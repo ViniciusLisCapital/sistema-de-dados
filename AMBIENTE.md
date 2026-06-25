@@ -38,7 +38,7 @@ ferramenta, o que antes exigia `pip` + `venv` + `pip-tools`.
 | `pyproject.toml` | ✅ Sim | **A lista de desejos.** Declara as dependências *diretas* (com faixas de versão flexíveis) e os metadados do projeto. | Você (via `uv add`) |
 | `uv.lock` | ✅ Sim | **A receita exata.** Versão pinada + hash de cada pacote (diretos *e* transitivos) e o grafo de dependências. Garante instalação idêntica em toda máquina. | Ninguém à mão — o `uv` gera |
 | `.venv/` | ❌ Não | O ambiente virtual em si (os pacotes instalados de fato). É descartável e recriável a partir do `uv.lock`. | Ninguém — o `uv` gera |
-| `.vscode/settings.json` | ✅ Sim | Aponta o interpretador do VS Code para `.venv/Scripts/python.exe`. | Raramente |
+| `.vscode/settings.json` | ❌ Não | Aponta o interpretador do VS Code para `.venv/Scripts/python.exe`. Path absoluto e específico de cada máquina — cada dev configura localmente. | Você, na sua máquina |
 | `.env.example` | ✅ Sim | **Modelo** das variáveis de ambiente (chaves sem valores). Serve de base para criar o `.env`. | Você, ao adicionar uma var nova |
 | `.env` | ❌ **Nunca** | Credenciais reais (banco, API keys). Local de cada máquina. | Você, manualmente |
 | `sistema_de_dados.egg-info/` | ❌ Não | Metadado gerado pela instalação editável (`uv pip install -e .`). Descartável. | Ninguém — gerado |

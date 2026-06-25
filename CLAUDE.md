@@ -245,10 +245,11 @@ Todas as séries consumidas por `_load_data()` vêm de `macro_brasil` via `MySQL
 
 Relatório HTML interativo de fundamentos cambiais. Arquivo único autocontido — abre em qualquer browser, enviável por email/Dropbox.
 
+📄 **Status, pendências e roadmap completos:** [`CAMBIO.md`](CAMBIO.md)
+
 ### Como gerar
 
 ```powershell
-# Atualiza dados e gera relatório
 uv run python jobs/update_cambio.py
 uv run python -c "from analytics.cambio.generate_report import run; run()"
 # Saída: reports/cambio_latest.html
@@ -258,37 +259,12 @@ uv run python -c "from analytics.cambio.generate_report import run; run()"
 
 Template fixo `report.html` com marcador `/*REPORT_DATA*/`. `generate_report.py` lê todas as tabelas de `macro_cambio`, serializa como JSON e substitui o marcador. Sem Jinja2 — só `str.replace()`.
 
-Seções e dados exibidos:
-
-| Seção | Fonte | Charts |
-|---|---|---|
-| Diferenciais de Juros | `diferenciais_juros` | Selic vs Fed Funds · Diferencial nominal · Taxas reais ex-post |
-| REER | `reer` | Câmbio efetivo real BR/MX/CL/CO (BIS) |
-| Posicionamento CFTC | `cot_fx` | Posição líquida BRL + open interest |
-| Fluxos e Fundamentos | `reservas`, `termos_de_troca`, `fluxo_cambial`, `balanco_pagamentos` | 4 charts |
-
-Stack: Plotly.js 2.35.2 CDN, paleta LIS Capital, range selectors (1a/3a/5a/10a/Tudo), modeBar hover-only.
-
-### Roadmap do relatório (3 fases)
-
-Ver detalhes em `CAMBIO.md § Roadmap do Relatório`.
-
-**Fase 1 — Qualidade e detalhe dos dados** *(próxima)*
-- Diferenciais ex-ante (Focus Selic + Fed Funds futuros/OIS)
-- Histórico completo para todas as séries (`diferenciais_juros` limitado hoje)
-- Confirmar SGS 22099/22100 e ampliar séries de `fluxo_cambial`
-- Reservas brutas (SGS code investigation)
-
-**Fase 2 — Histórico ampliado**
-- CFTC: estender de 3 anos para histórico completo (~2006 em diante)
-- `diferenciais_juros`: garantir `start="all"` (hoje truncado na carga)
-- `balanco_pagamentos` / `fluxo_cambial`: verificar cobertura real disponível
-
-**Fase 3 — Agente de análise**
-- Módulo `analytics/cambio/analyze.py`: lê dados atuais + bibliografia selecionada → gera narrativa via API Claude
-- Output: seção "Análise" no HTML ou documento separado
-- Dependência nova: `anthropic` SDK (`uv add anthropic`)
-- Requer: definir `analytics/cambio/bibliography/` com textos de referência
+| Seção | Tabela fonte |
+|---|---|
+| Diferenciais de Juros | `diferenciais_juros` |
+| REER | `reer` |
+| Posicionamento CFTC | `cot_fx` |
+| Fluxos e Fundamentos | `reservas`, `termos_de_troca`, `fluxo_cambial`, `balanco_pagamentos` |
 
 ---
 
@@ -339,15 +315,8 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 
 ## Pendências (próximas sessões)
 
-### Alta prioridade — Relatório Cambial Fase 1 (dados)
-- **Diferenciais ex-ante**: adicionar séries `_ex_ante` em `diferenciais_juros` — BR: Focus Selic EOP 12m / IPCA 12m (já em `expectativas`); EUA: FRED Fed Funds futuros ou OIS. Ver `CAMBIO.md`.
-- **Histórico `diferenciais_juros`**: série está truncada (~2023 em diante). Verificar default de `start=` no script e garantir carga desde `"all"`.
-- **CFTC histórico completo**: `cot_fx.py` carrega apenas últimos 3 anos. CFTC TFF disponível desde ~2006 — ampliar loader para todos os ZIPs anuais.
-- **Reservas brutas**: SGS 13127 retorna timeout. Mapear código correto no buscador BCB SGS. Ver `CAMBIO.md`.
-
-### Alta prioridade — Relatório Cambial Fase 3 (agente)
-- **`analytics/cambio/analyze.py`**: agente que lê dados de `macro_cambio` + textos de `analytics/cambio/bibliography/` e gera narrativa de análise via API Claude (`anthropic` SDK).
-- **`analytics/cambio/bibliography/`**: criar diretório e definir quais textos/papers fazem parte da base de referência.
+### Alta prioridade — Relatório Cambial
+Ver pendências e roadmap detalhados em [`CAMBIO.md`](CAMBIO.md).
 
 ### Média prioridade
 - **`domain/db/brasil/ibge/subcomponents.py`**: WIP — subcomponentes IPCA (IBGE 7060). Adaptar para connector v3, definir schema, implementar `run()`.
