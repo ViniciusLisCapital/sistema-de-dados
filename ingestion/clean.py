@@ -1,17 +1,13 @@
 """
-Step 2 — AI cleaning agent (3-pass pipeline).
+Step 2 — AI cleaning agent (2-pass pipeline, no intermediate files).
 
-Pass 1 — Structure: reformats raw extracted text into clean markdown,
+Pass 1 — Structure: reformats raw extracted text into clean markdown in memory,
           fixes PDF encoding artifacts, marks obvious boilerplate with
           > [BOILERPLATE] blockquotes.
-Pass 2 — Identify: analyzes the structured text and returns a JSON report
-          of boilerplate sections with type and reason.
-Pass 3 — Clean: rewrites the structured text with boilerplate removed.
+Pass 2 — Clean: identifies and removes all boilerplate. Writes the final file.
 
-Outputs (all in output_dir):
-  <name>_structured.md   — formatted intermediate (auditable)
-  <name>_report.json     — list of what was identified and why
-  <name>_clean.md        — final cleaned document
+Output:
+  <name>.md  — final cleaned document (written to output_dir)
 
 Usage (CLI):
     uv run python ingestion/clean.py ingestion/sample/raw/teste.md
@@ -19,13 +15,11 @@ Usage (CLI):
 
 As a function:
     from ingestion.clean import clean_file
-    report, clean_path = clean_file("ingestion/sample/raw/teste.md", output_dir="ingestion/sample/clean")
+    clean_path = clean_file("ingestion/sample/raw/teste.md", output_dir="ingestion/sample/clean")
 """
 
 import argparse
-import json
 import os
-import re
 from pathlib import Path
 
 import anthropic
@@ -33,7 +27,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "claude-haiku-4-5-20251001"
+INGEST_MODEL = "claude-haiku-4-5-20251001"
 MAX_CHARS = 180_000  # ~45k tokens — truncates only extremely long docs
 
 _STRUCTURE_PROMPT = """\
@@ -60,14 +54,14 @@ Document:
 {text}
 ---"""
 
-_IDENTIFY_PROMPT = """\
-You are a document cleaning assistant. The structured text below was extracted from a PDF
-and has already been pre-formatted. Sections marked with > [BOILERPLATE] are candidates for removal.
+_CLEAN_PROMPT = """\
+You are a document cleaning assistant. The structured text below was extracted from a PDF.
+Sections marked with > [BOILERPLATE] are candidates for removal.
 
-Your task: identify all boilerplate sections that should be removed to leave only substantive content.
-Include the pre-marked [BOILERPLATE] sections and any others you find.
+Your task: remove all boilerplate and return ONLY the cleaned document.
 
-Boilerplate includes:
+Boilerplate to remove:
+- Any section marked with > [BOILERPLATE]
 - Table of contents / index
 - Disclaimers and legal notices
 - Repeated page headers/footers (page numbers, document title artifacts)
@@ -77,74 +71,34 @@ Boilerplate includes:
 - References / bibliography that is just a citation list (no annotation)
 - Regulatory certifications and compliance statements
 
-Return a JSON object — no markdown fences, just raw JSON — in this exact shape:
-{
-  "boilerplate": [
-    {
-      "type": "toc|disclaimer|header_footer|copyright|contact|references|about|regulatory|other",
-      "excerpt": "<first 120 characters of the section>",
-      "reason": "<one sentence explaining why this is boilerplate>"
-    }
-  ],
-  "content_summary": "<1-2 sentences: what is the substantive content about>"
-}
-
-If no boilerplate is found, return {"boilerplate": [], "content_summary": "..."}.
-
-Document:
----
-{text}
----"""
-
-_CLEAN_PROMPT = """\
-You are a document cleaning assistant.
-
-Below is a structured document and a JSON list of boilerplate sections to remove.
-Return ONLY the cleaned document — no commentary, no JSON, no preamble.
-Remove all boilerplate sections completely. Remove any remaining > [BOILERPLATE] markers even if not in the list.
+Return ONLY the cleaned document. No commentary, no preamble.
 Keep all substantive content intact and in order. Preserve the markdown structure (headers, paragraphs).
 
-Boilerplate to remove:
-{boilerplate_json}
-
 Document:
 ---
 {text}
 ---"""
 
 
-def _call(client: anthropic.Anthropic, prompt: str, max_tokens: int = 8096) -> str:
+def _call(client: anthropic.Anthropic, model: str, prompt: str, max_tokens: int = 8096) -> str:
     msg = client.messages.create(
-        model=MODEL,
+        model=model,
         max_tokens=max_tokens,
         messages=[{"role": "user", "content": prompt}],
     )
     return msg.content[0].text.strip()
 
 
-def _parse_report(raw: str) -> dict:
-    raw = re.sub(r"^```(?:json)?\s*", "", raw.strip(), flags=re.IGNORECASE)
-    raw = re.sub(r"\s*```$", "", raw.strip())
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        m = re.search(r"\{[\s\S]*\}", raw)
-        if m:
-            try:
-                return json.loads(m.group())
-            except json.JSONDecodeError:
-                pass
-        raise ValueError(f"Could not parse JSON from model response:\n{raw[:600]}")
-
-
 def clean_file(
     source: str | Path,
     output_dir: str | Path | None = None,
-) -> tuple[dict, Path]:
+    model: str = INGEST_MODEL,
+) -> Path:
     """
-    Run the 3-pass pipeline on a single raw .md file.
+    Run the 2-pass pipeline on a single raw .md file.
+    Structure pass runs in memory; only the final clean file is written.
 
-    Returns (report_dict, clean_path).
+    Returns clean_path.
     """
     source = Path(source)
     if not source.exists():
@@ -160,8 +114,6 @@ def clean_file(
 
     stem = source.stem
     base = stem[:-4] if stem.endswith("_raw") else stem  # strip _raw suffix for output names
-    structured_path = dest_dir / f"{base}_structured.md"
-    report_path = dest_dir / f"{base}_report.json"
     clean_path = dest_dir / f"{base}.md"
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -170,32 +122,23 @@ def clean_file(
 
     client = anthropic.Anthropic(api_key=api_key)
 
-    # Pass 1: structure
-    structured = _call(client, _STRUCTURE_PROMPT.replace("{text}", text), max_tokens=8096)
-    structured_path.write_text(structured, encoding="utf-8")
-    print(f"        structured: {len(structured):,} chars -> {structured_path.name}")
+    # Pass 1: structure (in memory)
+    structured = _call(client, model, _STRUCTURE_PROMPT.replace("{text}", text))
+    print(f"        structured: {len(structured):,} chars (in memory)")
 
-    # Pass 2: identify boilerplate (on structured text)
-    raw_report = _call(client, _IDENTIFY_PROMPT.replace("{text}", structured))
-    report = _parse_report(raw_report)
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    n_items = len(report.get("boilerplate", []))
-    print(f"        identified: {n_items} boilerplate section(s) -> {report_path.name}")
-
-    # Pass 3: apply cleaning (on structured text)
-    boilerplate_json = json.dumps(report.get("boilerplate", []), ensure_ascii=False, indent=2)
-    prompt3 = _CLEAN_PROMPT.replace("{boilerplate_json}", boilerplate_json).replace("{text}", structured)
-    cleaned = _call(client, prompt3, max_tokens=8096)
+    # Pass 2: clean (identify + remove boilerplate, write final file)
+    cleaned = _call(client, model, _CLEAN_PROMPT.replace("{text}", structured))
     clean_path.write_text(cleaned, encoding="utf-8")
-    print(f"        -> {clean_path.name}  ({len(cleaned):,} chars)")
+    print(f"        cleaned:    {len(cleaned):,} chars -> {clean_path.name}")
 
-    return report, clean_path
+    return clean_path
 
 
 def process(
     source: str | Path,
     output_dir: str | Path | None = None,
     overwrite: bool = False,
+    model: str = INGEST_MODEL,
 ) -> None:
     """Clean one .md file or all .md files in a folder."""
     source = Path(source)
@@ -203,7 +146,7 @@ def process(
     if source.is_file():
         files = [source]
     elif source.is_dir():
-        files = sorted(f for f in source.glob("*.md") if not f.stem.endswith(("_structured", "_clean")))
+        files = sorted(f for f in source.glob("*.md") if not f.stem.endswith("_structured"))
         if not files:
             print(f"No .md files found in: {source}")
             return
@@ -219,9 +162,9 @@ def process(
         if clean_path.exists() and not overwrite:
             print(f"  skip (use --overwrite to replace)")
             continue
-        print(f"  structuring / identifying / cleaning ...")
+        print(f"  structuring + cleaning ...")
         try:
-            clean_file(f, output_dir=dest)
+            clean_file(f, output_dir=dest, model=model)
         except Exception as e:
             print(f"  ERROR: {e}")
 
@@ -231,6 +174,7 @@ if __name__ == "__main__":
     parser.add_argument("source", help=".md file or folder of .md files")
     parser.add_argument("--output", "-o", default=None, help="Output directory")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite existing cleaned files")
+    parser.add_argument("--model", default=INGEST_MODEL, help=f"Claude model for cleaning (default: {INGEST_MODEL})")
     args = parser.parse_args()
 
-    process(source=args.source, output_dir=args.output, overwrite=args.overwrite)
+    process(source=args.source, output_dir=args.output, overwrite=args.overwrite, model=args.model)
