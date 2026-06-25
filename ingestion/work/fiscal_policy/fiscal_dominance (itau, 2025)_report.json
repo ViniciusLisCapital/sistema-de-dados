@@ -1,0 +1,45 @@
+{
+  "boilerplate": [
+    {
+      "type": "contact",
+      "excerpt": "Fernando M. Goncalves, Julia Gottlieb, Pedro Schneider, Thales Guimarães, Mario Mesquita – Chief Economist",
+      "reason": "List of analyst names and titles with organizational affiliation."
+    },
+    {
+      "type": "contact",
+      "excerpt": "To access reports and forecasts, visit: https://www.itau.com.br/itaubba-pt/macroeconomic-analysis",
+      "reason": "Website contact information for accessing additional reports."
+    },
+    {
+      "type": "disclaimer",
+      "excerpt": "This report has been prepared and released by the Macro Research Department of Itaú Unibanco S.A. This report is not a product of the Equity Research Department...",
+      "reason": "Standard regulatory disclaimer explaining report purpose and disclaiming liability."
+    },
+    {
+      "type": "regulatory",
+      "excerpt": "The opinions contained herein reflect exclusively the personal views of the analyst responsible for this report and were prepared independently and autonomously...",
+      "reason": "Regulatory statement on analyst independence and personal views."
+    },
+    {
+      "type": "copyright",
+      "excerpt": "This report may not be reproduced or redistributed to any other person, in whole or in part, for any purpose, without the prior written consent of Itaú Unibanco.",
+      "reason": "Copyright and reproduction restrictions statement."
+    },
+    {
+      "type": "disclaimer",
+      "excerpt": "This material does not take into consideration the objectives, financial situation or specific needs of any particular client. Clients must obtain financial, tax, legal...",
+      "reason": "Standard disclaimer on client-specific financial advice requirements."
+    },
+    {
+      "type": "contact",
+      "excerpt": "For inquiries, suggestions, complaints, criticisms and compliments: CSCC: 0800 728 0728, Portal: https://www.itau.com.br/atenda-itau/para-voce/...",
+      "reason": "Customer service contact details including phone numbers and website URLs."
+    },
+    {
+      "type": "references",
+      "excerpt": "BARRO, RJ, AND F. BIANCHI (2024): 'Fiscal Influences on Inflation in OECD Countries, 2020-2023,' NBER Working Paper 31838.",
+      "reason": "Unannotated bibliography section listing academic citations without commentary."
+    }
+  ],
+  "content_summary": "This report analyzes fiscal dominance in Brazil—the phenomenon where deteriorating public finances undermine the central bank's ability to control inflation. It explains the concept through coordination problems between monetary and fiscal authorities, examines Brazil's current position (finding active monetary policy but concerning fiscal trajectory), and assesses market dynamics indicating growing fiscal risk despite inflation targeting framework remaining functional."
+}

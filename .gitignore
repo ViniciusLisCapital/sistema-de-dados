@@ -1,0 +1,40 @@
+# Credentials — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Virtual environment
+.venv/
+
+# Python bytecode and build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Generated outputs (ETL results, reports)
+reports/
+analytics/oraculo/brasil/base/
+analytics/oraculo/us/base/
+analytics/oraculo/base/
+
+# Large binary files
+*.pdf
+*.pptx
+*.xlsx
+
+# IDE — machine-specific paths
+.vscode/
+
+# Dropbox metadata
+.dropbox
+.dropbox.cache/
+~$*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

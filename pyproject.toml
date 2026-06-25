@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sistema-de-dados"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "beautifulsoup4",
+    "fredapi",
+    "mysql-connector-python",
+    "numpy",
+    "pandas",
+    "requests",
+    "scipy",
+    "siconfipy",
+    "scikit-learn",
+    "statsmodels",
+    "matplotlib",
+    "openpyxl",
+    "python-dotenv>=1.2.2",
+    "pdfplumber>=0.11.10",
+    "pymupdf>=1.27.2.3",
+    "pypdf>=6.13.3",
+    "sentence-transformers>=5.6.0",
+    "anthropic>=0.111.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython",
+    "ipdb",
+    "ipykernel",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["sistema_de_dados*", "*.egg-info*"]

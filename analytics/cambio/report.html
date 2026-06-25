@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama Cambial — LIS Capital</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    :root {
+      --lis-azul:    #1F2853;
+      --lis-dourado: #BB9B1D;
+      --lis-verde:   #418791;
+      --lis-azul-cl: #02739B;
+      --lis-laranja: #EA523A;
+      --lis-amarelo: #FBC852;
+      --lis-cinza:   #BFBFBF;
+      --bg:          #f0f2f5;
+      --card-bg:     #ffffff;
+      --border:      #dde1e9;
+      --text:        #2c3140;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--lis-azul);
+      color: #fff;
+      padding: 22px 40px 18px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header .brand {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--lis-dourado);
+      margin-bottom: 4px;
+    }
+    header h1 { font-size: 24px; font-weight: 700; letter-spacing: 0.2px; }
+    header .meta {
+      text-align: right;
+      font-size: 12px;
+      color: rgba(255,255,255,0.60);
+      line-height: 1.7;
+    }
+    header .meta strong { color: rgba(255,255,255,0.90); }
+
+    /* ── Nav ── */
+    nav {
+      background: var(--lis-azul);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 0 40px;
+      display: flex;
+      overflow-x: auto;
+    }
+    nav a {
+      display: block;
+      padding: 10px 18px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    nav a:hover {
+      color: rgba(255,255,255,0.90);
+      border-bottom-color: var(--lis-dourado);
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    /* ── Sections ── */
+    section { display: flex; flex-direction: column; gap: 14px; }
+    section h2 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--lis-azul);
+      border-left: 4px solid var(--lis-dourado);
+      padding-left: 10px;
+    }
+
+    /* ── Chart cards ── */
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 4px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      height: 420px;
+    }
+    /* The Plotly div fills the card; let it handle its own padding via margins */
+    .chart-card > div { width: 100%; height: 100%; }
+
+    .chart-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--lis-azul);
+      color: rgba(255,255,255,0.40);
+      font-size: 11px;
+      text-align: center;
+      padding: 14px 40px;
+    }
+    footer span { color: rgba(255,255,255,0.60); }
+
+    @media (max-width: 860px) {
+      .chart-grid-2 { grid-template-columns: 1fr; }
+      header, nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 20px 16px 36px; }
+      .chart-card { height: 360px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS Capital</div>
+    <h1>Panorama Cambial</h1>
+  </div>
+  <div class="meta">
+    Atualizado em: <strong id="generated-at">—</strong><br>
+    BCB SGS &nbsp;·&nbsp; FRED &nbsp;·&nbsp; BIS &nbsp;·&nbsp; CFTC
+  </div>
+</header>
+
+<nav>
+  <a href="#sec-juros">Diferenciais de Juros</a>
+  <a href="#sec-reer">REER</a>
+  <a href="#sec-cot">Posicionamento</a>
+  <a href="#sec-fluxos">Fluxos e Fundamentos</a>
+</nav>
+
+<main>
+
+  <section id="sec-juros">
+    <h2>Diferenciais de Juros</h2>
+    <div class="chart-grid-2">
+      <div class="chart-card"><div id="chart-nominal-rates"></div></div>
+      <div class="chart-card"><div id="chart-diferencial-nominal"></div></div>
+    </div>
+    <div class="chart-card"><div id="chart-taxas-reais"></div></div>
+  </section>
+
+  <section id="sec-reer">
+    <h2>Taxa de Câmbio Efetiva Real — BIS (2020 = 100)</h2>
+    <div class="chart-card"><div id="chart-reer"></div></div>
+  </section>
+
+  <section id="sec-cot">
+    <h2>Posicionamento Especulativo — CFTC (BRL Futuros CME)</h2>
+    <div class="chart-card"><div id="chart-cot-brl"></div></div>
+  </section>
+
+  <section id="sec-fluxos">
+    <h2>Fluxos e Fundamentos</h2>
+    <div class="chart-grid-2">
+      <div class="chart-card"><div id="chart-reservas"></div></div>
+      <div class="chart-card"><div id="chart-termos"></div></div>
+    </div>
+    <div class="chart-card"><div id="chart-fluxo"></div></div>
+    <div class="chart-card"><div id="chart-bop"></div></div>
+  </section>
+
+</main>
+
+<footer>
+  Fontes: <span>BCB SGS · FRED (Federal Reserve) · BIS Statistics API · CFTC Traders in Financial Futures</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+
+document.getElementById('generated-at').textContent = REPORT_DATA.generated_at || '—';
+
+// ── Color palette ─────────────────────────────────────────────────────────────
+
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+
+// ── Plotly shared config ───────────────────────────────────────────────────────
+// Range selector sits below the x-axis (y < 0) so it never overlaps the title.
+// Mode bar is set to 'hover' so it only appears on mouse-over and never
+// competes with the range buttons for screen space.
+
+var RANGE_SELECTOR = {
+  buttons: [
+    { count: 1,  label: '1a',  step: 'year', stepmode: 'backward' },
+    { count: 3,  label: '3a',  step: 'year', stepmode: 'backward' },
+    { count: 5,  label: '5a',  step: 'year', stepmode: 'backward' },
+    { count: 10, label: '10a', step: 'year', stepmode: 'backward' },
+    { step: 'all', label: 'Tudo' },
+  ],
+  bgcolor:     '#f5f6f8',
+  bordercolor: '#dde1e9',
+  borderwidth: 1,
+  activecolor: '#1F2853',
+  font:        { size: 11, color: '#555' },
+  x:       0,
+  xanchor: 'left',
+  y:       -0.14,
+};
+
+var RANGESLIDER = { visible: false };
+
+var CONFIG = {
+  displayModeBar:         'hover',   // toolbar only appears on mouse-over
+  responsive:              true,
+  displaylogo:             false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+};
+
+// ── Layout factory ────────────────────────────────────────────────────────────
+// b: 100 gives enough room for x-axis labels + range selector + legend.
+
+function mkLayout(title, extra) {
+  var base = {
+    title: {
+      text:    title,
+      font:    { size: 13, color: C.azul },
+      x:       0.01,
+      xanchor: 'left',
+    },
+    font:          { family: 'system-ui, -apple-system, "Segoe UI", sans-serif', size: 11.5, color: '#3a3f52' },
+    paper_bgcolor: '#ffffff',
+    plot_bgcolor:  '#fafbfc',
+    margin:        { t: 44, r: 22, b: 100, l: 62 },
+    hovermode:     'x unified',
+    hoverlabel:    { bgcolor: '#fff', bordercolor: '#dde1e9', font: { size: 12 } },
+    legend: {
+      orientation: 'h',
+      y:           -0.36,
+      xanchor:     'center',
+      x:           0.5,
+      font:        { size: 11 },
+      bgcolor:     'rgba(0,0,0,0)',
+    },
+    xaxis: {
+      showgrid:      false,
+      showline:      true,
+      linecolor:     '#dde1e9',
+      tickfont:      { size: 11 },
+      rangeselector: RANGE_SELECTOR,
+      rangeslider:   RANGESLIDER,
+    },
+    yaxis: {
+      gridcolor:     '#eaecf1',
+      zeroline:      true,
+      zerolinecolor: '#c0c4cc',
+      zerolinewidth: 1,
+      showline:      false,
+      tickfont:      { size: 11 },
+    },
+  };
+  if (extra) {
+    Object.keys(extra).forEach(function(k) {
+      if (k === 'xaxis' || k === 'yaxis' || k === 'yaxis2') {
+        base[k] = Object.assign({}, base[k] || {}, extra[k]);
+      } else {
+        base[k] = extra[k];
+      }
+    });
+  }
+  return base;
+}
+
+// ── Trace helper ──────────────────────────────────────────────────────────────
+
+function tLine(x, y, name, color, opts) {
+  return Object.assign({
+    x: x, y: y,
+    type: 'scatter', mode: 'lines',
+    name: name,
+    line: { color: color, width: 2 },
+    connectgaps: false,
+  }, opts || {});
+}
+
+// ── 1a. Selic vs Fed Funds ────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.diferenciais;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-nominal-rates', [
+    tLine(d.dates, d.selic,     'Selic',     C.verde,   { line: { color: C.verde,   width: 2.5 } }),
+    tLine(d.dates, d.fed_funds, 'Fed Funds', C.laranja, { line: { color: C.laranja, width: 2   } }),
+  ],
+  mkLayout('Selic vs Fed Funds (% a.a.)', {
+    yaxis: { ticksuffix: '%', zeroline: false },
+  }), CONFIG);
+})();
+
+// ── 1b. Diferencial Nominal ───────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.diferenciais;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-diferencial-nominal', [
+    Object.assign(
+      tLine(d.dates, d.diferencial_nominal, 'Diferencial Nominal', C.dourado),
+      { fill: 'tozeroy', fillcolor: 'rgba(187,155,29,0.10)' }
+    ),
+  ],
+  mkLayout('Diferencial Nominal Selic − Fed Funds (p.p.)', {
+    yaxis: { ticksuffix: ' p.p.', zeroline: true },
+  }), CONFIG);
+})();
+
+// ── 1c. Taxas Reais ex-post ───────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.diferenciais;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-taxas-reais', [
+    tLine(d.dates, d.real_br_ex_post,  'Taxa Real Brasil (ex-post)', C.verde,   {}),
+    tLine(d.dates, d.real_us_ex_post,  'Taxa Real EUA (ex-post)',    C.laranja, {}),
+    tLine(d.dates, d.diferencial_real, 'Diferencial Real',            C.dourado,
+      { line: { color: C.dourado, width: 2, dash: 'dot' } }),
+  ],
+  mkLayout('Taxas Reais ex-post e Diferencial (% a.a.)', {
+    yaxis: { ticksuffix: '%', zeroline: true },
+  }), CONFIG);
+})();
+
+// ── 2. REER ───────────────────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.reer;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-reer', [
+    tLine(d.dates, d.BR, 'Brasil (BR)',   C.verde,   { line: { color: C.verde,   width: 3   } }),
+    tLine(d.dates, d.MX, 'México (MX)',   C.laranja, { line: { color: C.laranja, width: 1.8 } }),
+    tLine(d.dates, d.CL, 'Chile (CL)',    C.amarelo, { line: { color: C.amarelo, width: 1.8 } }),
+    tLine(d.dates, d.CO, 'Colômbia (CO)', C.azulCl,  { line: { color: C.azulCl,  width: 1.8 } }),
+  ],
+  mkLayout('REER — Câmbio Efetivo Real Amplo (BIS, 2020 = 100)', {
+    yaxis: { zeroline: false },
+    shapes: [{
+      type: 'line', xref: 'paper', x0: 0, x1: 1,
+      y0: 100, y1: 100,
+      line: { color: '#adb5bd', width: 1, dash: 'dash' },
+    }],
+    annotations: [{
+      xref: 'paper', x: 0.99, y: 100,
+      xanchor: 'right', yanchor: 'bottom',
+      text: '100 (base 2020)', showarrow: false,
+      font: { size: 10, color: '#999' },
+    }],
+  }), CONFIG);
+})();
+
+// ── 3. COT BRL ────────────────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.cot_fx;
+  if (!d || !d.dates) return;
+  var barColors = (d.lev_net || []).map(function(v) {
+    return (v === null || v === undefined) ? C.cinza : (v >= 0 ? C.verde : C.laranja);
+  });
+  Plotly.newPlot('chart-cot-brl', [
+    {
+      x: d.dates, y: d.lev_net, type: 'bar',
+      name: 'Posição Líquida (Leveraged Money)',
+      marker: { color: barColors },
+      yaxis: 'y',
+    },
+    tLine(d.dates, d.open_interest, 'Open Interest', C.dourado, {
+      yaxis: 'y2',
+      line:  { color: C.dourado, width: 1.5, dash: 'dot' },
+    }),
+  ],
+  mkLayout('BRL — Posicionamento Especulativo (Leveraged Money Líquido)', {
+    barmode: 'relative',
+    yaxis:   { title: { text: 'Contratos', standoff: 8 }, zeroline: true },
+    yaxis2:  {
+      title:      { text: 'Open Interest', standoff: 8 },
+      overlaying: 'y', side: 'right',
+      showgrid:   false, zeroline: false,
+    },
+    margin: { t: 44, r: 82, b: 100, l: 62 },
+  }), CONFIG);
+})();
+
+// ── 4a. Reservas Internacionais ───────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.reservas;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-reservas', [
+    Object.assign(
+      tLine(d.dates, d.reservas_liquidez_usd, 'Reservas (Liquidez)', C.verde,
+        { line: { color: C.verde, width: 2.5 } }),
+      { fill: 'tozeroy', fillcolor: 'rgba(65,135,145,0.08)' }
+    ),
+  ],
+  mkLayout('Reservas Internacionais — Conceito Liquidez (USD mi)', {
+    yaxis: { zeroline: false },
+  }), CONFIG);
+})();
+
+// ── 4b. Termos de Troca ───────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.termos;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-termos', [
+    tLine(d.dates, d.termos_de_troca_a, 'Série A (SGS 22099)', C.verde,   {}),
+    tLine(d.dates, d.termos_de_troca_b, 'Série B (SGS 22100)', C.dourado, {}),
+  ],
+  mkLayout('Termos de Troca (BCB SGS)', {
+    yaxis: { zeroline: false },
+  }), CONFIG);
+})();
+
+// ── 4c. Fluxo Cambial ─────────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.fluxo;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-fluxo', [
+    tLine(d.dates, d.total_saldo,      'Saldo Total',      C.dourado,
+      { line: { color: C.dourado, width: 2.5 } }),
+    tLine(d.dates, d.comercial_saldo,  'Saldo Comercial',  C.verde,  {}),
+    tLine(d.dates, d.financeiro_saldo, 'Saldo Financeiro', C.azulCl, {}),
+  ],
+  mkLayout('Fluxo Cambial — Saldos por Segmento (USD mi)', {
+    yaxis: { zeroline: true },
+  }), CONFIG);
+})();
+
+// ── 4d. Balanço de Pagamentos ─────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.bop;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-bop', [
+    tLine(d.dates, d.conta_corrente,              'Conta Corrente',    C.verde,   {}),
+    tLine(d.dates, d.investimento_direto_liquido,  'IDP Líquido',      C.dourado, {}),
+    tLine(d.dates, d.conta_financeira,             'Conta Financeira', C.azulCl,  {}),
+    tLine(d.dates, d.investimento_carteira,         'Inv. Carteira',   C.laranja,
+      { line: { color: C.laranja, width: 1.5, dash: 'dot' } }),
+  ],
+  mkLayout('Balanço de Pagamentos (USD mi)', {
+    yaxis: { zeroline: true },
+  }), CONFIG);
+})();
+
+</script>
+</body>
+</html>

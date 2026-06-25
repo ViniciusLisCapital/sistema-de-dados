@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama IPCA — LIS Capital</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    :root {
+      --lis-azul:    #1F2853;
+      --lis-dourado: #BB9B1D;
+      --lis-verde:   #418791;
+      --lis-azul-cl: #02739B;
+      --lis-laranja: #EA523A;
+      --lis-amarelo: #FBC852;
+      --lis-cinza:   #BFBFBF;
+      --bg:          #f0f2f5;
+      --card-bg:     #ffffff;
+      --border:      #dde1e9;
+      --text:        #2c3140;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--lis-azul);
+      color: #fff;
+      padding: 20px 40px 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--lis-dourado); margin-bottom: 3px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header .meta { text-align: right; font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+    header .meta strong { color: rgba(255,255,255,0.90); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--lis-azul);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 2px solid var(--lis-dourado);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 46px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: rgba(255,255,255,0.85); }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--lis-dourado); }
+
+    /* ── Controls (Tab 1 only) ── */
+    #controls {
+      background: var(--lis-azul);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 9px 40px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      position: sticky;
+      top: 46px;
+      z-index: 100;
+    }
+    .ctrl-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+    .ctrl-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+    .pill {
+      padding: 4px 13px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 20px;
+      background: transparent;
+      color: rgba(255,255,255,0.60);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .pill:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; font-weight: 600; }
+    .pill:disabled { opacity: 0.35; cursor: not-allowed; }
+    #custom-row { display: none; align-items: center; gap: 7px; color: rgba(255,255,255,0.65); font-size: 12px; }
+    #custom-row input[type="month"] { padding: 3px 7px; border: 1px solid rgba(255,255,255,0.28); border-radius: 4px; background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; font-family: inherit; }
+    #custom-row input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.6); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--lis-azul);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+
+    /* ── KPI grids ── */
+    .kpi-grid   { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin-bottom: 5px; }
+    .kpi-value { font-size: 30px; font-weight: 700; color: var(--lis-azul); line-height: 1.1; }
+    .kpi-value.pos { color: var(--lis-laranja); }
+    .kpi-value.neg { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 12px; color: #999; margin-top: 3px; }
+    .kpi-detail { font-size: 13px; font-weight: 600; color: var(--lis-azul); margin-top: 2px; }
+
+    /* ── Breadcrumb ── */
+    #breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 13px; }
+    .bc-item { color: #999; }
+    .bc-link  { color: var(--lis-azul-cl); cursor: pointer; }
+    .bc-link:hover { text-decoration: underline; }
+    .bc-sep   { color: #bbb; font-size: 10px; }
+    #waterfall-subtitle { font-size: 12px; color: #aaa; font-style: italic; }
+
+    /* ── Chart cards ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 4px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .chart-col-title { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
+    #chart-waterfall    { width: 100%; height: 460px; }
+    #chart-timeseries   { width: 100%; height: 400px; }
+    #chart-snap-wf      { width: 100%; height: 360px; }
+    #chart-snap-cmp     { width: 100%; height: 360px; }
+    #chart-comp-saar    { width: 100%; height: 400px; }
+    #chart-nuc-saar     { width: 100%; height: 400px; }
+    #chart-comp-yoy     { width: 100%; height: 400px; }
+    #chart-nuc-yoy      { width: 100%; height: 400px; }
+    #chart-difusao      { width: 100%; height: 340px; }
+
+    /* ── Table ── */
+    .table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { background: var(--lis-azul); color: #fff; }
+    thead th { padding: 9px 13px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none; }
+    thead th:hover { background: #2a3563; }
+    thead th.sorted-asc::after  { content: ' ▲'; opacity: 0.7; }
+    thead th.sorted-desc::after { content: ' ▼'; opacity: 0.7; }
+    tbody tr:nth-child(even) { background: #f8f9fb; }
+    tbody tr:hover { background: #edf0f6; }
+    tbody td { padding: 7px 13px; border-bottom: 1px solid var(--border); }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.pos { color: var(--lis-laranja); font-weight: 600; }
+    td.neg { color: var(--lis-verde);   font-weight: 600; }
+
+    /* ── Snapshot controls ── */
+    .snap-ctrl-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .snap-ctrl-label { font-size: 13px; font-weight: 600; color: #555; }
+    .snap-index-badge {
+      font-size: 11px; font-weight: 700; color: var(--lis-dourado);
+      background: var(--lis-azul); padding: 3px 10px; border-radius: 10px;
+    }
+    input[type="month"]#snap-month-input {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 13px; color: var(--text);
+    }
+
+    /* ── Snapshot detail filter ── */
+    .snap-detail-ctrl {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+    }
+    .snap-detail-ctrl .ctrl-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #888; }
+    .snap-detail-ctrl select {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 13px; color: var(--text); background: #fff; cursor: pointer;
+    }
+    .snap-detail-ctrl select:focus { outline: none; border-color: var(--lis-azul-cl); }
+    .snap-filter-count { font-size: 12px; color: #aaa; }
+
+    /* ── Footer ── */
+    footer { background: var(--lis-azul); color: rgba(255,255,255,0.38); font-size: 11px; text-align: center; padding: 13px 40px; }
+    footer span { color: rgba(255,255,255,0.58); }
+
+    /* ── Y/Y drill controls ── */
+    .yoy-ctrl-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+    }
+    .yoy-ctrl-bar select {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 13px; color: var(--text);
+      background: #fff; cursor: pointer;
+    }
+    .yoy-ctrl-bar select:focus { outline: none; border-color: var(--lis-azul-cl); }
+    #chart-yoy-drill { width: 100%; height: 400px; }
+
+    @media (max-width: 960px) {
+      .kpi-grid, .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .chart-row { grid-template-columns: 1fr; }
+      header, .tab-nav, #controls { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid, .kpi-grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS Capital</div>
+    <h1>Panorama IPCA</h1>
+  </div>
+  <div class="meta">
+    Atualizado em: <strong id="generated-at">—</strong><br>
+    IBGE SIDRA &nbsp;·&nbsp; BCB SGS
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="decomp">Decomposição</button>
+  <button class="tab-btn" data-tab="snapshot">Snapshot</button>
+  <button class="tab-btn" data-tab="nucleos">Núcleos &amp; Difusão</button>
+</nav>
+
+<div id="controls">
+  <span class="ctrl-label">Índice</span>
+  <button class="pill active" data-index="ipca">IPCA</button>
+  <button class="pill" data-index="ipca15" id="pill-ipca15">IPCA-15</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-label">Período</span>
+  <button class="pill active" data-range="ytd">Início do ano</button>
+  <button class="pill" data-range="3m">3M</button>
+  <button class="pill" data-range="6m">6M</button>
+  <button class="pill" data-range="12m">12M</button>
+  <button class="pill" data-range="all">Tudo</button>
+  <button class="pill" data-range="custom">Personalizado</button>
+  <div id="custom-row">
+    De&nbsp;<input type="month" id="custom-start">
+    &nbsp;até&nbsp;<input type="month" id="custom-end">
+  </div>
+</div>
+
+<main>
+
+  <!-- ═══════════ TAB 1 — DECOMPOSIÇÃO ═══════════ -->
+  <div class="tab-panel active" id="tab-decomp">
+
+    <section id="sec-kpis">
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label" id="kpi-index-label">IPCA Acumulado</div>
+          <div class="kpi-value pos" id="kpi-ipca">—</div>
+          <div class="kpi-sub" id="kpi-ipca-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Maior Contribuidor (Grupo)</div>
+          <div class="kpi-detail" id="kpi-top-grupo-name">—</div>
+          <div class="kpi-value pos" id="kpi-top-grupo-contrib">—</div>
+          <div class="kpi-sub">contribuição acumulada no período</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" id="kpi-12m-label">IPCA 12 Meses</div>
+          <div class="kpi-value pos" id="kpi-12m">—</div>
+          <div class="kpi-sub" id="kpi-12m-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-decomp">
+      <h2>Decomposição por Período</h2>
+      <div id="breadcrumb"></div>
+      <div id="waterfall-subtitle"></div>
+      <div class="chart-card"><div id="chart-waterfall"></div></div>
+    </section>
+
+    <section id="sec-evolucao">
+      <h2>Evolução Mensal — Histórico Completo</h2>
+      <div class="chart-card"><div id="chart-timeseries"></div></div>
+    </section>
+
+    <section id="sec-ranking">
+      <h2>Maiores Contribuições no Período — Top 20 Subitens</h2>
+      <div class="yoy-ctrl-bar" style="margin-bottom:12px;">
+        <span class="ctrl-label">Filtro BCB</span>
+        <select id="ranking-bcb-sel">
+          <option value="todos">Todos</option>
+          <optgroup label="Livres / Monitorados">
+            <option value="livres">Livres</option>
+            <option value="monitorados">Monitorados</option>
+          </optgroup>
+          <optgroup label="Alimentos">
+            <option value="alimentos">Alimentos</option>
+            <option value="alimentos-subj">Alimentos — Subjacente</option>
+            <option value="alimentos-ex">Alimentos — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Bens Industriais">
+            <option value="bens-ind">Bens Industriais</option>
+            <option value="bens-ind-subj">Bens Industriais — Subjacente</option>
+            <option value="bens-ind-ex">Bens Industriais — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Serviços">
+            <option value="servicos">Serviços</option>
+            <option value="servicos-subj">Serviços — Subjacente</option>
+            <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-col="grupo">Grupo</th>
+              <th data-col="item">Item</th>
+              <th data-col="subitem">Subitem</th>
+              <th data-col="pesos" class="num">Peso</th>
+              <th data-col="contribuicao" class="num sorted-desc">Contribuição (p.p.)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sec-yoy-drill">
+      <h2>Variação 12M — Drilldown de Componentes</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Filtro BCB</span>
+        <select id="yoy-bcb-sel">
+          <option value="todos">Todos</option>
+          <optgroup label="Livres / Monitorados">
+            <option value="livres">Livres</option>
+            <option value="monitorados">Monitorados</option>
+          </optgroup>
+          <optgroup label="Alimentos">
+            <option value="alimentos">Alimentos</option>
+            <option value="alimentos-subj">Alimentos — Subjacente</option>
+            <option value="alimentos-ex">Alimentos — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Bens Industriais">
+            <option value="bens-ind">Bens Industriais</option>
+            <option value="bens-ind-subj">Bens Industriais — Subjacente</option>
+            <option value="bens-ind-ex">Bens Industriais — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Serviços">
+            <option value="servicos">Serviços</option>
+            <option value="servicos-subj">Serviços — Subjacente</option>
+            <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+        </select>
+        <span class="ctrl-label">Nível</span>
+        <select id="yoy-level-sel">
+          <option value="grupo">Grupo</option>
+          <option value="subgrupo">Subgrupo</option>
+          <option value="item">Item</option>
+          <option value="subitem" selected>Subitem</option>
+        </select>
+        <span class="ctrl-label">Componente</span>
+        <select id="yoy-item-sel" style="min-width:300px;max-width:520px;"></select>
+      </div>
+      <div class="chart-card"><div id="chart-yoy-drill"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB 2 — SNAPSHOT ═══════════ -->
+  <div class="tab-panel" id="tab-snapshot">
+
+    <div class="snap-ctrl-bar">
+      <span class="snap-ctrl-label">Leitura de</span>
+      <input type="month" id="snap-month-input">
+      <span class="snap-index-badge" id="snap-index-badge">IPCA</span>
+    </div>
+
+    <section>
+      <h2>Indicadores do Mês</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card">
+          <div class="kpi-label" id="snap-index-label">IPCA</div>
+          <div class="kpi-value pos" id="snap-total">—</div>
+          <div class="kpi-sub">total no mês (p.p.)</div>
+          <div class="kpi-sub" id="snap-total-var" style="margin-top:2px;font-size:11px;color:#aaa;"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Livres</div>
+          <div class="kpi-value" id="snap-livres">—</div>
+          <div class="kpi-sub">contribuição (p.p.)</div>
+          <div class="kpi-sub" id="snap-livres-var" style="margin-top:2px;font-size:11px;color:#aaa;"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Monitorados</div>
+          <div class="kpi-value" id="snap-admin">—</div>
+          <div class="kpi-sub">contribuição (p.p.)</div>
+          <div class="kpi-sub" id="snap-admin-var" style="margin-top:2px;font-size:11px;color:#aaa;"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" id="snap-difusao-label">Difusão IPCA</div>
+          <div class="kpi-value" id="snap-difusao">—</div>
+          <div class="kpi-sub" id="snap-difusao-sub">% itens com var. positiva</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Contribuições por Grupo</h2>
+      <div class="chart-row">
+        <div>
+          <div class="chart-col-title" id="snap-wf-title">—</div>
+          <div class="chart-card"><div id="chart-snap-wf"></div></div>
+        </div>
+        <div>
+          <div class="chart-col-title" id="snap-cmp-title">— vs —</div>
+          <div class="chart-card"><div id="chart-snap-cmp"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Composição Detalhada — <span id="snap-table-month">—</span></h2>
+      <div class="snap-detail-ctrl">
+        <span class="ctrl-lbl">Filtrar por</span>
+        <select id="snap-filter-level">
+          <option value="">Todos</option>
+          <option value="grupo">Grupo</option>
+          <option value="subgrupo">Subgrupo</option>
+          <option value="item">Item</option>
+          <option value="subitem">Subitem</option>
+        </select>
+        <select id="snap-filter-value" style="min-width:280px;display:none;"></select>
+        <span class="snap-filter-count" id="snap-filter-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-snapcol="grupo">Grupo</th>
+              <th data-snapcol="item">Item</th>
+              <th data-snapcol="subitem">Subitem</th>
+              <th data-snapcol="var_mensal" class="num">Var% mês</th>
+              <th data-snapcol="contribuicao" class="num sorted-desc">Contrib (p.p.)</th>
+            </tr>
+          </thead>
+          <tbody id="snap-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB 3 — NÚCLEOS & DIFUSÃO ═══════════ -->
+  <div class="tab-panel" id="tab-nucleos">
+
+    <section>
+      <h2 id="nuc-h2-comp-saar">Componentes — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <div class="chart-card"><div id="chart-comp-saar"></div></div>
+    </section>
+
+    <section id="nuc-sec-nuc-saar">
+      <h2>Núcleos — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <div class="chart-card"><div id="chart-nuc-saar"></div></div>
+    </section>
+
+    <section>
+      <h2 id="nuc-h2-comp-yoy">Componentes — Variação 12M % a/a</h2>
+      <div class="chart-card"><div id="chart-comp-yoy"></div></div>
+    </section>
+
+    <section id="nuc-sec-nuc-yoy">
+      <h2>Núcleos de Inflação — Variação 12M % a/a</h2>
+      <div class="chart-card"><div id="chart-nuc-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2 id="nuc-h2-difusao">Índice de Difusão IPCA</h2>
+      <div class="chart-card"><div id="chart-difusao"></div></div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>IBGE SIDRA (Agregados 7060 / 7062) &nbsp;·&nbsp; BCB SGS</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Data & palette ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/ipca_latest.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D   = REPORT_DATA;
+var C   = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+var LEVELS       = ['grupo', 'subgrupo', 'item', 'subitem'];
+var LEVEL_LABELS = {grupo:'Grupo', subgrupo:'Subgrupo', item:'Item', subitem:'Subitem'};
+var GROUP_COLORS = ['#EA523A','#02739B','#BB9B1D','#418791','#8E44AD','#16A085','#E67E22','#2980B9','#C0392B','#27AE60','#F39C12','#7F8C8D'];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var currentIndex = 'ipca';
+var startDate    = '';
+var endDate      = '';
+var drillPath    = [];
+var snapMonth    = '';
+var sortCol      = 'contribuicao';
+var sortAsc      = false;
+var snapSortCol    = 'contribuicao';
+var snapSortAsc    = false;
+var snapFilterLevel = '';
+var snapFilterValue = '';
+
+// ── State helpers ─────────────────────────────────────────────────────────────
+function currentAll()     { return currentIndex === 'ipca15' ? D.records_ipca15 : D.records; }
+function currentMaxDate() { return currentIndex === 'ipca15' ? D.max_date_ipca15 : D.max_date; }
+function currentMinDate() { return currentIndex === 'ipca15' ? D.min_date_ipca15 : D.min_date; }
+function indexLabel()     { return currentIndex === 'ipca15' ? 'IPCA-15' : 'IPCA'; }
+
+// ── Date helpers ──────────────────────────────────────────────────────────────
+function ytdStart() { return currentMaxDate().slice(0,4) + '-01'; }
+function monthsBack(n) {
+  var p = currentMaxDate().split('-');
+  var y = parseInt(p[0]), m = parseInt(p[1]);
+  m -= n; while (m <= 0) { m += 12; y--; }
+  return y + '-' + String(m).padStart(2,'0');
+}
+function prevMonth(dt) {
+  var p = dt.split('-');
+  var y = parseInt(p[0]), m = parseInt(p[1]);
+  m--; if (m === 0) { m = 12; y--; }
+  return y + '-' + String(m).padStart(2,'0');
+}
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function bcbValue(name, dt) {
+  var d = D.bcb[name];
+  if (!d) return null;
+  var i = d.dates.indexOf(dt);
+  return i >= 0 ? d.values[i] : null;
+}
+
+// ── Y/Y from monthly BCB series ───────────────────────────────────────────────
+function computeYoY(name) {
+  var d = D.bcb[name];
+  if (!d) return {dates:[], values:[]};
+  var dates = [], values = [];
+  for (var i = 11; i < d.dates.length; i++) {
+    if (d.dates[i] < '2000-01') continue; // skip hyperinflation era
+    var prod = 1, ok = true;
+    for (var j = i - 11; j <= i; j++) {
+      if (d.values[j] == null) { ok = false; break; }
+      prod *= (1 + d.values[j] / 100);
+    }
+    dates.push(d.dates[i]);
+    values.push(ok ? Math.round((prod - 1) * 10000) / 100 : null);
+  }
+  return {dates: dates, values: values};
+}
+function movingAvg(values, n) {
+  return values.map(function(v, i) {
+    if (i < n - 1) return null;
+    var sum = 0, cnt = 0;
+    for (var j = i - n + 1; j <= i; j++) {
+      if (values[j] != null) { sum += values[j]; cnt++; }
+    }
+    return cnt === n ? sum / n : null;
+  });
+}
+
+// ── IPCA-15 computed series (from records) ────────────────────────────────────
+// contribuicao = var_mensal * peso_fraction → group_var = contrib / peso
+function computeMonthlyFromRecords(records, filterFn) {
+  var byMonth = {};
+  records.forEach(function(r) {
+    if (filterFn && !filterFn(r)) return;
+    if (!byMonth[r.dt]) byMonth[r.dt] = {c: 0, p: 0};
+    byMonth[r.dt].c += (r.contribuicao || 0);
+    byMonth[r.dt].p += (r.pesos || 0);
+  });
+  var months = Object.keys(byMonth).sort();
+  var dates = [], values = [];
+  months.forEach(function(m) {
+    var d = byMonth[m];
+    dates.push(m);
+    values.push(d.p > 0 ? Math.round(d.c / d.p * 10000) / 100 : null);
+  });
+  return {dates: dates, values: values};
+}
+
+function computeYoYFromRecords(records, filterFn) {
+  var mo = computeMonthlyFromRecords(records, filterFn);
+  var dates = mo.dates, vals = mo.values;
+  var od = [], ov = [];
+  for (var i = 11; i < dates.length; i++) {
+    var prod = 1, ok = true;
+    for (var j = i - 11; j <= i; j++) { if (vals[j] == null) { ok = false; break; } prod *= (1 + vals[j] / 100); }
+    od.push(dates[i]);
+    ov.push(ok ? Math.round((prod - 1) * 10000) / 100 : null);
+  }
+  return {dates: od, values: ov};
+}
+
+function computeDifusaoFromRecords(records) {
+  var byMonth = {};
+  records.forEach(function(r) {
+    if (!byMonth[r.dt]) byMonth[r.dt] = {pos: 0, tot: 0};
+    byMonth[r.dt].tot++;
+    if ((r.var_mensal || 0) > 0) byMonth[r.dt].pos++;
+  });
+  var months = Object.keys(byMonth).sort();
+  var dates = [], values = [];
+  months.forEach(function(m) {
+    var d = byMonth[m];
+    dates.push(m);
+    values.push(d.tot > 0 ? Math.round(d.pos / d.tot * 1000) / 10 : null);
+  });
+  return {dates: dates, values: values};
+}
+
+// ── Decomp helpers ────────────────────────────────────────────────────────────
+function applyDrillFilter(rows) {
+  for (var i = 0; i < drillPath.length; i++) {
+    var lv = drillPath[i].level, vl = drillPath[i].value;
+    rows = rows.filter(function(r) { return r[lv] === vl; });
+  }
+  return rows;
+}
+function getFiltered() {
+  var s = startDate, e = endDate;
+  return applyDrillFilter(currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; }));
+}
+function currentLevel() { return LEVELS[Math.min(drillPath.length, LEVELS.length - 1)]; }
+function isLeaf()       { return drillPath.length >= LEVELS.length - 1; }
+function aggregateByLevel(rows, key) {
+  var agg = {};
+  for (var i = 0; i < rows.length; i++) {
+    var k = rows[i][key] || '(sem categoria)';
+    agg[k] = (agg[k] || 0) + (rows[i].contribuicao || 0);
+  }
+  var out = [];
+  for (var k in agg) out.push({label: k, contrib: agg[k]});
+  out.sort(function(a,b) { return b.contrib - a.contrib; });
+  return out;
+}
+function computeIpca(rows) {
+  var byMonth = {};
+  for (var i = 0; i < rows.length; i++) {
+    byMonth[rows[i].dt] = (byMonth[rows[i].dt] || 0) + (rows[i].contribuicao || 0);
+  }
+  var acc = 1;
+  Object.values(byMonth).forEach(function(v) { acc *= (1 + v / 100); });
+  return (acc - 1) * 100;
+}
+
+// ── Decomp renders ────────────────────────────────────────────────────────────
+function renderAll() {
+  renderBreadcrumb();
+  renderKPIs();
+  renderWaterfall();
+  renderTimeSeries();
+  renderTable();
+}
+
+function renderKPIs() {
+  var idx = indexLabel();
+  document.getElementById('kpi-index-label').textContent  = idx + ' Acumulado';
+  document.getElementById('kpi-12m-label').textContent    = idx + ' 12 Meses';
+  var s = startDate, e = endDate;
+  var rangeRows = currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; });
+  var total = computeIpca(rangeRows);
+  document.getElementById('kpi-ipca').textContent    = fmt(total) + '%';
+  document.getElementById('kpi-ipca-sub').textContent = s + ' → ' + e;
+
+  var filtered   = getFiltered();
+  var grupoAgg   = aggregateByLevel(filtered, 'grupo');
+  var top        = grupoAgg[0] || {label:'—', contrib:0};
+  document.getElementById('kpi-top-grupo-name').textContent  = top.label;
+  var cel = document.getElementById('kpi-top-grupo-contrib');
+  cel.textContent = fmt(top.contrib) + ' p.p.';
+  cel.className   = 'kpi-value ' + (top.contrib >= 0 ? 'pos' : 'neg');
+
+  var from12  = monthsBack(12);
+  var rows12  = currentAll().filter(function(r) { return r.dt >= from12 && r.dt <= currentMaxDate(); });
+  var ipca12m = computeIpca(rows12);
+  document.getElementById('kpi-12m').textContent    = fmt(ipca12m) + '%';
+  document.getElementById('kpi-12m-sub').textContent = '12M encerrado em ' + currentMaxDate();
+}
+
+function renderWaterfall() {
+  var agg    = aggregateByLevel(getFiltered(), currentLevel());
+  var labels = agg.map(function(d) { return d.label; }).reverse();
+  var values = agg.map(function(d) { return Math.round(d.contrib * 10000) / 10000; }).reverse();
+  var colors = values.map(function(v) { return v >= 0 ? C.laranja : C.verde; });
+  document.getElementById('waterfall-subtitle').textContent = isLeaf()
+    ? 'Nível mais detalhado — veja o ranking abaixo'
+    : 'Clique em uma barra para detalhar por ' + LEVEL_LABELS[LEVELS[drillPath.length + 1] || 'subitem'];
+  Plotly.react('chart-waterfall', [{
+    type:'bar', orientation:'h',
+    y: labels, x: values, marker:{color: colors},
+    hovertemplate: '<b>%{y}</b><br>%{x:.3f} p.p.<extra></extra>',
+  }], {
+    height:460, margin:{l:220,r:30,t:20,b:50},
+    xaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    yaxis:{tickfont:{size:12}, automargin:true},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12}, bargap:0.35,
+  }, {responsive:true, displayModeBar:false});
+}
+
+function renderTimeSeries() {
+  var level    = currentLevel();
+  var pathRows = applyDrillFilter(currentAll());
+  var allDates = [], dateSet = {};
+  for (var i = 0; i < currentAll().length; i++) {
+    var dt = currentAll()[i].dt;
+    if (!dateSet[dt]) { dateSet[dt] = true; allDates.push(dt); }
+  }
+  allDates.sort();
+  var groupSet = {};
+  for (var i = 0; i < pathRows.length; i++) groupSet[pathRows[i][level] || '(sem categoria)'] = true;
+  var groups = Object.keys(groupSet);
+  var byGD = {}, totalByD = {};
+  for (var i = 0; i < pathRows.length; i++) {
+    var r = pathRows[i], g = r[level] || '(sem categoria)';
+    if (!byGD[g]) byGD[g] = {};
+    byGD[g][r.dt] = (byGD[g][r.dt] || 0) + (r.contribuicao || 0);
+    totalByD[r.dt] = (totalByD[r.dt] || 0) + (r.contribuicao || 0);
+  }
+  var traces = groups.map(function(grp, idx) {
+    return {
+      type:'bar', name: grp.length > 35 ? grp.slice(0,35)+'…' : grp,
+      x: allDates, marker:{color: GROUP_COLORS[idx % GROUP_COLORS.length]},
+      y: allDates.map(function(d) { return Math.round(((byGD[grp]||{})[d]||0)*10000)/10000; }),
+      hovertemplate:'<b>'+grp+'</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+    };
+  });
+  traces.push({
+    type:'scatter', mode:'lines', name:'Total', yaxis:'y2',
+    x: allDates, line:{color:C.azul, width:2},
+    y: allDates.map(function(d) { return Math.round((totalByD[d]||0)*10000)/10000; }),
+    hovertemplate:'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+  });
+  Plotly.react('chart-timeseries', traces, {
+    barmode:'stack', height:400, margin:{l:55,r:55,t:30,b:40},
+    xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
+      buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
+      bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',
+    }},
+    yaxis:{title:{text:'Contribuição mensal (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    yaxis2:{title:{text:'Total (p.p.)',font:{size:11}}, overlaying:'y', side:'right', showgrid:false, zeroline:false},
+    legend:{orientation:'h', y:1.08, x:0, font:{size:11}},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+  }, {responsive:true, displayModeBar:false});
+}
+
+var rankingBcbKey = 'todos';
+
+function renderTable() {
+  var fn = _YOY_BCB_FILTERS[rankingBcbKey] || _YOY_BCB_FILTERS['todos'];
+  var rows = getFiltered().filter(fn);
+  var agg = {}, meta = {};
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i], k = r.subitem;
+    if (!agg[k]) { agg[k] = 0; meta[k] = {grupo:r.grupo, item:r.item, pesos:r.pesos}; }
+    agg[k] += (r.contribuicao || 0);
+  }
+  var data = [];
+  for (var si in agg) data.push({subitem:si, contribuicao:agg[si], grupo:meta[si].grupo, item:meta[si].item, pesos:meta[si].pesos});
+  if (sortCol === 'contribuicao' && !sortAsc) {
+    data.sort(function(a,b) { return b.contribuicao - a.contribuicao; });
+  } else {
+    var col = sortCol, asc = sortAsc;
+    data.sort(function(a,b) {
+      var va = a[col]||'', vb = b[col]||'';
+      return va < vb ? (asc?-1:1) : va > vb ? (asc?1:-1) : 0;
+    });
+  }
+  document.getElementById('table-body').innerHTML = data.slice(0,20).map(function(d) {
+    var css = d.contribuicao >= 0 ? 'pos' : 'neg';
+    var peso = d.pesos != null ? (d.pesos*100).toFixed(2)+'%' : '—';
+    return '<tr><td>'+(d.grupo||'—')+'</td><td>'+(d.item||'—')+'</td><td>'+(d.subitem||'—')+'</td><td class="num">'+peso+'</td><td class="num '+css+'">'+fmt(d.contribuicao,3)+'</td></tr>';
+  }).join('');
+  document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+    th.classList.remove('sorted-asc','sorted-desc');
+    if (th.dataset.col === sortCol) th.classList.add(sortAsc ? 'sorted-asc' : 'sorted-desc');
+  });
+}
+
+function renderBreadcrumb() {
+  var html = '<span class="bc-item bc-link" data-idx="-1">Todos os Grupos</span>';
+  for (var i = 0; i < drillPath.length; i++) {
+    html += ' <span class="bc-sep">▶</span> ';
+    var cls = i < drillPath.length - 1 ? 'bc-item bc-link' : 'bc-item';
+    html += '<span class="'+cls+'" data-idx="'+i+'">'+drillPath[i].value+'</span>';
+  }
+  var el = document.getElementById('breadcrumb');
+  el.innerHTML = html;
+  el.querySelectorAll('.bc-link').forEach(function(node) {
+    node.addEventListener('click', function() {
+      drillPath = drillPath.slice(0, parseInt(this.dataset.idx) + 1);
+      renderAll();
+    });
+  });
+}
+
+function bindWaterfallClick() {
+  document.getElementById('chart-waterfall').on('plotly_click', function(data) {
+    if (isLeaf()) return;
+    drillPath.push({level: currentLevel(), value: data.points[0].y});
+    renderAll();
+  });
+}
+
+// ── Snapshot renders ──────────────────────────────────────────────────────────
+function renderSnapshot() {
+  var idx = indexLabel();
+  document.getElementById('snap-index-badge').textContent  = idx;
+  document.getElementById('snap-index-label').textContent  = idx;
+  document.getElementById('snap-month-input').value        = snapMonth;
+  document.getElementById('snap-month-input').max          = currentMaxDate();
+  document.getElementById('snap-month-input').min          = currentMinDate();
+  document.getElementById('snap-wf-title').textContent     = 'Contribuições — ' + snapMonth;
+  document.getElementById('snap-cmp-title').textContent    = snapMonth + ' vs ' + prevMonth(snapMonth);
+  document.getElementById('snap-table-month').textContent  = snapMonth;
+  populateSnapFilter();
+  renderSnapKPIs();
+  renderSnapWaterfall();
+  renderSnapCompare();
+  renderSnapTable();
+}
+
+function renderSnapKPIs() {
+  var rows   = currentAll().filter(function(r) { return r.dt === snapMonth; });
+  var total  = rows.reduce(function(s,r) { return s + (r.contribuicao||0); }, 0);
+  var livres = rows.filter(function(r) { return r.grupo === 'Livres'; })
+                   .reduce(function(s,r) { return s + (r.contribuicao||0); }, 0);
+  var admin  = rows.filter(function(r) { return r.grupo === 'Monitorados'; })
+                   .reduce(function(s,r) { return s + (r.contribuicao||0); }, 0);
+
+  var difusao, difusaoLabel, difusaoSub;
+  if (currentIndex === 'ipca15') {
+    var pos = rows.filter(function(r) { return r.var_mensal > 0; }).length;
+    difusao     = rows.length > 0 ? (pos / rows.length * 100) : null;
+    difusaoLabel = 'Difusão IPCA-15';
+    difusaoSub   = '% subitens c/ alta (IBGE)';
+  } else {
+    difusao     = bcbValue('IPCA_indice_difusao', snapMonth);
+    difusaoLabel = 'Difusão IPCA';
+    difusaoSub   = '% itens com var. positiva';
+  }
+
+  var ipcaVar   = bcbValue(currentIndex === 'ipca15' ? 'IPCA15' : 'IPCA', snapMonth);
+  var livresVar = currentIndex === 'ipca15' ? null : bcbValue('IPCA_livres', snapMonth);
+  var adminVar  = currentIndex === 'ipca15' ? null : bcbValue('IPCA_administrado', snapMonth);
+
+  var setKpi = function(id, val, decimals, suffix) {
+    var el = document.getElementById(id);
+    el.textContent = val != null ? fmt(val, decimals||2) + (suffix||' p.p.') : '—';
+    el.className   = 'kpi-value ' + (val == null ? '' : val >= 0 ? 'pos' : 'neg');
+  };
+  setKpi('snap-total',   total,   2);
+  setKpi('snap-livres',  livres,  2);
+  setKpi('snap-admin',   admin,   2);
+  document.getElementById('snap-difusao').textContent = difusao != null ? fmt(difusao,1)+'%' : '—';
+  var dlEl = document.getElementById('snap-difusao-label');
+  if (dlEl) dlEl.textContent = difusaoLabel;
+  var dsEl = document.getElementById('snap-difusao-sub');
+  if (dsEl) dsEl.textContent = difusaoSub;
+
+  var tvEl = document.getElementById('snap-total-var');
+  if (tvEl) tvEl.textContent = ipcaVar != null ? fmt(ipcaVar,2)+'% m/m' + (currentIndex === 'ipca' ? ' (BCB)' : '') : '';
+  var lvEl = document.getElementById('snap-livres-var');
+  if (lvEl) lvEl.textContent = livresVar != null ? fmt(livresVar,2)+'% m/m' : '';
+  var avEl = document.getElementById('snap-admin-var');
+  if (avEl) avEl.textContent = adminVar != null ? fmt(adminVar,2)+'% m/m' : '';
+}
+
+function renderSnapWaterfall() {
+  var rows = currentAll().filter(function(r) { return r.dt === snapMonth; });
+  var agg  = aggregateByLevel(rows, 'grupo');
+  var labels = agg.map(function(d) { return d.label; }).reverse();
+  var values = agg.map(function(d) { return Math.round(d.contrib*10000)/10000; }).reverse();
+  Plotly.react('chart-snap-wf', [{
+    type:'bar', orientation:'h', y:labels, x:values,
+    marker:{color: values.map(function(v) { return v>=0?C.laranja:C.verde; })},
+    hovertemplate:'<b>%{y}</b><br>%{x:.3f} p.p.<extra></extra>',
+  }], _snapLayout(360), {responsive:true, displayModeBar:false});
+}
+
+function renderSnapCompare() {
+  var curDt  = snapMonth, prvDt = prevMonth(snapMonth);
+  var curAgg = aggregateByLevel(currentAll().filter(function(r){return r.dt===curDt;}),'grupo');
+  var prvAgg = aggregateByLevel(currentAll().filter(function(r){return r.dt===prvDt;}),'grupo');
+  var curMap = {}, prvMap = {};
+  curAgg.forEach(function(d){curMap[d.label]=d.contrib;});
+  prvAgg.forEach(function(d){prvMap[d.label]=d.contrib;});
+  var groups = Object.keys(Object.assign({}, curMap, prvMap)).sort();
+  var toVal = function(map, g) { return Math.round((map[g]||0)*10000)/10000; };
+  Plotly.react('chart-snap-cmp', [
+    {type:'bar', orientation:'h', name:curDt, y:groups, x:groups.map(function(g){return toVal(curMap,g);}),
+     marker:{color:C.azulCl}, hovertemplate:'<b>%{y}</b><br>'+curDt+': %{x:.3f} p.p.<extra></extra>'},
+    {type:'bar', orientation:'h', name:prvDt, y:groups, x:groups.map(function(g){return toVal(prvMap,g);}),
+     marker:{color:C.cinza},  hovertemplate:'<b>%{y}</b><br>'+prvDt+': %{x:.3f} p.p.<extra></extra>'},
+  ], Object.assign(_snapLayout(360), {barmode:'group', bargroupgap:0.08,
+    legend:{x:0.5,xanchor:'center',y:1.06,orientation:'h',font:{size:11}}}),
+  {responsive:true, displayModeBar:false});
+}
+
+function _snapLayout(height) {
+  return {
+    height: height, margin:{l:160,r:30,t:20,b:50},
+    xaxis:{title:{text:'Contribuição (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    yaxis:{tickfont:{size:12}, automargin:true},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12}, bargap:0.30,
+  };
+}
+
+function populateSnapFilter() {
+  var sel = document.getElementById('snap-filter-value');
+  if (!snapFilterLevel) { sel.style.display = 'none'; return; }
+  var rows = currentAll().filter(function(r) { return r.dt === snapMonth; });
+  var seen = {}, values = [];
+  rows.forEach(function(r) { var v = r[snapFilterLevel]; if (v && !seen[v]) { seen[v] = 1; values.push(v); } });
+  values.sort();
+  sel.innerHTML = '<option value="">Todos</option>' +
+    values.map(function(v) { return '<option value="'+v.replace(/"/g,'&quot;')+'">'+v+'</option>'; }).join('');
+  if (snapFilterValue && seen[snapFilterValue]) { sel.value = snapFilterValue; }
+  else { snapFilterValue = ''; sel.value = ''; }
+  sel.style.display = 'block';
+}
+
+function renderSnapTable() {
+  var rows = currentAll().filter(function(r) { return r.dt === snapMonth; });
+  if (snapFilterLevel && snapFilterValue) {
+    rows = rows.filter(function(r) { return r[snapFilterLevel] === snapFilterValue; });
+  }
+  var col = snapSortCol, asc = snapSortAsc;
+  rows = rows.slice().sort(function(a,b) {
+    if (col === 'contribuicao') { var va=a.contribuicao||0, vb=b.contribuicao||0; return asc ? va-vb : vb-va; }
+    if (col === 'var_mensal')   { var va=a.var_mensal||0,   vb=b.var_mensal||0;   return asc ? va-vb : vb-va; }
+    var va=(a[col]||'').toString(), vb=(b[col]||'').toString();
+    return va < vb ? (asc?-1:1) : va > vb ? (asc?1:-1) : 0;
+  });
+  var limit = (snapFilterLevel && snapFilterValue) ? rows.length : 60;
+  var countEl = document.getElementById('snap-filter-count');
+  if (countEl) countEl.textContent = rows.length + ' subitens';
+  document.getElementById('snap-table-body').innerHTML = rows.slice(0,limit).map(function(r) {
+    var css = (r.contribuicao||0) >= 0 ? 'pos' : 'neg';
+    return '<tr><td>'+(r.grupo||'—')+'</td><td>'+(r.item||'—')+'</td><td>'+(r.subitem||'—')+'</td>'
+      +'<td class="num">'+fmt(r.var_mensal,2)+'%</td>'
+      +'<td class="num '+css+'">'+fmt(r.contribuicao,3)+'</td></tr>';
+  }).join('');
+  document.querySelectorAll('thead th[data-snapcol]').forEach(function(th) {
+    th.classList.remove('sorted-asc','sorted-desc');
+    if (th.dataset.snapcol === snapSortCol) th.classList.add(snapSortAsc ? 'sorted-asc' : 'sorted-desc');
+  });
+}
+
+// ── 3M SAAR (seasonal-adjusted annual rate) ──────────────────────────────────
+// Python computes MA(3) on the raw series, then removes the seasonal component
+// via STL; result stored as name_ma3_sa. This function annualizes: (1+v/100)^12-1.
+function compute3mSAAR(name) {
+  var d = D.bcb[name + '_ma3_sa'];
+  if (!d) return {dates: [], values: []};
+  var dates = [], values = [];
+  for (var i = 0; i < d.dates.length; i++) {
+    if (d.dates[i] < '2000-01') continue;
+    var v = d.values[i];
+    if (v == null) { dates.push(d.dates[i]); values.push(null); continue; }
+    dates.push(d.dates[i]);
+    values.push(Math.round((Math.pow(1 + v / 100, 12) - 1) * 10000) / 100);
+  }
+  return {dates: dates, values: values};
+}
+
+function renderCompSAAR() {
+  var COMP = [
+    {name:'IPCA',             label:'IPCA (total)', color:C.azul,    width:2.5, dash:'dot'},
+    {name:'IPCA_livres',      label:'Livres',       color:C.laranja, width:1.5},
+    {name:'IPCA_servicos',    label:'Serviços',     color:C.azulCl,  width:1.5},
+    {name:'IPCA_industriais', label:'Industriais',  color:C.cinza,   width:1.5},
+    {name:'IPCA_alimentacao', label:'Alimentação',  color:C.dourado, width:1.5},
+  ];
+  var traces = COMP.map(function(s) {
+    var r = compute3mSAAR(s.name);
+    if (!r.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:r.dates, y:r.values,
+      line:{color:s.color, width:s.width, dash:s.dash||'solid'},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), {responsive:true, displayModeBar:false});
+}
+
+function renderNucSAAR() {
+  var NUC = [
+    {name:'IPCA',                        label:'IPCA (ref.)',     color:C.azul,    width:2,   dash:'dot'},
+    {name:'IPCA_nucleo_EX0',             label:'EX-0',            color:C.laranja, width:1.5},
+    {name:'IPCA_nucleo_EX03',            label:'EX-03',           color:C.azulCl,  width:1.5},
+    {name:'IPCA_nucleo_EXFE',            label:'EX-FE',           color:'#16A085', width:1.5},
+    {name:'IPCA_nucleo_P55',             label:'P55',             color:C.dourado, width:1.5},
+    {name:'IPCA_nucleo_medias_aparadas', label:'Méd. Aparadas',   color:C.verde,   width:1.5},
+    {name:'IPCA_nucleo_DP',              label:'Dupla Pond.',     color:'#E67E22', width:1.5},
+  ];
+  var traces = NUC.map(function(s) {
+    var r = compute3mSAAR(s.name);
+    if (!r.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:r.dates, y:r.values,
+      line:{color:s.color, width:s.width, dash:s.dash||'solid'},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), {responsive:true, displayModeBar:false});
+}
+
+// ── Y-axis rescale on rangeselector click ─────────────────────────────────────
+function _bindYRescale(divId) {
+  var el = document.getElementById(divId);
+  var lock = false;
+  el.on('plotly_relayout', function(ev) {
+    if (lock) return;
+    if (!Object.keys(ev).some(function(k) { return k.indexOf('xaxis.range') === 0; })) return;
+    var layout = el.layout || el._fullLayout;
+    if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    var xr = layout.xaxis.range;
+    var x0 = xr[0].toString().slice(0,7), x1 = xr[1].toString().slice(0,7);
+    var mn = Infinity, mx = -Infinity;
+    (el.data || []).forEach(function(t) {
+      if (!t.x || !t.y) return;
+      for (var i = 0; i < t.x.length; i++) {
+        var v = t.y[i], s = (t.x[i] || '').toString();
+        if (v == null || s < x0 || s > x1) continue;
+        if (v < mn) mn = v;
+        if (v > mx) mx = v;
+      }
+    });
+    if (mn < Infinity) {
+      lock = true;
+      var p = Math.max((mx - mn) * 0.1, 0.5);
+      Plotly.relayout(divId, {'yaxis.range': [Math.min(mn - p, 0), mx + p], 'yaxis.autorange': false})
+        .then(function() { lock = false; }).catch(function() { lock = false; });
+    }
+  });
+}
+
+// ── Núcleos tab renders ───────────────────────────────────────────────────────
+function renderNucleosTab() {
+  var is15 = currentIndex === 'ipca15';
+  var secNucSaar = document.getElementById('nuc-sec-nuc-saar');
+  var secNucYoy  = document.getElementById('nuc-sec-nuc-yoy');
+  if (secNucSaar) secNucSaar.style.display = is15 ? 'none' : '';
+  if (secNucYoy)  secNucYoy.style.display  = is15 ? 'none' : '';
+
+  var h2Saar = document.getElementById('nuc-h2-comp-saar');
+  var h2Yoy  = document.getElementById('nuc-h2-comp-yoy');
+  var h2Dif  = document.getElementById('nuc-h2-difusao');
+  if (h2Saar) h2Saar.textContent = is15 ? 'Decomposição Mensal por Componente — IPCA-15' : 'Componentes — 3M SAAR, % a.a. (dessazonalizado)';
+  if (h2Yoy)  h2Yoy.textContent  = is15 ? 'Componentes — Variação 12M % a/a — IPCA-15'   : 'Componentes — Variação 12M % a/a';
+  if (h2Dif)  h2Dif.textContent  = is15 ? 'Índice de Difusão — IPCA-15'                   : 'Índice de Difusão IPCA';
+
+  if (is15) {
+    renderCompContrib15();
+    renderCompYoY15();    _bindYRescale('chart-comp-yoy');
+    renderDifusao15();    _bindYRescale('chart-difusao');
+  } else {
+    renderCompSAAR();       _bindYRescale('chart-comp-saar');
+    renderNucSAAR();        _bindYRescale('chart-nuc-saar');
+    renderComponentesYoY(); _bindYRescale('chart-comp-yoy');
+    renderNucleosYoY();     _bindYRescale('chart-nuc-yoy');
+    renderDifusao();        _bindYRescale('chart-difusao');
+  }
+}
+
+function renderComponentesYoY() {
+  var COMP = [
+    {name:'IPCA',              label:'IPCA (total)',  color:C.azul,    width:2.5},
+    {name:'IPCA_livres',       label:'Livres',        color:C.laranja, width:1.5},
+    {name:'IPCA_administrado', label:'Administrado',  color:C.verde,   width:1.5},
+    {name:'IPCA_servicos',     label:'Serviços',      color:C.azulCl,  width:1.5},
+    {name:'IPCA_alimentacao',  label:'Alimentação',   color:C.dourado, width:1.5},
+    {name:'IPCA_industriais',  label:'Industriais',   color:C.cinza,   width:1.5},
+  ];
+  var traces = COMP.map(function(s) {
+    var yoy = computeYoY(s.name);
+    if (!yoy.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:yoy.dates, y:yoy.values,
+      line:{color:s.color, width:s.width},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), {responsive:true, displayModeBar:false});
+}
+
+function renderNucleosYoY() {
+  var NUC = [
+    {name:'IPCA',                        label:'IPCA (ref.)',     color:C.azul,    width:2,   dash:'dot'},
+    {name:'IPCA_nucleo_EX0',             label:'EX-0',            color:C.laranja, width:1.5},
+    {name:'IPCA_nucleo_EX01',            label:'EX-01',           color:'#8E44AD', width:1.5},
+    {name:'IPCA_nucleo_EX03',            label:'EX-03',           color:C.azulCl,  width:1.5},
+    {name:'IPCA_nucleo_P55',             label:'P55',             color:C.dourado, width:1.5},
+    {name:'IPCA_nucleo_EXFE',            label:'EX-FE',           color:'#16A085', width:1.5},
+    {name:'IPCA_nucleo_DP',              label:'Dupla Pond.',     color:'#E67E22', width:1.5},
+    {name:'IPCA_nucleo_medias_aparadas', label:'Médias Aparadas', color:C.verde,   width:1.5},
+  ];
+  var traces = NUC.map(function(s) {
+    var yoy = computeYoY(s.name);
+    if (!yoy.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:yoy.dates, y:yoy.values,
+      line:{color:s.color, width:s.width, dash:s.dash||'solid'},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-nuc-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), {responsive:true, displayModeBar:false});
+}
+
+function renderDifusao() {
+  var d = D.bcb['IPCA_indice_difusao'];
+  if (!d) return;
+  var startIdx = 0;
+  while (startIdx < d.dates.length && d.dates[startIdx] < '2000-01') startIdx++;
+  var dates  = d.dates.slice(startIdx);
+  var values = d.values.slice(startIdx);
+  var ma3  = movingAvg(values, 3);
+  var ma6  = movingAvg(values, 6);
+  var ma12 = movingAvg(values, 12);
+  Plotly.react('chart-difusao', [
+    {type:'bar', name:'Difusão mensal', x:dates, y:values,
+     marker:{color:C.azulCl, opacity:0.45},
+     hovertemplate:'Difusão<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'MM 3M', x:dates, y:ma3,
+     line:{color:C.cinza, width:1.5, dash:'dot'},
+     hovertemplate:'MM 3M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'MM 6M', x:dates, y:ma6,
+     line:{color:C.verde, width:1.5},
+     hovertemplate:'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'MM 12M', x:dates, y:ma12,
+     line:{color:C.laranja, width:2},
+     hovertemplate:'MM 12M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+  ], _nucLayout('% itens c/ var. positiva', 340), {responsive:true, displayModeBar:false});
+}
+
+// ── IPCA-15 Núcleos tab renders ───────────────────────────────────────────────
+function renderCompContrib15() {
+  var SUBG = [
+    {key: 'Alimentos',        fn: function(r) { return r.subgrupo === 'Alimentos'; },        color: C.dourado},
+    {key: 'Bens Industriais', fn: function(r) { return r.subgrupo === 'Bens Industriais'; }, color: C.cinza},
+    {key: 'Serviços',         fn: function(r) { return r.subgrupo === 'Serviços'; },         color: C.azulCl},
+    {key: 'Monitorados',      fn: function(r) { return r.grupo === 'Monitorados'; },          color: C.verde},
+  ];
+  var byKey = {};
+  D.records_ipca15.forEach(function(r) {
+    SUBG.forEach(function(s) {
+      if (!s.fn(r)) return;
+      var k = r.dt + '|' + s.key;
+      byKey[k] = (byKey[k] || 0) + (r.contribuicao || 0);
+    });
+  });
+  var allM = Object.keys(
+    D.records_ipca15.reduce(function(acc, r) { acc[r.dt] = 1; return acc; }, {})
+  ).sort().slice(-18);
+
+  var traces = SUBG.map(function(s) {
+    return {type: 'bar', name: s.key, x: allM,
+      y: allM.map(function(m) { return Math.round((byKey[m+'|'+s.key] || 0) * 10000) / 10000; }),
+      marker: {color: s.color},
+      hovertemplate: '<b>' + s.key + '</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>'};
+  });
+  Plotly.react('chart-comp-saar', traces, Object.assign({}, _nucLayout('Contribuição (p.p.)', 400), {
+    barmode: 'relative',
+    xaxis: {type: 'category', tickangle: -35, gridcolor: '#eee', rangeselector: undefined},
+    legend: {orientation: 'h', y: 1.08, x: 0, font: {size: 11}},
+  }), {responsive: true, displayModeBar: false});
+}
+
+function renderCompYoY15() {
+  var COMP15 = [
+    {label: 'IPCA-15 (total)',  fn: null,                                                      color: C.azul,    width: 2.5},
+    {label: 'Livres',           fn: function(r) { return r.grupo === 'Livres'; },              color: C.laranja, width: 1.5},
+    {label: 'Monitorados',      fn: function(r) { return r.grupo === 'Monitorados'; },         color: C.verde,   width: 1.5},
+    {label: 'Serviços',         fn: function(r) { return r.subgrupo === 'Serviços'; },         color: C.azulCl,  width: 1.5},
+    {label: 'Alimentos',        fn: function(r) { return r.subgrupo === 'Alimentos'; },        color: C.dourado, width: 1.5},
+    {label: 'Bens Industriais', fn: function(r) { return r.subgrupo === 'Bens Industriais'; }, color: C.cinza,   width: 1.5},
+  ];
+  var traces = COMP15.map(function(s) {
+    var yoy = computeYoYFromRecords(D.records_ipca15, s.fn);
+    if (!yoy.dates.length) return null;
+    return {type: 'scatter', mode: 'lines', name: s.label, x: yoy.dates, y: yoy.values,
+      line: {color: s.color, width: s.width},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), {responsive: true, displayModeBar: false});
+}
+
+function renderDifusao15() {
+  var d = computeDifusaoFromRecords(D.records_ipca15);
+  if (!d.dates.length) return;
+  var ma3 = movingAvg(d.values, 3), ma6 = movingAvg(d.values, 6), ma12 = movingAvg(d.values, 12);
+  Plotly.react('chart-difusao', [
+    {type: 'bar', name: 'Difusão mensal', x: d.dates, y: d.values,
+     marker: {color: C.azulCl, opacity: 0.45},
+     hovertemplate: 'Difusão IPCA-15<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type: 'scatter', mode: 'lines', name: 'MM 3M', x: d.dates, y: ma3,
+     line: {color: C.cinza, width: 1.5, dash: 'dot'},
+     hovertemplate: 'MM 3M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type: 'scatter', mode: 'lines', name: 'MM 6M', x: d.dates, y: ma6,
+     line: {color: C.verde, width: 1.5},
+     hovertemplate: 'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type: 'scatter', mode: 'lines', name: 'MM 12M', x: d.dates, y: ma12,
+     line: {color: C.laranja, width: 2},
+     hovertemplate: 'MM 12M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+  ], _nucLayout('% subitens c/ var. positiva', 340), {responsive: true, displayModeBar: false});
+}
+
+function _nucLayout(yTitle, height) {
+  return {
+    height: height, margin:{l:55,r:20,t:20,b:50},
+    xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
+      buttons:[{count:3,label:'3a',step:'year',stepmode:'backward'},{count:5,label:'5a',step:'year',stepmode:'backward'},{count:10,label:'10a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
+      bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.10,yanchor:'top',
+    }},
+    yaxis:{title:{text:yTitle,font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    legend:{orientation:'h', y:1.08, x:0, font:{size:11}},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+  };
+}
+
+// ── Y/Y drilldown — Decomposição tab ─────────────────────────────────────────
+var yoyLevel  = 'subitem';
+var yoyItem   = '';
+var yoyBcbKey = 'todos';
+
+var _YOY_BCB_FILTERS = {
+  'todos':        function(r) { return true; },
+  'livres':       function(r) { return r.grupo === 'Livres'; },
+  'monitorados':  function(r) { return r.grupo === 'Monitorados'; },
+  'alimentos':       function(r) { return r.subgrupo === 'Alimentos'; },
+  'alimentos-subj':  function(r) { return r.subgrupo === 'Alimentos' && r.subjacente != null; },
+  'alimentos-ex':    function(r) { return r.subgrupo === 'Alimentos' && r.subjacente == null; },
+  'bens-ind':        function(r) { return r.subgrupo === 'Bens Industriais'; },
+  'bens-ind-subj':   function(r) { return r.subgrupo === 'Bens Industriais' && r.subjacente != null; },
+  'bens-ind-ex':     function(r) { return r.subgrupo === 'Bens Industriais' && r.subjacente == null; },
+  'servicos':        function(r) { return r.subgrupo === 'Serviços'; },
+  'servicos-subj':   function(r) { return r.subgrupo === 'Serviços' && r.subjacente != null; },
+  'servicos-ex':     function(r) { return r.subgrupo === 'Serviços' && r.subjacente == null; },
+};
+
+function yoyFiltered() {
+  var fn = _YOY_BCB_FILTERS[yoyBcbKey] || _YOY_BCB_FILTERS['todos'];
+  return currentAll().filter(fn);
+}
+
+function populateYoYItems() {
+  var all = yoyFiltered();
+  var seen = {};
+  all.forEach(function(r) { var v = r[yoyLevel]; if (v) seen[v] = 1; });
+  var opts = Object.keys(seen).sort();
+  var sel = document.getElementById('yoy-item-sel');
+  sel.innerHTML = opts.map(function(v) {
+    var esc = v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    return '<option value="' + esc + '">' + esc + '</option>';
+  }).join('');
+  yoyItem = opts[0] || '';
+  if (yoyItem) sel.value = yoyItem;
+}
+
+function computeYoYDrill() {
+  var filtered = yoyFiltered().filter(function(r) { return r[yoyLevel] === yoyItem; });
+  if (!filtered.length) return {dates: [], values: []};
+
+  // Weighted avg m/m%: var_group[t] = sum(var_mensal * pesos) / sum(pesos)
+  var byDate = {};
+  filtered.forEach(function(r) {
+    var dt = r.dt;
+    if (!byDate[dt]) byDate[dt] = {vm: 0, p: 0};
+    byDate[dt].vm += (r.var_mensal || 0) * (r.pesos || 0);
+    byDate[dt].p  += (r.pesos || 0);
+  });
+
+  var dates   = Object.keys(byDate).sort();
+  var monthly = dates.map(function(dt) {
+    var b = byDate[dt];
+    return b.p > 0 ? b.vm / b.p : null;  // weighted avg var_mensal (%)
+  });
+
+  // Build cumulative price index (base = 100 at first observation)
+  var index = new Array(monthly.length).fill(null);
+  var base = 100;
+  for (var i = 0; i < monthly.length; i++) {
+    if (monthly[i] == null) { base = null; index[i] = null; continue; }
+    if (base == null) { index[i] = null; continue; }
+    base = base * (1 + monthly[i] / 100);
+    index[i] = base;
+  }
+
+  // y/y = index[t] / index[t-12] - 1
+  var ydates = [], yvalues = [];
+  for (var i = 12; i < dates.length; i++) {
+    ydates.push(dates[i]);
+    if (index[i] == null || index[i - 12] == null) {
+      yvalues.push(null);
+    } else {
+      yvalues.push(Math.round((index[i] / index[i - 12] - 1) * 10000) / 100);
+    }
+  }
+  return {dates: ydates, values: yvalues};
+}
+
+function renderYoYDrill() {
+  if (!yoyItem) return;
+  var r = computeYoYDrill();
+  if (!r.dates.length) { Plotly.purge('chart-yoy-drill'); return; }
+  var label = LEVEL_LABELS[yoyLevel] + ': ' + yoyItem;
+  Plotly.react('chart-yoy-drill', [{
+    type: 'scatter', mode: 'lines', name: label,
+    x: r.dates, y: r.values,
+    line: {color: C.azul, width: 2},
+    fill: 'tozeroy', fillcolor: 'rgba(31,40,83,0.08)',
+    hovertemplate: '<b>' + label + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>',
+  }], _nucLayout('Var. 12M (% a/a)', 400), {responsive: true, displayModeBar: false});
+  _bindYRescale('chart-yoy-drill');
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+var tabRendered = {decomp:true, snapshot:false, nucleos:false};
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-tab="'+id+'"]').classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('controls').style.display = id === 'decomp' ? 'flex' : 'none';
+
+  if (!tabRendered[id]) {
+    tabRendered[id] = true;
+    if (id === 'snapshot') renderSnapshot();
+    else if (id === 'nucleos') renderNucleosTab();
+  }
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────────
+
+// Tab nav
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { switchTab(this.dataset.tab); });
+});
+
+// Index toggle (IPCA / IPCA-15)
+document.querySelectorAll('[data-index]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    if (btn.disabled) return;
+    document.querySelectorAll('[data-index]').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    currentIndex = this.dataset.index;
+    endDate    = currentMaxDate();
+    startDate  = ytdStart();
+    snapMonth  = currentMaxDate();
+    snapFilterLevel = '';
+    snapFilterValue = '';
+    document.getElementById('snap-filter-level').value = '';
+    document.getElementById('snap-filter-value').style.display = 'none';
+    document.getElementById('custom-start').setAttribute('min', currentMinDate());
+    document.getElementById('custom-start').setAttribute('max', currentMaxDate());
+    document.getElementById('custom-end').setAttribute('min', currentMinDate());
+    document.getElementById('custom-end').setAttribute('max', currentMaxDate());
+    document.getElementById('custom-start').value = startDate;
+    document.getElementById('custom-end').value   = endDate;
+    drillPath = [];
+    renderAll();
+    populateYoYItems();
+    renderYoYDrill();
+    if (tabRendered.snapshot) renderSnapshot();
+    if (tabRendered.nucleos)  renderNucleosTab();
+  });
+});
+
+// Period pills
+document.querySelectorAll('[data-range]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('[data-range]').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    var range = this.dataset.range;
+    document.getElementById('custom-row').style.display = range === 'custom' ? 'flex' : 'none';
+    if      (range === 'ytd')    { startDate = ytdStart();     endDate = currentMaxDate(); renderAll(); }
+    else if (range === '3m')     { startDate = monthsBack(3);  endDate = currentMaxDate(); renderAll(); }
+    else if (range === '6m')     { startDate = monthsBack(6);  endDate = currentMaxDate(); renderAll(); }
+    else if (range === '12m')    { startDate = monthsBack(12); endDate = currentMaxDate(); renderAll(); }
+    else if (range === 'all')    { startDate = currentMinDate(); endDate = currentMaxDate(); renderAll(); }
+    else if (range === 'custom') {
+      startDate = document.getElementById('custom-start').value || currentMinDate();
+      endDate   = document.getElementById('custom-end').value   || currentMaxDate();
+      if (startDate && endDate && startDate <= endDate) renderAll();
+    }
+  });
+});
+
+document.getElementById('custom-start').addEventListener('change', function() {
+  startDate = this.value;
+  if (startDate && endDate && startDate <= endDate) renderAll();
+});
+document.getElementById('custom-end').addEventListener('change', function() {
+  endDate = this.value;
+  if (startDate && endDate && startDate <= endDate) renderAll();
+});
+
+// Snapshot month selector
+document.getElementById('snap-month-input').addEventListener('change', function() {
+  snapMonth = this.value;
+  if (snapMonth) renderSnapshot();
+});
+
+// Snapshot detail filter
+document.getElementById('snap-filter-level').addEventListener('change', function() {
+  snapFilterLevel = this.value;
+  snapFilterValue = '';
+  populateSnapFilter();
+  if (tabRendered.snapshot) renderSnapTable();
+});
+document.getElementById('snap-filter-value').addEventListener('change', function() {
+  snapFilterValue = this.value;
+  if (tabRendered.snapshot) renderSnapTable();
+});
+
+// Y/Y drilldown dropdowns
+document.getElementById('yoy-bcb-sel').addEventListener('change', function() {
+  yoyBcbKey = this.value;
+  populateYoYItems();
+  renderYoYDrill();
+});
+document.getElementById('yoy-level-sel').addEventListener('change', function() {
+  yoyLevel = this.value;
+  populateYoYItems();
+  renderYoYDrill();
+});
+document.getElementById('yoy-item-sel').addEventListener('change', function() {
+  yoyItem = this.value;
+  renderYoYDrill();
+});
+
+// Ranking BCB filter
+document.getElementById('ranking-bcb-sel').addEventListener('change', function() {
+  rankingBcbKey = this.value;
+  renderTable();
+});
+
+// Table sort (decomp)
+document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var col = this.dataset.col;
+    if (sortCol === col) { sortAsc = !sortAsc; }
+    else { sortCol = col; sortAsc = col !== 'contribuicao'; }
+    renderTable();
+  });
+});
+
+// Table sort (snapshot)
+document.querySelectorAll('thead th[data-snapcol]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var col = this.dataset.snapcol;
+    if (snapSortCol === col) { snapSortAsc = !snapSortAsc; }
+    else { snapSortCol = col; snapSortAsc = col !== 'contribuicao' && col !== 'var_mensal'; }
+    if (tabRendered.snapshot) renderSnapTable();
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('generated-at').textContent = D.generated_at;
+
+// Disable IPCA-15 toggle if no data
+var has15 = D.records_ipca15 && D.records_ipca15.length > 0;
+if (!has15) {
+  var p15 = document.getElementById('pill-ipca15');
+  p15.disabled = true;
+  p15.title = 'Dados IPCA-15 não disponíveis';
+}
+
+startDate = ytdStart();
+endDate   = currentMaxDate();
+snapMonth = currentMaxDate();
+
+document.getElementById('custom-start').setAttribute('min', currentMinDate());
+document.getElementById('custom-start').setAttribute('max', currentMaxDate());
+document.getElementById('custom-end').setAttribute('min',   currentMinDate());
+document.getElementById('custom-end').setAttribute('max',   currentMaxDate());
+document.getElementById('custom-start').value = startDate;
+document.getElementById('custom-end').value   = endDate;
+
+try {
+  renderAll();
+  bindWaterfallClick();
+  populateYoYItems();
+  renderYoYDrill();
+} catch(e) {
+  var errDiv = document.createElement('div');
+  errDiv.style.cssText = 'background:#fff0f0;border:1px solid #c00;color:#c00;padding:16px 20px;margin:20px;border-radius:6px;font-family:monospace;font-size:13px;white-space:pre-wrap;';
+  errDiv.textContent = 'Erro ao renderizar:\n' + e.message + '\n\n' + e.stack;
+  document.querySelector('main').prepend(errDiv);
+}
+</script>
+</body>
+</html>

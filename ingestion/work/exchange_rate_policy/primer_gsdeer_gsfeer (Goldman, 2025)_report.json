@@ -1,0 +1,25 @@
+{
+  "boilerplate": [
+    {
+      "type": "contact",
+      "excerpt": "Teresa Alves\n+44(20)7051-7566 | teresa.alves@gs.com\nGoldman Sachs International\n\nStuart Jenkins\n+44(20)7051-4700 | stuart.jenkins@gs.com",
+      "reason": "Contact information for analysts including phone numbers and email addresses."
+    },
+    {
+      "type": "regulatory",
+      "excerpt": "Reg AC\n\nWe, Teresa Alves and Stuart Jenkins, hereby certify that all of the views expressed in this report accurately reflect our personal views, which have not been influenced by considerations",
+      "reason": "Regulatory certification statement required by compliance rules."
+    },
+    {
+      "type": "disclaimer",
+      "excerpt": "Disclosures\n\nRegulatory disclosures\n\nDisclosures required by United States laws and regulations\n\nSee company-specific regulatory disclosures above for any of the following disclosures required as to companies",
+      "reason": "Comprehensive regulatory and legal disclaimers covering multiple jurisdictions and compliance requirements."
+    },
+    {
+      "type": "about",
+      "excerpt": "Global product; distributing entities\n\nGoldman Sachs Global Investment Research produces and distributes research products for clients of Goldman Sachs on a global basis. Analysts based in Goldman Sachs offices around the world produce research",
+      "reason": "Boilerplate description of Goldman Sachs' global research distribution infrastructure and legal entities."
+    }
+  ],
+  "content_summary": "This document provides a comprehensive primer on Goldman Sachs' two FX valuation models—GSDEER and GSFEER—explaining their theoretical foundations, methodologies, current signals, and historical performance. It covers the GSDEER model as a purchasing power parity-based approach for long-term fair value anchoring, the GSFEER model as a more cyclical framework based on current account imbalances, optimal weighting of both models across different time horizons, convergence rates to fair value across currencies, and specific currency observations highlighting undervalued currencies like AUD and KRW versus overvalued ones."
+}

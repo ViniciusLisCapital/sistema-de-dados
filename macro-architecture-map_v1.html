@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro Research Platform — Architecture Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060D1F;--s1:#0D1629;--s2:#111E35;--s3:#172540;
+  --b1:#1A3050;--b2:#244470;--b3:#2D5890;
+  --raw:#3B82F6;--proc:#8B5CF6;--del:#10B981;
+  --gold:#F59E0B;--gold-dim:rgba(245,158,11,0.18);--gold-border:rgba(245,158,11,0.45);
+  --c1:#22C55E;--c2:#84CC16;--c3:#EAB308;--c4:#F97316;--c5:#EF4444;
+  --txt:#E2E8F0;--txt2:#94A3B8;--txt3:#475569;
+  --font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:8px;--rs:4px
+}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);min-height:100vh;overflow-x:auto}
+
+/* ── HEADER ── */
+header{padding:18px 28px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(6,13,31,0.97);position:sticky;top:0;z-index:90}
+.hdr-title{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.hdr-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.legend{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt3)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.team-toggle{display:flex;align-items:center;gap:7px;padding:5px 12px;border:1px solid var(--gold-border);border-radius:20px;font-size:11px;font-weight:600;color:var(--gold);background:var(--gold-dim);cursor:pointer;transition:all .15s}
+.team-toggle:hover{background:rgba(245,158,11,0.28)}
+.team-toggle.active{background:rgba(245,158,11,0.3);box-shadow:0 0 12px rgba(245,158,11,0.2)}
+
+/* ── PHASE STRIP ── */
+.phase-strip{display:flex;align-items:center;gap:0;padding:8px 28px;border-bottom:1px solid var(--b1);font-size:11px;background:rgba(6,13,31,0.9);overflow-x:auto}
+.ph{display:flex;align-items:center;gap:6px;padding:4px 14px;border-right:1px solid var(--b1);white-space:nowrap}
+.ph:last-child{border-right:none}
+.ph-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ph-label{font-weight:600;color:var(--txt)}
+.ph-detail{color:var(--txt3)}
+.ph-path{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:4px 14px;color:var(--gold);font-size:11px}
+.ph-arrow{color:var(--txt3)}
+.ph-code{font-family:var(--mono);padding:1px 5px;background:var(--gold-dim);border-radius:3px;font-size:10px}
+
+/* ── MAIN GRID ── */
+.arch-wrap{padding:20px 16px 40px;min-width:1100px}
+.arch-grid{display:grid;grid-template-columns:1fr 28px 1.3fr 28px 1fr;gap:0;align-items:start}
+
+/* ── BLOCK COLUMN ── */
+.block{display:flex;flex-direction:column;padding:0 4px}
+.block-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--b1)}
+.block-hdr-raw{border-bottom-color:var(--raw)}
+.block-hdr-proc{border-bottom-color:var(--proc)}
+.block-hdr-del{border-bottom-color:var(--del)}
+.blk-icon{width:7px;height:22px;border-radius:3px;flex-shrink:0}
+.blk-raw{background:var(--raw)}
+.blk-proc{background:var(--proc)}
+.blk-del{background:var(--del)}
+.blk-name{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.blk-n-raw{color:var(--raw)}
+.blk-n-proc{color:var(--proc)}
+.blk-n-del{color:var(--del)}
+.blk-desc{font-size:10px;color:var(--txt3);margin-top:2px}
+
+.sec-group{margin-bottom:20px}
+.sec-label{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3);padding:0 2px 6px 2px;margin-bottom:8px;border-bottom:1px solid var(--b1)}
+
+/* ── OPTION CARD ── */
+.opt{position:relative;padding:10px 12px 8px;margin-bottom:5px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;transition:all .15s}
+.opt:hover{background:var(--s2);border-color:var(--b2);transform:translateY(-1px)}
+.opt.team-path-card{border-color:var(--gold-border);background:linear-gradient(135deg,var(--s1) 0%,rgba(245,158,11,0.04) 100%)}
+.opt.team-path-card:hover{border-color:var(--gold);box-shadow:0 0 10px rgba(245,158,11,0.15)}
+.opt.locked{cursor:default;border-color:rgba(16,185,129,0.3);background:linear-gradient(135deg,var(--s1) 0%,rgba(16,185,129,0.04) 100%)}
+.opt.locked:hover{transform:none}
+.opt.dim{opacity:.3;pointer-events:none}
+.opt.glow-raw{border-color:var(--raw)!important;box-shadow:0 0 10px rgba(59,130,246,0.25)!important;opacity:1!important}
+.opt.glow-proc{border-color:var(--proc)!important;box-shadow:0 0 10px rgba(139,92,246,0.25)!important;opacity:1!important}
+.opt.glow-del{border-color:var(--del)!important;box-shadow:0 0 10px rgba(16,185,129,0.25)!important;opacity:1!important}
+.opt.active-card{border-color:var(--txt2)!important;box-shadow:0 0 14px rgba(148,163,184,0.2)!important}
+
+.card-top{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.opt-id{font-family:var(--mono);font-size:9px;color:var(--txt3);min-width:18px}
+.card-title{font-size:12px;font-weight:600;flex:1;line-height:1.3}
+.badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.b-team{background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)}
+.b-locked{background:rgba(16,185,129,0.1);color:#10B981;border:1px solid rgba(16,185,129,0.3)}
+.b-ph2{background:rgba(139,92,246,0.1);color:#A78BFA;border:1px solid rgba(139,92,246,0.3)}
+.b-ph3{background:rgba(249,115,22,0.1);color:#FB923C;border:1px solid rgba(249,115,22,0.3)}
+
+.card-sub{font-size:10px;color:var(--txt3);margin-bottom:6px;padding-left:25px;line-height:1.4}
+.card-foot{display:flex;align-items:center;justify-content:space-between;padding-left:25px}
+.cx-dots{display:flex;gap:2px;align-items:center}
+.cx-dot{width:6px;height:6px;border-radius:50%;background:var(--b2)}
+.cx-dot.on{background:var(--c-val)}
+.cx-lbl{font-size:9px;color:var(--txt3);margin-left:4px}
+.cost{font-family:var(--mono);font-size:9px;color:var(--txt3);background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:3px;border:1px solid var(--b1)}
+.conn-row{margin-top:5px;padding-left:25px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.conn-lbl{font-size:9px;color:var(--txt3)}
+.conn-tag{font-family:var(--mono);font-size:9px;padding:1px 4px;border-radius:2px;background:rgba(100,116,139,0.08);border:1px solid var(--b1);color:var(--txt3);cursor:default}
+.conn-tag.raw-t{background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.25);color:#93C5FD}
+.conn-tag.proc-t{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25);color:#C4B5FD}
+.conn-tag.del-t{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);color:#6EE7B7}
+
+/* ── COLUMN SEPARATOR ── */
+.col-sep{display:flex;flex-direction:column;align-items:center;padding-top:56px;gap:0}
+.sep-top,.sep-bot{flex:1;width:1px;background:var(--b1)}
+.sep-arrow{color:var(--b2);font-size:16px;line-height:1;padding:6px 0}
+
+/* ── DETAIL PANEL ── */
+#detail{position:fixed;top:0;right:-540px;width:500px;height:100vh;background:#0A1528;border-left:1px solid var(--b2);z-index:100;transition:right .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;display:flex;flex-direction:column}
+#detail.open{right:0;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.dp-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:#0A1528;z-index:1}
+.dp-title{font-size:16px;font-weight:700;line-height:1.3}
+.dp-sub{font-size:11px;color:var(--txt2);margin-top:3px}
+.dp-close{width:28px;height:28px;border:1px solid var(--b1);border-radius:50%;background:transparent;color:var(--txt2);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.dp-close:hover{background:var(--s3);color:var(--txt);border-color:var(--b2)}
+.dp-body{padding:20px 24px;display:flex;flex-direction:column;gap:18px;flex:1}
+.dp-metrics{display:flex;gap:8px}
+.m-box{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:10px 12px}
+.m-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:3px;font-weight:600}
+.m-val{font-family:var(--mono);font-size:13px;font-weight:600}
+.dp-sec{display:flex;flex-direction:column;gap:7px}
+.ds-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);padding-bottom:5px;border-bottom:1px solid var(--b1)}
+.ds-txt{font-size:12px;color:var(--txt2);line-height:1.7}
+.tools-wrap{display:flex;flex-wrap:wrap;gap:5px}
+.tool-tag{font-family:var(--mono);font-size:10px;padding:2px 8px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:3px;color:#C4B5FD}
+.pc-list{display:flex;flex-direction:column;gap:5px}
+.pc-item{font-size:12px;color:var(--txt2);padding-left:14px;position:relative;line-height:1.5}
+.pc-item.pro::before{content:'↑';position:absolute;left:0;color:#22C55E;font-size:10px;top:1px}
+.pc-item.con::before{content:'↓';position:absolute;left:0;color:#F97316;font-size:10px;top:1px}
+.team-box{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:6px;padding:10px 14px;font-size:12px;color:#FCD34D;line-height:1.7}
+.team-box strong{color:var(--gold)}
+
+/* ── OVERLAY ── */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;display:none}
+#overlay.vis{display:block}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="hdr-title">Macro Research Platform — Architecture Map</div>
+    <div class="hdr-sub">Hover any option to see connections · click to explore · ★ marks the team's recommended architecture</div>
+  </div>
+  <div class="hdr-right">
+    <div class="legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--c1)"></div>Low (1–2)</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--c3)"></div>Medium (3)</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--c5)"></div>High (4–5)</div>
+    </div>
+    <button class="team-toggle" id="teamToggle" onclick="toggleTeamPath()">★ Show Team Path</button>
+  </div>
+</header>
+
+<div class="phase-strip" id="phaseStrip">
+  <div class="ph"><div class="ph-dot" style="background:#3B82F6"></div><span class="ph-label">Phase 1</span><span class="ph-detail">0–4 mo · $5–15k/yr</span></div>
+  <div class="ph"><div class="ph-dot" style="background:#8B5CF6"></div><span class="ph-label">Phase 2</span><span class="ph-detail">4–12 mo · $15–40k/yr</span></div>
+  <div class="ph"><div class="ph-dot" style="background:#F97316"></div><span class="ph-label">Phase 3</span><span class="ph-detail">12–24 mo · $40–100k/yr</span></div>
+  <div class="ph-path" id="teamPath" style="display:none">
+    <span style="color:var(--gold);font-weight:600">★ Team Path Ph.1:</span>
+    <span class="ph-code">1B</span><span class="ph-arrow">→</span>
+    <span class="ph-code">1C★</span><span class="ph-arrow">→</span>
+    <span class="ph-code">1D</span><span class="ph-arrow">→</span>
+    <span class="ph-code">2D★</span><span class="ph-arrow">→</span>
+    <span class="ph-code">2G</span><span class="ph-arrow">→</span>
+    <span class="ph-code">2K</span><span class="ph-arrow">→</span>
+    <span class="ph-code">3A</span><span class="ph-arrow">+</span>
+    <span class="ph-code">3C</span><span class="ph-arrow">+</span>
+    <span class="ph-code">3E</span>
+    <span style="color:var(--txt3);margin-left:8px">Ph.2 adds:</span>
+    <span class="ph-code">1E/1G</span><span class="ph-arrow">→</span>
+    <span class="ph-code">2H</span><span class="ph-arrow">→</span>
+    <span class="ph-code">3B</span>
+    <span style="color:var(--txt3);margin-left:8px">Ph.3 adds:</span>
+    <span class="ph-code">3D</span><span class="ph-arrow">+</span>
+    <span class="ph-code">3F</span>
+  </div>
+</div>
+
+<div class="arch-wrap">
+<div class="arch-grid">
+
+  <!-- ── RAW MATERIALS ── -->
+  <div class="block" id="block-raw">
+    <div class="block-hdr block-hdr-raw">
+      <div class="blk-icon blk-raw"></div>
+      <div><div class="blk-name blk-n-raw">Raw Materials</div><div class="blk-desc">Inputs that feed the system</div></div>
+    </div>
+    <div id="g-raw-text" class="sec-group"></div>
+    <div id="g-raw-data" class="sec-group"></div>
+    <div id="g-raw-news" class="sec-group"></div>
+  </div>
+
+  <div class="col-sep"><div class="sep-top"></div><div class="sep-arrow">▶</div><div class="sep-bot"></div></div>
+
+  <!-- ── PROCESS ── -->
+  <div class="block" id="block-proc">
+    <div class="block-hdr block-hdr-proc">
+      <div class="blk-icon blk-proc"></div>
+      <div><div class="blk-name blk-n-proc">Process</div><div class="blk-desc">Engineering · storage · reasoning</div></div>
+    </div>
+    <div id="g-proc-kb" class="sec-group"></div>
+    <div id="g-proc-ai" class="sec-group"></div>
+    <div id="g-proc-orch" class="sec-group"></div>
+  </div>
+
+  <div class="col-sep"><div class="sep-top"></div><div class="sep-arrow">▶</div><div class="sep-bot"></div></div>
+
+  <!-- ── DELIVERABLES ── -->
+  <div class="block" id="block-del">
+    <div class="block-hdr block-hdr-del">
+      <div class="blk-icon blk-del"></div>
+      <div><div class="blk-name blk-n-del">Deliverables</div><div class="blk-desc">What the investment team sees</div></div>
+    </div>
+    <div id="g-del-rep" class="sec-group"></div>
+    <div id="g-del-dash" class="sec-group"></div>
+    <div id="g-del-ai" class="sec-group"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ── DETAIL PANEL ── -->
+<div id="detail">
+  <div class="dp-hdr">
+    <div>
+      <div class="dp-title" id="dp-title">—</div>
+      <div class="dp-sub" id="dp-sub">—</div>
+    </div>
+    <button class="dp-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="dp-body" id="dp-body"></div>
+</div>
+<div id="overlay" onclick="closeDetail()"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const SECTIONS = {
+  'g-raw-text': {label:'Text Input', block:'raw'},
+  'g-raw-data': {label:'Quantitative Data', block:'raw'},
+  'g-raw-news': {label:'News & Intelligence', block:'raw'},
+  'g-proc-kb':  {label:'Knowledge Base', block:'proc'},
+  'g-proc-ai':  {label:'AI Reasoning Layer', block:'proc'},
+  'g-proc-orch':{label:'Orchestration', block:'proc'},
+  'g-del-rep':  {label:'Reporting', block:'del'},
+  'g-del-dash': {label:'Dashboards', block:'del'},
+  'g-del-ai':   {label:'AI Interface', block:'del'},
+};
+
+const OPTS = {
+  '1A': {
+    group:'g-raw-text', title:'PDF Documents', sub:'Institutional research · central bank publications',
+    cx:2, capex:'~$0', opex:'<$500/yr', phase:1, team:false, locked:false,
+    connects:['2A','2B','2C','2D'],
+    concept:'PDF is the dominant format for institutional research: academic papers, central bank communications, broker reports, IMF/World Bank publications, internal memos. Digital PDFs parse cleanly and cheaply. Scanned documents require OCR (Tesseract free, AWS Textract ~$1.50/1k pages for complex layouts).',
+    practice:'A download script on Prefect pulls BCB, IMF, and Fed publications automatically on a predictable schedule. True manual effort is only required for sources without predictable publication patterns — broker reports, academic papers. Text is extracted, cleaned, and fed into the chosen knowledge base.',
+    tools:['PyMuPDF','pdfplumber','Tesseract (OCR)','LangChain PDF loader','LlamaIndex'],
+    pros:['Covers the large majority of institutional and academic content','No licensing costs — files collected directly','Many key sources (BCB, IMF, Fed) can be automated on a schedule'],
+    cons:['Tables and charts extract as garbled text — numerical data must always come from the quant layer','Scanned documents require OCR, which introduces extraction errors'],
+  },
+  '1B': {
+    group:'g-raw-text', title:'Multi-Format Text', sub:'PDF + Markdown + HTML + DOCX',
+    cx:3, capex:'~$500', opex:'<$1k/yr', phase:1, team:true, locked:false,
+    connects:['2A','2B','2C','2D','2E','2F'],
+    concept:'Expands ingestion to all common document types. Markdown is the most robust format for AI systems — pure text, no binary encoding, zero noise. It converts cleanly to anything without information loss. This breadth is essential for the Obsidian vault workflow, which produces Markdown synthesis files that feed directly into the knowledge base.',
+    practice:'Each format uses its own parser with a shared cleaning pipeline. LangChain provides unified loaders for all formats. A Prefect job processes new documents on a schedule. Claude Code-generated synthesis files (.md) feed directly into the Obsidian vault without any conversion step.',
+    tools:['LangChain loaders','PyMuPDF','python-docx','BeautifulSoup','LlamaIndex','Prefect'],
+    pros:['Maximum coverage across all research formats','Markdown parses with near-zero noise — best format for AI systems','Opens the door to ingesting Claude Code synthesis outputs directly','Better automation potential across all source types'],
+    cons:['Requires separate parsing logic for each format; failure modes differ','DOCX and HTML carry layout noise requiring a cleaning step','Higher pipeline maintenance as formats and libraries evolve'],
+    teamNote:'Entry point for the Obsidian vault workflow. Claude Code reads source PDFs and writes structured .md synthesis files — these feed directly into the vault. The multi-format pipeline is what makes this workflow seamless.',
+  },
+  '1C': {
+    group:'g-raw-data', title:'MySQL + Bloomberg + Free APIs', sub:'BCB · IBGE · FRED · IPEA · Bloomberg terminal',
+    cx:3, capex:'Existing', opex:'$5k–$30k/yr', phase:1, team:true, locked:true,
+    connects:['2K','3A','3B','3C','3D'],
+    concept:'The quantitative backbone: time series for SELIC, IPCA, USDBRL, GDP, primary balance, credit aggregates, and market pricing. Already deployed. MySQL stores structured series; Bloomberg provides market data and Focus Survey consensus; free public APIs (BCB SGS, IBGE SIDRA, FRED, IPEA) cover macro indicators.',
+    practice:'Already operational — no Phase 1 build required. The relevant question is how this data layer integrates with process and deliverables: Prefect should orchestrate data refreshes, and data freshness is the hard constraint for any dashboard or alert system. Bloomberg cost is the largest recurring spend in the stack.',
+    tools:['MySQL','Bloomberg API','python-bcb','sidrapy','fredapi','ipeadatapy'],
+    pros:['Already operational — no Phase 1 build required','Covers SELIC, IPCA, USDBRL, GDP, credit, and external sector comprehensively','Bloomberg provides real-time pricing and Focus Survey consensus'],
+    cons:['Bloomberg subscription is the largest recurring cost in the entire stack','Free APIs have rate limits and pagination constraints for large historical pulls'],
+    teamNote:'Already decided and operational. No change needed in Phase 1. Key integration point: Prefect (2K) should orchestrate data refreshes to ensure dashboard and alert freshness.',
+  },
+  '1D': {
+    group:'g-raw-news', title:'Web Search on Demand', sub:'Agent-triggered — reactive, not a pipeline',
+    cx:1, capex:'~$0', opex:'<$600/yr', phase:1, team:true, locked:false,
+    connects:['2G','2H','3A','3C'],
+    concept:"The agent calls a web search API when it needs current context — a recent BCB statement, a data release, fact-checking. This is not a feed; it's reactive search triggered by the agent's reasoning process. Low volume, low cost, zero pipeline maintenance.",
+    practice:'Integrate a search API (Brave, Tavily, or Perplexity) as a callable tool in the LLM agent. When the agent encounters a gap — "I need the most recent Copom communication" — it calls the search tool, gets results, and incorporates them into its reasoning. Total cost is proportional to how often agents search.',
+    tools:['Brave Search API','Tavily API','Perplexity API','Serper API'],
+    pros:['Near-zero cost and complexity','No pipeline maintenance — triggered on demand','Keeps the research chat grounded in current events without a full news pipeline'],
+    cons:["Not a reliable real-time feed — depends on the agent's judgment about when to search",'Cannot power proactive automated alerts (reactive, not proactive)','Search results are unstructured and unvalidated'],
+    teamNote:'Phase 1 choice. Zero maintenance, enables the research chat to stay current. A full news pipeline (1E or 1G) is a Phase 2 addition once the core system is validated.',
+  },
+  '1E': {
+    group:'g-raw-news', title:'News APIs', sub:'GDELT · NewsAPI · Refinitiv Elektron',
+    cx:2, capex:'~$200', opex:'$600–$6k/yr', phase:2, team:true, locked:false,
+    connects:['2G','2H','3A','3B','3C','3E'],
+    concept:'Structured real-time article feeds from aggregators. GDELT is free and covers global news; NewsAPI provides clean API access (~$450/yr); Refinitiv Elektron covers institutional-grade financial news. Articles arrive with metadata (source, timestamp, entity tags) enabling structured automated ingestion.',
+    practice:'A Prefect job polls the API, filters for relevant topics (Brazil macro, SELIC, IPCA, USDBRL), chunks articles, and ingests into the knowledge base or a dedicated news index. The LLM classifies relevance before storage to avoid noise.',
+    tools:['GDELT API','NewsAPI','Refinitiv Elektron','Prefect','LangChain'],
+    pros:['Structured feeds enable automated ingestion pipelines','Metadata (source, date, entity tags) improves retrieval quality','Lower maintenance burden than custom scraping'],
+    cons:['Free tiers have coverage gaps; full coverage requires paid subscription','Topic filtering requires calibration to avoid false positives and misses'],
+  },
+  '1F': {
+    group:'g-raw-news', title:'Premium News Feeds', sub:'Bloomberg · Refinitiv Eikon · Dow Jones',
+    cx:3, capex:'~$2k', opex:'$20k–$100k+/yr', phase:3, team:false, locked:false,
+    connects:['2G','2H','3A','3B','3C','3D','3E','3F'],
+    concept:'Institutional-grade real-time news with millisecond latency, structured metadata, and full global coverage. Bloomberg and Refinitiv also include analyst research, corporate actions, and structured financial data alongside news — the gold standard for buy-side operations.',
+    practice:'Direct API integration with Bloomberg or Refinitiv feeds. Events stream in real time and can trigger immediate alert workflows. Best combined with a live dashboard and full alert engine.',
+    tools:['Bloomberg B-PIPE','Bloomberg Data License','Refinitiv Eikon/Elektron','Dow Jones DNA'],
+    pros:['Millisecond latency, complete global coverage','Structured metadata enables sophisticated automated processing'],
+    cons:['Very high cost — only justified if macro news is a primary investment edge','Overkill if the fund primarily reads news manually on Bloomberg terminal'],
+  },
+  '1G': {
+    group:'g-raw-news', title:'RSS + Custom Scraping', sub:'BCB · Tesouro · IBGE · Valor — direct sourcing',
+    cx:4, capex:'$1k–$5k', opex:'$1k–$4k/yr', phase:2, team:true, locked:false,
+    connects:['2K','3A','3B','3C','3E'],
+    concept:"Curated direct access to high-priority sources via RSS feeds (BCB Copom communications, Tesouro Nacional, IBGE press releases — official and reliable) and targeted scrapers for sources without RSS (Valor Econômico, FT). Proprietary source selection creates a competitive advantage over generic feeds.",
+    practice:'Prefect monitors RSS feeds and triggers scrapers on schedule. HTML structure changes break scrapers silently — monitoring and retry logic are mandatory. Prefect (2K) is a hard dependency for this option; cron is structurally insufficient.',
+    tools:['feedparser','requests/httpx','BeautifulSoup','Playwright (JS-rendered)','Prefect'],
+    pros:['Fully customizable — precisely the sources that matter for the thesis','No per-article cost at operating scale','Direct access to central bank communications without intermediary'],
+    cons:['High maintenance: sites change HTML structure frequently, scrapers break silently','Commercial scraping operates in a legal grey area (robots.txt, ToS)','Hard dependency on Prefect orchestration (2K)'],
+    teamNote:'Phase 2 addition. BCB/Tesouro RSS feeds are reliable and low-maintenance; Valor scraping is the high-maintenance component. Prefect (2K) is required from day one of this option.',
+  },
+  '2A': {
+    group:'g-proc-kb', title:'Plain Files + Keyword Search', sub:'Directory structure + BM25 full-text matching',
+    cx:1, capex:'~$0', opex:'<$300/yr', phase:1, team:false, locked:false,
+    connects:['2G','3A'],
+    concept:'Documents stored in a structured directory with full-text search via BM25 or SQLite FTS. Retrieval finds documents containing the exact query words. Simple, transparent, zero infrastructure.',
+    practice:'rank_bm25 library indexes all documents at startup (~30 lines of Python). Agent queries by keyword and receives ranked file paths. No embeddings, no managed service, no API cost beyond the LLM itself.',
+    tools:['rank_bm25','SQLite FTS5','Python filesystem'],
+    pros:['No infrastructure — operational immediately','Completely transparent and auditable','Zero vendor dependency'],
+    cons:["No semantic search — 'monetary tightening' won't find 'raising the SELIC rate'",'Cannot support RAG or any LLM-powered retrieval pattern','Quality collapses beyond a few hundred documents'],
+  },
+  '2B': {
+    group:'g-proc-kb', title:'Vector RAG — Managed Cloud', sub:'Weaviate Cloud · Qdrant Cloud · Pinecone',
+    cx:2, capex:'~$0 (free tiers)', opex:'$500–$5k/yr', phase:1, team:false, locked:false,
+    connects:['2G','2H','3A','3C','3E'],
+    concept:'Documents are chunked, converted to numerical embeddings (vectors capturing their meaning), and stored in a cloud-hosted vector database. Retrieval finds the most semantically relevant chunks — even when the query uses different words than the document. The fully managed infrastructure path.',
+    practice:'LlamaIndex or LangChain handles ingestion. Free tiers (Weaviate, Qdrant) cover Phase 1 volumes. Store raw embeddings in cold storage (S3 or Postgres) from day one to avoid vendor lock-in — this one practice eliminates most migration risk.',
+    tools:['Weaviate Cloud','Qdrant Cloud','Pinecone','LlamaIndex','LangChain','Cohere/OpenAI embeddings'],
+    pros:['No infrastructure to manage — scales automatically','Free tiers available for Phase 1','Fastest path to a working research chat interface'],
+    cons:['Documents stored on third-party infrastructure — compliance review required','Cost scales with vector count and query volume','Vendor lock-in risk without a cold storage strategy'],
+    teamNote:'The fastest alternative to the Obsidian vault. The week-1 decision is this vs. 2D (Obsidian). Managed vector RAG builds faster; Obsidian produces higher knowledge quality for a curated, scoped domain.',
+  },
+  '2C': {
+    group:'g-proc-kb', title:'Vector RAG — Self-Hosted', sub:'pgvector · ChromaDB · Qdrant (local)',
+    cx:3, capex:'$500–$2k', opex:'$500–$2k/yr', phase:1, team:false, locked:false,
+    connects:['2G','2H','2I','3A','3C','3E'],
+    concept:'Same semantic search and RAG architecture as managed cloud, but hosted on your own infrastructure. pgvector adds vector search to an existing Postgres database; ChromaDB is purpose-built and trivial to set up; Qdrant offers high-performance filtering. Complete data sovereignty.',
+    practice:'Deploy Qdrant or ChromaDB on a cloud VM. LangChain handles ingestion and retrieval. DevOps capacity required for monitoring, backups, and updates. The right choice for compliance-sensitive environments that cannot send documents to third-party services.',
+    tools:['pgvector','ChromaDB','Qdrant','LlamaIndex','LangChain','sentence-transformers'],
+    pros:['Complete data sovereignty — documents never leave your infrastructure','No per-query cost beyond fixed compute','pgvector reuses existing PostgreSQL infrastructure if already running'],
+    cons:['DevOps capacity required to manage, monitor, and back up','No managed SLAs — outages are your problem','Chunking strategy and embedding model choices require expertise; poor choices degrade quality significantly'],
+  },
+  '2D': {
+    group:'g-proc-kb', title:'Obsidian Vault + Wiki-Links', sub:'Curated .md vault · BM25 fallback · specialist agents',
+    cx:2, capex:'~$0', opex:'<$300/yr', phase:1, team:true, locked:false,
+    connects:['2G','2H','3A','3C','3E','3F'],
+    concept:"A curated Markdown vault organized by domain (monetary policy, fiscal, FX). Two tiers within each: synthesis files (one per source document) and concept files (one per analytical concept, interconnected via [[wiki-links]]). The wiki-link graph is a human-curated knowledge map — more reliable than machine-extracted vector similarity for a specialized domain. Agents navigate using link traversal (primary) and BM25 keyword search (fallback). The Obsidian application is never used — the vault is just a folder of .md files.",
+    practice:"Claude Code reads source PDFs, generates structured .md synthesis files, and creates/updates concept files. Agents are Python functions with three callable tools: read_file(), follow_wikilink(), and search_vault(). Without these tool functions the agent cannot navigate — it can only reason about what is directly in the prompt. An orchestrator agent detects cross-domain signals via structured output fields (cross_domain_references) and routes to specialist agents (monetary policy, fiscal, FX).",
+    tools:['rank_bm25 (~30 lines)','Python filesystem tools','Claude Code (curation)','Claude API (agents)','Prefect (automation)'],
+    pros:['Near-zero infrastructure cost — no vector DB, no embedding pipeline','Human-curated links are more reliable than machine extraction for a specialized domain','Interpretable reasoning: every file read and link followed can be logged as a structured trace','Natural workflow: Claude Code reads papers and writes .md synthesis files','The wiki-link graph approximates a knowledge graph at a fraction of the complexity'],
+    cons:['Coverage depends entirely on curation discipline — uncurated documents are invisible to traversal','BM25 fallback closes most gaps but remains keyword-based','Scale ceiling: at 300+ sources, a hybrid approach (vault + vector DB) makes more sense'],
+    teamNote:"★ This is the team's architecture. Vault structure: obsidian/<domain>/synthesis/ (one .md per source) + obsidian/<domain>/concepts/ (one .md per concept). The agents are more than prompts — they require callable tool functions to navigate. The Obsidian application is not needed; the vault is a plain folder of .md files accessible via standard Python filesystem operations.",
+  },
+  '2E': {
+    group:'g-proc-kb', title:'Formal Knowledge Graph', sub:'Neo4j / Memgraph + Cypher — explicit macro relationships',
+    cx:5, capex:'$5k–$20k', opex:'$3k–$12k/yr', phase:3, team:false, locked:false,
+    connects:['2H','2I','3E','3F'],
+    concept:"A database that models macro entities (countries, indicators, policies, institutions) and the typed relationships between them. Enables multi-hop reasoning: 'fiscal deterioration → debt sustainability risk → BRL depreciation → imported inflation → IPCA impact' — traversing this chain through explicitly stored relationships even when no single document states all five connections together.",
+    practice:'Domain experts design the ontology (the schema of what entities and relationship types exist); LLM agents assist with extracting entities from documents. Queried via Cypher. An agent calls a graph traversal tool to find structural relationships, then combines those with vector-retrieved document evidence (GraphRAG pattern).',
+    tools:['Neo4j','Memgraph','Cypher','LangChain graph tools','LlamaIndex KG integration'],
+    pros:['Unique capability: multi-hop reasoning across explicitly modeled macro relationships','Auditable — every inference path through the graph can be traced','Can formally encode decades of macro institutional knowledge into a queryable structure'],
+    cons:['Requires significant domain expertise to design the ontology correctly','Maintenance intensive as macro regimes evolve — relationships must be added and deprecated','6–12 months minimum to production-quality implementation'],
+  },
+  '2F': {
+    group:'g-proc-kb', title:'GraphRAG — Vector + Graph', sub:'Semantic retrieval + graph traversal combined',
+    cx:5, capex:'$10k–$30k', opex:'$8k–$25k/yr', phase:3, team:false, locked:false,
+    connects:['2H','2I','3E','3F'],
+    concept:"Combines vector semantic search and knowledge graph traversal as simultaneous context sources for the LLM. For each query, the system runs both a semantic search (text evidence from documents) and a graph traversal (structural evidence from the knowledge graph). The LLM receives both types of evidence. Produces materially higher quality answers on complex multi-hop questions. The architecture that most closely realizes the 'PhD analyst' vision.",
+    practice:'Requires coordinating four distinct systems: vector DB, graph DB, LLM orchestration layer, and data ingestion pipeline. A failure in any layer produces silent quality degradation, not a clean error. Strong recommendation: build vector RAG alone in Phase 1, validate, add the graph only in Phase 3 if analytical requirements justify the complexity.',
+    tools:['Neo4j + Weaviate/Pinecone','LangChain GraphRAG','LlamaIndex KG','Prefect/Dagster (required)'],
+    pros:['Maximum analytical depth: semantic evidence + structural reasoning','GraphRAG produces materially higher quality on complex multi-document, multi-hop questions'],
+    cons:['Highest implementation and maintenance complexity in this document','6–12 months to production quality — very high early-stage risk','Strong recommendation: build vector RAG first; add graph in Phase 3 only'],
+  },
+  '2G': {
+    group:'g-proc-ai', title:'Single LLM API', sub:'Claude Sonnet — reasoning engine for the deployed system',
+    cx:2, capex:'~$0', opex:'$1k–$10k/yr', phase:1, team:true, locked:false,
+    connects:['2J','2K','3A','3C','3E'],
+    concept:'A single LLM API call is the reasoning engine for the autonomous deployed system. Claude Code covers interactive development and curation; the API covers the system that runs without a human operator — scheduled reports, research chat responses, alert classification. Claude Sonnet ~$3/MTok input, $15/MTok output.',
+    practice:'One Python function wraps the API call with a system prompt and user message. Retrieval context from the knowledge base is injected into the prompt. A Prefect job calls this function on a schedule for reports; a Slack bot calls it on demand for research chat.',
+    tools:['Anthropic Python SDK','Claude Sonnet 4','Prefect (scheduling)','Slack Bolt (chat)'],
+    pros:['Zero infrastructure — just an API call','Sufficient for reports, research chat, and alert classification','Claude Code subscription covers development; API covers production'],
+    cons:['No agent capabilities — cannot call tools, traverse files, or execute code autonomously','LLM has no memory between calls — all context must be assembled in the prompt'],
+    teamNote:'Phase 1 choice. Development and curation uses Claude Code; the production autonomous system uses the API. The multi-agent framework (2H) is the Phase 2 upgrade once single-LLM patterns are validated.',
+  },
+  '2H': {
+    group:'g-proc-ai', title:'Multi-Agent Framework', sub:'Domain specialists + orchestrator + tool-equipped agents',
+    cx:4, capex:'$2k–$5k', opex:'$3k–$15k/yr', phase:2, team:true, locked:false,
+    connects:['2K','3A','3B','3C','3D','3E','3F'],
+    concept:'Multiple specialized agents — monetary policy, fiscal, FX — each equipped with callable tools to navigate the knowledge base (read files, follow wiki-links, run BM25 search, query the database). An orchestrator above them receives questions, delegates to specialists, detects cross-domain signals via structured output fields, and consolidates responses. Agents take multi-step actions, not just generate text.',
+    practice:"Each agent is: (1) a system prompt defining its analytical role, (2) callable tool functions it can invoke, (3) a defined context boundary in the vault. The orchestrator reads structured output fields (cross_domain_references) to route reliably — not from LLM judgment alone. LangGraph or Claude Agent SDK for the framework. Each agent has a 'home folder' in the vault it operates within.",
+    tools:['LangGraph','Claude Agent SDK','CrewAI','LlamaIndex agents','LangChain'],
+    pros:['Enables multi-step research: fetch data → query knowledge base → run statistics → write memo','Agents equipped with tools navigate the vault — not just prompts that hope for the right output','Cross-domain analysis through reliable orchestrator routing'],
+    cons:['Significantly more complex to build, test, and trust in a production investment context','Agents can produce confidently wrong analysis — human-in-the-loop oversight is required','$5–20 per extended reasoning run; costs compound in production'],
+    teamNote:'Phase 2 upgrade from single LLM. The Obsidian vault (2D) is designed specifically for this: agents call read_file(), follow_wikilink(), and search_vault() to traverse the vault during reasoning. The orchestrator detects cross-domain signals through structured output, not inference.',
+  },
+  '2I': {
+    group:'g-proc-ai', title:'Self-Hosted OSS LLM', sub:'Llama 3 / Mistral — GPU infrastructure',
+    cx:5, capex:'$10k–$40k', opex:'$8k–$40k/yr', phase:3, team:false, locked:false,
+    connects:['2K','3A','3C','3E','3F'],
+    concept:'Run an open-source LLM on your own GPU infrastructure. Complete data sovereignty: no proprietary model API, no data leaving your environment. Required for the most compliance-sensitive use cases. Quality of current open-source models (Llama 3, Mistral) is excellent for structured tasks but trails frontier models on complex synthesis.',
+    practice:'Deploy on A100/H100 GPU (cloud or on-premise). vLLM or Ollama for serving. Quality is excellent for structured reasoning tasks but typically below Claude/GPT-4o for complex macro synthesis. Only justified for strong compliance requirements or very high inference volume.',
+    tools:['Llama 3.3','Mistral Large','vLLM','Ollama','CUDA infrastructure'],
+    pros:['Complete data sovereignty — nothing leaves your infrastructure','No per-token API cost at scale','Full model customization and fine-tuning possible'],
+    cons:['GPU infrastructure cost and operational complexity are significant','Quality trails Claude/GPT-4o on complex macro synthesis tasks','Only justified for strong compliance requirements or very high inference volume'],
+  },
+  '2J': {
+    group:'g-proc-orch', title:'Cron Scripts', sub:'Unix scheduler — time-triggered Python scripts',
+    cx:1, capex:'~$0', opex:'<$500/yr', phase:1, team:false, locked:false,
+    connects:['3A'],
+    concept:'A Unix cron job fires a Python script on a schedule. The script runs and cron forgets. No awareness of whether it succeeded, no retry on failure, no alerting if something breaks. The simplest possible scheduler.',
+    practice:'Appropriate for a single, stable, low-consequence pipeline — e.g., a daily data refresh from a reliable API. Not appropriate for anything involving scraping, multi-step pipelines, or agent workflows that can fail in complex ways.',
+    tools:['cron','Python scripts','shell scripts'],
+    pros:['Zero setup — available on every Unix server','No additional software or cost','Sufficient for simple, reliable, single-step jobs'],
+    cons:['Silent failures: cron fires and forgets whether the job succeeded','No retry, no alerting, no dependency management','Structurally insufficient for scraping, agent workflows, or multi-step pipelines'],
+  },
+  '2K': {
+    group:'g-proc-orch', title:'Workflow Orchestrator', sub:'Prefect · retry · monitoring · alerts · dependencies',
+    cx:4, capex:'~$500', opex:'$1k–$4k/yr', phase:1, team:true, locked:false,
+    connects:['3A','3B','3C','3D','3E','3F'],
+    concept:'The upgrade from cron that every real pipeline needs: instead of a timer that fires and forgets, Prefect knows whether a pipeline run succeeded, retries automatically on failure, notifies the team if something breaks, enforces dependencies (report runs only after fresh data), and provides a run history dashboard.',
+    practice:'Any Python function decorated with @task and @flow becomes an orchestrated, monitored, retriable pipeline. Prefect Cloud ~$100/month; self-hosted is free. Deploy on a small VM. Dagster is a strong alternative with an asset-centric model that fits a macro data platform well.',
+    tools:['Prefect','Dagster (alternative)','Prefect Cloud / self-hosted'],
+    pros:['Retry logic, monitoring, and alerting built-in','Dependency management: ensures data is fresh before a report runs','Enables reliable scraping pipelines and scheduled AI analysis','Easier than Airflow for a Python analytics team'],
+    cons:['Learning curve: requires understanding flows, tasks, and schedules','Another system to operate and monitor','Overkill for very simple, single-step pipelines'],
+    teamNote:'Phase 1 requirement. Hard dependency for RSS/scraping (1G) and alert engine (3B). Also required for any multi-step pipeline where failures have downstream consequences. Prefect recommended over Dagster for a Python analytics background.',
+  },
+  '2L': {
+    group:'g-proc-orch', title:'Cloud-Native Pipelines', sub:'AWS Step Functions · GCP Workflows · Azure Logic Apps',
+    cx:3, capex:'$1k–$4k', opex:'$500–$3k/yr', phase:2, team:false, locked:false,
+    connects:['3A','3B','3C','3D','3E'],
+    concept:'Serverless orchestration using the chosen cloud provider\'s native tools. Fully managed with no orchestration infrastructure. Pay-per-execution pricing. Best choice if the entire stack is already committed to one cloud provider.',
+    practice:'Define pipeline steps as state machine transitions (Step Functions) or YAML workflow definitions (GCP Workflows). Native integration with cloud storage and databases.',
+    tools:['AWS Step Functions','GCP Workflows','Azure Logic Apps'],
+    pros:['Fully managed — no orchestration infrastructure to run','Native integration with same-cloud storage and databases','Pay-per-execution pricing for light workflows'],
+    cons:['Significant vendor lock-in to the chosen cloud provider','Limited Python support for complex data transformation','Requires cloud IAM and networking expertise'],
+  },
+  '3A': {
+    group:'g-del-rep', title:'Scheduled Macro Digest', sub:'Daily brief · weekly synthesis · event-driven memos',
+    cx:2, capex:'~$500', opex:'<$500/yr', phase:1, team:true, locked:false,
+    connects:[],
+    concept:'LLM-generated macro summaries delivered on a fixed schedule via Slack. Daily: SELIC expectations, FX, equities, key releases, overnight news. Weekly: synthesis of data releases, central bank communications, notable research. Event-driven: auto-generated within minutes of a Copom decision or IPCA print.',
+    practice:"A Prefect job queries the data layer and knowledge base, assembles a structured prompt, calls the LLM API, and posts the result to Slack. The hardest part is prompt engineering: the template must produce reliable output without hallucinating data values. A review step is required before distribution for anything investment-decision-relevant.",
+    tools:['Claude API','Prefect','Slack API','Jinja2 templates'],
+    pros:['Immediately useful and tangible — demonstrates project value early','Simple to implement once data and LLM API are connected','Distributable via Slack with zero friction','Builds analyst trust in the system incrementally'],
+    cons:['Static — no drill-down or interactivity','LLM-generated text requires a review process before distribution for investment-relevant content'],
+    teamNote:'Phase 1 target deliverable. Start with a weekly digest; add the daily brief once the pipeline is stable. This is the fastest way to demonstrate system value to the team.',
+  },
+  '3B': {
+    group:'g-del-rep', title:'Alert & Signal Engine', sub:'SELIC repricing · IPCA surprise · BCB intervention · CDS',
+    cx:3, capex:'$1k–$3k', opex:'$500–$2k/yr', phase:2, team:true, locked:false,
+    connects:[],
+    concept:'Push notifications when macro variables cross defined thresholds or significant events are detected. Rules-based triggers (SELIC futures reprice >25bps in one session) can be layered with AI classification (LLM classifies whether a BCB communication signals policy change). Delivered via Slack or WhatsApp.',
+    practice:'Prefect job monitors data series on a schedule (every 15 minutes for market data, event-driven for news). When a threshold is crossed, an LLM call classifies the signal\'s investment significance and drafts a one-paragraph alert. A human reviews before distribution.',
+    tools:['Prefect','Claude API','Slack API','MySQL (threshold storage)'],
+    pros:['Proactive: the system notifies rather than waiting for the team to check','High perceived value relative to implementation cost','Integrates into existing Slack workflow'],
+    cons:['Alert fatigue risk if thresholds are miscalibrated','Requires reliable, timely data feeds — alerts on stale data are actively harmful','AI-enhanced alerts need a systematic validation process before production'],
+    teamNote:'Phase 2 addition. Requires automated data feeds (1C already done) and Prefect (2K). Start with simple threshold rules; layer LLM classification once the rules-based system is stable and trusted.',
+  },
+  '3C': {
+    group:'g-del-dash', title:'Internal Dashboard — Streamlit', sub:'Macro thermometer · surprise index · CB tracker',
+    cx:2, capex:'$1k–$3k', opex:'$500–$2k/yr', phase:1, team:true, locked:false,
+    connects:[],
+    concept:'Python-based interactive web app. Any Python script with st. calls becomes a web dashboard. Content: macro thermometer (key variables vs. historical distributions), economic surprise index (recent prints vs. Focus Survey consensus), central bank communication tracker, model outputs (GDP nowcast, inflation forecast).',
+    practice:'Build in a week. Prefect refreshes data into MySQL; Streamlit reads from MySQL and renders. Deploy on a small VM or Streamlit Cloud. Natural language summary panels powered by a single LLM API call.',
+    tools:['Streamlit','pandas','plotly','MySQL connector','Claude API (summary panels)'],
+    pros:['Fast to build: working dashboard in days','Full Python data stack works natively','Easily iterable — adding a new panel does not require a redesign','Inexpensive to host'],
+    cons:['Not board-presentation quality without significant additional design work','Performance issues with complex data (full-script rerun model)','Limited enterprise auth and access control out of the box'],
+    teamNote:'Phase 1 deliverable. The internal team tool for daily use. For board-facing dashboards, upgrade to 3D (Live Production) in Phase 3.',
+  },
+  '3D': {
+    group:'g-del-dash', title:'Live Production Dashboard', sub:'React + D3 / Tableau — board quality, real-time',
+    cx:4, capex:'$5k–$20k', opex:'$3k–$15k/yr', phase:3, team:false, locked:false,
+    connects:[],
+    concept:'Enterprise-grade dashboards for board presentations, client reporting, and real-time monitoring. Custom React + Recharts/D3 gives maximum control. Tableau or Power BI for faster delivery with less frontend engineering. Professional design, enterprise auth (SSO), and real-time data streaming.',
+    practice:'Prefect feeds a data warehouse; the dashboard reads from the warehouse. Custom React: 3–6 months build time. Tableau accelerates this if pre-built visualizations are acceptable.',
+    tools:['React','D3.js','Recharts','Tableau','Power BI','Apache Superset'],
+    pros:['Board-presentation quality: professional design and full branding control','Enterprise auth (SSO, LDAP) and audit logging standard','Real-time data streaming support'],
+    cons:['Significantly more expensive and longer to build than Streamlit','Custom React requires frontend engineering skills not typical in a quant team','Often over-engineered for purely internal analytical use'],
+  },
+  '3E': {
+    group:'g-del-ai', title:'Research Chat Interface', sub:'Slack bot — cited answers from the knowledge base',
+    cx:3, capex:'$2k–$6k', opex:'$2k–$8k/yr', phase:1, team:true, locked:false,
+    connects:[],
+    concept:'Analysts ask questions in natural language and receive cited answers drawn from the knowledge base. "What does the historical analysis say about SELIC cuts and USDBRL?" — the system retrieves relevant documents, passes them to the LLM, generates an answer with source citations. Deployed as a Slack bot for zero-friction adoption.',
+    practice:"A Slack slash command (/macro 'question') triggers a retrieval + synthesis pipeline: search the knowledge base, assemble context, call LLM API, return answer with citations. For the Obsidian vault, retrieval uses wiki-link traversal + BM25; for vector RAG, semantic search. The same Slack interface works with any knowledge base architecture.",
+    tools:['Slack Bolt SDK','Claude API','Knowledge base (2B, 2C, or 2D)','LangChain/LlamaIndex retrieval'],
+    pros:['High user satisfaction — analysts experience a genuine research upgrade','Democratizes access to the full document library across the team','Answers cited to specific source documents, enabling verification','Deployable as a Slack bot — zero adoption friction'],
+    cons:['Quality entirely determined by knowledge base completeness','Hallucination risk when the knowledge base lacks a relevant document','Retrieval and synthesis only — cannot take actions'],
+    teamNote:'Phase 1 target deliverable. Start with the Obsidian vault (2D) as the retrieval layer — the same Slack bot interface works with any knowledge base architecture later.',
+  },
+  '3F': {
+    group:'g-del-ai', title:'Autonomous Analyst Agent', sub:'Multi-step · data · code · memo — on demand',
+    cx:5, capex:'$10k–$40k', opex:'$8k–$30k/yr', phase:3, team:true, locked:false,
+    connects:[],
+    concept:"A multi-step AI agent that executes research tasks autonomously: fetches live data, queries the knowledge base, runs statistical analysis via Python code execution, synthesizes findings, and produces structured memos. Example: 'Analyze the 5-year relationship between Brazilian primary balance and USDBRL. Fit a regression, identify outliers, write a one-page memo with implications.'",
+    practice:'Requires all of: multi-agent framework (2H), rich knowledge base (2D or vector RAG), reliable data APIs (1C), and Prefect (2K). The agent calls tools sequentially: search_vault() → query_data() → run_code() → write_memo(). Human-in-the-loop review before any investment-decision use.',
+    tools:['Claude Agent SDK','LangGraph','Python REPL tool','MySQL tool','Vault tools'],
+    pros:["The closest realization of the 'PhD analyst' vision",'Combines retrieval + data + code execution + synthesis in one workflow','Dramatically multiplies analyst capacity for data-intensive tasks'],
+    cons:['Extremely complex to build, test, and trust in production','Requires robust human-in-the-loop oversight — agents produce confidently wrong analysis','$5–20 per extended run; evaluation requires systematic back-testing','Build time: 6–12 months to production-ready quality'],
+    teamNote:"Phase 3 target. This is the 'PhD analyst' vision. Attempting in Phase 1 is the most common failure mode in projects like this — build the components first, validate them independently, then orchestrate. The Obsidian vault (2D) + Multi-Agent (2H) are the Phase 1–2 foundations that make this achievable.",
+  },
+};
+
+// ── BLOCK OF EACH OPTION ──────────────────────────────────────────────────────
+const BLOCK_OF = {};
+Object.entries(OPTS).forEach(([id, o]) => {
+  if(o.group.startsWith('g-raw'))  BLOCK_OF[id] = 'raw';
+  if(o.group.startsWith('g-proc')) BLOCK_OF[id] = 'proc';
+  if(o.group.startsWith('g-del'))  BLOCK_OF[id] = 'del';
+});
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+const CX_COLORS = {1:'#22C55E',2:'#84CC16',3:'#EAB308',4:'#F97316',5:'#EF4444'};
+const CX_LABELS = {1:'Low',2:'Low',3:'Medium',4:'High',5:'Very High'};
+const PHASE_BADGES = {1:null, 2:'b-ph2', 3:'b-ph3'};
+const CONN_TAG_CLASS = {raw:'raw-t', proc:'proc-t', del:'del-t'};
+
+function renderDots(cx) {
+  let s = '';
+  for(let i=1;i<=5;i++){
+    const on = i<=cx;
+    s += `<span class="cx-dot${on?' on':''}" style="${on?'--c-val:'+CX_COLORS[cx]:''};${on?'background:'+CX_COLORS[cx]:''}"></span>`;
+  }
+  return s;
+}
+
+function renderConnTags(connects) {
+  if(!connects || connects.length===0) return '';
+  const tags = connects.map(cId => {
+    const blk = BLOCK_OF[cId] || 'proc';
+    const cls = CONN_TAG_CLASS[blk] || '';
+    return `<span class="conn-tag ${cls}">${cId}</span>`;
+  }).join('');
+  return `<div class="conn-row"><span class="conn-lbl">→</span>${tags}</div>`;
+}
+
+function buildCard(id, o) {
+  const badges = [];
+  if(o.locked) badges.push(`<span class="badge b-locked">✓ Decided</span>`);
+  else if(o.team) badges.push(`<span class="badge b-team">★ Team</span>`);
+  if(o.phase===2) badges.push(`<span class="badge b-ph2">Ph.2</span>`);
+  if(o.phase===3) badges.push(`<span class="badge b-ph3">Ph.3</span>`);
+
+  const cls = ['opt'];
+  if(o.team||o.locked) cls.push('team-path-card');
+  if(o.locked) cls.push('locked');
+
+  const connectHtml = (o.connects && o.connects.length > 0)
+    ? renderConnTags(o.connects)
+    : '';
+  const hoverAttr = o.locked ? '' : `onmouseenter="hlOn('${id}')" onmouseleave="hlOff()"`;
+
+  return `<div class="${cls.join(' ')}" data-id="${id}" data-block="${BLOCK_OF[id]||''}" ${hoverAttr} onclick="openDetail('${id}')">
+    <div class="card-top">
+      <span class="opt-id">${id}</span>
+      <span class="card-title">${o.title}</span>
+      ${badges.join('')}
+    </div>
+    <div class="card-sub">${o.sub}</div>
+    <div class="card-foot">
+      <div class="complexity-row" style="display:flex;align-items:center;gap:6px">
+        <div class="cx-dots">${renderDots(o.cx)}</div>
+        <span class="cx-lbl">${CX_LABELS[o.cx]}</span>
+      </div>
+      <span class="cost">${o.opex}</span>
+    </div>
+    ${connectHtml}
+  </div>`;
+}
+
+function renderAll() {
+  Object.entries(SECTIONS).forEach(([gId, sec]) => {
+    const el = document.getElementById(gId);
+    if(!el) return;
+    el.innerHTML = `<div class="sec-label">${sec.label}</div>`;
+    Object.entries(OPTS).forEach(([id, o]) => {
+      if(o.group===gId) el.innerHTML += buildCard(id, o);
+    });
+  });
+}
+renderAll();
+
+// ── HOVER HIGHLIGHTING ────────────────────────────────────────────────────────
+let hlActive = false;
+
+function hlOn(id) {
+  const o = OPTS[id];
+  if(!o || !o.connects || o.connects.length===0) return;
+  hlActive = true;
+  const myBlock = BLOCK_OF[id];
+  const nextBlock = myBlock==='raw' ? 'proc' : myBlock==='proc' ? 'del' : null;
+  if(!nextBlock) return;
+
+  const connSet = new Set(o.connects);
+  document.querySelectorAll('.opt').forEach(card => {
+    const cId = card.dataset.id;
+    const cBlock = card.dataset.block;
+    if(cBlock !== nextBlock) return;
+    if(connSet.has(cId)) {
+      card.classList.add(`glow-${nextBlock}`);
+      card.classList.remove('dim');
+    } else {
+      card.classList.add('dim');
+    }
+  });
+}
+
+function hlOff() {
+  if(!hlActive) return;
+  hlActive = false;
+  document.querySelectorAll('.opt').forEach(c => {
+    c.classList.remove('glow-raw','glow-proc','glow-del','dim');
+  });
+}
+
+// ── TEAM PATH TOGGLE ──────────────────────────────────────────────────────────
+let teamPathActive = false;
+function toggleTeamPath() {
+  teamPathActive = !teamPathActive;
+  const btn = document.getElementById('teamToggle');
+  const strip = document.getElementById('teamPath');
+  btn.classList.toggle('active', teamPathActive);
+  btn.textContent = teamPathActive ? '★ Team Path ON' : '★ Show Team Path';
+  strip.style.display = teamPathActive ? 'flex' : 'none';
+  document.querySelectorAll('.opt').forEach(card => {
+    const o = OPTS[card.dataset.id];
+    if(!o) return;
+    if(teamPathActive) {
+      if(!o.team && !o.locked) card.classList.add('dim');
+      else card.classList.remove('dim');
+    } else {
+      card.classList.remove('dim');
+    }
+  });
+}
+
+// ── DETAIL PANEL ──────────────────────────────────────────────────────────────
+let currentCard = null;
+
+function openDetail(id) {
+  const o = OPTS[id];
+  if(!o) return;
+  if(currentCard) document.querySelector(`[data-id="${currentCard}"]`)?.classList.remove('active-card');
+  currentCard = id;
+  document.querySelector(`[data-id="${id}"]`)?.classList.add('active-card');
+
+  document.getElementById('dp-title').textContent = o.title;
+  document.getElementById('dp-sub').textContent = o.sub;
+
+  const phaseLabel = o.phase===1 ? 'Phase 1' : o.phase===2 ? 'Phase 2' : 'Phase 3';
+  const phaseColor = o.phase===1 ? '#3B82F6' : o.phase===2 ? '#8B5CF6' : '#F97316';
+
+  const tools = o.tools ? o.tools.map(t=>`<span class="tool-tag">${t}</span>`).join('') : '';
+  const pros = (o.pros||[]).map(p=>`<div class="pc-item pro">${p}</div>`).join('');
+  const cons = (o.cons||[]).map(c=>`<div class="pc-item con">${c}</div>`).join('');
+  const teamNote = o.teamNote ? `<div class="dp-sec"><div class="ds-lbl">Team Architecture Note</div><div class="team-box"><strong>★</strong> ${o.teamNote}</div></div>` : '';
+
+  document.getElementById('dp-body').innerHTML = `
+    <div class="dp-metrics">
+      <div class="m-box"><div class="m-lbl">Phase</div><div class="m-val" style="color:${phaseColor}">${phaseLabel}</div></div>
+      <div class="m-box"><div class="m-lbl">Complexity</div><div class="m-val" style="color:${CX_COLORS[o.cx]}">${o.cx}/5 · ${CX_LABELS[o.cx]}</div></div>
+      <div class="m-box"><div class="m-lbl">Capex</div><div class="m-val">${o.capex}</div></div>
+      <div class="m-box"><div class="m-lbl">Annual Opex</div><div class="m-val">${o.opex}</div></div>
+    </div>
+    <div class="dp-sec">
+      <div class="ds-lbl">Concept</div>
+      <div class="ds-txt">${o.concept}</div>
+    </div>
+    <div class="dp-sec">
+      <div class="ds-lbl">How it works in practice</div>
+      <div class="ds-txt">${o.practice}</div>
+    </div>
+    ${tools ? `<div class="dp-sec"><div class="ds-lbl">Available tools</div><div class="tools-wrap">${tools}</div></div>` : ''}
+    <div class="dp-sec">
+      <div class="ds-lbl">Pros</div>
+      <div class="pc-list">${pros}</div>
+    </div>
+    <div class="dp-sec">
+      <div class="ds-lbl">Cons</div>
+      <div class="pc-list">${cons}</div>
+    </div>
+    ${teamNote}
+  `;
+
+  document.getElementById('detail').classList.add('open');
+  document.getElementById('overlay').classList.add('vis');
+}
+
+function closeDetail() {
+  document.getElementById('detail').classList.remove('open');
+  document.getElementById('overlay').classList.remove('vis');
+  if(currentCard) {
+    document.querySelector(`[data-id="${currentCard}"]`)?.classList.remove('active-card');
+    currentCard = null;
+  }
+}
+</script>
+</body>
+</html>
