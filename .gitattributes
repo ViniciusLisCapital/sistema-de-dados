@@ -1,0 +1,22 @@
+# Normalize line endings: store as LF in the repo, checkout as CRLF on Windows
+* text=auto
+
+# Force LF for Python and text files (avoids CRLF creeping into scripts)
+*.py   text eol=lf
+*.md   text eol=lf
+*.toml text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.env.example text eol=lf
+
+# Binary files — never touch line endings
+*.png  binary
+*.jpg  binary
+*.pdf  binary
+*.pbix binary
+*.pptx binary
+*.xlsx binary
+*.xls  binary
+*.docx binary

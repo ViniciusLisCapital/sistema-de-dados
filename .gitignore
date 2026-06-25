@@ -29,6 +29,10 @@ analytics/oraculo/base/
 # IDE — machine-specific paths
 .vscode/
 
+# Temporary editor/tool files
+*.tmp
+*.tmp.*
+
 # Dropbox metadata
 .dropbox
 .dropbox.cache/
