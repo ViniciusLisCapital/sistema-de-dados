@@ -28,7 +28,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-INGEST_MODEL = "claude-sonnet-4-6"
+INGEST_MODEL = "claude-haiku-4-5-20251001"
 MAX_CHARS = 180_000  # kept for reference; chunking is used instead of hard truncation
 CHUNK_SIZE  =  60_000  # ~15k tokens per chunk — output fits within 8k token limit
 

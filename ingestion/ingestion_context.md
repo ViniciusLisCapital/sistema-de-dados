@@ -15,7 +15,7 @@
 
 ## Pendências
 
-### 1. CFA L1 e L2 — reprocessar com fix Q&A
+<!-- ### 1. CFA L1 e L2 — reprocessar com fix Q&A
 
 Os arquivos `exchange_rate_calculation` e `exchange_rate_understanding_equilibrium` foram limpos com sucesso pelo pipeline, mas falharam no passo final de `rename()` para `agent_bibliography/` por um bug no Windows (`WinError 183: arquivo já existe`).
 
@@ -30,7 +30,7 @@ uv run python ingestion/run.py "ingestion/inbox/exchange_rate_policy/exchange_ra
 uv run python ingestion/run.py "ingestion/inbox/exchange_rate_policy/exchange_rate_understanding_equilibrium (CFA L2, 2025).pdf" --overwrite --no-verify
 ```
 
-**Observação:** A versão atual em `agent_bibliography/` é a anterior (sem o fix de remoção de Q&A). Os arquivos serão regenerados do zero (nova chamada à API).
+**Observação:** A versão atual em `agent_bibliography/` é a anterior (sem o fix de remoção de Q&A). Os arquivos serão regenerados do zero (nova chamada à API). -->
 
 ---
 

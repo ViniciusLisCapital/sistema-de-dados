@@ -1,0 +1,1619 @@
+14
+CHAPTER
+Exchange Rates and the Foreign
+Exchange Market: An Asset
+Approach
+In July 2011, the U.S. dollar’s price against a basket of major foreign currencies
+reached a low point at a time when the United States was struggling with high
+unemployment and low growth. In April 2020, however, the dollar’s value was
+higher than at any point in the previous 15 years—about 43 percent above its low
+point—at a time when the U.S. economy had the highest unemployment since the
+Great Depression. What changes in the U.S. and world economy could possibly
+have driven such a dramatic change in the foreign exchange market? In this chapter,
+we will begin our study of the causes and effects of exchange rate changes.
+The price of one currency in terms of another is called an exchange rate. At
+4 p.m. London time on June 3, 2020, you would have needed 1.1219 dollars to
+buy one unit of the European currency, the euro, so the dollar’s exchange rate
+against the euro was $1.1219 per euro. Because of their strong influence on the
+current account and other macroeconomic variables, exchange rates are among
+the most important prices in an open economy.
+Because an exchange rate, the price of one country’s money in terms of
+another’s, is also an asset price, the principles governing the behavior of other
+asset prices also govern the behavior of exchange rates. As you will recall from
+Chapter 13, the defining characteristic of an asset is that it is a form of wealth, a
+way of transferring purchasing power from the present into the future. The price
+an asset commands today is therefore directly related to the purchasing power
+over goods and services that buyers expect it to yield in the future. Similarly,
+today’s dollar/euro exchange rate is closely tied to people’s expectations about the
+future level of that rate. Just as the price of Google stock rises immediately upon
+favorable news about Google’s future prospects, so do exchange rates respond
+immediately to any news concerning future currency values.
+Our general goals in this chapter are to understand the role of exchange rates
+in international trade and to understand how exchange rates are determined. To
+begin, we first learn how exchange rates allow us to compare the prices of differ-
+ent countries’ goods and services. Next, we describe the international asset mar-
+ket in which currencies are traded and show how equilibrium exchange rates are
+381
+M14_KRUG9719_12_GE_C14.indd 381 16/11/2021 16:16
+
+382 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+determined in that market. A final section underlines our asset market approach
+by showing how today’s exchange rate responds to changes in the expected future
+values of exchange rates.
+LEARNING GOALS
+After reading this chapter, you will be able to:
+■■ Relate exchange rate changes to changes in the relative prices of countries’
+exports.
+■■ Describe the structure and functions of the foreign exchange market.
+■■ Use exchange rates to calculate and compare returns on assets denominated
+in different currencies.
+■■ Apply the interest parity condition to find equilibrium exchange rates.
+■■ Find the effects of interest rates and expectation shifts on exchange rates.
+Exchange Rates and International Transactions
+Exchange rates play a central role in international trade because they allow us to com-
+pare the prices of goods and services produced in different countries. A consumer
+deciding which of two American cars to buy must compare their dollar prices, for
+example, $44,500 (for a Lincoln Continental) or $27,000 (for a Ford Taurus). But how
+is the same consumer to compare either of these prices with the 3,500,000 Japanese
+yen it costs to buy a Nissan Leaf from Japan? To make this comparison, he or she must
+know the relative price of dollars and yen.
+You can view the relative prices of currencies in real time on the Internet. Exchange
+rates are also reported daily in newspapers’ financial sections. Table 14-1 shows the
+dollar, euro, and pound exchange rates for currencies reported in the Financial Times
+on June 4, 2020 (these rates being the ones quoted in London at 4 p.m. of the previous
+day, June 3, 2020). An exchange rate can be quoted in two ways: as the price of the
+foreign currency in terms of dollars (for example, $1.1219 per euro) or as its inverse,
+the price of dollars in terms of the foreign currency (for example, €0.8913 per dollar).
+The first of these exchange rate quotations (dollars per foreign currency unit) is said
+to be in direct (or “American”) terms; the second (foreign currency units per dollar) is
+in indirect (or “European”) terms. Each row in the table shows the price of the dollar,
+euro, and pound in terms of a national currency.1
+Households and firms use exchange rates to translate foreign prices into domestic
+currency terms. Once the money prices of domestic goods and imports have been
+expressed in terms of the same currency, households and firms can compute the relative
+prices that affect international trade flows.
+Domestic and Foreign Prices
+If we know the exchange rate between two countries’ currencies, we can compute the price
+of one country’s exports in terms of the other country’s money. For example, how many dol-
+lars would it cost to buy an Edinburgh Woolen Mill sweater costing 50 British pounds (£50)?
+1The “mid” rates shown are the average of “bid” and “ask” prices for the U.S. dollar. Generally, a buyer of
+dollars will pay more (the ask price) than a seller will receive (the bid price) due to costs of intermediating
+the trade (for example by a bank or broker). The difference—the bid-ask spread—is a measure of transaction
+costs. In Chapter 19, we will refer to “effective” exchange rate indexes, which are averages of exchange rates
+against individual trading partner currencies.
+M14_KRUG9719_12_GE_C14.indd 382 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 383
+TABLE 14-1 Exchange Rate Quotations
+CURRENCIES
+DOLLAR EURO POUND
+Closing Day’s Closing Day’s Closing Day’s
+Jun 3 Currency Mid Change Mid Change Mid Change
+Argentina Argentine Peso 68.8026 0.0953 77.1927 0.3569 86.6673 0.3917
+Australia Australian Dollar 1.4423 -0.0088 1.6181 -0.0046 1.8168 -0.0053
+Bahrain Bahraini Dinar 0.3772 0.0000 0.4231 0.0013 0.4751 0.0014
+Bolivia Bolivian Boliviano 6.9100 – 7.7526 0.0251 8.7042 0.0273
+Brazil Brazilian Real 5.0281 -0.1935 5.6412 -0.1981 6.3336 -0.2231
+Canada Canadian Dollar 1.3489 0.0001 1.5133 0.0050 1.6991 0.0055
+Chile Chilean Peso 764.9900 -15.2950 858.2761 -14.3210 963.6213 -16.1809
+China Chinese Yuan 7.1099 -0.0006 7.9769 0.0252 8.9560 0.0274
+Colombia Colombian Peso 3579.3300 -46.9050 4015.8094 -39.4294 4508.7106 -44.7456
+Costa Rica Costa Rican Colon 577.1050 1.7850 647.4796 4.0960 726.9515 4.5235
+Czech Republic Czech Koruna 23.7213 0.0004 26.6139 0.0868 29.8805 0.0943
+Denmark Danish Krone 6.6449 -0.0199 7.4552 0.0019 8.3702 0.0012
+Egypt Egyptian Pound 16.0836 0.1097 18.0449 0.1812 20.2598 0.2014
+Hong Kong Hong Kong Dollar 7.7503 -0.0002 8.6953 0.0279 9.7626 0.0303
+Hungary Hungarian Forint 306.7205 -2.1010 344.1232 -1.2335 386.3611 -1.4253
+India Indian Rupee 75.4700 0.1075 84.6731 0.3948 95.0659 0.4334
+Indonesia Indonesian Rupiah 14110.0000 -322.5000 15830.6500 -309.3157 17773.7017 -349.1678
+Israel Israeli Shekel 3.4763 0.0030 3.9002 0.0161 4.3789 0.0176
+Japan Japanese Yen 108.8250 0.2400 122.0956 0.6644 137.0816 0.7317
+..One Month 108.8249 0.2399 122.0956 0.6644 137.0816 0.7316
+..Three Month 108.8248 0.2397 122.0956 0.6645 137.0815 0.7314
+..One Year 108.8242 0.2384 122.0957 0.6647 137.0816 0.7309
+Kenya Kenyan Shilling 106.1000 -0.3500 119.0383 -0.0054 133.6491 -0.0199
+Kuwait Kuwaiti Dinar 0.3081 -0.0002 0.3457 0.0010 0.3881 0.0010
+Malaysia Malaysian Ringgit 4.2625 -0.0150 4.7823 -0.0013 5.3693 -0.0020
+Mexico Mexican Peso 21.5950 -0.0380 24.2284 0.0361 27.2022 0.0377
+New Zealand New Zealand Dollar 1.5570 -0.0139 1.7469 -0.0099 1.9613 -0.0113
+Nigeria Nigerian Naira 388.1800 1.4300 435.5163 3.0116 488.9718 3.3307
+Norway Norwegian Krone 9.4775 -0.0501 10.6332 -0.0215 11.9384 -0.0254
+Pakistan Pakistani Rupee 164.2000 -0.8500 184.2232 -0.3531 206.8349 -0.4180
+Peru Peruvian Nuevo Sol 3.3860 -0.0145 3.7989 -0.0039 4.2652 -0.0048
+Philippines Philippine Peso 50.1200 -0.2250 56.2318 -0.0693 63.1338 -0.0843
+Poland Polish Zloty 3.9347 0.0150 4.4145 0.0311 4.9564 0.0345
+Romania Romanian Leu 4.3079 -0.0185 4.8333 -0.0050 5.4265 -0.0062
+Russia Russian Ruble 68.6488 -0.1112 77.0201 0.1254 86.4735 0.1318
+Saudi Arabia Saudi Riyal 3.7550 0.0015 4.2128 0.0153 4.7299 0.0167
+Singapore Singapore Dollar 1.3970 -0.0026 1.5674 0.0022 1.7597 0.0023
+South Africa South African Rand 16.9163 -0.1885 18.9791 -0.1492 21.3086 -0.1698
+South Korea South Korean Won 1216.6500 -8.7500 1365.0135 -5.3583 1532.5558 -6.1763
+Sweden Swedish Krona 9.2891 -0.0357 10.4219 -0.0062 11.7011 -0.0082
+Switzerland Swiss Franc 0.9621 0.0015 1.0794 0.0051 1.2118 0.0056
+Taiwan New Taiwan Dollar 29.8745 -0.0800 33.5175 0.0192 37.6315 0.0177
+Thailand Thai Baht 31.5525 – 35.4001 0.1148 39.7452 0.1248
+Tunisia Tunisian Dinar 2.8531 -0.0050 3.2010 0.0048 3.5939 0.0051
+Turkey Turkish Lira 6.7298 -0.0028 7.5504 0.0214 8.4771 0.0232
+United Arab Emirates UAE Dirham 3.6732 – 4.1211 0.0134 4.6269 0.0145
+United Kingdom Pound Sterling 0.7939 -0.0025 0.8907 0.0001 – –
+..One Month 0.7939 -0.0025 0.8906 0.0001 – –
+..Three Month 0.7939 -0.0025 0.8905 0.0001 – –
+..One Year 0.7941 -0.0025 0.8901 0.0001 – –
+United States United States Dollar – – 1.1219 0.0036 1.2597 0.0040
+..One Month – – 1.1219 -0.1338 1.2597 0.0040
+..Three Month – – 1.1217 -0.1338 1.2597 0.0040
+..One Year – – 1.1210 -0.1338 1.2599 0.0040
+Venezuela Venezuelan Bolivar Fuerte – – – – – –
+Vietnam Vietnamese Dong 23262.0000 5.5000 26098.6896 90.7520 29302.0544 98.8350
+European Union Euro 0.8913 -0.0029 – – 1.1227 -0.0001
+..One Month 0.8912 -0.0029 – – 1.1227 -0.0001
+..Three Month 0.8911 -0.0029 – – 1.1226 -0.0001
+..One Year 0.8903 -0.0029 – – 1.1221 -0.0001
+Rates are derived from WM Reuters Spot Rates and MorningStar (latest rates at time of production). Some values are rounded.
+Currency redenominated by 1000. The exchange rates printed in this table are also available at www.FT.com/marketsdata.
+M14_KRUG9719_12_GE_C14.indd 383 16/11/2021 16:16
+
+384 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+The answer is found by multiplying the price of the sweater in pounds, 50, by the price of
+a pound in terms of dollars—the dollar’s exchange rate against the pound. At an exchange
+rate of $1.50 per pound (expressed in American terms), the dollar price of the sweater is
+(1.50$ £) * (£50) = $75.
+A change in the dollar/pound exc>hange rate would alter the sweater’s dollar price.
+At an exchange rate of 1.25 per pound, the sweater would cost only
+(1.25$ £) * (£50) = $62.50,
+assuming its price in terms of poun>ds remained the same. At an exchange rate of $1.75
+per pound, the sweater’s dollar price would be higher, equal to
+(1.75$ £) * (£50) = $87.50.
+Changes in exchange rates ar>e described as depreciations or appreciations.
+A depreciation of the pound against the dollar is a fall in the dollar price of pounds,
+for example, a change in the exchange rate from $1.50 per pound to $1.25 per pound.
+The preceding example shows that all else equal, a depreciation of a country’s currency
+makes its goods cheaper for foreigners. A rise in the pound’s price in terms of dollars—
+for example, from $1.50 per pound to $1.75 per pound—is an appreciation of the pound
+against the dollar. All else equal, an appreciation of a country’s currency makes its goods
+more expensive for foreigners.
+The exchange rate changes discussed in the example simultaneously alter the prices
+Britons pay for American goods. At an exchange rate of $1.50 per pound, the pound
+price of a pair of American designer jeans costing $45 is ($45) (1.50$ £) = £30.
+A change in the exchange rate from $1.50 per pound to $1.25 per pound, while a
+> >
+depreciation of the pound against the dollar, is also a rise in the pound price of dollars,
+an appreciation of the dollar against the pound. This appreciation of the dollar makes
+the American jeans more expensive for Britons by raising their pound price from £30 to
+($45) (1.25$ £) = £36.
+The change in the exchange rate> from $>1.50 per pound to $1.75 per pound—an
+appreciation of the pound against the dollar but a depreciation of the dollar against
+the pound—lowers the pound price of the jeans from £30 to
+($45) (1.75$ £) = £25.71.
+As you can see, descriptions of e>xchang>e rate changes as depreciations or apprecia-
+tions can be bewildering because when one currency depreciates against another, the
+second currency must simultaneously appreciate against the first. To avoid confusion
+in discussing exchange rates, we must always keep track of which of the two currencies
+we are examining has depreciated or appreciated against the other.
+If we remember that a depreciation of the dollar against the pound is at the same
+time an appreciation of the pound against the dollar, we reach the following conclusion:
+When a country’s currency depreciates, foreigners find that its exports are cheaper and
+domestic residents find that imports from abroad are more expensive. An appreciation has
+opposite effects: Foreigners pay more for the country’s products and domestic consumers
+pay less for foreign products.
+Exchange Rates and Relative Prices
+Import and export demands, like the demands for all goods and services, are influenced
+by relative prices, such as the price of sweaters in terms of designer jeans. We have just
+seen how exchange rates allow individuals to compare domestic and foreign money
+M14_KRUG9719_12_GE_C14.indd 384 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 385
+TABLE 14-2 $ £ Exchange Rates and the Relative Price
+of American Designer Jeans and British Sweaters
+>
+Exchange rate $ £ 1.25 1.50 1.75
+Relative price (pairs of jeans/sweater) 1.39 1.67 1.94
+>
+Note: The preceding calculations assume unchanged money prices of $45 per pair of jeans and £50 per
+sweater.
+prices by expressing them in a common currency unit. Carrying this analysis one step
+further, we can see that exchange rates also allow individuals to compute the relative
+prices of goods and services whose money prices are quoted in different currencies.
+An American trying to decide how much to spend on American jeans and how
+much to spend on British sweaters must translate their prices into a common currency
+to compute the price of sweaters in terms of jeans. As we have seen, an exchange rate
+of $1.50 per pound means that an American pays $75 for a sweater priced at £50 in
+Britain. Because the price of a pair of American jeans is $45, the price of a sweater
+in terms of a pair of jeans is ($75 per sweater) ($45 per pair of jeans) = 1.67 pairs
+of jeans per sweater. Naturally, a Briton faces the same relative price of
+>
+(£50 per sweater) (£30 per pair of jeans) = 1.67 pairs of jeans per sweater.
+Table 14-2 shows the relative prices implied by exchange rates of $1.25 per pound,
+>
+$1.50 per pound, and $1.75 per pound, on the assumption that the dollar price of jeans
+and the pound price of sweaters are unaffected by the exchange rate changes. To test
+your understanding, try to calculate these relative prices for yourself and confirm that
+the outcome of the calculation is the same for a Briton and for an American.
+The table shows that if the goods’ money prices do not change, an appreciation of
+the dollar against the pound makes sweaters cheaper in terms of jeans (each pair of
+jeans buys more sweaters) while a depreciation of the dollar against the pound makes
+sweaters more expensive in terms of jeans (each pair of jeans buys fewer sweaters). The
+computations illustrate a general principle: All else equal, an appreciation of a country’s
+currency raises the relative price of its exports and lowers the relative price of its imports.
+Conversely, a depreciation lowers the relative price of a country’s exports and raises the
+relative price of its imports.
+The Foreign Exchange Market
+Just as other prices in the economy are determined by the interaction of buyers and sellers,
+exchange rates are determined by the interaction of the households, firms, and financial
+institutions that buy and sell foreign currencies to make international payments. The mar-
+ket in which international currency trades take place is called the foreign exchange market.
+The Actors
+The major participants in the foreign exchange market are commercial banks, corpora-
+tions that engage in international trade, nonbank financial institutions such as asset-
+management firms and insurance companies, and central banks. Individuals may also
+participate in the foreign exchange market—for example, the tourist who buys foreign
+currency at a hotel’s front desk—but such cash transactions are an insignificant fraction
+of total foreign exchange trading.
+We now describe the major actors in the market and their roles.
+1. Commercial banks. Commercial banks are at the center of the foreign exchange
+market because almost every sizable international transaction involves the debiting
+M14_KRUG9719_12_GE_C14.indd 385 16/11/2021 16:16
+
+386 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+and crediting of accounts at commercial banks in various financial centers. Thus,
+the vast majority of foreign exchange transactions involve the exchange of bank
+deposits denominated in different currencies.
+Let’s look at an example. Suppose ExxonMobil Corporation wishes to pay €160,000
+to a German supplier. First, ExxonMobil gets an exchange rate quotation from its
+own commercial bank, the Third National Bank. Then it instructs Third National
+to debit ExxonMobil’s dollar account and pay €160,000 into the supplier’s account
+at a German bank. If the exchange rate quoted to ExxonMobil by Third National is
+$1.2 per euro, $192,000 (= $1.2 per euro * :160,000) is debited from ExxonMobil’s
+account. The final result of the transaction is the exchange of a $192,000 deposit at
+Third National Bank (now owned by the German bank that supplied the euros) for
+the €160,000 deposit used by Third National to pay ExxonMobil’s German supplier.
+As the example shows, banks routinely enter the foreign exchange market to meet
+the needs of their customers—primarily corporations. In addition, a bank will also
+quote to other banks exchange rates at which it is willing to buy currencies from them
+and sell currencies to them. Foreign currency trading among banks—called interbank
+trading—accounts for much of the activity in the foreign exchange market. In fact, the
+exchange rates listed in Table 14-1 are interbank rates, the rates banks charge each other.
+No amount less than $1 million trades at those rates. The rates available to corporate
+customers, called “retail” rates, are usually less favorable than the “wholesale” interbank
+rates. The difference between the retail and the wholesale rates is the bank’s compensa-
+tion for doing the business.
+Because their international operations are so extensive, large commercial banks are
+well suited to bring buyers and sellers of currencies together. A multinational corpora-
+tion wishing to convert $100,000 into Swedish kronor might find it difficult and costly
+to locate other corporations wishing to sell the right amount of kronor. By serving
+many customers simultaneously through a single large purchase of kronor, a bank can
+economize on these search costs.
+2. Corporations. Corporations with operations in several countries frequently make
+or receive payments in currencies other than that of the country in which they
+are headquartered. To pay workers at a plant in Mexico, for example, IBM may
+need Mexican pesos. If IBM has only dollars earned by selling computers in the
+United States, it can acquire the pesos it needs by buying them with its dollars in
+the foreign exchange market.
+3. Nonbank financial institutions. Over the years, deregulation of financial markets in the
+United States, Japan, and other countries has encouraged nonbank financial institu-
+tions such as mutual funds to offer their customers a broader range of services, many
+of them indistinguishable from those offered by banks. Among these have been services
+involving foreign exchange transactions. Institutional investors such as pension funds
+often trade foreign currencies. So do insurance companies. Hedge funds, which cater
+to very wealthy individuals and are not bound by the government regulations that limit
+mutual funds’ trading strategies, trade actively in the foreign exchange market.
+4. Central banks. In the previous chapter, we learned that central banks sometimes
+intervene in foreign exchange markets. While the volume of central bank transac-
+tions is typically not large, the impact of these transactions may be great. The reason
+for this impact is that participants in the foreign exchange market watch central
+bank actions closely for clues about future macroeconomic policies that may affect
+exchange rates. Government agencies other than central banks may also trade in the
+foreign exchange market, but central banks are the most regular official participants.
+M14_KRUG9719_12_GE_C14.indd 386 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 387
+Characteristics of the Market
+Foreign exchange trading takes place in many financial centers, with the largest volumes
+of trade occurring in such major cities as London (the largest market), New York,
+Tokyo, Frankfurt, Hong Kong, and Singapore. The worldwide volume of foreign
+exchange trading is enormous, and it has ballooned over the past three decades. In
+April 1989, the average total value of global foreign exchange trading was close to
+$600 billion per day. A total of $184 billion was traded daily in London, $115 billion
+in the United States, and $111 billion in Tokyo. Thirty years later, in April 2019, the
+daily global value of foreign exchange trading had jumped to around $6.6 trillion.
+A total of $3.58 trillion was traded daily in the United Kingdom, $1.37 trillion in the
+United States, and $376 billion in Japan.2
+Telephone, fax, and Internet links among the major foreign exchange trading centers
+make each a part of a single world market on which the sun never sets. Economic news
+released at any time of the day is immediately transmitted around the world and may
+set off a flurry of activity by market participants. Even after trading in New York has
+finished, New York–based banks and corporations with affiliates in other time zones
+can remain active in the market. Foreign exchange traders may deal from their homes
+when a late-night communication alerts them to important developments in a financial
+center on another continent.
+The integration of financial centers implies that there can be no significant dif-
+ference between the dollar/euro exchange rate quoted in New York at 9 a.m. and the
+dollar/euro exchange rate quoted in London at the same time (which corresponds to
+2 p.m. London time). If the euro were selling for $1.1 in New York and $1.2 in London,
+profits could be made through arbitrage, the process of buying a currency cheap and
+selling it dear. At the prices listed, a trader could, for instance, purchase €1 million in
+New York for $1.1 million and immediately sell the euros in London for $1.2 million,
+making a pure profit of $100,000. If all traders tried to cash in on the opportunity,
+however, their demand for euros in New York would drive up the dollar price of euros
+there, and their supply of euros in London would drive down the dollar price of euros
+there. Very quickly, the difference between the New York and London exchange rates
+would disappear. Since foreign exchange traders carefully watch their computer screens
+for arbitrage opportunities, the few that arise are small and very short-lived.
+While a foreign exchange transaction can match any two currencies, most transac-
+tions (88.3 percent in April 2019) are exchanges of foreign currencies for U.S. dollars.
+This is true even when a bank’s goal is to sell one nondollar currency and buy another!
+A bank wishing to sell Swiss francs and buy Israeli shekels, for example, will usually
+sell its francs for dollars and then use the dollars to buy shekels. While this procedure
+may appear roundabout, it is actually cheaper for the bank than the alternative of
+trying to find a holder of shekels who wishes to buy Swiss francs. The advantage of
+trading through the dollar is a result of the United States’ importance in the world
+economy. Because the volume of international transactions involving dollars is so
+great, it is not hard to find parties willing to trade dollars against Swiss francs or
+2April 1989 figures come from surveys carried out simultaneously by the Federal Reserve Bank of New York,
+the Bank of England, the Bank of Japan, the Bank of Canada, and monetary authorities from France, Italy,
+the Netherlands, Singapore, Hong Kong, and Australia. The April 2019 survey was carried out by 53 central
+banks. Revised figures are reported in “Triennial Central Bank Survey: Foreign Exchange Turnover in April
+2019,” Bank for International Settlements, Basel, Switzerland, September 16, 2019. Daily U.S. foreign cur-
+rency trading in 1980 averaged only around $18 billion.
+M14_KRUG9719_12_GE_C14.indd 387 16/11/2021 16:16
+
+388 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+shekels. In contrast, relatively few transactions require direct exchanges of Swiss francs
+for shekels.3
+Because of its pivotal role in so many foreign exchange deals, the U.S. dollar is
+sometimes called a vehicle currency. A vehicle currency is one that is widely used to
+denominate international contracts made by parties who do not reside in the country
+that issues the vehicle currency. It has been suggested that the euro, which was intro-
+duced at the start of 1999, could evolve into a vehicle currency on a par with the dollar.
+By April 2019, 32.3 percent of foreign exchange trades were against euros—less than
+half the share of the dollar and significantly below the figure of 39 percent clocked in
+2010. Japan’s yen is the third most important currency, with a market share of
+16.8 percent. (All shares are out of 200 because two currencies are necessary for every
+foreign exchange trade.) The pound sterling, once second only to the dollar as a key
+international currency, has declined greatly in importance and now stands in fourth
+place. China’s renminbi ranked eighth among the word’s currencies in 2019, with a
+market share of 4.3 percent—low, but much above its 0.9 percent share in 2010.4
+Spot Rates and Forward Rates
+The foreign exchange transactions we have been discussing take place on the spot:
+Two parties agree to an exchange of bank deposits and execute the deal immediately.
+Exchange rates governing such “on-the-spot” trading are called spot exchange rates,
+and the deal is called a spot transaction.
+Foreign exchange deals sometimes specify a future transaction date—one that may
+be 30 days, 90 days, 180 days, or even several years away. We call the exchange rates
+quoted in such transactions forward exchange rates. In a one-month forward transac-
+tion, for example, two parties may commit themselves on April 1 to a spot exchange of
+£100,000 for $155,000 on May 1. The one-month forward exchange rate is therefore
+$1.55 per pound, and it is generally different from the spot rate and from the forward
+rates applied to different future dates. When you agree to sell pounds for dollars on a
+future date at a forward rate agreed on today, you have “sold pounds forward” and
+“bought dollars forward.” The future date on which the currencies are actually
+exchanged is called the value date.5 Table 14-1 shows forward exchange rates for some
+major currencies, at the one-month, three-month, and one-year maturities.
+Forward and spot exchange rates, while not necessarily equal, do move closely
+together, as illustrated for monthly data on dollar/pound rates in Figure 14-1. The last
+section of this chapter, which discusses how forward exchange rates are determined,
+throws light on this close relationship between movements in spot and forward rates.
+3The Swiss franc/shekel exchange rate can be calculated from the dollar/franc and dollar/shekel exchange
+rates as the dollar/shekel rate divided by the dollar/franc rate. If the dollar/franc rate is $0.80 per franc and the
+dollar/shekel rate is $0.20 per shekel, then the Swiss franc/shekel rate is (0.20$ shekel) (0.80$ franc) = 0.25
+Swiss francs/shekel. Exchange rates between nondollar currencies are called “cross rates” by foreign exchange
+> > >
+traders. For more detail on the relationship between dollar exchange rates and cross rates, see the second
+problem at the end of this chapter.
+4For a more detailed discussion of vehicle currencies, see Richard Portes and Hélène Rey, “The Emergence
+of the Euro as an International Currency,” Economic Policy 26 (April 1998), pp. 307–343. Data on currency
+shares come from the Bank for International Settlements, op. cit., table 2. For an assessment of the future
+roles of the dollar and the euro, see the essays in Jean Pisani-Ferry and Adam S. Posen, eds., The Euro at
+Ten: The Next Global Currency? (Washington, D.C.: Peterson Institute for International Economics, 2009).
+These essays were written before the euro area crisis, to be discussed in Chapter 21. An updated assessment
+is the book by Eichengreen, Mehl, and Chitu listed in Further Readings.
+5In days past, it would take up to two days to settle even spot foreign exchange transactions. In other words,
+the value date for a spot transaction was actually two days after the deal was struck. Nowadays, most spot
+trades of major currencies settle on the same day.
+M14_KRUG9719_12_GE_C14.indd 388 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 389
+2.2
+2.0
+1.8
+1.6
+1.4
+1.2
+1.0
+FIGURE 14-1
+Dollar/Pound Spot and Forward Exchange Rates, 1983–2020
+Spot and forward exchange rates tend to move in a highly correlated fashion.
+Source: Datastream. Rates shown are 90-day forward exchange rates and spot exchange rates, at end of month.
+An example shows why parties may wish to engage in forward exchange transactions.
+Suppose Best Buy knows that in 30 days it must pay yen to a Japanese supplier for a ship-
+ment of radios arriving then. Best Buy can sell each radio for $100 and must pay its supplier
+¥9,000 per radio; its profit depends on the dollar/yen exchange rate. At a spot exchange
+rate of $0.0105 per yen, Best Buy would pay ($0.0105 per yen) * (¥9,000 per radio) =
+$94.50 per radio and would therefore make $5.50 on each radio imported. But Best Buy
+will not have the funds to pay the supplier until the radios arrive and are sold. If over the
+next 30 days the dollar unexpectedly depreciates to $0.0115 per yen, Best Buy will have
+to pay ($0.0115 per yen) * (¥9,000 per radio) = $103.50 per radio and so will take a
+$3.50 loss on each.
+To avoid this risk, Best Buy can make a 30-day forward exchange deal with Bank of
+America. If Bank of America agrees to sell yen to Best Buy in 30 days at a rate of $0.0107,
+Best Buy is assured of paying exactly ($0.0107 per yen) * (¥9,000 per radio) = $96.30
+per radio to the supplier. By buying yen and selling dollars forward, Best Buy is guar-
+anteed a profit of $3.70 per radio and is insured against the possibility that a sudden
+exchange rate change will turn a profitable importing deal into a loss. In the jargon of
+the foreign exchange market, we would say that Best Buy has hedged its foreign cur-
+rency risk.
+From now on, when we mention an exchange rate but don’t specify whether it is a
+spot rate or a forward rate, we will always be referring to the spot rate. However, we
+will return to the forward exchange rate and its role at the end of this chapter and later
+in this book.
+3891 4891 5891 6891 7891 8891 9891 0991 1991 2991 3991 4991 5991 6991 7991 8991 9991 0002 1002 2002 3002 4002 5002 6002 7002 8002 9002 0102 1102 2102 3102 4102 5102 6102 7102 8102 9102 0202
+Exchange rates ($/£)
+Spot rate
+Forward rate
+M14_KRUG9719_12_GE_C14.indd 389 16/11/2021 16:16
+
+390 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+Foreign Exchange Swaps
+A foreign exchange swap is a spot sale of a currency combined with a forward repur-
+chase of that currency. For example, suppose the Toyota auto company has just received
+$1 million from American sales and knows it will have to pay those dollars to a Califor-
+nia supplier in three months. Toyota’s asset-management department would meanwhile
+like to invest the $1 million in euro bonds. A three-month swap of dollars into euros may
+result in lower brokers’ fees than the two separate transactions, possibly with different
+parties, of selling dollars for spot euros and selling the euros for dollars on the forward
+market. Swaps make up a significant proportion of all foreign exchange trading.
+Futures and Options
+Several other financial instruments traded in the foreign exchange market, like for-
+ward contracts, involve future exchanges of currencies. The timing and terms of the
+exchanges can differ, however, from those specified in forward contracts, giving traders
+additional flexibility in avoiding foreign exchange risk.
+When you buy a futures contract, you buy a promise that a specified amount of foreign
+currency will be delivered on a specified date in the future. A forward contract between
+you and some other private party is an alternative way to ensure that you receive the same
+amount of foreign currency on the date in question. But while you have no choice about
+fulfilling your end of a forward deal, you can sell your futures contract on an organized
+futures exchange, realizing a profit or loss right away. Such a sale might appear advanta-
+geous, for example, if your views about the future spot exchange rate were to change.
+A foreign exchange option gives its owner the right to buy or sell a specified amount
+of foreign currency at a specified price at any time up to a specified expiration date. The
+other party to the deal, the option’s seller, is required to sell or buy the foreign currency
+at the discretion of the option’s owner, who is under no obligation to exercise his right.6
+Imagine you are uncertain about when in the next month a foreign currency pay-
+ment will arrive. To avoid the risk of a loss, you may wish to buy a put option giving
+you the right to sell the foreign currency at a known exchange rate at any time during
+the month. If instead you expect to make a payment abroad sometime in the month, a
+call option, which gives you the right to buy foreign currency to make the payment at
+a known price, might be attractive. Options can be written on many underlying assets
+(including foreign exchange futures), and, like futures, they are freely bought and sold.
+Forwards, swaps, futures, and options are all examples of financial derivatives, which
+we encountered in Chapter 13.
+The Demand for Foreign Currency Assets
+We have now seen how banks, corporations, and other institutions trade foreign cur-
+rency bank deposits in a worldwide foreign exchange market that operates 24 hours a
+day. To understand how exchange rates are determined by the foreign exchange market,
+we first must ask how the major actors’ demands for different types of foreign currency
+deposits are determined.
+The demand for a foreign currency bank deposit is influenced by the same consider-
+ations that influence the demand for any other asset. Chief among these considerations
+is our view of what the deposit will be worth in the future. A foreign currency deposit’s
+6This description refers to a so-called American option, as opposed to a European option that can only be
+exercised on a predetermined date.
+M14_KRUG9719_12_GE_C14.indd 390 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 391
+future value depends in turn on two factors: the interest rate it offers and the expected
+change in the currency’s exchange rate against other currencies.
+Assets and Asset Returns
+As you will recall, people can hold wealth in many forms—stocks, bonds, cash, real
+estate, rare wines, diamonds, and so on. The object of acquiring wealth—of saving—is
+to transfer purchasing power into the future. We may do this to provide for our retire-
+ment years, for our heirs, or simply because we earn more than we need to spend in a
+particular year and prefer to save the balance for a rainy day.
+Defining Asset Returns Because the object of saving is to provide for future con-
+sumption, we judge the desirability of an asset largely on the basis of its rate of return,
+that is, the percentage increase in value it offers over some time period. For example,
+suppose that at the beginning of 2021 you pay $100 for a share of stock issued by
+Financial Soothsayers, Inc. If the stock pays you a dividend of $1 at the beginning
+of 2022 and if the stock’s price rises from $100 to $109 per share over the year, then
+you have earned a rate of return of 10 percent on the stock over 2021—that is, your
+initial $100 investment has grown in value to $110, the sum of the $1 dividend and
+the $109 you could get by selling your share. Had Financial Soothsayers stock still
+paid out its $1 dividend but dropped in price to $89 per share, your $100 investment
+would be worth only $90 by year’s end, giving a rate of return of negative 10 percent.
+You often cannot know with certainty the return that an asset will actually pay after
+you buy it. Both the dividend paid by a share of stock and the share’s resale price, for
+example, may be hard to predict. Your decision therefore must be based on an expected
+rate of return. To calculate an expected rate of return over some time period, you make
+your best forecast of the asset’s total value at the period’s end. The percentage difference
+between that expected future value and the price you pay for the asset today equals the
+asset’s expected rate of return over the time period.
+When we measure an asset’s rate of return, we compare how an investment in the asset
+changes in total value between two dates. In the previous example, we compared how the
+value of an investment in Financial Soothsayers stock changed between 2021 ($100) and
+2022 ($110) to conclude that the rate of return on the stock was 10 percent per year. We
+call this a dollar rate of return because the two values we compare are expressed in terms
+of dollars. It is also possible, however, to compute different rates of return by expressing
+the two values in terms of a foreign currency or a commodity such as gold.
+The Real Rate of Return The expected rate of return that savers consider in decid-
+ing which assets to hold is the expected real rate of return, that is, the rate of return
+computed by measuring asset values in terms of some broad representative basket
+of products that savers regularly purchase. It is the expected real return that matters
+because the ultimate goal of saving is future consumption, and only the real return
+measures the goods and services a saver can buy in the future in return for giving up
+some consumption (that is, saving) today.
+To continue our example, suppose the dollar value of an investment in Financial
+Soothsayers stock increases by 10 percent between 2021 and 2022 but the dollar prices
+of all goods and services also increase by 10 percent. Then in terms of output—that is,
+in real terms—the investment would be worth no more in 2021 than in 2022. With a real
+rate of return of zero, Financial Soothsayers stock would not be a very desirable asset
+(because in the real world assets with positive real rates of return usually are available).
+M14_KRUG9719_12_GE_C14.indd 391 16/11/2021 16:16
+
+392 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+Although savers care about expected real rates of return, rates of return expressed
+in terms of a currency can still be used to compare real returns on different assets.
+Even if all dollar prices rise by 10 percent between 2021 and 2022, a rare bottle of
+wine whose dollar price rises by 25 percent is still a better investment than a bond
+whose dollar value rises by 20 percent. The real rate of return offered by the wine is
+15 percent (= 25 percent - 10 percent), while that offered by the bond is only 10 p ercent
+(= 20 percent - 10 percent). Notice that the difference between the dollar returns of
+the two assets (25 percent - 20 percent) must equal the difference between their real
+returns (15 percent - 10 percent). The reason for this equality is that given the two
+assets’ dollar returns, a change in the rate at which the dollar prices of goods are rising
+changes both assets’ real returns by the same amount.
+The distinction between real rates of return and dollar rates of return illustrates
+an important concept in studying how savers evaluate different assets: The returns
+on two assets cannot be compared unless they are measured in the same units. For
+example, it makes no sense to compare directly the real return on the bottle of wine
+(15 percent in our example) with the dollar return on the bond (20 percent) or to
+compare the dollar return on old paintings with the euro return on gold. Only after
+the returns are expressed in terms of a common unit of measure—for example, all
+in terms of dollars—can we tell which asset offers the highest expected real rate
+of return.
+Risk and Liquidity
+All else equal, individuals prefer to hold those assets offering the highest expected real
+rate of return. Our later discussions of particular assets will show, however, that “all
+else” often is not equal. Some assets may be valued by savers for attributes other than
+the expected real rate of return they offer. Savers care about two main characteris-
+tics of an asset other than its return: its risk, the variability it contributes to savers’
+wealth, and its liquidity, the ease with which the asset can be sold or exchanged for
+goods.
+1. Risk. An asset’s real return is usually unpredictable and may turn out to be quite
+different from what savers expected when they purchased the asset. In our previous
+example, savers found the expected real rate of return on an investment in bonds
+(10 percent) by subtracting from the expected rate of increase in the investment’s
+dollar value (20 percent) the expected rate of increase in dollar prices (10 percent).
+But if expectations are wrong and the bonds’ dollar value stays constant instead
+of rising by 20 percent, the saver ends up with a real return of negative 10 percent
+(= 0 percent - 10 percent). Savers dislike uncertainty and are reluctant to hold
+assets that make their wealth highly variable. An asset with a high expected rate of
+return may thus appear undesirable to savers if its realized rate of return fluctu-
+ates widely.
+2. Liquidity. Assets also differ according to the cost and speed at which savers can
+dispose of them. A house, for example, is not very liquid because its sale usually
+requires time and the services of brokers and inspectors. To sell a house quickly,
+one might have to sell at a relatively low price. In contrast, cash is the most liquid
+of all assets: It is always acceptable at face value as payment for goods or other
+assets. Savers prefer to hold some liquid assets as a precaution against unexpected
+pressing expenses that might force them to sell less-liquid assets at a loss. They
+will therefore consider an asset’s liquidity as well as its expected return and risk in
+deciding how much of it to hold.
+M14_KRUG9719_12_GE_C14.indd 392 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 393
+Interest Rates
+As in other asset markets, participants in the foreign exchange market base their
+demands for deposits of different currencies on a comparison of these assets’
+expected rates of return. To compare returns on different deposits, market partici-
+pants need two pieces of information. First, they need to know how the money val-
+ues of the deposits will change. Second, they need to know how exchange rates will
+change so that they can translate rates of return measured in different currencies into
+c omparable terms.
+The first piece of information needed to compute the rate of return on a deposit
+of a particular currency is the currency’s interest rate, the amount of that currency an
+individual can earn by lending a unit of the currency for a year. At a dollar interest rate
+of 0.10 (quoted as 10 percent per year), the lender of $1 receives $1.10 at the end of
+the year, $1 of which is principal and 10 cents of which is interest. Looked at from the
+other side of the transaction, the interest rate on dollars is also the amount that must be
+paid to borrow $1 for a year. When you buy a U.S. Treasury bill, you earn the interest
+rate on dollars because you are lending dollars to the U.S. government.
+Interest rates play an important role in the foreign exchange market because the
+large deposits traded there pay interest, each at a rate reflecting its currency of denomi-
+nation. For example, when the interest rate on dollars is 10 percent per year, a $100,000
+deposit is worth $110,000 after a year; when the interest rate on euros is 5 percent per
+year, a €100,000 deposit is worth €105,000 after a year. Deposits pay interest because
+they are really loans from the depositor to the bank. When a corporation or a financial
+institution deposits a currency in a bank, it is lending that currency to the bank rather
+than using it for some current expenditure. In other words, the depositor is acquiring
+an asset denominated in the currency it deposits.
+The dollar interest rate is simply the dollar rate of return on dollar deposits. You
+“buy” the deposit by lending a bank $100,000, and when you are paid back with
+10 percent interest at the end of the year, your asset is worth $110,000. This gives a rate
+of return of (110,000 - 100,000) 100,000 = 0.10, or 10 percent per year. Similarly,
+a foreign currency’s interest rate measures the foreign currency return on deposits of
+>
+that currency. Figure 14-2 shows the monthly behavior of interest rates on the dol-
+lar and the Japanese yen from 1978 to 2020. These interest rates are not measured in
+comparable terms, so there is no reason for them to be close to each other or to move
+in similar ways over time.
+Exchange Rates and Asset Returns
+The interest rates offered by a dollar and a euro deposit tell us how their dollar and
+euro values will change over a year. The other piece of information we need in order to
+compare the rates of return offered by dollar and euro deposits is the expected change
+in the dollar/euro exchange rate over the year. To see which deposit, euro or dollar,
+offers a higher expected rate of return, you must ask the question: If I use dollars to
+buy a euro deposit, how many dollars will I get back after a year? When you answer this
+question, you are calculating the dollar rate of return on a euro deposit because you are
+comparing its dollar price today with its dollar value a year from today.
+To see how to approach this type of calculation, let’s look at the following situation:
+Suppose that today’s exchange rate (quoted in American terms) is $1.10 per euro but
+that you expect the rate to be $1.165 per euro in a year (perhaps because you expect
+unfavorable developments in the U.S. economy). Suppose also that the dollar interest
+rate is 10 percent per year while the euro interest rate is 5 percent per year. This means
+
+
+394 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+FIGURE 14-2
+Interest Rates on Dollar and Yen Deposits, 1978–2020
+Since dollar and yen interest rates are not measured in comparable terms, they can move quite differently
+over time.
+Source: Datastream. The figure shows three-month interest rates.
+a deposit of $1.00 pays $1.10 after a year while a deposit of €1 pays €1.05 after a year.
+Which of these deposits offers the higher return?
+You can find the answer in five steps.
+Step 1. Use today’s dollar/euro exchange rate to figure out the dollar price of a
+euro deposit of, say, €1. If the exchange rate today is $1.10 per euro, the dollar price
+of a €1 deposit is just $1.10.
+Step 2. Use the euro interest rate to find the amount of euros you will have a year
+from now if you purchase a €1 deposit today. You know that the interest rate on euro
+deposits is 5 percent per year. So at the end of a year, your €1 deposit will be worth
+€1.05.
+Step 3. Use the exchange rate you expect to prevail a year from today to calculate
+the expected dollar value of the euro amount determined in Step 2. Since you expect
+the dollar to depreciate against the euro over the coming year so that the exchange rate
+12 months from today is $1.165 per euro, you expect the dollar value of your euro
+deposit after a year to be $1.165 per euro * :1.05 = $1.223.
+Step 4. Now that you know the dollar price of a €1 deposit today ($1.10) and can
+forecast its value in a year ($1.223), you can calculate the expected dollar rate of return
+on a euro deposit as (1.223 - 1.10) 1.10 = 0.11, or 11 percent per year.
+Step 5. Since the dollar rate of return on dollar deposits (the dollar interest rate)
+>
+is only 10 percent per year, you expect to do better by holding your wealth in the form
+of euro deposits. Despite the fact that the dollar interest rate exceeds the euro interest
+8791 0891 2891 4891 6891 8891 0991 2991 4991 6991 8991 0002 2002 4002 6002 8002 0102 2102 4102 6102 8102 0202
+Percent per year
+19
+14
+Dollar rate
+9
+4
+Yen rate
+–1
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 395
+rate by 5 percent per year, the euro’s expected appreciation against the dollar gives
+euro holders a prospective capital gain that is large enough to make euro deposits the
+higher-yield asset.
+A Simple Rule
+A simple rule shortens this calculation. First, define the rate of depreciation of the dollar
+against the euro as the percentage increase in the dollar/euro exchange rate over a year. In
+the last example, the dollar’s expected depreciation rate is (1.165 - 1.10) 1.10 = 0.059,
+or roughly 6 percent per year. Once you have calculated the rate of depreciation of the
+>
+dollar against the euro, our rule is this: The dollar rate of return on euro deposits is approx-
+imately the euro interest rate plus the rate of depreciation of the dollar against the euro.
+In other words, to translate the euro return on euro deposits into dollar terms, you need
+to add the rate at which the euro’s dollar price rises over a year to the euro interest rate.
+In our example, the sum of the euro interest rate (5 percent) and the expected depre-
+ciation rate of the dollar (roughly 6 percent) is about 11 percent, which is what we found
+to be the expected dollar return on euro deposits in our first calculation.
+We summarize our discussion by introducing some notation:
+R = today>s interest rate on one@year euro deposits,
+:
+E = today>s dollar euro exchange rate (number of dollars per euro),
+$ :
+Ee
+$
+>
+:
+= dollar euro ex>change rate (number of dollars per euro) expected
+to prevail a year from today.
+> >
+(The superscript e attached to this last exchange rate indicates that it is a forecast of
+the future exchange rate based on what people know today.)
+Using these symbols, we write the expected rate of return on a euro deposit, mea-
+sured in terms of dollars, as the sum of (1) the euro interest rate and (2) the expected
+rate of dollar depreciation against the euro:
+R + (Ee - E ) E .
+: $ : $ : $ :
+This expected return is what must b>e compa>red> wi>th the interest rate on one-year
+dollar deposits, R , in deciding whether dollar or euro deposits offer the higher expected
+$
+rate of return.7 The expected rate of return difference between dollar and euro deposits
+is therefore equal to R less the previous expression,
+$
+R - [R + (Ee - E ) E ] = R - R - (Ee - E ) E . (14-1)
+$ : $ : $ : $ : $ : $ : $ : $ :
+When the difference ab > ove is p > osit>ive, > dollar deposits yield th > e higher > ex>pec > ted rate of
+return; when it is negative, euro deposits yield the higher expected rate of return.
+Table 14-3 carries out some illustrative comparisons. In case 1, the interest difference
+in favor of dollar deposits is 4 percent per year (R - R = 0.10 - 0.06 = 0.04), and
+$ :
+7If you compute the expected dollar return on euro deposits using the exact five-step method we described
+before introducing the simple rule, you’ll find that it actually equals
+(1 + R : )(E $ e : E $: ) - 1.
+This exact formula can be rewritten, however, as > > >
+R : + (E $ e : - E $: ) E $: + R : * (E $ e : - E $: ) E $: .
+The expression above is very close t>o the fo>rm>ula> derived from th>e simpl>e r>ule >when, as is usually the case,
+the product R : * (E $ e : - E $: ) E $: is a small number.
+> > > >
+M14_KRUG9719_12_GE_C14.indd 395 16/11/2021 16:16
+
+396 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+TABLE 14-3 Comparing Dollar Rates of Return on Dollar and Euro Deposits
+Expected Rate Rate of Return
+Dollar Euro of Dollar Depreciation Difference between
+Interest Rate Interest Rate against Euro Dollar and Euro Deposits
+Ee - E (Ee - E )
+$: $: $: $:
+R - R -
+Case R $ R : > E $: > $ : > E $: >
+1 0.10 0.06 0.0>0 0.04 >
+2 0.10 0.06 0.04 0.00
+3 0.10 0.06 0.08 -0.04
+4 0.10 0.12 -0.04 0.02
+no change in the exchange rate is expected [(Ee - E ) E = 0.00]. This means
+$ : $ : $ :
+that the expected annual real rate of return on dollar deposits is 4 percent higher than
+> > > >
+that on euro deposits, so that, other things equal, you would prefer to hold your wealth
+as dollar rather than euro deposits.
+In case 2, the interest difference is the same (4 percent), but it is just offset by an
+expected depreciation rate of the dollar of 4 percent. The two assets therefore have the
+same expected rate of return.
+Case 3 is similar to the one discussed earlier: A 4 percent interest difference in favor
+of dollar deposits is more than offset by an 8 percent expected depreciation of the dol-
+lar, so euro deposits are preferred by market participants.
+In case 4, there is a 2 percent interest difference in favor of euro deposits, but the dollar
+is expected to appreciate against the euro by 4 percent over the year. The expected rate of
+return on dollar deposits is therefore 2 percent per year higher than that on euro deposits.
+So far, we have been translating all returns into dollar terms. But the rate of return
+differentials we calculated would have been the same had we chosen to express returns
+in terms of euros or in terms of some third currency. Suppose, for example, we wanted
+to measure the return on dollar deposits in terms of euros. Following our simple rule,
+we would add to the dollar interest rate R the expected rate of depreciation of the euro
+$
+against the dollar. But the expected rate of depreciation of the euro against the dollar
+is approximately the expected rate of appreciation of the dollar against the euro, that
+is, the expected rate of depreciation of the dollar against the euro with a minus sign in
+front of it. This means that in terms of euros, the return on a dollar deposit is
+R - (Ee - E ) E .
+$ $ : $ : $ :
+The difference between the expression a>bove an>d R>: i>s identical to the right-hand side
+of equation (14-1). Thus, it makes no difference to our comparison whether we measure
+returns in terms of dollars or euros, as long as we measure them both in terms of the
+same currency.
+Return, Risk, and Liquidity in the Foreign Exchange Market
+We observed earlier that a saver deciding which assets to hold may care about the assets’
+riskiness and liquidity in addition to their expected real rates of return. Similarly, the
+demand for foreign currency assets depends not only on returns but also on risk and
+liquidity. Even if the expected dollar return on euro deposits is higher than that on dol-
+lar deposits, for example, people may be reluctant to hold euro deposits if the payoff
+to holding them varies erratically.
+M14_KRUG9719_12_GE_C14.indd 396 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 397
+There is no consensus among economists about the importance of risk in the foreign
+exchange market. Even the definition of “foreign exchange risk” is a topic of debate.
+For now, we will avoid these complex questions by assuming that the real returns on all
+deposits have equal riskiness, regardless of the currency of denomination. In other words,
+we are assuming that risk differences do not influence the demand for foreign currency
+assets. We discuss the role of foreign exchange risk in greater detail, however, in Chapter 18.8
+Liquidity factors may influence some market participants when they decide which
+currencies to hold. Most of these participants are firms and individuals conducting
+international trade. An American importer of French fashion products or wines, for
+example, may find it convenient to hold euros for routine payments even if the expected
+rate of return on euros is lower than that on dollars. Because payments connected with
+international trade make up a very small fraction of total foreign exchange transactions,
+we ignore the liquidity motive for holding foreign currencies.
+We are therefore assuming for now that participants in the foreign exchange market
+base their demands for foreign currency assets exclusively on a comparison of those
+assets’ expected rates of return. The main reason for making this assumption is that it
+simplifies our analysis of how exchange rates are determined in the foreign exchange
+market. In addition, the risk and liquidity motives for holding foreign currencies appear
+to be of secondary importance for many of the international macroeconomic issues dis-
+cussed in the next few chapters.
+Equilibrium in the Foreign Exchange Market
+We now use what we have learned about the demand for foreign currency assets to
+describe how exchange rates are determined. We will show that the exchange rate at
+which the market settles is the one that makes market participants content to hold exist-
+ing supplies of deposits of all currencies. When market participants willingly hold the
+existing supplies of deposits of all currencies, we say that the foreign exchange market
+is in equilibrium.
+The description of exchange rate determination given in this section is only a first
+step: We will be able to give a full explanation of the exchange rate’s current level only
+after we examine how participants in the foreign exchange market form their expecta-
+tions about the exchange rates they expect to prevail in the future. The next two chap-
+ters look at the factors that influence expectations of future exchange rates. For now,
+however, we will take expected future exchange rates as given.
+Interest Parity: The Basic Equilibrium Condition
+The foreign exchange market is in equilibrium when deposits of all currencies offer the
+same expected rate of return. We define the interest parity condition as the requirement
+that the expected returns on deposits of any two currencies are equal when measured in
+the same currency. Interest parity is satisfied when potential holders of foreign currency
+8In discussing spot and forward foreign exchange transactions, some textbooks make a distinction between
+foreign exchange “speculators”—market participants who allegedly care only about expected returns—and
+“hedgers”—market participants whose concern is to avoid risk. We depart from this textbook tradition
+because it can mislead the unwary: While the speculative and hedging motives are both potentially important
+in exchange rate determination, the same person can be both a speculator and a hedger if she cares about
+both return and risk. Our tentative assumption that risk is unimportant in determining the demand for
+foreign currency assets means, in terms of the traditional language, that the speculative motive for holding
+foreign currencies is far more important than the hedging motive. As noted in the text, however, we will
+consider the role of risk more closely later on in this book.
+M14_KRUG9719_12_GE_C14.indd 397 16/11/2021 16:16
+
+398 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+deposits view them all as equally desirable assets, provided their expected rates of return
+are the same.
+Let’s see why the foreign exchange market is in equilibrium only when the interest
+parity condition holds. Suppose the dollar interest rate is 10 percent and the euro inter-
+est rate is 6 percent, but that the dollar is expected to depreciate against the euro at an
+8 percent rate over a year. (This is case 3 in Table 14-3.) In the circumstances described,
+the expected rate of return on euro deposits would be 4 percent per year higher than
+that on dollar deposits. We assumed at the end of the last section that individuals
+always prefer to hold deposits of currencies offering the highest expected return. This
+implies that if the expected return on euro deposits is 4 percent greater than that on
+dollar deposits, no one will be willing to continue holding dollar deposits, and hold-
+ers of dollar deposits will be trying to sell them for euro deposits. There will therefore
+be an excess supply of dollar deposits and an excess demand for euro deposits in the
+foreign exchange market.
+As a contrasting example, suppose dollar deposits again offer a 10 percent interest
+rate but euro deposits offer a 12 percent rate and the dollar is expected to appreciate
+against the euro by 4 percent over the coming year. (This is case 4 in Table 14-3.) Now
+the return on dollar deposits is 2 percent higher. In this case, no one would demand
+euro deposits, so they would be in excess supply and dollar deposits would be in excess
+demand.
+When, however, the dollar interest rate is 10 percent, the euro interest rate is 6 p ercent,
+and the dollar’s expected depreciation rate against the euro is 4 percent, dollar and euro
+deposits offer the same rate of return and participants in the foreign exchange market
+are equally willing to hold either. (This is case 2 in Table 14-3.)
+Only when all expected rates of return are equal—that is, when the interest par-
+ity condition holds—is there no excess supply of some type of deposit and no excess
+demand for another. The foreign exchange market is in equilibrium when no type of
+deposit is in excess demand or excess supply. We can therefore say that the foreign
+exchange market is in equilibrium when, and only when, the interest parity condition
+holds.
+To represent interest parity between dollar and euro deposits symbolically, we use
+equation (14-1), which shows the difference between the two assets’ expected rates of
+return measured in dollars. The expected rates of return are equal when
+R = R + (Ee - E ) E . (14-2)
+$ : $ : $ : $ :
+You probably suspect that when dolla > r deposi > ts >offe > r a higher return than euro
+deposits, the dollar will appreciate against the euro as investors all try to shift their funds
+into dollars. Conversely, the dollar should depreciate against the euro when it is euro
+deposits that initially offer the higher return. This intuition is exactly correct. To under-
+stand the mechanism at work, however, we must take a careful look at how exchange
+rate changes like these help to maintain equilibrium in the foreign exchange market.
+How Changes in the Current Exchange Rate Affect
+Expected Returns
+As a first step in understanding how the foreign exchange market finds its equilibrium,
+we examine how changes in today’s exchange rate affect the expected return on a foreign
+currency deposit when interest rates and expectations about the future exchange rate do
+not change. Our analysis will show that, other things equal, depreciation of a country’s
+M14_KRUG9719_12_GE_C14.indd 398 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 399
+currency today lowers the expected domestic currency return on foreign currency deposits.
+Conversely, appreciation of the domestic currency today, all else equal, raises the
+domestic currency return expected of foreign currency deposits.
+It is easiest to see why these relationships hold by looking at an example: How
+does a change in today’s dollar/euro exchange rate, all else held constant, change the
+expected return, measured in terms of dollars, on euro deposits? Suppose today’s
+dollar/euro rate is $1.00 per euro and the exchange rate you expect for this day next
+year is $1.05 per euro. Then the expected rate of dollar depreciation against the euro
+is (1.05 - 1.00) 1.00 = 0.05, or 5 percent per year. This means that when you buy a
+euro deposit, you not only earn the interest R but also get a 5 percent “bonus” in terms
+:
+>
+of dollars. Now suppose today’s exchange rate suddenly jumps up to $1.03 per euro
+(a depreciation of the dollar and an appreciation of the euro), but the expected future
+rate is still $1.05 per euro. What happens to the “bonus” you expected to get from the
+euro’s increase in value in terms of dollars? The expected rate of dollar depreciation
+is now only (1.05 - 1.03) 1.03 = 0.019, or 1.9 percent instead of 5 percent. Since
+R has not changed, the dollar return on euro deposits, which is the sum of R and
+: :
+>
+the expected rate of dollar depreciation, has fallen by 3.1 percentage points per year
+(5 percent - 1.9 percent).
+In Table 14-4, we work out the dollar return on euro deposits for various levels
+of today’s dollar/euro exchange rate E , always assuming that the expected future
+$ :
+exchange rate remains fixed at $1.05 per euro and the euro interest rate is 5 percent per
+>
+year. As you can see, a rise in today’s dollar/euro exchange rate (a depreciation of the
+dollar against the euro) always lowers the expected dollar return on euro deposits (as
+in our example), while a fall in today’s dollar/euro exchange rate (an appreciation of
+the dollar against the euro) always raises this return.
+It may run counter to your intuition that a depreciation of the dollar against the
+euro makes euro deposits less attractive relative to dollar deposits (by lowering the
+expected dollar return on euro deposits) while an appreciation of the dollar makes
+euro deposits more attractive. This result will seem less surprising if you remember
+we have assumed that the expected future dollar/euro rate and interest rates do not
+change. A dollar depreciation today, for example, means the dollar now needs to depre-
+ciate by a smaller amount to reach any given expected future level. If the expected
+future dollar/euro exchange rate does not change when the dollar depreciates today,
+TABLE 14-4 Today’s Dollar/Euro Exchange Rate and the Expected Dollar Return
+on Euro Deposits When E $ €e = $1.05 per Euro
+> Expected Dollar Expected Dollar
+Today’s Dollar/Euro Interest Rate on Depreciation Rate Return on Euro
+Exchange Rate Euro Deposits against Euro Deposits
+1.05 - E 1.05 - E
+$: $:
+R +
+E $: R : E $: > : E $: >
+1.0 > 7 0.05 -0.0>19 0.031 >
+1.05 0.05 0.00 0.05
+1.03 0.05 0.019 0.069
+1.02 0.05 0.029 0.079
+1.00 0.05 0.05 0.10
+M14_KRUG9719_12_GE_C14.indd 399 16/11/2021 16:16
+
+400 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+the dollar’s expected future depreciation against the euro therefore falls, or, alternatively,
+the dollar’s expected future appreciation rises. Since interest rates also are unchanged,
+today’s dollar depreciation thus makes euro deposits less attractive compared with
+dollar deposits.
+Put another way, a current dollar depreciation that affects neither exchange rate
+expectations nor interest rates leaves the expected future dollar payoff of a euro deposit
+the same but raises the deposit’s current dollar cost. This change naturally makes euro
+deposits less attractive relative to dollar deposits.
+It may also run counter to your intuition that today’s exchange rate can change while
+the exchange rate expected for the future does not. We will indeed study cases later in
+this book when both of these rates do change at once. We nonetheless hold the expected
+future exchange rate constant in the present discussion because that is the clearest way
+to illustrate the effect of today’s exchange rate on expected returns. If it helps, you can
+imagine we are looking at the impact of a temporary change so brief that it has no effect
+on the exchange rate expected for next year.
+Figure 14-3 shows the calculations in Table 14-4 in a graphic form that will be
+helpful in our analysis of exchange rate determination. The vertical axis in the figure
+FIGURE 14-3
+Today’s dollar/euro
+The Relation between
+exchange rate, E
+the Current Dollar/Euro $/:
+Exchange Rate
+and the Expected Dollar
+1.07
+Return on Euro Deposits
+Given that E $ e : = 1.05 and
+R = 0.05, an appreciation
+: >
+of the dollar against the euro 1.05
+raises the expected return on
+euro deposits, measured in
+terms of dollars.
+1.03
+1.02
+1.00
+0.031 0.050 0.069 0.079 0.100
+Expected dollar return on
+Ee – E
+euro deposits,R + $/: $/:
+: E
+$/:
+M14_KRUG9719_12_GE_C14.indd 400 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 401
+measures today’s dollar/euro exchange rate and the horizontal axis measures the
+expected dollar return on euro deposits. For fixed values of the expected future dollar/
+euro exchange rate and the euro interest rate, the relation between today’s dollar/euro
+exchange rate and the expected dollar return on euro deposits defines a downward-
+sloping schedule.
+The Equilibrium Exchange Rate
+Now that we understand why the interest parity condition must hold for the foreign
+exchange market to be in equilibrium and how today’s exchange rate affects the
+expected return on foreign currency deposits, we can see how equilibrium exchange
+rates are determined. Our main conclusion will be that exchange rates always adjust
+to maintain interest parity. We continue to assume the dollar interest rate R , the
+$
+euro interest rate R , and the expected future dollar/euro exchange rate Ee are
+: $ :
+all given.
+>
+Figure 14-4 illustrates how the equilibrium dollar/euro exchange rate is determined
+under these assumptions. The vertical schedule in the graph indicates the given level of
+R , the return on dollar deposits measured in terms of dollars. The downward-sloping
+$
+schedule shows how the expected return on euro deposits, measured in terms of dollars,
+depends on the current dollar/euro exchange rate. This second schedule is derived in
+the same way as the one shown in Figure 14-3.
+FIGURE 14-4
+Exchange rate,
+Determination of the Equilibrium
+E
+Dollar/Euro Exchange Rate $/:
+Return on
+Equilibrium in the foreign exchange
+dollar deposits
+market is at point 1, where the expected
+dollar returns on dollar and euro deposits
+are equal.
+E2 2
+$/:
+E1 1
+$/:
+3
+E3
+$/:
+Expected return
+on euro deposits
+R Rates of return
+$
+(in dollar terms)
+M14_KRUG9719_12_GE_C14.indd 401 16/11/2021 16:16
+
+402 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+The equilibrium dollar/euro rate is the one indicated by the intersection of the two
+schedules at point 1, E1 . At this exchange rate, the returns on dollar and euro deposits
+$ :
+are equal, so that the interest parity condition (14-2),
+>
+R = R + (Ee - E1 ) E1 ,
+$ : $ : $ : $ :
+is satisfied. > > > >
+Let’s see why the exchange rate will tend to settle at point 1 in Figure 14-4 if
+it is initially at a point such as 2 or 3. Suppose first that we are at point 2, with
+the exchange rate equal to E2 . The downward-sloping schedule measuring the
+$ :
+expected dollar return on euro deposits tells us that at the exchange rate E2 , the
+> $ :
+rate of return on euro deposits is less than the rate of return on dollar deposits,
+>
+R . In this situation, anyone holding euro deposits wishes to sell them for the more
+$
+lucrative dollar deposits: The foreign exchange market is out of equilibrium because
+participants such as banks and multinational corporations are unwilling to hold
+euro deposits.
+How does the exchange rate adjust? The unhappy owners of euro deposits attempt
+to sell them for dollar deposits, but because the return on dollar deposits is higher
+than that on euro deposits at the exchange rate E2 , no holder of a dollar deposit
+$ :
+is willing to sell it for a euro deposit at that rate. As euro holders try to entice dollar
+>
+holders to trade by offering them a better price for dollars, the dollar/euro exchange
+rate falls toward E1 ; that is, euros become cheaper in terms of dollars. Once the
+$ :
+exchange rate reaches E1 , euro and dollar deposits offer equal returns, and hold-
+> $ :
+ers of euro deposits no longer have an incentive to try to sell them for dollars. The
+>
+foreign exchange market is therefore in equilibrium. In falling from E2 to E1 , the
+$ : $ :
+exchange rate equalizes the expected returns on the two types of deposit by i ncreasing
+> >
+the rate at which the dollar is expected to depreciate in the future, thereby making
+euro deposits more attractive.
+The same process works in reverse if we are initially at point 3 with an exchange rate
+of E3 . At point 3, the return on euro deposits exceeds that on dollar deposits, so there
+$ :
+is now an excess supply of the latter. As unwilling holders of dollar deposits bid for the
+>
+more attractive euro deposits, the price of euros in terms of dollars tends to rise; that
+is, the dollar tends to depreciate against the euro. When the exchange rate has moved
+to E1 , rates of return are equalized across currencies and the market is in equilibrium.
+$ :
+The depreciation of the dollar from E3 to E1 makes euro deposits less attractive
+> $ : $ :
+relative to dollar deposits by reducing the rate at which the dollar is expected to depreci-
+> >
+ate in the future.9
+Interest Rates, Expectations, and Equilibrium
+Having seen how exchange rates are determined by interest parity, we now take a look
+at how current exchange rates are affected by changes in interest rates and in expecta-
+tions about the future, the two factors we held constant in our previous discussions.
+9We could have developed our diagram from the perspective of Europe, with the euro/dollar exchange rate
+E (= 1/E ) on the vertical axis, a schedule vertical at R to indicate the euro return on euro deposits, and
+:/$ $/: :
+a downward-sloping schedule showing how the euro return on dollar deposits varies with E . An exercise
+:/$
+at the end of the chapter asks you to show that this alternative way of looking at equilibrium in the foreign
+exchange market gives the same answers as the method used here in the text.
+M14_KRUG9719_12_GE_C14.indd 402 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 403
+We will see that the exchange rate (which is the relative price of two assets) responds to
+factors that alter the expected rates of return on those two assets.
+The Effect of Changing Interest Rates on the Current
+Exchange Rate
+We often read in the newspaper that the dollar is strong because U.S. interest rates are
+high or that it is falling because U.S. interest rates are falling. Can these statements be
+explained using our analysis of the foreign exchange market?
+To answer this question, we again turn to a diagram. Figure 14-5 shows a rise in the
+interest rate on dollars, from R1 to R2 as a rightward shift of the vertical dollar deposits
+$ $
+return schedule. At the initial exchange rate E1 , the expected return on dollar deposits
+$ :
+is now higher than that on euro deposits by an amount equal to the distance between
+>
+points 1 and 1′. As we have seen, this difference causes the dollar to appreciate to E2
+$ :
+(point 2). Because there has been no change in the euro interest rate or in the expected
+>
+future exchange rate, the dollar’s appreciation today raises the expected dollar return
+on euro deposits by increasing the rate at which the dollar is expected to depreciate in
+the future.
+Figure 14-6 shows the effect of a rise in the euro interest rate R . This change causes
+:
+the downward-sloping schedule (which measures the expected dollar return on euro
+deposits) to shift rightward. (To see why, ask yourself how a rise in the euro interest
+rate alters the dollar return on euro deposits, given the current exchange rate and the
+expected future rate.)
+At the initial exchange rate E1 , the expected depreciation rate of the dollar is the
+$ :
+same as before the rise in R , so the expected return on euro deposits now exceeds that
+: >
+FIGURE 14-5
+Exchange rate,
+Effect of a Rise in the Dollar
+E
+Interest Rate $/:
+Dollar return
+A rise in the interest rate offered by dollar
+deposits from R1 to R2 causes the dollar
+$ $
+to appreciate from E1 (point 1) to E2
+$: $:
+(point 2).
+> >
+1 19
+E1
+$/:
+2
+E2
+$/:
+Expected
+euro return
+R1 R2
+Rates of return
+$ $
+(in dollar terms)
+M14_KRUG9719_12_GE_C14.indd 403 16/11/2021 16:16
+
+404 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+FIGURE 14-6
+Exchange rate,
+Effect of a Rise in the Euro
+E
+Interest Rate $/:
+Dollar return
+A rise in the interest rate paid by euro
+deposits causes the dollar to d epreciate
+from E1 (point 1) to E2 (point 2).
+$: $:
+(This figure also describes the effect of Rise in euro
+> > interest rate
+a rise in the expected future $ :
+exchange rate.)
+>
+2
+E2
+$/:
+1
+E1 Expected
+$/:
+euro return
+R Rates of return
+$ (in dollar terms)
+on dollar deposits. The dollar/euro exchange rate rises (from E1 to E2 ) to eliminate
+$ : $ :
+the excess supply of dollar assets at point 1. As before, the dollar’s depreciation against
+> >
+the euro eliminates the excess supply of dollar assets by lowering the expected dollar
+rate of return on euro deposits. A rise in European interest rates therefore leads to a
+depreciation of the dollar against the euro or, looked at from the European perspective,
+an appreciation of the euro against the dollar.
+Our discussion shows that, all else equal, an increase in the interest paid on deposits
+of a currency causes that currency to appreciate against foreign currencies.
+Before we conclude that the newspaper account of the effect of interest rates on
+exchange rates is correct, we must remember that our assumption of a constant expected
+future exchange rate often is unrealistic. In many cases, a change in the expected future
+exchange rate will accompany a change in interest rates. This change in the expected
+future exchange rate will depend, in turn, on the economic causes of the interest rate
+change. We compare different possible relationships between interest rates and expected
+future exchange rates in Chapter 16. Keep in mind for now that in the real world, we
+cannot predict how a given interest rate change will alter exchange rates unless we know
+why the interest rate is changing.
+The Effect of Changing Expectations on the Current
+Exchange Rate
+We may also use Figure 14-6 to study the effect on today’s exchange rate of a rise in the
+expected future dollar/euro exchange rate, Ee .
+$ :
+>
+M14_KRUG9719_12_GE_C14.indd 404 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 405
+Given today’s exchange rate, a rise in the expected future price of euros in terms of
+dollars raises the dollar’s expected depreciation rate. For example, if today’s exchange
+rate is $1.00 per euro and the rate expected to prevail in a year is $1.05 per euro, the
+expected depreciation rate of the dollar against the euro is (1.05 - 1.00) 1.00 = 0.05;
+if the expected future exchange rate now rises to $1.06 per euro, the expected deprecia-
+>
+tion rate also rises, to (1.06 - 1.00) 1.00 = 0.06.
+Because a rise in the expected depreciation rate of the dollar raises the expected
+>
+dollar return on euro deposits, the downward-sloping schedule shifts to the right, as
+in Figure 14-6. At the initial exchange rate E1 , there is now an excess supply of dol-
+$ :
+lar deposits: Euro deposits offer a higher expected rate of return (measured in dollar
+>
+terms) than do dollar deposits. The dollar therefore depreciates against the euro until
+equilibrium is reached at point 2.
+We conclude that, all else equal, a rise in the expected future exchange rate causes
+a rise in the current exchange rate. Similarly, a fall in the expected future exchange rate
+causes a fall in the current exchange rate.
+CASE STUDY
+What Explains the Carry Trade?
+Over much of the 2000s, Japanese yen interest rates were
+close to zero (as Figure 14-2 shows) while Australia’s
+interest rates were comfortably positive, climbing to over
+7 percent per year by the spring of 2008. While it might
+therefore have appeared attractive to borrow yen and
+invest the proceeds in Australian dollar bonds, the inter-
+est parity condition implies that such a strategy should
+not be systematically profitable: On average, shouldn’t
+the interest advantage of Australian dollars be wiped out
+by relative appreciation of the yen?
+Nonetheless, market actors ranging from Japanese
+housewives to sophisticated hedge funds did in fact pursue this strategy, invest-
+ing billions in Australian dollars and driving that currency’s value up, rather than
+down, against the yen. More generally, international investors frequently borrow
+low-interest currencies (called “funding” currencies) and buy high-interest curren-
+cies (called “investment” currencies), with results that can be profitable over long
+periods. This activity is called the carry trade, and while it is generally impossible
+to document the extent of carry trade positions accurately, they can become very
+large when sizable international interest differentials open up. Is the prevalence
+of the carry trade evidence that interest parity is wrong?
+The honest answer is that while interest parity does not hold exactly in p ractice—
+in part because of the risk and liquidity factors mentioned earlier—economists are
+still working hard to understand if the carry trade requires additional explanation.
+Their work is likely to throw further light on the functioning of foreign exchange
+markets in particular and financial markets in general.
+kcotsrettuhS/ycnegaswenaisA
+M14_KRUG9719_12_GE_C14.indd 405 16/11/2021 16:16
+
+406 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+One important hazard of the carry trade is that investment currencies (the
+high-interest currencies that carry traders target) may experience abrupt crashes.
+Figure 14-7 illustrates this feature of foreign exchange markets, comparing the
+cumulative return to investing ¥100 in yen bonds and in Australian dollar bonds
+over different investment horizons, with the initial investment being made in the first
+quarter of 2006. As you can see, the yen investment yields next to nothing, whereas
+Australian dollars pay off handsomely at almost every horizon, not only because of
+a high interest rate but because the yen tended to fall against the Australian dollar
+through the summer of 2008. But in 2008, the Australian dollar crashed against
+the yen, falling in price from ¥100 to only ¥65 between July and December.
+Anyone who got into the business after mid-2009, however, consistently did bet-
+ter in Australian dollars. And anyone savvy enough to unwind the strategy in June
+2008 could have made nearly a 40 percent return in about two and a half years
+rather than taking a sizable loss over three. The carry trade is obviously a very
+risky business.
+Investment return
+200
+180
+160
+Australian dollar
+140
+120
+100
+Japanese yen
+80
+60
+2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020
+FIGURE 14-7
+Cumulative Total Investment Return in Australian Dollars Compared with Japanese Yen,
+2006–2020
+The Australian dollar-yen carry trade has been profitable on average but is subject to sudden large
+reversals, as in 2008.
+Source: Quarterly Japanese yen/Australian dollar exchange rate, 90-day Australia bank bill rate, and 90-day Japan certificate
+of deposit rate from FRED database. The chart compares the cumulative value over time of a ¥100 investment in Japanese
+interest-bearing 90-day bonds, rolled over every quarter, with the same yen investment converted into Australian dollars,
+invested in 90-day Australian bonds and rolled over every quarter, and then converted back into yen at the end of the
+investment period.
+M14_KRUG9719_12_GE_C14.indd 406 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 407
+We can gain some insight into this pattern by imagining that investors expect
+a gradual 1 percent annual appreciation of the Australian dollar to occur with
+high probability (say, 90 percent) and a big 40 percent depreciation to occur with
+a 10 percent probability. Then the expected appreciation rate of the Australian
+dollar is:
+Expected appreciation = (0.9) * 1 - (0.1) * 40 = -3.1 percent per year.
+The negative expected appreciation rate means that the yen is actually expected
+to appreciate on average against the Australian dollar, which is at least qualita-
+tively consistent with interest parity. However, the probability of an Australian
+dollar crash occurring in the first six years of the investment is only
+1 - (0.9)6 = 1 - 0.53 = 47 percent, less than fifty-fifty.10 The resulting pattern
+of cumulative returns could easily look much like the one shown in Figure 14-7.
+Calculations like these are suggestive, and although they are unlikely to explain
+the full magnitude of carry trade returns, researchers have found that investment
+currencies are particularly subject to abrupt crashes and funding currencies to
+abrupt appreciations.11
+Complementary explanations based on risk and liquidity considerations have
+also been advanced. Often, abrupt currency movements occur during financial
+crises, which are situations in which other wealth is being lost and liquid cash is
+particularly valuable. In such circumstances, large losses on carry trade positions
+are extra painful and may force traders to sell other assets they own at a loss.12
+We will say much more about crises in later chapters, but we note for now that
+the Australian dollar collapse of late 2008 occurred in the midst of a severe global
+financial crisis.
+When big carry trade positions emerge, the government officials respon-
+sible for international economic policies often lose sleep. In their early phase,
+carry trade dynamics will drive investment currencies higher as investors pile
+in and build up ever-larger exposures to a sudden depreciation of those cur-
+rencies. This makes the crash bigger when it occurs, as wrong-footed investors
+all scramble to repay their funding loans. The result is greater exchange rate
+volatility in general as well as the possibility of big trader losses with negative
+repercussions in stock markets, bond markets, and markets for interbank loans.
+10If crashes are independent events over time, the probability that a crash does not occur over six years is
+(0.9)6. Therefore, the probability that a crash does occur in the six-year period is 1 - (0.9)6.
+11See Markus K. Brunnermeier, Stefan Nagel, and Lasse H. Pedersen, “Carry Trades and Currency Crashes,”
+NBER Macroeconomics Annual 23 (2008), pp. 313–347. These findings are consistent with the apparently
+greater empirical success of the interest parity condition over relatively long periods, as documented by
+Menzie Chinn, “The (Partial) Rehabilitation of Interest Rate Parity in the Floating Rate Era: Longer
+Horizons, Alternative Expectations, and Emerging Markets,” Journal of International Money and Finance
+25 (February 2006), pp. 7–21.
+12See Brunnermeier et al., ibid., as well as Craig Burnside, “Carry Trades and Risk,” in Jessica James, Ian
+Marsh, and Lucio Sarno, eds., Handbook of Exchange Rates (Hoboken, NJ: John Wiley & Sons, 2012),
+pp. 283–312.
+M14_KRUG9719_12_GE_C14.indd 407 16/11/2021 16:16
+
+408 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+Forward Exchange Rates and Covered Interest Parity
+We have seen that the forward exchange rate moves closely with the spot rate, but it
+has great importance in its own right, both as an indicator of market expectations
+and as a key price linking money markets in different currencies. In this section we
+will show that under the assumption that the interest parity condition always holds,
+a forward exchange rate equals the spot exchange rate expected to prevail on the for-
+ward contract’s value date. We will also show how forward rates can connect national
+money markets closely even if interest parity does not hold and introduce (although
+not resolve) a market puzzle that has emerged since the global financial crisis that broke
+out in 2007–2008.
+As the first step in the discussion, we point out the close connection among the for-
+ward exchange rate between two currencies, their spot exchange rate, and the interest
+rates on deposits denominated in those currencies. The connection is described by the
+covered interest parity (CIP) condition, which is similar to the (uncovered) interest parity
+(UIP) condition defining foreign exchange market equilibrium but involves the forward
+exchange rate rather than the expected future spot exchange rate.
+To be concrete, we again consider dollar and euro deposits. Suppose you want to buy
+a euro deposit with dollars but would like to be certain about the number of dollars it
+will be worth at the end of a year. You can avoid exchange rate risk by buying a euro
+deposit and, at the same time, selling the proceeds of your investment forward. When
+you buy a euro deposit with dollars and at the same time sell the principal and interest
+forward for dollars, we say you have “covered” yourself, that is, avoided the possibility
+of an unexpected depreciation of the euro.
+The covered interest parity condition states that the rates of return on dollar deposits
+and “covered” foreign deposits must be the same. An example will clarify the meaning
+of the condition and illustrate why it must always hold. Let F stand for the one-year
+$ :
+forward price of euros in terms of dollars, and suppose F = $1.113 per euro. Assume
+$ : >
+that at the same time, the spot exchange rate is E = 1.05 per euro, R = 0.10, and
+$ : > $
+R = 0.04. The (dollar) rate of return on a dollar deposit is clearly 0.10, or 10 percent,
+: >
+per year. What is the rate of return on a covered euro deposit?
+We answer this question as we did in the chapter. A €1 deposit costs $1.05 today, and
+it is worth €1.04 after a year. If you sell €1.04 forward today at the forward exchange
+rate of $1.113 per euro, the dollar value of your investment at the end of a year is
+($1.113 per euro) * (:1.04) = $1.158. The rate of return on a covered purchase of a
+euro deposit is therefore (1.158 - 1.05) 1.05 = 0.103. This 10.3 percent per year rate
+of return exceeds the 10 percent offered by dollar deposits, so covered interest parity
+>
+does not hold. In this situation, no one would be willing to hold dollar deposits; every-
+one would prefer covered euro deposits. In other words, market pricing would present
+an arbitrage opportunity.
+More formally, we can express the covered return on euro deposits as
+F (1 + R ) - E
+$ : : $ :
+,
+> E $ : >
+which is approximately equal to >
+F - E
+$ : $ :
+R +
+: > E $ : >
+>
+M14_KRUG9719_12_GE_C14.indd 408 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 409
+when the product R * (F - E ) E is a small number. The covered interest
+: $ : $ : $ :
+parity condition can therefore be written
+> > > >
+R = R + (F - E ) E . (14-3)
+$ : $ : $ : $ :
+The quantity > > > >
+(F - E ) E
+$ : $ : $ :
+is called the forward premium on euro>s agains>t d>olla>rs. (It is also called the forward dis-
+count on dollars against euros.) Using this terminology, we can state the covered interest
+parity condition as follows: The interest rate on dollar deposits equals the interest rate
+on euro deposits plus the forward premium on euros against dollars (the forward discount
+on dollars against euros).
+Up until the late 2000s, the covered interest parity condition held very closely for dif-
+ferent foreign currency deposits issued within a single financial center.13 Deviations
+from covered interest parity could occur, however, if the deposits being compared were
+located in different countries. For example, deviations could arise if asset holders feared
+that governments might impose regulations to prevent the free movement of foreign
+funds across national borders. Our derivation of the covered interest parity condition
+implicitly assumed there was no political risk of this kind—a good description of cur-
+rent conditions in advanced economies.
+Deviations can occur also because of fears that banks will fail, making them unable
+to pay off large deposits, or that the counterparties to forward exchange transactions
+will not make good on their commitments to deliver currencies. For these reasons, big
+deviations from covered interest parity emerged around the time of the worldwide
+banking crisis that started in 2007–2008.14 Figure 14-8 illustrates this development by
+graphing the difference between dollar interbank interest rates and the covered return
+to investing in three foreign interbank markets, measured in basis points (a basis point
+is one-hundredth of a percentage point).
+Surprisingly, however, CIP did not reestablish itself after the 2007–2008 crisis passed,
+as Figure 14-8 also shows, even though banks and other market participants became
+financially stronger. In general, the deviations in Figure 14-8 tend to be negative, imply-
+ing that it would be profitable to arbitrage by borrowing dollars, selling them for foreign
+currencies, and then investing the proceeds in foreign money markets while selling the
+13Empirical evidence supporting the covered interest parity condition was provided, for example, by Frank
+McCormick in “Covered Interest Arbitrage: Unexploited Profits? Comment,” Journal of Political Economy
+87 (April 1979), pp. 411–417, and by Kevin Clinton in “Transactions Costs and Covered Interest Arbitrage:
+Theory and Evidence,” Journal of Political Economy 96 (April 1988), pp. 358–370. For a broad survey, see
+the recent paper by Levich in Further Readings.
+14For a more detailed discussion of the role of political risk in the forward exchange market, see Robert
+Z. Aliber, “The Interest Parity Theorem: A Reinterpretation,” Journal of Political Economy 81 (November/
+December 1973), pp. 1451–1459. Of course, actual government restrictions on cross-border money move-
+ments can also cause covered interest parity deviations. On the fear of bank and counterparty failure as
+a cause for deviations from covered interest parity, see Naohiko Baba and Frank Packer, “Interpreting
+Deviations from Covered Interest Parity During the Financial Market Turmoil of 2007–2008,” Working
+Paper No. 267, Bank for International Settlements, December 2008. Chapter 20 will discuss the events
+underlying this last paper. On covered interest parity during the euro crisis (to be discussed in Chapter 21),
+see Victoria Ivashina, David S. Scharfstein, and Jeremy C. Stein, “Dollar Funding and the Lending Behavior
+of Global Banks,” Quarterly Journal of Economics 130 (August 2015), pp. 1241–1281.
+M14_KRUG9719_12_GE_C14.indd 409 16/11/2021 16:16
+
+410 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+Basis points
+75
+25
+–25
+–75
+–125
+–175
+–225
+–275
+–325
+EUR GBP JPY
+FIGURE 14-8
+U.S. Dollar Three-Month Interest Rate Less Covered Rate on Three-Month
+Foreign Bank Deposits
+Covered interest parity held well up until the financial crisis that started in 2008, but it has not
+held closely since then. The three non-U.S. investment currencies shown are the euro, pound,
+and yen.
+proceeds forward to complete the round trip out of dollars and back. In important
+research, Wenxin Du of the University of Chicago, Alexander Tepper of Columbia
+University, and Adrien Verdelhan of the Massachusetts Institute of Technology have
+shown that the reason for the recent breakdown of CIP is almost certainly not a fear
+of default by parties to CIP transactions.15 Nonetheless, potential market arbitrageurs
+seem unwilling (or lack the borrowing capacity) to exploit fully potentially profitable
+CIP trades. The reasons behind this apparent puzzle are important for understanding
+current conditions in financial markets, and we will discuss them further in
+Chapter 20.
+By comparing the uncovered interest parity (UIP) condition,
+R = R + (Ee - E ) E ,
+$ : $ : $ : $ :
+with the covered interest parity condition,> you wi>ll f>ind >that both conditions can be
+true at the same time only if the one-year forward rate quoted today equals the spot
+exchange rate people expect to materialize a year from today:
+F = Ee . (14-4)
+$ : $ :
+> >
+15See Du, Tepper, and Verdelhan, “Deviations from Covered Interest Rate Parity,” Journal of Finance 73
+(June 2018), pp. 915–957.
+2002 3002 4002 5002 6002 7002 8002 9002 0102 1102 2102 3102 4102 5102 6102 7102 8102 9102 0202
+M14_KRUG9719_12_GE_C14.indd 410 16/11/2021 16:16
+
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 411
+This makes intuitive sense. When two parties agree to trade foreign exchange on a date
+in the future, the exchange rate they agree on is the spot rate they expect to prevail
+on that date. The important difference between covered and uncovered transactions
+should be kept in mind, however. Covered transactions do not involve exchange rate risk,
+whereas uncovered transactions do. This important distinction means that the simple
+equality between forward rates and expected future spot rates need not hold in theory;
+Chapter 18 will take this topic up. And as we have noted, UIP does not seem to hold in
+practice either, for reasons we will explore in Chapter 20.
+The theory of covered interest parity helps explain the close correlation between
+the movements in spot and forward exchange rates shown in Table 14-1, a correlation
+typical of all major currencies. The unexpected economic events that affect expected
+asset returns often have a relatively small effect on international interest rate differences
+between deposits with short maturities (for example, three months). To maintain CIP,
+therefore, spot and forward rates for the corresponding maturities must change roughly
+in proportion to each other.
+We conclude this section with one further application of the covered interest par-
+ity condition. To illustrate the role of forward exchange rates, the chapter used the
+example of an American importer of Japanese radios anxious about the $/¥ exchange
+rate it would face in 30 days when the time came to pay the supplier. In the example,
+Best Buy solved the problem by selling forward for yen enough dollars to cover the
+cost of the radios. But Best Buy could have solved the problem in a different, more
+complicated way. It could have (1) borrowed dollars from a bank; (2) sold those dollars
+immediately for yen at the spot exchange rate and placed the yen in a 30-day yen bank
+deposit; (3) then, after 30 days, used the proceeds of the maturing yen deposit to pay
+the Japanese supplier; and (4) used the realized proceeds of the U.S. radio sales, less
+profits, to repay the original dollar loan.
+Which course of action—the forward purchase of yen or the sequence of four trans-
+actions described in the preceding paragraph—is more profitable for the importer? We
+leave it to you, as an exercise, to show that the two strategies yield the same profit when
+the covered interest parity condition holds.
+SUMMARY
+■■ An exchange rate is the price of one country’s currency in terms of another country’s
+currency. Exchange rates play a role in spending decisions because they enable us to
+translate different countries’ prices into comparable terms. All else equal, a deprecia-
+tion of a country’s currency against foreign currencies (a rise in the home currency
+prices of foreign currencies) makes its exports cheaper and its imports more expen-
+sive. An appreciation of its currency (a fall in the home currency prices of foreign
+currencies) makes its exports more expensive and its imports cheaper.
+■■ Exchange rates are determined in the foreign exchange market. The major partici-
+pants in that market are commercial banks, international corporations, nonbank
+financial institutions, and national central banks. Commercial banks play a pivotal
+role in the market because they facilitate the exchange of interest-bearing bank
+deposits, which make up the bulk of foreign exchange trading. Even though foreign
+M14_KRUG9719_12_GE_C14.indd 411 16/11/2021 16:16
+
+412 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+exchange trading takes place in many financial centers around the world, modern
+communication technology links those centers together into a single market that is
+open 24 hours a day. An important category of foreign exchange trading is forward
+trading, in which parties agree to exchange currencies on some future date at a pre-
+negotiated exchange rate. In contrast, spot trades are settled immediately.
+■■ Because the exchange rate is the relative price of two assets, it is most appropriately
+considered as being an asset price itself. The basic principle of asset pricing is that an
+asset’s current value depends on its expected future purchasing power. In evaluating
+an asset, savers look at the expected rate of return it offers, that is, the rate at which
+the value of an investment in the asset is expected to rise over time. It is possible to
+measure an asset’s expected rate of return in different ways, each depending on the
+units in which the asset’s value is measured. Savers care about an asset’s expected
+real rate of return, the rate at which its value expressed in terms of a representative
+output basket is expected to rise.
+■■ When relative asset returns are relevant, as in the foreign exchange market, it is appro-
+priate to compare expected changes in assets’ currency values, provided those values
+are expressed in the same currency. If risk and liquidity factors do not strongly influ-
+ence the demands for foreign currency assets, participants in the foreign exchange
+market always prefer to hold those assets yielding the highest expected rate of return.
+■■ The returns on deposits traded in the foreign exchange market depend on interest
+rates and expected exchange rate changes. To compare the expected rates of return
+offered by dollar and euro deposits, for example, the return on euro deposits must
+be expressed in dollar terms by adding to the euro interest rate the expected rate of
+depreciation of the dollar against the euro (or rate of appreciation of the euro against
+the dollar) over the deposit’s holding period.
+■■ Equilibrium in the foreign exchange market requires interest parity; that is, deposits
+of all currencies must offer the same expected rate of return when returns are mea-
+sured in comparable terms.
+■■ For given interest rates and a given expectation of the future exchange rate, the inter-
+est parity condition tells us the current equilibrium exchange rate. When the expected
+dollar return on euro deposits exceeds that on dollar deposits, for example, the dollar
+immediately depreciates against the euro. Other things equal, a dollar depreciation
+today reduces the expected dollar return on euro deposits by reducing the deprecia-
+tion rate of the dollar against the euro expected for the future. Similarly, when the
+expected return on euro deposits is below that on dollar deposits, the dollar must
+immediately appreciate against the euro. Other things equal, a current appreciation
+of the dollar makes euro deposits more attractive by increasing the dollar’s expected
+future depreciation against the European currency.
+■■ All else equal, a rise in dollar interest rates causes the dollar to appreciate against
+the euro while a rise in euro interest rates causes the dollar to depreciate against the
+euro. Today’s exchange rate is also altered by changes in its expected future level. If
+there is a rise in the expected future level of the dollar/euro rate, for example, then at
+unchanged interest rates, today’s dollar/euro exchange rate will also rise.
+■■ Interest rates, spot exchange rates, and forward exchange rates must conform to the
+covered interest parity (CIP) condition if arbitrage opportunities between money
+markets for different currencies are absent. CIP differs from the (uncovered) interest
+parity condition (UIP) that underlies our theory of foreign exchange market equi-
+librium unless forward exchange rates equal expected future spot rates. As we will
+discuss in future chapters, this last condition need not always be satisfied, and even
+CIP itself has not held closely in recent years.
+M14_KRUG9719_12_GE_C14.indd 412 16/11/2021 16:16
