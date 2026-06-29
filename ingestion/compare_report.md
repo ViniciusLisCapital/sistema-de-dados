@@ -1,48 +1,36 @@
 # Ingestion Quality Report
 
-Generated: 2026-06-25 18:00  |  Verify model: `claude-haiku-4-5-20251001`
+Generated: 2026-06-26 17:24  |  Verify model: `claude-haiku-4-5-20251001`
 
 ---
 
-## [1] equilibrium_exchange_brazil(Paiva, 2006), 
+## [1] capital_flow_fx_market (CFA L1, 2025)
 
 | | Path |
 |---|---|
-| **Raw** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\ingestion\work\general\equilibrium_exchange_brazil(Paiva, 2006), _raw.md` |
-| **Clean** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\agent_bibliography\general\equilibrium_exchange_brazil(Paiva, 2006), .md` |
+| **Raw** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\ingestion\work\exchange_rate_policy\capital_flow_fx_market (CFA L1, 2025)_raw.md` |
+| **Clean** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\agent_bibliography\exchange_rate_policy\capital_flow_fx_market (CFA L1, 2025).md` |
 
 | Field | Value |
 |-------|-------|
 | Model | `claude-haiku-4-5-20251001` |
-| Verdict | ✅ **OK** |
-| Content preserved | 98% |
+| Verdict | ❌ **LOSS** |
+| Content preserved | 72% |
 
-> File B successfully preserves all substantive content from File A. Boilerplate (copyright notice, IMF disclaimer, author acknowledgments, table of contents listing) has been appropriately removed, and the content has been reorganized into clean markdown with proper heading hierarchy. All technical details, data, figures, tables, and arguments are intact.
-
----
-
-## [2] padrao_trasmissao_cambial (Cortapasso, J.P., 2023)
-
-| | Path |
-|---|---|
-| **Raw** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\ingestion\work\general\padrao_trasmissao_cambial (Cortapasso, J.P., 2023)_raw.md` |
-| **Clean** | `C:\Users\LIS CAPITAL\LIS Capital Dropbox\LIS Capital\Macro\Sistema de dados\agent_bibliography\general\padrao_trasmissao_cambial (Cortapasso, J.P., 2023).md` |
-
-| Field | Value |
-|-------|-------|
-| Model | `claude-haiku-4-5-20251001` |
-| Verdict | ✅ **OK** |
-| Content preserved | 95% |
-
-> FILE B successfully preserves all substantive theoretical, institutional, and empirical findings from the paper. The removal of mathematical equations, technical test results tables, and appendix figures is appropriate for a cleaned markdown version and does not constitute loss of substantive content. The core economic arguments, data analysis, and policy conclusions remain fully intact.
+> FILE B is substantially incomplete. While it preserves the opening sections on exchange rates and market participants, it loses approximately 28% of substantive content including three critical exhibits with market data, detailed exchange rate quotation conventions, the entire capital restrictions section (Section 4), a major historical example with case study questions, and all practice problems. The document appears to have been cut off mid-section.
 
 **Content lost:**
 
-- Mathematical equations (1)-(5) showing VAR model specifications in structural and reduced forms
-- Detailed description of Cholesky decomposition and SVAR methodology (paragraphs explaining B matrix, identification procedures)
-- Technical discussion of impulse-response functions and forecast error variance decomposition methodology
-- Complete Appendix A tables (A1, A2) showing unit root test results (DF-GLS, Phillips-Perron, ADF tests)
-- Complete Appendix A figures (A1, A2, A3) showing impulse-response functions for full period and subperiods
-- Detailed econometric results tables and all supplementary analysis figures beyond Figure 5
+- Exhibit 2: FX Turnover by Instrument (spot 33%, outright forwards 14%, swaps 49%, FX options 5%) - substantive data table
+- Exhibit 3: FX Flows by Counterparty (interbank 42%, financial clients 51%, non-financial clients 8%) - substantive data table
+- Exhibit 4: FX Turnover by Currency Pair (top 5 pairs with percentages) - substantive market data
+- Market trading hub information (London, New York, Tokyo activity times and volumes)
+- Example 2: Market Participants and Composition of Trades with 2 questions and solutions
+- Exchange Rate Quotations section with detailed quoting conventions, bid/offer spreads, and Example 3 with 2 questions
+- Section on Exchange Rates and Trade Balance Introduction with macroeconomic identity (X - M = (S - I) + (T - G))
+- Question Set following the trade balance section
+- Capital Restrictions section (Section 4) including types of capital controls, their objectives, and effectiveness discussion
+- Example 5: Historical Example—Capital Restrictions: Malaysia's Capital Controls in 1998–2001 with 3 questions
+- Practice Problems (6 problems with solutions) at end of module
 
 ---

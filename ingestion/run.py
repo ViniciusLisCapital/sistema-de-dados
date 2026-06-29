@@ -98,7 +98,7 @@ def process_one(
     work_clean = clean_file(raw_out, output_dir=work_dir, model=ingest_model)
 
     # Move clean output from work/ to agent_bibliography/
-    work_clean.rename(clean_out)
+    work_clean.replace(clean_out)
     print(f"  done  -> {clean_out.relative_to(ROOT)}")
 
     return raw_out, clean_out
