@@ -11,7 +11,7 @@ Series armazenadas (campo 'name'):
   nonrept_long   — Posicao comprada: Nao-reportaveis
   nonrept_short  — Posicao vendida: Nao-reportaveis
 
-Banco: macro_cambio.cot_fx
+Banco: macro_international.cot_fx
 Schema: PRIMARY KEY (date, currency, name)
 """
 
@@ -20,7 +20,7 @@ from datetime import datetime
 from connectors.cftc import CFTC
 from connectors.mysql import insert_data_into_database
 
-_DATABASE = "macro_cambio"
+_DATABASE = "macro_international"
 _TABLE    = "cot_fx"
 
 # CLP and COP do not appear in CFTC TFF file (no CME FX futures for these)
@@ -33,7 +33,7 @@ _cftc = CFTC()
 
 
 def run(years: list[int] | None = None, n_anos: int = 3) -> None:
-    """Atualiza macro_cambio.cot_fx com posicionamento COT de moedas.
+    """Atualiza macro_international.cot_fx com posicionamento COT de moedas.
 
     Args:
         years:  Lista de anos a buscar. Se None, usa os ultimos n_anos incluindo o atual.

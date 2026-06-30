@@ -23,7 +23,10 @@ logger = logging.getLogger("update_db")
 from domain.db.brasil.ibge import gdp, pim, pmc, pms, pnad
 
 # BCB
-from domain.db.brasil.bcb import caged, credito, expectativas, ibc_br, indicadores_familias, inflacao
+from domain.db.brasil.bcb import (
+    caged, cambio_contratado, credito, expectativas, ibc_br, indicadores_familias, inflacao,
+    reservas, balanco_pagamentos, fluxo_cambial, termos_de_troca,
+)
 
 # ---------------------------------------------------------------------------
 # Scripts e parametros de atualizacao rotineira
@@ -48,6 +51,11 @@ _SCRIPTS = [
     ("BCB  · Credito",                 credito,              {}),
     ("BCB  · Indicadores Familias",    indicadores_familias, {}),
     ("BCB  · Expectativas Focus",      expectativas,         {}),
+    ("BCB  · Reservas Internacionais", reservas,             {}),
+    ("BCB  · Balanco de Pagamentos",   balanco_pagamentos,   {}),
+    ("BCB  · Fluxo Cambial",           fluxo_cambial,        {}),
+    ("BCB  · Cambio Contratado",       cambio_contratado,    {}),
+    ("BCB  · Termos de Troca",         termos_de_troca,      {}),
 ]
 
 

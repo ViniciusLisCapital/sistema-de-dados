@@ -13,7 +13,11 @@ Series derivadas (calculadas no script):
   real_us_ex_post     — fed_funds - cpi_12m_us
   diferencial_real    — real_br_ex_post - real_us_ex_post
 
-Banco: macro_cambio.diferenciais_juros
+Banco: macro_analytics.diferenciais_juros
+
+Nota: os inputs brutos (selic, ipca_12m, fed_funds, cpi_12m_us) sao armazenados
+junto com os diferenciais para manter macro_analytics auto-contido para a analise
+cambial — denormalizacao intencional.
 
 TODO (proxima fase): diferenciais ex-ante usando Focus (macro_brasil.expectativas)
 e taxa implicita nos Fed Funds futuros.
@@ -31,7 +35,7 @@ from connectors.mysql import insert_data_into_database
 
 load_dotenv()
 
-_DATABASE = "macro_cambio"
+_DATABASE = "macro_analytics"
 _TABLE    = "diferenciais_juros"
 
 _BCB_SERIES = {
@@ -54,7 +58,7 @@ def _from_n_meses(n_meses: int) -> str:
 
 
 def run(n_meses: int = 36, start: str | None = None) -> None:
-    """Atualiza macro_cambio.diferenciais_juros.
+    """Atualiza macro_analytics.diferenciais_juros.
 
     Args:
         n_meses: ultimos N meses (default 36). Ignorado se start fornecido.

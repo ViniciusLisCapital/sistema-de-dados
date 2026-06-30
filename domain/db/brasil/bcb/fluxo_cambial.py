@@ -9,7 +9,7 @@ Series SGS (valores em USD billions — confirmar unidade na BCB SGS):
   24363 — Setor comercial — saida  (importadores)
   24369 — Setor financeiro — saldo
 
-Banco: macro_cambio.fluxo_cambial
+Banco: macro_brasil.fluxo_cambial
 
 Nota: A BCB publica o fluxo cambial com maior granularidade (CEP/CBE sub-itens)
 na Nota Cambial semanal. Os codigos SGS para esse nivel de detalhe nao foram
@@ -23,7 +23,7 @@ como (entrada - saida) se necessario.
 from connectors.bcb import BCB
 from connectors.mysql import insert_data_into_database
 
-_DATABASE = "macro_cambio"
+_DATABASE = "macro_brasil"
 _TABLE    = "fluxo_cambial"
 
 _SERIES = {
@@ -42,7 +42,7 @@ _bcb = BCB()
 
 
 def run(n_meses: int = 36, start: str | None = None, end: str | None = None) -> None:
-    """Atualiza macro_cambio.fluxo_cambial.
+    """Atualiza macro_brasil.fluxo_cambial.
 
     Args:
         n_meses: ultimos N meses (default 36). Ignorado se start/end fornecidos.

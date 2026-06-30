@@ -1,8 +1,9 @@
 """
 Gerador do relatório HTML de fundamentos cambiais.
 
-Lê todas as tabelas de macro_cambio, injeta os dados no template report.html
-e salva um único arquivo HTML autocontido em reports/cambio_latest.html.
+Lê tabelas de macro_brasil, macro_international e macro_analytics, injeta os
+dados no template report.html e salva um único arquivo HTML autocontido em
+reports/cambio_latest.html.
 
 Uso:
     uv run python -c "from analytics.cambio.generate_report import run; run()"
@@ -35,24 +36,24 @@ def _col(wide: pd.DataFrame, name: str):
     return _to_list(wide[name])
 
 
-def _fetch(table: str) -> pd.DataFrame | None:
-    req = MySQLDataRequester("macro_cambio", table)
+def _fetch(database: str, table: str) -> pd.DataFrame | None:
+    req = MySQLDataRequester(database, table)
     req.connect()
     if req.connection is None:
-        print(f"  Aviso: sem conexão para {table}")
+        print(f"  Aviso: sem conexão para {database}.{table}")
         return None
     df = req.request_data()
     req.close_connection()
     if df is None or df.empty:
-        print(f"  Aviso: {table} vazia ou sem dados")
+        print(f"  Aviso: {database}.{table} vazia ou sem dados")
         return None
     df["date"] = pd.to_datetime(df["date"])
     return df
 
 
-def _pivot(table: str) -> pd.DataFrame | None:
+def _pivot(database: str, table: str) -> pd.DataFrame | None:
     """Lê tabela com schema (date, name, value) e pivota para wide."""
-    df = _fetch(table)
+    df = _fetch(database, table)
     if df is None:
         return None
     df["value"] = df["value"].astype(float)
@@ -63,7 +64,7 @@ def _pivot(table: str) -> pd.DataFrame | None:
 
 def _load_diferenciais() -> dict:
     try:
-        wide = _pivot("diferenciais_juros")
+        wide = _pivot("macro_analytics", "diferenciais_juros")
         if wide is None:
             return {}
         return {
@@ -84,7 +85,7 @@ def _load_diferenciais() -> dict:
 
 def _load_reer() -> dict:
     try:
-        df = _fetch("reer")
+        df = _fetch("macro_international", "reer")
         if df is None:
             return {}
         df["value"] = df["value"].astype(float)
@@ -104,7 +105,7 @@ def _load_reer() -> dict:
 
 def _load_cot_fx() -> dict:
     try:
-        df = _fetch("cot_fx")
+        df = _fetch("macro_international", "cot_fx")
         if df is None:
             return {}
         df["value"] = df["value"].astype(float)
@@ -124,7 +125,7 @@ def _load_cot_fx() -> dict:
 
 def _load_reservas() -> dict:
     try:
-        wide = _pivot("reservas")
+        wide = _pivot("macro_brasil", "reservas")
         if wide is None:
             return {}
         return {
@@ -138,7 +139,7 @@ def _load_reservas() -> dict:
 
 def _load_fluxo() -> dict:
     try:
-        wide = _pivot("fluxo_cambial")
+        wide = _pivot("macro_brasil", "fluxo_cambial")
         if wide is None:
             return {}
         if "comercial_entrada" in wide.columns and "comercial_saida" in wide.columns:
@@ -156,7 +157,7 @@ def _load_fluxo() -> dict:
 
 def _load_bop() -> dict:
     try:
-        wide = _pivot("balanco_pagamentos")
+        wide = _pivot("macro_brasil", "balanco_pagamentos")
         if wide is None:
             return {}
         return {
@@ -173,7 +174,7 @@ def _load_bop() -> dict:
 
 def _load_termos() -> dict:
     try:
-        wide = _pivot("termos_de_troca")
+        wide = _pivot("macro_brasil", "termos_de_troca")
         if wide is None:
             return {}
         return {
@@ -197,7 +198,7 @@ def run(output: str = "reports/cambio_latest.html") -> None:
     Args:
         output: caminho de saída. Default "reports/cambio_latest.html".
     """
-    print("Carregando dados de macro_cambio...")
+    print("Carregando dados de macro_brasil / macro_international / macro_analytics...")
     report_data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "diferenciais":  _load_diferenciais(),

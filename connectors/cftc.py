@@ -40,12 +40,13 @@ _CONTRACT_MAP: Dict[str, str] = {
     "COLOMBIAN PESO":  "COP",
 }
 
-# Columns to read from the raw CSV (others discarded to save memory)
-_DATE_COL = "Report_Date_as_YYYY-MM-DD"
+# Date column changed name between 2012 and 2013:
+#   2010-2012: Report_Date_as_MM_DD_YYYY  (format "%m/%d/%Y")
+#   2013+:     Report_Date_as_YYYY-MM-DD  (format "%Y-%m-%d")
+_DATE_COL_NEW = "Report_Date_as_YYYY-MM-DD"
+_DATE_COL_OLD = "Report_Date_as_MM_DD_YYYY"
 
-_USECOLS = [
-    "Market_and_Exchange_Names",
-    _DATE_COL,
+_VALUE_COLS = [
     "Open_Interest_All",
     "Lev_Money_Positions_Long_All",
     "Lev_Money_Positions_Short_All",
@@ -53,7 +54,8 @@ _USECOLS = [
     "NonRept_Positions_Short_All",
 ]
 
-_VALUE_COLS = [c for c in _USECOLS if c not in ("Market_and_Exchange_Names", _DATE_COL)]
+# Keep _DATE_COL for backwards compat (used in _parse signature reference)
+_DATE_COL = _DATE_COL_NEW
 
 
 def _build_session() -> requests.Session:
@@ -164,10 +166,18 @@ class CFTC:
             return zf.read(target).decode("utf-8", errors="replace")
 
     def _parse(self, csv_text: str, contract_names: List[str]) -> pd.DataFrame:
+        # Detect which date column is present in this file's header.
+        # Note: Report_Date_as_MM_DD_YYYY (2010-2012) also stores values as YYYY-MM-DD,
+        # so we infer the format from data rather than from the column name.
+        header = csv_text.split("\n")[0]
+        date_col = _DATE_COL_NEW if _DATE_COL_NEW in header else _DATE_COL_OLD
+
+        usecols = ["Market_and_Exchange_Names", date_col] + _VALUE_COLS
+
         df = pd.read_csv(
             io.StringIO(csv_text),
-            usecols=_USECOLS,
-            dtype={"Market_and_Exchange_Names": str, _DATE_COL: str},
+            usecols=usecols,
+            dtype={"Market_and_Exchange_Names": str, date_col: str},
             low_memory=False,
         )
 
@@ -197,7 +207,7 @@ class CFTC:
             return "UNKNOWN"
 
         df["currency"] = df["Market_and_Exchange_Names"].apply(_to_iso)
-        df["date"] = pd.to_datetime(df[_DATE_COL], format="%Y-%m-%d")
+        df["date"] = pd.to_datetime(df[date_col])
 
         # Coerce numeric columns
         for col in _VALUE_COLS:

@@ -5,7 +5,7 @@ Series SGS:
   22099 — Termos de troca (indice, serie A)
   22100 — Termos de troca (indice, serie B)
 
-Banco: macro_cambio.termos_de_troca
+Banco: macro_brasil.termos_de_troca
 
 Nota: Verificar as descricoes exatas de cada serie na BCB SGS — os dois indices
 podem representar metodologias distintas (ex: FOB vs CIF, ou diferentes cestas).
@@ -14,7 +14,7 @@ podem representar metodologias distintas (ex: FOB vs CIF, ou diferentes cestas).
 from connectors.bcb import BCB
 from connectors.mysql import insert_data_into_database
 
-_DATABASE = "macro_cambio"
+_DATABASE = "macro_brasil"
 _TABLE    = "termos_de_troca"
 
 _SERIES = {
@@ -26,7 +26,7 @@ _bcb = BCB()
 
 
 def run(n_meses: int = 36, start: str | None = None, end: str | None = None) -> None:
-    """Atualiza macro_cambio.termos_de_troca.
+    """Atualiza macro_brasil.termos_de_troca.
 
     Args:
         n_meses: ultimos N meses (default 36). Ignorado se start/end fornecidos.

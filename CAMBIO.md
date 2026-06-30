@@ -1,8 +1,8 @@
-# Pipeline macro_cambio — Status e Pendências
+# Pipeline Cambial — Status e Pendências
 
-Banco MySQL: `macro_cambio` (servidor 192.168.15.200)  
-Entry point: `jobs/update_cambio.py`  
-Construído em: junho 2026
+Schemas MySQL: `macro_brasil` · `macro_international` · `macro_analytics` (servidor 192.168.15.200)  
+Entry points: `jobs/update_db.py` · `jobs/update_international.py` · `jobs/update_analytics.py`  
+Construído em: junho 2026 · Reestruturado: junho 2026
 
 ---
 
@@ -10,13 +10,13 @@ Construído em: junho 2026
 
 ### Fase 1 — BCB + FRED (connectors existentes)
 
-| Tabela | Fonte | Período | Script |
-|---|---|---|---|
-| `reservas` | BCB SGS 3546 | 2004 → hoje | `bcb/reservas.py` |
-| `balanco_pagamentos` | BCB SGS (10 séries) | 2001 → hoje | `bcb/balanco_pagamentos.py` |
-| `fluxo_cambial` | BCB SGS (6 séries) | 2003 → hoje | `bcb/fluxo_cambial.py` |
-| `termos_de_troca` | BCB SGS 22099/22100 | variado | `bcb/termos_de_troca.py` |
-| `diferenciais_juros` | BCB SGS + FRED | 1995 → hoje | `fred/diferenciais_juros.py` |
+| Tabela | Schema | Fonte | Período | Script |
+|---|---|---|---|---|
+| `reservas` | `macro_brasil` | BCB SGS 3546 | 2004 → hoje | `domain/db/brasil/bcb/reservas.py` |
+| `balanco_pagamentos` | `macro_brasil` | BCB SGS (10 séries) | 2001 → hoje | `domain/db/brasil/bcb/balanco_pagamentos.py` |
+| `fluxo_cambial` | `macro_brasil` | BCB SGS (6 séries) | 2003 → hoje | `domain/db/brasil/bcb/fluxo_cambial.py` |
+| `termos_de_troca` | `macro_brasil` | BCB SGS 22099/22100 | variado | `domain/db/brasil/bcb/termos_de_troca.py` |
+| `diferenciais_juros` | `macro_analytics` | BCB SGS + FRED | janela 36m | `domain/db/analytics/fred/diferenciais_juros.py` |
 
 **`reservas`** — séries armazenadas:
 - `reservas_liquidez_usd` — conceito de liquidez (USD milhões)
@@ -40,10 +40,10 @@ Construído em: junho 2026
 
 ### Fase 2 — BIS + CFTC (novos connectors)
 
-| Tabela | Fonte | Período | Script |
-|---|---|---|---|
-| `reer` | BIS API (stats.bis.org) | 1994 → hoje | `bis/reer.py` |
-| `cot_fx` | CFTC TFF ZIPs | últimos 3 anos | `cftc/cot_fx.py` |
+| Tabela | Schema | Fonte | Período | Script |
+|---|---|---|---|---|
+| `reer` | `macro_international` | BIS API (stats.bis.org) | 1994 → hoje | `domain/db/international/bis/reer.py` |
+| `cot_fx` | `macro_international` | CFTC TFF ZIPs | 2010 → hoje | `domain/db/international/cftc/cot_fx.py` |
 
 **`reer`** — países × tipos (388 obs cada, ~1994–hoje):
 - Brasil (BR), México (MX), Chile (CL), Colômbia (CO)
@@ -72,14 +72,19 @@ Construído em junho 2026. Arquivo único autocontido (`reports/cambio_latest.ht
 ### Como atualizar
 
 ```powershell
-uv run python jobs/update_cambio.py   # opcional: só se quiser dados mais frescos
+# Atualizar dados (opcional — só se quiser dados mais frescos)
+uv run python jobs/update_db.py            # macro_brasil (inclui reservas, BOP, fluxo, termos)
+uv run python jobs/update_international.py # macro_international (reer, cot_fx)
+uv run python jobs/update_analytics.py    # macro_analytics (diferenciais_juros)
+
+# Gerar relatório
 uv run python -c "from analytics.cambio.generate_report import run; run()"
 # Saída: reports/cambio_latest.html  (~50 KB, abre em qualquer browser)
 ```
 
 ### Mecanismo de injeção
 
-O template contém o marcador `/*REPORT_DATA*/` num bloco `<script>`. `generate_report.py` lê todas as tabelas de `macro_cambio`, serializa como JSON e substitui o marcador via `str.replace()`. Sem Jinja2.
+O template contém o marcador `/*REPORT_DATA*/` num bloco `<script>`. `generate_report.py` lê tabelas de `macro_brasil`, `macro_international` e `macro_analytics`, serializa como JSON e substitui o marcador via `str.replace()`. Sem Jinja2.
 
 ### Charts ativos
 
@@ -153,7 +158,8 @@ Deferred: requer `blpapi`/`xbbg` na máquina de Bloomberg.
 ### CFTC TFF
 - URL: `https://www.cftc.gov/files/dea/history/fut_fin_txt_{YYYY}.zip`
 - ZIP contém: `FinFutYY.txt` (87 colunas)
-- Coluna de data: `Report_Date_as_YYYY-MM-DD` (não `MM_DD_YYYY`)
+- Coluna de data: `Report_Date_as_YYYY-MM-DD` (2013+) ou `Report_Date_as_MM_DD_YYYY` (2010–2012 — o nome é enganoso, os valores também são `YYYY-MM-DD`). O connector auto-detecta.
+- Histórico disponível: 2010 → hoje (2006–2009 retornam 404 no CFTC).
 - FX contracts no arquivo: BRL e MXN. CLP/COP não têm futuros CME no TFF.
 
 ### Selic + alinhamento de frequência
@@ -168,9 +174,9 @@ Deferred: requer `blpapi`/`xbbg` na máquina de Bloomberg.
 
 **Objetivo:** o relatório deve mostrar o quadro cambial completo, sem lacunas de série nem dados truncados.
 
-#### 1a. Histórico `diferenciais_juros` (urgente)
+#### 1a. Histórico `diferenciais_juros` (pendente)
 
-O relatório hoje exibe dados a partir de ~2023 mesmo com o seletor "10a" ativo. Causa provável: o script usa um `start=` padrão recente em vez de `start="all"`. Verificar `domain/db/cambio/fred/diferenciais_juros.py` e corrigir a carga histórica (Selic disponível desde 1996, Fed Funds desde 1954 no FRED).
+O relatório hoje exibe dados a partir de ~2023 mesmo com o seletor "10a" ativo. O script usa janela padrão de 36 meses. Expandir a carga histórica: Selic disponível desde 1996 no BCB SGS, Fed Funds desde 1954 no FRED. Script: `domain/db/analytics/fred/diferenciais_juros.py`. Atenção: BCB SGS 432 (Selic diária) retorna 406 para janelas > ~5 anos — investigar uso de série mensal alternativa ou chunking.
 
 #### 1b. Diferenciais ex-ante
 
@@ -189,9 +195,9 @@ Criar séries `_ex_ante` em `diferenciais_juros` sem remover as ex-post existent
 
 Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxas Reais ex-ante".
 
-#### 1c. CFTC histórico completo
+#### 1c. CFTC histórico ✓ (feito)
 
-`cot_fx.py` hoje carrega apenas os últimos 3 anos. O CFTC disponibiliza ZIPs anuais desde 2006. Ampliar o loader para buscar todos os anos disponíveis na carga histórica (`run(start_year=2006)`).
+`connectors/cftc.py` agora suporta 2010 → hoje (auto-detecção de coluna de data entre formatos pré/pós-2013). 2006–2009 retornam 404 no servidor do CFTC — não há histórico disponível antes de 2010.
 
 #### 1d. Pendências menores de ETL
 
@@ -208,15 +214,15 @@ Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxa
 - Garantir que todos os scripts de domínio foram rodados com `start="all"` ao menos uma vez
 - Verificar cobertura real de cada tabela:
 
-| Tabela | Cobertura esperada | Verificar |
-|---|---|---|
-| `diferenciais_juros` | 1995 → hoje | script truncando? |
-| `reer` | 1994 → hoje | ✓ BIS full history |
-| `cot_fx` | 2006 → hoje | ampliar após Fase 1c |
-| `balanco_pagamentos` | 2001 → hoje | ✓ |
-| `fluxo_cambial` | 2003 → hoje | ✓ |
-| `reservas` | 2004 → hoje | ✓ conceito liquidez |
-| `termos_de_troca` | variado | após confirmar descrições |
+| Tabela | Schema | Cobertura esperada | Status |
+|---|---|---|---|
+| `diferenciais_juros` | `macro_analytics` | 1995 → hoje | pendente — janela 36m hoje |
+| `reer` | `macro_international` | 1994 → hoje | ✓ BIS full history |
+| `cot_fx` | `macro_international` | 2010 → hoje | ✓ (2006–2009 indisponíveis no CFTC) |
+| `balanco_pagamentos` | `macro_brasil` | 2001 → hoje | ✓ |
+| `fluxo_cambial` | `macro_brasil` | 2003 → hoje | ✓ |
+| `reservas` | `macro_brasil` | 2004 → hoje | ✓ conceito liquidez |
+| `termos_de_troca` | `macro_brasil` | variado | após confirmar descrições SGS 22099/22100 |
 
 - Adicionar no `generate_report.py` um campo `data_range` no JSON por seção (para exibir no tooltip do chart header: "2006 – jun/2026")
 

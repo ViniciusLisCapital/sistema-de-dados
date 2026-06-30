@@ -13,13 +13,13 @@ Series SGS (valores em USD millions):
   22870 — Investimento em carteira — acoes — saldo
   22871 — Investimento em carteira — renda fixa — saldo
 
-Banco: macro_cambio.balanco_pagamentos
+Banco: macro_brasil.balanco_pagamentos
 """
 
 from connectors.bcb import BCB
 from connectors.mysql import insert_data_into_database
 
-_DATABASE = "macro_cambio"
+_DATABASE = "macro_brasil"
 _TABLE    = "balanco_pagamentos"
 
 _SERIES = {
@@ -39,7 +39,7 @@ _bcb = BCB()
 
 
 def run(n_meses: int = 36, start: str | None = None, end: str | None = None) -> None:
-    """Atualiza macro_cambio.balanco_pagamentos.
+    """Atualiza macro_brasil.balanco_pagamentos.
 
     Args:
         n_meses: ultimos N meses (default 36). Ignorado se start/end fornecidos.
