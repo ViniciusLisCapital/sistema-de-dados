@@ -292,6 +292,23 @@ Ao converter PDFs em `.md` para alimentar o agente de análise, use a seguinte l
 
 ---
 
+## agent_bibliography/exchange_rate_policy/ — Conceptual Map
+
+`agent_bibliography/exchange_rate_conceptual_map.md` é um mapa de conhecimento single-file, estilo Obsidian (`[[wikilinks]]` para conceitos, `#tags` para clusters temáticos), construído diretamente a partir dos 18 PDFs em `agent_bibliography/exchange_rate_policy/` — **não** a partir de `.md` extraídos (esses foram deletados de propósito; os PDFs são a fonte de verdade). Cobre 9 clusters temáticos (`#market_microstructure`, `#exchange_rate_determination`, `#currency_regimes`, `#balance_of_payments`, `#policy_transmission`, `#applied_valuation_tools`, `#pass_through_and_inflation`, `#capital_controls`, `#currency_crisis_dynamics`).
+
+**Não usa e não reconcilia com** o vault `obsidian/exchange_rate/` (páginas de conceito pré-existentes) — são dois sistemas paralelos por instrução explícita do usuário. Também não interage com o pipeline `ingestion/`.
+
+`agent_bibliography/exchange_rate_bibliography_gaps.md` lista fontes candidatas para fechar as lacunas identificadas na seção "Coverage notes" do mapa (crisis models de 1ª/2ª/3ª geração, capital controls como ferramenta de política, teoria de OCA, opções de FX/volatilidade, econometria de falha de UIP (Fama 1984), profundidade em EM não-Brasil, economia política do câmbio) — nenhuma dessas fontes foi adquirida/processada ainda.
+
+**Para incrementar a base (próxima sessão ou quando novas fontes chegarem):**
+1. Adicionar o(s) PDF(s) em `agent_bibliography/exchange_rate_policy/`, usando a convenção de nome já estabelecida: `topic_description (Author, Year).pdf` (os nomes sugeridos já estão no arquivo de gaps).
+2. Processar **um de cada vez** (não paralelizar com agents em background — fluxo de trabalho preferido pelo usuário: extrair texto completo → ler → identificar conceitos novos vs. reforço de existentes → editar o mapa).
+3. Extrair texto via `pdfplumber` em Bash (o `Read` tool não renderiza PDF nesta máquina — falta `poppler`/`pdftoppm`); redirecionar para arquivo no scratchpad com `sys.stdout.reconfigure(encoding='utf-8')` para evitar `UnicodeEncodeError` em símbolos não-ASCII no console do Windows.
+4. Atualizar o mapa: nova linha na tabela `## Sources processed`, bullets de conceito no(s) `#theme_cluster` correspondente(s) com cross-links `[[conceito]]` para conceitos já existentes quando houver conexão genuína, e remover/marcar a linha correspondente em `exchange_rate_bibliography_gaps.md`.
+5. Manter textos em inglês para fontes em inglês e português para fontes em português (regra geral do projeto) — o mapa em si é escrito em inglês, mas termos técnicos em PT (ex: "posição de câmbio", "repasse cambial") são preservados entre parênteses quando a fonte é em português.
+
+---
+
 ## Gerenciamento de pacotes: uv + pyproject.toml
 
 📄 **Documentação completa:** [`AMBIENTE.md`](AMBIENTE.md) — racional do `uv`, papel de cada arquivo (`pyproject.toml`, `uv.lock`, `.venv`), setup em máquina nova, como atualizar versões, manutenção e troubleshooting. Resumo abaixo.
@@ -327,6 +344,7 @@ Ver pendências e roadmap detalhados em [`CAMBIO.md`](CAMBIO.md).
 - **`analytics/oraculo/us/term_us.py` — revisão de qualidade**: snake_case, `_load_data()` centralizado, bugs de robustez.
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
 - **macro_analytics/international — itens menores**: confirmar descrições SGS 22099/22100, sub-itens CEP/CBE fluxo cambial, diferenciais ex-ante. Ver `CAMBIO.md`.
+- **`agent_bibliography/exchange_rate_conceptual_map.md` — incrementar com fontes de `exchange_rate_bibliography_gaps.md`**: mapa base (18 fontes) está completo; próximo passo é adquirir e processar fontes para as lacunas listadas (crisis models, capital controls, OCA, FX options, Fama 1984, EM não-Brasil, economia política). Ver seção acima.
 
 ### Baixa prioridade
 - `quarantine/` — scripts legados (curva de juros, decomposição IPCA). Limpar quando conveniente.
