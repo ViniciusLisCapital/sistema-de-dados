@@ -16,15 +16,6 @@ The base had crisis *mechanics* via textbook treatment (Krugman Ch. 18) and CFA'
 
 | Priority | Source | Why | Target cluster(s) | Suggested filename |
 |---|---|---|---|---|
-<!-- | High | Krugman, P. (1979), "A Model of Balance-of-Payments Crises," *Journal of Money, Credit and Banking* | The original first-generation model — reserve-depletion/shadow-exchange-rate mechanics that Krugman's own textbook chapter (already in base) teaches in simplified form | `#currency_crisis_dynamics` | `first_gen_crisis_model (Krugman, 1979).pdf` | -->
-<!-- 
-| High | Obstfeld, M. (1986), "Rational and Self-Fulfilling Balance-of-Payments Crises," *American Economic Review* | Canonical second-generation model — multiple equilibria, self-fulfilling attacks. Explicitly named as missing in Coverage notes | `#currency_crisis_dynamics` | `second_gen_crisis_model (Obstfeld, 1986).pdf` | -->
-
-<!-- | Medium | Flood, R. & Garber, P. (1984), "Collapsing Exchange-Rate Regimes: Some Linear Examples," *Journal of International Economics* | Standard linearized companion to Krugman 1979, almost always taught together; makes crisis-timing prediction tractable | `#currency_crisis_dynamics` | `collapsing_regimes_linear_model (Flood & Garber, 1984).pdf` |
-<!--  -->
-<!-- | Medium | Krugman, P. (1999), "Balance Sheets, the Transfer Problem, and Financial Crises" | Third-generation model — currency mismatch on corporate/bank balance sheets as crisis amplifier. Written in direct response to the 1997–98 Asian crisis; missing generation entirely | `#currency_crisis_dynamics` `#balance_of_payments` | `third_gen_crisis_model (Krugman, 1999).pdf` | -->
-
-<!-- | Medium | Chang, R. & Velasco, A. (2001), "A Model of Financial Crises in Emerging Markets," *Quarterly Journal of Economics* | Banking-liquidity-driven third-gen model, EM-specific framing | `#currency_crisis_dynamics` | `bank_liquidity_crisis_model (Chang & Velasco, 2001).pdf` | -->
 
 | Low (synthesis, optional) | Obstfeld, M. (1994), "The Logic of Currency Crises," NBER Working Paper | One accessible paper bridging first- and second-gen logic — useful if you want a single synthesis rather than two dense originals | `#currency_crisis_dynamics` | `logic_of_currency_crises (Obstfeld, 1994).pdf` |
 
