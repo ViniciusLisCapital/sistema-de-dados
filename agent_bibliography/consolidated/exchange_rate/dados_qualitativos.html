@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Exchange Rate — Cluster Diagram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --lis-azul:    #1F2853;
+    --lis-dourado: #BB9B1D;
+    --lis-verde:   #418791;
+    --lis-azul-cl: #02739B;
+    --lis-laranja: #EA523A;
+    --lis-cinza:   #BFBFBF;
+
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a1d29;
+    --text-muted: #5a5f70;
+    --border: #d7dae2;
+    --line: #9aa0b4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161f;
+      --card-bg: #1c1f2b;
+      --text: #e8e9ee;
+      --text-muted: #9aa0b4;
+      --border: #333748;
+      --line: #4a4f66;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161f; --card-bg: #1c1f2b; --text: #e8e9ee; --text-muted: #9aa0b4; --border: #333748; --line: #4a4f66;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f6f8; --card-bg: #ffffff; --text: #1a1d29; --text-muted: #5a5f70; --border: #d7dae2; --line: #9aa0b4;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    background: var(--lis-azul);
+    color: #fff;
+    padding: 26px 24px 20px;
+  }
+  header h1 { margin: 0 0 6px; font-size: 1.45rem; font-weight: 700; }
+  header p { margin: 0; color: #c7cbe0; font-size: 0.9rem; max-width: 900px; }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 34px 16px 60px; }
+
+  .diagram-wrap {
+    position: relative;
+    padding-top: 6px;
+    overflow-x: auto;
+  }
+  #connectors {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .root-node {
+    position: relative;
+    z-index: 2;
+    width: 200px;
+    margin: 0 auto 76px;
+    background: var(--lis-azul);
+    color: #fff;
+    border-radius: 12px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    border: 2px solid var(--lis-azul);
+    transition: box-shadow 0.15s;
+  }
+  .root-node:hover { box-shadow: 0 6px 22px rgba(187,155,29,0.35); }
+  .root-node .root-label { font-weight: 700; font-size: 1.05rem; }
+  .root-node .root-sub {
+    font-size: 0.7rem; color: #d3d6ea; text-transform: uppercase;
+    letter-spacing: 0.06em; margin-top: 3px;
+  }
+
+  .cluster-row {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 14px;
+    justify-content: center;
+    min-width: 920px;
+  }
+  .cluster-box {
+    width: 150px;
+    min-height: 92px;
+    background: var(--card-bg);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+  }
+  .cluster-box:hover { border-color: var(--lis-dourado); transform: translateY(-2px); }
+  .cluster-box.active {
+    border-color: var(--lis-dourado);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--lis-dourado) 22%, transparent);
+  }
+  .cluster-box.nolink { border-style: dashed; }
+  .cluster-box .idx {
+    width: 20px; height: 20px; border-radius: 5px;
+    background: var(--lis-azul); color: #fff; font-size: 0.68rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 6px;
+  }
+  .cluster-box .tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.66rem; color: var(--lis-verde); word-break: break-word;
+  }
+  .cluster-box .title { font-size: 0.76rem; font-weight: 600; margin-top: 4px; }
+  .cluster-box .count { font-size: 0.64rem; color: var(--text-muted); margin-top: 5px; }
+
+  .hint { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 28px; }
+
+  .detail-panel {
+    margin-top: 30px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--lis-dourado);
+    border-radius: 10px;
+    padding: 18px 20px 20px;
+    min-height: 80px;
+  }
+  .detail-panel.nolink { border-left-color: var(--lis-laranja); }
+  .detail-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0; }
+  .detail-header {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .detail-header .tag { font-family: ui-monospace, monospace; color: var(--lis-verde); font-weight: 700; font-size: 0.95rem; }
+  .detail-header .title { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
+  .close-btn {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text-muted); cursor: pointer; padding: 4px 10px; font-size: 0.78rem;
+    flex: 0 0 auto;
+  }
+  .close-btn:hover { border-color: var(--lis-laranja); color: var(--lis-laranja); }
+
+  .detail-columns { display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 780px) { .detail-columns { grid-template-columns: 1fr; } }
+  .col h4 {
+    margin: 0 0 10px; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-muted); font-weight: 700;
+  }
+  .col.refs h4 { color: var(--lis-azul-cl); }
+  .col.data h4 { color: var(--lis-verde); }
+
+  ul.data-list { margin: 0; padding: 0; list-style: none; }
+  ul.data-list li {
+    background: color-mix(in srgb, var(--lis-verde) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lis-verde) 25%, transparent);
+    border-radius: 8px; padding: 9px 11px; margin-bottom: 7px; font-size: 0.84rem;
+  }
+  ul.data-list li b { color: var(--lis-verde); }
+  .no-data-note {
+    background: color-mix(in srgb, var(--lis-laranja) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lis-laranja) 30%, transparent);
+    border-radius: 8px; padding: 10px 12px; font-size: 0.84rem;
+  }
+  .placeholder-note { font-style: italic; color: var(--text-muted); font-size: 0.82rem; margin-top: 8px; }
+
+  /* bibliographic reference cards */
+  .ref-list { display: flex; flex-direction: column; gap: 12px; }
+  .ref-item {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 13px;
+    background: color-mix(in srgb, var(--lis-azul-cl) 4%, transparent);
+  }
+  .ref-item.gap {
+    border-style: dashed;
+    background: transparent;
+    opacity: 0.82;
+  }
+  .ref-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .ref-citation { font-size: 0.87rem; font-weight: 600; line-height: 1.35; }
+  .ref-meta {
+    flex: 0 0 auto; font-size: 0.68rem; color: var(--text-muted);
+    white-space: nowrap; text-align: right;
+  }
+  .ref-meta .score { color: var(--lis-dourado); font-weight: 700; }
+  .ref-synthesis { font-size: 0.82rem; color: var(--text-muted); margin-top: 6px; }
+  .ref-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+  .tag-chip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    background: color-mix(in srgb, var(--lis-dourado) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lis-dourado) 40%, transparent);
+    color: var(--text);
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+  .ref-no-tags { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-top: 8px; }
+
+  footer { max-width: 1120px; margin: 0 auto; padding: 0 16px 40px; color: var(--text-muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exchange Rate — Cluster Diagram</h1>
+  <p>Um agente macro (câmbio) com 9 clusters embaixo. Clique numa caixa de cluster para ver as referências bibliográficas (<code>bibliography.md</code>) desse cluster, cada uma com sua síntese e os conceitos-chave (<code>[tag]</code>) que ela contribuiu, além dos dados (<code>data_inventory.md</code>) envolvidos.</p>
+</header>
+<main>
+  <div class="diagram-wrap" id="diagramWrap">
+    <svg id="connectors"></svg>
+    <div class="root-node" id="rootNode" title="Clique para limpar a seleção">
+      <div class="root-label">Exchange Rate</div>
+      <div class="root-sub">agente macro</div>
+    </div>
+    <div class="cluster-row" id="clusterRow"></div>
+  </div>
+  <div class="hint">clique em qualquer caixa de cluster acima</div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty">Selecione um cluster para ver suas referências e dados.</div>
+  </div>
+</main>
+<footer>
+  Gerado a partir de <code>agent_bibliography/consolidated/exchange_rate/</code> — não modifica nenhum arquivo original. Fontes marcadas com borda tracejada são lacunas de <code>bibliography.md</code> ainda não adquiridas/processadas — por isso não têm conceitos-tag ainda.
+</footer>
+
+<script>
+const CLUSTERS = [
+{
+  tag: "#market_microstructure",
+  title: "FX market structure, quoting, and plumbing",
+  sources: [
+    { citation: "Garman, M. & Kohlhagen, S. (1983), \"Foreign Currency Option Values,\" Journal of International Money and Finance", type: "Paper", scoreYear: "5 / 1983", synthesis: "O modelo FX-adaptado de Black-Scholes — a fórmula canônica de precificação de opções de câmbio. Fecha a única área teórica (opções/volatilidade) sem representação hoje na base.", gap: true, tags: [] },
+    { citation: "Barker, McNelis & Nickelsburg (CFA Institute, 2025), \"The Foreign Exchange Market\" — CFA Level I", type: "CFA curriculum reading", scoreYear: "3 / 2025", synthesis: "Mapa padrão da estrutura do mercado de câmbio: buy-side vs. sell-side, split de turnover (BIS Triennial), hierarquia de cotagem e o trilema — a referência de base por trás dos pressupostos implícitos de liquidez e cotação de todas as outras fontes.", tags: ["fx_market_participants", "fx_market_composition", "exchange_rate_quoting_conventions", "seigniorage", "impossible_trinity", "currency_regime_taxonomy", "historical_monetary_systems", "central_bank_fx_intervention", "trade_balance_capital_account_identity", "capital_controls", "nominal_vs_real_exchange_rate", "purchasing_power_parity"] },
+    { citation: "CFA Institute (2025), \"Exchange Rate Calculations\" — CFA Level I", type: "CFA curriculum reading", scoreYear: "3 / 2025", synthesis: "O ferramental de cálculo — cross-rate/arbitragem triangular, pontos forward e CIP como identidade de não-arbitragem — sobre o qual todo o cluster de paridades (UIP, paridade de juro real) é construído.", tags: ["cross_rate_calculation", "triangular_arbitrage", "forward_points_and_premium_discount", "covered_interest_rate_parity", "forward_rate_as_predictor_puzzle"] },
+    { citation: "Banco Central do Brasil (2020), \"Posição de Câmbio, Saldo Cambial, Disponibilidade Cambial e Exposição Cambial,\" Estudo Especial nº 87/2020", type: "Central bank technical note", scoreYear: "4 / 2020", synthesis: "Desambiguação precisa da própria BCB de quatro conceitos de plumbing cambial (posição, fluxo, disponibilidade, exposição) mais seu toolkit concreto de intervenção — ground truth essencial para qualquer dado de câmbio publicado pela BCB.", tags: ["posicao_de_cambio", "posicao_vendida_carry_incentive", "bcb_fx_intervention_toolkit", "cupom_cambial_spread"] },
+    { citation: "CFA-curriculum ou bank-research primer sobre opções de câmbio / risk reversals (fonte ainda não identificada)", type: "Paper / practitioner note", scoreYear: "2 / TBD", synthesis: "Placeholder para um companheiro de posicionamento-via-skew ao modelo de precificação de Garman-Kohlhagen — fecharia a metade de \"opções como indicador de sentimento/posicionamento\" do gap.", gap: true, tags: [] }
+  ],
+  data: [
+    ["bcb_fx_plumbing_data_link", "Dados de posição/intervenção da BCB (Reservas & intervenção, §6) e fluxo cambial registrado/contratado (§5) são a contrapartida operacional da nota técnica da BCB e do material de microestrutura da CFA.", "data_inventory.md §5, §6"],
+    ["fx_options_positioning_data_gap", "O gap de posicionamento via opções (§8) é o mesmo gap da literatura de Garman-Kohlhagen/primer de opções — nem o dado nem a teoria estão construídos ainda.", "data_inventory.md §8"]
+  ]
+},
+{
+  tag: "#exchange_rate_determination",
+  title: "Nominal, real, and equilibrium exchange rates",
+  sources: [
+    { citation: "Dornbusch, R. (1976), \"Expectations and Exchange Rate Dynamics,\" Journal of Political Economy", type: "Paper", scoreYear: "5 / 1976", synthesis: "O modelo fundador de overshooting — preços rígidos + mercados de ativos que limpam instantaneamente fazem o câmbio depreciar além do seu equilíbrio de longo prazo após um choque monetário. A explicação mais citada para por que a volatilidade cambial supera tanto a dos preços relativos.", tags: ["overshooting_model", "rational_expectations_perfect_foresight_path", "overshooting_interest_rate_comovement", "overshooting_with_variable_output"] },
+    { citation: "Fama, E. (1984), \"Forward and Spot Exchange Rates,\" Journal of Monetary Economics", type: "Paper", scoreYear: "5 / 1984", synthesis: "A econometria original do \"beta com sinal errado\" de falha da UIP — o fato empírico mais citado por trás do forward-premium/carry-trade puzzle.", tags: ["fama_regression_decomposition", "wrong_signed_beta_uip_regression", "premium_variance_dominance", "negative_premium_expected_change_covariance", "fama_1984_candidate_explanations", "interest_rate_parity_premium_link"] },
+    { citation: "Froot, K. & Thaler, R. (1990), \"Anomalies: Foreign Exchange,\" Journal of Economic Perspectives", type: "Paper (survey)", scoreYear: "4 / 1990", synthesis: "Survey acessível e não-técnico do forward-premium puzzle que a econometria de Fama estabeleceu.", gap: true, tags: [] },
+    { citation: "Krugman, Obstfeld & Melitz (2023), International Economics, Ch. 14 \"Exchange Rates and the Foreign Exchange Market\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "A formalização didática padrão da UIP como condição de equilíbrio do mercado de câmbio, e o asset approach que trata o câmbio como preço de ativo, não de bem — a espinha em torno da qual o cluster de determinação se organiza.", tags: ["vehicle_currency", "asset_approach_to_exchange_rates", "uncovered_interest_rate_parity", "cip_basis_breakdown", "carry_trade"] },
+    { citation: "Krugman, Obstfeld & Melitz (2023), Ch. 15 \"Money, Interest Rates, and Exchange Rates\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "Derivação didática do overshooting de Dornbusch via o diagrama de mercado monetário/paridade de juros, mais a analogia da reforma monetária e evidência empírica de crescimento monetário vs. inflação na América Latina.", tags: ["long_run_monetary_neutrality_currency_reform_analogy", "money_growth_inflation_empirical_evidence", "hyperinflation_case_studies"] },
+    { citation: "Krugman, Obstfeld & Melitz (2023), Ch. 16 \"Price Levels and the Exchange Rate in the Long Run\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "Capítulo de PPP/abordagem monetária de longo prazo — deriva a paridade de juro real como identidade contábil, formaliza o efeito Balassa-Samuelson por trás dos modelos estilo BEER, e reporta a meia-vida de ~4 anos de Frankel & Rose.", tags: ["real_interest_rate_parity", "balassa_samuelson_effect", "ppp_deviation_half_life", "icp_ppp_measurement_methodology", "fisher_effect_uip_ppp_paradox_resolution"] },
+    { citation: "CFA Institute (CFA Level II, 2025), \"Currency Exchange Rates: Understanding Equilibrium Value\"", type: "CFA curriculum reading", scoreYear: "4 / 2025", synthesis: "A fonte sintetizadora mais densa da base (78pp) — amarra UIP, CIP, PPP ex ante, paridade de juro real e o efeito Fisher internacional num único diagrama mestre, e é a fonte direta da mecânica de distribuição de retorno do carry trade usada em toda a base.", tags: ["international_parity_conditions_synthesis", "real_interest_rate_parity", "monetary_fiscal_policy_mix_capital_mobility", "monetary_approach_to_exchange_rates", "portfolio_balance_approach", "current_account_adjustment_channels", "capital_flow_push_pull_factors", "capital_controls", "fx_intervention_effectiveness_evidence", "capital_flow_surge_reversal", "currency_crisis_warning_signs", "iceland_2008_currency_crisis", "carry_trade"] }
+  ],
+  data: [
+    ["spot_price_as_dependent_variable", "A série de PTAX (§1) é a variável dependente que todo argumento de UIP, PPP e overshooting deste cluster tenta explicar.", "data_inventory.md §1"],
+    ["carry_differential_uip_input", "Os diferenciais de juros ex-ante/ex-post e o cupom cambial (§2) são os insumos empíricos diretos da UIP/CIP e da econometria de Fama.", "data_inventory.md §2"]
+  ]
+},
+{
+  tag: "#currency_regimes",
+  title: "Regime choice, OCA theory, and the trilemma",
+  sources: [
+    { citation: "Mundell, R.A. (1961), \"A Theory of Optimum Currency Areas,\" American Economic Review", type: "Paper", scoreYear: "5 / 1961", synthesis: "O paper fundador da OCA — define o domínio ótimo para uma moeda compartilhada como a região com alta mobilidade interna e baixa mobilidade externa de fatores, não uma fronteira política qualquer.", tags: ["optimum_currency_area_definition", "interregional_vs_international_adjustment_asymmetry", "cross_cutting_regions_currency_mismatch_paradox", "optimal_number_of_currencies_tradeoff", "oca_application_european_monetary_union_debate"] },
+    { citation: "Mundell, R.A. (1963), \"Capital Mobility and Stabilization Policy Under Fixed and Flexible Exchange Rates,\" Canadian Journal of Economics", type: "Paper", scoreYear: "5 / 1963", synthesis: "O resultado fundador de Mundell-Fleming — sob mobilidade perfeita de capital, política monetária é potente sob flutuação/impotente sob fixo, e fiscal é o espelho. O trilema e todo argumento de efetividade de política fixo-vs-flutuante da base remonta a este paper.", tags: ["flow_of_funds_sectoral_balances", "mundell_fleming_model", "monetary_fiscal_policy_effectiveness_by_regime", "sterilization_policy", "central_bank_deficit_financing"] },
+    { citation: "McKinnon, R. (1963), \"Optimum Currency Areas,\" American Economic Review", type: "Paper", scoreYear: "5 / 1963", synthesis: "O segundo critério clássico de OCA (abertura econômica) — complemento padrão a Mundell (1961); junto com Kenen (1969), completa o trio canônico Mundell/McKinnon/Kenen.", gap: true, tags: [] },
+    { citation: "Kenen, P. (1969), \"The Theory of Optimum Currency Areas: An Eclectic View\"", type: "Paper", scoreYear: "5 / 1969", synthesis: "O terceiro critério clássico de OCA (diversificação da produção como buffer contra choques assimétricos) — fecha o trio canônico ao lado de Mundell (1961) e McKinnon (1963).", gap: true, tags: [] },
+    { citation: "Eichengreen, B. & Hausmann, R. (1999), \"Exchange Rates and Financial Fragility,\" NBER WP 7418", type: "Paper", scoreYear: "5 / 1999", synthesis: "O paper que cunhou \"original sin\" — muitos EMs estruturalmente não conseguem tomar dívida externa na própria moeda, o que molda a escolha de regime cambial independente da qualidade da política de cada país.", gap: true, tags: [] },
+    { citation: "Krugman, Obstfeld & Melitz (2023), Ch. 18 \"Fixed Exchange Rates and Foreign Exchange Intervention\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "A mecânica didática de defesa de uma paridade — mecânica de balanço do banco central, intervenção esterilizada vs. não-esterilizada, o canal de prêmio de risco, e a assimetria da moeda de reserva que deixou os EUA sem nunca precisar intervir sob Bretton Woods.", tags: ["central_bank_balance_sheet_mechanics", "fixed_rate_mechanics", "devaluation_revaluation_dynamics", "sterilized_intervention", "signaling_effect_of_intervention", "reserve_currency_asymmetry", "balance_of_payments_crisis_mechanics", "swiss_franc_2011_2015_defense"] },
+    { citation: "Eichengreen, B. & Kawai, M. (2014), \"Renminbi Internationalization: Achievements, Prospects, and Challenges,\" Brookings/ADBI", type: "Paper", scoreYear: "3 / 2014", synthesis: "Um estudo de caso concreto de EM não-Brasil em mecânica de flutuação administrada/status de moeda de reserva — paralelo natural ao material de posição de câmbio da BCB já na base.", gap: true, tags: [] }
+  ],
+  data: [
+    ["reserves_as_peg_defense_evidence", "Dados de reservas e intervenção da BCB (§6) são a contrapartida empírica da mecânica de defesa de paridade (Krugman Ch.18, Mundell 1963).", "data_inventory.md §6"],
+    ["reer_em_peer_comparison_gap", "O conjunto de pares EM do REER (§7) fecharia o gap de profundidade não-Brasil sinalizado neste cluster.", "data_inventory.md §7"]
+  ]
+},
+{
+  tag: "#balance_of_payments",
+  title: "Trade, capital flows, and the accounting identities",
+  sources: [
+    { citation: "Krugman, Obstfeld & Melitz (2023), Ch. 13 \"National Income Accounting and the Balance of Payments\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "A espinha de identidades contábeis de todo o cluster de balanço de pagamentos — X−M=(S−I)+(T−G), a decomposição de twin deficits, e a estrutura BPM6 sobre a qual fontes posteriores (BEER de Paiva, o modelo GSFEER) constroem diretamente.", tags: ["national_income_identity_open_economy", "twin_deficits_identity", "balance_of_payments_accounting_structure", "global_current_account_discrepancy_puzzle", "gdp_measurement_distortion_case"] }
+  ],
+  data: [
+    ["bop_identity_empirical_counterpart", "Dados de conta corrente, conta financeira e investimento em carteira (§4) são a instanciação empírica direta das identidades contábeis deste cluster.", "data_inventory.md §4"],
+    ["terms_of_trade_bop_mechanism", "Termos de troca (§3) operam pela mecânica de balança comercial deste cluster tanto quanto pelos modelos de valuation.", "data_inventory.md §3"],
+    ["fx_flow_current_account_channel", "Fluxo cambial registrado (§5) é a contrapartida empírica do canal de oferta/demanda de fluxo no ajuste de conta corrente.", "data_inventory.md §5"]
+  ]
+},
+{
+  tag: "#policy_transmission",
+  title: "Monetary & fiscal policy under different regimes, and its politics",
+  noData: true,
+  sources: [
+    { citation: "Frieden, J. (1991), \"Invested Interests: The Politics of National Economic Policies in a World of Global Finance,\" International Organization", type: "Paper", scoreYear: "5 / 1991", synthesis: "O paper canônico de economia política do câmbio — mapeia quais setores domésticos favorecem estabilidade cambial vs. autonomia de política, e uma moeda fraca vs. forte.", tags: ["sectoral_exchange_rate_preferences_framework", "tradables_nontradables_level_preference", "monetary_fiscal_mix_sectoral_coalition_politics", "capital_mobility_reshapes_political_coalitions", "emu_erm_political_economy_prediction", "international_policy_coordination_sectoral_support"] },
+    { citation: "Krugman, Obstfeld & Melitz (2023), Ch. 17 \"Output and the Exchange Rate in the Short Run\"", type: "Textbook chapter", scoreYear: "4 / 2023", synthesis: "O modelo DD-AA mais a condição de Marshall-Lerner e a J-curve — as condições formais de elasticidade sob as quais uma depreciação de fato melhora (em vez de piorar) a balança comercial.", tags: [] },
+    { citation: "Broz, J.L. & Frieden, J. (2001), \"The Political Economy of International Monetary Relations,\" Annual Review of Political Science", type: "Paper (survey)", scoreYear: "3 / 2001", synthesis: "Survey de fonte única do campo de economia política cambial — útil como visão geral mais ampla ao lado do paper original de Frieden (1991).", gap: true, tags: [] }
+  ]
+},
+{
+  tag: "#applied_valuation_tools",
+  title: "Estimating the \"equilibrium\" exchange rate",
+  sources: [
+    { citation: "Paiva, C. (2006), \"External Adjustment and Equilibrium Exchange Rate in Brazil,\" IMF WP/06/221", type: "Paper", scoreYear: "4 / 2006", synthesis: "Aplica a metodologia BEER ao Brasil via cointegração de Johansen — encontra que a apreciação do real em 2003-05 foi majoritariamente um fenômeno de equilíbrio (NFA + termos de troca).", tags: ["behavioral_equilibrium_exchange_rate", "beer_fundamentals", "cointegration_vec_methodology", "brazil_beer_2003_05_appreciation", "balassa_samuelson_effect", "uncovered_interest_rate_parity"] },
+    { citation: "Bhushan & Cahill, Goldman Sachs (2023), \"GSDEER — A User's Guide\"", type: "Practitioner research note", scoreYear: "3 / 2023", synthesis: "Nota de metodologia do próprio Goldman para o modelo GSDEER (PPP ajustado por termos de troca e produtividade) — documenta qual componente domina o fair value por moeda e o timeline empírico de convergência.", tags: ["gsdeer_model", "fair_value_convergence_vs_anchor_distinction", "gsdeer_horizon_dynamics", "gsdeer_cross_country_heterogeneity", "out_of_sample_forecast_evaluation"] },
+    { citation: "Alves & Jenkins, Goldman Sachs (2025), \"Primer: GSDEER and GSFEER\"", type: "Practitioner research note", scoreYear: "3 / 2025", synthesis: "Introduz o GSFEER (o primo família-macro-balance do GSDEER) e os pesos de blending dos dois modelos do próprio Goldman por horizonte. Sinaliza que GSDEER e GSFEER hoje dão sinais direcionalmente diferentes para o BRL.", tags: ["gsfeer_model", "gsdeer_gsfeer_model_blending", "convergence_rate_heterogeneity_drivers", "brl_gsdeer_gsfeer_divergence"] }
+  ],
+  data: [
+    ["beer_gsdeer_fundamental_inputs", "O diferencial de juro real (§2), termos de troca (§3) e o próprio REER (§7) são exatamente o driver set do BEER/GSDEER.", "data_inventory.md §2, §3, §7"],
+    ["spot_price_valuation_target", "O preço à vista (§1) é o que todo modelo de valuation deste cluster (BEER, GSDEER, GSFEER) estima um fair value de.", "data_inventory.md §1"]
+  ]
+},
+{
+  tag: "#capital_controls",
+  title: "Restrictions on capital flows as a policy tool",
+  sources: [
+    { citation: "Ostry, Ghosh, Habermeier, Chamon, Qureshi & Reinhardt, IMF (2010), \"Capital Inflows: The Role of Controls,\" SPN/10/04", type: "Paper", scoreYear: "4 / 2010", synthesis: "O precursor empírico/pragmático da visão institucional posterior do FMI — a sequência de decisão de política (apreciar → acumular reservas → esterilizar → política monetária/fiscal → controles por último) e um teste de quatro condições.", tags: ["capital_inflow_response_toolkit", "capital_controls_justification_conditions", "sand_in_the_wheels_circumvention_tolerance", "pecking_order_of_capital_inflows_riskiness", "capital_controls_effectiveness_stylized_facts", "multilateral_spillover_caveat_capital_controls"] },
+    { citation: "IMF Staff — Arora, Habermeier, Ostry, Weeks-Brown et al. (2012), \"The Liberalization and Management of Capital Flows: An Institutional View\"", type: "Official institutional doctrine", scoreYear: "5 / 2012", synthesis: "A doutrina oficial permanente do FMI sobre liberalização e gestão da conta de capital — introduz a distinção CFM/MPM, um framework de sequenciamento de liberalização, e critérios explícitos de desenho.", tags: ["cfm_mpm_terminology_and_overlap", "integrated_approach_liberalization_sequencing", "cfm_appropriateness_conditions_2012", "source_country_spillover_responsibility", "institutional_view_as_policy_compromise"] },
+    { citation: "Chamon, M. & Garcia, M. (2016), \"Capital Controls in Brazil: Effective?\" Journal of International Money and Finance", type: "Paper", scoreYear: "4 / 2016", synthesis: "Teste empírico direto do episódio do IOF no Brasil (2008-2012) — o complemento Brasil-específico que falta ao framework geral de controle de capital.", gap: true, tags: [] }
+  ],
+  data: [
+    ["bop_instrument_riskiness_data", "O split FDI-vs-portfolio dentro de balanço de pagamentos (§4) é a contrapartida empírica direta do ranking de riscos de Ostry et al. (2010) e das questões de desenho CFM/MPM.", "data_inventory.md §4"]
+  ]
+},
+{
+  tag: "#currency_crisis_dynamics",
+  title: "How currency crises build and break",
+  sources: [
+    { citation: "Krugman, P. (1979), \"A Model of Balance-of-Payments Crises,\" Journal of Money, Credit and Banking", type: "Paper", scoreYear: "5 / 1979", synthesis: "O modelo fundador de primeira geração — um governo financiando déficit via emissão monetária queima reservas mecanicamente; especuladores racionais atacam antes do esgotamento, no exato momento que evita uma perda de capital previsível.", tags: ["krugman_1979_first_generation_model", "speculative_attack_timing_condition", "one_way_option_uncertain_reserves", "reserve_loss_trade_balance_decoupling"] },
+    { citation: "Flood, R.P. & Garber, P.M. (1983/84), \"Collapsing Exchange-Rate Regimes: Some Linear Examples,\" Journal of International Economics", type: "Paper", scoreYear: "4 / 1983", synthesis: "O companheiro linear e fechado padrão de Krugman (1979) — introduz a técnica da \"taxa de câmbio sombra\" e mostra que fixar a taxa não elimina o risco de bolha especulativa autorrealizável, só realoca quando ele se manifesta.", tags: ["shadow_floating_exchange_rate", "arbitrary_speculative_bubbles_under_fixed_rates", "stochastic_collapse_forward_discount", "offset_coefficient_exceeding_unity"] },
+    { citation: "Obstfeld, M. (1984), \"Balance-of-Payments Crises and Devaluation,\" NBER WP 1486", type: "Paper", scoreYear: "5 / 1984", synthesis: "O modelo original de segunda geração, autorrealizável — prova que uma função de reação de política contingente à própria crise é o que torna possíveis múltiplos equilíbrios.", tags: ["rational_vs_self_fulfilling_crisis_distinction", "self_fulfilling_multiple_equilibria_crisis", "crisis_risk_premium_before_collapse", "policy_contingent_indeterminacy_mechanism", "extrinsic_uncertainty_bank_run_analogy"] },
+    { citation: "Obstfeld, M. (1994), \"The Logic of Currency Crises,\" NBER WP 4640", type: "Paper (survey)", scoreYear: "3 / 1994", synthesis: "Síntese acessível de fonte única unindo a lógica de primeira e segunda geração — útil se uma narrativa unificada for preferida aos dois papers originais densos.", gap: true, tags: [] },
+    { citation: "Chang, R. & Velasco, A. (1998), \"Financial Crises in Emerging Markets: A Canonical Model,\" FRB Atlanta WP 98-10 / NBER WP 6606", type: "Paper", scoreYear: "5 / 1998", synthesis: "Um dos dois modelos concorrentes de terceira geração da crise asiática de 1997-98 — um modelo Diamond-Dybvig de economia aberta com um critério de iliquidez preciso e falseável.", tags: ["open_economy_diamond_dybvig_illiquidity_model", "bank_illiquidity_necessary_and_sufficient_condition", "foreign_creditor_panic_ongoing_lending", "short_term_debt_maturity_fragility_channel", "financial_liberalization_fragility_tradeoff", "endogenous_fundamental_value_asset_crash", "currency_board_vs_lolr_crisis_relocation", "international_lender_of_last_resort_case"] },
+    { citation: "Krugman, P. (1999/2000), \"Balance Sheets, the Transfer Problem, and Financial Crises,\" IMF Staff Papers", type: "Paper", scoreYear: "5 / 2000", synthesis: "O outro modelo concorrente de terceira geração — um loop puro de balanço patrimonial/descasamento cambial do setor privado, e a reversão pública explícita do próprio Krugman sobre crises autorrealizáveis.", tags: ["krugman_capitulation_on_self_fulfilling_crises", "moral_hazard_vs_diamond_dybvig_asian_crisis_debate", "balance_sheet_currency_mismatch_investment_channel", "transfer_problem_current_account_reversal", "currency_mismatch_vs_maturity_mismatch_distinction", "stabilization_dilemma_price_vs_quantity_adjustment", "garber_generational_taxonomy_critique"] },
+    { citation: "Garcia, M. & Valpassos, M. (1998), \"Capital Flows, Capital Controls and Currency Crisis: The Case of Brazil in the Nineties\"", type: "Paper", scoreYear: "3 / 1998", synthesis: "Liga a teoria de crise diretamente à desvalorização do Real em 1999 — o complemento de estudo de caso brasileiro que falta ao conjunto de modelos acadêmicos, majoritariamente não-Brasil, deste cluster.", gap: true, tags: [] }
+  ],
+  data: [
+    ["reserve_depletion_crisis_mechanics_data", "Dados de reservas e intervenção (§6) são a contrapartida empírica da mecânica de esgotamento de reservas no núcleo dos modelos de primeira geração.", "data_inventory.md §6"],
+    ["positioning_unwind_crisis_amplifier_data", "Posicionamento especulativo (§8) rastreia o desmonte de posições alavancadas que amplifica o padrão de surto-e-reversão de fluxo.", "data_inventory.md §8"]
+  ]
+},
+{
+  tag: "#practitioner_mental_models",
+  title: "How specific macro funds actually reason about BRL/USD",
+  sources: [
+    { citation: "\"Modelos Mentais de Câmbio — Verde Asset Management (2020–2026)\" (síntese interna, exchange_rate_policy/verde_fx_mental_models.md)", type: "Practitioner mental-model synthesis (internal)", scoreYear: "Feito", synthesis: "Consolidado de 73 cartas mensais (jan/2020–mai/2026), 507 instâncias de modelos mentais identificadas, organizadas em 5 clusters temáticos, cada uma com aplicações reais datadas e citadas.", tags: ["verde_1_1_credibilidade_arcabouco_fiscal", "verde_2_1_balanca_comercial_ancora", "verde_2_2_termos_de_troca", "verde_3_1_diferencial_juros_carry", "verde_3_2_nivel_juro_real", "verde_3_4_cupom_cambial", "verde_5_3_posicionamento_sinal_contrario"] },
+    { citation: "Kinea Insights — síntese de modelos mentais", type: "Practitioner mental-model synthesis (internal, pendente)", scoreYear: "Placeholder", synthesis: "Material bruto já coletado (~60 cartas Kinea Insights, 2021-2026, em agent_bibliography/mental_model/kinea_insights/). Construir o documento equivalente ao do Verde fica para uma sessão futura.", gap: true, tags: [] }
+  ],
+  data: [
+    ["verde_carry_data_link", "Dados de carry/diferencial de juros (§2) sustentam os modelos §3.1/§3.2/§3.4 de Verde.", "data_inventory.md §2"],
+    ["verde_terms_of_trade_data_link", "Termos de troca (§3) sustentam o framework §2.1/§2.2 de superávit estrutural vs. cíclico.", "data_inventory.md §3"],
+    ["verde_positioning_data_link", "Dados de posicionamento especulativo (§8) sustentam o modelo §5.3 de posicionamento como sinal contrário.", "data_inventory.md §8"]
+  ]
+}
+];
+
+const wrap = document.getElementById('diagramWrap');
+const row = document.getElementById('clusterRow');
+const svg = document.getElementById('connectors');
+const rootNode = document.getElementById('rootNode');
+const panel = document.getElementById('detailPanel');
+let activeIndex = null;
+
+function renderBoxes() {
+  row.innerHTML = CLUSTERS.map((c, i) => {
+    const nSources = c.sources.length;
+    const nTags = c.sources.reduce((sum, s) => sum + (s.tags ? s.tags.length : 0), 0);
+    return `
+    <div class="cluster-box${c.noData ? ' nolink' : ''}" data-idx="${i}">
+      <div class="idx">${i + 1}</div>
+      <div class="tag">${c.tag}</div>
+      <div class="title">${c.title}</div>
+      <div class="count">${nSources} fontes · ${nTags} tags</div>
+    </div>`;
+  }).join('');
+}
+
+function drawConnectors() {
+  const wrapRect = wrap.getBoundingClientRect();
+  svg.setAttribute('width', wrapRect.width);
+  svg.setAttribute('height', wrapRect.height);
+  svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+  const rootRect = rootNode.getBoundingClientRect();
+  const x1 = rootRect.left - wrapRect.left + rootRect.width / 2;
+  const y1 = rootRect.bottom - wrapRect.top;
+
+  const boxes = row.querySelectorAll('.cluster-box');
+  let paths = '';
+  boxes.forEach((box, i) => {
+    const r = box.getBoundingClientRect();
+    const x2 = r.left - wrapRect.left + r.width / 2;
+    const y2 = r.top - wrapRect.top;
+    const dy = Math.max((y2 - y1) / 2, 20);
+    const isActive = i === activeIndex;
+    const stroke = isActive ? 'var(--lis-dourado)' : 'var(--line)';
+    const width = isActive ? 2.5 : 1.4;
+    paths += `<path d="M ${x1},${y1} C ${x1},${y1 + dy} ${x2},${y2 - dy} ${x2},${y2}" fill="none" stroke="${stroke}" stroke-width="${width}" />`;
+  });
+  svg.innerHTML = paths;
+}
+
+function renderDetail(i) {
+  if (i === null) {
+    panel.classList.remove('nolink');
+    panel.innerHTML = `<div class="detail-empty">Selecione um cluster para ver suas referências e dados.</div>`;
+    return;
+  }
+  const c = CLUSTERS[i];
+
+  const refsHtml = c.sources.map(s => {
+    const tagsHtml = (s.tags && s.tags.length)
+      ? `<div class="ref-tags">${s.tags.map(t => `<span class="tag-chip">[${t}]</span>`).join('')}</div>`
+      : `<div class="ref-no-tags">sem conceitos extraídos ainda${s.gap ? ' — fonte não adquirida' : ''}</div>`;
+    return `
+      <div class="ref-item${s.gap ? ' gap' : ''}">
+        <div class="ref-top">
+          <div class="ref-citation">${s.citation}</div>
+          <div class="ref-meta">${s.type}<br><span class="score">${s.scoreYear}</span></div>
+        </div>
+        <div class="ref-synthesis">${s.synthesis}</div>
+        ${tagsHtml}
+      </div>`;
+  }).join('');
+
+  const dataHtml = (c.data || []).map(([name, gloss, src]) =>
+    `<li><b>${name}</b> — ${gloss} <span class="ref-meta" style="display:inline">(${src})</span></li>`
+  ).join('');
+  const dataBlock = c.noData
+    ? `<div class="no-data-note">Nenhum dado associado a este cluster hoje — é o cluster mais puramente teórico da base (Mundell-Fleming, economia política de Frieden) e não é o tipo de argumento que uma série de tempo isolada valida diretamente.</div>`
+    : `<ul class="data-list">${dataHtml}</ul>`;
+
+  panel.classList.toggle('nolink', !!c.noData);
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <div class="tag">${c.tag}</div>
+        <div class="title">${c.title}</div>
+      </div>
+      <button class="close-btn" id="closeDetail">fechar ✕</button>
+    </div>
+    <div class="detail-columns">
+      <div class="col refs">
+        <h4>Referências bibliográficas (${c.sources.length})</h4>
+        <div class="ref-list">${refsHtml}</div>
+      </div>
+      <div class="col data">
+        <h4>Dados envolvidos</h4>
+        ${dataBlock}
+      </div>
+    </div>`;
+  document.getElementById('closeDetail').addEventListener('click', () => selectCluster(null));
+}
+
+function selectCluster(i) {
+  activeIndex = i;
+  row.querySelectorAll('.cluster-box').forEach((box, idx) => {
+    box.classList.toggle('active', idx === i);
+  });
+  drawConnectors();
+  renderDetail(i);
+}
+
+renderBoxes();
+row.addEventListener('click', (e) => {
+  const box = e.target.closest('.cluster-box');
+  if (!box) return;
+  const idx = Number(box.dataset.idx);
+  selectCluster(idx === activeIndex ? null : idx);
+});
+rootNode.addEventListener('click', () => selectCluster(null));
+
+requestAnimationFrame(drawConnectors);
+window.addEventListener('resize', drawConnectors);
+new ResizeObserver(drawConnectors).observe(wrap);
+</script>
+</body>
+</html>

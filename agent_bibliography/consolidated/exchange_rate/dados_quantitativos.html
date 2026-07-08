@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Exchange Rate — Data Explorer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --lis-azul:    #1F2853;
+    --lis-dourado: #BB9B1D;
+    --lis-verde:   #418791;
+    --lis-azul-cl: #02739B;
+    --lis-laranja: #EA523A;
+    --lis-cinza:   #BFBFBF;
+
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --text: #1a1d29;
+    --text-muted: #5a5f70;
+    --border: #d7dae2;
+    --line: #9aa0b4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161f; --card-bg: #1c1f2b; --text: #e8e9ee; --text-muted: #9aa0b4; --border: #333748; --line: #4a4f66;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161f; --card-bg: #1c1f2b; --text: #e8e9ee; --text-muted: #9aa0b4; --border: #333748; --line: #4a4f66;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f6f8; --card-bg: #ffffff; --text: #1a1d29; --text-muted: #5a5f70; --border: #d7dae2; --line: #9aa0b4;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header { background: var(--lis-azul); color: #fff; padding: 26px 24px 20px; }
+  header h1 { margin: 0 0 6px; font-size: 1.45rem; font-weight: 700; }
+  header p { margin: 0; color: #c7cbe0; font-size: 0.9rem; max-width: 900px; }
+
+  main { max-width: 1160px; margin: 0 auto; padding: 34px 16px 60px; }
+
+  .diagram-wrap { position: relative; padding-top: 6px; overflow-x: auto; }
+  #connectors { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .root-node {
+    position: relative; z-index: 2; width: 200px; margin: 0 auto 76px;
+    background: var(--lis-verde); color: #fff; border-radius: 12px; padding: 16px 12px;
+    text-align: center; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    border: 2px solid var(--lis-verde); transition: box-shadow 0.15s;
+  }
+  .root-node:hover { box-shadow: 0 6px 22px rgba(187,155,29,0.35); }
+  .root-node .root-label { font-weight: 700; font-size: 1.05rem; }
+  .root-node .root-sub { font-size: 0.7rem; color: #d9eef1; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+
+  .cluster-row { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 16px 14px; justify-content: center; min-width: 860px; }
+  .cluster-box {
+    width: 150px; min-height: 92px; background: var(--card-bg); border: 2px solid var(--border);
+    border-radius: 10px; padding: 10px 8px; cursor: pointer; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+  }
+  .cluster-box:hover { border-color: var(--lis-verde); transform: translateY(-2px); }
+  .cluster-box.active { border-color: var(--lis-verde); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lis-verde) 22%, transparent); }
+  .cluster-box .idx {
+    width: 20px; height: 20px; border-radius: 5px; background: var(--lis-verde); color: #fff;
+    font-size: 0.68rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;
+  }
+  .cluster-box .title { font-size: 0.78rem; font-weight: 600; margin-top: 2px; }
+  .cluster-box .count { font-size: 0.64rem; color: var(--text-muted); margin-top: 5px; }
+
+  .hint { text-align: center; color: var(--text-muted); font-size: 0.82rem; margin-top: 28px; }
+
+  .detail-panel {
+    margin-top: 30px; background: var(--card-bg); border: 1px solid var(--border);
+    border-left: 4px solid var(--lis-verde); border-radius: 10px; padding: 18px 20px 20px; min-height: 80px;
+  }
+  .detail-empty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px 0; }
+  .detail-header {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    margin-bottom: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .detail-header .idx-title { display: flex; align-items: center; gap: 10px; }
+  .detail-header .num {
+    width: 26px; height: 26px; border-radius: 7px; background: var(--lis-verde); color: #fff;
+    font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .detail-header .title { font-size: 1.02rem; font-weight: 700; }
+  .close-btn {
+    background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted);
+    cursor: pointer; padding: 4px 10px; font-size: 0.78rem; flex: 0 0 auto;
+  }
+  .close-btn:hover { border-color: var(--lis-laranja); color: var(--lis-laranja); }
+
+  .intro { font-size: 0.92rem; color: var(--text-muted); margin: 12px 0 18px; font-style: italic; }
+
+  .section-h { font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--lis-verde); font-weight: 700; margin: 0 0 10px; }
+
+  table.series-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-bottom: 26px; }
+  table.series-table th {
+    text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--text-muted); border-bottom: 1px solid var(--border); padding: 6px 10px 6px 0;
+  }
+  table.series-table td { padding: 9px 10px 9px 0; border-bottom: 1px dashed var(--border); vertical-align: top; }
+  table.series-table tr:last-child td { border-bottom: none; }
+  table.series-table .series-name { font-weight: 600; }
+  table.series-table .series-src { color: var(--lis-azul-cl); white-space: nowrap; font-size: 0.8rem; }
+  table.series-table .series-freq { color: var(--text-muted); white-space: nowrap; font-size: 0.8rem; }
+  table.series-table .series-why { color: var(--text-muted); }
+
+  .ground-list { display: flex; flex-direction: column; gap: 10px; }
+  .ground-item {
+    border: 1px solid var(--border); border-radius: 9px; padding: 11px 13px;
+    background: color-mix(in srgb, var(--lis-dourado) 5%, transparent);
+  }
+  .ground-item.gap { border-style: dashed; opacity: 0.85; }
+  .ground-tag { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--lis-azul-cl); font-weight: 700; font-size: 0.86rem; }
+  .ground-note { font-size: 0.83rem; color: var(--text-muted); margin-top: 4px; }
+  .ground-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .tag-chip {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.68rem;
+    background: color-mix(in srgb, var(--lis-dourado) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lis-dourado) 40%, transparent);
+    color: var(--text); border-radius: 5px; padding: 2px 7px;
+  }
+
+  footer { max-width: 1160px; margin: 0 auto; padding: 0 16px 40px; color: var(--text-muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Exchange Rate — Data Explorer</h1>
+  <p>As 8 categorias de dados de <code>data_inventory.md</code>, embaixo do mesmo agente macro. Clique numa categoria para ver as séries que a compõem, por que cada uma importa, e o embasamento na literatura de <code>bibliography.md</code> (com os conceitos-tag <code>[tag]</code> correspondentes).</p>
+</header>
+<main>
+  <div class="diagram-wrap" id="diagramWrap">
+    <svg id="connectors"></svg>
+    <div class="root-node" id="rootNode" title="Clique para limpar a seleção">
+      <div class="root-label">Exchange Rate</div>
+      <div class="root-sub">dados</div>
+    </div>
+    <div class="cluster-row" id="clusterRow"></div>
+  </div>
+  <div class="hint">clique em qualquer categoria de dado acima</div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty">Selecione uma categoria de dado para ver as séries e o embasamento na literatura.</div>
+  </div>
+</main>
+<footer>
+  Gerado a partir de <code>agent_bibliography/consolidated/exchange_rate/</code> — não modifica nenhum arquivo original. Embasamentos marcados com borda tracejada apontam para lacunas de literatura ainda não fechadas (ver <code>bibliography.md</code>).
+</footer>
+
+<script>
+const CATEGORIES = [
+{
+  title: "1. Spot price",
+  intro: "A variável dependente central de toda a análise cambial — sem ela, nenhum argumento sobre \"o real está caro ou barato\" pode ser testado contra o preço de fato.",
+  series: [
+    ["USD/BRL PTAX (venda)", "BCB SGS 1 (ou SGS 10813, fechamento)", "Diária, desde 1984", "A variável dependente — toda outra categoria deste inventário existe para explicar movimentos nesta série."]
+  ],
+  grounding: [
+    { tag: "#exchange_rate_determination", note: "É a variável dependente que todo argumento de UIP, PPP e overshooting deste cluster tenta explicar.", tags: ["uncovered_interest_rate_parity", "purchasing_power_parity", "overshooting_model"] },
+    { tag: "#applied_valuation_tools", note: "É o que todo modelo de valuation deste cluster (BEER, GSDEER, GSFEER) estima um fair value de.", tags: ["behavioral_equilibrium_exchange_rate", "gsdeer_model", "gsfeer_model"] }
+  ]
+},
+{
+  title: "2. Carry / rate differential",
+  intro: "O driver mais rápido e mais citado de fluxo para o BRL — mas a própria Verde é explícita que carry sozinho não basta quando risco fiscal ou risk-off global dominam.",
+  series: [
+    ["Selic (nominal)", "BCB SGS 432", "Diária/mensal, desde 1996", "A perna doméstica de todo argumento de carry."],
+    ["Fed Funds (nominal)", "FRED (FEDFUNDS)", "Mensal, desde 1954", "A perna estrangeira."],
+    ["Diferencial nominal ex-post", "Selic − Fed Funds", "Derivado", "O sinal de carry mais simples."],
+    ["IPCA (cheio + núcleos)", "BCB SGS", "Mensal, desde 1980", "A perna de inflação doméstica necessária para transformar a Selic nominal em juro real."],
+    ["US CPI", "FRED", "Mensal", "A perna de inflação estrangeira, simétrica ao IPCA."],
+    ["Diferencial real ex-post", "(Selic − IPCA 12m) vs. (Fed Funds − CPI 12m)", "Derivado", "A comparação relevante para a UIP — retira o efeito puro do diferencial de inflação do sinal de juro real."],
+    ["Expectativas Focus (IPCA 12m/24m, IGP-M, Selic)", "BCB Focus/Olinda", "Semanal, desde 2001", "O insumo doméstico forward-looking que o diferencial ex-ante precisa, e a matéria-prima de qualquer argumento de credibilidade/ancoragem."],
+    ["Diferencial ex-ante", "Focus Selic 12m × trajetória implícita do Fed Funds; Focus IPCA 12m × breakevens dos EUA", "Derivado, forward-looking", "O que o mercado está de fato precificando — o insumo que a UIP e os modelos de fair value realmente precisam."],
+    ["Cupom cambial (DDI/FRC)", "B3", "Diária", "O gauge da própria BCB para o custo da liquidez em dólar onshore — a instância local do conceito de CIP-basis."],
+    ["Curva de futuros DOL/WDO", "B3", "Diária", "Pontos forward implícitos de mercado, o complemento no nível de instrumento ao cupom cambial."]
+  ],
+  grounding: [
+    { tag: "#exchange_rate_determination", note: "O diferencial ex-ante/ex-post e o cupom cambial são os insumos empíricos diretos da UIP/CIP e da econometria de Fama.", tags: ["uncovered_interest_rate_parity", "covered_interest_rate_parity", "international_parity_conditions_synthesis", "real_interest_rate_parity", "fama_regression_decomposition"] },
+    { tag: "#applied_valuation_tools", note: "O diferencial de juro real é um dos drivers fundamentais canônicos do BEER.", tags: ["beer_fundamentals"] },
+    { tag: "#currency_regimes", note: "Sob paridade fixa, o juro doméstico fica preso ao mundial — a mecânica formal por trás de qualquer argumento de carry sob regime administrado.", tags: ["fixed_rate_mechanics", "mundell_fleming_model"] },
+    { tag: "#practitioner_mental_models", note: "Base do framework de carry da Verde: suporte ao BRL, âncora de juro real e o cupom cambial como instrumento operado separadamente.", tags: ["verde_3_1_diferencial_juros_carry", "verde_3_2_nivel_juro_real", "verde_3_4_cupom_cambial"] }
+  ]
+},
+{
+  title: "3. Terms of trade",
+  intro: "Determina se o superávit comercial é estrutural (durável, via volume) ou cíclico (reversível, via preço) — a distinção central para julgar se a força do BRL vai durar.",
+  series: [
+    ["Índice de termos de troca (razão preço exportação/importação)", "BCB SGS 22099, 22100", "Mensal", "O sinal agregado de termos de troca por trás de todo argumento cambial de exportador de commodities."],
+    ["Preços de commodities individuais em USD (minério, soja, Brent/WTI)", "Externo (ex. World Bank Pink Sheet, bolsas de futuros)", "Diária/mensal", "Decompõe qual commodity está de fato puxando o movimento de termos de troca — necessário para distinguir superávit estrutural (volume) de cíclico (preço)."]
+  ],
+  grounding: [
+    { tag: "#applied_valuation_tools", note: "Termos de troca são um driver fundamental canônico do BEER e o canal central do GSFEER.", tags: ["beer_fundamentals", "gsfeer_model"] },
+    { tag: "#balance_of_payments", note: "Termos de troca operam pela mecânica de balança comercial dentro da identidade de conta corrente.", tags: ["trade_balance_capital_account_identity"] },
+    { tag: "#practitioner_mental_models", note: "Base do framework da Verde de superávit estrutural (volume) vs. cíclico (preço) e da sustentabilidade do superávit via termos de troca.", tags: ["verde_2_1_balanca_comercial_ancora", "verde_2_2_termos_de_troca"] }
+  ]
+},
+{
+  title: "4. Balance of payments",
+  intro: "A contabilidade que qualquer argumento de fluxo, déficit ou vulnerabilidade a crise tem que respeitar por construção — identidade, não opinião.",
+  series: [
+    ["Conta corrente, balança comercial+serviços, exportação de bens", "BCB (BPM6)", "Mensal, desde 2001", "A contrapartida de fluxo da identidade trade-balance/conta-de-capital na base de todo o cluster de determinação."],
+    ["Conta financeira, IDP (líquido, ingressos), IDE saídas", "BCB (BPM6)", "Mensal, desde 2001", "FDI é o instrumento \"mais seguro\" no ranking de risco de Ostry et al. (2010) — rastreá-lo separado do portfólio importa para ler vulnerabilidade a crise."],
+    ["Investimento em carteira (total, ações, renda fixa)", "BCB (BPM6)", "Mensal, desde 2001", "O contraponto mais arriscado e reversível ao FDI — o split de instrumento em torno do qual a literatura de controle de capital é construída."]
+  ],
+  grounding: [
+    { tag: "#balance_of_payments", note: "Instanciação empírica direta das identidades contábeis do cluster.", tags: ["trade_balance_capital_account_identity", "twin_deficits_identity", "balance_of_payments_accounting_structure"] },
+    { tag: "#capital_controls", note: "O split FDI-vs-portfólio é a base do ranking de risco de instrumentos de capital de Ostry et al. (2010) e das questões de desenho CFM/MPM.", tags: ["pecking_order_of_capital_inflows_riskiness", "capital_controls_justification_conditions"] }
+  ]
+},
+{
+  title: "5. FX flow",
+  intro: "A visão transacional e de mais alta frequência de quem está de fato comprando e vendendo dólares no mercado onshore — diferente, e não substituta, do balanço de pagamentos.",
+  series: [
+    ["Fluxo cambial registrado — saldo total/comercial/financeiro", "BCB Nota Cambial", "Semanal/mensal, desde 2003", "A medida de fluxo mais ampla via canais registrados — a contrapartida empírica do canal de oferta/demanda no ajuste de conta corrente."],
+    ["Fluxo cambial registrado — subitens CEP/CBE", "BCB Nota Cambial", "Semanal", "Granularidade mais fina do lado financeiro do que o agregado acima."],
+    ["Câmbio contratado — liquidações banco-cliente (totais diários)", "BCB Tabelas 13/14", "Diária, desde set/2008", "A visão transacional de liquidação — conceitualmente distinta do fluxo registrado, não um substituto."],
+    ["Câmbio contratado — detalhamento financeiro mensal", "BCB Tabelas 13/14", "Mensal, desde 1982/2011", "Histórico mais longo e categorização mais fina que a série diária."]
+  ],
+  grounding: [
+    { tag: "#market_microstructure", note: "O fluxo cambial registrado/contratado é a contrapartida transacional da nota técnica da BCB sobre plumbing cambial.", tags: ["posicao_de_cambio", "bcb_fx_intervention_toolkit"] },
+    { tag: "#balance_of_payments", note: "Contrapartida empírica do canal de oferta/demanda de fluxo no ajuste de conta corrente.", tags: ["current_account_adjustment_channels"] }
+  ]
+},
+{
+  title: "6. Reserves & intervention",
+  intro: "Quanta munição o BCB tem e o que está fazendo com ela agora — a distinção entre estoque e fluxo que separa \"capacidade\" de \"ação\".",
+  series: [
+    ["Reservas totais e por componente (títulos em FX, depósitos, FMI, DES, ouro, outros)", "BCB", "Mensal", "O lado do estoque de \"quanta munição o BCB tem\" — central a todo argumento de defesa de paridade fixa/administrada."],
+    ["Reservas — total e conceito de liquidez", "BCB", "Diária", "Leitura de maior frequência do mesmo estoque."],
+    ["Posição líquida de câmbio dos bancos", "BCB SGS 21195", "Mensal", "O espelho, no sistema bancário, do carry trade — quem está de fato comprado/vendido em FX onshore."],
+    ["Swap cambial do BCB — posição líquida", "BCB SGS 29533", "Mensal", "O instrumento de hedge fora do balanço que o BCB usa em vez de intervenção à vista."],
+    ["Estoque de linhas de repo/empréstimos em FX", "BCB SGS 29534", "Mensal", "Instrumento de liquidez temporária, distinto de uma mudança permanente de reservas."],
+    ["Intervenções do BCB — à vista, forwards, empréstimos/repos, linhas de repo", "BCB", "Diária (esparsa, só dias de intervenção)", "O lado do fluxo de \"o que o BCB está fazendo agora\", distinguível do estoque acima."]
+  ],
+  grounding: [
+    { tag: "#market_microstructure", note: "O toolkit de intervenção e a posição líquida de FX dos bancos são exatamente o que a nota técnica da BCB documenta.", tags: ["bcb_fx_intervention_toolkit", "posicao_vendida_carry_incentive", "cupom_cambial_spread"] },
+    { tag: "#currency_regimes", note: "Central a todo argumento de defesa de paridade fixa/administrada — de quanta munição o BCB efetivamente dispõe.", tags: ["fixed_rate_mechanics", "central_bank_balance_sheet_mechanics", "reserve_currency_asymmetry"] },
+    { tag: "#currency_crisis_dynamics", note: "O esgotamento de reservas é o mecanismo formal no núcleo dos modelos de crise de primeira geração.", tags: ["krugman_1979_first_generation_model", "balance_of_payments_crisis_mechanics"] }
+  ]
+},
+{
+  title: "7. REER",
+  intro: "O benchmark de valorização relativa que ancora qualquer julgamento de \"o real está sobre ou subvalorizado\".",
+  series: [
+    ["REER real (amplo) e nominal (amplo) — Brasil", "BIS", "Mensal, desde 1994", "O benchmark central de valuation de equilíbrio por trás de argumentos estilo BEER/GSDEER."],
+    ["O mesmo, para um conjunto de pares EM (México, Chile, Colômbia; idealmente também Turquia, África do Sul, Índia)", "BIS", "Mensal", "Permite ler o movimento do REER do BRL relativo a pares em vez de isoladamente — a profundidade não-Brasil da base ainda é rasa."]
+  ],
+  grounding: [
+    { tag: "#applied_valuation_tools", note: "REER é o insumo de entrada de qualquer estimativa BEER/GSDEER/GSFEER.", tags: ["behavioral_equilibrium_exchange_rate", "gsdeer_model", "gsdeer_cross_country_heterogeneity"] }
+  ],
+  gapNote: "O conjunto de pares EM (México, Chile, Colômbia) fecharia parcialmente o gap de profundidade não-Brasil sinalizado em `bibliography.md` cluster 3 (`#currency_regimes`) — mas isso é uma extensão futura da base teórica, não um embasamento já existente."
+},
+{
+  title: "8. Speculative positioning",
+  intro: "Quando o posicionamento fica extremo, o próprio desmonte de posições vira o driver de curto prazo — independente dos fundamentos.",
+  series: [
+    ["Posicionamento CFTC — open interest, leveraged money líquido/comprado/vendido, non-reportables (BRL, MXN)", "CFTC Traders in Financial Futures", "Semanal, desde 2010", "O gauge padrão de posicionamento via futuros por trás do modelo mental §5.3 da Verde."],
+    ["Posicionamento via opções (risk reversal, skew)", "Dados de derivativos de bancos/bolsas", "Diária/semanal", "O complemento do mercado de volatilidade ao posicionamento via futuros — liga direto ao gap de literatura de opções cambiais."]
+  ],
+  grounding: [
+    { tag: "#market_microstructure", note: "O gap de posicionamento via opções é o mesmo gap da literatura de precificação de opções cambiais (Garman-Kohlhagen) — nem dado nem teoria estão construídos ainda.", tags: [], gap: true },
+    { tag: "#currency_crisis_dynamics", note: "O desmonte de posições alavancadas é o mecanismo central que amplifica o padrão de surto-e-reversão de fluxo de capital.", tags: ["capital_flow_surge_reversal"] },
+    { tag: "#practitioner_mental_models", note: "Base do modelo da Verde de posicionamento como sinal contrário.", tags: ["verde_5_3_posicionamento_sinal_contrario"] }
+  ]
+}
+];
+
+const wrap = document.getElementById('diagramWrap');
+const row = document.getElementById('clusterRow');
+const svg = document.getElementById('connectors');
+const rootNode = document.getElementById('rootNode');
+const panel = document.getElementById('detailPanel');
+let activeIndex = null;
+
+function renderBoxes() {
+  row.innerHTML = CATEGORIES.map((c, i) => `
+    <div class="cluster-box" data-idx="${i}">
+      <div class="idx">${i + 1}</div>
+      <div class="title">${c.title.replace(/^\d+\.\s*/, '')}</div>
+      <div class="count">${c.series.length} série${c.series.length === 1 ? '' : 's'} · ${c.grounding.length} cluster${c.grounding.length === 1 ? '' : 's'}</div>
+    </div>
+  `).join('');
+}
+
+function drawConnectors() {
+  const wrapRect = wrap.getBoundingClientRect();
+  svg.setAttribute('width', wrapRect.width);
+  svg.setAttribute('height', wrapRect.height);
+  svg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+  const rootRect = rootNode.getBoundingClientRect();
+  const x1 = rootRect.left - wrapRect.left + rootRect.width / 2;
+  const y1 = rootRect.bottom - wrapRect.top;
+
+  const boxes = row.querySelectorAll('.cluster-box');
+  let paths = '';
+  boxes.forEach((box, i) => {
+    const r = box.getBoundingClientRect();
+    const x2 = r.left - wrapRect.left + r.width / 2;
+    const y2 = r.top - wrapRect.top;
+    const dy = Math.max((y2 - y1) / 2, 20);
+    const isActive = i === activeIndex;
+    const stroke = isActive ? 'var(--lis-verde)' : 'var(--line)';
+    const width = isActive ? 2.5 : 1.4;
+    paths += `<path d="M ${x1},${y1} C ${x1},${y1 + dy} ${x2},${y2 - dy} ${x2},${y2}" fill="none" stroke="${stroke}" stroke-width="${width}" />`;
+  });
+  svg.innerHTML = paths;
+}
+
+function renderDetail(i) {
+  if (i === null) {
+    panel.innerHTML = `<div class="detail-empty">Selecione uma categoria de dado para ver as séries e o embasamento na literatura.</div>`;
+    return;
+  }
+  const c = CATEGORIES[i];
+
+  const seriesRows = c.series.map(([name, src, freq, why]) => `
+    <tr>
+      <td class="series-name">${name}</td>
+      <td class="series-src">${src}</td>
+      <td class="series-freq">${freq}</td>
+      <td class="series-why">${why}</td>
+    </tr>`).join('');
+
+  const groundHtml = c.grounding.map(g => {
+    const tagsHtml = (g.tags && g.tags.length)
+      ? `<div class="ground-tags">${g.tags.map(t => `<span class="tag-chip">[${t}]</span>`).join('')}</div>`
+      : '';
+    return `
+      <div class="ground-item${g.gap ? ' gap' : ''}">
+        <span class="ground-tag">${g.tag}</span>
+        <div class="ground-note">${g.note}</div>
+        ${tagsHtml}
+      </div>`;
+  }).join('');
+
+  const gapNoteHtml = c.gapNote ? `<div class="ground-note" style="margin-top:10px;font-style:italic;">${c.gapNote}</div>` : '';
+
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div class="idx-title">
+        <div class="num">${i + 1}</div>
+        <div class="title">${c.title.replace(/^\d+\.\s*/, '')}</div>
+      </div>
+      <button class="close-btn" id="closeDetail">fechar ✕</button>
+    </div>
+    <div class="intro">${c.intro}</div>
+    <div class="section-h">Séries (${c.series.length})</div>
+    <table class="series-table">
+      <thead><tr><th>Série</th><th>Fonte</th><th>Frequência</th><th>Por que importa</th></tr></thead>
+      <tbody>${seriesRows}</tbody>
+    </table>
+    <div class="section-h">Embasamento na literatura</div>
+    <div class="ground-list">${groundHtml}</div>
+    ${gapNoteHtml}
+  `;
+  document.getElementById('closeDetail').addEventListener('click', () => selectCluster(null));
+}
+
+function selectCluster(i) {
+  activeIndex = i;
+  row.querySelectorAll('.cluster-box').forEach((box, idx) => {
+    box.classList.toggle('active', idx === i);
+  });
+  drawConnectors();
+  renderDetail(i);
+}
+
+renderBoxes();
+row.addEventListener('click', (e) => {
+  const box = e.target.closest('.cluster-box');
+  if (!box) return;
+  const idx = Number(box.dataset.idx);
+  selectCluster(idx === activeIndex ? null : idx);
+});
+rootNode.addEventListener('click', () => selectCluster(null));
+
+requestAnimationFrame(drawConnectors);
+window.addEventListener('resize', drawConnectors);
+new ResizeObserver(drawConnectors).observe(wrap);
+</script>
+</body>
+</html>

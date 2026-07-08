@@ -292,19 +292,43 @@ Ao converter PDFs em `.md` para alimentar o agente de análise, use a seguinte l
 
 ---
 
-## agent_bibliography/exchange_rate_policy/ — Conceptual Map
+## agent_bibliography/ — estrutura geral e Conceptual Maps
 
-`agent_bibliography/exchange_rate_conceptual_map.md` é um mapa de conhecimento single-file, estilo Obsidian (`[[wikilinks]]` para conceitos, `#tags` para clusters temáticos), construído diretamente a partir dos 18 PDFs em `agent_bibliography/exchange_rate_policy/` — **não** a partir de `.md` extraídos (esses foram deletados de propósito; os PDFs são a fonte de verdade). Cobre 9 clusters temáticos (`#market_microstructure`, `#exchange_rate_determination`, `#currency_regimes`, `#balance_of_payments`, `#policy_transmission`, `#applied_valuation_tools`, `#pass_through_and_inflation`, `#capital_controls`, `#currency_crisis_dynamics`).
+Desde 2026-07, `agent_bibliography/` organiza-se por área temática (exchange rate, monetary policy, e futuras), cada uma com um pipeline literatura → dados. O processo reutilizável está documentado em [`agent_bibliography/BIBLIOGRAPHY_METHODOLOGY.md`](agent_bibliography/BIBLIOGRAPHY_METHODOLOGY.md) — misturar fontes internacionais + Brasil, extrair só os capítulos relevantes de livros, pontuar cada fonte 1-5 em "quão fundacional" (independente da idade) ao lado do ano, organizar em clusters temáticos `#tag`.
+
+Layout de pastas:
+```
+agent_bibliography/
+  BIBLIOGRAPHY_METHODOLOGY.md          — processo reutilizável (não é output de nenhum tópico)
+  exchange_rate_policy/                — PDFs brutos adquiridos (28 fontes)
+  monetary_policy/                     — PDFs brutos (ainda vazio — candidatos em agent_mapping/recommended_bibliography/)
+  agent_mapping/
+    conceptual_maps/                   — <topic>_conceptual_map.md, um por área
+    recommended_bibliography/          — <topic>_bibliography_candidates.md (pré-aquisição) + <topic>_bibliography_gaps.md (pós-mapa)
+    recommended_data/                  — <topic>_data_inventory.md, um por área
+```
+
+### Exchange rate (área completa)
+
+`agent_bibliography/agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` é um mapa de conhecimento single-file, estilo Obsidian (`[[wikilinks]]` para conceitos, `#tags` para clusters temáticos), construído diretamente a partir dos 18 PDFs originais em `agent_bibliography/exchange_rate_policy/` (hoje 28) — **não** a partir de `.md` extraídos (esses foram deletados de propósito; os PDFs são a fonte de verdade). Cobre 9 clusters temáticos (`#market_microstructure`, `#exchange_rate_determination`, `#currency_regimes`, `#balance_of_payments`, `#policy_transmission`, `#applied_valuation_tools`, `#pass_through_and_inflation`, `#capital_controls`, `#currency_crisis_dynamics`).
 
 **Não usa e não reconcilia com** o vault `obsidian/exchange_rate/` (páginas de conceito pré-existentes) — são dois sistemas paralelos por instrução explícita do usuário. Também não interage com o pipeline `ingestion/`.
 
-`agent_bibliography/exchange_rate_bibliography_gaps.md` lista fontes candidatas para fechar as lacunas identificadas na seção "Coverage notes" do mapa (crisis models de 1ª/2ª/3ª geração, capital controls como ferramenta de política, teoria de OCA, opções de FX/volatilidade, econometria de falha de UIP (Fama 1984), profundidade em EM não-Brasil, economia política do câmbio) — nenhuma dessas fontes foi adquirida/processada ainda.
+`agent_bibliography/agent_mapping/recommended_bibliography/exchange_rate_bibliography_gaps.md` lista fontes candidatas para fechar as lacunas identificadas na seção "Coverage notes" do mapa (crisis models de 1ª/2ª/3ª geração, capital controls como ferramenta de política, teoria de OCA, opções de FX/volatilidade, econometria de falha de UIP (Fama 1984), profundidade em EM não-Brasil, economia política do câmbio) — nenhuma dessas fontes foi adquirida/processada ainda.
+
+`agent_bibliography/agent_mapping/recommended_data/exchange_rate_data_inventory.md` mapeia categorias analíticas (preço à vista, carry, termos de troca, BOP, fluxo cambial, reservas, REER, posicionamento, diferencial de inflação) ao que já existe no banco vs. lacunas — maior gap identificado: nenhuma série de câmbio à vista (PTAX) está armazenada hoje.
 
 **Para incrementar a base (próxima sessão ou quando novas fontes chegarem):**
 1. Adicionar o(s) PDF(s) em `agent_bibliography/exchange_rate_policy/`, usando a convenção de nome já estabelecida: `topic_description (Author, Year).pdf` (os nomes sugeridos já estão no arquivo de gaps).
 2. Processar **um de cada vez** (não paralelizar com agents em background — fluxo de trabalho preferido pelo usuário: extrair texto completo → ler → identificar conceitos novos vs. reforço de existentes → editar o mapa).
 3. Extrair texto via `pdfplumber` em Bash (o `Read` tool não renderiza PDF nesta máquina — falta `poppler`/`pdftoppm`); redirecionar para arquivo no scratchpad com `sys.stdout.reconfigure(encoding='utf-8')` para evitar `UnicodeEncodeError` em símbolos não-ASCII no console do Windows.
 4. Atualizar o mapa: nova linha na tabela `## Sources processed`, bullets de conceito no(s) `#theme_cluster` correspondente(s) com cross-links `[[conceito]]` para conceitos já existentes quando houver conexão genuína, e remover/marcar a linha correspondente em `exchange_rate_bibliography_gaps.md`.
+
+### Monetary policy (em andamento)
+
+`agent_bibliography/agent_mapping/recommended_bibliography/monetary_policy_bibliography_candidates.md` tem 29 candidatos de literatura em 7 clusters (`#policy_rules_and_credibility`, `#new_keynesian_transmission`, `#inflation_targeting_regimes`, `#transmission_channels_financial_frictions`, `#unconventional_policy_zlb`, `#global_spillovers_em_autonomy`, `#brazil_monetary_policy`) mais uma seção §8 separada para materiais primários do COPOM (Comunicado, Ata, Relatório de Política Monetária) — nenhuma fonte adquirida ainda; escopo/mecanismo de ingestão do §8 ficaram deliberadamente em aberto.
+
+`agent_bibliography/agent_mapping/recommended_data/monetary_policy_data_inventory.md` usa uma estrutura de duas camadas — dados próprios (Selic/decisões COPOM, diferenciais, r*) vs. dados consumidos de outros agentes ainda não construídos (inflação, atividade, fiscal, câmbio) — reflexo da arquitetura multi-agente que a LIS está planejando (um agente por área macro).
 5. Manter textos em inglês para fontes em inglês e português para fontes em português (regra geral do projeto) — o mapa em si é escrito em inglês, mas termos técnicos em PT (ex: "posição de câmbio", "repasse cambial") são preservados entre parênteses quando a fonte é em português.
 
 ---
@@ -344,7 +368,8 @@ Ver pendências e roadmap detalhados em [`CAMBIO.md`](CAMBIO.md).
 - **`analytics/oraculo/us/term_us.py` — revisão de qualidade**: snake_case, `_load_data()` centralizado, bugs de robustez.
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
 - **macro_analytics/international — itens menores**: confirmar descrições SGS 22099/22100, sub-itens CEP/CBE fluxo cambial, diferenciais ex-ante. Ver `CAMBIO.md`.
-- **`agent_bibliography/exchange_rate_conceptual_map.md` — incrementar com fontes de `exchange_rate_bibliography_gaps.md`**: mapa base (18 fontes) está completo; próximo passo é adquirir e processar fontes para as lacunas listadas (crisis models, capital controls, OCA, FX options, Fama 1984, EM não-Brasil, economia política). Ver seção acima.
+- **`agent_bibliography/agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` — incrementar com fontes de `agent_mapping/recommended_bibliography/exchange_rate_bibliography_gaps.md`**: mapa base (18 fontes, hoje 28) está completo; próximo passo é adquirir e processar fontes para as lacunas listadas (crisis models, capital controls, OCA, FX options, Fama 1984, EM não-Brasil, economia política). Ver seção acima.
+- **Monetary policy — iniciar aquisição**: `agent_bibliography/agent_mapping/recommended_bibliography/monetary_policy_bibliography_candidates.md` tem 29 candidatos prontos, nenhum adquirido; ordem sugerida no próprio arquivo. Decisões em aberto no §8 (materiais COPOM): janela de retenção e mecanismo de ingestão (fetcher automatizado planejado, mirroring `domain/db/brasil/bcb/*.py`).
 
 ### Baixa prioridade
 - `quarantine/` — scripts legados (curva de juros, decomposição IPCA). Limpar quando conveniente.
