@@ -13,7 +13,7 @@
 
 ### 1. Policy rate & COPOM decision history — ⚠️ GAP
 
-There is no dedicated table recording COPOM decisions as discrete events (meeting date, rate before/after, change in bps, vote count/dissent). The Selic level only exists today embedded inside `macro_analytics.diferenciais_juros` (series `selic`, sourced from BCB SGS 432) as a continuous monthly series for computing rate differentials — it was never built to answer "what did COPOM actually decide, and how divided was the committee, at each meeting."
+There is no dedicated table recording COPOM decisions as discrete events (meeting date, rate before/after, change in bps, vote count/dissent). The Selic level only exists today embedded inside `macro_international.diferenciais_juros` (series `selic`, sourced from BCB SGS 432) as a continuous monthly series for computing rate differentials — it was never built to answer "what did COPOM actually decide, and how divided was the committee, at each meeting."
 
 **Impact:** without this, the agent can't backtest a reaction function against actual historical decisions, or characterize dissent/unanimity patterns (directly relevant to reading credibility, per the Barro-Gordon/Rogoff literature already in the bibliography).
 
@@ -23,23 +23,23 @@ There is no dedicated table recording COPOM decisions as discrete events (meetin
 
 | What we have | Table | Series |
 |---|---|---|
-| Selic, Fed Funds (raw) | `macro_analytics.diferenciais_juros` | `selic`, `fed_funds` |
-| Nominal and real ex-post differentials | `macro_analytics.diferenciais_juros` | `diferencial_nominal`, `real_br_ex_post`, `real_us_ex_post`, `diferencial_real` |
+| Selic, Fed Funds (raw) | `macro_international.diferenciais_juros` | `selic`, `fed_funds` |
+| Nominal and real ex-post differentials | `macro_international.diferenciais_juros` | `diferencial_nominal`, `real_br_ex_post`, `real_us_ex_post`, `diferencial_real` |
 
-Script: `domain/db/analytics/fred/diferenciais_juros.py`. Same table already documented from the FX angle in `exchange_rate_data_inventory.md` §2 — for monetary policy the read is different: this is the agent's primary evidence of *where policy stance sits relative to global conditions*, not just a carry-trade input.
+Script: `domain/db/international/fred/diferenciais_juros.py`. Same table already documented from the FX angle in `exchange_rate_data_inventory.md` §2 — for monetary policy the read is different: this is the agent's primary evidence of *where policy stance sits relative to global conditions*, not just a carry-trade input.
 
 **Gaps (same underlying ones as the FX inventory, restated for this agent's purposes):**
 - History limited to ~36 months by default — needs full extension (Selic since 1996, Fed Funds since 1954).
-- Ex-ante differentials (Focus-based) not implemented — see `CAMBIO.md` §1b/§2. For monetary policy specifically, `selic_ex_ante` (Focus Selic EOP 12m, already sitting in `macro_brasil.expectativas`) is close to the single most directly relevant missing series: it's the market's own forward-looking read on the same thing the agent is trying to compute.
+- Ex-ante differentials (Focus-based) not implemented — see `CAMBIO.md` §1b/§2. For monetary policy specifically, `selic_ex_ante` (Focus Selic EOP 12m, already sitting in `macro_brasil.expc_focus`) is close to the single most directly relevant missing series: it's the market's own forward-looking read on the same thing the agent is trying to compute.
 
 ### 3. Market-implied rate expectations
 
 | What we have | Table | Note |
 |---|---|---|
-| Focus survey — Selic median/mean expectations | `macro_brasil.expectativas` | `indicador = 'Selic'`, various horizons; 2001 → today |
-| Focus survey — IPCA, IGP-M expectations | `macro_brasil.expectativas` | same table, other `indicador` values |
+| Focus survey — Selic median/mean expectations | `macro_brasil.expc_focus` | `indicador = 'Selic'`, various horizons; 2001 → today |
+| Focus survey — IPCA, IGP-M expectations | `macro_brasil.expc_focus` | same table, other `indicador` values |
 
-Script: `domain/db/brasil/bcb/expectativas.py`. This is genuinely useful, already-available data — the agent can compare its own reaction-function output against what professional forecasters expect BCB to do, without waiting on any other agent.
+Script: `domain/db/brasil/bcb/expc_focus.py`. This is genuinely useful, already-available data — the agent can compare its own reaction-function output against what professional forecasters expect BCB to do, without waiting on any other agent.
 
 **Gaps:**
 - No DI futures curve (B3) — the *market-priced*, real-time-updating implied Selic path, as opposed to the survey-based Focus median. This is the same Bloomberg-dependent gap already flagged in `CAMBIO.md` §5 ("Cupom cambial + futuros B3 — Fase 3, requires `blpapi`/`xbbg`"). Focus is a usable substitute today but updates weekly and reflects survey consensus, not tradeable pricing.
@@ -48,7 +48,7 @@ Script: `domain/db/brasil/bcb/expectativas.py`. This is genuinely useful, alread
 
 | What we have | Table | Note |
 |---|---|---|
-| Real rate ex-post (Selic − realized IPCA 12m) | `macro_analytics.diferenciais_juros` | `real_br_ex_post` |
+| Real rate ex-post (Selic − realized IPCA 12m) | `macro_international.diferenciais_juros` | `real_br_ex_post` |
 
 **Gaps:**
 - No ex-ante real rate (Selic − *expected* IPCA, which is the theoretically correct measure of how restrictive/expansionary policy actually is right now) — same missing piece as item 2 above (needs Focus IPCA expectations, already available, just not yet combined).
@@ -66,7 +66,7 @@ No table records the history of the target itself: the numeric target, tolerance
 
 | What we have | Table | Series |
 |---|---|---|
-| Fed Funds (raw, as part of the differential calc) | `macro_analytics.diferenciais_juros` | `fed_funds` |
+| Fed Funds (raw, as part of the differential calc) | `macro_international.diferenciais_juros` | `fed_funds` |
 
 **Gaps:** only the Fed is covered. No broader global policy-rate context (ECB, other EM central banks) for situating BCB within the "global financial cycle" framing central to the Rey (2013) / Obstfeld (2015) debate in the bibliography's `#global_spillovers_em_autonomy` cluster. Low priority unless a specific cross-country comparison becomes necessary.
 
@@ -82,7 +82,7 @@ None of this exists yet in any form — these are the structured outputs the mon
 - Signal on whether inflation expectations are anchored or de-anchoring (distance of Focus 12m/24m from target, and its trend)
 
 ### From a future activity agent
-- Output gap estimate (vs. `ibc_br`/`gdp`-based potential)
+- Output gap estimate (vs. `atv_ibcbr`/`atv_pib`-based potential)
 - Labor market slack (unemployment gap vs. NAIRU-type estimate)
 - Credit growth / credit impulse read (ties to the `#transmission_channels_financial_frictions` bibliography cluster — how much of any given Selic move is actually reaching the real economy through credit)
 
@@ -92,10 +92,10 @@ None of this exists yet in any form — these are the structured outputs the mon
 - A fiscal-dominance / sustainability risk signal — directly operationalizes Blanchard (2004): is there a regime where hiking Selic further would raise, not lower, medium-term inflation risk through the debt/risk-premium channel?
 
 ### From the exchange rate agent (already substantially built — see `exchange_rate_data_inventory.md`)
-This dependency is less hypothetical than the three above, since the underlying FX data pipeline already exists (`reservas`, `fluxo_cambial`, `reer`, `cot_fx`, `balanco_pagamentos`). What's still missing is the *packaging* into a monetary-policy-ready number:
+This dependency is less hypothetical than the three above, since the underlying FX data pipeline already exists (`cmb_reservas_bc`, `cmb_fluxo_cambial`, `cmb_reer`, `cmb_cot_fx`, `cmb_balanco_pagmt`). What's still missing is the *packaging* into a monetary-policy-ready number:
 - An FX pass-through estimate (how much of any BRL move shows up in inflation, and over what horizon)
-- A REER over/undervaluation signal (already have raw REER in `macro_international.reer`; no "gap vs. equilibrium" estimate yet)
-- A capital-flow-pressure read (from `balanco_pagamentos`/`cot_fx`) as a leading indicator of FX-driven imported-inflation risk
+- A REER over/undervaluation signal (already have raw REER in `macro_international.cmb_reer`; no "gap vs. equilibrium" estimate yet)
+- A capital-flow-pressure read (from `cmb_balanco_pagmt`/`cmb_cot_fx`) as a leading indicator of FX-driven imported-inflation risk
 
 ### From a possible future global/markets agent (not yet scoped at all)
 - Global financial cycle stance / risk sentiment proxy (VIX, EM risk premia) — the empirical counterpart to the Rey/Obstfeld debate
@@ -109,7 +109,7 @@ This dependency is less hypothetical than the three above, since the underlying 
 |---|---|---|
 | High | No COPOM decision history table (meeting-level rate changes, votes) | §1 |
 | High | No neutral/equilibrium real rate (r*) — no proxy, no model estimate | §4 |
-| Medium | Ex-ante real/nominal rate differentials not computed (inputs already exist in `expectativas`, just not combined) | §2, §4 |
+| Medium | Ex-ante real/nominal rate differentials not computed (inputs already exist in `expc_focus`, just not combined) | §2, §4 |
 | Medium | No inflation target regime parameter table (target/band/horizon history) | §6 |
 | Medium | Full history of `diferenciais_juros` (same gap as FX inventory, ~36m today) | §2 |
 | Low | No DI futures curve (Bloomberg-dependent) | §3 |

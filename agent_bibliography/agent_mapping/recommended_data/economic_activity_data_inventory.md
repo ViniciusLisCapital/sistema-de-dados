@@ -15,11 +15,11 @@
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Supply side — agriculture, industry (+ extractive/manufacturing/utilities/construction), services (+ commerce/transport/info-comm/finance/real estate/other/public admin) | `macro_brasil.gdp` | `agropecuaria`, `industria`, `ind_extrativas`, `ind_transformacao`, `eletricidade_gas_agua`, `construcao`, `servicos`, `comercio`, `transporte_correio`, `informacao_comunicacao`, `financeiras_seguros`, `imobiliarias`, `outros_servicos`, `adm_saude_educacao_pub` | NSA and SA |
-| Demand side — household consumption, government consumption, gross fixed capital formation, exports, imports | `macro_brasil.gdp` | `consumo_familias`, `consumo_adm_publica`, `fbcf`, `exportacao`, `importacao` | NSA and SA |
-| Aggregates | `macro_brasil.gdp` | `pib_pm`, `valor_adicionado`, `impostos_liquidos` | NSA and SA |
+| Supply side — agriculture, industry (+ extractive/manufacturing/utilities/construction), services (+ commerce/transport/info-comm/finance/real estate/other/public admin) | `macro_brasil.atv_pib` | `agropecuaria`, `industria`, `ind_extrativas`, `ind_transformacao`, `eletricidade_gas_agua`, `construcao`, `servicos`, `comercio`, `transporte_correio`, `informacao_comunicacao`, `financeiras_seguros`, `imobiliarias`, `outros_servicos`, `adm_saude_educacao_pub` | NSA and SA |
+| Demand side — household consumption, government consumption, gross fixed capital formation, exports, imports | `macro_brasil.atv_pib` | `consumo_familias`, `consumo_adm_publica`, `fbcf`, `exportacao`, `importacao` | NSA and SA |
+| Aggregates | `macro_brasil.atv_pib` | `pib_pm`, `valor_adicionado`, `impostos_liquidos` | NSA and SA |
 
-Script: `domain/db/brasil/ibge/gdp.py`. IBGE aggregados 1620 (NSA)/1621 (SA), volume-index series. **This is a genuinely complete both-sides-of-GDP dataset** — supply and demand decomposition together, which many countries' own statistical agencies don't publish this readily disaggregated.
+Script: `domain/db/brasil/ibge/atv_pib.py`. IBGE aggregados 1620 (NSA)/1621 (SA), volume-index series. **This is a genuinely complete both-sides-of-GDP dataset** — supply and demand decomposition together, which many countries' own statistical agencies don't publish this readily disaggregated.
 
 **Gaps:**
 - Coverage per `CLAUDE.md`: 2016 → today. IBGE's own Contas Nacionais Trimestrais series goes back to 1996 — the ~2016 starting point is a script default (`years_back`), not a source limitation, so a full-history backfill (`periodos="all"`) is a low-effort extension, same pattern as the ~36-month rolling windows flagged repeatedly in the other three inventories.
@@ -28,9 +28,9 @@ Script: `domain/db/brasil/ibge/gdp.py`. IBGE aggregados 1620 (NSA)/1621 (SA), vo
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| Total, and by sector (agriculture, industry, services, ex-agriculture, taxes) | `macro_brasil.ibc_br` | `ibcbr_nsa`/`ibcbr_sa`, `ibcbr_agropecuaria_*`, `ibcbr_industria_*`, `ibcbr_servicos_*`, `ibcbr_ex_agropecuaria_*`, `ibcbr_impostos_*` | 2003 → today, NSA and SA |
+| Total, and by sector (agriculture, industry, services, ex-agriculture, taxes) | `macro_brasil.atv_ibcbr` | `ibcbr_nsa`/`ibcbr_sa`, `ibcbr_agropecuaria_*`, `ibcbr_industria_*`, `ibcbr_servicos_*`, `ibcbr_ex_agropecuaria_*`, `ibcbr_impostos_*` | 2003 → today, NSA and SA |
 
-Script: `domain/db/brasil/bcb/ibc_br.py`. BCB SGS. Directly matches the methodology documented in bibliography cluster 7 (the 2010 launch box, 2016 revision, 2018 GDP-comparison study) — worth cross-checking the local column set against that methodology once those three sources are processed into the conceptual map, the same way inflation's inventory flagged doing for its núcleo series against NT 57.
+Script: `domain/db/brasil/bcb/atv_ibcbr.py`. BCB SGS. Directly matches the methodology documented in bibliography cluster 7 (the 2010 launch box, 2016 revision, 2018 GDP-comparison study) — worth cross-checking the local column set against that methodology once those three sources are processed into the conceptual map, the same way inflation's inventory flagged doing for its núcleo series against NT 57.
 
 **Gaps:** none identified at the raw-series level — this table is essentially complete relative to what BCB itself publishes for IBC-Br.
 
@@ -38,9 +38,9 @@ Script: `domain/db/brasil/bcb/ibc_br.py`. BCB SGS. Directly matches the methodol
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| General industry, extractive industry, manufacturing | `macro_brasil.pim` | `industria_geral`, `ind_extrativas`, `ind_transformacao` | 2002 → today, NSA and SA |
+| General industry, extractive industry, manufacturing | `macro_brasil.atv_pim` | `industria_geral`, `ind_extrativas`, `ind_transformacao` | 2002 → today, NSA and SA |
 
-Script: `domain/db/brasil/ibge/pim.py`. IBGE aggregado 8888.
+Script: `domain/db/brasil/ibge/atv_pim.py`. IBGE aggregado 8888.
 
 **Gap:** only the 3 highest-level categories are ingested — IBGE's PIM also publishes by broad sectoral/use-based category (capital goods, intermediate goods, durable/semi-durable/non-durable consumer goods) and by specific industrial sector (CNAE divisions), neither of which is captured here. This is the PIM-side equivalent of the disaggregation IPCA already has in the inflation agent's inventory — useful for identifying *which* part of industry is driving a given month's move, not just the aggregate.
 
@@ -48,16 +48,16 @@ Script: `domain/db/brasil/ibge/pim.py`. IBGE aggregado 8888.
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| Restricted and expanded retail totals | `macro_brasil.pmc` | `comercio_restrito_total`, `comercio_ampliado_total` | NSA and SA |
-| 14 retail segments (fuel, supermarkets, apparel/footwear, furniture/appliances, pharma, books, IT equipment, other personal/household, vehicles, construction materials, wholesale food) | `macro_brasil.pmc` | segment-level series (see `domain/db/brasil/ibge/pmc.py`) | NSA and SA |
+| Restricted and expanded retail totals | `macro_brasil.atv_pmc` | `comercio_restrito_total`, `comercio_ampliado_total` | NSA and SA |
+| 14 retail segments (fuel, supermarkets, apparel/footwear, furniture/appliances, pharma, books, IT equipment, other personal/household, vehicles, construction materials, wholesale food) | `macro_brasil.atv_pmc` | segment-level series (see `domain/db/brasil/ibge/atv_pmc.py`) | NSA and SA |
 
-Script: `domain/db/brasil/ibge/pmc.py`. IBGE aggregados 8880/8881/8883.
+Script: `domain/db/brasil/ibge/atv_pmc.py`. IBGE aggregados 8880/8881/8883.
 
 **Gap — short history:** coverage per `CLAUDE.md`: 2023 → today only, driven by the script's `years_back=3` default. IBGE's PMC series (both restricted and expanded) go back to the late 1990s/2000s depending on the exact series — a full backfill would materially improve this table's usefulness for anything beyond the most recent cycle.
 
 ### 4a. Vehicle sales/licensing (Fenabrave via BCB SGS) — ⚠️ GAP, verified codes, not yet ingested
 
-A confirmed, currently-active family of BCB SGS series, sourced from Fenabrave (the dealer federation) and distinct from anything already in PMC — the `veiculos_motocicletas_pecas` segment in `macro_brasil.pmc` §4 tracks retail *revenue* for vehicle dealers, while this family tracks actual *unit sales volumes* by vehicle type. Vehicle sales/licensing is one of the most-watched high-frequency consumer-durables activity signals in Brazil, comparable to auto sales data in the US — checked live against the BCB SGS API on 2026-07 and all four series are current through May 2026:
+A confirmed, currently-active family of BCB SGS series, sourced from Fenabrave (the dealer federation) and distinct from anything already in PMC — the `veiculos_motocicletas_pecas` segment in `macro_brasil.atv_pmc` §4 tracks retail *revenue* for vehicle dealers, while this family tracks actual *unit sales volumes* by vehicle type. Vehicle sales/licensing is one of the most-watched high-frequency consumer-durables activity signals in Brazil, comparable to auto sales data in the US — checked live against the BCB SGS API on 2026-07 and all four series are current through May 2026:
 
 | Series | SGS code | Note |
 |---|---|---|
@@ -70,21 +70,21 @@ A confirmed, currently-active family of BCB SGS series, sourced from Fenabrave (
 
 **Note on discontinued predecessor codes:** SGS 1381 and 1385 (an older vehicle-sales series pair) return data only through December 2020 — superseded by the 7384-7387 family above; don't use them for new ingestion.
 
-**Possible source:** straightforward addition via the existing `connectors/bcb.py` SGS client, same pattern as `ibc_br.py` or `credito.py` — no new connector needed, just a new script (e.g. `domain/db/brasil/bcb/vendas_veiculos.py`) with these 7 codes (4 sales + 3 credit/rate).
+**Possible source:** straightforward addition via the existing `connectors/bcb.py` SGS client, same pattern as `atv_ibcbr.py` or `cred_credito_amplo.py` — no new connector needed, just a new script (e.g. `domain/db/brasil/bcb/vendas_veiculos.py`) with these 7 codes (4 sales + 3 credit/rate).
 
 ### 5. Monthly services (PMS)
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| Total services, plus 4 main groups (services to families, information/communication, professional/administrative, transport/mail) and their sub-segments (lodging, food service, telecom, IT services, road/air/water transport, real estate, etc.) | `macro_brasil.pms` | `servicos_total`, `servicos_familias`, `informacao_comunicacao`, `prof_adm_complementares`, `transportes_correio`, plus ~20 sub-segment columns | NSA and SA |
+| Total services, plus 4 main groups (services to families, information/communication, professional/administrative, transport/mail) and their sub-segments (lodging, food service, telecom, IT services, road/air/water transport, real estate, etc.) | `macro_brasil.atv_pms` | `servicos_total`, `servicos_familias`, `informacao_comunicacao`, `prof_adm_complementares`, `transportes_correio`, plus ~20 sub-segment columns | NSA and SA |
 
-Script: `domain/db/brasil/ibge/pms.py`. IBGE aggregado 8688. **Genuinely deep disaggregation** — likely the most granular single table in `macro_brasil` outside of `inflacao`.
+Script: `domain/db/brasil/ibge/atv_pms.py`. IBGE aggregado 8688. **Genuinely deep disaggregation** — likely the most granular single table in `macro_brasil` outside of `inflacao`.
 
 **Gap — same short-history issue as PMC:** coverage per `CLAUDE.md`: 2023 → today only (`years_back=3` default), while IBGE's PMS series go back further. Same low-effort fix as §4.
 
 ### 6. Output gap and potential growth — ⚠️ GAP, now unblocked by the literature pass
 
-No output gap or potential-output series is computed anywhere in the database — this is the same gap already flagged in `monetary_policy_data_inventory.md` §4 ("no neutral/equilibrium real rate... no output gap") from the monetary policy side. What's changed since that inventory was written: **the methodology is no longer missing** — `economic_activity_bibliography_candidates.md` cluster 5 now has both the general toolkit (HP filter, Blanchard-Quah SVAR, Kuttner unobserved-components) and two Brazil-specific applications (Cusinato-Minella-Pôrto Júnior 2010, BCB WP 203; Souza Júnior 2005, IPEA TD 1130) with real, replicable methodology. The blocker is now purely implementation — computing any of these against `macro_brasil.gdp` (§1) and/or `ibc_br` (§2), which are already sufficient inputs.
+No output gap or potential-output series is computed anywhere in the database — this is the same gap already flagged in `monetary_policy_data_inventory.md` §4 ("no neutral/equilibrium real rate... no output gap") from the monetary policy side. What's changed since that inventory was written: **the methodology is no longer missing** — `economic_activity_bibliography_candidates.md` cluster 5 now has both the general toolkit (HP filter, Blanchard-Quah SVAR, Kuttner unobserved-components) and two Brazil-specific applications (Cusinato-Minella-Pôrto Júnior 2010, BCB WP 203; Souza Júnior 2005, IPEA TD 1130) with real, replicable methodology. The blocker is now purely implementation — computing any of these against `macro_brasil.atv_pib` (§1) and/or `atv_ibcbr` (§2), which are already sufficient inputs.
 
 **Recommended starting point:** the HP filter is the cheapest to implement and the most-replicated in the literature, but per Hodrick & Prescott's own paper (and its well-known end-of-sample bias) should be flagged as a first-pass estimate, not a final one — the Harvey-Clark unobserved-components approach from Cusinato et al. (2010) is more defensible but requires more implementation work.
 
@@ -117,7 +117,7 @@ Beyond IBC-Br itself (§2, which is BCB's own coincident index), none of the oth
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Broad non-financial-sector credit by instrument and institutional sector (government, corporates, households — 17 series) | `macro_brasil.credito` | see `domain/db/brasil/bcb/credito.py` | Owned by this agent — credit growth/impulse is a standard leading/coincident activity signal, not primarily a monetary-policy series despite living alongside monetary-policy-relevant data |
+| Broad non-financial-sector credit by instrument and institutional sector (government, corporates, households — 17 series) | `macro_brasil.cred_credito_amplo` | see `domain/db/brasil/bcb/cred_credito_amplo.py` | Owned by this agent — credit growth/impulse is a standard leading/coincident activity signal, not primarily a monetary-policy series despite living alongside monetary-policy-relevant data |
 
 **Gap:** no credit *impulse* measure computed (the change in new credit flow as a share of GDP, the standard "credit impulse" concept from the financial-accelerator literature already in monetary policy's bibliography) — only the raw stock/flow series exist today.
 
@@ -125,7 +125,7 @@ Beyond IBC-Br itself (§2, which is BCB's own coincident index), none of the oth
 
 | What we have | Table | Series |
 |---|---|---|
-| Household debt-to-income, interest burden, debt-service burden (interest + amortization) as % of income | `macro_brasil.indicadores_familias` | 3 series, see `domain/db/brasil/bcb/indicadores_familias.py` |
+| Household debt-to-income, interest burden, debt-service burden (interest + amortization) as % of income | `macro_brasil.cred_credito_familias` | 3 series, see `domain/db/brasil/bcb/cred_credito_familias.py` |
 
 Relevant as a consumption-capacity constraint (household deleveraging/releveraging cycles) but more directly tied to credit conditions than to activity measurement itself — flagged here for completeness rather than as a priority.
 
@@ -136,16 +136,16 @@ Relevant as a consumption-capacity constraint (household deleveraging/releveragi
 ### From a future labor market agent (the split the user is actively considering)
 - Hours worked / employment-rate / participation-rate decomposition — the "hours worked" half of the standard potential-growth decomposition (potential growth = labor productivity growth + hours-worked growth) referenced in BCB's own June 2024 RPM chapter on growth projections. Without this, cluster 9's productivity work (§7) can be computed but can't be combined into a full potential-growth read.
 - Unemployment gap / NAIRU-type estimate — the labor-market-side companion to this agent's own output gap (§6); the two are usually estimated jointly or at least cross-checked against each other.
-- Wage growth and wage bill — already sitting in `macro_brasil.pnad` today (per `inflation_data_inventory.md` §6, which documents the same table from the wage-price-spiral angle) — usable by this agent too without new ingestion, once formally scoped as a labor-agent-owned, activity-agent-consumed series.
+- Wage growth and wage bill — already sitting in `macro_brasil.mt_pnad` today (per `inflation_data_inventory.md` §6, which documents the same table from the wage-price-spiral angle) — usable by this agent too without new ingestion, once formally scoped as a labor-agent-owned, activity-agent-consumed series.
 
 ### From the monetary policy agent (reciprocal dependency, already documented from that side)
-`monetary_policy_data_inventory.md` already lists this agent's expected output-gap and credit-impulse deliverables as its own Tier 2 gap — so the dependency here runs the other way too: this agent would want the real Selic/real rate stance (already computed in `macro_analytics.diferenciais_juros`) to interpret whether a given activity reading reflects tight or loose policy, not just describe the reading in isolation.
+`monetary_policy_data_inventory.md` already lists this agent's expected output-gap and credit-impulse deliverables as its own Tier 2 gap — so the dependency here runs the other way too: this agent would want the real Selic/real rate stance (already computed in `macro_international.diferenciais_juros`) to interpret whether a given activity reading reflects tight or loose policy, not just describe the reading in isolation.
 
 ### From a future fiscal agent
-- Government investment execution pace and fiscal impulse — needed to properly interpret the `consumo_adm_publica` and public-investment components already owned in `macro_brasil.gdp` §1; today those series exist but there's no read on whether a given move is discretionary policy or automatic/base-effect.
+- Government investment execution pace and fiscal impulse — needed to properly interpret the `consumo_adm_publica` and public-investment components already owned in `macro_brasil.atv_pib` §1; today those series exist but there's no read on whether a given move is discretionary policy or automatic/base-effect.
 
 ### From the exchange rate agent (substantially built already)
-- REER (`macro_international.reer`) and terms of trade (`macro_brasil.termos_de_troca`) already exist and are directly usable for bibliography cluster 8's Dutch-disease/commodity-cycle work without waiting on any new agent — flagged here only so the cross-reference is explicit, mirroring how `inflation_data_inventory.md` treats the same two tables.
+- REER (`macro_international.cmb_reer`) and terms of trade (`macro_brasil.cmb_termos_troca`) already exist and are directly usable for bibliography cluster 8's Dutch-disease/commodity-cycle work without waiting on any new agent — flagged here only so the cross-reference is explicit, mirroring how `inflation_data_inventory.md` treats the same two tables.
 
 ### From a possible future global/markets agent (not yet scoped at all)
 - Commodity price indices — same gap already flagged in `inflation_data_inventory.md`'s Tier 2 section; relevant here for the Fernández-Schmitt-Grohé-Uribe (2017) "how much of the cycle is the world commodity cycle" framework in bibliography cluster 8.
@@ -165,7 +165,7 @@ Relevant as a consumption-capacity constraint (household deleveraging/releveragi
 | Medium | Vehicle sales/licensing (SGS 7384-7387) and vehicle-purchase credit (SGS 20673/25471/20728) not ingested — verified live codes, cheap to add, high-frequency consumer-durables leading indicator | §4a |
 | Low | GDP table defaults to 2016 → today despite Contas Nacionais Trimestrais data existing since 1996 | §1 |
 | Low | PIM ingests only the 3 top-level categories, not the use-based or CNAE-division breakdowns IBGE also publishes | §3 |
-| Low | No credit impulse measure computed from the raw `credito` series | §10 |
+| Low | No credit impulse measure computed from the raw `cred_credito_amplo` series | §10 |
 | Low | No replication of the Duarte-Issler-Spacov coincident/leading index methodology | §9 |
 
 ---

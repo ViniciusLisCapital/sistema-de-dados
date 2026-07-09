@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama de Inflação — LIS Capital</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    :root {
+      --lis-azul:    #1F2853;
+      --lis-dourado: #BB9B1D;
+      --lis-verde:   #418791;
+      --lis-azul-cl: #02739B;
+      --lis-laranja: #EA523A;
+      --lis-amarelo: #FBC852;
+      --lis-cinza:   #BFBFBF;
+      --bg:          #f0f2f5;
+      --card-bg:     #ffffff;
+      --border:      #dde1e9;
+      --text:        #2c3140;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--lis-azul);
+      color: #fff;
+      padding: 20px 40px 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--lis-dourado); margin-bottom: 3px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header .meta { text-align: right; font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+    header .meta strong { color: rgba(255,255,255,0.90); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--lis-azul);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 2px solid var(--lis-dourado);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 46px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: rgba(255,255,255,0.85); }
+    .tab-btn.active { color: #fff; border-bottom-color: var(--lis-dourado); }
+
+    /* ── Controls (Tab 1 only) ── */
+    #controls {
+      background: var(--lis-azul);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 9px 40px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      position: sticky;
+      top: 46px;
+      z-index: 100;
+    }
+    .ctrl-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+    .ctrl-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+    .pill {
+      padding: 4px 13px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 20px;
+      background: transparent;
+      color: rgba(255,255,255,0.60);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .pill:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; font-weight: 600; }
+    .pill:disabled { opacity: 0.35; cursor: not-allowed; }
+    #custom-row { display: none; align-items: center; gap: 7px; color: rgba(255,255,255,0.65); font-size: 12px; }
+    #custom-row input[type="month"] { padding: 3px 7px; border: 1px solid rgba(255,255,255,0.28); border-radius: 4px; background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; font-family: inherit; }
+    #custom-row input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.6); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--lis-azul);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+
+    /* ── KPI grids ── */
+    .kpi-grid   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin-bottom: 5px; }
+    .kpi-value { font-size: 30px; font-weight: 700; color: var(--lis-azul); line-height: 1.1; }
+    .kpi-value.pos { color: var(--lis-laranja); }
+    .kpi-value.neg { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 12px; color: #999; margin-top: 3px; }
+
+    /* ── Breadcrumb ── */
+    #breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 13px; }
+    .bc-item { color: #999; }
+    .bc-link  { color: var(--lis-azul-cl); cursor: pointer; }
+    .bc-link:hover { text-decoration: underline; }
+    .bc-sep   { color: #bbb; font-size: 10px; }
+    #waterfall-subtitle { font-size: 12px; color: #aaa; font-style: italic; }
+
+    /* ── Chart cards ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 4px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .chart-col-title { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
+    #chart-waterfall    { width: 100%; height: 460px; }
+    #chart-timeseries   { width: 100%; height: 460px; }
+    #chart-comp-saar    { width: 100%; height: 400px; }
+    #chart-nuc-saar     { width: 100%; height: 400px; }
+    #chart-comp-yoy     { width: 100%; height: 400px; }
+    #chart-nuc-yoy      { width: 100%; height: 400px; }
+    #chart-difusao-categoria { width: 100%; height: 340px; }
+    #chart-nucleo-sel { width: 100%; height: 360px; }
+
+    /* ── Table ── */
+    .table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { background: var(--lis-azul); color: #fff; }
+    thead th { padding: 9px 13px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none; }
+    thead th:hover { background: #2a3563; }
+    thead th.sorted-asc::after  { content: ' ▲'; opacity: 0.7; }
+    thead th.sorted-desc::after { content: ' ▼'; opacity: 0.7; }
+    tbody tr:nth-child(even) { background: #f8f9fb; }
+    tbody tr:hover { background: #edf0f6; }
+    tbody td { padding: 7px 13px; border-bottom: 1px solid var(--border); }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.pos { color: var(--lis-laranja); font-weight: 600; }
+    td.neg { color: var(--lis-verde);   font-weight: 600; }
+
+    /* ── Footer ── */
+    footer { background: var(--lis-azul); color: rgba(255,255,255,0.38); font-size: 11px; text-align: center; padding: 13px 40px; }
+    footer span { color: rgba(255,255,255,0.58); }
+
+    /* ── Y/Y drill controls ── */
+    .yoy-ctrl-bar {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 18px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+    }
+    .yoy-ctrl-bar select {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 13px; color: var(--text);
+      background: #fff; cursor: pointer;
+    }
+    .yoy-ctrl-bar select:focus { outline: none; border-color: var(--lis-azul-cl); }
+    #chart-yoy-drill { width: 100%; height: 400px; }
+
+    /* ── Multi-select checkbox dropdown (Y/Y drilldown component picker) ── */
+    .multiselect { position: relative; min-width: 300px; max-width: 520px; }
+    .multiselect-btn {
+      width: 100%; text-align: left; padding: 5px 10px; border: 1px solid var(--border);
+      border-radius: 4px; font-family: inherit; font-size: 13px; color: var(--text);
+      background: #fff; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .multiselect-btn:focus { outline: none; border-color: var(--lis-azul-cl); }
+    .multiselect-panel {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+      max-height: 260px; overflow-y: auto; background: #fff; border: 1px solid var(--border);
+      border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); padding: 4px 0;
+    }
+    .multiselect-panel.open { display: block; }
+    .multiselect-panel label {
+      display: flex; align-items: center; gap: 7px; padding: 5px 12px; font-size: 13px;
+      color: var(--text); cursor: pointer; white-space: nowrap;
+    }
+    .multiselect-panel label:hover { background: #f0f2f5; }
+    .multiselect-panel input[type="checkbox"] { cursor: pointer; }
+
+    /* ── Núcleos glossary (collapsible) ── */
+    .glossario-toggle {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      width: 100%; text-align: left; padding: 10px 16px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+      font-family: inherit; font-size: 13px; font-weight: 600; color: var(--lis-azul);
+      cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .glossario-toggle:hover { background: #f8f9fb; }
+    .glossario-caret { transition: transform .15s; color: #999; font-size: 11px; }
+    .glossario-caret.open { transform: rotate(180deg); }
+    .glossario-panel {
+      display: none; margin-top: 8px; padding: 14px 18px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .glossario-panel.open { display: block; }
+    .glossario-intro { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 14px; }
+    .glossario-list { display: grid; grid-template-columns: 190px 1fr; row-gap: 10px; column-gap: 14px; }
+    .glossario-list dt { font-weight: 700; color: var(--lis-azul); font-size: 12px; }
+    .glossario-list dd { font-size: 13px; color: #444; line-height: 1.5; margin: 0; }
+
+    /* ── Mapa de Calor ── */
+    .heatmap-intro { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 10px; max-width: 900px; }
+    .heatmap-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #666; margin-bottom: 14px; }
+    .heatmap-legend-bar {
+      display: inline-block; width: 160px; height: 12px; border-radius: 3px;
+      background: linear-gradient(to right, rgb(75,110,220), rgb(255,255,255), rgb(220,60,50));
+    }
+    .heatmap-wrap { overflow-x: auto; }
+    .heatmap-table { border-collapse: collapse; font-size: 12px; width: 100%; }
+    .heatmap-table th, .heatmap-table td { padding: 6px 9px; text-align: center; white-space: nowrap; }
+    .heatmap-table thead th { font-weight: 700; color: #fff; letter-spacing: 0.4px; }
+    .heatmap-table td.hm-label, .heatmap-table th.hm-label {
+      text-align: left; font-weight: 600; color: var(--text);
+      position: sticky; left: 0; background: var(--card-bg);
+    }
+    .heatmap-table tr.hm-section td {
+      font-weight: 700; color: var(--lis-azul); background: #f0f2f5 !important;
+      text-align: left; padding-top: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .chart-row { grid-template-columns: 1fr; }
+      header, .tab-nav, #controls { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .glossario-list { grid-template-columns: 1fr; row-gap: 3px; }
+      .glossario-list dd { margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS Capital</div>
+    <h1>Panorama de Inflação</h1>
+  </div>
+  <div class="meta">
+    Atualizado em: <strong id="generated-at">—</strong><br>
+    IBGE SIDRA &nbsp;·&nbsp; BCB SGS
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="decomp">Decomposição</button>
+  <button class="tab-btn" data-tab="nucleos">Núcleos &amp; Difusão</button>
+  <button class="tab-btn" data-tab="heatmap">Mapa de Calor</button>
+</nav>
+
+<div id="controls">
+  <span class="ctrl-label">Índice</span>
+  <button class="pill active" data-index="ipca">IPCA</button>
+  <button class="pill" data-index="ipca15" id="pill-ipca15">IPCA-15</button>
+  <div class="ctrl-sep"></div>
+  <span class="ctrl-label">Período</span>
+  <button class="pill active" data-range="ytd">Início do ano</button>
+  <button class="pill" data-range="3m">3M</button>
+  <button class="pill" data-range="6m">6M</button>
+  <button class="pill" data-range="12m">12M</button>
+  <button class="pill" data-range="all">Tudo</button>
+  <button class="pill" data-range="custom">Personalizado</button>
+  <div id="custom-row">
+    De&nbsp;<input type="month" id="custom-start">
+    &nbsp;até&nbsp;<input type="month" id="custom-end">
+  </div>
+</div>
+
+<main>
+
+  <!-- ═══════════ TAB 1 — DECOMPOSIÇÃO ═══════════ -->
+  <div class="tab-panel active" id="tab-decomp">
+
+    <section id="sec-kpis">
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label" id="kpi-index-label">IPCA Acumulado</div>
+          <div class="kpi-value pos" id="kpi-ipca">—</div>
+          <div class="kpi-sub" id="kpi-ipca-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" id="kpi-12m-label">IPCA 12 Meses</div>
+          <div class="kpi-value pos" id="kpi-12m">—</div>
+          <div class="kpi-sub" id="kpi-12m-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-decomp">
+      <h2>Decomposição por Período</h2>
+      <div id="breadcrumb"></div>
+      <div id="waterfall-subtitle"></div>
+      <div class="chart-card"><div id="chart-waterfall"></div></div>
+    </section>
+
+    <section id="sec-evolucao">
+      <h2>Evolução Mensal — Histórico Completo</h2>
+      <div class="chart-card"><div id="chart-timeseries"></div></div>
+    </section>
+
+    <section id="sec-ranking">
+      <h2 id="ranking-h2">Maiores Contribuições no Período — Top 20 Subitens</h2>
+      <div class="yoy-ctrl-bar" style="margin-bottom:12px;">
+        <span class="ctrl-label">Filtro BCB</span>
+        <select id="ranking-bcb-sel">
+          <option value="todos">Todos</option>
+          <optgroup label="Livres / Monitorados">
+            <option value="livres">Livres</option>
+            <option value="monitorados">Monitorados</option>
+          </optgroup>
+          <optgroup label="Alimentos">
+            <option value="alimentos">Alimentos</option>
+            <option value="alimentos-subj">Alimentos — Subjacente</option>
+            <option value="alimentos-ex">Alimentos — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Bens Industriais">
+            <option value="bens-ind">Bens Industriais</option>
+            <option value="bens-ind-subj">Bens Industriais — Subjacente</option>
+            <option value="bens-ind-ex">Bens Industriais — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Serviços">
+            <option value="servicos">Serviços</option>
+            <option value="servicos-subj">Serviços — Subjacente</option>
+            <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+        </select>
+        <button class="pill" id="ranking-toggle" style="margin-left:auto;background:var(--lis-azul);color:#fff;border-color:var(--lis-azul);">Ver todos</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-col="grupo">Grupo</th>
+              <th data-col="item">Item</th>
+              <th data-col="subitem">Subitem</th>
+              <th data-col="pesos" class="num">Peso</th>
+              <th data-col="periodo_var" class="num">Variação Período (%)</th>
+              <th data-col="contribuicao" class="num sorted-desc">Contribuição (p.p.)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sec-yoy-drill">
+      <h2>Variação 12M — Drilldown de Componentes</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Filtro BCB</span>
+        <select id="yoy-bcb-sel">
+          <option value="todos">Todos</option>
+          <optgroup label="Livres / Monitorados">
+            <option value="livres">Livres</option>
+            <option value="monitorados">Monitorados</option>
+          </optgroup>
+          <optgroup label="Alimentos">
+            <option value="alimentos">Alimentos</option>
+            <option value="alimentos-subj">Alimentos — Subjacente</option>
+            <option value="alimentos-ex">Alimentos — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Bens Industriais">
+            <option value="bens-ind">Bens Industriais</option>
+            <option value="bens-ind-subj">Bens Industriais — Subjacente</option>
+            <option value="bens-ind-ex">Bens Industriais — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Serviços">
+            <option value="servicos">Serviços</option>
+            <option value="servicos-subj">Serviços — Subjacente</option>
+            <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+        </select>
+        <span class="ctrl-label">Nível</span>
+        <select id="yoy-level-sel">
+          <option value="grupo">Grupo</option>
+          <option value="subgrupo">Subgrupo</option>
+          <option value="item">Item</option>
+          <option value="subitem" selected>Subitem</option>
+        </select>
+        <span class="ctrl-label">Componente</span>
+        <div class="multiselect" id="yoy-item-multiselect">
+          <button type="button" class="multiselect-btn" id="yoy-item-btn">—</button>
+          <div class="multiselect-panel" id="yoy-item-panel"></div>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-yoy-drill"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB 2 — NÚCLEOS & DIFUSÃO ═══════════ -->
+  <div class="tab-panel" id="tab-nucleos">
+
+    <section id="sec-nuc-glossario">
+      <button type="button" class="glossario-toggle" id="glossario-toggle">
+        <span>ⓘ O que são os núcleos de inflação?</span>
+        <span class="glossario-caret" id="glossario-caret">▾</span>
+      </button>
+      <div class="glossario-panel" id="glossario-panel">
+        <p class="glossario-intro">
+          Núcleos de inflação são medidas alternativas ao IPCA cheio que tentam isolar a
+          tendência inflacionária, excluindo ou suavizando itens muito voláteis ou
+          sujeitos a choques pontuais (clima, câmbio, decisões de política de preços).
+          Definições conforme a Nota Técnica do Banco Central do Brasil nº 57 (dez/2025),
+          que consolida a metodologia de cálculo de todas as séries analíticas do IPCA.
+        </p>
+        <dl class="glossario-list">
+          <dt>EX-0</dt>
+          <dd>Núcleo por exclusão mais abrangente: inclui todos os preços livres, exceto o subgrupo "Alimentação no domicílio" — equivale à soma de Serviços e Bens Industriais.</dd>
+          <dt>EX-01</dt>
+          <dd>Exclui os itens de alimentação no domicílio com preços mais voláteis (cereais/leguminosas/oleaginosas, tubérculos/raízes/legumes, açúcares, hortaliças/verduras, frutas, carnes, pescados, aves e ovos, leites e derivados, óleos e gorduras) e os combustíveis, domésticos e veiculares.</dd>
+          <dt>EX-02</dt>
+          <dd>Núcleo do segmento de preços livres composto por três sub-núcleos — de alimentação no domicílio, de serviços e de bens industriais —, cada um definido por critérios próprios de exclusão de componentes voláteis ou de reajuste infrequente.</dd>
+          <dt>EX-03</dt>
+          <dd>Composto apenas pelos sub-núcleos de serviços e de bens industriais do EX-02 — ou seja, o EX-02 sem o componente de alimentação no domicílio. Os dois sub-núcleos são publicados em separado como EX-03 — Serviços (série 29683) e EX-03 — Industriais (série 29684), antes referidos nos Relatórios de Política Monetária como "serviços subjacente" e "industriais núcleo".</dd>
+          <dt>EX-FE</dt>
+          <dd>Exclui todos os itens de alimentação e energia, seguindo a classificação internacional COICOP: alimentação no domicílio (exceto bebidas alcoólicas), combustíveis e energia, óleo lubrificante automotivo e combustível veicular.</dd>
+          <dt>P55</dt>
+          <dd>Percentil 55 ponderado da distribuição de variações por subitem. Esse percentil minimiza o viés frente ao IPCA cheio — a mediana (P50) tende a subestimar a inflação, dada a assimetria à direita da distribuição de variações de preços.</dd>
+          <dt>Médias Aparadas (sem suavização) — MA</dt>
+          <dd>Ordena as variações de preço por item e exclui sucessivamente os de menor e os de maior variação até que cada cauda acumule 20% do peso total; o núcleo é a média ponderada dos itens remanescentes.</dd>
+          <dt>Médias Aparadas (com suavização) — MS</dt>
+          <dd>Segue exatamente o mesmo cálculo do MA, mas substitui a variação mensal de 9 itens de reajuste infrequente (ex.: combustíveis, energia elétrica, transporte público, cursos, comunicação) pela sua variação média nos últimos 12 meses antes de aparar as caudas.</dd>
+          <dt>Dupla Ponderação</dt>
+          <dd>Não exclui nenhum item — pondera as variações de preço pelo peso original ajustado pelo inverso da volatilidade relativa de cada item (desvio-padrão da diferença entre sua variação e a do IPCA cheio, numa janela móvel de 48 meses).</dd>
+          <dt>Difusão</dt>
+          <dd>Percentual de subitens do IPCA com variação de preço positiva no mês — ao contrário dos núcleos acima, não pondera pelos pesos originais dos subitens.</dd>
+          <dt>Média 5 Núcleos (BCB)</dt>
+          <dd>Média simples de EX-0, EX-03, Médias Aparadas (com suavização), Dupla Ponderação e P55 — o conjunto de cinco núcleos que o próprio BC costuma resumir em uma única média em suas comunicações. Não inclui EX-01, EX-02 nem EX-FE.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section>
+      <h2 id="nuc-h2-comp-saar">Componentes — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <div class="chart-card"><div id="chart-comp-saar"></div></div>
+    </section>
+
+    <section id="nuc-sec-nuc-saar">
+      <h2>Núcleos — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Núcleos</span>
+        <div class="multiselect" id="nuc-saar-multiselect">
+          <button type="button" class="multiselect-btn" id="nuc-saar-btn">—</button>
+          <div class="multiselect-panel" id="nuc-saar-panel"></div>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-nuc-saar"></div></div>
+    </section>
+
+    <section>
+      <h2 id="nuc-h2-comp-yoy">Componentes — Variação 12M % a/a</h2>
+      <div class="chart-card"><div id="chart-comp-yoy"></div></div>
+    </section>
+
+    <section id="nuc-sec-nuc-yoy">
+      <h2>Núcleos de Inflação — Variação 12M % a/a</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Núcleos</span>
+        <div class="multiselect" id="nuc-yoy-multiselect">
+          <button type="button" class="multiselect-btn" id="nuc-yoy-btn">—</button>
+          <div class="multiselect-panel" id="nuc-yoy-panel"></div>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-nuc-yoy"></div></div>
+    </section>
+
+    <section id="nuc-sec-selecionado">
+      <h2>Núcleo Selecionado</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Núcleo</span>
+        <select id="nucleo-sel" style="min-width:280px;max-width:420px;"></select>
+      </div>
+      <div class="chart-card"><div id="chart-nucleo-sel"></div></div>
+    </section>
+
+    <section>
+      <h2 id="nuc-h2-difusao">Difusão por Categoria</h2>
+      <div class="yoy-ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="difcat-level-sel">
+          <option value="grupo">Grupo</option>
+          <option value="subgrupo">Subgrupo</option>
+          <option value="item">Item</option>
+          <option value="nucleo">Núcleo</option>
+        </select>
+        <span class="ctrl-label">Categoria</span>
+        <select id="difcat-value-sel" style="min-width:300px;max-width:520px;"></select>
+      </div>
+      <div class="chart-card"><div id="chart-difusao-categoria"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB 3 — MAPA DE CALOR ═══════════ -->
+  <div class="tab-panel" id="tab-heatmap">
+
+    <section>
+      <h2>Mapa de Calor — Grupos e Núcleos (3M SAAR)</h2>
+      <p class="heatmap-intro">
+        Cada célula mostra o 3M SAAR (% a.a., dessazonalizado) do mês, colorido pelo
+        <strong>z-score da própria série</strong> — quantos desvios-padrão aquele valor está
+        acima (vermelho) ou abaixo (azul) da média móvel dos últimos 5 anos (60 meses) da
+        mesma linha. Cores mais fortes = leituras mais distantes do "normal" recente daquela
+        série, não de um valor absoluto comum a todas — por isso núcleos com volatilidade
+        muito diferente ficam comparáveis na mesma escala. Metodologia inspirada no
+        <em>heat map</em> de inflação do FRED Blog (St. Louis Fed).
+      </p>
+      <div class="heatmap-legend">
+        <span>Frio (abaixo do normal)</span>
+        <span class="heatmap-legend-bar"></span>
+        <span>Quente (acima do normal)</span>
+      </div>
+      <div class="heatmap-wrap" id="heatmap-table-wrap"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>IBGE SIDRA (Agregados 7060 / 7062) &nbsp;·&nbsp; BCB SGS</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Data & palette ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/inflation_latest.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D   = REPORT_DATA;
+var C   = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+var LEVELS       = ['grupo', 'subgrupo', 'item', 'subitem'];
+var LEVEL_LABELS = {grupo:'Grupo', subgrupo:'Subgrupo', item:'Item', subitem:'Subitem'};
+var GROUP_COLORS = ['#EA523A','#02739B','#BB9B1D','#418791','#8E44AD','#16A085','#E67E22','#2980B9','#C0392B','#27AE60','#F39C12','#7F8C8D'];
+// scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
+var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var currentIndex = 'ipca';
+var startDate    = '';
+var endDate      = '';
+var drillPath    = [];
+var sortCol      = 'contribuicao';
+var sortAsc      = false;
+
+// ── State helpers ─────────────────────────────────────────────────────────────
+function currentAll()     { return currentIndex === 'ipca15' ? D.records_ipca15 : D.records; }
+function currentMaxDate() { return currentIndex === 'ipca15' ? D.max_date_ipca15 : D.max_date; }
+function currentMinDate() { return currentIndex === 'ipca15' ? D.min_date_ipca15 : D.min_date; }
+function indexLabel()     { return currentIndex === 'ipca15' ? 'IPCA-15' : 'IPCA'; }
+
+// ── Date helpers ──────────────────────────────────────────────────────────────
+function ytdStart() { return currentMaxDate().slice(0,4) + '-01'; }
+// Trailing-N-months window, inclusive of the anchor month, e.g. monthsBack(3, '2026-05')
+// returns '2026-03' so that [result, anchor] spans exactly 3 months (Mar/Abr/Mai).
+function monthsBack(n, anchor) {
+  var p = (anchor || currentMaxDate()).split('-');
+  var y = parseInt(p[0]), m = parseInt(p[1]);
+  m -= (n - 1); while (m <= 0) { m += 12; y--; }
+  return y + '-' + String(m).padStart(2,'0');
+}
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function bcbValue(name, dt) {
+  var d = D.bcb[name];
+  if (!d) return null;
+  var i = d.dates.indexOf(dt);
+  return i >= 0 ? d.values[i] : null;
+}
+
+// ── Y/Y from monthly BCB series ───────────────────────────────────────────────
+function computeYoY(name) {
+  var d = D.bcb[name];
+  if (!d) return {dates:[], values:[]};
+  var dates = [], values = [];
+  for (var i = 11; i < d.dates.length; i++) {
+    if (d.dates[i] < '2000-01') continue; // skip hyperinflation era
+    var prod = 1, ok = true;
+    for (var j = i - 11; j <= i; j++) {
+      if (d.values[j] == null) { ok = false; break; }
+      prod *= (1 + d.values[j] / 100);
+    }
+    dates.push(d.dates[i]);
+    values.push(ok ? Math.round((prod - 1) * 10000) / 100 : null);
+  }
+  return {dates: dates, values: values};
+}
+function movingAvg(values, n) {
+  return values.map(function(v, i) {
+    if (i < n - 1) return null;
+    var sum = 0, cnt = 0;
+    for (var j = i - n + 1; j <= i; j++) {
+      if (values[j] != null) { sum += values[j]; cnt++; }
+    }
+    return cnt === n ? sum / n : null;
+  });
+}
+
+// ── IPCA-15 computed series (from records) ────────────────────────────────────
+// contribuicao = var_mensal * peso_fraction → group_var = contrib / peso
+function computeMonthlyFromRecords(records, filterFn) {
+  var byMonth = {};
+  records.forEach(function(r) {
+    if (filterFn && !filterFn(r)) return;
+    if (!byMonth[r.dt]) byMonth[r.dt] = {c: 0, p: 0};
+    byMonth[r.dt].c += (r.contribuicao || 0);
+    byMonth[r.dt].p += (r.pesos || 0);
+  });
+  var months = Object.keys(byMonth).sort();
+  var dates = [], values = [];
+  months.forEach(function(m) {
+    var d = byMonth[m];
+    dates.push(m);
+    values.push(d.p > 0 ? Math.round(d.c / d.p * 10000) / 100 : null);
+  });
+  return {dates: dates, values: values};
+}
+
+function computeYoYFromRecords(records, filterFn) {
+  var mo = computeMonthlyFromRecords(records, filterFn);
+  var dates = mo.dates, vals = mo.values;
+  var od = [], ov = [];
+  for (var i = 11; i < dates.length; i++) {
+    var prod = 1, ok = true;
+    for (var j = i - 11; j <= i; j++) { if (vals[j] == null) { ok = false; break; } prod *= (1 + vals[j] / 100); }
+    od.push(dates[i]);
+    ov.push(ok ? Math.round((prod - 1) * 10000) / 100 : null);
+  }
+  return {dates: od, values: ov};
+}
+
+function computeDifusaoFromRecords(records, filterFn) {
+  var byMonth = {};
+  records.forEach(function(r) {
+    if (filterFn && !filterFn(r)) return;
+    if (!byMonth[r.dt]) byMonth[r.dt] = {pos: 0, tot: 0};
+    byMonth[r.dt].tot++;
+    if ((r.var_mensal || 0) > 0) byMonth[r.dt].pos++;
+  });
+  var months = Object.keys(byMonth).sort();
+  var dates = [], values = [];
+  months.forEach(function(m) {
+    var d = byMonth[m];
+    dates.push(m);
+    values.push(d.tot > 0 ? Math.round(d.pos / d.tot * 1000) / 10 : null);
+  });
+  return {dates: dates, values: values};
+}
+
+// ── Decomp helpers ────────────────────────────────────────────────────────────
+function applyDrillFilter(rows) {
+  for (var i = 0; i < drillPath.length; i++) {
+    var lv = drillPath[i].level, vl = drillPath[i].value;
+    rows = rows.filter(function(r) { return r[lv] === vl; });
+  }
+  return rows;
+}
+function getFiltered() {
+  var s = startDate, e = endDate;
+  return applyDrillFilter(currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; }));
+}
+function currentLevel() { return LEVELS[Math.min(drillPath.length, LEVELS.length - 1)]; }
+function isLeaf()       { return drillPath.length >= LEVELS.length - 1; }
+function aggregateByLevel(rows, key) {
+  var agg = {};
+  for (var i = 0; i < rows.length; i++) {
+    var k = rows[i][key] || '(sem categoria)';
+    agg[k] = (agg[k] || 0) + (rows[i].contribuicao || 0);
+  }
+  var out = [];
+  for (var k in agg) out.push({label: k, contrib: agg[k]});
+  out.sort(function(a,b) { return b.contrib - a.contrib; });
+  return out;
+}
+function computeIpca(rows) {
+  var byMonth = {};
+  for (var i = 0; i < rows.length; i++) {
+    byMonth[rows[i].dt] = (byMonth[rows[i].dt] || 0) + (rows[i].contribuicao || 0);
+  }
+  var acc = 1;
+  Object.values(byMonth).forEach(function(v) { acc *= (1 + v / 100); });
+  return (acc - 1) * 100;
+}
+
+// ── Decomp renders ────────────────────────────────────────────────────────────
+function renderAll() {
+  renderBreadcrumb();
+  renderKPIs();
+  renderWaterfall();
+  renderTimeSeries();
+  renderTable();
+}
+
+// Three-tier preference for the trailing-12-months figure ending at `anchor`,
+// from most to least precise:
+// 1) Officially published accumulated-12m series (BCB SGS 13522, IPCA only)
+//    — computed by BCB from the full-precision index, exact by construction.
+// 2) Chain BCB's own official monthly print (SGS 433/7478 — the same number
+//    already cross-checked elsewhere in the report) over the corrected
+//    12-month window. IBGE only publishes that monthly rate to 2 decimals,
+//    but it's the same rounding baked into BCB's own accumulated series, so
+//    chaining it reproduces the official 12m value exactly (verified against
+//    13522 for every month back to 2025-01 — 0.00pp difference).
+// 3) Reconstruct from subitem-level decomposicao (sum of contribuicao) — only
+//    reached if BCB has no data for this window at all. This is the one tier
+//    with real drift: IBGE publishes each SUBITEM's var_mensal already
+//    rounded to 2 decimals before we recombine ~380 of them, and that
+//    doesn't perfectly reconstruct the headline print (measured 0.001-0.005pp
+//    off per month), which compounds to ~0.02pp over a 12-month chain. There
+//    is no more-precise published input to fix this with — it's an IBGE
+//    publication-precision limit, not a bug in our aggregation.
+function computeIpca12m(anchor) {
+  var official = currentIndex === 'ipca' ? bcbValue('IPCA_12m', anchor) : null;
+  if (official != null) return official;
+  var monthlyName = currentIndex === 'ipca15' ? 'IPCA15' : 'IPCA';
+  var chained = computeYoY(monthlyName);
+  var i = chained.dates.indexOf(anchor);
+  if (i >= 0) return chained.values[i];
+  var from12 = monthsBack(12, anchor);
+  var rows12 = currentAll().filter(function(r) { return r.dt >= from12 && r.dt <= anchor; });
+  return computeIpca(rows12);
+}
+
+function renderKPIs() {
+  var idx = indexLabel();
+  document.getElementById('kpi-index-label').textContent  = idx + ' Acumulado';
+  document.getElementById('kpi-12m-label').textContent    = idx + ' 12 Meses';
+  var s = startDate, e = endDate;
+
+  var ipca12m = computeIpca12m(e);
+
+  // When the selected period IS exactly the trailing 12 months ending at e
+  // (e.g. the "12M" pill, or a custom range that happens to span 12 months),
+  // reuse that same, more precise value for "Acumulado" instead of
+  // recomputing from subitem-level data — otherwise the two cards can show
+  // slightly different numbers for what is conceptually the same window,
+  // since the subitem reconstruction carries the ~0.02pp drift described
+  // above (this is exactly what caused Acumulado=4.71% / 12 Meses=4.72% for
+  // the same jun/2025→mai/2026 window).
+  var total;
+  if (s === monthsBack(12, e)) {
+    total = ipca12m;
+  } else {
+    var rangeRows = currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; });
+    total = computeIpca(rangeRows);
+  }
+  document.getElementById('kpi-ipca').textContent    = fmt(total) + '%';
+  document.getElementById('kpi-ipca-sub').textContent = s + ' → ' + e;
+
+  document.getElementById('kpi-12m').textContent    = fmt(ipca12m) + '%';
+  document.getElementById('kpi-12m-sub').textContent = '12M encerrado em ' + e;
+}
+
+function renderWaterfall() {
+  var agg    = aggregateByLevel(getFiltered(), currentLevel());
+  var labels = agg.map(function(d) { return d.label; }).reverse();
+  var values = agg.map(function(d) { return Math.round(d.contrib * 10000) / 10000; }).reverse();
+  var colors = values.map(function(v) { return v >= 0 ? C.laranja : C.verde; });
+  document.getElementById('waterfall-subtitle').textContent = isLeaf()
+    ? 'Nível mais detalhado — veja o ranking abaixo'
+    : 'Clique em uma barra para detalhar por ' + LEVEL_LABELS[LEVELS[drillPath.length + 1] || 'subitem'];
+  Plotly.react('chart-waterfall', [{
+    type:'bar', orientation:'h',
+    y: labels, x: values, marker:{color: colors},
+    hovertemplate: '<b>%{y}</b><br>%{x:.3f} p.p.<extra></extra>',
+  }], {
+    height:460, margin:{l:220,r:30,t:20,b:50},
+    xaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    yaxis:{tickfont:{size:12}, automargin:true},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12}, bargap:0.35,
+  }, _PLOTLY_CONFIG);
+}
+
+function renderTimeSeries() {
+  var level    = currentLevel();
+  var pathRows = applyDrillFilter(currentAll());
+  var allDates = [], dateSet = {};
+  for (var i = 0; i < currentAll().length; i++) {
+    var dt = currentAll()[i].dt;
+    if (!dateSet[dt]) { dateSet[dt] = true; allDates.push(dt); }
+  }
+  allDates.sort();
+  var groupSet = {};
+  for (var i = 0; i < pathRows.length; i++) groupSet[pathRows[i][level] || '(sem categoria)'] = true;
+  var groups = Object.keys(groupSet);
+  var byGD = {}, totalByD = {};
+  for (var i = 0; i < pathRows.length; i++) {
+    var r = pathRows[i], g = r[level] || '(sem categoria)';
+    if (!byGD[g]) byGD[g] = {};
+    byGD[g][r.dt] = (byGD[g][r.dt] || 0) + (r.contribuicao || 0);
+    totalByD[r.dt] = (totalByD[r.dt] || 0) + (r.contribuicao || 0);
+  }
+  var traces = groups.map(function(grp, idx) {
+    return {
+      type:'bar', name: grp.length > 35 ? grp.slice(0,35)+'…' : grp,
+      x: allDates, marker:{color: GROUP_COLORS[idx % GROUP_COLORS.length]},
+      y: allDates.map(function(d) { return Math.round(((byGD[grp]||{})[d]||0)*10000)/10000; }),
+      hovertemplate:'<b>'+grp+'</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+    };
+  });
+  traces.push({
+    type:'scatter', mode:'lines', name:'Total', yaxis:'y2',
+    x: allDates, line:{color:C.azul, width:2},
+    y: allDates.map(function(d) { return Math.round((totalByD[d]||0)*10000)/10000; }),
+    hovertemplate:'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+  });
+  Plotly.react('chart-timeseries', traces, {
+    barmode:'stack', height:460, margin:{l:55,r:190,t:20,b:40},
+    xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
+      buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
+      bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',
+    }},
+    yaxis:{title:{text:'Contribuição mensal (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    yaxis2:{title:{text:'Total (p.p.)',font:{size:11}}, overlaying:'y', side:'right', showgrid:false, zeroline:false},
+    // Vertical legend to the right instead of wrapping above the chart — with
+    // dozens of subitems selected via drilldown, a horizontal legend wraps
+    // across many rows and covers the bars. Plotly scrolls this internally
+    // if it's taller than the plot, so it never spills over.
+    legend:{orientation:'v', x:1.02, xanchor:'left', y:1, yanchor:'top', font:{size:10}},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+  }, _PLOTLY_CONFIG);
+}
+
+var rankingBcbKey  = 'todos';
+var rankingShowAll = false;
+var _NUMERIC_TABLE_COLS = {pesos:1, contribuicao:1, periodo_var:1};
+
+// Own-price cumulative variation of a subitem over the filtered period —
+// chains var_mensal like computeIpca does for the whole index, but scoped
+// to that one subitem's rows, sorted chronologically first.
+function chainVariation(vars) {
+  vars.sort(function(a,b) { return a.dt < b.dt ? -1 : a.dt > b.dt ? 1 : 0; });
+  var acc = 1, any = false;
+  vars.forEach(function(v) { if (v.vm != null) { acc *= (1 + v.vm / 100); any = true; } });
+  return any ? Math.round((acc - 1) * 10000) / 100 : null;
+}
+
+function renderTable() {
+  var fn = _YOY_BCB_FILTERS[rankingBcbKey] || _YOY_BCB_FILTERS['todos'];
+  var rows = getFiltered().filter(fn);
+  var agg = {}, meta = {}, vars = {};
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i], k = r.subitem;
+    if (!agg[k]) { agg[k] = 0; meta[k] = {grupo:r.grupo, item:r.item, pesos:r.pesos}; vars[k] = []; }
+    agg[k] += (r.contribuicao || 0);
+    vars[k].push({dt: r.dt, vm: r.var_mensal});
+  }
+  var data = [];
+  for (var si in agg) {
+    data.push({
+      subitem: si, contribuicao: agg[si], grupo: meta[si].grupo, item: meta[si].item,
+      pesos: meta[si].pesos, periodo_var: chainVariation(vars[si]),
+    });
+  }
+  if (sortCol === 'contribuicao' && !sortAsc) {
+    data.sort(function(a,b) { return b.contribuicao - a.contribuicao; });
+  } else if (_NUMERIC_TABLE_COLS[sortCol]) {
+    var ncol = sortCol, nasc = sortAsc;
+    data.sort(function(a,b) {
+      var va = a[ncol], vb = b[ncol];
+      if (va == null) return vb == null ? 0 : 1;
+      if (vb == null) return -1;
+      return nasc ? va - vb : vb - va;
+    });
+  } else {
+    var col = sortCol, asc = sortAsc;
+    data.sort(function(a,b) {
+      var va = a[col]||'', vb = b[col]||'';
+      return va < vb ? (asc?-1:1) : va > vb ? (asc?1:-1) : 0;
+    });
+  }
+  var shown = rankingShowAll ? data : data.slice(0,20);
+  document.getElementById('table-body').innerHTML = shown.map(function(d) {
+    var css = d.contribuicao >= 0 ? 'pos' : 'neg';
+    var peso = d.pesos != null ? (d.pesos*100).toFixed(2)+'%' : '—';
+    var pvCss = d.periodo_var == null ? '' : d.periodo_var >= 0 ? 'pos' : 'neg';
+    var pv = d.periodo_var != null ? fmt(d.periodo_var,2)+'%' : '—';
+    return '<tr><td>'+(d.grupo||'—')+'</td><td>'+(d.item||'—')+'</td><td>'+(d.subitem||'—')+'</td><td class="num">'+peso+'</td>'
+      +'<td class="num '+pvCss+'">'+pv+'</td><td class="num '+css+'">'+fmt(d.contribuicao,3)+'</td></tr>';
+  }).join('');
+  document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+    th.classList.remove('sorted-asc','sorted-desc');
+    if (th.dataset.col === sortCol) th.classList.add(sortAsc ? 'sorted-asc' : 'sorted-desc');
+  });
+  document.getElementById('ranking-h2').textContent = 'Maiores Contribuições no Período — '
+    + (rankingShowAll ? ('Todos os Subitens (' + data.length + ')') : 'Top 20 Subitens');
+  document.getElementById('ranking-toggle').textContent = rankingShowAll ? 'Ver top 20' : 'Ver todos';
+}
+
+function renderBreadcrumb() {
+  var html = '<span class="bc-item bc-link" data-idx="-1">Todos os Grupos</span>';
+  for (var i = 0; i < drillPath.length; i++) {
+    html += ' <span class="bc-sep">▶</span> ';
+    var cls = i < drillPath.length - 1 ? 'bc-item bc-link' : 'bc-item';
+    html += '<span class="'+cls+'" data-idx="'+i+'">'+drillPath[i].value+'</span>';
+  }
+  var el = document.getElementById('breadcrumb');
+  el.innerHTML = html;
+  el.querySelectorAll('.bc-link').forEach(function(node) {
+    node.addEventListener('click', function() {
+      drillPath = drillPath.slice(0, parseInt(this.dataset.idx) + 1);
+      renderAll();
+    });
+  });
+}
+
+function bindWaterfallClick() {
+  document.getElementById('chart-waterfall').on('plotly_click', function(data) {
+    if (isLeaf()) return;
+    drillPath.push({level: currentLevel(), value: data.points[0].y});
+    renderAll();
+  });
+}
+
+// ── 3M SAAR (seasonal-adjusted annual rate) ──────────────────────────────────
+// Python computes MA(3) on the raw series, then removes the seasonal component
+// via STL; result stored as name_ma3_sa. This function annualizes: (1+v/100)^12-1.
+function compute3mSAAR(name) {
+  var d = D.bcb[name + '_ma3_sa'];
+  if (!d) return {dates: [], values: []};
+  var dates = [], values = [];
+  for (var i = 0; i < d.dates.length; i++) {
+    if (d.dates[i] < '2000-01') continue;
+    var v = d.values[i];
+    if (v == null) { dates.push(d.dates[i]); values.push(null); continue; }
+    dates.push(d.dates[i]);
+    values.push(Math.round((Math.pow(1 + v / 100, 12) - 1) * 10000) / 100);
+  }
+  return {dates: dates, values: values};
+}
+
+function renderCompSAAR() {
+  var COMP = [
+    {name:'IPCA',                     label:'IPCA (total)',        color:C.azul,    width:2.5, dash:'dot'},
+    {name:'IPCA_livres',              label:'Livres',              color:C.laranja, width:1.5},
+    {name:'IPCA_servicos',            label:'Serviços',            color:C.azulCl,  width:1.5},
+    {name:'IPCA_industriais',         label:'Industriais',         color:C.cinza,   width:1.5},
+    {name:'IPCA_alimentacao',         label:'Alimentação',         color:C.dourado, width:1.5},
+    {name:'IPCA_comercializaveis',    label:'Comercializáveis',    color:'#8E44AD', width:1.5},
+    {name:'IPCA_nao_comercializaveis',label:'Não Comercializáveis',color:'#16A085', width:1.5},
+  ];
+  var traces = COMP.map(function(s) {
+    var r = compute3mSAAR(s.name);
+    if (!r.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:r.dates, y:r.values,
+      line:{color:s.color, width:s.width, dash:s.dash||'solid'},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), _PLOTLY_CONFIG);
+}
+
+// Master list of every núcleo series selectable in the two checklist-driven
+// charts below, plus the synthetic "Média 5 Núcleos (BCB)" pseudo-series.
+// '_media5' = simple average of EX-0, EX-03, Médias Aparadas (c/ suavização),
+// Dupla Ponderação e P55 — the five core measures BCB itself averages in its
+// own communications (see glossário); NOT the same set as EX-FE/EX-01/EX-02.
+var NUCLEO_ALL = [
+  {value:'IPCA',                                       label:'IPCA (ref.)',                      color:C.azul,    width:2,   dash:'dot'},
+  {value:'_media5',                                    label:'Média 5 Núcleos (BCB)',             color:'#1F2853', width:2.5, dash:'solid'},
+  {value:'IPCA_nucleo_EX0',                            label:'EX-0',                              color:C.laranja},
+  {value:'IPCA_nucleo_EX01',                           label:'EX-01',                             color:'#8E44AD'},
+  {value:'IPCA_nucleo_EX02',                           label:'EX-02',                             color:'#2980B9'},
+  {value:'IPCA_nucleo_EX03',                           label:'EX-03',                              color:C.azulCl},
+  {value:'IPCA_nucleo_EX03_servicos',                  label:'EX-03 — Serviços',                  color:'#27AE60'},
+  {value:'IPCA_nucleo_EX03_industriais',                label:'EX-03 — Industriais',               color:'#C0392B'},
+  {value:'IPCA_nucleo_EXFE',                           label:'EX-FE',                              color:'#16A085'},
+  {value:'IPCA_nucleo_P55',                            label:'P55',                                color:C.dourado},
+  {value:'IPCA_nucleo_medias_aparadas',                label:'Médias Aparadas (com suavização)',   color:C.verde},
+  {value:'IPCA_nucleo_medias_aparadas_sem_suavizacao', label:'Médias Aparadas (sem suavização)',   color:'#F39C12'},
+  {value:'IPCA_nucleo_DP',                             label:'Dupla Ponderação',                   color:'#E67E22'},
+];
+var NUCLEO5_BCB = ['IPCA_nucleo_EX0', 'IPCA_nucleo_EX03', 'IPCA_nucleo_medias_aparadas', 'IPCA_nucleo_DP', 'IPCA_nucleo_P55'];
+
+function computeNucleoMedia5(computeFn) {
+  var series = NUCLEO5_BCB.map(computeFn);
+  var byDate = {};
+  series.forEach(function(s) {
+    for (var i = 0; i < s.dates.length; i++) {
+      if (s.values[i] == null) continue;
+      if (!byDate[s.dates[i]]) byDate[s.dates[i]] = {sum: 0, n: 0};
+      byDate[s.dates[i]].sum += s.values[i];
+      byDate[s.dates[i]].n++;
+    }
+  });
+  var dates = Object.keys(byDate).sort();
+  var values = dates.map(function(d) { return Math.round((byDate[d].sum / byDate[d].n) * 100) / 100; });
+  return {dates: dates, values: values};
+}
+
+function nucleoSeriesValues(key, computeFn) {
+  return key === '_media5' ? computeNucleoMedia5(computeFn) : computeFn(key);
+}
+
+var nucSaarItems = ['IPCA', '_media5', 'IPCA_nucleo_EX0', 'IPCA_nucleo_EX03', 'IPCA_nucleo_EXFE', 'IPCA_nucleo_P55', 'IPCA_nucleo_medias_aparadas', 'IPCA_nucleo_DP'];
+var nucYoyItems  = nucSaarItems.slice();
+
+function _nucOptLabel(key) {
+  var o = NUCLEO_ALL.filter(function(x) { return x.value === key; })[0];
+  return o ? o.label : key;
+}
+
+function populateNucChecklist(panelId, btnId, state, renderFn) {
+  var panel = document.getElementById(panelId);
+  panel.innerHTML = NUCLEO_ALL.map(function(o) {
+    var checked = state.indexOf(o.value) >= 0 ? ' checked' : '';
+    return '<label><input type="checkbox" value="' + o.value + '"' + checked + '> ' + o.label + '</label>';
+  }).join('');
+  Array.prototype.forEach.call(panel.querySelectorAll('input[type=checkbox]'), function(cb) {
+    cb.addEventListener('change', function() {
+      var v = this.value;
+      if (this.checked) { if (state.indexOf(v) < 0) state.push(v); }
+      else { var i = state.indexOf(v); if (i >= 0) state.splice(i, 1); }
+      _updateNucBtnLabel(btnId, state);
+      renderFn();
+    });
+  });
+  _updateNucBtnLabel(btnId, state);
+}
+
+function _updateNucBtnLabel(btnId, state) {
+  var btn = document.getElementById(btnId);
+  if (!btn) return;
+  if (!state.length)          btn.textContent = 'Selecione…';
+  else if (state.length === 1) btn.textContent = _nucOptLabel(state[0]);
+  else                          btn.textContent = state.length + ' selecionados';
+}
+
+function renderNucSAAR() {
+  if (!nucSaarItems.length) { Plotly.purge('chart-nuc-saar'); return; }
+  var traces = nucSaarItems.map(function(key) {
+    var opt = NUCLEO_ALL.filter(function(o) { return o.value === key; })[0];
+    if (!opt) return null;
+    var r = nucleoSeriesValues(key, compute3mSAAR);
+    if (!r.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:opt.label, x:r.dates, y:r.values,
+      line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
+      hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), _PLOTLY_CONFIG);
+}
+
+// ── Y-axis rescale on rangeselector click ─────────────────────────────────────
+function _bindYRescale(divId) {
+  var el = document.getElementById(divId);
+  var lock = false;
+  el.on('plotly_relayout', function(ev) {
+    if (lock) return;
+    if (!Object.keys(ev).some(function(k) { return k.indexOf('xaxis.range') === 0; })) return;
+    var layout = el.layout || el._fullLayout;
+    if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    var xr = layout.xaxis.range;
+    var x0 = xr[0].toString().slice(0,7), x1 = xr[1].toString().slice(0,7);
+    var mn = Infinity, mx = -Infinity;
+    (el.data || []).forEach(function(t) {
+      if (!t.x || !t.y) return;
+      for (var i = 0; i < t.x.length; i++) {
+        var v = t.y[i], s = (t.x[i] || '').toString();
+        if (v == null || s < x0 || s > x1) continue;
+        if (v < mn) mn = v;
+        if (v > mx) mx = v;
+      }
+    });
+    if (mn < Infinity) {
+      lock = true;
+      var p = Math.max((mx - mn) * 0.1, 0.5);
+      Plotly.relayout(divId, {'yaxis.range': [Math.min(mn - p, 0), mx + p], 'yaxis.autorange': false})
+        .then(function() { lock = false; }).catch(function() { lock = false; });
+    }
+  });
+}
+
+// ── Núcleos tab renders ───────────────────────────────────────────────────────
+function renderNucleosTab() {
+  var is15 = currentIndex === 'ipca15';
+  var secNucSaar = document.getElementById('nuc-sec-nuc-saar');
+  var secNucYoy  = document.getElementById('nuc-sec-nuc-yoy');
+  var secSel     = document.getElementById('nuc-sec-selecionado');
+  if (secNucSaar) secNucSaar.style.display = is15 ? 'none' : '';
+  if (secNucYoy)  secNucYoy.style.display  = is15 ? 'none' : '';
+  if (secSel)     secSel.style.display     = is15 ? 'none' : '';
+
+  var h2Saar = document.getElementById('nuc-h2-comp-saar');
+  var h2Yoy  = document.getElementById('nuc-h2-comp-yoy');
+  if (h2Saar) h2Saar.textContent = is15 ? 'Decomposição Mensal por Componente — IPCA-15' : 'Componentes — 3M SAAR, % a.a. (dessazonalizado)';
+  if (h2Yoy)  h2Yoy.textContent  = is15 ? 'Componentes — Variação 12M % a/a — IPCA-15'   : 'Componentes — Variação 12M % a/a';
+
+  if (is15) {
+    renderCompContrib15();
+    renderCompYoY15();    _bindYRescale('chart-comp-yoy');
+  } else {
+    renderCompSAAR();       _bindYRescale('chart-comp-saar');
+    renderNucSAAR();        _bindYRescale('chart-nuc-saar');
+    renderComponentesYoY(); _bindYRescale('chart-comp-yoy');
+    renderNucleosYoY();     _bindYRescale('chart-nuc-yoy');
+    renderNucleoSelecionado();
+  }
+  populateDifCatItems();
+  renderDifusaoCategoria();
+}
+
+// ── Núcleo Selecionado — pick any single núcleo (or IPCA / the 5-core
+// average), see 3M SAAR + 12M a/a together. Reuses NUCLEO_ALL (defined
+// above) so this dropdown always stays in sync with the checklist charts —
+// same 13 options, same labels/colors, no separate list to keep updated.
+var nucleoSelKey = 'IPCA_nucleo_EX0';
+
+function populateNucleoSelect() {
+  var sel = document.getElementById('nucleo-sel');
+  sel.innerHTML = NUCLEO_ALL.map(function(o) {
+    return '<option value="' + o.value + '">' + o.label + '</option>';
+  }).join('');
+  sel.value = nucleoSelKey;
+}
+
+function renderNucleoSelecionado() {
+  var opt = NUCLEO_ALL.filter(function(o) { return o.value === nucleoSelKey; })[0];
+  var label = opt ? opt.label : nucleoSelKey;
+  var saar = nucleoSeriesValues(nucleoSelKey, compute3mSAAR);
+  var yoy  = nucleoSeriesValues(nucleoSelKey, computeYoY);
+  var traces = [];
+  if (saar.dates.length) traces.push({
+    type:'scatter', mode:'lines', name:'3M SAAR', x:saar.dates, y:saar.values,
+    line:{color:C.laranja, width:2.5},
+    hovertemplate:'<b>' + label + ' — 3M SAAR</b><br>%{x}<br>%{y:.1f}% a.a.<extra></extra>',
+  });
+  if (yoy.dates.length) traces.push({
+    type:'scatter', mode:'lines', name:'12M a/a', x:yoy.dates, y:yoy.values,
+    line:{color:C.azul, width:2, dash:'dot'},
+    hovertemplate:'<b>' + label + ' — 12M a/a</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
+  });
+  if (!traces.length) { Plotly.purge('chart-nucleo-sel'); return; }
+  Plotly.react('chart-nucleo-sel', traces, _nucLayout(label + ' (%)', 360), _PLOTLY_CONFIG);
+  _bindYRescale('chart-nucleo-sel');
+}
+
+function renderComponentesYoY() {
+  var COMP = [
+    {name:'IPCA',                     label:'IPCA (total)',        color:C.azul,    width:2.5},
+    {name:'IPCA_livres',              label:'Livres',              color:C.laranja, width:1.5},
+    {name:'IPCA_administrado',        label:'Administrado',        color:C.verde,   width:1.5},
+    {name:'IPCA_servicos',            label:'Serviços',            color:C.azulCl,  width:1.5},
+    {name:'IPCA_alimentacao',         label:'Alimentação',         color:C.dourado, width:1.5},
+    {name:'IPCA_industriais',         label:'Industriais',         color:C.cinza,   width:1.5},
+    {name:'IPCA_comercializaveis',    label:'Comercializáveis',    color:'#8E44AD', width:1.5},
+    {name:'IPCA_nao_comercializaveis',label:'Não Comercializáveis',color:'#16A085', width:1.5},
+  ];
+  var traces = COMP.map(function(s) {
+    var yoy = computeYoY(s.name);
+    if (!yoy.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:s.label, x:yoy.dates, y:yoy.values,
+      line:{color:s.color, width:s.width},
+      hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+}
+
+function renderNucleosYoY() {
+  if (!nucYoyItems.length) { Plotly.purge('chart-nuc-yoy'); return; }
+  var traces = nucYoyItems.map(function(key) {
+    var opt = NUCLEO_ALL.filter(function(o) { return o.value === key; })[0];
+    if (!opt) return null;
+    var r = nucleoSeriesValues(key, computeYoY);
+    if (!r.dates.length) return null;
+    return {type:'scatter', mode:'lines', name:opt.label, x:r.dates, y:r.values,
+      line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
+      hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-nuc-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+}
+
+// ── IPCA-15 Núcleos tab renders ───────────────────────────────────────────────
+function renderCompContrib15() {
+  var SUBG = [
+    {key: 'Alimentos',        fn: function(r) { return r.subgrupo === 'Alimentos'; },        color: C.dourado},
+    {key: 'Bens Industriais', fn: function(r) { return r.subgrupo === 'Bens Industriais'; }, color: C.cinza},
+    {key: 'Serviços',         fn: function(r) { return r.subgrupo === 'Serviços'; },         color: C.azulCl},
+    {key: 'Monitorados',      fn: function(r) { return r.grupo === 'Monitorados'; },          color: C.verde},
+  ];
+  var byKey = {};
+  D.records_ipca15.forEach(function(r) {
+    SUBG.forEach(function(s) {
+      if (!s.fn(r)) return;
+      var k = r.dt + '|' + s.key;
+      byKey[k] = (byKey[k] || 0) + (r.contribuicao || 0);
+    });
+  });
+  var allM = Object.keys(
+    D.records_ipca15.reduce(function(acc, r) { acc[r.dt] = 1; return acc; }, {})
+  ).sort().slice(-18);
+
+  var traces = SUBG.map(function(s) {
+    return {type: 'bar', name: s.key, x: allM,
+      y: allM.map(function(m) { return Math.round((byKey[m+'|'+s.key] || 0) * 10000) / 10000; }),
+      marker: {color: s.color},
+      hovertemplate: '<b>' + s.key + '</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>'};
+  });
+  Plotly.react('chart-comp-saar', traces, Object.assign({}, _nucLayout('Contribuição (p.p.)', 400), {
+    barmode: 'relative',
+    xaxis: {type: 'category', tickangle: -35, gridcolor: '#eee', rangeselector: undefined},
+    legend: {orientation: 'h', y: 1.08, x: 0, font: {size: 11}},
+  }), _PLOTLY_CONFIG);
+}
+
+function renderCompYoY15() {
+  var COMP15 = [
+    {label: 'IPCA-15 (total)',  fn: null,                                                      color: C.azul,    width: 2.5},
+    {label: 'Livres',           fn: function(r) { return r.grupo === 'Livres'; },              color: C.laranja, width: 1.5},
+    {label: 'Monitorados',      fn: function(r) { return r.grupo === 'Monitorados'; },         color: C.verde,   width: 1.5},
+    {label: 'Serviços',         fn: function(r) { return r.subgrupo === 'Serviços'; },         color: C.azulCl,  width: 1.5},
+    {label: 'Alimentos',        fn: function(r) { return r.subgrupo === 'Alimentos'; },        color: C.dourado, width: 1.5},
+    {label: 'Bens Industriais', fn: function(r) { return r.subgrupo === 'Bens Industriais'; }, color: C.cinza,   width: 1.5},
+  ];
+  var traces = COMP15.map(function(s) {
+    var yoy = computeYoYFromRecords(D.records_ipca15, s.fn);
+    if (!yoy.dates.length) return null;
+    return {type: 'scatter', mode: 'lines', name: s.label, x: yoy.dates, y: yoy.values,
+      line: {color: s.color, width: s.width},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
+  }).filter(Boolean);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+}
+
+// ── Difusão por Categoria (Grupo/Subgrupo/Item drilldown) ────────────────────
+// Unlike the headline difusão chart above, this is derived straight from
+// records/records_ipca15 (no BCB-series branching), so it works the same
+// way for both IPCA and IPCA-15.
+var difCatLevel = 'grupo';
+var difCatValue = '';
+
+// Núcleo-based diffusion categories. Unlike grupo/subgrupo/item (plain field
+// equality on the record), these use per-subitem membership flags
+// (nucleo_ex0/ex01/ex02/ex03/ex03_servicos/ex03_industriais/exfe) computed
+// in domain/db/brasil/ibge/inflc_dim.py directly from BCB's own official
+// aggregation vector (analytics/inflation/data/Vetores_NT_57.xlsx, support
+// file of Nota Técnica BCB nº 57, dez/2025) — not an approximation from
+// grupo/subgrupo, and not the older, separately hand-curated `subjacente`
+// column (which a cross-check against this same vetor found to disagree on
+// ~19 subitens — see INFLATION.md). Covers every núcleo por exclusão; P55/
+// Médias Aparadas/DP are deliberately excluded — their exclusions are
+// statistical and change month to month, so there's no fixed membership set
+// to measure diffusion over.
+var NUCLEO_DIFUSAO_CATS = [
+  {value: 'ex0',              label: 'EX-0',
+   filterFn: function(r) { return r.nucleo_ex0 === 1; }},
+  {value: 'ex01',             label: 'EX-01',
+   filterFn: function(r) { return r.nucleo_ex01 === 1; }},
+  {value: 'ex02',             label: 'EX-02',
+   filterFn: function(r) { return r.nucleo_ex02 === 1; }},
+  {value: 'ex03',             label: 'EX-03 (Serviços + Industriais)',
+   filterFn: function(r) { return r.nucleo_ex03 === 1; }},
+  {value: 'ex03_servicos',    label: 'EX-03 — Serviços',
+   filterFn: function(r) { return r.nucleo_ex03_servicos === 1; }},
+  {value: 'ex03_industriais', label: 'EX-03 — Industriais',
+   filterFn: function(r) { return r.nucleo_ex03_industriais === 1; }},
+  {value: 'exfe',             label: 'EX-FE',
+   filterFn: function(r) { return r.nucleo_exfe === 1; }},
+];
+
+function populateDifCatItems() {
+  var sel = document.getElementById('difcat-value-sel');
+  if (difCatLevel === 'nucleo') {
+    sel.innerHTML = NUCLEO_DIFUSAO_CATS.map(function(o) {
+      return '<option value="' + o.value + '">' + o.label + '</option>';
+    }).join('');
+    difCatValue = NUCLEO_DIFUSAO_CATS[0].value;
+    sel.value = difCatValue;
+    return;
+  }
+  var seen = {}, opts = [];
+  currentAll().forEach(function(r) { var v = r[difCatLevel]; if (v && !seen[v]) { seen[v] = 1; opts.push(v); } });
+  opts.sort();
+  sel.innerHTML = opts.map(function(v) {
+    var esc = v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    return '<option value="' + esc + '">' + esc + '</option>';
+  }).join('');
+  difCatValue = opts[0] || '';
+  if (difCatValue) sel.value = difCatValue;
+}
+
+function renderDifusaoCategoria() {
+  if (!difCatValue) { Plotly.purge('chart-difusao-categoria'); return; }
+  var isNucleo = difCatLevel === 'nucleo';
+  var nucCat = isNucleo ? NUCLEO_DIFUSAO_CATS.filter(function(o) { return o.value === difCatValue; })[0] : null;
+  var label = isNucleo ? (nucCat ? nucCat.label : difCatValue) : difCatValue;
+  var filterFn = isNucleo ? (nucCat ? nucCat.filterFn : function() { return false; })
+                           : (function(v) { return function(r) { return r[difCatLevel] === v; }; })(difCatValue);
+  var d = computeDifusaoFromRecords(currentAll(), filterFn);
+  if (!d.dates.length) { Plotly.purge('chart-difusao-categoria'); return; }
+  var ma3 = movingAvg(d.values, 3), ma6 = movingAvg(d.values, 6);
+  // Monthly is noisy background context (thin, muted gray), drawn first so
+  // the moving averages — drawn after, bolder and saturated — read as the
+  // clear focal series on top of it.
+  Plotly.react('chart-difusao-categoria', [
+    {type: 'scatter', mode: 'lines', name: 'Difusão mensal', x: d.dates, y: d.values,
+     line: {color: C.cinza, width: 1},
+     hovertemplate: '<b>' + label + '</b><br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type: 'scatter', mode: 'lines', name: 'MM 3M', x: d.dates, y: ma3,
+     line: {color: C.azulCl, width: 2, dash: 'dash'},
+     hovertemplate: 'MM 3M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+    {type: 'scatter', mode: 'lines', name: 'MM 6M', x: d.dates, y: ma6,
+     line: {color: C.laranja, width: 2.5},
+     hovertemplate: 'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
+  ], _nucLayout('% subitens c/ var. positiva — ' + label, 340), _PLOTLY_CONFIG);
+}
+
+function _nucLayout(yTitle, height) {
+  return {
+    height: height, margin:{l:55,r:20,t:20,b:50},
+    xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
+      buttons:[{count:3,label:'3a',step:'year',stepmode:'backward'},{count:5,label:'5a',step:'year',stepmode:'backward'},{count:10,label:'10a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
+      bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.10,yanchor:'top',
+    }},
+    yaxis:{title:{text:yTitle,font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    legend:{orientation:'h', y:1.08, x:0, font:{size:11}},
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
+    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+  };
+}
+
+// ── Mapa de Calor — z-score heatmap of 3M SAAR vs. own trailing history ──────
+// Methodology: same as the St. Louis Fed's "Is inflation running hot or cold?"
+// CPI heatmap (FRED Blog) — each cell's 3M SAAR reading is normalized by that
+// SAME row's own trailing mean/std (a rolling z-score), not a common
+// threshold shared across rows. This makes series with very different
+// baselines/volatility (a calm núcleo vs. a volatile one) visually
+// comparable on one blue(cold)→white→red(hot) scale. Confirmed with user:
+// z-score rule, 3M SAAR as the cell metric.
+var HEATMAP_WINDOW_MONTHS = 60; // 5-year trailing window, matching the FRED methodology
+var HEATMAP_MIN_OBS       = 24; // don't score a cell until its own row has this much history
+
+var HEATMAP_ROWS = {
+  'Grupos': [
+    {key:'IPCA',                      label:'IPCA (Total)'},
+    {key:'IPCA_livres',               label:'Livres'},
+    {key:'IPCA_administrado',         label:'Monitorados'},
+    {key:'IPCA_alimentacao',          label:'Alimentação no Domicílio'},
+    {key:'IPCA_servicos',             label:'Serviços'},
+    {key:'IPCA_industriais',          label:'Industriais'},
+    {key:'IPCA_comercializaveis',     label:'Comercializáveis'},
+    {key:'IPCA_nao_comercializaveis', label:'Não Comercializáveis'},
+  ],
+  'Núcleos': [
+    {key:'IPCA_nucleo_EX0',                            label:'EX-0'},
+    {key:'IPCA_nucleo_EX01',                           label:'EX-01'},
+    {key:'IPCA_nucleo_EX02',                           label:'EX-02'},
+    {key:'IPCA_nucleo_EX03',                           label:'EX-03'},
+    {key:'IPCA_nucleo_EX03_servicos',                  label:'EX-03 — Serviços'},
+    {key:'IPCA_nucleo_EX03_industriais',                label:'EX-03 — Industriais'},
+    {key:'IPCA_nucleo_EXFE',                           label:'EX-FE'},
+    {key:'IPCA_nucleo_P55',                            label:'P55'},
+    {key:'IPCA_nucleo_medias_aparadas',                label:'Médias Aparadas (com suavização)'},
+    {key:'IPCA_nucleo_medias_aparadas_sem_suavizacao', label:'Médias Aparadas (sem suavização)'},
+    {key:'IPCA_nucleo_DP',                              label:'Dupla Ponderação'},
+    {key:'_media5',                                     label:'Média 5 Núcleos (BCB)'},
+  ],
+};
+
+// Trailing (not centered) window ending at i, inclusive — so the z-score at
+// month i only ever uses information available up to that month.
+function rollingZScore(values, window, minObs) {
+  return values.map(function(_, i) {
+    var lo = Math.max(0, i - window + 1);
+    var win = values.slice(lo, i + 1).filter(function(v) { return v != null; });
+    if (win.length < minObs || values[i] == null) return null;
+    var mean = win.reduce(function(a, b) { return a + b; }, 0) / win.length;
+    var variance = win.reduce(function(a, b) { return a + Math.pow(b - mean, 2); }, 0) / win.length;
+    var std = Math.sqrt(variance);
+    return std === 0 ? null : (values[i] - mean) / std;
+  });
+}
+
+function computeHeatmapRow(key) {
+  var s = nucleoSeriesValues(key, compute3mSAAR);
+  return {dates: s.dates, values: s.values, z: rollingZScore(s.values, HEATMAP_WINDOW_MONTHS, HEATMAP_MIN_OBS)};
+}
+
+// Diverging blue→white→red scale, clipped at ±3 std devs.
+function zColor(z) {
+  if (z == null || isNaN(z)) return {bg: '#f5f6f8', fg: '#aaa'};
+  var t = Math.max(-3, Math.min(3, z)) / 3; // -1..1
+  var r, g, b;
+  if (t >= 0) { r = 255; g = Math.round(255 - t * 175); b = Math.round(255 - t * 175); }
+  else        { var s = -t; r = Math.round(255 - s * 165); g = Math.round(255 - s * 100); b = 255; }
+  return {bg: 'rgb(' + r + ',' + g + ',' + b + ')', fg: Math.abs(t) > 0.55 ? '#fff' : '#222'};
+}
+
+function renderHeatmap() {
+  var anchor = compute3mSAAR('IPCA');
+  var container = document.getElementById('heatmap-table-wrap');
+  if (!anchor.dates.length) { container.innerHTML = ''; return; }
+  var last12 = anchor.dates.slice(-12);
+
+  var html = '<table class="heatmap-table"><thead><tr><th class="hm-label"></th>';
+  last12.forEach(function(d) { html += '<th>' + d + '</th>'; });
+  html += '</tr></thead><tbody>';
+
+  Object.keys(HEATMAP_ROWS).forEach(function(section) {
+    html += '<tr class="hm-section"><td colspan="' + (last12.length + 1) + '">' + section + '</td></tr>';
+    HEATMAP_ROWS[section].forEach(function(row) {
+      var d = computeHeatmapRow(row.key);
+      html += '<tr><td class="hm-label">' + row.label + '</td>';
+      last12.forEach(function(dt) {
+        var idx = d.dates.indexOf(dt);
+        var v = idx >= 0 ? d.values[idx] : null;
+        var z = idx >= 0 ? d.z[idx] : null;
+        var c = zColor(z);
+        var text = v == null ? '—' : v.toFixed(1);
+        var title = row.label + ' — ' + dt + (v == null ? ': sem dado' :
+          ': ' + v.toFixed(2) + '% SAAR' + (z != null ? ' (z=' + z.toFixed(2) + ')' : ' (histórico insuficiente p/ z-score)'));
+        html += '<td style="background:' + c.bg + ';color:' + c.fg + ';" title="' + title + '">' + text + '</td>';
+      });
+      html += '</tr>';
+    });
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+// ── Y/Y drilldown — Decomposição tab ─────────────────────────────────────────
+var yoyLevel  = 'subitem';
+var yoyItems  = [];
+var yoyBcbKey = 'todos';
+
+var _YOY_BCB_FILTERS = {
+  'todos':        function(r) { return true; },
+  'livres':       function(r) { return r.grupo === 'Livres'; },
+  'monitorados':  function(r) { return r.grupo === 'Monitorados'; },
+  'alimentos':       function(r) { return r.subgrupo === 'Alimentos'; },
+  'alimentos-subj':  function(r) { return r.subgrupo === 'Alimentos' && r.subjacente != null; },
+  'alimentos-ex':    function(r) { return r.subgrupo === 'Alimentos' && r.subjacente == null; },
+  'bens-ind':        function(r) { return r.subgrupo === 'Bens Industriais'; },
+  'bens-ind-subj':   function(r) { return r.subgrupo === 'Bens Industriais' && r.subjacente != null; },
+  'bens-ind-ex':     function(r) { return r.subgrupo === 'Bens Industriais' && r.subjacente == null; },
+  'servicos':        function(r) { return r.subgrupo === 'Serviços'; },
+  'servicos-subj':   function(r) { return r.subgrupo === 'Serviços' && r.subjacente != null; },
+  'servicos-ex':     function(r) { return r.subgrupo === 'Serviços' && r.subjacente == null; },
+};
+
+function yoyFiltered() {
+  var fn = _YOY_BCB_FILTERS[yoyBcbKey] || _YOY_BCB_FILTERS['todos'];
+  return currentAll().filter(fn);
+}
+
+function populateYoYItems() {
+  var all = yoyFiltered();
+  var seen = {};
+  all.forEach(function(r) { var v = r[yoyLevel]; if (v) seen[v] = 1; });
+  var opts = Object.keys(seen).sort();
+  yoyItems = opts.length ? [opts[0]] : [];
+  renderYoYPanel(opts);
+  updateYoYButtonLabel();
+}
+
+function renderYoYPanel(opts) {
+  var panel = document.getElementById('yoy-item-panel');
+  panel.innerHTML = opts.map(function(v) {
+    var esc = v.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    var checked = yoyItems.indexOf(v) >= 0 ? ' checked' : '';
+    return '<label><input type="checkbox" value="' + esc + '"' + checked + '> ' + esc + '</label>';
+  }).join('');
+  panel.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var v = this.value;
+      if (this.checked) { if (yoyItems.indexOf(v) < 0) yoyItems.push(v); }
+      else { yoyItems = yoyItems.filter(function(x) { return x !== v; }); }
+      updateYoYButtonLabel();
+      renderYoYDrill();
+    });
+  });
+}
+
+function updateYoYButtonLabel() {
+  var btn = document.getElementById('yoy-item-btn');
+  if (!yoyItems.length)      btn.textContent = 'Selecione…';
+  else if (yoyItems.length === 1) btn.textContent = yoyItems[0];
+  else                        btn.textContent = yoyItems.length + ' selecionados';
+}
+
+function computeYoYDrill(item) {
+  var filtered = yoyFiltered().filter(function(r) { return r[yoyLevel] === item; });
+  if (!filtered.length) return {dates: [], values: []};
+
+  // Weighted avg m/m%: var_group[t] = sum(var_mensal * pesos) / sum(pesos)
+  var byDate = {};
+  filtered.forEach(function(r) {
+    var dt = r.dt;
+    if (!byDate[dt]) byDate[dt] = {vm: 0, p: 0};
+    byDate[dt].vm += (r.var_mensal || 0) * (r.pesos || 0);
+    byDate[dt].p  += (r.pesos || 0);
+  });
+
+  var dates   = Object.keys(byDate).sort();
+  var monthly = dates.map(function(dt) {
+    var b = byDate[dt];
+    return b.p > 0 ? b.vm / b.p : null;  // weighted avg var_mensal (%)
+  });
+
+  // Build cumulative price index (base = 100 at first observation)
+  var index = new Array(monthly.length).fill(null);
+  var base = 100;
+  for (var i = 0; i < monthly.length; i++) {
+    if (monthly[i] == null) { base = null; index[i] = null; continue; }
+    if (base == null) { index[i] = null; continue; }
+    base = base * (1 + monthly[i] / 100);
+    index[i] = base;
+  }
+
+  // y/y = index[t] / index[t-12] - 1
+  var ydates = [], yvalues = [];
+  for (var i = 12; i < dates.length; i++) {
+    ydates.push(dates[i]);
+    if (index[i] == null || index[i - 12] == null) {
+      yvalues.push(null);
+    } else {
+      yvalues.push(Math.round((index[i] / index[i - 12] - 1) * 10000) / 100);
+    }
+  }
+  return {dates: ydates, values: yvalues};
+}
+
+function renderYoYDrill() {
+  if (!yoyItems.length) { Plotly.purge('chart-yoy-drill'); return; }
+  var single = yoyItems.length === 1;
+  var traces = yoyItems.map(function(item, idx) {
+    var r = computeYoYDrill(item);
+    if (!r.dates.length) return null;
+    var color = single ? C.azul : GROUP_COLORS[idx % GROUP_COLORS.length];
+    var trace = {
+      type: 'scatter', mode: 'lines', name: item,
+      x: r.dates, y: r.values,
+      line: {color: color, width: 2},
+      hovertemplate: '<b>' + item + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>',
+    };
+    if (single) { trace.fill = 'tozeroy'; trace.fillcolor = 'rgba(31,40,83,0.08)'; }
+    return trace;
+  }).filter(Boolean);
+  if (!traces.length) { Plotly.purge('chart-yoy-drill'); return; }
+  Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('Var. 12M (% a/a)', 400), {
+    showlegend: !single,
+  }), _PLOTLY_CONFIG);
+  _bindYRescale('chart-yoy-drill');
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+var tabRendered = {decomp:true, nucleos:false, heatmap:false};
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-tab="'+id+'"]').classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('controls').style.display = id === 'decomp' ? 'flex' : 'none';
+
+  if (!tabRendered[id]) {
+    tabRendered[id] = true;
+    if (id === 'nucleos') renderNucleosTab();
+    if (id === 'heatmap') renderHeatmap();
+  }
+}
+
+// ── Event handlers ────────────────────────────────────────────────────────────
+
+// Tab nav
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { switchTab(this.dataset.tab); });
+});
+
+// Index toggle (IPCA / IPCA-15)
+document.querySelectorAll('[data-index]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    if (btn.disabled) return;
+    document.querySelectorAll('[data-index]').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    currentIndex = this.dataset.index;
+    endDate    = currentMaxDate();
+    startDate  = ytdStart();
+    document.getElementById('custom-start').setAttribute('min', currentMinDate());
+    document.getElementById('custom-start').setAttribute('max', currentMaxDate());
+    document.getElementById('custom-end').setAttribute('min', currentMinDate());
+    document.getElementById('custom-end').setAttribute('max', currentMaxDate());
+    document.getElementById('custom-start').value = startDate;
+    document.getElementById('custom-end').value   = endDate;
+    drillPath = [];
+    renderAll();
+    populateYoYItems();
+    renderYoYDrill();
+    if (tabRendered.nucleos)  renderNucleosTab();
+  });
+});
+
+// Period pills
+document.querySelectorAll('[data-range]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('[data-range]').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    var range = this.dataset.range;
+    document.getElementById('custom-row').style.display = range === 'custom' ? 'flex' : 'none';
+    if      (range === 'ytd')    { startDate = ytdStart();     endDate = currentMaxDate(); renderAll(); }
+    else if (range === '3m')     { startDate = monthsBack(3);  endDate = currentMaxDate(); renderAll(); }
+    else if (range === '6m')     { startDate = monthsBack(6);  endDate = currentMaxDate(); renderAll(); }
+    else if (range === '12m')    { startDate = monthsBack(12); endDate = currentMaxDate(); renderAll(); }
+    else if (range === 'all')    { startDate = currentMinDate(); endDate = currentMaxDate(); renderAll(); }
+    else if (range === 'custom') {
+      startDate = document.getElementById('custom-start').value || currentMinDate();
+      endDate   = document.getElementById('custom-end').value   || currentMaxDate();
+      if (startDate && endDate && startDate <= endDate) renderAll();
+    }
+  });
+});
+
+document.getElementById('custom-start').addEventListener('change', function() {
+  startDate = this.value;
+  if (startDate && endDate && startDate <= endDate) renderAll();
+});
+document.getElementById('custom-end').addEventListener('change', function() {
+  endDate = this.value;
+  if (startDate && endDate && startDate <= endDate) renderAll();
+});
+
+// Y/Y drilldown dropdowns
+document.getElementById('yoy-bcb-sel').addEventListener('change', function() {
+  yoyBcbKey = this.value;
+  populateYoYItems();
+  renderYoYDrill();
+});
+document.getElementById('yoy-level-sel').addEventListener('change', function() {
+  yoyLevel = this.value;
+  populateYoYItems();
+  renderYoYDrill();
+});
+// Núcleos glossary toggle
+document.getElementById('glossario-toggle').addEventListener('click', function() {
+  document.getElementById('glossario-panel').classList.toggle('open');
+  document.getElementById('glossario-caret').classList.toggle('open');
+});
+
+// Núcleo Selecionado dropdown
+document.getElementById('nucleo-sel').addEventListener('change', function() {
+  nucleoSelKey = this.value;
+  renderNucleoSelecionado();
+});
+
+// Difusão por Categoria dropdowns
+document.getElementById('difcat-level-sel').addEventListener('change', function() {
+  difCatLevel = this.value;
+  populateDifCatItems();
+  renderDifusaoCategoria();
+});
+document.getElementById('difcat-value-sel').addEventListener('change', function() {
+  difCatValue = this.value;
+  renderDifusaoCategoria();
+});
+
+// Y/Y component multi-select dropdown: toggle open/close, close on outside click
+document.getElementById('yoy-item-btn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('yoy-item-panel').classList.toggle('open');
+});
+document.addEventListener('click', function(e) {
+  var ms = document.getElementById('yoy-item-multiselect');
+  if (ms && !ms.contains(e.target)) document.getElementById('yoy-item-panel').classList.remove('open');
+});
+
+// Núcleo checklist multi-select dropdowns (3M SAAR / 12M YoY): same toggle pattern
+[['nuc-saar-btn', 'nuc-saar-panel', 'nuc-saar-multiselect'], ['nuc-yoy-btn', 'nuc-yoy-panel', 'nuc-yoy-multiselect']].forEach(function(ids) {
+  var btn = document.getElementById(ids[0]), panel = document.getElementById(ids[1]), ms = document.getElementById(ids[2]);
+  btn.addEventListener('click', function(e) { e.stopPropagation(); panel.classList.toggle('open'); });
+  document.addEventListener('click', function(e) { if (!ms.contains(e.target)) panel.classList.remove('open'); });
+});
+
+// Ranking BCB filter
+document.getElementById('ranking-bcb-sel').addEventListener('change', function() {
+  rankingBcbKey = this.value;
+  renderTable();
+});
+document.getElementById('ranking-toggle').addEventListener('click', function() {
+  rankingShowAll = !rankingShowAll;
+  renderTable();
+});
+
+// Table sort (decomp)
+document.querySelectorAll('thead th[data-col]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var col = this.dataset.col;
+    if (sortCol === col) { sortAsc = !sortAsc; }
+    else { sortCol = col; sortAsc = col !== 'contribuicao'; }
+    renderTable();
+  });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('generated-at').textContent = D.generated_at;
+
+// Disable IPCA-15 toggle if no data
+var has15 = D.records_ipca15 && D.records_ipca15.length > 0;
+if (!has15) {
+  var p15 = document.getElementById('pill-ipca15');
+  p15.disabled = true;
+  p15.title = 'Dados IPCA-15 não disponíveis';
+}
+
+startDate = ytdStart();
+endDate   = currentMaxDate();
+
+document.getElementById('custom-start').setAttribute('min', currentMinDate());
+document.getElementById('custom-start').setAttribute('max', currentMaxDate());
+document.getElementById('custom-end').setAttribute('min',   currentMinDate());
+document.getElementById('custom-end').setAttribute('max',   currentMaxDate());
+document.getElementById('custom-start').value = startDate;
+document.getElementById('custom-end').value   = endDate;
+
+try {
+  renderAll();
+  bindWaterfallClick();
+  populateYoYItems();
+  renderYoYDrill();
+  populateNucleoSelect();
+  populateNucChecklist('nuc-saar-panel', 'nuc-saar-btn', nucSaarItems, renderNucSAAR);
+  populateNucChecklist('nuc-yoy-panel',  'nuc-yoy-btn',  nucYoyItems,  renderNucleosYoY);
+} catch(e) {
+  var errDiv = document.createElement('div');
+  errDiv.style.cssText = 'background:#fff0f0;border:1px solid #c00;color:#c00;padding:16px 20px;margin:20px;border-radius:6px;font-family:monospace;font-size:13px;white-space:pre-wrap;';
+  errDiv.textContent = 'Erro ao renderizar:\n' + e.message + '\n\n' + e.stack;
+  document.querySelector('main').prepend(errDiv);
+}
+</script>
+</body>
+</html>

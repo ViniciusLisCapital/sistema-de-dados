@@ -1,8 +1,8 @@
 # Pipeline Cambial — Status e Pendências
 
-Schemas MySQL: `macro_brasil` · `macro_international` · `macro_analytics` (servidor 192.168.15.200)  
-Entry points: `jobs/update_db.py` · `jobs/update_international.py` · `jobs/update_analytics.py`  
-Construído em: junho 2026 · Reestruturado: junho 2026
+Schemas MySQL: `macro_brasil` · `macro_international` (servidor 192.168.15.200) — ver [`DB_SCHEMAS.md`](DB_SCHEMAS.md) para a organização geral  
+Entry points: `jobs/update_db.py` · `jobs/update_international.py`  
+Construído em: junho 2026 · Reestruturado: junho 2026, julho 2026 (macro_analytics descontinuado; tabelas renomeadas com prefixo de tema `cambio_`, depois abreviadas para `cmb_` nos dois schemas — exceto `diferenciais_juros`, que ficou sem prefixo por escolha explícita — ver `DB_SCHEMAS.md`)
 
 ---
 
@@ -12,26 +12,26 @@ Construído em: junho 2026 · Reestruturado: junho 2026
 
 | Tabela | Schema | Fonte | Período | Script |
 |---|---|---|---|---|
-| `reservas` | `macro_brasil` | BCB SGS 3546 | 2004 → hoje | `domain/db/brasil/bcb/reservas.py` |
-| `balanco_pagamentos` | `macro_brasil` | BCB SGS (10 séries) | 2001 → hoje | `domain/db/brasil/bcb/balanco_pagamentos.py` |
-| `fluxo_cambial` | `macro_brasil` | BCB SGS (6 séries) | 2003 → hoje | `domain/db/brasil/bcb/fluxo_cambial.py` |
-| `termos_de_troca` | `macro_brasil` | BCB SGS 22099/22100 | variado | `domain/db/brasil/bcb/termos_de_troca.py` |
-| `diferenciais_juros` | `macro_analytics` | BCB SGS + FRED | janela 36m | `domain/db/analytics/fred/diferenciais_juros.py` |
+| `cmb_reservas_bc` | `macro_brasil` | BCB SGS 3546 | 2004 → hoje | `domain/db/brasil/bcb/cmb_reservas_bc.py` |
+| `cmb_balanco_pagmt` | `macro_brasil` | BCB SGS (10 séries) | 2001 → hoje | `domain/db/brasil/bcb/cmb_balanco_pagmt.py` |
+| `cmb_fluxo_cambial` | `macro_brasil` | BCB SGS (6 séries) | 2003 → hoje | `domain/db/brasil/bcb/cmb_fluxo_cambial.py` |
+| `cmb_termos_troca` | `macro_brasil` | BCB SGS 22099/22100 | variado | `domain/db/brasil/bcb/cmb_termos_troca.py` |
+| `diferenciais_juros` | `macro_international` | BCB SGS + FRED | janela 36m | `domain/db/international/fred/diferenciais_juros.py` |
 
-**`reservas`** — séries armazenadas:
+**`cmb_reservas_bc`** — séries armazenadas:
 - `reservas_liquidez_usd` — conceito de liquidez (USD milhões)
 
-**`balanco_pagamentos`** — séries armazenadas:
+**`cmb_balanco_pagmt`** — séries armazenadas:
 - `conta_corrente`, `balanca_comercial_servicos`, `exportacao_bens`
 - `conta_financeira`, `investimento_direto_liquido`, `idp_ingressos`, `ide_saidas`
 - `investimento_carteira`, `carteira_acoes`, `carteira_renda_fixa`
 
-**`fluxo_cambial`** — séries armazenadas:
+**`cmb_fluxo_cambial`** — séries armazenadas:
 - Total: `total_saldo`, `total_entrada`, `total_saida`
 - Comercial: `comercial_entrada`, `comercial_saida`
 - Financeiro: `financeiro_saldo`
 
-**`termos_de_troca`** — séries armazenadas:
+**`cmb_termos_troca`** — séries armazenadas:
 - `termos_de_troca_a` (22099), `termos_de_troca_b` (22100) — descrições exatas pendentes de verificação
 
 **`diferenciais_juros`** — séries armazenadas (frequência mensal, month-start):
@@ -42,16 +42,16 @@ Construído em: junho 2026 · Reestruturado: junho 2026
 
 | Tabela | Schema | Fonte | Período | Script |
 |---|---|---|---|---|
-| `reer` | `macro_international` | BIS API (stats.bis.org) | 1994 → hoje | `domain/db/international/bis/reer.py` |
-| `cot_fx` | `macro_international` | CFTC TFF ZIPs | 2010 → hoje | `domain/db/international/cftc/cot_fx.py` |
+| `cmb_reer` | `macro_international` | BIS API (stats.bis.org) | 1994 → hoje | `domain/db/international/bis/cmb_reer.py` |
+| `cmb_cot_fx` | `macro_international` | CFTC TFF ZIPs | 2010 → hoje | `domain/db/international/cftc/cmb_cot_fx.py` |
 
-**`reer`** — países × tipos (388 obs cada, ~1994–hoje):
+**`cmb_reer`** — países × tipos (388 obs cada, ~1994–hoje):
 - Brasil (BR), México (MX), Chile (CL), Colômbia (CO)
 - Tipos: `real_broad`, `nominal_broad`
 - BIS API key order: `FREQ.EER_TYPE.EER_BASKET.REF_AREA` (ex: `M.R.B.BR`)
 - `real_narrow` foi excluído do escopo
 
-**`cot_fx`** — BRL e MXN; semanal (terças):
+**`cmb_cot_fx`** — BRL e MXN; semanal (terças):
 - `open_interest`, `lev_long`, `lev_short`, `lev_net`, `nonrept_long`, `nonrept_short`
 - Fonte: CFTC Traders in Financial Futures (`fut_fin_txt_{YYYY}.zip`)
 - CLP e COP **não têm** futuros CME no relatório TFF
@@ -73,9 +73,8 @@ Construído em junho 2026. Arquivo único autocontido (`reports/cambio_latest.ht
 
 ```powershell
 # Atualizar dados (opcional — só se quiser dados mais frescos)
-uv run python jobs/update_db.py            # macro_brasil (inclui reservas, BOP, fluxo, termos)
-uv run python jobs/update_international.py # macro_international (reer, cot_fx)
-uv run python jobs/update_analytics.py    # macro_analytics (diferenciais_juros)
+uv run python jobs/update_db.py            # macro_brasil (inclui cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca)
+uv run python jobs/update_international.py # macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
 
 # Gerar relatório
 uv run python -c "from analytics.cambio.generate_report import run; run()"
@@ -84,7 +83,7 @@ uv run python -c "from analytics.cambio.generate_report import run; run()"
 
 ### Mecanismo de injeção
 
-O template contém o marcador `/*REPORT_DATA*/` num bloco `<script>`. `generate_report.py` lê tabelas de `macro_brasil`, `macro_international` e `macro_analytics`, serializa como JSON e substitui o marcador via `str.replace()`. Sem Jinja2.
+O template contém o marcador `/*REPORT_DATA*/` num bloco `<script>`. `generate_report.py` lê tabelas de `macro_brasil` e `macro_international`, serializa como JSON e substitui o marcador via `str.replace()`. Sem Jinja2.
 
 ### Charts ativos
 
@@ -121,11 +120,11 @@ O código SGS 13127 (supostamente `reservas_brutas_usd`) retorna timeout consist
 A `diferenciais_juros` hoje contém apenas ex-post (inflação realizada). Os ex-ante usam expectativas de mercado:
 
 **Diferencial nominal ex-ante:**
-- Brasil: mediana Focus Selic EOP 12m à frente (já em `macro_brasil.expectativas`)
+- Brasil: mediana Focus Selic EOP 12m à frente (já em `macro_brasil.expc_focus`)
 - EUA: taxa implícita nos Fed Funds futuros (FRED: `FF{mês}` futures ou OIS) — **pendente de implementação**
 
 **Diferencial real ex-ante:**
-- Brasil: Selic EOP Focus 12m − IPCA 12m Focus (ambos já em `expectativas`)
+- Brasil: Selic EOP Focus 12m − IPCA 12m Focus (ambos já em `expc_focus`)
 - EUA: taxa implícita − CPI 12m expectativa (FRED: Michigan Survey `MICH` ou 5yr breakeven `T5YIE`)
 
 **Implementação sugerida:** criar novas séries em `diferenciais_juros` com sufixo `_ex_ante` sem alterar as séries ex-post já existentes.
@@ -176,7 +175,7 @@ Deferred: requer `blpapi`/`xbbg` na máquina de Bloomberg.
 
 #### 1a. Histórico `diferenciais_juros` (pendente)
 
-O relatório hoje exibe dados a partir de ~2023 mesmo com o seletor "10a" ativo. O script usa janela padrão de 36 meses. Expandir a carga histórica: Selic disponível desde 1996 no BCB SGS, Fed Funds desde 1954 no FRED. Script: `domain/db/analytics/fred/diferenciais_juros.py`. Atenção: BCB SGS 432 (Selic diária) retorna 406 para janelas > ~5 anos — investigar uso de série mensal alternativa ou chunking.
+O relatório hoje exibe dados a partir de ~2023 mesmo com o seletor "10a" ativo. O script usa janela padrão de 36 meses. Expandir a carga histórica: Selic disponível desde 1996 no BCB SGS, Fed Funds desde 1954 no FRED. Script: `domain/db/international/fred/diferenciais_juros.py`. Atenção: BCB SGS 432 (Selic diária) retorna 406 para janelas > ~5 anos — investigar uso de série mensal alternativa ou chunking.
 
 #### 1b. Diferenciais ex-ante
 
@@ -184,8 +183,8 @@ Criar séries `_ex_ante` em `diferenciais_juros` sem remover as ex-post existent
 
 | Nome da série | Fonte | Observação |
 |---|---|---|
-| `selic_ex_ante` | Focus Selic EOP 12m (`macro_brasil.expectativas`) | JOIN por data |
-| `ipca_ex_ante` | Focus IPCA 12m (`macro_brasil.expectativas`) | JOIN por data |
+| `selic_ex_ante` | Focus Selic EOP 12m (`macro_brasil.expc_focus`) | JOIN por data |
+| `ipca_ex_ante` | Focus IPCA 12m (`macro_brasil.expc_focus`) | JOIN por data |
 | `real_br_ex_ante` | `selic_ex_ante − ipca_ex_ante` | calculado no script |
 | `ff_ex_ante` | FRED: `FF{M}` futures ou OIS 1y | novo fetch |
 | `cpi_ex_ante` | FRED: `MICH` (Michigan Survey) ou `T5YIE` breakeven | novo fetch |
@@ -216,13 +215,13 @@ Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxa
 
 | Tabela | Schema | Cobertura esperada | Status |
 |---|---|---|---|
-| `diferenciais_juros` | `macro_analytics` | 1995 → hoje | pendente — janela 36m hoje |
-| `reer` | `macro_international` | 1994 → hoje | ✓ BIS full history |
-| `cot_fx` | `macro_international` | 2010 → hoje | ✓ (2006–2009 indisponíveis no CFTC) |
-| `balanco_pagamentos` | `macro_brasil` | 2001 → hoje | ✓ |
-| `fluxo_cambial` | `macro_brasil` | 2003 → hoje | ✓ |
-| `reservas` | `macro_brasil` | 2004 → hoje | ✓ conceito liquidez |
-| `termos_de_troca` | `macro_brasil` | variado | após confirmar descrições SGS 22099/22100 |
+| `diferenciais_juros` | `macro_international` | 1995 → hoje | pendente — janela 36m hoje |
+| `cmb_reer` | `macro_international` | 1994 → hoje | ✓ BIS full history |
+| `cmb_cot_fx` | `macro_international` | 2010 → hoje | ✓ (2006–2009 indisponíveis no CFTC) |
+| `cmb_balanco_pagmt` | `macro_brasil` | 2001 → hoje | ✓ |
+| `cmb_fluxo_cambial` | `macro_brasil` | 2003 → hoje | ✓ |
+| `cmb_reservas_bc` | `macro_brasil` | 2004 → hoje | ✓ conceito liquidez |
+| `cmb_termos_troca` | `macro_brasil` | variado | após confirmar descrições SGS 22099/22100 |
 
 - Adicionar no `generate_report.py` um campo `data_range` no JSON por seção (para exibir no tooltip do chart header: "2006 – jun/2026")
 
@@ -245,7 +244,7 @@ analytics/cambio/
 #### `analyze.py` — fluxo
 
 1. `_load_context()` — lê `bibliography/` (PDFs via pypdf ou txt direto), constrói string de contexto
-2. `_load_snapshot()` — lê tabelas `macro_cambio` e formata como texto tabular (últimas N observações por série)
+2. `_load_snapshot()` — lê tabelas `macro_brasil`/`macro_international` e formata como texto tabular (últimas N observações por série)
 3. `_build_prompt(context, snapshot)` — monta prompt estruturado: contexto bibliográfico + dados atuais + instruções de análise
 4. `_call_claude(prompt)` → `anthropic.Anthropic().messages.create(model="claude-opus-4-8", ...)` → texto de análise
 5. `run(output_html, inject=True)` — chama `generate_report.run()` e injeta o texto no HTML como seção "Análise"

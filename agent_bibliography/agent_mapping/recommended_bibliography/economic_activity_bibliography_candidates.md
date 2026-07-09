@@ -119,7 +119,7 @@
 
 | Banco Central do Brasil (2018), "Aspectos Metodológicos e Comparações dos Comportamentos do IBC-Br e do PIB," Estudo Especial nº 3/2018 (originally a box in *Relatório de Inflação*, março/2018) | Paper (report box / special study) | 4 / 2018 | Directly documents where and why IBC-Br and GDP diverge (short-horizon volatility, supply-side-only construction with no demand-side balancing, seasonal-adjustment differences) — essential caveats before treating IBC-Br as a clean monthly GDP proxy | `ibc_br_pib_comparacao (BCB, 2018).pdf` |
 
-| IBGE, "Sistema de Contas Nacionais Trimestrais: Notas Metodológicas" (current edition — confirm latest version on acquisition) | Paper (official methodology note) | 4 / n/a | The official Quarterly National Accounts methodology that IBC-Br is itself calibrated against (per the 2018 Estudo Especial above) — the necessary baseline reference for the `gdp`, `pim`, `pmc`, and `pms` tables already in `macro_brasil` | `contas_nacionais_trimestrais_notas_metodologicas (IBGE).pdf` |
+| IBGE, "Sistema de Contas Nacionais Trimestrais: Notas Metodológicas" (current edition — confirm latest version on acquisition) | Paper (official methodology note) | 4 / n/a | The official Quarterly National Accounts methodology that IBC-Br is itself calibrated against (per the 2018 Estudo Especial above) — the necessary baseline reference for the `atv_pib`, `atv_pim`, `atv_pmc`, and `atv_pms` tables already in `macro_brasil` | `contas_nacionais_trimestrais_notas_metodologicas (IBGE).pdf` |
 
 ## 8. `#commodity_cycles_dutch_disease_and_growth` — the structural growth channel of Brazil's commodity exposure
 

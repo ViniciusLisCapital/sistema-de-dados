@@ -2,9 +2,9 @@
 
 ---
 
-## Tabela `macro_brasil.reservas`
+## Tabela `macro_brasil.cmb_reservas_bc`
 
-Script: `domain/db/brasil/bcb/reservas.py`  
+Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`  
 Chave primária: `(date, sgs_code INT)` — `name` é coluna regular
 
 ### Reservas internacionais — mensais
@@ -71,9 +71,9 @@ Chave primária: `(date, sgs_code INT)` — `name` é coluna regular
 
 ---
 
-## Tabela `macro_brasil.cambio_contratado`
+## Tabela `macro_brasil.cmb_cambio_contratado`
 
-Script: `domain/db/brasil/bcb/cambio_contratado.py`  
+Script: `domain/db/brasil/bcb/cmb_cambio_contratado.py`  
 Chave primária: `(date, sgs_code INT)`
 
 ### Tabela 13 — Movimento de câmbio contratado (DIÁRIO, desde set/2008)
@@ -114,7 +114,7 @@ Chave primária: `(date, sgs_code INT)`
 ## Notas técnicas
 
 - Séries diárias em ambas as tabelas usam chunking anual para evitar erro 406 da API BCB.
-- `cambio_contratado` ≠ `fluxo_cambial`: o contratado mede liquidações banco-cliente (Tabelas 13/14 BCB); o fluxo registrado (24xxx) é uma medida mais ampla de todos os canais.
+- `cmb_cambio_contratado` ≠ `cmb_fluxo_cambial`: o contratado mede liquidações banco-cliente (Tabelas 13/14 BCB); o fluxo registrado (24xxx) é uma medida mais ampla de todos os canais.
 - 3553 (`reserves_gold_volume`) em troy oz (thousand), não USD.
 - 29533 negativo = BCB tem posição vendida em USD via swap (swap tradicional ao mercado).
 

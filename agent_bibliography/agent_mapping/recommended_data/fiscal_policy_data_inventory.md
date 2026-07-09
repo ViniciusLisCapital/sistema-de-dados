@@ -63,7 +63,7 @@ Bibliography cluster 6 (federalism/subnational debt, built around Rodden's *Hami
 
 ### 7. Minimum wage and Previdência indexation — owned elsewhere, cross-referenced here
 
-Already flagged as a gap from the labor market side in `labor_market_data_inventory.md` §7 (no series exists at all) — restated here only because the *fiscal* consequence of the minimum wage (its role as the indexing floor for Previdência and BPC benefit payments, bibliography cluster 6's Brazil relevance note) is this agent's concern even though the series itself would be owned by labor market, mirroring how `inflation_data_inventory.md` and `economic_activity_data_inventory.md` both reference `pnad` from their own angle without owning it.
+Already flagged as a gap from the labor market side in `labor_market_data_inventory.md` §7 (no series exists at all) — restated here only because the *fiscal* consequence of the minimum wage (its role as the indexing floor for Previdência and BPC benefit payments, bibliography cluster 6's Brazil relevance note) is this agent's concern even though the series itself would be owned by labor market, mirroring how `inflation_data_inventory.md` and `economic_activity_data_inventory.md` both reference `mt_pnad` from their own angle without owning it.
 
 ---
 
@@ -71,13 +71,13 @@ Already flagged as a gap from the labor market side in `labor_market_data_invent
 
 ### From the economic activity agent
 - Output gap / potential output estimate — needed to compute a cyclically-adjusted (structural) primary balance, the standard way of separating a genuine fiscal policy stance change from an automatic, cycle-driven revenue/spending swing. Flagged as a gap in `economic_activity_data_inventory.md` §6 itself — this agent inherits that same gap rather than duplicating it.
-- Nominal GDP — needed as the denominator for every ratio series in §1-§2 above; `macro_brasil.gdp` already has this (owned by economic activity), so this is a straightforward existing dependency rather than a placeholder.
+- Nominal GDP — needed as the denominator for every ratio series in §1-§2 above; `macro_brasil.atv_pib` already has this (owned by economic activity), so this is a straightforward existing dependency rather than a placeholder.
 
 ### From the exchange rate agent
 - A sovereign risk premium proxy (EMBI-style spread, or CDS) — the market-priced complement to Reinhart-Rogoff-Savastano's debt-intolerance framing (bibliography cluster 4): does the market currently treat Brazil's debt level as risky, independent of what the arithmetic alone would say? Not currently identified as existing in `exchange_rate_data_inventory.md` either — a gap shared across two agents' inventories rather than resolved in either.
 
 ### From the monetary policy agent
-- The real interest rate path (Selic real, already computed in `macro_analytics.diferenciais_juros`) — needed to project debt-service costs and to interpret the r-vs-g comparison (Domar 1944 / Blanchard 2019, bibliography cluster 1) using Brazil's actual, not a generic, r.
+- The real interest rate path (Selic real, already computed in `macro_international.diferenciais_juros`) — needed to project debt-service costs and to interpret the r-vs-g comparison (Domar 1944 / Blanchard 2019, bibliography cluster 1) using Brazil's actual, not a generic, r.
 
 ### From the labor market agent
 - The minimum wage series and Previdência indexation rule itself, once built there (§7 above) — restated as a forward pointer rather than a fresh placeholder.

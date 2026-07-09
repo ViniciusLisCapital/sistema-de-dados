@@ -16,24 +16,29 @@ Sistema de dados da LIS Capital para coleta, processamento e visualização de v
 connectors/          — Clientes de APIs externas (IBGE, BCB, FRED, BIS, CFTC, MySQL)
 domain/
   db/brasil/         — ETL Brasil: fetch → transform → insert em macro_brasil
-    ibge/            — Scripts por pesquisa IBGE (pim, gdp, pmc, pms, pnad)
-    bcb/             — Scripts por tema BCB (ibc_br, inflacao, caged, credito, expectativas,
-                       indicadores_familias, reservas, balanco_pagamentos, fluxo_cambial, termos_de_troca)
+    ibge/            — Scripts por pesquisa IBGE (atv_pim, atv_pib, atv_pmc,
+                       atv_pms, mt_pnad, inflc_decomposicao, inflc_dim)
+    bcb/             — Scripts por tema BCB (atv_ibcbr, inflc_agregados, mt_caged,
+                       cred_credito_amplo, expc_focus, cred_credito_familias, cmb_reservas_bc,
+                       cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado)
   db/international/  — ETL dados cross-country: fetch → insert em macro_international
-    bis/             — reer (REER Brasil/MX/CL/CO via BIS API)
-    cftc/            — cot_fx (posicionamento especulativo BRL/MXN)
-  db/analytics/      — Séries derivadas: fetch + calcular → insert em macro_analytics
-    fred/            — diferenciais_juros (Selic × Fed Funds, real ex-post)
+    bis/             — cmb_reer (REER Brasil/MX/CL/CO via BIS API)
+    cftc/            — cmb_cot_fx (posicionamento especulativo BRL/MXN)
+    fred/            — diferenciais_juros (Selic × Fed Funds, real ex-post — precisa de BR+US)
 analytics/           — Projetos que consomem o banco MySQL
   oraculo/           — Termômetro macro (brasil e us)
   painel_setores/    — Painel de setores
   cambio/            — Panorama Cambial HTML  [ver CAMBIO.md]
-    generate_report.py  — Lê macro_brasil/macro_international/macro_analytics, injeta JSON no template, salva HTML
+    generate_report.py  — Lê macro_brasil/macro_international, injeta JSON no template, salva HTML
     report.html         — Template fixo (HTML + CSS + Plotly.js CDN)
+  inflation/         — Panorama de Inflação HTML  [ver INFLATION.md]
+    fetch_bcb.py         — Agregados BCB/SGS (IPCA headline/componentes/núcleos) → data/ipca_bcb_series.csv (+ STL _ma3_sa)
+    generate_report.py   — Lê Excel (subitens) + CSV (agregados), injeta JSON no template, salva HTML
+    report.html           — Template fixo (HTML + CSS + Plotly.js CDN)
+    data/                 — Excel (decomposição por subitem, fora do MySQL) + CSV (agregados BCB)
 jobs/                — Entry points
   update_db.py          — Atualiza todas as tabelas de macro_brasil
-  update_international.py — Atualiza macro_international (reer, cot_fx)
-  update_analytics.py   — Atualiza macro_analytics (diferenciais_juros)
+  update_international.py — Atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
   update_oraculo.py     — Atualiza o oráculo
 reports/             — Outputs gerados (não versionados)
   cambio_latest.html — Relatório cambial mais recente (autocontido, enviável)
@@ -49,21 +54,42 @@ quarantine/          — Scripts e materiais legados/experimentais (não fazem p
 **Servidor:** 192.168.15.200 (rede local da empresa)  
 **Credenciais:** `.env` (nunca hardcoded)
 
+📄 **Como os schemas são organizados (por domínio/geografia, não por estágio bruto/calculado) e por que `macro_analytics` foi descontinuado:** [`DB_SCHEMAS.md`](DB_SCHEMAS.md)
+
+Nomes de tabela são prefixados por tema macro (`atv_` = atividade, `mt_` =
+mercado de trabalho, `cred_` = crédito, `cmb_` = câmbio, `inflc_` = inflação,
+`expc_` = expectativas) para facilitar organização visual dentro de cada
+schema — ver [`DB_SCHEMAS.md`](DB_SCHEMAS.md) para o critério completo.
+Renomeação feita em 2026-07, em duas rodadas: primeiro para prefixos por
+extenso (`pim`→`atividade_pim`), depois abreviados por instrução explícita do
+usuário (`atividade_pim`→`atv_pim`, `atividade_gdp`→`atv_pib`, etc.) — mapeamento
+completo em [`DB_SCHEMAS.md`](DB_SCHEMAS.md). `mt_pnad`/`mt_caged` ficaram de
+fora da segunda rodada (mantidos com o prefixo por extenso).
+
 ### Tabelas ativas
 
 | Tabela | Fonte | Período disponível | Script |
 |---|---|---|---|
-| `pim` | IBGE 8888 | 2002 → hoje | `ibge/pim.py` |
-| `gdp` | IBGE 1620/1621 | 2016 → hoje | `ibge/gdp.py` |
-| `pmc` | IBGE 8880/8881/8883 | 2023 → hoje | `ibge/pmc.py` |
-| `pms` | IBGE 8688 | 2023 → hoje | `ibge/pms.py` |
-| `pnad` | IBGE 6318/6320/6323/6387/6388/6389/6391/6392 | 2024 → hoje | `ibge/pnad.py` |
-| `ibc_br` | BCB SGS (12 séries) | 2003 → hoje | `bcb/ibc_br.py` |
-| `inflacao` | BCB SGS (28 séries IPCA + núcleos) | 1980 → hoje | `bcb/inflacao.py` |
-| `caged` | BCB SGS (14 séries) | 1992 → hoje | `bcb/caged.py` |
-| `credito` | BCB SGS (17 séries crédito amplo) | 2013 → hoje | `bcb/credito.py` |
-| `expectativas` | BCB Focus (IPCA 12m/24m, IGP-M, Selic) | 2001 → hoje | `bcb/expectativas.py` |
-| `indicadores_familias` | BCB SGS (3 séries — endividamento/renda famílias) | 2005 → hoje | `bcb/indicadores_familias.py` |
+| `atv_pim` | IBGE 8888 | 2002 → hoje | `ibge/atv_pim.py` |
+| `atv_pib` | IBGE 1620/1621 | 2016 → hoje | `ibge/atv_pib.py` |
+| `atv_pmc` | IBGE 8880/8881/8883 | 2023 → hoje | `ibge/atv_pmc.py` |
+| `atv_pms` | IBGE 8688 | 2023 → hoje | `ibge/atv_pms.py` |
+| `atv_ibcbr` | BCB SGS (12 séries) | 2003 → hoje | `bcb/atv_ibcbr.py` |
+| `mt_pnad` | IBGE 6318/6320/6323/6387/6388/6389/6391/6392 | 2024 → hoje | `ibge/mt_pnad.py` |
+| `mt_caged` | BCB SGS (14 séries) | 1992 → hoje | `bcb/mt_caged.py` |
+| `cred_credito_amplo` | BCB SGS (17 séries crédito amplo) | 2013 → hoje | `bcb/cred_credito_amplo.py` |
+| `cred_credito_familias` | BCB SGS (3 séries — endividamento/renda famílias) | 2005 → hoje | `bcb/cred_credito_familias.py` |
+| `inflc_agregados` | BCB SGS (33 séries IPCA/IPCA-15 + núcleos) | 1980 → hoje | `bcb/inflc_agregados.py` |
+| `inflc_decomposicao` | IBGE 7060/7062 (subitem: var_mensal/pesos/contribuicao) | 2020 → hoje | `ibge/inflc_decomposicao.py` |
+| `inflc_dim` | Subitem → Grupo/Subgrupo/Item (manual) + Subjacente/núcleos (híbrido, ver INFLATION.md) | — (sem data) | `ibge/inflc_dim.py` |
+| `expc_focus` | BCB Focus (IPCA 12m/24m, IGP-M, Selic) | 2001 → hoje | `bcb/expc_focus.py` |
+
+`inflc_agregados` (renomeada de `inflacao` em 2026-07, depois de
+`ipca_agregados`, depois de `inflation_agregados`, todas em 2026-07 até chegar
+no prefixo abreviado atual; séries agora em minúsculo, ex: `ipca_nucleo_p55`)
+tem documentação nativa no MySQL: `COMMENT` na tabela e na coluna `name` (lista
+cada série com seu código SGS) — visível via `SHOW CREATE TABLE inflc_agregados`
+ou no editor de tabelas do Workbench.
 
 ### Schema das tabelas
 
@@ -71,14 +97,18 @@ Todas as tabelas usam **chave primária composta natural** (sem `id` sintético)
 
 ```sql
 -- Séries com ajuste sazonal
-PRIMARY KEY (date, name, seasonal_adjs)   -- pim, gdp, pmc, pms
+PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pib, atv_pmc, atv_pms
 
 -- Séries sem ajuste sazonal  
-PRIMARY KEY (date, name)                  -- inflacao, caged, credito, ibc_br, indicadores_familias
-PRIMARY KEY (date, name, region)          -- pnad
+PRIMARY KEY (date, name)                  -- inflc_agregados, mt_caged, cred_credito_amplo, atv_ibcbr, cred_credito_familias
+PRIMARY KEY (date, name, region)          -- mt_pnad
 
 -- Expectativas Focus
-PRIMARY KEY (date, indicador, horizonte)  -- expectativas
+PRIMARY KEY (date, indicador, horizonte)  -- expc_focus
+
+-- IPCA por subitem
+PRIMARY KEY (date, indice, subitem)       -- inflc_decomposicao (indice = IPCA | IPCA15)
+PRIMARY KEY (subitem)                     -- inflc_dim (tabela de dimensao, sem data)
 ```
 
 `ON DUPLICATE KEY UPDATE` no insert garante upsert idempotente.
@@ -170,7 +200,7 @@ df_long = FredMultFrame({...}, start, end, Pivot=True)
 ```python
 from connectors.mysql import insert_data_into_database
 
-insert_data_into_database("macro_brasil", "pim", df)
+insert_data_into_database("macro_brasil", "atv_pim", df)
 ```
 
 Faz `SHOW COLUMNS FROM table`, reordena o df, e executa `INSERT ... ON DUPLICATE KEY UPDATE` em batches de 1000 linhas.
@@ -185,21 +215,21 @@ Cada script expõe apenas `run()` — sem execução ao importar.
 
 ```python
 # Carga histórica (primeira vez)
-pim.run(periodos="all")
-ibc_br.run(start="all")
+atv_pim.run(periodos="all")
+atv_ibcbr.run(start="all")
 
 # Atualização rotineira (padrão)
-pim.run()              # últimos N anos (default do script)
-inflacao.run()         # últimos N meses
+atv_pim.run()             # últimos N anos (default do script)
+inflc_agregados.run()     # últimos N meses
 
 # Range específico
-gdp.run(periodos=(2015, 2024))
-caged.run(start="01/01/2020", end="31/12/2024")
+atv_pib.run(periodos=(2015, 2024))
+mt_caged.run(start="01/01/2020", end="31/12/2024")
 ```
 
 Scripts IBGE usam `periodos=` (formatos do connector IBGE).  
 Scripts BCB SGS usam `start=`/`end=` (formato `"DD/MM/YYYY"`) ou `start="all"`.  
-`expectativas.run()` usa `start=` ISO (`"YYYY-MM-DD"`) ou `n_dias=` para janela retroativa.
+`expc_focus.run()` usa `start=` ISO (`"YYYY-MM-DD"`) ou `n_dias=` para janela retroativa.
 
 ---
 
@@ -235,7 +265,7 @@ A lógica de scoring está em `utils/thermometer.py` (`Score`, `Score_SMC`, `Sco
 Todas as séries consumidas por `_load_data()` vêm de `macro_brasil` via `MySQLDataRequester` — sem dependência direta de connectors externos (BCB, FRED etc.).
 
 **Refatoração 2026-05:**
-- Todas as funções de scoring renomeadas para snake_case (ex: `Inflacao` → `inflacao`, `IBC_BR` → `ibc_br`)
+- Todas as funções de scoring renomeadas para snake_case (ex: `Inflacao` → `inflacao`, `IBC_BR` → `ibc_br`) — nomes de função, não as tabelas (que levam o prefixo de tema desde a renomeação de 2026-07)
 - `_finalize(*frames)` elimina boilerplate: `pd.concat([unpivot(f.tail(_N)) for f in frames]).dropna()`
 - `serv_divida_renda()`: usa `comp_renda_servico_total` diretamente do banco (antes reconstruía via juros + amortização)
 - `saldo_credito_empresas()`: `deflator.reindex(df.index)` antes da divisão para alinhar índices corretamente
@@ -252,23 +282,36 @@ Relatório HTML interativo de fundamentos cambiais. Arquivo único autocontido �
 ### Como gerar
 
 ```powershell
-uv run python jobs/update_db.py          # atualiza macro_brasil (inclui reservas, BOP, fluxo, termos)
-uv run python jobs/update_international.py  # atualiza macro_international (reer, cot_fx)
-uv run python jobs/update_analytics.py   # atualiza macro_analytics (diferenciais_juros)
+uv run python jobs/update_db.py          # atualiza macro_brasil (inclui cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca)
+uv run python jobs/update_international.py  # atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
 uv run python -c "from analytics.cambio.generate_report import run; run()"
 # Saída: reports/cambio_latest.html
 ```
 
 ### Arquitetura do relatório
 
-Template fixo `report.html` com marcador `/*REPORT_DATA*/`. `generate_report.py` lê tabelas de três schemas, serializa como JSON e substitui o marcador. Sem Jinja2 — só `str.replace()`.
+Template fixo `report.html` com marcador `/*REPORT_DATA*/`. `generate_report.py` lê tabelas de dois schemas, serializa como JSON e substitui o marcador. Sem Jinja2 — só `str.replace()`.
 
 | Seção | Schema | Tabela |
 |---|---|---|
-| Diferenciais de Juros | `macro_analytics` | `diferenciais_juros` |
-| REER | `macro_international` | `reer` |
-| Posicionamento CFTC | `macro_international` | `cot_fx` |
-| Fluxos e Fundamentos | `macro_brasil` | `reservas`, `termos_de_troca`, `fluxo_cambial`, `balanco_pagamentos` |
+| Diferenciais de Juros | `macro_international` | `diferenciais_juros` |
+| REER | `macro_international` | `cmb_reer` |
+| Posicionamento CFTC | `macro_international` | `cmb_cot_fx` |
+| Fluxos e Fundamentos | `macro_brasil` | `cmb_reservas_bc`, `cmb_termos_troca`, `cmb_fluxo_cambial`, `cmb_balanco_pagmt` |
+
+---
+
+## analytics/inflation/ — Panorama de Inflação
+
+Relatório HTML de decomposição do IPCA/IPCA-15 (renomeado de `analytics/ipca/` em 2026-07, rebranding para refletir que o relatório cobre inflação de forma geral, não só o índice IPCA). Desde 2026-07, a decomposição por subitem vive em `macro_brasil` (`inflc_decomposicao` + `inflc_dim`); os agregados BCB/SGS ainda vêm de um CSV separado (`ipca_bcb_series.csv`, via `fetch_bcb.py`).
+
+📄 **Mapa de dados completo:** [`INFLATION.md`](INFLATION.md)
+
+**Pontos-chave:**
+- Decomposição por subitem agora é buscada diretamente da API do IBGE (agregados 7060/7062, classificação 315, nível 4 = subitem) por `domain/db/brasil/ibge/inflc_decomposicao.py`, direto para `macro_brasil.inflc_decomposicao`. Os antigos scripts em `quarantine/inflation_decomposition/` (que geravam os xlsx) não são mais usados pelo relatório. Não armazena variação 12 meses (removida em 2026-07 — calcular a partir de `var_mensal` na camada de consumo, não no banco).
+- `macro_brasil.inflc_dim` combina duas fontes (2026-07): `grupo`/`subgrupo`/`item` seguem sendo sincronizados a partir de `analytics/inflation/data/tabela_dimensao_ipca.xlsx` (mantido manualmente). `subjacente` (Serviços/Bens Industriais) e os 7 flags `nucleo_ex0/ex01/ex02/ex03/ex03_servicos/ex03_industriais/exfe` são derivados de `analytics/inflation/data/Vetores_NT_57.xlsx` — vetor de agregação **oficial** do BC (Nota Técnica BCB nº 57, dez/2025), com precedência sobre a planilha manual. "Alimentos Subjacente" continua vindo do xlsx manual (sem equivalente oficial). Ver `INFLATION.md` para o detalhe completo.
+- IPCA e IPCA-15 usam **IDs de variável diferentes** no mesmo esquema de classificação (63/66 vs 355/357) — ver docstring de `inflc_decomposicao.py`.
+- Agregados BCB/SGS (`ipca_bcb_series.csv`, via `fetch_bcb.py`) ainda duplicam ~33 das 34 séries já em `macro_brasil.inflc_agregados` (`fetch_bcb.py` tem uma a mais, `IPCA_12m`, usada no cross-check do KPI "12 Meses") — pipeline separado por ora, sem migração planejada. Note que os nomes de série em `fetch_bcb.py` continuam em maiúsculo (`IPCA_nucleo_P55`) — só as séries em `macro_brasil.inflc_agregados` foram padronizadas para minúsculo.
 
 ---
 
@@ -363,11 +406,13 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 ### Alta prioridade — Relatório Cambial
 Ver pendências e roadmap detalhados em [`CAMBIO.md`](CAMBIO.md).
 
+### Alta prioridade — Relatório de Inflação
+Ver mapa de dados e pendências detalhados em [`INFLATION.md`](INFLATION.md). Resumo: decomposição por subitem migrada para `macro_brasil.inflc_decomposicao`/`inflc_dim` (2026-07) e já no `jobs/update_db.py`; tabela `inflacao` renomeada em sequência para `ipca_agregados` → `inflation_agregados` → `inflc_agregados` (prefixo de tema, depois abreviado) com séries em minúsculo; falta migrar os agregados BCB/SGS do relatório (`ipca_bcb_series.csv`) para ler de `macro_brasil.inflc_agregados` em vez de duplicar o fetch (e, se migrado, também padronizar os nomes de série para minúsculo lá).
+
 ### Média prioridade
-- **`domain/db/brasil/ibge/subcomponents.py`**: WIP — subcomponentes IPCA (IBGE 7060). Adaptar para connector v3, definir schema, implementar `run()`.
-- **`analytics/oraculo/us/term_us.py` — revisão de qualidade**: snake_case, `_load_data()` centralizado, bugs de robustez.
+- **`analytics/oraculo/us/term_us.py` — revisão de qualidade**: snake_case, `_load_data()` centralizado, bugs de robustez. Se os scores do oráculo migrarem para MySQL no futuro, ver `DB_SCHEMAS.md` — esse é o cenário citado lá como justificativa legítima para um schema de analytics dedicado.
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
-- **macro_analytics/international — itens menores**: confirmar descrições SGS 22099/22100, sub-itens CEP/CBE fluxo cambial, diferenciais ex-ante. Ver `CAMBIO.md`.
+- **macro_international — itens menores**: confirmar descrições SGS 22099/22100, sub-itens CEP/CBE fluxo cambial, diferenciais ex-ante. Ver `CAMBIO.md`.
 - **`agent_bibliography/agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` — incrementar com fontes de `agent_mapping/recommended_bibliography/exchange_rate_bibliography_gaps.md`**: mapa base (18 fontes, hoje 28) está completo; próximo passo é adquirir e processar fontes para as lacunas listadas (crisis models, capital controls, OCA, FX options, Fama 1984, EM não-Brasil, economia política). Ver seção acima.
 - **Monetary policy — iniciar aquisição**: `agent_bibliography/agent_mapping/recommended_bibliography/monetary_policy_bibliography_candidates.md` tem 29 candidatos prontos, nenhum adquirido; ordem sugerida no próprio arquivo. Decisões em aberto no §8 (materiais COPOM): janela de retenção e mecanismo de ingestão (fetcher automatizado planejado, mirroring `domain/db/brasil/bcb/*.py`).
 

@@ -1,9 +1,8 @@
 """
 Gerador do relatório HTML de fundamentos cambiais.
 
-Lê tabelas de macro_brasil, macro_international e macro_analytics, injeta os
-dados no template report.html e salva um único arquivo HTML autocontido em
-reports/cambio_latest.html.
+Lê tabelas de macro_brasil e macro_international, injeta os dados no template
+report.html e salva um único arquivo HTML autocontido em reports/cambio_latest.html.
 
 Uso:
     uv run python -c "from analytics.cambio.generate_report import run; run()"
@@ -64,7 +63,7 @@ def _pivot(database: str, table: str) -> pd.DataFrame | None:
 
 def _load_diferenciais() -> dict:
     try:
-        wide = _pivot("macro_analytics", "diferenciais_juros")
+        wide = _pivot("macro_international", "diferenciais_juros")
         if wide is None:
             return {}
         return {
@@ -85,7 +84,7 @@ def _load_diferenciais() -> dict:
 
 def _load_reer() -> dict:
     try:
-        df = _fetch("macro_international", "reer")
+        df = _fetch("macro_international", "cmb_reer")
         if df is None:
             return {}
         df["value"] = df["value"].astype(float)
@@ -99,13 +98,13 @@ def _load_reer() -> dict:
             "CO":    _col(wide, "CO"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em reer — {exc}")
+        print(f"  Aviso: erro em cmb_reer — {exc}")
         return {}
 
 
 def _load_cot_fx() -> dict:
     try:
-        df = _fetch("macro_international", "cot_fx")
+        df = _fetch("macro_international", "cmb_cot_fx")
         if df is None:
             return {}
         df["value"] = df["value"].astype(float)
@@ -119,13 +118,13 @@ def _load_cot_fx() -> dict:
             "open_interest": _col(wide, "open_interest"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em cot_fx — {exc}")
+        print(f"  Aviso: erro em cmb_cot_fx — {exc}")
         return {}
 
 
 def _load_reservas() -> dict:
     try:
-        wide = _pivot("macro_brasil", "reservas")
+        wide = _pivot("macro_brasil", "cmb_reservas_bc")
         if wide is None:
             return {}
         return {
@@ -133,13 +132,13 @@ def _load_reservas() -> dict:
             "reservas_liquidez_usd":  _col(wide, "reservas_liquidez_usd"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em reservas — {exc}")
+        print(f"  Aviso: erro em cmb_reservas_bc — {exc}")
         return {}
 
 
 def _load_fluxo() -> dict:
     try:
-        wide = _pivot("macro_brasil", "fluxo_cambial")
+        wide = _pivot("macro_brasil", "cmb_fluxo_cambial")
         if wide is None:
             return {}
         if "comercial_entrada" in wide.columns and "comercial_saida" in wide.columns:
@@ -151,13 +150,13 @@ def _load_fluxo() -> dict:
             "financeiro_saldo": _col(wide, "financeiro_saldo"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em fluxo_cambial — {exc}")
+        print(f"  Aviso: erro em cmb_fluxo_cambial — {exc}")
         return {}
 
 
 def _load_bop() -> dict:
     try:
-        wide = _pivot("macro_brasil", "balanco_pagamentos")
+        wide = _pivot("macro_brasil", "cmb_balanco_pagmt")
         if wide is None:
             return {}
         return {
@@ -168,13 +167,13 @@ def _load_bop() -> dict:
             "investimento_carteira":       _col(wide, "investimento_carteira"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em balanco_pagamentos — {exc}")
+        print(f"  Aviso: erro em cmb_balanco_pagmt — {exc}")
         return {}
 
 
 def _load_termos() -> dict:
     try:
-        wide = _pivot("macro_brasil", "termos_de_troca")
+        wide = _pivot("macro_brasil", "cmb_termos_troca")
         if wide is None:
             return {}
         return {
@@ -183,7 +182,7 @@ def _load_termos() -> dict:
             "termos_de_troca_b":   _col(wide, "termos_de_troca_b"),
         }
     except Exception as exc:
-        print(f"  Aviso: erro em termos_de_troca — {exc}")
+        print(f"  Aviso: erro em cmb_termos_troca — {exc}")
         return {}
 
 
@@ -192,13 +191,13 @@ def _load_termos() -> dict:
 def run(output: str = "reports/cambio_latest.html") -> None:
     """Gera o relatório HTML de fundamentos cambiais.
 
-    Lê todas as tabelas de macro_cambio, injeta os dados no template
-    report.html e salva um único arquivo HTML autocontido.
+    Lê tabelas de macro_brasil e macro_international, injeta os dados no
+    template report.html e salva um único arquivo HTML autocontido.
 
     Args:
         output: caminho de saída. Default "reports/cambio_latest.html".
     """
-    print("Carregando dados de macro_brasil / macro_international / macro_analytics...")
+    print("Carregando dados de macro_brasil / macro_international...")
     report_data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "diferenciais":  _load_diferenciais(),

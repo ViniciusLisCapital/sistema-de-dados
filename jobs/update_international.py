@@ -10,6 +10,7 @@ Exit code 1 se houver qualquer falha.
 Fontes:
   BIS  — REER (taxa de cambio efetiva real)
   CFTC — COT FX (posicionamento especulativo em futuros de moedas)
+  FRED + BCB — Diferenciais de juros Brasil x EUA (nominal e real ex-post)
 """
 
 import logging
@@ -23,12 +24,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("update_international")
 
-from domain.db.international.bis import reer
-from domain.db.international.cftc import cot_fx
+from domain.db.international.bis import cmb_reer
+from domain.db.international.cftc import cmb_cot_fx
+from domain.db.international.fred import diferenciais_juros
 
 _SCRIPTS = [
-    ("BIS  · REER",               reer,   {}),
-    ("CFTC · COT FX Positioning", cot_fx, {}),
+    ("BIS  · REER",               cmb_reer,   {}),
+    ("CFTC · COT FX Positioning", cmb_cot_fx, {}),
+    ("FRED · Diferenciais de Juros", diferenciais_juros, {}),
 ]
 
 

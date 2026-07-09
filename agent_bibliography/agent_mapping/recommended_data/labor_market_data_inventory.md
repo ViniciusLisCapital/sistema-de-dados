@@ -2,9 +2,9 @@
 
 **Purpose:** maps the data the labor market agent needs to what already exists in the LIS database vs. what's missing — following the same pattern as the exchange rate, monetary policy, inflation, and economic activity inventories. Built after the literature pass (`labor_market_bibliography_candidates.md`), per the agreed order.
 
-**Ownership resolved:** per the user's decision, `macro_brasil.pnad` and `macro_brasil.caged` belong to this agent, not economic activity — both were previously referenced from the activity side as a Tier 2 dependency; `economic_activity_data_inventory.md` already treats them that way, so no change was needed there.
+**Ownership resolved:** per the user's decision, `macro_brasil.mt_pnad` and `macro_brasil.mt_caged` belong to this agent, not economic activity — both were previously referenced from the activity side as a Tier 2 dependency; `economic_activity_data_inventory.md` already treats them that way, so no change was needed there.
 
-**Two-tier structure, per the established convention:** like inflation and economic activity, this agent is a **net producer**, not a consumer — `pnad` and `caged` together already give it real depth (unemployment, formal/informal split, wages, sectoral employment flow), and both the inflation and economic activity inventories already list wage growth, the wage bill, an unemployment gap, and "hours worked" as things they expect *from* this agent.
+**Two-tier structure, per the established convention:** like inflation and economic activity, this agent is a **net producer**, not a consumer — `mt_pnad` and `mt_caged` together already give it real depth (unemployment, formal/informal split, wages, sectoral employment flow), and both the inflation and economic activity inventories already list wage growth, the wage bill, an unemployment gap, and "hours worked" as things they expect *from* this agent.
 
 - **Tier 1 — Owned data:** the labor force survey (PNAD Contínua) and the formal-employment registry (CAGED), plus what's missing on the derived side (NAIRU/NAWRU, a minimum wage series, vacancy data for the Beveridge curve, regional breakdowns).
 - **Tier 2 — Consumed data:** thin, by the same logic as inflation's inventory — this agent mostly supplies rather than consumes, so this section is short.
@@ -17,9 +17,9 @@
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Occupied, unemployed, out of labor force | `macro_brasil.pnad` | `ocupado`, `desocupado`, `fora_da_forca_trabalho` | the core unemployment-rate input, directly feeding cluster 3's NAIRU/NAWRU work and (once a vacancy series exists) cluster 2's Beveridge curve |
+| Occupied, unemployed, out of labor force | `macro_brasil.mt_pnad` | `ocupado`, `desocupado`, `fora_da_forca_trabalho` | the core unemployment-rate input, directly feeding cluster 3's NAIRU/NAWRU work and (once a vacancy series exists) cluster 2's Beveridge curve |
 
-Script: `domain/db/brasil/ibge/pnad.py`. IBGE aggregado 6318. Coverage per `CLAUDE.md`: 2024 → today — driven by the script's `years_back=2` default; PNAD Contínua's actual series starts in 2012, so this is the same "short default window, deeper source available" pattern flagged repeatedly in the other three inventories (`diferenciais_juros`, `pmc`/`pms`).
+Script: `domain/db/brasil/ibge/mt_pnad.py`. IBGE aggregado 6318. Coverage per `CLAUDE.md`: 2024 → today — driven by the script's `years_back=2` default; PNAD Contínua's actual series starts in 2012, so this is the same "short default window, deeper source available" pattern flagged repeatedly in the other three inventories (`diferenciais_juros`, `atv_pmc`/`atv_pms`).
 
 **Structural limitation, not a pipeline gap:** the script hardcodes `region = "Brasil"` (IBGE locality `N1`, national level only) — no state or metro-region breakdown exists. This isn't just a missing convenience: Blanchflower & Oswald's wage curve (cluster 5) is fundamentally a *cross-region* empirical relationship, and can't be tested or replicated for Brazil at all without sub-national unemployment and wage data. This is the single highest-value structural extension identified in this inventory.
 
@@ -27,8 +27,8 @@ Script: `domain/db/brasil/ibge/pnad.py`. IBGE aggregado 6318. Coverage per `CLAU
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Occupied population by formal/informal position — private-sector with/without carteira, domestic worker with/without carteira, public-sector (military/civil) with/without carteira, employer/self-employed with/without CNPJ | `macro_brasil.pnad` | `ocup_priv_excl_domestico_com_carteira`, `ocup_priv_excl_domestico_sem_carteira`, `ocup_domestico_com_carteira`, `ocup_domestico_sem_carteira`, `ocup_pub_*`, `ocup_empregador_*`, `ocup_conta_propria_*`, `ocup_familiar_auxiliar` | the `com_carteira` (formal, signed labor card) vs. `sem_carteira` (informal) distinction across every category is already a genuine, usable formal/informal decomposition — directly relevant to cluster 7 (Ulyssea 2018, Meghir-Narita-Robin 2015) |
-| Same, by main economic activity/sector | `macro_brasil.pnad` | `ocup_agropecuaria`, `ocup_industria_geral`, `ocup_construcao`, `ocup_comercio_rep_veiculo`, `ocup_transporte_armazenagem_correio`, `ocup_alojamento_alimentacao`, `ocup_inform_comun_financ_imob_prof_adm`, `ocup_admpub_educ_saude_segsoc`, `ocup_outros_servicos`, `ocup_servicos_domesticos` | |
+| Occupied population by formal/informal position — private-sector with/without carteira, domestic worker with/without carteira, public-sector (military/civil) with/without carteira, employer/self-employed with/without CNPJ | `macro_brasil.mt_pnad` | `ocup_priv_excl_domestico_com_carteira`, `ocup_priv_excl_domestico_sem_carteira`, `ocup_domestico_com_carteira`, `ocup_domestico_sem_carteira`, `ocup_pub_*`, `ocup_empregador_*`, `ocup_conta_propria_*`, `ocup_familiar_auxiliar` | the `com_carteira` (formal, signed labor card) vs. `sem_carteira` (informal) distinction across every category is already a genuine, usable formal/informal decomposition — directly relevant to cluster 7 (Ulyssea 2018, Meghir-Narita-Robin 2015) |
+| Same, by main economic activity/sector | `macro_brasil.mt_pnad` | `ocup_agropecuaria`, `ocup_industria_geral`, `ocup_construcao`, `ocup_comercio_rep_veiculo`, `ocup_transporte_armazenagem_correio`, `ocup_alojamento_alimentacao`, `ocup_inform_comun_financ_imob_prof_adm`, `ocup_admpub_educ_saude_segsoc`, `ocup_outros_servicos`, `ocup_servicos_domesticos` | |
 
 **This is a genuinely strong existing asset** — no new ingestion is needed to start computing a headline informality *rate* (informal occupied / total occupied); the underlying components are already there, just not combined into a single derived series. Flagged as a gap below (§6) precisely because it's cheap to close.
 
@@ -36,9 +36,9 @@ Script: `domain/db/brasil/ibge/pnad.py`. IBGE aggregado 6318. Coverage per `CLAU
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Real and nominal aggregate wage bill ("massa de rendimentos") | `macro_brasil.pnad` | `massa_real_habitual`, `massa_nominal_habitual` | already cross-referenced from `inflation_data_inventory.md` §6 for the wage-price-spiral angle; this agent is the actual owner |
-| Habitual average income, by formal/informal position and by sector | `macro_brasil.pnad` | `rend_*` (mirrors the `ocup_*` breakdown in §2), plus `rend_media_nacional` | |
-| Effective average income — all jobs (real/nominal) and main job (real) | `macro_brasil.pnad` | `rend_efetivo_real_todos_trabalhos`, `rend_efetivo_nominal_todos_trabalhos`, `rend_efetivo_real_trabalho_principal` | "habitual" vs. "effective" income is PNAD's own distinction between usual/regular earnings and actual earnings received in the reference period — useful for capturing irregular-income effects (common in informal work) that a habitual-only measure would miss |
+| Real and nominal aggregate wage bill ("massa de rendimentos") | `macro_brasil.mt_pnad` | `massa_real_habitual`, `massa_nominal_habitual` | already cross-referenced from `inflation_data_inventory.md` §6 for the wage-price-spiral angle; this agent is the actual owner |
+| Habitual average income, by formal/informal position and by sector | `macro_brasil.mt_pnad` | `rend_*` (mirrors the `ocup_*` breakdown in §2), plus `rend_media_nacional` | |
+| Effective average income — all jobs (real/nominal) and main job (real) | `macro_brasil.mt_pnad` | `rend_efetivo_real_todos_trabalhos`, `rend_efetivo_nominal_todos_trabalhos`, `rend_efetivo_real_trabalho_principal` | "habitual" vs. "effective" income is PNAD's own distinction between usual/regular earnings and actual earnings received in the reference period — useful for capturing irregular-income effects (common in informal work) that a habitual-only measure would miss |
 
 **This is the data underlying Borges (2022)'s NAWRU methodology** (bibliography cluster 3) — a wage-focused Phillips curve needs exactly this kind of wage series matched against unemployment (§1). No unit-labor-cost series is computed from it yet (same gap already flagged in `inflation_data_inventory.md` §6, restated here since this agent now owns the underlying series).
 
@@ -46,7 +46,7 @@ Script: `domain/db/brasil/ibge/pnad.py`. IBGE aggregado 6318. Coverage per `CLAU
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| Net balance of admissions minus dismissals, total and by sector (14 series, CNAE 2.0: agriculture, extractive industry, manufacturing, utilities, waste management, construction, commerce, services, transport/storage/mail, lodging/food, information/communication, financial/insurance activities) | `macro_brasil.caged` | see `domain/db/brasil/bcb/caged.py` | 1992 → today (per `CLAUDE.md`), script default window `n_meses=24` |
+| Net balance of admissions minus dismissals, total and by sector (14 series, CNAE 2.0: agriculture, extractive industry, manufacturing, utilities, waste management, construction, commerce, services, transport/storage/mail, lodging/food, information/communication, financial/insurance activities) | `macro_brasil.mt_caged` | see `domain/db/brasil/bcb/mt_caged.py` | 1992 → today (per `CLAUDE.md`), script default window `n_meses=24` |
 
 BCB SGS (14 series). **The administrative-registry complement to PNAD's household survey** — CAGED only captures formal employment (it's built from the employer registry itself) and is typically released faster than PNAD, making it the more timely leading signal for formal job creation specifically, at the cost of missing the informal side entirely (which only PNAD, §2, can see).
 
@@ -65,7 +65,7 @@ Bibliography cluster 2's Beveridge curve requires both unemployment (§1, alread
 
 ### 6. Derived series not yet computed from existing owned data
 
-Distinct from §5 above — these don't require any new source, only computation against data already sitting in `pnad`/`caged`:
+Distinct from §5 above — these don't require any new source, only computation against data already sitting in `mt_pnad`/`mt_caged`:
 - **Informality rate** — trivial to derive from §2's `com_carteira`/`sem_carteira` split (informal occupied ÷ total occupied), but not computed as a standalone series today.
 - **Unemployment rate** — `desocupado` ÷ (`ocupado` + `desocupado`) from §1's raw counts; same situation, a one-line derivation not yet materialized as its own column/series.
 - **NAWRU/NAIRU estimate** — Borges (2022)'s methodology (bibliography cluster 3) is fully specified (wage Phillips curve with unionization and capital/human-capital controls, 1996-2017 sample) but not implemented against current data.
@@ -79,7 +79,7 @@ No series for the minimum wage itself exists anywhere in the database. This is a
 
 ### 8. Unionization rate — ⚠️ GAP
 
-Borges (2022)'s NAWRU methodology (bibliography cluster 3) explicitly uses `taxa de sindicalização` as a structural control variable — no such series exists in the database. IBGE's PNAD (both the older annual PNAD and the current PNAD Contínua, via its supplementary/annual modules) does ask about union membership, but it isn't currently among the aggregados the local `pnad.py` script queries.
+Borges (2022)'s NAWRU methodology (bibliography cluster 3) explicitly uses `taxa de sindicalização` as a structural control variable — no such series exists in the database. IBGE's PNAD (both the older annual PNAD and the current PNAD Contínua, via its supplementary/annual modules) does ask about union membership, but it isn't currently among the aggregados the local `mt_pnad.py` script queries.
 
 **Possible source:** likely a specific IBGE PNAD Contínua supplementary-module aggregado (annual, not the core quarterly release) — not yet identified/confirmed.
 
@@ -111,8 +111,8 @@ Thin, for the same reason as inflation's inventory: this agent mostly supplies r
 | Medium | No NAWRU/NAIRU estimate computed — Borges (2022) methodology fully specified, purely an implementation gap | §6 |
 | Medium | No informality rate or unemployment rate computed as standalone derived series, despite raw components already existing | §6 |
 | Low | No unionization rate series — needed as a Borges (2022) NAWRU control variable | §8 |
-| Low | `pnad` defaults to 2024 → today despite PNAD Contínua existing since 2012 | §1 |
-| Low | `caged` defaults to a 24-month window despite SGS history back to 1992 | §4 |
+| Low | `mt_pnad` defaults to 2024 → today despite PNAD Contínua existing since 2012 | §1 |
+| Low | `mt_caged` defaults to a 24-month window despite SGS history back to 1992 | §4 |
 | Low | No unit labor cost series computed (same gap restated from `inflation_data_inventory.md` §6) | §3, §6 |
 
 ---

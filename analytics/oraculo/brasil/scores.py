@@ -36,15 +36,16 @@ def _load_data() -> None:
            _data_pim, _data_ibc_br
 
     # -- Inflacao --
-    req = MySQLDataRequester('macro_brasil', 'inflacao')
+    req = MySQLDataRequester('macro_brasil', 'inflc_agregados')
     req.connect()
     _data_inflacao = req.long_to_wide(req.request_data()).astype(float).rename(columns={
-        'IPCA_nucleo_medias_aparadas': 'IPCA_Nucleo_MediasAparadasSuavizadas',
-        'IPCA_indice_difusao':         'Indice_Difusao',
+        'ipca_nucleo_medias_aparadas': 'IPCA_Nucleo_MediasAparadasSuavizadas',
+        'ipca_indice_difusao':         'Indice_Difusao',
+        'ipca':                        'IPCA',
     })
 
     # -- Expectativas Focus --
-    req = MySQLDataRequester('macro_brasil', 'expectativas')
+    req = MySQLDataRequester('macro_brasil', 'expc_focus')
     req.connect()
     df = req.request_data()
     mask = (df['indicador'] == 'IPCA') & (df['horizonte'] == '12m')
@@ -56,32 +57,32 @@ def _load_data() -> None:
                                 .astype(float))
 
     # -- CAGED --
-    req = MySQLDataRequester('macro_brasil', 'caged')
+    req = MySQLDataRequester('macro_brasil', 'mt_caged')
     req.connect()
     _data_caged = req.long_to_wide(req.request_data()).astype(float)
 
     # -- PNAD: forca de trabalho --
     # region='Brasil' obrigatorio — pnad tem chave (date, name, region) e multiplas regioes
-    req = MySQLDataRequester('macro_brasil', 'pnad')
+    req = MySQLDataRequester('macro_brasil', 'mt_pnad')
     req.connect()
     df = req.request_data()
     mask = df['name'].isin(['ocupado', 'desocupado']) & (df['region'] == 'Brasil')
     _data_forca_trabalho = MySQLDataRequester.long_to_wide(df[mask].copy()).astype(float)
 
     # -- Credito --
-    req = MySQLDataRequester('macro_brasil', 'credito')
+    req = MySQLDataRequester('macro_brasil', 'cred_credito_amplo')
     req.connect()
     _data_credito = req.long_to_wide(req.request_data()).astype(float)
     emp_cols = [c for c in _data_credito.columns if c.startswith('emp_')]
     _data_credito['total_credito_ampliado_empresas'] = _data_credito[emp_cols].sum(axis=1)
 
     # -- Condicoes financeiras familias --
-    req = MySQLDataRequester('macro_brasil', 'indicadores_familias')
+    req = MySQLDataRequester('macro_brasil', 'cred_credito_familias')
     req.connect()
     _data_condicoes_familias = req.long_to_wide(req.request_data()).astype(float)
 
     # -- GDP --
-    req = MySQLDataRequester('macro_brasil', 'gdp')
+    req = MySQLDataRequester('macro_brasil', 'atv_pib')
     req.connect()
     df = req.request_data()
     _data_gdp = (req.long_to_wide(df[df['seasonal_adjs'] == 'Y'].copy())
@@ -94,7 +95,7 @@ def _load_data() -> None:
                     }))
 
     # -- PMS --
-    req = MySQLDataRequester('macro_brasil', 'pms')
+    req = MySQLDataRequester('macro_brasil', 'atv_pms')
     req.connect()
     df = req.request_data()
     _data_pms = (req.long_to_wide(df[df['seasonal_adjs'] == 'Y'].copy())
@@ -103,7 +104,7 @@ def _load_data() -> None:
                     .rename(columns={'servicos_total': 'Total'}))
 
     # -- PIM --
-    req = MySQLDataRequester('macro_brasil', 'pim')
+    req = MySQLDataRequester('macro_brasil', 'atv_pim')
     req.connect()
     df = req.request_data()
     _data_pim = (req.long_to_wide(df[df['seasonal_adjs'] == 'Y'].copy())
@@ -111,7 +112,7 @@ def _load_data() -> None:
                     .astype(float))
 
     # -- IBC-BR --
-    req = MySQLDataRequester('macro_brasil', 'ibc_br')
+    req = MySQLDataRequester('macro_brasil', 'atv_ibcbr')
     req.connect()
     df = req.request_data()
     _data_ibc_br = req.long_to_wide(df[df['name'] == 'ibcbr_sa'].copy()).astype(float)

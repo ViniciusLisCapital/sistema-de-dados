@@ -20,12 +20,16 @@ logging.basicConfig(
 logger = logging.getLogger("update_db")
 
 # IBGE
-from domain.db.brasil.ibge import gdp, pim, pmc, pms, pnad
+from domain.db.brasil.ibge import (
+    atv_pib, atv_pim, atv_pmc, atv_pms, mt_pnad,
+    inflc_decomposicao, inflc_dim,
+)
 
 # BCB
 from domain.db.brasil.bcb import (
-    caged, cambio_contratado, credito, expectativas, ibc_br, indicadores_familias, inflacao,
-    reservas, balanco_pagamentos, fluxo_cambial, termos_de_troca,
+    atv_ibcbr, mt_caged, cred_credito_amplo, cred_credito_familias, expc_focus,
+    inflc_agregados, cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt,
+    cmb_fluxo_cambial, cmb_termos_troca,
 )
 
 # ---------------------------------------------------------------------------
@@ -39,23 +43,25 @@ from domain.db.brasil.bcb import (
 
 _SCRIPTS = [
     # IBGE
-    ("IBGE · GDP / Contas Nacionais",  gdp,         {}),
-    ("IBGE · PIM / Prod. Industrial",  pim,         {}),
-    ("IBGE · PMC / Varejo",            pmc,         {}),
-    ("IBGE · PMS / Servicos",          pms,         {}),
-    ("IBGE · PNAD / Emprego",          pnad,        {}),
+    ("IBGE · GDP / Contas Nacionais",  atv_pib,               {}),
+    ("IBGE · PIM / Prod. Industrial",  atv_pim,               {}),
+    ("IBGE · PMC / Varejo",            atv_pmc,               {}),
+    ("IBGE · PMS / Servicos",          atv_pms,               {}),
+    ("IBGE · PNAD / Emprego",          mt_pnad,               {}),
+    ("IBGE · IPCA Decomposicao",       inflc_decomposicao,    {}),
+    ("IBGE · IPCA Dimensao",           inflc_dim,             {}),
     # BCB
-    ("BCB  · IBC-Br",                  ibc_br,      {}),
-    ("BCB  · Inflacao",                inflacao,    {}),
-    ("BCB  · CAGED",                   caged,       {}),
-    ("BCB  · Credito",                 credito,              {}),
-    ("BCB  · Indicadores Familias",    indicadores_familias, {}),
-    ("BCB  · Expectativas Focus",      expectativas,         {}),
-    ("BCB  · Reservas Internacionais", reservas,             {}),
-    ("BCB  · Balanco de Pagamentos",   balanco_pagamentos,   {}),
-    ("BCB  · Fluxo Cambial",           fluxo_cambial,        {}),
-    ("BCB  · Cambio Contratado",       cambio_contratado,    {}),
-    ("BCB  · Termos de Troca",         termos_de_troca,      {}),
+    ("BCB  · IBC-Br",                  atv_ibcbr,             {}),
+    ("BCB  · IPCA Agregados",          inflc_agregados,       {}),
+    ("BCB  · CAGED",                   mt_caged,              {}),
+    ("BCB  · Credito",                 cred_credito_amplo,    {}),
+    ("BCB  · Indicadores Familias",    cred_credito_familias, {}),
+    ("BCB  · Expectativas Focus",      expc_focus,            {}),
+    ("BCB  · Reservas Internacionais", cmb_reservas_bc,       {}),
+    ("BCB  · Balanco de Pagamentos",   cmb_balanco_pagmt,     {}),
+    ("BCB  · Fluxo Cambial",           cmb_fluxo_cambial,     {}),
+    ("BCB  · Cambio Contratado",       cmb_cambio_contratado, {}),
+    ("BCB  · Termos de Troca",         cmb_termos_troca,      {}),
 ]
 
 

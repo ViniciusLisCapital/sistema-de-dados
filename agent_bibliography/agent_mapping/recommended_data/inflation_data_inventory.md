@@ -2,7 +2,7 @@
 
 **Purpose:** maps the data the inflation agent needs to what already exists in the LIS database vs. what's missing — following the same pattern as `exchange_rate_data_inventory.md` and `monetary_policy_data_inventory.md`. Built after the literature pass (`inflation_bibliography_candidates.md`), per the agreed order.
 
-**Two-tier structure, per the architecture already established for monetary policy:** unlike monetary policy (mostly a *consumer* of other agents' outputs), the inflation agent is closer to a **net producer** — `macro_brasil.inflacao` and `macro_brasil.expectativas` already give it an unusually rich owned base, and monetary policy's own inventory already lists "inflation gap/nowcast," "core decomposition and diffusion," and "anchoring signal" as things it expects to receive *from* this agent (`monetary_policy_data_inventory.md`, Tier 2). So this file still splits the same way for consistency, but the balance is inverted:
+**Two-tier structure, per the architecture already established for monetary policy:** unlike monetary policy (mostly a *consumer* of other agents' outputs), the inflation agent is closer to a **net producer** — `macro_brasil.inflc_agregados` and `macro_brasil.expc_focus` already give it an unusually rich owned base, and monetary policy's own inventory already lists "inflation gap/nowcast," "core decomposition and diffusion," and "anchoring signal" as things it expects to receive *from* this agent (`monetary_policy_data_inventory.md`, Tier 2). So this file still splits the same way for consistency, but the balance is inverted:
 
 - **Tier 1 — Owned data:** the price indices themselves, their disaggregation, and market-based inflation expectations. Mostly already buildable, several gaps closeable without depending on any other agent.
 - **Tier 2 — Consumed data:** structured hand-offs the inflation agent needs *from* other agents (a wage/labor-cost signal, a spot FX series for pass-through, a commodity price for cost-push) — placeholders until those agents are scoped, mirroring the convention set in `monetary_policy_data_inventory.md`.
@@ -15,13 +15,13 @@
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Headline (IPCA, IPCA-15) and diffusion index | `macro_brasil.inflacao` | `IPCA`, `IPCA15`, `IPCA_indice_difusao` | SGS 433 / 7478 / 21379 |
-| Administered vs. free (market) prices | `macro_brasil.inflacao` | `IPCA_administrado`, `IPCA_livres` | direct input for cluster 3 (cost-push/pass-through) and cluster 7 (fiscal dominance via administered-price policy) |
-| By type of good/service (industrial, food, services, durables/semi/non-durables) | `macro_brasil.inflacao` | `IPCA_industriais`, `IPCA_alimentacao`, `IPCA_servicos`, `IPCA_bens_*` | |
-| By COICOP-style expenditure group (9 groups: food, housing, apparel, transport, communication, health, personal expenses, education, home goods) | `macro_brasil.inflacao` | `IPCA_grupo_*` | |
-| Core measures (8 methodologies: trimmed means, EX0/EX01/EX02/EX03, DP, P55, EXFE) | `macro_brasil.inflacao` | `IPCA_nucleo_*` | directly operationalizes cluster 6 (`#inflation_measurement_and_core_measures`) — EXFE and the trimmed-means series are the two BCB currently emphasizes in its own communication |
+| Headline (IPCA, IPCA-15) and diffusion index | `macro_brasil.inflc_agregados` | `IPCA`, `IPCA15`, `IPCA_indice_difusao` | SGS 433 / 7478 / 21379 |
+| Administered vs. free (market) prices | `macro_brasil.inflc_agregados` | `IPCA_administrado`, `IPCA_livres` | direct input for cluster 3 (cost-push/pass-through) and cluster 7 (fiscal dominance via administered-price policy) |
+| By type of good/service (industrial, food, services, durables/semi/non-durables) | `macro_brasil.inflc_agregados` | `IPCA_industriais`, `IPCA_alimentacao`, `IPCA_servicos`, `IPCA_bens_*` | |
+| By COICOP-style expenditure group (9 groups: food, housing, apparel, transport, communication, health, personal expenses, education, home goods) | `macro_brasil.inflc_agregados` | `IPCA_grupo_*` | |
+| Core measures (8 methodologies: trimmed means, EX0/EX01/EX02/EX03, DP, P55, EXFE) | `macro_brasil.inflc_agregados` | `IPCA_nucleo_*` | directly operationalizes cluster 6 (`#inflation_measurement_and_core_measures`) — EXFE and the trimmed-means series are the two BCB currently emphasizes in its own communication |
 
-Script: `domain/db/brasil/bcb/inflacao.py`. Coverage per `CLAUDE.md`: 1980 → today for headline, though the core-measure and component series individually start later (each SGS code has its own inception date — not verified series-by-series here).
+Script: `domain/db/brasil/bcb/inflc_agregados.py`. Coverage per `CLAUDE.md`: 1980 → today for headline, though the core-measure and component series individually start later (each SGS code has its own inception date — not verified series-by-series here).
 
 **This is the single richest owned dataset across any LIS agent's inventory so far** — 28 series spanning headline, administered/free split, sectoral/expenditure breakdown, and 8 distinct core methodologies, with no equivalent depth yet in the exchange rate or monetary policy inventories.
 
@@ -65,7 +65,7 @@ BCB's Monetary Policy Report has, in recent years, tracked services inflation re
 | Serviços intensivos em trabalho | labor-intensive services — **not new to 2024**, originally defined in a *December 2013* RI box; the 2024 box re-analyzes it | 6.1% |
 | Intensivos em trabalho ex-domésticos | the above, with domestic-worker sub-items stripped out — this specific cut *is* new to the 2024 box | 2.8% |
 
-All six are also presented as 3-month seasonally-adjusted annualized rates (MM3M a.s.) alongside the standard 12-month change — a transformation `inflacao.py` doesn't compute for any series today (it stores raw index levels only), which is itself a prerequisite piece of work independent of sourcing the underlying series.
+All six are also presented as 3-month seasonally-adjusted annualized rates (MM3M a.s.) alongside the standard 12-month change — a transformation `inflc_agregados.py` doesn't compute for any series today (it stores raw index levels only), which is itself a prerequisite piece of work independent of sourcing the underlying series.
 
 **Methodology 2 — production-factor reweighting via national accounts input-output data** (from "Inflação de Serviços Reponderada por Fatores de Produção," a genuinely new approach, not a refinement of Methodology 1): each IPCA services sub-item is mapped to an economic activity in IBGE's *Tabela de Recursos e Usos* (TRU — national accounts input-output tables), and reweighted by that activity's 2010-2019 average factor share of production. This produces five subindices that partition "Serviços ex-passagem aérea":
 
@@ -87,10 +87,10 @@ All six are also presented as 3-month seasonally-adjusted annualized rates (MM3M
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| IPCA 12m and 24m — mean, median, std. dev., min, max, number of respondents | `macro_brasil.expectativas` | `indicador = 'IPCA'`, `horizonte = '12m'/'24m'` | 2001 → today |
-| IGP-M 12m — same fields | `macro_brasil.expectativas` | `indicador = 'IGP-M'`, `horizonte = '12m'` | |
+| IPCA 12m and 24m — mean, median, std. dev., min, max, number of respondents | `macro_brasil.expc_focus` | `indicador = 'IPCA'`, `horizonte = '12m'/'24m'` | 2001 → today |
+| IGP-M 12m — same fields | `macro_brasil.expc_focus` | `indicador = 'IGP-M'`, `horizonte = '12m'` | |
 
-Script: `domain/db/brasil/bcb/expectativas.py`. Same underlying table monetary policy's inventory documents for the Selic side — for inflation, the load-bearing columns are different: **`DesvioPadrao` and the respondent count are already captured**, which means the dispersion/anchoring measures central to cluster 2 (Gaglianone 2017, Bevilaqua-Mesquita-Minella 2007) are computable *today* without any new data work — this is a materially better position than monetary policy's own r*/neutral-rate gap.
+Script: `domain/db/brasil/bcb/expc_focus.py`. Same underlying table monetary policy's inventory documents for the Selic side — for inflation, the load-bearing columns are different: **`DesvioPadrao` and the respondent count are already captured**, which means the dispersion/anchoring measures central to cluster 2 (Gaglianone 2017, Bevilaqua-Mesquita-Minella 2007) are computable *today* without any new data work — this is a materially better position than monetary policy's own r*/neutral-rate gap.
 
 **Gaps:**
 - No 3-year or 5-year-ahead IPCA expectations (Focus does publish beyond 24m for some horizons) — would be useful for a longer-run anchoring read distinct from the 12m/24m already captured.
@@ -113,12 +113,12 @@ No producer/wholesale price index from IBGE is ingested. This is the standard up
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Real and nominal average income, by formal/informal position and by economic sector | `macro_brasil.pnad` | `rend_*` (e.g. `rend_priv_excl_domestico_com_carteira`, `rend_media_nacional`) | |
-| Real and nominal aggregate wage bill ("massa de rendimentos") | `macro_brasil.pnad` | `massa_real_habitual`, `massa_nominal_habitual` | directly usable for a wage-price-spiral read (bibliography cluster 8, Weber & Wasner) without waiting on a separate labor/activity agent |
+| Real and nominal average income, by formal/informal position and by economic sector | `macro_brasil.mt_pnad` | `rend_*` (e.g. `rend_priv_excl_domestico_com_carteira`, `rend_media_nacional`) | |
+| Real and nominal aggregate wage bill ("massa de rendimentos") | `macro_brasil.mt_pnad` | `massa_real_habitual`, `massa_nominal_habitual` | directly usable for a wage-price-spiral read (bibliography cluster 8, Weber & Wasner) without waiting on a separate labor/activity agent |
 
-Script: `domain/db/brasil/ibge/pnad.py`. This table is conceptually "owned" by a future activity/labor agent, but the specific wage-growth series are already sitting in the database today and don't require any new ingestion work for the inflation agent to start using them.
+Script: `domain/db/brasil/ibge/mt_pnad.py`. This table is conceptually "owned" by a future activity/labor agent, but the specific wage-growth series are already sitting in the database today and don't require any new ingestion work for the inflation agent to start using them.
 
-**Gap:** no unit labor cost measure (wage growth relative to productivity) — would need a productivity proxy (e.g. GDP/`gdp` table vs. hours worked from `pnad`) combined manually; nothing computes this today.
+**Gap:** no unit labor cost measure (wage growth relative to productivity) — would need a productivity proxy (e.g. GDP/`atv_pib` table vs. hours worked from `mt_pnad`) combined manually; nothing computes this today.
 
 ### 7. International comparison: Latin America and developed-market inflation (headline and core) — ⚠️ GAP, new category
 
@@ -126,27 +126,27 @@ No cross-country inflation series exists anywhere in the database today — head
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| US CPI 12m, consumed inside the rate-differential calculation | `macro_analytics.diferenciais_juros` | `cpi_12m_us` | ~36m rolling (script's default window) |
+| US CPI 12m, consumed inside the rate-differential calculation | `macro_international.diferenciais_juros` | `cpi_12m_us` | ~36m rolling (script's default window) |
 
 This is the only existing cross-country inflation data point, and it's a byproduct of the FRED differentials script rather than a dedicated inflation table — limited to a ~36-month rolling window, same gap already flagged in the exchange rate and monetary policy inventories. See `CLAUDE.md`'s "US — expandir dados" pending item (no persistent `macro_us` schema yet).
 
 **Possible source, no new connector needed:** FRED's OECD Main Economic Indicators dataset carries harmonized headline and core (ex food & energy) CPI, year-over-year, for essentially every relevant peer — reusable directly via the existing `connectors/fred.py` (`FredMultFrame`) client already used for `diferenciais_juros`. Suggested peer set:
-- **Latin America:** Mexico, Chile, Colombia — matching the peer set already established in `macro_international.reer`, for direct cross-reference against the existing REER series; Peru and Argentina as secondary additions if headline/core CPI is confirmed available on FRED for both.
+- **Latin America:** Mexico, Chile, Colombia — matching the peer set already established in `macro_international.cmb_reer`, for direct cross-reference against the existing REER series; Peru and Argentina as secondary additions if headline/core CPI is confirmed available on FRED for both.
 - **Developed markets:** US (upgrade from the current ~36m byproduct to full history), Euro Area, UK, Japan — the core DM peer set most relevant to the global "low-flation" and post-pandemic-surge narratives already in bibliography clusters 1 and 8.
 
-**Where it should live:** `macro_international` alongside `reer` and `cot_fx`, not `macro_brasil` — this is fundamentally cross-country data, not a Brazil series, and reusing that schema keeps the LatAm peer set consistent with what the REER table already tracks.
+**Where it should live:** `macro_international` alongside `cmb_reer` and `cmb_cot_fx`, not `macro_brasil` — this is fundamentally cross-country data, not a Brazil series, and reusing that schema keeps the LatAm peer set consistent with what the REER table already tracks.
 
 ---
 
 ## Tier 2 — Consumed data (placeholders, pending other agents)
 
 ### From a future activity/labor agent
-- Output gap estimate (the standard demand-side input to any Phillips curve specification in bibliography cluster 1) — `macro_brasil.ibc_br`/`gdp` exist today but no potential-output/gap estimate is computed from them.
-- Unemployment gap vs. a NAIRU-type estimate (same role as the output gap, labor-market version) — raw unemployment already in `pnad` (§6 above), but no natural-rate estimate exists.
-- Already-partially-satisfied by §6 above (wage growth, wage bill) — flagged here only as a reminder that the *ownership* of `pnad` sits with a future activity/labor agent even though the specific series are usable now.
+- Output gap estimate (the standard demand-side input to any Phillips curve specification in bibliography cluster 1) — `macro_brasil.atv_ibcbr`/`atv_pib` exist today but no potential-output/gap estimate is computed from them.
+- Unemployment gap vs. a NAIRU-type estimate (same role as the output gap, labor-market version) — raw unemployment already in `mt_pnad` (§6 above), but no natural-rate estimate exists.
+- Already-partially-satisfied by §6 above (wage growth, wage bill) — flagged here only as a reminder that the *ownership* of `mt_pnad` sits with a future activity/labor agent even though the specific series are usable now.
 
 ### From the exchange rate agent (substantially built, per `exchange_rate_data_inventory.md`)
-- Spot BRL series (PTAX) — flagged as a high-priority gap in that agent's own inventory too; without it, this agent can't directly regress pass-through against the actual depreciation, only against REER (`macro_international.reer`, already available) or indirectly via `fluxo_cambial`/`balanco_pagamentos`.
+- Spot BRL series (PTAX) — flagged as a high-priority gap in that agent's own inventory too; without it, this agent can't directly regress pass-through against the actual depreciation, only against REER (`macro_international.cmb_reer`, already available) or indirectly via `cmb_fluxo_cambial`/`cmb_balanco_pagmt`.
 - A REER over/undervaluation signal — same gap noted in `monetary_policy_data_inventory.md`; relevant here as a slower-moving pass-through input alongside spot moves.
 
 ### From a future fiscal agent
@@ -154,7 +154,7 @@ This is the only existing cross-country inflation data point, and it's a byprodu
 - Fiscal dominance / sustainability risk signal — same placeholder already listed in `monetary_policy_data_inventory.md`; for this agent specifically it would inform how much weight to put on the FTPL-style price-level channel (bibliography cluster 7) versus the standard Phillips-curve channel (cluster 1) when accounting for a given inflation surprise.
 
 ### From a possible future global/markets agent (not yet scoped at all)
-- Commodity price indices (oil, agricultural, metals) — the standard cost-push/imported-inflation input (bibliography cluster 3, Blanchard & Gali 2007) and a direct driver of Brazil's own terms-of-trade-linked food/energy inflation episodes (e.g. the 2021 drought/energy shock flagged as an open gap in bibliography cluster 8). Today the closest proxy in the database is the aggregate terms-of-trade index in `macro_brasil.termos_de_troca`, which is too coarse to isolate a specific commodity shock.
+- Commodity price indices (oil, agricultural, metals) — the standard cost-push/imported-inflation input (bibliography cluster 3, Blanchard & Gali 2007) and a direct driver of Brazil's own terms-of-trade-linked food/energy inflation episodes (e.g. the 2021 drought/energy shock flagged as an open gap in bibliography cluster 8). Today the closest proxy in the database is the aggregate terms-of-trade index in `macro_brasil.cmb_termos_troca`, which is too coarse to isolate a specific commodity shock.
 - Global Supply Chain Pressure Index or equivalent — the empirical counterpart to di Giovanni et al. (2022) in bibliography cluster 8; no domestic or global proxy exists in the database today.
 
 ---

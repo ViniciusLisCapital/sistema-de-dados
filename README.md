@@ -70,9 +70,11 @@ uv run python jobs/update_oraculo.py
 
 ## Tabelas do banco `macro_brasil`
 
-11 tabelas, todas atualizadas por `jobs/update_db.py`. Schema e período de cada uma em
-[`CLAUDE.md`](CLAUDE.md): `pim`, `gdp`, `pmc`, `pms`, `pnad` (IBGE) · `ibc_br`, `inflacao`,
-`caged`, `credito`, `expectativas`, `indicadores_familias` (BCB).
+Schema e período de cada tabela em [`CLAUDE.md`](CLAUDE.md): `atv_pim`,
+`atv_pib`, `atv_pmc`, `atv_pms`, `mt_pnad` (IBGE) ·
+`atv_ibcbr`, `inflc_agregados`, `mt_caged`, `cred_credito_amplo`,
+`expc_focus`, `cred_credito_familias` (BCB). Nomes prefixados por tema desde
+2026-07, abreviados numa segunda rodada — ver [`DB_SCHEMAS.md`](DB_SCHEMAS.md).
 
 ---
 
