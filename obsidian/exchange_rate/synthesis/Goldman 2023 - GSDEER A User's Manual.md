@@ -3,7 +3,8 @@
 **Authors:** Sid Bhushan, Michael Cahill  
 **Source:** Goldman Sachs Global Markets Analyst, 30 May 2023  
 **Type:** Empirical research note — forecasting performance assessment  
-**Tags:** #GSDEER #fair-value #PPP #forecasting #convergence #G10 #exchange-rate #goldman-sachs
+**Tags:** #GSDEER #fair-value #PPP #forecasting #convergence #G10 #exchange-rate #goldman-sachs  
+**Raw file:** [[gsdeer_manual_guide (Goldman, 2025)]]
 
 ---
 
@@ -30,13 +31,13 @@ Key point: **large swings in fair value ≠ large swings in spot** — in the sh
 
 ### Forecasting horizon results (G10 mean)
 
-| Horizon | GSDEER performance |
-|---|---|
-| < 3 years | Underperforms or matches random walk |
-| ~3 years | Begins to outperform random walk (RMSE crosses zero) |
-| ~5 years | Full convergence on average; substantially outperforms random walk and FX forwards |
-| 5–8 years | Improvement continues but at slower pace |
-| 8–10 years | Spot tends to **overshoot** fair value |
+| Horizon    | GSDEER performance                                                                 |
+| ---------- | ---------------------------------------------------------------------------------- |
+| < 3 years  | Underperforms or matches random walk                                               |
+| ~3 years   | Begins to outperform random walk (RMSE crosses zero)                               |
+| ~5 years   | Full convergence on average; substantially outperforms random walk and FX forwards |
+| 5–8 years  | Improvement continues but at slower pace                                           |
+| 8–10 years | Spot tends to **overshoot** fair value                                             |
 
 **Convergence path:** Nearly linear at ~20%/year until full convergence at ~5 years. This is consistent with the academic literature finding a real exchange rate half-life of 3–5 years.
 

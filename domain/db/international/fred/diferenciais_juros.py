@@ -48,6 +48,8 @@ _BCB_SERIES = {
     "ipca_12m": 13522,  # IPCA acumulado 12 meses (%)
 }
 
+_SELIC_CHUNK_DAYS = 8 * 365  # janela segura: SGS 432 (serie diaria) retorna 406 acima de ~10 anos
+
 _bcb = BCB()
 
 
@@ -60,6 +62,37 @@ def _from_n_meses(n_meses: int) -> str:
     """Retorna data inicial em formato BCB para os ultimos N meses."""
     dt = datetime.now() - timedelta(days=n_meses * 31)
     return dt.strftime("%d/%m/%Y")
+
+
+def _fetch_bcb_chunked(start_bcb: str) -> pd.DataFrame:
+    """Busca Selic (432) + IPCA 12m (13522) do BCB, encadeando em janelas de
+    ate ~8 anos quando o intervalo total excede isso.
+
+    SGS 432 e serie diaria (meta Selic vigente por dia) e a API BCB retorna
+    406 Not Acceptable para intervalos > ~10 anos nesse endpoint — 13522
+    (mensal) nao tem esse problema, mas encadear os dois junto simplifica o
+    codigo sem custo extra (poucas paginas mensais a mais nao pesam).
+    """
+    start_dt = datetime.strptime(start_bcb, "%d/%m/%Y")
+    end_dt = datetime.now()
+
+    if (end_dt - start_dt).days <= _SELIC_CHUNK_DAYS:
+        return _bcb.get_sgs(_BCB_SERIES, start=start_bcb)
+
+    frames = []
+    chunk_start = start_dt
+    while chunk_start < end_dt:
+        chunk_end = min(chunk_start + timedelta(days=_SELIC_CHUNK_DAYS), end_dt)
+        frames.append(
+            _bcb.get_sgs(
+                _BCB_SERIES,
+                start=chunk_start.strftime("%d/%m/%Y"),
+                end=chunk_end.strftime("%d/%m/%Y"),
+            )
+        )
+        chunk_start = chunk_end + timedelta(days=1)
+
+    return pd.concat(frames, ignore_index=True).drop_duplicates(subset=["date", "name"])
 
 
 def run(n_meses: int = 36, start: str | None = None) -> None:
@@ -80,7 +113,7 @@ def run(n_meses: int = 36, start: str | None = None) -> None:
     ).strftime("%Y-%m-%d")
 
     # --- Fetch BCB (Selic + IPCA) ---
-    bcb_df = _bcb.get_sgs(_BCB_SERIES, start=start_bcb)
+    bcb_df = _fetch_bcb_chunked(start_bcb)
     bcb_wide = bcb_df.pivot(index="date", columns="name", values="value")
 
     # --- Fetch FRED ---

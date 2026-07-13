@@ -29,8 +29,11 @@ from domain.db.brasil.ibge import (
 from domain.db.brasil.bcb import (
     atv_ibcbr, mt_caged, cred_credito_amplo, cred_credito_familias, expc_focus,
     inflc_agregados, cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt,
-    cmb_fluxo_cambial, cmb_termos_troca,
+    cmb_fluxo_cambial, cmb_ptax,
 )
+
+# IPEA
+from domain.db.brasil.ipea import cmb_termos_troca
 
 # ---------------------------------------------------------------------------
 # Scripts e parametros de atualizacao rotineira
@@ -61,7 +64,8 @@ _SCRIPTS = [
     ("BCB  · Balanco de Pagamentos",   cmb_balanco_pagmt,     {}),
     ("BCB  · Fluxo Cambial",           cmb_fluxo_cambial,     {}),
     ("BCB  · Cambio Contratado",       cmb_cambio_contratado, {}),
-    ("BCB  · Termos de Troca",         cmb_termos_troca,      {}),
+    ("BCB  · PTAX + Volume Interbanc.", cmb_ptax,              {}),
+    ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
 ]
 
 

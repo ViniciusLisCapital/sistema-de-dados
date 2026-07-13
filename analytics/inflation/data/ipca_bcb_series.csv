@@ -316,6 +316,7 @@
 2026-03,IPCA,0.88
 2026-04,IPCA,0.67
 2026-05,IPCA,0.58
+2026-06,IPCA,0.16
 2000-05,IPCA15,0.09
 2000-06,IPCA15,0.08
 2000-07,IPCA15,0.78
@@ -947,6 +948,7 @@
 2026-03,IPCA_12m,4.14
 2026-04,IPCA_12m,4.39
 2026-05,IPCA_12m,4.72
+2026-06,IPCA_12m,4.64
 2000-01,IPCA_administrado,0.54
 2000-02,IPCA_administrado,-0.15
 2000-03,IPCA_administrado,1.22
@@ -1264,6 +1266,7 @@
 2026-03,IPCA_administrado,1.22
 2026-04,IPCA_administrado,1.0
 2026-05,IPCA_administrado,0.44
+2026-06,IPCA_administrado,0.29
 2000-01,IPCA_administrado_ma3_sa,
 2000-02,IPCA_administrado_ma3_sa,
 2000-03,IPCA_administrado_ma3_sa,0.5641801105098176
@@ -1581,6 +1584,7 @@
 2026-03,IPCA_administrado_ma3_sa,0.6675134438431517
 2026-04,IPCA_administrado_ma3_sa,0.8184391772291288
 2026-05,IPCA_administrado_ma3_sa,0.7991419709428124
+2026-06,IPCA_administrado_ma3_sa,0.649787504405979
 2000-01,IPCA_alimentacao,0.94
 2000-02,IPCA_alimentacao,-0.5
 2000-03,IPCA_alimentacao,-0.63
@@ -1898,6 +1902,7 @@
 2026-03,IPCA_alimentacao,1.94
 2026-04,IPCA_alimentacao,1.64
 2026-05,IPCA_alimentacao,1.65
+2026-06,IPCA_alimentacao,-0.39
 2000-01,IPCA_alimentacao_ma3_sa,
 2000-02,IPCA_alimentacao_ma3_sa,
 2000-03,IPCA_alimentacao_ma3_sa,-0.3182202936477332
@@ -2215,6 +2220,7 @@
 2026-03,IPCA_alimentacao_ma3_sa,0.5017797063522663
 2026-04,IPCA_alimentacao_ma3_sa,1.170375058167969
 2026-05,IPCA_alimentacao_ma3_sa,1.6885853116086305
+2026-06,IPCA_alimentacao_ma3_sa,1.1174313910618328
 2000-01,IPCA_bens_duraveis,0.5
 2000-02,IPCA_bens_duraveis,1.0
 2000-03,IPCA_bens_duraveis,0.88
@@ -2532,6 +2538,7 @@
 2026-03,IPCA_bens_duraveis,0.21
 2026-04,IPCA_bens_duraveis,0.45
 2026-05,IPCA_bens_duraveis,-0.08
+2026-06,IPCA_bens_duraveis,0.15
 2000-01,IPCA_bens_nao_duraveis,0.81
 2000-02,IPCA_bens_nao_duraveis,-0.22
 2000-03,IPCA_bens_nao_duraveis,-0.29
@@ -2849,6 +2856,7 @@
 2026-03,IPCA_bens_nao_duraveis,1.48
 2026-04,IPCA_bens_nao_duraveis,1.44
 2026-05,IPCA_bens_nao_duraveis,1.33
+2026-06,IPCA_bens_nao_duraveis,-0.27
 2000-01,IPCA_bens_semi_duraveis,0.28
 2000-02,IPCA_bens_semi_duraveis,-0.08
 2000-03,IPCA_bens_semi_duraveis,-1.13
@@ -3166,6 +3174,7 @@
 2026-03,IPCA_bens_semi_duraveis,0.2
 2026-04,IPCA_bens_semi_duraveis,0.37
 2026-05,IPCA_bens_semi_duraveis,0.51
+2026-06,IPCA_bens_semi_duraveis,0.18
 2000-01,IPCA_comercializaveis,0.46
 2000-02,IPCA_comercializaveis,0.1
 2000-03,IPCA_comercializaveis,-0.33
@@ -3483,6 +3492,7 @@
 2026-03,IPCA_comercializaveis,0.42
 2026-04,IPCA_comercializaveis,0.62
 2026-05,IPCA_comercializaveis,0.43
+2026-06,IPCA_comercializaveis,-0.21
 2000-01,IPCA_comercializaveis_ma3_sa,
 2000-02,IPCA_comercializaveis_ma3_sa,
 2000-03,IPCA_comercializaveis_ma3_sa,0.1458502591518998
@@ -3800,6 +3810,7 @@
 2026-03,IPCA_comercializaveis_ma3_sa,0.3958502591518996
 2026-04,IPCA_comercializaveis_ma3_sa,0.475470353182706
 2026-05,IPCA_comercializaveis_ma3_sa,0.4860801605799585
+2026-06,IPCA_comercializaveis_ma3_sa,0.28353292166823424
 2000-01,IPCA_grupo_alimentacao_bebidas,0.84
 2000-02,IPCA_grupo_alimentacao_bebidas,-0.25
 2000-03,IPCA_grupo_alimentacao_bebidas,-0.46
@@ -4117,6 +4128,7 @@
 2026-03,IPCA_grupo_alimentacao_bebidas,1.56
 2026-04,IPCA_grupo_alimentacao_bebidas,1.34
 2026-05,IPCA_grupo_alimentacao_bebidas,1.33
+2026-06,IPCA_grupo_alimentacao_bebidas,-0.24
 2000-01,IPCA_grupo_artigos_residencia,0.43
 2000-02,IPCA_grupo_artigos_residencia,0.29
 2000-03,IPCA_grupo_artigos_residencia,0.28
@@ -4434,6 +4446,7 @@
 2026-03,IPCA_grupo_artigos_residencia,0.51
 2026-04,IPCA_grupo_artigos_residencia,0.65
 2026-05,IPCA_grupo_artigos_residencia,0.08
+2026-06,IPCA_grupo_artigos_residencia,0.23
 2000-01,IPCA_grupo_comunicacao,1.82
 2000-02,IPCA_grupo_comunicacao,0.04
 2000-03,IPCA_grupo_comunicacao,0.07
@@ -4751,6 +4764,7 @@
 2026-03,IPCA_grupo_comunicacao,0.19
 2026-04,IPCA_grupo_comunicacao,0.57
 2026-05,IPCA_grupo_comunicacao,0.23
+2026-06,IPCA_grupo_comunicacao,0.19
 2000-01,IPCA_grupo_despesas_pessoais,0.12
 2000-02,IPCA_grupo_despesas_pessoais,0.36
 2000-03,IPCA_grupo_despesas_pessoais,-0.07
@@ -5068,6 +5082,7 @@
 2026-03,IPCA_grupo_despesas_pessoais,0.65
 2026-04,IPCA_grupo_despesas_pessoais,0.35
 2026-05,IPCA_grupo_despesas_pessoais,0.41
+2026-06,IPCA_grupo_despesas_pessoais,0.25
 2000-01,IPCA_grupo_educacao,3.05
 2000-02,IPCA_grupo_educacao,1.32
 2000-03,IPCA_grupo_educacao,-0.26
@@ -5385,6 +5400,7 @@
 2026-03,IPCA_grupo_educacao,0.02
 2026-04,IPCA_grupo_educacao,0.06
 2026-05,IPCA_grupo_educacao,0.0
+2026-06,IPCA_grupo_educacao,-0.02
 2000-01,IPCA_grupo_habitacao,0.19
 2000-02,IPCA_grupo_habitacao,0.01
 2000-03,IPCA_grupo_habitacao,0.17
@@ -5702,6 +5718,7 @@
 2026-03,IPCA_grupo_habitacao,0.22
 2026-04,IPCA_grupo_habitacao,0.63
 2026-05,IPCA_grupo_habitacao,1.22
+2026-06,IPCA_grupo_habitacao,0.63
 2000-01,IPCA_grupo_saude_cuidados_pessoais,0.59
 2000-02,IPCA_grupo_saude_cuidados_pessoais,0.22
 2000-03,IPCA_grupo_saude_cuidados_pessoais,0.27
@@ -6019,6 +6036,7 @@
 2026-03,IPCA_grupo_saude_cuidados_pessoais,0.42
 2026-04,IPCA_grupo_saude_cuidados_pessoais,1.16
 2026-05,IPCA_grupo_saude_cuidados_pessoais,0.9
+2026-06,IPCA_grupo_saude_cuidados_pessoais,0.23
 2000-01,IPCA_grupo_transporte,0.39
 2000-02,IPCA_grupo_transporte,0.4
 2000-03,IPCA_grupo_transporte,1.68
@@ -6336,6 +6354,7 @@
 2026-03,IPCA_grupo_transporte,1.64
 2026-04,IPCA_grupo_transporte,0.06
 2026-05,IPCA_grupo_transporte,-0.46
+2026-06,IPCA_grupo_transporte,0.17
 2000-01,IPCA_grupo_vestuario,0.21
 2000-02,IPCA_grupo_vestuario,-0.67
 2000-03,IPCA_grupo_vestuario,-1.44
@@ -6653,6 +6672,7 @@
 2026-03,IPCA_grupo_vestuario,0.46
 2026-04,IPCA_grupo_vestuario,0.52
 2026-05,IPCA_grupo_vestuario,0.62
+2026-06,IPCA_grupo_vestuario,0.17
 2000-01,IPCA_indice_difusao,68.75
 2000-02,IPCA_indice_difusao,53.52
 2000-03,IPCA_indice_difusao,51.17
@@ -6970,6 +6990,7 @@
 2026-03,IPCA_indice_difusao,67.37
 2026-04,IPCA_indice_difusao,65.25
 2026-05,IPCA_indice_difusao,64.99
+2026-06,IPCA_indice_difusao,53.58
 2000-01,IPCA_industriais,0.47
 2000-02,IPCA_industriais,0.47
 2000-03,IPCA_industriais,0.17
@@ -7287,6 +7308,7 @@
 2026-03,IPCA_industriais,0.31
 2026-04,IPCA_industriais,0.62
 2026-05,IPCA_industriais,0.32
+2026-06,IPCA_industriais,0.11
 2000-01,IPCA_industriais_ma3_sa,
 2000-02,IPCA_industriais_ma3_sa,
 2000-03,IPCA_industriais_ma3_sa,0.37672389104014975
@@ -7604,6 +7626,7 @@
 2026-03,IPCA_industriais_ma3_sa,0.4267238910401496
 2026-04,IPCA_industriais_ma3_sa,0.4096579792565813
 2026-05,IPCA_industriais_ma3_sa,0.3599395979529921
+2026-06,IPCA_industriais_ma3_sa,0.34167765771193354
 2000-01,IPCA_livres,0.65
 2000-02,IPCA_livres,0.23
 2000-03,IPCA_livres,-0.11
@@ -7921,6 +7944,7 @@
 2026-03,IPCA_livres,0.75
 2026-04,IPCA_livres,0.55
 2026-05,IPCA_livres,0.64
+2026-06,IPCA_livres,0.11
 2000-01,IPCA_livres_ma3_sa,
 2000-02,IPCA_livres_ma3_sa,
 2000-03,IPCA_livres_ma3_sa,0.10749215871678645
@@ -8238,6 +8262,7 @@
 2026-03,IPCA_livres_ma3_sa,0.48082549205012004
 2026-04,IPCA_livres_ma3_sa,0.6080749887957824
 2026-05,IPCA_livres_ma3_sa,0.6599998652885058
+2026-06,IPCA_livres_ma3_sa,0.4965720176134653
 2000-01,IPCA_ma3_sa,
 2000-02,IPCA_ma3_sa,
 2000-03,IPCA_ma3_sa,0.24011779093729715
@@ -8555,6 +8580,7 @@
 2026-03,IPCA_ma3_sa,0.5534511242706305
 2026-04,IPCA_ma3_sa,0.7093483872240086
 2026-05,IPCA_ma3_sa,0.74007269348168
+2026-06,IPCA_ma3_sa,0.573831373324547
 2000-01,IPCA_nao_comercializaveis,0.87
 2000-02,IPCA_nao_comercializaveis,0.38
 2000-03,IPCA_nao_comercializaveis,0.15
@@ -8872,6 +8898,7 @@
 2026-03,IPCA_nao_comercializaveis,1.0
 2026-04,IPCA_nao_comercializaveis,0.5
 2026-05,IPCA_nao_comercializaveis,0.79
+2026-06,IPCA_nao_comercializaveis,0.34
 2000-01,IPCA_nao_comercializaveis_ma3_sa,
 2000-02,IPCA_nao_comercializaveis_ma3_sa,
 2000-03,IPCA_nao_comercializaveis_ma3_sa,0.11752092883494109
@@ -9189,6 +9216,7 @@
 2026-03,IPCA_nao_comercializaveis_ma3_sa,0.5041875955016075
 2026-04,IPCA_nao_comercializaveis_ma3_sa,0.6979364213708985
 2026-05,IPCA_nao_comercializaveis_ma3_sa,0.8090370030915198
+2026-06,IPCA_nao_comercializaveis_ma3_sa,0.677808481076374
 2000-01,IPCA_nucleo_DP,0.49
 2000-02,IPCA_nucleo_DP,0.28
 2000-03,IPCA_nucleo_DP,0.2
@@ -9506,6 +9534,7 @@
 2026-03,IPCA_nucleo_DP,0.46
 2026-04,IPCA_nucleo_DP,0.51
 2026-05,IPCA_nucleo_DP,0.38
+2026-06,IPCA_nucleo_DP,0.15
 2000-01,IPCA_nucleo_DP_ma3_sa,
 2000-02,IPCA_nucleo_DP_ma3_sa,
 2000-03,IPCA_nucleo_DP_ma3_sa,0.263992247134319
@@ -9823,6 +9852,7 @@
 2026-03,IPCA_nucleo_DP_ma3_sa,0.4406589138009856
 2026-04,IPCA_nucleo_DP_ma3_sa,0.4990978638914629
 2026-05,IPCA_nucleo_DP_ma3_sa,0.4673689470432925
+2026-06,IPCA_nucleo_DP_ma3_sa,0.38764081955263435
 2000-01,IPCA_nucleo_EX0,0.56
 2000-02,IPCA_nucleo_EX0,0.45
 2000-03,IPCA_nucleo_EX0,0.06
@@ -10140,6 +10170,7 @@
 2026-03,IPCA_nucleo_EX0,0.45
 2026-04,IPCA_nucleo_EX0,0.26
 2026-05,IPCA_nucleo_EX0,0.37
+2026-06,IPCA_nucleo_EX0,0.25
 2000-01,IPCA_nucleo_EX01,0.64
 2000-02,IPCA_nucleo_EX01,0.33
 2000-03,IPCA_nucleo_EX01,0.16
@@ -10457,6 +10488,7 @@
 2026-03,IPCA_nucleo_EX01,0.41
 2026-04,IPCA_nucleo_EX01,0.32
 2026-05,IPCA_nucleo_EX01,0.56
+2026-06,IPCA_nucleo_EX01,0.27
 2000-01,IPCA_nucleo_EX01_ma3_sa,
 2000-02,IPCA_nucleo_EX01_ma3_sa,
 2000-03,IPCA_nucleo_EX01_ma3_sa,0.2873010319586071
@@ -10774,6 +10806,7 @@
 2026-03,IPCA_nucleo_EX01_ma3_sa,0.41063436529194036
 2026-04,IPCA_nucleo_EX01_ma3_sa,0.45560739404567924
 2026-05,IPCA_nucleo_EX01_ma3_sa,0.4398672694333696
+2026-06,IPCA_nucleo_EX01_ma3_sa,0.40443083162196647
 2000-01,IPCA_nucleo_EX02,0.43
 2000-02,IPCA_nucleo_EX02,0.18
 2000-03,IPCA_nucleo_EX02,-0.1
@@ -11091,6 +11124,7 @@
 2026-03,IPCA_nucleo_EX02,0.4
 2026-04,IPCA_nucleo_EX02,0.56
 2026-05,IPCA_nucleo_EX02,0.54
+2026-06,IPCA_nucleo_EX02,0.11
 2000-01,IPCA_nucleo_EX02_ma3_sa,
 2000-02,IPCA_nucleo_EX02_ma3_sa,
 2000-03,IPCA_nucleo_EX02_ma3_sa,0.138974931804746
@@ -11408,6 +11442,7 @@
 2026-03,IPCA_nucleo_EX02_ma3_sa,0.43897493180474595
 2026-04,IPCA_nucleo_EX02_ma3_sa,0.49105450849588417
 2026-05,IPCA_nucleo_EX02_ma3_sa,0.4832248612790024
+2026-06,IPCA_nucleo_EX02_ma3_sa,0.37941727526133145
 2000-01,IPCA_nucleo_EX03,0.34
 2000-02,IPCA_nucleo_EX03,0.23
 2000-03,IPCA_nucleo_EX03,-0.03
@@ -13627,6 +13662,7 @@
 2026-03,IPCA_nucleo_EX0_ma3_sa,0.4894723698631851
 2026-04,IPCA_nucleo_EX0_ma3_sa,0.5116220157111253
 2026-05,IPCA_nucleo_EX0_ma3_sa,0.4276964843691333
+2026-06,IPCA_nucleo_EX0_ma3_sa,0.36494057661439855
 2000-01,IPCA_nucleo_EXFE,0.62
 2000-02,IPCA_nucleo_EXFE,0.37
 2000-03,IPCA_nucleo_EXFE,0.23
@@ -13944,6 +13980,7 @@
 2026-03,IPCA_nucleo_EXFE,0.42
 2026-04,IPCA_nucleo_EXFE,0.3
 2026-05,IPCA_nucleo_EXFE,0.41
+2026-06,IPCA_nucleo_EXFE,0.25
 2000-01,IPCA_nucleo_EXFE_ma3_sa,
 2000-02,IPCA_nucleo_EXFE_ma3_sa,
 2000-03,IPCA_nucleo_EXFE_ma3_sa,0.31686333437875946
@@ -14261,6 +14298,7 @@
 2026-03,IPCA_nucleo_EXFE_ma3_sa,0.49353000104542605
 2026-04,IPCA_nucleo_EXFE_ma3_sa,0.4857624053094652
 2026-05,IPCA_nucleo_EXFE_ma3_sa,0.4215025185780708
+2026-06,IPCA_nucleo_EXFE_ma3_sa,0.3534226853034266
 2000-01,IPCA_nucleo_P55,0.34
 2000-02,IPCA_nucleo_P55,0.13
 2000-03,IPCA_nucleo_P55,0.1
@@ -14578,6 +14616,7 @@
 2026-03,IPCA_nucleo_P55,0.46
 2026-04,IPCA_nucleo_P55,0.59
 2026-05,IPCA_nucleo_P55,0.48
+2026-06,IPCA_nucleo_P55,0.18
 2000-01,IPCA_nucleo_P55_ma3_sa,
 2000-02,IPCA_nucleo_P55_ma3_sa,
 2000-03,IPCA_nucleo_P55_ma3_sa,0.12215167827177742
@@ -14895,6 +14934,7 @@
 2026-03,IPCA_nucleo_P55_ma3_sa,0.4121516782717774
 2026-04,IPCA_nucleo_P55_ma3_sa,0.48046166302057597
 2026-05,IPCA_nucleo_P55_ma3_sa,0.4811700856077405
+2026-06,IPCA_nucleo_P55_ma3_sa,0.42314525337064485
 2000-01,IPCA_nucleo_medias_aparadas,0.47
 2000-02,IPCA_nucleo_medias_aparadas,0.43
 2000-03,IPCA_nucleo_medias_aparadas,0.37
@@ -15212,6 +15252,7 @@
 2026-03,IPCA_nucleo_medias_aparadas,0.41
 2026-04,IPCA_nucleo_medias_aparadas,0.48
 2026-05,IPCA_nucleo_medias_aparadas,0.43
+2026-06,IPCA_nucleo_medias_aparadas,0.24
 2000-01,IPCA_nucleo_medias_aparadas_ma3_sa,
 2000-02,IPCA_nucleo_medias_aparadas_ma3_sa,
 2000-03,IPCA_nucleo_medias_aparadas_ma3_sa,0.41319959694444913
@@ -15529,6 +15570,7 @@
 2026-03,IPCA_nucleo_medias_aparadas_ma3_sa,0.4265329302777825
 2026-04,IPCA_nucleo_medias_aparadas_ma3_sa,0.4552844121585344
 2026-05,IPCA_nucleo_medias_aparadas_ma3_sa,0.43211462683102414
+2026-06,IPCA_nucleo_medias_aparadas_ma3_sa,0.3758939468681861
 2000-01,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.4
 2000-02,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.19
 2000-03,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.21
@@ -15846,6 +15888,7 @@
 2026-03,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.41
 2026-04,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.53
 2026-05,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.34
+2026-06,IPCA_nucleo_medias_aparadas_sem_suavizacao,0.14
 2000-01,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,
 2000-02,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,
 2000-03,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,0.21724393344028783
@@ -16163,6 +16206,7 @@
 2026-03,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,0.39057726677362115
 2026-04,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,0.4748167515925256
 2026-05,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,0.43804262392019583
+2026-06,IPCA_nucleo_medias_aparadas_sem_suavizacao_ma3_sa,0.37356161810673894
 2000-01,IPCA_servicos,0.66
 2000-02,IPCA_servicos,0.43
 2000-03,IPCA_servicos,-0.07
@@ -16480,6 +16524,7 @@
 2026-03,IPCA_servicos,0.53
 2026-04,IPCA_servicos,0.04
 2026-05,IPCA_servicos,0.4
+2026-06,IPCA_servicos,0.33
 2000-01,IPCA_servicos_ma3_sa,
 2000-02,IPCA_servicos_ma3_sa,
 2000-03,IPCA_servicos_ma3_sa,0.13555467999941553
@@ -16797,3 +16842,4 @@
 2026-03,IPCA_servicos_ma3_sa,0.5088880133327488
 2026-04,IPCA_servicos_ma3_sa,0.5434080439907248
 2026-05,IPCA_servicos_ma3_sa,0.46680030533313627
+2026-06,IPCA_servicos_ma3_sa,0.3898700414621055

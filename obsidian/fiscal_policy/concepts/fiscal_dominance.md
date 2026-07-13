@@ -76,6 +76,8 @@ Three information sets:
 |---|---|
 | [[Itaú 2025 - Fiscal Dominance in Brazil]] | Full theoretical framework + Brazil 2025 empirical assessment (Sargent-Wallace, Leeper, Blanchard, FTPL, Woodford) |
 | [[verde_fx_mental_models]] | Practitioner operationalization: sections 1.1–1.11 (fiscal credibility), 1.8 (fiscal dominance risk), 3.1 (carry overridden when ρ dominates) |
+| [[kinea_fx_mental_models]] | Explicit definition used verbatim by the manager (1.3); "good vs. bad equilibrium" framework (1.4); Dec/2024–Jan/2025 case of carry failing without credibility (1.9) |
+| [[kapitalo_fx_mental_models]] | 6.6–6.7: 2024 fiscal-anchor credibility crisis and its pass-through to inflation; fiscal dominance and underpriced risk premia in 2025 |
 
 ---
 
@@ -99,3 +101,5 @@ Itaú's assessment: Brazil in an intermediate regime, moving toward fiscal domin
 - [[overshooting]] — Blanchard overshooting (fiscal) is directionally opposite to Dornbusch overshooting (monetary): rate hike → depreciation vs. rate hike → appreciation
 - [[Itaú 2025 - Fiscal Dominance in Brazil]] — primary source for this concept
 - [[verde_fx_mental_models]] — practitioner framework; fiscal credibility sections 1.1–1.11, 1.8
+- [[kinea_fx_mental_models]] — explicit definition (1.3), good-vs-bad-equilibrium framework (1.4), and the Dec/2024–Jan/2025 empirical lesson that no nominal rate level anchors the currency without fiscal credibility (1.9)
+- [[kapitalo_fx_mental_models]] — 6.6–6.7: 2024 fiscal-anchor credibility crisis with pass-through to inflation, and 2025 fiscal dominance with underpriced risk premia

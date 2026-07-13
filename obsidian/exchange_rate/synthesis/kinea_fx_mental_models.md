@@ -509,4 +509,6 @@ Ao analisar o Real, a Kinea efetivamente percorre:
 - [[risk_premium]] — cluster 1 inteiro (credibilidade fiscal, dominância fiscal, ciclo eleitoral); 2.6 (BRL de alto beta); 4.5 (EUA reagindo como EM)
 - [[uip]] — 2.1–2.2: diferencial de juros e o canal cambial como mecanismo prático de transmissão, ecoando a falha empírica da UIP
 - [[fiscal_dominance]] — 1.3 (definição explícita usada pela própria Kinea) e todo o cluster 1
-- [[current_account_adjustment_channels]] — cluster 3 (conta corrente, termos de troca, déficits gêmeos como variável de ajuste cambial)
+- [[balance_of_payments_approach]] — cluster 3 (conta corrente, termos de troca, déficits gêmeos como variável de ajuste cambial)
+- [[kapitalo_fx_mental_models]] — mesmo gênero de documento (mental model de câmbio de gestora macro brasileira), construído de forma independente
+- [[verde_fx_mental_models]] — terceiro documento da mesma família (mental models de câmbio por gestora)

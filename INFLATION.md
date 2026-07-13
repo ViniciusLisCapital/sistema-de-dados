@@ -79,18 +79,44 @@ Consumidores que ainda referenciam o nome/série antigo
 `ipca` → `IPCA` internamente logo após o load para não precisar tocar no resto do
 arquivo.
 
-### `analytics/inflation/data/` — Excel/CSV
+### `analytics/inflation/data/` vs. `analytics/inflation/referencia/` (2026-07)
+
+Convenção adotada nesta rodada (a mesma vale para os outros relatórios em
+`analytics/`, ex. `cambio/`, `oraculo/`): `data/` é só para arquivos que
+algum script efetivamente lê ou escreve; material de contexto/proveniência
+que nenhum script toca vai para `referencia/`.
+
+**`analytics/inflation/data/` (operacional):**
 
 | Arquivo | Situação |
 |---|---|
-| `tabela_dimensao_ipca.xlsx` | **Ainda em uso** — única fonte da marcação Subjacente; lido por `inflc_dim.py` |
-| `ipca_bcb_series.csv` | **Ainda em uso** — agregados BCB/SGS + STL `_ma3_sa`, gerado por `fetch_bcb.py`, lido por `generate_report.py` |
-| `variacao_peso_contribuicao_ipca.xlsx` | Não lido mais por nenhum script (substituído por `inflc_decomposicao` no MySQL) |
-| `variacao_peso_contribuicao_ipca15.xlsx` | Idem |
-| `dim_inflation_ipca15.xlsx` | Idem |
+| `tabela_dimensao_ipca.xlsx` | **Em uso** — fonte de `grupo`/`subgrupo`/`item` + "Alimentos Subjacente" (sem equivalente oficial); lido por `inflc_dim.py` |
+| `Vetores_NT_57.xlsx` | **Em uso** — fonte oficial de `subjacente` (Serviços/Industriais) + todos os `nucleo_*`; lido por `inflc_dim.py` |
+| `ipca_bcb_series.csv` | **Em uso** — agregados BCB/SGS + STL `_ma3_sa`, gerado por `fetch_bcb.py`, lido por `generate_report.py` |
 
-Os três últimos não foram apagados — mantidos como registro histórico do formato
-anterior, mas não fazem mais parte do pipeline.
+**`analytics/inflation/referencia/` (contexto/proveniência, nenhum script lê):**
+
+| Arquivo | Situação |
+|---|---|
+| `Nucleos_inflacao.pdf` | Nota Técnica BCB nº 57 (dez/2025) — fonte da metodologia consolidada e do glossário de núcleos |
+| `Series_NT_57.xlsx` | Arquivo de apoio da NT-57 (comparação séries novas/anteriores) — não lido por código |
+| `inflacao_servico.pdf` | Boxe RI jun/2024, "Inflação de serviços reponderada por fatores de produção" — insumo da pendência de novas métricas de serviços |
+| `dim_inflation_ipca15.xlsx` | Formato pré-MySQL, substituído por `inflc_decomposicao` — mantido como registro histórico |
+
+`variacao_peso_contribuicao_ipca.xlsx`/`variacao_peso_contribuicao_ipca15.xlsx`
+(mesma categoria de `dim_inflation_ipca15.xlsx` acima) foram apagados em
+2026-07 — registro histórico sem valor prático, substituídos por
+`inflc_decomposicao` há tempo.
+
+**Pendência registrada para discutir na próxima sessão:** avaliar se algum
+desses arquivos de `referencia/` deveria ser carregado no MySQL em vez de
+ficar como Excel solto — em especial `Vetores_NT_57.xlsx` (que hoje só tem a
+aba `jan20-presente` lida; as demais abas, por período de estrutura do IPCA
+desde 1991, ainda não viraram dado de banco — ver pendência de expandir
+`inflc_decomposicao`/`inflc_dim` acima) e `Series_NT_57.xlsx` (série
+comparativa nova/anterior da própria NT-57 — pode ter valor como
+cross-check histórico se carregada). Nada decidido ainda; só um apontador
+para a conversa.
 
 ### `generate_report.py`
 
@@ -187,12 +213,107 @@ independente de `macro_brasil.inflc_agregados` — ver pendência abaixo.
   volatilidade muito diferente comparáveis na mesma escala de cor
   azul(frio)→branco→vermelho(quente). Não achamos um equivalente publicado
   pelo BCB para replicar — o FRED é a referência mais sólida encontrada.
+- **`data/` vs. `referencia/`**: separação adotada para organizar material
+  técnico — `data/` só para arquivos que algum script lê/escreve,
+  `referencia/` para PDFs/notas de proveniência que ninguém no código toca.
+  Movidos para `analytics/inflation/referencia/`: `Nucleos_inflacao.pdf`,
+  `Series_NT_57.xlsx`, `dim_inflation_ipca15.xlsx`,
+  `variacao_peso_contribuicao_ipca(15).xlsx`, e `inflacao_servico.pdf`
+  (que estava solto na raiz do projeto). Ver seção de dados acima.
+  `variacao_peso_contribuicao_ipca(15).xlsx` foram apagados em seguida —
+  registro histórico sem valor prático.
+- **Bug corrigido: "Evolução Mensal" mostrando contribuição positiva como
+  negativa** (`renderTimeSeries()`): usava `barmode:'stack'`, que empilha as
+  barras estritamente na ordem dos traces, independente do sinal — se uma
+  categoria (ex.: Bens Industriais) tem contribuição negativa num mês, a
+  próxima categoria empilhada (ex.: Serviços) nasce daquela base negativa e
+  pode aparecer abaixo de zero mesmo com valor próprio positivo (bug
+  reportado pelo usuário via screenshot). Corrigido para `barmode:'relative'`
+  — empilha positivos a partir de zero para cima e negativos a partir de
+  zero para baixo, independentemente uns dos outros; já era o padrão correto
+  usado no gráfico equivalente do IPCA-15 (`renderCompContrib15()`).
 
 ---
 
 ## Pendências
 
 ### Alta prioridade
+- **Mapa de Calor de variação mensal por Grupo/Subgrupo/Item/Subitem**
+  (pedido do usuário, não iniciado): hoje a aba "Mapa de Calor" só cobre um
+  conjunto fixo de linhas (Grupos BCB + Núcleos, 3M SAAR). Falta uma segunda
+  visão — ou um modo alternativo na mesma aba — mostrando **variação mensal
+  (var_mensal)**, não SAAR, com o **nível selecionável** (Grupo/Subgrupo/
+  Item/Subitem, os mesmos 4 níveis de `LEVELS`/`currentLevel()` usados no
+  drilldown da Decomposição) e todas as categorias daquele nível como linhas
+  do heatmap — ao contrário da "Difusão por Categoria", que já tem Nível +
+  Categoria (uma categoria de cada vez); aqui a ideia é ver **todas** as
+  categorias do nível escolhido lado a lado. Pontos em aberto para a próxima
+  sessão: (1) reaproveitar `rollingZScore`/`zColor` (mesma regra já
+  confirmada com o usuário) ou usar outra régua já que var_mensal de
+  subitem é mais ruidoso que 3M SAAR de núcleo; (2) nível Subitem pode
+  gerar 300+ linhas — precisa de paginação, scroll, ou um teto com "ver
+  todos" (mesmo padrão do ranking da aba Decomposição); (3) fonte de dados
+  são os `records`/`records_ipca15` já carregados (mesmo pipeline da
+  Difusão por Categoria), não os agregados BCB — funciona igual para
+  IPCA/IPCA-15 sem branching.
+- **Núcleos não existem para o IPCA-15 — precisam ser reconstruídos por
+  agregação própria**: todo o trabalho de núcleos desta rodada (glossário,
+  dropdowns, "Média 5 Núcleos", Mapa de Calor, difusão por núcleo) usa séries
+  BCB/SGS que **só existem para o IPCA cheio**. O BCB não publica núcleos
+  para o IPCA-15 — `inflc_agregados`/`fetch_bcb.py` só têm o headline IPCA-15
+  (série 7478); não há EX-0/EX-01/.../P55/MA/MS/DP equivalentes. Por isso
+  `renderNucleosTab()` já esconde essas seções para IPCA-15 hoje (mostra só
+  "Decomposição Mensal por Componente" no lugar). Para ter núcleos de
+  IPCA-15, teríamos que **calcular nós mesmos**, via agregação simples (o
+  mesmo método da NT-57, Subseção 2.1.2: variação ponderada dos componentes
+  que pertencem ao núcleo) em cima de `inflc_decomposicao` (que já tem os
+  dados de var_mensal/pesos por subitem do IPCA-15) e `inflc_dim` (cujos
+  flags `nucleo_ex0/ex01/ex02/ex03/ex03_servicos/ex03_industriais/exfe` já
+  são compartilhados entre IPCA e IPCA-15 — "todo subitem do IPCA-15 também
+  existe no IPCA", ver docstring de `inflc_dim.py`). Viável para os núcleos
+  por exclusão (EX-0/EX-01/EX-02/EX-03/EX-FE) com renormalização de peso
+  dentro da cesta do IPCA-15; MA/MS/DP/P55 exigiriam replicar toda a
+  metodologia estatística (aparação, dupla ponderação, percentil) sobre os
+  subitens do IPCA-15 — bem mais trabalho. Não iniciado.
+- **Expandir `inflc_decomposicao`/`inflc_dim` para períodos anteriores a 2020**:
+  hoje a decomposição por subitem só cobre a estrutura vigente (jan/20-presente,
+  POF 2017-2018). `Vetores_NT_57.xlsx` (`analytics/inflation/data/`) na
+  verdade tem uma aba por período de estrutura do IPCA desde jan/91
+  (`jan91-jul99`, `ago99-dez05`, `jan06-jun06`, `jul06-dez11`, `jan12-dez19`,
+  além de `jan20-presente`, já em uso) — ou seja, agora temos a classificação/
+  vetor de agregação oficial necessária para estender a decomposição e os
+  flags de núcleo históricamente, se algum dia for necessário (ex.: séries de
+  contribuição por subitem mais longas que 2020). Não faz parte do escopo
+  atual do `inflc_decomposicao.py` (que busca direto da API do IBGE, que só
+  cobre a estrutura vigente) — exigiria decidir se vale a pena reconstruir
+  histórico via IBGE (dados existem, mas a API atual não expõe estruturas
+  antigas do mesmo jeito) ou aceitar que só o vetor oficial (sem os dados de
+  variação/peso do IBGE em si) está disponível para os períodos anteriores.
+- **Decomposição por subitem dentro de um núcleo** (não só do IPCA cheio):
+  hoje `inflc_decomposicao` calcula contribuição de cada subitem para o IPCA
+  geral; falta uma visão equivalente *dentro* da cesta reduzida de um núcleo
+  (ex.: quais subitens mais contribuíram para o EX-03 este mês, com pesos
+  renormalizados dentro da cesta do núcleo, não do IPCA cheio). Os flags
+  `nucleo_*` em `inflc_dim` (2026-07) já dão a filtragem de membership
+  necessária — falta a lógica de renormalização de peso + contribuição
+  específica do núcleo.
+- **Agregados também a partir da perspectiva do IBGE** (hoje só vêm do BCB):
+  `inflc_agregados` inteiro vem de séries BCB/SGS; o usuário quer também
+  agregados construídos diretamente a partir da API do IBGE (agregados
+  7060/7062, mesmos dados-fonte de `inflc_decomposicao`), permitindo
+  decompor esses agregados por subitem do mesmo jeito que já se faz para o
+  IPCA cheio — um cross-check independente do BCB e uma decomposição que o
+  BCB não publica para seus próprios agregados/núcleos.
+- **Novas métricas de inflação de serviços** — `analytics/inflation/referencia/inflacao_servico.pdf`
+  (movido da raiz do projeto em 2026-07): boxe do BC (RI jun/2024, "Inflação de serviços reponderada
+  por fatores de produção") propõe reponderar subitens de serviços por
+  intensidade de uso de trabalho/capital/insumos, estimada a partir das
+  Tabelas de Recursos e Usos (TRU) das Contas Nacionais por atividade
+  econômica — mais abrangente que a medida de "serviços intensivos em mão de
+  obra" de 2013 (que cobre só 6% do IPCA vs. 35% do total de serviços).
+  Implementar exigiria: (1) obter os pesos de fator (trabalho/capital/
+  insumos) por atividade das TRU/IBGE, (2) mapear atividades → subitens de
+  serviços do IPCA, (3) construir as séries reponderadas. Não iniciado.
 - ~~Reconciliar `subjacente` (manual) com os flags `nucleo_*` (oficiais)~~ —
   **resolvido em 2026-07** (rodada seguinte): `inflc_dim.py` agora deriva
   Serviços/Bens Industriais Subjacente diretamente de

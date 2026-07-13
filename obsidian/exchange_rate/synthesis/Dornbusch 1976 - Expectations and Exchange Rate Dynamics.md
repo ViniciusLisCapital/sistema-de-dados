@@ -7,7 +7,8 @@ aliases: ["Dornbusch 1976"]
 **Author:** Rudiger Dornbusch  
 **Source:** Journal of Political Economy, 1976, vol. 84, no. 6, pp. 1161–1176  
 **Type:** Foundational theoretical article  
-**Tags:** #overshooting #exchange-rate #monetary-policy #expectations #sticky-prices #foundational
+**Tags:** #overshooting #exchange-rate #monetary-policy #expectations #sticky-prices #foundational  
+**Raw file:** [[expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]]
 
 ---
 

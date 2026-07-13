@@ -3,7 +3,8 @@
 **Authors:** Teresa Alves, Stuart Jenkins  
 **Source:** Goldman Sachs FX in Focus, 3 November 2025  
 **Type:** Research note — proprietary fair value framework  
-**Tags:** #fair-value #PPP #GSDEER #GSFEER #valuation #exchange-rate #goldman-sachs
+**Tags:** #fair-value #PPP #GSDEER #GSFEER #valuation #exchange-rate #goldman-sachs  
+**Raw file:** [[primer_gsdeer_gsfeer (Goldman, 2025)]]
 
 ---
 
@@ -135,3 +136,4 @@ The implication: don't use GSDEER cheapness as a buy signal for BRL without a ca
 - [[Mundell 1963]] / [[Fleming 1962]] — GSFEER is implicitly a macro balance model in the M-F tradition
 - [[verde_fx_mental_models]] — Verde letters treat GSDEER-type arguments as "structural" floor for BRL; skeptical of convergence without carry catalyst
 - [[Sarno-Taylor]] — academic treatment of PPP-based equilibrium exchange rates and their empirical limitations
+- [[Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil]] — BEER model, the direct methodological ancestor applied to Brazil two decades earlier: same terms-of-trade/productivity/NFA/risk-premium fundamentals, cointegration instead of a cross-sectional regression

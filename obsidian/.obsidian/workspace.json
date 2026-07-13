@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "d47af6bdf3b57f58",
+        "id": "3a74763cfa731a04",
         "type": "tabs",
         "children": [
           {
-            "id": "2de58328a7ad84a7",
+            "id": "420e51367e8c983f",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -70,13 +70,11 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "3c9bdc402d800256",
@@ -180,40 +178,45 @@
       "bases:Create new base": false
     }
   },
-  "active": "2de58328a7ad84a7",
+  "active": "420e51367e8c983f",
   "lastOpenFiles": [
-    "exchange_rate/synthesis/verde_fx_mental_models.md",
-    "exchange_rate/concepts/carry_trade.md",
-    "exchange_rate/synthesis/Dornbusch 1976 - Expectations and Exchange Rate Dynamics.md",
-    "exchange_rate/concepts/uip.md",
-    "fiscal_policy/concepts/fiscal_dominance.md",
+    "exchange_rate/synthesis/Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil.md.tmp.11252.31bc3bf8e324",
+    "exchange_rate/raw/equilibrium_exchange_brazil (Paiva, 2006).md",
+    "exchange_rate/raw/equilibrium_exchange_brazil (Paiva, 2006), .md",
+    "exchange_rate/concepts/currency_crisis_indicators.md.tmp.11252.cd362748cf94",
+    "exchange_rate/concepts/currency_regimes.md.tmp.11252.ed045a8456c3",
+    "exchange_rate/concepts/exchange_rate_pass_through.md.tmp.11252.f03e46bacd62",
+    "exchange_rate/concepts/balance_of_payments_approach.md.tmp.11252.75e2295ef8f3",
+    "fiscal_policy/concepts/fiscal_dominance.md.tmp.11252.4118e1d15577",
+    "fiscal_policy/concepts/fiscal_dominance.md.tmp.11252.5bc32c6cf54d",
+    "exchange_rate/concepts/ppp_balassa_samuelson.md.tmp.11252.ba2f8798df51",
+    "exchange_rate/concepts/overshooting.md.tmp.11252.0c9c3e5d4451",
+    "exchange_rate/concepts/uip.md.tmp.11252.916bc378f106",
+    "exchange_rate/concepts/risk_premium.md.tmp.11252.c81c9abfc4b8",
+    "exchange_rate/Sarno-Taylor.md",
+    "exchange_rate/synthesis/kapitalo_fx_mental_models.md",
+    "exchange_rate/synthesis/kinea_fx_mental_models.md",
+    "exchange_rate/raw/price_levels_exchange_rate_lr (Krugman, 2023)_raw.md",
+    "monetary_policy/synthesis/BIS 2026 - Monetary Policy Transmission to Exchange Rates via Carry Trades.md",
+    "inflation/concepts/food_inflation_drivers.md",
+    "inflation/synthesis/Goldman 2026 - EM Food Inflation.md",
+    "exchange_rate/synthesis/Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil.md",
+    "exchange_rate/synthesis/Cortapasso 2023 - Padrões da Transmissão Cambial para a Taxa de Inflação no Brasil.md",
+    "exchange_rate/synthesis/Belaisch 2003 - Exchange Rate Pass-Through in Brazil.md",
+    "exchange_rate/synthesis/Goldfajn and Werlang 2000 - The Pass-through from Depreciation to Inflation.md",
+    "exchange_rate/synthesis/CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value.md",
+    "exchange_rate/concepts/currency_crisis_indicators.md",
+    "exchange_rate/concepts/balance_of_payments_approach.md",
+    "exchange_rate/concepts/mundell_fleming_policy_mix.md",
+    "exchange_rate/synthesis/CFA L1 2025 - Capital Flows and the FX Market.md",
+    "exchange_rate/concepts/currency_regimes.md",
+    "exchange_rate/synthesis/CFA L1 2025 - Exchange Rate Calculations.md",
+    "exchange_rate/synthesis/Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention.md",
+    "exchange_rate/concepts/exchange_rate_pass_through.md",
+    "exchange_rate/synthesis/Krugman 2023 - Output and the Exchange Rate in the Short Run.md",
+    "exchange_rate/synthesis/Krugman 2023 - Price Levels and the Exchange Rate in the Long Run.md",
+    "exchange_rate/synthesis/Krugman 2023 - Money, Interest Rates, and Exchange Rates.md",
     "Untitled.canvas",
-    "exchange_rate/concepts/risk_premium.md",
-    "exchange_rate/concepts/ppp_balassa_samuelson.md",
-    "exchange_rate/concepts/overshooting.md",
-    "exchange_rate/synthesis/Goldman 2025 - GSDEER and GSFEER Models Primer.md",
-    "fiscal_policy/synthesis/Itaú 2025 - Fiscal Dominance in Brazil.md",
-    "fiscal_policy/concepts",
-    "fiscal_policy/synthesis",
-    "exchange_rate/synthesis/verde_fx_mental_models.md.tmp.25336.488c3ec63085",
-    "exchange_rate/synthesis/Goldman 2025 - GSDEER and GSFEER Models Primer.md.tmp.25336.72320205ee3d",
-    "exchange_rate/synthesis/Dornbusch 1976 - Expectations and Exchange Rate Dynamics.md.tmp.25336.f9f34267dfd3",
-    "exchange_rate/synthesis/Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates.md.tmp.25336.5a43e0acc8ae",
-    "brasil_macro/concepts/fiscal_dominance.md",
-    "exchange_rate/concepts/overshooting.md.tmp.25336.e97784f087f6",
-    "exchange_rate/concepts/uip.md.tmp.25336.807c5b2684ef",
-    "exchange_rate/concepts/carry_trade.md.tmp.25336.2cd8dd165939",
-    "exchange_rate/concepts/risk_premium.md.tmp.25336.f525ad247589",
-    "brasil_macro/synthesis/Itaú 2025 - Fiscal Dominance in Brazil.md",
-    "exchange_rate/Obstfeld-Rogoff.md",
-    "exchange_rate/Mundell 1963.md",
-    "exchange_rate/synthesis/Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates.md",
-    "synthesis/verde_fx_mental_models.md",
-    "2026-06-18.md",
-    "raw/Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell, 1963).md",
-    "raw/verde_fev_2025.md",
-    "raw/verde_jan_2025.md",
-    "Untitled 1.canvas",
-    "Welcome.md"
+    "Untitled 1.canvas"
   ]
 }

@@ -36,6 +36,8 @@ The rate of currency depreciation equals the inflation differential. Brazil infl
 
 In Dornbusch (1976), PPP is only the *long-run* equilibrium condition (`ē = p̄ − p̄*`). The paper's entire contribution is explaining why the exchange rate can deviate from PPP in the short run while still being on an equilibrium path.
 
+**Empirical horizon-dependence (CFA L2):** plotting inflation differentials against exchange rate changes shows no relationship at a 1-year horizon but a clear positive (PPP-consistent) one at 5+ years — PPP's signal is swamped by noise at short horizons, not absent. The clearest confirming case is Brazil 1977–1993: the BRL/USD rate tracked the Brazil-US inflation differential almost exactly even at a 1-year horizon, because the inflation gap was so large (hyperinflationary) it dominated all the usual short-horizon noise. See [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]].
+
 ---
 
 ## The Balassa-Samuelson Effect
@@ -52,6 +54,14 @@ Richer, more productive countries have **higher price levels** than raw PPP pred
 4. The country appears expensive on absolute PPP, even though its *tradable* prices are globally competitive.
 
 **Implication for EM:** A simple PPP comparison makes EM currencies look perpetually "cheap" — but the cheapness is structural (development gap), not misalignment. Fair value models must **correct for Balassa-Samuelson** to identify true deviations.
+
+### A competing explanation: Bhagwati-Kravis-Lipsey
+
+Krugman's textbook treatment (Ch. 16) notes the Balassa-Samuelson productivity story is not the only explanation for why rich countries have higher price levels. Bhagwati-Kravis-Lipsey attributes it to **capital-labor ratios** instead of a tradables-specific productivity gap: rich countries have more capital per worker, which raises the marginal product (and hence wage) of labor directly; since nontradables are labor-intensive, higher wages raise nontradables prices — same cross-country prediction, different mechanism (no need for productivity growth to be *concentrated* in tradables). The two theories are not nested and the textbook does not adjudicate between them.
+
+### Real exchange rate and real interest parity
+
+Krugman formalizes the real exchange rate as `q = (E · P_foreign) / P_domestic` — the relative price of the foreign consumption basket in domestic terms — and shows its long-run level is set by relative demand/supply for output, not by money (a rise in relative demand for domestic output → real appreciation; a rise in domestic relative output supply → real depreciation). Combining this with UIP gives **real interest parity**: `r_domestic^e − r_foreign^e = E[Δq]` — countries' expected real interest rates need not converge even in the long run if a real exchange rate trend (e.g., ongoing Balassa-Samuelson appreciation) is expected. See [[Krugman 2023 - Price Levels and the Exchange Rate in the Long Run]].
 
 ---
 
@@ -86,4 +96,14 @@ BRL is **undervalued** on GSDEER — after correcting for Brazil's productivity 
 - [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — GSDEER as augmented PPP correcting for Balassa-Samuelson; BRL undervalued on GSDEER
 - [[Goldman 2023 - GSDEER A User's Manual]] — empirical PPP convergence: ~20%/yr, 3–5yr to beat random walk; BRL convergence blocked by high risk premium
 - [[verde_fx_mental_models]] — Verde uses relative PPP as baseline for BRL trend (inflation differential vs US); carry is the deviation from the PPP path
+- [[kapitalo_fx_mental_models]] — 2.1–2.2: explicit PPP/REER valuation model with a Balassa-Samuelson/relative-unit-labor-cost component, laid out as a formal table ("Vetores e Indicadores Econômicos para Câmbio de Moedas") in the fund's inaugural 2019 letter and applied implicitly ever since
 - [[risk_premium]] — even with GSDEER undervaluation, BRL may not converge if the risk premium is high enough to block carry flows
+- [[Krugman 2023 - Price Levels and the Exchange Rate in the Long Run]] — fullest textbook derivation of absolute/relative PPP, the monetary approach, the real exchange rate, real interest parity, and the Bhagwati-Kravis-Lipsey alternative to Balassa-Samuelson
+- [[uip]] — Fisher effect and real interest parity split nominal UIP into an inflation-expectations component and a real-exchange-rate-expectations component
+- [[exchange_rate_pass_through]] — pricing-to-market and market segmentation (this page's PPP-failure mechanisms) are the same forces behind incomplete pass-through
+- [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — uses this page's real exchange rate `q = EP*/P` as the operative variable in the current-account/DD-AA model
+- [[CFA L1 2025 - Capital Flows and the FX Market]] — same real exchange rate definition with a clean worked example (India 2018 INR/USD); reinforces PPP's weak predictive track record from the practitioner side
+- [[currency_regimes]] — Impossible Trinity and IMF regime taxonomy built from this reading's companion source
+- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — real interest rate parity via ex ante PPP + UIP; horizon-dependent empirical PPP evidence; Brazil 1977–93 hyperinflation as cleanest confirming case
+- [[balance_of_payments_approach]] — complementary long-run channel: PPP explains price-level-driven trend, BOP/portfolio-balance explain debt/flow-driven trend
+- [[Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil]] — BEER model direct methodological ancestor of GSDEER; NTT (CPI/PPI ratio) as an empirical Balassa-Samuelson proxy explaining Brazil's 2003–05 REER appreciation

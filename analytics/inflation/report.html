@@ -857,7 +857,13 @@ function renderTimeSeries() {
     hovertemplate:'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
   });
   Plotly.react('chart-timeseries', traces, {
-    barmode:'stack', height:460, margin:{l:55,r:190,t:20,b:40},
+    // 'relative' (not 'stack'): stacks positive-valued traces upward from
+    // zero and negative-valued traces downward from zero independently per
+    // month. 'stack' instead stacks strictly in trace order regardless of
+    // sign, so a negative category pushes the *next* trace's baseline below
+    // zero even when that trace's own value is positive — misreading a
+    // positive contribution as negative.
+    barmode:'relative', height:460, margin:{l:55,r:190,t:20,b:40},
     xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
       buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
       bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',

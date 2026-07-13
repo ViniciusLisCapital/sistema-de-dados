@@ -73,8 +73,17 @@ Verde's framework of "ruído vs. sinal" (section 1.6 in [[verde_fx_mental_models
 
 - [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — formal derivation of overshooting
 - [[uip]] — overshooting is a direct consequence of UIP: the exchange rate must be far enough from equilibrium that the expected return path satisfies `r = r* + E[Δe]`
+- [[Krugman 2023 - Money, Interest Rates, and Exchange Rates]] — same overshooting result derived via a simple money-market + UIP diagram (no continuous-time optimization); Zimbabwe/Venezuela hyperinflations as extreme, compressed-timescale illustrations of the underlying long-run-neutrality logic
+- [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — derives overshooting a third way via the DD-AA model (permanent money supply increase) and adds the J-curve as a second, independent amplifier of exchange-rate volatility
+- [[exchange_rate_pass_through]] — incomplete pass-through and the J-curve both delay the real-economy effects of a nominal move, which is part of why the nominal rate has to overshoot further to clear asset markets in the meantime
+- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — a permanent devaluation is long-run neutral in exactly the same way as a permanent money supply increase under floating rates, reinforcing the same overshooting/neutrality logic across regimes
+- [[currency_regimes]] — the post-1973 float's surprisingly high volatility (far more than trade-flow models predicted) is the historical/empirical motivation for the asset-approach overshooting framework
+- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — explicitly cites Dornbusch (1976) as the source of the sticky-price overshooting mechanism, contrasted with the "pure" (always-PPP) monetary approach
+- [[BIS 2026 - Monetary Policy Transmission to Exchange Rates via Carry Trades]] — a distinct, positioning-driven overshooting mechanism (deleveraging of crowded carry shorts on a tightening surprise), additive to the sticky-price/Dornbusch channel
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — Fleming's section on speculative capital flows seeds the idea; Dornbusch formalizes it with rational expectations
 - [[verde_fx_mental_models]] — empirical pattern: "running ahead of fundamentals" (section 1.6), technical corrections (section 7.3), carry unwind timing (9.4)
+- [[kinea_fx_mental_models]] — cluster 8 (technical shocks and short-run overshoots distinct from fundamentals, e.g. the Aug/2024 JPY carry unwind); 8.2 (safe-haven flows vs. positioning unwind as two distinct drivers of a dollar rally)
+- [[kapitalo_fx_mental_models]] — 1.4 (central scenario vs. probability distribution — "we count barrels, but we trade probabilities"), a practitioner framing of trading around a fundamentals path that the spot rate can overshoot in either direction
 - [[carry_trade]] — the carry window (gradual depreciation after overshooting appreciation) is when carry is collected
 - [[fiscal_dominance]] — fiscal-dominance overshooting (rate hike → depreciation via ρ) is directionally opposite to Dornbusch monetary overshooting (rate hike → appreciation)
 - [[Itaú 2025 - Fiscal Dominance in Brazil]] — Blanchard (2004) anti-Dornbusch mechanism: rate hike causes depreciation not appreciation when fiscal risk premium dominates

@@ -4,17 +4,20 @@
 
 **Not cross-linked yet** to `exchange_rate_conceptual_map.md` (theory/bibliography) — that's left for a later step, by the user's decision. For now this file documents only the data side.
 
-Technical details on schema, SGS codes and observation counts live in `CAMBIO.md` and `RESERVAS.md` — this file organizes the same information by analytical category instead of by table.
+Technical details on schema, SGS codes and observation counts live in `CAMBIO.md` (`RESERVAS.md` was consolidated into `CAMBIO.md` in 2026-07 and no longer exists as a separate file) — this file organizes the same information by analytical category instead of by table.
 
 ---
 
-## 1. Spot price — ⚠️ GAP
+## 1. Spot price — ✓ resolved (2026-07)
 
-There is currently no spot exchange rate series (PTAX or otherwise) stored in `macro_brasil` or `macro_international`. The entire FX pipeline covers *determinants* of the exchange rate (flow, positioning, rates, reserves) but not the dependent variable (USD/BRL) itself.
+| What we have | Table | Series | Coverage |
+|---|---|---|---|
+| PTAX sell (spot) | `macro_brasil.cmb_ptax` | `ptax_venda` (SGS 1) | 1984-11-28 → today, daily |
+| Interbank FX volume, T+1/T+2 settlement | `macro_brasil.cmb_ptax` | `fx_interbank_vol_t1` (SGS 20359), `fx_interbank_vol_t2` (SGS 20205) | 1994-07-04 → today, daily |
 
-**Impact:** the analysis agent cannot today directly correlate fundamentals with the level or change of the exchange rate — it needs that to be supplied externally or read from another source on each analysis.
+Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chunks by year (BCB API rejects windows > 10 years for daily series, confirmed via 406 response).
 
-**Possible source:** BCB SGS 1 (PTAX sell, daily, since 1984) or 10813 (PTAX sell, closing). No script built yet.
+**Remaining gap:** the analysis agent (`analytics/cambio/agent_data.py`) hasn't been updated yet to pull `cmb_ptax` into its snapshot — the data exists but isn't wired into the agent's output.
 
 ---
 
@@ -22,15 +25,14 @@ There is currently no spot exchange rate series (PTAX or otherwise) stored in `m
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| Selic (raw) | `macro_international.diferenciais_juros` | `selic` | ~36m rolling (script's default window) |
-| Fed Funds (raw) | `macro_international.diferenciais_juros` | `fed_funds` | same |
-| Nominal ex-post differential | `macro_international.diferenciais_juros` | `diferencial_nominal` | same |
-| Real ex-post differential (Selic − IPCA vs. Fed Funds − CPI) | `macro_international.diferenciais_juros` | `real_br_ex_post`, `real_us_ex_post`, `diferencial_real` | same |
+| Selic (raw) | `macro_international.diferenciais_juros` | `selic` | 1999-03 → today (SGS 432 has no earlier data) |
+| Fed Funds (raw) | `macro_international.diferenciais_juros` | `fed_funds` | 1995 → today |
+| Nominal ex-post differential | `macro_international.diferenciais_juros` | `diferencial_nominal` | 1999-03 → today |
+| Real ex-post differential (Selic − IPCA vs. Fed Funds − CPI) | `macro_international.diferenciais_juros` | `real_br_ex_post`, `real_us_ex_post`, `diferencial_real` | 1999-03 → today |
 
-Script: `domain/db/international/fred/diferenciais_juros.py`.
+Script: `domain/db/international/fred/diferenciais_juros.py`. Full history load (2026-07): `selic` (SGS 432, daily) is chunked in 8-year windows to avoid the BCB API's 406 on windows > 10 years.
 
 **Gaps:**
-- History limited to ~36 months by default (Selic available since 1996 on SGS, Fed Funds since 1954 on FRED — full historical load still pending, see `CAMBIO.md` §1a).
 - **Ex-ante** differentials (based on expectations, not realized inflation) not implemented yet — detailed plan in `CAMBIO.md` §1b/§2, uses `macro_brasil.expc_focus` (Focus) on the BR side and FRED (`FF{m}` futures/OIS, `MICH`/`T5YIE`) on the US side.
 - Cupom cambial (DDI/FRC curve) and B3 futures (DOL/WDO) — deferred, requires Bloomberg access (`blpapi`/`xbbg`).
 
@@ -40,14 +42,14 @@ Script: `domain/db/international/fred/diferenciais_juros.py`.
 
 | What we have | Table | Series | Note |
 |---|---|---|---|
-| Terms of trade index (series A) | `macro_brasil.cmb_termos_troca` | `termos_de_troca_a` (SGS 22099) | exact description (FOB vs. CIF? basket?) unconfirmed |
-| Terms of trade index (series B) | `macro_brasil.cmb_termos_troca` | `termos_de_troca_b` (SGS 22100) | same |
+| Terms of trade index (PX/PM, base 2018=100) | `macro_brasil.cmb_termos_troca` | `termos_de_troca_funcex` (IPEADATA `FUNCEX12_TTR12`) | 1978 → today, monthly |
 
-Script: `domain/db/brasil/bcb/cmb_termos_troca.py`.
+Script: `domain/db/brasil/ipea/cmb_termos_troca.py`. Source: Funcex, via the IPEADATA OData API (`connectors/ipeadata.py`) — **not** BCB SGS.
+
+**Correction (2026-07):** the previous entries here (`termos_de_troca_a`/`b`, BCB SGS 22099/22100) were confirmed to be **National Accounts (GDP) series, not terms of trade** — BCB SGS does not publish a terms-of-trade index at all. Those two series and their rows were removed from `cmb_termos_troca`.
 
 **Gaps:**
-- Exact descriptions of both series still pending confirmation with BCB SGS.
-- No individual commodity prices (iron ore, soybeans, oil) — only the BCB's aggregate index. If the agent needs to decompose terms of trade by commodity, there's no data for that today.
+- No individual commodity prices (iron ore, soybeans, oil) — only the aggregate Funcex index. If the agent needs to decompose terms of trade by commodity, there's no data for that today.
 
 ---
 
@@ -105,7 +107,7 @@ Script: `domain/db/brasil/bcb/cmb_cambio_contratado.py`. ~46k observations.
 | Stock of repo lines/loans/repurchase agreements in FX | `macro_brasil.cmb_reservas_bc` | `bcb_fx_stock_repos_loans` (SGS 29534) | monthly |
 | BCB interventions (spot, forwards, FX loans/repos, repo lines) — only days with actual intervention | `macro_brasil.cmb_reservas_bc` | `bcb_intervention_spot`, `bcb_intervention_forwards`, `bcb_intervention_fx_loans_repos`, `bcb_intervention_repo_lines` | daily (sparse) |
 
-Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `RESERVAS.md`.
+Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `CAMBIO.md`.
 
 **Coverage considered robust** — includes both the stock (reserves, bank position, swap) and the intervention flow (BCB's net buying/selling in spot and forwards), which lets the agent distinguish "how much the BCB has" from "what the BCB is doing right now."
 
@@ -168,11 +170,9 @@ On the US side, activity/inflation data today only exists ad hoc inside `analyti
 
 | Priority | Gap | Category |
 |---|---|---|
-| High | Spot exchange rate (PTAX) series not stored | §1 |
 | High | Ex-ante interest rate differentials (Focus × Fed Funds futures/OIS) | §2 |
-| Medium | Full history of `diferenciais_juros` (today ~36m, should go back to 1995/1954) | §2 |
 | Medium | CEP/CBE granularity of the financial FX flow | §5a |
-| Medium | Confirmation of SGS 22099/22100 descriptions (terms of trade) | §3 |
+| Medium | Wire `cmb_ptax` into the analysis agent's snapshot (`agent_data.py`) | §1 |
 | Low | Cupom cambial + B3 futures (requires Bloomberg access) | §2 |
 | Low | REER/COT for EM peers beyond BR/MX/CL/CO | §7, §8 |
 | Low | Options-based positioning data (skew, risk reversal) | §8 |

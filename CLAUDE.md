@@ -41,7 +41,7 @@ jobs/                — Entry points
   update_international.py — Atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
   update_oraculo.py     — Atualiza o oráculo
 reports/             — Outputs gerados (não versionados)
-  cambio_latest.html — Relatório cambial mais recente (autocontido, enviável)
+  fx_report.html — Relatório cambial mais recente (autocontido, enviável; renomeado de cambio_latest.html em 2026-07)
 utils/               — Funções auxiliares compartilhadas
 quarantine/          — Scripts e materiais legados/experimentais (não fazem parte do ETL)
 ```
@@ -282,10 +282,10 @@ Relatório HTML interativo de fundamentos cambiais. Arquivo único autocontido �
 ### Como gerar
 
 ```powershell
-uv run python jobs/update_db.py          # atualiza macro_brasil (inclui cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca)
+uv run python jobs/update_db.py          # atualiza macro_brasil (inclui cmb_reservas_bc, cmb_cambio_contratado, cmb_ptax, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca)
 uv run python jobs/update_international.py  # atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
 uv run python -c "from analytics.cambio.generate_report import run; run()"
-# Saída: reports/cambio_latest.html
+# Saída: reports/fx_report.html
 ```
 
 ### Arquitetura do relatório

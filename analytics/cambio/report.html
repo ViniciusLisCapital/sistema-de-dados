@@ -58,7 +58,7 @@
     }
     header .meta strong { color: rgba(255,255,255,0.90); }
 
-    /* ── Nav ── */
+    /* ── Tabs ── */
     nav {
       background: var(--lis-azul);
       border-top: 1px solid rgba(255,255,255,0.08);
@@ -66,19 +66,26 @@
       display: flex;
       overflow-x: auto;
     }
-    nav a {
+    .tab-btn {
       display: block;
       padding: 10px 18px;
       font-size: 12px;
       font-weight: 500;
+      font-family: inherit;
       color: rgba(255,255,255,0.55);
-      text-decoration: none;
+      background: none;
+      border: none;
       border-bottom: 3px solid transparent;
       white-space: nowrap;
+      cursor: pointer;
       transition: color 0.15s, border-color 0.15s;
     }
-    nav a:hover {
+    .tab-btn:hover {
       color: rgba(255,255,255,0.90);
+      border-bottom-color: rgba(255,255,255,0.30);
+    }
+    .tab-btn.active {
+      color: #fff;
       border-bottom-color: var(--lis-dourado);
     }
 
@@ -87,10 +94,15 @@
       max-width: 1440px;
       margin: 0 auto;
       padding: 28px 28px 48px;
-      display: flex;
+    }
+
+    /* ── Tab panels ── */
+    .tab-panel {
+      display: none;
       flex-direction: column;
       gap: 36px;
     }
+    .tab-panel.active { display: flex; }
 
     /* ── Sections ── */
     section { display: flex; flex-direction: column; gap: 14px; }
@@ -102,6 +114,43 @@
       color: var(--lis-azul);
       border-left: 4px solid var(--lis-dourado);
       padding-left: 10px;
+    }
+    section .note {
+      font-size: 12px;
+      color: #8a8f9e;
+      padding-left: 10px;
+    }
+
+    /* ── Period selector (aggregation toggle) ── */
+    .period-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .period-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-right: 2px;
+    }
+    .period-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--lis-azul);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .period-btn:hover { border-color: var(--lis-dourado); }
+    .period-btn.active {
+      background: var(--lis-azul);
+      color: #fff;
+      border-color: var(--lis-azul);
     }
 
     /* ── Chart cards ── */
@@ -120,6 +169,43 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px;
+    }
+
+    .chart-card-tall { height: 820px; }
+
+    /* ── Heatmap controls ── */
+    .heatmap-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .heatmap-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      color: var(--lis-azul);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .heatmap-btn:hover { border-color: var(--lis-dourado); }
+    .heatmap-legend {
+      font-size: 12px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .heatmap-legend .swatch {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border-radius: 2px;
+      vertical-align: middle;
     }
 
     /* ── Footer ── */
@@ -154,42 +240,157 @@
 </header>
 
 <nav>
-  <a href="#sec-juros">Diferenciais de Juros</a>
-  <a href="#sec-reer">REER</a>
-  <a href="#sec-cot">Posicionamento</a>
-  <a href="#sec-fluxos">Fluxos e Fundamentos</a>
+  <button class="tab-btn" data-tab="tab-bop">Balanço de Pagamentos</button>
+  <button class="tab-btn" data-tab="tab-heatmap">Mapa de Calor — BP</button>
+  <button class="tab-btn" data-tab="tab-bcb">Posicionamento do BCB</button>
+  <button class="tab-btn" data-tab="tab-flow">Fluxo Cambial</button>
+  <button class="tab-btn" data-tab="tab-quotation">Cotação</button>
+  <button class="tab-btn" data-tab="tab-valuation">Valuation</button>
 </nav>
 
 <main>
 
-  <section id="sec-juros">
-    <h2>Diferenciais de Juros</h2>
-    <div class="chart-grid-2">
-      <div class="chart-card"><div id="chart-nominal-rates"></div></div>
-      <div class="chart-card"><div id="chart-diferencial-nominal"></div></div>
+  <!-- ══ a) Balanço de Pagamentos ══ -->
+  <div class="tab-panel" id="tab-bop">
+
+    <div class="period-selector" id="bop-period-selector">
+      <span class="period-label">Agregação:</span>
+      <button class="period-btn active" data-period="monthly">Mensal</button>
+      <button class="period-btn" data-period="quarterly">Trimestral</button>
+      <button class="period-btn" data-period="annual">Anual</button>
+      <button class="period-btn" data-period="ttm">12m Acumulado</button>
     </div>
-    <div class="chart-card"><div id="chart-taxas-reais"></div></div>
-  </section>
 
-  <section id="sec-reer">
-    <h2>Taxa de Câmbio Efetiva Real — BIS (2020 = 100)</h2>
-    <div class="chart-card"><div id="chart-reer"></div></div>
-  </section>
+    <section id="sec-bop-current">
+      <h2>Conta Corrente — Composição</h2>
+      <div class="chart-card"><div id="chart-bop-current"></div></div>
+    </section>
 
-  <section id="sec-cot">
-    <h2>Posicionamento Especulativo — CFTC (BRL Futuros CME)</h2>
-    <div class="chart-card"><div id="chart-cot-brl"></div></div>
-  </section>
+    <section id="sec-bop-servicos">
+      <h2>Serviços — Detalhe</h2>
+      <div class="chart-card"><div id="chart-bop-servicos"></div></div>
+    </section>
 
-  <section id="sec-fluxos">
-    <h2>Fluxos e Fundamentos</h2>
-    <div class="chart-grid-2">
-      <div class="chart-card"><div id="chart-reservas"></div></div>
+    <section id="sec-bop-renda">
+      <h2>Renda Primária — Detalhe</h2>
+      <div class="chart-card"><div id="chart-bop-renda"></div></div>
+    </section>
+
+    <section id="sec-bop-financial">
+      <h2>Conta Financeira — Ativos vs Passivos</h2>
+      <div class="chart-card"><div id="chart-bop-financial"></div></div>
+    </section>
+
+    <section id="sec-bop-financiamento">
+      <h2>Financiamento Externo — Passivos</h2>
+      <div class="chart-card"><div id="chart-bop-financiamento"></div></div>
+      <div class="note">Quebra oficial do BCB ("Financiamento Externo") — cross-checada contra balance_payments_breakdown.xlsx, Jan-Mai/2026.</div>
+    </section>
+
+  </div>
+
+  <!-- ══ Mapa de Calor — Balanço de Pagamentos ══ -->
+  <div class="tab-panel" id="tab-heatmap">
+
+    <section id="sec-heatmap">
+      <h2>Balanço de Pagamentos — Z-score Trimestral (janela móvel de 3 anos)</h2>
+      <div class="heatmap-controls">
+        <button class="heatmap-btn" id="heatmap-expand-all">Expandir Tudo</button>
+        <button class="heatmap-btn" id="heatmap-collapse-all">Recolher Tudo</button>
+        <span class="heatmap-legend">
+          <span class="swatch" style="background:#1D4ED8"></span> acima do normal (3a) — inflow/melhora
+          <span class="swatch" style="background:#F5F5F5;border:1px solid #ddd"></span> na média
+          <span class="swatch" style="background:#B91C1C"></span> abaixo do normal (3a) — outflow/piora
+        </span>
+      </div>
+      <div class="chart-card chart-card-tall"><div id="chart-heatmap"></div></div>
+      <div class="note">Clique em uma linha com "▸"/"▾" para expandir/recolher seus componentes. Cor = z-score da própria série contra sua média/desvio móvel de 3 anos (12 trimestres) — não é o valor bruto. As primeiras ~12 colunas de cada série ficam em branco (sem janela de 3 anos completa ainda).</div>
+    </section>
+
+  </div>
+
+  <!-- ══ b) Posicionamento do BCB ══ -->
+  <div class="tab-panel" id="tab-bcb">
+
+    <section id="sec-bcb-reserves">
+      <h2>Reservas Internacionais</h2>
+      <div class="chart-card"><div id="chart-bcb-reserves"></div></div>
+    </section>
+
+    <section id="sec-bcb-swap">
+      <h2>Posição de Câmbio — Swap BCB vs Bancos</h2>
+      <div class="chart-card"><div id="chart-bcb-swap"></div></div>
+    </section>
+
+    <section id="sec-bcb-gold-intervention">
+      <h2>Ouro e Intervenções Cambiais</h2>
+      <div class="chart-grid-2">
+        <div class="chart-card"><div id="chart-bcb-gold"></div></div>
+        <div class="chart-card"><div id="chart-bcb-intervention"></div></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ══ c) Fluxo Cambial ══ -->
+  <div class="tab-panel" id="tab-flow">
+
+    <section id="sec-flow-saldo">
+      <h2>Fluxo Cambial — Saldos</h2>
+      <div class="chart-card"><div id="chart-fluxo"></div></div>
+    </section>
+
+    <section id="sec-flow-breakdown">
+      <h2>Fluxo Cambial — Entradas e Saídas</h2>
+      <div class="chart-card"><div id="chart-fluxo-breakdown"></div></div>
+    </section>
+
+    <section id="sec-flow-interbank">
+      <h2>Volume Interbancário — Liquidação T+1 / T+2</h2>
+      <div class="chart-card"><div id="chart-interbank-vol"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ══ d) Cotação ══ -->
+  <div class="tab-panel" id="tab-quotation">
+
+    <section id="sec-quotation-ptax">
+      <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
+      <div class="chart-card"><div id="chart-ptax"></div></div>
+      <div class="note">Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver CAMBIO.md.</div>
+    </section>
+
+  </div>
+
+  <!-- ══ e) Valuation ══ -->
+  <div class="tab-panel" id="tab-valuation">
+
+    <section id="sec-valuation-juros">
+      <h2>Diferenciais de Juros</h2>
+      <div class="chart-grid-2">
+        <div class="chart-card"><div id="chart-nominal-rates"></div></div>
+        <div class="chart-card"><div id="chart-diferencial-nominal"></div></div>
+      </div>
+      <div class="chart-card"><div id="chart-taxas-reais"></div></div>
+    </section>
+
+    <section id="sec-valuation-reer">
+      <h2>Taxa de Câmbio Efetiva Real — BIS (2020 = 100)</h2>
+      <div class="chart-card"><div id="chart-reer"></div></div>
+    </section>
+
+    <section id="sec-valuation-termos">
+      <h2>Termos de Troca</h2>
       <div class="chart-card"><div id="chart-termos"></div></div>
-    </div>
-    <div class="chart-card"><div id="chart-fluxo"></div></div>
-    <div class="chart-card"><div id="chart-bop"></div></div>
-  </section>
+    </section>
+
+    <section id="sec-valuation-cot">
+      <h2>Posicionamento Especulativo — CFTC (BRL Futuros CME)</h2>
+      <div class="chart-card"><div id="chart-cot-brl"></div></div>
+    </section>
+
+  </div>
 
 </main>
 
@@ -216,6 +417,29 @@ var C = {
   amarelo: '#FBC852',
   cinza:   '#BFBFBF',
 };
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+// Charts created inside a display:none panel render at zero size — after
+// switching tabs we force Plotly to resize every chart in the now-visible
+// panel so it picks up the container's real width.
+
+function activateTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === tabId);
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === tabId);
+  });
+  var panel = document.getElementById(tabId);
+  if (!panel) return;
+  panel.querySelectorAll('.chart-card > div').forEach(function(div) {
+    if (div._fullLayout) { Plotly.Plots.resize(div); }
+  });
+}
+
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { activateTab(btn.dataset.tab); });
+});
 
 // ── Plotly shared config ───────────────────────────────────────────────────────
 // Range selector sits below the x-axis (y < 0) so it never overlaps the title.
@@ -315,7 +539,482 @@ function tLine(x, y, name, color, opts) {
   }, opts || {});
 }
 
-// ── 1a. Selic vs Fed Funds ────────────────────────────────────────────────────
+function negate(arr) {
+  return (arr || []).map(function(v) { return (v === null || v === undefined) ? null : -v; });
+}
+
+// ── a) Balanço de Pagamentos ──────────────────────────────────────────────────
+// As séries desta aba são composições (partes que somam a um total — ver
+// docstring de domain/db/brasil/bcb/cmb_balanco_pagmt.py para as fórmulas
+// validadas). Por isso: barras empilhadas (componentes) + linha (total, cor
+// azul reservada para esse papel), com opção de agregar Mensal/Trimestral/
+// Anual (barras) ou 12m Acumulado (linha, soma móvel — mais legível como
+// tendência contínua do que como barra).
+
+function bucketKey(dateStr, period) {
+  var y = parseInt(dateStr.slice(0, 4), 10);
+  var m = parseInt(dateStr.slice(5, 7), 10); // 1-indexed
+  if (period === 'quarterly') return y + '-Q' + (Math.floor((m - 1) / 3) + 1);
+  if (period === 'annual')    return String(y);
+  return dateStr;
+}
+
+function bucketStartDate(key, period) {
+  if (period === 'quarterly') {
+    var parts = key.split('-Q');
+    var qStartMonth = (parseInt(parts[1], 10) - 1) * 3 + 1;
+    return parts[0] + '-' + String(qStartMonth).padStart(2, '0') + '-01';
+  }
+  if (period === 'annual') return key + '-01-01';
+  return key;
+}
+
+// Soma por período (mensal/trimestral/anual). Se qualquer mês do bucket for
+// null, o bucket inteiro vira null — evita subestimar silenciosamente.
+function aggregateSum(dates, values, period) {
+  if (period === 'monthly') return { dates: dates, values: values };
+  var order = [], buckets = {};
+  dates.forEach(function(dt, i) {
+    var key = bucketKey(dt, period);
+    if (!(key in buckets)) { buckets[key] = { sum: 0, hasNull: false }; order.push(key); }
+    var v = (values || [])[i];
+    if (v === null || v === undefined) buckets[key].hasNull = true;
+    else buckets[key].sum += v;
+  });
+  return {
+    dates:  order.map(function(k) { return bucketStartDate(k, period); }),
+    values: order.map(function(k) { return buckets[k].hasNull ? null : buckets[k].sum; }),
+  };
+}
+
+// Soma móvel de 12 meses (janela completa; qualquer null na janela -> null).
+function rollingSum12(dates, values) {
+  var out = new Array(dates.length).fill(null);
+  for (var i = 11; i < dates.length; i++) {
+    var sum = 0, ok = true;
+    for (var j = i - 11; j <= i; j++) {
+      var v = (values || [])[j];
+      if (v === null || v === undefined) { ok = false; break; }
+      sum += v;
+    }
+    out[i] = ok ? sum : null;
+  }
+  return { dates: dates, values: out };
+}
+
+// Renderiza um chart de composição: barras empilhadas por componente +
+// (opcional) linha do total. `total` pode ser null quando os componentes não
+// somam de forma simples ao total (ver chart-bop-financial).
+function renderComposition(divId, dates, components, total, period, title) {
+  var traces = [];
+  if (period === 'ttm') {
+    components.forEach(function(c) {
+      var agg = rollingSum12(dates, c.values);
+      traces.push(tLine(agg.dates, agg.values, c.name, c.color, {}));
+    });
+    if (total) {
+      var aggT = rollingSum12(dates, total.values);
+      traces.push(tLine(aggT.dates, aggT.values, total.name, C.azul, { line: { color: C.azul, width: 2.5 } }));
+    }
+  } else {
+    components.forEach(function(c) {
+      var agg = aggregateSum(dates, c.values, period);
+      traces.push({ x: agg.dates, y: agg.values, type: 'bar', name: c.name, marker: { color: c.color } });
+    });
+    if (total) {
+      var aggT = aggregateSum(dates, total.values, period);
+      traces.push(tLine(aggT.dates, aggT.values, total.name, C.azul, { line: { color: C.azul, width: 2.5 } }));
+    }
+  }
+  Plotly.newPlot(divId, traces, mkLayout(title, {
+    barmode: period === 'ttm' ? undefined : 'relative',
+    yaxis:   { zeroline: true },
+  }), CONFIG);
+}
+
+function renderBopCharts(period) {
+  var d = REPORT_DATA.bop;
+  if (!d || !d.dates) return;
+  var suffix = { monthly: '(USD mi, mensal)', quarterly: '(USD mi, trimestral)', annual: '(USD mi, anual)', ttm: '(USD mi, 12m acumulado)' }[period];
+
+  renderComposition('chart-bop-current', d.dates, [
+    { name: 'Balança Comercial+Serviços', color: C.verde,   values: d.balanca_comercial_servicos },
+    { name: 'Renda Primária',             color: C.laranja, values: d.renda_primaria },
+    { name: 'Renda Secundária',           color: C.azulCl,  values: d.renda_secundaria },
+  ], { name: 'Conta Corrente (Total)', values: d.conta_corrente }, period, 'Conta Corrente — Composição ' + suffix);
+
+  renderComposition('chart-bop-servicos', d.dates, [
+    { name: 'Viagens',                   color: C.verde,   values: d.viagens },
+    { name: 'Transportes',               color: C.azulCl,  values: d.transportes },
+    { name: 'Aluguel de Equipamentos',   color: C.laranja, values: d.aluguel_equipamentos },
+    { name: 'Demais Serviços',           color: C.cinza,   values: d.demais_servicos },
+  ], { name: 'Serviços (Total)', values: d.servicos }, period, 'Serviços — Detalhe ' + suffix);
+
+  renderComposition('chart-bop-renda', d.dates, [
+    { name: 'Remuneração de Empregados', color: C.verde,   values: d.remuneracao_empregados },
+    { name: 'Juros',                     color: C.azulCl,  values: d.juros },
+    { name: 'Lucros e Dividendos',       color: C.laranja, values: d.lucros_dividendos },
+  ], { name: 'Renda Primária (Total)', values: d.renda_primaria }, period, 'Renda Primária — Detalhe ' + suffix);
+
+  // Sem linha de total: conta_financeira = ativos - passivos + derivativos + reserva
+  // (passivos entra com sinal invertido na identidade) — uma barra empilhada
+  // simples destas 4 séries não soma ao total, então mostramos só os 4 fluxos.
+  renderComposition('chart-bop-financial', d.dates, [
+    { name: 'Investimentos — Ativos',    color: C.verde,   values: d.investimentos_ativos },
+    { name: 'Investimentos — Passivos',  color: C.azulCl,  values: d.investimentos_passivos },
+    { name: 'Derivativos',               color: C.laranja, values: d.derivativos },
+    { name: 'Ativos de Reserva',         color: C.amarelo, values: d.ativos_reserva },
+  ], null, period, 'Conta Financeira — Ativos vs Passivos ' + suffix);
+
+  renderComposition('chart-bop-financiamento', d.dates, [
+    { name: 'Investimento Direto no País',        color: C.dourado, values: d.investimento_direto_liquido },
+    { name: 'Ações Totais',                       color: C.verde,   values: d.acoes_totais },
+    { name: 'Títulos — Mercado Doméstico',        color: C.azulCl,  values: d.titulos_dom },
+    { name: 'Empréstimos/Títulos LP Externo',     color: C.laranja, values: d.emprestimos_titulos_lp_externo },
+    { name: 'Empréstimos/Títulos CP Externo',     color: C.amarelo, values: d.emprestimos_titulos_cp_externo },
+    { name: 'Demais Passivos',                    color: C.cinza,   values: d.demais_passivos },
+  ], { name: 'Investimentos — Passivos (Total)', values: d.investimentos_passivos }, period, 'Financiamento Externo — Passivos ' + suffix);
+}
+
+document.querySelectorAll('#bop-period-selector .period-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#bop-period-selector .period-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderBopCharts(btn.dataset.period);
+  });
+});
+
+renderBopCharts('monthly');
+
+// ── Mapa de Calor — Balanço de Pagamentos ─────────────────────────────────────
+// Hierarquia de 3 níveis espelhando os agregados validados em
+// cmb_balanco_pagmt.py. Cada nó tem um `get(d)` que extrai/deriva sua série
+// mensal a partir de REPORT_DATA.bop; a agregação trimestral reaproveita
+// aggregateSum() (já usada na aba BOP) e o z-score é calculado por linha
+// contra a própria janela móvel de 3 anos (12 trimestres) daquela série —
+// não é uma cor fixa por sinal bruto (ver CAMBIO.md para a justificativa).
+
+function subtractArrays(a, b) {
+  return (a || []).map(function(v, i) {
+    var bv = (b || [])[i];
+    if (v === null || v === undefined || bv === null || bv === undefined) return null;
+    return v - bv;
+  });
+}
+
+var BOP_TREE = [
+  {
+    key: 'conta_corrente', label: 'Conta Corrente',
+    get: function(d) { return d.conta_corrente; },
+    children: [
+      {
+        key: 'balanca_bens_servicos', label: 'Balança Comercial+Serviços',
+        get: function(d) { return d.balanca_comercial_servicos; },
+        children: [
+          {
+            key: 'balanca_bens', label: 'Balança de Bens',
+            get: function(d) { return subtractArrays(d.exportacao_bens, d.importacao_bens); },
+            children: [
+              { key: 'exportacao_bens', label: 'Exportação de Bens', get: function(d) { return d.exportacao_bens; } },
+              { key: 'importacao_bens', label: 'Importação de Bens (saída)', get: function(d) { return negate(d.importacao_bens); } },
+            ],
+          },
+          {
+            key: 'servicos', label: 'Serviços',
+            get: function(d) { return d.servicos; },
+            children: [
+              { key: 'viagens',              label: 'Viagens',                  get: function(d) { return d.viagens; } },
+              { key: 'transportes',          label: 'Transportes',              get: function(d) { return d.transportes; } },
+              { key: 'aluguel_equipamentos', label: 'Aluguel de Equipamentos',  get: function(d) { return d.aluguel_equipamentos; } },
+              { key: 'demais_servicos',      label: 'Demais Serviços',         get: function(d) { return d.demais_servicos; } },
+            ],
+          },
+        ],
+      },
+      {
+        key: 'renda_primaria', label: 'Renda Primária',
+        get: function(d) { return d.renda_primaria; },
+        children: [
+          { key: 'remuneracao_empregados', label: 'Remuneração de Empregados', get: function(d) { return d.remuneracao_empregados; } },
+          { key: 'juros',                   label: 'Juros',                     get: function(d) { return d.juros; } },
+          { key: 'lucros_dividendos',       label: 'Lucros e Dividendos',       get: function(d) { return d.lucros_dividendos; } },
+        ],
+      },
+      { key: 'renda_secundaria', label: 'Renda Secundária', get: function(d) { return d.renda_secundaria; } },
+    ],
+  },
+  { key: 'conta_capital', label: 'Conta Capital', get: function(d) { return d.conta_capital; } },
+  {
+    key: 'conta_financeira', label: 'Conta Financeira',
+    get: function(d) { return d.conta_financeira; },
+    children: [
+      {
+        key: 'investimentos_ativos', label: 'Investimentos — Ativos',
+        get: function(d) { return d.investimentos_ativos; },
+        children: [
+          { key: 'idp_exterior',       label: 'Invest. Direto no Exterior',       get: function(d) { return d.idp_exterior; } },
+          { key: 'portfolio_ativos',   label: 'Invest. em Carteira — Ativos',     get: function(d) { return d.portfolio_ativos; } },
+          { key: 'outros_inv_ativos',  label: 'Outros Investimentos — Ativos',    get: function(d) { return d.outros_inv_ativos; } },
+        ],
+      },
+      {
+        key: 'investimentos_passivos', label: 'Investimentos — Passivos',
+        get: function(d) { return d.investimentos_passivos; },
+        children: [
+          { key: 'investimento_direto_liquido',       label: 'Invest. Direto no País',    get: function(d) { return d.investimento_direto_liquido; } },
+          { key: 'acoes_totais',                       label: 'Ações Totais',              get: function(d) { return d.acoes_totais; } },
+          { key: 'titulos_dom',                         label: 'Títulos — Mercado Doméstico', get: function(d) { return d.titulos_dom; } },
+          { key: 'emprestimos_titulos_lp_externo',      label: 'Empr./Tít. LP Externo',     get: function(d) { return d.emprestimos_titulos_lp_externo; } },
+          { key: 'emprestimos_titulos_cp_externo',      label: 'Empr./Tít. CP Externo',     get: function(d) { return d.emprestimos_titulos_cp_externo; } },
+          { key: 'demais_passivos',                     label: 'Demais Passivos',            get: function(d) { return d.demais_passivos; } },
+        ],
+      },
+      { key: 'derivativos',    label: 'Derivativos',       get: function(d) { return d.derivativos; } },
+      { key: 'ativos_reserva', label: 'Ativos de Reserva', get: function(d) { return d.ativos_reserva; } },
+    ],
+  },
+  { key: 'erros_omissoes', label: 'Erros e Omissões', get: function(d) { return d.erros_omissoes; } },
+];
+
+// Z-score móvel: janela de `window` trimestres TERMINANDO no ponto atual
+// (inclusive). Requer a janela cheia sem nulls; caso contrário, null.
+function rollingZScore(values, window) {
+  var out = new Array(values.length).fill(null);
+  for (var i = window - 1; i < values.length; i++) {
+    var slice = values.slice(i - window + 1, i + 1);
+    if (slice.some(function(v) { return v === null || v === undefined; })) continue;
+    var n = slice.length;
+    var mean = slice.reduce(function(a, b) { return a + b; }, 0) / n;
+    var variance = slice.reduce(function(a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
+    var std = Math.sqrt(variance);
+    out[i] = std === 0 ? 0 : (values[i] - mean) / std;
+  }
+  return out;
+}
+
+var heatmapExpanded = new Set();
+
+function flattenVisibleRows(tree, expanded, depth) {
+  depth = depth || 0;
+  var rows = [];
+  tree.forEach(function(node) {
+    rows.push({ node: node, depth: depth });
+    if (node.children && expanded.has(node.key)) {
+      rows = rows.concat(flattenVisibleRows(node.children, expanded, depth + 1));
+    }
+  });
+  return rows;
+}
+
+function collectParentKeys(tree) {
+  var keys = [];
+  tree.forEach(function(node) {
+    if (node.children) {
+      keys.push(node.key);
+      keys = keys.concat(collectParentKeys(node.children));
+    }
+  });
+  return keys;
+}
+
+function rowLabel(node, depth) {
+  var indent = '    '.repeat(depth);
+  var icon = node.children ? (heatmapExpanded.has(node.key) ? '▾ ' : '▸ ') : '  ';
+  return indent + icon + node.label;
+}
+
+function renderHeatmap() {
+  var d = REPORT_DATA.bop;
+  if (!d || !d.dates) return;
+
+  var visibleRows = flattenVisibleRows(BOP_TREE, heatmapExpanded);
+  var labelToNode = {};
+  var yLabels = visibleRows.map(function(r) {
+    var label = rowLabel(r.node, r.depth);
+    labelToNode[label] = r.node;
+    return label;
+  });
+
+  var qDates = null;
+  var zMatrix = [], textMatrix = [];
+  visibleRows.forEach(function(r) {
+    var monthly = r.node.get(d) || [];
+    var agg = aggregateSum(d.dates, monthly, 'quarterly');
+    if (!qDates) qDates = agg.dates;
+    var z = rollingZScore(agg.values, 12);
+    zMatrix.push(z);
+    textMatrix.push(agg.values.map(function(v) { return v === null || v === undefined ? '—' : v.toFixed(1); }));
+  });
+
+  var maxLabelLen = yLabels.reduce(function(m, l) { return Math.max(m, l.length); }, 0);
+
+  var trace = {
+    type: 'heatmap',
+    x: qDates || [],
+    y: yLabels,
+    z: zMatrix,
+    text: textMatrix,
+    colorscale: [[0, '#B91C1C'], [0.5, '#F5F5F5'], [1, '#1D4ED8']],
+    zmin: -3, zmax: 3,
+    xgap: 1, ygap: 2,
+    hovertemplate: '%{y}<br>%{x}<br>Valor: %{text} USD mi<br>Z-score (3a): %{z:.2f}<extra></extra>',
+    hoverlabel: { bgcolor: '#fff', bordercolor: '#dde1e9', font: { size: 12 } },
+    colorbar: { title: { text: 'Z-score', side: 'right' }, thickness: 14, len: 0.9 },
+  };
+
+  var layout = mkLayout('Balanço de Pagamentos — Z-score Trimestral (3a móvel)', {
+    yaxis: {
+      autorange: 'reversed',
+      tickfont: { size: 11 },
+      automargin: true,
+    },
+    xaxis: { rangeslider: { visible: false } },
+    margin: { t: 44, r: 90, b: 100, l: Math.min(260, 20 + maxLabelLen * 6) },
+  });
+
+  Plotly.newPlot('chart-heatmap', [trace], layout, CONFIG).then(function(gd) {
+    gd.on('plotly_click', function(evt) {
+      if (!evt || !evt.points || !evt.points.length) return;
+      var node = labelToNode[evt.points[0].y];
+      if (!node || !node.children) return;
+      if (heatmapExpanded.has(node.key)) heatmapExpanded.delete(node.key);
+      else heatmapExpanded.add(node.key);
+      renderHeatmap();
+    });
+  });
+}
+
+document.getElementById('heatmap-expand-all').addEventListener('click', function() {
+  heatmapExpanded = new Set(collectParentKeys(BOP_TREE));
+  renderHeatmap();
+});
+document.getElementById('heatmap-collapse-all').addEventListener('click', function() {
+  heatmapExpanded = new Set();
+  renderHeatmap();
+});
+
+renderHeatmap();
+
+// ── b) Posicionamento do BCB ──────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.bcb_positioning && REPORT_DATA.bcb_positioning.reserves;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-bcb-reserves', [
+    tLine(d.dates, d.reserves_liquidity_daily, 'Reservas — Liquidez (diária)', C.verde,
+      { line: { color: C.verde, width: 2.5 } }),
+    tLine(d.dates, d.reserves_total_monthly,   'Reservas — Total (mensal)',    C.dourado,
+      { line: { color: C.dourado, width: 1.8, dash: 'dot' }, connectgaps: true }),
+  ],
+  mkLayout('Reservas Internacionais (USD mi)', {
+    yaxis: { zeroline: false },
+  }), CONFIG);
+})();
+
+(function() {
+  var d = REPORT_DATA.bcb_positioning && REPORT_DATA.bcb_positioning.swap;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-bcb-swap', [
+    tLine(d.dates, d.bcb_swap_cambial_position, 'Swap Cambial BCB (posição líq.)', C.dourado,
+      { line: { color: C.dourado, width: 2.5 }, connectgaps: true }),
+    tLine(d.dates, d.bank_fx_spot_position,     'Posição de Câmbio — Bancos',      C.azulCl,
+      { connectgaps: true }),
+  ],
+  mkLayout('Swap Cambial BCB vs Posição dos Bancos (USD mi)', {
+    yaxis: { zeroline: true },
+  }), CONFIG);
+})();
+
+(function() {
+  var d = REPORT_DATA.bcb_positioning && REPORT_DATA.bcb_positioning.gold;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-bcb-gold', [
+    Object.assign(
+      tLine(d.dates, d.reserves_gold_usd, 'Reservas em Ouro', C.amarelo,
+        { line: { color: C.amarelo, width: 2.5 } }),
+      { fill: 'tozeroy', fillcolor: 'rgba(251,200,82,0.12)' }
+    ),
+  ],
+  mkLayout('Reservas em Ouro (USD mi)', {
+    yaxis: { zeroline: false },
+  }), CONFIG);
+})();
+
+(function() {
+  var d = REPORT_DATA.bcb_positioning && REPORT_DATA.bcb_positioning.interventions;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-bcb-intervention', [
+    { x: d.dates, y: d.bcb_intervention_spot,         type: 'bar', name: 'Spot',            marker: { color: C.verde   } },
+    { x: d.dates, y: d.bcb_intervention_forwards,     type: 'bar', name: 'Forwards',         marker: { color: C.laranja } },
+    { x: d.dates, y: d.bcb_intervention_fx_loans_repos, type: 'bar', name: 'FX Loans/Repos', marker: { color: C.azulCl  } },
+    { x: d.dates, y: d.bcb_intervention_repo_lines,   type: 'bar', name: 'Repo Lines',       marker: { color: C.dourado } },
+  ],
+  mkLayout('Intervenções Cambiais BCB — Líquidas (USD mi)', {
+    barmode: 'relative',
+    yaxis:   { zeroline: true },
+  }), CONFIG);
+})();
+
+// ── c) Fluxo Cambial ──────────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.fluxo;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-fluxo', [
+    tLine(d.dates, d.total_saldo,      'Saldo Total',      C.dourado,
+      { line: { color: C.dourado, width: 2.5 } }),
+    tLine(d.dates, d.comercial_saldo,  'Saldo Comercial',  C.verde,  {}),
+    tLine(d.dates, d.financeiro_saldo, 'Saldo Financeiro', C.azulCl, {}),
+  ],
+  mkLayout('Fluxo Cambial — Saldos por Segmento (USD mi)', {
+    yaxis: { zeroline: true },
+  }), CONFIG);
+})();
+
+(function() {
+  var d = REPORT_DATA.fluxo;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-fluxo-breakdown', [
+    { x: d.dates, y: d.total_entrada,          type: 'bar', name: 'Total — Entrada',     marker: { color: C.verde   } },
+    { x: d.dates, y: negate(d.total_saida),     type: 'bar', name: 'Total — Saída',       marker: { color: C.laranja } },
+    { x: d.dates, y: d.comercial_entrada,       type: 'bar', name: 'Comercial — Entrada', marker: { color: C.azulCl  }, visible: 'legendonly' },
+    { x: d.dates, y: negate(d.comercial_saida), type: 'bar', name: 'Comercial — Saída',   marker: { color: C.dourado }, visible: 'legendonly' },
+  ],
+  mkLayout('Fluxo Cambial — Entradas (+) e Saídas (−) (USD mi)', {
+    barmode: 'relative',
+    yaxis:   { zeroline: true },
+  }), CONFIG);
+})();
+
+(function() {
+  var d = REPORT_DATA.ptax;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-interbank-vol', [
+    { x: d.dates, y: d.vol_t1, type: 'bar', name: 'Volume T+1', marker: { color: C.verde   } },
+    { x: d.dates, y: d.vol_t2, type: 'bar', name: 'Volume T+2', marker: { color: C.azulCl  } },
+  ],
+  mkLayout('Volume Interbancário de Câmbio — Liquidação T+1 / T+2 (USD)', {
+    barmode: 'stack',
+    yaxis:   { zeroline: true },
+  }), CONFIG);
+})();
+
+// ── d) Cotação ────────────────────────────────────────────────────────────────
+
+(function() {
+  var d = REPORT_DATA.ptax;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-ptax', [
+    tLine(d.dates, d.ptax_venda, 'PTAX (venda)', C.azul, {
+      line: { color: C.azul, width: 2.5 },
+    }),
+  ],
+  mkLayout('PTAX — Câmbio à Vista (BRL/USD)', {
+    yaxis: { title: { text: 'BRL/USD', standoff: 8 }, zeroline: false },
+  }), CONFIG);
+})();
+
+// ── e) Valuation ──────────────────────────────────────────────────────────────
 
 (function() {
   var d = REPORT_DATA.diferenciais;
@@ -328,8 +1027,6 @@ function tLine(x, y, name, color, opts) {
     yaxis: { ticksuffix: '%', zeroline: false },
   }), CONFIG);
 })();
-
-// ── 1b. Diferencial Nominal ───────────────────────────────────────────────────
 
 (function() {
   var d = REPORT_DATA.diferenciais;
@@ -345,8 +1042,6 @@ function tLine(x, y, name, color, opts) {
   }), CONFIG);
 })();
 
-// ── 1c. Taxas Reais ex-post ───────────────────────────────────────────────────
-
 (function() {
   var d = REPORT_DATA.diferenciais;
   if (!d || !d.dates) return;
@@ -360,8 +1055,6 @@ function tLine(x, y, name, color, opts) {
     yaxis: { ticksuffix: '%', zeroline: true },
   }), CONFIG);
 })();
-
-// ── 2. REER ───────────────────────────────────────────────────────────────────
 
 (function() {
   var d = REPORT_DATA.reer;
@@ -388,7 +1081,16 @@ function tLine(x, y, name, color, opts) {
   }), CONFIG);
 })();
 
-// ── 3. COT BRL ────────────────────────────────────────────────────────────────
+(function() {
+  var d = REPORT_DATA.termos;
+  if (!d || !d.dates) return;
+  Plotly.newPlot('chart-termos', [
+    tLine(d.dates, d.termos_de_troca_funcex, 'Termos de Troca (Funcex, 2018=100)', C.verde, {}),
+  ],
+  mkLayout('Termos de Troca (Funcex / IPEADATA)', {
+    yaxis: { zeroline: false },
+  }), CONFIG);
+})();
 
 (function() {
   var d = REPORT_DATA.cot_fx;
@@ -420,69 +1122,9 @@ function tLine(x, y, name, color, opts) {
   }), CONFIG);
 })();
 
-// ── 4a. Reservas Internacionais ───────────────────────────────────────────────
+// ── Default tab ───────────────────────────────────────────────────────────────
 
-(function() {
-  var d = REPORT_DATA.reservas;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-reservas', [
-    Object.assign(
-      tLine(d.dates, d.reservas_liquidez_usd, 'Reservas (Liquidez)', C.verde,
-        { line: { color: C.verde, width: 2.5 } }),
-      { fill: 'tozeroy', fillcolor: 'rgba(65,135,145,0.08)' }
-    ),
-  ],
-  mkLayout('Reservas Internacionais — Conceito Liquidez (USD mi)', {
-    yaxis: { zeroline: false },
-  }), CONFIG);
-})();
-
-// ── 4b. Termos de Troca ───────────────────────────────────────────────────────
-
-(function() {
-  var d = REPORT_DATA.termos;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-termos', [
-    tLine(d.dates, d.termos_de_troca_a, 'Série A (SGS 22099)', C.verde,   {}),
-    tLine(d.dates, d.termos_de_troca_b, 'Série B (SGS 22100)', C.dourado, {}),
-  ],
-  mkLayout('Termos de Troca (BCB SGS)', {
-    yaxis: { zeroline: false },
-  }), CONFIG);
-})();
-
-// ── 4c. Fluxo Cambial ─────────────────────────────────────────────────────────
-
-(function() {
-  var d = REPORT_DATA.fluxo;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-fluxo', [
-    tLine(d.dates, d.total_saldo,      'Saldo Total',      C.dourado,
-      { line: { color: C.dourado, width: 2.5 } }),
-    tLine(d.dates, d.comercial_saldo,  'Saldo Comercial',  C.verde,  {}),
-    tLine(d.dates, d.financeiro_saldo, 'Saldo Financeiro', C.azulCl, {}),
-  ],
-  mkLayout('Fluxo Cambial — Saldos por Segmento (USD mi)', {
-    yaxis: { zeroline: true },
-  }), CONFIG);
-})();
-
-// ── 4d. Balanço de Pagamentos ─────────────────────────────────────────────────
-
-(function() {
-  var d = REPORT_DATA.bop;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-bop', [
-    tLine(d.dates, d.conta_corrente,              'Conta Corrente',    C.verde,   {}),
-    tLine(d.dates, d.investimento_direto_liquido,  'IDP Líquido',      C.dourado, {}),
-    tLine(d.dates, d.conta_financeira,             'Conta Financeira', C.azulCl,  {}),
-    tLine(d.dates, d.investimento_carteira,         'Inv. Carteira',   C.laranja,
-      { line: { color: C.laranja, width: 1.5, dash: 'dot' } }),
-  ],
-  mkLayout('Balanço de Pagamentos (USD mi)', {
-    yaxis: { zeroline: true },
-  }), CONFIG);
-})();
+activateTab('tab-bop');
 
 </script>
 </body>

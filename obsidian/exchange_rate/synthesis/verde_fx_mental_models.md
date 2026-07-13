@@ -924,3 +924,5 @@ Ao analisar o BRL, a Verde efetivamente percorre:
 - [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — Verde trata subvalorização GSDEER como piso estrutural; cético em relação à convergência sem catalisador de carry
 - [[Goldman 2023 - GSDEER A User's Manual]] — convergência lenta ao fair value consistente com a visão Verde de que carry, não valor, dirige o BRL no curto prazo
 - [[Itaú 2025 - Fiscal Dominance in Brazil]] — framework teórico por trás das seções de credibilidade fiscal das cartas Verde
+- [[kinea_fx_mental_models]] — mesmo gênero de documento (mental model de câmbio de gestora macro brasileira), construído de forma independente
+- [[kapitalo_fx_mental_models]] — terceiro documento da mesma família (mental models de câmbio por gestora); Kapitalo é multi-ativo global e telegráfica, Verde e Kinea são Brasil-cêntricas e mais discursivas
