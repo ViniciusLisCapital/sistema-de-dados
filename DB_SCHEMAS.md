@@ -90,7 +90,7 @@ seguida na prática antes mesmo de ser formalmente abandonada.
   `domain/db/international/fred/diferenciais_juros.py` (`_DATABASE = "macro_international"`)
 - `jobs/update_analytics.py` removido; `diferenciais_juros` passou a rodar dentro de
   `jobs/update_international.py`
-- `analytics/cambio/generate_report.py` atualizado para ler `diferenciais_juros` de
+- `analytics/exchange_rate/generate_report.py` atualizado para ler `diferenciais_juros` de
   `macro_international`
 
 **Julho 2026 — prefixo de tema (1ª rodada).** Depois de decidir o schema por
@@ -101,7 +101,7 @@ de cada schema. Adotado o prefixo por tema macro, por extenso (`atividade_`,
 (sem impacto em dados/colunas), scripts/arquivos renomeados para espelhar (ex.:
 `ibge/pnad.py` → `ibge/mt_pnad.py`), e todos os consumidores (`jobs/update_db.py`,
 `jobs/update_international.py`, `analytics/oraculo/brasil/scores.py`,
-`analytics/cambio/generate_report.py`, `analytics/inflation/generate_report.py`)
+`analytics/exchange_rate/generate_report.py`, `analytics/inflation/generate_report.py`)
 atualizados para os novos nomes.
 
 **Julho 2026 — prefixo abreviado (2ª rodada, `macro_brasil` apenas).** O usuário

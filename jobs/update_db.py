@@ -27,13 +27,16 @@ from domain.db.brasil.ibge import (
 
 # BCB
 from domain.db.brasil.bcb import (
-    atv_ibcbr, mt_caged, cred_credito_amplo, cred_credito_familias, expc_focus,
+    atv_ibcbr, atv_pib_usd, mt_caged, cred_credito_amplo, cred_credito_familias, expc_focus,
     inflc_agregados, cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt,
     cmb_fluxo_cambial, cmb_ptax,
 )
 
 # IPEA
 from domain.db.brasil.ipea import cmb_termos_troca
+
+# MDIC
+from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_comex_produto
 
 # ---------------------------------------------------------------------------
 # Scripts e parametros de atualizacao rotineira
@@ -55,6 +58,7 @@ _SCRIPTS = [
     ("IBGE · IPCA Dimensao",           inflc_dim,             {}),
     # BCB
     ("BCB  · IBC-Br",                  atv_ibcbr,             {}),
+    ("BCB  · PIB Mensal (USD)",        atv_pib_usd,           {}),
     ("BCB  · IPCA Agregados",          inflc_agregados,       {}),
     ("BCB  · CAGED",                   mt_caged,              {}),
     ("BCB  · Credito",                 cred_credito_amplo,    {}),
@@ -66,6 +70,9 @@ _SCRIPTS = [
     ("BCB  · Cambio Contratado",       cmb_cambio_contratado, {}),
     ("BCB  · PTAX + Volume Interbanc.", cmb_ptax,              {}),
     ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
+    ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
+    ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),
+    ("MDIC · Comex Stat (produto)",     cmb_comex_produto,     {}),
 ]
 
 

@@ -143,4 +143,27 @@ Directly relevant to how much genuine autonomy BCB has given global (mainly Fed)
 
 ## Status
 
-No sources acquired yet, in either the literature clusters (1-7) or the COPOM primary-source track (8). This file is the pre-acquisition candidate list; once processing begins, create `monetary_policy_conceptual_map.md` (Sources table + `#cluster` concept bullets, one source processed at a time) and demote acquired/processed rows out of this file into that map, following the same lifecycle as `exchange_rate_bibliography_gaps.md` → `exchange_rate_conceptual_map.md`. §8's retention window and ingestion mechanism still need to be decided before any COPOM acquisition work starts.
+**26 of 31 sources acquired into `agent_bibliography/monetary_policy/`** (as of 2026-07-13), none processed into a conceptual map yet. All standalone papers/working papers are done — everything remaining is either a book (needs manual chapter selection, not a straight download) or paywalled with no free copy found.
+
+Acquired, by cluster:
+- **Friedman (1968)** — `the_role_monetary_policy (Friedman, 1968).pdf` (acquired prior to this batch, 2026-07-06)
+- **Cluster 1**: Kydland & Prescott (1977), Barro & Gordon (1983), Taylor (1993), Walsh (1995) — `time_inconsistency_optimal_plans`, `positive_theory_monetary_policy`, `taylor_rule`, `optimal_contracts_central_bankers`
+- **Cluster 2**: Calvo (1983), Clarida-Galí-Gertler (1999), Galí & Monacelli (2005) — `staggered_prices`, `science_of_monetary_policy`, `nk_small_open_economy`
+- **Cluster 3**: Svensson (1997), Mishkin (2000) — `inflation_forecast_targeting`, `inflation_targeting_em`
+- **Cluster 4**: Bernanke & Blinder (1988), Bernanke & Gertler (1995), Bernanke-Gertler-Gilchrist (1999) — `credit_money_aggregate_demand`, `credit_channel_transmission`, `financial_accelerator`
+- **Cluster 5**: Krugman (1998), Eggertsson & Woodford (2003), Bernanke-Reinhart-Sack (2004), Gertler & Karadi (2011) — `liquidity_trap_japan`, `zero_bound_optimal_policy`, `zero_bound_alternatives`, `unconventional_policy_model`
+- **Cluster 6**: Rey (2013), Miranda-Agrippino & Rey (2020), Obstfeld (2015) — `dilemma_not_trilemma`, `us_monetary_policy_global_cycle`, `trilemma_tradeoffs`
+- **Cluster 7**: Bogdanski/Tombini/Werlang (2000), Minella et al. (2002), Minella et al. (2003), Blanchard (2004), Favero & Giavazzi (2004), Muinhos & Nakane (2006) — `implementing_it_brazil`, `it_lessons_and_challenges`, `it_credibility_fx_volatility`, `fiscal_dominance_it_brazil`, `it_and_debt_brazil`, `neutral_rate_brazil`
+
+All sourced from free/ungated copies (Stanford, NBER, Brookings, BIS, Fed Board, BCB working paper series, author personal pages) and content-verified against each paper's actual opening text/title page before being kept — not just "a PDF downloaded." Two extraction quirks to know about before processing:
+- **Clarida-Galí-Gertler (1999)** — text layer is Caesar-shift-encoded (font-encoding artifact of the source site, not a wrong file; verified by decoding the opening line). Won't extract cleanly with plain `pdftotext`.
+- **Walsh (1995) and Bernanke-Gertler-Gilchrist (1999)** — both are scanned/image-only PDFs with no text layer at all (confirmed via embedded `/Image` object counts, not corruption). Processing these will need actual reading/OCR, not `grep`/`pdftotext`.
+
+**Not acquired — logged here, not silently dropped:**
+- **Rogoff (1985)**, "The Optimal Degree of Commitment to an Intermediate Monetary Target," *QJE* — no free/ungated copy found (checked Rogoff's Harvard page, Fed IFDP reprint, SSRN, ResearchGate — all paywalled or dead). Needs institutional/JSTOR access or purchase.
+- **Cukierman (1992)**, *Central Bank Strategy, Credibility, and Independence* — book, not attempted this pass.
+- **Woodford (2003)**, *Interest and Prices* — book, not attempted this pass.
+- **Galí (2015)**, *Monetary Policy, Inflation, and the Business Cycle* — book, not attempted this pass.
+- **Bernanke, Laubach, Mishkin & Posen (1999)**, *Inflation Targeting: Lessons from the International Experience* — book, not attempted this pass.
+
+The four books need the specific-chapter identification step (per `BIBLIOGRAPHY_METHODOLOGY.md` §b) before acquisition, rather than a straight download — a separate pass from this one. This file is the pre-acquisition candidate list; once processing begins, create `monetary_policy_conceptual_map.md` (Sources table + `#cluster` concept bullets, one source processed at a time) and demote acquired/processed rows out of this file into that map, following the same lifecycle as `exchange_rate_bibliography_gaps.md` → `exchange_rate_conceptual_map.md`. §8's retention window and ingestion mechanism still need to be decided before any COPOM acquisition work starts.

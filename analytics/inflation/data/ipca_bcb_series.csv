@@ -11760,6 +11760,7 @@
 2026-03,IPCA_nucleo_EX03,0.39
 2026-04,IPCA_nucleo_EX03,0.63
 2026-05,IPCA_nucleo_EX03,0.58
+2026-06,IPCA_nucleo_EX03,0.22
 2000-01,IPCA_nucleo_EX03_industriais,0.49
 2000-02,IPCA_nucleo_EX03_industriais,0.19
 2000-03,IPCA_nucleo_EX03_industriais,-0.06
@@ -12077,6 +12078,7 @@
 2026-03,IPCA_nucleo_EX03_industriais,0.26
 2026-04,IPCA_nucleo_EX03_industriais,0.78
 2026-05,IPCA_nucleo_EX03_industriais,0.84
+2026-06,IPCA_nucleo_EX03_industriais,0.22
 2000-01,IPCA_nucleo_EX03_industriais_ma3_sa,
 2000-02,IPCA_nucleo_EX03_industriais_ma3_sa,
 2000-03,IPCA_nucleo_EX03_industriais_ma3_sa,0.29476079420245693
@@ -12394,6 +12396,7 @@
 2026-03,IPCA_nucleo_EX03_industriais_ma3_sa,0.4614274608691236
 2026-04,IPCA_nucleo_EX03_industriais_ma3_sa,0.4590358677370709
 2026-05,IPCA_nucleo_EX03_industriais_ma3_sa,0.5334858834438853
+2026-06,IPCA_nucleo_EX03_industriais_ma3_sa,0.5118561674649066
 2000-01,IPCA_nucleo_EX03_ma3_sa,
 2000-02,IPCA_nucleo_EX03_ma3_sa,
 2000-03,IPCA_nucleo_EX03_ma3_sa,0.1723482965281461
@@ -12711,6 +12714,7 @@
 2026-03,IPCA_nucleo_EX03_ma3_sa,0.47901496319481307
 2026-04,IPCA_nucleo_EX03_ma3_sa,0.511977528417935
 2026-05,IPCA_nucleo_EX03_ma3_sa,0.5021230405632527
+2026-06,IPCA_nucleo_EX03_ma3_sa,0.4302735904618402
 2000-01,IPCA_nucleo_EX03_servicos,0.21
 2000-02,IPCA_nucleo_EX03_servicos,0.26
 2000-03,IPCA_nucleo_EX03_servicos,0.0
@@ -13028,6 +13032,7 @@
 2026-03,IPCA_nucleo_EX03_servicos,0.49
 2026-04,IPCA_nucleo_EX03_servicos,0.52
 2026-05,IPCA_nucleo_EX03_servicos,0.4
+2026-06,IPCA_nucleo_EX03_servicos,0.22
 2000-01,IPCA_nucleo_EX03_servicos_ma3_sa,
 2000-02,IPCA_nucleo_EX03_servicos_ma3_sa,
 2000-03,IPCA_nucleo_EX03_servicos_ma3_sa,0.04288793697662261
@@ -13345,6 +13350,7 @@
 2026-03,IPCA_nucleo_EX03_servicos_ma3_sa,0.45288793697662255
 2026-04,IPCA_nucleo_EX03_servicos_ma3_sa,0.5236314071724294
 2026-05,IPCA_nucleo_EX03_servicos_ma3_sa,0.49541350349852403
+2026-06,IPCA_nucleo_EX03_servicos_ma3_sa,0.4092140200993513
 2000-01,IPCA_nucleo_EX0_ma3_sa,
 2000-02,IPCA_nucleo_EX0_ma3_sa,
 2000-03,IPCA_nucleo_EX0_ma3_sa,0.24613903652985172

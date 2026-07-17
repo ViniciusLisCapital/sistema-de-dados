@@ -91,7 +91,7 @@
 
     /* ── Main ── */
     main {
-      max-width: 1440px;
+      max-width: 1800px;
       margin: 0 auto;
       padding: 28px 28px 48px;
     }
@@ -170,8 +170,6 @@
       grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
-
-    .chart-card-tall { height: 820px; }
 
     /* ── Heatmap controls ── */
     .heatmap-controls {
@@ -260,31 +258,71 @@
       <button class="period-btn" data-period="annual">Anual</button>
       <button class="period-btn" data-period="ttm">12m Acumulado</button>
     </div>
+    <div class="period-selector" id="bop-mode-selector">
+      <span class="period-label">Unidade:</span>
+      <button class="period-btn active" data-mode="abs">USD Bi</button>
+      <button class="period-btn" data-mode="pct">% do PIB</button>
+    </div>
+    <div class="note">"% do PIB" divide o valor de cada bucket (mês/trimestre/ano/12m) pelo PIB mensal em USD do Brasil (BCB SGS 4385) somado na mesma janela — ex: no anual, soma de 12 meses de fluxo ÷ soma de 12 meses de PIB, a convenção usual para "déficit em conta corrente como % do PIB" etc. Aplica-se aos 7 gráficos de composição desta aba (não ao Mapa de Calor).</div>
 
     <section id="sec-bop-current">
       <h2>Conta Corrente — Composição</h2>
       <div class="chart-card"><div id="chart-bop-current"></div></div>
+      <div class="note">Saldo de bens, serviços, renda e transferências correntes com o exterior. Déficit em conta corrente precisa ser financiado — tipicamente pela conta financeira (IDE, portfólio, empréstimos).</div>
+    </section>
+
+    <section id="sec-bop-bens">
+      <h2>Balança de Bens — Detalhe</h2>
+      <div class="chart-card"><div id="chart-bop-bens"></div></div>
+      <div class="note">Quebra oficial do BCB da balança comercial de bens: Mercadorias em Geral (grosso da pauta de exportação/importação), Ouro Não Monetário (varia com preço e volume de ouro exportado, não é reserva) e Merchanting (revenda de bens sem passar pelo território nacional — tipicamente pequeno em módulo). Quebra por país/bloco parceiro e por categoria de produto: ver os dois gráficos "Balança de Bens — por..." logo abaixo, mesma fonte (Comex Stat/MDIC).</div>
+    </section>
+
+    <section id="sec-bop-bens-pais">
+      <h2>Balança de Bens — por País Parceiro</h2>
+      <div class="chart-card"><div id="chart-bop-bens-pais"></div></div>
+      <div class="note">Fonte: Comex Stat/MDIC (comércio exterior, base SISCOMEX) — <strong>não é BPM6</strong>, diferente do restante desta aba: metodologia de "comércio geral" (registro aduaneiro), sem os ajustes que o BCB aplica para chegar à série oficial da Balança de Bens (bens para transformação, mudança de propriedade sem cruzar fronteira etc.) — por isso o total aqui ("Demais Países" + os 4 parceiros) não fecha exatamente com o gráfico "Balança de Bens — Detalhe" acima; é um recorte complementar por parceiro, não uma reconciliação. Parceiros: os 4 maiores por comércio total em 2025 (China, Estados Unidos, Argentina, Alemanha — juntos ~70% do comércio de bens do Brasil); "Demais Países" é o residual (mundo − os 4). Sempre em USD Bi — não segue o botão "% do PIB" acima (fonte/metodologia diferentes das demais séries desta aba).</div>
+    </section>
+
+    <section id="sec-bop-bens-fator-agregado">
+      <h2>Balança de Bens — por Categoria de Produto (Fator Agregado)</h2>
+      <div class="chart-card"><div id="chart-bop-bens-fator-agregado"></div></div>
+      <div class="note">Mesma fonte do gráfico "por País Parceiro" acima (Comex Stat/MDIC, não BPM6) — quebra clássica do comércio exterior brasileiro por "Fator Agregado": Básicos (commodities — soja, minério, petróleo etc.), Semimanufaturados e Manufaturados (maior valor agregado/tecnologia), mais "Demais" (transações especiais, consumo de bordo, reexportação e um pequeno resíduo de produtos sem classificação — juntos tipicamente &lt;1% do total). Diferente do gráfico por país, aqui as 4 categorias já somam exatamente ao total do Comex Stat (toda transação cai em uma delas) — sem residual "mundo menos parceiros". Sempre em USD Bi — não segue o botão "% do PIB" acima.</div>
+    </section>
+
+    <section id="sec-bop-bens-produto">
+      <h2>Balança de Bens — por Produto</h2>
+      <div class="chart-card"><div id="chart-bop-bens-produto"></div></div>
+      <div class="note">Mesma fonte/ressalva dos gráficos acima (Comex Stat/MDIC, não BPM6) — os 5 maiores produtos de exportação do Brasil em 2025: Soja (código SH 1201), Petróleo Bruto (2709, distinto de combustíveis refinados), Minério de Ferro (2601), Carnes (capítulo 02 inteiro — bovina/suína/aves, sem uma posição dominante isolada) e Café (0901). "Demais Produtos" é o residual (mundo − os 5) — igual ao gráfico por país, essa quebra não cobre 100% do total (ao contrário do gráfico por Fator Agregado). Sempre em USD Bi — não segue o botão "% do PIB" acima.</div>
     </section>
 
     <section id="sec-bop-servicos">
       <h2>Serviços — Detalhe</h2>
       <div class="chart-card"><div id="chart-bop-servicos"></div></div>
+      <div class="note">Decomposição da conta de Serviços (viagens, transportes, aluguel de equipamentos, demais) — historicamente deficitária no Brasil.</div>
     </section>
 
     <section id="sec-bop-renda">
       <h2>Renda Primária — Detalhe</h2>
       <div class="chart-card"><div id="chart-bop-renda"></div></div>
+      <div class="note">Remuneração de fatores de produção com o exterior: salários de trabalhadores temporários, juros (dívida e carteira) e lucros/dividendos de investimento direto e em carteira. "Lucros e Dividendos" inclui lucros reinvestidos (SGS 22815) — série sem dado publicado pelo BCB entre 1999 e 2009 (lacuna real da fonte, não do pipeline); o agregado usa 0 nesse intervalo, então o total pode estar levemente subestimado nesses anos.</div>
     </section>
 
     <section id="sec-bop-financial">
       <h2>Conta Financeira — Ativos vs Passivos</h2>
       <div class="chart-card"><div id="chart-bop-financial"></div></div>
+      <div class="note">Variação de ativos brasileiros no exterior e de passivos (investimento estrangeiro) no Brasil — o espelho contábil que financia (ou é financiado por) a conta corrente. Convenção de sinal única em todo o relatório: <strong>negativo = saída de USD do país, positivo = entrada de USD</strong> — a mesma leitura da Conta Corrente (onde déficit/negativo já significa saída), para que os dois lados possam ser lidos como contrapartida um do outro. Passivos já publica nessa convenção sem alteração (positivo = mais capital estrangeiro entrando). Ativos, Derivativos e Ativos de Reserva foram invertidos em relação à publicação bruta do BCB, que usa a convenção oposta para o lado Ativos (positivo = mais investimento no exterior = saída) — dado bruto no banco continua no padrão BCB, a inversão é só deste relatório.</div>
+    </section>
+
+    <section id="sec-bop-ativos-externos">
+      <h2>Investimentos no Exterior — Ativos</h2>
+      <div class="chart-card"><div id="chart-bop-ativos-externos"></div></div>
+      <div class="note">Detalha como residentes brasileiros aplicam recursos no exterior: investimento direto, investimento em carteira — aberto em ações/fundos e títulos de dívida de curto/longo prazo, mesmo nível de detalhe do quadro "Financiamento Externo — Passivos" abaixo — e outros investimentos (depósitos, empréstimos concedidos etc.). Quebra oficial do BCB ("BreakDown the bcb provides"), cross-checada contra balance_payments_breakdown.xlsx. Convenção de sinal invertida em relação à publicação bruta do BCB, igual ao resto desta aba: <strong>negativo = saída de USD</strong> (mais aplicação no exterior), <strong>positivo = entrada de USD</strong> (repatriação/redução de ativos no exterior).</div>
     </section>
 
     <section id="sec-bop-financiamento">
       <h2>Financiamento Externo — Passivos</h2>
       <div class="chart-card"><div id="chart-bop-financiamento"></div></div>
-      <div class="note">Quebra oficial do BCB ("Financiamento Externo") — cross-checada contra balance_payments_breakdown.xlsx, Jan-Mai/2026.</div>
+      <div class="note">Detalha como o país financia seu déficit em conta corrente: investimento direto, ações/fundos, títulos domésticos e empréstimos/títulos de curto e longo prazo no exterior. Publicado na convenção original do BCB (positivo = entrada de capital estrangeiro, negativo = saída) — não foi alterado, diferente da aba "Ativos vs Passivos" acima. Quebra oficial do BCB ("Financiamento Externo") — cross-checada contra balance_payments_breakdown.xlsx, Jan-Mai/2026.</div>
     </section>
 
   </div>
@@ -292,19 +330,39 @@
   <!-- ══ Mapa de Calor — Balanço de Pagamentos ══ -->
   <div class="tab-panel" id="tab-heatmap">
 
-    <section id="sec-heatmap">
-      <h2>Balanço de Pagamentos — Z-score Trimestral (janela móvel de 3 anos)</h2>
+    <div class="heatmap-controls">
+      <span class="heatmap-legend">
+        <span class="swatch" style="background:#1D4ED8"></span> acima do normal (3a) — inflow/melhora
+        <span class="swatch" style="background:#F5F5F5;border:1px solid #ddd"></span> na média
+        <span class="swatch" style="background:#B91C1C"></span> abaixo do normal (3a) — outflow/piora
+      </span>
+    </div>
+    <div class="note">Cor = z-score da própria série contra sua média/desvio móvel de 3 anos (12 trimestres) — não é o valor bruto. O valor bruto (USD Bi) aparece escrito em cada célula ao aproximar o zoom (botões "1a/3a/5a") — com o histórico completo visível ("10a"/"Tudo") os números ficariam sobrepostos e ilegíveis, então só a cor fica ativa; passe o mouse sobre a célula para ver o valor a qualquer zoom. As primeiras ~12 colunas de cada série ficam em branco (sem janela de 3 anos completa ainda). Clique numa linha com "▸"/"▾" para expandir/recolher seus componentes.</div>
+
+    <section id="sec-heatmap-current">
+      <h2>Conta Corrente</h2>
       <div class="heatmap-controls">
-        <button class="heatmap-btn" id="heatmap-expand-all">Expandir Tudo</button>
-        <button class="heatmap-btn" id="heatmap-collapse-all">Recolher Tudo</button>
-        <span class="heatmap-legend">
-          <span class="swatch" style="background:#1D4ED8"></span> acima do normal (3a) — inflow/melhora
-          <span class="swatch" style="background:#F5F5F5;border:1px solid #ddd"></span> na média
-          <span class="swatch" style="background:#B91C1C"></span> abaixo do normal (3a) — outflow/piora
-        </span>
+        <button class="heatmap-btn" id="heatmap-expand-current">Expandir Tudo</button>
+        <button class="heatmap-btn" id="heatmap-collapse-current">Recolher Tudo</button>
       </div>
-      <div class="chart-card chart-card-tall"><div id="chart-heatmap"></div></div>
-      <div class="note">Clique em uma linha com "▸"/"▾" para expandir/recolher seus componentes. Cor = z-score da própria série contra sua média/desvio móvel de 3 anos (12 trimestres) — não é o valor bruto. As primeiras ~12 colunas de cada série ficam em branco (sem janela de 3 anos completa ainda).</div>
+      <div class="chart-card" id="card-heatmap-current"><div id="chart-heatmap-current"></div></div>
+      <div class="note">Bens, serviços, renda primária (salários, juros, lucros/dividendos) e renda secundária trocados com o exterior — o núcleo do saldo em transações correntes.</div>
+    </section>
+
+    <section id="sec-heatmap-financial">
+      <h2>Conta Financeira</h2>
+      <div class="heatmap-controls">
+        <button class="heatmap-btn" id="heatmap-expand-financial">Expandir Tudo</button>
+        <button class="heatmap-btn" id="heatmap-collapse-financial">Recolher Tudo</button>
+      </div>
+      <div class="chart-card" id="card-heatmap-financial"><div id="chart-heatmap-financial"></div></div>
+      <div class="note">Como o país financia (ou financia o resto do mundo): investimento direto, investimento em carteira, empréstimos/títulos, derivativos e ativos de reserva. Os ramos "Investimentos — Ativos", "Derivativos" e "Ativos de Reserva" têm sinal invertido em relação à publicação bruta do BCB, para ler negativo = saída de USD / positivo = entrada de USD em todo o relatório (mesma regra da Conta Corrente); "Investimentos — Passivos" já publica nessa convenção sem alteração. Ver aba Balanço de Pagamentos para detalhe.</div>
+    </section>
+
+    <section id="sec-heatmap-capital">
+      <h2>Conta de Capital &amp; Erros e Omissões</h2>
+      <div class="chart-card" id="card-heatmap-capital"><div id="chart-heatmap-capital"></div></div>
+      <div class="note">Conta de Capital: transferências de capital e ativos não financeiros (residual, pequena magnitude). Erros e Omissões: item de fechamento contábil do BP — grande em módulo costuma sinalizar fluxos não capturados pelas demais contas.</div>
     </section>
 
   </div>
@@ -315,11 +373,13 @@
     <section id="sec-bcb-reserves">
       <h2>Reservas Internacionais</h2>
       <div class="chart-card"><div id="chart-bcb-reserves"></div></div>
+      <div class="note">Ativos em moeda estrangeira, ouro e outros instrumentos mantidos pelo BCB como "colchão" para intervenção cambial e estabilidade externa.</div>
     </section>
 
     <section id="sec-bcb-swap">
       <h2>Posição de Câmbio — Swap BCB vs Bancos</h2>
       <div class="chart-card"><div id="chart-bcb-swap"></div></div>
+      <div class="note">Swap cambial: instrumento do BCB para prover proteção cambial sem usar reservas — posição negativa = BCB vendido em USD via swap (equivalente a uma intervenção sintética). Posição dos bancos: exposição líquida à vista do sistema bancário no mercado de câmbio.</div>
     </section>
 
     <section id="sec-bcb-gold-intervention">
@@ -328,6 +388,7 @@
         <div class="chart-card"><div id="chart-bcb-gold"></div></div>
         <div class="chart-card"><div id="chart-bcb-intervention"></div></div>
       </div>
+      <div class="note">Ouro: parcela das reservas valorizada a preço de mercado (variações refletem preço do ouro, não só volume). Intervenções: operações do BCB no mercado à vista, forward, linhas de recompra e empréstimos em ME para conter volatilidade cambial.</div>
     </section>
 
   </div>
@@ -338,16 +399,19 @@
     <section id="sec-flow-saldo">
       <h2>Fluxo Cambial — Saldos</h2>
       <div class="chart-card"><div id="chart-fluxo"></div></div>
+      <div class="note">Fluxo de câmbio efetivamente contratado entre bancos e clientes (Nota Cambial BCB) — segmento comercial (bens/serviços) e financeiro (capitais). Saldo positivo = entrada líquida de dólares no país.</div>
     </section>
 
     <section id="sec-flow-breakdown">
       <h2>Fluxo Cambial — Entradas e Saídas</h2>
       <div class="chart-card"><div id="chart-fluxo-breakdown"></div></div>
+      <div class="note">Mesmo fluxo contratado acima, decomposto em entradas (+) e saídas (−) brutas — útil para ver se um saldo estável esconde giro (entrada e saída) crescente ou decrescente.</div>
     </section>
 
     <section id="sec-flow-interbank">
       <h2>Volume Interbancário — Liquidação T+1 / T+2</h2>
       <div class="chart-card"><div id="chart-interbank-vol"></div></div>
+      <div class="note">Volume negociado entre bancos no mercado interbancário de câmbio, por prazo de liquidação (D+1 ou D+2) — proxy de atividade/liquidez do mercado, não de direção do fluxo.</div>
     </section>
 
   </div>
@@ -358,7 +422,7 @@
     <section id="sec-quotation-ptax">
       <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
       <div class="chart-card"><div id="chart-ptax"></div></div>
-      <div class="note">Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver CAMBIO.md.</div>
+      <div class="note">Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário, usada em contratos e balanços. Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver CAMBIO.md.</div>
     </section>
 
   </div>
@@ -373,21 +437,25 @@
         <div class="chart-card"><div id="chart-diferencial-nominal"></div></div>
       </div>
       <div class="chart-card"><div id="chart-taxas-reais"></div></div>
+      <div class="note">Selic vs Fed Funds e o diferencial entre elas — a base do carry trade tradicional do BRL frente ao USD. Taxas reais usam inflação de 12m realizada (ex-post), não expectativas.</div>
     </section>
 
     <section id="sec-valuation-reer">
       <h2>Taxa de Câmbio Efetiva Real — BIS (2020 = 100)</h2>
       <div class="chart-card"><div id="chart-reer"></div></div>
+      <div class="note">Câmbio ponderado pela pauta de comércio e ajustado pela inflação relativa a cada parceiro — acima de 100 sugere câmbio mais apreciado que a média do período-base (2020), abaixo sugere mais depreciado.</div>
     </section>
 
     <section id="sec-valuation-termos">
       <h2>Termos de Troca</h2>
       <div class="chart-card"><div id="chart-termos"></div></div>
+      <div class="note">Razão entre índices de preço de exportação e de importação (Funcex) — alta beneficia a balança comercial e tende a se associar a apreciação do câmbio real.</div>
     </section>
 
     <section id="sec-valuation-cot">
       <h2>Posicionamento Especulativo — CFTC (BRL Futuros CME)</h2>
       <div class="chart-card"><div id="chart-cot-brl"></div></div>
+      <div class="note">Posição líquida de fundos alavancados (leveraged money — hedge funds/CTAs) em futuros de BRL na CME. Net comprado em USD (vendido em BRL) tende a coincidir com pressão de depreciação do real, e vice-versa.</div>
     </section>
 
   </div>
@@ -561,9 +629,11 @@ function bucketKey(dateStr, period) {
 
 function bucketStartDate(key, period) {
   if (period === 'quarterly') {
+    // Rotulado pelo mes final do trimestre (mar/jun/set/dez), nao o inicial
+    // (jan/abr/jul/out) -- convencao usual de leitura de trimestre fiscal.
     var parts = key.split('-Q');
-    var qStartMonth = (parseInt(parts[1], 10) - 1) * 3 + 1;
-    return parts[0] + '-' + String(qStartMonth).padStart(2, '0') + '-01';
+    var qEndMonth = parseInt(parts[1], 10) * 3;
+    return parts[0] + '-' + String(qEndMonth).padStart(2, '0') + '-01';
   }
   if (period === 'annual') return key + '-01-01';
   return key;
@@ -605,66 +675,161 @@ function rollingSum12(dates, values) {
 // Renderiza um chart de composição: barras empilhadas por componente +
 // (opcional) linha do total. `total` pode ser null quando os componentes não
 // somam de forma simples ao total (ver chart-bop-financial).
-function renderComposition(divId, dates, components, total, period, title) {
+//
+// `mode` ('abs' | 'pct') e `gdpValues` (série de PIB mensal em USD Bi,
+// mesmo índice de `dates`) habilitam o botão "% do PIB" da aba: cada bucket
+// (mensal/trimestral/anual/12m) divide o valor agregado do bucket pelo PIB
+// agregado da MESMA janela (soma dos mesmos meses) — não pelo PIB mensal
+// isolado — para que a razão seja comparável entre períodos (ex: % PIB
+// anual = razão das duas somas de 12 meses, a convenção usual).
+function renderComposition(divId, dates, components, total, period, title, gdpValues, mode) {
+  var gdpAgg = null;
+  if (mode === 'pct' && gdpValues) {
+    gdpAgg = period === 'ttm' ? rollingSum12(dates, gdpValues) : aggregateSum(dates, gdpValues, period);
+  }
+  function toPct(agg) {
+    if (!gdpAgg) return agg;
+    return {
+      dates: agg.dates,
+      values: agg.values.map(function(v, i) {
+        var g = gdpAgg.values[i];
+        return (v === null || v === undefined || !g) ? null : (v / g) * 100;
+      }),
+    };
+  }
   var traces = [];
   if (period === 'ttm') {
     components.forEach(function(c) {
-      var agg = rollingSum12(dates, c.values);
+      var agg = toPct(rollingSum12(dates, c.values));
       traces.push(tLine(agg.dates, agg.values, c.name, c.color, {}));
     });
     if (total) {
-      var aggT = rollingSum12(dates, total.values);
+      var aggT = toPct(rollingSum12(dates, total.values));
       traces.push(tLine(aggT.dates, aggT.values, total.name, C.azul, { line: { color: C.azul, width: 2.5 } }));
     }
   } else {
     components.forEach(function(c) {
-      var agg = aggregateSum(dates, c.values, period);
+      var agg = toPct(aggregateSum(dates, c.values, period));
       traces.push({ x: agg.dates, y: agg.values, type: 'bar', name: c.name, marker: { color: c.color } });
     });
     if (total) {
-      var aggT = aggregateSum(dates, total.values, period);
+      var aggT = toPct(aggregateSum(dates, total.values, period));
       traces.push(tLine(aggT.dates, aggT.values, total.name, C.azul, { line: { color: C.azul, width: 2.5 } }));
     }
   }
   Plotly.newPlot(divId, traces, mkLayout(title, {
     barmode: period === 'ttm' ? undefined : 'relative',
-    yaxis:   { zeroline: true },
+    yaxis:   { zeroline: true, hoverformat: mode === 'pct' ? '.2f' : '.1f', ticksuffix: mode === 'pct' ? '%' : '' },
   }), CONFIG);
 }
 
-function renderBopCharts(period) {
+function renderBopCharts(period, mode) {
+  mode = mode || 'abs';
   var d = REPORT_DATA.bop;
   if (!d || !d.dates) return;
-  var suffix = { monthly: '(USD mi, mensal)', quarterly: '(USD mi, trimestral)', annual: '(USD mi, anual)', ttm: '(USD mi, 12m acumulado)' }[period];
+  var unit = mode === 'pct' ? '% PIB' : 'USD Bi';
+  var suffix = {
+    monthly:   '(' + unit + ', mensal)',
+    quarterly: '(' + unit + ', trimestral)',
+    annual:    '(' + unit + ', anual)',
+    ttm:       '(' + unit + ', 12m acumulado)',
+  }[period];
+  var gdp = d.gdp_usd_bi;
 
   renderComposition('chart-bop-current', d.dates, [
     { name: 'Balança Comercial+Serviços', color: C.verde,   values: d.balanca_comercial_servicos },
     { name: 'Renda Primária',             color: C.laranja, values: d.renda_primaria },
     { name: 'Renda Secundária',           color: C.azulCl,  values: d.renda_secundaria },
-  ], { name: 'Conta Corrente (Total)', values: d.conta_corrente }, period, 'Conta Corrente — Composição ' + suffix);
+  ], { name: 'Conta Corrente (Total)', values: d.conta_corrente }, period, 'Conta Corrente — Composição ' + suffix, gdp, mode);
+
+  renderComposition('chart-bop-bens', d.dates, [
+    { name: 'Mercadorias em Geral', color: C.verde,   values: d.mercadorias_gerais },
+    { name: 'Ouro Não Monetário',   color: C.amarelo, values: d.ouro_nao_monetario },
+    { name: 'Merchanting',          color: C.cinza,   values: d.merchanting },
+  ], { name: 'Balança de Bens (Total)', values: subtractArrays(d.exportacao_bens, d.importacao_bens) }, period, 'Balança de Bens — Detalhe ' + suffix, gdp, mode);
+
+  // Fonte diferente (Comex Stat/MDIC, não BPM6/SGS) — sempre USD Bi, não
+  // segue o toggle "% do PIB" (ver .note da seção no HTML). Acompanha só o
+  // seletor de período (Mensal/Trimestral/Anual/12m), igual às demais.
+  var dcp = REPORT_DATA.comex_pais;
+  if (dcp && dcp.dates) {
+    var suffixCp = '(USD Bi, ' + { monthly: 'mensal', quarterly: 'trimestral', annual: 'anual', ttm: '12m acumulado' }[period] + ')';
+    renderComposition('chart-bop-bens-pais', dcp.dates, [
+      { name: 'China',          color: C.laranja, values: dcp.saldo_china },
+      { name: 'Estados Unidos', color: C.azulCl,  values: dcp.saldo_eua },
+      { name: 'Argentina',      color: C.verde,   values: dcp.saldo_argentina },
+      { name: 'Alemanha',       color: C.amarelo, values: dcp.saldo_alemanha },
+      { name: 'Demais Países',  color: C.cinza,   values: dcp.saldo_demais },
+    ], { name: 'Balança de Bens — Comex Stat (Total)', values: dcp.saldo_mundo }, period, 'Balança de Bens — por País Parceiro ' + suffixCp);
+  }
+
+  // Mesma ressalva do chart acima: fonte Comex Stat/MDIC, não BPM6, sempre
+  // USD Bi, não segue o toggle "% do PIB". Diferente do chart por país, as
+  // 4 categorias já somam 100% do total (sem residual "mundo − parceiros").
+  var dfa = REPORT_DATA.comex_fator_agregado;
+  if (dfa && dfa.dates) {
+    var suffixFa = '(USD Bi, ' + { monthly: 'mensal', quarterly: 'trimestral', annual: 'anual', ttm: '12m acumulado' }[period] + ')';
+    renderComposition('chart-bop-bens-fator-agregado', dfa.dates, [
+      { name: 'Básicos',            color: C.dourado, values: dfa.saldo_basicos },
+      { name: 'Semimanufaturados',  color: C.azulCl,  values: dfa.saldo_semimanufaturados },
+      { name: 'Manufaturados',      color: C.verde,   values: dfa.saldo_manufaturados },
+      { name: 'Demais',             color: C.cinza,   values: dfa.saldo_demais },
+    ], { name: 'Balança de Bens — Comex Stat (Total)', values: dfa.saldo_total }, period, 'Balança de Bens — por Categoria de Produto ' + suffixFa);
+  }
+
+  // Mesma ressalva dos charts acima: fonte Comex Stat/MDIC, não BPM6,
+  // sempre USD Bi, não segue o toggle "% do PIB". Igual ao chart por país
+  // (não ao de Fator Agregado): os 5 produtos NÃO somam 100% do total —
+  // "Demais Produtos" é o residual (mundo − os 5).
+  var dpr = REPORT_DATA.comex_produto;
+  if (dpr && dpr.dates) {
+    var suffixPr = '(USD Bi, ' + { monthly: 'mensal', quarterly: 'trimestral', annual: 'anual', ttm: '12m acumulado' }[period] + ')';
+    renderComposition('chart-bop-bens-produto', dpr.dates, [
+      { name: 'Soja',            color: C.dourado, values: dpr.saldo_soja },
+      { name: 'Petróleo Bruto',  color: C.cinza,   values: dpr.saldo_petroleo },
+      { name: 'Minério de Ferro', color: C.laranja, values: dpr.saldo_minerio_ferro },
+      { name: 'Carnes',          color: C.verde,   values: dpr.saldo_carnes },
+      { name: 'Café',            color: C.azulCl,  values: dpr.saldo_cafe },
+      { name: 'Demais Produtos', color: C.amarelo, values: dpr.saldo_demais },
+    ], { name: 'Balança de Bens — Comex Stat (Total)', values: dpr.saldo_mundo }, period, 'Balança de Bens — por Produto ' + suffixPr);
+  }
 
   renderComposition('chart-bop-servicos', d.dates, [
     { name: 'Viagens',                   color: C.verde,   values: d.viagens },
     { name: 'Transportes',               color: C.azulCl,  values: d.transportes },
     { name: 'Aluguel de Equipamentos',   color: C.laranja, values: d.aluguel_equipamentos },
     { name: 'Demais Serviços',           color: C.cinza,   values: d.demais_servicos },
-  ], { name: 'Serviços (Total)', values: d.servicos }, period, 'Serviços — Detalhe ' + suffix);
+  ], { name: 'Serviços (Total)', values: d.servicos }, period, 'Serviços — Detalhe ' + suffix, gdp, mode);
 
   renderComposition('chart-bop-renda', d.dates, [
     { name: 'Remuneração de Empregados', color: C.verde,   values: d.remuneracao_empregados },
     { name: 'Juros',                     color: C.azulCl,  values: d.juros },
     { name: 'Lucros e Dividendos',       color: C.laranja, values: d.lucros_dividendos },
-  ], { name: 'Renda Primária (Total)', values: d.renda_primaria }, period, 'Renda Primária — Detalhe ' + suffix);
+  ], { name: 'Renda Primária (Total)', values: d.renda_primaria }, period, 'Renda Primária — Detalhe ' + suffix, gdp, mode);
 
-  // Sem linha de total: conta_financeira = ativos - passivos + derivativos + reserva
-  // (passivos entra com sinal invertido na identidade) — uma barra empilhada
-  // simples destas 4 séries não soma ao total, então mostramos só os 4 fluxos.
+  // Investimentos — Ativos, Derivativos, Ativos de Reserva e conta_financeira
+  // tiveram o sinal invertido em generate_report.py (2026-07, pedido do
+  // usuário) para ler negativo = saída de USD / positivo = entrada de USD em
+  // todo o relatório, igual à Conta Corrente (Investimentos — Passivos já
+  // publicava nessa convenção e não foi alterado). A identidade original
+  // (conta_financeira = ativos - passivos + derivativos + reserva) só
+  // continua fechando porque conta_financeira também foi invertido — por
+  // isso a linha de total agora soma certo aos 4 componentes (antes não
+  // somava, e por isso não existia).
   renderComposition('chart-bop-financial', d.dates, [
     { name: 'Investimentos — Ativos',    color: C.verde,   values: d.investimentos_ativos },
     { name: 'Investimentos — Passivos',  color: C.azulCl,  values: d.investimentos_passivos },
     { name: 'Derivativos',               color: C.laranja, values: d.derivativos },
     { name: 'Ativos de Reserva',         color: C.amarelo, values: d.ativos_reserva },
-  ], null, period, 'Conta Financeira — Ativos vs Passivos ' + suffix);
+  ], { name: 'Conta Financeira (Total)', values: d.conta_financeira }, period, 'Conta Financeira — Ativos vs Passivos ' + suffix, gdp, mode);
+
+  renderComposition('chart-bop-ativos-externos', d.dates, [
+    { name: 'Invest. Direto no Exterior',           color: C.dourado, values: d.idp_exterior },
+    { name: 'Ações e Fundos — Ativos',              color: C.verde,   values: d.acoes_fundos_ativos },
+    { name: 'Títulos de Dívida — Ativos (LP)',      color: C.azulCl,  values: d.titulos_ativos_lp },
+    { name: 'Títulos de Dívida — Ativos (CP)',      color: C.laranja, values: d.titulos_ativos_cp },
+    { name: 'Outros Investimentos — Ativos',        color: C.cinza,   values: d.outros_inv_ativos },
+  ], { name: 'Investimentos — Ativos (Total)', values: d.investimentos_ativos }, period, 'Investimentos no Exterior — Ativos ' + suffix, gdp, mode);
 
   renderComposition('chart-bop-financiamento', d.dates, [
     { name: 'Investimento Direto no País',        color: C.dourado, values: d.investimento_direto_liquido },
@@ -673,18 +838,31 @@ function renderBopCharts(period) {
     { name: 'Empréstimos/Títulos LP Externo',     color: C.laranja, values: d.emprestimos_titulos_lp_externo },
     { name: 'Empréstimos/Títulos CP Externo',     color: C.amarelo, values: d.emprestimos_titulos_cp_externo },
     { name: 'Demais Passivos',                    color: C.cinza,   values: d.demais_passivos },
-  ], { name: 'Investimentos — Passivos (Total)', values: d.investimentos_passivos }, period, 'Financiamento Externo — Passivos ' + suffix);
+  ], { name: 'Investimentos — Passivos (Total)', values: d.investimentos_passivos }, period, 'Financiamento Externo — Passivos ' + suffix, gdp, mode);
 }
+
+var _bopPeriod = 'monthly';
+var _bopMode = 'abs';
 
 document.querySelectorAll('#bop-period-selector .period-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
     document.querySelectorAll('#bop-period-selector .period-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
-    renderBopCharts(btn.dataset.period);
+    _bopPeriod = btn.dataset.period;
+    renderBopCharts(_bopPeriod, _bopMode);
   });
 });
 
-renderBopCharts('monthly');
+document.querySelectorAll('#bop-mode-selector .period-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#bop-mode-selector .period-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    _bopMode = btn.dataset.mode;
+    renderBopCharts(_bopPeriod, _bopMode);
+  });
+});
+
+renderBopCharts(_bopPeriod, _bopMode);
 
 // ── Mapa de Calor — Balanço de Pagamentos ─────────────────────────────────────
 // Hierarquia de 3 níveis espelhando os agregados validados em
@@ -702,7 +880,10 @@ function subtractArrays(a, b) {
   });
 }
 
-var BOP_TREE = [
+// Árvore dividida em 3 (Conta Corrente / Conta Financeira / Conta de Capital
+// + Erros e Omissões), pedido do usuário para poder ler cada conta na sua
+// própria altura de card em vez de uma única árvore combinada de 31 linhas.
+var BOP_TREE_CURRENT = [
   {
     key: 'conta_corrente', label: 'Conta Corrente',
     get: function(d) { return d.conta_corrente; },
@@ -715,8 +896,23 @@ var BOP_TREE = [
             key: 'balanca_bens', label: 'Balança de Bens',
             get: function(d) { return subtractArrays(d.exportacao_bens, d.importacao_bens); },
             children: [
-              { key: 'exportacao_bens', label: 'Exportação de Bens', get: function(d) { return d.exportacao_bens; } },
-              { key: 'importacao_bens', label: 'Importação de Bens (saída)', get: function(d) { return negate(d.importacao_bens); } },
+              {
+                key: 'mercadorias_gerais', label: 'Mercadorias em Geral',
+                get: function(d) { return d.mercadorias_gerais; },
+                children: [
+                  { key: 'mercadorias_gerais_export', label: 'Exportação', get: function(d) { return d.mercadorias_gerais_export; } },
+                  { key: 'mercadorias_gerais_import', label: 'Importação (saída)', get: function(d) { return negate(d.mercadorias_gerais_import); } },
+                ],
+              },
+              {
+                key: 'ouro_nao_monetario', label: 'Ouro Não Monetário',
+                get: function(d) { return d.ouro_nao_monetario; },
+                children: [
+                  { key: 'ouro_nao_monetario_export', label: 'Exportação', get: function(d) { return d.ouro_nao_monetario_export; } },
+                  { key: 'ouro_nao_monetario_import', label: 'Importação (saída)', get: function(d) { return negate(d.ouro_nao_monetario_import); } },
+                ],
+              },
+              { key: 'merchanting', label: 'Merchanting', get: function(d) { return d.merchanting; } },
             ],
           },
           {
@@ -743,7 +939,9 @@ var BOP_TREE = [
       { key: 'renda_secundaria', label: 'Renda Secundária', get: function(d) { return d.renda_secundaria; } },
     ],
   },
-  { key: 'conta_capital', label: 'Conta Capital', get: function(d) { return d.conta_capital; } },
+];
+
+var BOP_TREE_FINANCIAL = [
   {
     key: 'conta_financeira', label: 'Conta Financeira',
     get: function(d) { return d.conta_financeira; },
@@ -773,7 +971,11 @@ var BOP_TREE = [
       { key: 'ativos_reserva', label: 'Ativos de Reserva', get: function(d) { return d.ativos_reserva; } },
     ],
   },
-  { key: 'erros_omissoes', label: 'Erros e Omissões', get: function(d) { return d.erros_omissoes; } },
+];
+
+var BOP_TREE_CAPITAL = [
+  { key: 'conta_capital',   label: 'Conta Capital',      get: function(d) { return d.conta_capital; } },
+  { key: 'erros_omissoes',  label: 'Erros e Omissões',   get: function(d) { return d.erros_omissoes; } },
 ];
 
 // Z-score móvel: janela de `window` trimestres TERMINANDO no ponto atual
@@ -791,8 +993,6 @@ function rollingZScore(values, window) {
   }
   return out;
 }
-
-var heatmapExpanded = new Set();
 
 function flattenVisibleRows(tree, expanded, depth) {
   depth = depth || 0;
@@ -817,20 +1017,24 @@ function collectParentKeys(tree) {
   return keys;
 }
 
-function rowLabel(node, depth) {
+function rowLabel(node, depth, expanded) {
   var indent = '    '.repeat(depth);
-  var icon = node.children ? (heatmapExpanded.has(node.key) ? '▾ ' : '▸ ') : '  ';
+  var icon = node.children ? (expanded.has(node.key) ? '▾ ' : '▸ ') : '  ';
   return indent + icon + node.label;
 }
 
-function renderHeatmap() {
+// Estado de expansão independente por painel (Corrente / Financeira / Capital).
+var heatmapState = { current: new Set(), financial: new Set(), capital: new Set() };
+
+function renderHeatmapPanel(panelKey, tree, divId, cardId, title) {
   var d = REPORT_DATA.bop;
   if (!d || !d.dates) return;
+  var expanded = heatmapState[panelKey];
 
-  var visibleRows = flattenVisibleRows(BOP_TREE, heatmapExpanded);
+  var visibleRows = flattenVisibleRows(tree, expanded);
   var labelToNode = {};
   var yLabels = visibleRows.map(function(r) {
-    var label = rowLabel(r.node, r.depth);
+    var label = rowLabel(r.node, r.depth, expanded);
     labelToNode[label] = r.node;
     return label;
   });
@@ -848,21 +1052,35 @@ function renderHeatmap() {
 
   var maxLabelLen = yLabels.reduce(function(m, l) { return Math.max(m, l.length); }, 0);
 
+  // Altura do card acompanha o numero de linhas visiveis (colapsado fica
+  // compacto, expandido cresce) -- resolve a desproporcao de linhas
+  // exageradamente altas quando poucas estao visiveis (ver CAMBIO.md).
+  var rowPx = 26, chromePx = 190;
+  var cardHeight = Math.max(220, Math.min(820, chromePx + yLabels.length * rowPx));
+  document.getElementById(cardId).style.height = cardHeight + 'px';
+
   var trace = {
     type: 'heatmap',
     x: qDates || [],
     y: yLabels,
     z: zMatrix,
     text: textMatrix,
+    // texttemplate começa vazio -- com ~126 colunas trimestrais (histórico
+    // completo), texto em cada célula vira ruído ilegível (letras de
+    // colunas vizinhas se sobrepõem). applyHeatmapTextVisibility() liga o
+    // texto só quando o zoom deixa poucas colunas visíveis o bastante para
+    // caber sem sobrepor (ver listener plotly_relayout abaixo).
+    texttemplate: '',
+    textfont: { size: 9, color: '#1a1a1a' },
     colorscale: [[0, '#B91C1C'], [0.5, '#F5F5F5'], [1, '#1D4ED8']],
     zmin: -3, zmax: 3,
     xgap: 1, ygap: 2,
-    hovertemplate: '%{y}<br>%{x}<br>Valor: %{text} USD mi<br>Z-score (3a): %{z:.2f}<extra></extra>',
+    hovertemplate: '%{y}<br>%{x}<br>Valor: %{text} USD Bi<br>Z-score (3a): %{z:.2f}<extra></extra>',
     hoverlabel: { bgcolor: '#fff', bordercolor: '#dde1e9', font: { size: 12 } },
     colorbar: { title: { text: 'Z-score', side: 'right' }, thickness: 14, len: 0.9 },
   };
 
-  var layout = mkLayout('Balanço de Pagamentos — Z-score Trimestral (3a móvel)', {
+  var layout = mkLayout(title, {
     yaxis: {
       autorange: 'reversed',
       tickfont: { size: 11 },
@@ -872,28 +1090,65 @@ function renderHeatmap() {
     margin: { t: 44, r: 90, b: 100, l: Math.min(260, 20 + maxLabelLen * 6) },
   });
 
-  Plotly.newPlot('chart-heatmap', [trace], layout, CONFIG).then(function(gd) {
+  Plotly.newPlot(divId, [trace], layout, CONFIG).then(function(gd) {
+    applyHeatmapTextVisibility(gd, qDates || []);
+    gd.on('plotly_relayout', function() { applyHeatmapTextVisibility(gd, qDates || []); });
     gd.on('plotly_click', function(evt) {
       if (!evt || !evt.points || !evt.points.length) return;
       var node = labelToNode[evt.points[0].y];
       if (!node || !node.children) return;
-      if (heatmapExpanded.has(node.key)) heatmapExpanded.delete(node.key);
-      else heatmapExpanded.add(node.key);
-      renderHeatmap();
+      if (expanded.has(node.key)) expanded.delete(node.key);
+      else expanded.add(node.key);
+      renderHeatmapPanel(panelKey, tree, divId, cardId, title);
     });
   });
 }
 
-document.getElementById('heatmap-expand-all').addEventListener('click', function() {
-  heatmapExpanded = new Set(collectParentKeys(BOP_TREE));
-  renderHeatmap();
+// Numero maximo de colunas trimestrais visiveis para ainda mostrar o valor
+// escrito em cada celula sem sobrepor a coluna vizinha (~8 anos de historico
+// numa area de plotagem de ~1450px -> ~40px/coluna, o suficiente para um
+// numero como "-13.1" em fonte 9px). Acima disso, só cor + hover.
+var HEATMAP_TEXT_MAX_COLS = 32;
+
+function applyHeatmapTextVisibility(gd, qDates) {
+  if (!qDates.length) return;
+  var xa = gd._fullLayout.xaxis;
+  var range = xa && xa.range;
+  var visibleCount = qDates.length;
+  if (range && range.length === 2) {
+    var t0 = new Date(range[0]).getTime();
+    var t1 = new Date(range[1]).getTime();
+    visibleCount = qDates.filter(function(dt) {
+      var t = new Date(dt).getTime();
+      return t >= t0 && t <= t1;
+    }).length;
+  }
+  var showText = visibleCount > 0 && visibleCount <= HEATMAP_TEXT_MAX_COLS;
+  var current = gd.data[0].texttemplate;
+  var next = showText ? '%{text}' : '';
+  if (current !== next) Plotly.restyle(gd, { texttemplate: next }, [0]);
+}
+
+document.getElementById('heatmap-expand-current').addEventListener('click', function() {
+  heatmapState.current = new Set(collectParentKeys(BOP_TREE_CURRENT));
+  renderHeatmapPanel('current', BOP_TREE_CURRENT, 'chart-heatmap-current', 'card-heatmap-current', 'Conta Corrente — Z-score Trimestral (3a móvel)');
 });
-document.getElementById('heatmap-collapse-all').addEventListener('click', function() {
-  heatmapExpanded = new Set();
-  renderHeatmap();
+document.getElementById('heatmap-collapse-current').addEventListener('click', function() {
+  heatmapState.current = new Set();
+  renderHeatmapPanel('current', BOP_TREE_CURRENT, 'chart-heatmap-current', 'card-heatmap-current', 'Conta Corrente — Z-score Trimestral (3a móvel)');
+});
+document.getElementById('heatmap-expand-financial').addEventListener('click', function() {
+  heatmapState.financial = new Set(collectParentKeys(BOP_TREE_FINANCIAL));
+  renderHeatmapPanel('financial', BOP_TREE_FINANCIAL, 'chart-heatmap-financial', 'card-heatmap-financial', 'Conta Financeira — Z-score Trimestral (3a móvel)');
+});
+document.getElementById('heatmap-collapse-financial').addEventListener('click', function() {
+  heatmapState.financial = new Set();
+  renderHeatmapPanel('financial', BOP_TREE_FINANCIAL, 'chart-heatmap-financial', 'card-heatmap-financial', 'Conta Financeira — Z-score Trimestral (3a móvel)');
 });
 
-renderHeatmap();
+renderHeatmapPanel('current',    BOP_TREE_CURRENT,   'chart-heatmap-current',    'card-heatmap-current',    'Conta Corrente — Z-score Trimestral (3a móvel)');
+renderHeatmapPanel('financial',  BOP_TREE_FINANCIAL, 'chart-heatmap-financial',  'card-heatmap-financial',  'Conta Financeira — Z-score Trimestral (3a móvel)');
+renderHeatmapPanel('capital',    BOP_TREE_CAPITAL,   'chart-heatmap-capital',    'card-heatmap-capital',    'Conta de Capital & Erros e Omissões — Z-score Trimestral (3a móvel)');
 
 // ── b) Posicionamento do BCB ──────────────────────────────────────────────────
 
@@ -906,8 +1161,8 @@ renderHeatmap();
     tLine(d.dates, d.reserves_total_monthly,   'Reservas — Total (mensal)',    C.dourado,
       { line: { color: C.dourado, width: 1.8, dash: 'dot' }, connectgaps: true }),
   ],
-  mkLayout('Reservas Internacionais (USD mi)', {
-    yaxis: { zeroline: false },
+  mkLayout('Reservas Internacionais (USD Bi)', {
+    yaxis: { zeroline: false, hoverformat: '.1f' },
   }), CONFIG);
 })();
 
@@ -920,8 +1175,8 @@ renderHeatmap();
     tLine(d.dates, d.bank_fx_spot_position,     'Posição de Câmbio — Bancos',      C.azulCl,
       { connectgaps: true }),
   ],
-  mkLayout('Swap Cambial BCB vs Posição dos Bancos (USD mi)', {
-    yaxis: { zeroline: true },
+  mkLayout('Swap Cambial BCB vs Posição dos Bancos (USD Bi)', {
+    yaxis: { zeroline: true, hoverformat: '.1f' },
   }), CONFIG);
 })();
 
@@ -935,8 +1190,8 @@ renderHeatmap();
       { fill: 'tozeroy', fillcolor: 'rgba(251,200,82,0.12)' }
     ),
   ],
-  mkLayout('Reservas em Ouro (USD mi)', {
-    yaxis: { zeroline: false },
+  mkLayout('Reservas em Ouro (USD Bi)', {
+    yaxis: { zeroline: false, hoverformat: '.1f' },
   }), CONFIG);
 })();
 
@@ -949,9 +1204,9 @@ renderHeatmap();
     { x: d.dates, y: d.bcb_intervention_fx_loans_repos, type: 'bar', name: 'FX Loans/Repos', marker: { color: C.azulCl  } },
     { x: d.dates, y: d.bcb_intervention_repo_lines,   type: 'bar', name: 'Repo Lines',       marker: { color: C.dourado } },
   ],
-  mkLayout('Intervenções Cambiais BCB — Líquidas (USD mi)', {
+  mkLayout('Intervenções Cambiais BCB — Líquidas (USD Bi)', {
     barmode: 'relative',
-    yaxis:   { zeroline: true },
+    yaxis:   { zeroline: true, hoverformat: '.1f' },
   }), CONFIG);
 })();
 
@@ -966,8 +1221,8 @@ renderHeatmap();
     tLine(d.dates, d.comercial_saldo,  'Saldo Comercial',  C.verde,  {}),
     tLine(d.dates, d.financeiro_saldo, 'Saldo Financeiro', C.azulCl, {}),
   ],
-  mkLayout('Fluxo Cambial — Saldos por Segmento (USD mi)', {
-    yaxis: { zeroline: true },
+  mkLayout('Fluxo Cambial — Saldos por Segmento (USD Bi)', {
+    yaxis: { zeroline: true, hoverformat: '.1f' },
   }), CONFIG);
 })();
 
@@ -980,9 +1235,9 @@ renderHeatmap();
     { x: d.dates, y: d.comercial_entrada,       type: 'bar', name: 'Comercial — Entrada', marker: { color: C.azulCl  }, visible: 'legendonly' },
     { x: d.dates, y: negate(d.comercial_saida), type: 'bar', name: 'Comercial — Saída',   marker: { color: C.dourado }, visible: 'legendonly' },
   ],
-  mkLayout('Fluxo Cambial — Entradas (+) e Saídas (−) (USD mi)', {
+  mkLayout('Fluxo Cambial — Entradas (+) e Saídas (−) (USD Bi)', {
     barmode: 'relative',
-    yaxis:   { zeroline: true },
+    yaxis:   { zeroline: true, hoverformat: '.1f' },
   }), CONFIG);
 })();
 

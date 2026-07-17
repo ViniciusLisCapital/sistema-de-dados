@@ -8,7 +8,7 @@ dados a conceitos (UIP, carry trade, BOP etc.) é responsabilidade do agente
 que consome este snapshot.
 
 Uso:
-    uv run python -c "from analytics.cambio.agent_data import get_fx_snapshot; import json; print(json.dumps(get_fx_snapshot(), ensure_ascii=False, default=str))"
+    uv run python -c "from analytics.exchange_rate.agent_data import get_fx_snapshot; import json; print(json.dumps(get_fx_snapshot(), ensure_ascii=False, default=str))"
 """
 
 import json
@@ -16,7 +16,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from analytics.cambio.generate_report import (
+from analytics.exchange_rate.generate_report import (
     _load_bcb_positioning,
     _load_bop,
     _load_cot_fx,

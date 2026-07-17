@@ -17,7 +17,7 @@ Technical details on schema, SGS codes and observation counts live in `CAMBIO.md
 
 Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chunks by year (BCB API rejects windows > 10 years for daily series, confirmed via 406 response).
 
-**Remaining gap:** the analysis agent (`analytics/cambio/agent_data.py`) hasn't been updated yet to pull `cmb_ptax` into its snapshot — the data exists but isn't wired into the agent's output.
+**Remaining gap:** the analysis agent (`analytics/exchange_rate/agent_data.py`) hasn't been updated yet to pull `cmb_ptax` into its snapshot — the data exists but isn't wired into the agent's output.
 
 ---
 

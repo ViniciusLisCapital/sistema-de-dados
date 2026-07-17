@@ -38,8 +38,13 @@ def _load_decomposicao() -> pd.DataFrame:
     dimensao.close_connection()
 
     df["date"] = pd.to_datetime(df["date"])
-    for col in ["var_mensal", "pesos", "contribuicao"]:
-        df[col] = pd.to_numeric(df[col]).round(5)
+    df["var_mensal"] = pd.to_numeric(df["var_mensal"]).round(5)
+    # pesos/contribuicao rounded looser (5) than their smallest real values (~3e-6 /
+    # ~6e-8) collapse low-weight subitems (e.g. "Fisioterapeuta", peixes exoticos) to
+    # 0.0 -- since the front-end weighted average divides by sum(pesos), a zeroed
+    # weight makes every month null and the Y/Y drilldown chart renders empty.
+    for col in ["pesos", "contribuicao"]:
+        df[col] = pd.to_numeric(df[col]).round(8)
 
     return df.merge(dim, on="subitem", how="left")
 

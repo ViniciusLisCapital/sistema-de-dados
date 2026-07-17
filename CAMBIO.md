@@ -15,9 +15,13 @@ Construído em: junho 2026 · Reestruturado: junho 2026, julho 2026 (macro_analy
 | `cmb_reservas_bc` | `macro_brasil` | BCB SGS (22 séries) | 1971 → hoje | `domain/db/brasil/bcb/cmb_reservas_bc.py` |
 | `cmb_cambio_contratado` | `macro_brasil` | BCB SGS (15 séries) | 1982 → hoje | `domain/db/brasil/bcb/cmb_cambio_contratado.py` |
 | `cmb_ptax` | `macro_brasil` | BCB SGS 1, 20205, 20359 | 1984 → hoje | `domain/db/brasil/bcb/cmb_ptax.py` |
-| `cmb_balanco_pagmt` | `macro_brasil` | BCB SGS (41 séries) | 1995 → hoje | `domain/db/brasil/bcb/cmb_balanco_pagmt.py` |
+| `cmb_balanco_pagmt` | `macro_brasil` | BCB SGS (52 séries) | 1995 → hoje | `domain/db/brasil/bcb/cmb_balanco_pagmt.py` |
 | `cmb_fluxo_cambial` | `macro_brasil` | BCB SGS (6 séries) | 2003 → hoje | `domain/db/brasil/bcb/cmb_fluxo_cambial.py` |
 | `cmb_termos_troca` | `macro_brasil` | IPEADATA/Funcex (`FUNCEX12_TTR12`) | 1978 → hoje | `domain/db/brasil/ipea/cmb_termos_troca.py` |
+| `atv_pib_usd` | `macro_brasil` | BCB SGS 4385 (PIB mensal em USD, Depec) | 1995 → hoje | `domain/db/brasil/bcb/atv_pib_usd.py` |
+| `cmb_comex_pais` | `macro_brasil` | Comex Stat/MDIC (China/EUA/Argentina/Alemanha/mundo × export/import) | 1997 → hoje | `domain/db/brasil/mdic/cmb_comex_pais.py` |
+| `cmb_comex_fator_agregado` | `macro_brasil` | Comex Stat/MDIC (Básicos/Semi/Manufaturados/Demais × export/import) | 1997 → hoje | `domain/db/brasil/mdic/cmb_comex_fator_agregado.py` |
+| `cmb_comex_produto` | `macro_brasil` | Comex Stat/MDIC (Soja/Petróleo/Minério de Ferro/Carnes/Café/mundo × export/import) | 1997 → hoje | `domain/db/brasil/mdic/cmb_comex_produto.py` |
 | `diferenciais_juros` | `macro_international` | BCB SGS + FRED | 1995 → hoje | `domain/db/international/fred/diferenciais_juros.py` |
 
 **`cmb_reservas_bc`** — schema `(date, sgs_code, name, value)`, PK `(date, sgs_code)`, `name` coluna regular. 22 séries, mistura mensal/diária. (Correção 2026-07: esta tabela era documentada aqui com apenas 1 série — a implementação real já estava muito mais completa; doc estava desatualizado, não o dado. Consolidado de `RESERVAS.md`, que foi descontinuado — conteúdo integralmente incorporado abaixo.)
@@ -105,13 +109,13 @@ Construído em: junho 2026 · Reestruturado: junho 2026, julho 2026 (macro_analy
 - `fx_interbank_vol_t2` (SGS 20205) — Volume interbancário de câmbio USD, liquidação T+2; desde 04/07/1994
 - Série diária: carga histórica usa chunking anual (API BCB rejeita janelas > 10 anos para séries diárias — erro 406 confirmado).
 
-**`cmb_balanco_pagmt`** — reestruturada em 2026-07 a partir de `balance_payments_breakdown.xlsx` (mapeamento oficial de códigos SGS fornecido pelo usuário, arquivo na raiz do repo). 41 séries brutas, 1995 → hoje:
+**`cmb_balanco_pagmt`** — reestruturada em 2026-07 a partir de `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` (mapeamento oficial de códigos SGS fornecido pelo usuário). 52 séries brutas (41 + 7 da quebra de Balança de Bens + 4 da quebra de Carteira — Ativos, todas 2026-07-14), 1995 → hoje:
 - Conta corrente: `conta_corrente`, `balanca_comercial_servicos`, `exportacao_bens`, `importacao_bens`, `servicos`, `viagens`, `transportes`, `aluguel_equipamentos`, `renda_primaria`, `remuneracao_empregados`, `lucros_remetidos`, `lucros_reinvestidos`, `juros_intercompanhia`, `lucros_dividendos_carteira`, `juros_carteira_externo`, `juros_carteira_domestico`, `juros_outros_investimentos`, `renda_reservas`, `renda_secundaria`, `conta_capital`
 - Conta financeira: `conta_financeira`, `idp_exterior`, `ide_saidas`, `investimento_direto_liquido`, `idp_ingressos`, `portfolio_ativos`, `portfolio_passivos`, `acoes_passivos`, `fundos_passivos`, `titulos_dom`, `titulos_externo_cp`, `titulos_externo_lp` (+ `_ingressos`/`_saidas`), `outros_inv_ativos`, `outros_inv_passivos`, `emprestimos_cp_passivos`, `emprestimos_lp_passivos` (+ `_ingressos`/`_saidas`), `derivativos`, `ativos_reserva`, `erros_omissoes`
 - **Agregados derivados** (calculados em `generate_report.py`, não armazenados): `demais_servicos`, `juros`, `lucros_dividendos`, `investimentos_ativos`, `investimentos_passivos`, `acoes_totais`, `emprestimos_titulos_lp_externo`, `emprestimos_titulos_cp_externo`, `demais_passivos` — todas as fórmulas cross-checadas contra o quadro condensado oficial do BCB ("Financiamento Externo") em 5 meses (Jan-Mai/2026), batendo dentro da tolerância de arredondamento da API (<0.11). Ver docstring de `cmb_balanco_pagmt.py` para as fórmulas completas.
-- **Pendência conhecida:** a quebra "Ativos de bancos" vs "Demais ativos" (lado ativo do balanço) e a quebra público/privado/direto/demais dos empréstimos de LP externo (Ingressos e Amortizações) — 10 das 40 linhas do "quadro que o usuário quer" — não têm código SGS correspondente nem em `balance_payments_breakdown.xlsx` nem em qualquer fonte que já temos. Precisa de códigos adicionais (possivelmente de uma tabela BCB diferente) antes de resolver.
+- **Pendência conhecida:** a quebra "Ativos de bancos" vs "Demais ativos" (lado ativo do balanço) e a quebra público/privado/direto/demais dos empréstimos de LP externo (Ingressos e Amortizações) — 10 das 40 linhas do "quadro que o usuário quer" — não têm código SGS correspondente nem em `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` nem em qualquer fonte que já temos. Precisa de códigos adicionais (possivelmente de uma tabela BCB diferente) antes de resolver.
 
-**Bug corrigido (2026-07, achado ao processar `balance_payments_breakdown.xlsx`):** 6 das 10 séries originais desta tabela usavam códigos SGS **errados** — apontavam para sub-itens sem relação com o nome da série (ex: `conta_corrente` usava SGS 22707, que é "Balança comercial (bens)", não "Transações correntes" — sinal e magnitude completamente diferentes). Séries afetadas: `conta_corrente`, `balanca_comercial_servicos`, `conta_financeira`, `investimento_carteira`, `carteira_acoes`, `carteira_renda_fixa`. As 3 últimas foram descontinuadas (substituídas por `portfolio_ativos`/`portfolio_passivos`/`acoes_passivos`/`fundos_passivos`/`titulos_dom`, mais precisas); as linhas históricas sob os nomes antigos foram deletadas do banco (1131 linhas) com confirmação do usuário, já que nunca representaram o conceito que o nome sugeria. Isso também significa que os 3 charts da aba BOP construídos horas antes desta correção mostravam dados errados — foram reconstruídos (ver "Estrutura em abas" abaixo).
+**Bug corrigido (2026-07, achado ao processar `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx`):** 6 das 10 séries originais desta tabela usavam códigos SGS **errados** — apontavam para sub-itens sem relação com o nome da série (ex: `conta_corrente` usava SGS 22707, que é "Balança comercial (bens)", não "Transações correntes" — sinal e magnitude completamente diferentes). Séries afetadas: `conta_corrente`, `balanca_comercial_servicos`, `conta_financeira`, `investimento_carteira`, `carteira_acoes`, `carteira_renda_fixa`. As 3 últimas foram descontinuadas (substituídas por `portfolio_ativos`/`portfolio_passivos`/`acoes_passivos`/`fundos_passivos`/`titulos_dom`, mais precisas); as linhas históricas sob os nomes antigos foram deletadas do banco (1131 linhas) com confirmação do usuário, já que nunca representaram o conceito que o nome sugeria. Isso também significa que os 3 charts da aba BOP construídos horas antes desta correção mostravam dados errados — foram reconstruídos (ver "Estrutura em abas" abaixo).
 
 **`cmb_fluxo_cambial`** — séries armazenadas:
 - Total: `total_saldo`, `total_entrada`, `total_saida`
@@ -152,14 +156,24 @@ Construído em: junho 2026 · Reestruturado: junho 2026, julho 2026 (macro_analy
 | `connectors/bis.py` | BIS Statistics API v1 (`stats.bis.org/api/v1`) | Nenhuma |
 | `connectors/cftc.py` | CFTC TFF ZIPs anuais | Nenhuma |
 | `connectors/ipeadata.py` (2026-07) | IPEADATA OData v4 (`ipeadata.gov.br/api/odata4`) | Nenhuma |
+| `connectors/comexstat.py` (2026-07-14) | Comex Stat/MDIC API ao vivo (`api-comexstat.mdic.gov.br`) — só updates marginais | Nenhuma |
+| `connectors/comexstat_bulk.py` (2026-07-14) | Comex Stat/MDIC download em massa (`balanca.economia.gov.br`) — carga histórica (país + Fator Agregado) | Nenhuma |
 
 **`connectors/ipeadata.py`** — criado para termos de troca (Funcex não está no BCB SGS). Nota técnica: o filtro `$filter=contains(...)` retorna 400 nesta API — usar `substringof('valor', CAMPO)` (sintaxe OData v3) para buscar séries por nome/código.
 
+**`connectors/comexstat.py`** — criado para a quebra da Balança de Bens por país parceiro (ver "Comex Stat/MDIC — pesquisa e decisões" abaixo). Dois gotchas confirmados empiricamente, ambos tratados dentro do connector para que nada silenciosamente errado chegue ao banco:
+- **Bug de período multi-ano:** `period.from`/`period.to` da API NÃO é uma janela contínua quando os anos são diferentes — ela aplica o intervalo de MESES em TODO ano do intervalo (ex: `from=1997-01, to=2026-06` não retorna 1997-01→2026-06 contínuo; retorna jan-jun de CADA ano entre 1997 e 2026 — confirmado, 180 linhas = 30 anos × 6 meses, não os ~354 meses esperados). Um range que cruza anos com mês(from) > mês(to) retorna lista vazia, sem erro. `get_trade()` corrige isso fazendo 1 chamada por ano internamente (sempre dentro do mesmo ano civil) e concatenando. Checado contra o OpenAPI da própria API (`/docs/doc.yaml`) — os únicos exemplos documentados usam range dentro de um único ano; a doc não confirma nem descarta comportamento multi-ano, então esse achado é 100% empírico (curl direto), não uma leitura de doc.
+- **Rate limit mais severo do que parecia inicialmente:** ~5 chamadas rápidas em sequência bastam para um 429 ("tente novamente em 10 segundos" — mensagem genérica e enganosa). Um throttle proativo (2s entre chamadas) + backoff reativo (11s→60s, 10 tentativas) reduziu a frequência de 429 mas **não foi suficiente** — um backfill de ~300 chamadas em sequência esgotou uma cota que continuou bloqueando por mais de 65s mesmo SEM nenhuma chamada adicional nesse intervalo (confirmado com testes `curl` isolados depois da falha) — indício de uma janela de limite mais longa (minutos, possivelmente mais) do que um burst-limiter comum. Resultado prático: **a API ao vivo não é confiável para o backfill histórico completo** — ver pivô para download em massa abaixo. Fica reservada só para updates marginais (`run()`, janela padrão de 36 meses — poucas dezenas de chamadas).
+
+**`connectors/comexstat_bulk.py`** — criado depois que o backfill via API ao vivo falhou 2x por rate limit (ver acima). Baixa os arquivos anuais estáticos do Comex Stat (`balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/{EXP,IMP}_{ano}.csv`, NCM-level, `;`-separado) — sem rate limit, porque são downloads de arquivo estático, não chamadas a uma API com cota. É a alternativa que a própria documentação da API recomenda para "consultas muito grandes". Um gotcha de TLS encontrado e corrigido: `balanca.economia.gov.br` envia só o certificado-folha, sem a cadeia intermediária (confirmado via `openssl s_client -showcerts`: 1 certificado, contra 3 em `api-comexstat.mdic.gov.br`) — `requests`/certifi rejeita com `CERTIFICATE_VERIFY_FAILED` porque não faz *AIA fetching* (completar a cadeia buscando o emissor via a extensão Authority Information Access do certificado); `curl`/Windows Schannel fazem isso automaticamente, por isso os testes manuais via `curl` funcionavam sem configuração extra enquanto o `requests` do Python falhava. Corrigido adicionando a dependência `truststore` (`uv add truststore`) e um `HTTPAdapter` customizado que usa verificação nativa do SO em vez do bundle do certifi — mesmo comportamento do Schannel.
+
+**Validação cruzada:** os totais agregados do CSV em massa batem exatamente com os da API ao vivo testada antes da falha — China exportação 2025: `99940244710` (bulk) vs `99940244710` (API); Estados Unidos: `37682246914` em ambas. Confirma que as duas fontes são consistentes entre si — o problema era só a confiabilidade operacional da API para volumes grandes, não os dados.
+
 ---
 
-## Relatório HTML — analytics/cambio/
+## Relatório HTML — analytics/exchange_rate/
 
-Construído em junho 2026. Arquivo único autocontido (`reports/fx_report.html`, renomeado de `cambio_latest.html` em 2026-07) gerado por `analytics/cambio/generate_report.py` a partir do template `analytics/cambio/report.html`.
+Construído em junho 2026. Arquivo único autocontido (`reports/fx_report.html`, renomeado de `cambio_latest.html` em 2026-07) gerado por `analytics/exchange_rate/generate_report.py` a partir do template `analytics/exchange_rate/report.html`.
 
 ### Como atualizar
 
@@ -169,7 +183,7 @@ uv run python jobs/update_db.py            # macro_brasil (inclui cmb_reservas_b
 uv run python jobs/update_international.py # macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
 
 # Gerar relatório
-uv run python -c "from analytics.cambio.generate_report import run; run()"
+uv run python -c "from analytics.exchange_rate.generate_report import run; run()"
 # Saída: reports/fx_report.html  (~50 KB, abre em qualquer browser)
 ```
 
@@ -201,11 +215,18 @@ O relatório era uma página única com âncoras de navegação (scroll), sem se
 | Aba | ID | Dados | Tipo |
 |---|---|---|---|
 | a | `chart-bop-current` | balança comercial+serviços + renda primária + renda secundária (barras) + conta_corrente (linha, total) | barras empilhadas + linha |
+| a | `chart-bop-bens` | mercadorias em geral + ouro não monetário + merchanting (barras) + balança de bens = exportação−importação (linha, total) | barras empilhadas + linha |
+| a | `chart-bop-bens-pais` | saldo China/EUA/Argentina/Alemanha + demais países (barras) + total Comex Stat (linha) — fonte diferente do resto da aba (não BPM6, não segue o toggle % PIB) | barras empilhadas + linha |
+| a | `chart-bop-bens-fator-agregado` | saldo Básicos/Semimanufaturados/Manufaturados/Demais (barras) + total Comex Stat (linha) — mesma fonte/ressalvas do chart por país; 4 categorias já somam 100% (sem residual) | barras empilhadas + linha |
+| a | `chart-bop-bens-produto` | saldo Soja/Petróleo Bruto/Minério de Ferro/Carnes/Café + demais produtos (barras) + total Comex Stat (linha) — mesma fonte/ressalvas do chart por país; NÃO cobre 100% do total (como o chart por país, não o de Fator Agregado) | barras empilhadas + linha |
 | a | `chart-bop-servicos` | viagens + transportes + aluguel de equipamentos + demais serviços (barras) + serviços (linha, total) | barras empilhadas + linha |
 | a | `chart-bop-renda` | remuneração de empregados + juros + lucros e dividendos (barras) + renda primária (linha, total) | barras empilhadas + linha |
-| a | `chart-bop-financial` | investimentos ativos/passivos + derivativos + ativos de reserva | barras (sem linha de total — ver nota) |
+| a | `chart-bop-financial` | investimentos ativos/passivos + derivativos + ativos de reserva (barras) + conta_financeira (linha, total) | barras empilhadas + linha |
+| a | `chart-bop-ativos-externos` | IDP no exterior + ações/fundos — ativos + títulos de dívida LP/CP — ativos + outros invest. — ativos (barras) + investimentos ativos (linha, total) | barras empilhadas + linha |
 | a | `chart-bop-financiamento` | IDP no país + ações totais + títulos mercado doméstico + empréstimos/títulos LP/CP externo + demais passivos (barras) + investimentos passivos (linha, total) | barras empilhadas + linha |
-| heatmap | `chart-heatmap` | árvore de 3 níveis do BP (ver seção própria abaixo) | heatmap, z-score trimestral |
+| heatmap | `chart-heatmap-current` | árvore de 3 níveis, Conta Corrente (ver seção própria abaixo) | heatmap, z-score trimestral |
+| heatmap | `chart-heatmap-financial` | árvore de 2 níveis, Conta Financeira | heatmap, z-score trimestral |
+| heatmap | `chart-heatmap-capital` | Conta Capital + Erros e Omissões (flat, sem drilldown) | heatmap, z-score trimestral |
 | b | `chart-bcb-reserves` | reserves_liquidity_daily (diária) + reserves_total_monthly (mensal, connectgaps) | 2 linhas |
 | b | `chart-bcb-swap` | bcb_swap_cambial_position vs bank_fx_spot_position | 2 linhas |
 | b | `chart-bcb-gold` | reserves_gold_usd | linha + fill |
@@ -221,7 +242,7 @@ O relatório era uma página única com âncoras de navegação (scroll), sem se
 | e | `chart-termos` | termos_de_troca_funcex | 1 linha |
 | e | `chart-cot-brl` | lev_net (barras) + open_interest | bar + linha eixo duplo |
 
-**Agregação por período (aba BOP, 2026-07):** os 5 charts da aba Balanço de Pagamentos têm um seletor compartilhado (`#bop-period-selector`) — Mensal / Trimestral / Anual (barras empilhadas, `barmode: 'relative'`) ou 12m Acumulado (linha, soma móvel de 12 meses). Motivação: essas séries são composições (partes que somam a um total, validado em `cmb_balanco_pagmt.py`) — barra empilhada comunica "isso construiu aquilo" melhor que linhas sobrepostas; a soma móvel de 12m suaviza a sazonalidade mensal do BOP para leitura de tendência. Trimestral/anual agregam por soma calendário-fixa (`QS`/`YS`, equivalente a `pandas.resample`); se qualquer mês do bucket for `null`, o bucket inteiro vira `null` (evita subestimar silenciosamente). `chart-bop-financial` não tem linha de total porque `conta_financeira = investimentos_ativos − investimentos_passivos + derivativos + ativos_reserva` (passivos entra com sinal invertido na identidade — empilhar os 4 componentes com sinal natural não soma ao total).
+**Agregação por período (aba BOP, 2026-07):** os 5 charts da aba Balanço de Pagamentos têm um seletor compartilhado (`#bop-period-selector`) — Mensal / Trimestral / Anual (barras empilhadas, `barmode: 'relative'`) ou 12m Acumulado (linha, soma móvel de 12 meses). Motivação: essas séries são composições (partes que somam a um total, validado em `cmb_balanco_pagmt.py`) — barra empilhada comunica "isso construiu aquilo" melhor que linhas sobrepostas; a soma móvel de 12m suaviza a sazonalidade mensal do BOP para leitura de tendência. Trimestral/anual agregam por soma calendário-fixa (`QS`/`YS`, equivalente a `pandas.resample`); se qualquer mês do bucket for `null`, o bucket inteiro vira `null` (evita subestimar silenciosamente). `chart-bop-financial` ganhou linha de total em 2026-07-14 (antes não tinha — ver "Convenção de sinal — Conta Financeira" abaixo para o porquê).
 
 **Nota:** volume interbancário (T+1/T+2) saiu do `chart-ptax` (antes combinado) e virou seu próprio chart em Fluxo Cambial (`chart-interbank-vol`) — a aba Cotação agora mostra só o nível do câmbio, sem misturar volume.
 
@@ -248,12 +269,12 @@ Aba nova (`tab-heatmap`), pedida pelo usuário para visualizar todo o BP num ún
 
 #### 0. Balanço de Pagamentos — 10 linhas do quadro "Financiamento Externo" sem código SGS
 
-Ao processar `balance_payments_breakdown.xlsx` (2026-07), 30 das 40 linhas do quadro condensado que o usuário quer foram resolvidas e cross-checadas (ver `cmb_balanco_pagmt.py`). Restam sem código SGS identificado:
+Ao processar `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` (2026-07), 30 das 40 linhas do quadro condensado que o usuário quer foram resolvidas e cross-checadas (ver `cmb_balanco_pagmt.py`). Restam sem código SGS identificado:
 - **Ativos de bancos** vs **Demais ativos** (quebra por setor do lado ativo do balanço) — só encontramos quebra setorial (Banco Central/Bancos/Governo/Demais setores) para o lado ativo em "Moeda e depósitos" (SGS 22982 para bancos); não bate exatamente com o valor do quadro condensado, então não é só essa série.
-- **Títulos públicos / Títulos privados / Empréstimos diretos / Demais empréstimos** — quebra por tipo de credor dentro de "Empréstimos e títulos de LP negociados no mercado externo", tanto para Ingressos quanto para Amortizações (8 linhas) — não existe em `balance_payments_breakdown.xlsx` nem no detalhamento BPM6 padrão (códigos 22701–23060).
+- **Títulos públicos / Títulos privados / Empréstimos diretos / Demais empréstimos** — quebra por tipo de credor dentro de "Empréstimos e títulos de LP negociados no mercado externo", tanto para Ingressos quanto para Amortizações (8 linhas) — não existe em `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` nem no detalhamento BPM6 padrão (códigos 22701–23060).
 
 **Próximos passos (definido com o usuário em 2026-07):** duas linhas de ataque possíveis, ainda em aberto:
-1. **Usar a informação do jeito que o BCB fornece** — ao invés de forçar a quebra exata do quadro "Financiamento Externo" (bancos/demais setores, público/privado/direto), aceitar a granularidade que o BPM6 detalhado (`balance_payments_breakdown.xlsx`, aba 1) já oferece nativamente para essas 10 linhas, mesmo que não bata 1:1 com "o quadro que eu quero".
+1. **Usar a informação do jeito que o BCB fornece** — ao invés de forçar a quebra exata do quadro "Financiamento Externo" (bancos/demais setores, público/privado/direto), aceitar a granularidade que o BPM6 detalhado (`analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx`, aba 1) já oferece nativamente para essas 10 linhas, mesmo que não bata 1:1 com "o quadro que eu quero".
 2. **Tentar por tentativa e erro** — buscar no buscador de séries do BCB SGS (https://www3.bcb.gov.br/sgspub/localizarseries/localizarSeries.do) por candidatos a código fora do range 22701–23060 (o quadro condensado "Financiamento Externo" das notas do setor externo do BCB provavelmente tem sua própria faixa de códigos, sem correspondência 1:1 com o detalhamento BPM6).
 
 Nenhuma das duas foi executada ainda — ficou registrado como pendência para retomar quando o usuário tiver tempo/prioridade.
@@ -302,19 +323,120 @@ Deferred: requer `blpapi`/`xbbg` na máquina de Bloomberg.
 
 `chart-ptax` (linha PTAX venda) adicionado na aba Cotação. `agent_data.py` (cambio-analyst) também atualizado para incluir o grupo `ptax` no snapshot — a nota antiga "nenhuma série de câmbio à vista disponível" estava desatualizada e foi removida. **Atualização (mesmo dia, reestruturação em abas):** o volume interbancário (T+1/T+2), que tinha sido colocado no mesmo chart em eixo secundário, foi separado para seu próprio chart (`chart-interbank-vol`) na aba Fluxo Cambial — a aba Cotação mostra só o nível do câmbio. `_load_ptax()` ainda expõe `vol_t1`/`vol_t2`/`vol_total` (soma) para os dois consumidores.
 
-#### 7. Balança de Bens — quebra adicional (registrado 2026-07)
+#### 7. Balança de Bens — quebra adicional ✓ (feito, 2026-07-14 — quebra por categoria BCB e por país parceiro; quebra por produto/NCM segue em aberto)
 
-Hoje `cmb_balanco_pagmt` só tem `exportacao_bens`/`importacao_bens` em total (sem quebra por produto, país/parceiro comercial, ou fator agregado). O usuário quer mais detalhe aqui — eixo de quebra ainda não definido. Precisa decidir com o usuário: quebra por categoria de produto (commodities vs manufaturados?), por país/bloco parceiro, ou ambos — e se os dados vêm do BCB SGS (buscar códigos) ou de outra fonte mais adequada para comércio exterior (ex: Comex Stat/MDIC, que é a fonte oficial de dados de comércio exterior desagregados por NCM e país, mas não é BCB SGS — pode exigir um connector novo).
+`cmb_balanco_pagmt` ganhou 7 novas séries (SGS 22710–22713, 22716–22718), backfilled desde 1995: `mercadorias_gerais` (+`_export`/`_import`), `merchanting`, `ouro_nao_monetario` (+`_export`/`_import`). É a quebra oficial que o próprio BCB já publica dentro do detalhamento BPM6 (mesma planilha `balance_payments_breakdown.xlsx`, aba "BreakDown the bcb provides", já em uso para o resto da tabela — não foi preciso um connector novo). Confirmado aditivo: `mercadorias_gerais + merchanting + ouro_nao_monetario = exportacao_bens − importacao_bens` bate exatamente (testado contra a API, Jan-Mai/2026). `merchanting` é pequeno em módulo (~USD 5–20 mi/mês) e tem convenção de sinal atípica no detalhamento bruto — só o líquido (22713) foi ingerido, sem export/import próprios.
 
-#### 8. Métricas em % do PIB (registrado 2026-07)
+Novo chart `chart-bop-bens` ("Balança de Bens — Detalhe", espelhando "Serviços — Detalhe") na aba BOP, e o nó "Balança de Bens" do Mapa de Calor (Conta Corrente) ganhou 2 níveis de profundidade (Mercadorias em Geral / Ouro Não Monetário — cada um com Exportação/Importação — e Merchanting como folha), substituindo os antigos filhos flat "Exportação de Bens"/"Importação de Bens".
 
-Adicionar as séries do Balanço de Pagamentos como % do PIB (ex: conta corrente/PIB, IDP líquido/PIB), para comparabilidade histórica entre períodos de câmbio/preço diferentes — hoje todo o BOP está em USD milhões nominais, o que dificulta comparar magnitude entre 1995 e 2026. Precisa: (a) confirmar se já temos uma série de PIB adequada no banco (`atv_pib`, IBGE 1620/1621 — verificar se é só em BRL ou também disponível/conversível para USD, e se a frequência trimestral bate com o BOP) e (b) decidir onde expor isso no relatório — provavelmente como um toggle adicional na aba BOP (ao lado do seletor de período) ou uma aba/seção própria.
+**Quebra por país parceiro ✓ (feito, 2026-07-14):** usuário pediu para pesquisar alternativas — Comex Stat/MDIC confirmado como a fonte oficial de comércio exterior por país/produto (ver pesquisa detalhada abaixo, "Comex Stat/MDIC"). Novo connector `connectors/comexstat.py` (API ao vivo) + `connectors/comexstat_bulk.py` (download em massa) + script `domain/db/brasil/mdic/cmb_comex_pais.py` (`backfill()` via bulk, `run()` via API) + tabela `cmb_comex_pais` (`macro_brasil`), **354 linhas cada série, 1997-01 → 2026-06, sem gaps**. Novo chart `chart-bop-bens-pais` ("Balança de Bens — por País Parceiro") logo abaixo de `chart-bop-bens` na aba BOP: China, Estados Unidos, Argentina, Alemanha (os 4 maiores parceiros por comércio total em 2025) + "Demais Países" (residual). Aditividade confirmada via Node harness (mensal: soma dos 5 = 9.7577 = total; anual: soma dos 5 = 42.3575 = total). **Importante:** Comex Stat usa metodologia de comércio geral (SISCOMEX), não BPM6 — o BCB aplica ajustes documentados para chegar de uma para a outra (bens para transformação, mudança de propriedade sem cruzar fronteira etc.) — por isso o total desta quebra não fecha exatamente com `chart-bop-bens`/`mercadorias_gerais`; é um recorte complementar por parceiro, com seu próprio total interno (`saldo_mundo`), não uma reconciliação linha a linha. Ver seção própria abaixo para detalhes técnicos (gotcha de período da API, rate limit persistente que forçou o pivô para download em massa, gotcha de TLS, escolha dos parceiros).
+
+**Quebra por Fator Agregado ✓ (feito, 2026-07-14 — pedido do usuário: "can we get the balance of payments by product?"):** confirmado antes que essa classificação **não está disponível via a API do Comex Stat**, só via join local contra `NCM.csv`/`NCM_FAT_AGREG.csv` do download em massa. Validado o join primeiro (2025 export: total bate exatamente com o já obtido pela API, `nao_classificado` residual de só 0.04% do total) antes de construir o pipeline completo. Novo connector `connectors/comexstat_bulk.py::get_year_by_fator_agregado()` + script `domain/db/brasil/mdic/cmb_comex_fator_agregado.py` + tabela `cmb_comex_fator_agregado` (`macro_brasil`) — 4 séries agregadas dos 6 códigos oficiais (Básicos, Semimanufaturados, Manufaturados, "Demais" = Transações Especiais + Consumo de Bordo + Reexportação + resíduo não classificado). **Diferente da quebra por país**, aqui as 4 categorias já somam 100% do total (toda transação cai em exatamente 1 categoria) — não precisa de série "mundo" + residual, só a soma direta. Só existe fonte bulk (sem API ao vivo equivalente) — `run()` é um wrapper fino sobre `backfill()` com janela curta (últimos 2 anos, sem risco de rate limit já que é download de arquivo estático). Backfill completo: **354 linhas em basicos/semimanufaturados/manufaturados × export/import; "demais" tem gaps genuínos** (324 linhas export, só 51 import — meses sem nenhuma transação nessas categorias raras, não falha do pipeline) — corrigido com `fillna(0)` em `generate_report.py` antes de calcular saldo/total (ausência de linha = zero real, análogo ao `lucros_reinvestidos` de `cmb_balanco_pagmt`). Novo chart `chart-bop-bens-fator-agregado` ("Balança de Bens — por Categoria de Produto"). Aditividade confirmada via Node harness — e os totais batem EXATAMENTE com os do chart por país para o mesmo período (mensal e anual), confirmando consistência entre as duas quebras da mesma fonte. Sinais batem com o perfil conhecido do comércio brasileiro: Básicos/Semimanufaturados superavitários, Manufaturados deficitário.
+
+**Quebra por produto específico ✓ (feito, 2026-07-14 — usuário apontou: "We don't have the by product information?"):** a quebra por Fator Agregado acima responde "que TIPO de produto" (categorias amplas), não "QUAL produto" — usuário queria os produtos específicos citados originalmente (soja, petróleo). Investigação rápida por capítulo do Sistema Harmonizado (SH2) nos exports de 2025 confirmou os 5 maiores: Petróleo/Combustíveis (cap. 27, US$56.0 Bi), Soja/oleaginosas (cap. 12, US$44.7 Bi), Minérios (cap. 26, US$34.9 Bi), Carnes (cap. 02, US$30.0 Bi), Café/especiarias (cap. 09, US$15.6 Bi) — usuário escolheu via pergunta o conjunto "Top 5" (Petróleo, Soja, Minério de Ferro, Carnes, Café).
+
+**Precisão do código SH escolhida por produto** (verificado numericamente antes de implementar — ver tabela abaixo): para 4 dos 5 produtos, uma única posição SH4 (4 dígitos) domina o capítulo inteiro, então usar o capítulo (SH2) inflaria o número com produtos correlatos mas diferentes — usado SH4 nesses casos. "Carnes" é a exceção: o capítulo 02 se divide genuinamente entre bovina/suína/aves sem uma posição dominante, então manteve o capítulo inteiro (SH2).
+
+| Produto | Código usado | % do capítulo (2025 export) | O que ficaria de fora com o capítulo inteiro |
+|---|---|---|---|
+| Soja | SH4 `1201` | 97.5% do cap. 12 | Outras sementes oleaginosas (girassol, colza etc.) |
+| Petróleo Bruto | SH4 `2709` | 79.6% do cap. 27 | Combustíveis refinados (SH4 `2710`, US$10.3 Bi) — categoria distinta |
+| Minério de Ferro | SH4 `2601` | 83.1% do cap. 26 | Minério de cobre e outros (SH4 `2603` etc.) |
+| Café | SH4 `0901` | 95.4% do cap. 09 | Chá, mate, especiarias |
+| Carnes | SH2 `02` (capítulo inteiro) | 100% (é o próprio capítulo) | — bovina (SH4 `0202`=US$14.4 Bi)/aves (`0207`=US$8.8 Bi)/suína (`0203`=US$3.4 Bi) somadas de propósito |
+
+**Implementação:** `connectors/comexstat_bulk.py` ganhou `get_ncm_sh6()` (correlação NCM→SH6, cacheada) + `get_year_by_produto()` (agrega por prefixo de código SH, aceita SH2 ou SH4 no mesmo dict) + script `domain/db/brasil/mdic/cmb_comex_produto.py` (mesmo padrão de `cmb_comex_pais.py`: série "mundo" + residual "Demais Produtos", já que 5 produtos específicos não cobrem 100% do total) + tabela `cmb_comex_produto`. Séries de import de commodities que o Brasil majoritariamente exporta têm gaps genuínos (`minerio_ferro_import` só 283/354 meses, `soja_import` 339/354, `petroleo_export` 321/354 — ausência real, não falha) — mesmo tratamento `fillna(0)` de `_load_comex_fator_agregado()`.
+
+**Bug de robustez encontrado durante o backfill:** o primeiro `backfill(1997)` falhou no meio (`ChunkedEncodingError`/`IncompleteRead` — conexão caiu depois de já ter recebido `200 OK` e começado a transferir o corpo de ~50MB) — o `Retry` do `urllib3` montado no adapter NÃO cobre esse caso (só retries de conexão/status HTTP, não de leitura de corpo interrompida no meio). Corrigido com `_get_csv_bytes()`, um retry manual (3 tentativas, backoff simples) em volta da leitura de `.content` — aplicado retroativamente também às 2 outras funções de fetch (`get_year`, `get_year_by_fator_agregado`) para a mesma robustez, mesmo que não tivessem falhado ainda.
+
+**Verificação:** Node harness confirmou aditividade (mensal: soma dos 6 = 9.7577 = total; anual: soma dos 6 = 42.3575 = total) — **os totais batem EXATAMENTE com os das outras 2 quebras Comex Stat** (por país e por Fator Agregado) para os mesmos períodos, uma terceira confirmação cruzada de consistência entre as 3 tabelas. Sinais econômicos fazem sentido: os 5 produtos nomeados são todos superavitários (Soja +28.9 Bi, Petróleo +24.6 Bi, Minério +13.4 Bi, Carnes +16.5 Bi, Café +5.9 Bi no acumulado 2026 parcial) e "Demais Produtos" é bem negativo (-47.1 Bi) — absorve o déficit de manufaturados já visto na quebra por Fator Agregado.
+
+#### 8. Métricas em % do PIB ✓ (feito, 2026-07-14)
+
+Botão "USD Bi / % do PIB" adicionado no topo da aba BOP, ao lado do seletor de período — aplica-se aos 7 gráficos de composição. Usa nova tabela `atv_pib_usd` (BCB SGS 4385, PIB mensal em USD — não é `atv_pib`, que é trimestral em R$ via IBGE). Ver seção própria abaixo ("Botão 'USD Bi / % do PIB'...") para a convenção de agregação por período e a verificação numérica.
 
 #### 9. Melhorias no Mapa de Calor (registrado 2026-07)
 
-Itens abertos, ainda sem prioridade definida:
-- **Altura fixa do card** (`.chart-card-tall`, 820px) foi dimensionada para a árvore totalmente expandida (~31 linhas) — com poucas linhas visíveis (estado recolhido, default), as linhas ficam desproporcionalmente altas. Deliberadamente deixado assim por ora ("por enquanto, deixa assim" — instrução do usuário). Redimensionamento dinâmico por número de linhas visíveis é a solução óbvia quando isso virar prioridade.
+- ~~Altura fixa do card desproporcional quando poucas linhas visíveis~~ ✓ resolvido 2026-07-14 — ver "Ajustes de UX" abaixo (altura agora dinâmica por painel).
 - Espaço para outras melhorias a definir (ex: exportar/imprimir o estado expandido, indicador visual de "quantas colunas iniciais estão em branco" por falta de baseline de 3 anos, etc.) — usuário não especificou detalhes ainda.
+
+### Ajustes de UX e correção de dados (2026-07-14)
+
+Pedidos do usuário após revisão do relatório já em uso — cinco itens:
+
+1. **USD mi → USD Bi:** todas as séries em USD (BOP, posicionamento BCB — reservas/ouro/swap/intervenções —, fluxo cambial) convertidas para bilhões na camada de dados (`generate_report.py`, `/1000` logo após o pivot), não só no rótulo — z-score do heatmap é invariante a escala, mas o valor bruto exibido em cada célula/hover muda de fato. PTAX, REER, diferenciais de juros e COT não usam USD nominal e não foram tocados.
+
+2. **"Lucros e Dividendos" 2000–2010 — verificado, era um gap real da fonte BCB, não um bug do pipeline.** `lucros_reinvestidos` (SGS 22815) não tem dado publicado pelo BCB entre 1999-01 e 2009-12 (confirmado direto na API: HTTP 404 "Value(s) not found" para essa janela — a série volta a existir a partir de 2010-01, provavelmente por causa da transição de metodologia BPM5→BPM6). Como `lucros_dividendos = lucros_remetidos + lucros_reinvestidos + lucros_dividendos_carteira`, a soma propagava `NaN` pela década inteira mesmo com as outras duas parcelas presentes — o componente sumia do gráfico de composição nesses anos. Fix: `fillna(0)` em `lucros_reinvestidos` antes da soma (ver docstring de `cmb_balanco_pagmt.py`); a Renda Primária (linha de total) nunca foi afetada, pois vem direto do agregado oficial do BCB, não da soma dos componentes.
+
+3. **Trimestres rotulados pelo mês final (mar/jun/set/dez), não inicial (jan/abr/jul/out).** `bucketStartDate()` em `report.html` usava o primeiro mês do trimestre como data de rótulo; ajustado para o último mês — convenção mais comum de leitura de trimestre fiscal. Só afeta o rótulo do eixo X — a soma trimestral em si (quais meses entram em cada bucket) não mudou.
+
+4. **Notas explicativas em todos os gráficos:** cada seção agora tem um `.note` com 1–2 frases sobre o que a série representa (ex: o que é REER, o que é Financiamento Externo, o que significa net comprado no COT) — antes só ~3 seções tinham nota, e eram técnicas (sobre a fonte/cálculo), não explicativas sobre o conceito.
+
+5. **Mapa de Calor dividido em 3 painéis** (Conta Corrente / Conta Financeira / Conta de Capital + Erros e Omissões), cada um com seu próprio estado de expansão e altura de card dinâmica (`chromePx + linhas_visíveis * rowPx`, 220–820px) — resolve a pendência conhecida de linhas desproporcionalmente altas quando poucas estão visíveis. Erros e Omissões foi agrupado com Conta Capital (não é uma das 3 contas nomeadas do BP, mas também não justifica um painel próprio de 1 linha). Página alargada (`main`, 1440px → 1800px).
+   - **Valor escrito em cada célula, mas só sob zoom suficiente:** primeira tentativa (`texttemplate: '%{text}'` sempre ativo) ficou ilegível com o histórico completo (~126 colunas trimestrais) — texto de células vizinhas se sobrepõe e vira ruído. Corrigido com `applyHeatmapTextVisibility()`: liga o texto (via `Plotly.restyle`) só quando o range visível no eixo X tem ≤32 colunas (~8 anos — cabe sem sobrepor numa área de plotagem de ~1450px), escutando `plotly_relayout` (dispara tanto em zoom manual quanto nos botões "1a/3a/5a/10a/Tudo"). Com o histórico completo visível, só a cor fica ativa (valor exato continua no hover). Números arredondados para 1 casa decimal (era 2 — ajuste pedido pelo usuário).
+
+6. **Hoverformat nos gráficos em USD Bi:** o item 1 converteu os valores para Bi, mas não arredondava o hover (Plotly mostra float cheio por padrão, ex. "1.7888") — `yaxis.hoverformat: '.1f'` adicionado em todos os charts de BOP/BCB Positioning/Fluxo Cambial (PTAX ficou de fora — cotação precisa de mais casas decimais).
+
+### Convenção de sinal — Conta Financeira (2026-07-14, pedido do usuário)
+
+**Objetivo:** o usuário quer ler a Conta Financeira como "contraparte" da Conta Corrente, com uma única regra em todo o relatório: **negativo = saída de USD do Brasil, positivo = entrada de USD** — a mesma leitura que Conta Corrente já tem (déficit/negativo = saída).
+
+**Descoberta ao verificar dado real (Ativos, maio/2026 = -745):** o BPM6 publicado pelo BCB usa convenções opostas para Ativos e Passivos — positivo em Ativos = aumento de ativo no exterior = SAÍDA de USD; positivo em Passivos = aumento de passivo externo = ENTRADA de USD (confirmado numericamente: `investimento_direto_liquido`, a maior componente de Passivos, é consistentemente positivo todo mês — IDE líquido positivo é a norma no Brasil). Isso significa que **só o lado Ativos precisa ser invertido** para bater com a regra desejada — Passivos já publica na convenção certa e não deveria ser tocado.
+
+**Correção de rumo nesta sessão:** a primeira tentativa inverteu Passivos (raciocínio: "Ativos e Passivos parecem andar juntos no mesmo gráfico, uniformizar os dois para 'positivo = saída' em ambos") — isso resolvia a inconsistência *entre* Ativos e Passivos, mas na direção errada para o objetivo real (comparar com Conta Corrente). Corrigido depois de o usuário testar o valor de maio/2026 passo a passo comigo e apontar a contradição. Lição: verificar a direção do sinal contra um exemplo numérico real e contra o objetivo final (aqui, "contraparte da Conta Corrente"), não só contra consistência interna entre duas séries.
+
+**Implementação final** (`generate_report.py::_load_bop()`), tudo aplicado só na camada do relatório, ANTES de qualquer fórmula rodar (fórmulas são combinações lineares, então invertem corretamente sem precisar reescrever nada):
+- Invertido: `idp_exterior`, `portfolio_ativos`, `outros_inv_ativos` (→ `investimentos_ativos`), `derivativos`, `ativos_reserva`, `conta_financeira` (total oficial).
+- NÃO invertido: `investimento_direto_liquido`, `portfolio_passivos`, `acoes_passivos`, `fundos_passivos`, `titulos_dom`, `titulos_externo_cp`, `titulos_externo_lp`, `emprestimos_cp_passivos`, `emprestimos_lp_passivos`, `outros_inv_passivos` (→ `investimentos_passivos` e tudo que dele deriva) — já publica na convenção desejada.
+- `Ativos de Reserva` também invertido, por decisão explícita do usuário: quando o BC aumenta reservas (positivo na fonte), esse USD é absorvido pelo BC em vez de ficar disponível — mesma direção de "saída" que Ativos.
+- `conta_financeira` (total oficial, SGS 22863) precisou ser invertido também para a identidade continuar fechando: originalmente `conta_financeira = investimentos_ativos − investimentos_passivos + derivativos + ativos_reserva` (Passivos entra subtraído — convenção "Concessões líquidas(+)/Captações líquidas(-)"); invertendo ativos/derivativos/reserva e mantendo passivos como está, só fecha invertendo `conta_financeira` também. Confirmado numericamente para maio/2026 (soma dos 4 componentes = 3.7157, `conta_financeira` invertido = 3.7159 — bate dentro do arredondamento).
+- **Bônus:** com a identidade voltando a fechar como soma direta, `chart-bop-financial` ("Conta Financeira — Ativos vs Passivos") ganhou linha de total pela primeira vez — antes não tinha, porque a soma dos 4 componentes não batia com o total.
+- **Bug encontrado de graça nesse processo:** `outros_inv_ativos` era referenciado pelo nó "Outros Investimentos — Ativos" do Mapa de Calor mas nunca tinha sido incluído na lista de passthrough de `_load_bop()` — a linha vinha em branco desde sempre. Corrigido junto (adicionado à lista).
+- `Investimentos — Passivos` e "Financiamento Externo — Passivos" (`chart-bop-financiamento`) permanecem exatamente na convenção original do BCB, sem alteração.
+
+**Verificação:** script Node.js executou o JS extraído do HTML gerado contra um stub mínimo de `document`/`Plotly` (mesma técnica já usada para `rollingZScore()` — ver "Verificação" na seção do Mapa de Calor original) — confirmado sem erros de runtime, valores em USD Bi na faixa esperada (ex: reservas ~USD 371 Bi em 2026-05, bate com o número real de reservas do Brasil), e rótulos trimestrais terminando em `-03-01`/`-06-01`/`-09-01`/`-12-01`.
+
+**Breakdown "Ativos" adicionado (2026-07-14, pedido do usuário: "it's missing the breakdown of the asset part"):** `chart-bop-financiamento` ("Financiamento Externo — Passivos") já detalhava o lado Passivos, mas não havia equivalente para Ativos — adicionado `chart-bop-ativos-externos` ("Investimentos no Exterior — Ativos"), inicialmente com 3 linhas (IDP no exterior + carteira — ativos, lump + outros investimentos — ativos).
+
+**Refinamento (mesma sessão, pedido do usuário):** usuário pediu para usar a granularidade da aba oficial "BreakDown the bcb provides" (`balance_payments_breakdown.xlsx`), separando investimento direto de investimento em carteira, e — dada a opção — escolheu abrir Carteira em Ações+Fundos e Títulos de Dívida CP/LP separados, no mesmo nível de detalhe já usado no lado Passivos (`chart-bop-financiamento`). 4 novas séries adicionadas a `cmb_balanco_pagmt` (SGS 22909/22912/22918/22921 — ver docstring de `cmb_balanco_pagmt.py`), backfilled `start='01/01/1995'` (377 linhas cada, sem gaps). `chart-bop-ativos-externos` agora tem 5 linhas: IDP no Exterior, Ações e Fundos — Ativos, Títulos de Dívida — Ativos (LP), Títulos de Dívida — Ativos (CP), Outros Investimentos — Ativos. Aditividade confirmada numericamente (Node harness, maio/2026: soma dos 5 componentes = 0.7452, `investimentos_ativos` = 0.7451). As 4 novas séries entram em `_INVERTED_COLS` em `_load_bop()` — herdam a mesma inversão de sinal de `portfolio_ativos` (do qual são subitens), pela mesma lógica documentada acima.
+
+### Botão "USD Bi / % do PIB" na aba Balanço de Pagamentos (2026-07-14, pedido do usuário)
+
+Usuário encontrou a série SGS 4385 ("GDP monthly in dollar") no buscador de séries do BCB e pediu um botão no topo da aba para alternar entre valor absoluto (USD Bi) e % do PIB.
+
+**Nova tabela `atv_pib_usd`** (`domain/db/brasil/bcb/atv_pib_usd.py`) — série única, SGS 4385, PIB mensal do Brasil em USD (BCB/Depec). Prefixo `atv_` porque é dado de atividade por natureza (independente de quem consome — ver critério de classificação do projeto), não `cmb_`, mesmo sendo usada só pelo relatório cambial por ora. Tabela nova (schema idêntico às demais: `date`, `name`, `value`, `PRIMARY KEY (date, name)`), sem relação com `atv_pib` (PIB trimestral IBGE em R$, tabela e propósito diferentes). Backfilled `start='01/01/1995'` (378 linhas, 1995-01 a 2026-06 — um mês à frente de `cmb_balanco_pagmt`, sem problema porque o reindex em `_load_bop()` alinha pelo índice do BOP). Adicionada a `jobs/update_db.py`.
+
+**Alinhamento em `generate_report.py::_load_bop()`:** `atv_pib_usd` é lida e reindexada ao índice de datas de `cmb_balanco_pagmt` (`gdp_wide["pib_usd"].reindex(wide.index)`), convertida para USD Bi (`/1000`), e exposta como `REPORT_DATA.bop.gdp_usd_bi` — mesmo array de datas que todas as outras séries da aba.
+
+**Escopo do toggle (decisão via pergunta ao usuário):** aplica-se aos 7 gráficos de composição da aba (`chart-bop-current`, `-bens`, `-servicos`, `-renda`, `-financial`, `-ativos-externos`, `-financiamento`) — não ao Mapa de Calor (que já usa uma normalização própria via z-score).
+
+**Convenção de agregação por período:** `renderComposition()` ganhou parâmetros opcionais `gdpValues`/`mode`. Quando `mode === 'pct'`, o PIB é agregado pela MESMA regra do período ativo (`aggregateSum` para mensal/trimestral/anual, `rollingSum12` para 12m acumulado) antes da divisão — ou seja, o bucket anual divide a soma de 12 meses de fluxo pela soma de 12 meses de PIB, não pelo PIB de um mês isolado. É a convenção usual de "déficit em conta corrente como % do PIB" (razão entre duas somas na mesma janela, não razão instantânea mês-a-mês). Como as fórmulas de agregação (`aggregateSum`/`rollingSum12`) já eram lineares e reaproveitadas, converter para % só exigiu dividir depois de agregar — não antes.
+
+**Verificação:** Node harness re-executando `renderBopCharts('annual', 'pct')` contra o script extraído do HTML gerado — bucket 2025 de Conta Corrente: soma = -66.72 USD Bi, PIB somado = 2280.89 USD Bi, razão = -2.925% (compatível com o histórico real de déficit em conta corrente do Brasil, ~1-3% do PIB) — 2023 (-1.23%) e 2024 (-2.99%) também na faixa esperada.
+
+### Comex Stat/MDIC — pesquisa e decisões (2026-07-14, pedido do usuário: "search for a better decomposition of the Balance of goods")
+
+Usuário pediu para pesquisar alternativas à quebra da Balança de Bens (que já tinha Mercadorias em Geral/Ouro/Merchanting, mas nada por produto ou país — pendência registrada no item 7 acima desde a sessão anterior). Pesquisa (agente dedicado + verificação direta via `curl` contra a API ao vivo) confirmou o Comex Stat/MDIC como a fonte oficial.
+
+**O que existe na fonte:**
+- API pública sem autenticação (`https://api-comexstat.mdic.gov.br`), cobertura 1997-01 → hoje, atualizada ~3 dias após o fechamento do mês (mais rápido que a Balança de Pagamentos do BCB). Valores em USD FOB.
+- Quebras disponíveis via API: país, bloco econômico (blocos se sobrepõem entre si — Ásia inclui ASEAN, Europa inclui UE, América do Sul inclui Mercosul — não formam uma partição própria para um gráfico empilhado), NCM (8 dígitos), Sistema Harmonizado em 4 níveis, CGCE, CUCI/SITC, ISIC.
+- **A quebra clássica brasileira "Fator Agregado" (Básicos/Semimanufaturados/Manufaturados) NÃO está disponível via API** — confirmado checando `/general/filters` diretamente — só existe no arquivo de correlação `NCM.csv` do download em massa (`balanca.economia.gov.br`), teria que ser feito join local por código NCM.
+- Metodologia "comércio geral" (registro aduaneiro/SISCOMEX), **não BPM6** — o BCB aplica ajustes documentados (bens para transformação que cruzam fronteira sem mudança de propriedade, bens que mudam de propriedade sem cruzar fronteira, etc.) para chegar da base Comex Stat/SECEX até `mercadorias_gerais`. Os dois não devem ser somados/comparados linha a linha.
+- Rate limit agressivo (confirmado: ~5 chamadas rápidas → 429) — a própria documentação da API recomenda os arquivos de download em massa para consultas grandes/históricas em vez da API.
+
+**Decisão (via pergunta ao usuário):** começar pela quebra mais simples — país/bloco parceiro — deixando a quebra por produto (Fator Agregado, via download em massa + join) para uma fase 2. Fase 2 feita na mesma sessão, logo em seguida (usuário: "can we get the balance of payments by product?") — ver item "Quebra por Fator Agregado" acima.
+
+**Pivô de arquitetura no meio da implementação (mesma sessão):** a primeira tentativa de backfill histórico (1997→2026, ~300 chamadas via `connectors/comexstat.py`) falhou duas vezes por rate limit — na segunda vez, mesmo esperando 65+ segundos SEM nenhuma chamada adicional, a API continuou retornando 429. Isso indicou uma cota de duração mais longa do que um burst-limiter comum, não contornável com backoff dentro de uma única execução. Usuário perguntou diretamente "did you see the documentation?" — resposta honesta: não, a conclusão veio de teste empírico direto (`curl`), não de leitura prévia da doc; checando depois o OpenAPI (`/docs/doc.yaml`), os exemplos ali só cobrem ranges de um único ano, então a doc não confirma nem contradiz o achado — ela simplesmente não fala sobre isso. Usuário então perguntou "Can we use the csv to get the historical and the marginal update by the API?" — confirmado que sim, essa é exatamente a divisão de responsabilidade que a própria documentação do Comex Stat recomenda para "consultas muito grandes".
+
+**Implementação final:**
+- `connectors/comexstat.py` — API ao vivo, usada só para updates marginais (`run()`, default 36 meses). Ver tabela de connectors acima para os 2 gotchas confirmados e corrigidos (bug de período multi-ano, rate limit).
+- `connectors/comexstat_bulk.py` (novo, criado depois do pivô) — download em massa (`balanca.economia.gov.br`), sem rate limit, usado para a carga histórica completa. Gotcha de TLS encontrado e corrigido via `truststore` — ver tabela de connectors acima.
+- `domain/db/brasil/mdic/cmb_comex_pais.py` (novo, pasta `mdic/` nova ao lado de `bcb/`/`ibge/`/`ipea/`) → tabela `cmb_comex_pais`. Duas funções: `backfill(start_year=1997)` (bulk, insere incrementalmente por ano×flow — uma falha no meio não descarta o que já foi buscado, ao contrário da primeira versão que só inseria uma vez no final) e `run(n_meses=36)` (API ao vivo, update rotineiro — a única chamada em `jobs/update_db.py`). Parceiros escolhidos: os 4 maiores por comércio total (export+import) em 2025 — China (US$170.8 Bi), Estados Unidos (US$82.8 Bi), Argentina (US$31.0 Bi), Alemanha (US$20.9 Bi), juntos ~70% do comércio de bens do Brasil — mais o total mundial (`mundo_export`/`mundo_import`, sem filtro de país), que permite calcular "Demais Países" como residual na camada de consumo sem precisar buscar os ~200 parceiros individualmente. Backfill completo executado com sucesso via `backfill(1997)`: **354 linhas por série, 1997-01 → 2026-06, sem gaps**, ~60 downloads (30 anos × 2 fluxos), sem nenhum 429.
+- `generate_report.py::_load_comex_pais()` — calcula saldo (export−import) por parceiro e `saldo_demais = saldo_mundo − soma dos 4 parceiros`; expõe `REPORT_DATA.comex_pais` (dict próprio, separado de `REPORT_DATA.bop` — fonte/índice de datas diferentes). Valores já vêm em USD (não USD MM, diferente de `cmb_balanco_pagmt`) — convertidos para USD Bi via `/1e9`.
+- Novo chart `chart-bop-bens-pais` ("Balança de Bens — por País Parceiro"), logo abaixo de `chart-bop-bens` na aba BOP. Segue o seletor de período (Mensal/Trimestral/Anual/12m) mas **não** o toggle "% do PIB" (fonte/metodologia diferentes das demais séries da aba — nota explícita no HTML).
+
+**Verificação:** valores agregados do bulk CSV batem exatamente com a API ao vivo testada antes da falha (China export 2025: `99940244710` nas duas fontes; EUA: `37682246914` nas duas). Node harness confirmou aditividade do chart: mensal (jun/2026) soma dos 5 componentes = 9.7577, total = 9.7577; anual (2026 parcial) soma = 42.3575, total = 42.3575.
 
 ---
 
@@ -394,7 +516,8 @@ Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxa
 | `diferenciais_juros` | `macro_international` | 1995 → hoje | ✓ (feito 2026-07; `selic` real desde 1999-03) |
 | `cmb_reer` | `macro_international` | 1994 → hoje | ✓ BIS full history |
 | `cmb_cot_fx` | `macro_international` | 2010 → hoje | ✓ (2006–2009 indisponíveis no CFTC) |
-| `cmb_balanco_pagmt` | `macro_brasil` | 1995 → hoje | ✓ (reestruturada 2026-07, 41 séries) |
+| `cmb_balanco_pagmt` | `macro_brasil` | 1995 → hoje | ✓ (reestruturada 2026-07, 52 séries) |
+| `atv_pib_usd` | `macro_brasil` | 1995 → hoje | ✓ (nova 2026-07-14, PIB mensal USD para normalização % PIB) |
 | `cmb_fluxo_cambial` | `macro_brasil` | 2003 → hoje | ✓ |
 | `cmb_reservas_bc` | `macro_brasil` | 1971 → hoje | ✓ 22 séries (doc anterior estava desatualizado) |
 | `cmb_cambio_contratado` | `macro_brasil` | 1982 → hoje | ✓ |
@@ -407,12 +530,12 @@ Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxa
 
 ### Fase 3 — Agente de análise ✓ (feito, 2026-07, arquitetura diferente da originalmente planejada)
 
-**Implementado como:** um subagente Claude Code (`.claude/agents/cambio-analyst.md`) que roda `analytics/cambio/agent_data.py` (`get_fx_snapshot()` — snapshot data-only: último valor + deltas 1m/3m/12m por série, reaproveitando os loaders de `generate_report.py`) e conecta os movimentos de dados a conceitos já curados em `obsidian/exchange_rate/concepts/` (UIP, carry trade, REER/PPP, BOP, crises cambiais etc.). Resposta conversacional por padrão; gera relatório markdown em `reports/cambio_analysis_<data>.md` quando solicitado — não escreve nem regenera `reports/cambio_latest.html`.
+**Implementado como:** um subagente Claude Code (`.claude/agents/cambio-analyst.md`) que roda `analytics/exchange_rate/agent_data.py` (`get_fx_snapshot()` — snapshot data-only: último valor + deltas 1m/3m/12m por série, reaproveitando os loaders de `generate_report.py`) e conecta os movimentos de dados a conceitos já curados em `obsidian/exchange_rate/concepts/` (UIP, carry trade, REER/PPP, BOP, crises cambiais etc.). Resposta conversacional por padrão; gera relatório markdown em `reports/cambio_analysis_<data>.md` quando solicitado — não escreve nem regenera `reports/cambio_latest.html`.
 
 **Por que a arquitetura mudou em relação ao plano original abaixo (histórico):** o plano original previa uma pasta `bibliography/` de PDFs novos + chamada direta à API Anthropic (`analyze.py`) injetando narrativa estática no HTML. Optou-se por reaproveitar o conhecimento conceitual já existente em `obsidian/exchange_rate/` (evita duplicar uma segunda base de textos) e por um subagente Claude Code interativo/on-demand (evita builds de narrativa estática que ficam desatualizadas assim que os dados mudam). `agent_bibliography/` continua deliberadamente fora do escopo deste agente — sistema paralelo, sem reconciliação (ver `CLAUDE.md`).
 
 **Pendências conhecidas:**
-- ~~Sem série de câmbio à vista (PTAX) no banco~~ ✓ resolvido 2026-07: `macro_brasil.cmb_ptax` (PTAX + volume interbancário), e `analytics/cambio/agent_data.py` atualizado para incluir o grupo `ptax` no snapshot.
+- ~~Sem série de câmbio à vista (PTAX) no banco~~ ✓ resolvido 2026-07: `macro_brasil.cmb_ptax` (PTAX + volume interbancário), e `analytics/exchange_rate/agent_data.py` atualizado para incluir o grupo `ptax` no snapshot.
 - **Sem allowlist de permissões Bash em `.claude/settings.json`** — cada chamada do agente ao script (`uv run python ...`) pede confirmação até isso ser configurado separadamente (skill `fewer-permission-prompts`/`update-config`).
 - **Casamento de conceitos do obsidian é um julgamento do LLM, não uma busca estruturada** — `concepts/*.md` não tem índice de tags parseável, só uma linha `**Tags:**` em texto livre e nomes de arquivo.
 
@@ -424,7 +547,7 @@ Adicionar dois charts novos no relatório: "Diferencial Nominal ex-ante" e "Taxa
 #### Arquitetura proposta
 
 ```
-analytics/cambio/
+analytics/exchange_rate/
   generate_report.py    — existente (dados → HTML)
   analyze.py            — novo: dados + bibliography → narrativa
   bibliography/         — novo: PDFs ou .txt de papers/relatórios de referência
@@ -448,7 +571,7 @@ uv add pypdf              # leitura de PDFs da bibliography (opcional)
 
 #### Estrutura da bibliografia
 
-O diretório `analytics/cambio/bibliography/` deve conter textos relevantes para análise do BRL. Exemplos de conteúdo útil:
+O diretório `analytics/exchange_rate/bibliography/` deve conter textos relevantes para análise do BRL. Exemplos de conteúdo útil:
 - Framework de análise cambial (determinantes do BRL: carry, risco, termos de troca, fluxo)
 - Research sobre posicionamento especulativo e reversão de câmbio
 - Estudos BCB/FMI sobre equilíbrio do câmbio real no Brasil

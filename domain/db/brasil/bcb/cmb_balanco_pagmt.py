@@ -2,8 +2,9 @@
 Balanco de Pagamentos do Brasil (BPM6)
 
 Series SGS (valores em USD millions). Codigos confirmados em 2026-07 contra
-`balance_payments_breakdown.xlsx` (mapeamento oficial fornecido pelo usuario,
-aba "BreakDown the bcb provides") e cross-checados numericamente contra os
+`analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` (mapeamento
+oficial fornecido pelo usuario, aba "BreakDown the bcb provides") e
+cross-checados numericamente contra os
 5 meses (Jan-Mai/2026) da aba "the breakdown I want" — todas as formulas
 abaixo batem com a API BCB dentro da tolerancia de arredondamento (<0.11).
 
@@ -12,6 +13,13 @@ Conta Corrente:
   22704 Balanca comercial (bens) e Servicos — saldo      -> balanca_comercial_servicos
   22708 Exportacoes de bens                              -> exportacao_bens
   22709 Importacoes de bens                              -> importacao_bens
+  22710 Balanca comercial (bens) — mercadorias em geral   -> mercadorias_gerais
+  22711 Exportacoes de bens — mercadorias em geral        -> mercadorias_gerais_export
+  22712 Importacoes de bens — mercadorias em geral        -> mercadorias_gerais_import
+  22713 Balanca comercial (bens) — exportacoes sob merchanting -> merchanting
+  22716 Balanca comercial (bens) — ouro nao monetario     -> ouro_nao_monetario
+  22717 Exportacoes de bens — ouro nao monetario          -> ouro_nao_monetario_export
+  22718 Importacoes de bens — ouro nao monetario          -> ouro_nao_monetario_import
   22719 Servicos — saldo                                 -> servicos
   22740 Viagens                                           -> viagens
   22728 Transportes                                       -> transportes
@@ -36,6 +44,10 @@ Conta Financeira:
   22885 Investimentos diretos no pais (IDP — passivos)      -> investimento_direto_liquido
   22886 Investimentos diretos no pais — Ingressos           -> idp_ingressos
   22906 Investimentos em carteira — ativos                 -> portfolio_ativos
+  22909 Investimentos em acoes — ativos                     -> acoes_ativos
+  22912 Investimentos em fundos de investimento — ativos    -> fundos_ativos
+  22918 Titulos de divida — ativos — curto prazo             -> titulos_ativos_cp
+  22921 Titulos de divida — ativos — longo prazo             -> titulos_ativos_lp
   22924 Investimentos em carteira — passivos                -> portfolio_passivos
   22927 Investimentos em acoes — passivos                   -> acoes_passivos
   22936 Investimentos em fundos de investimento — passivos  -> fundos_passivos
@@ -54,25 +66,41 @@ Conta Financeira:
   23043 Ativos de reserva                                     -> ativos_reserva
   23060 Erros e omissoes                                       -> erros_omissoes
 
-Series derivadas (calculadas em analytics/cambio/generate_report.py a partir
+Series derivadas (calculadas em analytics/exchange_rate/generate_report.py a partir
 das series brutas acima, NAO armazenadas no banco — mesmo padrao ja usado
 para `comercial_saldo` em cmb_fluxo_cambial):
   demais_servicos                  = servicos - viagens - transportes - aluguel_equipamentos
   juros                            = juros_intercompanhia + juros_carteira_externo + juros_carteira_domestico + juros_outros_investimentos + renda_reservas
   lucros_dividendos                = lucros_remetidos + lucros_reinvestidos + lucros_dividendos_carteira
+    (lucros_reinvestidos/SGS 22815 tem lacuna real na fonte BCB entre 1999-01 e 2009-12 -
+     confirmado via API, 404 "Value(s) not found" para essa janela; analytics/exchange_rate/generate_report.py
+     trata isso com fillna(0) antes de somar, para não propagar NaN por uma década inteira)
   investimentos_ativos             = idp_exterior + portfolio_ativos + outros_inv_ativos
   investimentos_passivos           = investimento_direto_liquido + portfolio_passivos + outros_inv_passivos
   acoes_totais                     = acoes_passivos + fundos_passivos
+  acoes_fundos_ativos               = acoes_ativos + fundos_ativos
+    (portfolio_ativos = acoes_fundos_ativos + titulos_ativos_cp + titulos_ativos_lp,
+     confirmado numericamente contra a API para Jan-Mai/2026)
   emprestimos_titulos_lp_externo   = titulos_externo_lp + emprestimos_lp_passivos
   emprestimos_titulos_cp_externo   = titulos_externo_cp + emprestimos_cp_passivos
   demais_passivos                  = portfolio_passivos + outros_inv_passivos - acoes_passivos - fundos_passivos
                                       - titulos_dom - titulos_externo_lp - emprestimos_lp_passivos
                                       - titulos_externo_cp - emprestimos_cp_passivos
 
+Quebra da Balanca de Bens (2026-07, pedido do usuario, "like the services"):
+mercadorias_gerais + merchanting + ouro_nao_monetario = exportacao_bens - importacao_bens
+(confirmado numericamente contra a API para Jan-Mai/2026, bate exatamente — e' uma
+particao aditiva oficial do BCB, nao uma aproximacao). Merchanting e' pequeno em
+modulo (~USD 5-20 mi/mes vs ~USD 6-9 bi do total) e tem convencao de sinal atipica
+no detalhamento bruto (22714/22715 — "importacoes sob merchanting" ja vem negativo
+na fonte, ao contrario de importacao_bens); por isso so o liquido (22713) foi
+ingerido, sem export/import proprios de merchanting.
+
 Pendencia conhecida: a quebra "Ativos de bancos" vs "Demais ativos" (lado
 ativo do balanco) e a quebra publico/privado/direto/demais emprestimos dos
 titulos de LP externo (Ingressos e Amortizacoes) nao foram resolvidas — nao
-ha codigo SGS correspondente em `balance_payments_breakdown.xlsx`. Ver CAMBIO.md.
+ha codigo SGS correspondente em `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx`.
+Ver CAMBIO.md.
 
 Correcao 2026-07: os codigos de 6 das 10 series originais estavam ERRADOS
 (apontavam para sub-itens nao relacionados — ex: `conta_corrente` usava 22707,
@@ -99,6 +127,13 @@ _SERIES = {
     "balanca_comercial_servicos":   22704,
     "exportacao_bens":              22708,
     "importacao_bens":              22709,
+    "mercadorias_gerais":           22710,
+    "mercadorias_gerais_export":    22711,
+    "mercadorias_gerais_import":    22712,
+    "merchanting":                  22713,
+    "ouro_nao_monetario":           22716,
+    "ouro_nao_monetario_export":    22717,
+    "ouro_nao_monetario_import":    22718,
     "servicos":                     22719,
     "viagens":                      22740,
     "transportes":                  22728,
@@ -122,6 +157,10 @@ _SERIES = {
     "investimento_direto_liquido":  22885,
     "idp_ingressos":                22886,
     "portfolio_ativos":             22906,
+    "acoes_ativos":                 22909,
+    "fundos_ativos":                22912,
+    "titulos_ativos_cp":            22918,
+    "titulos_ativos_lp":            22921,
     "portfolio_passivos":           22924,
     "acoes_passivos":               22927,
     "fundos_passivos":              22936,
