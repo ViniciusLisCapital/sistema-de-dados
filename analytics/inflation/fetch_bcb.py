@@ -107,7 +107,7 @@ def _apply_stl_ma3(df: pd.DataFrame) -> pd.DataFrame:
     convention).
 
     Deliberately still STL, not the BLS/Census X-13ARIMA-SEATS itself — see
-    "Trocar STL por X-13ARIMA-SEATS" in INFLATION.md pendências for why
+    the STL-ordering gotcha in analytics/inflation/CLAUDE.md for why
     (external binary, no pip package, breaks uv-based reproducibility).
     """
     import numpy as np

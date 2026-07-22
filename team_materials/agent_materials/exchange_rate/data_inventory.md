@@ -1,8 +1,8 @@
 # Exchange Rate — Consolidated Data Inventory
 
-**Purpose:** a presentable map of the data series relevant to exchange-rate (BRL) analysis — what LIS should be tracking for this topic, full stop. Like `bibliography.md`, this file does **not** flag which series are already in the database vs. still to be built; that acquisition/build tracking remains the job of `agent_bibliography/agent_mapping/recommended_data/exchange_rate_data_inventory.md`, which stays the working pipeline-maintenance file. This is the presentation-layer cut of the same analytical ground, current as of 2026-07.
+**Purpose:** a presentable map of the data series relevant to exchange-rate (BRL) analysis — what LIS should be tracking for this topic, full stop. Like `bibliography.md`, this file does **not** flag which series are already in the database vs. still to be built; that acquisition/build tracking remains the job of `repository/agent_mapping/recommended_data/exchange_rate_data_inventory.md`, which stays the working pipeline-maintenance file. This is the presentation-layer cut of the same analytical ground, current as of 2026-07.
 
-**Where this lives:** part of the same `agent_bibliography/consolidated/exchange_rate/` folder as `bibliography.md` (step i). Nothing in `agent_mapping/recommended_data/` was modified to produce this file.
+**Where this lives:** part of the same `team_materials/agent_materials/exchange_rate/` folder as `bibliography.md` (step i). Nothing in `agent_mapping/recommended_data/` was modified to produce this file.
 
 **This is step (ii) of the three-part deliverable.** Step (iii) — integrating this data map with the concepts in `exchange_rate_conceptual_map.md` (which theory each series is evidence *for*) — has not been built yet, by design.
 

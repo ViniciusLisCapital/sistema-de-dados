@@ -22,7 +22,7 @@ Run:
 uv run python -c "from analytics.exchange_rate.agent_data import get_fx_snapshot; import json; print(json.dumps(get_fx_snapshot(), ensure_ascii=False, default=str))"
 ```
 
-Parse the JSON. It has one entry per group (`diferenciais`, `reer`, `cot_fx`, `reservas`, `fluxo`, `bop`, `termos`), each with per-series `latest_date`/`latest_value`/`deltas` (1m/3m/12m) and a `data_gap_days`/`stale` flag. Note the top-level `note` field — it states that no PTAX/spot BRL rate exists in the database (confirmed gap, see `CAMBIO.md`).
+Parse the JSON. It has one entry per group (`ptax`, `diferenciais`, `reer`, `cot_fx`, `reservas`, `fluxo`, `bop`, `termos`), each with per-series `latest_date`/`latest_value`/`deltas` (1m/3m/12m) and a `data_gap_days`/`stale` flag. `ptax` is the spot USD/BRL series (BCB PTAX venda) — treat it as the primary spot-rate reference for this agent.
 
 Flag any group with `"stale": true` before using it — mention the staleness to the user rather than silently treating old data as current.
 
@@ -42,7 +42,7 @@ Based on which series show the most notable moves (largest deltas relative to th
 
 Grep the `**Tags:**` line and filenames if the mapping above doesn't clearly cover the user's question — read whichever concept pages are actually relevant, not all 10 by default. Optionally check `obsidian/exchange_rate/synthesis/*_fx_mental_models.md` (kapitalo/kinea/verde) for firm-specific framing if directly relevant to the question.
 
-**Do not read `agent_bibliography/`** — this agent is restricted to `obsidian/exchange_rate/` only; the two are deliberately separate systems (see `CLAUDE.md`).
+**Do not read `repository/`** — this agent is restricted to `obsidian/exchange_rate/` only; the two are deliberately separate systems (see `CLAUDE.md`).
 
 ## Step 3 — Synthesize
 

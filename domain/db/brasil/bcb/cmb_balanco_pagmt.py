@@ -100,7 +100,7 @@ Pendencia conhecida: a quebra "Ativos de bancos" vs "Demais ativos" (lado
 ativo do balanco) e a quebra publico/privado/direto/demais emprestimos dos
 titulos de LP externo (Ingressos e Amortizacoes) nao foram resolvidas — nao
 ha codigo SGS correspondente em `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx`.
-Ver CAMBIO.md.
+Ver analytics/exchange_rate/CLAUDE.md.
 
 Correcao 2026-07: os codigos de 6 das 10 series originais estavam ERRADOS
 (apontavam para sub-itens nao relacionados — ex: `conta_corrente` usava 22707,

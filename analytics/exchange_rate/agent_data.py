@@ -40,7 +40,7 @@ _EXPECTED_GAP_DAYS = {
     "cot_fx": 14,           # semanal (CFTC, terças)
     "fluxo": 45,            # mensal
     "bop": 45,              # mensal
-    "termos": 90,           # mensal, mas periodicidade "variada" (ver CAMBIO.md)
+    "termos": 90,           # mensal, mas periodicidade "variada" (ver analytics/exchange_rate/CLAUDE.md)
     "bcb_reserves": 15,     # diária (reserves_liquidity_daily)
     "bcb_gold": 45,         # mensal
     "bcb_swap": 45,         # mensal

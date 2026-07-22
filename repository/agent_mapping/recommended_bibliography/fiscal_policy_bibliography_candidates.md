@@ -1,6 +1,6 @@
 # Fiscal Policy — Bibliography Candidates
 
-**Purpose:** first-pass candidate literature list for the fiscal policy agent, built following `BIBLIOGRAPHY_METHODOLOGY.md`. Nothing here has been acquired yet — this is the pre-acquisition step. Once a source is sourced into `agent_bibliography/fiscal_policy/` (naming convention: `topic_description (Author, Year).pdf`), process it into a new `fiscal_policy_conceptual_map.md`, one source at a time, following the same pattern used for `exchange_rate_conceptual_map.md`. `agent_bibliography/fiscal_policy/` already exists (created earlier, currently empty).
+**Purpose:** first-pass candidate literature list for the fiscal policy agent, built following `BIBLIOGRAPHY_METHODOLOGY.md`. Nothing here has been acquired yet — this is the pre-acquisition step. Once a source is sourced into `repository/fiscal_policy/` (naming convention: `topic_description (Author, Year).pdf`), process it into a new `fiscal_policy_conceptual_map.md`, one source at a time, following the same pattern used for `exchange_rate_conceptual_map.md`. `repository/fiscal_policy/` already exists (created earlier, currently empty).
 
 **Scope — deliberately does not re-acquire fiscal-monetary interaction theory already covered elsewhere.** Two other files already own significant fiscal-adjacent ground:
 - `inflation_bibliography_candidates.md` cluster 7 (`#fiscal_theory_of_the_price_level`) owns the Fiscal Theory of the Price Level itself — Sargent & Wallace (1981), Leeper (1991), Woodford (2001).

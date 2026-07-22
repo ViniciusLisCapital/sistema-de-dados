@@ -146,7 +146,7 @@ This is the only existing cross-country inflation data point, and it's a byprodu
 - Already-partially-satisfied by §6 above (wage growth, wage bill) — flagged here only as a reminder that the *ownership* of `mt_pnad` sits with a future activity/labor agent even though the specific series are usable now.
 
 ### From the exchange rate agent (substantially built, per `exchange_rate_data_inventory.md`)
-- Spot BRL series (PTAX) — flagged as a high-priority gap in that agent's own inventory too; without it, this agent can't directly regress pass-through against the actual depreciation, only against REER (`macro_international.cmb_reer`, already available) or indirectly via `cmb_fluxo_cambial`/`cmb_balanco_pagmt`.
+- Spot BRL series (PTAX) — now available (`macro_brasil.cmb_ptax.ptax_venda`), usable directly for pass-through regressions against actual depreciation, alongside REER (`macro_international.cmb_reer`) and the flow series (`cmb_fluxo_cambial`/`cmb_balanco_pagmt`).
 - A REER over/undervaluation signal — same gap noted in `monetary_policy_data_inventory.md`; relevant here as a slower-moving pass-through input alongside spot moves.
 
 ### From a future fiscal agent

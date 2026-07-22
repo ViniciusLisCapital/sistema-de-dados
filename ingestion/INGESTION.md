@@ -1,6 +1,6 @@
 # Ingestion Pipeline
 
-Converts PDF research documents into clean, analysis-ready `.md` files for use by the macro analysis agent and other consumers in `agent_bibliography/`.
+Converts PDF research documents into clean, analysis-ready `.md` files for use by the macro analysis agent and other consumers in `repository/`.
 
 ---
 
@@ -45,14 +45,14 @@ ingestion/
   run.py                     ← Full pipeline entry point
   INGESTION.md               ← this file
 
-agent_bibliography/          ← FINAL OUTPUT LANDS HERE
+repository/                  ← FINAL OUTPUT LANDS HERE
   general/
     paper.md
   exchange_rate/
   fiscal_policy/
 ```
 
-The topic subfolder (`general/`, `exchange_rate/`, etc.) is inferred automatically from where you place the PDF inside `inbox/`. The clean output is written to the matching subfolder in `agent_bibliography/`.
+The topic subfolder (`general/`, `exchange_rate/`, etc.) is inferred automatically from where you place the PDF inside `inbox/`. The clean output is written to the matching subfolder in `repository/`.
 
 ---
 
@@ -64,7 +64,7 @@ The topic subfolder (`general/`, `exchange_rate/`, etc.) is inferred automatical
 uv run python ingestion/run.py
 ```
 
-Scans `ingestion/inbox/**/*.pdf`, skips any PDF whose clean output already exists in `agent_bibliography/`, and processes the rest.
+Scans `ingestion/inbox/**/*.pdf`, skips any PDF whose clean output already exists in `repository/`, and processes the rest.
 
 ### Process a single file
 
@@ -103,7 +103,7 @@ uv run python ingestion/clean.py ingestion/work/general/paper.md --output ingest
    uv run python ingestion/run.py
    ```
 
-3. Check the output in `agent_bibliography/general/goldman_sachs_gold_2026.md`.
+3. Check the output in `repository/general/goldman_sachs_gold_2026.md`.
 
 4. If the result looks wrong, inspect the intermediate files in `ingestion/work/general/`:
    - `*_raw.md` — raw text extracted from the PDF
@@ -119,7 +119,7 @@ uv run python ingestion/clean.py ingestion/work/general/paper.md --output ingest
 
 ## Skip logic
 
-PDFs are **never deleted** from `inbox/`. Re-running the pipeline is safe by default — a document is skipped if its clean output already exists in `agent_bibliography/`. Use `--overwrite` to force reprocessing.
+PDFs are **never deleted** from `inbox/`. Re-running the pipeline is safe by default — a document is skipped if its clean output already exists in `repository/`. Use `--overwrite` to force reprocessing.
 
 ---
 
@@ -130,7 +130,7 @@ PDFs are **never deleted** from `inbox/`. Re-running the pipeline is safe by def
    mkdir ingestion/inbox/monetary_policy
    ```
 
-2. Drop PDFs into it and run the pipeline — the matching folder in `agent_bibliography/` is created automatically.
+2. Drop PDFs into it and run the pipeline — the matching folder in `repository/` is created automatically.
 
 ---
 

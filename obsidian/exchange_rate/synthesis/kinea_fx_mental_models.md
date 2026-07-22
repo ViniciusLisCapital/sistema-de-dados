@@ -2,7 +2,7 @@
 
 ## Sobre este documento
 
-Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD e dinâmica global do dólar) extraídos das cartas da Kinea Investimentos entre maio de 2021 e junho de 2026 — as 60 cartas mensais da série "Carta do Gestor" (`agent_bibliography/mental_model/kinea/`) e os 64 ensaios temáticos da série "Kinea Insights" (`agent_bibliography/mental_model/kinea_insights/`), 124 arquivos no total.
+Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD e dinâmica global do dólar) extraídos das cartas da Kinea Investimentos entre maio de 2021 e junho de 2026 — as 60 cartas mensais da série "Carta do Gestor" (`repository/mental_model/kinea/`) e os 64 ensaios temáticos da série "Kinea Insights" (`repository/mental_model/kinea_insights/`), 124 arquivos no total.
 
 Diferente da série da Kinea Insights, que é majoritariamente setorial/temática (IA, saúde, energia, geopolítica) e só toca câmbio de forma direta em uma minoria dos textos, a série "Carta do Gestor" discute posicionamento cambial quase todo mês, tipicamente dentro de uma seção dedicada ao Brasil. O documento reúne conteúdo **diretamente** cambial (posições em BRL, USD, EUR, CNY, GBP, MXN etc.) e **indiretamente** cambial — fiscal, diferencial de juros, termos de troca, fluxos de capital — sempre que o texto usa esse conteúdo para alimentar uma tese de câmbio, do mesmo modo que uma discussão fiscal pode ser a base de um modelo cambial sem citar a palavra "câmbio".
 

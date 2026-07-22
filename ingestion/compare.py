@@ -26,7 +26,7 @@ Requires ANTHROPIC_API_KEY in .env
 FILES: list[tuple[str, str]] = [
     (
         r"ingestion\work\general\depreciation_pass_through (Goldfajn, 2000)_raw.md",
-        r"agent_bibliography\general\depreciation_pass_through (Goldfajn, 2000).md",
+        r"repository\general\depreciation_pass_through (Goldfajn, 2000).md",
     ),
 ]
 

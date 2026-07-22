@@ -30,7 +30,7 @@ Script: `domain/db/international/fred/diferenciais_juros.py`. Same table already
 
 **Gaps (same underlying ones as the FX inventory, restated for this agent's purposes):**
 - History limited to ~36 months by default — needs full extension (Selic since 1996, Fed Funds since 1954).
-- Ex-ante differentials (Focus-based) not implemented — see `CAMBIO.md` §1b/§2. For monetary policy specifically, `selic_ex_ante` (Focus Selic EOP 12m, already sitting in `macro_brasil.expc_focus`) is close to the single most directly relevant missing series: it's the market's own forward-looking read on the same thing the agent is trying to compute.
+- Ex-ante differentials (Focus-based) not implemented — see the pending item in `analytics/exchange_rate/CLAUDE.md`. For monetary policy specifically, `selic_ex_ante` (Focus Selic EOP 12m, already sitting in `macro_brasil.expc_focus`) is close to the single most directly relevant missing series: it's the market's own forward-looking read on the same thing the agent is trying to compute.
 
 ### 3. Market-implied rate expectations
 
@@ -42,7 +42,7 @@ Script: `domain/db/international/fred/diferenciais_juros.py`. Same table already
 Script: `domain/db/brasil/bcb/expc_focus.py`. This is genuinely useful, already-available data — the agent can compare its own reaction-function output against what professional forecasters expect BCB to do, without waiting on any other agent.
 
 **Gaps:**
-- No DI futures curve (B3) — the *market-priced*, real-time-updating implied Selic path, as opposed to the survey-based Focus median. This is the same Bloomberg-dependent gap already flagged in `CAMBIO.md` §5 ("Cupom cambial + futuros B3 — Fase 3, requires `blpapi`/`xbbg`"). Focus is a usable substitute today but updates weekly and reflects survey consensus, not tradeable pricing.
+- No DI futures curve (B3) — the *market-priced*, real-time-updating implied Selic path, as opposed to the survey-based Focus median. This is the same Bloomberg-dependent gap already flagged as a pending item in `analytics/exchange_rate/CLAUDE.md` ("Cupom cambial + B3 FX futures", requires `blpapi`/`xbbg`). Focus is a usable substitute today but updates weekly and reflects survey consensus, not tradeable pricing.
 
 ### 4. Real interest rate & neutral rate (r*) — ⚠️ largely a GAP
 

@@ -2,7 +2,7 @@
 PTAX (cambio a vista) e volume interbancario de cambio.
 
 Preenche a lacuna de "nenhuma serie de cambio a vista (PTAX) no banco"
-identificada em agent_bibliography/agent_mapping/recommended_data/exchange_rate_data_inventory.md.
+identificada em repository/agent_mapping/recommended_data/exchange_rate_data_inventory.md.
 
 Series SGS:
   1     ptax_venda          — Taxa de cambio - Livre - Dolar americano (venda) - diario; desde 28/11/1984

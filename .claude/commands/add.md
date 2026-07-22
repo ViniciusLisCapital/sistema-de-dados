@@ -15,11 +15,11 @@ Determine extraction route from CLAUDE.md rules:
 - Academic papers, research reports, complex layout: read the PDF directly with the Read tool
 - Scanned PDFs: warn the user — OCR required, stop here
 
-Determine the vault topic from the PDF path: the subfolder under `agent_bibliography/` maps directly to a vault folder under `obsidian/`. Examples:
-- `agent_bibliography/exchange_rate/...` → `obsidian/exchange_rate/synthesis/`
-- `agent_bibliography/fiscal_policy/...` → `obsidian/fiscal_policy/synthesis/`
-- `agent_bibliography/general/...` → ask the user which vault topic applies
-- If the path is outside `agent_bibliography/` or the subfolder has no matching vault folder, ask the user before placing the file
+Determine the vault topic from the PDF path: the subfolder under `repository/` maps directly to a vault folder under `obsidian/`. Examples:
+- `repository/exchange_rate/...` → `obsidian/exchange_rate/synthesis/`
+- `repository/fiscal_policy/...` → `obsidian/fiscal_policy/synthesis/`
+- `repository/general/...` → ask the user which vault topic applies
+- If the path is outside `repository/` or the subfolder has no matching vault folder, ask the user before placing the file
 
 Create the synthesis file. Follow this structure exactly:
 

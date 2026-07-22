@@ -11,8 +11,8 @@ Series SGS (mensal, desde 1998-02):
   icbr_energia      27577 — IC-Br Energia
 
 Codigos confirmados via chamada direta a api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}
-(nao apenas por busca/memoria) em 2026-07 — ver historico de bugs de codigo SGS
-errado em cmb_balanco_pagmt (CAMBIO.md) que motivou essa verificacao.
+(nao apenas por busca/memoria) em 2026-07 — pratica adotada apos um bug de
+codigo SGS errado em cmb_balanco_pagmt.
 
 Banco: macro_brasil.comm_icbr — PRIMARY KEY (date, name)
 """

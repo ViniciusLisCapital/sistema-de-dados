@@ -1,6 +1,6 @@
 # Monetary Policy — Bibliography Candidates
 
-**Purpose:** first-pass candidate literature list for the monetary policy agent, built following `BIBLIOGRAPHY_METHODOLOGY.md`. Nothing here has been acquired yet — this is the pre-acquisition step. Once a source is sourced into `agent_bibliography/monetary_policy/` (naming convention: `topic_description (Author, Year).pdf`), process it into a new `monetary_policy_conceptual_map.md`, one source at a time, following the same pattern used for `exchange_rate_conceptual_map.md`.
+**Purpose:** first-pass candidate literature list for the monetary policy agent, built following `BIBLIOGRAPHY_METHODOLOGY.md`. Nothing here has been acquired yet — this is the pre-acquisition step. Once a source is sourced into `repository/monetary_policy/` (naming convention: `topic_description (Author, Year).pdf`), process it into a new `monetary_policy_conceptual_map.md`, one source at a time, following the same pattern used for `exchange_rate_conceptual_map.md`.
 
 **Scope:** core monetary policy theory + Brazil-specific application + international spillovers relevant to EM monetary policy autonomy (per the agreed scope). Does not duplicate the exchange-rate-specific literature already covered in `exchange_rate_policy/` (e.g. UIP failure, currency regimes) — where a topic touches both (e.g. inflation targeting under exchange rate volatility), it's included here because the primary lens is monetary policy, not FX.
 
@@ -143,7 +143,7 @@ Directly relevant to how much genuine autonomy BCB has given global (mainly Fed)
 
 ## Status
 
-**26 of 31 sources acquired into `agent_bibliography/monetary_policy/`** (as of 2026-07-13), none processed into a conceptual map yet. All standalone papers/working papers are done — everything remaining is either a book (needs manual chapter selection, not a straight download) or paywalled with no free copy found.
+**26 of 31 sources acquired into `repository/monetary_policy/`** (as of 2026-07-13), none processed into a conceptual map yet. All standalone papers/working papers are done — everything remaining is either a book (needs manual chapter selection, not a straight download) or paywalled with no free copy found.
 
 Acquired, by cluster:
 - **Friedman (1968)** — `the_role_monetary_policy (Friedman, 1968).pdf` (acquired prior to this batch, 2026-07-06)

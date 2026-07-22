@@ -422,7 +422,7 @@
     <section id="sec-quotation-ptax">
       <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
       <div class="chart-card"><div id="chart-ptax"></div></div>
-      <div class="note">Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário, usada em contratos e balanços. Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver CAMBIO.md.</div>
+      <div class="note">Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário, usada em contratos e balanços. Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver analytics/exchange_rate/CLAUDE.md.</div>
     </section>
 
   </div>
@@ -870,7 +870,7 @@ renderBopCharts(_bopPeriod, _bopMode);
 // mensal a partir de REPORT_DATA.bop; a agregação trimestral reaproveita
 // aggregateSum() (já usada na aba BOP) e o z-score é calculado por linha
 // contra a própria janela móvel de 3 anos (12 trimestres) daquela série —
-// não é uma cor fixa por sinal bruto (ver CAMBIO.md para a justificativa).
+// não é uma cor fixa por sinal bruto (ver analytics/exchange_rate/CLAUDE.md para a justificativa).
 
 function subtractArrays(a, b) {
   return (a || []).map(function(v, i) {
@@ -1054,7 +1054,7 @@ function renderHeatmapPanel(panelKey, tree, divId, cardId, title) {
 
   // Altura do card acompanha o numero de linhas visiveis (colapsado fica
   // compacto, expandido cresce) -- resolve a desproporcao de linhas
-  // exageradamente altas quando poucas estao visiveis (ver CAMBIO.md).
+  // exageradamente altas quando poucas estao visiveis (ver analytics/exchange_rate/CLAUDE.md).
   var rowPx = 26, chromePx = 190;
   var cardHeight = Math.max(220, Math.min(820, chromePx + yLabels.length * rowPx));
   document.getElementById(cardId).style.height = cardHeight + 'px';

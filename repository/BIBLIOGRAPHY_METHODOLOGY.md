@@ -2,10 +2,10 @@
 
 **Purpose:** reusable guidelines for building topic-specific literature inventories and conceptual maps for LIS Capital's analysis agents — exchange rate, monetary policy, fiscal policy, and any future area. Established 2026-07 while starting the monetary policy bibliography, generalizing the process already used for `exchange_rate_policy/`.
 
-**Folder layout (established 2026-07):** all per-topic mapping outputs live under `agent_bibliography/agent_mapping/`, split by output type rather than by topic:
+**Folder layout (established 2026-07):** all per-topic mapping outputs live under `repository/agent_mapping/`, split by output type rather than by topic:
 
 ```
-agent_bibliography/
+repository/
   BIBLIOGRAPHY_METHODOLOGY.md          — this file (process doc, not a topic output)
   <topic>_policy/                      — raw acquired PDFs for a topic (e.g. exchange_rate_policy/), unaffected by this layout
   agent_mapping/
@@ -14,7 +14,7 @@ agent_bibliography/
     recommended_data/                  — <topic>_data_inventory.md, one per topic
 ```
 
-Raw PDF vaults (per point b) and this methodology doc stay at the `agent_bibliography/` root — `agent_mapping/` holds only the *analysis and planning* documents built on top of those sources, not the sources themselves.
+Raw PDF vaults (per point b) and this methodology doc stay at the `repository/` root — `agent_mapping/` holds only the *analysis and planning* documents built on top of those sources, not the sources themselves.
 
 **This is a set of defaults, not a rigid template.** Each topic gets to apply these points with discretion — e.g. a topic that is inherently global (say, commodity cycles) may weight international sources much more heavily than Brazil-specific ones; a topic that is inherently domestic (say, a specific BCB facility) may skip the international side almost entirely. Deviate when the topic calls for it, and note the deviation in that topic's own files rather than treating it as a violation of the rule.
 
@@ -57,7 +57,7 @@ Group candidate sources (and, later, processed concepts) into named clusters —
 ## Standard workflow per topic
 
 1. **Candidate list** — draft `agent_mapping/recommended_bibliography/<topic>_bibliography_candidates.md`: sources organized by cluster, each with type (paper/book+chapter), foundational score + year, target cluster tag, and suggested filename. This is the *pre-acquisition* deliverable — nothing has been bought/downloaded yet.
-2. **Acquisition** — source PDFs one at a time into `agent_bibliography/<topic>/`, using the naming convention `topic_description (Author, Year).pdf`.
+2. **Acquisition** — source PDFs one at a time into `repository/<topic>/`, using the naming convention `topic_description (Author, Year).pdf`.
 3. **Processing** — read each PDF (or the identified chapter) and fold it into `agent_mapping/conceptual_maps/<topic>_conceptual_map.md`: a row in a Sources table, concept bullets filed under the relevant `#cluster` tag, cross-links (`[[concept]]`) to existing concepts where a genuine connection exists. Process **one source at a time**, not in parallel — this has been the user's preferred cadence (see `agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md`'s processing history) because it lets each new source be weighed against what's already in the map before moving on.
 4. **Gaps tracking** — once the map exists, maintain `agent_mapping/recommended_bibliography/<topic>_bibliography_gaps.md` for candidates not yet acquired/processed, following the same format established in `agent_mapping/recommended_bibliography/exchange_rate_bibliography_gaps.md`.
 5. **No automatic reconciliation** with any pre-existing topic vault elsewhere (e.g. an Obsidian vault of concept pages) unless the user explicitly asks for it — these are deliberately parallel systems, per the precedent set for `exchange_rate_policy/` vs. `obsidian/exchange_rate/`.

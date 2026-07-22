@@ -52,7 +52,7 @@ The model's own fixed parameters and seed states aren't raw macro data — they'
 
 ## Progress log (2026-07-13)
 
-- **SGS/FRED codes verified live** (direct API calls, not guessed from memory — see the `cmb_balanco_pagmt` wrong-code precedent in `CAMBIO.md`):
+- **SGS/FRED codes verified live** (direct API calls, not guessed from memory — practice adopted after a wrong-SGS-code bug in `cmb_balanco_pagmt`):
   - IC-Br: 27574 (geral), 27575 (agropecuária), 27576 (metal), 27577 (energia) — monthly, confirmed live through 2026-06.
   - Meta de inflação: SGS 13521 — confirmed live (3.50/2022 → 3.25/2023 → 3.00/2024–2026, matches known target path).
   - NOAA ONI: `https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt` — confirmed, columns `SEAS/YR/TOTAL/ANOM`.

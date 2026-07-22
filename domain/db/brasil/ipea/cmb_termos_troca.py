@@ -12,10 +12,6 @@ Serie IPEADATA:
                    Fonte: Funcex. Historico: 1978-01 -> hoje.
 
 Banco: macro_brasil.cmb_termos_troca — PRIMARY KEY (date, name)
-
-Nota: a tabela tambem contem as series antigas ("termos_de_troca_a",
-"termos_de_troca_b", codigos SGS 22099/22100) ate serem removidas —
-ver CAMBIO.md para o status da migracao.
 """
 
 from connectors.ipeadata import IPEA

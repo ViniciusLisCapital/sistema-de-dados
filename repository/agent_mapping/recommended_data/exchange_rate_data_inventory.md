@@ -1,10 +1,10 @@
 # Exchange Rate Data Inventory
 
-**Purpose:** inventory of the data categories relevant to exchange rate (BRL) analysis, mapping each analytical category to what already exists in the database (`macro_brasil` / `macro_international` — see `DB_SCHEMAS.md`; `macro_analytics` was discontinued in 2026-07) and to what's still missing. Meant to inform the exchange rate analysis agent (see `CAMBIO.md`, "Fase 3 — Agente de análise") about which series are available to support each type of argument.
+**Purpose:** inventory of the data categories relevant to exchange rate (BRL) analysis, mapping each analytical category to what already exists in the database (`macro_brasil` / `macro_international` — see `domain/db/CLAUDE.md`; `macro_analytics` was discontinued in 2026-07) and to what's still missing. Meant to inform the exchange rate analysis agent (see `.claude/agents/cambio-analyst.md`) about which series are available to support each type of argument.
 
 **Not cross-linked yet** to `exchange_rate_conceptual_map.md` (theory/bibliography) — that's left for a later step, by the user's decision. For now this file documents only the data side.
 
-Technical details on schema, SGS codes and observation counts live in `CAMBIO.md` (`RESERVAS.md` was consolidated into `CAMBIO.md` in 2026-07 and no longer exists as a separate file) — this file organizes the same information by analytical category instead of by table.
+Technical details on schema, SGS codes and observation counts live in `analytics/exchange_rate/CLAUDE.md` — this file organizes the same information by analytical category instead of by table.
 
 ---
 
@@ -33,7 +33,7 @@ Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chu
 Script: `domain/db/international/fred/diferenciais_juros.py`. Full history load (2026-07): `selic` (SGS 432, daily) is chunked in 8-year windows to avoid the BCB API's 406 on windows > 10 years.
 
 **Gaps:**
-- **Ex-ante** differentials (based on expectations, not realized inflation) not implemented yet — detailed plan in `CAMBIO.md` §1b/§2, uses `macro_brasil.expc_focus` (Focus) on the BR side and FRED (`FF{m}` futures/OIS, `MICH`/`T5YIE`) on the US side.
+- **Ex-ante** differentials (based on expectations, not realized inflation) not implemented yet — see the pending item in `analytics/exchange_rate/CLAUDE.md`, uses `macro_brasil.expc_focus` (Focus) on the BR side and FRED (`FF{m}` futures/OIS, `MICH`/`T5YIE`) on the US side.
 - Cupom cambial (DDI/FRC curve) and B3 futures (DOL/WDO) — deferred, requires Bloomberg access (`blpapi`/`xbbg`).
 
 ---
@@ -107,11 +107,11 @@ Script: `domain/db/brasil/bcb/cmb_cambio_contratado.py`. ~46k observations.
 | Stock of repo lines/loans/repurchase agreements in FX | `macro_brasil.cmb_reservas_bc` | `bcb_fx_stock_repos_loans` (SGS 29534) | monthly |
 | BCB interventions (spot, forwards, FX loans/repos, repo lines) — only days with actual intervention | `macro_brasil.cmb_reservas_bc` | `bcb_intervention_spot`, `bcb_intervention_forwards`, `bcb_intervention_fx_loans_repos`, `bcb_intervention_repo_lines` | daily (sparse) |
 
-Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `CAMBIO.md`.
+Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `analytics/exchange_rate/CLAUDE.md`.
 
 **Coverage considered robust** — includes both the stock (reserves, bank position, swap) and the intervention flow (BCB's net buying/selling in spot and forwards), which lets the agent distinguish "how much the BCB has" from "what the BCB is doing right now."
 
-**Gaps:** none identified — the historical "gross reserves" pending item (SGS 13127, timeout) mentioned in earlier versions of `CAMBIO.md` has been superseded by using the liquidity concept plus detailed components.
+**Gaps:** none identified — the historical "gross reserves" pending item (SGS 13127, timeout) has been superseded by using the liquidity concept plus detailed components.
 
 ---
 

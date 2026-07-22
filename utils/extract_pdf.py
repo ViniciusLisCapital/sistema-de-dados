@@ -16,7 +16,7 @@ Usage:
 
 As a function:
     from utils.extract_pdf import process
-    process("agent_bibliography/general/gestores", output_dir="agent_bibliography/raw/verde")
+    process("repository/general/gestores", output_dir="repository/raw/verde")
 """
 
 import argparse

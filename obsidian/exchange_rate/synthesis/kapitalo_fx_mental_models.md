@@ -2,7 +2,7 @@
 
 ## Sobre este documento
 
-Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD, moedas de mercados emergentes e dinâmica global do dólar) extraídos das cartas mensais "Carta do Gestor K10" da Kapitalo Investimentos, cobrindo 83 cartas consecutivas entre julho de 2019 e maio de 2026 (`agent_bibliography/mental_model/kapitalo/`).
+Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD, moedas de mercados emergentes e dinâmica global do dólar) extraídos das cartas mensais "Carta do Gestor K10" da Kapitalo Investimentos, cobrindo 83 cartas consecutivas entre julho de 2019 e maio de 2026 (`repository/mental_model/kapitalo/`).
 
 O K10 é um fundo macro global multi-ativo: cada carta traz um "Cenário" narrativo curto seguido de listas de posições por livro (Commodities, Moedas, Bolsa, Renda Fixa) e uma tabela de P&L mensal por classe de ativo. Diferente da Kinea e da Verde — gestoras Brasil-cêntricas cujas cartas dedicam parágrafos extensos a justificar cada posição —, as cartas do K10 são telegráficas: a seção "Moedas" é, na maioria dos meses, apenas uma lista curta de posições adicionadas/zeradas, com racional textual concentrado em uma minoria de cartas (tipicamente quando um tema novo emerge ou vira "case" dedicado). Por isso, boa parte dos modelos abaixo foi reconstruída cruzando o parágrafo de "Cenário" do mês (que discute o tema macro dominante — Fed, China, tarifas, fiscal brasileiro etc.) com a lista de posições que imediatamente o segue, e não apenas transcrevendo frases isoladas da seção de câmbio.
 

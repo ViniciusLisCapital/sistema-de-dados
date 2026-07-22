@@ -1,15 +1,15 @@
 """
-Full ingestion pipeline: inbox PDF -> work (raw + structured) -> agent_bibliography (clean)
+Full ingestion pipeline: inbox PDF -> work (raw + structured) -> repository (clean)
                          -> quality report (compare structured vs clean).
 
 Flow:
   ingestion/inbox/<topic>/paper.pdf
     -> ingestion/work/<topic>/paper_raw.md        (raw extraction)
     -> ingestion/work/<topic>/paper_structured.md (formatted intermediate)
-    -> agent_bibliography/<topic>/paper.md        (final clean output)
+    -> repository/<topic>/paper.md                (final clean output)
     -> ingestion/compare_report.md                (quality check, newly processed files only)
 
-Skips any PDF whose clean output already exists in agent_bibliography/.
+Skips any PDF whose clean output already exists in repository/.
 Use --overwrite to force reprocessing.
 
 Models:
@@ -41,7 +41,7 @@ from ingestion.extract import extract
 ROOT = Path(__file__).parent.parent
 INBOX = ROOT / "ingestion" / "inbox"
 WORK = ROOT / "ingestion" / "work"
-BIBLIOGRAPHY = ROOT / "agent_bibliography"
+BIBLIOGRAPHY = ROOT / "repository"
 
 
 def _find_pdfs(source: Path) -> list[tuple[Path, str]]:
@@ -97,7 +97,7 @@ def process_one(
     print(f"  [2/2] structuring + cleaning ...")
     work_clean = clean_file(raw_out, output_dir=work_dir, model=ingest_model)
 
-    # Move clean output from work/ to agent_bibliography/
+    # Move clean output from work/ to repository/
     work_clean.replace(clean_out)
     print(f"  done  -> {clean_out.relative_to(ROOT)}")
 
@@ -144,7 +144,7 @@ def run(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ingest PDFs: inbox -> work -> agent_bibliography")
+    parser = argparse.ArgumentParser(description="Ingest PDFs: inbox -> work -> repository")
     parser.add_argument(
         "source",
         nargs="?",

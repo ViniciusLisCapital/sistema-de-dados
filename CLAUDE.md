@@ -8,7 +8,7 @@
 
 Sistema de dados da LIS Capital para coleta, processamento e visualização de variáveis macroeconômicas (Brasil, EUA). Alimenta dashboards Power BI e materiais de análise macro.
 
-📄 **Racional estratégico e origem do projeto** (por que o vault `obsidian/` e a direção de agentes especialistas por área macro existem, fases de investimento planejadas): [`project_docs/macro-project-context.md`](project_docs/macro-project-context.md).
+📄 **Racional estratégico e origem do projeto** (por que o vault `obsidian/` e a direção de agentes especialistas por área macro existem, fases de investimento planejadas): [`team_materials/structure_materials/macro-project-context.md`](team_materials/structure_materials/macro-project-context.md).
 
 ---
 
@@ -40,13 +40,14 @@ domain/
 analytics/           — Projetos que consomem o banco MySQL
   oraculo/           — Termômetro macro (brasil e us)
   painel_setores/    — Painel de setores
-  exchange_rate/     — Panorama Cambial HTML  [ver CAMBIO.md] (pasta renomeada de `cambio/` em 2026-07,
-                       fundida com o material analítico do agent_bibliography sob o mesmo nome de área)
+  exchange_rate/     — Panorama Cambial HTML  [ver analytics/exchange_rate/CLAUDE.md]
     generate_report.py  — Lê macro_brasil/macro_international, injeta JSON no template, salva HTML
     report.html         — Template fixo (HTML + CSS + Plotly.js CDN)
-    referencia/          — balance_payments_breakdown.xlsx (mapeamento de códigos SGS, fora do MySQL)
-    fx_forecasting_theory_vs_practice.html — peça analítica standalone (teoria vs. prática de forecasting cambial)
-  inflation/         — Panorama de Inflação HTML  [ver INFLATION.md]
+    referencia/          — Material de contexto (mapeamento SGS, peças analíticas sobre forecasting
+                           cambial) — ver analytics/exchange_rate/CLAUDE.md
+    models/              — Modelos estatísticos testando teoria cambial contra o banco — ver
+                           analytics/exchange_rate/CLAUDE.md
+  inflation/         — Panorama de Inflação HTML  [ver analytics/inflation/CLAUDE.md]
     fetch_bcb.py         — Agregados BCB/SGS (IPCA headline/componentes/núcleos) → data/ipca_bcb_series.csv (+ STL _ma3_sa)
     generate_report.py   — Lê Excel (subitens) + CSV (agregados), injeta JSON no template, salva HTML
     report.html           — Template fixo (HTML + CSS + Plotly.js CDN)
@@ -72,192 +73,15 @@ quarantine/          — Scripts e materiais legados/experimentais (não fazem p
 
 ---
 
-## Banco de dados: macro_brasil
+## Banco de dados: macro_brasil / macro_international
 
-**Servidor:** 192.168.15.200 (rede local da empresa)  
-**Credenciais:** `.env` (nunca hardcoded)
-
-📄 **Como os schemas são organizados (por domínio/geografia, não por estágio bruto/calculado) e por que `macro_analytics` foi descontinuado:** [`DB_SCHEMAS.md`](DB_SCHEMAS.md)
-
-Nomes de tabela são prefixados por tema macro (`atv_` = atividade, `mt_` =
-mercado de trabalho, `cred_` = crédito, `cmb_` = câmbio, `inflc_` = inflação,
-`expc_` = expectativas) para facilitar organização visual dentro de cada
-schema — ver [`DB_SCHEMAS.md`](DB_SCHEMAS.md) para o critério completo.
-Renomeação feita em 2026-07, em duas rodadas: primeiro para prefixos por
-extenso (`pim`→`atividade_pim`), depois abreviados por instrução explícita do
-usuário (`atividade_pim`→`atv_pim`, `atividade_gdp`→`atv_pib`, etc.) — mapeamento
-completo em [`DB_SCHEMAS.md`](DB_SCHEMAS.md). `mt_pnad`/`mt_caged` ficaram de
-fora da segunda rodada (mantidos com o prefixo por extenso).
-
-### Tabelas ativas
-
-| Tabela | Fonte | Período disponível | Script |
-|---|---|---|---|
-| `atv_pim` | IBGE 8888 | 2002 → hoje | `ibge/atv_pim.py` |
-| `atv_pib` | IBGE 1620/1621 | 2016 → hoje | `ibge/atv_pib.py` |
-| `atv_pmc` | IBGE 8880/8881/8883 | 2023 → hoje | `ibge/atv_pmc.py` |
-| `atv_pms` | IBGE 8688 | 2023 → hoje | `ibge/atv_pms.py` |
-| `atv_ibcbr` | BCB SGS (12 séries) | 2003 → hoje | `bcb/atv_ibcbr.py` |
-| `mt_pnad` | IBGE 6318/6320/6323/6387/6388/6389/6391/6392 | 2024 → hoje | `ibge/mt_pnad.py` |
-| `mt_caged` | BCB SGS (14 séries) | 1992 → hoje | `bcb/mt_caged.py` |
-| `cred_credito_amplo` | BCB SGS (17 séries crédito amplo) | 2013 → hoje | `bcb/cred_credito_amplo.py` |
-| `cred_credito_familias` | BCB SGS (3 séries — endividamento/renda famílias) | 2005 → hoje | `bcb/cred_credito_familias.py` |
-| `inflc_agregados` | BCB SGS (33 séries IPCA/IPCA-15 + núcleos) | 1980 → hoje | `bcb/inflc_agregados.py` |
-| `inflc_decomposicao` | IBGE 7060/7062 (subitem: var_mensal/pesos/contribuicao) | 2020 → hoje | `ibge/inflc_decomposicao.py` |
-| `inflc_dim` | Subitem → Grupo/Subgrupo/Item (manual) + Subjacente/núcleos (híbrido, ver INFLATION.md) | — (sem data) | `ibge/inflc_dim.py` |
-| `expc_focus` | BCB Focus (IPCA 12m/24m, IGP-M, Selic) | 2001 → hoje | `bcb/expc_focus.py` |
-| `atv_pib_usd` | BCB SGS 4385 (PIB mensal em USD) | — → hoje | `bcb/atv_pib_usd.py` |
-| `comm_icbr` | BCB SGS (IC-Br + 3 sub-índices, 27574-27577) | 1998-02 → hoje | `bcb/comm_icbr.py` |
-| `inflc_meta` | BCB SGS 13521 (meta de inflação CMN) | 1999 → hoje | `bcb/inflc_meta.py` |
-
-As tabelas `cmb_*` (câmbio) são documentadas separadamente em [`CAMBIO.md`](CAMBIO.md), incluindo as novas `cmb_comex_pais`/`cmb_comex_fator_agregado`/`cmb_comex_produto` (Comex Stat/MDIC, 1997 → hoje).
-
-`inflc_agregados` (renomeada de `inflacao` em 2026-07, depois de
-`ipca_agregados`, depois de `inflation_agregados`, todas em 2026-07 até chegar
-no prefixo abreviado atual; séries agora em minúsculo, ex: `ipca_nucleo_p55`)
-tem documentação nativa no MySQL: `COMMENT` na tabela e na coluna `name` (lista
-cada série com seu código SGS) — visível via `SHOW CREATE TABLE inflc_agregados`
-ou no editor de tabelas do Workbench.
-
-### Schema das tabelas
-
-Todas as tabelas usam **chave primária composta natural** (sem `id` sintético):
-
-```sql
--- Séries com ajuste sazonal
-PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pib, atv_pmc, atv_pms
-
--- Séries sem ajuste sazonal  
-PRIMARY KEY (date, name)                  -- inflc_agregados, mt_caged, cred_credito_amplo, atv_ibcbr, cred_credito_familias
-PRIMARY KEY (date, name, region)          -- mt_pnad
-
--- Expectativas Focus
-PRIMARY KEY (date, indicador, horizonte)  -- expc_focus
-
--- IPCA por subitem
-PRIMARY KEY (date, indice, subitem)       -- inflc_decomposicao (indice = IPCA | IPCA15)
-PRIMARY KEY (subitem)                     -- inflc_dim (tabela de dimensao, sem data)
-```
-
-`ON DUPLICATE KEY UPDATE` no insert garante upsert idempotente.
+📄 **Organização de schemas, convenção de nomes, tabelas ativas, padrões de chave primária:** [`domain/db/CLAUDE.md`](domain/db/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `domain/db/`.
 
 ---
 
 ## Connectors
 
-### `connectors/ibge.py` — API de Agregados IBGE v3
-
-Cliente paramétrico baseado em `view=flat`. Substituiu o antigo `ibge_get(url, start, end, freq)`.
-
-```python
-from connectors.ibge import IBGE
-
-ibge = IBGE()
-df = ibge.get(
-    agregado=8888,
-    variaveis=12606,
-    classificacoes={544: "all"},
-    localidades={"N1": "all"},
-    periodos="last:24",    # ou "202401-202412", "all", (2024, 2024)
-)
-# date: Timestamp, value: float64, sentinels -> NaN
-```
-
-**Detalhes técnicos da API IBGE v3:**
-- `periodos`: aceita `YYYYMM-YYYYMM`, `last:N`, `-N`, `all`. A tupla `(ano_ini, ano_fim)` usa metadados para inferir o sufixo correto.
-- `view=flat`: primeiro item do array é sempre o cabeçalho — `_parse_flat` pula automaticamente.
-- Frequência inferida do cabeçalho `D2N` (`"Mês"`, `"Trimestre"`, `"Trimestre Móvel"`, `"Semestre"`, `"Ano"`).
-- `"trimestral móvel"` (PNAD) é mapeado para formato `YYYYMM` igual ao mensal.
-- Retry: 6 tentativas, backoff 1s, respeita `Retry-After`.
-- `ibge_old.py` foi removido (código morto).
-
-### `connectors/bcb.py` — APIs SGS e Focus do BCB
-
-```python
-from connectors.bcb import BCB
-
-bcb = BCB()
-
-# SGS: últimos N meses
-df = bcb.get_sgs_ultimos({"ibcbr_nsa": 24363, "ibcbr_sa": 24364}, n=36)
-
-# SGS: por período ou histórico completo
-df = bcb.get_sgs(series, start="01/01/2020")
-df = bcb.get_sgs(series, start="all")   # série histórica completa desde o início
-
-# Focus/Olinda
-df = bcb.get_focus(
-    endpoint="ExpectativasMercadoInflacao12Meses",
-    indicador="IPCA",
-    campos=["Data", "Media", "Mediana", "DesvioPadrao"],
-    start="2020-01-01",
-    filtros_extras="Suavizada eq 'S' and baseCalculo eq 0",
-)
-# colunas em snake_case, date como Timestamp
-```
-
-**Detalhes técnicos:**
-- SGS: `/ultimos/{n}` tem limite ~24 — `get_sgs_ultimos` usa `/dados?dataInicial=...` calculando a data.
-- SGS `start="all"` mapeia para `"01/01/1970"` internamente; a API retorna desde o início real da série.
-- Focus: URL deve ter `$` literal — `requests(params={})` percent-encoda para `%24` e a API rejeita. URL é construída manualmente.
-- `$count` não suportado pelo endpoint Focus do BCB — paginação por `$skip` até `len(page) < page_size`.
-- `ExpectativasMercadoSelic` não tem campo `Suavizada` — filtro diferente de inflação.
-- Paralelismo: `ThreadPoolExecutor` para múltiplas séries SGS simultâneas.
-
-### `connectors/fred.py` — API FRED (Federal Reserve)
-
-```python
-from connectors.fred import FredUniFrame, FredMultFrame
-
-# Série única
-df = FredUniFrame("PCE", "PCEPI", "2010-01-01", "2024-12-31")
-# colunas: Date, <NameSerie>
-
-# Múltiplas séries (wide ou unpivoted)
-df = FredMultFrame({"PCE": "PCEPI", "CPI": "CPIAUCSL"}, "2010-01-01", "2024-12-31")
-df_long = FredMultFrame({...}, start, end, Pivot=True)
-```
-
-**Detalhes:**
-- API key via `FRED_API_KEY` no `.env` — nunca hardcoded.
-- `US_IndexNormalize`: expande dados trimestrais para mensais via merge com CPI e `ffill(limit=2)`.
-- Arquivo em `connectors/fred.py` (movido de `connectors/not_in_production/` em 2026-05).
-
-### `connectors/mysql.py` — Insert/Update no banco
-
-```python
-from connectors.mysql import insert_data_into_database
-
-insert_data_into_database("macro_brasil", "atv_pim", df)
-```
-
-Faz `SHOW COLUMNS FROM table`, reordena o df, e executa `INSERT ... ON DUPLICATE KEY UPDATE` em batches de 1000 linhas.
-
-**Bug corrigido:** `.where(pd.notna(df), None)` não convertia NaN em float64 para None — `executemany` enviava `float('nan')` como string `'nan'` ao MySQL. Fix: `df.astype(object).where(...)`.
-
----
-
-## Padrão dos scripts de domínio
-
-Cada script expõe apenas `run()` — sem execução ao importar.
-
-```python
-# Carga histórica (primeira vez)
-atv_pim.run(periodos="all")
-atv_ibcbr.run(start="all")
-
-# Atualização rotineira (padrão)
-atv_pim.run()             # últimos N anos (default do script)
-inflc_agregados.run()     # últimos N meses
-
-# Range específico
-atv_pib.run(periodos=(2015, 2024))
-mt_caged.run(start="01/01/2020", end="31/12/2024")
-```
-
-Scripts IBGE usam `periodos=` (formatos do connector IBGE).  
-Scripts BCB SGS usam `start=`/`end=` (formato `"DD/MM/YYYY"`) ou `start="all"`.  
-`expc_focus.run()` usa `start=` ISO (`"YYYY-MM-DD"`) ou `n_dias=` para janela retroativa.
+📄 **Documentação completa (API IBGE v3, SGS/Focus do BCB, FRED, MySQL insert/update):** [`connectors/CLAUDE.md`](connectors/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `connectors/`.
 
 ---
 
@@ -265,39 +89,7 @@ Scripts BCB SGS usam `start=`/`end=` (formato `"DD/MM/YYYY"`) ou `start="all"`.
 
 Calcula "notas" (scores 1–10) para variáveis macroeconômicas de Brasil e EUA, alimentando dashboards Power BI.
 
-### Componentes
-
-| Módulo | Função | Output |
-|---|---|---|
-| `brasil/scores.py` | Notas macro Brasil (inflação, trabalho, crédito, atividade) | `brasil/base/Brasil_base.csv` |
-| `us/term_us.py` | Notas macro EUA (labor, inflation, activity, financial, housing) | `us/base/US_BASE.csv` |
-| `brasil/thermometer.py` | Múltiplos financeiros BRL (P/E, P/B, EV/EBITDA) | `brasil/base/Brasil_notas_preco.csv` |
-| `us/thermometer.py` | Múltiplos financeiros US | `us/base/` |
-| `jobs/update_oraculo.py` | Entry point: importa os módulos acima e combina em Central_base.csv | `base/Central_base.csv` |
-
-### Fluxo de execução (reestruturado 2026-05)
-
-```
-jobs/update_oraculo.py
-  scores.run()   → _load_data() lê macro_brasil → grava Brasil_base.csv → retorna DataFrame
-  term_us.run()  → lê FRED/BCB → grava US_BASE.csv → retorna DataFrame
-  pd.concat([db_brl, db_us]) → base/Central_base.csv
-```
-
-A lógica de scoring está em `utils/thermometer.py` (`Score`, `Score_SMC`, `Score_SA`, `Score_Diff`) e usa sigmóide normalizada para transformar qualquer série em nota 1–10.
-
-### Padrão de `scores.py` (Brasil)
-
-`_load_data()` centraliza todos os reads do banco e popula variáveis de módulo `_data_*`. `run()` chama `_load_data()` uma vez e concatena os frames de scoring. Colunas são renomeadas em `_load_data()` para manter os corpos das funções de scoring inalterados.
-
-Todas as séries consumidas por `_load_data()` vêm de `macro_brasil` via `MySQLDataRequester` — sem dependência direta de connectors externos (BCB, FRED etc.).
-
-**Refatoração 2026-05:**
-- Todas as funções de scoring renomeadas para snake_case (ex: `Inflacao` → `inflacao`, `IBC_BR` → `ibc_br`) — nomes de função, não as tabelas (que levam o prefixo de tema desde a renomeação de 2026-07)
-- `_finalize(*frames)` elimina boilerplate: `pd.concat([unpivot(f.tail(_N)) for f in frames]).dropna()`
-- `serv_divida_renda()`: usa `comp_renda_servico_total` diretamente do banco (antes reconstruía via juros + amortização)
-- `saldo_credito_empresas()`: `deflator.reindex(df.index)` antes da divisão para alinhar índices corretamente
-- `ibc_br()`: label corrigido (`'IBC_BR - [MA(Var(Yt, 12))]'` — parêntese faltando antes)
+📄 **Componentes, fluxo de execução, padrão de `scores.py`:** [`analytics/oraculo/CLAUDE.md`](analytics/oraculo/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `analytics/oraculo/`.
 
 ---
 
@@ -305,41 +97,15 @@ Todas as séries consumidas por `_load_data()` vêm de `macro_brasil` via `MySQL
 
 Relatório HTML interativo de fundamentos cambiais. Arquivo único autocontido — abre em qualquer browser, enviável por email/Dropbox.
 
-📄 **Status, pendências e roadmap completos:** [`CAMBIO.md`](CAMBIO.md)
-
-### Como gerar
-
-```powershell
-uv run python jobs/update_db.py          # atualiza macro_brasil (inclui cmb_reservas_bc, cmb_cambio_contratado, cmb_ptax, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca)
-uv run python jobs/update_international.py  # atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
-uv run python -c "from analytics.exchange_rate.generate_report import run; run()"
-# Saída: reports/fx_report.html
-```
-
-### Arquitetura do relatório
-
-Template fixo `report.html` com marcador `/*REPORT_DATA*/`. `generate_report.py` lê tabelas de dois schemas, serializa como JSON e substitui o marcador. Sem Jinja2 — só `str.replace()`.
-
-| Seção | Schema | Tabela |
-|---|---|---|
-| Diferenciais de Juros | `macro_international` | `diferenciais_juros` |
-| REER | `macro_international` | `cmb_reer` |
-| Posicionamento CFTC | `macro_international` | `cmb_cot_fx` |
-| Fluxos e Fundamentos | `macro_brasil` | `cmb_reservas_bc`, `cmb_termos_troca`, `cmb_fluxo_cambial`, `cmb_balanco_pagmt` |
+📄 **Como gerar, arquitetura do relatório, mapeamento seção→schema→tabela, gotchas atuais, pendências:** [`analytics/exchange_rate/CLAUDE.md`](analytics/exchange_rate/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `analytics/exchange_rate/`.
 
 ---
 
 ## analytics/inflation/ — Panorama de Inflação
 
-Relatório HTML de decomposição do IPCA/IPCA-15 (renomeado de `analytics/ipca/` em 2026-07, rebranding para refletir que o relatório cobre inflação de forma geral, não só o índice IPCA). Desde 2026-07, a decomposição por subitem vive em `macro_brasil` (`inflc_decomposicao` + `inflc_dim`); os agregados BCB/SGS ainda vêm de um CSV separado (`ipca_bcb_series.csv`, via `fetch_bcb.py`).
+Relatório HTML de decomposição do IPCA/IPCA-15. Decomposição por subitem vive em `macro_brasil` (`inflc_decomposicao` + `inflc_dim`); agregados BCB/SGS vêm de um CSV separado (`ipca_bcb_series.csv`, via `fetch_bcb.py`).
 
-📄 **Mapa de dados completo:** [`INFLATION.md`](INFLATION.md)
-
-**Pontos-chave:**
-- Decomposição por subitem agora é buscada diretamente da API do IBGE (agregados 7060/7062, classificação 315, nível 4 = subitem) por `domain/db/brasil/ibge/inflc_decomposicao.py`, direto para `macro_brasil.inflc_decomposicao`. Os antigos scripts em `quarantine/inflation_decomposition/` (que geravam os xlsx) não são mais usados pelo relatório. Não armazena variação 12 meses (removida em 2026-07 — calcular a partir de `var_mensal` na camada de consumo, não no banco).
-- `macro_brasil.inflc_dim` combina duas fontes (2026-07): `grupo`/`subgrupo`/`item` seguem sendo sincronizados a partir de `analytics/inflation/data/tabela_dimensao_ipca.xlsx` (mantido manualmente). `subjacente` (Serviços/Bens Industriais) e os 7 flags `nucleo_ex0/ex01/ex02/ex03/ex03_servicos/ex03_industriais/exfe` são derivados de `analytics/inflation/data/Vetores_NT_57.xlsx` — vetor de agregação **oficial** do BC (Nota Técnica BCB nº 57, dez/2025), com precedência sobre a planilha manual. "Alimentos Subjacente" continua vindo do xlsx manual (sem equivalente oficial). Ver `INFLATION.md` para o detalhe completo.
-- IPCA e IPCA-15 usam **IDs de variável diferentes** no mesmo esquema de classificação (63/66 vs 355/357) — ver docstring de `inflc_decomposicao.py`.
-- Agregados BCB/SGS (`ipca_bcb_series.csv`, via `fetch_bcb.py`) ainda duplicam ~33 das 34 séries já em `macro_brasil.inflc_agregados` (`fetch_bcb.py` tem uma a mais, `IPCA_12m`, usada no cross-check do KPI "12 Meses") — pipeline separado por ora, sem migração planejada. Note que os nomes de série em `fetch_bcb.py` continuam em maiúsculo (`IPCA_nucleo_P55`) — só as séries em `macro_brasil.inflc_agregados` foram padronizadas para minúsculo.
+📄 **Como gerar, arquitetura, mapa de dados, gotchas atuais, pendências:** [`analytics/inflation/CLAUDE.md`](analytics/inflation/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `analytics/inflation/`.
 
 ---
 
@@ -378,68 +144,23 @@ Ao converter PDFs em `.md` para alimentar o agente de análise, use a seguinte l
 
 **Regras:**
 - Para as cartas da Verde (81 PDFs, coluna única, born digital): sempre usar o script.
-- Para papers acadêmicos e relatórios de research na `agent_bibliography/`: ler na sessão e gerar `.md` estruturado diretamente.
+- Para papers acadêmicos e relatórios de research na `repository/`: ler na sessão e gerar `.md` estruturado diretamente.
 - A estrutura `.md` (headers, seções) só importa para legibilidade humana no Obsidian. Para o agente, texto limpo é suficiente.
 - Nunca usar `pypdf` para PDFs de 2 colunas — a ordem de leitura fica errada.
 - `pdfplumber` e `pymupdf` produzem Unicode correto (ç, ã, é) — o display `?` no terminal Windows é apenas artefato de codepage, não corrupção.
 
 ---
 
-## agent_bibliography/ — estrutura geral e Conceptual Maps
+## repository/ — curated knowledge base (bibliography + conceptual maps)
 
-Desde 2026-07, `agent_bibliography/` organiza-se por área temática (exchange rate, monetary policy, e futuras), cada uma com um pipeline literatura → dados. O processo reutilizável está documentado em [`agent_bibliography/BIBLIOGRAPHY_METHODOLOGY.md`](agent_bibliography/BIBLIOGRAPHY_METHODOLOGY.md) — misturar fontes internacionais + Brasil, extrair só os capítulos relevantes de livros, pontuar cada fonte 1-5 em "quão fundacional" (independente da idade) ao lado do ano, organizar em clusters temáticos `#tag`.
+Since 2026-07, organized by topic area (exchange rate, monetary policy, trader, and future ones: economic activity, fiscal policy, inflation, labor market), each with a literature → data → conceptual map pipeline. Named `agent_bibliography/` before — old name still turns up in git history/older docs, treat as a synonym. Doesn't use or reconcile with `obsidian/`, nor interact with the `ingestion/` pipeline — deliberately parallel systems, per explicit user instruction.
 
-Layout de pastas:
-```
-agent_bibliography/
-  BIBLIOGRAPHY_METHODOLOGY.md          — processo reutilizável (não é output de nenhum tópico)
-  exchange_rate/                        — PDFs brutos adquiridos (28 fontes) + sínteses (renomeada de
-                                          exchange_rate_policy/; ver nota de três-branches abaixo)
-  monetary_policy/                     — PDFs brutos (praticamente todos os 30 candidatos já adquiridos,
-                                          ver nota abaixo — conceptual_map ainda não construído)
-  agent_mapping/
-    conceptual_maps/                   — <topic>_conceptual_map.md, um por área
-    recommended_bibliography/          — <topic>_bibliography_candidates.md (pré-aquisição) + <topic>_bibliography_gaps.md (pós-mapa)
-    recommended_data/                  — <topic>_data_inventory.md, um por área
-```
+📄 **Folder structure, methodology, per-topic status, and pending items:** [`repository/CLAUDE.md`](repository/CLAUDE.md) — loads on demand when Claude reads files inside `repository/` (unlike this root file, which loads in full every session).
 
-### Exchange rate (área completa)
-
-`agent_bibliography/agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` é um mapa de conhecimento single-file, estilo Obsidian (`[[wikilinks]]` para conceitos, `#tags` para clusters temáticos), construído diretamente a partir dos 18 PDFs originais em `agent_bibliography/exchange_rate/` (hoje 28) — **não** a partir de `.md` extraídos (esses foram deletados de propósito; os PDFs são a fonte de verdade). Cobre 9 clusters temáticos (`#market_microstructure`, `#exchange_rate_determination`, `#currency_regimes`, `#balance_of_payments`, `#policy_transmission`, `#applied_valuation_tools`, `#pass_through_and_inflation`, `#capital_controls`, `#currency_crisis_dynamics`).
-
-**Não usa e não reconcilia com** o vault `obsidian/exchange_rate/` (páginas de conceito pré-existentes) — são dois sistemas paralelos por instrução explícita do usuário. Também não interage com o pipeline `ingestion/`.
-
-`agent_bibliography/agent_mapping/recommended_bibliography/exchange_rate_bibliography_gaps.md` lista fontes candidatas para fechar as lacunas identificadas na seção "Coverage notes" do mapa (crisis models de 1ª/2ª/3ª geração, capital controls como ferramenta de política, teoria de OCA, opções de FX/volatilidade, econometria de falha de UIP (Fama 1984), profundidade em EM não-Brasil, economia política do câmbio). **Status 2026-07:** 5 das 7 seções já fechadas (crisis models, capital controls, Fama 1984, economia política — cheias; OCA parcial, faltam McKinnon 1963/Kenen 1969); restam abertas de fato só FX options/volatilidade e profundidade EM não-Brasil — ver pendências abaixo.
-
-`agent_bibliography/agent_mapping/recommended_data/exchange_rate_data_inventory.md` mapeia categorias analíticas (preço à vista, carry, termos de troca, BOP, fluxo cambial, reservas, REER, posicionamento, diferencial de inflação) ao que já existe no banco vs. lacunas — maior gap identificado: nenhuma série de câmbio à vista (PTAX) está armazenada hoje.
-
-**Três branches de material sobre exchange rate (2026-07):**
-1. **Curadoria** (`agent_bibliography/exchange_rate/` + `agent_bibliography/agent_mapping/*`) — pipeline de literatura → mapa conceitual, descrito nesta seção. Não é voltado ao time, é a base que alimenta o agente.
-2. **Consolidado** (`agent_bibliography/consolidated/exchange_rate/`) — síntese condensada e apresentável para discussão com o time (bibliografia consolidada, mapa conceitual, inventário de dados, introdução EN/PT, dois explorers HTML interativos). Segue o mesmo padrão de pasta-por-tópico do `agent_mapping/`, hoje o único tópico já construído.
-3. **Analítico** (`analytics/exchange_rate/`) — braço analítico/aplicado, mesmo padrão de `analytics/monetary_policy/` e `analytics/inflation/` (código + relatório HTML + `referencia/`). Contém o Panorama Cambial (`generate_report.py`/`report.html`/`agent_data.py`, fundido da antiga pasta `analytics/cambio/` em 2026-07 — mesmo tema, nome unificado) e peças analíticas standalone como `fx_forecasting_theory_vs_practice.html` (teoria vs. prática de forecasting cambial, ainda não referenciada em nenhum dos outros dois branches).
-
-**Para incrementar a base (próxima sessão ou quando novas fontes chegarem):**
-1. Adicionar o(s) PDF(s) em `agent_bibliography/exchange_rate/`, usando a convenção de nome já estabelecida: `topic_description (Author, Year).pdf` (os nomes sugeridos já estão no arquivo de gaps).
-2. Processar **um de cada vez** (não paralelizar com agents em background — fluxo de trabalho preferido pelo usuário: extrair texto completo → ler → identificar conceitos novos vs. reforço de existentes → editar o mapa).
-3. Extrair texto via `pdfplumber` em Bash (o `Read` tool não renderiza PDF nesta máquina — falta `poppler`/`pdftoppm`); redirecionar para arquivo no scratchpad com `sys.stdout.reconfigure(encoding='utf-8')` para evitar `UnicodeEncodeError` em símbolos não-ASCII no console do Windows.
-4. Atualizar o mapa: nova linha na tabela `## Sources processed`, bullets de conceito no(s) `#theme_cluster` correspondente(s) com cross-links `[[conceito]]` para conceitos já existentes quando houver conexão genuína, e remover/marcar a linha correspondente em `exchange_rate_bibliography_gaps.md`.
-5. Manter textos em inglês para fontes em inglês e português para fontes em português (regra geral do projeto) — o mapa em si é escrito em inglês, mas termos técnicos em PT (ex: "posição de câmbio", "repasse cambial") são preservados entre parênteses quando a fonte é em português.
-
-### Monetary policy (em andamento)
-
-`agent_bibliography/agent_mapping/recommended_bibliography/monetary_policy_bibliography_candidates.md` tem 30 candidatos de literatura em 7 clusters (`#policy_rules_and_credibility`, `#new_keynesian_transmission`, `#inflation_targeting_regimes`, `#transmission_channels_financial_frictions`, `#unconventional_policy_zlb`, `#global_spillovers_em_autonomy`, `#brazil_monetary_policy`) mais uma seção §8 separada para materiais primários do COPOM (Comunicado, Ata, Relatório de Política Monetária). **Atualização 2026-07:** praticamente todos os candidatos já foram adquiridos fisicamente em `agent_bibliography/monetary_policy/` (nomes de arquivo batem com a convenção sugerida no próprio arquivo de candidatos) — falta só o livro do Cukierman (1992, precisa de capítulos específicos) e os materiais §8 do COPOM. O texto do arquivo de candidatos ainda diz "nada adquirido ainda" — ficou desatualizado e não foi corrigido nesta revisão. **Nenhum conceptual map foi construído ainda** para essa área (só `exchange_rate_conceptual_map.md` existe hoje em `agent_mapping/conceptual_maps/`) — esse é o próximo passo real, não a aquisição. Escopo/mecanismo de ingestão do §8 (COPOM) seguem deliberadamente em aberto.
-
-`agent_bibliography/agent_mapping/recommended_data/monetary_policy_data_inventory.md` usa uma estrutura de duas camadas — dados próprios (Selic/decisões COPOM, diferenciais, r*) vs. dados consumidos de outros agentes ainda não construídos (inflação, atividade, fiscal, câmbio) — reflexo da arquitetura multi-agente que a LIS está planejando (um agente por área macro).
-
-Separado dessa curadoria de literatura: `analytics/monetary_policy/` já é um projeto analítico funcionando (réplica do modelo pequeno do BCB, ver seção própria acima) — não confundir os dois; um é a base de conhecimento teórico, o outro é um modelo aplicado com relatório HTML.
-
-Uma fonte adicional fora dos 30 candidatos originais foi solta em `agent_bibliography/monetary_policy/` em 2026-07: `systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012).pdf` (BIS Working Paper No. 396) — argumenta que a regra sistemática de política monetária do banco central pode por si só gerar o forward premium puzzle/falha de UIP. Está na pasta certa mas **não processada** em nenhum mapa ainda; toca tanto monetary policy quanto exchange rate (mesmo tipo de fronteira ambígua já sinalizado para `#pass_through_and_inflation` em `bibliography.md`) — decidir em qual mapa entra antes de processar.
-
-### Trader (global macro trading) — pendente decisão de escopo
-
-`agent_bibliography/trader/` contém os 15 capítulos (ch2–ch16) de *Trading Global Macro Markets* (Dirk Willer & Alex Saunders, 2024), renomeados em 2026-07-13 para a convenção `topic_description_chN (Author, Year).pdf` (mesmo padrão dos capítulos do livro do Galí em `monetary_policy/`). Cobre regras de macro trading, ciclo de negócios, geopolítica, e frameworks táticos/estratégicos para rates, equities, credit, FX, commodities, alocação por regime, e ativos não tradicionais (cripto/privados).
-
-Diferente de `exchange_rate/` e `monetary_policy/`, esta pasta **não tem** ainda `conceptual_map`, `bibliography_candidates`/`gaps`, nem `data_inventory` — foi criada só com os PDFs, sem seguir o processo de `BIBLIOGRAPHY_METHODOLOGY.md` desde o início. Decisão em aberto para próxima sessão: se `trader` vira um quarto pilar temático completo (mapa conceitual + inventário de dados, mesmo tratamento das outras duas áreas) ou se serve a um propósito diferente (ex: alimentar diretamente um agente/estratégia de trading, sem mapa conceitual formal). Enquanto isso não for decidido, não iniciar o processamento capítulo-a-capítulo no padrão dos outros mapas.
+**Three branches of exchange-rate material (2026-07):**
+1. **Curation** (`repository/exchange_rate/` + `repository/agent_mapping/*`) — literature → conceptual map pipeline. Not team-facing, it's the base that feeds the agent. Full detail in `repository/CLAUDE.md`.
+2. **Consolidated** (`team_materials/agent_materials/exchange_rate/`) — condensed, presentable synthesis for team discussion (bibliography, conceptual map, data inventory, EN/PT introduction, two interactive HTML explorers).
+3. **Analytical** (`analytics/exchange_rate/`) — applied/analytical branch, same pattern as `analytics/monetary_policy/` and `analytics/inflation/` (code + HTML report + `referencia/`). See its own section above.
 
 ---
 
@@ -470,23 +191,16 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 
 ## Pendências (próximas sessões)
 
-### Alta prioridade — Relatório Cambial
-Ver pendências e roadmap detalhados em [`CAMBIO.md`](CAMBIO.md).
-
-### Alta prioridade — Relatório de Inflação
-Ver mapa de dados e pendências detalhados em [`INFLATION.md`](INFLATION.md). Resumo: decomposição por subitem migrada para `macro_brasil.inflc_decomposicao`/`inflc_dim` (2026-07) e já no `jobs/update_db.py`; tabela `inflacao` renomeada em sequência para `ipca_agregados` → `inflation_agregados` → `inflc_agregados` (prefixo de tema, depois abreviado) com séries em minúsculo; falta migrar os agregados BCB/SGS do relatório (`ipca_bcb_series.csv`) para ler de `macro_brasil.inflc_agregados` em vez de duplicar o fetch (e, se migrado, também padronizar os nomes de série para minúsculo lá).
+### Alta prioridade
+- **`analytics/exchange_rate/`**: ver "Pending" em [`analytics/exchange_rate/CLAUDE.md`](analytics/exchange_rate/CLAUDE.md).
+- **`analytics/inflation/`**: ver "Pending" em [`analytics/inflation/CLAUDE.md`](analytics/inflation/CLAUDE.md).
 
 ### Média prioridade
-- **`analytics/oraculo/us/term_us.py` — revisão de qualidade**: snake_case, `_load_data()` centralizado, bugs de robustez. Se os scores do oráculo migrarem para MySQL no futuro, ver `DB_SCHEMAS.md` — esse é o cenário citado lá como justificativa legítima para um schema de analytics dedicado.
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
-- **macro_international — itens menores**: confirmar descrições SGS 22099/22100, sub-itens CEP/CBE fluxo cambial, diferenciais ex-ante. Ver `CAMBIO.md`.
-- **`agent_bibliography/agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` — 2 lacunas reais ainda abertas**: das 7 seções originais de `exchange_rate_bibliography_gaps.md`, 5 já foram fechadas (crisis models, capital controls, Fama 1984/UIP, economia política — todas 2026-07; OCA parcialmente, falta McKinnon 1963/Kenen 1969). Restam genuinamente abertas: **FX options/volatilidade** (Garman & Kohlhagen 1983) e **profundidade EM não-Brasil** (RMB/original sin, Eichengreen & Hausmann 1999). Ver arquivo de gaps para status seção-a-seção.
-- **Monetary policy — construir o conceptual map** (não mais "iniciar aquisição" — isso já foi feito, ver seção "Monetary policy (em andamento)" acima): praticamente todos os 30 candidatos de `monetary_policy_bibliography_candidates.md` já estão em `agent_bibliography/monetary_policy/`; falta processá-los em `monetary_policy_conceptual_map.md` (ainda não existe), um de cada vez, mesmo fluxo usado para exchange rate. Faltam adquirir: livro do Cukierman (1992, capítulos específicos) e materiais §8 do COPOM (escopo/ingestão em aberto). Decidir também onde processar o Tambakis & Tarashev (2012) solto na pasta (ver seção acima).
-- **`agent_bibliography/trader/` — decidir escopo**: 15 capítulos de *Trading Global Macro Markets* (Willer & Saunders, 2024) já renomeados na convenção padrão, mas sem `conceptual_map`/`bibliography_candidates`/`data_inventory` associados. Decidir se vira um quarto pilar temático (mesmo tratamento de `exchange_rate/`/`monetary_policy/`) ou se tem um uso diferente antes de processar os capítulos. Ver seção acima.
+- **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): see "Pending" section in [`repository/CLAUDE.md`](repository/CLAUDE.md).
 - **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Todos os quatro já alimentam `analytics/monetary_policy/model.py` mas precisam ser rodados manualmente até serem integrados.
-- **`agent_bibliography/consolidated/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
-- **Kinea PDF órfão**: `consolidated/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `agent_bibliography/mental_model/kinea_insights/`).
+- **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
+- **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
 
 ### Baixa prioridade
 - `quarantine/` — scripts legados (curva de juros, decomposição IPCA). Limpar quando conveniente.
-- `brasil/thermometer.py` lê de `MySQLDataRequester('br_finance', 'brazil_real_yield_curve')` — verificar se schema ainda existe.

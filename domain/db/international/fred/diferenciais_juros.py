@@ -18,7 +18,7 @@ Banco: macro_international.diferenciais_juros
 Movida de macro_analytics em 2026-07 — schema dedicado a series "calculadas"
 foi descontinuado (tinha essa unica tabela, e ela ja precisa de dados de mais
 de um pais para existir, o que a qualifica para macro_international pela
-propria regra original de organizacao). Ver DB_SCHEMAS.md.
+propria regra original de organizacao). Ver domain/db/CLAUDE.md.
 
 Nota: os inputs brutos (selic, ipca_12m, fed_funds, cpi_12m_us) sao armazenados
 junto com os diferenciais para manter a tabela auto-contida para a analise
