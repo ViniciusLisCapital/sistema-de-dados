@@ -63,6 +63,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `atv_pib_usd` | BCB SGS 4385 (monthly GDP in USD) | — → today | `brasil/bcb/atv_pib_usd.py` |
 | `comm_icbr` | BCB SGS 27574-27577 (IC-Br + 3 sub-indices) | 1998-02 → today | `brasil/bcb/comm_icbr.py` |
 | `inflc_meta` | BCB SGS 13521 (CMN inflation target) | 1999 → today | `brasil/bcb/inflc_meta.py` |
+| `cmb_risco_pais` | investing.com (manual CSV export, Brazil 5Y CDS USD) | 2007-12 → today (gap: 2015-12-02→2015-12-31, real gap in source exports) | `brasil/investing/cmb_risco_pais.py` |
 
 `cmb_*` FX tables in `macro_brasil` (reserves, BOP, flow, terms of trade, contracted FX, Comex breakdowns) plus `macro_international`'s `cmb_reer`/`cmb_cot_fx`/`diferenciais_juros` are documented in [`analytics/exchange_rate/CLAUDE.md`](../../analytics/exchange_rate/CLAUDE.md) instead, since that's where they're actually consumed.
 

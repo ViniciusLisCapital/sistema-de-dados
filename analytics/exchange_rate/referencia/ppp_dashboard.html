@@ -1,0 +1,1137 @@
+<title>USD/BRL — Relative PPP Equilibrium — Lis Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --bg: #F4F5F7;
+  --bg2: #FFFFFF;
+  --navy: #1F2853;
+  --ice: #1F2853;
+  --ice2: #3A4F72;
+  --gold: #BB9B1D;
+  --muted: #7A88A8;
+  --green: #418791;
+  --red: #EA523A;
+  --purple: #02739B;
+  --line: rgba(31,40,83,0.1);
+  --sans: 'Barlow', sans-serif;
+  --cond: 'Barlow Condensed', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--navy);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.page { margin: 0 auto; padding: 24px 32px; }
+
+/* Header */
+.hdr {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hdr-logo { font-family: Georgia, serif; font-size: 22px; letter-spacing: 0.06em; color: var(--navy); }
+.hdr-logo span { color: var(--gold); }
+.hdr-center { font-family: var(--cond); font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ice2); text-align: center; }
+.hdr-right { display: flex; align-items: center; gap: 12px; }
+.hdr-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.hdr-badge { font-family: var(--mono); font-size: 10px; padding: 4px 12px; border-radius: 100px; background: rgba(2,115,155,0.08); border: 1px solid rgba(2,115,155,0.25); color: var(--purple); }
+
+/* Note panel — equation + framing (not part of base skill, extends it for research context) */
+.note-panel {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 24px; margin-bottom: 20px;
+}
+.note-formula { font-family: var(--mono); font-size: 12.5px; color: var(--ice); overflow-x: auto; white-space: nowrap; }
+.note-formula .g-obs { color: var(--gold); font-weight: 700; }
+.note-formula .g-eq { color: var(--navy); font-weight: 700; }
+.note-formula .g-sec { color: var(--purple); font-weight: 600; }
+.note-sub { font-size: 12px; color: var(--muted); margin-top: 6px; max-width: 100ch; }
+
+/* Controls (base-month selector) */
+.controls {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 24px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.ctrl-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.ctrl-group { display: flex; align-items: center; gap: 10px; }
+select#baseMonth {
+  font-family: var(--mono); font-size: 12px; color: var(--ice);
+  background: rgba(31,40,83,0.03); border: 1px solid rgba(31,40,83,0.15);
+  border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  min-width: 140px;
+}
+select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+.month-btn {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  padding: 7px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid rgba(187,155,29,0.5); background: rgba(187,155,29,0.1);
+  color: var(--gold); transition: all 0.15s;
+}
+.month-btn:hover { background: rgba(187,155,29,0.18); }
+.sep { width: 1px; height: 32px; background: var(--line); }
+
+/* Stats Cards */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.stat-val { font-family: var(--cond); font-size: 26px; font-weight: 600; color: var(--ice); line-height: 1; }
+.stat-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.up { color: var(--green) !important; }
+.dn { color: var(--red) !important; }
+
+/* Chart Container */
+.chart-container { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+.chart-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.chart-hdr-left { display: flex; flex-direction: column; gap: 2px; }
+.chart-title { font-family: var(--cond); font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
+.chart-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.chart-hdr-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.chart-wrap { position: relative; height: 480px; }
+
+.legend-row { display: flex; gap: 20px; justify-content: center; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.legend-dot { width: 14px; height: 3px; border-radius: 2px; }
+
+/* Botao Dados no Grafico */
+.dl-toggle {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+  padding: 6px 16px; border-radius: 8px; cursor: pointer;
+  border: 2px solid rgba(2,115,155,0.4); background: rgba(2,115,155,0.06);
+  color: var(--purple); transition: all 0.2s; user-select: none;
+  display: flex; align-items: center; gap: 7px;
+}
+.dl-toggle:hover { border-color: rgba(2,115,155,0.7); background: rgba(2,115,155,0.1); }
+.dl-toggle.on { background: rgba(2,115,155,0.18); border-color: rgba(2,115,155,0.7); color: #025E82; font-weight: 600; }
+.dl-toggle .toggle-icon {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; line-height: 1;
+}
+.dl-toggle.on .toggle-icon { background: var(--purple); color: #fff; }
+
+/* Footer */
+.ftr { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 12px 0 4px; }
+.ftr-note { text-align: center; font-size: 11px; color: var(--muted); padding-bottom: 12px; max-width: 100ch; margin: 0 auto; }
+
+/* Tabs */
+.tab-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn {
+  font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 10px 20px; border-radius: 10px 10px 0 0; cursor: pointer;
+  background: transparent; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+}
+.tab-btn:hover { color: var(--ice); }
+.tab-btn.active { background: var(--bg2); color: var(--navy); border-color: var(--line); box-shadow: 0 -2px 8px rgba(31,40,83,0.04); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Model-explanation cards (Bayesian tab) */
+.model-section { margin-bottom: 20px; }
+.model-section > h2 {
+  font-family: var(--cond); font-size: 16px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ice); margin-bottom: 10px;
+}
+.eq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.eq-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+}
+.eq-card h3 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.eq-card .formula { font-family: var(--mono); font-size: 12.5px; color: var(--ice); overflow-x: auto; white-space: nowrap; margin-bottom: 6px; }
+.eq-card p { font-size: 12px; color: var(--ice2); line-height: 1.5; }
+
+.data-table-wrap { overflow-x: auto; }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.data-table th {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  text-align: right; padding: 6px 10px; border-bottom: 2px solid var(--line);
+}
+table.data-table th:first-child, table.data-table td:first-child { text-align: left; }
+table.data-table td { font-family: var(--mono); text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); color: var(--ice); }
+table.data-table tr:last-child td { border-bottom: none; }
+table.data-table .spec-label { font-family: var(--sans); font-weight: 600; }
+table.data-table.text-table th, table.data-table.text-table td { text-align: left; font-family: var(--sans); }
+
+.small-multiples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .small-multiples { grid-template-columns: repeat(2, 1fr); } }
+.mini-chart-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.mini-chart-card .mini-title { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; text-align: center; }
+.mini-chart-wrap { position: relative; height: 130px; }
+
+.callout {
+  background: rgba(2,115,155,0.05); border: 1px solid rgba(2,115,155,0.2); border-radius: 10px;
+  padding: 12px 16px; font-size: 12.5px; color: var(--ice2); margin-bottom: 16px;
+}
+.callout b { color: var(--navy); }
+
+.no-data-msg { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+</style>
+
+<div class="page">
+
+  <div class="hdr">
+    <div class="hdr-logo">LIS <span>CAPITAL</span></div>
+    <div class="hdr-center">USD/BRL — Relative PPP Equilibrium</div>
+    <div class="hdr-right">
+      <div class="hdr-badge" id="rangeBadge">—</div>
+      <div class="hdr-date" id="genDate"></div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-btn active" data-tab="tab-data">Equilibrium &amp; Data</div>
+    <div class="tab-btn" data-tab="tab-model">Bayesian Model</div>
+  </div>
+
+  <div class="tab-panel active" id="tab-data">
+
+  <div class="note-panel">
+    <div class="note-formula">
+      <span class="g-eq">equilibrium(t)</span> = <span class="g-sec">ptax(b)</span> ×
+      [ <span class="g-sec">IPCA_index(t)</span> / <span class="g-sec">IPCA_index(b)</span> ] /
+      [ <span class="g-sec">CPI_index(t)</span> / <span class="g-sec">CPI_index(b)</span> ]
+      &nbsp;&nbsp;·&nbsp;&nbsp; <span class="g-obs">deviation(t)</span> = 100 × ln( actual(t) / equilibrium(t) )
+    </div>
+    <div class="note-sub">Relative PPP anchored at a selectable base month <b>b</b> — the equilibrium line is forced to equal the actual PTAX rate at <b>b</b>, then scaled by cumulative BRL inflation (headline IPCA) over cumulative USD inflation (headline CPI, FRED CPIAUCSL) since then. Companion to <b>referencia/state_space_equilibrium_model.md</b>.</div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Base month</span>
+      <select id="baseMonth"></select>
+    </div>
+    <div class="sep"></div>
+    <div class="month-btn" id="resetBtn">Reset to Jul/1994</div>
+  </div>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Actual PTAX vs. PPP Equilibrium</div>
+        <div class="chart-subtitle" id="mainSubtitle">BRL per USD · monthly</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle1"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>Actual (PTAX)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>PPP equilibrium</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Deviation from PPP Equilibrium</div>
+        <div class="chart-subtitle">100 × ln(actual / equilibrium) — positive = BRL weaker (more depreciated) than PPP implies</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle2"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="devChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Carry</div>
+        <div class="chart-subtitle" id="carrySubtitle">Selic − Fed Funds, % p.a.</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle3"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="carryChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Terms of Trade</div>
+        <div class="chart-subtitle" id="totSubtitle">Funcex PX/PM index, 2018=100</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle4"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="totChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Long-Term Inflation Expectation</div>
+        <div class="chart-subtitle" id="breakevenSubtitle">Bond-implied breakeven, 10y (PREJS − NTNBJS), % p.a.</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle6"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="breakevenChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Fiscal Risk</div>
+        <div class="chart-subtitle" id="fiscalSubtitle">Brazil 5Y CDS (USD), bps</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle5"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="fiscalChart"></canvas></div>
+  </div>
+
+  <div class="ftr">Lis Capital · USD/BRL · Relative PPP (headline IPCA / headline CPI) · <span id="ftrRange">—</span></div>
+  <div class="ftr-note">Sources: BCB SGS 433 (IPCA) and SGS 1 (PTAX venda), macro_brasil; FRED CPIAUCSL (US CPI), fetched live; diferenciais_juros.diferencial_nominal (carry, macro_international); cmb_termos_troca.termos_de_troca_funcex (Funcex/IPEADATA, macro_brasil); base_mercado.interest_rates PREJS−NTNBJS @120M (10y bond-implied breakeven inflation, external fund-ops schema, PREJS@120M data bug masked/interpolated — see ppp_equilibrium.py); cmb_risco_pais.cds_5y_usd (investing.com, macro_brasil). Base-month dependence is real — the "Latest deviation" figures above will move materially with the selector, which is the reason the state-space concept note treats equilibrium as a filtered unobserved state rather than a single fixed anchor. Carry/terms-of-trade/breakeven/fiscal-risk panels are raw series for visual inspection only — see the "Bayesian Model" tab for the fitted regression. Not wired into generate_report.py — reference/research material only. Generated by analytics/exchange_rate/models/ppp_equilibrium.py.</div>
+
+  </div>
+  <!-- /tab-data -->
+
+  <div class="tab-panel" id="tab-model">
+
+  <div id="bayesNoData" style="display:none" class="no-data-msg">
+    No Bayesian model data embedded in this build. Regenerate via
+    <code>uv run python -c "from analytics.exchange_rate.models.bayesian_deviation_model import render_dashboard; render_dashboard()"</code>
+    (requires <code>bayesian_deviation_model.run()</code> to have been run at least once first, to produce the saved posterior traces it reads from).
+  </div>
+
+  <div id="bayesContent" style="display:none">
+
+    <div class="model-section">
+      <h2>What this model is</h2>
+      <div class="callout">
+        A Bayesian linear regression explaining the month-to-month <b>change</b> in the PPP deviation (tab 1) from four candidate channels — carry, terms-of-trade, long-term inflation expectations, and fiscal risk — each lagged one month. Deliberately the simpler "attempt one", ahead of a possible Kalman-filter state-space model ("attempt two") that would let these relationships vary over time instead of holding them fixed. Full design rationale and discussion: <b>models/bayesian_deviation_model.md</b>.
+      </div>
+      <div class="eq-grid">
+        <div class="eq-card">
+          <h3>1 · Dependent variable</h3>
+          <div class="formula">D(t) = 100 · ln( ptax(t) / equilibrium(t) )</div>
+          <p>The PPP deviation from tab 1 (any base month gives identical results here — only the intercept shifts, see the .md's derivation).</p>
+        </div>
+        <div class="eq-card">
+          <h3>2 · Why first differences</h3>
+          <div class="formula">ADF + KPSS on D(t), carry, tot → I(1)<br>breakeven, fiscal → I(0)</div>
+          <p>Regressing an I(1) series on a mix of I(1)/I(0) regressors risks spurious correlation. Pre-registered rule: if any series is I(1), difference everything uniformly.</p>
+        </div>
+        <div class="eq-card">
+          <h3>3 · Regression equation</h3>
+          <div class="formula">Δdev(t) = α + β₁Δcarry(t−1) + β₂Δtot(t−1)<br>+ β₃Δbreakeven(t−1) + β₄Δfiscal(t−1) + ε(t)</div>
+          <p>All four regressors standardized (mean 0, sd 1) before fitting, so β's are comparable in "per 1 SD of the regressor" units.</p>
+        </div>
+        <div class="eq-card">
+          <h3>4 · Priors &amp; likelihood</h3>
+          <div class="formula">α ~ Normal(0,10)&nbsp;&nbsp;β ~ Normal(0,2)<br>σ ~ HalfNormal(5)&nbsp;&nbsp;ε ~ Normal(0,σ) or StudentT(ν,0,σ)</div>
+          <p>Weakly-informative priors on standardized regressors. Normal vs. Student-t errors compared via LOO (see below) — Normal preferred, no evidence of fat tails at this sample size.</p>
+        </div>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table text-table" id="varTable" style="width:100%">
+          <thead><tr><th>Variable</th><th>Source</th><th>Available from</th><th>Expected sign</th></tr></thead>
+          <tbody>
+            <tr><td>carry</td><td>diferenciais_juros.diferencial_nominal (Selic − Fed Funds)</td><td>1999-03</td><td>No strong prior expectation</td></tr>
+            <tr><td>tot</td><td>cmb_termos_troca.termos_de_troca_funcex (Funcex PX/PM)</td><td>1994-07</td><td>Negative</td></tr>
+            <tr><td>breakeven</td><td>base_mercado.interest_rates, PREJS−NTNBJS @120M</td><td>2006-01</td><td>Positive</td></tr>
+            <tr><td>fiscal</td><td>cmb_risco_pais.cds_5y_usd (Brazil 5Y CDS)</td><td>2007-12</td><td>Positive</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:11.5px;color:var(--muted);margin-top:8px">Fit via PyMC/NUTS, 4 chains. Two additional specs cross-check the primary one: a <b>de-anchoring gap</b> variant (breakeven − CMN inflation target, macro_brasil.inflc_meta) in place of raw breakeven, and a <b>robustness</b> spec (carry + tot only, no breakeven/fiscal) over a much longer sample.</p>
+    </div>
+
+    <div class="model-section">
+      <h2>Descriptive stats</h2>
+      <div class="stats-row" id="bayesStatsRow"></div>
+      <div class="callout" id="modelComparisonCallout"></div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="specTable"></table>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Historical Fit</div>
+          <div class="chart-subtitle">Actual vs. fitted PPP deviation (primary spec) — shaded band = 94% credible interval on the fitted mean</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="fitLevelChart"></canvas></div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>Actual</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>Fitted (posterior mean)</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Decomposition of the PPP Deviation</div>
+          <div class="chart-subtitle">Cumulative contribution of each channel to the modeled change in deviation since the sample start — sums exactly to the actual change (residual included)</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="decompChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Nominal Exchange Rate Decomposition</div>
+          <div class="chart-subtitle">Same decomposition, in BRL/USD terms: PPP equilibrium (base layer) + each channel's contribution, stacked, reaches the actual rate exactly (dashed line) — e.g. "equilibrium 4.80, carry +0.40, fiscal −0.50, residual completes the gap to the actual 5.00"</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="levelDecompChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Coefficient Estimates Across Specs</div>
+          <div class="chart-subtitle">Posterior mean and 94% HDI — same channel estimated on different samples/constructions</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:280px"><canvas id="forestChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Posterior Distributions</div>
+          <div class="chart-subtitle">Primary spec — histograms of the MCMC posterior draws (4 chains × 2000 draws, thinned for display)</div>
+        </div>
+      </div>
+      <div class="small-multiples" id="posteriorGrid"></div>
+    </div>
+
+  </div>
+  <!-- /bayesContent -->
+
+  </div>
+  <!-- /tab-model -->
+
+</div>
+
+<script>
+const PPP_DATA = {"months": ["1994-07", "1994-08", "1994-09", "1994-10", "1994-11", "1994-12", "1995-01", "1995-02", "1995-03", "1995-04", "1995-05", "1995-06", "1995-07", "1995-08", "1995-09", "1995-10", "1995-11", "1995-12", "1996-01", "1996-02", "1996-03", "1996-04", "1996-05", "1996-06", "1996-07", "1996-08", "1996-09", "1996-10", "1996-11", "1996-12", "1997-01", "1997-02", "1997-03", "1997-04", "1997-05", "1997-06", "1997-07", "1997-08", "1997-09", "1997-10", "1997-11", "1997-12", "1998-01", "1998-02", "1998-03", "1998-04", "1998-05", "1998-06", "1998-07", "1998-08", "1998-09", "1998-10", "1998-11", "1998-12", "1999-01", "1999-02", "1999-03", "1999-04", "1999-05", "1999-06", "1999-07", "1999-08", "1999-09", "1999-10", "1999-11", "1999-12", "2000-01", "2000-02", "2000-03", "2000-04", "2000-05", "2000-06", "2000-07", "2000-08", "2000-09", "2000-10", "2000-11", "2000-12", "2001-01", "2001-02", "2001-03", "2001-04", "2001-05", "2001-06", "2001-07", "2001-08", "2001-09", "2001-10", "2001-11", "2001-12", "2002-01", "2002-02", "2002-03", "2002-04", "2002-05", "2002-06", "2002-07", "2002-08", "2002-09", "2002-10", "2002-11", "2002-12", "2003-01", "2003-02", "2003-03", "2003-04", "2003-05", "2003-06", "2003-07", "2003-08", "2003-09", "2003-10", "2003-11", "2003-12", "2004-01", "2004-02", "2004-03", "2004-04", "2004-05", "2004-06", "2004-07", "2004-08", "2004-09", "2004-10", "2004-11", "2004-12", "2005-01", "2005-02", "2005-03", "2005-04", "2005-05", "2005-06", "2005-07", "2005-08", "2005-09", "2005-10", "2005-11", "2005-12", "2006-01", "2006-02", "2006-03", "2006-04", "2006-05", "2006-06", "2006-07", "2006-08", "2006-09", "2006-10", "2006-11", "2006-12", "2007-01", "2007-02", "2007-03", "2007-04", "2007-05", "2007-06", "2007-07", "2007-08", "2007-09", "2007-10", "2007-11", "2007-12", "2008-01", "2008-02", "2008-03", "2008-04", "2008-05", "2008-06", "2008-07", "2008-08", "2008-09", "2008-10", "2008-11", "2008-12", "2009-01", "2009-02", "2009-03", "2009-04", "2009-05", "2009-06", "2009-07", "2009-08", "2009-09", "2009-10", "2009-11", "2009-12", "2010-01", "2010-02", "2010-03", "2010-04", "2010-05", "2010-06", "2010-07", "2010-08", "2010-09", "2010-10", "2010-11", "2010-12", "2011-01", "2011-02", "2011-03", "2011-04", "2011-05", "2011-06", "2011-07", "2011-08", "2011-09", "2011-10", "2011-11", "2011-12", "2012-01", "2012-02", "2012-03", "2012-04", "2012-05", "2012-06", "2012-07", "2012-08", "2012-09", "2012-10", "2012-11", "2012-12", "2013-01", "2013-02", "2013-03", "2013-04", "2013-05", "2013-06", "2013-07", "2013-08", "2013-09", "2013-10", "2013-11", "2013-12", "2014-01", "2014-02", "2014-03", "2014-04", "2014-05", "2014-06", "2014-07", "2014-08", "2014-09", "2014-10", "2014-11", "2014-12", "2015-01", "2015-02", "2015-03", "2015-04", "2015-05", "2015-06", "2015-07", "2015-08", "2015-09", "2015-10", "2015-11", "2015-12", "2016-01", "2016-02", "2016-03", "2016-04", "2016-05", "2016-06", "2016-07", "2016-08", "2016-09", "2016-10", "2016-11", "2016-12", "2017-01", "2017-02", "2017-03", "2017-04", "2017-05", "2017-06", "2017-07", "2017-08", "2017-09", "2017-10", "2017-11", "2017-12", "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12", "2019-01", "2019-02", "2019-03", "2019-04", "2019-05", "2019-06", "2019-07", "2019-08", "2019-09", "2019-10", "2019-11", "2019-12", "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12", "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12", "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12", "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "ptax": [0.94, 0.889, 0.853, 0.846, 0.845, 0.846, 0.842, 0.8515, 0.896, 0.913, 0.906, 0.922, 0.936, 0.951, 0.954, 0.9619, 0.9666, 0.9725, 0.9786, 0.9842, 0.988, 0.9925, 0.9984, 1.0044, 1.0112, 1.0169, 1.0215, 1.0276, 1.0332, 1.0394, 1.0461, 1.0515, 1.0593, 1.0638, 1.0717, 1.0769, 1.0834, 1.0916, 1.0964, 1.1031, 1.1098, 1.1164, 1.1237, 1.1304, 1.1374, 1.1443, 1.1505, 1.1569, 1.1634, 1.1769, 1.1856, 1.1932, 1.2012, 1.2087, 1.9832, 2.0648, 1.722, 1.6607, 1.724, 1.7695, 1.7892, 1.9159, 1.9223, 1.953, 1.9227, 1.789, 1.8024, 1.7685, 1.7473, 1.8067, 1.8266, 1.8, 1.7748, 1.8234, 1.8437, 1.909, 1.9596, 1.9554, 1.9711, 2.0452, 2.1616, 2.1847, 2.36, 2.3049, 2.4313, 2.5517, 2.6713, 2.7071, 2.5287, 2.3204, 2.4183, 2.3482, 2.3236, 2.3625, 2.522, 2.8444, 3.4285, 3.0223, 3.8949, 3.645, 3.6365, 3.5333, 3.5258, 3.5632, 3.3531, 2.8898, 2.9656, 2.872, 2.9655, 2.9665, 2.9234, 2.8562, 2.9494, 2.8892, 2.9409, 2.9138, 2.9086, 2.9447, 3.1291, 3.1075, 3.0268, 2.9338, 2.8586, 2.8565, 2.7307, 2.6544, 2.6248, 2.595, 2.6662, 2.5313, 2.4038, 2.3504, 2.3905, 2.3637, 2.2222, 2.2543, 2.207, 2.3407, 2.216, 2.1355, 2.1724, 2.0892, 2.3005, 2.1643, 2.1762, 2.1388, 2.1742, 2.143, 2.1668, 2.138, 2.1247, 2.1182, 2.0504, 2.0339, 1.9289, 1.9262, 1.8776, 1.962, 1.8389, 1.744, 1.7837, 1.7713, 1.7603, 1.6833, 1.7491, 1.6872, 1.6294, 1.5919, 1.5666, 1.6344, 1.9143, 2.1153, 2.3331, 2.337, 2.3162, 2.3784, 2.3152, 2.1783, 1.973, 1.9516, 1.8726, 1.8864, 1.7781, 1.744, 1.7505, 1.7412, 1.8748, 1.811, 1.781, 1.7306, 1.8167, 1.8015, 1.7572, 1.756, 1.6942, 1.7014, 1.7161, 1.6662, 1.6734, 1.6612, 1.6287, 1.5733, 1.5799, 1.5611, 1.5563, 1.5872, 1.8544, 1.6885, 1.8109, 1.8758, 1.7391, 1.7092, 1.8221, 1.8918, 2.0223, 2.0213, 2.0499, 2.0372, 2.0306, 2.0313, 2.1074, 2.0435, 1.9883, 1.9754, 2.0138, 2.0017, 2.1319, 2.2156, 2.2903, 2.3725, 2.23, 2.2026, 2.3249, 2.3426, 2.4263, 2.3334, 2.263, 2.236, 2.239, 2.2025, 2.2674, 2.2396, 2.451, 2.4442, 2.5601, 2.6562, 2.6623, 2.8782, 3.208, 2.9936, 3.1788, 3.1026, 3.394, 3.6467, 3.9729, 3.8589, 3.8506, 3.9048, 4.0428, 3.9796, 3.5589, 3.4508, 3.5951, 3.2098, 3.239, 3.2403, 3.2462, 3.1811, 3.3967, 3.2591, 3.127, 3.0993, 3.1684, 3.1984, 3.2437, 3.3082, 3.1307, 3.1471, 3.168, 3.2769, 3.2616, 3.308, 3.1624, 3.2449, 3.3238, 3.4811, 3.737, 3.8558, 3.7549, 4.1353, 4.0039, 3.7177, 3.8633, 3.8748, 3.6519, 3.7385, 3.8967, 3.9453, 3.9407, 3.8322, 3.7649, 4.1385, 4.1644, 4.0041, 4.224, 4.0307, 4.2695, 4.4987, 5.1987, 5.427, 5.4263, 5.476, 5.2033, 5.4713, 5.6407, 5.7718, 5.3317, 5.1967, 5.4759, 5.5302, 5.6973, 5.4036, 5.2322, 5.0022, 5.1216, 5.1433, 5.4394, 5.643, 5.6199, 5.5805, 5.3574, 5.1394, 4.7378, 4.9191, 4.7289, 5.238, 5.1884, 5.179, 5.4066, 5.257, 5.2941, 5.2177, 5.0993, 5.2078, 5.0804, 5.0007, 5.0959, 4.8192, 4.7415, 4.9219, 5.0076, 5.0575, 4.9355, 4.8413, 4.9535, 4.9833, 4.9962, 5.1718, 5.2416, 5.5589, 5.6621, 5.6562, 5.4481, 5.7779, 6.0535, 6.1923, 5.8301, 5.8488, 5.7422, 5.6608, 5.7087, 5.4571, 5.6021, 5.4264, 5.3186, 5.3338, 5.5024, 5.2301, 5.1495, 5.2194, 4.9886, 5.0569, 5.1766], "br_index": [915.903285, 932.939086, 947.213054, 972.030036, 999.34408, 1016.432864, 1033.712222, 1044.256087, 1060.442056, 1086.210798, 1115.212627, 1140.416432, 1167.33026, 1178.886829, 1190.557809, 1207.344674, 1225.092641, 1244.204086, 1260.876421, 1273.863448, 1278.32197, 1294.428827, 1310.220858, 1325.812487, 1340.529005, 1346.427333, 1348.446974, 1352.492315, 1356.82029, 1363.197346, 1379.283074, 1386.17949, 1393.249005, 1405.509596, 1411.272186, 1418.893055, 1422.01462, 1421.730217, 1422.583255, 1425.855197, 1428.279151, 1434.420751, 1444.605138, 1451.250322, 1456.184573, 1459.679416, 1466.977813, 1467.271209, 1465.510483, 1458.03638, 1454.8287, 1455.119665, 1453.373522, 1458.169654, 1468.376842, 1483.794799, 1500.116542, 1508.517194, 1513.042746, 1515.917527, 1532.441028, 1541.022698, 1545.799868, 1564.194887, 1579.054738, 1588.529067, 1598.377947, 1600.455838, 1603.976841, 1610.713544, 1610.874615, 1614.579627, 1640.574359, 1662.065883, 1665.888634, 1668.220878, 1673.559185, 1683.433184, 1693.028754, 1700.816686, 1707.279789, 1717.182012, 1724.222458, 1733.188415, 1756.239821, 1768.5335, 1773.485393, 1788.205322, 1800.90158, 1812.60744, 1822.032999, 1828.592318, 1839.563872, 1854.280383, 1858.174371, 1865.978704, 1888.18385, 1900.457045, 1914.140336, 1939.215575, 1997.779885, 2039.733262, 2085.627261, 2118.371609, 2144.42758, 2165.228527, 2178.436421, 2175.168767, 2179.519104, 2186.929469, 2203.987519, 2210.379083, 2217.894372, 2229.427422, 2246.371071, 2260.073934, 2270.696282, 2279.097858, 2290.721257, 2306.985378, 2327.978945, 2344.042, 2351.777338, 2362.125159, 2378.423822, 2398.878267, 2412.791761, 2427.027232, 2441.832098, 2463.076038, 2475.14511, 2474.650081, 2480.836706, 2485.054129, 2493.751818, 2512.454957, 2526.273459, 2535.368044, 2550.326715, 2560.783055, 2571.794422, 2577.19519, 2579.772385, 2574.354863, 2579.246138, 2580.535761, 2585.954886, 2594.488537, 2602.531451, 2615.023602, 2626.529706, 2638.086437, 2647.847357, 2654.466975, 2661.899483, 2669.352801, 2675.759248, 2688.335316, 2693.17432, 2701.253843, 2711.518607, 2731.583845, 2746.334398, 2759.791436, 2773.038435, 2788.290147, 2810.317639, 2831.113989, 2846.118894, 2854.088026, 2861.508655, 2874.385444, 2884.733232, 2892.810485, 2906.695975, 2922.682803, 2928.528169, 2942.585104, 2956.415254, 2967.058349, 2974.179289, 2978.640558, 2985.789295, 2994.149505, 3006.425518, 3017.549293, 3040.180912, 3063.894323, 3079.826574, 3097.381585, 3110.700326, 3110.700326, 3111.011396, 3112.255801, 3126.260952, 3149.707909, 3175.850485, 3195.858343, 3222.383967, 3248.163039, 3273.823527, 3299.031968, 3314.537418, 3319.509224, 3324.820439, 3337.122275, 3354.809023, 3369.234701, 3386.754722, 3403.688495, 3422.749151, 3438.151522, 3445.37164, 3467.422019, 3479.904738, 3482.688662, 3497.664223, 3512.004647, 3532.023073, 3552.862009, 3574.179181, 3602.415197, 3633.395967, 3655.196343, 3672.375766, 3692.573833, 3706.236356, 3715.87257, 3716.987332, 3725.908102, 3738.94878, 3760.260788, 3780.566196, 3815.347406, 3836.331816, 3862.802506, 3898.340289, 3924.459169, 3942.511681, 3958.281728, 3958.677556, 3968.57425, 3991.195123, 4007.958142, 4028.398729, 4059.820239, 4110.16201, 4160.305987, 4215.222026, 4245.150102, 4276.564213, 4310.34907, 4337.073234, 4346.614795, 4370.086515, 4405.921225, 4450.421029, 4493.145071, 4550.208013, 4591.159885, 4610.901873, 4639.028374, 4675.212796, 4691.57604, 4715.972236, 4736.722514, 4740.511892, 4752.837223, 4761.39233, 4775.676507, 4793.824077, 4809.643697, 4821.667806, 4828.418141, 4843.386237, 4832.246449, 4843.84384, 4853.047144, 4860.812019, 4881.22743, 4894.894866, 4916.432404, 4930.690058, 4946.468266, 4950.920087, 4961.812112, 4981.65936, 5044.428268, 5061.074881, 5056.519914, 5080.791209, 5103.65477, 5092.937095, 5100.5765, 5116.898345, 5138.901008, 5177.442766, 5206.95419, 5213.72323, 5214.244602, 5224.151667, 5229.898234, 5227.806275, 5233.034081, 5259.722555, 5320.209364, 5331.381804, 5344.710258, 5348.451555, 5331.871356, 5311.610244, 5325.420431, 5344.591945, 5357.418965, 5391.706447, 5438.075122, 5486.473991, 5560.54139, 5574.442743, 5622.382951, 5674.671112, 5692.262592, 5739.508372, 5769.927766, 5825.319073, 5875.999349, 5944.160941, 6018.462953, 6075.638351, 6119.990511, 6153.03846, 6215.184148, 6315.870132, 6382.818355, 6412.817601, 6455.783479, 6411.884151, 6388.801368, 6370.273845, 6407.85846, 6434.13068, 6474.02229, 6508.334608, 6563.004619, 6609.601952, 6649.920524, 6665.215341, 6659.883169, 6667.875028, 6683.211141, 6700.58749, 6716.6689, 6735.475573, 6773.194236, 6801.641652, 6858.095278, 6869.06823, 6895.170689, 6926.888474, 6941.43494, 6967.812393, 6966.418831, 6997.071073, 7036.254671, 7063.696065, 7100.427284, 7111.787968, 7204.95239, 7245.300124, 7276.454914, 7295.373697, 7312.882594, 7331.896088, 7323.831003, 7358.985392, 7378.866574, 7403.216833, 7427.647449, 7479.640981, 7545.461822, 7596.016416, 7640.073311, 7652.297428], "us_index": [148.4, 149.0, 149.3, 149.4, 149.8, 150.1, 150.5, 150.9, 151.2, 151.8, 152.1, 152.4, 152.6, 152.9, 153.1, 153.5, 153.7, 153.9, 154.7, 155.0, 155.5, 156.1, 156.4, 156.7, 157.0, 157.2, 157.7, 158.2, 158.7, 159.1, 159.4, 159.7, 159.8, 159.9, 159.9, 160.2, 160.4, 160.8, 161.2, 161.5, 161.7, 161.8, 162.0, 162.0, 162.0, 162.2, 162.6, 162.8, 163.2, 163.4, 163.5, 163.9, 164.1, 164.4, 164.7, 164.7, 164.8, 165.9, 166.0, 166.0, 166.7, 167.1, 167.8, 168.1, 168.4, 168.8, 169.3, 170.0, 171.0, 170.9, 171.2, 172.2, 172.7, 172.7, 173.6, 173.9, 174.2, 174.6, 175.6, 176.0, 176.1, 176.4, 177.3, 177.7, 177.4, 177.4, 178.1, 177.6, 177.5, 177.4, 177.7, 178.0, 178.5, 179.3, 179.5, 179.6, 180.0, 180.5, 180.8, 181.2, 181.5, 181.8, 182.6, 183.6, 183.9, 183.2, 182.9, 183.1, 183.7, 184.5, 185.1, 184.9, 185.0, 185.5, 186.3, 186.7, 187.1, 187.4, 188.2, 188.9, 189.1, 189.2, 189.8, 190.8, 191.7, 191.7, 191.6, 192.4, 193.1, 193.7, 193.6, 193.7, 194.9, 196.1, 198.8, 199.1, 198.1, 198.1, 199.3, 199.4, 199.7, 200.7, 201.3, 201.8, 202.9, 203.8, 202.8, 201.9, 202.0, 203.1, 203.437, 204.226, 205.288, 205.904, 206.755, 207.234, 207.603, 207.667, 208.547, 209.19, 210.834, 211.445, 212.174, 212.687, 213.448, 213.942, 215.208, 217.463, 219.016, 218.69, 218.877, 216.995, 213.153, 211.398, 211.933, 212.705, 212.495, 212.709, 213.022, 214.79, 214.726, 215.445, 215.861, 216.509, 217.234, 217.347, 217.488, 217.281, 217.353, 217.403, 217.29, 217.199, 217.605, 217.923, 218.275, 219.035, 219.59, 220.472, 221.187, 221.898, 223.046, 224.093, 224.806, 224.806, 225.395, 226.106, 226.597, 226.75, 227.169, 227.223, 227.842, 228.329, 228.807, 229.187, 228.713, 228.524, 228.59, 229.918, 231.015, 231.638, 231.249, 231.221, 231.679, 232.937, 232.282, 231.797, 231.893, 232.445, 232.9, 233.456, 233.544, 233.669, 234.1, 234.719, 235.288, 235.547, 236.028, 236.468, 236.918, 237.231, 237.498, 237.46, 237.477, 237.43, 236.983, 236.252, 234.747, 235.342, 235.976, 236.222, 237.001, 237.657, 238.034, 238.033, 237.498, 237.733, 238.017, 237.761, 237.652, 237.336, 238.08, 238.992, 239.557, 240.222, 240.101, 240.545, 241.176, 241.741, 242.026, 242.637, 243.618, 244.006, 243.892, 244.193, 244.004, 244.163, 244.243, 245.183, 246.435, 246.626, 247.284, 247.805, 248.859, 249.529, 249.577, 250.227, 250.792, 251.018, 251.214, 251.663, 252.182, 252.772, 252.594, 252.767, 252.561, 253.319, 254.277, 255.233, 255.296, 255.213, 255.802, 256.036, 256.43, 257.155, 257.879, 258.63, 259.127, 259.25, 258.076, 256.032, 255.802, 257.042, 258.352, 259.316, 259.997, 260.319, 260.911, 262.045, 262.687, 263.579, 264.961, 266.614, 268.383, 270.654, 271.903, 272.676, 273.91, 276.55, 278.919, 280.845, 282.543, 284.5, 287.674, 288.561, 291.298, 294.957, 294.913, 295.097, 296.349, 298.007, 298.786, 298.832, 300.42, 301.45, 301.821, 302.845, 303.334, 304.014, 304.609, 306.082, 307.276, 307.696, 308.148, 308.741, 309.698, 310.967, 312.345, 313.023, 313.175, 313.044, 313.569, 314.062, 314.732, 315.631, 316.528, 317.604, 318.961, 319.679, 319.785, 320.302, 320.62, 321.435, 322.169, 323.291, 324.245, 325.063, 326.031, 326.588, 327.46, 330.293, 332.407, 333.979, 332.568], "carry": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 37.19, 27.26, 18.76, 16.24, 14.51, 14.43, 13.78, 13.8, 13.58, 13.7, 13.55, 13.27, 12.65, 12.48, 12.23, 10.97, 9.96, 10.0, 9.98, 9.99, 9.99, 9.35, 9.27, 9.76, 10.44, 11.45, 12.54, 14.28, 15.23, 15.35, 15.93, 16.51, 16.91, 17.18, 17.27, 17.01, 16.77, 16.75, 16.75, 16.75, 16.27, 16.26, 16.25, 19.25, 20.66, 23.76, 24.26, 25.24, 25.25, 25.24, 25.24, 24.78, 23.49, 20.97, 18.99, 17.99, 16.5, 15.52, 15.5, 15.49, 15.25, 15.0, 15.0, 14.97, 14.74, 14.57, 14.64, 14.99, 15.32, 15.59, 15.97, 16.25, 16.62, 16.71, 16.75, 16.71, 16.49, 16.25, 15.88, 15.22, 14.5, 13.84, 12.96, 12.76, 11.91, 10.96, 10.81, 10.26, 9.51, 9.0, 9.0, 8.5, 8.0, 8.01, 7.75, 7.74, 7.49, 7.25, 7.25, 6.75, 6.24, 6.48, 6.31, 6.49, 6.76, 7.01, 7.31, 8.27, 8.64, 9.47, 9.77, 10.25, 10.99, 11.0, 11.94, 12.78, 13.36, 13.59, 12.6, 12.53, 11.07, 10.1, 10.07, 9.04, 8.59, 8.59, 8.6, 8.63, 8.63, 8.63, 8.64, 8.62, 8.59, 9.3, 9.3, 10.07, 10.57, 10.56, 10.56, 10.56, 10.56, 10.57, 11.08, 11.09, 11.61, 11.9, 11.91, 12.16, 12.43, 12.4, 11.92, 11.43, 11.42, 10.93, 10.42, 10.4, 9.62, 8.86, 8.34, 8.34, 7.84, 7.37, 7.36, 7.09, 7.09, 7.09, 7.11, 7.1, 7.11, 7.35, 7.89, 7.91, 8.41, 8.92, 8.92, 9.41, 9.92, 9.91, 10.43, 10.68, 10.67, 10.91, 10.91, 10.9, 10.91, 10.91, 10.91, 11.16, 11.16, 11.63, 12.14, 12.14, 12.64, 13.13, 13.13, 13.62, 14.12, 14.11, 14.11, 14.13, 14.13, 14.01, 13.91, 13.87, 13.89, 13.88, 13.88, 13.87, 13.86, 13.85, 13.85, 13.6, 13.59, 13.21, 12.35, 11.59, 11.46, 10.35, 10.34, 9.21, 8.1, 8.09, 7.1, 6.35, 6.34, 5.7, 5.59, 5.33, 4.99, 4.81, 4.8, 4.68, 4.59, 4.59, 4.55, 4.31, 4.3, 4.23, 4.1, 4.1, 4.09, 4.08, 4.11, 4.12, 4.1, 3.87, 3.46, 3.17, 3.45, 2.95, 2.95, 2.67, 3.1, 3.7, 2.95, 2.17, 2.16, 1.9, 1.91, 1.91, 1.91, 1.91, 1.91, 1.92, 2.68, 2.68, 3.44, 4.17, 4.15, 5.16, 6.17, 7.67, 7.67, 9.17, 9.17, 10.67, 11.55, 11.42, 11.98, 12.04, 11.57, 11.42, 11.19, 10.67, 9.97, 9.65, 9.42, 9.18, 9.1, 8.92, 8.69, 8.67, 8.63, 7.92, 7.42, 7.42, 6.92, 6.42, 6.42, 5.92, 5.42, 5.42, 5.17, 5.17, 5.17, 5.17, 5.62, 5.92, 6.61, 7.77, 8.92, 8.92, 9.92, 9.92, 10.42, 10.67, 10.67, 10.67, 10.78, 11.12, 11.28, 11.36, 11.36, 11.11, 10.86, 10.87, 10.62], "tot": [81.47, 83.31, 86.27, 90.75, 93.5, 91.53, 92.37, 97.4, 94.19, 91.84, 91.52, 95.81, 93.98, 95.88, 95.71, 95.12, 95.79, 93.64, 91.54, 89.84, 91.45, 92.27, 92.27, 92.27, 95.57, 93.76, 92.16, 92.73, 94.92, 93.0, 93.66, 94.96, 96.77, 96.37, 101.43, 99.23, 100.11, 100.35, 100.75, 97.91, 98.93, 97.03, 100.23, 99.26, 99.78, 98.82, 96.94, 98.24, 97.04, 96.15, 96.41, 92.98, 92.53, 93.07, 90.81, 86.5, 86.84, 83.94, 82.76, 84.17, 84.15, 82.34, 82.95, 82.9, 84.06, 83.33, 82.45, 87.95, 87.55, 86.41, 88.92, 86.69, 88.22, 91.28, 88.9, 84.58, 86.39, 86.93, 88.17, 88.0, 90.6, 87.39, 87.03, 85.86, 87.16, 87.63, 85.06, 83.91, 87.03, 85.6, 85.79, 87.71, 87.99, 88.32, 87.36, 89.17, 86.58, 83.78, 83.95, 83.26, 84.34, 80.82, 83.52, 81.91, 83.66, 83.82, 84.72, 85.79, 86.12, 84.57, 84.9, 86.73, 85.56, 85.72, 87.28, 85.21, 86.13, 87.28, 88.87, 85.56, 87.3, 85.98, 86.44, 82.5, 85.45, 85.97, 86.24, 85.78, 85.77, 86.02, 87.71, 86.51, 88.09, 86.46, 87.05, 86.22, 87.94, 88.7, 88.79, 90.05, 88.18, 88.76, 88.7, 90.16, 93.0, 92.56, 93.9, 94.43, 93.53, 96.19, 95.62, 94.06, 96.93, 93.85, 93.81, 92.82, 94.0, 93.97, 94.54, 96.49, 95.48, 96.49, 97.9, 94.43, 94.07, 92.94, 97.06, 98.93, 100.01, 103.15, 101.49, 103.49, 98.45, 96.42, 89.11, 92.19, 92.1, 92.88, 92.56, 93.98, 93.84, 94.77, 97.99, 97.97, 99.75, 104.31, 105.86, 103.81, 105.0, 104.64, 108.12, 107.64, 112.4, 112.88, 117.51, 116.58, 116.58, 119.66, 119.15, 118.17, 116.64, 117.92, 119.24, 119.72, 120.14, 120.47, 122.2, 122.2, 118.74, 114.66, 113.73, 111.51, 111.29, 112.18, 113.7, 113.98, 113.82, 114.82, 112.64, 111.82, 110.68, 111.53, 111.58, 111.14, 112.19, 109.94, 109.7, 108.85, 108.48, 107.04, 108.83, 109.89, 108.52, 108.78, 111.07, 106.96, 106.73, 105.79, 107.55, 107.44, 106.4, 106.0, 105.89, 103.59, 101.84, 101.55, 96.96, 96.84, 98.83, 93.19, 92.53, 93.99, 94.82, 91.46, 91.53, 90.16, 93.33, 89.1, 88.3, 87.68, 88.42, 88.6, 97.81, 97.21, 97.37, 98.96, 100.05, 99.81, 101.86, 103.35, 106.78, 105.18, 105.35, 102.12, 99.49, 98.32, 97.18, 97.42, 101.76, 102.0, 99.37, 100.26, 102.68, 100.93, 100.18, 99.26, 99.0, 100.08, 101.73, 99.05, 98.96, 101.16, 100.09, 96.88, 99.42, 97.57, 98.99, 99.94, 99.42, 101.9, 100.76, 103.74, 101.28, 99.8, 99.75, 99.19, 102.01, 102.2, 96.42, 100.92, 95.72, 93.15, 94.23, 97.42, 104.32, 106.62, 108.91, 106.97, 115.01, 120.33, 118.89, 116.07, 117.42, 122.43, 121.43, 117.69, 114.22, 111.28, 104.54, 104.23, 104.98, 106.53, 109.76, 106.49, 106.62, 106.71, 109.94, 106.85, 107.6, 107.69, 105.67, 106.26, 105.32, 107.22, 105.29, 108.49, 107.28, 108.22, 106.78, 110.41, 113.72, 114.0, 114.94, 114.51, 115.52, 113.07, 109.39, 107.24, 109.54, 113.75, 113.73, 111.52, 113.52, 115.71, 116.39, 116.97, 116.0, 114.2, 109.86, 109.73, 110.02, 109.63, 109.74, 105.83, 109.13, 110.56, 115.7, 113.92, 111.33, 110.4, 113.38, null, null], "fiscal": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 107.3, 115.3, 151.15, 177.65, 121.65, 121.65, 121.65, 121.65, 121.65, 184.56, 334.87, 321.81, 305.06, 346.56, 399.04, 327.28, 273.78, 192.37, 181.74, 132.68, 137.68, 124.62, 137.92, 129.42, 122.06, 143.56, 129.06, 131.56, 123.72, 136.3, 137.16, 117.06, 132.0, 115.41, 100.15, 122.32, 109.53, 118.36, 117.29, 111.4, 105.83, 104.59, 111.2, 113.79, 146.23, 194.11, 142.45, 162.65, 159.42, 145.07, 138.7, 120.68, 123.79, 166.67, 152.43, 134.38, 130.06, 116.49, 110.33, 109.45, 107.42, 121.01, 132.34, 135.42, 108.03, 142.94, 184.94, 188.48, 207.22, 175.24, 172.28, 203.47, 191.89, 205.43, 170.39, 168.99, 141.39, 139.78, 140.13, 150.93, 128.38, 174.27, 152.56, 151.58, 201.06, 212.77, 235.88, 277.77, 232.62, 231.01, 258.01, 288.87, 344.24, 470.63, 429.67, 438.6, 436.37, 462.63, 445.8, 357.01, 330.82, 354.8, 306.21, 283.39, 255.44, 265.89, 266.5, 289.34, 274.36, 247.2, 220.19, 219.84, 213.49, 231.32, 237.03, 206.41, 192.95, 191.86, 169.44, 170.26, 160.27, 144.02, 155.58, 161.53, 172.51, 228.28, 267.98, 210.65, 298.97, 255.11, 201.42, 207.46, 205.34, 164.1, 153.35, 174.53, 171.47, 178.18, 149.18, 126.2, 133.68, 136.23, 121.31, 124.14, 99.11, 104.56, 134.66, 264.85, 298.91, 284.79, 251.36, 215.22, 212.01, 246.93, 215.33, 165.49, 141.6, 171.67, 193.87, 221.5, 189.56, 170.81, 164.47, 174.64, 174.68, 203.0, 244.17, 254.26, 201.86, 226.81, 218.17, 203.83, 219.08, 220.51, 292.02, 275.16, 257.55, 306.56, 272.8, 253.23, 250.26, 232.09, 229.17, 228.5, 224.79, 206.96, 179.92, 162.65, 162.81, 185.0, 183.28, 142.17, 132.49, 136.49, 126.63, 138.47, 146.24, 197.94, 166.94, 156.16, 144.87, 153.03, 154.19, 161.52, 214.17, 177.15, 176.29, 188.36, 181.91, 160.44, 147.7, 147.75, 136.82, 135.81, 140.81, 138.32, 129.04, 130.55, 141.11, 124.06, 119.42, 125.23], "breakeven": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 5.982207, 5.595199, 6.610945, 6.385013, 7.678387, 6.668241, 6.619419, 6.108749, 5.628625, 5.398242, 5.339946, 4.799687, 4.936866, 4.776595, 4.511061, 4.25822, 4.052396, 4.486011, 4.372348, 4.972334, 4.771226, 4.8978, 5.473386, 5.78073, 5.637415, 5.400126, 5.680524, 6.32452, 6.22002, 7.180396, 6.169067, 5.862898, 6.231518, 7.638251, 8.004898, 5.502995, 6.010759, 6.043714, 5.599358, 6.095262, 5.615442, 6.632368, 6.749196, 7.041921, 6.898911, 7.011431, 7.017204, 7.209857, 6.822083, 6.729164, 6.296331, 6.085138, 6.054178, 5.865667, 5.800956, 5.546, 5.797751, 6.117287, 6.508376, 6.288407, 6.669088, 6.13344, 6.577537, 6.167347, 6.172431, 5.942524, 6.362842, 5.885561, 5.898964, 5.942798, 5.809864, 5.868674, 6.156178, 6.209199, 6.285266, 6.369014, 6.039272, 5.631838, 5.543535, 5.67844, 6.048889, 5.757759, 5.911602, 5.89611, 6.095406, 5.689578, 5.943468, 5.730816, 5.916069, 5.821665, 5.808867, 6.479399, 6.170483, 5.953611, 6.616651, 6.880189, 6.431887, 6.314289, 6.348136, 6.25932, 6.132893, 6.121622, 5.963096, 5.754792, 6.437783, 6.286605, 6.246862, 6.21769, 6.03326, 6.377506, 6.710108, 6.431789, 6.083944, 6.324805, 6.376201, 7.03301, 8.216172, 8.5046, 8.476521, 9.192267, 8.781241, 8.972501, 7.288058, 6.477225, 6.728792, 5.915573, 5.890222, 6.162209, 5.789658, 5.47681, 5.811102, 5.485656, 5.144361, 4.861062, 4.802596, 4.945651, 5.111136, 4.959958, 4.946544, 5.139317, 5.008751, 4.900027, 5.224158, 5.247112, 5.146105, 4.956795, 4.909997, 4.962933, 5.892656, 6.061611, 5.540688, 6.662222, 5.805272, 5.245455, 5.057074, 4.56481, 4.751303, 4.766632, 4.729211, 4.764511, 4.689611, 4.233973, 4.004063, 4.170227, 4.139541, 4.030723, 4.069088, 3.983479, 3.932739, 3.898719, 3.999254, 4.013352, 3.678969, 3.803479, 3.798917, 4.052504, 4.252577, 4.267131, 4.526172, 4.087686, 4.495134, 4.96963, 5.339216, 5.215359, 5.202865, 5.112603, 5.263656, 5.848815, 6.3363, 6.642652, 6.389974, 5.609637, 5.857373, 5.841912, 6.249926, 6.716834, 6.981409, 7.308725, 6.95951, 6.412786, 6.384082, 6.286682, 6.884332, 6.688602, 6.884393, 7.056294, 6.801865, 6.478126, 6.048975, 5.546963, 5.7014, 5.76981, 6.081768, 6.024329, 5.273645, 5.014665, 5.052326, 5.235222, 5.19011, 5.496488, 5.712272, 5.776369, 5.782744, 5.779808, 5.860695, 5.913623, 6.694527, 7.588164, 7.273271, 7.260223, 7.435666, 6.721334, 6.727322, 6.613623, 6.571303, 6.457972, 6.18303, 6.19231, 6.439386, 5.962259, 6.22574, 6.594495, 6.458391, 6.584572, 6.389568], "default_base_month": "1994-07"};
+const BAYES_DATA = {"n": 219, "sample_range": ["2008-02", "2026-05"], "months": ["2008-02", "2008-03", "2008-04", "2008-05", "2008-06", "2008-07", "2008-08", "2008-09", "2008-10", "2008-11", "2008-12", "2009-01", "2009-02", "2009-03", "2009-04", "2009-05", "2009-06", "2009-07", "2009-08", "2009-09", "2009-10", "2009-11", "2009-12", "2010-01", "2010-02", "2010-03", "2010-04", "2010-05", "2010-06", "2010-07", "2010-08", "2010-09", "2010-10", "2010-11", "2010-12", "2011-01", "2011-02", "2011-03", "2011-04", "2011-05", "2011-06", "2011-07", "2011-08", "2011-09", "2011-10", "2011-11", "2011-12", "2012-01", "2012-02", "2012-03", "2012-04", "2012-05", "2012-06", "2012-07", "2012-08", "2012-09", "2012-10", "2012-11", "2012-12", "2013-01", "2013-02", "2013-03", "2013-04", "2013-05", "2013-06", "2013-07", "2013-08", "2013-09", "2013-10", "2013-11", "2013-12", "2014-01", "2014-02", "2014-03", "2014-04", "2014-05", "2014-06", "2014-07", "2014-08", "2014-09", "2014-10", "2014-11", "2014-12", "2015-01", "2015-02", "2015-03", "2015-04", "2015-05", "2015-06", "2015-07", "2015-08", "2015-09", "2015-10", "2015-11", "2015-12", "2016-01", "2016-02", "2016-03", "2016-04", "2016-05", "2016-06", "2016-07", "2016-08", "2016-09", "2016-10", "2016-11", "2016-12", "2017-01", "2017-02", "2017-03", "2017-04", "2017-05", "2017-06", "2017-07", "2017-08", "2017-09", "2017-10", "2017-11", "2017-12", "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12", "2019-01", "2019-02", "2019-03", "2019-04", "2019-05", "2019-06", "2019-07", "2019-08", "2019-09", "2019-10", "2019-11", "2019-12", "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12", "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12", "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12", "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05"], "actual_delta": [-4.7201, 3.7128, -3.9204, -3.6827, -2.0233, -1.4191, 3.8082, 15.6334, 8.6719, 7.6544, -0.9393, -1.1201, 2.4651, -2.9918, -6.4733, -10.2208, -0.6234, -4.4017, 0.9186, -5.9593, -1.9163, 0.2972, -0.85, 6.7104, -4.3345, -2.1559, -3.4161, 4.3743, -0.8821, -2.3131, 0.0377, -3.8704, 0.0245, 0.2868, -3.178, -0.0716, -1.2076, -2.2467, -3.7594, 0.2674, -1.347, -0.2062, 1.9117, 15.2473, -9.7336, 6.6643, 3.0461, -7.8531, -1.9697, 6.3958, 3.2819, 6.1043, -0.2121, 1.0048, -0.4514, -0.4169, -0.2845, 2.9116, -3.8781, -3.3968, -0.7076, 1.1748, -1.3602, 5.9738, 3.8291, 3.4815, 3.5249, -6.506, -1.7512, 5.0496, 0.1067, 3.2042, -4.4817, -3.7753, -1.6818, -0.1347, -1.9108, 3.0066, -1.4993, 8.4587, -0.7167, 3.9357, 2.5991, -1.6421, 6.838, 9.8059, -7.5204, 5.5947, -2.9368, 8.5173, 6.9612, 7.8038, -3.6292, -1.1009, 0.3347, 2.1652, -2.6047, -11.2891, -3.3104, 3.5557, -11.4085, 0.3366, -0.2142, 0.3639, -2.0515, 6.4957, -4.1827, -4.1135, -1.0601, 1.9086, 0.9258, 1.0194, 2.2644, -5.7217, 0.7168, 1.0114, 3.0381, -0.4812, 1.184, -4.3664, 2.5247, 2.3317, 4.6643, 6.9198, 1.9675, -2.9031, 9.9184, -3.5019, -7.6317, 3.9814, 0.2158, -6.3257, 2.2143, 3.7748, 1.0464, -0.2219, -2.8344, -1.7311, 9.4427, 0.8177, -3.743, 5.1188, -5.5369, 5.7379, 5.0269, 13.9382, 3.8131, 0.278, 1.1357, -4.9592, 5.155, 2.6735, 1.565, -8.5903, -3.4719, 5.2283, 0.4694, 2.5741, -4.9803, -3.3886, -4.1814, 1.8639, -0.1595, 4.8956, 3.3917, -0.5027, -0.7427, -4.0157, -4.4689, -8.6339, 3.0087, -3.4682, 10.8052, -0.284, 0.2417, 5.0146, -2.8363, 0.5551, -2.0563, -2.2939, 1.6112, -3.0612, -1.8507, 1.8174, -5.2789, -1.5498, 3.9868, 1.8559, 0.8884, -2.5746, -2.2933, 2.1815, 0.1821, 0.5408, 3.2919, 0.9302, 5.6257, 1.6277, 0.0728, -3.9745, 5.6041, 4.5542, 2.0877, -5.7608, -0.7564, -2.3647, -1.6953, 0.6822, -4.4932, 2.5908, -2.7288, -2.1908, 0.2675, 3.0799, -5.2342, -1.984, 1.3336, -4.5525, 1.2533], "fitted_delta_mean": [0.4198, 1.6811, 0.5512, -0.9443, -0.0418, -0.7226, 1.2389, 0.1677, 1.3764, 1.4594, 0.3775, 2.5173, 0.9649, 0.7159, -0.9621, -1.4755, -0.6669, -1.3238, -0.8103, -0.0608, -0.2077, 0.3533, -0.1151, -0.5674, 0.7724, 0.2836, 0.5248, 0.5236, 0.086, 0.6775, -0.4264, 0.6516, -0.7828, -0.2219, 0.2357, -0.1177, 0.2203, 0.805, 0.0301, 0.4492, 0.059, 0.5624, -0.0873, 1.1572, 0.6888, -0.8131, 1.0534, 0.4208, -0.3196, 0.3039, -0.3393, -0.1087, 0.9309, 0.3294, -0.1179, -0.2103, -0.108, 0.4012, 0.192, 0.1127, 0.2684, 0.8289, -0.0675, 0.2725, 0.8128, 1.1076, 0.4742, 0.2208, -0.2194, 0.3953, 0.4275, -0.2407, 0.7574, 0.2619, 0.1919, 0.0141, 0.1228, 0.2494, 0.6643, 0.0823, 0.3757, 0.319, 0.4333, 1.2375, 1.2261, 0.3072, 0.5421, 0.4727, 0.5869, 0.4325, 0.741, 0.906, 1.2398, -0.5684, 0.0561, -0.0441, 1.0962, -0.1753, 0.2116, 0.5074, -0.6017, 0.2207, -0.1529, -0.6649, 0.6213, 0.4768, 0.0745, 0.0054, -0.5265, -0.0056, 0.2172, 0.0271, 0.6512, 0.269, -0.4599, -0.2051, -0.4196, -0.2849, 0.2227, -0.2379, -0.2463, 0.7065, 0.3523, 0.4079, 0.328, 0.5808, -0.4577, 0.9591, 0.276, -0.4628, 0.61, 0.9665, -0.9442, 0.231, 0.455, 0.0355, 0.469, -0.1073, 0.1693, -0.1894, 0.4462, 0.1542, 0.3197, -0.1934, 0.0566, 0.6581, 3.0455, 0.4597, 0.6476, -0.3864, -0.4932, -0.4785, -0.12, -0.5641, -1.0905, 0.4369, -0.5164, -0.4122, 0.7139, 0.1101, -0.0107, -0.1367, 0.3579, 0.3753, 0.9066, 1.3657, 1.3517, 0.5168, 0.3321, 0.3451, -0.4916, 0.3682, 0.1481, 1.123, -0.2173, 0.723, 0.9217, -0.4038, -0.6255, 0.2008, -0.2202, -0.254, 0.632, 0.0625, 0.3864, 0.1258, -0.0604, -0.426, -0.1886, 0.2178, -0.0149, 0.2069, 0.1472, 0.0179, 0.7209, 0.3057, 0.5698, -0.8058, 0.0409, 0.2776, 0.1955, 0.0421, -0.2492, 0.5445, 0.321, 0.4163, 1.0125, 0.7842, -0.0309, 0.2278, 0.2518, 0.5683, 0.1329, 0.2392, -0.5542, 0.7207, 0.2882, 0.0935, -0.3271], "fitted_delta_lo": [-0.3611, 0.0369, -0.2846, -3.237, -1.1915, -2.4195, -0.5333, -0.8298, -0.2019, -1.4867, -1.2657, -1.0319, -1.4908, -0.6824, -3.0237, -3.3831, -2.2573, -3.4308, -2.0685, -0.7809, -1.1478, -0.2675, -0.8214, -1.801, -0.2842, -0.5059, -0.3647, -0.5357, -0.9316, -0.4063, -1.8773, -0.1481, -2.116, -1.1372, -0.5688, -1.0395, -0.7519, -0.1687, -1.1452, -0.4486, -0.569, -0.165, -0.9831, -0.1064, -0.7022, -2.0724, -0.0366, -0.8712, -1.356, -0.4753, -1.4854, -1.2412, -0.6062, -0.4379, -0.9809, -1.0705, -1.1645, -0.3842, -0.4789, -0.4729, -0.3817, -0.0734, -0.7672, -0.7201, -0.1603, 0.0346, -0.3262, -1.0269, -1.1074, -0.4808, -0.7933, -1.0119, -0.479, -1.0974, -0.3689, -0.8743, -0.5756, -0.3076, -0.0383, -0.6201, -0.8236, -0.619, -0.2457, 0.0674, -0.1254, -0.4731, -0.6259, -1.3471, -0.169, -0.5451, -0.2153, -0.5807, -1.2581, -1.869, -0.8855, -1.6241, -0.0205, -0.9589, -2.2205, -0.6915, -2.8577, -1.088, -0.8623, -1.7138, -0.2686, -0.32, -0.8166, -0.8657, -1.9541, -1.2207, -0.3712, -1.6662, -0.2439, -1.3587, -1.9818, -0.9299, -2.0708, -1.3713, -0.7381, -1.2147, -1.0617, -0.1834, -0.413, -0.2958, -1.1376, -0.4066, -1.6857, -1.0887, -1.0316, -1.6949, -0.0772, -0.1895, -2.1926, -0.5132, -0.344, -0.5643, -0.1311, -1.1144, -0.5955, -1.1416, -0.5453, -0.6351, -0.3226, -1.0955, -0.8083, -0.3006, 0.1704, -1.0222, -1.0583, -1.8005, -1.4271, -1.5109, -1.9206, -1.5505, -2.5225, -0.512, -2.5782, -1.9089, -0.4749, -0.9518, -1.2345, -1.6822, -0.3063, -1.4514, -0.7133, -0.6247, -0.3469, -1.8729, -0.4383, -1.5905, -2.135, -0.7948, -0.8138, -0.2991, -1.3554, -0.4496, -0.3052, -1.3865, -2.168, -0.5366, -1.0841, -1.054, -0.1779, -0.9638, -0.4908, -0.7609, -0.8927, -1.7375, -1.4258, -0.3437, -1.3002, -0.6903, -0.4564, -1.0782, -0.573, -0.564, -0.7376, -2.0988, -0.5575, -0.5118, -0.704, -0.7795, -1.7444, -1.3294, -1.4484, -0.2701, -0.6222, -0.3396, -1.0192, -0.471, -0.3041, -0.5021, -0.8864, -0.5189, -1.928, -0.214, -0.627, -0.7758, -1.2599], "fitted_delta_hi": [1.1938, 3.3359, 1.3909, 1.2894, 1.114, 0.9575, 3.0478, 1.1936, 2.9656, 4.326, 2.0357, 6.1364, 3.3599, 2.1386, 1.0968, 0.4365, 0.9372, 0.785, 0.4577, 0.6652, 0.7557, 0.9808, 0.591, 0.6609, 1.8524, 1.0656, 1.4285, 1.595, 1.11, 1.7873, 1.0091, 1.4517, 0.562, 0.6747, 1.0499, 0.8446, 1.189, 1.7676, 1.2118, 1.3409, 0.6825, 1.2962, 0.7956, 2.4425, 2.1195, 0.4648, 2.1762, 1.6935, 0.688, 1.0989, 0.7764, 1.0152, 2.5071, 1.0867, 0.7366, 0.6421, 0.9445, 1.1866, 0.8743, 0.7117, 0.9209, 1.7435, 0.6463, 1.2559, 1.8025, 2.1981, 1.2941, 1.4701, 0.7147, 1.2866, 1.6746, 0.5374, 2.02, 1.6117, 0.7719, 0.8901, 0.837, 0.8205, 1.3745, 0.7942, 1.5635, 1.2644, 1.1386, 2.4409, 2.582, 1.0977, 1.6729, 2.2778, 1.3329, 1.3933, 1.6982, 2.3916, 3.73, 0.6882, 1.005, 1.523, 2.2536, 0.6135, 2.5812, 1.6818, 1.6149, 1.4781, 0.5716, 0.3812, 1.5243, 1.278, 0.9772, 0.9077, 0.9441, 1.1766, 0.8125, 1.658, 1.5603, 1.8482, 1.0521, 0.5356, 1.2579, 0.7937, 1.1941, 0.7486, 0.6116, 1.6145, 1.1182, 1.1093, 1.7998, 1.5774, 0.8062, 2.9986, 1.5469, 0.8159, 1.2959, 2.1351, 0.3284, 0.9812, 1.2429, 0.6552, 1.0869, 0.9288, 0.9216, 0.7652, 1.4175, 0.9331, 0.9725, 0.7198, 0.9297, 1.62, 5.9873, 1.9524, 2.2989, 1.0071, 0.4623, 0.578, 1.6815, 0.442, 0.3577, 1.3644, 1.5075, 1.0712, 1.9171, 1.1617, 1.2311, 1.4292, 1.0235, 2.2082, 2.5464, 3.3775, 3.0803, 2.864, 1.099, 2.3446, 1.1839, 1.5169, 1.1091, 2.5664, 0.9553, 1.8741, 2.1857, 0.5917, 0.8775, 0.9515, 0.6246, 0.5667, 1.4332, 1.1128, 1.2517, 1.0201, 0.7669, 0.9005, 1.0774, 0.7942, 1.2884, 1.0975, 0.7594, 1.0779, 1.9944, 1.1703, 1.9038, 0.5101, 0.6567, 1.0786, 1.0847, 0.8619, 1.2332, 2.4336, 2.0698, 1.1304, 2.6463, 1.9024, 0.952, 0.9289, 0.8146, 1.6497, 1.1708, 0.9986, 0.8122, 1.6417, 1.2045, 0.9565, 0.6563], "anchor_level": -11.3257, "actual_level": [-16.0458, -12.3329, -16.2534, -19.9361, -21.9594, -23.3784, -19.5702, -3.9367, 4.7352, 12.3895, 11.4502, 10.3301, 12.7952, 9.8034, 3.3301, -6.8907, -7.5141, -11.9158, -10.9972, -16.9565, -18.8727, -18.5756, -19.4256, -12.7152, -17.0497, -19.2056, -22.6217, -18.2474, -19.1295, -21.4425, -21.4048, -25.2752, -25.2507, -24.9639, -28.142, -28.2136, -29.4212, -31.6679, -35.4273, -35.1599, -36.5069, -36.713, -34.8014, -19.5541, -29.2877, -22.6234, -19.5773, -27.4304, -29.4001, -23.0044, -19.7225, -13.6182, -13.8303, -12.8255, -13.2768, -13.6937, -13.9782, -11.0666, -14.9447, -18.3415, -19.0491, -17.8744, -19.2345, -13.2608, -9.4317, -5.9502, -2.4253, -8.9313, -10.6825, -5.6329, -5.5262, -2.3219, -6.8036, -10.579, -12.2608, -12.3955, -14.3063, -11.2997, -12.7991, -4.3404, -5.0572, -1.1215, 1.4776, -0.1644, 6.6736, 16.4795, 8.9591, 14.5538, 11.617, 20.1343, 27.0954, 34.8992, 31.2701, 30.1692, 30.5039, 32.6692, 30.0645, 18.7754, 15.4651, 19.0208, 7.6123, 7.9489, 7.7347, 8.0986, 6.0472, 12.5429, 8.3602, 4.2467, 3.1866, 5.0952, 6.021, 7.0405, 9.3048, 3.5831, 4.2999, 5.3113, 8.3494, 7.8682, 9.0522, 4.6858, 7.2105, 9.5422, 14.2065, 21.1264, 23.0938, 20.1908, 30.1092, 26.6073, 18.9756, 22.957, 23.1728, 16.8471, 19.0614, 22.8363, 23.8826, 23.6607, 20.8263, 19.0952, 28.5379, 29.3556, 25.6126, 30.7314, 25.1945, 30.9324, 35.9594, 49.8975, 53.7106, 53.9886, 55.1242, 50.165, 55.3201, 57.9936, 59.5586, 50.9683, 47.4964, 52.7247, 53.1941, 55.7682, 50.7879, 47.3993, 43.2179, 45.0818, 44.9223, 49.8179, 53.2095, 52.7068, 51.964, 47.9483, 43.4794, 34.8455, 37.8542, 34.386, 45.1913, 44.9072, 45.1489, 50.1635, 47.3272, 47.8823, 45.826, 43.5321, 45.1433, 42.082, 40.2314, 42.0488, 36.7699, 35.2201, 39.2069, 41.0627, 41.9512, 39.3765, 37.0833, 39.2648, 39.4469, 39.9877, 43.2796, 44.2098, 49.8355, 51.4633, 51.5361, 47.5616, 53.1658, 57.7199, 59.8077, 54.0469, 53.2905, 50.9258, 49.2305, 49.9127, 45.4195, 48.0103, 45.2815, 43.0907, 43.3582, 46.4382, 41.204, 39.22, 40.5536, 36.0011, 37.2544], "fitted_level_mean": [-10.9058, -9.2247, -8.6736, -9.6179, -9.6597, -10.3823, -9.1433, -8.9756, -7.5992, -6.1398, -5.7623, -3.2449, -2.28, -1.5641, -2.5262, -4.0017, -4.6685, -5.9924, -6.8027, -6.8635, -7.0712, -6.7179, -6.833, -7.4004, -6.628, -6.3445, -5.8197, -5.296, -5.21, -4.5325, -4.959, -4.3073, -5.0901, -5.312, -5.0763, -5.194, -4.9736, -4.1686, -4.1385, -3.6893, -3.6303, -3.0679, -3.1552, -1.998, -1.3093, -2.1224, -1.069, -0.6482, -0.9678, -0.6639, -1.0032, -1.1119, -0.181, 0.1484, 0.0305, -0.1798, -0.2878, 0.1134, 0.3054, 0.4181, 0.6865, 1.5154, 1.448, 1.7204, 2.5332, 3.6408, 4.1151, 4.3358, 4.1164, 4.5117, 4.9392, 4.6985, 5.4558, 5.7177, 5.9096, 5.9238, 6.0466, 6.296, 6.9603, 7.0426, 7.4183, 7.7373, 8.1707, 9.4082, 10.6343, 10.9415, 11.4836, 11.9563, 12.5432, 12.9757, 13.7167, 14.6227, 15.8624, 15.294, 15.3501, 15.306, 16.4022, 16.2269, 16.4384, 16.9458, 16.3441, 16.5648, 16.4119, 15.7471, 16.3683, 16.8451, 16.9196, 16.925, 16.3985, 16.3929, 16.6101, 16.6372, 17.2884, 17.5573, 17.0974, 16.8923, 16.4727, 16.1878, 16.4105, 16.1727, 15.9264, 16.6329, 16.9852, 17.3931, 17.7212, 18.302, 17.8442, 18.8033, 19.0794, 18.6166, 19.2265, 20.1931, 19.2489, 19.4799, 19.9349, 19.9703, 20.4394, 20.332, 20.5013, 20.3119, 20.7582, 20.9124, 21.2321, 21.0387, 21.0954, 21.7535, 24.799, 25.2587, 25.9063, 25.5199, 25.0267, 24.5482, 24.4283, 23.8642, 22.7736, 23.2106, 22.6942, 22.282, 22.9959, 23.106, 23.0953, 22.9585, 23.3164, 23.6917, 24.5983, 25.964, 27.3157, 27.8325, 28.1647, 28.5098, 28.0181, 28.3863, 28.5344, 29.6574, 29.4401, 30.1631, 31.0848, 30.681, 30.0555, 30.2563, 30.0361, 29.7822, 30.4142, 30.4767, 30.8631, 30.9888, 30.9285, 30.5025, 30.3139, 30.5317, 30.5168, 30.7236, 30.8709, 30.8888, 31.6097, 31.9154, 32.4852, 31.6794, 31.7203, 31.9979, 32.1933, 32.2354, 31.9862, 32.5307, 32.8517, 33.268, 34.2806, 35.0648, 35.0339, 35.2617, 35.5135, 36.0818, 36.2147, 36.454, 35.8998, 36.6205, 36.9087, 37.0022, 36.6751], "fitted_level_lo": [-11.6868, -11.3514, -11.4566, -13.4326, -13.9556, -15.9143, -15.2797, -15.5265, -15.2202, -15.4937, -15.7634, -13.6273, -12.4847, -12.4698, -12.658, -13.8711, -14.8007, -16.3203, -17.487, -18.1786, -18.8998, -19.198, -19.7509, -21.1735, -20.8159, -21.0492, -20.9883, -21.1372, -21.6904, -21.6671, -23.1953, -22.9568, -24.5778, -25.2383, -25.5613, -26.3542, -26.8493, -26.3952, -27.102, -27.2676, -27.7494, -27.8287, -28.5294, -28.0197, -27.7876, -28.7889, -28.0759, -27.8699, -28.7561, -28.9665, -29.4718, -30.1177, -29.6809, -29.858, -30.3819, -31.2354, -31.7746, -31.7941, -32.1582, -32.5969, -32.8858, -32.5932, -33.2337, -33.4475, -33.3747, -32.8894, -32.8379, -33.2288, -33.9894, -34.1175, -34.3507, -35.1522, -34.9293, -35.0951, -35.5393, -36.0583, -36.4082, -36.7422, -36.7753, -36.9502, -37.3062, -37.5083, -37.6465, -37.1412, -36.3819, -36.6809, -36.9505, -37.0898, -37.1707, -37.3721, -37.3265, -36.8895, -36.2702, -37.4654, -38.1404, -38.6847, -37.8509, -38.5562, -38.6607, -38.8515, -40.07, -40.3506, -40.969, -42.1349, -41.9004, -42.0266, -42.455, -42.9071, -43.9273, -44.1329, -44.4268, -45.054, -44.7636, -45.2339, -46.4632, -47.1558, -48.0962, -49.1655, -49.3936, -50.3292, -51.0564, -50.9793, -51.3179, -51.2487, -51.587, -51.7109, -52.5327, -52.492, -52.6568, -53.4966, -53.4339, -52.9121, -54.5885, -54.8765, -54.9064, -55.4406, -55.485, -55.9584, -56.3327, -57.1016, -57.4313, -57.8597, -58.2012, -59.0163, -59.334, -59.1584, -57.0629, -56.8253, -57.2784, -58.3794, -59.1041, -59.9717, -60.7623, -61.6649, -63.2235, -63.3789, -64.4157, -65.1208, -64.9762, -65.4682, -65.8507, -66.3017, -66.4976, -66.8466, -66.6218, -65.3526, -64.6124, -64.5744, -64.7685, -65.094, -65.8949, -66.44, -66.367, -65.7662, -66.835, -66.8398, -66.5262, -67.5062, -68.7951, -69.0754, -69.8492, -70.7295, -70.5685, -71.0466, -70.8584, -71.2508, -71.8057, -73.0518, -73.8193, -74.186, -74.6607, -75.4148, -75.7908, -76.4043, -76.0852, -76.494, -76.257, -77.8, -78.203, -78.4169, -78.8325, -79.3155, -79.7719, -79.5436, -80.0786, -80.3199, -79.9266, -79.7124, -79.9021, -80.1517, -80.4514, -80.5507, -80.9506, -81.2812, -82.4165, -82.1506, -82.3551, -82.8705, -83.715], "fitted_level_hi": [-10.1319, -7.073, -5.8366, -5.7124, -5.2756, -4.8674, -2.9065, -2.3245, 0.2175, 3.2701, 4.3827, 7.351, 8.2035, 9.609, 7.8172, 5.9863, 5.6948, 4.4949, 4.1513, 4.7263, 5.0305, 5.9098, 6.2832, 6.4764, 7.6784, 8.3485, 9.4945, 10.5927, 11.3414, 12.7444, 12.9871, 14.1898, 14.0806, 14.4383, 15.205, 15.7989, 16.6884, 17.8532, 18.5476, 19.6267, 20.2753, 21.5083, 21.9996, 23.6448, 24.6977, 24.3524, 25.9622, 26.6858, 26.8569, 27.6239, 27.8538, 28.4261, 29.8655, 30.7072, 31.1623, 31.585, 32.1163, 32.9383, 33.6178, 34.3417, 35.1898, 36.5676, 37.0693, 37.6712, 39.1577, 40.9164, 41.8607, 42.7063, 43.0948, 44.0568, 44.9467, 45.2294, 46.5526, 47.3286, 48.1967, 48.835, 49.3902, 50.154, 51.3962, 52.0585, 53.1061, 53.6866, 54.5161, 56.2635, 58.2234, 59.059, 60.2653, 61.3213, 62.4242, 63.5404, 64.9785, 66.8637, 68.858, 69.0001, 69.5846, 70.332, 72.0483, 72.3027, 72.4706, 73.4802, 73.4609, 74.0226, 74.2338, 73.7877, 75.2005, 76.1699, 77.0217, 77.4843, 77.561, 77.9869, 78.7433, 79.2947, 80.5906, 81.7595, 82.2676, 82.544, 82.8032, 82.9455, 83.9627, 84.2598, 84.3348, 85.742, 86.6929, 87.6427, 88.6145, 90.1063, 89.9343, 91.7342, 92.5114, 92.4856, 93.6235, 94.9688, 94.6624, 95.5577, 96.4422, 97.0796, 98.1077, 98.6329, 99.3716, 99.7118, 100.9916, 101.6416, 102.5637, 102.8401, 103.5153, 104.6122, 108.3433, 109.4589, 110.5088, 111.1151, 111.184, 111.4702, 111.612, 111.6413, 110.891, 111.9211, 111.9, 112.119, 113.4594, 113.9835, 114.6424, 114.675, 115.6778, 116.5414, 118.0226, 119.5422, 121.5358, 122.338, 123.2056, 123.9947, 124.3283, 125.1035, 125.7504, 127.7679, 127.9008, 129.1573, 130.4514, 130.5975, 130.9869, 131.6018, 132.0442, 132.4875, 133.7447, 133.9227, 134.7304, 135.6683, 136.133, 136.3625, 136.72, 137.5671, 138.3224, 139.1499, 139.8189, 140.406, 141.9844, 142.8999, 144.1126, 143.8112, 144.4476, 145.3864, 145.9152, 146.128, 146.5126, 147.8691, 148.3737, 149.3985, 151.0994, 152.3604, 153.108, 153.8527, 154.6399, 155.775, 156.4695, 157.3519, 156.9662, 158.4359, 159.4478, 159.971, 160.2487], "decomposition": {"alpha": [0.2192, 0.4384, 0.6575, 0.8767, 1.0959, 1.3151, 1.5343, 1.7535, 1.9726, 2.1918, 2.411, 2.6302, 2.8494, 3.0685, 3.2877, 3.5069, 3.7261, 3.9453, 4.1645, 4.3836, 4.6028, 4.822, 5.0412, 5.2604, 5.4795, 5.6987, 5.9179, 6.1371, 6.3563, 6.5755, 6.7946, 7.0138, 7.233, 7.4522, 7.6714, 7.8905, 8.1097, 8.3289, 8.5481, 8.7673, 8.9865, 9.2056, 9.4248, 9.644, 9.8632, 10.0824, 10.3015, 10.5207, 10.7399, 10.9591, 11.1783, 11.3975, 11.6166, 11.8358, 12.055, 12.2742, 12.4934, 12.7125, 12.9317, 13.1509, 13.3701, 13.5893, 13.8085, 14.0276, 14.2468, 14.466, 14.6852, 14.9044, 15.1235, 15.3427, 15.5619, 15.7811, 16.0003, 16.2195, 16.4386, 16.6578, 16.877, 17.0962, 17.3154, 17.5345, 17.7537, 17.9729, 18.1921, 18.4113, 18.6304, 18.8496, 19.0688, 19.288, 19.5072, 19.7264, 19.9455, 20.1647, 20.3839, 20.6031, 20.8223, 21.0414, 21.2606, 21.4798, 21.699, 21.9182, 22.1374, 22.3565, 22.5757, 22.7949, 23.0141, 23.2333, 23.4524, 23.6716, 23.8908, 24.11, 24.3292, 24.5484, 24.7675, 24.9867, 25.2059, 25.4251, 25.6443, 25.8634, 26.0826, 26.3018, 26.521, 26.7402, 26.9594, 27.1785, 27.3977, 27.6169, 27.8361, 28.0553, 28.2744, 28.4936, 28.7128, 28.932, 29.1512, 29.3704, 29.5895, 29.8087, 30.0279, 30.2471, 30.4663, 30.6854, 30.9046, 31.1238, 31.343, 31.5622, 31.7814, 32.0005, 32.2197, 32.4389, 32.6581, 32.8773, 33.0964, 33.3156, 33.5348, 33.754, 33.9732, 34.1924, 34.4115, 34.6307, 34.8499, 35.0691, 35.2883, 35.5074, 35.7266, 35.9458, 36.165, 36.3842, 36.6034, 36.8225, 37.0417, 37.2609, 37.4801, 37.6993, 37.9184, 38.1376, 38.3568, 38.576, 38.7952, 39.0144, 39.2335, 39.4527, 39.6719, 39.8911, 40.1103, 40.3294, 40.5486, 40.7678, 40.987, 41.2062, 41.4254, 41.6445, 41.8637, 42.0829, 42.3021, 42.5213, 42.7404, 42.9596, 43.1788, 43.398, 43.6172, 43.8364, 44.0555, 44.2747, 44.4939, 44.7131, 44.9323, 45.1514, 45.3706, 45.5898, 45.809, 46.0282, 46.2474, 46.4665, 46.6857, 46.9049, 47.1241, 47.3433, 47.5624, 47.7816, 48.0008], "delta_carry": [0.0787, 0.3415, 0.4398, 0.6663, 0.745, 0.874, 1.0754, 1.0733, 1.3304, 1.5597, 1.7166, 1.7758, 1.4949, 1.4704, 1.0585, 0.7831, 0.7698, 0.4778, 0.3474, 0.3425, 0.3404, 0.3438, 0.3389, 0.334, 0.3319, 0.3215, 0.3082, 0.5012, 0.4963, 0.7061, 0.8406, 0.8329, 0.828, 0.8231, 0.8182, 0.8161, 0.9534, 0.9513, 1.0914, 1.1673, 1.1652, 1.23, 1.3004, 1.2871, 1.1484, 1.0069, 0.9992, 0.8577, 0.7106, 0.7001, 0.4777, 0.2609, 0.111, 0.1061, -0.0382, -0.1741, -0.1818, -0.262, -0.2669, -0.2718, -0.2711, -0.2788, -0.2809, -0.2189, -0.0732, -0.0726, 0.0619, 0.1992, 0.1943, 0.326, 0.4633, 0.4557, 0.5957, 0.6605, 0.6528, 0.7149, 0.71, 0.7023, 0.7002, 0.6953, 0.6904, 0.7552, 0.7503, 0.8764, 1.0137, 1.0088, 1.1433, 1.275, 1.2701, 1.4018, 1.5363, 1.5286, 1.5237, 1.5244, 1.5195, 1.4812, 1.4484, 1.4323, 1.433, 1.4253, 1.4204, 1.4127, 1.405, 1.3973, 1.3924, 1.3178, 1.3101, 1.1993, 0.9546, 0.7378, 0.6967, 0.3823, 0.3746, 0.0546, -0.2598, -0.2675, -0.5484, -0.7624, -0.7701, -0.9534, -0.989, -1.0664, -1.1661, -1.2212, -1.2289, -1.2672, -1.2972, -1.3021, -1.3182, -1.39, -1.3977, -1.4221, -1.4633, -1.4682, -1.4759, -1.4835, -1.4801, -1.4822, -1.4927, -1.5617, -1.6809, -1.7667, -1.6935, -1.8378, -1.8427, -1.9257, -1.8107, -1.6483, -1.8623, -2.0847, -2.0924, -2.1698, -2.1719, -2.1768, -2.1817, -2.1866, -2.1915, -2.1936, -1.9866, -1.9915, -1.7845, -1.5859, -1.5964, -1.3197, -1.043, -0.6296, -0.6345, -0.2212, -0.2261, 0.1872, 0.4277, 0.3865, 0.5377, 0.5496, 0.4136, 0.3669, 0.2979, 0.148, -0.0521, -0.1462, -0.2152, -0.2871, -0.3143, -0.3693, -0.4384, -0.4489, -0.4649, -0.6678, -0.8121, -0.817, -0.9613, -1.1056, -1.1105, -1.2548, -1.3991, -1.404, -1.4786, -1.4835, -1.4884, -1.4933, -1.3728, -1.294, -1.1065, -0.788, -0.4723, -0.4772, -0.2033, -0.2082, -0.0737, -0.0089, -0.0138, -0.0187, 0.0071, 0.097, 0.1367, 0.1541, 0.1492, 0.0746, 0.0], "delta_tot": [-0.144, 0.2393, 0.2865, 0.4169, -0.0199, -0.2137, -0.322, -0.653, -0.4653, -0.6731, -0.1201, 0.1076, 0.9058, 0.5813, 0.5994, 0.5234, 0.5664, 0.4212, 0.4447, 0.3525, 0.0129, 0.0234, -0.1606, -0.645, -0.8042, -0.5743, -0.6946, -0.6473, -1.0151, -0.9549, -1.4609, -1.5044, -1.9964, -1.8876, -1.8792, -2.2037, -2.1403, -2.026, -1.8524, -1.9824, -2.1167, -2.1602, -2.1973, -2.2246, -2.4032, -2.3949, -2.0126, -1.5634, -1.4546, -1.2064, -1.1743, -1.2621, -1.418, -1.4399, -1.4143, -1.514, -1.2701, -1.1732, -1.0417, -1.1252, -1.1223, -1.0664, -1.1715, -0.92, -0.8858, -0.7856, -0.7373, -0.5733, -0.7584, -0.8646, -0.7083, -0.728, -0.9671, -0.5147, -0.4815, -0.3716, -0.5534, -0.5332, -0.4125, -0.3609, -0.3407, -0.0838, 0.1136, 0.1533, 0.6576, 0.6789, 0.4722, 1.09, 1.1696, 1.0202, 0.9388, 1.3103, 1.311, 1.4674, 1.1332, 1.5986, 1.6934, 1.7687, 1.6971, 1.686, 0.6991, 0.7723, 0.7633, 0.5998, 0.4904, 0.5246, 0.3114, 0.1588, -0.2035, -0.0223, -0.0323, 0.325, 0.6176, 0.7523, 0.8838, 0.8662, 0.4056, 0.388, 0.6805, 0.5927, 0.3395, 0.537, 0.6263, 0.7341, 0.7705, 0.6621, 0.4922, 0.7901, 0.8082, 0.5788, 0.7027, 1.0579, 0.7918, 1.0, 0.8549, 0.7606, 0.8251, 0.5655, 0.697, 0.3833, 0.6575, 0.8257, 0.8395, 0.9083, 0.6119, 0.5997, 1.2327, 0.7547, 1.325, 1.611, 1.5026, 1.1663, 0.429, 0.1888, -0.0503, 0.1676, -0.6928, -1.2594, -1.0954, -0.7824, -0.9199, -1.453, -1.3366, -0.9241, -0.5408, -0.2148, 0.5219, 0.5637, 0.491, 0.3318, -0.0089, 0.3528, 0.3471, 0.3457, 0.005, 0.3473, 0.2746, 0.2732, 0.4998, 0.4444, 0.5543, 0.3573, 0.5742, 0.2367, 0.3758, 0.2826, 0.4465, 0.0626, -0.2868, -0.3087, -0.4019, -0.3471, -0.4479, -0.1748, 0.2311, 0.4718, 0.2316, -0.215, -0.2045, 0.0426, -0.1651, -0.3935, -0.4586, -0.5129, -0.3998, -0.197, 0.2804, 0.3027, 0.2797, 0.3302, 0.3267, 0.7575, 0.4093, 0.2631, -0.284, -0.0834, 0.2049, 0.3137, -0.0], "delta_breakeven": [0.1339, 0.3538, 0.1002, -0.4861, -0.3877, -1.2634, -0.3354, -0.0525, -0.3869, -1.6709, -2.0035, 0.288, -0.1736, -0.2009, 0.2084, -0.2424, 0.1993, -0.7281, -0.8322, -1.0971, -0.9635, -1.0636, -1.066, -1.2394, -0.8818, -0.794, -0.3952, -0.1992, -0.1681, 0.0072, 0.0692, 0.3053, 0.0778, -0.2116, -0.5666, -0.3625, -0.7079, -0.2151, -0.6185, -0.2404, -0.2423, -0.0291, -0.4108, 0.0287, 0.0192, -0.018, 0.1064, 0.0554, -0.2048, -0.2504, -0.3172, -0.391, -0.0865, 0.2891, 0.3727, 0.2521, -0.084, 0.1852, 0.0473, 0.0643, -0.1152, 0.2589, 0.0295, 0.2268, 0.0602, 0.1494, 0.1639, -0.4466, -0.1612, 0.04, -0.5637, -0.802, -0.389, -0.2786, -0.3068, -0.2227, -0.1042, -0.0911, 0.0568, 0.2502, -0.3718, -0.2307, -0.1915, -0.1619, 0.0096, -0.3025, -0.6039, -0.3465, -0.0254, -0.243, -0.2871, -0.8851, -1.9647, -2.2257, -2.1972, -2.8491, -2.4703, -2.6424, -1.0986, -0.3541, -0.5814, 0.1654, 0.1914, -0.0546, 0.2891, 0.5781, 0.2751, 0.5756, 0.8907, 1.1527, 1.209, 1.081, 0.9324, 1.0735, 1.0886, 0.9151, 1.0374, 1.1397, 0.846, 0.8278, 0.9231, 1.0991, 1.1447, 1.0991, 0.2514, 0.0997, 0.5791, -0.4441, 0.3427, 0.8576, 1.0328, 1.486, 1.3182, 1.307, 1.3441, 1.3146, 1.3859, 1.8056, 2.0187, 1.8696, 1.9005, 2.0028, 1.9706, 2.0517, 2.101, 2.1349, 2.0458, 2.0357, 2.3444, 2.2334, 2.2404, 2.0112, 1.831, 1.8205, 1.5864, 1.9904, 1.6205, 1.1892, 0.854, 0.9701, 0.9844, 1.0698, 0.9344, 0.4019, -0.0412, -0.3186, -0.0846, 0.6321, 0.4083, 0.4252, 0.0548, -0.3695, -0.6087, -0.9053, -0.583, -0.08, -0.0509, 0.041, -0.5029, -0.321, -0.4973, -0.6517, -0.4161, -0.1171, 0.2783, 0.7404, 0.6019, 0.5422, 0.2596, 0.315, 1.0045, 1.2443, 1.2127, 1.0482, 1.0923, 0.8148, 0.6203, 0.5645, 0.5615, 0.567, 0.4958, 0.4502, -0.2613, -1.076, -0.7851, -0.7703, -0.928, -0.2717, -0.2743, -0.1675, -0.1259, -0.0194, 0.2349, 0.2293, 0.0061, 0.4454, 0.2072, -0.1273, -0.0], "delta_fiscal": [0.132, 0.7279, 1.1681, 0.234, 0.2327, 0.2314, 0.2301, 0.2289, 1.2756, 3.7783, 3.5595, 3.2791, 3.9692, 4.8422, 3.6455, 2.753, 1.3955, 1.2171, 0.3986, 0.4806, 0.2618, 0.482, 0.3392, 0.2153, 0.5722, 0.3293, 0.3697, 0.2378, 0.4461, 0.4592, 0.1231, 0.3707, 0.093, -0.1625, 0.2056, -0.0087, 0.1371, 0.118, 0.0186, -0.0755, -0.0974, 0.0114, 0.0533, 0.5924, 1.3888, 0.5269, 0.8621, 0.8071, 0.5667, 0.4593, 0.1579, 0.2084, 0.9215, 0.683, 0.381, 0.3078, 0.0804, -0.0235, -0.0394, -0.0745, 0.1506, 0.3381, 0.3881, -0.0694, 0.5109, 1.2092, 1.2669, 1.5779, 1.0438, 0.9932, 1.5116, 1.3174, 1.5417, 0.9567, 0.9321, 0.471, 0.4429, 0.4475, 0.6261, 0.2492, 1.0124, 0.6494, 0.6318, 1.4548, 1.6486, 2.0323, 2.7289, 1.9755, 1.9474, 2.3959, 2.9087, 3.8298, 5.9341, 5.2505, 5.3979, 5.3595, 5.7957, 5.5141, 4.0337, 3.5961, 3.9943, 3.1836, 2.8021, 2.3352, 2.5081, 2.5169, 2.8962, 2.6453, 2.1916, 1.7404, 1.7333, 1.6262, 1.922, 2.0158, 1.5044, 1.2789, 1.2595, 0.8847, 0.8971, 0.7294, 0.4574, 0.6488, 0.7466, 0.9282, 1.856, 2.5161, 1.5598, 3.0298, 2.2979, 1.4022, 1.5015, 1.4649, 0.7767, 0.5963, 0.9479, 0.8956, 1.0061, 0.5217, 0.1376, 0.261, 0.3022, 0.0524, 0.0982, -0.32, -0.2305, 0.2697, 2.4372, 3.0033, 2.7668, 2.2086, 1.6053, 1.5506, 2.131, 1.6033, 0.7718, 0.3725, 0.8722, 1.2407, 1.6997, 1.1664, 0.8527, 0.7459, 0.914, 0.9134, 1.3839, 2.0685, 2.2353, 1.3611, 1.7754, 1.6302, 1.3901, 1.6428, 1.6654, 2.8554, 2.5732, 2.2786, 3.0938, 2.5301, 2.2028, 2.1521, 1.8481, 1.7982, 1.7857, 1.7227, 1.4244, 0.9726, 0.6837, 0.6851, 1.0534, 1.0235, 0.3374, 0.1749, 0.2402, 0.0747, 0.2707, 0.3988, 1.2588, 0.7411, 0.5602, 0.3709, 0.5056, 0.5236, 0.6444, 1.5202, 0.9023, 0.8867, 1.0865, 0.9777, 0.6188, 0.4053, 0.4048, 0.2215, 0.2034, 0.2854, 0.2427, 0.0868, 0.1107, 0.2853, -0.0], "residual": [-5.1399, -3.1082, -7.5798, -10.3182, -12.2997, -12.9961, -10.4268, 5.0389, 12.3343, 18.5293, 17.2124, 13.575, 15.0752, 11.3675, 5.8563, -2.889, -2.8456, -5.9234, -4.1945, -10.093, -11.8015, -11.8577, -12.5926, -5.3148, -10.4216, -12.8611, -16.802, -12.9513, -13.9194, -16.91, -16.4458, -20.9678, -20.1606, -19.6519, -23.0657, -23.0196, -24.4476, -27.4993, -31.2888, -31.4706, -32.8766, -33.6452, -31.6462, -17.5561, -27.9785, -20.501, -18.5083, -26.7823, -28.4324, -22.3405, -18.7193, -12.5063, -13.6493, -12.9739, -13.3074, -13.514, -13.6904, -11.18, -15.2501, -18.7596, -19.7356, -19.3898, -20.6825, -14.9812, -11.9649, -9.591, -6.5404, -13.2671, -14.7989, -10.1446, -10.4654, -7.0204, -12.2595, -16.2966, -18.1704, -18.3193, -20.3529, -17.5957, -19.7594, -11.383, -12.4755, -8.8588, -6.693, -9.5726, -3.9607, 5.538, -2.5245, 2.5974, -0.9263, 7.1586, 13.3788, 20.2766, 15.4076, 14.8752, 15.1538, 17.3631, 13.6623, 2.5485, -0.9734, 2.075, -8.7318, -8.6159, -8.6772, -7.6484, -10.3212, -4.3022, -8.5595, -12.6783, -13.2119, -11.2977, -10.5891, -9.5967, -7.9835, -13.9742, -12.7975, -11.581, -8.1233, -8.3196, -7.3583, -11.4868, -8.7158, -7.0907, -2.7787, 3.7332, 5.3727, 1.8888, 12.265, 7.8039, -0.1038, 4.3404, 3.9463, -3.3459, -0.1875, 3.3564, 3.9478, 3.6904, 0.3869, -1.2368, 8.0366, 9.0436, 4.8544, 9.819, 3.9624, 9.8937, 14.864, 28.144, 28.9116, 28.7299, 29.2179, 24.6451, 30.2934, 33.4454, 35.1303, 27.1041, 24.7228, 29.5141, 30.4999, 33.4862, 27.792, 24.2933, 20.1226, 22.1233, 21.6058, 26.1261, 28.6112, 26.7428, 24.6483, 20.1158, 15.3147, 6.3357, 9.8361, 5.9997, 16.6569, 15.2498, 15.7088, 20.0004, 16.2424, 17.2014, 15.7705, 13.2758, 15.1072, 12.2999, 9.8172, 11.5721, 5.9069, 4.2312, 8.2784, 10.5602, 11.6373, 8.8448, 6.5665, 8.5411, 8.576, 9.0989, 11.6698, 12.2944, 17.3503, 19.7839, 19.8158, 15.5638, 20.9724, 25.4845, 27.8214, 21.5161, 20.4388, 17.6578, 14.95, 14.8479, 10.3856, 12.7486, 9.768, 7.0089, 7.1435, 9.9842, 5.3042, 2.5995, 3.6449, -1.0011, 0.5793]}, "level_decomposition": {"equilibrium": [1.9763, 1.9787, 1.985, 1.9889, 1.9828, 1.9792, 1.9877, 1.9912, 2.0175, 2.0612, 2.0842, 2.0889, 2.0927, 2.099, 2.107, 2.1137, 2.1039, 2.1096, 2.1057, 2.1067, 2.1062, 2.1078, 2.1145, 2.129, 2.1477, 2.1581, 2.1699, 2.1804, 2.1813, 2.1774, 2.1751, 2.1814, 2.1901, 2.2027, 2.2077, 2.2189, 2.2294, 2.2355, 2.2422, 2.2456, 2.2489, 2.2467, 2.2479, 2.2549, 2.2631, 2.2706, 2.2814, 2.288, 2.2934, 2.2934, 2.3042, 2.3173, 2.3211, 2.3304, 2.3265, 2.3286, 2.336, 2.354, 2.3729, 2.3886, 2.3899, 2.4079, 2.4262, 2.4342, 2.4347, 2.4307, 2.4307, 2.4383, 2.4509, 2.4596, 2.4757, 2.4833, 2.4977, 2.5155, 2.5277, 2.5345, 2.5413, 2.5386, 2.5454, 2.5597, 2.571, 2.589, 2.6172, 2.6667, 2.6924, 2.7206, 2.7371, 2.7483, 2.7623, 2.775, 2.7812, 2.8025, 2.8227, 2.8478, 2.8782, 2.9161, 2.9463, 2.9497, 2.9563, 2.9724, 2.9745, 2.9915, 2.9991, 2.9937, 2.9944, 2.9963, 2.9977, 2.997, 3.0021, 3.011, 3.0115, 3.0232, 3.0143, 3.0205, 3.0146, 3.0041, 3.0144, 3.0148, 3.0217, 3.0176, 3.0192, 3.0213, 3.0201, 3.0253, 3.0607, 3.0684, 3.0602, 3.0685, 3.0751, 3.0708, 3.0733, 3.0857, 3.0897, 3.1011, 3.1071, 3.1104, 3.1117, 3.1105, 3.111, 3.105, 3.0994, 3.1064, 3.133, 3.1336, 3.1399, 3.1564, 3.1717, 3.1625, 3.1555, 3.1508, 3.1466, 3.1584, 3.1816, 3.2027, 3.2319, 3.232, 3.2488, 3.2619, 3.2517, 3.2571, 3.2469, 3.263, 3.2821, 3.3052, 3.3145, 3.3176, 3.3189, 3.3168, 3.3272, 3.3438, 3.3689, 3.3529, 3.3335, 3.3113, 3.2974, 3.2739, 3.2749, 3.2798, 3.2996, 3.2995, 3.3159, 3.3353, 3.3443, 3.3466, 3.3365, 3.3339, 3.3255, 3.3212, 3.3246, 3.3291, 3.3413, 3.3449, 3.3589, 3.3495, 3.3549, 3.3687, 3.3772, 3.3844, 3.3784, 3.386, 3.3953, 3.3989, 3.4049, 3.3959, 3.4326, 3.4507, 3.46, 3.4655, 3.465, 3.4661, 3.4503, 3.4567, 3.4573, 3.4584, 3.4639, 3.4788, 3.4794, 3.4804, 3.4841], "baseline": [-0.2077, -0.2041, -0.2009, -0.1973, -0.1928, -0.1885, -0.1854, -0.1818, -0.1801, -0.1799, -0.1778, -0.174, -0.1701, -0.1664, -0.1627, -0.159, -0.154, -0.1501, -0.1455, -0.1413, -0.1369, -0.1327, -0.1288, -0.1253, -0.122, -0.1181, -0.1142, -0.1102, -0.1057, -0.101, -0.0964, -0.0921, -0.0878, -0.0837, -0.0792, -0.0749, -0.0706, -0.066, -0.0614, -0.0567, -0.052, -0.0471, -0.0423, -0.0376, -0.0329, -0.0281, -0.0232, -0.0183, -0.0134, -0.0084, -0.0034, 0.0017, 0.0068, 0.0119, 0.017, 0.0222, 0.0274, 0.0329, 0.0384, 0.044, 0.0494, 0.0551, 0.061, 0.0667, 0.0722, 0.0775, 0.083, 0.0888, 0.0949, 0.1008, 0.1071, 0.1131, 0.1195, 0.1262, 0.1326, 0.1388, 0.1451, 0.1508, 0.1571, 0.164, 0.1707, 0.1779, 0.186, 0.1958, 0.204, 0.2126, 0.2204, 0.2278, 0.2355, 0.2432, 0.2504, 0.259, 0.2676, 0.2768, 0.2867, 0.2975, 0.3077, 0.3152, 0.3231, 0.3321, 0.3396, 0.3489, 0.3571, 0.3638, 0.3713, 0.3789, 0.3865, 0.3938, 0.4019, 0.4106, 0.4182, 0.4274, 0.4337, 0.4421, 0.4489, 0.4549, 0.4641, 0.4717, 0.4805, 0.4875, 0.4955, 0.5035, 0.5111, 0.5197, 0.5337, 0.5429, 0.5493, 0.5588, 0.568, 0.5752, 0.5836, 0.594, 0.6029, 0.6133, 0.6226, 0.6315, 0.6399, 0.6479, 0.6563, 0.6633, 0.6703, 0.6801, 0.6943, 0.7028, 0.7127, 0.7249, 0.737, 0.7434, 0.7503, 0.7578, 0.7653, 0.7768, 0.7912, 0.8052, 0.8214, 0.8304, 0.8437, 0.8561, 0.8624, 0.8729, 0.8792, 0.8926, 0.907, 0.9227, 0.9346, 0.9448, 0.9545, 0.9633, 0.9757, 0.9901, 1.0071, 1.0119, 1.0155, 1.0182, 1.0234, 1.0255, 1.0353, 1.0463, 1.0622, 1.0717, 1.0867, 1.1028, 1.1155, 1.1261, 1.1324, 1.1414, 1.1483, 1.1566, 1.1676, 1.1791, 1.1933, 1.2046, 1.2196, 1.2262, 1.2383, 1.2535, 1.2668, 1.2797, 1.2877, 1.3008, 1.3147, 1.3264, 1.3392, 1.346, 1.3711, 1.3889, 1.4033, 1.4162, 1.4267, 1.4379, 1.4421, 1.4555, 1.4665, 1.4778, 1.491, 1.5084, 1.5195, 1.531, 1.5436], "delta_carry": [0.0014, 0.0061, 0.0079, 0.012, 0.0134, 0.0157, 0.0195, 0.0195, 0.0246, 0.0296, 0.033, 0.0343, 0.029, 0.0286, 0.0207, 0.0154, 0.0151, 0.0094, 0.0068, 0.0067, 0.0067, 0.0068, 0.0067, 0.0067, 0.0067, 0.0066, 0.0063, 0.0104, 0.0103, 0.0147, 0.0175, 0.0175, 0.0175, 0.0175, 0.0175, 0.0176, 0.0207, 0.0207, 0.0239, 0.0257, 0.0257, 0.0272, 0.0289, 0.0287, 0.0258, 0.0227, 0.0227, 0.0196, 0.0163, 0.0161, 0.011, 0.0061, 0.0026, 0.0025, -0.0009, -0.0041, -0.0043, -0.0062, -0.0064, -0.0066, -0.0066, -0.0069, -0.007, -0.0055, -0.0018, -0.0018, 0.0016, 0.005, 0.005, 0.0084, 0.012, 0.0119, 0.0156, 0.0175, 0.0174, 0.0192, 0.0191, 0.019, 0.019, 0.019, 0.019, 0.021, 0.0211, 0.0252, 0.0295, 0.0297, 0.034, 0.0382, 0.0383, 0.0426, 0.0469, 0.0472, 0.0474, 0.048, 0.0485, 0.048, 0.0475, 0.0471, 0.0473, 0.0474, 0.0474, 0.0475, 0.0475, 0.0472, 0.0472, 0.0448, 0.0446, 0.0409, 0.0327, 0.0253, 0.024, 0.0132, 0.0129, 0.0019, -0.009, -0.0092, -0.019, -0.0265, -0.0269, -0.0333, -0.0346, -0.0374, -0.0409, -0.043, -0.0439, -0.0455, -0.0465, -0.0469, -0.0477, -0.0503, -0.0508, -0.052, -0.0536, -0.0541, -0.0546, -0.0551, -0.0551, -0.0553, -0.0558, -0.0584, -0.0628, -0.0663, -0.0643, -0.0699, -0.0703, -0.074, -0.0701, -0.0639, -0.0721, -0.0806, -0.081, -0.0845, -0.0854, -0.0863, -0.0875, -0.0879, -0.0887, -0.0893, -0.0809, -0.0814, -0.073, -0.0654, -0.0663, -0.0554, -0.0441, -0.0268, -0.027, -0.0095, -0.0097, 0.0081, 0.0188, 0.0169, 0.0234, 0.0239, 0.0179, 0.0158, 0.0129, 0.0064, -0.0023, -0.0064, -0.0095, -0.0127, -0.014, -0.0165, -0.0195, -0.02, -0.0208, -0.0298, -0.0363, -0.0367, -0.0434, -0.05, -0.0506, -0.0571, -0.0638, -0.0644, -0.0682, -0.0687, -0.0689, -0.0695, -0.0642, -0.0608, -0.0522, -0.0372, -0.0226, -0.023, -0.0099, -0.0102, -0.0036, -0.0004, -0.0007, -0.0009, 0.0003, 0.0048, 0.0068, 0.0077, 0.0075, 0.0037, 0.0], "delta_tot": [-0.0025, 0.0043, 0.0051, 0.0075, -0.0004, -0.0039, -0.0059, -0.0119, -0.0086, -0.0128, -0.0023, 0.0021, 0.0178, 0.0114, 0.0118, 0.0103, 0.0112, 0.0083, 0.0088, 0.007, 0.0003, 0.0005, -0.0032, -0.0129, -0.0163, -0.0117, -0.0143, -0.0134, -0.0211, -0.0199, -0.0304, -0.0315, -0.0419, -0.04, -0.04, -0.0471, -0.0462, -0.0439, -0.0405, -0.0435, -0.0466, -0.0476, -0.0486, -0.0494, -0.0536, -0.0536, -0.0454, -0.0355, -0.0332, -0.0276, -0.027, -0.0292, -0.0328, -0.0335, -0.0329, -0.0353, -0.0298, -0.0278, -0.0249, -0.0271, -0.0271, -0.0261, -0.0289, -0.0229, -0.0221, -0.0196, -0.0185, -0.0145, -0.0193, -0.0221, -0.0183, -0.0189, -0.0253, -0.0137, -0.0129, -0.01, -0.0149, -0.0144, -0.0112, -0.0099, -0.0094, -0.0023, 0.0032, 0.0044, 0.0193, 0.0202, 0.0142, 0.033, 0.0357, 0.0314, 0.029, 0.041, 0.0414, 0.0469, 0.0366, 0.0526, 0.0564, 0.0591, 0.0569, 0.057, 0.0236, 0.0263, 0.0261, 0.0205, 0.0168, 0.018, 0.0107, 0.0055, -0.007, -0.0008, -0.0011, 0.0113, 0.0214, 0.0262, 0.0307, 0.03, 0.0141, 0.0135, 0.0237, 0.0206, 0.0118, 0.0188, 0.0219, 0.0258, 0.0275, 0.0237, 0.0176, 0.0284, 0.0292, 0.0209, 0.0254, 0.0386, 0.0289, 0.0368, 0.0316, 0.0281, 0.0306, 0.021, 0.026, 0.0142, 0.0245, 0.0308, 0.0317, 0.0344, 0.0232, 0.0229, 0.0476, 0.0291, 0.0511, 0.0622, 0.058, 0.0452, 0.0167, 0.0074, -0.002, 0.0067, -0.0276, -0.0504, -0.0439, -0.0316, -0.0371, -0.059, -0.0547, -0.0384, -0.0227, -0.0091, 0.0222, 0.0241, 0.0211, 0.0144, -0.0004, 0.0155, 0.0152, 0.0151, 0.0002, 0.015, 0.0119, 0.0119, 0.0218, 0.0194, 0.0244, 0.0158, 0.0256, 0.0106, 0.0168, 0.0126, 0.0199, 0.0028, -0.0128, -0.0138, -0.018, -0.0156, -0.0202, -0.0079, 0.0105, 0.0216, 0.0106, -0.0099, -0.0094, 0.002, -0.0077, -0.0183, -0.0215, -0.0241, -0.0191, -0.0095, 0.0136, 0.0148, 0.0137, 0.0162, 0.016, 0.0373, 0.0202, 0.013, -0.0141, -0.0042, 0.0103, 0.0158, 0.0], "delta_breakeven": [0.0024, 0.0063, 0.0018, -0.0088, -0.007, -0.0226, -0.0061, -0.001, -0.0072, -0.0315, -0.0384, 0.0056, -0.0034, -0.004, 0.0041, -0.0048, 0.0039, -0.0143, -0.0164, -0.0216, -0.0189, -0.021, -0.0211, -0.0246, -0.0177, -0.0161, -0.0081, -0.0041, -0.0035, 0.0001, 0.0014, 0.0063, 0.0016, -0.0044, -0.0119, -0.0077, -0.015, -0.0046, -0.0133, -0.0052, -0.0053, -0.0006, -0.009, 0.0006, 0.0004, -0.0004, 0.0024, 0.0012, -0.0046, -0.0057, -0.0072, -0.009, -0.002, 0.0067, 0.0086, 0.0058, -0.002, 0.0044, 0.0011, 0.0015, -0.0028, 0.0063, 0.0007, 0.0056, 0.0015, 0.0037, 0.0041, -0.0112, -0.0041, 0.001, -0.0145, -0.0207, -0.0101, -0.0074, -0.0082, -0.006, -0.0028, -0.0025, 0.0015, 0.0068, -0.0102, -0.0064, -0.0054, -0.0047, 0.0003, -0.009, -0.0181, -0.0105, -0.0008, -0.0075, -0.0089, -0.0278, -0.0618, -0.0709, -0.0706, -0.0931, -0.0819, -0.0879, -0.037, -0.012, -0.0196, 0.0057, 0.0066, -0.0019, 0.0099, 0.0199, 0.0095, 0.0198, 0.0307, 0.04, 0.042, 0.0378, 0.0326, 0.0377, 0.0381, 0.032, 0.0362, 0.0398, 0.0297, 0.029, 0.0324, 0.0387, 0.0404, 0.039, 0.009, 0.0036, 0.0208, -0.016, 0.0124, 0.0312, 0.0377, 0.0549, 0.0487, 0.0486, 0.0502, 0.0492, 0.052, 0.0679, 0.0762, 0.0703, 0.0716, 0.0759, 0.0755, 0.0788, 0.0808, 0.0827, 0.0803, 0.0796, 0.0922, 0.0879, 0.0881, 0.0791, 0.0721, 0.0722, 0.0634, 0.08, 0.065, 0.0476, 0.0342, 0.0392, 0.0397, 0.0434, 0.0382, 0.0167, -0.0017, -0.0134, -0.0036, 0.0272, 0.0177, 0.0186, 0.0024, -0.0162, -0.0266, -0.0394, -0.0252, -0.0035, -0.0022, 0.0018, -0.022, -0.0141, -0.0219, -0.0288, -0.0186, -0.0052, 0.0124, 0.0332, 0.027, 0.0242, 0.0115, 0.0141, 0.0452, 0.0561, 0.055, 0.0475, 0.0499, 0.0375, 0.0285, 0.026, 0.0258, 0.0263, 0.0231, 0.021, -0.0122, -0.0501, -0.0372, -0.0369, -0.045, -0.0133, -0.0134, -0.0082, -0.0062, -0.001, 0.0116, 0.0114, 0.0003, 0.0223, 0.0104, -0.0064, 0.0], "delta_fiscal": [0.0023, 0.0131, 0.0211, 0.0042, 0.0042, 0.0041, 0.0042, 0.0042, 0.0237, 0.0719, 0.0688, 0.0652, 0.0796, 0.0977, 0.0735, 0.0551, 0.0278, 0.024, 0.0078, 0.0094, 0.0051, 0.0095, 0.0067, 0.0043, 0.0115, 0.0067, 0.0076, 0.0049, 0.0092, 0.0095, 0.0025, 0.0077, 0.0019, -0.0034, 0.0043, -0.0002, 0.0029, 0.0025, 0.0004, -0.0016, -0.0021, 0.0002, 0.0012, 0.0131, 0.0308, 0.0117, 0.0194, 0.0183, 0.0128, 0.0104, 0.0036, 0.0048, 0.0213, 0.0159, 0.0088, 0.0071, 0.0019, -0.0006, -0.0009, -0.0018, 0.0036, 0.0083, 0.0095, -0.0017, 0.0127, 0.0303, 0.0319, 0.0399, 0.0265, 0.0254, 0.039, 0.0341, 0.0404, 0.0254, 0.0249, 0.0126, 0.0119, 0.0121, 0.017, 0.0068, 0.0279, 0.0181, 0.0179, 0.0423, 0.049, 0.0611, 0.0826, 0.0606, 0.0604, 0.0748, 0.0915, 0.1219, 0.1906, 0.1697, 0.1763, 0.1773, 0.1955, 0.1861, 0.1378, 0.1244, 0.1371, 0.1106, 0.0977, 0.0809, 0.0874, 0.0881, 0.1013, 0.0927, 0.0767, 0.0612, 0.0611, 0.0576, 0.0682, 0.0718, 0.0534, 0.0452, 0.0445, 0.0312, 0.0318, 0.0258, 0.0162, 0.0231, 0.0266, 0.0333, 0.0672, 0.0916, 0.0566, 0.1105, 0.0845, 0.0515, 0.0555, 0.0549, 0.029, 0.0224, 0.0358, 0.0339, 0.0382, 0.0198, 0.0053, 0.0099, 0.0115, 0.002, 0.0038, -0.0124, -0.0089, 0.0106, 0.0979, 0.1205, 0.1116, 0.0888, 0.0644, 0.0621, 0.0856, 0.0647, 0.0312, 0.0152, 0.0354, 0.0503, 0.069, 0.0476, 0.0347, 0.0305, 0.0377, 0.0381, 0.0583, 0.0881, 0.0964, 0.0592, 0.0776, 0.0719, 0.0615, 0.0726, 0.0732, 0.1254, 0.1124, 0.0997, 0.1361, 0.1114, 0.0971, 0.0951, 0.082, 0.0801, 0.0802, 0.0775, 0.0642, 0.044, 0.0309, 0.0308, 0.0472, 0.046, 0.0153, 0.0079, 0.011, 0.0034, 0.0124, 0.0184, 0.0585, 0.0343, 0.0259, 0.0173, 0.0236, 0.0245, 0.0301, 0.0709, 0.0428, 0.0425, 0.0527, 0.0479, 0.0303, 0.0199, 0.0199, 0.011, 0.0101, 0.0142, 0.012, 0.0044, 0.0056, 0.0144, 0.0], "residual": [-0.0888, -0.0552, -0.1329, -0.1771, -0.2083, -0.2174, -0.1796, 0.0941, 0.2455, 0.3946, 0.3695, 0.294, 0.3328, 0.2488, 0.1239, -0.0578, -0.0563, -0.1143, -0.0808, -0.1888, -0.2185, -0.2204, -0.2337, -0.1023, -0.1989, -0.2444, -0.3166, -0.2512, -0.269, -0.3237, -0.3139, -0.3952, -0.38, -0.3727, -0.4323, -0.4332, -0.4601, -0.5155, -0.578, -0.5843, -0.6077, -0.6225, -0.5909, -0.3559, -0.5451, -0.412, -0.3814, -0.5341, -0.5621, -0.4561, -0.3894, -0.2694, -0.2956, -0.284, -0.29, -0.2938, -0.298, -0.2493, -0.3367, -0.4103, -0.431, -0.4309, -0.4599, -0.3445, -0.2816, -0.2305, -0.1604, -0.3164, -0.3513, -0.2482, -0.2584, -0.1765, -0.3043, -0.4005, -0.4455, -0.4501, -0.4971, -0.4362, -0.4893, -0.2955, -0.3248, -0.2371, -0.1839, -0.2674, -0.1163, 0.1728, -0.0765, 0.0815, -0.0289, 0.2345, 0.4567, 0.7291, 0.551, 0.5322, 0.5491, 0.6444, 0.5082, 0.0896, -0.0338, 0.0738, -0.2929, -0.2914, -0.2937, -0.258, -0.3459, -0.1493, -0.2912, -0.4227, -0.4378, -0.379, -0.3573, -0.3267, -0.2749, -0.4695, -0.4297, -0.389, -0.2773, -0.283, -0.2526, -0.3849, -0.2955, -0.2442, -0.0981, 0.1369, 0.2017, 0.0703, 0.4773, 0.3006, -0.0039, 0.1641, 0.1499, -0.1243, -0.007, 0.1286, 0.1527, 0.1428, 0.0148, -0.0469, 0.3196, 0.3601, 0.1897, 0.395, 0.1566, 0.4022, 0.6214, 1.2753, 1.3626, 1.355, 1.3874, 1.1366, 1.4299, 1.6035, 1.7098, 1.2658, 1.1383, 1.3995, 1.4538, 1.6212, 1.3111, 1.1285, 0.9118, 1.0165, 0.9994, 1.2506, 1.4041, 1.3187, 1.2191, 0.9762, 0.7298, 0.2909, 0.4608, 0.2754, 0.8037, 0.7338, 0.7529, 0.9801, 0.7881, 0.8366, 0.7613, 0.634, 0.7302, 0.588, 0.4676, 0.5569, 0.2764, 0.1964, 0.391, 0.5018, 0.5556, 0.4178, 0.3077, 0.4055, 0.4096, 0.4345, 0.5697, 0.6064, 0.8855, 1.0163, 1.0168, 0.7852, 1.0931, 1.3618, 1.5039, 1.1286, 1.0812, 0.9295, 0.7861, 0.7877, 0.5383, 0.6705, 0.505, 0.36, 0.3677, 0.5228, 0.2702, 0.1321, 0.1868, -0.0502, 0.0292], "actual": [1.6833, 1.7491, 1.6872, 1.6294, 1.5919, 1.5666, 1.6344, 1.9143, 2.1153, 2.3331, 2.337, 2.3162, 2.3784, 2.3152, 2.1783, 1.973, 1.9516, 1.8726, 1.8864, 1.7781, 1.744, 1.7505, 1.7412, 1.8748, 1.811, 1.781, 1.7306, 1.8167, 1.8015, 1.7572, 1.756, 1.6942, 1.7014, 1.7161, 1.6662, 1.6734, 1.6612, 1.6287, 1.5733, 1.5799, 1.5611, 1.5563, 1.5872, 1.8544, 1.6885, 1.8109, 1.8758, 1.7391, 1.7092, 1.8221, 1.8918, 2.0223, 2.0213, 2.0499, 2.0372, 2.0306, 2.0313, 2.1074, 2.0435, 1.9883, 1.9754, 2.0138, 2.0017, 2.1319, 2.2156, 2.2903, 2.3725, 2.23, 2.2026, 2.3249, 2.3426, 2.4263, 2.3334, 2.263, 2.236, 2.239, 2.2025, 2.2674, 2.2396, 2.451, 2.4442, 2.5601, 2.6562, 2.6623, 2.8782, 3.208, 2.9936, 3.1788, 3.1026, 3.394, 3.6467, 3.9729, 3.8589, 3.8506, 3.9048, 4.0428, 3.9796, 3.5589, 3.4508, 3.5951, 3.2098, 3.239, 3.2403, 3.2462, 3.1811, 3.3967, 3.2591, 3.127, 3.0993, 3.1684, 3.1984, 3.2437, 3.3082, 3.1307, 3.1471, 3.168, 3.2769, 3.2616, 3.308, 3.1624, 3.2449, 3.3238, 3.4811, 3.737, 3.8558, 3.7549, 4.1353, 4.0039, 3.7177, 3.8633, 3.8748, 3.6519, 3.7385, 3.8967, 3.9453, 3.9407, 3.8322, 3.7649, 4.1385, 4.1644, 4.0041, 4.224, 4.0307, 4.2695, 4.4987, 5.1987, 5.427, 5.4263, 5.476, 5.2033, 5.4713, 5.6407, 5.7718, 5.3317, 5.1967, 5.4759, 5.5302, 5.6973, 5.4036, 5.2322, 5.0022, 5.1216, 5.1433, 5.4394, 5.643, 5.6199, 5.5805, 5.3574, 5.1394, 4.7378, 4.9191, 4.7289, 5.238, 5.1884, 5.179, 5.4066, 5.257, 5.2941, 5.2177, 5.0993, 5.2078, 5.0804, 5.0007, 5.0959, 4.8192, 4.7415, 4.9219, 5.0076, 5.0575, 4.9355, 4.8413, 4.9535, 4.9833, 4.9962, 5.1718, 5.2416, 5.5589, 5.6621, 5.6562, 5.4481, 5.7779, 6.0535, 6.1923, 5.8301, 5.8488, 5.7422, 5.6608, 5.7087, 5.4571, 5.6021, 5.4264, 5.3186, 5.3338, 5.5024, 5.2301, 5.1495, 5.2194, 4.9886, 5.0569]}, "posteriors": {"alpha": {"counts": [2, 0, 3, 3, 10, 12, 16, 36, 59, 54, 98, 150, 219, 265, 320, 383, 421, 521, 539, 599, 604, 573, 593, 494, 450, 375, 274, 258, 197, 156, 104, 68, 55, 40, 26, 9, 7, 3, 1, 3], "edges": [-0.9135, -0.8582, -0.8029, -0.7476, -0.6923, -0.637, -0.5817, -0.5264, -0.4711, -0.4158, -0.3605, -0.3052, -0.2499, -0.1947, -0.1394, -0.0841, -0.0288, 0.0265, 0.0818, 0.1371, 0.1924, 0.2477, 0.303, 0.3583, 0.4136, 0.4688, 0.5241, 0.5794, 0.6347, 0.69, 0.7453, 0.8006, 0.8559, 0.9112, 0.9665, 1.0218, 1.0771, 1.1324, 1.1876, 1.2429, 1.2982], "mean": 0.2192}, "beta_delta_carry": {"counts": [1, 2, 1, 4, 8, 12, 35, 34, 57, 113, 126, 203, 241, 318, 415, 471, 529, 607, 611, 618, 596, 533, 540, 461, 376, 307, 214, 179, 129, 90, 69, 43, 25, 11, 11, 6, 1, 2, 0, 1], "edges": [-1.0218, -0.9624, -0.9029, -0.8435, -0.784, -0.7246, -0.6652, -0.6057, -0.5463, -0.4868, -0.4274, -0.3679, -0.3085, -0.249, -0.1896, -0.1302, -0.0707, -0.0113, 0.0482, 0.1076, 0.1671, 0.2265, 0.2859, 0.3454, 0.4048, 0.4643, 0.5237, 0.5832, 0.6426, 0.7021, 0.7615, 0.8209, 0.8804, 0.9398, 0.9993, 1.0587, 1.1182, 1.1776, 1.237, 1.2965, 1.3559], "mean": 0.1311}, "beta_delta_tot": {"counts": [1, 1, 0, 4, 4, 7, 29, 41, 85, 141, 192, 281, 355, 448, 566, 654, 686, 743, 771, 686, 616, 487, 390, 278, 219, 130, 79, 48, 27, 12, 4, 4, 2, 3, 3, 1, 1, 0, 0, 1], "edges": [-1.5145, -1.4437, -1.373, -1.3022, -1.2314, -1.1607, -1.0899, -1.0192, -0.9484, -0.8776, -0.8069, -0.7361, -0.6654, -0.5946, -0.5239, -0.4531, -0.3823, -0.3116, -0.2408, -0.1701, -0.0993, -0.0285, 0.0422, 0.113, 0.1837, 0.2545, 0.3252, 0.396, 0.4668, 0.5375, 0.6083, 0.679, 0.7498, 0.8206, 0.8913, 0.9621, 1.0328, 1.1036, 1.1743, 1.2451, 1.3159], "mean": -0.2677}, "beta_delta_breakeven": {"counts": [5, 4, 7, 16, 11, 29, 40, 60, 99, 140, 164, 229, 315, 355, 447, 482, 557, 579, 604, 570, 550, 545, 507, 386, 324, 289, 228, 143, 106, 81, 49, 23, 20, 16, 12, 3, 2, 2, 0, 1], "edges": [-1.5488, -1.4869, -1.4249, -1.363, -1.301, -1.2391, -1.1772, -1.1152, -1.0533, -0.9913, -0.9294, -0.8674, -0.8055, -0.7435, -0.6816, -0.6196, -0.5577, -0.4957, -0.4338, -0.3719, -0.3099, -0.248, -0.186, -0.1241, -0.0621, -0.0002, 0.0618, 0.1237, 0.1857, 0.2476, 0.3095, 0.3715, 0.4334, 0.4954, 0.5573, 0.6193, 0.6812, 0.7432, 0.8051, 0.8671, 0.929], "mean": -0.3868}, "beta_delta_fiscal": {"counts": [1, 0, 1, 1, 7, 10, 22, 34, 40, 68, 106, 147, 213, 274, 338, 440, 494, 543, 558, 656, 619, 566, 565, 486, 445, 346, 286, 212, 169, 127, 87, 56, 37, 21, 11, 5, 5, 2, 0, 2], "edges": [-0.8062, -0.7403, -0.6744, -0.6085, -0.5425, -0.4766, -0.4107, -0.3448, -0.2788, -0.2129, -0.147, -0.0811, -0.0152, 0.0508, 0.1167, 0.1826, 0.2485, 0.3144, 0.3804, 0.4463, 0.5122, 0.5781, 0.644, 0.71, 0.7759, 0.8418, 0.9077, 0.9736, 1.0396, 1.1055, 1.1714, 1.2373, 1.3032, 1.3692, 1.4351, 1.501, 1.5669, 1.6329, 1.6988, 1.7647, 1.8306], "mean": 0.5205}, "sigma": {"counts": [3, 2, 7, 10, 23, 39, 57, 95, 112, 180, 237, 320, 414, 485, 519, 580, 596, 563, 532, 525, 501, 472, 404, 297, 270, 194, 151, 133, 89, 58, 44, 32, 20, 10, 9, 7, 5, 2, 1, 2], "edges": [3.7341, 3.7745, 3.815, 3.8554, 3.8958, 3.9362, 3.9767, 4.0171, 4.0575, 4.0979, 4.1384, 4.1788, 4.2192, 4.2596, 4.3001, 4.3405, 4.3809, 4.4213, 4.4618, 4.5022, 4.5426, 4.583, 4.6235, 4.6639, 4.7043, 4.7447, 4.7852, 4.8256, 4.866, 4.9064, 4.9469, 4.9873, 5.0277, 5.0681, 5.1086, 5.149, 5.1894, 5.2298, 5.2703, 5.3107, 5.3511], "mean": 4.4543}}, "specs": {"primary_breakeven": [{"param": "alpha", "mean": 0.219, "sd": 0.298, "hdi_3%": -0.32, "hdi_97%": 0.792, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 11146.0, "ess_tail": 6625.0, "r_hat": 1.0}, {"param": "beta_delta_carry", "mean": 0.131, "sd": 0.305, "hdi_3%": -0.434, "hdi_97%": 0.719, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 11402.0, "ess_tail": 5742.0, "r_hat": 1.0}, {"param": "beta_delta_tot", "mean": -0.268, "sd": 0.303, "hdi_3%": -0.852, "hdi_97%": 0.276, "mcse_mean": 0.003, "mcse_sd": 0.004, "ess_bulk": 11738.0, "ess_tail": 5935.0, "r_hat": 1.0}, {"param": "beta_delta_breakeven", "mean": -0.387, "sd": 0.33, "hdi_3%": -1.017, "hdi_97%": 0.207, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 9381.0, "ess_tail": 6157.0, "r_hat": 1.0}, {"param": "beta_delta_fiscal", "mean": 0.52, "sd": 0.338, "hdi_3%": -0.115, "hdi_97%": 1.151, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 9616.0, "ess_tail": 6269.0, "r_hat": 1.0}], "primary_gap": [{"param": "alpha", "mean": 0.221, "sd": 0.299, "hdi_3%": -0.327, "hdi_97%": 0.796, "mcse_mean": 0.003, "mcse_sd": 0.004, "ess_bulk": 10961.0, "ess_tail": 6157.0, "r_hat": 1.0}, {"param": "beta_delta_carry", "mean": 0.134, "sd": 0.304, "hdi_3%": -0.41, "hdi_97%": 0.726, "mcse_mean": 0.003, "mcse_sd": 0.004, "ess_bulk": 10474.0, "ess_tail": 6003.0, "r_hat": 1.0}, {"param": "beta_delta_tot", "mean": -0.267, "sd": 0.299, "hdi_3%": -0.823, "hdi_97%": 0.305, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 10919.0, "ess_tail": 5811.0, "r_hat": 1.0}, {"param": "beta_delta_breakeven_gap", "mean": -0.362, "sd": 0.33, "hdi_3%": -1.001, "hdi_97%": 0.252, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 9580.0, "ess_tail": 6819.0, "r_hat": 1.0}, {"param": "beta_delta_fiscal", "mean": 0.511, "sd": 0.343, "hdi_3%": -0.148, "hdi_97%": 1.138, "mcse_mean": 0.004, "mcse_sd": 0.004, "ess_bulk": 8807.0, "ess_tail": 6201.0, "r_hat": 1.0}], "primary_studentt": [{"param": "alpha", "mean": 0.138, "sd": 0.296, "hdi_3%": -0.426, "hdi_97%": 0.683, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 10871.0, "ess_tail": 6184.0, "r_hat": 1.0}, {"param": "beta_delta_carry", "mean": 0.128, "sd": 0.308, "hdi_3%": -0.466, "hdi_97%": 0.684, "mcse_mean": 0.003, "mcse_sd": 0.004, "ess_bulk": 10100.0, "ess_tail": 5767.0, "r_hat": 1.0}, {"param": "beta_delta_tot", "mean": -0.252, "sd": 0.293, "hdi_3%": -0.79, "hdi_97%": 0.306, "mcse_mean": 0.003, "mcse_sd": 0.004, "ess_bulk": 11005.0, "ess_tail": 5766.0, "r_hat": 1.0}, {"param": "beta_delta_breakeven", "mean": -0.264, "sd": 0.325, "hdi_3%": -0.843, "hdi_97%": 0.381, "mcse_mean": 0.004, "mcse_sd": 0.004, "ess_bulk": 8577.0, "ess_tail": 6480.0, "r_hat": 1.0}, {"param": "beta_delta_fiscal", "mean": 0.429, "sd": 0.347, "hdi_3%": -0.218, "hdi_97%": 1.078, "mcse_mean": 0.004, "mcse_sd": 0.004, "ess_bulk": 8193.0, "ess_tail": 6604.0, "r_hat": 1.0}, {"param": "nu", "mean": 16.912, "sd": 10.67, "hdi_3%": 3.59, "hdi_97%": 36.669, "mcse_mean": 0.12, "mcse_sd": 0.176, "ess_bulk": 7726.0, "ess_tail": 6547.0, "r_hat": 1.0}], "robustness": [{"param": "alpha", "mean": 0.059, "sd": 0.264, "hdi_3%": -0.434, "hdi_97%": 0.547, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 8985.0, "ess_tail": 6637.0, "r_hat": 1.0}, {"param": "beta_delta_carry", "mean": -0.156, "sd": 0.258, "hdi_3%": -0.659, "hdi_97%": 0.307, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 8859.0, "ess_tail": 6202.0, "r_hat": 1.0}, {"param": "beta_delta_tot", "mean": -0.248, "sd": 0.263, "hdi_3%": -0.724, "hdi_97%": 0.263, "mcse_mean": 0.003, "mcse_sd": 0.003, "ess_bulk": 9219.0, "ess_tail": 6518.0, "r_hat": 1.0}]}, "spec_meta": {"primary_breakeven": {"n": 219, "sample_range": ["2008-02", "2026-05"]}, "primary_gap": {"n": 219, "sample_range": ["2008-02", "2026-05"]}, "primary_studentt": {"n": 219, "sample_range": ["2008-02", "2026-05"]}, "robustness": {"n": 324, "sample_range": ["1999-05", "2026-05"]}}, "model_comparison": [{"model": "student_t", "rank": 0, "elpd_loo": -639.4686, "p_loo": 6.75, "elpd_diff": 0.0, "weight": 1.0, "se": 12.2929, "dse": 0.0, "warning": false, "scale": "log"}, {"model": "normal", "rank": 1, "elpd_loo": -640.9555, "p_loo": 6.4958, "elpd_diff": 1.4868, "weight": 0.0, "se": 12.493, "dse": 1.481, "warning": false, "scale": "log"}], "forest": {"delta_carry": [{"spec": "primary_breakeven", "mean": 0.131, "lo": -0.434, "hi": 0.719}, {"spec": "robustness", "mean": -0.156, "lo": -0.659, "hi": 0.307}], "delta_tot": [{"spec": "primary_breakeven", "mean": -0.268, "lo": -0.852, "hi": 0.276}, {"spec": "robustness", "mean": -0.248, "lo": -0.724, "hi": 0.263}], "delta_breakeven": [{"spec": "primary_breakeven", "mean": -0.387, "lo": -1.017, "hi": 0.207}, {"spec": "primary_gap", "mean": -0.362, "lo": -1.001, "hi": 0.252}], "delta_fiscal": [{"spec": "primary_breakeven", "mean": 0.52, "lo": -0.115, "hi": 1.151}, {"spec": "primary_gap", "mean": 0.511, "lo": -0.148, "hi": 1.138}]}};
+
+(function () {
+  "use strict";
+  Chart.register(ChartDataLabels);
+
+  const D = PPP_DATA; // { months, ptax, br_index, us_index, default_base_month }
+  const N = D.months.length;
+
+  function fmtRate(v) {
+    return 'R$ ' + (Math.floor(v * 100) / 100).toFixed(2).replace('.', ',');
+  }
+  function fmtPct(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 10) / 10).toFixed(1).replace('.', ',') + '%';
+  }
+  function fmtPP(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 10) / 10).toFixed(1).replace('.', ',') + ' pp';
+  }
+  function fmtIndex(v) {
+    return (Math.floor(v * 10) / 10).toFixed(1).replace('.', ',');
+  }
+  function fmtBps(v) {
+    return Math.floor(v) + ' bps';
+  }
+  function monthLabel(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+
+  function computeSeries(baseIdx) {
+    const ptaxBase = D.ptax[baseIdx];
+    const brBase = D.br_index[baseIdx];
+    const usBase = D.us_index[baseIdx];
+    const eq = new Array(N), dev = new Array(N);
+    for (let t = 0; t < N; t++) {
+      const brRel = D.br_index[t] / brBase;
+      const usRel = D.us_index[t] / usBase;
+      eq[t] = ptaxBase * (brRel / usRel);
+      dev[t] = 100 * Math.log(D.ptax[t] / eq[t]);
+    }
+    return { eq, dev, ptaxBase };
+  }
+
+  // ---- controls setup ----
+  const selEl = document.getElementById('baseMonth');
+  D.months.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = monthLabel(m);
+    selEl.appendChild(opt);
+  });
+  const defaultIdx = D.months.indexOf(D.default_base_month);
+  selEl.value = String(defaultIdx >= 0 ? defaultIdx : 0);
+
+  document.getElementById('rangeBadge').textContent = 'MODEL: RELATIVE PPP';
+  document.getElementById('genDate').textContent = monthLabel(D.months[0]) + ' → ' + monthLabel(D.months[N - 1]);
+  document.getElementById('ftrRange').textContent = monthLabel(D.months[0]) + ' – ' + monthLabel(D.months[N - 1]) + ' (' + N + ' months)';
+
+  // ---- stats ----
+  function buildStats(dev, baseIdx) {
+    let minI = 0, maxI = 0;
+    for (let i = 1; i < N; i++) {
+      if (dev[i] < dev[minI]) minI = i;
+      if (dev[i] > dev[maxI]) maxI = i;
+    }
+    const last = N - 1;
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Latest deviation</div>
+        <div class="stat-val">${fmtPct(dev[last])}</div>
+        <div class="stat-sub">${monthLabel(D.months[last])} · base ${monthLabel(D.months[baseIdx])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Max deviation</div>
+        <div class="stat-val up">${fmtPct(dev[maxI])}</div>
+        <div class="stat-sub">${monthLabel(D.months[maxI])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Min deviation</div>
+        <div class="stat-val dn">${fmtPct(dev[minI])}</div>
+        <div class="stat-sub">${monthLabel(D.months[minI])}</div>
+      </div>`;
+  }
+
+  // ---- charts ----
+  const step = N > 60 ? 5 : N > 30 ? 3 : 1;
+  const labels = D.months.map(monthLabel);
+
+  // null-aware: values may start with a run of nulls (a series that begins
+  // later than the shared 1994-07 axis) — those points aren't drawn, and the
+  // first real point after a gap is colored neutrally rather than compared
+  // against null (which JS would silently coerce to 0).
+  function pointColors(values) {
+    let prev = null;
+    return values.map((v) => {
+      if (v === null) return 'rgba(0,0,0,0)';
+      const color = prev === null ? 'rgba(31,40,83,0.6)'
+        : v >= prev ? 'rgba(65,135,145,0.7)' : 'rgba(234,82,58,0.7)';
+      prev = v;
+      return color;
+    });
+  }
+
+  function firstIdx(values) { return values.findIndex(v => v !== null); }
+  function lastIdx(values) { for (let i = values.length - 1; i >= 0; i--) if (values[i] !== null) return i; return -1; }
+
+  function renderSeriesChart(canvasId, dlToggleId, subtitleId, opts) {
+    const { values, color, fill, fmt, label, unitLabel } = opts;
+    const i0 = firstIdx(values), i1 = lastIdx(values);
+    if (i0 === -1) {
+      document.getElementById(subtitleId).textContent = 'no data';
+      return null;
+    }
+    document.getElementById(subtitleId).textContent =
+      unitLabel + ' · ' + monthLabel(D.months[i0]) + ' → ' + monthLabel(D.months[i1]) +
+      ' · latest ' + fmt(values[i1]);
+
+    let showLabels = false;
+    const chart = new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label,
+          data: values,
+          borderColor: color,
+          backgroundColor: fill,
+          fill: true,
+          spanGaps: false,
+          pointBackgroundColor: pointColors(values),
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          borderWidth: 2,
+          tension: 0.15,
+          datalabels: {
+            display: () => showLabels,
+            align: 'top', anchor: 'end', offset: 4,
+            color: color, font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+            formatter: (v, ctx) => (v !== null && ctx.dataIndex % step === 0) ? fmt(v) : '',
+            backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+            padding: { top: 2, bottom: 2, left: 4, right: 4 },
+          },
+        }],
+      },
+      options: {
+        ...baseChartOptions(v => fmt(v)),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: { label: (ctx) => ctx.parsed.y === null ? null : label + ': ' + fmt(ctx.parsed.y) },
+          },
+        },
+      },
+    });
+
+    document.getElementById(dlToggleId).addEventListener('click', function () {
+      showLabels = !showLabels;
+      this.classList.toggle('on', showLabels);
+      chart.update();
+    });
+    return chart;
+  }
+
+  let mainChart, devChart;
+  let showLabels1 = false, showLabels2 = false;
+
+  function baseChartOptions(yCallback) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1F2853',
+          titleFont: { family: 'JetBrains Mono', size: 11 },
+          bodyFont: { family: 'Barlow', size: 12 },
+          padding: 12,
+          cornerRadius: 8,
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(31,40,83,0.04)' },
+          ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 },
+        },
+        y: {
+          grid: { color: 'rgba(31,40,83,0.06)' },
+          ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: yCallback },
+        },
+      },
+      interaction: { mode: 'index', intersect: false },
+    };
+  }
+
+  function renderMain(baseIdx) {
+    const { eq } = computeSeries(baseIdx);
+    document.getElementById('mainSubtitle').textContent =
+      'BRL per USD · monthly (month-end PTAX) · base month ' + monthLabel(D.months[baseIdx]);
+
+    const datasets = [
+      {
+        label: 'Actual (PTAX)',
+        data: D.ptax,
+        borderColor: '#1F2853',
+        backgroundColor: 'rgba(31,40,83,0.06)',
+        fill: true,
+        pointBackgroundColor: pointColors(D.ptax),
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels1,
+          align: 'top', anchor: 'end', offset: 4,
+          color: '#1F2853', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtRate(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+      {
+        label: 'PPP equilibrium',
+        data: eq,
+        borderColor: '#02739B',
+        backgroundColor: 'rgba(2,115,155,0.06)',
+        borderDash: [6, 3],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#02739B',
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels1,
+          align: 'bottom', anchor: 'end', offset: 4,
+          color: '#02739B', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtRate(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+    ];
+
+    if (mainChart) mainChart.destroy();
+    mainChart = new Chart(document.getElementById('mainChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        ...baseChartOptions(v => fmtRate(v)),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: {
+              label: (ctx) => ctx.dataset.label + ': ' + fmtRate(ctx.parsed.y),
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function renderDev(baseIdx) {
+    const { dev } = computeSeries(baseIdx);
+    buildStats(dev, baseIdx);
+
+    const zeroLine = new Array(N).fill(0);
+
+    const datasets = [
+      {
+        label: 'Deviation',
+        data: dev,
+        borderColor: '#1F2853',
+        backgroundColor: 'rgba(31,40,83,0.06)',
+        fill: true,
+        pointBackgroundColor: pointColors(dev),
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels2,
+          align: 'top', anchor: 'end', offset: 4,
+          color: '#1F2853', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtPct(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+      {
+        label: 'Zero',
+        data: zeroLine,
+        borderColor: 'rgba(122,136,168,0.5)',
+        borderWidth: 1,
+        borderDash: [3, 3],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        datalabels: { display: false },
+      },
+    ];
+
+    if (devChart) devChart.destroy();
+    devChart = new Chart(document.getElementById('devChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        ...baseChartOptions(v => v.toFixed(0) + '%'),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: {
+              label: (ctx) => ctx.dataset.label === 'Zero' ? null : 'Deviation: ' + fmtPct(ctx.parsed.y),
+              afterBody: (items) => {
+                const i = items[0].dataIndex;
+                return ['Actual: ' + fmtRate(D.ptax[i])];
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function renderAll() {
+    const baseIdx = parseInt(selEl.value, 10);
+    renderMain(baseIdx);
+    renderDev(baseIdx);
+  }
+
+  document.getElementById('dlToggle1').addEventListener('click', function () {
+    showLabels1 = !showLabels1;
+    this.classList.toggle('on', showLabels1);
+    mainChart.update();
+  });
+  document.getElementById('dlToggle2').addEventListener('click', function () {
+    showLabels2 = !showLabels2;
+    this.classList.toggle('on', showLabels2);
+    devChart.update();
+  });
+
+  selEl.addEventListener('change', renderAll);
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    selEl.value = String(defaultIdx >= 0 ? defaultIdx : 0);
+    renderAll();
+  });
+
+  renderAll();
+
+  // Raw candidate-channel panels — static, independent of the base-month
+  // selector (they don't feed the equilibrium/deviation calc, just sit
+  // alongside it for visual inspection ahead of any future regression).
+  renderSeriesChart('carryChart', 'dlToggle3', 'carrySubtitle', {
+    values: D.carry, color: '#BB9B1D', fill: 'rgba(187,155,29,0.08)',
+    fmt: fmtPP, label: 'Carry (Selic − Fed Funds)', unitLabel: '% p.a.',
+  });
+  renderSeriesChart('totChart', 'dlToggle4', 'totSubtitle', {
+    values: D.tot, color: '#418791', fill: 'rgba(65,135,145,0.08)',
+    fmt: fmtIndex, label: 'Terms of trade (Funcex, 2018=100)', unitLabel: 'index',
+  });
+  renderSeriesChart('breakevenChart', 'dlToggle6', 'breakevenSubtitle', {
+    values: D.breakeven, color: '#02739B', fill: 'rgba(2,115,155,0.08)',
+    fmt: fmtPP, label: 'Breakeven inflation, 10y', unitLabel: '% p.a.',
+  });
+  renderSeriesChart('fiscalChart', 'dlToggle5', 'fiscalSubtitle', {
+    values: D.fiscal, color: '#EA523A', fill: 'rgba(234,82,58,0.08)',
+    fmt: fmtBps, label: 'Brazil 5Y CDS (USD)', unitLabel: 'bps',
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Bayesian Model tab — separate IIFE (own scope, own small formatter helpers)
+// ---------------------------------------------------------------------------
+(function () {
+  "use strict";
+
+  function fmtNum(v, decimals) {
+    decimals = decimals === undefined ? 2 : decimals;
+    const sign = v >= 0 ? '' : '-';
+    const scaled = Math.floor(Math.abs(v) * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return sign + scaled.toFixed(decimals).replace('.', ',');
+  }
+  function fmtSigned(v, decimals) {
+    return (v >= 0 ? '+' : '') + fmtNum(v, decimals);
+  }
+  function monthLabelB(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+  const SPEC_TITLES = {
+    primary_breakeven: 'Primary (breakeven)',
+    primary_gap: 'Primary (de-anchoring gap)',
+    primary_studentt: 'Primary (breakeven, Student-t errors)',
+    robustness: 'Robustness (carry + tot only)',
+  };
+  const PARAM_LABELS = {
+    alpha: 'α (intercept)',
+    beta_delta_carry: 'β carry',
+    beta_delta_tot: 'β terms of trade',
+    beta_delta_breakeven: 'β breakeven',
+    beta_delta_breakeven_gap: 'β breakeven (gap)',
+    beta_delta_fiscal: 'β fiscal',
+    sigma: 'σ (residual sd)',
+    nu: 'ν (Student-t d.f.)',
+  };
+  const GROUP_COLOR = { delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A' };
+  const GROUP_LABEL = { delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven / de-anchoring gap', delta_fiscal: 'Fiscal' };
+
+  const noDataEl = document.getElementById('bayesNoData');
+  const contentEl = document.getElementById('bayesContent');
+
+  if (!BAYES_DATA) {
+    noDataEl.style.display = 'block';
+    return;
+  }
+  contentEl.style.display = 'block';
+
+  let rendered = false;
+
+  function renderBayesTab() {
+    if (rendered) return;
+    rendered = true;
+    const B = BAYES_DATA;
+    const months = B.months.map(monthLabelB);
+
+    // ---- descriptive stats row ----
+    const maxRhat = Math.max(...B.specs.primary_breakeven.map(r => r.r_hat));
+    const preferred = B.model_comparison[0].model === 'student_t' ? 'Student-t' : 'Normal';
+    document.getElementById('bayesStatsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Primary spec sample</div>
+        <div class="stat-val">${B.n}</div>
+        <div class="stat-sub">months · ${monthLabelB(B.sample_range[0])} → ${monthLabelB(B.sample_range[1])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Convergence (max r&#770;)</div>
+        <div class="stat-val ${maxRhat <= 1.01 ? 'up' : 'dn'}">${maxRhat.toFixed(3)}</div>
+        <div class="stat-sub">4 chains, target &le; 1.01</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Preferred error model</div>
+        <div class="stat-val">${preferred}</div>
+        <div class="stat-sub">by LOO — see callout below</div>
+      </div>`;
+
+    const cmp = B.model_comparison;
+    const normalRow = cmp.find(r => r.model === 'normal');
+    const studentRow = cmp.find(r => r.model === 'student_t');
+    const diff = Math.abs(normalRow.elpd_loo - studentRow.elpd_loo);
+    document.getElementById('modelComparisonCallout').innerHTML =
+      `<b>Normal vs. Student-t errors (LOO):</b> elpd difference = ${fmtNum(diff, 2)}, standard error of that difference &asymp; ${fmtNum(studentRow.dse || normalRow.dse, 2)} — ` +
+      (diff < (studentRow.dse || normalRow.dse || 1)
+        ? 'the difference is within its own uncertainty, i.e. <b>no real evidence favoring one over the other</b>. Plain Normal errors are an adequate, simpler choice here.'
+        : `<b>${preferred}</b> is preferred beyond its own uncertainty.`);
+
+    // ---- spec / diagnostics table ----
+    let tableHtml = '<thead><tr><th style="text-align:left">Spec</th><th style="text-align:left">Parameter</th><th>Mean</th><th>SD</th><th>HDI 3%</th><th>HDI 97%</th><th>ESS bulk</th><th>r&#770;</th></tr></thead><tbody>';
+    Object.keys(B.specs).forEach(specKey => {
+      const meta = B.spec_meta[specKey];
+      B.specs[specKey].forEach((row, i) => {
+        tableHtml += '<tr>' +
+          (i === 0 ? `<td class="spec-label" rowspan="${B.specs[specKey].length}">${SPEC_TITLES[specKey]}<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">n=${meta.n}, ${monthLabelB(meta.sample_range[0])}→${monthLabelB(meta.sample_range[1])}</span></td>` : '') +
+          `<td style="text-align:left">${PARAM_LABELS[row.param] || row.param}</td>` +
+          `<td>${fmtSigned(row.mean, 3)}</td><td>${fmtNum(row.sd, 3)}</td>` +
+          `<td>${fmtSigned(row['hdi_3%'], 3)}</td><td>${fmtSigned(row['hdi_97%'], 3)}</td>` +
+          `<td>${Math.round(row.ess_bulk)}</td><td>${row.r_hat.toFixed(2)}</td>` +
+          '</tr>';
+      });
+    });
+    tableHtml += '</tbody>';
+    document.getElementById('specTable').innerHTML = tableHtml;
+
+    // ---- historical fit (level) ----
+    new Chart(document.getElementById('fitLevelChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          { label: 'lo', data: B.fitted_level_lo, borderWidth: 0, pointRadius: 0, fill: false },
+          { label: 'hi', data: B.fitted_level_hi, borderWidth: 0, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(2,115,155,0.12)' },
+          { label: 'Fitted (posterior mean)', data: B.fitted_level_mean, borderColor: '#02739B', borderDash: [6, 3], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.15 },
+          { label: 'Actual', data: B.actual_level, borderColor: '#1F2853', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.15 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            filter: (item) => item.dataset.label !== 'lo' && item.dataset.label !== 'hi',
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmtSigned(ctx.parsed.y, 1) + '%' },
+          },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(31,40,83,0.04)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v.toFixed(0) + '%' } },
+        },
+      },
+    });
+
+    // ---- decomposition (stacked cumulative contributions) ----
+    // Real stacked bars, not stacked line-fills — Chart.js line charts don't
+    // actually stack their fills (each area independently fills to zero and
+    // overlapping translucent layers just muddy together); bar datasets with
+    // stacked scales are the correct primitive for "these pieces sum to the
+    // total," including cleanly splitting positive/negative segments above
+    // and below zero.
+    const decompColors = { alpha: '#7A88A8', delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A', residual: '#C9CEDB' };
+    const decompLabels = { alpha: 'Baseline drift (α)', delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven', delta_fiscal: 'Fiscal', residual: 'Residual (unexplained)' };
+    const decompOrder = ['delta_carry', 'delta_tot', 'delta_breakeven', 'delta_fiscal', 'alpha', 'residual'];
+    new Chart(document.getElementById('decompChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: decompOrder.map(key => ({
+          label: decompLabels[key],
+          data: B.decomposition[key],
+          backgroundColor: decompColors[key],
+          stack: 'components',
+          barPercentage: 0.85,
+          categoryPercentage: 0.9,
+        })),
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { font: { family: 'JetBrains Mono', size: 10 }, color: '#3A4F72', boxWidth: 12 } },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmtSigned(ctx.parsed.y, 1) + '%' },
+          },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { stacked: true, grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v.toFixed(0) + '%' } },
+        },
+      },
+    });
+
+    // ---- nominal exchange rate decomposition (level, BRL/USD) ----
+    // Equilibrium is the base layer of the stack; each channel's contribution
+    // is stacked on top, in the same order applied when converting the log
+    // decomposition into level terms (see build_dashboard_payload's docstring
+    // for why this is sequential/order-dependent by construction, not an
+    // approximation) — the stack top lands exactly on "Actual" (dashed
+    // overlay, not itself part of the stack).
+    // Same fix as decompChart above: real stacked bars for the components,
+    // with "Actual (PTAX)" as a line overlay (Chart.js mixed chart — a
+    // per-dataset `type: 'line'` opts that one series out of the bar
+    // stack and just draws it on top).
+    function fmtRateB(v) { return 'R$ ' + fmtNum(v, 2); }
+    const levelColors = { equilibrium: '#1F2853', baseline: '#7A88A8', delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A', residual: '#C9CEDB' };
+    const levelLabels = { equilibrium: 'PPP equilibrium', baseline: 'Baseline (α + pre-sample)', delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven', delta_fiscal: 'Fiscal', residual: 'Residual (unexplained)' };
+    const levelOrder = ['equilibrium', 'baseline', 'delta_carry', 'delta_tot', 'delta_breakeven', 'delta_fiscal', 'residual'];
+    const L = B.level_decomposition;
+    new Chart(document.getElementById('levelDecompChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          ...levelOrder.map(key => ({
+            label: levelLabels[key],
+            data: L[key],
+            stack: 'components',
+            backgroundColor: levelColors[key],
+            barPercentage: 0.85,
+            categoryPercentage: 0.9,
+          })),
+          {
+            type: 'line',
+            label: 'Actual (PTAX)',
+            data: L.actual,
+            borderColor: '#1F2853',
+            borderDash: [5, 3],
+            borderWidth: 2,
+            fill: false,
+            pointRadius: 0,
+            tension: 0.15,
+          },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { font: { family: 'JetBrains Mono', size: 10 }, color: '#3A4F72', boxWidth: 12 } },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + (ctx.dataset.label.indexOf('equilibrium') >= 0 || ctx.dataset.label.indexOf('Actual') >= 0 ? fmtRateB(ctx.parsed.y) : fmtSigned(ctx.parsed.y, 3)) },
+          },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { stacked: true, grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => fmtRateB(v) } },
+        },
+      },
+    });
+
+    // ---- forest plot ----
+    const forestLabels = [], forestRanges = [], forestMeans = [], forestColors = [];
+    const specShort = { primary_breakeven: 'primary', primary_gap: 'gap-spec', robustness: 'robustness' };
+    Object.keys(B.forest).forEach(key => {
+      B.forest[key].forEach(row => {
+        forestLabels.push(GROUP_LABEL[key] + ' — ' + (specShort[row.spec] || row.spec));
+        forestRanges.push([row.lo, row.hi]);
+        forestMeans.push(row.mean);
+        forestColors.push(GROUP_COLOR[key]);
+      });
+    });
+    new Chart(document.getElementById('forestChart'), {
+      type: 'bar',
+      data: {
+        labels: forestLabels,
+        datasets: [{
+          data: forestRanges,
+          backgroundColor: forestColors.map(c => c + '40'),
+          borderColor: forestColors,
+          borderWidth: 1.5,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            display: true, anchor: 'center', align: 'center',
+            formatter: (v, ctx) => fmtSigned(forestMeans[ctx.dataIndex], 2),
+            color: '#1F2853', font: { family: 'JetBrains Mono', size: 10, weight: 600 },
+          },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => 'mean ' + fmtSigned(forestMeans[ctx.dataIndex], 3) + ', 94% HDI [' + fmtSigned(ctx.raw[0], 3) + ', ' + fmtSigned(ctx.raw[1], 3) + ']' },
+          },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 } } },
+          y: { grid: { display: false }, ticks: { color: '#1F2853', font: { family: 'Barlow', size: 11.5 } } },
+        },
+      },
+    });
+
+    // ---- posterior distribution histograms ----
+    const grid = document.getElementById('posteriorGrid');
+    Object.keys(B.posteriors).forEach(coef => {
+      const card = document.createElement('div');
+      card.className = 'mini-chart-card';
+      const title = document.createElement('div');
+      title.className = 'mini-title';
+      title.textContent = (PARAM_LABELS[coef] || coef) + '  (mean ' + fmtSigned(B.posteriors[coef].mean, 3) + ')';
+      const wrap = document.createElement('div');
+      wrap.className = 'mini-chart-wrap';
+      const canvas = document.createElement('canvas');
+      wrap.appendChild(canvas);
+      card.appendChild(title);
+      card.appendChild(wrap);
+      grid.appendChild(card);
+
+      const post = B.posteriors[coef];
+      const binLabels = post.edges.slice(0, -1).map((e, i) => fmtNum((e + post.edges[i + 1]) / 2, 2));
+      new Chart(canvas, {
+        type: 'bar',
+        data: { labels: binLabels, datasets: [{ data: post.counts, backgroundColor: 'rgba(2,115,155,0.35)', borderColor: '#02739B', borderWidth: 1, barPercentage: 1, categoryPercentage: 1 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { display: false } },
+            y: { display: false },
+          },
+        },
+      });
+    });
+  }
+
+  // ---- tab switching ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'tab-model') renderBayesTab();
+    });
+  });
+})();
+</script>

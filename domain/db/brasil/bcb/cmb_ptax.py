@@ -5,9 +5,17 @@ Preenche a lacuna de "nenhuma serie de cambio a vista (PTAX) no banco"
 identificada em repository/agent_mapping/recommended_data/exchange_rate_data_inventory.md.
 
 Series SGS:
-  1     ptax_venda          — Taxa de cambio - Livre - Dolar americano (venda) - diario; desde 28/11/1984
+  1     ptax_venda          — Taxa de cambio - Livre - Dolar americano (venda) - diario; desde 01/07/1994
   20359 fx_interbank_vol_t1 — Volume interbancario de cambio - USD - T+1; desde 04/07/1994
   20205 fx_interbank_vol_t2 — Volume interbancario de cambio - USD - T+2; desde 04/07/1994
+
+ptax_venda so e' carregada a partir da implantacao do Plano Real (01/07/1994).
+A serie SGS 1 volta ate 28/11/1984, mas em moedas extintas (Cruzeiro Real e,
+antes dela, Cruzeiro/Cruzado/Cruzado Novo) — confirmado no proprio banco pela
+quebra de 1994-06-30 (2750.00, Cruzeiro Real) -> 1994-07-01 (1.00, Real),
+exatamente a paridade fixa de lancamento (CR$2750 = R$1). Nao comparavel ao
+periodo pos-Real sem fator de conversao, que este projeto nao carrega — por
+isso o corte, nao um limite tecnico da API.
 
 Banco: macro_brasil.cmb_ptax — PRIMARY KEY (date, name)
 
@@ -16,7 +24,7 @@ chunking anual via _fetch_chunked(), mesmo padrao de cmb_reservas_bc.py.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pandas as pd
 
@@ -35,10 +43,15 @@ _SERIES = {
 }
 
 _START_YEAR = {
-    "ptax_venda":          1984,
+    "ptax_venda":          1994,
     "fx_interbank_vol_t1": 1994,
     "fx_interbank_vol_t2": 1994,
 }
+
+# Real Plan cutoff — ptax_venda before this date is denominated in an extinct
+# pre-Real currency (see module docstring). Applies only to the 1994 chunk;
+# later years are unaffected.
+_REAL_PLAN_START = date(1994, 7, 1)
 
 _bcb = BCB()
 
@@ -54,7 +67,7 @@ def _fetch_chunked(start_year: int, end_year: int) -> pd.DataFrame:
         }
         if not series_this_year:
             continue
-        chunk_start = f"01/01/{year}"
+        chunk_start = f"01/01/{year}" if year > _REAL_PLAN_START.year else _REAL_PLAN_START.strftime("%d/%m/%Y")
         chunk_end   = f"31/12/{year}"
         logger.info("cmb_ptax chunk year=%d (%d series)", year, len(series_this_year))
         chunk = _bcb.get_sgs(series_this_year, start=chunk_start, end=chunk_end)

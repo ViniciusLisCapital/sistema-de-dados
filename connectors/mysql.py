@@ -89,13 +89,13 @@ class MySQLDataRequester:
             print("DataFrame vazio ou inválido.")
             return None
         
-        exploration = pd.DataFrame({
-            'name': df['name'].unique(),
-            'data_inicial': df.groupby('name')['date'].min().values,
-            'data_final': df.groupby('name')['date'].max().values,
-            'tipo_dado': df.dtypes['value']
-        })
-        
+        exploration = (
+            df.groupby('name')['date']
+            .agg(data_inicial='min', data_final='max')
+            .reset_index()
+        )
+        exploration['tipo_dado'] = df['value'].dtype
+
         return exploration
     
     @staticmethod

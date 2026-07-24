@@ -1,0 +1,1137 @@
+<title>USD/BRL — Relative PPP Equilibrium — Lis Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --bg: #F4F5F7;
+  --bg2: #FFFFFF;
+  --navy: #1F2853;
+  --ice: #1F2853;
+  --ice2: #3A4F72;
+  --gold: #BB9B1D;
+  --muted: #7A88A8;
+  --green: #418791;
+  --red: #EA523A;
+  --purple: #02739B;
+  --line: rgba(31,40,83,0.1);
+  --sans: 'Barlow', sans-serif;
+  --cond: 'Barlow Condensed', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--navy);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.page { margin: 0 auto; padding: 24px 32px; }
+
+/* Header */
+.hdr {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.hdr-logo { font-family: Georgia, serif; font-size: 22px; letter-spacing: 0.06em; color: var(--navy); }
+.hdr-logo span { color: var(--gold); }
+.hdr-center { font-family: var(--cond); font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ice2); text-align: center; }
+.hdr-right { display: flex; align-items: center; gap: 12px; }
+.hdr-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.hdr-badge { font-family: var(--mono); font-size: 10px; padding: 4px 12px; border-radius: 100px; background: rgba(2,115,155,0.08); border: 1px solid rgba(2,115,155,0.25); color: var(--purple); }
+
+/* Note panel — equation + framing (not part of base skill, extends it for research context) */
+.note-panel {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 24px; margin-bottom: 20px;
+}
+.note-formula { font-family: var(--mono); font-size: 12.5px; color: var(--ice); overflow-x: auto; white-space: nowrap; }
+.note-formula .g-obs { color: var(--gold); font-weight: 700; }
+.note-formula .g-eq { color: var(--navy); font-weight: 700; }
+.note-formula .g-sec { color: var(--purple); font-weight: 600; }
+.note-sub { font-size: 12px; color: var(--muted); margin-top: 6px; max-width: 100ch; }
+
+/* Controls (base-month selector) */
+.controls {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 24px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.ctrl-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.ctrl-group { display: flex; align-items: center; gap: 10px; }
+select#baseMonth {
+  font-family: var(--mono); font-size: 12px; color: var(--ice);
+  background: rgba(31,40,83,0.03); border: 1px solid rgba(31,40,83,0.15);
+  border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  min-width: 140px;
+}
+select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+.month-btn {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+  padding: 7px 14px; border-radius: 6px; cursor: pointer;
+  border: 1px solid rgba(187,155,29,0.5); background: rgba(187,155,29,0.1);
+  color: var(--gold); transition: all 0.15s;
+}
+.month-btn:hover { background: rgba(187,155,29,0.18); }
+.sep { width: 1px; height: 32px; background: var(--line); }
+
+/* Stats Cards */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.stat-val { font-family: var(--cond); font-size: 26px; font-weight: 600; color: var(--ice); line-height: 1; }
+.stat-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.up { color: var(--green) !important; }
+.dn { color: var(--red) !important; }
+
+/* Chart Container */
+.chart-container { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+.chart-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.chart-hdr-left { display: flex; flex-direction: column; gap: 2px; }
+.chart-title { font-family: var(--cond); font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
+.chart-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.chart-hdr-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.chart-wrap { position: relative; height: 480px; }
+
+.legend-row { display: flex; gap: 20px; justify-content: center; margin-top: 10px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.legend-dot { width: 14px; height: 3px; border-radius: 2px; }
+
+/* Botao Dados no Grafico */
+.dl-toggle {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+  padding: 6px 16px; border-radius: 8px; cursor: pointer;
+  border: 2px solid rgba(2,115,155,0.4); background: rgba(2,115,155,0.06);
+  color: var(--purple); transition: all 0.2s; user-select: none;
+  display: flex; align-items: center; gap: 7px;
+}
+.dl-toggle:hover { border-color: rgba(2,115,155,0.7); background: rgba(2,115,155,0.1); }
+.dl-toggle.on { background: rgba(2,115,155,0.18); border-color: rgba(2,115,155,0.7); color: #025E82; font-weight: 600; }
+.dl-toggle .toggle-icon {
+  width: 14px; height: 14px; border-radius: 4px;
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; line-height: 1;
+}
+.dl-toggle.on .toggle-icon { background: var(--purple); color: #fff; }
+
+/* Footer */
+.ftr { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 12px 0 4px; }
+.ftr-note { text-align: center; font-size: 11px; color: var(--muted); padding-bottom: 12px; max-width: 100ch; margin: 0 auto; }
+
+/* Tabs */
+.tab-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn {
+  font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 10px 20px; border-radius: 10px 10px 0 0; cursor: pointer;
+  background: transparent; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+}
+.tab-btn:hover { color: var(--ice); }
+.tab-btn.active { background: var(--bg2); color: var(--navy); border-color: var(--line); box-shadow: 0 -2px 8px rgba(31,40,83,0.04); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Model-explanation cards (Bayesian tab) */
+.model-section { margin-bottom: 20px; }
+.model-section > h2 {
+  font-family: var(--cond); font-size: 16px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ice); margin-bottom: 10px;
+}
+.eq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.eq-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+}
+.eq-card h3 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.eq-card .formula { font-family: var(--mono); font-size: 12.5px; color: var(--ice); overflow-x: auto; white-space: nowrap; margin-bottom: 6px; }
+.eq-card p { font-size: 12px; color: var(--ice2); line-height: 1.5; }
+
+.data-table-wrap { overflow-x: auto; }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+table.data-table th {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  text-align: right; padding: 6px 10px; border-bottom: 2px solid var(--line);
+}
+table.data-table th:first-child, table.data-table td:first-child { text-align: left; }
+table.data-table td { font-family: var(--mono); text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); color: var(--ice); }
+table.data-table tr:last-child td { border-bottom: none; }
+table.data-table .spec-label { font-family: var(--sans); font-weight: 600; }
+table.data-table.text-table th, table.data-table.text-table td { text-align: left; font-family: var(--sans); }
+
+.small-multiples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .small-multiples { grid-template-columns: repeat(2, 1fr); } }
+.mini-chart-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.mini-chart-card .mini-title { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; text-align: center; }
+.mini-chart-wrap { position: relative; height: 130px; }
+
+.callout {
+  background: rgba(2,115,155,0.05); border: 1px solid rgba(2,115,155,0.2); border-radius: 10px;
+  padding: 12px 16px; font-size: 12.5px; color: var(--ice2); margin-bottom: 16px;
+}
+.callout b { color: var(--navy); }
+
+.no-data-msg { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+</style>
+
+<div class="page">
+
+  <div class="hdr">
+    <div class="hdr-logo">LIS <span>CAPITAL</span></div>
+    <div class="hdr-center">USD/BRL — Relative PPP Equilibrium</div>
+    <div class="hdr-right">
+      <div class="hdr-badge" id="rangeBadge">—</div>
+      <div class="hdr-date" id="genDate"></div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-btn active" data-tab="tab-data">Equilibrium &amp; Data</div>
+    <div class="tab-btn" data-tab="tab-model">Bayesian Model</div>
+  </div>
+
+  <div class="tab-panel active" id="tab-data">
+
+  <div class="note-panel">
+    <div class="note-formula">
+      <span class="g-eq">equilibrium(t)</span> = <span class="g-sec">ptax(b)</span> ×
+      [ <span class="g-sec">IPCA_index(t)</span> / <span class="g-sec">IPCA_index(b)</span> ] /
+      [ <span class="g-sec">CPI_index(t)</span> / <span class="g-sec">CPI_index(b)</span> ]
+      &nbsp;&nbsp;·&nbsp;&nbsp; <span class="g-obs">deviation(t)</span> = 100 × ln( actual(t) / equilibrium(t) )
+    </div>
+    <div class="note-sub">Relative PPP anchored at a selectable base month <b>b</b> — the equilibrium line is forced to equal the actual PTAX rate at <b>b</b>, then scaled by cumulative BRL inflation (headline IPCA) over cumulative USD inflation (headline CPI, FRED CPIAUCSL) since then. Companion to <b>referencia/state_space_equilibrium_model.md</b>.</div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Base month</span>
+      <select id="baseMonth"></select>
+    </div>
+    <div class="sep"></div>
+    <div class="month-btn" id="resetBtn">Reset to Jul/1994</div>
+  </div>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Actual PTAX vs. PPP Equilibrium</div>
+        <div class="chart-subtitle" id="mainSubtitle">BRL per USD · monthly</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle1"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    <div class="legend-row">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>Actual (PTAX)</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>PPP equilibrium</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Deviation from PPP Equilibrium</div>
+        <div class="chart-subtitle">100 × ln(actual / equilibrium) — positive = BRL weaker (more depreciated) than PPP implies</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle2"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="devChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Carry</div>
+        <div class="chart-subtitle" id="carrySubtitle">Selic − Fed Funds, % p.a.</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle3"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="carryChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Terms of Trade</div>
+        <div class="chart-subtitle" id="totSubtitle">Funcex PX/PM index, 2018=100</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle4"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="totChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Long-Term Inflation Expectation</div>
+        <div class="chart-subtitle" id="breakevenSubtitle">Bond-implied breakeven, 10y (PREJS − NTNBJS), % p.a.</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle6"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="breakevenChart"></canvas></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-hdr">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Fiscal Risk</div>
+        <div class="chart-subtitle" id="fiscalSubtitle">Brazil 5Y CDS (USD), bps</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="dlToggle5"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="fiscalChart"></canvas></div>
+  </div>
+
+  <div class="ftr">Lis Capital · USD/BRL · Relative PPP (headline IPCA / headline CPI) · <span id="ftrRange">—</span></div>
+  <div class="ftr-note">Sources: BCB SGS 433 (IPCA) and SGS 1 (PTAX venda), macro_brasil; FRED CPIAUCSL (US CPI), fetched live; diferenciais_juros.diferencial_nominal (carry, macro_international); cmb_termos_troca.termos_de_troca_funcex (Funcex/IPEADATA, macro_brasil); base_mercado.interest_rates PREJS−NTNBJS @120M (10y bond-implied breakeven inflation, external fund-ops schema, PREJS@120M data bug masked/interpolated — see ppp_equilibrium.py); cmb_risco_pais.cds_5y_usd (investing.com, macro_brasil). Base-month dependence is real — the "Latest deviation" figures above will move materially with the selector, which is the reason the state-space concept note treats equilibrium as a filtered unobserved state rather than a single fixed anchor. Carry/terms-of-trade/breakeven/fiscal-risk panels are raw series for visual inspection only — see the "Bayesian Model" tab for the fitted regression. Not wired into generate_report.py — reference/research material only. Generated by analytics/exchange_rate/models/ppp_equilibrium.py.</div>
+
+  </div>
+  <!-- /tab-data -->
+
+  <div class="tab-panel" id="tab-model">
+
+  <div id="bayesNoData" style="display:none" class="no-data-msg">
+    No Bayesian model data embedded in this build. Regenerate via
+    <code>uv run python -c "from analytics.exchange_rate.models.bayesian_deviation_model import render_dashboard; render_dashboard()"</code>
+    (requires <code>bayesian_deviation_model.run()</code> to have been run at least once first, to produce the saved posterior traces it reads from).
+  </div>
+
+  <div id="bayesContent" style="display:none">
+
+    <div class="model-section">
+      <h2>What this model is</h2>
+      <div class="callout">
+        A Bayesian linear regression explaining the month-to-month <b>change</b> in the PPP deviation (tab 1) from four candidate channels — carry, terms-of-trade, long-term inflation expectations, and fiscal risk — each lagged one month. Deliberately the simpler "attempt one", ahead of a possible Kalman-filter state-space model ("attempt two") that would let these relationships vary over time instead of holding them fixed. Full design rationale and discussion: <b>models/bayesian_deviation_model.md</b>.
+      </div>
+      <div class="eq-grid">
+        <div class="eq-card">
+          <h3>1 · Dependent variable</h3>
+          <div class="formula">D(t) = 100 · ln( ptax(t) / equilibrium(t) )</div>
+          <p>The PPP deviation from tab 1 (any base month gives identical results here — only the intercept shifts, see the .md's derivation).</p>
+        </div>
+        <div class="eq-card">
+          <h3>2 · Why first differences</h3>
+          <div class="formula">ADF + KPSS on D(t), carry, tot → I(1)<br>breakeven, fiscal → I(0)</div>
+          <p>Regressing an I(1) series on a mix of I(1)/I(0) regressors risks spurious correlation. Pre-registered rule: if any series is I(1), difference everything uniformly.</p>
+        </div>
+        <div class="eq-card">
+          <h3>3 · Regression equation</h3>
+          <div class="formula">Δdev(t) = α + β₁Δcarry(t−1) + β₂Δtot(t−1)<br>+ β₃Δbreakeven(t−1) + β₄Δfiscal(t−1) + ε(t)</div>
+          <p>All four regressors standardized (mean 0, sd 1) before fitting, so β's are comparable in "per 1 SD of the regressor" units.</p>
+        </div>
+        <div class="eq-card">
+          <h3>4 · Priors &amp; likelihood</h3>
+          <div class="formula">α ~ Normal(0,10)&nbsp;&nbsp;β ~ Normal(0,2)<br>σ ~ HalfNormal(5)&nbsp;&nbsp;ε ~ Normal(0,σ) or StudentT(ν,0,σ)</div>
+          <p>Weakly-informative priors on standardized regressors. Normal vs. Student-t errors compared via LOO (see below) — Normal preferred, no evidence of fat tails at this sample size.</p>
+        </div>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table text-table" id="varTable" style="width:100%">
+          <thead><tr><th>Variable</th><th>Source</th><th>Available from</th><th>Expected sign</th></tr></thead>
+          <tbody>
+            <tr><td>carry</td><td>diferenciais_juros.diferencial_nominal (Selic − Fed Funds)</td><td>1999-03</td><td>No strong prior expectation</td></tr>
+            <tr><td>tot</td><td>cmb_termos_troca.termos_de_troca_funcex (Funcex PX/PM)</td><td>1994-07</td><td>Negative</td></tr>
+            <tr><td>breakeven</td><td>base_mercado.interest_rates, PREJS−NTNBJS @120M</td><td>2006-01</td><td>Positive</td></tr>
+            <tr><td>fiscal</td><td>cmb_risco_pais.cds_5y_usd (Brazil 5Y CDS)</td><td>2007-12</td><td>Positive</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:11.5px;color:var(--muted);margin-top:8px">Fit via PyMC/NUTS, 4 chains. Two additional specs cross-check the primary one: a <b>de-anchoring gap</b> variant (breakeven − CMN inflation target, macro_brasil.inflc_meta) in place of raw breakeven, and a <b>robustness</b> spec (carry + tot only, no breakeven/fiscal) over a much longer sample.</p>
+    </div>
+
+    <div class="model-section">
+      <h2>Descriptive stats</h2>
+      <div class="stats-row" id="bayesStatsRow"></div>
+      <div class="callout" id="modelComparisonCallout"></div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="specTable"></table>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Historical Fit</div>
+          <div class="chart-subtitle">Actual vs. fitted PPP deviation (primary spec) — shaded band = 94% credible interval on the fitted mean</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="fitLevelChart"></canvas></div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>Actual</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>Fitted (posterior mean)</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Decomposition of the PPP Deviation</div>
+          <div class="chart-subtitle">Cumulative contribution of each channel to the modeled change in deviation since the sample start — sums exactly to the actual change (residual included)</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="decompChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Nominal Exchange Rate Decomposition</div>
+          <div class="chart-subtitle">Same decomposition, in BRL/USD terms: PPP equilibrium (base layer) + each channel's contribution, stacked, reaches the actual rate exactly (dashed line) — e.g. "equilibrium 4.80, carry +0.40, fiscal −0.50, residual completes the gap to the actual 5.00"</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="levelDecompChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Coefficient Estimates Across Specs</div>
+          <div class="chart-subtitle">Posterior mean and 94% HDI — same channel estimated on different samples/constructions</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:280px"><canvas id="forestChart"></canvas></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Posterior Distributions</div>
+          <div class="chart-subtitle">Primary spec — histograms of the MCMC posterior draws (4 chains × 2000 draws, thinned for display)</div>
+        </div>
+      </div>
+      <div class="small-multiples" id="posteriorGrid"></div>
+    </div>
+
+  </div>
+  <!-- /bayesContent -->
+
+  </div>
+  <!-- /tab-model -->
+
+</div>
+
+<script>
+const PPP_DATA = /*PPP_DATA*/;
+const BAYES_DATA = /*BAYES_DATA*/;
+
+(function () {
+  "use strict";
+  Chart.register(ChartDataLabels);
+
+  const D = PPP_DATA; // { months, ptax, br_index, us_index, default_base_month }
+  const N = D.months.length;
+
+  function fmtRate(v) {
+    return 'R$ ' + (Math.floor(v * 100) / 100).toFixed(2).replace('.', ',');
+  }
+  function fmtPct(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 10) / 10).toFixed(1).replace('.', ',') + '%';
+  }
+  function fmtPP(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 10) / 10).toFixed(1).replace('.', ',') + ' pp';
+  }
+  function fmtIndex(v) {
+    return (Math.floor(v * 10) / 10).toFixed(1).replace('.', ',');
+  }
+  function fmtBps(v) {
+    return Math.floor(v) + ' bps';
+  }
+  function monthLabel(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+
+  function computeSeries(baseIdx) {
+    const ptaxBase = D.ptax[baseIdx];
+    const brBase = D.br_index[baseIdx];
+    const usBase = D.us_index[baseIdx];
+    const eq = new Array(N), dev = new Array(N);
+    for (let t = 0; t < N; t++) {
+      const brRel = D.br_index[t] / brBase;
+      const usRel = D.us_index[t] / usBase;
+      eq[t] = ptaxBase * (brRel / usRel);
+      dev[t] = 100 * Math.log(D.ptax[t] / eq[t]);
+    }
+    return { eq, dev, ptaxBase };
+  }
+
+  // ---- controls setup ----
+  const selEl = document.getElementById('baseMonth');
+  D.months.forEach((m, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = monthLabel(m);
+    selEl.appendChild(opt);
+  });
+  const defaultIdx = D.months.indexOf(D.default_base_month);
+  selEl.value = String(defaultIdx >= 0 ? defaultIdx : 0);
+
+  document.getElementById('rangeBadge').textContent = 'MODEL: RELATIVE PPP';
+  document.getElementById('genDate').textContent = monthLabel(D.months[0]) + ' → ' + monthLabel(D.months[N - 1]);
+  document.getElementById('ftrRange').textContent = monthLabel(D.months[0]) + ' – ' + monthLabel(D.months[N - 1]) + ' (' + N + ' months)';
+
+  // ---- stats ----
+  function buildStats(dev, baseIdx) {
+    let minI = 0, maxI = 0;
+    for (let i = 1; i < N; i++) {
+      if (dev[i] < dev[minI]) minI = i;
+      if (dev[i] > dev[maxI]) maxI = i;
+    }
+    const last = N - 1;
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Latest deviation</div>
+        <div class="stat-val">${fmtPct(dev[last])}</div>
+        <div class="stat-sub">${monthLabel(D.months[last])} · base ${monthLabel(D.months[baseIdx])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Max deviation</div>
+        <div class="stat-val up">${fmtPct(dev[maxI])}</div>
+        <div class="stat-sub">${monthLabel(D.months[maxI])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Min deviation</div>
+        <div class="stat-val dn">${fmtPct(dev[minI])}</div>
+        <div class="stat-sub">${monthLabel(D.months[minI])}</div>
+      </div>`;
+  }
+
+  // ---- charts ----
+  const step = N > 60 ? 5 : N > 30 ? 3 : 1;
+  const labels = D.months.map(monthLabel);
+
+  // null-aware: values may start with a run of nulls (a series that begins
+  // later than the shared 1994-07 axis) — those points aren't drawn, and the
+  // first real point after a gap is colored neutrally rather than compared
+  // against null (which JS would silently coerce to 0).
+  function pointColors(values) {
+    let prev = null;
+    return values.map((v) => {
+      if (v === null) return 'rgba(0,0,0,0)';
+      const color = prev === null ? 'rgba(31,40,83,0.6)'
+        : v >= prev ? 'rgba(65,135,145,0.7)' : 'rgba(234,82,58,0.7)';
+      prev = v;
+      return color;
+    });
+  }
+
+  function firstIdx(values) { return values.findIndex(v => v !== null); }
+  function lastIdx(values) { for (let i = values.length - 1; i >= 0; i--) if (values[i] !== null) return i; return -1; }
+
+  function renderSeriesChart(canvasId, dlToggleId, subtitleId, opts) {
+    const { values, color, fill, fmt, label, unitLabel } = opts;
+    const i0 = firstIdx(values), i1 = lastIdx(values);
+    if (i0 === -1) {
+      document.getElementById(subtitleId).textContent = 'no data';
+      return null;
+    }
+    document.getElementById(subtitleId).textContent =
+      unitLabel + ' · ' + monthLabel(D.months[i0]) + ' → ' + monthLabel(D.months[i1]) +
+      ' · latest ' + fmt(values[i1]);
+
+    let showLabels = false;
+    const chart = new Chart(document.getElementById(canvasId), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label,
+          data: values,
+          borderColor: color,
+          backgroundColor: fill,
+          fill: true,
+          spanGaps: false,
+          pointBackgroundColor: pointColors(values),
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          borderWidth: 2,
+          tension: 0.15,
+          datalabels: {
+            display: () => showLabels,
+            align: 'top', anchor: 'end', offset: 4,
+            color: color, font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+            formatter: (v, ctx) => (v !== null && ctx.dataIndex % step === 0) ? fmt(v) : '',
+            backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+            padding: { top: 2, bottom: 2, left: 4, right: 4 },
+          },
+        }],
+      },
+      options: {
+        ...baseChartOptions(v => fmt(v)),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: { label: (ctx) => ctx.parsed.y === null ? null : label + ': ' + fmt(ctx.parsed.y) },
+          },
+        },
+      },
+    });
+
+    document.getElementById(dlToggleId).addEventListener('click', function () {
+      showLabels = !showLabels;
+      this.classList.toggle('on', showLabels);
+      chart.update();
+    });
+    return chart;
+  }
+
+  let mainChart, devChart;
+  let showLabels1 = false, showLabels2 = false;
+
+  function baseChartOptions(yCallback) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1F2853',
+          titleFont: { family: 'JetBrains Mono', size: 11 },
+          bodyFont: { family: 'Barlow', size: 12 },
+          padding: 12,
+          cornerRadius: 8,
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(31,40,83,0.04)' },
+          ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 },
+        },
+        y: {
+          grid: { color: 'rgba(31,40,83,0.06)' },
+          ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: yCallback },
+        },
+      },
+      interaction: { mode: 'index', intersect: false },
+    };
+  }
+
+  function renderMain(baseIdx) {
+    const { eq } = computeSeries(baseIdx);
+    document.getElementById('mainSubtitle').textContent =
+      'BRL per USD · monthly (month-end PTAX) · base month ' + monthLabel(D.months[baseIdx]);
+
+    const datasets = [
+      {
+        label: 'Actual (PTAX)',
+        data: D.ptax,
+        borderColor: '#1F2853',
+        backgroundColor: 'rgba(31,40,83,0.06)',
+        fill: true,
+        pointBackgroundColor: pointColors(D.ptax),
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels1,
+          align: 'top', anchor: 'end', offset: 4,
+          color: '#1F2853', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtRate(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+      {
+        label: 'PPP equilibrium',
+        data: eq,
+        borderColor: '#02739B',
+        backgroundColor: 'rgba(2,115,155,0.06)',
+        borderDash: [6, 3],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#02739B',
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels1,
+          align: 'bottom', anchor: 'end', offset: 4,
+          color: '#02739B', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtRate(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+    ];
+
+    if (mainChart) mainChart.destroy();
+    mainChart = new Chart(document.getElementById('mainChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        ...baseChartOptions(v => fmtRate(v)),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: {
+              label: (ctx) => ctx.dataset.label + ': ' + fmtRate(ctx.parsed.y),
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function renderDev(baseIdx) {
+    const { dev } = computeSeries(baseIdx);
+    buildStats(dev, baseIdx);
+
+    const zeroLine = new Array(N).fill(0);
+
+    const datasets = [
+      {
+        label: 'Deviation',
+        data: dev,
+        borderColor: '#1F2853',
+        backgroundColor: 'rgba(31,40,83,0.06)',
+        fill: true,
+        pointBackgroundColor: pointColors(dev),
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        tension: 0.15,
+        datalabels: {
+          display: () => showLabels2,
+          align: 'top', anchor: 'end', offset: 4,
+          color: '#1F2853', font: { family: 'JetBrains Mono', size: 9, weight: 500 },
+          formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtPct(v) : '',
+          backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 3,
+          padding: { top: 2, bottom: 2, left: 4, right: 4 },
+        },
+      },
+      {
+        label: 'Zero',
+        data: zeroLine,
+        borderColor: 'rgba(122,136,168,0.5)',
+        borderWidth: 1,
+        borderDash: [3, 3],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        datalabels: { display: false },
+      },
+    ];
+
+    if (devChart) devChart.destroy();
+    devChart = new Chart(document.getElementById('devChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        ...baseChartOptions(v => v.toFixed(0) + '%'),
+        plugins: {
+          ...baseChartOptions().plugins,
+          tooltip: {
+            ...baseChartOptions().plugins.tooltip,
+            callbacks: {
+              label: (ctx) => ctx.dataset.label === 'Zero' ? null : 'Deviation: ' + fmtPct(ctx.parsed.y),
+              afterBody: (items) => {
+                const i = items[0].dataIndex;
+                return ['Actual: ' + fmtRate(D.ptax[i])];
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  function renderAll() {
+    const baseIdx = parseInt(selEl.value, 10);
+    renderMain(baseIdx);
+    renderDev(baseIdx);
+  }
+
+  document.getElementById('dlToggle1').addEventListener('click', function () {
+    showLabels1 = !showLabels1;
+    this.classList.toggle('on', showLabels1);
+    mainChart.update();
+  });
+  document.getElementById('dlToggle2').addEventListener('click', function () {
+    showLabels2 = !showLabels2;
+    this.classList.toggle('on', showLabels2);
+    devChart.update();
+  });
+
+  selEl.addEventListener('change', renderAll);
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    selEl.value = String(defaultIdx >= 0 ? defaultIdx : 0);
+    renderAll();
+  });
+
+  renderAll();
+
+  // Raw candidate-channel panels — static, independent of the base-month
+  // selector (they don't feed the equilibrium/deviation calc, just sit
+  // alongside it for visual inspection ahead of any future regression).
+  renderSeriesChart('carryChart', 'dlToggle3', 'carrySubtitle', {
+    values: D.carry, color: '#BB9B1D', fill: 'rgba(187,155,29,0.08)',
+    fmt: fmtPP, label: 'Carry (Selic − Fed Funds)', unitLabel: '% p.a.',
+  });
+  renderSeriesChart('totChart', 'dlToggle4', 'totSubtitle', {
+    values: D.tot, color: '#418791', fill: 'rgba(65,135,145,0.08)',
+    fmt: fmtIndex, label: 'Terms of trade (Funcex, 2018=100)', unitLabel: 'index',
+  });
+  renderSeriesChart('breakevenChart', 'dlToggle6', 'breakevenSubtitle', {
+    values: D.breakeven, color: '#02739B', fill: 'rgba(2,115,155,0.08)',
+    fmt: fmtPP, label: 'Breakeven inflation, 10y', unitLabel: '% p.a.',
+  });
+  renderSeriesChart('fiscalChart', 'dlToggle5', 'fiscalSubtitle', {
+    values: D.fiscal, color: '#EA523A', fill: 'rgba(234,82,58,0.08)',
+    fmt: fmtBps, label: 'Brazil 5Y CDS (USD)', unitLabel: 'bps',
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Bayesian Model tab — separate IIFE (own scope, own small formatter helpers)
+// ---------------------------------------------------------------------------
+(function () {
+  "use strict";
+
+  function fmtNum(v, decimals) {
+    decimals = decimals === undefined ? 2 : decimals;
+    const sign = v >= 0 ? '' : '-';
+    const scaled = Math.floor(Math.abs(v) * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return sign + scaled.toFixed(decimals).replace('.', ',');
+  }
+  function fmtSigned(v, decimals) {
+    return (v >= 0 ? '+' : '') + fmtNum(v, decimals);
+  }
+  function monthLabelB(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+  const SPEC_TITLES = {
+    primary_breakeven: 'Primary (breakeven)',
+    primary_gap: 'Primary (de-anchoring gap)',
+    primary_studentt: 'Primary (breakeven, Student-t errors)',
+    robustness: 'Robustness (carry + tot only)',
+  };
+  const PARAM_LABELS = {
+    alpha: 'α (intercept)',
+    beta_delta_carry: 'β carry',
+    beta_delta_tot: 'β terms of trade',
+    beta_delta_breakeven: 'β breakeven',
+    beta_delta_breakeven_gap: 'β breakeven (gap)',
+    beta_delta_fiscal: 'β fiscal',
+    sigma: 'σ (residual sd)',
+    nu: 'ν (Student-t d.f.)',
+  };
+  const GROUP_COLOR = { delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A' };
+  const GROUP_LABEL = { delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven / de-anchoring gap', delta_fiscal: 'Fiscal' };
+
+  const noDataEl = document.getElementById('bayesNoData');
+  const contentEl = document.getElementById('bayesContent');
+
+  if (!BAYES_DATA) {
+    noDataEl.style.display = 'block';
+    return;
+  }
+  contentEl.style.display = 'block';
+
+  let rendered = false;
+
+  function renderBayesTab() {
+    if (rendered) return;
+    rendered = true;
+    const B = BAYES_DATA;
+    const months = B.months.map(monthLabelB);
+
+    // ---- descriptive stats row ----
+    const maxRhat = Math.max(...B.specs.primary_breakeven.map(r => r.r_hat));
+    const preferred = B.model_comparison[0].model === 'student_t' ? 'Student-t' : 'Normal';
+    document.getElementById('bayesStatsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Primary spec sample</div>
+        <div class="stat-val">${B.n}</div>
+        <div class="stat-sub">months · ${monthLabelB(B.sample_range[0])} → ${monthLabelB(B.sample_range[1])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Convergence (max r&#770;)</div>
+        <div class="stat-val ${maxRhat <= 1.01 ? 'up' : 'dn'}">${maxRhat.toFixed(3)}</div>
+        <div class="stat-sub">4 chains, target &le; 1.01</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Preferred error model</div>
+        <div class="stat-val">${preferred}</div>
+        <div class="stat-sub">by LOO — see callout below</div>
+      </div>`;
+
+    const cmp = B.model_comparison;
+    const normalRow = cmp.find(r => r.model === 'normal');
+    const studentRow = cmp.find(r => r.model === 'student_t');
+    const diff = Math.abs(normalRow.elpd_loo - studentRow.elpd_loo);
+    document.getElementById('modelComparisonCallout').innerHTML =
+      `<b>Normal vs. Student-t errors (LOO):</b> elpd difference = ${fmtNum(diff, 2)}, standard error of that difference &asymp; ${fmtNum(studentRow.dse || normalRow.dse, 2)} — ` +
+      (diff < (studentRow.dse || normalRow.dse || 1)
+        ? 'the difference is within its own uncertainty, i.e. <b>no real evidence favoring one over the other</b>. Plain Normal errors are an adequate, simpler choice here.'
+        : `<b>${preferred}</b> is preferred beyond its own uncertainty.`);
+
+    // ---- spec / diagnostics table ----
+    let tableHtml = '<thead><tr><th style="text-align:left">Spec</th><th style="text-align:left">Parameter</th><th>Mean</th><th>SD</th><th>HDI 3%</th><th>HDI 97%</th><th>ESS bulk</th><th>r&#770;</th></tr></thead><tbody>';
+    Object.keys(B.specs).forEach(specKey => {
+      const meta = B.spec_meta[specKey];
+      B.specs[specKey].forEach((row, i) => {
+        tableHtml += '<tr>' +
+          (i === 0 ? `<td class="spec-label" rowspan="${B.specs[specKey].length}">${SPEC_TITLES[specKey]}<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">n=${meta.n}, ${monthLabelB(meta.sample_range[0])}→${monthLabelB(meta.sample_range[1])}</span></td>` : '') +
+          `<td style="text-align:left">${PARAM_LABELS[row.param] || row.param}</td>` +
+          `<td>${fmtSigned(row.mean, 3)}</td><td>${fmtNum(row.sd, 3)}</td>` +
+          `<td>${fmtSigned(row['hdi_3%'], 3)}</td><td>${fmtSigned(row['hdi_97%'], 3)}</td>` +
+          `<td>${Math.round(row.ess_bulk)}</td><td>${row.r_hat.toFixed(2)}</td>` +
+          '</tr>';
+      });
+    });
+    tableHtml += '</tbody>';
+    document.getElementById('specTable').innerHTML = tableHtml;
+
+    // ---- historical fit (level) ----
+    new Chart(document.getElementById('fitLevelChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [
+          { label: 'lo', data: B.fitted_level_lo, borderWidth: 0, pointRadius: 0, fill: false },
+          { label: 'hi', data: B.fitted_level_hi, borderWidth: 0, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(2,115,155,0.12)' },
+          { label: 'Fitted (posterior mean)', data: B.fitted_level_mean, borderColor: '#02739B', borderDash: [6, 3], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.15 },
+          { label: 'Actual', data: B.actual_level, borderColor: '#1F2853', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.15 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            filter: (item) => item.dataset.label !== 'lo' && item.dataset.label !== 'hi',
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmtSigned(ctx.parsed.y, 1) + '%' },
+          },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(31,40,83,0.04)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v.toFixed(0) + '%' } },
+        },
+      },
+    });
+
+    // ---- decomposition (stacked cumulative contributions) ----
+    // Real stacked bars, not stacked line-fills — Chart.js line charts don't
+    // actually stack their fills (each area independently fills to zero and
+    // overlapping translucent layers just muddy together); bar datasets with
+    // stacked scales are the correct primitive for "these pieces sum to the
+    // total," including cleanly splitting positive/negative segments above
+    // and below zero.
+    const decompColors = { alpha: '#7A88A8', delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A', residual: '#C9CEDB' };
+    const decompLabels = { alpha: 'Baseline drift (α)', delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven', delta_fiscal: 'Fiscal', residual: 'Residual (unexplained)' };
+    const decompOrder = ['delta_carry', 'delta_tot', 'delta_breakeven', 'delta_fiscal', 'alpha', 'residual'];
+    new Chart(document.getElementById('decompChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: decompOrder.map(key => ({
+          label: decompLabels[key],
+          data: B.decomposition[key],
+          backgroundColor: decompColors[key],
+          stack: 'components',
+          barPercentage: 0.85,
+          categoryPercentage: 0.9,
+        })),
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { font: { family: 'JetBrains Mono', size: 10 }, color: '#3A4F72', boxWidth: 12 } },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmtSigned(ctx.parsed.y, 1) + '%' },
+          },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { stacked: true, grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v.toFixed(0) + '%' } },
+        },
+      },
+    });
+
+    // ---- nominal exchange rate decomposition (level, BRL/USD) ----
+    // Equilibrium is the base layer of the stack; each channel's contribution
+    // is stacked on top, in the same order applied when converting the log
+    // decomposition into level terms (see build_dashboard_payload's docstring
+    // for why this is sequential/order-dependent by construction, not an
+    // approximation) — the stack top lands exactly on "Actual" (dashed
+    // overlay, not itself part of the stack).
+    // Same fix as decompChart above: real stacked bars for the components,
+    // with "Actual (PTAX)" as a line overlay (Chart.js mixed chart — a
+    // per-dataset `type: 'line'` opts that one series out of the bar
+    // stack and just draws it on top).
+    function fmtRateB(v) { return 'R$ ' + fmtNum(v, 2); }
+    const levelColors = { equilibrium: '#1F2853', baseline: '#7A88A8', delta_carry: '#BB9B1D', delta_tot: '#418791', delta_breakeven: '#02739B', delta_fiscal: '#EA523A', residual: '#C9CEDB' };
+    const levelLabels = { equilibrium: 'PPP equilibrium', baseline: 'Baseline (α + pre-sample)', delta_carry: 'Carry', delta_tot: 'Terms of trade', delta_breakeven: 'Breakeven', delta_fiscal: 'Fiscal', residual: 'Residual (unexplained)' };
+    const levelOrder = ['equilibrium', 'baseline', 'delta_carry', 'delta_tot', 'delta_breakeven', 'delta_fiscal', 'residual'];
+    const L = B.level_decomposition;
+    new Chart(document.getElementById('levelDecompChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          ...levelOrder.map(key => ({
+            label: levelLabels[key],
+            data: L[key],
+            stack: 'components',
+            backgroundColor: levelColors[key],
+            barPercentage: 0.85,
+            categoryPercentage: 0.9,
+          })),
+          {
+            type: 'line',
+            label: 'Actual (PTAX)',
+            data: L.actual,
+            borderColor: '#1F2853',
+            borderDash: [5, 3],
+            borderWidth: 2,
+            fill: false,
+            pointRadius: 0,
+            tension: 0.15,
+          },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, position: 'bottom', labels: { font: { family: 'JetBrains Mono', size: 10 }, color: '#3A4F72', boxWidth: 12 } },
+          datalabels: { display: false },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => ctx.dataset.label + ': ' + (ctx.dataset.label.indexOf('equilibrium') >= 0 || ctx.dataset.label.indexOf('Actual') >= 0 ? fmtRateB(ctx.parsed.y) : fmtSigned(ctx.parsed.y, 3)) },
+          },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 } },
+          y: { stacked: true, grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => fmtRateB(v) } },
+        },
+      },
+    });
+
+    // ---- forest plot ----
+    const forestLabels = [], forestRanges = [], forestMeans = [], forestColors = [];
+    const specShort = { primary_breakeven: 'primary', primary_gap: 'gap-spec', robustness: 'robustness' };
+    Object.keys(B.forest).forEach(key => {
+      B.forest[key].forEach(row => {
+        forestLabels.push(GROUP_LABEL[key] + ' — ' + (specShort[row.spec] || row.spec));
+        forestRanges.push([row.lo, row.hi]);
+        forestMeans.push(row.mean);
+        forestColors.push(GROUP_COLOR[key]);
+      });
+    });
+    new Chart(document.getElementById('forestChart'), {
+      type: 'bar',
+      data: {
+        labels: forestLabels,
+        datasets: [{
+          data: forestRanges,
+          backgroundColor: forestColors.map(c => c + '40'),
+          borderColor: forestColors,
+          borderWidth: 1.5,
+        }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            display: true, anchor: 'center', align: 'center',
+            formatter: (v, ctx) => fmtSigned(forestMeans[ctx.dataIndex], 2),
+            color: '#1F2853', font: { family: 'JetBrains Mono', size: 10, weight: 600 },
+          },
+          tooltip: {
+            backgroundColor: '#1F2853', titleFont: { family: 'JetBrains Mono', size: 11 }, bodyFont: { family: 'Barlow', size: 12 }, padding: 12, cornerRadius: 8,
+            callbacks: { label: (ctx) => 'mean ' + fmtSigned(forestMeans[ctx.dataIndex], 3) + ', 94% HDI [' + fmtSigned(ctx.raw[0], 3) + ', ' + fmtSigned(ctx.raw[1], 3) + ']' },
+          },
+        },
+        scales: {
+          x: { grid: { color: 'rgba(31,40,83,0.06)' }, ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 } } },
+          y: { grid: { display: false }, ticks: { color: '#1F2853', font: { family: 'Barlow', size: 11.5 } } },
+        },
+      },
+    });
+
+    // ---- posterior distribution histograms ----
+    const grid = document.getElementById('posteriorGrid');
+    Object.keys(B.posteriors).forEach(coef => {
+      const card = document.createElement('div');
+      card.className = 'mini-chart-card';
+      const title = document.createElement('div');
+      title.className = 'mini-title';
+      title.textContent = (PARAM_LABELS[coef] || coef) + '  (mean ' + fmtSigned(B.posteriors[coef].mean, 3) + ')';
+      const wrap = document.createElement('div');
+      wrap.className = 'mini-chart-wrap';
+      const canvas = document.createElement('canvas');
+      wrap.appendChild(canvas);
+      card.appendChild(title);
+      card.appendChild(wrap);
+      grid.appendChild(card);
+
+      const post = B.posteriors[coef];
+      const binLabels = post.edges.slice(0, -1).map((e, i) => fmtNum((e + post.edges[i + 1]) / 2, 2));
+      new Chart(canvas, {
+        type: 'bar',
+        data: { labels: binLabels, datasets: [{ data: post.counts, backgroundColor: 'rgba(2,115,155,0.35)', borderColor: '#02739B', borderWidth: 1, barPercentage: 1, categoryPercentage: 1 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, datalabels: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { display: false } },
+            y: { display: false },
+          },
+        },
+      });
+    });
+  }
+
+  // ---- tab switching ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'tab-model') renderBayesTab();
+    });
+  });
+})();
+</script>

@@ -20,6 +20,7 @@ reports/
 analytics/oraculo/brasil/base/
 analytics/oraculo/us/base/
 analytics/oraculo/base/
+analytics/exchange_rate/models/bayesian_results/
 
 # Large binary files
 *.pdf

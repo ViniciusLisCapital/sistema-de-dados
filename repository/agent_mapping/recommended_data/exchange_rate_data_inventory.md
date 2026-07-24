@@ -12,7 +12,7 @@ Technical details on schema, SGS codes and observation counts live in `analytics
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
-| PTAX sell (spot) | `macro_brasil.cmb_ptax` | `ptax_venda` (SGS 1) | 1984-11-28 → today, daily |
+| PTAX sell (spot) | `macro_brasil.cmb_ptax` | `ptax_venda` (SGS 1) | 1994-07-01 → today, daily (Real Plan implementation — pre-Real data in extinct currencies excluded) |
 | Interbank FX volume, T+1/T+2 settlement | `macro_brasil.cmb_ptax` | `fx_interbank_vol_t1` (SGS 20359), `fx_interbank_vol_t2` (SGS 20205) | 1994-07-04 → today, daily |
 
 Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chunks by year (BCB API rejects windows > 10 years for daily series, confirmed via 406 response).

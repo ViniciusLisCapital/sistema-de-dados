@@ -1,0 +1,768 @@
+<title>USD/BRL Equilibrium Model — Intuition Simulator</title>
+<style>
+:root {
+  --bg: #F3F5F8;
+  --surface: #FFFFFF;
+  --surface-2: #EAEDF2;
+  --ink: #1F2853;
+  --ink-muted: #5B6478;
+  --ink-faint: #8991A3;
+  --accent: #BB9B1D;
+  --accent-ink: #6B5710;
+  --line-eq: #1F2853;
+  --line-obs: #BB9B1D;
+  --line-dev: #418791;
+  --line-sec: #02739B;
+  --line-alert: #EA523A;
+  --grid: #D8DCE3;
+  --border: #DDE1E8;
+  --focus: #02739B;
+  --shadow: 0 1px 2px rgba(31,40,83,0.06), 0 4px 16px rgba(31,40,83,0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12162A;
+    --surface: #1A2038;
+    --surface-2: #232A47;
+    --ink: #E7E9F2;
+    --ink-muted: #A6ADC4;
+    --ink-faint: #7981A0;
+    --accent: #E0C059;
+    --accent-ink: #2A2005;
+    --line-eq: #8DA0E8;
+    --line-obs: #E0C059;
+    --line-dev: #5FC3CE;
+    --line-sec: #4FB6E8;
+    --line-alert: #FF8266;
+    --grid: #323A5C;
+    --border: #2C3454;
+    --focus: #4FB6E8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12162A; --surface: #1A2038; --surface-2: #232A47;
+  --ink: #E7E9F2; --ink-muted: #A6ADC4; --ink-faint: #7981A0;
+  --accent: #E0C059; --accent-ink: #2A2005;
+  --line-eq: #8DA0E8; --line-obs: #E0C059; --line-dev: #5FC3CE; --line-sec: #4FB6E8; --line-alert: #FF8266;
+  --grid: #323A5C; --border: #2C3454; --focus: #4FB6E8;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 20px rgba(0,0,0,0.35);
+}
+:root[data-theme="light"] {
+  --bg: #F3F5F8; --surface: #FFFFFF; --surface-2: #EAEDF2;
+  --ink: #1F2853; --ink-muted: #5B6478; --ink-faint: #8991A3;
+  --accent: #BB9B1D; --accent-ink: #6B5710;
+  --line-eq: #1F2853; --line-obs: #BB9B1D; --line-dev: #418791; --line-sec: #02739B; --line-alert: #EA523A;
+  --grid: #D8DCE3; --border: #DDE1E8; --focus: #02739B;
+  --shadow: 0 1px 2px rgba(31,40,83,0.06), 0 4px 16px rgba(31,40,83,0.06);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.serif { font-family: Cambria, Georgia, "Iowan Old Style", "Times New Roman", serif; }
+.mono, .num {
+  font-family: Consolas, "SF Mono", "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.page { max-width: 1320px; margin: 0 auto; padding: 28px 24px 60px; }
+
+header.masthead {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+header.masthead .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 11px;
+  color: var(--accent-ink);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+header.masthead h1 {
+  font-size: 26px;
+  margin: 0 0 6px;
+  text-wrap: balance;
+  font-weight: 600;
+}
+header.masthead p {
+  margin: 0;
+  color: var(--ink-muted);
+  max-width: 62ch;
+  font-size: 13.5px;
+}
+header.masthead .meta {
+  color: var(--ink-faint);
+  font-size: 12px;
+  text-align: right;
+  max-width: 30ch;
+}
+
+/* Equations strip */
+.equations {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+.equations .eq {
+  padding: 4px 20px;
+  border-left: 1px solid var(--border);
+}
+.equations .eq:first-child { border-left: none; padding-left: 4px; }
+.equations .eq h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+.equations .eq .formula {
+  font-size: 15px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.equations .eq .formula .g-eq { color: var(--line-eq); font-weight: 600; }
+.equations .eq .formula .g-dev { color: var(--line-dev); font-weight: 600; }
+.equations .eq .formula .g-obs { color: var(--line-obs); font-weight: 700; }
+
+/* Layout */
+.workspace {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .workspace { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 18px 18px 20px;
+  position: sticky;
+  top: 16px;
+}
+@media (max-width: 900px) { .panel { position: static; } }
+
+.panel h2 {
+  font-size: 13px;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+.group { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.group:last-of-type { border-bottom: none; }
+.group-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  margin: 14px 0 10px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.group-title .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.control { margin-bottom: 12px; }
+.control label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12.5px;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+.control label .symbol { font-weight: 700; }
+.control label .value { color: var(--ink-muted); font-size: 12px; }
+.control .hint { font-size: 11px; color: var(--ink-faint); margin-top: 2px; line-height: 1.35; }
+
+input[type="range"] {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-2);
+  appearance: none;
+  outline: none;
+  margin: 6px 0 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: pointer;
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+select {
+  width: 100%;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+select:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.checkrow {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--ink);
+  margin-top: 10px;
+}
+.checkrow input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+button.reset {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.reset:hover { background: var(--border); }
+button.reset:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Charts */
+.charts { display: flex; flex-direction: column; gap: 16px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 16px 18px 10px;
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px; flex-wrap: wrap; gap: 6px;
+}
+.card-head h3 { margin: 0; font-size: 14px; font-weight: 700; }
+.card-head .subtitle { font-size: 11.5px; color: var(--ink-faint); }
+.legend { display: flex; gap: 14px; font-size: 11.5px; color: var(--ink-muted); }
+.legend .item { display: flex; align-items: center; gap: 5px; }
+.legend .dot { width: 9px; height: 9px; border-radius: 2px; }
+
+.small-multiples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 760px) { .small-multiples { grid-template-columns: 1fr; } }
+
+svg.chart { width: 100%; height: auto; overflow: visible; display: block; }
+.chart-wrap { position: relative; }
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  padding: 6px 9px;
+  border-radius: 6px;
+  transform: translate(-50%, -110%);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.08s ease;
+  z-index: 5;
+  box-shadow: var(--shadow);
+}
+.tooltip .row { display: flex; gap: 8px; justify-content: space-between; }
+.tooltip .swatch-inline { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+footer.note {
+  margin-top: 22px;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+</style>
+
+<div class="page">
+
+  <header class="masthead">
+    <div>
+      <span class="eyebrow">Illustrative simulator — synthetic scenarios, not fitted to real BRL data</span>
+      <h1 class="serif">USD/BRL Equilibrium Model — Intuition Simulator</h1>
+      <p>Companion to <span class="mono">state_space_equilibrium_model.md</span>. Adjust the structural parameters and driver shapes below and watch how an unobserved equilibrium, a mean-reverting deviation, and their sum (the "observed" rate) behave — before any of this is fit to real data.</p>
+    </div>
+    <div class="meta">120-month horizon (10y)<br>equilibrium(0) = 100, index units</div>
+  </header>
+
+  <div class="equations">
+    <div class="eq">
+      <h3>1 · Measurement</h3>
+      <div class="formula serif"><span class="g-obs">rer(t)</span> = <span class="g-eq">equilibrium(t)</span> + <span class="g-dev">deviation(t)</span></div>
+    </div>
+    <div class="eq">
+      <h3>2 · Transition (equilibrium)</h3>
+      <div class="formula serif"><span class="g-eq">equilibrium(t)</span> = equilibrium(t−1) + γ·tot_shift(t) + η(t)</div>
+    </div>
+    <div class="eq">
+      <h3>3 · Deviation (error correction)</h3>
+      <div class="formula serif"><span class="g-dev">deviation(t)</span> = φ·deviation(t−1) + β₁·carry(t−1) + β₂·fiscal_risk(t−1) + ε(t)</div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <!-- CONTROL PANEL -->
+    <div class="panel">
+      <h2>Controls</h2>
+
+      <div class="group-title"><span class="swatch" style="background:var(--line-eq)"></span>Transition — equilibrium</div>
+      <div class="control">
+        <label><span class="symbol">γ &nbsp;terms-of-trade pass-through</span><span class="value num" id="v-gamma">0.60</span></label>
+        <input type="range" id="gamma" min="-2" max="2" step="0.05" value="0.6">
+        <div class="hint">How much a terms-of-trade shock permanently shifts fair value. 0 = equilibrium ignores it entirely.</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">σ_η &nbsp;equilibrium noise</span><span class="value num" id="v-sigmaEta">0.00</span></label>
+        <input type="range" id="sigmaEta" min="0" max="2" step="0.05" value="0">
+        <div class="hint">Unexplained monthly drift in fair value itself. Needs "add random noise" on below.</div>
+      </div>
+
+      <div class="group-title"><span class="swatch" style="background:var(--line-dev)"></span>Deviation — error correction</div>
+      <div class="control">
+        <label><span class="symbol">φ &nbsp;reversion speed</span><span class="value num" id="v-phi">0.85</span></label>
+        <input type="range" id="phi" min="0" max="0.98" step="0.01" value="0.85">
+        <div class="hint">How much of last month's gap survives. Higher = slower reversion, longer-lived misalignments.</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">β₁ &nbsp;carry pull</span><span class="value num" id="v-beta1">-1.00</span></label>
+        <input type="range" id="beta1" min="-3" max="3" step="0.1" value="-1">
+        <div class="hint">Negative = higher carry <em>widens</em> the gap (the empirical, "wrong-sign" finding from carry_model.py). Positive = textbook UIP direction.</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">β₂ &nbsp;fiscal-risk pull</span><span class="value num" id="v-beta2">0.80</span></label>
+        <input type="range" id="beta2" min="-3" max="3" step="0.1" value="0.8">
+        <div class="hint">Positive = worse fiscal credibility widens the gap (currency weaker than fundamentals justify).</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">σ_ε &nbsp;deviation noise</span><span class="value num" id="v-sigmaEps">1.20</span></label>
+        <input type="range" id="sigmaEps" min="0" max="5" step="0.1" value="1.2">
+        <div class="hint">Month-to-month noise in the gap beyond the three drivers. Needs "add random noise" on below.</div>
+      </div>
+
+      <div class="group-title"><span class="swatch" style="background:var(--line-sec)"></span>Driver scenarios</div>
+      <div class="control">
+        <label><span>Terms-of-trade shift</span></label>
+        <select id="shape-tot">
+          <option value="pulse" selected>Pulse (commodity shock, decays)</option>
+          <option value="step">Step (permanent shift)</option>
+          <option value="trend">Trend (gradual drift)</option>
+          <option value="cycle">Cycle (3y sine)</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="control">
+        <label><span>Carry</span></label>
+        <select id="shape-carry">
+          <option value="cycle" selected>Cycle (3y sine — hiking/cutting)</option>
+          <option value="step">Step (permanent shift)</option>
+          <option value="pulse">Pulse (shock, decays)</option>
+          <option value="trend">Trend (gradual drift)</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="control">
+        <label><span>Fiscal risk</span></label>
+        <select id="shape-fiscal">
+          <option value="trend" selected>Trend (gradual deterioration)</option>
+          <option value="step">Step (permanent shift)</option>
+          <option value="pulse">Pulse (crisis, decays)</option>
+          <option value="cycle">Cycle (3y sine)</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="control">
+        <label><span class="symbol">Shock magnitude</span><span class="value num" id="v-mag">1.50</span></label>
+        <input type="range" id="magnitude" min="0" max="4" step="0.1" value="1.5">
+        <div class="hint">Applies to whichever drivers are set to Step/Pulse/Trend/Cycle above (shared scale, signs preserved per driver — fiscal deterioration below is inverted so "worse" is still positive risk).</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">Shock month</span><span class="value num" id="v-shockMonth">36</span></label>
+        <input type="range" id="shockMonth" min="6" max="108" step="1" value="36">
+        <div class="hint">When Step/Pulse shocks occur.</div>
+      </div>
+
+      <div class="checkrow">
+        <input type="checkbox" id="noiseOn">
+        <label for="noiseOn">Add random noise (σ_η, σ_ε above)</label>
+      </div>
+
+      <button class="reset" id="resetBtn">Reset to defaults</button>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Observed rate vs. equilibrium</h3>
+            <div class="subtitle">rer(t) = equilibrium(t) + deviation(t) — index units, month 0 = 100</div>
+          </div>
+          <div class="legend">
+            <span class="item"><span class="dot" style="background:var(--line-obs)"></span>Observed (rer)</span>
+            <span class="item"><span class="dot" style="background:var(--line-eq)"></span>Equilibrium</span>
+          </div>
+        </div>
+        <div class="chart-wrap" id="wrap-main"><svg class="chart" id="chart-main"></svg><div class="tooltip" id="tip-main"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Deviation (the gap)</h3>
+            <div class="subtitle">positive = observed rate weaker (more depreciated) than equilibrium</div>
+          </div>
+        </div>
+        <div class="chart-wrap" id="wrap-dev"><svg class="chart" id="chart-dev"></svg><div class="tooltip" id="tip-dev"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Driver paths</h3>
+            <div class="subtitle">the three exogenous inputs feeding the equations above</div>
+          </div>
+        </div>
+        <div class="small-multiples">
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Terms-of-trade shift</div><svg class="chart" id="chart-tot"></svg><div class="tooltip" id="tip-tot"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Carry</div><svg class="chart" id="chart-carry"></svg><div class="tooltip" id="tip-carry"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Fiscal risk</div><svg class="chart" id="chart-fiscal"></svg><div class="tooltip" id="tip-fiscal"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="note">
+    Pure client-side simulation of the three toy equations in <span class="mono">state_space_equilibrium_model.md</span> — no real REER, carry, terms-of-trade, or fiscal-risk data involved. Built to build intuition for the structural parameters (γ, φ, β₁, β₂) before any real Kalman-filter estimation is attempted.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const HORIZON = 120;
+
+  const els = {
+    gamma: document.getElementById("gamma"),
+    sigmaEta: document.getElementById("sigmaEta"),
+    phi: document.getElementById("phi"),
+    beta1: document.getElementById("beta1"),
+    beta2: document.getElementById("beta2"),
+    sigmaEps: document.getElementById("sigmaEps"),
+    shapeTot: document.getElementById("shape-tot"),
+    shapeCarry: document.getElementById("shape-carry"),
+    shapeFiscal: document.getElementById("shape-fiscal"),
+    magnitude: document.getElementById("magnitude"),
+    shockMonth: document.getElementById("shockMonth"),
+    noiseOn: document.getElementById("noiseOn"),
+    resetBtn: document.getElementById("resetBtn"),
+  };
+
+  const DEFAULTS = {
+    gamma: 0.6, sigmaEta: 0, phi: 0.85, beta1: -1, beta2: 0.8, sigmaEps: 1.2,
+    shapeTot: "pulse", shapeCarry: "cycle", shapeFiscal: "trend",
+    magnitude: 1.5, shockMonth: 36, noiseOn: false,
+  };
+
+  function readParams() {
+    return {
+      gamma: parseFloat(els.gamma.value),
+      sigmaEta: parseFloat(els.sigmaEta.value),
+      phi: parseFloat(els.phi.value),
+      beta1: parseFloat(els.beta1.value),
+      beta2: parseFloat(els.beta2.value),
+      sigmaEps: parseFloat(els.sigmaEps.value),
+      shapeTot: els.shapeTot.value,
+      shapeCarry: els.shapeCarry.value,
+      shapeFiscal: els.shapeFiscal.value,
+      magnitude: parseFloat(els.magnitude.value),
+      shockMonth: parseInt(els.shockMonth.value, 10),
+      noiseOn: els.noiseOn.checked,
+    };
+  }
+
+  function generateDriver(shape, magnitude, shockMonth, horizon) {
+    const out = new Array(horizon).fill(0);
+    if (shape === "none") return out;
+    for (let t = 0; t < horizon; t++) {
+      if (shape === "step") {
+        out[t] = t >= shockMonth ? magnitude : 0;
+      } else if (shape === "pulse") {
+        out[t] = t >= shockMonth ? magnitude * Math.pow(0.82, t - shockMonth) : 0;
+      } else if (shape === "trend") {
+        out[t] = magnitude * (t / (horizon - 1));
+      } else if (shape === "cycle") {
+        out[t] = magnitude * Math.sin((2 * Math.PI * t) / 36);
+      }
+    }
+    return out;
+  }
+
+  // Box-Muller
+  function randn() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function simulate(p) {
+    const tot = generateDriver(p.shapeTot, p.magnitude, p.shockMonth, HORIZON);
+    const carry = generateDriver(p.shapeCarry, p.magnitude, p.shockMonth, HORIZON);
+    const fiscal = generateDriver(p.shapeFiscal, p.magnitude, p.shockMonth, HORIZON);
+
+    const equilibrium = new Array(HORIZON);
+    const deviation = new Array(HORIZON);
+    const rer = new Array(HORIZON);
+    equilibrium[0] = 100;
+    deviation[0] = 0;
+    rer[0] = 100;
+
+    for (let t = 1; t < HORIZON; t++) {
+      const eta = p.noiseOn ? randn() * p.sigmaEta : 0;
+      equilibrium[t] = equilibrium[t - 1] + p.gamma * tot[t] + eta;
+
+      const eps = p.noiseOn ? randn() * p.sigmaEps : 0;
+      deviation[t] = p.phi * deviation[t - 1] + p.beta1 * carry[t - 1] + p.beta2 * fiscal[t - 1] + eps;
+
+      rer[t] = equilibrium[t] + deviation[t];
+    }
+
+    return { tot, carry, fiscal, equilibrium, deviation, rer };
+  }
+
+  // ---------------- Chart rendering (hand-rolled SVG, no deps) ----------------
+
+  function niceTicks(min, max, count) {
+    if (min === max) { min -= 1; max += 1; }
+    const span = max - min;
+    const step = span / count;
+    const mag = Math.pow(10, Math.floor(Math.log10(step)));
+    const norm = step / mag;
+    let niceStep;
+    if (norm < 1.5) niceStep = 1 * mag;
+    else if (norm < 3) niceStep = 2 * mag;
+    else if (norm < 7) niceStep = 5 * mag;
+    else niceStep = 10 * mag;
+    const niceMin = Math.floor(min / niceStep) * niceStep;
+    const niceMax = Math.ceil(max / niceStep) * niceStep;
+    const ticks = [];
+    for (let v = niceMin; v <= niceMax + 1e-9; v += niceStep) ticks.push(Math.round(v * 1000) / 1000);
+    return ticks;
+  }
+
+  function fmt(n) {
+    return (Math.round(n * 100) / 100).toFixed(2);
+  }
+
+  function renderChart(svgId, tipId, series, opts) {
+    const svg = document.getElementById(svgId);
+    const tip = document.getElementById(tipId);
+    const W = opts.width || 600, H = opts.height || 190;
+    const M = { top: 10, right: 14, bottom: 20, left: 40 };
+    const plotW = W - M.left - M.right;
+    const plotH = H - M.top - M.bottom;
+
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const allVals = series.flatMap(s => s.values);
+    let vmin = Math.min(...allVals), vmax = Math.max(...allVals);
+    if (opts.zeroLine) { vmin = Math.min(vmin, 0); vmax = Math.max(vmax, 0); }
+    const pad = (vmax - vmin) * 0.08 || 1;
+    vmin -= pad; vmax += pad;
+    const ticks = niceTicks(vmin, vmax, 4);
+    const yMin = ticks[0], yMax = ticks[ticks.length - 1];
+
+    const n = series[0].values.length;
+    const x = i => M.left + (plotW * i) / (n - 1);
+    const y = v => M.top + plotH - (plotH * (v - yMin)) / (yMax - yMin);
+
+    const svgns = "http://www.w3.org/2000/svg";
+    function el(tag, attrs) {
+      const e = document.createElementNS(svgns, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    // gridlines + y labels
+    ticks.forEach(t => {
+      svg.appendChild(el("line", { x1: M.left, x2: W - M.right, y1: y(t), y2: y(t), stroke: "var(--grid)", "stroke-width": 1 }));
+      const label = el("text", { x: M.left - 6, y: y(t) + 3, "text-anchor": "end", class: "num", fill: "var(--ink-faint)", "font-size": "10" });
+      label.textContent = fmt(t);
+      svg.appendChild(label);
+    });
+
+    // zero line emphasis
+    if (opts.zeroLine && yMin < 0 && yMax > 0) {
+      svg.appendChild(el("line", { x1: M.left, x2: W - M.right, y1: y(0), y2: y(0), stroke: "var(--ink-faint)", "stroke-width": 1 }));
+    }
+
+    // x labels (years)
+    const yearStep = Math.max(1, Math.round(n / 60)) * 12;
+    for (let i = 0; i < n; i += yearStep) {
+      const label = el("text", { x: x(i), y: H - 4, "text-anchor": "middle", class: "num", fill: "var(--ink-faint)", "font-size": "10" });
+      label.textContent = "y" + Math.round(i / 12);
+      svg.appendChild(label);
+    }
+
+    // series lines
+    series.forEach(s => {
+      const d = s.values.map((v, i) => (i === 0 ? "M" : "L") + x(i) + "," + y(v)).join(" ");
+      svg.appendChild(el("path", { d: d, fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    });
+
+    // endpoint markers
+    series.forEach(s => {
+      const last = s.values[s.values.length - 1];
+      svg.appendChild(el("circle", { cx: x(s.values.length - 1), cy: y(last), r: 3, fill: s.color }));
+    });
+
+    // hover crosshair + tooltip
+    const hitRect = el("rect", { x: M.left, y: M.top, width: plotW, height: plotH, fill: "transparent" });
+    const guide = el("line", { x1: 0, x2: 0, y1: M.top, y2: M.top + plotH, stroke: "var(--ink-faint)", "stroke-width": 1, "stroke-dasharray": "3,3", opacity: 0 });
+    svg.appendChild(guide);
+    const dots = series.map(s => {
+      const c = el("circle", { r: 3.5, fill: s.color, stroke: "var(--surface)", "stroke-width": 1.5, opacity: 0 });
+      svg.appendChild(c);
+      return c;
+    });
+    svg.appendChild(hitRect);
+
+    hitRect.addEventListener("mousemove", function (ev) {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = W / rect.width;
+      const mx = (ev.clientX - rect.left) * scaleX;
+      let i = Math.round(((mx - M.left) / plotW) * (n - 1));
+      i = Math.max(0, Math.min(n - 1, i));
+      guide.setAttribute("x1", x(i)); guide.setAttribute("x2", x(i)); guide.setAttribute("opacity", 1);
+      let rows = "";
+      series.forEach((s, k) => {
+        dots[k].setAttribute("cx", x(i)); dots[k].setAttribute("cy", y(s.values[i])); dots[k].setAttribute("opacity", 1);
+        rows += '<div class="row"><span><span class="swatch-inline" style="background:' + s.color + '"></span>' + s.name + '</span><span class="num">' + fmt(s.values[i]) + "</span></div>";
+      });
+      tip.innerHTML = "<div style='margin-bottom:3px;color:var(--ink-faint)'>month " + i + " (y" + (i / 12).toFixed(1) + ")</div>" + rows;
+      const wrapRect = svg.parentElement.getBoundingClientRect();
+      tip.style.left = ((ev.clientX - wrapRect.left)) + "px";
+      tip.style.top = ((ev.clientY - wrapRect.top) - 6) + "px";
+      tip.style.opacity = 1;
+    });
+    hitRect.addEventListener("mouseleave", function () {
+      guide.setAttribute("opacity", 0);
+      dots.forEach(d => d.setAttribute("opacity", 0));
+      tip.style.opacity = 0;
+    });
+  }
+
+  function renderAll() {
+    const p = readParams();
+    document.getElementById("v-gamma").textContent = p.gamma.toFixed(2);
+    document.getElementById("v-sigmaEta").textContent = p.sigmaEta.toFixed(2);
+    document.getElementById("v-phi").textContent = p.phi.toFixed(2);
+    document.getElementById("v-beta1").textContent = p.beta1.toFixed(2);
+    document.getElementById("v-beta2").textContent = p.beta2.toFixed(2);
+    document.getElementById("v-sigmaEps").textContent = p.sigmaEps.toFixed(2);
+    document.getElementById("v-mag").textContent = p.magnitude.toFixed(2);
+    document.getElementById("v-shockMonth").textContent = p.shockMonth;
+
+    const sim = simulate(p);
+
+    const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+    renderChart("chart-main", "tip-main", [
+      { name: "Observed (rer)", color: cssVar("--line-obs"), values: sim.rer },
+      { name: "Equilibrium", color: cssVar("--line-eq"), values: sim.equilibrium },
+    ], { height: 220 });
+
+    renderChart("chart-dev", "tip-dev", [
+      { name: "Deviation", color: cssVar("--line-dev"), values: sim.deviation },
+    ], { height: 160, zeroLine: true });
+
+    renderChart("chart-tot", "tip-tot", [
+      { name: "ToT shift", color: cssVar("--line-sec"), values: sim.tot },
+    ], { height: 130, zeroLine: true });
+
+    renderChart("chart-carry", "tip-carry", [
+      { name: "Carry", color: cssVar("--line-sec"), values: sim.carry },
+    ], { height: 130, zeroLine: true });
+
+    renderChart("chart-fiscal", "tip-fiscal", [
+      { name: "Fiscal risk", color: cssVar("--line-sec"), values: sim.fiscal },
+    ], { height: 130, zeroLine: true });
+  }
+
+  Object.keys(els).forEach(k => {
+    const e = els[k];
+    if (!e || k === "resetBtn") return;
+    e.addEventListener("input", renderAll);
+    e.addEventListener("change", renderAll);
+  });
+
+  els.resetBtn.addEventListener("click", function () {
+    els.gamma.value = DEFAULTS.gamma;
+    els.sigmaEta.value = DEFAULTS.sigmaEta;
+    els.phi.value = DEFAULTS.phi;
+    els.beta1.value = DEFAULTS.beta1;
+    els.beta2.value = DEFAULTS.beta2;
+    els.sigmaEps.value = DEFAULTS.sigmaEps;
+    els.shapeTot.value = DEFAULTS.shapeTot;
+    els.shapeCarry.value = DEFAULTS.shapeCarry;
+    els.shapeFiscal.value = DEFAULTS.shapeFiscal;
+    els.magnitude.value = DEFAULTS.magnitude;
+    els.shockMonth.value = DEFAULTS.shockMonth;
+    els.noiseOn.checked = DEFAULTS.noiseOn;
+    renderAll();
+  });
+
+  window.addEventListener("resize", renderAll);
+  renderAll();
+})();
+</script>

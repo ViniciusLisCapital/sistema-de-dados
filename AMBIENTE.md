@@ -108,6 +108,42 @@ ModuleNotFoundError: No module named 'analytics'
 > já têm — mas se criar uma pasta-pacote nova, lembre de adicionar o `__init__.py`,
 > senão o `setuptools.packages.find` não a encontra.
 
+### Dependência de sistema opcional: compilador C++ (para PyMC)
+
+`pymc` (usado em `analytics/exchange_rate/models/bayesian_deviation_model.py` e
+futuros modelos bayesianos) roda via `pytensor`, que compila cada modelo para
+C por padrão. **Sem compilador C++ no PATH, `pytensor` cai para um fallback em
+Python puro** — funciona, mas cada `pm.sample()` fica ordens de magnitude mais
+lento (minutos → potencialmente nunca termina em modelos maiores).
+
+Instalado nesta máquina em 2026-07-23 via MSYS2 (não `conda`, para não
+introduzir um segundo gerenciador de pacotes só por causa do compilador):
+
+```powershell
+winget install --id MSYS2.MSYS2 --source winget --accept-source-agreements --accept-package-agreements --silent
+& "C:\msys64\usr\bin\bash.exe" -lc "pacman -S --noconfirm --needed mingw-w64-x86_64-gcc"
+```
+
+Depois, `C:\msys64\mingw64\bin` precisa estar no `PATH` (setado no `PATH` de
+usuário via `[Environment]::SetEnvironmentVariable`, então persiste em
+terminais/sessões *novas* — um terminal já aberto antes dessa mudança não
+enxerga o PATH atualizado sem reiniciar).
+
+Verificar se está funcionando:
+
+```powershell
+uv run python -c "import pytensor; print(pytensor.config.cxx)"
+# deve imprimir o caminho do g++.exe, não uma string vazia
+```
+
+Numa máquina nova sem esse setup: os modelos PyMC ainda rodam (fallback Python),
+só mais devagar — refazer o passo acima só se isso virar um gargalo real.
+
+`pytensor` também avisa que não encontra uma instalação de BLAS ("PyTensor
+could not link to a BLAS installation") — não bloqueia nada nesta escala de
+modelo, mas para modelos bayesianos bem maiores no futuro, considerar
+`OpenBLAS` ou um numpy linkado com BLAS via conda.
+
 ---
 
 ## 4. Tarefas do dia a dia
