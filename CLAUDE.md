@@ -44,6 +44,9 @@ domain/
                        Phillips do modelo BCB; ainda não integrado a jobs/update_international.py)
     yfinance/        — cmb_dollar_index (DXY, Yahoo Finance DX-Y.NYB — ICE US Dollar Index, diário desde
                        1971-01-04; preferido ao FRED DTWEXBGS, que só cobre a partir de 2006 — ainda não
+                       integrado a jobs/update_international.py), cmb_fx_latam (câmbio diário MX/CL/CO/PE
+                       vs. USD, Yahoo Finance MXN=X/CLP=X/COP=X/PEN=X — insumo de volatilidade cambial para
+                       o métrico carry/vol de analytics/exchange_rate/models/ppp_equilibrium.py; ainda não
                        integrado a jobs/update_international.py)
 analytics/           — Projetos que consomem o banco MySQL
   oraculo/           — Termômetro macro (brasil e us)
@@ -206,7 +209,7 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 ### Média prioridade
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): see "Pending" section in [`repository/CLAUDE.md`](repository/CLAUDE.md).
-- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
+- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
 - **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
 - **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
 

@@ -288,6 +288,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
       </div>
       <div class="chart-hdr-right">
         <select id="channelSelect" class="base-select"></select>
+        <div class="dl-toggle" id="zscoreToggleChannel"><span class="toggle-icon"></span> Z-score</div>
         <div class="dl-toggle" id="dlToggleChannel"><span class="toggle-icon"></span> Dados no gráfico</div>
       </div>
     </div>
@@ -1145,10 +1146,28 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   CHANNEL_DEFS.forEach((c) => { CHANNEL_MAP[c.key] = c; });
 
   let showLabelsChannel = false;
+  let showZScoreChannel = false;
+
+  // Converts a channel's raw array into z-scores -- (v - mean) / population
+  // stdev computed over that channel's OWN non-null history (not the full
+  // 383-month index, which would understate the mean/stdev for
+  // late-starting channels like fiscal/breakeven). Null stays null so
+  // firstIdx/lastIdx/gaps behave identically to the raw series.
+  function zScoreArr(values) {
+    const nums = values.filter((v) => v !== null && v !== undefined && !isNaN(v));
+    if (nums.length === 0) return values.slice();
+    const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+    const variance = nums.reduce((a, b) => a + (b - mean) * (b - mean), 0) / nums.length;
+    const sd = Math.sqrt(variance);
+    return values.map((v) => (v === null || v === undefined || isNaN(v) || sd === 0) ? null : (v - mean) / sd);
+  }
 
   function renderChannel(key) {
     const def = CHANNEL_MAP[key];
-    const values = D[key];
+    const raw = D[key];
+    const values = showZScoreChannel ? zScoreArr(raw) : raw;
+    const unitLabel = showZScoreChannel ? 'z-score (σ from own mean)' : def.unitLabel;
+    const fmt = showZScoreChannel ? fmtZ : def.fmt;
     document.getElementById('channelTitle').textContent = def.title;
     const i0 = firstIdx(values), i1 = lastIdx(values);
 
@@ -1158,8 +1177,8 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       return;
     }
     document.getElementById('channelSubtitle').textContent =
-      def.unitLabel + ' · ' + monthLabel(D.months[i0]) + ' → ' + monthLabel(D.months[i1]) +
-      ' · latest ' + def.fmt(values[i1]);
+      unitLabel + ' · ' + monthLabel(D.months[i0]) + ' → ' + monthLabel(D.months[i1]) +
+      ' · latest ' + fmt(values[i1]);
 
     // No explicit xaxis/yaxis range passed below (and no uirevision), so each
     // call gets a fresh autoranged view -- same "no pan/zoom state carries
@@ -1170,14 +1189,14 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       type: 'scatter', mode,
       name: def.label,
       x: D.months, y: values,
-      text: values.map((v, i) => (v !== null && i % step === 0 ? def.fmt(v) : '')),
+      text: values.map((v, i) => (v !== null && i % step === 0 ? fmt(v) : '')),
       textposition: 'top center',
       textfont: { family: 'JetBrains Mono', size: 9, color: def.color },
       line: { color: def.color, width: 2, shape: 'spline', smoothing: 0.3 },
       fill: 'tozeroy', fillcolor: def.fill,
       connectgaps: false,
-      customdata: values.map((v) => (v === null ? '' : def.fmt(v))),
-      hovertemplate: def.label + ': %{customdata}<extra></extra>',
+      customdata: values.map((v) => (v === null ? '' : fmt(v))),
+      hovertemplate: def.label + (showZScoreChannel ? ' (z-score)' : '') + ': %{customdata}<extra></extra>',
     }], { height: 400 });
   }
 
@@ -1294,6 +1313,11 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     this.classList.toggle('on', showLabelsChannel);
     const el = document.getElementById('channelChart');
     if (el && el.data) Plotly.restyle('channelChart', { mode: showLabelsChannel ? 'lines+text' : 'lines' }, [0]);
+  });
+  document.getElementById('zscoreToggleChannel').addEventListener('click', function () {
+    showZScoreChannel = !showZScoreChannel;
+    this.classList.toggle('on', showZScoreChannel);
+    renderChannel(channelSelEl.value);
   });
   renderChannel(CHANNEL_DEFS[0].key);
 })();
