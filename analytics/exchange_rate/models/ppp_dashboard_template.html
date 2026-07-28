@@ -1045,6 +1045,14 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   function fmtBps(v) {
     return Math.floor(v) + ' bps';
   }
+  function fmtRatio(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 100) / 100).toFixed(2).replace('.', ',');
+  }
+  function fmtZ(v) {
+    const sign = v >= 0 ? '+' : '';
+    return sign + (Math.sign(v) * Math.floor(Math.abs(v) * 100) / 100).toFixed(2).replace('.', ',') + ' σ';
+  }
   function monthLabel(m) {
     const [y, mo] = m.split('-');
     const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1123,6 +1131,8 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   const CHANNEL_DEFS = [
     { key: 'carry', title: 'Carry', label: 'Carry (Selic − Fed Funds)', unitLabel: '% p.a.', color: '#BB9B1D', fill: 'rgba(187,155,29,0.08)', fmt: fmtPP },
     { key: 'relative_carry', title: 'Relative Carry (vs. LatAm)', label: 'Selic − avg(MX, CL, CO, PE policy rate)', unitLabel: 'pp', color: '#6E8B3D', fill: 'rgba(110,139,61,0.08)', fmt: fmtPP },
+    { key: 'carry_vol', title: 'Carry / Vol', label: 'Carry ÷ BRL 6m annualized realized vol', unitLabel: 'ratio', color: '#9B5DE5', fill: 'rgba(155,93,229,0.08)', fmt: fmtRatio },
+    { key: 'relative_carry_vol', title: 'Relative Carry / Vol (vs. LatAm)', label: 'Carry/vol(BR) − avg(carry/vol, MX/CL/CO/PE)', unitLabel: 'ratio', color: '#F15BB5', fill: 'rgba(241,91,181,0.08)', fmt: fmtRatio },
     { key: 'tot', title: 'Terms of Trade', label: 'Terms of trade (Funcex, 2018=100)', unitLabel: 'index', color: '#418791', fill: 'rgba(65,135,145,0.08)', fmt: fmtIndex },
     { key: 'breakeven', title: 'Long-Term Inflation Expectation', label: 'Breakeven inflation, 10y (PREJS − NTNBJS)', unitLabel: '% p.a.', color: '#02739B', fill: 'rgba(2,115,155,0.08)', fmt: fmtPP },
     { key: 'breakeven_gap', title: 'Breakeven De-Anchoring Gap', label: 'Breakeven − CMN target (de-anchoring gap)', unitLabel: 'pp', color: '#3A4F72', fill: 'rgba(58,79,114,0.08)', fmt: fmtPP },
