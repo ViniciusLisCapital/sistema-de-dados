@@ -21,6 +21,8 @@ analytics/oraculo/brasil/base/
 analytics/oraculo/us/base/
 analytics/oraculo/base/
 analytics/exchange_rate/models/bayesian_results/
+analytics/exchange_rate/models/state_space_results/
+analytics/exchange_rate/models/beer_results/
 
 # Large binary files
 *.pdf

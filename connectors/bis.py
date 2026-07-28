@@ -1,7 +1,8 @@
 """
-BIS Statistics API v1 client — Effective Exchange Rates (WS_EER).
+BIS Statistics API v1 client — Effective Exchange Rates (WS_EER) and Central
+Bank Policy Rates (WS_CBPOL).
 
-API: https://data.bis.org/api/v1/data/WS_EER/{key}/all?format=csv
+API: https://data.bis.org/api/v1/data/{FLOW}/{key}/all?format=csv
 No authentication required.
 
 Key structure (WS_EER): FREQ.ADJUSTMENT.REF_AREA.BASKET
@@ -9,6 +10,10 @@ Key structure (WS_EER): FREQ.ADJUSTMENT.REF_AREA.BASKET
   ADJUSTMENT: R (real) | N (nominal)
   REF_AREA:   ISO2 country code, e.g. BR, MX, CL, CO
   BASKET:     B (broad) | N (narrow)
+
+Key structure (WS_CBPOL): FREQ.REF_AREA
+  FREQ:       D (daily) | M (monthly)
+  REF_AREA:   ISO2 country code, e.g. BR, MX, CL, CO, PE, AR
 
 Multiple values in one dimension use '+', e.g. "R+N" or "BR+MX".
 """
@@ -25,6 +30,7 @@ from urllib3.util.retry import Retry
 logger = logging.getLogger(__name__)
 
 _BASE = "https://stats.bis.org/api/v1/data/WS_EER"
+_BASE_CBPOL = "https://stats.bis.org/api/v1/data/WS_CBPOL"
 
 _TYPE_LABEL = {
     ("R", "B"): "real_broad",
@@ -90,6 +96,75 @@ class BIS:
         resp.raise_for_status()
 
         return self._parse(resp.text, types)
+
+    def get_policy_rates(
+        self,
+        countries: List[str],
+        freq: str = "D",
+        start: str | None = None,
+    ) -> pd.DataFrame:
+        """
+        Fetch Central Bank Policy Rates from BIS.
+
+        Args:
+            countries: ISO2 country codes, e.g. ["BR", "MX", "CL", "CO", "PE", "AR"]
+            freq:      "D" (daily) or "M" (monthly)
+            start:     "YYYY-MM-DD" (freq="D") or "YYYY-MM" (freq="M") to filter
+                       from that date, or None for full history
+
+        Returns:
+            Tidy DataFrame with columns:
+                date         Timestamp
+                country_code str
+                value        float64  (% a.a.)
+        """
+        country_str = "+".join(countries)
+
+        # BIS WS_CBPOL key order: FREQ.REF_AREA
+        key = f"{freq}.{country_str}"
+        url = f"{_BASE_CBPOL}/{key}/all"
+
+        params: dict = {"format": "csv"}
+        if start:
+            params["startPeriod"] = start
+
+        logger.debug("BIS CBPOL GET %s  params=%s", url, params)
+        resp = self._session.get(url, params=params, timeout=60.0)
+        resp.raise_for_status()
+
+        return self._parse_cbpol(resp.text, freq)
+
+    def _parse_cbpol(self, text: str, freq: str) -> pd.DataFrame:
+        clean_lines = [ln for ln in text.splitlines() if not ln.startswith("#")]
+        raw = pd.read_csv(io.StringIO("\n".join(clean_lines)), low_memory=False)
+
+        raw.columns = [c.strip().upper() for c in raw.columns]
+
+        for col in ("REF_AREA", "TIME_PERIOD", "OBS_VALUE"):
+            if col not in raw.columns:
+                raise ValueError(
+                    f"BIS CSV missing column '{col}'. "
+                    f"Available columns: {list(raw.columns)}"
+                )
+
+        df = raw.copy()
+        df["value"] = pd.to_numeric(df["OBS_VALUE"], errors="coerce")
+        date_format = "%Y-%m-%d" if freq == "D" else "%Y-%m"
+        df["date"] = pd.to_datetime(df["TIME_PERIOD"].str.strip(), format=date_format)
+        df["country_code"] = df["REF_AREA"].str.strip()
+
+        result = (
+            df[["date", "country_code", "value"]]
+            .dropna(subset=["value"])
+            .reset_index(drop=True)
+        )
+
+        logger.debug(
+            "BIS CBPOL parsed %d rows, %d countries",
+            len(result),
+            result["country_code"].nunique(),
+        )
+        return result
 
     def _parse(self, text: str, types: List[Tuple[str, str]]) -> pd.DataFrame:
         # BIS CSV may have comment/annotation lines starting with '#'

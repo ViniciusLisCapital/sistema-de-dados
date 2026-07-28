@@ -537,6 +537,13 @@ const GRID = "#e7e9ee";
 function baseLayout(yTitle) {
   return {
     margin: { t: 8, r: 16, b: 32, l: 48 },
+    // dragmode:'pan': drag/scroll move both axes directly, TradingView-
+    // style. No fixedrange on yaxis below — Y is user-pannable/zoomable
+    // too; _bindYAutofit below is inert in this report specifically (no
+    // rangeselector buttons exist here, so X never changes without Y also
+    // changing in the same event) but kept for consistency with the other
+    // two reports' shared copy of the function.
+    dragmode: "pan",
     xaxis: { showgrid: false, tickfont: { size: 11, color: "#6b7280" } },
     yaxis: { title: { text: yTitle, font: { size: 11 } }, gridcolor: GRID, zeroline: true, zerolinecolor: GRID, tickfont: { size: 11, color: "#6b7280" } },
     legend: { orientation: "h", y: -0.22, font: { size: 11 } },
@@ -545,6 +552,87 @@ function baseLayout(yTitle) {
     plot_bgcolor: "#fff",
     paper_bgcolor: "#fff",
   };
+}
+
+// ── Y-axis autofit to visible X range, on pan/zoom/reset ──────────────────────
+// Same generic function shared verbatim with analytics/inflation/ and
+// analytics/exchange_rate/ — see either file's own comment for the full
+// rationale. This report's x-axis (quarter labels like "2026T3") is the
+// 'category' case: Plotly reports xaxis.range as fractional array indices
+// here, not real values, so `isCat` branches accordingly. chart-decomp is
+// the one stacked-bar case (barmode:'relative'); the three scenario line
+// charts autofit tightly with no forced zero.
+function _toComparableX(v) {
+  return (typeof v === 'string' && /^\d{4}-\d{2}(-\d{2})?/.test(v)) ? Date.parse(v) : v;
+}
+function _bindYAutofit(divId) {
+  var el = document.getElementById(divId);
+  if (!el) return;
+  var lock = false;
+  el.on('plotly_relayout', function(ev) {
+    if (lock) return;
+    var xChanged = Object.keys(ev).some(function(k) { return k.indexOf('xaxis.range') === 0 || k.indexOf('xaxis.autorange') === 0; });
+    var yChanged = Object.keys(ev).some(function(k) { return /^yaxis\d*\.(range|autorange)/.test(k); });
+    if (!xChanged || yChanged) return;
+    // _fullLayout first, not layout: it's Plotly's fully-resolved internal
+    // state, guaranteed to have xaxis.type auto-detected (category vs date)
+    // -- el.layout is the raw object passed to newPlot/react and may never
+    // have had .type set at all when it wasn't specified explicitly. Caught
+    // by a runtime harness test against real category-axis data (see
+    // CLAUDE.md's Gotchas), not assumed.
+    var layout = el._fullLayout || el.layout;
+    if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    var isCat = layout.xaxis.type === 'category';
+    var stackedAxes = {};
+    if (layout.barmode === 'stack' || layout.barmode === 'relative') {
+      (el.data || []).forEach(function(t) { if (t.type === 'bar') stackedAxes[t.yaxis || 'y'] = true; });
+    }
+    var xr = layout.xaxis.range;
+    var lo = isCat ? Math.round(xr[0]) : _toComparableX(xr[0]);
+    var hi = isCat ? Math.round(xr[1]) : _toComparableX(xr[1]);
+    var axes = {};
+    (el.data || []).forEach(function(t) {
+      if (!t.x || !t.y || t.type === 'heatmap') return;
+      var axisId = t.yaxis || 'y';
+      if (!axes[axisId]) axes[axisId] = { mn: Infinity, mx: -Infinity, byX: {} };
+      var a = axes[axisId];
+      var stackable = stackedAxes[axisId] && t.type === 'bar';
+      for (var i = 0; i < t.x.length; i++) {
+        var inRange = isCat ? (i >= lo && i <= hi) : (_toComparableX(t.x[i]) >= lo && _toComparableX(t.x[i]) <= hi);
+        if (!inRange) continue;
+        var v = t.y[i];
+        if (v == null || isNaN(v)) continue;
+        if (stackable) {
+          var key = isCat ? i : t.x[i];
+          if (!a.byX[key]) a.byX[key] = { pos: 0, neg: 0 };
+          if (v >= 0) a.byX[key].pos += v; else a.byX[key].neg += v;
+        } else {
+          if (v < a.mn) a.mn = v;
+          if (v > a.mx) a.mx = v;
+        }
+      }
+    });
+    var upd = {}, any = false;
+    Object.keys(axes).forEach(function(axisId) {
+      var a = axes[axisId], mn = a.mn, mx = a.mx;
+      Object.keys(a.byX).forEach(function(k) {
+        var b = a.byX[k];
+        if (b.pos > mx) mx = b.pos;
+        if (b.neg < mn) mn = b.neg;
+      });
+      if (Object.keys(a.byX).length) { mn = Math.min(mn, 0); mx = Math.max(mx, 0); }
+      if (mn === Infinity || mx === -Infinity) return;
+      var pad = Math.max((mx - mn) * 0.1, 0.5);
+      var key = axisId === 'y' ? 'yaxis' : axisId.replace('y', 'yaxis');
+      upd[key + '.range'] = [mn - pad, mx + pad];
+      upd[key + '.autorange'] = false;
+      any = true;
+    });
+    if (any) {
+      lock = true;
+      Plotly.relayout(divId, upd).then(function() { lock = false; }).catch(function() { lock = false; });
+    }
+  });
 }
 
 function lineTrace(x, y, name, color, dash) {
@@ -557,7 +645,7 @@ function lineTrace(x, y, name, color, dash) {
 }
 
 const Q = REPORT_DATA.quarters;
-const config = { responsive: true, displayModeBar: false };
+const config = { responsive: true, displayModeBar: false, scrollZoom: true };
 
 // ── KPIs ──
 const kpi = REPORT_DATA.kpi;
@@ -585,6 +673,7 @@ function scenarioChart(elId, field, yTitle) {
     lineTrace(Q, REPORT_DATA.baseline[field], "Base", COLORS.verde),
     lineTrace(Q, REPORT_DATA.shock[field], "Choque", COLORS.laranja, "dot"),
   ], baseLayout(yTitle), config);
+  _bindYAutofit(elId);
 }
 scenarioChart("chart-selic", "selic", "% a.a.");
 scenarioChart("chart-hiato", "output_gap", "p.p.");
@@ -607,6 +696,7 @@ Plotly.newPlot("chart-decomp", decompTraces, {
   bargap: 0.25,
   legend: { orientation: "h", y: -0.18, font: { size: 11 } },
 }, config);
+_bindYAutofit("chart-decomp");
 
 // ── Tab switching ──
 document.querySelectorAll(".tab-btn").forEach(btn => {

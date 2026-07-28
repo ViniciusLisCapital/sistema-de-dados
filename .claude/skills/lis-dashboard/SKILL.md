@@ -50,8 +50,7 @@ Seguir as regras de design abaixo. Confirmar o NAV do fundo se necessário para 
 
 O output é um **artifact HTML direto no chat** (não salvar em pasta específica). O HTML inclui:
 - Google Fonts (Barlow, Barlow Condensed, JetBrains Mono)
-- Chart.js 4.4.1 via CDN
-- chartjs-plugin-datalabels 2.2.0 via CDN
+- Plotly 2.35.2 via CDN (charting padrão do projeto desde 2026-07-28 — ver `references/design-system.md#zoom-pan`; substituiu Chart.js, que esta skill usava antes)
 - CSS inline com variáveis do design system
 - Dados embarcados como array JS (não fetch externo)
 
@@ -64,15 +63,15 @@ O output é um **artifact HTML direto no chat** (não salvar em pasta específic
 - **Chart container**: card branco com título, subtítulo, e botão "Dados no gráfico"
 - **Footer**: linha centralizada com contexto
 
-### Gráficos — Chart.js
-- **Tipo padrão**: `line` com `fill:true`, `tension:0.25`, `borderWidth:2`
+### Gráficos — Plotly
+- **Tipo padrão**: `type:'scatter'`, `mode:'lines+markers'`, `line:{shape:'spline', smoothing:0.25}`, `fill:'tozeroy'`
 - **Cor da linha**: `#1F2853` (navy)
 - **Fill**: `rgba(31,40,83,0.06)`
-- **Pontos coloridos por variação**: verde `rgba(65,135,145,0.7)` se subiu, vermelho `rgba(234,82,58,0.7)` se caiu
-- **Point radius**: 3 normal, 4 para poucos pontos, hover sempre 6-7
-- **Options obrigatórias**: `responsive:true`, `maintainAspectRatio:false`
-- **Chart wrap**: `position:relative; height:480px;`
-- **Registrar plugin**: `Chart.register(ChartDataLabels)` no início do script
+- **Marcadores coloridos por variação**: verde `rgba(65,135,145,0.7)` se subiu, vermelho `rgba(234,82,58,0.7)` se caiu — array em `marker.color`
+- **Marker size**: 3 normal, 4 para poucos pontos
+- **Cada gráfico é um `<div id="...">` vazio** (nunca `<canvas>`) — `Plotly.newPlot(divId, traces, layout, config)`
+- **Chart wrap**: `position:relative; height:480px;` (o `layout.height` do Plotly deve ficar próximo desse valor)
+- **Zoom/pan interativo (obrigatório)**: arrastar move os dois eixos (pan), scroll/pinch dá zoom nos dois eixos, double-click reseta, sem gesto de box-zoom, mais botões de range rápido (1a/3a/5a/10a/Tudo) — via `dragmode:'pan'` + `scrollZoom:true` (nativo do Plotly) + `rangeselector`, e `_bindYAutofit(divId)` chamado logo após cada `Plotly.newPlot`/`react` (cobre o caso em que um clique no rangeselector move X sem mover Y). Ver `references/design-system.md#zoom-pan` para o bloco de código completo (`mkLayout()`, `PLOTLY_CONFIG`, `_bindYAutofit`) e a explicação — mesmo padrão já usado em `analytics/exchange_rate/report.html`/`analytics/inflation/report.html`/`analytics/monetary_policy/report.html`.
 
 ### Botão "Dados no gráfico"
 OBRIGATÓRIO em todo dashboard. Comportamento:
@@ -81,20 +80,20 @@ OBRIGATÓRIO em todo dashboard. Comportamento:
 - Ao clicar de novo, oculta
 - Classe `.dl-toggle` / `.dl-toggle.on`
 
-### Formatação de labels (datalabels)
+### Formatação de labels (texto sobre o gráfico via `text`/`textposition`)
 - **Truncar, não arredondar**: usar `Math.floor(v*10)/10` antes de `.toFixed(1)`
 - **Separador decimal**: vírgula (formato BR) → `.replace('.',',')`
 - **Sufixo**: `%` para percentuais, `R$` prefix para preços
 - **Exemplo**: 16.951 → "16,9%" (não "17,0%")
 - **Step para muitos pontos**: >60 pontos → mostrar a cada 5; >30 → a cada 3; ≤30 → todos
-- **Estilo do label**: `backgroundColor:'rgba(255,255,255,0.85)'`, `borderRadius:3`, font JetBrains Mono 9px
+- **Estilo do label**: `textfont: {family:'JetBrains Mono', size:9, color: <cor da série>}` — Plotly não tem um "chip" com fundo/borderRadius por label como o chartjs-plugin-datalabels tinha; texto simples sobre o gráfico é o padrão aqui, não tente forçar um background por annotation (custo/complexidade não valem a pena para esse efeito)
 
-### Tooltips
-- Background: `#1F2853`
-- Font título: JetBrains Mono 11px
-- Font body: Barlow 12px
-- Padding: 12, cornerRadius: 8
-- Mostrar todas as métricas disponíveis (% NAV, preço, quantidade, etc.)
+### Tooltips (`hoverlabel` + `hovertemplate`)
+- Background: `#1F2853` (`hoverlabel.bgcolor`)
+- Font: Barlow 12px (`hoverlabel.font`) — Plotly usa uma única fonte para título+corpo do hover, não título/corpo separados como o Chart.js
+- `hovermode: 'x unified'` no layout
+- Valores formatados em BR entram via `customdata` (não dá pra formatar direto no `%{y}` do `hovertemplate` com vírgula decimal)
+- Mostrar todas as métricas disponíveis (% NAV, preço, quantidade, etc.) — várias linhas no mesmo `hovertemplate`, `<br>` entre elas
 
 ### Filtros de período (quando aplicável)
 - Botões tipo pill com classe `.month-btn`
@@ -108,9 +107,9 @@ OBRIGATÓRIO em todo dashboard. Comportamento:
 - Eixos independentes: primária à esquerda, secundárias à direita
 
 ### Escalas
-- Grid X: `rgba(31,40,83,0.04)`, ticks JetBrains Mono 9-10px, `maxTicksLimit:20`
-- Grid Y: `rgba(31,40,83,0.06)`, ticks JetBrains Mono 10px
-- Ticks Y com sufixo adequado (`%`, `R$`, `k`)
+- Grid X: `showgrid:false` (linha de base só, `showline:true` + `linecolor:'rgba(31,40,83,0.1)'`), ticks JetBrains Mono 9-10px — Plotly gerencia a densidade de ticks automaticamente (sem um `maxTicksLimit` explícito; use `xaxis.nticks` só se precisar forçar)
+- Grid Y: `gridcolor:'rgba(31,40,83,0.06)'`, ticks JetBrains Mono 10px
+- Ticks Y com sufixo simples via `ticksuffix`/`tickprefix` (`%`, `R$`, `k`) quando o formato é direto — para vírgula decimal BR completa, use `customdata`/`hovertemplate` no tooltip em vez de tentar formatar o tick do eixo (ver nota em "Formatação BR" na referência)
 
 ### Stats cards
 - Exatamente 3 cards em grid `repeat(3, 1fr)`

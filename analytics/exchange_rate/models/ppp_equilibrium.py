@@ -15,7 +15,7 @@ same series pairing used everywhere else in this project (diferenciais_juros
 uses ipca_12m/cpi_12m_us) rather than a bespoke tradables-only or
 seasonally-adjusted construction.
 
-Also fetches the three candidate channels for a future Bayesian model of the
+Also fetches the candidate channels for a future Bayesian model of the
 PPP deviation (not fit yet — 2026-07-23 decision: examine the raw series on
 the dashboard first, decide on the regression afterward):
   carry   diferenciais_juros.diferencial_nominal (Selic - Fed Funds, macro_international)
@@ -34,6 +34,42 @@ the dashboard first, decide on the regression afterward):
           user's request, after confirming BCB Focus's own longest horizon
           (IPCA 24m, macro_brasil.expc_focus) only goes back to 2021-03 —
           too short to be useful here.
+  dxy     cmb_dollar_index.dxy (ICE US Dollar Index, DX-Y.NYB via Yahoo
+          Finance, macro_international) from 1971 — a GLOBAL dollar-strength
+          proxy, not bilateral BRL-specific like the other four channels.
+          Added 2026-07-24 at the user's request to test whether it improves
+          the state-space model's explicability alongside carry/tot/
+          breakeven/fiscal.
+  relative_carry  Selic minus the equal-weighted average policy rate of
+          MX/CL/CO/PE (macro_international.cmb_policy_rates, BIS WS_CBPOL) --
+          Brazil's rate advantage relative to its LatAm peers, rather than
+          only against the US (`carry` above). AR excluded (BIS stopped
+          updating it 2025-07; also a structural outlier vs. the other four
+          inflation-targeters). Added 2026-07-28 to test whether REGIONAL
+          relative positioning explains the deviation beyond the bilateral
+          BR-US differential.
+  carry_vol  carry / BRL's own trailing-6m annualized realized volatility
+          (from daily PTAX, macro_brasil.cmb_ptax) -- a carry-to-volatility
+          ("Sharpe-style") measure of Brazil's rate advantage per unit of
+          FX risk. relative_carry_vol = carry_vol - mean(peer_carry_vol) for
+          MX/CL/CO/PE, each peer's own carry_vol built the identical way
+          (peer policy rate - Fed Funds, over that peer's own trailing-6m
+          vol vs USD from the new macro_international.cmb_fx_latam, Yahoo
+          Finance MXN=X/CLP=X/COP=X/PEN=X). Both added 2026-07-28, same
+          equal-weight peer-average convention as relative_carry.
+  trade_pct_gdp / ca_pct_gdp  Trade balance and current account, both as %
+          of GDP (cmb_balanco_pagmt.exportacao_bens - importacao_bens, and
+          .conta_corrente respectively, both macro_brasil, BCB BOP BPM6) over
+          atv_pib_usd.pib_usd (BCB SGS 4385, monthly GDP in USD). Same 12-
+          month TRAILING-SUM-over-trailing-sum convention already used by
+          analytics/exchange_rate/generate_report.py's own "% PIB" toggle
+          (not a single month's noisy ratio) -- reused here rather than
+          inventing a second convention for the same two series. From
+          1995-01 (both series' own start), though the model's actual
+          binding constraint remains fiscal (2007-12). Added 2026-07-24 for
+          the "BEER-style levels" model (see beer_model.py) after a
+          throwaway delta-channel test (scratchpad, not committed) found
+          neither trade nor CA added signal in delta form.
           Data-quality fix carried over from referencia/state_space_equilibrium_model.md's
           "built and charted this session as a working proxy" note: PREJS@120M
           has two confirmed bad windows (2010-01-22..2010-02-05 and
@@ -45,7 +81,7 @@ the dashboard first, decide on the regression afterward):
           plotting script — though note the fix still lives in this project's
           code, not in the external base_mercado table itself, since that
           table isn't ours to write to.
-All four are left-joined onto the core (ptax/ipca/cpi) monthly index, so
+All ten are left-joined onto the core (ptax/ipca/cpi) monthly index, so
 each column is simply null before its own series starts — no padding or
 back-filling.
 
@@ -119,6 +155,117 @@ def _load_breakeven() -> pd.Series:
     return breakeven.resample("MS").last().rename("breakeven")
 
 
+_LATAM_PEERS = ["MX", "CL", "CO", "PE"]
+
+
+def _load_policy_rates_monthly() -> pd.DataFrame:
+    """Wide monthly BIS policy rates (macro_international.cmb_policy_rates),
+    one column per country_code (BR + the 4 LatAm peers, AR excluded -- see
+    load_data()'s docstring) -- shared by _load_relative_carry() and
+    _load_carry_vol_metrics() so the table is only read/pivoted once."""
+    rates = _read_table("macro_international", "cmb_policy_rates")
+    rates["date"] = pd.to_datetime(rates["date"])
+    rates["value"] = rates["value"].astype(float)
+    wide = rates.pivot_table(index="date", columns="country_code", values="value")
+    return wide.resample("MS").last()
+
+
+def _load_relative_carry() -> pd.Series:
+    """relative_carry(t) = Selic(t) - mean(MX, CL, CO, PE policy rate)(t).
+
+    Since Fed Funds cancels out of (Selic - FF) - mean(peer - FF), this is
+    exactly Selic minus the equal-weighted peer level -- no need to net out
+    the US rate a second time. AR excluded (see load_data()'s docstring)."""
+    monthly = _load_policy_rates_monthly()
+    peer_avg = monthly[_LATAM_PEERS].mean(axis=1)
+    return (monthly["BR"] - peer_avg).rename("relative_carry")
+
+
+def _load_daily_ptax() -> pd.Series:
+    """Raw daily PTAX (macro_brasil.cmb_ptax, ptax_venda) -- NOT resampled,
+    unlike every other loader in this module. Needed at daily frequency for
+    _annualized_vol_6m(); the rest of the module only ever needs the
+    already-monthly ptax_m built in load_data()."""
+    ptax = _read_table("macro_brasil", "cmb_ptax")
+    ptax = ptax[ptax["name"] == "ptax_venda"]
+    return ptax.set_index(pd.to_datetime(ptax["date"]))["value"].astype(float).sort_index()
+
+
+def _load_daily_peer_fx() -> pd.DataFrame:
+    """Wide daily LatAm peer FX rates vs USD (macro_international.cmb_fx_latam,
+    Yahoo Finance MXN=X/CLP=X/COP=X/PEN=X), one column per country_code."""
+    fx = _read_table("macro_international", "cmb_fx_latam")
+    fx["date"] = pd.to_datetime(fx["date"])
+    fx["value"] = fx["value"].astype(float)
+    return fx.pivot_table(index="date", columns="country_code", values="value").sort_index()
+
+
+def _annualized_vol_6m(daily: pd.Series) -> pd.Series:
+    """Trailing 6-month (126 trading-day) annualized realized volatility of
+    a daily FX rate, in percent -- standard construction (log returns,
+    sqrt(252) annualization), resampled to month-end (MS) to align with the
+    rest of this module's monthly index. min_periods=90 lets the window
+    start reporting before a full 126 observations accumulate, same
+    tolerance the rest of this module applies to its own ramp-up periods."""
+    log_ret = np.log(daily / daily.shift(1))
+    vol = log_ret.rolling(window=126, min_periods=90).std() * np.sqrt(252) * 100
+    return vol.resample("MS").last()
+
+
+def _load_carry_vol_metrics(carry_m: pd.Series) -> pd.DataFrame:
+    """carry_vol(t) = carry(t) / BRL's own trailing-6m annualized realized
+    vol (from daily PTAX) -- a carry-to-volatility ("Sharpe-style") measure
+    of Brazil's rate advantage per unit of FX risk taken, rather than the
+    raw rate differential alone.
+
+    relative_carry_vol(t) = carry_vol(t) - mean(peer_carry_vol(t)) for
+    MX/CL/CO/PE, each peer's own carry_vol built identically (peer policy
+    rate - Fed Funds, over that peer's own trailing-6m annualized vol vs
+    USD from cmb_fx_latam) -- same equal-weight peer-average convention
+    already used by relative_carry above, just applied to the risk-adjusted
+    metric instead of the raw rate. Added 2026-07-28 at the user's request,
+    to test whether the carry trade's RISK-ADJUSTED attractiveness (not
+    just the level of the rate differential) explains the deviation, and
+    whether that's a bilateral BR-US or a regional-peer-relative story."""
+    brl_vol_m = _annualized_vol_6m(_load_daily_ptax())
+    carry_vol = (carry_m / brl_vol_m).rename("carry_vol")
+
+    rates_m = _load_policy_rates_monthly()
+    fed_funds_m = _monthly_series("macro_international", "diferenciais_juros", "fed_funds", "fed_funds")
+    peer_fx_daily = _load_daily_peer_fx()
+
+    peer_carry_vols = []
+    for peer in _LATAM_PEERS:
+        peer_carry = rates_m[peer] - fed_funds_m
+        peer_vol = _annualized_vol_6m(peer_fx_daily[peer])
+        peer_carry_vols.append(peer_carry / peer_vol)
+    peer_carry_vol_avg = pd.concat(peer_carry_vols, axis=1).mean(axis=1)
+
+    relative_carry_vol = (carry_vol - peer_carry_vol_avg).rename("relative_carry_vol")
+    return pd.concat([carry_vol, relative_carry_vol], axis=1)
+
+
+def _load_bop_pct_gdp() -> pd.DataFrame:
+    """Trade balance and current account, both as % of GDP -- 12m trailing
+    sum of the flow over 12m trailing sum of pib_usd, same convention as
+    generate_report.py's "% PIB" toggle. See load_data()'s docstring."""
+    gdp = _monthly_series("macro_brasil", "atv_pib_usd", "pib_usd", "pib_usd")
+    gdp_12m = gdp.rolling(12).sum()
+
+    bop = _read_table("macro_brasil", "cmb_balanco_pagmt")
+    bop_wide = bop.pivot_table(index="date", columns="name", values="value")
+    bop_wide.index = pd.to_datetime(bop_wide.index)
+    bop_wide = bop_wide.resample("MS").last()
+
+    trade = bop_wide["exportacao_bens"] - bop_wide["importacao_bens"]
+    ca = bop_wide["conta_corrente"]
+
+    return pd.DataFrame({
+        "trade_pct_gdp": 100 * trade.rolling(12).sum() / gdp_12m,
+        "ca_pct_gdp": 100 * ca.rolling(12).sum() / gdp_12m,
+    })
+
+
 def _load_inflation_target() -> pd.Series:
     """CMN inflation target (macro_brasil.inflc_meta, BCB SGS 13521) — one
     value per calendar year, dated Jan-1 of the target year. Returned as-is
@@ -147,6 +294,15 @@ def load_data() -> pd.DataFrame:
     cpi = FredUniFrame("cpi_us", "CPIAUCSL", _FETCH_START, None)
     cpi_s = cpi.set_index(pd.to_datetime(cpi["Date"]))["cpi_us"].sort_index()
     cpi_m = cpi_s.resample("MS").last().rename("cpi_index")
+    # FRED CPIAUCSL has a genuine NaN at 2025-10-01 -- BLS didn't collect CPI
+    # data during the Oct-Nov 2025 government shutdown and never published an
+    # October 2025 report. Interpolated (not dropped) so this one confirmed
+    # real-world gap doesn't delete the whole month from every downstream
+    # chart via the dropna() below -- same "isolated known gap, fix it here"
+    # precedent as the PREJS@120M bug window in _load_breakeven(). limit_area
+    # ="inside" keeps this from ever extrapolating beyond real data at either
+    # end of the series.
+    cpi_m = cpi_m.interpolate(method="time", limit_area="inside")
 
     core = pd.concat([ptax_m, ipca_index, cpi_m], axis=1).dropna()
 
@@ -154,9 +310,16 @@ def load_data() -> pd.DataFrame:
     tot_m = _monthly_series("macro_brasil", "cmb_termos_troca", "termos_de_troca_funcex", "tot")
     fiscal_m = _monthly_series("macro_brasil", "cmb_risco_pais", "cds_5y_usd", "fiscal")
     breakeven_m = _load_breakeven()
+    dxy_m = _monthly_series("macro_international", "cmb_dollar_index", "dxy", "dxy")
+    relative_carry_m = _load_relative_carry()
+    carry_vol_df = _load_carry_vol_metrics(carry_m)
+    bop_pct_gdp = _load_bop_pct_gdp()
     target_annual = _load_inflation_target()
 
-    df = core.join([carry_m, tot_m, fiscal_m, breakeven_m, target_annual], how="left")
+    df = core.join(
+        [carry_m, tot_m, fiscal_m, breakeven_m, dxy_m, relative_carry_m, carry_vol_df, bop_pct_gdp, target_annual],
+        how="left",
+    )
     df["target"] = df["target"].ffill()
     df["breakeven_gap"] = df["breakeven"] - df["target"]
     return df
@@ -198,18 +361,32 @@ def build_payload(df: pd.DataFrame, default_base_month: str = _DEFAULT_BASE_MONT
         "tot": _to_jsonable(df["tot"]),
         "fiscal": _to_jsonable(df["fiscal"]),
         "breakeven": _to_jsonable(df["breakeven"]),
+        "dxy": _to_jsonable(df["dxy"]),
+        "relative_carry": _to_jsonable(df["relative_carry"]),
+        "carry_vol": _to_jsonable(df["carry_vol"]),
+        "relative_carry_vol": _to_jsonable(df["relative_carry_vol"]),
+        "trade_pct_gdp": _to_jsonable(df["trade_pct_gdp"]),
+        "ca_pct_gdp": _to_jsonable(df["ca_pct_gdp"]),
+        "breakeven_gap": _to_jsonable(df["breakeven_gap"]),
         "default_base_month": default_base_month,
     }
 
 
-def render(payload: dict, bayes_payload: dict | None = None) -> None:
-    """Fills both template markers. `/*PPP_DATA*/` always gets `payload`;
-    `/*BAYES_DATA*/` gets `bayes_payload` if given, else the literal `null`
-    (so the template's Bayesian-model tab always has valid JS to check
+def render(payload: dict, bayes_payload: dict | None = None, statespace_payload: dict | None = None,
+           kalman_payload: dict | None = None, beer_payload: dict | None = None,
+           rolling_payload: dict | None = None) -> None:
+    """Fills all six template markers. `/*PPP_DATA*/` always gets `payload`;
+    `/*BAYES_DATA*/`, `/*STATESPACE_DATA*/`, `/*KALMAN_DATA*/`, `/*BEER_DATA*/`,
+    and `/*ROLLING_DATA*/` get their respective payload if given, else the
+    literal `null` (so each tab's JS always has something valid to check
     against, whether or not that tab's data was generated this run)."""
     template = _TEMPLATE.read_text(encoding="utf-8")
     html = template.replace("/*PPP_DATA*/", json.dumps(payload))
     html = html.replace("/*BAYES_DATA*/", json.dumps(bayes_payload) if bayes_payload is not None else "null")
+    html = html.replace("/*STATESPACE_DATA*/", json.dumps(statespace_payload) if statespace_payload is not None else "null")
+    html = html.replace("/*KALMAN_DATA*/", json.dumps(kalman_payload) if kalman_payload is not None else "null")
+    html = html.replace("/*BEER_DATA*/", json.dumps(beer_payload) if beer_payload is not None else "null")
+    html = html.replace("/*ROLLING_DATA*/", json.dumps(rolling_payload) if rolling_payload is not None else "null")
     _OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     _OUTPUT.write_text(html, encoding="utf-8")
 
@@ -223,7 +400,7 @@ def run() -> dict:
     print(f"Sample: {df.index.min().date()} .. {df.index.max().date()}  (n={len(df)})")
     print(f"Base month ({_DEFAULT_BASE_MONTH}): PTAX={df.loc[df.index.strftime('%Y-%m') == _DEFAULT_BASE_MONTH, 'ptax'].iloc[0]:.4f}")
     print(f"Latest ({df.index[-1].strftime('%Y-%m')}): actual PTAX={df['ptax'].iloc[-1]:.4f}, deviation={deviation.iloc[-1]:+.1f}%")
-    for col in ("carry", "tot", "fiscal", "breakeven", "target", "breakeven_gap"):
+    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "fiscal", "breakeven", "dxy", "trade_pct_gdp", "ca_pct_gdp", "target", "breakeven_gap"):
         s = df[col].dropna()
         print(f"  {col}: {s.index.min().date()} .. {s.index.max().date()}  (n={len(s)})")
     print(f"Dashboard written to {_OUTPUT}")

@@ -287,9 +287,13 @@ button.reset:focus-visible { outline: 2px solid var(--focus); outline-offset: 2p
 .card-head .subtitle { font-size: 11.5px; color: var(--ink-faint); }
 .legend { display: flex; gap: 14px; font-size: 11.5px; color: var(--ink-muted); }
 .legend .item { display: flex; align-items: center; gap: 5px; }
+.legend .item.toggleable { cursor: pointer; user-select: none; border-radius: 4px; padding: 2px 5px; margin: -2px -5px; transition: opacity 0.1s ease, background 0.1s ease; }
+.legend .item.toggleable:hover { background: var(--surface-2); }
+.legend .item.toggleable.off { opacity: 0.4; }
+.legend .item.toggleable.off .dot { background: var(--ink-faint) !important; }
 .legend .dot { width: 9px; height: 9px; border-radius: 2px; }
 
-.small-multiples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.small-multiples { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 @media (max-width: 760px) { .small-multiples { grid-template-columns: 1fr; } }
 
 svg.chart { width: 100%; height: auto; overflow: visible; display: block; }
@@ -329,6 +333,8 @@ footer.note {
       <span class="eyebrow">Illustrative simulator — synthetic scenarios, not fitted to real BRL data</span>
       <h1 class="serif">USD/BRL Equilibrium Model — Intuition Simulator</h1>
       <p>Companion to <span class="mono">state_space_equilibrium_model.md</span>. Adjust the structural parameters and driver shapes below and watch how an unobserved equilibrium, a mean-reverting deviation, and their sum (the "observed" rate) behave — before any of this is fit to real data.</p>
+      <p style="margin-top:8px;"><strong>Updated 2026-07-24 (third pass, same day):</strong> added a <span class="mono">Constant</span> shape for π_diff and made it the default — a steady, non-widening inflation differential is the more realistic baseline (constant-rate depreciation, a straight-line equilibrium) than the inherited <span class="mono">Trend</span> shape, which ramps π_diff's own level and, once accumulated, produces an ever-accelerating (quadratic) equilibrium path instead.</p>
+      <p style="margin-top:8px;"><strong>Updated 2026-07-24 (revised same day):</strong> equilibrium is now explicitly a relative-PPP path — <span class="mono">π_diff</span>, a synthetic inflation-differential proxy, is a <em>rate</em>, so accumulating its raw level each month is the correct construction of a price-level ratio (this is literally how <span class="mono">ppp_equilibrium.py</span> builds the real PPP series from IPCA/CPI). Carry, terms-of-trade, and fiscal risk are now <em>all</em> deviation-side regressors, matching <span class="mono">bayesian_deviation_model.py</span>'s actual fitted structure — an earlier version of this simulator had briefly moved carry into the transition equation using an I(1)/I(0) argument taken out of context; that didn't match how the real model treats PPP as the whole equilibrium and never splits channels this way. Each of the three now enters the deviation equation as a period-over-period <em>change</em> (Δ), not a raw level — feeding a level directly into a difference equation was producing unbounded compounding drift instead of the intended transitory (Step/Pulse) or steady-drift (Trend) effect. φ (reversion speed) defaults to 0.98, matching the ~44-month mean-reversion half-life that model's error-correction follow-up found in real data — it remains the only channel carrying an effect into future months.</p>
     </div>
     <div class="meta">120-month horizon (10y)<br>equilibrium(0) = 100, index units</div>
   </header>
@@ -339,12 +345,12 @@ footer.note {
       <div class="formula serif"><span class="g-obs">rer(t)</span> = <span class="g-eq">equilibrium(t)</span> + <span class="g-dev">deviation(t)</span></div>
     </div>
     <div class="eq">
-      <h3>2 · Transition (equilibrium)</h3>
-      <div class="formula serif"><span class="g-eq">equilibrium(t)</span> = equilibrium(t−1) + γ·tot_shift(t) + η(t)</div>
+      <h3>2 · Transition (equilibrium ≡ relative PPP)</h3>
+      <div class="formula serif"><span class="g-eq">equilibrium(t)</span> = equilibrium(t−1) + γ_ppp·π_diff(t) + η(t)</div>
     </div>
     <div class="eq">
-      <h3>3 · Deviation (error correction)</h3>
-      <div class="formula serif"><span class="g-dev">deviation(t)</span> = φ·deviation(t−1) + β₁·carry(t−1) + β₂·fiscal_risk(t−1) + ε(t)</div>
+      <h3>3 · Deviation (error correction, Δ-driven)</h3>
+      <div class="formula serif"><span class="g-dev">deviation(t)</span> = φ·deviation(t−1) + β_carry·Δcarry(t) + β_tot·Δtot(t) + β_fiscal·Δfiscal(t) + ε(t)</div>
     </div>
   </div>
 
@@ -353,66 +359,82 @@ footer.note {
     <div class="panel">
       <h2>Controls</h2>
 
-      <div class="group-title"><span class="swatch" style="background:var(--line-eq)"></span>Transition — equilibrium</div>
+      <div class="group-title"><span class="swatch" style="background:var(--line-eq)"></span>Transition — equilibrium (≡ relative PPP)</div>
       <div class="control">
-        <label><span class="symbol">γ &nbsp;terms-of-trade pass-through</span><span class="value num" id="v-gamma">0.60</span></label>
-        <input type="range" id="gamma" min="-2" max="2" step="0.05" value="0.6">
-        <div class="hint">How much a terms-of-trade shock permanently shifts fair value. 0 = equilibrium ignores it entirely.</div>
+        <label><span class="symbol">γ_ppp &nbsp;PPP pass-through</span><span class="value num" id="v-gammaPpp">1.00</span></label>
+        <input type="range" id="gammaPpp" min="0" max="2" step="0.05" value="1">
+        <div class="hint">1.0 = strict relative PPP — the nominal rate fully absorbs the inflation differential, month by month. &lt;1 = incomplete pass-through (non-tradables, Balassa-Samuelson); &gt;1 = overshooting.</div>
       </div>
       <div class="control">
         <label><span class="symbol">σ_η &nbsp;equilibrium noise</span><span class="value num" id="v-sigmaEta">0.00</span></label>
         <input type="range" id="sigmaEta" min="0" max="2" step="0.05" value="0">
-        <div class="hint">Unexplained monthly drift in fair value itself. Needs "add random noise" on below.</div>
+        <div class="hint">Unexplained monthly drift in fair value itself, beyond π_diff. Needs "add random noise" on below.</div>
       </div>
 
-      <div class="group-title"><span class="swatch" style="background:var(--line-dev)"></span>Deviation — error correction</div>
+      <div class="group-title"><span class="swatch" style="background:var(--line-dev)"></span>Deviation — error correction (all three channels, Δ-driven)</div>
       <div class="control">
-        <label><span class="symbol">φ &nbsp;reversion speed</span><span class="value num" id="v-phi">0.85</span></label>
-        <input type="range" id="phi" min="0" max="0.98" step="0.01" value="0.85">
-        <div class="hint">How much of last month's gap survives. Higher = slower reversion, longer-lived misalignments.</div>
+        <label><span class="symbol">φ &nbsp;reversion speed</span><span class="value num" id="v-phi">0.98</span></label>
+        <input type="range" id="phi" min="0" max="0.99" step="0.005" value="0.98">
+        <div class="hint">How much of last month's gap survives. The <em>only</em> channel carrying an effect into future months — the three drivers below act contemporaneously (as Δ), so this is where "residual impact in months forward" actually lives. Default 0.98 ≈ the ~44-month half-life <span class="mono">bayesian_deviation_model.py</span>'s error-correction follow-up found (weak evidence, P≈89%, not proof) — a real data-derived starting point, not an arbitrary guess.</div>
       </div>
       <div class="control">
-        <label><span class="symbol">β₁ &nbsp;carry pull</span><span class="value num" id="v-beta1">-1.00</span></label>
-        <input type="range" id="beta1" min="-3" max="3" step="0.1" value="-1">
-        <div class="hint">Negative = higher carry <em>widens</em> the gap (the empirical, "wrong-sign" finding from carry_model.py). Positive = textbook UIP direction.</div>
+        <label><span class="symbol">β_carry &nbsp;carry pull</span><span class="value num" id="v-betaCarry">-1.00</span></label>
+        <input type="range" id="betaCarry" min="-3" max="3" step="0.1" value="-1">
+        <div class="hint">Negative = higher carry <em>widens</em> the gap this month — the consistent finding in <span class="mono">uip_model.py</span>/<span class="mono">carry_model.py</span>'s simpler regressions (a UIP-violating "wrong sign"). <span class="mono">bayesian_deviation_model.py</span>'s own multi-channel attempt found no stable sign across samples — try both directions.</div>
       </div>
       <div class="control">
-        <label><span class="symbol">β₂ &nbsp;fiscal-risk pull</span><span class="value num" id="v-beta2">0.80</span></label>
-        <input type="range" id="beta2" min="-3" max="3" step="0.1" value="0.8">
-        <div class="hint">Positive = worse fiscal credibility widens the gap (currency weaker than fundamentals justify).</div>
+        <label><span class="symbol">β_tot &nbsp;terms-of-trade pull</span><span class="value num" id="v-betaTot">-0.50</span></label>
+        <input type="range" id="betaTot" min="-3" max="3" step="0.1" value="-0.5">
+        <div class="hint">The one channel <span class="mono">bayesian_deviation_model.py</span> found consistently negative-signed across both its primary and long-sample robustness checks (P(β&lt;0) ≈ 0.82–0.83) — the most reliable of the three, though still not at its 94%-HDI bar.</div>
+      </div>
+      <div class="control">
+        <label><span class="symbol">β_fiscal &nbsp;fiscal-risk pull</span><span class="value num" id="v-betaFiscal">0.80</span></label>
+        <input type="range" id="betaFiscal" min="-3" max="3" step="0.1" value="0.8">
+        <div class="hint">Positive = worse fiscal credibility (CDS) widens the gap this month. Strongest single-spec sign probability of the three (0.94) — but no longer-sample robustness check exists for it yet, unlike β_tot.</div>
       </div>
       <div class="control">
         <label><span class="symbol">σ_ε &nbsp;deviation noise</span><span class="value num" id="v-sigmaEps">1.20</span></label>
         <input type="range" id="sigmaEps" min="0" max="5" step="0.1" value="1.2">
-        <div class="hint">Month-to-month noise in the gap beyond the three drivers. Needs "add random noise" on below.</div>
+        <div class="hint">Month-to-month noise in the gap beyond the three channels. Needs "add random noise" on below.</div>
       </div>
 
       <div class="group-title"><span class="swatch" style="background:var(--line-sec)"></span>Driver scenarios</div>
       <div class="control">
-        <label><span>Terms-of-trade shift</span></label>
+        <label><span>Inflation differential (π_diff) <span style="color:var(--ink-faint);font-weight:400;">→ equilibrium, level</span></span></label>
+        <select id="shape-piDiff">
+          <option value="constant" selected>Constant (steady differential)</option>
+          <option value="trend">Trend (gradual BR−US gap drift)</option>
+          <option value="step">Step (regime shift)</option>
+          <option value="pulse">Pulse (inflation shock, decays)</option>
+          <option value="cycle">Cycle (3y sine)</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div class="control">
+        <label><span>Terms-of-trade shift <span style="color:var(--ink-faint);font-weight:400;">→ deviation, Δ</span></span></label>
         <select id="shape-tot">
           <option value="pulse" selected>Pulse (commodity shock, decays)</option>
-          <option value="step">Step (permanent shift)</option>
+          <option value="step">Step (level shift)</option>
           <option value="trend">Trend (gradual drift)</option>
           <option value="cycle">Cycle (3y sine)</option>
           <option value="none">None</option>
         </select>
       </div>
       <div class="control">
-        <label><span>Carry</span></label>
+        <label><span>Carry <span style="color:var(--ink-faint);font-weight:400;">→ deviation, Δ</span></span></label>
         <select id="shape-carry">
           <option value="cycle" selected>Cycle (3y sine — hiking/cutting)</option>
-          <option value="step">Step (permanent shift)</option>
+          <option value="step">Step (level shift)</option>
           <option value="pulse">Pulse (shock, decays)</option>
           <option value="trend">Trend (gradual drift)</option>
           <option value="none">None</option>
         </select>
       </div>
       <div class="control">
-        <label><span>Fiscal risk</span></label>
+        <label><span>Fiscal risk <span style="color:var(--ink-faint);font-weight:400;">→ deviation, Δ</span></span></label>
         <select id="shape-fiscal">
           <option value="trend" selected>Trend (gradual deterioration)</option>
-          <option value="step">Step (permanent shift)</option>
+          <option value="step">Step (level shift)</option>
           <option value="pulse">Pulse (crisis, decays)</option>
           <option value="cycle">Cycle (3y sine)</option>
           <option value="none">None</option>
@@ -445,9 +467,9 @@ footer.note {
             <h3>Observed rate vs. equilibrium</h3>
             <div class="subtitle">rer(t) = equilibrium(t) + deviation(t) — index units, month 0 = 100</div>
           </div>
-          <div class="legend">
-            <span class="item"><span class="dot" style="background:var(--line-obs)"></span>Observed (rer)</span>
-            <span class="item"><span class="dot" style="background:var(--line-eq)"></span>Equilibrium</span>
+          <div class="legend" id="legend-main">
+            <span class="item toggleable" data-series="rer"><span class="dot" style="background:var(--line-obs)"></span>Observed (rer)</span>
+            <span class="item toggleable" data-series="equilibrium"><span class="dot" style="background:var(--line-eq)"></span>Equilibrium</span>
           </div>
         </div>
         <div class="chart-wrap" id="wrap-main"><svg class="chart" id="chart-main"></svg><div class="tooltip" id="tip-main"></div></div>
@@ -467,20 +489,21 @@ footer.note {
         <div class="card-head">
           <div>
             <h3>Driver paths</h3>
-            <div class="subtitle">the three exogenous inputs feeding the equations above</div>
+            <div class="subtitle">π_diff feeds the equilibrium directly at its own level (it's a rate); tot/carry/fiscal feed the deviation via their period-over-period change (Δ) — shown here at their own level</div>
           </div>
         </div>
         <div class="small-multiples">
-          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Terms-of-trade shift</div><svg class="chart" id="chart-tot"></svg><div class="tooltip" id="tip-tot"></div></div>
-          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Carry</div><svg class="chart" id="chart-carry"></svg><div class="tooltip" id="tip-carry"></div></div>
-          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Fiscal risk</div><svg class="chart" id="chart-fiscal"></svg><div class="tooltip" id="tip-fiscal"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Inflation differential (π_diff) <span style="color:var(--ink-faint);font-weight:400;">→ equilibrium</span></div><svg class="chart" id="chart-piDiff"></svg><div class="tooltip" id="tip-piDiff"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Terms-of-trade shift <span style="color:var(--ink-faint);font-weight:400;">→ deviation (Δ)</span></div><svg class="chart" id="chart-tot"></svg><div class="tooltip" id="tip-tot"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Carry <span style="color:var(--ink-faint);font-weight:400;">→ deviation (Δ)</span></div><svg class="chart" id="chart-carry"></svg><div class="tooltip" id="tip-carry"></div></div>
+          <div class="chart-wrap"><div style="font-size:11.5px;color:var(--ink-muted);margin-bottom:4px;font-weight:600">Fiscal risk <span style="color:var(--ink-faint);font-weight:400;">→ deviation (Δ)</span></div><svg class="chart" id="chart-fiscal"></svg><div class="tooltip" id="tip-fiscal"></div></div>
         </div>
       </div>
     </div>
   </div>
 
   <footer class="note">
-    Pure client-side simulation of the three toy equations in <span class="mono">state_space_equilibrium_model.md</span> — no real REER, carry, terms-of-trade, or fiscal-risk data involved. Built to build intuition for the structural parameters (γ, φ, β₁, β₂) before any real Kalman-filter estimation is attempted.
+    Pure client-side simulation of the three toy equations in <span class="mono">state_space_equilibrium_model.md</span> — no real REER, carry, terms-of-trade, fiscal-risk, or price-level data involved (π_diff is a synthetic inflation-differential proxy, not the real IPCA/CPI series <span class="mono">ppp_equilibrium.py</span> uses). Built to build intuition for the structural parameters (γ_ppp, φ, β_carry, β_tot, β_fiscal) before any real Kalman-filter estimation is attempted. Rebuilt 2026-07-24 (second revision, same day) to match <span class="mono">bayesian_deviation_model.py</span>'s actual architecture: equilibrium is explicitly the PPP-consistent path, and carry/tot/fiscal are all deviation-side regressors entered as period-over-period deltas — not split between equations, and not levels. Does not model that same model's own unexplained drift/intercept (~0.2–0.4/month, still an open finding) — a known simplification, not an oversight.
   </footer>
 </div>
 
@@ -491,12 +514,14 @@ footer.note {
   const HORIZON = 120;
 
   const els = {
-    gamma: document.getElementById("gamma"),
+    gammaPpp: document.getElementById("gammaPpp"),
     sigmaEta: document.getElementById("sigmaEta"),
     phi: document.getElementById("phi"),
-    beta1: document.getElementById("beta1"),
-    beta2: document.getElementById("beta2"),
+    betaCarry: document.getElementById("betaCarry"),
+    betaTot: document.getElementById("betaTot"),
+    betaFiscal: document.getElementById("betaFiscal"),
     sigmaEps: document.getElementById("sigmaEps"),
+    shapePiDiff: document.getElementById("shape-piDiff"),
     shapeTot: document.getElementById("shape-tot"),
     shapeCarry: document.getElementById("shape-carry"),
     shapeFiscal: document.getElementById("shape-fiscal"),
@@ -507,19 +532,21 @@ footer.note {
   };
 
   const DEFAULTS = {
-    gamma: 0.6, sigmaEta: 0, phi: 0.85, beta1: -1, beta2: 0.8, sigmaEps: 1.2,
-    shapeTot: "pulse", shapeCarry: "cycle", shapeFiscal: "trend",
+    gammaPpp: 1, sigmaEta: 0, phi: 0.98, betaCarry: -1, betaTot: -0.5, betaFiscal: 0.8, sigmaEps: 1.2,
+    shapePiDiff: "constant", shapeTot: "pulse", shapeCarry: "cycle", shapeFiscal: "trend",
     magnitude: 1.5, shockMonth: 36, noiseOn: false,
   };
 
   function readParams() {
     return {
-      gamma: parseFloat(els.gamma.value),
+      gammaPpp: parseFloat(els.gammaPpp.value),
       sigmaEta: parseFloat(els.sigmaEta.value),
       phi: parseFloat(els.phi.value),
-      beta1: parseFloat(els.beta1.value),
-      beta2: parseFloat(els.beta2.value),
+      betaCarry: parseFloat(els.betaCarry.value),
+      betaTot: parseFloat(els.betaTot.value),
+      betaFiscal: parseFloat(els.betaFiscal.value),
       sigmaEps: parseFloat(els.sigmaEps.value),
+      shapePiDiff: els.shapePiDiff.value,
       shapeTot: els.shapeTot.value,
       shapeCarry: els.shapeCarry.value,
       shapeFiscal: els.shapeFiscal.value,
@@ -533,7 +560,9 @@ footer.note {
     const out = new Array(horizon).fill(0);
     if (shape === "none") return out;
     for (let t = 0; t < horizon; t++) {
-      if (shape === "step") {
+      if (shape === "constant") {
+        out[t] = magnitude;
+      } else if (shape === "step") {
         out[t] = t >= shockMonth ? magnitude : 0;
       } else if (shape === "pulse") {
         out[t] = t >= shockMonth ? magnitude * Math.pow(0.82, t - shockMonth) : 0;
@@ -555,6 +584,7 @@ footer.note {
   }
 
   function simulate(p) {
+    const piDiff = generateDriver(p.shapePiDiff, p.magnitude, p.shockMonth, HORIZON);
     const tot = generateDriver(p.shapeTot, p.magnitude, p.shockMonth, HORIZON);
     const carry = generateDriver(p.shapeCarry, p.magnitude, p.shockMonth, HORIZON);
     const fiscal = generateDriver(p.shapeFiscal, p.magnitude, p.shockMonth, HORIZON);
@@ -568,15 +598,19 @@ footer.note {
 
     for (let t = 1; t < HORIZON; t++) {
       const eta = p.noiseOn ? randn() * p.sigmaEta : 0;
-      equilibrium[t] = equilibrium[t - 1] + p.gamma * tot[t] + eta;
+      equilibrium[t] = equilibrium[t - 1] + p.gammaPpp * piDiff[t] + eta;
+
+      const dCarry = carry[t] - carry[t - 1];
+      const dTot = tot[t] - tot[t - 1];
+      const dFiscal = fiscal[t] - fiscal[t - 1];
 
       const eps = p.noiseOn ? randn() * p.sigmaEps : 0;
-      deviation[t] = p.phi * deviation[t - 1] + p.beta1 * carry[t - 1] + p.beta2 * fiscal[t - 1] + eps;
+      deviation[t] = p.phi * deviation[t - 1] + p.betaCarry * dCarry + p.betaTot * dTot + p.betaFiscal * dFiscal + eps;
 
       rer[t] = equilibrium[t] + deviation[t];
     }
 
-    return { tot, carry, fiscal, equilibrium, deviation, rer };
+    return { piDiff, tot, carry, fiscal, equilibrium, deviation, rer };
   }
 
   // ---------------- Chart rendering (hand-rolled SVG, no deps) ----------------
@@ -613,6 +647,19 @@ footer.note {
 
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    if (series.length === 0) {
+      const msg = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      msg.setAttribute("x", W / 2);
+      msg.setAttribute("y", H / 2);
+      msg.setAttribute("text-anchor", "middle");
+      msg.setAttribute("fill", "var(--ink-faint)");
+      msg.setAttribute("font-size", "12");
+      msg.textContent = "No series selected — click a legend item to show it";
+      svg.appendChild(msg);
+      if (tip) tip.style.opacity = 0;
+      return;
+    }
 
     const allVals = series.flatMap(s => s.values);
     let vmin = Math.min(...allVals), vmax = Math.max(...allVals);
@@ -702,13 +749,25 @@ footer.note {
     });
   }
 
+  // Click a legend item to hide/show that line — lets you isolate one series at a time.
+  const hiddenMain = new Set();
+  document.querySelectorAll("#legend-main .item.toggleable").forEach(function (item) {
+    item.addEventListener("click", function () {
+      const key = item.getAttribute("data-series");
+      if (hiddenMain.has(key)) hiddenMain.delete(key); else hiddenMain.add(key);
+      item.classList.toggle("off", hiddenMain.has(key));
+      renderAll();
+    });
+  });
+
   function renderAll() {
     const p = readParams();
-    document.getElementById("v-gamma").textContent = p.gamma.toFixed(2);
+    document.getElementById("v-gammaPpp").textContent = p.gammaPpp.toFixed(2);
     document.getElementById("v-sigmaEta").textContent = p.sigmaEta.toFixed(2);
     document.getElementById("v-phi").textContent = p.phi.toFixed(2);
-    document.getElementById("v-beta1").textContent = p.beta1.toFixed(2);
-    document.getElementById("v-beta2").textContent = p.beta2.toFixed(2);
+    document.getElementById("v-betaCarry").textContent = p.betaCarry.toFixed(2);
+    document.getElementById("v-betaTot").textContent = p.betaTot.toFixed(2);
+    document.getElementById("v-betaFiscal").textContent = p.betaFiscal.toFixed(2);
     document.getElementById("v-sigmaEps").textContent = p.sigmaEps.toFixed(2);
     document.getElementById("v-mag").textContent = p.magnitude.toFixed(2);
     document.getElementById("v-shockMonth").textContent = p.shockMonth;
@@ -717,14 +776,19 @@ footer.note {
 
     const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-    renderChart("chart-main", "tip-main", [
-      { name: "Observed (rer)", color: cssVar("--line-obs"), values: sim.rer },
-      { name: "Equilibrium", color: cssVar("--line-eq"), values: sim.equilibrium },
-    ], { height: 220 });
+    const mainSeries = [
+      { key: "rer", name: "Observed (rer)", color: cssVar("--line-obs"), values: sim.rer },
+      { key: "equilibrium", name: "Equilibrium", color: cssVar("--line-eq"), values: sim.equilibrium },
+    ].filter(s => !hiddenMain.has(s.key));
+    renderChart("chart-main", "tip-main", mainSeries, { height: 220 });
 
     renderChart("chart-dev", "tip-dev", [
       { name: "Deviation", color: cssVar("--line-dev"), values: sim.deviation },
     ], { height: 160, zeroLine: true });
+
+    renderChart("chart-piDiff", "tip-piDiff", [
+      { name: "π_diff", color: cssVar("--line-eq"), values: sim.piDiff },
+    ], { height: 130, zeroLine: true });
 
     renderChart("chart-tot", "tip-tot", [
       { name: "ToT shift", color: cssVar("--line-sec"), values: sim.tot },
@@ -747,12 +811,14 @@ footer.note {
   });
 
   els.resetBtn.addEventListener("click", function () {
-    els.gamma.value = DEFAULTS.gamma;
+    els.gammaPpp.value = DEFAULTS.gammaPpp;
     els.sigmaEta.value = DEFAULTS.sigmaEta;
     els.phi.value = DEFAULTS.phi;
-    els.beta1.value = DEFAULTS.beta1;
-    els.beta2.value = DEFAULTS.beta2;
+    els.betaCarry.value = DEFAULTS.betaCarry;
+    els.betaTot.value = DEFAULTS.betaTot;
+    els.betaFiscal.value = DEFAULTS.betaFiscal;
     els.sigmaEps.value = DEFAULTS.sigmaEps;
+    els.shapePiDiff.value = DEFAULTS.shapePiDiff;
     els.shapeTot.value = DEFAULTS.shapeTot;
     els.shapeCarry.value = DEFAULTS.shapeCarry;
     els.shapeFiscal.value = DEFAULTS.shapeFiscal;

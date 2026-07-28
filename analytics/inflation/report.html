@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panorama de Inflação — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
   <style>
     :root {
@@ -14,14 +15,19 @@
       --lis-laranja: #EA523A;
       --lis-amarelo: #FBC852;
       --lis-cinza:   #BFBFBF;
-      --bg:          #f0f2f5;
-      --card-bg:     #ffffff;
-      --border:      #dde1e9;
-      --text:        #2c3140;
+      --bg:          #F4F5F7;
+      --card-bg:     #FFFFFF;
+      --border:      rgba(31,40,83,0.1);
+      --text:        #1F2853;
+      --text2:       #3A4F72;
+      --muted:       #7A88A8;
+      --sans:        'Barlow', sans-serif;
+      --cond:        'Barlow Condensed', sans-serif;
+      --mono:        'JetBrains Mono', monospace;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: var(--sans);
       background: var(--bg);
       color: var(--text);
       font-size: 14px;
@@ -30,88 +36,95 @@
 
     /* ── Header ── */
     header {
-      background: var(--lis-azul);
-      color: #fff;
-      padding: 20px 40px 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px;
     }
-    header .brand { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--lis-dourado); margin-bottom: 3px; }
-    header h1 { font-size: 22px; font-weight: 700; }
-    header .meta { text-align: right; font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.7; }
-    header .meta strong { color: rgba(255,255,255,0.90); }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
 
     /* ── Tab nav ── */
     .tab-nav {
-      background: var(--lis-azul);
-      border-top: 1px solid rgba(255,255,255,0.07);
-      border-bottom: 2px solid var(--lis-dourado);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
       padding: 0 40px;
       display: flex;
       position: sticky;
       top: 0;
       z-index: 101;
+      margin-top: 14px;
     }
     .tab-btn {
       padding: 0 22px;
-      height: 46px;
+      height: 44px;
+      font-family: var(--cond);
       font-size: 13px;
       font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       border: none;
       background: transparent;
-      color: rgba(255,255,255,0.45);
+      color: var(--muted);
       cursor: pointer;
       border-bottom: 3px solid transparent;
-      margin-bottom: -2px;
+      margin-bottom: -1px;
       transition: color .15s, border-color .15s;
-      letter-spacing: 0.2px;
       white-space: nowrap;
     }
-    .tab-btn:hover { color: rgba(255,255,255,0.85); }
-    .tab-btn.active { color: #fff; border-bottom-color: var(--lis-dourado); }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
 
     /* ── Controls (Tab 1 only) ── */
     #controls {
-      background: var(--lis-azul);
-      border-top: 1px solid rgba(255,255,255,0.07);
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
       padding: 9px 40px;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
       position: sticky;
-      top: 46px;
+      top: 44px;
       z-index: 100;
     }
     .ctrl-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.45);
-    }
-    .ctrl-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; }
-    .pill {
-      padding: 4px 13px;
-      font-size: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
       font-weight: 500;
-      border: 1px solid rgba(255,255,255,0.22);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .ctrl-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+    .pill {
+      font-family: var(--mono);
+      padding: 4px 13px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      border: 1px solid var(--border);
       border-radius: 20px;
-      background: transparent;
-      color: rgba(255,255,255,0.60);
+      background: rgba(31,40,83,0.03);
+      color: var(--muted);
       cursor: pointer;
       transition: all .15s;
       white-space: nowrap;
     }
-    .pill:hover { background: rgba(255,255,255,0.10); color: #fff; }
-    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; font-weight: 600; }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); font-weight: 600; }
     .pill:disabled { opacity: 0.35; cursor: not-allowed; }
-    #custom-row { display: none; align-items: center; gap: 7px; color: rgba(255,255,255,0.65); font-size: 12px; }
-    #custom-row input[type="month"] { padding: 3px 7px; border: 1px solid rgba(255,255,255,0.28); border-radius: 4px; background: rgba(255,255,255,0.08); color: #fff; font-size: 12px; font-family: inherit; }
-    #custom-row input[type="month"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(0.6); }
+    #custom-row { display: none; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; font-family: var(--mono); }
+    #custom-row input[type="month"] { padding: 3px 7px; border: 1px solid var(--border); border-radius: 4px; background: var(--card-bg); color: var(--text); font-size: 12px; font-family: inherit; }
 
     /* ── Main layout ── */
     main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
@@ -121,32 +134,32 @@
     /* ── Section headings ── */
     section { display: flex; flex-direction: column; gap: 12px; }
     section h2 {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 1.2px; color: var(--lis-azul);
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
       border-left: 4px solid var(--lis-dourado); padding-left: 10px;
     }
 
     /* ── KPI grids ── */
-    .kpi-grid   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #888; margin-bottom: 5px; }
-    .kpi-value { font-size: 30px; font-weight: 700; color: var(--lis-azul); line-height: 1.1; }
+    .kpi-grid   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
     .kpi-value.pos { color: var(--lis-laranja); }
     .kpi-value.neg { color: var(--lis-verde); }
-    .kpi-sub    { font-size: 12px; color: #999; margin-top: 3px; }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
 
     /* ── Breadcrumb ── */
-    #breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 13px; }
-    .bc-item { color: #999; }
+    #breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-family: var(--mono); font-size: 12px; }
+    .bc-item { color: var(--muted); }
     .bc-link  { color: var(--lis-azul-cl); cursor: pointer; }
     .bc-link:hover { text-decoration: underline; }
-    .bc-sep   { color: #bbb; font-size: 10px; }
-    #waterfall-subtitle { font-size: 12px; color: #aaa; font-style: italic; }
+    .bc-sep   { color: var(--muted); font-size: 10px; }
+    #waterfall-subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
 
     /* ── Chart cards ── */
-    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 4px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
     .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .chart-col-title { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
+    .chart-col-title { font-family: var(--cond); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 6px; }
     #chart-waterfall    { width: 100%; height: 460px; }
     #chart-timeseries   { width: 100%; height: 460px; }
     #chart-comp-saar    { width: 100%; height: 400px; }
@@ -157,36 +170,35 @@
     #chart-nucleo-sel { width: 100%; height: 360px; }
 
     /* ── Table ── */
-    .table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--sans); }
     thead tr { background: var(--lis-azul); color: #fff; }
-    thead th { padding: 9px 13px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none; }
+    thead th { padding: 9px 13px; text-align: left; font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none; }
     thead th:hover { background: #2a3563; }
     thead th.sorted-asc::after  { content: ' ▲'; opacity: 0.7; }
     thead th.sorted-desc::after { content: ' ▼'; opacity: 0.7; }
-    tbody tr:nth-child(even) { background: #f8f9fb; }
-    tbody tr:hover { background: #edf0f6; }
+    tbody tr:nth-child(even) { background: rgba(31,40,83,0.02); }
+    tbody tr:hover { background: rgba(31,40,83,0.05); }
     tbody td { padding: 7px 13px; border-bottom: 1px solid var(--border); }
-    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
     td.pos { color: var(--lis-laranja); font-weight: 600; }
     td.neg { color: var(--lis-verde);   font-weight: 600; }
 
     /* ── Footer ── */
-    footer { background: var(--lis-azul); color: rgba(255,255,255,0.38); font-size: 11px; text-align: center; padding: 13px 40px; }
-    footer span { color: rgba(255,255,255,0.58); }
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
 
     /* ── Y/Y drill controls ── */
     .yoy-ctrl-bar {
       display: flex; align-items: center; gap: 12px;
       background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 8px; padding: 12px 18px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border-radius: 10px; padding: 12px 18px;
       flex-wrap: wrap;
     }
     .yoy-ctrl-bar select {
-      padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px;
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
       font-family: inherit; font-size: 13px; color: var(--text);
-      background: #fff; cursor: pointer;
+      background: var(--card-bg); cursor: pointer;
     }
     .yoy-ctrl-bar select:focus { outline: none; border-color: var(--lis-azul-cl); }
     #chart-yoy-drill { width: 100%; height: 400px; }
@@ -195,62 +207,61 @@
     .multiselect { position: relative; min-width: 300px; max-width: 520px; }
     .multiselect-btn {
       width: 100%; text-align: left; padding: 5px 10px; border: 1px solid var(--border);
-      border-radius: 4px; font-family: inherit; font-size: 13px; color: var(--text);
-      background: #fff; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--text);
+      background: var(--card-bg); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .multiselect-btn:focus { outline: none; border-color: var(--lis-azul-cl); }
     .multiselect-panel {
       display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
-      max-height: 260px; overflow-y: auto; background: #fff; border: 1px solid var(--border);
-      border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); padding: 4px 0;
+      max-height: 260px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; box-shadow: 0 4px 14px rgba(31,40,83,0.12); padding: 4px 0;
     }
     .multiselect-panel.open { display: block; }
     .multiselect-panel label {
       display: flex; align-items: center; gap: 7px; padding: 5px 12px; font-size: 13px;
       color: var(--text); cursor: pointer; white-space: nowrap;
     }
-    .multiselect-panel label:hover { background: #f0f2f5; }
+    .multiselect-panel label:hover { background: var(--bg); }
     .multiselect-panel input[type="checkbox"] { cursor: pointer; }
 
     /* ── Núcleos glossary (collapsible) ── */
     .glossario-toggle {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       width: 100%; text-align: left; padding: 10px 16px;
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-      font-family: inherit; font-size: 13px; font-weight: 600; color: var(--lis-azul);
-      cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer;
     }
-    .glossario-toggle:hover { background: #f8f9fb; }
-    .glossario-caret { transition: transform .15s; color: #999; font-size: 11px; }
+    .glossario-toggle:hover { background: var(--bg); }
+    .glossario-caret { transition: transform .15s; color: var(--muted); font-size: 11px; }
     .glossario-caret.open { transform: rotate(180deg); }
     .glossario-panel {
       display: none; margin-top: 8px; padding: 14px 18px;
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
     }
     .glossario-panel.open { display: block; }
-    .glossario-intro { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 14px; }
+    .glossario-intro { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
     .glossario-list { display: grid; grid-template-columns: 190px 1fr; row-gap: 10px; column-gap: 14px; }
-    .glossario-list dt { font-weight: 700; color: var(--lis-azul); font-size: 12px; }
-    .glossario-list dd { font-size: 13px; color: #444; line-height: 1.5; margin: 0; }
+    .glossario-list dt { font-weight: 700; color: var(--text); font-size: 12px; }
+    .glossario-list dd { font-size: 13px; color: var(--text2); line-height: 1.5; margin: 0; }
 
     /* ── Mapa de Calor ── */
-    .heatmap-intro { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 10px; max-width: 900px; }
-    .heatmap-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #666; margin-bottom: 14px; }
+    .heatmap-intro { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; max-width: 900px; }
+    .heatmap-legend { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 14px; }
     .heatmap-legend-bar {
       display: inline-block; width: 160px; height: 12px; border-radius: 3px;
       background: linear-gradient(to right, rgb(75,110,220), rgb(255,255,255), rgb(220,60,50));
     }
     .heatmap-wrap { overflow-x: auto; }
-    .heatmap-table { border-collapse: collapse; font-size: 12px; width: 100%; }
+    .heatmap-table { border-collapse: collapse; font-family: var(--mono); font-size: 11px; width: 100%; }
     .heatmap-table th, .heatmap-table td { padding: 6px 9px; text-align: center; white-space: nowrap; }
-    .heatmap-table thead th { font-weight: 700; color: #fff; letter-spacing: 0.4px; }
+    .heatmap-table thead th { font-weight: 500; letter-spacing: 0.06em; color: #fff; }
     .heatmap-table td.hm-label, .heatmap-table th.hm-label {
-      text-align: left; font-weight: 600; color: var(--text);
+      text-align: left; font-family: var(--sans); font-weight: 600; color: var(--text);
       position: sticky; left: 0; background: var(--card-bg);
     }
     .heatmap-table tr.hm-section td {
-      font-weight: 700; color: var(--lis-azul); background: #f0f2f5 !important;
+      font-family: var(--sans); font-weight: 700; color: var(--text); background: var(--bg) !important;
       text-align: left; padding-top: 14px;
     }
 
@@ -270,11 +281,11 @@
 
 <header>
   <div>
-    <div class="brand">LIS Capital</div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
     <h1>Panorama de Inflação</h1>
   </div>
   <div class="meta">
-    Atualizado em: <strong id="generated-at">—</strong><br>
+    Atualizado em <strong id="generated-at">—</strong><br>
     IBGE SIDRA &nbsp;·&nbsp; BCB SGS
   </div>
 </header>
@@ -474,7 +485,20 @@
     </section>
 
     <section id="nuc-sec-nuc-saar">
-      <h2>Núcleos — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <h2 id="nuc-h2-nuc-saar">Núcleos — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <p class="glossario-intro" id="nuc15-note" style="display:none;">
+        Para o IPCA-15, o BCB não publica nenhum núcleo — todas as séries abaixo são
+        calculadas internamente. EX-0, EX-01, EX-02, EX-03 e EX-FE usam o vetor
+        oficial de pertencimento da NT-57 (mesmos flags <code>nucleo_*</code> usados
+        na Difusão por Categoria). P55, Médias Aparadas (com e sem suavização) e
+        Dupla Ponderação seguem exatamente a metodologia da NT-57 — P55 e Difusão no
+        nível de subitem, Médias Aparadas e Dupla Ponderação no nível de item (4
+        dígitos) — e foram validadas contra as séries oficiais do IPCA cheio antes de
+        aplicadas aqui. Uma diferença conhecida: a Dupla Ponderação do IPCA-15 mede a
+        volatilidade de cada item frente ao próprio IPCA-15 (não ao IPCA cheio, como
+        na fórmula original do BC) — não há um "IPCA-15 cheio" de referência oficial
+        para seguir, então a escolha aqui foi manter a série internamente consistente.
+      </p>
       <div class="yoy-ctrl-bar">
         <span class="ctrl-label">Núcleos</span>
         <div class="multiselect" id="nuc-saar-multiselect">
@@ -491,7 +515,7 @@
     </section>
 
     <section id="nuc-sec-nuc-yoy">
-      <h2>Núcleos de Inflação — Variação 12M % a/a</h2>
+      <h2 id="nuc-h2-nuc-yoy">Núcleos de Inflação — Variação 12M % a/a</h2>
       <div class="yoy-ctrl-bar">
         <span class="ctrl-label">Núcleos</span>
         <div class="multiselect" id="nuc-yoy-multiselect">
@@ -503,7 +527,7 @@
     </section>
 
     <section id="nuc-sec-selecionado">
-      <h2>Núcleo Selecionado</h2>
+      <h2 id="nuc-h2-selecionado">Núcleo Selecionado</h2>
       <div class="yoy-ctrl-bar">
         <span class="ctrl-label">Núcleo</span>
         <select id="nucleo-sel" style="min-width:280px;max-width:420px;"></select>
@@ -516,6 +540,7 @@
       <div class="yoy-ctrl-bar">
         <span class="ctrl-label">Nível</span>
         <select id="difcat-level-sel">
+          <option value="total">Total (sem filtro)</option>
           <option value="grupo">Grupo</option>
           <option value="subgrupo">Subgrupo</option>
           <option value="item">Item</option>
@@ -533,7 +558,7 @@
   <div class="tab-panel" id="tab-heatmap">
 
     <section>
-      <h2>Mapa de Calor — Grupos e Núcleos (3M SAAR)</h2>
+      <h2 id="heatmap-h2">Mapa de Calor — Grupos e Núcleos (3M SAAR)</h2>
       <p class="heatmap-intro">
         Cada célula mostra o 3M SAAR (% a.a., dessazonalizado) do mês, colorido pelo
         <strong>z-score da própria série</strong> — quantos desvios-padrão aquele valor está
@@ -648,8 +673,25 @@ function movingAvg(values, n) {
 }
 
 // ── IPCA-15 computed series (from records) ────────────────────────────────────
-// contribuicao = var_mensal * peso_fraction → group_var = contrib / peso
-function computeMonthlyFromRecords(records, filterFn) {
+// contribuicao (= var_mensal * peso_fraction) and var_mensal are both already
+// on a "percent number" scale (e.g. var_mensal=-1.49 means -1.49%), and pesos
+// sums to ~1.0 across the full index — so group_var = sum(contrib)/sum(peso)
+// already lands on that same percent-number scale. Only round to 2 decimals
+// here, do NOT multiply by 100 again (that was a real 100x-too-large bug,
+// found 2026-07 by actually executing this against real data instead of only
+// checking JS syntax — round(x*10000)/100 assumes x is a raw fraction like
+// 0.0056, but x is already 0.56).
+// Unrounded monthly ratio -- the basis for both display (rounded to 2dp at
+// the computeMonthlyFromRecords boundary) and Y/Y chaining
+// (computeYoYFromRecords, which must NOT round before compounding: chaining
+// 11 already-2dp-rounded monthly values compounds that rounding into a
+// small but real drift in the 12m figure. Verified 2026-07 against an
+// external BCB reference table: monthly group values (Administrados/Livres/
+// Alimentação no domicílio/Industriais/Serviços) matched exactly, but the
+// old rounded-then-chained 12m figures were off by up to 0.02pp for exactly
+// those groups -- chaining this unrounded ratio and rounding only the final
+// 12m result reproduces the reference exactly, digit for digit.
+function computeMonthlyRatioFromRecords(records, filterFn) {
   var byMonth = {};
   records.forEach(function(r) {
     if (filterFn && !filterFn(r)) return;
@@ -662,13 +704,21 @@ function computeMonthlyFromRecords(records, filterFn) {
   months.forEach(function(m) {
     var d = byMonth[m];
     dates.push(m);
-    values.push(d.p > 0 ? Math.round(d.c / d.p * 10000) / 100 : null);
+    values.push(d.p > 0 ? d.c / d.p : null);
   });
   return {dates: dates, values: values};
 }
 
+function computeMonthlyFromRecords(records, filterFn) {
+  var ratio = computeMonthlyRatioFromRecords(records, filterFn);
+  return {
+    dates: ratio.dates,
+    values: ratio.values.map(function(v) { return v == null ? null : Math.round(v * 100) / 100; }),
+  };
+}
+
 function computeYoYFromRecords(records, filterFn) {
-  var mo = computeMonthlyFromRecords(records, filterFn);
+  var mo = computeMonthlyRatioFromRecords(records, filterFn);
   var dates = mo.dates, vals = mo.values;
   var od = [], ov = [];
   for (var i = 11; i < dates.length; i++) {
@@ -810,6 +860,11 @@ function renderWaterfall() {
   document.getElementById('waterfall-subtitle').textContent = isLeaf()
     ? 'Nível mais detalhado — veja o ranking abaixo'
     : 'Clique em uma barra para detalhar por ' + LEVEL_LABELS[LEVELS[drillPath.length + 1] || 'subitem'];
+  // Deliberately left out of the dragmode:'pan'/_bindYAutofit treatment
+  // applied to every other chart in this report: this is a horizontal
+  // ranking bar chart (x=value, y=category), not a time series — there is
+  // no time axis to pan/zoom through, so TradingView-style navigation
+  // doesn't apply here. Keeps Plotly's own default box-zoom interaction.
   Plotly.react('chart-waterfall', [{
     type:'bar', orientation:'h',
     y: labels, x: values, marker:{color: colors},
@@ -819,7 +874,7 @@ function renderWaterfall() {
     xaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
     yaxis:{tickfont:{size:12}, automargin:true},
     paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12}, bargap:0.35,
+    font:{family:'Barlow,sans-serif', color:'#1F2853', size:12}, bargap:0.35,
   }, _PLOTLY_CONFIG);
 }
 
@@ -863,11 +918,16 @@ function renderTimeSeries() {
     // sign, so a negative category pushes the *next* trace's baseline below
     // zero even when that trace's own value is positive — misreading a
     // positive contribution as negative.
-    barmode:'relative', height:460, margin:{l:55,r:190,t:20,b:40},
+    barmode:'relative', height:460, margin:{l:55,r:190,t:20,b:40}, dragmode:'pan',
     xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
       buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
       bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',
     }},
+    // No fixedrange: drag/scroll move both axes directly (dual-axis-aware --
+    // both the p.p. axis and the Total axis pan/zoom independently per the
+    // user's actual drag/scroll direction). _bindYAutofit still fits both
+    // whenever X moves WITHOUT Y also moving in the same event (e.g. the
+    // rangeselector preset buttons below, which only ever touch xaxis).
     yaxis:{title:{text:'Contribuição mensal (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
     yaxis2:{title:{text:'Total (p.p.)',font:{size:11}}, overlaying:'y', side:'right', showgrid:false, zeroline:false},
     // Vertical legend to the right instead of wrapping above the chart — with
@@ -876,8 +936,9 @@ function renderTimeSeries() {
     // if it's taller than the plot, so it never spills over.
     legend:{orientation:'v', x:1.02, xanchor:'left', y:1, yanchor:'top', font:{size:10}},
     paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+    font:{family:'Barlow,sans-serif', color:'#1F2853', size:12},
   }, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-timeseries');
 }
 
 var rankingBcbKey  = 'todos';
@@ -988,8 +1049,24 @@ function compute3mSAAR(name) {
   return {dates: dates, values: values};
 }
 
+// IPCA-15 branch added 2026-07: until then this chart was hardcoded to
+// full-IPCA's own BCB-published component series (IPCA_livres_ma3_sa etc.),
+// so switching to the IPCA-15 tab silently kept showing IPCA's data under
+// the same title -- see CLAUDE.md Gotchas. IPCA15_livres/administrado/
+// alimentacao/servicos/industriais are computed in generate_report.py
+// (_compute_ipca15_grupos) the same way as the in-house núcleos; no
+// Comercializáveis/Não Comercializáveis equivalent exists for IPCA-15 (see
+// that function's docstring), so this list has 5 components, not 7.
 function renderCompSAAR() {
-  var COMP = [
+  var is15 = currentIndex === 'ipca15';
+  var COMP = is15 ? [
+    {name:'IPCA15',              label:'IPCA-15 (total)',     color:C.azul,    width:2.5, dash:'dot'},
+    {name:'IPCA15_livres',       label:'Livres',              color:C.laranja, width:1.5},
+    {name:'IPCA15_administrado', label:'Monitorados',         color:C.verde,   width:1.5},
+    {name:'IPCA15_servicos',     label:'Serviços',            color:C.azulCl,  width:1.5},
+    {name:'IPCA15_alimentacao',  label:'Alimentos',           color:C.dourado, width:1.5},
+    {name:'IPCA15_industriais',  label:'Bens Industriais',    color:C.cinza,   width:1.5},
+  ] : [
     {name:'IPCA',                     label:'IPCA (total)',        color:C.azul,    width:2.5, dash:'dot'},
     {name:'IPCA_livres',              label:'Livres',              color:C.laranja, width:1.5},
     {name:'IPCA_servicos',            label:'Serviços',            color:C.azulCl,  width:1.5},
@@ -1030,8 +1107,47 @@ var NUCLEO_ALL = [
 ];
 var NUCLEO5_BCB = ['IPCA_nucleo_EX0', 'IPCA_nucleo_EX03', 'IPCA_nucleo_medias_aparadas', 'IPCA_nucleo_DP', 'IPCA_nucleo_P55'];
 
+// IPCA-15 equivalent of NUCLEO_ALL — BCB never publishes núcleo series for
+// IPCA-15, so these are computed in generate_report.py directly from
+// inflc_decomposicao/inflc_dim/inflc_decomposicao_item. EX-0/EX-01/EX-02/
+// EX-03/EX-FE use the official NT-57 exclusion vector (same membership
+// flags used by the Difusão-by-núcleo section below); P55/MA/MS/DP are all
+// validated against BCB's official full-IPCA series before being trusted
+// here (see generate_report.py::_compute_p55/_compute_ma/_compute_ms/
+// _compute_dp) — P55 exact match, MA/MS/DP within display rounding except
+// a bounded ~0.02pp gap around the ago/2006 transition for DP (missing
+// NT-57 proxy tables, see CLAUDE.md Gotchas). All run through the same
+// STL/MA3 pipeline as the BCB series so compute3mSAAR/computeYoY work on
+// them unmodified. DP diffs each item against IPCA-15's OWN headline, not
+// full IPCA's — BCB's formula (written only for full IPCA) uses "a do IPCA
+// cheio", but there's no official IPCA-15 DP to be consistent with, so
+// this in-house version stays internally consistent instead.
+var NUCLEO_ALL_15 = [
+  {value:'IPCA15',                                     label:'IPCA-15 (ref.)',      color:C.azul,   width:2, dash:'dot'},
+  {value:'_media5',                                    label:'Média 5 Núcleos',     color:'#1F2853', width:2.5, dash:'solid'},
+  {value:'IPCA15_nucleo_EX0',                          label:'EX-0',                color:C.laranja},
+  {value:'IPCA15_nucleo_EX01',                         label:'EX-01',               color:'#8E44AD'},
+  {value:'IPCA15_nucleo_EX02',                         label:'EX-02',               color:'#2980B9'},
+  {value:'IPCA15_nucleo_EX03',                         label:'EX-03',               color:C.azulCl},
+  {value:'IPCA15_nucleo_EX03_servicos',                label:'EX-03 — Serviços',    color:'#27AE60'},
+  {value:'IPCA15_nucleo_EX03_industriais',             label:'EX-03 — Industriais', color:'#C0392B'},
+  {value:'IPCA15_nucleo_EXFE',                         label:'EX-FE',               color:'#16A085'},
+  {value:'IPCA15_nucleo_P55',                          label:'P55',                 color:C.dourado},
+  {value:'IPCA15_nucleo_medias_aparadas',              label:'Médias Aparadas (com suavização)', color:C.verde},
+  {value:'IPCA15_nucleo_medias_aparadas_sem_suavizacao', label:'Médias Aparadas (sem suavização)', color:'#F39C12'},
+  {value:'IPCA15_nucleo_DP',                           label:'Dupla Ponderação',    color:'#E67E22'},
+];
+var NUCLEO5_BCB_15 = ['IPCA15_nucleo_EX0', 'IPCA15_nucleo_EX03', 'IPCA15_nucleo_medias_aparadas', 'IPCA15_nucleo_DP', 'IPCA15_nucleo_P55'];
+
+function activeNucleoList()  { return currentIndex === 'ipca15' ? NUCLEO_ALL_15 : NUCLEO_ALL; }
+function activeSaarState()   { return currentIndex === 'ipca15' ? nucSaarItems15 : nucSaarItems; }
+function activeYoyState()    { return currentIndex === 'ipca15' ? nucYoyItems15  : nucYoyItems; }
+function activeNucleoSelKey()      { return currentIndex === 'ipca15' ? nucleoSelKey15 : nucleoSelKey; }
+function setActiveNucleoSelKey(v)  { if (currentIndex === 'ipca15') nucleoSelKey15 = v; else nucleoSelKey = v; }
+
 function computeNucleoMedia5(computeFn) {
-  var series = NUCLEO5_BCB.map(computeFn);
+  var lista = currentIndex === 'ipca15' ? NUCLEO5_BCB_15 : NUCLEO5_BCB;
+  var series = lista.map(computeFn);
   var byDate = {};
   series.forEach(function(s) {
     for (var i = 0; i < s.dates.length; i++) {
@@ -1050,17 +1166,20 @@ function nucleoSeriesValues(key, computeFn) {
   return key === '_media5' ? computeNucleoMedia5(computeFn) : computeFn(key);
 }
 
-var nucSaarItems = ['IPCA', '_media5', 'IPCA_nucleo_EX0', 'IPCA_nucleo_EX03', 'IPCA_nucleo_EXFE', 'IPCA_nucleo_P55', 'IPCA_nucleo_medias_aparadas', 'IPCA_nucleo_DP'];
-var nucYoyItems  = nucSaarItems.slice();
+var nucSaarItems   = ['IPCA', '_media5', 'IPCA_nucleo_EX0', 'IPCA_nucleo_EX03', 'IPCA_nucleo_EXFE', 'IPCA_nucleo_P55', 'IPCA_nucleo_medias_aparadas', 'IPCA_nucleo_DP'];
+var nucYoyItems    = nucSaarItems.slice();
+var nucSaarItems15 = ['IPCA15', '_media5', 'IPCA15_nucleo_EX0', 'IPCA15_nucleo_EX03', 'IPCA15_nucleo_EXFE', 'IPCA15_nucleo_P55', 'IPCA15_nucleo_medias_aparadas', 'IPCA15_nucleo_DP'];
+var nucYoyItems15  = nucSaarItems15.slice();
 
 function _nucOptLabel(key) {
-  var o = NUCLEO_ALL.filter(function(x) { return x.value === key; })[0];
+  var o = activeNucleoList().filter(function(x) { return x.value === key; })[0];
   return o ? o.label : key;
 }
 
-function populateNucChecklist(panelId, btnId, state, renderFn) {
+function populateNucChecklist(panelId, btnId, state, renderFn, list) {
+  list = list || NUCLEO_ALL;
   var panel = document.getElementById(panelId);
-  panel.innerHTML = NUCLEO_ALL.map(function(o) {
+  panel.innerHTML = list.map(function(o) {
     var checked = state.indexOf(o.value) >= 0 ? ' checked' : '';
     return '<label><input type="checkbox" value="' + o.value + '"' + checked + '> ' + o.label + '</label>';
   }).join('');
@@ -1085,9 +1204,10 @@ function _updateNucBtnLabel(btnId, state) {
 }
 
 function renderNucSAAR() {
-  if (!nucSaarItems.length) { Plotly.purge('chart-nuc-saar'); return; }
-  var traces = nucSaarItems.map(function(key) {
-    var opt = NUCLEO_ALL.filter(function(o) { return o.value === key; })[0];
+  var items = activeSaarState(), list = activeNucleoList();
+  if (!items.length) { Plotly.purge('chart-nuc-saar'); return; }
+  var traces = items.map(function(key) {
+    var opt = list.filter(function(o) { return o.value === key; })[0];
     if (!opt) return null;
     var r = nucleoSeriesValues(key, compute3mSAAR);
     if (!r.dates.length) return null;
@@ -1098,32 +1218,94 @@ function renderNucSAAR() {
   Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), _PLOTLY_CONFIG);
 }
 
-// ── Y-axis rescale on rangeselector click ─────────────────────────────────────
-function _bindYRescale(divId) {
+// ── Y-axis autofit to visible X range, on pan/zoom/reset ──────────────────────
+// Generic across every chart shape in this report: category or date x-axis
+// (Plotly reports xaxis.range as fractional array indices for category axes,
+// real values for date ones — handled via `isCat`), single or dual y-axis
+// (grouped by each trace's own `yaxis` id), and plain vs. stacked bars
+// (barmode 'stack'/'relative' sums same-axis bar traces per x-bucket by sign
+// before taking min/max, and always anchors that axis at 0, since a stacked
+// bar's baseline is always the zero line — pure line/scatter axes autofit
+// tightly to whatever's actually visible, no forced zero, matching
+// TradingView's own price-axis behavior). Y is user-pannable/zoomable
+// directly too (no fixedrange, dragmode:'pan' moves both axes per the
+// user's actual drag/scroll) — this function only fires when X changed
+// WITHOUT Y also changing in the same relayout event, i.e. exactly the
+// rangeselector preset buttons (3a/5a/10a/Tudo etc.), which only ever touch
+// xaxis. A direct diagonal drag or an xy scroll-zoom changes both axes in
+// one event and is deliberately left alone here, since overriding it would
+// fight the user's own gesture. Verified in isolation against synthetic
+// data (scratchpad/test_yautofit.js) since this environment has no browser
+// to test the real Plotly wiring in.
+function _toComparableX(v) {
+  return (typeof v === 'string' && /^\d{4}-\d{2}(-\d{2})?/.test(v)) ? Date.parse(v) : v;
+}
+function _bindYAutofit(divId) {
   var el = document.getElementById(divId);
+  if (!el) return;
   var lock = false;
   el.on('plotly_relayout', function(ev) {
     if (lock) return;
-    if (!Object.keys(ev).some(function(k) { return k.indexOf('xaxis.range') === 0; })) return;
-    var layout = el.layout || el._fullLayout;
+    var xChanged = Object.keys(ev).some(function(k) { return k.indexOf('xaxis.range') === 0 || k.indexOf('xaxis.autorange') === 0; });
+    var yChanged = Object.keys(ev).some(function(k) { return /^yaxis\d*\.(range|autorange)/.test(k); });
+    if (!xChanged || yChanged) return;
+    // _fullLayout first, not layout: it's Plotly's fully-resolved internal
+    // state, guaranteed to have xaxis.type auto-detected (category vs date)
+    // -- el.layout is the raw object passed to newPlot/react and may never
+    // have had .type set at all when it wasn't specified explicitly. Caught
+    // by a runtime harness test against real category-axis data (see
+    // CLAUDE.md's Gotchas), not assumed.
+    var layout = el._fullLayout || el.layout;
     if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    var isCat = layout.xaxis.type === 'category';
+    var stackedAxes = {};
+    if (layout.barmode === 'stack' || layout.barmode === 'relative') {
+      (el.data || []).forEach(function(t) { if (t.type === 'bar') stackedAxes[t.yaxis || 'y'] = true; });
+    }
     var xr = layout.xaxis.range;
-    var x0 = xr[0].toString().slice(0,7), x1 = xr[1].toString().slice(0,7);
-    var mn = Infinity, mx = -Infinity;
+    var lo = isCat ? Math.round(xr[0]) : _toComparableX(xr[0]);
+    var hi = isCat ? Math.round(xr[1]) : _toComparableX(xr[1]);
+    var axes = {};
     (el.data || []).forEach(function(t) {
       if (!t.x || !t.y) return;
+      var axisId = t.yaxis || 'y';
+      if (!axes[axisId]) axes[axisId] = { mn: Infinity, mx: -Infinity, byX: {} };
+      var a = axes[axisId];
+      var stackable = stackedAxes[axisId] && t.type === 'bar';
       for (var i = 0; i < t.x.length; i++) {
-        var v = t.y[i], s = (t.x[i] || '').toString();
-        if (v == null || s < x0 || s > x1) continue;
-        if (v < mn) mn = v;
-        if (v > mx) mx = v;
+        var inRange = isCat ? (i >= lo && i <= hi) : (_toComparableX(t.x[i]) >= lo && _toComparableX(t.x[i]) <= hi);
+        if (!inRange) continue;
+        var v = t.y[i];
+        if (v == null || isNaN(v)) continue;
+        if (stackable) {
+          var key = isCat ? i : t.x[i];
+          if (!a.byX[key]) a.byX[key] = { pos: 0, neg: 0 };
+          if (v >= 0) a.byX[key].pos += v; else a.byX[key].neg += v;
+        } else {
+          if (v < a.mn) a.mn = v;
+          if (v > a.mx) a.mx = v;
+        }
       }
     });
-    if (mn < Infinity) {
+    var upd = {}, any = false;
+    Object.keys(axes).forEach(function(axisId) {
+      var a = axes[axisId], mn = a.mn, mx = a.mx;
+      Object.keys(a.byX).forEach(function(k) {
+        var b = a.byX[k];
+        if (b.pos > mx) mx = b.pos;
+        if (b.neg < mn) mn = b.neg;
+      });
+      if (Object.keys(a.byX).length) { mn = Math.min(mn, 0); mx = Math.max(mx, 0); }
+      if (mn === Infinity || mx === -Infinity) return;
+      var pad = Math.max((mx - mn) * 0.1, 0.5);
+      var key = axisId === 'y' ? 'yaxis' : axisId.replace('y', 'yaxis');
+      upd[key + '.range'] = [mn - pad, mx + pad];
+      upd[key + '.autorange'] = false;
+      any = true;
+    });
+    if (any) {
       lock = true;
-      var p = Math.max((mx - mn) * 0.1, 0.5);
-      Plotly.relayout(divId, {'yaxis.range': [Math.min(mn - p, 0), mx + p], 'yaxis.autorange': false})
-        .then(function() { lock = false; }).catch(function() { lock = false; });
+      Plotly.relayout(divId, upd).then(function() { lock = false; }).catch(function() { lock = false; });
     }
   });
 }
@@ -1131,51 +1313,63 @@ function _bindYRescale(divId) {
 // ── Núcleos tab renders ───────────────────────────────────────────────────────
 function renderNucleosTab() {
   var is15 = currentIndex === 'ipca15';
-  var secNucSaar = document.getElementById('nuc-sec-nuc-saar');
-  var secNucYoy  = document.getElementById('nuc-sec-nuc-yoy');
-  var secSel     = document.getElementById('nuc-sec-selecionado');
-  if (secNucSaar) secNucSaar.style.display = is15 ? 'none' : '';
-  if (secNucYoy)  secNucYoy.style.display  = is15 ? 'none' : '';
-  if (secSel)     secSel.style.display     = is15 ? 'none' : '';
+  var note = document.getElementById('nuc15-note');
+  if (note) note.style.display = is15 ? '' : 'none';
 
   var h2Saar = document.getElementById('nuc-h2-comp-saar');
   var h2Yoy  = document.getElementById('nuc-h2-comp-yoy');
-  if (h2Saar) h2Saar.textContent = is15 ? 'Decomposição Mensal por Componente — IPCA-15' : 'Componentes — 3M SAAR, % a.a. (dessazonalizado)';
-  if (h2Yoy)  h2Yoy.textContent  = is15 ? 'Componentes — Variação 12M % a/a — IPCA-15'   : 'Componentes — Variação 12M % a/a';
+  if (h2Saar) h2Saar.textContent = 'Componentes — 3M SAAR, % a.a. (dessazonalizado)' + (is15 ? ' — IPCA-15' : '');
+  if (h2Yoy)  h2Yoy.textContent  = 'Componentes — Variação 12M % a/a' + (is15 ? ' — IPCA-15' : '');
 
+  var h2NucSaar = document.getElementById('nuc-h2-nuc-saar');
+  var h2NucYoy  = document.getElementById('nuc-h2-nuc-yoy');
+  var h2Sel     = document.getElementById('nuc-h2-selecionado');
+  if (h2NucSaar) h2NucSaar.textContent = 'Núcleos — 3M SAAR, % a.a. (dessazonalizado)' + (is15 ? ' — IPCA-15' : '');
+  if (h2NucYoy)  h2NucYoy.textContent  = 'Núcleos de Inflação — Variação 12M % a/a'    + (is15 ? ' — IPCA-15' : '');
+  if (h2Sel)     h2Sel.textContent     = 'Núcleo Selecionado' + (is15 ? ' — IPCA-15' : '');
+
+  renderCompSAAR(); _bindYAutofit('chart-comp-saar');
   if (is15) {
-    renderCompContrib15();
-    renderCompYoY15();    _bindYRescale('chart-comp-yoy');
+    renderCompYoY15();
   } else {
-    renderCompSAAR();       _bindYRescale('chart-comp-saar');
-    renderNucSAAR();        _bindYRescale('chart-nuc-saar');
-    renderComponentesYoY(); _bindYRescale('chart-comp-yoy');
-    renderNucleosYoY();     _bindYRescale('chart-nuc-yoy');
-    renderNucleoSelecionado();
+    renderComponentesYoY();
   }
+  _bindYAutofit('chart-comp-yoy');
+
+  populateNucChecklist('nuc-saar-panel', 'nuc-saar-btn', activeSaarState(), renderNucSAAR, activeNucleoList());
+  populateNucChecklist('nuc-yoy-panel',  'nuc-yoy-btn',  activeYoyState(),  renderNucleosYoY, activeNucleoList());
+  populateNucleoSelect();
+  renderNucSAAR();        _bindYAutofit('chart-nuc-saar');
+  renderNucleosYoY();     _bindYAutofit('chart-nuc-yoy');
+  renderNucleoSelecionado();
+
   populateDifCatItems();
   renderDifusaoCategoria();
 }
 
 // ── Núcleo Selecionado — pick any single núcleo (or IPCA / the 5-core
-// average), see 3M SAAR + 12M a/a together. Reuses NUCLEO_ALL (defined
-// above) so this dropdown always stays in sync with the checklist charts —
-// same 13 options, same labels/colors, no separate list to keep updated.
-var nucleoSelKey = 'IPCA_nucleo_EX0';
+// average for the full index; IPCA-15 has no synthetic average — see
+// NUCLEO_ALL_15), see 3M SAAR + 12M a/a together. Reuses NUCLEO_ALL/
+// NUCLEO_ALL_15 (defined above) so this dropdown always stays in sync with
+// the checklist charts, one selected key tracked per index (nucleoSelKey /
+// nucleoSelKey15) so switching tabs doesn't lose either selection.
+var nucleoSelKey   = 'IPCA_nucleo_EX0';
+var nucleoSelKey15 = 'IPCA15_nucleo_EX0';
 
 function populateNucleoSelect() {
   var sel = document.getElementById('nucleo-sel');
-  sel.innerHTML = NUCLEO_ALL.map(function(o) {
+  sel.innerHTML = activeNucleoList().map(function(o) {
     return '<option value="' + o.value + '">' + o.label + '</option>';
   }).join('');
-  sel.value = nucleoSelKey;
+  sel.value = activeNucleoSelKey();
 }
 
 function renderNucleoSelecionado() {
-  var opt = NUCLEO_ALL.filter(function(o) { return o.value === nucleoSelKey; })[0];
-  var label = opt ? opt.label : nucleoSelKey;
-  var saar = nucleoSeriesValues(nucleoSelKey, compute3mSAAR);
-  var yoy  = nucleoSeriesValues(nucleoSelKey, computeYoY);
+  var key = activeNucleoSelKey();
+  var opt = activeNucleoList().filter(function(o) { return o.value === key; })[0];
+  var label = opt ? opt.label : key;
+  var saar = nucleoSeriesValues(key, compute3mSAAR);
+  var yoy  = nucleoSeriesValues(key, computeYoY);
   var traces = [];
   if (saar.dates.length) traces.push({
     type:'scatter', mode:'lines', name:'3M SAAR', x:saar.dates, y:saar.values,
@@ -1189,7 +1383,7 @@ function renderNucleoSelecionado() {
   });
   if (!traces.length) { Plotly.purge('chart-nucleo-sel'); return; }
   Plotly.react('chart-nucleo-sel', traces, _nucLayout(label + ' (%)', 360), _PLOTLY_CONFIG);
-  _bindYRescale('chart-nucleo-sel');
+  _bindYAutofit('chart-nucleo-sel');
 }
 
 function renderComponentesYoY() {
@@ -1214,9 +1408,10 @@ function renderComponentesYoY() {
 }
 
 function renderNucleosYoY() {
-  if (!nucYoyItems.length) { Plotly.purge('chart-nuc-yoy'); return; }
-  var traces = nucYoyItems.map(function(key) {
-    var opt = NUCLEO_ALL.filter(function(o) { return o.value === key; })[0];
+  var items = activeYoyState(), list = activeNucleoList();
+  if (!items.length) { Plotly.purge('chart-nuc-yoy'); return; }
+  var traces = items.map(function(key) {
+    var opt = list.filter(function(o) { return o.value === key; })[0];
     if (!opt) return null;
     var r = nucleoSeriesValues(key, computeYoY);
     if (!r.dates.length) return null;
@@ -1228,38 +1423,6 @@ function renderNucleosYoY() {
 }
 
 // ── IPCA-15 Núcleos tab renders ───────────────────────────────────────────────
-function renderCompContrib15() {
-  var SUBG = [
-    {key: 'Alimentos',        fn: function(r) { return r.subgrupo === 'Alimentos'; },        color: C.dourado},
-    {key: 'Bens Industriais', fn: function(r) { return r.subgrupo === 'Bens Industriais'; }, color: C.cinza},
-    {key: 'Serviços',         fn: function(r) { return r.subgrupo === 'Serviços'; },         color: C.azulCl},
-    {key: 'Monitorados',      fn: function(r) { return r.grupo === 'Monitorados'; },          color: C.verde},
-  ];
-  var byKey = {};
-  D.records_ipca15.forEach(function(r) {
-    SUBG.forEach(function(s) {
-      if (!s.fn(r)) return;
-      var k = r.dt + '|' + s.key;
-      byKey[k] = (byKey[k] || 0) + (r.contribuicao || 0);
-    });
-  });
-  var allM = Object.keys(
-    D.records_ipca15.reduce(function(acc, r) { acc[r.dt] = 1; return acc; }, {})
-  ).sort().slice(-18);
-
-  var traces = SUBG.map(function(s) {
-    return {type: 'bar', name: s.key, x: allM,
-      y: allM.map(function(m) { return Math.round((byKey[m+'|'+s.key] || 0) * 10000) / 10000; }),
-      marker: {color: s.color},
-      hovertemplate: '<b>' + s.key + '</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>'};
-  });
-  Plotly.react('chart-comp-saar', traces, Object.assign({}, _nucLayout('Contribuição (p.p.)', 400), {
-    barmode: 'relative',
-    xaxis: {type: 'category', tickangle: -35, gridcolor: '#eee', rangeselector: undefined},
-    legend: {orientation: 'h', y: 1.08, x: 0, font: {size: 11}},
-  }), _PLOTLY_CONFIG);
-}
-
 function renderCompYoY15() {
   var COMP15 = [
     {label: 'IPCA-15 (total)',  fn: null,                                                      color: C.azul,    width: 2.5},
@@ -1317,6 +1480,14 @@ var NUCLEO_DIFUSAO_CATS = [
 
 function populateDifCatItems() {
   var sel = document.getElementById('difcat-value-sel');
+  if (difCatLevel === 'total') {
+    sel.innerHTML = '<option value="total">— (todos os subitens) —</option>';
+    difCatValue = 'total';
+    sel.value = difCatValue;
+    sel.disabled = true;
+    return;
+  }
+  sel.disabled = false;
   if (difCatLevel === 'nucleo') {
     sel.innerHTML = NUCLEO_DIFUSAO_CATS.map(function(o) {
       return '<option value="' + o.value + '">' + o.label + '</option>';
@@ -1338,11 +1509,13 @@ function populateDifCatItems() {
 
 function renderDifusaoCategoria() {
   if (!difCatValue) { Plotly.purge('chart-difusao-categoria'); return; }
+  var isTotal = difCatLevel === 'total';
   var isNucleo = difCatLevel === 'nucleo';
   var nucCat = isNucleo ? NUCLEO_DIFUSAO_CATS.filter(function(o) { return o.value === difCatValue; })[0] : null;
-  var label = isNucleo ? (nucCat ? nucCat.label : difCatValue) : difCatValue;
-  var filterFn = isNucleo ? (nucCat ? nucCat.filterFn : function() { return false; })
-                           : (function(v) { return function(r) { return r[difCatLevel] === v; }; })(difCatValue);
+  var label = isTotal ? 'Total' : (isNucleo ? (nucCat ? nucCat.label : difCatValue) : difCatValue);
+  var filterFn = isTotal ? null
+                          : isNucleo ? (nucCat ? nucCat.filterFn : function() { return false; })
+                          : (function(v) { return function(r) { return r[difCatLevel] === v; }; })(difCatValue);
   var d = computeDifusaoFromRecords(currentAll(), filterFn);
   if (!d.dates.length) { Plotly.purge('chart-difusao-categoria'); return; }
   var ma3 = movingAvg(d.values, 3), ma6 = movingAvg(d.values, 6);
@@ -1360,11 +1533,16 @@ function renderDifusaoCategoria() {
      line: {color: C.laranja, width: 2.5},
      hovertemplate: 'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
   ], _nucLayout('% subitens c/ var. positiva — ' + label, 340), _PLOTLY_CONFIG);
+  _bindYAutofit('chart-difusao-categoria');
 }
 
+// dragmode:'pan' lets drag/scroll move both axes directly, TradingView-
+// style. No fixedrange on yaxis: Y is user-pannable/zoomable too. _bindYAutofit
+// still fits Y whenever X moves without Y moving in the same event (the
+// rangeselector preset buttons below only ever touch xaxis).
 function _nucLayout(yTitle, height) {
   return {
-    height: height, margin:{l:55,r:20,t:20,b:50},
+    height: height, margin:{l:55,r:20,t:20,b:50}, dragmode: 'pan',
     xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
       buttons:[{count:3,label:'3a',step:'year',stepmode:'backward'},{count:5,label:'5a',step:'year',stepmode:'backward'},{count:10,label:'10a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
       bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.10,yanchor:'top',
@@ -1372,7 +1550,7 @@ function _nucLayout(yTitle, height) {
     yaxis:{title:{text:yTitle,font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
     legend:{orientation:'h', y:1.08, x:0, font:{size:11}},
     paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-    font:{family:'system-ui,sans-serif', color:'#2c3140', size:12},
+    font:{family:'Barlow,sans-serif', color:'#1F2853', size:12},
   };
 }
 
@@ -1414,6 +1592,37 @@ var HEATMAP_ROWS = {
   ],
 };
 
+// IPCA-15 equivalent, added 2026-07 — until then this heatmap was hardcoded
+// to HEATMAP_ROWS (full IPCA only, see CLAUDE.md Gotchas), so the "Mapa de
+// Calor" tab never changed when switching to IPCA-15. No Comercializáveis/
+// Não Comercializáveis row (same reason as renderCompSAAR's IPCA-15
+// branch); '_media5' here resolves via NUCLEO5_BCB_15, not NUCLEO5_BCB (see
+// computeNucleoMedia5).
+var HEATMAP_ROWS_15 = {
+  'Grupos': [
+    {key:'IPCA15',                label:'IPCA-15 (Total)'},
+    {key:'IPCA15_livres',         label:'Livres'},
+    {key:'IPCA15_administrado',   label:'Monitorados'},
+    {key:'IPCA15_alimentacao',    label:'Alimentação no Domicílio'},
+    {key:'IPCA15_servicos',       label:'Serviços'},
+    {key:'IPCA15_industriais',    label:'Industriais'},
+  ],
+  'Núcleos': [
+    {key:'IPCA15_nucleo_EX0',                            label:'EX-0'},
+    {key:'IPCA15_nucleo_EX01',                           label:'EX-01'},
+    {key:'IPCA15_nucleo_EX02',                           label:'EX-02'},
+    {key:'IPCA15_nucleo_EX03',                           label:'EX-03'},
+    {key:'IPCA15_nucleo_EX03_servicos',                  label:'EX-03 — Serviços'},
+    {key:'IPCA15_nucleo_EX03_industriais',               label:'EX-03 — Industriais'},
+    {key:'IPCA15_nucleo_EXFE',                           label:'EX-FE'},
+    {key:'IPCA15_nucleo_P55',                            label:'P55'},
+    {key:'IPCA15_nucleo_medias_aparadas',                label:'Médias Aparadas (com suavização)'},
+    {key:'IPCA15_nucleo_medias_aparadas_sem_suavizacao', label:'Médias Aparadas (sem suavização)'},
+    {key:'IPCA15_nucleo_DP',                             label:'Dupla Ponderação'},
+    {key:'_media5',                                      label:'Média 5 Núcleos'},
+  ],
+};
+
 // Trailing (not centered) window ending at i, inclusive — so the z-score at
 // month i only ever uses information available up to that month.
 function rollingZScore(values, window, minObs) {
@@ -1444,7 +1653,12 @@ function zColor(z) {
 }
 
 function renderHeatmap() {
-  var anchor = compute3mSAAR('IPCA');
+  var is15 = currentIndex === 'ipca15';
+  var rows = is15 ? HEATMAP_ROWS_15 : HEATMAP_ROWS;
+  var h2 = document.getElementById('heatmap-h2');
+  if (h2) h2.textContent = 'Mapa de Calor — Grupos e Núcleos (3M SAAR)' + (is15 ? ' — IPCA-15' : '');
+
+  var anchor = compute3mSAAR(is15 ? 'IPCA15' : 'IPCA');
   var container = document.getElementById('heatmap-table-wrap');
   if (!anchor.dates.length) { container.innerHTML = ''; return; }
   var last12 = anchor.dates.slice(-12);
@@ -1453,9 +1667,9 @@ function renderHeatmap() {
   last12.forEach(function(d) { html += '<th>' + d + '</th>'; });
   html += '</tr></thead><tbody>';
 
-  Object.keys(HEATMAP_ROWS).forEach(function(section) {
+  Object.keys(rows).forEach(function(section) {
     html += '<tr class="hm-section"><td colspan="' + (last12.length + 1) + '">' + section + '</td></tr>';
-    HEATMAP_ROWS[section].forEach(function(row) {
+    rows[section].forEach(function(row) {
       var d = computeHeatmapRow(row.key);
       html += '<tr><td class="hm-label">' + row.label + '</td>';
       last12.forEach(function(dt) {
@@ -1597,7 +1811,7 @@ function renderYoYDrill() {
   Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('Var. 12M (% a/a)', 400), {
     showlegend: !single,
   }), _PLOTLY_CONFIG);
-  _bindYRescale('chart-yoy-drill');
+  _bindYAutofit('chart-yoy-drill');
 }
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
@@ -1643,7 +1857,8 @@ document.querySelectorAll('[data-index]').forEach(function(btn) {
     renderAll();
     populateYoYItems();
     renderYoYDrill();
-    if (tabRendered.nucleos)  renderNucleosTab();
+    if (tabRendered.nucleos) renderNucleosTab();
+    if (tabRendered.heatmap) renderHeatmap();
   });
 });
 
@@ -1695,7 +1910,7 @@ document.getElementById('glossario-toggle').addEventListener('click', function()
 
 // Núcleo Selecionado dropdown
 document.getElementById('nucleo-sel').addEventListener('change', function() {
-  nucleoSelKey = this.value;
+  setActiveNucleoSelKey(this.value);
   renderNucleoSelecionado();
 });
 
@@ -1773,9 +1988,9 @@ try {
   bindWaterfallClick();
   populateYoYItems();
   renderYoYDrill();
-  populateNucleoSelect();
-  populateNucChecklist('nuc-saar-panel', 'nuc-saar-btn', nucSaarItems, renderNucSAAR);
-  populateNucChecklist('nuc-yoy-panel',  'nuc-yoy-btn',  nucYoyItems,  renderNucleosYoY);
+  // Núcleos-tab widgets (checklist/select) are (re)built by renderNucleosTab()
+  // itself — called on first switch to that tab, and again on every IPCA /
+  // IPCA-15 toggle — so no separate init call is needed here.
 } catch(e) {
   var errDiv = document.createElement('div');
   errDiv.style.cssText = 'background:#fff0f0;border:1px solid #c00;color:#c00;padding:16px 20px;margin:20px;border-radius:6px;font-family:monospace;font-size:13px;white-space:pre-wrap;';

@@ -78,6 +78,50 @@ df_long = FredMultFrame({...}, start, end, Pivot=True)
 - API key via `FRED_API_KEY` no `.env` — nunca hardcoded.
 - `US_IndexNormalize`: expande dados trimestrais para mensais via merge com CPI e `ffill(limit=2)`.
 
+### `connectors/bis.py` — BIS Statistics API v1
+
+Sem autenticação. Dois datasets SDMX-CSV expostos:
+
+```python
+from connectors.bis import BIS
+
+bis = BIS()
+
+# WS_EER — Effective Exchange Rates (REER/NEER)
+df = bis.get_eer(countries=["BR", "MX", "CL", "CO"], types=[("R", "B"), ("N", "B")])
+# colunas: date (month-start), country_code, reer_type (real_broad | nominal_broad | ...), value
+
+# WS_CBPOL — Central Bank Policy Rates
+df = bis.get_policy_rates(countries=["BR", "MX", "CL", "CO", "PE", "AR"], freq="D")
+# colunas: date, country_code, value (% a.a.)
+```
+
+**Detalhes técnicos:**
+- Key SDMX difere por dataset: `WS_EER` é `FREQ.ADJUSTMENT.REF_AREA.BASKET` (4 dimensões); `WS_CBPOL` é
+  `FREQ.REF_AREA` (2 dimensões, mais simples).
+- `WS_CBPOL` também expõe frequência mensal, mas é só o fechamento de mês da série diária — por isso os
+  scripts de domínio usam apenas `freq="D"`.
+- Cuidado com o range de valores: Brasil na hiperinflação (1989-1994) chega a ~790.799% a.a. — coluna
+  `value` no banco precisa de `decimal(12,4)`, não `decimal(8,4)`.
+- Argentina (`AR`) parou de ser atualizada pelo BIS em 2025-07 — gap esperado no fim da série, não é
+  falha do connector/script.
+- Retry: 4 tentativas, backoff 1s, respeita `Retry-After` (429/5xx).
+
+### `connectors/yfinance.py` — Yahoo Finance (via pacote `yfinance`)
+
+```python
+from connectors.yfinance import get_history
+
+df = get_history("DX-Y.NYB", start="1971-01-01")
+# colunas: date, value (value = Close)
+```
+
+**Detalhes:**
+- Usado por `domain/db/international/yfinance/cmb_dollar_index.py` (DXY) — historico desde 1971,
+  bem mais longo que o equivalente FRED (`DTWEXBGS`, so cobre a partir de 2006).
+- `end=None` (default) baixa ate a data atual.
+- `yf.download` retorna colunas em MultiIndex (`Price`, `Ticker`) — `get_history` ja acha e renomeia.
+
 ### `connectors/mysql.py` — Insert/Update no banco
 
 ```python

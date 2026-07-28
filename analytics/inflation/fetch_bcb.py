@@ -22,7 +22,7 @@ from connectors.bcb import BCB
 # dropdown "Núcleo Selecionado" do relatório sempre tenha SAAR disponível,
 # qualquer que seja o núcleo escolhido.
 _SAAR_SERIES = {
-    "IPCA", "IPCA_administrado", "IPCA_livres", "IPCA_industriais",
+    "IPCA", "IPCA15", "IPCA_administrado", "IPCA_livres", "IPCA_industriais",
     "IPCA_alimentacao", "IPCA_servicos",
     "IPCA_comercializaveis", "IPCA_nao_comercializaveis",
     "IPCA_nucleo_medias_aparadas", "IPCA_nucleo_medias_aparadas_sem_suavizacao",
@@ -92,7 +92,7 @@ def _seasonal_cutoff(dts: "pd.Series") -> str:
     return f"{last_year - 1}-12"
 
 
-def _apply_stl_ma3(df: pd.DataFrame) -> pd.DataFrame:
+def _apply_stl_ma3(df: pd.DataFrame, series: set[str] | None = None) -> pd.DataFrame:
     """Seasonally adjust each SAAR series via STL, then take MA(3), store as _ma3_sa.
 
     Seasonal factors are estimated on data up to the last complete December
@@ -109,13 +109,20 @@ def _apply_stl_ma3(df: pd.DataFrame) -> pd.DataFrame:
     Deliberately still STL, not the BLS/Census X-13ARIMA-SEATS itself — see
     the STL-ordering gotcha in analytics/inflation/CLAUDE.md for why
     (external binary, no pip package, breaks uv-based reproducibility).
+
+    `series` defaults to the module-level `_SAAR_SERIES` (BCB/SGS series this
+    file fetches). generate_report.py passes its own set here to run the same
+    pipeline over the in-house IPCA-15 núcleo series it computes from
+    inflc_decomposicao/inflc_dim — those never appear in `df` fetched by
+    `run()`, so reusing `_SAAR_SERIES` for them would silently skip them.
     """
     import numpy as np
     from statsmodels.tsa.seasonal import STL
 
+    series = series if series is not None else _SAAR_SERIES
     sa_frames = []
     for name, grp in df.groupby("name"):
-        if name not in _SAAR_SERIES:
+        if name not in series:
             continue
         grp = grp.sort_values("dt").reset_index(drop=True)
         vals = grp["value"].astype(float)

@@ -12,13 +12,14 @@ Referência completa de CSS, componentes HTML e padrões de código para dashboa
 6. [HTML — Filtros de Período](#filtros)
 7. [HTML — Toggle de Séries](#toggle-series)
 8. [HTML — Footer](#footer)
-9. [JS — Chart.js Setup](#chartjs-setup)
-10. [JS — Datalabels](#datalabels)
-11. [JS — Formatação BR](#formatacao)
-12. [JS — Cores por variação](#cores)
-13. [JS — Stats dinâmicos](#stats-dinamicos)
-14. [Exemplo completo — Dashboard single-metric](#exemplo-single)
-15. [Exemplo completo — Dashboard multi-metric](#exemplo-multi)
+9. [JS — Plotly Setup](#chartjs-setup)
+10. [JS — Zoom/Pan Interativo](#zoom-pan)
+11. [JS — Datalabels (toggle de texto)](#datalabels)
+12. [JS — Formatação BR](#formatacao)
+13. [JS — Cores por variação](#cores)
+14. [JS — Stats dinâmicos](#stats-dinamicos)
+15. [Exemplo completo — Dashboard single-metric](#exemplo-single)
+16. [Exemplo completo — Dashboard multi-metric](#exemplo-multi)
 
 ---
 
@@ -207,7 +208,7 @@ body {
       </div>
     </div>
   </div>
-  <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+  <div class="chart-wrap"><div id="mainChart" style="width:100%"></div></div>
 </div>
 ```
 
@@ -220,17 +221,165 @@ body {
 
 ## JavaScript Patterns <a name="chartjs-setup"></a>
 
-### Setup obrigatório
-```javascript
-// SEMPRE no início do script
-Chart.register(ChartDataLabels);
-```
+Padrão único de charting do projeto desde 2026-07-28 (histórico completo da mudança em `.claude/rules/lis-dashboards.md`, repo principal): **Plotly**, não Chart.js. Todo relatório analítico do projeto (`analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, `analytics/monetary_policy/report.html`) já usava Plotly desde o início; esta skill migrou para o mesmo padrão no mesmo dia em que `analytics/exchange_rate/referencia/ppp_dashboard.html` (originalmente Chart.js) foi convertido, a pedido direto do usuário ("I want all graphs to be this way ... set this in skill too"). Os padrões abaixo são os MESMOS já usados nesses relatórios — não uma variação nova.
 
 ### CDNs obrigatórios (no <head>)
 ```html
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+```
+
+Nada além disso — sem Chart.js, sem chartjs-plugin-datalabels, sem hammer.js/chartjs-plugin-zoom. Cada `<div id="...">` vazio (não `<canvas>`) recebe seu gráfico via `Plotly.newPlot`/`Plotly.react`.
+
+## JS — Zoom/Pan Interativo <a name="zoom-pan"></a>
+
+**Obrigatório em todo dashboard** — nenhum gráfico fica estático. Interação livre nos dois eixos, mesmo padrão usado em `analytics/exchange_rate/report.html`/`analytics/inflation/report.html`/`analytics/monetary_policy/report.html` (histórico completo, incluindo as versões descartadas antes de chegar neste padrão, em `.claude/rules/lis-dashboards.md`):
+
+- **Arrastar (drag)** → pan nos dois eixos diretamente (Plotly `dragmode:'pan'` nativo)
+- **Scroll / pinch** → zoom nos dois eixos, ancorado no cursor (`scrollZoom:true`)
+- **Double-click** → reseta para o range completo (comportamento nativo do Plotly, não precisa de handler)
+- **Sem gesto de box-zoom** (o `dragmode:'pan'` do Plotly já substitui o `'zoom'` padrão da lib, que faria rubber-band box-zoom)
+- **Botões de range rápido** (1a/3a/5a/10a/Tudo) — algo que o Chart.js não tinha equivalente direto; usa o `rangeselector` nativo do Plotly
+
+```javascript
+// Config do Plotly (passar como 3º argumento de Plotly.newPlot/react)
+const PLOTLY_CONFIG = {
+  responsive: true,
+  displayModeBar: 'hover',       // toolbar só aparece no hover, não compete com o rangeselector
+  displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+  scrollZoom: true,              // scroll/pinch zoom in place, estilo TradingView
+};
+
+const RANGE_SELECTOR = {
+  buttons: [
+    { count: 1, label: '1a', step: 'year', stepmode: 'backward' },
+    { count: 3, label: '3a', step: 'year', stepmode: 'backward' },
+    { count: 5, label: '5a', step: 'year', stepmode: 'backward' },
+    { count: 10, label: '10a', step: 'year', stepmode: 'backward' },
+    { step: 'all', label: 'Tudo' },
+  ],
+  bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+  activecolor: '#1F2853', font: { size: 11, color: '#555' },
+  x: 0, xanchor: 'left', y: -0.16,
+};
+
+function mkLayout(extra) {
+  const base = {
+    dragmode: 'pan',              // nunca 'zoom' (rubber-band box) -- ver acima
+    hovermode: 'x unified',
+    hoverlabel: { bgcolor: '#1F2853', bordercolor: '#1F2853', font: { family: 'Barlow', size: 12, color: '#fff' } },
+    showlegend: false,
+    xaxis: {
+      type: 'date',               // ou 'category' se o eixo X não for uma série temporal real
+      showgrid: false, showline: true, linecolor: 'rgba(31,40,83,0.1)',
+      tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
+      rangeselector: RANGE_SELECTOR,
+      rangeslider: { visible: false },
+      // NÃO setar `fixedrange` -- Y também precisa ficar pannable/zoomable livremente.
+    },
+    yaxis: {
+      gridcolor: 'rgba(31,40,83,0.06)',
+      tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'Barlow, sans-serif', color: '#1F2853', size: 12 },
+  };
+  if (!extra) return base;
+  Object.keys(extra).forEach((k) => {
+    if (k === 'xaxis' || k === 'yaxis') base[k] = Object.assign({}, base[k], extra[k]);
+    else base[k] = extra[k];
+  });
+  return base;
+}
+```
+
+**Por que ainda precisa de um helper de autofit em Y, mesmo com `dragmode:'pan'`+Y livre:** os botões do `rangeselector` (1a/3a/...) mudam `xaxis.range` diretamente, sem nenhum gesto de usuário em Y — então Y fica mostrando o range antigo (às vezes uma janela nova e estreita espremida no range antigo inteiro). `_bindYAutofit` cobre exatamente esse caso: só recalcula Y quando `xaxis.range` mudou **sem** `yaxis`/`yaxis2` também terem mudado no mesmo evento (ou seja, clique num botão do rangeselector ou um double-click reset — nunca um drag/scroll direto, que já move os dois eixos juntos e não deve ser contrariado). Versão genérica (funciona com eixo category ou date, single ou dual y-axis, barras simples ou empilhadas — mesma função usada nos três relatórios analíticos e em `ppp_dashboard.html`):
+
+```javascript
+function _toComparableX(v) {
+  return (typeof v === 'string' && /^\d{4}-\d{2}(-\d{2})?/.test(v)) ? Date.parse(v) : v;
+}
+function _bindYAutofit(divId) {
+  const el = document.getElementById(divId);
+  if (!el || el._yAutofitBound) return;
+  el._yAutofitBound = true;
+  let lock = false;
+  el.on('plotly_relayout', function (ev) {
+    if (lock) return;
+    const xChanged = Object.keys(ev).some((k) => k.indexOf('xaxis.range') === 0 || k.indexOf('xaxis.autorange') === 0);
+    const yChanged = Object.keys(ev).some((k) => /^yaxis\d*\.(range|autorange)/.test(k));
+    if (!xChanged || yChanged) return;
+    // _fullLayout primeiro, não layout: só ali o Plotly resolve o xaxis.type
+    // (category vs date) detectado automaticamente.
+    const layout = el._fullLayout || el.layout;
+    if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    const isCat = layout.xaxis.type === 'category';
+    const stackedAxes = {};
+    if (layout.barmode === 'stack' || layout.barmode === 'relative') {
+      (el.data || []).forEach((t) => { if (t.type === 'bar') stackedAxes[t.yaxis || 'y'] = true; });
+    }
+    const xr = layout.xaxis.range;
+    const lo = isCat ? Math.round(xr[0]) : _toComparableX(xr[0]);
+    const hi = isCat ? Math.round(xr[1]) : _toComparableX(xr[1]);
+    const axes = {};
+    (el.data || []).forEach((t) => {
+      if (!t.x || !t.y || t.visible === 'legendonly') return;
+      const axisId = t.yaxis || 'y';
+      if (!axes[axisId]) axes[axisId] = { mn: Infinity, mx: -Infinity, byX: {} };
+      const a = axes[axisId];
+      const stackable = stackedAxes[axisId] && t.type === 'bar';
+      for (let i = 0; i < t.x.length; i++) {
+        const inRange = isCat ? (i >= lo && i <= hi) : (_toComparableX(t.x[i]) >= lo && _toComparableX(t.x[i]) <= hi);
+        if (!inRange) continue;
+        const v = t.y[i];
+        if (v == null || isNaN(v)) continue;
+        if (stackable) {
+          const key = isCat ? i : t.x[i];
+          if (!a.byX[key]) a.byX[key] = { pos: 0, neg: 0 };
+          if (v >= 0) a.byX[key].pos += v; else a.byX[key].neg += v;
+        } else {
+          if (v < a.mn) a.mn = v;
+          if (v > a.mx) a.mx = v;
+        }
+      }
+    });
+    const upd = {}; let any = false;
+    Object.keys(axes).forEach((axisId) => {
+      const a = axes[axisId]; let mn = a.mn, mx = a.mx;
+      Object.keys(a.byX).forEach((k) => {
+        const b = a.byX[k];
+        if (b.pos > mx) mx = b.pos;
+        if (b.neg < mn) mn = b.neg;
+      });
+      if (Object.keys(a.byX).length) { mn = Math.min(mn, 0); mx = Math.max(mx, 0); }
+      if (mn === Infinity || mx === -Infinity) return;
+      const pad = Math.max((mx - mn) * 0.1, 0.5);
+      const key = axisId === 'y' ? 'yaxis' : axisId.replace('y', 'yaxis');
+      upd[key + '.range'] = [mn - pad, mx + pad];
+      upd[key + '.autorange'] = false;
+      any = true;
+    });
+    if (any) {
+      lock = true;
+      Plotly.relayout(divId, upd).then(() => { lock = false; }).catch(() => { lock = false; });
+    }
+  });
+}
+// depois de CADA Plotly.newPlot/react: _bindYAutofit('mainChart');
+```
+
+Só pule `_bindYAutofit` (deixe o Plotly com a interação padrão dele) em gráficos que não são série temporal no eixo X — ex. um ranking horizontal (x=valor, y=categoria) ou um heatmap com eixo Y fixo por categoria, mesma exceção já documentada nos relatórios analíticos.
+
+Dica de descoberta, uma linha só, perto do topo da página (não repetir por gráfico):
+```html
+<div class="chart-hint">Todo gráfico: scroll/pinch para zoom (2 eixos) · arraste para mover (2 eixos) · double-click para resetar</div>
+```
+```css
+.chart-hint {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  padding: 6px 2px 14px; letter-spacing: 0.02em;
+}
 ```
 
 ### Formatação BR <a name="formatacao"></a>
@@ -251,22 +400,25 @@ function fmtQty(v) {
 }
 ```
 
-### Datalabels config <a name="datalabels"></a>
+Nota: o eixo Y do Plotly não aceita um formatter arbitrário em JS (só strings de formato d3, que não fazem vírgula decimal BR) — não tente forçar isso no eixo. Os valores formatados em BR (`fmtLabel`/`fmtPrice`/`fmtQty`) entram via `customdata` + `hovertemplate` (tooltip) e via `text` (labels sobre o gráfico, ver abaixo), nunca via tick do eixo.
+
+### Datalabels (toggle de texto sobre o gráfico) <a name="datalabels"></a>
+
+Chart.js tinha um plugin dedicado (`chartjs-plugin-datalabels`); no Plotly o equivalente é nativo — `mode` inclui `'text'`, com `text`/`textposition`/`textfont` por trace, e o toggle liga/desliga trocando `mode` via `Plotly.restyle` (sem re-renderizar o gráfico inteiro):
+
 ```javascript
-// Step baseado no total de pontos
+// Step baseado no total de pontos -- igual ao Chart.js
 const step = data.length > 60 ? 5 : data.length > 30 ? 3 : 1;
 
-datalabels: {
-  display: false, // começa desligado!
-  align: 'top',
-  anchor: 'end',
-  offset: 4,
-  color: '#1F2853',
-  font: { family: 'JetBrains Mono', size: 9, weight: 500 },
-  formatter: (v, ctx) => ctx.dataIndex % step === 0 ? fmtLabel(v) : '',
-  backgroundColor: 'rgba(255,255,255,0.85)',
-  borderRadius: 3,
-  padding: { top: 2, bottom: 2, left: 4, right: 4 }
+// Ao montar a trace:
+{
+  type: 'scatter',
+  mode: showLabels ? 'lines+text' : 'lines',   // começa 'lines' (labels ocultos)
+  x: dates, y: values,
+  text: values.map((v, i) => (i % step === 0 ? fmtLabel(v) : '')),
+  textposition: 'top center',
+  textfont: { family: 'JetBrains Mono', size: 9, color: '#1F2853' },
+  // ... cor/fill/hovertemplate, ver "Dataset padrão" abaixo
 }
 ```
 
@@ -277,65 +429,44 @@ let showLabels = false;
 function toggleLabels() {
   showLabels = !showLabels;
   document.getElementById('dlToggle').classList.toggle('on', showLabels);
-  chart.options.plugins.datalabels.display = showLabels;
-  chart.update();
+  Plotly.restyle('mainChart', { mode: showLabels ? 'lines+text' : 'lines' }, [0]); // [0] = índice da trace principal
 }
 ```
 
 ### Cores por variação <a name="cores"></a>
 ```javascript
-// Pontos coloridos: verde se subiu, vermelho se caiu
+// Marcadores coloridos: verde se subiu, vermelho se caiu -- array de cores
+// por ponto, igual ao pointBackgroundColor do Chart.js mas via marker.color
 const pointColors = data.map((d, i) =>
   i === 0 ? 'rgba(31,40,83,0.6)'
   : d.value >= data[i-1].value ? 'rgba(65,135,145,0.7)'
   : 'rgba(234,82,58,0.7)'
 );
+// na trace: mode: 'lines+markers', marker: { color: pointColors, size: 3 }
 ```
 
-### Dataset padrão (single line)
+### Dataset padrão (single line) <a name="dataset-padrao"></a>
 ```javascript
 {
-  data: values,
-  borderColor: '#1F2853',
-  backgroundColor: 'rgba(31,40,83,0.06)',
-  fill: true,
-  pointBackgroundColor: pointColors,
-  pointRadius: 3,      // 4 se poucos pontos
-  pointHoverRadius: 6,  // 7 se poucos pontos
-  borderWidth: 2,
-  tension: 0.25
+  type: 'scatter',
+  mode: 'lines+markers',           // markers sempre visíveis (pointRadius:3 do Chart.js)
+  x: dates, y: values,
+  line: { color: '#1F2853', width: 2, shape: 'spline', smoothing: 0.25 },
+  marker: { color: pointColors, size: 3 },
+  fill: 'tozeroy', fillcolor: 'rgba(31,40,83,0.06)',
+  customdata: values.map(fmtLabel),          // valor já formatado em BR, para o tooltip
+  hovertemplate: 'NOME_DA_SÉRIE: %{customdata}<extra></extra>',
 }
 ```
 
-### Chart options padrão
+### Layout padrão (chamar via `Plotly.newPlot(divId, traces, mkLayout(extra), PLOTLY_CONFIG)`)
+`mkLayout()` (seção Zoom/Pan acima) já cobre `dragmode`, `hovermode`, `rangeselector`, cores de eixo/fonte. Para overrides específicos do gráfico (título de eixo Y, `barmode` para stacked bar, etc.), passe um objeto `extra`:
+
 ```javascript
-{
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    datalabels: { /* config acima */ },
-    tooltip: {
-      backgroundColor: '#1F2853',
-      titleFont: { family: 'JetBrains Mono', size: 11 },
-      bodyFont: { family: 'Barlow', size: 12 },
-      padding: 12,
-      cornerRadius: 8,
-      callbacks: { /* custom por dashboard */ }
-    }
-  },
-  scales: {
-    x: {
-      grid: { color: 'rgba(31,40,83,0.04)' },
-      ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 9 }, maxTicksLimit: 20, maxRotation: 45 }
-    },
-    y: {
-      grid: { color: 'rgba(31,40,83,0.06)' },
-      ticks: { color: '#7A88A8', font: { family: 'JetBrains Mono', size: 10 }, callback: v => v.toFixed(0) + '%' }
-    }
-  },
-  interaction: { mode: 'index', intersect: false }
-}
+Plotly.newPlot('mainChart', traces, mkLayout({
+  yaxis: { ticksuffix: '%' },   // sufixo simples no eixo -- não um formatter BR completo, ver nota acima
+}), PLOTLY_CONFIG);
+_bindYAutofit('mainChart');
 ```
 
 ### Stats dinâmicos <a name="stats-dinamicos"></a>
@@ -367,25 +498,31 @@ function buildStats(data, valueKey, label, suffix) {
 
 ## Cores para séries múltiplas
 
-| Série      | Linha      | Fill                    | Dash   |
-|------------|------------|-------------------------|--------|
-| Primária   | #1F2853    | rgba(31,40,83,0.08)     | solid  |
-| Secundária | #02739B    | rgba(2,115,155,0.08)    | [6,3]  |
-| Terciária  | #BB9B1D    | rgba(187,155,29,0.12)   | [2,2]  |
-| Quaternária| #EA523A    | rgba(234,82,58,0.08)    | [8,4]  |
-| Quinquenária| #418791   | rgba(65,135,145,0.08)   | [4,2]  |
+Coluna "Dash" usa a sintaxe do Plotly (`line.dash`: string, não array de pixels como no Chart.js):
+
+| Série      | Linha      | Fill                    | Dash     |
+|------------|------------|-------------------------|----------|
+| Primária   | #1F2853    | rgba(31,40,83,0.08)     | solid    |
+| Secundária | #02739B    | rgba(2,115,155,0.08)    | dash     |
+| Terciária  | #BB9B1D    | rgba(187,155,29,0.12)   | dot      |
+| Quaternária| #EA523A    | rgba(234,82,58,0.08)    | longdash |
+| Quinquenária| #418791   | rgba(65,135,145,0.08)   | dashdot  |
+
+Eixos independentes (série secundária num eixo à direita): trace da série secundária ganha `yaxis: 'y2'`, e o layout ganha `yaxis2: { overlaying: 'y', side: 'right', gridcolor: 'rgba(31,40,83,0.06)', tickfont: {...} }` — `_bindYAutofit` já é dual-axis-aware (agrupa por `t.yaxis || 'y'`), não precisa de tratamento especial.
 
 ---
 
 ## Checklist antes de entregar
 
-- [ ] `Chart.register(ChartDataLabels)` no início
-- [ ] Botão "Dados no gráfico" presente e funcional
-- [ ] Labels truncados com vírgula (não arredondados)
+- [ ] CDN: só Plotly (`https://cdn.plot.ly/plotly-2.35.2.min.js`) — sem Chart.js/chartjs-plugin-datalabels/hammer.js/chartjs-plugin-zoom
+- [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, `rangeselector`, sem `fixedrange`) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
+- [ ] Gráficos que não são série temporal (ranking horizontal, heatmap categórico) ficam com a interação padrão do Plotly — não force `_bindYAutofit` neles
+- [ ] Cada gráfico é um `<div id="...">` vazio, nunca `<canvas>`
+- [ ] Botão "Dados no gráfico" presente e funcional (`Plotly.restyle(..., {mode: 'lines+text'|'lines'}, [idx])`)
+- [ ] Labels truncados com vírgula (não arredondados) — via `text`/`customdata`, nunca no tick do eixo Y
 - [ ] Step adequado ao número de pontos
 - [ ] Stats cards com último/máxima/mínima
-- [ ] Pontos coloridos por variação (verde/vermelho)
-- [ ] `responsive:true, maintainAspectRatio:false`
-- [ ] Tooltip mostrando todas as métricas disponíveis
+- [ ] Marcadores coloridos por variação (verde/vermelho) via `marker.color` (array por ponto)
+- [ ] Tooltip via `customdata`+`hovertemplate`, mostrando todas as métricas disponíveis, formatado em BR
 - [ ] Formato BR: vírgula decimal, R$ para preços, k para milhares
 - [ ] Footer com contexto

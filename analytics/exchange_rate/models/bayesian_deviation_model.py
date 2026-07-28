@@ -73,6 +73,24 @@ def build_deltas(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
+    """Same as build_deltas() but regressors enter as Δchannel(t) — no extra
+    1-month lag — matching state_space_model.py's contemporaneous timing
+    choice rather than this module's original lagged convention. Added
+    2026-07-28 for the not-lagged carry/cds/breakeven_gap/dxy spec (see
+    fit_contemp_spec()); also carries delta_dxy, which build_deltas() never
+    needed since the original 4-channel spec didn't use it. delta_relative_carry
+    added same day, alongside (not replacing) delta_carry — see
+    fit_contemp_spec()'s docstring."""
+    dev = compute_deviation(df)
+    out = pd.DataFrame(index=df.index)
+    out["delta_dev"] = dev.diff()
+    out["deviation_lag1"] = dev.shift(1)
+    for col in ("carry", "relative_carry", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy"):
+        out[f"delta_{col}"] = df[col].diff()
+    return out
+
+
 def _standardize(frame: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, dict]:
     stats = {}
     z = frame.copy()
@@ -192,6 +210,36 @@ def fit_ecm_spec() -> dict:
     return result
 
 
+def fit_contemp_spec() -> dict:
+    """Not-lagged spec, 2026-07-28 user request: carry + fiscal (CDS) +
+    breakeven_gap (de-anchoring) + DXY, contemporaneous deltas (no extra
+    1-month lag) via build_deltas_contemporaneous() — replacing the tab's
+    original carry/tot/breakeven/fiscal lagged spec, per direct user
+    instruction ("it's not necessary to run the other specifications").
+    DXY is new to this module (state_space_model.py/beer_model.py already
+    use it); breakeven_gap over raw breakeven, matching the user's own
+    "de-anchoring breakeven" framing. Saved under label "primary_contemp" —
+    the dashboard's build_dashboard_payload() reads this and only this.
+
+    relative_carry added same day, alongside (not replacing) carry, per
+    direct user choice: Selic minus the equal-weighted MX/CL/CO/PE policy
+    rate average (see ppp_equilibrium._load_relative_carry()) — testing
+    whether Brazil's rate positioning RELATIVE TO ITS LATAM PEERS explains
+    the deviation beyond the bilateral BR-US differential `carry` already
+    captures."""
+    df = load_data()
+    deltas = build_deltas_contemporaneous(df)
+    print("=" * 78)
+    print("CONTEMPORANEOUS SPEC — carry + relative_carry + fiscal (CDS) + breakeven_gap (de-anchoring) + DXY, deltas, no lag")
+    result = fit_regression(
+        deltas, ["delta_carry", "delta_relative_carry", "delta_fiscal", "delta_breakeven_gap", "delta_dxy"],
+        student_t=False, label="primary_contemp",
+    )
+    print(result["summary"])
+    print(f"n={result['n']}  range={[d.strftime('%Y-%m') for d in result['sample_range']]}")
+    return result
+
+
 def sign_probability(idata, coef_name: str, expected_positive: bool) -> float:
     draws = idata.posterior[coef_name].values.flatten()
     return float((draws > 0).mean()) if expected_positive else float((draws < 0).mean())
@@ -266,59 +314,60 @@ def run() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Dashboard tab: descriptive stats, historical fit, decomposition, posteriors
+# Dashboard tab: descriptive stats, historical fit, decomposition
 # ---------------------------------------------------------------------------
 # Reuses the already-fit, already-saved idata (bayesian_results/*.nc) rather
 # than refitting — run() must have been run at least once first.
 
 _SPEC_FILES = {
-    "primary_breakeven": ["delta_carry", "delta_tot", "delta_breakeven", "delta_fiscal"],
-    "primary_gap": ["delta_carry", "delta_tot", "delta_breakeven_gap", "delta_fiscal"],
-    "primary_studentt": ["delta_carry", "delta_tot", "delta_breakeven", "delta_fiscal"],
-    "robustness": ["delta_carry", "delta_tot"],
+    "primary_contemp": ["delta_carry", "delta_relative_carry", "delta_fiscal", "delta_breakeven_gap", "delta_dxy"],
 }
 
 
 def load_saved(label: str):
     path = _RESULTS_DIR / f"{label}_idata.nc"
     if not path.exists():
-        raise FileNotFoundError(f"{path} not found — run bayesian_deviation_model.run() first.")
+        raise FileNotFoundError(f"{path} not found — run bayesian_deviation_model.fit_contemp_spec() first.")
     return az.from_netcdf(path)
 
 
-def _summary_records(idata, regressor_cols: list[str], student_t: bool) -> list[dict]:
-    var_names = ["alpha"] + [f"beta_{c}" for c in regressor_cols] + (["nu"] if student_t else [])
+def _summary_records(idata, regressor_cols: list[str]) -> list[dict]:
+    var_names = ["alpha"] + [f"beta_{c}" for c in regressor_cols]
     summary = az.summary(idata, var_names=var_names)
     records = summary.reset_index().rename(columns={"index": "param"})
     return records.round(4).to_dict("records")
 
 
 def build_dashboard_payload() -> dict:
-    idatas = {label: load_saved(label) for label in _SPEC_FILES}
+    """Dashboard payload for the "Bayesian Model" tab — rebuilt 2026-07-28
+    around the single not-lagged carry/cds/breakeven_gap/dxy spec
+    ("primary_contemp") at direct user request, replacing the original
+    4-spec (primary_breakeven/primary_gap/primary_studentt/robustness)
+    comparison. Those specs' saved traces are untouched on disk but no
+    longer read here — no cross-spec forest plot or Normal-vs-Student-t
+    comparison, since both required multiple specs sharing a channel set
+    that this replacement spec doesn't share with them. Posterior-
+    distribution histograms also dropped, per explicit user request.
+    relative_carry added alongside carry the same day (see
+    fit_contemp_spec()) — still a single spec, now 5 regressors."""
+    label = "primary_contemp"
+    regressor_cols = _SPEC_FILES[label]
+    idata = load_saved(label)
     df = load_data()
-    deltas = build_deltas(df)
+    deltas = build_deltas_contemporaneous(df)
 
-    # --- descriptive stats / diagnostics per spec, incl. each spec's own n/range ---
-    specs = {}
-    spec_meta = {}
-    for label, cols in _SPEC_FILES.items():
-        specs[label] = _summary_records(idatas[label], cols, student_t=(label == "primary_studentt"))
-        spec_sample = deltas[["delta_dev"] + cols].dropna()
-        spec_meta[label] = {
-            "n": int(len(spec_sample)),
-            "sample_range": [spec_sample.index.min().strftime("%Y-%m"), spec_sample.index.max().strftime("%Y-%m")],
-        }
-
-    # --- model comparison (Normal vs. Student-t), recomputed live from saved traces ---
-    cmp = az.compare({"normal": idatas["primary_breakeven"], "student_t": idatas["primary_studentt"]})
-    model_comparison = cmp.reset_index().rename(columns={"index": "model"}).round(4).to_dict("records")
-
-    # --- historical fit + decomposition (primary_breakeven spec) ---
-    regressor_cols = _SPEC_FILES["primary_breakeven"]
+    # --- descriptive stats / diagnostics (single spec) ---
+    spec_summary = _summary_records(idata, regressor_cols)
     sample = deltas[["delta_dev"] + regressor_cols].dropna()
+    spec_meta = {
+        "n": int(len(sample)),
+        "sample_range": [sample.index.min().strftime("%Y-%m"), sample.index.max().strftime("%Y-%m")],
+    }
+
+    # --- historical fit + decomposition (primary_contemp spec) ---
     z, _ = _standardize(sample, regressor_cols)
 
-    post = idatas["primary_breakeven"].posterior
+    post = idata.posterior
     alpha_draws = post["alpha"].values.reshape(-1)
     beta_draws = {c: post[f"beta_{c}"].values.reshape(-1) for c in regressor_cols}
 
@@ -354,69 +403,40 @@ def build_dashboard_payload() -> dict:
 
     # --- level (nominal-rate) decomposition: same log-space pieces above,
     # converted into a BRL/USD-denominated bridge from equilibrium to the
-    # actual rate: equilibrium(t) + baseline + carry + tot + breakeven +
-    # fiscal + residual == ptax(t), exactly. Since the log pieces are
-    # additive but the exchange rate is exp(equilibrium * deviation), the
-    # conversion is inherently sequential/multiplicative (each channel's
-    # BRL/USD contribution is "on top of" whatever came before it in the
-    # chosen order) rather than a second independent additive split — a
+    # actual rate: equilibrium(t) + baseline + (one term per regressor) +
+    # residual == ptax(t), exactly. Since the log pieces are additive but
+    # the exchange rate is exp(equilibrium * deviation), the conversion is
+    # inherently sequential/multiplicative (each channel's BRL/USD
+    # contribution is "on top of" whatever came before it in the chosen
+    # order) rather than a second independent additive split — a
     # well-known property of decomposing a multiplicative (log-additive)
     # process into level terms, not an approximation or extra source of
-    # error. Order chosen to match the log decomposition above: baseline
-    # (anchor + alpha) first, then carry/tot/breakeven/fiscal, residual last
-    # (so it's always the exact plug, never hides misattribution elsewhere).
+    # error. Order: baseline (anchor + alpha) first, then each regressor in
+    # regressor_cols order, residual last (so it's always the exact plug,
+    # never hides misattribution elsewhere). Looped over regressor_cols
+    # (rather than named lvl_2..lvl_N variables) so this works unchanged
+    # however many channels the spec has — same generalization
+    # state_space_model.py's own level bridge already went through.
     equilibrium_level = compute_equilibrium(df).reindex(sample.index).values
     actual_ptax = df["ptax"].reindex(sample.index).values
 
     lvl_0 = equilibrium_level
     lvl_1 = lvl_0 * np.exp((anchor_level + cum_alpha) / 100)
-    lvl_2 = lvl_1 * np.exp(cum_contrib["delta_carry"] / 100)
-    lvl_3 = lvl_2 * np.exp(cum_contrib["delta_tot"] / 100)
-    lvl_4 = lvl_3 * np.exp(cum_contrib["delta_breakeven"] / 100)
-    lvl_5 = lvl_4 * np.exp(cum_contrib["delta_fiscal"] / 100)
-    lvl_6 = lvl_5 * np.exp(cum_residual / 100)  # == actual_ptax exactly, up to floating point
 
     level_decomposition = {
         "equilibrium": [round(float(v), 4) for v in lvl_0],
         "baseline": [round(float(v), 4) for v in (lvl_1 - lvl_0)],
-        "delta_carry": [round(float(v), 4) for v in (lvl_2 - lvl_1)],
-        "delta_tot": [round(float(v), 4) for v in (lvl_3 - lvl_2)],
-        "delta_breakeven": [round(float(v), 4) for v in (lvl_4 - lvl_3)],
-        "delta_fiscal": [round(float(v), 4) for v in (lvl_5 - lvl_4)],
-        "residual": [round(float(v), 4) for v in (lvl_6 - lvl_5)],
-        "actual": [round(float(v), 4) for v in actual_ptax],
     }
+    prev = lvl_1
+    for c in regressor_cols:
+        nxt = prev * np.exp(cum_contrib[c] / 100)
+        level_decomposition[c] = [round(float(v), 4) for v in (nxt - prev)]
+        prev = nxt
+    lvl_final = prev * np.exp(cum_residual / 100)  # == actual_ptax exactly, up to floating point
+    level_decomposition["residual"] = [round(float(v), 4) for v in (lvl_final - prev)]
+    level_decomposition["actual"] = [round(float(v), 4) for v in actual_ptax]
 
     months = [d.strftime("%Y-%m") for d in sample.index]
-
-    # --- posterior distributions (primary_breakeven: alpha, betas, sigma) ---
-    posteriors = {}
-    for coef, draws in {"alpha": alpha_draws, **{f"beta_{c}": beta_draws[c] for c in regressor_cols},
-                         "sigma": post["sigma"].values.reshape(-1)}.items():
-        counts, edges = np.histogram(draws, bins=40)
-        posteriors[coef] = {
-            "counts": counts.tolist(),
-            "edges": [round(float(e), 4) for e in edges],
-            "mean": round(float(draws.mean()), 4),
-        }
-
-    # --- forest plot: coefficient comparability across specs ---
-    def _forest_row(label: str, param: str):
-        rec = next((r for r in specs[label] if r["param"] == param), None)
-        if rec is None:
-            return None
-        return {"spec": label, "mean": rec["mean"], "lo": rec["hdi_3%"], "hi": rec["hdi_97%"]}
-
-    forest = {
-        "delta_carry": [r for r in (_forest_row("primary_breakeven", "beta_delta_carry"),
-                                     _forest_row("robustness", "beta_delta_carry")) if r],
-        "delta_tot": [r for r in (_forest_row("primary_breakeven", "beta_delta_tot"),
-                                   _forest_row("robustness", "beta_delta_tot")) if r],
-        "delta_breakeven": [r for r in (_forest_row("primary_breakeven", "beta_delta_breakeven"),
-                                         _forest_row("primary_gap", "beta_delta_breakeven_gap")) if r],
-        "delta_fiscal": [r for r in (_forest_row("primary_breakeven", "beta_delta_fiscal"),
-                                      _forest_row("primary_gap", "beta_delta_fiscal")) if r],
-    }
 
     return {
         "n": int(len(sample)),
@@ -437,11 +457,8 @@ def build_dashboard_payload() -> dict:
             "residual": [round(float(v), 4) for v in cum_residual],
         },
         "level_decomposition": level_decomposition,
-        "posteriors": posteriors,
-        "specs": specs,
-        "spec_meta": spec_meta,
-        "model_comparison": model_comparison,
-        "forest": forest,
+        "specs": {label: spec_summary},
+        "spec_meta": {label: spec_meta},
     }
 
 

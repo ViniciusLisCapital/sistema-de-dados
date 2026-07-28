@@ -34,7 +34,7 @@ expc_   — market expectations (Focus)
 
 `macro_international`:
 ```
-cmb_    — FX: cmb_reer, cmb_cot_fx
+cmb_    — FX: cmb_reer, cmb_cot_fx, cmb_dollar_index, cmb_dollar_index_em, cmb_policy_rates
 (none)  — diferenciais_juros: the one table in this schema with no prefix,
            by explicit user instruction — not "cmb_diferenciais_juros"
 ```
@@ -57,8 +57,9 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `cred_credito_amplo` | BCB SGS (17 series) | 2013 → today | `brasil/bcb/cred_credito_amplo.py` |
 | `cred_credito_familias` | BCB SGS (3 series — household debt/income) | 2005 → today | `brasil/bcb/cred_credito_familias.py` |
 | `inflc_agregados` | BCB SGS (33 series — IPCA/IPCA-15 + cores) | 1980 → today | `brasil/bcb/inflc_agregados.py` |
-| `inflc_decomposicao` | IBGE 7060/7062 (subitem: monthly var/weights/contribution) | 2020 → today | `brasil/ibge/inflc_decomposicao.py` |
-| `inflc_dim` | Subitem → Group/Subgroup/Item (manual) + core-inflation flag (hybrid, see `analytics/inflation/CLAUDE.md`) | — (no date) | `brasil/ibge/inflc_dim.py` |
+| `inflc_decomposicao` | IBGE, one aggregate per weighting-structure vintage — see `analytics/inflation/CLAUDE.md` (subitem: monthly var/weights/contribution) | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao.py` |
+| `inflc_decomposicao_item` | Same as above, one hierarchy level coarser (item, 4-digit, not subitem/7-digit) — feeds MA/MS/DP núcleos only, see `analytics/inflation/CLAUDE.md` | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao_item.py` |
+| `inflc_dim` | Subitem → Group/Subgroup/Item + core-inflation flag, all from BCB's official NT-57 vector (see `analytics/inflation/CLAUDE.md`) | — (no date) | `brasil/ibge/inflc_dim.py` |
 | `expc_focus` | BCB Focus (IPCA 12m/24m, IGP-M, Selic) | 2001 → today | `brasil/bcb/expc_focus.py` |
 | `atv_pib_usd` | BCB SGS 4385 (monthly GDP in USD) | — → today | `brasil/bcb/atv_pib_usd.py` |
 | `comm_icbr` | BCB SGS 27574-27577 (IC-Br + 3 sub-indices) | 1998-02 → today | `brasil/bcb/comm_icbr.py` |
@@ -85,8 +86,15 @@ PRIMARY KEY (date, name, region)          -- mt_pnad
 PRIMARY KEY (date, indicador, horizonte)  -- expc_focus
 
 -- IPCA by subitem
-PRIMARY KEY (date, indice, subitem)       -- inflc_decomposicao (indice = IPCA | IPCA15)
-PRIMARY KEY (subitem)                     -- inflc_dim (dimension table, no date)
+PRIMARY KEY (date, indice, subitem_codigo) -- inflc_decomposicao (indice = IPCA | IPCA15; codigo = 7-digit IBGE code, not "code + name" text — see analytics/inflation/CLAUDE.md)
+PRIMARY KEY (subitem_codigo)               -- inflc_dim (dimension table, no date)
+
+-- IPCA by item (one level coarser than subitem — 4-digit, not 7-digit)
+PRIMARY KEY (date, indice, item_codigo)    -- inflc_decomposicao_item
+
+-- Cross-country, one value per country
+PRIMARY KEY (date, country_code)          -- cmb_policy_rates
+PRIMARY KEY (date, country_code, reer_type) -- cmb_reer
 ```
 
 `ON DUPLICATE KEY UPDATE` on insert makes it an idempotent upsert.
