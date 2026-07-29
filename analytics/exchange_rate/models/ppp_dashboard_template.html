@@ -1148,11 +1148,28 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   let showLabelsChannel = false;
   let showZScoreChannel = false;
 
-  // Converts a channel's raw array into z-scores -- (v - mean) / population
-  // stdev computed over that channel's OWN non-null history (not the full
-  // 383-month index, which would understate the mean/stdev for
-  // late-starting channels like fiscal/breakeven). Null stays null so
-  // firstIdx/lastIdx/gaps behave identically to the raw series.
+  // 2000-01 cutoff for the candidate-channel chart -- serves two purposes,
+  // both added 2026-07-28 at the user's direct request: (1) the z-score
+  // reference window (below) and (2) the chart's own displayed range (in
+  // renderChannel() below), now capped to start here too rather than each
+  // channel's own earlier start. Reason: carry's pre-2000 span includes the
+  // 1999-03..1999-12 Real-Plan/Selic-targeting transition (rates spiking
+  // from ~37 down to ~12 in under a year), a one-off adjustment episode,
+  // not a representative "normal regime" observation -- including it (a)
+  // dragged the z-score mean/stdev up to almost exactly where today's level
+  // sits, making "at the mean" a coincidence of that early spike rather
+  // than a genuine finding, and (b) visually dominated the chart's own
+  // y-axis autorange even in raw (non-z-score) view. Channels that start
+  // later than 2000-01 anyway (fiscal, breakeven, breakeven_gap) are
+  // unaffected -- the cutoff only ever narrows a channel's OWN window, it
+  // never invents earlier data. Mirrors bayesian_deviation_model.py's
+  // _standardize_ext() reference-window change, same day, same rationale.
+  var CHANNEL_VIEW_START = '2000-01';
+
+  // (v - mean) / population stdev, computed over `values`' own non-null
+  // entries -- caller is expected to have already restricted `values` to
+  // the CHANNEL_VIEW_START+ window (see renderChannel() below), so this no
+  // longer does its own slicing.
   function zScoreArr(values) {
     const nums = values.filter((v) => v !== null && v !== undefined && !isNaN(v));
     if (nums.length === 0) return values.slice();
@@ -1164,7 +1181,9 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
 
   function renderChannel(key) {
     const def = CHANNEL_MAP[key];
-    const raw = D[key];
+    const viewStartIdx = D.months.findIndex((m) => m >= CHANNEL_VIEW_START);
+    const months = viewStartIdx === -1 ? D.months : D.months.slice(viewStartIdx);
+    const raw = viewStartIdx === -1 ? D[key] : D[key].slice(viewStartIdx);
     const values = showZScoreChannel ? zScoreArr(raw) : raw;
     const unitLabel = showZScoreChannel ? 'z-score (σ from own mean)' : def.unitLabel;
     const fmt = showZScoreChannel ? fmtZ : def.fmt;
@@ -1177,7 +1196,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       return;
     }
     document.getElementById('channelSubtitle').textContent =
-      unitLabel + ' · ' + monthLabel(D.months[i0]) + ' → ' + monthLabel(D.months[i1]) +
+      unitLabel + ' · ' + monthLabel(months[i0]) + ' → ' + monthLabel(months[i1]) +
       ' · latest ' + fmt(values[i1]);
 
     // No explicit xaxis/yaxis range passed below (and no uirevision), so each
@@ -1188,7 +1207,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     plotlyRenderAndBind('channelChart', [{
       type: 'scatter', mode,
       name: def.label,
-      x: D.months, y: values,
+      x: months, y: values,
       text: values.map((v, i) => (v !== null && i % step === 0 ? fmt(v) : '')),
       textposition: 'top center',
       textfont: { family: 'JetBrains Mono', size: 9, color: def.color },

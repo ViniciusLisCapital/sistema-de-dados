@@ -86,7 +86,7 @@ def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame(index=df.index)
     out["delta_dev"] = dev.diff()
     out["deviation_lag1"] = dev.shift(1)
-    for col in ("carry", "relative_carry", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy"):
+    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy"):
         out[f"delta_{col}"] = df[col].diff()
     return out
 
@@ -101,11 +101,48 @@ def _standardize(frame: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, di
     return z, stats
 
 
-def fit_regression(frame: pd.DataFrame, regressor_cols: list[str], student_t: bool = False, label: str = "", no_intercept: bool = False, raw_cols: list[str] | None = None) -> dict:
+_REFERENCE_START = "2000-01-01"
+
+
+def _standardize_ext(sample: pd.DataFrame, reference: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, dict]:
+    """Like _standardize(), but each column's mean/std comes from `reference`
+    instead of from `sample` itself -- added 2026-07-28 at the user's direct
+    request: the fitting sample (`sample`) is bound to the narrow overlap
+    where ALL regressors are simultaneously available (fiscal/CDS, 2007-12+,
+    forces the whole primary_contemp spec to start 2008-01), but carry/
+    relative_carry/dxy all have much longer real history on their own --
+    z-scoring them against only the narrow 2008+ window throws that longer
+    history away for no reason tied to any actual data limitation of THOSE
+    channels specifically.
+
+    `reference` can be longer than `sample`, need not share its index, and
+    each column's stats are computed independently over its own non-null
+    rows in `reference` (dropna() per-column, not a single joint dropna()
+    the way _standardize()/fit_regression()'s `sample` construction does)
+    -- so e.g. delta_carry's mean/std reflect its own 2000-01+ history even
+    though delta_fiscal's still effectively reflect only 2007-12+ (fiscal
+    simply has no earlier data to draw on, reference window or not)."""
+    stats = {}
+    z = sample.copy()
+    for c in cols:
+        ref_col = reference[c].dropna()
+        mu, sd = ref_col.mean(), ref_col.std()
+        z[c] = (sample[c] - mu) / sd
+        stats[c] = (mu, sd)
+    return z, stats
+
+
+def fit_regression(frame: pd.DataFrame, regressor_cols: list[str], student_t: bool = False, label: str = "", no_intercept: bool = False, raw_cols: list[str] | None = None, reference: pd.DataFrame | None = None) -> dict:
     """Fit delta_dev ~ regressor_cols (already differenced/lagged) via PyMC.
     Regressors are standardized before fitting so a single weakly-informative
     prior works regardless of native units — EXCEPT columns named in
     raw_cols, kept in their native units.
+
+    reference: if given, standardization uses _standardize_ext() (each
+    column's own mean/std computed from `reference`, e.g. a longer
+    2000-01+ window) instead of _standardize() (mean/std from `sample`
+    itself, i.e. the model's own narrow fitting-sample overlap). See
+    _standardize_ext()'s docstring for why this matters.
 
     raw_cols matters: standardizing (z-scoring) a column always forces its
     sample mean to exactly 0, which mechanically prevents it from ever
@@ -128,7 +165,10 @@ def fit_regression(frame: pd.DataFrame, regressor_cols: list[str], student_t: bo
     raw_cols = raw_cols or []
     sample = frame[["delta_dev"] + regressor_cols].dropna()
     standardize_cols = [c for c in regressor_cols if c not in raw_cols]
-    z, stats = _standardize(sample, standardize_cols)
+    if reference is None:
+        z, stats = _standardize(sample, standardize_cols)
+    else:
+        z, stats = _standardize_ext(sample, reference, standardize_cols)
     for c in raw_cols:
         z[c] = sample[c]
         stats[c] = (0.0, 1.0)  # identity — kept in native units, not standardized
@@ -226,14 +266,27 @@ def fit_contemp_spec() -> dict:
     rate average (see ppp_equilibrium._load_relative_carry()) — testing
     whether Brazil's rate positioning RELATIVE TO ITS LATAM PEERS explains
     the deviation beyond the bilateral BR-US differential `carry` already
-    captures."""
+    captures.
+
+    Standardization reference window changed 2026-07-28 (direct user
+    request, after the tab-1 z-score toggle discussion surfaced the same
+    question for this model): each regressor's mean/std for z-scoring now
+    comes from `reference` = deltas from 2000-01 onward (_REFERENCE_START),
+    NOT from `sample` (the model's own narrow 2008-01+ fitting overlap,
+    forced by fiscal/CDS's late start). carry/relative_carry/dxy all have
+    real history well before 2008 that was previously discarded for a
+    reason (fiscal's start) unrelated to THEIR OWN data availability.
+    fiscal/breakeven_gap are effectively unaffected (their own real start,
+    2007-12/2006-01, is already later than 2000-01)."""
     df = load_data()
     deltas = build_deltas_contemporaneous(df)
+    reference = deltas[deltas.index >= _REFERENCE_START]
     print("=" * 78)
     print("CONTEMPORANEOUS SPEC — carry + relative_carry + fiscal (CDS) + breakeven_gap (de-anchoring) + DXY, deltas, no lag")
+    print(f"Standardization reference window: {_REFERENCE_START} -> latest (not the narrower fitting sample)")
     result = fit_regression(
         deltas, ["delta_carry", "delta_relative_carry", "delta_fiscal", "delta_breakeven_gap", "delta_dxy"],
-        student_t=False, label="primary_contemp",
+        student_t=False, label="primary_contemp", reference=reference,
     )
     print(result["summary"])
     print(f"n={result['n']}  range={[d.strftime('%Y-%m') for d in result['sample_range']]}")
@@ -349,7 +402,10 @@ def build_dashboard_payload() -> dict:
     that this replacement spec doesn't share with them. Posterior-
     distribution histograms also dropped, per explicit user request.
     relative_carry added alongside carry the same day (see
-    fit_contemp_spec()) — still a single spec, now 5 regressors."""
+    fit_contemp_spec()) — still a single spec, now 5 regressors.
+    Standardization reference window (2000-01+, not the narrow fitting
+    sample) matched to fit_contemp_spec()'s own change, same day -- see
+    _standardize_ext()'s docstring."""
     label = "primary_contemp"
     regressor_cols = _SPEC_FILES[label]
     idata = load_saved(label)
@@ -365,7 +421,11 @@ def build_dashboard_payload() -> dict:
     }
 
     # --- historical fit + decomposition (primary_contemp spec) ---
-    z, _ = _standardize(sample, regressor_cols)
+    # Must match fit_contemp_spec()'s own standardization exactly (same
+    # reference window) -- otherwise the z-values fed into the point
+    # decomposition below wouldn't correspond to the betas actually fit.
+    reference = deltas[deltas.index >= _REFERENCE_START]
+    z, _ = _standardize_ext(sample, reference, regressor_cols)
 
     post = idata.posterior
     alpha_draws = post["alpha"].values.reshape(-1)
