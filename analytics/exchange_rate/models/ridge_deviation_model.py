@@ -239,7 +239,8 @@ def run_ar1_variant(channels: list[str] | None = None, window: int = 60, label: 
 
 
 def build_plain_regression_sample(df: pd.DataFrame | None = None,
-                                   channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
+                                   channels: list[str] | None = None,
+                                   include_ppp: bool = True) -> tuple[pd.DataFrame, dict, list[str]]:
     """A genuinely different model from every other spec in this module --
     direct user request ("instead of considering the ppp as equilibrium,
     incorporate it in the regression as a channel... rerun without
@@ -266,19 +267,30 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     convention as delta_dev_lag1 elsewhere. channels defaults to
     _CHANNELS_SHRUNK (fiscal, carry_vol, dxy, curve_steep) -- the same 4
     already shown to carry real signal in the deviation framework;
-    swapping the dependent variable is the test here, not the channel set."""
+    swapping the dependent variable is the test here, not the channel set.
+
+    include_ppp=False (2026-07-30, direct user follow-up "Remove the ppp
+    entirely, let the alfa capture it") drops delta_ppp from the
+    regressors altogether -- its whole-sample coefficient (+0.34) had
+    already shown up as unstable in the rolling read (mean +0.04, ranging
+    -0.86 to +1.48), so rather than keep a channel whose sign/size isn't
+    trustworthy, PPP's average contribution (mostly just Brazil's average
+    inflation being higher than the US's, a near-constant monthly drift
+    over an 18-year sample) is left for alpha to absorb, same as every
+    other spec in this file that doesn't have its own explicit PPP term."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
     df = load_data() if df is None else df
 
     out = pd.DataFrame(index=df.index)
     out["delta_fx"] = 100 * np.log(df["ptax"]).diff()
-    out["delta_ppp"] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
+    if include_ppp:
+        out["delta_ppp"] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
     for c in channels:
         out[f"delta_{c}"] = df[c].diff()
     out["delta_fx_lag1"] = out["delta_fx"].shift(1)
 
     sample = out.dropna()
-    standardize_cols = ["delta_ppp"] + [f"delta_{c}" for c in channels]
+    standardize_cols = (["delta_ppp"] if include_ppp else []) + [f"delta_{c}" for c in channels]
     reference = out[out.index >= _REFERENCE_START]
     z, stats = _standardize_ext(sample, reference, standardize_cols)
     z["delta_fx_lag1"] = sample["delta_fx_lag1"]
@@ -290,17 +302,17 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
 
 
 def run_plain_regression_variant(channels: list[str] | None = None, window: int = 60,
-                                  label: str = "plain_regression") -> dict:
+                                  label: str = "plain_regression", include_ppp: bool = True) -> dict:
     """Fits and prints build_plain_regression_sample()'s spec -- same
     walk-forward-lambda / whole-sample / rolling-fit sequence as the other
     run_*_variant() functions, with y_col="delta_fx" since the dependent
     variable here isn't delta_dev at all."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
-    z, stats, reg_cols = build_plain_regression_sample(channels=channels)
+    z, stats, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=include_ppp)
 
     print("=" * 78)
-    print(f"RIDGE MODEL -- PLAIN REGRESSION (PPP as a channel, not equilibrium), channels={channels}")
-    print("delta_fx(t) = 100*diff(log(ptax)) ~ delta_ppp + channels + delta_fx_lag1 -- no compute_deviation()/compute_equilibrium() involved")
+    print(f"RIDGE MODEL -- PLAIN REGRESSION ({'PPP as a channel' if include_ppp else 'PPP dropped, alpha absorbs it'}, not equilibrium), channels={channels}")
+    print("delta_fx(t) = 100*diff(log(ptax)) ~ " + ("delta_ppp + " if include_ppp else "") + "channels + delta_fx_lag1 -- no compute_deviation()/compute_equilibrium() involved")
     cv = walk_forward_lambda(z, reg_cols, y_col="delta_fx")
     lam = float(cv.iloc[0]["lambda"])
     print(cv.head(10).to_string(index=False))
