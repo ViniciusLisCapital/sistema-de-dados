@@ -830,28 +830,54 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     actual_level = actual_ptax_full.reindex(z.index).values
     fitted_level = anchor_level * np.exp(np.cumsum(fitted_delta) / 100)
 
+    # --- "Baseline" bucket (2026-07-30, direct user request "consider as
+    # one metric the anchor, the alfa and the AR(1)"): the anchor level,
+    # alpha, and the AR(1) term are the three pieces of this model that
+    # AREN'T one of the four actual economic channels -- a starting point,
+    # a constant drift, and the exchange rate's own momentum. Bundled into
+    # one combined bucket (still an ABSOLUTE level, same role the old
+    # "anchor"/"equilibrium" bucket played in every version of this chart)
+    # rather than shown as three separate bars, so the chart visually
+    # separates "structural/mechanical" from "the four things the model
+    # actually explains the move with." ---
+    ar1_col = "delta_fx_lag1"
+    channel_cols = [c for c in delta_cols if c != ar1_col]
     contributions = {c: whole["beta"][c] * z[c].values for c in delta_cols}
-    cum_alpha = np.cumsum(np.full(len(z), whole["alpha"]))
-    cum_contrib = {c: np.cumsum(contributions[c]) for c in delta_cols}
+    baseline_monthly = np.full(len(z), whole["alpha"]) + contributions[ar1_col]
+    cum_baseline = np.cumsum(baseline_monthly)
+    cum_contrib = {c: np.cumsum(contributions[c]) for c in channel_cols}
     cum_residual = np.cumsum(residual)
 
     actual_ptax = actual_level
 
     anchor_series = np.full(len(z), anchor_level)
-    lvl_0 = anchor_series
-    lvl_1 = lvl_0 * np.exp(cum_alpha / 100)
+    lvl_1 = anchor_series * np.exp(cum_baseline / 100)
     level_decomposition = {
-        "anchor": [round(float(v), 4) for v in lvl_0],
-        "baseline": [round(float(v), 4) for v in (lvl_1 - lvl_0)],
+        "baseline": [round(float(v), 4) for v in lvl_1],
     }
     prev = lvl_1
-    for c in delta_cols:
+    for c in channel_cols:
         nxt = prev * np.exp(cum_contrib[c] / 100)
         level_decomposition[c] = [round(float(v), 4) for v in (nxt - prev)]
         prev = nxt
     lvl_final = prev * np.exp(cum_residual / 100)  # == actual_ptax exactly, up to floating point
     level_decomposition["residual"] = [round(float(v), 4) for v in (lvl_final - prev)]
     level_decomposition["actual"] = [round(float(v), 4) for v in actual_ptax]
+
+    # --- monthly (NON-cumulative) contributions, one number per bucket per
+    # month -- lets the dashboard rebase the decomposition to any chosen
+    # start month client-side (fresh cumsum from that index, anchored at
+    # the actual PTAX rate the month before), direct user request ("I want
+    # the option to select an initial date to make a decomposition...
+    # understand how my model explains the performance since 2025") rather
+    # than just slicing the whole-sample-anchored cumulative arrays above
+    # (which would still carry pre-2025 residual/channel buildup into every
+    # bar). ---
+    contrib_monthly = {
+        "baseline": [round(float(v), 4) for v in baseline_monthly],
+        **{c: [round(float(v), 4) for v in contributions[c]] for c in channel_cols},
+        "residual": [round(float(v), 4) for v in residual],
+    }
 
     return {
         "n": int(len(z)),
@@ -877,11 +903,12 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
             "fitted": [round(float(v), 4) for v in fitted_level],
         },
         "decomposition": {
-            "alpha": [round(float(v), 4) for v in cum_alpha],
-            **{c: [round(float(v), 4) for v in cum_contrib[c]] for c in delta_cols},
+            "baseline": [round(float(v), 4) for v in cum_baseline],
+            **{c: [round(float(v), 4) for v in cum_contrib[c]] for c in channel_cols},
             "residual": [round(float(v), 4) for v in cum_residual],
         },
         "level_decomposition": level_decomposition,
+        "contrib_monthly": contrib_monthly,
         "rolling": {
             "window_months": window,
             "n_windows": len(roll),

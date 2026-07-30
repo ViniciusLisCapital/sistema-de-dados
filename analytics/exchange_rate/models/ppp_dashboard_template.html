@@ -949,6 +949,9 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
         <b>Includes a single AR(1) term</b> — Δfx(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the exchange rate has a direct, persistent pull on this month's, independent of any channel. An earlier version of this tab instead gave every channel its own 6-month lag structure (48 parameters); a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
       </div>
       <div class="callout">
+        <b>"Baseline" on the decomposition chart below combines three things that aren't one of the four economic channels</b>: the anchor rate (where the bridge starts), α (the constant drift), and the AR(1) term (the exchange rate's own momentum). None of the three is a fundamental driver on its own, so rather than three separate bars cluttering the chart, they're shown as one combined bucket — everything the model attributes to its own structure/mechanics, as opposed to fiscal, carry/vol, DXY, or curve steepening.
+      </div>
+      <div class="callout">
         <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
       </div>
       <div class="callout">
@@ -1002,7 +1005,10 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
       <div class="chart-hdr">
         <div class="chart-hdr-left">
           <div class="chart-title">Exchange Rate Decomposition</div>
-          <div class="chart-subtitle">Whole-sample Ridge fit, bridged from an anchor rate up to the actual PTAX rate — no PPP/equilibrium layer, since the model targets the FX rate directly</div>
+          <div class="chart-subtitle">Bridged from an anchor rate up to the actual PTAX rate — no PPP/equilibrium layer, since the model targets the FX rate directly. Pick a start month to REBASE the bridge from that month's actual rate forward (not just zoom the same whole-sample bars) — e.g. select 2025-01 to see how the model explains the move since 2025.</div>
+        </div>
+        <div class="chart-hdr-right">
+          <select id="ridgeDecompStart" class="base-select"></select>
         </div>
       </div>
       <div class="chart-wrap"><div id="ridgeDecompChart" style="width:100%"></div></div>
@@ -2884,25 +2890,80 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         customdata: R.r2.map(v => fmtNumRg(v, 3)), hovertemplate: 'R²: %{customdata}<extra></extra>' },
     ], { height: 340, yaxis: { range: [0, 1] } });
 
-    // ---- decomposition / level bridge (whole-sample fit, full history) ----
+    // ---- decomposition / level bridge, rebasable to a chosen start month ----
+    // "baseline" bundles anchor + alpha + AR(1) into one bucket (see the
+    // tab's own callout) -- an ABSOLUTE level, same role "equilibrium"/
+    // "anchor" played in earlier versions of this chart, so it's excluded
+    // from the per-channel loop below (DECOMP_CHANNELS_RG), unlike
+    // CHANNEL_ORDER_RIDGE itself (still used as-is by the Rolling
+    // Coefficient dropdown above, which legitimately wants to show phi's
+    // own rolling path).
     const L = D.level_decomposition;
-    const levelColorsRg = { anchor: '#1F2853', baseline: '#7A88A8', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
-    const levelLabelsRg = { anchor: 'Anchor (starting rate)', baseline: 'Baseline (α)', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
-    const levelOrderRg = ['anchor', 'baseline', ...CHANNEL_ORDER_RIDGE, 'residual'];
+    const CM = D.contrib_monthly;
+    const DECOMP_CHANNELS_RG = CHANNEL_ORDER_RIDGE.filter(k => k !== 'delta_fx_lag1');
+    const levelColorsRg = { baseline: '#1F2853', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
+    const levelLabelsRg = { baseline: 'Baseline (anchor + α + AR(1))', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
+    const levelOrderRg = ['baseline', ...DECOMP_CHANNELS_RG, 'residual'];
 
-    plotlyRenderAndBind('ridgeDecompChart', [
-      ...levelOrderRg.map(key => ({
-        type: 'bar', name: levelLabelsRg[key],
-        x: D.months, y: L[key],
-        marker: { color: levelColorsRg[key] },
-        customdata: L[key].map(v => key === 'anchor' ? fmtRateRg(v) : fmtSignedRg(v, 3)),
-        hovertemplate: levelLabelsRg[key] + ': %{customdata}<extra></extra>',
-      })),
-      { type: 'scatter', mode: 'lines', name: 'Actual (PTAX)', x: D.months, y: L.actual,
-        line: { color: '#1F2853', width: 2, dash: 'dash', shape: 'spline', smoothing: 0.3 },
-        customdata: L.actual.map(fmtRateRg),
-        hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
-    ], { height: 400, barmode: 'relative', bargap: 0.15, showlegend: true });
+    const decompStartEl = document.getElementById('ridgeDecompStart');
+    D.months.forEach((m, i) => {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = monthLabelRg(m);
+      decompStartEl.appendChild(opt);
+    });
+    const defaultDecompStart = D.months.indexOf('2025-01');
+    decompStartEl.value = String(defaultDecompStart >= 0 ? defaultDecompStart : 0);
+
+    // Fresh cumsum of a monthly (non-cumulative) contribution array,
+    // starting at index i0 -- NOT a slice of an already-cumulative array,
+    // which would still carry every prior month's buildup into the first
+    // bar of the window. This is what makes the chosen start month a real
+    // REBASE (decomposing the move since that month) rather than a zoom
+    // (decomposing the move since 2008, just not drawing the early bars).
+    function cumFromRg(arr, i0) {
+      const out = [];
+      let acc = 0;
+      for (let i = i0; i < arr.length; i++) { acc += arr[i]; out.push(acc); }
+      return out;
+    }
+
+    function renderDecompChart() {
+      const i0 = parseInt(decompStartEl.value, 10);
+      const slicedMonths = D.months.slice(i0);
+      const anchorForWindow = i0 === 0 ? D.fit_level.anchor_level : L.actual[i0 - 1];
+
+      const bars = {};
+      const cumBaseline = cumFromRg(CM.baseline, i0);
+      let prevArr = cumBaseline.map(v => anchorForWindow * Math.exp(v / 100));
+      bars.baseline = prevArr;
+      DECOMP_CHANNELS_RG.forEach(key => {
+        const cum = cumFromRg(CM[key], i0);
+        const nxt = cum.map((v, i) => prevArr[i] * Math.exp(v / 100));
+        bars[key] = nxt.map((v, i) => v - prevArr[i]);
+        prevArr = nxt;
+      });
+      const cumResidual = cumFromRg(CM.residual, i0);
+      const finalArr = cumResidual.map((v, i) => prevArr[i] * Math.exp(v / 100));
+      bars.residual = finalArr.map((v, i) => v - prevArr[i]);
+      bars.actual = L.actual.slice(i0);
+
+      plotlyRenderAndBind('ridgeDecompChart', [
+        ...levelOrderRg.map(key => ({
+          type: 'bar', name: levelLabelsRg[key],
+          x: slicedMonths, y: bars[key],
+          marker: { color: levelColorsRg[key] },
+          customdata: bars[key].map(v => key === 'baseline' ? fmtRateRg(v) : fmtSignedRg(v, 3)),
+          hovertemplate: levelLabelsRg[key] + ': %{customdata}<extra></extra>',
+        })),
+        { type: 'scatter', mode: 'lines', name: 'Actual (PTAX)', x: slicedMonths, y: bars.actual,
+          line: { color: '#1F2853', width: 2, dash: 'dash', shape: 'spline', smoothing: 0.3 },
+          customdata: bars.actual.map(fmtRateRg),
+          hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
+      ], { height: 400, barmode: 'relative', bargap: 0.15, showlegend: true });
+    }
+    decompStartEl.addEventListener('change', renderDecompChart);
+    renderDecompChart();
   }
 
   document.querySelectorAll('.tab-btn').forEach(btn => {
