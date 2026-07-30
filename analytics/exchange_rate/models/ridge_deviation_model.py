@@ -238,6 +238,98 @@ def run_ar1_variant(channels: list[str] | None = None, window: int = 60, label: 
     }
 
 
+def build_plain_regression_sample(df: pd.DataFrame | None = None,
+                                   channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
+    """A genuinely different model from every other spec in this module --
+    direct user request ("instead of considering the ppp as equilibrium,
+    incorporate it in the regression as a channel... rerun without
+    considering the deviation stuff, just the regression"). Every other
+    spec here regresses delta_dev = 100*diff(log(ptax/equilibrium)), which
+    FORCES a coefficient of exactly 1 on PPP's own implied move (ptax and
+    equilibrium are subtracted in log space before anything is estimated).
+    This one instead regresses the exchange rate's own log return directly
+    --
+
+        delta_fx(t) = 100*diff(log(ptax(t)))
+
+    -- on PPP as ONE MORE CHANNEL alongside the others, with its
+    coefficient freely estimated by Ridge instead of assumed: delta_ppp(t)
+    = 100*diff(log(ipca_index(t)) - log(cpi_index(t))), the BR-US relative
+    inflation differential for that month (exactly what compute_equilibrium()
+    assumes moves the exchange rate 1-for-1; no base month needed here at
+    all, since diff() cancels whatever constant a base month would
+    otherwise introduce -- same base-month-invariance argument as the
+    "base-month digression" earlier this session, just applied from the
+    other direction). No compute_deviation()/compute_equilibrium() call
+    anywhere in this function. delta_fx_lag1 (AR(1) on the exchange rate's
+    own return, not delta_dev's) is kept raw/unstandardized, same
+    convention as delta_dev_lag1 elsewhere. channels defaults to
+    _CHANNELS_SHRUNK (fiscal, carry_vol, dxy, curve_steep) -- the same 4
+    already shown to carry real signal in the deviation framework;
+    swapping the dependent variable is the test here, not the channel set."""
+    channels = _CHANNELS_SHRUNK if channels is None else channels
+    df = load_data() if df is None else df
+
+    out = pd.DataFrame(index=df.index)
+    out["delta_fx"] = 100 * np.log(df["ptax"]).diff()
+    out["delta_ppp"] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
+    for c in channels:
+        out[f"delta_{c}"] = df[c].diff()
+    out["delta_fx_lag1"] = out["delta_fx"].shift(1)
+
+    sample = out.dropna()
+    standardize_cols = ["delta_ppp"] + [f"delta_{c}" for c in channels]
+    reference = out[out.index >= _REFERENCE_START]
+    z, stats = _standardize_ext(sample, reference, standardize_cols)
+    z["delta_fx_lag1"] = sample["delta_fx_lag1"]
+    stats["delta_fx_lag1"] = (0.0, 1.0)  # identity -- kept in native units, not standardized
+    z["delta_fx"] = sample["delta_fx"]
+
+    reg_cols = standardize_cols + ["delta_fx_lag1"]
+    return z, stats, reg_cols
+
+
+def run_plain_regression_variant(channels: list[str] | None = None, window: int = 60,
+                                  label: str = "plain_regression") -> dict:
+    """Fits and prints build_plain_regression_sample()'s spec -- same
+    walk-forward-lambda / whole-sample / rolling-fit sequence as the other
+    run_*_variant() functions, with y_col="delta_fx" since the dependent
+    variable here isn't delta_dev at all."""
+    channels = _CHANNELS_SHRUNK if channels is None else channels
+    z, stats, reg_cols = build_plain_regression_sample(channels=channels)
+
+    print("=" * 78)
+    print(f"RIDGE MODEL -- PLAIN REGRESSION (PPP as a channel, not equilibrium), channels={channels}")
+    print("delta_fx(t) = 100*diff(log(ptax)) ~ delta_ppp + channels + delta_fx_lag1 -- no compute_deviation()/compute_equilibrium() involved")
+    cv = walk_forward_lambda(z, reg_cols, y_col="delta_fx")
+    lam = float(cv.iloc[0]["lambda"])
+    print(cv.head(10).to_string(index=False))
+    print(f"Selected lambda = {lam:.4f} (mean OOS MSE = {cv.iloc[0]['mse']:.4f})")
+
+    whole = fit_whole_sample(z, reg_cols, lam, y_col="delta_fx")
+    print("=" * 78)
+    betas_fmt = {c: round(b, 4) for c, b in whole["beta"].items()}
+    print(f"Whole-sample fit at lambda={lam:.4f}: alpha={whole['alpha']:+.4f}  "
+          f"betas={betas_fmt}  R2={whole['r2']:.4f}  n={whole['n']}")
+
+    roll = rolling_fit(z, reg_cols, lam, window=window, y_col="delta_fx")
+    print("=" * 78)
+    print(f"Rolling fit: {len(roll)} windows of {window} months, lambda={lam:.4f}")
+    print(roll[[f"beta_{c}" for c in reg_cols] + ["r2"]].describe())
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    cv.to_csv(_RESULTS_DIR / f"{label}_lambda_cv.csv", index=False)
+    roll.reset_index().to_csv(_RESULTS_DIR / f"{label}_rolling.csv", index=False)
+    pd.DataFrame([{"lambda": lam, "alpha": whole["alpha"], "r2": whole["r2"], "n": whole["n"],
+                    **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / f"{label}_whole_sample.csv", index=False)
+
+    return {
+        "channels": channels, "reg_cols": reg_cols, "lambda": lam, "cv": cv,
+        "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+    }
+
+
 def build_level_sample(df: pd.DataFrame | None = None,
                         channels: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
     """Level-space counterpart to build_sample(): the dependent variable is
