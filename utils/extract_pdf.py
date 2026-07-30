@@ -84,7 +84,7 @@ def process(
 
         try:
             pages = extract(pdf_path, out)
-            print(f"{prefix}  ok       {pdf_path.name}  ({pages}p) → {out.name}")
+            print(f"{prefix}  ok       {pdf_path.name}  ({pages}p) -> {out.name}")
         except Exception as e:
             print(f"{prefix}  ERROR    {pdf_path.name}: {e}")
 

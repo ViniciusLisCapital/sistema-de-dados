@@ -25,9 +25,12 @@ repository/
     recommended_bibliography/   — <topic>_bibliography_candidates.md / _gaps.md
     recommended_data/           — <topic>_data_inventory.md
     data_tracker.xlsx
-  mental_model/                 — 291 files, raw sources (asset manager letters): kapitalo/ (83 PDF),
-                                  kinea/ (60 .md), kinea_insights/ (64 .md), spx_capital/ (7 PDF),
-                                  verde_asset/ (77 PDF)
+  mental_model/                 — 291 files, raw sources (asset manager letters): kapitalo/ (83 PDF,
+                                  raw_md/ fully extracted — see Pending for a known extraction-quality
+                                  caveat on the newer letters), kinea/ (60 .md), kinea_insights/ (64 .md),
+                                  spx_capital/ (7 PDF),
+                                  verde_asset/ (raw_pdf/ growing — 1999-2026 pulled so far; see
+                                  verde_asset/DOWNLOAD_PROCESS.md for the URL pattern/download process)
 ```
 
 **`consolidated/` moved out of here in 2026-07** — the presentable exchange-rate synthesis now lives in [`team_materials/agent_materials/exchange_rate/`](../team_materials/agent_materials/exchange_rate/). See the root `CLAUDE.md` for the full three-branch distinction for exchange-rate material.
@@ -49,3 +52,4 @@ repository/
 - **Exchange rate — 2 real gaps**: FX options/volatility (Garman & Kohlhagen 1983), non-Brazil EM depth (Eichengreen & Hausmann 1999). See `exchange_rate_bibliography_gaps.md`.
 - **Monetary policy — build the conceptual map**: candidates acquired, still need to process them into `monetary_policy_conceptual_map.md` (doesn't exist yet), one at a time. Still need to acquire Cukierman (1992) and COPOM §8 materials. Decide where to process Tambakis & Tarashev (2012).
 - **Trader — decide scope**: see above.
+- **`mental_model/kapitalo/raw_md/` — extraction-quality caveat on newer letters**: `utils/extract_pdf.py` (plain pdfplumber text extraction, no layout awareness) extracted all 83 letters cleanly for Jul/2019–Aug/2023 (~52 files, single-column "Carta K10" template). Starting Sep/2023 ("CARTA DO GESTOR" template) through the latest letter (Mar/2026) — ~31 files — Kapitalo switched to a two-column narrative layout that pdfplumber's default reading order merges into interleaved, out-of-sequence lines (two unrelated sentences from adjacent columns land on the same output line). This is genuine garbling, not the usual Windows-terminal codepage display artifact. Not yet fixed — would need a column-aware re-extraction (e.g. pdfplumber layout mode, or the per-PDF Claude-read route from the root CLAUDE.md's PDF-routing table) for that subset before the affected letters are used for conceptual mapping or bibliography work.

@@ -1,0 +1,118 @@
+CARTA DO GESTOR MARÇO 2025
+K10
+
+CARTA DO GESTOR MARÇO 2025
+K10
+LIBERATION DAY: CENÁRIO ECONÔMICO
+AUMENTO DA INCERTEZA,
+Os riscos e incertezas sobre os próximos passos
+CHOQUE DE OFERTA,
+desse processo vão afetar a confiança do consumidor
+e do investidor. O comércio global e as intenções de
+DESACELERAÇÃO ECONÔMICA
+investimento já estão sendo impactados, e a atividade
+global deve desacelerar de forma importante. A
+Em nossas últimas cartas, expressamos uma visão implementação da proposta feita no dia 2 de abril, se
+otimista sobre a agenda econômica do governo Trump resultar numa escalada de tarifas, pode desencadear
+para o setor privado americano: desregulamentação uma forte recessão global. Temos ciência de que
+massiva, aumento da produtividade do setor público as decisões do governo Trump costumam ser
+com cortes de gastos no governo federal, cortes fluidas e acreditamos que eles não queiram arriscar
+de impostos e esforços para aumentar a oferta de uma recessão econômica agora, mas os riscos
+energia barata. aumentaram expressivamente: a China, por exemplo,
+já optou pela retaliação, aumentando suas tarifas de
+Admitimos que enxergávamos com receio a questão bens importados dos Estados Unidos.
+das tarifas. Afinal de contas, esse é um assunto
+complexo, de difícil execução e com potencial
+risco de ruína. Contudo, com um plano bem
+desenhado, implementação faseada ao longo do PORTFÓLIO
+tempo e acompanhado por um programa de forte
+desregulamentação do setor privado, poderíamos ver
+uma onda de reshoring. Além disso, esse movimento Os livros de commodities, juros e moedas mantêm
+poderia despertar o interesse dos dois lados em um perfil baixista, se beneficiando se a atividade
+negociar e buscar um equilíbrio de menores barreiras global desacelerar de forma relevante. Algumas
+e tarifas comerciais. De acordo com os discursos commodities já apresentam um balanço prospectivo
+recentes de Scott Bessent, Secretário do Tesouro baixista, deixando o left tail provável num cenário
+Americano, parecia que estávamos caminhando de demanda fraca: como exemplo, nossos modelos
+nessa direção. apontam pra quedas nos preços de petróleo e
+derivados da ordem 30%, caso a desaceleração
+O anúncio de 2 de abril, no entanto, representa global seja mais acentuada. Ao longo do mês de
+um marco: pode sinalizar uma guinada na política março, aumentamos as posições aplicadas em
+econômica dos EUA em direção oposta à globalização juros. Já o livro de moedas continua com suas
+e ao livre comércio que predominaram nas últimas maiores alocações comprado em dólar americano
+décadas, ancorados em regras claras e bem definidas e no iene japonês. Adequamos o livro de bolsa,
+— justamente aquelas que os próprios Estados Unidos zerando os componentes mais cíclicos, como bancos
+ajudaram a estabelecer e sustentar. Vemos que a nova americanos. Aproveitamos a liquidação nos setores
+administração busca endereçar diversas questões de tecnologia e da cadeia de inteligência artificial
+estratégicas por meio de tarifas comerciais, sendo para aumentar nossas alocações nesse setor. Além
+arrecadação e protecionismo as duas principais. disso, aumentamos a posição vendida em Brasil e
+Com isso, porém, arrisca desencadear uma grave iniciamos uma posição vendida em Europa.
+guerra comercial. A probabilidade de isso acontecer
+vem aumentando rapidamente. Para fazer uma
+analogia histórica, o último evento similar ocorreu na
+década de 1930, que agravou a Grande Depressão da
+economia americana.
+
+CARTA DO GESTOR MARÇO 2025
+K10
+ALOCAÇÃO 1,12%
+POR FATOR DE RISCO
+1,08%
+*Mínimo, Médio e Máximo ao longo do mês
+VaR 1d; 95% (% do PL)
+0,92%
+0,81%
+0,46%
+0,41%
+0,76%
+0,26% 0,34%
+0,55%
+0,25%
+0,16%
+0,23%
+0,18%
+0,09%
+COMMODITIES MOEDAS BOLSA RENDA FIXA TOTAL
+ATRIBUIÇÃO
+DE PERFORMANCE
+K10 FIQ
+MAR/25 2025 12M 24M 60M DESDE INÍCIO
+Juros 0,43% 1,27% 0,26% -4,68% 12,67% 21,32%
+Moedas -0,30% -0,48% 0,30% -0,18% 9,63% 1,47%
+Bolsa -1,38% -0,63% -0,68% 2,25% 28,74% 32,64%
+Commodities 0,40% -0,95% 1,06% 4,93% 35,67% 50,33%
+Caixa e Custos -0,17% -0,30% -2,29% -4,98% -33,41% -48,00%
+CDI 0,96% 2,98% 11,26% 25,02% 54,06% 71,40%
+Performance
+do Fundo -0,05% 1,90% 9,91% 22,35% 107,36% 129,16%
+%CDI -4,96% 63,71% 88,03% 89,32% 198,61% 180,89%
+
+CARTA DO GESTOR MARÇO 2025
+K10
+Este conteúdo foi preparado pelas gestoras Kapitalo
+(Kapitalo Investimentos Ltda. e Kapitalo Ciclo Gestão de
+Recursos Ltda.),tem caráter meramente informativo e
+não deve ser entendido como análise de valor mobiliário,
+material promocional, solicitação de compra ou venda,
+oferta ou recomendação de qualquer ativo financeiro
+ou investimento, sugestão de alocação ou adoção de
+estratégia de investimento por parte dos destinatários.
+As gestoras não se responsabilizam por erros, omissões
+ou pelo uso destas informações. As informações refe-
+rem-se às datas e condições mencionadas. Os cenários
+apresentados podem não se refletir nas estratégias dos
+diversos fundos geridos pelas gestoras Kapitalo AS ES-
+TIMATIVAS, CONCLUSÕES, OPINIÕES, PROJEÇÕES E HI-
+PÓTESES APRESENTADAS NÃO CONSTITUEM GARAN-
+TIA OU PROMESSA DE RENTABILIDADE OU DE ISENÇÃO
+DE RISCO. AOS INVESTIDORES, É RECOMENDADA A
+LEITURA CUIDADOSA DE LÂMINAS, PROSPECTOS E/ OU
+REGULAMENTOS ANTES DE INVESTIR SEUS RECUR-
+KAPITALO INVESTIMENTOS LTDA
+SOS. As análises aqui apresentadas não pretendem con-
+Av. Brigadeiro Faria Lima, 3144
+ter todas as informações relevantes que um investidor
+11º andar - Itaim Bibi
+deve considerar e, dessa forma, representam apenas
+uma visão limitada do mercado. Este conteúdo não pode 01451-000 – São Paulo, SP
+ser copiado, reproduzido ou distribuído sem a prévia e (11) 3956-0600
+expressa concordância das gestoras. kapitalo.com.br
