@@ -775,34 +775,41 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     convention as every other tab), and the rolling-window coefficient paths
     against the whole-sample reference line.
 
-    Model is build_ar1_sample()'s spec, defaulting to _CHANNELS_SHRUNK (4
-    channels + delta_dev_lag1) rather than the full _CHANNELS (8 channels),
-    switched again 2026-07-30, same day, direct user instruction ("Move it
-    to tab"): the shrunk spec (fiscal + carry_vol + dxy + curve_steep +
-    AR(1)) was shown, on a fair OOS-aligned comparison against the
-    9-parameter full-channel AR(1) spec, to match its whole-sample R2
-    almost exactly (0.5827 vs. 0.5829) while predicting BETTER
-    out-of-sample (OOS MSE 8.64 vs. 8.90) with roughly half the parameters
-    -- see CLAUDE.md for the full comparison. Earlier the same day the tab
-    was switched from the plain contemporaneous build_sample() spec to
-    build_ar1_sample()'s full 8-channel + AR(1) spec, after
-    compare_lag_depths() showed the tab's original 6-lag-per-channel
-    "Impulse Decay" section (build_lag_dashboard_payload(), still present
-    in this module for reproducibility but no longer called here) overfits
-    out-of-sample. reg_cols (from build_ar1_sample()) replaces the old
-    delta_cols everywhere below -- delta_dev_lag1/delta_curve_steep are
-    just two more entries in it, so the decomposition/level-bridge loop
-    picks them up as their own buckets automatically, same as every
-    channel. Pass channels=_CHANNELS explicitly to get the old 8-channel
-    behavior back."""
+    Model is build_plain_regression_sample()'s spec (include_ppp=False),
+    switched 2026-07-30, same day, direct user instruction ("Wired it into
+    the dashboard") following two immediately preceding decisions: (1)
+    "instead of considering the ppp as equilibrium, incorporate it in the
+    regression as a channel... just the regression" -- the dependent
+    variable is now the exchange rate's OWN log return, delta_fx(t) =
+    100*diff(log(ptax(t))), not delta_dev (no compute_deviation()/
+    compute_equilibrium() involved in the fit itself); and (2) "Remove the
+    ppp entirely, let the alfa capture it" -- PPP's own freely-estimated
+    coefficient turned out unstable in the rolling read (whole-sample
+    +0.34, rolling mean +0.04) and dropping it improved out-of-sample
+    prediction, so it's excluded rather than included. Regressors:
+    _CHANNELS_SHRUNK's 4 contemporaneous z-scored deltas (fiscal,
+    carry_vol, dxy, curve_steep) plus delta_fx_lag1 (AR(1) on the
+    exchange rate's own return, raw/unstandardized) -- reg_cols from
+    build_plain_regression_sample() replaces the old delta_cols
+    everywhere below.
+
+    Level bridge is genuinely simpler than every earlier version of this
+    payload: there's no PPP/equilibrium layer to bridge FROM anymore,
+    since the model targets the FX level directly. The base layer is just
+    a FLAT "anchor" series (the actual PTAX rate one month before the
+    sample starts) instead of a time-varying equilibrium curve --
+    anchor * exp(cum_alpha/100) * prod(exp(cum_contrib[c]/100)) *
+    exp(cum_residual/100) reconstructs the actual PTAX rate exactly, same
+    residual-absorbs-the-rest logic as every other tab's bridge, just one
+    layer shorter."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
-    z, _, reg_cols = build_ar1_sample(channels=channels)
+    z, _, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False)
     delta_cols = reg_cols
 
-    cv = walk_forward_lambda(z, delta_cols)
+    cv = walk_forward_lambda(z, delta_cols, y_col="delta_fx")
     lam = float(cv.iloc[0]["lambda"])
-    whole = fit_whole_sample(z, delta_cols, lam)
-    roll = rolling_fit(z, delta_cols, lam, window=window)
+    whole = fit_whole_sample(z, delta_cols, lam, y_col="delta_fx")
+    roll = rolling_fit(z, delta_cols, lam, window=window, y_col="delta_fx")
 
     df = load_data()
     months = [d.strftime("%Y-%m") for d in z.index]
@@ -811,31 +818,30 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     X = z[delta_cols].values
     beta_vec = np.array([whole["beta"][c] for c in delta_cols])
     fitted_delta = whole["alpha"] + X @ beta_vec
-    actual_delta = z["delta_dev"].values
+    actual_delta = z["delta_fx"].values
     residual = actual_delta - fitted_delta
 
-    # --- decomposition + level bridge (cumulative), same construction as
-    # bayesian_deviation_model.py's primary_contemp payload: anchor_level +
-    # cum_alpha + sum(cum_contrib) + cum_residual reconstructs actual_level
-    # exactly, by definition of residual. ---
-    dev_full = compute_deviation(df)
+    # --- decomposition + level bridge (cumulative): anchor_level (actual
+    # PTAX, not deviation) + cum_alpha + sum(cum_contrib) + cum_residual
+    # reconstructs actual_ptax exactly, by definition of residual. ---
+    actual_ptax_full = df["ptax"]
     anchor_date = z.index[0] - pd.DateOffset(months=1)
-    anchor_level = float(dev_full.loc[anchor_date])
-    actual_level = dev_full.reindex(z.index).values
-    fitted_level = anchor_level + np.cumsum(fitted_delta)
+    anchor_level = float(actual_ptax_full.loc[anchor_date])
+    actual_level = actual_ptax_full.reindex(z.index).values
+    fitted_level = anchor_level * np.exp(np.cumsum(fitted_delta) / 100)
 
     contributions = {c: whole["beta"][c] * z[c].values for c in delta_cols}
     cum_alpha = np.cumsum(np.full(len(z), whole["alpha"]))
     cum_contrib = {c: np.cumsum(contributions[c]) for c in delta_cols}
     cum_residual = np.cumsum(residual)
 
-    equilibrium_level = compute_equilibrium(df).reindex(z.index).values
-    actual_ptax = df["ptax"].reindex(z.index).values
+    actual_ptax = actual_level
 
-    lvl_0 = equilibrium_level
-    lvl_1 = lvl_0 * np.exp((anchor_level + cum_alpha) / 100)
+    anchor_series = np.full(len(z), anchor_level)
+    lvl_0 = anchor_series
+    lvl_1 = lvl_0 * np.exp(cum_alpha / 100)
     level_decomposition = {
-        "equilibrium": [round(float(v), 4) for v in lvl_0],
+        "anchor": [round(float(v), 4) for v in lvl_0],
         "baseline": [round(float(v), 4) for v in (lvl_1 - lvl_0)],
     }
     prev = lvl_1

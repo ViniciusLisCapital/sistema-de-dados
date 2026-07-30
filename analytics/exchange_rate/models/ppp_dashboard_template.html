@@ -937,13 +937,16 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
     <div class="model-section">
       <h2>What this tab is</h2>
       <div class="callout">
-        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Grew from 2 channels up to 8 across several rounds (fiscal, DXY, four carry variants, breakeven gap, terms of trade), then <b>shrunk back down to 4</b> — fiscal risk (CDS), carry-to-vol, the dollar index (DXY), and BR yield-curve steepening (10Y-2Y) — once a walk-forward out-of-sample test showed this smaller set matches the 8-channel version's whole-sample fit almost exactly while predicting slightly BETTER out-of-sample. Fewer parameters, same signal.
+        Estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Grew from 2 channels up to 8 across several rounds (fiscal, DXY, four carry variants, breakeven gap, terms of trade), then <b>shrunk back down to 4</b> — fiscal risk (CDS), carry-to-vol, the dollar index (DXY), and BR yield-curve steepening (10Y-2Y) — once a walk-forward out-of-sample test showed this smaller set matches the 8-channel version's whole-sample fit almost exactly while predicting slightly BETTER out-of-sample. Fewer parameters, same signal.
       </div>
       <div class="callout">
-        <b>Curve steepening (10Y-2Y) is new</b> — the BR nominal pre-fixed curve's 10-year rate minus its 2-year rate, an alternate, market-based proxy for fiscal risk alongside CDS: when markets price rising long-run fiscal risk (debt-sustainability or monetization concerns), long-dated rates tend to move more than short, policy-anchored ones, steepening the curve independently of whether 5y CDS itself moves. It came in with the same sign as fiscal risk itself — a steeper curve pushes the deviation the same direction a wider CDS spread does.
+        <b>Dependent variable changed from PPP deviation to the exchange rate's own return.</b> Every earlier version of this tab regressed Δdeviation — the change in how far PTAX sits from its PPP-implied equilibrium — which forces a coefficient of exactly 1 on PPP's own implied move (it's subtracted out before anything is estimated). This version regresses <b>Δfx(t) = the exchange rate's own log return</b> directly, with PPP entering (briefly) as one more freely-estimated channel instead of an assumed equilibrium. That channel's coefficient came out unstable across rolling windows (whole-sample +0.34, rolling mean +0.04, swinging from −0.86 to +1.48) — dropping it entirely cost almost nothing in-sample and genuinely improved out-of-sample prediction, so PPP is excluded here and α absorbs its average drift instead, same as every channel this tab has dropped for the same reason.
       </div>
       <div class="callout">
-        <b>Includes a single AR(1) term</b> — Δdeviation(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the deviation has a direct, persistent pull on this month's, independent of any channel. An earlier version of this tab instead gave every channel its own 6-month lag structure (48 parameters); a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
+        <b>Curve steepening (10Y-2Y) is new</b> — the BR nominal pre-fixed curve's 10-year rate minus its 2-year rate, an alternate, market-based proxy for fiscal risk alongside CDS: when markets price rising long-run fiscal risk (debt-sustainability or monetization concerns), long-dated rates tend to move more than short, policy-anchored ones, steepening the curve independently of whether 5y CDS itself moves. It came in with the same sign as fiscal risk itself — a steeper curve pushes the exchange rate the same direction a wider CDS spread does.
+      </div>
+      <div class="callout">
+        <b>Includes a single AR(1) term</b> — Δfx(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the exchange rate has a direct, persistent pull on this month's, independent of any channel. An earlier version of this tab instead gave every channel its own 6-month lag structure (48 parameters); a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
       </div>
       <div class="callout">
         <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
@@ -999,7 +1002,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
       <div class="chart-hdr">
         <div class="chart-hdr-left">
           <div class="chart-title">Exchange Rate Decomposition</div>
-          <div class="chart-subtitle">Whole-sample Ridge fit, bridged from PPP equilibrium up to the actual PTAX rate</div>
+          <div class="chart-subtitle">Whole-sample Ridge fit, bridged from an anchor rate up to the actual PTAX rate — no PPP/equilibrium layer, since the model targets the FX rate directly</div>
         </div>
       </div>
       <div class="chart-wrap"><div id="ridgeDecompChart" style="width:100%"></div></div>
@@ -2770,17 +2773,17 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   const PARAM_LABELS_RIDGE = {
     alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_carry_vol: 'β carry/vol',
     delta_dxy: 'β dollar index (DXY)', delta_curve_steep: 'β curve steepening (10Y-2Y)',
-    delta_dev_lag1: 'φ AR(1) — Δdev(t-1)',
+    delta_fx_lag1: 'φ AR(1) — Δfx(t-1)',
   };
   const CHANNEL_COLORS_RIDGE = {
     delta_fiscal: '#EA523A', delta_carry_vol: '#9B5DE5', delta_dxy: '#FBC852',
-    delta_curve_steep: '#4A90D9', delta_dev_lag1: '#8C6A5D',
+    delta_curve_steep: '#4A90D9', delta_fx_lag1: '#8C6A5D',
   };
   const CHANNEL_LABELS_RIDGE = {
     delta_fiscal: 'Fiscal', delta_carry_vol: 'Carry / FX vol', delta_dxy: 'Dollar index (DXY)',
-    delta_curve_steep: 'Curve steepening (10Y-2Y)', delta_dev_lag1: 'AR(1) — Δdev(t-1)',
+    delta_curve_steep: 'Curve steepening (10Y-2Y)', delta_fx_lag1: 'AR(1) — Δfx(t-1)',
   };
-  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_carry_vol', 'delta_dxy', 'delta_curve_steep', 'delta_dev_lag1'];
+  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_carry_vol', 'delta_dxy', 'delta_curve_steep', 'delta_fx_lag1'];
 
   const noDataEl = document.getElementById('ridgeNoData');
   const contentEl = document.getElementById('ridgeContent');
@@ -2883,16 +2886,16 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
 
     // ---- decomposition / level bridge (whole-sample fit, full history) ----
     const L = D.level_decomposition;
-    const levelColorsRg = { equilibrium: '#1F2853', baseline: '#7A88A8', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
-    const levelLabelsRg = { equilibrium: 'PPP equilibrium', baseline: 'Baseline (α)', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
-    const levelOrderRg = ['equilibrium', 'baseline', ...CHANNEL_ORDER_RIDGE, 'residual'];
+    const levelColorsRg = { anchor: '#1F2853', baseline: '#7A88A8', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
+    const levelLabelsRg = { anchor: 'Anchor (starting rate)', baseline: 'Baseline (α)', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
+    const levelOrderRg = ['anchor', 'baseline', ...CHANNEL_ORDER_RIDGE, 'residual'];
 
     plotlyRenderAndBind('ridgeDecompChart', [
       ...levelOrderRg.map(key => ({
         type: 'bar', name: levelLabelsRg[key],
         x: D.months, y: L[key],
         marker: { color: levelColorsRg[key] },
-        customdata: L[key].map(v => key === 'equilibrium' ? fmtRateRg(v) : fmtSignedRg(v, 3)),
+        customdata: L[key].map(v => key === 'anchor' ? fmtRateRg(v) : fmtSignedRg(v, 3)),
         hovertemplate: levelLabelsRg[key] + ': %{customdata}<extra></extra>',
       })),
       { type: 'scatter', mode: 'lines', name: 'Actual (PTAX)', x: D.months, y: L.actual,
