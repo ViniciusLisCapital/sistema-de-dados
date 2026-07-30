@@ -12,21 +12,25 @@ periods.
 
 Started with two channels only (fiscal, DXY), by explicit user choice ("run
 it with (i) fiscal and (ii) global USD (DXY). We increment later"). Grown
-2026-07-30, same day, to six: carry, relative_carry, carry_vol,
-relative_carry_vol added alongside fiscal/DXY, all at once rather than one
-at a time -- direct user call, and the whole reason this model uses Ridge
-(L2) rather than OLS/Lasso in the first place (see below): the four carry
-variants are deliberately overlapping constructions of the same underlying
-signal (bilateral vs. relative-to-peers, raw vs. vol-adjusted), so a Ridge
-fit lets them share credit and reveals how they interact (e.g.
-bayesian_deviation_model.py already found that adding relative_carry
-alongside carry sharpens carry's own estimate once the peer component is
-partialled out -- an interaction only visible in a joint fit, not from
-testing each channel in its own separate univariate spec). Reuses
-bayesian_deviation_model.py's build_deltas_contemporaneous()/_standardize_ext()
-(2000-01+ reference window) so the z-scored deltas here are identical,
-channel for channel, to what primary_contemp already uses -- only the
-estimator and the re-estimation scheme are new.
+2026-07-30, same day, in two further rounds:
+  - to six: carry, relative_carry, carry_vol, relative_carry_vol added
+    alongside fiscal/DXY, all at once rather than one at a time -- direct
+    user call, and the whole reason this model uses Ridge (L2) rather than
+    OLS/Lasso in the first place (see below): the four carry variants are
+    deliberately overlapping constructions of the same underlying signal
+    (bilateral vs. relative-to-peers, raw vs. vol-adjusted), so a Ridge fit
+    lets them share credit and reveals how they interact (e.g.
+    bayesian_deviation_model.py already found that adding relative_carry
+    alongside carry sharpens carry's own estimate once the peer component
+    is partialled out -- an interaction only visible in a joint fit, not
+    from testing each channel in its own separate univariate spec).
+  - to eight: breakeven_gap (the breakeven-minus-CMN-target de-anchoring
+    gap) and tot (terms of trade) added, same day, direct user request.
+Reuses bayesian_deviation_model.py's
+build_deltas_contemporaneous()/_standardize_ext() (2000-01+ reference
+window) so the z-scored deltas here are identical, channel for channel, to
+what primary_contemp already uses -- only the estimator and the
+re-estimation scheme are new.
 
 Three design choices, per the proposal:
   - L2 (Ridge), not L1 (Lasso): the goal is stabilizing coefficients between
@@ -71,11 +75,11 @@ pd.set_option("display.max_columns", None)
 
 _RESULTS_DIR = Path(__file__).parent / "ridge_results"
 
-# Started as ["fiscal", "dxy"] only, per direct user instruction -- grown
-# 2026-07-30 to the four carry variants too, added together rather than one
-# at a time (see module docstring for why). All six already exist as
-# delta_<channel> columns in build_deltas_contemporaneous().
-_CHANNELS = ["fiscal", "dxy", "carry", "relative_carry", "carry_vol", "relative_carry_vol"]
+# Started as ["fiscal", "dxy"], grown same day to the four carry variants,
+# then to breakeven_gap + tot (see module docstring for the two rounds).
+# All eight already exist as delta_<channel> columns in
+# build_deltas_contemporaneous().
+_CHANNELS = ["fiscal", "dxy", "carry", "relative_carry", "carry_vol", "relative_carry_vol", "breakeven_gap", "tot"]
 
 _LAMBDA_GRID = np.logspace(-2, 3, 25)  # 0.01 .. 1000, log-spaced
 
