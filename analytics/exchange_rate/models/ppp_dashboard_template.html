@@ -937,7 +937,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
     <div class="model-section">
       <h2>What this tab is</h2>
       <div class="callout">
-        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Starts with two channels — fiscal risk (CDS) and the dollar index (DXY) — by deliberate choice, to validate the estimation method before growing the channel set.
+        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Started with fiscal risk (CDS) and the dollar index (DXY) only; grown to six channels by adding all four carry variants together — bilateral carry, carry relative to LatAm peers, carry adjusted for FX volatility, and the relative version of that — rather than testing each one separately. That's deliberate: these four are overlapping constructions of the same underlying signal, and Ridge is specifically suited to letting them share credit instead of forcing a pick between them.
       </div>
       <div class="callout">
         <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
@@ -2758,11 +2758,24 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   // Channel keys match the payload's own delta_cols naming (delta_<channel>)
   // -- ridge_deviation_model.py's whole_sample/rolling/decomposition dicts
   // are all keyed this way, unlike the rolling/beer tabs above which key by
-  // bare channel name.
-  const PARAM_LABELS_RIDGE = { alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_dxy: 'β dollar index (DXY)' };
-  const CHANNEL_COLORS_RIDGE = { delta_fiscal: '#EA523A', delta_dxy: '#FBC852' };
-  const CHANNEL_LABELS_RIDGE = { delta_fiscal: 'Fiscal', delta_dxy: 'Dollar index (DXY)' };
-  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy'];
+  // bare channel name. Colors reuse the same hex values already assigned to
+  // these channels on the "Equilibrium & Data" tab's channel dropdown (see
+  // CLAUDE.md) so the same variable reads as the same color across tabs.
+  const PARAM_LABELS_RIDGE = {
+    alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_dxy: 'β dollar index (DXY)',
+    delta_carry: 'β carry', delta_relative_carry: 'β relative carry', delta_carry_vol: 'β carry/vol',
+    delta_relative_carry_vol: 'β relative carry/vol',
+  };
+  const CHANNEL_COLORS_RIDGE = {
+    delta_fiscal: '#EA523A', delta_dxy: '#FBC852', delta_carry: '#BB9B1D',
+    delta_relative_carry: '#6E8B3D', delta_carry_vol: '#9B5DE5', delta_relative_carry_vol: '#F15BB5',
+  };
+  const CHANNEL_LABELS_RIDGE = {
+    delta_fiscal: 'Fiscal', delta_dxy: 'Dollar index (DXY)', delta_carry: 'Carry',
+    delta_relative_carry: 'Relative carry (vs. LatAm peers)', delta_carry_vol: 'Carry / FX vol',
+    delta_relative_carry_vol: 'Relative carry / FX vol',
+  };
+  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy', 'delta_carry', 'delta_relative_carry', 'delta_carry_vol', 'delta_relative_carry_vol'];
 
   const noDataEl = document.getElementById('ridgeNoData');
   const contentEl = document.getElementById('ridgeContent');
