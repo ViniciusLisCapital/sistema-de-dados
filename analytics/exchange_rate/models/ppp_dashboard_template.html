@@ -938,6 +938,23 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
 })();
 
 // ---------------------------------------------------------------------------
+// Tab switching -- shared, top-level (was previously tucked inside the
+// removed Bayesian Model tab's own IIFE; extracted 2026-07-30 when that tab
+// was deleted, since this logic is generic and every remaining tab's own
+// IIFE depends on it running: each tab's own click listener only lazy-
+// renders its charts once the class-toggle below has already made that
+// panel visible). Runs once per click, shared across every '.tab-btn'.
+// ---------------------------------------------------------------------------
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // FX Attribution (Manager Letters) tab — separate IIFE, own scope
 // ---------------------------------------------------------------------------
 (function () {
