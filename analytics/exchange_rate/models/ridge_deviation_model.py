@@ -51,6 +51,30 @@ No posterior/HDI anywhere in this module -- Ridge is a point estimate, not a
 Bayesian fit, so there's no distribution to summarize beyond the coefficient
 itself (unlike every PyMC-based model elsewhere in this package).
 
+Impulse-decay / lag structure (added 2026-07-30, same day, direct user
+request): the contemporaneous-only spec above assumes a channel's shock
+affects deviation only in the month it happens. The user's own observation
+-- "a shock in interest rate have impact a continuing impact over the fx,
+we do not capture it" -- pointed at two ways to add persistence: (1) a
+single shared AR term (phi, deviation(t-1), the mechanism state_space_model.py
+already uses), or (2) an explicit per-channel lag structure. Chosen: (2),
+because (1)'s single phi forces EVERY channel to decay at the identical
+rate -- verified directly: unrolling deviation(t)=phi*deviation(t-1)+beta_c*z_c(t)
+for a one-time shock gives impulse response phi^k * beta_c at horizon k, so
+phi sets a common decay SPEED for the whole system and beta_c only scales
+its SIZE. A per-channel lag structure (z_c(t), z_c(t-1), ..., z_c(t-5), each
+with its own beta) lets different channels decay at genuinely different
+speeds, which is what the user was actually asking whether the model could
+show. build_lagged_sample()/fit_lag_structure()/build_lag_dashboard_payload()
+implement this as max_lag=6 months per channel (user's choice), fit via the
+same Ridge + walk-forward-CV-for-lambda machinery as the rest of this module
+-- WHOLE SAMPLE ONLY, no rolling window, also the user's own call once the
+arithmetic was laid out: 8 channels x 6 lags = 48 regressors + alpha, and a
+60-month rolling window would leave only ~11 degrees of freedom per window,
+unreliable even under Ridge's penalty; a rolling window wide enough to be
+comfortable (150+ months) would only yield a handful of windows across the
+~220-month sample anyway, not enough to say anything about regime change.
+
 Usage:
     uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run; run()"
 """
@@ -83,6 +107,15 @@ _CHANNELS = ["fiscal", "dxy", "carry", "relative_carry", "carry_vol", "relative_
 
 _LAMBDA_GRID = np.logspace(-2, 3, 25)  # 0.01 .. 1000, log-spaced
 
+# Lag structure (impulse-decay analysis) -- 6 months per channel, user's
+# choice. min_train raised to 72 (vs. 36 for the contemporaneous-only spec
+# above) specifically for this wider design: 8 channels x 6 lags = 48
+# regressors, so the first few folds of a 36-month floor would be fitting
+# more parameters than observations -- Ridge handles that numerically, but
+# the resulting OOS score wouldn't be trustworthy this early.
+_MAX_LAG = 6
+_LAG_MIN_TRAIN = 72
+
 
 def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
     """delta_dev plus each channel's z-scored CONTEMPORANEOUS delta,
@@ -99,6 +132,87 @@ def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = No
     z, stats = _standardize_ext(sample, reference, delta_cols)
     z["delta_dev"] = sample["delta_dev"]
     return z, stats
+
+
+def build_lagged_sample(df: pd.DataFrame | None = None, channels: list[str] | None = None,
+                         max_lag: int = _MAX_LAG) -> tuple[pd.DataFrame, list[str]]:
+    """delta_dev plus, for each channel, its own z-scored contemporaneous
+    delta shifted by lag 0..max_lag-1 (lag0 = the same z(delta_c(t))
+    build_sample() uses; lag_k = z(delta_c(t-k))) -- a distributed-lag
+    design letting each channel's effect on Δdeviation decay over several
+    months instead of assuming it only matters the month it happens.
+
+    Each channel is standardized ONCE, against the full history (same
+    2000-01+ reference window as build_sample()), and every lag is a pure
+    shift of that one z-scored series -- so all lags of a channel share one
+    mean/std, and only which month's value lands in which row differs.
+    Shifting then dropna() loses max_lag-1 extra months at the start of the
+    already-lagged sample (on top of whichever channel's own start date is
+    already binding), which is why this is a slightly shorter sample than
+    build_sample()'s own contemporaneous-only one."""
+    channels = _CHANNELS if channels is None else channels
+    df = load_data() if df is None else df
+    delta_cols = [f"delta_{c}" for c in channels]
+    deltas = build_deltas_contemporaneous(df)
+    reference = deltas[deltas.index >= _REFERENCE_START]
+    z_full, _ = _standardize_ext(deltas, reference, delta_cols)
+
+    out = pd.DataFrame(index=deltas.index)
+    out["delta_dev"] = deltas["delta_dev"]
+    lag_cols = []
+    for dcol in delta_cols:
+        for lag in range(max_lag):
+            col = f"{dcol}_lag{lag}"
+            out[col] = z_full[dcol].shift(lag)
+            lag_cols.append(col)
+    sample = out.dropna()
+    return sample, lag_cols
+
+
+def fit_lag_structure(channels: list[str] | None = None, max_lag: int = _MAX_LAG) -> dict:
+    """Distributed-lag Ridge fit -- WHOLE SAMPLE ONLY, no rolling window (see
+    module docstring for why). lambda chosen by the same walk-forward CV as
+    the contemporaneous-only spec, refit specifically for this wider design
+    (_LAG_MIN_TRAIN, not the shorter floor used above)."""
+    channels = _CHANNELS if channels is None else channels
+    sample, lag_cols = build_lagged_sample(channels=channels, max_lag=max_lag)
+    cv = walk_forward_lambda(sample, lag_cols, min_train=_LAG_MIN_TRAIN)
+    lam = float(cv.iloc[0]["lambda"])
+    whole = fit_whole_sample(sample, lag_cols, lam)
+    return {
+        "channels": channels, "max_lag": max_lag, "lag_cols": lag_cols,
+        "lambda": lam, "cv": cv, "whole_sample": whole, "sample": sample,
+    }
+
+
+def build_lag_dashboard_payload(channels: list[str] | None = None, max_lag: int = _MAX_LAG) -> dict:
+    """Reshapes fit_lag_structure()'s flat beta dict into one array of
+    max_lag coefficients per channel, for the "Impulse Decay by Channel"
+    chart -- index 0 is the contemporaneous effect, index k is the effect
+    of a shock k months earlier."""
+    channels = _CHANNELS if channels is None else channels
+    result = fit_lag_structure(channels=channels, max_lag=max_lag)
+    whole = result["whole_sample"]
+    sample = result["sample"]
+
+    by_channel = {}
+    for c in channels:
+        dcol = f"delta_{c}"
+        by_channel[dcol] = [round(whole["beta"][f"{dcol}_lag{lag}"], 4) for lag in range(max_lag)]
+
+    return {
+        "max_lag": max_lag,
+        "lambda": round(result["lambda"], 4),
+        "lambda_cv": {
+            "lambdas": [round(float(v), 6) for v in result["cv"]["lambda"]],
+            "mse": [round(float(v), 6) for v in result["cv"]["mse"]],
+        },
+        "alpha": round(whole["alpha"], 4),
+        "r2": round(whole["r2"], 4),
+        "n": int(len(sample)),
+        "sample_range": [sample.index.min().strftime("%Y-%m"), sample.index.max().strftime("%Y-%m")],
+        "by_channel": by_channel,
+    }
 
 
 def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | None = None,
@@ -220,9 +334,25 @@ def run(channels: list[str] | None = None, window: int = 60) -> dict:
                     **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
         _RESULTS_DIR / "whole_sample.csv", index=False)
 
+    print("=" * 78)
+    print(f"IMPULSE-DECAY (LAG STRUCTURE) -- {_MAX_LAG} lags/channel, whole sample only")
+    lag_result = fit_lag_structure(channels=channels, max_lag=_MAX_LAG)
+    lag_whole = lag_result["whole_sample"]
+    print(f"Selected lambda = {lag_result['lambda']:.4f}  alpha={lag_whole['alpha']:+.4f}  "
+          f"R2={lag_whole['r2']:.4f}  n={lag_whole['n']}")
+    for c in channels:
+        dcol = f"delta_{c}"
+        path = [round(lag_whole["beta"][f"{dcol}_lag{lag}"], 3) for lag in range(_MAX_LAG)]
+        print(f"  {c:22s} lag0..lag{_MAX_LAG - 1}: {path}")
+    lag_result["sample"].reset_index().to_csv(_RESULTS_DIR / "lag_structure_sample.csv", index=False)
+    pd.DataFrame([{"lambda": lag_result["lambda"], "alpha": lag_whole["alpha"], "r2": lag_whole["r2"],
+                    "n": lag_whole["n"], **{k: v for k, v in lag_whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / "lag_structure_whole_sample.csv", index=False)
+
     return {
         "channels": channels, "delta_cols": delta_cols, "lambda": lam, "cv": cv,
         "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+        "lag_structure": lag_result,
     }
 
 
@@ -237,8 +367,9 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     """Payload for the "Ridge (Regularized, Rolling)" dashboard tab: the
     walk-forward lambda-selection curve, the whole-sample fit's own
     decomposition/level-bridge (same log-additive-then-multiplicative
-    convention as every other tab), and the rolling-window coefficient
-    paths against the whole-sample reference line."""
+    convention as every other tab), the rolling-window coefficient paths
+    against the whole-sample reference line, and (under "lag_structure") the
+    separate whole-sample-only impulse-decay fit -- see build_lag_dashboard_payload()."""
     channels = _CHANNELS if channels is None else channels
     delta_cols = [f"delta_{c}" for c in channels]
     z, _ = build_sample(channels=channels)
@@ -337,6 +468,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
                 for c in delta_cols
             },
         },
+        "lag_structure": build_lag_dashboard_payload(channels=channels),
     }
 
 
