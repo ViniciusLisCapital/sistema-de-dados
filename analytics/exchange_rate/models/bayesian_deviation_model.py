@@ -526,20 +526,5 @@ def build_dashboard_payload() -> dict:
     }
 
 
-def render_dashboard() -> None:
-    """Regenerates referencia/ppp_dashboard.html with BOTH tabs — the PPP/data
-    tab (ppp_equilibrium's own payload) and the Bayesian Model tab (this
-    module's payload). This is now the canonical way to generate the full
-    dashboard; ppp_equilibrium.run() alone still works but leaves the
-    Bayesian tab empty (falls back to `null`, see ppp_equilibrium.render())."""
-    from analytics.exchange_rate.models.ppp_equilibrium import _OUTPUT, build_payload, render
-
-    df = load_data()
-    ppp_payload = build_payload(df)
-    bayes_payload = build_dashboard_payload()
-    render(ppp_payload, bayes_payload=bayes_payload)
-    print(f"Full dashboard (both tabs) written to {_OUTPUT}")
-
-
 if __name__ == "__main__":
     run()

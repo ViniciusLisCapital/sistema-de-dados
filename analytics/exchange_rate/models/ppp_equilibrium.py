@@ -408,23 +408,28 @@ def build_payload(df: pd.DataFrame, default_base_month: str = _DEFAULT_BASE_MONT
     }
 
 
-def render(payload: dict, bayes_payload: dict | None = None, statespace_payload: dict | None = None,
-           kalman_payload: dict | None = None, beer_payload: dict | None = None,
-           rolling_payload: dict | None = None, fxattr_payload: dict | None = None,
-           ridge_payload: dict | None = None) -> None:
-    """Fills all eight template markers. `/*PPP_DATA*/` always gets `payload`;
-    `/*BAYES_DATA*/`, `/*STATESPACE_DATA*/`, `/*KALMAN_DATA*/`, `/*BEER_DATA*/`,
-    `/*ROLLING_DATA*/`, `/*FXATTR_DATA*/`, and `/*RIDGE_DATA*/` get their
-    respective payload if given, else the literal `null` (so each tab's JS
-    always has something valid to check against, whether or not that tab's
-    data was generated this run)."""
+def render(payload: dict, fxattr_payload: dict | None = None, ridge_payload: dict | None = None) -> None:
+    """Fills the template's three markers. `/*PPP_DATA*/` always gets
+    `payload`; `/*FXATTR_DATA*/` and `/*RIDGE_DATA*/` get their respective
+    payload if given, else the literal `null` (so each tab's JS always has
+    something valid to check against, whether or not that tab's data was
+    generated this run).
+
+    Down from eight markers/params to three, 2026-07-30, direct user request
+    ("remove the other tabs") -- the Bayesian Model, State-Space (Attempt
+    Two), Kalman Filter (η free), BEER Model (Levels), and Rolling Window
+    (Core 4) tabs (and their `/*BAYES_DATA*/`/`/*STATESPACE_DATA*/`/
+    `/*KALMAN_DATA*/`/`/*BEER_DATA*/`/`/*ROLLING_DATA*/` markers) were
+    removed from the template entirely to declutter the dashboard down to
+    Equilibrium & Data, FX Attribution, and Ridge. Their own modules
+    (bayesian_deviation_model.py, state_space_model.py's build_dashboard_payload()/
+    build_kalman_dashboard_payload(), beer_model.py) are untouched and still
+    work standalone -- only the dashboard wiring was removed. This also
+    retires the Kalman-tab staleness bug that used to force a surgical
+    single-line RIDGE_DATA replacement instead of a full render_dashboard()
+    call -- see CLAUDE.md."""
     template = _TEMPLATE.read_text(encoding="utf-8")
     html = template.replace("/*PPP_DATA*/", json.dumps(payload))
-    html = html.replace("/*BAYES_DATA*/", json.dumps(bayes_payload) if bayes_payload is not None else "null")
-    html = html.replace("/*STATESPACE_DATA*/", json.dumps(statespace_payload) if statespace_payload is not None else "null")
-    html = html.replace("/*KALMAN_DATA*/", json.dumps(kalman_payload) if kalman_payload is not None else "null")
-    html = html.replace("/*BEER_DATA*/", json.dumps(beer_payload) if beer_payload is not None else "null")
-    html = html.replace("/*ROLLING_DATA*/", json.dumps(rolling_payload) if rolling_payload is not None else "null")
     html = html.replace("/*FXATTR_DATA*/", json.dumps(fxattr_payload) if fxattr_payload is not None else "null")
     html = html.replace("/*RIDGE_DATA*/", json.dumps(ridge_payload) if ridge_payload is not None else "null")
     _OUTPUT.parent.mkdir(parents=True, exist_ok=True)

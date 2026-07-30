@@ -819,50 +819,41 @@ def build_kalman_dashboard_payload(label: str = "kalman", channels: list[str] | 
 
 
 def render_dashboard() -> None:
-    """Regenerates referencia/ppp_dashboard.html with all eight tabs: PPP/data
-    (ppp_equilibrium), attempt-one Bayesian model (bayesian_deviation_model),
-    attempt-two eta=0 state-space fit, attempt-two's free-eta Kalman filter,
-    the BEER-style levels model (beer_model, 7-channel), the BEER model's
-    rolling-window/core-4 tab, the FX cause-attribution tab
-    (fx_attribution_model, manager-letter claims), and the Ridge-penalized
-    rolling deviation model (ridge_deviation_model, 2-channel). Requires
-    bayesian_deviation_model.run(), this module's run(), this module's
-    fit_kalman(), beer_model.run(), beer_model.fit(label="beer_core4",
-    channels=beer_model._CHANNELS_CORE4), and at least one manager corpus
-    hand-extracted under fx_attribution_model.DATA_ROOT to have each been
-    done at least once first (reads saved traces/CSVs, doesn't refit or
-    re-extract) -- ridge_deviation_model.build_dashboard_payload() is the one
-    exception, cheap enough (milliseconds) to fit fresh on every call rather
-    than reading a saved trace.
+    """Regenerates referencia/ppp_dashboard.html with its three tabs: PPP/data
+    (ppp_equilibrium), the FX cause-attribution tab (fx_attribution_model,
+    manager-letter claims), and the Ridge-penalized regression
+    (ridge_deviation_model). Requires at least one manager corpus
+    hand-extracted under fx_attribution_model.DATA_ROOT to have been done at
+    least once first (reads saved claim CSVs, doesn't re-extract) --
+    ridge_deviation_model.build_dashboard_payload() needs no saved trace at
+    all, cheap enough (milliseconds) to fit fresh on every call.
 
-    A 7th tab (core-4 + election-risk dummy, rolling) was built and then
-    REMOVED 2026-07-24 at user request -- see beer_model.py's module
-    docstring and CLAUDE.md's "Pending" section for why, and for the
-    "difference model" follow-up the user asked to be tried instead. (The FX
-    attribution tab added 2026-07-29 and the Ridge tab added 2026-07-30 are
-    unrelated to that removed one.)"""
-    from analytics.exchange_rate.models import bayesian_deviation_model as bdm
-    from analytics.exchange_rate.models import beer_model
+    Down from eight tabs to three, 2026-07-30, direct user request ("remove
+    the other tabs"): the Bayesian Model, State-Space (Attempt Two), Kalman
+    Filter (η free), BEER Model (Levels), and Rolling Window (Core 4) tabs
+    were removed from the dashboard template entirely. Their own modules
+    (bayesian_deviation_model.py, this module's own build_dashboard_payload()/
+    build_kalman_dashboard_payload(), beer_model.py) are UNTOUCHED and still
+    work standalone -- only the dashboard wiring (this function, and the
+    template's markers/tab HTML/JS) was removed. This also retires the
+    Kalman-tab staleness bug (build_kalman_dashboard_payload()'s saved trace
+    no longer matching load_data()'s current sample length) that used to
+    force a surgical single-line RIDGE_DATA replacement instead of calling
+    this function directly -- see CLAUDE.md for the full history.
+
+    (A 7th tab, core-4 + election-risk dummy rolling, was built and then
+    REMOVED back on 2026-07-24, for unrelated reasons -- see beer_model.py's
+    module docstring. That's a separate, earlier removal from this one.)"""
     from analytics.exchange_rate.models import fx_attribution_model
     from analytics.exchange_rate.models import ridge_deviation_model
     from analytics.exchange_rate.models.ppp_equilibrium import _OUTPUT, build_payload, render
 
     df = load_data()
     ppp_payload = build_payload(df)
-    bayes_payload = bdm.build_dashboard_payload()
-    statespace_payload = build_dashboard_payload()  # default _CHANNELS -- 5-channel, incl. dxy
-    kalman_payload = build_kalman_dashboard_payload(channels=_KALMAN_CHANNELS)  # frozen 4-channel, matches its saved trace
-    beer_payload = beer_model.build_dashboard_payload()  # default _CHANNELS -- 7-channel
-    rolling_payload = {
-        "model": beer_model.build_dashboard_payload(label="beer_core4", channels=beer_model._CHANNELS_CORE4),
-        "rolling": beer_model.build_rolling_payload(channels=beer_model._CHANNELS_CORE4),
-    }
     fxattr_payload = fx_attribution_model.build_dashboard_payload()
     ridge_payload = ridge_deviation_model.build_dashboard_payload()
-    render(ppp_payload, bayes_payload=bayes_payload, statespace_payload=statespace_payload,
-           kalman_payload=kalman_payload, beer_payload=beer_payload, rolling_payload=rolling_payload,
-           fxattr_payload=fxattr_payload, ridge_payload=ridge_payload)
-    print(f"Full dashboard (all eight tabs) written to {_OUTPUT}")
+    render(ppp_payload, fxattr_payload=fxattr_payload, ridge_payload=ridge_payload)
+    print(f"Full dashboard (three tabs) written to {_OUTPUT}")
 
 
 if __name__ == "__main__":
