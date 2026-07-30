@@ -81,12 +81,16 @@ def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
     fit_contemp_spec()); also carries delta_dxy, which build_deltas() never
     needed since the original 4-channel spec didn't use it. delta_relative_carry
     added same day, alongside (not replacing) delta_carry — see
-    fit_contemp_spec()'s docstring."""
+    fit_contemp_spec()'s docstring. curve_steep (BR nominal 10Y-2Y yield
+    curve steepening, PREJS@120M-24M — see
+    ppp_equilibrium._load_curve_steepening()) added 2026-07-30, an alternate
+    market-based fiscal-risk proxy tested alongside the CDS-based `fiscal`
+    channel in ridge_deviation_model.py's shrunk AR(1) spec."""
     dev = compute_deviation(df)
     out = pd.DataFrame(index=df.index)
     out["delta_dev"] = dev.diff()
     out["deviation_lag1"] = dev.shift(1)
-    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy"):
+    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy", "curve_steep"):
         out[f"delta_{col}"] = df[col].diff()
     return out
 

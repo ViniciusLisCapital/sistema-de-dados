@@ -127,6 +127,16 @@ _CHANNELS = ["fiscal", "dxy", "carry", "relative_carry", "carry_vol", "relative_
 
 _LAMBDA_GRID = np.logspace(-2, 3, 25)  # 0.01 .. 1000, log-spaced
 
+# Shrunk AR(1) spec (2026-07-30, direct user request): a + AR(t-1) +
+# fiscal(t) + carry_vol(t) + dxy(t) + curve_steep(t) -- 4 channels instead
+# of 8, curve_steep (BR nominal 10Y-2Y yield-curve steepening,
+# ppp_equilibrium._load_curve_steepening()) tested as an alternate,
+# market-based fiscal-risk proxy alongside the CDS-based `fiscal` channel,
+# not in place of it. Exploratory only -- run via run_shrunk_ar1_variant(),
+# NOT wired into build_dashboard_payload()/the dashboard tab, per direct
+# user instruction ("do not include in the dashboard yet, let's test").
+_CHANNELS_SHRUNK = ["fiscal", "carry_vol", "dxy", "curve_steep"]
+
 # Lag structure (impulse-decay analysis) -- 6 months per channel, user's
 # choice. min_train raised to 72 (vs. 36 for the contemporaneous-only spec
 # above) specifically for this wider design: 8 channels x 6 lags = 48
@@ -185,6 +195,47 @@ def build_ar1_sample(df: pd.DataFrame | None = None,
 
     reg_cols = delta_cols + ["delta_dev_lag1"]
     return z, stats, reg_cols
+
+
+def run_ar1_variant(channels: list[str] | None = None, window: int = 60, label: str = "ar1") -> dict:
+    """Fits and prints the AR(1) spec on build_ar1_sample() -- same
+    walk-forward-lambda / whole-sample / rolling-fit sequence as run(),
+    generic over `channels` so it also covers the shrunk 4-channel spec
+    (channels=_CHANNELS_SHRUNK, label="ar1_shrunk") as well as the full
+    8-channel one. Exploratory, not wired into build_dashboard_payload()."""
+    channels = _CHANNELS if channels is None else channels
+    z, stats, reg_cols = build_ar1_sample(channels=channels)
+
+    print("=" * 78)
+    print(f"RIDGE DEVIATION MODEL -- AR(1) VARIANT, channels={channels}")
+    print("(delta_dev_lag1, raw units, plus each channel's own contemporaneous z-scored delta)")
+    cv = walk_forward_lambda(z, reg_cols)
+    lam = float(cv.iloc[0]["lambda"])
+    print(cv.head(10).to_string(index=False))
+    print(f"Selected lambda = {lam:.4f} (mean OOS MSE = {cv.iloc[0]['mse']:.4f})")
+
+    whole = fit_whole_sample(z, reg_cols, lam)
+    print("=" * 78)
+    betas_fmt = {c: round(b, 4) for c, b in whole["beta"].items()}
+    print(f"Whole-sample fit at lambda={lam:.4f}: alpha={whole['alpha']:+.4f}  "
+          f"betas={betas_fmt}  R2={whole['r2']:.4f}  n={whole['n']}")
+
+    roll = rolling_fit(z, reg_cols, lam, window=window)
+    print("=" * 78)
+    print(f"Rolling fit: {len(roll)} windows of {window} months, lambda={lam:.4f}")
+    print(roll[[f"beta_{c}" for c in reg_cols] + ["r2"]].describe())
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    cv.to_csv(_RESULTS_DIR / f"{label}_lambda_cv.csv", index=False)
+    roll.reset_index().to_csv(_RESULTS_DIR / f"{label}_rolling.csv", index=False)
+    pd.DataFrame([{"lambda": lam, "alpha": whole["alpha"], "r2": whole["r2"], "n": whole["n"],
+                    **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / f"{label}_whole_sample.csv", index=False)
+
+    return {
+        "channels": channels, "reg_cols": reg_cols, "lambda": lam, "cv": cv,
+        "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+    }
 
 
 def build_level_sample(df: pd.DataFrame | None = None,

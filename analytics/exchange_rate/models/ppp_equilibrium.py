@@ -137,13 +137,22 @@ _PREJS_120M_BUG_WINDOWS = [
 ]
 
 
-def _load_breakeven() -> pd.Series:
-    """10y bond-implied breakeven inflation (PREJS - NTNBJS @ 120M), monthly,
-    with the confirmed PREJS@120M bug windows masked and linearly interpolated."""
+def _load_interest_rate_curves() -> pd.DataFrame:
+    """Raw base_mercado.interest_rates table, read once and shared by
+    _load_breakeven() and _load_curve_steepening() -- both need PREJS@120M,
+    and re-reading the same external table twice per load_data() call would
+    be a wasted round-trip on a schema outside this project's own ETL --
+    same precedent as _load_policy_rates_monthly() being shared by
+    _load_relative_carry()/_load_carry_vol_metrics()."""
     curves = _read_table("base_mercado", "interest_rates")
     curves["date"] = pd.to_datetime(curves["date"])
     curves["value"] = curves["value"].astype(float)
+    return curves
 
+
+def _load_breakeven(curves: pd.DataFrame) -> pd.Series:
+    """10y bond-implied breakeven inflation (PREJS - NTNBJS @ 120M), monthly,
+    with the confirmed PREJS@120M bug windows masked and linearly interpolated."""
     prejs = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
     ntnbjs = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
 
@@ -153,6 +162,31 @@ def _load_breakeven() -> pd.Series:
 
     breakeven = (prejs - ntnbjs).dropna()
     return breakeven.resample("MS").last().rename("breakeven")
+
+
+def _load_curve_steepening(curves: pd.DataFrame) -> pd.Series:
+    """BR nominal yield-curve steepening, 10Y minus 2Y (PREJS @ 120M minus
+    PREJS @ 24M, base_mercado.interest_rates -- same external fund-ops
+    schema _load_breakeven() reads) -- added 2026-07-30, direct user request,
+    as an alternate, market-based proxy for fiscal risk alongside (not
+    replacing) the CDS-based `fiscal` channel: when markets price rising
+    long-run fiscal risk (debt-sustainability concerns, monetization risk),
+    long-dated rates move more than short, policy-anchored ones, steepening
+    the curve independently of whether 5y CDS itself moves. PREJS@120M's
+    confirmed bug windows (see _PREJS_120M_BUG_WINDOWS / _load_breakeven())
+    are masked and interpolated here too, same treatment, same reason --
+    isolated to that one curve/tenor, so PREJS@24M needs no equivalent
+    masking. Real coverage starts 2006-01 (verified against Tesouro Direto
+    -- no BR pre-fixed bond traded past ~1.6y maturity before then)."""
+    prejs_120 = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    prejs_24 = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
+
+    for start, end in _PREJS_120M_BUG_WINDOWS:
+        prejs_120.loc[start:end] = pd.NA
+    prejs_120 = prejs_120.astype(float).interpolate(method="time")
+
+    steepening = (prejs_120 - prejs_24).dropna()
+    return steepening.resample("MS").last().rename("curve_steep")
 
 
 _LATAM_PEERS = ["MX", "CL", "CO", "PE"]
@@ -309,7 +343,9 @@ def load_data() -> pd.DataFrame:
     carry_m = _monthly_series("macro_international", "diferenciais_juros", "diferencial_nominal", "carry")
     tot_m = _monthly_series("macro_brasil", "cmb_termos_troca", "termos_de_troca_funcex", "tot")
     fiscal_m = _monthly_series("macro_brasil", "cmb_risco_pais", "cds_5y_usd", "fiscal")
-    breakeven_m = _load_breakeven()
+    curves = _load_interest_rate_curves()
+    breakeven_m = _load_breakeven(curves)
+    curve_steep_m = _load_curve_steepening(curves)
     dxy_m = _monthly_series("macro_international", "cmb_dollar_index", "dxy", "dxy")
     relative_carry_m = _load_relative_carry()
     carry_vol_df = _load_carry_vol_metrics(carry_m)
@@ -317,7 +353,7 @@ def load_data() -> pd.DataFrame:
     target_annual = _load_inflation_target()
 
     df = core.join(
-        [carry_m, tot_m, fiscal_m, breakeven_m, dxy_m, relative_carry_m, carry_vol_df, bop_pct_gdp, target_annual],
+        [carry_m, tot_m, fiscal_m, breakeven_m, curve_steep_m, dxy_m, relative_carry_m, carry_vol_df, bop_pct_gdp, target_annual],
         how="left",
     )
     df["target"] = df["target"].ffill()
