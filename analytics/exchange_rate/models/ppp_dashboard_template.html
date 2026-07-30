@@ -940,6 +940,9 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
         Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Started with fiscal risk (CDS) and the dollar index (DXY) only; grown to six channels by adding all four carry variants together — bilateral carry, carry relative to LatAm peers, carry adjusted for FX volatility, and the relative version of that — rather than testing each one separately. That's deliberate: these four are overlapping constructions of the same underlying signal, and Ridge is specifically suited to letting them share credit instead of forcing a pick between them. Grown again to eight channels with the breakeven de-anchoring gap and terms of trade.
       </div>
       <div class="callout">
+        <b>Includes a single AR(1) term</b> — Δdeviation(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the deviation has a direct, persistent pull on this month's, independent of any channel. This replaced an earlier version of this tab that instead gave every channel its own 6-month lag structure (48 parameters): a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
+      </div>
+      <div class="callout">
         <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
       </div>
       <div class="callout">
@@ -997,30 +1000,6 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
         </div>
       </div>
       <div class="chart-wrap"><div id="ridgeDecompChart" style="width:100%"></div></div>
-    </div>
-
-    <div class="model-section">
-      <h2>Impulse Decay by Channel (Lag Structure)</h2>
-      <div class="callout">
-        A different question from the rest of this tab: does a channel's effect on Δdeviation persist beyond the month it occurs? Each channel here enters at lag 0 (the same month) through lag 5 (five months earlier), each as its own z-scored series (same 2000-01+ reference window as the rest of this tab) — so the coefficient at each lag traces out how much of that channel's effect survives k months later, instead of assuming every channel decays at the same speed (which is what a single shared φ, the mechanism the "State-Space" tab uses, would force).
-      </div>
-      <div class="callout">
-        <b>Whole-sample only, no rolling window here</b> — 8 channels × 6 lags is 48 regressors plus the constant; a 60-month rolling window would leave only ~11 degrees of freedom per window, not enough to trust even with Ridge's penalty. λ is chosen by the same walk-forward cross-validation as the rest of this tab, refit specifically for this wider design (with a higher minimum training window, given the larger parameter count).
-      </div>
-      <div class="stats-row" id="ridgeLagStatsRow"></div>
-    </div>
-
-    <div class="chart-container">
-      <div class="chart-hdr">
-        <div class="chart-hdr-left">
-          <div class="chart-title">Coefficient by Lag</div>
-          <div class="chart-subtitle">How much of this channel's effect on Δdeviation survives k months after the shock — bar height at lag 0 is the contemporaneous effect</div>
-        </div>
-        <div class="chart-hdr-right">
-          <select id="ridgeLagChannelSelect" class="base-select"></select>
-        </div>
-      </div>
-      <div class="chart-wrap"><div id="ridgeLagChart" style="width:100%"></div></div>
     </div>
 
   </div>
@@ -2789,20 +2768,20 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_dxy: 'β dollar index (DXY)',
     delta_carry: 'β carry', delta_relative_carry: 'β relative carry', delta_carry_vol: 'β carry/vol',
     delta_relative_carry_vol: 'β relative carry/vol', delta_breakeven_gap: 'β breakeven (de-anchoring gap)',
-    delta_tot: 'β terms of trade',
+    delta_tot: 'β terms of trade', delta_dev_lag1: 'φ AR(1) — Δdev(t-1)',
   };
   const CHANNEL_COLORS_RIDGE = {
     delta_fiscal: '#EA523A', delta_dxy: '#FBC852', delta_carry: '#BB9B1D',
     delta_relative_carry: '#6E8B3D', delta_carry_vol: '#9B5DE5', delta_relative_carry_vol: '#F15BB5',
-    delta_breakeven_gap: '#3A4F72', delta_tot: '#418791',
+    delta_breakeven_gap: '#3A4F72', delta_tot: '#418791', delta_dev_lag1: '#8C6A5D',
   };
   const CHANNEL_LABELS_RIDGE = {
     delta_fiscal: 'Fiscal', delta_dxy: 'Dollar index (DXY)', delta_carry: 'Carry',
     delta_relative_carry: 'Relative carry (vs. LatAm peers)', delta_carry_vol: 'Carry / FX vol',
     delta_relative_carry_vol: 'Relative carry / FX vol', delta_breakeven_gap: 'Breakeven (de-anchoring gap)',
-    delta_tot: 'Terms of trade',
+    delta_tot: 'Terms of trade', delta_dev_lag1: 'AR(1) — Δdev(t-1)',
   };
-  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy', 'delta_carry', 'delta_relative_carry', 'delta_carry_vol', 'delta_relative_carry_vol', 'delta_breakeven_gap', 'delta_tot'];
+  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy', 'delta_carry', 'delta_relative_carry', 'delta_carry_vol', 'delta_relative_carry_vol', 'delta_breakeven_gap', 'delta_tot', 'delta_dev_lag1'];
 
   const noDataEl = document.getElementById('ridgeNoData');
   const contentEl = document.getElementById('ridgeContent');
@@ -2922,64 +2901,6 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         customdata: L.actual.map(fmtRateRg),
         hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
     ], { height: 400, barmode: 'relative', bargap: 0.15, showlegend: true });
-
-    // ---- impulse decay by channel (lag structure) -- whole-sample only,
-    // not a time series (x is lag count), so this deliberately skips
-    // plotlyRenderAndBind/plotlyBaseLayout the same way the lambda-selection
-    // chart above does. ----
-    if (D.lag_structure) {
-      const LS = D.lag_structure;
-      document.getElementById('ridgeLagStatsRow').innerHTML = `
-        <div class="stat-card">
-          <div class="stat-label">Selected λ</div>
-          <div class="stat-val">${fmtNumRg(LS.lambda, 2)}</div>
-          <div class="stat-sub">much higher than the contemporaneous fit's own λ — expected, given ${LS.max_lag} lags/channel are far more collinear than the bare channels</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Whole-sample fit</div>
-          <div class="stat-val">${LS.n}</div>
-          <div class="stat-sub">months · ${monthLabelRg(LS.sample_range[0])} → ${monthLabelRg(LS.sample_range[1])} · R²=${fmtNumRg(LS.r2, 3)}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Parameters</div>
-          <div class="stat-val">${Object.keys(LS.by_channel).length * LS.max_lag + 1}</div>
-          <div class="stat-sub">${Object.keys(LS.by_channel).length} channels × ${LS.max_lag} lags + α — why this is whole-sample only, no rolling window</div>
-        </div>`;
-
-      const lagSelEl = document.getElementById('ridgeLagChannelSelect');
-      CHANNEL_ORDER_RIDGE.forEach(k => {
-        if (!LS.by_channel[k]) return;
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = CHANNEL_LABELS_RIDGE[k];
-        lagSelEl.appendChild(opt);
-      });
-      lagSelEl.value = CHANNEL_ORDER_RIDGE[0];
-
-      function renderLagChart() {
-        const key = lagSelEl.value;
-        const vals = LS.by_channel[key];
-        const lags = vals.map((_, i) => i);
-        const color = CHANNEL_COLORS_RIDGE[key] || '#1F2853';
-        Plotly.newPlot('ridgeLagChart', [
-          { type: 'bar', x: lags, y: vals, marker: { color },
-            customdata: vals.map(v => fmtSignedRg(v, 3)), hovertemplate: 'lag %{x}: %{customdata}<extra></extra>' },
-        ], {
-          height: 340, margin: { l: 55, r: 20, t: 10, b: 50 },
-          xaxis: {
-            title: 'Months after shock', tickmode: 'array', tickvals: lags,
-            ticktext: lags.map(l => l === 0 ? 't' : ('t-' + l)),
-            tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
-          },
-          yaxis: { title: 'β (z-scored)', gridcolor: 'rgba(31,40,83,0.06)', tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' } },
-          showlegend: false,
-          paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-          font: { family: 'Barlow, sans-serif', color: '#1F2853', size: 12 },
-        }, { responsive: true, displayModeBar: 'hover', displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d'] });
-      }
-      lagSelEl.addEventListener('change', renderLagChart);
-      renderLagChart();
-    }
   }
 
   document.querySelectorAll('.tab-btn').forEach(btn => {

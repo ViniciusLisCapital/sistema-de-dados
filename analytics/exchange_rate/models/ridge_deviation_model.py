@@ -617,12 +617,25 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     """Payload for the "Ridge (Regularized, Rolling)" dashboard tab: the
     walk-forward lambda-selection curve, the whole-sample fit's own
     decomposition/level-bridge (same log-additive-then-multiplicative
-    convention as every other tab), the rolling-window coefficient paths
-    against the whole-sample reference line, and (under "lag_structure") the
-    separate whole-sample-only impulse-decay fit -- see build_lag_dashboard_payload()."""
+    convention as every other tab), and the rolling-window coefficient paths
+    against the whole-sample reference line.
+
+    Model is build_ar1_sample()'s spec (8 channels + delta_dev_lag1), not
+    the plain contemporaneous build_sample() -- switched 2026-07-30, direct
+    user request ("Update the tab with the AR(1) model"), after the
+    walk-forward comparison in compare_lag_depths() showed the tab's
+    original 6-lag-per-channel "Impulse Decay" section (build_lag_dashboard_payload(),
+    still present in this module for reproducibility but no longer called
+    here) overfits out-of-sample, while the single shared AR(1) term
+    (delta_dev_lag1, kept raw/unstandardized) genuinely improves one-step-
+    ahead prediction with only one extra parameter. reg_cols (from
+    build_ar1_sample()) replaces the old delta_cols everywhere below --
+    delta_dev_lag1 is just one more entry in it, so the decomposition/
+    level-bridge loop picks it up as its own bucket automatically, same as
+    every channel."""
     channels = _CHANNELS if channels is None else channels
-    delta_cols = [f"delta_{c}" for c in channels]
-    z, _ = build_sample(channels=channels)
+    z, _, reg_cols = build_ar1_sample(channels=channels)
+    delta_cols = reg_cols
 
     cv = walk_forward_lambda(z, delta_cols)
     lam = float(cv.iloc[0]["lambda"])
@@ -718,7 +731,6 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
                 for c in delta_cols
             },
         },
-        "lag_structure": build_lag_dashboard_payload(channels=channels),
     }
 
 
