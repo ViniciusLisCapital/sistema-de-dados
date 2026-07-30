@@ -187,6 +187,86 @@ def build_ar1_sample(df: pd.DataFrame | None = None,
     return z, stats, reg_cols
 
 
+def build_level_sample(df: pd.DataFrame | None = None,
+                        channels: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
+    """Level-space counterpart to build_sample(): the dependent variable is
+    deviation(t) ITSELF (column "dev"), not delta_dev(t), and every channel
+    enters as its own z-scored LEVEL (df[c]) rather than a delta -- direct
+    user request ("run the model in level not difference") after the
+    lag-structure/AR(1) work above, to see what the same Ridge/walk-forward-
+    CV/rolling machinery finds against the untransformed series.
+
+    Flagged deliberately, not just here but in CLAUDE.md: per
+    bayesian_deviation_model.py's own pre-registered ADF/KPSS check,
+    `deviation`, `carry`, and `tot` all test as I(1) (unit root) while
+    `breakeven`/`fiscal` test as I(0) -- regressing a level, I(1) dependent
+    variable on a mix of level regressors (some I(1)) is the textbook
+    spurious-regression setup, which is the exact reason this whole module
+    (and bayesian_deviation_model.py before it) works in first differences
+    everywhere else. This function exists to show what that risk actually
+    produces on this channel set, not to argue any resulting R2 is real
+    explanatory power.
+
+    Reuses walk_forward_lambda()/fit_whole_sample()/rolling_fit() via their
+    y_col="dev" override -- same reference-window standardization (2000-01+)
+    as every other variant in this module, just applied to df[c] instead of
+    delta_c."""
+    channels = _CHANNELS if channels is None else channels
+    df = load_data() if df is None else df
+    dev = compute_deviation(df)
+
+    sample = pd.DataFrame(index=df.index)
+    sample["dev"] = dev
+    for c in channels:
+        sample[c] = df[c]
+    sample = sample.dropna()
+
+    reference = sample[sample.index >= _REFERENCE_START]
+    z, stats = _standardize_ext(sample, reference, channels)
+    z["dev"] = sample["dev"]
+    return z, stats
+
+
+def run_level_variant(window: int = 60) -> dict:
+    """Fits and prints the level-space variant -- same walk-forward-lambda /
+    whole-sample / rolling-fit sequence as run(), on build_level_sample()'s
+    sample (y_col="dev") instead of build_sample()'s (y_col="delta_dev",
+    the default)."""
+    channels = _CHANNELS
+    z, stats = build_level_sample(channels=channels)
+
+    print("=" * 78)
+    print(f"RIDGE DEVIATION MODEL -- LEVEL VARIANT (dev ~ channel levels, not deltas), channels={channels}")
+    print("WARNING: deviation/carry/tot test as I(1) -- see build_level_sample() docstring, spurious-regression risk")
+    cv = walk_forward_lambda(z, channels, y_col="dev")  # default min_train=36, same as the 8-param contemporaneous spec
+    lam = float(cv.iloc[0]["lambda"])
+    print(cv.head(10).to_string(index=False))
+    print(f"Selected lambda = {lam:.4f} (mean OOS MSE = {cv.iloc[0]['mse']:.4f})")
+
+    whole = fit_whole_sample(z, channels, lam, y_col="dev")
+    print("=" * 78)
+    betas_fmt = {c: round(b, 4) for c, b in whole["beta"].items()}
+    print(f"Whole-sample fit at lambda={lam:.4f}: alpha={whole['alpha']:+.4f}  "
+          f"betas={betas_fmt}  R2={whole['r2']:.4f}  n={whole['n']}")
+
+    roll = rolling_fit(z, channels, lam, window=window, y_col="dev")
+    print("=" * 78)
+    print(f"Rolling fit: {len(roll)} windows of {window} months, lambda={lam:.4f}")
+    print(roll[[f"beta_{c}" for c in channels] + ["r2"]].describe())
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    cv.to_csv(_RESULTS_DIR / "level_lambda_cv.csv", index=False)
+    roll.reset_index().to_csv(_RESULTS_DIR / "level_rolling.csv", index=False)
+    pd.DataFrame([{"lambda": lam, "alpha": whole["alpha"], "r2": whole["r2"], "n": whole["n"],
+                    **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / "level_whole_sample.csv", index=False)
+
+    return {
+        "channels": channels, "lambda": lam, "cv": cv,
+        "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+    }
+
+
 def build_sample_carry_level(df: pd.DataFrame | None = None,
                               channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
     """Like build_sample(), except the "carry" channel enters as its own
@@ -380,7 +460,7 @@ def build_lag_dashboard_payload(channels: list[str] | None = None, max_lag: int 
 
 
 def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | None = None,
-                         min_train: int = 36) -> pd.DataFrame:
+                         min_train: int = 36, y_col: str = "delta_dev") -> pd.DataFrame:
     """Selects lambda by one-step-ahead walk-forward validation: for each
     candidate lambda, fit Ridge on z[:t] and score the squared error on
     z[t] (never used for that fit), for every t from min_train to the end,
@@ -388,11 +468,16 @@ def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndar
     little data a 2-channel Ridge fit is trusted with -- arbitrary, not
     tuned to the answer.
 
+    y_col defaults to "delta_dev" (every spec in this module until now has
+    been delta-space) but can be overridden -- e.g. build_level_sample()
+    passes y_col="dev" for the level-space variant, where the dependent
+    variable isn't a delta at all.
+
     Returns one row per lambda (lambda, mean OOS squared error, fold count),
     sorted by error ascending -- best_lambda() just takes the top row."""
     lambdas = _LAMBDA_GRID if lambdas is None else lambdas
     X = z[delta_cols].values
-    y = z["delta_dev"].values
+    y = z[y_col].values
     n = len(z)
 
     rows = []
@@ -413,13 +498,13 @@ def best_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | No
     return float(cv.iloc[0]["lambda"])
 
 
-def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float) -> dict:
+def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float, y_col: str = "delta_dev") -> dict:
     """Single Ridge fit on the full available sample at the chosen lambda --
     the "whole-sample reference" line the rolling tab compares each window
     against, same role beer_model.py's own whole-sample fit plays for its
-    rolling tab."""
+    rolling tab. y_col: see walk_forward_lambda()'s docstring."""
     X = z[delta_cols].values
-    y = z["delta_dev"].values
+    y = z[y_col].values
     model = Ridge(alpha=lam, fit_intercept=True)
     model.fit(X, y)
     fitted = model.predict(X)
@@ -436,16 +521,17 @@ def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float) -> dict
 
 
 def rolling_fit(z: pd.DataFrame, delta_cols: list[str], lam: float, window: int = 60,
-                 step: int = 1) -> pd.DataFrame:
+                 step: int = 1, y_col: str = "delta_dev") -> pd.DataFrame:
     """Ridge coefficients re-estimated every `step` months on a trailing
     `window`-month sample -- same 60-month/monthly-step design as
     beer_model.py's rolling_fit(), swapped to a Ridge (not OLS+HAC)
     estimator, with lambda fixed at whatever walk_forward_lambda() already
     picked (chosen once, globally -- re-selecting lambda inside every one of
     ~160 windows would let lambda itself drift for reasons unrelated to the
-    coefficients' own stability, which is the thing being tested here)."""
+    coefficients' own stability, which is the thing being tested here).
+    y_col: see walk_forward_lambda()'s docstring."""
     X = z[delta_cols].values
-    y = z["delta_dev"].values
+    y = z[y_col].values
     n = len(z)
 
     rows = []
