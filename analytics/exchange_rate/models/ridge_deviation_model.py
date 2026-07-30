@@ -75,8 +75,28 @@ unreliable even under Ridge's penalty; a rolling window wide enough to be
 comfortable (150+ months) would only yield a handful of windows across the
 ~220-month sample anyway, not enough to say anything about regime change.
 
+Carry-in-level variant (added 2026-07-30, same day, direct user request "Run
+with the carry in level"): an exploratory alternate spec, not wired into the
+dashboard tab -- same role bayesian_deviation_model.py's own extra specs
+(primary_gap, primary_studentt, robustness) play there, printed/compared but
+not all promoted to a tab. Every channel except carry keeps its own
+contemporaneous DELTA as in the main spec; carry alone is replaced by its raw
+LEVEL (z-scored against the same 2000-01+ reference window), i.e. the nominal
+BR-US policy rate differential itself (diferenciais_juros.diferencial_nominal),
+not its month-to-month change. Motivation: a level regressor is the
+parsimonious alternative to the lag structure above for capturing "a shock
+has continuing impact" -- with delta_carry, a persistently high (but no
+longer RISING) carry contributes nothing to delta_dev after the month it
+stopped changing; with carry_level, a persistently high carry keeps pulling
+delta_dev every single month for as long as the level stays high, with no
+extra lag terms needed. build_sample_carry_level()/run_carry_level_variant()
+implement this; reuses walk_forward_lambda()/fit_whole_sample()/rolling_fit()
+unchanged, since none of those three assume anything about a column's name
+beyond it being present in the sample.
+
 Usage:
     uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run; run()"
+    uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run_carry_level_variant; run_carry_level_variant()"
 """
 
 from __future__ import annotations
@@ -132,6 +152,75 @@ def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = No
     z, stats = _standardize_ext(sample, reference, delta_cols)
     z["delta_dev"] = sample["delta_dev"]
     return z, stats
+
+
+def build_sample_carry_level(df: pd.DataFrame | None = None,
+                              channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
+    """Like build_sample(), except the "carry" channel enters as its own
+    z-scored LEVEL (carry_level = z(carry(t))) instead of z(delta_carry(t))
+    -- see module docstring for the motivation. Every other channel is
+    untouched, still its own contemporaneous delta. Returns (z, stats,
+    reg_cols) -- reg_cols is channels' usual delta_<c> list with delta_carry
+    swapped out for "carry_level", ready to hand straight to
+    walk_forward_lambda()/fit_whole_sample()/rolling_fit() in place of
+    delta_cols."""
+    channels = _CHANNELS if channels is None else channels
+    df = load_data() if df is None else df
+    other = [c for c in channels if c != "carry"]
+    delta_cols = [f"delta_{c}" for c in other]
+    deltas = build_deltas_contemporaneous(df)
+
+    sample = deltas[["delta_dev"] + delta_cols].copy()
+    sample["carry_level"] = df["carry"]
+    sample = sample.dropna()
+
+    reference = deltas[deltas.index >= _REFERENCE_START][delta_cols].copy()
+    reference["carry_level"] = df["carry"]
+
+    reg_cols = delta_cols + ["carry_level"] if "carry" in channels else delta_cols
+    z, stats = _standardize_ext(sample, reference, reg_cols)
+    z["delta_dev"] = sample["delta_dev"]
+    return z, stats, reg_cols
+
+
+def run_carry_level_variant(window: int = 60) -> dict:
+    """Fits and prints the carry-in-level variant side by side with nothing
+    else (caller compares its own printed R2/betas against run()'s output) --
+    same walk-forward-lambda / whole-sample / rolling-fit sequence as run(),
+    just on build_sample_carry_level()'s sample instead of build_sample()'s."""
+    channels = _CHANNELS
+    z, stats, reg_cols = build_sample_carry_level(channels=channels)
+
+    print("=" * 78)
+    print(f"RIDGE DEVIATION MODEL -- CARRY-IN-LEVEL VARIANT, channels={channels}")
+    print("(carry enters as z(carry_level(t)), every other channel unchanged: z(delta_c(t)))")
+    cv = walk_forward_lambda(z, reg_cols)
+    lam = float(cv.iloc[0]["lambda"])
+    print(cv.head(10).to_string(index=False))
+    print(f"Selected lambda = {lam:.4f} (mean OOS MSE = {cv.iloc[0]['mse']:.4f})")
+
+    whole = fit_whole_sample(z, reg_cols, lam)
+    print("=" * 78)
+    betas_fmt = {c: round(b, 4) for c, b in whole["beta"].items()}
+    print(f"Whole-sample fit at lambda={lam:.4f}: alpha={whole['alpha']:+.4f}  "
+          f"betas={betas_fmt}  R2={whole['r2']:.4f}  n={whole['n']}")
+
+    roll = rolling_fit(z, reg_cols, lam, window=window)
+    print("=" * 78)
+    print(f"Rolling fit: {len(roll)} windows of {window} months, lambda={lam:.4f}")
+    print(roll[[f"beta_{c}" for c in reg_cols] + ["r2"]].describe())
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    cv.to_csv(_RESULTS_DIR / "carry_level_lambda_cv.csv", index=False)
+    roll.reset_index().to_csv(_RESULTS_DIR / "carry_level_rolling.csv", index=False)
+    pd.DataFrame([{"lambda": lam, "alpha": whole["alpha"], "r2": whole["r2"], "n": whole["n"],
+                    **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / "carry_level_whole_sample.csv", index=False)
+
+    return {
+        "channels": channels, "reg_cols": reg_cols, "lambda": lam, "cv": cv,
+        "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+    }
 
 
 def build_lagged_sample(df: pd.DataFrame | None = None, channels: list[str] | None = None,
