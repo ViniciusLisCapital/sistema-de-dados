@@ -154,6 +154,39 @@ def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = No
     return z, stats
 
 
+def build_ar1_sample(df: pd.DataFrame | None = None,
+                      channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
+    """delta_dev(t) regressed on ITS OWN lag, delta_dev(t-1), plus every
+    channel's contemporaneous z-scored delta (no per-channel lags) -- tests
+    persistence option (1) from the module docstring (a single shared AR
+    term) instead of option (2) (the per-channel 6-lag structure), which
+    compare_lag_depths() showed does NOT survive walk-forward out-of-sample
+    validation (OOS MSE rose monotonically with every added lag, depth 1
+    was the best of 1-6). delta_dev_lag1 is kept in RAW units, not
+    z-scored, alongside the standardized channels -- same raw_cols
+    rationale bayesian_deviation_model.py's fit_ecm_spec() uses for
+    deviation_lag1: standardizing a lagged-dependent-variable term would
+    obscure phi's direct reading as "fraction of last month's change
+    carried into this one," the whole point of testing it."""
+    channels = _CHANNELS if channels is None else channels
+    df = load_data() if df is None else df
+    delta_cols = [f"delta_{c}" for c in channels]
+    deltas = build_deltas_contemporaneous(df)
+
+    sample = deltas[["delta_dev"] + delta_cols].copy()
+    sample["delta_dev_lag1"] = deltas["delta_dev"].shift(1)
+    sample = sample.dropna()
+
+    reference = deltas[deltas.index >= _REFERENCE_START]
+    z, stats = _standardize_ext(sample, reference, delta_cols)
+    z["delta_dev_lag1"] = sample["delta_dev_lag1"]
+    stats["delta_dev_lag1"] = (0.0, 1.0)  # identity -- kept in native units, not standardized
+    z["delta_dev"] = sample["delta_dev"]
+
+    reg_cols = delta_cols + ["delta_dev_lag1"]
+    return z, stats, reg_cols
+
+
 def build_sample_carry_level(df: pd.DataFrame | None = None,
                               channels: list[str] | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
     """Like build_sample(), except the "carry" channel enters as its own
@@ -272,6 +305,48 @@ def fit_lag_structure(channels: list[str] | None = None, max_lag: int = _MAX_LAG
         "channels": channels, "max_lag": max_lag, "lag_cols": lag_cols,
         "lambda": lam, "cv": cv, "whole_sample": whole, "sample": sample,
     }
+
+
+def compare_lag_depths(channels: list[str] | None = None, max_lags: list[int] | None = None) -> pd.DataFrame:
+    """Answers "do we actually need all 6 lags" directly via walk-forward OOS
+    error, rather than eyeballing coefficient sizes off a single max_lag=6
+    fit: refits the lag structure at every candidate depth (default 1..6),
+    each with its OWN walk-forward-selected lambda (a deeper design needs
+    more regularization, so reusing max_lag=6's lambda at a shallower depth
+    would bias the comparison), and reports that depth's best OOS MSE
+    alongside its whole-sample R2. Every depth's sample is restricted to the
+    deepest depth's own date range first (`common_index` below) so every row
+    is scored on the exact same set of held-out months -- otherwise a
+    shallower depth's walk-forward fold count/date range would differ
+    (fewer leading months lost to the lag shift), making the MSEs not
+    comparable. If R2 keeps climbing with depth but OOS MSE flattens or
+    turns back up, the extra lags are fitting in-sample noise, not adding
+    real predictive value -- Ridge's L2 penalty shrinks a useless lag
+    toward zero but never all the way to it, so R2 alone can't tell the two
+    apart the way OOS error does."""
+    channels = _CHANNELS if channels is None else channels
+    max_lags = list(range(1, _MAX_LAG + 1)) if max_lags is None else max_lags
+
+    samples, lag_cols_map = {}, {}
+    for ml in max_lags:
+        sample, lag_cols = build_lagged_sample(channels=channels, max_lag=ml)
+        samples[ml] = sample
+        lag_cols_map[ml] = lag_cols
+    common_index = samples[max(max_lags)].index
+
+    rows = []
+    for ml in max_lags:
+        sample = samples[ml].loc[common_index]
+        lag_cols = lag_cols_map[ml]
+        cv = walk_forward_lambda(sample, lag_cols, min_train=_LAG_MIN_TRAIN)
+        lam = float(cv.iloc[0]["lambda"])
+        oos_mse = float(cv.iloc[0]["mse"])
+        whole = fit_whole_sample(sample, lag_cols, lam)
+        rows.append({
+            "max_lag": ml, "n_params": len(lag_cols), "lambda": lam,
+            "oos_mse": oos_mse, "r2": whole["r2"], "n": whole["n"],
+        })
+    return pd.DataFrame(rows)
 
 
 def build_lag_dashboard_payload(channels: list[str] | None = None, max_lag: int = _MAX_LAG) -> dict:
