@@ -671,20 +671,27 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     convention as every other tab), and the rolling-window coefficient paths
     against the whole-sample reference line.
 
-    Model is build_ar1_sample()'s spec (8 channels + delta_dev_lag1), not
-    the plain contemporaneous build_sample() -- switched 2026-07-30, direct
-    user request ("Update the tab with the AR(1) model"), after the
-    walk-forward comparison in compare_lag_depths() showed the tab's
-    original 6-lag-per-channel "Impulse Decay" section (build_lag_dashboard_payload(),
-    still present in this module for reproducibility but no longer called
-    here) overfits out-of-sample, while the single shared AR(1) term
-    (delta_dev_lag1, kept raw/unstandardized) genuinely improves one-step-
-    ahead prediction with only one extra parameter. reg_cols (from
-    build_ar1_sample()) replaces the old delta_cols everywhere below --
-    delta_dev_lag1 is just one more entry in it, so the decomposition/
-    level-bridge loop picks it up as its own bucket automatically, same as
-    every channel."""
-    channels = _CHANNELS if channels is None else channels
+    Model is build_ar1_sample()'s spec, defaulting to _CHANNELS_SHRUNK (4
+    channels + delta_dev_lag1) rather than the full _CHANNELS (8 channels),
+    switched again 2026-07-30, same day, direct user instruction ("Move it
+    to tab"): the shrunk spec (fiscal + carry_vol + dxy + curve_steep +
+    AR(1)) was shown, on a fair OOS-aligned comparison against the
+    9-parameter full-channel AR(1) spec, to match its whole-sample R2
+    almost exactly (0.5827 vs. 0.5829) while predicting BETTER
+    out-of-sample (OOS MSE 8.64 vs. 8.90) with roughly half the parameters
+    -- see CLAUDE.md for the full comparison. Earlier the same day the tab
+    was switched from the plain contemporaneous build_sample() spec to
+    build_ar1_sample()'s full 8-channel + AR(1) spec, after
+    compare_lag_depths() showed the tab's original 6-lag-per-channel
+    "Impulse Decay" section (build_lag_dashboard_payload(), still present
+    in this module for reproducibility but no longer called here) overfits
+    out-of-sample. reg_cols (from build_ar1_sample()) replaces the old
+    delta_cols everywhere below -- delta_dev_lag1/delta_curve_steep are
+    just two more entries in it, so the decomposition/level-bridge loop
+    picks them up as their own buckets automatically, same as every
+    channel. Pass channels=_CHANNELS explicitly to get the old 8-channel
+    behavior back."""
+    channels = _CHANNELS_SHRUNK if channels is None else channels
     z, _, reg_cols = build_ar1_sample(channels=channels)
     delta_cols = reg_cols
 

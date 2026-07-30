@@ -937,10 +937,13 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
     <div class="model-section">
       <h2>What this tab is</h2>
       <div class="callout">
-        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Started with fiscal risk (CDS) and the dollar index (DXY) only; grown to six channels by adding all four carry variants together — bilateral carry, carry relative to LatAm peers, carry adjusted for FX volatility, and the relative version of that — rather than testing each one separately. That's deliberate: these four are overlapping constructions of the same underlying signal, and Ridge is specifically suited to letting them share credit instead of forcing a pick between them. Grown again to eight channels with the breakeven de-anchoring gap and terms of trade.
+        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Grew from 2 channels up to 8 across several rounds (fiscal, DXY, four carry variants, breakeven gap, terms of trade), then <b>shrunk back down to 4</b> — fiscal risk (CDS), carry-to-vol, the dollar index (DXY), and BR yield-curve steepening (10Y-2Y) — once a walk-forward out-of-sample test showed this smaller set matches the 8-channel version's whole-sample fit almost exactly while predicting slightly BETTER out-of-sample. Fewer parameters, same signal.
       </div>
       <div class="callout">
-        <b>Includes a single AR(1) term</b> — Δdeviation(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the deviation has a direct, persistent pull on this month's, independent of any channel. This replaced an earlier version of this tab that instead gave every channel its own 6-month lag structure (48 parameters): a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
+        <b>Curve steepening (10Y-2Y) is new</b> — the BR nominal pre-fixed curve's 10-year rate minus its 2-year rate, an alternate, market-based proxy for fiscal risk alongside CDS: when markets price rising long-run fiscal risk (debt-sustainability or monetization concerns), long-dated rates tend to move more than short, policy-anchored ones, steepening the curve independently of whether 5y CDS itself moves. It came in with the same sign as fiscal risk itself — a steeper curve pushes the deviation the same direction a wider CDS spread does.
+      </div>
+      <div class="callout">
+        <b>Includes a single AR(1) term</b> — Δdeviation(t-1) itself, kept in raw units alongside the z-scored channels — so last month's move in the deviation has a direct, persistent pull on this month's, independent of any channel. An earlier version of this tab instead gave every channel its own 6-month lag structure (48 parameters); a walk-forward out-of-sample test showed that version overfits — one-step-ahead error got WORSE with every added lag, even though the in-sample R² kept climbing — while this single shared AR(1) term, at the cost of one extra parameter, genuinely improves out-of-sample prediction. The φ coefficient on the rolling-coefficient chart below is small and negative: a month that moves more than usual tends to see a modest partial reversal the next month.
       </div>
       <div class="callout">
         <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
@@ -2765,23 +2768,19 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   // these channels on the "Equilibrium & Data" tab's channel dropdown (see
   // CLAUDE.md) so the same variable reads as the same color across tabs.
   const PARAM_LABELS_RIDGE = {
-    alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_dxy: 'β dollar index (DXY)',
-    delta_carry: 'β carry', delta_relative_carry: 'β relative carry', delta_carry_vol: 'β carry/vol',
-    delta_relative_carry_vol: 'β relative carry/vol', delta_breakeven_gap: 'β breakeven (de-anchoring gap)',
-    delta_tot: 'β terms of trade', delta_dev_lag1: 'φ AR(1) — Δdev(t-1)',
+    alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_carry_vol: 'β carry/vol',
+    delta_dxy: 'β dollar index (DXY)', delta_curve_steep: 'β curve steepening (10Y-2Y)',
+    delta_dev_lag1: 'φ AR(1) — Δdev(t-1)',
   };
   const CHANNEL_COLORS_RIDGE = {
-    delta_fiscal: '#EA523A', delta_dxy: '#FBC852', delta_carry: '#BB9B1D',
-    delta_relative_carry: '#6E8B3D', delta_carry_vol: '#9B5DE5', delta_relative_carry_vol: '#F15BB5',
-    delta_breakeven_gap: '#3A4F72', delta_tot: '#418791', delta_dev_lag1: '#8C6A5D',
+    delta_fiscal: '#EA523A', delta_carry_vol: '#9B5DE5', delta_dxy: '#FBC852',
+    delta_curve_steep: '#4A90D9', delta_dev_lag1: '#8C6A5D',
   };
   const CHANNEL_LABELS_RIDGE = {
-    delta_fiscal: 'Fiscal', delta_dxy: 'Dollar index (DXY)', delta_carry: 'Carry',
-    delta_relative_carry: 'Relative carry (vs. LatAm peers)', delta_carry_vol: 'Carry / FX vol',
-    delta_relative_carry_vol: 'Relative carry / FX vol', delta_breakeven_gap: 'Breakeven (de-anchoring gap)',
-    delta_tot: 'Terms of trade', delta_dev_lag1: 'AR(1) — Δdev(t-1)',
+    delta_fiscal: 'Fiscal', delta_carry_vol: 'Carry / FX vol', delta_dxy: 'Dollar index (DXY)',
+    delta_curve_steep: 'Curve steepening (10Y-2Y)', delta_dev_lag1: 'AR(1) — Δdev(t-1)',
   };
-  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy', 'delta_carry', 'delta_relative_carry', 'delta_carry_vol', 'delta_relative_carry_vol', 'delta_breakeven_gap', 'delta_tot', 'delta_dev_lag1'];
+  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_carry_vol', 'delta_dxy', 'delta_curve_steep', 'delta_dev_lag1'];
 
   const noDataEl = document.getElementById('ridgeNoData');
   const contentEl = document.getElementById('ridgeContent');
