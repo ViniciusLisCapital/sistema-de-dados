@@ -819,22 +819,28 @@ def build_kalman_dashboard_payload(label: str = "kalman", channels: list[str] | 
 
 
 def render_dashboard() -> None:
-    """Regenerates referencia/ppp_dashboard.html with all six tabs: PPP/data
+    """Regenerates referencia/ppp_dashboard.html with all seven tabs: PPP/data
     (ppp_equilibrium), attempt-one Bayesian model (bayesian_deviation_model),
     attempt-two eta=0 state-space fit, attempt-two's free-eta Kalman filter,
-    the BEER-style levels model (beer_model, 7-channel), and the BEER
-    model's rolling-window/core-4 tab. Requires bayesian_deviation_model.run(),
-    this module's run(), this module's fit_kalman(), beer_model.run(), and
-    beer_model.fit(label="beer_core4", channels=beer_model._CHANNELS_CORE4)
-    to have each been called at least once first (reads their saved traces,
-    doesn't refit).
+    the BEER-style levels model (beer_model, 7-channel), the BEER model's
+    rolling-window/core-4 tab, and the FX cause-attribution tab
+    (fx_attribution_model, manager-letter claims). Requires
+    bayesian_deviation_model.run(), this module's run(), this module's
+    fit_kalman(), beer_model.run(), beer_model.fit(label="beer_core4",
+    channels=beer_model._CHANNELS_CORE4), and at least one manager corpus
+    hand-extracted under fx_attribution_model.DATA_ROOT to have each been
+    done at least once first (reads saved traces/CSVs, doesn't refit or
+    re-extract).
 
     A 7th tab (core-4 + election-risk dummy, rolling) was built and then
     REMOVED 2026-07-24 at user request -- see beer_model.py's module
     docstring and CLAUDE.md's "Pending" section for why, and for the
-    "difference model" follow-up the user asked to be tried instead."""
+    "difference model" follow-up the user asked to be tried instead. (The FX
+    attribution tab added 2026-07-29 is the new 7th tab, unrelated to that
+    removed one.)"""
     from analytics.exchange_rate.models import bayesian_deviation_model as bdm
     from analytics.exchange_rate.models import beer_model
+    from analytics.exchange_rate.models import fx_attribution_model
     from analytics.exchange_rate.models.ppp_equilibrium import _OUTPUT, build_payload, render
 
     df = load_data()
@@ -847,9 +853,11 @@ def render_dashboard() -> None:
         "model": beer_model.build_dashboard_payload(label="beer_core4", channels=beer_model._CHANNELS_CORE4),
         "rolling": beer_model.build_rolling_payload(channels=beer_model._CHANNELS_CORE4),
     }
+    fxattr_payload = fx_attribution_model.build_dashboard_payload()
     render(ppp_payload, bayes_payload=bayes_payload, statespace_payload=statespace_payload,
-           kalman_payload=kalman_payload, beer_payload=beer_payload, rolling_payload=rolling_payload)
-    print(f"Full dashboard (all six tabs) written to {_OUTPUT}")
+           kalman_payload=kalman_payload, beer_payload=beer_payload, rolling_payload=rolling_payload,
+           fxattr_payload=fxattr_payload)
+    print(f"Full dashboard (all seven tabs) written to {_OUTPUT}")
 
 
 if __name__ == "__main__":

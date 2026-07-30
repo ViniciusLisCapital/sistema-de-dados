@@ -225,6 +225,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
     <div class="tab-btn" data-tab="tab-kalman">Kalman Filter (η free)</div>
     <div class="tab-btn" data-tab="tab-beer">BEER Model (Levels)</div>
     <div class="tab-btn" data-tab="tab-rolling">Rolling Window (Core 4)</div>
+    <div class="tab-btn" data-tab="tab-fxattr">FX Attribution (Manager Letters)</div>
   </div>
 
   <div class="tab-panel active" id="tab-data">
@@ -845,6 +846,84 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
   </div>
   <!-- /tab-rolling -->
 
+  <div class="tab-panel" id="tab-fxattr">
+
+  <div id="fxattrNoData" style="display:none" class="no-data-msg">
+    No FX attribution data embedded in this build. Regenerate via
+    <code>uv run python -c "from analytics.exchange_rate.models.state_space_model import render_dashboard; render_dashboard()"</code>
+    (requires at least one manager corpus hand-extracted under
+    <code>analytics/exchange_rate/models/fx_attribution_data/&lt;manager&gt;/</code> — documents.csv + claims.csv).
+  </div>
+
+  <div id="fxattrContent" style="display:none">
+
+    <div class="model-section">
+      <h2>What this tab is</h2>
+      <div class="callout">
+        Turns qualitative FX commentary from asset-manager monthly letters into a numeric time series: for each month, how much of the narrative attributes BRL/USD moves to each of nine fixed causal regimes — fiscal (Brasil), monetary/carry, politics (Brasil), global USD, commodities/terms of trade/external accounts, global risk sentiment, China/EM growth, trade policy, and capital flows/positioning. This is a manual-extraction pilot, not an automated text-to-claim pipeline — each manager's claims are hand-extracted from source letters following a fixed taxonomy and rule set (see <code>analytics/exchange_rate/models/fx_attribution_model.md</code>).
+      </div>
+      <div class="callout">
+        <b>Sign convention:</b> direction scores the claim's implied effect <b>on BRL</b>, never on the claim's own subject — +1 strongly BRL-appreciation-supportive, −1 strongly BRL-depreciation-driving. A claim that "the dollar is strengthening globally" is scored <b>negative</b> (bad for BRL), not positive. Each manager's corpus is scoped independently (coverage windows and document counts differ) — cross-manager comparisons should account for that rather than reading a lower claim count as "this manager talks about FX less."
+      </div>
+    </div>
+
+    <div class="chart-hdr" style="margin-bottom:16px;">
+      <div class="chart-hdr-left">
+        <div class="chart-title">Manager</div>
+        <div class="chart-subtitle">Each manager's corpus is a separate extraction — pick one to explore</div>
+      </div>
+      <div class="chart-hdr-right">
+        <div class="dl-toggle" id="fxattrQuarterToggle"><span class="toggle-icon"></span> Quarterly</div>
+        <select id="fxattrManagerSelect" class="base-select"></select>
+      </div>
+    </div>
+
+    <div class="model-section">
+      <h2>Coverage</h2>
+      <div class="stats-row" id="fxattrStatsRow"></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Directional Relevance</div>
+          <div class="chart-subtitle" id="fxattrDirSubtitle">3-month rolling average, signed (+BRL-supportive / −BRL-negative), per regime — click a legend entry to isolate it</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="fxattrDirChart" style="width:100%"></div></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Grau de Relevância (Magnitude)</div>
+          <div class="chart-subtitle" id="fxattrMagSubtitle">3-month rolling average of |score| — how much a regime has mattered, regardless of direction</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="fxattrMagChart" style="width:100%"></div></div>
+    </div>
+
+    <div class="model-section">
+      <h2>Claims</h2>
+      <div class="chart-hdr" style="margin-bottom:12px;">
+        <div class="chart-hdr-left">
+          <div class="chart-subtitle">Every extracted claim for the selected manager, most recent first</div>
+        </div>
+        <div class="chart-hdr-right">
+          <select id="fxattrCategorySelect" class="base-select"></select>
+        </div>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table text-table" id="fxattrClaimsTable"></table>
+      </div>
+    </div>
+
+  </div>
+  <!-- /fxattrContent -->
+
+  </div>
+  <!-- /tab-fxattr -->
+
 </div>
 
 <script>
@@ -854,6 +933,7 @@ const STATESPACE_DATA = /*STATESPACE_DATA*/;
 const KALMAN_DATA = /*KALMAN_DATA*/;
 const BEER_DATA = /*BEER_DATA*/;
 const ROLLING_DATA = /*ROLLING_DATA*/;
+const FXATTR_DATA = /*FXATTR_DATA*/;
 
 // ---------------------------------------------------------------------------
 // Chart.register: only ChartDataLabels remains (2026-07-28) -- ChartZoom was
@@ -2332,6 +2412,243 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'tab-rolling') renderRollingTab();
+    });
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// FX Attribution (Manager Letters) tab — separate IIFE, own scope
+// ---------------------------------------------------------------------------
+(function () {
+  "use strict";
+
+  function monthLabelFx(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+  function fmtSignedFx(v, decimals) {
+    decimals = decimals === undefined ? 2 : decimals;
+    const sign = v >= 0 ? '+' : '-';
+    const scaled = Math.floor(Math.abs(v) * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return sign + scaled.toFixed(decimals).replace('.', ',');
+  }
+  function escapeHtmlFx(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
+  const noDataEl = document.getElementById('fxattrNoData');
+  const contentEl = document.getElementById('fxattrContent');
+
+  if (!FXATTR_DATA) {
+    noDataEl.style.display = 'block';
+    return;
+  }
+  contentEl.style.display = 'block';
+
+  const F = FXATTR_DATA; // { categories: [{slug,label,color}, ...], managers: { <slug>: {...} } }
+  const CATS = F.categories;
+  const CAT_MAP = {};
+  CATS.forEach((c) => { CAT_MAP[c.slug] = c; });
+  const managerKeys = Object.keys(F.managers);
+
+  const managerSelEl = document.getElementById('fxattrManagerSelect');
+  managerKeys.forEach((k) => {
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = F.managers[k].label;
+    managerSelEl.appendChild(opt);
+  });
+  managerSelEl.value = managerKeys[0];
+
+  const catSelEl = document.getElementById('fxattrCategorySelect');
+  const allOpt = document.createElement('option');
+  allOpt.value = '__all__';
+  allOpt.textContent = 'All categories';
+  catSelEl.appendChild(allOpt);
+  CATS.forEach((c) => {
+    const opt = document.createElement('option');
+    opt.value = c.slug;
+    opt.textContent = c.label;
+    catSelEl.appendChild(opt);
+  });
+  catSelEl.value = '__all__';
+
+  let rendered = false;
+  let quarterly = false;
+
+  // Aggregates the raw per-month category sums (M.monthly[slug]) or raw
+  // n_documents/n_claims into calendar quarters -- SUM, not mean, matching
+  // aggregate_monthly()'s own "sum, not mean" convention server-side, so a
+  // quarter with no claims in a category correctly sums to 0. `months`'
+  // anchor (first month of its quarter, e.g. '2014-02' -> '2014-01') is used
+  // as the x value so Plotly's existing date-type x-axis still parses it
+  // like every other chart on this dashboard, no category-axis special case.
+  function quarterAnchor(m) {
+    const [y, mo] = m.split('-');
+    const moInt = parseInt(mo, 10);
+    const anchorMo = Math.floor((moInt - 1) / 3) * 3 + 1;
+    return y + '-' + String(anchorMo).padStart(2, '0');
+  }
+  function toQuarterlySum(months, values) {
+    const order = [];
+    const sums = {};
+    months.forEach((m, i) => {
+      const k = quarterAnchor(m);
+      if (!(k in sums)) { sums[k] = 0; order.push(k); }
+      sums[k] += values[i];
+    });
+    return { anchors: order, values: order.map((k) => sums[k]) };
+  }
+
+  function renderStats(M) {
+    const n = M.months.length;
+    const perDoc = M.totals.n_documents > 0 ? M.totals.n_claims / M.totals.n_documents : 0;
+    document.getElementById('fxattrStatsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Coverage</div>
+        <div class="stat-val">${n}</div>
+        <div class="stat-sub">months · ${monthLabelFx(M.months[0])} → ${monthLabelFx(M.months[n - 1])}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Documents</div>
+        <div class="stat-val">${M.totals.n_documents}</div>
+        <div class="stat-sub">source letters extracted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Claims</div>
+        <div class="stat-val">${M.totals.n_claims}</div>
+        <div class="stat-sub">${perDoc.toFixed(2).replace('.', ',')} per document</div>
+      </div>`;
+  }
+
+  // Common to both charts below: build one {label,color,values} series per
+  // category, either the monthly rolling view or the quarterly-summed view,
+  // sharing a single `x` array (months or quarter anchors) across all of
+  // them so they stack against the same categories on the same axis.
+  function fxattrSeriesByCategory(M, key, absValue) {
+    if (quarterly) {
+      let x = null;
+      const series = CATS.map((c) => {
+        const raw = absValue ? M.monthly[c.slug].map((v) => Math.abs(v)) : M.monthly[c.slug];
+        const q = toQuarterlySum(M.months, raw);
+        x = q.anchors;
+        return { label: c.label, color: c.color, values: q.values };
+      });
+      return { x, series };
+    }
+    const series = CATS.map((c) => ({ label: c.label, color: c.color, values: M[key][c.slug] }));
+    return { x: M.months, series };
+  }
+
+  function renderDirChart(M) {
+    const { x, series } = fxattrSeriesByCategory(M, 'rolling', false);
+    const totals = x.map((_, i) => series.reduce((s, ser) => s + ser.values[i], 0));
+    const traces = [
+      ...series.map((s) => ({
+        type: 'bar', name: s.label,
+        x, y: s.values,
+        marker: { color: s.color },
+        customdata: s.values.map((v) => fmtSignedFx(v, 2)),
+        hovertemplate: s.label + ': %{customdata}<extra></extra>',
+      })),
+      {
+        type: 'scatter', mode: 'lines', name: 'Total',
+        x, y: totals,
+        line: { color: '#1F2853', width: 2, dash: 'dash', shape: 'spline', smoothing: 0.3 },
+        customdata: totals.map((v) => fmtSignedFx(v, 2)),
+        hovertemplate: 'Total: %{customdata}<extra></extra>',
+      },
+    ];
+    document.getElementById('fxattrDirSubtitle').textContent = quarterly
+      ? 'Quarterly sum, signed (+BRL-supportive / −BRL-negative), stacked by regime, with the net total overlaid — click a legend entry to isolate it'
+      : '3-month rolling average, signed (+BRL-supportive / −BRL-negative), stacked by regime, with the net total overlaid — click a legend entry to isolate it';
+    plotlyRenderAndBind('fxattrDirChart', traces, { height: 460, barmode: 'relative', bargap: 0.15, showlegend: true, legend: { orientation: 'h', y: -0.34 } });
+  }
+
+  // 100%-stacked composition chart -- rendered via a direct Plotly.react
+  // call (not plotlyRenderAndBind/_bindPlotlyYAutofit): the shared y-autofit
+  // helper recomputes the y-range from each trace's raw (un-normalized)
+  // values on a rangeselector click, which would fight barnorm:'percent''s
+  // own 0-100 scaling. This chart has no need for that autofit anyway,
+  // since 100%-stacked bars are always full-scale by construction.
+  function renderMagChart(M) {
+    const { x, series } = fxattrSeriesByCategory(M, 'rolling_abs', true);
+    const traces = series.map((s) => ({
+      type: 'bar', name: s.label,
+      x, y: s.values,
+      marker: { color: s.color },
+      hovertemplate: s.label + ': %{y:.1f}%<extra></extra>',
+    }));
+    document.getElementById('fxattrMagSubtitle').textContent = quarterly
+      ? 'Quarterly composition of |score| by regime — share of the quarter’s total salience, 100% stacked'
+      : '3-month rolling composition of |score| by regime — share of the period’s total salience, 100% stacked';
+    Plotly.react('fxattrMagChart', traces, plotlyBaseLayout({
+      height: 460, barmode: 'stack', barnorm: 'percent', bargap: 0.15,
+      showlegend: true, legend: { orientation: 'h', y: -0.34 },
+      yaxis: { range: [0, 100], autorange: false, ticksuffix: '%' },
+    }), PLOTLY_CONFIG);
+  }
+
+  function renderClaimsTable(M) {
+    const catFilter = catSelEl.value;
+    const claims = M.claims
+      .filter((c) => catFilter === '__all__' || c.category === catFilter)
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date));
+    const rows = claims.map((c) => {
+      const cat = CAT_MAP[c.category];
+      const dirClass = c.direction > 0 ? 'up' : c.direction < 0 ? 'dn' : '';
+      return `<tr>
+        <td style="text-align:left;font-family:var(--mono)">${escapeHtmlFx(c.date)}</td>
+        <td style="text-align:left"><span class="legend-dot" style="background:${cat ? cat.color : '#999'};display:inline-block;margin-right:6px;vertical-align:middle;"></span>${escapeHtmlFx(cat ? cat.label : c.category)}</td>
+        <td class="${dirClass}">${fmtSignedFx(c.direction, 1)}</td>
+        <td style="text-align:left">${escapeHtmlFx(c.source)}</td>
+        <td style="text-align:left">${escapeHtmlFx(c.quote)}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('fxattrClaimsTable').innerHTML = `
+      <thead><tr>
+        <th style="text-align:left">Date</th>
+        <th style="text-align:left">Category</th>
+        <th>Direction</th>
+        <th style="text-align:left">Source</th>
+        <th style="text-align:left">Quote</th>
+      </tr></thead>
+      <tbody>${rows || '<tr><td colspan="5" style="text-align:center">No claims for this filter</td></tr>'}</tbody>`;
+  }
+
+  function renderAll() {
+    const M = F.managers[managerSelEl.value];
+    renderStats(M);
+    renderDirChart(M);
+    renderMagChart(M);
+    renderClaimsTable(M);
+  }
+
+  managerSelEl.addEventListener('change', renderAll);
+  catSelEl.addEventListener('change', () => renderClaimsTable(F.managers[managerSelEl.value]));
+
+  const quarterToggleEl = document.getElementById('fxattrQuarterToggle');
+  quarterToggleEl.addEventListener('click', function () {
+    quarterly = !quarterly;
+    quarterToggleEl.classList.toggle('on', quarterly);
+    const M = F.managers[managerSelEl.value];
+    renderDirChart(M);
+    renderMagChart(M);
+  });
+
+  function renderFxattrTab() {
+    if (rendered) return;
+    rendered = true;
+    renderAll();
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab === 'tab-fxattr') renderFxattrTab();
     });
   });
 })();

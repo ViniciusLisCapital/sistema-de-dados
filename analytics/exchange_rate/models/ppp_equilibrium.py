@@ -374,12 +374,13 @@ def build_payload(df: pd.DataFrame, default_base_month: str = _DEFAULT_BASE_MONT
 
 def render(payload: dict, bayes_payload: dict | None = None, statespace_payload: dict | None = None,
            kalman_payload: dict | None = None, beer_payload: dict | None = None,
-           rolling_payload: dict | None = None) -> None:
-    """Fills all six template markers. `/*PPP_DATA*/` always gets `payload`;
+           rolling_payload: dict | None = None, fxattr_payload: dict | None = None) -> None:
+    """Fills all seven template markers. `/*PPP_DATA*/` always gets `payload`;
     `/*BAYES_DATA*/`, `/*STATESPACE_DATA*/`, `/*KALMAN_DATA*/`, `/*BEER_DATA*/`,
-    and `/*ROLLING_DATA*/` get their respective payload if given, else the
-    literal `null` (so each tab's JS always has something valid to check
-    against, whether or not that tab's data was generated this run)."""
+    `/*ROLLING_DATA*/`, and `/*FXATTR_DATA*/` get their respective payload if
+    given, else the literal `null` (so each tab's JS always has something
+    valid to check against, whether or not that tab's data was generated this
+    run)."""
     template = _TEMPLATE.read_text(encoding="utf-8")
     html = template.replace("/*PPP_DATA*/", json.dumps(payload))
     html = html.replace("/*BAYES_DATA*/", json.dumps(bayes_payload) if bayes_payload is not None else "null")
@@ -387,6 +388,7 @@ def render(payload: dict, bayes_payload: dict | None = None, statespace_payload:
     html = html.replace("/*KALMAN_DATA*/", json.dumps(kalman_payload) if kalman_payload is not None else "null")
     html = html.replace("/*BEER_DATA*/", json.dumps(beer_payload) if beer_payload is not None else "null")
     html = html.replace("/*ROLLING_DATA*/", json.dumps(rolling_payload) if rolling_payload is not None else "null")
+    html = html.replace("/*FXATTR_DATA*/", json.dumps(fxattr_payload) if fxattr_payload is not None else "null")
     _OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     _OUTPUT.write_text(html, encoding="utf-8")
 
