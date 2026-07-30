@@ -1,0 +1,339 @@
+"""
+Ridge-penalized, rolling-window deviation model (2026-07-30) -- the "modelo
+proposto" from the same-day design note: keeps the dependent variable and
+channel set already used elsewhere in this dashboard (delta_dev, channels in
+z-score) but swaps the estimator for Ridge (L2 penalty), re-estimated
+periodically on a rolling window so the coefficients can track regime change
+rather than describing one average relationship across calm and crisis
+periods.
+
+    delta_dev(t) = alpha + sum(beta_c * z(delta_channel_c(t))) + eps(t),
+    estimated by Ridge:  min sum(erro)^2 + lambda * sum(beta_c^2)
+
+Starts with two channels only, by explicit user choice ("run it with (i)
+fiscal and (ii) global USD (DXY). We increment later") -- not the full
+5-channel primary_contemp set bayesian_deviation_model.py already fits.
+Reuses that module's build_deltas_contemporaneous()/_standardize_ext()
+(2000-01+ reference window) so the z-scored deltas here are identical,
+channel for channel, to what primary_contemp already uses -- only the
+estimator and the re-estimation scheme are new. _CHANNELS is deliberately a
+short list at module scope so growing it later is a one-line change.
+
+Three design choices, per the proposal:
+  - L2 (Ridge), not L1 (Lasso): the goal is stabilizing coefficients between
+    correlated channels, not zeroing any of them out -- collinearity isn't
+    yet the live concern it will be once more channels are added, but the
+    module is meant to grow into that.
+  - lambda (regularization strength) is NOT fixed arbitrarily -- chosen by
+    walk-forward temporal cross-validation: fit on an expanding window,
+    score one step ahead (never used for fitting), walk forward across the
+    whole history, and pick the lambda with the best average out-of-sample
+    squared error.
+  - Re-estimated on a rolling window (60 months, the same window
+    beer_model.py's rolling_fit() uses) -- Ridge alone fixes collinearity,
+    not regime change; a single whole-sample Ridge fit would still describe
+    one average relationship between calm and crisis periods.
+
+No posterior/HDI anywhere in this module -- Ridge is a point estimate, not a
+Bayesian fit, so there's no distribution to summarize beyond the coefficient
+itself (unlike every PyMC-based model elsewhere in this package).
+
+Usage:
+    uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run; run()"
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import Ridge
+
+from analytics.exchange_rate.models.bayesian_deviation_model import (
+    _REFERENCE_START,
+    _standardize_ext,
+    build_deltas_contemporaneous,
+)
+from analytics.exchange_rate.models.ppp_equilibrium import compute_deviation, compute_equilibrium, load_data
+
+pd.set_option("display.width", 200)
+pd.set_option("display.max_columns", None)
+
+_RESULTS_DIR = Path(__file__).parent / "ridge_results"
+
+# Starting set, per direct user instruction -- "increment later" once this
+# is validated. Both already exist as delta_fiscal/delta_dxy columns in
+# build_deltas_contemporaneous().
+_CHANNELS = ["fiscal", "dxy"]
+
+_LAMBDA_GRID = np.logspace(-2, 3, 25)  # 0.01 .. 1000, log-spaced
+
+
+def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
+    """delta_dev plus each channel's z-scored CONTEMPORANEOUS delta,
+    standardized against the same 2000-01+ reference window
+    bayesian_deviation_model.py's primary_contemp spec uses (not this
+    model's own narrower fitting-sample overlap) -- so a coefficient here
+    stays comparable to that spec's if the two are ever set side by side."""
+    channels = _CHANNELS if channels is None else channels
+    df = load_data() if df is None else df
+    delta_cols = [f"delta_{c}" for c in channels]
+    deltas = build_deltas_contemporaneous(df)
+    sample = deltas[["delta_dev"] + delta_cols].dropna()
+    reference = deltas[deltas.index >= _REFERENCE_START]
+    z, stats = _standardize_ext(sample, reference, delta_cols)
+    z["delta_dev"] = sample["delta_dev"]
+    return z, stats
+
+
+def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | None = None,
+                         min_train: int = 36) -> pd.DataFrame:
+    """Selects lambda by one-step-ahead walk-forward validation: for each
+    candidate lambda, fit Ridge on z[:t] and score the squared error on
+    z[t] (never used for that fit), for every t from min_train to the end,
+    then average across t. min_train=36 (3 years) is a modest floor on how
+    little data a 2-channel Ridge fit is trusted with -- arbitrary, not
+    tuned to the answer.
+
+    Returns one row per lambda (lambda, mean OOS squared error, fold count),
+    sorted by error ascending -- best_lambda() just takes the top row."""
+    lambdas = _LAMBDA_GRID if lambdas is None else lambdas
+    X = z[delta_cols].values
+    y = z["delta_dev"].values
+    n = len(z)
+
+    rows = []
+    for lam in lambdas:
+        errors = []
+        for t in range(min_train, n):
+            model = Ridge(alpha=lam, fit_intercept=True)
+            model.fit(X[:t], y[:t])
+            pred = model.predict(X[t:t + 1])[0]
+            errors.append((y[t] - pred) ** 2)
+        rows.append({"lambda": float(lam), "mse": float(np.mean(errors)), "n_folds": len(errors)})
+    return pd.DataFrame(rows).sort_values("mse").reset_index(drop=True)
+
+
+def best_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | None = None,
+                 min_train: int = 36) -> float:
+    cv = walk_forward_lambda(z, delta_cols, lambdas=lambdas, min_train=min_train)
+    return float(cv.iloc[0]["lambda"])
+
+
+def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float) -> dict:
+    """Single Ridge fit on the full available sample at the chosen lambda --
+    the "whole-sample reference" line the rolling tab compares each window
+    against, same role beer_model.py's own whole-sample fit plays for its
+    rolling tab."""
+    X = z[delta_cols].values
+    y = z["delta_dev"].values
+    model = Ridge(alpha=lam, fit_intercept=True)
+    model.fit(X, y)
+    fitted = model.predict(X)
+    ss_res = float(np.sum((y - fitted) ** 2))
+    ss_tot = float(np.sum((y - y.mean()) ** 2))
+    r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+    return {
+        "alpha": float(model.intercept_),
+        "beta": {c: float(b) for c, b in zip(delta_cols, model.coef_)},
+        "r2": r2,
+        "n": len(z),
+        "lambda": lam,
+    }
+
+
+def rolling_fit(z: pd.DataFrame, delta_cols: list[str], lam: float, window: int = 60,
+                 step: int = 1) -> pd.DataFrame:
+    """Ridge coefficients re-estimated every `step` months on a trailing
+    `window`-month sample -- same 60-month/monthly-step design as
+    beer_model.py's rolling_fit(), swapped to a Ridge (not OLS+HAC)
+    estimator, with lambda fixed at whatever walk_forward_lambda() already
+    picked (chosen once, globally -- re-selecting lambda inside every one of
+    ~160 windows would let lambda itself drift for reasons unrelated to the
+    coefficients' own stability, which is the thing being tested here)."""
+    X = z[delta_cols].values
+    y = z["delta_dev"].values
+    n = len(z)
+
+    rows = []
+    for start in range(0, n - window + 1, step):
+        win_X = X[start:start + window]
+        win_y = y[start:start + window]
+        model = Ridge(alpha=lam, fit_intercept=True)
+        model.fit(win_X, win_y)
+        fitted = model.predict(win_X)
+        ss_res = float(np.sum((win_y - fitted) ** 2))
+        ss_tot = float(np.sum((win_y - win_y.mean()) ** 2))
+        r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+        row = {
+            "window_start": z.index[start], "window_end": z.index[start + window - 1],
+            "n": window, "r2": r2, "alpha": float(model.intercept_),
+        }
+        for c, b in zip(delta_cols, model.coef_):
+            row[f"beta_{c}"] = float(b)
+        rows.append(row)
+    return pd.DataFrame(rows).set_index("window_end")
+
+
+def run(channels: list[str] | None = None, window: int = 60) -> dict:
+    channels = _CHANNELS if channels is None else channels
+    delta_cols = [f"delta_{c}" for c in channels]
+    z, stats = build_sample(channels=channels)
+
+    print("=" * 78)
+    print(f"RIDGE DEVIATION MODEL -- channels={channels}, walk-forward lambda selection")
+    cv = walk_forward_lambda(z, delta_cols)
+    lam = float(cv.iloc[0]["lambda"])
+    print(cv.head(10).to_string(index=False))
+    print(f"Selected lambda = {lam:.4f} (mean OOS MSE = {cv.iloc[0]['mse']:.4f})")
+
+    whole = fit_whole_sample(z, delta_cols, lam)
+    print("=" * 78)
+    betas_fmt = {c: round(b, 4) for c, b in whole["beta"].items()}
+    print(f"Whole-sample fit at lambda={lam:.4f}: alpha={whole['alpha']:+.4f}  "
+          f"betas={betas_fmt}  R2={whole['r2']:.4f}  n={whole['n']}")
+
+    roll = rolling_fit(z, delta_cols, lam, window=window)
+    print("=" * 78)
+    print(f"Rolling fit: {len(roll)} windows of {window} months, lambda={lam:.4f}")
+    print(roll[[f"beta_{c}" for c in delta_cols] + ["r2"]].describe())
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    cv.to_csv(_RESULTS_DIR / "lambda_cv.csv", index=False)
+    roll.reset_index().to_csv(_RESULTS_DIR / "rolling.csv", index=False)
+    pd.DataFrame([{"lambda": lam, "alpha": whole["alpha"], "r2": whole["r2"], "n": whole["n"],
+                    **{f"beta_{c}": b for c, b in whole["beta"].items()}}]).to_csv(
+        _RESULTS_DIR / "whole_sample.csv", index=False)
+
+    return {
+        "channels": channels, "delta_cols": delta_cols, "lambda": lam, "cv": cv,
+        "whole_sample": whole, "rolling": roll, "z": z, "stats": stats,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Dashboard tab: lambda-selection curve, historical fit, decomposition, and
+# rolling-window coefficient paths -- built fresh each call rather than read
+# from a saved trace, since fitting cost here is milliseconds, not the
+# minutes-per-run every PyMC model in this package needs to amortize.
+# ---------------------------------------------------------------------------
+
+def build_dashboard_payload(channels: list[str] | None = None, window: int = 60) -> dict:
+    """Payload for the "Ridge (Regularized, Rolling)" dashboard tab: the
+    walk-forward lambda-selection curve, the whole-sample fit's own
+    decomposition/level-bridge (same log-additive-then-multiplicative
+    convention as every other tab), and the rolling-window coefficient
+    paths against the whole-sample reference line."""
+    channels = _CHANNELS if channels is None else channels
+    delta_cols = [f"delta_{c}" for c in channels]
+    z, _ = build_sample(channels=channels)
+
+    cv = walk_forward_lambda(z, delta_cols)
+    lam = float(cv.iloc[0]["lambda"])
+    whole = fit_whole_sample(z, delta_cols, lam)
+    roll = rolling_fit(z, delta_cols, lam, window=window)
+
+    df = load_data()
+    months = [d.strftime("%Y-%m") for d in z.index]
+
+    # --- historical fit (delta space), whole-sample point estimate ---
+    X = z[delta_cols].values
+    beta_vec = np.array([whole["beta"][c] for c in delta_cols])
+    fitted_delta = whole["alpha"] + X @ beta_vec
+    actual_delta = z["delta_dev"].values
+    residual = actual_delta - fitted_delta
+
+    # --- decomposition + level bridge (cumulative), same construction as
+    # bayesian_deviation_model.py's primary_contemp payload: anchor_level +
+    # cum_alpha + sum(cum_contrib) + cum_residual reconstructs actual_level
+    # exactly, by definition of residual. ---
+    dev_full = compute_deviation(df)
+    anchor_date = z.index[0] - pd.DateOffset(months=1)
+    anchor_level = float(dev_full.loc[anchor_date])
+    actual_level = dev_full.reindex(z.index).values
+    fitted_level = anchor_level + np.cumsum(fitted_delta)
+
+    contributions = {c: whole["beta"][c] * z[c].values for c in delta_cols}
+    cum_alpha = np.cumsum(np.full(len(z), whole["alpha"]))
+    cum_contrib = {c: np.cumsum(contributions[c]) for c in delta_cols}
+    cum_residual = np.cumsum(residual)
+
+    equilibrium_level = compute_equilibrium(df).reindex(z.index).values
+    actual_ptax = df["ptax"].reindex(z.index).values
+
+    lvl_0 = equilibrium_level
+    lvl_1 = lvl_0 * np.exp((anchor_level + cum_alpha) / 100)
+    level_decomposition = {
+        "equilibrium": [round(float(v), 4) for v in lvl_0],
+        "baseline": [round(float(v), 4) for v in (lvl_1 - lvl_0)],
+    }
+    prev = lvl_1
+    for c in delta_cols:
+        nxt = prev * np.exp(cum_contrib[c] / 100)
+        level_decomposition[c] = [round(float(v), 4) for v in (nxt - prev)]
+        prev = nxt
+    lvl_final = prev * np.exp(cum_residual / 100)  # == actual_ptax exactly, up to floating point
+    level_decomposition["residual"] = [round(float(v), 4) for v in (lvl_final - prev)]
+    level_decomposition["actual"] = [round(float(v), 4) for v in actual_ptax]
+
+    return {
+        "n": int(len(z)),
+        "sample_range": [months[0], months[-1]],
+        "months": months,
+        "lambda": round(lam, 4),
+        "lambda_cv": {
+            "lambdas": [round(float(v), 6) for v in cv["lambda"]],
+            "mse": [round(float(v), 6) for v in cv["mse"]],
+        },
+        "whole_sample": {
+            "alpha": round(whole["alpha"], 4),
+            "beta": {c: round(whole["beta"][c], 4) for c in delta_cols},
+            "r2": round(whole["r2"], 4),
+        },
+        "fit_delta": {
+            "actual": [round(float(v), 4) for v in actual_delta],
+            "fitted": [round(float(v), 4) for v in fitted_delta],
+        },
+        "fit_level": {
+            "anchor_level": round(anchor_level, 4),
+            "actual": [round(float(v), 4) for v in actual_level],
+            "fitted": [round(float(v), 4) for v in fitted_level],
+        },
+        "decomposition": {
+            "alpha": [round(float(v), 4) for v in cum_alpha],
+            **{c: [round(float(v), 4) for v in cum_contrib[c]] for c in delta_cols},
+            "residual": [round(float(v), 4) for v in cum_residual],
+        },
+        "level_decomposition": level_decomposition,
+        "rolling": {
+            "window_months": window,
+            "n_windows": len(roll),
+            "window_end": [d.strftime("%Y-%m") for d in roll.index],
+            "r2": [round(float(v), 4) for v in roll["r2"]],
+            "alpha": {
+                "mean": [round(float(v), 4) for v in roll["alpha"]],
+                "whole_sample": round(whole["alpha"], 4),
+            },
+            "channels": {
+                c: {
+                    "mean": [round(float(v), 4) for v in roll[f"beta_{c}"]],
+                    "whole_sample": round(whole["beta"][c], 4),
+                }
+                for c in delta_cols
+            },
+        },
+    }
+
+
+def render_dashboard() -> None:
+    """Regenerates referencia/ppp_dashboard.html with the Ridge tab added
+    alongside the other seven. Delegates to state_space_model.render_dashboard()
+    for everything else so this stays the single entry point that keeps all
+    tabs in sync, rather than duplicating that function's payload wiring."""
+    from analytics.exchange_rate.models import state_space_model
+    state_space_model.render_dashboard()
+
+
+if __name__ == "__main__":
+    run()

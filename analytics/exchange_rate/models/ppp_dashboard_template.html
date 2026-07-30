@@ -226,6 +226,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
     <div class="tab-btn" data-tab="tab-beer">BEER Model (Levels)</div>
     <div class="tab-btn" data-tab="tab-rolling">Rolling Window (Core 4)</div>
     <div class="tab-btn" data-tab="tab-fxattr">FX Attribution (Manager Letters)</div>
+    <div class="tab-btn" data-tab="tab-ridge">Ridge (Regularized, Rolling)</div>
   </div>
 
   <div class="tab-panel active" id="tab-data">
@@ -924,6 +925,86 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
   </div>
   <!-- /tab-fxattr -->
 
+  <div class="tab-panel" id="tab-ridge">
+
+  <div id="ridgeNoData" style="display:none" class="no-data-msg">
+    No Ridge-model data embedded in this build. Regenerate via
+    <code>uv run python -c "from analytics.exchange_rate.models.state_space_model import render_dashboard; render_dashboard()"</code>.
+  </div>
+
+  <div id="ridgeContent" style="display:none">
+
+    <div class="model-section">
+      <h2>What this tab is</h2>
+      <div class="callout">
+        Same dependent variable and channel-in-z-score setup used elsewhere in this dashboard (Δdeviation regressed on each channel's own contemporaneous z-scored change), but estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit, and re-estimated on a rolling window like the BEER model's own rolling tab. Starts with two channels — fiscal risk (CDS) and the dollar index (DXY) — by deliberate choice, to validate the estimation method before growing the channel set.
+      </div>
+      <div class="callout">
+        <b>λ is not fixed by hand</b> — it's chosen by walk-forward temporal cross-validation: fit on an expanding window, score one step ahead (never used to fit that step), walk forward across the whole history, and keep the λ with the best average out-of-sample squared error. The chart below shows that selection directly.
+      </div>
+      <div class="callout">
+        Coefficients are then <b>re-estimated on a rolling 60-month window</b> (same window the BEER "Rolling Window (Core 4)" tab uses) at that fixed λ — Ridge alone stabilizes correlated channels' coefficients, it doesn't handle regime change on its own; a single whole-sample Ridge fit would still describe one average relationship across calm and crisis periods.
+      </div>
+    </div>
+
+    <div class="model-section">
+      <h2>Descriptive stats</h2>
+      <div class="stats-row" id="ridgeStatsRow"></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">λ Selection (Walk-Forward Cross-Validation)</div>
+          <div class="chart-subtitle">Mean one-step-ahead out-of-sample squared error per candidate λ — the marked point is the one actually used everywhere else on this tab</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="ridgeLambdaChart" style="width:100%"></div></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Rolling Coefficient</div>
+          <div class="chart-subtitle">Point estimate per 5-year window, vs. the whole-sample estimate (dashed) — no confidence band shown: Ridge is a penalized point estimate, not a distribution</div>
+        </div>
+        <div class="chart-hdr-right">
+          <select id="ridgeParamSelect" class="base-select"></select>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="ridgeParamChart" style="width:100%"></div></div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Rolling estimate</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--muted)"></span>Whole-sample estimate</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">R² Over Time</div>
+          <div class="chart-subtitle">Share of variance explained by the rolling fit, per 5-year window</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="ridgeR2Chart" style="width:100%"></div></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Exchange Rate Decomposition</div>
+          <div class="chart-subtitle">Whole-sample Ridge fit, bridged from PPP equilibrium up to the actual PTAX rate</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><div id="ridgeDecompChart" style="width:100%"></div></div>
+    </div>
+
+  </div>
+  <!-- /ridgeContent -->
+
+  </div>
+  <!-- /tab-ridge -->
+
 </div>
 
 <script>
@@ -934,6 +1015,7 @@ const KALMAN_DATA = /*KALMAN_DATA*/;
 const BEER_DATA = /*BEER_DATA*/;
 const ROLLING_DATA = /*ROLLING_DATA*/;
 const FXATTR_DATA = /*FXATTR_DATA*/;
+const RIDGE_DATA = /*RIDGE_DATA*/;
 
 // ---------------------------------------------------------------------------
 // Chart.register: only ChartDataLabels remains (2026-07-28) -- ChartZoom was
@@ -2649,6 +2731,162 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tab === 'tab-fxattr') renderFxattrTab();
+    });
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Ridge (Regularized, Rolling) tab — separate IIFE, own scope
+// ---------------------------------------------------------------------------
+(function () {
+  "use strict";
+
+  function fmtNumRg(v, decimals) {
+    decimals = decimals === undefined ? 2 : decimals;
+    const sign = v >= 0 ? '' : '-';
+    const scaled = Math.floor(Math.abs(v) * Math.pow(10, decimals)) / Math.pow(10, decimals);
+    return sign + scaled.toFixed(decimals).replace('.', ',');
+  }
+  function fmtSignedRg(v, decimals) { return (v >= 0 ? '+' : '') + fmtNumRg(v, decimals); }
+  function fmtRateRg(v) { return 'R$ ' + fmtNumRg(v, 2); }
+  function monthLabelRg(m) {
+    const [y, mo] = m.split('-');
+    const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[parseInt(mo, 10) - 1] + '/' + y;
+  }
+
+  // Channel keys match the payload's own delta_cols naming (delta_<channel>)
+  // -- ridge_deviation_model.py's whole_sample/rolling/decomposition dicts
+  // are all keyed this way, unlike the rolling/beer tabs above which key by
+  // bare channel name.
+  const PARAM_LABELS_RIDGE = { alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_dxy: 'β dollar index (DXY)' };
+  const CHANNEL_COLORS_RIDGE = { delta_fiscal: '#EA523A', delta_dxy: '#FBC852' };
+  const CHANNEL_LABELS_RIDGE = { delta_fiscal: 'Fiscal', delta_dxy: 'Dollar index (DXY)' };
+  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_dxy'];
+
+  const noDataEl = document.getElementById('ridgeNoData');
+  const contentEl = document.getElementById('ridgeContent');
+
+  if (!RIDGE_DATA) {
+    noDataEl.style.display = 'block';
+    return;
+  }
+  contentEl.style.display = 'block';
+
+  let rendered = false;
+
+  function renderRidgeTab() {
+    if (rendered) return;
+    rendered = true;
+    const D = RIDGE_DATA;
+    const R = D.rolling;
+
+    // ---- stats ----
+    document.getElementById('ridgeStatsRow').innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Selected λ</div>
+        <div class="stat-val">${fmtNumRg(D.lambda, 3)}</div>
+        <div class="stat-sub">walk-forward CV, ${D.lambda_cv.lambdas.length} candidates tested</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Whole-sample fit</div>
+        <div class="stat-val">${D.n}</div>
+        <div class="stat-sub">months · ${monthLabelRg(D.sample_range[0])} → ${monthLabelRg(D.sample_range[1])} · R²=${fmtNumRg(D.whole_sample.r2, 3)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Rolling windows</div>
+        <div class="stat-val">${R.n_windows}</div>
+        <div class="stat-sub">${R.window_months}-month window · R² ${fmtNumRg(Math.min(...R.r2), 2)}–${fmtNumRg(Math.max(...R.r2), 2)}</div>
+      </div>`;
+
+    // ---- λ selection chart -- NOT a time series (x is λ, log scale), so
+    // this deliberately skips plotlyRenderAndBind/plotlyBaseLayout (both
+    // assume a date x-axis with a rangeselector) and calls Plotly directly,
+    // same exception already made elsewhere in this file for non-time-series
+    // charts (the coefficient/forest bar charts, posterior histograms). ----
+    const cv = D.lambda_cv;
+    const bestIdx = cv.lambdas.indexOf(D.lambda);
+    Plotly.newPlot('ridgeLambdaChart', [
+      { type: 'scatter', mode: 'lines+markers', name: 'OOS MSE', x: cv.lambdas, y: cv.mse,
+        line: { color: '#02739B', width: 2 }, marker: { size: 5, color: '#02739B' },
+        customdata: cv.mse.map(v => fmtNumRg(v, 4)), hovertemplate: 'λ=%{x}<br>MSE: %{customdata}<extra></extra>' },
+      { type: 'scatter', mode: 'markers', name: 'Selected λ', x: [D.lambda], y: [cv.mse[bestIdx]],
+        marker: { size: 11, color: '#EA523A', symbol: 'star' },
+        hovertemplate: 'Selected λ=%{x}<extra></extra>' },
+    ], {
+      height: 340, margin: { l: 55, r: 20, t: 10, b: 50 },
+      xaxis: { type: 'log', title: 'λ', tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' } },
+      yaxis: { title: 'Mean OOS squared error', gridcolor: 'rgba(31,40,83,0.06)', tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' } },
+      showlegend: false,
+      paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+      font: { family: 'Barlow, sans-serif', color: '#1F2853', size: 12 },
+    }, { responsive: true, displayModeBar: 'hover', displaylogo: false, modeBarButtonsToRemove: ['lasso2d', 'select2d'] });
+
+    // ---- rolling coefficient chart ----
+    const selEl = document.getElementById('ridgeParamSelect');
+    const paramKeys = ['alpha', ...CHANNEL_ORDER_RIDGE];
+    paramKeys.forEach(k => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = PARAM_LABELS_RIDGE[k];
+      selEl.appendChild(opt);
+    });
+    selEl.value = CHANNEL_ORDER_RIDGE[0];
+
+    function paramSeriesRg(key) {
+      return key === 'alpha' ? R.alpha : R.channels[key];
+    }
+
+    function renderParamChartRg() {
+      const key = selEl.value;
+      const s = paramSeriesRg(key);
+      const color = key === 'alpha' ? '#1F2853' : CHANNEL_COLORS_RIDGE[key];
+      const wholeArr = new Array(R.window_end.length).fill(s.whole_sample);
+
+      plotlyRenderAndBind('ridgeParamChart', [
+        { type: 'scatter', mode: 'lines', name: 'Rolling estimate', x: R.window_end, y: s.mean,
+          line: { color, width: 2, shape: 'spline', smoothing: 0.2 },
+          customdata: s.mean.map(v => fmtSignedRg(v, 3)), hovertemplate: 'Rolling estimate: %{customdata}<extra></extra>' },
+        { type: 'scatter', mode: 'lines', name: 'Whole-sample', x: R.window_end, y: wholeArr,
+          line: { color: '#7A88A8', width: 1.5, dash: 'dash' },
+          customdata: wholeArr.map(v => fmtSignedRg(v, 3)), hovertemplate: 'Whole-sample: %{customdata}<extra></extra>' },
+      ], { height: 380 });
+    }
+    selEl.addEventListener('change', renderParamChartRg);
+    renderParamChartRg();
+
+    // ---- R² chart (always shown, no selector) ----
+    plotlyRenderAndBind('ridgeR2Chart', [
+      { type: 'scatter', mode: 'lines', name: 'R²', x: R.window_end, y: R.r2,
+        line: { color: '#418791', width: 2, shape: 'spline', smoothing: 0.2 },
+        fill: 'tozeroy', fillcolor: 'rgba(65,135,145,0.10)',
+        customdata: R.r2.map(v => fmtNumRg(v, 3)), hovertemplate: 'R²: %{customdata}<extra></extra>' },
+    ], { height: 340, yaxis: { range: [0, 1] } });
+
+    // ---- decomposition / level bridge (whole-sample fit, full history) ----
+    const L = D.level_decomposition;
+    const levelColorsRg = { equilibrium: '#1F2853', baseline: '#7A88A8', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
+    const levelLabelsRg = { equilibrium: 'PPP equilibrium', baseline: 'Baseline (α)', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
+    const levelOrderRg = ['equilibrium', 'baseline', ...CHANNEL_ORDER_RIDGE, 'residual'];
+
+    plotlyRenderAndBind('ridgeDecompChart', [
+      ...levelOrderRg.map(key => ({
+        type: 'bar', name: levelLabelsRg[key],
+        x: D.months, y: L[key],
+        marker: { color: levelColorsRg[key] },
+        customdata: L[key].map(v => key === 'equilibrium' ? fmtRateRg(v) : fmtSignedRg(v, 3)),
+        hovertemplate: levelLabelsRg[key] + ': %{customdata}<extra></extra>',
+      })),
+      { type: 'scatter', mode: 'lines', name: 'Actual (PTAX)', x: D.months, y: L.actual,
+        line: { color: '#1F2853', width: 2, dash: 'dash', shape: 'spline', smoothing: 0.3 },
+        customdata: L.actual.map(fmtRateRg),
+        hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
+    ], { height: 400, barmode: 'relative', bargap: 0.15, showlegend: true });
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tab === 'tab-ridge') renderRidgeTab();
     });
   });
 })();
