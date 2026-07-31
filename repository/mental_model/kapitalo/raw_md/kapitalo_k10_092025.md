@@ -34,89 +34,149 @@ investimento que temos perseguido.
 
 CARTA DO GESTOR SETEMBRO 2025
 K10
-1. ARGENTINA 2. PETRÓLEO
-A derrota contundente nas eleições legislativas da Após não obter progresso nas negociações por um
-Província de Buenos Aires, somada a novas denúncias de eventual fim da guerra, o governo Trump passou
-corrupção e às constantes derrotas legislativas, levou o a permitir que a Ucrânia ampliasse seus ataques
-mercado a questionar a viabilidade do governo Milei. à infraestrutura energética russa. Tanques de
-estocagem, oleodutos e terminais de exportação
-Os preços dos ativos locais sofreram fortemente e o foram atingidos pela primeira vez desde o início do
-mercado vem testando os limites do atual programa conflito, e o total de refinarias russas incapazes de
-econômico. O peso argentino se desvalorizou e atingiu operar normalmente passou a representar cerca de
-o teto da banda cambial, exigindo vendas expressivas 15% da capacidade total. Vemos como considerável o
-de reservas pelo Tesouro e pelo Banco Central. risco de alguma interrupção na oferta da Rússia nos
-próximos meses.
+1. ARGENTINA
+A derrota contundente nas eleições legislativas da
+Província de Buenos Aires, somada a novas denúncias de
+corrupção e às constantes derrotas legislativas, levou o
+mercado a questionar a viabilidade do governo Milei.
+Os preços dos ativos locais sofreram fortemente e o
+mercado vem testando os limites do atual programa
+econômico. O peso argentino se desvalorizou e atingiu
+o teto da banda cambial, exigindo vendas expressivas
+de reservas pelo Tesouro e pelo Banco Central.
 A percepção de que a Argentina chegaria em
-novembro com reservas ainda menores, deteriorando No entanto, os dados de ship tracking passaram a
-de forma significativa sua capacidade de pagamento corroborar o aumento de produção prometido pela
-da dívida externa, fez com que a probabilidade de Organização dos Países Exportadores de Petróleo
-default implícita no Credit Default Swap (CDS) de 5 (Organization of the Petroleum Exporting Countries –
-anos subisse de forma relevante. OPEC), levando os estoques de petróleo em trânsito
-aos níveis mais altos desde 2020.
+novembro com reservas ainda menores, deteriorando
+de forma significativa sua capacidade de pagamento
+da dívida externa, fez com que a probabilidade de
+default implícita no Credit Default Swap (CDS) de 5
+anos subisse de forma relevante.
 Essa dinâmica foi contida graças ao Tesouro dos
-Estados Unidos, que anunciou estar disposto a fazer Os preços do mercado físico começaram a corroborar
-o que for necessário para auxiliar a Argentina. Na um superávit, com o prêmio do petróleo spot na Ásia
-sequência, o Fundo Monetário Internacional, o Banco atingindo o menor nível desde junho, e as cotações de
-Mundial e o Banco Interamericano de Desenvolvimento frete para novembro quase dobrando desde o início
-também se mostraram dispostos a ampliar os de agosto. Dado o tamanho do excesso de oferta
-programas de auxílio. projetado, achamos que, mesmo com algum problema
-de oferta, o preço de equilíbrio do mercado ainda
-A economia apresenta hoje superávit fiscal, pequeno seria bem inferior ao atual. Portanto, mantivemos
-déficit em conta corrente e o governo possui um nível nossa posição vendida em petróleo, mesmo diante do
-de popularidade historicamente compatível com uma aumento do risco geopolítico.
+Estados Unidos, que anunciou estar disposto a fazer
+o que for necessário para auxiliar a Argentina. Na
+sequência, o Fundo Monetário Internacional, o Banco
+Mundial e o Banco Interamericano de Desenvolvimento
+também se mostraram dispostos a ampliar os
+programas de auxílio.
+A economia apresenta hoje superávit fiscal, pequeno
+déficit em conta corrente e o governo possui um nível
+de popularidade historicamente compatível com uma
 eleição razoável. Contudo, a baixa representatividade
 do governo no Congresso, o câmbio apreciado e o baixo
-nível de reservas são fragilidades que provavelmente 3. MILHO
+nível de reservas são fragilidades que provavelmente
 serão endereçadas após a eleição de outubro.
-No relatório World Agricultural Supply and Demand
-Um resultado razoável nas eleições legislativas Estimates (WASDE) de agosto, o Departamento
-deveria resultar em uma combinação de governo de Agricultura dos Estados Unidos (United States
-mais forte no Congresso e com melhor interlocução Department of Agriculture – USDA) apontou estoques de
-política, câmbio mais depreciado e reservas mais milho elevados para os padrões históricos dos Estados
-elevadas, impulsionadas pela ajuda dos Estados Unidos. No entanto, o preço subiu de US$ 3,70 para US$
-Unidos. Isso deveria levar a uma melhora substancial 4,30 entre os relatórios de agosto e setembro.
+Um resultado razoável nas eleições legislativas
+deveria resultar em uma combinação de governo
+mais forte no Congresso e com melhor interlocução
+política, câmbio mais depreciado e reservas mais
+elevadas, impulsionadas pela ajuda dos Estados
+Unidos. Isso deveria levar a uma melhora substancial
 nas probabilidades de default. Diante disso, decidimos
 ajustar nossa exposição, reduzindo nossa carteira de
 ações e aumentando a exposição a crédito.
+2. PETRÓLEO
+Após não obter progresso nas negociações por um
+eventual fim da guerra, o governo Trump passou
+a permitir que a Ucrânia ampliasse seus ataques
+à infraestrutura energética russa. Tanques de
+estocagem, oleodutos e terminais de exportação
+foram atingidos pela primeira vez desde o início do
+conflito, e o total de refinarias russas incapazes de
+operar normalmente passou a representar cerca de
+15% da capacidade total. Vemos como considerável o
+risco de alguma interrupção na oferta da Rússia nos
+próximos meses.
+No entanto, os dados de ship tracking passaram a
+corroborar o aumento de produção prometido pela
+Organização dos Países Exportadores de Petróleo
+(Organization of the Petroleum Exporting Countries –
+OPEC), levando os estoques de petróleo em trânsito
+aos níveis mais altos desde 2020.
+Os preços do mercado físico começaram a corroborar
+um superávit, com o prêmio do petróleo spot na Ásia
+atingindo o menor nível desde junho, e as cotações de
+frete para novembro quase dobrando desde o início
+de agosto. Dado o tamanho do excesso de oferta
+projetado, achamos que, mesmo com algum problema
+de oferta, o preço de equilíbrio do mercado ainda
+seria bem inferior ao atual. Portanto, mantivemos
+nossa posição vendida em petróleo, mesmo diante do
+aumento do risco geopolítico.
+3. MILHO
+No relatório World Agricultural Supply and Demand
+Estimates (WASDE) de agosto, o Departamento
+de Agricultura dos Estados Unidos (United States
+Department of Agriculture – USDA) apontou estoques de
+milho elevados para os padrões históricos dos Estados
+Unidos. No entanto, o preço subiu de US$ 3,70 para US$
+4,30 entre os relatórios de agosto e setembro.
 
 CARTA DO GESTOR SETEMBRO 2025
 K10
-Acreditamos que o movimento é explicado por um Esses países se encontram, respectivamente, com
-short covering das posições de especuladores – que estoques sazonalmente altos e uma colheita em
-estavam vendidos em 200 mil lotes no período do atraso — e devem competir entre si para ampliar suas
-relatório – em meio à preocupação do mercado de exportações nos próximos meses.
+Acreditamos que o movimento é explicado por um
+short covering das posições de especuladores – que
+estavam vendidos em 200 mil lotes no período do
+relatório – em meio à preocupação do mercado de
 que a produção americana seria revisada para baixo,
-diante de relatos de fazendeiros sobre incidência Para o ano-safra 2025/2026, vemos a exportação
-acima do normal de doenças, além de um fluxo forte de americana significativamente menor que a estimada
-vendas para exportação nos últimos dois meses. Não pelo USDA. O órgão considera um aumento das
-compartilhamos dessas preocupações e acreditamos importações chinesas de milho, hipótese que não é
-que o balanço do milho suporte preços mais próximos sustentada nem pelos preços internos na China nem
-dos custos de produção. pelo clima benigno durante o período que determinou
-a produtividade da safra local. Além disso, o USDA
-Primeiramente, os modelos estatísticos baseados no não contempla um aumento das exportações da
-clima, os dados de Normalized Difference Vegetation Argentina, algo esperado pelas consultorias locais e
-Index (NDVI), o relatório de conditions e os tours de por grande parte do mercado.
+diante de relatos de fazendeiros sobre incidência
+acima do normal de doenças, além de um fluxo forte de
+vendas para exportação nos últimos dois meses. Não
+compartilhamos dessas preocupações e acreditamos
+que o balanço do milho suporte preços mais próximos
+dos custos de produção.
+Primeiramente, os modelos estatísticos baseados no
+clima, os dados de Normalized Difference Vegetation
+Index (NDVI), o relatório de conditions e os tours de
 safra corroboram uma produtividade alta para a safra
-norte-americana. Parte do mercado parece estar Com o aumento de área plantada no relatório de
-fazendo uma relação entre a falta de chuva no período agosto para mais de 98 milhões de acres e o aumento
-final da safra (a partir de 15 de agosto) e revisões na dos estoques finais da safra passada – que já
-produtividade, dado que isso ocorreu no ano passado. esperávamos, dada a ausência de sinais de aperto no
-Porém, estatisticamente, essa relação não parece mercado físico durante o ano todo –, acreditamos que
-existir. o acúmulo de estoque será muito expressivo mesmo
-que algumas de nossas hipóteses estejam erradas.
-O número forte de vendas de exportação até o Com isso, montamos uma posição vendida no milho
-momento se deve a um front loading por parte de da Chicago Board of Trade (CBOT).
+norte-americana. Parte do mercado parece estar
+fazendo uma relação entre a falta de chuva no período
+final da safra (a partir de 15 de agosto) e revisões na
+produtividade, dado que isso ocorreu no ano passado.
+Porém, estatisticamente, essa relação não parece
+existir.
+O número forte de vendas de exportação até o
+momento se deve a um front loading por parte de
 alguns importadores, bem como à comercialização
 atrasada no Brasil e na Ucrânia.
+Esses países se encontram, respectivamente, com
+estoques sazonalmente altos e uma colheita em
+atraso — e devem competir entre si para ampliar suas
+exportações nos próximos meses.
+Para o ano-safra 2025/2026, vemos a exportação
+americana significativamente menor que a estimada
+pelo USDA. O órgão considera um aumento das
+importações chinesas de milho, hipótese que não é
+sustentada nem pelos preços internos na China nem
+pelo clima benigno durante o período que determinou
+a produtividade da safra local. Além disso, o USDA
+não contempla um aumento das exportações da
+Argentina, algo esperado pelas consultorias locais e
+por grande parte do mercado.
+Com o aumento de área plantada no relatório de
+agosto para mais de 98 milhões de acres e o aumento
+dos estoques finais da safra passada – que já
+esperávamos, dada a ausência de sinais de aperto no
+mercado físico durante o ano todo –, acreditamos que
+o acúmulo de estoque será muito expressivo mesmo
+que algumas de nossas hipóteses estejam erradas.
+Com isso, montamos uma posição vendida no milho
+da Chicago Board of Trade (CBOT).
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em iene japonês, lira turca Seguimos comprados nos Estados Unidos
-e rupia indiana contra o dólar norte-americano. e na China. Zeramos a compra de Argentina
-Zeramos a posição comprada em euro. e adicionamos posição vendida em Brasil.
-Commodities Juros
-Mantivemos posições vendidas em café, soja, zinco Mantivemos posições aplicadas no Brasil,
-e petróleo e continuamos comprados em ouro e gás na Europa e na Suécia. Encerramos as posições
-natural. Adicionamos uma posição vendida em milho. aplicadas no Canadá e na Colômbia e a posição
+Moedas
+Seguimos comprados em iene japonês, lira turca
+e rupia indiana contra o dólar norte-americano.
+Zeramos a posição comprada em euro.
+Commodities
+Mantivemos posições vendidas em café, soja, zinco
+e petróleo e continuamos comprados em ouro e gás
+natural. Adicionamos uma posição vendida em milho.
+Bolsa
+Seguimos comprados nos Estados Unidos
+e na China. Zeramos a compra de Argentina
+e adicionamos posição vendida em Brasil.
+Juros
+Mantivemos posições aplicadas no Brasil,
+na Europa e na Suécia. Encerramos as posições
+aplicadas no Canadá e na Colômbia e a posição
 tomada na parte longa da curva dos Estados Unidos.
 
 CARTA DO GESTOR SETEMBRO 2025
@@ -173,11 +233,15 @@ SENTADAS NÃO CONSTITUEM GARANTIA OU PROMESSA DE
 RENTABILIDADE OU DE ISENÇÃO DE RISCO. AOS INVESTIDO-
 RES, É RECOMENDADA A LEITURA CUIDADOSA DE LÂMINAS,
 PROSPECTOS E/ OU REGULAMENTOS ANTES DE INVESTIR
-SEUS RECURSOS. As análises aqui apresentadas não preten- KAPITALO INVESTIMENTOS LTDA
-Av. Brigadeiro Faria Lima, 3144
+SEUS RECURSOS. As análises aqui apresentadas não preten-
 dem conter todas as informações relevantes que um inves-
-11º andar - Itaim Bibi
 tidor deve considerar e, dessa forma, representam apenas
-uma visão limitada do mercado. Este conteúdo não pode ser 01451-000 – São Paulo, SP
-copiado, reproduzido ou distribuído sem a prévia e expressa (11) 3956-0600
-concordância das gestoras. kapitalo.com.br
+uma visão limitada do mercado. Este conteúdo não pode ser
+copiado, reproduzido ou distribuído sem a prévia e expressa
+concordância das gestoras.
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

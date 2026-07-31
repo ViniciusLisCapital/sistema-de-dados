@@ -4,39 +4,28 @@ K10
 CARTA DO GESTOR JULHO 2025
 K10
 CENÁRIO
-No cenário macro, seguimos vendo uma desaceleração Esse movimento pode desencadear uma queda relevan-
-gradual nas economias desenvolvidas. Nesse contexto, te das taxas terminais nos países em estágio mais avan-
-temos buscado, de forma seletiva, posições aplicadas çado do ciclo econômico. Mantemos, portanto, posições
-em juros onde os sinais de abertura do hiato econômico aplicadas em Canadá e Suécia, onde observamos nível
-são mais evidentes. A combinação de: (1) arrefecimento de ociosidade crescente e elevado, enquanto o mercado
-do mercado de trabalho; (2) desaceleração dos salários; ainda precifica pouco afrouxamento monetário adicio-
-e (3) trajetória de queda da inflação não nos parece com- nal.
-patível com juros terminais próximos ao nível neutro.
-Além disso, a imposição de tarifas comerciais pelo presi- Em commodities, seguimos com visão baixista para o
-dente Trump tende ter impacto contracionista sobre ati- petróleo. O balanço global de oferta e demanda aponta
-vidade global e pode até ter efeito desinflacionário fora para excedente de produção nos próximos trimestres.
-dos Estados Unidos, reforçando o espaço para cortes Nossas posições vendidas sofreram no mês passado
-adicionais de juros. após ameaças de tarifas severas sobre a Rússia e com-
-pradores de seu petróleo, o que sustentou os preços no
-Apesar desse pano de fundo, ao longo de julho, as curvas curto prazo. Aproveitamos esse movimento para au-
-de juros em diversos países reprecificaram as taxas para mentar a exposição vendida.
-cima. Ainda assim, os dados mais recentes do mercado
-de trabalho americano ampliaram a probabilidade de iní-
-cio, já em setembro, de um processo de recalibragem do
-Federal Funds Rate (taxa básica de juros dos EUA).
+
+No cenário macro, seguimos vendo uma desaceleração gradual nas economias desenvolvidas. Nesse contexto, temos buscado, de forma seletiva, posições aplicadas em juros onde os sinais de abertura do hiato econômico são mais evidentes. A combinação de: (1) arrefecimento do mercado de trabalho; (2) desaceleração dos salários; e (3) trajetória de queda da inflação não nos parece compatível com juros terminais próximos ao nível neutro. Além disso, a imposição de tarifas comerciais pelo presidente Trump tende ter impacto contracionista sobre atividade global e pode até ter efeito desinflacionário fora dos Estados Unidos, reforçando o espaço para cortes adicionais de juros.
+
+Apesar desse pano de fundo, ao longo de julho, as curvas de juros em diversos países reprecificaram as taxas para cima. Ainda assim, os dados mais recentes do mercado de trabalho americano ampliaram a probabilidade de início, já em setembro, de um processo de recalibragem do Federal Funds Rate (taxa básica de juros dos EUA).
+
+Esse movimento pode desencadear uma queda relevante das taxas terminais nos países em estágio mais avançado do ciclo econômico. Mantemos, portanto, posições aplicadas em Canadá e Suécia, onde observamos nível de ociosidade crescente e elevado, enquanto o mercado ainda precifica pouco afrouxamento monetário adicional.
+
+Em commodities, seguimos com visão baixista para o petróleo. O balanço global de oferta e demanda aponta para excedente de produção nos próximos trimestres. Nossas posições vendidas sofreram no mês passado após ameaças de tarifas severas sobre a Rússia e compradores de seu petróleo, o que sustentou os preços no curto prazo. Aproveitamos esse movimento para aumentar a exposição vendida.
+
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em iene japonês contra Seguimos comprados na bolsa norte-americana
-o dólar norte-americano. Adicionamos compra e comprados na bolsa da China. Adicionamos
-de lira turca, euro e rúpia indiana contra o dólar compra da Bolsa do Brasil;
-norte-americano. Zeramos a venda de renminbi
-chinês contra o dólar norte-americano;
-Juros
-Seguimos com posições aplicadas no México,
+
+Moedas
+Seguimos comprados em iene japonês contra o dólar norte-americano. Adicionamos compra de lira turca, euro e rúpia indiana contra o dólar norte-americano. Zeramos a venda de renminbi chinês contra o dólar norte-americano;
+
 Commodities
-no Brasil e no Canadá. Adicionamos posições
-Mantivemos a venda de café, soja, zinco, aplicadas na Europa, Colômbia e Suécia.
-petróleo e a compra de ouro e gás natural;
+Mantivemos a venda de café, soja, zinco, petróleo e a compra de ouro e gás natural;
+
+Bolsa
+Seguimos comprados na bolsa norte-americana e comprados na bolsa da China. Adicionamos compra da Bolsa do Brasil;
+
+Juros
+Seguimos com posições aplicadas no México, no Brasil e no Canadá. Adicionamos posições aplicadas na Europa, Colômbia e Suécia.
 
 CARTA DO GESTOR JULHO 2025
 K10

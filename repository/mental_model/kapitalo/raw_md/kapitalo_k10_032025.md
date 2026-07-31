@@ -3,59 +3,30 @@ K10
 
 CARTA DO GESTOR MARÇO 2025
 K10
-LIBERATION DAY: CENÁRIO ECONÔMICO
+LIBERATION DAY:
 AUMENTO DA INCERTEZA,
-Os riscos e incertezas sobre os próximos passos
 CHOQUE DE OFERTA,
-desse processo vão afetar a confiança do consumidor
-e do investidor. O comércio global e as intenções de
 DESACELERAÇÃO ECONÔMICA
-investimento já estão sendo impactados, e a atividade
-global deve desacelerar de forma importante. A
-Em nossas últimas cartas, expressamos uma visão implementação da proposta feita no dia 2 de abril, se
-otimista sobre a agenda econômica do governo Trump resultar numa escalada de tarifas, pode desencadear
-para o setor privado americano: desregulamentação uma forte recessão global. Temos ciência de que
-massiva, aumento da produtividade do setor público as decisões do governo Trump costumam ser
-com cortes de gastos no governo federal, cortes fluidas e acreditamos que eles não queiram arriscar
-de impostos e esforços para aumentar a oferta de uma recessão econômica agora, mas os riscos
-energia barata. aumentaram expressivamente: a China, por exemplo,
-já optou pela retaliação, aumentando suas tarifas de
-Admitimos que enxergávamos com receio a questão bens importados dos Estados Unidos.
-das tarifas. Afinal de contas, esse é um assunto
-complexo, de difícil execução e com potencial
-risco de ruína. Contudo, com um plano bem
-desenhado, implementação faseada ao longo do PORTFÓLIO
-tempo e acompanhado por um programa de forte
-desregulamentação do setor privado, poderíamos ver
-uma onda de reshoring. Além disso, esse movimento Os livros de commodities, juros e moedas mantêm
-poderia despertar o interesse dos dois lados em um perfil baixista, se beneficiando se a atividade
-negociar e buscar um equilíbrio de menores barreiras global desacelerar de forma relevante. Algumas
-e tarifas comerciais. De acordo com os discursos commodities já apresentam um balanço prospectivo
-recentes de Scott Bessent, Secretário do Tesouro baixista, deixando o left tail provável num cenário
-Americano, parecia que estávamos caminhando de demanda fraca: como exemplo, nossos modelos
-nessa direção. apontam pra quedas nos preços de petróleo e
-derivados da ordem 30%, caso a desaceleração
-O anúncio de 2 de abril, no entanto, representa global seja mais acentuada. Ao longo do mês de
-um marco: pode sinalizar uma guinada na política março, aumentamos as posições aplicadas em
-econômica dos EUA em direção oposta à globalização juros. Já o livro de moedas continua com suas
-e ao livre comércio que predominaram nas últimas maiores alocações comprado em dólar americano
-décadas, ancorados em regras claras e bem definidas e no iene japonês. Adequamos o livro de bolsa,
-— justamente aquelas que os próprios Estados Unidos zerando os componentes mais cíclicos, como bancos
-ajudaram a estabelecer e sustentar. Vemos que a nova americanos. Aproveitamos a liquidação nos setores
-administração busca endereçar diversas questões de tecnologia e da cadeia de inteligência artificial
-estratégicas por meio de tarifas comerciais, sendo para aumentar nossas alocações nesse setor. Além
-arrecadação e protecionismo as duas principais. disso, aumentamos a posição vendida em Brasil e
-Com isso, porém, arrisca desencadear uma grave iniciamos uma posição vendida em Europa.
-guerra comercial. A probabilidade de isso acontecer
-vem aumentando rapidamente. Para fazer uma
-analogia histórica, o último evento similar ocorreu na
-década de 1930, que agravou a Grande Depressão da
-economia americana.
+
+Em nossas últimas cartas, expressamos uma visão otimista sobre a agenda econômica do governo Trump para o setor privado americano: desregulamentação massiva, aumento da produtividade do setor público com cortes de gastos no governo federal, cortes de impostos e esforços para aumentar a oferta de energia barata.
+
+Admitimos que enxergávamos com receio a questão das tarifas. Afinal de contas, esse é um assunto complexo, de difícil execução e com potencial risco de ruína. Contudo, com um plano bem desenhado, implementação faseada ao longo do tempo e acompanhado por um programa de forte desregulamentação do setor privado, poderíamos ver uma onda de reshoring. Além disso, esse movimento poderia despertar o interesse dos dois lados em negociar e buscar um equilíbrio de menores barreiras e tarifas comerciais. De acordo com os discursos recentes de Scott Bessent, Secretário do Tesouro Americano, parecia que estávamos caminhando nessa direção.
+
+O anúncio de 2 de abril, no entanto, representa um marco: pode sinalizar uma guinada na política econômica dos EUA em direção oposta à globalização e ao livre comércio que predominaram nas últimas décadas, ancorados em regras claras e bem definidas — justamente aquelas que os próprios Estados Unidos ajudaram a estabelecer e sustentar. Vemos que a nova administração busca endereçar diversas questões estratégicas por meio de tarifas comerciais, sendo arrecadação e protecionismo as duas principais. Com isso, porém, arrisca desencadear uma grave guerra comercial. A probabilidade de isso acontecer vem aumentando rapidamente. Para fazer uma analogia histórica, o último evento similar ocorreu na década de 1930, que agravou a Grande Depressão da economia americana.
+
+CENÁRIO ECONÔMICO
+
+Os riscos e incertezas sobre os próximos passos desse processo vão afetar a confiança do consumidor e do investidor. O comércio global e as intenções de investimento já estão sendo impactados, e a atividade global deve desacelerar de forma importante. A implementação da proposta feita no dia 2 de abril, se resultar numa escalada de tarifas, pode desencadear uma forte recessão global. Temos ciência de que as decisões do governo Trump costumam ser fluidas e acreditamos que eles não queiram arriscar uma recessão econômica agora, mas os riscos aumentaram expressivamente: a China, por exemplo, já optou pela retaliação, aumentando suas tarifas de bens importados dos Estados Unidos.
+
+PORTFÓLIO
+
+Os livros de commodities, juros e moedas mantêm um perfil baixista, se beneficiando se a atividade global desacelerar de forma relevante. Algumas commodities já apresentam um balanço prospectivo baixista, deixando o left tail provável num cenário de demanda fraca: como exemplo, nossos modelos apontam pra quedas nos preços de petróleo e derivados da ordem 30%, caso a desaceleração global seja mais acentuada. Ao longo do mês de março, aumentamos as posições aplicadas em juros. Já o livro de moedas continua com suas maiores alocações comprado em dólar americano e no iene japonês. Adequamos o livro de bolsa, zerando os componentes mais cíclicos, como bancos americanos. Aproveitamos a liquidação nos setores de tecnologia e da cadeia de inteligência artificial para aumentar nossas alocações nesse setor. Além disso, aumentamos a posição vendida em Brasil e iniciamos uma posição vendida em Europa.
 
 CARTA DO GESTOR MARÇO 2025
 K10
-ALOCAÇÃO 1,12%
+ALOCAÇÃO
 POR FATOR DE RISCO
+1,12%
 1,08%
 *Mínimo, Médio e Máximo ao longo do mês
 VaR 1d; 95% (% do PL)

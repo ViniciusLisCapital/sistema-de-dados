@@ -4,42 +4,75 @@ K10
 CARTA DO GESTOR ABRIL 2026
 K10
 CENÁRIO
-No mês de abril, o fundo Kapitalo K10 teve retorno de Vemos a situação como insustentável caso o Estreito
-3,12% contra 1,09% do seu benchmark. Os livros de continue fechado. Com o fim das manutenções nas
-juros, bolsa e commodities foram positivos. refinarias nas próximas semanas, acreditamos que
-os preços de petróleo cru deveriam voltar a subir.
+No mês de abril, o fundo Kapitalo K10 teve retorno de
+3,12% contra 1,09% do seu benchmark. Os livros de
+juros, bolsa e commodities foram positivos.
+
 No início do mês, Estados Unidos e Irã anunciaram
-um cessar-fogo e partiram para uma tentativa de A manutenção do preço do petróleo em patamar
-resolução diplomática do conflito. A expectativa mais elevado e por mais tempo tem produzido uma
-de normalização do fluxo de petróleo e uma safra alta na inflação corrente e uma revisão para cima
-de resultados muito positiva das empresas norte- na inflação prospectiva. A resposta de política
-americanas geraram uma reprecificação importante monetária tem variado, dependendo do estado
-dos ativos de risco. inicial da economia. Bancos centrais como o RBA,
-da Austrália, e o Norges Bank, da Noruega, que já se
-Após uma forte onda de compras em março, encontravam diante de um cenário de atividade forte
-principalmente por consumidores da Ásia procurando e inflação elevada, foram mais pró-ativos e subiram
-cobrir a demanda de meses à frente, o mercado de as taxas de juros. Por outro lado, bancos centrais
-petróleo mostrou sinais de estabilidade em abril. que se encontravam diante de uma economia mais
-Atribuímos isso a alguns fatores como: (i) a utilização equilibrada endureceram o discurso, mas deixaram
-das reservas estratégicas de petróleo no Ocidente e claro que podem subir as taxas de juros caso não
-na China; (ii) a sazonalidade negativa do balanço no haja normalização nos preços do petróleo.
+um cessar-fogo e partiram para uma tentativa de
+resolução diplomática do conflito. A expectativa
+de normalização do fluxo de petróleo e uma safra
+de resultados muito positiva das empresas norte-
+americanas geraram uma reprecificação importante
+dos ativos de risco.
+
+Após uma forte onda de compras em março,
+principalmente por consumidores da Ásia procurando
+cobrir a demanda de meses à frente, o mercado de
+petróleo mostrou sinais de estabilidade em abril.
+Atribuímos isso a alguns fatores como: (i) a utilização
+das reservas estratégicas de petróleo no Ocidente e
+na China; (ii) a sazonalidade negativa do balanço no
 segundo trimestre, quando várias refinarias param
-para executar manutenções preventivas; e (iii) a Seguimos com um livro comprado em petróleo,
-esperança dos agentes de que uma solução para o comprado em ativos de risco e aplicados no juro
-conflito será encontrada no curto prazo. curto de países com maior capacidade ociosa.
+para executar manutenções preventivas; e (iii) a
+esperança dos agentes de que uma solução para o
+conflito será encontrada no curto prazo.
+
+Vemos a situação como insustentável caso o Estreito
+continue fechado. Com o fim das manutenções nas
+refinarias nas próximas semanas, acreditamos que
+os preços de petróleo cru deveriam voltar a subir.
+
+A manutenção do preço do petróleo em patamar
+mais elevado e por mais tempo tem produzido uma
+alta na inflação corrente e uma revisão para cima
+na inflação prospectiva. A resposta de política
+monetária tem variado, dependendo do estado
+inicial da economia. Bancos centrais como o RBA,
+da Austrália, e o Norges Bank, da Noruega, que já se
+encontravam diante de um cenário de atividade forte
+e inflação elevada, foram mais pró-ativos e subiram
+as taxas de juros. Por outro lado, bancos centrais
+que se encontravam diante de uma economia mais
+equilibrada endureceram o discurso, mas deixaram
+claro que podem subir as taxas de juros caso não
+haja normalização nos preços do petróleo.
+
+Seguimos com um livro comprado em petróleo,
+comprado em ativos de risco e aplicados no juro
+curto de países com maior capacidade ociosa.
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em peso chileno Seguimos comprados no setor de tecnologia
-e vendidos no baht tailandês, ambos contra nos Estados Unidos e na bolsa da Argentina
-o dólar norte-americano. Adicionamos compra e vendidos no índice de small caps dos Estados
-do rand sul-africano e venda de euro, ambos Unidos. Adicionamos compra da bolsa do Brasil.
+Moedas
+Seguimos comprados em peso chileno
+e vendidos no baht tailandês, ambos contra
+o dólar norte-americano. Adicionamos compra
+do rand sul-africano e venda de euro, ambos
 contra o dólar norte-americano.
-Juros
+
 Commodities
-Mantivemos posições aplicadas no Brasil,
-Mantivemos as vendas de café, trigo e zinco na Suécia, no México e no Canadá.
+Mantivemos as vendas de café, trigo e zinco
 e as compras de petróleo, diesel, ouro e alumínio.
 Adicionamos compras de cobre e de óleo de soja.
+
+Bolsa
+Seguimos comprados no setor de tecnologia
+nos Estados Unidos e na bolsa da Argentina
+e vendidos no índice de small caps dos Estados
+Unidos. Adicionamos compra da bolsa do Brasil.
+
+Juros
+Mantivemos posições aplicadas no Brasil,
+na Suécia, no México e no Canadá.
 
 CARTA DO GESTOR ABRIL 2026
 K10
@@ -92,7 +125,7 @@ MAI/18 NOV/18 JUN/19 DEZ/19 JUN/20 DEZ/20 JUL/21 JAN/22 JUL/22 FEV/23 AGO/23 FEV
 CARTA DO GESTOR ABRIL 2026
 K10
 Este conteúdo foi elaborado por Kapitalo Investimentos Ltda. e Kapi-
-talo Nexo Gestão de Recursos Ltda. (em conjunto, “Gestoras Kapitalo”),
+talo Nexo Gestão de Recursos Ltda. (em conjunto, "Gestoras Kapitalo"),
 não podendo ser reproduzido, copiado ou distribuído sem autorização
 das Gestoras Kapitalo, estando isentas de responsabilidade em caso
 de erros de avaliações e omissões. Suas informações são de caráter
@@ -123,16 +156,21 @@ butário buscado, seja de Longo Prazo ou Ações. As Gestoras Kapitalo,
 seus administradores, sócios e funcionários não se responsabilizam
 pela publicação acidental de informações incorretas, e isentam-se
 de responsabilidade sobre quaisquer danos resultantes direta ou in-
-KAPITALO INVESTIMENTOS LTDA
 diretamente da utilização das informações contidas neste documen-
-to. Recomenda-se que os investidores consultem assessores de in- Av. Brigadeiro Faria Lima, 3144
+to. Recomenda-se que os investidores consultem assessores de in-
 vestimentos e profissionais especializados antes de tomar qualquer
-decisão. Para mais informações, consulte os documentos do fundo, 11º andar - Itaim Bibi
+decisão. Para mais informações, consulte os documentos do fundo,
 disponíveis com os respectivos administradores fiduciários: BEM Dis-
-01451-000 – São Paulo, SP
 tribuidora de Títulos e Valores Mobiliários Ltda., com endereço eletrô-
-nico https://bemdtvm.bradesco/; BTG Pactual Serviços Financeiros (11) 3956-0600
+nico https://bemdtvm.bradesco/; BTG Pactual Serviços Financeiros
 S.A. DTVM, com endereço eletrônico https://www.btgpactual.com/;
-e INTRAG Distribuidora de Títulos e Valores Mobiliários Ltda.; com en- kapitalo.com.br
+e INTRAG Distribuidora de Títulos e Valores Mobiliários Ltda.; com en-
 dereço eletrônico https://www.intrag.com.br/. Supervisão e Fiscali-
 zação: Comissão de Valores Mobiliários – CVM.
+
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

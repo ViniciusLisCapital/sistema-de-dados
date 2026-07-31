@@ -4,71 +4,61 @@ K10
 CARTA DO GESTOR ABRIL 2025
 K10
 CENÁRIO
-O mês de abril foi marcado por um forte movimento Por outro lado, as agendas de cortes de impostos
-nas condições financeiras dos EUA (vide gráfico). e de desregulamentação devem ficar mais claras
-A reação dos mercados ao anúncio feito pela nos próximos meses. Dependendo do formato e da
-administração Trump no “Liberation Day” foi de queda velocidade de aprovação, esses vetores podem ser
-relevante nas bolsas, abertura dos spreads de crédito atenuantes importantes para o choque negativo
-e alta da parte longa da curva de juros. Logo em gerado pelas tarifas.
-seguida, a administração – liderada pelo secretário do
-Tesouro, Scott Bessent – foi forçada pelos mercados O fundo apresentou bons resultados em abril, com
-e empresários a recuar e ajustar o processo de contribuições positivas das 4 classes de ativos. Ao
-negociação das tarifas comerciais. longo do mês fomos reduzindo algumas alocações,
-mas mantivemos um livro com posições aplicadas
-EUA: Índice de Condições Financeiras em juros e vendidas em commodities, que devem se
-beneficiar de uma desaceleração da atividade global.
+
+O mês de abril foi marcado por um forte movimento nas condições financeiras dos EUA (vide gráfico). A reação dos mercados ao anúncio feito pela administração Trump no "Liberation Day" foi de queda relevante nas bolsas, abertura dos spreads de crédito e alta da parte longa da curva de juros. Logo em seguida, a administração – liderada pelo secretário do Tesouro, Scott Bessent – foi forçada pelos mercados e empresários a recuar e ajustar o processo de negociação das tarifas comerciais.
+
+EUA: Índice de Condições Financeiras
 100,4
-No livro de bolsa, seguimos comprados nos setores de
 100,2
-100,0 tecnologia e da cadeia de inteligência artificial.
+100,0
 99,8
-99,6 Atualização Gás Natural: na metade de abril zeramos
-99,4 a posição vendida nos contratos de gás natural com
-99,2 vencimento no verão de 2025.
+99,6
+99,4
+99,2
 99,0
 98,8
-Apesar da necessidade de preços mais altos a médio
 98,6
-JUN JUL AGO SET OUT NOV DEZ JAN FEV MAR ABR prazo para atender ao crescimento da capacidade de
-24 24 24 24 24 24 24 25 25 25 25
-exportação, entendíamos que o preço no intervalo
-de $4.0 - $4.5 / mmbtu deveria gerar um acúmulo
-de estoques maior que o necessário até o final de
-Está ficando mais claro que o governo reconheceu outubro. Isso porque uma boa parte da capacidade de
-o erro e está buscando soluções bilaterais com geração a carvão seria ativada (portanto reduzindo a
-diversos países, contudo o resultado final das queima de gás) e porque os turn-in-lines, represados
-negociações das tarifas comerciais ainda é bastante em 2024, seriam utilizados pelos produtores. Com
-incerto. De toda forma, acreditamos que, ao fim do a realização de injections fortes em março e abril, o
-processo, ainda haverá um aumento importante gás do verão de 2025 convergiu para preços ao redor
-da alíquota média de importação (efeito análogo de $3.3 / mmbtu, quando decidimos encerrar nossa
-a um aumento de imposto sobre o consumo), que posição vendida.
-deve resultar em um aumento do nível de preços
-nos EUA e em uma desaceleração da atividade A correção dos preços da parte curta da curva acabou
-econômica global. Além disso, tudo leva a crer que contaminando os preços do ano calendário de 2026,
-a discrepância entre as alíquotas incidentes sobre a onde a probabilidade de um déficit de oferta parece
-China e os demais países permanecerá, o que deve alta. Aproveitamos para montar uma posição comprada
-afetar a competitividade relativa e criar um incentivo nos contratos com vencimento no verão de 2026.
-à realocação da manufatura global. Alguns países
-asiáticos podem se beneficiar desse novo desenho.
+Aperto do FCI
+Liberation Day
+JUN 24
+JUL 24
+AGO 24
+SET 24
+OUT 24
+NOV 24
+DEZ 24
+JAN 25
+FEV 25
+MAR 25
+ABR 25
+
+Está ficando mais claro que o governo reconheceu o erro e está buscando soluções bilaterais com diversos países, contudo o resultado final das negociações das tarifas comerciais ainda é bastante incerto. De toda forma, acreditamos que, ao fim do processo, ainda haverá um aumento importante da alíquota média de importação (efeito análogo a um aumento de imposto sobre o consumo), que deve resultar em um aumento do nível de preços nos EUA e em uma desaceleração da atividade econômica global. Além disso, tudo leva a crer que a discrepância entre as alíquotas incidentes sobre a China e os demais países permanecerá, o que deve afetar a competitividade relativa e criar um incentivo à realocação da manufatura global. Alguns países asiáticos podem se beneficiar desse novo desenho.
+
+Por outro lado, as agendas de cortes de impostos e de desregulamentação devem ficar mais claras nos próximos meses. Dependendo do formato e da velocidade de aprovação, esses vetores podem ser atenuantes importantes para o choque negativo gerado pelas tarifas.
+
+O fundo apresentou bons resultados em abril, com contribuições positivas das 4 classes de ativos. Ao longo do mês fomos reduzindo algumas alocações, mas mantivemos um livro com posições aplicadas em juros e vendidas em commodities, que devem se beneficiar de uma desaceleração da atividade global. No livro de bolsa, seguimos comprados nos setores de tecnologia e da cadeia de inteligência artificial.
+
+Atualização Gás Natural: na metade de abril zeramos a posição vendida nos contratos de gás natural com vencimento no verão de 2025.
+
+Apesar da necessidade de preços mais altos a médio prazo para atender ao crescimento da capacidade de exportação, entendíamos que o preço no intervalo de $4.0 - $4.5 / mmbtu deveria gerar um acúmulo de estoques maior que o necessário até o final de outubro. Isso porque uma boa parte da capacidade de geração a carvão seria ativada (portanto reduzindo a queima de gás) e porque os turn-in-lines, represados em 2024, seriam utilizados pelos produtores. Com a realização de injections fortes em março e abril, o gás do verão de 2025 convergiu para preços ao redor de $3.3 / mmbtu, quando decidimos encerrar nossa posição vendida.
+
+A correção dos preços da parte curta da curva acabou contaminando os preços do ano calendário de 2026, onde a probabilidade de um déficit de oferta parece alta. Aproveitamos para montar uma posição comprada nos contratos com vencimento no verão de 2026.
 
 CARTA DO GESTOR ABRIL 2025
 POSIÇÕES
-Moedas Commodities
-Ao longo do mês zeramos a nossa posição comprada Mantivemos as posições vendidas em café, alumínio,
-no dólar norte-americano. Seguimos com posições zinco e PGMs, e a posição comprada em ouro. Zeramos
-compradas no iene japonês e na lira turca e com as posições compradas em açúcar, no cobre e a
-posição vendida no renminbi chinês. Adicionamos posição vendida em gás natural. Adicionamos posição
-posições compradas na rúpia indiana, no dólar comprada no gás natural calendário 2026 e posição
-canadense e no dólar australiano contra o renminbi. vendida no petróleo.
-Zeramos as posições vendidas na libra esterlina
-Juros
-e na coroa sueca.
-As posições de juros foram reduzidas, mas seguimos
+
+Moedas
+Ao longo do mês zeramos a nossa posição comprada no dólar norte-americano. Seguimos com posições compradas no iene japonês e na lira turca e com posição vendida no renminbi chinês. Adicionamos posições compradas na rúpia indiana, no dólar canadense e no dólar australiano contra o renminbi. Zeramos as posições vendidas na libra esterlina e na coroa sueca.
+
 Bolsa
-com posições aplicadas na Suécia, nos EUA, na China,
-Reduzimos a posição comprada na bolsa norte- no México e no juro real de Brasil e comprados na
-americana e mantivemos a posição comprada na bolsa inflação implícita do Brasil. Adicionamos posição
-chinesa. Zeramos a posição vendida na bolsa do Brasil. aplicada no Canadá.
+Reduzimos a posição comprada na bolsa norte-americana e mantivemos a posição comprada na bolsa chinesa. Zeramos a posição vendida na bolsa do Brasil.
+
+Commodities
+Mantivemos as posições vendidas em café, alumínio, zinco e PGMs, e a posição comprada em ouro. Zeramos as posições compradas em açúcar, no cobre e a posição vendida em gás natural. Adicionamos posição comprada no gás natural calendário 2026 e posição vendida no petróleo.
+
+Juros
+As posições de juros foram reduzidas, mas seguimos com posições aplicadas na Suécia, nos EUA, na China, no México e no juro real de Brasil e comprados na inflação implícita do Brasil. Adicionamos posição aplicada no Canadá.
+
 ALOCAÇÃO
 1,63%
 POR FATOR DE RISCO

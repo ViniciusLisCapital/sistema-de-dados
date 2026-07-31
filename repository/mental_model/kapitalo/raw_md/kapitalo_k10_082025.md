@@ -4,61 +4,45 @@ K10
 CARTA DO GESTOR AGOSTO 2025
 K10
 CENÁRIO
-O fundo K10 teve retorno de 3,30% em agosto. Mais recentemente, o acordo com o FMI permitiu
-Todos os livros tiveram resultado positivo, com o aumento das reservas internacionais e foi
-as maiores contribuições vindas dos livros de juros acompanhado pela flexibilização de grande parte do
-e de commodities. mercado cambial.
-A economia global segue apresentando sinais de As eleições legislativas nacionais ocorrerão outubro e
-desaceleração moderada. O mercado de trabalho de são vistas como um referendo às políticas do governo.
-países como os Estados Unidos, Canadá, Inglaterra Uma vitória do partido incumbente permitiria criar
-e Suécia seguem deteriorando, e há risco crescente uma base mais sólida no Congresso, que seria capaz
-de um aumento mais pronunciado nas taxas de de manter os vetos às políticas fiscais expansionistas
-desemprego. O impacto das tarifas em importações e barrar processos de impeachment. No entanto, a
-sobre os preços tem sido até então contido, e a inflação Província de Buenos Aires teve sua eleição antecipada
-nas economias desenvolvidas segue controlada, o que para o início de setembro e o resultado foi uma derrota
-deve permitir uma recalibragem das taxas de juros por frente aos kirchneristas.
-parte dos bancos centrais.
-Nesse contexto, o mercado passou a se questionar
-Essa combinação de piora gradual da atividade, inflação a respeito da manutenção da política econômica e
-cadente e afrouxamento monetário deve estender o da viabilidade do governo ao longo dos próximos
-ciclo econômico global, o que historicamente está dois anos. Houve uma queda expressiva nos preços
-associado a períodos de retornos positivos para os dos ativos locais e o CDS de 5 anos subiu 500
-ativos de risco. pontos, refletindo alta probabilidade de default da
-dívida soberana.
-Nosso livro continua aplicado em juros nas regiões
-mais avançados no ciclo econômico, vendido no Apesar do evento negativo, o nível de aprovação
-dólar norte-americano e comprado em ações. do governo ainda segue em patamar relativamente
-O panorama global favorável tem nos permitido elevado e consistente com uma votação de cerca
-buscar oportunidades de investimentos em países de 40% nas eleições legislativas nacionais, o que
-mais alavancados e com ativos que embutem maiores seria lido como positivo. Entretanto, o desafio agora
-prêmios de risco. passa por manter a estabilidade macroeconômica no
-período que antecede a eleição legislativa nacional.
-Uma depreciação forçada do câmbio tenderia a afetar
-O CASO DA ARGENTINA a confiança no governo e complicar a perspectiva do
-VOLTOU AO NOSSO RADAR cenário eleitoral.
-Desde que assumiu a presidência em 2023, o governo Nos parece que os ativos argentinos precificam
-Milei promoveu um ajuste macroeconômico de uma probabilidade muito elevada de uma derrota
-grandes proporções, mesmo contando com uma contundente do governo Milei nas eleições de outubro.
-base de apoio muito restrita no Congresso. Houve um Os títulos da dívida soberana já negociam em preços
-ajuste fiscal de 4,5% do PIB, implementado com corte muito descontados, condizentes com casos de maior
-expressivo de subsídios e gastos primários, o que estresse. Iniciamos posições compradas em crédito e
-contribuiu para uma queda significativa da inflação, em ações na Argentina.
-que passou de 200% para 40% ao ano.
+
+O fundo K10 teve retorno de 3,30% em agosto. Todos os livros tiveram resultado positivo, com as maiores contribuições vindas dos livros de juros e de commodities.
+
+A economia global segue apresentando sinais de desaceleração moderada. O mercado de trabalho de países como os Estados Unidos, Canadá, Inglaterra e Suécia seguem deteriorando, e há risco crescente de um aumento mais pronunciado nas taxas de desemprego. O impacto das tarifas em importações sobre os preços tem sido até então contido, e a inflação nas economias desenvolvidas segue controlada, o que deve permitir uma recalibragem das taxas de juros por parte dos bancos centrais.
+
+Essa combinação de piora gradual da atividade, inflação cadente e afrouxamento monetário deve estender o ciclo econômico global, o que historicamente está associado a períodos de retornos positivos para os ativos de risco.
+
+Nosso livro continua aplicado em juros nas regiões mais avançados no ciclo econômico, vendido no dólar norte-americano e comprado em ações. O panorama global favorável tem nos permitido buscar oportunidades de investimentos em países mais alavancados e com ativos que embutem maiores prêmios de risco.
+
+O CASO DA ARGENTINA VOLTOU AO NOSSO RADAR
+
+Desde que assumiu a presidência em 2023, o governo Milei promoveu um ajuste macroeconômico de grandes proporções, mesmo contando com uma base de apoio muito restrita no Congresso. Houve um ajuste fiscal de 4,5% do PIB, implementado com corte expressivo de subsídios e gastos primários, o que contribuiu para uma queda significativa da inflação, que passou de 200% para 40% ao ano.
+
+Mais recentemente, o acordo com o FMI permitiu o aumento das reservas internacionais e foi acompanhado pela flexibilização de grande parte do mercado cambial.
+
+As eleições legislativas nacionais ocorrerão outubro e são vistas como um referendo às políticas do governo. Uma vitória do partido incumbente permitiria criar uma base mais sólida no Congresso, que seria capaz de manter os vetos às políticas fiscais expansionistas e barrar processos de impeachment. No entanto, a Província de Buenos Aires teve sua eleição antecipada para o início de setembro e o resultado foi uma derrota frente aos kirchneristas.
+
+Nesse contexto, o mercado passou a se questionar a respeito da manutenção da política econômica e da viabilidade do governo ao longo dos próximos dois anos. Houve uma queda expressiva nos preços dos ativos locais e o CDS de 5 anos subiu 500 pontos, refletindo alta probabilidade de default da dívida soberana.
+
+Apesar do evento negativo, o nível de aprovação do governo ainda segue em patamar relativamente elevado e consistente com uma votação de cerca de 40% nas eleições legislativas nacionais, o que seria lido como positivo. Entretanto, o desafio agora passa por manter a estabilidade macroeconômica no período que antecede a eleição legislativa nacional. Uma depreciação forçada do câmbio tenderia a afetar a confiança no governo e complicar a perspectiva do cenário eleitoral.
+
+Nos parece que os ativos argentinos precificam uma probabilidade muito elevada de uma derrota contundente do governo Milei nas eleições de outubro. Os títulos da dívida soberana já negociam em preços muito descontados, condizentes com casos de maior estresse. Iniciamos posições compradas em crédito e em ações na Argentina.
 
 CARTA DO GESTOR AGOSTO 2025
 K10
 POSIÇÕES
-Moedas Bolsa
-seguimos comprados em iene japonês, seguimos comprados nos Estados Unidos,
-na lira turca, no euro e na rupia indiana no Brasil e na China, e adicionamos novas
-contra o dólar norte-americano; posições compradas na Argentina;
-Juros
+
+Moedas
+seguimos comprados em iene japonês, na lira turca, no euro e na rupia indiana contra o dólar norte-americano;
+
+Bolsa
+seguimos comprados nos Estados Unidos, no Brasil e na China, e adicionamos novas posições compradas na Argentina;
+
 Commodities
-mantivemos posições aplicadas no Brasil,
-mantivemos posições vendidas em café, no Canadá, na Europa, na Colômbia e na Suécia.
-soja, zinco e petróleo, e continuamos comprados Encerramos a posição aplicada no México e
-em ouro e gás natural; adicionamos uma posição tomada na parte longa
-da curva de juros dos Estados Unidos.
+mantivemos posições vendidas em café, soja, zinco e petróleo, e continuamos comprados em ouro e gás natural;
+
+Juros
+mantivemos posições aplicadas no Brasil, no Canadá, na Europa, na Colômbia e na Suécia. Encerramos a posição aplicada no México e adicionamos uma posição tomada na parte longa da curva de juros dos Estados Unidos.
+
 ALOCAÇÃO
 POR FATOR DE RISCO
 *Mínimo, Médio e Máximo ao longo do mês

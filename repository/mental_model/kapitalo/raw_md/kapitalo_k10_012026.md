@@ -5,281 +5,193 @@ CARTA DO GESTOR JANEIRO 2026
 K10
 FOI A NOMEAÇÃO
 DE KEVIN WARSH
-O “MINSKY MOMENT”
+O "MINSKY MOMENT"
 DA PRATA?
-No mês de janeiro o fundo Kapitalo K10 teve retorno Os eventos geopolíticos também tiveram destaque:
-de 2,49% contra 1,16% do seu benchmark. Os livros de a captura de Nicolás Maduro, para ser julgado pelas
-bolsa, juros e moedas tiveram resultados positivos, cortes norte-americanas por tráfico internacional
-enquanto o livro de commodities apresentou de drogas, foi uma operação militar exemplar. A
-resultado negativo. rediscussão dos direitos de uso da Groenlândia
-deve começar em outra base de referência. As
-As reuniões dos bancos centrais trouxeram novidades manifestações populares no Irã abriram uma janela
-importantes. Após três cortes consecutivos, o Fed para renegociação com o atual regime sobre o total
-decidiu manter a taxa de juros inalterada, apoiado abandono do programa nuclear do país.
+No mês de janeiro o fundo Kapitalo K10 teve retorno
+de 2,49% contra 1,16% do seu benchmark. Os livros de
+bolsa, juros e moedas tiveram resultados positivos,
+enquanto o livro de commodities apresentou
+resultado negativo.
+As reuniões dos bancos centrais trouxeram novidades
+importantes. Após três cortes consecutivos, o Fed
+decidiu manter a taxa de juros inalterada, apoiado
 em um maior conforto com a retomada da atividade e
-alguns sinais de estabilização no mercado de trabalho. A maior atuação do governo norte-americano no
-No Brasil, o Banco Central reconheceu a melhora da âmbito geopolítico, somada às ameaças de novas
-inflação e a desaceleração da economia, passando tarifas de importação e à agenda interna mais populista
-então a sinalizar o início de um ciclo de recalibragem mirando as eleições de midterm, reacenderam o
-da política monetária na reunião de março. ímpeto por diversificação dos portfólios globais para
-ativos do resto do mundo. Como exemplo, alguns
-Já no fim do mês, Trump decidiu nomear Kevin fundos de pensão internacionais sinalizaram a
-Warsh como o novo chairman do Fed. Warsh é redução da alocação em ativos norte-americanos.
-reconhecido como um tecnocrata independente, o Essa busca por diversificação beneficiou os ativos
-que reforça a institucionalidade do Banco Central de países emergentes, principalmente as bolsas, e
-dos Estados Unidos. Além disso, ele defende uma algumas commodities.
+alguns sinais de estabilização no mercado de trabalho.
+No Brasil, o Banco Central reconheceu a melhora da
+inflação e a desaceleração da economia, passando
+então a sinalizar o início de um ciclo de recalibragem
+da política monetária na reunião de março.
+Já no fim do mês, Trump decidiu nomear Kevin
+Warsh como o novo chairman do Fed. Warsh é
+reconhecido como um tecnocrata independente, o
+que reforça a institucionalidade do Banco Central
+dos Estados Unidos. Além disso, ele defende uma
 revisão mais profunda das ações adotadas pela
-autoridade monetária desde a crise financeira de Nesse contexto, seguimos com um livro com posições
-2008, o que parece bem alinhado com a agenda do aplicadas em juros de forma seletiva. Nosso livro de
-secretário do tesouro, Scott Bessent1. Ele argumenta moedas está com risco baixo, mas segue vendido no
-que o Fed tem atuado de maneira excessiva no dólar norte-amerciano contra países emergentes.
-mercado financeiro, notadamente via a expansão de Mantivemos um livro de ações comprado em países
-seu balanço e maior uso de poder regulatório. Tais emergentes e em tecnologia nos Estados Unidos. No
-práticas possuem eficácia duvidosa em expandir a livro de commodities, mantivemos posição vendida em
-economia e manter a inflação baixa e acabam por petróleo, mas reduzimos a nossa exposição ao ouro.
+autoridade monetária desde a crise financeira de
+2008, o que parece bem alinhado com a agenda do
+secretário do tesouro, Scott Bessent1. Ele argumenta
+que o Fed tem atuado de maneira excessiva no
+mercado financeiro, notadamente via a expansão de
+seu balanço e maior uso de poder regulatório. Tais
+práticas possuem eficácia duvidosa em expandir a
+economia e manter a inflação baixa e acabam por
 gerar efeitos distributivos relevantes, afetando a
 credibilidade e a independência do Fed.
+Os eventos geopolíticos também tiveram destaque:
+a captura de Nicolás Maduro, para ser julgado pelas
+cortes norte-americanas por tráfico internacional
+de drogas, foi uma operação militar exemplar. A
+rediscussão dos direitos de uso da Groenlândia
+deve começar em outra base de referência. As
+manifestações populares no Irã abriram uma janela
+para renegociação com o atual regime sobre o total
+abandono do programa nuclear do país.
+A maior atuação do governo norte-americano no
+âmbito geopolítico, somada às ameaças de novas
+tarifas de importação e à agenda interna mais populista
+mirando as eleições de midterm, reacenderam o
+ímpeto por diversificação dos portfólios globais para
+ativos do resto do mundo. Como exemplo, alguns
+fundos de pensão internacionais sinalizaram a
+redução da alocação em ativos norte-americanos.
+Essa busca por diversificação beneficiou os ativos
+de países emergentes, principalmente as bolsas, e
+algumas commodities.
+Nesse contexto, seguimos com um livro com posições
+aplicadas em juros de forma seletiva. Nosso livro de
+moedas está com risco baixo, mas segue vendido no
+dólar norte-americano contra países emergentes.
+Mantivemos um livro de ações comprado em países
+emergentes e em tecnologia nos Estados Unidos. No
+livro de commodities, mantivemos posição vendida em
+petróleo, mas reduzimos a nossa exposição ao ouro.
 1 http://www.international-economy.com/TIE_Sp25_Bessent.pdf
 
 CARTA DO GESTOR JANEIRO 2026
 K10
 OURO: ATUALIZAÇÃO
-Em 2020, dedicamos uma carta mensal do K10 para políticas monetárias extremamente acomodatícias
-analisar o ouro como alternativa de investimento2. decorrentes dos efeitos recessivos da pandemia.
-Na época, tínhamos uma visão bastante construtiva Aquele ambiente nos parecia propício para que o
-que era fundamentada: (1) pelo aumento dos déficits ouro viesse a se tornar uma alocação importante nos
-fiscais e do endividamento público; e (2) pelas portfólios de investidores públicos e privados.
+Em 2020, dedicamos uma carta mensal do K10 para
+analisar o ouro como alternativa de investimento2.
+Na época, tínhamos uma visão bastante construtiva
+que era fundamentada: (1) pelo aumento dos déficits
+fiscais e do endividamento público; e (2) pelas
+políticas monetárias extremamente acomodatícias
+decorrentes dos efeitos recessivos da pandemia.
+Aquele ambiente nos parecia propício para que o
+ouro viesse a se tornar uma alocação importante nos
+portfólios de investidores públicos e privados.
+2 https://www.kapitalo.com.br/wp-content/uploads/2020/02/Carta-K10_Abril-2020-1.pdf
 GRÁFICO 1:
 EUA: TERMO DE JURO REAL 5Y5Y E PREÇO DO OURO
-PREÇO DO OURO (EM LOG)
 Até 2023, períodos de queda do juro real coincidiam
-com o aumento do preço do ouro (área hachurada), e TAXA DE JURO REAL 5y5y - MÉDIA 12M
+com o aumento do preço do ouro (área hachurada), e
 vice-versa.
-3,9 2,5
-3,7 2
-3,5 1,5
-3,3 1
-3,1 0,5
-2,9 0
-2,7 -0,5
-2,5 -1
-2 https://www.kapitalo.com.br/wp-content/uploads/2020/02/Carta-K10_Abril-2020-1.pdf
-50
-LUJ
-60
-VEF
-60
-TES
-70
-RBA
-70
-VON
-80
-NUJ
-90
-NAJ
-90
-OGA
-01
-RAM
-01
-TUO
-11
-IAM
-11
-ZED
-21
-LUJ
-31
-VEF
-31
-TES
-41
-RBA
-41
-VON
-51
-NUJ
-61
-NAJ
-61
-OGA
-71
-RAM
-71
-TUO
-81
-IAM
-81
-ZED
-91
-LUJ
-02
-VEF
-02
-TES
-12
-RBA
-12
-VON
-22
-NUJ
-32
-NAJ
-32
-OGA
-42
-RAM
-42
-TUO
-52
-IAM
-52
-ZED
-JUROS E OURO
-PARA CIMA
-)GOL
-ME(
-ORUO
-OD
-OÇERP
-JURO
-REAL
-5y5y
-Contudo, a partir de 2023, passamos a presenciar de ouro como alternativa aos ativos norte-americanos
-um comportamento distinto. Apesar do expressivo para reservas internacionais. Esse movimento foi
-aperto das condições monetárias, as sanções seguido por outros investidores públicos e privados.
-impostas pelos Estados Unidos às reservas Nos últimos três anos, a prevalência do ouro nos
-internacionais da Rússia geraram uma aceleração, portfólios globais aumentou significativamente, e os
-principalmente pelos bancos centrais, das compras preços reagiram.
+Legenda: PREÇO DO OURO (EM LOG); TAXA DE JURO REAL 5y5y - MÉDIA 12M
+Eixo esquerdo (preço do ouro, em log): 3,9 3,7 3,5 3,3 3,1 2,9 2,7 2,5
+Eixo direito (juro real 5y5y, média 12m): 2,5 2 1,5 1 0,5 0 -0,5 -1
+Eixo X (datas): JUL 05, FEV 06, SET 06, ABR 07, NOV 07, JUN 08, JAN 09, AGO 09, MAR 10, OUT 10, MAI 11, DEZ 11, JUL 12, FEV 13, SET 13, ABR 14, NOV 14, JUN 15, JAN 16, AGO 16, MAR 17, OUT 17, MAI 18, DEZ 18, JUL 19, FEV 20, SET 20, ABR 21, NOV 21, JUN 22, JAN 23, AGO 23, MAR 24, OUT 24, MAI 25, DEZ 25
+Anotação no gráfico: JUROS E OURO PARA CIMA
+Rótulos dos eixos verticais: PREÇO DO OURO (EM LOG) / JURO REAL 5y5y
+Contudo, a partir de 2023, passamos a presenciar
+um comportamento distinto. Apesar do expressivo
+aperto das condições monetárias, as sanções
+impostas pelos Estados Unidos às reservas
+internacionais da Rússia geraram uma aceleração,
+principalmente pelos bancos centrais, das compras
+de ouro como alternativa aos ativos norte-americanos
+para reservas internacionais. Esse movimento foi
+seguido por outros investidores públicos e privados.
+Nos últimos três anos, a prevalência do ouro nos
+portfólios globais aumentou significativamente, e os
+preços reagiram.
 
 CARTA DO GESTOR JANEIRO 2026
 K10
 PRATA: COMMODITIES TAKE NO PRISONERS
-No livro The Crowd: A Study of the Popular Mind, fosse um aumento da demanda por outros metais
-Gustave Le Bon descreve com perfeição os preciosos, como prata e PGMs (metais do grupo da
-mecanismos políticos, sociológicos e psicológicos platina). Apesar de não serem utilizados atualmente
-que levam indivíduos “racionais” a se comportarem pelos bancos centrais como reserva internacional,
-de forma tão diferente quando se tornam parte de um esses metais já funcionaram como lastro/moeda no
-grande grupo. Esses mecanismos também servem passado distante e têm correlação alta com o ouro.
-para explicar porque os mercados podem tornar-
-se irracionais, com o preço descolando de forma Contudo, no caso específico da prata, enxergamos
-significativa do fundamento. Ótima leitura. alguns fatores de curto prazo que, em nosso
-julgamento, fizeram o preço divergir da sua relação
-A forte alta nos preços do ouro nos últimos anos gerou histórica com o ouro e do seu balanço de oferta e
-spillovers para outros ativos: era previsível que uma demanda.
+No livro The Crowd: A Study of the Popular Mind,
+Gustave Le Bon descreve com perfeição os
+mecanismos políticos, sociológicos e psicológicos
+que levam indivíduos "racionais" a se comportarem
+de forma tão diferente quando se tornam parte de um
+grande grupo. Esses mecanismos também servem
+para explicar porque os mercados podem tornar-se
+irracionais, com o preço descolando de forma
+significativa do fundamento. Ótima leitura.
+A forte alta nos preços do ouro nos últimos anos gerou
+spillovers para outros ativos: era previsível que uma
 das consequências de uma maior valorização do ouro
+fosse um aumento da demanda por outros metais
+preciosos, como prata e PGMs (metais do grupo da
+platina). Apesar de não serem utilizados atualmente
+pelos bancos centrais como reserva internacional,
+esses metais já funcionaram como lastro/moeda no
+passado distante e têm correlação alta com o ouro.
+Contudo, no caso específico da prata, enxergamos
+alguns fatores de curto prazo que, em nosso
+julgamento, fizeram o preço divergir da sua relação
+histórica com o ouro e do seu balanço de oferta e
+demanda.
 GRÁFICO 2:
 RAZÃO ENTRE O PREÇO DO OURO
 E O PREÇO DA PRATA
 Movimento similar ao de 2011: a prata caiu 50% nos
 dois anos seguintes.
-140
-120
-100
-80
-60
-40
-20
-0
-20
-ZED
-40
-VON
-60
-TUO
-80
-TES
-01
-OGA
-21
-LUJ
-41
-NUJ
-61
-IAM
-81
-RBA
-02
-RAM
-22
-VEF
-42
-NAJ
-52
-ZED
-PREÇO OURO/PREÇO PRATA
-MÉDIA 3 ANOS
+Eixo Y: 140 120 100 80 60 40 20 0
+Eixo X (datas): DEZ 02, NOV 04, OUT 06, SET 08, AGO 10, JUL 12, JUN 14, MAI 16, ABR 18, MAR 20, FEV 22, JAN 24, DEZ 25
+Legenda: PREÇO OURO/PREÇO PRATA; MÉDIA 3 ANOS
 
 CARTA DO GESTOR JANEIRO 2026
 K10
-A partir do segundo trimestre de 2025, as discussões Logo em seguida, quando houve o início das
-sobre a nacionalização da oferta de materiais críticos transações dos contratos de PGM nas bolsas
-aumentou em alguns países. A expectativa da chinesas, e a prata transacionada em Xangai
-implementação de uma tarifa de importação da prata começou a negociar com prêmio em relação às
-nos Estados Unidos fez com que uma quantidade bolsas estrangeiras, o movimento de preços foi
-importante do metal fosse transferida para dentro do ainda mais abrupto. Atribuímos essa fase mais aguda
-país, originado principalmente do Reino Unido, que é do movimento à intensificação das compras de
-o maior hub de negócios da commodity. ativos ligados a metais por parte dos investidores de
-varejo chineses. Em janeiro, os níveis de negociação
-Essa forte demanda por mercadoria física somou- diários foram recorde; o ETF de prata negociado na
-se ao sequestro vindo das compras de prata pelos China chegou a ter um prêmio de 42% em relação a
-ETFs de varejo (que mantêm prata física custodiada seu NAV3; a arbitragem de exportação de Londres
-localmente como lastro das cotas), eventualmente para Xangai abriu pela primeira vez na história
-causando um squeeze de prata em disponibilidade (gráfico 4) e o contrato da SHFE passou a operar
-imediata em Londres. em backwardation. Ao mesmo tempo, volatilidade
-implícita na CME atingiu 110% (breakeven diário de
-Outro evento similar parece ter acontecido na Índia, quase 7%).
+A partir do segundo trimestre de 2025, as discussões
+sobre a nacionalização da oferta de materiais críticos
+aumentou em alguns países. A expectativa da
+implementação de uma tarifa de importação da prata
+nos Estados Unidos fez com que uma quantidade
+importante do metal fosse transferida para dentro do
+país, originado principalmente do Reino Unido, que é
+o maior hub de negócios da commodity.
+Essa forte demanda por mercadoria física somou-se
+ao sequestro vindo das compras de prata pelos
+ETFs de varejo (que mantêm prata física custodiada
+localmente como lastro das cotas), eventualmente
+causando um squeeze de prata em disponibilidade
+imediata em Londres.
+Outro evento similar parece ter acontecido na Índia,
 onde o contrato local passou a subir em relação às
-demais bolsas a partir do início de novembro (gráfico GRÁFICO 4:
-3), em antecipação a um eventual aumento da tarifa PARIDADE DE IMPORTAÇÃO CHINA VS. LONDRES
+demais bolsas a partir do início de novembro (gráfico
+3), em antecipação a um eventual aumento da tarifa
 de importação para o ano fiscal de 2026 (começando
-em 1º de fevereiro). Sendo a Índia o maior importador Os preços da prata nas bolsas da China estavam bem
-do metal, estimamos que a soma deste front loading acima dos preços em Londres.
+em 1º de fevereiro). Sendo a Índia o maior importador
+do metal, estimamos que a soma deste front loading
 de demanda e o acúmulo preventivo de estoques
-(hoarding) tenham sido significantes. A combinação SHFE - Londres*
-dos dois eventos constitui um choque de demanda Arbitragem de Importação China*
+(hoarding) tenham sido significantes. A combinação
+dos dois eventos constitui um choque de demanda
 relevante para este mercado.
+Logo em seguida, quando houve o início das
+transações dos contratos de PGM nas bolsas
+chinesas, e a prata transacionada em Xangai
+começou a negociar com prêmio em relação às
+bolsas estrangeiras, o movimento de preços foi
+ainda mais abrupto. Atribuímos essa fase mais aguda
+do movimento à intensificação das compras de
+ativos ligados a metais por parte dos investidores de
+varejo chineses. Em janeiro, os níveis de negociação
+diários foram recorde; o ETF de prata negociado na
+China chegou a ter um prêmio de 42% em relação a
+seu NAV3; a arbitragem de exportação de Londres
+para Xangai abriu pela primeira vez na história
+(gráfico 4) e o contrato da SHFE passou a operar
+em backwardation. Ao mesmo tempo, volatilidade
+implícita na CME atingiu 110% (breakeven diário de
+quase 7%).
 3 Bloomberg
-71
-VON
-81
-NUJ
-91
-NAJ
-91
-OGA
-02
-RAM
-02
-TUO
-12
-IAM
-12
-ZED
-22
-LUJ
-32
-VEF
-32
-TES
-42
-RBA
-42
-VON
-52
-NUJ
-62
-NAJ
-$30,00
-$25,00
-$25,00
-GRÁFICO 3: $15,00
-PARIDADE DE IMPORTAÇÃO ÍNDIA VS. LONDRES $10,00
-$5,00
-Os preços da prata nas bolsas da Índia estavam bem
-acima dos preços em Londres. $-
-$-5,00
+GRÁFICO 4:
+PARIDADE DE IMPORTAÇÃO CHINA VS. LONDRES
+Os preços da prata nas bolsas da China estavam bem
+acima dos preços em Londres.
+Legenda: SHFE - Londres*; Arbitragem de Importação China*
+Eixo X (datas): NOV 17, JUN 18, JAN 19, AGO 19, MAR 20, OUT 20, MAI 21, DEZ 21, JUL 22, FEV 23, SET 23, ABR 24, NOV 24, JUN 25, JAN 26
+Eixo Y: $30,00 $25,00 $25,00 $15,00 $10,00 $5,00 $- $-5,00
 *Dada a dificuldade de visualização das séries pela diferença do horário
 de ajuste, realizamos uma suavização.
 No entanto, nas últimas duas semanas do mês, um
@@ -291,107 +203,81 @@ série de restrições (limite de contrato, aumento de
 margem e fechamento do ETF) para evitar que a
 mania especulativa continue, o que normalmente só
 ocorre em momentos de estresse financeiro.
-iabmuM
-me
-atarp
-ad
-oãçatropmI
-ed
-megartibrA
-$25,00
-$20,00
-$15,00
-$10,00
-$5,00
-$-
-52
-NUJ
-52
-NUJ
-52
-LUJ
-52
-OGA
-52
-OGA
-52
-TES
-52
-TUO
-52
-TUO
-52
-VON
-52
-ZED
-52
-ZED
-62
-NAJ
-Arbitragem Importação India (Tarifa 6%)
-Prata MCX - Prata LBMA
-Arbitragem Importação India (Tarifa 15%)
+GRÁFICO 3:
+PARIDADE DE IMPORTAÇÃO ÍNDIA VS. LONDRES
+Os preços da prata nas bolsas da Índia estavam bem
+acima dos preços em Londres.
+Legenda: Arbitragem Importação India (Tarifa 6%); Prata MCX - Prata LBMA; Arbitragem Importação India (Tarifa 15%)
+Eixo Y: $25,00 $20,00 $15,00 $10,00 $5,00 $-
+Eixo X (datas): JUN 25, JUN 25, JUL 25, AGO 25, AGO 25, SET 25, OUT 25, OUT 25, NOV 25, DEZ 25, DEZ 25, JAN 26
 
 CARTA DO GESTOR JANEIRO 2026
 K10
-OPORTUNIDADE? (isto é, 5% a 10% da produção anual). Pelo lado da
-demanda, acreditamos que já estão ocorrendo tanto
-Sabemos que pegar reversões de tendências de a substituição quanto o racionamento. No setor de
-preços, ainda mais quando são agudas, não é uma painéis fotovoltaicos, por exemplo, já há um esforço
-tarefa fácil. Nos mercados de commodities, a maioria para diminuir a intensidade do uso de prata, que
-de nossas posições direcionais buscam capturar uma deve acelerar com os níveis atuais de preço (algumas
-tendência. Contudo, nesse caso, diversos aspectos estimativas apontam para 20-25% do custo dos
-técnicos apresentavam sinais extremos, o que painéis, contra apenas 5% há dois anos). Esse efeito
-historicamente indicam que as chances são favoráveis tem potencial de retirar 50 milhões de onças anuais
-para uma reversão ou correção da tendência atual. de demanda já em 20266.
+OPORTUNIDADE?
+Sabemos que pegar reversões de tendências de
+preços, ainda mais quando são agudas, não é uma
+tarefa fácil. Nos mercados de commodities, a maioria
+de nossas posições direcionais buscam capturar uma
+tendência. Contudo, nesse caso, diversos aspectos
+técnicos apresentavam sinais extremos, o que
+historicamente indicam que as chances são favoráveis
+para uma reversão ou correção da tendência atual.
 Montamos uma posição vendida na prata durante o
-mês de janeiro com orçamento de perda definido. Por fim, vale notar que a oferta de prata é bastante
-Essa posição teve resultado positivo, contribuindo pulverizada. China e Rússia somadas representam
-com 0,61% para o fundo, mas a prata terminou subindo apenas 18% da mineração anual. A oferta conjunta
-18% no mês e forçou uma redução de parte de nossas de México, Chile, Bolívia, Peru, Argentina, Canadá e
-posições vendidas. o próprio Estados Unidos representam um terço da
-mineração anual.
-NACIONALIZAÇÃO DE RECURSOS NATURAIS GRÁFICO 5:
-E BALANÇO DE OFERTA E DEMANDA: BALANÇO DE OFERTA E DEMANDA DA PRATA
+mês de janeiro com orçamento de perda definido.
+Essa posição teve resultado positivo, contribuindo
+com 0,61% para o fundo, mas a prata terminou subindo
+18% no mês e forçou uma redução de parte de nossas
+posições vendidas.
+NACIONALIZAÇÃO DE RECURSOS NATURAIS
+E BALANÇO DE OFERTA E DEMANDA:
 A PRATA É UM MATERIAL CRÍTICO?
-Neste patamar de preços haverá aumento importante
-Para alguns usos do metal, sim. da oferta de prata.
-350
+Para alguns usos do metal, sim.
 Contudo, a quantidade de material destinada a
-300
-aplicações estratégicas é muito pequena em relação 250
-200
+aplicações estratégicas é muito pequena em relação
 à oferta total. O uso industrial total da prata é de
-150
-aproximadamente 60% da oferta anual, sendo que 100
-50
+aproximadamente 60% da oferta anual, sendo que
 a maior parte disso são as aplicações em painéis
-0
-fotovoltaicos, soldas e vidros. Apenas 25% da oferta -50
--100
+fotovoltaicos, soldas e vidros. Apenas 25% da oferta
 se destina para usos de interesse militar ou de alta
--150
-tecnologia4. -200
-1990 1994 1998 2002 2006 2010 2014 2018 2022 2026 2030
+tecnologia4.
 Assim, a probabilidade de que os governos criem
-Balanço de Oferta e Demanda
 estoques ou tentem estimular produções nacionais
-Previsão Preços Altos
 através de tarifas nos parece menor do que no
-Previsão Preços
 caso de outros metais. Não bastasse a baixa
-Normais
 representatividade da oferta total, a prata também
 se encontra em um superávit contínuo nos últimos
 vinte anos, com os estoques em barras crescendo
 acima de 5 bilhões de onças em 2004 para mais
 de 8 bilhões5 ao final de 2025 (sendo 9 a 10 vezes a
 demanda atual).
-Além disso, com a alta recente dos preços, espera-
-se um aumento da oferta de material reciclado,
+Além disso, com a alta recente dos preços, espera-se
+um aumento da oferta de material reciclado,
 semelhante ao que aconteceu no último período
 de preços elevados, entre 2010 e 2013, podendo
 adicionar de 50 a 100 milhões de onças à oferta anual
+(isto é, 5% a 10% da produção anual). Pelo lado da
+demanda, acreditamos que já estão ocorrendo tanto
+a substituição quanto o racionamento. No setor de
+painéis fotovoltaicos, por exemplo, já há um esforço
+para diminuir a intensidade do uso de prata, que
+deve acelerar com os níveis atuais de preço (algumas
+estimativas apontam para 20-25% do custo dos
+painéis, contra apenas 5% há dois anos). Esse efeito
+tem potencial de retirar 50 milhões de onças anuais
+de demanda já em 20266.
+Por fim, vale notar que a oferta de prata é bastante
+pulverizada. China e Rússia somadas representam
+apenas 18% da mineração anual. A oferta conjunta
+de México, Chile, Bolívia, Peru, Argentina, Canadá e
+o próprio Estados Unidos representam um terço da
+mineração anual.
+GRÁFICO 5:
+BALANÇO DE OFERTA E DEMANDA DA PRATA
+Neste patamar de preços haverá aumento importante
+da oferta de prata.
+Legenda: Balanço de Oferta e Demanda; Previsão Preços Altos; Previsão Preços Normais
+Eixo Y: 350 300 250 200 150 100 50 0 -50 -100 -150 -200
+Eixo X (anos): 1990 1994 1998 2002 2006 2010 2014 2018 2022 2026 2030
 4 The Silver Institute / 5 The Silver Institute; Kapitalo Investimentos/ 6 JP Morgan
 
 CARTA DO GESTOR JANEIRO 2026
@@ -400,20 +286,10 @@ GRÁFICO 6:
 PREÇO DA PRATA VS OFERTA DE PRATA RECICLADA
 Os preços atuais incentivam a recicliagem, como
 ocorreu em 2011.
-$60,00 40%
-$50,00
-35%
-$40,00
-30%
-$30,00
-25%
-$20,00
-20%
-$10,00
-$- 15%
-Preço CPI Ajustado
-Reciclagem como % da Demanda
-0991 2991 4991 6991 8991 0002 2002 4002 6002 8002 0102 2102 4102 6102 8102 0202 2202 4202
+Legenda: Preço CPI Ajustado; Reciclagem como % da Demanda
+Eixo Y esquerdo (preço, $): $60,00 $50,00 $40,00 $30,00 $20,00 $10,00 $-
+Eixo Y direito (% da demanda): 40% 35% 30% 25% 20% 15%
+Eixo X (anos): 1990 1992 1994 1996 1998 2000 2002 2004 2006 2008 2010 2012 2014 2016 2018 2020 2022 2024
 ALGUM SINAL DE DEBASEMENT
 EM OUTROS MERCADOS?
 Como citamos na carta de 2020, o motivo
@@ -440,102 +316,11 @@ JURO REAL 5Y5Y
 A inflação implícita segue comportada e o juro real
 está com prêmio acima do compatível com o nível da
 inflação implícita.
-y5y5
-aticílpmI
-oãçaflnI
-y5y5
-laeR
-oruJ
-3,5 2,5
-3,3
-2,0
-3,1
-2,9 1,5
-2,7
-1,0
-2,5
-0,5 2,3
-2,1 0,0
-1,9
--0,5
-1,7
-1,5 -1,0
-40
-LUJ
-50
-VEF
-50
-TES
-60
-RBA
-60
-VON
-70
-NUJ
-80
-NAJ
-80
-OGA
-90
-RAM
-90
-TUO
-01
-IAM
-01
-ZED
-11
-LUJ
-21
-VEF
-21
-TES
-31
-RBA
-31
-VON
-41
-NUJ
-51
-NAJ
-41
-OGA
-61
-RAM
-41
-TUO
-71
-IAM
-71
-ZED
-81
-LUJ
-81
-VEF
-81
-TES
-02
-RBA
-02
-VON
-12
-NUJ
-22
-NAJ
-22
-OGA
-32
-RAM
-32
-TUO
-42
-IAM
-42
-ZED
-52
-LUJ
-Inflação Implícita 5y5y
-Juro Real US 5y5y - Média 12M
+Legenda: Inflação Implícita 5y5y; Juro Real 5y5y (repetida como Juro Real US 5y5y - Média 12M)
+Eixo Y esquerdo (inflação implícita 5y5y): 3,5 3,3 3,1 2,9 2,7 2,5 2,3 2,1 1,9 1,7 1,5
+Eixo Y direito (juro real 5y5y): 2,5 2,0 1,5 1,0 0,5 0,0 -0,5 -1,0
+Eixo X (datas): JUL 04, FEV 05, SET 05, ABR 06, NOV 06, JUN 07, JAN 08, AGO 08, MAR 09, OUT 09, MAI 10, DEZ 10, JUL 11, FEV 12, SET 12, ABR 13, NOV 13, JUN 14, JAN 15, AGO 14, MAR 16, OUT 14, MAI 17, DEZ 17, JUL 18, FEV 18, SET 18, ABR 20, NOV 20, JUN 21, JAN 22, AGO 22, MAR 23, OUT 23, MAI 24, DEZ 24, JUL 25
+[a sequência de datas deste eixo específico apresentava texto rotacionado muito denso e a ordem cronológica de alguns rótulos não pôde ser confirmada com certeza — trecho parcialmente incerto na extração]
 
 CARTA DO GESTOR JANEIRO 2026
 K10
@@ -549,17 +334,27 @@ demanda cativa dos bancos centrais, o K10 vai seguir
 com a estratégia de manter posições compradas,
 mas operando de forma anticíclica.
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em iene japonês, lira turca, Seguimos comprados nos Estados Unidos e
-peso chileno, rand sul-africano e rúpia indiana contra na Argentina. Zeramos a posição comprada em
-o dólar norte-americano. Adicionamos compra do real China e adicionamos posição vendida em Brasil.
+Moedas
+Seguimos comprados em iene japonês, lira turca,
+peso chileno, rand sul-africano e rúpia indiana contra
+o dólar norte-americano. Adicionamos compra do real
 brasileiro e venda do euro.
-Commodities Juros
-Mantivemos posições vendidas em café, milho, zinco, Mantivemos posições aplicadas no Brasil, na Europa,
-e petróleo e continuamos comprados em alumínio. na Suécia, no Canadá, no México e na África do Sul.
-Reduzimos a posição comprada em ouro e zeramos Continuamos com posições tomadas em Chile e na
-a posição comprada em gás natural. Adicionamos parte longa dos EUA. Adicionamos posição aplicada
-posição vendida em prata. na parte longa das curvas de Japão e Austrália.
+Commodities
+Mantivemos posições vendidas em café, milho, zinco,
+e petróleo e continuamos comprados em alumínio.
+Reduzimos a posição comprada em ouro e zeramos
+a posição comprada em gás natural. Adicionamos
+posição vendida em prata.
+Bolsa
+Seguimos comprados nos Estados Unidos e
+na Argentina. Zeramos a posição comprada em
+China e adicionamos posição vendida em Brasil.
+Juros
+Mantivemos posições aplicadas no Brasil, na Europa,
+na Suécia, no Canadá, no México e na África do Sul.
+Continuamos com posições tomadas em Chile e na
+parte longa dos EUA. Adicionamos posição aplicada
+na parte longa das curvas de Japão e Austrália.
 
 CARTA DO GESTOR JANEIRO 2026
 K10
@@ -634,15 +429,15 @@ TIA OU PROMESSA DE RENTABILIDADE OU DE ISENÇÃO
 DE RISCO. AOS INVESTIDORES, É RECOMENDADA A
 LEITURA CUIDADOSA DE LÂMINAS, PROSPECTOS E/ OU
 REGULAMENTOS ANTES DE INVESTIR SEUS RECUR-
-KAPITALO INVESTIMENTOS LTDA
 SOS. As análises aqui apresentadas não pretendem con-
-Av. Brigadeiro Faria Lima, 3144
 ter todas as informações relevantes que um investidor
-11º andar - Itaim Bibi
 deve considerar e, dessa forma, representam apenas
-01451-000 – São Paulo, SP
 uma visão limitada do mercado. Este conteúdo não pode
-(11) 3956-0600
 ser copiado, reproduzido ou distribuído sem a prévia e
-kapitalo.com.br
 expressa concordância das gestoras.
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

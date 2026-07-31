@@ -4,26 +4,30 @@ K10
 CARTA DO GESTOR OUTUBRO 2025
 K10
 CENÁRIO
-O fundo Kapitalo K10 Do ponto de vista macro, o ciclo econômico global
+O fundo Kapitalo K10
+teve retorno de 1,56%
+em outubro. O livro de
+bolsa apresentou bons
+resultados, enquanto
+os livros de juros,
+câmbio e commodities
+foram detratores de
+performance.
+Do ponto de vista macro, o ciclo econômico global
 continua favorável aos ativos de risco. O afrouxamento
-teve retorno de 1,56% do mercado de trabalho e a desinflação dos últimos
+do mercado de trabalho e a desinflação dos últimos
 trimestres têm permitido a continuidade do ciclo de
-em outubro. O livro de relaxamento monetário pelos bancos centrais. Além
+relaxamento monetário pelos bancos centrais. Além
 disso, o acordo comercial entre os Estados Unidos e
-bolsa apresentou bons a China resultou em uma redução marginal das tarifas
+a China resultou em uma redução marginal das tarifas
 comerciais e reduziu o risco de ruptura nas cadeias
 globais de produção.
-resultados, enquanto
 A temporada de resultados das companhias do
-os livros de juros,
 S&P500 foi positiva, com crescimento de receitas
 superior à média histórica, sugerindo que os avanços
-câmbio e commodities
 tecnológicos seguem impulsionando a produtividade.
-foram detratores de
 O K10 continua aplicado em juros de forma seletiva e
 comprado em ações globais. Reduzimos taticamente
-performance.
 alocação comprada em ouro e aumentamos a exposi-
 ção aplicada em renda fixa do Brasil.
 ARGENTINA:
@@ -48,21 +52,20 @@ nos ativos.
 CARTA DO GESTOR OUTUBRO 2025
 K10
 CENÁRIO
-A primeira metade do governo foi marcada por um Por outro lado, a agenda de reformas parece em
-ajuste econômico de grandes proporções. O resultado estágio mais avançado. Em seu discurso da vitória,
-fiscal passou de -4% para +1% do PIB, a inflação caiu Milei adotou tom mais conciliador e agregador,
-de 250% para 25% ao ano, houve liberalização parcial buscando angariar apoios para a agenda de
-do mercado de câmbio, um ajuste significativo na reformas estruturais. A combinação de um governo
-conta corrente e acúmulo de reservas internacionais. politicamente mais robusto, mais aberto ao diálogo,
-cenário externo favorável e enorme goodwill dos
-Os próximos dois anos do governo Milei apresentam organismos internacionais e do governo dos Estados
-uma oportunidade ímpar de recolocar a Argentina Unidos deve permitir a aprovação de reformas
-no mapa global de investimentos. Para tanto, dois econômicas importantes já nos próximos meses.
+A primeira metade do governo foi marcada por um
+ajuste econômico de grandes proporções. O resultado
+fiscal passou de -4% para +1% do PIB, a inflação caiu
+de 250% para 25% ao ano, houve liberalização parcial
+do mercado de câmbio, um ajuste significativo na
+conta corrente e acúmulo de reservas internacionais.
+Os próximos dois anos do governo Milei apresentam
+uma oportunidade ímpar de recolocar a Argentina
+no mapa global de investimentos. Para tanto, dois
 problemas fundamentais precisam ser endereçados:
-liberar o mercado de câmbio, o que permitirá reduzir Apesar da grande valorização dos ativos, entendemos
-a vulnerabilidade externa; e aprovar reformas que há espaço para altas adicionais à medida que a
-econômicas que aumentem a competitividade e que agenda positiva avance. Continuamos comprados em
-gerem crescimento econômico sustentado. ações e em dívida externa.
+liberar o mercado de câmbio, o que permitirá reduzir
+a vulnerabilidade externa; e aprovar reformas
+econômicas que aumentem a competitividade e que
+gerem crescimento econômico sustentado.
 Por ora, o regime de flutuação cambial regido por
 bandas e o fluxo restrito de capitais seguem em vigor,
 mas devem ser flexibilizados conjuntamente ao longo
@@ -73,16 +76,38 @@ permitir a inclusão da Argentina nos índices globais de
 ações e de títulos públicos, permitir a emissão de dívida
 externa pelos agentes econômicos e traduzir-se em um
 acúmulo de reservas por parte do Banco Central.
+Por outro lado, a agenda de reformas parece em
+estágio mais avançado. Em seu discurso da vitória,
+Milei adotou tom mais conciliador e agregador,
+buscando angariar apoios para a agenda de
+reformas estruturais. A combinação de um governo
+politicamente mais robusto, mais aberto ao diálogo,
+cenário externo favorável e enorme goodwill dos
+organismos internacionais e do governo dos Estados
+Unidos deve permitir a aprovação de reformas
+econômicas importantes já nos próximos meses.
+Apesar da grande valorização dos ativos, entendemos
+que há espaço para altas adicionais à medida que a
+agenda positiva avance. Continuamos comprados em
+ações e em dívida externa.
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em iene japonês, lira turca Seguimos comprados nos Estados Unidos
-e rúpia indiana contra o dólar norte-americano. e na China e vendidos no Brasil. Adicionamos
-Adicionamos posição comprada no peso chileno. posições compradas em Argentina e Chile
+Moedas
+Seguimos comprados em iene japonês, lira turca
+e rúpia indiana contra o dólar norte-americano.
+Adicionamos posição comprada no peso chileno.
+Commodities
+Mantivemos posições vendidas em café, milho, zinco
+e petróleo e continuamos comprados em ouro e gás
+natural. Zeramos a posição vendida em soja.
+Bolsa
+Seguimos comprados nos Estados Unidos
+e na China e vendidos no Brasil. Adicionamos
+posições compradas em Argentina e Chile
 e posição vendida em Europa.
-Commodities Juros
-Mantivemos posições vendidas em café, milho, zinco Mantivemos posições aplicadas no Brasil,
-e petróleo e continuamos comprados em ouro e gás na Europa e na Suécia. Adicionamos posições
-natural. Zeramos a posição vendida em soja. aplicadas em Canadá e México e aumentamos
+Juros
+Mantivemos posições aplicadas no Brasil,
+na Europa e na Suécia. Adicionamos posições
+aplicadas em Canadá e México e aumentamos
 a posição aplicada em Brasil.
 
 CARTA DO GESTOR OUTUBRO 2025
@@ -140,15 +165,15 @@ TIA OU PROMESSA DE RENTABILIDADE OU DE ISENÇÃO
 DE RISCO. AOS INVESTIDORES, É RECOMENDADA A
 LEITURA CUIDADOSA DE LÂMINAS, PROSPECTOS E/ OU
 REGULAMENTOS ANTES DE INVESTIR SEUS RECUR-
-KAPITALO INVESTIMENTOS LTDA
 SOS. As análises aqui apresentadas não pretendem con-
-Av. Brigadeiro Faria Lima, 3144
 ter todas as informações relevantes que um investidor
-11º andar - Itaim Bibi
 deve considerar e, dessa forma, representam apenas
-01451-000 – São Paulo, SP
 uma visão limitada do mercado. Este conteúdo não pode
-(11) 3956-0600
 ser copiado, reproduzido ou distribuído sem a prévia e
-kapitalo.com.br
 expressa concordância das gestoras.
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

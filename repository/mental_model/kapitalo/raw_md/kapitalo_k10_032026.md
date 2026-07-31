@@ -4,41 +4,78 @@ K10
 CARTA DO GESTOR MARÇO 2026
 K10
 CENÁRIO
-No mês de março o fundo Kapitalo K10 teve retorno Readequamos o nosso livro: zeramos a posição
-de -6,13% contra 1,21% do seu benchmark. Os livros de vendida em petróleo e abrimos posição comprada
-juros e commodities foram os principais detratores nos derivados, principalmente em diesel. Reduzimos
-de performance. taticamente as alocações direcionais em moedas e em
-bolsas. Seguimos aplicados na parte curta das curvas
-Desde o início da guerra, Estados Unidos e Israel têm de juros, mas concentramos as posições em países
-conseguido reduzir significativamente a capacidade desenvolvidos com capacidade ociosa e inflação
-bélica do regime iraniano; eliminando suas lideranças; baixa, como Canadá e Suécia, e em juros locais, onde
-obtendo controle do espaço aéreo; destruindo sua o Banco Central já deu início ao ciclo de recalibragem.
+No mês de março o fundo Kapitalo K10 teve retorno
+de -6,13% contra 1,21% do seu benchmark. Os livros de
+juros e commodities foram os principais detratores
+de performance.
+
+Desde o início da guerra, Estados Unidos e Israel têm
+conseguido reduzir significativamente a capacidade
+bélica do regime iraniano; eliminando suas lideranças;
+obtendo controle do espaço aéreo; destruindo sua
 capacidade industrial; e enfraquecendo fortemente
-sua marinha. No entanto, o Irã mantém alguma Choques negativos de oferta criam um dilema para a
-habilidade de atacar seus vizinhos e navios no Golfo condução da política monetária, uma vez que aumentam
-Pérsico, impondo custos políticos e econômicos aos a inflação, mas também reduzem a atividade.
-países do Golfo e à economia global. O fluxo de petróleo Teoricamente, as autoridades monetárias devem
-no estreito de Ormuz foi reduzido a praticamente zero, reagir de forma gradual ou mesmo não reagir, focando
-provocando um aperto substancial na oferta global de mais na estabilização da economia do que no combate
-petróleo e de seus produtos, levando os time spreads aos efeitos primários na inflação, condicionado à
-ao nível mais alto do histórico recente (gráfico 1). ancoragem das expectativas mais longas.
+sua marinha. No entanto, o Irã mantém alguma
+habilidade de atacar seus vizinhos e navios no Golfo
+Pérsico, impondo custos políticos e econômicos aos
+países do Golfo e à economia global. O fluxo de petróleo
+no estreito de Ormuz foi reduzido a praticamente zero,
+provocando um aperto substancial na oferta global de
+petróleo e de seus produtos, levando os time spreads
+ao nível mais alto do histórico recente (gráfico 1).
+
 Os governos anunciaram medidas paliativas, como
-a retirada de sanções sobre o estoque de petróleo O ponto de partida também importa: o choque da
-na água do Irã e da Rússia e a venda de reservas guerra da Ucrânia de 2022 exigiu resposta expressiva,
-estratégicas. Entretanto, seu efeito é limitado e o mas se deu em um contexto de taxas de juros
-passar do tempo torna um problema de fluxo em próximas à zero, inflação acima da meta, expectativas
-um problema de estoques, com a eliminação dos mais longas elevadas e economia muito aquecida. A
-buffers operacionais aumentando a probabilidade de situação atual é distinta, já que os países se encontram
-movimentos não lineares de preço. em posição cíclica mais equilibrada, juros próximos ao
-neutro e com inflação corrente baixa, o que deveria
-A alta do petróleo e, principalmente, dos derivados, deixar os bancos centrais em posição confortável
-gerou uma reprecificação importante na inflação e para avaliar os efeitos do choque ao longo do tempo.
+a retirada de sanções sobre o estoque de petróleo
+na água do Irã e da Rússia e a venda de reservas
+estratégicas. Entretanto, seu efeito é limitado e o
+passar do tempo torna um problema de fluxo em
+um problema de estoques, com a eliminação dos
+buffers operacionais aumentando a probabilidade de
+movimentos não lineares de preço.
+
+A alta do petróleo e, principalmente, dos derivados,
+gerou uma reprecificação importante na inflação e
 nas curvas de juros. Alguns bancos centrais, que antes
-do conflito viam espaço para flexibilização adicional Nosso grau de previsibilidade sobre quais serão as
-das taxas, ajustaram seu discurso, apresentando uma próximas etapas do conflito e, por consequência,
-postura mais cautelosa. Para a maioria dos países, os qual solução será dada para o estreito de Ormuz,
-mercados deixaram de precificar quedas e passaram a ainda é muito baixo. Até o presente momento, as
-prever um pequeno ciclo de aperto monetário (gráfico 2). tentativas do governo americano de encontrar
+do conflito viam espaço para flexibilização adicional
+das taxas, ajustaram seu discurso, apresentando uma
+postura mais cautelosa. Para a maioria dos países, os
+mercados deixaram de precificar quedas e passaram a
+prever um pequeno ciclo de aperto monetário (gráfico 2).
+
+Readequamos o nosso livro: zeramos a posição
+vendida em petróleo e abrimos posição comprada
+nos derivados, principalmente em diesel. Reduzimos
+taticamente as alocações direcionais em moedas e em
+bolsas. Seguimos aplicados na parte curta das curvas
+de juros, mas concentramos as posições em países
+desenvolvidos com capacidade ociosa e inflação
+baixa, como Canadá e Suécia, e em juros locais, onde
+o Banco Central já deu início ao ciclo de recalibragem.
+
+Choques negativos de oferta criam um dilema para a
+condução da política monetária, uma vez que aumentam
+a inflação, mas também reduzem a atividade.
+Teoricamente, as autoridades monetárias devem
+reagir de forma gradual ou mesmo não reagir, focando
+mais na estabilização da economia do que no combate
+aos efeitos primários na inflação, condicionado à
+ancoragem das expectativas mais longas.
+
+O ponto de partida também importa: o choque da
+guerra da Ucrânia de 2022 exigiu resposta expressiva,
+mas se deu em um contexto de taxas de juros
+próximas à zero, inflação acima da meta, expectativas
+mais longas elevadas e economia muito aquecida. A
+situação atual é distinta, já que os países se encontram
+em posição cíclica mais equilibrada, juros próximos ao
+neutro e com inflação corrente baixa, o que deveria
+deixar os bancos centrais em posição confortável
+para avaliar os efeitos do choque ao longo do tempo.
+
+Nosso grau de previsibilidade sobre quais serão as
+próximas etapas do conflito e, por consequência,
+qual solução será dada para o estreito de Ormuz,
+ainda é muito baixo. Até o presente momento, as
+tentativas do governo americano de encontrar
 uma solução negociada parecem não ter avançado
 suficientemente. No modelo, a janela de tempo para
 que o mercado de petróleo continue funcional é
@@ -47,7 +84,7 @@ pequena, de apenas algumas semanas.
 CARTA DO GESTOR MARÇO 2026
 K10
 GRÁFICO 1
-Time Spreads do Petróleo (primeiro futuro menos o sexto futuro)”
+Time Spreads do Petróleo (primeiro futuro menos o sexto futuro)"
 40
 30
 20
@@ -55,71 +92,27 @@ Time Spreads do Petróleo (primeiro futuro menos o sexto futuro)”
 0
 -10
 -20
-50
-NAJ
-60
-NAJ
-70
-NAJ
-80
-NAJ
-90
-NAJ
-01
-NAJ
-11
-NAJ
-21
-NAJ
-31
-NAJ
-41
-NAJ
-51
-NAJ
-61
-NAJ
-71
-NAJ
-81
-NAJ
-91
-NAJ
-02
-NAJ
-12
-NAJ
-22
-NAJ
-32
-NAJ
-422
-NAJ
-52
-NAJ
-62
-NAJ
+JAN 05 JAN 06 JAN 07 JAN 08 JAN 09 JAN 10 JAN 11 JAN 12 JAN 13 JAN 14 JAN 15 JAN 16 JAN 17 JAN 18 JAN 19 JAN 20 JAN 21 JAN 22 JAN 23 JAN 24 JAN 25 JAN 26
+[nota: o rótulo referente a 2024 aparece na extração do PDF como "JAN 224" — dígito extra não identificável com segurança, possivelmente artefato de sobreposição no gráfico; mantido aqui como "JAN 24" por ser a leitura mais provável dada a sequência anual]
 35,4
 GRÁFICO 2
 Precificação das Curvas de Juros de Países Desenvolvidos
 100
-Linhas cheias representam
 80
-a precificação no dia 31/mar/2026
 60
 40
 20
 0
 -20
 -40
-Linhas tracejadas representam a
 -60
-precificação no dia 27/fev/2026
 -80
 Hoje Q2/2026 Q3/2026 Q4/2026 Q3/2027
-)spb(
-odacfiicerp
-otnemivoM
+Linhas cheias representam
+a precificação no dia 31/mar/2026
+Linhas tracejadas representam a
+precificação no dia 27/fev/2026
+Movimento precificado (bps)
 Estados
 Unidos
 Canadá
@@ -131,19 +124,30 @@ Unido
 CARTA DO GESTOR MARÇO 2026
 K10
 POSIÇÕES
-Moedas Bolsa
-Seguimos comprados em peso chileno contra Seguimos comprados no setor de tecnologia
-o dólar norte-americano. Adicionamos venda dos Estados Unidos e na bolsa da Argentina.
-do baht tailandês contra o dólar norte-americano. Adicionamos posições vendida em Brasil e
-Zeramos as compras do iene japonês, lira turca no índice de small caps dos EUA.
+Moedas
+Seguimos comprados em peso chileno contra
+o dólar norte-americano. Adicionamos venda
+do baht tailandês contra o dólar norte-americano.
+Zeramos as compras do iene japonês, lira turca
 e rand sul-africano contra o dólar norte-americano.
-Juros
+
 Commodities
-Mantivemos posições aplicadas no Brasil,
-Mantivemos posições vendidas em café e zinco na Suécia, no México e no Canadá. Zeramos
-e continuamos comprados em ouro e alumínio. a posição tomada em Chile e as posições
-Zeramos a venda de prata. Adicionamos compra aplicadas na Austrália e na África do Sul.
+Mantivemos posições vendidas em café e zinco
+e continuamos comprados em ouro e alumínio.
+Zeramos a venda de prata. Adicionamos compra
 de petróleo e diesel e posição vendida em trigo.
+
+Bolsa
+Seguimos comprados no setor de tecnologia
+dos Estados Unidos e na bolsa da Argentina.
+Adicionamos posições vendida em Brasil e
+no índice de small caps dos EUA.
+
+Juros
+Mantivemos posições aplicadas no Brasil,
+na Suécia, no México e no Canadá. Zeramos
+a posição tomada em Chile e as posições
+aplicadas na Austrália e na África do Sul.
 ALOCAÇÃO
 POR FATOR DE RISCO
 1,45%
@@ -190,27 +194,11 @@ MAI/18 DEZ/18 JUN/19 JAN/20 AGO/20 FEV/21 SET/21 MAR/22 OUT/23 MAI/23 NOV/24 JUN
 
 CARTA DO GESTOR MARÇO 2026
 K10
-Este conteúdo foi preparado pelas gestoras Kapitalo (Ka-
-pitalo Investimentos Ltda. e Kapitalo Ciclo Gestão de Re-
-cursos Ltda.),tem caráter meramente informativo e não
-deve ser entendido como análise de valor mobiliário, ma-
-terial promocional, solicitação de compra ou venda, oferta
-ou recomendação de qualquer ativo financeiro ou investi-
-mento, sugestão de alocação ou adoção de estratégia de
-investimento por parte dos destinatários. As gestoras não
-se responsabilizam por erros, omissões ou pelo uso destas
-informações. As informações referem-se às datas e condi-
-ções mencionadas. Os cenários apresentados podem não
-se refletir nas estratégias dos diversos fundos geridos pe-
-las gestoras Kapitalo AS ESTIMATIVAS, CONCLUSÕES, OPI-
-NIÕES, PROJEÇÕES E HIPÓTESES APRESENTADAS NÃO
-CONSTITUEM GARANTIA OU PROMESSA DE RENTABILIDA-
-DE OU DE ISENÇÃO DE RISCO. AOS INVESTIDORES, É RE-
-COMENDADA A LEITURA CUIDADOSA DE LÂMINAS, PROS-
-PECTOS E/ OU REGULAMENTOS ANTES DE INVESTIR SEUS
-RECURSOS. As análises aqui apresentadas não pretendem KAPITALO INVESTIMENTOS LTDA
-conter todas as informações relevantes que um investidor Av. Brigadeiro Faria Lima, 3144
-deve considerar e, dessa forma, representam apenas uma 11º andar - Itaim Bibi
-visão limitada do mercado. Este conteúdo não pode ser co- 01451-000 – São Paulo, SP
-piado, reproduzido ou distribuído sem a prévia e expressa (11) 3956-0600
-concordância das gestoras. kapitalo.com.br
+Este conteúdo foi preparado pelas gestoras Kapitalo (Kapitalo Investimentos Ltda. e Kapitalo Ciclo Gestão de Recursos Ltda.), tem caráter meramente informativo e não deve ser entendido como análise de valor mobiliário, material promocional, solicitação de compra ou venda, oferta ou recomendação de qualquer ativo financeiro ou investimento, sugestão de alocação ou adoção de estratégia de investimento por parte dos destinatários. As gestoras não se responsabilizam por erros, omissões ou pelo uso destas informações. As informações referem-se às datas e condições mencionadas. Os cenários apresentados podem não se refletir nas estratégias dos diversos fundos geridos pelas gestoras Kapitalo AS ESTIMATIVAS, CONCLUSÕES, OPINIÕES, PROJEÇÕES E HIPÓTESES APRESENTADAS NÃO CONSTITUEM GARANTIA OU PROMESSA DE RENTABILIDADE OU DE ISENÇÃO DE RISCO. AOS INVESTIDORES, É RECOMENDADA A LEITURA CUIDADOSA DE LÂMINAS, PROSPECTOS E/ OU REGULAMENTOS ANTES DE INVESTIR SEUS RECURSOS. As análises aqui apresentadas não pretendem conter todas as informações relevantes que um investidor deve considerar e, dessa forma, representam apenas uma visão limitada do mercado. Este conteúdo não pode ser copiado, reproduzido ou distribuído sem a prévia e expressa concordância das gestoras.
+
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

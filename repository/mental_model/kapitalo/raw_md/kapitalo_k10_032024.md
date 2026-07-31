@@ -3,42 +3,22 @@ K10
 
 CARTA DO GESTOR MARÇO 2024
 K10
-CENÁRIO POSIÇÕES
-Os indicadores de demanda de
-diversos países, principalmente
-na parte de bens, continuam
-mostrando que o crescimento
-global segue moderado. Moedas
-Seguimos com posições vendidas no euro, no renminbi
-chinês e na libra esterlina contra o dólar norte-americano,
-Os números de mercado de trabalho seguem apontando e com posições compradas no dólar australiano e no real
-para um reequilíbrio gradual. Apesar das pesquisas de con- contra o dólar norte-americano. Zeramos as posições
-fiança do setor manufatureiro apontarem para uma leve vendidas em coroa sueca e no dólar neozelandês contra o
-recuperação, nos parece cedo para afirmar que veremos dólar norte-americano.
-uma importante aceleração da atividade à frente.
+CENÁRIO
+Os indicadores de demanda de diversos países, principalmente na parte de bens, continuam mostrando que o crescimento global segue moderado.
+Os números de mercado de trabalho seguem apontando para um reequilíbrio gradual. Apesar das pesquisas de confiança do setor manufatureiro apontarem para uma leve recuperação, nos parece cedo para afirmar que veremos uma importante aceleração da atividade à frente.
+A inflação surpreendeu para cima no início de 2024. Mas em diversos países os dados recentes devolveram grande parte da surpresa altista, mostrando um arrefecimento importante dos núcleos.
+Mantivemos um livro alocado em ativos de risco, principalmente bolsa, e aplicado em juros nominais. As condições para o início de um ciclo de afrouxamento monetário estão presentes, principalmente na Europa. O FED continua mostrando disposição para iniciar uma recalibragem da política monetária a partir da reunião de junho.
+Nas commodities, adicionamos posições compradas em petróleo, ouro e cobre. No mercado de moedas, alteramos o perfil das posições ao trocar as apostas direcionais em BRL e AUD por opções, aproveitando os níveis historicamente baixos de volatilidade implícita.
+Os livros de commodities e bolsa tiveram resultado positivo no mês. Juros e câmbio foram negativos.
+POSIÇÕES
+Moedas
+Seguimos com posições vendidas no euro, no renminbi chinês e na libra esterlina contra o dólar norte-americano, e com posições compradas no dólar australiano e no real contra o dólar norte-americano. Zeramos as posições vendidas em coroa sueca e no dólar neozelandês contra o dólar norte-americano.
 Commodities
-A inflação surpreendeu para cima no início de 2024. Mas
-em diversos países os dados recentes devolveram grande Mantivemos a posição comprada em açúcar e as
-parte da surpresa altista, mostrando um arrefecimento im- vendidas de minério de ferro, café, milho, PGMs e na
-portante dos núcleos. parte curta da curvatura de petróleo. Adicionamos uma
-posição vendida em soja, além de posições compradas
-Mantivemos um livro alocado em ativos de risco, principal- em petróleo, cobre e ouro.
-mente bolsa, e aplicado em juros nominais. As condições
-para o início de um ciclo de afrouxamento monetário es-
+Mantivemos a posição comprada em açúcar e as vendidas de minério de ferro, café, milho, PGMs e na parte curta da curvatura de petróleo. Adicionamos uma posição vendida em soja, além de posições compradas em petróleo, cobre e ouro.
 Bolsa
-tão presentes, principalmente na Europa. O FED continua
-mostrando disposição para iniciar uma recalibragem da Mantivemos as posições compradas na bolsa brasileira
-política monetária a partir da reunião de junho. e no NASDAQ, além da posição vendida no índice de
-small-caps americano.
-Nas commodities, adicionamos posições compradas em
-petróleo, ouro e cobre. No mercado de moedas, alteramos
-o perfil das posições ao trocar as apostas direcionais em
+Mantivemos as posições compradas na bolsa brasileira e no NASDAQ, além da posição vendida no índice de small-caps americano.
 Juros
-BRL e AUD por opções, aproveitando os níveis historica-
-mente baixos de volatilidade implícita. Seguimos com uma posição tomada na inclinação do
-Chile, além das posições aplicadas nos Estados Unidos,
-Os livros de commodities e bolsa tiveram resultado positivo Suécia, Europa, Reino Unido e no juro real do Brasil.
-no mês. Juros e câmbio foram negativos. Zeramos as posições aplicadas em Canadá e México.
+Seguimos com uma posição tomada na inclinação do Chile, além das posições aplicadas nos Estados Unidos, Suécia, Europa, Reino Unido e no juro real do Brasil. Zeramos as posições aplicadas em Canadá e México.
 
 CARTA DO GESTOR MARÇO 2024
 K10
@@ -60,7 +40,7 @@ VaR 1d; 95% (% do PL)
 0,08%
 COMMODITIES MOEDAS BOLSA RENDA FIXA TOTAL
 ATRIBUIÇÃO DE PERFORMANCE
-ESTRATÉGIAS MAR ‘24 2024 12M 24M 60M DESDE INÍCIO
+ESTRATÉGIAS MAR '24 2024 12M 24M 60M DESDE INÍCIO
 JUROS -0,16% -1,83% -4,47% -1,59% 11,74% 18,67%
 MOEDAS -0,04% -0,58% -0,46% 0,10% 4,75% 0,77%
 BOLSA 0,14% 0,60% 2,69% 7,46% 26,13% 30,60%
@@ -73,7 +53,7 @@ PERFORMANCE DO FUNDO 1,43% 2,86% 11,31% 29,23% 96,49% 108,48%
 CARTA DO GESTOR MARÇO 2024
 K10
 Este conteúdo foi preparado pela e Kapitalo Ciclo Gestão
-de Recursos Ltda (“Kapitalo”), tem caráter meramente in-
+de Recursos Ltda ("Kapitalo"), tem caráter meramente in-
 formativo e não deve ser entendido como análise de valor
 mobiliário, material promocional, solicitação de compra ou
 venda, oferta ou recomendação de qualquer ativo finan-

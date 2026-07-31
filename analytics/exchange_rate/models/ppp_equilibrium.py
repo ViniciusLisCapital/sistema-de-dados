@@ -57,6 +57,97 @@ the dashboard first, decide on the regression afterward):
           vol vs USD from the new macro_international.cmb_fx_latam, Yahoo
           Finance MXN=X/CLP=X/COP=X/PEN=X). Both added 2026-07-28, same
           equal-weight peer-average convention as relative_carry.
+  dxy_em  macro_international.cmb_dollar_index_em.dxy_em (FRED DTWEXEMEGS,
+          "Nominal Broad EM U.S. Dollar Index" — the Fed's own trade-weighted
+          basket of ~19 EM currencies including BRL/CNY/MXN/KRW etc.) from
+          2006-01. Added 2026-07-31 at the user's request, as an EM-specific
+          co-movement proxy alongside (not replacing) `dxy` (the broad/DXY
+          measure, mostly G10 currencies) -- the hypothesis being that BRL
+          co-moves with the EM-FX complex specifically, a distinct channel
+          from generic global-dollar strength. Already sitting in the DB,
+          unused by any model until now.
+  curve_steep_real  BR REAL yield-curve steepening, 10Y minus 2Y on the
+          inflation-linked curve (NTNBJS @ 120M minus NTNBJS @ 24M,
+          base_mercado.interest_rates -- same external schema/table
+          curve_steep and breakeven already read). Added 2026-07-31 at the
+          user's request, as an alternate fiscal-risk proxy to `curve_steep`
+          (nominal) and `fiscal` (5y USD CDS): the hypothesis is that CDS,
+          priced in USD against EXTERNAL default risk, understates domestic
+          fiscal-sustainability risk given Brazil's large USD reserve
+          buffer -- external default is remote even when the domestic
+          debt/GDP trajectory looks worse. A real (inflation-linked) curve
+          isolates the real term premium the market demands to hold
+          long-dated BR government risk, net of inflation-expectations
+          effects that contaminate the nominal steepening. Same
+          `_PREJS_120M_BUG_WINDOWS`-style masking is unnecessary here --
+          NTNBJS@120M is the confirmed-clean series (see _load_breakeven()'s
+          docstring); only PREJS@120M has the bug. Real coverage starts
+          2006-01, same as curve_steep.
+  sp500   macro_international.cmb_equity_us.sp500 (Yahoo Finance ^GSPC, S&P
+          500 index close) from 1990-01. Added 2026-07-31 at the user's
+          request, testing a "competing for capital" hypothesis: a stronger
+          US equity market pulls capital toward US assets, pressuring
+          USD/BRL up independently of any Brazil-specific channel (same
+          structural role as dxy/dxy_em, but from the equity side rather than
+          FX/rates). Entered as its own monthly log-return in
+          ridge_deviation_model.py (delta_sp500 = 100*diff(log(sp500)), NOT a
+          plain level diff -- a price index's month-over-month change is
+          properly a return, matching the convention already used for
+          ptax/ipca_index/cpi_index elsewhere in this module). Tested
+          alongside VIX (FRED VIXCLS) and the US 10Y real yield (FRED
+          DFII10) as a joint "global risk/capital-competition" round --
+          sp500 alone improved walk-forward OOS MSE ~4% with a stable,
+          never-crosses-zero rolling coefficient; VIX and the real yield did
+          NOT improve OOS MSE and were NOT ingested into the DB -- see
+          ridge_deviation_model.py's module docstring and
+          analytics/exchange_rate/CLAUDE.md for the full comparison. Read
+          the finding narrowly: what carries signal is the S&P's own PRICE
+          MOVE (a "competing for capital" / level-of-the-index effect), not
+          general risk appetite/volatility -- VIX (the more direct risk-
+          sentiment proxy) added nothing once sp500 was already in the
+          regression.
+  real_yield_diff  10Y REAL yield differential, BR minus US -- NTNBJS @ 120M
+          (base_mercado.interest_rates, the same series curve_steep_real
+          already reads) minus DFII10 (US 10Y TIPS real yield, FRED). Added
+          2026-07-31 at the user's request, as a risk-premium measure. NOT
+          the same test as the earlier "US 10Y real yield" entry above (that
+          was DFII10 alone, a standalone US-level channel testing a global
+          "competing for capital via rates" story, and it did NOT clear the
+          walk-forward OOS bar) -- this is a BR-US DIFFERENTIAL, a genuinely
+          different construction, tested 2026-07-31 and found to clear the
+          bar cleanly (-1.7% OOS MSE alone, stable positive coefficient,
+          never crosses zero across 163 rolling windows). Read the sign
+          carefully: positive, meaning a WIDER BR-US real-rate gap moves
+          delta_fx UP (BRL weaker) -- the opposite of a naive UIP/carry-
+          attractiveness reading (which would expect a higher real yield to
+          attract capital and strengthen BRL), but consistent with reading
+          Brazil's own real yield as a RISK PREMIUM: a rising BR real yield
+          often reflects the market demanding more compensation for BR risk,
+          moving the same direction as fiscal/curve_steep rather than against
+          it. Real coverage from 2006-01 (NTNBJS@120M's own start, the
+          binding constraint here -- DFII10 itself goes back to 2003-01).
+  icbr_usd  macro_brasil.comm_icbr_usd.icbr_usd (BCB SGS 29042) from 1998-01
+          -- the USD-denominated IC-Br general commodity index, DISTINCT
+          from comm_icbr (SGS 27574 etc., the BRL-denominated version
+          already in the DB, used by analytics/monetary_policy/'s Phillips-
+          curve model). The BRL version is UNSUITABLE as a regressor here:
+          the BCB converts international commodity prices INTO REAIS as
+          part of that index's own construction, so it already partly
+          embeds USD/BRL's own move -- circular if used to explain delta_fx.
+          SGS 29042 (user-identified; not independently confirmed via the
+          BCB's own metadata API, which requires an authenticated session --
+          corroborated only indirectly, by returning materially different
+          values from SGS 27574 for the same months, consistent with two
+          distinct denominations of the same underlying index) sidesteps
+          that problem. Tested 2026-07-31: the single largest new channel
+          this round -- reliably NEGATIVE across nearly the whole rolling
+          history (mean -0.93, essentially never flips positive) and
+          improved walk-forward OOS MSE ~4.6% alone. Sign makes clean sense:
+          rising global commodity prices, Brazil being a major commodity
+          exporter, strengthen BRL (delta_fx down) -- a genuine terms-of-
+          trade/export-basket channel, distinct from `tot` (not currently in
+          the shipped 7/9-channel spec) and from `sp500` (equities, not
+          commodities).
   trade_pct_gdp / ca_pct_gdp  Trade balance and current account, both as %
           of GDP (cmb_balanco_pagmt.exportacao_bens - importacao_bens, and
           .conta_corrente respectively, both macro_brasil, BCB BOP BPM6) over
@@ -187,6 +278,45 @@ def _load_curve_steepening(curves: pd.DataFrame) -> pd.Series:
 
     steepening = (prejs_120 - prejs_24).dropna()
     return steepening.resample("MS").last().rename("curve_steep")
+
+
+def _load_curve_steepening_real(curves: pd.DataFrame) -> pd.Series:
+    """BR REAL yield-curve steepening, 10Y minus 2Y on the inflation-linked
+    curve (NTNBJS @ 120M minus NTNBJS @ 24M) -- added 2026-07-31, direct user
+    request, as an alternate fiscal-risk proxy alongside `curve_steep`
+    (nominal) and `fiscal` (CDS): isolates the real term premium, net of
+    inflation-expectations effects that a nominal curve mixes in. No bug-
+    window masking needed -- NTNBJS@120M is the confirmed-clean series (only
+    PREJS@120M has the documented bug, see _PREJS_120M_BUG_WINDOWS)."""
+    ntnbjs_120 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    ntnbjs_24 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
+
+    steepening = (ntnbjs_120 - ntnbjs_24).dropna()
+    return steepening.resample("MS").last().rename("curve_steep_real")
+
+
+def _load_real_yield_diff(curves: pd.DataFrame) -> pd.Series:
+    """10Y REAL yield differential, BR minus US -- NTNBJS @ 120M
+    (base_mercado.interest_rates, the same series curve_steep_real already
+    reads, confirmed-clean, no bug-window masking needed) minus DFII10 (US
+    10Y TIPS real yield, FRED). Added 2026-07-31, direct user request, as a
+    risk-premium measure alongside the CDS/curve-based fiscal-risk proxies
+    already in the model. Real coverage from 2006-01 (NTNBJS@120M's own
+    start -- the binding constraint here; DFII10 itself goes back to
+    2003-01, TIPS market inception). Tested 2026-07-31 in
+    ridge_deviation_model.py: positive, stable coefficient (never crosses
+    zero across 163 rolling windows) -- read as a RISK-PREMIUM signal (same
+    direction as fiscal/curve_steep), not a carry-attractiveness one -- a
+    rising BR-US real yield gap here moves WITH BRL depreciation rather than
+    against it, opposite the naive UIP-style expectation that a wider real-
+    rate advantage should attract capital and strengthen the currency."""
+    ntnbjs_120 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    br_real10y_m = ntnbjs_120.resample("MS").last()
+
+    us_real10y = FredUniFrame("us_real_10y", "DFII10", _FETCH_START, None)
+    us_real10y_m = us_real10y.set_index(pd.to_datetime(us_real10y["Date"]))["us_real_10y"].sort_index().resample("MS").last()
+
+    return (br_real10y_m - us_real10y_m).dropna().rename("real_yield_diff")
 
 
 _LATAM_PEERS = ["MX", "CL", "CO", "PE"]
@@ -346,14 +476,21 @@ def load_data() -> pd.DataFrame:
     curves = _load_interest_rate_curves()
     breakeven_m = _load_breakeven(curves)
     curve_steep_m = _load_curve_steepening(curves)
+    curve_steep_real_m = _load_curve_steepening_real(curves)
+    real_yield_diff_m = _load_real_yield_diff(curves)
     dxy_m = _monthly_series("macro_international", "cmb_dollar_index", "dxy", "dxy")
+    dxy_em_m = _monthly_series("macro_international", "cmb_dollar_index_em", "dxy_em", "dxy_em")
+    sp500_m = _monthly_series("macro_international", "cmb_equity_us", "sp500", "sp500")
+    icbr_usd_m = _monthly_series("macro_brasil", "comm_icbr_usd", "icbr_usd", "icbr_usd")
     relative_carry_m = _load_relative_carry()
     carry_vol_df = _load_carry_vol_metrics(carry_m)
     bop_pct_gdp = _load_bop_pct_gdp()
     target_annual = _load_inflation_target()
 
     df = core.join(
-        [carry_m, tot_m, fiscal_m, breakeven_m, curve_steep_m, dxy_m, relative_carry_m, carry_vol_df, bop_pct_gdp, target_annual],
+        [carry_m, tot_m, fiscal_m, breakeven_m, curve_steep_m, curve_steep_real_m, real_yield_diff_m,
+         dxy_m, dxy_em_m, sp500_m, icbr_usd_m,
+         relative_carry_m, carry_vol_df, bop_pct_gdp, target_annual],
         how="left",
     )
     df["target"] = df["target"].ffill()
@@ -398,6 +535,9 @@ def build_payload(df: pd.DataFrame, default_base_month: str = _DEFAULT_BASE_MONT
         "fiscal": _to_jsonable(df["fiscal"]),
         "breakeven": _to_jsonable(df["breakeven"]),
         "dxy": _to_jsonable(df["dxy"]),
+        "sp500": _to_jsonable(df["sp500"]),
+        "icbr_usd": _to_jsonable(df["icbr_usd"]),
+        "real_yield_diff": _to_jsonable(df["real_yield_diff"]),
         "relative_carry": _to_jsonable(df["relative_carry"]),
         "carry_vol": _to_jsonable(df["carry_vol"]),
         "relative_carry_vol": _to_jsonable(df["relative_carry_vol"]),

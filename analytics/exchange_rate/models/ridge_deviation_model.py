@@ -125,6 +125,80 @@ _RESULTS_DIR = Path(__file__).parent / "ridge_results"
 # build_deltas_contemporaneous().
 _CHANNELS = ["fiscal", "dxy", "carry", "relative_carry", "carry_vol", "relative_carry_vol", "breakeven_gap", "tot"]
 
+# 2026-07-31, direct user request: test (i) a Fed Broad-EM dollar index
+# (dxy_em, EM-specific FX co-movement) alongside dxy, and (ii) a REAL
+# (inflation-linked) yield-curve steepening (curve_steep_real,
+# NTNBJS@120M-24M) alongside the nominal curve_steep already in
+# _CHANNELS_SHRUNK -- hypothesis: 5y USD CDS (fiscal) understates domestic
+# fiscal-sustainability risk given Brazil's large USD reserve buffer, and a
+# real term premium isolates that risk net of inflation-expectations noise a
+# nominal curve mixes in. Both new channels tested TOGETHER (not one at a
+# time), same walk-forward-OOS standard as every prior variant round.
+_CHANNELS_SHRUNK_EM_REAL = ["fiscal", "carry_vol", "dxy", "dxy_em", "curve_steep", "curve_steep_real"]
+
+# 2026-07-31, same day, direct user request: test S&P 500 (sp500, "competing
+# for capital" hypothesis), VIX, and the US 10Y real yield (FRED DFII10) as a
+# joint global-risk/capital-competition round, one-at-a-time comparison
+# after the joint test to isolate which channel actually carries signal.
+# sp500 alone improved walk-forward OOS MSE ~4pct with a stable, never-
+# crosses-zero rolling coefficient across all 163 windows; VIX and the real
+# yield did NOT improve OOS MSE and were NOT added to _CHANNELS -- see
+# ppp_equilibrium.py's sp500 docstring and analytics/exchange_rate/CLAUDE.md
+# for the full comparison (walk-forward OOS MSE, one-at-a-time ablation).
+# Read narrowly: what carries signal is sp500's own PRICE MOVE (a level-of-
+# the-index/"competing for capital" effect), not general risk appetite --
+# VIX (the more direct risk-sentiment proxy) added nothing once sp500 was
+# already in the regression, which is why VIX/real-yield are absent here.
+_CHANNELS_SHRUNK_EM_REAL_SP500 = _CHANNELS_SHRUNK_EM_REAL + ["sp500"]
+
+# 2026-07-31, same day, direct user request: test the 10Y REAL yield
+# differential (BR-US, real_yield_diff -- a risk-premium measure, distinct
+# from testing the US real yield alone, which did NOT clear the bar in the
+# round above) and a USD-denominated commodity-price index (icbr_usd, BCB
+# SGS 29042) -- NOT comm_icbr (SGS 27574 etc.), which is BRL-denominated and
+# unsuitable here since the BCB already converts it into reais, making it
+# partly endogenous to USD/BRL itself. Both cleared the walk-forward OOS bar
+# individually and together (real_yield_diff -1.7% alone, icbr_usd -4.6%
+# alone, both together -6.1% vs. the 7-channel baseline) -- see
+# ppp_equilibrium.py's real_yield_diff/icbr_usd docstrings and
+# analytics/exchange_rate/CLAUDE.md for the full comparison.
+_CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR = _CHANNELS_SHRUNK_EM_REAL_SP500 + ["real_yield_diff", "icbr_usd"]
+
+# 2026-07-31, same day, direct user request following a visual observation on
+# the shipped Ridge tab's decomposition chart (large unexplained residual
+# concentrated 2020-2022, alpha/PPP-type drift catching up only later):
+# dropping curve_steep (nominal 10Y-2Y steepening) from the 9-channel spec
+# above -- confirmed a clean, repeatedly-reproduced win across every round-4
+# test this session (-1.4% OOS MSE, 7.0675->6.9677, essentially no change to
+# any other channel's coefficient). Five candidate explanations for the
+# residual concentration itself were tested and ALL failed walk-forward OOS
+# validation against this 8-channel baseline: (1) short-term real yield as a
+# BR-US differential (wrong construction, rejected before a full test), (2)
+# short-term real yield as Selic-IPCA ex-post (`real_br_ex_post`, +0.5% worse),
+# (3) standalone BR 1Y bond-implied real yield level (NTNBJS@12M, +0.5%
+# worse, likely collinear with curve_steep_real), (4) BR-US 5Y breakeven
+# inflation differential, contemporaneous delta (+0.8% worse, R2 flat), (5) a
+# COVID-window dummy, tested both broad (2020-03 to 2021-12, +0.1% worse) and
+# narrow/acute (2020-02 to 2020-05, +0.05% worse, small coefficient). None of
+# these five is in this channel list -- see each scratch test's own docstring
+# and analytics/exchange_rate/CLAUDE.md for the full record. The 2020-2022
+# residual concentration remains unexplained; a genuinely different, more
+# current finding surfaced while investigating it instead -- rolling R2 has
+# been declining every year since 2022, reaching its weakest point in the
+# most recent 2025-2026 windows, which argues against a COVID-specific
+# structural break and toward a recent, ongoing fit degradation as the more
+# actionable open thread.
+_CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP = [
+    c for c in _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR if c != "curve_steep"
+]
+
+# Channels whose month-over-month change is a LOG-RETURN (100*diff(log(.))),
+# not a plain level diff -- price indices in the thousands/hundreds, where a
+# raw point change isn't the right transform (unlike every other channel
+# here, which is already a rate/spread/differential, stationary in levels).
+# Used by _deltas_with_extra_channels()/build_plain_regression_sample() below.
+_LOG_RETURN_CHANNELS = {"sp500", "icbr_usd"}
+
 _LAMBDA_GRID = np.logspace(-2, 3, 25)  # 0.01 .. 1000, log-spaced
 
 # Shrunk AR(1) spec (2026-07-30, direct user request): a + AR(t-1) +
@@ -147,6 +221,28 @@ _MAX_LAG = 6
 _LAG_MIN_TRAIN = 72
 
 
+def _deltas_with_extra_channels(df: pd.DataFrame, channels: list[str]) -> pd.DataFrame:
+    """build_deltas_contemporaneous(df) plus delta_<c> for any channel in
+    `channels` that function doesn't already compute (sp500, real_yield_diff,
+    icbr_usd, and any future addition), WITHOUT touching
+    bayesian_deviation_model.py (that module isn't part of the dashboard
+    pipeline anymore -- Ridge is the only model wired into ppp_dashboard.html
+    -- so new channels are added locally here instead of in its shared
+    helper). Channels in _LOG_RETURN_CHANNELS (price indices in the
+    thousands/hundreds) get a LOG-RETURN (100*diff(log(.))); everything else
+    (rates, spreads, differentials -- already stationary in levels) gets a
+    plain level diff, same convention build_deltas_contemporaneous() itself
+    uses -- same special-casing build_plain_regression_sample() below
+    applies independently for its own dependent-variable-free spec."""
+    deltas = build_deltas_contemporaneous(df)
+    for c in channels:
+        col = f"delta_{c}"
+        if col in deltas.columns:
+            continue
+        deltas[col] = 100 * np.log(df[c]).diff() if c in _LOG_RETURN_CHANNELS else df[c].diff()
+    return deltas
+
+
 def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = None) -> tuple[pd.DataFrame, dict]:
     """delta_dev plus each channel's z-scored CONTEMPORANEOUS delta,
     standardized against the same 2000-01+ reference window
@@ -156,7 +252,7 @@ def build_sample(df: pd.DataFrame | None = None, channels: list[str] | None = No
     channels = _CHANNELS if channels is None else channels
     df = load_data() if df is None else df
     delta_cols = [f"delta_{c}" for c in channels]
-    deltas = build_deltas_contemporaneous(df)
+    deltas = _deltas_with_extra_channels(df, channels)
     sample = deltas[["delta_dev"] + delta_cols].dropna()
     reference = deltas[deltas.index >= _REFERENCE_START]
     z, stats = _standardize_ext(sample, reference, delta_cols)
@@ -181,7 +277,7 @@ def build_ar1_sample(df: pd.DataFrame | None = None,
     channels = _CHANNELS if channels is None else channels
     df = load_data() if df is None else df
     delta_cols = [f"delta_{c}" for c in channels]
-    deltas = build_deltas_contemporaneous(df)
+    deltas = _deltas_with_extra_channels(df, channels)
 
     sample = deltas[["delta_dev"] + delta_cols].copy()
     sample["delta_dev_lag1"] = deltas["delta_dev"].shift(1)
@@ -277,7 +373,17 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     trustworthy, PPP's average contribution (mostly just Brazil's average
     inflation being higher than the US's, a near-constant monthly drift
     over an 18-year sample) is left for alpha to absorb, same as every
-    other spec in this file that doesn't have its own explicit PPP term."""
+    other spec in this file that doesn't have its own explicit PPP term.
+
+    Channels in _LOG_RETURN_CHANNELS (sp500, icbr_usd -- both 2026-07-31) are
+    special-cased to a log-return (100*diff(log(.))), same as delta_fx/
+    delta_ppp above -- both are price indices (thousands/hundreds), so a
+    plain level diff() (correct for every other channel here, which are all
+    rates/spreads/differentials already stationary in levels) would be the
+    wrong transform. This module-local special-casing is deliberate --
+    bayesian_deviation_model.py isn't part of the dashboard pipeline anymore
+    (Ridge is the only model wired into ppp_dashboard.html), so new channels
+    are handled entirely here, not in that module's own delta-builder."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
     df = load_data() if df is None else df
 
@@ -286,7 +392,10 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     if include_ppp:
         out["delta_ppp"] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
     for c in channels:
-        out[f"delta_{c}"] = df[c].diff()
+        if c in _LOG_RETURN_CHANNELS:
+            out[f"delta_{c}"] = 100 * np.log(df[c]).diff()
+        else:
+            out[f"delta_{c}"] = df[c].diff()
     out["delta_fx_lag1"] = out["delta_fx"].shift(1)
 
     sample = out.dropna()
@@ -761,6 +870,119 @@ def run(channels: list[str] | None = None, window: int = 60) -> dict:
     }
 
 
+_FORECAST_BANDS_CACHE = _RESULTS_DIR / "forecast_error_bands_w72.json"
+
+
+def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72,
+                              horizon: int = 12, force: bool = False) -> dict:
+    """Per-forecast-step standard error for a W=72-month-trained, multi-step
+    Ridge forecast -- 2026-07-31, direct user request, part 3 of the
+    decomposition/forecast follow-up ("it's necessary to have a standard
+    error for that forecast. the standard error should be base on the test
+    we already have (run on the 72mo window -> forecast 12mo foward, compute
+    the forecast error for each month and construct the interval from the
+    next to 12 months horizon"). Reuses the exact walk-forward rolling-
+    window / multi-step-simulation mechanism from the W x F grid test
+    (analytics/exchange_rate/referencia/ridge_window_horizon_grid.md) at
+    W=72 specifically -- own simulated AR(1) feedback (delta_fx_lag1) fed
+    forward at every step, real realized channel deltas for those months --
+    but where the grid test only scored the CUMULATIVE return at the end of
+    each horizon F, this scores the error at EVERY intermediate step (1, 2,
+    ..., 12 months ahead) separately, pooling each step's error across every
+    rolling fold to build a step-indexed error curve. That per-step curve is
+    what lets the dashboard draw a widening (not flat) confidence band on a
+    forecast chart -- month 1 should be tighter than month 12, and a single
+    cumulative-horizon number (what the grid test computed) can't express
+    that on its own.
+
+    Expensive (a full W=72-month rolling refit walked across the whole
+    ~220-month sample, same cost class as the grid test's own W=72 cell,
+    which took ~70-80s in that test) -- cached to
+    ridge_results/forecast_error_bands_w72.json and only recomputed when
+    force=True or the cache file doesn't exist yet, rather than on every
+    build_dashboard_payload() call (which needs to stay cheap, since it also
+    runs at render time)."""
+    if not force and _FORECAST_BANDS_CACHE.exists():
+        import json
+        with open(_FORECAST_BANDS_CACHE) as fh:
+            cached = json.load(fh)
+        if cached.get("window") == window and cached.get("horizon") == horizon:
+            return cached
+
+    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
+    df = load_data()
+    out = pd.DataFrame(index=df.index)
+    out["ptax"] = df["ptax"]
+    out["delta_fx"] = 100 * np.log(df["ptax"]).diff()
+    out["delta_fx_lag1"] = out["delta_fx"].shift(1)
+    delta_cols = []
+    for c in channels:
+        if c in _LOG_RETURN_CHANNELS:
+            out[f"delta_{c}"] = 100 * np.log(df[c]).diff()
+        else:
+            out[f"delta_{c}"] = df[c].diff()
+        delta_cols.append(f"delta_{c}")
+    out = out.dropna(subset=["ptax", "delta_fx", "delta_fx_lag1"] + delta_cols)
+
+    n = len(out)
+    max_f = horizon
+    step_errors = {h: [] for h in range(1, horizon + 1)}
+    n_folds = n - window - max_f + 1
+
+    for start in range(0, n_folds):
+        train = out.iloc[start:start + window]
+        future = out.iloc[start + window: start + window + max_f]
+
+        reference = train[train.index >= _REFERENCE_START]
+        if len(reference) < 12:
+            reference = train
+        z, stats = _standardize_ext(train, reference, delta_cols)
+        z["delta_fx_lag1"] = train["delta_fx_lag1"]
+        z["delta_fx"] = train["delta_fx"]
+        reg_cols = delta_cols + ["delta_fx_lag1"]
+
+        min_train = max(6, window // 2)
+        cv = walk_forward_lambda(z, reg_cols, y_col="delta_fx", min_train=min_train)
+        lam = float(cv.iloc[0]["lambda"])
+        model = Ridge(alpha=lam, fit_intercept=True)
+        model.fit(z[reg_cols].values, z["delta_fx"].values)
+
+        z_future = pd.DataFrame(index=future.index)
+        for c in delta_cols:
+            mean, std = stats[c]
+            z_future[c] = (future[c] - mean) / std if std > 0 else future[c] - mean
+
+        seed_level = train["ptax"].iloc[-1]
+        prev_delta_fx = train["delta_fx"].iloc[-1]
+        cum_sim = 0.0
+        for h, dt in enumerate(future.index, start=1):
+            row = z_future.loc[dt, delta_cols].values
+            x = np.concatenate([row, [prev_delta_fx]])
+            delta_pred = model.predict(x.reshape(1, -1))[0]
+            cum_sim += delta_pred
+            prev_delta_fx = delta_pred
+
+            sim_level = seed_level * np.exp(cum_sim / 100)
+            real_level = future["ptax"].iloc[h - 1]
+            pct_error = 100 * (sim_level - real_level) / real_level
+            step_errors[h].append(pct_error)
+
+    result = {
+        "window": window,
+        "horizon": horizon,
+        "n_folds": n_folds,
+        "steps": list(range(1, horizon + 1)),
+        "std_error_pct": [round(float(np.std(step_errors[h])), 4) for h in range(1, horizon + 1)],
+        "mean_error_pct": [round(float(np.mean(step_errors[h])), 4) for h in range(1, horizon + 1)],
+    }
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    import json
+    with open(_FORECAST_BANDS_CACHE, "w") as fh:
+        json.dump(result, fh, indent=2)
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Dashboard tab: lambda-selection curve, historical fit, decomposition, and
 # rolling-window coefficient paths -- built fresh each call rather than read
@@ -768,7 +990,7 @@ def run(channels: list[str] | None = None, window: int = 60) -> dict:
 # minutes-per-run every PyMC model in this package needs to amortize.
 # ---------------------------------------------------------------------------
 
-def build_dashboard_payload(channels: list[str] | None = None, window: int = 60) -> dict:
+def build_dashboard_payload(channels: list[str] | None = None, window: int = 72) -> dict:
     """Payload for the "Ridge (Regularized, Rolling)" dashboard tab: the
     walk-forward lambda-selection curve, the whole-sample fit's own
     decomposition/level-bridge (same log-additive-then-multiplicative
@@ -801,9 +1023,69 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
     anchor * exp(cum_alpha/100) * prod(exp(cum_contrib[c]/100)) *
     exp(cum_residual/100) reconstructs the actual PTAX rate exactly, same
     residual-absorbs-the-rest logic as every other tab's bridge, just one
-    layer shorter."""
-    channels = _CHANNELS_SHRUNK if channels is None else channels
-    z, _, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False)
+    layer shorter.
+
+    Channel set grown 2026-07-31 across three rounds, same day: _CHANNELS_SHRUNK
+    (4: fiscal, carry_vol, dxy, curve_steep) -> _CHANNELS_SHRUNK_EM_REAL (6:
+    + dxy_em, curve_steep_real) -> _CHANNELS_SHRUNK_EM_REAL_SP500 (7: + sp500)
+    -> _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR (9: + real_yield_diff, icbr_usd)
+    -- direct user requests, every addition tested and confirmed to improve
+    walk-forward OOS MSE before being wired in (see each constant's own
+    comment and analytics/exchange_rate/CLAUDE.md for the full test record).
+    Deviation vs. plain-regression framework choice was re-confirmed on the
+    7-channel set before switching the default (not just assumed from the
+    smaller-channel-set comparison earlier this session) -- OOS MSE came
+    back very close (deviation 7.4708 vs. plain-regression 7.5297, a <1%
+    gap) with nearly identical betas either way, so the framework this tab
+    already shipped with (plain-regression, no PPP) was kept rather than
+    switched, since the data didn't call for a change, only the channel set
+    did. The framework choice was NOT re-tested again for the 9-channel set
+    -- no reason to expect that <1% gap to flip with two more channels added
+    identically to both frameworks.
+
+    curve_steep DROPPED, same day, later round: confirmed a clean,
+    repeatedly-reproduced win (-1.4% OOS MSE) across every round-4 residual-
+    investigation test this session -- see
+    _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP's own comment for the full
+    list of what else was tried (and failed) against this same baseline
+    while investigating the 2020-2022 decomposition residual.
+
+    Rolling window default changed 60 -> 72 months (2026-07-31, direct user
+    request, following the W x F training-window/forecast-horizon grid test
+    in analytics/exchange_rate/referencia/ridge_window_horizon_grid.md): that
+    grid found W=72 is the more robust single choice across forecast
+    horizons (W=60 and W=72 are close at every horizon, but W=84 clearly
+    degrades at F=12mo specifically) -- this payload's `window` default
+    follows that finding for BOTH the Rolling Coefficient/R2 charts AND the
+    "last window" parameters the decomposition toggle and forecast area
+    (below) both key off of, so all three stay consistent with each other.
+
+    last_window block + forecast/scenario area (2026-07-31, same day, direct
+    user request, three-part follow-up): (1) the decomposition chart's bars
+    always used the WHOLE-SAMPLE alpha/beta, even when a start/end month was
+    picked -- `last_window` now exposes the MOST RECENT rolling window's own
+    alpha/beta plus a parallel `contrib_monthly_last_window` (built exactly
+    like `contrib_monthly` but from those coefficients instead), and the
+    template's decomposition toggle switches which one feeds the bars,
+    auto-restricting Start/End to that window's own date span when clicked.
+    (2) `forecast` exposes what a client-side multi-step scenario simulator
+    needs to run entirely in JS (last window's alpha/beta/lambda, each
+    channel's reference mean/std for un-standardizing a user-entered raw-
+    unit shock, and the seed level/AR state to start from) -- no server
+    round-trip needed per scenario, since Ridge is just alpha + beta.x, cheap
+    enough to re-run 12 steps forward in the browser on every input change.
+    (3) `forecast_error_bands` are PRE-COMPUTED here (not simulated live) via
+    forecast_error_bands_w72(): the same walk-forward-path-tracking
+    mechanism as the W=72,F=12 cell of the grid test (own simulated AR
+    feedback, real realized channels), but scored PER STEP (1..12 months
+    ahead) rather than only at the cumulative 12-month horizon, pooling the
+    per-step error across every rolling fold to get a step-indexed std-error
+    curve. This is expensive (full W=72 rolling refit across the sample) so
+    it's cached to a JSON file and only recomputed when the underlying
+    sample/spec changes, not on every build_dashboard_payload() call -- see
+    that function's own docstring."""
+    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
+    z, stats, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False)
     delta_cols = reg_cols
 
     cv = walk_forward_lambda(z, delta_cols, y_col="delta_fx")
@@ -879,6 +1161,40 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
         "residual": [round(float(v), 4) for v in residual],
     }
 
+    # --- last-window decomposition (2026-07-31, direct user request: "the
+    # exchange rate decomposition consider the whole-sample parameters,
+    # right? I want a option here to click and use the parameters of the
+    # window... restrict the range to the window") -- same monthly-
+    # contribution construction as contrib_monthly above, but using the
+    # MOST RECENT rolling window's own alpha/beta (roll.iloc[-1], already
+    # fitted on exactly that window) instead of the whole-sample fit, and
+    # restricted to that window's own `window` months rather than the full
+    # sample. The residual here is NOT the same quantity as the whole-
+    # sample residual above -- it's this window-specific fit's own
+    # in-sample residual over its own months, so the two decompositions
+    # aren't directly comparable bar-for-bar, only each internally
+    # consistent (each bridges its own anchor to the actual rate exactly). ---
+    last_row = roll.iloc[-1]
+    last_alpha = float(last_row["alpha"])
+    last_beta = {c: float(last_row[f"beta_{c}"]) for c in delta_cols}
+    last_window_months = months[-window:]
+    z_last = z.iloc[-window:]
+
+    X_last = z_last[delta_cols].values
+    beta_vec_last = np.array([last_beta[c] for c in delta_cols])
+    fitted_delta_last = last_alpha + X_last @ beta_vec_last
+    actual_delta_last = z_last["delta_fx"].values
+    residual_last = actual_delta_last - fitted_delta_last
+
+    contributions_last = {c: last_beta[c] * z_last[c].values for c in delta_cols}
+    baseline_monthly_last = np.full(len(z_last), last_alpha) + contributions_last[ar1_col]
+
+    contrib_monthly_last_window = {
+        "baseline": [round(float(v), 4) for v in baseline_monthly_last],
+        **{c: [round(float(v), 4) for v in contributions_last[c]] for c in channel_cols},
+        "residual": [round(float(v), 4) for v in residual_last],
+    }
+
     return {
         "n": int(len(z)),
         "sample_range": [months[0], months[-1]],
@@ -909,6 +1225,69 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 60)
         },
         "level_decomposition": level_decomposition,
         "contrib_monthly": contrib_monthly,
+        "last_window": {
+            "window_months": window,
+            "start": last_window_months[0],
+            "end": last_window_months[-1],
+            "start_index": len(months) - window,
+            "end_index": len(months) - 1,
+            "alpha": round(last_alpha, 4),
+            "beta": {c: round(last_beta[c], 4) for c in delta_cols},
+            "r2": round(float(last_row["r2"]), 4),
+            "anchor_level": round(float(actual_ptax_full.loc[z_last.index[0] - pd.DateOffset(months=1)]), 4),
+            "contrib_monthly": contrib_monthly_last_window,
+        },
+        "forecast": {
+            "horizon": 12,
+            "seed_level": round(float(actual_level[-1]), 4),
+            "seed_delta_fx_lag1": round(float(z["delta_fx"].iloc[-1]), 4),
+            "alpha": round(last_alpha, 4),
+            "beta": {c: round(last_beta[c], 4) for c in delta_cols},
+            "channel_stats": {
+                c: {"mean": round(float(stats[c][0]), 6), "std": round(float(stats[c][1]), 6)}
+                for c in channel_cols
+            },
+            # 2026-07-31, direct user follow-up after trying the forecast
+            # area live ("I'm not seeing what I'm doing with the
+            # regressors"): the shock inputs had no visible connection to
+            # each channel's own actual recent values or units -- a bare
+            # "+50" was meaningless without seeing what level that's
+            # relative to. channel_history exposes each channel's own last
+            # 24 months of RAW (native-unit) values so the template can
+            # plot "actual history -> shocked path forward" per channel,
+            # same idea as the main decomposition/forecast chart but for
+            # the regressors themselves rather than the FX rate they drive.
+            # is_log_return flags sp500/icbr_usd so the client projects
+            # their shocked path multiplicatively (level*exp(shock/100)^h)
+            # instead of additively (level+shock*h), matching how each is
+            # actually differenced in build_plain_regression_sample().
+            #
+            # 2026-07-31, same day, direct user follow-up ("put a button
+            # ... I can see the regressor graph (all history) + forecast
+            # future (dot) - with the option to see the Z-score too") --
+            # extended from the last 24 months to the FULL sample so the
+            # expanded regressor chart can show all available history, not
+            # just the tail the compact sparkline needed. level_mean/
+            # level_std (NEW here -- distinct from channel_stats' own
+            # mean/std, which standardize the DELTA, not the level) let the
+            # template's Z-score toggle standardize the raw level itself:
+            # confirmed via AskUserQuestion this should be a z-score of the
+            # LEVEL (a new, distinct statistic), not of the delta the model
+            # actually regresses on -- the two answer different questions
+            # ("how unusual is this level" vs. "how big a signal is this
+            # month's move"), and the level reading is what was asked for.
+            "channel_history": {
+                c: {
+                    "months": months,
+                    "values": [round(float(v), 4) for v in df[c].reindex(z.index).values],
+                    "is_log_return": c in _LOG_RETURN_CHANNELS,
+                    "level_mean": round(float(np.nanmean(df[c].reindex(z.index).values)), 6),
+                    "level_std": round(float(np.nanstd(df[c].reindex(z.index).values, ddof=1)), 6),
+                }
+                for c in channels
+            },
+        },
+        "forecast_error_bands": forecast_error_bands_w72(channels=channels, window=window, horizon=12),
         "rolling": {
             "window_months": window,
             "n_windows": len(roll),

@@ -4,47 +4,73 @@ K10
 CARTA DO GESTOR NOVEMBRO 2025
 K10
 CENÁRIO
-O fundo Kapitalo K10 obteve retorno de 0,69% no Nos Estados Unidos, o Congresso votou pelo fim do
-mês de novembro. O livro de commodities apresentou shutdown e teremos a normalização da divulgação dos
-resultado positivo, enquanto os livros de juros, câmbio dados econômicos ao longo de dezembro. O Fed não
-e bolsa foram detratores. deve receber as informações mais recentes sobre a
-economia antes da sua próxima reunião, mas a inflação
-O mês foi marcado por uma maior volatilidade mais baixa e os riscos ao equilíbrio do mercado de
-nos mercados de ações internacionais, uma vez trabalho levaram membros dos Fed a sinalizar um
-que os investidores vêm questionando o retorno de novo corte de juros na reunião de dezembro.
+O fundo Kapitalo K10 obteve retorno de 0,69% no
+mês de novembro. O livro de commodities apresentou
+resultado positivo, enquanto os livros de juros, câmbio
+e bolsa foram detratores.
+O mês foi marcado por uma maior volatilidade
+nos mercados de ações internacionais, uma vez
+que os investidores vêm questionando o retorno de
 capital dos investimentos no setor de tecnologia.
-As grandes empresas do setor têm comprometido No Brasil, o cenário político está delineando uma
-montantes representativos em investimentos cujo eleição presidencial bastante disputada em 2026.
-retorno ainda é incerto. Do ponto de vista da política monetária, o gradual
-afrouxamento do mercado de trabalho, a inflação
-A discussão sobre quem serão os ganhadores e/ou benigna e a queda das expectativas de inflação
-perdedores dessa corrida parece correta. Algumas devem permitir o início de um ciclo de recalibragem
-empresas possuem capacidade financeira inferior dos juros já na reunião de janeiro. Mantivemos um
-e sua viabilidade pode ser questionada. Dito isto, livro aplicado em juros reais e nominais na parte
-as informações marginais foram muito positivas intermediária da curva.
+As grandes empresas do setor têm comprometido
+montantes representativos em investimentos cujo
+retorno ainda é incerto.
+A discussão sobre quem serão os ganhadores e/ou
+perdedores dessa corrida parece correta. Algumas
+empresas possuem capacidade financeira inferior
+e sua viabilidade pode ser questionada. Dito isto,
+as informações marginais foram muito positivas
 para o complexo. Aproveitamos a queda de preços
-para aumentar as alocações em empresas bem O K10 continua aplicado em juros de forma seletiva e
-posicionadas no núcleo da cadeia de Inteligência aumentamos a alocação comprada em ações globais.
-Artificial e que apresentam valuation atrativo. Além disso, reduzimos a exposição aplicada em renda
-fixa do Brasil.
+para aumentar as alocações em empresas bem
+posicionadas no núcleo da cadeia de Inteligência
+Artificial e que apresentam valuation atrativo.
 Do ponto de vista macro, o distensionamento da
 guerra comercial entre Estados Unidos e China, bem
 como o ciclo econômico global – caracterizado por
 desaceleração gradual da atividade e baixa inflação –,
 constituem um ambiente favorável aos ativos de risco.
+Nos Estados Unidos, o Congresso votou pelo fim do
+shutdown e teremos a normalização da divulgação dos
+dados econômicos ao longo de dezembro. O Fed não
+deve receber as informações mais recentes sobre a
+economia antes da sua próxima reunião, mas a inflação
+mais baixa e os riscos ao equilíbrio do mercado de
+trabalho levaram membros dos Fed a sinalizar um
+novo corte de juros na reunião de dezembro.
+No Brasil, o cenário político está delineando uma
+eleição presidencial bastante disputada em 2026.
+Do ponto de vista da política monetária, o gradual
+afrouxamento do mercado de trabalho, a inflação
+benigna e a queda das expectativas de inflação
+devem permitir o início de um ciclo de recalibragem
+dos juros já na reunião de janeiro. Mantivemos um
+livro aplicado em juros reais e nominais na parte
+intermediária da curva.
+O K10 continua aplicado em juros de forma seletiva e
+aumentamos a alocação comprada em ações globais.
+Além disso, reduzimos a exposição aplicada em renda
+fixa do Brasil.
 POSIÇÕES
-Moedas Commodities
-Seguimos comprados em iene japonês, lira turca, Mantivemos posições vendidas em café, milho, zinco
-florim húngaro, peso chileno e rúpia indiana contra e petróleo e continuamos comprados em ouro e gás
-o dólar norte-americano. Adicionamos posição natural. Adicionamos posições compradas em cobre
-comprada no rand sul-africano contra o dólar e em alumínio.
+Moedas
+Seguimos comprados em iene japonês, lira turca,
+florim húngaro, peso chileno e rúpia indiana contra
+o dólar norte-americano. Adicionamos posição
+comprada no rand sul-africano contra o dólar
 norte-americano.
-Juros
 Bolsa
+Seguimos comprados nos Estados Unidos, na
+Argentina, no Chile e na China. Zeramos a posição
+comprada em Europa e a posição vendida em Brasil.
+Commodities
+Mantivemos posições vendidas em café, milho, zinco
+e petróleo e continuamos comprados em ouro e gás
+natural. Adicionamos posições compradas em cobre
+e em alumínio.
+Juros
 Mantivemos posições aplicadas na Europa,
-Seguimos comprados nos Estados Unidos, na na Suécia, no Canadá e no México. Adicionamos
-Argentina, no Chile e na China. Zeramos a posição posição aplicada em África do Sul e reduzimos
-comprada em Europa e a posição vendida em Brasil. a posição aplicada em Brasil.
+na Suécia, no Canadá e no México. Adicionamos
+posição aplicada em África do Sul e reduzimos
+a posição aplicada em Brasil.
 
 CARTA DO GESTOR NOVEMBRO 2025
 K10
@@ -102,15 +128,15 @@ TIA OU PROMESSA DE RENTABILIDADE OU DE ISENÇÃO
 DE RISCO. AOS INVESTIDORES, É RECOMENDADA A
 LEITURA CUIDADOSA DE LÂMINAS, PROSPECTOS E/ OU
 REGULAMENTOS ANTES DE INVESTIR SEUS RECUR-
-KAPITALO INVESTIMENTOS LTDA
 SOS. As análises aqui apresentadas não pretendem con-
-Av. Brigadeiro Faria Lima, 3144
 ter todas as informações relevantes que um investidor
-11º andar - Itaim Bibi
 deve considerar e, dessa forma, representam apenas
-01451-000 – São Paulo, SP
 uma visão limitada do mercado. Este conteúdo não pode
-(11) 3956-0600
 ser copiado, reproduzido ou distribuído sem a prévia e
-kapitalo.com.br
 expressa concordância das gestoras.
+KAPITALO INVESTIMENTOS LTDA
+Av. Brigadeiro Faria Lima, 3144
+11º andar - Itaim Bibi
+01451-000 – São Paulo, SP
+(11) 3956-0600
+kapitalo.com.br

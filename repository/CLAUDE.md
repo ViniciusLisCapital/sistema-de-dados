@@ -26,8 +26,8 @@ repository/
     recommended_data/           — <topic>_data_inventory.md
     data_tracker.xlsx
   mental_model/                 — 291 files, raw sources (asset manager letters): kapitalo/ (83 PDF,
-                                  raw_md/ fully extracted — see Pending for a known extraction-quality
-                                  caveat on the newer letters), kinea/ (60 .md), kinea_insights/ (64 .md),
+                                  raw_md/ + clean_md/ both complete and cross-validated across all
+                                  three format eras — see CURATION_SCOPE.md), kinea/ (60 .md), kinea_insights/ (64 .md),
                                   spx_capital/ (7 PDF),
                                   verde_asset/ (raw_pdf/ growing — 1999-2026 pulled so far; see
                                   verde_asset/DOWNLOAD_PROCESS.md for the URL pattern/download process)
@@ -52,4 +52,4 @@ repository/
 - **Exchange rate — 2 real gaps**: FX options/volatility (Garman & Kohlhagen 1983), non-Brazil EM depth (Eichengreen & Hausmann 1999). See `exchange_rate_bibliography_gaps.md`.
 - **Monetary policy — build the conceptual map**: candidates acquired, still need to process them into `monetary_policy_conceptual_map.md` (doesn't exist yet), one at a time. Still need to acquire Cukierman (1992) and COPOM §8 materials. Decide where to process Tambakis & Tarashev (2012).
 - **Trader — decide scope**: see above.
-- **`mental_model/kapitalo/raw_md/` — extraction-quality caveat on newer letters**: `utils/extract_pdf.py` (plain pdfplumber text extraction, no layout awareness) extracted all 83 letters cleanly for Jul/2019–Aug/2023 (~52 files, single-column "Carta K10" template). Starting Sep/2023 ("CARTA DO GESTOR" template) through the latest letter (Mar/2026) — ~31 files — Kapitalo switched to a two-column narrative layout that pdfplumber's default reading order merges into interleaved, out-of-sequence lines (two unrelated sentences from adjacent columns land on the same output line). This is genuine garbling, not the usual Windows-terminal codepage display artifact. Not yet fixed — would need a column-aware re-extraction (e.g. pdfplumber layout mode, or the per-PDF Claude-read route from the root CLAUDE.md's PDF-routing table) for that subset before the affected letters are used for conceptual mapping or bibliography work.
+- **`mental_model/kapitalo/` — curation complete (2026-07-31)**: all 83 letters (Jul/2019–Mai/2026) have both `raw_md/` (permanent audit trail) and `clean_md/` (curated per `CURATION_SCOPE.md`, same purpose as the Verde Asset corpus — feeds FX/macro mental-model synthesis), all cross-validated against each letter's own performance-attribution table. Three PDF template eras identified and handled: era 1 "Carta K10" (Jul/2019–Aug/2023, single-column), era 2 "CARTA DO GESTOR" (Sep/2023–Fev/2025, two-column narrative — needed column-aware re-extraction, now fixed), era 3 (Mar/2025–present, same two-column narrative plus a further layout tweak: split section headers, relocated VaR footnote, wrapped table-row label — handled in `curate.py` via additive regex fallbacks). No further action needed unless a new letter arrives in a yet-unseen format.

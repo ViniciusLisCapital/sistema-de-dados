@@ -28,8 +28,21 @@ inclinação do Chile.
 Av. Brig. Faria Lima, 3144 • 2º Andar • Itaim Bibi • 01451-000 • São Paulo Carta K10 • Abril 2022
 
 Alocação por Fator de Risco* Atribuição de Performance
+VaR 1d; 95% (% do PL)
+[gráfico de VaR: valores por barra não mapeados com confiança na extração — omitido, ver raw_pdf/kapitalo_k10_042022.pdf.]
+
+Estratégias abr/22 2022 12M 24M Desde Início
+Juros 1,04% 5,93% 6,87% 10,44% 18,49%
+Moedas 0,12% -0,37% 1,43% 4,62% 0,67%
+Bolsa 0,52% 1,62% 3,78% 11,36% 15,54%
+Commodities -0,37% 2,59% 8,12% 17,12% 30,97%
+Caixa e Custos -0,41% -2,51% -5,83% -12,89% -23,62%
+CDI 0,83% 3,29% 7,11% 9,41% 22,06%
+Performance do Fundo 1,73% 10,54% 21,48% 40,07% 64,12%
+% CDI 207,07% 320,43% 302,01% 425,84% 290,65%
 *Mínimo, Médio e Máximo ao longo do mês
-Av. Brig. Faria Lima, 3144 • 2º Andar • Itaim Bibi • 01451-000 • São Paulo Carta K10 • Abril 2022
+
+Esse documento foi elaborado pelo grupo Kapitalo (Kapitalo Investimentos e Kapitalo Ciclo) e suas informações são de caráter exclusivamente informativo. Ele não deve ser entendido como oferta, recomendação ou análise de investimentos ou ativos. O grupo Kapitalo não comercializa nem distribui quotas de fundos de investimentos. Fundos de investimento não contam com garantia do administrador do fundo, do gestor da carteira, de qualquer mecanismo de seguro ou, ainda, do fundo garantidor de créditos - FGC. A RENTABILIDADE OBTIDA NO PASSADO NÃO REPRESENTA GARANTIA DE RENTABILIDADE FUTURA. A RENTABILIDADE DO FUNDO APRESENTADA NÃO É LÍQUIDA DE IMPOSTOS E TAXA DE SAÍDA. LEIA A LÂMINA DE INFORMAÇÕES ESSENCIAIS E O REGULAMENTO ANTES DE INVESTIR. Para mais informações acerca das taxas de administração, cotização e público-alvo de cada um dos fundos, consulte os documentos do fundo disponíveis no site www.bradescobemdtvm.com.br. Os investidores devem estar preparados para aceitar os riscos inerentes aos diversos mercados em que os fundos atuam e, consequentemente, possíveis variações no patrimônio investido. O investidor deve tomar sua própria decisão de investimento, por isso recomendamos consultar aos assessores de investimentos e profissionais especializados antes de tomar sua decisão. O Fundo apresentados podem estar expostos a significativa concentração em ativos de poucos emissores e investimentos no exterior, com os riscos daí decorrentes. O Fundo apresentado realiza investimentos nas quotas do(s) Fundo(s) Master da Kapitalo para a estratégia (Kapitalo K10 Master FIM) que utiliza(m) estratégias com derivativos como parte integrante de sua(s) política(s) de investimento. Tais estratégias, da forma como são adotadas no(s) Fundo(s) Master(s), podem resultar em significativas perdas patrimoniais para seus quotistas, podendo inclusive acarretar perdas superiores ao capital aplicado, implicando na ocorrência de patrimônio líquido negativo no Fundo e na consequente obrigação do quotista de aportar recursos adicionais para cobrir o prejuízo do Fundo. Não há garantia de que o fundo terá tratamento tributário para fundos de longo prazo. Administradora: BEM DTVM Ltda. (CNPJ: 00.066.670/0001-00, Cidade de Deus, Prédio Prata, 4º andar, Vila Yara, Osasco-SP, CEP 06029-900, Tel: (11) 3684-9432, www.bradescobemdtvm.com.br, SAC: centralbemdtvm@bradesco.com.br ou 0800 704 8383, Ouvidoria: 0800 727 9933).
 
 Material Informativo
 Abril 2022

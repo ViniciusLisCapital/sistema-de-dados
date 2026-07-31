@@ -85,12 +85,19 @@ def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
     curve steepening, PREJS@120M-24M — see
     ppp_equilibrium._load_curve_steepening()) added 2026-07-30, an alternate
     market-based fiscal-risk proxy tested alongside the CDS-based `fiscal`
-    channel in ridge_deviation_model.py's shrunk AR(1) spec."""
+    channel in ridge_deviation_model.py's shrunk AR(1) spec. curve_steep_real
+    (REAL 10Y-2Y steepening, NTNBJS@120M-24M) and dxy_em (Fed Broad-EM dollar
+    index, FRED DTWEXEMEGS) added 2026-07-31, testing (i) whether the real
+    term premium captures domestic fiscal risk CDS misses (Brazil's USD
+    reserve buffer keeps external-default-priced CDS muted even when
+    domestic debt dynamics worsen) and (ii) EM-specific FX co-movement
+    alongside the broad/G10-heavy dxy channel."""
     dev = compute_deviation(df)
     out = pd.DataFrame(index=df.index)
     out["delta_dev"] = dev.diff()
     out["deviation_lag1"] = dev.shift(1)
-    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap", "fiscal", "dxy", "curve_steep"):
+    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap",
+                "fiscal", "dxy", "dxy_em", "curve_steep", "curve_steep_real"):
         out[f"delta_{col}"] = df[col].diff()
     return out
 

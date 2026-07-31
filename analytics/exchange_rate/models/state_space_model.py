@@ -826,7 +826,11 @@ def render_dashboard() -> None:
     hand-extracted under fx_attribution_model.DATA_ROOT to have been done at
     least once first (reads saved claim CSVs, doesn't re-extract) --
     ridge_deviation_model.build_dashboard_payload() needs no saved trace at
-    all, cheap enough (milliseconds) to fit fresh on every call.
+    all -- the fit itself is milliseconds, but the payload also calls
+    forecast_error_bands_w72() (2026-07-31), a genuinely expensive full
+    W=72 rolling-refit walk-forward computation (~150s), CACHED to
+    ridge_results/forecast_error_bands_w72.json rather than fit fresh every
+    call -- see that function's own docstring for the caching rule.
 
     Down from eight tabs to three, 2026-07-30, direct user request ("remove
     the other tabs"): the Bayesian Model, State-Space (Attempt Two), Kalman
