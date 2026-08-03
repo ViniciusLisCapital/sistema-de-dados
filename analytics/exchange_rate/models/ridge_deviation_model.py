@@ -883,7 +883,7 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     the forecast error for each month and construct the interval from the
     next to 12 months horizon"). Reuses the exact walk-forward rolling-
     window / multi-step-simulation mechanism from the W x F grid test
-    (analytics/exchange_rate/referencia/ridge_window_horizon_grid.md) at
+    (analytics/exchange_rate/referencia/equilibrium_model/ridge_window_horizon_grid.md) at
     W=72 specifically -- own simulated AR(1) feedback (delta_fx_lag1) fed
     forward at every step, real realized channel deltas for those months --
     but where the grid test only scored the CUMULATIVE return at the end of
@@ -1052,7 +1052,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
 
     Rolling window default changed 60 -> 72 months (2026-07-31, direct user
     request, following the W x F training-window/forecast-horizon grid test
-    in analytics/exchange_rate/referencia/ridge_window_horizon_grid.md): that
+    in analytics/exchange_rate/referencia/equilibrium_model/ridge_window_horizon_grid.md): that
     grid found W=72 is the more robust single choice across forecast
     horizons (W=60 and W=72 are close at every horizon, but W=84 clearly
     degrades at F=12mo specifically) -- this payload's `window` default
@@ -1309,7 +1309,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
 
 
 def render_dashboard() -> None:
-    """Regenerates referencia/ppp_dashboard.html with the Ridge tab added
+    """Regenerates reports/ppp_dashboard.html with the Ridge tab added
     alongside the other seven. Delegates to state_space_model.render_dashboard()
     for everything else so this stays the single entry point that keeps all
     tabs in sync, rather than duplicating that function's payload wiring."""

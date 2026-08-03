@@ -1,0 +1,12 @@
+/* Color every "synthesis" folder (one per topic) gold, to mark the
+   synthesis tier of the concepts/sources/synthesis model consistently
+   across the vault. See obsidian/CLAUDE.md for the three-tier definition. */
+
+.nav-folder-title[data-path$="/synthesis"],
+.nav-folder-title[data-path$="/synthesis"] .nav-folder-title-content {
+  color: #BB9B1D !important;
+}
+
+.nav-folder-title[data-path$="/synthesis"] .nav-folder-collapse-indicator {
+  color: #BB9B1D !important;
+}

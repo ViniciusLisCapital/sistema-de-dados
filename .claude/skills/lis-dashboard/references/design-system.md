@@ -221,7 +221,7 @@ body {
 
 ## JavaScript Patterns <a name="chartjs-setup"></a>
 
-Padrão único de charting do projeto desde 2026-07-28 (histórico completo da mudança em `.claude/rules/lis-dashboards.md`, repo principal): **Plotly**, não Chart.js. Todo relatório analítico do projeto (`analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, `analytics/monetary_policy/report.html`) já usava Plotly desde o início; esta skill migrou para o mesmo padrão no mesmo dia em que `analytics/exchange_rate/referencia/ppp_dashboard.html` (originalmente Chart.js) foi convertido, a pedido direto do usuário ("I want all graphs to be this way ... set this in skill too"). Os padrões abaixo são os MESMOS já usados nesses relatórios — não uma variação nova.
+Padrão único de charting do projeto desde 2026-07-28 (histórico completo da mudança em `.claude/rules/lis-dashboards.md`, repo principal): **Plotly**, não Chart.js. Todo relatório analítico do projeto (`analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, `analytics/monetary_policy/report.html`) já usava Plotly desde o início; esta skill migrou para o mesmo padrão no mesmo dia em que `ppp_dashboard.html` (originalmente Chart.js; então em `analytics/exchange_rate/referencia/`, movido para o `reports/` de topo em 2026-08 por ser um deliverable gerado por código, não material de referência) foi convertido, a pedido direto do usuário ("I want all graphs to be this way ... set this in skill too"). Os padrões abaixo são os MESMOS já usados nesses relatórios — não uma variação nova.
 
 ### CDNs obrigatórios (no <head>)
 ```html

@@ -1,6 +1,6 @@
 # UIP Model — USD/BRL
 
-*Companion doc to `uip_model.py`. First model built in the `analytics/exchange_rate/models/` series — see `DATA_REQUIREMENTS.md` for the full model-by-model data inventory and `../referencia/fx_forecasting_theory_vs_practice.md` for the broader theory-vs-practice context this sits inside.*
+*Companion doc to `uip_model.py`. First model built in the `analytics/exchange_rate/models/` series — see `DATA_REQUIREMENTS.md` for the full model-by-model data inventory and `../referencia/literature/fx_forecasting_theory_vs_practice.md` for the broader theory-vs-practice context this sits inside.*
 
 ## What it tests
 
@@ -8,9 +8,9 @@ Uncovered Interest Parity: does the Selic–Fed Funds interest-rate differential
 
 ## Literature
 
-- **Fama (1984)**, *"Forward and Spot Exchange Rates"* — the original finding that the spot-change-on-forward-premium regression comes back with the wrong sign; established that most forward-premium variance is risk-premium variance, not genuinely expected depreciation. (`referencia/er_forecasting/`)
-- **Araújo et al. (SciELO, 2000–2014, inflation-targeting era)** — the direct BRL precedent this model is checked against: GARCH coefficient of **−2.94** (wrong sign vs. UIP's β=1), with a Markov-switching extension finding **−2.94 in low-volatility months, flipping >+1.00 in high-volatility ones**. Documented in `../referencia/fx_forecasting_theory_vs_practice.md` Part I §2.
-- **Bacchetta & van Wincoop (2004, 2009/2013)** and **Fratzscher (2011)** — the "scapegoat theory" motivating the *next* model in this series (driver attribution / time-varying importance of fundamentals); the UIP result here is also read partly as evidence for or against parameter instability in its own right (see Results below). (`referencia/er_forecasting/`)
+- **Fama (1984)**, *"Forward and Spot Exchange Rates"* — the original finding that the spot-change-on-forward-premium regression comes back with the wrong sign; established that most forward-premium variance is risk-premium variance, not genuinely expected depreciation. (`referencia/literature/papers/`)
+- **Araújo et al. (SciELO, 2000–2014, inflation-targeting era)** — the direct BRL precedent this model is checked against: GARCH coefficient of **−2.94** (wrong sign vs. UIP's β=1), with a Markov-switching extension finding **−2.94 in low-volatility months, flipping >+1.00 in high-volatility ones**. Documented in `../referencia/literature/fx_forecasting_theory_vs_practice.md` Part I §2.
+- **Bacchetta & van Wincoop (2004, 2009/2013)** and **Fratzscher (2011)** — the "scapegoat theory" motivating the *next* model in this series (driver attribution / time-varying importance of fundamentals); the UIP result here is also read partly as evidence for or against parameter instability in its own right (see Results below). (`referencia/literature/papers/`)
 
 ## Data and variables
 

@@ -68,6 +68,13 @@ analytics/           — Projetos que consomem o banco MySQL
     generate_report.py   — Mesmo padrão /*REPORT_DATA*/ de exchange_rate/inflation
     report.html           — Template fixo, abas "Cenários" e "Sobre o Modelo"
     referencia/           — PDFs do modelo original do BCB + MODEL_REPLICATION_PLAN.md (histórico da réplica)
+    models/               — Material legado de curva de juros (ex-quarantine/, 2026-08), ainda não integrado
+                           ao motor principal — ver "Pendências" abaixo
+  report_structure/  — Scaffolding compartilhado de build-time para os relatórios acima (theme CSS,
+                       _bindYAutofit, harness de substituição /*REPORT_DATA*/) — ver analytics/CLAUDE.md
+                       e analytics/report_structure/CLAUDE.md. Piloto: inflation/ (2026-08, migração completa);
+                       exchange_rate/ parcialmente migrado (JS/harness, falta o CSS — precisa do reskin 2026-07
+                       antes); monetary_policy/ ainda não migrado.
 jobs/                — Entry points
   update_db.py          — Atualiza todas as tabelas de macro_brasil (inclui mdic/ e atv_pib_usd; NÃO inclui
                           ainda comm_icbr/inflc_meta — rodar manualmente por enquanto)
@@ -78,7 +85,6 @@ reports/             — Outputs gerados (não versionados)
   fx_report.html — Relatório cambial mais recente (autocontido, enviável; renomeado de cambio_latest.html em 2026-07)
   bcb_model.html — Relatório do modelo BCB replicado (renomeado de monetary_policy_latest.html)
 utils/               — Funções auxiliares compartilhadas
-quarantine/          — Scripts e materiais legados/experimentais (não fazem parte do ETL)
 ```
 
 
@@ -93,6 +99,12 @@ quarantine/          — Scripts e materiais legados/experimentais (não fazem p
 ## Connectors
 
 📄 **Documentação completa (API IBGE v3, SGS/Focus do BCB, FRED, MySQL insert/update):** [`connectors/CLAUDE.md`](connectors/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `connectors/`.
+
+---
+
+## analytics/
+
+📄 **Visão geral do diretório, padrões compartilhados entre os relatórios (`/*REPORT_DATA*/`, `data/` vs `referencia/`), e itens de organização pendentes:** [`analytics/CLAUDE.md`](analytics/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `analytics/`.
 
 ---
 
@@ -164,7 +176,7 @@ Ao converter PDFs em `.md` para alimentar o agente de análise, use a seguinte l
 
 ## repository/ — curated knowledge base (bibliography + conceptual maps)
 
-Since 2026-07, organized by topic area (exchange rate, monetary policy, trader, and future ones: economic activity, fiscal policy, inflation, labor market), each with a literature → data → conceptual map pipeline. Named `agent_bibliography/` before — old name still turns up in git history/older docs, treat as a synonym. Doesn't use or reconcile with `obsidian/`, nor interact with the `ingestion/` pipeline — deliberately parallel systems, per explicit user instruction.
+Since 2026-07, organized by topic area (exchange rate, monetary policy, trader, and future ones: economic activity, fiscal policy, inflation, labor market), each with a literature → data → conceptual map pipeline. Named `agent_bibliography/` before — old name still turns up in git history/older docs, treat as a synonym. Doesn't use or reconcile with `obsidian/`'s own concept/synthesis pages — deliberately parallel systems, per explicit user instruction. Does interact with `repository/ingestion/` (2026-08) — that's the PDF ingestion pipeline itself, living inside this tree: drop a PDF in `repository/ingestion/land_space/<topic>/`, run `repository/ingestion/scripts/run.py`, and it populates `raw_pdf/`/`raw_md/`/`clean_md/` in one command.
 
 📄 **Folder structure, methodology, per-topic status, and pending items:** [`repository/CLAUDE.md`](repository/CLAUDE.md) — loads on demand when Claude reads files inside `repository/` (unlike this root file, which loads in full every session).
 
@@ -172,6 +184,14 @@ Since 2026-07, organized by topic area (exchange rate, monetary policy, trader, 
 1. **Curation** (`repository/exchange_rate/` + `repository/agent_mapping/*`) — literature → conceptual map pipeline. Not team-facing, it's the base that feeds the agent. Full detail in `repository/CLAUDE.md`.
 2. **Consolidated** (`team_materials/agent_materials/exchange_rate/`) — condensed, presentable synthesis for team discussion (bibliography, conceptual map, data inventory, EN/PT introduction, two interactive HTML explorers).
 3. **Analytical** (`analytics/exchange_rate/`) — applied/analytical branch, same pattern as `analytics/monetary_policy/` and `analytics/inflation/` (code + HTML report + `referencia/`). See its own section above.
+
+---
+
+## obsidian/ — Vault de conhecimento macro
+
+Vault Obsidian cross-linked por área macro (`exchange_rate`, `monetary_policy`, `inflation`, `fiscal_policy`, `labor_market`, `economic_activity`), voltado para leitura/navegação por humanos e agentes — não é um arquivo de material bruto. Cada tópico segue um modelo de três camadas: `concepts/` (notas atômicas de teoria, densamente linkadas), `sources/` (material completo por fonte, só com boilerplate/disclaimers removidos — equivalente ao `clean_md` do `repository/`, nova em 2026-08 e ainda vazia), `synthesis/` (notas condensadas por fonte, já populadas para várias áreas). Deliberadamente paralelo ao `repository/`'s `agent_mapping/`, por instrução explícita do usuário — mas as duas árvores passaram a compartilhar a camada de extração bruta em 2026-08 (ver histórico abaixo).
+
+📄 **Definição de cada camada, status por tópico, histórico da reorganização de 2026-08, pendências:** [`obsidian/CLAUDE.md`](obsidian/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `obsidian/`.
 
 ---
 
@@ -212,6 +232,7 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 - **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
 - **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
 - **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
+- **`analytics/monetary_policy/models/curva_juros/`**: material legado de curva de juros (`yield_curve.py`, `yield_curve_model.py`, planilhas DI/títulos/governo), movido de `quarantine/` em 2026-08. Ainda não integrado ao motor principal (`model.py`) nem discutido com o agente de política monetária — revisitar quando essa frente for retomada.
 
 ### Baixa prioridade
-- `quarantine/` — scripts legados (curva de juros, decomposição IPCA). Limpar quando conveniente.
+- (nenhuma pendência no momento)

@@ -4,7 +4,7 @@
 **Tags:** #beer #fair-value #real-exchange-rate #brazil #balassa-samuelson #terms-of-trade #net-foreign-assets #risk-premium
 **Source:** Claudio Paiva, IMF Working Paper, 2006
 **Language:** English
-**Raw file:** [[equilibrium_exchange_brazil (Paiva, 2006)]]
+**Source file:** [[equilibrium_exchange_brazil (Paiva, 2006)]]
 
 ---
 

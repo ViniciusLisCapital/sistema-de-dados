@@ -4,7 +4,7 @@
 **Tags:** #fiscal-dominance #brasil #monetary-policy #inflation #risk-premium #brl #debt #bcb
 **Source:** Itaú Unibanco Macro Vision, January 21, 2025
 **Language:** English
-**Raw file:** [[fiscal_dominance (itau, 2025)]]
+**Source file:** [[fiscal_dominance (itau, 2025)]]
 
 ---
 

@@ -10,13 +10,13 @@ Uso:
     uv run python -c "from analytics.inflation.generate_report import run; run()"
 """
 
-import json
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
 from analytics.inflation.fetch_bcb import _apply_stl_ma3
+from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
 
 _HERE = Path(__file__).parent
@@ -507,14 +507,8 @@ def run(output: str = "reports/inflation_latest.html") -> None:
     n_bcb = sum(len(v["dates"]) for v in data["bcb"].values())
     print(f"  BCB:     {n_bcb} obs ({len(data['bcb'])} series)")
 
-    template = _TEMPLATE.read_text(encoding="utf-8")
-    payload = json.dumps(data, ensure_ascii=False, default=str)
-    html = template.replace("/*REPORT_DATA*/", f"const REPORT_DATA = {payload};")
-
-    out = Path(output)
-    out.parent.mkdir(exist_ok=True)
-    out.write_text(html, encoding="utf-8")
-    print(f"Relatorio salvo: {out.resolve()}")
+    out = render_report(_TEMPLATE, data, output)
+    print(f"Relatorio salvo: {out}")
 
 
 if __name__ == "__main__":

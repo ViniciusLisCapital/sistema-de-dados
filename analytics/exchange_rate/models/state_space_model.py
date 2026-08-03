@@ -819,7 +819,7 @@ def build_kalman_dashboard_payload(label: str = "kalman", channels: list[str] | 
 
 
 def render_dashboard() -> None:
-    """Regenerates referencia/ppp_dashboard.html with its three tabs: PPP/data
+    """Regenerates reports/ppp_dashboard.html with its three tabs: PPP/data
     (ppp_equilibrium), the FX cause-attribution tab (fx_attribution_model,
     manager-letter claims), and the Ridge-penalized regression
     (ridge_deviation_model). Requires at least one manager corpus

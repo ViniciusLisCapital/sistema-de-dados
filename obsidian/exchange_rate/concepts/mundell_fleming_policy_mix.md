@@ -46,6 +46,7 @@ The same headline policy announcement (e.g., "fiscal stimulus") can be currency-
 
 ## Connections
 
+- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built from that reading's capital-mobility-conditioned policy tables
 - [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — same qualitative fiscal/monetary-policy-to-exchange-rate results (temporary fiscal → appreciation, temporary monetary → depreciation), derived from the DD-AA model rather than a capital-mobility parameter
 - [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] — original Mundell source on capital mobility and policy effectiveness under fixed vs. floating rates
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — companion original source

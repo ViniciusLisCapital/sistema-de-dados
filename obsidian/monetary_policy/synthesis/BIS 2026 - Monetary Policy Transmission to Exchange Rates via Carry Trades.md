@@ -4,7 +4,7 @@
 **Tags:** #carry-trade #monetary-policy #uip #cftc-positioning #deleveraging #chf #jpy
 **Source:** BIS Bulletin No 124, 6 May 2026
 **Language:** English
-**Raw file:** [[monetary_policy_exchange_rates (BIS, 2026)]]
+**Source file:** [[monetary_policy_exchange_rates (BIS, 2026)]]
 
 ---
 

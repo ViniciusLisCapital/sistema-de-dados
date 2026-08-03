@@ -8,7 +8,7 @@ aliases: ["Dornbusch 1976"]
 **Source:** Journal of Political Economy, 1976, vol. 84, no. 6, pp. 1161–1176  
 **Type:** Foundational theoretical article  
 **Tags:** #overshooting #exchange-rate #monetary-policy #expectations #sticky-prices #foundational  
-**Raw file:** [[expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]]
+**Source file:** [[expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]]
 
 ---
 
@@ -144,8 +144,12 @@ The system becomes second-order. Overshooting can be larger or smaller depending
 
 ## Connections in the bibliography
 
-- [[Mundell 1963]] — no price stickiness; exchange rate adjusts instantly → no overshooting
-- [[Fleming 1962]] — same Mundell-Fleming framework; Dornbusch adds dynamic expectations
+- [[overshooting]] — this paper is the formal source of the overshooting concept: sticky prices + perfect capital mobility + rational expectations producing short-run depreciation beyond the long-run rate
+- [[uip]] — Block 1's `r = r* + ε` with `ε = θ(ē − e)` is exactly the UIP condition, here made the engine of the whole dynamic system rather than a static no-arbitrage check
+- [[ppp_balassa_samuelson]] — the model's long-run anchor (`ē = p̄ − p̄*`, Block 3) is long-run PPP; the paper's contribution is explaining the short-run deviation from it, not the long-run condition itself
+- [[carry_trade]] — the required interest differential compensating for expected depreciation (Block 1) is the same UIP logic that, when it fails to hold empirically, defines carry-trade profitability
+- [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] — no price stickiness; exchange rate adjusts instantly → no overshooting
+- [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — same Mundell-Fleming framework; Dornbusch adds dynamic expectations
 - [[Obstfeld-Rogoff]] — extensions with microfoundations (Redux model, ch. 9–10)
 - [[verde_fx_mental_models]] — Verde letters frequently describe FX "running ahead of fundamentals" — consistent with this mechanism
 

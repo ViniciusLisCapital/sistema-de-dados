@@ -4,7 +4,7 @@
 **Tags:** #textbook #monetary-approach #overshooting #money-supply #hyperinflation #inflation-targeting #pass-through
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Raw file:** [[money_interest_rate_exchange_rates (Krugman, 2023)_raw]]
+**Source file:** [[money_interest_rate_exchange_rates (Krugman, 2023)]]
 
 ---
 

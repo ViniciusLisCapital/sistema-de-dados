@@ -2,8 +2,8 @@
 Uncovered Interest Parity (UIP) for USD/BRL — OLS, GARCH(1,1), and 2-regime
 Markov-switching versions of the CIP-proxied forward-premium regression.
 
-Background: referencia/fx_forecasting_theory_vs_practice.md Part I S2, and
-referencia/er_forecasting/ (Fama, 1984; Araujo et al., SciELO).
+Background: referencia/literature/fx_forecasting_theory_vs_practice.md Part I S2, and
+referencia/literature/papers/ (Fama, 1984; Araujo et al., SciELO).
 
 No forward FX rate exists in the DB, so — the same substitution the BRL
 literature itself uses — the Selic-Fed Funds differential stands in for the

@@ -4,7 +4,7 @@
 **Tags:** #textbook #dd-aa-model #fiscal-policy #monetary-policy #j-curve #pass-through #global-value-chains #crowding-out
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Raw file:** [[output_exchange_rates_sr (Krugman, 2023)_raw]]
+**Source file:** [[output_exchange_rates_sr (Krugman, 2023)]]
 
 ---
 
@@ -43,6 +43,7 @@ Short-run equilibrium is the intersection of DD (output market clears: aggregate
 
 ## Connections
 
+- [[exchange_rate_pass_through]] — this chapter is that concept's canonical textbook source: the pass-through/pricing-to-market discussion and the global-value-chain backward/forward linkages (import content of exports, a trading partner's depreciation lowering a country's own input costs) are both derived here
 - [[overshooting]] — this chapter derives overshooting a second, independent way (via DD-AA under a permanent money supply increase) and adds the J-curve as a second, distinct amplifier of exchange-rate overshooting
 - [[uip]] — the AA schedule is UIP + money-market equilibrium restated as a function of output; permanent-vs-temporary policy distinctions here are the same E^e-sensitivity logic as Ch. 15/16
 - [[ppp_balassa_samuelson]] — the real exchange rate `q = EP*/P` is the operative variable throughout the current-account/DD analysis, same definition as Ch. 16

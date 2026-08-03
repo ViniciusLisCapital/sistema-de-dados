@@ -2,7 +2,7 @@
 causas cambiais (FX Attribution).
 
 Documento complementar à aba "FX Attribution (Manager Letters)" de
-`referencia/ppp_dashboard.html` e a `fx_attribution_model.py`/`.md` (mesma
+`reports/ppp_dashboard.html` e a `fx_attribution_model.py`/`.md` (mesma
 pasta de modelos) — não lê `claims.csv`/`documents.csv` diretamente para todo
 o texto (a maior parte é hand-transcribed, mesma convenção de
 `generate_model_spec_pdf.py`), mas as tabelas de contagem por categoria e o

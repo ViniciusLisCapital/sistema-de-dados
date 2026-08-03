@@ -4,7 +4,7 @@
 **Tags:** #textbook #fixed-exchange-rate #sterilization #currency-crisis #capital-flight #reserve-currency #gold-standard #risk-premium
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Raw file:** [[fixed_exchange_rate_intervention (Krugman, 2023)_raw]]
+**Source file:** [[fixed_exchange_rate_intervention (Krugman, 2023)]]
 
 ---
 

@@ -1,0 +1,252 @@
+"""
+⚠️ NOT RECOMMENDED — see repository/ingestion/INGESTION.md's "AI cleaning pass
+is unreliable" section. A 2026-08 audit found every file this script had
+produced was corrupted (truncation from a too-small per-chunk output budget,
+"Practice questions/answers" and other substantive content wrongly treated as
+boilerplate, and unprompted voice paraphrasing). Kept here for reference/
+possible future repair only. Use clean_code.py (deterministic, no AI, no
+rewriting risk) via run.py instead.
+
+Step 2 — AI cleaning agent (2-pass pipeline, no intermediate files).
+
+Pass 1 — Structure: reformats raw extracted text into clean markdown in memory,
+          fixes PDF encoding artifacts, marks obvious boilerplate with
+          > [BOILERPLATE] blockquotes.
+Pass 2 — Clean: identifies and removes all boilerplate. Writes the final file.
+
+Output:
+  <name>.md  — final cleaned document (written to output_dir)
+
+Usage (CLI):
+    uv run python repository/ingestion/scripts/clean.py repository/ingestion/sample/raw/teste.md
+    uv run python repository/ingestion/scripts/clean.py repository/ingestion/sample/raw/ --output repository/ingestion/sample/clean/
+
+As a function:
+    from clean import clean_file
+    clean_path = clean_file("repository/ingestion/sample/raw/teste.md", output_dir="repository/ingestion/sample/clean")
+"""
+
+import argparse
+import os
+import re
+from pathlib import Path
+
+import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+
+INGEST_MODEL = "claude-haiku-4-5-20251001"
+MAX_CHARS = 180_000  # kept for reference; chunking is used instead of hard truncation
+CHUNK_SIZE  =  60_000  # ~15k tokens per chunk — output fits within 8k token limit
+
+_STRUCTURE_PROMPT = """\
+You are a document structuring assistant. The text below was extracted raw from a PDF and may contain:
+- Garbled, reversed, or corrupted text (PDF encoding artifacts)
+- Missing paragraph breaks or run-on sentences from page joins
+- Page number artifacts and repeated headers mixed into the content
+- Inconsistent spacing and formatting
+
+Your task: reformat the text into clean, readable markdown. Rules:
+1. Add proper headers (## for main sections, ### for subsections) inferred from the document's structure.
+2. Fix obvious PDF extraction artifacts — e.g., reversed text, broken Unicode sequences, words fused together or split at wrong positions.
+3. Separate paragraphs with blank lines. Merge broken lines that belong to the same sentence.
+4. Mark boilerplate by wrapping it in a blockquote prefixed with [BOILERPLATE]:
+   > [BOILERPLATE] <original text of the section>
+   Boilerplate includes: disclaimers, legal notices, copyright, regulatory disclosures,
+   contact details (phone numbers, email addresses), analyst certification statements,
+   "about the author/company" sections, table of contents, blank filler pages.
+5. Do NOT remove any content — only restructure and mark.
+6. Return only the structured markdown. No commentary, no preamble.
+
+Document:
+---
+{text}
+---"""
+
+_CLEAN_PROMPT = """\
+You are a document cleaning assistant. The structured text below was extracted from a PDF.
+Sections marked with > [BOILERPLATE] are candidates for removal.
+
+Your task: remove all boilerplate and return ONLY the cleaned document.
+
+Boilerplate to remove:
+- Any section marked with > [BOILERPLATE]
+- Table of contents / index
+- Disclaimers and legal notices
+- Repeated page headers/footers (page numbers, document title artifacts)
+- Copyright / publisher information
+- Contact details: phone numbers, email addresses, analyst names with contact info
+- "About the author" or "About the company" sections
+- References / bibliography that is just a citation list (no annotation)
+- Regulatory certifications and compliance statements
+- Practice questions, review questions, and answers/solutions sections
+
+Return ONLY the cleaned document. No commentary, no preamble.
+Keep all substantive content intact and in order. Preserve the markdown structure (headers, paragraphs).
+
+Document:
+---
+{text}
+---"""
+
+
+_GARBLED_PREAMBLE = (
+    "[PDF EXTRACTION NOTE: This text was extracted from a scanned academic journal article. "
+    "The PDF's text layer has formatting errors typical of old digitized papers: some words "
+    "appear fused together or have spaces at incorrect positions. Please reconstruct the "
+    "intended academic text.]\n\n"
+)
+
+
+def _detect_garbled(text: str) -> bool:
+    """Return True if the text shows high density of camelCase word fusions."""
+    fusions = len(re.findall(r"[a-z][A-Z]", text))
+    return fusions > len(text) / 500  # more than 1 fusion per 500 chars
+
+
+def _preprocess_garbled(text: str) -> str:
+    """
+    Fix PDF text-layer artifacts before sending to Claude.
+    Splits camelCase word fusions and injects a context preamble to
+    prevent content-filter false positives on garbled text patterns.
+    """
+    if not _detect_garbled(text):
+        return text
+    # Fix camelCase fusions: "DomesticF inancial" -> "Domestic Financial"
+    text = re.sub(r"([a-z])([A-Z])", r"\1 \2", text)
+    return _GARBLED_PREAMBLE + text
+
+
+def _chunk_text(text: str, chunk_size: int = CHUNK_SIZE) -> list[str]:
+    """Split text into chunks at paragraph boundaries, never mid-paragraph."""
+    if len(text) <= chunk_size:
+        return [text]
+    chunks = []
+    while len(text) > chunk_size:
+        split_at = text.rfind("\n\n", 0, chunk_size)
+        if split_at == -1:
+            split_at = chunk_size
+        chunks.append(text[:split_at])
+        text = text[split_at:].lstrip("\n")
+    if text:
+        chunks.append(text)
+    return chunks
+
+
+_SYSTEM_PROMPT = (
+    "You are an academic document processor. You work exclusively with legitimate scholarly "
+    "texts: economics papers, research articles, and financial reports. Your task is to "
+    "reformat and clean these documents for a research knowledge base."
+)
+
+
+def _call(client: anthropic.Anthropic, model: str, prompt: str, max_tokens: int = 8096) -> str:
+    msg = client.messages.create(
+        model=model,
+        max_tokens=max_tokens,
+        system=_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return msg.content[0].text.strip()
+
+
+def clean_file(
+    source: str | Path,
+    output_dir: str | Path | None = None,
+    model: str = INGEST_MODEL,
+) -> Path:
+    """
+    Run the 2-pass pipeline on a single raw .md file.
+    Structure pass runs in memory; only the final clean file is written.
+
+    Returns clean_path.
+    """
+    source = Path(source)
+    if not source.exists():
+        raise FileNotFoundError(source)
+
+    text = source.read_text(encoding="utf-8")
+    text = _preprocess_garbled(text)
+
+    dest_dir = Path(output_dir) if output_dir else source.parent
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    stem = source.stem
+    base = stem[:-4] if stem.endswith("_raw") else stem  # strip _raw suffix for output names
+    clean_path = dest_dir / f"{base}.md"
+
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise EnvironmentError("ANTHROPIC_API_KEY not set in environment / .env")
+
+    client = anthropic.Anthropic(api_key=api_key)
+
+    chunks = _chunk_text(text)
+    if len(chunks) > 1:
+        print(f"        document split into {len(chunks)} chunks ({len(text):,} chars total)")
+
+    # Pass 1 (structure) + Pass 2 (clean) — per chunk
+    cleaned_parts = []
+    for i, chunk in enumerate(chunks, 1):
+        if len(chunks) > 1:
+            print(f"        chunk {i}/{len(chunks)}: structuring ...")
+        structured = _call(client, model, _STRUCTURE_PROMPT.replace("{text}", chunk))
+        if len(chunks) == 1:
+            print(f"        structured: {len(structured):,} chars (in memory)")
+        if len(chunks) > 1:
+            print(f"        chunk {i}/{len(chunks)}: cleaning ...")
+        cleaned_part = _call(client, model, _CLEAN_PROMPT.replace("{text}", structured))
+        cleaned_parts.append(cleaned_part)
+
+    cleaned = "\n\n".join(cleaned_parts)
+    clean_path.write_text(cleaned, encoding="utf-8")
+    print(f"        cleaned:    {len(cleaned):,} chars -> {clean_path.name}")
+
+    return clean_path
+
+
+def process(
+    source: str | Path,
+    output_dir: str | Path | None = None,
+    overwrite: bool = False,
+    model: str = INGEST_MODEL,
+) -> None:
+    """Clean one .md file or all .md files in a folder."""
+    source = Path(source)
+
+    if source.is_file():
+        files = [source]
+    elif source.is_dir():
+        files = sorted(f for f in source.glob("*.md") if not f.stem.endswith("_structured"))
+        if not files:
+            print(f"No .md files found in: {source}")
+            return
+    else:
+        raise FileNotFoundError(f"Path not found: {source}")
+
+    total = len(files)
+    for i, f in enumerate(files, 1):
+        print(f"\n[{i}/{total}] {f.name}")
+        dest = Path(output_dir) if output_dir else f.parent
+        base = f.stem[:-4] if f.stem.endswith("_raw") else f.stem
+        clean_path = dest / f"{base}.md"
+        if clean_path.exists() and not overwrite:
+            print(f"  skip (use --overwrite to replace)")
+            continue
+        print(f"  structuring + cleaning ...")
+        try:
+            clean_file(f, output_dir=dest, model=model)
+        except Exception as e:
+            print(f"  ERROR: {e}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="AI cleaning agent for raw .md files.")
+    parser.add_argument("source", help=".md file or folder of .md files")
+    parser.add_argument("--output", "-o", default=None, help="Output directory")
+    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing cleaned files")
+    parser.add_argument("--model", default=INGEST_MODEL, help=f"Claude model for cleaning (default: {INGEST_MODEL})")
+    args = parser.parse_args()
+
+    process(source=args.source, output_dir=args.output, overwrite=args.overwrite, model=args.model)

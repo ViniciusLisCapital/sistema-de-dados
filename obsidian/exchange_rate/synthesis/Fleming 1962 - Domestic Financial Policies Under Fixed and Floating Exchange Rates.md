@@ -140,8 +140,9 @@ Fleming derives formally the stability conditions and multipliers. The condition
 
 ## Connections in the bibliography
 
-- [[Mundell 1963]] — parallel version; Mundell makes perfect capital mobility analysis cleaner and adds the inflation model
-- [[Dornbusch 1976]] — extends with dynamic expectations and sticky prices → generates overshooting
+- [[mundell_fleming_policy_mix]] — this paper is a companion original source for the concept page (alongside Mundell 1963); the policy-mix tables there are the reduced-form summary of this paper's fixed vs. floating analysis
+- [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] — parallel version; Mundell makes perfect capital mobility analysis cleaner and adds the inflation model
+- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — extends with dynamic expectations and sticky prices → generates overshooting
 - [[Obstfeld-Rogoff]] — microfoundation of the Mundell-Fleming model (Redux, General Equilibrium)
 - [[Sarno-Taylor]] — critiques of M-F and extensions with risk premium and portfolio balance
 

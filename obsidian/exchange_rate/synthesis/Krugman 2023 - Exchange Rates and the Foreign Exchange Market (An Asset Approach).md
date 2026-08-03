@@ -4,7 +4,7 @@
 **Tags:** #textbook #fx-market #asset-approach #uip #cip #carry-trade #forward-rate
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Raw file:** [[exchange_rate_foreign_exchange_market (Krugman, 2023)_raw]]
+**Source file:** [[exchange_rate_foreign_exchange_market (Krugman, 2023)]]
 
 ---
 

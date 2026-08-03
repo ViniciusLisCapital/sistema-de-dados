@@ -53,6 +53,7 @@ Key nuance: even "independent floats" intervene occasionally (Plaza Accord 1985;
 
 ## Connections
 
+- [[CFA L1 2025 - Capital Flows and the FX Market]] — primary source; this concept page (Impossible Trinity framework and the full IMF regime taxonomy) was created from that reading
 - [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same core mechanics (fixing R=R* requires giving up Ms control) derived via the DD-AA/money-market model rather than stated as a trilemma; gold standard and reserve-currency-asymmetry history overlaps directly
 - [[uip]] — the trilemma's "credibly fixed + convertible ⇒ one currency" logic is UIP with zero risk premium and zero expected depreciation
 - [[overshooting]] — post-1973 float volatility being driven by asset flows rather than trade flows is the empirical seed for the asset-approach/overshooting framework

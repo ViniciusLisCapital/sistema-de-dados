@@ -4,7 +4,7 @@
 **Source:** Goldman Sachs Global Markets Analyst, 30 May 2023  
 **Type:** Empirical research note — forecasting performance assessment  
 **Tags:** #GSDEER #fair-value #PPP #forecasting #convergence #G10 #exchange-rate #goldman-sachs  
-**Raw file:** [[gsdeer_manual_guide (Goldman, 2025)]]
+**Source file:** [[gsdeer_manual_guide (Goldman, 2023)]]
 
 ---
 
@@ -162,7 +162,9 @@ As of May 2023:
 ## Connections in the bibliography
 
 - [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — companion piece explaining the model construction and BRL case study (2025 vintage)
-- [[Dornbusch 1976]] — provides the theoretical basis for why fair value is a long-run concept and short-run deviations are rational (overshooting)
-- [[Mundell 1963]] / [[Fleming 1962]] — the policy effectiveness framework that underpins why exchange rates deviate from PPP in the short run
+- [[ppp_balassa_samuelson]] — GSDEER is an augmented PPP model (this paper evaluates its forecasting performance); the augmentation itself corrects for the Balassa-Samuelson productivity effect this concept documents
+- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — provides the theoretical basis for why fair value is a long-run concept and short-run deviations are rational (overshooting)
+- [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — the policy effectiveness framework that underpins why exchange rates deviate from PPP in the short run
+- [[risk_premium]] — EM currencies with high risk premia show slower, noisier GSDEER convergence than this paper's G10-focused results would suggest
 - [[Sarno-Taylor]] — academic treatment of PPP mean-reversion and the 3–5 year half-life that GS references
 - [[verde_fx_mental_models]] — Verde letters treat GSDEER-type structural undervaluation as a necessary-but-not-sufficient condition for BRL appreciation; consistent with this paper's finding that convergence is slow and requires a catalyst

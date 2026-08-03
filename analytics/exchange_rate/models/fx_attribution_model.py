@@ -17,7 +17,7 @@ whatever the claim's subject is. +1 = strongly BRL-appreciation-supportive,
 -1 = strongly BRL-depreciation-driving. A claim that "the dollar is
 strengthening globally" is scored NEGATIVE (bad for BRL), not positive.
 
-Wired into referencia/ppp_dashboard.html as its own tab, "FX Attribution
+Wired into reports/ppp_dashboard.html as its own tab, "FX Attribution
 (Manager Letters)" (2026-07-29) — see build_dashboard_payload() below, and
 state_space_model.render_dashboard(), which calls it and threads the result
 into ppp_equilibrium.render()'s fxattr_payload argument alongside the other
@@ -268,7 +268,7 @@ def build_manager_payload(manager):
 
 
 def build_dashboard_payload():
-    """Payload for referencia/ppp_dashboard.html's "FX Attribution (Manager
+    """Payload for reports/ppp_dashboard.html's "FX Attribution (Manager
     Letters)" tab -- one entry per manager subfolder actually present under
     fx_attribution_data/ (hand-extracted documents.csv + claims.csv), so a
     newly onboarded manager appears automatically, no code change needed. The

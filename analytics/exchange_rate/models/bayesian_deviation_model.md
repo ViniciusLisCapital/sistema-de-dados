@@ -1,6 +1,6 @@
 # Bayesian Deviation Model — USD/BRL (built and fit 2026-07-23)
 
-*Companion doc to `bayesian_deviation_model.py`. Positioned as "attempt one" at explaining the PPP deviation from `ppp_equilibrium.py` — deliberately simpler than, and prior to, the Kalman-filter state-space model in `../referencia/state_space_equilibrium_model.md` ("attempt two"). See `DATA_REQUIREMENTS.md` for the broader model-by-model data inventory. Results below; design rationale sections below that are kept as originally written (pre-registered before any fitting) so the two can be compared honestly.*
+*Companion doc to `bayesian_deviation_model.py`. Positioned as "attempt one" at explaining the PPP deviation from `ppp_equilibrium.py` — deliberately simpler than, and prior to, the Kalman-filter state-space model in `../referencia/equilibrium_model/state_space_equilibrium_model.md` ("attempt two"). See `DATA_REQUIREMENTS.md` for the broader model-by-model data inventory. Results below; design rationale sections below that are kept as originally written (pre-registered before any fitting) so the two can be compared honestly.*
 
 ## What it will test
 

@@ -4,7 +4,7 @@
 **Tags:** #cfa #real-exchange-rate #fx-market-microstructure #impossible-trinity #currency-regimes #capital-flows
 **Source:** CFA Institute, Level I curriculum, Learning Module 7 (Economics)
 **Language:** English
-**Raw file:** [[capital_flow_fx_market (CFA L1, 2025)]]
+**Source file:** [[capital_flow_fx_market (CFA L1, 2025)]]
 
 ---
 

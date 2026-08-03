@@ -35,6 +35,7 @@ Iceland demonstrates the **banking-crisis/currency-crisis feedback loop**: krona
 
 ## Connections
 
+- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built from that reading's nine-indicator checklist and the Iceland 2008 case study
 - [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same underlying balance-of-payments-crisis/capital-flight mechanics; Iceland is a real-world case where a fragile banking sector (not central bank reserves defending a formal peg) was the crisis transmission channel
 - [[currency_regimes]] — the 1992 UK/ERM crisis is a second real-world case study of the same "fixed/quasi-fixed regimes are more crisis-prone" indicator (#4)
 - [[risk_premium]] — a currency crisis is the extreme, discontinuous realization of a risk premium spike, per the "risk-premium overshooting" mechanism documented there

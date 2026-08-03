@@ -15,7 +15,7 @@ point is avoiding notation.
 
 Static content, not live-computed: every number here is hand-transcribed
 from ridge_deviation_model.py's own docstrings, analytics/exchange_rate/
-CLAUDE.md, and referencia/ridge_window_horizon_grid.md as of 2026-07-31.
+CLAUDE.md, and referencia/equilibrium_model/ridge_window_horizon_grid.md as of 2026-07-31.
 If the model is refit/reespecified, update this file's numbers by hand in
 the same session (same convention generate_model_spec_pdf.py documents).
 

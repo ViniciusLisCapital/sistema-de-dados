@@ -4,7 +4,7 @@
 **Tags:** #cfa #uip #cip #ppp #real-interest-rate-parity #mundell-fleming #portfolio-balance #currency-crisis #carry-trade
 **Source:** CFA Institute, Level II curriculum, Learning Module 1 (Economics)
 **Language:** English
-**Raw file:** [[exchange_rate_understanding_equilibrium (CFA L2, 2025)]]
+**Source file:** [[exchange_rate_understanding_equilibrium (CFA L2, 2025)]]
 
 ---
 

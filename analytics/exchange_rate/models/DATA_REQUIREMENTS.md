@@ -1,6 +1,6 @@
 # FX driver models — data requirements mapping
 
-*Companion to `referencia/fx_forecasting_theory_vs_practice.md` and `referencia/er_forecasting/`. Scopes what each candidate model needs, what's already in the database, and where the missing pieces could come from.*
+*Companion to `referencia/literature/fx_forecasting_theory_vs_practice.md` and `referencia/literature/papers/`. Scopes what each candidate model needs, what's already in the database, and where the missing pieces could come from.*
 
 ## Status legend
 

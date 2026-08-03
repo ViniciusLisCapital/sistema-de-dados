@@ -4,7 +4,7 @@
 **Tags:** #cfa #cross-rate #triangular-arbitrage #forward-points #covered-interest-parity #cip
 **Source:** CFA Institute, Level I curriculum, Learning Module 8 (Economics)
 **Language:** English
-**Raw file:** [[exchange_rate_calculation (CFA L1, 2025)]]
+**Source file:** [[exchange_rate_calculation (CFA L1, 2025)]]
 
 ---
 

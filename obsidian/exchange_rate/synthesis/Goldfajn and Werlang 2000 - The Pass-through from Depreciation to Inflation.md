@@ -4,7 +4,7 @@
 **Tags:** #pass-through #real-exchange-rate #currency-crisis #emerging-markets #brazil #panel-data
 **Source:** Ilan Goldfajn (PUC-Rio / Deputy Governor, Banco Central do Brasil) and Sergio R.C. Werlang, working paper, 2000
 **Language:** English
-**Raw file:** [[depreciation_pass_through (Goldfajn, 2000)]]
+**Source file:** [[depreciation_pass_through (Goldfajn, 2000)]]
 
 ---
 

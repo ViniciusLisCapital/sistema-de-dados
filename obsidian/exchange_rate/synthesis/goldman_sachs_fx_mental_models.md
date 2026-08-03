@@ -512,3 +512,15 @@ A few observations worth carrying forward when the remaining ~64 issues (mid-Apr
 - **The tariff-transmission thesis (Cluster 2) is clearly still evolving past this pilot's endpoint.** The "exceptionalism erosion" reversal (2.5) is dated 4 April 2025; by the time the series reaches mid-2026 (per titles like "A Window Into Debasement," "Currencies in Conflict," "The Gulf Between" — likely covering an Iran/Hormuz-related oil shock, consistent with the Kapitalo/Verde/Kinea documents' coverage of the same episode around March-April 2026) the framework will likely have moved through further stages worth documenting as their own cluster or sub-cluster.
 - **Trade-recommendation lifecycles (1.5) are worth tracking as a dedicated index** (open date, adjustments, close date, realized return) as more issues are added — this is a distinctive, quantifiable feature of the GS source that the manager letters don't offer in the same form.
 - This document was built independently from the three existing manager documents, without cross-referencing them for consistency of theme or terminology — as with those three, any eventual comparison across houses should be a separate, explicit exercise.
+
+---
+
+## Connections
+
+- [[carry_trade]] — 1.5's trade-recommendation lifecycles are mostly carry-driven expressions (short EUR/BRL, long BRL/MXN, short THB/KRW); 3.1's rate-differential framework as the primary, testable USD driver
+- [[uip]] — 1.1's rate-differential/GSBEER fitted-value check is a practical, empirically-tested proxy for whether a move is "UIP-justified"; the recurring finding that a currency "outperformed" or "underperformed" its rate-differential-implied fit is the same UIP-deviation logic this concept documents
+- [[risk_premium]] — 3.4's governance-credibility repricing (the UK-2022 analogy applied to the US itself, 11 Apr/23 May 2025); 8.4's relative political-institutional risk premium (CAD priced worse than MXN); 9.4's UK fiscal-risk-premium co-movement diagnostic
+- [[overshooting]] — 1.3's explicit "it is not unusual for currencies to overshoot once fair value is reached" (GBP Brexit, EUR gas-shock analogues); 2.5's "exceptionalism erosion" Dollar reversal, a real-time overshooting-in-progress case
+- [[ppp_balassa_samuelson]] — 1.2's GSDEER (augmented PPP) and GSFEER structural valuation toolkit, applied tactically to a new currency almost every week
+- [[Goldman 2023 - GSDEER A User's Manual]] / [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — this document's own methodology backbone (see "About this document" above): those two cover GSDEER/GSFEER's construction, this one covers their week-to-week tactical application
+- [[kapitalo_fx_mental_models]] / [[verde_fx_mental_models]] / [[kinea_fx_mental_models]] — sibling FX mental-model documents (asset-manager side, vs. this one's sell-side/dealer perspective), each built independently

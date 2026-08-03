@@ -4,7 +4,7 @@
 **Tags:** #textbook #ppp #law-of-one-price #balassa-samuelson #real-exchange-rate #fisher-effect #monetary-approach
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Raw file:** [[price_levels_exchange_rate_lr (Krugman, 2023)_raw]]
+**Source file:** [[price_levels_exchange_rate_lr (Krugman, 2023)]]
 
 ---
 

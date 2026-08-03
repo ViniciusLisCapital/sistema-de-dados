@@ -4,7 +4,7 @@
 **Tags:** #food-inflation #emerging-markets #pca-factor-model #commodities #exchange-rate-pass-through
 **Source:** Goldman Sachs, EM Macro Themes, 23 June 2026
 **Language:** English
-**Raw file:** [[em_food_inflation (goldamn, 2026)]]
+**Source file:** [[em_food_inflation (goldamn, 2026)]]
 
 ---
 

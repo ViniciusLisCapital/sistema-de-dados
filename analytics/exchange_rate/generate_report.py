@@ -8,12 +8,12 @@ Uso:
     uv run python -c "from analytics.exchange_rate.generate_report import run; run()"
 """
 
-import json
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
+from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
 
 _TEMPLATE = Path(__file__).parent / "report.html"
@@ -498,11 +498,5 @@ def run(output: str = "reports/fx_report.html") -> None:
         "termos":          _load_termos(),
     }
 
-    template = _TEMPLATE.read_text(encoding="utf-8")
-    payload = json.dumps(report_data, ensure_ascii=False, default=str)
-    html = template.replace("/*REPORT_DATA*/", f"const REPORT_DATA = {payload};")
-
-    out = Path(output)
-    out.parent.mkdir(exist_ok=True)
-    out.write_text(html, encoding="utf-8")
-    print(f"Relatório salvo: {out.resolve()}")
+    out = render_report(_TEMPLATE, report_data, output)
+    print(f"Relatório salvo: {out}")

@@ -848,7 +848,7 @@ uv run python -c "from analytics.exchange_rate.models.fx_attribution_model impor
   `run(manager=...)` applies.
 - **No dashboard yet, by design.** Per direct user instruction (2026-07-29),
   this stays numbers-only (CSV/Excel) for now; the eventual visualization is
-  a new tab in `referencia/ppp_dashboard.html` (stacked bar per category,
+  a new tab in `reports/ppp_dashboard.html` (stacked bar per category,
   `n_documents`/`n_claims` visible alongside), not a standalone page.
 - **Reusability for other text-scoring tasks** (e.g. Copom hawkish/dovish)
   is an explicit design goal but hasn't been attempted — nothing here is

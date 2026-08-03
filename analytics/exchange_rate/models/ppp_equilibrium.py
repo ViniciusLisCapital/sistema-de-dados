@@ -1,6 +1,6 @@
 """
 Relative-PPP equilibrium for USD/BRL — the first real-data building block for
-referencia/state_space_equilibrium_model.md's measurement equation.
+referencia/equilibrium_model/state_space_equilibrium_model.md's measurement equation.
 
     equilibrium(t) = ptax(b) * [ipca_index(t)/ipca_index(b)] / [cpi_index(t)/cpi_index(b)]
 
@@ -161,7 +161,7 @@ the dashboard first, decide on the regression afterward):
           the "BEER-style levels" model (see beer_model.py) after a
           throwaway delta-channel test (scratchpad, not committed) found
           neither trade nor CA added signal in delta form.
-          Data-quality fix carried over from referencia/state_space_equilibrium_model.md's
+          Data-quality fix carried over from referencia/equilibrium_model/state_space_equilibrium_model.md's
           "built and charted this session as a working proxy" note: PREJS@120M
           has two confirmed bad windows (2010-01-22..2010-02-05 and
           2010-03-02..2010-03-04, values ~3% vs. a true ~13%, isolated to this
@@ -177,9 +177,11 @@ each column is simply null before its own series starts — no padding or
 back-filling.
 
 Not wired into generate_report.py — renders a standalone, self-contained
-dashboard (models/ppp_dashboard_template.html -> referencia/ppp_dashboard.html)
-with a client-side base-month selector, following the same /*MARKER*/ +
-str.replace() templating convention as generate_report.py.
+dashboard (models/ppp_dashboard_template.html -> reports/ppp_dashboard.html,
+untracked/regenerate-only like every other report in reports/ — moved out of
+referencia/ 2026-08, since it's a code-generated deliverable, not background
+reading) with a client-side base-month selector, following the same
+/*MARKER*/ + str.replace() templating convention as generate_report.py.
 
 Usage:
     uv run python -c "from analytics.exchange_rate.models.ppp_equilibrium import run; run()"
@@ -196,7 +198,7 @@ from connectors.fred import FredUniFrame
 from connectors.mysql import MySQLDataRequester
 
 _TEMPLATE = Path(__file__).parent / "ppp_dashboard_template.html"
-_OUTPUT = Path(__file__).parent.parent / "referencia" / "ppp_dashboard.html"
+_OUTPUT = Path(__file__).parent.parent.parent.parent / "reports" / "ppp_dashboard.html"
 
 _DEFAULT_BASE_MONTH = "1994-07"
 _FETCH_START = "1994-01-01"  # a few months of headroom before the first PTAX print (1994-07-01)

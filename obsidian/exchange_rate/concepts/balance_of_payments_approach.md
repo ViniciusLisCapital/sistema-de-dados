@@ -33,6 +33,7 @@ This is the same logic as Krugman's formal `ρ = ρ(B − A)` risk premium (see 
 
 ## Connections
 
+- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built by combining that reading's BOP/debt-sustainability and portfolio-balance channels
 - [[risk_premium]] — the portfolio balance approach is the qualitative version of Krugman's `ρ(B−A)` risk premium: a larger domestic bond stock (higher B) requires compensation via rates, risk premium, or depreciation
 - [[mundell_fleming_policy_mix]] — this approach explicitly extends Mundell-Fleming's short-run policy effects to the long-run consequence of sustained deficits
 - [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same debt-stock-driven risk premium mechanism, formalized via the central bank balance sheet
