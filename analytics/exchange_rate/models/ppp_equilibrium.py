@@ -500,6 +500,109 @@ def load_data() -> pd.DataFrame:
     return df
 
 
+def load_channel_series(channels: list[str] | None = None) -> dict[str, pd.Series]:
+    """Each requested channel's OWN raw monthly series, on its own natural
+    index -- deliberately NOT joined onto load_data()'s `core` (ptax/
+    ipca_index/cpi_index) frame, and NOT dropna()'d against any other
+    channel. load_data()'s own `df` is bounded by whichever of ptax/IBGE
+    IPCA/FRED US CPI publishes slowest -- confirmed 2026-08 that this is
+    routinely US CPI (FRED CPIAUCSL, ~2-week lag past month-end) or IBGE
+    IPCA, NOT the channels themselves: e.g. fiscal/CDS and ptax were both
+    current through early August the same day `core` still capped out in
+    June. Reading `df[c]` directly for "is there newer data than the fit"
+    purposes would make an already-current channel look stale just because
+    a slower, unrelated series hasn't published yet.
+
+    Added 2026-08 for ridge_deviation_model.py's forecast-tab nowcast (see
+    build_dashboard_payload()'s own docstring) -- the one consumer that
+    needs to know each channel's true availability independently of core's
+    bound. channels=None returns every channel this module knows how to
+    build. Recomputes the same per-channel loaders load_data() itself
+    calls (a few extra DB/API reads on top of a plain load_data() call) --
+    accepted deliberately rather than restructuring load_data()'s join,
+    which other tabs (the Equilibrium & Data payload, in particular) rely
+    on staying exactly core-bounded."""
+    ptax = _read_table("macro_brasil", "cmb_ptax")
+    ptax = ptax[ptax["name"] == "ptax_venda"]
+    ptax_s = ptax.set_index(pd.to_datetime(ptax["date"]))["value"].sort_index()
+    ptax_m = ptax_s.resample("MS").last().rename("ptax")
+
+    carry_m = _monthly_series("macro_international", "diferenciais_juros", "diferencial_nominal", "carry")
+    tot_m = _monthly_series("macro_brasil", "cmb_termos_troca", "termos_de_troca_funcex", "tot")
+    fiscal_m = _monthly_series("macro_brasil", "cmb_risco_pais", "cds_5y_usd", "fiscal")
+    curves = _load_interest_rate_curves()
+    breakeven_m = _load_breakeven(curves)
+    curve_steep_m = _load_curve_steepening(curves)
+    curve_steep_real_m = _load_curve_steepening_real(curves)
+    real_yield_diff_m = _load_real_yield_diff(curves)
+    dxy_m = _monthly_series("macro_international", "cmb_dollar_index", "dxy", "dxy")
+    dxy_em_m = _monthly_series("macro_international", "cmb_dollar_index_em", "dxy_em", "dxy_em")
+    sp500_m = _monthly_series("macro_international", "cmb_equity_us", "sp500", "sp500")
+    icbr_usd_m = _monthly_series("macro_brasil", "comm_icbr_usd", "icbr_usd", "icbr_usd")
+    relative_carry_m = _load_relative_carry()
+    carry_vol_df = _load_carry_vol_metrics(carry_m)
+
+    all_series = {
+        "ptax": ptax_m, "carry": carry_m, "tot": tot_m, "fiscal": fiscal_m, "breakeven": breakeven_m,
+        "curve_steep": curve_steep_m, "curve_steep_real": curve_steep_real_m,
+        "real_yield_diff": real_yield_diff_m, "dxy": dxy_m, "dxy_em": dxy_em_m,
+        "sp500": sp500_m, "icbr_usd": icbr_usd_m, "relative_carry": relative_carry_m,
+        "carry_vol": carry_vol_df["carry_vol"], "relative_carry_vol": carry_vol_df["relative_carry_vol"],
+    }
+    return {c: all_series[c] for c in (channels if channels is not None else all_series)}
+
+
+def load_primitive_series(primitives: list[str] | None = None) -> dict[str, pd.Series]:
+    """Raw building-block series behind the three composite/derived channels
+    users find hardest to reason about directly -- carry_vol, real_yield_diff,
+    curve_steep_real (2026-08, direct user request: "some variables are less
+    intuitive in aggregate... I think it would be good to start from bottom
+    up," giving carry_vol's own Selic/Fed-Funds/vol breakdown as the example).
+    For ridge_deviation_model.py's forecast-tab "break down into parts"
+    panels. Each primitive is exposed on its OWN natural index, same
+    independently-per-series convention as load_channel_series() (not
+    joined/dropna'd against anything else, or against each other).
+
+    br_real_10y (NTNBJS@120M) is deliberately the SAME series feeding BOTH
+    real_yield_diff (br_real_10y - us_real_10y) and curve_steep_real
+    (br_real_10y - br_real_2y) -- confirmed with the user this must be one
+    shared input, not two independently-guessable copies of the same real-
+    world rate, so a single scenario can't imply two different BR 10Y paths
+    at once.
+
+    primitives=None returns all six this module knows how to build:
+        selic        -- BR policy rate (BCB SGS 432, via diferenciais_juros)
+        fed_funds    -- US policy rate (FRED FEDFUNDS, via diferenciais_juros)
+        fx_vol       -- BRL trailing-6m annualized realized vol (daily PTAX)
+        br_real_10y  -- BR real 10Y yield, NTNBJS@120M (base_mercado.interest_rates)
+        us_real_10y  -- US real 10Y yield, DFII10 (FRED)
+        br_real_2y   -- BR real 2Y yield, NTNBJS@24M (base_mercado.interest_rates)
+    None of the six needs curve_steep/breakeven's PREJS@120M bug-window
+    masking -- that bug is isolated to PREJS (nominal), not NTNBJS (real),
+    per _load_breakeven()'s own docstring."""
+    selic_m = _monthly_series("macro_international", "diferenciais_juros", "selic", "selic")
+    fed_funds_m = _monthly_series("macro_international", "diferenciais_juros", "fed_funds", "fed_funds")
+    fx_vol_m = _annualized_vol_6m(_load_daily_ptax()).rename("fx_vol")
+
+    curves = _load_interest_rate_curves()
+    ntnbjs_120 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    br_real_10y_m = ntnbjs_120.resample("MS").last().rename("br_real_10y")
+    ntnbjs_24 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
+    br_real_2y_m = ntnbjs_24.resample("MS").last().rename("br_real_2y")
+
+    us_real10y = FredUniFrame("us_real_10y", "DFII10", _FETCH_START, None)
+    us_real_10y_m = (
+        us_real10y.set_index(pd.to_datetime(us_real10y["Date"]))["us_real_10y"]
+        .sort_index().resample("MS").last().rename("us_real_10y")
+    )
+
+    all_primitives = {
+        "selic": selic_m, "fed_funds": fed_funds_m, "fx_vol": fx_vol_m,
+        "br_real_10y": br_real_10y_m, "us_real_10y": us_real_10y_m, "br_real_2y": br_real_2y_m,
+    }
+    return {p: all_primitives[p] for p in (primitives if primitives is not None else all_primitives)}
+
+
 def compute_equilibrium(df: pd.DataFrame, base_month: str = _DEFAULT_BASE_MONTH) -> pd.Series:
     """equilibrium(t) = ptax(b) * [ipca_index(t)/ipca_index(b)] / [cpi_index(t)/cpi_index(b)].
 

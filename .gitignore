@@ -29,6 +29,7 @@ analytics/exchange_rate/models/ridge_results/
 *.pdf
 *.pptx
 *.xlsx
+*.mp4
 
 # IDE — machine-specific paths
 .vscode/

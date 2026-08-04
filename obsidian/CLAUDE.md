@@ -49,6 +49,7 @@ concept → check `synthesis/` (is the condensation enough for the task?) → if
 
 ## Pending
 
+- **Revisit `sources/`'s definition (flagged 2026-08, not decided)** — same open question as `repository/CLAUDE.md`'s: this tier currently mirrors `clean_md/` exactly (raw text minus true garbage, zero rewriting/restructuring). User is reconsidering whether it should instead be an *organized* version of the raw text — reformatted for readability (paragraph breaks, headers) — while still preserving all content, not condensed or truncated. Whatever gets decided for `clean_md/` in `repository/` should carry over here, since `sources/` is a direct copy of it.
 - **New sources arriving in `repository/<topic>/clean_md/`** (12 more `exchange_rate` PDFs and 35 `monetary_policy` PDFs still await ingestion — see `repository/CLAUDE.md`'s pending list) need the same copy-into-`sources/` treatment once they exist. Not automatic — redo the copy manually (or scripted) after each ingestion batch.
 - **Fleming 1962 / Frenkel 1976** — no `sources/` note until their `clean_md` exists, which is blocked on the garbled-scan safety-classifier issue (see History above).
 - **Reconcile with `repository/ingestion/`** — relationship between this vault's `sources/` tier and the ingestion pipeline's own folders is now simpler (ingestion writes `clean_md/`, this vault copies from it) but still not formalized as a repeatable step. Deferred.

@@ -26,11 +26,14 @@ it with (i) fiscal and (ii) global USD (DXY). We increment later"). Grown
     from testing each channel in its own separate univariate spec).
   - to eight: breakeven_gap (the breakeven-minus-CMN-target de-anchoring
     gap) and tot (terms of trade) added, same day, direct user request.
-Reuses bayesian_deviation_model.py's
-build_deltas_contemporaneous()/_standardize_ext() (2000-01+ reference
-window) so the z-scored deltas here are identical, channel for channel, to
-what primary_contemp already uses -- only the estimator and the
-re-estimation scheme are new.
+Originally reused bayesian_deviation_model.py's build_deltas_contemporaneous()/
+_standardize_ext() (2000-01+ reference window) so the z-scored deltas here
+were identical, channel for channel, to what that module's primary_contemp
+spec used. bayesian_deviation_model.py was retired 2026-08 (Bayesian
+attempt-one superseded by this Ridge model); both helpers were inlined below
+rather than deleted, since this module still needs them and they have no
+other dependency on that module beyond compute_deviation() (already imported
+here directly from ppp_equilibrium).
 
 Three design choices, per the proposal:
   - L2 (Ridge), not L1 (Lasso): the goal is stabilizing coefficients between
@@ -97,6 +100,13 @@ beyond it being present in the sample.
 Usage:
     uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run; run()"
     uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import run_carry_level_variant; run_carry_level_variant()"
+
+    # Advance the pinned fit cutoff to incorporate newer data into
+    # alpha/beta/lambda (see refit_from_latest_data()'s own docstring) --
+    # run this once you've decided the model should actually refit, NOT on
+    # routine data-refresh regenerations (those leave the cutoff, and so the
+    # fit, untouched by design):
+    uv run python -c "from analytics.exchange_rate.models.ridge_deviation_model import refit_from_latest_data; refit_from_latest_data(force=True)"
 """
 
 from __future__ import annotations
@@ -107,17 +117,71 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
 
-from analytics.exchange_rate.models.bayesian_deviation_model import (
-    _REFERENCE_START,
-    _standardize_ext,
-    build_deltas_contemporaneous,
+from analytics.exchange_rate.models.ppp_equilibrium import (
+    compute_deviation,
+    compute_equilibrium,
+    load_channel_series,
+    load_data,
+    load_primitive_series,
 )
-from analytics.exchange_rate.models.ppp_equilibrium import compute_deviation, compute_equilibrium, load_data
+
+# Which primitives (see ppp_equilibrium.load_primitive_series()) build each
+# composite channel, and in what order -- used only by build_dashboard_payload()
+# to tell the forecast tab's "break down into parts" panels what to fetch/
+# show. br_real_10y appears in TWO entries deliberately (see
+# load_primitive_series()'s own docstring on why it's one shared input, not
+# two independent guesses of the same rate). The actual arithmetic
+# (carry_vol = (selic - fed_funds) / fx_vol, etc.) lives client-side in
+# ppp_dashboard_template.html, not here -- this dict only says WHICH raw
+# series feed which channel.
+_COMPOSITE_PRIMITIVES = {
+    "carry_vol": ["selic", "fed_funds", "fx_vol"],
+    "real_yield_diff": ["br_real_10y", "us_real_10y"],
+    "curve_steep_real": ["br_real_10y", "br_real_2y"],
+}
 
 pd.set_option("display.width", 200)
 pd.set_option("display.max_columns", None)
 
 _RESULTS_DIR = Path(__file__).parent / "ridge_results"
+
+_REFERENCE_START = "2000-01-01"
+
+
+def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
+    """Contemporaneous (no extra 1-month lag) first-differenced regressors
+    alongside delta_dev(t) -- inlined from the retired bayesian_deviation_model.py
+    (see module docstring above). curve_steep/curve_steep_real (BR nominal/real
+    10Y-2Y yield-curve steepening, PREJS/NTNBJS@120M-24M) and dxy_em (Fed
+    Broad-EM dollar index, FRED DTWEXEMEGS) are carried alongside the original
+    channel set for models that use them."""
+    dev = compute_deviation(df)
+    out = pd.DataFrame(index=df.index)
+    out["delta_dev"] = dev.diff()
+    out["deviation_lag1"] = dev.shift(1)
+    for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "breakeven", "breakeven_gap",
+                "fiscal", "dxy", "dxy_em", "curve_steep", "curve_steep_real"):
+        out[f"delta_{col}"] = df[col].diff()
+    return out
+
+
+def _standardize_ext(sample: pd.DataFrame, reference: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, dict]:
+    """Z-scores `sample` using each column's mean/std computed from `reference`
+    instead of from `sample` itself -- inlined from the retired
+    bayesian_deviation_model.py (see module docstring above). Lets channels
+    with longer real history (e.g. carry, dxy) be standardized against their
+    own full 2000-01+ window even when the fitting sample itself is bound to
+    a narrower overlap forced by a late-starting channel (e.g. fiscal/CDS,
+    2007-12+). `reference` need not share `sample`'s index; each column's
+    stats are computed independently over its own non-null rows."""
+    stats = {}
+    z = sample.copy()
+    for c in cols:
+        ref_col = reference[c].dropna()
+        mu, sd = ref_col.mean(), ref_col.std()
+        z[c] = (sample[c] - mu) / sd
+        stats[c] = (mu, sd)
+    return z, stats
 
 # Started as ["fiscal", "dxy"], grown same day to the four carry variants,
 # then to breakeven_gap + tot (see module docstring for the two rounds).
@@ -983,6 +1047,57 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     return result
 
 
+_FIT_CUTOFF_CACHE = _RESULTS_DIR / "model_fit_cutoff.json"
+
+
+def _load_fit_cutoff() -> str | None:
+    if not _FIT_CUTOFF_CACHE.exists():
+        return None
+    import json
+    with open(_FIT_CUTOFF_CACHE) as fh:
+        return json.load(fh)["cutoff_month"]
+
+
+def refit_from_latest_data(channels: list[str] | None = None, force: bool = False) -> str:
+    """Pins (or re-pins) the month through which build_dashboard_payload()'s
+    Ridge fit (alpha/beta/lambda, the decomposition, the forecast tab's seed
+    state) is computed -- persisted to disk so a plain report regeneration,
+    which reloads fresh DB data every time, can never silently refit the
+    model just because every channel happens to catch up to the same month
+    at once. 2026-08, direct user request ("I still don't want to re-run the
+    model" when only SOME regressors -- e.g. fiscal/CDS -- have new data out
+    but others don't yet): without this, the fit sample was bounded only by
+    build_plain_regression_sample()'s own dropna() (whichever channel lags
+    furthest), which drifts forward on its own with no explicit signal, so
+    a plain regeneration could in principle change alpha/beta by accident.
+
+    A no-op (returns the existing pinned cutoff unchanged) when one is
+    already saved and force=False -- this is what every ordinary
+    build_dashboard_payload() call does, so routine regenerations never move
+    the fit. Call with force=True only once you've decided the model should
+    actually incorporate the newer data (advances the cutoff to the latest
+    month every channel currently has in common) -- the dashboard's forecast
+    tab then resets to a fresh 12-month horizon from that new cutoff, same
+    as it always has. Data for months AFTER whatever cutoff is pinned here
+    is still surfaced to the dashboard (build_dashboard_payload()'s own
+    `nowcast` block, assessed independently per channel), just never fed
+    into the coefficient fit until this is explicitly called."""
+    if not force:
+        existing = _load_fit_cutoff()
+        if existing is not None:
+            return existing
+
+    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
+    z, _, _ = build_plain_regression_sample(channels=channels, include_ppp=False)
+    latest = z.index.max().strftime("%Y-%m")
+
+    _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    import json
+    with open(_FIT_CUTOFF_CACHE, "w") as fh:
+        json.dump({"cutoff_month": latest}, fh, indent=2)
+    return latest
+
+
 # ---------------------------------------------------------------------------
 # Dashboard tab: lambda-selection curve, historical fit, decomposition, and
 # rolling-window coefficient paths -- built fresh each call rather than read
@@ -1088,6 +1203,17 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     z, stats, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False)
     delta_cols = reg_cols
 
+    # Pinned fit cutoff (see refit_from_latest_data()'s own docstring): z
+    # above is naturally bounded by whichever channel's data lags furthest
+    # (build_plain_regression_sample()'s own dropna()), which drifts forward
+    # on its own as new data lands. Truncating to the persisted cutoff here
+    # decouples "what feeds the coefficient fit" from "what's in the DB
+    # right now" -- alpha/beta/lambda/decomposition/forecast-seed below only
+    # ever move when refit_from_latest_data(force=True) is called.
+    cutoff_month = refit_from_latest_data(channels=channels)
+    cutoff_period = pd.Period(cutoff_month, freq="M")
+    z = z.loc[z.index.to_period("M") <= cutoff_period]
+
     cv = walk_forward_lambda(z, delta_cols, y_col="delta_fx")
     lam = float(cv.iloc[0]["lambda"])
     whole = fit_whole_sample(z, delta_cols, lam, y_col="delta_fx")
@@ -1095,6 +1221,65 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
 
     df = load_data()
     months = [d.strftime("%Y-%m") for d in z.index]
+
+    # --- nowcast: real observed values beyond the pinned fit cutoff,
+    # wherever the DB already has them, assessed INDEPENDENTLY per channel
+    # (and for ptax) -- via load_channel_series(), NOT df/z above. df is
+    # load_data()'s core-joined frame, bounded by whichever of ptax/IBGE
+    # IPCA/FRED US CPI publishes slowest (confirmed 2026-08: routinely US
+    # CPI, ~2-week lag past month-end, or IBGE IPCA -- NOT the channels
+    # themselves), so df/z never even have ROWS beyond that bound no matter
+    # how current an individual channel's own table is. Reading off
+    # load_channel_series()'s raw, independently-indexed series instead
+    # means a channel that's updated past the cutoff (e.g. fiscal/CDS)
+    # surfaces its new month(s) even while core's slower series haven't
+    # caught up, without touching alpha/beta/lambda at all. Consumed
+    # client-side to lock the matching box(es) in the 12-month forecast
+    # grid to their real value instead of a user guess. ---
+    raw_series = load_channel_series(channels + ["ptax"])
+    cutoff_ts = cutoff_period.to_timestamp()
+    nowcast_ptax = raw_series["ptax"][raw_series["ptax"].index > cutoff_ts].dropna()
+    nowcast_channels = {}
+    for c in channels:
+        s = raw_series[c][raw_series[c].index > cutoff_ts].dropna()
+        nowcast_channels[c] = {
+            "months": [d.strftime("%Y-%m") for d in s.index],
+            "values": [round(float(v), 4) for v in s.values],
+        }
+    # current_month lets the client tell a FINAL nowcast month (already
+    # fully elapsed -- safe to lock outright) from the CURRENT, still-
+    # in-progress one (e.g. "2026-08" read from a source updated daily,
+    # a few days into the month -- genuinely not yet the month's eventual
+    # close). Stamped at generation time, not read live in the browser, so
+    # every viewer of a given report build sees the same classification
+    # regardless of their own clock/timezone. 2026-08, direct user request
+    # ("July is close, but august it's not... let me estimate the end
+    # month value") after noticing a same-day partial CDS print (1 trading
+    # day into August) got hard-locked exactly like a fully-elapsed month.
+    current_month = pd.Timestamp.today().strftime("%Y-%m")
+
+    # --- primitive breakdown for carry_vol/real_yield_diff/curve_steep_real
+    # (2026-08, direct user request: "some variables are less intuitive in
+    # aggregate... start from bottom up") -- each primitive gets the same
+    # history/nowcast split as the main channels above, so the forecast
+    # tab's "break down into parts" panels can lock/flag them 'final'/
+    # 'provisional' independently, exactly like any other box. See
+    # load_primitive_series()'s docstring for why br_real_10y is one
+    # series shared by two composites, not two independent ones. ---
+    primitive_names = sorted({p for prims in _COMPOSITE_PRIMITIVES.values() for p in prims})
+    raw_primitives = load_primitive_series(primitive_names)
+    primitives_payload = {}
+    for p in primitive_names:
+        hist_s = raw_primitives[p][raw_primitives[p].index <= cutoff_ts].dropna()
+        now_s = raw_primitives[p][raw_primitives[p].index > cutoff_ts].dropna()
+        primitives_payload[p] = {
+            "months": [d.strftime("%Y-%m") for d in hist_s.index],
+            "values": [round(float(v), 4) for v in hist_s.values],
+            "nowcast": {
+                "months": [d.strftime("%Y-%m") for d in now_s.index],
+                "values": [round(float(v), 4) for v in now_s.values],
+            },
+        }
 
     # --- historical fit (delta space), whole-sample point estimate ---
     X = z[delta_cols].values
@@ -1286,6 +1471,17 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
                 }
                 for c in channels
             },
+            "nowcast": {
+                "fit_cutoff": cutoff_month,
+                "current_month": current_month,
+                "ptax": {
+                    "months": [d.strftime("%Y-%m") for d in nowcast_ptax.index],
+                    "values": [round(float(v), 4) for v in nowcast_ptax.values],
+                },
+                "channels": nowcast_channels,
+            },
+            "primitives": primitives_payload,
+            "composite_primitives": _COMPOSITE_PRIMITIVES,
         },
         "forecast_error_bands": forecast_error_bands_w72(channels=channels, window=window, horizon=12),
         "rolling": {
@@ -1309,12 +1505,19 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
 
 
 def render_dashboard() -> None:
-    """Regenerates reports/ppp_dashboard.html with the Ridge tab added
-    alongside the other seven. Delegates to state_space_model.render_dashboard()
-    for everything else so this stays the single entry point that keeps all
-    tabs in sync, rather than duplicating that function's payload wiring."""
-    from analytics.exchange_rate.models import state_space_model
-    state_space_model.render_dashboard()
+    """Regenerates reports/ppp_dashboard.html's three tabs (Equilibrium &
+    Data, FX Attribution, Ridge). Used to delegate to the retired
+    state_space_model.render_dashboard() (see module docstring above for why
+    that module is gone); this is now the single entry point instead, calling
+    each tab's own build_dashboard_payload() directly and handing all three
+    to ppp_equilibrium.render()."""
+    from analytics.exchange_rate.models import fx_attribution_model, ppp_equilibrium
+
+    df = ppp_equilibrium.load_data()
+    payload = ppp_equilibrium.build_payload(df)
+    fxattr_payload = fx_attribution_model.build_dashboard_payload()
+    ridge_payload = build_dashboard_payload()
+    ppp_equilibrium.render(payload, fxattr_payload, ridge_payload)
 
 
 if __name__ == "__main__":

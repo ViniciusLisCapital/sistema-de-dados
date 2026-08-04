@@ -159,11 +159,11 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 .fc-shock-label { font-family: var(--cond); font-size: 14px; font-weight: 600; color: var(--ice); }
 .fc-shock-unit { font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
 .fc-shock-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.fc-shock-avg-btn, .fc-shock-graph-btn {
+.fc-shock-avg-btn, .fc-shock-graph-btn, .fc-primitive-graph-btn {
   font-family: var(--mono); font-size: 9px; color: var(--purple); cursor: pointer;
   text-decoration: underline; text-underline-offset: 2px; width: fit-content;
 }
-.fc-shock-avg-btn:hover, .fc-shock-graph-btn:hover { color: #025E82; }
+.fc-shock-avg-btn:hover, .fc-shock-graph-btn:hover, .fc-primitive-graph-btn:hover { color: #025E82; }
 /* Per-channel input-mode toggle (Level vs. %Δ m/m) -- 2026-07-31, direct
    user request ("put the option to set the level or the percent change
    m/m for each variable"), confirmed per-channel (not one global switch)
@@ -185,6 +185,48 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
   padding: 5px 3px; text-align: center;
 }
 .fc-level-input:focus-visible { outline: 2px solid var(--purple); outline-offset: 1px; }
+/* Resolved (nowcast) boxes -- 2026-08, direct user request: months where the
+   DB already has a real observed value for THIS channel (independent of
+   whether every other channel has caught up too) are locked instead of
+   editable, so a guess never overrides data that's already known. See
+   FC.nowcast in the script below and refit_from_latest_data() in
+   ridge_deviation_model.py for how the fit cutoff stays pinned regardless. */
+.fc-level-input.final {
+  background: rgba(65,135,145,0.08); border-color: rgba(65,135,145,0.4);
+  color: var(--green); cursor: not-allowed; font-weight: 600;
+}
+.fc-level-box-label.final { color: var(--green); }
+/* 'provisional' -- current, still in-progress month: a real partial
+   reading, pre-filled but left EDITABLE (unlike 'final') so a same-day/
+   mid-month value can be overridden with the user's own end-of-month
+   estimate instead of taken as the month's last word. */
+.fc-level-input.provisional {
+  background: rgba(187,155,29,0.08); border-color: rgba(187,155,29,0.5);
+  color: var(--gold); font-weight: 600;
+}
+.fc-level-box-label.provisional { color: var(--gold); }
+/* 'computed' -- this composite is in "break down into parts" mode and this
+   month isn't 'final', so its value is derived from the primitives panel
+   below rather than directly editable. Distinct purple (matches --purple,
+   the accent already used for other computed/derived UI in this tab) so
+   it doesn't read as either 'final' (green, genuinely real/closed) or
+   'provisional' (gold, a partial real reading). */
+.fc-level-input.computed {
+  background: rgba(2,115,155,0.08); border-color: rgba(2,115,155,0.4);
+  color: var(--purple); cursor: not-allowed; font-weight: 600;
+}
+/* "Break down into parts" (2026-08, direct user request) -- one sub-card
+   per primitive, same open/closed reveal pattern as .fc-quickshock-panel/
+   .fc-graph-panel above. Slightly indented + tinted so it reads as nested
+   INSIDE the composite card, not a sibling of it. */
+.fc-primitives-toggle-btn {
+  font-family: var(--mono); font-size: 9px; color: var(--purple); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px; width: fit-content;
+}
+.fc-primitives-toggle-btn:hover { color: #025E82; }
+.fc-primitives-panel { display: none; margin-top: 12px; padding: 12px; border-radius: 8px; background: rgba(2,115,155,0.04); border: 1px dashed rgba(2,115,155,0.25); }
+.fc-primitives-panel.open { display: flex; flex-direction: column; gap: 10px; }
+.fc-primitive-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
 /* Expanded regressor chart -- 2026-07-31, direct user request ("put a
    button that when we click I can see the regressor graph (all history)
    + forecast future (dashed) - with the option to see the Z-score too")
@@ -194,6 +236,76 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 .fc-graph-panel { display: none; margin-top: 12px; }
 .fc-graph-panel.open { display: block; }
 .fc-graph-hdr { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+/* Quick-shock tool (2026-08, direct user request: "% increase/decrease +
+   time shock" rather than hand-typing all 12 boxes) -- fills the SAME
+   canonical levels[] state the 12 boxes already read from, so nothing
+   downstream (simulateForecast, %Δ toggle, regressor chart) needs to know
+   this path came from a target+horizon instead of manual entry. */
+.fc-quickshock-btn {
+  font-family: var(--mono); font-size: 9px; color: var(--purple); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px; width: fit-content;
+}
+.fc-quickshock-btn:hover { color: #025E82; }
+.fc-quickshock-panel { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(31,40,83,0.12); }
+.fc-quickshock-panel.open { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.fc-quickshock-field { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.fc-quickshock-input {
+  font-family: var(--mono); font-size: 11px; color: var(--ice); width: 56px;
+  background: var(--bg2); border: 1px solid rgba(31,40,83,0.15); border-radius: 6px;
+  padding: 4px 6px; text-align: center;
+}
+.fc-quickshock-apply {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; color: #fff;
+  background: var(--purple); border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer;
+}
+.fc-quickshock-apply:hover { background: #025E82; }
+
+/* Saved scenarios (2026-08, direct user request: "save and delete
+   scenarios, give name to them and explain the rationale... open the
+   dashboard tomorrow and check my scenarios") -- persisted in this
+   browser's localStorage only, keyed by RIDGE_SCENARIO_STORAGE_KEY below;
+   nothing is sent anywhere. Export/Import (plain JSON file) is the escape
+   hatch for moving scenarios to another browser/machine or backing them up
+   against a cleared cache, since localStorage is the only persistence a
+   static, serverless HTML file has available. */
+.scenario-form { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(31,40,83,0.12); }
+.scenario-form.open { display: block; }
+.scenario-form input[type=text], .scenario-form textarea {
+  font-family: var(--mono); font-size: 12px; color: var(--ice); width: 100%;
+  background: var(--bg2); border: 1px solid rgba(31,40,83,0.15); border-radius: 8px;
+  padding: 8px 10px; margin-bottom: 8px; box-sizing: border-box; resize: vertical;
+}
+.scenario-form-actions { display: flex; gap: 8px; }
+.scenario-form-hint { font-size: 12px; color: var(--purple); margin: -4px 0 10px; font-style: italic; }
+.scenario-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.scenario-card { background: rgba(31,40,83,0.03); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.scenario-card-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.scenario-name { font-family: var(--cond); font-size: 15px; font-weight: 600; color: var(--ice); }
+.scenario-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
+.scenario-meta.warn { color: var(--red); }
+.scenario-rationale { font-size: 12px; color: var(--ice); margin-top: 6px; white-space: pre-wrap; }
+.scenario-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.scenario-action-btn {
+  font-family: var(--mono); font-size: 9px; color: var(--purple); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px; width: fit-content;
+}
+.scenario-action-btn:hover { color: #025E82; }
+.scenario-action-btn.danger { color: var(--red); }
+.scenario-action-btn.danger:hover { color: #b83a2a; }
+.scenario-empty { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+/* "Plot on chart" (2026-08, direct user request: "a check-box where I
+   could load, delete or plot. If only plot, I would not see the
+   regressor data of the scenarios, just the plot") -- independent of
+   Load: checking it overlays that scenario's simulated forecast path on
+   the main chart WITHOUT touching the live box grid, any number of
+   scenarios at once. The swatch shows the same color the chart legend
+   uses for that scenario, assigned by save order so it stays stable as
+   other scenarios are checked/unchecked. */
+.scenario-plot-toggle {
+  display: flex; align-items: center; gap: 6px; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; color: var(--ice);
+}
+.scenario-plot-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
 /* Footer */
 .ftr { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 12px 0 4px; }
@@ -484,6 +596,7 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
         <div class="chart-hdr-right">
           <div class="dl-toggle" id="ridgeLastWindowToggle"><span class="toggle-icon"></span> Use last-window (72mo) parameters</div>
           <div class="dl-toggle" id="ridgePctToggle"><span class="toggle-icon"></span> % change</div>
+          <div class="dl-toggle" id="ridgeLinesToggle"><span class="toggle-icon"></span> Show as lines (Actual vs. Fitted)</div>
           <select id="ridgeDecompStart" class="base-select"></select>
           <span style="color:var(--muted); font-family:var(--font-mono); font-size:12px;">→</span>
           <select id="ridgeDecompEnd" class="base-select"></select>
@@ -504,6 +617,31 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
       </div>
       <div class="chart-wrap"><div id="ridgeForecastChart" style="width:100%"></div></div>
       <div class="fc-shock-grid" id="ridgeForecastShocks"></div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-hdr">
+        <div class="chart-hdr-left">
+          <div class="chart-title">Saved Scenarios</div>
+          <div class="chart-subtitle">Save the shock inputs above under a name and rationale, so you can reload them later without re-entering every box. Stored in this browser only (localStorage) — nothing is uploaded. Export/Import moves scenarios to another browser or backs them up as a file.</div>
+        </div>
+        <div class="chart-hdr-right">
+          <div class="dl-toggle" id="scenarioSaveToggle"><span class="toggle-icon">+</span> Save current scenario</div>
+          <div class="dl-toggle" id="scenarioExportBtn"><span class="toggle-icon">↓</span> Export all</div>
+          <div class="dl-toggle" id="scenarioImportBtn"><span class="toggle-icon">↑</span> Import</div>
+          <input type="file" id="scenarioImportFile" accept="application/json" style="display:none">
+        </div>
+      </div>
+      <div class="scenario-form" id="scenarioForm">
+        <div class="scenario-form-hint" id="scenarioFormHint" style="display:none"></div>
+        <input type="text" id="scenarioNameInput" placeholder="Scenario name (e.g. &quot;Fiscal shock + weak DXY&quot;)">
+        <textarea id="scenarioRationaleInput" rows="3" placeholder="Rationale — why this scenario, what you changed and why"></textarea>
+        <div class="scenario-form-actions">
+          <div class="dl-toggle" id="scenarioSaveConfirmBtn">Save</div>
+          <div class="dl-toggle" id="scenarioSaveCancelBtn">Cancel</div>
+        </div>
+      </div>
+      <div class="scenario-list" id="scenarioList"></div>
     </div>
 
   </div>
@@ -666,10 +804,14 @@ function plotlyBaseLayout(extra) {
       tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
       rangeselector: PLOTLY_RANGE_SELECTOR,
       rangeslider: { visible: false },
+      showspikes: true, spikemode: 'across', spikesnap: 'cursor',
+      spikedash: 'solid', spikethickness: 1, spikecolor: 'rgba(31,40,83,0.35)',
     },
     yaxis: {
       gridcolor: 'rgba(31,40,83,0.06)',
       tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
+      showspikes: true, spikemode: 'across', spikesnap: 'cursor',
+      spikedash: 'solid', spikethickness: 1, spikecolor: 'rgba(31,40,83,0.35)',
     },
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
     font: { family: 'Barlow, sans-serif', color: '#1F2853', size: 12 },
@@ -1312,6 +1454,30 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     'delta_curve_steep_real', 'delta_sp500', 'delta_real_yield_diff',
     'delta_icbr_usd', 'delta_fx_lag1'];
 
+  // "Break down into parts" (2026-08, direct user request: "some variables
+  // are less intuitive in aggregate... start from bottom up") -- lets
+  // carry_vol/real_yield_diff/curve_steep_real be built from their own raw
+  // primitives instead of guessed directly. COMPOSITE_PRIMITIVES/labels come
+  // from the payload (ridge_deviation_model.py's _COMPOSITE_PRIMITIVES);
+  // the arithmetic itself is small and stable enough to keep here rather
+  // than round-trip a formula string. br_real_10y appears in TWO entries on
+  // purpose -- see load_primitive_series()'s docstring in ppp_equilibrium.py
+  // on why it's one shared input, not two independently-guessable copies of
+  // the same rate.
+  const PRIMITIVE_LABELS_RG = {
+    selic: 'Selic (BR policy rate)',
+    fed_funds: 'Fed Funds (US policy rate)',
+    fx_vol: 'BRL realized FX vol (6m ann.)',
+    br_real_10y: 'BR real 10Y yield (NTN-B)',
+    us_real_10y: 'US real 10Y yield (DFII10)',
+    br_real_2y: 'BR real 2Y yield (NTN-B)',
+  };
+  const COMPOSITE_FORMULAS = {
+    carry_vol: (p) => (p.selic - p.fed_funds) / p.fx_vol,
+    real_yield_diff: (p) => p.br_real_10y - p.us_real_10y,
+    curve_steep_real: (p) => p.br_real_10y - p.br_real_2y,
+  };
+
   const noDataEl = document.getElementById('ridgeNoData');
   const contentEl = document.getElementById('ridgeContent');
 
@@ -1462,6 +1628,23 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       renderDecompChart();
     });
 
+    // Lines-only view (2026-08, direct user request): swap the stacked
+    // channel bars out for just two traces, Actual vs. Fitted -- Fitted
+    // being the model's bridged level BEFORE the residual step (i.e. the
+    // same `prevArr` the bar view already builds out of baseline+channels,
+    // just not also split back out into per-channel increments). Reuses
+    // renderDecompChart()'s existing start/end/last-window/% toggles rather
+    // than being a separate chart, since "what the model predicts vs. what
+    // actually happened, over this same rebased/windowed range" is the same
+    // underlying computation either view draws from.
+    let linesMode = false;
+    const linesToggleEl = document.getElementById('ridgeLinesToggle');
+    linesToggleEl.addEventListener('click', function () {
+      linesMode = !linesMode;
+      this.classList.toggle('on', linesMode);
+      renderDecompChart();
+    });
+
     // ---- last-window parameters toggle (2026-07-31, direct user request:
     // "the exchange rate decomposition consider the whole-sample
     // parameters, right? I want a option here to click and use the
@@ -1535,12 +1718,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       const cumResidual = cumFromRg(currentArr('residual'), li0, li1);
 
       const bars = {};
-      let actualSeries;
+      let actualSeries, fittedSeries;
       if (pctMode) {
         bars.baseline = cumBaseline;
         DECOMP_CHANNELS_RG.forEach(key => { bars[key] = cumChannels[key]; });
         bars.residual = cumResidual;
         actualSeries = slicedMonths.map((_, i) => 100 * Math.log(L.actual[i0 + i] / anchorForWindow));
+        fittedSeries = cumBaseline.map((v, i) => v + DECOMP_CHANNELS_RG.reduce((s, key) => s + cumChannels[key][i], 0));
       } else {
         let prevArr = cumBaseline.map(v => anchorForWindow * Math.exp(v / 100));
         bars.baseline = prevArr;
@@ -1549,6 +1733,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
           bars[key] = nxt.map((v, i) => v - prevArr[i]);
           prevArr = nxt;
         });
+        fittedSeries = prevArr; // bridged level from baseline+channels, before the residual step below
         const finalArr = cumResidual.map((v, i) => prevArr[i] * Math.exp(v / 100));
         bars.residual = finalArr.map((v, i) => v - prevArr[i]);
         actualSeries = L.actual.slice(i0, i1 + 1);
@@ -1557,7 +1742,16 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       const fmtBar = pctMode ? fmtPctRg : (v, key) => (key === 'baseline' ? fmtRateRg(v) : fmtSignedRg(v, 3));
       const fmtActual = pctMode ? fmtPctRg : fmtRateRg;
 
-      plotlyRenderAndBind('ridgeDecompChart', [
+      const traces = linesMode ? [
+        { type: 'scatter', mode: 'lines', name: 'Fitted (model)', x: slicedMonths, y: fittedSeries,
+          line: { color: '#BB9B1D', width: 2 },
+          customdata: fittedSeries.map(fmtActual),
+          hovertemplate: 'Fitted: %{customdata}<extra></extra>' },
+        { type: 'scatter', mode: 'lines', name: 'Actual (PTAX)', x: slicedMonths, y: actualSeries,
+          line: { color: '#1F2853', width: 2 },
+          customdata: actualSeries.map(fmtActual),
+          hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
+      ] : [
         ...levelOrderRg.map(key => ({
           type: 'bar', name: levelLabelsRg[key],
           x: slicedMonths, y: bars[key],
@@ -1569,7 +1763,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
           line: { color: '#1F2853', width: 2, dash: 'dash', shape: 'spline', smoothing: 0.3 },
           customdata: actualSeries.map(fmtActual),
           hovertemplate: 'Actual (PTAX): %{customdata}<extra></extra>' },
-      ], {
+      ];
+
+      plotlyRenderAndBind('ridgeDecompChart', traces, {
         height: 400, barmode: 'relative', bargap: 0.15, showlegend: true,
         yaxis: { title: pctMode ? 'Cumulative % change from window start' : 'R$' },
       });
@@ -1620,6 +1816,40 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     // per-channel transform exactly). ---
     const FC = D.forecast;
     const FEB = D.forecast_error_bands;
+    // futureMonthsForBoxes/resolvedFlags are needed by the levels[]/
+    // boxMode init below, ahead of futureMonthLabels()'s own textual
+    // definition further down -- safe because it's a function DECLARATION
+    // (hoisted), unlike the const/let bindings here.
+    const futureMonthsForBoxes = futureMonthLabels(12).slice(1);
+    // resolvedFlags[key] is a 12-entry array, one per forecast month, each
+    // 'final' | 'provisional' | false -- (2026-08, direct user request:
+    // "the data that we already have should be fixed in the box (we see,
+    // but we can't change)"). Assessed independently per channel, since
+    // one regressor (e.g. fiscal/CDS) routinely updates ahead of its
+    // siblings -- see refit_from_latest_data()'s docstring in
+    // ridge_deviation_model.py for why this never touches alpha/beta/
+    // lambda itself. Resolved months never grow the 12-box horizon
+    // (confirmed via direct user follow-up: "let's just make the data we
+    // have as resolved and locked... if I want to expand the horizon to a
+    // brand new 12 months, I re-run the model") -- they just lock in
+    // place, still counted among the 12.
+    //
+    // 'final' vs. 'provisional' split added same session, direct user
+    // follow-up ("July is close, but august it's not... let me estimate
+    // the end month value") after noticing a same-day partial CDS print
+    // (one trading day into August) got hard-locked exactly like a fully-
+    // elapsed month -- a month is 'provisional' if it's FC.nowcast.
+    // current_month (the real calendar month as of report generation,
+    // stamped server-side so every viewer sees the same classification
+    // regardless of their own clock), 'final' if it's an earlier nowcast
+    // month (necessarily fully elapsed, however partial the LATEST
+    // in-progress reading is). 'final' boxes stay disabled/locked;
+    // 'provisional' ones are pre-filled with the latest partial reading
+    // but stay EDITABLE, so a same-day/mid-month value can be overridden
+    // with the user's own end-of-month estimate rather than taken as the
+    // month's final word.
+    const currentMonth = FC.nowcast && FC.nowcast.current_month;
+    const resolvedFlags = {};
     // levels[key] is an array of `FC.horizon` (12) user-editable native-
     // unit levels, one per forecast month -- the actual, canonical state
     // driving the simulation. This stays in LEVEL units regardless of
@@ -1627,7 +1857,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     // %Δm/m is purely a DISPLAY/ENTRY convention on top of the same
     // underlying level state, converted at the input boundary, so
     // channelDeltas()/simulateForecast() never need to know which mode a
-    // channel's boxes are currently showing.
+    // channel's boxes are currently showing. Resolved months seed
+    // directly from the real nowcast value instead of the flat default.
     const levels = {};
     // boxMode[key] = 'level' | 'pct' -- 2026-07-31, direct user request
     // ("put the option to set the level or the percent change m/m for
@@ -1638,9 +1869,100 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
       const lastVal = hist.values[hist.values.length - 1];
-      levels[key] = new Array(FC.horizon).fill(lastVal);
+      const nc = FC.nowcast && FC.nowcast.channels[rawKey];
+      resolvedFlags[key] = futureMonthsForBoxes.map(m => {
+        if (!nc || !nc.months.includes(m)) return false;
+        return m === currentMonth ? 'provisional' : 'final';
+      });
+      levels[key] = futureMonthsForBoxes.map((m, h) => {
+        if (resolvedFlags[key][h]) return nc.values[nc.months.indexOf(m)];
+        return lastVal;
+      });
       boxMode[key] = 'level';
     });
+
+    // Primitive-level state for the "break down into parts" panels --
+    // same shape/locking convention as levels[]/resolvedFlags above, keyed
+    // by primitive name (selic, fed_funds, fx_vol, br_real_10y, us_real_10y,
+    // br_real_2y) instead of channel key. expandedComposites tracks which
+    // composite RAW keys (carry_vol, real_yield_diff, curve_steep_real) are
+    // currently in "build from parts" mode -- while a key is in this set,
+    // its own top-level boxes are computed/read-only (except 'final'
+    // months, which stay real regardless); collapsing just stops further
+    // recomputation, it does not revert levels[key] to anything.
+    const COMPOSITE_PRIMITIVES = (FC.composite_primitives) || {};
+    const expandedComposites = new Set();
+    const primitiveLevels = {};
+    const primitiveResolvedFlags = {};
+    Object.keys(FC.primitives || {}).forEach(pk => {
+      const prim = FC.primitives[pk];
+      const nc = prim.nowcast;
+      const lastVal = prim.values.length ? prim.values[prim.values.length - 1] : 0;
+      primitiveResolvedFlags[pk] = futureMonthsForBoxes.map(m => {
+        if (!nc || !nc.months.includes(m)) return false;
+        return m === currentMonth ? 'provisional' : 'final';
+      });
+      primitiveLevels[pk] = futureMonthsForBoxes.map((m, h) => {
+        if (primitiveResolvedFlags[pk][h]) return nc.values[nc.months.indexOf(m)];
+        return lastVal;
+      });
+    });
+
+    // Recomputes composite `rawKey`'s own levels[] from its primitives'
+    // CURRENT boxes, for every month that isn't 'final' (real, closed data
+    // always wins over anything derived). No-op if rawKey isn't one of the
+    // three composite channels.
+    function recomputeComposite(rawKey) {
+      const prims = COMPOSITE_PRIMITIVES[rawKey];
+      const formula = COMPOSITE_FORMULAS[rawKey];
+      if (!prims || !formula) return;
+      const key = 'delta_' + rawKey;
+      for (let h = 0; h < FC.horizon; h++) {
+        if (resolvedFlags[key][h] === 'final') continue;
+        const inputs = {};
+        prims.forEach(pk => { inputs[pk] = primitiveLevels[pk][h]; });
+        levels[key][h] = formula(inputs);
+      }
+    }
+
+    // Re-renders every OTHER rendered box for one primitive's DISPLAYED
+    // values -- a primitive can appear in TWO panels at once (br_real_10y,
+    // shared by real_yield_diff and curve_steep_real), so this updates
+    // every instance by data-primitive, not scoped to one composite's own
+    // panel. `skipEl`, when passed, is excluded from the rewrite -- it's
+    // the box the user is actively typing into (called from the 'input'
+    // handler on every keystroke), and overwriting ITS OWN value mid-edit
+    // would reformat away whatever the user just typed (e.g. wipe out a
+    // trailing "," or "." before the next digit lands), making it
+    // impossible to ever finish typing a decimal. The regular (non-
+    // primitive) channel boxes never had this bug because their 'input'
+    // handler doesn't re-render the box's own value at all -- only
+    // 'change' (on blur/commit) rounds the display, same as this function
+    // should behave for every box except the live one.
+    function refreshPrimitiveBoxDisplay(primitiveKey, skipEl) {
+      shockGridEl.querySelectorAll(`.fc-primitive-input[data-primitive="${primitiveKey}"]`).forEach(inp => {
+        if (inp === skipEl) return;
+        const h = parseInt(inp.dataset.h, 10);
+        inp.value = Math.round(primitiveLevels[primitiveKey][h] * 1000) / 1000;
+      });
+    }
+
+    // Re-renders composite `rawKey`'s own 12 boxes -- its displayed values
+    // (from levels[], just recomputed) AND the disabled/class state, which
+    // changes once expandedComposites flips (computed vs. directly
+    // editable) even for months whose underlying value didn't change.
+    function refreshCompositeBoxDisplay(rawKey) {
+      const key = 'delta_' + rawKey;
+      const expanded = expandedComposites.has(rawKey);
+      shockGridEl.querySelectorAll(`.fc-level-input[data-channel="${key}"]`).forEach(inp => {
+        const h = parseInt(inp.dataset.h, 10);
+        const state = resolvedFlags[key][h];
+        const computed = expanded && state !== 'final';
+        inp.value = Math.round(levels[key][h] * 100) / 100;
+        inp.disabled = state === 'final' || computed;
+        inp.classList.toggle('computed', computed);
+      });
+    }
 
     // Converts levels[key] into whatever boxMode[key] currently displays,
     // for populating the 12 boxes' own values. %Δm/m mode shows each
@@ -1657,6 +1979,21 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         const prev = h === 0 ? lastReal : boxes[h - 1];
         return hist.is_log_return ? 100 * Math.log(v / prev) : 100 * (v - prev) / prev;
       });
+    }
+
+    // Reads a shock-box input as a float, tolerating a comma decimal
+    // separator ("13,75") -- the natural way to type a decimal on a pt-BR
+    // keyboard. These boxes used to be <input type="number">, which
+    // silently blocks the comma keystroke in every major browser
+    // (type="number" only ever accepts a period, regardless of OS/browser
+    // locale) -- so a box mid-edit would visibly get stuck after the whole
+    // part (e.g. "13" and no further). Switched to type="text"
+    // inputmode="decimal" so the comma keystroke isn't blocked at all, with
+    // parsing handled entirely here instead of by the browser: a bare
+    // parseFloat() stops at the first non-numeric character, so without
+    // this, "13,75" would parse as 13, silently dropping ",75".
+    function parseLocaleFloat(str) {
+      return parseFloat(String(str).replace(',', '.'));
     }
 
     // Converts one edited box's DISPLAYED value (in whichever mode is
@@ -1690,11 +2027,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     // observation for month 1 -- returns FC.horizon raw-unit deltas (NOT
     // yet z-scored; z-scoring happens in simulateForecast(), the one place
     // that also needs each delta standardized before multiplying by beta).
-    function channelDeltas(key) {
+    // levelsSource lets simulateForecast() (see below) run against a
+    // scenario's own stored levels instead of the live editable state,
+    // for the scenario-comparison chart overlay -- defaults to the live
+    // `levels` so every existing call site is unaffected.
+    function channelDeltas(key, levelsSource) {
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
       const lastReal = hist.values[hist.values.length - 1];
-      const boxes = levels[key];
+      const boxes = (levelsSource || levels)[key];
       const deltas = [];
       for (let h = 0; h < boxes.length; h++) {
         const prev = h === 0 ? lastReal : boxes[h - 1];
@@ -1731,22 +2072,43 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       const histValues = hist.values;
       const projValues = [hist.values[hist.values.length - 1], ...levels[key]];
 
-      let plotHist = histValues, plotProj = projValues, yTitle = 'Level';
+      // "Observed (since fit)" (2026-08, direct user request: "compare our
+      // scenario/model with the observable data") -- the same real,
+      // independently-per-channel nowcast data that locks the resolved
+      // boxes above, drawn as its own line alongside the entered/guessed
+      // path so a loaded scenario's guess for this channel can be checked
+      // directly against what's actually happened since the fit cutoff.
+      // Only added when there's at least one real nowcast month, so a
+      // channel with nothing new yet doesn't get an empty legend entry.
+      const nc = FC.nowcast && FC.nowcast.channels[rawKey];
+      const hasObserved = !!(nc && nc.months.length);
+      const obsMonths = hasObserved ? [hist.months[hist.months.length - 1], ...nc.months] : [];
+      const obsValues = hasObserved ? [hist.values[hist.values.length - 1], ...nc.values] : [];
+
+      const zOf = v => hist.level_std > 0 ? (v - hist.level_mean) / hist.level_std : v - hist.level_mean;
+      let plotHist = histValues, plotProj = projValues, plotObs = obsValues, yTitle = 'Level';
       if (graphMode[key] === 'zscore') {
-        const zOf = v => hist.level_std > 0 ? (v - hist.level_mean) / hist.level_std : v - hist.level_mean;
         plotHist = histValues.map(zOf);
         plotProj = projValues.map(zOf);
+        plotObs = obsValues.map(zOf);
         yTitle = 'Z-score (level)';
       }
 
-      plotlyRenderAndBind('regressor-graph-' + key, [
+      const traces = [
         { type: 'scatter', mode: 'lines', name: 'Historical', x: hist.months, y: plotHist,
           line: { color: CHANNEL_COLORS_RIDGE[key], width: 2 },
           customdata: plotHist.map(v => fmtNumRg(v, 3)), hovertemplate: 'Historical: %{customdata}<extra></extra>' },
         { type: 'scatter', mode: 'lines', name: 'Entered path (forecast)', x: projMonths, y: plotProj,
           line: { color: CHANNEL_COLORS_RIDGE[key], width: 2, dash: 'dash' },
           customdata: plotProj.map(v => fmtNumRg(v, 3)), hovertemplate: 'Entered: %{customdata}<extra></extra>' },
-      ], {
+      ];
+      if (hasObserved) {
+        traces.push({ type: 'scatter', mode: 'lines+markers', name: 'Observed (since fit)', x: obsMonths, y: plotObs,
+          line: { color: '#418791', width: 2 }, marker: { size: 5 },
+          customdata: plotObs.map(v => fmtNumRg(v, 3)), hovertemplate: 'Observed: %{customdata}<extra></extra>' });
+      }
+
+      plotlyRenderAndBind('regressor-graph-' + key, traces, {
         height: 260, showlegend: true,
         yaxis: { title: yTitle },
       });
@@ -1765,24 +2127,117 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       });
     }
 
+    // One sub-card per primitive inside a composite's "break down into
+    // parts" panel -- graph panel ids are namespaced by (compositeRawKey,
+    // primitiveKey) since br_real_10y renders in TWO composites' panels at
+    // once and DOM ids must stay unique per instance, but the box INPUTS
+    // themselves carry only data-primitive (no composite namespacing), so
+    // editing either instance updates the one shared primitiveLevels[] and
+    // both rendered copies via refreshPrimitiveBoxDisplay().
+    function primitiveSubcardHtml(compositeRawKey, primitiveKey) {
+      const prim = FC.primitives[primitiveKey];
+      const nc = prim.nowcast;
+      const lastRealVal = nc.values.length ? nc.values[nc.values.length - 1] : prim.values[prim.values.length - 1];
+      const lastRealMonth = nc.months.length ? nc.months[nc.months.length - 1] : prim.months[prim.months.length - 1];
+      const boxesHtml = futureMonthsForBoxes.map((m, h) => {
+        const state = primitiveResolvedFlags[primitiveKey][h];
+        const cls = state ? ' ' + state : '';
+        const mark = state === 'final' ? ' ✓' : state === 'provisional' ? ' ~' : '';
+        const disabledAttr = state === 'final' ? ' disabled' : '';
+        return `
+        <div class="fc-level-box">
+          <div class="fc-level-box-label${cls}">${monthLabelRg(m)}${mark}</div>
+          <input type="text" inputmode="decimal" class="fc-level-input fc-primitive-input${cls}" data-primitive="${primitiveKey}" data-h="${h}" value="${primitiveLevels[primitiveKey][h]}"${disabledAttr}>
+        </div>`;
+      }).join('');
+      return `
+        <div class="fc-primitive-card">
+          <div class="fc-shock-hdr">
+            <div>
+              <div class="fc-shock-label">${PRIMITIVE_LABELS_RG[primitiveKey]}</div>
+              <div class="fc-shock-unit">Last observed: ${fmtNumRg(lastRealVal, 3)} (${lastRealMonth})</div>
+            </div>
+            <div class="fc-shock-actions">
+              <div class="fc-primitive-graph-btn" data-primitive-graph="${compositeRawKey}:${primitiveKey}">Show history chart</div>
+            </div>
+          </div>
+          <div class="fc-level-grid">${boxesHtml}</div>
+          <div class="fc-graph-panel" id="primitive-graph-panel-${compositeRawKey}-${primitiveKey}">
+            <div id="primitive-graph-${compositeRawKey}-${primitiveKey}" style="width:100%"></div>
+          </div>
+        </div>`;
+    }
+
+    function primitivesPanelHtml(compositeRawKey) {
+      const prims = COMPOSITE_PRIMITIVES[compositeRawKey] || [];
+      return `<div class="fc-primitives-panel" id="primitives-panel-${compositeRawKey}">` +
+        prims.map(pk => primitiveSubcardHtml(compositeRawKey, pk)).join('') +
+        `</div>`;
+    }
+
+    // Level-only history chart for one primitive (no z-score toggle, no
+    // is_log_return branching -- unlike renderChannelGraph()'s main
+    // channels, none of the six primitives need either: all are already
+    // rates/vol in native, comparable units).
+    function renderPrimitiveGraph(compositeRawKey, primitiveKey) {
+      const prim = FC.primitives[primitiveKey];
+      const futureMonths = futureMonthLabels(FC.horizon);
+      const projMonths = [prim.months[prim.months.length - 1], ...futureMonths.slice(1)];
+      const projValues = [prim.values[prim.values.length - 1], ...primitiveLevels[primitiveKey]];
+      plotlyRenderAndBind(`primitive-graph-${compositeRawKey}-${primitiveKey}`, [
+        { type: 'scatter', mode: 'lines', name: 'Historical', x: prim.months, y: prim.values,
+          line: { color: '#02739B', width: 2 },
+          customdata: prim.values.map(v => fmtNumRg(v, 3)), hovertemplate: 'Historical: %{customdata}<extra></extra>' },
+        { type: 'scatter', mode: 'lines', name: 'Entered path', x: projMonths, y: projValues,
+          line: { color: '#02739B', width: 2, dash: 'dash' },
+          customdata: projValues.map(v => fmtNumRg(v, 3)), hovertemplate: 'Entered: %{customdata}<extra></extra>' },
+      ], { height: 220, showlegend: true, yaxis: { title: 'Level' } });
+    }
+
+    // Cards ordered by impact, highest |beta| first (2026-08, direct user
+    // request: "rank the regressors by importance"). Every channel here
+    // (everything except delta_fx_lag1, shown in its own AR(1) row
+    // elsewhere) is z-scored before Ridge sees it, so beta IS directly
+    // "delta_fx's response, in %, to a 1-standard-deviation move in this
+    // channel" -- comparable across channels as-is, no extra scaling
+    // needed. Uses FC.beta (the last window's own fit -- the same
+    // coefficients simulateForecast() actually runs), not the whole-
+    // sample beta shown elsewhere on this tab.
+    const CHANNELS_BY_IMPORTANCE = DECOMP_CHANNELS_RG.slice().sort((a, b) => Math.abs(FC.beta[b]) - Math.abs(FC.beta[a]));
+
     const shockGridEl = document.getElementById('ridgeForecastShocks');
-    const futureMonthsForBoxes = futureMonthLabels(12).slice(1);
-    DECOMP_CHANNELS_RG.forEach(key => {
+    CHANNELS_BY_IMPORTANCE.forEach((key, rankIdx) => {
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
-      const lastVal = hist.values[hist.values.length - 1];
+      const nc = FC.nowcast && FC.nowcast.channels[rawKey];
+      // "Last observed" reads off the true latest real value, which may be
+      // AHEAD of the fit cutoff (nowcast) even though the model's own fit
+      // still stops at FC.nowcast.fit_cutoff -- see resolvedFlags above.
+      const lastRealVal = (nc && nc.values.length) ? nc.values[nc.values.length - 1] : hist.values[hist.values.length - 1];
+      const lastRealMonth = (nc && nc.months.length) ? nc.months[nc.months.length - 1] : hist.months[hist.months.length - 1];
+      const beta = FC.beta[key];
+      const betaFmt = (beta >= 0 ? '+' : '') + beta.toFixed(3);
       const card = document.createElement('div');
       card.className = 'fc-shock-card';
-      const boxesHtml = futureMonthsForBoxes.map((m, h) => `
+      const boxesHtml = futureMonthsForBoxes.map((m, h) => {
+        const state = resolvedFlags[key][h]; // 'final' | 'provisional' | false
+        const cls = state ? ' ' + state : '';
+        const mark = state === 'final' ? ' ✓' : state === 'provisional' ? ' ~' : '';
+        const disabledAttr = state === 'final' ? ' disabled' : '';
+        const title = state === 'final' ? ' title="Observed — already known, not editable"'
+          : state === 'provisional' ? ' title="Partial reading for the current month — editable, override with your own end-of-month estimate"' : '';
+        return `
         <div class="fc-level-box">
-          <div class="fc-level-box-label">${monthLabelRg(m)}</div>
-          <input type="number" class="fc-level-input" data-channel="${key}" data-h="${h}" value="${lastVal}" step="any">
-        </div>`).join('');
+          <div class="fc-level-box-label${cls}">${monthLabelRg(m)}${mark}</div>
+          <input type="text" inputmode="decimal" class="fc-level-input${cls}" data-channel="${key}" data-h="${h}" value="${levels[key][h]}"${disabledAttr}${title}>
+        </div>`;
+      }).join('');
       card.innerHTML = `
         <div class="fc-shock-hdr">
           <div>
-            <div class="fc-shock-label">${CHANNEL_LABELS_RIDGE[key]}</div>
-            <div class="fc-shock-unit">Last observed: ${fmtNumRg(lastVal, 2)} (${hist.months[hist.months.length - 1]})</div>
+            <div class="fc-shock-label">#${rankIdx + 1} ${CHANNEL_LABELS_RIDGE[key]}</div>
+            <div class="fc-shock-unit">Last observed: ${fmtNumRg(lastRealVal, 2)} (${lastRealMonth})</div>
+            <div class="fc-shock-unit">β = ${betaFmt} (Δfx % per 1σ move, last-window fit)</div>
           </div>
           <div class="fc-shock-actions">
             <div class="fc-mode-toggle" data-channel="${key}">
@@ -1790,10 +2245,30 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
               <div class="fc-mode-btn" data-mode="pct">%Δ m/m</div>
             </div>
             <div class="fc-shock-avg-btn" data-channel="${key}">Reset to flat</div>
+            <div class="fc-quickshock-btn" data-channel="${key}">Apply shock...</div>
             <div class="fc-shock-graph-btn" data-channel="${key}">Show regressor chart</div>
+            ${COMPOSITE_PRIMITIVES[rawKey] ? `<div class="fc-primitives-toggle-btn" data-composite="${rawKey}">Break down into parts</div>` : ''}
           </div>
         </div>
         <div class="fc-level-grid">${boxesHtml}</div>
+        ${COMPOSITE_PRIMITIVES[rawKey] ? primitivesPanelHtml(rawKey) : ''}
+        <div class="fc-quickshock-panel" id="quickshock-panel-${key}">
+          <div class="fc-quickshock-field">
+            <span>Shock</span>
+            <input type="text" inputmode="decimal" class="fc-quickshock-input fc-quickshock-pct" data-channel="${key}" value="5">
+            <span>%</span>
+          </div>
+          <div class="fc-quickshock-field">
+            <span>over</span>
+            <input type="number" class="fc-quickshock-input fc-quickshock-months" data-channel="${key}" value="3" min="1" max="${FC.horizon}" step="1">
+            <span>months, then flat</span>
+          </div>
+          <label class="fc-quickshock-field">
+            <input type="checkbox" class="fc-quickshock-noise" data-channel="${key}">
+            <span>+ noise (±1σ of this channel's own monthly move)</span>
+          </label>
+          <div class="fc-quickshock-apply" data-channel="${key}">Apply</div>
+        </div>
         <div class="fc-graph-panel" id="graph-panel-${key}">
           <div class="fc-graph-hdr">
             <div class="fc-mode-toggle" data-graph-channel="${key}">
@@ -1806,11 +2281,14 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       shockGridEl.appendChild(card);
     });
 
-    shockGridEl.querySelectorAll('.fc-level-input').forEach(inp => {
+    // Scoped to [data-channel] -- .fc-primitive-input below also carries
+    // .fc-level-input for shared styling, but has no data-channel at all,
+    // so this selector (and its dataset.channel lookup) never touches it.
+    shockGridEl.querySelectorAll('.fc-level-input[data-channel]').forEach(inp => {
       inp.addEventListener('input', function () {
         const key = this.dataset.channel;
         const h = parseInt(this.dataset.h, 10);
-        const v = parseFloat(this.value);
+        const v = parseLocaleFloat(this.value);
         const rawKey = key.replace(/^delta_/, '');
         const lastVal = FC.channel_history[rawKey].values[FC.channel_history[rawKey].values.length - 1];
         levels[key][h] = isNaN(v) ? lastVal : displayToLevel(key, h, v);
@@ -1825,8 +2303,74 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       // simulation is untouched by this -- only the input's own display
       // string is cleaned up.
       inp.addEventListener('change', function () {
-        const v = parseFloat(this.value);
+        const v = parseLocaleFloat(this.value);
         if (!isNaN(v)) this.value = Math.round(v * 100) / 100;
+      });
+    });
+
+    // Primitive boxes (2026-08, "break down into parts") -- editing one
+    // updates its OWN shared primitiveLevels[] (a primitive may render in
+    // two panels at once, e.g. br_real_10y; refreshPrimitiveBoxDisplay()
+    // updates every rendered copy), then recomputes + re-renders every
+    // EXPANDED composite that depends on it. A composite that ISN'T
+    // currently expanded is left alone -- it's back in direct-entry mode,
+    // so a primitive edit shouldn't silently change its levels[] behind
+    // the scenes.
+    shockGridEl.querySelectorAll('.fc-primitive-input[data-primitive]').forEach(inp => {
+      inp.addEventListener('input', function () {
+        const pk = this.dataset.primitive;
+        const h = parseInt(this.dataset.h, 10);
+        const v = parseLocaleFloat(this.value);
+        const prim = FC.primitives[pk];
+        const lastVal = prim.values.length ? prim.values[prim.values.length - 1] : 0;
+        primitiveLevels[pk][h] = isNaN(v) ? lastVal : v;
+        refreshPrimitiveBoxDisplay(pk, this);
+        Object.keys(COMPOSITE_PRIMITIVES).forEach(rawKey => {
+          if (!expandedComposites.has(rawKey) || !COMPOSITE_PRIMITIVES[rawKey].includes(pk)) return;
+          recomputeComposite(rawKey);
+          refreshCompositeBoxDisplay(rawKey);
+        });
+        renderForecastChart();
+      });
+      inp.addEventListener('change', function () {
+        const v = parseLocaleFloat(this.value);
+        if (!isNaN(v)) this.value = Math.round(v * 1000) / 1000;
+      });
+    });
+
+    // "Break down into parts" toggle -- expanding switches this composite
+    // to computed/read-only (non-'final' months only) and does an initial
+    // recompute right away; collapsing just stops further recomputation,
+    // leaving levels[] at whatever was last computed (nothing reverts).
+    shockGridEl.querySelectorAll('.fc-primitives-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const rawKey = this.dataset.composite;
+        const panel = document.getElementById('primitives-panel-' + rawKey);
+        const isOpen = panel.classList.toggle('open');
+        this.textContent = isOpen ? 'Hide breakdown' : 'Break down into parts';
+        if (isOpen) {
+          expandedComposites.add(rawKey);
+          recomputeComposite(rawKey);
+        } else {
+          expandedComposites.delete(rawKey);
+        }
+        refreshCompositeBoxDisplay(rawKey);
+        renderForecastChart();
+      });
+    });
+
+    // Primitive "Show history chart" -- separate class/handler from the
+    // main channels' .fc-shock-graph-btn (below) since both classes could
+    // otherwise collide on a bare selector; data-primitive-graph is
+    // "compositeRawKey:primitiveKey" so a shared primitive rendered in two
+    // panels (br_real_10y) gets its own independent chart instance in each.
+    shockGridEl.querySelectorAll('.fc-primitive-graph-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const [compositeRawKey, primitiveKey] = this.dataset.primitiveGraph.split(':');
+        const panel = document.getElementById(`primitive-graph-panel-${compositeRawKey}-${primitiveKey}`);
+        const isOpen = panel.classList.toggle('open');
+        this.textContent = isOpen ? 'Hide history chart' : 'Show history chart';
+        if (isOpen) renderPrimitiveGraph(compositeRawKey, primitiveKey);
       });
     });
 
@@ -1883,7 +2427,81 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         const key = this.dataset.channel;
         const rawKey = key.replace(/^delta_/, '');
         const lastVal = FC.channel_history[rawKey].values[FC.channel_history[rawKey].values.length - 1];
-        levels[key] = new Array(FC.horizon).fill(lastVal);
+        // 'final' months are skipped (real, closed data). If this
+        // composite is currently expanded ("break down into parts"), its
+        // whole non-final range is also skipped -- it's computed from the
+        // primitives panel below, not this bulk tool.
+        if (expandedComposites.has(rawKey)) return;
+        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final' ? v : lastVal);
+        refreshBoxDisplay(key);
+        if (document.getElementById('graph-panel-' + key).classList.contains('open')) renderChannelGraph(key);
+        renderForecastChart();
+      });
+    });
+
+    // Quick-shock tool (2026-08, direct user request: "% increase/decrease
+    // + time shock" instead of hand-typing all 12 boxes, "we could improve
+    // that shock adding a error shock compatible with the own series
+    // standard deviation") -- toggle-open panel per channel, same
+    // open/closed pattern as the regressor-chart reveal above.
+    shockGridEl.querySelectorAll('.fc-quickshock-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.getElementById('quickshock-panel-' + this.dataset.channel).classList.toggle('open');
+      });
+    });
+
+    // Approximate standard-normal draw (Box-Muller) -- used only to decorate
+    // the quick-shock path with noise on request, never in the model fit or
+    // simulateForecast() itself.
+    function _randNormal() {
+      const u1 = Math.random(), u2 = Math.random();
+      return Math.sqrt(-2 * Math.log(u1 || 1e-12)) * Math.cos(2 * Math.PI * u2);
+    }
+
+    shockGridEl.querySelectorAll('.fc-quickshock-apply').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const key = this.dataset.channel;
+        const rawKey = key.replace(/^delta_/, '');
+        const hist = FC.channel_history[rawKey];
+        const lastReal = hist.values[hist.values.length - 1];
+        const panel = document.getElementById('quickshock-panel-' + key);
+        const pctTarget = parseLocaleFloat(panel.querySelector('.fc-quickshock-pct').value);
+        if (isNaN(pctTarget)) return;
+        // If this composite is currently expanded ("break down into
+        // parts"), it's computed from the primitives panel below -- a
+        // quick-shock on the composite itself would just get overwritten
+        // by the next primitive edit, so skip it entirely rather than
+        // leave a value that silently doesn't match its own primitives.
+        if (expandedComposites.has(rawKey)) return;
+        const monthsToShock = Math.max(1, Math.min(FC.horizon,
+          Math.round(parseFloat(panel.querySelector('.fc-quickshock-months').value)) || 1));
+        const addNoise = panel.querySelector('.fc-quickshock-noise').checked;
+
+        // channel_stats[key].std is the std of this channel's own monthly
+        // delta -- already a % for log-return channels (sp500/icbr_usd,
+        // whose delta IS 100*log-return), but a RAW level-diff for every
+        // other channel (points, not %). Converted to an equivalent % of
+        // lastReal so it's addable to pctTarget on the same footing --
+        // same %-of-level convention the %Δ m/m box-entry mode already uses
+        // (see displayToLevel()), regardless of channel type.
+        const rawStd = (FC.channel_stats[key] && FC.channel_stats[key].std) || 0;
+        const noisePctStd = hist.is_log_return ? rawStd : (lastReal !== 0 ? 100 * rawStd / Math.abs(lastReal) : 0);
+
+        const newLevels = [];
+        for (let h = 0; h < FC.horizon; h++) {
+          // Linear ramp of the CUMULATIVE target over `monthsToShock`
+          // months, held flat at the fully-realized shock afterward --
+          // "5% over 3 months" reads as "+5% cumulative by month 3, then
+          // unchanged," not a one-off jump or a repeating monthly %.
+          const cumPct = pctTarget * Math.min(1, (h + 1) / monthsToShock);
+          const noise = addNoise && noisePctStd > 0 ? noisePctStd * _randNormal() : 0;
+          const totalPct = cumPct + noise;
+          newLevels.push(hist.is_log_return ? lastReal * Math.exp(totalPct / 100) : lastReal * (1 + totalPct / 100));
+        }
+        // Only 'final' months are skipped -- a shock never overwrites a
+        // real, already-known value with a guess; 'provisional' months
+        // are fair game, same as above.
+        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final' ? v : newLevels[h]);
         refreshBoxDisplay(key);
         if (document.getElementById('graph-panel-' + key).classList.contains('open')) renderChannelGraph(key);
         renderForecastChart();
@@ -1893,8 +2511,9 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('ridgeForecastReset').addEventListener('click', function () {
       DECOMP_CHANNELS_RG.forEach(key => {
         const rawKey = key.replace(/^delta_/, '');
+        if (expandedComposites.has(rawKey)) return; // computed from primitives, not this bulk tool
         const lastVal = FC.channel_history[rawKey].values[FC.channel_history[rawKey].values.length - 1];
-        levels[key] = new Array(FC.horizon).fill(lastVal);
+        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final' ? v : lastVal);
         refreshBoxDisplay(key);
         if (document.getElementById('graph-panel-' + key).classList.contains('open')) renderChannelGraph(key);
       });
@@ -1907,9 +2526,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     // channelDeltas()). AR(1) term is fed by the model's OWN simulated
     // delta_fx at every step, seeded from the real last observed value,
     // same mechanic as every path-tracking/grid test this session.
-    function simulateForecast() {
+    // levelsSource: see channelDeltas() above -- omit to run against the
+    // live editable state (every existing call site), or pass a
+    // scenario's own effective levels to simulate ITS path instead,
+    // without touching the live state at all.
+    function simulateForecast(levelsSource) {
       const deltasByChannel = {};
-      DECOMP_CHANNELS_RG.forEach(key => { deltasByChannel[key] = channelDeltas(key); });
+      DECOMP_CHANNELS_RG.forEach(key => { deltasByChannel[key] = channelDeltas(key, levelsSource); });
 
       let prevDeltaFx = FC.seed_delta_fx_lag1;
       let level = FC.seed_level;
@@ -1929,17 +2552,69 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
       return out;
     }
 
+    // Shared by applyScenario() and the "Plot on chart" overlay below: a
+    // scenario's stored levels, with any 'final' (fully-elapsed, locked)
+    // month overridden by what's actually known now -- a scenario saved
+    // before a month resolved should never show/simulate a stale guess
+    // for it once the real value is in. Referenced ahead of its own
+    // definition further down (applyScenario) and the scenario section
+    // (plottedScenarioIds/scenarioColor) -- both are `const`/hoisted
+    // function declarations already initialized by the time either is
+    // actually called (both only fire from later user interaction, never
+    // during this synchronous setup).
+    function effectiveScenarioLevels(sc) {
+      const eff = {};
+      DECOMP_CHANNELS_RG.forEach(key => {
+        const base = (sc.levels && sc.levels[key]) ? sc.levels[key] : levels[key];
+        eff[key] = base.map((v, h) => resolvedFlags[key][h] === 'final' ? levels[key][h] : v);
+      });
+      return eff;
+    }
+
+    // "Plot on chart" (2026-08, direct user request: overlay one or more
+    // saved scenarios' simulated forecast paths on the main chart WITHOUT
+    // touching the live box grid -- "If only plot, I would not see the
+    // regressor data of the scenarios, just the plot"). Each plotted
+    // scenario gets its own line + legend entry, colored by
+    // scenarioColor() so it matches the swatch on its own card.
+    function plotScenarioTraces(futureMonths) {
+      if (!plottedScenarioIds.size) return [];
+      const scenarios = loadScenarios();
+      const out = [];
+      plottedScenarioIds.forEach(id => {
+        const sc = scenarios.find(s => String(s.id) === String(id));
+        if (!sc) return;
+        const simLevels = simulateForecast(effectiveScenarioLevels(sc));
+        out.push({ type: 'scatter', mode: 'lines', name: 'Scenario: ' + sc.name, x: futureMonths, y: simLevels,
+          line: { color: scenarioColor(id), width: 2, dash: 'dot' },
+          customdata: simLevels.map(fmtRateRg), hovertemplate: 'Scenario: ' + sc.name + ': %{customdata}<extra></extra>' });
+      });
+      return out;
+    }
+
     function renderForecastChart() {
       const simLevels = simulateForecast();
       const futureMonths = futureMonthLabels(FC.horizon).slice(1);
       const upperBand = simLevels.map((lv, i) => lv * (1 + FEB.std_error_pct[i] / 100));
       const lowerBand = simLevels.map((lv, i) => lv * (1 - FEB.std_error_pct[i] / 100));
 
-      const histTailN = 24;
-      const histMonths = D.months.slice(-histTailN);
-      const histLevels = L.actual.slice(-histTailN);
+      // Full sample, not a recent tail (2026-08, direct user request) -- so
+      // as new actual months land they visibly connect into the forecast
+      // rather than the comparison being cropped out of view. Extended
+      // with FC.nowcast.ptax (2026-08, direct user follow-up: "the observed
+      // line should continue to walk over the yellow interval") -- real
+      // PTAX prints for months after the pinned fit cutoff, wherever
+      // already known, keep extending this line into the still-FIXED
+      // forecast/band area below (which never recomputes just because more
+      // actual data lands -- see the Band-horizon decision in this
+      // session), so you can see directly whether reality is landing
+      // inside the original forecast's uncertainty band.
+      const nowcastPtax = (FC.nowcast && FC.nowcast.ptax) || { months: [], values: [] };
+      const histMonths = D.months.concat(nowcastPtax.months);
+      const histLevels = L.actual.concat(nowcastPtax.values);
+      const lastActualMonth = histMonths[histMonths.length - 1];
 
-      plotlyRenderAndBind('ridgeForecastChart', [
+      const traces = [
         { type: 'scatter', mode: 'lines', name: 'Historical (PTAX)', x: histMonths, y: histLevels,
           line: { color: '#1F2853', width: 2 },
           customdata: histLevels.map(fmtRateRg), hovertemplate: 'Actual: %{customdata}<extra></extra>' },
@@ -1953,11 +2628,347 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
           line: { color: 'rgba(187,155,29,0.35)', width: 1 },
           fill: 'tonexty', fillcolor: 'rgba(187,155,29,0.12)',
           hoverinfo: 'skip' },
-      ], {
+        ...plotScenarioTraces(futureMonths),
+      ];
+
+      plotlyRenderAndBind('ridgeForecastChart', traces, {
         height: 420, showlegend: true,
         yaxis: { title: 'R$' },
+        // Light shade over the observed range only -- visually marks
+        // "everything under this band is real data," leaving the
+        // forecast region (to the right, unshaded) visually distinct with
+        // no extra legend entry needed.
+        shapes: [{
+          type: 'rect', xref: 'x', yref: 'paper',
+          x0: histMonths[0], x1: lastActualMonth, y0: 0, y1: 1,
+          fillcolor: 'rgba(31,40,83,0.05)', line: { width: 0 }, layer: 'below',
+        }],
       });
     }
+    // NOTE: the first real call to renderForecastChart() is deferred to
+    // the very end of this function (after renderScenarioList()) --
+    // plotScenarioTraces() inside it reads plottedScenarioIds/scenarioColor,
+    // both declared further down, so calling it here (before those consts
+    // initialize) would throw a TDZ ReferenceError.
+
+    // ---- Saved scenarios (2026-08, direct user request: "save and delete
+    // scenarios, give name to them and explain the rational... open the
+    // dashboard tomorrow and check my scenarios") -- persisted in this
+    // browser's localStorage under RIDGE_SCENARIO_KEY; nothing is uploaded
+    // anywhere. Each scenario snapshots `levels`/`boxMode` for whichever
+    // channels exist at save time, plus that channel list itself, so a
+    // later channel-set change (see _CHANNELS_* history in
+    // ridge_deviation_model.py) surfaces as a visible warning on load
+    // instead of silently misapplying values to the wrong channel.
+    // Export/Import (plain JSON file) is the escape hatch for moving
+    // scenarios to another browser/machine or backing them up against a
+    // cleared cache -- localStorage is the only persistence a static,
+    // serverless HTML file has available at all.
+    const RIDGE_SCENARIO_KEY = 'lis_ridge_forecast_scenarios_v1';
+
+    function escapeHtmlRg(s) {
+      const div = document.createElement('div');
+      div.textContent = s == null ? '' : String(s);
+      return div.innerHTML;
+    }
+    function loadScenarios() {
+      try {
+        const raw = localStorage.getItem(RIDGE_SCENARIO_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) { return []; }
+    }
+    function persistScenarios(list) {
+      try {
+        localStorage.setItem(RIDGE_SCENARIO_KEY, JSON.stringify(list));
+        return true;
+      } catch (e) {
+        alert('Could not save to this browser\'s storage (' + e.message + '). Use "Export all" to keep a copy as a file instead.');
+        return false;
+      }
+    }
+    function fmtScenarioDate(iso) {
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? iso : d.toLocaleString();
+    }
+
+    // "Plot on chart" state (2026-08) -- which scenario ids are currently
+    // overlaid on the main forecast chart. Deliberately NOT persisted to
+    // localStorage alongside the scenarios themselves -- which scenarios
+    // happen to be plotted is a transient view preference for this
+    // session, not part of the scenario's own saved definition.
+    const plottedScenarioIds = new Set();
+    const SCENARIO_PLOT_COLORS = ['#8E44AD', '#E67E22', '#16A085', '#C0392B', '#2980B9', '#D35400', '#7F8C8D', '#27AE60'];
+    // Color assigned by save order (oldest first, loadScenarios()'s own
+    // array order) so a given scenario keeps the same color across
+    // renders regardless of which OTHER scenarios are checked at the time.
+    function scenarioColor(id) {
+      const idx = loadScenarios().findIndex(s => String(s.id) === String(id));
+      return SCENARIO_PLOT_COLORS[Math.max(idx, 0) % SCENARIO_PLOT_COLORS.length];
+    }
+
+    const scenarioListEl = document.getElementById('scenarioList');
+    const scenarioFormEl = document.getElementById('scenarioForm');
+    const scenarioFormHintEl = document.getElementById('scenarioFormHint');
+    const scenarioSaveToggleEl = document.getElementById('scenarioSaveToggle');
+    const scenarioNameEl = document.getElementById('scenarioNameInput');
+    const scenarioRationaleEl = document.getElementById('scenarioRationaleInput');
+    const scenarioSaveConfirmEl = document.getElementById('scenarioSaveConfirmBtn');
+
+    // Non-null while the form is editing an EXISTING scenario (opened via a
+    // card's "Edit" button) rather than creating a new one (opened via the
+    // top "Save current scenario" toggle). Editing LOADS that scenario's
+    // assumptions into the live shock boxes (same as "Load" does) so they
+    // can be adjusted directly, then "Update" re-snapshots whatever's live
+    // at that point back into the same scenario -- name, rationale, AND
+    // levels/boxMode all update together. editRevertLevels/BoxMode holds
+    // what was live BEFORE the edit-load, so Cancel (or switching to a
+    // fresh "new scenario" form mid-edit) can put the boxes back exactly
+    // as they were, instead of leaving them silently altered.
+    let editingScenarioId = null;
+    let editRevertLevels = null;
+    let editRevertBoxMode = null;
+
+    function restoreLiveLevels(snapLevels, snapBoxMode) {
+      DECOMP_CHANNELS_RG.forEach(key => {
+        const rawKey = key.replace(/^delta_/, '');
+        if (expandedComposites.has(rawKey)) return;
+        levels[key] = snapLevels[key].slice();
+        boxMode[key] = snapBoxMode[key];
+        const toggle = shockGridEl.querySelector('.fc-mode-toggle[data-channel="' + key + '"]');
+        if (toggle) toggle.querySelectorAll('.fc-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === boxMode[key]));
+        refreshBoxDisplay(key);
+        const panel = document.getElementById('graph-panel-' + key);
+        if (panel && panel.classList.contains('open')) renderChannelGraph(key);
+      });
+      renderForecastChart();
+    }
+
+    function closeScenarioForm() {
+      scenarioFormEl.classList.remove('open');
+      scenarioNameEl.value = '';
+      scenarioRationaleEl.value = '';
+      scenarioFormHintEl.style.display = 'none';
+      scenarioFormHintEl.textContent = '';
+      editingScenarioId = null;
+      editRevertLevels = null;
+      editRevertBoxMode = null;
+      scenarioSaveConfirmEl.textContent = 'Save';
+    }
+
+    function renderScenarioList() {
+      const scenarios = loadScenarios();
+      scenarioListEl.innerHTML = '';
+      if (!scenarios.length) {
+        scenarioListEl.innerHTML = '<div class="scenario-empty">No saved scenarios yet -- set up the shocks above, then "Save current scenario".</div>';
+        return;
+      }
+      scenarios.slice().reverse().forEach(sc => {
+        const missing = (sc.channels || []).filter(c => !DECOMP_CHANNELS_RG.includes(c));
+        const card = document.createElement('div');
+        card.className = 'scenario-card';
+        card.innerHTML =
+          '<div class="scenario-card-hdr">' +
+            '<div>' +
+              '<div class="scenario-name">' + escapeHtmlRg(sc.name) + '</div>' +
+              '<div class="scenario-meta">Saved ' + fmtScenarioDate(sc.savedAt) +
+                (sc.editedAt ? ' &middot; edited ' + fmtScenarioDate(sc.editedAt) : '') + '</div>' +
+              (missing.length ? '<div class="scenario-meta warn">Channel set changed since this was saved -- missing: ' +
+                escapeHtmlRg(missing.map(c => (CHANNEL_LABELS_RIDGE[c] || c)).join(', ')) +
+                '. Those will load at last-observed instead.</div>' : '') +
+            '</div>' +
+            '<div class="scenario-actions">' +
+              '<label class="scenario-plot-toggle">' +
+                '<input type="checkbox" class="scenario-plot-checkbox" data-id="' + sc.id + '"' + (plottedScenarioIds.has(String(sc.id)) ? ' checked' : '') + '>' +
+                '<span class="scenario-plot-swatch" style="background:' + scenarioColor(sc.id) + '"></span>Plot on chart' +
+              '</label>' +
+              '<div class="scenario-action-btn" data-id="' + sc.id + '" data-action="load">Load</div>' +
+              '<div class="scenario-action-btn" data-id="' + sc.id + '" data-action="edit">Edit</div>' +
+              '<div class="scenario-action-btn danger" data-id="' + sc.id + '" data-action="delete">Delete</div>' +
+            '</div>' +
+          '</div>' +
+          (sc.rationale ? '<div class="scenario-rationale">' + escapeHtmlRg(sc.rationale) + '</div>' : '');
+        scenarioListEl.appendChild(card);
+      });
+      scenarioListEl.querySelectorAll('.scenario-action-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const id = this.dataset.id;
+          if (this.dataset.action === 'delete') {
+            if (!confirm('Delete this scenario? This can\'t be undone.')) return;
+            persistScenarios(loadScenarios().filter(s => String(s.id) !== id));
+            const hadPlot = plottedScenarioIds.delete(id);
+            renderScenarioList();
+            if (hadPlot) renderForecastChart();
+          } else if (this.dataset.action === 'edit') {
+            const sc = loadScenarios().find(s => String(s.id) === id);
+            if (!sc) return;
+            editingScenarioId = id;
+            editRevertLevels = JSON.parse(JSON.stringify(levels));
+            editRevertBoxMode = Object.assign({}, boxMode);
+            applyScenario(id); // loads this scenario's assumptions into the live boxes for editing
+            scenarioNameEl.value = sc.name || '';
+            scenarioRationaleEl.value = sc.rationale || '';
+            scenarioSaveConfirmEl.textContent = 'Update';
+            scenarioFormHintEl.textContent = 'This scenario’s assumptions are now loaded into the shock boxes above -- adjust any of them, then click Update. Cancel restores your boxes to what they were before.';
+            scenarioFormHintEl.style.display = '';
+            scenarioFormEl.classList.add('open');
+            scenarioNameEl.focus();
+          } else {
+            applyScenario(id);
+          }
+        });
+      });
+      scenarioListEl.querySelectorAll('.scenario-plot-checkbox').forEach(cb => {
+        cb.addEventListener('change', function () {
+          const id = this.dataset.id;
+          if (this.checked) plottedScenarioIds.add(id); else plottedScenarioIds.delete(id);
+          renderForecastChart();
+        });
+      });
+    }
+
+    function applyScenario(id) {
+      const sc = loadScenarios().find(s => String(s.id) === id);
+      if (!sc) return;
+      // effectiveScenarioLevels() (defined above simulateForecast()'s use
+      // of it) applies the same 'final'-wins-over-a-stored-guess merge
+      // the "Plot on chart" overlay uses -- a scenario saved before a
+      // month resolved never shows/loads a stale guess for it once the
+      // real value is in. 'provisional' months are treated like any other
+      // editable box -- the scenario's own stored value applies.
+      const eff = effectiveScenarioLevels(sc);
+      DECOMP_CHANNELS_RG.forEach(key => {
+        const rawKey = key.replace(/^delta_/, '');
+        // A composite currently expanded ("break down into parts") stays
+        // computed from its primitives -- loading a scenario's flat stored
+        // value for it would otherwise silently disagree with what its
+        // own primitives panel shows.
+        if (sc.levels && sc.levels[key] && !expandedComposites.has(rawKey)) {
+          levels[key] = eff[key];
+          boxMode[key] = (sc.boxMode && sc.boxMode[key]) || 'level';
+        }
+        const toggle = shockGridEl.querySelector('.fc-mode-toggle[data-channel="' + key + '"]');
+        if (toggle) {
+          toggle.querySelectorAll('.fc-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === boxMode[key]));
+        }
+        refreshBoxDisplay(key);
+        const panel = document.getElementById('graph-panel-' + key);
+        if (panel && panel.classList.contains('open')) renderChannelGraph(key);
+      });
+      renderForecastChart();
+    }
+
+    scenarioSaveToggleEl.addEventListener('click', function () {
+      const opening = !scenarioFormEl.classList.contains('open');
+      // Always a fresh "new scenario" form when opened via this top-level
+      // toggle, even if a card's "Edit" was left open without confirming --
+      // edit mode is only ever entered through a card's own Edit button.
+      // If an edit-load is in progress, revert the boxes first so
+      // switching to "new scenario" doesn't silently strand them on
+      // whatever the abandoned edit had loaded.
+      if (editingScenarioId && editRevertLevels) restoreLiveLevels(editRevertLevels, editRevertBoxMode);
+      editingScenarioId = null;
+      editRevertLevels = null;
+      editRevertBoxMode = null;
+      scenarioSaveConfirmEl.textContent = 'Save';
+      scenarioFormHintEl.style.display = 'none';
+      scenarioFormHintEl.textContent = '';
+      if (opening) { scenarioNameEl.value = ''; scenarioRationaleEl.value = ''; }
+      scenarioFormEl.classList.toggle('open', opening);
+      if (opening) scenarioNameEl.focus();
+    });
+    document.getElementById('scenarioSaveCancelBtn').addEventListener('click', function () {
+      if (editingScenarioId && editRevertLevels) restoreLiveLevels(editRevertLevels, editRevertBoxMode);
+      closeScenarioForm();
+    });
+    scenarioSaveConfirmEl.addEventListener('click', function () {
+      const name = scenarioNameEl.value.trim();
+      if (!name) { scenarioNameEl.focus(); return; }
+      const scenarios = loadScenarios();
+      if (editingScenarioId) {
+        // Update re-snapshots name, rationale, AND whatever's currently
+        // live in the shock boxes (which "Edit" pre-loaded from this same
+        // scenario, and the user may have since adjusted) back into this
+        // scenario -- a true in-place edit of both the description and the
+        // underlying assumptions, not just a rename.
+        const sc = scenarios.find(s => String(s.id) === editingScenarioId);
+        if (sc) {
+          sc.name = name;
+          sc.rationale = scenarioRationaleEl.value.trim();
+          sc.editedAt = new Date().toISOString();
+          sc.channels = DECOMP_CHANNELS_RG.slice();
+          sc.levels = JSON.parse(JSON.stringify(levels));
+          sc.boxMode = Object.assign({}, boxMode);
+        }
+        // Committed -- nothing left to revert to.
+        editRevertLevels = null;
+        editRevertBoxMode = null;
+      } else {
+        scenarios.push({
+          id: Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+          name: name,
+          rationale: scenarioRationaleEl.value.trim(),
+          savedAt: new Date().toISOString(),
+          channels: DECOMP_CHANNELS_RG.slice(),
+          levels: JSON.parse(JSON.stringify(levels)),
+          boxMode: Object.assign({}, boxMode),
+        });
+      }
+      if (persistScenarios(scenarios)) {
+        closeScenarioForm();
+        renderScenarioList();
+      }
+    });
+
+    document.getElementById('scenarioExportBtn').addEventListener('click', function () {
+      const scenarios = loadScenarios();
+      if (!scenarios.length) { alert('No saved scenarios to export yet.'); return; }
+      const blob = new Blob([JSON.stringify(scenarios, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ridge_forecast_scenarios_' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    const scenarioImportFileEl = document.getElementById('scenarioImportFile');
+    document.getElementById('scenarioImportBtn').addEventListener('click', function () { scenarioImportFileEl.click(); });
+    scenarioImportFileEl.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function () {
+        let imported;
+        try {
+          imported = JSON.parse(reader.result);
+          if (!Array.isArray(imported)) throw new Error('not a list');
+        } catch (e) {
+          alert('That file doesn\'t look like a scenarios export (expected a JSON list).');
+          scenarioImportFileEl.value = '';
+          return;
+        }
+        // Re-IDed on import (not merged by id) so importing the same file
+        // twice, or a file from another machine that happens to reuse an
+        // id, never silently overwrites an existing local scenario.
+        const existing = loadScenarios();
+        const reIded = imported.filter(sc => sc && sc.levels && sc.name).map(sc =>
+          Object.assign({}, sc, { id: Date.now() + '_' + Math.random().toString(36).slice(2, 8) }));
+        persistScenarios(existing.concat(reIded));
+        renderScenarioList();
+        scenarioImportFileEl.value = '';
+        alert('Imported ' + reIded.length + ' scenario(s).');
+      };
+      reader.readAsText(file);
+    });
+
+    renderScenarioList();
+    // Deferred here (see the NOTE above renderForecastChart()'s
+    // definition) -- everything plotScenarioTraces() reads
+    // (plottedScenarioIds, scenarioColor/loadScenarios) is initialized by
+    // this point.
     renderForecastChart();
   }
 
