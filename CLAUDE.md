@@ -33,7 +33,12 @@ domain/
   db/international/  — ETL dados cross-country: fetch → insert em macro_international
     bis/             — cmb_reer (REER Brasil/MX/CL/CO via BIS API), cmb_policy_rates (taxa de juros de
                        politica monetaria, BIS WS_CBPOL, diária, BR/MX/CL/CO/PE/AR — AR parou de ser
-                       atualizada pelo BIS em 2025-07; ainda não integrado a jobs/update_international.py)
+                       atualizada pelo BIS em 2025-07; ainda não integrado a jobs/update_international.py),
+                       cmb_real_rates (taxa real ex-post = policy rate − CPI YoY, BIS WS_CBPOL + WS_LONG_CPI,
+                       mensal, BR/MX/CL/CO/PE — cada país começa no início da própria série de policy rate
+                       do BIS, o fator limitante; BR truncado em 1994-07 como cmb_policy_rates; recalcula BR
+                       com fonte BIS para comparabilidade cross-country, não substitui o real_br_ex_post de
+                       diferenciais_juros — ainda não integrado a jobs/update_international.py)
     cftc/            — cmb_cot_fx (posicionamento especulativo BRL/MXN)
     fred/            — diferenciais_juros (Selic × Fed Funds, real ex-post — precisa de BR+US),
                        comm_brent (Brent diário, FRED DCOILBRENTEU — insumo de choque de commodities do
@@ -70,11 +75,18 @@ analytics/           — Projetos que consomem o banco MySQL
     referencia/           — PDFs do modelo original do BCB + MODEL_REPLICATION_PLAN.md (histórico da réplica)
     models/               — Material legado de curva de juros (ex-quarantine/, 2026-08), ainda não integrado
                            ao motor principal — ver "Pendências" abaixo
+  economic_activity/ — Panorama de Atividade Econômica HTML (PIB/PIM/PMC/PMS/IBC-Br)  [ver
+                       analytics/economic_activity/CLAUDE.md]
+    generate_report.py   — Lê atv_pib/atv_pib_encadeado/atv_pib_taxas/atv_pim/atv_pmc/atv_pms/atv_ibcbr
+                           de macro_brasil, injeta JSON no template, salva HTML — sem CSV/Excel local,
+                           tudo já está no MySQL
+    report.html           — Template fixo (HTML + CSS + Plotly.js CDN), 6 abas
   report_structure/  — Scaffolding compartilhado de build-time para os relatórios acima (theme CSS,
                        _bindYAutofit, harness de substituição /*REPORT_DATA*/) — ver analytics/CLAUDE.md
                        e analytics/report_structure/CLAUDE.md. Piloto: inflation/ (2026-08, migração completa);
                        exchange_rate/ parcialmente migrado (JS/harness, falta o CSS — precisa do reskin 2026-07
-                       antes); monetary_policy/ ainda não migrado.
+                       antes); monetary_policy/ ainda não migrado; economic_activity/ (2026-08) já nasceu
+                       construído sobre os dois marcadores, sem precisar de migração.
 jobs/                — Entry points
   update_db.py          — Atualiza todas as tabelas de macro_brasil (inclui mdic/ e atv_pib_usd; NÃO inclui
                           ainda comm_icbr/inflc_meta — rodar manualmente por enquanto)
@@ -225,11 +237,21 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 ### Alta prioridade
 - **`analytics/exchange_rate/`**: ver "Pending" em [`analytics/exchange_rate/CLAUDE.md`](analytics/exchange_rate/CLAUDE.md).
 - **`analytics/inflation/`**: ver "Pending" em [`analytics/inflation/CLAUDE.md`](analytics/inflation/CLAUDE.md).
+- **`analytics/economic_activity/`** (novo, 2026-08): `generate_report.py` já roda contra o banco real e
+  a lógica JS foi verificada contra esses dados reais via harness Node — falta só abrir
+  `reports/economic_activity_latest.html` num browser de verdade para confirmar visualmente (sandbox
+  sem browser disponível). Aba PIB já reconstruída com taxas oficiais do IBGE (Agregado 5932) +
+  decomposição de crescimento T/T e interanual (Agregados 6612/6613, metodologia BEA/IBGE replicada
+  por BCB/IPEA) + acumulado em 4 trimestres, a pedido explícito do usuário; as outras 5 abas ainda
+  usam a abordagem original (razão sobre o índice de volume) até o usuário passar as próprias
+  diretrizes para elas. Duas tabelas novas: `atv_pib_encadeado`, `atv_pib_taxas` (ambas já em
+  `jobs/update_db.py`). Ver "Gotchas"/"Pending" em
+  [`analytics/economic_activity/CLAUDE.md`](analytics/economic_activity/CLAUDE.md).
 
 ### Média prioridade
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): see "Pending" section in [`repository/CLAUDE.md`](repository/CLAUDE.md).
-- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
+- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py`/`cmb_real_rates.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates`/`cmb_real_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
 - **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
 - **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
 - **`analytics/monetary_policy/models/curva_juros/`**: material legado de curva de juros (`yield_curve.py`, `yield_curve_model.py`, planilhas DI/títulos/governo), movido de `quarantine/` em 2026-08. Ainda não integrado ao motor principal (`model.py`) nem discutido com o agente de política monetária — revisitar quando essa frente for retomada.

@@ -1,6 +1,6 @@
 """
-BIS Statistics API v1 client — Effective Exchange Rates (WS_EER) and Central
-Bank Policy Rates (WS_CBPOL).
+BIS Statistics API v1 client — Effective Exchange Rates (WS_EER), Central
+Bank Policy Rates (WS_CBPOL), and long-run Consumer Prices (WS_LONG_CPI).
 
 API: https://data.bis.org/api/v1/data/{FLOW}/{key}/all?format=csv
 No authentication required.
@@ -14,6 +14,11 @@ Key structure (WS_EER): FREQ.ADJUSTMENT.REF_AREA.BASKET
 Key structure (WS_CBPOL): FREQ.REF_AREA
   FREQ:       D (daily) | M (monthly)
   REF_AREA:   ISO2 country code, e.g. BR, MX, CL, CO, PE, AR
+
+Key structure (WS_LONG_CPI): FREQ.REF_AREA.UNIT_MEASURE
+  FREQ:         M (monthly)
+  REF_AREA:     ISO2 country code, e.g. BR, MX, CL, CO, PE
+  UNIT_MEASURE: 771 (YoY % change) | 628 (index, 2010=100)
 
 Multiple values in one dimension use '+', e.g. "R+N" or "BR+MX".
 """
@@ -31,6 +36,9 @@ logger = logging.getLogger(__name__)
 
 _BASE = "https://stats.bis.org/api/v1/data/WS_EER"
 _BASE_CBPOL = "https://stats.bis.org/api/v1/data/WS_CBPOL"
+_BASE_LONG_CPI = "https://stats.bis.org/api/v1/data/WS_LONG_CPI"
+
+_CPI_UNIT_CODE = {"yoy": "771", "index": "628"}
 
 _TYPE_LABEL = {
     ("R", "B"): "real_broad",
@@ -133,6 +141,75 @@ class BIS:
         resp.raise_for_status()
 
         return self._parse_cbpol(resp.text, freq)
+
+    def get_cpi(
+        self,
+        countries: List[str],
+        unit: str = "yoy",
+        start: str | None = None,
+    ) -> pd.DataFrame:
+        """
+        Fetch long-run Consumer Prices from BIS (WS_LONG_CPI).
+
+        Args:
+            countries: ISO2 country codes, e.g. ["BR", "MX", "CL", "CO", "PE"]
+            unit:      "yoy" (YoY % change, UNIT_MEASURE 771) or "index"
+                       (index 2010=100, UNIT_MEASURE 628)
+            start:     "YYYY-MM" to filter from that date, or None for full history
+
+        Returns:
+            Tidy DataFrame with columns:
+                date         Timestamp (month-start)
+                country_code str
+                value        float64
+        """
+        unit_code = _CPI_UNIT_CODE.get(unit, unit)
+        country_str = "+".join(countries)
+
+        # BIS WS_LONG_CPI key order: FREQ.REF_AREA.UNIT_MEASURE
+        key = f"M.{country_str}.{unit_code}"
+        url = f"{_BASE_LONG_CPI}/{key}/all"
+
+        params: dict = {"format": "csv"}
+        if start:
+            params["startPeriod"] = start
+
+        logger.debug("BIS LONG_CPI GET %s  params=%s", url, params)
+        resp = self._session.get(url, params=params, timeout=60.0)
+        resp.raise_for_status()
+
+        return self._parse_cpi(resp.text)
+
+    def _parse_cpi(self, text: str) -> pd.DataFrame:
+        clean_lines = [ln for ln in text.splitlines() if not ln.startswith("#")]
+        raw = pd.read_csv(io.StringIO("\n".join(clean_lines)), low_memory=False)
+
+        raw.columns = [c.strip().upper() for c in raw.columns]
+
+        for col in ("REF_AREA", "TIME_PERIOD", "OBS_VALUE"):
+            if col not in raw.columns:
+                raise ValueError(
+                    f"BIS CSV missing column '{col}'. "
+                    f"Available columns: {list(raw.columns)}"
+                )
+
+        df = raw.copy()
+        df["value"] = pd.to_numeric(df["OBS_VALUE"], errors="coerce")
+        df["date"] = pd.to_datetime(df["TIME_PERIOD"].str.strip(), format="%Y-%m")
+        df["country_code"] = df["REF_AREA"].str.strip()
+
+        result = (
+            df[["date", "country_code", "value"]]
+            .dropna(subset=["value"])
+            .reset_index(drop=True)
+        )
+
+        logger.debug(
+            "BIS LONG_CPI parsed %d rows, %d countries",
+            len(result),
+            result["country_code"].nunique(),
+        )
+        return result
 
     def _parse_cbpol(self, text: str, freq: str) -> pd.DataFrame:
         clean_lines = [ln for ln in text.splitlines() if not ln.startswith("#")]

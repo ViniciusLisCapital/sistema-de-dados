@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama de Atividade Econômica — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 44px;
+      font-family: var(--cond);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+
+    /* ── Nota metodológica ── */
+    .note-metodologia { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 1100px; }
+    .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+
+    /* ── KPI grids ── */
+    .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .kpi-grid-5  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-value.pos { color: var(--lis-laranja); }
+    .kpi-value.neg { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Chart cards ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    #chart-ov-yoy, #chart-ov-levels           { width: 100%; height: 420px; }
+    #chart-pib-acum4t                         { width: 100%; height: 360px; }
+    #chart-pib-oferta, #chart-pib-demanda     { width: 100%; height: 400px; }
+    #chart-pib-qoq                            { width: 100%; height: 360px; }
+    #chart-pib-decomp-oferta-qoq, #chart-pib-decomp-demanda-qoq   { width: 100%; height: 380px; }
+    #chart-pib-decomp-oferta-yoy, #chart-pib-decomp-demanda-yoy   { width: 100%; height: 380px; }
+    #chart-pim-yoy                            { width: 100%; height: 400px; }
+    #chart-pim-mom                            { width: 100%; height: 360px; }
+    #chart-pmc-yoy, #chart-pms-yoy            { width: 100%; height: 380px; }
+    #chart-pmc-ranking, #chart-pms-ranking    { width: 100%; }
+    #chart-pmc-mom, #chart-pms-mom            { width: 100%; height: 360px; }
+    #chart-ibcbr-yoy                          { width: 100%; height: 400px; }
+    #chart-ibcbr-mom                          { width: 100%; height: 360px; }
+
+    /* ── Footer ── */
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      .chart-row { grid-template-columns: 1fr; }
+      header, .tab-nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid, .kpi-grid-5, .kpi-grid-4, .kpi-grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>Panorama de Atividade Econômica</h1>
+  </div>
+  <div class="meta">
+    Atualizado em <strong id="generated-at">—</strong><br>
+    IBGE SIDRA (PIB · PIM · PMC · PMS) &nbsp;·&nbsp; BCB SGS (IBC-Br)
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="overview">Visão Geral</button>
+  <button class="tab-btn" data-tab="pib">PIB</button>
+  <button class="tab-btn" data-tab="pim">Produção Industrial</button>
+  <button class="tab-btn" data-tab="pmc">Comércio</button>
+  <button class="tab-btn" data-tab="pms">Serviços</button>
+  <button class="tab-btn" data-tab="ibcbr">IBC-Br</button>
+</nav>
+
+<main>
+
+  <!-- ═══════════ TAB — VISÃO GERAL ═══════════ -->
+  <div class="tab-panel active" id="tab-overview">
+
+    <p class="note-metodologia">
+      Convenção seguida em todo o relatório: a <strong>variação interanual</strong> (mesmo período do ano
+      anterior) é calculada sobre a série <strong>sem ajuste sazonal</strong>; a variação
+      mensal/trimestral é calculada sobre a série <strong>dessazonalizada</strong> — a mesma convenção
+      usada pelo IBGE (Contas Nacionais, PIM, PMC, PMS) e pelo BCB (IBC-Br) em suas próprias divulgações.
+    </p>
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid-5">
+        <div class="kpi-card">
+          <div class="kpi-label">PIB</div>
+          <div class="kpi-value" id="kpi-ov-pib-value">—</div>
+          <div class="kpi-sub" id="kpi-ov-pib-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">IBC-Br</div>
+          <div class="kpi-value" id="kpi-ov-ibcbr-value">—</div>
+          <div class="kpi-sub" id="kpi-ov-ibcbr-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Produção Industrial</div>
+          <div class="kpi-value" id="kpi-ov-pim-value">—</div>
+          <div class="kpi-sub" id="kpi-ov-pim-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Varejo Ampliado</div>
+          <div class="kpi-value" id="kpi-ov-pmc-value">—</div>
+          <div class="kpi-sub" id="kpi-ov-pmc-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Serviços</div>
+          <div class="kpi-value" id="kpi-ov-pms-value">—</div>
+          <div class="kpi-sub" id="kpi-ov-pms-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Comparativo — Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-ov-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2>Nível de Atividade — Índices Dessazonalizados</h2>
+      <p class="chart-caption">PIB e IBC-Br, cada um rebasado a 100 na sua primeira leitura disponível — mostra a coincidência de trajetória entre o proxy mensal do BCB e o PIB trimestral oficial.</p>
+      <div class="chart-card"><div id="chart-ov-levels"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — PIB ═══════════ -->
+  <div class="tab-panel" id="tab-pib">
+
+    <p class="note-metodologia">
+      Todas as taxas desta aba vêm diretamente das taxas oficiais do IBGE (Agregado 5932 — Contas
+      Nacionais Trimestrais), não de um cálculo aproximado sobre o índice de volume: variação
+      interanual e acumulada em 4 trimestres são, por definição do IBGE, calculadas sobre a série
+      <strong>sem ajuste sazonal</strong>; a variação trimestral é calculada sobre a série
+      <strong>dessazonalizada</strong>.
+    </p>
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid-3">
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Trimestral Dessazonalizada</div>
+          <div class="kpi-value" id="kpi-pib-qoq-value">—</div>
+          <div class="kpi-sub" id="kpi-pib-qoq-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Interanual</div>
+          <div class="kpi-value" id="kpi-pib-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-pib-yoy-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Acumulada em 4 Trimestres</div>
+          <div class="kpi-value" id="kpi-pib-acum4t-value">—</div>
+          <div class="kpi-sub" id="kpi-pib-acum4t-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>PIB — Variação Acumulada em 4 Trimestres (%, NSA)</h2>
+      <p class="chart-caption">Soma dos últimos 4 trimestres vs. soma dos 4 trimestres imediatamente anteriores — a métrica de "crescimento acumulado em 12 meses" para uma série trimestral, oficial do IBGE (Agregado 5932).</p>
+      <div class="chart-card"><div id="chart-pib-acum4t"></div></div>
+    </section>
+
+    <section>
+      <h2>Ótica da Oferta — Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-pib-oferta"></div></div>
+    </section>
+
+    <section>
+      <h2>Ótica da Demanda — Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-pib-demanda"></div></div>
+    </section>
+
+    <section>
+      <h2>PIB — Variação Trimestral Dessazonalizada (%, SA)</h2>
+      <div class="chart-card"><div id="chart-pib-qoq"></div></div>
+    </section>
+
+    <section>
+      <h2>Decomposição do Crescimento — Contribuição em Pontos Percentuais</h2>
+      <p class="note-metodologia">
+        Metodologia BEA/IBGE ("contribution to percent change"), a mesma usada pelo BCB e pelo IPEA em
+        seus comentários de conjuntura: contribuição<sub>i</sub> = (valor encadeado<sub>i,t</sub> −
+        valor encadeado<sub>i,t−n</sub>) / valor encadeado<sub>PIB,t−n</sub> × 100, usando os
+        <strong>valores encadeados a preços de 1995</strong> (R$ milhões — IBGE Agregados 6612/6613),
+        não o índice de volume — só valores monetários são aditivos entre categorias. Cada gráfico tem
+        uma barra residual ("Impostos e Discrepância" na ótica da oferta; "Var. Estoques e
+        Discrepância" na ótica da demanda) que fecha a soma exatamente com a taxa oficial do PIB
+        (linha/marcadores pretos) — ela absorve tanto os itens que a classificação do IBGE não separa
+        (impostos líquidos não tem série dessazonalizada própria; variação de estoques não é uma
+        categoria própria nesta classificação) quanto a não-aditividade normal de uma série encadeada
+        fora do ano de referência (1995) — ambas esperadas e documentadas, não um erro de cálculo. Ver
+        "Gotchas" em <code>analytics/economic_activity/CLAUDE.md</code>.
+      </p>
+      <h3 style="font-family:var(--cond);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);">Trimestre Contra Trimestre Anterior (dessazonalizado)</h3>
+      <div class="chart-row">
+        <div>
+          <p class="chart-caption">Ótica da Oferta</p>
+          <div class="chart-card"><div id="chart-pib-decomp-oferta-qoq"></div></div>
+        </div>
+        <div>
+          <p class="chart-caption">Ótica da Demanda</p>
+          <div class="chart-card"><div id="chart-pib-decomp-demanda-qoq"></div></div>
+        </div>
+      </div>
+      <h3 style="font-family:var(--cond);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text2);">Em Relação ao Mesmo Trimestre do Ano Anterior</h3>
+      <div class="chart-row">
+        <div>
+          <p class="chart-caption">Ótica da Oferta</p>
+          <div class="chart-card"><div id="chart-pib-decomp-oferta-yoy"></div></div>
+        </div>
+        <div>
+          <p class="chart-caption">Ótica da Demanda</p>
+          <div class="chart-card"><div id="chart-pib-decomp-demanda-yoy"></div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — PRODUÇÃO INDUSTRIAL ═══════════ -->
+  <div class="tab-panel" id="tab-pim">
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Mensal Dessazonalizada</div>
+          <div class="kpi-value" id="kpi-pim-period-value">—</div>
+          <div class="kpi-sub" id="kpi-pim-period-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Interanual</div>
+          <div class="kpi-value" id="kpi-pim-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-pim-yoy-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Produção Industrial — Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-pim-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2>Indústria Geral — Variação Mensal Dessazonalizada (%, SA)</h2>
+      <div class="chart-card"><div id="chart-pim-mom"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — COMÉRCIO ═══════════ -->
+  <div class="tab-panel" id="tab-pmc">
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card">
+          <div class="kpi-label">Ampliado — Var. Mensal Dessaz.</div>
+          <div class="kpi-value" id="kpi-pmc-ampliado-period-value">—</div>
+          <div class="kpi-sub" id="kpi-pmc-ampliado-period-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ampliado — Var. Interanual</div>
+          <div class="kpi-value" id="kpi-pmc-ampliado-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-pmc-ampliado-yoy-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Restrito — Var. Mensal Dessaz.</div>
+          <div class="kpi-value" id="kpi-pmc-restrito-period-value">—</div>
+          <div class="kpi-sub" id="kpi-pmc-restrito-period-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Restrito — Var. Interanual</div>
+          <div class="kpi-value" id="kpi-pmc-restrito-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-pmc-restrito-yoy-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Varejo Restrito vs. Ampliado — Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-pmc-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2>Ranking por Segmento — Variação Interanual</h2>
+      <p class="chart-caption" id="chart-pmc-ranking-caption">—</p>
+      <div class="chart-card"><div id="chart-pmc-ranking"></div></div>
+    </section>
+
+    <section>
+      <h2>Varejo Ampliado — Variação Mensal Dessazonalizada (%, SA)</h2>
+      <div class="chart-card"><div id="chart-pmc-mom"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — SERVIÇOS ═══════════ -->
+  <div class="tab-panel" id="tab-pms">
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Mensal Dessazonalizada</div>
+          <div class="kpi-value" id="kpi-pms-period-value">—</div>
+          <div class="kpi-sub" id="kpi-pms-period-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Interanual</div>
+          <div class="kpi-value" id="kpi-pms-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-pms-yoy-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Serviços — Grupos Principais, Variação Interanual (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-pms-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2>Ranking por Subsegmento — Variação Interanual</h2>
+      <p class="chart-caption" id="chart-pms-ranking-caption">—</p>
+      <div class="chart-card"><div id="chart-pms-ranking"></div></div>
+    </section>
+
+    <section>
+      <h2>Serviços — Variação Mensal Dessazonalizada (%, SA)</h2>
+      <div class="chart-card"><div id="chart-pms-mom"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — IBC-BR ═══════════ -->
+  <div class="tab-panel" id="tab-ibcbr">
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Mensal Dessazonalizada</div>
+          <div class="kpi-value" id="kpi-ibcbr-period-value">—</div>
+          <div class="kpi-sub" id="kpi-ibcbr-period-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Var. Interanual</div>
+          <div class="kpi-value" id="kpi-ibcbr-yoy-value">—</div>
+          <div class="kpi-sub" id="kpi-ibcbr-yoy-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>IBC-Br — Variação Interanual por Componente (%, NSA)</h2>
+      <div class="chart-card"><div id="chart-ibcbr-yoy"></div></div>
+    </section>
+
+    <section>
+      <h2>IBC-Br — Variação Mensal Dessazonalizada (%, SA)</h2>
+      <div class="chart-card"><div id="chart-ibcbr-mom"></div></div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>IBGE SIDRA (Agregados 1620/1621, 8888, 8880/8881/8883, 8688) &nbsp;·&nbsp; BCB SGS (IBC-Br)</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Data & palette ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/economic_activity_latest.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D = REPORT_DATA;
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+// PIB e trimestral (4 leituras/ano); as demais series (PIM/PMC/PMS/IBC-Br) sao mensais.
+var PERIODS_PER_YEAR = {pib: 4, pim: 12, pmc: 12, pms: 12, ibcbr: 12};
+var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+// scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
+var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
+
+/*Y_AUTOFIT_JS*/
+
+// ── Value/date helpers ────────────────────────────────────────────────────────
+function ser(group, key) {
+  var g = D[group] || {};
+  return g[key] || {dates: [], values: []};
+}
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function fmtDate(dateStr, group) {
+  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
+  if (group === 'pib') { return y + ' T' + (Math.floor((m - 1) / 3) + 1); }
+  return MESES[m - 1] + '/' + y;
+}
+function lastValid(dates, values) {
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+
+// ── Growth transforms — index levels, not chained rates: value[i]/value[i-n]-1 ──
+function growthN(dates, values, n) {
+  var od = [], ov = [];
+  for (var i = n; i < values.length; i++) {
+    var prev = values[i - n], cur = values[i];
+    od.push(dates[i]);
+    ov.push((cur != null && prev != null && prev !== 0) ? Math.round((cur / prev - 1) * 10000) / 100 : null);
+  }
+  return {dates: od, values: ov};
+}
+// Var. interanual (mesmo periodo do ano anterior) -- convencao IBGE/BCB: sobre a serie SEM ajuste sazonal.
+function seriesYoY(group, base) {
+  var s = ser(group, base + '_nsa');
+  return growthN(s.dates, s.values, PERIODS_PER_YEAR[group]);
+}
+// Var. do periodo (mensal ou trimestral) -- convencao IBGE/BCB: sobre a serie DESSAZONALIZADA.
+function seriesPeriodSA(group, base) {
+  var s = ser(group, base + '_sa');
+  return growthN(s.dates, s.values, 1);
+}
+// ── PIB — taxas oficiais do IBGE (Agregado 5932), lidas direto de D.pib_taxas ────
+// Preferidas a seriesYoY/seriesPeriodSA para qualquer serie do grupo 'pib': sao a fonte
+// oficial (yoy/acum_4t/acum_ano sao NSA por definicao; qoq e SA por definicao -- ver
+// domain/db/brasil/ibge/atv_pib_taxas.py), nao uma razao aproximada sobre o indice de volume.
+function officialRate(base, indicador) {
+  return ser('pib_taxas', base + '__' + indicador);
+}
+function toMap(seriesObj) {
+  var m = {};
+  for (var i = 0; i < seriesObj.dates.length; i++) m[seriesObj.dates[i]] = seriesObj.values[i];
+  return m;
+}
+// Decomposicao/contribuicao de crescimento (metodologia BEA/IBGE, replicada por BCB/IPEA em seus
+// comentarios de conjuntura -- ver a nota metodologica na aba PIB): contribuicao_i = (valor
+// encadeado_i,t - valor encadeado_i,t-n) / valor encadeado_PIB,t-n * 100, usando os VALORES
+// ENCADEADOS a precos de 1995 (D.pib_enc, R$ mi -- aditivos entre categorias, ao contrario do
+// indice de volume) para cada categoria, e a taxa oficial do PIB (D.pib_taxas) como o total real
+// contra o qual a barra residual fecha a soma. baseList: [{base, label, color, sign}] (sign=-1
+// para importacao, que SUBTRAI do PIB). suffix: '_sa' (n=1, T/T) ou '_nsa' (n=4, interanual).
+function computeContribution(baseList, totalBase, suffix, lag, totalIndicador, residualLabel) {
+  var totalSeries = ser('pib_enc', totalBase + suffix);
+  var totalMap = toMap(totalSeries);
+  var officialMap = toMap(officialRate(totalBase, totalIndicador));
+  var catMaps = baseList.map(function(b) { return toMap(ser('pib_enc', b.base + suffix)); });
+  var dates = totalSeries.dates.slice().sort();
+  var outDates = [], residualValues = [], totalValues = [];
+  var contributions = baseList.map(function(b) { return {label: b.label, color: b.color, values: []}; });
+  for (var i = lag; i < dates.length; i++) {
+    var d = dates[i], dPrev = dates[i - lag];
+    var prevTotal = totalMap[dPrev];
+    var totalActual = officialMap[d];
+    if (prevTotal == null || totalActual == null) continue;
+    var sumC = 0;
+    var rowVals = [];
+    for (var j = 0; j < baseList.length; j++) {
+      var v = catMaps[j][d], vPrev = catMaps[j][dPrev];
+      var contrib = (v != null && vPrev != null) ? (v - vPrev) / prevTotal * 100 : null;
+      if (baseList[j].sign === -1 && contrib != null) contrib = -contrib;
+      rowVals.push(contrib);
+      if (contrib != null) sumC += contrib;
+    }
+    outDates.push(d);
+    for (var j = 0; j < baseList.length; j++) {
+      contributions[j].values.push(rowVals[j] == null ? null : Math.round(rowVals[j] * 100) / 100);
+    }
+    residualValues.push(Math.round((totalActual - sumC) * 100) / 100);
+    totalValues.push(totalActual);
+  }
+  return {dates: outDates, contributions: contributions, residual: residualValues, residualLabel: residualLabel, total: totalValues};
+}
+// Rebasa a serie a 100 na primeira leitura valida -- usado so para o comparativo de niveis.
+function rebaseTo100(dates, values) {
+  var i0 = -1;
+  for (var i = 0; i < values.length; i++) { if (values[i] != null) { i0 = i; break; } }
+  if (i0 < 0) return {dates: [], values: []};
+  var base = values[i0], od = [], ov = [];
+  for (var i = i0; i < values.length; i++) {
+    od.push(dates[i]);
+    ov.push(values[i] == null ? null : Math.round((values[i] / base * 100) * 100) / 100);
+  }
+  return {dates: od, values: ov};
+}
+
+// ── KPI rendering ─────────────────────────────────────────────────────────────
+function setKPI(idPrefix, value, sub) {
+  var elV = document.getElementById(idPrefix + '-value');
+  if (!elV) return;
+  var elS = document.getElementById(idPrefix + '-sub');
+  if (value == null) {
+    elV.textContent = '—'; elV.className = 'kpi-value';
+    if (elS) elS.textContent = '—';
+    return;
+  }
+  elV.textContent = fmt(value) + '%';
+  elV.className = 'kpi-value ' + (value >= 0 ? 'pos' : 'neg');
+  if (elS) elS.textContent = sub;
+}
+// Two-card pair (period-SA + YoY-NSA) for a single group/base, e.g. PIB, PIM, PMS, IBC-Br headline.
+function renderKPIPair(prefix, group, base, periodLabel, yoyLabel) {
+  var per = seriesPeriodSA(group, base), lp = lastValid(per.dates, per.values);
+  setKPI(prefix + '-period', lp ? lp.value : null, lp ? (periodLabel + ' · ' + fmtDate(lp.date, group)) : '—');
+  var yoy = seriesYoY(group, base), ly = lastValid(yoy.dates, yoy.values);
+  setKPI(prefix + '-yoy', ly ? ly.value : null, ly ? (yoyLabel + ' · ' + fmtDate(ly.date, group)) : '—');
+}
+// Three-card PIB KPI grid (QoQ SA, YoY NSA, acumulado 4T NSA) -- all from the official IBGE rates
+// table (D.pib_taxas), not the generic ratio-based seriesYoY/seriesPeriodSA used elsewhere.
+function renderPIBKPIs() {
+  var qoq = officialRate('pib_pm', 'qoq'), lq = lastValid(qoq.dates, qoq.values);
+  setKPI('kpi-pib-qoq', lq ? lq.value : null, lq ? ('T/T dessaz. · ' + fmtDate(lq.date, 'pib')) : '—');
+  var yoy = officialRate('pib_pm', 'yoy'), ly = lastValid(yoy.dates, yoy.values);
+  setKPI('kpi-pib-yoy', ly ? ly.value : null, ly ? ('Interanual · ' + fmtDate(ly.date, 'pib')) : '—');
+  var acum = officialRate('pib_pm', 'acum_4t'), la = lastValid(acum.dates, acum.values);
+  setKPI('kpi-pib-acum4t', la ? la.value : null, la ? ('Acum. 4T · ' + fmtDate(la.date, 'pib')) : '—');
+}
+// Single-card overview KPI: main value = YoY (NSA), sub = period SA change -- used on the Visão Geral grid.
+function renderOverviewKPI(prefix, group, base) {
+  var yoy = seriesYoY(group, base), ly = lastValid(yoy.dates, yoy.values);
+  var per = seriesPeriodSA(group, base), lp = lastValid(per.dates, per.values);
+  var periodTag = group === 'pib' ? 'Trim. dessaz.' : 'Mensal dessaz.';
+  var sub = lp ? (periodTag + ': ' + fmt(lp.value) + '%') : '—';
+  if (ly) sub += ' · ' + fmtDate(ly.date, group);
+  setKPI(prefix, ly ? ly.value : null, sub);
+}
+
+// ── Chart layout factories ────────────────────────────────────────────────────
+function _rangeButtons() {
+  return [
+    {count: 1, label: '1a', step: 'year', stepmode: 'backward'},
+    {count: 3, label: '3a', step: 'year', stepmode: 'backward'},
+    {count: 5, label: '5a', step: 'year', stepmode: 'backward'},
+    {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
+    {step: 'all', label: 'Tudo'},
+  ];
+}
+function mkTimeseriesLayout(yTitle, height) {
+  return {
+    height: height || 400, margin: {l: 55, r: 30, t: 40, b: 70}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+      buttons: _rangeButtons(), bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+      activecolor: C.azul, font: {size: 11, color: '#555'},
+    }},
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+  };
+}
+function mkBarLayout(yTitle, height) {
+  return {
+    height: height || 360, margin: {l: 55, r: 30, t: 20, b: 60}, dragmode: 'pan', showlegend: false,
+    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+      buttons: _rangeButtons(), bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+      activecolor: C.azul, font: {size: 11, color: '#555'},
+    }},
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+  };
+}
+
+// ── Chart renderers ───────────────────────────────────────────────────────────
+// specs: [{group, base, label, color}] -- one line per spec, each its own YoY(NSA) series.
+// Works across a single group (e.g. PIB oferta/demanda) or mixed groups (Visão Geral comparativo).
+function renderYoYChart(divId, specs, yTitle) {
+  var traces = specs.map(function(s) {
+    var d = seriesYoY(s.group, s.base);
+    return {
+      type: 'scatter', mode: 'lines', name: s.label, x: d.dates, y: d.values,
+      line: {color: s.color, width: 2},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
+    };
+  });
+  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+function renderBarChart(divId, group, base, yTitle) {
+  var d = seriesPeriodSA(group, base);
+  var colors = d.values.map(function(v) { return v == null ? C.cinza : (v >= 0 ? C.laranja : C.verde); });
+  Plotly.react(divId, [{
+    type: 'bar', x: d.dates, y: d.values, marker: {color: colors},
+    hovertemplate: '%{x}<br>%{y:.2f}%<extra></extra>',
+  }], mkBarLayout(yTitle), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+// specs: [{base, indicador, label, color}] -- PIB-only, reads the official IBGE rate directly
+// (D.pib_taxas) instead of computing a ratio from the volume index. Used for Oferta/Demanda/
+// Acumulado-4T on the PIB tab.
+function renderRateChart(divId, specs, yTitle) {
+  var traces = specs.map(function(s) {
+    var d = officialRate(s.base, s.indicador);
+    return {
+      type: 'scatter', mode: 'lines', name: s.label, x: d.dates, y: d.values,
+      line: {color: s.color, width: 2},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
+    };
+  });
+  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+function renderRateBarChart(divId, base, indicador, yTitle) {
+  var d = officialRate(base, indicador);
+  var colors = d.values.map(function(v) { return v == null ? C.cinza : (v >= 0 ? C.laranja : C.verde); });
+  Plotly.react(divId, [{
+    type: 'bar', x: d.dates, y: d.values, marker: {color: colors},
+    hovertemplate: '%{x}<br>%{y:.2f}%<extra></extra>',
+  }], mkBarLayout(yTitle), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+// Growth-decomposition chart: one bar trace per category's contribution (p.p.) + a residual bar
+// that closes the sum to the official rate, + a black line/marker overlay for that official total --
+// the standard BCB/IPEA presentation of a contribution-to-growth chart. Unlike the ranking bars,
+// this DOES get the full time-axis pan/zoom/_bindYAutofit treatment (it's a real time series).
+function renderContribChart(divId, baseList, totalBase, suffix, lag, totalIndicador, residualLabel, yTitle) {
+  var res = computeContribution(baseList, totalBase, suffix, lag, totalIndicador, residualLabel);
+  var traces = res.contributions.map(function(c) {
+    return {
+      type: 'bar', name: c.label, x: res.dates, y: c.values, marker: {color: c.color},
+      hovertemplate: '<b>' + c.label + '</b><br>%{x}<br>%{y:.2f} p.p.<extra></extra>',
+    };
+  });
+  traces.push({
+    type: 'bar', name: residualLabel, x: res.dates, y: res.residual, marker: {color: C.cinza},
+    hovertemplate: '<b>' + residualLabel + '</b><br>%{x}<br>%{y:.2f} p.p.<extra></extra>',
+  });
+  traces.push({
+    type: 'scatter', mode: 'lines+markers', name: 'PIB (Total)', x: res.dates, y: res.total,
+    line: {color: C.azul, width: 2}, marker: {symbol: 'diamond', size: 6, color: C.azul},
+    hovertemplate: '<b>PIB (Total)</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
+  });
+  Plotly.react(divId, traces, Object.assign(mkTimeseriesLayout(yTitle, 380), {barmode: 'relative'}), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+// Horizontal ranking bar of latest YoY(NSA) reading per category, sorted descending.
+// Deliberately excluded from the pan/zoom/_bindYAutofit treatment applied to every time-series
+// chart above -- this has a category axis (not time), same precedent as the waterfall chart in
+// analytics/inflation/report.html.
+function renderRanking(divId, group, labelMap) {
+  var rows = [];
+  Object.keys(labelMap).forEach(function(base) {
+    var d = seriesYoY(group, base);
+    var last = lastValid(d.dates, d.values);
+    if (last) rows.push({label: labelMap[base], value: last.value, date: last.date});
+  });
+  rows.sort(function(a, b) { return b.value - a.value; });
+  var labels = rows.map(function(r) { return r.label; }).reverse();
+  var values = rows.map(function(r) { return r.value; }).reverse();
+  var colors = values.map(function(v) { return v >= 0 ? C.laranja : C.verde; });
+  var captionEl = document.getElementById(divId + '-caption');
+  if (captionEl) captionEl.textContent = rows.length ? ('Última leitura: ' + fmtDate(rows[0].date, group)) : '—';
+  Plotly.react(divId, [{
+    type: 'bar', orientation: 'h', x: values, y: labels, marker: {color: colors},
+    hovertemplate: '<b>%{y}</b><br>%{x:.2f}%<extra></extra>',
+  }], {
+    height: Math.max(360, rows.length * 28), margin: {l: 280, r: 30, t: 10, b: 50},
+    xaxis: {title: {text: 'Var. % interanual (última leitura)', font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    yaxis: {tickfont: {size: 11}, automargin: true},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12}, bargap: 0.3, showlegend: false,
+  }, {responsive: true, displayModeBar: false});
+}
+function renderLevelsChart() {
+  var pib = rebaseTo100(ser('pib', 'pib_pm_sa').dates, ser('pib', 'pib_pm_sa').values);
+  var ibc = rebaseTo100(ser('ibcbr', 'ibcbr_sa').dates, ser('ibcbr', 'ibcbr_sa').values);
+  Plotly.react('chart-ov-levels', [
+    {type: 'scatter', mode: 'lines', name: 'PIB (dessaz.)', x: pib.dates, y: pib.values, line: {color: C.azul, width: 2}},
+    {type: 'scatter', mode: 'lines', name: 'IBC-Br (dessaz.)', x: ibc.dates, y: ibc.values, line: {color: C.dourado, width: 2}},
+  ], mkTimeseriesLayout('Índice (100 = primeira leitura disponível)'), _PLOTLY_CONFIG);
+  _bindYAutofit('chart-ov-levels');
+}
+
+// ── Category labels ───────────────────────────────────────────────────────────
+var PMC_RANKING_LABELS = {
+  combustiveis_lubrificantes:    'Combustíveis e Lubrificantes',
+  hiper_super_alim_bebidas_fumo: 'Hiper/Supermercados, Alim., Bebidas e Fumo',
+  tecidos_vestuario_calcados:    'Tecidos, Vestuário e Calçados',
+  moveis:                        'Móveis',
+  eletrodomesticos:              'Eletrodomésticos',
+  farma_medicos_perfumaria:      'Artigos Farmacêuticos, Médicos e Perfumaria',
+  livros_jornais_papelaria:      'Livros, Jornais, Revistas e Papelaria',
+  equip_escritorio_informatica:  'Equip. de Escritório e Informática',
+  outros_artigos_pessoal_domest: 'Outros Artigos de Uso Pessoal e Doméstico',
+  veiculos_motocicletas_pecas:   'Veículos, Motocicletas e Peças',
+  material_construcao:           'Material de Construção',
+  atacado_alim_bebidas_fumo:     'Atacado de Alimentos, Bebidas e Fumo',
+};
+var PMS_RANKING_LABELS = {
+  alojamento:                          'Alojamento',
+  alimentacao:                         'Alimentação',
+  outros_servicos_familias:            'Outros Serviços às Famílias',
+  telecomunicacoes:                    'Telecomunicações',
+  servicos_ti:                         'Serviços de TI',
+  audiovisual_edicao_noticias:         'Audiovisual, Edição e Notícias',
+  servicos_tecnico_profissionais:      'Serviços Técnico-Profissionais',
+  servicos_adm_complementares:         'Serviços Administrativos e Complementares',
+  alugueis_nao_imobiliarios:           'Aluguéis Não Imobiliários',
+  apoio_atividades_empresariais:       'Apoio a Atividades Empresariais',
+  rodoviario_cargas:                   'Transporte Rodoviário de Cargas',
+  rodoviario_passageiros:              'Transporte Rodoviário de Passageiros',
+  outros_transporte_terrestre:         'Outros Transportes Terrestres',
+  transporte_aquaviario:               'Transporte Aquaviário',
+  transporte_aereo:                    'Transporte Aéreo',
+  armazenagem_aux_transportes_correio: 'Armazenagem e Aux. de Transportes/Correio',
+  esgoto_gestao_residuos:              'Esgoto e Gestão de Resíduos',
+  ativ_aux_financeiras:                'Atividades Auxiliares Financeiras',
+  imobiliarias:                        'Atividades Imobiliárias',
+  outros_nao_especificados:            'Outros Serviços Não Especificados',
+};
+
+// ── Tab renderers ──────────────────────────────────────────────────────────────
+function renderOverview() {
+  renderOverviewKPI('kpi-ov-pib', 'pib', 'pib_pm');
+  renderOverviewKPI('kpi-ov-ibcbr', 'ibcbr', 'ibcbr');
+  renderOverviewKPI('kpi-ov-pim', 'pim', 'industria_geral');
+  renderOverviewKPI('kpi-ov-pmc', 'pmc', 'comercio_ampliado_total');
+  renderOverviewKPI('kpi-ov-pms', 'pms', 'servicos_total');
+  renderYoYChart('chart-ov-yoy', [
+    {group: 'pib',   base: 'pib_pm',                  label: 'PIB',                color: C.azul},
+    {group: 'ibcbr', base: 'ibcbr',                    label: 'IBC-Br',             color: C.dourado},
+    {group: 'pim',   base: 'industria_geral',          label: 'Produção Industrial', color: C.laranja},
+    {group: 'pmc',   base: 'comercio_ampliado_total',  label: 'Varejo Ampliado',    color: C.verde},
+    {group: 'pms',   base: 'servicos_total',           label: 'Serviços',           color: C.azulCl},
+  ], 'Var. % interanual (NSA)');
+  renderLevelsChart();
+}
+// Ótica da Oferta/Demanda base lists for the growth-decomposition charts -- shared between the
+// T/T (SA, lag=1) and interanual (NSA, lag=4) versions, only suffix/lag/totalIndicador differ.
+// sign=-1 on importacao: imports SUBTRACT from GDP, so a rising import level is a NEGATIVE
+// contribution to growth even though its own chain value is increasing.
+var PIB_OFERTA_BASES = [
+  {base: 'agropecuaria', label: 'Agropecuária', color: C.verde, sign: 1},
+  {base: 'industria',    label: 'Indústria',    color: C.laranja, sign: 1},
+  {base: 'servicos',     label: 'Serviços',     color: C.azulCl, sign: 1},
+];
+var PIB_DEMANDA_BASES = [
+  {base: 'consumo_familias',    label: 'Consumo das Famílias', color: C.azulCl, sign: 1},
+  {base: 'consumo_adm_publica', label: 'Consumo do Governo',   color: C.amarelo, sign: 1},
+  {base: 'fbcf',                label: 'Investimento (FBCF)',  color: C.laranja, sign: 1},
+  {base: 'exportacao',          label: 'Exportações',          color: C.verde, sign: 1},
+  {base: 'importacao',          label: 'Importações',          color: '#8E44AD', sign: -1},
+];
+function renderPIB() {
+  renderPIBKPIs();
+  renderRateChart('chart-pib-acum4t', [
+    {base: 'pib_pm', indicador: 'acum_4t', label: 'PIB — Acumulado em 4 Trimestres', color: C.azul},
+  ], 'Var. % acumulada em 4 trimestres (NSA)');
+  renderRateChart('chart-pib-oferta', [
+    {base: 'agropecuaria', indicador: 'yoy', label: 'Agropecuária', color: C.verde},
+    {base: 'industria',    indicador: 'yoy', label: 'Indústria',    color: C.laranja},
+    {base: 'servicos',     indicador: 'yoy', label: 'Serviços',     color: C.azulCl},
+    {base: 'pib_pm',       indicador: 'yoy', label: 'PIB',          color: C.azul},
+  ], 'Var. % interanual (NSA)');
+  renderRateChart('chart-pib-demanda', [
+    {base: 'consumo_familias',    indicador: 'yoy', label: 'Consumo das Famílias', color: C.azulCl},
+    {base: 'consumo_adm_publica', indicador: 'yoy', label: 'Consumo do Governo',   color: C.amarelo},
+    {base: 'fbcf',                indicador: 'yoy', label: 'Investimento (FBCF)',  color: C.laranja},
+    {base: 'exportacao',          indicador: 'yoy', label: 'Exportações',          color: C.verde},
+    {base: 'importacao',          indicador: 'yoy', label: 'Importações',          color: C.cinza},
+    {base: 'pib_pm',               indicador: 'yoy', label: 'PIB',                  color: C.azul},
+  ], 'Var. % interanual (NSA)');
+  renderRateBarChart('chart-pib-qoq', 'pib_pm', 'qoq', 'Var. % trimestral dessaz. (SA)');
+
+  renderContribChart('chart-pib-decomp-oferta-qoq', PIB_OFERTA_BASES, 'pib_pm', '_sa', 1, 'qoq',
+    'Impostos e Discrepância', 'Contribuição (p.p.)');
+  renderContribChart('chart-pib-decomp-demanda-qoq', PIB_DEMANDA_BASES, 'pib_pm', '_sa', 1, 'qoq',
+    'Var. Estoques e Discrepância', 'Contribuição (p.p.)');
+  renderContribChart('chart-pib-decomp-oferta-yoy', PIB_OFERTA_BASES, 'pib_pm', '_nsa', 4, 'yoy',
+    'Impostos e Discrepância', 'Contribuição (p.p.)');
+  renderContribChart('chart-pib-decomp-demanda-yoy', PIB_DEMANDA_BASES, 'pib_pm', '_nsa', 4, 'yoy',
+    'Var. Estoques e Discrepância', 'Contribuição (p.p.)');
+}
+function renderPIM() {
+  renderKPIPair('kpi-pim', 'pim', 'industria_geral', 'Var. mensal dessaz.', 'Var. interanual');
+  renderYoYChart('chart-pim-yoy', [
+    {group: 'pim', base: 'industria_geral',   label: 'Indústria Geral',            color: C.azul},
+    {group: 'pim', base: 'ind_extrativas',    label: 'Indústrias Extrativas',      color: C.dourado},
+    {group: 'pim', base: 'ind_transformacao', label: 'Indústria de Transformação', color: C.laranja},
+  ], 'Var. % interanual (NSA)');
+  renderBarChart('chart-pim-mom', 'pim', 'industria_geral', 'Var. % mensal dessaz. (SA)');
+}
+function renderPMC() {
+  renderKPIPair('kpi-pmc-ampliado', 'pmc', 'comercio_ampliado_total', 'Var. mensal dessaz.', 'Var. interanual');
+  renderKPIPair('kpi-pmc-restrito', 'pmc', 'comercio_restrito_total', 'Var. mensal dessaz.', 'Var. interanual');
+  renderYoYChart('chart-pmc-yoy', [
+    {group: 'pmc', base: 'comercio_ampliado_total', label: 'Varejo Ampliado',  color: C.azul},
+    {group: 'pmc', base: 'comercio_restrito_total', label: 'Varejo Restrito', color: C.dourado},
+  ], 'Var. % interanual (NSA)');
+  renderRanking('chart-pmc-ranking', 'pmc', PMC_RANKING_LABELS);
+  renderBarChart('chart-pmc-mom', 'pmc', 'comercio_ampliado_total', 'Var. % mensal dessaz. (SA)');
+}
+function renderPMS() {
+  renderKPIPair('kpi-pms', 'pms', 'servicos_total', 'Var. mensal dessaz.', 'Var. interanual');
+  renderYoYChart('chart-pms-yoy', [
+    {group: 'pms', base: 'servicos_total',           label: 'Serviços (Total)',           color: C.azul},
+    {group: 'pms', base: 'servicos_familias',        label: 'Serviços às Famílias',       color: C.dourado},
+    {group: 'pms', base: 'informacao_comunicacao',   label: 'Informação e Comunicação',   color: C.laranja},
+    {group: 'pms', base: 'prof_adm_complementares',  label: 'Prof., Adm. e Complementares', color: C.verde},
+    {group: 'pms', base: 'transportes_correio',      label: 'Transportes e Correio',       color: C.azulCl},
+    {group: 'pms', base: 'outros_servicos',          label: 'Outros Serviços',             color: C.cinza},
+  ], 'Var. % interanual (NSA)');
+  renderRanking('chart-pms-ranking', 'pms', PMS_RANKING_LABELS);
+  renderBarChart('chart-pms-mom', 'pms', 'servicos_total', 'Var. % mensal dessaz. (SA)');
+}
+function renderIBCBR() {
+  renderKPIPair('kpi-ibcbr', 'ibcbr', 'ibcbr', 'Var. mensal dessaz.', 'Var. interanual');
+  renderYoYChart('chart-ibcbr-yoy', [
+    {group: 'ibcbr', base: 'ibcbr',                  label: 'IBC-Br (Total)',        color: C.azul},
+    {group: 'ibcbr', base: 'ibcbr_agropecuaria',     label: 'Agropecuária',          color: C.verde},
+    {group: 'ibcbr', base: 'ibcbr_industria',        label: 'Indústria',             color: C.laranja},
+    {group: 'ibcbr', base: 'ibcbr_servicos',         label: 'Serviços',               color: C.azulCl},
+    {group: 'ibcbr', base: 'ibcbr_ex_agropecuaria',  label: 'IBC-Br ex-Agropecuária', color: C.dourado},
+  ], 'Var. % interanual (NSA)');
+  renderBarChart('chart-ibcbr-mom', 'ibcbr', 'ibcbr', 'Var. % mensal dessaz. (SA)');
+}
+
+// ── Tab switching — lazy render on first activation (Plotly needs a visible,
+// non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
+var RENDERERS = {overview: renderOverview, pib: renderPIB, pim: renderPIM, pmc: renderPMC, pms: renderPMS, ibcbr: renderIBCBR};
+var tabRendered = {};
+function activateTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+  if (!tabRendered[tab]) { RENDERERS[tab](); tabRendered[tab] = true; }
+}
+document.querySelectorAll('.tab-btn').forEach(function(b) {
+  b.addEventListener('click', function() { activateTab(this.dataset.tab); });
+});
+
+document.getElementById('generated-at').textContent = D.generated_at || '—';
+activateTab('overview');
+</script>
+
+</body>
+</html>

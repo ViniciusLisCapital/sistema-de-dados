@@ -18,9 +18,13 @@ repository/
   exchange_rate/                — raw_pdf/ (28), raw_md/ (16, genuine pdfplumber extractions via
                                   repository/ingestion/), clean_md/ (16, via clean_code.py) — complete;
                                   12 raw_pdf sources still await extraction
-  monetary_policy/               — raw_pdf/ (36, incl. the ex-ingestion-inbox BIS file), raw_md/ (1),
-                                  clean_md/ (1) — most candidates acquired, map not built yet; 35 raw_pdf
-                                  sources still await extraction
+  monetary_policy/               — raw_pdf/theorical_literature/ (36 academic papers, incl. the
+                                  ex-ingestion-inbox BIS file), raw_pdf/central_bank_comunication/ (1,
+                                  Copom decision comunicado #279/2026-06-17 — sourced from BCB's
+                                  comunicados API as raw text, not an actual PDF file, since BCB doesn't
+                                  publish a standalone PDF for the comunicado, only for the longer ata),
+                                  raw_md/ (1), clean_md/ (1) — most candidates acquired, map not built
+                                  yet; 35 raw_pdf sources still await extraction
   trader/                        — raw_pdf/ (26, Trading Global Macro Markets), raw_md/, clean_md/ — scope undecided
   economic_activity/             — raw_pdf/, raw_md/, clean_md/, all empty — future pillar
   fiscal_policy/                 — raw_pdf/ (1, ex-ingestion-inbox), raw_md/ (1), clean_md/ (1) — future pillar

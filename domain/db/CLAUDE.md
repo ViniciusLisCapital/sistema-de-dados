@@ -34,7 +34,8 @@ expc_   — market expectations (Focus)
 
 `macro_international`:
 ```
-cmb_    — FX: cmb_reer, cmb_cot_fx, cmb_dollar_index, cmb_dollar_index_em, cmb_policy_rates
+cmb_    — FX: cmb_reer, cmb_cot_fx, cmb_dollar_index, cmb_dollar_index_em, cmb_policy_rates,
+           cmb_real_rates
 (none)  — diferenciais_juros: the one table in this schema with no prefix,
            by explicit user instruction — not "cmb_diferenciais_juros"
 ```
@@ -49,6 +50,8 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 |---|---|---|---|
 | `atv_pim` | IBGE 8888 | 2002 → today | `brasil/ibge/atv_pim.py` |
 | `atv_pib` | IBGE 1620/1621 | 2016 → today | `brasil/ibge/atv_pib.py` |
+| `atv_pib_encadeado` | IBGE 6612/6613 (mesmas categorias de `atv_pib`, mas em R$ milhões a preços de 1995 em vez de índice de volume — insumo para decomposição/contribuição de crescimento, ver `analytics/economic_activity/CLAUDE.md`; 6613/SA não tem `impostos_liquidos`) | 1996 → today | `brasil/ibge/atv_pib_encadeado.py` |
+| `atv_pib_taxas` | IBGE 5932 (4 taxas oficiais por categoria: `yoy`, `acum_4t`, `acum_ano`, `qoq` — ver docstring do script) | 1996 → today | `brasil/ibge/atv_pib_taxas.py` |
 | `atv_pmc` | IBGE 8880/8881/8883 | 2023 → today | `brasil/ibge/atv_pmc.py` |
 | `atv_pms` | IBGE 8688 | 2023 → today | `brasil/ibge/atv_pms.py` |
 | `atv_ibcbr` | BCB SGS (12 series) | 2003 → today | `brasil/bcb/atv_ibcbr.py` |
@@ -76,7 +79,7 @@ All tables use a natural composite key (no synthetic `id`):
 
 ```sql
 -- Seasonally adjusted series
-PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pib, atv_pmc, atv_pms
+PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pib, atv_pib_encadeado, atv_pmc, atv_pms
 
 -- Not seasonally adjusted
 PRIMARY KEY (date, name)                  -- inflc_agregados, mt_caged, cred_credito_amplo, atv_ibcbr, cred_credito_familias
@@ -84,6 +87,10 @@ PRIMARY KEY (date, name, region)          -- mt_pnad
 
 -- Focus expectations
 PRIMARY KEY (date, indicador, horizonte)  -- expc_focus
+
+-- Multiple named rates per category, no seasonal_adjs column (each rate is inherently
+-- NSA or SA by its own definition, not a dimension of the table)
+PRIMARY KEY (date, name, indicador)       -- atv_pib_taxas (indicador = yoy | acum_4t | acum_ano | qoq)
 
 -- IPCA by subitem
 PRIMARY KEY (date, indice, subitem_codigo) -- inflc_decomposicao (indice = IPCA | IPCA15; codigo = 7-digit IBGE code, not "code + name" text — see analytics/inflation/CLAUDE.md)
@@ -95,6 +102,7 @@ PRIMARY KEY (date, indice, item_codigo)    -- inflc_decomposicao_item
 -- Cross-country, one value per country
 PRIMARY KEY (date, country_code)          -- cmb_policy_rates
 PRIMARY KEY (date, country_code, reer_type) -- cmb_reer
+PRIMARY KEY (date, country_code, name)    -- cmb_real_rates (name = policy_rate | cpi_yoy | real_rate_ex_post)
 ```
 
 `ON DUPLICATE KEY UPDATE` on insert makes it an idempotent upsert.

@@ -80,7 +80,7 @@ df_long = FredMultFrame({...}, start, end, Pivot=True)
 
 ### `connectors/bis.py` — BIS Statistics API v1
 
-Sem autenticação. Dois datasets SDMX-CSV expostos:
+Sem autenticação. Três datasets SDMX-CSV expostos:
 
 ```python
 from connectors.bis import BIS
@@ -94,17 +94,27 @@ df = bis.get_eer(countries=["BR", "MX", "CL", "CO"], types=[("R", "B"), ("N", "B
 # WS_CBPOL — Central Bank Policy Rates
 df = bis.get_policy_rates(countries=["BR", "MX", "CL", "CO", "PE", "AR"], freq="D")
 # colunas: date, country_code, value (% a.a.)
+
+# WS_LONG_CPI — Consumer Prices (série longa)
+df = bis.get_cpi(countries=["BR", "MX", "CL", "CO", "PE"], unit="yoy")
+# colunas: date (month-start), country_code, value (% a.a., YoY)
 ```
 
 **Detalhes técnicos:**
 - Key SDMX difere por dataset: `WS_EER` é `FREQ.ADJUSTMENT.REF_AREA.BASKET` (4 dimensões); `WS_CBPOL` é
-  `FREQ.REF_AREA` (2 dimensões, mais simples).
-- `WS_CBPOL` também expõe frequência mensal, mas é só o fechamento de mês da série diária — por isso os
-  scripts de domínio usam apenas `freq="D"`.
+  `FREQ.REF_AREA` (2 dimensões); `WS_LONG_CPI` é `FREQ.REF_AREA.UNIT_MEASURE` (3 dimensões, `UNIT_MEASURE`
+  `771`=YoY % ou `628`=índice 2010=100 — `get_cpi(unit=...)` aceita `"yoy"`/`"index"` ou o código direto).
+- `WS_CBPOL` também expõe frequência mensal, mas é só o fechamento de mês da série diária — por isso a
+  maioria dos scripts de domínio usa `freq="D"`; `cmb_real_rates.py` é a exceção, usa `freq="M"` para
+  alinhar com o CPI (também mensal).
 - Cuidado com o range de valores: Brasil na hiperinflação (1989-1994) chega a ~790.799% a.a. — coluna
-  `value` no banco precisa de `decimal(12,4)`, não `decimal(8,4)`.
+  `value` no banco precisa de `decimal(12,4)`, não `decimal(8,4)`, em qualquer tabela que use `WS_CBPOL`
+  sem truncar esse período.
 - Argentina (`AR`) parou de ser atualizada pelo BIS em 2025-07 — gap esperado no fim da série, não é
-  falha do connector/script.
+  falha do connector/script. `WS_LONG_CPI` não cobre AR nos países acompanhados aqui (não testado).
+- `WS_LONG_CPI` é live/atualizado mensalmente (cobre até o mês corrente, checado em 2026-08) — ao
+  contrário do CPI de MX/CL/CO exposto no FRED (fonte OECD, descontinuado lá em 2023-2024) e de PE
+  (sem série mensal alguma no FRED). Preferir `WS_LONG_CPI` a FRED para CPI desses 4 países.
 - Retry: 4 tentativas, backoff 1s, respeita `Retry-After` (429/5xx).
 
 ### `connectors/yfinance.py` — Yahoo Finance (via pacote `yfinance`)

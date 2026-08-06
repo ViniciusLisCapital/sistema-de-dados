@@ -21,7 +21,7 @@ logger = logging.getLogger("update_db")
 
 # IBGE
 from domain.db.brasil.ibge import (
-    atv_pib, atv_pim, atv_pmc, atv_pms, mt_pnad,
+    atv_pib, atv_pib_encadeado, atv_pib_taxas, atv_pim, atv_pmc, atv_pms, mt_pnad,
     inflc_decomposicao, inflc_dim,
 )
 
@@ -50,6 +50,8 @@ from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_
 _SCRIPTS = [
     # IBGE
     ("IBGE · GDP / Contas Nacionais",  atv_pib,               {}),
+    ("IBGE · GDP / Valores Encadeados", atv_pib_encadeado,     {}),
+    ("IBGE · GDP / Taxas Oficiais",     atv_pib_taxas,         {}),
     ("IBGE · PIM / Prod. Industrial",  atv_pim,               {}),
     ("IBGE · PMC / Varejo",            atv_pmc,               {}),
     ("IBGE · PMS / Servicos",          atv_pms,               {}),

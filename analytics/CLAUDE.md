@@ -11,15 +11,16 @@ This is the applied/analytical layer: projects that consume the MySQL database (
 | `exchange_rate/` | Panorama Cambial (HTML report) | [`exchange_rate/CLAUDE.md`](exchange_rate/CLAUDE.md) |
 | `inflation/` | Panorama de Inflação (HTML report) | [`inflation/CLAUDE.md`](inflation/CLAUDE.md) |
 | `monetary_policy/` | BCB small-model replication (HTML report) | documented inline in root `CLAUDE.md` + [`monetary_policy/referencia/MODEL_REPLICATION_PLAN.md`](monetary_policy/referencia/MODEL_REPLICATION_PLAN.md) |
+| `economic_activity/` | Panorama de Atividade Econômica (HTML report — PIB/PIM/PMC/PMS/IBC-Br) | [`economic_activity/CLAUDE.md`](economic_activity/CLAUDE.md) |
 | `report_structure/` | Nothing on its own — shared build-time scaffolding the report projects above assemble from | [`report_structure/CLAUDE.md`](report_structure/CLAUDE.md) |
 
-## Shared report pattern (`exchange_rate/`, `inflation/`, `monetary_policy/`)
+## Shared report pattern (`exchange_rate/`, `inflation/`, `monetary_policy/`, `economic_activity/`)
 
 - `generate_report.py` loads MySQL tables (each `_load_*()` wrapped in its own try/except, so one missing/broken table only degrades that section instead of failing the whole report), serializes to JSON, and substitutes a `/*REPORT_DATA*/` marker inside `report.html` — no Jinja2, no build step.
 - `report.html` is a fixed template: HTML + CSS + Plotly.js from CDN, tabs via JS `display` toggling, nothing server-side.
-- Chart interaction is identical across all three: free pan/zoom on both axes (`dragmode:'pan'` + `scrollZoom:true`), plus a `_bindYAutofit()` helper that re-fits Y only when a rangeselector preset button moves X without an accompanying user gesture on Y — see [`.claude/rules/lis-dashboards.md`](../.claude/rules/lis-dashboards.md) for the full model and history.
-- `data/` vs `referencia/` convention: `data/` holds what the scripts actually read/write (e.g. `inflation/data/ipca_bcb_series.csv`); `referencia/` holds context nothing reads (PDFs, literature, the original BCB model spec). Same split, repo-wide since 2026-07.
-- **Since 2026-08, the boilerplate pieces of this pattern (the theme CSS, the `_bindYAutofit` JS, the substitution/write-out plumbing) live in [`report_structure/`](report_structure/CLAUDE.md) as shared build-time assets, not hand-copy-pasted per report.** `inflation/` (fully migrated) is the pilot; `exchange_rate/` is partially migrated (JS + harness, not theme CSS — needs the 2026-07 reskin first); `monetary_policy/` is untouched, deferred on purpose — see `report_structure/CLAUDE.md`'s Migration status.
+- Chart interaction is identical across all four: free pan/zoom on both axes (`dragmode:'pan'` + `scrollZoom:true`), plus a `_bindYAutofit()` helper that re-fits Y only when a rangeselector preset button moves X without an accompanying user gesture on Y — see [`.claude/rules/lis-dashboards.md`](../.claude/rules/lis-dashboards.md) for the full model and history.
+- `data/` vs `referencia/` convention: `data/` holds what the scripts actually read/write (e.g. `inflation/data/ipca_bcb_series.csv`); `referencia/` holds context nothing reads (PDFs, literature, the original BCB model spec). Same split, repo-wide since 2026-07. `economic_activity/` needs neither — everything it reads is already in MySQL, no local data files at all.
+- **Since 2026-08, the boilerplate pieces of this pattern (the theme CSS, the `_bindYAutofit` JS, the substitution/write-out plumbing) live in [`report_structure/`](report_structure/CLAUDE.md) as shared build-time assets, not hand-copy-pasted per report.** `inflation/` (fully migrated) was the pilot; `exchange_rate/` is partially migrated (JS + harness, not theme CSS — needs the 2026-07 reskin first); `monetary_policy/` is untouched, deferred on purpose; `economic_activity/` was built directly onto both markers from the start, no migration needed — see `report_structure/CLAUDE.md`'s Migration status.
 
 ## `painel_setores/`
 

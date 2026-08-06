@@ -44,6 +44,7 @@ def run(output: str = "reports/xxx.html") -> None:
 - **`inflation/`** — fully migrated 2026-08 (the pilot for this convention). Both markers (`/*THEME_CSS*/`, `/*Y_AUTOFIT_JS*/`) plus the `render_report()` harness.
 - **`exchange_rate/`** — partially migrated 2026-08: `/*Y_AUTOFIT_JS*/` and the `render_report()` harness are in use (verified byte-for-byte equivalent to the prior inline copy, including the `t.type === 'heatmap'` guard this report actually needs — `y_autofit.js` was widened to include that guard unconditionally, a no-op for `inflation/` since it never binds `_bindYAutofit` to a heatmap trace). **Theme CSS is deliberately NOT migrated** — `exchange_rate/report.html`'s `:root` predates the 2026-07 LIS-dashboard reskin (`inflation/CLAUDE.md`'s "Visual design"): navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `theme.css`. Swapping in `/*THEME_CSS*/` as-is would silently change the report's look without an actual design pass — that reskin is its own follow-up; do it, then point at the shared file.
 - **`monetary_policy/`** — not migrated at all yet (explicitly deferred). Still carries its own inline theme CSS and `_bindYAutofit` copy.
+- **`economic_activity/`** — built directly onto both markers from day one (2026-08), the first report to start here rather than migrate here — no separate migration step was ever needed.
 
 ## Why build-time, not a runtime shared module
 

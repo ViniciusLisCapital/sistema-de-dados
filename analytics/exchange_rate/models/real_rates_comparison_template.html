@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Taxa Real de Juros — Brasil vs. Pares Emergentes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+/*THEME_CSS*/
+
+.page { max-width: 1180px; margin: 0 auto; padding: 28px 20px 48px; }
+header { margin-bottom: 20px; }
+header h1 {
+  font-family: var(--cond);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--lis-azul);
+  letter-spacing: 0.2px;
+}
+header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.hint {
+  font-size: 12px; color: var(--muted); margin: 6px 0 18px;
+  font-family: var(--mono);
+}
+.chart-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 18px 8px;
+  box-shadow: 0 1px 3px rgba(31,40,83,0.06);
+}
+.chart-card h2 {
+  font-family: var(--cond);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+.note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 14px;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.legend-start {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  font-size: 12px; color: var(--text2); margin-top: 10px;
+}
+.legend-start span.dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 5px; vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>Taxa Real de Juros Ex-Post — Brasil vs. Pares Emergentes</h1>
+    <p>Policy rate &minus; CPI (var. 12 meses), fonte BIS (WS_CBPOL + WS_LONG_CPI) para todos os 5 países, mensal.</p>
+  </header>
+
+  <div class="hint">Todo gráfico: scroll/pinça para zoom (ambos eixos) · arrastar para navegar (ambos eixos) · duplo-clique para resetar</div>
+
+  <div class="chart-card">
+    <h2>Taxa real ex-post (% a.a.)</h2>
+    <div id="chart-real-rates" style="height:520px;"></div>
+    <div class="legend-start" id="legend-start"></div>
+  </div>
+
+  <div class="note" id="footnote"></div>
+
+  <div class="chart-card" style="margin-top:24px;">
+    <h2>Brasil — Crescimento Real do Gasto do Governo (var. 12m)</h2>
+    <div id="chart-fiscal-monetary" style="height:480px;"></div>
+  </div>
+
+  <div class="note" id="footnote-fiscal"></div>
+</div>
+
+<script>
+/*REPORT_DATA*/
+/*Y_AUTOFIT_JS*/
+
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+};
+
+var COUNTRY_COLOR = { BR: C.azul, MX: C.dourado, CL: C.verde, CO: C.azulCl, PE: C.laranja };
+var ORDER = ['BR', 'MX', 'CL', 'CO', 'PE'];
+
+var _PLOTLY_CONFIG = { responsive: true, displayModeBar: false, scrollZoom: true };
+
+var START_DATE = '2000-01-01';
+
+// Plotly's initial autorange (on first draw only -- unrelated to
+// _bindYAutofit, which handles later relayout events) scans ALL trace data
+// regardless of any xaxis.range you pass in, unless autorange is explicitly
+// set to false on both axes. Without this, x silently reverts to the full
+// 1994-2026 span and y to its full -3900..14 span on first paint, ignoring
+// the range below entirely -- caught by opening the actual generated file
+// in a browser, not from reading the config.
+function computeYRangeFrom(minDate) {
+  var mn = Infinity, mx = -Infinity;
+  ORDER.forEach(function(cc) {
+    var s = REPORT_DATA.series[cc];
+    if (!s) return;
+    for (var i = 0; i < s.dates.length; i++) {
+      if (s.dates[i] < minDate) continue;
+      var v = s.values[i];
+      if (v == null || isNaN(v)) continue;
+      if (v < mn) mn = v;
+      if (v > mx) mx = v;
+    }
+  });
+  if (mn === Infinity) return null;
+  var pad = Math.max((mx - mn) * 0.1, 0.5);
+  return [mn - pad, mx + pad];
+}
+
+function renderChart() {
+  var traces = ORDER.filter(function(cc) { return REPORT_DATA.series[cc]; }).map(function(cc) {
+    var s = REPORT_DATA.series[cc];
+    return {
+      type: 'scatter', mode: 'lines', name: REPORT_DATA.labels[cc] || cc,
+      x: s.dates, y: s.values,
+      line: { color: COUNTRY_COLOR[cc], width: 2 },
+      hovertemplate: '<b>' + (REPORT_DATA.labels[cc] || cc) + '</b><br>%{x}<br>%{y:.2f}% a.a.<extra></extra>',
+    };
+  });
+
+  var yRange = computeYRangeFrom(START_DATE);
+
+  Plotly.react('chart-real-rates', traces, {
+    height: 520,
+    margin: { l: 55, r: 20, t: 10, b: 40 },
+    dragmode: 'pan',
+    xaxis: {
+      type: 'date', gridcolor: '#eee', autorange: false,
+      // Default view starts in 2000, at explicit user request -- also
+      // clears Brazil's hyperinflation-base CPI-YoY tail (through ~1995)
+      // that would otherwise dwarf every other line on first paint. Full
+      // history (back to 1994-07 for BR) is still in the data -- the
+      // "Tudo" button reaches it.
+      range: [START_DATE, REPORT_DATA.series.BR.dates[REPORT_DATA.series.BR.dates.length - 1]],
+      rangeselector: {
+        buttons: [
+          { count: 5, label: '5a', step: 'year', stepmode: 'backward' },
+          { count: 10, label: '10a', step: 'year', stepmode: 'backward' },
+          { count: 20, label: '20a', step: 'year', stepmode: 'backward' },
+          { step: 'all', label: 'Tudo' },
+        ],
+        bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+        activecolor: C.azul, font: { size: 11, color: '#555' }, x: 0, y: -0.1, yanchor: 'top',
+      },
+    },
+    // No fixedrange: drag/scroll move both axes directly per the user's own
+    // gesture. _bindYAutofit only steps in when the rangeselector buttons
+    // above move X without an accompanying Y change in the same event --
+    // the explicit initial yRange above only covers the first paint.
+    yaxis: Object.assign(
+      { title: { text: '% a.a.', font: { size: 11 } }, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee' },
+      yRange ? { range: yRange, autorange: false } : {}
+    ),
+    legend: { orientation: 'h', x: 0, y: 1.12, font: { size: 11 } },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'Barlow,sans-serif', color: '#1F2853', size: 12 },
+  }, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-real-rates');
+
+  var legendEl = document.getElementById('legend-start');
+  legendEl.innerHTML = ORDER.filter(function(cc) { return REPORT_DATA.series[cc]; }).map(function(cc) {
+    var s = REPORT_DATA.series[cc];
+    return '<span><span class="dot" style="background:' + COUNTRY_COLOR[cc] + '"></span>' +
+      (REPORT_DATA.labels[cc] || cc) + ' desde ' + s.dates[0] + '</span>';
+  }).join('');
+
+  document.getElementById('footnote').innerHTML =
+    'Cada país começa no início da própria série de policy rate do BIS (o fator limitante — o CPI do BIS cobre um período muito mais longo para todos eles). ' +
+    'Brasil truncado em 1994-07 (Plano Real), mesma decisão usada em <code>cmb_policy_rates</code>. ' +
+    'Brasil recalculado aqui com a mesma fonte/método do BIS usada para os outros 4 países (policy rate &minus; CPI YoY, ambos BIS), para comparabilidade cross-country homogênea — não substitui <code>diferenciais_juros.real_br_ex_post</code> (fonte BCB oficial), que fica ~0.01pp deste em 2026-06.';
+}
+
+// Single-series version of computeYRangeFrom above -- chart-fiscal-monetary
+// has one trace per axis (not a multi-country panel), so no need to scan
+// across a country list here.
+function computeSeriesYRange(dates, values, minDate) {
+  var mn = Infinity, mx = -Infinity;
+  for (var i = 0; i < dates.length; i++) {
+    if (dates[i] < minDate) continue;
+    var v = values[i];
+    if (v == null || isNaN(v)) continue;
+    if (v < mn) mn = v;
+    if (v > mx) mx = v;
+  }
+  if (mn === Infinity) return null;
+  var pad = Math.max((mx - mn) * 0.1, 0.5);
+  return [mn - pad, mx + pad];
+}
+
+function renderFiscalMonetaryChart() {
+  var gov = REPORT_DATA.gov_spending_yoy;
+  if (!gov) return;
+
+  var traces = [
+    {
+      type: 'scatter', mode: 'lines+markers', name: 'Gasto do governo, var. 12m real',
+      x: gov.dates, y: gov.values,
+      line: { color: C.laranja, width: 2, shape: 'spline' }, marker: { size: 4 },
+      hovertemplate: '<b>Gasto do governo (12m real)</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
+    },
+  ];
+
+  var govRange = computeSeriesYRange(gov.dates, gov.values, START_DATE);
+
+  Plotly.react('chart-fiscal-monetary', traces, {
+    height: 480,
+    margin: { l: 55, r: 20, t: 10, b: 40 },
+    dragmode: 'pan',
+    xaxis: {
+      type: 'date', gridcolor: '#eee', autorange: false,
+      range: [START_DATE, gov.dates[gov.dates.length - 1]],
+      rangeselector: {
+        buttons: [
+          { count: 5, label: '5a', step: 'year', stepmode: 'backward' },
+          { count: 10, label: '10a', step: 'year', stepmode: 'backward' },
+          { count: 20, label: '20a', step: 'year', stepmode: 'backward' },
+          { step: 'all', label: 'Tudo' },
+        ],
+        bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+        activecolor: C.azul, font: { size: 11, color: '#555' }, x: 0, y: -0.1, yanchor: 'top',
+      },
+    },
+    // No fixedrange: drag/scroll move both axes directly per the user's own
+    // gesture, same model as chart-real-rates above. _bindYAutofit re-fits
+    // Y whenever the rangeselector buttons move X without an accompanying
+    // Y change in the same event.
+    yaxis: Object.assign(
+      { title: { text: 'Gasto do governo (var. 12m, %)', font: { size: 11 } }, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee' },
+      govRange ? { range: govRange, autorange: false } : {}
+    ),
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'Barlow,sans-serif', color: '#1F2853', size: 12 },
+  }, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-fiscal-monetary');
+
+  document.getElementById('footnote-fiscal').innerHTML =
+    'Fonte: <code>atv_pib.consumo_adm_publica</code> (IBGE, PIB trimestral pela ótica da despesa — Despesa de Consumo da Administração Pública, índice de volume encadeado, série não ajustada sazonalmente). Variação em 12 meses calculada aqui, não armazenada no banco.';
+}
+
+renderChart();
+renderFiscalMonetaryChart();
+</script>
+</body>
+</html>
