@@ -26,7 +26,14 @@ function _toComparableX(v) {
 }
 function _bindYAutofit(divId) {
   var el = document.getElementById(divId);
-  if (!el) return;
+  // Idempotent per div: a report that re-renders the same div via Plotly.react on every filter/
+  // control change (e.g. economic_activity's PIB tab checkbox dropdowns) calls this again on every
+  // re-render. Without the guard, el.on() adds one more listener each time -- after N re-renders,
+  // N redundant relayout listeners all fire (and each schedule their own Plotly.relayout) on every
+  // single rangeselector click or preserved-range redraw. The listener itself is stateless (reads
+  // el.data/_fullLayout live at event time), so binding it once per div's lifetime is correct.
+  if (!el || el._yAutofitBound) return;
+  el._yAutofitBound = true;
   var lock = false;
   el.on('plotly_relayout', function(ev) {
     if (lock) return;

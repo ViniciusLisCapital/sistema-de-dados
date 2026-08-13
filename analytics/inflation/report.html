@@ -129,20 +129,26 @@
     .bc-link  { color: var(--lis-azul-cl); cursor: pointer; }
     .bc-link:hover { text-decoration: underline; }
     .bc-sep   { color: var(--muted); font-size: 10px; }
-    #waterfall-subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+    #waterfall-subtitle, #scatter-subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
 
     /* ── Chart cards ── */
-    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    /* overflow:hidden is a deliberate safety net: a Plotly layout.height that
+       doesn't match this card's own CSS height (e.g. a copy-paste edit that
+       updates one but not the other) previously overflowed silently past the
+       card's rounded border into whatever section came next, instead of
+       failing visibly -- see chart-scatter-momentum's 2026-08 history. */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; overflow: hidden; }
     .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .chart-col-title { font-family: var(--cond); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 6px; }
-    #chart-waterfall    { width: 100%; height: 460px; }
-    #chart-timeseries   { width: 100%; height: 460px; }
-    #chart-comp-saar    { width: 100%; height: 400px; }
-    #chart-nuc-saar     { width: 100%; height: 400px; }
-    #chart-comp-yoy     { width: 100%; height: 400px; }
-    #chart-nuc-yoy      { width: 100%; height: 400px; }
-    #chart-difusao-categoria { width: 100%; height: 340px; }
-    #chart-nucleo-sel { width: 100%; height: 360px; }
+    #chart-waterfall    { width: 100%; height: 580px; }
+    #chart-timeseries   { width: 100%; height: 580px; }
+    #chart-comp-saar    { width: 100%; height: 520px; }
+    #chart-nuc-saar     { width: 100%; height: 520px; }
+    #chart-comp-yoy     { width: 100%; height: 520px; }
+    #chart-nuc-yoy      { width: 100%; height: 520px; }
+    #chart-difusao-categoria { width: 100%; height: 460px; }
+    #chart-nucleo-sel { width: 100%; height: 480px; }
+    #chart-scatter-momentum { width: 100%; height: 700px; }
 
     /* ── Table ── */
     .table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; }
@@ -347,6 +353,10 @@
             <option value="servicos-subj">Serviços — Subjacente</option>
             <option value="servicos-ex">Serviços — ex-Subjacente</option>
           </optgroup>
+          <optgroup label="Comercializáveis">
+            <option value="comercializaveis">Comercializáveis</option>
+            <option value="nao-comercializaveis">Não Comercializáveis</option>
+          </optgroup>
         </select>
         <button class="pill" id="ranking-toggle" style="margin-left:auto;background:var(--lis-azul);color:#fff;border-color:var(--lis-azul);">Ver todos</button>
       </div>
@@ -365,6 +375,49 @@
           <tbody id="table-body"></tbody>
         </table>
       </div>
+    </section>
+
+    <section id="sec-scatter">
+      <h2>Dispersão — Momentum 3M × Variação 12M</h2>
+      <div class="yoy-ctrl-bar" style="margin-bottom:12px;">
+        <button class="pill" data-scatter-jump="1">1a</button>
+        <button class="pill" data-scatter-jump="3">3a</button>
+        <button class="pill" data-scatter-jump="5">5a</button>
+        <button class="pill" data-scatter-jump="10">10a</button>
+        <button class="pill" data-scatter-jump="all">Tudo</button>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Mês</span>
+        <select id="scatter-month-sel"></select>
+        <span class="ctrl-label">Filtro BCB</span>
+        <select id="scatter-bcb-sel">
+          <option value="todos">Todos</option>
+          <optgroup label="Livres / Monitorados">
+            <option value="livres">Livres</option>
+            <option value="monitorados">Monitorados</option>
+          </optgroup>
+          <optgroup label="Alimentos">
+            <option value="alimentos">Alimentos</option>
+            <option value="alimentos-subj">Alimentos — Subjacente</option>
+            <option value="alimentos-ex">Alimentos — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Bens Industriais">
+            <option value="bens-ind">Bens Industriais</option>
+            <option value="bens-ind-subj">Bens Industriais — Subjacente</option>
+            <option value="bens-ind-ex">Bens Industriais — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Serviços">
+            <option value="servicos">Serviços</option>
+            <option value="servicos-subj">Serviços — Subjacente</option>
+            <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Comercializáveis">
+            <option value="comercializaveis">Comercializáveis</option>
+            <option value="nao-comercializaveis">Não Comercializáveis</option>
+          </optgroup>
+        </select>
+      </div>
+      <div id="scatter-subtitle"></div>
+      <div class="chart-card"><div id="chart-scatter-momentum"></div></div>
     </section>
 
     <section id="sec-yoy-drill">
@@ -391,6 +444,10 @@
             <option value="servicos">Serviços</option>
             <option value="servicos-subj">Serviços — Subjacente</option>
             <option value="servicos-ex">Serviços — ex-Subjacente</option>
+          </optgroup>
+          <optgroup label="Comercializáveis">
+            <option value="comercializaveis">Comercializáveis</option>
+            <option value="nao-comercializaveis">Não Comercializáveis</option>
           </optgroup>
         </select>
         <span class="ctrl-label">Nível</span>
@@ -591,6 +648,8 @@ var endDate      = '';
 var drillPath    = [];
 var sortCol      = 'contribuicao';
 var sortAsc      = false;
+var scatterMonth = ''; // '' == latest available month; set from the month picker
+var scatterBcbKey = 'todos'; // same Filtro BCB categories as ranking-bcb-sel/yoy-bcb-sel, via _YOY_BCB_FILTERS
 
 // ── State helpers ─────────────────────────────────────────────────────────────
 function currentAll()     { return currentIndex === 'ipca15' ? D.records_ipca15 : D.records; }
@@ -765,6 +824,7 @@ function renderAll() {
   renderWaterfall();
   renderTimeSeries();
   renderTable();
+  renderScatterMomentum();
 }
 
 // Three-tier preference for the trailing-12-months figure ending at `anchor`,
@@ -829,25 +889,29 @@ function renderKPIs() {
 
 function renderWaterfall() {
   var agg    = aggregateByLevel(getFiltered(), currentLevel());
-  var labels = agg.map(function(d) { return d.label; }).reverse();
-  var values = agg.map(function(d) { return Math.round(d.contrib * 10000) / 10000; }).reverse();
+  // No .reverse() here (unlike the old horizontal version): aggregateByLevel
+  // already sorts descending by contribution, and a vertical bar chart's
+  // category axis reads left-to-right in array order, so the highest
+  // contributor already lands leftmost without reversing.
+  var labels = agg.map(function(d) { return d.label; });
+  var values = agg.map(function(d) { return Math.round(d.contrib * 10000) / 10000; });
   var colors = values.map(function(v) { return v >= 0 ? C.laranja : C.verde; });
   document.getElementById('waterfall-subtitle').textContent = isLeaf()
     ? 'Nível mais detalhado — veja o ranking abaixo'
     : 'Clique em uma barra para detalhar por ' + LEVEL_LABELS[LEVELS[drillPath.length + 1] || 'subitem'];
   // Deliberately left out of the dragmode:'pan'/_bindYAutofit treatment
-  // applied to every other chart in this report: this is a horizontal
-  // ranking bar chart (x=value, y=category), not a time series — there is
+  // applied to every other chart in this report: this is a category
+  // ranking bar chart (x=category, y=value), not a time series — there is
   // no time axis to pan/zoom through, so TradingView-style navigation
   // doesn't apply here. Keeps Plotly's own default box-zoom interaction.
   Plotly.react('chart-waterfall', [{
-    type:'bar', orientation:'h',
-    y: labels, x: values, marker:{color: colors},
-    hovertemplate: '<b>%{y}</b><br>%{x:.3f} p.p.<extra></extra>',
+    type:'bar',
+    x: labels, y: values, marker:{color: colors},
+    hovertemplate: '<b>%{x}</b><br>%{y:.3f} p.p.<extra></extra>',
   }], {
-    height:460, margin:{l:220,r:30,t:20,b:50},
-    xaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
-    yaxis:{tickfont:{size:12}, automargin:true},
+    height:580, margin:{l:60,r:30,t:20,b:150},
+    yaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
+    xaxis:{tickfont:{size:11}, automargin:true, tickangle:-40},
     paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
     font:{family:'Barlow,sans-serif', color:'#1F2853', size:12}, bargap:0.35,
   }, _PLOTLY_CONFIG);
@@ -881,7 +945,7 @@ function renderTimeSeries() {
     };
   });
   traces.push({
-    type:'scatter', mode:'lines', name:'Total', yaxis:'y2',
+    type:'scatter', mode:'lines', name:'Total',
     x: allDates, line:{color:C.azul, width:2},
     y: allDates.map(function(d) { return Math.round((totalByD[d]||0)*10000)/10000; }),
     hovertemplate:'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
@@ -893,18 +957,19 @@ function renderTimeSeries() {
     // sign, so a negative category pushes the *next* trace's baseline below
     // zero even when that trace's own value is positive — misreading a
     // positive contribution as negative.
-    barmode:'relative', height:460, margin:{l:55,r:190,t:20,b:40}, dragmode:'pan',
+    barmode:'relative', height:580, margin:{l:55,r:190,t:20,b:40}, dragmode:'pan',
     xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
       buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
       bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',
     }},
-    // No fixedrange: drag/scroll move both axes directly (dual-axis-aware --
-    // both the p.p. axis and the Total axis pan/zoom independently per the
-    // user's actual drag/scroll direction). _bindYAutofit still fits both
-    // whenever X moves WITHOUT Y also moving in the same event (e.g. the
-    // rangeselector preset buttons below, which only ever touch xaxis).
+    // No fixedrange: drag/scroll pan/zoom the single shared axis directly.
+    // Bars and the Total line are the same unit (p.p.) and Total is
+    // literally their sum, so they share one y-axis -- a second, independently
+    // autoranged axis here would visually decouple the line from what the
+    // stacked bars actually add up to. _bindYAutofit still fits it whenever X
+    // moves WITHOUT Y also moving in the same event (e.g. the rangeselector
+    // preset buttons below, which only ever touch xaxis).
     yaxis:{title:{text:'Contribuição mensal (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
-    yaxis2:{title:{text:'Total (p.p.)',font:{size:11}}, overlaying:'y', side:'right', showgrid:false, zeroline:false},
     // Vertical legend to the right instead of wrapping above the chart — with
     // dozens of subitems selected via drilldown, a horizontal legend wraps
     // across many rows and covers the bars. Plotly scrolls this internally
@@ -982,6 +1047,185 @@ function renderTable() {
   document.getElementById('ranking-toggle').textContent = rankingShowAll ? 'Ver top 20' : 'Ver todos';
 }
 
+// ── Dispersão — Momentum 3M × Variação 12M ───────────────────────────────────
+// One point per subitem (level is fixed -- unlike the waterfall/ranking, this
+// chart doesn't drill through Grupo/Subgrupo/Item; the subitem SET is instead
+// narrowed via the same "Filtro BCB" category dropdown used by the ranking
+// table/Y/Y drilldown, _YOY_BCB_FILTERS), anchored on a user-selected month
+// (scatterMonth, defaults to the latest available). Deliberately ignores the
+// Período pills, same as the top KPI cards: momentum is a trailing-window
+// snapshot ("where was inflation heading as of this month"), not something
+// that should shrink when the user picks e.g. "3M" for the other charts.
+// Momentum 3M is NOT seasonally adjusted (unlike the official BCB-published
+// "3M SAAR" component/núcleo series used elsewhere in this report, via
+// fetch_bcb._apply_stl_ma3) -- running STL per subitem would mean hundreds
+// of client-side seasonal decompositions, which isn't practical; this uses
+// the same MA(3)-then-annualize formula (see compute3mSAAR) on the raw (NSA)
+// weighted monthly rate instead. Treat it as a directional momentum read,
+// not a precise SAAR figure.
+function computeScatterMomentum(anchor) {
+  var fn = _YOY_BCB_FILTERS[scatterBcbKey] || _YOY_BCB_FILTERS['todos'];
+  var rows = currentAll();
+  var byGD = {};
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i], g = r.subitem;
+    if (!g || !fn(r)) continue;
+    if (!byGD[g]) byGD[g] = {};
+    var b = byGD[g][r.dt] || (byGD[g][r.dt] = {c: 0, p: 0});
+    b.c += (r.contribuicao || 0);
+    b.p += (r.pesos || 0);
+  }
+  anchor = anchor || currentMaxDate();
+  var points = [];
+  Object.keys(byGD).forEach(function(g) {
+    var dm = byGD[g];
+    var dates = Object.keys(dm).sort();
+    var ai = dates.indexOf(anchor);
+    if (ai < 11) return; // needs 12 trailing months ending at anchor
+    var ratio = dates.map(function(d) { return dm[d].p > 0 ? dm[d].c / dm[d].p : null; });
+    var prod = 1, ok = true;
+    for (var j = ai - 11; j <= ai; j++) {
+      if (ratio[j] == null) { ok = false; break; }
+      prod *= (1 + ratio[j] / 100);
+    }
+    if (!ok || ratio[ai] == null || ratio[ai-1] == null || ratio[ai-2] == null) return;
+    var yoy  = (prod - 1) * 100;
+    var avg3 = (ratio[ai] + ratio[ai-1] + ratio[ai-2]) / 3;
+    var mom3 = (Math.pow(1 + avg3 / 100, 12) - 1) * 100;
+    points.push({
+      label: g,
+      x: Math.round(yoy * 10000) / 10000,
+      y: Math.round(mom3 * 10000) / 10000,
+      peso: dm[anchor].p,
+    });
+  });
+  points.sort(function(a, b) { return a.label.localeCompare(b.label); });
+  return {anchor: anchor, points: points};
+}
+
+// Suppresses the on-chart text label for any point that has another point
+// within a small radius of it -- a fixed point-count cutoff (the previous
+// approach) doesn't actually predict legibility: a handful of subitens
+// bunched near the origin can be unreadable while a spread-out set of
+// several dozen stays perfectly clear (e.g. "Serviços — ex-Subjacente", 24
+// points, found 2026-08 by a user report showing exactly this — labels
+// piled on top of each other near (0,0) while points further out, like
+// "Transporte por aplicativo", were fine on their own). Distance is
+// normalized by each axis's own data range so x/y being on different scales
+// doesn't bias which axis dominates "closeness". Hover always shows the
+// label regardless (hovertext, kept separate from the on-chart text array).
+function scatterLabelVisibility(pts) {
+  if (pts.length <= 1) return pts.map(function() { return true; });
+  var xs = pts.map(function(p) { return p.x; }), ys = pts.map(function(p) { return p.y; });
+  var xRange = Math.max.apply(null, xs) - Math.min.apply(null, xs) || 1;
+  var yRange = Math.max.apply(null, ys) - Math.min.apply(null, ys) || 1;
+  var THRESH = 0.06; // fraction of each axis's own range
+  return pts.map(function(p, i) {
+    for (var j = 0; j < pts.length; j++) {
+      if (j === i) continue;
+      var dx = (p.x - pts[j].x) / xRange, dy = (p.y - pts[j].y) / yRange;
+      if (Math.sqrt(dx * dx + dy * dy) < THRESH) return false;
+    }
+    return true;
+  });
+}
+
+function renderScatterMomentum() {
+  var anchor = scatterMonth || currentMaxDate();
+  var res = computeScatterMomentum(anchor);
+  var pts = res.points;
+  var sub = document.getElementById('scatter-subtitle');
+  var isLatest = anchor === currentMaxDate();
+  var bcbSel = document.getElementById('scatter-bcb-sel');
+  var catLabel = bcbSel.options[bcbSel.selectedIndex].textContent;
+  sub.textContent = pts.length
+    ? ((isLatest ? 'Último mês disponível: ' : 'Mês selecionado: ') + res.anchor + ' (' + pts.length
+       + ' subitens · ' + catLabel + ') — independente do filtro de Período acima')
+    : 'Sem histórico de 12 meses suficiente para esta categoria/mês.';
+  if (!pts.length) { Plotly.purge('chart-scatter-momentum'); return; }
+  var labelVisible = scatterLabelVisibility(pts);
+  var trace = {
+    type: 'scatter', mode: 'markers+text',
+    x: pts.map(function(p) { return p.x; }),
+    y: pts.map(function(p) { return p.y; }),
+    text: pts.map(function(p, i) { return labelVisible[i] ? p.label : ''; }),
+    hovertext: pts.map(function(p) { return p.label; }),
+    textposition: 'top center', textfont: {size: 9, color: '#5a6482'},
+    marker: {
+      color: pts.map(function(p, i) { return GROUP_COLORS[i % GROUP_COLORS.length]; }),
+      size: 11, line: {width: 1, color: '#fff'},
+    },
+    hovertemplate: '<b>%{hovertext}</b><br>Var. 12M: %{x:.2f}%<br>Momentum 3M (anualizado, não dessaz.): %{y:.2f}%<extra></extra>',
+  };
+  // Plotly.purge()+newPlot(), not react(): found 2026-08 by a user report (a
+  // BCB-filter switch losing every point's on-chart label) that Plotly.react()
+  // silently fails to create text nodes when transitioning FROM a trace whose
+  // `text` array is all empty strings (e.g. the initial "Todos" render, ~377
+  // crowded points, all suppressed by scatterLabelVisibility) TO one with some
+  // non-empty entries -- reproduced in isolation outside this report, so it's
+  // a Plotly diffing quirk, not a mistake in how the trace is built here. A
+  // full purge+redraw sidesteps it; harmless since this chart has no
+  // date-range/zoom state worth preserving across re-renders (unlike the
+  // time-series charts elsewhere that rely on react() + _bindYAutofit).
+  Plotly.purge('chart-scatter-momentum');
+  Plotly.newPlot('chart-scatter-momentum', [trace], {
+    height: 700, margin: {l: 60, r: 30, t: 20, b: 55}, dragmode: 'pan',
+    xaxis: {title: {text: 'Variação 12 Meses (%)', font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    yaxis: {title: {text: 'Momentum 3M anualizado (%, não dessaz.)', font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12}, showlegend: false,
+  }, _PLOTLY_CONFIG);
+  // No _bindYAutofit here: both axes are plain % values, not a date axis --
+  // same reasoning as economic_activity's renderQuadrant, which this chart
+  // otherwise mirrors (see .claude/rules/lis-dashboards.md).
+}
+
+// ── Scatter controls: month select + quick-jump pills ────────────────────────
+var _MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+function formatMonthLabel(dt) {
+  var p = dt.split('-');
+  return _MESES_ABREV[parseInt(p[1], 10) - 1] + '/' + p[0];
+}
+// Earliest month that still has a full 12-month trailing window behind it --
+// the true floor for a valid scatter anchor, distinct from currentMinDate()
+// itself (which has zero trailing history).
+function earliestValidScatterAnchor() {
+  var p = currentMinDate().split('-');
+  var y = parseInt(p[0], 10), m = parseInt(p[1], 10) + 11;
+  while (m > 12) { m -= 12; y++; }
+  return y + '-' + String(m).padStart(2, '0');
+}
+function yearsBackDate(n, anchor) {
+  var p = (anchor || currentMaxDate()).split('-');
+  return (parseInt(p[0], 10) - n) + '-' + p[1];
+}
+function clampScatterAnchor(dt) {
+  var lo = earliestValidScatterAnchor(), hi = currentMaxDate();
+  return dt < lo ? lo : dt > hi ? hi : dt;
+}
+
+function populateScatterMonthOptions() {
+  var sel = document.getElementById('scatter-month-sel');
+  var lo = earliestValidScatterAnchor(), hi = currentMaxDate();
+  var p = lo.split('-'), y = parseInt(p[0], 10), m = parseInt(p[1], 10);
+  var opts = [];
+  while ((y + '-' + String(m).padStart(2,'0')) <= hi) {
+    var dt = y + '-' + String(m).padStart(2, '0');
+    opts.push(dt);
+    m++; if (m > 12) { m = 1; y++; }
+  }
+  sel.innerHTML = opts.map(function(dt) {
+    return '<option value="' + dt + '">' + formatMonthLabel(dt) + '</option>';
+  }).join('');
+  sel.value = clampScatterAnchor(scatterMonth || hi);
+}
+
+function jumpScatterAnchor(dt) {
+  scatterMonth = clampScatterAnchor(dt);
+  document.getElementById('scatter-month-sel').value = scatterMonth;
+  renderScatterMomentum();
+}
+
 function renderBreadcrumb() {
   var html = '<span class="bc-item bc-link" data-idx="-1">Todos os Grupos</span>';
   for (var i = 0; i < drillPath.length; i++) {
@@ -1002,7 +1246,7 @@ function renderBreadcrumb() {
 function bindWaterfallClick() {
   document.getElementById('chart-waterfall').on('plotly_click', function(data) {
     if (isLeaf()) return;
-    drillPath.push({level: currentLevel(), value: data.points[0].y});
+    drillPath.push({level: currentLevel(), value: data.points[0].x});
     renderAll();
   });
 }
@@ -1057,7 +1301,7 @@ function renderCompSAAR() {
       line:{color:s.color, width:s.width, dash:s.dash||'solid'},
       hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-saar', traces, _nucLayout('3M SAAR (% a.a.)', 520), _PLOTLY_CONFIG);
 }
 
 // Master list of every núcleo series selectable in the two checklist-driven
@@ -1190,7 +1434,7 @@ function renderNucSAAR() {
       line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
       hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 400), _PLOTLY_CONFIG);
+  Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 520), _PLOTLY_CONFIG);
 }
 
 /*Y_AUTOFIT_JS*/
@@ -1267,7 +1511,7 @@ function renderNucleoSelecionado() {
     hovertemplate:'<b>' + label + ' — 12M a/a</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
   });
   if (!traces.length) { Plotly.purge('chart-nucleo-sel'); return; }
-  Plotly.react('chart-nucleo-sel', traces, _nucLayout(label + ' (%)', 360), _PLOTLY_CONFIG);
+  Plotly.react('chart-nucleo-sel', traces, _nucLayout(label + ' (%)', 480), _PLOTLY_CONFIG);
   _bindYAutofit('chart-nucleo-sel');
 }
 
@@ -1289,7 +1533,7 @@ function renderComponentesYoY() {
       line:{color:s.color, width:s.width},
       hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
 }
 
 function renderNucleosYoY() {
@@ -1304,7 +1548,7 @@ function renderNucleosYoY() {
       line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
       hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-nuc-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+  Plotly.react('chart-nuc-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
 }
 
 // ── IPCA-15 Núcleos tab renders ───────────────────────────────────────────────
@@ -1324,7 +1568,7 @@ function renderCompYoY15() {
       line: {color: s.color, width: s.width},
       hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 400), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
 }
 
 // ── Difusão por Categoria (Grupo/Subgrupo/Item drilldown) ────────────────────
@@ -1417,7 +1661,7 @@ function renderDifusaoCategoria() {
     {type: 'scatter', mode: 'lines', name: 'MM 6M', x: d.dates, y: ma6,
      line: {color: C.laranja, width: 2.5},
      hovertemplate: 'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
-  ], _nucLayout('% subitens c/ var. positiva — ' + label, 340), _PLOTLY_CONFIG);
+  ], _nucLayout('% subitens c/ var. positiva — ' + label, 460), _PLOTLY_CONFIG);
   _bindYAutofit('chart-difusao-categoria');
 }
 
@@ -1592,6 +1836,8 @@ var _YOY_BCB_FILTERS = {
   'servicos':        function(r) { return r.subgrupo === 'Serviços'; },
   'servicos-subj':   function(r) { return r.subgrupo === 'Serviços' && r.subjacente != null; },
   'servicos-ex':     function(r) { return r.subgrupo === 'Serviços' && r.subjacente == null; },
+  'comercializaveis':     function(r) { return r.comercializavel === 'Comercializável'; },
+  'nao-comercializaveis': function(r) { return r.comercializavel === 'Não Comercializável'; },
 };
 
 function yoyFiltered() {
@@ -1693,7 +1939,7 @@ function renderYoYDrill() {
     return trace;
   }).filter(Boolean);
   if (!traces.length) { Plotly.purge('chart-yoy-drill'); return; }
-  Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('Var. 12M (% a/a)', 400), {
+  Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('Var. 12M (% a/a)', 520), {
     showlegend: !single,
   }), _PLOTLY_CONFIG);
   _bindYAutofit('chart-yoy-drill');
@@ -1739,6 +1985,8 @@ document.querySelectorAll('[data-index]').forEach(function(btn) {
     document.getElementById('custom-start').value = startDate;
     document.getElementById('custom-end').value   = endDate;
     drillPath = [];
+    scatterMonth = '';
+    populateScatterMonthOptions();
     renderAll();
     populateYoYItems();
     renderYoYDrill();
@@ -1832,6 +2080,26 @@ document.getElementById('ranking-bcb-sel').addEventListener('change', function()
   rankingBcbKey = this.value;
   renderTable();
 });
+
+// Scatter momentum: quick-jump pills (1a/3a/5a/10a back from the latest month, Tudo = earliest valid anchor)
+document.querySelectorAll('[data-scatter-jump]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var key = this.dataset.scatterJump;
+    jumpScatterAnchor(key === 'all' ? earliestValidScatterAnchor() : yearsBackDate(parseInt(key, 10)));
+  });
+});
+
+// Scatter momentum month picker
+document.getElementById('scatter-month-sel').addEventListener('change', function() {
+  scatterMonth = this.value;
+  renderScatterMomentum();
+});
+
+// Scatter momentum Filtro BCB (same categories/logic as ranking-bcb-sel/yoy-bcb-sel)
+document.getElementById('scatter-bcb-sel').addEventListener('change', function() {
+  scatterBcbKey = this.value;
+  renderScatterMomentum();
+});
 document.getElementById('ranking-toggle').addEventListener('click', function() {
   rankingShowAll = !rankingShowAll;
   renderTable();
@@ -1867,6 +2135,8 @@ document.getElementById('custom-end').setAttribute('min',   currentMinDate());
 document.getElementById('custom-end').setAttribute('max',   currentMaxDate());
 document.getElementById('custom-start').value = startDate;
 document.getElementById('custom-end').value   = endDate;
+
+populateScatterMonthOptions();
 
 try {
   renderAll();

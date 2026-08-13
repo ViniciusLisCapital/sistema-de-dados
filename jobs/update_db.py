@@ -21,15 +21,19 @@ logger = logging.getLogger("update_db")
 
 # IBGE
 from domain.db.brasil.ibge import (
-    atv_pib, atv_pib_encadeado, atv_pib_taxas, atv_pim, atv_pmc, atv_pms, mt_pnad,
-    inflc_decomposicao, inflc_dim,
+    atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_pim, atv_pim_uso, atv_pmc, atv_pms,
+    mt_pnad, mt_pnad_trimestral, inflc_decomposicao, inflc_dim,
 )
 
 # BCB
 from domain.db.brasil.bcb import (
-    atv_ibcbr, atv_pib_usd, mt_caged, cred_credito_amplo, cred_credito_familias, expc_focus,
-    inflc_agregados, cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt,
-    cmb_fluxo_cambial, cmb_ptax,
+    atv_ibcbr, atv_pib_usd, atv_pib_mensal, mt_caged, cred_credito_amplo, cred_credito_familias,
+    cred_credito_resumo, cred_inadimplencia_pj, cred_modalidade_livre_pj,
+    cred_modalidade_livre_pf, cred_modalidade_direcionado_pj, cred_modalidade_direcionado_pf,
+    cred_credito_porte, cred_credito_atividade_economica, cred_credito_tipo_cliente,
+    cred_credito_controle_capital, cred_ptc, expc_focus, inflc_agregados,
+    cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
+    fisc_divida, fisc_nfsp,
 )
 
 # IPEA
@@ -37,6 +41,9 @@ from domain.db.brasil.ipea import cmb_termos_troca
 
 # MDIC
 from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_comex_produto
+
+# Tesouro Nacional
+from domain.db.brasil.tesouro import fisc_rtn, fisc_efgg
 
 # ---------------------------------------------------------------------------
 # Scripts e parametros de atualizacao rotineira
@@ -50,31 +57,49 @@ from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_
 _SCRIPTS = [
     # IBGE
     ("IBGE · GDP / Contas Nacionais",  atv_pib,               {}),
-    ("IBGE · GDP / Valores Encadeados", atv_pib_encadeado,     {}),
+    ("IBGE · GDP / Valores Correntes",  atv_pib_valores_correntes, {}),
     ("IBGE · GDP / Taxas Oficiais",     atv_pib_taxas,         {}),
     ("IBGE · PIM / Prod. Industrial",  atv_pim,               {}),
+    ("IBGE · PIM / Categorias de Uso", atv_pim_uso,           {}),
     ("IBGE · PMC / Varejo",            atv_pmc,               {}),
     ("IBGE · PMS / Servicos",          atv_pms,               {}),
     ("IBGE · PNAD / Emprego",          mt_pnad,               {}),
+    ("IBGE · PNAD Trimestral",         mt_pnad_trimestral,    {}),
     ("IBGE · IPCA Decomposicao",       inflc_decomposicao,    {}),
     ("IBGE · IPCA Dimensao",           inflc_dim,             {}),
     # BCB
     ("BCB  · IBC-Br",                  atv_ibcbr,             {}),
     ("BCB  · PIB Mensal (USD)",        atv_pib_usd,           {}),
+    ("BCB  · PIB Mensal (R$)",         atv_pib_mensal,        {}),
     ("BCB  · IPCA Agregados",          inflc_agregados,       {}),
     ("BCB  · CAGED",                   mt_caged,              {}),
     ("BCB  · Credito",                 cred_credito_amplo,    {}),
+    ("BCB  · Credito Resumo",           cred_credito_resumo,  {}),
     ("BCB  · Indicadores Familias",    cred_credito_familias, {}),
+    ("BCB  · Inadimplencia PJ",         cred_inadimplencia_pj, {}),
+    ("BCB  · Credito Modalidade Livre PJ",        cred_modalidade_livre_pj,        {}),
+    ("BCB  · Credito Modalidade Livre PF",        cred_modalidade_livre_pf,        {}),
+    ("BCB  · Credito Modalidade Direcionado PJ",  cred_modalidade_direcionado_pj,  {}),
+    ("BCB  · Credito Modalidade Direcionado PF",  cred_modalidade_direcionado_pf,  {}),
+    ("BCB  · Credito por Porte de Empresa",       cred_credito_porte,              {}),
+    ("BCB  · Credito por Atividade Economica",    cred_credito_atividade_economica, {}),
+    ("BCB  · Credito por Tipo de Cliente",        cred_credito_tipo_cliente,       {}),
+    ("BCB  · Credito por Controle de Capital",    cred_credito_controle_capital,   {}),
+    ("BCB  · Pesquisa Trimestral Condicoes Credito", cred_ptc,                     {}),
     ("BCB  · Expectativas Focus",      expc_focus,            {}),
     ("BCB  · Reservas Internacionais", cmb_reservas_bc,       {}),
     ("BCB  · Balanco de Pagamentos",   cmb_balanco_pagmt,     {}),
     ("BCB  · Fluxo Cambial",           cmb_fluxo_cambial,     {}),
     ("BCB  · Cambio Contratado",       cmb_cambio_contratado, {}),
     ("BCB  · PTAX + Volume Interbanc.", cmb_ptax,              {}),
+    ("BCB  · Divida Publica",           fisc_divida,           {}),
+    ("BCB  · NFSP",                     fisc_nfsp,             {}),
     ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
     ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
     ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),
     ("MDIC · Comex Stat (produto)",     cmb_comex_produto,     {}),
+    ("Tesouro · RTN",                   fisc_rtn,              {}),
+    ("Tesouro · EFGG",                   fisc_efgg,             {}),
 ]
 
 

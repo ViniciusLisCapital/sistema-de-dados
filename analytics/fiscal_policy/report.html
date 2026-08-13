@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama Fiscal — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 44px;
+      font-family: var(--cond);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+
+    /* ── Nota metodológica ── */
+    .note-metodologia { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 1100px; }
+    .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+
+    /* ── Appendix: click-to-expand methodology notes (native <details>/<summary>) ── */
+    .appendix-item {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 2px 18px;
+    }
+    .appendix-item summary {
+      font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); padding: 14px 0; cursor: pointer; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .appendix-item summary::-webkit-details-marker { display: none; }
+    .appendix-item summary::after {
+      content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto;
+    }
+    .appendix-item[open] summary::after { content: '−'; }
+    .appendix-item .appendix-body {
+      font-size: 13px; color: var(--muted); line-height: 1.6; padding: 0 0 16px; max-width: 1100px;
+    }
+    .appendix-item .appendix-body strong { color: var(--text2); }
+    .appendix-item .appendix-body table { border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    .appendix-item .appendix-body th, .appendix-item .appendix-body td { border: 1px solid var(--border); padding: 5px 10px; text-align: left; }
+    .appendix-item .appendix-body th { color: var(--text2); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .appendix-item + .appendix-item { margin-top: 10px; }
+
+    /* ── KPI grids ── */
+    .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-value.pos { color: var(--lis-laranja); }
+    .kpi-value.neg { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Chart cards ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    #chart-ieg-linha, #chart-ieg-decomposicao,
+    #chart-ieg-pib-comparacao, #chart-ieg-esfera,
+    #chart-gfsm                                                { width: 100%; height: 560px; }
+
+    /* ── Controls (select dropdowns) ── */
+    .ctrl-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px;
+      margin-bottom: 12px;
+    }
+    .ctrl-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .ctrl-select {
+      font-family: inherit; font-size: 13px; color: var(--text); padding: 5px 10px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
+    }
+    .ctrl-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
+
+    /* ── Pills (aba Receitas e Despesas — Nível/Y-Y/T-T, Nominal/Real/% PIB) ── */
+    .pill-group { display: flex; gap: 6px; }
+    .pill {
+      font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
+      cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; }
+    .pill.disabled { opacity: 0.35; pointer-events: none; }
+
+    /* ── Hierarchical data table (aba Receitas e Despesas) ── */
+    .table-card { max-height: 620px; overflow: auto; padding: 0; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .data-table thead th {
+      position: sticky; top: 0; z-index: 1; background: var(--card-bg); text-align: left;
+      padding: 10px 14px; font-family: var(--mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th.col-check { width: 34px; }
+    .data-table th.col-value, .data-table td.col-value { text-align: right; min-width: 76px; }
+    .data-table td { padding: 7px 14px; border-bottom: 1px solid rgba(31,40,83,0.06); vertical-align: middle; }
+    .data-table tbody tr:hover { background: rgba(31,40,83,0.03); }
+    .data-table tbody tr.is-group td.col-label { font-weight: 600; }
+    .data-table td.col-value { font-family: var(--mono); white-space: nowrap; color: var(--text); }
+    .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
+    .tree-toggle:hover { color: var(--text); }
+
+    /* ── Footer ── */
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      header, .tab-nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid, .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>Panorama Fiscal</h1>
+  </div>
+  <div class="meta">
+    Atualizado em <strong id="generated-at">—</strong><br>
+    Secretaria do Tesouro Nacional (EFGG) &nbsp;·&nbsp; IBGE (PIB)
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="gfsm">Receitas e Despesas</button>
+  <button class="tab-btn" data-tab="impulso">Impulso Fiscal</button>
+  <button class="tab-btn" data-tab="apendice">Apêndice</button>
+</nav>
+
+<main>
+
+  <!-- ═══════════ TAB — RECEITAS E DESPESAS (GFSM) ═══════════ -->
+  <div class="tab-panel active" id="tab-gfsm">
+
+    <p class="note-metodologia">
+      Receita e despesa por natureza econômica — classificação GFSM 2014 do FMI (Tesouro Nacional/
+      EFGG), trimestral. <strong>Esfera</strong> troca a árvore inteira entre Governo Geral
+      (consolidado) e cada ente federado. Clique numa linha com ▸ para expandir o detalhe; marque o
+      checkbox de uma ou mais linhas para plotá-las no gráfico abaixo. <strong>Nível/Y-Y/T-T</strong> e
+      <strong>Nominal/Real/% PIB</strong> recalculam a coluna de valor e o gráfico ao vivo (% PIB só tem
+      a variante Nível, e usa sempre o PIB nacional total, não um PIB por esfera) — ver Apêndice para a
+      metodologia completa (por que T/T usa ajuste sazonal e Y/Y não, deflator usado no Real).
+    </p>
+
+    <section>
+      <h2>Receita e Despesa por Esfera de Governo</h2>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Esfera</span>
+        <select id="gfsm-esfera-select" class="ctrl-select">
+          <option value="geral" selected>Governo Geral (Consolidado)</option>
+          <option value="central">União</option>
+          <option value="estados">Estados</option>
+          <option value="municipios">Municípios</option>
+        </select>
+        <div class="pill-group" id="gfsm-metric-group">
+          <button type="button" class="pill active" data-metric="level">Nível</button>
+          <button type="button" class="pill" data-metric="yoy">Y/Y</button>
+          <button type="button" class="pill" data-metric="qoq_sa">T/T</button>
+        </div>
+        <div class="pill-group" id="gfsm-basis-group">
+          <button type="button" class="pill active" data-basis="nominal">Nominal</button>
+          <button type="button" class="pill" data-basis="real">Real</button>
+          <button type="button" class="pill" data-basis="pctpib">% PIB</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="gfsm-table">
+          <thead id="gfsm-table-head"></thead>
+          <tbody id="gfsm-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real/% PIB.</p>
+      <div class="chart-card"><div id="chart-gfsm"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — IMPULSO FISCAL ═══════════ -->
+  <div class="tab-panel" id="tab-impulso">
+
+    <p class="note-metodologia">
+      Métrica experimental de impulso fiscal, ao lado das três abas anteriores — não é a metodologia
+      oficial "abaixo da linha" do BCB. Detalhe metodológico completo na aba <strong>Apêndice</strong>.
+    </p>
+
+    <section>
+      <h2>IEG — Impulso Estrutural do Gasto</h2>
+      <p class="chart-caption">
+        Resende &amp; Pires (Textos para Discussão nº16, FGV/Tesouro, 2024) — multiplicadores fixos do
+        paper aplicados à variação interanual (acumulado em 4 trimestres, % do PIB) de 4 categorias de
+        despesa do Governo Geral (EFGG/Tesouro Nacional). <strong>Multiplicadores ainda não
+        re-estimados neste projeto</strong> — ver Apêndice para a fórmula completa e o mapeamento GFSM.
+      </p>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">IEG do Trimestre (p.p., equivalente % PIB)</div>
+          <div class="kpi-value" id="kpi-ieg-value">—</div>
+          <div class="kpi-sub" id="kpi-ieg-sub">—</div>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-ieg-linha"></div></div>
+      <p class="chart-caption">Barras empilhadas: contribuição de cada categoria (multiplicador × Δ % do PIB) ao IEG do trimestre — a soma das quatro é a linha do IEG.</p>
+      <div class="chart-card"><div id="chart-ieg-decomposicao"></div></div>
+    </section>
+
+    <section>
+      <h2>IEG × PIB</h2>
+      <p class="chart-caption">
+        Compara o IEG com a variação interanual (Y/Y, sem ajuste sazonal, dado oficial IBGE) do PIB
+        total ou de um componente da ótica da demanda — eixo à direita.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Componente do PIB</span>
+        <select id="ieg-pib-select" class="ctrl-select">
+          <option value="pib_pm">PIB (Total)</option>
+          <option value="consumo_familias">Consumo das Famílias</option>
+          <option value="consumo_adm_publica">Consumo do Governo</option>
+          <option value="fbcf">Investimento (FBCF)</option>
+          <option value="exportacao">Exportações</option>
+          <option value="importacao">Importações</option>
+        </select>
+      </div>
+      <div class="chart-card"><div id="chart-ieg-pib-comparacao"></div></div>
+    </section>
+
+    <section>
+      <h2>IEG por Ente Federado</h2>
+      <p class="chart-caption">
+        Decomposição do mesmo IEG total (linha) pela contribuição de cada esfera de governo — União,
+        Estados e Municípios pesam pela mesma metodologia (multiplicadores fixos × Δ interanual da
+        despesa daquele ente como % do PIB total), e a soma das três esferas reproduz exatamente a
+        linha do IEG mostrada acima.
+      </p>
+      <div class="chart-card"><div id="chart-ieg-esfera"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — APÊNDICE ═══════════ -->
+  <div class="tab-panel" id="tab-apendice">
+
+    <section>
+      <h2>Notas Metodológicas</h2>
+      <p class="chart-caption">Discussão de método, separada da leitura dos dados nas outras abas — clique num item para abrir.</p>
+
+      <details class="appendix-item" open>
+        <summary>Receitas e Despesas (GFSM) — Metodologia Completa</summary>
+        <div class="appendix-body">
+          Receita e despesa por natureza econômica, classificação GFSM 2014 do FMI. Fonte:
+          <code>macro_brasil.fisc_efgg</code> (EFGG — Estatísticas Fiscais do Governo Geral, Tesouro
+          Nacional, trimestral). O seletor <strong>Esfera</strong> troca a árvore inteira (mesmas 27
+          categorias) entre <strong>Governo Geral</strong> (União + Estados + Municípios consolidado —
+          namespace <code>geral_</code>, 2010-I→hoje, mesmo escopo do IEG, ver item abaixo),
+          <strong>União</strong> (<code>central_</code>, 2006-I→hoje), <strong>Estados</strong> e
+          <strong>Municípios</strong> (<code>estados_</code>/<code>municipios_</code>, 2010-I→hoje) —
+          o estado de quais linhas estão marcadas/expandidas na tabela sobrevive à troca de
+          esfera.<br><br>
+          <strong>Nível</strong> é o valor bruto (sem ajuste sazonal) executado no próprio trimestre,
+          em R$ milhões.<br><br>
+          <strong>Y/Y</strong> compara o trimestre com o mesmo trimestre um ano antes, sobre o nível
+          bruto — a variação interanual já cancela a sazonalidade por construção, sem precisar de
+          ajuste sazonal.<br><br>
+          <strong>T/T</strong> compara o trimestre com o trimestre imediatamente anterior, mas sobre
+          uma base <strong>dessazonalizada (STL)</strong> — diferente de Y/Y, uma variação
+          trimestre-contra-trimestre-anterior sobre o dado bruto reproduziria o forte calendário
+          sazonal de execução orçamentária destas séries (13º salário, concentração de investimento no
+          último trimestre etc.) em vez de medir uma variação real — exatamente o mesmo problema já
+          identificado e corrigido uma vez neste relatório para o cálculo do IEG (ver item abaixo).<br><br>
+          <strong>Real</strong> deflaciona o valor nominal pelo IPCA (<code>inflc_agregados.ipca</code>),
+          a preços constantes do último mês disponível da série de IPCA.<br><br>
+          <strong>% do PIB</strong> usa a mesma convenção já estabelecida neste relatório para séries
+          fiscais trimestrais (<code>fisc_nfsp</code>'s colunas <code>*_pct_pib_12m</code>, e o próprio
+          IEG) — acumulado em 4 trimestres (TTM) da própria série, dividido pelo TTM do PIB nominal
+          (<code>atv_pib_valores_correntes</code>) — não o nível de um único trimestre sobre o PIB
+          anualizado, que sub-estimaria a razão usual "receita/despesa como % do PIB". Só tem a
+          variante Nível (não há Y/Y/T/T de uma razão fluxo/PIB) e é sempre calculada sobre o nível
+          nominal (idêntica à razão real/PIB-real, já que o deflator cancela).<br><br>
+          <strong>Atenção — em <u>Governo Geral</u>, "Receita"/"Despesa" (raiz da árvore) são uma soma
+          célula-a-célula das três esferas, não uma consolidação líquida</strong> (União/Estados/
+          Municípios individualmente, escolhidos no seletor Esfera, não têm esse problema — cada um é o
+          relatório real daquele ente, sem soma nenhuma): <code>fisc_efgg.py</code>'s
+          <code>_build_geral()</code> soma <code>central_despesa_total + estados_despesa_total +
+          municipios_despesa_total</code> diretamente, sem abater as transferências
+          intergovernamentais (FPE, FPM, SUS, royalties etc.) que aparecem <strong>duas vezes</strong>
+          nessa soma — uma vez como despesa de quem repassa (código 26, Transferências e Doações, no
+          orçamento da União) e de novo como despesa final de quem recebeu e executou o recurso
+          (Estados/Municípios). Checado ao vivo: nos últimos 4 trimestres, as três esferas repassaram
+          juntas ~R$1,36 tri em transferências intergovernamentais — quase 10% do PIB — inflando tanto
+          a Receita Total quanto a Despesa Total (Governo Geral) acima do que uma consolidação GFSM
+          própria mostraria. <strong>É exatamente o mesmo problema que o cálculo do IEG (item abaixo) já
+          contorna</strong> excluindo o código 26 (Transferências e Doações) da despesa ajustada — só
+          que o IEG nunca expõe "Despesa Total"/"Receita Total" brutos como número de leitura direta, e
+          esta aba expõe. Leia os subitens de uma mesma esfera/categoria normalmente (não têm esse
+          problema — cada código é uma série própria, sem soma entre esferas), mas trate os nós-raiz
+          "Receita"/"Despesa" em Governo Geral como uma cota superior (não uma consolidação oficial) do
+          tamanho do Governo Geral — não o valor a citar como "gasto público em % do PIB". Não corrigido nesta
+          versão (exigiria abater as transferências intergovernamentais entre esferas, um trabalho de
+          reconciliação próprio, não uma correção pontual) — ver Pending em
+          <code>analytics/fiscal_policy/CLAUDE.md</code>.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>IEG (Impulso Estrutural do Gasto) — Metodologia Completa</summary>
+        <div class="appendix-body">
+          Índice de Resende &amp; Pires (Textos para Discussão nº16, FGV/Tesouro, 2024), que mede o
+          impulso fiscal ponderando a variação interanual (em % do PIB) de 4 categorias de despesa do
+          <strong>Governo Geral</strong> (Governo Central + Estados + Municípios consolidado — não o
+          Governo Central sozinho, escopo da aba Receita e Despesa/RTN) por multiplicadores fiscais
+          fixos estimados no paper via VAR:<br><br>
+          <table>
+            <tr><th>Categoria</th><th>Multiplicador</th><th>Definição do paper</th><th>Código GFSM (EFGG)</th></tr>
+            <tr><td>Folha</td><td>1,32</td><td>Salários e vencimentos (exclui contribuições sociais)</td><td>211</td></tr>
+            <tr><td>Transferências</td><td>1,46</td><td>Benefícios previdenciários e assistenciais</td><td>27</td></tr>
+            <tr><td>Investimentos</td><td>1,66</td><td>Aquisição de ativos não financeiros (bruto)</td><td>31.1</td></tr>
+            <tr><td>Outras</td><td>0,64</td><td>Resíduo — despesa ajustada menos as três acima</td><td>22+25+28 (residual)</td></tr>
+          </table>
+          Despesa ajustada = gasto total (2) <strong>excluindo</strong> consumo de capital fixo (23),
+          juros (24) e transferências/doações entre entes (26) — para não contar duas vezes repasses
+          entre esferas de governo.<br><br>
+          <strong>Fórmula</strong>: IEG = 1,32·ΔFolha + 1,46·ΔTransferências + 1,66·ΔInvestimentos +
+          0,64·ΔOutras, cada Δ = variação interanual (p.p., trimestre t vs. mesmo trimestre um ano
+          antes) do acumulado em 4 trimestres da categoria como % do PIB, onde tanto a categoria quanto
+          o PIB são somados nos últimos 4 trimestres (mesma convenção de "acumulado 12 meses" usada em
+          outras séries fiscais deste projeto, ex.: <code>fisc_nfsp</code>'s colunas
+          <code>*_pct_pib_12m</code>) — é uma versão "rolante" (recalculada a cada trimestre) da mesma
+          comparação ano-contra-ano-anterior que o paper reporta em sua Tabela 6, sem precisar rodar um
+          ajuste sazonal (X-13) por categoria como o paper faz. Uma primeira versão deste indicador usava
+          a variação trimestre-contra-trimestre-anterior direto sobre a série bruta (sem ajuste sazonal
+          nem acumulação), o que reproduzia a forte sazonalidade do calendário de execução orçamentária
+          (13º salário, concentração de investimento no fim do ano etc.) em vez de medir o impulso fiscal
+          — corrigido nesta versão. Validado diretamente contra a Tabela 6 do paper: o valor do 4º
+          trimestre de cada ano (onde o acumulado-4T coincide com a soma do ano civil) fica muito próximo
+          do impulso anual publicado (ex.: 2020 → 6,87% nos dois; 2018 → -0,24% nos dois; 2012 → 0,71%
+          nos dois).<br><br>
+          Fonte primária: <code>macro_brasil.fisc_efgg</code> (EFGG — Estatísticas Fiscais do Governo
+          Geral, Tesouro Nacional, classificação econômica GFSM 2014 do FMI, trimestral, 2010-I→hoje) e
+          <code>atv_pib_valores_correntes</code> (PIB nominal trimestral, NSA) como denominador. Ver
+          <code>domain/db/brasil/tesouro/fisc_efgg.py</code> e
+          <code>analytics/fiscal_policy/reference/rtn_vs_efgg.md</code> para o histórico completo da
+          investigação (por que a EFGG e não a RTN, validação de consistência
+          Central+Estados+Municípios=Geral, links de download).<br><br>
+          <strong>Multiplicadores ainda não re-estimados neste projeto</strong> — os valores usados são
+          exatamente os publicados no paper original (amostra 2010T1–2023T4); uma re-estimação própria,
+          com amostra atualizada, é trabalho futuro (ver "Pending" em
+          <code>analytics/fiscal_policy/CLAUDE.md</code>).
+        </div>
+      </details>
+
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>Secretaria do Tesouro Nacional (EFGG) &nbsp;·&nbsp; IBGE (PIB nominal)</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Data & palette ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/fiscal_policy_latest.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D = REPORT_DATA;
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+// scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
+var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
+
+/*Y_AUTOFIT_JS*/
+
+// ── Value/date helpers ────────────────────────────────────────────────────────
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function fmtQuarter(dateStr) {
+  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
+  return y + ' T' + (Math.floor((m - 1) / 3) + 1);
+}
+function lastValid(dates, values) {
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+function firstValid(dates, values) {
+  for (var i = 0; i < values.length; i++) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+// Corta uma serie {dates, values} para o intervalo [lo, hi] (strings ISO, comparaveis
+// lexicograficamente). Usado para nao mostrar PIB fora da janela onde o IEG existe.
+function clipToRange(seriesObj, lo, hi) {
+  var dates = [], values = [];
+  for (var i = 0; i < seriesObj.dates.length; i++) {
+    if (seriesObj.dates[i] >= lo && seriesObj.dates[i] <= hi) {
+      dates.push(seriesObj.dates[i]);
+      values.push(seriesObj.values[i]);
+    }
+  }
+  return {dates: dates, values: values};
+}
+// D.ieg has its own shape ({dates, ieg, contrib:{...}, pct_pib:{...}}), not a plain (group, key)
+// table -- ieg*() adapt it to the same {dates, values} shape used everywhere else.
+function iegTotal() {
+  var g = D.ieg || {};
+  return {dates: g.dates || [], values: g.ieg || []};
+}
+function iegContrib(key) {
+  var g = D.ieg || {};
+  return {dates: g.dates || [], values: (g.contrib && g.contrib[key]) || []};
+}
+function iegEsfera(key) {
+  var g = D.ieg || {};
+  return {dates: g.dates || [], values: (g.esfera && g.esfera[key]) || []};
+}
+// D.pib_yoy is a plain {name: {dates, values}} dict (atv_pib_taxas, indicador='yoy') -- its own
+// tiny accessor, same reason as iegTotal()/iegContrib()/iegEsfera() above.
+function pibYoy(base) {
+  var g = D.pib_yoy || {};
+  return g[base] || {dates: [], values: []};
+}
+
+// ── KPI rendering ─────────────────────────────────────────────────────────────
+function setKPI(idPrefix, value, sub, unit) {
+  var elV = document.getElementById(idPrefix + '-value');
+  if (!elV) return;
+  var elS = document.getElementById(idPrefix + '-sub');
+  if (value == null) {
+    elV.textContent = '—'; elV.className = 'kpi-value';
+    if (elS) elS.textContent = '—';
+    return;
+  }
+  elV.textContent = fmt(value) + (unit || '%');
+  elV.className = 'kpi-value ' + (value >= 0 ? 'pos' : 'neg');
+  if (elS) elS.textContent = sub;
+}
+
+// ── Chart layout factories ────────────────────────────────────────────────────
+function _rangeButtons() {
+  return [
+    {count: 1, label: '1a', step: 'year', stepmode: 'backward'},
+    {count: 3, label: '3a', step: 'year', stepmode: 'backward'},
+    {count: 5, label: '5a', step: 'year', stepmode: 'backward'},
+    {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
+    {step: 'all', label: 'Tudo'},
+  ];
+}
+function mkTimeseriesLayout(yTitle, height) {
+  return {
+    height: height || 560, margin: {l: 60, r: 30, t: 40, b: 70}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+      buttons: _rangeButtons(), bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
+      activecolor: C.azul, font: {size: 11, color: '#555'},
+    }},
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+  };
+}
+// 'relative' (not 'stack'): bars with mixed positive/negative values stack cleanly above/below
+// zero -- needed for IEG's per-category contributions, which regularly flip sign quarter to quarter.
+function mkRelativeBarLayout(yTitle, height) {
+  return Object.assign(mkTimeseriesLayout(yTitle, height), {barmode: 'relative'});
+}
+
+// ── Chart renderers ───────────────────────────────────────────────────────────
+// specs: [{dates, values, label, color}] -- one line per pre-computed series.
+function renderLineChart(divId, specs, yTitle, height) {
+  var traces = specs.map(function(s) {
+    return {
+      type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
+      line: {color: s.color, width: 2},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
+    };
+  });
+  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+// barSpecs: [{dates, values, label, color}] -- barras 'relative' (mistura sinal) somando ao total.
+// totalSpec: {dates, values, label, color} -- linha do total, mesmo eixo (nao secundario).
+function renderRelativeBarWithLine(divId, barSpecs, totalSpec, yTitle, height) {
+  var traces = barSpecs.map(function(s) {
+    return {
+      type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.3f} p.p.<extra></extra>',
+    };
+  });
+  traces.push({
+    type: 'scatter', mode: 'lines+markers', name: totalSpec.label, x: totalSpec.dates, y: totalSpec.values,
+    line: {color: totalSpec.color, width: 2}, marker: {size: 5, color: totalSpec.color},
+    hovertemplate: '<b>' + totalSpec.label + '</b><br>%{x}<br>%{y:,.3f} p.p.<extra></extra>',
+  });
+  Plotly.react(divId, traces, mkRelativeBarLayout(yTitle, height), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+}
+// ── Aba Receitas e Despesas (GFSM) — hierarchical table + chart, same pattern as
+// analytics/credit/report.html's makeHierTab() (Saldo/Concessão tabs), adapted here
+// for a single tab with quarterly data (fmtDate passed via opts instead of a
+// hardcoded fmtMonthShort — this report's dates are quarter-starts, not months). ──
+var GFSM_CHART_COLORS = [C.azul, C.dourado, C.verde, C.laranja, C.azulCl, C.amarelo, '#8E44AD', '#16A085'];
+// R$ milhoes -> string auto-escalada (mi/bi/tri) -- linhas variam de dezenas de R$mi
+// (Venda de Ativos Não Financeiros) a ~R$2tri (Receita/Despesa Total).
+function fmtAutoCurrency(valueMillions) {
+  var abs = Math.abs(valueMillions);
+  if (abs >= 1e6) return (valueMillions / 1e6).toFixed(2).replace('.', ',') + ' tri';
+  if (abs >= 1e3) return (valueMillions / 1e3).toFixed(1).replace('.', ',') + ' bi';
+  return valueMillions.toFixed(0).replace('.', ',') + ' mi';
+}
+function fmtQuarterShort(dateStr) {
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return 'T' + (Math.floor((m - 1) / 3) + 1) + '/' + y;
+}
+function flattenHierRows(tree, expanded, depth) {
+  var rows = [];
+  (tree || []).forEach(function(node) {
+    rows.push({node: node, depth: depth});
+    if (node.children && expanded[node.key]) {
+      rows = rows.concat(flattenHierRows(node.children, expanded, depth + 1));
+    }
+  });
+  return rows;
+}
+// opts: {dataKey, anchorSeriesKey, metricGroupId, basisGroupId, tableHeadId,
+//        tableBodyId, chartDivId, defaultChecked: [keys], fmtDate, colLabel,
+//        esferaSelectId (optional -- prefixes every seriesKey lookup with
+//        "{esfera}__", so the same node.key/checked/expanded state survives an
+//        esfera switch), yTitle(metric, basis, refDate)}
+function makeHierTab(opts) {
+  var state = {metric: null, basis: 'nominal', esfera: null, checked: {}, expanded: {}};
+  opts.defaultChecked.forEach(function(k) { state.checked[k] = true; });
+
+  function dataKeyFor(seriesKey) {
+    return opts.esferaSelectId ? (state.esfera + '__' + seriesKey) : seriesKey;
+  }
+  function seriesFor(seriesKey) {
+    var byBasis = D[opts.dataKey].series[dataKeyFor(seriesKey)];
+    if (!byBasis) return {dates: [], values: []};
+    var byMetric = byBasis[state.basis] || byBasis.nominal;
+    return (byMetric && byMetric[state.metric]) || {dates: [], values: []};
+  }
+  function fmtValue(value) {
+    if (value == null || isNaN(value)) return '—';
+    // "% do PIB" e sempre percentual mesmo com metric==='level' (level e a unica
+    // variante que essa base tem) -- so a combinacao Nominal/Real + level usa a
+    // formatacao de moeda.
+    if (state.metric === 'level' && state.basis !== 'pctpib') return fmtAutoCurrency(value);
+    return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
+  }
+  // Ultimos 12 trimestres -- lidos de `anchorSeriesKey` (sempre presente, o mais
+  // completo da arvore) como referencia comum de datas para todas as linhas.
+  function refDates() {
+    var byBasis = D[opts.dataKey].series[dataKeyFor(opts.anchorSeriesKey)];
+    var dates = (byBasis && byBasis.nominal && byBasis.nominal.level && byBasis.nominal.level.dates) || [];
+    return dates.slice(-12);
+  }
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = opts.colLabel || 'Categoria';
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = opts.fmtDate(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = refDates();
+    flattenHierRows(D[opts.dataKey].tree, state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      dates.forEach(function(d) {
+        var tdValue = document.createElement('td');
+        tdValue.className = 'col-value';
+        tdValue.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(tdValue);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function renderChart() {
+    var specs = [], colorIdx = 0;
+    (function walk(tree) {
+      (tree || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          specs.push({dates: s.dates, values: s.values, label: node.label, color: GFSM_CHART_COLORS[colorIdx++ % GFSM_CHART_COLORS.length]});
+        }
+        if (node.children) walk(node.children);
+      });
+    })(D[opts.dataKey].tree);
+    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date));
+  }
+  function wireControls() {
+    if (opts.esferaSelectId) {
+      var esferaSel = document.getElementById(opts.esferaSelectId);
+      if (esferaSel) {
+        state.esfera = esferaSel.value;
+        esferaSel.addEventListener('change', function() {
+          state.esfera = esferaSel.value;
+          renderTable(); renderChart();
+        });
+      }
+    }
+    document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
+      if (btn.classList.contains('active')) state.metric = btn.dataset.metric;
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.metric = btn.dataset.metric;
+        renderTable(); renderChart();
+      });
+    });
+    document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.basis = btn.dataset.basis;
+        // "% PIB" so tem a variante Nivel -- forca o metrico de volta para 'level'
+        // e desabilita os demais botoes enquanto essa base estiver selecionada.
+        var metricPills = document.querySelectorAll('#' + opts.metricGroupId + ' .pill');
+        if (state.basis === 'pctpib') {
+          state.metric = 'level';
+          metricPills.forEach(function(b) {
+            b.classList.toggle('disabled', b.dataset.metric !== 'level');
+            b.classList.toggle('active', b.dataset.metric === 'level');
+          });
+        } else {
+          metricPills.forEach(function(b) { b.classList.remove('disabled'); });
+        }
+        renderTable(); renderChart();
+      });
+    });
+  }
+  return {
+    init: function() {
+      wireControls();
+      renderTable();
+      renderChart();
+    },
+  };
+}
+// basis==='pctpib' so tem a variante Nivel -- o Y do grafico e sempre "% do PIB"
+// nesse caso, independente do metric selecionado.
+function _gfsmYTitle(metric, basis, refDate) {
+  if (basis === 'pctpib') return '% do PIB';
+  if (metric !== 'level') return '%';
+  return basis === 'real' ? 'R$ mi (a preços de ' + fmtQuarter(refDate) + ')' : 'R$ mi';
+}
+var GFSM_TAB = makeHierTab({
+  dataKey: 'gfsm', anchorSeriesKey: 'despesa_total', esferaSelectId: 'gfsm-esfera-select',
+  metricGroupId: 'gfsm-metric-group', basisGroupId: 'gfsm-basis-group',
+  tableHeadId: 'gfsm-table-head', tableBodyId: 'gfsm-table-body', chartDivId: 'chart-gfsm',
+  defaultChecked: ['receita_total', 'despesa_total'],
+  fmtDate: fmtQuarterShort, colLabel: 'Categoria (GFSM)',
+  yTitle: _gfsmYTitle,
+});
+
+// ── Tab renderers ──────────────────────────────────────────────────────────────
+var PIB_DEMANDA_LABELS = {
+  pib_pm:              'PIB (Total)',
+  consumo_familias:    'Consumo das Famílias',
+  consumo_adm_publica: 'Consumo do Governo',
+  fbcf:                'Investimento (FBCF)',
+  exportacao:          'Exportações',
+  importacao:          'Importações',
+};
+function renderIEGPibComparacao() {
+  var sel = document.getElementById('ieg-pib-select');
+  var base = sel ? sel.value : 'pib_pm';
+  var label = PIB_DEMANDA_LABELS[base] || base;
+  var total = iegTotal(), pib = pibYoy(base);
+  // PIB (atv_pib_taxas) tem historico muito mais longo que o IEG (que so existe onde
+  // fisc_efgg/geral_* tem dado, ~2011+, ver _load_ieg()) -- corta o PIB para a mesma janela do
+  // IEG em vez de deixar pontos de PIB sem nenhuma barra de IEG ao lado para comparar.
+  var fv = firstValid(total.dates, total.values), lv = lastValid(total.dates, total.values);
+  if (fv && lv) pib = clipToRange(pib, fv.date, lv.date);
+  var traces = [
+    {
+      type: 'bar', name: 'IEG (Impulso Estrutural do Gasto)',
+      x: total.dates, y: total.values, marker: {color: C.azul},
+      hovertemplate: 'IEG: %{y:,.2f} p.p.<extra></extra>',
+    },
+    {
+      type: 'scatter', mode: 'markers', name: label + ' (Var. Interanual)',
+      x: pib.dates, y: pib.values, marker: {color: C.dourado, size: 6},
+      hovertemplate: label + ': %{y:,.2f}%<extra></extra>',
+    },
+  ];
+  var layout = mkTimeseriesLayout('IEG (p.p.) e ' + label + ' (Var. Interanual, %)');
+  Plotly.react('chart-ieg-pib-comparacao', traces, layout, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-ieg-pib-comparacao');
+}
+function renderIEGEsfera() {
+  var total = iegTotal();
+  renderRelativeBarWithLine('chart-ieg-esfera', [
+    {dates: iegEsfera('central').dates, values: iegEsfera('central').values, label: 'União', color: C.azul},
+    {dates: iegEsfera('estados').dates, values: iegEsfera('estados').values, label: 'Estados', color: C.dourado},
+    {dates: iegEsfera('municipios').dates, values: iegEsfera('municipios').values, label: 'Municípios', color: C.verde},
+  ], {dates: total.dates, values: total.values, label: 'IEG (total)', color: C.laranja}, 'p.p. (equivalente % do PIB)');
+}
+function renderIEG() {
+  var total = iegTotal(), lt = lastValid(total.dates, total.values);
+  setKPI('kpi-ieg', lt ? lt.value : null, lt ? fmtQuarter(lt.date) : '—', ' p.p.');
+
+  renderLineChart('chart-ieg-linha', [
+    {dates: total.dates, values: total.values, label: 'IEG (Impulso Estrutural do Gasto)', color: C.azul},
+  ], 'p.p. (equivalente % do PIB)');
+
+  renderRelativeBarWithLine('chart-ieg-decomposicao', [
+    {dates: iegContrib('folha').dates, values: iegContrib('folha').values, label: 'Folha (×1,32)', color: C.azul},
+    {dates: iegContrib('transferencias').dates, values: iegContrib('transferencias').values, label: 'Transferências (×1,46)', color: C.dourado},
+    {dates: iegContrib('investimentos').dates, values: iegContrib('investimentos').values, label: 'Investimentos (×1,66)', color: C.verde},
+    {dates: iegContrib('outras').dates, values: iegContrib('outras').values, label: 'Outras (×0,64)', color: C.cinza},
+  ], {dates: total.dates, values: total.values, label: 'IEG (total)', color: C.laranja}, 'p.p. (equivalente % do PIB)');
+
+  renderIEGPibComparacao();
+  renderIEGEsfera();
+
+  var pibSel = document.getElementById('ieg-pib-select');
+  if (pibSel && !pibSel._wired) {
+    pibSel.addEventListener('change', renderIEGPibComparacao);
+    pibSel._wired = true;
+  }
+}
+
+// ── Tab switching — lazy render on first activation (Plotly needs a visible,
+// non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
+var RENDERERS = {gfsm: function() { GFSM_TAB.init(); }, impulso: renderIEG};
+var tabRendered = {};
+function activateTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+  if (!tabRendered[tab] && RENDERERS[tab]) { RENDERERS[tab](); tabRendered[tab] = true; }
+}
+document.querySelectorAll('.tab-btn').forEach(function(b) {
+  b.addEventListener('click', function() { activateTab(this.dataset.tab); });
+});
+
+document.getElementById('generated-at').textContent = D.generated_at || '—';
+activateTab('gfsm');
+</script>
+
+</body>
+</html>

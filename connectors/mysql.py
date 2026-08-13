@@ -1,5 +1,8 @@
 
+import glob
 import os
+from datetime import datetime
+
 import mysql.connector
 import pandas as pd
 from dotenv import load_dotenv
@@ -248,6 +251,107 @@ class DataTransformer:
 
 
 #________________________________
+
+def backup_table_before_truncate(database, table, backup_dir, keep=5):
+    """
+    Salva um snapshot CSV do conteudo atual de uma tabela antes de trunca-la,
+    mantendo so as `keep` execucoes mais recentes (backups mais antigos sao
+    apagados). Chamar explicitamente nos scripts que precisam desse seguro de
+    comparacao logo antes de truncate_table() -- NAO e chamado automaticamente
+    por truncate_table() em si; escopo mantido deliberadamente restrito aos
+    scripts que pedem (fisc_rtn.py, fisc_efgg.py), nao todo script que trunca
+    (decisao do usuario, 2026-08). Sem isso, uma revisao abrupta ou incorreta
+    da fonte numa carga futura sobrescreveria os valores anteriores sem deixar
+    nenhum jeito de comparar "o que era antes desta rodada".
+
+    Args:
+        database (str): The name of the schema in MySql.
+        table (str): The name of the table to back up.
+        backup_dir (str): Diretorio onde salvar os CSVs (criado se nao existir).
+        keep (int): Quantos backups recentes manter (default 5).
+
+    Returns:
+        str | None: Caminho do CSV salvo, ou None se a tabela ja estava vazia
+                    (nada para guardar -- ex: primeira execucao antes de
+                    qualquer carga anterior).
+    """
+    try:
+        connection = mysql.connector.connect(
+            host=os.environ.get("MYSQL_HOST", "localhost"),
+            user=os.environ.get("MYSQL_USER", "root"),
+            password=os.environ.get("MYSQL_PASSWORD", ""),
+            database=database,
+        )
+    except mysql.connector.Error as err:
+        print(f"MySQL connection error: {err}")
+        return None
+
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"SELECT * FROM {table}")
+        rows = cursor.fetchall()
+        df = pd.DataFrame(rows, columns=list(cursor.column_names))
+    finally:
+        cursor.close()
+        connection.close()
+
+    if df.empty:
+        return None
+
+    os.makedirs(backup_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = os.path.join(backup_dir, f"{table}_{timestamp}.csv")
+    df.to_csv(path, index=False)
+
+    existing = sorted(glob.glob(os.path.join(backup_dir, f"{table}_*.csv")))
+    for old_path in existing[:-keep]:
+        os.remove(old_path)
+
+    print(f"Backup de {table} salvo em {path} ({len(existing[:-keep]) or 0} backup(s) antigo(s) removido(s)).")
+    return path
+
+
+def truncate_table(database, table):
+    """
+    Remove todas as linhas de uma tabela (TRUNCATE), preservando schema/PK/comment.
+
+    Usar antes de uma carga completa vinda de uma fonte que so distribui
+    historico inteiro (sem parametro incremental) e que substituiu a fonte
+    anterior de uma tabela -- garante que nenhuma linha antiga sobreviva
+    silenciosamente sob a mesma chave (date, name) caso o range de datas da
+    nova fonte um dia nao cubra exatamente o mesmo periodo da antiga. So
+    seguro para tabelas alimentadas por um unico script -- checar
+    domain/db/CLAUDE.md antes de usar numa tabela compartilhada.
+
+    Args:
+        database (str): The name of the schema in MySql.
+        table (str): The name of the table to truncate.
+
+    Returns:
+        None
+    """
+    try:
+        connection = mysql.connector.connect(
+            host=os.environ.get("MYSQL_HOST", "localhost"),
+            user=os.environ.get("MYSQL_USER", "root"),
+            password=os.environ.get("MYSQL_PASSWORD", ""),
+            database=database,
+        )
+    except mysql.connector.Error as err:
+        print(f"MySQL connection error: {err}")
+        return
+
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"TRUNCATE TABLE {table}")
+        connection.commit()
+        print(f"Table {table} truncated.")
+    except mysql.connector.Error as err:
+        print(f"MySQL truncate error: {err}")
+    finally:
+        cursor.close()
+        connection.close()
+
 
 def insert_data_into_database(database, table, df_to_insert, batch_size=1000):
     """

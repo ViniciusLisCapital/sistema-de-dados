@@ -132,14 +132,89 @@ df = get_history("DX-Y.NYB", start="1971-01-01")
 - `end=None` (default) baixa ate a data atual.
 - `yf.download` retorna colunas em MultiIndex (`Price`, `Ticker`) — `get_history` ja acha e renomeia.
 
+### `connectors/tesouro.py` — RTN (Resultado do Tesouro Nacional)
+
+```python
+from connectors.tesouro import RTN
+
+rtn = RTN()
+df = rtn.get_series({"receita_total": "1.", "despesa_total": "4.", "resultado_nominal": "10."})
+# date (Timestamp), name (str), value (float) — R$ milhoes, mensal desde 1997-01
+```
+
+**Detalhes técnicos:**
+- Fonte: workbook "Resultado do Tesouro Nacional - Série Histórica - Mensal" (XLSX), publicado no
+  CKAN da Tesouro Transparente. O nome do arquivo muda todo mês (ex: `seriehistoricamai26.xlsx`) —
+  a URL de download é resolvida a cada chamada via `package_show` (dataset id
+  `ab56485b-9c40-4efb-8563-9ce3e1973c4b`), nunca hardcoded.
+- Lê a aba `"1.1"` (Resumida) do workbook, que é wide-format: coluna A = rótulo com prefixo
+  hierárquico (ex: `"4.1  Benefícios Previdenciários"`), colunas B em diante = uma por mês.
+  `get_series()` casa o **primeiro token** do rótulo (ex: `"4.1"`) contra o dict `line_items`
+  passado — não por substring, para não confundir `"1."` com `"1.1"`/`"1.2"`.
+- Linhas "abaixo da linha" (Ajustes Metodológicos, Juros Nominais, Resultado Nominal etc.) ficam
+  tipicamente 1 mês defasadas em relação às linhas "acima da linha" (Receita, Despesa) — API do BCB
+  atualiza com lag. `get_series()` já descarta (`dropna`) células vazias, então cada série retorna
+  só até sua própria última leitura disponível, sem erro.
+- API de séries temporais mencionada na documentação oficial (`apiapex.tesouro.gov.br/...`) redireciona
+  em loop (`sisweb.tesouro.gov.br`, testado em 2026-08) — não usada; o download direto do XLSX via
+  CKAN é o caminho confirmado funcionando.
+
+### `connectors/tesouro_efgg.py` — EFGG (Estatisticas Fiscais do Governo Geral)
+
+```python
+from connectors.tesouro_efgg import EFGG
+
+efgg = EFGG()
+urls = efgg.get_current_urls()   # {"central": url, "estados": url, "municipios": url, "investimento_geral": url}
+raw = efgg.download_table(urls["estados"], sheet_name="1.3")
+# DataFrame cru (header=None) -- parsing por codigo GFSM fica no script de dominio
+```
+
+**Detalhes tecnicos** (achados investigando ao vivo em 2026-08, apos o usuario perguntar se a
+classificacao GFSM/Governo Geral teria planilha, nao so boletim PDF -- pesquisa anterior, documentada
+em `analytics/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava errada/desatualizada):
+- Pagina fixa (`_PAGE_URL`, `tesourotransparente.gov.br/publicacoes/estatisticas-fiscais-do-governo-
+  geral/2021/22`) cujo conteudo e sobrescrito a cada publicacao trimestral nova -- mesmo padrao das
+  "tabelas especiais" do BCB. **E HTML puro (Plone), nao SPA** -- confirmado com `requests` simples,
+  sem headless browser (suspeita inicial de que precisaria de Playwright estava errada).
+- Os 4 anexos xlsx (`demonstrativos_governo_central_orcamentario.xlsx`,
+  `..._governos_estaduais.xlsx`, `..._governos_municipais.xlsx`,
+  `..._investimento_governo_geral.xlsx`) tem um `id` numerico
+  (`thot-arquivos.tesouro.gov.br/publicacao-anexo/{id}`) que muda a cada trimestre -- resolvido a cada
+  chamada via parse do `<a title="...">` na pagina fixa, nunca hardcoded.
+- Sem autenticacao.
+- Metodologia GFSM 2014 do FMI, harmonizada com o SNA 2008/IBGE — e a mesma fonte que o paper do IEG
+  (Impulso Estrutural do Gasto, Resende & Pires 2024) usa. Ver
+  `analytics/fiscal_policy/reference/rtn_vs_efgg.md` para a diferenciacao completa vs. a RTN
+  (`connectors/tesouro.py`), o mapeamento de codigos e a validacao de que Central+Estados+Municipios
+  somam exatamente ao arquivo consolidado de Governo Geral.
+- Cada esfera tem seu proprio nome de aba para a despesa trimestral: Governo Central e `"2.3"` (tem
+  tambem uma versao mensal, `"1.3"`, que este connector nao usa -- ver docstring de
+  `domain/db/brasil/tesouro/fisc_efgg.py`); Estados/Municipios so tem trimestral, na aba `"1.3"`.
+
 ### `connectors/mysql.py` — Insert/Update no banco
 
 ```python
-from connectors.mysql import insert_data_into_database
+from connectors.mysql import insert_data_into_database, truncate_table, backup_table_before_truncate
 
 insert_data_into_database("macro_brasil", "atv_pim", df)
+
+# Para tabelas alimentadas por uma fonte que so distribui historico completo
+# (nunca incremental) e que por isso trunca+recarrega toda vez (ver fisc_rtn.py/fisc_efgg.py):
+backup_table_before_truncate("macro_brasil", "fisc_efgg", backup_dir, keep=5)  # snapshot CSV antes
+truncate_table("macro_brasil", "fisc_efgg")
+insert_data_into_database("macro_brasil", "fisc_efgg", df)
 ```
 
-Faz `SHOW COLUMNS FROM table`, reordena o df, e executa `INSERT ... ON DUPLICATE KEY UPDATE` em batches de 1000 linhas.
+`insert_data_into_database` faz `SHOW COLUMNS FROM table`, reordena o df, e executa `INSERT ... ON DUPLICATE KEY UPDATE` em batches de 1000 linhas.
 
 **Bug corrigido:** `.where(pd.notna(df), None)` não convertia NaN em float64 para None — `executemany` enviava `float('nan')` como string `'nan'` ao MySQL. Fix: `df.astype(object).where(...)`.
+
+**`backup_table_before_truncate`** (2026-08, adicionado depois de truncar `fisc_rtn` sem backup na
+migração Excel→API desse script — os valores antigos daquela migração específica já se perderam):
+salva um CSV com timestamp do conteúdo atual da tabela antes de truncar, mantendo só os últimos `keep`
+(default 5) — dá um "antes desta rodada" para comparar se uma carga futura trouxer uma revisão abrupta
+ou errada da fonte. **Não é chamado automaticamente por `truncate_table()`** — escopo deliberadamente
+restrito aos scripts que pedem (`fisc_rtn.py`, `fisc_efgg.py`, ambos salvando em
+`domain/db/brasil/tesouro/_backups/`, gitignored), não todo script que trunca. Usa `cursor.fetchall()`
+(não `pd.read_sql`) para evitar o warning do pandas sobre conexão não-SQLAlchemy.

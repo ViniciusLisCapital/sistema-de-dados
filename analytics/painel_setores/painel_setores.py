@@ -49,8 +49,11 @@ def Request_data_bcb():
 
 
     #! BCB: TRIMESTRE
-    dict_data_bcb_trimestre = {"PTCC - Grandes Empresas - Aprov. Observadas" : 21397, "PTCC - Micro, Pequenas e Medias empresas - Aprov. Observadas":21399, 
-                               "PTCC - Consumo - Aprov. Observadas":21401, "PTCC - Habitacional - Aprov. Observadas": 21403}
+    # Codigos corrigidos em 2026-08 -- 21397/21399/21401/21403 pararam de ser atualizados pelo
+    # BCB em 2022-10 (o Banco Central manteve a pesquisa, so trocou de codigo SGS). Ver
+    # domain/db/brasil/bcb/cred_ptc.py para o detalhe completo da correcao.
+    dict_data_bcb_trimestre = {"PTCC - Grandes Empresas - Aprov. Observadas" : 21389, "PTCC - Micro, Pequenas e Medias empresas - Aprov. Observadas":21391,
+                               "PTCC - Consumo - Aprov. Observadas":21393, "PTCC - Habitacional - Aprov. Observadas": 21395}
     df_bcb_trimestral = BCB_MultFrame(dict_data_bcb_trimestre, dt_inicial_str, dt_final_str)
     df_bcb_trimestral = pivot_table_to_long(df_bcb_trimestral)
     

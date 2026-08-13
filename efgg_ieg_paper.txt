@@ -1,0 +1,1243 @@
+=== PAGE 1 ===
+Textos para discussão
+11.06.2024
+TEXTOS PARA DISCUSSÃO #16
+11.06.2024
+IMPULSO ESTRUTURAL DO GASTO
+PÚBLICO: METODOLOGIA E
+ESTIMATIVAS INICIAIS
+Carolina Resende
+Pesquisadora associada do FGV IBRE.
+Manoel Pires
+Pesquisador associado do FGV IBRE.
+1
+
+=== PAGE 2 ===
+Textos para discussão
+11.06.2024
+SUMÁRIO
+1. Introdução...............................................................................................3
+2. Resultado Primário Estrutural e o Impulso Fiscal Estrutural............4
+2.1 A construção do IFE..............................................................................6
+2.2 Questões metodológicas do IFE..........................................................8
+2.2.1 PIB potencial..........................................................................................8
+2.2.2 Elasticidade da receita..........................................................................9
+2.2.3 Eventos não recorrentes.....................................................................11
+2.2.4 Adaptações necessárias à realidade brasileira.................................11
+3. Multiplicadores Fiscais........................................................................12
+3.1 Metodologias........................................................................................13
+3.2 Tipos de multiplicador.........................................................................15
+3.3 Evidências para o Brasil......................................................................16
+4. O Impulso Estrutural do Gasto (IEG).................................................19
+4.1 Os dados...............................................................................................20
+4.2 Estimação dos Multiplicadores e construção do IEG...................... 21
+4.3 Resultados............................................................................................22
+5. Conclusão.............................................................................................31
+6. Referências...........................................................................................33
+2
+
+=== PAGE 3 ===
+Textos para discussão
+11.06.2024
+1. Introdução
+O impacto da política fiscal na demanda agregada é alvo de ampla controvérsia
+na literatura e muitos dos indicadores utilizados para dimensionar esse impacto
+refletem óticas distintas, que representam interesses ou preocupações
+específicas do analista. Assim, cada indicador traz uma dimensão particular do
+tema.
+O indicador mais reconhecido e utilizado é o resultado primário, divulgado
+oficialmente pela Secretaria do Tesouro Nacional. O resultado primário reflete
+quanto o setor público injeta na demanda agregada. Quando o resultado primário
+é positivo, as receitas são superiores à despesa e o setor público atua para
+contrair a demanda agregada. Quando o resultado primário é negativo, há um
+déficit, o gasto público primário é maior do que a receita primária e o setor público
+está injetando estímulos à demanda agregada.1
+Um indicador alternativo é o impulso fiscal estrutural, calculado pela Secretaria
+de Política Econômica (SPE), que elimina os elementos não recorrentes e
+cíclicos da política fiscal. Como tal, tem como objetivo quantificar a contribuição
+da política fiscal para o endividamento público. Para tanto, esse indicador se
+fundamenta na literatura de Resultado Primário Estrutural, que visa eliminar
+fatores alheios à vontade governamental na condução da política fiscal e, assim,
+quantificar a contribuição efetiva do governo para o aumento ou redução da
+dívida pública.
+O impulso fiscal da SPE, portanto, não se propõe a estimar os efeitos da política
+fiscal na atividade econômica. Muito embora a existência de um indicador sob a
+ótica do endividamento seja importante para análise de política fiscal, há
+necessidade de avaliar também o impacto da política fiscal sobre a demanda
+agregada.
+1 Outro indicador utilizado é o resultado nominal, que acrescenta ao resultado primário o pagamento líquido de juros.
+Como os gastos com juros tendem a ter baixo impacto sobre a demanda agregada, o déficit nominal atrai mais atenção
+como medida de endividamento público.
+3
+
+=== PAGE 4 ===
+Textos para discussão
+11.06.2024
+Por esse motivo, este estudo tem como objetivo desenvolver e avaliar um
+indicador que estime os efeitos da política fiscal no produto da economia com
+foco no impacto da despesa pública, em uma atualização do artigo Resende e
+Pires (2021). Para tanto, terá uma abordagem que abarca os três entes
+federados, rompendo a lógica mais comum que concentra as análises na União
+e desconsidera como a atuação de governos estaduais e municipais também
+produzem repercussões relevantes. Adicionalmente, o indicador proposto trará
+efeitos segregados por grupos de despesas, evidenciando como a composição
+da política fiscal pode gerar resultados diferentes. Ou seja, não só o tamanho do
+gasto importa, mas o tipo de gasto também é relevante para medir seu impacto
+sobre a demanda agregada.
+Este trabalho está dividido em 4 seções. A primeira discutirá o Resultado Fiscal
+Estrutural e o Impulso Fiscal estimados pela SPE, mostrando como se dá a
+construção do indicador e analisando o seu significado. A seção 2 aborda a
+literatura de multiplicadores fiscais, por se tratar de instrumento útil para
+estimação de efeitos de gastos públicos sobre o PIB. Serão discutidos:
+metodologias, tipos de multiplicador e evidências para o Brasil. A terceira seção
+trata do Impulso Estrutural do Gasto, indicador proposto neste estudo. Serão
+apresentados os dados, a metodologia proposta e os principais resultados. Por
+fim, a última seção conclui a pesquisa.
+2. Resultado Primário Estrutural e o Impulso Fiscal Estrutural
+O Resultado Primário Estrutural (RFE)2 é um indicador que visa avaliar o esforço
+fiscal discricionário do governo, excluindo do cálculo os fatores alheios à atuação
+governamental. Diferentemente do Resultado Primário (RP), o RFE identifica os
+efeitos estimados do ciclo econômico e os eventos fiscais não recorrentes na
+estatística de resultado, a fim de dimensionar o impacto da política fiscal. Para
+tanto, o indicador decompõe o RP em três componentes: a) componente
+estrutural; b) componente cíclico; c) componente não recorrente.
+2 Essa abreviação é utilizada pela Secretaria de Política Econômica.
+4
+
+=== PAGE 5 ===
+Textos para discussão
+11.06.2024
+Segundo a Secretaria de Política Econômica (SPE)3, o RFE tem a vantagem de
+isolar a política fiscal do governo federal dos eventos cíclicos e não recorrentes,
+de modo a permitir uma avaliação mais precisa sobre as escolhas
+governamentais. Isso porque o RP pode sofrer influências externas que não
+refletem, necessariamente, ações contracionistas ou expansionistas por parte do
+governo. Por exemplo, um RP negativo decorrente da redução de receitas pela
+queda da atividade econômica, com a manutenção do nível de despesas, sugere
+uma política fiscal expansionista. Nessa mesma situação, a identificação do
+componente cíclico do resultado poderia indicar que a política do governo foi
+neutra, ou até contracionista. Portanto, ao isolar os componentes do resultado,
+o RFE auxilia na qualificação do debate fiscal.
+Por outro lado, o RFE tem a desvantagem de depender da estimação de
+parâmetros e de variáveis não observáveis que são objeto de críticas na
+literatura, como será abordado mais adiante. Além disso, é um indicador pouco
+intuitivo, perdendo para o RP no quesito simplicidade.
+Tabela 1 – Aspectos de indicadores fiscais selecionados
+Fonte: SPE (2022).
+A variação do RFE entre dois anos é conhecida como Impulso Fiscal Estrutural
+(IFE), que indica o quão expansionista ou contracionista foi a política fiscal
+discricionária do governo no período. Sobre esse ponto, é importante esclarecer
+que o IFE avalia o resultado fiscal sob a ótica de sua contribuição para o
+3https://www.gov.br/fazenda/pt-br/assuntos/politica-fiscal/atuacao-spe/resultado-fiscal-estrutural/notas-
+metodologicas/2022/nota-metodologica-atualizada
+5
+
+=== PAGE 6 ===
+Textos para discussão
+11.06.2024
+endividamento público. Ou seja, o IFE negativo (ou contracionista) indica que o
+governo contribuiu positivamente para a redução do endividamento. Já o IFE
+positivo (ou expansionista) sugere que o governo ampliou o endividamento
+público.
+Tabela 2 – Relação entre RFE, impulso fiscal estrutural, esforço fiscal
+estrutural e condições de solvência do setor público consolidado
+Fonte: SPE (2022).
+Por ser restrito à ótica de solvência do Estado, o IFE não é uma métrica
+adequada para qualificar o impacto de política fiscal sobre a demanda agregada
+e o crescimento potencial. Essa ressalva é feita pela própria SPE: “O conceito
+de impulso fiscal estrutural apresentado nesta nota metodológica está associado
+à ótica da solvência do setor público, mas não tem relação tão forte com o
+conceito de impulso fiscal sobre a demanda agregada, como a classificação em
+contracionista/expansionista sugere” (SPE, 2022, p. 6). Portanto, muito embora
+o IFE seja uma estatística importante do ponto de vista da relação entre a esforço
+fiscal discricionário e a dívida pública, o indicador não é suficiente para analisar
+todos os efeitos da política fiscal do governo.
+2.1 A construção do IFE
+A Nota Metodológica do Resultado Estrutural de 2021, última disponibilizada
+pela SPE (2022), indica os passos seguidos pela Secretaria para a construção
+do indicador fiscal. O primeiro passo é a estimação das tendências do PIB e do
+preço de petróleo, que são fundamentais para identificar o componente cíclico
+das receitas do RFE. Isso porque as estimativas do produto potencial e do hiato
+serão utilizadas no cálculo das elasticidades da receita. Em linhas gerais, a SPE
+parte de uma função Cobb-Douglas com retornos constantes de escala e os
+6
+
+=== PAGE 7 ===
+Textos para discussão
+11.06.2024
+níveis de equilíbrio são determinados pela utilização do filtro Hodrick-Prescott
+(HP) ou por médias móveis, a depender da variável.
+Em seguida, as receitas são divididas em grupos, a fim de que sejam
+identificadas sua relação com o hiato do produto. São elas: a) RTOT: Receita
+total federal, exceto a parcela não recorrente, royalties e participações especiais;
+b) ICMS: Imposto sobre operações relativas à circulação de mercadorias e sobre
+prestação de serviços de transporte interestadual e intermunicipal, e de
+comunicação (ICMS); c) ISSQN: Imposto sobre Serviços de Qualquer Natureza
+(ISSQN); d) ROY: receitas de royalties; e) PE: participação especial do petróleo;
+f) TRAN: Transferências Obrigatórias (constitucionais e legais) para estados,
+Distrito Federal e municípios, incluindo Salário-Educação.
+O terceiro passo é a estimação das elasticidades da receita de cada grupo em
+relação a flutuações do ciclo econômico e do preço do petróleo. Também são
+ajustadas as receitas atípicas, tanto com relação ao hiato quanto com relação ao
+preço do petróleo. A SPE esclarece que utiliza três abordagens econométricas
+para o cálculo das elasticidades4, utilizando uma média entre elas.
+Posteriormente, o componente cíclico de cada grupo de receita é definido como
+a diferença entre a receita sujeita ao ajuste e a receita ciclicamente ajustada.
+Esta é definida como a receita que se teria caso o hiato do produto fosse zero.
+No quinto passo, os eventos que afetam o resultado fiscal são divididos em
+recorrentes e não recorrentes. Assim, os eventos não recorrentes serão retirados
+do RFE, por não dizerem respeito ao esforço fiscal discricionário do governo.
+Essa classificação não é trivial e está sujeita a certo nível de discricionariedade.
+Após a classificação das operações fiscais, temos o componente não recorrente
+do resultado, que, somado aos componentes cíclico e estrutural, compõem o RP.
+De modo direto, o componente não recorrente é a diferença as receitas não
+recorrentes e despesas não recorrentes.
+4 “Utilizamos um modelo autorregressivo com tendência e defasagens distribuídas e duas variações do modelo de espaço
+de estados (estimado por filtro de Kalman) de componentes não observados, na qual uma série temporal pode ser
+decomposta em tendência, sazonalidade, ciclo e erro”.
+7
+
+=== PAGE 8 ===
+Textos para discussão
+11.06.2024
+Por fim, tendo estimado os componentes cíclico e não recorrente, temos a
+formulação do RFE, que é a diferença entre o RP e os componentes cíclico e
+não recorrente. O IFE é a diferença entre o RFE de dois anos, indicando a
+trajetória contracionista ou expansionista da política fiscal em relação ao
+endividamento público.
+𝑅𝐹𝐸 = 𝑅𝑃−𝐶𝐶 −𝐶𝑁𝑅
+Em que: CC = componente cíclico e CNR = componente não recorrente.
+2.2 Questões metodológicas do IFE
+O relativo consenso econômico acerca da ineficácia da política fiscal em
+influenciar a trajetória do produto no longo prazo influencia a concepção
+metodológica utilizada para estimar os parâmetros não diretamente observáveis
+e que compõem o cálculo do IFE. Compreender como essas questões teóricas
+influenciam as metodologias utilizadas é fundamental para dimensionar como
+afetam o debate sobre os efeitos da política fiscal e para entender as limitações
+das estimações comumente utilizadas na construção de indicadores fiscais.
+2.2.1 PIB potencial
+As estimativas do PIB potencial são realizadas a partir da aplicação de filtros
+estatísticos e da abordagem da função de produção. No primeiro caso, iguala-
+se a tendência da série temporal com o conceito de produto potencial; no
+segundo caso aceita-se que o sistema econômico é bem descrito por uma função
+de produção do tipo neoclássica, sendo o PIB potencial estimado considerando
+a plena utilização da capacidade e uma taxa de equilíbrio no mercado de trabalho
+sobre o qual existe um desemprego natural (Gobetti, Orair e Dutra, 2018).
+8
+
+=== PAGE 9 ===
+Textos para discussão
+11.06.2024
+Contudo, ambas abordagens sofrem críticas quanto à falta de robustez,
+especialmente em períodos de elevada volatilidade.
+No caso do filtro HP, que é utilizado pela SPE, Gobetti, Orair e Dutra (2018),
+apontam que, além da ‘falta de estrutura teórica subjacente’, a imposição da
+média zero aos hiatos5 e a sensibilidade da técnica quanto à adição de novos
+dados são limitações ainda mais relevantes. Como resultado, teríamos o
+conhecido problema de final da amostra – ou viés de ponta. Para minimizar os
+problemas decorrentes da estimação do PIB potencial, a Comissão Europeia
+trabalha com a média de longo prazo do PIB potencial, em vez da estatística em
+si. Busca-se com isso um indicador mais estável.
+Quanto à abordagem da função de produção, é importante mencionar que, ao
+partir de uma função de produção neoclássica, a estimativa sofre críticas quanto
+à aproximação com a realidade, isto é, quanto à capacidade de descrever as
+relações da estrutura produtiva da economia. Ademais, a metodologia depende
+de variáveis intermediárias que podem não ser estimadas de modo satisfatório,
+como é o caso de estimativas de estoque de capital e do nível de utilização da
+capacidade instalada. Segundo Gobetti, Orair e Dutra (2018), “a experiência
+recente vem mostrando que os métodos convencionais de estimação das
+variáveis intermediárias, como a NAIRU/NAWRU e a tendência da PTF, tendem
+a produzir estimativas voláteis e enviesadas (pró-cíclicas) nas situações de
+mudanças bruscas no ciclo econômico, que acabam transmitindo tais problemas
+para as séries do produto potencial” (p. 24).
+2.2.2 Elasticidade da receita
+Como visto anteriormente, o cálculo das elasticidades das receitas tributárias em
+relação a flutuações do ciclo econômico é outro parâmetro fundamental para
+construção do RFE e, consequentemente, do IFE. Uma elasticidade-receita-PIB
+5 “é pouco razoável admitir que eventos futuros alterem a interpretação sobre o hiato do produto simplesmente por uma
+restrição estatística, que faz com que as revisões positivas do hiato no presente sejam compensadas por revisões
+negativas no passado, de modo a que a soma dos hiatos seja 0”.
+9
+
+=== PAGE 10 ===
+Textos para discussão
+11.06.2024
+unitária significa que desvios do produto em relação ao potencial tem impacto
+equivalente sobre a arrecadação governamental, isto é, o crescimento da receita
+tributária potencial é equivalente ao crescimento da receita efetiva.
+Contudo, a constatação de que a elasticidade das receitas pode diferir da
+unidade e variarem no tempo motivou a utilização de modelos econométricos
+que admitem variabilidades paramétricas e/ou não linearidades. Primeiramente,
+as bases de arrecadação e do PIB são distintas, além de a tributação não ser
+homogênea. Esse é um dos motivos para que as estimações das elasticidades
+por grupos de receitas. As diferentes metodologias e agrupamentos produzem
+resultados distintos.
+Adicionalmente, as elasticidades podem diferir da unidade por alterações na
+legislação tributária, que afetam o nível e a composição da carga. A ideia é que
+mudanças exógenas interferem na estatística ao distorcer as séries, pois
+introduzem fatores que alteram as bases de comparação. Por isso, discute-se
+na literatura abordagens de tax correction, no intuito de corrigir tais distorções. A
+abordagem do tipo bottom-up, ou narrativa, por exemplo, visa homogeneizar as
+séries, evitando que as mudanças legislativas interfiram no cálculo das
+elasticidades.
+Como discutiram Carnot e De Castro (2015), as variações na arrecadação
+podem decorrer de fatores espontâneos da economia ou de medidas
+discricionárias do governo, sendo oportuno separar esses efeitos. Essa
+constatação já havia sido discutida pela Comissão Europeia de Finanças
+Públicas (2013), que discorreu sobre a necessidade de que as elasticidades
+tributárias reflitam apenas o efeito endógeno da evolução das bases tributárias,
+abstraindo os efeitos das mudanças discricionárias que afetam as receitas
+fiscais.
+10
+
+=== PAGE 11 ===
+Textos para discussão
+11.06.2024
+2.2.3 Eventos não recorrentes
+A classificação dos eventos fiscais também é objeto de controvérsias no cálculo
+do RFE, tendo em vista o grau de arbitrariedade dessa classificação. Para tentar
+seguir um certo padrão, a SPE considera um ou mais de quatro critérios para
+definir que um evento não é recorrente, em linha com Jourmard et al (2008). São
+eles: i) Efeito sobre o patrimônio líquido do setor público; ii) Perspectiva de
+repetição no longo prazo (recorrência); iii) Materialidade dos valores envolvidos;
+iv) Disponibilidade de informações públicas sobre a operação. Uma classificação
+controversa e que resultou na necessidade de utilizar indicadores adicionais e
+metodologias alternativas para avaliação da política fiscal ocorreu durante a
+pandemia.
+As ações como o socorro à emergência sanitária da COVID-19, conquanto
+tenham efeitos relevantes sobre a economia, foram excluídas do cálculo do RFE,
+por não apresentarem o elemento de repetição. Essa decisão gerou discussões,
+especialmente porque se presume que o conceito de impulso fiscal incorpore
+todos os eventos com efeitos relevantes sobre o PIB, o que não foi o caso do
+IFE nessa situação. Cabe ressaltar que esse foi um problema geral, e não
+específico do Brasil, e provocou questionamentos e desconforto entre vários
+analistas em diversos países.
+2.2.4 Adaptações necessárias à realidade brasileira
+Em artigo recente, os pesquisadores Sérgio Gobetti, Bráulio Borges, Manoel
+Pires e Rodrigo Orair6 identificaram novas questões que tornam o
+aperfeiçoamento metodológico do RFE fundamental. Para os autores, a
+subestimação dos efeitos cíclicos pelo lado da receita foi responsável pela
+melhora do resultado estrutural nos últimos anos. Os efeitos transitórios, não
+captados como extraordinários pela metodologia adotada pela SPE, são
+decorrentes tanto do efeito composição do PIB quanto da alta do preço de
+6 https://blogdoibre.fgv.br/posts/por-que-revisar-metodologia-de-calculo-do-resultado-estrutural#_ftn4
+11
+
+=== PAGE 12 ===
+Textos para discussão
+11.06.2024
+petróleo e minérios. Adicionalmente, foi identificado que a classificação das
+compensações de tributos como eventos não recorrentes também ajudou a
+aumentar a receita estrutural.
+Primeiramente, Gobetti7 identificou um aumento da receita estrutural decorrente
+de um efeito composição do PIB. O autor mostrou que boa parte do crescimento
+de 2021 (e provável de 2022) era explicado pelo diferencial de deflator da
+indústria e do PIB, já que a carga tributária sobre o setor industrial é em média
+maior que a carga aplicada aos serviços. Dito de outra maneira, o efeito da
+inflação acabou produzindo impacto proporcionalmente maior no setor industrial
+que no PIB, produzindo uma receita tributária maior. No caso do setor petrolífero,
+Borges8 mostrou que o ajustamento cíclico das receitas foi incompleto, já que
+desconsiderou a arrecadação de IRPJ e CSSL, além dos dividendos pagos pela
+Petrobras à União, decorrente de oscilações nos preços internacionais.
+Por fim, Pires, Orair e Gobetti9 discutiram os efeitos das compensações de
+tributos, classificadas como eventos não recorrentes, sobre a receita estrutural.
+Além de alterações normativas que facilitaram os processos de compensação
+de créditos tributários, a decisão do STF sobre a inconstitucionalidade de
+cobrança do ICMS sobre a base de cálculo do PIS/COFINS tende a impactar
+negativamente a receita de modo permanente, e não ocasional como a
+classificação da SPE prevê. Esse ajuste teria um impacto negativo no RFE.
+3. Multiplicadores Fiscais
+Os multiplicadores são meios de estimar os efeitos da política fiscal sobre o
+produto da economia. Trazem evidências de impactos de curto ou médio prazos
+de variações de gastos ou receitas no PIB. São, portanto, estatísticas fiscais que
+7 https://observatorio-politica-fiscal.ibre.fgv.br/politica-economica/outros/ilusao-do-aumento-estrutural-de-receitas-leva-
+ao-expansionismo-fiscal-das
+8 https://blogdoibre.fgv.br/posts/excesso-de-variacao-do-deflator-do-pib-impulsionou-arrecadacao-do-governo-geral-em-
+r-174
+9 https://observatorio-politica-fiscal.ibre.fgv.br/politica-economica/outros/uma-avaliacao-estrutural-da-evolucao-recente-
+da-arrecadacao-partir-das
+12
+
+=== PAGE 13 ===
+Textos para discussão
+11.06.2024
+ajudam a qualificar o debate sobre a ação discricionária do governo, trazendo a
+perspectiva de sua contribuição para a demanda agregada.
+Essas estatísticas, por não serem uma variável observável, são estimações
+sujeitas a diversas influências, tais como a metodologia empregada,
+características da economia analisada, recorte temporal, grupo de despesa ou
+receita a que se refere etc.
+3.1 Metodologias
+A literatura traz dois métodos principais de estimação de multiplicadores fiscais,
+quais sejam, estimações empíricas, comumente baseadas em modelos
+econométricos de vetores autorregressivos (VAR), e abordagens baseadas em
+modelos, notadamente modelos dinâmicos estocásticos de equilíbrio geral
+(DSGE). Batini et al (2014) discutem as vantagens e desvantagens de cada uma
+das técnicas.
+No caso dos modelos VAR, os autores apontam que são justificados pelo fato de
+as variáveis de interesse (receita, despesa, PIB, juros e inflação) estarem
+relacionadas com múltiplas relações de causalidade. Ademais, indicam que o
+grande desafio dessa estimação é isolar os choques fiscais exógenos. Para
+tanto, mostram que o método de identificação estrutural (SVAR) tem sido muito
+utilizado.
+Dentre as desvantagens da estimação de multiplicadores por modelos VAR, os
+autores apontam primeiramente a possibilidade de falhas na identificação de
+choques puramente exógenos, já que a modelagem não capta, por exemplo,
+variações de preços de ativos e commodities. Para tratar essa questão, eles
+indicam o desenvolvimento da abordagem narrativa, como discutido
+anteriormente, que usa fontes diretas na identificação dos choques exógenos.
+Em segundo lugar, os autores sugerem que multiplicadores estimados pelo VAR
+em economias que passaram por mudanças estruturais podem não representar
+13
+
+=== PAGE 14 ===
+Textos para discussão
+11.06.2024
+bem a realidade. Isso porque esses modelos trazem médias de resposta do
+produto a choques fiscais exógenos baseados em informações passadas. Por
+fim, os autores trazem o questionamento sobre a linearidade dessa modelagem,
+que pode não captar a dependência do estágio do ciclo econômico.
+Já os modelos DSGE tem a vantagem, segundo Batini et al (2014), de descrever
+o comportamento da economia como um todo, e não apenas de variáveis
+selecionadas como é o caso dos modelos VAR. No entanto, a falta de consenso
+para uma modelagem de política fiscal é uma desvantagem apresentada pelos
+autores nos modelos DSGE. Adicionalmente, as simulações dessa modelagem
+tendem a ser sensíveis quanto à escolha de parâmetros. Outra desvantagem
+apontada é a dependência dos modelos DSGE das hipóteses assumidas,
+especialmente em modelos calibrados, e não estimados. Por fim, a questão da
+linearidade dos parâmetros também aparece como possível problema da
+estimativa dos multiplicadores fiscais por meio de modelos DSGE.
+Além das modelagens, os autores trazem uma série de fatores que influenciam
+a magnitude dos multiplicadores. Dentre as características estruturais da
+economia, destacam:
+• Grau de abertura comercial – quanto menor a propensão a importar, maior
+seriam os multiplicadores, porque haveria menos vazamentos de
+demanda;
+• Rigidez do mercado de trabalho – quanto maior a rigidez de salários,
+maior o multiplicador;
+• Tamanho dos estabilizadores automáticos – maiores estabilizadores
+reduzem o impacto dos multiplicadores fiscais;
+• Regime cambial – países com regimes flutuantes tendem a ter um
+multiplicador menor, pois o movimento da taxa de câmbio pode arrefecer
+o impacto da política discricionária;
+• Nível de dívida – países com dívidas altas teriam menores multiplicadores,
+por motivos de credibilidade e efeitos sobre o prêmio de risco;
+• Administração Pública – ineficiências na cobrança de impostos e nos
+gastos tendem a reduzir os multiplicadores.
+14
+
+=== PAGE 15 ===
+Textos para discussão
+11.06.2024
+Do ponto de vista conjuntural, dois fatores seriam centrais na determinação do
+tamanho dos multiplicadores. Primeiramente, o estágio do ciclo econômico seria
+relevante, pois os multiplicadores seriam maiores em períodos recessivos que
+expansivos. Ademais, o nível de reação da política monetária a choques fiscais
+também seria um fator relevante, já que a política monetária pode reduzir o
+impacto da política fiscal.
+3.2 Tipos de multiplicador
+Além das diferentes abordagens metodológicas e dos fatores estruturais e
+conjunturais da economia que afetam a magnitude dos multiplicadores fiscais,
+também temos uma variedade de métricas de multiplicador, que traduzem óticas
+diferentes a respeito do efeito da política fiscal no produto e que tornam,
+inclusive, as comparações entre estudos difíceis. Como discutiu Oliveira (2018),
+os diversos tipos visam estimar o impacto, o pico e a persistência dos choques
+fiscais.
+O multiplicador de impacto, por exemplo, visa estimar o efeito contemporâneo
+da ação fiscal e pode ser uma métrica relevante a ser observada em face da
+ocorrência de crises econômicas, quando a atuação do governo precisa ser mais
+ágil. Além disso, essa métrica isola o impacto da política fiscal sobre a resposta
+das demais variáveis endógenas. Já o multiplicador de pico, como o nome
+sugere, estima o efeito potencial máximo de determinada política dentro de um
+determinado horizonte de tempo. Por fim, os multiplicadores de horizonte e
+cumulativo tem como pano de fundo a ideia de persistência da medida fiscal,
+sendo o multiplicador de horizonte uma estimação de médio prazo de um choque
+presente e o cumulativo uma resposta também de médio prazo, mas que reflete
+o efeito acumulado no tempo.
+15
+
+=== PAGE 16 ===
+Textos para discussão
+11.06.2024
+Tabela 3 – Tipos de multiplicadores fiscais
+Fonte: Oliveira (2018)
+Entender as diferenças entre essas métricas é fundamental, porque cada uma
+delas traz informações qualitativas distintas sobre a política fiscal, que devem
+ser usadas segundo os objetivos do pesquisador / formulador de políticas
+públicas.
+3.3 Evidências para o Brasil
+Esse conjunto de fatores discutidos nas seções 3.1 e 3.2 contribuiu para o
+surgimento de consensos e dissensos na literatura, como apontam Busato e
+Martins (2022) em revisão feita sobre a literatura empírica acerca de
+multiplicadores fiscais, especialmente aplicados ao Brasil.
+Do lado dos consensos, os pesquisadores mostram que parte relevante da
+literatura empírica produzida no Brasil aponta efeitos positivos dos gastos
+públicos agregados sobre o produto, com variações de magnitude a depender
+da metodologia empregada e do recorte temporal. Também foi identificado, na
+maior parte da literatura que trabalha com multiplicadores desagregados por
+tipos de despesa, que os efeitos dos gastos com investimentos públicos e dos
+gastos sociais são maiores e tem mais persistência que outras categorias.
+16
+
+=== PAGE 17 ===
+Textos para discussão
+11.06.2024
+Quanto aos dissensos, os autores trazem a ligação entre os multiplicadores e o
+ciclo econômico e a metodologia empregada nas estimações, muito embora
+exista certa predominância dos modelos SVAR no caso brasileiro.
+Busato e Martins (2022) também trazem uma tabela síntese da literatura sobre
+multiplicadores fiscais no Brasil, em que detalham, por artigo, o período
+analisado, a metodologia empregada e os principais resultados.
+Tabela 4 - Síntese da literatura empírica sobre multiplicadores fiscais no
+Brasil
+Ano Autores Título Período Método Resultados
+Avaliando os Efeitos da S-VAR +
+Mendonça, Política Fiscal no Brasil: identificação ΔG → ΔPIB (-)
+T1/95-
+2009 Medrano e Resultados de um agnóstica ΔG → ΔC (+)
+T4/07
+Sachsida Procedimento de (Mountford; ΔT → ΔPIB (+)
+Identificação Agnóstica Uhlig, 2005)
+ΔG → ΔPIB (+)
+Efeitos dinâmicos dos
+2009
+Peres e
+choques fiscais do governo
+T1/94-
+S-VAR
+αG = 0,39
+Ellery Jr. T2/05 ΔT → ΔPIB (-)
+central no PIB no Brasil
+αT = -0,29
+Sem dívida:
+Dívida pública, política
+S-VAR + ΔG → ΔPIB (+)
+fiscal e nível de atividade:
+2010
+Cavalcanti
+Uma abordagem VAR para
+T1/95- controle p/ αG ≈ 0,0015
+e Silva T4/08 dívida Com dívida:
+o Brasil no período 1995-
+pública ΔG → ΔPIB (X)
+2008
+αT ≈ 0
+ΔG → ΔPIB (X)
+αG ≈ 0
+Política fiscal e ciclos T2/96- ΔT → ΔPIB (-)
+2014 Pires MS-DIR
+econômicos no Brasil T4/12 αT = [-0,3, -0,2]
+ΔIG → ΔPIB (+)
+αIG = [1,4, 1,7]
+ΔG → ΔPIB (+/-)
+Multiplicadores Fiscais e
+2015 Moura Investimento em Simulação DSGE
+αG = [-0,4, 0,6]
+ΔIG → ΔPIB (+)
+Infraestrutura
+αIG = [0,6, 1,0]
+ΔG → ΔPIB (+)
+Multiplicadores fiscais no
+2016 Dutra Brasil : estimativas a partir
+jan/97-
+ST-VAR
+αG = [0,21, 0,49]
+jun/16 ΔIG → ΔPIB (+)
+de modelos STVAR
+αIG = [0,40, 1,77]
+ΔG → ΔPIB (+)
+Matheson T1/99-
+αG ≈ 0,6
+2016 Fiscal Multipliers for Brazil S-VAR ΔCred. → ΔPIB
+e Pereira T1/14
+(+)
+αT ≈ 0,6
+17
+
+=== PAGE 18 ===
+Textos para discussão
+11.06.2024
+ΔG → ΔPIB (+)
+Orair,
+Política Fiscal e Ciclo αG = [0,35, 0,54]
+Econômico: uma análise jan/02- ΔIG → ΔPIB (+)
+2016 Siqueira e ST-VAR
+Gobbeti
+baseada em multiplicadores abr/16 αIG = [0,16, 1,68]
+do gasto público ΔTr → ΔPIB (-)
+αTr = [0,84, 1,51]
+ΔG → ΔPIB (+)
+Mudanças de regime e
+Castelo-
+multiplicadores fiscais no MS-SBVAR
+αG = [0,53, 0,65]
+Branco, T1/99- ΔIG → ΔPIB (+)
+2017 Brasil em 1999-2012: uma e
+Lima e
+avaliação empírica com uso
+T4/12
+S-VAR
+αIG = [1,14, 1,66]
+Paula ΔT → ΔPIB (-)
+da metodologia MS-SBVAR
+αT = [-0,16, -0,12]
+Expansão:
+Multiplicador dos Gastos do
+ΔG → ΔPIB (+)
+Governo em Períodos de
+2017
+Grudtner e
+Expansão e Recessão:
+T1/99-
+STVAR
+αG = [0,45, 2,94]*
+Aragon T4/15 Recessão:
+Evidências Empíricas para
+ΔG → ΔPIB (+)
+o Brasil
+αIG = [1,11, 2,59]*
+Política fiscal e crescimento
+ΔG → ΔPIB (+)
+econômico: uma análise do jan/02-
+2017 Cattan STVAR ΔIG → ΔPIB (+)
+período de metas de abr/16
+ΔT → ΔPIB (+)
+inflação no Brasil
+Linear:
+O impacto da política fiscal Método de
+ΔG → ΔPIB (+)
+sobre a atividade Projeção
+2017 Alves econômica ao longo do
+T1/99-
+Local
+αG = 0,52
+T2/16 Não-linear:
+ciclo econômico: evidências (Jordá,
+ΔG → ΔPIB (+)
+para o Brasil 2005)
+αIG = [0,27, 0,98]
+ΔG → ΔPIB (+)
+Multiplicadores fiscais
+desagregados e ciclicidade
+αG = [1,18, 1,22]
+ΔIG → ΔPIB (+)
+2018 Oliveira da política fiscal: UMA Simulação DSGE
+abordagem DSGE para a
+αIG = [1,24, 1,29]
+ΔTr → ΔPIB (+)
+economia brasileira
+αTr = [0,23, 0,29]
+Linear:
+Investimento público no ΔIG → ΔPIB (+)
+2018
+Orair e Brasil e suas relações com jan/02-
+STVAR
+αIG = 1,30
+Siqueira ciclo econômico e regime dez/15 Não-linear:
+fiscal ΔIG → ΔPIB (+)
+αIG = [0,81, 2,19]
+Linear:
+Método de
+Multiplicadores fiscais ΔG → ΔPIB (+)
+Alves, Projeção
+2019 Rocha e
+dependentes do ciclo T1/97-
+Local
+αG = 0,17
+econômico: O que é T2/17 Não-linear:
+Gobetti (Jordá,
+possível dizer para o Brasil? ΔIG → ΔPIB (+)
+2005)
+αIG = [0,05, 0,60]
+A contribuição da política
+ΔGp → ΔPIB (+)
+fiscal para a crise brasileira
+recente: uma análise
+αGp = [0,33, 038]
+Sanches e jan/97- ΔIG → ΔPIB (+)
+2019 baseada em multiplicadores SVAR
+Carvalho
+de despesas primárias do
+jun/18 αIG = [1,4, 1,5]
+ΔTr → ΔPIB (+)
+governo central no período
+1997-2018
+αTr = [0,75, 0,77]
+18
+
+=== PAGE 19 ===
+Textos para discussão
+11.06.2024
+Uma Contribuição Para as
+Estimativas de ΔG → ΔPIB (+)
+Barros Multiplicadores Fiscais no T4/98;
+S-VAR c/
+Ipea: αG = 4,92
+2020 Neto e Brasil: Análise de T1/03;
+dummies
+Tesouro: αG =
+Correa Intervenção em Modelos T4/08 3,97
+VAR Ampliados por (acum. 4 trim.)
+Dummies
+Holland, Is fiscal policy effective in Não-linear:
+T1/97- VAR e
+2020 Marçal e Brazil? An empirical ΔG → ΔPIB (X)
+T2/18 TVAR
+Prince analysis αG = [-0,10, 0,01]
+ΔG → ΔPIB (+)
+2020 Restrepo
+How big are fiscal T1/97-
+SVAR
+αG = 0,81*
+multipliers in Latin America? T2/17 ΔT → ΔPIB (-)
+αT = -0,44*
+ΔGp → ΔPIB (+)
+Política fiscal e dinâmica do αGp = [0,33, 038]
+produto: uma análise jan/97- ΔIG → ΔPIB (+)
+2020 Sanches SVAR
+baseada em multiplicadores jun/18 αIG = [1,4, 1,5]
+fiscais no Brasil ΔTr → ΔPIB (+)
+αTr = [0,70, 0,77]
+ΔGp → ΔPIB (+)
+αGp = [0,40, 0,49]
+Política fiscal e
+ΔGfolha → ΔPIB
+(+)
+multiplicador fiscal no T1/97- VAR e
+2021 Paulino
+Brasil: teoria e evidência T4/19 tvVAR
+αfolha = [1,33,
+2,37]
+empírica (1997-2019)
+ΔGoutras → ΔPIB
+(+)
+αGo = [-0,67, 1,97]
+ΔGfolha → ΔPIB
+(+)
+Impulso de
+Resende e
+O impulso de multiplicador
+T1/97- Multiplicador
+αGfolha = 0,82
+2021 fiscal: implementação e ΔIG → ΔPIB (+)
+Pires T4/18 Fiscal e
+evidência para o Brasil
+SVAR
+αIG = 2,37
+ΔTr → ΔPIB (+)
+αTr = 0,72
+Multiplier effects of social
+Sanches e jan/97- ΔTr → ΔPIB (+)
+2021 protection: a SVAR SVAR
+Carvalho
+approach for Brazil
+jun/18 αTr = [0,70, 1,30]
+Fonte: Busato e Martins (2022). Adaptado. Os números apresentados consideram os
+multiplicadores de impacto. *Multiplicador cumulativo.
+4. O Impulso Estrutural do Gasto (IEG)
+Conforme discutido, não há um indicador fiscal de uso amplo para o Brasil que
+vise estimar os efeitos da política fiscal sobre o produto da economia. O impulso
+estrutural do gasto (IEG) busca incorporar a literatura de multiplicadores fiscais
+na estimação de um indicador de impulso fiscal que reflita a contribuição da
+despesa primária sobre o produto da economia. Busca-se, portanto, trazer outra
+dimensão de impacto da política fiscal, o que se mostrou cada vez mais
+19
+
+=== PAGE 20 ===
+Textos para discussão
+11.06.2024
+importante desde os desdobramentos da crise financeira internacional em 2008
+e, principalmente, com a pandemia.
+Inicialmente, é importante destacar que o gasto é uma das dimensões do impulso
+fiscal, tendo em vista que muitas vezes, as respostas de política fiscal também
+ocorrem pela tributação. No entanto, dado que os multiplicadores de receitas são
+muito mais instáveis em função do viés de endogeneidade, o foco do IEG será o
+gasto público.
+4.1 Os dados
+As séries utilizadas na análise são as de PIB, despesas primárias do governo
+geral, IPCA e taxa Selic. O período da análise é do primeiro trimestre de 2010
+ao quarto trimestre de 2023, 2010T1 – 2023T4. Todas as séries utilizadas
+apresentam as 56 observações disponíveis. As séries foram deflacionadas pelo
+IPCA. As séries foram logaritimizadas, trimestralizadas e dessazonalizadas pelo
+método X-13, com exceção da taxa de juros e do IPCA que foram apenas
+trimestralizadas.
+As séries de PIB e IPCA são calculadas pelo Instituto Brasileiro de Geografia e
+Estatística (IBGE). As séries de despesas primárias foram provenientes do
+Resultado de Estatísticas Fiscais do Governo Geral, disponibilizadas pelo
+Tesouro Nacional. A série da taxa Selic é divulgada pelo Banco Central.
+A série de despesas primárias do governo geral foi ajustada para adequar o
+padrão contábil das despesas públicas a uma metodologia mais consistente para
+análise de política fiscal, como já discutido no Observatório de Política
+Fiscal/IBRE10. Para tanto, foram considerados os gastos do governo
+exclusivamente orçamentários, excluindo-se as estimativas de consumo de
+10 https://observatorio-politica-fiscal.ibre.fgv.br/politica-economica/pesquisa-academica/estimativa-das-despesas-
+publicas-para-o-periodo-2010-2019
+20
+
+=== PAGE 21 ===
+Textos para discussão
+11.06.2024
+capital fixo11 e foram incluídos os investimentos por meio da rubrica de ‘aquisição
+de ativos não financeiros’. Para os gastos com folha de salários foram
+considerados apenas salários e vencimentos, ou seja, foram excluídas as
+contribuições sociais. Por fim, foram excluídas as transferências e doações entre
+os entes da federação, para evitar a dupla contagem12.
+4.2 Estimação dos Multiplicadores e construção do IEG
+Foram estimados multiplicadores fiscais para o Governo Geral, isto é, para os
+gastos agregados da União, estados e municípios, baseados em grupos de
+despesa, tendo em vista que os efeitos do gasto público sobre o PIB diferem a
+depender do tipo de despesa a que se referem. As despesas foram divididas em:
+a) folha; b) transferências sociais; c) investimentos; d) outras despesas.
+O gasto com folha se refere a salários e vencimentos nas três esferas do
+governo. As transferências englobam os gastos previdenciários e assistenciais.
+Os investimentos se referem à aquisição de ativos não financeiros e as outras
+despesas são calculadas por resíduo da despesa primária total. Para tanto, a
+despesa primária total decorre do gasto total após a exclusão das despesas de
+consumo de capital fixo, despesas com juros e transferências e doações.
+Os multiplicadores para cada grupo de despesas foram obtidos por meio da
+abordagem de Vetores Autorregressivos (VAR), que trata cada variável do
+sistema como função das demais variáveis defasadas. Por meio da função de
+impulso resposta são obtidas as elasticidades do choque entre as variáveis. Essa
+elasticidade é utilizada para estimar o multiplicador fiscal de cada despesa,
+segundo a equação:
+11 O consumo de capital fixo é uma estimativa de depreciação do capital público o que impacta a conta de acumulação no setor público.
+É um custo econômico importante, mas não envolve uma despesa.
+12 É importante observar que o período amostral é exíguo, há elevada volatilidade econômica nesse período e mudanças de regras
+fiscais que podem ter alterado o processo gerador de dados e produzido algum viés nas estimativas a serem apresentadas. Na medida
+em que a amostra for ampliada e o indicador atualizado será possível reavaliar os resultados obtidos o obter maior robustez.
+21
+
+=== PAGE 22 ===
+Textos para discussão
+11.06.2024
+ΔY
+ΔY X
+∈ = 𝑌 = . , em que:
+ΔX ΔX Y
+𝑋
+ΔY X
+é o multiplicador fiscal e é a proporção da despesa em percentual do PIB.
+ΔX Y
+Foram estimados multiplicadores de impacto para cada grupo de despesa, com
+a despesa em percentual do PIB do último trimestre.
+Com a estimação dos multiplicadores fiscais, procedeu-se à construção do
+indicador de impulso estrutural do gasto do governo geral. O impulso estrutural
+do gasto é a variação de cada grupo de despesa, em percentual do PIB,
+ponderada pelo respectivo multiplicador fiscal de impacto, segundo equação:
+𝐼 = 𝜇 .Δ 𝐹 + 𝜇 .Δ𝑇+ 𝜇 .Δ 𝐼 + 𝜇 .Δ 𝑂
+𝐹 𝑇 𝐼 𝑜
+Onde:
+Δ𝐹= variação do gasto com folha em percentual do PIB
+Δ𝑇= variação do gasto com transferências sociais em percentual do PIB
+Δ𝐼= variação do investimento público em percentual do PIB
+Δ𝑂= variação das outras despesas em percentual do PIB
+4.3 Resultados
+Para o período em análise, o multiplicador fiscal para o governo geral mais alto
+é o de investimentos, com impacto de 1,66. O que observamos, não obstante, é
+que esse grupo representa uma pequena parcela dos gastos, tendo uma média
+de apenas 1,86% do PIB. Como é sabido, o investimento público foi
+historicamente variável de ajuste nas regras fiscais, sofrendo com cortes
+orçamentários ao longo dos anos.
+22
+
+=== PAGE 23 ===
+Textos para discussão
+11.06.2024
+O multiplicador de transferências foi de 1,46, indicando como o aumento do gasto
+público com benefícios previdenciários e assistenciais nas três esferas tiveram
+efeitos positivos no produto da economia. Essa é a despesa pública mais
+relevante, correspondendo a aproximadamente 50% do total.
+O multiplicador de folha foi estimado em 1,32, sugerindo também o efeito positivo
+desse grupo de despesas no PIB. Quanto ao aumento de gastos com folha, é
+comum a ideia de que se trata de uma parcela muito privilegiada da sociedade,
+o que advogaria no sentido de que o aumento desse grupo de despesa teria
+pouco efeito na economia, pois grande parte viraria poupança.
+Ocorre que, quando analisamos o perfil do serviço público nos três entes
+federados observamos que a maior parte do funcionalismo está nos municípios,
+onde os salários são mais baixos. Uma pesquisa do IPEA mostra que, no
+Executivo, que concentra a maior parte do funcionalismo nos três entes, 58,13%
+dos servidores municipais e 31,87% nos estados ganham até R$ 2,5 mil. Já na
+faixa de R$2,5 a R$ 5 mil estão cerca de 29% dos servidores municipais e 35,4%
+dos estaduais. Ou seja, trata-se de grande parte do funcionalismo. Na outra
+ponta, com salários de acima de R$ 30 mil, estão apenas 0,3% do serviço público
+municipal, 0,24% dos estaduais e 1,95% dos federais. Além disso, como a maior
+parte possui estabilidade, a incerteza e, consequentemente, o estímulo à
+poupança pessoal é menor. Essas informações corroboram o resultado de que
+um estímulo na folha, para a maior parte do serviço público, deve gerar um
+impacto acima de 113.
+Por fim, os gastos do governo geral com outras despesas, grupo formado por
+resíduo, teria um multiplicador bem mais baixo, de 0,64 no PIB. Esse tipo de
+despesa é relevante e corresponde à aproximadamente 30% do total.
+13 https://www.ipea.gov.br/atlasestado/consulta/173
+23
+
+=== PAGE 24 ===
+Textos para discussão
+11.06.2024
+Tabela 5: Multiplicadores fiscais por grupo de despesa
+Grupo de despesa Multiplicador
+Folha 1,32
+Transferência 1,46
+Investimentos 1,66
+Outras Despesas 0,64
+Fonte: elaboração própria.
+A partir desses multiplicadores, é possível calcular o impulso estrutural de gastos
+do governo geral. O indicador aponta que, de 2011 a 2023, apenas nos anos de
+2011, 2018 e 2021 houve um impulso contracionista do gasto público em relação
+ao ano anterior. Em 2011, como é de conhecimento público, houve um grande
+choque negativo de investimentos públicos, que contribuiu para a desaceleração
+econômica no período.
+Em 2018 houve uma contração de 0,24% em relação a 2017, ano em que Teto
+de Gastos na esfera federal estava vigente. Já em 2021, a forte contração foi
+puxada por cortes nas transferências de renda em relação a 2020, como
+reversão das políticas implementadas durante o período pandêmico.
+Tabela 6: Impulso Estrutural do Gasto
+Impulso
+Ano Estrutural do Resultado
+Gasto
+2011 -0,83% contração
+2012 0,71% expansão
+2013 0,53% expansão
+2014 1,29% expansão
+2015 0,84% expansão
+2016 1,65% expansão
+2017 0,27% expansão
+2018 -0,24% contração
+2019 0,48% expansão
+2020 6,87% expansão
+2021 -9,19% contração
+2022 1,90% expansão
+2023 1,75% expansão
+Fonte: elaboração própria.
+24
+
+=== PAGE 25 ===
+Textos para discussão
+11.06.2024
+Quando comparamos o IEG com o IFE da SPE14, observamos uma diferença
+relevante no que diz respeito ao período de enfrentamento da pandemia de
+COVID-19. Segundo o indicador da SPE, que exclui eventos não recorrentes do
+impulso fiscal, os anos de 2020 e 2021 foram de contração fiscal, muito embora
+os governos tenham ampliado sobremaneira os gastos para conter danos
+socioeconômicos da crise.
+Já o IEG aponta que no ano de 2020 houve uma relevante expansão do gasto
+público, que contribuiu para arrefecer o choque negativo provocado pela
+emergência sanitária. No ano seguinte, no entanto, a tentativa precoce de reduzir
+os gastos públicos ainda em meio aos efeitos da pandemia produziu um forte
+impacto contracionista, como observamos no gráfico abaixo.
+Gráfico 1: Impulso Estrutural do Gasto (IEG) x Impulso Fiscal Estrutural
+(IFE)
+Impulso Fiscal
+8,00%
+6,00%
+4,00%
+2,00%
+0,00%
+-2,00%
+-4,00%
+-6,00%
+-8,00%
+-10,00%
+2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021
+IFE IEG
+Fonte: elaboração própria.
+Quanto à contribuição de cada grupo de despesas para o impulso, destaca-se
+os anos de 2015, 2020, 2021 e 2023 para análise. Em 2015, ano em que o IFE
+14 O IFE só está disponível até 2021.
+25
+
+=== PAGE 26 ===
+Textos para discussão
+11.06.2024
+aponta impulso contracionista, indicando um ajuste fiscal naquele ano com a
+consequente contribuição positiva para o endividamento público, o IEG aponta
+um impulso expansionista de 0,84%. Analisando a composição do ajuste fiscal
+promovido, vemos que a contribuição marginal negativa ficou concentrada nos
+investimentos públicos nas três esferas, com 1,24%. Os demais grupos tiveram
+efeito positivo, revertendo a contração nos investimentos. As transferências
+contribuíram positivamente com 0,91%, seguido do grupo folha com 0,71%. Por
+fim, outras despesas deram uma contribuição de 0,47%.
+Tabela 7: Contribuição por grupo de despesa para o Impulso Estrutural do
+Gasto
+Contribuição
+Contribuição Contribuição Contribuição
+marginal de
+Ano marginal de marginal de marginal de Impulso
+outras
+folha transferências investimentos
+despesas
+2011 -0,14% -0,18% -0,94% 0,44% -0,83%
+2012 0,13% 0,52% -0,10% 0,17% 0,71%
+2013 0,17% 0,29% 0,01% 0,07% 0,53%
+2014 0,11% 0,75% 0,37% 0,05% 1,29%
+2015 0,71% 0,91% -1,24% 0,47% 0,84%
+2016 0,09% 1,71% -0,29% 0,13% 1,65%
+2017 0,04% 0,89% -0,45% -0,21% 0,27%
+2018 -0,26% -0,22% 0,18% 0,06% -0,24%
+2019 -0,08% 0,38% -0,18% 0,36% 0,48%
+2020 -0,05% 6,95% 0,40% -0,44% 6,87%
+2021 -1,26% -7,80% -0,21% 0,09% -9,19%
+2022 0,22% 0,41% 1,11% 0,15% 1,90%
+2023 0,32% 1,44% -0,10% 0,08% 1,75%
+Fonte: elaboração própria.
+Quando observamos as despesas em percentual do PIB nos três entes
+federados, fica mais evidente que a concentração do ajuste fiscal de 2015
+ocorreu exclusivamente sobre os investimentos públicos, tendo em vista que
+este grupo de despesas foi o único que sofreu redução tanto na União quanto
+em estados e municípios.
+26
+
+=== PAGE 27 ===
+Textos para discussão
+11.06.2024
+Tabela 8: Despesas em percentual do PIB por ente federado em 2015
+UNIÃO
+Outras Total em
+Ano Folha Transferências Investimentos
+despesas % do PIB
+2014 2,27% 10,72% 0,72% 1,64% 15,35%
+2015 2,46% 11,13% 0,46% 1,73% 15,78%
+Variação 0,19% 0,41% -0,26% 0,09% 0,43%
+ESTADOS E MUNICÍPIOS
+Outras Total em
+Ano Folha Transferências Investimentos
+despesas % do PIB
+2014 7,05% 2,54% 1,74% 5,09% 16,42%
+2015 7,40% 2,76% 1,25% 5,73% 17,13%
+Variação 0,34% 0,22% -0,49% 0,65% 0,72%
+Fonte: elaboração própria.
+No entanto, em 2015 houve um grande dispêndio de R$ 39 bilhões na conta
+“equalização de passivos 2015”, que entra no grupo de outras despesas. Essas
+despesas se referem a ajustes de passivos do governo federal que haviam sido
+determinados pelo TCU. Na prática, o impacto econômico dessas despesas foi
+sentido em anos anteriores, pois foram custeadas por bancos públicos sem o
+devido ressarcimento pelo Governo Federal que atrasou os repasses.
+Se retirássemos esses ajustes da conta, veríamos que a União também fez
+ajuste fiscal em outras despesas e reduziu sua despesa total em percentual do
+PIB. Com isso, o impulso cairia para 0,46% e o resultado positivo ficaria
+fundamentalmente por conta da expansão ocorrida nos estados e municípios.
+27
+
+=== PAGE 28 ===
+Textos para discussão
+11.06.2024
+Tabela 9: Despesas em percentual do PIB por ente federado em 2015 sem
+ajustes de passivos
+UNIÃO
+Outras Total em
+Ano Folha Transferências Investimentos
+despesas % do PIB
+2014 2,27% 10,72% 0,72% 1,64% 15,35%
+2015 2,46% 11,13% 0,46% 1,08% 15,13%
+Variação 0,19% 0,41% -0,26% -0,56% -0,23%
+ESTADOS E MUNICÍPIOS
+Outras Total em
+Ano Folha Transferências Investimentos
+despesas % do PIB
+2014 7,05% 2,54% 1,74% 5,09% 16,42%
+2015 7,40% 2,76% 1,25% 5,73% 17,13%
+Variação 0,34% 0,22% -0,49% 0,65% 0,72%
+Fonte: elaboração própria.
+No ano de 2020, o IEG de 6,87% foi puxado pelo aumento das transferências de
+renda, que contribuíram em 6,95% para o resultado. Como sabido, em 2020 foi
+instituído o Auxílio Emergencial, que transferiu R$ 293 bilhões e atingiu quase
+68 milhões de brasileiros, segundo dados do governo federal15. Com isso, as
+despesas em percentual do PIB tiveram aumento de 4,52% no nível federal, o
+que explica a maior parte do IEG. O impulso positivo foi reforçado pelo aumento
+dos investimentos, que contribuíram com 0,40% do resultado do IEG. Ao
+observar as despesas por esfera, vemos que esse impulso positivo partiu de
+estados e municípios, que aumentaram a despesa em percentual do PIB em
+0,26% em relação a 2019. O resultado positivo foi menor devido à contribuição
+negativa da folha de salários do funcionalismo e de outras despesas, que
+amorteceram em 0,05% e 0,44%, respectivamente, o impulso expansionista
+sobre a demanda.
+15 https://www.gov.br/pt-br/noticias/assistencia-social/2020/12/auxilio-emergencial-ja-pagou-mais-de-r-288-bilhoes-para-
+garantir-protecao-social-aos-brasileiros-1
+https://portaldatransparencia.gov.br/beneficios/consulta?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrd
+enacao=asc&tipoBeneficio=6&colunasSelecionadas=linkDetalhamento%2ClinguagemCidada%2CmesAno%2Cvalor&or
+denarPor=municipio&direcao=asc
+28
+
+=== PAGE 29 ===
+Textos para discussão
+11.06.2024
+Tabela 10: Despesas em percentual do PIB por ente federado em 2020
+UNIÃO
+Outras Total em % do
+Ano Folha Transferências Investimentos
+despesas PIB
+2019 2,39% 12,48% 0,34% 1,90% 17,11%
+2020 2,33% 17,00% 0,32% 1,41% 21,05%
+Variação -0,06% 4,52% -0,02% -0,49% 3,94%
+ESTADOS E MUNICÍPIOS
+Outras Total em % do
+Ano Folha Transferências Investimentos
+despesas PIB
+2019 7,31% 3,30% 0,92% 6,08% 17,61%
+2020 7,34% 3,55% 1,18% 5,89% 17,96%
+Variação 0,03% 0,24% 0,26% -0,19% 0,35%
+Fonte: elaboração própria.
+Em 2021, com exceção do grupo outras despesas, de baixo multiplicador, todos
+os grupos de despesa contribuíram negativamente para o PIB, tendo em vista a
+redução do gasto público em relação a 2020. O forte impulso negativo de 9,19%
+foi puxado pela redução das transferências de renda em 2021, que contraiu em
+7,80% o impulso fiscal. Neste ano, o governo reduziu drasticamente o
+pagamento do Auxílio Emergencial, cujo pagamento foi reduzido para 39 milhões
+de famílias16, tendo o desembolso caído de R$ 293 bilhões para cerca de R$ 57
+bilhões, segundo o Portal da Transparência. Esses números explicam a redução
+de 4,88% do PIB em gastos com transferências na União. Estados e municípios
+também tiveram queda de 0,46% nas transferências.
+Outro grupo de despesa que afetou sobremaneira o impulso fiscal negativo sobre
+a demanda em 2021 foi a folha de salários do funcionalismo, com impacto
+negativo de 1,26%. Esse efeito pode ser relacionado à aprovação da Lei
+Complementar nº 173, de 2020, que instituiu o congelamento de salários dos
+servidores nos três entes até dezembro de 2021. Como visto, os efeitos
+começaram a ser sentidos em 2020, mas foram mais contundentes em 2021,
+especialmente no nível subnacional. Estados e municípios tiveram uma queda
+16 https://agenciabrasil.ebc.com.br/economia/noticia/2021-10/caixa-encerra-pagamento-do-auxilio-emergencial-apos-
+sete-meses#:~:text=De%20setembro%20a%20dezembro%20de,%24%20150%20e%20R%24%20375.
+29
+
+=== PAGE 30 ===
+Textos para discussão
+11.06.2024
+de 0,67% do PIB nos gastos com folha, enquanto esse número foi negativo em
+0,28% na União.
+Por fim, os investimentos também contribuíram negativamente para o resultado
+de 2021 em 0,21%, com queda nos três níveis de governo dos gastos em
+percentual do PIB.
+Tabela 11: Despesas em percentual do PIB por ente federado em 2021
+UNIÃO
+Outras Total em %
+Ano Folha Transferências Investimentos
+despesas do PIB
+2020 2,33% 17,00% 0,32% 1,41% 21,05%
+2021 2,04% 12,11% 0,25% 1,51% 15,92%
+Variação -0,28% -4,88% -0,07% 0,10% -5,13%
+ESTADOS E MUNICÍPIOS
+Outras Total em %
+Ano Folha Transferências Investimentos
+despesas do PIB
+2020 7,34% 3,55% 1,18% 5,89% 17,96%
+2021 6,67% 3,08% 1,12% 5,93% 16,81%
+Variação -0,67% -0,46% -0,06% 0,04% -1,15%
+Fonte: elaboração própria.
+Em 2023, o IEG positivo de 1,75% foi puxado pela contribuição marginal positiva
+das transferências de renda. Ao observar o gasto em percentual do PIB nas
+esferas de governo, vemos que esse resultado positivo decorreu do aumento de
+0,97% dos gastos com políticas de transferência da União. Foi em 2023 que o
+Programa Bolsa Família teve um aumento expressivo, impulsionando o consumo
+das famílias17 e, consequentemente, a atividade econômica.
+O resultado do IEG de 2023 também é explicado pelo impulso positivo da folha,
+que teve contribuição marginal de 0,32%. Quanto a esse resultado, é importante
+observar que esse efeito ocorreu nos entes subnacionais, que tiveram aumento
+17 https://valor.globo.com/brasil/noticia/2023/12/25/transferencias-de-renda-tem-aumento-forte-e-ajudam-a-impulsionar-
+consumo-das-familias.ghtml
+30
+
+=== PAGE 31 ===
+Textos para discussão
+11.06.2024
+desse gasto de 0,24% em percentual do PIB em relação a 2022. Em nível
+federal, a despesa relativa foi estável.
+Os investimentos em 2023 contribuíram negativamente para o IEG em 0,10%.
+Quando analisamos por esfera de governo, vemos que esse resultado decorreu
+de uma retração nos gastos a nível de estados e munícipios em 0,10%, já que a
+União teve um aumento de 0,04% do PIB nos investimentos federais. Contudo,
+até o terceiro trimestre a contribuição marginal de investimentos era de -0,42%,
+sendo a retração puxada pelos estados e municípios, cujo nível de gastos estava
+reduzido em 0,24% em relação ao ano anterior. Portanto, o quarto trimestre foi
+fundamental para arrefecer o impacto negativo dos investimentos no IEG.
+Tabela 12: Despesas em percentual do PIB por ente federado em 2023
+UNIÃO
+Outras Total em %
+Ano Folha Transferências Investimentos
+despesas do PIB
+2022 1,89% 12,32% 0,26% 1,36% 15,82%
+2023 1,89% 13,29% 0,30% 1,46% 16,94%
+Variação 0,00% 0,97% 0,04% 0,10% 1,12%
+ESTADOS E MUNICÍPIOS
+Outras Total em %
+Ano Folha Transferências Investimentos
+despesas do PIB
+2022 6,99% 3,16% 1,79% 6,32% 18,26%
+2023 7,23% 3,18% 1,69% 6,34% 18,44%
+Variação 0,24% 0,02% -0,10% 0,02% 0,18%
+Fonte: elaboração própria.
+5. Conclusão
+O IEG ajuda a quantificar o debate sobre os efeitos da política fiscal na demanda
+agregada. Ao trazer uma nova ótica para avaliação dos gastos públicos, que
+combina a literatura de multiplicadores com o conceito de impulso fiscal, o
+indicador estima o impacto do gasto público sobre o produto da economia. Essa
+nova dimensão visa contribuir para a discussão sobre política fiscal, que
+comumente está restrita à relação entre despesa e dívida pública.
+31
+
+=== PAGE 32 ===
+Textos para discussão
+11.06.2024
+O IEG também qualifica o debate na medida em que combina efeitos de política
+fiscal com duas perspectivas, quais sejam, os impactos dos três entes federados
+e de grupos distintos de gastos públicos. Com isso, foi possível observar, por
+exemplo, que em 2015 o ajuste fiscal foi todo concentrado em investimentos
+públicos, que teve o choque arrefecido pelo aumento das despesas em
+percentual do PIB nos demais grupos. Quanto aos sinais divergentes de política
+fiscal entre as esferas de governo, vimos que o forte impulso fiscal da pandemia
+em 2020 foi puxado pelas transferências sociais na União. Em 2023, muito
+embora tenha havido retração dos investimentos nos entes subnacionais, os
+investimentos na União arrefeceram esse impacto.
+Ao combinar, portanto, efeitos de grupos segregados de despesa com
+efeitos de política fiscal nas três esferas, é possível observar que tanto o ´mix´
+de gastos importa quanto as ações dos demais entes, que podem potencializar
+ou arrefecer um choque fiscal. Desse modo, um estímulo pode não produzir os
+efeitos esperados, por exemplo, em decorrência do tipo de gasto escolhido ou
+da atuação de outra esfera de governo, e não por uma eventual ineficácia da
+política fiscal per si.
+32
+
+=== PAGE 33 ===
+Textos para discussão
+11.06.2024
+6. Referências
+BATINI, Nicoletta; EYRAUD, Luc; WEBER, Anke. A simple method to compute
+fiscal multipliers. International Monetary Fund, 2014. Disponível em: <
+https://www.imf.org/en/Publications/WP/Issues/2016/12/31/A-Simple-Method-to-
+Compute-Fiscal-Multipliers-41627>
+BUSATO, Maria Isabel; MARTINS, Norberto Montani. Multiplicadores fiscais no
+Brasil: entre consensos e dissensos. Texto para Discussão. 2022. Disponível em:
+https://www.ie.ufrj.br/images/IE/CATEDRA/Texto%205_Catedra%20Celso%20Furt
+ado_Multiplicadores_vf.pdf.
+CARNOT, Nicolas; DE CASTRO, Francisco. The discretionary fiscal effort: an
+assessment of fiscal policy and its output effect. Hacienda Pública Española, n.
+215, p. 63, 2015. Disponível em: <
+http://ec.europa.eu/economy_finance/publications/.>
+EUROPEAN COMMISSION. Report on Public finances in EMU 2013, European
+Economy, 4. 2013. Disponível em: <
+https://ec.europa.eu/economy_finance/publications/european_economy/2013/pdf/e
+e-2013-4.pdf.>
+GOBETTI, Sérgio Wulff; ORAIR, Rodrigo Octávio; DUTRA, Frederico Nascimento.
+Resultado estrutural e impulso fiscal: aprimoramentos metodológicos. 2018.
+Disponível em: <
+http://www.ipea.gov.br/portal/images/stories/PDFs/TDs/td_2405.pdf>.
+JOURMARD, I.; MINEGISHI, M.; ANDRÉ, C.; NICQ, C.; PRICE, R. Accounting For
+One-Off Operations When Assessing Underlying Fiscal Positions. OECD
+Economics Department Working Papers, No. 642, OECD Publishing, 2008.
+Disponível em: < https://www.oecd-ilibrary.org/economics/accounting-for-one-off-
+operations-when-assessing-underlying-fiscal-positions_236220765316 >.
+OLIVEIRA, Vitor Kayo de. Multiplicadores fiscais de gastos e tributos: uma
+abordagem DSGE para a economia brasileira. 2018. Dissertação (Mestrado em
+Teoria Econômica) - Faculdade de Economia, Administração e Contabilidade,
+Universidade de São Paulo, São Paulo, 2018.
+RESENDE, Carolina., PIRES, Manoel. 2021. O Impulso de Multiplicador Fiscal:
+Implementação E Evidência Para O Brasil. Estudos Econômicos 51 (2): 213–243.
+SECRETARIA DE POLÍTICA ECONÔMICA (SPE). Nota Metodológica do
+Resultado Fiscal Estrutural. Brasília, 2022. Disponível em: <
+https://www.gov.br/fazenda/pt-br/assuntos/politica-fiscal/atuacao-spe/resultado-
+fiscal-estrutural/notas-metodologicas/2022/nota-metodologica-atualizada>.
+33
+
+=== PAGE 34 ===
+Textos para discussão
+11.06.2024
+c
+34

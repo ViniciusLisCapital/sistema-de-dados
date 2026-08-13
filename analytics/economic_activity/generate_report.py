@@ -27,20 +27,27 @@ _DATABASE = "macro_brasil"
 
 # Tabelas com coluna seasonal_adjs separada ("Y"/"N") -- o sufixo _sa/_nsa e
 # adicionado ao nome aqui, na leitura, para virar a chave final da serie.
+#
+# "pim" nao esta aqui -- ele combina DUAS tabelas (atv_pim + atv_pim_uso) num unico grupo,
+# ver _load_pim() abaixo.
 _SUFFIXED_TABLES = {
-    "pib":     "atv_pib",
-    "pib_enc": "atv_pib_encadeado",  # R$ mi a precos de 1995 -- insumo da decomposicao de crescimento
-    "pim":     "atv_pim",
-    "pmc":     "atv_pmc",
-    "pms":     "atv_pms",
+    "pib": "atv_pib",
+    "pmc": "atv_pmc",
+    "pms": "atv_pms",
 }
 
 # atv_ibcbr ja grava o sufixo _sa/_nsa dentro do proprio "name" (ver
 # domain/db/brasil/bcb/atv_ibcbr.py) -- nao precisa de sufixo adicional,
 # so agrupar por name direto. O resultado final tem exatamente o mesmo
 # formato de chave (<base>_sa / <base>_nsa) que as tabelas acima.
+#
+# atv_pib_valores_correntes (grupo "pib_val") tambem entra aqui, mesmo sem SA/NSA algum -- e NSA
+# apenas (nao existe variante SA para "valores a precos correntes"), entao _load_flat() so agrupa
+# por name, sem sufixo. Usado para computar o peso anual (nao a serie em si) no metodo de
+# decomposicao de crescimento -- ver report.html/CLAUDE.md "PIB tab methodology".
 _FLAT_TABLES = {
-    "ibcbr": "atv_ibcbr",
+    "ibcbr":   "atv_ibcbr",
+    "pib_val": "atv_pib_valores_correntes",
 }
 
 
@@ -75,6 +82,21 @@ def _load_flat(table: str) -> dict:
     return _series_dict(df, lambda r: r["name"])
 
 
+def _load_pim() -> dict:
+    """atv_pim (secoes e atividades CNAE, agregado IBGE 8888) e atv_pim_uso (grandes
+    categorias economicas / categorias de uso, agregado 8887) sao duas tabelas distintas
+    (agregados IBGE diferentes) mas viram um unico grupo "pim" aqui -- os nomes de
+    categoria de cada uma nunca colidem (industria_geral/ind_extrativas/ind_transformacao/
+    transf_* de um lado, bens_capital/bens_intermediarios/bens_consumo/... do outro), e
+    report.html's PIM tab le ambas perspectivas atraves do mesmo D.pim namespace
+    (ser('pim', base)), sem precisar saber de qual tabela cada base veio.
+    """
+    df1 = _load_table("atv_pim")
+    df2 = _load_table("atv_pim_uso")
+    df  = pd.concat([df1, df2], ignore_index=True)
+    return _series_dict(df, lambda r: r["name"] + ("_sa" if r["seasonal_adjs"] == "Y" else "_nsa"))
+
+
 def _load_pib_taxas() -> dict:
     """atv_pib_taxas has (date, name, indicador, value) -- no seasonal_adjs column, since each
     indicador (yoy/acum_4t/acum_ano/qoq) is inherently NSA or SA by its own definition. Key format
@@ -99,6 +121,15 @@ def run(output: str = "reports/economic_activity_latest.html") -> None:
         except Exception as exc:
             print(f"  {group:6s} ({table}): FALHOU -- {exc}")
             data[group] = {}
+
+    try:
+        series = _load_pim()
+        data["pim"] = series
+        n_obs = sum(len(v["dates"]) for v in series.values())
+        print(f"  pim    (atv_pim + atv_pim_uso): {len(series)} series, {n_obs} obs")
+    except Exception as exc:
+        print(f"  pim    (atv_pim + atv_pim_uso): FALHOU -- {exc}")
+        data["pim"] = {}
 
     for group, table in _FLAT_TABLES.items():
         try:

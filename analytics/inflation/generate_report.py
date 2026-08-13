@@ -99,7 +99,7 @@ def _to_records(df: pd.DataFrame, indice: str) -> dict:
         return {"records": [], "min_date": "", "max_date": ""}
 
     sub["dt"] = sub["date"].dt.strftime("%Y-%m")
-    cols = ["dt", "subitem", "grupo", "subgrupo", "item", "subjacente",
+    cols = ["dt", "subitem", "grupo", "subgrupo", "item", "subjacente", "comercializavel",
             "nucleo_ex0", "nucleo_ex01", "nucleo_ex02", "nucleo_ex03",
             "nucleo_ex03_servicos", "nucleo_ex03_industriais", "nucleo_exfe",
             "var_mensal", "pesos", "contribuicao"]

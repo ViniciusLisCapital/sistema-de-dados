@@ -239,30 +239,59 @@ Nada além disso — sem Chart.js, sem chartjs-plugin-datalabels, sem hammer.js/
 - **Scroll / pinch** → zoom nos dois eixos, ancorado no cursor (`scrollZoom:true`)
 - **Double-click** → reseta para o range completo (comportamento nativo do Plotly, não precisa de handler)
 - **Sem gesto de box-zoom** (o `dragmode:'pan'` do Plotly já substitui o `'zoom'` padrão da lib, que faria rubber-band box-zoom)
-- **Botões de range rápido** (1a/3a/5a/10a/Tudo) — algo que o Chart.js não tinha equivalente direto; usa o `rangeselector` nativo do Plotly
+- **Botões de range rápido** (1a/3a/5a/10a/Tudo) — **botões HTML normais + `Plotly.relayout()` direto, NÃO o `xaxis.rangeselector` nativo do Plotly.** Ver caixa de atenção abaixo antes de implementar isso de outra forma.
+
+> [!WARNING]
+> **Não use `layout.xaxis.rangeselector` para os botões de range rápido.** Duas tentativas anteriores nesse próprio padrão quebraram em produção (`analytics/economic_activity/report.html`, 2026-08, histórico completo em `.claude/rules/lis-dashboards.md`):
+> 1. `rangeselector.buttons[]` com `step`/`stepmode`/`count` (a forma "correta"/documentada) ainda assim ancora o `to` no range **atual** do eixo — que, se estiver com autorange ligado, é o range com o padding automático do próprio Plotly (uma % do span total, grande em termos absolutos quando o histórico é longo). Resultado: clicar em "3a" abre uma janela com meses/anos vazios depois do último ponto real.
+> 2. Uma correção errada assumiu que `rangeselector.buttons[]` aceitava `{method:'relayout', args:[...]}` como os botões de `layout.updatemenus` — **não aceita**. Esse campo não existe na spec do rangeselector (só `step`/`stepmode`/`count`/`label`/`name`/`visible`). O Plotly ignora o campo silenciosamente e o clique produz um resultado sem sentido (gráfico em branco, eixo X reduzido a poucas semanas perto da data de renderização).
+>
+> A causa raiz dos dois problemas é a mesma: depender do comportamento interno do componente `rangeselector` em vez de calcular o range você mesmo. Botões HTML normais que chamam `Plotly.relayout(divId, {'xaxis.range': [from, to]})` diretamente evitam ambos de uma vez — você mesmo calcula `[from, to]` a partir dos dados reais, sem depender de nenhum estado interno do Plotly.
 
 ```javascript
 // Config do Plotly (passar como 3º argumento de Plotly.newPlot/react)
 const PLOTLY_CONFIG = {
   responsive: true,
-  displayModeBar: 'hover',       // toolbar só aparece no hover, não compete com o rangeselector
+  displayModeBar: 'hover',       // toolbar só aparece no hover, não compete com os botões de range
   displaylogo: false,
   modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
   scrollZoom: true,              // scroll/pinch zoom in place, estilo TradingView
 };
 
-const RANGE_SELECTOR = {
-  buttons: [
-    { count: 1, label: '1a', step: 'year', stepmode: 'backward' },
-    { count: 3, label: '3a', step: 'year', stepmode: 'backward' },
-    { count: 5, label: '5a', step: 'year', stepmode: 'backward' },
-    { count: 10, label: '10a', step: 'year', stepmode: 'backward' },
-    { step: 'all', label: 'Tudo' },
-  ],
-  bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
-  activecolor: '#1F2853', font: { size: 11, color: '#555' },
-  x: 0, xanchor: 'left', y: -0.16,
-};
+// Calcula [from, to] a partir dos dados REAIS do gráfico (não do range atual do eixo, que pode
+// estar com padding do Plotly) -- `dates` = array ordenado de strings 'YYYY-MM-DD', ex. o próprio
+// eixo X de uma das séries do gráfico.
+function quickRangeOptions(dates) {
+  if (!dates.length) return [];
+  const hiISO = dates[dates.length - 1], loISO = dates[0];
+  const hiMs = Date.parse(hiISO);
+  function backISO(years) {
+    const d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - years);
+    return d.toISOString().slice(0, 10);
+  }
+  return [
+    { label: '1a',  from: backISO(1),  to: hiISO },
+    { label: '3a',  from: backISO(3),  to: hiISO },
+    { label: '5a',  from: backISO(5),  to: hiISO },
+    { label: '10a', from: backISO(10), to: hiISO },
+    { label: 'Tudo', from: loISO,      to: hiISO },
+  ];
+}
+// containerEl: elemento vazio (ex. <div class="range-pills"></div>) posicionado acima do gráfico.
+// Chamar de novo a cada re-render do gráfico (troca de filtro/série) -- é barato e mantém `dates`
+// (portanto o "to" de cada botão) sempre correto mesmo que o range de dados mude.
+function renderQuickRangeButtons(containerEl, divId, dates) {
+  containerEl.innerHTML = '';
+  quickRangeOptions(dates).forEach((opt) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'range-pill';
+    btn.textContent = opt.label;
+    btn.addEventListener('click', () => Plotly.relayout(divId, { 'xaxis.range': [opt.from, opt.to] }));
+    containerEl.appendChild(btn);
+  });
+}
 
 function mkLayout(extra) {
   const base = {
@@ -274,9 +303,9 @@ function mkLayout(extra) {
       type: 'date',               // ou 'category' se o eixo X não for uma série temporal real
       showgrid: false, showline: true, linecolor: 'rgba(31,40,83,0.1)',
       tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
-      rangeselector: RANGE_SELECTOR,
       rangeslider: { visible: false },
       // NÃO setar `fixedrange` -- Y também precisa ficar pannable/zoomable livremente.
+      // NÃO setar `rangeselector` -- ver caixa de atenção acima; os botões vivem fora do Plotly.
     },
     yaxis: {
       gridcolor: 'rgba(31,40,83,0.06)',
@@ -294,7 +323,18 @@ function mkLayout(extra) {
 }
 ```
 
-**Por que ainda precisa de um helper de autofit em Y, mesmo com `dragmode:'pan'`+Y livre:** os botões do `rangeselector` (1a/3a/...) mudam `xaxis.range` diretamente, sem nenhum gesto de usuário em Y — então Y fica mostrando o range antigo (às vezes uma janela nova e estreita espremida no range antigo inteiro). `_bindYAutofit` cobre exatamente esse caso: só recalcula Y quando `xaxis.range` mudou **sem** `yaxis`/`yaxis2` também terem mudado no mesmo evento (ou seja, clique num botão do rangeselector ou um double-click reset — nunca um drag/scroll direto, que já move os dois eixos juntos e não deve ser contrariado). Versão genérica (funciona com eixo category ou date, single ou dual y-axis, barras simples ou empilhadas — mesma função usada nos três relatórios analíticos e em `ppp_dashboard.html`):
+CSS mínimo para `.range-pill` (mesma linguagem visual dos outros controles pill do design system):
+
+```css
+.range-pill {
+  font-family: var(--mono, 'JetBrains Mono'); font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+  padding: 4px 13px; border: 1px solid rgba(31,40,83,0.15); border-radius: 20px;
+  background: rgba(31,40,83,0.03); color: #7A88A8; cursor: pointer; transition: all .15s;
+}
+.range-pill:hover { color: #1F2853; border-color: rgba(31,40,83,0.3); }
+```
+
+**Por que ainda precisa de um helper de autofit em Y, mesmo com `dragmode:'pan'`+Y livre:** os botões de range rápido (1a/3a/...) mudam `xaxis.range` diretamente, sem nenhum gesto de usuário em Y — então Y fica mostrando o range antigo (às vezes uma janela nova e estreita espremida no range antigo inteiro). `_bindYAutofit` cobre exatamente esse caso: só recalcula Y quando `xaxis.range` mudou **sem** `yaxis`/`yaxis2` também terem mudado no mesmo evento (ou seja, clique num botão de range rápido ou um double-click reset — nunca um drag/scroll direto, que já move os dois eixos juntos e não deve ser contrariado). Isso continua funcionando idêntico com os novos botões HTML: `Plotly.relayout()` dispara o mesmo evento `plotly_relayout` que os botões nativos disparavam. Versão genérica (funciona com eixo category ou date, single ou dual y-axis, barras simples ou empilhadas — mesma função usada nos três relatórios analíticos e em `ppp_dashboard.html`):
 
 ```javascript
 function _toComparableX(v) {
@@ -515,7 +555,7 @@ Eixos independentes (série secundária num eixo à direita): trace da série se
 ## Checklist antes de entregar
 
 - [ ] CDN: só Plotly (`https://cdn.plot.ly/plotly-2.35.2.min.js`) — sem Chart.js/chartjs-plugin-datalabels/hammer.js/chartjs-plugin-zoom
-- [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, `rangeselector`, sem `fixedrange`) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
+- [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, sem `fixedrange`, sem `xaxis.rangeselector`) + botões de range rápido via `renderQuickRangeButtons()` (HTML + `Plotly.relayout()`, NÃO `xaxis.rangeselector` nativo) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
 - [ ] Gráficos que não são série temporal (ranking horizontal, heatmap categórico) ficam com a interação padrão do Plotly — não force `_bindYAutofit` neles
 - [ ] Cada gráfico é um `<div id="...">` vazio, nunca `<canvas>`
 - [ ] Botão "Dados no gráfico" presente e funcional (`Plotly.restyle(..., {mode: 'lines+text'|'lines'}, [idx])`)

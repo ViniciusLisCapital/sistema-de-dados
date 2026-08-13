@@ -97,7 +97,7 @@ Plotly ships its own zoom/pan/reset toolbar out of the box, but its *defaults* d
 
 That's it for direct user gestures — Plotly's own pan/scroll-zoom handling covers both axes correctly on its own, same as Chart.js's native `mode:'xy'`.
 
-**Why `_bindYAutofit` still exists here and not on the Chart.js side**: these Plotly reports also have **rangeselector preset buttons** ("3a"/"5a"/"10a"/"Tudo" etc.) that jump the visible X window directly, bypassing drag/scroll entirely — clicking one changes `xaxis.range` alone, with no accompanying user gesture on Y at all, so Y is left showing whatever range was visible before the click (often squeezing a newly-narrow window into a sliver of the old full-history range). `_bindYAutofit(divId)` — bound once per chart div, right after its `Plotly.react`/`Plotly.newPlot` call — patches exactly that gap: it listens for `plotly_relayout` events, and **only** recomputes Y when `xaxis.range` changed **without** `yaxis`/`yaxis2` also changing in that same event (i.e. a preset-button click or a double-click reset, never a direct drag or an xy scroll-zoom, which always change both axes together and must be left alone or they'd fight the user's own gesture). Generic across category x-axis (Plotly reports `xaxis.range` as fractional array indices there) vs. date x-axis (real values, compared via `Date.parse`), single/dual y-axis (grouped by each trace's own `yaxis` id), and plain vs. stacked (`barmode: 'stack'`/`'relative'`) bar traces — stacked axes always get 0 folded into their fitted range (a stacked bar's baseline is the zero line), plain line/bar axes autofit tightly with no forced zero:
+**Why `_bindYAutofit` still exists here and not on the Chart.js side**: these Plotly reports also have **quick-range preset buttons** ("3a"/"5a"/"10a"/"Tudo" etc.) that jump the visible X window directly, bypassing drag/scroll entirely — clicking one changes `xaxis.range` alone, with no accompanying user gesture on Y at all, so Y is left showing whatever range was visible before the click (often squeezing a newly-narrow window into a sliver of the old full-history range). `_bindYAutofit(divId)` — bound once per chart div, right after its `Plotly.react`/`Plotly.newPlot` call — patches exactly that gap: it listens for `plotly_relayout` events, and **only** recomputes Y when `xaxis.range` changed **without** `yaxis`/`yaxis2` also changing in that same event (i.e. a preset-button click or a double-click reset, never a direct drag or an xy scroll-zoom, which always change both axes together and must be left alone or they'd fight the user's own gesture). This reasoning holds regardless of *how* those preset buttons are implemented — native `xaxis.rangeselector` or plain HTML buttons calling `Plotly.relayout()` (see "Quick-range buttons" dated entry below for why the latter is now the standard) — both fire the same `plotly_relayout` event shape this function listens for. Generic across category x-axis (Plotly reports `xaxis.range` as fractional array indices there) vs. date x-axis (real values, compared via `Date.parse`), single/dual y-axis (grouped by each trace's own `yaxis` id), and plain vs. stacked (`barmode: 'stack'`/`'relative'`) bar traces — stacked axes always get 0 folded into their fitted range (a stacked bar's baseline is the zero line), plain line/bar axes autofit tightly with no forced zero:
 
 ```js
 function _toComparableX(v) {
@@ -172,7 +172,7 @@ function _bindYAutofit(divId) {
 }
 ```
 
-Applied verbatim to `analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, and `analytics/monetary_policy/report.html` — historically by hand copy-paste, since each report is self-contained with no shared JS module at *runtime*. **Since 2026-08**, `analytics/inflation/report.html` and `analytics/exchange_rate/report.html` no longer carry their own inline copy: both have a `/*Y_AUTOFIT_JS*/` marker, filled in at generation time from `analytics/report_structure/y_autofit.js` (see [`analytics/report_structure/CLAUDE.md`](../../analytics/report_structure/CLAUDE.md)) — the *shipped* HTML still ends up with this function embedded verbatim, only the source-of-truth for edits moved. That shared file's guard clause was widened to `!t.x || !t.y || t.type === 'heatmap'` to match `exchange_rate`'s version (needed for its BOP heatmap panels; a no-op for `inflation`, which never binds `_bindYAutofit` to a heatmap trace). `monetary_policy/report.html` still carries its own hand-copied inline version, not yet migrated (deferred on purpose) — it also has no rangeselector buttons at all, so `_bindYAutofit` is inert there (kept anyway for consistency with the other two reports' identical copy, not because it does anything). Excluded on purpose: any chart that isn't a time series along X — `analytics/inflation/report.html`'s `chart-waterfall` (horizontal ranking bars, x=value/y=category) and `analytics/exchange_rate/report.html`'s BOP z-score heatmap panels (`renderHeatmapPanel`, x=date but y=fixed category rows, not a value axis) keep Plotly's own default interaction instead.
+Applied verbatim to `analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, and `analytics/monetary_policy/report.html` — historically by hand copy-paste, since each report is self-contained with no shared JS module at *runtime*. **Since 2026-08**, `analytics/inflation/report.html` and `analytics/exchange_rate/report.html` no longer carry their own inline copy: both have a `/*Y_AUTOFIT_JS*/` marker, filled in at generation time from `analytics/report_structure/y_autofit.js` (see [`analytics/report_structure/CLAUDE.md`](../../analytics/report_structure/CLAUDE.md)) — the *shipped* HTML still ends up with this function embedded verbatim, only the source-of-truth for edits moved. That shared file's guard clause was widened to `!t.x || !t.y || t.type === 'heatmap'` to match `exchange_rate`'s version (needed for its BOP heatmap panels; a no-op for `inflation`, which never binds `_bindYAutofit` to a heatmap trace). `monetary_policy/report.html` still carries its own hand-copied inline version, not yet migrated (deferred on purpose) — it also has no rangeselector buttons at all, so `_bindYAutofit` is inert there (kept anyway for consistency with the other two reports' identical copy, not because it does anything). Excluded on purpose: any chart that isn't a time series along X — `analytics/inflation/report.html`'s `chart-waterfall` (vertical category-ranking bars, x=category/y=value — flipped from horizontal to vertical 2026-08 at direct user request) and `chart-scatter-momentum` (both axes are plain % values, no category or time axis at all) and `analytics/exchange_rate/report.html`'s BOP z-score heatmap panels (`renderHeatmapPanel`, x=date but y=fixed category rows, not a value axis) keep Plotly's own default interaction instead.
 
 ## Verification approach (no browser available in this environment)
 
@@ -187,3 +187,44 @@ Brand colors/typography are a separate concern from this rule — see the `proje
 User visually confirmed the interaction in a real browser and it's correct. The Chart.js half of this setup (CDN tags, `Chart.defaults.plugins.zoom` config, double-click handler, discoverability hint) was originally baked into `.claude/skills/lis-dashboard/references/design-system.md` (§10, "JS — Zoom/Pan Interativo") and `.claude/skills/lis-dashboard/SKILL.md`'s Chart.js rules + output-structure lists, so every *new* dashboard the skill generated got this by default. The Plotly `_bindYAutofit` half stayed here only at the time, since that skill was Chart.js-only.
 
 **Superseded 2026-07-28, same day, later that day**: the skill itself moved off Chart.js entirely, onto Plotly — direct user request after converting `analytics/exchange_rate/referencia/ppp_dashboard.html`'s Chart.js charts to Plotly one at a time and liking the result better ("I want all graphs to be this way ... set this in skill too"). `.claude/skills/lis-dashboard/references/design-system.md` and `SKILL.md` were rewritten so every future dashboard the skill generates uses the exact same Plotly convention already established here (`dragmode:'pan'`, `scrollZoom:true`, `rangeselector`, the generic `_bindYAutofit`) — the design-system.md's own JS section is now the canonical copy-paste source for new skill-built dashboards, not a Chart.js-specific variant of it. This section's "Chart.js half"/"Plotly half stays here only" framing is accordingly obsolete: there is now one Plotly convention shared by the three analytics reports, `ppp_dashboard.html`, and the skill — not two parallel conventions split by codebase. Kept here as history, not corrected in place, since the point of this file is documenting how the interaction model evolved.
+
+## Quick-range buttons: native `xaxis.rangeselector` replaced by plain HTML + `Plotly.relayout()` (2026-08)
+
+The "3a"/"5a"/"10a"/"Tudo" quick-range buttons above were, at the time the previous section was
+written, Plotly's own native `layout.xaxis.rangeselector.buttons[]` component. That component broke
+in production twice while building `analytics/economic_activity/report.html`'s PIB tab (full
+before/after detail in that report's own `analytics/economic_activity/CLAUDE.md`, "Chart interaction
+and KPI fixes"/"Sixth round" sections):
+
+1. Even used correctly (`step`/`stepmode`/`count`, the documented fields), a `stepmode:'backward'`
+   button computes its `to` anchor from the axis's *current* range — which, on a fresh view with
+   `autorange` still on, is Plotly's own auto-padded full-data range, not the true last data point.
+   On a chart with a long history, that padding is small as a percentage but large in absolute
+   terms, so a "3a" click opened a window with a wall of empty months/years past the last real bar.
+2. An attempted fix wrongly assumed `rangeselector.buttons[]` accepted an `updatemenus`-style
+   `{method:'relayout', args:[...]}` button definition to bake in an exact `[from,to]` range. It does
+   not — that field doesn't exist in the rangeselector button spec (only `step`/`stepmode`/`count`/
+   `label`/`name`/`visible`/`templateitemname`) — Plotly silently ignores it, and the resulting click
+   produced a blank chart with the x-axis collapsed to a few weeks near the render date.
+
+Both failures trace to the same root cause: relying on `xaxis.rangeselector`'s internal behavior
+instead of computing the range yourself. **Current standard**: plain HTML `<button>` elements (styled
+as pills) whose click handler calls `Plotly.relayout(divId, {'xaxis.range': [from, to]})` directly,
+with `[from, to]` computed from the chart's own real trace data (never from the axis's current
+range). This is a real, documented, top-level Plotly API call, not an internal component's
+undocumented click-dispatch — there is no more Plotly-internal behavior this pattern depends on and
+cannot verify with a jsdom-without-real-Plotly harness (which is exactly what let both failures above
+ship undetected — every test up to that point asserted on the button *definition object*, never on
+what real Plotly does when that definition is clicked). User confirmed the resulting buttons "much
+better" in a real browser and asked for this to become the standard.
+
+Promoted into `.claude/skills/lis-dashboard/references/design-system.md` (`quickRangeOptions()`/
+`renderQuickRangeButtons()`, replacing the old `RANGE_SELECTOR` const) and `SKILL.md` — every
+*future* dashboard the skill generates uses this pattern from the start, same promotion mechanism as
+the Chart.js→Plotly switch above. `_bindYAutofit`'s own rationale is unaffected (see the amended note
+above) — it reacts to the `plotly_relayout` event either implementation produces. Not retrofitted
+into `analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, or
+`analytics/monetary_policy/report.html` — those three still carry the native `xaxis.rangeselector`
+from before this fix and have not been reported as broken, but should be treated as carrying the
+same latent bug (point 1 above applies to native step/stepmode/count buttons generally, regardless of
+whether point 2's invalid method/args form was ever added to them) until migrated.

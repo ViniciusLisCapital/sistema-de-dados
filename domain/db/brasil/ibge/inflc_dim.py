@@ -1,13 +1,15 @@
 """
 Dimensao do IPCA/IPCA-15 por subitem: Grupo/Subgrupo/Item (classificacao
 BCB), marcacao de nucleo "Subjacente" (Servicos/Bens Industriais Subjacente),
-e flags de pertencimento aos nucleos por exclusao oficiais do BC (EX-0/EX-01/
-EX-02/EX-03/EX-FE + os dois subcomponentes do EX-03).
+classificacao Comercializavel/Nao Comercializavel, e flags de pertencimento
+aos nucleos por exclusao oficiais do BC (EX-0/EX-01/EX-02/EX-03/EX-FE + os
+dois subcomponentes do EX-03).
 
 Schema macro_brasil.inflc_dim:
   PRIMARY KEY (subitem_codigo)
   Colunas: subitem_codigo VARCHAR(10) | nome VARCHAR(120) | grupo VARCHAR(60) |
            subgrupo VARCHAR(80) | item VARCHAR(150) | subjacente VARCHAR(60) |
+           comercializavel VARCHAR(30) |
            nucleo_ex0 TINYINT(1) | nucleo_ex01 TINYINT(1) |
            nucleo_ex02 TINYINT(1) | nucleo_ex03 TINYINT(1) |
            nucleo_ex03_servicos TINYINT(1) | nucleo_ex03_industriais TINYINT(1) |
@@ -22,6 +24,7 @@ DDL:
       subgrupo                 VARCHAR(80),
       item                     VARCHAR(150),
       subjacente               VARCHAR(60),
+      comercializavel          VARCHAR(30),
       nucleo_ex0               TINYINT(1),
       nucleo_ex01              TINYINT(1),
       nucleo_ex02              TINYINT(1),
@@ -31,6 +34,10 @@ DDL:
       nucleo_exfe              TINYINT(1),
       PRIMARY KEY (subitem_codigo)
   );
+
+  -- Adicionada 2026-08 a uma tabela ja existente:
+  ALTER TABLE macro_brasil.inflc_dim
+      ADD COLUMN comercializavel VARCHAR(30) AFTER subjacente;
 
 Fonte unica para Grupo/Subgrupo/Item/nucleos: analytics/inflation/data/
 Vetores_NT_57.xlsx, arquivo de apoio da Nota Tecnica do Banco Central do
@@ -59,6 +66,10 @@ Grupo/Subgrupo/Item tambem:
     Industriais.
   - EX3 Servicos -> Item ("Servicos Subjacente"/"Servicos Ex Subjacentes"),
     quando Subgrupo=Servicos.
+  - Comercializaveis/Nao comercializaveis -> `comercializavel` (rotulo
+    "Comercializavel"/"Nao Comercializavel"), eixo independente de
+    Grupo/Subgrupo/Item — presente e uniforme nas 5 abas 1999-hoje, ao
+    contrario de "Alimentos Subjacente" (ver REGRESSAO CONHECIDA abaixo).
   - Nucleo EX-FE/EX0/EX1/EX2/EX3 + EX3 Servicos/Industriais -> flags de
     nucleo (inalterado).
 Verificado por conferencia cruzada com a extinta tabela_dimensao_ipca.xlsx
@@ -129,6 +140,7 @@ _VETOR_SHEETS = ["ago99-dez05", "jan06-jun06", "jul06-dez11", "jan12-dez19", "ja
 _COLS_GRUPO = ["Administrados", "Livres"]
 _COLS_SUBGRUPO = ["Alimentação no domicílio", "Serviços", "Bens industriais"]
 _COLS_ITEM_DURAB = ["Bens não duráveis", "Bens semiduráveis", "Bens duráveis"]
+_COLS_COMERCIALIZAVEL = ["Comercializáveis", "Não comercializáveis"]
 _COLS_NUCLEO = {
     "Núcleo EX-FE": "nucleo_exfe",
     "Núcleo EX0": "nucleo_ex0",
@@ -138,7 +150,7 @@ _COLS_NUCLEO = {
     "EX3 Serviços": "nucleo_ex03_servicos",
     "EX3 Industriais": "nucleo_ex03_industriais",
 }
-_ALL_VETOR_COLS = _COLS_GRUPO + _COLS_SUBGRUPO + _COLS_ITEM_DURAB + list(_COLS_NUCLEO)
+_ALL_VETOR_COLS = _COLS_GRUPO + _COLS_SUBGRUPO + _COLS_ITEM_DURAB + _COLS_COMERCIALIZAVEL + list(_COLS_NUCLEO)
 
 # EE069 (2020), Tabela 5 — nomes de Item de 4 digitos, estaveis ago/1999-hoje
 # (verificado via API contra os agregados 655/2938/1419/7060). Chave e o
@@ -251,6 +263,10 @@ def _derive_classificacao(rolled: pd.DataFrame) -> pd.DataFrame:
     dim.loc[rolled["EX3 Serviços"] == 1, "subjacente"] = "Serviços Subjacente"
     dim.loc[rolled["EX3 Industriais"] == 1, "subjacente"] = "Bens Industriais Subjacente"
     # "Alimentos Subjacente" sem fonte — ver REGRESSAO CONHECIDA na docstring do modulo.
+
+    dim["comercializavel"] = None
+    dim.loc[rolled["Comercializáveis"] == 1, "comercializavel"] = "Comercializável"
+    dim.loc[rolled["Não comercializáveis"] == 1, "comercializavel"] = "Não Comercializável"
 
     for src, dst in _COLS_NUCLEO.items():
         dim[dst] = rolled[src]

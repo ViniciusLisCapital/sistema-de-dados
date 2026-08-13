@@ -12,6 +12,8 @@ This is the applied/analytical layer: projects that consume the MySQL database (
 | `inflation/` | Panorama de Inflação (HTML report) | [`inflation/CLAUDE.md`](inflation/CLAUDE.md) |
 | `monetary_policy/` | BCB small-model replication (HTML report) | documented inline in root `CLAUDE.md` + [`monetary_policy/referencia/MODEL_REPLICATION_PLAN.md`](monetary_policy/referencia/MODEL_REPLICATION_PLAN.md) |
 | `economic_activity/` | Panorama de Atividade Econômica (HTML report — PIB/PIM/PMC/PMS/IBC-Br) | [`economic_activity/CLAUDE.md`](economic_activity/CLAUDE.md) |
+| `fiscal_policy/` | Panorama Fiscal (HTML report — dívida pública, NFSP, RTN) | [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md) |
+| `credit/` | Panorama de Crédito (HTML report — novo, substitui `credit_stress/`) | [`credit/CLAUDE.md`](credit/CLAUDE.md) |
 | `report_structure/` | Nothing on its own — shared build-time scaffolding the report projects above assemble from | [`report_structure/CLAUDE.md`](report_structure/CLAUDE.md) |
 
 ## Shared report pattern (`exchange_rate/`, `inflation/`, `monetary_policy/`, `economic_activity/`)
@@ -39,6 +41,7 @@ Legacy yield-curve material (`yield_curve.py`, `yield_curve_model.py`, DI/títul
 
 ## Pending
 
+- **`analytics/credit/` (new, 2026-08)** — built, see [`credit/CLAUDE.md`](credit/CLAUDE.md) for full detail and its own Pending list (PJ/PF segment selector, the ~22 deferred BCB-workbook tabs, ICC not yet charted, real-browser confirmation).
 - **Give `exchange_rate/` the 2026-07 LIS-dashboard CSS reskin, then migrate its theme onto `report_structure/theme.css`** — its JS/harness are already migrated (see `report_structure/CLAUDE.md` Migration status); only the theme CSS is left, and it needs the actual reskin first (navy header/`system-ui` font → the light Barlow theme `inflation/` already has), not a mechanical marker swap.
 - **Migrate `monetary_policy/` onto `report_structure/` entirely** — deferred on purpose, not started.
 - **`oraculo/docs/` vs `oraculo/base/` duplication** — confirm `docs/` is dead and remove it, or document why both exist.

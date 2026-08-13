@@ -1,10 +1,19 @@
 """
 Indicadores de condicoes financeiras das familias (BCB/SGS)
 
-Series SGS coletadas (3 series — endividamento e servico da divida em % da renda):
+Series SGS coletadas (5 series — endividamento e servico da divida em % da renda):
   29037 - Endividamento das familias / renda acumulada (12 meses)
+  29038 - Endividamento das familias sem financiamento imobiliario / renda acumulada (12 meses)
   29033 - Comprometimento da renda com juros
   29034 - Comprometimento da renda com servico da divida (juros + amortizacao)
+  29035 - Comprometimento da renda com servico da divida, sem financiamento imobiliario
+
+  As duas ultimas (endividamento_sem_imob/comp_renda_servico_sem_imob) completam a
+  Tabela 27 da publicacao "Tabelas de Estatisticas Monetarias e de Credito" do BCB (ver
+  analytics/credit/fontes_dados.md) -- as outras 2 series dessa tabela (endividamento_
+  renda=29037, comp_renda_servico_total=29034) ja estavam aqui desde a primeira versao
+  deste script. comp_renda_juros (29033) e uma serie SGS avulsa do mesmo tema, nao faz
+  parte da Tabela 27.
 
   Fonte: Nota de Credito do BCB
 
@@ -18,9 +27,11 @@ _DATABASE = "macro_brasil"
 _TABLE    = "cred_credito_familias"
 
 _SERIES = {
-    "endividamento_renda":      29037,
-    "comp_renda_juros":         29033,
-    "comp_renda_servico_total": 29034,
+    "endividamento_renda":            29037,
+    "endividamento_sem_imob":         29038,
+    "comp_renda_juros":               29033,
+    "comp_renda_servico_total":       29034,
+    "comp_renda_servico_sem_imob":    29035,
 }
 
 _bcb = BCB()

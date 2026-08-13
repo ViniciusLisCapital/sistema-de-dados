@@ -16,17 +16,37 @@ Sistema de dados da LIS Capital para coleta, processamento e visualização de v
 
 ```
 connectors/          — Clientes de APIs externas (IBGE, BCB, FRED, BIS, CFTC, MySQL,
-                       Comex Stat/MDIC — comexstat.py live API + comexstat_bulk.py CSV histórico)
+                       Comex Stat/MDIC — comexstat.py live API + comexstat_bulk.py CSV histórico,
+                       Tesouro Nacional — tesouro.py, RTN via CKAN)
 domain/
   db/brasil/         — ETL Brasil: fetch → transform → insert em macro_brasil
-    ibge/            — Scripts por pesquisa IBGE (atv_pim, atv_pib, atv_pmc,
+    ibge/            — Scripts por pesquisa IBGE (atv_pim, atv_pim_uso — categoria de uso, perspectiva
+                       complementar ao atv_pim por seção/atividade —, atv_pib, atv_pmc,
                        atv_pms, mt_pnad, inflc_decomposicao, inflc_decomposicao_item,
                        inflc_dim)
     bcb/             — Scripts por tema BCB (atv_ibcbr, inflc_agregados, mt_caged,
-                       cred_credito_amplo, expc_focus, cred_credito_familias, cmb_reservas_bc,
-                       cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado,
-                       atv_pib_usd, comm_icbr, inflc_meta — os 3 últimos alimentam o modelo BCB em
-                       analytics/monetary_policy/, ver seção própria abaixo)
+                       cred_credito_amplo, cred_credito_resumo — resumo por recurso [livre/
+                       direcionado/total] x segmento [pj/pf/total], 84 séries (72 + 12 do corte
+                       "crédito não rotativo" da Tabela 14), códigos SGS extraídos da planilha
+                       mensal do BCB "Tabelas de Estatísticas Monetárias e de Crédito"
+                       (Tabelas 3-5, 14) —, cred_modalidade_livre_pj/livre_pf/direcionado_pj/
+                       direcionado_pf — saldo/concessão/taxa média/inadimplência por modalidade
+                       específica de crédito (Tabelas 6-13, 15-22) —, cred_credito_porte/
+                       atividade_economica/tipo_cliente/controle_capital — cortes estruturais
+                       (Tabelas 23-26) —, expc_focus, cred_credito_familias,
+                       cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca,
+                       cmb_cambio_contratado, atv_pib_usd, comm_icbr, inflc_meta — os 3 últimos
+                       alimentam o modelo BCB em analytics/monetary_policy/, ver seção própria
+                       abaixo — fisc_divida, fisc_nfsp, cred_inadimplencia_pj — Selic + proxies
+                       de estresse de crédito PJ, alimenta analytics/credit/, ver seção própria
+                       abaixo —, cred_ptc — Pesquisa Trimestral de Condições de Crédito, 16 séries,
+                       percepção dos bancos sobre oferta/demanda de crédito por segmento, equivalente
+                       ao Senior Loan Officer Opinion Survey do Fed)
+    tesouro/         — fisc_rtn (RTN, Resultado do Tesouro Nacional — receita/despesa/resultado do
+                       Governo Central por rubrica orçamentária), fisc_efgg (EFGG, Estatísticas
+                       Fiscais do Governo Geral — classificação econômica GFSM 2014, por esfera
+                       Central/Estados/Municípios + geral, fonte da IEG) — alimentam
+                       analytics/fiscal_policy/, ver seção própria abaixo
     mdic/            — Comex Stat: cmb_comex_pais (saldo por parceiro), cmb_comex_fator_agregado
                        (básicos/semi/manufaturados), cmb_comex_produto (soja, petróleo, minério,
                        carnes, café) — todos com run() (janela recente, API) e backfill() (1997→hoje, bulk CSV)
@@ -77,10 +97,33 @@ analytics/           — Projetos que consomem o banco MySQL
                            ao motor principal — ver "Pendências" abaixo
   economic_activity/ — Panorama de Atividade Econômica HTML (PIB/PIM/PMC/PMS/IBC-Br)  [ver
                        analytics/economic_activity/CLAUDE.md]
-    generate_report.py   — Lê atv_pib/atv_pib_encadeado/atv_pib_taxas/atv_pim/atv_pmc/atv_pms/atv_ibcbr
-                           de macro_brasil, injeta JSON no template, salva HTML — sem CSV/Excel local,
-                           tudo já está no MySQL
+    generate_report.py   — Lê atv_pib/atv_pib_valores_correntes/atv_pib_taxas/atv_pim/atv_pmc/atv_pms/
+                           atv_ibcbr de macro_brasil, injeta JSON no template, salva HTML — sem
+                           CSV/Excel local, tudo já está no MySQL
     report.html           — Template fixo (HTML + CSS + Plotly.js CDN), 6 abas
+  fiscal_policy/     — Panorama Fiscal HTML (dívida pública, NFSP, RTN)  [ver
+                       analytics/fiscal_policy/CLAUDE.md]
+    generate_report.py   — Lê fisc_divida/fisc_nfsp/fisc_rtn de macro_brasil, injeta JSON no
+                           template, salva HTML — sem CSV/Excel local, tudo já está no MySQL
+    report.html           — Template fixo (HTML + CSS + Plotly.js CDN), 4 abas
+  credit/            — Panorama de Crédito HTML (novo, substitui credit_stress/ — 2026-08)  [ver
+                       analytics/credit/CLAUDE.md]
+    generate_report.py   — Lê cred_credito_amplo/cred_credito_resumo/cred_credito_familias/
+                           cred_inadimplencia_pj de macro_brasil, injeta JSON no template, salva HTML
+                           — sem CSV/Excel local no pipeline de atualização (a planilha do BCB em
+                           analytics/credit/ foi usada só para mapear códigos SGS, não é lida em
+                           runtime)
+    report.html           — Template fixo (HTML + CSS + Plotly.js CDN); em reconstrucao aba por aba
+                           desde 2026-08 (usuario apagou as 4 abas de dados do v1, so Apendice
+                           sobreviveu) — hoje tem Saldo (com 2a tabela para Credito Ampliado, mais
+                           grupos por porte/atividade economica/tipo cliente) + Concessao (ambas
+                           tabela-hierarquica-grafico via a fabrica JS makeHierTab(), reusada entre as
+                           duas, com toggle Nominal/Real/% PIB) + Concessao + Taxa & Spread (formato
+                           bespoke, sem makeHierTab, com overlay de Selic) + Inadimplencia (mesmo
+                           formato bespoke de Taxa & Spread, reune inadimplencia de todos os cortes que
+                           a publicam, mais Saldo de Maior Risco em 2 grupos por metodologia -- Res.
+                           2.682 vs. Res. 4.966, quebra confirmada ao vivo, nunca emendadas) + Apendice,
+                           ver analytics/credit/CLAUDE.md
   report_structure/  — Scaffolding compartilhado de build-time para os relatórios acima (theme CSS,
                        _bindYAutofit, harness de substituição /*REPORT_DATA*/) — ver analytics/CLAUDE.md
                        e analytics/report_structure/CLAUDE.md. Piloto: inflation/ (2026-08, migração completa);
@@ -234,27 +277,39 @@ Todos os pacotes Python do projeto (`connectors/`, `domain/`, `analytics/`, `uti
 
 ## Pendências (próximas sessões)
 
+Cada relatório em reconstrução tem seu próprio "Pending" atualizado no `CLAUDE.md` da pasta — histórico
+rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não aqui.
+
 ### Alta prioridade
 - **`analytics/exchange_rate/`**: ver "Pending" em [`analytics/exchange_rate/CLAUDE.md`](analytics/exchange_rate/CLAUDE.md).
 - **`analytics/inflation/`**: ver "Pending" em [`analytics/inflation/CLAUDE.md`](analytics/inflation/CLAUDE.md).
-- **`analytics/economic_activity/`** (novo, 2026-08): `generate_report.py` já roda contra o banco real e
-  a lógica JS foi verificada contra esses dados reais via harness Node — falta só abrir
-  `reports/economic_activity_latest.html` num browser de verdade para confirmar visualmente (sandbox
-  sem browser disponível). Aba PIB já reconstruída com taxas oficiais do IBGE (Agregado 5932) +
-  decomposição de crescimento T/T e interanual (Agregados 6612/6613, metodologia BEA/IBGE replicada
-  por BCB/IPEA) + acumulado em 4 trimestres, a pedido explícito do usuário; as outras 5 abas ainda
-  usam a abordagem original (razão sobre o índice de volume) até o usuário passar as próprias
-  diretrizes para elas. Duas tabelas novas: `atv_pib_encadeado`, `atv_pib_taxas` (ambas já em
-  `jobs/update_db.py`). Ver "Gotchas"/"Pending" em
-  [`analytics/economic_activity/CLAUDE.md`](analytics/economic_activity/CLAUDE.md).
+- **`analytics/economic_activity/`**: 6 abas (PIB, Produção Industrial, Comércio, Serviços, IBC-Br,
+  Apêndice), framework interativo comum às 5 abas de dados (multiselect, toggle Y/Y↔acumulado, momentum
+  scatter/heatmap); só a aba PIB tem decomposição de crescimento (as outras 4 não têm tabela de
+  peso nominal/taxa oficial). Ver "Pending" em
+  [`analytics/economic_activity/CLAUDE.md`](analytics/economic_activity/CLAUDE.md) — falta principalmente
+  confirmar visualmente num browser real (sandbox sem browser disponível).
+- **`analytics/fiscal_policy/`**: 3 abas (Receitas e Despesas GFSM — aba padrão, com seletor de Esfera
+  União/Estados/Municípios/Geral —, Impulso Fiscal/IEG, Apêndice). As 3 abas antigas (Visão Geral/Dívida
+  Pública/Resultado Fiscal) foram apagadas a pedido do usuário para reconstrução tab-a-tab, ainda não
+  retomada. Ver "Pending" em [`analytics/fiscal_policy/CLAUDE.md`](analytics/fiscal_policy/CLAUDE.md)
+  (inclui o double-count de transferências intergovernamentais no total Governo Geral, re-estimação dos
+  multiplicadores do IEG, e o bloqueio do MEFA).
+- **`analytics/credit/`**: substituiu `analytics/credit_stress/` (removida junto com a tabela
+  `insolv_falencia_rj` e `connectors/datajud.py` a pedido do usuário — histórico só em git log). Hoje
+  tem Saldo (+ 2ª tabela para Crédito Ampliado), Concessão (ambas via a fábrica JS `makeHierTab()`,
+  toggle Nominal/Real/% PIB), Taxa & Spread e Inadimplência (formato bespoke, com overlay de Selic), +
+  Apêndice. Ver "Pending" em [`analytics/credit/CLAUDE.md`](analytics/credit/CLAUDE.md) (confirmação em
+  browser real, `cred_credito_controle_capital.saldo`/`provisoes` ainda não charteados, `cred_ptc` ainda
+  não charteada em nenhuma aba).
 
 ### Média prioridade
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
-- **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): see "Pending" section in [`repository/CLAUDE.md`](repository/CLAUDE.md).
-- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (novos, `domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py`/`cmb_real_rates.py` (novos, `domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros da lista original já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates`/`cmb_real_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (novo, `domain/db/brasil/ibge/`, ver `analytics/inflation/CLAUDE.md`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
-- **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta. Nenhum dos dois foi corrigido ainda.
+- **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): ver "Pending" em [`repository/CLAUDE.md`](repository/CLAUDE.md).
+- **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (`domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py`/`cmb_real_rates.py` (`domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates`/`cmb_real_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (`domain/db/brasil/ibge/`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.
+- **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta.
 - **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
-- **`analytics/monetary_policy/models/curva_juros/`**: material legado de curva de juros (`yield_curve.py`, `yield_curve_model.py`, planilhas DI/títulos/governo), movido de `quarantine/` em 2026-08. Ainda não integrado ao motor principal (`model.py`) nem discutido com o agente de política monetária — revisitar quando essa frente for retomada.
+- **`analytics/monetary_policy/models/curva_juros/`**: material legado de curva de juros (`yield_curve.py`, `yield_curve_model.py`, planilhas DI/títulos/governo), movido de `quarantine/` em 2026-08. Ainda não integrado ao motor principal (`model.py`) — revisitar quando essa frente for retomada.
 
 ### Baixa prioridade
 - (nenhuma pendência no momento)

@@ -17,6 +17,7 @@ build/
 
 # Generated outputs (ETL results, reports)
 reports/
+domain/db/brasil/tesouro/_backups/
 analytics/oraculo/brasil/base/
 analytics/oraculo/us/base/
 analytics/oraculo/base/
