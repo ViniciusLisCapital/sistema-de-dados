@@ -114,9 +114,8 @@
 
     /* ── Chart cards ── */
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
-    #chart-ieg-linha, #chart-ieg-decomposicao,
-    #chart-ieg-pib-comparacao, #chart-ieg-esfera,
-    #chart-gfsm                                                { width: 100%; height: 560px; }
+    #chart-impulso-combinado, #chart-ieg-hier, #chart-impulso-rp-esfera,
+    #chart-gfsm, #chart-rtn                                     { width: 100%; height: 560px; }
 
     /* ── Controls (select dropdowns) ── */
     .ctrl-bar {
@@ -130,17 +129,6 @@
       border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
     }
     .ctrl-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
-
-    /* ── Pills (aba Receitas e Despesas — Nível/Y-Y/T-T, Nominal/Real/% PIB) ── */
-    .pill-group { display: flex; gap: 6px; }
-    .pill {
-      font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
-      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
-      cursor: pointer; transition: background .15s, color .15s, border-color .15s;
-    }
-    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
-    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; }
-    .pill.disabled { opacity: 0.35; pointer-events: none; }
 
     /* ── Hierarchical data table (aba Receitas e Despesas) ── */
     .table-card { max-height: 620px; overflow: auto; padding: 0; }
@@ -201,17 +189,30 @@
   <div class="tab-panel active" id="tab-gfsm">
 
     <p class="note-metodologia">
-      Receita e despesa por natureza econômica — classificação GFSM 2014 do FMI (Tesouro Nacional/
-      EFGG), trimestral. <strong>Esfera</strong> troca a árvore inteira entre Governo Geral
-      (consolidado) e cada ente federado. Clique numa linha com ▸ para expandir o detalhe; marque o
-      checkbox de uma ou mais linhas para plotá-las no gráfico abaixo. <strong>Nível/Y-Y/T-T</strong> e
-      <strong>Nominal/Real/% PIB</strong> recalculam a coluna de valor e o gráfico ao vivo (% PIB só tem
-      a variante Nível, e usa sempre o PIB nacional total, não um PIB por esfera) — ver Apêndice para a
-      metodologia completa (por que T/T usa ajuste sazonal e Y/Y não, deflator usado no Real).
+      Duas tabelas, duas metodologias que não reconciliam entre si por desenho — ver Apêndice
+      ("GFSM vs. RTN — Duas Metodologias") para a diferença completa, inclusive um double-check ao vivo
+      dos números do 1T/2026 que explica por que as duas tabelas mostram magnitudes tão diferentes.
+      <strong>GFSM</strong> (Tesouro/EFGG): natureza econômica, competência modificada, Governo Geral ou
+      por esfera. <strong>RTN</strong> (Tesouro, Tema 10): rubrica orçamentária, caixa, só Governo
+      Central. Em cada tabela, clique numa linha com ▸ para expandir o detalhe; marque o checkbox de uma
+      ou mais linhas para plotá-las no gráfico logo abaixo dela. Três decisões independentes controlam a
+      coluna de valor e o gráfico: <strong>Nível (frequência)</strong> — <strong>Mensal</strong> (só RTN,
+      valor do próprio mês), <strong>Trimestral</strong> (soma do trimestre calendário sem sobreposição —
+      na GFSM é a frequência nativa; na RTN, o mesmo corte trimestral, útil para comparar as duas tabelas
+      trimestre a trimestre) ou <strong>Acumulado 12m</strong> (acumulado móvel — 4 trimestres na GFSM,
+      12 meses na RTN); só é possível reduzir a frequência de uma série, nunca aumentá-la (por isso a
+      GFSM, nativamente trimestral, não tem opção Mensal). <strong>Nominal/Real</strong> — se o valor do
+      Nível escolhido é ajustado pela inflação (IPCA). <strong>Modelagem</strong> —
+      <strong>Nível</strong> (valor bruto), <strong>Y/Y</strong> (mesmo período um ano antes),
+      <strong>Marginal</strong> (período imediatamente anterior — mês contra mês no Nível Mensal,
+      trimestre contra trimestre no Trimestral; indisponível no Acumulado 12m, onde a única comparação
+      é Y/Y) ou <strong>% PIB</strong> (nominal apenas — no Mensal/Trimestral compara com o PIB do MESMO
+      período, sem acumular nenhum dos dois lados; no Acumulado 12m continua TTM/TTM, igual ao resto do
+      relatório). Ver Apêndice para a metodologia completa e o porquê de cada escolha.
     </p>
 
     <section>
-      <h2>Receita e Despesa por Esfera de Governo</h2>
+      <h2>Metodologia GFSM (Governo Geral/por Esfera)</h2>
       <div class="ctrl-bar">
         <span class="ctrl-label">Esfera</span>
         <select id="gfsm-esfera-select" class="ctrl-select">
@@ -220,16 +221,23 @@
           <option value="estados">Estados</option>
           <option value="municipios">Municípios</option>
         </select>
-        <div class="pill-group" id="gfsm-metric-group">
-          <button type="button" class="pill active" data-metric="level">Nível</button>
-          <button type="button" class="pill" data-metric="yoy">Y/Y</button>
-          <button type="button" class="pill" data-metric="qoq_sa">T/T</button>
-        </div>
-        <div class="pill-group" id="gfsm-basis-group">
-          <button type="button" class="pill active" data-basis="nominal">Nominal</button>
-          <button type="button" class="pill" data-basis="real">Real</button>
-          <button type="button" class="pill" data-basis="pctpib">% PIB</button>
-        </div>
+        <span class="ctrl-label">Nível</span>
+        <select id="gfsm-accum-select" class="ctrl-select">
+          <option value="bruto" selected>Trimestral</option>
+          <option value="acum">Acumulado 12m</option>
+        </select>
+        <span class="ctrl-label">Base</span>
+        <select id="gfsm-basis-select" class="ctrl-select">
+          <option value="nominal" selected>Nominal</option>
+          <option value="real">Real</option>
+        </select>
+        <span class="ctrl-label">Modelagem</span>
+        <select id="gfsm-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="yoy">Y/Y</option>
+          <option value="marginal">Marginal</option>
+          <option value="pctpib">% PIB</option>
+        </select>
       </div>
       <div class="chart-card table-card">
         <table class="data-table" id="gfsm-table">
@@ -240,9 +248,54 @@
     </section>
 
     <section>
-      <h2>Evolução — Séries Selecionadas</h2>
-      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real/% PIB.</p>
+      <h2>Evolução — GFSM</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível (Trimestral/Acumulado 12m), Nominal/Real e Modelagem (Nível/Y-Y/Marginal/% PIB).</p>
       <div class="chart-card"><div id="chart-gfsm"></div></div>
+    </section>
+
+    <section>
+      <h2>Metodologia RTN (Governo Central, Caixa)</h2>
+      <p class="chart-caption">
+        <strong>Sem seletor de Esfera aqui — não é uma opção não implementada, é um limite da fonte</strong>:
+        a RTN é o relatório de execução orçamentária do próprio Tesouro Nacional, então por definição só
+        existe para o Governo Central — não há dado de receita/despesa de Estados/Municípios nesta série
+        (ver Apêndice, "Sem dado SICONFI"). Para comparar receita/despesa por esfera de governo, use o
+        seletor <strong>Esfera</strong> da tabela GFSM acima (União/Estados/Municípios/Governo Geral) —
+        mesma tabela "Receitas e Despesas", metodologia diferente (natureza econômica, não rubrica
+        orçamentária), mas é onde esse corte já existe.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="rtn-accum-select" class="ctrl-select">
+          <option value="bruto" selected>Mensal</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="acum">Acumulado 12m</option>
+        </select>
+        <span class="ctrl-label">Base</span>
+        <select id="rtn-basis-select" class="ctrl-select">
+          <option value="nominal" selected>Nominal</option>
+          <option value="real">Real</option>
+        </select>
+        <span class="ctrl-label">Modelagem</span>
+        <select id="rtn-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="yoy">Y/Y</option>
+          <option value="marginal">Marginal</option>
+          <option value="pctpib">% PIB</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="rtn-table">
+          <thead id="rtn-table-head"></thead>
+          <tbody id="rtn-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — RTN</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui. Por padrão, mostra <strong>Receita Líquida</strong>, <strong>Despesa Total</strong> e <strong>Resultado Primário</strong> (Receita Líquida − Despesa Total). Toggle <strong>Mensal/Trimestral/Acumulado 12m</strong> disponível junto com Nominal/Real e Modelagem (Nível/Y-Y/Marginal/% PIB) — <strong>Trimestral</strong> soma o trimestre calendário (não móvel), o mesmo corte que a GFSM já usa nativamente, útil para comparar as duas tabelas trimestre a trimestre (ver Apêndice).</p>
+      <div class="chart-card"><div id="chart-rtn"></div></div>
     </section>
 
   </div>
@@ -256,54 +309,117 @@
     </p>
 
     <section>
-      <h2>IEG — Impulso Estrutural do Gasto</h2>
+      <h2>Visão Combinada — IEG, Impulso via Resultado Primário e PIB</h2>
       <p class="chart-caption">
-        Resende &amp; Pires (Textos para Discussão nº16, FGV/Tesouro, 2024) — multiplicadores fixos do
-        paper aplicados à variação interanual (acumulado em 4 trimestres, % do PIB) de 4 categorias de
-        despesa do Governo Geral (EFGG/Tesouro Nacional). <strong>Multiplicadores ainda não
-        re-estimados neste projeto</strong> — ver Apêndice para a fórmula completa e o mapeamento GFSM.
-      </p>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">IEG do Trimestre (p.p., equivalente % PIB)</div>
-          <div class="kpi-value" id="kpi-ieg-value">—</div>
-          <div class="kpi-sub" id="kpi-ieg-sub">—</div>
-        </div>
-      </div>
-      <div class="chart-card"><div id="chart-ieg-linha"></div></div>
-      <p class="chart-caption">Barras empilhadas: contribuição de cada categoria (multiplicador × Δ % do PIB) ao IEG do trimestre — a soma das quatro é a linha do IEG.</p>
-      <div class="chart-card"><div id="chart-ieg-decomposicao"></div></div>
-    </section>
-
-    <section>
-      <h2>IEG × PIB</h2>
-      <p class="chart-caption">
-        Compara o IEG com a variação interanual (Y/Y, sem ajuste sazonal, dado oficial IBGE) do PIB
-        total ou de um componente da ótica da demanda — eixo à direita.
+        As três métricas desta aba na mesma base de comparação: <strong>IEG</strong>,
+        <strong>Impulso via Resultado Primário</strong> e <strong>PIB</strong> (sempre a taxa
+        <strong>real</strong> — o IBGE publica essas variações sobre o índice de volume, não sobre
+        valores correntes).<br><br>
+        <strong>4T/12m Acumulado (Y/Y)</strong>: cada métrica compara uma janela anual contra a janela
+        anual anterior — o IEG compara o acumulado em 4 trimestres contra o de 4 trimestres antes, o
+        Impulso PB compara o acumulado em 12 meses contra o de 12 meses antes, e o PIB entra pela taxa
+        <strong>acumulada em 4 trimestres</strong> (2026-08, a pedido do usuário — substituiu a
+        variação interanual simples, que comparava um único trimestre contra o mesmo trimestre do ano
+        anterior e por isso não tinha a mesma forma que as outras duas linhas).<br><br>
+        <strong>Trimestre (T/T)</strong> (2026-08, reescrito — ver Apêndice) é uma variação trimestral
+        genuinamente dessazonalizada (STL) em cada uma das três
+        séries — IEG sobre a série trimestral bruta do EFGG, Impulso PB sobre o fluxo mensal bruto do
+        BCB (suavizado numa soma móvel de 3 meses antes do ajuste sazonal), PIB via o indicador 'qoq'
+        oficial do IBGE (já dessazonalizado pelo próprio IBGE) — nenhuma das três é mais um atalho
+        sobre o acumulado em 12m/4T. Os fatores sazonais do STL são estimados apenas até o
+        <strong>último ano civil completo</strong> e aplicados congelados ao ano corrente (ver
+        Apêndice). IEG e Impulso PB compartilham o eixo esquerdo (mesma unidade,
+        p.p.); o PIB fica no eixo direito (%, escala diferente).
       </p>
       <div class="ctrl-bar">
-        <span class="ctrl-label">Componente do PIB</span>
-        <select id="ieg-pib-select" class="ctrl-select">
-          <option value="pib_pm">PIB (Total)</option>
-          <option value="consumo_familias">Consumo das Famílias</option>
-          <option value="consumo_adm_publica">Consumo do Governo</option>
-          <option value="fbcf">Investimento (FBCF)</option>
-          <option value="exportacao">Exportações</option>
-          <option value="importacao">Importações</option>
+        <span class="ctrl-label">Comparação</span>
+        <select id="impulso-combinado-view-select" class="ctrl-select">
+          <option value="acum" selected>4T/12m Acumulado (Y/Y)</option>
+          <option value="quarter">Trimestre (T/T)</option>
         </select>
       </div>
-      <div class="chart-card"><div id="chart-ieg-pib-comparacao"></div></div>
+      <div class="chart-card"><div id="chart-impulso-combinado"></div></div>
     </section>
 
     <section>
-      <h2>IEG por Ente Federado</h2>
+      <h2>IEG por Esfera e Categoria</h2>
       <p class="chart-caption">
-        Decomposição do mesmo IEG total (linha) pela contribuição de cada esfera de governo — União,
-        Estados e Municípios pesam pela mesma metodologia (multiplicadores fixos × Δ interanual da
-        despesa daquele ente como % do PIB total), e a soma das três esferas reproduz exatamente a
-        linha do IEG mostrada acima.
+        Mesma interação de tabela+gráfico das abas Receitas e Despesas (checkbox para plotar,
+        seletor de Esfera) aplicada ao IEG — decompõe o IEG em suas 4 categorias de despesa
+        (Folha/Transferências/Investimentos/Outras) para a esfera de governo selecionada, com a
+        mesma escolha Trimestre/4T Acumulado do gráfico combinado acima. <strong>Hierarquia
+        Esfera&nbsp;›&nbsp;Categoria de despesa</strong> (2026-08, reestruturado a pedido do usuário —
+        antes era um seletor de Esfera com as 4 categorias soltas): as 4 esferas convivem na mesma
+        tabela, cada uma expansível (▸) nas suas 4 categorias, e qualquer linha — esfera ou categoria
+        — pode ser marcada para virar barra no gráfico. A linha laranja (sempre visível,
+        independente do que está marcado) é o <strong>IEG do Governo Geral</strong>: marcar
+        União+Estados+Municípios empilha exatamente nela, e expandir uma esfera e marcar suas 4
+        categorias empilha no total daquela esfera. Marcar uma esfera <em>e</em> as categorias dela ao
+        mesmo tempo empilha o mesmo valor duas vezes — é uma escolha de leitura, não um erro.
+        <strong>Trimestre (T/T)</strong> (2026-08, reescrito — ver Apêndice) roda um
+        ajuste sazonal (STL) independente por categoria — por isso, ao contrário de 4T Acumulado, a
+        soma de União+Estados+Municípios <strong>não reconcilia mais exatamente</strong> com Geral
+        neste toggle (STL não é uma operação linear). Sem Banco Central aqui — o EFGG/Tesouro
+        Nacional (fonte do IEG) só cobre Governo Geral/Central/Estados/Municípios, sem um corte de
+        Banco Central próprio (ao contrário do impulso via Resultado Primário abaixo, cuja fonte —
+        BCB — publica um corte de Banco Central à parte).
       </p>
-      <div class="chart-card"><div id="chart-ieg-esfera"></div></div>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="ieg-accum-select" class="ctrl-select">
+          <option value="acum4t" selected>4T Acumulado (Y/Y)</option>
+          <option value="quarter">Trimestre (T/T)</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="ieg-hier-table">
+          <thead id="ieg-hier-table-head"></thead>
+          <tbody id="ieg-hier-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-ieg-hier"></div></div>
+    </section>
+
+    <section>
+      <h2>Impulso via Resultado Primário por Esfera</h2>
+      <p class="chart-caption">
+        Decomposição do impulso via resultado primário (mesma série agregada da Visão Combinada acima)
+        pela contribuição de cada esfera — a partir do resultado primário do <strong>setor público
+        consolidado</strong> (BCB, metodologia "abaixo da linha", <code>fisc_nfsp</code> — Governo
+        Central + Estados/Municípios + Empresas Estatais + Banco Central). Mesma tabela+gráfico da
+        seção anterior (2026-08, a pedido do usuário), só que <strong>sem segundo nível</strong> — o
+        BCB não publica um corte por categoria de despesa dentro de cada esfera, então a árvore aqui é
+        a lista plana das 5 esferas. Marque as linhas que quiser ver como barra; a linha laranja é
+        sempre o total do setor público consolidado. <strong>Governo Federal aqui
+        exclui o Banco Central</strong> — o BCB o publica como uma série própria, historicamente pequeno
+        e listado por completude, não porque seja relevante para a leitura fiscal — desmarque-o na
+        tabela (ou clique no nome dele na legenda) para escondê-lo do gráfico.<br><br>
+        <strong>Atenção — esta série NÃO é a mesma coisa que a linha "Resultado Primário" da tabela RTN
+        (aba Receitas e Despesas)</strong>, mesmo que o nome pareça igual: a RTN cobre só o Governo
+        Central (Tesouro), enquanto esta usa o setor público consolidado (BCB) — os dois números para o
+        mesmo mês são esperados serem diferentes, não é um erro.<br><br>
+        <strong>Acum. 12m (Y/Y)</strong>: as 5 séries de esfera já publicadas pelo BCB somam o total a
+        cada mês (a menos de arredondamento de ±0,01pp por série) — reconciliação <strong>exata</strong>.
+        <strong>Trimestre (T/T)</strong> (2026-08, reescrito — ver Apêndice): cada esfera roda seu próprio
+        ajuste sazonal (STL) sobre o fluxo mensal bruto daquela esfera — como o STL não é uma operação
+        linear, a soma das 5 barras <strong>não reconcilia mais exatamente</strong> com a linha do total
+        neste toggle (o preço de trocar o atalho anterior — T/T sobre o próprio acumulado, sem
+        dessazonalizar de verdade — por uma leitura trimestral genuína em cada corte).
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="impulso-rp-esfera-accum-select" class="ctrl-select">
+          <option value="acum12m" selected>Acum. 12m (Y/Y)</option>
+          <option value="quarter">Trimestre (T/T)</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="impulso-rp-table">
+          <thead id="impulso-rp-table-head"></thead>
+          <tbody id="impulso-rp-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-impulso-rp-esfera"></div></div>
     </section>
 
   </div>
@@ -327,26 +443,46 @@
           <strong>Municípios</strong> (<code>estados_</code>/<code>municipios_</code>, 2010-I→hoje) —
           o estado de quais linhas estão marcadas/expandidas na tabela sobrevive à troca de
           esfera.<br><br>
-          <strong>Nível</strong> é o valor bruto (sem ajuste sazonal) executado no próprio trimestre,
-          em R$ milhões.<br><br>
-          <strong>Y/Y</strong> compara o trimestre com o mesmo trimestre um ano antes, sobre o nível
-          bruto — a variação interanual já cancela a sazonalidade por construção, sem precisar de
-          ajuste sazonal.<br><br>
-          <strong>T/T</strong> compara o trimestre com o trimestre imediatamente anterior, mas sobre
-          uma base <strong>dessazonalizada (STL)</strong> — diferente de Y/Y, uma variação
-          trimestre-contra-trimestre-anterior sobre o dado bruto reproduziria o forte calendário
-          sazonal de execução orçamentária destas séries (13º salário, concentração de investimento no
-          último trimestre etc.) em vez de medir uma variação real — exatamente o mesmo problema já
-          identificado e corrigido uma vez neste relatório para o cálculo do IEG (ver item abaixo).<br><br>
-          <strong>Real</strong> deflaciona o valor nominal pelo IPCA (<code>inflc_agregados.ipca</code>),
-          a preços constantes do último mês disponível da série de IPCA.<br><br>
-          <strong>% do PIB</strong> usa a mesma convenção já estabelecida neste relatório para séries
-          fiscais trimestrais (<code>fisc_nfsp</code>'s colunas <code>*_pct_pib_12m</code>, e o próprio
-          IEG) — acumulado em 4 trimestres (TTM) da própria série, dividido pelo TTM do PIB nominal
-          (<code>atv_pib_valores_correntes</code>) — não o nível de um único trimestre sobre o PIB
-          anualizado, que sub-estimaria a razão usual "receita/despesa como % do PIB". Só tem a
-          variante Nível (não há Y/Y/T/T de uma razão fluxo/PIB) e é sempre calculada sobre o nível
-          nominal (idêntica à razão real/PIB-real, já que o deflator cancela).<br><br>
+          Três decisões independentes controlam a tabela/gráfico (reorganizadas 2026-08, a pedido do
+          usuário — antes eram "Nível/Y-Y/T-T" + "Nominal/Real/% PIB" + "Bruto/Acumulado"; % do PIB
+          mudou de grupo, ver abaixo):<br><br>
+          <strong>(a) Nível — a frequência de agregação</strong>: <strong>Trimestral</strong> (padrão —
+          valor do próprio trimestre, sem ajuste sazonal, em R$ milhões — é a frequência nativa da GFSM,
+          não há opção "Mensal" aqui) ou <strong>Acumulado 12m</strong> (adicionado 2026-08 — Nível é o
+          <u>acumulado móvel em 4 trimestres</u>, TTM). Só é possível reduzir a frequência de uma série
+          (por isso a RTN, mensal, ganha uma terceira opção "Mensal" que a GFSM não tem — ver item
+          seguinte), nunca aumentá-la.<br><br>
+          <strong>(b) Nominal ou Real</strong>: se o valor do Nível escolhido acima é ajustado pela
+          inflação. <strong>Real</strong> deflaciona pelo IPCA (<code>inflc_agregados.ipca</code>), a
+          preços constantes do último mês disponível da série — aplicado trimestre a trimestre antes de
+          acumular (no Nível Acumulado), não sobre o acumulado já somado.<br><br>
+          <strong>(c) Modelagem</strong>: <strong>Nível</strong> (valor bruto, sem transformação),
+          <strong>Y/Y</strong> (compara com o mesmo trimestre um ano antes — sobre o Nível Trimestral,
+          a variação interanual já cancela a sazonalidade por construção; sobre o Acumulado 12m, compara
+          o acumulado terminado no trimestre <em>t</em> contra o acumulado terminado 4 trimestres antes,
+          o "ano-móvel contra ano-móvel anterior", mesma lógica já usada pelo IEG e por
+          <code>fisc_nfsp</code>'s colunas <code>*_pct_pib_12m</code>), <strong>Marginal</strong>
+          (compara com o trimestre imediatamente anterior sobre uma base
+          <strong>dessazonalizada (STL)</strong> antes do diff, porque uma variação
+          trimestre-contra-trimestre-anterior sobre o dado bruto reproduziria o forte calendário sazonal
+          de execução orçamentária destas séries [13º salário, concentração de investimento no último
+          trimestre etc.] em vez de medir uma variação real — mesmo problema já identificado e corrigido
+          uma vez neste relatório para o cálculo do IEG, ver item abaixo; <strong>indisponível no Nível
+          Acumulado 12m</strong> — ali a única modelagem de crescimento é Y/Y, comparando o acumulado
+          contra o acumulado de 12 meses antes; um "Marginal" do acumulado contra o acumulado do
+          trimestre anterior seria uma medida de aceleração/desaceleração do próprio acumulado, não a
+          leitura "trimestre contra trimestre" que a palavra sugere, e foi deliberadamente descartada
+          para não confundir as duas ideias) ou <strong>% do PIB</strong>.<br><br>
+          <strong>% do PIB</strong> (2026-08, revisado — antes era sempre TTM/TTM independente do
+          toggle; agora acompanha o Nível selecionado): no Nível <strong>Trimestral</strong>, compara o
+          valor do próprio trimestre com o PIB do <u>mesmo</u> trimestre (<code>atv_pib_valores_correntes</code>,
+          SEM o <code>rolling(4)</code> que o Nível Acumulado usa) — não mais o PIB anualizado (TTM), que
+          sub-estimaria a razão em ~4x. No Nível <strong>Acumulado 12m</strong>, continua TTM/TTM
+          (acumulado em 4 trimestres da própria série sobre o TTM do PIB), mesma convenção já usada por
+          <code>fisc_nfsp</code>'s <code>*_pct_pib_12m</code> e pelo IEG. Em ambos os casos, só existe em
+          termos <strong>nominais</strong> (a variante Real fica indisponível quando % do PIB está
+          selecionado) — se faz sentido comparar Real com um PIB real em vez do nominal é uma decisão
+          ainda em aberto, ver Pending em <code>analytics/fiscal_policy/CLAUDE.md</code>.<br><br>
           <strong>Atenção — em <u>Governo Geral</u>, "Receita"/"Despesa" (raiz da árvore) são uma soma
           célula-a-célula das três esferas, não uma consolidação líquida</strong> (União/Estados/
           Municípios individualmente, escolhidos no seletor Esfera, não têm esse problema — cada um é o
@@ -369,6 +505,97 @@
           versão (exigiria abater as transferências intergovernamentais entre esferas, um trabalho de
           reconciliação próprio, não uma correção pontual) — ver Pending em
           <code>analytics/fiscal_policy/CLAUDE.md</code>.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>GFSM vs. RTN — Duas Metodologias</summary>
+        <div class="appendix-body">
+          A aba mostra <strong>duas tabelas independentes</strong> de Receita/Despesa, uma por
+          metodologia — não são a mesma pergunta respondida duas vezes, e os totais das duas
+          <strong>não devem reconciliar entre si</strong>. Detalhe completo em
+          <code>analytics/fiscal_policy/reference/rtn_vs_efgg.md</code>; resumo comparativo:<br><br>
+          <table>
+            <tr><th></th><th>GFSM (primeira tabela)</th><th>RTN (segunda tabela)</th></tr>
+            <tr><td>Abrangência</td><td>Governo Geral (União+Estados+Municípios) ou cada esfera, via seletor</td><td>Só Governo Central</td></tr>
+            <tr><td>Classificação</td><td>Natureza econômica — GFSM 2014 do FMI (remuneração de empregados, uso de bens e serviços, juros, subsídios, transferências, investimento)</td><td>Rubrica orçamentária do Tesouro (benefícios previdenciários, pessoal, outras obrigatórias, discricionárias por função — saúde/educação/defesa/etc.)</td></tr>
+            <tr><td>Regime contábil</td><td>Competência modificada (caixa p/ receita, competência p/ despesa)</td><td>Caixa — "acima da linha" (valor pago/liberado)</td></tr>
+            <tr><td>Periodicidade</td><td>Trimestral</td><td>Mensal</td></tr>
+            <tr><td>Fonte</td><td><code>fisc_efgg</code> (EFGG, Tesouro)</td><td><code>fisc_rtn</code> (RTN, Tesouro, Tema 10 da API de Séries Temporais)</td></tr>
+            <tr><td>Métricas</td><td>Nível (Trimestral/Acumulado 12m) × Nominal/Real × Modelagem (Nível/Y-Y/Marginal/% PIB)</td><td>Nível (Mensal/Trimestral/Acumulado 12m) × Nominal/Real × Modelagem (Nível/Y-Y/Marginal/% PIB) — <strong>Trimestral</strong> soma o trimestre calendário sem sobreposição, o mesmo corte que a GFSM já usa nativamente; <strong>Marginal</strong> é M/M no Nível Mensal e T/T no Trimestral</td></tr>
+          </table>
+          Nenhuma das duas é "mais certa" — respondem perguntas diferentes (harmonização
+          internacional/SNA 2008 vs. acompanhamento operacional do caixa do Tesouro), do mesmo jeito
+          que "acima da linha" (Tesouro) e "abaixo da linha" (BCB, <code>fisc_nfsp</code>) também não
+          reconciliam entre si no resto deste relatório.<br><br>
+          <strong>Dentro da própria tabela RTN, "Receita Total" também não é comparável a "Despesa
+          Total"</strong> — <code>receita_total</code> é bruta, antes das transferências por
+          repartição de receita a Estados/Municípios (FPM/FPE/IPI-EE — linha "Transferências por
+          Repartição de Receita" na árvore), que nunca chegam a ser gasto do Governo Central. A linha
+          que de fato reconcilia com <code>despesa_total</code> é <code>receita_liquida</code>
+          (= Receita Total − Transferências) — por isso é ela, e não Receita Total, que vem marcada
+          por padrão no gráfico da tabela RTN. <code>receita_total</code> continua disponível na
+          árvore (expandir "Receita Total") para quem quiser o valor bruto por rubrica.<br><br>
+          <strong>"Resultado Primário" (2026-08, adicionado como irmão de "Receita Total"/"Despesa
+          Total")</strong> é a série publicada pelo próprio Tesouro sob o código 10.04.1 (Governo Central
+          = Tesouro Nacional + Previdência Social + Banco Central) — confirmado ao vivo que é idêntica,
+          mês a mês, à identidade <code>receita_liquida − despesa_total</code> já usada internamente por
+          <code>fisc_rtn.py</code> desde a migração para esta fonte. Vem marcada por padrão no gráfico,
+          ao lado de Receita Líquida e Despesa Total.<br><br>
+          <strong>Dentro de "Receita Total", a linha "Incentivos Fiscais" é uma dedução, não uma receita
+          positiva</strong> — mede a renúncia de receita (isenções, anistias, remissões, créditos
+          presumidos etc., art. 14 da Lei de Responsabilidade Fiscal) sobre a Receita Administrada pela
+          RFB, então é sempre ≤ 0, ao contrário das outras 3 categorias que dividem a Receita Total
+          (Receita Administrada, Arrecadação RGPS, Receitas Não Administradas), que são positivas.
+          Checado ao vivo na série completa (1997-01→2026-06, 354 observações): 98 valores negativos, 254
+          exatamente zero e só 2 positivos (arredondamento, magnitudes ínfimas). <strong>De 2024-01 em
+          diante a série é zero em todos os meses</strong> (uma única exceção, -R$1,4 mi em 2025-12) —
+          efetivamente "morta" nos últimos ~2,5 anos, sem confirmação de causa (pode refletir um
+          reordenamento de reporte no boletim RTN, não necessariamente o fim da renúncia fiscal em si). A
+          série também tem um <strong>outlier isolado em 2017-12 (-R$1.356 mi)</strong>, ~9x maior em
+          módulo que qualquer outro mês (faixa típica -R$1mi a -R$190mi) — provável ajuste de fechamento
+          anual concentrado num único mês, não um fluxo mensal genuíno. No toggle <strong>Bruto</strong>
+          (padrão) esse outlier aparece como um único pico isolado em dez/2017; no toggle
+          <strong>Acumulado</strong>, o Nível vira um acumulado de 12 meses (ver item acima), então esse
+          mesmo outlier "mancha" o acumulado pelos 12 meses seguintes a partir de dez/2017 em vez de
+          aparecer isolado — atenção ao ler essa linha especificamente no modo Acumulado.<br><br>
+          <strong>% do PIB no Nível Acumulado 12m</strong> usa a mesma convenção TTM/TTM nas duas
+          tabelas — acumulado em 12 meses da própria série sobre acumulado em 12 meses do PIB (RTN: 12
+          meses corridos sobre <code>atv_pib_mensal.pib_acum_12m</code>, BCB SGS 4382; GFSM: 4
+          trimestres sobre <code>atv_pib_valores_correntes</code>, ver item acima). Ainda assim,
+          <strong>as magnitudes das duas tabelas não convergem</strong>, e isso é esperado, não um erro
+          de cálculo: checado ao vivo (2026-06), Despesa Total RTN (Governo Central) fica em
+          <strong>~20% do PIB</strong>, enquanto Despesa Total GFSM da esfera União fica em
+          <strong>~33-35% do PIB</strong> para o mesmo período — uma diferença de escopo/classificação,
+          não de metodologia de anualização. A GFSM classifica repasses constitucionais a Estados/
+          Municípios (FPM/FPE/IPI-EE) como <strong>despesa</strong> do ente que repassa (código GFSM 26,
+          Transferências e Doações — a mesma linha que o cálculo do IEG já exclui para não contar
+          duas vezes, ver item abaixo); a RTN trata esses mesmos repasses como uma <strong>dedução da
+          receita</strong> (Receita Total − Transferências = Receita Líquida, não uma linha de despesa) —
+          por isso a Despesa Total da GFSM já nasce estruturalmente maior que a da RTN para o mesmo
+          ente. Comparar as duas tabelas linha a linha (ex.: "Despesa Total RTN" vs. "Despesa Total GFSM
+          — União") mede coisas diferentes por desenho; use cada tabela para acompanhar sua própria
+          série ao longo do tempo, não para reconciliar uma contra a outra.<br><br>
+          <strong>Double-check ao vivo (1T/2026) — de onde vem a diferença de ~2,2x entre as duas
+          tabelas</strong>: checado diretamente contra o banco (2026-08) depois de uma dúvida levantada
+          sobre a Receita do 1T/2026 aparecer em ~R$800bi na RTN contra ~R$1,7tri na GFSM (~53% do PIB
+          trimestral) — não é um bug de cálculo, são <u>duas causas somadas, ambas já conhecidas neste
+          Apêndice</u>: (1) o valor da GFSM que aparece por padrão é <strong>Governo Geral</strong>
+          (União+Estados+Municípios consolidado), enquanto a RTN só cobre <strong>Governo Central</strong>
+          — comparar Geral (GFSM) contra Central (RTN) já é comparar escopos de tamanho diferente por
+          desenho; (2) Governo Geral, como descrito no item anterior deste Apêndice, soma as três esferas
+          célula a célula sem abater as transferências intergovernamentais, inflando ainda mais o total.
+          Refeito o corte para comparar <strong>escopo igual</strong> — GFSM esfera <strong>União</strong>
+          (não Geral) contra RTN <strong>Receita Total</strong>, ambas Governo Central, 1T/2026 nominal:
+          GFSM União = R$918,6bi vs. RTN = R$776,1bi — a diferença cai de ~2,2x para ~18%, um resíduo
+          consistente com a diferença de fonte/classificação já documentada acima (SIAFI+Siconfi
+          consolidado pela STN, classificação GFSM 2014, vs. Série Temporais do Tesouro por rubrica
+          orçamentária) e ainda não decomposto item a item — tratar como uma divergência de metodologia
+          conhecida, não investigada em detalhe linha a linha. <strong>Recomendação</strong>: ao comparar
+          as duas tabelas, sempre trocar o seletor <strong>Esfera</strong> da GFSM para <strong>União</strong>
+          (nunca deixar em Governo Geral, o padrão) e usar o toggle <strong>Trimestral</strong> da RTN
+          (ver acima) para alinhar a janela de 3 meses das duas séries antes de comparar qualquer valor
+          entre as duas tabelas.
         </div>
       </details>
 
@@ -419,6 +646,97 @@
         </div>
       </details>
 
+      <details class="appendix-item">
+        <summary>Ajuste Sazonal (STL) — Fatores Estimados até o Último Ano Completo</summary>
+        <div class="appendix-body">
+          Toda leitura <strong>Trimestre (T/T)</strong> deste relatório — e a modelagem
+          <strong>Marginal</strong> das tabelas de Receitas e Despesas — passa por um ajuste sazonal
+          STL, porque uma comparação período-contra-período-anterior sobre o dado bruto reproduziria o
+          calendário de execução orçamentária (13º salário, concentração de investimento e de
+          pagamentos no fim do ano, calendário de arrecadação) em vez de medir uma variação
+          real.<br><br>
+          <strong>Convenção (2026-08, a pedido explícito do usuário)</strong>: os fatores sazonais são
+          estimados <strong>apenas sobre a amostra que vai até o último ano civil completo</strong>, e
+          aplicados <strong>congelados</strong> ao ano corrente ainda incompleto. Gerando o relatório
+          em 2026 com dado até junho, o STL roda até 2025-T4/2025-12; os meses/trimestres de 2026
+          recebem, congelado, o fator estimado para a mesma posição sazonal no último ano da amostra
+          (2025). Quando 2026 fechar, o ajuste é re-rodado incorporando 2026, e passa a valer para
+          2027.<br><br>
+          <strong>Por que</strong>: rodando o STL sobre toda a série disponível, o componente sazonal
+          de cada trimestre/mês passa a ser estimado em parte a partir de um ano truncado — e muda
+          retroativamente a cada nova observação que chega no meio do ano, fazendo a leitura T/T de
+          trimestres já publicados se mover sem que nenhum dado deles tenha sido revisado. Com o corte
+          no último ano completo, os fatores só mudam quando um ano fecha.<br><br>
+          O histórico dentro da amostra continua usando o fator <em>local</em> do STL (sazonalidade que
+          evolui ao longo dos anos — a razão de usar STL em vez de um fator fixo); só a extrapolação
+          para o ano corrente é congelada. Implementação em
+          <code>analytics/fiscal_policy/transforms.py</code>
+          (<code>stl_seasonal_adjust()</code>/<code>seasonal_cutoff_year()</code>).<br><br>
+          <strong>Não se aplica ao PIB</strong>: as leituras T/T do PIB usadas aqui vêm já
+          dessazonalizadas do próprio IBGE (indicador <code>qoq</code>), não passam por este STL.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Impulso Fiscal via Resultado Primário (NFSP) — Metodologia Completa</summary>
+        <div class="appendix-body">
+          Métrica de impulso fiscal alternativa ao IEG, adicionada em 2026-08 como uma
+          <strong>tabela nova e deliberadamente separada</strong> — não uma linha a mais dentro do IEG —
+          porque a fonte, o escopo e o regime contábil diferem, e uma consolidação entre as duas fica
+          para uma próxima rodada.<br><br>
+          <strong>Fonte e escopo</strong>: <code>fisc_nfsp</code> (BCB SGS, metodologia "abaixo da
+          linha") — resultado primário do <strong>setor público consolidado</strong> (Governo Central +
+          Estados/Municípios + Empresas Estatais + Banco Central), já em % do PIB acumulado em 12 meses
+          (mesma convenção TTM/TTM do resto deste relatório). Escopo mais próximo do Governo Geral do
+          IEG (GFSM/Tesouro) do que do Governo Central da aba Receita e Despesa/RTN — ainda assim uma
+          fonte e um regime contábil diferentes dos dois (BCB "abaixo da linha" vs. Tesouro "acima da
+          linha"/EFGG). A série já vem com o sinal corrigido na ingestão (positivo = superávit,
+          convenção "resultado", não "necessidade de financiamento") — ver
+          <code>domain/db/brasil/bcb/fisc_nfsp.py</code>.<br><br>
+          <strong>Não confundir com a linha "Resultado Primário" da tabela RTN</strong> (aba Receitas e
+          Despesas, <code>resultado_primario_governo_central</code>) — mesmo nome, séries diferentes: a
+          RTN cobre só o Governo Central (Tesouro), esta usa o setor público consolidado (BCB). Os dois
+          números para o mesmo mês/nível <strong>não devem bater</strong> — comparar os dois diretamente
+          já gerou confusão real (2026-08): a RTN mostrava, no nível %PIB Acum. 12m, Jun/2025→Jun/2026
+          como +0,11%→−1,08% (delta −1,19pp), enquanto o impulso desta tabela vem da série do BCB,
+          Jun/2025→Jun/2026 = +0,15%→−1,19% (delta −1,34pp) — os dois cálculos estavam corretos, só
+          liam séries diferentes.<br><br>
+          <strong>Fórmula, com exemplo verificado (Jun/2025 → Jun/2026)</strong>: Impulso(t) =
+          −[Resultado Primário(t) − Resultado Primário(t−12m)],
+          uma diferença simples em pontos percentuais (não uma variação percentual — não faz sentido
+          calcular "crescimento" de uma razão já expressa em %, ver <code>transforms.pp_diff()</code>) do
+          resultado primário como % do PIB, comparado ao mesmo mês um ano antes. Em números reais: o
+          resultado primário (setor público consolidado) foi de <strong>+0,15%</strong> do PIB em
+          Jun/2025 para <strong>−1,19%</strong> em Jun/2026 — uma piora de <strong>−1,34 p.p.</strong>
+          (−1,19 − 0,15). O sinal é invertido em relação ao resultado primário bruto para bater com a
+          convenção do IEG (positivo = expansionista): uma <strong>piora</strong> do resultado primário
+          (superávit caindo/déficit subindo) injeta estímulo na economia, então vira impulso
+          <strong>+1,34%</strong> — o oposto do sinal da variação bruta do resultado primário em
+          si.<br><br>
+          <strong>Nível — Acum. 12m (Y/Y) ou Trimestre (T/T)</strong>: <strong>Acum. 12m</strong> é a
+          fórmula acima, sobre a série de resultado primário como % do PIB acumulada em 12 meses que o
+          BCB já publica (dessazonalizada por construção, já que soma um ciclo anual inteiro) — a
+          soma das 5 esferas reproduz o total <strong>exatamente</strong>, a menos do arredondamento de
+          ±0,01pp por série do SGS. <strong>Trimestre</strong> não é um recorte da mesma série: parte
+          do <strong>fluxo mensal bruto</strong> (não acumulado) que o BCB publica em série própria,
+          toma uma soma móvel de 3 meses do fluxo e do PIB (o fluxo mensal cru é ruidoso demais —
+          precatórios e outros pagamentos pontuais concentram valores enormes num único mês), divide,
+          dessazonaliza via STL (ver o item "Ajuste Sazonal" acima) e compara contra 3 meses antes.
+          Como o STL é rodado independentemente em cada esfera e não é uma operação linear, a soma das
+          5 esferas <strong>não reconcilia mais exatamente</strong> com o total neste Nível — divergência
+          típica da ordem de 0,2pp, chegando a 1-2pp nos trimestres de choque (2020).<br><br>
+          <strong>Por que não consolidar com o IEG agora</strong>: (1) fontes diferentes — IEG usa
+          GFSM/EFGG (Tesouro, natureza econômica, Governo Geral), este usa NFSP (BCB, "abaixo da linha",
+          setor público consolidado); (2) o IEG pondera 4 categorias de despesa por multiplicadores
+          fiscais distintos (Resende &amp; Pires), enquanto este é o resultado primário inteiro, sem
+          nenhuma ponderação — dois conceitos de "impulso" genuinamente diferentes (o IEG mede o efeito
+          esperado na demanda agregada; este mede a variação bruta do saldo fiscal); (3) qualquer
+          consolidação exigiria decidir como tratar a sobreposição de escopo entre Governo Geral e Setor
+          Público Consolidado, e qual das duas convenções de "impulso" prevalece — trabalho de desenho
+          próprio, não uma junção mecânica de duas tabelas.
+        </div>
+      </details>
+
     </section>
 
   </div>
@@ -462,49 +780,56 @@ function fmtQuarter(dateStr) {
   var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
   return y + ' T' + (Math.floor((m - 1) / 3) + 1);
 }
-function lastValid(dates, values) {
-  for (var i = values.length - 1; i >= 0; i--) {
-    if (values[i] != null) return {date: dates[i], value: values[i]};
-  }
-  return null;
-}
-function firstValid(dates, values) {
-  for (var i = 0; i < values.length; i++) {
-    if (values[i] != null) return {date: dates[i], value: values[i]};
-  }
-  return null;
-}
-// Corta uma serie {dates, values} para o intervalo [lo, hi] (strings ISO, comparaveis
-// lexicograficamente). Usado para nao mostrar PIB fora da janela onde o IEG existe.
-function clipToRange(seriesObj, lo, hi) {
-  var dates = [], values = [];
-  for (var i = 0; i < seriesObj.dates.length; i++) {
-    if (seriesObj.dates[i] >= lo && seriesObj.dates[i] <= hi) {
-      dates.push(seriesObj.dates[i]);
-      values.push(seriesObj.values[i]);
-    }
-  }
-  return {dates: dates, values: values};
-}
-// D.ieg has its own shape ({dates, ieg, contrib:{...}, pct_pib:{...}}), not a plain (group, key)
-// table -- ieg*() adapt it to the same {dates, values} shape used everywhere else.
-function iegTotal() {
+// D.ieg has its own shape ({dates, ieg, ieg_quarter, tree, series:{...}, esfera_total:{...}}),
+// not a plain (group, key) table -- ieg*() adapt it to the same {dates, values} shape used
+// everywhere else. variant is 'acum4t' (4T Acumulado, Y/Y -- o IEG "oficial" do paper) or
+// 'quarter' (T/T sobre o mesmo acumulado, ver _ieg_contrib_for_esfera() em generate_report.py).
+function iegTotal(variant) {
   var g = D.ieg || {};
-  return {dates: g.dates || [], values: g.ieg || []};
+  return {dates: g.dates || [], values: (variant === 'quarter' ? g.ieg_quarter : g.ieg) || []};
 }
-function iegContrib(key) {
+// Uma linha da arvore "IEG por Esfera e Categoria" (ver makeImpulsoHierTab() abaixo).
+// D.ieg.series e chaveado tanto pela esfera sozinha ("geral"/"central"/"estados"/
+// "municipios" -- o total daquela esfera, no PAI da arvore) quanto por
+// "{esfera}__{categoria}" (as 4 categorias de despesa, os filhos). O dict esfera_total
+// separado que existia ate 2026-08 foi dobrado dentro de `series` justamente para os dois
+// niveis serem consultados pelo mesmo seriesKey.
+function iegSeries(key, variant) {
   var g = D.ieg || {};
-  return {dates: g.dates || [], values: (g.contrib && g.contrib[key]) || []};
+  var s = g.series && g.series[key];
+  return (s && s[variant]) || {dates: [], values: []};
 }
-function iegEsfera(key) {
-  var g = D.ieg || {};
-  return {dates: g.dates || [], values: (g.esfera && g.esfera[key]) || []};
+// D.fiscal_impulse_nfsp.impulso/impulso_quarter sao flat lists (variant 'acum12m'/'quarter')
+// -- o total do impulso via resultado primario, usado pelo grafico combinado (ver
+// renderImpulsoCombinado()) e como linha do grafico por esfera.
+function impulsoRPTotal(variant) {
+  var g = D.fiscal_impulse_nfsp || {};
+  var key = variant === 'quarter' ? 'impulso_quarter' : 'impulso';
+  return {dates: g.dates || [], values: g[key] || []};
 }
-// D.pib_yoy is a plain {name: {dates, values}} dict (atv_pib_taxas, indicador='yoy') -- its own
-// tiny accessor, same reason as iegTotal()/iegContrib()/iegEsfera() above.
-function pibYoy(base) {
+// D.fiscal_impulse_nfsp.esfera[key] e {acum12m: [...], quarter: [...]} -- listas de valores
+// CRUAS, sem datas proprias (todas compartilham o D.fiscal_impulse_nfsp.dates do topo, ver
+// _load_fiscal_impulse_nfsp() em generate_report.py, que realinha cada esfera aquele grid
+// antes de calcular). Esta funcao reembrulha no formato {dates, values} que os renderers
+// esperam. **Bug real corrigido em 2026-08**: a versao anterior devolvia `s[variant]` direto
+// (a lista crua), entao quem lia `.dates`/`.values` recebia undefined -- as 5 barras por
+// esfera do grafico saiam vazias, e so o total (que vem de impulsoRPTotal(), com o formato
+// certo) era desenhado. Nao aparecia como erro em lugar nenhum: o Plotly aceita
+// x/y undefined sem reclamar, e a checagem de reconciliacao rodava sobre o payload em
+// Python, nunca sobre os traces que o grafico de fato recebe.
+function impulsoRPEsfera(key, variant) {
+  var g = D.fiscal_impulse_nfsp || {};
+  var s = g.esfera && g.esfera[key];
+  var values = s && s[variant];
+  return values ? {dates: g.dates || [], values: values} : {dates: [], values: []};
+}
+// D.pib_yoy e {name: {yoy:{...}, qoq:{...}, acum_4t:{...}}} (atv_pib_taxas). metric e
+// 'acum_4t' (par do "4T/12m Acumulado" do grafico combinado), 'qoq' (par do "Trimestre") ou
+// 'yoy' (nao usada pelo grafico, mantida no payload -- ver _load_pib_yoy()).
+function pibYoy(base, metric) {
   var g = D.pib_yoy || {};
-  return g[base] || {dates: [], values: []};
+  var s = g[base];
+  return (s && s[metric]) || {dates: [], values: []};
 }
 
 // ── KPI rendering ─────────────────────────────────────────────────────────────
@@ -608,38 +933,96 @@ function flattenHierRows(tree, expanded, depth) {
   });
   return rows;
 }
-// opts: {dataKey, anchorSeriesKey, metricGroupId, basisGroupId, tableHeadId,
-//        tableBodyId, chartDivId, defaultChecked: [keys], fmtDate, colLabel,
-//        esferaSelectId (optional -- prefixes every seriesKey lookup with
+// opts: {dataKey, anchorSeriesKey, metricSelectId, basisSelectId, accumSelectId,
+//        tableHeadId, tableBodyId, chartDivId, defaultChecked: [keys], fmtDate,
+//        colLabel, esferaSelectId (optional -- prefixes every seriesKey lookup with
 //        "{esfera}__", so the same node.key/checked/expanded state survives an
-//        esfera switch), yTitle(metric, basis, refDate)}
+//        esfera switch), yTitle(metric, basis, refDate, accum),
+//        quarterlyStepAccum (optional -- accum value, RTN-only "trimestral", whose
+//        Nivel is a calendar-quarter step repeated across 3 months in the underlying
+//        data; seriesFor()/refDates() collapse it down to one column per quarter,
+//        see collapseToQuarterStart() below)}
+// D[dataKey].series[key] is nested {bruto|acum: {nominal|real|pctpib: {level|yoy|...}}}
+// -- "bruto" (Nivel = valor do proprio periodo) e "acum" (Nivel = acumulado
+// movel/TTM) sao duas modelagens de FREQUENCIA INDEPENDENTES, oferecidas lado a lado
+// via o dropdown accumSelectId (rotulado "Mensal/Trimestral/Acumulado 12m" no RTN,
+// "Trimestral/Acumulado 12m" na GFSM -- accumSelectId e o eixo (a) "Nivel" do
+// usuario, nao confundir com state.metric==='level' abaixo, o eixo (c)
+// "Modelagem"), nao uma substituindo a outra (ver
+// analytics/fiscal_policy/transforms.py e Apendice, "GFSM vs. RTN" / "Bruto vs.
+// Acumulado"). state.metric (eixo (c) Modelagem, dropdown metricSelectId) e um de
+// {level, yoy, marginal, pctpib} -- "marginal" nao e uma chave propria nos dados,
+// resolve para mom_sa/qoq_sa em seriesFor() conforme o Nivel de frequencia
+// selecionado. state.basis (eixo (b), dropdown basisSelectId) e {nominal, real} --
+// "% do PIB" saiu deste grupo em 2026-08 e virou uma modelagem
+// (state.metric==='pctpib'), sempre nominal (ver wireControls()).
+// Controles convertidos de pill-buttons para <select> dropdowns em 2026-08, a
+// pedido do usuario ("click drop" para as 3 decisoes) -- mesmos 3 eixos, mesma
+// logica de forcar/desabilitar opcao quando %PIB ou Acumulado 12m sao escolhidos,
+// so o widget mudou (ver wireControls()).
+function isQuarterStartDate(dateStr) {
+  var m = parseInt(dateStr.slice(5, 7), 10);
+  return m === 1 || m === 4 || m === 7 || m === 10;
+}
+// RTN "Trimestral" (quarterlyStepAccum) guarda o Nivel do trimestre calendario
+// REPETIDO nos 3 meses daquele trimestre (ver quarterly_step_level() em
+// transforms.py) -- necessario para o Y/Y e T/T mensais originais, mas errado para
+// exibicao direta (mostraria o mesmo valor 3x, ver CLAUDE.md Gotchas). Reduz para
+// 1 coluna por trimestre, mantendo so o primeiro mes (Jan/Abr/Jul/Out) -- "como a
+// GFSM", a pedido explicito do usuario, 2026-08.
+function collapseToQuarterStart(dates, values) {
+  var outD = [], outV = [];
+  for (var i = 0; i < dates.length; i++) {
+    if (isQuarterStartDate(dates[i])) { outD.push(dates[i]); outV.push(values[i]); }
+  }
+  return {dates: outD, values: outV};
+}
 function makeHierTab(opts) {
-  var state = {metric: null, basis: 'nominal', esfera: null, checked: {}, expanded: {}};
+  var state = {metric: null, basis: 'nominal', accum: 'bruto', esfera: null, checked: {}, expanded: {}};
   opts.defaultChecked.forEach(function(k) { state.checked[k] = true; });
 
   function dataKeyFor(seriesKey) {
     return opts.esferaSelectId ? (state.esfera + '__' + seriesKey) : seriesKey;
   }
   function seriesFor(seriesKey) {
-    var byBasis = D[opts.dataKey].series[dataKeyFor(seriesKey)];
-    if (!byBasis) return {dates: [], values: []};
-    var byMetric = byBasis[state.basis] || byBasis.nominal;
-    return (byMetric && byMetric[state.metric]) || {dates: [], values: []};
+    var byAccum = D[opts.dataKey].series[dataKeyFor(seriesKey)];
+    if (!byAccum) return {dates: [], values: []};
+    var byBasis = (byAccum[state.accum] || byAccum.bruto) || {};
+    var result;
+    // "% PIB" e uma chave IRMA de nominal/real dentro de byBasis (so tem ".level",
+    // nunca yoy/mom_sa/qoq_sa -- ver analytics/fiscal_policy/transforms.py), nao uma
+    // metrica dentro de nominal/real -- le direto em vez de passar por
+    // byBasis[state.basis].
+    if (state.metric === 'pctpib') {
+      result = (byBasis.pctpib && byBasis.pctpib.level) || {dates: [], values: []};
+    } else {
+      var byMetric = byBasis[state.basis] || byBasis.nominal;
+      // "Marginal" nao e uma chave propria nos dados -- resolve para 'mom_sa' (Nivel
+      // Mensal, RTN) se existir, senao 'qoq_sa' (Trimestral/GFSM, que nunca tem mom_sa).
+      var metric = state.metric === 'marginal' ? ((byMetric && byMetric.mom_sa) ? 'mom_sa' : 'qoq_sa') : state.metric;
+      result = (byMetric && byMetric[metric]) || {dates: [], values: []};
+    }
+    if (opts.quarterlyStepAccum && state.accum === opts.quarterlyStepAccum) {
+      return collapseToQuarterStart(result.dates, result.values);
+    }
+    return result;
   }
   function fmtValue(value) {
     if (value == null || isNaN(value)) return '—';
-    // "% do PIB" e sempre percentual mesmo com metric==='level' (level e a unica
-    // variante que essa base tem) -- so a combinacao Nominal/Real + level usa a
-    // formatacao de moeda.
-    if (state.metric === 'level' && state.basis !== 'pctpib') return fmtAutoCurrency(value);
+    if (state.metric === 'level') return fmtAutoCurrency(value);
     return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
   }
-  // Ultimos 12 trimestres -- lidos de `anchorSeriesKey` (sempre presente, o mais
-  // completo da arvore) como referencia comum de datas para todas as linhas.
+  // Ultimas 12 colunas do Nivel/metrica atual, lidas de `anchorSeriesKey` (sempre
+  // presente, o mais completo da arvore) via o proprio seriesFor() -- assim
+  // acompanha automaticamente o accum selecionado (inclui o colapso trimestral
+  // acima), em vez de sempre olhar para as datas de "bruto" como antes (o que
+  // fazia a Trimestral da RTN repetir 3x o mesmo valor -- ver CLAUDE.md Gotchas).
   function refDates() {
-    var byBasis = D[opts.dataKey].series[dataKeyFor(opts.anchorSeriesKey)];
-    var dates = (byBasis && byBasis.nominal && byBasis.nominal.level && byBasis.nominal.level.dates) || [];
-    return dates.slice(-12);
+    var prevMetric = state.metric;
+    state.metric = 'level';
+    var s = seriesFor(opts.anchorSeriesKey);
+    state.metric = prevMetric;
+    return (s.dates || []).slice(-12);
   }
   function renderTableHead() {
     var thead = document.getElementById(opts.tableHeadId);
@@ -718,7 +1101,7 @@ function makeHierTab(opts) {
         if (node.children) walk(node.children);
       });
     })(D[opts.dataKey].tree);
-    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date));
+    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date, state.accum));
   }
   function wireControls() {
     if (opts.esferaSelectId) {
@@ -731,35 +1114,53 @@ function makeHierTab(opts) {
         });
       }
     }
-    document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
-      if (btn.classList.contains('active')) state.metric = btn.dataset.metric;
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        state.metric = btn.dataset.metric;
-        renderTable(); renderChart();
-      });
+    var metricSel = document.getElementById(opts.metricSelectId);
+    var basisSel = document.getElementById(opts.basisSelectId);
+    var accumSel = opts.accumSelectId ? document.getElementById(opts.accumSelectId) : null;
+    function findOption(sel, value) {
+      for (var i = 0; i < sel.options.length; i++) if (sel.options[i].value === value) return sel.options[i];
+      return null;
+    }
+    state.metric = metricSel.value;
+    metricSel.addEventListener('change', function() {
+      state.metric = metricSel.value;
+      // "% PIB" so existe em termos NOMINAIS -- forca Nominal e desabilita a opcao
+      // Real enquanto essa modelagem estiver selecionada.
+      var realOpt = findOption(basisSel, 'real');
+      if (state.metric === 'pctpib') {
+        state.basis = 'nominal';
+        basisSel.value = 'nominal';
+        if (realOpt) realOpt.disabled = true;
+      } else if (realOpt) {
+        realOpt.disabled = false;
+      }
+      renderTable(); renderChart();
     });
-    document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        state.basis = btn.dataset.basis;
-        // "% PIB" so tem a variante Nivel -- forca o metrico de volta para 'level'
-        // e desabilita os demais botoes enquanto essa base estiver selecionada.
-        var metricPills = document.querySelectorAll('#' + opts.metricGroupId + ' .pill');
-        if (state.basis === 'pctpib') {
-          state.metric = 'level';
-          metricPills.forEach(function(b) {
-            b.classList.toggle('disabled', b.dataset.metric !== 'level');
-            b.classList.toggle('active', b.dataset.metric === 'level');
-          });
-        } else {
-          metricPills.forEach(function(b) { b.classList.remove('disabled'); });
+    basisSel.addEventListener('change', function() {
+      state.basis = basisSel.value;
+      renderTable(); renderChart();
+    });
+    if (accumSel) {
+      state.accum = accumSel.value;
+      accumSel.addEventListener('change', function() {
+        state.accum = accumSel.value;
+        // "Marginal" nao existe no Nivel Acumulado 12m -- a unica modelagem
+        // permitida ali e Y/Y (12m contra os 12m imediatamente anteriores); Nivel e
+        // % PIB continuam disponiveis (% PIB usa TTM/TTM nesse nivel, ver
+        // transforms.py). Cai para Y/Y se Marginal estiver selecionado ao trocar
+        // para Acumulado 12m.
+        var marginalOpt = findOption(metricSel, 'marginal');
+        if (marginalOpt) {
+          var disableMarginal = state.accum === 'acum';
+          marginalOpt.disabled = disableMarginal;
+          if (disableMarginal && state.metric === 'marginal') {
+            metricSel.value = 'yoy';
+            state.metric = 'yoy';
+          }
         }
         renderTable(); renderChart();
       });
-    });
+    }
   }
   return {
     init: function() {
@@ -769,93 +1170,274 @@ function makeHierTab(opts) {
     },
   };
 }
-// basis==='pctpib' so tem a variante Nivel -- o Y do grafico e sempre "% do PIB"
-// nesse caso, independente do metric selecionado.
-function _gfsmYTitle(metric, basis, refDate) {
-  if (basis === 'pctpib') return '% do PIB';
+// metric==='pctpib' -- o Y do grafico e sempre "% do PIB", com o denominador
+// dependendo do Nivel (accum): Acumulado 12m usa TTM/TTM (mesmo PIB acumulado que o
+// resto do relatorio), Trimestral usa o PIB do MESMO trimestre (sem acumular nenhum
+// dos dois lados) -- ver analytics/fiscal_policy/transforms.py.
+function _gfsmYTitle(metric, basis, refDate, accum) {
+  if (metric === 'pctpib') return accum === 'acum' ? '% do PIB (Acum. 4T)' : '% do PIB (Trimestral)';
   if (metric !== 'level') return '%';
-  return basis === 'real' ? 'R$ mi (a preços de ' + fmtQuarter(refDate) + ')' : 'R$ mi';
+  var base = basis === 'real' ? 'R$ mi (a preços de ' + fmtQuarter(refDate) + ')' : 'R$ mi';
+  return accum === 'acum' ? base + ' — Acum. 4T' : base;
 }
 var GFSM_TAB = makeHierTab({
   dataKey: 'gfsm', anchorSeriesKey: 'despesa_total', esferaSelectId: 'gfsm-esfera-select',
-  metricGroupId: 'gfsm-metric-group', basisGroupId: 'gfsm-basis-group',
+  metricSelectId: 'gfsm-metric-select', basisSelectId: 'gfsm-basis-select', accumSelectId: 'gfsm-accum-select',
   tableHeadId: 'gfsm-table-head', tableBodyId: 'gfsm-table-body', chartDivId: 'chart-gfsm',
   defaultChecked: ['receita_total', 'despesa_total'],
   fmtDate: fmtQuarterShort, colLabel: 'Categoria (GFSM)',
   yTitle: _gfsmYTitle,
 });
+// ── 2a tabela+grafico da mesma aba — metodologia RTN (mensal, so Governo Central,
+// ver analytics/fiscal_policy/rtn_tab.py). fmtMonthShort/fmtMonthFull no lugar de
+// fmtQuarterShort/fmtQuarter -- RTN e mensal, nao trimestral.
+function fmtMonthShort(dateStr) {
+  var MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return MESES[m - 1] + '/' + y;
+}
+function fmtMonthFull(dateStr) {
+  var MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
+  return MESES[m - 1] + '/' + y;
+}
+function _rtnYTitle(metric, basis, refDate, accum) {
+  if (metric === 'pctpib') {
+    if (accum === 'acum') return '% do PIB (Acum. 12m)';
+    if (accum === 'trimestral') return '% do PIB (Trimestral)';
+    return '% do PIB (Mensal)';
+  }
+  if (metric !== 'level') return '%';
+  var base = basis === 'real' ? 'R$ mi (a preços de ' + fmtMonthFull(refDate) + ')' : 'R$ mi';
+  if (accum === 'acum') return base + ' — Acum. 12m';
+  if (accum === 'trimestral') return base + ' — Trimestral (não móvel)';
+  return base;
+}
+var RTN_TAB = makeHierTab({
+  dataKey: 'rtn', anchorSeriesKey: 'despesa_total',
+  metricSelectId: 'rtn-metric-select', basisSelectId: 'rtn-basis-select', accumSelectId: 'rtn-accum-select',
+  tableHeadId: 'rtn-table-head', tableBodyId: 'rtn-table-body', chartDivId: 'chart-rtn',
+  defaultChecked: ['receita_liquida', 'despesa_total', 'resultado_primario_governo_central'],
+  fmtDate: fmtMonthShort, colLabel: 'Categoria (RTN)', quarterlyStepAccum: 'trimestral',
+  yTitle: _rtnYTitle,
+});
 
 // ── Tab renderers ──────────────────────────────────────────────────────────────
-var PIB_DEMANDA_LABELS = {
-  pib_pm:              'PIB (Total)',
-  consumo_familias:    'Consumo das Famílias',
-  consumo_adm_publica: 'Consumo do Governo',
-  fbcf:                'Investimento (FBCF)',
-  exportacao:          'Exportações',
-  importacao:          'Importações',
-};
-function renderIEGPibComparacao() {
-  var sel = document.getElementById('ieg-pib-select');
-  var base = sel ? sel.value : 'pib_pm';
-  var label = PIB_DEMANDA_LABELS[base] || base;
-  var total = iegTotal(), pib = pibYoy(base);
-  // PIB (atv_pib_taxas) tem historico muito mais longo que o IEG (que so existe onde
-  // fisc_efgg/geral_* tem dado, ~2011+, ver _load_ieg()) -- corta o PIB para a mesma janela do
-  // IEG em vez de deixar pontos de PIB sem nenhuma barra de IEG ao lado para comparar.
-  var fv = firstValid(total.dates, total.values), lv = lastValid(total.dates, total.values);
-  if (fv && lv) pib = clipToRange(pib, fv.date, lv.date);
+// ── Fabrica compartilhada pelas DUAS tabelas de impulso desta aba (IEG por Esfera e
+// Categoria; Impulso via Resultado Primario por Esfera) -- 2026-08, a pedido do usuario:
+// "The hierarque should be: Sphere > Expenditure catergories. Then I can click on the
+// series I want to see. Mantain just the 'Nivel' click-dropdown" (IEG) e "The same for
+// 'Impulso via Resultado Primario por Esfera', but only with the spheres". Substitui o par
+// anterior (makeIegHierTab, com dropdown de Esfera + lista plana de 4 categorias, e o
+// grafico sem tabela do impulso via resultado primario).
+//
+// Diferencas em relacao a makeHierTab() (GFSM/RTN, acima), que e por isso uma funcao
+// separada e nao um opts a mais dela: aqui nao existem os eixos Nominal/Real/%PIB (a
+// contribuicao ja e uma variacao ponderada em p.p.), o unico controle e o "Nivel"
+// (Trimestre/Acumulado), e o grafico e barras empilhadas ('relative') + uma linha FIXA de
+// total (nao linhas soltas por serie marcada).
+//
+// opts: {dataKey, accumSelectId, tableHeadId, tableBodyId, chartDivId, colLabel,
+//        defaultAccum, defaultChecked: [keys], defaultExpanded: [keys],
+//        fmtDate(dateStr), seriesFor(seriesKey, accum) -> {dates, values},
+//        totalFor(accum) -> {dates, values}, totalLabel, accumLabel(accum)}
+function makeImpulsoHierTab(opts) {
+  var state = {accum: opts.defaultAccum, checked: {}, expanded: {}};
+  (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
+  (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
+
+  function tree() { return (D[opts.dataKey] && D[opts.dataKey].tree) || []; }
+  function seriesFor(seriesKey) { return opts.seriesFor(seriesKey, state.accum); }
+  function totalFor() { return opts.totalFor(state.accum); }
+  function fmtValue(value) {
+    if (value == null || isNaN(value)) return '—';
+    return (value >= 0 ? '+' : '') + value.toFixed(3).replace('.', ',') + ' p.p.';
+  }
+  // Ultimas 12 colunas, lidas da linha de total (sempre presente, o grid mais completo)
+  // -- acompanha automaticamente o Nivel selecionado.
+  function refDates() { return (totalFor().dates || []).slice(-12); }
+
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = opts.colLabel;
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th'); th.className = 'col-value'; th.textContent = opts.fmtDate(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = refDates();
+    flattenHierRows(tree(), state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td'); tdCheck.className = 'col-check';
+      var cb = document.createElement('input'); cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td'); tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      dates.forEach(function(d) {
+        var td = document.createElement('td'); td.className = 'col-value';
+        td.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  // Barras = TODA linha marcada, na ordem em que aparece na arvore (pai ou filho, o leitor
+  // escolhe o corte); linha = o total fixo (IEG Geral / impulso do setor publico
+  // consolidado), sempre visivel, independente do que esta marcado. Marcar um pai E os
+  // filhos dele ao mesmo tempo empilha o mesmo valor duas vezes -- por construcao, e
+  // decisao de leitura de quem marca, nao um caso a ser bloqueado aqui.
+  function renderChart() {
+    var bars = [], colorIdx = 0;
+    (function walk(nodes) {
+      (nodes || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          bars.push({dates: s.dates, values: s.values, label: node.label, color: GFSM_CHART_COLORS[colorIdx++ % GFSM_CHART_COLORS.length]});
+        }
+        if (node.children) walk(node.children);
+      });
+    })(tree());
+    var total = totalFor();
+    renderRelativeBarWithLine(
+      opts.chartDivId, bars,
+      {dates: total.dates, values: total.values, label: opts.totalLabel, color: C.laranja},
+      'p.p. (' + opts.accumLabel(state.accum) + ')'
+    );
+  }
+  function wireControls() {
+    var accumSel = document.getElementById(opts.accumSelectId);
+    if (accumSel) {
+      state.accum = accumSel.value;
+      accumSel.addEventListener('change', function() { state.accum = accumSel.value; renderTable(); renderChart(); });
+    }
+  }
+  return {
+    init: function() { wireControls(); renderTable(); renderChart(); },
+  };
+}
+
+var IEG_HIER_TAB = makeImpulsoHierTab({
+  dataKey: 'ieg', accumSelectId: 'ieg-accum-select',
+  tableHeadId: 'ieg-hier-table-head', tableBodyId: 'ieg-hier-table-body', chartDivId: 'chart-ieg-hier',
+  colLabel: 'Esfera / Categoria de Despesa', defaultAccum: 'acum4t', fmtDate: fmtQuarterShort,
+  // Default: as 3 esferas fechadas e marcadas -- suas barras empilham exatamente na linha
+  // do IEG Geral (garantia exata em 4T Acumulado; residuo pequeno em Trimestre, ver
+  // caption/Apendice). "Geral" fica desmarcado por ser justamente a linha ja plotada.
+  defaultChecked: ['central', 'estados', 'municipios'], defaultExpanded: [],
+  seriesFor: function(key, accum) { return iegSeries(key, accum); },
+  totalFor: function(accum) { return iegTotal(accum); },
+  totalLabel: 'IEG (Governo Geral)',
+  accumLabel: function(accum) { return accum === 'quarter' ? 'Trimestre (T/T)' : '4T Acumulado (Y/Y)'; },
+});
+
+var IMPULSO_RP_TAB = makeImpulsoHierTab({
+  dataKey: 'fiscal_impulse_nfsp', accumSelectId: 'impulso-rp-esfera-accum-select',
+  tableHeadId: 'impulso-rp-table-head', tableBodyId: 'impulso-rp-table-body', chartDivId: 'chart-impulso-rp-esfera',
+  colLabel: 'Esfera', defaultAccum: 'acum12m', fmtDate: fmtMonthShort,
+  defaultChecked: ['governo_federal', 'estados', 'municipios', 'empresas_estatais', 'banco_central'],
+  defaultExpanded: [],
+  seriesFor: function(key, accum) { return impulsoRPEsfera(key, accum); },
+  totalFor: function(accum) { return impulsoRPTotal(accum); },
+  totalLabel: 'Impulso (total, Setor Público Consolidado)',
+  accumLabel: function(accum) { return accum === 'quarter' ? 'Trimestre (T/T)' : 'Acum. 12m (Y/Y), sinal invertido'; },
+});
+
+// ── Visão Combinada — IEG + Impulso via Resultado Primário + PIB (2026-08, a pedido do
+// usuario -- "A line graph with the IEG, primary balance impulse (aggregate) and the GDP
+// (aggregate)... 12m/4Q as well as quarter comparison"). Eixo duplo -- IEG/Impulso PB
+// compartilham o eixo esquerdo (mesma unidade, p.p.), PIB fica no eixo direito (%, escala
+// diferente) -- _bindYAutofit ja suporta multi-eixo nativamente (agrupa por t.yaxis, ver
+// analytics/report_structure/y_autofit.js), nao precisou de nenhuma mudanca ali.
+// "Trimestre" usa a variante T/T dessazonalizada (STL) de cada metrica -- ver
+// _ieg_contrib_for_esfera()/_impulso_quarter_via_stl(); o PIB entra pelo indicador 'qoq' do
+// IBGE, ja dessazonalizado na fonte. "4T/12m Acumulado" usa a leitura de janela anual de
+// cada uma: IEG 4T-contra-4T, impulso PB 12m-contra-12m e PIB pelo indicador 'acum_4t'
+// (2026-08 -- antes era 'yoy', trocado a pedido do usuario justamente para as tres linhas
+// terem a MESMA forma de comparacao; ver docstring de _load_pib_yoy()).
+function renderImpulsoCombinado() {
+  var sel = document.getElementById('impulso-combinado-view-select');
+  var view = sel ? sel.value : 'acum';
+  var iegVariant = view === 'quarter' ? 'quarter' : 'acum4t';
+  var pbVariant = view === 'quarter' ? 'quarter' : 'acum12m';
+  var gdpMetric = view === 'quarter' ? 'qoq' : 'acum_4t';
+  var gdpLabel = view === 'quarter' ? 'PIB (Var. T/T real, dessaz.)' : 'PIB (Var. real, acum. 4T)';
+
+  var ieg = iegTotal(iegVariant), pb = impulsoRPTotal(pbVariant), gdp = pibYoy('pib_pm', gdpMetric);
+
   var traces = [
     {
-      type: 'bar', name: 'IEG (Impulso Estrutural do Gasto)',
-      x: total.dates, y: total.values, marker: {color: C.azul},
-      hovertemplate: 'IEG: %{y:,.2f} p.p.<extra></extra>',
+      type: 'scatter', mode: 'lines', name: 'IEG', x: ieg.dates, y: ieg.values,
+      line: {color: C.azul, width: 2}, yaxis: 'y',
+      hovertemplate: '<b>IEG</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
     },
     {
-      type: 'scatter', mode: 'markers', name: label + ' (Var. Interanual)',
-      x: pib.dates, y: pib.values, marker: {color: C.dourado, size: 6},
-      hovertemplate: label + ': %{y:,.2f}%<extra></extra>',
+      type: 'scatter', mode: 'lines', name: 'Impulso via Resultado Primário', x: pb.dates, y: pb.values,
+      line: {color: C.dourado, width: 2}, yaxis: 'y',
+      hovertemplate: '<b>Impulso via Resultado Primário</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
+    },
+    {
+      type: 'scatter', mode: 'lines', name: gdpLabel, x: gdp.dates, y: gdp.values,
+      line: {color: C.verde, width: 2, dash: 'dot'}, yaxis: 'y2',
+      hovertemplate: '<b>' + gdpLabel + '</b><br>%{x}<br>%{y:,.2f}%<extra></extra>',
     },
   ];
-  var layout = mkTimeseriesLayout('IEG (p.p.) e ' + label + ' (Var. Interanual, %)');
-  Plotly.react('chart-ieg-pib-comparacao', traces, layout, _PLOTLY_CONFIG);
-  _bindYAutofit('chart-ieg-pib-comparacao');
-}
-function renderIEGEsfera() {
-  var total = iegTotal();
-  renderRelativeBarWithLine('chart-ieg-esfera', [
-    {dates: iegEsfera('central').dates, values: iegEsfera('central').values, label: 'União', color: C.azul},
-    {dates: iegEsfera('estados').dates, values: iegEsfera('estados').values, label: 'Estados', color: C.dourado},
-    {dates: iegEsfera('municipios').dates, values: iegEsfera('municipios').values, label: 'Municípios', color: C.verde},
-  ], {dates: total.dates, values: total.values, label: 'IEG (total)', color: C.laranja}, 'p.p. (equivalente % do PIB)');
-}
-function renderIEG() {
-  var total = iegTotal(), lt = lastValid(total.dates, total.values);
-  setKPI('kpi-ieg', lt ? lt.value : null, lt ? fmtQuarter(lt.date) : '—', ' p.p.');
+  var layout = mkTimeseriesLayout('p.p. (IEG / Impulso via Resultado Primário)');
+  layout.yaxis2 = {
+    title: {text: '% (PIB)', font: {size: 11}}, overlaying: 'y', side: 'right',
+    zeroline: false, gridcolor: 'transparent',
+  };
+  Plotly.react('chart-impulso-combinado', traces, layout, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-impulso-combinado');
 
-  renderLineChart('chart-ieg-linha', [
-    {dates: total.dates, values: total.values, label: 'IEG (Impulso Estrutural do Gasto)', color: C.azul},
-  ], 'p.p. (equivalente % do PIB)');
-
-  renderRelativeBarWithLine('chart-ieg-decomposicao', [
-    {dates: iegContrib('folha').dates, values: iegContrib('folha').values, label: 'Folha (×1,32)', color: C.azul},
-    {dates: iegContrib('transferencias').dates, values: iegContrib('transferencias').values, label: 'Transferências (×1,46)', color: C.dourado},
-    {dates: iegContrib('investimentos').dates, values: iegContrib('investimentos').values, label: 'Investimentos (×1,66)', color: C.verde},
-    {dates: iegContrib('outras').dates, values: iegContrib('outras').values, label: 'Outras (×0,64)', color: C.cinza},
-  ], {dates: total.dates, values: total.values, label: 'IEG (total)', color: C.laranja}, 'p.p. (equivalente % do PIB)');
-
-  renderIEGPibComparacao();
-  renderIEGEsfera();
-
-  var pibSel = document.getElementById('ieg-pib-select');
-  if (pibSel && !pibSel._wired) {
-    pibSel.addEventListener('change', renderIEGPibComparacao);
-    pibSel._wired = true;
+  if (sel && !sel._wired) {
+    sel.addEventListener('change', renderImpulsoCombinado);
+    sel._wired = true;
   }
 }
 
 // ── Tab switching — lazy render on first activation (Plotly needs a visible,
 // non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
-var RENDERERS = {gfsm: function() { GFSM_TAB.init(); }, impulso: renderIEG};
+var RENDERERS = {
+  gfsm: function() { GFSM_TAB.init(); RTN_TAB.init(); },
+  impulso: function() { renderImpulsoCombinado(); IEG_HIER_TAB.init(); IMPULSO_RP_TAB.init(); },
+};
 var tabRendered = {};
 function activateTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });

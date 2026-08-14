@@ -3,10 +3,13 @@ Novo CAGED -- saldo/admissões/desligamentos por setor de atividade (CNAE 2.0,
 nível seção), direto do microdado não-identificado do FTP do PDET/MTE.
 
 Complementa `mt_caged` (BCB SGS -- hoje só estoque, mal rotulado como saldo,
-ver domain/db/brasil/bcb/mt_caged.py e HANDOVER.md) com o dado que nenhum
-distribuidor (BCB/IPEA) republica: saldo/admissões/desligamentos por setor,
-que só existe no microdado bruto. Ver domain/db/brasil/mte/_caged_core.py
-para a lógica de combinação MOV+FOR-EXC por competência de movimentação.
+ver domain/db/brasil/bcb/mt_caged.py) com o dado que nenhum distribuidor
+(BCB/IPEA) republica: saldo/admissões/desligamentos por setor, que só existe no
+microdado bruto.
+
+Rodar via `mt_caged_novo.run()` (orquestrador -- baixa cada release uma vez e
+alimenta as 3 tabelas de corte no mesmo passe). O `run()` deste módulo existe
+para atualizar só esta tabela, ao custo de baixar os mesmos arquivos de novo.
 
 Banco: macro_brasil.mt_caged_setor -- PRIMARY KEY (date, categoria, metrica)
 DDL:
@@ -17,17 +20,19 @@ DDL:
       value     DECIMAL(12,0),
       PRIMARY KEY (date, categoria, metrica)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
--- categoria VARCHAR(60): o slug mais longo (atividades_administrativas_servicos_complementares) tem 49 chars.
+-- VARCHAR(60): o slug mais longo (atividades_administrativas_servicos_complementares) tem 49 chars.
 
-Disponível desde 2020-01 (início do Novo CAGED -- o CAGED antigo, pré-2020,
-usa outro layout e fica fora de escopo deliberadamente, ver HANDOVER.md).
+Disponível desde 2020-01 (início do Novo CAGED -- o CAGED antigo, pré-2020, usa
+outro layout e fica fora de escopo deliberadamente, ver HANDOVER.md).
 """
 
-from domain.db.brasil.mte._caged_core import agregar_por_corte, carregar_releases, resolver_releases
+import pandas as pd
+
 from connectors.mysql import insert_data_into_database
+from domain.db.brasil.mte._caged_core import processar, resolver_releases
 
 _DATABASE = "macro_brasil"
-_TABLE = "mt_caged_setor"
+TABLE = "mt_caged_setor"
 
 # Seção CNAE 2.0 -> slug (tabela "seção" do layout_novo_caged.xlsx, confirmada ao vivo).
 _SECAO = {
@@ -56,21 +61,21 @@ _SECAO = {
 }
 
 
+def categoria(df: pd.DataFrame) -> pd.Series:
+    """Coluna de corte para este recorte (usada pelo orquestrador)."""
+    return df["seção"].map(_SECAO).fillna("nao_identificado")
+
+
 def run(n_meses: int = 6, start: str | None = None, end: str | None = None) -> None:
-    """Atualiza macro_brasil.mt_caged_setor.
+    """Atualiza só macro_brasil.mt_caged_setor.
 
     Args:
-        n_meses: últimos N releases do FTP a reprocessar (default 6). Cada
-                 release reprocessa a competência de movimentação do próprio
-                 mês (MOV) + eventuais correções a competências anteriores
-                 (FOR/EXC) -- ver _caged_core.py. Ignorado se start/end.
-        start:   "AAAAMM" inicial, ou "all" para a série completa desde 2020-01
-                 (reconstrução histórica -- baixa e agrega TODOS os releases,
-                 ~4GB de MOV comprimido, ver HANDOVER.md).
+        n_meses: últimos N releases do FTP a reprocessar (default 6). Só as
+                 competências dentro dessa janela são gravadas -- ver
+                 _caged_core.py para por quê. Ignorado se start/end.
+        start:   "AAAAMM" inicial, ou "all" para reconstrução completa desde 2020-01.
         end:     "AAAAMM" final (default: último release disponível no FTP).
     """
     releases = resolver_releases(n_meses, start, end)
-    bruto = carregar_releases(releases)
-    bruto["categoria"] = bruto["seção"].map(_SECAO).fillna("nao_identificado")
-    df = agregar_por_corte(bruto, "categoria")
-    insert_data_into_database(_DATABASE, _TABLE, df)
+    for _comp, resultado in processar(releases, {"setor": categoria}):
+        insert_data_into_database(_DATABASE, TABLE, resultado["setor"])

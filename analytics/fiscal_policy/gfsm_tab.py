@@ -118,18 +118,28 @@ ESFERAS = ["geral", "central", "estados", "municipios"]
 DB_NAMES = [f"{esfera}_{code}" for esfera in ESFERAS for code in CODES]
 
 
-def build(raw: dict, ipca_pct: dict, gdp_ttm: dict) -> dict:
+def build(raw: dict, ipca_pct: dict, gdp_ttm: dict, gdp_same_period: dict) -> dict:
     """`raw`: {"{esfera}_{code}": {"dates": [...], "values": [...]}} para toda
     combinacao em DB_NAMES (nomes de coluna reais de fisc_efgg). `ipca_pct`: serie
     bruta {"dates", "values"} da variacao mensal do IPCA (inflc_agregados.ipca).
     `gdp_ttm`: {date: PIB acumulado em 4 trimestres} (ver generate_report.py's
     pib_4t, mesmo denominador de fisc_nfsp/IEG -- sempre o PIB NACIONAL, nao um PIB
-    por esfera, para as 4 esferas igualmente).
+    por esfera, para as 4 esferas igualmente) -- denominador do %PIB no nivel
+    Acumulado (TTM/TTM). `gdp_same_period`: {date: PIB do PROPRIO trimestre, SEM
+    acumular} (ver generate_report.py's `_load_pib_pm_raw()`, mesma serie
+    `atv_pib_valores_correntes.pib_pm` que `pib_4t` rola em 4 trimestres -- 2026-08,
+    adicionado para o %PIB "mesmo periodo" do nivel Trimestral, ver docstring de
+    analytics/fiscal_policy/transforms.py) -- denominador do %PIB no nivel Trimestral.
 
     Retorna `series` chaveada por "{esfera}__{code}" (dois underscores, mesma
     convencao "{table}__{modalidade}" de analytics/credit/tree_helpers.py) -- o lado
     JS monta essa mesma chave combinando o dropdown de esfera com `node.seriesKey`
-    (o codigo nu que a arvore carrega) em tempo de render.
+    (o codigo nu que a arvore carrega) em tempo de render. Cada serie carrega as duas
+    modelagens de Nivel lado a lado (toggle Trimestral/Acumulado 12m no relatorio, ver
+    analytics/fiscal_policy/transforms.py): `series[key]["bruto"]` (compute_variants(),
+    Nivel = valor do proprio trimestre, %PIB = mesmo periodo) e `series[key]["acum"]`
+    (compute_variants_ttm(), Nivel = acumulado em 4 trimestres, %PIB = TTM/TTM) -- o
+    lado JS escolhe qual usar via `state.accum`.
     """
     from analytics.fiscal_policy import transforms as tf
 
@@ -140,8 +150,9 @@ def build(raw: dict, ipca_pct: dict, gdp_ttm: dict) -> dict:
     for esfera in ESFERAS:
         for code in CODES:
             s = raw[f"{esfera}_{code}"]
-            series[f"{esfera}__{code}"] = tf.compute_variants(
-                s["dates"], s["values"], price_index, ref_date, gdp_ttm=gdp_ttm
-            )
+            series[f"{esfera}__{code}"] = {
+                "bruto": tf.compute_variants(s["dates"], s["values"], price_index, ref_date, gdp_same_period=gdp_same_period),
+                "acum": tf.compute_variants_ttm(s["dates"], s["values"], price_index, ref_date, gdp_ttm=gdp_ttm),
+            }
 
     return {"tree": GFSM_TREE, "series": series, "ref_date": ref_date, "esferas": ESFERAS}

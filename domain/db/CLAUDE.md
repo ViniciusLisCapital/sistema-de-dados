@@ -60,6 +60,9 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `mt_pnad` | IBGE 6318/6320/6323/6379/6380/6381/6387/6388/6389/6390/6391/6392/6393/5944/6438/6439/6440/6441/6785/6807/8501/8513/3919 (ocupação, força de trabalho, subutilização, informalidade, rendimento, massa salarial, taxas/níveis agregados — ver docstring do script) | 2012-03 → today (confirmado ao vivo contra o banco, 2026-08; corrigido de "2024" que estava desatualizado) | `brasil/ibge/mt_pnad.py` |
 | `mt_pnad_trimestral` | IBGE 24 agregados (4093-6406, pesquisa DD — cortes por sexo, grupo de idade, nível de instrução, cor/raça, posição na ocupação, atividade e grupamento ocupacional que a mensal não tem; ver docstring do script para a lista completa e o que ficou fora nesta rodada) | 2012-01 → today, só nível Brasil (N1) — nível UF/N3, suportado pela API para quase todos esses agregados, ficou fora deliberadamente nesta rodada (multiplicaria o volume por ~27x) | `brasil/ibge/mt_pnad_trimestral.py` |
 | `mt_caged` | BCB SGS (14 series) | 1992 → today | `brasil/bcb/mt_caged.py` |
+| `mt_caged_setor` | MTE/PDET, microdado do Novo CAGED via FTP (saldo/admissões/desligamentos por seção CNAE 2.0 — 22 seções) | 2020-01 → today | `brasil/mte/mt_caged_setor.py` (rodar via `mt_caged_novo.py`) |
+| `mt_caged_uf` | Idem, por UF (27 + "NI") | 2020-01 → today | `brasil/mte/mt_caged_uf.py` (idem) |
+| `mt_caged_salario` | Idem, por faixa de salário em múltiplos do salário mínimo vigente (10 bandas + `nao_identificado`) | 2020-01 → today | `brasil/mte/mt_caged_salario.py` (idem) |
 | `cred_credito_amplo` | BCB SGS (17 series) | 2013 → today | `brasil/bcb/cred_credito_amplo.py` |
 | `cred_credito_resumo` | BCB SGS (84 series = 72 [8 metrics × 3 recurso [total/livre/direcionado] × 3 segmento [pj/pf/total] — saldo, concessão, concessão SA, taxa de juros, spread, ICC, inadimplência, % PIB] + 12 [taxa de juros/spread × recurso [não rotativo/livre não rotativo] × segmento] from Tabela 14's "crédito não rotativo" cut; codes sourced from BCB's "Tabelas de Estatísticas Monetárias e de Crédito" Tabelas 3-5 and 14, Tabela 2 confirmed fully redundant with 3-5 and not replicated, Tabela 14's "taxa de captação" columns have no SGS code at all (confirmed live, not an extraction bug) — see script docstring) | pct_pib_total_total 1995-07, saldo_total_total 1988-06, most others 2007-03 or 2011-03, ICC-suffixed 2013-01, não-rotativo 2011-03 → today | `brasil/bcb/cred_credito_resumo.py` |
 | `cred_credito_familias` | BCB SGS (5 series — household debt/income, incl./excl. mortgage debt) | 2005 → today | `brasil/bcb/cred_credito_familias.py` |
@@ -83,7 +86,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `inflc_meta` | BCB SGS 13521 (CMN inflation target) | 1999 → today | `brasil/bcb/inflc_meta.py` |
 | `cmb_risco_pais` | investing.com (manual CSV export, Brazil 5Y CDS USD) | 2007-12 → today (gap: 2015-12-02→2015-12-31, real gap in source exports) | `brasil/investing/cmb_risco_pais.py` |
 | `fisc_divida` | BCB SGS (6 series — DBGG bruta + DLSP líquida, total e por nível de governo, % PIB) | 2001-12 → today | `brasil/bcb/fisc_divida.py` |
-| `fisc_nfsp` | BCB SGS (6 series — NFSP primário/nominal/juros, % PIB, acum. 12m) | 1991-12 → today (varia por série) | `brasil/bcb/fisc_nfsp.py` |
+| `fisc_nfsp` | BCB SGS (16 series — NFSP primário/nominal/juros, % PIB acum. 12m [10, incl. 5 por esfera] + fluxo mensal bruto R$ mi não acumulado [6, total + 5 por esfera, 2026-08 — alimenta o ajuste sazonal STL do impulso fiscal em `analytics/fiscal_policy/`]) | 1991-12 → today (varia por série) | `brasil/bcb/fisc_nfsp.py` |
 | `fisc_rtn` | Tesouro Nacional, RTN (164 séries — receita/despesa/resultado do Governo Central por rubrica orçamentária, R$ milhões) — ver `analytics/fiscal_policy/CLAUDE.md` | 1997-01 → today | `brasil/tesouro/fisc_rtn.py` |
 | `fisc_efgg` | Tesouro Nacional, EFGG — Estatísticas Fiscais do Governo Geral (108 séries GFSM 2014 por natureza econômica, não rubrica — 16 códigos de despesa [remuneração de empregados, transferências, investimento líquido etc.] + 11 códigos de receita [impostos por tipo, contribuições sociais, transferências/doações, outras receitas, adicionados 2026-08] — por esfera Central/Estados/Municípios + `geral` = soma das três, R$ milhões, trimestral) — fonte da IEG, ver `analytics/fiscal_policy/reference/rtn_vs_efgg.md` | 2010-I → today (Central sozinho vai até 2006-01, mas `geral` fica limitado pelo início de Estados/Municípios) | `brasil/tesouro/fisc_efgg.py` |
 
@@ -102,6 +105,13 @@ PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pim_uso, atv_pib, atv_
 -- Not seasonally adjusted
 PRIMARY KEY (date, name)                  -- inflc_agregados, mt_caged, cred_credito_amplo, atv_ibcbr, cred_credito_familias, atv_pib_valores_correntes, fisc_divida, fisc_nfsp, fisc_rtn, fisc_efgg, cred_inadimplencia_pj, cred_credito_resumo, cred_credito_atividade_economica, cred_credito_tipo_cliente
 PRIMARY KEY (date, name, region)          -- mt_pnad
+
+-- Novo CAGED por corte x metrica (uma tabela por corte, cortes independentes e
+-- nao cruzados entre si -- decisao explicita do usuario, 2026-08: cada tabela e
+-- um total nacional por aquele corte, nao uma grade setor x UF x salario)
+PRIMARY KEY (date, categoria, metrica)    -- mt_caged_setor, mt_caged_uf, mt_caged_salario
+                                          -- (metrica = saldo | admissoes | desligamentos;
+                                          --  date = competencia de MOVIMENTACAO, nao de declaracao)
 
 -- Credit by modality/cut x metric (each cell's underlying SGS code differs by
 -- BOTH dimensions, not derivable from one alone — see cred_modalidade_*'s own

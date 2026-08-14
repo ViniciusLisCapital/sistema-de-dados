@@ -1,7 +1,10 @@
 """
 Novo CAGED -- saldo/admissões/desligamentos por UF, direto do microdado
 não-identificado do FTP do PDET/MTE. Ver mt_caged_setor.py (mesmo padrão) e
-domain/db/brasil/mte/_caged_core.py para a lógica de combinação MOV+FOR-EXC.
+_caged_core.py para a lógica MOV+FOR-EXC.
+
+Rodar via `mt_caged_novo.run()` (orquestrador) para atualizar as 3 tabelas num
+único passe de download.
 
 Banco: macro_brasil.mt_caged_uf -- PRIMARY KEY (date, categoria, metrica)
 DDL:
@@ -17,11 +20,13 @@ DDL:
 Disponível desde 2020-01 (Novo CAGED).
 """
 
-from domain.db.brasil.mte._caged_core import agregar_por_corte, carregar_releases, resolver_releases
+import pandas as pd
+
 from connectors.mysql import insert_data_into_database
+from domain.db.brasil.mte._caged_core import processar, resolver_releases
 
 _DATABASE = "macro_brasil"
-_TABLE = "mt_caged_uf"
+TABLE = "mt_caged_uf"
 
 # Código IBGE -> sigla (tabela "uf" do layout_novo_caged.xlsx, confirmada ao vivo).
 _UF = {
@@ -35,17 +40,20 @@ _UF = {
 }
 
 
+def categoria(df: pd.DataFrame) -> pd.Series:
+    """Coluna de corte para este recorte (usada pelo orquestrador)."""
+    return df["uf"].map(_UF).fillna("NI")
+
+
 def run(n_meses: int = 6, start: str | None = None, end: str | None = None) -> None:
-    """Atualiza macro_brasil.mt_caged_uf.
+    """Atualiza só macro_brasil.mt_caged_uf.
 
     Args:
         n_meses: últimos N releases do FTP a reprocessar (default 6). Ver
                  docstring de mt_caged_setor.run() -- mesma semântica.
-        start:   "AAAAMM" inicial, ou "all" para a série completa desde 2020-01.
+        start:   "AAAAMM" inicial, ou "all" para reconstrução completa desde 2020-01.
         end:     "AAAAMM" final (default: último release disponível no FTP).
     """
     releases = resolver_releases(n_meses, start, end)
-    bruto = carregar_releases(releases)
-    bruto["categoria"] = bruto["uf"].map(_UF).fillna("NI")
-    df = agregar_por_corte(bruto, "categoria")
-    insert_data_into_database(_DATABASE, _TABLE, df)
+    for _comp, resultado in processar(releases, {"uf": categoria}):
+        insert_data_into_database(_DATABASE, TABLE, resultado["uf"])

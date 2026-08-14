@@ -61,6 +61,22 @@ def listar_anos() -> list[str]:
         ftp.quit()
 
 
+def listar_arquivos(competencia: str) -> list[str]:
+    """Lista os .7z presentes numa competência de release.
+
+    Nem toda competência tem os 3 tipos: 2020-01 (primeiro release do Novo
+    CAGED) só tem MOV -- não havia competência anterior para corrigir --, e
+    2020-02/03 têm MOV+FOR mas nenhum EXC. Confirmado ao vivo.
+    """
+    ano = competencia[:4]
+    ftp = _connect()
+    try:
+        ftp.cwd(f"{_ROOT}/{ano}/{competencia}")
+        return sorted(ftp.nlst())
+    finally:
+        ftp.quit()
+
+
 def baixar_7z(competencia: str, tipo: str) -> bytes:
     """Baixa o .7z de uma competência de publicação.
 

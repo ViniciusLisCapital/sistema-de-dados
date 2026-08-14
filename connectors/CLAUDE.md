@@ -192,6 +192,43 @@ em `analytics/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava errada
   tambem uma versao mensal, `"1.3"`, que este connector nao usa -- ver docstring de
   `domain/db/brasil/tesouro/fisc_efgg.py`); Estados/Municipios so tem trimestral, na aba `"1.3"`.
 
+### `connectors/pdet_ftp.py` — FTP do PDET/MTE (microdados do Novo CAGED)
+
+```python
+from connectors.pdet_ftp import baixar_7z, extrair_csv, listar_arquivos, listar_competencias
+
+listar_competencias(2026)          # ['202601', ..., '202606']
+listar_arquivos('202001')          # ['CAGEDMOV202001.7z'] -- nem todo release tem os 3
+conteudo = baixar_7z('202606', 'MOV')             # bytes do .7z
+path = extrair_csv(conteudo, 'CAGEDMOV202606.txt', dest_dir)   # extrai e devolve o caminho
+```
+
+**Detalhes técnicos** (todos confirmados ao vivo em 2026-08):
+- FTP puro, login anônimo, sem TLS ("Microsoft FTP Service"/IIS).
+- **Encoding Latin-1/cp1252 nos nomes de pasta/arquivo acentuados**, não UTF-8.
+  `FTP(..., encoding="latin-1")` resolve de forma transparente. `urllib.request.urlopen`
+  com percent-encoding **não funciona** (decodifica como UTF-8 antes de repassar ao
+  ftplib e corrompe o byte) — usar sempre este módulo, nunca `urlopen`, para caminhos
+  com acento.
+- Três arquivos por competência de release: `CAGEDMOV` (no prazo), `CAGEDFOR` (fora do
+  prazo), `CAGEDEXC` (exclusões). **Nem toda competência tem os 3** — 2020-01 (primeiro
+  release) só tem MOV; 2020-02/03 têm MOV+FOR sem EXC. Checar com `listar_arquivos()`
+  antes de baixar, senão `error_perm: 550`.
+- CSV dentro do 7z: `sep=";"`, conteúdo em UTF-8 (não confundir com o Latin-1 dos
+  *nomes* no FTP).
+- **Separador decimal NÃO é consistente entre releases**: a maioria usa vírgula
+  (`"4800,00"`), mas os arquivos de **2023-08 e 2023-09 usam ponto** (`"2333.8"`).
+  Confirmado ao vivo no texto cru dos dois. Um `decimal=","` fixo no `read_csv` deixa a
+  coluna como `object` no formato inesperado e estoura `TypeError` na primeira operação
+  aritmética — ver `_normalizar_salario` em `domain/db/brasil/mte/_caged_core.py`, que
+  lê a coluna como texto e normaliza os dois casos.
+- Tamanho: MOV ~50MB comprimido / ~450MB extraído / ~4M linhas por mês; FOR/EXC ~0,6MB.
+- `py7zr` (1.1.3) não lê 7z puramente em memória — só `extract()`/`extractall()`, que
+  escrevem em disco. Por isso `extrair_csv` recebe um `dest_dir` e o chamador é
+  responsável por apagá-lo (padrão "agregar-e-descartar", ver
+  `domain/db/brasil/mte/_caged_core.py`).
+- Sem checksums publicados para validar a integridade do download.
+
 ### `connectors/mysql.py` — Insert/Update no banco
 
 ```python

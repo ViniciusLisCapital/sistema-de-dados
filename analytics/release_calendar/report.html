@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário de Divulgações — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Filter bar ── */
+    .ctrl-bar {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px;
+    }
+    .ctrl-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .ctrl-sep { width: 1px; height: 20px; background: var(--border); }
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      font-family: var(--mono); padding: 5px 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); font-weight: 600; }
+    .ctrl-select {
+      font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 5px 12px;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--text2);
+      cursor: pointer; max-width: 360px;
+    }
+    .ctrl-select:hover { border-color: rgba(31,40,83,0.3); }
+
+    /* ── Stat cards ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .stat-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .stat-card .stat-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .stat-card .stat-value { font-family: var(--cond); font-size: 30px; font-weight: 700; color: var(--text); line-height: 1.15; }
+    .stat-card .stat-value.up { color: var(--lis-verde); }
+    .stat-card .stat-value.dn { color: var(--lis-dourado); }
+    .stat-card .stat-sub { font-family: var(--sans); font-size: 12px; color: var(--text2); }
+    .stat-card .stat-sub .badge { font-family: var(--mono); font-size: 9px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; }
+
+    /* ── Table ── */
+    .table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+    .table-card h2 { font-family: var(--cond); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
+    table.release-table { width: 100%; border-collapse: collapse; }
+    table.release-table thead th {
+      font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    table.release-table td { padding: 9px 10px; font-size: 12.5px; border-bottom: 1px solid rgba(31,40,83,0.05); vertical-align: top; }
+    table.release-table tr.month-header td {
+      font-family: var(--cond); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--lis-dourado); background: rgba(187,155,29,0.06); padding: 8px 10px; border-bottom: none;
+    }
+    table.release-table tr:hover:not(.month-header) { background: rgba(31,40,83,0.02); }
+    td.col-date { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
+    td.col-date .end { color: var(--muted); font-weight: 400; }
+    td.col-name { color: var(--text); font-weight: 500; }
+    td.col-ref { font-family: var(--mono); color: var(--text2); white-space: nowrap; }
+    td.col-tables { font-family: var(--mono); font-size: 10.5px; color: var(--muted); max-width: 260px; }
+    .inst-badge {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+      white-space: nowrap; display: inline-block;
+    }
+    .status-pill {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 600; padding: 2px 9px; border-radius: 10px;
+      white-space: nowrap; display: inline-block;
+    }
+    .status-pill.confirmed { background: rgba(65,135,145,0.15); color: var(--lis-verde); }
+    .status-pill.estimated { background: rgba(187,155,29,0.15); color: var(--lis-dourado); }
+    .empty-row td { text-align: center; color: var(--muted); padding: 24px 10px; font-family: var(--mono); font-size: 12px; }
+
+    /* ── Recurring releases ── */
+    .recurring-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+    .recurring-card .rec-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .recurring-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text2); }
+    .recurring-item strong { color: var(--text); }
+
+    footer { max-width: 1440px; margin: 8px auto 40px; padding: 0 32px; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="brand">LIS <em>CAPITAL</em></div>
+      <h1>Calendário de Divulgações — Dados Macro Brasil</h1>
+    </div>
+    <div class="meta">
+      Gerado em <strong id="generated-at">—</strong><br>
+      Período: <strong>Ago–Dez 2026</strong>
+    </div>
+  </header>
+
+  <main>
+    <div class="ctrl-bar">
+      <span class="ctrl-label">Instituição</span>
+      <div class="pill-group" id="institution-pills"></div>
+      <div class="ctrl-sep"></div>
+      <span class="ctrl-label">Mês</span>
+      <div class="pill-group" id="month-pills"></div>
+      <div class="ctrl-sep"></div>
+      <span class="ctrl-label">Divulgação</span>
+      <select class="ctrl-select" id="divulgacao-select"></select>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Próxima Divulgação</span>
+        <span class="stat-value" id="stat-next-date">—</span>
+        <span class="stat-sub" id="stat-next-name">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Divulgações no Mês Atual</span>
+        <span class="stat-value" id="stat-month-count">—</span>
+        <span class="stat-sub" id="stat-month-label">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Confirmadas vs. Estimadas</span>
+        <span class="stat-value" id="stat-confirmed-ratio">—</span>
+        <span class="stat-sub">no recorte atual — ver metodologia no rodapé</span>
+      </div>
+    </div>
+
+    <div class="recurring-card" id="recurring-card"></div>
+
+    <div class="table-card">
+      <h2>Lista de Divulgações</h2>
+      <table class="release-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Instituição</th>
+            <th>Divulgação</th>
+            <th>Período de Referência</th>
+            <th>Status</th>
+            <th>Tabelas Alimentadas</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    Calendário estático (não uma API oficial) — pesquisado manualmente por instituição em 2026-08-13, ver domain/release_calendar/CLAUDE.md.
+    "Confirmado" = data lida diretamente de um calendário/PDF oficial · "Estimado" = padrão histórico, calendário oficial indisponível na pesquisa — reconfira a fonte antes de se basear na data.
+  </footer>
+
+  <script>
+    /*REPORT_DATA*/
+
+    var INSTITUTION_COLORS = {
+      'IBGE': '#1F2853',
+      'BCB': '#BB9B1D',
+      'Tesouro Nacional': '#418791',
+      'MTE/PDET': '#02739B',
+      'MDIC': '#EA523A',
+    };
+    function institutionColor(inst) { return INSTITUTION_COLORS[inst] || '#7A88A8'; }
+
+    var MONTH_LABELS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    function monthLabel(ym) {
+      var parts = ym.split('-');
+      return MONTH_LABELS[parseInt(parts[1], 10) - 1] + '/' + parts[0].slice(2);
+    }
+    function fmtDateShort(iso) {
+      var p = iso.split('-');
+      return p[2] + '/' + p[1];
+    }
+    function fmtDateFull(iso) {
+      var p = iso.split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    var state = { institution: 'Todos', month: 'Tudo', divulgacao: 'Todas' };
+
+    function filteredEntries() {
+      return REPORT_DATA.entries.filter(function(e) {
+        if (state.institution !== 'Todos' && e.institution !== state.institution) return false;
+        if (state.month !== 'Tudo' && e.date.slice(0, 7) !== state.month) return false;
+        if (state.divulgacao !== 'Todas' && e.group !== state.divulgacao) return false;
+        return true;
+      });
+    }
+
+    function buildPills(containerId, options, activeKey, onClick) {
+      var el = document.getElementById(containerId);
+      el.innerHTML = '';
+      options.forEach(function(opt) {
+        var btn = document.createElement('button');
+        btn.className = 'pill' + (opt.key === activeKey ? ' active' : '');
+        btn.textContent = opt.label;
+        btn.addEventListener('click', function() { onClick(opt.key); });
+        el.appendChild(btn);
+      });
+    }
+
+    function renderControls() {
+      var instOptions = [{ key: 'Todos', label: 'Todos' }].concat(
+        REPORT_DATA.institutions.map(function(i) { return { key: i, label: i }; })
+      );
+      buildPills('institution-pills', instOptions, state.institution, function(k) {
+        state.institution = k; renderAll();
+      });
+
+      var months = Array.from(new Set(REPORT_DATA.entries.map(function(e) { return e.date.slice(0, 7); }))).sort();
+      var monthOptions = [{ key: 'Tudo', label: 'Tudo' }].concat(
+        months.map(function(m) { return { key: m, label: monthLabel(m) }; })
+      );
+      buildPills('month-pills', monthOptions, state.month, function(k) {
+        state.month = k; renderAll();
+      });
+
+      var groupLabel = {};
+      REPORT_DATA.entries.forEach(function(e) { groupLabel[e.group] = e.institution + ' — ' + e.name; });
+      var groupOrder = Object.keys(groupLabel).sort(function(a, b) { return groupLabel[a].localeCompare(groupLabel[b]); });
+      var sel = document.getElementById('divulgacao-select');
+      if (sel.dataset.built !== '1') {
+        sel.dataset.built = '1';
+        var optAll = document.createElement('option');
+        optAll.value = 'Todas'; optAll.textContent = 'Todas';
+        sel.appendChild(optAll);
+        groupOrder.forEach(function(g) {
+          var opt = document.createElement('option');
+          opt.value = g; opt.textContent = groupLabel[g];
+          sel.appendChild(opt);
+        });
+        sel.addEventListener('change', function() { state.divulgacao = sel.value; renderAll(); });
+      }
+      sel.value = state.divulgacao;
+    }
+
+    function renderStats() {
+      var entries = filteredEntries();
+      var today = REPORT_DATA.reference_date;
+
+      var upcoming = entries.filter(function(e) { return e.date >= today; });
+      var next = upcoming.length ? upcoming[0] : null;
+      document.getElementById('stat-next-date').textContent = next ? fmtDateFull(next.date) : '—';
+      document.getElementById('stat-next-name').textContent = next ? (next.institution + ' — ' + next.name) : 'Nenhuma no recorte atual';
+
+      var curMonth = today.slice(0, 7);
+      var monthEntries = entries.filter(function(e) { return e.date.slice(0, 7) === curMonth; });
+      document.getElementById('stat-month-count').textContent = String(monthEntries.length);
+      document.getElementById('stat-month-label').textContent = monthLabel(curMonth);
+
+      var nConfirmed = entries.filter(function(e) { return e.confirmed; }).length;
+      var nEstimated = entries.length - nConfirmed;
+      var ratioEl = document.getElementById('stat-confirmed-ratio');
+      ratioEl.innerHTML = '<span class="up">' + nConfirmed + '</span> / <span class="dn">' + nEstimated + '</span>';
+    }
+
+    function renderRecurring() {
+      var el = document.getElementById('recurring-card');
+      if (!REPORT_DATA.recurring.length) { el.style.display = 'none'; return; }
+      el.style.display = 'flex';
+      el.innerHTML = '<span class="rec-label">Recorrentes (sem data fixa)</span>';
+      REPORT_DATA.recurring.forEach(function(r) {
+        var span = document.createElement('span');
+        span.className = 'recurring-item';
+        span.innerHTML = '<strong>' + r.institution + ' — ' + r.name + '</strong> · toda ' +
+          (r.weekday || r.cadence) + (r.note ? (' — ' + r.note) : '');
+        el.appendChild(span);
+      });
+    }
+
+    function renderTable() {
+      var entries = filteredEntries();
+      var tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+      if (!entries.length) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Nenhuma divulgação no recorte selecionado.</td></tr>';
+        return;
+      }
+      var lastMonth = null;
+      entries.forEach(function(e) {
+        var ym = e.date.slice(0, 7);
+        if (ym !== lastMonth) {
+          lastMonth = ym;
+          var mtr = document.createElement('tr');
+          mtr.className = 'month-header';
+          mtr.innerHTML = '<td colspan="6">' + monthLabel(ym) + '</td>';
+          tbody.appendChild(mtr);
+        }
+        var tr = document.createElement('tr');
+        var color = institutionColor(e.institution);
+        var dateCell = fmtDateFull(e.date) + (e.date_end ? ' <span class="end">– ' + fmtDateFull(e.date_end) + '</span>' : '');
+        var statusCell = e.confirmed
+          ? '<span class="status-pill confirmed">Confirmado</span>'
+          : '<span class="status-pill estimated">Estimado</span>';
+        tr.innerHTML =
+          '<td class="col-date">' + dateCell + '</td>' +
+          '<td><span class="inst-badge" style="background:' + color + '22;color:' + color + '">' + e.institution + '</span></td>' +
+          '<td class="col-name">' + e.name + '</td>' +
+          '<td class="col-ref">' + (e.reference_period || '—') + '</td>' +
+          '<td>' + statusCell + '</td>' +
+          '<td class="col-tables" title="' + e.tables.join(', ') + '">' + e.tables.join(', ') + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      renderControls();
+      renderStats();
+      renderTable();
+    }
+
+    document.getElementById('generated-at').textContent = REPORT_DATA.generated_at;
+    renderRecurring();
+    renderAll();
+  </script>
+</body>
+</html>

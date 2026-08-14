@@ -1,48 +1,51 @@
 """
 Lógica compartilhada de download+combinação+agregação do Novo CAGED (FTP do
-PDET/MTE) -- usada por mt_caged_setor.py / mt_caged_uf.py / mt_caged_salario.py.
-Não é um script de domínio próprio (sem `run()`), só o núcleo comum.
+PDET/MTE) -- usada por mt_caged.py (o orquestrador, que alimenta as 3 tabelas
+de corte num único passe de download).
 
 Fonte: ftp://ftp.mtps.gov.br/pdet/microdados/NOVO CAGED/<AAAA>/<AAAAMM>/
-Ver connectors/pdet_ftp.py para o cliente FTP (encoding Latin-1) e a
-docstring de cada arquivo MOV/FOR/EXC.
+Ver connectors/pdet_ftp.py para o cliente FTP (encoding Latin-1).
 
 ## Fórmula de saldo por competência de MOVIMENTAÇÃO (validada ao vivo, 2026-08)
 
     saldo(X)         = MOV(X) + FOR(X) - EXC(X)
-    admissões(X)      = Σ valores positivos de MOV+FOR  -  Σ valores positivos de EXC
-    desligamentos(X)  = Σ |valores negativos| de MOV+FOR -  Σ |valores negativos| de EXC
+    admissões(X)      = Σ (+1) de MOV+FOR  -  Σ (+1) de EXC
+    desligamentos(X)  = Σ (-1) de MOV+FOR  -  Σ (-1) de EXC   [em valor absoluto]
 
 `saldomovimentação` é sempre ±1 por linha (admissão=+1, desligamento=-1).
 Confirmado inspecionando linhas reais de CAGEDEXC202401.txt: uma exclusão de
-desligamento (tipomovimentação=40, "Desligamento a pedido") aparece com
-saldomovimentação=-1 -- ou seja, EXC guarda o SINAL ORIGINAL do registro que
-está sendo cancelado, não pré-invertido. Por isso a fórmula SUBTRAI o EXC em
-vez de somar.
+desligamento (tipomovimentação=40) aparece com saldomovimentação=-1 -- ou seja,
+EXC guarda o SINAL ORIGINAL do registro sendo cancelado, não pré-invertido.
+Por isso a fórmula SUBTRAI o EXC em vez de somar.
+
+Validação ao vivo (2026-08): competência 2026-06 fechou em saldo=145.161,
+admissões=2.220.131, desligamentos=2.074.970 -- o saldo bate exatamente com o
+número apurado independentemente na investigação anterior (ver HANDOVER.md).
 
 ## Por que "competência do arquivo" != "competência de movimentação"
 
-Cada arquivo pertence a uma competência de RELEASE (ex: o release de
-2024-01 publica CAGEDMOV202401.7z + CAGEDFOR202401.7z + CAGEDEXC202401.7z).
-Confirmado ao vivo:
-  - CAGEDMOV<AAAAMM>: TODA linha tem competênciamov==AAAAMM -- é um arquivo
-    fixo, nunca revisado depois de publicado. Só precisa ser baixado UMA VEZ,
-    na sua própria competência de release.
-  - CAGEDFOR<AAAAMM>/CAGEDEXC<AAAAMM>: contêm linhas com competênciamov de
-    QUALQUER mês anterior a AAAAMM (ex: o FOR de 2024-01 corrigiu
-    competências de movimentação espalhadas por 2023 inteiro). Ou seja, o
-    saldo "final" de uma competência passada só fica completo depois que
-    TODOS os releases seguintes já publicaram seus FOR/EXC -- a mesma
-    "reescrita histórica silenciosa" confirmada no HANDOVER.md.
+Cada arquivo pertence a uma competência de RELEASE. Confirmado ao vivo:
+  - CAGEDMOV<AAAAMM>: TODA linha tem competênciamov==AAAAMM -- arquivo fixo,
+    nunca revisado depois de publicado. Baixado UMA vez, no seu próprio release.
+  - CAGEDFOR/CAGEDEXC<AAAAMM>: contêm linhas com competênciamov de QUALQUER mês
+    anterior (o FOR de 2024-01 corrigiu competências espalhadas por 2023 inteiro).
 
-Consequência prática: uma reconstrução histórica completa (`start="all"`)
-precisa varrer o MOV+FOR+EXC de TODOS os releases desde 2020-01, agregando
-por competência de movimentação (não pela competência do arquivo) --
-implementado em `carregar_releases`/`agregar_por_corte` abaixo. Uma
-atualização de rotina (`n_meses` recente) só reprocessa os releases mais
-recentes -- suficiente para capturar a maioria das correções (fora-do-prazo
-é aceito por até 12 meses, ver Leia-me do FTP), mas não reabre uma exclusão
-rara referente a uma competência muito antiga fora dessa janela.
+Ou seja, o saldo de uma competência X só fica completo depois que todos os
+releases seguintes publicaram seus FOR/EXC -- a "reescrita histórica
+silenciosa" do HANDOVER.md. Declaração fora do prazo é aceita por até ~12
+meses, então uma competência estabiliza ~1 ano depois de publicada.
+
+## Consequência para atualização incremental (importante para corretude)
+
+Como as contribuições a uma competência X estão espalhadas por vários releases,
+somar apenas os releases de uma janela recente daria um valor PARCIAL de X --
+que, gravado com `ON DUPLICATE KEY UPDATE`, sobrescreveria o valor completo já
+no banco. Para evitar isso, `processar` só devolve as competências X cujo
+CAGEDMOV está DENTRO da janela processada: para essas, a janela contém o MOV(X)
+original e todos os FOR/EXC publicados desde então, ou seja o valor completo
+disponível hoje. Competências anteriores à janela recebem correções apenas na
+próxima reconstrução completa (`start="all"`). Isso mantém a operação idempotente
+-- rodar duas vezes dá o mesmo resultado, nunca duplica.
 """
 
 import shutil
@@ -50,7 +53,13 @@ import tempfile
 
 import pandas as pd
 
-from connectors.pdet_ftp import baixar_7z, extrair_csv, listar_anos, listar_competencias
+from connectors.pdet_ftp import (
+    baixar_7z,
+    extrair_csv,
+    listar_anos,
+    listar_arquivos,
+    listar_competencias,
+)
 
 _COLS = ["competênciamov", "saldomovimentação", "seção", "uf", "salário"]
 
@@ -80,48 +89,46 @@ def resolver_releases(n_meses: int, start: str | None, end: str | None) -> list[
     return disponiveis[-n_meses:]
 
 
+def _normalizar_salario(serie: pd.Series) -> pd.Series:
+    """Converte a coluna `salário` para float aceitando as duas convenções da fonte.
+
+    O separador decimal NÃO é consistente entre releases: a maioria usa vírgula
+    ("4800,00"), mas os arquivos de 2023-08 e 2023-09 usam ponto ("2333.8").
+    Confirmado ao vivo inspecionando o texto cru dos dois formatos. Por isso a
+    coluna é lida como texto e normalizada aqui, em vez de confiar num
+    `decimal=` fixo no `read_csv` (que deixava a coluna como object no formato
+    inesperado e estourava TypeError na primeira divisão).
+
+    Regra: se há vírgula, ela é o decimal e o ponto é separador de milhar;
+    se não há, o ponto é o decimal.
+    """
+    texto = serie.astype("string").str.strip()
+    com_virgula = texto.str.contains(",", na=False)
+    texto = texto.mask(
+        com_virgula,
+        texto.str.replace(".", "", regex=False).str.replace(",", ".", regex=False),
+    )
+    return pd.to_numeric(texto, errors="coerce")
+
+
 def _ler_arquivo(competencia: str, tipo: str) -> pd.DataFrame:
     nome_interno = f"CAGED{tipo}{competencia}.txt"
     conteudo = baixar_7z(competencia, tipo)
     tmp = tempfile.mkdtemp(prefix="caged_")
     try:
         path = extrair_csv(conteudo, nome_interno, tmp)
-        df = pd.read_csv(path, sep=";", decimal=",", encoding="utf-8", usecols=_COLS)
+        df = pd.read_csv(
+            path, sep=";", encoding="utf-8", usecols=_COLS, dtype={"salário": "string"}
+        )
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+    df["salário"] = _normalizar_salario(df["salário"])
     df["_sinal"] = 1 if tipo in ("MOV", "FOR") else -1
     return df
 
 
-def carregar_releases(releases: list[str]) -> pd.DataFrame:
-    """Baixa e empilha MOV+FOR+EXC de cada competência de release em `releases`.
-
-    Nunca persiste o microdado bruto em disco alem da extracao temporaria
-    (apagada logo apos a leitura) -- padrao "agregar-e-descartar" do projeto.
-
-    Returns:
-        DataFrame com _COLS + `_sinal` (+1 MOV/FOR, -1 EXC), todas as linhas
-        de todos os releases empilhadas.
-    """
-    frames = []
-    for comp in releases:
-        for tipo in ("MOV", "FOR", "EXC"):
-            frames.append(_ler_arquivo(comp, tipo))
-    return pd.concat(frames, ignore_index=True)
-
-
-def agregar_por_corte(df: pd.DataFrame, corte_col: str) -> pd.DataFrame:
-    """Agrega saldo/admissões/desligamentos por (competência de movimentação, corte).
-
-    Args:
-        df: retorno de `carregar_releases`, com uma coluna de corte adicional
-            já pronta (`seção`, `uf`, ou uma coluna `categoria` derivada de
-            `salário`, ver mt_caged_salario.py).
-        corte_col: nome da coluna de corte em `df`.
-
-    Returns:
-        DataFrame tidy: date, categoria, metrica (saldo|admissoes|desligamentos), value.
-    """
+def _agregar(df: pd.DataFrame, corte_col: str) -> pd.DataFrame:
+    """Agrega saldo/admissões/desligamentos por (competência de movimentação, corte)."""
     valor_assinado = df["saldomovimentação"] * df["_sinal"]
     admissoes = valor_assinado.where(df["saldomovimentação"] > 0, 0.0)
     desligamentos = (-valor_assinado).where(df["saldomovimentação"] < 0, 0.0)
@@ -139,7 +146,77 @@ def agregar_por_corte(df: pd.DataFrame, corte_col: str) -> pd.DataFrame:
         s.columns = ["competencia", "categoria", "value"]
         s["metrica"] = metrica
         out.append(s)
+    return pd.concat(out, ignore_index=True)
 
-    resultado = pd.concat(out, ignore_index=True)
-    resultado["date"] = pd.to_datetime(resultado["competencia"].astype(str), format="%Y%m")
-    return resultado[["date", "categoria", "metrica", "value"]]
+
+def _agregar_cortes(df: pd.DataFrame, cortes: dict) -> dict:
+    out = {}
+    for nome, fn in cortes.items():
+        df["_categoria"] = fn(df)
+        out[nome] = _agregar(df, "_categoria")
+    return out
+
+
+def processar(releases: list[str], cortes: dict):
+    """Gera o resultado de cada competência, uma por vez, num único download.
+
+    Duas fases, para gravar progresso de forma incremental sem sacrificar
+    corretude:
+      1. Lê os FOR/EXC de TODOS os releases da janela (arquivos pequenos,
+         ~0,6MB cada) e acumula as correções agregadas por competência de
+         movimentação.
+      2. Lê o CAGEDMOV de cada release (o arquivo grande, ~50MB) um a um.
+         Como MOV<X> contém exclusivamente a competência X, somar as correções
+         já coletadas na fase 1 fecha o valor completo de X naquele momento --
+         então cada competência pode ser gravada assim que processada, em vez
+         de esperar o fim da varredura inteira.
+
+    Descarta o microdado bruto antes do próximo release (padrão
+    "agregar-e-descartar") -- nunca persiste o bruto, nunca carrega mais de uma
+    competência na memória de uma vez.
+
+    Args:
+        releases: competências de release a processar (de `resolver_releases`).
+        cortes:   {nome_do_corte: função(df) -> pd.Series de categorias}.
+
+    Yields:
+        (competencia, {nome_do_corte: DataFrame tidy (date, categoria, metrica, value)})
+        para cada competência da janela, na ordem.
+    """
+    correcoes = {nome: [] for nome in cortes}
+    for comp in releases:
+        presentes = listar_arquivos(comp)
+        for tipo in ("FOR", "EXC"):
+            if f"CAGED{tipo}{comp}.7z" not in presentes:
+                continue
+            df = _ler_arquivo(comp, tipo)
+            for nome, agregado in _agregar_cortes(df, cortes).items():
+                correcoes[nome].append(agregado)
+            del df
+    print(f"  correções (FOR/EXC) de {len(releases)} release(s) lidas")
+
+    correcoes = {
+        nome: (
+            pd.concat(frames, ignore_index=True)
+            if frames
+            else pd.DataFrame(columns=["competencia", "categoria", "value", "metrica"])
+        )
+        for nome, frames in correcoes.items()
+    }
+
+    for comp in releases:
+        mov = _ler_arquivo(comp, "MOV")
+        agregados = _agregar_cortes(mov, cortes)
+        del mov
+
+        resultado = {}
+        for nome, base in agregados.items():
+            corr = correcoes[nome]
+            corr = corr[corr["competencia"] == int(comp)]
+            df = pd.concat([base, corr], ignore_index=True)
+            df = df.groupby(["competencia", "categoria", "metrica"], as_index=False)["value"].sum()
+            df["date"] = pd.to_datetime(df["competencia"].astype(str), format="%Y%m")
+            resultado[nome] = df[["date", "categoria", "metrica", "value"]]
+
+        print(f"  competência {comp} processada")
+        yield comp, resultado

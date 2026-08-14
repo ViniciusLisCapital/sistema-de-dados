@@ -17,7 +17,9 @@ Sistema de dados da LIS Capital para coleta, processamento e visualização de v
 ```
 connectors/          — Clientes de APIs externas (IBGE, BCB, FRED, BIS, CFTC, MySQL,
                        Comex Stat/MDIC — comexstat.py live API + comexstat_bulk.py CSV histórico,
-                       Tesouro Nacional — tesouro.py, RTN via CKAN)
+                       Tesouro Nacional — tesouro.py, RTN via CKAN,
+                       PDET/MTE — pdet_ftp.py, microdados do Novo CAGED via FTP, encoding
+                       Latin-1 nos nomes de arquivo, ver connectors/CLAUDE.md)
 domain/
   db/brasil/         — ETL Brasil: fetch → transform → insert em macro_brasil
     ibge/            — Scripts por pesquisa IBGE (atv_pim, atv_pim_uso — categoria de uso, perspectiva
@@ -50,6 +52,13 @@ domain/
     mdic/            — Comex Stat: cmb_comex_pais (saldo por parceiro), cmb_comex_fator_agregado
                        (básicos/semi/manufaturados), cmb_comex_produto (soja, petróleo, minério,
                        carnes, café) — todos com run() (janela recente, API) e backfill() (1997→hoje, bulk CSV)
+    mte/             — Novo CAGED via microdado do FTP do PDET (2020-01→hoje): saldo/admissões/
+                       desligamentos em 3 cortes independentes — mt_caged_setor (seção CNAE),
+                       mt_caged_uf, mt_caged_salario (faixas em múltiplos de SM). Rodar via
+                       mt_caged_novo.py, o orquestrador que baixa cada release UMA vez e alimenta
+                       as 3 tabelas no mesmo passe (~50MB/mês; ~4GB para start="all"). Lógica
+                       MOV+FOR-EXC por competência de movimentação em _caged_core.py — leitura
+                       obrigatória antes de mexer, a revisão retroativa é sutil.
   db/international/  — ETL dados cross-country: fetch → insert em macro_international
     bis/             — cmb_reer (REER Brasil/MX/CL/CO via BIS API), cmb_policy_rates (taxa de juros de
                        politica monetaria, BIS WS_CBPOL, diária, BR/MX/CL/CO/PE/AR — AR parou de ser
@@ -131,8 +140,10 @@ analytics/           — Projetos que consomem o banco MySQL
                        antes); monetary_policy/ ainda não migrado; economic_activity/ (2026-08) já nasceu
                        construído sobre os dois marcadores, sem precisar de migração.
 jobs/                — Entry points
-  update_db.py          — Atualiza todas as tabelas de macro_brasil (inclui mdic/ e atv_pib_usd; NÃO inclui
-                          ainda comm_icbr/inflc_meta — rodar manualmente por enquanto)
+  update_db.py          — Atualiza todas as tabelas de macro_brasil (inclui mdic/, atv_pib_usd e o
+                          Novo CAGED via mte/mt_caged_novo — este último baixa ~50MB do FTP e leva
+                          minutos, não segundos, por isso fica no fim da lista; NÃO inclui ainda
+                          comm_icbr/inflc_meta — rodar manualmente por enquanto)
   update_international.py — Atualiza macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros; NÃO
                           inclui ainda comm_brent/clima_oni — rodar manualmente por enquanto)
   update_oraculo.py     — Atualiza o oráculo
@@ -304,6 +315,16 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   não charteada em nenhuma aba).
 
 ### Média prioridade
+- **Mercado de trabalho — pendências pós-Novo CAGED** (o conector do FTP e as 3 tabelas de corte
+  ficaram prontos em 2026-08, ver `domain/db/brasil/mte/` e `analytics/labor_market/fontes_dados.md`):
+  (a) `domain/db/brasil/bcb/mt_caged.py` continua rotulando **estoque** como "saldo" — corrigir a
+  rotulagem (pendência antiga, agora mais visível porque o saldo real existe em tabela própria);
+  (b) cortes do microdado ainda não modelados: município, ocupação (CBO), sexo/idade/instrução/raça
+  — todos disponíveis no mesmo microdado já baixado, adicionar é só uma tabela irmã nova com o
+  mesmo padrão (`categoria`/`metrica`), sem migração;
+  (c) `mt_pnad_trimestral`: nível UF/N3 deixado de fora deliberadamente, sem previsão;
+  (d) nenhum relatório/dashboard consome as 3 tabelas novas ainda — não existe
+  `analytics/labor_market/` como projeto de relatório, só o `fontes_dados.md`.
 - **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): ver "Pending" em [`repository/CLAUDE.md`](repository/CLAUDE.md).
 - **Jobs de rotina incompletos**: `comm_icbr.py`/`inflc_meta.py` (`domain/db/brasil/bcb/`) não estão em `jobs/update_db.py`; `comm_brent.py`/`clima_oni.py`/`cmb_dollar_index.py`/`cmb_dollar_index_em.py`/`cmb_policy_rates.py`/`cmb_fx_latam.py`/`cmb_real_rates.py` (`domain/db/international/`) não estão em `jobs/update_international.py`. Os quatro primeiros já alimentam `analytics/monetary_policy/model.py`; `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_policy_rates`/`cmb_real_rates` ainda não são consumidos por nenhum relatório/modelo. `inflc_decomposicao_item.py` (`domain/db/brasil/ibge/`) também não está em `jobs/update_db.py` — alimenta os núcleos MA/MS/DP do IPCA-15. Todos precisam ser rodados manualmente até serem integrados.

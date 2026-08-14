@@ -1,0 +1,280 @@
+# Forward-looking release calendar for Brazilian macro data, Aug-Dec 2026.
+#
+# One entry per official release EVENT, not per series -- BCB in particular bundles
+# dozens of series into a single monthly "nota". See this folder's CLAUDE.md for the
+# schema, per-group confidence notes, and what's deliberately NOT covered yet
+# (international-sourced series, a few untouched BCB SGS series, cred_ptc).
+#
+# confirmed: true  -> date read directly from an official published calendar/PDF.
+# confirmed: false -> no exact date could be retrieved (source page was a JS-rendered
+#                      SPA or returned an HTTP error as of 2026-08-13) -- date/window
+#                      is an estimate from the historical day-of-month pattern.
+#                      Re-check the source_url closer to the date before relying on it.
+#
+# Researched 2026-08-13. Only dates on/after that day are listed (nothing in the past).
+
+groups:
+  - group: ibge_pim
+    institution: IBGE
+    name: "Pesquisa Industrial Mensal – Produção Física (PIM-PF)"
+    tables: [atv_pim, atv_pim_uso]
+    cadence: monthly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-09-02", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-10-02", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-05", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-03", reference_period: "2026-10", confirmed: true}
+
+  - group: ibge_pmc
+    institution: IBGE
+    name: "Pesquisa Mensal de Comércio (PMC)"
+    tables: [atv_pmc]
+    cadence: monthly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-08-13", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-09-15", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-10-15", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-13", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-08", reference_period: "2026-10", confirmed: true}
+
+  - group: ibge_pms
+    institution: IBGE
+    name: "Pesquisa Mensal de Serviços (PMS)"
+    tables: [atv_pms]
+    cadence: monthly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-09-10", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-10-14", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-11", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-10", reference_period: "2026-10", confirmed: true}
+
+  - group: ibge_pib_trimestral
+    institution: IBGE
+    name: "Contas Nacionais Trimestrais (PIB)"
+    tables: [atv_pib, atv_pib_valores_correntes, atv_pib_taxas]
+    cadence: quarterly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-09-01", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-12-02", reference_period: "2026-Q3", confirmed: true}
+
+  - group: ibge_pnad_mensal
+    institution: IBGE
+    name: "PNAD Contínua Mensal"
+    tables: [mt_pnad]
+    cadence: monthly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-08-27", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-27", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-29", reference_period: "2026-11", confirmed: true}
+
+  - group: ibge_pnad_trimestral
+    institution: IBGE
+    name: "PNAD Contínua Trimestral"
+    tables: [mt_pnad_trimestral]
+    cadence: quarterly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-08-14", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-11-18", reference_period: "2026-Q3", confirmed: true}
+
+  - group: ibge_ipca
+    institution: IBGE
+    name: "IPCA"
+    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
+    cadence: monthly
+    note: >
+      BCB SGS mirrors this release (feeding inflc_agregados) within about a day;
+      IBGE is the original source and the authoritative date.
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-09-11", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-09", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-12", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-11", reference_period: "2026-11", confirmed: true}
+
+  - group: ibge_ipca15
+    institution: IBGE
+    name: "IPCA-15"
+    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
+    cadence: monthly
+    source_url: https://www.ibge.gov.br/calendario/conjunturais.html
+    entries:
+      - {date: "2026-08-26", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-09-25", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-10-23", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-11-26", reference_period: "2026-11", confirmed: true}
+      - {date: "2026-12-23", reference_period: "2026-12", confirmed: true}
+
+  - group: bcb_ibcbr
+    institution: BCB
+    name: "Índice de Atividade Econômica do Banco Central – IBC-Br"
+    tables: [atv_ibcbr]
+    cadence: monthly
+    note: "~2-month lag from reference period (day 15-17 of month M+2)."
+    source_url: https://www.investing.com/economic-calendar/brazil-ibc-br-economic-activity-765
+    entries:
+      - {date: "2026-08-17", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-09-15", date_end: "2026-09-17", reference_period: "2026-07", confirmed: false}
+      - {date: "2026-10-15", date_end: "2026-10-17", reference_period: "2026-08", confirmed: false}
+      - {date: "2026-11-16", date_end: "2026-11-17", reference_period: "2026-09", confirmed: false}
+      - {date: "2026-12-15", date_end: "2026-12-17", reference_period: "2026-10", confirmed: false}
+
+  - group: bcb_focus
+    institution: BCB
+    name: "Boletim Focus"
+    tables: [expc_focus]
+    cadence: weekly
+    weekday: Monday
+    confirmed: true
+    note: "Released every Monday ~08:30, based on expectations collected through the prior Friday. No date list -- expand the weekday rule as needed."
+    source_url: https://www.remessaonline.com.br/blog/boletim-focus-o-que-e-sua-importancia-e-como-consultar/
+
+  - group: bcb_credit_note
+    institution: BCB
+    name: "Estatísticas Monetárias e de Crédito – Nota para a Imprensa"
+    tables:
+      - cred_credito_amplo
+      - cred_credito_resumo
+      - cred_credito_familias
+      - cred_inadimplencia_pj
+      - cred_modalidade_livre_pj
+      - cred_modalidade_livre_pf
+      - cred_modalidade_direcionado_pj
+      - cred_modalidade_direcionado_pf
+      - cred_credito_porte
+      - cred_credito_atividade_economica
+      - cred_credito_tipo_cliente
+      - cred_credito_controle_capital
+    cadence: monthly
+    note: >
+      BCB's own forward calendar page is a JS-rendered SPA, unreachable by fetch tools
+      as of 2026-08-13 -- these are estimated windows from the historical pattern
+      (business day, ~26th-30th, roughly 4 weeks after month-end), not confirmed dates.
+      The note has been pushed past month-end before for unrelated reasons (e.g. the
+      2026-06 note moved from 29/06 to 01/07 because of a Brazil World Cup match).
+    source_url: https://www.bcb.gov.br/estatisticas/estatisticasmonetariascredito
+    entries:
+      - {date: "2026-08-26", date_end: "2026-08-30", reference_period: "2026-07", confirmed: false}
+      - {date: "2026-09-26", date_end: "2026-09-30", reference_period: "2026-08", confirmed: false}
+      - {date: "2026-10-26", date_end: "2026-10-30", reference_period: "2026-09", confirmed: false}
+      - {date: "2026-11-26", date_end: "2026-11-30", reference_period: "2026-10", confirmed: false}
+      - {date: "2026-12-26", date_end: "2026-12-30", reference_period: "2026-11", confirmed: false, note: "December often shifts earlier for year-end holidays -- treat this window as especially uncertain."}
+
+  - group: bcb_caged_sgs_mirror
+    institution: BCB
+    name: "Novo CAGED (mirrored into BCB SGS as mt_caged)"
+    tables: [mt_caged]
+    cadence: monthly
+    note: >
+      Not an independent BCB release -- mt_caged mirrors MTE's Novo CAGED microdata
+      (see mte_caged_novo group below) into BCB's SGS system, typically same day or
+      next business day after MTE's own release. Dates below are derived from that
+      group's confirmed dates, not independently confirmed for the SGS mirror itself.
+    source_url: https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho/o-pdet/calendario-de-divulgacao-do-novo-caged
+    entries:
+      - {date: "2026-08-28", date_end: "2026-08-31", reference_period: "2026-07", confirmed: false}
+      - {date: "2026-09-29", date_end: "2026-09-30", reference_period: "2026-08", confirmed: false}
+      - {date: "2026-10-29", date_end: "2026-10-30", reference_period: "2026-09", confirmed: false}
+      - {date: "2026-11-30", date_end: "2026-12-01", reference_period: "2026-10", confirmed: false}
+      - {date: "2026-12-30", date_end: "2026-12-31", reference_period: "2026-11", confirmed: false}
+
+  - group: bcb_external_sector_note
+    institution: BCB
+    name: "Estatísticas do Setor Externo – Nota para a Imprensa"
+    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado]
+    cadence: monthly
+    note: >
+      BCB's forward calendar page returned a genuine HTTP 502 as of 2026-08-13.
+      Windows below are estimated from the historical pattern (published ~24th-28th
+      of month M+1, covering month M data).
+    source_url: https://www.bcb.gov.br/content/estatisticas/hist_estatisticassetorexterno/
+    entries:
+      - {date: "2026-08-24", date_end: "2026-08-28", reference_period: "2026-07", confirmed: false}
+      - {date: "2026-09-24", date_end: "2026-09-28", reference_period: "2026-08", confirmed: false}
+      - {date: "2026-10-26", date_end: "2026-10-29", reference_period: "2026-09", confirmed: false}
+      - {date: "2026-11-24", date_end: "2026-11-27", reference_period: "2026-10", confirmed: false}
+      - {date: "2026-12-18", date_end: "2026-12-22", reference_period: "2026-11", confirmed: false, note: "No December historical data point was found -- this window is a low-confidence guess assuming a holiday-driven shift earlier in the month, same reasoning as fiscal statistics below."}
+
+  - group: bcb_fiscal_statistics
+    institution: BCB
+    name: "Estatísticas Fiscais – Nota para a Imprensa"
+    tables: [fisc_divida, fisc_nfsp]
+    cadence: monthly
+    note: >
+      BCB's forward calendar page returned a genuine HTTP 502 as of 2026-08-13.
+      Historical pattern is very regular: last business day of month M+1, covering
+      month M data. December is flagged as uncertain since public offices commonly
+      shorten hours/close in the last days of the year.
+    source_url: https://www.bcb.gov.br/content/estatisticas/hist_estatisticasfiscais/
+    entries:
+      - {date: "2026-08-31", reference_period: "2026-07", confirmed: false}
+      - {date: "2026-09-30", reference_period: "2026-08", confirmed: false}
+      - {date: "2026-10-30", reference_period: "2026-09", confirmed: false}
+      - {date: "2026-11-30", reference_period: "2026-10", confirmed: false}
+      - {date: "2026-12-29", date_end: "2026-12-31", reference_period: "2026-11", confirmed: false, note: "May shift earlier than the literal last business day (Dec 31) for year-end holidays."}
+
+  - group: tesouro_rtn
+    institution: "Tesouro Nacional"
+    name: "Resultado do Tesouro Nacional (RTN)"
+    tables: [fisc_rtn]
+    cadence: monthly
+    source_url: https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/55039_1735642/anexos/28614_964310/2026_2sem.pdf
+    note: "Official 2026-2S calendar itself carries a \"sujeito a alterações\" (subject to change) caveat, last updated 2026-06-26 -- still marked confirmed here since it's a direct official publication, not a pattern guess."
+    entries:
+      - {date: "2026-08-28", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-29", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-27", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-29", reference_period: "2026-11", confirmed: true}
+
+  - group: tesouro_efgg
+    institution: "Tesouro Nacional"
+    name: "Boletim Trimestral de Estatísticas Fiscais do Governo Geral (EFGG)"
+    tables: [fisc_efgg]
+    cadence: quarterly
+    source_url: https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/55039_1735642/anexos/28614_964310/2026_2sem.pdf
+    note: >
+      Only one EFGG release falls in Aug-Dec 2026 per the official calendar -- the other
+      H2 release was 2026-07-01 (before this window). No EFGG release is scheduled for
+      Nov or Dec 2026. Reference-period mapping (which quarter Oct 1 actually covers)
+      was not independently verified against a past bulletin -- treat as approximate.
+    entries:
+      - {date: "2026-10-01", reference_period: "2026-Q2 (unverified)", confirmed: true}
+
+  - group: mte_caged_novo
+    institution: "MTE/PDET"
+    name: "Novo CAGED (microdado)"
+    tables: [mt_caged_setor, mt_caged_uf, mt_caged_salario]
+    cadence: monthly
+    source_url: https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho/o-pdet/calendario-de-divulgacao-do-novo-caged
+    entries:
+      - {date: "2026-08-28", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-29", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-30", reference_period: "2026-11", confirmed: true}
+
+  - group: mdic_comex_stat
+    institution: "MDIC"
+    name: "Balança Comercial – Coletiva Mensal (Comex Stat)"
+    tables: [cmb_comex_pais, cmb_comex_fator_agregado, cmb_comex_produto]
+    cadence: monthly
+    note: >
+      This is the consolidated monthly press conference date, covering the FULL prior
+      month (e.g. the 2026-09-04 release covers August 2026 data) -- align on
+      reference_period, not the release month. MDIC also publishes weekly preliminary
+      "parcial" figures within each month (not listed here, see source for the full
+      schedule) and the calendar is fully published through Dec 2026.
+    source_url: https://balanca.economia.gov.br/balanca/cronograma/pg_cronograma.html
+    entries:
+      - {date: "2026-09-04", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-06", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-06", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-04", reference_period: "2026-11", confirmed: true}

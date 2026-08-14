@@ -42,6 +42,9 @@ from domain.db.brasil.ipea import cmb_termos_troca
 # MDIC
 from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_comex_produto
 
+# MTE/PDET (Novo CAGED, microdado do FTP)
+from domain.db.brasil.mte import mt_caged_novo
+
 # Tesouro Nacional
 from domain.db.brasil.tesouro import fisc_rtn, fisc_efgg
 
@@ -98,6 +101,11 @@ _SCRIPTS = [
     ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
     ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),
     ("MDIC · Comex Stat (produto)",     cmb_comex_produto,     {}),
+    # Novo CAGED: baixa ~50MB/mes do FTP do PDET (release novo ~4 semanas apos o
+    # fim do mes). Alimenta as 3 tabelas de corte num unico passe -- ver
+    # domain/db/brasil/mte/mt_caged_novo.py. Bem mais lento que os scripts de API
+    # acima (minutos, nao segundos), por isso fica no fim da lista.
+    ("MTE  · Novo CAGED (setor/UF/salario)", mt_caged_novo,    {}),
     ("Tesouro · RTN",                   fisc_rtn,              {}),
     ("Tesouro · EFGG",                   fisc_efgg,             {}),
 ]

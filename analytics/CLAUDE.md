@@ -14,6 +14,7 @@ This is the applied/analytical layer: projects that consume the MySQL database (
 | `economic_activity/` | Panorama de Atividade Econômica (HTML report — PIB/PIM/PMC/PMS/IBC-Br) | [`economic_activity/CLAUDE.md`](economic_activity/CLAUDE.md) |
 | `fiscal_policy/` | Panorama Fiscal (HTML report — dívida pública, NFSP, RTN) | [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md) |
 | `credit/` | Panorama de Crédito (HTML report — novo, substitui `credit_stress/`) | [`credit/CLAUDE.md`](credit/CLAUDE.md) |
+| `release_calendar/` | Calendário de Divulgações (HTML report — forward-looking, reads a local YAML, not MySQL) | [`release_calendar/CLAUDE.md`](release_calendar/CLAUDE.md) |
 | `report_structure/` | Nothing on its own — shared build-time scaffolding the report projects above assemble from | [`report_structure/CLAUDE.md`](report_structure/CLAUDE.md) |
 
 ## Shared report pattern (`exchange_rate/`, `inflation/`, `monetary_policy/`, `economic_activity/`)
