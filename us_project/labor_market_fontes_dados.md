@@ -66,10 +66,13 @@ claims, 3 Productivity and Costs, 2 ECI, 2 ADP, 2 Sahm. Longest: `PAYEMS`, `MANE
   back `"Series does not exist"`. If we want a key-free path, it has to be v1 *plus* something else
   for JOLTS — or just use unregistered v2, which **does** work (confirmed: a no-key v2 request
   returned CPI data) at 25 series / 10 years / 25 queries per day.
-- **The BLS key hardcoded in `connectors/not_in_production/bls.py` is dead.** Live response:
-  `"The key:8c7fe923715143688e37c1c2b069a38d provided by the User is invalid"`. Either register a
-  new one (free, raises the caps to 50 series / 20 years / 500 queries per day) or drop the key and
-  accept the unregistered limits.
+- **The BLS key hardcoded in the old `not_in_production/bls.py` was dead** — live response:
+  `"The key:8c7fe923715143688e37c1c2b069a38d provided by the User is invalid"`. Resolved 2026-08-18:
+  that stub is gone, replaced by [`connectors/bls.py`](../connectors/bls.py), which reads
+  `BLS_API_KEY` from `.env` and works unregistered when it is absent. Registering a free key is still
+  worth doing (caps go to 50 series / 20 years / 500 queries per day). Note that this branch's series
+  come through the same connector as the inflation branch — `ce` (CES), `ln` (CPS) and `jt` (JOLTS)
+  answer the same call as `cu`, confirmed live in one request covering five surveys.
 - **`download.bls.gov` returns 403 to a browser User-Agent and 200 to an identifying one.** BLS
   policy requires the UA to identify the requester; `LISCapital-macro-pipeline/1.0
   (fabian@liscapital.com.br)` worked on all seven catalogs tried. This is the only path to the

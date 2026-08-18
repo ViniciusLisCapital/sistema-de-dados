@@ -77,6 +77,26 @@
     .note-metodologia { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 1100px; }
     .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
 
+    /* ── Escala de resposta da PTC: as 5 alternativas do questionário, na ordem em que
+       viram número (-2 a +2). Serve de régua para ler a magnitude do índice. ── */
+    .scale-legend {
+      display: flex; flex-wrap: wrap; gap: 0; margin: 10px 0 4px; max-width: 1100px;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      font-size: 11px; line-height: 1.35;
+    }
+    .scale-legend div {
+      flex: 1 1 140px; padding: 7px 10px; text-align: center;
+      border-right: 1px solid var(--border); background: var(--card-bg);
+    }
+    .scale-legend div:last-child { border-right: 0; }
+    .scale-legend b { display: block; font-family: var(--mono); font-size: 13px; }
+    .scale-legend span { color: var(--muted); }
+    .scale-legend .sc-n2 { background: rgba(234,82,58,0.16); }
+    .scale-legend .sc-n1 { background: rgba(234,82,58,0.07); }
+    .scale-legend .sc-p1 { background: rgba(65,135,145,0.09); }
+    .scale-legend .sc-p2 { background: rgba(65,135,145,0.20); }
+    .row-n { color: var(--muted); font-family: var(--mono); font-size: 10.5px; }
+
     /* ── Appendix: click-to-expand methodology notes (native <details>/<summary>) ── */
     .appendix-item {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
@@ -188,6 +208,7 @@
   <button class="tab-btn" data-tab="impulso">Impulso</button>
   <button class="tab-btn" data-tab="taxa">Taxa &amp; Spread</button>
   <button class="tab-btn" data-tab="inadimplencia">Inadimplência</button>
+  <button class="tab-btn" data-tab="ptc">PTC</button>
   <button class="tab-btn" data-tab="apendice">Apêndice</button>
 </nav>
 
@@ -461,6 +482,58 @@
 
   </div>
 
+  <!-- ═══════════ TAB — PTC ═══════════ -->
+  <div class="tab-panel" id="tab-ptc">
+
+    <p class="note-metodologia">
+      <strong>Pesquisa Trimestral de Condições de Crédito (PTC)</strong> — o BCB pergunta aos próprios
+      bancos se afrouxaram ou apertaram a concessão e se viram mais ou menos procura. É o equivalente
+      brasileiro ao <em>Senior Loan Officer Opinion Survey</em> do Fed. Cada banco escolhe um de cinco
+      níveis, convertidos para <strong>−2 a +2</strong>, e o valor publicado é a
+      <strong>média aritmética simples</strong> das respostas do segmento — não um saldo líquido de
+      "quantos apertaram menos quantos afrouxaram", e não uma taxa. Por isso a magnitude se lê
+      diretamente na régua abaixo: <strong>±1 é o banco médio dizendo "moderadamente"</strong> e ±2,
+      "consideravelmente". <strong>Oferta &gt; 0 = aprovação mais frouxa</strong>,
+      <strong>demanda &gt; 0 = procura maior</strong>; o zero é o ponto em que as respostas se cancelam,
+      não "condições neutras". Leitura qualitativa que <em>antecede</em> o dado quantitativo das
+      outras abas. A pill <strong>Observada</strong> (últimos 3 meses) / <strong>Esperada</strong>
+      (próximos 3 meses) troca o horizonte da pesquisa. O BCB não publica agregado de todos os
+      segmentos, então "Oferta" e "Demanda" são só cabeçalhos expansíveis, sem linha própria.
+      Metodologia oficial no TD 245 do BCB (Annibal &amp; Koyama, 2011) — ver Apêndice.
+    </p>
+
+    <section>
+      <h2>Condições de Crédito Percebidas pelos Bancos</h2>
+      <div class="scale-legend">
+        <div class="sc-n2"><b>−2</b><span>consideravelmente<br>mais restritivo / mais fraca</span></div>
+        <div class="sc-n1"><b>−1</b><span>moderadamente<br>mais restritivo / mais fraca</span></div>
+        <div><b>0</b><span>basicamente inalterado /<br>mesmo nível</span></div>
+        <div class="sc-p1"><b>+1</b><span>moderadamente<br>mais flexível / mais forte</span></div>
+        <div class="sc-p2"><b>+2</b><span>consideravelmente<br>mais flexível / mais forte</span></div>
+      </div>
+      <p class="chart-caption">Clique em ▸ para abrir os 4 segmentos; marque os checkboxes para plotar. Trimestral desde 2011-T2. <strong>N</strong> = respondentes do segmento: o índice só se move em degraus de 1/N, então ±0,14 em PF Habitacional (N≈7) é <em>um</em> banco mudando de opinião.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="ptc-horizonte-group">
+          <button type="button" class="pill active" data-horizonte="observada">Observada (últimos 3m)</button>
+          <button type="button" class="pill" data-horizonte="esperada">Esperada (próximos 3m)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="ptc-table">
+          <thead id="ptc-table-head"></thead>
+          <tbody id="ptc-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui. A linha do zero é o empate entre aperto e afrouxamento — acima dela, oferta mais frouxa ou demanda mais forte. O eixo fica em autoescala: a escala teórica vai de −2 a +2, mas nenhuma série jamais passou de −1,21 / +1,57, e fixar em ±2 achataria tudo contra o zero.</p>
+      <div class="chart-card"><div id="chart-ptc"></div></div>
+    </section>
+
+  </div>
+
   <!-- ═══════════ TAB — APÊNDICE ═══════════ -->
   <div class="tab-panel" id="tab-apendice">
 
@@ -706,6 +779,149 @@
       </details>
 
       <details class="appendix-item">
+        <summary>Aba PTC — Metodologia da Pesquisa (escala, fórmula, painel, ausência de total)</summary>
+        <div class="appendix-body">
+
+          <strong>1. Fonte metodológica.</strong> Annibal, C. A. &amp; Koyama, S. M. (2011),
+          <em>Pesquisa Trimestral de Condições de Crédito no Brasil</em>, BCB
+          <strong>Trabalhos para Discussão 245</strong> (§2.3 oferta, §2.6 demanda), mais a seção
+          "Introdução" de qualquer relatório trimestral da PTC. Tudo nesta nota vem de lá, não de
+          inferência sobre os dados — exceto onde marcado como conferência ao vivo.
+          <em>Atenção ao citar:</em> a nota de rodapé dos relatórios trimestrais remete a "Trabalhos
+          para Discussão 254", que é <strong>erro de digitação do próprio BCB</strong> — o TD 254 é
+          um artigo de regulação macroprudencial de outros autores. O da PTC é o <strong>245</strong>.<br><br>
+
+          <strong>2. Como o número é construído.</strong> Cada respondente escolhe <em>um</em> de cinco
+          níveis. As respostas são convertidas para inteiros de −2 a +2 e o indicador publicado é a
+          <strong>média aritmética simples</strong> delas no segmento:
+          <code>I(segmento, trimestre) = (1/N) · Σ<sub>b</sub> resposta<sub>b</sub></code>, com
+          <code>resposta<sub>b</sub> ∈ {−2, −1, 0, +1, +2}</code> e <code>N</code> = número de
+          instituições que responderam àquela questão naquele trimestre. Nas palavras do relatório:
+          "as avaliações são convertidas em valores entre -2 e 2 e são apresentadas as
+          <strong>médias não ponderadas</strong> das respostas".<br><br>
+          <em>Não é um saldo líquido</em> do tipo "% que apertou menos % que afrouxou" — a forma como o
+          SLOOS do Fed publica os seus. Aqui os níveis carregam peso 1 e 2, então direção e
+          <em>intensidade</em> entram no mesmo número.<br><br>
+
+          <strong>3. A escala, e o que cada nível significa.</strong> Mesma escala numérica nas duas
+          direções, com rótulos próprios de cada uma (é a régua reproduzida no topo da aba):
+          <table>
+            <thead><tr><th>Valor</th><th>Oferta — padrão de aprovação</th><th>Demanda — procura por crédito</th></tr></thead>
+            <tbody>
+              <tr><td><strong>+2</strong></td><td>consideravelmente mais flexível</td><td>substancialmente mais forte</td></tr>
+              <tr><td><strong>+1</strong></td><td>moderadamente mais flexível</td><td>moderadamente mais forte</td></tr>
+              <tr><td><strong>0</strong></td><td>basicamente inalterado</td><td>mesmo nível</td></tr>
+              <tr><td><strong>−1</strong></td><td>moderadamente mais restritivo</td><td>moderadamente mais fraca</td></tr>
+              <tr><td><strong>−2</strong></td><td>consideravelmente mais restritivo</td><td>substancialmente mais fraca</td></tr>
+            </tbody>
+          </table>
+          Como é média de níveis rotulados, <strong>a magnitude tem leitura direta</strong>:
+          |I| ≈ 1 significa "o banco médio marcou <em>moderadamente</em>"; |I| ≈ 2,
+          "<em>consideravelmente</em>". Um −0,32 <strong>não</strong> é "32% dos bancos apertaram" — é o
+          banco médio a um terço do caminho entre "inalterado" e "moderadamente mais restritivo", isto
+          é, aperto brando. Nos relatórios do BCB a mesma escala aparece como gradiente de cor, de
+          vermelho pleno em −2 a verde pleno em +2.<br><br>
+
+          <strong>4. O intervalo é [−2, +2], não [−1, +1].</strong> Conferência ao vivo: 19 dos 960
+          pontos passam de 1 em módulo — extremos −1,21 (<code>mpme_oferta_esperada</code>, T1/2016) e
+          +1,57 (<code>pfh_demanda_observada</code>, T4/2020) — exatamente porque o teto da escala é 2.
+          Uma leitura de −1,17 em grandes empresas no T1/2015 quer dizer "o banco médio apertou um
+          pouco <em>mais</em> que moderadamente", não "estourou o limite do índice". O eixo do gráfico
+          fica em <strong>autoescala</strong> de propósito: fixar em ±2 achataria todas as séries contra
+          o zero, já que nenhuma jamais chegou perto do teto.<br><br>
+
+          <strong>5. Zero não é "condições neutras"</strong> — é o ponto em que as respostas se
+          cancelam. Dá zero tanto com o painel inteiro respondendo "inalterado" quanto com metade
+          apertando e metade afrouxando na mesma intensidade. As duas situações são economicamente
+          diferentes e o índice não as distingue.<br><br>
+
+          <strong>6. Sem ponderação por participação de mercado — e isso é deliberado.</strong> O
+          TD 245 registra que essa é a prática internacional dominante (Fed, BoJ, Chile, Espanha,
+          França, Portugal, quase toda a Europa) "pelo fato de que as pesquisas já seriam naturalmente
+          direcionadas às maiores instituições financeiras de cada região". A ausência de peso não é,
+          portanto, uma lacuna a corrigir: o painel <em>é</em> o topo do mercado (cobertura na tabela
+          abaixo).<br><br>
+
+          <strong>7. O painel é pequeno, e isso limita a granularidade.</strong> Sendo média simples de
+          <code>N</code> respostas, o índice só pode assumir múltiplos de <code>1/N</code> — uma única
+          instituição mudando de nível move o índice em <code>1/N</code>. Conferência ao vivo:
+          recuperando o <code>N</code> implícito da própria série (o menor <code>N</code> que explica os
+          4 indicadores de um segmento num trimestre, dado o arredondamento de 2 decimais), o
+          <code>N</code> modal por segmento <strong>reproduz os participantes que o BCB publica</strong>:
+          <table>
+            <thead><tr><th>Segmento</th><th>N (respondentes)</th><th>Degrau mínimo 1/N</th><th>Cobertura do crédito do segmento</th></tr></thead>
+            <tbody>
+              <tr><td>Grandes Empresas</td><td>22</td><td>~0,05</td><td>94,1%</td></tr>
+              <tr><td>MPME</td><td>28</td><td>~0,04</td><td>95,3%</td></tr>
+              <tr><td>PF — Consumo</td><td>17</td><td>~0,06</td><td>92,4%</td></tr>
+              <tr><td>PF — Habitacional</td><td>7</td><td>~0,14</td><td>99,7%</td></tr>
+            </tbody>
+          </table>
+          <em>N</em> da rodada de junho/2024 (PF Habitacional tinha 8 na primeira, em 2011); cobertura
+          da primeira rodada, TD 245. Consequência prática: em <strong>PF Habitacional um movimento de
+          0,14 é <em>um</em> banco mudando de opinião</strong>, não mudança de regime — e é por isso que
+          essa série parece mais voltátil que as outras. Não comparar amplitude entre segmentos sem
+          isso em conta. O <code>N≈</code> ao lado de cada rótulo na tabela da aba está ali por esse
+          motivo.<br><br>
+
+          <strong>8. Armadilha de sinal ao ler o TD 245.</strong> No questionário de demanda as
+          alternativas são listadas de "substancialmente mais forte" (opção 1) a "substancialmente mais
+          fraca" (opção 5) — ordem <em>inversa</em> à conversão numérica divulgada. Na série publicada,
+          e nesta aba, <strong>positivo = demanda maior</strong>. Confirmado contra episódios conhecidos:
+          na recessão de 2015-16 a oferta observada chega a −1,08 (grandes empresas, T3/15 e T1/16) e
+          −1,12 (MPME, T1/16) com demanda também negativa; em T2/2020 a oferta é negativa nos 4
+          segmentos (−0,77 grandes, −0,53 MPME) <em>ao mesmo tempo</em> que a demanda PJ dispara
+          (+0,91 grandes, +0,63 MPME) e a de PF consumo colapsa (−0,90) — a assinatura do
+          <em>dash for cash</em> corporativo contra o recuo do consumo das famílias. Não "corrigir" o
+          sinal a partir da ordem das opções do questionário.<br><br>
+
+          <strong>9. Por que não há linha de total.</strong> O BCB não publica agregado "todos os
+          segmentos" da PTC — nem no SGS nem nos relatórios. E mediar os 4 segmentos aqui não
+          reproduziria a conta dele: a média simples do BCB corre sobre <em>instituições dentro de um
+          segmento</em>, com o painel e o questionário daquele segmento. Uma média entre segmentos
+          misturaria painéis de 7 a 28 respondentes e universos de crédito de tamanhos muito
+          diferentes, produzindo um objeto que não é o índice de nada. Por isso "Oferta" e "Demanda" são
+          <strong>nós-cabeçalho</strong>: expansíveis, mas sem checkbox e sem coluna de valor — mesmo
+          tratamento (e mesma razão de fundo) dado a "Por Porte de Empresa" na aba Inadimplência.<br><br>
+
+          <strong>10. Sem transformação alguma.</strong> Não se deflaciona (não é valor em R$), não se
+          dessazonaliza (a pergunta <em>já</em> é relativa ao trimestre anterior, e a de demanda pede
+          explicitamente que se desconsiderem flutuações sazonais) e não se expressa como % do PIB. As
+          séries entram na aba exatamente como saem do banco.<br><br>
+
+          <strong>11. Horizonte é uma pill, não um nível da árvore.</strong> <code>Observada</code>
+          (últimos 3 meses) e <code>Esperada</code> (próximos 3 meses) são as duas variantes de cada uma
+          das 8 células direção×segmento; o seletor troca qual delas a tabela e o gráfico leem, mantendo
+          a comparação entre segmentos — a leitura principal — na mesma tela. As duas contam quase a
+          mesma história deslocada de um trimestre: conferência ao vivo, a esperada de <em>t−1</em> tem o
+          mesmo sinal da observada de <em>t</em> em <strong>47 dos 52</strong> trimestres comparáveis de
+          <code>ge_oferta</code>. O valor de alternar está em ver <em>antecipação de virada</em>, não
+          discordância.<br><br>
+
+          <strong>12. Datas.</strong> Trimestral desde T2/2011 — 60 observações, sem nenhum buraco em
+          nenhuma das 16 séries. O SGS data cada trimestre no seu primeiro mês (jan/abr/jul/out), e o
+          cabeçalho da tabela converte para <code>T&lt;n&gt;/&lt;aa&gt;</code>. A coleta ocorre no mês
+          seguinte ao fim do trimestre avaliado, então a última coluna é sempre uma leitura recente.<br><br>
+
+          <strong>13. O que a PTC não é.</strong> Não é inadimplência, não é probabilidade de default e
+          não é volume — é percepção declarada, uma leitura qualitativa que <em>antecede</em> o dado
+          quantitativo das outras abas. O próprio BCB adverte que os resultados "representam unicamente
+          a visão das instituições financeiras pesquisadas", não a do Banco Central.<br><br>
+
+          <strong>14. Correções de 2026-08.</strong> Duas, ambas registradas aqui para não se perderem:
+          <em>(a)</em> uma versão anterior deste relatório guardava apenas 2 das 16 séries
+          (<code>ptcc_grandes</code>/<code>ptcc_mpme</code> em <code>cred_inadimplencia_pj</code>) sob
+          códigos SGS <strong>congelados desde 2022-10</strong> — o BCB nunca descontinuou a pesquisa,
+          apenas passou a publicar sob outros códigos; a série completa vive agora em
+          <code>cred_ptc</code>, que é o que alimenta esta aba. <em>(b)</em> a documentação interna da
+          tabela descrevia o valor como "índice de difusão (saldo líquido, −1 a +1)", errado nas duas
+          metades pelos motivos dos itens 2 e 4 — o <code>COMMENT</code> de <code>cred_ptc</code> no
+          MySQL foi corrigido, e a escala −2..+2 com a definição de média não ponderada está agora no
+          <code>COMMENT</code> da coluna <code>value</code>.
+        </div>
+      </details>
+
+      <details class="appendix-item">
         <summary>Crédito Ampliado × Crédito do Sistema Financeiro — Qual a Diferença</summary>
         <div class="appendix-body">
           <strong>Crédito ampliado ao setor não financeiro</strong> (segunda tabela da aba Saldo,
@@ -757,23 +973,6 @@
           <code>cred_credito_resumo</code>) em vez do corte PJ desta tabela. Um cruzamento PJ vs. PF
           dentro de cada recurso, ou um seletor de segmento nos gráficos desta aba, é natural para uma
           próxima rodada.
-        </div>
-      </details>
-
-      <details class="appendix-item">
-        <summary>PTC (Pesquisa Trimestral de Condições de Crédito) — Em Tabela Própria</summary>
-        <div class="appendix-body">
-          <code>cred_ptc</code> guarda a Pesquisa Trimestral de Condições de Crédito do BCB — 16
-          séries (4 segmentos: grandes empresas, MPME, PF consumo, PF habitacional × oferta/demanda ×
-          observada/esperada), trimestral desde 2011-04, atualizada até hoje. Não é uma probabilidade
-          de default — é um indicador de difusão (saldo líquido de respostas) sobre se os bancos
-          relataram condições de oferta/demanda de crédito mais ou menos frouxas no trimestre,
-          equivalente brasileiro ao Senior Loan Officer Opinion Survey do Fed. Corrigido em 2026-08:
-          uma versão anterior guardava só 2 dessas 16 séries (<code>ptcc_grandes</code>/
-          <code>ptcc_mpme</code> em <code>cred_inadimplencia_pj</code>) sob códigos SGS que tinham
-          ficado obsoletos desde 2022-10 — o BCB nunca descontinuou a pesquisa, só trocou de código;
-          a série completa e corrigida vive agora em <code>cred_ptc</code>. Ainda não exibida em
-          nenhum gráfico desta v1.
         </div>
       </details>
 
@@ -1057,6 +1256,12 @@ function fmtMonthShort(dateStr) {
   var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
   return MESES[m - 1] + '/' + y;
+}
+// Serie trimestral (PTC) -- o SGS data o trimestre no seu primeiro mes (jan/abr/jul/out),
+// entao o trimestre sai de (mes-1)/3. Mesmo formato "T<n>/<aa>" de analytics/fiscal_policy.
+function fmtQuarterShort(dateStr) {
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return 'T' + (Math.floor((m - 1) / 3) + 1) + '/' + y;
 }
 function flattenHierRows(tree, expanded, depth) {
   var rows = [];
@@ -1663,12 +1868,156 @@ function initInadTab() {
   renderInadChart();
 }
 
+// ── PTC (Pesquisa Trimestral de Condicoes de Credito) — nao usa makeHierTab() nem
+// makeImpulseTab(): indice de difusao nao tem base Nominal/Real/% PIB (nao se deflaciona
+// nem se divide pelo PIB uma contagem liquida de respostas) e nao tem decomposicao
+// aditiva (nada empilha, nao existe total). Sobrou uma unica pill — o horizonte da
+// pesquisa —, entao a forma e a do bloco bespoke de Taxa & Spread / Inadimplencia:
+// arvore + checkbox + linhas. Os 2 nos de topo (Oferta/Demanda) sao cabecalhos sem
+// serie, tratados como em Inadimplencia via ptcHasData(). Ver ptc_tab.py.
+var ptcState = {horizonte: 'observada', checked: {}, expanded: {oferta__header: true, demanda__header: true}};
+['ge_oferta', 'mpme_oferta', 'pfc_oferta', 'pfh_oferta'].forEach(function(k) { ptcState.checked[k] = true; });
+
+function ptcHasData(seriesKey) {
+  return !!(D.ptc.series || {})[seriesKey];
+}
+function ptcSeries(seriesKey) {
+  var byHorizonte = (D.ptc.series || {})[seriesKey];
+  return (byHorizonte && byHorizonte[ptcState.horizonte]) || {dates: [], values: []};
+}
+function ptcRefDates() {
+  var s = ptcSeries(D.ptc.anchor);
+  return s.dates.slice(-12);
+}
+// Sinal explicito: e a leitura inteira da metrica (positivo = afrouxou / mais procura).
+// Arredonda ANTES de escolher o sinal para -0,001 nao imprimir "-0,00", que se le errado.
+function fmtDiffusion(v) {
+  if (v == null || isNaN(v)) return '—';
+  var r = Math.round(v * 100) / 100;
+  if (r === 0) return '0,00';
+  return (r > 0 ? '+' : '') + r.toFixed(2).replace('.', ',');
+}
+function renderPtcTableHead() {
+  var thead = document.getElementById('ptc-table-head');
+  thead.innerHTML = '';
+  var tr = document.createElement('tr');
+  var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+  var thLabel = document.createElement('th'); thLabel.textContent = 'Direção / Segmento';
+  tr.appendChild(thCheck); tr.appendChild(thLabel);
+  ptcRefDates().forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtQuarterShort(d);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+}
+function renderPtcTable() {
+  renderPtcTableHead();
+  var tbody = document.getElementById('ptc-table-body');
+  tbody.innerHTML = '';
+  var dates = ptcRefDates();
+  flattenHierRows(D.ptc.tree, ptcState.expanded, 0).forEach(function(r) {
+    var node = r.node;
+    var hasData = ptcHasData(node.seriesKey);
+    var s = ptcSeries(node.seriesKey);
+    var valueByDate = {};
+    for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+    var tr = document.createElement('tr');
+    if (node.children) tr.className = 'is-group';
+
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    if (hasData) {
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!ptcState.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) ptcState.checked[node.key] = true; else delete ptcState.checked[node.key];
+        renderPtcChart();
+      });
+      tdCheck.appendChild(cb);
+    }
+
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = ptcState.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        ptcState.expanded[node.key] = !ptcState.expanded[node.key];
+        renderPtcTable();
+      });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+      // N do painel: e o que fixa o degrau minimo do indice (1/N) naquele segmento.
+      if (node.n) {
+        var sn = document.createElement('span');
+        sn.className = 'row-n';
+        sn.textContent = '  N≈' + node.n;
+        tdLabel.appendChild(sn);
+      }
+    }
+
+    tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var tdValue = document.createElement('td');
+      tdValue.className = 'col-value';
+      tdValue.textContent = hasData ? fmtDiffusion(valueByDate[d]) : '—';
+      tr.appendChild(tdValue);
+    });
+    tbody.appendChild(tr);
+  });
+}
+// Renderer proprio em vez de renderLineChart(): a serie trimestral tem 60 pontos (contra
+// centenas nas abas mensais), e sem marcadores cada observacao da pesquisa deixa de ser
+// identificavel na linha. Mesma razao do `withMarkers` em renderImpulseChart.
+function renderPtcChart() {
+  var specs = [], colorIdx = 0;
+  (function walk(tree) {
+    (tree || []).forEach(function(node) {
+      if (ptcState.checked[node.key] && ptcHasData(node.seriesKey)) {
+        var s = ptcSeries(node.seriesKey);
+        specs.push({dates: s.dates, values: s.values, label: node.label, color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+      }
+      if (node.children) walk(node.children);
+    });
+  })(D.ptc.tree);
+  var traces = specs.map(function(sp) {
+    return {
+      type: 'scatter', mode: 'lines+markers', name: sp.label, x: sp.dates, y: sp.values,
+      line: {color: sp.color, width: 2}, marker: {color: sp.color, size: 5},
+      hovertemplate: '<b>' + sp.label + '</b><br>%{x}<br>%{y:+.2f}<extra></extra>',
+    };
+  });
+  // Eixo deixado em autoscale de proposito: a escala teorica e -2..+2, mas o observado
+  // nunca passa de |1,57| -- fixar em +-2 achataria toda a serie contra o zero.
+  Plotly.react('chart-ptc', traces, mkTimeseriesLayout('Média das respostas (−2 a +2)'), _PLOTLY_CONFIG);
+  _bindYAutofit('chart-ptc');
+  _ensureQuickRange('chart-ptc', _unionDates.apply(null, specs));
+}
+function initPtcTab() {
+  document.querySelectorAll('#ptc-horizonte-group .pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#ptc-horizonte-group .pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      ptcState.horizonte = btn.dataset.horizonte;
+      renderPtcTable(); renderPtcChart();
+    });
+  });
+  renderPtcTable();
+  renderPtcChart();
+}
+
 var RENDERERS = {
   saldo: function() { SALDO_TAB.init(); AMPLO_TAB.init(); },
   concessao: function() { CONCESSAO_TAB.init(); },
   impulso: function() { IMP_RECURSO_TAB.init(); IMP_PORTE_TAB.init(); IMP_ATIV_TAB.init(); },
   taxa: function() { initTaxaTab(); },
   inadimplencia: function() { initInadTab(); },
+  ptc: function() { initPtcTab(); },
 };
 
 // ── Tab switching — lazy render on first activation (Plotly needs a visible,

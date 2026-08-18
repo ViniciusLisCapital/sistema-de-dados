@@ -5,6 +5,11 @@ Surveyed live on 2026-08-17 against each source's API, not just its documentatio
 access status and outstanding API keys: [`README.md`](README.md). Brazil counterpart:
 [`analytics/inflation/CLAUDE.md`](../analytics/inflation/CLAUDE.md).
 
+📄 **How this data nests** — the 294-item, 9-level CPI expenditure tree with weights and series ids,
+validated additive, plus the (much flatter) structure of PPI/PCE/cores and the proposed `macro_us`
+tables: [`inflation_hierarchy.md`](inflation_hierarchy.md), machine-readable in
+[`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv).
+
 **Two headline indices, not one.** Brazil has the IPCA and everything anchors to it. The US has
 **CPI** (BLS, the public/contractual index, released ~mid-month) and **PCE** (BEA, the Fed's actual
 target, released ~end of month, different weights and scope). They differ persistently, not just
@@ -23,7 +28,7 @@ Five series are read ad hoc by `analytics/oraculo/us/term_us.py`, marked `(orác
 | CPI headline and core | **BLS** | ✅ `CPIAUCSL` (SA, 1947-01→), `CPIAUCNS` (NSA, **1913-01→**), `CPILFESL` | ✅ API + `cu` flat file | FRED / JSON | ⚠️ `cpi_12m_us` only, in `macro_international` | |
 | CPI major groups | **BLS** | ✅ `CPIUFDSL` (food), `CPIENGSL` (energy), `CPIHOSSL` (housing), `CPIMEDSL`/`CUSR0000SAM2` (medical), `CUSR0000SAH1` (shelter) | ✅ | FRED | ❌ | |
 | CPI analytical cuts | **BLS** | ✅ `CUSR0000SASLE` (services less energy), `CUSR0000SACL1E` (core goods), `CUSR0000SETA01`/`02` (new/used vehicles), `CUSR0000SEHA` (rent), `CUSR0000SEHC` (OER) | ✅ | FRED | ❌ | Core services ex-shelter — the current policy focus — is **not a published series**; it has to be built from components, which needs the weights |
-| **CPI weights and the full item tree** | **BLS** | ⚠️ FRED has indices, **not weights** | ✅ `cu` flat file (1.34 MB catalog) | flat file | ❌ | **This is the gap that matters.** The Brazil report's whole architecture (`inflc_decomposicao`, `inflc_dim`, contribution = variation × weight) needs relative importance per item. FRED does not carry it; the BLS flat files and the news-release tables do |
+| **CPI weights and the full item tree** | **BLS** | ⚠️ FRED has indices, **not weights** | ✅ **solved 2026-08-18** — `cu.item` (400 items, `display_level` 0-8) + relative-importance xlsx per year | flat file / xlsx | ❌ | **Was the gap that mattered; no longer blocking.** `connectors/bls.py` reads both: the item tree from the flat file and the weight vector from `relative-importance/<year>.xlsx` (2020-2025, plus 1947-1986 historical). Expenditure tree verified to sum to 100. See Gotchas |
 | PCE price index, headline and core | **BEA** | ✅ `PCEPI`, `PCEPILFE` (both 1959-01→), `BPCERO1Q156NBEA`, `BPCCRO1Q156NBEA` (quarterly YoY) | 🔑 BEA key needed | FRED | ❌ (oráculo uses both) | **The Fed's target index.** The monthly percent-change series I guessed (`DPCERG3M086SBEA`, `DPCCRG3M086SBEA`) do **not** exist — compute from the index |
 | Trimmed-mean and median cores | **Dallas Fed**, **Cleveland Fed** | ✅ `PCETRIM12M159SFRBDAL`, `PCETRIM1M158SFRBDAL`, `MEDCPIM158SFRBCLE`, `TRMMEANCPIM158SFRBCLE`, `MEDCPIM094SFRBCLE` | ✅ | FRED | ❌ | The analogue of the BCB's núcleos. All live to 2026-06/07 |
 | Sticky vs. flexible price CPI | **Atlanta Fed** | ✅ `STICKCPIM159SFRBATL`, `CORESTICKM159SFRBATL`, `FLEXCPIM159SFRBATL`, `CORESTICKM158SFRBATL` | ✅ xlsx confirmed | FRED / xlsx | ❌ (oráculo uses sticky + flexible) | Already in the oráculo. The `…159…` ids are YoY rates, `…158…` are indices — easy to mix up |
@@ -58,13 +63,28 @@ Latest data as probed: CPI/PPI/sticky/median through **2026-07**, PCE and trimme
 
 ## Gotchas found live
 
-- **The weights problem is the architectural decision for this branch.** The Brazil inflation report
-  is built on subitem-level variation *and* relative importance, which lets it compute contributions
-  and rebuild any aggregate (`inflc_decomposicao` + `inflc_dim`). FRED gives us the CPI indices but
-  **not** the relative-importance vector, so "contribution of shelter to July CPI" is not derivable
-  from FRED alone. Getting it means the BLS flat files or the news-release tables. **Decide this
-  before designing the report**, because it determines whether the US report can have a
-  decomposition/waterfall tab at all or is limited to index and YoY charts.
+- **The weights problem is solved — a decomposition tab is possible.** Resolved live on 2026-08-18
+  while building `connectors/bls.py`, and this supersedes the earlier "decide this before designing
+  the report" note. Two primary-source pieces, neither on FRED:
+  - **The item tree**: `download.bls.gov/pub/time.series/cu/cu.item` — 400 items with
+    `display_level` 0-8. The direct analogue of `inflc_dim`. No parent column; the parent is the
+    preceding item at a lower level in `sort_sequence` order.
+  - **The weight vector**: `bls.gov/cpi/tables/relative-importance/<year>.xlsx` — relative importance
+    per item, CPI-U and CPI-W, published for **2020-2025** (plus
+    `historical-relative-importance-1947-1986.xlsx` and a 1987-1989 zip; **1990-2019 has no xlsx on
+    that page**). The expenditure tree sums to 100 at level 1, verified across all 7 sheets and all
+    6 years.
+  So contribution = variation × weight is reconstructible, and the report can carry a
+  decomposition/waterfall tab. Two caveats that shape the schema: the weights are keyed by **item
+  name + indent level, not `item_code`**, so joining to the index series needs name matching; and
+  each sheet stacks independent trees ("Expenditure category" vs. "Special aggregate indexes"),
+  which must be kept apart — summing across them gives 764 instead of 100. Full detail in
+  [`connectors/CLAUDE.md`](../connectors/CLAUDE.md).
+- **The API is not the backfill path.** Unregistered, the BLS API silently truncates a long window to
+  the **oldest** 10 years (asking 1990-2026 returns 1990-1999 with `REQUEST_SUCCEEDED`), and one long
+  series costs 12 requests against a 25/day cap. The `cu.data.*` flat files return the same numbers —
+  cross-checked to 0.0 difference over 319 months — with no key and no quota. Use the files for
+  history, the API for the recent window.
 - **PPI has two incompatible families and both look like "PPI".** The modern *final demand* series
   (`PPIFIS`, `PPIFES`, `PPIFID`) start **2009-11**/2010-04. The long history is the legacy *finished
   goods* family (`WPSFD49207`, 1947-04→; `PPIACO`, 1913-01→). Splicing them makes a chart that reads
@@ -89,8 +109,10 @@ Latest data as probed: CPI/PPI/sticky/median through **2026-07**, PCE and trimme
 
 ## Open items
 
-- **Resolve the CPI weights source** (BLS flat files vs. news-release tables) — the one decision this
-  branch is blocked on for anything beyond index/YoY charts.
+- ~~Resolve the CPI weights source~~ — **done 2026-08-18**, see Gotchas. The remaining weights
+  question is narrower: `1990-2019` has no relative-importance xlsx on the BLS page, so a
+  decomposition that reaches back past 2020 needs either the 1947-1986 historical file (different
+  format, 13 sheets by year range) or another source for the 1990s/2000s.
 - **Get the BEA key** for PCE at NIPA table granularity (component price indices, contributions).
 - **Ingest the NY Fed SCE** — no FRED path exists and it is the best household expectation series.
 - **Not inventoried this round**: CPI-W and C-CPI-U, regional/metro CPI, the full PPI industry tree,

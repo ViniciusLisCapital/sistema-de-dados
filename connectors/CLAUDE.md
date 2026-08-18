@@ -176,6 +176,83 @@ df_long = FredMultFrame({...}, start, end, Pivot=True)
 - API key via `FRED_API_KEY` no `.env` — nunca hardcoded.
 - `US_IndexNormalize`: expande dados trimestrais para mensais via merge com CPI e `ffill(limit=2)`.
 
+### `connectors/bls.py` — BLS (Bureau of Labor Statistics)
+
+Reescrito em 2026-08 a partir do stub morto que vivia em `not_in_production/` (chave hardcoded
+e inválida, path absoluto de Dropbox inexistente, `int(period[1:])` estourando em `M13`).
+**Três caminhos de acesso com papéis diferentes** — a escolha entre eles não é estilística:
+
+```python
+from connectors.bls import BLS
+
+bls = BLS()                                   # chave opcional (BLS_API_KEY)
+
+# 1. API — atualização incremental, qualquer pesquisa do BLS
+df = bls.get_series(["CUSR0000SA0", "CUSR0000SA0L1E"], 2000, 2026)
+# colunas: date (Timestamp, dia 1), series_id, value, period ("M01".."M13", "S01".."S03")
+
+# 2. Arquivos brutos — backfill e dimensões, sem chave e sem cota
+itens    = bls.get_item_tree("cu")            # 400 itens, display_level 0-8
+catalogo = bls.get_series_catalog("cu")       # 8.104 séries com begin_year/end_year
+hist     = bls.get_data_file("cu", "cu.data.1.AllItems")   # 1913→hoje numa requisição
+
+# 3. Importância relativa (pesos) — nem na API nem nos arquivos brutos
+pesos = bls.get_relative_importance(2025)     # long: section/indent_level/item_name/area/population/weight
+```
+
+**Chave de API — opcional, mas os limites mudam.** `BLS_API_KEY` no `.env` (registro gratuito e
+imediato em https://data.bls.gov/registrationEngine/) — **configurada desde 2026-08-18**. Sem chave a
+v2 responde normalmente, com os limites da v1: **25 séries / 10 anos / 25 requisições por dia**, e
+`catalog`/`calculations` desabilitados (o BLS avisa em `message[]` e ignora os flags). Com chave:
+**50 séries / 20 anos / 500 requisições**. Os limites por requisição das duas situações foram
+**medidos ao vivo** (51 séries → aviso "limit of 50 series"; 21 anos → aviso "limit of 20 years"); só
+a cota diária segue documentada-e-não-medida, porque o BLS não expõe contador de uso.
+`calculations=True` passou a funcionar e devolve as variações de 1/3/6/12 meses calculadas pelo
+próprio BLS em cada observação; `catalog=True` devolve survey/área/item/sazonalidade por série.
+
+**Detalhes e armadilhas** (todas verificadas ao vivo):
+- **A degradação sem chave é silenciosa e a janela truncada é a ERRADA.** Pedir 1990-2026 devolve
+  `REQUEST_SUCCEEDED` com **1990-1999**: o truncamento ancora no `startyear` e avança 10 anos, não
+  pega os 10 anos mais recentes. O connector fatia séries e anos antes de chamar e trata qualquer
+  aviso de truncamento como `BLSTruncationError` — se o limite real divergir de `_LIMITS`, estoura
+  em vez de devolver janela errada.
+- **Id inválido também volta com `REQUEST_SUCCEEDED`**, só com `"Invalid Series for Series X"` em
+  `message[]` e a série presente porém vazia. `get_series(strict=True)` (default) levanta;
+  `strict=False` avisa e devolve o resto.
+- **`M13` não é um mês.** O BLS intercala médias no meio da própria série: `M13`/`S03` = média anual,
+  `A01` = anual. `get_series`/`get_data_file` filtram por default (`include_aggregates=True` mantém).
+  **`S01`/`S02` (semestres) são caso diferente e NÃO são filtrados**: são a frequência real de séries
+  que o BLS só publica semestralmente — em `cu.data.1.AllItems`, 100 das 201 séries são semestrais e
+  101 mensais, e nenhuma tem as duas (conferido ao vivo). Filtrá-las apagaria dado legítimo; use a
+  coluna `period` para separar frequências antes de plotar.
+- **Os arquivos brutos são o caminho de backfill, não a API.** `cu.data.1.AllItems` traz 54.380
+  observações de 201 séries (CPI-U NSA desde 1913) numa requisição sem cota; a mesma janela pela API
+  custaria 12 requisições — metade da cota diária sem chave. `get_series` avisa quando a chamada
+  planejada excede a cota. **Cruzado ao vivo: API e arquivo bruto batem exatamente** (319 meses de
+  `CUSR0000SA0`, diferença máxima 0.0).
+- **`download.bls.gov` recusa o User-Agent default do `requests`** e serve página de erro com HTTP
+  200 em path inválido — `get_flat_file()` manda UA identificável e checa o corpo, não o status.
+- **Importância relativa: xlsx por ano, e o ano do arquivo não é o ano dos pesos.** `2025.xlsx` diz
+  "(2024 Weights) ... December 2025" — cesta de 2024 a preço de dez/2025; `weights_year` e
+  `reference_period` leem os dois rótulos do arquivo. O rótulo de peso só existe de 2022 em diante
+  (antes a cesta era bienal e `weights_year` volta `None`). Publicados: **2020-2025**, mais
+  `historical-relative-importance-1947-1986.xlsx` e um zip de 1987-1989 — **1990-2019 não tem xlsx
+  nessa página**.
+- **Cada tabela de pesos empilha várias árvores independentes**, separadas pela coluna `section`:
+  na Table 1, "Expenditure category" (294 itens, soma 100 no nível 1) e "Special aggregate indexes"
+  (cortes sobrepostos — "All items less food and energy", "Services less energy services" — que
+  somam 664). Somar sem filtrar `section` dá 764. As tabelas 2-6 são grades área × população com
+  2-3 linhas de header e células mescladas; por isso o retorno é sempre long. Identidade conferida
+  nas 7 abas: a árvore de despesa soma 100 em cada par (área, população), 84 checagens, desvio
+  máximo 0.002 (arredondamento do próprio arquivo).
+- **Os pesos são chaveados por NOME de item + nível de indentação, não por `item_code`** — juntar
+  com `get_item_tree()` exige casamento por nome. É o custo de o BLS publicar peso só em tabela de
+  divulgação, e é o passo que falta para montar o par `inflc_decomposicao`/`inflc_dim` do lado US.
+- **A API é genérica por pesquisa**: CPI (`cu`/`cw`/`su`), PPI (`wp`/`pc`), CES (`ce`), CPS (`ln`),
+  JOLTS (`jt`) e preços de importação/exportação (`ei`) respondem na mesma chamada — testado ao
+  vivo com uma requisição cobrindo as cinco. Um connector serve inflação, mercado de trabalho e
+  parte do setor externo.
+
 ### `connectors/bis.py` — BIS Statistics API v1
 
 Sem autenticação. Três datasets SDMX-CSV expostos:

@@ -61,7 +61,12 @@ domain/
                        de estresse de crédito PJ, alimenta analytics/credit/, ver seção própria
                        abaixo —, cred_ptc — Pesquisa Trimestral de Condições de Crédito, 16 séries,
                        percepção dos bancos sobre oferta/demanda de crédito por segmento, equivalente
-                       ao Senior Loan Officer Opinion Survey do Fed)
+                       ao Senior Loan Officer Opinion Survey do Fed — alimenta a aba PTC de
+                       analytics/credit/. É a MÉDIA SIMPLES (não ponderada) das respostas em
+                       escala −2..+2, não um saldo líquido, e o intervalo é −2 a +2. O COMMENT
+                       da tabela dizia ±1 e foi corrigido em 2026-08 (a escala vive agora no
+                       COMMENT da coluna value). Metodologia: BCB TD 245, Annibal & Koyama
+                       2011, https://www.bcb.gov.br/pec/wps/port/TD245.pdf)
     tesouro/         — fisc_rtn (RTN, Resultado do Tesouro Nacional — receita/despesa/resultado do
                        Governo Central por rubrica orçamentária), fisc_efgg (EFGG, Estatísticas
                        Fiscais do Governo Geral — classificação econômica GFSM 2014, por esfera
@@ -187,7 +192,11 @@ analytics/           — Projetos que consomem o banco MySQL
                            bespoke, sem makeHierTab, com overlay de Selic) + Inadimplencia (mesmo
                            formato bespoke de Taxa & Spread, reune inadimplencia de todos os cortes que
                            a publicam, mais Saldo de Maior Risco em 2 grupos por metodologia -- Res.
-                           2.682 vs. Res. 4.966, quebra confirmada ao vivo, nunca emendadas) + Apendice,
+                           2.682 vs. Res. 4.966, quebra confirmada ao vivo, nunca emendadas) + PTC
+                           (Pesquisa Trimestral de Condicoes de Credito, cred_ptc -- indice de difusao de
+                           oferta/demanda percebidas pelos bancos, o SLOOS brasileiro; arvore Oferta/Demanda
+                           x 4 segmentos com pill Observada|Esperada, SEM linha de total -- o BCB nao publica
+                           agregado e mediar segmentos misturaria paineis de 7 a 28 respondentes) + Apendice,
                            ver analytics/credit/CLAUDE.md
   labor_market/      — Panorama de Mercado de Trabalho HTML (2026-08, IBGE/PNAD + CAGED/MTE, so
                        visualizacao — sem metrica derivada, ver analytics/labor_market/CLAUDE.md)
@@ -410,9 +419,11 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   `insolv_falencia_rj` e `connectors/datajud.py` a pedido do usuário — histórico só em git log). Hoje
   tem Saldo (+ 2ª tabela para Crédito Ampliado), Concessão (ambas via a fábrica JS `makeHierTab()`,
   toggle Nominal/Real/% PIB), Taxa & Spread e Inadimplência (formato bespoke, com overlay de Selic), +
-  Apêndice. Ver "Pending" em [`analytics/credit/CLAUDE.md`](analytics/credit/CLAUDE.md) (confirmação em
-  browser real, `cred_credito_controle_capital.saldo`/`provisoes` ainda não charteados, `cred_ptc` ainda
-  não charteada em nenhuma aba).
+  Impulso (3 tabelas via `makeImpulseTab()`) e PTC (`cred_ptc`, nova em 2026-08 — árvore
+  Oferta/Demanda × 4 segmentos, pill Observada|Esperada, sem linha de total, régua da escala
+  −2..+2 no topo), + Apêndice.
+  Ver "Pending" em [`analytics/credit/CLAUDE.md`](analytics/credit/CLAUDE.md) (confirmação em
+  browser real, `cred_credito_controle_capital.saldo`/`provisoes` ainda não charteados).
 
 ### Média prioridade
 - **Expectativas Focus — consumo nos relatórios**: a camada de dados ficou pronta em 2026-08
@@ -442,7 +453,10 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   — todos disponíveis no mesmo microdado já baixado, adicionar é só uma tabela irmã nova com o
   mesmo padrão (`categoria`/`metrica`), sem migração;
   (b) `mt_pnad_trimestral`: nível UF/N3 deixado de fora deliberadamente, sem previsão.
-- **US — expandir dados**: `connectors/not_in_production/bls.py`, schema `macro_us`, `domain/db/us/inflation/`.
+- **US — expandir dados**: mapeamento de fontes das 8 áreas macro pronto em [`us_project/`](us_project/)
+  (levantado ao vivo contra as APIs, 377 séries FRED conferidas uma a uma). Primeiro connector já
+  construído: `connectors/bls.py` (2026-08, substitui o stub morto de `not_in_production/`). Falta o
+  schema `macro_us` e `domain/db/us/inflation/`.
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): ver "Pending" em [`repository/CLAUDE.md`](repository/CLAUDE.md).
 - **Jobs de rotina incompletos** (a checagem de freshness em `domain/release_calendar/sync.py` confirmou
   em 2026-08-17 que isto causa atraso real, não só teórico: `comm_icbr`/`comm_icbr_usd` estavam um mês

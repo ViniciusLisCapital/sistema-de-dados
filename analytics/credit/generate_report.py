@@ -24,6 +24,7 @@ from analytics.credit import (
     concessao_tab,
     impulso_tab,
     inadimplencia_tab,
+    ptc_tab,
     saldo_tab,
     taxa_tab,
 )
@@ -157,6 +158,14 @@ def _load_impulso_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
     return impulso_tab.build(raw, pib_acum_12m)
 
 
+def _load_ptc_tab_data() -> dict:
+    """Aba PTC: le cred_ptc cru e so reagrupa por horizonte. Sem IPCA, sem STL, sem PIB
+    -- indice de difusao nao aceita nenhuma dessas transformacoes (ver ptc_tab.py). Sem
+    _clip_from(_TAB_MIN_DATE) tambem: a pesquisa comeca em 2011-04, ja dentro da janela.
+    """
+    return ptc_tab.build(_load_flat("cred_ptc"))
+
+
 def _load_amplo_tab_data(amplo_series: dict, pib_acum_12m: dict) -> dict:
     ipca = _load_flat("inflc_agregados")["ipca"]
 
@@ -254,6 +263,14 @@ def run(output: str = "reports/Credit.html") -> None:
     except Exception as exc:
         print(f"  taxa      (Taxa Media + Spread): FALHOU -- {exc}")
         data["taxa"] = {"taxa_media": {"tree": [], "series": {}}, "spread": {"tree": [], "series": {}}, "selic": {"dates": [], "values": []}}
+
+    try:
+        data["ptc"] = _load_ptc_tab_data()
+        n_ptc = sum(len(v) for v in data["ptc"]["series"].values())
+        print(f"  ptc       (Pesquisa Trimestral de Condicoes de Credito): {n_ptc} series")
+    except Exception as exc:
+        print(f"  ptc       (Pesquisa Trimestral de Condicoes de Credito): FALHOU -- {exc}")
+        data["ptc"] = {"tree": [], "anchor": None, "series": {}, "ref_date": None}
 
     try:
         data["inadimplencia"] = _load_inadimplencia_tab_data(data.get("resumo", {}), data.get("pj", {}), selic)

@@ -5,10 +5,39 @@ proprios percebem, equivalente brasileiro ao Senior Loan Officer Opinion
 Survey do Fed / Bank Lending Survey do BCE. Trimestral, 4 segmentos (grandes
 empresas, MPME, pessoa fisica consumo, pessoa fisica habitacional) x 2
 direcoes (oferta/demanda) x 2 horizontes (observada = ultimos 3 meses,
-esperada = proximos 3 meses) = 16 series. Valor e um indice de difusao
-(saldo liquido de respostas, -1 a +1): positivo em oferta = aprovacao mais
-frouxa; positivo em demanda = demanda maior. Nao e taxa de inadimplencia
-nem probabilidade de default.
+esperada = proximos 3 meses) = 16 series.
+
+Valor: cada respondente escolhe um de CINCO niveis, convertidos para inteiros de
+-2 a +2, e o publicado e a MEDIA ARITMETICA SIMPLES (nao ponderada) das respostas
+do segmento -- I = (1/N) * SOMA respostas, N = respondentes daquela questao naquele
+trimestre. Escala: -2 consideravelmente mais restritivo / demanda consideravelmente
+mais fraca; -1 moderadamente; 0 basicamente inalterado; +1 moderadamente mais
+flexivel / mais forte; +2 consideravelmente. Positivo em oferta = aprovacao mais
+frouxa; positivo em demanda = demanda maior. Nao e taxa de inadimplencia nem
+probabilidade de default.
+
+CORRECAO 2026-08: esta docstring dizia "indice de difusao (saldo liquido de
+respostas, -1 a +1)" -- errado nas duas metades. Nao e saldo liquido (% que apertou
+menos % que afrouxou, como o SLOOS do Fed), e media de niveis com peso 1 e 2; e o
+intervalo e -2 a +2, nao -1 a +1 -- 19 dos 960 pontos da base passam de 1 em modulo,
+extremos -1,21 (mpme_oferta_esperada, 2016-T1) e +1,57 (pfh_demanda_observada,
+2020-T4). Fonte: BCB Trabalhos para Discussao 245, Annibal & Koyama (2011),
+"Pesquisa Trimestral de Condicoes de Credito no Brasil"
+(https://www.bcb.gov.br/pec/wps/port/TD245.pdf), secoes 2.3/2.6, mais a
+"Introducao" de qualquer relatorio trimestral da PTC ("as avaliacoes sao convertidas
+em valores entre -2 e 2 e sao apresentadas as medias nao ponderadas das respostas").
+Cuidado: a nota de rodape desses relatorios cita "TD 254" -- erro de digitacao do
+proprio BCB, o TD 254 e um paper de regulacao macroprudencial de outros autores.
+
+O COMMENT da tabela no MySQL repetia o mesmo "-1 a +1" e foi corrigido em 2026-08
+(ALTER TABLE): a tabela agora descreve chave/segmentos/horizontes e cita o TD 245, e a
+escala -2..+2 com a definicao de media nao ponderada ficou no COMMENT da coluna `value`.
+
+Painel pequeno: sendo media simples de N respostas, o indice so anda em multiplos
+de 1/N. Participantes na rodada de junho/2024 (e N modal recuperado da propria
+serie): grandes empresas 22, MPME 28, PF consumo 17, PF habitacional 7 (8 em 2011).
+Logo o degrau minimo em PF Habitacional e ~0,14 -- uma variacao desse tamanho ali e
+UM banco mudando de opiniao, nao mudanca de regime.
 
 Series SGS coletadas (16 series), confirmadas via a planilha oficial do BCB
 (https://www.bcb.gov.br/content/publicacoes/ptc/xls/Series_PTC.xlsx, aba

@@ -30,6 +30,8 @@ corrected on an individual re-check; the branch files use the corrected counts.
 | [`activity_fontes_dados.md`](activity_fontes_dados.md) | `analytics/economic_activity/` | GDP/NIPA, industrial production, retail, orders, inventories, income, sentiment, nowcasts |
 | [`labor_market_fontes_dados.md`](labor_market_fontes_dados.md) | `analytics/labor_market/` | CPS, CES, JOLTS, claims, ECI, productivity, wage trackers |
 | [`inflation_fontes_dados.md`](inflation_fontes_dados.md) | `analytics/inflation/` | CPI, PCE, PPI, import/export prices, cores/trimmed means, expectations |
+| ↳ [`inflation_hierarchy.md`](inflation_hierarchy.md) | — | **How the inflation data nests** (2026-08-18): the CPI's **two** trees — the 294-item / 9-level expenditure structure and the 21-node news-release structure (food / energy / core goods / core services) — both with weights and series ids and both validated against the weight identities; why every other US price measure is flat or nests differently; proposed `macro_us` tables |
+| ↳ [`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) · [`cpi_headline_hierarchy.tsv`](cpi_headline_hierarchy.tsv) | — | Machine-readable form of those two trees — level, parent, CPI-U/CPI-W weights, SA and NSA series ids, coverage window. Seed for `inflc_cpi_dim` |
 | [`monetary_policy_fontes_dados.md`](monetary_policy_fontes_dados.md) | `analytics/monetary_policy/` | Fed target/effective rates, yield curve, balance sheet, money, financial conditions, SEP |
 | [`fiscal_policy_fontes_dados.md`](fiscal_policy_fontes_dados.md) | `analytics/fiscal_policy/` | MTS receipts/outlays, debt stock and holders, NIPA government accounts, CBO |
 | [`credit_fontes_dados.md`](credit_fontes_dados.md) | `analytics/credit/` | H.8 bank credit, SLOOS, G.19 consumer credit, delinquencies, Z.1 debt, FDIC |
@@ -113,9 +115,15 @@ pending item in [`analytics/oraculo/CLAUDE.md`](../analytics/oraculo/CLAUDE.md).
 
 `connectors/fred.py` exists and works (`FredUniFrame`/`FredMultFrame`, key from `.env`), in the old
 CamelCase style rather than the class-based pattern of `connectors/ibge.py`/`bcb.py`.
-`connectors/not_in_production/bls.py` exists but its **hardcoded API key is dead** — confirmed
-live: `"The key:8c7fe923… provided by the User is invalid"`. It also hardcodes an absolute path to a
-spreadsheet on the old Dropbox layout.
+**`connectors/bls.py` was written on 2026-08-18** and is the first US connector built to the current
+conventions (class-based, key from `.env`, `date`/`value` output). It replaces the dead stub that used
+to live in `not_in_production/` — that file's hardcoded key was invalid (`"The key:8c7fe923… provided
+by the User is invalid"`), it pointed at a spreadsheet on the old Dropbox layout, and its date parser
+crashed on the BLS's `M13` annual-average rows; it has been removed (recoverable from git). The new
+connector covers three access paths — API by series id, the raw `download.bls.gov` flat files for
+backfill and dimensions, and the CPI relative-importance xlsx for weights — and serves every BLS
+survey (CPI, PPI, CES, CPS, JOLTS, import/export prices) through the same call. Full behaviour and
+gotchas in [`connectors/CLAUDE.md`](../connectors/CLAUDE.md).
 
 ## Naming and schema proposal (for discussion, nothing decided)
 
@@ -157,9 +165,11 @@ sit in the wrong schema today.
 - **Decide branch depth per report** — the Brazil reports grew tab by tab over months. Worth
   deciding up front which of the eight branches get a full HTML report and which are only
   ingestion for the oráculo.
-- **Fix or retire `connectors/not_in_production/bls.py`** (dead key, hardcoded path) and decide
-  whether `connectors/fred.py` gets rewritten into the class-based connector pattern before the US
-  ETL is built on top of it.
+- ~~Fix or retire `connectors/not_in_production/bls.py`~~ — **done 2026-08-18**: rewritten as
+  `connectors/bls.py`, old stub removed. Still open: whether `connectors/fred.py` gets rewritten into
+  the class-based connector pattern before the US ETL is built on top of it, and whether to register
+  a free `BLS_API_KEY` (raises the caps from 25 series / 10 years / 25 queries per day to
+  50 / 20 / 500 and enables `catalog`/`calculations`).
 - **Rolling-window licensing on FRED is a real design constraint, not a footnote** — corporate
   spreads start 2023-08, S&P 500 and Dow start 2016-08, NAR existing home sales has **13 monthly
   observations**. Any report tab built on those needs either a different source or an explicit
