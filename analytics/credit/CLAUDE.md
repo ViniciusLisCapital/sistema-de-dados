@@ -14,7 +14,7 @@ bank credit only — no bankruptcy/insolvency data.
 
 ```powershell
 uv run python -c "from analytics.credit.generate_report import run; run()"
-# Output: reports/credit_latest.html
+# Output: reports/Credit.html
 ```
 
 All source tables are already in `jobs/update_db.py`'s routine run — no manual refresh needed first.
@@ -48,6 +48,9 @@ Percentage-type metrics (`taxa_juros`, `spread`, `icc`, `inadimplencia`, `pct_pi
   by the Saldo and Concessão tabs; Taxa & Spread and Inadimplência are bespoke JS instead (their shape —
   a data-source switch, an overlay checkbox, no growth/deflation math — diverges enough that forcing them
   into the factory would add more special-casing than it saves).
+- `report.html`'s `makeImpulseTab(opts)` — a second, simpler factory (one control group instead of two,
+  no Nominal/Real/% PIB axis) instantiated 3× by the Impulso tab. Kept separate from `makeHierTab()`
+  because the impulse is already a ratio to GDP, so there is no basis to select — only a read frequency.
 - Every interactive tab clips series to `_TAB_MIN_DATE = "2000-01-01"` before building — most
   modality-level codes only start 2007-03, so a shared start keeps every row on a comparable window.
 
@@ -65,6 +68,41 @@ it disables the other metric pills).
 itself is STL+MM3M-smoothed (concessão is a noisy flow, not a stock); only M/M and T/T (no Y/Y); Crédito
 Livre PJ's "Cartão de Crédito" has 1 child instead of 3 (the BCB doesn't publish a concessão code for
 parcelado/rotativo there — confirmed from the actual SGS codes, not assumed from Saldo's tree).
+
+**Impulso** — credit impulse in p.p. of GDP: `I(t) = [Saldo(t)−Saldo(t−12)]/PIB12m(t) −
+[Saldo(t−12)−Saldo(t−24)]/PIB12m(t−12)`. Biggs, Mayer & Pick (2009) as applied to Brazil by the
+Blog do IBRE/FGV (Borça Jr., Furtado & Barbosa-Filho, 2021). Three tables, all built by
+`impulso_tab.py` + `makeImpulseTab()`: (a) Livre/Direcionado × PJ/PF nested under Total Geral,
+(b) porte (MPME/Grande), (c) atividade econômica (Agro/Indústria/Serviços/Outros — only the 4 top
+branches, the fine sectoral detail stays in Saldo). One control per table, `Mensal (12m)` vs
+`Anual (dez)` — **the same series, not two calculations**: in December the monthly formula already
+collapses into the annual one the IBRE publishes.
+
+- **The decompositions are exact.** The metric is linear in the stock and every row shares the GDP
+  denominator, so children sum to their parent with no residual — verified live at ~2e-4 p.p. across
+  the whole series, and re-asserted on the *rendered* table by the Node harness.
+- **Chart = stacked bars (components) + line (total).** Uses **`barmode: 'relative'`, never
+  `'stack'`** — impulse components routinely carry opposite signs (Livre negative while Direcionado is
+  positive right now), and Plotly's `'stack'` piles everything in one direction regardless of sign, so
+  the stack top would stop matching the total. `'relative'` puts positives above zero and negatives
+  below, which is the only way the net stack top coincides with the total line. `_bindYAutofit` already
+  handles both modes. The tree root is the line; every other checked node is a bar, **except** a node
+  that has a checked descendant (finest level wins) — otherwise checking Livre together with its PJ/PF
+  children would double-count the stack. A non-exhaustive selection deliberately leaves a visible gap
+  between stack and line. Harness asserts stack-top == line to 2e-4 p.p. over all 208 points (that
+  bound is the payload's own 4-decimal rounding, not a modelling residual).
+- Replication validated against IBRE's published figures: 2016 total −5,30 (published −5,3), 2020
+  públicos +2,78 (+2,8), monthly series crossing zero in nov/2021 (+0,08). The 2020 total (+4,29 vs
+  +4,4) differs by BCB revisions to saldo/PIB since the post, not by method.
+- **This measure does not strip interest, FX revaluation or write-offs** from the balance change —
+  the very critique BCB's EE 110/2021 makes of Biggs et al. Its clean SCR-based version was
+  deliberately left out (explicit user decision, 2026-08): BCB doesn't publish the juros/câmbio/baixas
+  inputs. A row can print a positive impulse purely from repricing.
+- Tables (b) and (c) partition the **same** PJ aggregate, so their totals coincide by construction
+  (≤R$5mi apart on R$2,76tri). That aggregate is not exactly `saldo_total_pj` from Tabelas 3-5 — up to
+  ~R$37bn (1,3%) apart at the 2020 peak — so (a) does not reconcile to the decimal with (b)/(c).
+- Series start: recurso×segmento 2009-03, porte/atividade 2014-01 (the formula eats 24 months of
+  history). The table always shows the last 12 observations *with a value*, never leading blanks.
 
 **Taxa & Spread** — a `Taxa Média | Spread` source switch, not a metric/basis toggle (no STL/deflation/%
 PIB — already percentages). Taxa Média has smaller modality coverage than Saldo (no "Outros" rate
@@ -107,7 +145,7 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
 
 ## Pending
 
-- Open `reports/credit_latest.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
+- Open `reports/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
   interactions across all 4 tabs, plus pan/zoom/quick-range behavior on every chart.
 - `cred_credito_controle_capital`'s `saldo`/`provisoes` metrics are still unused (only `inadimplencia` is
   charted, in the Inadimplência tab's "Por Controle de Capital" group).

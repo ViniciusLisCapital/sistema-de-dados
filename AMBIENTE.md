@@ -144,6 +144,63 @@ could not link to a BLAS installation") — não bloqueia nada nesta escala de
 modelo, mas para modelos bayesianos bem maiores no futuro, considerar
 `OpenBLAS` ou um numpy linkado com BLAS via conda.
 
+### Dependência de sistema opcional: X-13ARIMA-SEATS (ajuste sazonal)
+
+O X-13ARIMA-SEATS do US Census Bureau é um **executável Fortran externo**, não um
+pacote Python — não entra no `pyproject.toml` nem no `uv.lock`, e por isso o
+`uv sync` não o instala. `statsmodels` só o encapsula: `x13_arima_analysis()`
+escreve um arquivo `.spc`, chama o binário via subprocess, e lê o resultado de
+volta. Sem o binário, qualquer chamada levanta exceção.
+
+Instalado nesta máquina em 2026-08-17, build **ascii v1.1 Build 62**. Não tem
+instalador, não pede admin, não precisa de compilador — é só descompactar:
+
+```powershell
+$dest = "$env:LOCALAPPDATA\x13as"
+New-Item -ItemType Directory -Force $dest | Out-Null
+Invoke-WebRequest -Uri "https://www2.census.gov/software/x-13arima-seats/x13as/windows/program-archives/x13as_ascii-v1-1-b62.zip" -OutFile "$dest\x13as_ascii-v1-1-b62.zip"
+Expand-Archive -Path "$dest\x13as_ascii-v1-1-b62.zip" -DestinationPath $dest -Force
+
+# O statsmodels procura os nomes de binario em ordem e "x13as.exe" e o primeiro
+# da lista -- o zip traz "x13as_ascii.exe", entao duplique com o nome esperado.
+Copy-Item "$dest\x13as\x13as_ascii.exe" "$dest\x13as\x13as.exe"
+
+# Variavel de usuario (persiste em terminais NOVOS, igual ao PATH do MSYS2 acima)
+[Environment]::SetEnvironmentVariable("X13PATH", "$dest\x13as", "User")
+```
+
+Verificar se está funcionando:
+
+```powershell
+uv run python -c "import os, numpy as np, pandas as pd; from statsmodels.tsa.x13 import x13_arima_analysis; r=np.random.default_rng(0); s=pd.Series(100+np.arange(120)*0.3+5*np.sin(np.arange(120)*2*np.pi/12)+r.normal(0,1,120), index=pd.period_range('2015-01',periods=120,freq='M')); print(x13_arima_analysis(s, x12path=os.environ['X13PATH'], prefer_x13=True).seasadj.iloc[-3:])"
+# deve imprimir 3 valores dessazonalizados, nao uma excecao
+```
+
+Pontos de atenção:
+
+- **Passe `prefer_x13=True`** nas chamadas. Sem isso o `statsmodels` consulta
+  `X12PATH` (o programa antecessor) em vez de `X13PATH`.
+- `KeyError: 'X13PATH'` num terminal que já estava aberto quando a variável foi
+  criada é o comportamento esperado, não um erro de instalação — o processo herdou
+  o ambiente antigo. Abra um terminal novo, ou leia o valor persistido direto:
+  `$env:X13PATH = [Environment]::GetEnvironmentVariable("X13PATH","User")`.
+- O ruído no comando de verificação acima não é decorativo: uma série sintética
+  *perfeitamente* linear + sazonal faz o X-13 abortar com "Differencing has
+  annihilated the series". Ver também "série com valores zero ou negativos" — o
+  X-13 recusa transformação automática nesse caso.
+- O `.zip` também traz `docs/docX13AS.pdf` e `docs/qrefX13ASpc.pdf` — a
+  referência completa da linguagem de `.spc`, necessária para qualquer coisa que
+  o wrapper do `statsmodels` não expõe (feriados móveis brasileiros via `genhol`,
+  p. ex.).
+- Numa máquina nova sem esse setup, o comportamento **não** é um fallback
+  silencioso para STL: a chamada falha com exceção. Quem escreve código novo que
+  usa X-13 é responsável por decidir o que fazer no `except` — e por registrar
+  quando uma série caiu para STL, senão o resultado final mistura dois métodos
+  sem marcador de qual é qual.
+
+Contexto de quando usar X-13 em vez de STL, escopo por série, e os problemas
+práticos conhecidos: [`analytics/seasonal_adjustment.md`](analytics/seasonal_adjustment.md).
+
 ---
 
 ## 4. Tarefas do dia a dia

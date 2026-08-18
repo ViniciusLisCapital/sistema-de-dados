@@ -840,7 +840,7 @@
 
 // ── Data & palette ────────────────────────────────────────────────────────────
 if (typeof REPORT_DATA === 'undefined') {
-  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/economic_activity_latest.html</b></div>';
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/Economic Activity.html</b></div>';
   throw new Error('REPORT_DATA undefined');
 }
 var D = REPORT_DATA;
@@ -1246,7 +1246,8 @@ function _bindXRangeTracker(divId) {
 // "Apply this to all graphs"). The month/year dropdown replaced an earlier day-level <input
 // type=date> per explicit user rejection ("Do not use day, I think the standard in the image is
 // better" -- matched from the one existing implementation of that widget in this repo,
-// analytics/exchange_rate/models/ppp_dashboard_template.html's `#baseMonth`/`.base-select`). The
+// analytics/exchange_rate/report.html's `#baseMonth`/`.base-select`, then in its own
+// ppp_dashboard_template.html, fused into that file in 2026-08). The
 // quick pills replaced Plotly's native xaxis.rangeselector.buttons component entirely -- see
 // _quickRangeOptions()'s own comment above for why (that component doesn't support an explicit
 // [from,to] range per button, only step/stepmode/count; an earlier version wrongly assumed it did).

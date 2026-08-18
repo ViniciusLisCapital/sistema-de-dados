@@ -185,6 +185,7 @@
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="saldo">Saldo</button>
   <button class="tab-btn" data-tab="concessao">Concessão</button>
+  <button class="tab-btn" data-tab="impulso">Impulso</button>
   <button class="tab-btn" data-tab="taxa">Taxa &amp; Spread</button>
   <button class="tab-btn" data-tab="inadimplencia">Inadimplência</button>
   <button class="tab-btn" data-tab="apendice">Apêndice</button>
@@ -301,6 +302,90 @@
       <h2>Evolução — Séries Selecionadas</h2>
       <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real.</p>
       <div class="chart-card"><div id="chart-concessao"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — IMPULSO ═══════════ -->
+  <div class="tab-panel" id="tab-impulso">
+
+    <p class="note-metodologia">
+      <strong>Impulso de crédito</strong> — a variação do fluxo de crédito de 12 meses, normalizada
+      pelo PIB nominal acumulado em 12 meses, em <strong>pontos percentuais do PIB</strong>. Conceito
+      de Biggs, Mayer &amp; Pick (2009), na forma aplicada ao Brasil pelo Blog do IBRE/FGV (Borça Jr.,
+      Furtado &amp; Barbosa-Filho, 2021). Lê-se como <em>"o crédito novo deste ano pesou X p.p. do PIB
+      a mais (ou a menos) que o do ano anterior"</em> — o sinal indica aceleração ou desaceleração da
+      oferta de recursos, e não o nível dela: impulso negativo com crédito ainda crescendo é
+      perfeitamente possível, e é o caso mais comum.
+      <br><br>
+      As três tabelas abaixo são <strong>decomposições exatas</strong>, não aproximações — a métrica é
+      linear no saldo e todas as linhas dividem o mesmo denominador, então a soma dos filhos reproduz
+      o pai sem resíduo. <strong>Anual (dez)</strong> não é um cálculo diferente de
+      <strong>Mensal (12m)</strong>: é a mesma série lida em dezembro. Ver Apêndice para o que essa
+      métrica deliberadamente <em>não</em> corrige (juros, câmbio e baixas para prejuízo).
+      <br><br>
+      <strong>Como ler os gráficos:</strong> as parcelas marcadas aparecem como <strong>barras
+      empilhadas</strong> e o total, como <strong>linha</strong> por cima. Como a decomposição é exata,
+      o topo líquido da pilha coincide com a linha sempre que a seleção for exaustiva — se você marcar
+      só uma parte (ex: apenas PJ), a folga entre a pilha e a linha é exatamente o que falta para
+      fechar o total. Parcelas positivas empilham acima do zero e negativas abaixo, então uma barra
+      para baixo com a linha ainda positiva significa que aquele segmento <em>subtraiu</em> impulso
+      enquanto o agregado seguiu acelerando. Marcar um pai e seus filhos ao mesmo tempo não duplica a
+      pilha — o nível mais fino da seleção prevalece e o pai sai das barras.
+    </p>
+
+    <section>
+      <h2>a) Por Recurso e Segmento — Livre/Direcionado × PJ/PF</h2>
+      <p class="chart-caption">Clique em ▸ para abrir o nível seguinte; marque os checkboxes para plotar. Livre + Direcionado reproduzem o Total Geral exatamente, e PJ + PF reproduzem cada recurso.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-recurso-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-recurso-table">
+          <thead id="imp-recurso-table-head"></thead>
+          <tbody id="imp-recurso-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-recurso"></div></div>
+    </section>
+
+    <section>
+      <h2>b) Por Porte de Empresa — MPME e Grande</h2>
+      <p class="chart-caption">Crédito a Pessoa Jurídica apenas. O BCB não publica um total para este corte — a linha "Total PJ" é a soma de MPME + Grande (soma de nível em R$, feita antes da fórmula).</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-porte-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-porte-table">
+          <thead id="imp-porte-table-head"></thead>
+          <tbody id="imp-porte-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-porte"></div></div>
+    </section>
+
+    <section>
+      <h2>c) Por Atividade Econômica — Agropecuária, Indústria, Serviços e Outros</h2>
+      <p class="chart-caption">Crédito a Pessoa Jurídica apenas, nos 4 ramos de topo (o detalhe setorial fino fica na aba Saldo). Mesmo universo da tabela (b) — os dois totais coincidem por construção, são duas partições do mesmo agregado.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-ativ-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-ativ-table">
+          <thead id="imp-ativ-table-head"></thead>
+          <tbody id="imp-ativ-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-ativ"></div></div>
     </section>
 
   </div>
@@ -479,6 +564,78 @@
       </details>
 
       <details class="appendix-item">
+        <summary>Aba Impulso — Metodologia (impulso de crédito em p.p. do PIB)</summary>
+        <div class="appendix-body">
+          <strong>Fórmula.</strong> Impulso de crédito no conceito de Biggs, Mayer &amp; Pick (2009),
+          na forma aplicada ao Brasil pelo Blog do IBRE/FGV (Borça Jr., Furtado &amp; Barbosa-Filho,
+          2021): <code>I(t) = [Saldo(t) − Saldo(t−12)] / PIB12m(t) − [Saldo(t−12) − Saldo(t−24)] /
+          PIB12m(t−12)</code>, multiplicado por 100 para ficar em pontos percentuais do PIB. É a
+          <em>segunda diferença</em> do estoque de crédito normalizada pelo PIB — mede aceleração da
+          oferta de recursos, não nível. O denominador é o PIB nominal acumulado em 12 meses (BCB SGS
+          4382, <code>atv_pib_mensal.pib_acum_12m</code>), o mesmo que o BCB usa para publicar
+          <code>cred_credito_resumo.pct_pib_*</code>.<br><br>
+
+          <strong>Mensal (12m) × Anual (dez) — mesma série, não dois cálculos.</strong> Em dezembro,
+          <code>Saldo(t) − Saldo(t−12)</code> já é exatamente a variação do ano civil e
+          <code>PIB12m</code> já é exatamente o PIB do ano, então a fórmula mensal colapsa sem nenhum
+          ajuste na versão anual publicada pelo IBRE. O botão "Anual (dez)" apenas filtra a série
+          mensal em dezembro — as duas visões são consistentes por construção, não por
+          reconciliação.<br><br>
+
+          <strong>Por que as decomposições fecham.</strong> A métrica é linear no saldo e todas as
+          linhas dividem o mesmo denominador, então a soma dos filhos reproduz o pai <em>exatamente</em>,
+          sem resíduo. Verificado ao vivo: somando as 4 células Livre/Direcionado × PJ/PF contra o Total
+          Geral, a discrepância máxima em toda a série é da ordem de 0,0002 p.p. — ruído de ponto
+          flutuante. É o que permite ler estas tabelas como decomposições de verdade.<br><br>
+
+          <strong>Totais sintéticos (tabelas b e c).</strong> O BCB não publica um código SGS de total
+          para os cortes de porte e de atividade econômica — as linhas "Total PJ" são somas dos filhos
+          (MPME+Grande; Agropecuária+Indústria+Serviços+Outros), calculadas sobre o <em>nível em R$</em>
+          antes de aplicar a fórmula. Somar níveis é válido; somar as p.p. resultantes também seria,
+          por linearidade, mas somar taxas de crescimento nunca é — ver a nota da aba Saldo.<br><br>
+
+          <strong>Os dois totais PJ coincidem — e isso está certo.</strong> As tabelas (b) e (c) são
+          duas partições do <em>mesmo</em> agregado de crédito PJ: conferido ao vivo, os dois totais
+          diferem no máximo em R$ 5 milhões sobre R$ 2,76 trilhões (arredondamento). Esse agregado não
+          é idêntico ao <code>saldo_total_pj</code> das Tabelas 3-5 do BCB — a diferença chega a
+          ~R$ 37 bilhões (1,3%) no pico de 2020 —, então não espere que a tabela (a) reconcilie na
+          casa decimal com as tabelas (b) e (c).<br><br>
+
+          <strong>Início das séries.</strong> A fórmula precisa de 24 meses de histórico. Recurso ×
+          segmento começa em 2007-03 → primeiro impulso em 2009-03; porte e atividade econômica começam
+          em 2012-01 → primeiro impulso em 2014-01. As colunas da tabela mostram sempre as últimas 12
+          observações <em>com valor</em>, nunca células vazias do início da série.<br><br>
+
+          <strong>O que esta métrica não corrige.</strong> Sendo a segunda diferença do estoque, ela
+          <em>não</em> remove da variação do saldo os efeitos que não vêm de concessão e pagamento:
+          juros acruados, variação cambial de contratos indexados em moeda estrangeira e baixas para
+          prejuízo continuam dentro do número. Essa é exatamente a crítica que o BCB faz a Biggs et al.
+          no Estudo Especial 110/2021 ("Fluxo financeiro e impulso de crédito"), onde constrói uma
+          versão limpa a partir do SCR — que depende de dados de juros, câmbio e baixas que o BCB não
+          publica e que, por isso, não está neste relatório. Implicação de leitura: uma linha pode
+          marcar impulso positivo apenas por <em>repricing</em> (juros altos inflando o estoque) sem
+          nenhum crédito novo. Vale para o total e vale dentro de cada célula.<br><br>
+
+          <strong>Gráficos — barras empilhadas + linha do total.</strong> As parcelas marcadas viram
+          barras empilhadas; a raiz da árvore (Total Geral / Total PJ) vira a linha sobreposta. O modo
+          de empilhamento é <code>barmode: 'relative'</code>, não <code>'stack'</code>: as parcelas do
+          impulso trocam de sinal com frequência (hoje Livre está negativo enquanto Direcionado está
+          positivo), e o <code>'stack'</code> do Plotly empilha tudo na mesma direção independentemente
+          do sinal — o topo da pilha deixaria de bater com o total. Com <code>'relative'</code>, positivos
+          acumulam acima do zero e negativos abaixo, e o topo líquido coincide com a linha, que é a
+          leitura visual que esta aba existe para dar. Para não contar a mesma coisa duas vezes, um nó
+          marcado que tenha descendente também marcado sai das barras (o nível mais fino da seleção
+          prevalece) — marcar Livre junto com Livre&gt;PJ e Livre&gt;PF não dobra a pilha.<br><br>
+
+          <strong>Validação.</strong> A replicação bate com os números publicados pelo IBRE: 2016 total
+          −5,3 (aqui −5,30) e bancos públicos −4,1 p.p. (aqui −4,13); 2020 públicos +2,8 p.p. (aqui
+          +2,78); e a versão mensal cruza zero em nov/2021 (+0,08), o mês que o post cita como de
+          neutralidade. As diferenças residuais em 2020 (total +4,29 aqui vs. +4,4 publicado) são
+          revisões do BCB no saldo e no PIB desde a publicação do post, não divergência de método.
+        </div>
+      </details>
+
+      <details class="appendix-item">
         <summary>Aba Taxa &amp; Spread — Metodologia</summary>
         <div class="appendix-body">
           Diferente das abas Saldo e Concessão: <strong>sem STL, sem deflação, sem % do PIB</strong> —
@@ -650,7 +807,7 @@
 
 // ── Data & palette ────────────────────────────────────────────────────────────
 if (typeof REPORT_DATA === 'undefined') {
-  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/credit_latest.html</b></div>';
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/Credit.html</b></div>';
   throw new Error('REPORT_DATA undefined');
 }
 var D = REPORT_DATA;
@@ -838,6 +995,38 @@ function renderStackedBarChart(divId, specs, yTitle, height) {
   Plotly.react(divId, traces, mkStackedBarLayout(yTitle, height), _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, _unionDates.apply(null, specs));
+}
+
+// Impulso de credito: componentes como barras empilhadas + o total como linha por
+// cima. `bars`: [{dates, values, label, color}] (as parcelas da decomposicao);
+// `lineSpec`: {dates, values, label} do no raiz da arvore, ou null se desmarcado.
+//
+// barmode 'relative', NAO 'stack': as parcelas do impulso trocam de sinal com
+// frequencia (hoje Livre esta negativo enquanto Direcionado esta positivo) e o 'stack'
+// do Plotly empilha tudo na mesma direcao independentemente do sinal, o que produziria
+// um topo de pilha que nao bate com o total. 'relative' acumula positivos acima do zero
+// e negativos abaixo -- e so assim que o topo liquido da pilha coincide com a linha do
+// total, que e justamente a leitura visual que essa aba existe para dar. _bindYAutofit
+// ja reconhece os dois modos e refaz o Y somando pos/neg separadamente.
+function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers) {
+  var traces = bars.map(function(s) {
+    return {
+      type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+    };
+  });
+  if (lineSpec) {
+    traces.push({
+      type: 'scatter', mode: withMarkers ? 'lines+markers' : 'lines', name: lineSpec.label,
+      x: lineSpec.dates, y: lineSpec.values,
+      line: {color: C.azul, width: 2.5}, marker: {color: C.azul, size: 5},
+      hovertemplate: '<b>' + lineSpec.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+    });
+  }
+  var layout = Object.assign(mkTimeseriesLayout(yTitle), {barmode: 'relative', bargap: 0.15});
+  Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+  _ensureQuickRange(divId, _unionDates.apply(null, bars.concat(lineSpec ? [lineSpec] : [])));
 }
 
 // ── Tab renderers ──────────────────────────────────────────────────────────────
@@ -1062,6 +1251,187 @@ var AMPLO_TAB = makeHierTab({
   yTitle: function(metric, basis, refDate) {
     return _hierYTitle(metric, basis, refDate, 'R$ mi', 'R$ mi (a preços de ');
   },
+});
+
+// ── Impulso de Credito — fabrica propria, nao makeHierTab(): a metrica ja e uma razao
+// contra o PIB (nao existe Nominal/Real/% PIB para escolher) e o unico controle e a
+// frequencia de LEITURA da mesma serie (mensal 12m vs. anual em dezembro, ver
+// impulso_tab.py). D.impulso = {trees: {recurso|porte|atividade}, anchors, series:
+// {key: {m12|anual: {dates, values}}}} -- tudo pre-computado em Python.
+// opts: {treeKey, freqGroupId, tableHeadId, tableBodyId, chartDivId, defaultChecked,
+//        defaultExpanded, labelHeader}
+function makeImpulseTab(opts) {
+  var state = {freq: 'm12', checked: {}, expanded: {}};
+  (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
+  (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
+
+  function grp() { return D.impulso || {trees: {}, anchors: {}, series: {}}; }
+  function tree() { return grp().trees[opts.treeKey] || []; }
+  function seriesFor(seriesKey) {
+    var byFreq = grp().series[seriesKey];
+    return (byFreq && byFreq[state.freq]) || {dates: [], values: []};
+  }
+  // Ultimas 12 observacoes COM valor da serie-ancora -- os primeiros 24 meses de
+  // qualquer serie sao null por construcao (a formula precisa de t-24), entao pegar o
+  // rabo cru da lista deixaria colunas vazias nos cortes de historico mais curto
+  // (porte/atividade comecam em 2012-01, primeiro impulso so em 2014-01).
+  function refDates() {
+    var anchor = grp().series[grp().anchors[opts.treeKey]];
+    var s = anchor && anchor[state.freq];
+    if (!s) return [];
+    var out = [];
+    for (var i = s.dates.length - 1; i >= 0 && out.length < 12; i--) {
+      if (s.values[i] != null) out.unshift(s.dates[i]);
+    }
+    return out;
+  }
+  function fmtHeader(d) { return state.freq === 'anual' ? d.slice(0, 4) : fmtMonthShort(d); }
+  // Sinal explicito -- e a leitura principal da metrica. Arredonda ANTES de decidir o
+  // sinal para uma contribuicao residual (ex: -0,0004 p.p. da Agropecuaria) sair como
+  // "0,00" e nao como "-0,00", que se le como erro.
+  function fmtValue(v) {
+    if (v == null || isNaN(v)) return '—';
+    var r = Math.round(v * 100) / 100;
+    if (r === 0) return '0,00';
+    return (r > 0 ? '+' : '') + r.toFixed(2).replace('.', ',');
+  }
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = opts.labelHeader || 'Segmento';
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = fmtHeader(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = refDates();
+    flattenHierRows(tree(), state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      dates.forEach(function(d) {
+        var tdValue = document.createElement('td');
+        tdValue.className = 'col-value';
+        tdValue.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(tdValue);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function hasCheckedDescendant(node) {
+    return !!(node.children || []).some(function(c) {
+      return state.checked[c.key] || hasCheckedDescendant(c);
+    });
+  }
+  // A raiz da arvore (Total Geral / Total PJ) vira a LINHA; todo outro no marcado vira
+  // uma BARRA da pilha. Um no marcado que tenha descendente tambem marcado sai da pilha
+  // -- senao Livre e (Livre>PJ + Livre>PF) entrariam juntos e a pilha contaria a mesma
+  // coisa duas vezes. Vence sempre o nivel mais fino da selecao. Selecao nao exaustiva
+  // (ex: so PJ marcado) deixa uma folga visivel entre o topo da pilha e a linha -- isso
+  // e proposital, e a leitura honesta de "o que falta para fechar o total".
+  function chartSpecs() {
+    var nodes = tree(), rootNode = nodes[0], line = null, bars = [], colorIdx = 0;
+    // Paleta das barras comeca em 1: o indice 0 (azul) fica reservado para a linha do total.
+    (function walk(list) {
+      (list || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          if (node === rootNode) {
+            line = {dates: s.dates, values: s.values, label: node.label};
+          } else if (!hasCheckedDescendant(node)) {
+            bars.push({
+              dates: s.dates, values: s.values, label: node.label,
+              color: HIER_CHART_COLORS[1 + (colorIdx++ % (HIER_CHART_COLORS.length - 1))],
+            });
+          }
+        }
+        if (node.children) walk(node.children);
+      });
+    })(nodes);
+    return {bars: bars, line: line};
+  }
+  function renderChart() {
+    var spec = chartSpecs();
+    renderImpulseChart(opts.chartDivId, spec.bars, spec.line, 'p.p. do PIB', state.freq === 'anual');
+  }
+  function wireControls() {
+    document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.freq = btn.dataset.freq;
+        renderTable(); renderChart();
+      });
+    });
+  }
+  return {
+    init: function() { wireControls(); renderTable(); renderChart(); },
+  };
+}
+
+var IMP_RECURSO_TAB = makeImpulseTab({
+  treeKey: 'recurso', freqGroupId: 'imp-recurso-freq-group',
+  tableHeadId: 'imp-recurso-table-head', tableBodyId: 'imp-recurso-table-body',
+  chartDivId: 'chart-imp-recurso', labelHeader: 'Recurso / Segmento',
+  defaultChecked: ['saldo_total_total', 'saldo_livre_total', 'saldo_direcionado_total'],
+  defaultExpanded: ['saldo_total_total'],
+});
+var IMP_PORTE_TAB = makeImpulseTab({
+  treeKey: 'porte', freqGroupId: 'imp-porte-freq-group',
+  tableHeadId: 'imp-porte-table-head', tableBodyId: 'imp-porte-table-body',
+  chartDivId: 'chart-imp-porte', labelHeader: 'Porte de Empresa',
+  defaultChecked: ['porte__total', 'porte__mpme', 'porte__grande'],
+  defaultExpanded: ['porte__total'],
+});
+var IMP_ATIV_TAB = makeImpulseTab({
+  treeKey: 'atividade', freqGroupId: 'imp-ativ-freq-group',
+  tableHeadId: 'imp-ativ-table-head', tableBodyId: 'imp-ativ-table-body',
+  chartDivId: 'chart-imp-ativ', labelHeader: 'Atividade Econômica',
+  defaultChecked: ['ativ__total', 'ativ__agropecuaria', 'ativ__industria_total', 'ativ__servicos_total', 'ativ__outros'],
+  defaultExpanded: ['ativ__total'],
 });
 
 // ── Taxa & Spread — nao usa makeHierTab(): sem metrica/base (taxa e spread ja sao
@@ -1296,6 +1666,7 @@ function initInadTab() {
 var RENDERERS = {
   saldo: function() { SALDO_TAB.init(); AMPLO_TAB.init(); },
   concessao: function() { CONCESSAO_TAB.init(); },
+  impulso: function() { IMP_RECURSO_TAB.init(); IMP_PORTE_TAB.init(); IMP_ATIV_TAB.init(); },
   taxa: function() { initTaxaTab(); },
   inadimplencia: function() { initInadTab(); },
 };

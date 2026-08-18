@@ -8,20 +8,34 @@ This is the applied/analytical layer: projects that consume the MySQL database (
 |---|---|---|
 | `oraculo/` | Macro thermometer scores (1–10), feeds Power BI | [`oraculo/CLAUDE.md`](oraculo/CLAUDE.md) |
 | `painel_setores/` | Sector panel, feeds Power BI directly | no dedicated `CLAUDE.md` yet — see below |
-| `exchange_rate/` | Panorama Cambial (HTML report) | [`exchange_rate/CLAUDE.md`](exchange_rate/CLAUDE.md) |
+| `exchange_rate/` | Panorama Cambial (HTML report — 6 data tabs + the 3 model tabs fused in from the ex-standalone PPP dashboard, 2026-08) | [`exchange_rate/CLAUDE.md`](exchange_rate/CLAUDE.md) |
 | `inflation/` | Panorama de Inflação (HTML report) | [`inflation/CLAUDE.md`](inflation/CLAUDE.md) |
 | `monetary_policy/` | BCB small-model replication (HTML report) | documented inline in root `CLAUDE.md` + [`monetary_policy/referencia/MODEL_REPLICATION_PLAN.md`](monetary_policy/referencia/MODEL_REPLICATION_PLAN.md) |
 | `economic_activity/` | Panorama de Atividade Econômica (HTML report — PIB/PIM/PMC/PMS/IBC-Br) | [`economic_activity/CLAUDE.md`](economic_activity/CLAUDE.md) |
-| `fiscal_policy/` | Panorama Fiscal (HTML report — dívida pública, NFSP, RTN) | [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md) |
+| `fiscal_policy/` | Panorama Fiscal (HTML report — receita/despesa GFSM+RTN, dívida líquida/DLSP, investimento federal por GND, impulso fiscal) | [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md) |
 | `credit/` | Panorama de Crédito (HTML report — novo, substitui `credit_stress/`) | [`credit/CLAUDE.md`](credit/CLAUDE.md) |
+| `labor_market/` | Panorama de Mercado de Trabalho (HTML report — IBGE/PNAD + CAGED/MTE, só visualização) | [`labor_market/CLAUDE.md`](labor_market/CLAUDE.md) |
 | `release_calendar/` | Calendário de Divulgações (HTML report — forward-looking, reads a local YAML, not MySQL) | [`release_calendar/CLAUDE.md`](release_calendar/CLAUDE.md) |
 | `report_structure/` | Nothing on its own — shared build-time scaffolding the report projects above assemble from | [`report_structure/CLAUDE.md`](report_structure/CLAUDE.md) |
 
+## Metric layers (read before adding a metric selector to any tab)
+
+Every interactive table here exposes the same three orthogonal axes over its series — **aggregation
+level** (native frequency → quarter/semester/12m/year, rolling or closed calendar), **nominal vs.
+real**, and **modelling** (Nível / Y-Y / marginal / % PIB) — applied in a fixed order (deflate at the
+native frequency → seasonally adjust → aggregate → compare). The spec, the degenerate combinations to
+disable, the incomplete-period rule, which primitive to reuse, and the conventions still left open
+(notably the `% PIB` denominator for flows): [`metric_layers.md`](metric_layers.md).
+
+## Seasonal adjustment
+
+Two methods available — STL (in-process, the incumbent, ~391 series) and X-13ARIMA-SEATS (US Census Bureau binary, installed 2026-08, not yet used in production). **Which one applies is decided case by case, not by a blanket rule** (explicit user decision, 2026-08). Full inventory of which series use which, the measured X-13-vs-STL scorecard against IBGE's official adjustment, X-13's practical failure modes, and the parallel-subprocess recipe: [`seasonal_adjustment.md`](seasonal_adjustment.md).
+
 ## Shared report pattern (`exchange_rate/`, `inflation/`, `monetary_policy/`, `economic_activity/`)
 
-- `generate_report.py` loads MySQL tables (each `_load_*()` wrapped in its own try/except, so one missing/broken table only degrades that section instead of failing the whole report), serializes to JSON, and substitutes a `/*REPORT_DATA*/` marker inside `report.html` — no Jinja2, no build step.
+- `generate_report.py` loads MySQL tables (each `_load_*()` wrapped in its own try/except, so one missing/broken table only degrades that section instead of failing the whole report), serializes to JSON, and substitutes a `/*REPORT_DATA*/` marker inside `report.html` — no Jinja2, no build step. `exchange_rate/` additionally passes `extra_markers=` for its three model-tab payloads (`/*PPP_DATA*/`, `/*FXATTR_DATA*/`, `/*RIDGE_DATA*/`), the one report with more than one JSON marker.
 - `report.html` is a fixed template: HTML + CSS + Plotly.js from CDN, tabs via JS `display` toggling, nothing server-side.
-- Chart interaction is identical across all four: free pan/zoom on both axes (`dragmode:'pan'` + `scrollZoom:true`), plus a `_bindYAutofit()` helper that re-fits Y only when a rangeselector preset button moves X without an accompanying user gesture on Y — see [`.claude/rules/lis-dashboards.md`](../.claude/rules/lis-dashboards.md) for the full model and history.
+- Chart interaction is identical across all four: free pan/zoom on both axes (`dragmode:'pan'` + `scrollZoom:true`), plus a `_bindYAutofit()` helper that re-fits Y only when a rangeselector preset button moves X without an accompanying user gesture on Y — see [`.claude/rules/lis-dashboards.md`](../.claude/rules/lis-dashboards.md) for the full model and history. Same interaction, two implementations inside `exchange_rate/`: its model tabs came in with their own `_bindPlotlyYAutofit()`/`plotlyBaseLayout()`, kept as-is by the merge.
 - `data/` vs `referencia/` convention: `data/` holds what the scripts actually read/write (e.g. `inflation/data/ipca_bcb_series.csv`); `referencia/` holds context nothing reads (PDFs, literature, the original BCB model spec). Same split, repo-wide since 2026-07. `economic_activity/` needs neither — everything it reads is already in MySQL, no local data files at all.
 - **Since 2026-08, the boilerplate pieces of this pattern (the theme CSS, the `_bindYAutofit` JS, the substitution/write-out plumbing) live in [`report_structure/`](report_structure/CLAUDE.md) as shared build-time assets, not hand-copy-pasted per report.** `inflation/` (fully migrated) was the pilot; `exchange_rate/` is partially migrated (JS + harness, not theme CSS — needs the 2026-07 reskin first); `monetary_policy/` is untouched, deferred on purpose; `economic_activity/` was built directly onto both markers from the start, no migration needed — see `report_structure/CLAUDE.md`'s Migration status.
 
@@ -43,7 +57,7 @@ Legacy yield-curve material (`yield_curve.py`, `yield_curve_model.py`, DI/títul
 ## Pending
 
 - **`analytics/credit/` (new, 2026-08)** — built, see [`credit/CLAUDE.md`](credit/CLAUDE.md) for full detail and its own Pending list (PJ/PF segment selector, the ~22 deferred BCB-workbook tabs, ICC not yet charted, real-browser confirmation).
-- **Give `exchange_rate/` the 2026-07 LIS-dashboard CSS reskin, then migrate its theme onto `report_structure/theme.css`** — its JS/harness are already migrated (see `report_structure/CLAUDE.md` Migration status); only the theme CSS is left, and it needs the actual reskin first (navy header/`system-ui` font → the light Barlow theme `inflation/` already has), not a mechanical marker swap.
+- **Give `exchange_rate/` the 2026-07 LIS-dashboard CSS reskin, then migrate its theme onto `report_structure/theme.css`** — its JS/harness are already migrated (see `report_structure/CLAUDE.md` Migration status); only the theme CSS is left, and it needs the actual reskin first (navy header/`system-ui` font → the light Barlow theme `inflation/` already has), not a mechanical marker swap. Now doubles as cleanup for the 2026-08 PPP-dashboard merge: that report currently runs two design systems side by side, the fused-in model tabs scoped under `.ppp-scope`.
 - **Migrate `monetary_policy/` onto `report_structure/` entirely** — deferred on purpose, not started.
 - **`oraculo/docs/` vs `oraculo/base/` duplication** — confirm `docs/` is dead and remove it, or document why both exist.
 - **`oraculo/us/us/`** — looks safe to remove, superseded by `oraculo/us/term_us.py`.

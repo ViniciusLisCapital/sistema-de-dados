@@ -1,10 +1,34 @@
 """
-Novo CAGED - Cadastro Geral de Empregados e Desempregados
+Novo CAGED - Cadastro Geral de Empregados e Desempregados (via BCB SGS)
 
-Series SGS coletadas (14 series — saldo de admissoes menos demissoes):
-  Total e por setor de atividade economica (CNAE 2.0)
+Series SGS coletadas (14 series): **ESTOQUE de empregos formais celetistas**
+(nivel, em pessoas), total e por setor de atividade economica -- NAO o saldo
+(admissoes menos desligamentos), apesar do que a docstring deste modulo dizia
+ate 2026-08. Confirmado ao vivo contra a API do SGS: a serie 28763
+(`caged_total`) marca 48.032.308 em 2026-06, ordem de grandeza de um estoque
+nacional de vinculos, nao de um fluxo mensal (que roda na casa das centenas de
+milhares -- o saldo real de 2026-06 foi 145.161, ver `domain/db/brasil/mte/`).
+
+O saldo/admissoes/desligamentos vem do microdado do FTP do PDET/MTE, em
+`mt_caged_setor`/`mt_caged_uf`/`mt_caged_salario` -- e a DIFERENCA MENSAL desta
+serie de estoque reproduz aproximadamente aquele saldo (e o que
+`analytics/oraculo/brasil/scores.py` ja faz, corretamente, com `diff_1m`).
+
+Taxonomia setorial propria do BCB, que NAO e a das 22 secoes CNAE 2.0 do
+microdado -- e uma arvore de 3 niveis com agregados intermediarios, validada ao
+vivo (2026-08) somando as partes:
+  Total = Agropecuaria + Ind. extrativa + Ind. transformacao + SIUP
+          + Construcao + Comercio + Servicos          (fecha em ~4 vinculos)
+  SIUP  = Eletricidade e gas + Agua/esgoto/residuos    (fecha exato)
+  Servicos > Transporte/Alojamento/Informacao/Financeiras (subconjunto
+          publicado, NAO soma o total de Servicos -- ha subsetores sem codigo
+          SGS proprio)
+
+Cobertura 1992-01 -> hoje: e a unica serie longa de emprego formal do projeto
+(o microdado do Novo CAGED so comeca em 2020-01).
 
 Banco: macro_brasil.mt_caged
+Consumidores: analytics/oraculo/brasil/scores.py, analytics/labor_market/
 """
 
 from connectors.bcb import BCB

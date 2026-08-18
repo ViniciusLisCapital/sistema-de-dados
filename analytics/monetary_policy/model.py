@@ -129,7 +129,15 @@ def load_history(quarters_back: int = 32) -> pd.DataFrame:
     for label, series_name in [("agro", "icbr_agropecuaria"), ("metal", "icbr_metal"), ("energia", "icbr_energia")]:
         out[f"icbr_{label}"] = _quarterly(icbr[icbr["name"] == series_name], "value", "mean")
 
-    focus_ipca = focus[(focus["indicador"] == "IPCA") & (focus["horizonte"] == "12m")]
+    # suavizada/base_calculo passaram a ser dimensoes de `expc_focus` em 2026-08 (antes a
+    # tabela guardava so a variante S/base 0). Sem esses dois filtros, o mesmo (date,
+    # indicador, horizonte) casa com 4 linhas e o `last` do resample pega uma arbitraria.
+    focus_ipca = focus[
+        (focus["indicador"] == "IPCA")
+        & (focus["horizonte"] == "12m")
+        & (focus["suavizada"] == "S")
+        & (focus["base_calculo"] == 0)
+    ]
     out["focus_ipca_12m"] = _quarterly(focus_ipca, "mediana", "last")
 
     out = out.ffill().dropna()

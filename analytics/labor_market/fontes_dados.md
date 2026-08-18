@@ -14,7 +14,7 @@ levantamento original.
 
 | Dado | IPEA | CAGED (fonte primária/MTE-PDET) | BCB | IBGE | Fonte primária | Na base/ETL | Comentário |
 |---|---|---|---|---|---|---|---|
-| Estoque de empregos formais (nível) | ❌ | ✅ | ✅ (SGS 28763-28776) | ❌ | **CAGED/MTE** | ✅ (mal rotulado) | `mt_caged.py` coleta isso hoje via BCB — mas o script rotula errado como "saldo". Ainda não corrigido. |
+| Estoque de empregos formais (nível) | ❌ | ✅ | ✅ (SGS 28763-28776) | ❌ | **CAGED/MTE** | ✅ | `mt_caged.py` coleta via BCB. A rotulagem errada ("saldo") foi corrigida em 2026-08 — docstring do script + `COMMENT` nativo da tabela. Confirmado ao vivo que é estoque: 48.032.308 em 2026-06, e a diferença mensal bate exatamente com o saldo do microdado (145.161). |
 | Saldo nacional (admissões − desligamentos) | ✅ (`CAGED12_SALDON12`, bruto + dessaz.) | ✅ | ❌ | ❌ | **CAGED/MTE** | ✅ | Direto da fonte primária desde 2026-08: soma de qualquer uma das 3 tabelas `mt_caged_setor`/`_uf`/`_salario` (as três fecham no mesmo total nacional por construção). |
 | Admissões nacional | ✅ (`CAGED12_ADMISN12`) | ✅ | ❌ | ❌ | **CAGED/MTE** | ✅ | Idem — métrica `admissoes` nas 3 tabelas. |
 | Desligamentos nacional | ✅ (`CAGED12_DESLIGN12`) | ✅ | ❌ | ❌ | **CAGED/MTE** | ✅ | Idem — métrica `desligamentos` nas 3 tabelas. |
@@ -42,9 +42,10 @@ levantamento original.
   saldo/admissões/desligamentos **direto do microdado do FTP do PDET** em 3
   cortes independentes (`mt_caged_setor`/`mt_caged_uf`/`mt_caged_salario`, ver
   `domain/db/brasil/mte/`) — dispensa o IPEA como distribuidor e vai além do que
-  ele publica (que era só o total nacional). Continua pendente só a fatia de
-  **estoque**, que ainda vem do BCB rotulada errado como saldo (ver
-  `domain/db/brasil/bcb/mt_caged.py`).
+  ele publica (que era só o total nacional). O **estoque** continua vindo do BCB
+  (`mt_caged`), agora corretamente rotulado, e é a única série longa do tema
+  (1992→hoje, contra 2020-01→hoje do microdado). As quatro tabelas alimentam a
+  aba "Emprego Formal" de `analytics/labor_market/` desde 2026-08.
 - **BCB** e **IPEA** nunca são fonte primária de nada aqui — são distribuidores,
   cada um carregando uma fatia diferente do que o CAGED/MTE produz (BCB: estoque
   nacional+setor; IPEA: saldo/admissões/desligamentos só nacional).

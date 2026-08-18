@@ -95,6 +95,35 @@
     .status-pill.estimated { background: rgba(187,155,29,0.15); color: var(--lis-dourado); }
     .empty-row td { text-align: center; color: var(--muted); padding: 24px 10px; font-family: var(--mono); font-size: 12px; }
 
+    /* ── Coluna Atualizar ── */
+    td.col-update { white-space: nowrap; text-align: right; }
+    .upd-btn {
+      font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 6px; cursor: pointer;
+      border: 1px solid transparent; transition: all .15s; white-space: nowrap;
+    }
+    /* atrasado: a divulgacao saiu e o dado nao esta no banco — o unico estado chamativo */
+    .upd-btn.late { background: var(--lis-laranja); color: #fff; }
+    .upd-btn.late:hover { filter: brightness(1.08); }
+    /* passado sem veredito (modo arquivo, ou grupo sem periodo datavel) */
+    .upd-btn.neutral { background: rgba(31,40,83,0.05); border-color: var(--border); color: var(--text2); }
+    .upd-btn.neutral:hover { border-color: rgba(31,40,83,0.3); color: var(--text); }
+    .upd-btn:disabled { cursor: default; opacity: 0.65; }
+    .upd-none { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+    .upd-ok { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--lis-verde); white-space: nowrap; }
+    .upd-msg { font-family: var(--mono); font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
+    .upd-msg.err { color: var(--lis-laranja); }
+
+    .table-card .card-hint {
+      font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+      margin: -8px 0 14px; line-height: 1.6;
+    }
+    .table-card .card-hint .mode {
+      font-weight: 600; padding: 1px 7px; border-radius: 8px; margin-right: 6px;
+      background: rgba(31,40,83,0.06); color: var(--text2);
+    }
+    .table-card .card-hint .mode.live { background: rgba(65,135,145,0.15); color: var(--lis-verde); }
+
     /* ── Recurring releases ── */
     .recurring-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
     .recurring-card .rec-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
@@ -151,6 +180,7 @@
 
     <div class="table-card">
       <h2>Lista de Divulgações</h2>
+      <div class="card-hint" id="mode-hint"></div>
       <table class="release-table">
         <thead>
           <tr>
@@ -160,6 +190,7 @@
             <th>Período de Referência</th>
             <th>Status</th>
             <th>Tabelas Alimentadas</th>
+            <th style="text-align:right">Atualizar</th>
           </tr>
         </thead>
         <tbody id="table-body"></tbody>
@@ -295,7 +326,7 @@
       var tbody = document.getElementById('table-body');
       tbody.innerHTML = '';
       if (!entries.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Nenhuma divulgação no recorte selecionado.</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhuma divulgação no recorte selecionado.</td></tr>';
         return;
       }
       var lastMonth = null;
@@ -305,7 +336,7 @@
           lastMonth = ym;
           var mtr = document.createElement('tr');
           mtr.className = 'month-header';
-          mtr.innerHTML = '<td colspan="6">' + monthLabel(ym) + '</td>';
+          mtr.innerHTML = '<td colspan="7">' + monthLabel(ym) + '</td>';
           tbody.appendChild(mtr);
         }
         var tr = document.createElement('tr');
@@ -320,9 +351,162 @@
           '<td class="col-name">' + e.name + '</td>' +
           '<td class="col-ref">' + (e.reference_period || '—') + '</td>' +
           '<td>' + statusCell + '</td>' +
-          '<td class="col-tables" title="' + e.tables.join(', ') + '">' + e.tables.join(', ') + '</td>';
+          '<td class="col-tables" title="' + e.tables.join(', ') + '">' + e.tables.join(', ') + '</td>' +
+          updateCell(e);
         tbody.appendChild(tr);
       });
+    }
+
+    /* ─────────────────────────── Coluna "Atualizar" ───────────────────────────
+       Um HTML estático não executa Python, então o botão tem dois modos:
+
+         servido  — aberto via `uv run python analytics/release_calendar/serve.py`,
+                    o clique faz POST /api/run e roda o ETL do grupo de verdade
+         arquivo  — aberto como file:// ou recebido por email: o ping falha e o
+                    mesmo botão copia o comando equivalente para o clipboard
+
+       O estado de cada linha vem de duas coisas independentes: a data (futura ->
+       nada a fazer) e, quando servido, o veredito do grupo em sync.py (atrasado ->
+       botão vermelho; em dia -> check). Sem servidor não há veredito possível, então
+       toda linha passada ganha o botão neutro.
+    */
+    var LIVE = { on: false, groups: null, today: null };
+
+    function rowState(e) {
+      var hoje = LIVE.today || REPORT_DATA.reference_date;
+      var quando = e.date_end || e.date;          // janela só conta depois do fim
+      if (quando > hoje) return 'future';
+      if (!e.tables || !e.tables.length) return 'notables';
+      if (!LIVE.on || !LIVE.groups) return 'unknown';
+      var g = LIVE.groups[e.group];
+      if (!g) return 'unknown';
+      if (g.estado === 'atrasado') return 'late';
+      if (g.estado === 'ok') return 'ok';
+      if (g.estado === 'vazio') return 'notables';
+      return 'unknown';
+    }
+
+    function updateCell(e) {
+      var st = rowState(e);
+      var cell = '<td class="col-update" data-group="' + e.group + '">';
+      if (st === 'future')   cell += '<span class="upd-none">—</span>';
+      else if (st === 'notables') cell += '<span class="upd-none">sem tabela</span>';
+      else if (st === 'ok')  cell += '<span class="upd-ok">✓ em dia</span>';
+      else {
+        var cls = st === 'late' ? 'late' : 'neutral';
+        var rotulo = LIVE.on ? 'Atualizar' : 'Copiar cmd';
+        var titulo = LIVE.on
+          ? 'Roda o ETL de: ' + e.tables.join(', ')
+          : 'Copia o comando (abra via serve.py para rodar daqui)';
+        cell += '<button class="upd-btn ' + cls + '" data-group="' + e.group +
+                '" title="' + titulo + '">' + rotulo + '</button>';
+      }
+      return cell + '</td>';
+    }
+
+    function setCellMsg(td, texto, erro) {
+      var old = td.querySelector('.upd-msg');
+      if (old) old.remove();
+      if (!texto) return;
+      var s = document.createElement('span');
+      s.className = 'upd-msg' + (erro ? ' err' : '');
+      s.textContent = texto;
+      td.appendChild(s);
+    }
+
+    function copyCommand(slug, td) {
+      var cmd = 'uv run python jobs/update_db.py --group ' + slug;
+      var done = function() { setCellMsg(td, 'comando copiado', false); };
+      // clipboard API exige contexto seguro — file:// não é, daí o fallback
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(cmd).then(done, function() { fallback(); });
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = cmd;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+        document.body.removeChild(ta);
+        if (ok) done(); else setCellMsg(td, cmd, false);
+      }
+    }
+
+    function runGroup(slug, btn) {
+      var td = btn.closest('td');
+      btn.disabled = true;
+      var rotulo = btn.textContent;
+      btn.textContent = 'rodando...';
+      setCellMsg(td, null);
+
+      fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ group: slug })
+      }).then(function(r) { return r.json(); }).then(function(res) {
+        if (res.erro) { throw new Error(res.erro); }
+        var partes = [];
+        if (res.n_ok) partes.push(res.n_ok + ' script(s) OK');
+        if (res.n_erro) partes.push(res.n_erro + ' falhou');
+        if (res.sem_script && res.sem_script.length)
+          partes.push('sem script: ' + res.sem_script.join(', '));
+        // re-lê o status para todas as linhas do grupo, não só esta
+        return refreshStatus().then(function() {
+          renderTable();
+          var alvo = document.querySelector('td.col-update[data-group="' + slug + '"]');
+          if (alvo) setCellMsg(alvo, partes.join(' · '), !!res.n_erro);
+        });
+      }).catch(function(err) {
+        btn.disabled = false;
+        btn.textContent = rotulo;
+        setCellMsg(td, String(err.message || err), true);
+      });
+    }
+
+    function refreshStatus() {
+      return fetch('/api/status').then(function(r) { return r.json(); }).then(function(s) {
+        if (s.ok) { LIVE.groups = s.grupos; LIVE.today = s.hoje; }
+        else { LIVE.groups = null; }
+        renderModeHint(s.ok ? null : s.erro);
+      }).catch(function() { LIVE.groups = null; });
+    }
+
+    function renderModeHint(dbErro) {
+      var el = document.getElementById('mode-hint');
+      if (!LIVE.on) {
+        el.innerHTML = '<span class="mode">modo arquivo</span>' +
+          'O botão copia o comando. Para rodar o ETL a partir daqui: ' +
+          '<strong>uv run python analytics/release_calendar/serve.py</strong>';
+      } else if (dbErro) {
+        el.innerHTML = '<span class="mode live">servido</span>' +
+          'Sem veredito de freshness (banco inacessível: ' + dbErro + ') — ' +
+          'o botão roda de qualquer forma nas divulgações já ocorridas.';
+      } else {
+        el.innerHTML = '<span class="mode live">servido</span>' +
+          'Divulgação já ocorrida e dado ausente no banco → botão vermelho. ' +
+          'Já no banco → em dia. Futura → nada a fazer.';
+      }
+    }
+
+    document.getElementById('table-body').addEventListener('click', function(ev) {
+      var btn = ev.target.closest ? ev.target.closest('button.upd-btn') : null;
+      if (!btn) return;
+      var slug = btn.dataset.group;
+      if (LIVE.on) runGroup(slug, btn);
+      else copyCommand(slug, btn.closest('td'));
+    });
+
+    function initLive() {
+      // se não houver servidor (file://), o fetch falha rápido e ficamos no modo arquivo
+      fetch('/api/ping').then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(p) {
+          if (!p || !p.ok) throw new Error('sem servidor');
+          LIVE.on = true;
+          LIVE.today = p.hoje;
+          return refreshStatus().then(function() { renderTable(); });
+        })
+        .catch(function() { LIVE.on = false; renderModeHint(); renderTable(); });
     }
 
     function renderAll() {
@@ -333,7 +517,9 @@
 
     document.getElementById('generated-at').textContent = REPORT_DATA.generated_at;
     renderRecurring();
+    renderModeHint();
     renderAll();
+    initLive();
   </script>
 </body>
 </html>

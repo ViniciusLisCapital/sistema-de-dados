@@ -2,7 +2,7 @@
 causas cambiais (FX Attribution).
 
 Documento complementar à aba "FX Attribution (Manager Letters)" de
-`reports/ppp_dashboard.html` e a `fx_attribution_model.py`/`.md` (mesma
+`reports/FX Report.html` e a `fx_attribution_model.py`/`.md` (mesma
 pasta de modelos) — não lê `claims.csv`/`documents.csv` diretamente para todo
 o texto (a maior parte é hand-transcribed, mesma convenção de
 `generate_model_spec_pdf.py`), mas as tabelas de contagem por categoria e o
@@ -520,7 +520,7 @@ def build_story():
         "<i>monthly.csv</i> — derivado, uma linha por mês (regenerado a cada execução).",
         "<i>fx_attribution.xlsx</i> — três abas (Claims, Monthly, Trends), com os dois gráficos de linha da "
         "aba Trends, também regenerados a cada execução.",
-        "Aba \"FX Attribution (Manager Letters)\" em <i>ppp_dashboard.html</i> (7ª aba do dashboard de PPP) — "
+        "Aba \"FX Attribution (Manager Letters)\" em <i>FX Report.html</i> — "
         "seletor de gestor, gráficos das duas visões de suavização, gráfico de barras de documentos/claims por "
         "mês, e uma tabela de reivindicações filtrável por categoria.",
     ])
@@ -660,7 +660,7 @@ def build_story():
         "<i>analytics/exchange_rate/models/</i>). As tabelas de categoria e o gráfico da Seção 6 foram "
         "computados diretamente a partir de <i>fx_attribution_data/&lt;gestor&gt;/claims.csv</i> e "
         "<i>documents.csv</i> ao gerar este PDF, não hand-transcribed. Os dados brutos por gestor e o dashboard "
-        "interativo (aba \"FX Attribution\" de <i>ppp_dashboard.html</i>) acompanham este documento.",
+        "interativo (aba \"FX Attribution\" de <i>FX Report.html</i>) acompanham este documento.",
         FOOTER,
     ))
 

@@ -444,7 +444,7 @@ def _compute_dp(decomposicao: pd.DataFrame, item: pd.DataFrame, indice: str, hea
     return pd.DataFrame({"dt": value.index, "value": value.values})
 
 
-def run(output: str = "reports/inflation_latest.html") -> None:
+def run(output: str = "reports/Inflation.html") -> None:
     print("Carregando dados...")
     decomposicao = _load_decomposicao()
     item = _load_decomposicao_item()

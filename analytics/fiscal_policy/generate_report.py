@@ -1,19 +1,22 @@
 """
 Gerador do Panorama Fiscal em HTML.
 
-Impulso Fiscal (IEG) + Apendice sao as unicas abas depois da limpeza de 2026-08 --
-usuario pediu para apagar Visao Geral/Divida Publica/Resultado Fiscal/Receita e
-Despesa e reconstruir o dashboard aba por aba, mesmo padrao ja usado em
-analytics/credit/ (ver "Report structure" em analytics/fiscal_policy/CLAUDE.md).
-fisc_divida/fisc_nfsp/fisc_rtn continuam alimentadas normalmente por
-jobs/update_db.py -- so pararam de ser lidas por ESTE relatorio ate as abas
-correspondentes serem reconstruidas (se/quando forem).
+Cinco abas, reconstruidas uma a uma depois da limpeza de 2026-08 (o usuario pediu
+para apagar Visao Geral/Divida Publica/Resultado Fiscal/Receita e Despesa e refazer
+o dashboard aba por aba, mesmo padrao ja usado em analytics/credit/ -- ver
+analytics/fiscal_policy/CLAUDE.md): Receitas e Despesas (GFSM + RTN), Divida Liquida
+(DLSP, fatores condicionantes), Investimento (GND x funcao / GND x natureza, 2026-08),
+Impulso Fiscal (IEG + resultado primario) e Apendice. Visao Geral e Resultado Fiscal
+seguem apagadas; `fisc_divida` continua alimentada por jobs/update_db.py sem ser lida
+aqui (ver Pending no CLAUDE.md desta pasta).
 
-Le fisc_efgg (IEG) + atv_pib_valores_correntes (denominador do IEG) +
-atv_pib_taxas (comparacao com o PIB oficial) de macro_brasil, e injeta no
-template report.html, gerando um arquivo HTML autocontido. Mesmo padrao
-/*REPORT_DATA*/ de analytics/economic_activity/ e analytics/inflation/ -- sem
-Jinja2, via analytics.report_structure.builder.render_report().
+Le de macro_brasil: fisc_efgg (GFSM + IEG), fisc_rtn (RTN), fisc_dlsp_fatores (DLSP),
+fisc_investimento (Investimento), fisc_nfsp (impulso via resultado primario),
+atv_pib_valores_correntes/atv_pib_mensal (denominadores de %PIB), inflc_agregados
+(deflator IPCA) e atv_pib_taxas (comparacao com o PIB oficial) -- e injeta no template
+report.html, gerando um arquivo HTML autocontido. Mesmo padrao /*REPORT_DATA*/ de
+analytics/economic_activity/ e analytics/inflation/ -- sem Jinja2, via
+analytics.report_structure.builder.render_report().
 
 Uso:
     uv run python analytics/fiscal_policy/generate_report.py
@@ -25,7 +28,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from analytics.fiscal_policy import gfsm_tab, rtn_tab
+from analytics.fiscal_policy import dlsp_tab, gfsm_tab, investimento_tab, rtn_tab
 from analytics.fiscal_policy import transforms as tf
 from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
@@ -105,6 +108,129 @@ def _load_rtn_tab_data() -> dict:
     pib_acum_12m = pib_mensal_all["pib_acum_12m"]
     pib_mensal = pib_mensal_all["pib_mensal"]
     return rtn_tab.build(raw, ipca, pib_acum_12m, pib_mensal)
+
+
+def _load_investimento_tab_data() -> dict:
+    """Aba Investimento -- investimento do Governo Federal por GND, nos dois cortes de
+    fisc_investimento (funcao e natureza), ver analytics/fiscal_policy/investimento_tab.py.
+
+    `fisc_investimento` tem PK (date, corte, item), nao (date, name) como as demais
+    tabelas fiscais, entao _load_flat() (que agrupa por `name`) nao serve -- agrupa
+    aqui pelas duas colunas de dimensao, como _load_dlsp_tab_data() faz para
+    (fator, item).
+    """
+    df = _load_table("fisc_investimento")
+    raw: dict = {}
+    for (corte, item), grp in df.groupby(["corte", "item"]):
+        grp = grp.sort_values("date")
+        raw.setdefault(corte, {})[item] = {
+            "dates":  grp["date"].dt.strftime("%Y-%m-%d").tolist(),
+            "values": [None if pd.isna(v) else round(float(v), 4) for v in grp["value"]],
+        }
+    ipca = _load_flat("inflc_agregados")["ipca"]
+    pib_mensal_all = _load_flat("atv_pib_mensal")
+    return investimento_tab.build(
+        raw, ipca, pib_mensal_all["pib_mensal"], pib_mensal_all["pib_acum_12m"])
+
+
+def _load_dlsp_tab_data() -> dict:
+    """Aba Divida Liquida (DLSP) -- 9 tabelas, uma por fator condicionante, ver
+    analytics/fiscal_policy/dlsp_tab.py.
+
+    Le fisc_dlsp_fatores num unico SELECT e pivota para {fator: {item: [valores]}} na
+    grade de datas compartilhada pelas 9 abas da planilha do BCB (uma grade so --
+    validado na ingestao, ver domain/db/brasil/bcb/fisc_dlsp_fatores.py). Denominador
+    do %PIB: atv_pib_mensal.pib_acum_12m (SGS 4382), o mesmo que reproduz
+    fisc_divida.dlsp_pct_pib a +/-0,005pp.
+    """
+    df = _load_table("fisc_dlsp_fatores")
+    dates = sorted(df["date"].unique())
+    date_strs = [pd.Timestamp(d).strftime("%Y-%m-%d") for d in dates]
+
+    wide = df.pivot_table(index="date", columns=["fator", "item"], values="value", aggfunc="first").reindex(dates)
+    raw: dict = {}
+    for fator, item in wide.columns:
+        raw.setdefault(fator, {})[item] = [None if pd.isna(v) else float(v) for v in wide[(fator, item)]]
+
+    pib_acum_12m = _load_flat("atv_pib_mensal")["pib_acum_12m"]
+    gdp_ttm = dict(zip(pib_acum_12m["dates"], pib_acum_12m["values"]))
+
+    return dlsp_tab.build(raw, date_strs, gdp_ttm)
+
+
+# Impulso via credito a instituicoes financeiras oficiais (2026-08, a pedido do
+# usuario). Item de fisc_dlsp_fatores + os 2 subcomponentes que o BCB publica --
+# confirmado ao vivo que o pai e a soma exata dos dois filhos, em `estoque` e em
+# `primario` (desvio 0,0).
+_CREDITO_OFICIAL_PAI = "interna__gov_federal__creditos_inst_fin_oficiais"
+_CREDITO_OFICIAL_TREE = [
+    (_CREDITO_OFICIAL_PAI, "Créditos concedidos a Inst. Financ. Oficiais", [
+        (f"{_CREDITO_OFICIAL_PAI}__creditos_bndes", "Créditos junto ao BNDES"),
+        (f"{_CREDITO_OFICIAL_PAI}__instrumentos_hibridos", "Instrumentos híbridos de capital e dívida"),
+    ]),
+]
+
+
+def _load_impulso_credito_oficial() -> dict:
+    """Impulso fiscal via credito a instituicoes financeiras oficiais -- metrica nova
+    (2026-08, a pedido explicito do usuario), complementar ao IEG e ao impulso via
+    resultado primario, NAO integrada a nenhum dos dois.
+
+    O que mede: o canal PARAFISCAL. Quando o Tesouro empresta a uma instituicao
+    financeira oficial (historicamente o BNDES, em volume), isso e uma operacao
+    financeira -- aumenta um ativo do Governo Federal e nao aparece como despesa no
+    resultado primario "acima da linha". Mas e expansionista: coloca funding
+    subsidiado na economia. O fator `primario` desse item em fisc_dlsp_fatores isola
+    exatamente esse fluxo.
+
+    Construcao (escopo definido pelo usuario -- "summing up the 12m the Primario
+    factor only, in level and % GDP"):
+      1. fator `primario` do item e dos 2 subcomponentes (SOMENTE `primario`; o item
+         tambem tem fluxo de `juros` e de `ajuste_met_interno`, deliberadamente fora);
+      2. soma movel de 12 meses;
+      3. **sinal invertido** -- na convencao da planilha, emprestar torna o item mais
+         negativo (o ativo cresce), e o usuario explicitou que emprestar e impulso e
+         portanto deve aparecer POSITIVO. Isso alinha esta metrica a convencao
+         "positivo = expansionista" que o IEG e o impulso via resultado primario ja
+         usam nesta aba;
+      4. "% do PIB" divide pelo PIB acumulado em 12 meses (atv_pib_mensal.pib_acum_12m),
+         mesmo denominador e mesma convencao TTM/TTM do resto do relatorio.
+
+    Sanidade confirmada ao vivo contra a historia conhecida do canal BNDES: pico de
+    +4,65% do PIB em 2010-05 (capitalizacao pos-crise), reversao a -2,65% em 2018-08
+    (pre-pagamentos do BNDES ao Tesouro), +0,67% em 2026-06.
+    """
+    df = _load_table("fisc_dlsp_fatores")
+    itens = [_CREDITO_OFICIAL_PAI] + [k for _p, _l, kids in _CREDITO_OFICIAL_TREE for k, _kl in kids]
+    prim = (
+        df[(df["fator"] == "primario") & (df["item"].isin(itens))]
+        .pivot(index="date", columns="item", values="value")
+        .sort_index()
+    )
+
+    pib_acum_12m = _load_flat("atv_pib_mensal")["pib_acum_12m"]
+    gdp = dict(zip(pib_acum_12m["dates"], pib_acum_12m["values"]))
+
+    dates = [d.strftime("%Y-%m-%d") for d in prim.index]
+    series = {}
+    for item in itens:
+        # -1 x soma movel de 12m: positivo = emprestando = impulso (ver docstring).
+        acum = (-prim[item].rolling(12).sum())
+        level = [None if pd.isna(v) else round(float(v), 1) for v in acum]
+        series[item] = {
+            "level": level,
+            "pctpib": [
+                None if (v is None or gdp.get(d) in (None, 0)) else round(v / gdp[d] * 100, 4)
+                for d, v in zip(dates, level)
+            ],
+        }
+
+    tree = [
+        {"key": pai, "label": label, "seriesKey": pai,
+         "children": [{"key": k, "label": kl, "seriesKey": k} for k, kl in kids]}
+        for pai, label, kids in _CREDITO_OFICIAL_TREE
+    ]
+    return {"dates": dates, "series": series, "tree": tree, "anchor": _CREDITO_OFICIAL_PAI}
 
 
 _IMPULSO_NFSP_ESFERAS = {
@@ -588,7 +714,7 @@ def _load_ieg() -> dict:
     }
 
 
-def run(output: str = "reports/fiscal_policy_latest.html") -> None:
+def run(output: str = "reports/Fiscal Policy.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 
@@ -609,6 +735,24 @@ def run(output: str = "reports/fiscal_policy_latest.html") -> None:
         data["rtn"] = {"tree": [], "series": {}, "ref_date": None}
 
     try:
+        dlsp = _load_dlsp_tab_data()
+        data["dlsp"] = dlsp
+        n_series = sum(len(v) for v in dlsp["series"].values())
+        print(f"  dlsp (fisc_dlsp_fatores): {len(dlsp['fatores'])} fatores, {n_series} series, {len(dlsp['dates'])} meses")
+    except Exception as exc:
+        print(f"  dlsp: FALHOU -- {exc}")
+        data["dlsp"] = {"fatores": [], "notes": {}, "tree": [], "dates": [], "series": {}, "anchor": None}
+
+    try:
+        investimento = _load_investimento_tab_data()
+        data["investimento"] = investimento
+        n_series = sum(len(c["series"]) for c in investimento["cortes"].values())
+        print(f"  investimento (fisc_investimento): {len(investimento['cortes'])} cortes, {n_series} series")
+    except Exception as exc:
+        print(f"  investimento: FALHOU -- {exc}")
+        data["investimento"] = {"cortes": {}, "ref_date": None}
+
+    try:
         ieg = _load_ieg()
         data["ieg"] = ieg
         print(f"  ieg (fisc_efgg + atv_pib_valores_correntes): {len(ieg['dates'])} trimestres")
@@ -624,6 +768,14 @@ def run(output: str = "reports/fiscal_policy_latest.html") -> None:
     except Exception as exc:
         print(f"  pib_yoy: FALHOU -- {exc}")
         data["pib_yoy"] = {}
+
+    try:
+        credito_oficial = _load_impulso_credito_oficial()
+        data["credito_oficial"] = credito_oficial
+        print(f"  credito_oficial (fisc_dlsp_fatores, fator primario): {len(credito_oficial['dates'])} meses")
+    except Exception as exc:
+        print(f"  credito_oficial: FALHOU -- {exc}")
+        data["credito_oficial"] = {"dates": [], "series": {}, "tree": [], "anchor": None}
 
     try:
         fiscal_impulse_nfsp = _load_fiscal_impulse_nfsp()

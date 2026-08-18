@@ -176,29 +176,25 @@ All ten are left-joined onto the core (ptax/ipca/cpi) monthly index, so
 each column is simply null before its own series starts — no padding or
 back-filling.
 
-Not wired into generate_report.py — renders a standalone, self-contained
-dashboard (models/ppp_dashboard_template.html -> reports/ppp_dashboard.html,
-untracked/regenerate-only like every other report in reports/ — moved out of
-referencia/ 2026-08, since it's a code-generated deliverable, not background
-reading) with a client-side base-month selector, following the same
-/*MARKER*/ + str.replace() templating convention as generate_report.py.
+Wired into generate_report.py since 2026-08: build_payload()'s output fills the
+FX report's /*PPP_DATA*/ marker (the "Equilíbrio PPP" tab, with its client-side
+base-month selector). Before that, this module rendered its own standalone
+dashboard — models/ppp_dashboard_template.html -> reports/ppp_dashboard.html,
+and its own render() — both of which are gone: that template's three tabs were
+fused into analytics/exchange_rate/report.html, so there is one FX report and
+one entry point. run() here is now diagnostics-only.
 
 Usage:
     uv run python -c "from analytics.exchange_rate.models.ppp_equilibrium import run; run()"
 """
 
-import json
 from decimal import Decimal
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from connectors.fred import FredUniFrame
 from connectors.mysql import MySQLDataRequester
-
-_TEMPLATE = Path(__file__).parent / "ppp_dashboard_template.html"
-_OUTPUT = Path(__file__).parent.parent.parent.parent / "reports" / "ppp_dashboard.html"
 
 _DEFAULT_BASE_MONTH = "1994-07"
 _FETCH_START = "1994-01-01"  # a few months of headroom before the first PTAX print (1994-07-01)
@@ -653,38 +649,15 @@ def build_payload(df: pd.DataFrame, default_base_month: str = _DEFAULT_BASE_MONT
     }
 
 
-def render(payload: dict, fxattr_payload: dict | None = None, ridge_payload: dict | None = None) -> None:
-    """Fills the template's three markers. `/*PPP_DATA*/` always gets
-    `payload`; `/*FXATTR_DATA*/` and `/*RIDGE_DATA*/` get their respective
-    payload if given, else the literal `null` (so each tab's JS always has
-    something valid to check against, whether or not that tab's data was
-    generated this run).
-
-    Down from eight markers/params to three, 2026-07-30, direct user request
-    ("remove the other tabs") -- the Bayesian Model, State-Space (Attempt
-    Two), Kalman Filter (η free), BEER Model (Levels), and Rolling Window
-    (Core 4) tabs (and their `/*BAYES_DATA*/`/`/*STATESPACE_DATA*/`/
-    `/*KALMAN_DATA*/`/`/*BEER_DATA*/`/`/*ROLLING_DATA*/` markers) were
-    removed from the template entirely to declutter the dashboard down to
-    Equilibrium & Data, FX Attribution, and Ridge. Their own modules
-    (bayesian_deviation_model.py, state_space_model.py's build_dashboard_payload()/
-    build_kalman_dashboard_payload(), beer_model.py) are untouched and still
-    work standalone -- only the dashboard wiring was removed. This also
-    retires the Kalman-tab staleness bug that used to force a surgical
-    single-line RIDGE_DATA replacement instead of a full render_dashboard()
-    call -- see CLAUDE.md."""
-    template = _TEMPLATE.read_text(encoding="utf-8")
-    html = template.replace("/*PPP_DATA*/", json.dumps(payload))
-    html = html.replace("/*FXATTR_DATA*/", json.dumps(fxattr_payload) if fxattr_payload is not None else "null")
-    html = html.replace("/*RIDGE_DATA*/", json.dumps(ridge_payload) if ridge_payload is not None else "null")
-    _OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    _OUTPUT.write_text(html, encoding="utf-8")
-
-
 def run() -> dict:
+    """Diagnostics over the PPP core: sample coverage per channel plus the
+    latest deviation. Builds the payload but renders nothing -- since 2026-08
+    the dashboard this used to write (reports/ppp_dashboard.html) is three tabs
+    of the fused FX report, whose single entry point is
+    analytics.exchange_rate.generate_report.run().
+    """
     df = load_data()
     payload = build_payload(df)
-    render(payload)
 
     deviation = compute_deviation(df)
     print(f"Sample: {df.index.min().date()} .. {df.index.max().date()}  (n={len(df)})")
@@ -693,7 +666,11 @@ def run() -> dict:
     for col in ("carry", "relative_carry", "carry_vol", "relative_carry_vol", "tot", "fiscal", "breakeven", "dxy", "trade_pct_gdp", "ca_pct_gdp", "target", "breakeven_gap"):
         s = df[col].dropna()
         print(f"  {col}: {s.index.min().date()} .. {s.index.max().date()}  (n={len(s)})")
-    print(f"Dashboard written to {_OUTPUT}")
+
+    print(
+        'To regenerate the report: uv run python -c "from '
+        'analytics.exchange_rate.generate_report import run; run()"'
+    )
 
     return {"data": df, "payload": payload}
 

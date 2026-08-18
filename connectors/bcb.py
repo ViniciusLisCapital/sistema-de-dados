@@ -142,10 +142,11 @@ class BCB:
     def get_focus(
         self,
         endpoint: str,
-        indicador: str,
-        campos: Sequence[str],
+        indicador: str | None = None,
+        campos: Sequence[str] | None = None,
         *,
         start: str | None = None,
+        end: str | None = None,
         filtros_extras: str = "",
         orderby: str = "Data desc",
     ) -> pd.DataFrame:
@@ -153,10 +154,15 @@ class BCB:
 
         Args:
             endpoint:       recurso OData. Ex.: "ExpectativasMercadoInflacao12Meses".
-            indicador:      valor do filtro Indicador. Ex.: "IPCA".
+            indicador:      valor do filtro Indicador. Ex.: "IPCA". None (default)
+                            varre o endpoint inteiro — util quando se quer varias
+                            dezenas de indicadores e uma varredura por janela de data
+                            custa menos requests que uma por indicador.
             campos:         colunas a selecionar. Ex.: ["Data", "Media", "Mediana"].
-                            "Data" e inserida automaticamente se ausente.
+                            "Data" e inserida automaticamente se ausente. None (default)
+                            traz todos os campos do recurso (sem clausula $select).
             start:          data inicial no formato ISO "YYYY-MM-DD". Opcional.
+            end:            data final no formato ISO "YYYY-MM-DD". Opcional.
             filtros_extras: clausulas OData adicionais (sem 'and' prefixado).
                             Ex.: "Suavizada eq 'S' and baseCalculo eq 0".
             orderby:        clausula $orderby. Default: "Data desc".
@@ -165,27 +171,31 @@ class BCB:
             DataFrame com colunas em snake_case. "Data" e convertida para
             coluna "date" do tipo Timestamp. Valores numericos ja sao float.
         """
-        select_fields = list(campos)
-        if "Data" not in select_fields:
-            select_fields.insert(0, "Data")
-
-        filtro = f"Indicador eq '{indicador}'"
+        clausulas = []
+        if indicador:
+            clausulas.append(f"Indicador eq '{indicador}'")
         if start:
-            filtro += f" and Data ge '{start}'"
+            clausulas.append(f"Data ge '{start}'")
+        if end:
+            clausulas.append(f"Data le '{end}'")
         if filtros_extras:
-            filtro += f" and {filtros_extras}"
+            clausulas.append(filtros_extras)
+        filtro = " and ".join(clausulas)
+
+        params = {"orderby": orderby, "format": "json"}
+        if campos is not None:
+            select_fields = list(campos)
+            if "Data" not in select_fields:
+                select_fields.insert(0, "Data")
+            params["select"] = ",".join(select_fields)
+        if filtro:
+            params["filter"] = filtro
 
         pages: list[dict] = []
         skip = 0
         while True:
             data = self._focus_get(
-                endpoint,
-                top=_FOCUS_PAGE_SIZE,
-                skip=skip,
-                filter=filtro,
-                select=",".join(select_fields),
-                orderby=orderby,
-                format="json",
+                endpoint, top=_FOCUS_PAGE_SIZE, skip=skip, **params,
             )
             page = data.get("value", [])
             if not page:
@@ -196,7 +206,7 @@ class BCB:
             skip += _FOCUS_PAGE_SIZE
 
         if not pages:
-            logger.warning("Focus: sem dados para %s / %s", endpoint, indicador)
+            logger.warning("Focus: sem dados para %s / %s", endpoint, indicador or "(todos)")
             return pd.DataFrame()
 
         return _normalize_focus_df(pd.DataFrame(pages))

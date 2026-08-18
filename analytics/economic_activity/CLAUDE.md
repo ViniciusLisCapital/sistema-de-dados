@@ -14,7 +14,7 @@ not repeated here.
 
 ```powershell
 uv run python -c "from analytics.economic_activity.generate_report import run; run()"
-# Output: reports/economic_activity_latest.html
+# Output: reports/Economic Activity.html
 ```
 
 No manual data-refresh step needed first — every source table is already in `jobs/update_db.py`'s
@@ -138,7 +138,7 @@ has been deleted (no callers left).
 
 ## Pending
 
-- Open `reports/economic_activity_latest.html` in a real browser — the one verification step the sandbox
+- Open `reports/Economic Activity.html` in a real browser — the one verification step the sandbox
   can't do, across every tab/interaction in this file.
 - Growth-decomposition not implemented for PIM/PMC/PMS/IBC-Br — needs an official-rates table and a
   nominal-weight table neither exists for these four series; would require new IBGE connector/table work.

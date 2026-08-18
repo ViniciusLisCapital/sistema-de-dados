@@ -2,10 +2,20 @@
 Gerador do relatório HTML de fundamentos cambiais.
 
 Lê tabelas de macro_brasil e macro_international, injeta os dados no template
-report.html e salva um único arquivo HTML autocontido em reports/fx_report.html.
+report.html e salva um único arquivo HTML autocontido em "reports/FX Report.html".
+
+Desde 2026-08 este é o ÚNICO entry point do relatório cambial: as três abas de
+modelo que antes viviam num dashboard separado (reports/ppp_dashboard.html, via
+models/ppp_dashboard_template.html) foram fundidas no mesmo report.html, então
+run() monta quatro payloads — os dados brutos (/*REPORT_DATA*/) mais PPP,
+FX Attribution e Ridge. Os três de modelo são opcionais (include_models=False,
+ou qualquer falha na construção): cada aba já tem seu próprio estado "sem dados
+embutidos", então o relatório de dados continua saindo inteiro.
 
 Uso:
     uv run python -c "from analytics.exchange_rate.generate_report import run; run()"
+    # sem as abas de modelo (mais rápido — não busca FRED nem roda os fits):
+    uv run python -c "from analytics.exchange_rate.generate_report import run; run(include_models=False)"
 """
 
 from datetime import datetime
@@ -471,16 +481,67 @@ def _load_termos() -> dict:
         return {}
 
 
+# ── Abas de modelo ────────────────────────────────────────────────────────────
+
+def _empty_models() -> dict[str, dict | None]:
+    """Os três marcadores de modelo, todos vazios. Sempre passados ao
+    render_report() — mesmo com include_models=False — porque o template
+    declara `const PPP_DATA = /*PPP_DATA*/;`: marcador não substituído é erro
+    de sintaxe, não aba vazia."""
+    return {"PPP_DATA": None, "FXATTR_DATA": None, "RIDGE_DATA": None}
+
+
+def _load_models() -> dict:
+    """Payloads das três abas de modelo (Equilíbrio PPP / FX Attribution /
+    Ridge), fundidas neste relatório em 2026-08.
+
+    Bem mais caro que os `_load_*()` acima: busca o CPI americano no FRED ao
+    vivo, roda a validação cruzada walk-forward do Ridge e reestima a janela
+    móvel. Mesmo padrão de degradação do resto do arquivo — cada payload é
+    try/exceptado por conta própria e volta como None, o que o template
+    renderiza como a mensagem "sem dados embutidos" daquela aba.
+    """
+    from analytics.exchange_rate.models import (
+        fx_attribution_model,
+        ppp_equilibrium,
+        ridge_deviation_model,
+    )
+
+    payloads = _empty_models()
+
+    try:
+        print("Carregando o núcleo PPP (MySQL + FRED)...")
+        df = ppp_equilibrium.load_data()
+        payloads["PPP_DATA"] = ppp_equilibrium.build_payload(df)
+    except Exception as exc:
+        print(f"  Aviso: aba Equilíbrio PPP sem dados — {exc}")
+
+    try:
+        payloads["FXATTR_DATA"] = fx_attribution_model.build_dashboard_payload()
+    except Exception as exc:
+        print(f"  Aviso: aba FX Attribution sem dados — {exc}")
+
+    try:
+        print("Estimando o modelo Ridge (walk-forward + janela móvel)...")
+        payloads["RIDGE_DATA"] = ridge_deviation_model.build_dashboard_payload()
+    except Exception as exc:
+        print(f"  Aviso: aba Ridge sem dados — {exc}")
+
+    return payloads
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def run(output: str = "reports/fx_report.html") -> None:
+def run(output: str = "reports/FX Report.html", include_models: bool = True) -> None:
     """Gera o relatório HTML de fundamentos cambiais.
 
     Lê tabelas de macro_brasil e macro_international, injeta os dados no
     template report.html e salva um único arquivo HTML autocontido.
 
     Args:
-        output: caminho de saída. Default "reports/fx_report.html".
+        output: caminho de saída. Default "reports/FX Report.html".
+        include_models: se False, pula as três abas de modelo (nada de FRED
+            nem de fits) e elas saem com a mensagem "sem dados embutidos".
     """
     print("Carregando dados de macro_brasil / macro_international...")
     report_data = {
@@ -498,5 +559,6 @@ def run(output: str = "reports/fx_report.html") -> None:
         "termos":          _load_termos(),
     }
 
-    out = render_report(_TEMPLATE, report_data, output)
+    models = _load_models() if include_models else _empty_models()
+    out = render_report(_TEMPLATE, report_data, output, extra_markers=models)
     print(f"Relatório salvo: {out}")

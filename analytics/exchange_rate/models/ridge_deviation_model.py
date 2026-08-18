@@ -132,7 +132,8 @@ from analytics.exchange_rate.models.ppp_equilibrium import (
 # load_primitive_series()'s own docstring on why it's one shared input, not
 # two independent guesses of the same rate). The actual arithmetic
 # (carry_vol = (selic - fed_funds) / fx_vol, etc.) lives client-side in
-# ppp_dashboard_template.html, not here -- this dict only says WHICH raw
+# the FX report's Ridge tab (analytics/exchange_rate/report.html), not here --
+# this dict only says WHICH raw
 # series feed which channel.
 _COMPOSITE_PRIMITIVES = {
     "carry_vol": ["selic", "fed_funds", "fx_vol"],
@@ -290,7 +291,7 @@ def _deltas_with_extra_channels(df: pd.DataFrame, channels: list[str]) -> pd.Dat
     `channels` that function doesn't already compute (sp500, real_yield_diff,
     icbr_usd, and any future addition), WITHOUT touching
     bayesian_deviation_model.py (that module isn't part of the dashboard
-    pipeline anymore -- Ridge is the only model wired into ppp_dashboard.html
+    pipeline anymore -- Ridge is the only model wired into the FX report
     -- so new channels are added locally here instead of in its shared
     helper). Channels in _LOG_RETURN_CHANNELS (price indices in the
     thousands/hundreds) get a LOG-RETURN (100*diff(log(.))); everything else
@@ -446,7 +447,7 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     rates/spreads/differentials already stationary in levels) would be the
     wrong transform. This module-local special-casing is deliberate --
     bayesian_deviation_model.py isn't part of the dashboard pipeline anymore
-    (Ridge is the only model wired into ppp_dashboard.html), so new channels
+    (Ridge is the only model wired into the FX report), so new channels
     are handled entirely here, not in that module's own delta-builder."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
     df = load_data() if df is None else df
@@ -1505,19 +1506,19 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
 
 
 def render_dashboard() -> None:
-    """Regenerates reports/ppp_dashboard.html's three tabs (Equilibrium &
-    Data, FX Attribution, Ridge). Used to delegate to the retired
-    state_space_model.render_dashboard() (see module docstring above for why
-    that module is gone); this is now the single entry point instead, calling
-    each tab's own build_dashboard_payload() directly and handing all three
-    to ppp_equilibrium.render()."""
-    from analytics.exchange_rate.models import fx_attribution_model, ppp_equilibrium
+    """Back-compat alias: regenerates the whole FX report, model tabs included.
 
-    df = ppp_equilibrium.load_data()
-    payload = ppp_equilibrium.build_payload(df)
-    fxattr_payload = fx_attribution_model.build_dashboard_payload()
-    ridge_payload = build_dashboard_payload()
-    ppp_equilibrium.render(payload, fxattr_payload, ridge_payload)
+    Was the entry point for the standalone reports/ppp_dashboard.html (itself a
+    replacement for the retired state_space_model.render_dashboard() -- see the
+    module docstring above for why that module is gone). Since 2026-08 that
+    dashboard's three tabs live inside analytics/exchange_rate/report.html, so
+    building only them is no longer a thing you can do: the single entry point
+    is generate_report.run(), which calls this module's own
+    build_dashboard_payload() alongside the other nine loaders.
+    """
+    from analytics.exchange_rate.generate_report import run as generate_fx_report
+
+    generate_fx_report()
 
 
 if __name__ == "__main__":

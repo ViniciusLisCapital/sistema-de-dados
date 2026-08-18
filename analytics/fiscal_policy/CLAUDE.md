@@ -1,6 +1,6 @@
 # analytics/fiscal_policy/ — Panorama Fiscal
 
-Self-contained HTML report on Brazilian fiscal data (`reports/fiscal_policy_latest.html`). Same
+Self-contained HTML report on Brazilian fiscal data (`reports/Fiscal Policy.html`). Same
 `/*REPORT_DATA*/` marker-substitution pattern as the other reports in `analytics/` — no Jinja2, no
 build step — built on [`analytics/report_structure/`](../report_structure/CLAUDE.md) (`/*THEME_CSS*/`
 and `/*Y_AUTOFIT_JS*/` markers).
@@ -9,13 +9,14 @@ and `/*Y_AUTOFIT_JS*/` markers).
 
 ```powershell
 uv run python -c "from analytics.fiscal_policy.generate_report import run; run()"
-# Output: reports/fiscal_policy_latest.html
+# Output: reports/Fiscal Policy.html
 ```
 
-`fisc_efgg`, `fisc_rtn`, `atv_pib_valores_correntes`, `atv_pib_taxas`, `atv_pib_mensal`,
-`inflc_agregados` are all in `jobs/update_db.py`'s routine run — no manual refresh needed.
+`fisc_efgg`, `fisc_rtn`, `fisc_investimento`, `atv_pib_valores_correntes`, `atv_pib_taxas`,
+`atv_pib_mensal`, `inflc_agregados` are all in `jobs/update_db.py`'s routine run — no manual refresh
+needed.
 
-## Current state — 3 tabs
+## Current state — 5 tabs
 
 **1. Receitas e Despesas** — default tab, **two independent hierarchical table+chart pairs, one per
 methodology** (do not reconcile with each other by design — see the Apêndice's "GFSM vs. RTN — Duas
@@ -81,7 +82,132 @@ Metodologias" note).
     answer is already numerically equivalent to "real ÷ real" — the open question is only whether a
     distinct real-GDP-denominator framing is ever worth exposing, not a live bug).
 
-**2. Impulso Fiscal (IEG)** — Resende & Pires' (FGV/Tesouro, 2024) Impulso Estrutural do Gasto: fixed
+**2. Dívida Líquida (DLSP)** (new 2026-08) — the conditioning factors of net public debt, from
+`fisc_dlsp_fatores` (BCB's `Facdetp.xlsx` tabela especial, not in the SGS). **Nine sections, one per
+fator, mirroring the workbook's nine sheets** (user's framing: "Separate the tables like in the excel:
+Estoque, Primario and so on"): Estoques (month-end stock) + Primário, Juros, Ajuste Metodológico
+Interno/Externo, Ajuste de Paridade, Ajuste Caixa-Competência, Reconhecimento de Dívidas, Privatizações
+(monthly flows).
+
+- **`dlsp_tab.py` builds the payload; `report.html`'s `makeDlspHierTab()` renders each section.** The 9
+  sections are **generated in JS** from `D.dlsp.fatores` (`renderDlspTab()`), not hand-written — 9
+  identical blocks differing only by fator, and their chart divs use a shared `.dlsp-chart` class in the
+  CSS width/height rule rather than 9 more IDs (see Gotchas — a chart div missing from that rule collapses
+  to zero width).
+- **First section is "Balanço por Entidade" (2026-08)** — the same 95 items reorganized as
+  **Entidade › Passivos | Caixa e equivalentes | Títulos e créditos › item**, with a **Fator** dropdown
+  applying that tree to any of the 9 fatores, plus the usual Nível/% PIB. Built on two live-verified
+  properties: `interna__X + externa__X = total__X` per entity and the 5 entities summing to the
+  consolidated total, both **0.000000** deviation over all 295 months; and the three buckets being a
+  *partition* of the same leaves, so `Passivos + Caixa + Créditos = Líquido` holds by construction —
+  classification affects interpretation, never arithmetic (worst observed residual R$0.50mi, just the
+  payload's 1-decimal rounding over ~20 summed items). `_CLASSE` in `dlsp_tab.py` is the hand-curated
+  map of all ~86 leaves → bucket (+ optional label override); `build_entity_tree()` **raises** if a leaf
+  is missing from it, so a new BCB line can't silently drop out of the balance sheet. Bucket aggregates
+  are synthetic (`bal__{ent}__{bucket}`) since the BCB publishes no "total liabilities of the BCB";
+  summing `level` and `pctpib` term-by-term is valid **only** because every item shares the same 12m-GDP
+  denominator — if Y/Y or Real ever land here, that shortcut breaks.
+  - **Why entity-first rather than consolidated** (this is the whole point, don't undo it): two item
+    pairs are intra-government and cancel exactly — União⇄BCB (Conta Única ±R$2.06tri, carteira do Bacen
+    ±R$2.97tri) and União⇄estados/municípios (Lei 9.496/MP 2.185 — sum of both sides is zero in *all* 295
+    months —, Lei 8.727, dívidas reestruturadas). Per entity they're real positions (flagged `⇄` in the
+    label) and the **nets still sum to DLSP automatically**, because the pairs cancel in the net. Never
+    sum the gross column across entities: that gives R$18.4tri of liabilities vs R$12.0tri consolidated
+    (91% of GDP), a ~40% gap nothing in the number signals.
+  - **"Caixa" only exists in this view.** The Treasury's cash cushion *is* Conta Única (R$2.06tri, 15.6%
+    of GDP) but it's a deposit at the BCB, so it nets to zero when consolidated — leaving ~R$54bn of
+    commercial-bank demand deposits (0.4% of GDP). International reserves are **not** a separate line in
+    `Facdetp.xlsx`: they're inside the BCB's net external position (footnote 15/, −R$1.81tri), classified
+    as caixa with that spelled out in the label. A gross-reserves line would need `cmb_reservas_bc`.
+  - 77 of the 86 leaves hold one sign across all 295 months. The 4 genuinely ambiguous ones (Previdência
+    Social, Equalização Cambial ×2, Demais Contas do Bacen) are classified **by concept, not by observed
+    sign**, so in an opposite-sign month they render as a negative value inside their own bucket rather
+    than jumping buckets over time.
+- **Two metrics only, by explicit scope** ("For now, the only metric should be Level and % GDP"): no
+  Nominal/Real, no Y/Y, no Marginal, no frequency toggle. `Nível` = the value as published (R$ correntes);
+  `% do PIB` = always over `atv_pib_mensal.pib_acum_12m`, but the **numerator differs by fator nature** —
+  month-end stock for `estoque`, **12-month rolling sum** for the 8 flows. A raw monthly flow over a
+  single month's GDP would be noise matching no publication; the 12m accumulation is the standard
+  convention, is what `fisc_nfsp`'s `*_pct_pib_12m` already uses here, and preserves the identity in %GDP
+  terms (Σ 8 flows accumulated 12m ÷ GDP 12m = the 12-month change in the stock as % of GDP).
+- **Why a separate JS factory and not `makeHierTab()`**: same reason `makeImpulsoHierTab()` is separate —
+  different axes. Also a different payload shape: all 855 series share one date grid and one tree, so
+  `dates`/`tree` live once at the payload root and each series is a bare array pair, instead of the
+  `{dates, values}`-per-variant shape `makeHierTab()` expects. That choice is why this tab costs 1.95 MB
+  for 855 series while `rtn` costs 9.69 MB for 35 (see Pending).
+- **Identically-zero series ship as the scalar `0`** (364 of 855 — the methodological/parity/cash-accrual
+  adjustments only touch ~25 of the 95 items), expanded back to zeros by `dlspZeros()` in JS. Accepted
+  side effect: on an identically-zero item, `% do PIB` shows 0,00% in the sample's first 11 months where a
+  non-zero item shows "—" (the 12m window isn't full there, but a rolling sum of zeros is zero anyway).
+- Default state per section: only the `total` root checked, and expanded into its 5 debtors — checking all
+  three roots would plot the same aggregate twice (`total = interna + externa`), allowed but not the
+  default.
+
+**3. Investimento** (new 2026-08) — investimento do Governo Federal por GND, from `fisc_investimento`
+(Tesouro's Tema 13, monthly, 2008-01→). **Two table+chart pairs, one per corte** (`funcao` = GND ×
+função orçamentária, 60 series; `natureza` = GND × natureza da despesa, 18) — same GFSM/RTN layout as
+tab 1, built by `investimento_tab.py`.
+
+- **Why two tables and not a Corte dropdown** — the GFSM Esfera selector swaps the *namespace* of an
+  identical taxonomy; here the two trees genuinely diverge below the GND, so switching corte would have
+  to swap the tree too, and the user's check/expand state would point at keys the other corte doesn't
+  have (`gnd4__funcao_saude` has no counterpart under `natureza`). Two tables avoid that without
+  generalizing `makeHierTab()`'s tree handling.
+- **Only the two capital GNDs exist in this source** — 4 Investimentos (creates a new asset) and 5
+  Inversões Financeiras (only transfers title to an existing one). **Default checked is GND 4 + GND 5
+  separately, not the `total`**, and that's the point of the tab: the 1.38%-of-GDP peak in 2020 is
+  almost entirely GND 5 (0.83pp — pandemic capitalizations), a financial operation, not asset-creating
+  investment. Summing them into one line hides exactly the distinction the GND cut exists to show.
+- **4 Nível windows × 5 modelagens × Nominal/Real**, all pre-computed in Python: **Mensal** (raw month,
+  STL `period=12` for M/M and T/T), **Trimestral** (calendar quarter step, `quarterlyStepAccum` collapses
+  the display to one column per quarter), **Acum. 12m** (rolling), **Acum. no ano** (YTD, resets each
+  January — `transforms.compute_variants_ytd()`/`ytd_sum()`). Audited against
+  [`analytics/metric_layers.md`](../metric_layers.md) in 2026-08; the three findings that pass are
+  recorded there, the three that changed the tab are below.
+- **% PIB uses convention B — denominator is always `atv_pib_mensal.pib_acum_12m` (SGS 4382)**, in all
+  four Níveis, with only the numerator following the selected window (user choice, 2026-08, resolving
+  `metric_layers.md`'s Open convention 1). Reads as an annualized share of output, which makes the four
+  Níveis mutually comparable — Jun/26 GND 4: 0.054% Mensal / 0.157% Trimestral / 0.594% Acum. 12m /
+  0.245% Acum. no ano. **This diverges from the GFSM/RTN tables in tab 1, which stay on convention A**
+  (same window both sides), so the same report now serves both: a Trimestral % PIB here is ~4x smaller
+  than one read in tab 1. The y-axis says `% do PIB 12m (<Nível>)` precisely so that gap is legible;
+  the GFSM/RTN retrofit was offered and declined.
+- **Trimestral T/T is seasonally adjusted at `period=4`** (2026-08) via
+  `compute_variants_quarterly_step(seasonal=True)` → `quarterly_step_qoq_sa()`. RTN deliberately stays
+  on the unadjusted default. This mattered more than expected: federal execution is systematically
+  back-loaded (mean level 2008-2025 — T1 R$7.1bn, T4 R$16.0bn, 2.2x), so the raw T/T was mostly
+  calendar — 2026-Q1 read −54.6% raw vs. +12.7% adjusted, 2026-Q2 +72.5% raw vs. +5.9% adjusted.
+  **The STL runs on the collapsed quarterly series, not the monthly step** — `period=4` over a step
+  that repeats each quarter 3× would treat four consecutive *months* as a cycle.
+- **Two deliberate exclusions, enforced by the new `opts.metricAvailability` hook** (which disables
+  `<option>`s per Nível, generalizing the legacy `marginal` rule — GFSM/RTN keep the old path
+  unchanged): **M/M at Trimestral** (the value is a constant step inside the quarter, so month-on-month
+  is 0% within it and an artificial jump at the turn) and **M/M + T/T at Acum. no ano** (both would
+  cross the January reset, where a closed year becomes one month). **These are settled, not a judgment
+  call** — `metric_layers.md`'s "Degenerate combinations to disable" table mandates exactly these two,
+  and its YTD section gives the reason ("YTD offers **only** Y/Y"). The user's original instruction
+  asked for M/M and T/T on every accumulation and I was about to enable all four cells on that basis;
+  the spec settles it the other way. Don't re-open without changing the spec first.
+- **8 of the 78 series cross zero, and keep their growth options anyway** (user choice, 2026-08).
+  `ajuste_ordem_bancaria` is the extreme case — negative in 61 of 222 months, ranging −R$3.46bn to
+  +R$3.42bn — plus isolated negative months in six GND 5 functions and `gnd5__demais`. A percent change
+  on a sign-flipping base has no economic reading, and `metric_layers.md` says such flows should get no
+  percent change at all; the user chose to document the caveat in the Apêndice rather than build the
+  per-series mask the current per-Nível `metricAvailability` can't express. Recorded as Open convention 5
+  in that file. A further 36 series contain at least one exact zero — those cells are `—` now, not
+  `Infinity` (see Gotchas).
+- **Divergence from RTN, on purpose — don't "fix" one to match the other**: M/M and T/T stay
+  **enabled** at Acum. 12m here, where RTN disables its equivalent. Requested explicitly ("Y/Y, M/M and
+  Q/Q growth ... for each acumulation"); the acceleration-of-the-window reading is spelled out in the
+  chart caption and the Apêndice rather than hidden by disabling.
+- **Payload uses the compact shared-dates shape** (`dates` once at the root, bare value arrays, scalar
+  `0`/`null` for identically-zero/empty variants — 145 of 2,340 variants compress that way, mostly the
+  28 orçamentária functions that never receive an inversão financeira). Measured: **3.63 MB vs. 15.31
+  MB** in the `{dates, values}`-per-variant shape `makeHierTab()` natively expects — more than the whole
+  rest of the report. `makeHierTab()` reads it via the new `opts.root`/`opts.sharedDates` hooks. This is
+  the same problem the Pending item below records for `rtn`/`gfsm`; this tab was built without it.
+
+**4. Impulso Fiscal (IEG)** — Resende & Pires' (FGV/Tesouro, 2024) Impulso Estrutural do Gasto: fixed
 multipliers (Folha 1.32 / Transferências 1.46 / Investimentos 1.66 / Outras 0.64) applied to the
 change (% of GDP) of 4 `fisc_efgg` spending categories — `generate_report.py`'s `_load_ieg()` /
 `_ieg_contrib_for_esfera()`. Two variants per category, `{"acum4t": ..., "quarter": ...}` (see "Quarter
@@ -90,17 +216,24 @@ Esfera e Categoria" below (the old standalone "IEG" line chart and "IEG × PIB" 
 **removed 2026-08** at user request, redundant with those two). Multipliers are the paper's own
 published values, **not re-estimated** for this project's data.
 
-**Visão Combinada** — single chart at the TOP of the tab overlaying the tab's three metrics: IEG (total),
-Impulso via Resultado Primário (total, see below), and GDP — switchable via one "Comparação" dropdown
-(`impulso-combinado-view-select`) between **4T/12m Acumulado (Y/Y)** and **Trimestre (T/T)** (see below —
-genuinely seasonally-adjusted since 2026-08, not a shortcut). GDP is always a **real** rate (IBGE
-publishes these over the volume index): `acum_4t` (indicador 6563) under Acumulado — **changed 2026-08
-from `yoy`, at user request**, so all three lines compare an annual window against the previous annual
-window rather than mixing a point-to-point quarter comparison into a chart of accumulated ones — and
-`qoq` (already SA at source) under Trimestre. `yoy` is still loaded but no longer plotted here. IEG/PB
-impulse share the left y-axis (same p.p. unit); GDP gets its own right-hand `yaxis2` — `_bindYAutofit`
-(`analytics/report_structure/y_autofit.js`) already groups by each trace's own `t.yaxis` generically, so
-this dual-axis chart needed no changes to the shared autofit helper.
+**Visão Combinada** — single chart at the TOP of the tab, now overlaying **three impulse metrics on one
+shared y-axis**: IEG (total), Impulso via Resultado Primário (total), and Impulso via Crédito a Inst.
+Financ. Oficiais (% GDP, see below). Switchable via one "Comparação" dropdown
+(`impulso-combinado-view-select`) between **4T/12m Acumulado (Y/Y)** and **Trimestre (T/T)** (genuinely
+seasonally-adjusted since 2026-08, not a shortcut).
+
+- **The GDP line was removed 2026-08 at user request** — with it went `yaxis2`, so this is a
+  single-axis chart again. `atv_pib_taxas` is still loaded into `D.pib_yoy` (`acum_4t`/`qoq`/`yoy`) but
+  nothing plots it; don't "restore" it without asking.
+- **The three metrics share an axis but are not the same transformation.** IEG and the PB impulse are
+  *changes* (p.p. of GDP between two annual windows); the credit metric is a *flow* accumulated over 12
+  months as % of GDP. They share the axis because the order of magnitude matches and the sign means the
+  same thing in all three (positive = expansionary) — spelled out in the chart caption so a reader
+  doesn't take it for a common transformation.
+- **The credit line is always the 12m accumulation**, regardless of the Comparação dropdown — the metric
+  has no quarterly variant, and its trace name carries "acum. 12m" explicitly so that reads as
+  deliberate rather than a bug. Asserted in the harness (switching to Trimestre changes IEG but leaves
+  the credit line untouched).
 
 **Quarter (T/T) methodology (2026-08, rewritten a second time)** — first version (see git history) used
 a T/T-on-TTM shortcut (a lag-1/lag-3 diff on the already-accumulated series, no STL) for both IEG and
@@ -177,7 +310,28 @@ consolidated-public-sector total. Nível toggles **Acum. 12m (Y/Y)** (exact reco
 contribution is consistently ~0 (confirmed live), included anyway for completeness — uncheck it in the
 table to drop it.
 
-**3. Apêndice** — methodology notes for the two tabs above (accordion, `<details>`/`<summary>`).
+**Impulso via Crédito a Inst. Financ. Oficiais** (new 2026-08, user request) — the **parafiscal channel**,
+which neither of the two metrics above captures. When the Treasury lends to an official financial
+institution (historically BNDES, in volume), it's a *financial* operation: it builds a Federal asset and
+never touches above-the-line primary spending, yet it is expansionary. `_load_impulso_credito_oficial()`
+takes the **`primario` fator only** of `fisc_dlsp_fatores`'s `interna__gov_federal__creditos_inst_fin_oficiais`
+(plus its 2 published subcomponents, which sum to the parent exactly), rolls it **12 months**, and **flips
+the sign** — in the workbook's convention lending makes the item *more negative* (the asset grows), and
+lending is the impulse, so ×−1 puts it on this tab's `positive = expansionary` convention. Offered in
+**Nível** (R$ mi) and **% PIB** (over `pib_acum_12m`, same TTM/TTM convention as the rest of the report),
+via `makeDlspHierTab({dataKey:'credito_oficial', noFator:true})` — the factory was generalized (payload +
+tree keys, optional fator layer, injectable yTitle) so this is its 11th instance rather than a 4th bespoke
+table.
+
+- **Validated against the known history of the channel, with no tuning**: peak **+4.65% of GDP in
+  2010-05** (post-crisis BNDES capitalization), reversing to **−2.65% in 2018-08** (BNDES prepayments to
+  the Treasury), **+0.67% in 2026-06**. Magnitudes are the same order as — in some years larger than —
+  the IEG, which is the argument for the metric existing.
+- Only `primario` is in scope: the same item also carries `juros` and `ajuste_met_interno` flows
+  (deliberately excluded). And this is a **flow**, not the stock — the item's balance today is a ~R$204bn
+  asset (1.5% of GDP), far below the cycle peak.
+
+**5. Apêndice** — methodology notes for the four tabs above (accordion, `<details>`/`<summary>`).
 
 **Historical, not current**: 3 earlier tabs (Visão Geral, Dívida Pública, Resultado Fiscal) were
 deleted 2026-08 at the user's request to rebuild the report tab-by-tab; a separate, older RTN-based
@@ -219,6 +373,9 @@ keep:
 |---|---|
 | Receitas e Despesas — GFSM | `fisc_efgg` (all 27 GFSM codes × 4 esferas, 108 series), `atv_pib_valores_correntes.pib_pm` (%PIB denominator — raw quarterly for Nível=Trimestral, `rolling(4)` TTM for Nível=Acumulado 12m, see `_load_pib_4t()`/`_load_pib_pm_raw()`), `inflc_agregados.ipca` (Real deflator) |
 | Receitas e Despesas — RTN | `fisc_rtn` (34 codes, Governo Central), `atv_pib_mensal` (both `pib_mensal`/SGS 4380 — raw monthly, %PIB denominator at Nível=Mensal/Trimestral — and `pib_acum_12m`/SGS 4382 — TTM, %PIB denominator at Nível=Acumulado 12m), `inflc_agregados.ipca` (Real deflator) |
+| Dívida Líquida (DLSP) | `fisc_dlsp_fatores` (all 95 items × 9 fatores = 855 series, + 135 synthetic balance-sheet aggregates = 990), `atv_pib_mensal.pib_acum_12m` (%PIB denominator for both the stock and the 12m-accumulated flows) |
+| Investimento | `fisc_investimento` (78 series = 60 `funcao` + 18 `natureza`), `atv_pib_mensal.pib_acum_12m` (SGS 4382 — the **only** %PIB denominator here, all four Níveis; convention B), `inflc_agregados.ipca` (Real deflator) |
+| Impulso Fiscal — via Crédito a Inst. Financ. Oficiais | `fisc_dlsp_fatores` (`primario` fator of `interna__gov_federal__creditos_inst_fin_oficiais` + 2 subcomponents), `atv_pib_mensal.pib_acum_12m` |
 | Impulso Fiscal — IEG | `fisc_efgg` (4 expense categories × 4 esferas), `atv_pib_valores_correntes` (`pib_pm` — both raw quarterly, for STL, and rolled TTM, for Acumulado), `atv_pib_taxas` (`acum_4t`+`qoq` indicadores — Visão Combinada; `yoy` loaded but unplotted) |
 | Impulso Fiscal — via Resultado Primário (NFSP) | `fisc_nfsp` (`resultado_primario_pct_pib_12m` + 5 esfera `*_pct_pib_12m` — Acum. 12m; `resultado_primario_fluxo_mensal` + 5 esfera `*_fluxo_mensal` — Trimestre/STL), `atv_pib_mensal.pib_mensal` (raw monthly GDP, STL denominator) |
 | Impulso Fiscal — Visão Combinada | Reads already-loaded `ieg`/`fiscal_impulse_nfsp`/`pib_yoy` payloads, no new table |
@@ -262,6 +419,14 @@ and each script's own docstring — not duplicated here.
   primário/nominal" as normally reported — `domain/db/brasil/bcb/fisc_nfsp.py` flips sign at ingestion
   (`_FLIP_SIGN`). If a new series from this same SGS family is ever added, check for this inversion
   before trusting the sign.
+- **`fisc_dlsp_fatores` (new 2026-08, not consumed by this report yet) keeps the UNFLIPPED sign — the
+  opposite of `fisc_nfsp`.** Its flows are debt-conditioning factors, so positive = *increases* net
+  debt, i.e. `primario` positive = primary **deficit**. Deliberate: flipping would break the additive
+  identity `estoque[t] − estoque[t−1] = Σ 8 fluxos[t]`, which is the whole reason that table exists.
+  Confirmed live that `fisc_dlsp_fatores.primario` (item `total`) and
+  `fisc_nfsp.resultado_primario_fluxo_mensal` are exact negatives of each other across all 295 shared
+  months (max |sum| = 0.017 R$ mi, just SGS's 2-decimal rounding). Any chart mixing the two tables must
+  flip one of them.
 - **`fisc_rtn.incentivos_fiscais` (RTN 10.01.1.2) is a deduction, not a revenue** — measures tax
   revenue foregone under LRF art. 14 (isenções/anistias/remissões/créditos presumidos), so it's
   structurally ≤ 0, unlike its 3 sibling children of `receita_total`. Confirmed live over the full
@@ -271,19 +436,16 @@ and each script's own docstring — not duplicated here.
   other month) — likely a year-end catch-up entry. Under the **Acumulado** toggle (see above) that
   single-month outlier smears across the following 12 months of the accumulated series instead of
   appearing as one isolated spike (under **Bruto**, the default, it's an isolated single-month value
-  as normal). **Found 2026-08, not fixed (pre-existing, out of scope of the session that found it):**
-  because this series has been exactly 0 every month since 2024-01, `incentivos_fiscais`'s **Y/Y**
-  under Nível=Mensal/Trimestral divides by that zero base for every date from ~2025-01 onward,
-  producing `Infinity`/`-Infinity` (pandas' `pct_change()`, used by
-  `analytics.credit.transforms.compute_variants()`, doesn't guard a zero denominator) — renders
-  literally as "Infinity%" in the table/chart if a user expands to this row and selects Y/Y. No
-  exception is thrown (`json.dumps` emits bare `Infinity`, which is valid as a JS literal but not
-  strict JSON — only surfaces if something tries to `JSON.parse` the report's data blob). Same root
-  cause likely affects any other series that ever hits an exact zero and is later compared Y/Y/M-M/T-T
-  against it — not audited across the rest of this report or `analytics/credit/`, which shares the
-  same `pct_change()`. Fix would be a `pct_change()`/`stl_seasonal_adjust()`-adjacent guard (return
-  `None` instead of inf when the denominator is 0) in `analytics/credit/transforms.py`, shared by
-  other reports — needs its own scoped pass, not a one-line patch here.
+  as normal). **The zero-base `Infinity` this series used to produce is FIXED (2026-08)** — because it
+  has been exactly 0 every month since 2024-01, its Y/Y divided by that zero base from ~2025-01 onward
+  and pandas' `pct_change()` emitted `inf`, which the old `np.isnan()` guard let through into the
+  payload as a bare `Infinity`. Both copies of `pct_change()` (`credit/transforms.py`,
+  `fiscal_policy/transforms.py`) now guard with `np.isfinite`, so the cell shows `—`. The audit that
+  found it was much wider than this one series: **6,814 `Infinity` values were shipping** — 1,642 in
+  `rtn` and 5,172 in `investimento` (36 of its 78 series contain an exact zero). Beyond the literal
+  "Infinity%" cell, a single infinite point in a plotted trace collapses Plotly's y-autorange and
+  `_bindYAutofit()`'s fitted range, so whole charts were unreadable rather than just one row. The
+  harness now walks the entire payload asserting every number is finite.
 - **RTN's `receita_total` (gross) is not comparable to `despesa_total`** — use `receita_liquida`
   (already net of revenue-sharing transfers to states/municipalities). `receita_total` reconciles to
   nothing when compared directly to `despesa_total`. This is why the RTN tab's chart defaults to
@@ -342,18 +504,57 @@ and each script's own docstring — not duplicated here.
   "not by sphere" (bars rendered too narrow to read, not a data/methodology bug). Whenever a new
   `chart-*` div is added to this report, it MUST be added to that same selector list or it silently
   renders broken.
+- **`makeHierTab()` now reads TWO payload shapes** (2026-08, with the Investimento tab) — the original
+  `{dates, values}`-per-variant one (`gfsm`/`rtn`) and the compact shared-dates one (`investimento`:
+  `dates` once at the payload root, each variant a bare value array or the scalar `0`/`null`). Which one
+  it uses is decided by whether `opts.sharedDates` is passed; `wrap()` re-expands the compact form.
+  **A new instance must pick one and pass the matching opts** — feeding a compact payload without
+  `opts.sharedDates` yields traces with `x: undefined` (the silent-blank-chart bug already documented
+  below), and feeding a `{dates, values}` payload *with* it would put an object where a value array
+  belongs. Same for `opts.root`: needed only when the block isn't directly at `D[dataKey]`.
 - **Actual browser rendering has not been visually confirmed** for any tab — verification here is a
   live DB run + a Node stub-`document`/`Plotly` harness against the real generated `<script>`, no real
   browser available in this sandbox.
 
 ## Pending
 
-- **Guard `pct_change()` (`analytics/credit/transforms.py`) against a zero denominator** — see
-  Gotchas' `incentivos_fiscais` entry for the concrete failure (`Infinity%` in the RTN table when
-  Y/Y divides by that series' now-permanently-zero 12-months-ago base). Shared code, used by other
-  reports too — needs its own scoped pass across callers, not a one-line fix here.
-- **Rebuild the 3 deleted tabs (Visão Geral, Dívida Pública, Resultado Fiscal)** — not started, no
-  design decided (`fisc_divida`/`fisc_nfsp` still unused by this report).
+- **Regenerate `reports/Credit.html`** — `analytics/credit/transforms.py`'s `pct_change()` was fixed in
+  2026-08 (zero-base guard, see Gotchas) but only the fiscal report has been rebuilt since. That report
+  shares the function, so it is presumed to be carrying `Infinity` values in any series that ever hits
+  an exact zero; the count there has not been measured. Same applies to any other report built on
+  `credit/transforms.py`.
+- **Deflator for capital spending** — the Investimento tab deflates GND 4/5 by the IPCA, like every
+  other tab. For works and equipment the INCC or the FBCF deflator would be more defensible. Raised
+  2026-08, recorded in `metric_layers.md`'s Open conventions, not decided.
+- **Convention split on `% PIB` inside this one report** — the Investimento tab moved to convention B
+  (always 12m GDP) in 2026-08 while GFSM/RTN stayed on A (same window both sides). The retrofit was
+  offered and declined at the time; until it happens, a reader comparing % PIB across tabs of this
+  report is comparing two conventions, mitigated only by the y-axis label.
+- **Rebuild the remaining deleted tabs (Visão Geral, Resultado Fiscal)** — not started, no design
+  decided. `fisc_divida`/`fisc_nfsp`'s own series are still unread by this report except through the
+  Impulso Fiscal tab (`fisc_nfsp`) — note that **Dívida Pública was effectively superseded** by the new
+  Dívida Líquida tab, which covers the same ground from a better source (`fisc_dlsp_fatores` decomposes
+  the stock *and* explains its variation, where `fisc_divida` only has 6 aggregate %PIB series).
+- **Consolidado mode for the Balanço por Entidade** — deliberately not built. Proper consolidation drops
+  both sides of each intra-government pair, which changes each entity's net (states' net would fall by
+  their Lei 9.496 liability, the Union's would rise by its credit) while leaving the total unchanged — so
+  it isn't a per-entity view at all, it's a single consolidated column (R$12.0tri liabilities / R$2.5tri
+  assets). Adding it means a second tree shape, not a toggle. The `⇄` labels + Apêndice cover the gap for
+  now.
+- **Gross reserves as their own line** in the balance sheet — today they're inside the BCB's net external
+  position (`externa__bacen`, footnote 15/), classified as caixa with the netting stated in the label.
+  Splitting them out needs `cmb_reservas_bc` joined into `dlsp_tab.py`.
+- **A stacked-bar conditioning-factors chart is the obvious next step for the Dívida Líquida tab** — one
+  bar per fator summing exactly to the change in the stock for a chosen item, the visual form the identity
+  is begging for. The current tab is 9 independent line charts, which shows each fator's own history well
+  but never shows them adding up. Not built; would need a 10th section reading across `D.dlsp.series`
+  (all the data is already in the payload, no new ingestion).
+- **`rtn`'s payload is 9.69 MB of the report's ~15 MB** (measured 2026-08) — 35 series × 3 frequencies ×
+  2 bases × 4 metrics, each carrying its own copy of the 354-date array. `gfsm` is 3.34 MB the same way.
+  For comparison, the Dívida Líquida tab ships **855 series in 1.95 MB** because `dlsp_tab.py` puts
+  `dates` once at the payload root and stores bare value arrays. Migrating `rtn`/`gfsm` to that shape
+  would cut the file several-fold; not attempted (it means touching `makeHierTab()`'s accessor, shared by
+  both tables).
 - **Fix the GFSM Governo-Geral double-count** (see Gotchas) — needs `fisc_efgg.py`'s `_build_geral()`
   to net out intergovernmental transfers before summing; a dedicated reconciliation project, not a
   one-line fix.
@@ -370,5 +571,11 @@ and each script's own docstring — not duplicated here.
 - **MEFA** (Monitor de Expansão Fiscal Ampliada) — blocked on data sourcing (no live restos-a-pagar
   endpoint found as of 2026-08-06); re-verify live before trusting that verdict, since a prior "blocked"
   call on IEG turned out to be wrong.
+- **Investimento tab — cuts not yet surfaced.** The tab covers both cortes the source publishes, so
+  there's nothing missing from `fisc_investimento` itself. What's absent is any *derived* reading: no
+  real-vs-nominal growth decomposition, no comparison against the IEG's `investimento` category
+  (`fisc_efgg`, GFSM code, Governo Geral scope — a different universe, so it needs a scope note before
+  being charted side by side), and no split of GND 4's asset-creating core from its capital transfers as
+  a single "investimento próprio" line.
 - **Not integrated into `analytics/oraculo/`'s macro thermometer.**
 - Open the report in an actual browser and confirm interactions feel right (see Gotchas).

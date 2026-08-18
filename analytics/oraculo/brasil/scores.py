@@ -48,7 +48,11 @@ def _load_data() -> None:
     req = MySQLDataRequester('macro_brasil', 'expc_focus')
     req.connect()
     df = req.request_data()
-    mask = (df['indicador'] == 'IPCA') & (df['horizonte'] == '12m')
+    # suavizada/base_calculo passaram a ser dimensoes de `expc_focus` em 2026-08 (antes a
+    # tabela guardava so a variante S/base 0). Sem esses dois filtros, o mesmo (date,
+    # indicador, horizonte) casa com 4 linhas e o `last` do resample pega uma arbitraria.
+    mask = ((df['indicador'] == 'IPCA') & (df['horizonte'] == '12m')
+            & (df['suavizada'] == 'S') & (df['base_calculo'] == 0))
     df_exp = df[mask][['date', 'mediana']].copy()
     df_exp['date'] = pd.to_datetime(df_exp['date'])
     _data_expectativas = (df_exp.sort_values('date')

@@ -108,7 +108,7 @@ def _load_pib_taxas() -> dict:
     return _series_dict(df, lambda r: r["name"] + "__" + r["indicador"])
 
 
-def run(output: str = "reports/economic_activity_latest.html") -> None:
+def run(output: str = "reports/Economic Activity.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 

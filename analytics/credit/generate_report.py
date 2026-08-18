@@ -19,7 +19,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from analytics.credit import amplo_tab, concessao_tab, inadimplencia_tab, saldo_tab, taxa_tab
+from analytics.credit import (
+    amplo_tab,
+    concessao_tab,
+    impulso_tab,
+    inadimplencia_tab,
+    saldo_tab,
+    taxa_tab,
+)
 from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
 
@@ -136,6 +143,20 @@ def _load_concessao_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
     return concessao_tab.build(raw, ipca, pib_acum_12m)
 
 
+def _load_impulso_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
+    """Aba Impulso: so precisa do SALDO NOMINAL bruto + PIB 12m -- sem IPCA (a metrica
+    ja e uma razao contra o PIB nominal, o deflator cancelaria) e sem STL (a diferenca
+    de 12 meses ja cancela sazonalidade por construcao)."""
+    raw = {k: resumo_series[k] for k in impulso_tab.resumo_impulso_keys() if k in resumo_series}
+    porte_prefix, porte_table = impulso_tab.PORTE_TABLE
+    raw.update(_load_by_metric(porte_table, "porte", porte_prefix, "saldo"))
+    ativ_prefix, ativ_table = impulso_tab.ATIVIDADE_ECONOMICA_TABLE
+    raw.update(_load_flat_prefixed(ativ_table, ativ_prefix, only_keys=impulso_tab.ATIVIDADE_KEYS))
+    raw = {k: _clip_from(s, _TAB_MIN_DATE) for k, s in raw.items()}
+
+    return impulso_tab.build(raw, pib_acum_12m)
+
+
 def _load_amplo_tab_data(amplo_series: dict, pib_acum_12m: dict) -> dict:
     ipca = _load_flat("inflc_agregados")["ipca"]
 
@@ -176,7 +197,7 @@ def _load_inadimplencia_tab_data(resumo_series: dict, pj_series: dict, selic: di
     return inadimplencia_tab.build(raw, selic)
 
 
-def run(output: str = "reports/credit_latest.html") -> None:
+def run(output: str = "reports/Credit.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 
@@ -209,6 +230,13 @@ def run(output: str = "reports/credit_latest.html") -> None:
     except Exception as exc:
         print(f"  concessao (arvore de modalidades): FALHOU -- {exc}")
         data["concessao"] = {"tree": [], "series": {}, "ref_date": None}
+
+    try:
+        data["impulso"] = _load_impulso_tab_data(data.get("resumo", {}), pib_acum_12m)
+        print(f"  impulso   (3 tabelas de decomposicao): {len(data['impulso']['series'])} series")
+    except Exception as exc:
+        print(f"  impulso   (3 tabelas de decomposicao): FALHOU -- {exc}")
+        data["impulso"] = {"trees": {}, "anchors": {}, "series": {}, "ref_date": None}
 
     try:
         data["amplo_hier"] = _load_amplo_tab_data(data.get("amplo", {}), pib_acum_12m)

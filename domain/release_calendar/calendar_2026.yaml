@@ -3,15 +3,114 @@
 # One entry per official release EVENT, not per series -- BCB in particular bundles
 # dozens of series into a single monthly "nota". See this folder's CLAUDE.md for the
 # schema, per-group confidence notes, and what's deliberately NOT covered yet
-# (international-sourced series, a few untouched BCB SGS series, cred_ptc).
+# (international-sourced series, a few untouched BCB SGS series).
 #
-# confirmed: true  -> date read directly from an official published calendar/PDF.
+# confirmed: true  -> date read directly from an official published calendar/PDF/ICS feed.
 # confirmed: false -> no exact date could be retrieved (source page was a JS-rendered
 #                      SPA or returned an HTTP error as of 2026-08-13) -- date/window
 #                      is an estimate from the historical day-of-month pattern.
 #                      Re-check the source_url closer to the date before relying on it.
 #
 # Researched 2026-08-13. Only dates on/after that day are listed (nothing in the past).
+#
+# UPDATED 2026-08-17: every BCB group here is now confirmed:true, sourced from BCB's own
+# release-calendar ICS feeds (/api/exportarics/sitebcb/agendaics?lista=<Nome>) and parsed
+# raw rather than summarized. That endpoint's full list of 29 available `lista` values is
+# itself enumerable -- see this folder's CLAUDE.md, point 4, for how to rediscover it.
+# This retired every derived-rule estimate for the BCB monthly notes and added two groups
+# (bcb_icbr, plus itemized bcb_focus dates). Remaining confirmed:false groups are the two
+# CAGED ones only, which are not BCB-sourced.
+
+# Tables with NO release event, on purpose -- read by domain/release_calendar/sync.py,
+# which would otherwise report them as uncovered. Two kinds: continuous market series
+# (a new observation every trading day, no discrete announcement to point at) and tables
+# that aren't published series at all (a dimension table, model parameters).
+#
+# This has to be DECLARED rather than inferred from "has no group": if absence of a group
+# silently meant "needs no calendar", a genuine coverage gap would be indistinguishable
+# from a deliberate exclusion -- which is exactly the confusion the --coverage audit in
+# this folder's CLAUDE.md had to be triaged by hand to resolve.
+#
+# Separado por MOTIVO, nao numa lista so: as duas metades tem consumidor diferente.
+# `continuous` e o que `jobs/update_db.py --continuous` roda todo dia sem calendario;
+# `not_a_series` nao roda por calendario nem por dia, so quando algo mudar a mao.
+no_release:
+  # Serie continua de mercado: um dado novo por dia util, sem anuncio para apontar.
+  # Criterio para entrar aqui: run() busca da fonte sozinho. Por isso cmb_risco_pais
+  # NAO esta na lista, apesar de ser serie de mercado -- o run() dele le CSVs
+  # exportados a mao do investing.com (CDS 5Y e serie paga), entao um job diario nao
+  # traria dado novo nenhum.
+  continuous:
+    - cmb_ptax               # PTAX + volume interbancario, diario
+    - cmb_dollar_index       # DXY, diario
+    - cmb_dollar_index_em    # indice do dolar vs. EM, diario
+    - cmb_fx_latam           # cambio MX/CL/CO/PE, diario
+    - cmb_equity_us          # equity US, diario
+    - comm_brent             # Brent, diario
+    - cmb_policy_rates       # policy rate BIS (BR/MX/CL/CO/PE/AR), diaria
+  # Nao e serie divulgada: nada a esperar do calendario e nada a rodar por dia.
+  not_a_series:
+    - inflc_dim              # tabela de dimensao (IPCA)
+    - pm_parametros          # parametros do modelo BCB
+    - pm_hiato_seed          # estado inicial do modelo BCB
+
+# Correcoes por tabela para a checagem de freshness (sync.py), onde o vinculo
+# grupo->tabela em `tables:` significa "esta divulgacao e RELEVANTE para esta tabela"
+# e nao "esta divulgacao ENTREGA o periodo desta tabela". As duas leituras coincidem
+# na maioria dos casos; onde nao coincidem, o resultado seria atraso falso todo mes.
+#
+# `tables:` fica como esta de proposito -- e a lista de relevancia que o relatorio
+# HTML mostra ("o que esta divulgacao alimenta"). O override corrige so a expectativa.
+#
+# Os tres casos abaixo foram diagnosticados empiricamente em 2026-08-17: cada script
+# de ETL foi executado e o MAX(date) da tabela NAO avancou, provando que a fonte nao
+# tem dado mais novo -- o atraso era do mapeamento, nao do banco. (No mesmo teste,
+# comm_icbr/comm_icbr_usd SIM avancaram: aqueles eram atraso real.)
+expectation_overrides:
+  cred_credito_familias:
+    lag_months: 1
+    why: >
+      Indicadores de endividamento/comprometimento de renda das familias saem um mes
+      ATRAS do resto da nota de credito (dependem de dado de renda). Medido numa
+      observacao (2026-08-17: nota cobre 2026-06, tabela para em 2026-05) mais o
+      motivo conhecido -- se o lag real for maior, revisar. Um travamento de 2+ meses
+      continua sendo detectado, o override desloca a expectativa, nao a desliga.
+  cmb_termos_troca:
+    expect: none
+    why: >
+      IPEA/Funcex, nao BCB -- esta sob bcb_external_sector_note por afinidade tematica
+      (setor externo), mas tem calendario proprio, nao pesquisado. Precisa do seu
+      grupo; ate lah nao da para exigir periodo nenhum.
+  expc_focus:
+    release_minus_days: 3
+    why: >
+      Focus e semanal e o feed do BCB nao traz reference_period nenhum, entao sem este
+      override a tabela caia na expectativa TRIMESTRAL do bcb_rpm -- e um Focus parado
+      passava batido. Foi o que aconteceu de fato em 2026-08-17: a checagem dizia OK
+      com MAX(date) em 2026-07-31, e rodar o ETL trouxe 2026-08-14 (duas semanas de
+      atraso real, nao detectado). Ancora na DATA da divulgacao em vez do periodo:
+      BCB publica na segunda-feira as expectativas coletadas ate a sexta anterior,
+      e a coluna `date` da tabela e a data da coleta -- dai os 3 dias.
+  expc_focus_periodo:
+    release_minus_days: 3
+    why: >
+      Mesma pesquisa semanal da expc_focus, mesmo raciocinio de ancorar na data da
+      coleta -- ver o override dela acima. Sao endpoints diferentes do mesmo Focus
+      (periodo de referencia fixo em vez de horizonte movel), nao divulgacoes
+      diferentes.
+  expc_focus_copom:
+    release_minus_days: 3
+    why: >
+      Idem. Apesar de a tabela ser sobre reunioes do Copom, ela e alimentada pela
+      pesquisa Focus semanal, NAO pela reuniao em si -- a expectativa de frescor
+      segue o calendario do Focus (semanal), nao o do Copom (a cada 45 dias).
+  inflc_meta:
+    expect: none
+    why: >
+      Serie ANUAL: a meta e definida pelo CMN, nao muda a cada RPM trimestral. O
+      vinculo com bcb_rpm e de relevancia (o RPM discute a meta), nao de entrega.
+      A lista "Reuniões do CMN e COMOC" do BCB e a fonte provavel -- ver Pending no
+      CLAUDE.md desta pasta.
 
 groups:
   - group: ibge_pim
@@ -117,24 +216,224 @@ groups:
     name: "Índice de Atividade Econômica do Banco Central – IBC-Br"
     tables: [atv_ibcbr]
     cadence: monthly
-    note: "~2-month lag from reference period (day 15-17 of month M+2)."
-    source_url: https://www.investing.com/economic-calendar/brazil-ibc-br-economic-activity-765
+    note: >
+      ~2-month lag from reference period, released 09:00 BRT. Dates below are parsed
+      directly from the raw ICS of BCB's own official release-calendar feed (source_url),
+      confirmed 2026-08-17 -- supersedes the prior day-15-to-17 estimates from
+      Investing.com's secondary calendar. The feed also carries 2027-01-18 and 2027-02-18,
+      omitted here only because this file is scoped to 2026.
+      NOTE: IC-Br does NOT ride along with this release, contrary to an earlier
+      assumption -- it has its own list and its own dates (see bcb_icbr below).
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=%C3%8Dndice%20de%20atividade%20econ%C3%B4mica%20(IBC-Br)
+    ics:
+      lista: Índice de atividade econômica (IBC-Br)
+      ref: {unit: month, lag: 2}
     entries:
+      - {date: "2026-05-18", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-06-17", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-07-17", reference_period: "2026-05", confirmed: true}
       - {date: "2026-08-17", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-09-15", date_end: "2026-09-17", reference_period: "2026-07", confirmed: false}
-      - {date: "2026-10-15", date_end: "2026-10-17", reference_period: "2026-08", confirmed: false}
-      - {date: "2026-11-16", date_end: "2026-11-17", reference_period: "2026-09", confirmed: false}
-      - {date: "2026-12-15", date_end: "2026-12-17", reference_period: "2026-10", confirmed: false}
+      - {date: "2026-09-16", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-10-16", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-16", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-11", reference_period: "2026-10", confirmed: true}
+
+  - group: bcb_icbr
+    institution: BCB
+    name: "Índice de Commodities – Brasil (IC-Br)"
+    tables: [comm_icbr, comm_icbr_usd]
+    cadence: monthly
+    note: >
+      Released Wednesdays at 14:30 BRT (5/5 of the remaining 2026 dates are Wednesdays),
+      covering the prior month. Dates below are parsed directly from the raw ICS of BCB's
+      own official release-calendar feed (source_url), confirmed 2026-08-17.
+      This group is NEW and settles a previously-open question: the earlier assumption
+      that IC-Br "shares a BCB calendar page with IBC-Br/IBCR, so it likely rides along
+      with bcb_ibcbr" is WRONG. IC-Br has its own separate calendar list, its own time
+      of day (14:30 vs. IBC-Br's 09:00) and dates that never coincide with IBC-Br's.
+      The feed also carries 2027-01-06 and 2027-02-03, omitted here only because this
+      file is scoped to 2026.
+      Caveat: reference_period below is INFERRED from the standard one-month-lag pattern
+      (the `ics.ref` rule), not stated in the feed, whose events carry only a title.
+      Verify against a published IC-Br figure before relying on the period mapping.
+      comm_icbr is one of the tables still absent from jobs/update_db.py (run manually).
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=%C3%8Dndice%20de%20Commodities%20%E2%80%93%20Brasil%20(IC-Br)
+    ics:
+      lista: Índice de Commodities – Brasil (IC-Br)
+      ref: {unit: month, lag: 1}
+    entries:
+      - {date: "2026-05-06", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-03", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-08", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-05", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-09", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-07", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-11", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-09", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_focus
     institution: BCB
     name: "Boletim Focus"
-    tables: [expc_focus]
+    tables: [expc_focus, expc_focus_periodo, expc_focus_copom]
     cadence: weekly
     weekday: Monday
-    confirmed: true
-    note: "Released every Monday ~08:30, based on expectations collected through the prior Friday. No date list -- expand the weekday rule as needed."
-    source_url: https://www.remessaonline.com.br/blog/boletim-focus-o-que-e-sua-importancia-e-como-consultar/
+    note: >
+      Released Mondays ~08:30 BRT, based on expectations collected through the prior
+      Friday. Dates below are parsed directly from the raw ICS of BCB's own official
+      release-calendar feed (source_url), confirmed 2026-08-17 -- so unlike the prior
+      bare "every Monday" rule, they capture BCB's actual holiday shifts. Three of the
+      22 remaining 2026 releases slip to TUESDAY because the normal Monday is a
+      Brazilian national holiday: 2026-09-08 (Sep 7, Independência), 2026-10-13
+      (Oct 12, N. Sra. Aparecida), 2026-11-03 (Nov 2, Finados). A naive weekday rule
+      would have gotten all three wrong -- which is why these are itemized now.
+      No reference_period: each bulletin reports the current state of expectations
+      rather than covering a closed prior period.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Focus
+    ics:
+      lista: Focus
+    entries:
+      - {date: "2026-05-04", confirmed: true}
+      - {date: "2026-05-11", confirmed: true}
+      - {date: "2026-05-18", confirmed: true}
+      - {date: "2026-05-25", confirmed: true}
+      - {date: "2026-06-01", confirmed: true}
+      - {date: "2026-06-08", confirmed: true}
+      - {date: "2026-06-15", confirmed: true}
+      - {date: "2026-06-22", confirmed: true}
+      - {date: "2026-06-29", confirmed: true}
+      - {date: "2026-07-06", confirmed: true}
+      - {date: "2026-07-13", confirmed: true}
+      - {date: "2026-07-20", confirmed: true}
+      - {date: "2026-07-27", confirmed: true}
+      - {date: "2026-08-03", confirmed: true}
+      - {date: "2026-08-10", confirmed: true}
+      - {date: "2026-08-17", confirmed: true}
+      - {date: "2026-08-24", confirmed: true}
+      - {date: "2026-08-31", confirmed: true}
+      - {date: "2026-09-08", confirmed: true, note: "Tuesday -- Sep 7 holiday (Independência)."}
+      - {date: "2026-09-14", confirmed: true}
+      - {date: "2026-09-21", confirmed: true}
+      - {date: "2026-09-28", confirmed: true}
+      - {date: "2026-10-05", confirmed: true}
+      - {date: "2026-10-13", confirmed: true, note: "Tuesday -- Oct 12 holiday (N. Sra. Aparecida)."}
+      - {date: "2026-10-19", confirmed: true, note: "Feed carries 00:00 rather than 08:30 for this one entry -- almost certainly a data-entry quirk in BCB's list, not a real midnight release."}
+      - {date: "2026-10-26", confirmed: true}
+      - {date: "2026-11-03", confirmed: true, note: "Tuesday -- Nov 2 holiday (Finados)."}
+      - {date: "2026-11-09", confirmed: true}
+      - {date: "2026-11-16", confirmed: true}
+      - {date: "2026-11-23", confirmed: true}
+      - {date: "2026-11-30", confirmed: true}
+      - {date: "2026-12-07", confirmed: true}
+      - {date: "2026-12-14", confirmed: true}
+      - {date: "2026-12-21", confirmed: true}
+      - {date: "2026-12-28", confirmed: true}
+
+  - group: bcb_copom
+    institution: BCB
+    name: "Reunião do Copom — decisão da taxa Selic"
+    tables: [cred_inadimplencia_pj, expc_focus, expc_focus_copom]
+    cadence: "8x/year (~every 45 days)"
+    note: >
+      Two-day meeting (Tue+Wed); the Selic decision is announced at the close of day 2,
+      ~18:30 BRT, via Comunicado. `date` below is DAY 2 (decision day), `date_start` is
+      day 1. Meeting numbers 281/282/283 continue the sequence confirmed live against
+      BCB's own API (/api/servico/sitebcb/copom/atas), which returned #276 2026-01-28,
+      #277 03-18, #278 04-29, #279 06-17, #280 08-05 as dataReferencia (= day 2). The
+      three forward dates are now confirmed directly from BCB's own official
+      release-calendar ICS feed (source_url), 2026-08-17 -- exactly matching what had
+      been read off independent secondary sources (CNN Brasil, Toro Investimentos). No
+      table is updated directly by this event; it's the policy event the Selic series
+      reflects.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Reuni%C3%B5es%20do%20Copom
+    ics:
+      lista: Reuniões do Copom
+      pair_days: true
+    entries:
+      - {date: "2026-06-17", date_start: "2026-06-16", confirmed: true}
+      - {date: "2026-08-05", date_start: "2026-08-04", confirmed: true}
+      - {date: "2026-09-16", date_start: "2026-09-15", reference_period: "281ª reunião", confirmed: true}
+      - {date: "2026-11-04", date_start: "2026-11-03", reference_period: "282ª reunião", confirmed: true}
+      - {date: "2026-12-09", date_start: "2026-12-08", reference_period: "283ª reunião", confirmed: true}
+
+  - group: bcb_copom_ata
+    institution: BCB
+    name: "Ata do Copom"
+    tables: []
+    cadence: "8x/year (follows each Copom meeting)"
+    note: >
+      Minutes of each Copom meeting. Publication rule measured EMPIRICALLY against
+      BCB's own API (/api/servico/sitebcb/copom/atas): every 2026 meeting published its
+      Ata exactly 6 calendar days after day 2 — i.e. the following Tuesday, ~08:00 BRT.
+      Verified 5/5: 01-28→02-03, 03-18→03-24, 04-29→05-05, 06-17→06-23, 08-05→08-11.
+      (This settles a documentation discrepancy: 6 calendar days = 4 business days,
+      so the "4 business days" and "following Tuesday" descriptions both hold.) The
+      three remaining 2026 dates are now confirmed directly from BCB's own official
+      release-calendar ICS feed (source_url), 2026-08-17 -- exactly matching the
+      empirical +6-day rule. That feed's `lista` name is "Atas e Comunicados do
+      Copom" but only Ata events actually appear in it for this window; the Comunicado
+      is announced same-day as the meeting itself (see bcb_copom above), not as its
+      own calendar entry.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Atas%20e%20Comunicados%20do%20Copom
+    ics:
+      lista: Atas e Comunicados do Copom
+      summary_contains: Ata
+    entries:
+      - {date: "2026-05-05", confirmed: true}
+      - {date: "2026-06-23", confirmed: true}
+      - {date: "2026-08-11", confirmed: true}
+      - {date: "2026-09-22", reference_period: "281ª reunião", confirmed: true}
+      - {date: "2026-11-10", reference_period: "282ª reunião", confirmed: true}
+      - {date: "2026-12-15", reference_period: "283ª reunião", confirmed: true}
+
+  - group: bcb_rpm
+    institution: BCB
+    name: "Relatório de Política Monetária (RPM)"
+    tables: [expc_focus, expc_focus_periodo, inflc_meta]
+    cadence: quarterly
+    note: >
+      Quarterly flagship inflation/policy report (successor to the Relatório de
+      Inflação). Read directly from a live official BCB API — GET
+      /api/servico/sitebcb/rpm/proximos-relatorios?inicioAgenda=2026-08-01 returned
+      exactly these two events with their reference quarters. Endpoint is documented in
+      BCB's own open-data catalog (dadosabertos.bcb.gov.br, package "rpm").
+      Independently CROSS-CONFIRMED 2026-08-17 against BCB's release-calendar ICS feed
+      (lista="Relatório de Política Monetária"), which returned the same two dates at
+      08:00 BRT — two separate official BCB sources agreeing exactly.
+      NOTE: the API requires browser-like headers (Accept/Referer/User-Agent) or BCB's
+      edge WAF answers 400 — see the folder CLAUDE.md.
+    source_url: https://www.bcb.gov.br/api/servico/sitebcb/rpm/proximos-relatorios?inicioAgenda=2026-08-01
+    ics:
+      lista: Relatório de Política Monetária
+      ref: {unit: quarter, lag: 0}
+    entries:
+      - {date: "2026-06-25", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-09-24", reference_period: "2026-Q3", confirmed: true}
+      - {date: "2026-12-17", reference_period: "2026-Q4", confirmed: true}
+
+  - group: bcb_ptc
+    institution: BCB
+    name: "Pesquisa Trimestral de Condições de Crédito (PTC)"
+    tables: [cred_ptc]
+    cadence: quarterly
+    note: >
+      Quarterly survey of banks' perception of credit supply/demand — Brazil's analogue
+      of the Fed's Senior Loan Officer Opinion Survey. Confirmed to be an INDEPENDENT
+      release, NOT bundled into the monthly credit note above: different cadence,
+      different day-of-month, and a distinct publication path
+      (bcb.gov.br/content/publicacoes/ptc/<YYYYMM>/RelatorioPTC-<Mês><Ano>.pdf).
+      BCB's own release-calendar ICS feed (source_url) confirms exact forward dates,
+      superseding the prior Q3-2025/Q1-2026 pattern-based estimate. The same feed also
+      lists PEF (Pesquisa de Estabilidade Financeira) releases -- not itemized here,
+      no table in this project consumes it.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Sondagens%20-%20PTC%20PEF
+    ics:
+      lista: Sondagens - PTC PEF
+      summary_contains: PTC
+      ref: {unit: quarter, lag: 1}
+    entries:
+      - {date: "2026-05-21", reference_period: "2026-Q1", confirmed: true}
+      - {date: "2026-08-20", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-11-19", reference_period: "2026-Q3", confirmed: true}
 
   - group: bcb_credit_note
     institution: BCB
@@ -154,18 +453,27 @@ groups:
       - cred_credito_controle_capital
     cadence: monthly
     note: >
-      BCB's own forward calendar page is a JS-rendered SPA, unreachable by fetch tools
-      as of 2026-08-13 -- these are estimated windows from the historical pattern
-      (business day, ~26th-30th, roughly 4 weeks after month-end), not confirmed dates.
-      The note has been pushed past month-end before for unrelated reasons (e.g. the
-      2026-06 note moved from 29/06 to 01/07 because of a Brazil World Cup match).
-    source_url: https://www.bcb.gov.br/estatisticas/estatisticasmonetariascredito
+      Dates below are parsed directly from the raw ICS of BCB's own official
+      release-calendar feed (source_url), confirmed 2026-08-17 at 08:30 BRT. This
+      supersedes the prior third-to-last-business-day rule that had been derived from
+      PDF Last-Modified headers (2026-01-28, 02-25, 03-27, 04-24, 05-27, 07-01 for the
+      World-Cup-delayed June note, 07-29) -- worth recording that the derived rule was
+      systematically ONE DAY EARLY on all five forward dates, so any future fallback to
+      pattern-matching here should skew a day later. Covers the prior month (M-1) and
+      lands one business day before the fiscal note, a day after the external-sector note.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Estat%C3%ADsticas%20monet%C3%A1rias%20e%20de%20cr%C3%A9dito
+    ics:
+      lista: Estatísticas monetárias e de crédito
+      ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-08-26", date_end: "2026-08-30", reference_period: "2026-07", confirmed: false}
-      - {date: "2026-09-26", date_end: "2026-09-30", reference_period: "2026-08", confirmed: false}
-      - {date: "2026-10-26", date_end: "2026-10-30", reference_period: "2026-09", confirmed: false}
-      - {date: "2026-11-26", date_end: "2026-11-30", reference_period: "2026-10", confirmed: false}
-      - {date: "2026-12-26", date_end: "2026-12-30", reference_period: "2026-11", confirmed: false, note: "December often shifts earlier for year-end holidays -- treat this window as especially uncertain."}
+      - {date: "2026-05-28", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-07-01", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-07-30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-28", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-29", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-27", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-28", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_caged_sgs_mirror
     institution: BCB
@@ -191,34 +499,57 @@ groups:
     tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado]
     cadence: monthly
     note: >
-      BCB's forward calendar page returned a genuine HTTP 502 as of 2026-08-13.
-      Windows below are estimated from the historical pattern (published ~24th-28th
-      of month M+1, covering month M data).
-    source_url: https://www.bcb.gov.br/content/estatisticas/hist_estatisticassetorexterno/
+      Dates below are read directly from BCB's own official release-calendar ICS feed
+      (source_url), confirmed 2026-08-17 -- supersedes the prior windowed estimate that
+      had been derived from PDF Last-Modified headers (2026-01-23, 02-25, 03-26, 04-23,
+      05-25, 06-26, 07-27, spanning the 3rd-to-6th-to-last business day with no clean
+      rule). The official date is notably earlier than that window would have suggested
+      for December: 2026-12-18 vs. a guessed 23-29. Covers the prior month (M-1) and
+      consistently lands a few days BEFORE the credit note.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Estat%C3%ADsticas%20do%20setor%20externo
+    ics:
+      lista: Estatísticas do setor externo
+      ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-08-24", date_end: "2026-08-28", reference_period: "2026-07", confirmed: false}
-      - {date: "2026-09-24", date_end: "2026-09-28", reference_period: "2026-08", confirmed: false}
-      - {date: "2026-10-26", date_end: "2026-10-29", reference_period: "2026-09", confirmed: false}
-      - {date: "2026-11-24", date_end: "2026-11-27", reference_period: "2026-10", confirmed: false}
-      - {date: "2026-12-18", date_end: "2026-12-22", reference_period: "2026-11", confirmed: false, note: "No December historical data point was found -- this window is a low-confidence guess assuming a holiday-driven shift earlier in the month, same reasoning as fiscal statistics below."}
+      - {date: "2026-05-26", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-26", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-28", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-27", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-28", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-27", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-26", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-18", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_fiscal_statistics
     institution: BCB
     name: "Estatísticas Fiscais – Nota para a Imprensa"
-    tables: [fisc_divida, fisc_nfsp]
+    tables: [fisc_divida, fisc_nfsp, fisc_dlsp_fatores]
     cadence: monthly
     note: >
-      BCB's forward calendar page returned a genuine HTTP 502 as of 2026-08-13.
-      Historical pattern is very regular: last business day of month M+1, covering
-      month M data. December is flagged as uncertain since public offices commonly
-      shorten hours/close in the last days of the year.
-    source_url: https://www.bcb.gov.br/content/estatisticas/hist_estatisticasfiscais/
+      Dates below are read directly from BCB's own official release-calendar ICS feed
+      (source_url), confirmed 2026-08-17 -- supersedes the prior derived rule (each 2026
+      note's actual publication timestamp read from its archived PDF's Last-Modified
+      header: 2026-01-29, 02-26, 03-30, 04-29, 05-28, 06-29, 07-30, all landing on the
+      second-to-last business day of the month). This is BCB's own fiscal note --
+      Tesouro Nacional's RTN/EFGG releases are tracked separately below
+      (tesouro_rtn/tesouro_efgg), on their own distinct calendar.
+      `fisc_dlsp_fatores` rides on this same release: it comes from the Facdetp.xlsx
+      "tabela especial" that BCB overwrites at each monthly fiscal publication (see
+      connectors/bcb_tabelas_especiais.py), not from SGS. It was missing from this
+      group's tables until the --coverage audit in update_calendar.py flagged it.
+    source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Estat%C3%ADsticas%20fiscais
+    ics:
+      lista: Estatísticas fiscais
+      ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-08-31", reference_period: "2026-07", confirmed: false}
-      - {date: "2026-09-30", reference_period: "2026-08", confirmed: false}
-      - {date: "2026-10-30", reference_period: "2026-09", confirmed: false}
-      - {date: "2026-11-30", reference_period: "2026-10", confirmed: false}
-      - {date: "2026-12-29", date_end: "2026-12-31", reference_period: "2026-11", confirmed: false, note: "May shift earlier than the literal last business day (Dec 31) for year-end holidays."}
+      - {date: "2026-05-29", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-31", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-31", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-30", reference_period: "2026-11", confirmed: true}
 
   - group: tesouro_rtn
     institution: "Tesouro Nacional"
@@ -260,6 +591,63 @@ groups:
       - {date: "2026-10-29", reference_period: "2026-09", confirmed: true}
       - {date: "2026-11-30", reference_period: "2026-10", confirmed: true}
       - {date: "2026-12-30", reference_period: "2026-11", confirmed: true}
+
+  - group: fomc
+    institution: "US Federal Reserve"
+    name: "FOMC — Federal Open Market Committee meeting"
+    tables: [diferenciais_juros]
+    cadence: "8x/year"
+    note: >
+      Two-day meeting; the rate decision is announced on day 2 at ~14:00 ET. `date` is
+      day 2, `date_start` is day 1. Read directly off the Fed's own published calendar,
+      so these are genuinely confirmed (unlike Copom's, which BCB doesn't expose).
+      Matters here because `diferenciais_juros` tracks the Selic–Fed Funds spread, so
+      both central banks' decision dates move that series. Sep and Dec coincide exactly
+      with Copom's meetings this year; Oct does not (Copom meets Nov 3-4 instead).
+      Sep/Dec also carry a Summary of Economic Projections (SEP); Oct does not.
+      Minutes are published 3 weeks after each meeting (not itemized here).
+    source_url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+    entries:
+      - {date: "2026-09-16", date_start: "2026-09-15", reference_period: "Sep 2026 (SEP)", confirmed: true}
+      - {date: "2026-10-28", date_start: "2026-10-27", reference_period: "Oct 2026", confirmed: true}
+      - {date: "2026-12-09", date_start: "2026-12-08", reference_period: "Dec 2026 (SEP)", confirmed: true}
+
+  - group: cftc_cot
+    institution: "CFTC"
+    name: "Commitments of Traders (COT)"
+    tables: [cmb_cot_fx]
+    cadence: weekly
+    weekday: Friday
+    note: >
+      Released Fridays at 15:30 ET, reporting positions as of the PRIOR TUESDAY — so
+      `reference_period` here is that Tuesday, not the release day. Dates below come
+      from CFTC's own published release schedule, including its holiday shifts:
+      2026-11-30 and 2026-12-28 are officially delayed off their normal Friday
+      (Thanksgiving and Christmas). CAVEAT: November's list as extracted had only
+      three entries (6, 20, 30) — the week of Nov 13 is unresolved and may be shifted
+      by Veterans Day (Wed Nov 11). Re-check November against the source before
+      relying on it.
+    source_url: https://www.cftc.gov/MarketReports/CommitmentsofTraders/ReleaseSchedule/index.htm
+    entries:
+      - {date: "2026-08-14", reference_period: "2026-08-11", confirmed: true}
+      - {date: "2026-08-21", reference_period: "2026-08-18", confirmed: true}
+      - {date: "2026-08-28", reference_period: "2026-08-25", confirmed: true}
+      - {date: "2026-09-04", reference_period: "2026-09-01", confirmed: true}
+      - {date: "2026-09-11", reference_period: "2026-09-08", confirmed: true}
+      - {date: "2026-09-18", reference_period: "2026-09-15", confirmed: true}
+      - {date: "2026-09-25", reference_period: "2026-09-22", confirmed: true}
+      - {date: "2026-10-02", reference_period: "2026-09-29", confirmed: true}
+      - {date: "2026-10-09", reference_period: "2026-10-06", confirmed: true}
+      - {date: "2026-10-16", reference_period: "2026-10-13", confirmed: true}
+      - {date: "2026-10-23", reference_period: "2026-10-20", confirmed: true}
+      - {date: "2026-10-30", reference_period: "2026-10-27", confirmed: true}
+      - {date: "2026-11-06", reference_period: "2026-11-03", confirmed: true}
+      - {date: "2026-11-20", reference_period: "2026-11-17", confirmed: true}
+      - {date: "2026-11-30", reference_period: "2026-11-24", confirmed: true, note: "Officially delayed off Friday by Thanksgiving."}
+      - {date: "2026-12-04", reference_period: "2026-12-01", confirmed: true}
+      - {date: "2026-12-11", reference_period: "2026-12-08", confirmed: true}
+      - {date: "2026-12-18", reference_period: "2026-12-15", confirmed: true}
+      - {date: "2026-12-28", reference_period: "2026-12-22", confirmed: true, note: "Officially delayed off Friday by Christmas."}
 
   - group: mdic_comex_stat
     institution: "MDIC"

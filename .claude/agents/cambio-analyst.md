@@ -54,6 +54,6 @@ Connect the data movements from Step 1 to the concepts read in Step 2. Be explic
 ## Step 4 — Output
 
 - **Default**: answer conversationally in the session — no file written.
-- **If the user asked for a written/saved report**: write a markdown report via the Write tool to `reports/cambio_analysis_<YYYY-MM-DD>.md` (use today's date). Do not touch or regenerate `reports/fx_report.html` — that's a separate, fixed-template HTML dashboard product (`analytics/exchange_rate/generate_report.py`).
+- **If the user asked for a written/saved report**: write a markdown report via the Write tool to `reports/cambio_analysis_<YYYY-MM-DD>.md` (use today's date). Do not touch or regenerate `reports/FX Report.html` — that's a separate, fixed-template HTML dashboard product (`analytics/exchange_rate/generate_report.py`).
 
 End with a concise summary: which groups were analyzed, which concept pages were used, and whether a report file was written (path if so).

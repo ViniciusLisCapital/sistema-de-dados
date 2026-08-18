@@ -91,10 +91,20 @@ def stl_seasonal_adjust(dates: list[str], values: list, min_obs: int = 24) -> li
 
 def pct_change(values: list, periods: int) -> list:
     """Variacao percentual entre `values[i]` e `values[i-periods]`, em %. None onde
-    nao ha par valido (inicio da serie ou algum dos dois pontos ausente)."""
+    nao ha par valido (inicio da serie ou algum dos dois pontos ausente).
+
+    None TAMBEM quando a base e exatamente zero: pandas emite `inf` nesse caso, e o
+    guard antigo (`np.isnan`) nao pegava, entao um `Infinity` literal vazava para o
+    JSON e renderizava na tabela (e destruia o range Y do grafico -- uma trace com um
+    ponto infinito faz o autorange do Plotly e o `_bindYAutofit` colapsarem). E o guard
+    que analytics/metric_layers.md registrava como pendente ("Zero base -> Infinity");
+    implementado 2026-08. Uma variacao percentual sobre base zero e indefinida, nao
+    infinita -- e uma serie esparsa (a maioria das 28 funcoes orcamentarias nunca recebe
+    inversao financeira) esta cheia dessas transicoes.
+    """
     vals = pd.Series(values, dtype="float64")
     pct = vals.pct_change(periods=periods, fill_method=None) * 100
-    return [None if np.isnan(v) else float(v) for v in pct]
+    return [None if not np.isfinite(v) else float(v) for v in pct]
 
 
 def build_price_index(dates: list[str], monthly_pct: list) -> dict:

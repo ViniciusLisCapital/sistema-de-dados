@@ -41,7 +41,7 @@ df = bcb.get_sgs_ultimos({"ibcbr_nsa": 24363, "ibcbr_sa": 24364}, n=36)
 df = bcb.get_sgs(series, start="01/01/2020")
 df = bcb.get_sgs(series, start="all")   # série histórica completa desde o início
 
-# Focus/Olinda
+# Focus/Olinda — uma serie especifica
 df = bcb.get_focus(
     endpoint="ExpectativasMercadoInflacao12Meses",
     indicador="IPCA",
@@ -50,6 +50,14 @@ df = bcb.get_focus(
     filtros_extras="Suavizada eq 'S' and baseCalculo eq 0",
 )
 # colunas em snake_case, date como Timestamp
+
+# Focus/Olinda — endpoint inteiro numa janela de datas (indicador/campos opcionais)
+df = bcb.get_focus(
+    "ExpectativaMercadoMensais",
+    start="2025-06-01", end="2025-06-30",
+    filtros_extras="baseCalculo eq 0",
+)
+# todos os indicadores, todos os campos do recurso
 ```
 
 **Detalhes técnicos:**
@@ -57,8 +65,98 @@ df = bcb.get_focus(
 - SGS `start="all"` mapeia para `"01/01/1970"` internamente; a API retorna desde o início real da série.
 - Focus: URL deve ter `$` literal — `requests(params={})` percent-encoda para `%24` e a API rejeita. URL é construída manualmente.
 - `$count` não suportado pelo endpoint Focus do BCB — paginação por `$skip` até `len(page) < page_size`.
-- `ExpectativasMercadoSelic` não tem campo `Suavizada` — filtro diferente de inflação.
+  **Paginar história longa com `$skip` crescente é lento e não é seguro**: o `$orderby=Data` não tem
+  desempate, então a ordem entre linhas da mesma data não é garantida entre páginas. Os scripts de
+  `expc_focus*` varrem por janela de **um mês** em vez de paginar o histórico inteiro — o endpoint
+  mais denso (`ExpectativaMercadoMensais`) dá ~4.200 linhas/mês contra o `$top` de 5.000, então na
+  prática o skip nunca sai de zero. Ver `domain/db/brasil/bcb/_focus_core.py`.
+- `indicador` e `campos` são opcionais: omitir `indicador` varre o endpoint inteiro (mais barato que
+  uma chamada por indicador quando são dezenas); omitir `campos` traz todos os campos do recurso.
+  `end=` fecha a janela do outro lado do `start=`.
+- `ExpectativasMercadoSelic` não tem campo `Suavizada` — filtro diferente de inflação. Ele devolve
+  **uma linha por reunião do Copom** (~16 por data de pesquisa), no campo `Reuniao` — não é um valor
+  por data, e tratar como se fosse foi o bug que a tabela `expc_focus` carregou até 2026-08.
+- **`baseCalculo`** (documentação oficial do serviço, `/aplicacao`): `0` = usa as submissões mais
+  recentes de cada instituição a partir do **30º dia anterior** ao cálculo; `1` = a partir do **4º dia
+  útil anterior**. Não são duas pesquisas — é a mesma com dois prazos de validade. Base 0 é ampla mas
+  carrega expectativa velha, base 1 é fresca mas magra (135 vs. 62 respondentes no IPCA 12m de
+  2026-08-14). `Suavizada` S/N existe **só** nos endpoints `Inflacao12Meses`/`24Meses`; `tipoCalculo`
+  (C/M/L, ou `CURTO_/MEDIO_/LONGO_PRAZO` nos de inflação) existe **só** nos endpoints Top5.
+- **A pesquisa foi reformulada quatro vezes** e as séries têm início/fim descontínuos: 2018-07-05
+  encerra Top5 IGP-DI; **2021-02-17 encerra a família antiga de índices de preços** (IGP-DI, INPC,
+  IPA-DI, IPA-M, IPC-Fipe, IPCA-15) em todos os endpoints; **2021-09-13→14** troca em um dia (sai
+  "Produção industrial" e saem PIB Agropecuária/Indústria/Serviços do endpoint *trimestral* — as
+  versões *anuais* seguem vivas —, entram os 5 componentes do IPCA, Taxa de desocupação, os
+  componentes de demanda do PIB e Câmbio/IPCA trimestrais); 2026-01-29 encerra Top5 IGP-M e Top5 IPCA
+  Administrados. Medir antes de assumir que uma série cobre o histórico inteiro.
 - Paralelismo: `ThreadPoolExecutor` para múltiplas séries SGS simultâneas.
+
+### `connectors/bcb_agenda.py` — Agenda de divulgações do BCB (feeds ICS)
+
+```python
+from connectors.bcb_agenda import BCBAgenda
+
+ag = BCBAgenda()
+
+ag.listas()       # 29 listas de calendario: {lista, categorias, link, e_evento}
+ag.categorias()   # 14 categorias (Copom, Estatisticas, Sondagens do BC, ...)
+
+ag.eventos("Sondagens - PTC PEF", start="2026-08-01", end="2026-12-31",
+           summary_contains="PTC")
+# [{'date': date(2026,8,20), 'time': '14:30', 'summary': '...', 'date_end': None}]
+
+ag.ics("Focus")   # texto cru do .ics
+```
+
+**Detalhes técnicos** (confirmados ao vivo em 2026-08-17):
+- `/api/exportarics/sitebcb/agendaics?lista=<Nome>` devolve `.ics` real, mas o horizonte é curto e
+  em geral **preso ao ano corrente** — medido em 2026-08-17: 7 das 10 listas do calendário paravam em
+  dez/2026, IBC-Br/ICBr chegavam a fev/2027, e só `Reuniões do Copom` ia a dez/2027 (publicado com
+  anos de antecedência por norma). Uma versão anterior desta nota dizia "~18 meses para frente" — está
+  errado, medir antes de assumir. **Não** é a rota `/acessoinformacao/calendariobc_ics`, que é SPA
+  Angular e cujo conteúdo está morto no backend (`/api/pagina/sitebcb/calendariobc[_ics]` retorna
+  stub SharePoint "File Not Found"). A página renderiza no browser porque o Angular monta o
+  seletor a partir dos endpoints de serviço abaixo, não do conteúdo da página — daí a confusão de
+  "abre no meu browser mas não pra você".
+- **Os nomes de `lista` são enumeráveis** — não chutar. `listas()` usa
+  `/api/servico/sitebcb/calendario/catassociado?lista=CalendariosAssociacaoCategorias`; os dois
+  nomes de lista do SharePoint saíram do bundle Angular (`calendario-card.component-*.js`, que
+  hardcoda `identificador="calendario"`). Há também `/selecionacatassociado`, que exige
+  `&categoria=<nome>` e dá 500 sem ele — `catassociado` sem categoria já traz tudo.
+- **Não exigem headers de browser**, ao contrário de outros `/api/servico/sitebcb/*` (copom/atas,
+  rpm): testado com User-Agent genérico e sem User-Agent nenhum, ambos HTTP 200.
+- Uma lista pode misturar divulgações diferentes — `Sondagens - PTC PEF` traz PTC e PEF,
+  `Estatísticas macroeconômicas` traz 4 pesquisas trimestrais. Daí `summary_contains`.
+- O feed do Copom emite os **dois dias** da reunião como eventos separados (00:00, sem DTEND);
+  quem pareia é `domain/release_calendar/update_calendar.py`.
+- Parsing próprio de ICS (sem dependência nova). Faz unfolding do RFC 5545 — linha continuada
+  começa com espaço/tab — senão um SUMMARY longo vira dois e perde metade. Aceita
+  `DTSTART;TZID=...:20260817T090000` e `DTSTART;VALUE=DATE:20260817`.
+- Retorna `list[dict]`, não DataFrame como os outros connectors: é metadado de calendário, não
+  série temporal, e o consumidor escreve YAML.
+- Único consumidor: `domain/release_calendar/update_calendar.py`.
+
+### `connectors/bcb_tabelas_especiais.py` — "Tabelas especiais" de estatísticas fiscais do BCB (xlsx)
+
+```python
+from connectors.bcb_tabelas_especiais import TabelasEspeciais
+
+te = TabelasEspeciais()
+sheets = te.read_sheets("Facdetp.xlsx")             # todas as abas, header=None
+sheets = te.read_sheets("Facdetp.xlsx", ["Juros"])  # só uma aba
+```
+
+**Detalhes técnicos** (confirmados ao vivo em 2026-08):
+- Fonte é uma pasta de conteúdo estático: `https://www.bcb.gov.br/content/estatisticas/Documents/Tabelas_especiais/{arquivo}`.
+  Nome de arquivo **fixo** — o BCB sobrescreve o mesmo arquivo a cada divulgação mensal. Ao contrário
+  da EFGG (`tesouro_efgg.py`), não há `id` variável para resolver, então não precisa parse de HTML.
+- **Não há listagem de diretório** e a página de Estatísticas Fiscais é SPA Angular (`requests`/WebFetch
+  trazem só o shell, sem os links) — um nome novo se descobre por tentativa direta. A pasta responde
+  200 para nome válido e 404 para inválido; `download()` levanta com mensagem explícita no 404.
+- Retorna abas cruas (`header=None`), igual a `tesouro_efgg.py` — parsing de cabeçalho/hierarquia é
+  responsabilidade do script de domínio.
+- Único consumidor hoje: `domain/db/brasil/bcb/fisc_dlsp_fatores.py` (`Facdetp.xlsx`, fatores
+  condicionantes da DLSP). Esses dados **não existem no SGS** — foi por isso que o connector nasceu.
 
 ### `connectors/fred.py` — API FRED (Federal Reserve)
 

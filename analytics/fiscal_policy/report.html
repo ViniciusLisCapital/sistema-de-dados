@@ -114,8 +114,12 @@
 
     /* ── Chart cards ── */
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    /* Qualquer div de grafico PRECISA estar nesta regra ou colapsa para largura ~0
+       (ver Gotchas em analytics/fiscal_policy/CLAUDE.md). A aba Dívida Líquida gera
+       seus 9 graficos por JS, entao usa a classe .dlsp-chart em vez de 9 ids. */
     #chart-impulso-combinado, #chart-ieg-hier, #chart-impulso-rp-esfera,
-    #chart-gfsm, #chart-rtn                                     { width: 100%; height: 560px; }
+    #chart-gfsm, #chart-rtn, .dlsp-chart,
+    #chart-inv-funcao, #chart-inv-natureza                      { width: 100%; height: 560px; }
 
     /* ── Controls (select dropdowns) ── */
     .ctrl-bar {
@@ -179,6 +183,8 @@
 
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="gfsm">Receitas e Despesas</button>
+  <button class="tab-btn" data-tab="dlsp">Dívida Líquida</button>
+  <button class="tab-btn" data-tab="investimento">Investimento</button>
   <button class="tab-btn" data-tab="impulso">Impulso Fiscal</button>
   <button class="tab-btn" data-tab="apendice">Apêndice</button>
 </nav>
@@ -300,6 +306,208 @@
 
   </div>
 
+  <!-- ═══════════ TAB — DÍVIDA LÍQUIDA (DLSP) ═══════════ -->
+  <!-- 9 seções (tabela + gráfico), uma por fator condicionante, espelhando as 9 abas
+       da planilha Facdetp.xlsx do BCB — construídas por JS a partir de D.dlsp.fatores
+       (ver renderDlspTab()), não escritas à mão aqui. -->
+  <div class="tab-panel" id="tab-dlsp">
+
+    <p class="note-metodologia">
+      <strong>Por que a dívida líquida mudou</strong>, não apenas quanto ela é. A DLSP (Dívida
+      Líquida do Setor Público) é o estoque; os oito fatores condicionantes abaixo somam
+      exatamente a variação desse estoque a cada mês — é uma identidade contábil, não uma
+      estimativa. Fonte: tabela especial <code>Facdetp.xlsx</code> do BCB, que não existe no
+      SGS. A primeira seção reorganiza os mesmos itens como <strong>balanço por entidade</strong>
+      (Passivos / Caixa / Títulos e créditos); depois vem uma seção por fator, na mesma ordem das
+      abas da planilha original.<br><br>
+      Nas nove seções por fator, cada tabela abre em <strong>três árvores independentes</strong>:
+      <strong>Dívida líquida total</strong> (aberta por devedor — Governo Federal, Banco Central,
+      estados, municípios, estatais), <strong>Dívida interna líquida</strong> (a mesma dívida
+      aberta por item de balanço dentro de cada devedor — dívida mobiliária, conta única,
+      operações compromissadas, base monetária, FAT, renegociações) e
+      <strong>Dívida externa líquida</strong> (por devedor). Como
+      <em>total = interna + externa</em>, marcar as três raízes plota o mesmo agregado duas
+      vezes — inteiro e em duas metades. Clique em ▸ para expandir; marque o checkbox para
+      plotar no gráfico da seção.<br><br>
+      Duas métricas, por seção: <strong>Nível</strong> — o valor como o BCB publica, em R$
+      correntes (saldo de fim de mês em Estoques, fluxo do próprio mês nos oito fatores);
+      <strong>% do PIB</strong> — sempre sobre o PIB acumulado em 12 meses, com o saldo do mês
+      no numerador em Estoques e o <strong>fluxo acumulado em 12 meses</strong> nos demais (um
+      fluxo mensal solto sobre o PIB de um mês seria ruído, e não corresponderia a nenhuma
+      divulgação; o acumulado em 12m é a convenção padrão e é o que reproduz as séries do SGS
+      — ver Apêndice). Um valor de Estoques em % do PIB é um saldo (~65% do PIB); um valor de
+      fluxo em % do PIB é um fluxo anual (tipicamente 1-8% do PIB) — mesma unidade, escalas
+      diferentes.<br><br>
+      <strong>Atenção ao sinal:</strong> a convenção aqui é a do BCB para fatores condicionantes
+      — <strong>fluxo positivo aumenta a dívida</strong>. Logo, na tabela
+      <strong>Primário</strong>, positivo significa <em>déficit</em> primário, o inverso da
+      convenção usada na aba <strong>Impulso Fiscal</strong> deste mesmo relatório (onde
+      positivo é superávit). Inverter o sinal aqui quebraria a identidade
+      estoque = soma dos fatores.
+    </p>
+
+    <section>
+      <h2>Balanço por Entidade</h2>
+      <p class="chart-caption">
+        Os mesmos itens reorganizados como <strong>balanço de cada entidade</strong> —
+        <strong>Passivos</strong>, <strong>Caixa e equivalentes</strong> e
+        <strong>Títulos e créditos</strong> — em vez do corte interna/externa das nove seções
+        abaixo. Cada entidade traz também sua linha <strong>Líquido</strong>, que é a
+        contribuição dela para a DLSP: <em>Passivos + Caixa + Títulos e créditos = Líquido</em>,
+        exato por construção (os três grupos são uma partição dos mesmos itens), e a soma dos
+        cinco líquidos reproduz a DLSP publicada.<br><br>
+        <strong>Por que por entidade e não consolidado.</strong> Dois pares de itens são
+        posições intra-governo e se cancelam exatamente: União⇄BCB (Conta Única, ±R$2,06&nbsp;tri;
+        dívida mobiliária na carteira do Bacen, ±R$2,97&nbsp;tri) e União⇄estados/municípios
+        (renegociações Lei 9.496/MP 2.185 e Lei 8.727 — a soma dos dois lados da 9.496 é zero em
+        todos os 295 meses). Por entidade eles são posições reais, e estão marcados com
+        <strong>⇄</strong> no rótulo. Os <em>líquidos</em> somam a DLSP porque os pares se
+        cancelam no líquido — mas <strong>a coluna de bruto não deve ser somada entre
+        entidades</strong> (isso dá R$18,4&nbsp;tri de passivos, um número não consolidado).<br><br>
+        É também por isso que "Caixa" só existe nesta visão: a Conta Única é um ativo real da
+        União (15,6% do PIB, o colchão de caixa do Tesouro), mas desaparece no consolidado
+        porque é um depósito no próprio BCB — lá sobram ~R$54&nbsp;bi de depósitos à vista em
+        bancos comerciais. O seletor <strong>Fator</strong> aplica a mesma árvore aos nove
+        fatores: em <em>Estoques</em> é o balanço; nos fatores de fluxo, é quanto daquele fluxo
+        atingiu passivos e quanto atingiu ativos.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Fator</span>
+        <select id="dlsp-balanco-fator-select" class="ctrl-select"></select>
+        <span class="ctrl-label">Métrica</span>
+        <select id="dlsp-balanco-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="pctpib">% do PIB</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="dlsp-balanco-table">
+          <thead id="dlsp-balanco-table-head"></thead>
+          <tbody id="dlsp-balanco-table-body"></tbody>
+        </table>
+      </div>
+      <p class="chart-caption">Marque uma ou mais linhas acima para plotá-las no gráfico.</p>
+      <div class="chart-card"><div class="dlsp-chart" id="chart-dlsp-balanco"></div></div>
+    </section>
+
+    <div id="dlsp-sections"></div>
+
+  </div>
+
+  <!-- ═══════════ TAB — INVESTIMENTO ═══════════ -->
+  <!-- Duas tabelas+gráficos, uma por corte de fisc_investimento (função orçamentária e
+       natureza da despesa). Deliberadamente NÃO um seletor de Corte — as duas árvores
+       divergem abaixo do GND (ver analytics/fiscal_policy/investimento_tab.py). -->
+  <div class="tab-panel" id="tab-investimento">
+
+    <section>
+      <h2>Investimento do Governo Federal — por Função Orçamentária</h2>
+      <p class="chart-caption">
+        <strong>Só os dois GNDs de capital.</strong> GND = Grupo de Natureza da Despesa, a classificação
+        orçamentária que agrupa o gasto pelo efeito econômico. <strong>GND 4 (Investimentos)</strong> cria
+        ativo novo — obras, equipamentos, mais as transferências de capital a estados/DF/municípios;
+        <strong>GND 5 (Inversões Financeiras)</strong> só troca a titularidade de um ativo que já existe —
+        participação no capital, integralização de cotas. Os dois vêm marcados <em>separados</em>, e não
+        somados no Investimento Total, porque é exatamente essa distinção que o corte por GND existe para
+        mostrar: o pico de 1,38% do PIB em 2020 é quase todo GND 5 (0,83 p.p.), operação financeira, não
+        investimento que cria ativo. Os outros 4 GNDs (pessoal, juros, custeio, amortização) não estão
+        nesta fonte — para despesa corrente use a aba <strong>Receitas e Despesas</strong>.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="inv-funcao-accum-select" class="ctrl-select">
+          <option value="mensal" selected>Mensal</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="acum12m">Acumulado 12m</option>
+          <option value="acum_ano">Acumulado no ano</option>
+        </select>
+        <span class="ctrl-label">Base</span>
+        <select id="inv-funcao-basis-select" class="ctrl-select">
+          <option value="nominal" selected>Nominal</option>
+          <option value="real">Real</option>
+        </select>
+        <span class="ctrl-label">Modelagem</span>
+        <select id="inv-funcao-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="yoy">Y/Y</option>
+          <option value="mom_sa">M/M</option>
+          <option value="qoq_sa">T/T</option>
+          <option value="pctpib">% PIB</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="inv-funcao-table">
+          <thead id="inv-funcao-table-head"></thead>
+          <tbody id="inv-funcao-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — por Função Orçamentária</h2>
+      <p class="chart-caption">
+        Marque uma ou mais linhas na tabela acima para plotar aqui. As 28 funções são as mesmas dentro de
+        cada GND — expanda GND 4 ou GND 5 para chegar nelas. <strong>Nem toda modelagem existe em todo
+        Nível</strong>, e as indisponíveis aparecem desabilitadas em vez de servir um número enganoso:
+        <strong>M/M</strong> não existe no Nível Trimestral (o valor é um degrau constante dentro do
+        trimestre, então mês contra mês daria 0% e um salto artificial na virada), e <strong>M/M e
+        T/T</strong> não existem no Acumulado no ano (as duas atravessariam o reset de janeiro). No
+        <strong>Acumulado 12m</strong>, M/M e T/T medem a <em>aceleração da própria janela de 12
+        meses</em> — não mês contra mês (ver Apêndice). <strong>% PIB divide sempre pelo PIB acumulado
+        em 12 meses</strong>, em todos os quatro Níveis — é um share anualizado do produto, o que deixa
+        os quatro comparáveis entre si ao custo de o número mensal ficar ~12x menor que o anual.
+      </p>
+      <div class="chart-card"><div id="chart-inv-funcao"></div></div>
+    </section>
+
+    <section>
+      <h2>Investimento do Governo Federal — por Natureza da Despesa</h2>
+      <p class="chart-caption">
+        Mesmo agregado da tabela acima, aberto por outro critério — <strong>os dois cortes são
+        independentes, não hierárquicos entre si</strong>: compartilham exatamente os quatro nós de cima
+        (Investimento Total, GND 4, GND 5, Ajuste de Ordem Bancária, idênticos mês a mês nos dois) e
+        divergem abaixo deles. Aqui o GND 4 se abre em aplicações diretas da União (obras, equipamentos,
+        serviços) <em>versus</em> transferências de capital a outros entes — a distinção entre o que a União
+        executa e o que ela repassa, que o corte por função não mostra.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="inv-natureza-accum-select" class="ctrl-select">
+          <option value="mensal" selected>Mensal</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="acum12m">Acumulado 12m</option>
+          <option value="acum_ano">Acumulado no ano</option>
+        </select>
+        <span class="ctrl-label">Base</span>
+        <select id="inv-natureza-basis-select" class="ctrl-select">
+          <option value="nominal" selected>Nominal</option>
+          <option value="real">Real</option>
+        </select>
+        <span class="ctrl-label">Modelagem</span>
+        <select id="inv-natureza-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="yoy">Y/Y</option>
+          <option value="mom_sa">M/M</option>
+          <option value="qoq_sa">T/T</option>
+          <option value="pctpib">% PIB</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="inv-natureza-table">
+          <thead id="inv-natureza-table-head"></thead>
+          <tbody id="inv-natureza-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — por Natureza da Despesa</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui. Mesmos eixos de Nível/Base/Modelagem da tabela por função, com as mesmas restrições por Nível.</p>
+      <div class="chart-card"><div id="chart-inv-natureza"></div></div>
+    </section>
+
+  </div>
+
   <!-- ═══════════ TAB — IMPULSO FISCAL ═══════════ -->
   <div class="tab-panel" id="tab-impulso">
 
@@ -309,27 +517,29 @@
     </p>
 
     <section>
-      <h2>Visão Combinada — IEG, Impulso via Resultado Primário e PIB</h2>
+      <h2>Visão Combinada — As Três Métricas de Impulso</h2>
       <p class="chart-caption">
-        As três métricas desta aba na mesma base de comparação: <strong>IEG</strong>,
-        <strong>Impulso via Resultado Primário</strong> e <strong>PIB</strong> (sempre a taxa
-        <strong>real</strong> — o IBGE publica essas variações sobre o índice de volume, não sobre
-        valores correntes).<br><br>
+        As três métricas desta aba no mesmo eixo: <strong>IEG</strong>,
+        <strong>Impulso via Resultado Primário</strong> e
+        <strong>Crédito a Inst. Financ. Oficiais</strong> (o canal parafiscal, em % do PIB).<br><br>
         <strong>4T/12m Acumulado (Y/Y)</strong>: cada métrica compara uma janela anual contra a janela
-        anual anterior — o IEG compara o acumulado em 4 trimestres contra o de 4 trimestres antes, o
-        Impulso PB compara o acumulado em 12 meses contra o de 12 meses antes, e o PIB entra pela taxa
-        <strong>acumulada em 4 trimestres</strong> (2026-08, a pedido do usuário — substituiu a
-        variação interanual simples, que comparava um único trimestre contra o mesmo trimestre do ano
-        anterior e por isso não tinha a mesma forma que as outras duas linhas).<br><br>
+        anual anterior — o IEG compara o acumulado em 4 trimestres contra o de 4 trimestres antes, e o
+        Impulso PB compara o acumulado em 12 meses contra o de 12 meses antes.<br><br>
         <strong>Trimestre (T/T)</strong> (2026-08, reescrito — ver Apêndice) é uma variação trimestral
-        genuinamente dessazonalizada (STL) em cada uma das três
+        genuinamente dessazonalizada (STL) em cada uma das duas
         séries — IEG sobre a série trimestral bruta do EFGG, Impulso PB sobre o fluxo mensal bruto do
-        BCB (suavizado numa soma móvel de 3 meses antes do ajuste sazonal), PIB via o indicador 'qoq'
-        oficial do IBGE (já dessazonalizado pelo próprio IBGE) — nenhuma das três é mais um atalho
-        sobre o acumulado em 12m/4T. Os fatores sazonais do STL são estimados apenas até o
+        BCB (suavizado numa soma móvel de 3 meses antes do ajuste sazonal) — nenhuma das duas é mais
+        um atalho sobre o acumulado em 12m/4T. Os fatores sazonais do STL são estimados apenas até o
         <strong>último ano civil completo</strong> e aplicados congelados ao ano corrente (ver
-        Apêndice). IEG e Impulso PB compartilham o eixo esquerdo (mesma unidade,
-        p.p.); o PIB fica no eixo direito (%, escala diferente).
+        Apêndice).<br><br>
+        <strong>Leitura das unidades — as três dividem um eixo, mas não são a mesma coisa.</strong>
+        IEG e Impulso PB são <em>variações</em> (p.p. do PIB entre duas janelas); o Crédito a Inst.
+        Financ. Oficiais é o <em>fluxo</em> acumulado em 12 meses como % do PIB. Compartilham o eixo
+        porque a ordem de grandeza é a mesma e o sinal tem o mesmo significado nas três
+        (<strong>positivo = expansionista</strong>), não porque sejam a mesma transformação. E a linha
+        do crédito é <strong>sempre a acumulada em 12 meses</strong>, independente do seletor
+        Comparação — a métrica foi definida assim e não tem variante trimestral (por isso o rótulo
+        dela no gráfico traz "acum. 12m" explícito). Ver a seção própria dela no fim desta aba.
       </p>
       <div class="ctrl-bar">
         <span class="ctrl-label">Comparação</span>
@@ -420,6 +630,48 @@
         </table>
       </div>
       <div class="chart-card"><div id="chart-impulso-rp-esfera"></div></div>
+    </section>
+
+    <section>
+      <h2>Impulso via Crédito a Instituições Financeiras Oficiais</h2>
+      <p class="chart-caption">
+        O <strong>canal parafiscal</strong>, que as duas métricas acima não capturam. Quando o Tesouro
+        empresta a uma instituição financeira oficial — historicamente o BNDES, em volume — a operação
+        é <em>financeira</em>: cria um ativo do Governo Federal e não aparece como despesa no resultado
+        primário "acima da linha". Mas é expansionista, porque coloca funding subsidiado na economia.
+        O fator <strong>Primário</strong> do item <em>Créditos concedidos a Inst. Financ. Oficiais</em>
+        (<code>fisc_dlsp_fatores</code>, aba Dívida Líquida) isola exatamente esse fluxo, aqui
+        <strong>acumulado em 12 meses</strong> e disponível em <strong>Nível</strong> (R$ milhões) ou
+        <strong>% do PIB</strong> (sobre o PIB acumulado em 12 meses, mesma convenção do resto do
+        relatório).<br><br>
+        <strong>Sinal invertido em relação à fonte, de propósito</strong>: na convenção da planilha do
+        BCB, emprestar torna o item mais negativo (o ativo cresce). Aqui o sinal é invertido para que
+        <strong>positivo = emprestando = impulso</strong>, alinhando esta métrica à convenção
+        "positivo = expansionista" que o IEG e o impulso via resultado primário já usam nesta aba.
+        Valores negativos são o inverso: a instituição amortizando/pré-pagando ao Tesouro, uma
+        contração parafiscal.<br><br>
+        A série reproduz a história conhecida do canal: pico de <strong>+4,65% do PIB em maio/2010</strong>
+        (capitalização do BNDES no pós-crise), reversão a <strong>−2,65% em agosto/2018</strong>
+        (pré-pagamentos do BNDES ao Tesouro) e <strong>+0,67% em junho/2026</strong>. Expandir a linha
+        principal mostra os dois subcomponentes que o BCB publica — os créditos junto ao BNDES e os
+        instrumentos híbridos de capital e dívida — que somam exatamente o total. Apenas o fator
+        <em>Primário</em> entra: o mesmo item também tem fluxo de juros e de ajuste metodológico
+        interno, fora do escopo desta métrica.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Métrica</span>
+        <select id="credito-oficial-metric-select" class="ctrl-select">
+          <option value="level" selected>Nível</option>
+          <option value="pctpib">% do PIB</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="credito-oficial-table">
+          <thead id="credito-oficial-table-head"></thead>
+          <tbody id="credito-oficial-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div class="dlsp-chart" id="chart-credito-oficial"></div></div>
     </section>
 
   </div>
@@ -600,6 +852,231 @@
       </details>
 
       <details class="appendix-item">
+        <summary>Dívida Líquida (DLSP) — Fatores Condicionantes, Metodologia Completa</summary>
+        <div class="appendix-body">
+          <strong>Fonte</strong>: planilha <code>Facdetp.xlsx</code>, uma das "tabelas especiais" de
+          estatísticas fiscais do BCB — <strong>não existe no SGS</strong>, que publica apenas os
+          agregados de dívida (DBGG/DLSP em % do PIB) e de resultado (NFSP), nunca a decomposição da
+          variação do estoque por item de balanço. Mensal desde dezembro/2001. Ingerida em
+          <code>macro_brasil.fisc_dlsp_fatores</code>: 95 itens × 9 fatores.<br><br>
+
+          <strong>A identidade</strong>. Para cada item e cada mês, a variação do estoque é exatamente a
+          soma dos oito fatores de fluxo:<br>
+          <em>estoque(t) − estoque(t−1) = primário + juros + ajuste metodológico interno + ajuste
+          metodológico externo + ajuste de paridade + ajuste caixa-competência + reconhecimento de
+          dívidas + privatizações</em>.<br>
+          Isso foi verificado célula a célula nas 27.930 combinações item × mês: fecha com desvio menor
+          que R$ 0,01 milhão em 27.904 delas. As 26 exceções estão todas em outubro/novembro de 2003 e
+          fevereiro/março de 2004, em pares que se cancelam entre meses consecutivos (por exemplo,
+          "Recursos do FAT" erra +R$ 622,8 mi em out/2003 e −R$ 622,8 mi em nov/2003) — é uma quebra da
+          revisão histórica do próprio BCB, não um erro de leitura da planilha, e por isso não foi
+          "corrigida" aqui.<br><br>
+
+          <strong>Três árvores, não uma</strong>. <em>Dívida líquida total</em> abre o estoque por
+          devedor; <em>Dívida interna líquida</em> abre a mesma dívida por item de balanço dentro de cada
+          devedor; <em>Dívida externa líquida</em> abre por devedor. Vale
+          <em>total = interna + externa</em> em todos os meses (desvio máximo de 2×10⁻⁹), e
+          <em>total = soma dos 5 devedores</em> exatamente, nas nove tabelas.<br><br>
+
+          <strong>As duas métricas</strong>. <em>Nível</em> é o valor como publicado, em R$ correntes:
+          saldo de fim de mês em Estoques, fluxo do próprio mês nos oito fatores. O fluxo mensal bruto é
+          deliberadamente ruidoso (um pagamento pontual move um único mês em dezenas de bilhões) — a
+          leitura suavizada é a segunda métrica. <em>% do PIB</em> divide sempre pelo PIB nominal
+          acumulado em 12 meses (<code>atv_pib_mensal.pib_acum_12m</code>, SGS 4382), mas o numerador
+          muda conforme a natureza do fator: em Estoques é o saldo do próprio mês; nos oito fatores de
+          fluxo é o <strong>fluxo acumulado em 12 meses</strong>. Um fluxo mensal solto dividido pelo PIB
+          de um mês seria ruído e não corresponderia a nenhuma divulgação; o acumulado em 12m é a
+          convenção padrão para fator condicionante e é a mesma já usada pelas colunas
+          <code>*_pct_pib_12m</code> do NFSP neste relatório. A escolha também preserva a identidade em
+          termos de % do PIB: a soma dos oito fluxos acumulados em 12 meses, sobre o PIB de 12 meses, é a
+          variação do estoque em 12 meses como % do PIB — a apresentação clássica de "o que explica a
+          variação da dívida no ano".<br><br>
+
+          <strong>Duas validações independentes contra o SGS</strong>, ambas ao vivo: (1) o estoque de
+          <em>Dívida líquida total</em> dividido pelo PIB acumulado em 12 meses reproduz
+          <code>fisc_divida.dlsp_pct_pib</code> a ±0,005 p.p. em todos os 295 meses — e o mesmo vale por
+          devedor (Governo Federal, Banco Central, estatais); (2) o fator <em>Primário</em> acumulado em
+          12 meses como % do PIB é o negativo exato de
+          <code>fisc_nfsp.resultado_primario_pct_pib_12m</code> (jun/2026: +1,19% aqui contra −1,19% lá).
+          Essa segunda igualdade é também a demonstração do ponto de sinal abaixo.<br><br>
+
+          <strong>Sinal — leia antes de comparar com a aba Impulso Fiscal</strong>. A convenção aqui é a
+          do BCB para fatores condicionantes: <strong>fluxo positivo aumenta a dívida</strong>. Logo, na
+          tabela <em>Primário</em>, positivo é <em>déficit</em> primário. A aba Impulso Fiscal usa a
+          convenção oposta, de mercado (positivo = superávit), porque a tabela
+          <code>fisc_nfsp</code> inverte o sinal na ingestão. Inverter também aqui quebraria a identidade
+          estoque = soma dos fatores, que é a razão de existir desta aba — então a divergência é
+          documentada, não "corrigida". Qualquer leitura que junte as duas abas precisa inverter uma
+          delas.<br><br>
+
+          <strong>Escala</strong>. Em % do PIB, um valor de Estoques é um <em>saldo</em> (~65% do PIB) e
+          um valor de fluxo é um <em>fluxo anual</em> (tipicamente 1 a 8% do PIB). Mesma unidade, escalas
+          diferentes — não são comparáveis lado a lado sem essa ressalva.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Balanço por Entidade — Passivos, Caixa e Créditos</summary>
+        <div class="appendix-body">
+          A primeira seção da aba Dívida Líquida reorganiza os mesmos 95 itens numa árvore
+          <strong>Entidade › Passivos | Caixa e equivalentes | Títulos e créditos › item</strong>, em vez
+          do corte interna/externa das nove seções por fator. Duas propriedades confirmadas ao vivo
+          sustentam essa visão.<br><br>
+
+          <strong>1. É completa e exata.</strong> Para cada entidade, <em>dívida interna líquida + dívida
+          externa líquida = total daquela entidade</em>, com desvio 0,000000 em todos os 295 meses; e a
+          soma das cinco entidades reproduz a DLSP consolidada, também exatamente. Então o balanço de
+          cada entidade é montável a partir das folhas das duas árvores sem nenhum resíduo. Como os três
+          grupos são uma <strong>partição</strong> dos mesmos itens, <em>Passivos + Caixa + Títulos e
+          créditos = Líquido</em> vale por construção — a classificação de cada item afeta a
+          interpretação, nunca a aritmética. (O resíduo observado é de R$ 0,50 mi no pior caso, só o
+          arredondamento de uma casa decimal do payload somado sobre ~20 itens.)<br><br>
+
+          <strong>2. Os offsets intra-governo deixam de ser double-count.</strong> Dois pares de itens
+          aparecem duas vezes com sinal oposto e se cancelam exatamente: União⇄BCB (Conta Única,
+          ±R$2,06&nbsp;tri; dívida mobiliária na carteira do Bacen, ±R$2,97&nbsp;tri) e
+          União⇄estados/municípios (renegociações Lei 9.496/MP 2.185 — a soma dos dois lados é zero em
+          <em>todos</em> os 295 meses —, Lei 8.727, dívidas reestruturadas). Numa visão consolidada esses
+          pares somem e viram fonte de erro; por entidade eles são posições reais, marcadas com
+          <strong>⇄</strong> no rótulo. Os <em>líquidos</em> continuam somando a DLSP porque os pares se
+          cancelam no líquido — mas <strong>a coluna de bruto não deve ser somada entre
+          entidades</strong>: isso dá R$18,4&nbsp;tri de passivos, contra R$12,0&nbsp;tri consolidados
+          (91% do PIB), uma diferença de ~40% que nada no número sinaliza.<br><br>
+
+          <strong>Por que "Caixa" só existe nesta visão.</strong> O colchão de caixa do Tesouro
+          <em>é</em> a Conta Única — R$2,06&nbsp;tri, 15,6% do PIB. Mas é um depósito no próprio Banco
+          Central, dentro do mesmo perímetro, então no consolidado ela se anula contra o passivo do BCB.
+          O que sobra de caixa consolidado são ~R$54&nbsp;bi de depósitos à vista em bancos comerciais,
+          0,4% do PIB. O ativo líquido de verdade do setor público consolidado são as reservas
+          internacionais, que esta planilha <strong>não</strong> expõe em linha própria: estão embutidas
+          na posição externa líquida do BCB (nota 15/ da planilha, −R$1,81&nbsp;tri), classificada aqui
+          como caixa com esse rótulo explícito. Reservas brutas em linha separada exigiriam cruzar com
+          <code>cmb_reservas_bc</code>, fora do escopo desta aba.<br><br>
+
+          <strong>Leituras que a visão consolidada não produz.</strong> O <strong>Banco Central é
+          líquido ~zero (−0,8% do PIB) sobre R$4,7&nbsp;tri de bruto em cada lado</strong>: operações
+          compromissadas 8,7% do PIB, Conta Única 15,6%, recolhimentos compulsórios 6,2% e base monetária
+          3,3% no passivo, contra uma carteira de títulos públicos de 22,5% e reservas de 13,7% no ativo
+          — o maior balanço do setor público, que toda leitura agregada da DLSP mostra como
+          arredondamento. E os <strong>estados já não devem principalmente à União</strong>: a
+          renegociação da Lei 9.496 é 0,7% do PIB dos 7,5% de dívida líquida deles, com "Outros débitos"
+          (6,2%) dominando — mudança estrutural real em relação a 2001, quando a 9.496 era o grosso.<br><br>
+
+          <strong>Quatro itens trocam de sinal ao longo da história</strong> (Previdência Social,
+          Equalização Cambial nos dois lados, Demais Contas do Bacen). São classificados pela
+          <em>natureza</em> do item, não pelo sinal observado — então num mês de sinal contrário o item
+          aparece com valor negativo dentro do próprio grupo (um "passivo negativo"), o que é preferível
+          a uma linha que pula de grupo ao longo do tempo. Dos 86 itens das duas árvores, 77 mantêm um
+          único sinal em todos os 295 meses.<br><br>
+
+          O seletor <strong>Fator</strong> aplica a mesma árvore aos nove fatores: em <em>Estoques</em> é
+          o balanço propriamente dito; nos fatores de fluxo, é quanto daquele fluxo atingiu passivos e
+          quanto atingiu ativos (por exemplo, juros pagos sobre passivos contra juros recebidos sobre
+          créditos).
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Investimento do Governo Federal — Metodologia Completa</summary>
+        <div class="appendix-body">
+          <strong>Fonte</strong>: Tesouro Nacional, API de Séries Temporais, <strong>Tema 13</strong>
+          ("Investimento do Governo Federal") — 78 séries mensais em R$ milhões correntes, valor pago no
+          mês, gravadas em <code>macro_brasil.fisc_investimento</code>. Escopo é o <strong>Governo
+          Federal</strong>, não o Governo Geral: não inclui investimento de estados e municípios com
+          recursos próprios (só as transferências de capital que a União faz a eles).<br><br>
+
+          <strong>GND — o que está e o que não está aqui.</strong> GND é o Grupo de Natureza da Despesa,
+          a classificação orçamentária brasileira que agrupa o gasto pelo efeito econômico. São seis
+          grupos: 1 Pessoal e Encargos Sociais, 2 Juros e Encargos da Dívida, 3 Outras Despesas
+          Correntes, 4 Investimentos, 5 Inversões Financeiras, 6 Amortização da Dívida. Este tema cobre
+          <strong>apenas os grupos 4 e 5</strong>, os dois de capital — é o que "investimento" significa
+          na estatística do Tesouro. GND 4 cria ativo novo; GND 5 apenas troca a titularidade de um ativo
+          existente. É a mesma distinção que faz o canal parafiscal de crédito a instituições financeiras
+          oficiais (aba Impulso Fiscal) não aparecer no resultado primário: uma operação financeira
+          constrói um ativo em vez de consumir recursos acima da linha.<br><br>
+
+          <strong>Dois cortes independentes, não hierárquicos entre si.</strong> A fonte publica o mesmo
+          agregado aberto por dois critérios: por <em>função orçamentária</em> (as 28 funções, dentro de
+          cada GND) e por <em>natureza da despesa</em> (aplicações diretas <em>versus</em> transferências;
+          participação no capital <em>versus</em> integralização de cotas). Os dois compartilham
+          exatamente os quatro nós de cima — Investimento Total, GND 4, GND 5 e Ajuste de Ordem Bancária —
+          e foi verificado que são <strong>idênticos</strong> entre os cortes em todos os 222 meses.
+          Abaixo disso as duas árvores não têm correspondência, e é por isso que são duas tabelas
+          separadas e não um seletor.<br><br>
+
+          <strong>Identidades</strong> (verificadas com desvio exato 0,0 em todos os 222 meses, nos dois
+          cortes): <code>Total = GND 4 + GND 5 + Ajuste de Ordem Bancária</code>, e cada nó pai é a soma
+          exata dos seus filhos. Os nós intermediários são séries próprias publicadas pelo Tesouro, não
+          rótulos — <strong>marcar um pai e os seus filhos ao mesmo tempo plota o mesmo valor duas
+          vezes</strong>, o que é permitido (a leitura é do usuário), mas não é o default.<br><br>
+
+          <strong>A série começa em 2008-01, não em 1997-01.</strong> A API anuncia
+          <code>dataInicialSerie</code> = 1997-01 para as 78 séries, mas 1997-2006 retorna o valor
+          <code>0,0</code> — zero como "sem dado", não como investimento igual a zero, que seria
+          implausível por 11 anos seguidos. 2007 confirma: os componentes são todos zero, mas a série de
+          total do corte por função carrega R$ 21,9 bi no ano, contradizendo o total do corte por
+          natureza, que é zero. O ETL corta em 2008-01, o primeiro mês em que os dois totais concordam e
+          a decomposição existe.<br><br>
+
+          <strong>As quatro janelas de Nível</strong>, e por que não toda modelagem existe em todas:
+          <ul>
+            <li><strong>Mensal</strong> — valor do próprio mês. Y/Y (12 meses), M/M e T/T
+            dessazonalizados por STL <code>period=12</code> (sem isso, reproduziriam o calendário de
+            execução orçamentária, que concentra investimento no fim do ano, em vez de uma variação
+            real). Aqui o T/T é o mês <em>t</em> contra o mês <em>t−3</em> da série dessazonalizada —
+            uma variação de 3 meses de uma série mensal, não uma comparação entre trimestres
+            fechados.</li>
+            <li><strong>Trimestral</strong> — soma do trimestre calendário, não móvel. <strong>Sem
+            M/M</strong>: o valor é um degrau constante dentro do trimestre, então mês contra mês daria
+            0% dentro dele e um salto artificial na virada. O <strong>T/T é dessazonalizado com STL
+            <code>period=4</code></strong> (2026-08): o ajuste roda sobre a série trimestral colapsada,
+            uma observação por trimestre, e não sobre o degrau mensal — rodar <code>period=4</code> no
+            degrau trataria 4 <em>meses</em> consecutivos como um ciclo e estimaria uma sazonalidade que
+            não existe. Sem esse ajuste, a concentração sistemática da execução no 4º trimestre faria o
+            T1-contra-T4 ler como colapso todo ano.</li>
+            <li><strong>Acumulado 12m</strong> — soma móvel de 12 meses, que cancela sazonalidade por
+            construção. Y/Y compara o ano-móvel com o anterior. <strong>M/M e T/T aqui medem a aceleração
+            da própria janela</strong> — quanto o acumulado de 12 meses mudou em relação ao acumulado de
+            1 ou 3 meses antes — e <em>não</em> mês contra mês. São oferecidos porque foram pedidos, mas
+            leia-os como aceleração; a tabela RTN da aba Receitas e Despesas desabilita o equivalente
+            justamente para evitar essa confusão.</li>
+            <li><strong>Acumulado no ano</strong> — soma no ano civil, zerando em cada janeiro. A janela
+            <em>cresce</em> ao longo do ano, então o valor de junho só é comparável com o junho de outro
+            ano: apenas <strong>Y/Y</strong> (Jan..M contra Jan..M do ano anterior). <strong>Sem M/M e sem
+            T/T</strong> — as duas atravessariam o reset de janeiro, onde um ano fechado vira um mês.</li>
+          </ul>
+
+          <strong>% do PIB — denominador único, PIB acumulado em 12 meses.</strong> O numerador acompanha
+          a janela do Nível selecionado; o denominador é sempre
+          <code>atv_pib_mensal.pib_acum_12m</code> (SGS 4382), nos quatro Níveis. Lê-se como um
+          <em>share anualizado do produto</em>, e a consequência prática é que os quatro Níveis ficam na
+          mesma escala — um % PIB lido no Mensal é diretamente comparável com um lido no Acum. 12m. O
+          preço é que o número mensal fica ~12x menor que o anual, e que <strong>esta aba diverge de
+          propósito das tabelas GFSM/RTN da aba Receitas e Despesas</strong>, que usam a mesma janela nos
+          dois lados da razão (um % PIB Trimestral lá é ~4x o de cá). Escolha explícita, 2026-08; é a
+          mesma convenção que a aba Dívida Líquida e o Panorama de Crédito já usam. % PIB só existe em
+          termos nominais — selecioná-lo força a base Nominal, porque o deflator cancelaria na razão.<br><br>
+
+          A base <strong>Real</strong> deflaciona cada mês pelo IPCA <em>antes</em> de acumular — somar os
+          nominais e deflacionar o total no fim precificaria doze meses de gasto ao nível de preços do
+          último mês. O deflator é o IPCA, preços ao consumidor, aplicado a gasto de capital: para GND 4
+          (obras e equipamentos) o INCC ou o deflator da FBCF seriam mais defensáveis, e essa escolha
+          está aberta.<br><br>
+
+          <strong>Séries que cruzam zero ou passam por zero: leia por Nível, não por taxa de
+          crescimento.</strong> Oito das 78 séries têm meses positivos e negativos — o
+          <em>Ajuste de Ordem Bancária</em> é o caso extremo (61 dos 222 meses negativos, oscilando entre
+          −R$ 3,5 bi e +R$ 3,4 bi), e algumas funções de GND 5 têm um ou dois meses negativos isolados.
+          Uma variação percentual sobre base que troca de sinal não tem leitura econômica, e ela continua
+          disponível na interface de propósito (mesma escolha que o Panorama de Crédito faz para
+          modalidades de base pequena: documentar, não suprimir). Outras 36 séries têm ao menos um mês
+          exatamente zero — em geral funções orçamentárias que nunca recebem inversão financeira; nessas,
+          a variação contra uma base zero é <em>indefinida</em> e aparece como <code>—</code>, não como
+          um número infinito.
+        </div>
+      </details>
+
+      <details class="appendix-item">
         <summary>IEG (Impulso Estrutural do Gasto) — Metodologia Completa</summary>
         <div class="appendix-body">
           Índice de Resende &amp; Pires (Textos para Discussão nº16, FGV/Tesouro, 2024), que mede o
@@ -643,6 +1120,53 @@
           exatamente os publicados no paper original (amostra 2010T1–2023T4); uma re-estimação própria,
           com amostra atualizada, é trabalho futuro (ver "Pending" em
           <code>analytics/fiscal_policy/CLAUDE.md</code>).
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Impulso via Crédito a Inst. Financ. Oficiais — Metodologia Completa</summary>
+        <div class="appendix-body">
+          <strong>O que a métrica mede</strong>: o canal <em>parafiscal</em>, que nem o IEG nem o impulso
+          via resultado primário capturam. Quando o Tesouro empresta a uma instituição financeira oficial
+          — historicamente o BNDES, em volume —, a operação é <em>financeira</em>: aumenta um ativo do
+          Governo Federal e não passa pela despesa primária "acima da linha". Mas é expansionista, porque
+          coloca funding subsidiado na economia. O resultado primário do período fica inalterado; a
+          dívida bruta cresce.<br><br>
+
+          <strong>Construção</strong>: o fator <strong>Primário</strong> do item <em>Créditos concedidos a
+          Inst. Financ. Oficiais</em> em <code>fisc_dlsp_fatores</code> (a mesma fonte da aba Dívida
+          Líquida) isola exatamente esse fluxo, mês a mês. Sobre ele: (1) soma móvel de
+          <strong>12 meses</strong>; (2) <strong>inversão de sinal</strong>; (3) opcionalmente divisão
+          pelo PIB nominal acumulado em 12 meses, a mesma convenção TTM/TTM do resto do relatório. Só o
+          fator Primário entra — o mesmo item também registra fluxo de <em>juros</em> e de <em>ajuste
+          metodológico interno</em>, deliberadamente fora do escopo. Os dois subcomponentes que o BCB
+          publica (créditos junto ao BNDES; instrumentos híbridos de capital e dívida) somam exatamente o
+          total, verificado em todos os meses.<br><br>
+
+          <strong>Por que o sinal é invertido</strong>: na convenção da planilha do BCB, emprestar torna o
+          item <em>mais negativo</em>, porque o ativo do governo cresce. Como emprestar é o impulso, a
+          série é multiplicada por −1 para que <strong>positivo = emprestando = expansionista</strong>,
+          alinhando-a às outras duas métricas desta aba. Valores negativos são o inverso: a instituição
+          amortizando ou pré-pagando ao Tesouro, uma contração parafiscal.<br><br>
+
+          <strong>Validação contra a história do canal</strong>: a série reproduz o episódio conhecido sem
+          nenhum ajuste — pico de <strong>+4,65% do PIB em maio/2010</strong> (a capitalização do BNDES no
+          pós-crise), reversão a <strong>−2,65% em agosto/2018</strong> (os pré-pagamentos do BNDES ao
+          Tesouro no período Meirelles), e <strong>+0,67% em junho/2026</strong>. As magnitudes são da
+          mesma ordem — em alguns anos maiores — que as do IEG, o que é o argumento para a métrica
+          existir.<br><br>
+
+          <strong>Na Visão Combinada</strong>: entra como terceira linha, em % do PIB, no mesmo eixo das
+          outras duas. As três compartilham o eixo porque a ordem de grandeza é a mesma e o sinal tem o
+          mesmo significado (positivo = expansionista), <strong>não</strong> porque sejam a mesma
+          transformação: IEG e Impulso PB são <em>variações</em> (p.p. entre duas janelas anuais), esta é
+          um <em>fluxo</em> acumulado em 12 meses. E ela é <strong>sempre a acumulada em 12 meses</strong>,
+          independente do seletor Comparação — a métrica não tem variante trimestral, e o rótulo dela no
+          gráfico traz "acum. 12m" explícito para isso não passar batido.<br><br>
+
+          <strong>Não é uma medida do estoque.</strong> O saldo do item hoje é um ativo de ~R$204&nbsp;bi
+          (1,5% do PIB), muito abaixo do pico do ciclo — esta métrica é o fluxo anual, não o que resta na
+          carteira.
         </div>
       </details>
 
@@ -753,7 +1277,7 @@
 
 // ── Data & palette ────────────────────────────────────────────────────────────
 if (typeof REPORT_DATA === 'undefined') {
-  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/fiscal_policy_latest.html</b></div>';
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/Fiscal Policy.html</b></div>';
   throw new Error('REPORT_DATA undefined');
 }
 var D = REPORT_DATA;
@@ -821,6 +1345,17 @@ function impulsoRPEsfera(key, variant) {
   var g = D.fiscal_impulse_nfsp || {};
   var s = g.esfera && g.esfera[key];
   var values = s && s[variant];
+  return values ? {dates: g.dates || [], values: values} : {dates: [], values: []};
+}
+// Impulso via credito a inst. financeiras oficiais, em % do PIB (acum. 12m) -- a
+// serie plotada na Visao Combinada. D.credito_oficial.series[item] guarda arrays NUS
+// contra o `dates` da raiz da payload, entao re-embrulha em {dates, values} aqui: um
+// trace Plotly com x/y undefined nao renderiza nada e nao lanca nada (ver Gotchas em
+// analytics/fiscal_policy/CLAUDE.md -- ja aconteceu neste relatorio).
+function creditoOficialTotal(metric) {
+  var g = D.credito_oficial || {};
+  var s = g.series && g.anchor && g.series[g.anchor];
+  var values = s && s[metric || 'pctpib'];
   return values ? {dates: g.dates || [], values: values} : {dates: [], values: []};
 }
 // D.pib_yoy e {name: {yoy:{...}, qoq:{...}, acum_4t:{...}}} (atv_pib_taxas). metric e
@@ -977,30 +1512,63 @@ function collapseToQuarterStart(dates, values) {
   }
   return {dates: outD, values: outV};
 }
+// opts adicionais usados SO pela aba Investimento (2026-08), todos opcionais e
+// inertes para gfsm/rtn, que seguem no caminho de antes:
+//   root()              -- devolve o bloco {tree, series, ref_date} quando ele nao esta
+//                          direto em D[dataKey] (Investimento aninha por corte:
+//                          D.investimento.cortes[corte]).
+//   sharedDates()       -- devolve a grade de datas da raiz do payload; ativa a leitura
+//                          do formato COMPACTO (variante = array de valores nu, ou o
+//                          escalar 0/null), ver investimento_tab.py's build().
+//   defaultAccumKey     -- chave de fallback do Nivel (default 'bruto'; Investimento
+//                          usa 'mensal').
+//   metricAvailability(accum) -> {metricValue: false} para as modelagens que nao existem
+//                          naquele Nivel. Generaliza a regra legada de 'marginal', que
+//                          continua valendo quando este hook nao e passado.
 function makeHierTab(opts) {
-  var state = {metric: null, basis: 'nominal', accum: 'bruto', esfera: null, checked: {}, expanded: {}};
+  var state = {metric: null, basis: 'nominal', accum: opts.defaultAccumKey || 'bruto', esfera: null, checked: {}, expanded: {}};
   opts.defaultChecked.forEach(function(k) { state.checked[k] = true; });
+  // Aba Investimento: `total` ja aberto, senao as duas linhas marcadas por default
+  // (GND 4 e GND 5) sao filhas de uma raiz fechada -- apareceriam no grafico sem
+  // linha visivel na tabela. gfsm/rtn nao passam isso e seguem abrindo fechadas.
+  (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
 
+  function rootFor() { return opts.root ? opts.root() : D[opts.dataKey]; }
+  // Reexpande o formato compacto para o {dates, values} que o resto desta fabrica
+  // espera. `undefined` = a metrica nao existe naquele Nivel (ex: mom_sa no Trimestral)
+  // e continua virando serie vazia, mesma semantica de antes.
+  function wrap(raw) {
+    if (!opts.sharedDates) return raw || {dates: [], values: []};
+    if (raw === undefined) return {dates: [], values: []};
+    var dates = opts.sharedDates();
+    if (raw === 0 || raw === null) {
+      var fill = (raw === 0 ? 0 : null);
+      return {dates: dates, values: dates.map(function() { return fill; })};
+    }
+    return {dates: dates, values: raw};
+  }
   function dataKeyFor(seriesKey) {
     return opts.esferaSelectId ? (state.esfera + '__' + seriesKey) : seriesKey;
   }
   function seriesFor(seriesKey) {
-    var byAccum = D[opts.dataKey].series[dataKeyFor(seriesKey)];
+    var byAccum = rootFor().series[dataKeyFor(seriesKey)];
     if (!byAccum) return {dates: [], values: []};
-    var byBasis = (byAccum[state.accum] || byAccum.bruto) || {};
+    var byBasis = (byAccum[state.accum] || byAccum[opts.defaultAccumKey || 'bruto']) || {};
     var result;
     // "% PIB" e uma chave IRMA de nominal/real dentro de byBasis (so tem ".level",
     // nunca yoy/mom_sa/qoq_sa -- ver analytics/fiscal_policy/transforms.py), nao uma
     // metrica dentro de nominal/real -- le direto em vez de passar por
     // byBasis[state.basis].
     if (state.metric === 'pctpib') {
-      result = (byBasis.pctpib && byBasis.pctpib.level) || {dates: [], values: []};
+      result = wrap(byBasis.pctpib && byBasis.pctpib.level);
     } else {
       var byMetric = byBasis[state.basis] || byBasis.nominal;
       // "Marginal" nao e uma chave propria nos dados -- resolve para 'mom_sa' (Nivel
       // Mensal, RTN) se existir, senao 'qoq_sa' (Trimestral/GFSM, que nunca tem mom_sa).
+      // A aba Investimento nao usa 'marginal': oferece 'mom_sa'/'qoq_sa' como opcoes
+      // proprias no <select>, resolvidas direto pelo else abaixo.
       var metric = state.metric === 'marginal' ? ((byMetric && byMetric.mom_sa) ? 'mom_sa' : 'qoq_sa') : state.metric;
-      result = (byMetric && byMetric[metric]) || {dates: [], values: []};
+      result = wrap(byMetric && byMetric[metric]);
     }
     if (opts.quarterlyStepAccum && state.accum === opts.quarterlyStepAccum) {
       return collapseToQuarterStart(result.dates, result.values);
@@ -1044,7 +1612,7 @@ function makeHierTab(opts) {
     var tbody = document.getElementById(opts.tableBodyId);
     tbody.innerHTML = '';
     var dates = refDates();
-    flattenHierRows(D[opts.dataKey].tree, state.expanded, 0).forEach(function(r) {
+    flattenHierRows(rootFor().tree, state.expanded, 0).forEach(function(r) {
       var node = r.node;
       var s = seriesFor(node.seriesKey);
       var valueByDate = {};
@@ -1100,8 +1668,8 @@ function makeHierTab(opts) {
         }
         if (node.children) walk(node.children);
       });
-    })(D[opts.dataKey].tree);
-    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date, state.accum));
+    })(rootFor().tree);
+    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, rootFor().ref_date, state.accum));
   }
   function wireControls() {
     if (opts.esferaSelectId) {
@@ -1140,27 +1708,51 @@ function makeHierTab(opts) {
       state.basis = basisSel.value;
       renderTable(); renderChart();
     });
+    // Desabilita as modelagens que nao existem no Nivel selecionado. Com
+    // opts.metricAvailability (aba Investimento, que expoe M/M e T/T como opcoes
+    // proprias), a regra vem do hook; sem ele, vale a regra legada de 'marginal' de
+    // GFSM/RTN, preservada como estava.
+    function applyMetricAvailability() {
+      if (opts.metricAvailability) {
+        var avail = opts.metricAvailability(state.accum);
+        var firstEnabled = null;
+        for (var i = 0; i < metricSel.options.length; i++) {
+          var o = metricSel.options[i];
+          o.disabled = (avail[o.value] === false);
+          if (!o.disabled && firstEnabled === null) firstEnabled = o.value;
+        }
+        if (avail[state.metric] === false && firstEnabled !== null) {
+          metricSel.value = firstEnabled;
+          state.metric = firstEnabled;
+        }
+        return;
+      }
+      // "Marginal" nao existe no Nivel Acumulado 12m -- a unica modelagem permitida
+      // ali e Y/Y (12m contra os 12m imediatamente anteriores); Nivel e % PIB
+      // continuam disponiveis (% PIB usa TTM/TTM nesse nivel, ver transforms.py).
+      // Cai para Y/Y se Marginal estiver selecionado ao trocar para Acumulado 12m.
+      var marginalOpt = findOption(metricSel, 'marginal');
+      if (marginalOpt) {
+        var disableMarginal = state.accum === 'acum';
+        marginalOpt.disabled = disableMarginal;
+        if (disableMarginal && state.metric === 'marginal') {
+          metricSel.value = 'yoy';
+          state.metric = 'yoy';
+        }
+      }
+    }
     if (accumSel) {
       state.accum = accumSel.value;
       accumSel.addEventListener('change', function() {
         state.accum = accumSel.value;
-        // "Marginal" nao existe no Nivel Acumulado 12m -- a unica modelagem
-        // permitida ali e Y/Y (12m contra os 12m imediatamente anteriores); Nivel e
-        // % PIB continuam disponiveis (% PIB usa TTM/TTM nesse nivel, ver
-        // transforms.py). Cai para Y/Y se Marginal estiver selecionado ao trocar
-        // para Acumulado 12m.
-        var marginalOpt = findOption(metricSel, 'marginal');
-        if (marginalOpt) {
-          var disableMarginal = state.accum === 'acum';
-          marginalOpt.disabled = disableMarginal;
-          if (disableMarginal && state.metric === 'marginal') {
-            metricSel.value = 'yoy';
-            state.metric = 'yoy';
-          }
-        }
+        applyMetricAvailability();
         renderTable(); renderChart();
       });
     }
+    // Uma vez na inicializacao tambem: o Nivel default pode ja excluir alguma
+    // modelagem (nenhum dos Niveis default exclui hoje, mas nao depender disso e o
+    // que impede a barra de controles de abrir num estado invalido no futuro).
+    applyMetricAvailability();
   }
   return {
     init: function() {
@@ -1220,6 +1812,344 @@ var RTN_TAB = makeHierTab({
   defaultChecked: ['receita_liquida', 'despesa_total', 'resultado_primario_governo_central'],
   fmtDate: fmtMonthShort, colLabel: 'Categoria (RTN)', quarterlyStepAccum: 'trimestral',
   yTitle: _rtnYTitle,
+});
+
+// ── Aba Investimento — investimento do Governo Federal por GND (2026-08) ─────────
+// Duas tabelas+graficos, uma por corte de fisc_investimento (funcao/natureza), mesmo
+// padrao GFSM/RTN da aba Receitas e Despesas -- e NAO um seletor de Corte: as duas
+// arvores divergem abaixo do GND, entao trocar o corte teria que trocar a arvore junto
+// (ver analytics/fiscal_policy/investimento_tab.py's docstring).
+//
+// Reusa makeHierTab() via os opts novos (root/sharedDates/defaultAccumKey/
+// defaultExpanded/metricAvailability), NAO uma fabrica propria: os eixos aqui sao os
+// MESMOS de GFSM/RTN (Nivel x Nominal-Real x Modelagem), so a lista de opcoes de cada
+// eixo muda -- diferente de makeDlspHierTab()/makeImpulsoHierTab(), que existem
+// justamente porque os eixos deles nao encaixam nessa fabrica.
+var _INV_JANELA = {mensal: 'Mensal', trimestral: 'Trimestral', acum12m: 'Acum. 12m', acum_ano: 'Acum. no ano'};
+// O "12m" no titulo do %PIB e o DENOMINADOR, nao a janela do numerador: esta aba usa a
+// convencao B de analytics/metric_layers.md (numerador segue o Nivel, denominador e
+// sempre pib_acum_12m), ao contrario de GFSM/RTN, que usam a mesma janela nos dois lados.
+// Sem o "12m" explicito no eixo, um %PIB Mensal daqui parece 12x menor que o de la sem
+// nenhuma pista do porque.
+function _invYTitle(metric, basis, refDate, accum) {
+  if (metric === 'pctpib') return '% do PIB 12m (' + _INV_JANELA[accum] + ')';
+  if (metric !== 'level') return '%';
+  var base = basis === 'real' ? 'R$ mi (a preços de ' + fmtMonthFull(refDate) + ')' : 'R$ mi';
+  return accum === 'mensal' ? base : base + ' — ' + _INV_JANELA[accum];
+}
+// M/M nao existe no Nivel Trimestral: o valor e um degrau constante dentro do trimestre,
+// entao mes-contra-mes daria 0% dentro dele e um salto artificial na virada. M/M e T/T
+// nao existem no Acum. no ano: as duas atravessariam o reset de janeiro (o acumulado de
+// janeiro contra o de dezembro nao e variacao mensal, e um ano fechado virando um mes).
+// Todo o resto fica disponivel -- INCLUSIVE M/M e T/T no Acum. 12m, que a RTN desabilita
+// de proposito. Aqui e pedido explicito do usuario, e a leitura correta (aceleracao da
+// propria janela de 12 meses, nao mes contra mes) esta dita no caption e no Apendice.
+function _invMetricAvailability(accum) {
+  if (accum === 'trimestral') return {mom_sa: false};
+  if (accum === 'acum_ano') return {mom_sa: false, qoq_sa: false};
+  return {};
+}
+function _invTab(corte) {
+  return makeHierTab({
+    root: function() { return D.investimento.cortes[corte]; },
+    sharedDates: function() { return D.investimento.dates; },
+    defaultAccumKey: 'mensal', quarterlyStepAccum: 'trimestral',
+    anchorSeriesKey: 'total',
+    accumSelectId: 'inv-' + corte + '-accum-select',
+    basisSelectId: 'inv-' + corte + '-basis-select',
+    metricSelectId: 'inv-' + corte + '-metric-select',
+    tableHeadId: 'inv-' + corte + '-table-head',
+    tableBodyId: 'inv-' + corte + '-table-body',
+    chartDivId: 'chart-inv-' + corte,
+    defaultChecked: D.investimento.cortes[corte].default_checked || [],
+    defaultExpanded: ['total'],
+    fmtDate: fmtMonthShort,
+    colLabel: corte === 'funcao' ? 'GND / Função Orçamentária' : 'GND / Natureza da Despesa',
+    metricAvailability: _invMetricAvailability,
+    yTitle: _invYTitle,
+  });
+}
+var INV_TABS = [];
+function renderInvestimentoTab() {
+  var cortes = (D.investimento && D.investimento.cortes) || {};
+  ['funcao', 'natureza'].forEach(function(corte) {
+    if (!cortes[corte]) return;
+    var t = _invTab(corte);
+    t.init();
+    INV_TABS.push(t);
+  });
+}
+
+// ── Aba Dívida Líquida (DLSP) — 9 tabelas+graficos, uma por fator condicionante ──
+// Fabrica propria (nao makeHierTab() acima) pelo mesmo motivo que makeImpulsoHierTab()
+// e separada: os eixos sao outros. Aqui NAO existe Nominal/Real nem toggle de
+// frequencia -- so uma metrica {level, pctpib} (escopo explicito desta rodada: "For
+// now, the only metric should be Level and % GDP") -- e as 9 secoes compartilham UMA
+// arvore e UMA grade de datas, entao o payload guarda `dates`/`tree` na raiz e cada
+// serie e um par de arrays nus (ver analytics/fiscal_policy/dlsp_tab.py), nao o
+// {dates, values} por serie que makeHierTab() espera.
+//
+// opts: {dataKey (default 'dlsp'), treeKey (default 'tree'), noFator, fator,
+//        fatorSelectId, metricSelectId, tableHeadId, tableBodyId, chartDivId,
+//        colLabel, defaultChecked: [keys], defaultExpanded: [keys], yTitle(state)}
+//
+// Serve 11 instancias hoje: as 9 secoes por fator, a secao Balanco por Entidade
+// (mesma payload, arvore por entidade, com seletor de Fator) e a secao "Impulso via
+// Crédito a Inst. Financ. Oficiais" da aba Impulso Fiscal (payload propria,
+// D.credito_oficial, que NAO tem a camada de fator -- por isso `noFator`).
+function makeDlspHierTab(opts) {
+  var state = {metric: 'level', fator: opts.fator, checked: {}, expanded: {}};
+  (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
+  (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
+
+  function payload() { return D[opts.dataKey || 'dlsp'] || {}; }
+  var dates = payload().dates || [];
+  var zeros = null;
+  function zerosArr() {
+    if (!zeros) zeros = dates.map(function() { return 0; });
+    return zeros;
+  }
+
+  // opts.treeKey: 'tree' (as 9 secoes por fator, arvores interna/externa) ou
+  // 'balanco_tree' (a secao Balanco por Entidade, Entidade > Passivos/Ativos > item).
+  function tree() { return payload()[opts.treeKey || 'tree'] || []; }
+  // series[fator][item] (ou series[item], se `noFator`) e {level, pctpib} OU o escalar
+  // 0, que dlsp_tab.py usa para as 364 de 855 series identicamente nulas (os ajustes
+  // metodologicos/paridade/caixa-competencia so tocam ~25 dos 95 itens) -- expande de
+  // volta aqui em vez de inflar o HTML com 295 zeros por serie.
+  function seriesFor(item) {
+    var all = payload().series || {};
+    var byItem = opts.noFator ? all : (all[state.fator] || {});
+    var s = byItem[item];
+    if (s === 0) return {dates: dates, values: zerosArr()};
+    if (!s) return {dates: [], values: []};
+    return {dates: dates, values: s[state.metric] || []};
+  }
+  function fmtValue(value) {
+    if (value == null || isNaN(value)) return '—';
+    if (state.metric === 'level') return fmtAutoCurrency(value);
+    return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
+  }
+  function refDates() { return dates.slice(-12); }
+  function yTitle() {
+    if (opts.yTitle) return opts.yTitle(state);
+    if (state.metric === 'pctpib') {
+      return state.fator === 'estoque' ? '% do PIB (saldo / PIB 12m)' : '% do PIB (fluxo acum. 12m / PIB 12m)';
+    }
+    return state.fator === 'estoque' ? 'R$ mi — saldo de fim de mês' : 'R$ mi — fluxo do mês';
+  }
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = opts.colLabel || 'Item';
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = fmtMonthShort(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var cols = refDates();
+    flattenHierRows(tree(), state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      cols.forEach(function(d) {
+        var tdValue = document.createElement('td');
+        tdValue.className = 'col-value';
+        tdValue.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(tdValue);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function renderChart() {
+    var specs = [], colorIdx = 0;
+    (function walk(tree) {
+      (tree || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          specs.push({dates: s.dates, values: s.values, label: node.label, color: GFSM_CHART_COLORS[colorIdx++ % GFSM_CHART_COLORS.length]});
+        }
+        if (node.children) walk(node.children);
+      });
+    })(tree());
+    renderLineChart(opts.chartDivId, specs, yTitle());
+  }
+  function wireControls() {
+    // Seletor de Fator: so existe na secao Balanco por Entidade, que mostra os
+    // mesmos 9 fatores numa arvore por entidade (as 9 secoes por fator, acima, tem
+    // o fator fixo pela propria secao).
+    if (opts.fatorSelectId) {
+      var fatorSel = document.getElementById(opts.fatorSelectId);
+      if (fatorSel) {
+        state.fator = fatorSel.value;
+        fatorSel.addEventListener('change', function() {
+          state.fator = fatorSel.value;
+          renderTable(); renderChart();
+        });
+      }
+    }
+    var sel = document.getElementById(opts.metricSelectId);
+    if (!sel) return;
+    state.metric = sel.value;
+    sel.addEventListener('change', function() {
+      state.metric = sel.value;
+      renderTable(); renderChart();
+    });
+  }
+  return {
+    init: function() {
+      wireControls();
+      renderTable();
+      renderChart();
+    },
+  };
+}
+// Constroi as 9 secoes (uma por fator, na ordem das abas da planilha do BCB) e
+// instancia uma makeDlspHierTab por secao. Gerado em JS em vez de escrito a mao no
+// HTML: sao 9 blocos identicos a menos do fator, e cada div de grafico novo teria de
+// entrar na regra de CSS de largura/altura (ver Gotchas em CLAUDE.md) -- a classe
+// .dlsp-chart cobre todos de uma vez.
+var DLSP_TABS = [];
+var DLSP_BALANCO_TAB = null;
+// Secao Balanco por Entidade -- mesma fabrica, arvore 'balanco_tree' e um seletor de
+// Fator proprio (as 9 secoes por fator tem o fator fixo). Preenche o <select> de
+// fator a partir do payload para nao repetir a lista de 9 rotulos no HTML.
+function renderDlspBalanco() {
+  var sel = document.getElementById('dlsp-balanco-fator-select');
+  var fatores = (D.dlsp && D.dlsp.fatores) || [];
+  if (!sel || !fatores.length) return;
+  sel.innerHTML = fatores.map(function(f, i) {
+    return '<option value="' + f.key + '"' + (i === 0 ? ' selected' : '') + '>' + f.label + '</option>';
+  }).join('');
+  var roots = ((D.dlsp && D.dlsp.balanco_tree) || []).map(function(n) { return n.key; });
+  DLSP_BALANCO_TAB = makeDlspHierTab({
+    treeKey: 'balanco_tree',
+    fator: fatores[0].key,
+    fatorSelectId: 'dlsp-balanco-fator-select',
+    metricSelectId: 'dlsp-balanco-metric-select',
+    tableHeadId: 'dlsp-balanco-table-head',
+    tableBodyId: 'dlsp-balanco-table-body',
+    chartDivId: 'chart-dlsp-balanco',
+    colLabel: 'Entidade / Grupo / Item',
+    // As 5 entidades marcadas (cada linha = a contribuição daquela entidade à DLSP,
+    // e as 5 somam o total), com o Governo Federal aberto nos seus grupos.
+    defaultChecked: roots,
+    defaultExpanded: roots.slice(0, 1),
+  });
+  DLSP_BALANCO_TAB.init();
+}
+function renderDlspTab() {
+  renderDlspBalanco();
+  var host = document.getElementById('dlsp-sections');
+  if (!host) return;
+  var fatores = (D.dlsp && D.dlsp.fatores) || [];
+  var notes = (D.dlsp && D.dlsp.notes) || {};
+  if (!fatores.length) {
+    host.innerHTML = '<p class="chart-caption">Dados de fatores condicionantes da DLSP indisponíveis nesta geração.</p>';
+    return;
+  }
+  host.innerHTML = fatores.map(function(f) {
+    var k = f.key;
+    return '' +
+      '<section>' +
+        '<h2>' + f.label + '</h2>' +
+        '<p class="chart-caption">' + (notes[k] || '') + '</p>' +
+        '<div class="ctrl-bar">' +
+          '<span class="ctrl-label">Métrica</span>' +
+          '<select id="dlsp-' + k + '-metric-select" class="ctrl-select">' +
+            '<option value="level" selected>Nível</option>' +
+            '<option value="pctpib">% do PIB</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="chart-card table-card">' +
+          '<table class="data-table" id="dlsp-' + k + '-table">' +
+            '<thead id="dlsp-' + k + '-table-head"></thead>' +
+            '<tbody id="dlsp-' + k + '-table-body"></tbody>' +
+          '</table>' +
+        '</div>' +
+        '<p class="chart-caption">Marque uma ou mais linhas acima para plotá-las no gráfico.</p>' +
+        '<div class="chart-card"><div class="dlsp-chart" id="chart-dlsp-' + k + '"></div></div>' +
+      '</section>';
+  }).join('');
+
+  DLSP_TABS = fatores.map(function(f) {
+    return makeDlspHierTab({
+      fator: f.key,
+      metricSelectId: 'dlsp-' + f.key + '-metric-select',
+      tableHeadId: 'dlsp-' + f.key + '-table-head',
+      tableBodyId: 'dlsp-' + f.key + '-table-body',
+      chartDivId: 'chart-dlsp-' + f.key,
+      colLabel: 'Item',
+      // Só a raiz "Dívida líquida total" marcada, e já expandida nos 5 devedores --
+      // marcar as 3 raízes de saída plotaria o mesmo agregado em dobro (total =
+      // interna + externa, ver a legenda da aba).
+      defaultChecked: [(D.dlsp && D.dlsp.anchor) || 'total'],
+      defaultExpanded: [(D.dlsp && D.dlsp.anchor) || 'total'],
+    });
+  });
+  DLSP_TABS.forEach(function(t) { t.init(); });
+}
+
+// ── Impulso via crédito a inst. financeiras oficiais (aba Impulso Fiscal) ──────
+// Reusa makeDlspHierTab com `noFator: true`: a payload D.credito_oficial tem a mesma
+// forma {dates, series, tree} da aba Dívida Líquida, mas sem a camada de fator (ela
+// JA e o fator `primario`, acumulado em 12m e com sinal invertido -- ver
+// _load_impulso_credito_oficial() em generate_report.py).
+var CREDITO_OFICIAL_TAB = makeDlspHierTab({
+  dataKey: 'credito_oficial', noFator: true,
+  metricSelectId: 'credito-oficial-metric-select',
+  tableHeadId: 'credito-oficial-table-head', tableBodyId: 'credito-oficial-table-body',
+  chartDivId: 'chart-credito-oficial',
+  colLabel: 'Rubrica',
+  defaultChecked: [(D.credito_oficial && D.credito_oficial.anchor) || ''],
+  yTitle: function(state) {
+    return state.metric === 'pctpib'
+      ? '% do PIB (acum. 12m) — positivo = impulso'
+      : 'R$ mi (acum. 12m) — positivo = impulso';
+  },
 });
 
 // ── Tab renderers ──────────────────────────────────────────────────────────────
@@ -1379,27 +2309,24 @@ var IMPULSO_RP_TAB = makeImpulsoHierTab({
   accumLabel: function(accum) { return accum === 'quarter' ? 'Trimestre (T/T)' : 'Acum. 12m (Y/Y), sinal invertido'; },
 });
 
-// ── Visão Combinada — IEG + Impulso via Resultado Primário + PIB (2026-08, a pedido do
-// usuario -- "A line graph with the IEG, primary balance impulse (aggregate) and the GDP
-// (aggregate)... 12m/4Q as well as quarter comparison"). Eixo duplo -- IEG/Impulso PB
-// compartilham o eixo esquerdo (mesma unidade, p.p.), PIB fica no eixo direito (%, escala
-// diferente) -- _bindYAutofit ja suporta multi-eixo nativamente (agrupa por t.yaxis, ver
-// analytics/report_structure/y_autofit.js), nao precisou de nenhuma mudanca ali.
-// "Trimestre" usa a variante T/T dessazonalizada (STL) de cada metrica -- ver
-// _ieg_contrib_for_esfera()/_impulso_quarter_via_stl(); o PIB entra pelo indicador 'qoq' do
-// IBGE, ja dessazonalizado na fonte. "4T/12m Acumulado" usa a leitura de janela anual de
-// cada uma: IEG 4T-contra-4T, impulso PB 12m-contra-12m e PIB pelo indicador 'acum_4t'
-// (2026-08 -- antes era 'yoy', trocado a pedido do usuario justamente para as tres linhas
-// terem a MESMA forma de comparacao; ver docstring de _load_pib_yoy()).
+// ── Visão Combinada — IEG + Impulso via Resultado Primário (2026-08; GDP line removed
+// 2026-08 a pedido do usuario). "Trimestre" usa a variante T/T dessazonalizada (STL) de
+// cada metrica -- ver _ieg_contrib_for_esfera()/_impulso_quarter_via_stl(). "4T/12m
+// Acumulado" usa a leitura de janela anual de cada uma: IEG 4T-contra-4T, impulso PB
+// 12m-contra-12m.
 function renderImpulsoCombinado() {
   var sel = document.getElementById('impulso-combinado-view-select');
   var view = sel ? sel.value : 'acum';
   var iegVariant = view === 'quarter' ? 'quarter' : 'acum4t';
   var pbVariant = view === 'quarter' ? 'quarter' : 'acum12m';
-  var gdpMetric = view === 'quarter' ? 'qoq' : 'acum_4t';
-  var gdpLabel = view === 'quarter' ? 'PIB (Var. T/T real, dessaz.)' : 'PIB (Var. real, acum. 4T)';
 
-  var ieg = iegTotal(iegVariant), pb = impulsoRPTotal(pbVariant), gdp = pibYoy('pib_pm', gdpMetric);
+  var ieg = iegTotal(iegVariant), pb = impulsoRPTotal(pbVariant);
+  // Terceira metrica (2026-08, a pedido do usuario): o canal parafiscal, em % do PIB.
+  // Sempre o acumulado em 12 MESES, independente do dropdown Comparacao -- e como a
+  // metrica foi definida ("summing up the 12m"), nao ha variante trimestral dela, e o
+  // rotulo do trace diz isso para nao dar a impressao de que acompanha o toggle.
+  var credito = creditoOficialTotal('pctpib');
+  var CREDITO_LABEL = 'Crédito a Inst. Financ. Oficiais (% PIB, acum. 12m)';
 
   var traces = [
     {
@@ -1413,16 +2340,12 @@ function renderImpulsoCombinado() {
       hovertemplate: '<b>Impulso via Resultado Primário</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
     },
     {
-      type: 'scatter', mode: 'lines', name: gdpLabel, x: gdp.dates, y: gdp.values,
-      line: {color: C.verde, width: 2, dash: 'dot'}, yaxis: 'y2',
-      hovertemplate: '<b>' + gdpLabel + '</b><br>%{x}<br>%{y:,.2f}%<extra></extra>',
+      type: 'scatter', mode: 'lines', name: CREDITO_LABEL, x: credito.dates, y: credito.values,
+      line: {color: C.verde, width: 2}, yaxis: 'y',
+      hovertemplate: '<b>' + CREDITO_LABEL + '</b><br>%{x}<br>%{y:,.2f}% do PIB<extra></extra>',
     },
   ];
-  var layout = mkTimeseriesLayout('p.p. (IEG / Impulso via Resultado Primário)');
-  layout.yaxis2 = {
-    title: {text: '% (PIB)', font: {size: 11}}, overlaying: 'y', side: 'right',
-    zeroline: false, gridcolor: 'transparent',
-  };
+  var layout = mkTimeseriesLayout('% do PIB / p.p. (as três métricas de impulso)');
   Plotly.react('chart-impulso-combinado', traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit('chart-impulso-combinado');
 
@@ -1436,7 +2359,9 @@ function renderImpulsoCombinado() {
 // non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
 var RENDERERS = {
   gfsm: function() { GFSM_TAB.init(); RTN_TAB.init(); },
-  impulso: function() { renderImpulsoCombinado(); IEG_HIER_TAB.init(); IMPULSO_RP_TAB.init(); },
+  dlsp: function() { renderDlspTab(); },
+  investimento: function() { renderInvestimentoTab(); },
+  impulso: function() { renderImpulsoCombinado(); IEG_HIER_TAB.init(); IMPULSO_RP_TAB.init(); CREDITO_OFICIAL_TAB.init(); },
 };
 var tabRendered = {};
 function activateTab(tab) {

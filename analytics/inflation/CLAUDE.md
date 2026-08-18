@@ -7,7 +7,7 @@ IPCA/IPCA-15 decomposition report: self-contained HTML that reads MySQL (`macro_
 ```powershell
 uv run python analytics/inflation/fetch_bcb.py               # refresh data/ipca_bcb_series.csv — NOT scheduled, run manually
 uv run python -c "from analytics.inflation.generate_report import run; run()"
-# Output: reports/inflation_latest.html (self-contained, ~99 MB as of the
+# Output: reports/Inflation.html (self-contained, ~99 MB as of the
 # 2026-07 historical extension back to ago/1999 — up from ~14 MB, since the
 # now much longer decomposition records embedded as inline JSON are the
 # bulk of it. Flagged, not yet addressed: emailability is a real concern
