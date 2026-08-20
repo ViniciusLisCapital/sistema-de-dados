@@ -1,7 +1,7 @@
 """
 Shared build-time assembly for analytics/ self-contained HTML reports.
 
-Extracted 2026-08 from analytics/inflation/generate_report.py (the pilot) --
+Extracted 2026-08 from analytics/brasil/inflation/generate_report.py (the pilot) --
 see analytics/report_structure/CLAUDE.md for the convention this establishes
 and which reports have been migrated onto it so far.
 

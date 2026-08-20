@@ -22,9 +22,9 @@ Four call sites, each with its own wrapper:
 
 | Wrapper | Where | Period |
 |---|---|---|
-| `_saar_sa()` (inline in `run()`) | [`analytics/inflation/fetch_bcb.py`](inflation/fetch_bcb.py) | 12 |
-| `stl_seasonal_adjust()` | [`analytics/credit/transforms.py`](credit/transforms.py) | 12 |
-| `stl_seasonal_adjust()` | [`analytics/fiscal_policy/transforms.py`](fiscal_policy/transforms.py) | 4 (and 12 via `credit`'s) |
+| `_saar_sa()` (inline in `run()`) | [`analytics/brasil/inflation/fetch_bcb.py`](brasil/inflation/fetch_bcb.py) | 12 |
+| `stl_seasonal_adjust()` | [`analytics/brasil/credit/transforms.py`](brasil/credit/transforms.py) | 12 |
+| `stl_seasonal_adjust()` | [`analytics/brasil/fiscal_policy/transforms.py`](brasil/fiscal_policy/transforms.py) | 4 (and 12 via `credit`'s) |
 | `Score_SA()` | [`utils/thermometer.py`](../utils/thermometer.py) | 12 |
 
 ### X-13ARIMA-SEATS — `statsmodels.tsa.x13.x13_arima_analysis`
@@ -159,10 +159,10 @@ at all — see (iv).
 
 | Consumer | Period | Series | Fits | Persisted? |
 |---|---|---|---|---|
-| [`inflation/fetch_bcb.py`](inflation/fetch_bcb.py) — `_SAAR_SERIES` + MA(3) | 12 | 20 | 20 | yes → `data/ipca_bcb_series.csv` as `*_ma3_sa` |
-| [`credit/`](credit/) — Saldo (122), Concessão (72), Ampliado (21) | 12 | 215 | 430 | no, report-time |
-| [`fiscal_policy/rtn_tab.py`](fiscal_policy/rtn_tab.py) — RTN Gov. Central | 12 | 35 | 70 | no |
-| [`fiscal_policy/`](fiscal_policy/) — GFSM (108) + PIB/impulso | 4 | ~119 | 238 | no |
+| [`inflation/fetch_bcb.py`](brasil/inflation/fetch_bcb.py) — `_SAAR_SERIES` + MA(3) | 12 | 20 | 20 | yes → `data/ipca_bcb_series.csv` as `*_ma3_sa` |
+| [`credit/`](brasil/credit/) — Saldo (122), Concessão (72), Ampliado (21) | 12 | 215 | 430 | no, report-time |
+| [`fiscal_policy/rtn_tab.py`](brasil/fiscal_policy/rtn_tab.py) — RTN Gov. Central | 12 | 35 | 70 | no |
+| [`fiscal_policy/`](brasil/fiscal_policy/) — GFSM (108) + PIB/impulso | 4 | ~119 | 238 | no |
 | [`oraculo/brasil/scores.py`](oraculo/brasil/scores.py) via `Score_SA` | 12 | 2 | 2 | as scores |
 
 Fits ≈ 2 × series because `compute_variants()` adjusts the nominal and the IPCA-deflated version
@@ -192,8 +192,8 @@ next to the official SA benchmark — that pairing is what made the scorecard ab
 
 ### Deliberately not adjusted
 
-[`labor_market/`](labor_market/) — visualisation only, no derived metric (explicit user decision).
-[`economic_activity/`](economic_activity/) — consumes IBGE's own SA rather than computing any.
+[`labor_market/`](brasil/labor_market/) — visualisation only, no derived metric (explicit user decision).
+[`economic_activity/`](brasil/economic_activity/) — consumes IBGE's own SA rather than computing any.
 
 ### Where X-13 is worth adopting first
 

@@ -9,12 +9,22 @@ Build-time-only building blocks for the `/*REPORT_DATA*/`-template reports (`exc
 | `builder.py` | `render_report(template_path, data, output_path, extra_markers=None)` — reads the template, JSON-serializes `data`, substitutes markers, writes the output, returns the resolved `Path` | — |
 | `theme.css` | The shared LIS brand `:root` palette + universal reset/body rules (`--lis-azul`, `--lis-dourado`, etc. — see `project_lis_brand_colors` memory for the canonical hex values) | `/*THEME_CSS*/` |
 | `y_autofit.js` | `_bindYAutofit()`/`_toComparableX()` — the Plotly rangeselector Y-refit helper described in `.claude/rules/lis-dashboards.md`'s "Plotly setup" section | `/*Y_AUTOFIT_JS*/` |
+| `tree_helpers.py` | `leaf()`/`group()`/`direct()` — the node builders every hierarchical-table tab uses to assemble its `{key, label, seriesKey, children}` tree. **Not a marker: a plain runtime import**, unlike the other three files here | — (imported, not substituted) |
 
 `render_report()` always substitutes `/*REPORT_DATA*/`; it only touches `/*THEME_CSS*/`/`/*Y_AUTOFIT_JS*/` if the template actually contains those markers, so a report can adopt one piece without adopting all of them.
 
 `extra_markers` (added 2026-08 for `exchange_rate/`) covers templates with more than one JSON payload: `{"PPP_DATA": payload_or_None}` fills `/*PPP_DATA*/` with that payload's JSON, or the literal `null` when the value is `None`, so a section whose data wasn't built this run still has something valid to check against. Unlike `/*REPORT_DATA*/`, these substitute the **bare JSON value** — the template owns the `const X = ...;` declaration. Markers absent from the template are skipped silently, so passing a marker a report doesn't have is harmless.
 
 **A marker the template declares and nobody substitutes is a syntax error, not an empty section** (`const X = /*X*/;` → `const X = ;`). If a report can skip building a payload, it must still pass that marker as `None`.
+
+`tree_helpers.py` is the one exception to "build-time only" (see the last section): it's imported
+normally at generation time, not pasted into a template. It landed here in 2026-08 with the
+country-first rename — it had been living in `analytics/credit/` while `fiscal_policy/` and
+`labor_market/` imported it across folders, which stopped being tenable once a `us/` branch could
+need the same builders without reaching into `brasil/credit/`. The deflation/STL/growth transforms
+did **not** move with it: `brasil/credit/transforms.py` chains an IPCA index and divides by a BCB
+`atv_pib_mensal` denominator, so it is Brazil-specific by construction — a US report needs its own,
+built on CPI.
 
 ## How a report uses it
 

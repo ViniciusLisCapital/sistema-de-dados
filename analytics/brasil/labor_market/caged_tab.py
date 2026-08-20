@@ -1,0 +1,308 @@
+"""
+Monta o dataset da aba "Emprego Formal" do Panorama de Mercado de Trabalho --
+CAGED/MTE, 5 tabelas: Nacional, Por Setor, Por UF, Por Faixa Salarial e Estoque.
+
+Por que aba separada, e nao dentro de Taxas/Ocupacao/Rendimento (avaliacao de
+2026-08): CAGED e PNAD medem universos diferentes e nao sao comparaveis no mesmo
+grafico. PNAD e pesquisa domiciliar (~103M ocupados, inclui informal, resultado
+em taxa/nivel); CAGED e registro administrativo do emprego formal celetista
+(~48M de estoque) e o que ele publica e FLUXO -- admissoes, desligamentos e o
+saldo entre os dois, em pessoas/mes. As tabelas hierarquicas deste relatorio
+plotam todas as linhas marcadas num eixo so, entao misturar `ocupado` (mil
+pessoas, PNAD) com `saldo` (pessoas/mes, CAGED) produziria leitura errada por
+construcao. Somam-se a isso a janela (2020-01 vs. 2012-03 da PNAD) e a revisao
+retroativa, que so o CAGED tem.
+
+## Controles: por que NAO ha variacao percentual aqui
+
+As abas de PNAD usam Nivel/Var. Curto Prazo/Var. Anual. Para fluxo de CAGED isso
+nao serve: saldo e liquido e cruza zero -- confirmado ao vivo (2026-08), as 22
+secoes CNAE cruzam, e a variacao anual em % do saldo nacional chega a 696%.
+Percentual sobre serie que troca de sinal e ruido numerico, nao leitura ruim.
+As tabelas de fluxo usam entao Mensal / Acum. 12m / Acum. no ano -- que e como o
+proprio MTE publica, e continua sendo so visualizacao (nenhuma metrica derivada,
+mesma restricao de escopo da v1, ver CLAUDE.md).
+
+A tabela de Estoque tem seletor proprio (Nivel / Var. Mensal / Var. Anual):
+estoque nunca cruza zero, entao a variacao percentual e valida la -- e a Var.
+Mensal em pessoas e justamente a leitura de saldo dessa serie.
+
+## Dois cortes setoriais que NAO se conversam
+
+`mt_caged_setor` (microdado) traz as 22 secoes CNAE 2.0. `mt_caged` (BCB) traz
+uma taxonomia propria de 3 niveis com agregados intermediarios (SIUP, Servicos)
+que nao mapeia 1:1 nas secoes. Ficam em tabelas separadas de proposito -- ver o
+Apendice do relatorio.
+"""
+from analytics.report_structure import tree_helpers as th
+from analytics.brasil.labor_market import transforms as tf
+
+# --- Cortes ------------------------------------------------------------------
+# Slugs identicos aos que domain/db/brasil/mte/mt_caged_*.py gravam em
+# `categoria` -- ver _SECAO/_UF/_BANDAS la.
+
+_SETOR_LABELS = {
+    "agropecuaria": "Agropecuária",
+    "industria_extrativa": "Indústria extrativa",
+    "industria_transformacao": "Indústria de transformação",
+    "eletricidade_gas": "Eletricidade e gás",
+    "agua_esgoto_residuos": "Água, esgoto e gestão de resíduos",
+    "construcao": "Construção",
+    "comercio": "Comércio",
+    "transporte_armazenagem_correio": "Transporte, armazenagem e correio",
+    "alojamento_alimentacao": "Alojamento e alimentação",
+    "informacao_comunicacao": "Informação e comunicação",
+    "atividades_financeiras_seguros": "Atividades financeiras e seguros",
+    "atividades_imobiliarias": "Atividades imobiliárias",
+    "atividades_profissionais_cientificas_tecnicas": "Atividades profissionais, científicas e técnicas",
+    "atividades_administrativas_servicos_complementares": "Atividades administrativas e serviços complementares",
+    "administracao_publica_defesa_seguridade_social": "Administração pública, defesa e seguridade social",
+    "educacao": "Educação",
+    "saude_servicos_sociais": "Saúde e serviços sociais",
+    "artes_cultura_esporte_recreacao": "Artes, cultura, esporte e recreação",
+    "outras_atividades_servicos": "Outras atividades de serviços",
+    "servicos_domesticos": "Serviços domésticos",
+    "organismos_internacionais": "Organismos internacionais",
+    "nao_identificado": "Não identificado",
+}
+
+# Regioes IBGE. `NI` (nao identificado) fica como folha solta fora das regioes --
+# nao pertence a nenhuma, e enfia-lo numa distorceria o total regional.
+_REGIOES = [
+    ("norte", "Norte", ["RO", "AC", "AM", "RR", "PA", "AP", "TO"]),
+    ("nordeste", "Nordeste", ["MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"]),
+    ("sudeste", "Sudeste", ["MG", "ES", "RJ", "SP"]),
+    ("sul", "Sul", ["PR", "SC", "RS"]),
+    ("centro_oeste", "Centro-Oeste", ["MS", "MT", "GO", "DF"]),
+]
+_UF_LABELS = {
+    "RO": "Rondônia", "AC": "Acre", "AM": "Amazonas", "RR": "Roraima", "PA": "Pará",
+    "AP": "Amapá", "TO": "Tocantins", "MA": "Maranhão", "PI": "Piauí", "CE": "Ceará",
+    "RN": "Rio Grande do Norte", "PB": "Paraíba", "PE": "Pernambuco", "AL": "Alagoas",
+    "SE": "Sergipe", "BA": "Bahia", "MG": "Minas Gerais", "ES": "Espírito Santo",
+    "RJ": "Rio de Janeiro", "SP": "São Paulo", "PR": "Paraná", "SC": "Santa Catarina",
+    "RS": "Rio Grande do Sul", "MS": "Mato Grosso do Sul", "MT": "Mato Grosso",
+    "GO": "Goiás", "DF": "Distrito Federal", "NI": "Não identificado",
+}
+
+_SALARIO_LABELS = {
+    "ate_1sm": "Até 1 salário mínimo",
+    "de_1_a_1_5sm": "De 1 a 1,5 SM",
+    "de_1_5_a_2sm": "De 1,5 a 2 SM",
+    "de_2_a_3sm": "De 2 a 3 SM",
+    "de_3_a_5sm": "De 3 a 5 SM",
+    "de_5_a_7sm": "De 5 a 7 SM",
+    "de_7_a_10sm": "De 7 a 10 SM",
+    "de_10_a_15sm": "De 10 a 15 SM",
+    "de_15_a_20sm": "De 15 a 20 SM",
+    "mais_de_20sm": "Mais de 20 SM",
+    "nao_identificado": "Não identificado",
+}
+
+_METRICAS = ["saldo", "admissoes", "desligamentos"]
+_METRICA_LABELS = {"saldo": "Saldo", "admissoes": "Admissões", "desligamentos": "Desligamentos"}
+
+# --- Estoque (mt_caged, BCB) -- arvore de 3 niveis, validada ao vivo somando as
+# partes (ver docstring de domain/db/brasil/bcb/mt_caged.py) -----------------
+
+_ESTOQUE_TREE = [
+    th.direct("caged_total", "Total — empregos formais", [
+        th.direct("caged_agropecuaria", "Agropecuária"),
+        th.direct("caged_ind_extrativa", "Indústria extrativa"),
+        th.direct("caged_ind_transformacao", "Indústria de transformação"),
+        th.direct("caged_SIUP", "Serviços industriais de utilidade pública (SIUP)", [
+            th.direct("caged_eletricidade_gas", "Eletricidade e gás"),
+            th.direct("caged_gestao_residuos", "Água, esgoto e gestão de resíduos"),
+        ]),
+        th.direct("caged_construcao", "Construção"),
+        th.direct("caged_comercio", "Comércio"),
+        th.direct("caged_servicos", "Serviços", [
+            th.direct("caged_transp_arm_correios", "Transporte, armazenagem e correios"),
+            th.direct("caged_aloj_alimentacao", "Alojamento e alimentação"),
+            th.direct("caged_informacao_comunicacao", "Informação e comunicação"),
+            th.direct("caged_ativ_financeiras_seguros", "Atividades financeiras e seguros"),
+        ]),
+    ]),
+]
+DB_NAMES_ESTOQUE = [
+    "caged_total", "caged_agropecuaria", "caged_ind_extrativa", "caged_ind_transformacao",
+    "caged_SIUP", "caged_eletricidade_gas", "caged_gestao_residuos", "caged_construcao",
+    "caged_comercio", "caged_servicos", "caged_transp_arm_correios", "caged_aloj_alimentacao",
+    "caged_informacao_comunicacao", "caged_ativ_financeiras_seguros",
+]
+
+# --- Controles ----------------------------------------------------------------
+# Cada opcao pode carregar `fmt` (como formatar o valor na tabela) e `ytitle`
+# (rotulo do eixo Y). Quando ha 2 controles, a chave da variante e a concatenacao
+# dos dois valores com "__" e o fmt/ytitle do ULTIMO controle que define um vence
+# -- ver makeSimpleHierTab() em report.html.
+
+_CTRL_METRICA = {
+    "key": "metrica", "label": "Métrica",
+    "options": [{"value": m, "label": _METRICA_LABELS[m]} for m in _METRICAS],
+}
+_CTRL_PERIODO = {
+    "key": "periodo", "label": "Período",
+    "options": [
+        {"value": "mensal", "label": "Mensal", "fmt": "pessoas", "ytitle": "pessoas no mês"},
+        {"value": "acum12m", "label": "Acum. 12m", "fmt": "pessoas", "ytitle": "pessoas, acum. 12 meses"},
+        {"value": "acum_ano", "label": "Acum. no ano", "fmt": "pessoas", "ytitle": "pessoas, acum. no ano"},
+    ],
+}
+_CTRL_ESTOQUE = {
+    "key": "metric", "label": "Nível",
+    "options": [
+        {"value": "level", "label": "Nível", "fmt": "pessoas", "ytitle": "vínculos formais (pessoas)"},
+        {"value": "mom_diff", "label": "Var. Mensal (pessoas)", "fmt": "pessoas", "ytitle": "variação mensal (pessoas)"},
+        {"value": "yoy", "label": "Var. Anual (%)", "fmt": "pct", "ytitle": "variação anual (%)"},
+    ],
+}
+
+
+def _cut_tree(prefix: str, labels: dict, total_label: str) -> list:
+    """Arvore de um corte plano: raiz "Total Brasil" (soma real, ver build()) com
+    uma folha por categoria."""
+    children = [th.direct(f"{prefix}__{slug}", label) for slug, label in labels.items()]
+    return [th.direct(f"{prefix}__total", total_label, children)]
+
+
+def _uf_tree() -> list:
+    regioes = [
+        th.direct(
+            f"uf__reg_{slug}", label,
+            [th.direct(f"uf__{sigla}", _UF_LABELS[sigla]) for sigla in siglas],
+        )
+        for slug, label, siglas in _REGIOES
+    ]
+    return [th.direct("uf__total", "Total Brasil", regioes + [th.direct("uf__NI", _UF_LABELS["NI"])])]
+
+
+TABLES = [
+    {
+        "key": "nacional", "label": "Nacional — Saldo, Admissões e Desligamentos",
+        "controls": [_CTRL_PERIODO],
+        "tree": [
+            th.direct("nac__saldo", "Saldo (admissões − desligamentos)"),
+            th.direct("nac__admissoes", "Admissões"),
+            th.direct("nac__desligamentos", "Desligamentos"),
+        ],
+        "default_checked": ["nac__saldo"],
+    },
+    {
+        "key": "setor", "label": "Por Setor de Atividade (CNAE 2.0, seção)",
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "tree": _cut_tree("setor", _SETOR_LABELS, "Total Brasil"),
+        "default_checked": ["setor__total"],
+        "default_expanded": ["setor__total"],
+    },
+    {
+        "key": "uf", "label": "Por Unidade da Federação",
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "tree": _uf_tree(),
+        "default_checked": [f"uf__reg_{slug}" for slug, _l, _s in _REGIOES],
+        "default_expanded": ["uf__total"],
+    },
+    {
+        "key": "salario", "label": "Por Faixa de Salário de Contratação (múltiplos do SM vigente)",
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "tree": _cut_tree("salario", _SALARIO_LABELS, "Total Brasil"),
+        "default_checked": ["salario__total"],
+        "default_expanded": ["salario__total"],
+    },
+    {
+        "key": "estoque", "label": "Estoque de Empregos Formais (BCB/SGS, desde 1992)",
+        "controls": [_CTRL_ESTOQUE],
+        "tree": _ESTOQUE_TREE,
+        "default_checked": ["caged_total"],
+        "default_expanded": ["caged_total"],
+    },
+]
+
+
+def _sum_metricas(cortes: list[dict]) -> dict:
+    """Soma elemento a elemento varios {metrica: [valores]} ja alinhados no mesmo
+    eixo de datas. Somar contagens de movimentacao por categoria e valido (sao
+    particoes do mesmo universo) -- ao contrario de somar taxas, que este
+    relatorio nunca faz."""
+    if not cortes:
+        return {}
+    n = len(next(iter(cortes[0].values())))
+    return {
+        metrica: [sum(c[metrica][i] for c in cortes) for i in range(n)]
+        for metrica in _METRICAS
+    }
+
+
+def _build_cut(series: dict, prefix: str, dados: dict, dates: list[str], slugs: list[str]) -> dict:
+    """Grava as variantes de cada categoria do corte em `series` e devolve o
+    {metrica: [valores]} de cada uma, para os totais/subtotais serem somados."""
+    por_slug = {}
+    for slug in slugs:
+        por_metrica = {m: dados.get(slug, {}).get(m, [0.0] * len(dates)) for m in _METRICAS}
+        por_slug[slug] = por_metrica
+        series[f"{prefix}__{slug}"] = tf.variants_caged_fluxo(dates, por_metrica)
+    return por_slug
+
+
+def build(setor: dict, uf: dict, salario: dict, estoque: dict) -> dict:
+    """`setor`/`uf`/`salario`: {categoria: {"dates": [...], metrica: [valores]}}
+    ja reindexados num eixo mensal comum (ver generate_report.py's
+    _load_caged_cut()). `estoque`: {name: {dates, values}} de mt_caged.
+
+    Retorna {tables, series, ref_date} -- mesmo contrato de pnad_tab.build(),
+    exceto que `tables` e uma lista plana (a aba e uma so) e nao ha `rate_keys`
+    (o formato vem do controle, nao da serie -- ver _CTRL_* acima)."""
+    series = {}
+    dates = setor["_dates"]
+
+    por_setor = _build_cut(series, "setor", setor, dates, list(_SETOR_LABELS))
+    por_uf = _build_cut(series, "uf", uf, dates, list(_UF_LABELS))
+    por_salario = _build_cut(series, "salario", salario, dates, list(_SALARIO_LABELS))
+
+    # Total de cada corte somado do PROPRIO corte (nao emprestado de outro): os
+    # tres tem que fechar no mesmo total nacional por construcao, entao calcular
+    # separado transforma a igualdade num cross-check em vez de numa suposicao.
+    totais = {
+        "setor": _sum_metricas(list(por_setor.values())),
+        "uf": _sum_metricas(list(por_uf.values())),
+        "salario": _sum_metricas(list(por_salario.values())),
+    }
+    for prefix, total in totais.items():
+        series[f"{prefix}__total"] = tf.variants_caged_fluxo(dates, total)
+
+    divergencias = [
+        (prefix, metrica, i)
+        for prefix, total in totais.items() if prefix != "setor"
+        for metrica in _METRICAS
+        for i in range(len(dates))
+        if abs(total[metrica][i] - totais["setor"][metrica][i]) > 0.5
+    ]
+    if divergencias:
+        raise ValueError(
+            f"Cortes do CAGED nao fecham no mesmo total nacional em {len(divergencias)} "
+            f"celula(s) -- ex.: {divergencias[:3]}. Os tres cortes sao particoes do mesmo "
+            "universo de movimentacoes; divergencia indica carga parcial de alguma tabela."
+        )
+
+    # UF: subtotal por regiao (soma real, plotavel -- nao linha so-cabecalho).
+    for slug, _label, siglas in _REGIOES:
+        series[f"uf__reg_{slug}"] = tf.variants_caged_fluxo(
+            dates, _sum_metricas([por_uf[s] for s in siglas])
+        )
+
+    # Tabela Nacional: uma linha por metrica, so o seletor de periodo.
+    for metrica in _METRICAS:
+        series[f"nac__{metrica}"] = tf.variants_caged_periodo(dates, totais["setor"][metrica])
+
+    for name in DB_NAMES_ESTOQUE:
+        s = estoque.get(name)
+        if s is None:
+            continue
+        series[name] = tf.variants_caged_estoque(s["dates"], s["values"])
+
+    return {
+        "tables": TABLES,
+        "series": series,
+        "ref_date": dates[-1],
+        "ref_date_estoque": estoque["caged_total"]["dates"][-1] if "caged_total" in estoque else None,
+    }

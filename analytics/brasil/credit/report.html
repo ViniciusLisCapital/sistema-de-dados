@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama de Crédito — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 44px;
+      font-family: var(--cond);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+
+    /* ── Nota metodológica ── */
+    .note-metodologia { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 1100px; }
+    .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+
+    /* ── Escala de resposta da PTC: as 5 alternativas do questionário, na ordem em que
+       viram número (-2 a +2). Serve de régua para ler a magnitude do índice. ── */
+    .scale-legend {
+      display: flex; flex-wrap: wrap; gap: 0; margin: 10px 0 4px; max-width: 1100px;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      font-size: 11px; line-height: 1.35;
+    }
+    .scale-legend div {
+      flex: 1 1 140px; padding: 7px 10px; text-align: center;
+      border-right: 1px solid var(--border); background: var(--card-bg);
+    }
+    .scale-legend div:last-child { border-right: 0; }
+    .scale-legend b { display: block; font-family: var(--mono); font-size: 13px; }
+    .scale-legend span { color: var(--muted); }
+    .scale-legend .sc-n2 { background: rgba(234,82,58,0.16); }
+    .scale-legend .sc-n1 { background: rgba(234,82,58,0.07); }
+    .scale-legend .sc-p1 { background: rgba(65,135,145,0.09); }
+    .scale-legend .sc-p2 { background: rgba(65,135,145,0.20); }
+    .row-n { color: var(--muted); font-family: var(--mono); font-size: 10.5px; }
+
+    /* ── Appendix: click-to-expand methodology notes (native <details>/<summary>) ── */
+    .appendix-item {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 2px 18px;
+    }
+    .appendix-item summary {
+      font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); padding: 14px 0; cursor: pointer; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .appendix-item summary::-webkit-details-marker { display: none; }
+    .appendix-item summary::after {
+      content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto;
+    }
+    .appendix-item[open] summary::after { content: '−'; }
+    .appendix-item .appendix-body {
+      font-size: 13px; color: var(--muted); line-height: 1.6; padding: 0 0 16px; max-width: 1100px;
+    }
+    .appendix-item .appendix-body strong { color: var(--text2); }
+    .appendix-item .appendix-body table { border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    .appendix-item .appendix-body th, .appendix-item .appendix-body td { border: 1px solid var(--border); padding: 5px 10px; text-align: left; }
+    .appendix-item .appendix-body th { color: var(--text2); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .appendix-item + .appendix-item { margin-top: 10px; }
+
+    /* ── KPI grids ── */
+    .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Chart cards ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    .chart-card > div { width: 100%; height: 560px; }
+
+    /* ── Controls: quick-range pills ── */
+    .ctrl-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px;
+      margin-bottom: 12px;
+    }
+    .pill-group { display: flex; gap: 6px; }
+    .pill {
+      font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: var(--lis-dourado); border-color: var(--lis-dourado); color: #fff; }
+    .pill.disabled { opacity: 0.35; pointer-events: none; }
+    .ctrl-check {
+      display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px;
+      color: var(--muted); cursor: pointer; user-select: none; margin-left: auto;
+    }
+    .ctrl-check input { cursor: pointer; }
+
+    /* ── Saldo tab: hierarchical data table ── */
+    .table-card { max-height: 620px; overflow: auto; padding: 0; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .data-table thead th {
+      position: sticky; top: 0; z-index: 1; background: var(--card-bg); text-align: left;
+      padding: 10px 14px; font-family: var(--mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th.col-check { width: 34px; }
+    .data-table th.col-value, .data-table td.col-value { text-align: right; min-width: 76px; }
+    .data-table td { padding: 7px 14px; border-bottom: 1px solid rgba(31,40,83,0.06); vertical-align: middle; }
+    .data-table tbody tr:hover { background: rgba(31,40,83,0.03); }
+    .data-table tbody tr.is-group td.col-label { font-weight: 600; }
+    .data-table td.col-value { font-family: var(--mono); white-space: nowrap; color: var(--text); }
+    .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
+    .tree-toggle:hover { color: var(--text); }
+
+    /* ── Footer ── */
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      header, .tab-nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid, .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>Panorama de Crédito</h1>
+  </div>
+  <div class="meta">
+    Atualizado em <strong id="generated-at">—</strong><br>
+    BCB SGS (Estatísticas Monetárias e de Crédito)
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="saldo">Saldo</button>
+  <button class="tab-btn" data-tab="concessao">Concessão</button>
+  <button class="tab-btn" data-tab="impulso">Impulso</button>
+  <button class="tab-btn" data-tab="taxa">Taxa &amp; Spread</button>
+  <button class="tab-btn" data-tab="inadimplencia">Inadimplência</button>
+  <button class="tab-btn" data-tab="ptc">PTC</button>
+  <button class="tab-btn" data-tab="apendice">Apêndice</button>
+</nav>
+
+<main>
+
+  <!-- ═══════════ TAB — SALDO ═══════════ -->
+  <div class="tab-panel active" id="tab-saldo">
+
+    <p class="note-metodologia">
+      Saldo de crédito do sistema financeiro por modalidade (BCB SGS) — Livre e Direcionado,
+      Pessoa Jurídica e Pessoa Física, com o detalhe de cada modalidade específica (cartão,
+      consignado, capital de giro, BNDES, rural, imobiliário etc.), mais cortes estruturais por
+      porte de empresa, atividade econômica e tipo de cliente. Clique numa linha com ▸ para
+      expandir o detalhe; marque o checkbox de uma ou mais linhas para plotá-las no gráfico abaixo.
+      <strong>Nível/Y-Y/M-M/T-T</strong> e <strong>Nominal/Real/% PIB</strong> recalculam a coluna de
+      valor e o gráfico ao vivo (% PIB só tem a variante Nível) — ver Apêndice para a metodologia
+      completa (dessazonalização STL, definição de T/T, deflator usado no Real, PIB usado no % PIB).
+    </p>
+
+    <section>
+      <h2>Modalidades de Crédito — Saldo</h2>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="saldo-metric-group">
+          <button type="button" class="pill active" data-metric="level">Nível</button>
+          <button type="button" class="pill" data-metric="yoy">Y/Y</button>
+          <button type="button" class="pill" data-metric="mom_sa">M/M (SA)</button>
+          <button type="button" class="pill" data-metric="qoq_sa">T/T (SA)</button>
+        </div>
+        <div class="pill-group" id="saldo-basis-group">
+          <button type="button" class="pill active" data-basis="nominal">Nominal</button>
+          <button type="button" class="pill" data-basis="real">Real</button>
+          <button type="button" class="pill" data-basis="pctpib">% PIB</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="saldo-table">
+          <thead id="saldo-table-head"></thead>
+          <tbody id="saldo-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real/% PIB.</p>
+      <div class="chart-card"><div id="chart-saldo"></div></div>
+    </section>
+
+    <section>
+      <h2>Crédito Ampliado ao Setor Não Financeiro — Governo, Empresas e Famílias</h2>
+      <p class="chart-caption">Conceito mais amplo que o saldo do sistema financeiro acima — inclui títulos de dívida e dívida externa, não só empréstimos bancários (ver Apêndice). Mesmas métricas da tabela de Saldo.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="amplo-metric-group">
+          <button type="button" class="pill active" data-metric="level">Nível</button>
+          <button type="button" class="pill" data-metric="yoy">Y/Y</button>
+          <button type="button" class="pill" data-metric="mom_sa">M/M (SA)</button>
+          <button type="button" class="pill" data-metric="qoq_sa">T/T (SA)</button>
+        </div>
+        <div class="pill-group" id="amplo-basis-group">
+          <button type="button" class="pill active" data-basis="nominal">Nominal</button>
+          <button type="button" class="pill" data-basis="real">Real</button>
+          <button type="button" class="pill" data-basis="pctpib">% PIB</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="amplo-table">
+          <thead id="amplo-table-head"></thead>
+          <tbody id="amplo-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-amplo"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — CONCESSÃO ═══════════ -->
+  <div class="tab-panel" id="tab-concessao">
+
+    <p class="note-metodologia">
+      Concessão de crédito do sistema financeiro por modalidade (BCB SGS) — novos empréstimos no mês,
+      mesma quebra Livre/Direcionado × Pessoa Jurídica/Pessoa Física × modalidade específica da aba
+      Saldo. Concessão é uma série de fluxo, bem mais ruidosa mês a mês que um estoque — por isso o
+      próprio <strong>Nível</strong> exibido aqui já é dessazonalizado (STL) e suavizado por média móvel
+      de 3 meses (MM3M), nominal, real e % do PIB. Crescimento é <strong>M/M</strong> e <strong>T/T</strong>
+      (T/T = 3M/3M rolante) sobre essa base já suavizada — sem Y/Y nesta aba. Ver Apêndice para o
+      detalhe completo da metodologia.
+    </p>
+
+    <section>
+      <h2>Modalidades de Crédito — Concessão (SA + MM3M)</h2>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="concessao-metric-group">
+          <button type="button" class="pill active" data-metric="level">Nível</button>
+          <button type="button" class="pill" data-metric="mom">M/M</button>
+          <button type="button" class="pill" data-metric="qoq">T/T</button>
+        </div>
+        <div class="pill-group" id="concessao-basis-group">
+          <button type="button" class="pill active" data-basis="nominal">Nominal</button>
+          <button type="button" class="pill" data-basis="real">Real</button>
+          <button type="button" class="pill" data-basis="pctpib">% PIB</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="concessao-table">
+          <thead id="concessao-table-head"></thead>
+          <tbody id="concessao-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real.</p>
+      <div class="chart-card"><div id="chart-concessao"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — IMPULSO ═══════════ -->
+  <div class="tab-panel" id="tab-impulso">
+
+    <p class="note-metodologia">
+      <strong>Impulso de crédito</strong> — a variação do fluxo de crédito de 12 meses, normalizada
+      pelo PIB nominal acumulado em 12 meses, em <strong>pontos percentuais do PIB</strong>. Conceito
+      de Biggs, Mayer &amp; Pick (2009), na forma aplicada ao Brasil pelo Blog do IBRE/FGV (Borça Jr.,
+      Furtado &amp; Barbosa-Filho, 2021). Lê-se como <em>"o crédito novo deste ano pesou X p.p. do PIB
+      a mais (ou a menos) que o do ano anterior"</em> — o sinal indica aceleração ou desaceleração da
+      oferta de recursos, e não o nível dela: impulso negativo com crédito ainda crescendo é
+      perfeitamente possível, e é o caso mais comum.
+      <br><br>
+      As três tabelas abaixo são <strong>decomposições exatas</strong>, não aproximações — a métrica é
+      linear no saldo e todas as linhas dividem o mesmo denominador, então a soma dos filhos reproduz
+      o pai sem resíduo. <strong>Anual (dez)</strong> não é um cálculo diferente de
+      <strong>Mensal (12m)</strong>: é a mesma série lida em dezembro. Ver Apêndice para o que essa
+      métrica deliberadamente <em>não</em> corrige (juros, câmbio e baixas para prejuízo).
+      <br><br>
+      <strong>Como ler os gráficos:</strong> as parcelas marcadas aparecem como <strong>barras
+      empilhadas</strong> e o total, como <strong>linha</strong> por cima. Como a decomposição é exata,
+      o topo líquido da pilha coincide com a linha sempre que a seleção for exaustiva — se você marcar
+      só uma parte (ex: apenas PJ), a folga entre a pilha e a linha é exatamente o que falta para
+      fechar o total. Parcelas positivas empilham acima do zero e negativas abaixo, então uma barra
+      para baixo com a linha ainda positiva significa que aquele segmento <em>subtraiu</em> impulso
+      enquanto o agregado seguiu acelerando. Marcar um pai e seus filhos ao mesmo tempo não duplica a
+      pilha — o nível mais fino da seleção prevalece e o pai sai das barras.
+    </p>
+
+    <section>
+      <h2>a) Por Recurso e Segmento — Livre/Direcionado × PJ/PF</h2>
+      <p class="chart-caption">Clique em ▸ para abrir o nível seguinte; marque os checkboxes para plotar. Livre + Direcionado reproduzem o Total Geral exatamente, e PJ + PF reproduzem cada recurso.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-recurso-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-recurso-table">
+          <thead id="imp-recurso-table-head"></thead>
+          <tbody id="imp-recurso-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-recurso"></div></div>
+    </section>
+
+    <section>
+      <h2>b) Por Porte de Empresa — MPME e Grande</h2>
+      <p class="chart-caption">Crédito a Pessoa Jurídica apenas. O BCB não publica um total para este corte — a linha "Total PJ" é a soma de MPME + Grande (soma de nível em R$, feita antes da fórmula).</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-porte-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-porte-table">
+          <thead id="imp-porte-table-head"></thead>
+          <tbody id="imp-porte-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-porte"></div></div>
+    </section>
+
+    <section>
+      <h2>c) Por Atividade Econômica — Agropecuária, Indústria, Serviços e Outros</h2>
+      <p class="chart-caption">Crédito a Pessoa Jurídica apenas, nos 4 ramos de topo (o detalhe setorial fino fica na aba Saldo). Mesmo universo da tabela (b) — os dois totais coincidem por construção, são duas partições do mesmo agregado.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-ativ-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-ativ-table">
+          <thead id="imp-ativ-table-head"></thead>
+          <tbody id="imp-ativ-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-imp-ativ"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — TAXA & SPREAD ═══════════ -->
+  <div class="tab-panel" id="tab-taxa">
+
+    <p class="note-metodologia">
+      Taxa média de juros e spread bancário por modalidade (BCB SGS). Sem Nominal/Real/% PIB nem
+      Y-Y/M-M/T-T aqui — taxa e spread já são percentuais, não faz sentido deflacionar pelo IPCA nem
+      expressar como % do PIB. <strong>Spread</strong> só existe agregado (Livre/Direcionado × PJ/PF) —
+      a planilha do BCB não publica spread por modalidade específica. Marque "Selic" para sobrepor a
+      taxa básica de juros no gráfico como referência.
+    </p>
+
+    <section>
+      <h2>Taxa Média &amp; Spread</h2>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="taxa-source-group">
+          <button type="button" class="pill active" data-source="taxa_media">Taxa Média</button>
+          <button type="button" class="pill" data-source="spread">Spread</button>
+        </div>
+        <label class="ctrl-check"><input type="checkbox" id="taxa-show-selic"> Mostrar Selic no gráfico</label>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="taxa-table">
+          <thead id="taxa-table-head"></thead>
+          <tbody id="taxa-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui.</p>
+      <div class="chart-card"><div id="chart-taxa"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — INADIMPLÊNCIA ═══════════ -->
+  <div class="tab-panel" id="tab-inadimplencia">
+
+    <p class="note-metodologia">
+      Inadimplência (carteira em atraso &gt; 90 dias, %) reunindo todos os cortes que a publicam —
+      Total/Livre/Direcionado × PJ/PF × modalidade específica, mais Por Porte de Empresa e Por Controle
+      de Capital. Sem Nominal/Real/% PIB nem Y-Y/M-M/T-T — já é um percentual. "Por Porte de Empresa" e
+      "Por Controle de Capital" são só cabeçalhos expansíveis (nenhuma das duas tabelas publica um
+      total agregado para inadimplência — ver Apêndice). <strong>Saldo de Maior Risco</strong> (classificação
+      de rating, não inadimplência realizada) aparece como dois grupos separados por metodologia — uma
+      quebra de série do BCB, nunca emendada numa linha só (ver Apêndice). Marque "Selic" para sobrepor
+      a taxa básica de juros no gráfico como referência.
+    </p>
+
+    <section>
+      <h2>Inadimplência &amp; Saldo de Maior Risco</h2>
+      <div class="ctrl-bar">
+        <label class="ctrl-check"><input type="checkbox" id="inad-show-selic"> Mostrar Selic no gráfico</label>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="inad-table">
+          <thead id="inad-table-head"></thead>
+          <tbody id="inad-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui.</p>
+      <div class="chart-card"><div id="chart-inad"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — PTC ═══════════ -->
+  <div class="tab-panel" id="tab-ptc">
+
+    <p class="note-metodologia">
+      <strong>Pesquisa Trimestral de Condições de Crédito (PTC)</strong> — o BCB pergunta aos próprios
+      bancos se afrouxaram ou apertaram a concessão e se viram mais ou menos procura. É o equivalente
+      brasileiro ao <em>Senior Loan Officer Opinion Survey</em> do Fed. Cada banco escolhe um de cinco
+      níveis, convertidos para <strong>−2 a +2</strong>, e o valor publicado é a
+      <strong>média aritmética simples</strong> das respostas do segmento — não um saldo líquido de
+      "quantos apertaram menos quantos afrouxaram", e não uma taxa. Por isso a magnitude se lê
+      diretamente na régua abaixo: <strong>±1 é o banco médio dizendo "moderadamente"</strong> e ±2,
+      "consideravelmente". <strong>Oferta &gt; 0 = aprovação mais frouxa</strong>,
+      <strong>demanda &gt; 0 = procura maior</strong>; o zero é o ponto em que as respostas se cancelam,
+      não "condições neutras". Leitura qualitativa que <em>antecede</em> o dado quantitativo das
+      outras abas. A pill <strong>Observada</strong> (últimos 3 meses) / <strong>Esperada</strong>
+      (próximos 3 meses) troca o horizonte da pesquisa. O BCB não publica agregado de todos os
+      segmentos, então "Oferta" e "Demanda" são só cabeçalhos expansíveis, sem linha própria.
+      Metodologia oficial no TD 245 do BCB (Annibal &amp; Koyama, 2011) — ver Apêndice.
+    </p>
+
+    <section>
+      <h2>Condições de Crédito Percebidas pelos Bancos</h2>
+      <div class="scale-legend">
+        <div class="sc-n2"><b>−2</b><span>consideravelmente<br>mais restritivo / mais fraca</span></div>
+        <div class="sc-n1"><b>−1</b><span>moderadamente<br>mais restritivo / mais fraca</span></div>
+        <div><b>0</b><span>basicamente inalterado /<br>mesmo nível</span></div>
+        <div class="sc-p1"><b>+1</b><span>moderadamente<br>mais flexível / mais forte</span></div>
+        <div class="sc-p2"><b>+2</b><span>consideravelmente<br>mais flexível / mais forte</span></div>
+      </div>
+      <p class="chart-caption">Clique em ▸ para abrir os 4 segmentos; marque os checkboxes para plotar. Trimestral desde 2011-T2. <strong>N</strong> = respondentes do segmento: o índice só se move em degraus de 1/N, então ±0,14 em PF Habitacional (N≈7) é <em>um</em> banco mudando de opinião.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="ptc-horizonte-group">
+          <button type="button" class="pill active" data-horizonte="observada">Observada (últimos 3m)</button>
+          <button type="button" class="pill" data-horizonte="esperada">Esperada (próximos 3m)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="ptc-table">
+          <thead id="ptc-table-head"></thead>
+          <tbody id="ptc-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolução — Séries Selecionadas</h2>
+      <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui. A linha do zero é o empate entre aperto e afrouxamento — acima dela, oferta mais frouxa ou demanda mais forte. O eixo fica em autoescala: a escala teórica vai de −2 a +2, mas nenhuma série jamais passou de −1,21 / +1,57, e fixar em ±2 achataria tudo contra o zero.</p>
+      <div class="chart-card"><div id="chart-ptc"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ═══════════ TAB — APÊNDICE ═══════════ -->
+  <div class="tab-panel" id="tab-apendice">
+
+    <section>
+      <h2>Notas Metodológicas</h2>
+      <p class="chart-caption">Discussão de método, separada da leitura dos dados nas outras abas — clique num item para abrir.</p>
+
+      <details class="appendix-item" open>
+        <summary>Aba Saldo — Metodologia (Nível/Y-Y/M-M/T-T × Nominal/Real/% PIB)</summary>
+        <div class="appendix-body">
+          Todas as variantes (Nível, Y/Y, M/M dessazonalizado, T/T dessazonalizado × Nominal, Real,
+          % do PIB) são pré-computadas em Python (<code>analytics/brasil/credit/transforms.py</code>,
+          <code>saldo_tab.py</code>) — os botões no navegador só trocam qual variante já calculada é
+          exibida, sem reimplementar STL/deflação/PIB em JS.<br><br>
+          <strong>% do PIB:</strong> nível dividido pelo PIB acumulado nos últimos 12 meses (BCB SGS
+          4382, <code>atv_pib_mensal.pib_acum_12m</code>) — o mesmo denominador que o próprio BCB usa
+          para publicar <code>cred_credito_resumo.pct_pib_*</code> (confirmado ao vivo: bate
+          exatamente, 55,76% em ambos em 2026-06). Só tem a variante Nível — selecionar "% PIB"
+          desabilita Y/Y, M/M e T/T (não faz sentido "crescimento de uma razão crédito/PIB" no mesmo
+          botão que crescimento de um saldo em R$), e funciona igual em Nominal e Real, já que a razão
+          nominal/PIB-nominal é idêntica a real/PIB-real (o deflator cancela).<br><br>
+          <strong>Cortes estruturais (Por Porte, Por Atividade Econômica, Por Tipo de Cliente):</strong>
+          além da árvore Livre/Direcionado × PJ/PF × modalidade, a tabela também traz 3 cortes de
+          <code>cred_credito_porte</code>/<code>cred_credito_atividade_economica</code>/
+          <code>cred_credito_tipo_cliente</code> como grupos de topo independentes — todos cobrem só
+          Pessoa Jurídica (nenhuma dessas 3 tabelas quebra por PF). "Por Porte" e "Por Atividade
+          Econômica" não têm um código SGS de total geral publicado pelo BCB — o valor do próprio grupo
+          é uma <strong>soma</strong> dos filhos (MPME+Grande; Agropecuária+Indústria+Serviços+Outros),
+          válida porque é soma de NÍVEL em R$ (nunca se soma variação percentual — ver nota sobre
+          grupos sem total nativo abaixo). "Por Tipo de Cliente" reaproveita a própria série de "Total
+          Geral" (mesmo código SGS 20539) como sua própria linha, já que Setor Privado + Setor Público
+          somam exatamente a esse total. Inadimplência e os cortes de "saldo de maior risco" dessa
+          mesma planilha (Tabela 23) ficam de fora desta tabela — ver a aba própria
+          <strong>Inadimplência</strong>.<br><br>
+          <strong>Segunda tabela — Crédito Ampliado:</strong> logo abaixo do gráfico principal, uma
+          segunda tabela hierárquica com o mesmo conjunto de métricas cobre o crédito ampliado ao setor
+          não financeiro (<code>cred_credito_amplo</code> — Governo/Empresas/Famílias por instrumento
+          de dívida) — ver o item "Crédito Ampliado × Crédito do Sistema Financeiro" abaixo para a
+          diferença conceitual entre as duas tabelas. Nenhum dos 4 totais dessa tabela (Geral, Governo,
+          Empresas, Famílias) tem código SGS próprio — todos são somas dos instrumentos de dívida de
+          cada setor, mesmo raciocínio de "soma de NÍVEL é válida" da nota anterior.<br><br>
+          <strong>Dessazonalização (M/M, T/T):</strong> STL com fatores de "amostra anual" — ajustados
+          uma vez sobre o histórico até o último dezembro completo (ex: em 2026, até 2025-12) e depois
+          aplicados congelados à série inteira, incluindo meses futuros. Os fatores só mudam quando um
+          novo janeiro chega — mesma convenção já usada em <code>analytics/brasil/inflation/fetch_bcb.py</code>
+          (STL/MA3 do IPCA).<br><br>
+          <strong>T/T (trimestre contra trimestre):</strong> variação "3M/3M rolante" sobre o nível
+          dessazonalizado (mês <em>t</em> vs. <em>t-3</em>), não trimestre civil — mesma lógica de
+          "momentum trimestral" já usada em <code>atv_pim</code>/<code>atv_pim_uso</code>. Y/Y usa o
+          nível bruto (sem ajuste sazonal, que a variação interanual já cancela por
+          construção).<br><br>
+          <strong>Real:</strong> deflacionado pelo IPCA (<code>inflc_agregados.ipca</code>, variação
+          mensal encadeada num índice de preços) a preços constantes do último mês disponível da
+          série de IPCA — não do último mês de cada modalidade individualmente, para manter todas as
+          linhas comparáveis na mesma base.<br><br>
+          <strong>Nota sobre modalidades de saldo muito pequeno:</strong> algumas modalidades legadas
+          têm saldo residual de poucos milhões de reais (ex: "Arrendamento Mercantil — Veículos" em
+          Crédito Livre PF, ~R$5-13mi em 2026, um produto praticamente extinto) — variações % (M/M,
+          T/T, Y/Y) sobre uma base tão pequena podem saltar para centenas ou milhares de % de um mês
+          para o outro. Isso é ruído estatístico de "base pequena", não um erro de dado ou de cálculo
+          — interpretar essas linhas pelo Nível (R$), não pela variação %.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Aba Concessão — Metodologia (Nível SA+MM3M, M/M, T/T × Nominal/Real/% PIB)</summary>
+        <div class="appendix-body">
+          Mesma árvore de modalidades da aba Saldo (mesmas tabelas <code>cred_modalidade_*</code>,
+          agora filtradas por <code>metrica='concessao'</code>, mais os 7 totais recurso×segmento de
+          <code>cred_credito_resumo</code>) — mas com métricas diferentes, pensadas para uma série de
+          <strong>fluxo</strong> (novos empréstimos no mês), bem mais ruidosa mês a mês que um estoque
+          como saldo.<br><br>
+          <strong>Nível:</strong> ao contrário da aba Saldo (nível bruto, NSA), aqui o próprio Nível
+          exibido já é a série dessazonalizada (mesma convenção STL "amostra anual" da aba Saldo) e
+          suavizada por uma <strong>média móvel de 3 meses (MM3M)</strong> — nominal e real cada um com
+          seu próprio ajuste sazonal (a deflação pode mudar levemente o padrão sazonal de uma
+          série).<br><br>
+          <strong>% do PIB:</strong> mesmo denominador e mesma regra da aba Saldo (só Nível, PIB
+          acumulado 12m) — aqui calculado sobre o próprio Nível já suavizado (SA+MM3M), não sobre o
+          valor bruto do mês nem sobre uma soma de 12 meses de concessão.<br><br>
+          <strong>M/M e T/T:</strong> variação percentual calculada sobre essa base já suavizada
+          (SA+MM3M), não sobre o valor bruto do mês — T/T usa a mesma convenção "3M/3M rolante" (mês
+          <em>t</em> vs. <em>t-3</em>) da aba Saldo. Sem Y/Y nesta aba (não pedido para
+          Concessão).<br><br>
+          <strong>Modalidades com menos quebras que na aba Saldo:</strong> a planilha-fonte do BCB não
+          publica código SGS de concessão para "Cartão de Crédito — Parcelado"/"Rotativo" em Crédito
+          Livre PJ (só para "À Vista" e o total do grupo) — ao contrário do saldo dessas mesmas
+          modalidades, que tem as 3 quebras. As demais 3 tabelas de modalidade (Livre PF, Direcionado
+          PJ, Direcionado PF) têm exatamente as mesmas modalidades em concessão e saldo.<br><br>
+          <strong>Real:</strong> mesmo deflator desta aba Saldo — IPCA (<code>inflc_agregados.ipca</code>)
+          encadeado a preços constantes do último mês disponível da série de IPCA.<br><br>
+          <strong>M/M e T/T são mais ruidosos aqui do que na aba Saldo, mesmo já suavizados:</strong>
+          concessão é um fluxo (volume de novos empréstimos no mês), não um estoque — nas modalidades
+          mais específicas (não nos totais Livre/Direcionado/Geral), é comum ver picos de dezenas ou até
+          centenas de % em M/M ou T/T mesmo após SA+MM3M, especialmente em categorias de volume pequeno
+          ou irregular (ex: "Repasse Externo", "Arrendamento Mercantil"). Isso é ruído estatístico
+          esperado de uma série de fluxo granular, não um erro de cálculo — para leitura de tendência,
+          prefira os totais (Total Geral, Livre, Direcionado, PJ, PF) às modalidades específicas mais
+          finas.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Aba Impulso — Metodologia (impulso de crédito em p.p. do PIB)</summary>
+        <div class="appendix-body">
+          <strong>Fórmula.</strong> Impulso de crédito no conceito de Biggs, Mayer &amp; Pick (2009),
+          na forma aplicada ao Brasil pelo Blog do IBRE/FGV (Borça Jr., Furtado &amp; Barbosa-Filho,
+          2021): <code>I(t) = [Saldo(t) − Saldo(t−12)] / PIB12m(t) − [Saldo(t−12) − Saldo(t−24)] /
+          PIB12m(t−12)</code>, multiplicado por 100 para ficar em pontos percentuais do PIB. É a
+          <em>segunda diferença</em> do estoque de crédito normalizada pelo PIB — mede aceleração da
+          oferta de recursos, não nível. O denominador é o PIB nominal acumulado em 12 meses (BCB SGS
+          4382, <code>atv_pib_mensal.pib_acum_12m</code>), o mesmo que o BCB usa para publicar
+          <code>cred_credito_resumo.pct_pib_*</code>.<br><br>
+
+          <strong>Mensal (12m) × Anual (dez) — mesma série, não dois cálculos.</strong> Em dezembro,
+          <code>Saldo(t) − Saldo(t−12)</code> já é exatamente a variação do ano civil e
+          <code>PIB12m</code> já é exatamente o PIB do ano, então a fórmula mensal colapsa sem nenhum
+          ajuste na versão anual publicada pelo IBRE. O botão "Anual (dez)" apenas filtra a série
+          mensal em dezembro — as duas visões são consistentes por construção, não por
+          reconciliação.<br><br>
+
+          <strong>Por que as decomposições fecham.</strong> A métrica é linear no saldo e todas as
+          linhas dividem o mesmo denominador, então a soma dos filhos reproduz o pai <em>exatamente</em>,
+          sem resíduo. Verificado ao vivo: somando as 4 células Livre/Direcionado × PJ/PF contra o Total
+          Geral, a discrepância máxima em toda a série é da ordem de 0,0002 p.p. — ruído de ponto
+          flutuante. É o que permite ler estas tabelas como decomposições de verdade.<br><br>
+
+          <strong>Totais sintéticos (tabelas b e c).</strong> O BCB não publica um código SGS de total
+          para os cortes de porte e de atividade econômica — as linhas "Total PJ" são somas dos filhos
+          (MPME+Grande; Agropecuária+Indústria+Serviços+Outros), calculadas sobre o <em>nível em R$</em>
+          antes de aplicar a fórmula. Somar níveis é válido; somar as p.p. resultantes também seria,
+          por linearidade, mas somar taxas de crescimento nunca é — ver a nota da aba Saldo.<br><br>
+
+          <strong>Os dois totais PJ coincidem — e isso está certo.</strong> As tabelas (b) e (c) são
+          duas partições do <em>mesmo</em> agregado de crédito PJ: conferido ao vivo, os dois totais
+          diferem no máximo em R$ 5 milhões sobre R$ 2,76 trilhões (arredondamento). Esse agregado não
+          é idêntico ao <code>saldo_total_pj</code> das Tabelas 3-5 do BCB — a diferença chega a
+          ~R$ 37 bilhões (1,3%) no pico de 2020 —, então não espere que a tabela (a) reconcilie na
+          casa decimal com as tabelas (b) e (c).<br><br>
+
+          <strong>Início das séries.</strong> A fórmula precisa de 24 meses de histórico. Recurso ×
+          segmento começa em 2007-03 → primeiro impulso em 2009-03; porte e atividade econômica começam
+          em 2012-01 → primeiro impulso em 2014-01. As colunas da tabela mostram sempre as últimas 12
+          observações <em>com valor</em>, nunca células vazias do início da série.<br><br>
+
+          <strong>O que esta métrica não corrige.</strong> Sendo a segunda diferença do estoque, ela
+          <em>não</em> remove da variação do saldo os efeitos que não vêm de concessão e pagamento:
+          juros acruados, variação cambial de contratos indexados em moeda estrangeira e baixas para
+          prejuízo continuam dentro do número. Essa é exatamente a crítica que o BCB faz a Biggs et al.
+          no Estudo Especial 110/2021 ("Fluxo financeiro e impulso de crédito"), onde constrói uma
+          versão limpa a partir do SCR — que depende de dados de juros, câmbio e baixas que o BCB não
+          publica e que, por isso, não está neste relatório. Implicação de leitura: uma linha pode
+          marcar impulso positivo apenas por <em>repricing</em> (juros altos inflando o estoque) sem
+          nenhum crédito novo. Vale para o total e vale dentro de cada célula.<br><br>
+
+          <strong>Gráficos — barras empilhadas + linha do total.</strong> As parcelas marcadas viram
+          barras empilhadas; a raiz da árvore (Total Geral / Total PJ) vira a linha sobreposta. O modo
+          de empilhamento é <code>barmode: 'relative'</code>, não <code>'stack'</code>: as parcelas do
+          impulso trocam de sinal com frequência (hoje Livre está negativo enquanto Direcionado está
+          positivo), e o <code>'stack'</code> do Plotly empilha tudo na mesma direção independentemente
+          do sinal — o topo da pilha deixaria de bater com o total. Com <code>'relative'</code>, positivos
+          acumulam acima do zero e negativos abaixo, e o topo líquido coincide com a linha, que é a
+          leitura visual que esta aba existe para dar. Para não contar a mesma coisa duas vezes, um nó
+          marcado que tenha descendente também marcado sai das barras (o nível mais fino da seleção
+          prevalece) — marcar Livre junto com Livre&gt;PJ e Livre&gt;PF não dobra a pilha.<br><br>
+
+          <strong>Validação.</strong> A replicação bate com os números publicados pelo IBRE: 2016 total
+          −5,3 (aqui −5,30) e bancos públicos −4,1 p.p. (aqui −4,13); 2020 públicos +2,8 p.p. (aqui
+          +2,78); e a versão mensal cruza zero em nov/2021 (+0,08), o mês que o post cita como de
+          neutralidade. As diferenças residuais em 2020 (total +4,29 aqui vs. +4,4 publicado) são
+          revisões do BCB no saldo e no PIB desde a publicação do post, não divergência de método.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Aba Taxa &amp; Spread — Metodologia</summary>
+        <div class="appendix-body">
+          Diferente das abas Saldo e Concessão: <strong>sem STL, sem deflação, sem % do PIB</strong> —
+          taxa de juros e spread já são percentuais (taxa a.a., spread em p.p.), então não faz sentido
+          "real" (deflacionar uma taxa pelo IPCA não é a mesma operação que deflacionar um valor em R$)
+          nem "% do PIB". Cada linha é o dado bruto vindo do banco, sem nenhuma transformação — só um
+          seletor de qual fonte mostrar.<br><br>
+          <strong>Taxa Média:</strong> árvore por modalidade (mesma estrutura Livre/Direcionado × PJ/PF
+          das outras abas), lendo <code>metrica='taxa_media'</code> das 4 tabelas
+          <code>cred_modalidade_*</code> + os 7 totais recurso×segmento
+          (<code>cred_credito_resumo.taxa_juros_*</code>). Cobertura de modalidade menor que Saldo —
+          confirmado direto nos códigos SGS de cada tabela: nenhuma publica taxa média para "Outros"
+          (categoria residual), e Crédito Livre PJ/PF também não tem taxa média para cartão "À Vista"
+          (não é um produto que carrega juros da mesma forma que parcelado/rotativo).<br><br>
+          <strong>Spread:</strong> só os 7 totais recurso×segmento
+          (<code>cred_credito_resumo.spread_*</code>) — a planilha do BCB não publica spread por
+          modalidade específica em nenhuma tabela, só agregado. A árvore aqui para no nível PJ/PF, sem
+          filhos de modalidade.<br><br>
+          <strong>Selic:</strong> checkbox independente das linhas marcadas na tabela — sobrepõe
+          <code>cred_inadimplencia_pj.selic</code> no gráfico como referência de custo de captação,
+          sem entrar na tabela em si.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Aba Inadimplência — Metodologia</summary>
+        <div class="appendix-body">
+          Reúne inadimplência (carteira em atraso &gt; 90 dias, %) de <strong>todos</strong> os cortes que
+          a publicam, não só a série dedicada PJ (<code>cred_inadimplencia_pj</code>) — mesma regra
+          "sem STL/deflação/% do PIB" da aba Taxa &amp; Spread, já que inadimplência já é um percentual.
+          <br><br>
+          <strong>Total/Livre/Direcionado × PJ/PF × modalidade:</strong> mesma árvore de
+          <code>cred_credito_resumo</code> (<code>inadimplencia_*</code>) + <code>cred_modalidade_*</code>
+          (<code>metrica='inadimplencia'</code>, Tabelas 19-22) das outras abas, mas com cobertura de
+          modalidade <strong>menor</strong> que Saldo — confirmado direto nos códigos SGS de cada tabela:
+          em Crédito Livre PJ, "Cartão de Crédito" é um único código (sem a quebra à
+          vista/parcelado/rotativo/total que Saldo tem); em Crédito Livre PF, "Cartão de Crédito" só tem
+          2 filhos (parcelado/rotativo, sem "à vista"), e faltam os cortes "Total Não Rotativo"/"Total
+          Rotativo" que Saldo tem. Direcionado PJ/PF têm exatamente a mesma quebra de Saldo/Taxa
+          Média.<br><br>
+          <strong>Atraso 15–90 dias (PJ, complementar):</strong> leaf isolada de
+          <code>cred_inadimplencia_pj.atraso_pj</code> — métrica diferente de inadimplência (atraso
+          &gt;90 dias), não deve ser somada/comparada diretamente com as demais linhas da tabela.<br><br>
+          <strong>Por Porte de Empresa / Por Controle de Capital — sem total próprio:</strong>
+          <code>cred_credito_porte</code> e <code>cred_credito_controle_capital</code> não publicam um
+          código SGS de total agregado para <code>metrica='inadimplencia'</code> (só MPMe/Grande e
+          Públicas/Privadas Nacionais/Estrangeiras, respectivamente) — e, ao contrário de somar NÍVEL em
+          R$ (válido, ver aba Saldo), somar <strong>razões</strong> de grupos diferentes não é
+          matematicamente válido. Por isso esses 2 grupos aparecem como cabeçalhos puros — sem checkbox
+          nem linha de valor própria, só o triângulo de expandir para ver MPMe/Grande ou
+          Públicas/Privadas Nacionais/Estrangeiras individualmente.<br><br>
+          <strong>Saldo de Maior Risco — quebra de metodologia, cuidado ao interpretar:</strong> a
+          mesma <code>cred_credito_porte</code> também publica o "% do saldo classificado em rating de
+          maior risco" por porte, sob <strong>duas metodologias com códigos SGS diferentes</strong> —
+          Resolução CMN 2.682 (colunas "Saldo de maior risco" da planilha-fonte do BCB) e Resolução CMN
+          4.966 (colunas "Saldo de maior risco — Res. 4.966", que a substitui). Diferente dos 2 cortes
+          acima, aqui o BCB publica um código de total próprio para as 3 combinações (MPMe/Grande/Total)
+          em cada metodologia — sem soma sintética. As duas aparecem como <strong>dois grupos
+          independentes</strong> na árvore — deliberadamente <strong>nunca emendadas numa série só</strong>,
+          já que são calculadas por critérios de classificação de risco diferentes; concatená-las
+          produziria uma quebra de nível artificial no gráfico que não reflete nenhuma mudança real de
+          risco de crédito. Confirmado ao vivo nos dados (sem sobreposição): a metodologia anterior vai
+          até 2024-12, a nova (Res. 4.966) começa em 2025-01.<br><br>
+          <strong>Selic:</strong> checkbox independente das linhas marcadas na tabela, mesma lógica da
+          aba Taxa &amp; Spread — sobrepõe <code>cred_inadimplencia_pj.selic</code> no gráfico como
+          referência, sem entrar na tabela em si.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Aba PTC — Metodologia da Pesquisa (escala, fórmula, painel, ausência de total)</summary>
+        <div class="appendix-body">
+
+          <strong>1. Fonte metodológica.</strong> Annibal, C. A. &amp; Koyama, S. M. (2011),
+          <em>Pesquisa Trimestral de Condições de Crédito no Brasil</em>, BCB
+          <strong>Trabalhos para Discussão 245</strong> (§2.3 oferta, §2.6 demanda), mais a seção
+          "Introdução" de qualquer relatório trimestral da PTC. Tudo nesta nota vem de lá, não de
+          inferência sobre os dados — exceto onde marcado como conferência ao vivo.
+          <em>Atenção ao citar:</em> a nota de rodapé dos relatórios trimestrais remete a "Trabalhos
+          para Discussão 254", que é <strong>erro de digitação do próprio BCB</strong> — o TD 254 é
+          um artigo de regulação macroprudencial de outros autores. O da PTC é o <strong>245</strong>.<br><br>
+
+          <strong>2. Como o número é construído.</strong> Cada respondente escolhe <em>um</em> de cinco
+          níveis. As respostas são convertidas para inteiros de −2 a +2 e o indicador publicado é a
+          <strong>média aritmética simples</strong> delas no segmento:
+          <code>I(segmento, trimestre) = (1/N) · Σ<sub>b</sub> resposta<sub>b</sub></code>, com
+          <code>resposta<sub>b</sub> ∈ {−2, −1, 0, +1, +2}</code> e <code>N</code> = número de
+          instituições que responderam àquela questão naquele trimestre. Nas palavras do relatório:
+          "as avaliações são convertidas em valores entre -2 e 2 e são apresentadas as
+          <strong>médias não ponderadas</strong> das respostas".<br><br>
+          <em>Não é um saldo líquido</em> do tipo "% que apertou menos % que afrouxou" — a forma como o
+          SLOOS do Fed publica os seus. Aqui os níveis carregam peso 1 e 2, então direção e
+          <em>intensidade</em> entram no mesmo número.<br><br>
+
+          <strong>3. A escala, e o que cada nível significa.</strong> Mesma escala numérica nas duas
+          direções, com rótulos próprios de cada uma (é a régua reproduzida no topo da aba):
+          <table>
+            <thead><tr><th>Valor</th><th>Oferta — padrão de aprovação</th><th>Demanda — procura por crédito</th></tr></thead>
+            <tbody>
+              <tr><td><strong>+2</strong></td><td>consideravelmente mais flexível</td><td>substancialmente mais forte</td></tr>
+              <tr><td><strong>+1</strong></td><td>moderadamente mais flexível</td><td>moderadamente mais forte</td></tr>
+              <tr><td><strong>0</strong></td><td>basicamente inalterado</td><td>mesmo nível</td></tr>
+              <tr><td><strong>−1</strong></td><td>moderadamente mais restritivo</td><td>moderadamente mais fraca</td></tr>
+              <tr><td><strong>−2</strong></td><td>consideravelmente mais restritivo</td><td>substancialmente mais fraca</td></tr>
+            </tbody>
+          </table>
+          Como é média de níveis rotulados, <strong>a magnitude tem leitura direta</strong>:
+          |I| ≈ 1 significa "o banco médio marcou <em>moderadamente</em>"; |I| ≈ 2,
+          "<em>consideravelmente</em>". Um −0,32 <strong>não</strong> é "32% dos bancos apertaram" — é o
+          banco médio a um terço do caminho entre "inalterado" e "moderadamente mais restritivo", isto
+          é, aperto brando. Nos relatórios do BCB a mesma escala aparece como gradiente de cor, de
+          vermelho pleno em −2 a verde pleno em +2.<br><br>
+
+          <strong>4. O intervalo é [−2, +2], não [−1, +1].</strong> Conferência ao vivo: 19 dos 960
+          pontos passam de 1 em módulo — extremos −1,21 (<code>mpme_oferta_esperada</code>, T1/2016) e
+          +1,57 (<code>pfh_demanda_observada</code>, T4/2020) — exatamente porque o teto da escala é 2.
+          Uma leitura de −1,17 em grandes empresas no T1/2015 quer dizer "o banco médio apertou um
+          pouco <em>mais</em> que moderadamente", não "estourou o limite do índice". O eixo do gráfico
+          fica em <strong>autoescala</strong> de propósito: fixar em ±2 achataria todas as séries contra
+          o zero, já que nenhuma jamais chegou perto do teto.<br><br>
+
+          <strong>5. Zero não é "condições neutras"</strong> — é o ponto em que as respostas se
+          cancelam. Dá zero tanto com o painel inteiro respondendo "inalterado" quanto com metade
+          apertando e metade afrouxando na mesma intensidade. As duas situações são economicamente
+          diferentes e o índice não as distingue.<br><br>
+
+          <strong>6. Sem ponderação por participação de mercado — e isso é deliberado.</strong> O
+          TD 245 registra que essa é a prática internacional dominante (Fed, BoJ, Chile, Espanha,
+          França, Portugal, quase toda a Europa) "pelo fato de que as pesquisas já seriam naturalmente
+          direcionadas às maiores instituições financeiras de cada região". A ausência de peso não é,
+          portanto, uma lacuna a corrigir: o painel <em>é</em> o topo do mercado (cobertura na tabela
+          abaixo).<br><br>
+
+          <strong>7. O painel é pequeno, e isso limita a granularidade.</strong> Sendo média simples de
+          <code>N</code> respostas, o índice só pode assumir múltiplos de <code>1/N</code> — uma única
+          instituição mudando de nível move o índice em <code>1/N</code>. Conferência ao vivo:
+          recuperando o <code>N</code> implícito da própria série (o menor <code>N</code> que explica os
+          4 indicadores de um segmento num trimestre, dado o arredondamento de 2 decimais), o
+          <code>N</code> modal por segmento <strong>reproduz os participantes que o BCB publica</strong>:
+          <table>
+            <thead><tr><th>Segmento</th><th>N (respondentes)</th><th>Degrau mínimo 1/N</th><th>Cobertura do crédito do segmento</th></tr></thead>
+            <tbody>
+              <tr><td>Grandes Empresas</td><td>22</td><td>~0,05</td><td>94,1%</td></tr>
+              <tr><td>MPME</td><td>28</td><td>~0,04</td><td>95,3%</td></tr>
+              <tr><td>PF — Consumo</td><td>17</td><td>~0,06</td><td>92,4%</td></tr>
+              <tr><td>PF — Habitacional</td><td>7</td><td>~0,14</td><td>99,7%</td></tr>
+            </tbody>
+          </table>
+          <em>N</em> da rodada de junho/2024 (PF Habitacional tinha 8 na primeira, em 2011); cobertura
+          da primeira rodada, TD 245. Consequência prática: em <strong>PF Habitacional um movimento de
+          0,14 é <em>um</em> banco mudando de opinião</strong>, não mudança de regime — e é por isso que
+          essa série parece mais voltátil que as outras. Não comparar amplitude entre segmentos sem
+          isso em conta. O <code>N≈</code> ao lado de cada rótulo na tabela da aba está ali por esse
+          motivo.<br><br>
+
+          <strong>8. Armadilha de sinal ao ler o TD 245.</strong> No questionário de demanda as
+          alternativas são listadas de "substancialmente mais forte" (opção 1) a "substancialmente mais
+          fraca" (opção 5) — ordem <em>inversa</em> à conversão numérica divulgada. Na série publicada,
+          e nesta aba, <strong>positivo = demanda maior</strong>. Confirmado contra episódios conhecidos:
+          na recessão de 2015-16 a oferta observada chega a −1,08 (grandes empresas, T3/15 e T1/16) e
+          −1,12 (MPME, T1/16) com demanda também negativa; em T2/2020 a oferta é negativa nos 4
+          segmentos (−0,77 grandes, −0,53 MPME) <em>ao mesmo tempo</em> que a demanda PJ dispara
+          (+0,91 grandes, +0,63 MPME) e a de PF consumo colapsa (−0,90) — a assinatura do
+          <em>dash for cash</em> corporativo contra o recuo do consumo das famílias. Não "corrigir" o
+          sinal a partir da ordem das opções do questionário.<br><br>
+
+          <strong>9. Por que não há linha de total.</strong> O BCB não publica agregado "todos os
+          segmentos" da PTC — nem no SGS nem nos relatórios. E mediar os 4 segmentos aqui não
+          reproduziria a conta dele: a média simples do BCB corre sobre <em>instituições dentro de um
+          segmento</em>, com o painel e o questionário daquele segmento. Uma média entre segmentos
+          misturaria painéis de 7 a 28 respondentes e universos de crédito de tamanhos muito
+          diferentes, produzindo um objeto que não é o índice de nada. Por isso "Oferta" e "Demanda" são
+          <strong>nós-cabeçalho</strong>: expansíveis, mas sem checkbox e sem coluna de valor — mesmo
+          tratamento (e mesma razão de fundo) dado a "Por Porte de Empresa" na aba Inadimplência.<br><br>
+
+          <strong>10. Sem transformação alguma.</strong> Não se deflaciona (não é valor em R$), não se
+          dessazonaliza (a pergunta <em>já</em> é relativa ao trimestre anterior, e a de demanda pede
+          explicitamente que se desconsiderem flutuações sazonais) e não se expressa como % do PIB. As
+          séries entram na aba exatamente como saem do banco.<br><br>
+
+          <strong>11. Horizonte é uma pill, não um nível da árvore.</strong> <code>Observada</code>
+          (últimos 3 meses) e <code>Esperada</code> (próximos 3 meses) são as duas variantes de cada uma
+          das 8 células direção×segmento; o seletor troca qual delas a tabela e o gráfico leem, mantendo
+          a comparação entre segmentos — a leitura principal — na mesma tela. As duas contam quase a
+          mesma história deslocada de um trimestre: conferência ao vivo, a esperada de <em>t−1</em> tem o
+          mesmo sinal da observada de <em>t</em> em <strong>47 dos 52</strong> trimestres comparáveis de
+          <code>ge_oferta</code>. O valor de alternar está em ver <em>antecipação de virada</em>, não
+          discordância.<br><br>
+
+          <strong>12. Datas.</strong> Trimestral desde T2/2011 — 60 observações, sem nenhum buraco em
+          nenhuma das 16 séries. O SGS data cada trimestre no seu primeiro mês (jan/abr/jul/out), e o
+          cabeçalho da tabela converte para <code>T&lt;n&gt;/&lt;aa&gt;</code>. A coleta ocorre no mês
+          seguinte ao fim do trimestre avaliado, então a última coluna é sempre uma leitura recente.<br><br>
+
+          <strong>13. O que a PTC não é.</strong> Não é inadimplência, não é probabilidade de default e
+          não é volume — é percepção declarada, uma leitura qualitativa que <em>antecede</em> o dado
+          quantitativo das outras abas. O próprio BCB adverte que os resultados "representam unicamente
+          a visão das instituições financeiras pesquisadas", não a do Banco Central.<br><br>
+
+          <strong>14. Correções de 2026-08.</strong> Duas, ambas registradas aqui para não se perderem:
+          <em>(a)</em> uma versão anterior deste relatório guardava apenas 2 das 16 séries
+          (<code>ptcc_grandes</code>/<code>ptcc_mpme</code> em <code>cred_inadimplencia_pj</code>) sob
+          códigos SGS <strong>congelados desde 2022-10</strong> — o BCB nunca descontinuou a pesquisa,
+          apenas passou a publicar sob outros códigos; a série completa vive agora em
+          <code>cred_ptc</code>, que é o que alimenta esta aba. <em>(b)</em> a documentação interna da
+          tabela descrevia o valor como "índice de difusão (saldo líquido, −1 a +1)", errado nas duas
+          metades pelos motivos dos itens 2 e 4 — o <code>COMMENT</code> de <code>cred_ptc</code> no
+          MySQL foi corrigido, e a escala −2..+2 com a definição de média não ponderada está agora no
+          <code>COMMENT</code> da coluna <code>value</code>.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Crédito Ampliado × Crédito do Sistema Financeiro — Qual a Diferença</summary>
+        <div class="appendix-body">
+          <strong>Crédito ampliado ao setor não financeiro</strong> (segunda tabela da aba Saldo,
+          <code>cred_credito_amplo</code>) é o conceito mais amplo do BCB: soma empréstimos bancários,
+          títulos de dívida (públicos e privados) e dívida externa, para Governo, Empresas e Famílias.
+          <strong>Crédito do sistema financeiro</strong> (primeira tabela da aba Saldo, demais abas,
+          <code>cred_credito_resumo</code>/<code>cred_inadimplencia_pj</code>/
+          <code>cred_credito_familias</code>) é mais estreito: só o crédito efetivamente concedido por
+          instituições financeiras (bancos), sem títulos públicos nem dívida externa. Por isso o total
+          da segunda tabela (~R$19,7tri) é bem maior que o saldo do sistema financeiro (~R$7,4tri) —
+          não é inconsistência, são dois recortes diferentes do mesmo fenômeno. A maior parte da
+          diferença vem de <strong>títulos públicos federais</strong> (código SGS 28198), que entram no
+          crédito ampliado ao Governo mas não na tabela de modalidades.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Fonte dos Dados — BCB, Tabelas de Estatísticas Monetárias e de Crédito</summary>
+        <div class="appendix-body">
+          Todas as séries desta aba vêm da publicação mensal do BCB "Tabelas de Estatísticas
+          Monetárias e de Crédito" — cada tabela da publicação expõe o código SGS de cada coluna, o
+          que permite buscar tudo direto via API (<code>connectors/bcb.py</code>), sem depender de
+          reparsear o Excel a cada mês. <code>cred_credito_resumo</code> replica as Tabelas 3
+          (recurso=total), 4 (recurso=livre) e 5 (recurso=direcionado) da publicação — a Tabela 2
+          (livre/direcionado sem quebra PJ/PF) foi checada e achada <strong>totalmente
+          redundante</strong> com as outras três (toda combinação que ela expõe já aparece com o
+          mesmo código SGS numa das outras), por isso não tem série própria aqui.<br><br>
+          <strong>Unidade:</strong> saldo/concessão vêm da API em R$ milhões, não R$ bilhões como o
+          cabeçalho da planilha-fonte mostra (a planilha exibe dividido por 1000) — os gráficos e KPIs
+          desta aba já fazem essa conversão para R$ bi/tri.<br><br>
+          <strong>Escopo da v1:</strong> a planilha-fonte tem 30 abas no total — 27 de crédito e 3 de
+          agregados monetários (base monetária, M1-M4, fora do escopo deste relatório). Só as 5 abas de
+          resumo agregado (Tabelas 2-5, +Tabela 1 já coberta por <code>cred_credito_amplo</code>) foram
+          trazidas para esta primeira versão. Ficaram de fora, disponíveis para uma rodada futura:
+          detalhe por modalidade específica de crédito (cartão, consignado, veículos, imobiliário
+          etc.), taxas/spread/inadimplência por modalidade, e os cortes por porte de empresa,
+          atividade econômica, tipo de cliente e controle de capital.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>Detalhe PJ × PF por Recurso (Livre/Direcionado) — Disponível, Não Exibido</summary>
+        <div class="appendix-body">
+          <code>cred_credito_resumo</code> guarda 72 séries: 8 métricas (saldo, concessão, concessão
+          dessazonalizada, taxa de juros, spread, ICC — Indicador de Custo do Crédito —, inadimplência,
+          % do PIB) × 3 recursos (livre/direcionado/total) × 3 segmentos (PJ/PF/total). A aba "Livre ×
+          Direcionado" só mostra o segmento "Total" (PJ+PF); a aba "Crédito Corporativo" usa
+          <code>cred_inadimplencia_pj</code> (que tem Selic e atraso 15-90d, não presentes em
+          <code>cred_credito_resumo</code>) em vez do corte PJ desta tabela. Um cruzamento PJ vs. PF
+          dentro de cada recurso, ou um seletor de segmento nos gráficos desta aba, é natural para uma
+          próxima rodada.
+        </div>
+      </details>
+
+      <details class="appendix-item">
+        <summary>O Que Saiu Desta Aba — Falências e Recuperação Judicial (CNJ DataJud)</summary>
+        <div class="appendix-body">
+          Uma versão anterior deste relatório ("Estresse de Crédito Corporativo") tinha como série
+          principal a contagem de novos processos de falência (classe 108) e recuperação judicial
+          (classe 129) via API pública do CNJ DataJud, por tribunal estadual. A pedido explícito do
+          usuário, essa tabela (<code>insolv_falencia_rj</code>), o connector
+          (<code>connectors/datajud.py</code>) e o script de domínio
+          (<code>domain/db/brasil/cnj/insolv_falencia_rj.py</code>) foram removidos da base — o
+          relatório de crédito passou a cobrir só dados bancários de crédito. Se a análise de
+          insolvência voltar a ser necessária, precisará ser reconstruída do zero.
+        </div>
+      </details>
+
+    </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>BCB SGS — Estatísticas Monetárias e de Crédito, Nota de Crédito</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Data & palette ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/Credit.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D = REPORT_DATA;
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+// scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
+var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
+
+/*Y_AUTOFIT_JS*/
+
+// ── Value/date helpers ────────────────────────────────────────────────────────
+function ser(group, key) {
+  var g = D[group] || {};
+  return g[key] || {dates: [], values: []};
+}
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function fmtDate(dateStr) {
+  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
+  return MESES[m - 1] + '/' + y;
+}
+function lastValid(dates, values) {
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+function firstValid(dates, values) {
+  for (var i = 0; i < values.length; i++) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+// Corta uma serie {dates, values} para o intervalo [lo, hi] (strings ISO, comparaveis
+// lexicograficamente). Usado para nao mostrar a Selic (historico desde 1986) muito antes de
+// onde as series de credito com que ela e comparada realmente comecam (2011-03).
+function clipToRange(seriesObj, lo, hi) {
+  var dates = [], values = [];
+  for (var i = 0; i < seriesObj.dates.length; i++) {
+    if (seriesObj.dates[i] >= lo && seriesObj.dates[i] <= hi) {
+      dates.push(seriesObj.dates[i]);
+      values.push(seriesObj.values[i]);
+    }
+  }
+  return {dates: dates, values: values};
+}
+// R$ milhoes -> R$ bilhoes / trilhoes, arredondado.
+function toBi(seriesObj) {
+  return {dates: seriesObj.dates, values: seriesObj.values.map(function(v) { return v == null ? null : Math.round(v / 1000 * 100) / 100; })};
+}
+function toTri(seriesObj) {
+  return {dates: seriesObj.dates, values: seriesObj.values.map(function(v) { return v == null ? null : Math.round(v / 1000000 * 1000) / 1000; })};
+}
+// Soma varias series {dates, values} ponto a ponto -- assume mesmo calendario (mesma tabela/frequencia).
+// Um valor null em qualquer serie naquela data produz null no total (nao trata null como zero).
+function sumSeries() {
+  var list = Array.prototype.slice.call(arguments);
+  if (!list.length) return {dates: [], values: []};
+  var dates = list[0].dates;
+  var values = dates.map(function(_, i) {
+    var sum = 0;
+    for (var j = 0; j < list.length; j++) {
+      var v = list[j].values[i];
+      if (v == null) return null;
+      sum += v;
+    }
+    return sum;
+  });
+  return {dates: dates, values: values};
+}
+
+// ── KPI rendering ─────────────────────────────────────────────────────────────
+function setKPI(idPrefix, value, sub, unit, decimals) {
+  var elV = document.getElementById(idPrefix + '-value');
+  if (!elV) return;
+  var elS = document.getElementById(idPrefix + '-sub');
+  if (value == null) {
+    elV.textContent = '—';
+    if (elS) elS.textContent = '—';
+    return;
+  }
+  elV.textContent = fmt(value, decimals) + (unit || '%');
+  if (elS) elS.textContent = sub;
+}
+
+// ── Chart layout factory ──────────────────────────────────────────────────────
+function mkTimeseriesLayout(yTitle, height) {
+  return {
+    height: height || 560, margin: {l: 60, r: 30, t: 40, b: 60}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee'},
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    legend: {orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', font: {size: 11}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+  };
+}
+function mkStackedBarLayout(yTitle, height) {
+  return Object.assign(mkTimeseriesLayout(yTitle, height), {barmode: 'stack'});
+}
+
+// ── Quick-range pills (plain HTML buttons + Plotly.relayout(), not the native
+// xaxis.rangeselector -- that component only recognizes step/stepmode/count, has no
+// way to bake an explicit [from,to] per button, and breaks in a real browser --
+// see .claude/rules/lis-dashboards.md's "Quick-range buttons" section) ──────────
+function _unionDates() {
+  var specs = Array.prototype.slice.call(arguments);
+  var set = {};
+  specs.forEach(function(s) { (s.dates || []).forEach(function(d) { set[d] = true; }); });
+  return Object.keys(set).sort();
+}
+function _quickRangeOptions(dates) {
+  if (!dates.length) return [];
+  var hiISO = dates[dates.length - 1], loISO = dates[0];
+  var hiMs = Date.parse(hiISO);
+  function backISO(years) {
+    var d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - years);
+    return d.toISOString().slice(0, 10);
+  }
+  return [
+    {label: '1a',   from: backISO(1),  to: hiISO},
+    {label: '3a',   from: backISO(3),  to: hiISO},
+    {label: '5a',   from: backISO(5),  to: hiISO},
+    {label: '10a',  from: backISO(10), to: hiISO},
+    {label: 'Tudo', from: loISO,       to: hiISO},
+  ];
+}
+function _ensureQuickRange(divId, dates) {
+  if (!dates.length) return;
+  var chartEl = document.getElementById(divId);
+  if (!chartEl) return;
+  var card = chartEl.closest('.chart-card');
+  if (!card || !card.parentNode) return;
+  var bar = card.previousElementSibling;
+  var isOurs = bar && bar.classList && bar.classList.contains('quick-range-bar') && bar.dataset.for === divId;
+  if (!isOurs) {
+    bar = document.createElement('div');
+    bar.className = 'ctrl-bar quick-range-bar';
+    bar.dataset.for = divId;
+    bar.innerHTML = '<div class="pill-group"></div>';
+    card.parentNode.insertBefore(bar, card);
+  }
+  var group = bar.querySelector('.pill-group');
+  group.innerHTML = '';
+  _quickRangeOptions(dates).forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'pill'; btn.textContent = opt.label;
+    btn.addEventListener('click', function() { Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]}); });
+    group.appendChild(btn);
+  });
+}
+
+// ── Chart renderers ───────────────────────────────────────────────────────────
+// specs: [{dates, values, label, color}] -- one line per pre-computed series.
+function renderLineChart(divId, specs, yTitle, height) {
+  var traces = specs.map(function(s) {
+    return {
+      type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
+      line: {color: s.color, width: 2},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
+    };
+  });
+  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+  _ensureQuickRange(divId, _unionDates.apply(null, specs));
+}
+// specs: [{dates, values, label, color}] -- stacked bar composition over time.
+function renderStackedBarChart(divId, specs, yTitle, height) {
+  var traces = specs.map(function(s) {
+    return {
+      type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
+    };
+  });
+  Plotly.react(divId, traces, mkStackedBarLayout(yTitle, height), _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+  _ensureQuickRange(divId, _unionDates.apply(null, specs));
+}
+
+// Impulso de credito: componentes como barras empilhadas + o total como linha por
+// cima. `bars`: [{dates, values, label, color}] (as parcelas da decomposicao);
+// `lineSpec`: {dates, values, label} do no raiz da arvore, ou null se desmarcado.
+//
+// barmode 'relative', NAO 'stack': as parcelas do impulso trocam de sinal com
+// frequencia (hoje Livre esta negativo enquanto Direcionado esta positivo) e o 'stack'
+// do Plotly empilha tudo na mesma direcao independentemente do sinal, o que produziria
+// um topo de pilha que nao bate com o total. 'relative' acumula positivos acima do zero
+// e negativos abaixo -- e so assim que o topo liquido da pilha coincide com a linha do
+// total, que e justamente a leitura visual que essa aba existe para dar. _bindYAutofit
+// ja reconhece os dois modos e refaz o Y somando pos/neg separadamente.
+function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers) {
+  var traces = bars.map(function(s) {
+    return {
+      type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+    };
+  });
+  if (lineSpec) {
+    traces.push({
+      type: 'scatter', mode: withMarkers ? 'lines+markers' : 'lines', name: lineSpec.label,
+      x: lineSpec.dates, y: lineSpec.values,
+      line: {color: C.azul, width: 2.5}, marker: {color: C.azul, size: 5},
+      hovertemplate: '<b>' + lineSpec.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+    });
+  }
+  var layout = Object.assign(mkTimeseriesLayout(yTitle), {barmode: 'relative', bargap: 0.15});
+  Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+  _ensureQuickRange(divId, _unionDates.apply(null, bars.concat(lineSpec ? [lineSpec] : [])));
+}
+
+// ── Tab renderers ──────────────────────────────────────────────────────────────
+// Aba por aba, sendo reconstruidas -- ver .claude/rules/lis-dashboards.md para o
+// modelo de interacao e analytics/brasil/credit/CLAUDE.md para o mapa de dados/tabelas.
+
+// ── Tabela hierarquica de modalidades + grafico das linhas marcadas -- fabrica
+// generica reusada por toda aba nesse formato (Saldo, Concessao, ...). D[dataKey].tree:
+// [{key, label, seriesKey, children?}] -- nodes sem `children` sao folhas; nodes com
+// `children` sao ao mesmo tempo uma linha de dados propria (tem seriesKey de um codigo
+// SGS real de "total", nunca soma sintetica de filhos) E um agrupador expansivel.
+// D[dataKey].series[seriesKey] = {nominal|real: {<metrica>: {dates, values}}} -- tudo
+// pre-computado em Python (STL/MM3M/deflacao, ver transforms.py), o toggle aqui so
+// troca qual variante ja calculada e lida -- cada aba so difere no conjunto de
+// metricas (Saldo: level/yoy/mom_sa/qoq_sa; Concessao: level/mom/qoq) e no titulo do
+// eixo Y, passados via `opts`.
+var HIER_CHART_COLORS = [C.azul, C.dourado, C.verde, C.laranja, C.azulCl, C.amarelo, '#8E44AD', '#16A085', '#D35400', C.cinza];
+// R$ milhoes -> string auto-escalada (mi/bi/tri) -- linhas dessas tabelas variam de
+// ~R$5-100mi (modalidades pequenas) a ~R$8tri (Total Geral), uma unica escala fixa
+// deixaria uma ponta ou outra ilegivel.
+function fmtAutoCurrency(valueMillions) {
+  var abs = Math.abs(valueMillions);
+  if (abs >= 1e6) return (valueMillions / 1e6).toFixed(2).replace('.', ',') + ' tri';
+  if (abs >= 1e3) return (valueMillions / 1e3).toFixed(1).replace('.', ',') + ' bi';
+  return valueMillions.toFixed(0).replace('.', ',') + ' mi';
+}
+function fmtMonthShort(dateStr) {
+  var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return MESES[m - 1] + '/' + y;
+}
+// Serie trimestral (PTC) -- o SGS data o trimestre no seu primeiro mes (jan/abr/jul/out),
+// entao o trimestre sai de (mes-1)/3. Mesmo formato "T<n>/<aa>" de analytics/brasil/fiscal_policy.
+function fmtQuarterShort(dateStr) {
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return 'T' + (Math.floor((m - 1) / 3) + 1) + '/' + y;
+}
+function flattenHierRows(tree, expanded, depth) {
+  var rows = [];
+  (tree || []).forEach(function(node) {
+    rows.push({node: node, depth: depth});
+    if (node.children && expanded[node.key]) {
+      rows = rows.concat(flattenHierRows(node.children, expanded, depth + 1));
+    }
+  });
+  return rows;
+}
+// opts: {dataKey, anchorSeriesKey, metricGroupId, basisGroupId, tableHeadId,
+//        tableBodyId, chartDivId, defaultChecked: [keys], yTitle(metric, basis, refDate)}
+function makeHierTab(opts) {
+  var state = {metric: null, basis: 'nominal', checked: {}, expanded: {}};
+  opts.defaultChecked.forEach(function(k) { state.checked[k] = true; });
+
+  function seriesFor(seriesKey) {
+    var byBasis = D[opts.dataKey].series[seriesKey];
+    if (!byBasis) return {dates: [], values: []};
+    var byMetric = byBasis[state.basis] || byBasis.nominal;
+    return (byMetric && byMetric[state.metric]) || {dates: [], values: []};
+  }
+  function fmtValue(value) {
+    if (value == null || isNaN(value)) return '—';
+    // "% do PIB" e sempre percentual mesmo com metric==='level' (level e a unica
+    // variante que essa base tem) -- so a combinacao Nominal/Real + level usa a
+    // formatacao de moeda.
+    if (state.metric === 'level' && state.basis !== 'pctpib') return fmtAutoCurrency(value);
+    return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
+  }
+  // Ultimos 12 meses de calendario -- lidos de `anchorSeriesKey` (sempre presente, o
+  // mais completo da arvore) como referencia comum de datas para todas as linhas, em
+  // vez de cada serie usar seus proprios ultimos 12 pontos (o que desalinharia as
+  // colunas se uma linha tivesse um mes de atraso em relacao a outra).
+  function refDates() {
+    var byBasis = D[opts.dataKey].series[opts.anchorSeriesKey];
+    var dates = (byBasis && byBasis.nominal && byBasis.nominal.level && byBasis.nominal.level.dates) || [];
+    return dates.slice(-12);
+  }
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = 'Modalidade';
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = fmtMonthShort(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = refDates();
+    flattenHierRows(D[opts.dataKey].tree, state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      dates.forEach(function(d) {
+        var tdValue = document.createElement('td');
+        tdValue.className = 'col-value';
+        tdValue.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(tdValue);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function renderChart() {
+    var specs = [], colorIdx = 0;
+    (function walk(tree) {
+      (tree || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          specs.push({dates: s.dates, values: s.values, label: node.label, color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+        }
+        if (node.children) walk(node.children);
+      });
+    })(D[opts.dataKey].tree);
+    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date));
+  }
+  function wireControls() {
+    document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
+      if (btn.classList.contains('active')) state.metric = btn.dataset.metric;
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.metric = btn.dataset.metric;
+        renderTable(); renderChart();
+      });
+    });
+    document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.basis = btn.dataset.basis;
+        // "% PIB" so tem a variante Nivel (decisao explicita do usuario, 2026-08) --
+        // forca o metrico de volta para 'level' e desabilita os demais botoes
+        // enquanto essa base estiver selecionada; volta ao normal em Nominal/Real.
+        var metricPills = document.querySelectorAll('#' + opts.metricGroupId + ' .pill');
+        if (state.basis === 'pctpib') {
+          state.metric = 'level';
+          metricPills.forEach(function(b) {
+            b.classList.toggle('disabled', b.dataset.metric !== 'level');
+            b.classList.toggle('active', b.dataset.metric === 'level');
+          });
+        } else {
+          metricPills.forEach(function(b) { b.classList.remove('disabled'); });
+        }
+        renderTable(); renderChart();
+      });
+    });
+  }
+  return {
+    init: function() {
+      wireControls();
+      renderTable();
+      renderChart();
+    },
+  };
+}
+
+// basis==='pctpib' so tem a variante Nivel (ver wireControls acima) -- o Y do grafico
+// e sempre "% do PIB" nesse caso, independente do rotulo Nominal/Real de cada aba.
+function _hierYTitle(metric, basis, refDate, levelLabelNominal, levelLabelRealPrefix) {
+  if (basis === 'pctpib') return '% do PIB';
+  if (metric !== 'level') return '%';
+  return basis === 'real' ? levelLabelRealPrefix + fmtDate(refDate) + ')' : levelLabelNominal;
+}
+
+var SALDO_TAB = makeHierTab({
+  dataKey: 'saldo', anchorSeriesKey: 'saldo_total_total',
+  metricGroupId: 'saldo-metric-group', basisGroupId: 'saldo-basis-group',
+  tableHeadId: 'saldo-table-head', tableBodyId: 'saldo-table-body', chartDivId: 'chart-saldo',
+  defaultChecked: ['saldo_livre_total', 'saldo_direcionado_total'],
+  yTitle: function(metric, basis, refDate) {
+    return _hierYTitle(metric, basis, refDate, 'R$ mi', 'R$ mi (a preços de ');
+  },
+});
+var CONCESSAO_TAB = makeHierTab({
+  dataKey: 'concessao', anchorSeriesKey: 'concessao_total_total',
+  metricGroupId: 'concessao-metric-group', basisGroupId: 'concessao-basis-group',
+  tableHeadId: 'concessao-table-head', tableBodyId: 'concessao-table-body', chartDivId: 'chart-concessao',
+  defaultChecked: ['concessao_livre_total', 'concessao_direcionado_total'],
+  yTitle: function(metric, basis, refDate) {
+    return _hierYTitle(metric, basis, refDate, 'R$ mi, SA+MM3M', 'R$ mi, SA+MM3M (a preços de ');
+  },
+});
+var AMPLO_TAB = makeHierTab({
+  dataKey: 'amplo_hier', anchorSeriesKey: 'amplo__total',
+  metricGroupId: 'amplo-metric-group', basisGroupId: 'amplo-basis-group',
+  tableHeadId: 'amplo-table-head', tableBodyId: 'amplo-table-body', chartDivId: 'chart-amplo',
+  defaultChecked: ['amplo__governo_total', 'amplo__empresas_total', 'amplo__familias_total'],
+  yTitle: function(metric, basis, refDate) {
+    return _hierYTitle(metric, basis, refDate, 'R$ mi', 'R$ mi (a preços de ');
+  },
+});
+
+// ── Impulso de Credito — fabrica propria, nao makeHierTab(): a metrica ja e uma razao
+// contra o PIB (nao existe Nominal/Real/% PIB para escolher) e o unico controle e a
+// frequencia de LEITURA da mesma serie (mensal 12m vs. anual em dezembro, ver
+// impulso_tab.py). D.impulso = {trees: {recurso|porte|atividade}, anchors, series:
+// {key: {m12|anual: {dates, values}}}} -- tudo pre-computado em Python.
+// opts: {treeKey, freqGroupId, tableHeadId, tableBodyId, chartDivId, defaultChecked,
+//        defaultExpanded, labelHeader}
+function makeImpulseTab(opts) {
+  var state = {freq: 'm12', checked: {}, expanded: {}};
+  (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
+  (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
+
+  function grp() { return D.impulso || {trees: {}, anchors: {}, series: {}}; }
+  function tree() { return grp().trees[opts.treeKey] || []; }
+  function seriesFor(seriesKey) {
+    var byFreq = grp().series[seriesKey];
+    return (byFreq && byFreq[state.freq]) || {dates: [], values: []};
+  }
+  // Ultimas 12 observacoes COM valor da serie-ancora -- os primeiros 24 meses de
+  // qualquer serie sao null por construcao (a formula precisa de t-24), entao pegar o
+  // rabo cru da lista deixaria colunas vazias nos cortes de historico mais curto
+  // (porte/atividade comecam em 2012-01, primeiro impulso so em 2014-01).
+  function refDates() {
+    var anchor = grp().series[grp().anchors[opts.treeKey]];
+    var s = anchor && anchor[state.freq];
+    if (!s) return [];
+    var out = [];
+    for (var i = s.dates.length - 1; i >= 0 && out.length < 12; i--) {
+      if (s.values[i] != null) out.unshift(s.dates[i]);
+    }
+    return out;
+  }
+  function fmtHeader(d) { return state.freq === 'anual' ? d.slice(0, 4) : fmtMonthShort(d); }
+  // Sinal explicito -- e a leitura principal da metrica. Arredonda ANTES de decidir o
+  // sinal para uma contribuicao residual (ex: -0,0004 p.p. da Agropecuaria) sair como
+  // "0,00" e nao como "-0,00", que se le como erro.
+  function fmtValue(v) {
+    if (v == null || isNaN(v)) return '—';
+    var r = Math.round(v * 100) / 100;
+    if (r === 0) return '0,00';
+    return (r > 0 ? '+' : '') + r.toFixed(2).replace('.', ',');
+  }
+  function renderTableHead() {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+    var thLabel = document.createElement('th'); thLabel.textContent = opts.labelHeader || 'Segmento';
+    tr.appendChild(thCheck); tr.appendChild(thLabel);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = fmtHeader(d);
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+  }
+  function renderTable() {
+    renderTableHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = refDates();
+    flattenHierRows(tree(), state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var s = seriesFor(node.seriesKey);
+      var valueByDate = {};
+      for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+      if (node.children) {
+        var icon = document.createElement('span');
+        icon.className = 'tree-toggle';
+        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+        icon.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+        tdLabel.appendChild(icon);
+        tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      } else {
+        tdLabel.appendChild(document.createTextNode(node.label));
+      }
+
+      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+      dates.forEach(function(d) {
+        var tdValue = document.createElement('td');
+        tdValue.className = 'col-value';
+        tdValue.textContent = fmtValue(valueByDate[d]);
+        tr.appendChild(tdValue);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+  function hasCheckedDescendant(node) {
+    return !!(node.children || []).some(function(c) {
+      return state.checked[c.key] || hasCheckedDescendant(c);
+    });
+  }
+  // A raiz da arvore (Total Geral / Total PJ) vira a LINHA; todo outro no marcado vira
+  // uma BARRA da pilha. Um no marcado que tenha descendente tambem marcado sai da pilha
+  // -- senao Livre e (Livre>PJ + Livre>PF) entrariam juntos e a pilha contaria a mesma
+  // coisa duas vezes. Vence sempre o nivel mais fino da selecao. Selecao nao exaustiva
+  // (ex: so PJ marcado) deixa uma folga visivel entre o topo da pilha e a linha -- isso
+  // e proposital, e a leitura honesta de "o que falta para fechar o total".
+  function chartSpecs() {
+    var nodes = tree(), rootNode = nodes[0], line = null, bars = [], colorIdx = 0;
+    // Paleta das barras comeca em 1: o indice 0 (azul) fica reservado para a linha do total.
+    (function walk(list) {
+      (list || []).forEach(function(node) {
+        if (state.checked[node.key]) {
+          var s = seriesFor(node.seriesKey);
+          if (node === rootNode) {
+            line = {dates: s.dates, values: s.values, label: node.label};
+          } else if (!hasCheckedDescendant(node)) {
+            bars.push({
+              dates: s.dates, values: s.values, label: node.label,
+              color: HIER_CHART_COLORS[1 + (colorIdx++ % (HIER_CHART_COLORS.length - 1))],
+            });
+          }
+        }
+        if (node.children) walk(node.children);
+      });
+    })(nodes);
+    return {bars: bars, line: line};
+  }
+  function renderChart() {
+    var spec = chartSpecs();
+    renderImpulseChart(opts.chartDivId, spec.bars, spec.line, 'p.p. do PIB', state.freq === 'anual');
+  }
+  function wireControls() {
+    document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.freq = btn.dataset.freq;
+        renderTable(); renderChart();
+      });
+    });
+  }
+  return {
+    init: function() { wireControls(); renderTable(); renderChart(); },
+  };
+}
+
+var IMP_RECURSO_TAB = makeImpulseTab({
+  treeKey: 'recurso', freqGroupId: 'imp-recurso-freq-group',
+  tableHeadId: 'imp-recurso-table-head', tableBodyId: 'imp-recurso-table-body',
+  chartDivId: 'chart-imp-recurso', labelHeader: 'Recurso / Segmento',
+  defaultChecked: ['saldo_total_total', 'saldo_livre_total', 'saldo_direcionado_total'],
+  defaultExpanded: ['saldo_total_total'],
+});
+var IMP_PORTE_TAB = makeImpulseTab({
+  treeKey: 'porte', freqGroupId: 'imp-porte-freq-group',
+  tableHeadId: 'imp-porte-table-head', tableBodyId: 'imp-porte-table-body',
+  chartDivId: 'chart-imp-porte', labelHeader: 'Porte de Empresa',
+  defaultChecked: ['porte__total', 'porte__mpme', 'porte__grande'],
+  defaultExpanded: ['porte__total'],
+});
+var IMP_ATIV_TAB = makeImpulseTab({
+  treeKey: 'atividade', freqGroupId: 'imp-ativ-freq-group',
+  tableHeadId: 'imp-ativ-table-head', tableBodyId: 'imp-ativ-table-body',
+  chartDivId: 'chart-imp-ativ', labelHeader: 'Atividade Econômica',
+  defaultChecked: ['ativ__total', 'ativ__agropecuaria', 'ativ__industria_total', 'ativ__servicos_total', 'ativ__outros'],
+  defaultExpanded: ['ativ__total'],
+});
+
+// ── Taxa & Spread — nao usa makeHierTab(): sem metrica/base (taxa e spread ja sao
+// percentuais, sem STL/deflacao/% PIB, ver D.taxa.taxa_media/spread's series brutas),
+// so um seletor de qual arvore mostrar (Taxa Media | Spread) mais uma sobreposicao
+// independente da Selic no grafico. Reusa flattenHierRows/fmtMonthShort/renderLineChart
+// do toolkit generico acima.
+var taxaState = {source: 'taxa_media', checked: {taxa_juros_total_total: true}, expanded: {}, showSelic: false};
+
+function taxaGroup() { return D.taxa[taxaState.source]; }
+function taxaSeries(seriesKey) {
+  var s = taxaGroup().series[seriesKey];
+  return s || {dates: [], values: []};
+}
+function fmtRate(value) {
+  if (value == null || isNaN(value)) return '—';
+  return value.toFixed(2).replace('.', ',') + '%';
+}
+function taxaRefDates() {
+  var anchor = taxaState.source === 'taxa_media' ? 'taxa_juros_total_total' : 'spread_total_total';
+  var s = taxaGroup().series[anchor];
+  return (s && s.dates.slice(-12)) || [];
+}
+function renderTaxaTableHead() {
+  var thead = document.getElementById('taxa-table-head');
+  thead.innerHTML = '';
+  var tr = document.createElement('tr');
+  var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+  var thLabel = document.createElement('th'); thLabel.textContent = 'Modalidade';
+  tr.appendChild(thCheck); tr.appendChild(thLabel);
+  taxaRefDates().forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtMonthShort(d);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+}
+function renderTaxaTable() {
+  renderTaxaTableHead();
+  var tbody = document.getElementById('taxa-table-body');
+  tbody.innerHTML = '';
+  var dates = taxaRefDates();
+  flattenHierRows(taxaGroup().tree, taxaState.expanded, 0).forEach(function(r) {
+    var node = r.node;
+    var s = taxaSeries(node.seriesKey);
+    var valueByDate = {};
+    for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+    var tr = document.createElement('tr');
+    if (node.children) tr.className = 'is-group';
+
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!taxaState.checked[node.key];
+    cb.addEventListener('change', function() {
+      if (cb.checked) taxaState.checked[node.key] = true; else delete taxaState.checked[node.key];
+      renderTaxaChart();
+    });
+    tdCheck.appendChild(cb);
+
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = taxaState.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        taxaState.expanded[node.key] = !taxaState.expanded[node.key];
+        renderTaxaTable();
+      });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+    }
+
+    tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var tdValue = document.createElement('td');
+      tdValue.className = 'col-value';
+      tdValue.textContent = fmtRate(valueByDate[d]);
+      tr.appendChild(tdValue);
+    });
+    tbody.appendChild(tr);
+  });
+}
+function renderTaxaChart() {
+  var specs = [], colorIdx = 0;
+  (function walk(tree) {
+    (tree || []).forEach(function(node) {
+      if (taxaState.checked[node.key]) {
+        var s = taxaSeries(node.seriesKey);
+        specs.push({dates: s.dates, values: s.values, label: node.label, color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+      }
+      if (node.children) walk(node.children);
+    });
+  })(taxaGroup().tree);
+  if (taxaState.showSelic && D.taxa.selic) {
+    specs.push({dates: D.taxa.selic.dates, values: D.taxa.selic.values, label: 'Selic', color: C.cinza});
+  }
+  renderLineChart('chart-taxa', specs, '% a.a.');
+}
+function initTaxaTab() {
+  document.querySelectorAll('#taxa-source-group .pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#taxa-source-group .pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      taxaState.source = btn.dataset.source;
+      taxaState.checked = {}; taxaState.expanded = {};
+      renderTaxaTable(); renderTaxaChart();
+    });
+  });
+  document.getElementById('taxa-show-selic').addEventListener('change', function(e) {
+    taxaState.showSelic = e.target.checked;
+    renderTaxaChart();
+  });
+  renderTaxaTable();
+  renderTaxaChart();
+}
+
+// ── Inadimplencia — mesmo padrao bespoke de Taxa & Spread (sem metrica/base, series
+// brutas), mas com uma unica arvore (sem seletor de fonte). Duas diferencas do padrao
+// de taxa: (1) 2 nos "cabecalho" (Por Porte/Por Controle de Capital) nao tem serie
+// propria -- renderizados sem checkbox, so o expand/colapsar (ver
+// inadimplencia_tab.py); (2) "Mostrar Selic" reusa a mesma logica de Taxa & Spread.
+var inadState = {checked: {inadimplencia_total_total: true}, expanded: {}, showSelic: false};
+
+function inadSeries(seriesKey) {
+  var s = D.inadimplencia.series[seriesKey];
+  return s || {dates: [], values: []};
+}
+function inadHasData(seriesKey) {
+  return !!D.inadimplencia.series[seriesKey];
+}
+function inadRefDates() {
+  var s = D.inadimplencia.series['inadimplencia_total_total'];
+  return (s && s.dates.slice(-12)) || [];
+}
+function renderInadTableHead() {
+  var thead = document.getElementById('inad-table-head');
+  thead.innerHTML = '';
+  var tr = document.createElement('tr');
+  var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+  var thLabel = document.createElement('th'); thLabel.textContent = 'Corte';
+  tr.appendChild(thCheck); tr.appendChild(thLabel);
+  inadRefDates().forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtMonthShort(d);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+}
+function renderInadTable() {
+  renderInadTableHead();
+  var tbody = document.getElementById('inad-table-body');
+  tbody.innerHTML = '';
+  var dates = inadRefDates();
+  flattenHierRows(D.inadimplencia.tree, inadState.expanded, 0).forEach(function(r) {
+    var node = r.node;
+    var hasData = inadHasData(node.seriesKey);
+    var s = inadSeries(node.seriesKey);
+    var valueByDate = {};
+    for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+    var tr = document.createElement('tr');
+    if (node.children) tr.className = 'is-group';
+
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    if (hasData) {
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!inadState.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) inadState.checked[node.key] = true; else delete inadState.checked[node.key];
+        renderInadChart();
+      });
+      tdCheck.appendChild(cb);
+    }
+
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = inadState.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        inadState.expanded[node.key] = !inadState.expanded[node.key];
+        renderInadTable();
+      });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+    }
+
+    tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var tdValue = document.createElement('td');
+      tdValue.className = 'col-value';
+      tdValue.textContent = hasData ? fmtRate(valueByDate[d]) : '—';
+      tr.appendChild(tdValue);
+    });
+    tbody.appendChild(tr);
+  });
+}
+function renderInadChart() {
+  var specs = [], colorIdx = 0;
+  (function walk(tree) {
+    (tree || []).forEach(function(node) {
+      if (inadState.checked[node.key] && inadHasData(node.seriesKey)) {
+        var s = inadSeries(node.seriesKey);
+        specs.push({dates: s.dates, values: s.values, label: node.label, color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+      }
+      if (node.children) walk(node.children);
+    });
+  })(D.inadimplencia.tree);
+  if (inadState.showSelic && D.inadimplencia.selic) {
+    specs.push({dates: D.inadimplencia.selic.dates, values: D.inadimplencia.selic.values, label: 'Selic', color: C.cinza});
+  }
+  renderLineChart('chart-inad', specs, '%');
+}
+function initInadTab() {
+  document.getElementById('inad-show-selic').addEventListener('change', function(e) {
+    inadState.showSelic = e.target.checked;
+    renderInadChart();
+  });
+  renderInadTable();
+  renderInadChart();
+}
+
+// ── PTC (Pesquisa Trimestral de Condicoes de Credito) — nao usa makeHierTab() nem
+// makeImpulseTab(): indice de difusao nao tem base Nominal/Real/% PIB (nao se deflaciona
+// nem se divide pelo PIB uma contagem liquida de respostas) e nao tem decomposicao
+// aditiva (nada empilha, nao existe total). Sobrou uma unica pill — o horizonte da
+// pesquisa —, entao a forma e a do bloco bespoke de Taxa & Spread / Inadimplencia:
+// arvore + checkbox + linhas. Os 2 nos de topo (Oferta/Demanda) sao cabecalhos sem
+// serie, tratados como em Inadimplencia via ptcHasData(). Ver ptc_tab.py.
+var ptcState = {horizonte: 'observada', checked: {}, expanded: {oferta__header: true, demanda__header: true}};
+['ge_oferta', 'mpme_oferta', 'pfc_oferta', 'pfh_oferta'].forEach(function(k) { ptcState.checked[k] = true; });
+
+function ptcHasData(seriesKey) {
+  return !!(D.ptc.series || {})[seriesKey];
+}
+function ptcSeries(seriesKey) {
+  var byHorizonte = (D.ptc.series || {})[seriesKey];
+  return (byHorizonte && byHorizonte[ptcState.horizonte]) || {dates: [], values: []};
+}
+function ptcRefDates() {
+  var s = ptcSeries(D.ptc.anchor);
+  return s.dates.slice(-12);
+}
+// Sinal explicito: e a leitura inteira da metrica (positivo = afrouxou / mais procura).
+// Arredonda ANTES de escolher o sinal para -0,001 nao imprimir "-0,00", que se le errado.
+function fmtDiffusion(v) {
+  if (v == null || isNaN(v)) return '—';
+  var r = Math.round(v * 100) / 100;
+  if (r === 0) return '0,00';
+  return (r > 0 ? '+' : '') + r.toFixed(2).replace('.', ',');
+}
+function renderPtcTableHead() {
+  var thead = document.getElementById('ptc-table-head');
+  thead.innerHTML = '';
+  var tr = document.createElement('tr');
+  var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+  var thLabel = document.createElement('th'); thLabel.textContent = 'Direção / Segmento';
+  tr.appendChild(thCheck); tr.appendChild(thLabel);
+  ptcRefDates().forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtQuarterShort(d);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+}
+function renderPtcTable() {
+  renderPtcTableHead();
+  var tbody = document.getElementById('ptc-table-body');
+  tbody.innerHTML = '';
+  var dates = ptcRefDates();
+  flattenHierRows(D.ptc.tree, ptcState.expanded, 0).forEach(function(r) {
+    var node = r.node;
+    var hasData = ptcHasData(node.seriesKey);
+    var s = ptcSeries(node.seriesKey);
+    var valueByDate = {};
+    for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
+    var tr = document.createElement('tr');
+    if (node.children) tr.className = 'is-group';
+
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    if (hasData) {
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!ptcState.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) ptcState.checked[node.key] = true; else delete ptcState.checked[node.key];
+        renderPtcChart();
+      });
+      tdCheck.appendChild(cb);
+    }
+
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = ptcState.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        ptcState.expanded[node.key] = !ptcState.expanded[node.key];
+        renderPtcTable();
+      });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+      // N do painel: e o que fixa o degrau minimo do indice (1/N) naquele segmento.
+      if (node.n) {
+        var sn = document.createElement('span');
+        sn.className = 'row-n';
+        sn.textContent = '  N≈' + node.n;
+        tdLabel.appendChild(sn);
+      }
+    }
+
+    tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var tdValue = document.createElement('td');
+      tdValue.className = 'col-value';
+      tdValue.textContent = hasData ? fmtDiffusion(valueByDate[d]) : '—';
+      tr.appendChild(tdValue);
+    });
+    tbody.appendChild(tr);
+  });
+}
+// Renderer proprio em vez de renderLineChart(): a serie trimestral tem 60 pontos (contra
+// centenas nas abas mensais), e sem marcadores cada observacao da pesquisa deixa de ser
+// identificavel na linha. Mesma razao do `withMarkers` em renderImpulseChart.
+function renderPtcChart() {
+  var specs = [], colorIdx = 0;
+  (function walk(tree) {
+    (tree || []).forEach(function(node) {
+      if (ptcState.checked[node.key] && ptcHasData(node.seriesKey)) {
+        var s = ptcSeries(node.seriesKey);
+        specs.push({dates: s.dates, values: s.values, label: node.label, color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+      }
+      if (node.children) walk(node.children);
+    });
+  })(D.ptc.tree);
+  var traces = specs.map(function(sp) {
+    return {
+      type: 'scatter', mode: 'lines+markers', name: sp.label, x: sp.dates, y: sp.values,
+      line: {color: sp.color, width: 2}, marker: {color: sp.color, size: 5},
+      hovertemplate: '<b>' + sp.label + '</b><br>%{x}<br>%{y:+.2f}<extra></extra>',
+    };
+  });
+  // Eixo deixado em autoscale de proposito: a escala teorica e -2..+2, mas o observado
+  // nunca passa de |1,57| -- fixar em +-2 achataria toda a serie contra o zero.
+  Plotly.react('chart-ptc', traces, mkTimeseriesLayout('Média das respostas (−2 a +2)'), _PLOTLY_CONFIG);
+  _bindYAutofit('chart-ptc');
+  _ensureQuickRange('chart-ptc', _unionDates.apply(null, specs));
+}
+function initPtcTab() {
+  document.querySelectorAll('#ptc-horizonte-group .pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#ptc-horizonte-group .pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      ptcState.horizonte = btn.dataset.horizonte;
+      renderPtcTable(); renderPtcChart();
+    });
+  });
+  renderPtcTable();
+  renderPtcChart();
+}
+
+var RENDERERS = {
+  saldo: function() { SALDO_TAB.init(); AMPLO_TAB.init(); },
+  concessao: function() { CONCESSAO_TAB.init(); },
+  impulso: function() { IMP_RECURSO_TAB.init(); IMP_PORTE_TAB.init(); IMP_ATIV_TAB.init(); },
+  taxa: function() { initTaxaTab(); },
+  inadimplencia: function() { initInadTab(); },
+  ptc: function() { initPtcTab(); },
+};
+
+// ── Tab switching — lazy render on first activation (Plotly needs a visible,
+// non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
+var tabRendered = {};
+function activateTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+  if (!tabRendered[tab] && RENDERERS[tab]) { RENDERERS[tab](); tabRendered[tab] = true; }
+}
+document.querySelectorAll('.tab-btn').forEach(function(b) {
+  b.addEventListener('click', function() { activateTab(this.dataset.tab); });
+});
+
+document.getElementById('generated-at').textContent = D.generated_at || '—';
+activateTab('saldo');
+</script>
+
+</body>
+</html>

@@ -142,7 +142,7 @@ a `semester_step_level()` alongside `quarterly_step_level()`, same step-and-coll
 - **`% PIB` needs no real counterpart** — the deflator cancels in the ratio, so real ÷ real GDP equals
   nominal ÷ nominal GDP. Selecting `% PIB` should force Nominal and disable Real (what `makeHierTab()`
   already does). Whether a distinct real-GDP-denominator framing is ever worth *exposing* is recorded
-  as an open question in [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md) — it is not a live bug.
+  as an open question in [`fiscal_policy/CLAUDE.md`](brasil/fiscal_policy/CLAUDE.md) — it is not a live bug.
 
 ---
 
@@ -165,7 +165,7 @@ one selector:
 
 Which STL freezing convention applies (whole-sample mean per month vs. last-complete-year factors
 carried forward) is documented in [`seasonal_adjustment.md`](seasonal_adjustment.md) and, for the
-divergence between `credit/` and `fiscal_policy/`, in [`fiscal_policy/CLAUDE.md`](fiscal_policy/CLAUDE.md).
+divergence between `credit/` and `fiscal_policy/`, in [`fiscal_policy/CLAUDE.md`](brasil/fiscal_policy/CLAUDE.md).
 Both fit only through the last complete calendar year — never over a half-finished current year.
 
 ### SA on an already-aggregated level
