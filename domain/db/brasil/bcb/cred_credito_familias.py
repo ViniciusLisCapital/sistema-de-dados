@@ -10,7 +10,7 @@ Series SGS coletadas (5 series — endividamento e servico da divida em % da ren
 
   As duas ultimas (endividamento_sem_imob/comp_renda_servico_sem_imob) completam a
   Tabela 27 da publicacao "Tabelas de Estatisticas Monetarias e de Credito" do BCB (ver
-  analytics/credit/fontes_dados.md) -- as outras 2 series dessa tabela (endividamento_
+  analytics/brasil/credit/fontes_dados.md) -- as outras 2 series dessa tabela (endividamento_
   renda=29037, comp_renda_servico_total=29034) ja estavam aqui desde a primeira versao
   deste script. comp_renda_juros (29033) e uma serie SGS avulsa do mesmo tema, nao faz
   parte da Tabela 27.

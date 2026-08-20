@@ -3,7 +3,7 @@ Crédito do sistema financeiro — recursos livres, por modalidade, Pessoa Físi
 
 Series SGS coletadas, por metrica x modalidade -- Tabelas 7, 11, 16, 20 da publicacao mensal
 do BCB "Tabelas de Estatisticas Monetarias e de Credito" (ver
-analytics/credit/fontes_dados.md para o mapeamento completo). A coluna "Total" de cada
+analytics/brasil/credit/fontes_dados.md para o mapeamento completo). A coluna "Total" de cada
 tabela-fonte foi deliberadamente excluida daqui -- ja existe em macro_brasil.cred_credito_resumo
 sob outro nome (ex: esta tabela nao repete o que cred_credito_resumo ja cobre).
 

@@ -336,6 +336,40 @@ class BLS:
             raise BLSError(f"{url} devolveu corpo vazio")
         return r.content
 
+    def get_release_table(self, url: str) -> str:
+        """Baixa uma tabela de news release do BLS (ex. cpi.t01.htm) como HTML cru.
+
+        Terceiro caminho de acesso, ao lado da API e dos flat files, e o unico que
+        publica duas coisas que nao existem em nenhum dos outros:
+
+          1. **A hierarquia da arvore de divulgacao, declarada pelo proprio BLS.**
+             Cada rotulo de linha vem em `<p class="subN">`, onde N e a
+             profundidade, e cada linha tem um id hierarquico
+             (`cpipress1.r.1`, `cpipress1.r.1.1`, ...) cujo pai e o id menos o
+             ultimo segmento. Nao e indentacao visual a ser adivinhada -- e
+             declaracao de parentesco.
+          2. **Relative importance MENSAL.** A coluna de peso da Tabela 1 e do mes
+             anterior ao de referencia, nao o snapshot de dezembro da planilha
+             anual: em jul/2026 o peso de Energy era 7,432 no release contra 6,383
+             na planilha de dez/2025.
+
+        Nao ha versao "dados" desta tabela -- parsear o HTML e o unico caminho.
+        Releases antigos ficam em /news.release/archives/cpi_MMDDYYYY.htm, com a
+        mesma forma e o peso do mes deles (o nome exige a data exata da
+        divulgacao; data errada e 404 puro, nao redirect).
+
+        **bls.gov responde 403 a User-Agent generico** -- a sessao desta classe ja
+        manda o `_UA` do projeto, que e o que faz a requisicao passar.
+        """
+        r = self._session.get(url, timeout=self.timeout)
+        r.raise_for_status()
+        if "<tbody" not in r.text:
+            raise BLSError(
+                f"{url} nao tem <tbody> -- provavelmente pagina de erro servida com "
+                "HTTP 200, ou a tabela mudou de forma"
+            )
+        return r.text
+
     def read_flat_table(self, survey: str, name: str) -> pd.DataFrame:
         """Le um arquivo bruto TSV do BLS num DataFrame, com colunas/valores strip()ados.
 

@@ -51,8 +51,49 @@ no_release:
   # Nao e serie divulgada: nada a esperar do calendario e nada a rodar por dia.
   not_a_series:
     - inflc_dim              # tabela de dimensao (IPCA)
-    - pm_parametros          # parametros do modelo BCB
-    - pm_hiato_seed          # estado inicial do modelo BCB
+
+# Tolerancia de atraso para conteudo DIARIO -- a checagem que faltava.
+#
+# Uma tabela diaria nao tem "periodo de referencia" para comparar: a pergunta certa
+# nao e "ja saiu o dado de julho?" e sim "quao velho esta o ultimo ponto em relacao a
+# HOJE?". Sem isso, uma serie diaria pendurada num grupo mensal passa a checagem com
+# semanas de atraso -- basta MAX(date) estar depois do periodo da nota mensal.
+#
+# Isso NAO era teorico. Descoberto 2026-08-19, quando o BCB divulgou fluxo cambial e a
+# checagem dizia OK: cmb_cambio_contratado estava em 2026-07-24 com o SGS ja em
+# 08-14 (3 semanas), e cmb_reservas_bc em 08-03 com o SGS em 08-18 (2 semanas). As
+# duas cobradas contra a nota mensal do setor externo (referencia 2026-06), que
+# qualquer coisa recente satisfaz. Mesma classe do buraco do expc_focus, agora com
+# duas vitimas confirmadas -- por isso virou regra generica em vez de override caso a caso.
+#
+# As 7 primeiras tambem estao em `no_release.continuous` acima, e isso nao e
+# redundancia: la elas declaram "nao tem evento de divulgacao", aqui declaram "e este
+# o atraso tolerado". Antes deste bloco, as continuas eram SEM DIVULGACAO e portanto
+# NAO eram checadas por nada -- se o job diario parasse, ninguem notaria.
+#
+# `jobs/update_db.py --continuous` roda a UNIAO deste bloco com no_release.continuous,
+# entao as duas ultimas entram no passe diario (o que as mantem em dia) sem sair do
+# calendario (o que as mantem checadas).
+#
+# Folga = lag DE PUBLICACAO da fonte + ~4 dias (fim de semana + feriado). Nao aperte
+# para 1-2 dias: geraria atraso falso em toda segunda-feira.
+#
+# Os valores abaixo foram MEDIDOS, nao estimados: em 2026-08-19, logo depois de um
+# `--continuous` que terminou 9/9 OK, mediu-se `hoje - MAX(date)` de cada tabela --
+# com tudo recem-atualizado, o que sobra e o atraso da propria fonte. O primeiro chute
+# subestimou tres (dollar_index_em, policy_rates, cambio_contratado); os valores atuais
+# vem da medicao. Re-medir com o mesmo metodo se aparecer atraso falso.
+max_age_days:
+  cmb_ptax:               5   # lag medido 0d (BCB publica no mesmo dia)
+  cmb_dollar_index:       5   # lag medido 0d
+  cmb_dollar_index_em:    9   # lag medido 5d -- FRED publica esta serie semanalmente
+  cmb_fx_latam:           5   # lag medido 0d
+  cmb_equity_us:          5   # lag medido 0d
+  comm_brent:             8   # lag medido 1d
+  cmb_policy_rates:      12   # lag medido 8d -- BIS republica em lote, o maior de todos
+  # Tem divulgacao mensal E conteudo diario -- checadas pelas duas regras
+  cmb_reservas_bc:        5   # lag medido 1d
+  cmb_cambio_contratado:  9   # lag medido 5d
 
 # Correcoes por tabela para a checagem de freshness (sync.py), onde o vinculo
 # grupo->tabela em `tables:` significa "esta divulgacao e RELEVANTE para esta tabela"
@@ -388,7 +429,7 @@ groups:
   - group: bcb_rpm
     institution: BCB
     name: "Relatório de Política Monetária (RPM)"
-    tables: [expc_focus, expc_focus_periodo, inflc_meta]
+    tables: [expc_focus, expc_focus_periodo, inflc_meta, pm_hiato_produto, pm_hiato_produto_vintages]
     cadence: quarterly
     note: >
       Quarterly flagship inflation/policy report (successor to the Relatório de

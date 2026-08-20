@@ -3,9 +3,9 @@ EFGG - Estatisticas Fiscais do Governo Geral (classificacao economica GFSM
 2014 do FMI), Secretaria do Tesouro Nacional.
 
 Despesa: 16 codigos por natureza economica (nao por rubrica orcamentaria/
-funcao, como a RTN -- ver analytics/fiscal_policy/reference/rtn_vs_efgg.md
+funcao, como a RTN -- ver analytics/brasil/fiscal_policy/reference/rtn_vs_efgg.md
 para a diferenciacao completa). Receita: 11 codigos por natureza economica
-(adicionados 2026-08, ver "Impulso de receitas" em analytics/fiscal_policy/
+(adicionados 2026-08, ver "Impulso de receitas" em analytics/brasil/fiscal_policy/
 CLAUDE.md -- mesmo connector/planilhas da despesa, so abas diferentes: Central
 usa "2.2", Estados/Municipios usam "1.2", mesmo layout de cabecalho/linha
 inicial que suas respectivas abas de despesa). Ambos trimestrais, por esfera
@@ -15,11 +15,11 @@ de governo (Governo Central, Estados, Municipios) mais o agregado "geral"
 
 Fonte primaria e diretamente a que o paper que originou o IEG (Impulso
 Estrutural do Gasto, Resende & Pires, Textos para Discussao no.16, FGV/
-Tesouro 2024, ver analytics/fiscal_policy/reference/impulso_estrutural_IEG.pdf)
+Tesouro 2024, ver analytics/brasil/fiscal_policy/reference/impulso_estrutural_IEG.pdf)
 usa: "Resultado de Estatisticas Fiscais do Governo Geral, disponibilizadas
 pelo Tesouro Nacional". Essa tabela nao calcula o IEG em si (isso e um
 indicador derivado -- multiplicadores fixos x variacao trimestral em % do
-PIB -- que pertence a analytics/fiscal_policy/, nao a este script de ETL);
+PIB -- que pertence a analytics/brasil/fiscal_policy/, nao a este script de ETL);
 so guarda a serie bruta que o alimenta.
 
 Mapeamento dos 4 grupos de despesa do paper -> codigo GFSM armazenado aqui:

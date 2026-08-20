@@ -6,7 +6,7 @@ PIB brasileiro convertida a dolares pelo BCB (Depec). Fonte e frequencia
 diferentes de `atv_pib` (PIB trimestral em R$, IBGE 1620/1621) - tabelas
 separadas de proposito, sem relacao direta uma com a outra.
 
-Uso: analytics/exchange_rate/generate_report.py consome esta serie para normalizar
+Uso: analytics/brasil/exchange_rate/generate_report.py consome esta serie para normalizar
 as series de Balanco de Pagamentos (`cmb_balanco_pagmt`) como % do PIB na
 aba "Balanco de Pagamentos" (botao de alternancia USD Bi / % PIB, 2026-07).
 Nao alimenta nenhum outro relatorio.

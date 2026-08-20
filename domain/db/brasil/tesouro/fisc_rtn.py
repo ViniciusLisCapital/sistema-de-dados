@@ -9,7 +9,7 @@ mensal desde 1997-01. Subtemas 10.01-10.09 (Receitas, Transferencias,
 Despesas, Resultado Primario, Ajustes Metodologicos, Discrepancia
 Estatistica, Resultado Primario Abaixo da Linha, Juros Nominais, Resultado
 Nominal) -- 10.99 (Itens de Memorando) fica de fora por ora, ver Pending em
-analytics/fiscal_policy/CLAUDE.md.
+analytics/brasil/fiscal_policy/CLAUDE.md.
 
 Substitui a versao anterior (18 linhas via parsing de Excel, aba "1.1"
 Resumida do workbook RTN, connectors/tesouro.py) por uma fonte mais rica:
@@ -18,14 +18,14 @@ informacao decomposta ate o 4o/5o nivel (ex: receita_administrada_rfb se
 decompoe em imposto_de_importacao, ipi (e subitens por produto), imposto_de_
 renda (e subitens IRPF/IRPJ/IRRF), cofins, csll etc.).
 
-Os 17 nomes ja usados por analytics/fiscal_policy/report.html foram
+Os 17 nomes ja usados por analytics/brasil/fiscal_policy/report.html foram
 preservados exatamente (mesma string, mesmo significado) para nao quebrar o
 relatorio -- so a fonte por tras de cada um mudou de "linha de Excel" para
 "id de serie". A 18a linha do formato antigo, resultado_primario_acima_linha
 (a antiga linha "5." do workbook, "(3-4)"), nao tem serie propria equivalente
 nessa API -- o subtema 10.07 e explicitamente "abaixo da linha" -- por isso
 continua computada aqui mesmo, como receita_liquida - despesa_total, a mesma
-identidade ja validada (ver Gotchas em analytics/fiscal_policy/CLAUDE.md).
+identidade ja validada (ver Gotchas em analytics/brasil/fiscal_policy/CLAUDE.md).
 
 Complementa fisc_nfsp.py (BCB SGS): RTN cobre so o Governo Central com o
 detalhe de receita/despesa por rubrica; NFSP cobre o setor publico consolidado
@@ -244,7 +244,7 @@ def _compute_resultado_primario_acima_linha(df: pd.DataFrame) -> pd.DataFrame:
     workbook resumido) -- so o subtema 10.07, explicitamente "abaixo da
     linha", tem um resultado primario com serie propria. Identidade validada
     quando essa mesma linha ainda vinha do parsing de Excel -- ver Gotchas em
-    analytics/fiscal_policy/CLAUDE.md.
+    analytics/brasil/fiscal_policy/CLAUDE.md.
     """
     wide = df.pivot(index="date", columns="name", values="value")
     calc = (wide["receita_liquida"] - wide["despesa_total"]).dropna()

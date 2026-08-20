@@ -9,12 +9,12 @@ Series SGS coletadas:
                    / pib_acum_12m * 100 reproduz pct_pib_total_total exatamente, 55,76%
                    em 2026-06 nos dois casos).
 
-Usado por analytics/credit/transforms.py's compute_pct_pib() para calcular "% do PIB"
+Usado por analytics/brasil/credit/transforms.py's compute_pct_pib() para calcular "% do PIB"
 para toda serie das abas Saldo/Concessao (nao so os totais agregados que ja vem prontos
-em cred_credito_resumo) -- ver analytics/credit/CLAUDE.md.
+em cred_credito_resumo) -- ver analytics/brasil/credit/CLAUDE.md.
 
 Diferente de atv_pib_usd.py (SGS 4385, PIB mensal em dolar, alimenta o toggle % PIB de
-analytics/exchange_rate/'s Balanco de Pagamentos) -- series/proposito separados, sem
+analytics/brasil/exchange_rate/'s Balanco de Pagamentos) -- series/proposito separados, sem
 relacao direta.
 
 Banco: macro_brasil.atv_pib_mensal -- PRIMARY KEY (date, name)

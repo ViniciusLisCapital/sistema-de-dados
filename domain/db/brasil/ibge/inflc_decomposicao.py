@@ -58,7 +58,7 @@ verdade no banco.
 Validacao cruzada disponivel para ago/1999-set/2014: Thiago Sevilhano
 Martinez (Ipea, TD 2056, 2015) compatibilizou uma serie por subitem para
 esse periodo a partir de dados do proprio BCB (Coace/Depec) — ver
-analytics/inflation/referencia/TD2056_IPEA_apendice_classificacoes.xlsx
+analytics/brasil/inflation/referencia/TD2056_IPEA_apendice_classificacoes.xlsx
 (abas sub_var/sub_peso). Usado so como conferencia pontual, nao como fonte
 dos dados em producao.
 

@@ -1,9 +1,9 @@
 # US inflation — source mapping (BLS / BEA / regional Feds / NY Fed)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Cross-cutting
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Cross-cutting
 access status and outstanding API keys: [`README.md`](README.md). Brazil counterpart:
-[`analytics/inflation/CLAUDE.md`](../analytics/inflation/CLAUDE.md).
+[`analytics/brasil/inflation/CLAUDE.md`](../analytics/brasil/inflation/CLAUDE.md).
 
 📄 **How this data nests** — the 294-item, 9-level CPI expenditure tree with weights and series ids,
 validated additive, plus the (much flatter) structure of PPI/PCE/cores and the proposed `macro_us`

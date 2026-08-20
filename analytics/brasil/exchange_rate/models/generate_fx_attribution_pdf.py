@@ -2,7 +2,7 @@
 causas cambiais (FX Attribution).
 
 Documento complementar à aba "FX Attribution (Manager Letters)" de
-`reports/FX Report.html` e a `fx_attribution_model.py`/`.md` (mesma
+`reports/brasil/FX Report.html` e a `fx_attribution_model.py`/`.md` (mesma
 pasta de modelos) — não lê `claims.csv`/`documents.csv` diretamente para todo
 o texto (a maior parte é hand-transcribed, mesma convenção de
 `generate_model_spec_pdf.py`), mas as tabelas de contagem por categoria e o
@@ -88,7 +88,7 @@ MUTED = colors.HexColor("#7A88A8")
 LINE = colors.HexColor("#D8DCE6")
 BG_EQ = colors.HexColor("#F4F5F7")
 
-OUT_PATH = os.path.join("reports", "fx_attribution_methodology.pdf")
+OUT_PATH = os.path.join("reports", "brasil", "fx_attribution_methodology.pdf")
 
 # ---------------------------------------------------------------------------
 # Paragraph styles (same as generate_model_spec_pdf.py, duplicated here since

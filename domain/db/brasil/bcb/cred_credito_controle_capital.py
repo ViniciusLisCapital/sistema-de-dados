@@ -4,7 +4,7 @@ capital da instituição financeira (BCB/SGS)
 
 Series SGS coletadas (9 series = 3 metricas x 3 controles) -- Tabela 26 da publicacao
 mensal do BCB "Tabelas de Estatisticas Monetarias e de Credito" (ver
-analytics/credit/fontes_dados.md).
+analytics/brasil/credit/fontes_dados.md).
 
 Metricas:
   saldo         -- saldo da carteira, R$ milhoes

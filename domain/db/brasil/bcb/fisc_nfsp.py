@@ -31,12 +31,12 @@ Empresas Estatais + Banco Central) pela metodologia "abaixo da linha" do BCB.
 
 Fluxo mensal corrente (2026-08, a pedido do usuario -- "we have the monthly primary
 result data from BCB... why not make the seasonal adjustments?", para o toggle
-Trimestre do impulso fiscal via resultado primario em analytics/fiscal_policy/):
+Trimestre do impulso fiscal via resultado primario em analytics/brasil/fiscal_policy/):
 as 6 series de %PIB acumulado em 12m acima (resultado_primario + as 5 de esfera) sao
 TODAS acumuladas -- fisc_nfsp nao guardava, ate agora, o fluxo MENSAL bruto (R$
 milhoes, NAO acumulado, NAO %PIB) que as alimenta, o que so permitia dessazonalizar
 via o atalho "T/T sobre o proprio acumulado" (ver _load_fiscal_impulse_nfsp() em
-analytics/fiscal_policy/generate_report.py) em vez de rodar STL de verdade sobre uma
+analytics/brasil/fiscal_policy/generate_report.py) em vez de rodar STL de verdade sobre uma
 serie mensal genuina. Adicionadas 6 series novas, mesmo corte de esfera das 5+1
 series acima, confirmadas ao vivo via busca no catalogo dadosabertos.bcb.gov.br
 (nao so por nome -- por RECONCILIACAO numerica, o mesmo padrao ja usado para as
@@ -56,7 +56,7 @@ a 2026-06) -- e a mesma identidade contabil que a BCB usa para publicar o
 acumulado, so que ainda nao rodada (o acumulado ja vem pronto do SGS). As 6 series
 NAO estao em %PIB (R$ milhoes brutos) -- dividir pelo PIB do MESMO mes
 (atv_pib_mensal.pib_mensal) e responsabilidade de quem consome (ver
-analytics/fiscal_policy/generate_report.py).
+analytics/brasil/fiscal_policy/generate_report.py).
 
 Codigos confirmados via busca no catalogo dadosabertos.bcb.gov.br (nao apenas por
 memoria) em 2026-08 — mesma pratica adotada apos o bug de codigo SGS em

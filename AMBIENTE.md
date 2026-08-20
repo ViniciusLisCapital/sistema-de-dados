@@ -110,7 +110,7 @@ ModuleNotFoundError: No module named 'analytics'
 
 ### Dependência de sistema opcional: compilador C++ (para PyMC)
 
-`pymc` (usado em `analytics/exchange_rate/models/bayesian_deviation_model.py` e
+`pymc` (usado em `analytics/brasil/exchange_rate/models/bayesian_deviation_model.py` e
 futuros modelos bayesianos) roda via `pytensor`, que compila cada modelo para
 C por padrão. **Sem compilador C++ no PATH, `pytensor` cai para um fallback em
 Python puro** — funciona, mas cada `pm.sample()` fica ordens de magnitude mais

@@ -34,7 +34,7 @@ espalhamento efetiva-vs-meta esperado. Confirmado por chamada direta as 3 series
 432, 4189) antes de gravar qualquer dado.
 
 Codigos confirmados via chamada direta a api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}
-em 2026-08 (nao apenas por memoria/copia de analytics/painel_setores/painel_setores.py,
+em 2026-08 (nao apenas por memoria/copia de analytics/brasil/painel_setores/painel_setores.py,
 que ja usava os codigos de inadimplencia/atraso/taxa/concessao) — mesma pratica adotada
 apos o bug de codigo SGS em cmb_balanco_pagmt.
 

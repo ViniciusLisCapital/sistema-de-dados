@@ -19,7 +19,7 @@ Analyzes Brazilian FX/exchange-rate fundamentals by combining the current data s
 
 Run:
 ```
-uv run python -c "from analytics.exchange_rate.agent_data import get_fx_snapshot; import json; print(json.dumps(get_fx_snapshot(), ensure_ascii=False, default=str))"
+uv run python -c "from analytics.brasil.exchange_rate.agent_data import get_fx_snapshot; import json; print(json.dumps(get_fx_snapshot(), ensure_ascii=False, default=str))"
 ```
 
 Parse the JSON. It has one entry per group (`ptax`, `diferenciais`, `reer`, `cot_fx`, `reservas`, `fluxo`, `bop`, `termos`), each with per-series `latest_date`/`latest_value`/`deltas` (1m/3m/12m) and a `data_gap_days`/`stale` flag. `ptax` is the spot USD/BRL series (BCB PTAX venda) — treat it as the primary spot-rate reference for this agent.
@@ -54,6 +54,6 @@ Connect the data movements from Step 1 to the concepts read in Step 2. Be explic
 ## Step 4 — Output
 
 - **Default**: answer conversationally in the session — no file written.
-- **If the user asked for a written/saved report**: write a markdown report via the Write tool to `reports/cambio_analysis_<YYYY-MM-DD>.md` (use today's date). Do not touch or regenerate `reports/FX Report.html` — that's a separate, fixed-template HTML dashboard product (`analytics/exchange_rate/generate_report.py`).
+- **If the user asked for a written/saved report**: write a markdown report via the Write tool to `reports/cambio_analysis_<YYYY-MM-DD>.md` (use today's date). Do not touch or regenerate `reports/brasil/FX Report.html` — that's a separate, fixed-template HTML dashboard product (`analytics/brasil/exchange_rate/generate_report.py`).
 
 End with a concise summary: which groups were analyzed, which concept pages were used, and whether a report file was written (path if so).

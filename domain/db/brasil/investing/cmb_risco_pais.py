@@ -2,7 +2,7 @@
 Risco-pais (CDS Brasil 5 anos, USD).
 
 Preenche a lacuna "Country risk / sovereign spread (EMBI or CDS)" identificada
-em analytics/exchange_rate/models/DATA_REQUIREMENTS.md como um dos dois gaps
+em analytics/brasil/exchange_rate/models/DATA_REQUIREMENTS.md como um dos dois gaps
 de dados do fiscal_credibility_model (o outro e' o resultado fiscal em si).
 CDS Brasil 5Y costuma ser uma serie paga (Bloomberg/Refinitiv); os 4 CSVs em
 raw/ foram exportados manualmente do investing.com pelo usuario (2026-07-23).

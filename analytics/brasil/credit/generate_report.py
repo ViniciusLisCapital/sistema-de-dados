@@ -206,7 +206,7 @@ def _load_inadimplencia_tab_data(resumo_series: dict, pj_series: dict, selic: di
     return inadimplencia_tab.build(raw, selic)
 
 
-def run(output: str = "reports/Credit.html") -> None:
+def run(output: str = "reports/brasil/Credit.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 

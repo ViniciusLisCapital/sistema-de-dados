@@ -15,7 +15,7 @@ Parceiros escolhidos (2026-07): os 4 maiores por comercio total (export +
 import) em 2025 — China, Estados Unidos, Argentina, Alemanha (juntos ~70%
 do comercio de bens do Brasil) — mais o total mundial, que permite calcular
 "Demais Paises" como residual (mundo - soma dos 4) na camada de consumo
-(analytics/exchange_rate/generate_report.py), sem precisar buscar todos os ~200
+(analytics/brasil/exchange_rate/generate_report.py), sem precisar buscar todos os ~200
 parceiros individualmente.
 
 Series (export/import separados; saldo por parceiro calculado no relatorio):

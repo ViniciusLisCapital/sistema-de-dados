@@ -4,7 +4,7 @@ Crédito do sistema financeiro — saldo a pessoas jurídicas por porte de empre
 Series SGS coletadas (10 series = 4 metricas x porte, nem toda combinacao existe --
 "Total" so tem codigo proprio para as 2 metricas de "saldo de maior risco", nao para
 saldo/inadimplencia) -- Tabela 23 da publicacao mensal do BCB "Tabelas de Estatisticas
-Monetarias e de Credito" (ver analytics/credit/fontes_dados.md).
+Monetarias e de Credito" (ver analytics/brasil/credit/fontes_dados.md).
 
 Metricas:
   saldo                    -- saldo da carteira, R$ milhoes (so MPMe/Grande, sem Total)

@@ -28,7 +28,7 @@ Cobertura 1992-01 -> hoje: e a unica serie longa de emprego formal do projeto
 (o microdado do Novo CAGED so comeca em 2020-01).
 
 Banco: macro_brasil.mt_caged
-Consumidores: analytics/oraculo/brasil/scores.py, analytics/labor_market/
+Consumidores: analytics/oraculo/brasil/scores.py, analytics/brasil/labor_market/
 """
 
 from connectors.bcb import BCB

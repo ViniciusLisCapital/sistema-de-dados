@@ -27,13 +27,13 @@ muda (len(code) == 4 aqui, == 7 la).
 
 Motivacao: os nucleos MA (medias aparadas sem suavizacao), MS (com
 suavizacao) e DP (dupla ponderacao) da NT-57 (Nota Tecnica do BC no 57,
-analytics/inflation/referencia/Nucleos_inflacao.pdf) operam no nivel de
+analytics/brasil/inflation/referencia/Nucleos_inflacao.pdf) operam no nivel de
 ITEM, nao de subitem -- confirmado tanto pela formula da nota (N_t^I,
 "numero de itens") quanto pela metadata do proprio IBGE (classificacao 315,
 "Geral, grupo, subgrupo, item e subitem"; nivel=3 = item/4 digitos, nivel=4
 = subitem/7 digitos). P55 e Difusao, por outro lado, operam no nivel de
 subitem e ja sao computados a partir de inflc_decomposicao (ver
-analytics/inflation/generate_report.py::_compute_p55/_compute_difusao) --
+analytics/brasil/inflation/generate_report.py::_compute_p55/_compute_difusao) --
 esta tabela nova existe so para dar a MA/MS/DP o nivel de granularidade que
 eles exigem.
 
@@ -49,7 +49,7 @@ itens listados nas Tabelas 2-8, a media/volatilidade fica levemente distorcida
 nos ~11/48 meses seguintes a cada transicao relevante para o IPCA-15 (ago/2006,
 jan/2020 -- jul/2006-dez/2011 nao precisa de proxy, ver nota 10 da NT-57;
 jan/1991-jul/1999 nao existe para o IPCA-15). Nao afeta MA (sem janela
-temporal). Ver Gotchas em analytics/inflation/CLAUDE.md para o tamanho
+temporal). Ver Gotchas em analytics/brasil/inflation/CLAUDE.md para o tamanho
 empirico desse efeito.
 
 Uso:

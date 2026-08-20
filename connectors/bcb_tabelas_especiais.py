@@ -15,7 +15,7 @@ Estatisticas Fiscais e SPA Angular: `requests`/WebFetch trazem so o shell, sem
 os links).
 
 **Inventario dos arquivos desta pasta** -- conteudo, abas e quais nomes retornam
-404 -- vive em `analytics/fiscal_policy/fontes_dados.md` (secao das Tabelas
+404 -- vive em `analytics/brasil/fiscal_policy/fontes_dados.md` (secao das Tabelas
 Especiais do BCB), nao duplicado aqui: e um mapa de fontes fiscais, mantido do
 lado de quem escolhe o que ingerir.
 
@@ -39,7 +39,7 @@ _BASE_URL = "https://www.bcb.gov.br/content/estatisticas/Documents/Tabelas_espec
 
 # So o que este projeto ja consome, para servir de referencia de nome exato na
 # mensagem de erro do 404. O inventario completo da pasta esta em
-# analytics/fiscal_policy/fontes_dados.md (ver docstring do modulo).
+# analytics/brasil/fiscal_policy/fontes_dados.md (ver docstring do modulo).
 KNOWN_FILES = {
     "Facdetp.xlsx": (
         "Fatores condicionantes da divida liquida do setor publico (DLSP) -- "

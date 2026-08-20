@@ -2,7 +2,7 @@
 Atualiza o banco de dados brasil com os dados mais recentes de todas as fontes.
 
 Uso:
-    uv run python jobs/update_db.py                      # passe completo (46 scripts)
+    uv run python jobs/update_db.py                      # passe completo (50 scripts)
     uv run python jobs/update_db.py --continuous         # so as series continuas (diarias)
     uv run python jobs/update_db.py --group ibge_ipca    # so uma divulgacao do calendario
     uv run python jobs/update_db.py --tables atv_pim,atv_pmc
@@ -55,6 +55,7 @@ from domain.db.brasil.bcb import (
     expc_focus, expc_focus_copom, expc_focus_periodo,
     cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
+    pm_hiato_produto, pm_hiato_produto_vintages,
 )
 
 # IPEA
@@ -129,6 +130,12 @@ _SCRIPTS = [
     # planilha so existe inteira. Mais lento que os scripts de SGS acima (dezenas de
     # segundos, nao segundos) -- ver domain/db/brasil/bcb/fisc_dlsp_fatores.py.
     ("BCB  · DLSP Fatores Condicionantes", fisc_dlsp_fatores,   {}),
+    # Anexo estatistico do RPM (xlsx trimestral, fora do SGS). O de vintages so
+    # baixa edicao que ainda nao esta no banco -- entao custa ~20 requests de 2
+    # bytes nos trimestres em que nao ha edicao nova, e ~1MB quando ha. O da serie
+    # corrente baixa 1 arquivo sempre. Ver domain/db/brasil/bcb/_rpm_hiato.py.
+    ("BCB  · Hiato do Produto (RPM)",   pm_hiato_produto,      {}),
+    ("BCB  · Hiato do Produto / vintages", pm_hiato_produto_vintages, {}),
     ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
     ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
     ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),

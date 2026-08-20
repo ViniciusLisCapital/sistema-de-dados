@@ -67,7 +67,7 @@ mais recente em 2026-01 (planilha PTC datada de marco/2026, atualizada em
 **Achado corrigindo um bug de dados existente (2026-08)**: os codigos 21397/
 21399/21401/21403 ("PTCC - <segmento> - Aprov. Observadas"), usados antes em
 cred_inadimplencia_pj.py (ptcc_grandes/ptcc_mpme) e em
-analytics/painel_setores/painel_setores.py (todos os 4 segmentos), estao
+analytics/brasil/painel_setores/painel_setores.py (todos os 4 segmentos), estao
 CONGELADOS desde 2022-10 -- o BCB continuou publicando a pesquisa, só sob
 outros codigos SGS (os 16 acima), nao descontinuou a serie como a
 documentacao anterior concluiu. Confirmado ao vivo: 21397/21399/21401/21403
@@ -78,7 +78,7 @@ codigo antigo a partir de onde a serie antiga parou de ser atualizada mas
 continuaria variando. ptcc_grandes/ptcc_mpme foram removidos de
 cred_inadimplencia_pj.py (dados obsoletos apagados da tabela) e
 painel_setores.py foi corrigido para os codigos certos -- ver
-analytics/credit/fontes_dados.md para o detalhe completo.
+analytics/brasil/credit/fontes_dados.md para o detalhe completo.
 
 Banco: macro_brasil.cred_ptc -- PRIMARY KEY (date, name)
 """

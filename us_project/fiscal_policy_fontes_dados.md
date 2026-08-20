@@ -1,7 +1,7 @@
 # US fiscal — source mapping (Treasury / BEA / CBO / OMB)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/fiscal_policy/fontes_dados.md`](../analytics/fiscal_policy/fontes_dados.md), the Brazil
+[`analytics/brasil/fiscal_policy/fontes_dados.md`](../analytics/brasil/fiscal_policy/fontes_dados.md), the Brazil
 counterpart of this branch. Cross-cutting access status: [`README.md`](README.md).
 
 The good news, and the headline of this survey: **the US Treasury has a real, open, documented JSON

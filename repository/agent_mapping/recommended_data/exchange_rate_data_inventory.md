@@ -4,7 +4,7 @@
 
 **Not cross-linked yet** to `exchange_rate_conceptual_map.md` (theory/bibliography) — that's left for a later step, by the user's decision. For now this file documents only the data side.
 
-Technical details on schema, SGS codes and observation counts live in `analytics/exchange_rate/CLAUDE.md` — this file organizes the same information by analytical category instead of by table.
+Technical details on schema, SGS codes and observation counts live in `analytics/brasil/exchange_rate/CLAUDE.md` — this file organizes the same information by analytical category instead of by table.
 
 ---
 
@@ -17,7 +17,7 @@ Technical details on schema, SGS codes and observation counts live in `analytics
 
 Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chunks by year (BCB API rejects windows > 10 years for daily series, confirmed via 406 response).
 
-**Remaining gap:** the analysis agent (`analytics/exchange_rate/agent_data.py`) hasn't been updated yet to pull `cmb_ptax` into its snapshot — the data exists but isn't wired into the agent's output.
+**Remaining gap:** the analysis agent (`analytics/brasil/exchange_rate/agent_data.py`) hasn't been updated yet to pull `cmb_ptax` into its snapshot — the data exists but isn't wired into the agent's output.
 
 ---
 
@@ -33,7 +33,7 @@ Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chu
 Script: `domain/db/international/fred/diferenciais_juros.py`. Full history load (2026-07): `selic` (SGS 432, daily) is chunked in 8-year windows to avoid the BCB API's 406 on windows > 10 years.
 
 **Gaps:**
-- **Ex-ante** differentials (based on expectations, not realized inflation) not implemented yet — see the pending item in `analytics/exchange_rate/CLAUDE.md`, uses `macro_brasil.expc_focus` (Focus) on the BR side and FRED (`FF{m}` futures/OIS, `MICH`/`T5YIE`) on the US side.
+- **Ex-ante** differentials (based on expectations, not realized inflation) not implemented yet — see the pending item in `analytics/brasil/exchange_rate/CLAUDE.md`, uses `macro_brasil.expc_focus` (Focus) on the BR side and FRED (`FF{m}` futures/OIS, `MICH`/`T5YIE`) on the US side.
 - Cupom cambial (DDI/FRC curve) and B3 futures (DOL/WDO) — deferred, requires Bloomberg access (`blpapi`/`xbbg`).
 
 ---
@@ -107,7 +107,7 @@ Script: `domain/db/brasil/bcb/cmb_cambio_contratado.py`. ~46k observations.
 | Stock of repo lines/loans/repurchase agreements in FX | `macro_brasil.cmb_reservas_bc` | `bcb_fx_stock_repos_loans` (SGS 29534) | monthly |
 | BCB interventions (spot, forwards, FX loans/repos, repo lines) — only days with actual intervention | `macro_brasil.cmb_reservas_bc` | `bcb_intervention_spot`, `bcb_intervention_forwards`, `bcb_intervention_fx_loans_repos`, `bcb_intervention_repo_lines` | daily (sparse) |
 
-Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `analytics/exchange_rate/CLAUDE.md`.
+Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full detail in `analytics/brasil/exchange_rate/CLAUDE.md`.
 
 **Coverage considered robust** — includes both the stock (reserves, bank position, swap) and the intervention flow (BCB's net buying/selling in spot and forwards), which lets the agent distinguish "how much the BCB has" from "what the BCB is doing right now."
 

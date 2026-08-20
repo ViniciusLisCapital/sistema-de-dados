@@ -13,7 +13,7 @@ nao faz sentido para uma serie que muda de sinal. So existe em valor corrente.
 Uso: esta tabela e o insumo para o peso anual (nominal_i[ano y-1] / nominal_PIB[ano y-1]) usado no
 metodo "alternativo ad hoc" da Nota Tecnica do Banco Central do Brasil no. 46 (Thiago Trafane
 Oliveira Santos, ago/2018) para decompor a contribuicao de cada componente ao crescimento
-trimestral do PIB -- ver analytics/economic_activity/CLAUDE.md "PIB tab methodology". O peso e
+trimestral do PIB -- ver analytics/brasil/economic_activity/CLAUDE.md "PIB tab methodology". O peso e
 somado por ano civil (4 trimestres) a partir desta serie NSA; a taxa de crescimento real de cada
 componente vem de atv_pib_taxas, nao desta tabela.
 

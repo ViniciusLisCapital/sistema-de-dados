@@ -2,7 +2,7 @@
 Crédito do sistema financeiro — saldo por tipo de cliente (BCB/SGS)
 
 Series SGS coletadas (7 series, R$ milhoes) -- Tabela 25 da publicacao mensal do BCB
-"Tabelas de Estatisticas Monetarias e de Credito" (ver analytics/credit/fontes_dados.md).
+"Tabelas de Estatisticas Monetarias e de Credito" (ver analytics/brasil/credit/fontes_dados.md).
 Uma unica metrica (saldo). Unico lugar da planilha que separa credito ao setor publico
 (governo como TOMADOR de credito bancario -- diferente do que cred_credito_amplo/
 fisc_divida medem, que sao o governo como EMISSOR de divida).

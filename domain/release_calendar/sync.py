@@ -51,9 +51,11 @@ _YAML_DEFAULT = _AQUI / "calendar_2026.yaml"
 
 _SCHEMAS = ("macro_brasil", "macro_international")
 
-# Coluna de tempo comum a toda tabela de dado publicado. Verificado 2026-08-17:
-# 63 das 66 tabelas dos dois schemas tem exatamente esta coluna, e as 3 excecoes
-# (inflc_dim, pm_parametros, pm_hiato_seed) nao sao serie divulgada.
+# Coluna de tempo comum a toda tabela de dado publicado. Remedido 2026-08-18:
+# 68 das 69 tabelas dos dois schemas tem exatamente esta coluna, e a unica excecao
+# (inflc_dim) e tabela de dimensao, nao serie divulgada. As outras duas excecoes de
+# 2026-08-17 (pm_parametros, pm_hiato_seed) deixaram de existir com a remocao da
+# replica do modelo do BCB.
 _COL_DATA = "date"
 
 # Vereditos
@@ -229,6 +231,25 @@ def expectativas(
                     "override": f"data da divulgacao -{n}d: {porque}",
                 }
 
+    # max_age_days: conteudo diario nao tem periodo de referencia para comparar, a
+    # regra e "quao velho pode estar em relacao a HOJE". Vale a expectativa MAIS ALTA
+    # entre esta e a do calendario -- uma serie diaria pendurada numa nota mensal
+    # precisa satisfazer as duas, e era justamente a mensal (frouxa) que a absolvia.
+    for tabela, dias in (doc.get("max_age_days") or {}).items():
+        tabela = str(tabela)
+        limite = corte - timedelta(days=int(dias))
+        atual = out.get(tabela)
+        if atual is None or limite > atual["esperado"]:
+            out[tabela] = {
+                "esperado": limite,
+                "grupo": (atual or {}).get("grupo") or "(max_age_days)",
+                "institution": (atual or {}).get("institution"),
+                "divulgado_em": (atual or {}).get("divulgado_em"),
+                "reference_period": None,
+                "override": f"max {dias}d de atraso",
+            }
+        motivos.pop(tabela, None)
+
     todas = {t for g in doc["groups"] for t in (g.get("tables") or [])}
     for t in todas:
         t = str(t)
@@ -265,12 +286,25 @@ def sem_divulgacao(doc: dict) -> set[str]:
 
 
 def continuas(doc: dict) -> list[str]:
-    """So as series continuas — o que roda todo dia, sem passar pelo calendario.
+    """O que `jobs/update_db.py --continuous` roda todo dia.
 
-    Subconjunto de sem_divulgacao(): exclui as tabelas que nao sao serie divulgada
-    (dimensao/parametros), que nao devem entrar num job diario.
+    Uniao de duas coisas, nao so de `no_release.continuous`:
+      * as series sem evento de divulgacao (PTAX, DXY, Brent...)
+      * toda tabela com `max_age_days`, que por definicao tem conteudo diario
+
+    A segunda metade e o que traz `cmb_reservas_bc` e `cmb_cambio_contratado` para o
+    passe diario: as duas TEM divulgacao mensal (a nota do setor externo), mas o
+    conteudo diario delas fica semanas parado se so a nota disparar a atualizacao --
+    foi exatamente o que aconteceu em 2026-08-19.
+
+    Exclui `not_a_series` (dimensao/parametros), que nao entram em job diario.
     """
-    return sorted(_no_release(doc).get("continuous") or [])
+    nr = _no_release(doc)
+    naoserie = set(nr.get("not_a_series") or [])
+    alvos = set(nr.get("continuous") or []) | {
+        str(t) for t in (doc.get("max_age_days") or {})
+    }
+    return sorted(alvos - naoserie)
 
 
 # ----------------------------------------------------------------------- banco
@@ -357,18 +391,16 @@ def status(
         exp = esperadas.get(tabela)
         obs = info["max_date"]
 
-        if tabela in isentas:
+        # A expectativa vem primeiro de proposito: uma tabela de `no_release.continuous`
+        # que tenha max_age_days DEVE ser checada, nao absolvida por "nao tem divulgacao".
+        if exp is not None and info["tem_data"]:
+            veredito = OK if (obs is not None and obs >= exp["esperado"]) else ATRASADO
+        elif tabela in isentas:
             veredito = SEM_DIVULGACAO
         elif tabela not in no_yaml:
             veredito = SEM_CALENDARIO
-        elif exp is None:
-            veredito = SEM_EXPECTATIVA
-        elif not info["tem_data"]:
-            veredito = SEM_EXPECTATIVA
-        elif obs is None or obs < exp["esperado"]:
-            veredito = ATRASADO
         else:
-            veredito = OK
+            veredito = SEM_EXPECTATIVA
 
         linhas.append({
             "tabela": tabela,
@@ -381,7 +413,10 @@ def status(
             "institution": exp["institution"] if exp else None,
             "divulgado_em": exp["divulgado_em"] if exp else None,
             "reference_period": exp["reference_period"] if exp else None,
-            "dias": (as_of - exp["divulgado_em"]).days if exp else None,
+            # None quando a expectativa vem de max_age_days numa tabela sem
+            # divulgacao nenhuma (serie continua) — nao ha release para contar desde.
+            "dias": ((as_of - exp["divulgado_em"]).days
+                     if exp and exp.get("divulgado_em") else None),
             "override": exp.get("override") if exp else None,
             "motivo": motivos.get(tabela),
         })
@@ -492,9 +527,13 @@ def report(
         print(f"{veredito} ({len(grupo)}):")
         for r in grupo:
             if veredito == ATRASADO:
+                # serie continua nao tem divulgacao para citar: mostra a regra de idade
+                if r["divulgado_em"]:
+                    origem = f"{r['grupo']} div. {r['divulgado_em']:%d/%m} ({r['dias']}d)"
+                else:
+                    origem = f"{r['grupo']} {r['override'] or ''}".strip()
                 print(f"    {r['tabela']:34s} esperado >= {r['esperado']}   "
-                      f"no banco {r['observado'] or '(vazia)'}   "
-                      f"{r['grupo']} div. {r['divulgado_em']:%d/%m} ({r['dias']}d)")
+                      f"no banco {r['observado'] or '(vazia)'}   {origem}")
             elif veredito == OK:
                 marca = "  [lag]" if r["override"] else ""
                 print(f"    {r['tabela']:34s} {r['observado']}   "

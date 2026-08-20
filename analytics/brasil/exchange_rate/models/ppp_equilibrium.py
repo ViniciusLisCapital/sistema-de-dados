@@ -129,8 +129,8 @@ the dashboard first, decide on the regression afterward):
   icbr_usd  macro_brasil.comm_icbr_usd.icbr_usd (BCB SGS 29042) from 1998-01
           -- the USD-denominated IC-Br general commodity index, DISTINCT
           from comm_icbr (SGS 27574 etc., the BRL-denominated version
-          already in the DB, used by analytics/brasil/monetary_policy/'s Phillips-
-          curve model). The BRL version is UNSUITABLE as a regressor here:
+          also in the DB, but with no consumer since the BCB-model replica
+          was removed in 2026-08). The BRL version is UNSUITABLE here:
           the BCB converts international commodity prices INTO REAIS as
           part of that index's own construction, so it already partly
           embeds USD/BRL's own move -- circular if used to explain delta_fx.

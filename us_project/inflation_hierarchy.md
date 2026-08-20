@@ -8,11 +8,14 @@ Machine-readable output, two files:
 
 | File | Rows | What it is |
 |---|---|---|
-| [`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) | 294 | The **expenditure tree** — the full statistical structure of the CPI, 9 levels deep |
-| [`cpi_headline_hierarchy.tsv`](cpi_headline_hierarchy.tsv) | 21 | The **news-release tree** — food / energy / core goods / core services, how the CPI is actually read |
+| [`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) | 294 | The **expenditure tree** as the relative-importance spreadsheet publishes it, 9 levels deep. **Not the deepest layer** — see §1b; the loaded version in `macro_us.inflc_cpi_dim` is 355 items over 10 levels |
+| [`cpi_newsrelease_table1.tsv`](cpi_newsrelease_table1.tsv) | 37 | The **news-release tree** — food / energy / core goods / core services, how the CPI is actually read. Extracted from Table 1 of the release, where BLS declares the hierarchy in its own markup |
 
-Both carry level, parent, both weights (CPI-U and CPI-W), the SA and NSA series ids and each one's
-coverage window. Everything below is derived from them and reproduces by re-running the connector.
+Both carry level, parent, weights, the SA and NSA series ids and each one's measured coverage window.
+The news-release file adds the release's published values (monthly relative importance, the three
+unadjusted indexes, y/y and m/m, three months of seasonally adjusted m/m) and a `decomposition` column
+flagging whether a parent's shown children add up to it. Everything below is derived from these two
+files and reproduces by re-running the connector.
 
 **Two structural facts worth having up front.** First, **the CPI has two different trees, not one**,
 and neither is a subset of the other's presentation — section 1 is the statistical hierarchy, section
@@ -155,81 +158,186 @@ Both corrections are applied in `cpi_item_hierarchy.tsv` and are the only two ha
 - **The tree covers CPI-U and CPI-W in the same file** (the `population` column). CPI-W is the
   indexation index for Social Security; CPI-U is the headline.
 
+### 1b. The spreadsheet is not the bottom of the tree
+
+Found 2026-08 while checking the report against the release: `cu.item` carries **400** item codes, and
+the expenditure tree above uses 267 of them. Of the 133 left over, 40 are special aggregates (a
+different tree — §3) and 2 are old-base series, but **83 are genuine deeper items with published index
+series** that the relative-importance spreadsheet simply does not list:
+
+| Parent in the spreadsheet | What sits below it, unlisted |
+|---|---|
+| Gasoline (all types) | unleaded regular, unleaded midgrade, unleaded premium |
+| Coffee | roasted coffee, instant coffee |
+| New vehicles | new cars, new trucks (and, discontinued, new cars and trucks / new motorcycles) |
+| Milk | fresh whole milk, fresh milk other than whole |
+| Bread | white bread, bread other than white |
+| Hospital services | inpatient hospital services, outpatient hospital services |
+| Telephone hardware / education | smartphones, college textbooks |
+
+All 83 have an NSA series; 60 also have SA. Median start 1997, earliest 1935. Seventeen are
+discontinued (last observations from 1998 to 2026), which is a fact about the series, not a load gap.
+
+They have **no published weight** at all — the spreadsheet is where weights come from, and it stops
+above them. So they support Index / Y-Y / M-M / 3M and cannot support contribution, and they cannot be
+part of any additivity check. That is why the loaded table carries a `tem_peso` flag rather than
+pretending the two layers are the same thing.
+
+Parentage comes from the same rule used for the rest, applied to `cu.item`'s own publication order: the
+last preceding line one `display_level` up. **Validated before use** — on the 266 items the spreadsheet
+already positions, the rule reproduces the published parent in 254, and all 12 disagreements are items
+whose true parent is a special aggregate (the 8 level-1 groups under the synthesised root, plus 4 where
+`cu.item` omits the intermediate SA level). None sits at the depth the graft touches, so the graft only
+adds leaves and never moves a spreadsheet-placed item.
+
+Three `cu.item` entries stay out on purpose: `Information technology commodities` (SEEEC), `Video and
+audio products` (SERAC) and `Video and audio services` (SERAS). They arrive at `display_level` 1, which
+would make them children of *All items*, and they are in neither section of the spreadsheet —
+cross-cutting aggregates with nowhere to go in this tree.
+
+### 1c. Five items were lost to a label mismatch
+
+Also found 2026-08. The spreadsheet and `cu.item` disagree on five labels, and a name join drops the
+item silently:
+
+| In the spreadsheet | In `cu.item` | Code | Weight |
+|---|---|---|---|
+| Housing at school, excluding board | Lodging while at school | SEHB01 | 0.221 |
+| Men's underwear, nightwear, swimwear**,** and accessories | …swimwear and accessories | SEAA02 | 0.130 |
+| Women's underwear, nightwear, swimwear**,** and accessories | …swimwear and accessories | SEAC04 | 0.234 |
+| Care of invalids and elderly at home | Home health care | SEMD03 | 0.230 |
+| Technical and business school tuition and fees | Technical and vocational school tuition and fixed fees | SEEB04 | 0.046 |
+
+0.861 index points, each with both a weight and a series published, invisible until the mismatch was
+resolved. Each pair was confirmed **by position**, not by resemblance: every unmatched spreadsheet line
+has exactly one `cu.item` candidate sitting between its coded neighbours in publication order, and for
+the two underwear rows the API's own `series_title` carries the *spreadsheet's* spelling, which settles
+which label is stale. The weight-additivity proof passed before and after (90/90), because it runs on
+names and always counted these rows.
+
 ---
 
 ## 2. CPI news-release tree — how the US actually reads its CPI
 
-Different tree, same 400-item universe. This is the structure of the CPI news release: **food,
-energy, and core, then core split into goods and services**. It is what the Fed talks about, what
-moves markets on release day, and what "core services ex-shelter" is carved out of. Four levels, 21
-nodes — in [`cpi_headline_hierarchy.tsv`](cpi_headline_hierarchy.tsv):
+Different tree, same 400-item universe. This is the structure of **Table 1 of the CPI news release**
+([`cpi.t01.htm`](https://www.bls.gov/news.release/cpi.t01.htm)): food, energy, and core, then core
+split into goods and services. It is what the Fed talks about, what moves markets on release day, and
+what "core services ex-shelter" is carved out of. **37 rows, 5 levels (0-4)**, in
+[`cpi_newsrelease_table1.tsv`](cpi_newsrelease_table1.tsv).
+
+### This tree is declared by BLS, not inferred by us
+
+The expenditure tree in section 1 had to be assembled and then proved by arithmetic. This one does not:
+**BLS ships the hierarchy inside the release page's own markup.** Each row label is wrapped in
+`<p class="subN">`, where `N` is the depth, and each row carries a hierarchical id
+(`cpipress1.r.1`, `cpipress1.r.1.1`, ...) whose parent is its own id minus the last segment. So depth
+and parentage are both read off the source, not guessed from visual indentation.
+
+That matters because inferring this tree from the *weights file* would fail. There, the
+"Special aggregate indexes" section nests `Energy commodities` inside `Commodities less food and energy
+commodities` — a category that by definition excludes energy commodities. The release page's markup has
+none of that problem: it is the publisher's own parent-child statement.
+
+The extraction was then checked against the API, which is the test that matters: **111 of 111 published
+index values (Jul-2025, Jun-2026 and Jul-2026 for all 37 rows) match the series pulled by item code to
+the third decimal, with zero mismatches.** Every row resolves to an item code and **every one of the 37
+has both an SA and an NSA series** — no gaps, unlike the expenditure tree. Six of them are special
+aggregates that do not exist in the expenditure tree at all (`SA0E`, `SACE`, `SA0L1E`, `SACL1E`,
+`SASLE`, `SAS4`). History reaches 1913 for All items, Food and Electricity; 1957 for the core
+aggregates.
+
+### The structure, with July 2026 numbers
 
 ```
-All items                                       100.000  SA0      CUSR0000SA0      1913
-  Food                                           13.698  SAF1     CUSR0000SAF1     1913
-    Food at home                                  8.325  SAF11    CUSR0000SAF11    1947
-    Food away from home                           5.373  SEFV     CUSR0000SEFV     1953
-  Energy                                          6.383  SA0E     CUSR0000SA0E     1957
-    Energy commodities                            3.120  SACE     CUSR0000SACE     1957
-      Gasoline (all types)                        2.895  SETB01   CUSR0000SETB01   1935
-      Fuel oil                                    0.083  SEHE01   CUSR0000SEHE01   1935
-    Energy services                               3.262  SEHF     CUSR0000SEHF     1935
-      Electricity                                 2.489  SEHF01   CUSR0000SEHF01   1913
-      Utility (piped) gas service                 0.773  SEHF02   CUSR0000SEHF02   1935
-  All items less food and energy                 79.919  SA0L1E   CUSR0000SA0L1E   1957
-    Commodities less food and energy commodities 19.176  SACL1E   CUSR0000SACL1E   1957
-      New vehicles                                3.838  SETA01   CUSR0000SETA01   1935
-      Used cars and trucks                        2.759  SETA02   CUSR0000SETA02   1952
-      Apparel                                     2.368  SAA      CUSR0000SAA      1913
-      Medical care commodities                    1.489  SAM1     CUSR0000SAM1     1935
-    Services less energy services                60.744  SASLE    CUSR0000SASLE    1957
-      Shelter                                    35.625  SAH1     CUSR0000SAH1     1952
-      Transportation services                     6.315  SAS4     CUSR0000SAS4     1935
-      Medical care services                       6.935  SAM2     CUSR0000SAM2     1935
+                                                code      RI Jun26   y/y%  sa m/m%   decomposition
+All items                                       SA0        100.000    3.4      0.1   complete
+  Food                                          SAF1        13.522    3.0      0.1   complete
+    Food at home                                SAF11        8.231    2.7     -0.1   complete
+      Cereals and bakery products               SAF111       1.023    2.7      0.2
+      Meats, poultry, fish, and eggs            SAF112       1.959    1.9     -0.7
+      Dairy and related products                SEFJ         0.743   -0.5     -0.1
+      Fruits and vegetables                     SAF113       1.283    5.1     -0.1
+      Nonalcoholic beverages                    SAF114       0.981    4.1      0.9
+      Other food at home                        SAF115       2.242    2.5      0.0
+    Food away from home                         SEFV         5.290    3.4      0.3
+  Energy                                        SA0E         7.432   14.7     -1.5   complete
+    Energy commodities                          SACE         4.132   24.7     -2.9   partial (0.055 unshown)
+      Fuel oil                                  SEHE01       0.106   39.1     -1.7
+      Motor fuel                                SETB         3.971   24.8     -3.0   partial (0.119 unshown)
+        Gasoline (all types)                    SETB01       3.852   24.6     -2.9
+    Energy services                             SEHF         3.300    4.3      0.3   complete
+      Electricity                               SEHF01       2.552    4.2      0.1
+      Utility (piped) gas service               SEHF02       0.748    4.3      0.7
+  All items less food and energy                SA0L1E      79.047    2.5      0.2   complete
+    Commodities less food and energy commod.    SACL1E      18.829    0.8      0.2   partial (7.282 unshown)
+      Apparel                                   SAA          2.437    3.9      0.1
+      New vehicles                              SETA01       3.751    0.5      0.1
+      Used cars and trucks                      SETA02       2.679   -1.9      0.4
+      Medical care commodities                  SAM1         1.412   -2.7     -0.6
+      Alcoholic beverages                       SAF116       0.823    2.1      0.2
+      Tobacco and smoking products              SEGA         0.445    6.7      0.5
+    Services less energy services               SASLE       60.217    3.0      0.2   partial (11.721 unshown)
+      Shelter                                   SAH1        35.304    3.2      0.1   partial (1.739 unshown)
+        Rent of primary residence               SEHA         7.716    2.9      0.3
+        Owners equivalent rent of residences    SEHC        25.849    3.2      0.3
+      Medical care services                     SAM2         6.840    2.7      0.6   partial (3.024 unshown)
+        Physicians services                     SEMC01       1.660    2.4      0.2
+        Hospital services                       SEMD01       2.156    5.2      0.5
+      Transportation services                   SAS4         6.352    2.9      0.3   partial (1.643 unshown)
+        Motor vehicle maintenance and repair    SETD         1.048    6.6      0.6
+        Motor vehicle insurance                 SETE         2.570   -4.5     -0.3
+        Airline fares                           SETG01       1.091   25.5      2.2
 ```
 
-All 21 nodes resolve to an item code, and **all 21 have both an SA and an NSA series** — no gaps,
-unlike the expenditure tree. History reaches 1957 for the core aggregates (`SA0L1E`, `SACL1E`,
-`SASLE`, `SA0E` all start there) and 1913 for All items, Food and Electricity.
+(Labels above are the release's own, minus its footnote markers; the TSV keeps the exact strings.)
 
-### This tree is declared, not inferred — and here is why that is the honest way to build it
+### Levels 0-2 are an exact partition; the detail rows are selective
 
-The expenditure tree could be walked out of the published indentation because it adds up. This one
-cannot: **the published indentation of the weights file's "Special aggregate indexes" section is
-presentational and semantically wrong.** It nests `Energy commodities` *inside* `Commodities less food
-and energy commodities` — a category that by definition excludes energy commodities. Inferring
-parents from that indentation would produce a tree that is arithmetically impossible.
+This is the single most important structural fact for building a decomposition on this tree:
 
-So the 21-node structure is stated explicitly and then **validated against the weight identities**,
-which is the test that actually proves it. All of them close:
-
-| Identity | Computed | Expected |
+| Level | Nodes | Weights sum to |
 |---|---|---|
-| Food + Energy + core = All items | 100.000 | 100.000 |
-| Food at home + Food away from home = Food | 13.698 | 13.698 |
-| Energy commodities + Energy services = Energy | 6.382 | 6.383 |
-| Electricity + Utility gas = Energy services | 3.262 | 3.262 |
-| Core goods + core services = core | 79.920 | 79.919 |
+| 0 (All items) | 1 | 100.000 |
+| 1 (food / energy / core) | 3 | 100.001 |
+| 2 (the six components) | 6 | 99.999 |
+| 3 | 19 | 75.651 |
+| 4 | 8 | 45.942 |
 
-### The one trap: this tree is not exhaustive at its bottom level
+So **the top three levels each re-partition the whole index exactly** — a waterfall or contribution
+chart built on any of them is complete and needs no residual. Below that it stops being a partition:
+7 of the 13 parents show only their largest children, leaving **25.583 points of the index unshown**,
+concentrated in exactly the places under discussion in 2026 — 11.721 inside core services and 7.282
+inside core goods. The 24 leaf rows together account for only 74.4 of 100 points.
 
-Three parents show only their largest children, by design of the release. The missing mass is large:
+Consequence for the report: **charts at level <= 2 are exact; anything deeper needs an explicit "other"
+bar**, computed as parent minus the sum of shown children, never dropped. The section-1 expenditure
+tree is what fills those gaps when the detail matters (its 179 leaves-with-series cover 97.65%).
 
-| Parent | Own weight | Children shown | Residual |
+### The release publishes a *monthly* weight — and it is not the December one
+
+The weight column in Table 1 is headed "Relative importance **Jun. 2026**", one month behind the
+reference month. That is a different vector from the December snapshot in the annual xlsx, and the gap
+is not noise:
+
+| Node | Dec-2025 xlsx | Jun-2026 release | Diff |
 |---|---|---|---|
-| Energy commodities | 3.120 | 2.978 | 0.142 |
-| Commodities less food and energy commodities | 19.176 | 10.454 | **8.722** |
-| Services less energy services | 60.744 | 48.875 | **11.869** |
+| Food | 13.698 | 13.522 | -0.176 |
+| **Energy** | 6.383 | **7.432** | **+1.049** |
+| All items less food and energy | 79.919 | 79.047 | -0.872 |
+| Energy commodities | 3.120 | 4.132 | +1.012 |
+| Services less energy services | 60.744 | 60.217 | -0.527 |
 
-**A decomposition built only on this tree's leaves accounts for 79.3 of 100 points of the index.** The
-residual has to be shown as an explicit "other" bar, not dropped — otherwise the chart silently loses
-21% of the index, most of it in core services, which is exactly the part under discussion in 2026. The
-expenditure tree in section 1 is what fills those gaps when the detail matters (its 179
-leaves-with-series cover 97.65%).
+Energy's weight rose 16% in relative terms over seven months, because relative importance is
+price-updated continuously and energy prices ran +24.7% y/y. Using the December vector for a July
+calculation therefore understates energy's weight by about a sixth. This is the same effect measured
+in section 4's reconciliation test, seen directly.
 
-The release table continues past the rows above with a few more aggregates (education and
-communication services, other personal services, and cuts like "All items less shelter"); they build
-the same way — declare the parent, pull the weight by name, check the identity.
+**Monthly weight history is recoverable**, which was not previously established: the archived releases
+carry the same table with their own RI column (`archives/cpi_01132026.htm` -> "Nov. 2025",
+`archives/cpi_08122026.htm` -> "Jun. 2026"). The archive is keyed by exact release date
+(`cpi_MMDDYYYY.htm`), so harvesting it needs the release-date calendar — a wrong date is a plain 404.
+Left as an open item; the December xlsx remains the only weight source covering all 294 expenditure
+items.
 
 ---
 
@@ -303,15 +411,33 @@ leaves-with-series** (97.65% of the index) with the residual shown explicitly ra
 - ~~Register a free `BLS_API_KEY`~~ — **done 2026-08-18**, in `.env`. Verified live: the caps really
   are 50 series / 20 years (measured, not just documented), and `catalog`/`calculations` now work —
   `calculations=True` returns BLS's own 1/3/6/12-month percent changes per observation.
-- **Extend the news-release tree** past the 21 nodes above with the remaining release-table
-  aggregates (education and communication services, other personal services, "All items less
-  shelter"), and decide whether "core services ex-shelter" — the current policy focus, and *not* a
-  published series — gets built from `Services less energy services` minus `Shelter` using these
-  weights.
-- **Weights before 2020** — `historical-relative-importance-1947-1986.xlsx` exists (13 sheets by year
-  range, different format, not yet parsed) and a 1987-1989 zip; **1990-2019 has no file on the BLS
-  page**. Until that gap is filled, a weighted decomposition starts in 2020 while the index series
-  themselves reach 1913.
+- **Extend the news-release tree** past Table 1's 37 rows using the release's later tables
+  (Table 2 carries the further aggregates — education and communication services, other personal
+  services, cuts like "All items less shelter"). They extract the same way: same `subN`/row-id markup.
+  Still to decide: whether "core services ex-shelter" — the current policy focus, and *not* a
+  published series — gets built as `Services less energy services` minus `Shelter`.
+- **Weights before 2020 — the gap is a parsing job, not a data gap** (corrected 2026-08-18; an
+  earlier round of this file wrongly said "1990-2019 has no file on the BLS page", having probed the
+  `<year>.xlsx` pattern, which only exists from 2020). Reading the RI page's own link list instead of
+  guessing URLs turns up continuous annual coverage back to 1947:
+
+  | Period | File | Contents | Format |
+  |---|---|---|---|
+  | 2020-2025 | `<year>.xlsx` | 1 file/year, 7 tables | xlsx, **parsed** (`get_relative_importance`) |
+  | 2010-2019 | `ri-archive-2010-2019.zip` | 35 entries, `<year>.txt` + `.pdf` | fixed-width, dot leaders, indentation = depth, **no item code** |
+  | 2000-2009 | `ri-archive-2000-2009.zip` | 24 entries, same shape | same as 2010s |
+  | 1990-1999 | `ri-archive-1990-1999.zip` | 10 `<year>.txt` | fixed-width **with an `Item code` column** — easier than the modern files, no name-matching needed |
+  | 1987-1989 | `ri-archive-1987-1989.zip` | 3 `<year>.txt` | as 1990s |
+  | 1947-1986 | `historical-relative-importance-1947-1986.xlsx` | 13 sheets by year range | xlsx, not yet parsed |
+
+  All six were downloaded and opened live (magic bytes checked, entry lists read, two year-files
+  parsed as samples). So a weighted decomposition can reach 1947 rather than 2020 — it costs two more
+  parsers (the 1987-2019 fixed-width form and the 1947-1986 workbook), not new data access.
+  `https://www.bls.gov/web/cpi/cpi-relative-importance.xlsx` is a "latest year" alias of the same
+  annual file, not a separate monthly source.
+- **Monthly weights** exist only for the news-release rows, recoverable from archived releases — see
+  section 2's last subsection. `list_relative_importance_years()` reports 2020-2025 only, because it
+  reads the `<year>.xlsx` links; it does not know about the decade archives.
 - **Decide the weight-carry convention** (December snapshot forward through the following year) and
   whether `contribuicao` is stored or computed.
 - **Get the BEA key** for PCE component detail — without it the CPI/PCE comparison stays headline-only.

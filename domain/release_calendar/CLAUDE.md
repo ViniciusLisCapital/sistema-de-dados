@@ -48,10 +48,11 @@ uv run python -m domain.release_calendar.sync --as-of 2026-09-15   # simula outr
 that already happened; `observado` = `MAX(date)` of the table; late iff `observado < esperado`.
 No "when did we last run" marker, so a missed day causes no drift and a recovered gap
 self-heals. Two facts make it possible with zero per-table config: the YAML already says
-which *period* each release delivers, and **63 of the 66 tables share an identical
+which *period* each release delivers, and **68 of the 69 tables share an identical
 `date DATE` column** in the same convention (month start for monthly, quarter start for
-quarterly). The 3 without it (`inflc_dim`, `pm_parametros`, `pm_hiato_seed`) aren't
-published series.
+quarterly). The 1 without it (`inflc_dim`) is a dimension table, not a published series.
+(`pm_parametros` / `pm_hiato_seed` were the other two exceptions until 2026-08-18, when
+the BCB-model replication that owned them was removed.)
 
 Five verdicts: `OK`, `ATRASADO`, `SEM EXPECTATIVA` (covered by a group, but no past release
 with a datable period — the report says which of the three causes), `SEM CALENDARIO`,
@@ -63,7 +64,7 @@ calendar group — worst verdict among its tables — which drives the update bu
 (`{grupo: [tabelas]}`, for a future `--due` mode), and `continuas()` (the daily set, for
 `jobs/update_db.py --continuous`).
 
-### Two YAML blocks it reads (both top-level, additive)
+### Three YAML blocks it reads (all top-level, additive)
 
 - **`no_release:`** — tables with no release event on purpose, **split by reason** because the two
   halves have different consumers: `continuous:` (daily market series — PTAX, DXY, Brent, BIS policy
@@ -75,6 +76,34 @@ calendar group — worst verdict among its tables — which drives the update bu
   otherwise a real coverage gap becomes indistinguishable from a deliberate exclusion, which is exactly
   the confusion the `--coverage` triage below had to resolve by hand. (`sem_divulgacao()` also still
   accepts the old flat-list form, so a `calendar_2027.yaml` copied before this change won't break.)
+- **`max_age_days:`** — staleness tolerance for **daily content**, the check that was missing. A daily
+  table has no reference period to compare against; the right question is "how old is the last point
+  relative to *today*?" Expectation = `today − N`, and the **strictest** of this and any calendar
+  expectation wins.
+
+  **This was not hypothetical.** Found 2026-08-19: BCB released FX flow, the check said everything was
+  OK, and `cmb_cambio_contratado` was sitting at 2026-07-24 while SGS already had 08-14 (3 weeks), with
+  `cmb_reservas_bc` at 08-03 against SGS 08-18 (2 weeks). Both are *daily* series filed under the
+  *monthly* external-sector note, whose expectation (reference 2026-06) anything recent satisfies. A
+  frequency audit — comparing each table's measured date spacing against its group's cadence — found
+  exactly 5 such tables, and running their ETL confirmed a third victim, `cmb_dollar_index_em`
+  (08-07 → 08-14). Third occurrence of this bug class after `expc_focus`, hence a general rule rather
+  than another per-table override.
+
+  It also closed a silent hole: before this, every `no_release.continuous` table was `SEM DIVULGACAO`
+  and therefore checked by **nothing** — if the daily job stopped, no one would notice. `SEM DIVULGACAO`
+  went from 8 tables to 1.
+
+  **The tolerances are measured, not guessed.** Right after a `--continuous` that finished 9/9 OK,
+  `today − MAX(date)` per table isolates the *source's* own publication lag; tolerance = that lag + ~4
+  days for weekend/holiday. The first guess understated three of the nine (`cmb_dollar_index_em` needs
+  9 not 6 — FRED publishes it weekly; `cmb_policy_rates` 12 not 8 — BIS republishes in batches;
+  `cmb_cambio_contratado` 9 not 8). Re-measure the same way if false lateness shows up; don't tighten
+  to 1–2 days, that fires every Monday.
+
+  `--continuous` runs the **union** of this block and `no_release.continuous`, which is what pulls
+  `cmb_reservas_bc`/`cmb_cambio_contratado` into the daily pass (keeping them current) without removing
+  them from the calendar (keeping them checked).
 - **`expectation_overrides:`** — per-table corrections where a group's `tables:` link means
   "this release is *relevant* to this table" rather than "this release *delivers* this
   table's period". `tables:` stays as-is on purpose (it's the relevance list the HTML report
@@ -223,6 +252,20 @@ Every group's origin is in its own `source_url` in the YAML; the 15 non-BCB grou
 
 ## Known gaps — not in this file yet
 
+- **BCB's WEEKLY FX-flow release is not modelled** (found 2026-08-19). BCB publishes the *fluxo
+  cambial* weekly (the "Nota Cambial", Wednesdays), and that release appears on **none** of BCB's 29
+  calendar lists — verified live: the only relevant list, `Estatísticas do setor externo`, returns
+  monthly events only (2026-07-28, 2026-08-27) for Jul–Sep 2026. So the calendar, which is built from
+  those feeds for every BCB group, has no way to know the weekly note exists. Consequences, all three
+  distinct:
+  1. There is no calendar row for the weekly release, and can't be until someone enters the dates by
+     hand or scrapes the note's own page. `update_calendar.py` cannot help — there is no feed.
+  2. `cmb_fluxo_cambial` holds the **monthly** SGS aggregation (24352/24370/24371/…), not the weekly
+     detail. Checked live: SGS's own latest for those series is 2026-07-01, exactly what the DB has —
+     that table is *not* stale, it simply isn't the weekly product.
+  3. The weekly detail (CEP/CBE sub-items) is **not ingested at all**. The script's own docstring
+     already flagged this: the SGS codes for that granularity "não foram identificados com certeza na
+     fase de pesquisa". Still open.
 - **International — still missing.** `cmb_reer` / `cmb_policy_rates` / `cmb_real_rates` (**BIS** — cadence not verified, do not assume the "3rd week of the month" figure that circulated in an earlier draft; it was an unchecked assumption, never confirmed) and `clima_oni` (**NOAA CPC** — monthly, but the "2nd Thursday" rule is likewise unverified). Both were left OUT of the YAML rather than guessed. `cmb_cot_fx` (CFTC) and `diferenciais_juros`' Fed side (FOMC) **are now in** — both read off the issuing body's own published calendar.
 - **Daily market series need no calendar entries**: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `comm_brent` are continuous market/daily data with no discrete release event. Deliberately not modelled as dated entries.
 - **LatAm CPI dates** (INEGI/INE/DANE/INEI — feed `cmb_real_rates`) not researched.
@@ -232,11 +275,12 @@ Every group's origin is in its own `source_url` in the YAML; the 15 non-BCB grou
 - **`inflc_meta` / `atv_pib_usd` / `cmb_risco_pais`** — still no dedicated release-calendar research. `inflc_meta` rides with CMN decisions (`Reuniões do CMN e COMOC` list exists, not yet pulled).
 - **The remaining `confirmed: false` entries are only `bcb_caged_sgs_mirror`** — derived from MTE's calendar rather than a BCB source, so the ICS feed doesn't help it.
 
-### Coverage audit: what the 17 uncovered tables actually are
+### Coverage audit: what the 16 uncovered tables actually are
 
-`--coverage` reports 49/66 tables covered. Triaged 2026-08-17 so future runs don't re-litigate the same list:
+`--coverage` reports 53/69 tables covered (re-measured 2026-08-18, after `pm_hiato_produto`/`pm_hiato_produto_vintages` were added and `pm_hiato_seed`/`pm_parametros` dropped). Triaged 2026-08-17 so future runs don't re-litigate the same list:
 
-- **Deliberate, no release event exists** — continuous daily market data: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `cmb_equity_us`, `cmb_ptax`, `comm_brent`. Plus `inflc_dim` (dimension table) and `pm_hiato_seed` / `pm_parametros` (model parameters, not published data).
+- **Deliberate, no release event exists** — continuous daily market data: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `cmb_equity_us`, `cmb_ptax`, `comm_brent`. Plus `inflc_dim` (dimension table). `pm_hiato_seed` / `pm_parametros` were here too until 2026-08-18, when they were dropped with the BCB-model replication.
+- **`expc_focus_pre202608`** — surfaced by the 2026-08-18 re-measure, not in the 2026-08-17 triage. Frozen snapshot of the pre-rewrite Focus table; if it's dead weight it should be dropped rather than covered, but that hasn't been confirmed.
 - **Genuine gaps, need research**: `atv_pib_usd`, `cmb_risco_pais`, `clima_oni` (NOAA CPC), the BIS trio `cmb_reer` / `cmb_policy_rates` / `cmb_real_rates`, and `fisc_investimento` (Tesouro's Séries Temporais API, Tema 13 — a different release from RTN/EFGG, would need its own group).
 - **`atv_pib_mensal`** — BCB SGS 4380/4382. Likely rides with the monetary/credit note (it's the same 12-month-accumulated GDP denominator BCB uses for `cred_credito_resumo.pct_pib_*`), but that's an inference, not verified — left uncovered rather than asserted.
 - **Two were found miscategorized by this audit and fixed**: `fisc_dlsp_fatores` now sits under `bcb_fiscal_statistics` (it comes from the Facdetp.xlsx tabela especial, overwritten at each monthly fiscal release), and `comm_icbr_usd` under `bcb_icbr` (SGS 29042, same release as `comm_icbr`).

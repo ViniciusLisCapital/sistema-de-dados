@@ -1,6 +1,6 @@
 # analytics/brasil/fiscal_policy/ — Panorama Fiscal
 
-Self-contained HTML report on Brazilian fiscal data (`reports/Fiscal Policy.html`). Same
+Self-contained HTML report on Brazilian fiscal data (`reports/brasil/Fiscal Policy.html`). Same
 `/*REPORT_DATA*/` marker-substitution pattern as the other reports in `analytics/` — no Jinja2, no
 build step — built on [`analytics/report_structure/`](../../report_structure/CLAUDE.md) (`/*THEME_CSS*/`
 and `/*Y_AUTOFIT_JS*/` markers).
@@ -9,7 +9,7 @@ and `/*Y_AUTOFIT_JS*/` markers).
 
 ```powershell
 uv run python -c "from analytics.brasil.fiscal_policy.generate_report import run; run()"
-# Output: reports/Fiscal Policy.html
+# Output: reports/brasil/Fiscal Policy.html
 ```
 
 `fisc_efgg`, `fisc_rtn`, `fisc_investimento`, `atv_pib_valores_correntes`, `atv_pib_taxas`,
@@ -345,7 +345,7 @@ duplicated here — see Pending.
 ## Excel audit workbook
 
 `export_audit_excel.py` (`uv run python -c "from analytics.brasil.fiscal_policy.export_audit_excel import run; run()"`
-→ `reports/fiscal_policy_audit.xlsx`) — original/adjusted series + every intermediate step of both
+→ `reports/brasil/fiscal_policy_audit.xlsx`) — original/adjusted series + every intermediate step of both
 impulse metrics (IEG × 4 esferas × 4 categorias; PB impulso × 5 esferas + total), one sheet per
 variant (Acumulado/Trimestre, both metrics) plus a Reconciliação sheet. Every pure-arithmetic step
 (accumulation, %PIB ratio, diff, sign flip) is a **live Excel formula**, not a pasted number — only
@@ -518,7 +518,7 @@ and each script's own docstring — not duplicated here.
 
 ## Pending
 
-- **Regenerate `reports/Credit.html`** — `analytics/brasil/credit/transforms.py`'s `pct_change()` was fixed in
+- **Regenerate `reports/brasil/Credit.html`** — `analytics/brasil/credit/transforms.py`'s `pct_change()` was fixed in
   2026-08 (zero-base guard, see Gotchas) but only the fiscal report has been rebuilt since. That report
   shares the function, so it is presumed to be carrying `Infinity` values in any series that ever hits
   an exact zero; the count there has not been measured. Same applies to any other report built on

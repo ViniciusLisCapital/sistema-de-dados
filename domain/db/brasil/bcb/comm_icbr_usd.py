@@ -13,7 +13,7 @@ confirmada 2026-07-31 no ridge_deviation_model.py como canal USD-neutro de
 precos globais de commodities -- melhorou o MSE out-of-sample (walk-forward)
 em ~4.6% isoladamente sobre o spec ja embarcado, com coeficiente negativo e
 estavel (quase nunca cruza zero nas 163 janelas rolantes) -- ver
-analytics/exchange_rate/CLAUDE.md para o registro completo.
+analytics/brasil/exchange_rate/CLAUDE.md para o registro completo.
 
 Codigo confirmado por identificacao direta do usuario (nao pela metadata
 API do BCB, que exige sessao autenticada); corroborado indiretamente aqui

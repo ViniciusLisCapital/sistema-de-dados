@@ -2,7 +2,7 @@
 Balanco de Pagamentos do Brasil (BPM6)
 
 Series SGS (valores em USD millions). Codigos confirmados em 2026-07 contra
-`analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx` (mapeamento
+`analytics/brasil/exchange_rate/referencia/balance_payments_breakdown.xlsx` (mapeamento
 oficial fornecido pelo usuario, aba "BreakDown the bcb provides") e
 cross-checados numericamente contra os
 5 meses (Jan-Mai/2026) da aba "the breakdown I want" — todas as formulas
@@ -66,14 +66,14 @@ Conta Financeira:
   23043 Ativos de reserva                                     -> ativos_reserva
   23060 Erros e omissoes                                       -> erros_omissoes
 
-Series derivadas (calculadas em analytics/exchange_rate/generate_report.py a partir
+Series derivadas (calculadas em analytics/brasil/exchange_rate/generate_report.py a partir
 das series brutas acima, NAO armazenadas no banco — mesmo padrao ja usado
 para `comercial_saldo` em cmb_fluxo_cambial):
   demais_servicos                  = servicos - viagens - transportes - aluguel_equipamentos
   juros                            = juros_intercompanhia + juros_carteira_externo + juros_carteira_domestico + juros_outros_investimentos + renda_reservas
   lucros_dividendos                = lucros_remetidos + lucros_reinvestidos + lucros_dividendos_carteira
     (lucros_reinvestidos/SGS 22815 tem lacuna real na fonte BCB entre 1999-01 e 2009-12 -
-     confirmado via API, 404 "Value(s) not found" para essa janela; analytics/exchange_rate/generate_report.py
+     confirmado via API, 404 "Value(s) not found" para essa janela; analytics/brasil/exchange_rate/generate_report.py
      trata isso com fillna(0) antes de somar, para não propagar NaN por uma década inteira)
   investimentos_ativos             = idp_exterior + portfolio_ativos + outros_inv_ativos
   investimentos_passivos           = investimento_direto_liquido + portfolio_passivos + outros_inv_passivos
@@ -99,8 +99,8 @@ ingerido, sem export/import proprios de merchanting.
 Pendencia conhecida: a quebra "Ativos de bancos" vs "Demais ativos" (lado
 ativo do balanco) e a quebra publico/privado/direto/demais emprestimos dos
 titulos de LP externo (Ingressos e Amortizacoes) nao foram resolvidas — nao
-ha codigo SGS correspondente em `analytics/exchange_rate/referencia/balance_payments_breakdown.xlsx`.
-Ver analytics/exchange_rate/CLAUDE.md.
+ha codigo SGS correspondente em `analytics/brasil/exchange_rate/referencia/balance_payments_breakdown.xlsx`.
+Ver analytics/brasil/exchange_rate/CLAUDE.md.
 
 Correcao 2026-07: os codigos de 6 das 10 series originais estavam ERRADOS
 (apontavam para sub-itens nao relacionados — ex: `conta_corrente` usava 22707,

@@ -1,0 +1,23 @@
+﻿vintage,equacao,parametro,descricao,distribuicao,moda,ci_inferior,ci_superior
+RI_2021T4_agregado,phillips,alpha_1I,Inercia da inflacao IPCA,Uniforme([0;1]),0.25568,0.0067,0.5743
+RI_2021T4_agregado,phillips,alpha_1L,Inercia da inflacao de livres,Uniforme([0;1]),0.23756,0.0057,0.3739
+RI_2021T4_agregado,phillips,alpha_2,Inflacao importada,Uniforme([0;1]),0.01826,0.0008,0.0332
+RI_2021T4_agregado,phillips,alpha_3,Variacao do cambio,Uniforme([0;1]),0.01727,0.0044,0.0312
+RI_2021T4_agregado,phillips,alpha_4,Hiato do produto,Uniforme([0;1]),0.13866,0.0865,0.2127
+RI_2021T4_agregado,phillips,alpha_5,El Nino,Uniforme([0;0.01]),0.00119,0.000461,0.001984
+RI_2021T4_agregado,phillips,alpha_6,La Nina,Uniforme([0;0.01]),0.00104,0.0,0.002319
+RI_2021T4_agregado,is,beta_1,Autorregressivo da IS,Uniforme([-2;2]),0.73897,0.6773,0.7959
+RI_2021T4_agregado,is,beta_2,Juro real,Uniforme([0;2]),0.54876,0.3903,0.7204
+RI_2021T4_agregado,is,beta_3,Resultado primario,Beta([0.03;0.002]),0.02985,0.0267,0.0332
+RI_2021T4_agregado,is,beta_4,Incerteza da economia,Beta([0.03;0.005]),0.04073,0.0321,0.0477
+RI_2021T4_agregado,is,beta_5,Hiato mundial,Uniforme([0;1]),0.04342,0.0,0.0957
+RI_2021T4_agregado,outras,delta,Diferencial de taxa de juros interna e externa,Uniforme([0;10]),1.71813,0.397,3.196
+RI_2021T4_agregado,outras,gamma_caged,Coeficiente de proporcionalidade do Caged,Uniforme([0;3]),0.77959,0.6842,0.8809
+RI_2021T4_agregado,outras,gamma_emp,Coeficiente de proporcionalidade do emprego,Uniforme([0;3]),1.08412,0.953,1.2412
+RI_2021T4_agregado,outras,gamma_nuci,Coeficiente de proporcionalidade da Nuci,Uniforme([0;3]),2.08871,1.8233,2.3782
+RI_2021T4_agregado,expectativas,phi_1,Inercia das expectativas,Uniforme([0;1]),0.7326,0.629,0.8277
+RI_2021T4_agregado,expectativas,phi_2,Expectativa consistente com o modelo,Uniforme([0;1]),0.12271,0.0749,0.1529
+RI_2021T4_agregado,expectativas,phi_3,Inflacao passada,Uniforme([0;1]),0.0437,0.0019,0.0828
+RI_2021T4_agregado,taylor,theta_1,"Suavizacao dos juros, 1a defasagem",Uniforme([0;2]),1.45688,1.3873,1.5133
+RI_2021T4_agregado,taylor,theta_2,"Suavizacao dos juros, 2a defasagem",Uniforme([-1;1]),-0.54402,-0.5987,-0.481
+RI_2021T4_agregado,taylor,theta_3,Desvio da expectativa de inflacao vs. meta,Uniforme([0;8]),1.29981,0.8121,1.9078

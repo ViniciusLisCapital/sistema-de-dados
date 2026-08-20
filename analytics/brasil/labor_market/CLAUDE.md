@@ -1,6 +1,6 @@
 # analytics/brasil/labor_market/ — Panorama de Mercado de Trabalho
 
-Self-contained HTML report (`reports/Labor Market.html`). Same `/*REPORT_DATA*/`
+Self-contained HTML report (`reports/brasil/Labor Market.html`). Same `/*REPORT_DATA*/`
 marker-substitution pattern as the other reports in `analytics/` — no Jinja2, no build step — built
 directly on [`analytics/report_structure/`](../../report_structure/CLAUDE.md) from day one (both markers),
 same as `fiscal_policy/`/`economic_activity/`.
@@ -9,7 +9,7 @@ same as `fiscal_policy/`/`economic_activity/`.
 
 ```powershell
 uv run python -c "from analytics.brasil.labor_market.generate_report import run; run()"
-# Output: reports/Labor Market.html
+# Output: reports/brasil/Labor Market.html
 ```
 
 `mt_pnad`/`mt_pnad_trimestral` are not yet in `jobs/update_db.py` (see root `CLAUDE.md`'s
@@ -226,4 +226,4 @@ table's own `controls` list — so a 2-select table needs no bespoke markup.
   something this report could add regardless.
 - **No derived/modeling metric** (hiato, Okun's law, etc.) — explicitly out of scope this round, at
   user request. Revisit only after the base visualization is validated.
-- Open `reports/Labor Market.html` in an actual browser and confirm interactions (see Gotchas).
+- Open `reports/brasil/Labor Market.html` in an actual browser and confirm interactions (see Gotchas).

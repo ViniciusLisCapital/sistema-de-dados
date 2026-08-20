@@ -1,10 +1,10 @@
 # US activity — source mapping (BEA / Census / Fed Board / regional Feds)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Access status
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Access status
 for every source, and the two API keys we still need, are in [`README.md`](README.md); this file
 covers only what the activity branch needs. Brazil counterpart:
-[`analytics/economic_activity/CLAUDE.md`](../analytics/economic_activity/CLAUDE.md).
+[`analytics/brasil/economic_activity/CLAUDE.md`](../analytics/brasil/economic_activity/CLAUDE.md).
 
 **Nothing in this branch is in the database.** Every row below is `❌` on "In DB/ETL" except where
 noted; the seven series already used ad hoc by `analytics/oraculo/us/term_us.py` are flagged

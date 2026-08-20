@@ -1,9 +1,9 @@
 # US monetary policy — source mapping (Fed Board / NY Fed / Treasury / regional Feds)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Cross-cutting
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Cross-cutting
 access status: [`README.md`](README.md). Brazil counterpart: the BCB small-model replication in
-[`analytics/monetary_policy/`](../analytics/monetary_policy/) plus `expc_focus`.
+[`analytics/brasil/monetary_policy/`](../analytics/brasil/monetary_policy/) plus `expc_focus`.
 
 This is the best-covered branch of the eight: **everything essential is free and reachable**, and
 almost all of it is on FRED. No API key is missing here. **Nothing is in the database yet** except
@@ -86,7 +86,7 @@ the NY Fed rate sources. Yield-curve data current to **2026-08-13/14**; the H.4.
   Brazil model replication needed the equivalent).
 - **Decide whether the policy-expectation path matters.** The Brazil model's known calibration gap is
   exactly this — it approximates the expected future Selic path by the current rate because it has no
-  forward curve (see [`analytics/monetary_policy/`](../analytics/monetary_policy/)). For the US, the
+  forward curve (see [`analytics/brasil/monetary_policy/`](../analytics/brasil/monetary_policy/)). For the US, the
   SEP median, the SPF, and fed funds futures are three candidate answers, and the third has no free
   source identified.
 - **Decide the prefix** — this branch has no Brazil prefix to reuse (`mon_` vs. `jur_`, see README).

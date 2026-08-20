@@ -221,7 +221,7 @@ body {
 
 ## JavaScript Patterns <a name="chartjs-setup"></a>
 
-Padrão único de charting do projeto desde 2026-07-28 (histórico completo da mudança em `.claude/rules/lis-dashboards.md`, repo principal): **Plotly**, não Chart.js. Todo relatório analítico do projeto (`analytics/exchange_rate/report.html`, `analytics/inflation/report.html`, `analytics/monetary_policy/report.html`) já usava Plotly desde o início; esta skill migrou para o mesmo padrão no mesmo dia em que `ppp_dashboard.html` (originalmente Chart.js; então em `analytics/exchange_rate/referencia/`, movido para o `reports/` de topo em 2026-08 por ser um deliverable gerado por código, não material de referência) foi convertido, a pedido direto do usuário ("I want all graphs to be this way ... set this in skill too"). Os padrões abaixo são os MESMOS já usados nesses relatórios — não uma variação nova.
+Padrão único de charting do projeto desde 2026-07-28 (histórico completo da mudança em `.claude/rules/lis-dashboards.md`, repo principal): **Plotly**, não Chart.js. Todo relatório analítico do projeto (`analytics/brasil/exchange_rate/report.html`, `analytics/brasil/inflation/report.html`) já usava Plotly desde o início; esta skill migrou para o mesmo padrão no mesmo dia em que `ppp_dashboard.html` (originalmente Chart.js; então em `analytics/brasil/exchange_rate/referencia/`, movido para o `reports/` de topo em 2026-08 por ser um deliverable gerado por código, não material de referência) foi convertido, a pedido direto do usuário ("I want all graphs to be this way ... set this in skill too"). Os padrões abaixo são os MESMOS já usados nesses relatórios — não uma variação nova.
 
 ### CDNs obrigatórios (no <head>)
 ```html
@@ -233,7 +233,7 @@ Nada além disso — sem Chart.js, sem chartjs-plugin-datalabels, sem hammer.js/
 
 ## JS — Zoom/Pan Interativo <a name="zoom-pan"></a>
 
-**Obrigatório em todo dashboard** — nenhum gráfico fica estático. Interação livre nos dois eixos, mesmo padrão usado em `analytics/exchange_rate/report.html`/`analytics/inflation/report.html`/`analytics/monetary_policy/report.html` (histórico completo, incluindo as versões descartadas antes de chegar neste padrão, em `.claude/rules/lis-dashboards.md`):
+**Obrigatório em todo dashboard** — nenhum gráfico fica estático. Interação livre nos dois eixos, mesmo padrão usado em `analytics/brasil/exchange_rate/report.html`/`analytics/brasil/inflation/report.html` (histórico completo, incluindo as versões descartadas antes de chegar neste padrão, em `.claude/rules/lis-dashboards.md`):
 
 - **Arrastar (drag)** → pan nos dois eixos diretamente (Plotly `dragmode:'pan'` nativo)
 - **Scroll / pinch** → zoom nos dois eixos, ancorado no cursor (`scrollZoom:true`)
@@ -242,7 +242,7 @@ Nada além disso — sem Chart.js, sem chartjs-plugin-datalabels, sem hammer.js/
 - **Botões de range rápido** (1a/3a/5a/10a/Tudo) — **botões HTML normais + `Plotly.relayout()` direto, NÃO o `xaxis.rangeselector` nativo do Plotly.** Ver caixa de atenção abaixo antes de implementar isso de outra forma.
 
 > [!WARNING]
-> **Não use `layout.xaxis.rangeselector` para os botões de range rápido.** Duas tentativas anteriores nesse próprio padrão quebraram em produção (`analytics/economic_activity/report.html`, 2026-08, histórico completo em `.claude/rules/lis-dashboards.md`):
+> **Não use `layout.xaxis.rangeselector` para os botões de range rápido.** Duas tentativas anteriores nesse próprio padrão quebraram em produção (`analytics/brasil/economic_activity/report.html`, 2026-08, histórico completo em `.claude/rules/lis-dashboards.md`):
 > 1. `rangeselector.buttons[]` com `step`/`stepmode`/`count` (a forma "correta"/documentada) ainda assim ancora o `to` no range **atual** do eixo — que, se estiver com autorange ligado, é o range com o padding automático do próprio Plotly (uma % do span total, grande em termos absolutos quando o histórico é longo). Resultado: clicar em "3a" abre uma janela com meses/anos vazios depois do último ponto real.
 > 2. Uma correção errada assumiu que `rangeselector.buttons[]` aceitava `{method:'relayout', args:[...]}` como os botões de `layout.updatemenus` — **não aceita**. Esse campo não existe na spec do rangeselector (só `step`/`stepmode`/`count`/`label`/`name`/`visible`). O Plotly ignora o campo silenciosamente e o clique produz um resultado sem sentido (gráfico em branco, eixo X reduzido a poucas semanas perto da data de renderização).
 >
@@ -334,7 +334,7 @@ CSS mínimo para `.range-pill` (mesma linguagem visual dos outros controles pill
 .range-pill:hover { color: #1F2853; border-color: rgba(31,40,83,0.3); }
 ```
 
-**Por que ainda precisa de um helper de autofit em Y, mesmo com `dragmode:'pan'`+Y livre:** os botões de range rápido (1a/3a/...) mudam `xaxis.range` diretamente, sem nenhum gesto de usuário em Y — então Y fica mostrando o range antigo (às vezes uma janela nova e estreita espremida no range antigo inteiro). `_bindYAutofit` cobre exatamente esse caso: só recalcula Y quando `xaxis.range` mudou **sem** `yaxis`/`yaxis2` também terem mudado no mesmo evento (ou seja, clique num botão de range rápido ou um double-click reset — nunca um drag/scroll direto, que já move os dois eixos juntos e não deve ser contrariado). Isso continua funcionando idêntico com os novos botões HTML: `Plotly.relayout()` dispara o mesmo evento `plotly_relayout` que os botões nativos disparavam. Versão genérica (funciona com eixo category ou date, single ou dual y-axis, barras simples ou empilhadas — mesma função usada nos três relatórios analíticos e nas abas de modelo do `analytics/exchange_rate/report.html`, ex-`ppp_dashboard.html`, fundido nele em 2026-08):
+**Por que ainda precisa de um helper de autofit em Y, mesmo com `dragmode:'pan'`+Y livre:** os botões de range rápido (1a/3a/...) mudam `xaxis.range` diretamente, sem nenhum gesto de usuário em Y — então Y fica mostrando o range antigo (às vezes uma janela nova e estreita espremida no range antigo inteiro). `_bindYAutofit` cobre exatamente esse caso: só recalcula Y quando `xaxis.range` mudou **sem** `yaxis`/`yaxis2` também terem mudado no mesmo evento (ou seja, clique num botão de range rápido ou um double-click reset — nunca um drag/scroll direto, que já move os dois eixos juntos e não deve ser contrariado). Isso continua funcionando idêntico com os novos botões HTML: `Plotly.relayout()` dispara o mesmo evento `plotly_relayout` que os botões nativos disparavam. Versão genérica (funciona com eixo category ou date, single ou dual y-axis, barras simples ou empilhadas — mesma função usada nos três relatórios analíticos e nas abas de modelo do `analytics/brasil/exchange_rate/report.html`, ex-`ppp_dashboard.html`, fundido nele em 2026-08):
 
 ```javascript
 function _toComparableX(v) {

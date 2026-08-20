@@ -72,7 +72,7 @@ def _load_gov_spending_yoy() -> dict:
     }
 
 
-def run(output: str = "reports/real_rates_comparison.html") -> None:
+def run(output: str = "reports/brasil/real_rates_comparison.html") -> None:
     data = {
         "series": _load_real_rates(),
         "labels": _COUNTRY_LABELS,

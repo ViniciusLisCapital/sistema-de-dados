@@ -849,7 +849,7 @@ uv run python -c "from analytics.brasil.exchange_rate.models.fx_attribution_mode
 - **No dashboard yet, by design.** Per direct user instruction (2026-07-29),
   this stays numbers-only (CSV/Excel) for now; the eventual visualization is
   a new tab in the FX report (then `reports/ppp_dashboard.html`, fused into
-  `reports/FX Report.html` in 2026-08 — stacked bar per category,
+  `reports/brasil/FX Report.html` in 2026-08 — stacked bar per category,
   `n_documents`/`n_claims` visible alongside), not a standalone page.
 - **Reusability for other text-scoring tasks** (e.g. Copom hawkish/dovish)
   is an explicit design goal but hasn't been attempted — nothing here is

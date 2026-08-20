@@ -39,7 +39,7 @@ DDL:
   ALTER TABLE macro_brasil.inflc_dim
       ADD COLUMN comercializavel VARCHAR(30) AFTER subjacente;
 
-Fonte unica para Grupo/Subgrupo/Item/nucleos: analytics/inflation/data/
+Fonte unica para Grupo/Subgrupo/Item/nucleos: analytics/brasil/inflation/data/
 Vetores_NT_57.xlsx, arquivo de apoio da Nota Tecnica do Banco Central do
 Brasil no 57, com uma aba por vigencia de classificacao oficial (ago99-dez05,
 jan06-jun06, jul06-dez11, jan12-dez19, jan20-presente — jan91-jul99 fora de
@@ -47,7 +47,7 @@ escopo). Essas vigencias de CLASSIFICACAO sao um eixo independente das
 vigencias de FETCH de dados em inflc_decomposicao.py (ex.: jan06-jun06 e uma
 aba propria por refletir uma reclassificacao pontual do BC — troca de etanol
 por medicamentos no grupo Monitorados, ver
-analytics/inflation/referencia/RI2005-12_boxe_Alteracao_composicao_administrados_monitorados_jan2006.pdf
+analytics/brasil/inflation/referencia/RI2005-12_boxe_Alteracao_composicao_administrados_monitorados_jan2006.pdf
 — nao uma atualizacao de POF) — as duas so se encontram no join por
 subitem_codigo em generate_report.py.
 
@@ -81,7 +81,7 @@ Subjacente (68/68).
 
 Item quando Subgrupo=Alimentos (estagio de processamento: in natura/semi-
 elaborado/industrializado) NAO esta em Vetores_NT_57.xlsx — vem de
-analytics/inflation/referencia/EE069_Atualizacoes_estrutura_ponderacao_IPCA_2020.pdf,
+analytics/brasil/inflation/referencia/EE069_Atualizacoes_estrutura_ponderacao_IPCA_2020.pdf,
 Tabela 5, que define essa classificacao por NOME DE ITEM (4 digitos), nao
 por subitem (_ALIMENTOS_PROCESSAMENTO abaixo), com uma unica excecao
 conhecida a nivel de subitem (_ALIMENTOS_EXCECAO_SUBITEM). Verificado

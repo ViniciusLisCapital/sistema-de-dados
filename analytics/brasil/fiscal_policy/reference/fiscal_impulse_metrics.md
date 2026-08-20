@@ -1,6 +1,6 @@
 # Fiscal Impulse Metrics — Reference
 
-Documents every metric built into `reports/fiscal_impulse_audit.xlsx` (not yet part of
+Documents every metric built into `reports/brasil/fiscal_impulse_audit.xlsx` (not yet part of
 `report.html`/`generate_report.py` — this is an audit workbook, built directly from BCB "tabelas
 especiais" downloads, not from the MySQL tables `fisc_divida`/`fisc_nfsp`/`fisc_rtn` that feed the
 main Panorama Fiscal report). Formulas, rationale, and literature references, in the order the
@@ -92,7 +92,7 @@ where `BC_holdings_Federal` is `Dlspp.xlsx` row 49, "Dívida Mobiliária na cart
 same row excluded from `Debt_Federal` above (this is where it's actually used).
 
 **Derivation**: from a three-agent accounting identity (Government / Central Bank / Real Economy)
-worked out by the user directly (`reports/raciocinio_impulso.xlsx`):
+worked out by the user directly (`reports/brasil/raciocinio_impulso.xlsx`):
 
 ```
 C(t) = C(t-1) + ΔGD(t) + ΔBC(t) + [T(t) - G(t)]      -- Government's cash balance

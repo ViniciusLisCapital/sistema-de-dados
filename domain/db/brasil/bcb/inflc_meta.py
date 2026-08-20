@@ -1,7 +1,8 @@
 """
-Meta para a inflacao (CMN), usada pela regra de Taylor e pela paridade do
-poder de compra (PPC) no modelo agregado de pequeno porte do BCB — ver
-analytics/monetary_policy/referencia/MODEL_REPLICATION_PLAN.md.
+Meta para a inflacao (CMN). Carregada para a replica do modelo agregado de
+pequeno porte do BCB (regra de Taylor e PPC), removida em 2026-08, mas segue
+com consumidor: analytics/brasil/exchange_rate/models/ppp_equilibrium.py e
+analytics/brasil/monetary_policy/phillips_excel.py.
 
 Serie SGS (anual):
   meta_inflacao 13521 — Meta para a inflacao

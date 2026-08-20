@@ -2,7 +2,7 @@
 Crédito do sistema financeiro — saldo por atividade econômica (BCB/SGS)
 
 Series SGS coletadas (38 series, R$ milhoes) -- Tabela 24 da publicacao mensal do BCB
-"Tabelas de Estatisticas Monetarias e de Credito" (ver analytics/credit/fontes_dados.md).
+"Tabelas de Estatisticas Monetarias e de Credito" (ver analytics/brasil/credit/fontes_dados.md).
 Uma unica metrica (saldo) -- quebra setorial mais fina de toda a planilha: agropecuaria,
 ~17 subsetores industriais (com total), ~15 subsetores de servicos (com total), outros,
 total geral.

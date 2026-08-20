@@ -64,7 +64,7 @@ MUTED = colors.HexColor("#7A88A8")
 LINE = colors.HexColor("#D8DCE6")
 BG_SOFT = colors.HexColor("#F4F5F7")
 
-OUT_PATH = os.path.join("reports", "ridge_model_explained.pdf")
+OUT_PATH = os.path.join("reports", "brasil", "ridge_model_explained.pdf")
 
 # ---------------------------------------------------------------------------
 # Paragraph styles -- larger body text, more whitespace, simpler than the
@@ -504,7 +504,7 @@ def build_story():
 
 
 def run():
-    os.makedirs("reports", exist_ok=True)
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
     doc = SimpleDocTemplate(
         OUT_PATH, pagesize=A4,
         topMargin=20 * mm, bottomMargin=18 * mm, leftMargin=22 * mm, rightMargin=22 * mm,

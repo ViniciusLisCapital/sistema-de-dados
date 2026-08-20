@@ -1,7 +1,7 @@
 # Handover — 2026-08-17
 
 Scope: the whole session. Two phases: (1) feasibility investigation of two BCB credit
-metrics, (2) building the **Impulso** tab in `analytics/credit/` from the metric that
+metrics, (2) building the **Impulso** tab in `analytics/brasil/credit/` from the metric that
 survived that investigation.
 
 ---
@@ -57,25 +57,25 @@ final ask was the chart form: stacked bars for components, total as a line.
 
 **New file**
 
-- `analytics/credit/impulso_tab.py` (9.2 KB) — `compute_impulse()` (date-based t-12/t-24
+- `analytics/brasil/credit/impulso_tab.py` (9.2 KB) — `compute_impulse()` (date-based t-12/t-24
   lookups, not positional), `_variants()` (m12 + anual), `build()`, the three trees
   (`_RECURSO_TREE` / `_PORTE_TREE` / `_ATIVIDADE_TREE`), `TREES`/`ANCHORS`, table
   configs. Module docstring carries the full rationale + validation numbers.
 
 **Edited**
 
-- `analytics/credit/generate_report.py` — import, `_load_impulso_tab_data()`, `run()`
+- `analytics/brasil/credit/generate_report.py` — import, `_load_impulso_tab_data()`, `run()`
   block with its own try/except (same degrade-gracefully pattern as the other tabs).
-- `analytics/credit/report.html` (+373 lines) — nav button `Impulso` (between Concessão
+- `analytics/brasil/credit/report.html` (+373 lines) — nav button `Impulso` (between Concessão
   and Taxa & Spread), the tab panel with 3 sections, `makeImpulseTab()` factory + 3
   instances (`IMP_RECURSO_TAB`/`IMP_PORTE_TAB`/`IMP_ATIV_TAB`), `renderImpulseChart()`
   (bars + line), `RENDERERS.impulso`, a long Apêndice item.
-- `analytics/credit/CLAUDE.md` — Impulso section under Tabs + `makeImpulseTab()` in the
+- `analytics/brasil/credit/CLAUDE.md` — Impulso section under Tabs + `makeImpulseTab()` in the
   shared-toolkit list.
 - `CLAUDE.md` (root) — added Impulso to the credit `report.html` tab list (this also
   removed a pre-existing duplicated "+ Concessao" in that sentence).
 
-**Generated**: `reports/Credit.html` (12.0 MB, 16:03). Regenerated several times; the
+**Generated**: `reports/brasil/Credit.html` (12.0 MB, 16:03). Regenerated several times; the
 last regen (16:03) is AFTER the concurrent `transforms.py` edit (16:02), so the
 `pct_change` Infinity fix IS baked into the current output.
 
@@ -98,11 +98,11 @@ Working and verified by a Node DOM-stub harness that executes the REAL generated
 
 Harness lives in the session scratchpad at
 `%TEMP%\claude\c--Users-LIS-CAPITAL-...\07162023-7dba-4490-8064-7fc7e2cb365a\scratchpad\harness.js`
-(disposable). Run: `node <path> reports/Credit.html`.
+(disposable). Run: `node <path> reports/brasil/Credit.html`.
 
 ## 6. Open items / next steps
 
-1. **Open `reports/Credit.html` in a real browser.** Never done — same standing sandbox
+1. **Open `reports/brasil/Credit.html` in a real browser.** Never done — same standing sandbox
    limitation as every report here. Specifically check bar width at ~208 monthly points;
    if too dense, the fix is `bargap` or defaulting monthly to a shorter quick-range.
 2. **Offered but not built** (user has not answered): a `Fluxo` / `Impulso` metric pill
@@ -119,9 +119,9 @@ Harness lives in the session scratchpad at
 
 ## 7. Files to read first
 
-- `analytics/credit/impulso_tab.py` — the docstring is the spec for the whole metric.
-- `analytics/credit/CLAUDE.md` — "Impulso" section under Tabs.
-- `analytics/credit/report.html` — `makeImpulseTab()` and `renderImpulseChart()`.
+- `analytics/brasil/credit/impulso_tab.py` — the docstring is the spec for the whole metric.
+- `analytics/brasil/credit/CLAUDE.md` — "Impulso" section under Tabs.
+- `analytics/brasil/credit/report.html` — `makeImpulseTab()` and `renderImpulseChart()`.
 - `.claude/rules/lis-dashboards.md` — chart interaction model (pan/zoom, `_bindYAutofit`,
   quick-range buttons).
 
@@ -144,7 +144,7 @@ Harness lives in the session scratchpad at
 - Balancetes are also heavily lagged now (Comunicado 44.132/2025: quarterly batches; Mar
   2026 only published 2026-08-03).
 - **Concurrent work in this folder by another session/user** — `analytics/metric_layers.md`
-  (new, 16:14) and a `pct_change` Infinity guard in `analytics/credit/transforms.py`
+  (new, 16:14) and a `pct_change` Infinity guard in `analytics/brasil/credit/transforms.py`
   (16:02). Neither was touched by this session; `impulso_tab.py` does not use
   `pct_change` at all. `analytics/CLAUDE.md` gained a "Metric layers" section. Do not
   revert any of it.
@@ -157,7 +157,7 @@ Harness lives in the session scratchpad at
 ---
 
 → also save to memory: nothing durable identified this session beyond what
-`analytics/credit/CLAUDE.md` now records.
+`analytics/brasil/credit/CLAUDE.md` now records.
 
 → candidate for `CLAUDE.md` "Pendências" (not added, needs sign-off): the pre-2007
 livre/direcionado splice (item 6.3 above). The "confirm in a real browser" item for the

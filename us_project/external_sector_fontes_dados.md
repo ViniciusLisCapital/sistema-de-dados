@@ -1,9 +1,9 @@
 # US external sector — source mapping (Census / BEA / Fed Board / Treasury TIC / BIS)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Cross-cutting
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Cross-cutting
 access status: [`README.md`](README.md). Brazil counterpart:
-[`analytics/exchange_rate/CLAUDE.md`](../analytics/exchange_rate/CLAUDE.md).
+[`analytics/brasil/exchange_rate/CLAUDE.md`](../analytics/brasil/exchange_rate/CLAUDE.md).
 
 **Why this branch is not called `exchange_rate`.** The Brazil report exists to explain BRL: carry,
 REER, reserves, BOP, contracted FX flow, CFTC positioning — the currency is the dependent variable.

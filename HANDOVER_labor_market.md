@@ -59,7 +59,7 @@ backfill full history (2020-01→2026-06) into `macro_brasil`.
 - Docs updated: `connectors/CLAUDE.md` (new `pdet_ftp.py` section, all 3 source
   quirks), `domain/db/CLAUDE.md` (3 new active tables + PK pattern note), root
   `CLAUDE.md` (tree entries + new "Mercado de trabalho — pendências pós-Novo CAGED"
-  item), `analytics/labor_market/fontes_dados.md` (coverage table flipped to ✅,
+  item), `analytics/brasil/labor_market/fontes_dados.md` (coverage table flipped to ✅,
   new "Novo CAGED" explainer section).
 - **Backfill run and validated**: `mt_caged_novo.run(start="all")` completed exit 0.
 
@@ -81,7 +81,7 @@ pós-Novo CAGED"):
 - Unmapped cuts available in the same microdado but not modeled: município, ocupação
   (CBO), sexo/idade/instrução/raça.
 - `mt_pnad_trimestral` UF/N3 level still out of scope (pre-existing, unrelated).
-- No report/dashboard consumes the 3 new tables yet — no `analytics/labor_market/`
+- No report/dashboard consumes the 3 new tables yet — no `analytics/brasil/labor_market/`
   report project exists, just the `fontes_dados.md` inventory.
 
 ## Files to read first
@@ -89,7 +89,7 @@ pós-Novo CAGED"):
 - `domain/db/brasil/mte/_caged_core.py` — the core logic, has a long docstring
   explaining the MOV/FOR/EXC formula and the two-phase generator design.
 - `domain/db/brasil/mte/mt_caged_novo.py` — orchestrator entry point.
-- `analytics/labor_market/fontes_dados.md` — coverage table + "Novo CAGED" explainer.
+- `analytics/brasil/labor_market/fontes_dados.md` — coverage table + "Novo CAGED" explainer.
 - `connectors/pdet_ftp.py` — FTP client, if touching the download layer.
 
 ## Gotchas

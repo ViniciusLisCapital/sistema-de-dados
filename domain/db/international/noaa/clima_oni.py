@@ -1,7 +1,9 @@
 """
-Oceanic Nino Index (ONI) — proxy de anomalia climatica (El Nino/La Nina)
-usado na curva de Phillips do modelo agregado de pequeno porte do BCB — ver
-analytics/monetary_policy/referencia/MODEL_REPLICATION_PLAN.md.
+Oceanic Nino Index (ONI) — proxy de anomalia climatica (El Nino/La Nina),
+carregado para a curva de Phillips da replica do modelo agregado de pequeno
+porte do BCB. Essa replica foi REMOVIDA em 2026-08 e esta tabela ficou SEM
+CONSUMIDOR — ver o aviso de status em
+analytics/brasil/monetary_policy/referencia/MODEL_REPLICATION_PLAN.md.
 
 Fonte: NOAA CPC, texto simples (nao precisa de connector dedicado — um unico
 endpoint estatico, sem autenticacao):

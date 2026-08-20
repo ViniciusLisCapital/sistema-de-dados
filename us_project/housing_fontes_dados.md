@@ -1,7 +1,7 @@
 # US housing — source mapping (Census/HUD / NAR / FHFA / S&P-Cotality / Freddie Mac)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Cross-cutting
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Cross-cutting
 access status: [`README.md`](README.md).
 
 **No Brazil counterpart.** This branch exists because US housing has a monthly statistical complex

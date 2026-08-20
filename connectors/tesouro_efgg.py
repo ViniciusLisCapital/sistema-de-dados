@@ -8,7 +8,7 @@ Estados, Municipios).
 Publicacao trimestral, HTML puro (Plone -- nao e SPA, confirmado ao vivo com
 requests simples, sem headless browser). A pagina e um link fixo cujo
 conteudo e sobrescrito a cada trimestre (mesmo padrao das "tabelas especiais"
-do BCB) -- ver analytics/fiscal_policy/reference/rtn_vs_efgg.md para o achado
+do BCB) -- ver analytics/brasil/fiscal_policy/reference/rtn_vs_efgg.md para o achado
 completo, incluindo a validacao de que Central+Estados+Municipios somam
 exatamente ao arquivo consolidado de Governo Geral.
 

@@ -158,6 +158,43 @@ sheets = te.read_sheets("Facdetp.xlsx", ["Juros"])  # só uma aba
 - Único consumidor hoje: `domain/db/brasil/bcb/fisc_dlsp_fatores.py` (`Facdetp.xlsx`, fatores
   condicionantes da DLSP). Esses dados **não existem no SGS** — foi por isso que o connector nasceu.
 
+### `connectors/bcb_rpm.py` — anexo estatístico do RPM (xlsx trimestral)
+
+```python
+from connectors.bcb_rpm import AnexoRPM
+
+anexo = AnexoRPM()
+vintages = anexo.vintages_disponiveis()      # [date(2021,9,1), ..., date(2026,6,1)]
+wb = anexo.abrir(vintages[-1])               # openpyxl read-only (150+ abas)
+ws, titulo = anexo.localizar_aba(wb, r"^grafico 2\.2\.\d+ .*hiato do produto")
+grade = anexo.grade(ws)                       # DataFrame cru, header=None
+```
+
+A planilha que o BCB publica junto do Relatório de Política Monetária com os dados por trás de
+**cada gráfico e tabela** do relatório — uma aba por figura, 130-190 abas por edição.
+
+**A unidade aqui é a EDIÇÃO, não a série** (é o que diferencia este connector de todos os outros):
+cada trimestre republica a série inteira revisada, então o mesmo trimestre do calendário tem um
+valor diferente em cada edição. Nenhuma outra fonte do projeto diz o que o BCB *achava* na época.
+
+**Detalhes** (confirmados ao vivo em 2026-08, varrendo 2014-03 → 2026-06):
+- URL: `…/content/ri/relatorioinflacao/{AAAAMM}/{prefixo}{AAAAMM}anp.xlsx`. O prefixo muda no meio
+  da série — `ri` até 2024-12, `rpm` de 2025-03 (o relatório foi renomeado). `url_de()` tenta o
+  outro prefixo no 404, então uma renomeação futura não quebra a descoberta.
+- **Série começa em 2021-09.** O relatório existe desde 1999, mas passou a publicar anexo de dados
+  só nessa edição — antes disso os números são imagem de gráfico no PDF.
+- Sem listagem de diretório e a página é SPA: `vintages_disponiveis()` **enumera** os trimestres
+  candidatos e testa cada URL com um GET de 2 bytes (`Range: bytes=0-1`). HEAD não é usado — nem
+  todo caminho do CDN do BCB responde a ele.
+- **Localizar aba por nome é furado**: o número do gráfico anda a cada edição (o hiato já foi
+  `Graf 2.2.3`, `2.2.4`, `2.2.6`, `2.2.8`). `localizar_aba()` casa um regex contra o bloco de
+  cabeçalho da coluna A, onde vive o título publicado.
+- Devolve grade crua (`header=None`), igual a `bcb_tabelas_especiais.py` — cada figura do anexo tem
+  uma forma diferente e o parsing fica no script de domínio.
+- Consumidores hoje: `domain/db/brasil/bcb/pm_hiato_produto.py` e `pm_hiato_produto_vintages.py`,
+  ambos via o parser compartilhado `domain/db/brasil/bcb/_rpm_hiato.py` (que documenta as cinco
+  armadilhas da aba do hiato — vale ler antes de adicionar a 3ª série deste anexo).
+
 ### `connectors/fred.py` — API FRED (Federal Reserve)
 
 ```python
@@ -347,7 +384,7 @@ raw = efgg.download_table(urls["estados"], sheet_name="1.3")
 
 **Detalhes tecnicos** (achados investigando ao vivo em 2026-08, apos o usuario perguntar se a
 classificacao GFSM/Governo Geral teria planilha, nao so boletim PDF -- pesquisa anterior, documentada
-em `analytics/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava errada/desatualizada):
+em `analytics/brasil/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava errada/desatualizada):
 - Pagina fixa (`_PAGE_URL`, `tesourotransparente.gov.br/publicacoes/estatisticas-fiscais-do-governo-
   geral/2021/22`) cujo conteudo e sobrescrito a cada publicacao trimestral nova -- mesmo padrao das
   "tabelas especiais" do BCB. **E HTML puro (Plone), nao SPA** -- confirmado com `requests` simples,
@@ -360,7 +397,7 @@ em `analytics/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava errada
 - Sem autenticacao.
 - Metodologia GFSM 2014 do FMI, harmonizada com o SNA 2008/IBGE — e a mesma fonte que o paper do IEG
   (Impulso Estrutural do Gasto, Resende & Pires 2024) usa. Ver
-  `analytics/fiscal_policy/reference/rtn_vs_efgg.md` para a diferenciacao completa vs. a RTN
+  `analytics/brasil/fiscal_policy/reference/rtn_vs_efgg.md` para a diferenciacao completa vs. a RTN
   (`connectors/tesouro.py`), o mapeamento de codigos e a validacao de que Central+Estados+Municipios
   somam exatamente ao arquivo consolidado de Governo Geral.
 - Cada esfera tem seu proprio nome de aba para a despesa trimestral: Governo Central e `"2.3"` (tem
@@ -403,6 +440,104 @@ path = extrair_csv(conteudo, 'CAGEDMOV202606.txt', dest_dir)   # extrai e devolv
   responsável por apagá-lo (padrão "agregar-e-descartar", ver
   `domain/db/brasil/mte/_caged_core.py`).
 - Sem checksums publicados para validar a integridade do download.
+
+### `connectors/comexstat.py` — API do Comex Stat (MDIC), ao vivo
+
+```python
+from connectors.comexstat import ComexStat
+
+cs = ComexStat()
+df = cs.get_trade("export", "1997-01", "2026-06", country_code="160")  # China
+df_mundo = cs.get_trade("export", "1997-01", "2026-06")                # sem filtro
+```
+
+**Detalhes técnicos:**
+- `https://api-comexstat.mdic.gov.br`, sem autenticação, mas com **rate limit agressivo**
+  (HTTP 429 depois de poucas chamadas rápidas em sequência, confirmado empiricamente) — todo
+  método usa retry com backoff exponencial e `min_interval=2.0s` entre chamadas. Para janelas
+  grandes/históricas use o `comexstat_bulk.py` abaixo, não este.
+- Cobertura 1997-01 → presente (mensal), publicado ~3 dias após o fim do mês — mais rápido que
+  o Balanço de Pagamentos do BCB. Valores em USD FOB.
+- **Não é BPM6.** Comex Stat/SECEX usa "comércio geral" (registro aduaneiro, SISCOMEX); o BCB
+  aplica ajustes documentados para chegar de lá até `cmb_balanco_pagmt.mercadorias_gerais`. Os
+  totais das duas fontes **não** devem ser somados ou comparados linha a linha — o Comex Stat é
+  recorte complementar (quebra por país/categoria), não reconciliação da BOP.
+- A quebra clássica "Fator Agregado" (Básicos/Semimanufaturados/Manufaturados) **não existe como
+  filtro da API** — só no arquivo de correlação `NCM.csv` do download em massa.
+
+### `connectors/comexstat_bulk.py` — Comex Stat em massa (CSV anual por NCM)
+
+```python
+from connectors.comexstat_bulk import get_year, get_year_by_fator_agregado, get_year_by_produto
+
+df = get_year("export", 2015)                       # NCM-level, ano inteiro
+df_fa = get_year_by_fator_agregado("export", 2015)  # via correlação NCM.csv
+```
+
+**Detalhes técnicos:**
+- `balanca.economia.gov.br/balanca/bd/comexstat-bd/ncm/{EXP,IMP}_{ano}.csv` — arquivos anuais
+  estáticos, **sem rate limit** (a própria documentação da API recomenda esta rota para consultas
+  grandes). Uso: **somente o backfill histórico** (1997→hoje, uma vez); update rotineiro é pela
+  API ao vivo.
+- `;` como separador, aspas duplas em texto. Colunas de export:
+  `CO_ANO;CO_MES;CO_NCM;CO_UNID;CO_PAIS;SG_UF_NCM;CO_VIA;CO_URF;QT_ESTAT;KG_LIQUIDO;VL_FOB`;
+  import acrescenta `VL_FRETE;VL_SEGURO`.
+- Códigos `CO_PAIS` confirmados **idênticos** aos da API ao vivo (China=160, EUA=249,
+  Argentina=063, Alemanha=023) — as duas rotas alimentam a mesma tabela sem tradução.
+- É daqui que sai a correlação NCM → fator agregado (`get_ncm_fator_agregado`) e NCM → SH6
+  (`get_ncm_sh6`), que a API não expõe.
+
+### `connectors/cftc.py` — CFTC Commitments of Traders (TFF)
+
+```python
+from connectors.cftc import CFTC
+```
+
+**Detalhes técnicos:**
+- ZIPs anuais em `https://www.cftc.gov/files/dea/history/fut_fin_txt_{YYYY}.zip`, sem
+  autenticação.
+- Contratos de **moeda (BRL, MXN, …) estão no relatório TFF** (Traders in Financial Futures),
+  não no disaggregated de commodities — procurar no arquivo errado é o erro fácil aqui.
+- Colunas extraídas por contrato: `open_interest`, `lev_long`/`lev_short`/`lev_net`
+  (Leveraged Funds = a perna especulativa) e `nonrept_long`/`nonrept_short`.
+
+### `connectors/ipeadata.py` — API do Ipeadata (OData v4)
+
+```python
+from connectors.ipeadata import IPEA
+
+ipea = IPEA()
+df = ipea.get_series("FUNCEX12_TTR12")     # date (Timestamp), value (float)
+ipea.buscar_series("termos de troca")      # busca por nome
+```
+
+**Detalhes técnicos:**
+- `http://www.ipeadata.gov.br/api/odata4`, sem autenticação. Usado para séries que o SGS do BCB
+  não tem — hoje só termos de troca (Funcex), em `domain/db/brasil/ipea/cmb_termos_troca.py`.
+- **Gotcha de OData**: `$filter=contains(...)` devolve **400** nesta API — usar
+  `substringof('valor', CAMPO)`, a sintaxe do OData v3, no lugar.
+
+### `connectors/tesouro_series_temporais.py` — API de Séries Temporais do Tesouro
+
+```python
+from connectors.tesouro_series_temporais import SeriesTemporais
+
+st = SeriesTemporais()
+temas = st.get_temas()                     # 10-20 temas
+arvore = st.get_arvore(subtema_id)         # plano de contas hierárquico
+df = st.get_series_bulk({"nome": 12345})   # uma chamada HTTP por série
+```
+
+**Detalhes técnicos:**
+- Backend **não documentado** no CKAN da Tesouro Transparente — descoberto rastreando as chamadas
+  de rede da própria página de séries temporais. Sem autenticação,
+  `Access-Control-Allow-Origin: *`. Por não ser documentado, pode mudar sem aviso.
+- Estrutura Tema → Subtema → árvore de séries com plano de contas (`10.03.1.1.02.1`) e id próprio
+  por série. `flatten_arvore()` achata a árvore; `get_series_bulk()` faz uma chamada por série —
+  a API **não** tem download em lote, e é por isso que `fisc_investimento` custa ~80 requests.
+- Alimenta `domain/db/brasil/tesouro/fisc_investimento.py` (Tema 13). A API "oficial" do CKAN para
+  o RTN (`apiapex.tesouro.gov.br`) segue **morta** (loop de redirecionamento, testado ao vivo) —
+  o RTN continua vindo do xlsx via `tesouro.py`.
 
 ### `connectors/mysql.py` — Insert/Update no banco
 

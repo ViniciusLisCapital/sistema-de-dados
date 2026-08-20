@@ -1,5 +1,28 @@
 # BCB Small-Scale Model — Replication Plan
 
+> **STATUS: RETIRED (2026-08-18).** This replication no longer exists in the repo. `model.py`,
+> `generate_report.py`, `report.html` and the generated `reports/brasil/bcb_model.html` were
+> deleted, and the two MySQL tables that fed it — `macro_brasil.pm_hiato_seed` and
+> `macro_brasil.pm_parametros` — were dropped. Their contents are preserved as CSV next to this
+> file (`pm_hiato_seed_2026-04.csv`, `pm_parametros_RI_2021T4.csv`), since the 22 posterior modes
+> in the latter are a hand transcription of Table 1 of the Dec/2021 box and would otherwise have
+> to be re-typed from `modelo_agregado.pdf`.
+>
+> Reason for retirement: a new monetary-policy model is being built on **automated extraction of
+> the BCB report** (`connectors/bcb_rpm.py` → `macro_brasil.pm_hiato_produto` and
+> `pm_hiato_produto_vintages`), which supersedes the hand-seeded latent states this plan describes
+> in simplification #2 below. The output gap is now a real series with a full vintage panel, not a
+> single typed-in number.
+>
+> **This document is kept as the design record**, not as instructions. The parts worth carrying
+> into the new model: the 5-equation structure, the calibration gap in "Validation" (the IRF came
+> out 4-5x the published magnitude because the engine approximated the expected future Selic path
+> by the current rate — `expc_focus_copom` is the forward curve that fixes it, weighted
+> 0.5/1/1/1/0.5 over the 4 quarters ahead), and the data-source mapping below.
+>
+> Still live in this folder and unaffected: `phillips_excel.py`, which never used the seed or the
+> parameters table and already reads `pm_hiato_produto`.
+
 Source material: `modelo_agregado.pdf` (Relatório de Inflação, Dec/2021 — aggregate model revision) and `modelo_desagregado.pdf` (Relatório de Inflação, Mar/2021 — disaggregated model) in this folder. Both are BCB "boxes" describing the semi-structural small-scale models that feed Copom's decision process.
 
 ## Scope decision (2026-07-13)
@@ -63,14 +86,14 @@ The model's own fixed parameters and seed states aren't raw macro data — they'
   - `macro_international.comm_brent` (FRED `DCOILBRENTEU`, 1990 → 2026-07)
   - `macro_international.clima_oni` (1950 → 2026-04, filtered to the 4 calendar-aligned seasons JFM/AMJ/JAS/OND)
   - `macro_brasil.pm_parametros` — all 22 coefficients from Table 1 of the Dec/2021 box transcribed and inserted, vintage `RI_2021T4_agregado`.
-  - `macro_brasil.pm_hiato_seed` — `output_gap` seeded at **0.4% for 2026Q2**, sourced from press coverage of the Jun/2026 RPM (BCB's own model estimate revised from 0.1%→0.5% for 1Q26, 0.4% for 2Q26). **Not verified against the primary RPM PDF** (WebFetch couldn't parse it) — flagged for confirmation when convenient.
+  - `macro_brasil.pm_hiato_seed` — `output_gap` seeded at **0.4% for 2026Q2**, sourced from press coverage of the Jun/2026 RPM (BCB's own model estimate revised from 0.1%→0.5% for 1Q26, 0.4% for 2Q26). ~~**Not verified against the primary RPM PDF** (WebFetch couldn't parse it) — flagged for confirmation when convenient.~~ **Confirmed 2026-08-18** against the primary source — not the PDF, but the RPM's *statistical annex* (xlsx), which publishes the chart data directly. The Jun/2026 annex gives 0.36 for 2026Q2 and 0.49 for 2026Q1 (0.13 in the Mar/2026 edition), so all three press figures were right to the rounding. The seed is now redundant for `output_gap`: `macro_brasil.pm_hiato_produto` carries the whole series straight from the annex, and `pm_hiato_produto_vintages` carries every edition's estimate — see `domain/db/brasil/bcb/pm_hiato_produto.py`. That redundancy is what settled the question: rather than repoint `model.py` at `pm_hiato_produto`, the whole replication was retired on 2026-08-18 and both seed tables dropped (see the status notice at the top).
 - **`neutral_rate` seed NOT inserted — unresolved conflict.** Web search returned two contradictory figures for BCB's current neutral-rate estimate: 3.3% (attributed to the Mar/2026 RPM) and 5.0% (attributed to the Jun/2026 RPM, "stable since Jun/2025"). These are too far apart to be the same concept reported at two different dates — at least one is a search-synthesis error. Needs primary-source confirmation before seeding (e.g. reading the actual RPM box, not press/search summaries) — this number anchors the entire IS curve, so seeding it wrong silently corrupts every downstream projection.
 
 ## Resolution (2026-07-13)
 
 Neutral rate confirmed by user: **5.0%** (RPM jun/2026, stable since jun/2025). Seeded in `pm_hiato_seed`.
 
-## Model built: `analytics/brasil/monetary_policy/model.py`
+## Model built (since deleted): `analytics/brasil/monetary_policy/model.py`
 
 Implements all 5 equations (Phillips curve for livres, IS curve, Taylor rule, UIP, climate/commodity terms) as a forward recursion from the seeded state, reading parameters/seed/history from MySQL. `load_history()`, `simulate(n_quarters, scenario)`, `decompose_last_quarter()`.
 
@@ -78,9 +101,10 @@ Implements all 5 equations (Phillips curve for livres, IS curve, Taylor rule, UI
 
 ## HTML report (2026-07-13)
 
-`analytics/brasil/monetary_policy/generate_report.py` + `report.html` — same self-contained, `/*REPORT_DATA*/`-injection pattern as `analytics/brasil/exchange_rate/` and `analytics/brasil/inflation/`. Runs `simulate()` for a baseline (Selic endogenous via Taylor rule) and a shock scenario (Selic +1pp for 4 quarters, the box's own IRF experiment), plus KPI tiles from the latest history/seed. Output: `reports/bcb_model.html` (renamed from `monetary_policy_latest.html` per user request). The known calibration gap (magnitude overstated ~4-5x on the real-rate channel) is surfaced as a visible callout on the report itself, not just in this doc. Report now has two tabs: **Cenários** (the above) and **Sobre o Modelo** (beginner-oriented intro: what the model is, a flow diagram, one card per equation in plain language, a glossary, and the data-sources table) — added 2026-07-13 per user request.
+`analytics/brasil/monetary_policy/generate_report.py` + `report.html` — same self-contained, `/*REPORT_DATA*/`-injection pattern as `analytics/brasil/exchange_rate/` and `analytics/brasil/inflation/`. Runs `simulate()` for a baseline (Selic endogenous via Taylor rule) and a shock scenario (Selic +1pp for 4 quarters, the box's own IRF experiment), plus KPI tiles from the latest history/seed. Output: `reports/brasil/bcb_model.html` (renamed from `monetary_policy_latest.html` per user request). The known calibration gap (magnitude overstated ~4-5x on the real-rate channel) is surfaced as a visible callout on the report itself, not just in this doc. Report now has two tabs: **Cenários** (the above) and **Sobre o Modelo** (beginner-oriented intro: what the model is, a flow diagram, one card per equation in plain language, a glossary, and the data-sources table) — added 2026-07-13 per user request.
 
 ```powershell
+# NAO FUNCIONA MAIS -- generate_report.py foi removido em 2026-08 (ver aviso de status no topo)
 uv run python -c "from analytics.brasil.monetary_policy.generate_report import run; run()"
 ```
 

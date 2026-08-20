@@ -1,6 +1,6 @@
 # analytics/report_structure/ — Shared report-generation scaffolding
 
-Build-time-only building blocks for the `/*REPORT_DATA*/`-template reports (`exchange_rate/`, `inflation/`, `monetary_policy/`) — extracted 2026-08 to stop hand-copy-pasting the same boilerplate into each new report. **Nothing here is ever loaded at runtime by a generated report** — `report.html` files stay plain, self-contained HTML/CSS/JS with no reference to this package. Only each project's own `generate_report.py` imports from it, at generation time, to assemble the final file. This preserves the "one emailable file" property `.claude/rules/lis-dashboards.md` and each report's own `CLAUDE.md` already document.
+Build-time-only building blocks for the `/*REPORT_DATA*/`-template reports (`exchange_rate/`, `inflation/`) — extracted 2026-08 to stop hand-copy-pasting the same boilerplate into each new report. **Nothing here is ever loaded at runtime by a generated report** — `report.html` files stay plain, self-contained HTML/CSS/JS with no reference to this package. Only each project's own `generate_report.py` imports from it, at generation time, to assemble the final file. This preserves the "one emailable file" property `.claude/rules/lis-dashboards.md` and each report's own `CLAUDE.md` already document.
 
 ## What's here
 
@@ -57,7 +57,7 @@ def run(output: str = "reports/xxx.html") -> None:
 
 - **`inflation/`** — fully migrated 2026-08 (the pilot for this convention). Both markers (`/*THEME_CSS*/`, `/*Y_AUTOFIT_JS*/`) plus the `render_report()` harness.
 - **`exchange_rate/`** — partially migrated 2026-08: `/*Y_AUTOFIT_JS*/` and the `render_report()` harness are in use, plus `extra_markers=` (the only report using it — its three model tabs, fused in from the ex-standalone PPP dashboard, carry their own payload markers). The `/*Y_AUTOFIT_JS*/` swap was verified byte-for-byte equivalent to the prior inline copy, including the `t.type === 'heatmap'` guard this report actually needs — `y_autofit.js` was widened to include that guard unconditionally, a no-op for `inflation/` since it never binds `_bindYAutofit` to a heatmap trace). **Theme CSS is deliberately NOT migrated** — `exchange_rate/report.html`'s `:root` predates the 2026-07 LIS-dashboard reskin (`inflation/CLAUDE.md`'s "Visual design"): navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `theme.css`. Swapping in `/*THEME_CSS*/` as-is would silently change the report's look without an actual design pass — that reskin is its own follow-up; do it, then point at the shared file.
-- **`monetary_policy/`** — not migrated at all yet (explicitly deferred). Still carries its own inline theme CSS and `_bindYAutofit` copy.
+- **`monetary_policy/`** — was never migrated; its `report.html` was deleted in 2026-08 with the BCB-model replication, so it is no longer a migration target.
 - **`economic_activity/`** — built directly onto both markers from day one (2026-08), the first report to start here rather than migrate here — no separate migration step was ever needed.
 - **`fiscal_policy/`** — same as `economic_activity/`: built directly onto both markers from day one (2026-08), no migration needed.
 

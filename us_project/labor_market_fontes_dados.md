@@ -1,7 +1,7 @@
 # US labor market — source mapping (BLS / DOL / ADP / regional Feds)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md), which is also
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md), which is also
 the Brazil counterpart of this branch. Cross-cutting access status and the outstanding API keys are
 in [`README.md`](README.md).
 

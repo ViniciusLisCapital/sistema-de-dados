@@ -2,7 +2,7 @@
 Cotacao diaria das moedas latino-americanas pares (MX/CL/CO/PE) contra o USD --
 Yahoo Finance. Nao alimenta nenhum relatorio diretamente; e o insumo de
 volatilidade cambial para o metrico carry/vol em
-analytics/exchange_rate/models/ppp_equilibrium.py (relative_carry_vol),
+analytics/brasil/exchange_rate/models/ppp_equilibrium.py (relative_carry_vol),
 o mesmo papel que cmb_ptax ja cumpre para o lado brasileiro.
 
 Serie Yahoo Finance (diaria, fechamento), moeda local por USD -- mesma

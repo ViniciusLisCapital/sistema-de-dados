@@ -28,7 +28,7 @@ Os outros 4 (1 Pessoal, 2 Juros da Divida, 3 Outras Despesas Correntes,
 
 A distincao GND 4 vs. GND 5 e a mesma que faz o canal parafiscal de credito a
 instituicoes financeiras oficiais nao aparecer no resultado primario -- ver o
-"Impulso via Credito a Inst. Financ. Oficiais" em analytics/fiscal_policy/ e
+"Impulso via Credito a Inst. Financ. Oficiais" em analytics/brasil/fiscal_policy/ e
 `fisc_dlsp_fatores`.
 
 ## Estrutura de cada corte

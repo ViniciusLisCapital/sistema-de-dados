@@ -714,7 +714,7 @@ def _load_ieg() -> dict:
     }
 
 
-def run(output: str = "reports/Fiscal Policy.html") -> None:
+def run(output: str = "reports/brasil/Fiscal Policy.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 

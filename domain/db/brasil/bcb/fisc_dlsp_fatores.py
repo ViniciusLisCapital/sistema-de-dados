@@ -57,7 +57,7 @@ Este script **NAO inverte o sinal**, deliberadamente: inverter quebraria a
 identidade aditiva com `estoque`, que e a razao de existir desta tabela. Quem
 cruzar `fisc_dlsp_fatores.primario` com `fisc_nfsp.resultado_primario_*` tem que
 esperar sinais opostos -- confirmado ao vivo, sao negativos exatos um do outro
-(ver "Validacao" abaixo). Ver o gotcha equivalente em analytics/fiscal_policy/
+(ver "Validacao" abaixo). Ver o gotcha equivalente em analytics/brasil/fiscal_policy/
 CLAUDE.md antes de charetar qualquer coisa desta tabela junto de fisc_nfsp.
 
 ## Identidade

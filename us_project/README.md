@@ -2,11 +2,22 @@
 
 Pre-build survey of what US macro data exists, who publishes it, how we can reach it, and what
 we already have. Same purpose and shape as the Brazil-side source maps
-([`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md),
-[`analytics/fiscal_policy/fontes_dados.md`](../analytics/fiscal_policy/fontes_dados.md)) — one
+([`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md),
+[`analytics/brasil/fiscal_policy/fontes_dados.md`](../analytics/brasil/fiscal_policy/fontes_dados.md)) — one
 file per macro branch, each with a coverage table, a live-verified series inventory, gotchas and
-open items. **Nothing here is built yet**: no schema, no connector, no ETL script. This folder is
-for the scoping conversation that comes first.
+open items. This folder is for the scoping conversation that comes first — but it is no longer
+purely a scoping folder: the **inflation branch has started building**. Done as of 2026-08-18:
+[`connectors/bls.py`](../connectors/bls.py) (working, API key installed, limits measured live) and
+the CPI item hierarchy in [`inflation_hierarchy.md`](inflation_hierarchy.md) +
+[`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) /
+[`cpi_newsrelease_table1.tsv`](cpi_newsrelease_table1.tsv). Still not built for **any** branch:
+the `macro_us` schema, the ETL scripts, the reports.
+
+**Where the built code goes.** `analytics/` was reorganised country-first in 2026-08 (see
+[`analytics/CLAUDE.md`](../analytics/CLAUDE.md)), so a US report lands in `analytics/us/<area>/` —
+`analytics/us/inflation/` for the first one — and its ETL in `domain/db/us/<area>/`, mirroring
+`domain/db/brasil/`. The "Brazil counterpart" column below is therefore the *precedent to copy*,
+not the destination: `analytics/brasil/inflation/` is the model for `analytics/us/inflation/`.
 
 **Method — everything below was probed live against each source on 2026-08-17**, not read off
 documentation. 377 candidate FRED series were checked one by one against `/fred/series` (existence,
@@ -27,15 +38,15 @@ corrected on an individual re-check; the branch files use the corrected counts.
 
 | File | Brazil counterpart | Scope |
 |---|---|---|
-| [`activity_fontes_dados.md`](activity_fontes_dados.md) | `analytics/economic_activity/` | GDP/NIPA, industrial production, retail, orders, inventories, income, sentiment, nowcasts |
-| [`labor_market_fontes_dados.md`](labor_market_fontes_dados.md) | `analytics/labor_market/` | CPS, CES, JOLTS, claims, ECI, productivity, wage trackers |
-| [`inflation_fontes_dados.md`](inflation_fontes_dados.md) | `analytics/inflation/` | CPI, PCE, PPI, import/export prices, cores/trimmed means, expectations |
-| ↳ [`inflation_hierarchy.md`](inflation_hierarchy.md) | — | **How the inflation data nests** (2026-08-18): the CPI's **two** trees — the 294-item / 9-level expenditure structure and the 21-node news-release structure (food / energy / core goods / core services) — both with weights and series ids and both validated against the weight identities; why every other US price measure is flat or nests differently; proposed `macro_us` tables |
-| ↳ [`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) · [`cpi_headline_hierarchy.tsv`](cpi_headline_hierarchy.tsv) | — | Machine-readable form of those two trees — level, parent, CPI-U/CPI-W weights, SA and NSA series ids, coverage window. Seed for `inflc_cpi_dim` |
-| [`monetary_policy_fontes_dados.md`](monetary_policy_fontes_dados.md) | `analytics/monetary_policy/` | Fed target/effective rates, yield curve, balance sheet, money, financial conditions, SEP |
-| [`fiscal_policy_fontes_dados.md`](fiscal_policy_fontes_dados.md) | `analytics/fiscal_policy/` | MTS receipts/outlays, debt stock and holders, NIPA government accounts, CBO |
-| [`credit_fontes_dados.md`](credit_fontes_dados.md) | `analytics/credit/` | H.8 bank credit, SLOOS, G.19 consumer credit, delinquencies, Z.1 debt, FDIC |
-| [`external_sector_fontes_dados.md`](external_sector_fontes_dados.md) | `analytics/exchange_rate/` | Dollar indices, trade, current account, IIP, TIC, reserves |
+| [`activity_fontes_dados.md`](activity_fontes_dados.md) | `analytics/brasil/economic_activity/` | GDP/NIPA, industrial production, retail, orders, inventories, income, sentiment, nowcasts |
+| [`labor_market_fontes_dados.md`](labor_market_fontes_dados.md) | `analytics/brasil/labor_market/` | CPS, CES, JOLTS, claims, ECI, productivity, wage trackers |
+| [`inflation_fontes_dados.md`](inflation_fontes_dados.md) | `analytics/brasil/inflation/` | CPI, PCE, PPI, import/export prices, cores/trimmed means, expectations |
+| ↳ [`inflation_hierarchy.md`](inflation_hierarchy.md) | — | **How the inflation data nests** (2026-08-18): the CPI's **two** trees — the 294-item / 9-level expenditure structure and the 37-row news-release structure (food / energy / core goods / core services) — both with weights and series ids and both validated against the weight identities; why every other US price measure is flat or nests differently; proposed `macro_us` tables |
+| ↳ [`cpi_item_hierarchy.tsv`](cpi_item_hierarchy.tsv) · [`cpi_newsrelease_table1.tsv`](cpi_newsrelease_table1.tsv) | — | Machine-readable form of those two trees — level, parent, CPI-U/CPI-W weights, SA and NSA series ids, coverage window. Seed for `inflc_cpi_dim` |
+| [`monetary_policy_fontes_dados.md`](monetary_policy_fontes_dados.md) | `analytics/brasil/monetary_policy/` | Fed target/effective rates, yield curve, balance sheet, money, financial conditions, SEP |
+| [`fiscal_policy_fontes_dados.md`](fiscal_policy_fontes_dados.md) | `analytics/brasil/fiscal_policy/` | MTS receipts/outlays, debt stock and holders, NIPA government accounts, CBO |
+| [`credit_fontes_dados.md`](credit_fontes_dados.md) | `analytics/brasil/credit/` | H.8 bank credit, SLOOS, G.19 consumer credit, delinquencies, Z.1 debt, FDIC |
+| [`external_sector_fontes_dados.md`](external_sector_fontes_dados.md) | `analytics/brasil/exchange_rate/` | Dollar indices, trade, current account, IIP, TIC, reserves |
 | [`housing_fontes_dados.md`](housing_fontes_dados.md) | *(none)* | Starts/permits/sales, prices, mortgage rates, vacancy, residential construction |
 
 **Why housing is its own branch and not a section of activity**: it has its own release cycle, its

@@ -89,7 +89,7 @@ def _load_caged_tab_data() -> dict:
     )
 
 
-def run(output: str = "reports/Labor Market.html") -> None:
+def run(output: str = "reports/brasil/Labor Market.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 

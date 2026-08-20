@@ -18,13 +18,14 @@ build/
 # Generated outputs (ETL results, reports)
 reports/
 domain/db/brasil/tesouro/_backups/
+domain/db/brasil/bcb/_backups/
 analytics/oraculo/brasil/base/
 analytics/oraculo/us/base/
 analytics/oraculo/base/
-analytics/exchange_rate/models/bayesian_results/
-analytics/exchange_rate/models/state_space_results/
-analytics/exchange_rate/models/beer_results/
-analytics/exchange_rate/models/ridge_results/
+analytics/brasil/exchange_rate/models/bayesian_results/
+analytics/brasil/exchange_rate/models/state_space_results/
+analytics/brasil/exchange_rate/models/beer_results/
+analytics/brasil/exchange_rate/models/ridge_results/
 
 # Large binary files
 *.pdf

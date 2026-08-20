@@ -14,7 +14,7 @@ bank credit only — no bankruptcy/insolvency data.
 
 ```powershell
 uv run python -c "from analytics.brasil.credit.generate_report import run; run()"
-# Output: reports/Credit.html
+# Output: reports/brasil/Credit.html
 ```
 
 All source tables are already in `jobs/update_db.py`'s routine run — no manual refresh needed first.
@@ -213,7 +213,7 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
 
 ## Pending
 
-- Open `reports/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
+- Open `reports/brasil/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
   interactions across all 6 data tabs, plus pan/zoom/quick-range behavior on every chart.
 - `cred_credito_controle_capital`'s `saldo`/`provisoes` metrics are still unused (only `inadimplencia` is
   charted, in the Inadimplência tab's "Por Controle de Capital" group).

@@ -17,7 +17,7 @@ whatever the claim's subject is. +1 = strongly BRL-appreciation-supportive,
 -1 = strongly BRL-depreciation-driving. A claim that "the dollar is
 strengthening globally" is scored NEGATIVE (bad for BRL), not positive.
 
-Wired into the FX report ("reports/FX Report.html") as its own tab, "FX
+Wired into the FX report ("reports/brasil/FX Report.html") as its own tab, "FX
 Attribution (Manager Letters)" (2026-07-29; that tab lived in the separate
 reports/ppp_dashboard.html until the two were fused in 2026-08) — see
 build_dashboard_payload() below, and generate_report._load_models(), which

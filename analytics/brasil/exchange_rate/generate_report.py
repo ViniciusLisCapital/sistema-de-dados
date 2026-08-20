@@ -2,7 +2,7 @@
 Gerador do relatório HTML de fundamentos cambiais.
 
 Lê tabelas de macro_brasil e macro_international, injeta os dados no template
-report.html e salva um único arquivo HTML autocontido em "reports/FX Report.html".
+report.html e salva um único arquivo HTML autocontido em "reports/brasil/FX Report.html".
 
 Desde 2026-08 este é o ÚNICO entry point do relatório cambial: as três abas de
 modelo que antes viviam num dashboard separado (reports/ppp_dashboard.html, via
@@ -532,14 +532,14 @@ def _load_models() -> dict:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def run(output: str = "reports/FX Report.html", include_models: bool = True) -> None:
+def run(output: str = "reports/brasil/FX Report.html", include_models: bool = True) -> None:
     """Gera o relatório HTML de fundamentos cambiais.
 
     Lê tabelas de macro_brasil e macro_international, injeta os dados no
     template report.html e salva um único arquivo HTML autocontido.
 
     Args:
-        output: caminho de saída. Default "reports/FX Report.html".
+        output: caminho de saída. Default "reports/brasil/FX Report.html".
         include_models: se False, pula as três abas de modelo (nada de FRED
             nem de fits) e elas saem com a mensagem "sem dados embutidos".
     """

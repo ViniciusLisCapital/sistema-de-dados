@@ -17,7 +17,7 @@ Testado 2026-07-31 como canal exploratorio no ridge_deviation_model.py antes
 de ser ingerido aqui — delta_sp500 (retorno log mensal) melhorou o MSE
 out-of-sample (walk-forward) em ~4% sobre o modelo shrunk_em_real já
 embarcado, com coeficiente positivo e estavel (nunca cruza zero em nenhuma das
-163 janelas rolantes) — ver analytics/exchange_rate/CLAUDE.md para o registro
+163 janelas rolantes) — ver analytics/brasil/exchange_rate/CLAUDE.md para o registro
 completo. VIX (FRED VIXCLS) e o rendimento real de 10 anos dos EUA (FRED
 DFII10) foram testados junto mas NAO melhoraram o OOS MSE — nao ingeridos.
 

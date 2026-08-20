@@ -17,7 +17,7 @@ ver analytics/brasil/fiscal_policy/CLAUDE.md, Gotchas).
 
 Uso:
     uv run python -c "from analytics.brasil.fiscal_policy.export_audit_excel import run; run()"
-    # Saida: reports/fiscal_policy_audit.xlsx
+    # Saida: reports/brasil/fiscal_policy_audit.xlsx
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ from analytics.brasil.fiscal_policy.generate_report import (
     _stl_on_valid_window,
 )
 
-_OUT = Path("reports/fiscal_policy_audit.xlsx")
+_OUT = Path("reports/brasil/fiscal_policy_audit.xlsx")
 
 _HEADER_FILL = PatternFill(start_color="1F2853", end_color="1F2853", fill_type="solid")
 _HEADER_FONT = Font(bold=True, color="FFFFFF", size=10)

@@ -4,7 +4,7 @@
 building the Dívida Líquida tab, the entity balance sheet, and the new parafiscal impulse
 metric. Also covers one small earlier item (the GDP line removal).
 
-Unrelated changes present in `git status` (`analytics/labor_market/*`,
+Unrelated changes present in `git status` (`analytics/brasil/labor_market/*`,
 `domain/release_calendar/*`, `domain/db/brasil/bcb/mt_caged.py`, and the mt_caged rows in
 `domain/db/CLAUDE.md`) are **NOT from this thread** — do not attribute or revert them here.
 
@@ -13,7 +13,7 @@ Unrelated changes present in `git status` (`analytics/labor_market/*`,
 ## Goal
 
 Consume BCB's `Facdetp.xlsx` (fatores condicionantes da DLSP) into the pipeline, then
-surface it in `analytics/fiscal_policy/`. The goal grew in four user-driven steps:
+surface it in `analytics/brasil/fiscal_policy/`. The goal grew in four user-driven steps:
 
 1. Ingest the workbook.
 2. New dashboard tab, **tables separated like the Excel** (Estoque, Primário, …), with
@@ -64,7 +64,7 @@ surface it in `analytics/fiscal_policy/`. The goal grew in four user-driven step
   `Passivos + Caixa + Créditos = Líquido` holds by construction; classification affects
   interpretation, never arithmetic.
 - Chart divs added in JS use the shared `.dlsp-chart` CSS class, not new IDs (the
-  missing-from-CSS-selector bug documented in `analytics/fiscal_policy/CLAUDE.md` Gotchas).
+  missing-from-CSS-selector bug documented in `analytics/brasil/fiscal_policy/CLAUDE.md` Gotchas).
 - `makeDlspHierTab()` is now the shared factory for **11 instances** (9 fator sections,
   Balanço por Entidade, Impulso via Crédito) via `dataKey` / `treeKey` / `noFator` /
   `yTitle` opts.
@@ -76,26 +76,26 @@ surface it in `analytics/fiscal_policy/`. The goal grew in four user-driven step
 - `connectors/bcb_tabelas_especiais.py` — BCB "Tabelas especiais" xlsx client. Fixed
   filenames at `https://www.bcb.gov.br/content/estatisticas/Documents/Tabelas_especiais/`;
   returns raw `header=None` sheets. Folder inventory intentionally lives in
-  `analytics/fiscal_policy/fontes_dados.md`, not duplicated in the docstring.
+  `analytics/brasil/fiscal_policy/fontes_dados.md`, not duplicated in the docstring.
 - `domain/db/brasil/bcb/fisc_dlsp_fatores.py` — ETL plus the hardcoded 95-item `_ITEMS`
   taxonomy, `ITEM_TREE` / `FATORES` exported for analytics, and 3 fail-loudly guards
   (label mismatch, non-contiguous date grid, broken identity).
-- `analytics/fiscal_policy/dlsp_tab.py` — payload builder: 9 fator sections plus the
+- `analytics/brasil/fiscal_policy/dlsp_tab.py` — payload builder: 9 fator sections plus the
   entity balance sheet (`_CLASSE`, `build_entity_tree()`, `_sum_arrays`).
 
 **Edited**
 
-- `analytics/fiscal_policy/generate_report.py` — `_load_dlsp_tab_data()`,
+- `analytics/brasil/fiscal_policy/generate_report.py` — `_load_dlsp_tab_data()`,
   `_load_impulso_credito_oficial()`, both wired into `run()`; module docstring refreshed
   (it claimed only 2 tabs existed).
-- `analytics/fiscal_policy/report.html` (+667 lines) — new **Dívida Líquida** tab (2nd in
+- `analytics/brasil/fiscal_policy/report.html` (+667 lines) — new **Dívida Líquida** tab (2nd in
   nav), `makeDlspHierTab()` / `renderDlspTab()` / `renderDlspBalanco()`, the Balanço por
   Entidade section, the Impulso via Crédito section, the 3rd trace and rewritten caption in
   Visão Combinada, `.dlsp-chart` CSS, and 3 new Apêndice entries.
 - `jobs/update_db.py` — `fisc_dlsp_fatores` registered (45 scripts now), placed after the
   SGS scripts since it rewrites full history each run.
-- Docs: root `CLAUDE.md`, `analytics/CLAUDE.md`, `analytics/fiscal_policy/CLAUDE.md`
-  (+154 lines), `analytics/fiscal_policy/fontes_dados.md`, `connectors/CLAUDE.md`,
+- Docs: root `CLAUDE.md`, `analytics/CLAUDE.md`, `analytics/brasil/fiscal_policy/CLAUDE.md`
+  (+154 lines), `analytics/brasil/fiscal_policy/fontes_dados.md`, `connectors/CLAUDE.md`,
   `domain/db/CLAUDE.md`.
 
 **State-changing commands**
@@ -147,10 +147,10 @@ Combinada. `reports/fiscal_policy_latest.html` regenerated (**15.77 MB** — see
 
 - `domain/db/brasil/bcb/fisc_dlsp_fatores.py` — the docstring is the source of truth on
   sign convention, the identity, and why upsert-not-truncate.
-- `analytics/fiscal_policy/dlsp_tab.py` — payload shape, `_CLASSE`, the %PIB rule.
-- `analytics/fiscal_policy/CLAUDE.md` — Gotchas and Pending are current as of this session.
-- `analytics/fiscal_policy/report.html` — `makeDlspHierTab()` and `renderDlspTab()`.
-- `analytics/fiscal_policy/fontes_dados.md` — inventory of the BCB Tabelas Especiais folder.
+- `analytics/brasil/fiscal_policy/dlsp_tab.py` — payload shape, `_CLASSE`, the %PIB rule.
+- `analytics/brasil/fiscal_policy/CLAUDE.md` — Gotchas and Pending are current as of this session.
+- `analytics/brasil/fiscal_policy/report.html` — `makeDlspHierTab()` and `renderDlspTab()`.
+- `analytics/brasil/fiscal_policy/fontes_dados.md` — inventory of the BCB Tabelas Especiais folder.
 
 ## Gotchas
 
@@ -188,4 +188,4 @@ misreport file sizes in any future session on this machine.
 → **already in `CLAUDE.md`**, no action needed: the new table, the connector, the sign
 convention, the 4-tab report state, and all Pending items above are written into root
 `CLAUDE.md`, `domain/db/CLAUDE.md`, `connectors/CLAUDE.md` and
-`analytics/fiscal_policy/CLAUDE.md`.
+`analytics/brasil/fiscal_policy/CLAUDE.md`.

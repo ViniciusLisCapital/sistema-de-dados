@@ -17,6 +17,7 @@ from datetime import date
 
 from domain.release_calendar.sync import (
     _divulgada_em,
+    continuas,
     expectativas,
     periodo_para_data,
     sem_divulgacao,
@@ -164,6 +165,52 @@ check("  ignora entrada futura (24/08)",
       exp_o["tab_semanal"]["divulgado_em"], date(2026, 8, 17))
 check("  e NAO usa o trimestre do outro grupo",
       exp_o["tab_semanal"]["esperado"] > date(2026, 4, 1), True)
+
+
+# ---------------------------------------------------------------------------
+# 5. max_age_days — conteudo diario cobrado contra HOJE, nao contra periodo
+# ---------------------------------------------------------------------------
+print("\n5. max_age_days — a regra que faltava para serie diaria")
+
+DOC_AGE = {
+    "no_release": {"continuous": ["tab_diaria"], "not_a_series": ["tab_dim"]},
+    "max_age_days": {"tab_diaria": 5, "tab_mista": 5},
+    "groups": [
+        # tabela diaria pendurada num grupo MENSAL: era exatamente o caso do
+        # cmb_cambio_contratado / cmb_reservas_bc em 2026-08-19, que passavam a
+        # checagem com 2-3 semanas de atraso porque a nota mensal e frouxa
+        {"group": "g_nota_mensal", "institution": "BCB", "tables": ["tab_mista"],
+         "entries": [{"date": "2026-07-28", "reference_period": "2026-06"}]},
+    ],
+}
+
+exp_a, motivos_a = expectativas(DOC_AGE, AS_OF)   # AS_OF = 2026-08-17
+
+# serie continua (sem grupo nenhum) passa a TER expectativa: hoje - 5 dias
+check("continua ganha expectativa", exp_a["tab_diaria"]["esperado"], date(2026, 8, 12))
+check("  marcada como max_age", "max 5d" in (exp_a["tab_diaria"]["override"] or ""), True)
+check("  sem divulgacao para citar", exp_a["tab_diaria"]["divulgado_em"], None)
+
+# na tabela mista, a regra de idade (12/08) vence a da nota mensal (01/06)
+check("max_age vence expectativa mensal frouxa",
+      exp_a["tab_mista"]["esperado"], date(2026, 8, 12))
+check("  e mantem o grupo que a cobre", exp_a["tab_mista"]["grupo"], "g_nota_mensal")
+
+# grace afrouxa junto
+exp_a2, _ = expectativas(DOC_AGE, AS_OF, grace=3)
+check("grace afrouxa a idade", exp_a2["tab_diaria"]["esperado"], date(2026, 8, 9))
+
+# continuas() = uniao de no_release.continuous com as chaves de max_age_days, menos
+# not_a_series -- e o que traz a tabela mista para o passe diario
+check("continuas() une as duas listas", continuas(DOC_AGE), ["tab_diaria", "tab_mista"])
+check("continuas() exclui not_a_series", "tab_dim" not in continuas(DOC_AGE), True)
+
+# sem o bloco, nada muda (compatibilidade com um YAML antigo)
+DOC_SEM = {k: v for k, v in DOC_AGE.items() if k != "max_age_days"}
+exp_s, _ = expectativas(DOC_SEM, AS_OF)
+check("sem max_age_days a continua nao e cobrada", "tab_diaria" in exp_s, False)
+check("  e a mista volta a expectativa mensal",
+      exp_s["tab_mista"]["esperado"], date(2026, 6, 1))
 
 
 # ---------------------------------------------------------------------------

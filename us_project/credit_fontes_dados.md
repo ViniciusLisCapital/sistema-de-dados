@@ -1,9 +1,9 @@
 # US credit — source mapping (Fed Board / FDIC / NY Fed / Freddie Mac)
 
 Surveyed live on 2026-08-17 against each source's API, not just its documentation — same method as
-[`analytics/labor_market/fontes_dados.md`](../analytics/labor_market/fontes_dados.md). Cross-cutting
+[`analytics/brasil/labor_market/fontes_dados.md`](../analytics/brasil/labor_market/fontes_dados.md). Cross-cutting
 access status: [`README.md`](README.md). Brazil counterpart:
-[`analytics/credit/CLAUDE.md`](../analytics/credit/CLAUDE.md).
+[`analytics/brasil/credit/CLAUDE.md`](../analytics/brasil/credit/CLAUDE.md).
 
 The Fed Board is to US credit what the BCB is to Brazilian credit: one publisher, several weekly and
 quarterly releases, and a survey of lending conditions. The mapping onto the Brazil report's tabs is
