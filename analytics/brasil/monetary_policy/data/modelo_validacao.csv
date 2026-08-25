@@ -1,0 +1,23 @@
+param,descricao,nosso,bcb,dif,ic_lo,ic_hi,dentro,metodo
+a1L,Inercia da inflacao de livres,0.2542051098247062,0.24,0.014205109824706186,0.02,0.38,True,filtro
+a1I,Inercia da inflacao IPCA,0.05414522902772897,0.38,-0.32585477097227106,0.13,0.69,False,filtro
+a2,Inflacao importada,0.02705180397655443,0.023,0.004051803976554431,0.006,0.039,True,filtro
+a3,Variacao do cambio,0.0024461820412429937,0.011,-0.008553817958757006,0.0,0.025,True,filtro
+a4,Hiato do produto,0.0705629571634168,0.12,-0.04943704283658319,0.072,0.198,False,filtro
+a5,"Anomalia climatica, El Nino",0.0012939036065013401,0.0012,9.390360650134025e-05,0.0004,0.0019,True,filtro
+a6,"Anomalia climatica, La Nina",0.00165498046670642,0.0007,0.00095498046670642,0.0,0.0021,True,filtro
+b1,Autorregressivo da IS,0.7374657090359129,0.85,-0.11253429096408707,0.7,0.95,True,filtro
+b2,Juro real,0.4299748105003251,0.44,-0.010025189499674902,0.21,0.66,True,filtro
+b3,Resultado primario,0.029847909526394236,0.03,-0.0001520904736057628,0.027,0.032,True,filtro
+b5,Autorregressivo do choque da IS,0.813993804415627,0.84,-0.026006195584373004,0.59,0.99,True,filtro
+t1,"Suavizacao dos juros, 1a defasagem",1.4848125434011008,1.48,0.004812543401100822,1.41,1.54,True,filtro
+t2,"Suavizacao dos juros, 2a defasagem",-0.6588847076124202,-0.58,-0.07888470761242028,-0.63,-0.52,False,filtro
+t3,Desvio da expectativa em relacao a meta,1.6875106486235636,2.03,-0.3424893513764362,1.47,2.64,True,filtro
+delta,Diferencial de juros interna e externa,1.9496251967346638,1.9,0.04962519673466392,0.77,3.22,True,filtro
+gn,Proporcionalidade da Nuci,2.0567720319225264,1.87,0.18677203192252634,1.65,2.12,True,filtro
+ge,Proporcionalidade do emprego,1.0519394544281486,1.1,-0.048060545571851465,0.96,1.25,True,filtro
+gc,Proporcionalidade do Caged,0.8022788703551619,0.69,0.11227887035516193,0.61,0.79,False,filtro
+sh,Desvio padrao do erro de mensuracao,1.1639565887392582,1.09,0.07395658873925814,0.98,1.21,True,filtro
+f1,Inercia das expectativas,0.7094836394089146,0.75,-0.04051636059108543,0.68,0.82,True,dois passos
+f2,Expectativa consistente com o modelo,0.21065373422188768,0.11,0.10065373422188768,0.06,0.13,False,dois passos
+f3,Inflacao passada nas expectativas,0.0475676851669049,0.021,0.026567685166904897,0.0,0.049,True,dois passos

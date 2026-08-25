@@ -15,6 +15,7 @@ Static config tracking when Brazilian macro data actually gets published, so a f
 ```powershell
 uv run python -m domain.release_calendar.update_calendar              # relatório de drift, não grava
 uv run python -m domain.release_calendar.update_calendar --write      # aplica no YAML
+uv run python -m domain.release_calendar.update_calendar --horas      # so a hora, sem tocar em data
 uv run python -m domain.release_calendar.update_calendar --coverage   # tabelas do banco sem grupo
 uv run python -m domain.release_calendar.update_calendar --listas     # as 29 listas do BCB
 uv run python -m domain.release_calendar.update_calendar --horizonte  # até onde cada feed chega
@@ -29,6 +30,12 @@ Behaviors worth knowing before trusting a `--write`:
 - **Matching is date-first, `reference_period` second.** A same-period-different-date pair is reported as `REVISAO DE DATA` rather than an add+remove, which is what keeps a hand-written `note` attached. Matching by period first breaks every group whose period isn't derivable from the feed (Copom uses `281ª reunião`).
 - **Nothing outside the fetched window is touched.** Entries before `--from` (default today) or after `--until` (default Dec 31 of the year in the filename) are preserved untouched and excluded from the diff. Without that guard a 2027 date sitting in the 2026 file would be deleted for "not being in the feed".
 - **Notes follow a revised date**, recovered via `reference_period`, and the run warns when that happens — the note may have been written about the old date.
+- **A hora vem do feed também**, do `DTSTART` de cada `VEVENT`, e uma mudança de hora aparece no
+  relatório como linha `HORA` em vez de entrar calada no `--write`. `--horas` é o modo que preenche
+  **só** `time`, sem adicionar, remover ou mover entrada nenhuma — existe porque um `refresh` normal
+  com a janela aberta em janeiro traria a hora de carona com 40 entradas passadas nunca preenchidas
+  (e 5 reuniões de Copom sem número derivável), e misturar as duas coisas numa gravação tira do
+  dry-run a chance de servir para algo. Idempotente: a segunda passada não muda nada.
 - `reference_period` values must stay clean (`"2026-08"`, not `"2026-08 (inferred)"`); they're the match key, so an appended annotation breaks it. Caveats belong in the group `note`.
 
 ## sync.py — freshness do banco contra o calendário
@@ -97,9 +104,18 @@ calendar group — worst verdict among its tables — which drives the update bu
   **The tolerances are measured, not guessed.** Right after a `--continuous` that finished 9/9 OK,
   `today − MAX(date)` per table isolates the *source's* own publication lag; tolerance = that lag + ~4
   days for weekend/holiday. The first guess understated three of the nine (`cmb_dollar_index_em` needs
-  9 not 6 — FRED publishes it weekly; `cmb_policy_rates` 12 not 8 — BIS republishes in batches;
-  `cmb_cambio_contratado` 9 not 8). Re-measure the same way if false lateness shows up; don't tighten
-  to 1–2 days, that fires every Monday.
+  more than 6 — FRED publishes it weekly; `cmb_policy_rates` 12 not 8 — BIS republishes in batches;
+  `cmb_cambio_contratado` more than 8). Re-measure the same way if false lateness shows up; don't
+  tighten to 1–2 days, that fires every Monday.
+
+  **Corrected 2026-08-24, and the correction is the general lesson**: for a *daily series published
+  weekly*, the tolerance has to cover the **interval between releases**, not the lag measured once.
+  `cmb_dollar_index_em` and `cmb_cambio_contratado` both went 9 → **12**. In that arrangement the age
+  of the newest point swings from ~3 days (release day) to ~10 (eve of the next one), so a 9 fires
+  ATRASADO every Monday morning — which is exactly what happened, and the sources were then checked
+  live: SGS 13961 ended 14/08 and FRED's `DTWEXEMEGS` too (`last_updated` 2026-08-17), i.e. there was
+  no newer data to fetch. Same false-positive class the block was created to kill, one level up:
+  measuring the lag isn't enough if the release cadence is coarser than the data's.
 
   `--continuous` runs the **union** of this block and `no_release.continuous`, which is what pulls
   `cmb_reservas_bc`/`cmb_cambio_contratado` into the daily pass (keeping them current) without removing
@@ -139,6 +155,98 @@ accretes history going forward on its own. The 15 non-BCB groups still hold futu
 only, which is why ~20 tables remain `SEM EXPECTATIVA` — closing that is the same IBGE-API
 work already listed in Pending.
 
+### Horário da divulgação — `release_time` no grupo, `time` na entrada (2026-08-20/24)
+
+```yaml
+  - group: ibge_ipca              # fonte sem feed: hora no grupo
+    release_time: "09:00"
+  - group: bcb_ptc                # fonte com feed: hora por entrada, escrita pelo script
+    entries:
+      - {date: "2026-08-20", time: "14:30", reference_period: "2026-Q2", confirmed: true}
+```
+
+Precedência: `time:` na entrada > `release_time:` do grupo > sem horário. Campo opcional — grupo sem
+hora se comporta como antes (divulgação datada hoje conta como ocorrida desde a meia-noite).
+
+**O que a hora muda de fato** — sem isso o campo seria decorativo:
+- `sync.py` só passa a exigir o dado **depois** da hora. Antes, uma divulgação das 14:30 era cobrada
+  desde 00:00 do mesmo dia, então a tabela aparecia `ATRASADO` por 14 horas todo dia de PTC. Medido no
+  dia: às 14:29 a expectativa de `cred_ptc` ainda é 2026-Q1; às 14:30 vira 2026-Q2.
+- O **botão "Atualizar"** do relatório também: a linha fica escurecida até a hora e só então acende.
+  Isso vale apenas no modo servido, o único em que a página sabe que horas são (`/api/ping` e
+  `/api/status` devolvem `agora`); no modo arquivo não há relógio confiável e o comportamento é o
+  antigo — inofensivo, porque ali o botão não roda nada de todo jeito.
+- A hora aparece na coluna de data do relatório, ao lado da data.
+
+#### De onde vem cada hora
+
+**BCB (10 grupos, 86 entradas): do próprio feed ICS**, e por isso fica **por entrada**. Os 10 feeds
+emitem `DTSTART;TZID=America/Sao_Paulo` com hora de verdade — medido ao vivo em 2026-08-24: PTC e
+IC-Br 14:30, notas de estatísticas e Focus 08:30, IBC-Br 09:00, ata do Copom e RPM 08:00. Ficar por
+entrada não é preciosismo: **a hora muda de era**. As notas de estatísticas saíram de 10:30 em 2019
+para 09:30 e depois 08:30 em 2023 — um `release_time` de grupo teria congelado a de hoje e mentido
+sobre o histórico. Preenchido com `update_calendar.py --horas --write`.
+
+**A reunião do Copom é a exceção sem hora**: o feed emite `00:00` nas 16 reuniões de 2026, que é
+placeholder de evento de dia inteiro e não meia-noite (a decisão sai perto das 18:30). O
+`_horas_por_data()` descarta `00:00` de propósito — gravar reproduziria exatamente o bug que a hora
+veio corrigir. Segunda regra da mesma função: duas horas no mesmo dia ficam com a **mais tarde**
+(hoje nenhuma das 10 listas tem isso, medido; liberar pela mais cedo destravaria o botão antes de o
+dado estar completo).
+
+**IBGE (8 grupos): `09:00` no grupo, e é valor DERIVADO** — a diferença importa. A API de calendário
+do IBGE (`servicodados.ibge.gov.br/api/v3/calendario`) tem hora, mas em UTC e **sem declarar fuso**:
+dos 197 eventos de 2026, 158 dizem 12:00 e 38 dizem 13:00, mais um `12:22:26` que é claramente
+timestamp de cadastro. A âncora é o IPCA, que a API põe às 12:00 e o IBGE divulga às 9h — daí UTC-3.
+Ou seja, ao contrário do BCB, o fuso é inferência nossa; corrigir a mão qualquer grupo que se saiba
+diferente. Não automatizado por isso.
+
+**MDIC**: `15:00` no grupo, e é **hora publicada, não derivada** — o cronograma da balança
+comercial tem coluna `Horário` própria, com `15:00 - 18:30` para a coletiva mensal (e `15:00 - 15:30`
+para as parciais, que não acompanhamos). Guardado o início da janela, que é quando o dado passa a
+existir. A página é tabular e raspável (só precisa de `verify=False` — o certificado de
+`balanca.economia.gov.br` não valida com o bundle padrão do `requests`), então é candidata natural a
+um `ics:`-equivalente se um dia valer automatizar as datas também.
+
+**CFTC e FOMC**: hora publicada, mas **no fuso da fonte** — daí o `release_time_tz`. A CFTC diz em
+prosa no release schedule: *"The Commitments of Traders reports are released at 3:30 p.m. Eastern
+time"*. O FOMC não põe a hora no calendário de reuniões, e sim no cabeçalho de cada comunicado
+(*"For release at 2:00 p.m. EDT"*).
+
+```yaml
+  - group: cftc_cot
+    release_time: "15:30"
+    release_time_tz: America/New_York   # convertido por entrada, com a data dela
+```
+
+O `release_time_tz` existe porque **os EUA têm horário de verão e o Brasil não tem desde 2019**: as
+mesmas 15:30 de Nova York são 16:30 em Brasília de março ao começo de novembro e 17:30 no resto do
+ano. Isso aparece no meio do nosso próprio calendário — o COT de 30/10 sai 16:30 e o de 06/11 sai
+17:30, e as 3 reuniões do FOMC ficam 15:00, 15:00 e 16:00. Um valor único convertido à mão erraria
+por uma hora em metade das entradas, **em silêncio**; guardar o fuso e converter com a data de cada
+entrada não tem esse modo de falha. `sync.py:hora_da_entrada()` é o único lugar que resolve isso, e o
+`generate_report.py` chama a mesma função em vez de reimplementar — o relógio do relatório e o do
+gate não podem divergir. Fuso com typo cai para a hora crua e escreve aviso no stderr, em vez de
+derrubar a checagem. Depende de `tzdata` (Windows não tem base de fusos do sistema), agora declarado
+no `pyproject.toml` em vez de vir de carona como dependência transitiva.
+
+**Sem hora, porque a fonte não publica** (auditado ao vivo em 2026-08-24, não presumido): o
+calendário do Tesouro é um PDF com colunas `Dia | Period. | Assunto | Tema` e **nenhum** padrão de
+hora no texto inteiro; a página do Novo CAGED no PDET lista só `data - competência`. As reuniões do
+Copom continuam sem hora pelo `00:00` do feed (acima). Sobra um caso isolado: o Focus de **19/10/2026**
+vem com `00:00` no feed enquanto todos os outros vêm 08:30 — lapso do BCB, não regra, e a nossa
+política o degrada para "conta desde a meia-noite", que é o lado seguro (não esconde atraso real).
+
+**Fuso**: tudo é hora de Brasília, comparada contra o relógio local da máquina — que é brasileira.
+Não há conversão de timezone em nenhum ponto; se este projeto algum dia rodar num servidor UTC, este
+é o lugar a corrigir. Formato aceito `"H:MM"` ou `"HH:MM"`; qualquer outra coisa (inclusive `"25:00"`)
+é lida como "sem horário" em vez de derrubar a checagem, mesma política do `reference_period`
+malformado.
+
+Coberto por `tests/test_sync_calendar.py` (seções 6 e 7: limite exato 14:29/14:30, precedência
+entrada×grupo, descarte do `00:00`, ordem das chaves e idempotência do `--horas`) e
+`tests/test_release_calendar_js.js` (o botão em 09:00/14:29/14:30/16:00).
+
 ## Rolling over to the next year
 
 📄 **Full runbook: [`ROLLOVER.md`](ROLLOVER.md)** — read it before touching the year boundary. Short version:
@@ -170,9 +278,12 @@ groups:
     name: "<official Portuguese release name>"
     tables: [<macro_brasil/macro_international table names this release feeds>]
     cadence: monthly|quarterly|weekly
+    release_time: "HH:MM"            # OPCIONAL, hora (fonte SEM feed: IBGE, MDIC, CFTC, FOMC)
+    release_time_tz: America/New_York  # OPCIONAL, fuso DA FONTE; sem isso a hora e de Brasilia
     source_url: <calendar page or a representative PDF>
     entries:
       - {date: "YYYY-MM-DD", reference_period: "YYYY-MM"|"YYYY-QN", confirmed: true|false}
+      - {date: "...", time: "HH:MM", ...}   # OPCIONAL, vence o release_time; vem do feed ICS
 ```
 
 - `confirmed: true` — date read directly off an official published calendar or PDF.
@@ -233,14 +344,17 @@ PDF URL patterns, for re-measuring later (note the inconsistent `de_`/`do_`):
 
 Every group's origin is in its own `source_url` in the YAML; the 15 non-BCB groups share just 6 distinct pages. All six answered HTTP 200 as plain static content — **none is an SPA**, so all are scrapeable, unlike BCB's site.
 
-| Source | Groups | Format | Automatable? |
-|---|---|---|---|
-| `servicodados.ibge.gov.br/api/v3/calendario` | the 8 `ibge_*` | **JSON API** | **Yes — best case of all, see below** |
-| `federalreserve.gov/monetarypolicy/fomccalendars.htm` | `fomc` | static HTML, 164KB | Likely (parse the table) |
-| `cftc.gov/.../ReleaseSchedule/index.htm` | `cftc_cot` | static HTML, 48KB | Likely |
-| `balanca.economia.gov.br/balanca/cronograma/` | `mdic_comex_stat` | static HTML, 1.4MB | Likely |
-| `cdn.tesouro.gov.br/.../2026_2sem.pdf` | `tesouro_rtn`, `tesouro_efgg` | **PDF** (semester calendar) | Harder — `pdfplumber` is already a dep; URL changes each semester |
-| `gov.br/trabalho-e-emprego/.../calendario-de-divulgacao-do-novo-caged` | `mte_caged_novo`, `bcb_caged_sgs_mirror` | static HTML (gov.br) | Likely |
+| Source | Groups | Format | Automatable? | Publishes a time? (audited 2026-08-24) |
+|---|---|---|---|---|
+| `servicodados.ibge.gov.br/api/v3/calendario` | the 8 `ibge_*` | **JSON API** | **Yes — best case of all, see below** | Yes, but **UTC without declaring it** → `09:00` derived |
+| `federalreserve.gov/monetarypolicy/fomccalendars.htm` | `fomc` | static HTML, 164KB | Likely (parse the table) | Not on the calendar; **`2:00 p.m. ET` on each statement** |
+| `cftc.gov/.../ReleaseSchedule/index.htm` | `cftc_cot` | static HTML, 48KB | Likely | Yes, in prose: **`3:30 p.m. Eastern`** |
+| `balanca.economia.gov.br/balanca/cronograma/` | `mdic_comex_stat` | static HTML, 1.4MB | Likely (needs `verify=False`) | **Yes, own `Horário` column** — `15:00 - 18:30` |
+| `cdn.tesouro.gov.br/.../2026_2sem.pdf` | `tesouro_rtn`, `tesouro_efgg` | **PDF** (semester calendar) | Harder — `pdfplumber` is already a dep; URL changes each semester | **No** — `Dia \| Period. \| Assunto \| Tema`, no time anywhere in the text |
+| `gov.br/trabalho-e-emprego/.../calendario-de-divulgacao-do-novo-caged` | `mte_caged_novo`, `bcb_caged_sgs_mirror` | static HTML (gov.br) | Likely | **No** — `data - competência` only |
+
+Detail on each, including why the two US sources are declared in their own timezone instead of
+converted by hand, is in the release-time section above.
 
 **IBGE's calendar API is better than BCB's ICS feeds** and is the obvious next automation target (8 of the 15 manual groups):
 

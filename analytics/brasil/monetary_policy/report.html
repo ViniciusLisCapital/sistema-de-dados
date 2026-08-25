@@ -1,0 +1,3169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama de Política Monetária — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0 22px;
+      height: 44px;
+      font-family: var(--cond);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+    .subsection-title {
+      font-family: var(--cond); font-size: 13px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text2); margin: 6px 0 0;
+    }
+
+    /* ── Nota metodológica sob um gráfico ── */
+    .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+
+    /* ── Stub das abas ainda não construídas (apagar junto com o conteúdo real) ── */
+    .stub-note {
+      background: var(--card-bg); border: 1px dashed rgba(31,40,83,0.28); border-radius: 12px;
+      padding: 22px 26px; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 1100px;
+    }
+    .stub-note h3 {
+      font-family: var(--cond); font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text2); margin-bottom: 8px;
+    }
+    .stub-note code {
+      font-family: var(--mono); font-size: 11px; background: rgba(31,40,83,0.05);
+      border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--text2);
+    }
+    .stub-note ul { margin: 6px 0 0 18px; }
+    .stub-note li { margin-bottom: 4px; }
+    .stub-note strong { color: var(--text2); }
+
+    /* ── Apêndice: notas metodológicas expansíveis (<details>/<summary>) ── */
+    .appendix-item {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 2px 18px;
+    }
+    .appendix-item summary {
+      font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); padding: 14px 0; cursor: pointer; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .appendix-item summary::-webkit-details-marker { display: none; }
+    .appendix-item summary::after {
+      content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto;
+    }
+    .appendix-item[open] summary::after { content: '−'; }
+    .appendix-item .appendix-body {
+      font-size: 13px; color: var(--muted); line-height: 1.6; padding: 0 0 16px; max-width: 1100px;
+    }
+    .appendix-item .appendix-body strong { color: var(--text2); }
+    .appendix-item + .appendix-item { margin-top: 10px; }
+
+    /* ── Apêndice: equações do modelo, com o coeficiente estimado no lugar do símbolo ── */
+    .eq {
+      font-family: var(--mono); font-size: 12px; line-height: 1.8; color: var(--text2);
+      background: rgba(31,40,83,0.035); border: 1px solid var(--border);
+      border-left: 3px solid var(--lis-dourado); border-radius: 6px;
+      padding: 9px 14px; margin: 8px 0; overflow-x: auto; white-space: nowrap;
+    }
+    .eq .n { color: var(--muted); display: inline-block; min-width: 44px; }
+    .eq b { color: var(--lis-dourado); font-weight: 700; }
+    .eq .lat { color: var(--lis-azul-cl); font-weight: 600; }
+    .eq-note { font-size: 12px; color: var(--muted); margin: -2px 0 10px; }
+    .par-table { border-collapse: collapse; font-size: 12px; margin: 8px 0 4px; }
+    .par-table th, .par-table td { padding: 5px 16px 5px 0; text-align: left; border-bottom: 1px solid var(--border); }
+    .par-table th { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .par-table td.v { font-family: var(--mono); color: var(--text); text-align: right; white-space: nowrap; }
+    .par-table td.s { font-family: var(--mono); color: var(--text2); white-space: nowrap; }
+
+    /* ── Controles: pills, multiselect, dropdowns De/Até ── */
+    .ctrl-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px;
+    }
+    .ctrl-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .ctrl-sep { width: 1px; height: 20px; background: var(--border); }
+    .pill-group { display: flex; gap: 6px; }
+    .pill {
+      font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); font-weight: 600; }
+
+    .multiselect { position: relative; min-width: 260px; max-width: 480px; }
+    .multiselect-btn {
+      width: 100%; text-align: left; padding: 5px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--text);
+      background: var(--card-bg); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .multiselect-btn:focus { outline: none; border-color: var(--lis-azul-cl); }
+    .multiselect-panel {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+      max-height: 320px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; box-shadow: 0 4px 14px rgba(31,40,83,0.12); padding: 4px 0;
+    }
+    .multiselect-panel.open { display: block; }
+    .multiselect-group-header {
+      padding: 7px 12px 3px; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--lis-dourado);
+    }
+    .multiselect-panel label {
+      display: flex; align-items: center; gap: 7px; padding: 5px 12px; font-size: 13px;
+      color: var(--text); cursor: pointer; white-space: nowrap;
+    }
+    .multiselect-panel label:hover { background: var(--bg); }
+    .multiselect-panel input[type="checkbox"] { cursor: pointer; }
+    .date-select {
+      font-family: var(--mono); font-size: 12px; color: var(--text); padding: 4px 8px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
+      min-width: 110px;
+    }
+    .date-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
+    .period-ctrl-bar { margin-bottom: 12px; }
+
+    /* ── Toggle "Dados no gráfico" (padrão da skill lis-dashboard) ── */
+    .dl-toggle {
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 20px; padding: 4px 13px;
+      background: rgba(2,115,155,0.04); transition: all .15s;
+    }
+    .dl-toggle:hover { border-color: rgba(2,115,155,0.7); background: rgba(2,115,155,0.1); }
+    .dl-toggle.on { background: rgba(2,115,155,0.18); border-color: rgba(2,115,155,0.7); color: #025E82; font-weight: 600; }
+    .dl-toggle .toggle-icon {
+      width: 13px; height: 13px; border-radius: 3px; border: 1px solid rgba(2,115,155,0.5);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 9px; line-height: 1;
+    }
+    .dl-toggle.on .toggle-icon { background: var(--lis-azul-cl); color: #fff; }
+    .dl-toggle.on .toggle-icon::after { content: '✓'; }
+
+    /* ── Tabela hierárquica (para abas com árvore de linhas expansíveis) ── */
+    .hier-table-wrap { overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+    .hier-table { border-collapse: collapse; width: 100%; font-size: 12px; white-space: nowrap; }
+    .hier-table th, .hier-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); text-align: right; }
+    .hier-table th.col-label, .hier-table td.col-label { text-align: left; white-space: normal; }
+    .hier-table thead th { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .hier-table td.col-value { font-family: var(--mono); color: var(--text); }
+    .hier-table tr.is-total td { font-weight: 700; color: var(--text); background: rgba(31,40,83,0.03); }
+    .hier-table tr.is-total td.col-label { color: var(--lis-azul); }
+
+    /* ── KPI grids ── */
+    .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-grid-5  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-value.pos { color: var(--lis-laranja); }
+    .kpi-value.neg { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Chart cards ──
+       O Plotly precisa de altura explícita no div. Toda aba nova declara a altura do
+       seu próprio div aqui (ou usa .chart-div), e o `layout.height` passado ao
+       mkTimeseriesLayout()/mkBarLayout() deve ficar próximo desse valor. */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    .chart-div  { width: 100%; height: 540px; }
+
+    /* ── Aba Modelo BC — Agregado ──
+       Os 4 gráficos ficam EMPILHADOS em largura cheia (não em grade 2x2): a série é longa e
+       o horizonte projetado é curto, então largura vale mais que ver dois de uma vez. Cada
+       um abre e fecha, e o Plotly precisa de altura explícita no div. */
+    #chart-mt-infl, #chart-mt-hiato, #chart-mt-juros, #chart-mt-exp { width: 100%; height: 420px; }
+    .mt-charts { display: flex; flex-direction: column; gap: 12px; }
+    /* O slot existe por causa do _ensurePeriodSelector: ele injeta a barra de período como
+       IRMÃO do .chart-card, então sem um wrapper por gráfico a barra ficaria fora do trecho
+       que abre e fecha. */
+    .mt-chart-slot { display: flex; flex-direction: column; min-width: 0; }
+    .mt-chart-body { display: none; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .mt-chart-slot.open .mt-chart-body { display: flex; }
+    .mt-chart-slot .period-ctrl-bar { margin-bottom: 0; padding: 8px 12px; }
+    .mt-chart-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 16px;
+    }
+    /* Só o título é clicável: os controles moram na mesma barra e o clique deles não pode
+       fechar o gráfico. */
+    .mt-chart-hit { display: flex; align-items: center; gap: 9px; cursor: pointer; user-select: none; }
+    .mt-chart-ctrl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .mt-chart-title {
+      font-family: var(--cond); font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text2);
+    }
+    .mt-chev {
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+      transition: transform .15s; display: inline-block;
+    }
+    .mt-chart-slot.open .mt-chev, .mt-card.open .mt-chev { transform: rotate(90deg); color: var(--lis-dourado); }
+
+    /* Linha de diagnóstico: quais canais estão endógenos e se a eq. (5) está bem posta. */
+    #mt-diag { font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.7; }
+    #mt-diag b { color: var(--text2); font-weight: 600; }
+    .diag-ok  { color: var(--lis-verde); font-weight: 600; }
+    .diag-bad { color: var(--lis-laranja); font-weight: 600; }
+
+    /* ── Cards de input (desenho do .fc-shock-card do FX Report, mais o abre/fecha) ── */
+    .mt-grupo {
+      font-family: var(--cond); font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--lis-dourado); margin: 18px 0 8px; padding-left: 2px;
+    }
+    .mt-grupo:first-child { margin-top: 4px; }
+    .mt-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; }
+    .mt-card + .mt-card { margin-top: 8px; }
+    .mt-card.is-endog { border-color: rgba(65,135,145,0.45); }
+    .mt-card-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 11px 16px; cursor: pointer; user-select: none;
+    }
+    .mt-card-bar:hover { background: rgba(31,40,83,0.02); border-radius: 10px; }
+    .mt-card-label { font-family: var(--cond); font-size: 15px; font-weight: 600; color: var(--text); }
+    .mt-card-status {
+      font-family: var(--mono); font-size: 11px; color: var(--lis-azul-cl);
+      background: rgba(2,115,155,0.07); border-radius: 20px; padding: 2px 10px;
+    }
+    .mt-card-unit { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-left: auto; }
+    .mt-card-body { display: none; padding: 0 16px 15px; }
+    .mt-card.open .mt-card-body { display: block; }
+    .mt-card-nota {
+      font-size: 12px; color: var(--muted); line-height: 1.6; max-width: 96ch;
+      border-left: 2px solid var(--border); padding-left: 12px; margin-bottom: 12px;
+    }
+    .mt-card-nota b { color: var(--text2); }
+    .mt-card-actions {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding-bottom: 2px; border-bottom: 1px dashed var(--border);
+    }
+    .inp-badge {
+      display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; border-radius: 20px; padding: 2px 8px;
+    }
+    .inp-endog    { background: rgba(65,135,145,0.15);  color: #2E6068; }
+    .inp-premissa { background: rgba(187,155,29,0.16);  color: #8A7215; }
+    .inp-estimado { background: rgba(234,82,58,0.13);   color: #B03A26; }
+
+    /* Link de ação: mesmo peso visual do .fc-shock-avg-btn do FX (sublinhado, não botão). */
+    .mt-link {
+      font-family: var(--mono); font-size: 9.5px; color: var(--lis-azul-cl); cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px; width: fit-content; white-space: nowrap;
+      padding-bottom: 8px;
+    }
+    .mt-link:hover { color: #025E82; }
+    .mt-link.forte { text-decoration: none; border: 1px solid rgba(2,115,155,0.5); border-radius: 20px; padding: 4px 14px; }
+    .mt-link.forte:hover { background: rgba(2,115,155,0.12); }
+
+    /* Toggle Endógeno|Manual: dois modos mutuamente exclusivos, deliberadamente distinto
+       do .dl-toggle (que é liga/desliga). Mesma decisão do .fc-mode-toggle do FX. */
+    .mt-mode-toggle { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; margin-bottom: 8px; }
+    .mt-mode-btn {
+      font-family: var(--mono); font-size: 9.5px; padding: 4px 11px; cursor: pointer;
+      color: var(--muted); background: rgba(31,40,83,0.03); transition: all .15s; white-space: nowrap;
+    }
+    .mt-mode-btn:hover { color: var(--text); }
+    .mt-mode-btn.active { background: var(--lis-verde); color: #fff; }
+
+    /* Grade de caixas: uma por trimestre, sempre visível. */
+    .mt-box-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; margin-top: 12px; }
+    .mt-box-grid.estados { grid-template-columns: repeat(auto-fill, minmax(120px, 160px)); }
+    .mt-box { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .mt-box-label { font-family: var(--mono); font-size: 8.5px; color: var(--muted); text-align: center; }
+    .mt-box-label.endog { color: var(--lis-verde); }
+    .mt-box-input {
+      font-family: var(--mono); font-size: 11px; color: var(--text); width: 100%; min-width: 0;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 5px 3px; text-align: center;
+    }
+    .mt-box-input:focus-visible { outline: 2px solid var(--lis-azul-cl); outline-offset: 1px; }
+    /* Caixa travada porque o MODELO resolve aquele caminho — mesmo código visual que o FX
+       usa para mês já observado: o valor é real, só não é seu para editar. */
+    .mt-box-input.endog {
+      background: rgba(65,135,145,0.08); border-color: rgba(65,135,145,0.4);
+      color: var(--lis-verde); font-weight: 600; cursor: not-allowed;
+    }
+
+    /* Painéis revelados por link (choque e gráfico), mesmo padrão do FX. */
+    .mt-panel { display: none; margin-top: 11px; }
+    .mt-panel.open { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 10px 12px; border-radius: 8px; background: rgba(2,115,155,0.05);
+      border: 1px dashed rgba(2,115,155,0.28); }
+    .mt-panel.graf.open { display: block; padding: 8px; }
+    .mt-panel span { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+    .mt-mini {
+      font-family: var(--mono); font-size: 11px; color: var(--text); width: 62px; text-align: right;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 7px;
+    }
+    .mt-mini-sel { min-width: 0; }
+    .mt-graf-div { width: 100%; height: 260px; }
+
+    /* ── Cenários salvos (estrutura do .scenario-card do FX Report) ── */
+    .sc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+    .sc-card + .sc-card { margin-top: 10px; }
+    .sc-card-hdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .sc-nome { font-family: var(--cond); font-size: 15px; font-weight: 600; color: var(--text); }
+    .sc-meta { font-family: var(--mono); font-size: 9.5px; color: var(--muted); margin-top: 2px; }
+    .sc-racional { font-size: 12.5px; color: var(--text2); margin-top: 7px; white-space: pre-wrap; line-height: 1.55; }
+    .sc-acoes { display: flex; gap: 12px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+    .sc-btn {
+      font-family: var(--mono); font-size: 9.5px; color: var(--lis-azul-cl); cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px;
+    }
+    .sc-btn:hover { color: #025E82; }
+    .sc-btn.danger { color: var(--lis-laranja); }
+    .sc-plot {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      font-family: var(--mono); font-size: 9.5px; color: var(--text2);
+    }
+    .sc-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .sc-vazio { font-family: var(--mono); font-size: 11.5px; color: var(--muted); font-style: italic; padding: 12px 2px; }
+    #mt-sc-form { display: none; flex-direction: column; gap: 8px; max-width: 640px; margin-bottom: 10px; }
+    #mt-sc-form input, #mt-sc-form textarea {
+      font-family: inherit; font-size: 13px; color: var(--text); padding: 7px 10px;
+      border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); width: 100%;
+      box-sizing: border-box; resize: vertical;
+    }
+    #mt-sc-form input:focus, #mt-sc-form textarea:focus { outline: none; border-color: var(--lis-azul-cl); }
+    #mt-sc-hint { font-size: 12px; color: var(--lis-azul-cl); font-style: italic; }
+    .cmp-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; }
+
+    @media (max-width: 900px) {
+      .mt-card-unit { margin-left: 0; width: 100%; }
+      .sc-card-hdr { flex-direction: column; }
+    }
+
+    /* ── Footer ── */
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      header, .tab-nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid, .kpi-grid-3, .kpi-grid-4, .kpi-grid-5 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>Panorama de Política Monetária</h1>
+  </div>
+  <div class="meta">
+    Atualizado em <strong id="generated-at">—</strong><br>
+    BCB — comunicados do Copom &nbsp;·&nbsp; anexo do RPM &nbsp;·&nbsp; Focus
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="motor">Modelo BC — Agregado</button>
+  <button class="tab-btn" data-tab="cenarios">Cenários</button>
+  <button class="tab-btn" data-tab="decomp">Decomposição</button>
+  <button class="tab-btn" data-tab="neutra">Taxa Neutra</button>
+  <button class="tab-btn" data-tab="hiato">Hiato do Produto</button>
+  <button class="tab-btn" data-tab="projecoes">Projeções do Copom</button>
+  <button class="tab-btn" data-tab="appendix">Apêndice</button>
+</nav>
+
+<main>
+
+  <!-- ═══════ ABA — MODELO BC, AGREGADO ═══════
+       A única aba em que o modelo roda NO NAVEGADOR. As outras leem artefatos que o Python
+       gravou; aqui o simulador de modelo_agregado.simular() está portado para JS (ver a
+       seção "MOTOR DO MODELO AGREGADO" no script), e cada mudança de input re-resolve as
+       equações — inclusive o ponto fixo da eq. (5).
+
+       Duas seções, na ordem em que o modelo se lê: o que ele ESTIMA (um gráfico por bloco,
+       empilhados em largura cheia) e o que ele RECEBE. A segunda segue a estrutura da aba
+       Ridge do FX Report: um card por input, caixas sempre visíveis (uma por trimestre),
+       atalhos que PREENCHEM as caixas, gráfico por input sob demanda, e cenários salvos com
+       plotar/carregar/editar. Gráficos e cards abrem e fecham — são quatro e treze.
+  ════════════════════════ -->
+  <div class="tab-panel active" id="tab-motor">
+
+    <section>
+      <h2>Variáveis estimadas</h2>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Horizonte</span>
+        <select id="mt-horizonte" class="date-select"></select>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Parte de</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--text)" id="mt-t0">—</span>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="mt-ref"><span class="toggle-icon"></span> Comparar com a referência endógena</div>
+        <div class="dl-toggle" id="mt-reset"><span class="toggle-icon">↺</span> Restaurar padrão</div>
+      </div>
+      <div id="mt-diag"></div>
+      <p class="chart-caption">
+        O horizonte não é só uma janela de exibição: <b>depois dele o último trimestre digitado se
+        repete</b>, porque a eq. (5) precisa de condicionante definido no buffer que ela olha à
+        frente. Escolher 8 trimestres com a curva da Focus é dizer "a Selic para no 8º valor dela",
+        não "mostre só 8" — o cenário muda de verdade.
+      </p>
+
+      <div class="kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">Selic no fim</div><div class="kpi-value" id="kpi-mt-selic-value">—</div><div class="kpi-sub" id="kpi-mt-selic-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Hiato no fim</div><div class="kpi-value" id="kpi-mt-hiato-value">—</div><div class="kpi-sub" id="kpi-mt-hiato-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">IPCA acum. 4T</div><div class="kpi-value" id="kpi-mt-ipca-value">—</div><div class="kpi-sub" id="kpi-mt-ipca-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Expectativa 12m</div><div class="kpi-value" id="kpi-mt-pie-value">—</div><div class="kpi-sub" id="kpi-mt-pie-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Hiato de juros (r̂)</div><div class="kpi-value" id="kpi-mt-rhat-value">—</div><div class="kpi-sub" id="kpi-mt-rhat-sub">—</div></div>
+      </div>
+
+      <div class="mt-charts">
+        <div class="mt-chart-slot" id="slot-chart-mt-infl">
+          <div class="mt-chart-bar">
+            <div class="mt-chart-hit" id="hit-chart-mt-infl" data-graf="chart-mt-infl">
+              <span class="mt-chev">▸</span><span class="mt-chart-title">Inflação</span>
+            </div>
+            <div class="mt-chart-ctrl">
+              <div class="pill-group" id="mt-infl-pills"></div>
+              <div class="dl-toggle" id="dl-chart-mt-infl"><span class="toggle-icon"></span> Dados no gráfico</div>
+            </div>
+          </div>
+          <div class="mt-chart-body">
+            <div class="chart-card"><div id="chart-mt-infl"></div></div>
+          </div>
+        </div>
+
+        <div class="mt-chart-slot" id="slot-chart-mt-hiato">
+          <div class="mt-chart-bar">
+            <div class="mt-chart-hit" id="hit-chart-mt-hiato" data-graf="chart-mt-hiato">
+              <span class="mt-chev">▸</span><span class="mt-chart-title">Hiato do produto</span>
+            </div>
+            <div class="mt-chart-ctrl">
+              <div class="dl-toggle" id="dl-chart-mt-hiato"><span class="toggle-icon"></span> Dados no gráfico</div>
+            </div>
+          </div>
+          <div class="mt-chart-body">
+            <div class="chart-card"><div id="chart-mt-hiato"></div></div>
+          </div>
+        </div>
+
+        <div class="mt-chart-slot" id="slot-chart-mt-juros">
+          <div class="mt-chart-bar">
+            <div class="mt-chart-hit" id="hit-chart-mt-juros" data-graf="chart-mt-juros">
+              <span class="mt-chev">▸</span><span class="mt-chart-title">Juros</span>
+            </div>
+            <div class="mt-chart-ctrl">
+              <div class="dl-toggle" id="dl-chart-mt-juros"><span class="toggle-icon"></span> Dados no gráfico</div>
+            </div>
+          </div>
+          <div class="mt-chart-body">
+            <div class="chart-card"><div id="chart-mt-juros"></div></div>
+          </div>
+        </div>
+
+        <div class="mt-chart-slot" id="slot-chart-mt-exp">
+          <div class="mt-chart-bar">
+            <div class="mt-chart-hit" id="hit-chart-mt-exp" data-graf="chart-mt-exp">
+              <span class="mt-chev">▸</span><span class="mt-chart-title">Expectativas</span>
+            </div>
+            <div class="mt-chart-ctrl">
+              <div class="dl-toggle" id="dl-chart-mt-exp"><span class="toggle-icon"></span> Dados no gráfico</div>
+            </div>
+          </div>
+          <div class="mt-chart-body">
+            <div class="chart-card"><div id="chart-mt-exp"></div></div>
+          </div>
+        </div>
+      </div>
+      <p class="chart-caption">
+        Cada linha cheia é histórico e cenário na mesma série; a <b>faixa cinza</b> marca o trecho
+        projetado, e o tracejado vertical é o <b>horizonte relevante</b> — dentro dele a faixa é mais
+        escura, depois clareia. <span id="mt-hr-nota"></span> Tracejadas nas séries: cenários salvos
+        marcados para plotar, mais a referência totalmente endógena, que só aparece quando o cenário
+        ativo difere dela. Juro real é diferença simples
+        i<sup>e</sup> − π<sup>e</sup>, como na eq. (2.1), não Fisher exato. O choque persistente
+        s<sup>h</sup> não entra no gráfico do hiato de propósito — ele é <em>uma</em> parcela da
+        eq. (2), e a decomposição completa é a aba Decomposição; aqui ele tem card e gráfico
+        próprios, entre os inputs.
+      </p>
+    </section>
+
+    <section>
+      <h2>Inputs do cenário</h2>
+      <div class="ctrl-bar">
+        <div class="dl-toggle" id="mt-abrir-tudo"><span class="toggle-icon">⇕</span> Abrir/fechar todos</div>
+      </div>
+      <p class="chart-caption">
+        Um card por condicionante, na ordem do bloco de política monetária — juros, hiato,
+        expectativas, câmbio, inflação importada, e por último o que entra por fora. Cada card abre
+        num clique e traz uma caixa por trimestre: as caixas <b>são</b> o cenário, e os atalhos
+        apenas as preenchem. Três inputs têm caminho endógeno de verdade (Selic pela eq. 3,
+        expectativa pela eq. 5, câmbio pela eq. 4): neles o toggle troca quem escreve as caixas, e
+        em <b>Endógeno</b> elas mostram travadas o caminho que o modelo resolveu. Os marcados como
+        <b>estimativa do modelo</b> não são dado observado — são estado filtrado ou tendência, e
+        substituí-los é trocar uma estimativa por uma escolha. Caixa vazia cai no default do próprio
+        input; vírgula decimal é aceita.
+      </p>
+      <div id="mt-inputs"></div>
+    </section>
+
+    <section>
+      <h2>Cenários salvos</h2>
+      <div class="ctrl-bar">
+        <div class="dl-toggle" id="mt-sc-novo"><span class="toggle-icon">+</span> Salvar cenário atual</div>
+        <div class="dl-toggle" id="mt-sc-export"><span class="toggle-icon">↓</span> Exportar todos</div>
+        <div class="dl-toggle" id="mt-sc-import"><span class="toggle-icon">↑</span> Importar</div>
+        <input type="file" id="mt-sc-file" accept="application/json" style="display:none">
+      </div>
+      <div id="mt-sc-form">
+        <div id="mt-sc-hint" style="display:none"></div>
+        <input type="text" id="mt-sc-nome" placeholder="Nome do cenário (ex.: &quot;Selic endógena com r* em 5%&quot;)">
+        <textarea id="mt-sc-racional" rows="3" placeholder="Racional — o que mudou e por quê"></textarea>
+        <div style="display:flex;gap:8px">
+          <div class="dl-toggle" id="mt-sc-salvar">Salvar</div>
+          <div class="dl-toggle" id="mt-sc-cancelar">Cancelar</div>
+        </div>
+      </div>
+      <p class="chart-caption">
+        Guardados no <b>localStorage deste navegador</b> — nada sobe para lugar nenhum, e limpar o
+        cache apaga. <b>Plotar</b> desenha o cenário nos quatro gráficos sem tocar nas caixas;
+        <b>Carregar</b> traz as premissas dele para as caixas; <b>Editar</b> faz as duas coisas e
+        depois regrava no mesmo cenário. O que se salva é a <b>configuração</b>, não os números: um
+        cenário plotado é re-simulado do zero a cada desenho, então depois de um update do painel ele
+        continua significando "estas premissas". Exportar/importar move a lista entre navegadores.
+      </p>
+      <div id="mt-sc-list"></div>
+      <div class="subsection-title">Comparação no fim do horizonte</div>
+      <div class="hier-table-wrap">
+        <table class="hier-table" id="mt-cmp-table"></table>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ═══════ ABA — CENÁRIOS ═══════
+       Trajetórias pré-simuladas por modelo_agregado.cenarios_padrao(); a interface escolhe
+       entre elas, não roda o modelo. Duas dimensões de escolha, e a segunda está exposta
+       de propósito: sem a eq. (5) a expectativa de inflação é PREMISSA, não resposta.
+  ════════════════════════ -->
+  <div class="tab-panel" id="tab-cenarios">
+    <section>
+      <h2>Construção de cenários</h2>
+      <div class="kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">Selic</div>
+          <div class="kpi-value" id="kpi-selic-v">—</div><div class="kpi-sub" id="kpi-selic-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Hiato do produto</div>
+          <div class="kpi-value" id="kpi-hiato-v">—</div><div class="kpi-sub" id="kpi-hiato-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Taxa neutra (IS)</div>
+          <div class="kpi-value" id="kpi-rstar-v">—</div><div class="kpi-sub" id="kpi-rstar-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Juro real − neutro</div>
+          <div class="kpi-value" id="kpi-rhat-v">—</div><div class="kpi-sub" id="kpi-rhat-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">IPCA 4T no fim do cenário</div>
+          <div class="kpi-value" id="kpi-ipca-v">—</div><div class="kpi-sub" id="kpi-ipca-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Trajetória da Selic</span>
+        <div class="pill-group" id="pg-cen-juros"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Expectativa de inflação</span>
+        <div class="pill-group" id="pg-cen-exp"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-cen"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+
+      <div class="stub-note" style="margin-top:14px">
+        <h3>O que este cenário resolve e o que ele condiciona</h3>
+        A trajetória de Selic escolhida resolve exatamente o <code>iᵉ(t,t+4|t)</code> que
+        estourou a réplica anterior deste modelo: num cenário o caminho de juros é conhecido por
+        construção, então a expectativa de juro é exata e não uma curva forward estimada.
+        <ul>
+          <li><strong>Expectativa de inflação é resposta, no default.</strong> A equação (5) do boxe
+              está resolvida — <span id="cen-eq5">—</span> As duas premissas fixas seguem no pill
+              como <em>contrafactual</em>: a distância entre elas e a endógena é o tamanho do canal
+              de expectativa.</li>
+          <li><strong>O câmbio também responde</strong>, pela equação (4): o diferencial de juros
+              se move com a Selic e <code>δ = 1,95</code> traduz em variação cambial. Aqui não há
+              ponto fixo — juro externo e CDS ficam constantes.</li>
+          <li><strong>Preços administrados continuam premissa.</strong> O modelo agregado determina
+              preços livres; o IPCA fecha com <code>πᵃ</code> na meta/4 e pesos de 0,767 (livres) e
+              0,233 (administrados), recuperados por regressão. É a única premissa que sobrou, e é
+              o que separa o nosso IRF do modelo cheio do BC — no modelo deles o repasse cambial
+              dos administrados é o dobro do de livres.</li>
+        </ul>
+      </div>
+
+      <h3 style="margin-top:22px">Selic e juro real esperado</h3>
+      <div class="chart-card"><div id="chart-cen-selic" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Hiato do produto e grau de aperto</h3>
+      <div class="chart-card"><div id="chart-cen-hiato" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">IPCA acumulado em 4 trimestres</h3>
+      <div class="chart-card"><div id="chart-cen-ipca" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Expectativa de inflação e câmbio no cenário</h3>
+      <div class="chart-card"><div id="chart-cen-exp" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Validação: resposta a +1 p.p. de Selic por 4 trimestres</h3>
+      <p class="lead" id="irf-lead">—</p>
+      <div class="chart-card"><div id="chart-cen-irf" class="chart-div"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — DECOMPOSIÇÃO ═══════
+       Contribuições das eqs. (1), (2) e (3). Cada bloco soma o total EXATAMENTE por
+       construção: o resíduo é definido como o que sobra.
+  ════════════════════════════ -->
+  <div class="tab-panel" id="tab-decomp">
+    <section>
+      <h2>Decomposição</h2>
+      <p class="lead">Contribuição de cada termo das equações estimadas. As barras somam a linha
+        do total exatamente — o resíduo é o que sobra depois dos termos nomeados.</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Equação</span>
+        <div class="pill-group" id="pg-dec-bloco"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-dec"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <p class="lead" id="dec-lead" style="margin-top:12px">—</p>
+      <div class="chart-card"><div id="chart-dec" class="chart-div"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — TAXA NEUTRA ═══════
+       r* latente do modelo (dois estados distintos: IS e Taylor, desvinculados desde a
+       versão de 2024) contra as 5 medidas do C2 Boxe2 Graf 1 do anexo. A coluna
+       "Modelos BC" é o r* que o próprio BC filtra dos semiestruturais — o comparável direto.
+  ═════════════════════════ -->
+  <div class="tab-panel" id="tab-neutra">
+    <section>
+      <h2>Taxa Neutra</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label">r* da curva IS</div>
+          <div class="kpi-value" id="kpi-nis-v">—</div><div class="kpi-sub" id="kpi-nis-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">r* da regra de Taylor</div>
+          <div class="kpi-value" id="kpi-ntay-v">—</div><div class="kpi-sub" id="kpi-ntay-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tendência HP do juro real</div>
+          <div class="kpi-value" id="kpi-ntr-v">—</div><div class="kpi-sub" id="kpi-ntr-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Mediana publicada pelo BC</div>
+          <div class="kpi-value" id="kpi-npub-v">—</div><div class="kpi-sub" id="kpi-npub-s">—</div></div>
+      </div>
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Séries</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-neutra-btn">—</button>
+          <div class="multiselect-panel" id="ms-neutra-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-neutra"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card" style="margin-top:14px"><div id="chart-neutra" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Grau de aperto: juro real ex-ante menos neutro</h3>
+      <p class="lead">Positivo = política restritiva. É o <code>r̂</code> da eq. (2.1), a variável
+        pela qual a Selic entra na curva IS — e o objeto cuja média importa mais que a de r*.</p>
+      <div class="chart-card"><div id="chart-neutra-aperto" class="chart-div"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — HIATO DO PRODUTO ═══════
+       Hiato latente do modelo (estado suavizado) contra pm_hiato_produto.
+       As duas faixas do publicado medem coisas diferentes e NÃO são a mesma coisa:
+       banda_sup/banda_inf (edições <=2024-06) é incerteza de UM modelo; minimo/p25/p75/
+       maximo (>=2024-09) é desacordo ENTRE modelos da suíte. Comparável entre edições: central.
+  ══════════════════════════════ -->
+  <div class="tab-panel" id="tab-hiato">
+    <section>
+      <h2>Hiato do Produto</h2>
+      <div class="kpi-grid-3">
+        <div class="kpi-card"><div class="kpi-label">Nosso hiato</div>
+          <div class="kpi-value" id="kpi-hn-v">—</div><div class="kpi-sub" id="kpi-hn-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Publicado pelo BC</div>
+          <div class="kpi-value" id="kpi-hp-v">—</div><div class="kpi-sub" id="kpi-hp-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Correlação na amostra do boxe</div>
+          <div class="kpi-value" id="kpi-hc-v">—</div><div class="kpi-sub" id="kpi-hc-s">—</div></div>
+      </div>
+      <div class="ctrl-bar" style="margin-top:14px">
+        <div class="dl-toggle" id="dl-hiato"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card" style="margin-top:14px"><div id="chart-hiato" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Choque persistente da IS</h3>
+      <p class="lead">O componente <code>sʰ</code> da eq. (2.2), AR(1) com coeficiente estimado.
+        É a parte do hiato que nem juro, nem fiscal, nem inércia explicam — e o lugar onde a
+        versão de 2024 do modelo põe a persistência que antes era ruído branco.</p>
+      <div class="chart-card"><div id="chart-hiato-choque" class="chart-div"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — PROJEÇÕES DO COPOM ═══════
+       Única aba ainda não construída. Ler ANTES de escrever o loader:
+       domain/db/brasil/bcb/copom_comunicados.md.
+  ═════════════════════════════ -->
+  <div class="tab-panel" id="tab-projecoes">
+    <section>
+      <h2>Projeções do Copom</h2>
+      <div class="stub-note">
+        <h3>Aba em construção</h3>
+        A projeção do próprio BC para o horizonte relevante, por reunião — o número que o Comitê
+        diz estar perseguindo quando decide a Selic, e portanto o gap projeção-vs-meta que motiva
+        a decisão. Contrapartida oficial do <code>expc_focus*</code>, que é expectativa de mercado.
+        <ul>
+          <li>Fonte: <code>macro_brasil.pm_copom_projecoes</code></li>
+          <li>Filtro da leitura principal: <code>horizonte_relevante = 1</code>,
+              <code>cenario = 'juros_focus'</code>, <code>indice = 'ipca'</code>,
+              <code>regime = 'hr_6_trimestres'</code></li>
+          <li>Escala: variação do IPCA acumulada em <strong>4 trimestres</strong> (%). Não
+              anualizar, não acumular. Pode ser negativa (administrados em −3,9% para 2022).</li>
+          <li>Uso natural aqui: alvo de validação do cenário. Se o modelo reproduz a projeção que
+              o BC publicou para o HR, está calibrado contra o número que o próprio Comitê olha.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — APÊNDICE ═══════
+       Estática quanto ao layout, mas a tabela de validação é preenchida por
+       renderAppendix() a partir de D.info.validacao.
+  ═══════════════════════ -->
+  <div class="tab-panel" id="tab-appendix">
+    <section>
+      <h2>Apêndice</h2>
+
+      <h3>O modelo, equação por equação</h3>
+      <p class="lead" id="mod-lead">—</p>
+      <!-- Montado por renderModelo() a partir de D.info.params: cada equação sai escrita
+           com o coeficiente ESTIMADO no lugar do símbolo, então texto e número não podem
+           divergir quando o modelo é reestimado. Editar em MODELO_ITENS(), no script. -->
+      <div id="modelo-desc"></div>
+
+      <h3 style="margin-top:28px">Validação dos parâmetros contra a Tabela 1 do boxe</h3>
+      <p class="lead" id="val-lead">—</p>
+      <div class="hier-table-wrap"><table class="hier-table" id="tab-validacao"></table></div>
+
+      <h3 style="margin-top:28px">Notas metodológicas</h3>
+      <div style="margin-top:22px">
+        <details class="appendix-item"><summary>Fonte e escopo</summary>
+          <div class="appendix-body">
+            Especificação do boxe <strong>"Atualização dos modelos semiestruturais de pequeno
+            porte"</strong>, Relatório de Inflação de junho de 2024, pp. 97-105
+            (<code>referencia/atualizacao_modelos.pdf</code>). Amostra de estimação
+            <strong>2003T4–2023T4</strong>, a mesma do boxe.
+            <br><br>
+            <strong>Estimado:</strong> curva de Phillips de preços livres (1), curva IS (2), regra de
+            Taylor (3), paridade descoberta (4) e as quatro equações de observação do hiato (6)-(9),
+            por máxima verossimilhança restrita. As prioris uniformes do BC entram como caixa; a
+            única informativa — a Beta de <code>β₃</code> — como penalidade. Isso torna a moda a
+            posteriori equivalente a MQV com restrição de suporte, sem precisar de MCMC.
+            <br><br>
+            <strong>Não estimado:</strong> a equação (5) de expectativas e o termo de hiato mundial
+            <code>β₄h*</code>. O hiato mundial foi excluído por decisão explícita — é 0,054 com
+            intervalo de credibilidade [0; 0,23], o termo mais dispensável da IS.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>A equação (5): o que mudou desde a réplica anterior</summary>
+          <div class="appendix-body">
+            Uma versão anterior deste apêndice dizia que a equação (5) estava <em>fora</em> do modelo e
+            que uma tentativa de resolvê-la por iteração amortecida (Fair-Taylor) tinha
+            <strong>divergido por instabilidade genuína</strong>. As duas coisas deixaram de valer, e
+            a segunda estava errada pelo mesmo motivo que inflava o IRF em 4-5×: aquele motor
+            aproximava a Selic <em>esperada</em> pela taxa corrente, e era esse erro que inflava o
+            ganho do laço.
+            <br><br>
+            Com <code>iᵉ</code> lido do próprio caminho de juros — que num cenário é conhecido por
+            construção — o raio espectral cai para 0,68 e até a iteração convergiria. Hoje ela nem é
+            iterada: como o modelo é linear, o ponto fixo é o sistema afim
+            <code>(I − G)πᵉ = g</code>, resolvido de uma vez. Ver <strong>"(5) Expectativas de
+            inflação"</strong>, acima, para a especificação e a fronteira de estabilidade que
+            continua existindo em <code>φ₂ ≈ 0,32</code>.
+            <br><br>
+            O que <strong>não</strong> mudou: a equação (5) segue fora do <em>filtro</em>. A hipótese
+            de que a ausência dela explicava o <code>α₁ᴵ</code> baixo foi testada e não se confirmou —
+            com a (5) resolvida no simulador, o <code>α₁ᴵ</code> do filtro não se move, porque
+            <code>πᵉ</code> continua entrando ali como dado observado da Focus.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Decisões de construção validadas contra número publicado</summary>
+          <div class="appendix-body">
+            Três escolhas de painel foram testadas contra valores que o BC publica, não adotadas por
+            plausibilidade:
+            <ul>
+              <li><strong><code>iᵉ</code> é a Selic esperada NO horizonte de 12 meses</strong>, um ponto,
+                  não a média do caminho. Contra a Tabela 1 do boxe da neutra ("esperado 1 ano à
+                  frente, filtro HP" = 5,2% em 2023T2 e 5,7% em 2024T2), o ponto erra +0,14 e a
+                  média +0,82.</li>
+              <li><strong>O HP roda com cauda de projeção Focus.</strong> Sem ela a tendência de r* em
+                  2023T4 sai 7,15% contra 4,82% da mediana publicada; com ela, 5,01%. O BC faz o
+                  mesmo — o título do C2 Boxe1 Graf 1B do anexo diz "dados completados com
+                  projeções Focus".</li>
+              <li><strong>Juro real é diferença simples</strong> <code>iᵉ − πᵉ</code>, como na eq. (2.1).
+                  Fisher exato descola ~0,2 p.p. da série em amostra.</li>
+            </ul>
+            Mais duas que o BC não publica e foram recuperadas por regressão: os pesos do IC-Br
+            (agro 0,687 / metal 0,154 / energia 0,159, R² 0,995) e os do IPCA (livres 0,767 /
+            administrados 0,233, R² 0,978).
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Os observáveis do bloco de hiato</summary>
+          <div class="appendix-body">
+            Quatro séries de atividade, normalizadas pela variância do PIB. PIB e Novo Caged entram
+            como ciclo HP(1600) do log; Nuci e desocupação, como desvio da média pré-Covid (até
+            2019T4). PIB e Nuci carregam em <code>hₜ</code>; desocupação e Caged, em <code>hₜ₋₁</code>.
+            <ul>
+              <li><strong>Nuci</strong> da FGV via IPEADATA (<code>CE12_CUTIND12</code>),
+                  <strong>dessazonalizada por X-13</strong>. A série bruta tem sazonalidade de 25% do
+                  próprio desvio-padrão (jan −1,8 / out +1,7); deixá-la crua contra uma desocupação
+                  que já vem dessazonalizada inflava o ruído de medição dela.</li>
+              <li><strong>Desocupação</strong>: a série <em>retropolada do próprio BC</em> (Alves e
+                  Fasolo, BCB Working Paper 400, 2015), publicada no Graf 1.2.11 do anexo do RPM,
+                  mensal a.s. desde 2004-04. As tabelas de PNAD do projeto só começam em 2012, o que
+                  não cobre a amostra. Entra com <strong>sinal invertido</strong>: desocupação é
+                  contracíclica e <code>γₑₘₚ</code> é positivo.</li>
+              <li><strong>Novo Caged</strong>: <code>mt_caged.caged_total</code>, que é estoque de
+                  vínculos (não saldo), a única série longa de emprego formal do projeto.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Inicialização do filtro e dado faltante</summary>
+          <div class="appendix-body">
+            O filtro usa <strong>prior própria</strong>, não difusa: desvio-padrão de 2 p.p. para o
+            desvio de r* em relação à tendência e 3 p.p. para o hiato. Com difusa (variância 1e6) o
+            filtro usa os primeiros trimestres para fixar <code>r̂ʳᵗᵃʸˡᵒʳ</code> num nível arbitrário do
+            qual não sai — esse estado carrega apenas <code>(1−θ₁−θ₂)</code> na Taylor, então
+            precisa de 10 p.p. para mover 1 p.p. do ajuste, e <code>σ(εʳʳ)</code> é calibrado
+            pequeno. Uma difusa contradiz essa calibração.
+            <br><br>
+            Quando um regressor exógeno falta em <em>t</em>, a observação daquela equação vira
+            <strong>faltante</strong> e o filtro a pula, em vez de gerar resíduo artificial contra
+            intercepto zero. É o que mantém a UIP genuinamente inativa antes de 2008T1 (onde o CDS
+            começa) e o que impede as defasagens ausentes do início da amostra de contaminarem os
+            estados.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Calibração de σ(εʳʳ) e as duas taxas neutras</summary>
+          <div class="appendix-body">
+            Desde a versão de 2024 o modelo tem <strong>duas</strong> taxas de equilíbrio
+            desvinculadas: a da IS é componente não-observável de demanda agregada, e a da Taylor é
+            a parte persistente do desvio da função de reação média. Nas versões de 2021 eram o mesmo
+            objeto. Ambas são tendência HP do juro real Focus mais um passeio aleatório próprio.
+            <br><br>
+            O desvio-padrão do choque desses passeios é <strong>calibrado, não estimado</strong>: o
+            boxe diz calibrá-lo para que a trajetória de r* tenha variância semelhante à das medidas
+            de neutra publicadas. Casando a variância da primeira diferença contra a mediana dos 5
+            grupos do C2 Boxe2 Graf 1, sai <code id="ap-sigma">—</code>.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>O que reproduz e o que não reproduz</summary>
+          <div class="appendix-body" id="ap-veredito">—</div>
+        </details>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  Fontes: <span>BCB — comunicados do Copom (API) &nbsp;·&nbsp; anexo estatístico do RPM &nbsp;·&nbsp; Focus</span>
+  &nbsp;|&nbsp; LIS Capital — Uso interno
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Dados & paleta ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/brasil/Monetary Policy.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D = REPORT_DATA;
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+// Frequência de cada grupo de D -- usada por fmtDate() e pelos cálculos de variação. Projeções do
+// Copom e hiato são TRIMESTRAIS; Focus/Selic, mensal. Declarar aqui todo grupo novo.
+// Todo grupo de D e TRIMESTRAL aqui -- o modelo e trimestral e o painel tambem.
+var PERIODS_PER_YEAR = {cenarios: 4, decomp: 4, neutra: 4, hiato: 4, projecoes: 4,
+                        motor: 4};
+// scrollZoom: pinça do trackpad / roda do mouse dá zoom no gráfico em vez de rolar a página.
+var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true};
+
+/*Y_AUTOFIT_JS*/
+
+// ── Helpers de valor e data ───────────────────────────────────────────────────
+function ser(group, key) {
+  var g = D[group] || {};
+  return g[key] || {dates: [], values: []};
+}
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+// Formato BR: vírgula decimal.
+function fmtBR(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2).replace('.', ',');
+}
+// Para labels SOBRE o gráfico: a convenção da skill lis-dashboard é TRUNCAR, não arredondar
+// (16,951 -> "16,9", nunca "17,0"), e vírgula decimal.
+// 2026Q3 -> 2026T3: o payload traz o trimestre no formato do pandas, e o relatorio
+// escreve T em todo o resto (inclusive na amostra "2003T4-2023T4", que e texto fixo).
+function fmtTri(s) { return s ? String(s).replace('Q', 'T') : '—'; }
+
+function fmtTrunc(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  var dec = d != null ? d : 1;
+  var p = Math.pow(10, dec);
+  return (Math.floor(v * p) / p).toFixed(dec).replace('.', ',');
+}
+function fmtDate(dateStr, group) {
+  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
+  if (PERIODS_PER_YEAR[group] === 4) return y + ' T' + (Math.floor((m - 1) / 3) + 1);
+  return MESES[m - 1] + '/' + y;
+}
+function lastValid(dates, values) {
+  for (var i = values.length - 1; i >= 0; i--) {
+    if (values[i] != null) return {date: dates[i], value: values[i]};
+  }
+  return null;
+}
+// value[i]/value[i-n]-1 sobre NÍVEIS de índice -- não encadeia taxas.
+function growthN(dates, values, n) {
+  var od = [], ov = [];
+  for (var i = n; i < values.length; i++) {
+    var prev = values[i - n], cur = values[i];
+    od.push(dates[i]);
+    ov.push((cur != null && prev != null && prev !== 0) ? Math.round((cur / prev - 1) * 10000) / 100 : null);
+  }
+  return {dates: od, values: ov};
+}
+function toMap(seriesObj) {
+  var m = {};
+  for (var i = 0; i < seriesObj.dates.length; i++) m[seriesObj.dates[i]] = seriesObj.values[i];
+  return m;
+}
+
+// ── KPI cards ─────────────────────────────────────────────────────────────────
+function setKPI(idPrefix, value, sub, suffix) {
+  var elV = document.getElementById(idPrefix + '-value');
+  if (!elV) return;
+  var elS = document.getElementById(idPrefix + '-sub');
+  if (value == null) {
+    elV.textContent = '—'; elV.className = 'kpi-value';
+    if (elS) elS.textContent = '—';
+    return;
+  }
+  elV.textContent = fmtBR(value) + (suffix != null ? suffix : '%');
+  elV.className = 'kpi-value ' + (value >= 0 ? 'pos' : 'neg');
+  if (elS) elS.textContent = sub;
+}
+function setKPILabel(idPrefix, text) {
+  var el = document.getElementById(idPrefix + '-label');
+  if (el) el.textContent = text;
+}
+
+// ── Fábricas de layout ────────────────────────────────────────────────────────
+// Bound [lo, hi] real do X entre todos os traces, contando só pontos com y não-nulo -- um trace com
+// nulos no fim (série que a fonte ainda não publicou) não pode empurrar o limite além do último
+// ponto realmente plotado.
+function _traceXRange(traces) {
+  var lo = null, hi = null;
+  (traces || []).forEach(function(t) {
+    if (!t.x || !t.y) return;
+    for (var i = 0; i < t.x.length; i++) {
+      if (t.y[i] == null) continue;
+      var v = t.x[i];
+      if (lo == null || v < lo) lo = v;
+      if (hi == null || v > hi) hi = v;
+    }
+  });
+  return {lo: lo, hi: hi};
+}
+// Todas as datas distintas de todos os traces (união, deduplicada, ordenada) -- alimenta os
+// dropdowns De/Até, onde o usuário precisa escolher qualquer divulgação, não só os extremos.
+// Deliberadamente NÃO filtra por y != null: uma categoria temporariamente desmarcada não deve
+// encolher o calendário que as outras séries do mesmo gráfico ainda podem usar.
+function _traceAllDates(traces) {
+  var set = {};
+  (traces || []).forEach(function(t) { (t.x || []).forEach(function(d) { if (d) set[d] = true; }); });
+  return Object.keys(set).sort();
+}
+// Presets de range rápido ancorados no MÁXIMO REAL do dado, aplicados via Plotly.relayout()
+// explícito -- NÃO pelo componente nativo xaxis.rangeselector.buttons. Esse componente quebrou em
+// produção duas vezes (ver .claude/rules/lis-dashboards.md, "Quick-range buttons"):
+//   1. um botão stepmode:'backward' calcula o "to" a partir do range ATUAL do eixo, que numa view
+//      nova é o range auto-paddeado do Plotly e não o último ponto real -- o resultado é uma parede
+//      de meses vazios depois da última barra;
+//   2. rangeselector.buttons NÃO aceita {method:'relayout', args:[...]} (isso é conceito de
+//      updatemenus) -- o Plotly ignora em silêncio e o clique colapsa o eixo.
+// Não voltar ao componente nativo.
+function _quickRangeOptions(dates) {
+  if (!dates.length) return [];
+  var hiISO = dates[dates.length - 1], loISO = dates[0];
+  var hiMs = Date.parse(hiISO);
+  function backISO(years) {
+    var d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - years);
+    return d.toISOString().slice(0, 10);
+  }
+  return [
+    {label: '1a',   from: backISO(1),  to: hiISO},
+    {label: '3a',   from: backISO(3),  to: hiISO},
+    {label: '5a',   from: backISO(5),  to: hiISO},
+    {label: '10a',  from: backISO(10), to: hiISO},
+    {label: 'Tudo', from: loISO,       to: hiISO},
+  ];
+}
+// View inicial justa (limites reais do dado + 2% de folga, não o autopad bem maior do Plotly).
+function _defaultXRange(traces) {
+  var r = _traceXRange(traces);
+  if (!r.lo || !r.hi) return null;
+  var loMs = Date.parse(r.lo), hiMs = Date.parse(r.hi);
+  var pad = Math.max((hiMs - loMs) * 0.02, 7 * 86400000);
+  return [new Date(loMs - pad).toISOString().slice(0, 10), new Date(hiMs + pad).toISOString().slice(0, 10)];
+}
+// dragmode:'pan' + scrollZoom (no config) = arrastar move os dois eixos, scroll dá zoom nos dois,
+// double-click reseta, sem box-zoom. Modelo de interação padrão do projeto.
+function mkTimeseriesLayout(yTitle, height, traces, extra) {
+  var xr = _defaultXRange(traces);
+  return Object.assign({
+    height: height || 540, margin: {l: 55, r: 30, t: 40, b: 70}, dragmode: 'pan',
+    hovermode: 'x unified',
+    hoverlabel: {bgcolor: C.azul, font: {family: 'Barlow,sans-serif', size: 12, color: '#fff'}},
+    xaxis: Object.assign({type: 'date', gridcolor: '#eee'}, xr ? {range: xr, autorange: false} : {}),
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: C.azul, size: 12},
+  }, extra || {});
+}
+function mkBarLayout(yTitle, height, traces, extra) {
+  var xr = _defaultXRange(traces);
+  return Object.assign({
+    height: height || 480, margin: {l: 55, r: 30, t: 20, b: 60}, dragmode: 'pan', showlegend: false,
+    hovermode: 'x unified',
+    hoverlabel: {bgcolor: C.azul, font: {family: 'Barlow,sans-serif', size: 12, color: '#fff'}},
+    xaxis: Object.assign({type: 'date', gridcolor: '#eee'}, xr ? {range: xr, autorange: false} : {}),
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: C.azul, size: 12},
+  }, extra || {});
+}
+
+// ── Tracking de X + barra de período ─────────────────────────────────────────
+// Guarda o range de X de cada div SÓ a partir de valores que este código mesmo escreveu, ou de um
+// evento 'plotly_relayout' real -- deliberadamente NUNCA lê _fullLayout.xaxis.range de volta. Uma
+// versão anterior (em economic_activity/) lia, e quebrou num browser real: o Plotly resolve o range
+// de um eixo de data no formato interno dele, que não é garantidamente o array que você passou, e
+// devolver isso para o próximo Plotly.react() colapsava o eixo. Um stub jsdom sem Plotly real não
+// pega esse bug -- ele só devolve o que foi escrito.
+var _chartXRange = {};
+function _bindXRangeTracker(divId) {
+  var el = document.getElementById(divId);
+  if (!el || el._xRangeTrackerBound) return;
+  el._xRangeTrackerBound = true;
+  el.on('plotly_relayout', function(ev) {
+    if (ev['xaxis.autorange']) { delete _chartXRange[divId]; return; }
+    var lo, hi;
+    if (Array.isArray(ev['xaxis.range'])) { lo = ev['xaxis.range'][0]; hi = ev['xaxis.range'][1]; }
+    else if (ev['xaxis.range[0]'] !== undefined && ev['xaxis.range[1]'] !== undefined) {
+      lo = ev['xaxis.range[0]']; hi = ev['xaxis.range[1]'];
+    } else return;
+    _chartXRange[divId] = [lo, hi];
+  });
+}
+function _monthYearLabel(dateStr) {
+  var p = dateStr.split('-');
+  return MESES[parseInt(p[1], 10) - 1] + '/' + p[0];
+}
+// Barra de controle de período: pills de range rápido + dois <select> De/Até (mês/ano), injetada
+// acima de todo gráfico que passa por _reactPreserveX(). Dropdown mês/ano em vez de
+// <input type=date> por rejeição explícita do nível de dia (2026-08).
+function _ensurePeriodSelector(divId, dates) {
+  if (!dates.length) return;
+  var chartEl = document.getElementById(divId);
+  if (!chartEl) return;
+  var card = chartEl.closest('.chart-card');
+  if (!card || !card.parentNode) return;
+  var bar = card.previousElementSibling;
+  var isOurs = bar && bar.classList && bar.classList.contains('period-ctrl-bar') && bar.dataset.for === divId;
+  if (!isOurs) {
+    bar = document.createElement('div');
+    bar.className = 'ctrl-bar period-ctrl-bar';
+    bar.dataset.for = divId;
+    bar.innerHTML =
+      '<div class="pill-group" data-role="quick"></div>' +
+      '<div class="ctrl-sep"></div>' +
+      '<span class="ctrl-label">Período</span>' +
+      '<select class="date-select" data-role="from"></select>' +
+      '<span class="ctrl-label">até</span>' +
+      '<select class="date-select" data-role="to"></select>';
+    card.parentNode.insertBefore(bar, card);
+    bar.querySelector('[data-role=from]').addEventListener('change', function() { _applyPeriodSelector(divId); });
+    bar.querySelector('[data-role=to]').addEventListener('change', function() { _applyPeriodSelector(divId); });
+  }
+  var quickGroup = bar.querySelector('[data-role=quick]');
+  quickGroup.innerHTML = '';
+  _quickRangeOptions(dates).forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'pill'; btn.textContent = opt.label;
+    btn.addEventListener('click', function() { Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]}); });
+    quickGroup.appendChild(btn);
+  });
+  var fromEl = bar.querySelector('[data-role=from]'), toEl = bar.querySelector('[data-role=to]');
+  var range = _chartXRange[divId];
+  var wantFrom = range ? range[0] : (fromEl.value ? dates[parseInt(fromEl.value, 10)] : dates[0]);
+  var wantTo = range ? range[1] : (toEl.value ? dates[parseInt(toEl.value, 10)] : dates[dates.length - 1]);
+  fromEl.innerHTML = ''; toEl.innerHTML = '';
+  dates.forEach(function(d, i) {
+    var label = _monthYearLabel(d);
+    fromEl.appendChild(new Option(label, String(i)));
+    toEl.appendChild(new Option(label, String(i)));
+  });
+  var fromIdx = dates.indexOf(wantFrom), toIdx = dates.indexOf(wantTo);
+  fromEl.value = String(fromIdx >= 0 ? fromIdx : 0);
+  toEl.value = String(toIdx >= 0 ? toIdx : dates.length - 1);
+}
+var _periodSelectorDates = {};
+function _applyPeriodSelector(divId) {
+  var bar = document.querySelector('.period-ctrl-bar[data-for="' + divId + '"]');
+  if (!bar) return;
+  var fromEl = bar.querySelector('[data-role=from]'), toEl = bar.querySelector('[data-role=to]');
+  var lo = _periodSelectorDates[divId] && _periodSelectorDates[divId][parseInt(fromEl.value, 10)];
+  var hi = _periodSelectorDates[divId] && _periodSelectorDates[divId][parseInt(toEl.value, 10)];
+  if (lo && hi) Plotly.relayout(divId, {'xaxis.range': [lo, hi]});
+}
+// PONTO DE ENTRADA de qualquer gráfico deste relatório -- chamar esta função, nunca
+// Plotly.newPlot/react direto. Redesenha preservando a janela de X já visível (um preset, um
+// drag-zoom, ou o default justo de um render anterior): sem isso, todo re-render disparado por um
+// controle reseta o eixo e lê como "o gráfico fica resetando". Y NÃO é preservado de propósito --
+// refaz o fit pela janela de X corrente via _bindYAutofit(). Também faz o bind do tracker de X e
+// injeta a barra de período.
+function _reactPreserveX(divId, traces, layout, config) {
+  var prev = _chartXRange[divId];
+  if (prev) {
+    layout = Object.assign({}, layout, {
+      xaxis: Object.assign({}, layout.xaxis, {range: prev.slice(), autorange: false}),
+    });
+  } else {
+    var xr = layout.xaxis && layout.xaxis.range;
+    if (xr) _chartXRange[divId] = xr.slice();
+  }
+  var p = Plotly.react(divId, traces, layout, config || _PLOTLY_CONFIG);
+  _bindXRangeTracker(divId);
+  _bindYAutofit(divId);
+  if (prev) Plotly.relayout(divId, {'xaxis.range': prev});
+  _periodSelectorDates[divId] = _traceAllDates(traces);
+  _ensurePeriodSelector(divId, _periodSelectorDates[divId]);
+  return p;
+}
+
+// ── Controles reutilizáveis ───────────────────────────────────────────────────
+// Multiselect com checkboxes agrupados. groups: [{header, items: [{key, label}]}].
+function setupMultiselect(btnId, panelId, groups, defaultSelected, onChange) {
+  var panel = document.getElementById(panelId), btn = document.getElementById(btnId);
+  if (!panel || !btn) return;
+  var html = '';
+  groups.forEach(function(g) {
+    html += '<div class="multiselect-group-header">' + g.header + '</div>';
+    g.items.forEach(function(it) {
+      var checked = defaultSelected.indexOf(it.key) >= 0 ? ' checked' : '';
+      html += '<label><input type="checkbox" value="' + it.key + '"' + checked + '> ' + it.label + '</label>';
+    });
+  });
+  panel.innerHTML = html;
+  function selected() {
+    return Array.prototype.slice.call(panel.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+  }
+  function updateLabel() {
+    var sel = selected();
+    btn.textContent = sel.length ? (sel.length + ' selecionado(s)') : 'Nenhum selecionado';
+  }
+  updateLabel();
+  btn.addEventListener('click', function(e) { e.stopPropagation(); panel.classList.toggle('open'); });
+  document.addEventListener('click', function(e) {
+    if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) panel.classList.remove('open');
+  });
+  panel.addEventListener('change', function() { updateLabel(); onChange(selected()); });
+  onChange(selected());
+}
+// Grupo de pills mutuamente exclusivas (ex: Nominal|Real|% PIB). options: [{key, label}].
+function setupPillGroup(containerId, options, defaultKey, onChange) {
+  var box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = '';
+  options.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pill' + (opt.key === defaultKey ? ' active' : '');
+    btn.textContent = opt.label;
+    btn.addEventListener('click', function() {
+      box.querySelectorAll('.pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      onChange(opt.key);
+    });
+    box.appendChild(btn);
+  });
+  onChange(defaultKey);
+}
+// Toggle "Dados no gráfico" -- obrigatório em todo gráfico (padrão da skill lis-dashboard).
+// Começa DESLIGADO; onChange(true|false) deve re-renderizar com/sem os labels de valor.
+// Markup esperado: <div class="dl-toggle" id="..."><span class="toggle-icon"></span> Dados no gráfico</div>
+function wireDlToggle(toggleId, onChange) {
+  var el = document.getElementById(toggleId);
+  if (!el) return;
+  el.addEventListener('click', function() {
+    el.classList.toggle('on');
+    onChange(el.classList.contains('on'));
+  });
+  onChange(false);
+}
+// Labels de valor sobre os pontos: trunca (fmtTrunc), e desbasta quando a série é longa
+// (>60 pontos -> 1 em 5; >30 -> 1 em 3; senão todos), sempre mantendo o último.
+function dlText(values, decimals, suffix) {
+  var step = values.length > 60 ? 5 : (values.length > 30 ? 3 : 1);
+  return values.map(function(v, i) {
+    if (v == null || (i % step !== 0 && i !== values.length - 1)) return '';
+    return fmtTrunc(v, decimals) + (suffix != null ? suffix : '');
+  });
+}
+// Trace de linha padrão do relatório. `showLabels` vem do wireDlToggle correspondente.
+function lineTrace(series, label, color, showLabels, decimals, suffix) {
+  var sfx = suffix != null ? suffix : '%';
+  var dec = decimals != null ? decimals : 2;
+  return {
+    type: 'scatter', mode: showLabels ? 'lines+markers+text' : 'lines+markers',
+    name: label, x: series.dates, y: series.values,
+    line: {color: color, width: 2, shape: 'spline', smoothing: 0.25},
+    marker: {size: 3, color: color},
+    text: showLabels ? dlText(series.values, dec, sfx) : undefined,
+    textposition: 'top center',
+    textfont: {family: 'JetBrains Mono,monospace', size: 9, color: color},
+    customdata: series.values.map(function(v) { return fmtBR(v, dec); }),
+    hovertemplate: '<b>' + label + '</b>: %{customdata}' + sfx + '<extra></extra>',
+  };
+}
+
+// Linha tracejada e sem marcador: usada para o par "publicado" de cada linha nossa
+// no IRF, para a leitura ser por COR (configuracao de canais) e nao por legenda.
+function dashTrace(series, label, color, showLabels, decimals, suffix) {
+  var t = lineTrace(series, label, color, showLabels, decimals, suffix);
+  t.line.dash = 'dash';
+  t.mode = showLabels ? 'lines+text' : 'lines';
+  t.marker = {size: 0};
+  return t;
+}
+
+// ── Renderizadores por aba ────────────────────────────────────────────────────
+// Uma função por aba, chamada uma única vez na primeira ativação (ver RENDERERS abaixo).
+// Roteiro de uma aba nova, de ponta a ponta:
+//   1. loader em generate_report.py grava as séries em D.<grupo> e o grupo entra em
+//      PERIODS_PER_YEAR acima;
+//   2. no HTML do painel: <div class="chart-card"><div id="chart-x" class="chart-div"></div></div>
+//      (+ o .dl-toggle e os controles que a aba precisar);
+//   3. monte os traces com lineTrace() (ou objeto Plotly próprio);
+//   4. _reactPreserveX('chart-x', traces, mkTimeseriesLayout(yTitle, altura, traces));
+//   5. wireDlToggle('dl-x', function(on) { ...re-render com showLabels = on... });
+//   6. se a altura não for a default de .chart-div, declare #chart-x no <style>.
+// Não chamar Plotly.newPlot/react direto -- _reactPreserveX faz o bind do y-autofit, do tracker de
+// X e da barra de período.
+
+function _cenKey() {
+  return (_cenJuros || 'focus') + '__' + (_cenExp || 'eq5');
+}
+var _cenJuros = 'focus', _cenExp = 'eq5', _cenLabels = false;
+
+// Cola o último ponto observado no início do cenário, para a linha não nascer solta.
+function _emenda(hist, cen) {
+  if (!hist || !hist.dates.length || !cen || !cen.dates.length) return cen || {dates: [], values: []};
+  return {dates: [hist.dates[hist.dates.length - 1]].concat(cen.dates),
+          values: [hist.values[hist.values.length - 1]].concat(cen.values)};
+}
+function _recorta(s, desdeISO) {
+  if (!s) return {dates: [], values: []};
+  var d = [], v = [];
+  for (var i = 0; i < s.dates.length; i++) {
+    if (s.dates[i] >= desdeISO) { d.push(s.dates[i]); v.push(s.values[i]); }
+  }
+  return {dates: d, values: v};
+}
+
+function renderCenarios() {
+  var info = D.info || {}, rot = info.rotulos || {};
+  var jopts = [{key: 'focus', label: 'Focus'}, {key: 'constante', label: 'Constante'},
+               {key: 'alta100', label: '+100 pb'}, {key: 'baixa100', label: '−100 pb'}];
+  var eopts = [{key: 'eq5', label: 'Endógena (eq. 5)'}, {key: 'focus', label: 'Fixa na Focus'},
+               {key: 'meta', label: 'Converge à meta'}];
+
+  setKPI('kpi-selic', info.selic_hoje, 'meta, ' + fmtTri(info.ultimo_tri), '%');
+  setKPI('kpi-hiato', info.h_hoje, '% do produto potencial', '');
+  setKPI('kpi-rstar', info.r_is_hoje, 'tendência HP + desvio latente', '%');
+  setKPI('kpi-rhat', info.r_hat_hoje, 'positivo = restritivo', ' p.p.');
+
+  var e5t = document.getElementById('cen-eq5');
+  if (e5t) {
+    var pp = info.params || {}, e5 = info.eq5 || {};
+    var wm = 1 - (pp.f1 || 0) - (pp.f2 || 0) - (pp.f3 || 0);
+    e5t.innerHTML = '<code>πᵉ</code> pesa ' + fmtBR(pp.f1, 2) + ' de inércia, '
+      + fmtBR(pp.f2, 2) + ' da previsão que o próprio modelo faz para os quatro trimestres '
+      + 'seguintes, ' + fmtBR(pp.f3, 2) + ' de inflação passada e ' + fmtBR(wm, 2) + ' da meta. '
+      + 'Como o modelo é linear, esse ponto fixo no caminho é um sistema afim e sai resolvido '
+      + 'de uma vez, não iterado — o resíduo fica na ordem de 10⁻¹⁴. O raio espectral do laço '
+      + 'é ' + fmtBR(e5.raio, 2) + ': acima de 1 (que acontece por <code>φ₂</code> ≈ 0,32) a '
+      + 'expectativa deixaria de ter caminho bem definido.';
+  }
+
+  var lead = document.getElementById('irf-lead');
+  if (lead && info.irf) {
+    var f = info.irf, mb = f.motor_bcb || {}, ce = f.com_expectativa || {}, sd = f.so_demanda || {};
+    lead.innerHTML = 'Trajetória exógena do C2 Boxe3 Graf 4A: +1 p.p. por 4 trimestres, depois '
+      + 'decaindo a fator 0,8 — escolhida pelo BC para silenciar a regra de Taylor. O Graf 4B '
+      + 'publica <strong>três</strong> respostas, uma por conjunto de canais ligados, e o '
+      + 'simulador tem exatamente essas três configurações: cada linha cheia abaixo tem a sua '
+      + 'tracejada correspondente. '
+      + '<br><br>Ligar a equação (5) leva o nosso pico de <strong>' + fmtBR(sd.pico_nosso, 3)
+      + ' p.p.</strong> para <strong>' + fmtBR(ce.pico_nosso, 3) + ' p.p.</strong> (alvo: '
+      + fmtBR(ce.pico_pub, 3) + '), então o canal de expectativa responde por mais da metade da '
+      + 'transmissão e a sua ausência era a maior lacuna do modelo. O que ainda falta é '
+      + '<em>parâmetro, não código</em>: o mesmo motor rodado com as modas publicadas pica em '
+      + '<strong>' + fmtBR(mb.pico_nosso, 3) + ' p.p.</strong> no T' + mb.tri_pico_nosso
+      + ' contra ' + fmtBR(mb.pico_pub, 3) + ' no T' + mb.tri_pico_pub + ', com erro absoluto '
+      + 'médio de <strong>' + fmtBR(mb.erro_abs_medio, 3) + ' p.p.</strong>';
+  }
+
+  function desenha() {
+    var k = _cenKey(), sl = _cenLabels;
+    var desde = '2015-01-01';
+    var hs = _recorta(ser('cenarios', 'hist__selic'), desde);
+    var hh = _recorta(ser('cenarios', 'hist__h'), desde);
+    var hr = _recorta(ser('cenarios', 'hist__r_hat'), desde);
+    var hi = _recorta(ser('cenarios', 'hist__ipca_4t'), desde);
+    var hm = _recorta(ser('cenarios', 'hist__meta'), desde);
+
+    var t1 = [lineTrace(hs, 'Selic observada', C.cinza, sl, 2, '%'),
+              lineTrace(_emenda(hs, ser('cenarios', k + '__selic')), 'Selic no cenário', C.azul, sl, 2, '%'),
+              lineTrace(ser('cenarios', k + '__i_e'), 'Selic esperada a 12m', C.dourado, sl, 2, '%')];
+    _reactPreserveX('chart-cen-selic', t1, mkTimeseriesLayout('% a.a.', 520, t1));
+
+    var t2 = [lineTrace(hh, 'Hiato observado', C.cinza, sl, 2, '%'),
+              lineTrace(_emenda(hh, ser('cenarios', k + '__h')), 'Hiato no cenário', C.azul, sl, 2, '%'),
+              lineTrace(_emenda(hr, ser('cenarios', k + '__r_hat')), 'Juro real − neutro', C.laranja, sl, 2, ' p.p.')];
+    _reactPreserveX('chart-cen-hiato', t2, mkTimeseriesLayout('% / p.p.', 520, t2));
+
+    var t3 = [lineTrace(hi, 'IPCA 4T observado', C.cinza, sl, 2, '%'),
+              lineTrace(_emenda(hi, ser('cenarios', k + '__ipca_4t')), 'IPCA 4T no cenário', C.azul, sl, 2, '%'),
+              lineTrace(hm, 'Meta', C.verde, false, 2, '%')];
+    _reactPreserveX('chart-cen-ipca', t3, mkTimeseriesLayout('% em 4 trimestres', 520, t3));
+
+    var cen = ser('cenarios', k + '__ipca_4t');
+    var ult = lastValid(cen.dates, cen.values);
+    setKPI('kpi-ipca', ult ? ult.value : null, (rot[k] || k), '%');
+
+    var he = _recorta(ser('cenarios', 'hist__pi_e'), desde);
+    var t5 = [lineTrace(he, 'Expectativa observada (Focus)', C.cinza, sl, 2, '%'),
+              lineTrace(_emenda(he, ser('cenarios', k + '__pi_e')), 'Expectativa no cenário', C.dourado, sl, 2, '%'),
+              lineTrace(hm, 'Meta', C.verde, false, 2, '%'),
+              lineTrace(ser('cenarios', k + '__de'), 'Variação cambial no trimestre', C.laranja, sl, 2, '%')];
+    _reactPreserveX('chart-cen-exp', t5, mkTimeseriesLayout('% / % no trimestre', 520, t5));
+
+    // A escada de validacao: cada configuracao de canais tem uma linha publicada.
+    // Cor = configuracao; cheia = nossa, tracejada = a do BC.
+    var t4 = [
+      lineTrace(ser('cenarios', 'irf__ipca_4t_so_demanda'), 'Nosso — só demanda', C.azulCl, sl, 3, ' p.p.'),
+      dashTrace(ser('cenarios', 'irf__publicado_so_demanda'), 'BC — expectativa e câmbio fixos', C.azulCl, false, 3, ' p.p.'),
+      lineTrace(ser('cenarios', 'irf__ipca_4t_com_expectativa'), 'Nosso — + equação (5)', C.azul, sl, 3, ' p.p.'),
+      dashTrace(ser('cenarios', 'irf__publicado_sem_cambio'), 'BC — câmbio fixo', C.azul, false, 3, ' p.p.'),
+      lineTrace(ser('cenarios', 'irf__ipca_4t_completo'), 'Nosso — + câmbio (eq. 4)', C.laranja, sl, 3, ' p.p.'),
+      dashTrace(ser('cenarios', 'irf__publicado_completo'), 'BC — modelo cheio', C.laranja, false, 3, ' p.p.'),
+      lineTrace(ser('cenarios', 'irf__ipca_4t_motor_bcb'), 'Nosso motor, parâmetros do BC', C.dourado, sl, 3, ' p.p.')];
+    _reactPreserveX('chart-cen-irf', t4, mkTimeseriesLayout('desvio do base (p.p.)', 560, t4));
+  }
+
+  setupPillGroup('pg-cen-juros', jopts, 'focus', function(k) { _cenJuros = k; desenha(); });
+  setupPillGroup('pg-cen-exp', eopts, 'eq5', function(k) { _cenExp = k; desenha(); });
+  wireDlToggle('dl-cen', function(on) { _cenLabels = on; desenha(); });
+}
+
+var DEC_BLOCOS = {
+  phillips: {
+    label: 'Inflação de livres', y: '% no trimestre', dec: 2,
+    termos: [['inercia_livres', 'Inércia (livres)', C.azul],
+             ['inercia_ipca', 'Inércia (IPCA)', C.azulCl],
+             ['expectativa', 'Expectativa', C.dourado],
+             ['commodities', 'Commodities', C.verde],
+             ['cambio', 'Câmbio', C.laranja],
+             ['hiato', 'Hiato', C.amarelo],
+             ['clima', 'Clima', '#8FB8C4'],
+             ['residuo', 'Resíduo', C.cinza]],
+    nota: 'Termos da eq. (1). O peso da expectativa é <code>1−α₁ᴸ−α₁ⁱ</code>, o que garante '
+        + 'neutralidade de longo prazo por construção. Nossa estimativa põe 0,65 nesse peso contra '
+        + '0,38 do BC — a diferença substantiva da réplica, e provavelmente consequência de a eq. (5) '
+        + 'estar fora: com <code>πᵉ</code> exógeno e informativo, a verossimilhança se apoia nele de graça.'
+  },
+  hiato: {
+    label: 'Hiato do produto', y: '% do produto potencial', dec: 2,
+    termos: [['inercia', 'Inércia', C.azul],
+             ['mp_juro', 'Juro vs tendência', C.laranja],
+             ['mp_neutro', 'Desvio de r*', C.amarelo],
+             ['fiscal', 'Fiscal', C.verde],
+             ['choque_persistente', 'Choque persistente', C.azulCl],
+             ['residuo', 'Resíduo (crises)', C.cinza]],
+    nota: 'Termos da eq. (2). A contribuição de política monetária está aberta em duas: o juro real '
+        + 'contra a tendência de r* e o desvio de r* em relação a essa tendência. Somadas dão o efeito '
+        + 'total; separadas mostram quanto do aperto medido vem da premissa de neutro. O resíduo '
+        + 'carrega os choques de crise de 2008/09 e 2020, cuja variância é inflada na estimação.'
+  },
+  taylor: {
+    label: 'Selic', y: '% a.a.', dec: 2,
+    termos: [['persistencia', 'Persistência', C.azul],
+             ['ancora_real', 'Âncora real (r*)', C.dourado],
+             ['meta', 'Meta', C.verde],
+             ['desvio_expectativa', 'Desvio da expectativa', C.laranja],
+             ['residuo', 'Resíduo', C.cinza]],
+    nota: 'Termos da eq. (3). A persistência domina porque <code>θ₁+θ₂</code> ≈ 0,82 na nossa '
+        + 'estimativa — o peso da âncora de longo prazo é só <code>1−θ₁−θ₂</code>. Não há termo de '
+        + 'reação ao hiato: o boxe registra que não se mostrou identificado, o que não quer dizer que '
+        + 'o BC ignore atividade — as expectativas já são correlacionadas ao hiato.'
+  }
+};
+var _decBloco = 'phillips', _decLabels = false;
+
+function renderDecomp() {
+  function desenha() {
+    var cfg = DEC_BLOCOS[_decBloco];
+    var nota = document.getElementById('dec-lead');
+    if (nota) nota.innerHTML = cfg.nota;
+    var traces = cfg.termos.map(function(t) {
+      var s = ser('decomp', _decBloco + '__' + t[0]);
+      return {type: 'bar', name: t[1], x: s.dates, y: s.values,
+              marker: {color: t[2]},
+              text: _decLabels ? dlText(s.values, cfg.dec, '') : undefined,
+              textposition: 'auto',
+              textfont: {family: 'JetBrains Mono,monospace', size: 8},
+              customdata: s.values.map(function(v) { return fmtBR(v, cfg.dec); }),
+              hovertemplate: '<b>' + t[1] + '</b>: %{customdata}<extra></extra>'};
+    });
+    var tot = ser('decomp', _decBloco + '__total');
+    traces.push({type: 'scatter', mode: 'lines+markers', name: 'Total', x: tot.dates, y: tot.values,
+                 line: {color: '#111', width: 2}, marker: {size: 3, color: '#111'},
+                 customdata: tot.values.map(function(v) { return fmtBR(v, cfg.dec); }),
+                 hovertemplate: '<b>Total</b>: %{customdata}<extra></extra>'});
+    _reactPreserveX('chart-dec', traces,
+      mkBarLayout(cfg.y, 560, traces, {barmode: 'relative', showlegend: true,
+        legend: {orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: {size: 10}}}));
+  }
+  setupPillGroup('pg-dec-bloco',
+    Object.keys(DEC_BLOCOS).map(function(k) { return {key: k, label: DEC_BLOCOS[k].label}; }),
+    'phillips', function(k) { _decBloco = k; desenha(); });
+  wireDlToggle('dl-dec', function(on) { _decLabels = on; desenha(); });
+}
+
+var NEUTRA_SERIES = [
+  {key: 'r_IS', label: 'r* da IS (nosso)', color: C.azul},
+  {key: 'r_TAY', label: 'r* da Taylor (nosso)', color: C.azulCl},
+  {key: 'tendencia', label: 'Tendência HP do juro real', color: C.dourado},
+  {key: 'r_focus', label: 'Juro real ex-ante (Focus)', color: C.cinza},
+  {key: 'pub_Modelos_BC', label: 'BC — Modelos', color: C.laranja},
+  {key: 'pub_Focus', label: 'BC — Focus', color: C.verde},
+  {key: 'pub_NTN-B', label: 'BC — NTN-B', color: C.amarelo},
+  {key: 'pub_Externas', label: 'BC — Externas', color: '#8FB8C4'},
+  {key: 'pub_AF_e_BF', label: 'BC — AF e BF', color: '#B79ACA'}
+];
+var _neutraSel = ['r_IS', 'r_TAY', 'tendencia', 'pub_Modelos_BC'], _neutraLabels = false;
+
+function renderNeutra() {
+  var info = D.info || {};
+  setKPI('kpi-nis', info.r_is_hoje, 'tendência HP + desvio latente', '%');
+  setKPI('kpi-ntay', info.r_tay_hoje, 'desvinculada da IS desde 2024', '%');
+  var tr = ser('neutra', 'tendencia'), ut = lastValid(tr.dates, tr.values);
+  setKPI('kpi-ntr', ut ? ut.value : null, 'HP com cauda de projeção Focus', '%');
+  setKPI('kpi-npub', info.neutra_pub_ult, 'mediana dos 5 grupos, ' + fmtTri(info.neutra_pub_tri), '%');
+
+  function desenha() {
+    var t = [];
+    NEUTRA_SERIES.forEach(function(s) {
+      if (_neutraSel.indexOf(s.key) < 0) return;
+      var d = ser('neutra', s.key);
+      if (d.dates.length) t.push(lineTrace(d, s.label, s.color, _neutraLabels, 2, '%'));
+    });
+    if (t.length) _reactPreserveX('chart-neutra', t, mkTimeseriesLayout('% a.a.', 540, t));
+    var ap = [lineTrace(ser('neutra', 'r_hat'), 'Juro real − neutro', C.laranja, _neutraLabels, 2, ' p.p.')];
+    _reactPreserveX('chart-neutra-aperto', ap, mkTimeseriesLayout('p.p.', 460, ap));
+  }
+  setupMultiselect('ms-neutra-btn', 'ms-neutra-panel',
+    [{header: 'Nosso modelo', items: NEUTRA_SERIES.slice(0, 4).map(function(s) { return {key: s.key, label: s.label}; })},
+     {header: 'Publicado pelo BC (C2 Boxe2 Graf 1)', items: NEUTRA_SERIES.slice(4).map(function(s) { return {key: s.key, label: s.label}; })}],
+    _neutraSel, function(sel) { _neutraSel = sel; desenha(); });
+  wireDlToggle('dl-neutra', function(on) { _neutraLabels = on; desenha(); });
+}
+
+function renderHiato() {
+  var info = D.info || {};
+  var n = ser('hiato', 'nosso'), un = lastValid(n.dates, n.values);
+  var p = ser('hiato', 'pub_central'), up = lastValid(p.dates, p.values);
+  setKPI('kpi-hn', un ? un.value : null, 'estado suavizado, ' + (un ? fmtDate(un.date, 'hiato') : ''), '%');
+  setKPI('kpi-hp', up ? up.value : null, 'pm_hiato_produto, ' + (up ? fmtDate(up.date, 'hiato') : ''), '%');
+  setKPI('kpi-hc', info.hiato_corr, (info.hiato_n || 0) + ' trimestres, 2003T4–2023T4', '');
+
+  function desenha(sl) {
+    var t = [];
+    // dispersão da suíte de modelos (edições >=2024-09) como faixa; NÃO é a mesma coisa
+    // que a banda de +-2 d.p. de um modelo só das edições anteriores
+    var lo = ser('hiato', 'pub_minimo'), hi = ser('hiato', 'pub_maximo');
+    if (lo.dates.length && hi.dates.length) {
+      t.push({type: 'scatter', mode: 'lines', name: 'Suíte do BC (mín–máx)', x: hi.dates, y: hi.values,
+              line: {width: 0}, hoverinfo: 'skip', showlegend: false});
+      t.push({type: 'scatter', mode: 'lines', name: 'Suíte do BC (mín–máx)', x: lo.dates, y: lo.values,
+              line: {width: 0}, fill: 'tonexty', fillcolor: 'rgba(65,135,145,0.13)', hoverinfo: 'skip'});
+    }
+    t.push(lineTrace(ser('hiato', 'pub_central'), 'BC — central', C.verde, sl, 2, '%'));
+    t.push(lineTrace(ser('hiato', 'nosso'), 'Nosso (latente)', C.azul, sl, 2, '%'));
+    _reactPreserveX('chart-hiato', t, mkTimeseriesLayout('% do produto potencial', 540, t));
+    var ch = [lineTrace(ser('hiato', 'choque_persistente'), 'Choque persistente sʰ', C.laranja, sl, 2, '%')];
+    _reactPreserveX('chart-hiato-choque', ch, mkTimeseriesLayout('% do produto potencial', 440, ch));
+  }
+  wireDlToggle('dl-hiato', function(on) { desenha(on); });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// APÊNDICE — descrição do modelo, equação por equação
+// ══════════════════════════════════════════════════════════════════════════════
+// A prosa vive aqui, e não no HTML, de propósito: cada equação é escrita com o
+// COEFICIENTE ESTIMADO no lugar do símbolo, lido de D.info.params. Reestimar o modelo
+// reescreve a descrição, em vez de deixá-la envelhecer em silêncio ao lado de números
+// novos. Uma nota nova é um objeto {t, c} novo em MODELO_ITENS() — o bloco expansível
+// em volta é montado por renderModelo().
+//
+// Convenção visual das equações: dourado = coeficiente estimado por nós;
+// azul = estado latente (o que o filtro recupera); o resto é dado observado.
+function _b(v, d) { return '<b>' + fmtBR(v, d == null ? 3 : d) + '</b>'; }
+function _lat(s) { return '<span class="lat">' + s + '</span>'; }
+function _eq(num, corpo) {
+  return '<div class="eq"><span class="n">(' + num + ')</span>' + corpo + '</div>';
+}
+function _nota(txt) { return '<div class="eq-note">' + txt + '</div>'; }
+
+function MODELO_ITENS() {
+  var i = D.info || {}, p = i.params || {}, e5 = i.eq5 || {};
+  var pe = 1 - p.a1L - p.a1I;            // peso da expectativa na Phillips (os 3 somam 1)
+  var tw = 1 - p.t1 - p.t2;              // peso do bloco de longo prazo na Taylor
+  var fm = e5.w_meta != null ? e5.w_meta : 1 - p.f1 - p.f2 - p.f3;
+  var mult = p.b1 != null ? p.b2 / (1 - p.b1) : null;
+  var h = _lat('hₜ'), h1 = _lat('hₜ₋₁'), sh = _lat('sʰₜ');
+
+  return [
+
+  {t: 'Visão geral: cinco estados latentes, sete equações de observação',
+   c: 'É o modelo semiestrutural de pequeno porte do boxe <strong>"Atualização dos modelos '
+    + 'semiestruturais de pequeno porte"</strong> (Relatório de Inflação de jun/2024), escrito em '
+    + 'espaço de estados e estimado por máxima verossimilhança restrita sobre '
+    + '<strong>2003T4–2023T4</strong> — a amostra do boxe. Com os parâmetros congelados, os estados '
+    + 'são estendidos até <strong>' + fmtTri(i.ultimo_tri) + '</strong>, que é de onde parte todo '
+    + 'cenário.'
+    + '<br><br>Nada do que o modelo precisa saber sobre o ciclo é observável, e é essa a razão de ele '
+    + 'ser um filtro e não uma regressão. O vetor de estados é '
+    + '<code>x = [h, h₋₁, sʰ, r̂*ᴵˢ, r̂*ᵀᴬʸ]</code>: o hiato do produto, sua defasagem, o choque '
+    + 'persistente de demanda e os desvios das duas taxas neutras em relação à tendência comum.'
+    + '<br><br>Contra eles, sete observáveis: as quatro medidas de atividade (PIB, Nuci, desocupação '
+    + 'e Caged), a inflação de preços livres, a Selic e a variação do câmbio. As quatro equações de '
+    + 'comportamento — Phillips (1), IS (2), Taylor (3) e paridade descoberta (4) — entram como '
+    + 'equações de observação, cada uma trazendo o seu próprio resíduo; as quatro de atividade '
+    + '(6)-(9) são o que identifica o hiato.'
+    + '<br><br>Numa <strong>simulação</strong> a ordem é outra e é recursiva: '
+    + '(2.1)&nbsp;→&nbsp;(2)&nbsp;→&nbsp;(1)&nbsp;→&nbsp;IPCA, com (3) fechando a Selic quando ela é '
+    + 'endógena, (4) o câmbio e (5) a expectativa. A eq. (5) é a única que não é recursiva — é um '
+    + 'ponto fixo, e por isso resolvida de uma vez em vez de propagada.'
+    + '<br><br><strong>Unidades</strong>: juros e taxa neutra em % a.a.; inflação em % no trimestre '
+    + '(a expectativa de 12 meses aparece dividida por 4 na Phillips); hiato em % do produto '
+    + 'potencial. <strong>Fora do modelo</strong>, por decisão: o bloco de preços administrados '
+    + '(πᴬ é premissa) e o hiato mundial <code>β₄h*</code>.'},
+
+  {t: '(1) Curva de Phillips de preços livres',
+   c: _eq('1', 'πᴸₜ = ' + _b(p.a1L) + '·πᴸₜ₋₁ + ' + _b(p.a1I) + '·¼Σᵢ₌₁..₄ πᴵᴾᶜᴬₜ₋ᵢ + '
+        + _b(pe) + '·πᵉₜ,ₜ₊₄/4 + ' + _b(p.a2) + '·π*ₜ + ' + _b(p.a3, 4) + '·Δêₜ₋₁ + '
+        + _b(p.a4) + '·' + h + ' + ' + _b(p.a5, 4) + '·Zᴱˡₜ + ' + _b(p.a6, 4) + '·Yᴸᵃₜ + ε')
+    + 'Os três primeiros pesos <strong>somam 1 por construção</strong>: o da expectativa é o resíduo '
+    + '<code>1−α₁ᴸ−α₁ᴵ</code>, e é ele que decide se a curva é retrospectiva ou prospectiva. Em '
+    + fmtBR(pe, 3) + ' a nossa é bem mais prospectiva que a do BC (0,38 de inércia do IPCA contra os '
+    + 'nossos ' + fmtBR(p.a1I, 3) + '), e essa é a diferença substantiva entre as duas estimações — '
+    + 'com a expectativa pesando mais, choques propagam menos.'
+    + '<br><br>O único estado aqui é o hiato: <code>α₄ = ' + fmtBR(p.a4, 3) + '</code> é o preço, em '
+    + 'p.p. de inflação trimestral de livres, de 1 p.p. de hiato. Todo o resto é dado observado — '
+    + 'inclusive <code>πᵉ</code>, que no filtro é a Focus e não a expectativa do próprio modelo '
+    + '(ver a eq. 5).'
+    + '<br><br><strong>Clima.</strong> <code>Zᴱˡ</code> e <code>Yᴸᵃ</code> são a média de '
+    + '<code>Clima²</code> nos 3 trimestres mais recentes <em>menos</em> a dos 3 anteriores, cada uma '
+    + 'restrita à sua fase (El Niño quando o ONI é positivo, La Niña quando é negativo) — é a forma '
+    + 'do somatório duplo publicado. O ONI entra em <strong>décimos de grau</strong>: em graus, o '
+    + 'termo inteiro contribuiria 0,006 p.p. e seria decoração, não variável.'
+    + '<br><br>O IPCA cheio sai de <code>0,767·πᴸ + 0,233·πᴬ</code>, pesos recuperados por regressão '
+    + '(R² 0,978) porque o BC não os publica.'},
+
+  {t: '(1.1) Inflação importada: o IC-Br líquido da meta',
+   c: _eq('1.1', 'π*ₜ = 0,687·π*ᵃᵍʳᵒₜ + 0,154·π*ᵐᵉᵗᵃˡₜ + 0,159·π*ᵉⁿᵉʳᵍⁱᵃₜ')
+    + _nota('cada componente entra como variação do subíndice do IC-Br <em>menos</em> meta/4')
+    + 'Os pesos vêm de regressão do IC-Br cheio contra os três subíndices (R² 0,995) — também não '
+    + 'publicados. O detalhe que engana: como cada termo já é <em>líquido de meta/4</em>, '
+    + '<code>π* = 0</code> significa commodities correndo à meta, não commodities paradas. É por isso '
+    + 'que o card de inflação importada, no simulador, mostra a variação do índice e converte por '
+    + 'dentro — sem isso, digitar 0 ali seria um choque desinflacionário silencioso.'},
+
+  {t: '(2) Curva IS: a equação de movimento do hiato',
+   c: _eq('2', h + ' = ' + _b(p.b1) + '·' + h1 + ' − ' + _b(p.b2) + '·r̂ₜ₋₁/4 − '
+        + _b(p.b3, 4) + '·r̂pₜ + ' + sh + ' + εᶜʳ⁰⁸ + εᶜʳ²⁰')
+    + _eq('2.2', sh + ' = ' + _b(p.b5) + '·' + _lat('sʰₜ₋₁') + ' + εʰ')
+    + 'O canal de política monetária é <code>β₂ = ' + fmtBR(p.b2, 3) + '</code> sobre o juro real em '
+    + 'desvio da neutra, defasado um trimestre e dividido por 4 (ele está em % a.a.). O multiplicador '
+    + 'de longo prazo é <code>β₂/(1−β₁) = ' + fmtBR(mult, 2) + '</code> — mas essa não é a estatística '
+    + 'robusta: perto de 0,85 ela muda ~17% para cada 0,01 em <code>β₁</code>, e o nosso '
+    + '<code>β₁</code> está <em>dentro</em> do intervalo do BC.'
+    + '<br><br><code>r̂p</code> é o resultado primário ciclicamente ajustado (semi-elasticidade de '
+    + '0,30% do PIB por p.p. de hiato) em desvio da própria tendência HP. Sinal negativo: aperto '
+    + 'fiscal fecha o hiato.'
+    + '<br><br><strong>O choque persistente <code>sʰ</code> não é um estado separado do resíduo</strong> '
+    + '— é o mesmo <code>εʰ</code> que entra em <code>h</code>, e o que o AR(1) de ' + fmtBR(p.b5, 3)
+    + ' faz é dar cauda a ele. É a parcela que a aba Decomposição isola e que o input "choque no '
+    + 'hiato" do simulador edita.'
+    + '<br><br>As duas dummies de crise (2008T4–2009T4 e 2020T1–2020T4) <strong>não mexem na '
+    + 'média</strong>: só multiplicam o desvio-padrão do choque por <code>k₀₈ = ' + fmtBR(p.k08, 2)
+    + '</code> e <code>k₂₀ = ' + fmtBR(p.k20, 2) + '</code>. Sem isso, quatro trimestres de Covid '
+    + 'puxariam os parâmetros de toda a amostra para explicá-los.'},
+
+  {t: '(2.1)–(2.4) e (3.1) Como a taxa neutra é recuperada',
+   c: _eq('2.1', 'r̂ₜ = iᵉₜ,ₜ₊₄ − πᵉₜ,ₜ₊₄ − r*ᴵˢₜ')
+    + _eq('2.3', 'r*ᴵˢₜ = r̄ₜ + ' + _lat('r̂*ᴵˢₜ') + '&nbsp;&nbsp;&nbsp;r̄ = tendência HP(1600) do juro real Focus')
+    + _eq('2.4', _lat('r̂*ᴵˢₜ') + ' = ' + _lat('r̂*ᴵˢₜ₋₁') + ' + εʳ*&nbsp;&nbsp;&nbsp;σ(εʳ*) = '
+        + fmtBR(D.info && D.info.sigma_rr, 4) + ', calibrado')
+    + _eq('3.1', 'r*ᵀᴬʸₜ = r̄ₜ + ' + _lat('r̂*ᵀᴬʸₜ') + '&nbsp;&nbsp;&nbsp;mesma tendência, desvio com estado próprio')
+    + 'A neutra é recuperada em <strong>duas camadas</strong>, e só a segunda é latente.'
+    + '<br><br><strong>A tendência <code>r̄</code></strong> vem de fora do filtro: HP(1600) de dois '
+    + 'lados sobre o juro real da Focus — Selic esperada 12 meses à frente menos IPCA esperado 12 '
+    + 'meses à frente, diferença simples e não Fisher exato, como na própria eq. (2.1). O HP roda '
+    + '<strong>com uma cauda de projeção Focus</strong> que entra no filtro e sai do resultado: sem '
+    + 'ela o viés de ponta põe a tendência em 7,15% em 2023T4 contra 4,82% da mediana publicada; com '
+    + 'ela, 5,01%.'
+    + '<br><br><strong>O desvio</strong> é um passeio aleatório sem deriva, um por equação, e é o que '
+    + 'o filtro recupera. O desvio-padrão do choque desses passeios <strong>não é estimado</strong>: '
+    + 'é calibrado casando a variância da primeira diferença de <code>r*</code> com a das cinco '
+    + 'medidas publicadas no C2 Boxe2 Graf 1 do anexo — o que o boxe diz fazer. Sai '
+    + '<code>' + fmtBR(D.info && D.info.sigma_rr, 4) + '</code>.'
+    + '<br><br><strong>As duas neutras não são redundância.</strong> Compartilham <code>r̄</code> e '
+    + 'diferem só no desvio — o que muda é a <em>identificação</em>. A da IS é o único termo da eq. (2) '
+    + 'que altera o quanto o juro real corrente aparece como restritivo, então sai do que as medidas '
+    + 'de atividade dizem. A da Taylor carrega <code>(1−θ₁−θ₂) = ' + fmtBR(tw, 3) + '</code> na eq. (3), '
+    + 'então sai do que a Selic observada revela sobre onde o Copom acha que a neutra está. Hoje: '
+    + '<strong>' + fmtBR(i.r_is_hoje, 2) + '%</strong> na IS contra <strong>' + fmtBR(i.r_tay_hoje, 2)
+    + '%</strong> na Taylor — política sistematicamente mais apertada do que a demanda pedia.'
+    + '<br><br><strong>É a premissa que domina todo cenário, e precisa de olhar.</strong> Com dado até '
+    + fmtTri(i.ultimo_tri) + ' o <code>r*</code> da IS está em ' + fmtBR(i.r_is_hoje, 1) + '%, contra '
+    + fmtBR(i.neutra_pub_ult, 1) + '% da mediana que o BC publicou para ' + fmtTri(i.neutra_pub_tri)
+    + '. Não é bug: é a definição do boxe — tendência do juro real <em>corrente</em> mais um passeio '
+    + 'aleatório —, e ela responde ao próprio aperto. Mas é o que faz a Selic de 15% parecer pouco '
+    + 'restritiva e uma Selic de 10% aparecer como expansionista.'},
+
+  {t: '(3) Regra de Taylor',
+   c: _eq('3', 'iₜ = ' + _b(p.t1) + '·iₜ₋₁ ' + (p.t2 < 0 ? '− ' + _b(-p.t2) : '+ ' + _b(p.t2))
+        + '·iₜ₋₂ + ' + _b(tw) + '·[' + _lat('r*ᵀᴬʸₜ') + ' + πᵐᵉᵗᵃₜ + ' + _b(p.t3)
+        + '·(πᵉₜ,ₜ₊₄ − πᵐᵉᵗᵃₜ)] + ε')
+    + '<code>θ₁+θ₂ = ' + fmtBR(p.t1 + p.t2, 3) + '</code> é a suavização de juros; o que sobra, '
+    + '<code>' + fmtBR(tw, 3) + '</code>, é o peso do bloco de longo prazo. <code>θ₃ = '
+    + fmtBR(p.t3, 2) + '</code> maior que 1 é o princípio de Taylor: o juro <em>real</em> sobe quando '
+    + 'a expectativa se afasta da meta.'
+    + '<br><br>A eq. (3) é usada de duas maneiras no relatório, e a diferença importa. No '
+    + '<strong>filtro</strong> ela é equação de observação: a Selic realizada é o que informa '
+    + '<code>r*ᵀᴬʸ</code>. Na aba <strong>Modelo BC — Agregado</strong> ela pode ser a resposta — '
+    + 'extensão nossa, porque o <code>simular()</code> do Python só aceita a Selic como caminho dado. '
+    + 'Ligar a regra <strong>troca o sinal de um choque de expectativa</strong>: com a Selic exógena, '
+    + 'expectativa maior derruba o juro real ex-ante e <em>abre</em> o hiato; com a Taylor ligada o BC '
+    + 'reage e o hiato <em>fecha</em>.'},
+
+  {t: '(4) Paridade descoberta de juros',
+   c: _eq('4', 'Δeₜ = Δeᵖᵖᶜₜ − ' + _b(p.delta, 2) + '·(i^difₜ − i^difₜ₋₁) + ε')
+    + _eq('4.1', 'i^difₜ = iₜ − (i*ₜ + CDSₜ)')
+    + _eq('4.2', 'Δeᵖᵖᶜₜ = (πᵐᵉᵗᵃₜ − 2)/4')
+    + 'Com o diferencial de juros parado, o câmbio anda pela PPC: meta menos a inflação externa de '
+    + 'equilíbrio de 2% (nota 5 do boxe). <code>δ = ' + fmtBR(p.delta, 2) + '</code> é a apreciação, '
+    + 'em %, por p.p. de <em>variação</em> do diferencial — é a variação que entra, não o nível.'
+    + '<br><br>É a única equação que <strong>não carrega estado nenhum</strong>: ela está no filtro só '
+    + 'para estimar <code>δ</code>. Fica genuinamente inativa antes de 2008T1, onde o CDS começa — o '
+    + 'filtro trata a observação como faltante em vez de gerar resíduo contra intercepto zero.'
+    + '<br><br>É também o canal que menos aparece aqui: <code>α₃ = ' + fmtBR(p.a3, 4) + '</code> na '
+    + 'Phillips contra 0,011 do BC e, principalmente, falta o bloco de administrados — no modelo deles '
+    + 'o repasse cambial dos administrados é 1,65 p.p. por 10% de depreciação contra 0,72 dos livres.'},
+
+  {t: '(5) Expectativas de inflação: o ponto fixo, e por que ele vive no simulador',
+   c: _eq('5', 'πᵉₜ,ₜ₊₄ = ' + _b(p.f1) + '·πᵉₜ₋₁,ₜ₊₃ + ' + _b(p.f2) + '·Eₜπₜ,ₜ₊₄ + '
+        + _b(p.f3) + '·Σᵢ₌₁..₄ πᴵᴾᶜᴬₜ₋ᵢ + ' + _b(fm) + '·πᵐᵉᵗᵃₜ + ε')
+    + 'O termo <code>Eₜπ</code> é a previsão do <em>próprio modelo</em> quatro trimestres à frente, '
+    + 'então a (5) é um ponto fixo: a expectativa entra na Phillips, que produz o IPCA, que realimenta '
+    + 'a expectativa.'
+    + '<br><br><strong>Como é resolvida.</strong> O modelo é linear, então o mapa '
+    + '<code>πᵉ ↦ eq5(ipca(πᵉ))</code> é <strong>afim</strong>, e a (5) vira o sistema '
+    + '<code>(I − G)πᵉ = g</code>, montado coluna a coluna e resolvido de uma vez. Resíduo na ordem de '
+    + '10⁻¹⁴, e mais barato que iterar. O raio espectral de <code>G</code> nestes φ é '
+    + '<strong>' + fmtBR(e5.raio, 2) + '</strong>.'
+    + '<br><br><strong>Mas a fronteira é real.</strong> O raio passa de 1 em <code>φ₂ ≈ 0,32</code>, e '
+    + 'acima disso dobrar o buffer de horizonte muda a resposta em p.p. inteiros — não existe caminho '
+    + 'de expectativa bem definido, e o que responde passa a ser a condição terminal, não o modelo. O '
+    + 'simulador testa isso a cada rodada, resolvendo o sistema duas vezes com folgas diferentes, e '
+    + 'reporta na linha de diagnóstico acima dos KPIs.'
+    + '<br><br><strong>Os três φ não vêm do filtro.</strong> São mínimos quadrados não lineares sobre a '
+    + 'previsão que o próprio modelo faz a partir do estado <em>filtrado</em> — não do suavizado, para '
+    + 'a previsão não olhar o futuro (n = ' + (e5.n || 0) + ', R² = ' + fmtBR(e5.r2, 3) + '). Dentro do '
+    + 'filtro, <code>πᵉ</code> segue entrando como dado observado da Focus, que é o que ele de fato é. '
+    + 'A assimetria é proposital: num cenário os exógenos são dados por construção, mas na amostra o '
+    + 'mesmo objeto exigiria fixar o que o modelo espera de πᴬ, π*, Δe e r̂p em cada trimestre — '
+    + 'convenção que o boxe não publica e que moveria <code>Eₜπ</code> mais do que os próprios φ.'},
+
+  {t: '(6)-(9) Como o hiato do produto é recuperado',
+   c: _eq('6', 'f^PIBₜ = ' + h + ' + σₕ·ν')
+    + _eq('7', 'f^Nuciₜ / ' + _b(p.gn, 2) + ' = ' + h + ' + σₕ·ν')
+    + _eq('8', 'f^Empₜ / ' + _b(p.ge, 2) + ' = ' + h1 + ' + σₕ·ν')
+    + _eq('9', 'f^Cagedₜ / ' + _b(p.gc, 2) + ' = ' + h1 + ' + σₕ·ν')
+    + _nota('σₕ = ' + fmtBR(p.sh, 3) + ' — o mesmo ruído de medição para as quatro, uma vez normalizadas')
+    + 'O hiato não é dado nem é um filtro univariado: é <strong>o que quatro medidas de atividade têm '
+    + 'em comum</strong>. Cada <code>γ</code> é o fator que traduz a medida para a escala do hiato do '
+    + 'PIB, e o ruído entra <em>escalado pelo mesmo γ</em> — o que equivale a dizer que as quatro '
+    + 'séries, normalizadas, têm o mesmo desvio-padrão de erro de mensuração.'
+    + '<br><br><strong>Como cada série entra:</strong> PIB e Novo Caged como ciclo HP(1600) do log; '
+    + 'Nuci e desocupação como desvio da média pré-Covid (até 2019T4). A desocupação entra com '
+    + '<strong>sinal invertido</strong>, porque é contracíclica. PIB e Nuci carregam em '
+    + '<code>hₜ</code>; desocupação e Caged, em <code>hₜ₋₁</code> — emprego reage com defasagem.'
+    + '<br><br><strong>Mas a informação não para aí, e é isso que separa este hiato de um HP '
+    + 'multivariado.</strong> A Phillips (1) também é equação de observação e carrega '
+    + '<code>α₄·hₜ</code>: inflação de livres alta demais para os condicionantes empurra o hiato para '
+    + 'cima. E a IS (2) é a lei de movimento — o hiato de hoje tem de ser compatível com o juro real e '
+    + 'o resultado fiscal de ontem. O filtro de Kalman suavizado concilia as três fontes.'
+    + '<br><br>A inicialização é <strong>prior própria, não difusa</strong>: desvio-padrão de 3 p.p. '
+    + 'para o hiato e 2 p.p. para o desvio de <code>r*</code>. Com difusa o filtro gasta os primeiros '
+    + 'trimestres fixando <code>r̂*ᵀᴬʸ</code> num nível arbitrário do qual não sai.'
+    + '<br><br><strong>Resultado.</strong> Correlação de <strong>' + fmtBR(i.hiato_corr, 3) + '</strong> '
+    + 'contra o hiato que o BC publica (n = ' + (i.hiato_n || 0) + '), com desvio-padrão praticamente '
+    + 'idêntico. No último trimestre, <code>h = ' + fmtBR(i.h_hoje, 2) + '%</code>.'},
+
+  {t: 'Choques e ruídos de medição: os parâmetros sem contraparte publicada',
+   c: 'A Tabela 1 do boxe publica moda e intervalo para os ' + (i.n_total || 22) + ' parâmetros de '
+    + 'comportamento — são eles que a tabela de validação abaixo confere. Estes outros são estimados '
+    + 'no mesmo passo, mas o BC não os publica, então não há contra o que compará-los:'
+    + _tabChoques(p, i.sigma_rr)
+    + 'O <code>k</code> de cada janela não muda média nenhuma: multiplica o desvio-padrão do choque '
+    + 'naquele intervalo. O <code>σₕ</code> das quatro séries de atividade é a exceção — esse o BC '
+    + 'publica, e ele está na tabela de validação.'},
+
+  ];
+}
+
+// Tabela dos parâmetros de variância. Fica fora de MODELO_ITENS() só por tamanho.
+function _tabChoques(p, sigma_rr) {
+  var linhas = [
+    ['σ(εʰ)',   p.s_h,  4, 'Choque de demanda da IS, por trimestre'],
+    ['k₀₈',     p.k08,  2, 'Multiplicador do choque na crise de 2008 (2008T4–2009T4)'],
+    ['k₂₀',     p.k20,  2, 'Multiplicador do choque na Covid (2020T1–2020T4)'],
+    ['σ(επᴸ)',  p.s_pi, 4, 'Resíduo da curva de Phillips'],
+    ['kπ',      p.k_pi, 2, 'Multiplicador do resíduo da Phillips em 2020T2–2022T4'],
+    ['σ(εⁱ)',   p.s_i,  4, 'Resíduo da regra de Taylor'],
+    ['σ(εᵉ)',   p.s_e,  3, 'Resíduo da paridade descoberta — câmbio trimestral é volátil'],
+    ['σ(εʳ*)',  sigma_rr, 4, 'Passeio aleatório das duas neutras — CALIBRADO, não estimado'],
+  ];
+  var h = '<table class="par-table"><thead><tr><th>Parâmetro</th><th>Valor</th>'
+        + '<th>O que é</th></tr></thead><tbody>';
+  linhas.forEach(function(l) {
+    h += '<tr><td class="s">' + l[0] + '</td><td class="v">' + fmtBR(l[1], l[2]) + '</td>'
+       + '<td>' + l[3] + '</td></tr>';
+  });
+  return h + '</tbody></table>';
+}
+
+function renderModelo() {
+  var i = D.info || {};
+  var lead = document.getElementById('mod-lead');
+  if (lead) {
+    lead.innerHTML = 'Espaço de estados com <strong>5 estados latentes</strong> e '
+      + '<strong>7 equações de observação</strong>, estimado por máxima verossimilhança restrita em '
+      + '2003T4–2023T4 e estendido até ' + fmtTri(i.ultimo_tri) + ' com os parâmetros congelados. '
+      + 'Cada equação abaixo vem escrita com o <b>coeficiente estimado</b> no lugar do símbolo e com o '
+      + '<span class="lat">estado latente</span> destacado — o que se lê é o modelo que está rodando, '
+      + 'não a especificação publicada. A comparação com as modas do BC vem logo abaixo.';
+  }
+  var box = document.getElementById('modelo-desc');
+  if (!box) return;
+  box.innerHTML = MODELO_ITENS().map(function(it) {
+    return '<details class="appendix-item"><summary>' + it.t + '</summary>'
+         + '<div class="appendix-body">' + it.c + '</div></details>';
+  }).join('');
+}
+
+function renderAppendix() {
+  renderModelo();
+  var info = D.info || {};
+  var val = info.validacao || [];
+  var lead = document.getElementById('val-lead');
+  if (lead) {
+    var e5 = info.eq5 || {};
+    lead.innerHTML = '<strong>' + (info.n_dentro || 0) + ' de ' + (info.n_total || 0) + '</strong> parâmetros '
+      + 'caem dentro do intervalo de credibilidade de 90% que o próprio BC publica. '
+      + 'Log-verossimilhança de ' + fmtBR(info.logL, 2) + ', contra ' + fmtBR(info.logL_bcb, 2)
+      + ' avaliada nas modas publicadas. Os três <code>φ</code> da equação (5) não vêm do filtro: '
+      + 'são mínimos quadrados não lineares sobre a previsão que o próprio modelo faz '
+      + '(n = ' + (e5.n || 0) + ', R² = ' + fmtBR(e5.r2, 4) + ', rmse ' + fmtBR(e5.rmse, 3)
+      + ' p.p.) — a coluna de método marca quais.';
+  }
+  var sg = document.getElementById('ap-sigma');
+  if (sg) sg.textContent = fmtBR(info.sigma_rr, 4);
+
+  var tb = document.getElementById('tab-validacao');
+  if (tb && val.length) {
+    var h = '<thead><tr><th class="col-label">Parâmetro</th><th class="col-label">Descrição</th>'
+          + '<th>Nosso</th><th>BC</th><th>Dif.</th><th>IC 90% do BC</th><th>Dentro</th>'
+          + '<th class="col-label">Estimado por</th></tr></thead><tbody>';
+    val.forEach(function(r) {
+      h += '<tr' + (r.dentro ? '' : ' class="is-total"') + '>'
+        + '<td class="col-label"><code>' + r.param + '</code></td>'
+        + '<td class="col-label">' + r.descricao + '</td>'
+        + '<td class="col-value">' + fmtBR(r.nosso, 4) + '</td>'
+        + '<td class="col-value">' + fmtBR(r.bcb, 4) + '</td>'
+        + '<td class="col-value">' + (r.dif > 0 ? '+' : '') + fmtBR(r.dif, 4) + '</td>'
+        + '<td class="col-value">[' + fmtBR(r.ic_lo, 3) + '; ' + fmtBR(r.ic_hi, 3) + ']</td>'
+        + '<td class="col-value">' + (r.dentro ? 'sim' : '<strong>não</strong>') + '</td>'
+        + '<td class="col-label">' + (r.metodo || 'filtro') + '</td></tr>';
+    });
+    tb.innerHTML = h + '</tbody>';
+  }
+
+  var vd = document.getElementById('ap-veredito');
+  if (vd) {
+    var f = info.irf || {};
+    var p = info.params || {};
+    var mult = (p.b2 != null && p.b1 != null) ? (p.b2 / (1 - p.b1)) : null;
+    var mb = f.motor_bcb || {};
+    vd.innerHTML =
+      '<strong>Reproduz.</strong> O bloco IS praticamente exato: <code>β₂</code> (juro real) em '
+      + fmtBR(p.b2, 4) + ' contra 0,44 do BC, <code>β₃</code> em ' + fmtBR(p.b3, 4) + ' contra 0,030, '
+      + '<code>β₅</code> em ' + fmtBR(p.b5, 4) + ' contra 0,84. O hiato latente tem correlação '
+      + fmtBR(info.hiato_corr, 3) + ' com o publicado, com desvio-padrão praticamente idêntico. '
+      + 'E o teste mais direto de implementação: <em>o mesmo motor rodado com as modas publicadas</em> '
+      + 'reproduz o IRF do BC com erro absoluto médio de <strong>' + fmtBR(mb.erro_abs_medio, 3)
+      + ' p.p.</strong>, picando no mesmo trimestre. O que separa o nosso IRF do publicado é '
+      + 'parâmetro estimado, não código.'
+      + '<br><br><strong>A escala do clima era unidade, não economia.</strong> <code>α₅</code> e '
+      + '<code>α₆</code> batiam no teto do suporte da priori enquanto o ONI entrava em graus. A '
+      + 'verossimilhança pedia coeficiente ~107× a moda publicada, e o <code>k</code> implícito ficava '
+      + 'entre 10,2 e 10,6 em <em>todos</em> os ajustes deixa-um-episódio-ENSO-de-fora — ou seja, não '
+      + 'era um El Niño carregando a estimativa. Com o ONI em <strong>décimos de grau</strong> os dois '
+      + 'caem dentro do intervalo, <code>α₅</code> praticamente na moda. O argumento que fecha: o '
+      + 'suporte [0; 0,01], que o BC chama de "pouco informativo", limitaria o clima a 0,05 p.p. se '
+      + 'a unidade fosse grau.'
+      + '<br><br><strong>Não reproduz.</strong> Cinco parâmetros ficam fora, e cada um tem '
+      + 'diagnóstico próprio. <code>α₁ⁱ</code> (inércia do IPCA) em ' + fmtBR(p.a1I, 4) + ' contra 0,38 '
+      + 'é o substantivo: nossa Phillips ficou muito mais prospectiva, e com ela shocks propagam '
+      + 'menos. <code>φ₂</code> em ' + fmtBR(p.f2, 3) + ' contra 0,11 vai no sentido oposto — a nossa '
+      + 'expectativa é o dobro mais sensível à previsão do modelo — mas é fracamente identificado: '
+      + 'o R² cai só de 0,896 para 0,878 nas modas do BC. <code>α₄</code>, <code>θ₂</code> e '
+      + '<code>γ</code> do Caged ficam marginalmente fora.'
+      + '<br><br><strong>O multiplicador não é a estatística robusta.</strong> '
+      + '<code>β₂/(1−β₁)</code> sai em ' + fmtBR(mult, 2) + ' contra 2,93 do BC, e a diferença é '
+      + 'inteiramente <code>β₁</code> — que está <em>dentro</em> do intervalo deles. Perto de 0,85 o '
+      + 'multiplicador muda ~17% para cada 0,01 em <code>β₁</code>: é <code>β₂</code> que se estima '
+      + 'bem, não a razão. Trocar <code>β₁</code>, <code>α₄</code> e <code>α₁ⁱ</code> pelos do BC ao '
+      + 'mesmo tempo faz o IRF <em>passar</em> de −0,30 para −0,56: os três interagem, e nenhum '
+      + 'isolado explica a diferença.';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MOTOR DO MODELO AGREGADO — porte JS de modelo_agregado.simular()
+// ══════════════════════════════════════════════════════════════════════════════
+// A aba Cenários escolhe entre trajetórias que o Python pré-simulou. Esta aba é o
+// contrário: o simulador roda AQUI, a cada mudança de input, porque a pergunta que ela
+// responde ("e se eu fixar isto e deixar aquilo endógeno?") tem combinação demais para
+// pré-calcular. O payload que `_motor_cfg()` manda não é resultado, é insumo:
+// parâmetros, condições iniciais lidas em t0 e o caminho default de cada condicionante.
+//
+// As equações são as mesmas, na mesma ordem: (2.1) -> (2) -> (1) -> IPCA, com (3) para
+// a Selic endógena, (4) para o câmbio e (5) para a expectativa. Divergir do Python aqui
+// é bug, e o teste que fecha isso roda este motor com a configuração equivalente a
+// `cenarios_padrao()` e exige bater com os CSVs gravados de lá.
+//
+// O que NÃO está aqui, igual ao Python: preços administrados. π^A é premissa.
+//
+// FORMA DA CONFIG (a mesma que a interface edita e que um cenário salvo guarda), no
+// padrão do `levels[]` do FX Report — um vetor por input, uma posição por trimestre:
+//   {n: 16, selic: {modo: 'endog'|'manual', vals: [...]}, ..., h0: {v}, s_h0: {v}}
+// `vals` é sempre a fonte da verdade quando o modo é manual; quando é endógeno o motor
+// resolve e a interface reescreve as caixas com o caminho resolvido, travadas.
+
+function _mtNum(v, dflt) {
+  if (v === '' || v == null) return dflt;
+  var x = parseFloat(String(v).replace(',', '.'));
+  return isFinite(x) ? x : dflt;
+}
+
+// Caminho default de cada condicionante, no horizonte reportado. Uma fonte só, usada
+// tanto pelo motor (fallback de caixa vazia) quanto pela interface (o que "Repor padrão"
+// escreve e o que as caixas mostram ao abrir).
+function mtDefaults(n) {
+  var M = D.motor_cfg, ini = M.ini, o = {}, i;
+  var meta = [], deppc = [];
+  for (i = 0; i < n; i++) {
+    var m = M.meta[Math.min(i, M.meta.length - 1)];
+    meta.push(m);
+    deppc.push((m - M.pi_ext) / 4);
+  }
+  function flat(v) { var a = []; for (var k = 0; k < n; k++) a.push(v); return a; }
+  o.meta = meta;
+  o.selic = M.dflt.selic_focus.slice(0, n);
+  while (o.selic.length < n) o.selic.push(o.selic[o.selic.length - 1]);
+  o.pi_e = flat(M.dflt.pi_e_focus);
+  o.de = deppc;
+  o.pi_A = meta.map(function(m) { return m / 4; });
+  // O card e o IC-Br, nao o pi* cru: pi* = variacao do IC-Br - meta/4 (eq. 1.1, os pesos
+  // somam 1). O default e a meta/4, que e a variacao de commodities consistente com pi* = 0
+  // -- digitar 0 aqui significa "commodities paradas", nao "sem choque externo".
+  o.icbr = meta.map(function(m) { return m / 4; });
+  o.rp = flat(M.dflt.rp);
+  // s^h e o CAMINHO do choque persistente, nao so a condicao inicial: o default e o
+  // decaimento que o proprio filtro implica (b5^(k+1) . s^h_t0), e digitar por cima e como
+  // se pergunta "e se a IS levar um choque de demanda em 2027?".
+  o.s_h = [];
+  for (i = 0; i < n; i++) o.s_h.push(Math.pow(M.par.b5, i + 1) * ini.s_h);
+  o.rr_IS = flat(ini.rr_IS);
+  o.rr_TAY = flat(ini.rr_TAY);
+  o.Zel = flat(0);
+  o.Yla = flat(0);
+  return o;
+}
+
+// Expectativa convergindo à meta em 8 trimestres — a mesma construção de
+// `cenarios_padrao()`. É atalho de preenchimento, não modo.
+function mtPathMeta(n) {
+  var M = D.motor_cfg, p0 = M.dflt.pi_e_focus, m = M.meta[0], o = [], i;
+  for (i = 1; i <= 8; i++) o.push(p0 + (m - p0) * i / 8);
+  for (i = 8; i < n; i++) o.push(m);
+  return o.slice(0, Math.max(n, 1));
+}
+
+// Le o vetor de um input para o horizonte INTERNO nn. Depois de `n` o último valor se
+// repete — mesmo prolongamento do `vec()` do Python, e é o que mantém o condicionante
+// constante no buffer que a eq. (5) precisa. Caixa vazia ou inválida cai no default.
+function _mtVals(spec, n, nn, base, decai) {
+  var v = new Array(nn), i, arr = (spec && spec.vals) || [];
+  for (i = 0; i < n; i++) v[i] = _mtNum(arr[i], base[Math.min(i, base.length - 1)]);
+  for (i = n; i < nn; i++) v[i] = (decai == null) ? v[n - 1] : v[i - 1] * decai;
+  return v;
+}
+
+// Eliminação de Gauss com pivoteamento parcial. A matriz da eq. (5) é (I − G), densa e
+// pequena (nn ≈ 56), então não vale nada mais sofisticado que isto.
+function _mtSolve(A, b) {
+  var n = b.length, i, j, k;
+  var M = new Array(n);
+  for (i = 0; i < n; i++) M[i] = A[i].slice().concat([b[i]]);
+  for (k = 0; k < n; k++) {
+    var p = k;
+    for (i = k + 1; i < n; i++) if (Math.abs(M[i][k]) > Math.abs(M[p][k])) p = i;
+    var t = M[k]; M[k] = M[p]; M[p] = t;
+    var piv = M[k][k];
+    if (!isFinite(piv) || Math.abs(piv) < 1e-13) return null;
+    for (i = k + 1; i < n; i++) {
+      var f = M[i][k] / piv;
+      if (f === 0) continue;
+      for (j = k; j <= n; j++) M[i][j] -= f * M[k][j];
+    }
+  }
+  var x = new Array(n);
+  for (i = n - 1; i >= 0; i--) {
+    var s = M[i][n];
+    for (j = i + 1; j < n; j++) s -= M[i][j] * x[j];
+    x[i] = s / M[i][i];
+  }
+  return x;
+}
+
+// Núcleo: monta os condicionantes, resolve a eq. (5) se ela estiver endógena e propaga.
+// Devolve os arrays no horizonte INTERNO (nn), mais os caminhos efetivos de cada input.
+function _mtCore(cfg, n, nn) {
+  var M = D.motor_cfg, par = M.par, ini = M.ini, phi = M.phi;
+  var wL = M.w_ipca[0], wA = M.w_ipca[1];
+  var i, B = mtDefaults(n);
+  var meta = new Array(nn);
+  for (i = 0; i < nn; i++) meta[i] = M.meta[Math.min(i, M.meta.length - 1)];
+  var de_ppc = new Array(nn);
+  for (i = 0; i < nn; i++) de_ppc[i] = (meta[i] - M.pi_ext) / 4;
+
+  function sp(key) { return (cfg && cfg[key]) || {}; }
+  var taylorOn = sp('selic').modo === 'endog';
+  var eq5On = sp('pi_e').modo !== 'manual';     // endógena é o default deste input
+  var uipOn = sp('de').modo !== 'manual';
+
+  // ── condicionantes exógenos ──
+  var iFix = taylorOn ? null : _mtVals(sp('selic'), n, nn, B.selic);
+  var pieFix = eq5On ? null : _mtVals(sp('pi_e'), n, nn, B.pi_e);
+  var deFix = uipOn ? null : _mtVals(sp('de'), n, nn, B.de);
+  var piA = _mtVals(sp('pi_A'), n, nn, B.pi_A);
+  var icbr = _mtVals(sp('icbr'), n, nn, B.icbr);
+  var piStar = new Array(nn);
+  for (i = 0; i < nn; i++) piStar[i] = icbr[i] - meta[i] / 4;
+  var rp = _mtVals(sp('rp'), n, nn, B.rp);
+  var rrIS = _mtVals(sp('rr_IS'), n, nn, B.rr_IS);
+  var rrTAY = _mtVals(sp('rr_TAY'), n, nn, B.rr_TAY);
+  var Zel = _mtVals(sp('Zel'), n, nn, B.Zel);
+  var Yla = _mtVals(sp('Yla'), n, nn, B.Yla);
+  var shPath = _mtVals(sp('s_h'), n, nn, B.s_h, par.b5);
+  var h0 = _mtNum(sp('h0').v, ini.h);
+
+  // (3) regra de Taylor. Não é ponto fixo: depende de pi^e e das PRÓPRIAS defasagens, então
+  // sai recursivamente para frente dado o vetor de expectativa. O que olha para frente é o
+  // i^e_{t,t+4|t} da eq. (2.1), e esse lê o caminho já inteiro.
+  var tSum = 1 - par.t1 - par.t2;
+  function taylorPath(pie) {
+    var o = new Array(nn), i1 = ini.selic, i2 = ini.selic_l1;
+    for (var q = 0; q < nn; q++) {
+      var v = par.t1 * i1 + par.t2 * i2
+            + tSum * (rrTAY[q] + meta[q] + par.t3 * (pie[q] - meta[q]));
+      o[q] = v; i2 = i1; i1 = v;
+    }
+    return o;
+  }
+
+  function prop(pie) {
+    var ipath = taylorOn ? taylorPath(pie) : iFix;
+    var de_p, q;
+    if (uipOn) {
+      de_p = new Array(nn);
+      var prev = ini.selic;
+      for (q = 0; q < nn; q++) { de_p[q] = de_ppc[q] - par.delta * (ipath[q] - prev); prev = ipath[q]; }
+    } else { de_p = deFix; }
+    var h_l = h0, piL_l = ini.pi_L, rhat_l = ini.r_hat, dehat_l = ini.de_hat;
+    var hist = ini.ipca4.slice();
+    var o = {selic: new Array(nn), i_e: new Array(nn), r_hat: new Array(nn),
+             h: new Array(nn), s_h: new Array(nn), pi_L: new Array(nn),
+             pi_IPCA: new Array(nn), de: new Array(nn), de_hat: new Array(nn)};
+    for (q = 0; q < nn; q++) {
+      var i_e = ipath[Math.min(q + 4, nn - 1)];
+      var r_hat = i_e - pie[q] - rrIS[q];
+      var sh = shPath[q];
+      var h = par.b1 * h_l - (par.b2 / 4) * rhat_l - par.b3 * rp[q] + sh;
+      var L = hist.length;
+      var ma4 = (hist[L - 4] + hist[L - 3] + hist[L - 2] + hist[L - 1]) / 4;
+      var piL = par.a1L * piL_l + par.a1I * ma4
+              + (1 - par.a1L - par.a1I) * pie[q] / 4
+              + par.a2 * piStar[q] + par.a3 * dehat_l + par.a4 * h
+              + par.a5 * Zel[q] + par.a6 * Yla[q];
+      var ipca = wL * piL + wA * piA[q];
+      o.selic[q] = ipath[q]; o.i_e[q] = i_e; o.r_hat[q] = r_hat;
+      o.h[q] = h; o.s_h[q] = sh; o.pi_L[q] = piL; o.pi_IPCA[q] = ipca;
+      o.de[q] = de_p[q]; o.de_hat[q] = de_p[q] - de_ppc[q];
+      h_l = h; piL_l = piL; rhat_l = r_hat; dehat_l = o.de_hat[q];
+      hist.push(ipca);
+    }
+    return o;
+  }
+
+  // (5) com E_t pi_{t,t+4} = soma dos 4 trimestres seguintes da PRÓPRIA simulação.
+  var wMeta = 1 - phi.f1 - phi.f2 - phi.f3;
+  function eq5(ipca) {
+    var last = ipca[nn - 1];
+    var ac = ipca.concat([last, last, last, last]);
+    var hist = ini.ipca4.slice(), out = new Array(nn), ant = ini.pi_e;
+    for (var q = 0; q < nn; q++) {
+      var s4 = ac[q + 1] + ac[q + 2] + ac[q + 3] + ac[q + 4];
+      var L = hist.length;
+      var h4 = hist[L - 4] + hist[L - 3] + hist[L - 2] + hist[L - 1];
+      out[q] = phi.f1 * ant + phi.f2 * s4 + phi.f3 * h4 + wMeta * meta[q];
+      ant = out[q]; hist.push(ipca[q]);
+    }
+    return out;
+  }
+
+  var pie, o, diag = {eq5: eq5On, taylor: taylorOn, uip: uipOn};
+  if (!eq5On) {
+    pie = pieFix; o = prop(pie);
+  } else {
+    // O modelo é linear, então T(pi^e) = eq5(ipca(pi^e)) é AFIM: T(v) = G v + g. Resolve-se
+    // (I − G) pi^e = g de uma vez, coluna a coluna, em vez de iterar.
+    var T = function(v) { return eq5(prop(v).pi_IPCA); };
+    var zero = new Array(nn);
+    for (i = 0; i < nn; i++) zero[i] = 0;
+    var g0 = T(zero);
+    var A = new Array(nn);
+    for (i = 0; i < nn; i++) A[i] = new Array(nn);
+    var e = zero.slice();
+    for (var j = 0; j < nn; j++) {
+      e[j] = 1;
+      var col = T(e);
+      for (i = 0; i < nn; i++) A[i][j] = (i === j ? 1 : 0) - (col[i] - g0[i]);
+      e[j] = 0;
+    }
+    pie = _mtSolve(A, g0);
+    if (!pie) return {erro: 'A eq. (5) não tem solução única com estes parâmetros (I − G singular).'};
+    o = prop(pie);
+    var chk = T(pie), res = 0;
+    for (i = 0; i < nn; i++) res = Math.max(res, Math.abs(chk[i] - pie[i]));
+    diag.resid = res;
+  }
+  o.pi_e = pie; o.pi_A = piA; o.rr_IS = rrIS; o.rr_TAY = rrTAY;
+  o.pi_star = piStar; o.icbr = icbr; o.rp = rp; o.Zel = Zel; o.Yla = Yla;
+  o.r_real = new Array(nn);
+  for (i = 0; i < nn; i++) o.r_real[i] = o.i_e[i] - pie[i];
+  return {o: o, diag: diag, h0: h0};
+}
+
+// Ponto de entrada. Corta no horizonte reportado, monta o IPCA acumulado em 4 trimestres
+// emendando os 3 últimos observados, e roda o teste de folga.
+function motorSim(cfg) {
+  var M = D.motor_cfg;
+  if (!M || !M.par) return null;
+  var n = Math.max(1, parseInt((cfg && cfg.n) || M.n, 10));
+  var folga = Math.max(M.folga, 8);
+  var r = _mtCore(cfg, n, n + folga);
+  if (!r || r.erro) return {erro: (r && r.erro) || 'falha na simulação'};
+  var o = r.o, i;
+
+  var out = {datas: M.datas.slice(0, n), n: n};
+  ['selic', 'i_e', 'r_hat', 'h', 's_h', 'pi_L', 'pi_IPCA', 'de', 'de_hat', 'pi_e', 'pi_A',
+   'rr_IS', 'rr_TAY', 'pi_star', 'icbr', 'rp', 'Zel', 'Yla', 'r_real'].forEach(function(k) {
+    out[k] = o[k].slice(0, n);
+  });
+  var acum = M.ini.ipca3.concat(o.pi_IPCA);
+  out.ipca_4t = [];
+  for (i = 0; i < n; i++) out.ipca_4t.push(acum[i] + acum[i + 1] + acum[i + 2] + acum[i + 3]);
+  out.h0 = r.h0;
+
+  // Teste de folga: com a eq. (5) endógena a condição terminal (IPCA constante depois do
+  // buffer) influencia para trás. Dobrar a folga tem de não mover o trecho reportado — é
+  // o mesmo teste que calibrou FOLGA=40 no Python, e o que denuncia phi2 fora da região
+  // de estabilidade (onde a resposta passa a ser a condição terminal, não o modelo).
+  out.diag = r.diag;
+  if (r.diag.eq5) {
+    var r2 = _mtCore(cfg, n, n + folga * 2);
+    if (r2 && r2.o) {
+      var d = 0;
+      for (i = 0; i < n; i++) d = Math.max(d, Math.abs(r2.o.pi_IPCA[i] - o.pi_IPCA[i]));
+      out.diag.folga = d;
+    }
+  }
+  return out;
+}
+
+// ── Aba Modelo BC — Agregado: interface ──────────────────────────────────────
+// Estrutura deliberadamente igual à do FX Report (aba Ridge, "12-Month Forecast" +
+// "Saved Scenarios"), porque é a mesma tarefa: montar um cenário mexendo em vários
+// condicionantes e guardá-lo para comparar depois. Três decisões vêm de lá:
+//
+//   1. As CAIXAS são a interface, sempre visíveis — uma por trimestre, pré-preenchidas
+//      com o caminho que está valendo. Nada de dropdown que revela campo.
+//   2. Os atalhos ("Repor padrão", "Aplicar choque...") PREENCHEM as caixas; não são
+//      modos paralelos. O que o motor lê é sempre o vetor de caixas.
+//   3. Cada input tem gráfico próprio sob demanda, com o histórico dele e o caminho
+//      digitado tracejado — sem isso não dá para saber se o que foi digitado é grande
+//      ou pequeno para aquela variável.
+//
+// O que é próprio daqui: três inputs têm caminho ENDÓGENO de verdade (Selic pela eq. 3,
+// expectativa pela eq. 5, câmbio pela eq. 4). Nesses, o toggle Endógeno/Manual troca quem
+// escreve as caixas — em endógeno elas mostram o caminho que o modelo resolveu, travadas,
+// no mesmo código visual que o FX usa para mês já observado.
+//
+// A ORDEM dos cards é a do bloco de política monetária, não a das equações: juros (e as
+// duas neutras), hiato, expectativas, câmbio, inflação importada, e só então o que entra
+// por fora. Cada card abre e fecha, porque são treze.
+
+var MT_SPEC = [
+  // ── juros ──
+  {key: 'selic', label: 'Selic (i)', unidade: '% a.a.', dec: 2, tipo: 'endog', hist: 'selic',
+   endogeno: 'Endógena — regra de Taylor (eq. 3)', modoPadrao: 'manual',
+   atalhos: [{k: 'padrao', l: 'Curva da Focus'}, {k: 'flat', l: 'Constante na atual'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'O caminho de juros do cenário. Em <b>Manual</b> as caixas nascem na curva da última '
+       + 'Focus e você escreve o que quiser; em <b>Endógena</b> o modelo escolhe a Selic pela '
+       + 'eq. (3) — a regra de Taylor estimada, que reage ao desvio da expectativa em relação à '
+       + 'meta com suavização de duas defasagens. É a única configuração em que o juro é resposta '
+       + 'e não premissa, e é ela que inverte o sinal de um choque de inflação: com a Selic dada '
+       + 'por fora, expectativa maior derruba o juro real e <i>abre</i> o hiato; com a regra '
+       + 'ligada, o BC reage e o hiato <i>fecha</i>.<br><br>'
+       + 'Seja qual for o modo, o i<sup>e</sup> que entra na eq. (2.1) sai <b>deste mesmo caminho '
+       + 'quatro trimestres à frente</b>, exato — num cenário a trajetória é conhecida por '
+       + 'construção, então não há curva forward estimada. Foi a ausência disso que fez o IRF da '
+       + 'réplica anterior sair 4-5x maior que o do BC.'},
+  {key: 'rr_IS', label: 'Taxa neutra da IS (r*)', unidade: '% a.a.', dec: 2,
+   tipo: 'estimado', hist: 'rr_IS_total',
+   atalhos: [{k: 'padrao', l: 'Filtrada'}, {k: 'bcb', l: 'Mediana do BC (4,8%)'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: '<b>A premissa que domina o cenário.</b> É a neutra do bloco de <b>demanda</b>: o nível '
+       + 'contra o qual o juro real vira aperto ou estímulo na eq. (2.1), r̂ = i<sup>e</sup> − '
+       + 'π<sup>e</sup> − r*. O filtro a identifica pelo que as <i>medidas de atividade</i> (PIB, '
+       + 'Nuci, emprego, Caged) dizem sobre o quanto a política tem sido restritiva.<br><br>'
+       + 'Na especificação do boxe é a tendência HP do juro real da Focus mais um passeio '
+       + 'aleatório, e com dado até hoje isso a põe perto de 7,8% — contra ~4,8% da mediana que o '
+       + 'BC publicou para 2024T2. Não é bug, é a definição; mas decidir se ela é aceitável vem '
+       + 'antes de usar o cenário para decisão.'},
+  {key: 'rr_TAY', label: 'Taxa neutra da regra de Taylor', unidade: '% a.a.', dec: 2,
+   tipo: 'estimado', hist: 'rr_TAY_total',
+   atalhos: [{k: 'padrao', l: 'Filtrada'}, {k: 'bcb', l: 'Mediana do BC (4,8%)'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'A neutra da <b>regra de política</b> (eq. 3.1): o nível para onde a Taylor puxa a Selic '
+       + 'quando expectativa e meta coincidem. Compartilha a <b>mesma tendência HP</b> da neutra '
+       + 'da IS e difere só no desvio, que tem estado próprio no filtro — e a identificação é que '
+       + 'muda: esta sai do que a <i>Selic observada</i> revela sobre onde o Copom acha que a '
+       + 'neutra está, aquela do que a <i>atividade</i> revela sobre onde ela de fato está. A '
+       + 'distância entre as duas é política sistematicamente mais apertada (ou mais frouxa) do '
+       + 'que a demanda pedia.<br><br>'
+       + '<b>Só age quando a Selic está endógena</b> — com o juro dado por fora, a eq. (3) não '
+       + 'entra no cenário. E ela carrega só (1−θ₁−θ₂) ≈ 0,17 da regra, o que é a razão de o '
+       + 'filtro precisar de priori própria aqui: com difusa, este estado para num nível '
+       + 'arbitrário e não sai mais dele.'},
+  // ── hiato ──
+  {key: 'h0', label: 'Hiato inicial (h₀)', unidade: '% do produto', dec: 2, escalar: true,
+   tipo: 'estimado', hist: 'h',
+   nota: 'O estado do hiato em t₀, de onde o cenário parte. Não é dado observado: sai do filtro '
+       + 'de Kalman contra as quatro medidas de atividade (eqs. 6-9), e é o mesmo objeto que a aba '
+       + 'Hiato do Produto compara com o <code>pm_hiato_produto</code> publicado (correlação '
+       + '0,99). Com β₁ ≈ 0,74 de persistência, ele ainda pesa vários trimestres à frente.'},
+  {key: 's_h', label: 'Choque no hiato (s<sup>h</sup>)', unidade: 'p.p.', dec: 2,
+   tipo: 'estimado', hist: 's_h',
+   atalhos: [{k: 'padrao', l: 'Decaimento do filtro'}, {k: 'zero', l: 'Zerar'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'A eq. (2.2): a parte do hiato que os condicionantes não explicam, com persistência '
+       + 'própria (β₅ ≈ 0,81). O default é o decaimento que o filtro implica a partir do valor em '
+       + 't₀ — digitar por cima é <b>impor um choque de demanda</b> ao cenário, trimestre a '
+       + 'trimestre, independente de juro, câmbio e fiscal. Use "Aplicar choque…" com dissipação '
+       + 'para um choque que se desfaz, ou digite direto para um degrau permanente.'},
+  // ── expectativas ──
+  {key: 'pi_e', label: 'Expectativa de inflação (π<sup>e</sup>)', unidade: '% em 12m', dec: 2,
+   tipo: 'endog', hist: 'pi_e', endogeno: 'Endógena — eq. (5)', modoPadrao: 'endog',
+   atalhos: [{k: 'padrao', l: 'Fixa na Focus'}, {k: 'meta8', l: 'Convergir à meta em 8T'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'Em <b>Endógena</b> a expectativa responde ao próprio cenário: E<sub>t</sub>π<sub>t,t+4</sub> é a soma '
+       + 'dos quatro trimestres seguintes da simulação, e o ponto fixo é resolvido de uma vez (o '
+       + 'sistema é afim). Fixá-la à mão é o <b>contrafactual</b>: a distância entre os dois é o '
+       + 'tamanho do canal de expectativa.'},
+  // ── câmbio ──
+  {key: 'de', label: 'Variação cambial (Δe)', unidade: '% no tri', dec: 2, tipo: 'endog', hist: 'de',
+   endogeno: 'Endógeno — eq. (4), UIP', modoPadrao: 'endog',
+   atalhos: [{k: 'padrao', l: 'PPC (câmbio neutro)'}, {k: 'zero', l: 'Zero'}],
+   choque: {rot: '%', v: 5, t: 1},
+   nota: 'Em <b>Endógeno</b> o câmbio responde ao diferencial de juros pela eq. (4), com i* e CDS '
+       + 'constantes — não há ponto fixo aqui, o diferencial se move só pela Selic. O default de '
+       + 'referência é a paridade, (meta − 2%)/4, em que o desvio Δê é zero.'},
+  // ── inflação importada ──
+  {key: 'icbr', label: 'Inflação importada (IC-Br)', unidade: '% no tri', dec: 2,
+   tipo: 'premissa', hist: 'icbr',
+   atalhos: [{k: 'padrao', l: 'Neutro (meta/4)'}, {k: 'zero', l: 'Índice parado'}],
+   choque: {rot: '%', v: 5, t: 2},
+   nota: 'A variação trimestral do <b>IC-Br</b>, o índice de commodities que o próprio BC publica. '
+       + 'O que entra na Phillips é o excesso sobre a paridade, π* = variação − meta/4 (eq. 1.1), '
+       + 'então o default é <b>meta/4</b> e não zero: digitar meta/4 significa "commodities '
+       + 'acompanhando a meta", e digitar 0 já é um choque desinflacionário. Os subíndices '
+       + 'agro/metal/energia não aparecem aqui de propósito — eles só existem no pipeline para '
+       + 'recuperar os pesos que o BC não publica, e reconstroem o agregado com R² 0,995.'},
+  // ── o que entra por fora ──
+  {key: 'rp', label: 'Resultado primário (r̂p)', unidade: '% do PIB', dec: 2,
+   tipo: 'premissa', hist: 'rp',
+   atalhos: [{k: 'padrao', l: 'Último observado'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'Entra na IS com sinal negativo (β₃): um primário maior contrai o hiato. β₃ é o único '
+       + 'parâmetro com priori informativa no boxe — Beta de média 0,03 e desvio 0,002 —, então a '
+       + 'faixa de resposta a este input é estreita por construção.'},
+  {key: 'pi_A', label: 'Preços administrados (π<sup>A</sup>)', unidade: '% no tri', dec: 2,
+   tipo: 'premissa', hist: 'pi_A',
+   atalhos: [{k: 'copom', l: 'Projeção do Copom'}, {k: 'padrao', l: 'Meta/4'}],
+   choque: {rot: 'p.p.', v: 1, t: 4},
+   nota: 'O bloco de administrados do BC <b>não está implementado</b>, então π<sup>A</sup> é sempre '
+       + 'premissa, nunca resposta — é a última premissa que sobrou no cenário. Mas premissa não '
+       + 'precisa ser inventada: o atalho <b>Projeção do Copom</b> preenche as caixas com a '
+       + 'projeção de administrados do próprio comunicado, trimestralizada (no ano corrente, '
+       + 'descontando o que já foi observado). No modelo cheio do BC o repasse cambial dos '
+       + 'administrados é mais que o dobro do de livres (1,65 p.p. contra 0,72 por 10% de '
+       + 'depreciação), e é essa a diferença que separa o nosso IRF do publicado.'},
+  {key: 'Zel', label: 'Clima² · El Niño', unidade: 'décimos²', dec: 1, tipo: 'premissa', hist: 'Zel',
+   atalhos: [{k: 'padrao', l: 'Nulo'}],
+   choque: {rot: 'décimos²', v: 100, t: 3},
+   nota: 'Anomalia ONI ao quadrado, em <b>décimos de grau</b> (não em graus — a nota 6 do boxe nomeia '
+       + 'a série mas não a unidade, e a diferença é 100x). Um El Niño forte de 1,5 °C entra como ~225.'},
+  {key: 'Yla', label: 'Clima² · La Niña', unidade: 'décimos²', dec: 1, tipo: 'premissa', hist: 'Yla',
+   atalhos: [{k: 'padrao', l: 'Nulo'}],
+   choque: {rot: 'décimos²', v: 100, t: 3},
+   nota: 'Contrapartida de La Niña, com coeficiente α₆ próprio.'},
+];
+
+// Os cards saem agrupados nesta ordem; um key fora daqui não é renderizado, então a lista
+// tem de cobrir o MT_SPEC inteiro (a seção 25 do teste cobra isso).
+var MT_GRUPOS = [
+  {titulo: 'Juros', keys: ['selic', 'rr_IS', 'rr_TAY']},
+  {titulo: 'Hiato do produto', keys: ['h0', 's_h']},
+  {titulo: 'Expectativas', keys: ['pi_e']},
+  {titulo: 'Câmbio', keys: ['de']},
+  {titulo: 'Inflação importada', keys: ['icbr']},
+  {titulo: 'Fiscal, administrados e clima', keys: ['rp', 'pi_A', 'Zel', 'Yla']},
+];
+
+var MT_TIPO_ROT = {endog: 'endógeno disponível', premissa: 'premissa', estimado: 'estimativa do modelo'};
+var MT_BCB_NEUTRA = 4.8;   // mediana publicada no C2 Boxe2 Graf 1 para 2024T2
+
+function _mtSpec(key) { return MT_SPEC.filter(function(s) { return s.key === key; })[0]; }
+
+function mtCfgPadrao(n) {
+  var M = D.motor_cfg || {};
+  n = n || M.n || 16;
+  var B = mtDefaults(n), c = {n: n};
+  MT_SPEC.forEach(function(sp) {
+    c[sp.key] = sp.escalar ? {v: ''} : {modo: sp.modoPadrao || 'manual', vals: B[sp.key].slice()};
+  });
+  return c;
+}
+function mtClone(c) { return JSON.parse(JSON.stringify(c)); }
+// `vals` guarda NUMEROS exatos (ou a string que o usuario digitou); esta funcao e so
+// exibicao. Guardar o valor ja arredondado faria o cenario default deixar de reproduzir o
+// Python bit a bit -- a secao 19 do teste pega exatamente isso.
+function _mtFmtBox(v, dec) {
+  if (v === '' || v == null) return '';
+  if (typeof v === 'string') return v;
+  return !isFinite(v) ? '' : v.toFixed(dec == null ? 2 : dec).replace('.', ',');
+}
+
+var MT_CFG = null;          // configuração viva da interface
+var MT_RES = null;          // último resultado simulado
+var MT_PLOT = {};           // ids de cenários salvos marcados para plotar
+var MT_REF = true;          // desenhar a referência totalmente endógena
+var MT_LABELS = {};         // estado do "Dados no gráfico" por div
+var MT_INFL_MODO = 'acum';  // 'acum' (4 trimestres) | 'tri'
+var MT_ABERTO = {};         // painéis de gráfico/choque abertos, por input
+var MT_CARD = {};           // cards de input abertos (todos fechados no load: são treze)
+var MT_EDIT = null;         // id do cenário em edição, ou null
+var MT_EDIT_REVERT = null;  // config anterior, para o Cancelar da edição
+var MT_DESDE = '2019-01-01';
+// Horizonte relevante: seis trimestres à frente da REUNIÃO. Como `datas[0]` é t0+1 — o
+// trimestre corrente, onde a reunião acontece —, a regra cai em `datas[6]`. É fallback:
+// o marcador prefere a data que o próprio Copom publicou (`motor_cfg.hr`).
+var MT_HR_TRI = 6;
+// Só o primeiro gráfico nasce aberto: os quatro empilhados em largura cheia dariam uma
+// rolagem longa antes de chegar nos inputs.
+var MT_GRAF = {'chart-mt-infl': true, 'chart-mt-hiato': false,
+               'chart-mt-juros': false, 'chart-mt-exp': false};
+
+// ── Cenários salvos (localStorage; nada sai do navegador) ────────────────────
+var MT_KEY = 'lis_mp_motor_cenarios_v1';
+function mtLer() {
+  try { return JSON.parse(localStorage.getItem(MT_KEY) || '[]') || []; } catch (e) { return []; }
+}
+function mtGravar(lista) {
+  try { localStorage.setItem(MT_KEY, JSON.stringify(lista)); return true; } catch (e) {
+    alert('Não foi possível gravar no armazenamento deste navegador (' + e.message
+        + '). Use "Exportar todos" para guardar como arquivo.');
+    return false;
+  }
+}
+function mtId() { return 'c' + Math.random().toString(36).slice(2, 9); }
+var MT_CORES = ['#8E44AD', '#E67E22', '#16A085', '#C0392B', '#2980B9', '#D35400', '#7F8C8D', '#27AE60'];
+// Cor pela ordem de gravação, para um cenário manter a mesma cor independente de quais
+// OUTROS estejam plotados no momento (mesma regra do FX Report).
+function mtCor(id) {
+  var i = mtLer().map(function(s) { return String(s.id); }).indexOf(String(id));
+  return MT_CORES[Math.max(i, 0) % MT_CORES.length];
+}
+
+function _mtEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function(c) {
+    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c];
+  });
+}
+function _mtSemTag(s) { return String(s).replace(/<[^>]+>/g, ''); }
+
+// ── Séries para os gráficos ──────────────────────────────────────────────────
+// Histórico e cenário viram UMA linha contínua, cortada em t0. Colar só o último ponto
+// observado (o que `_emenda()` faz, para a aba Cenários) deixaria os quatro gráficos desta
+// aba sem histórico nenhum — foi assim que a primeira versão saiu, com o eixo indo de 2018
+// a 2030 e a linha começando em 2026.
+function _mtLinha(histKey, cenKey, res) {
+  var h = ser('motor', histKey), d = [], v = [], i;
+  var corte = res ? res.datas[0] : null;
+  for (i = 0; i < h.dates.length; i++) {
+    if (h.dates[i] < MT_DESDE) continue;
+    if (h.values[i] == null) continue;              // cauda de NaN do painel
+    if (corte && h.dates[i] >= corte) continue;     // não invade o horizonte simulado
+    d.push(h.dates[i]); v.push(h.values[i]);
+  }
+  if (res && res[cenKey]) for (i = 0; i < res.n; i++) { d.push(res.datas[i]); v.push(res[cenKey][i]); }
+  return {dates: d, values: v};
+}
+// A meta não é output do simulador: histórico do painel + o vetor que o motor usa nas
+// eqs. (3) e (5).
+function _mtLinhaMeta(res) {
+  var M = D.motor_cfg, s = _mtLinha('meta', null, res);
+  for (var i = 0; i < res.n; i++) { s.dates.push(res.datas[i]); s.values.push(M.meta[Math.min(i, M.meta.length - 1)]); }
+  return s;
+}
+// Onde cai o horizonte relevante dentro da simulação. Duas fontes que normalmente
+// coincidem: a data que o Copom declarou no último comunicado e a regra dos seis
+// trimestres. A publicada ganha — se divergirem, o painel está com dado atrasado em
+// relação à última reunião, e o horizonte é da reunião, não do painel. Fora da janela
+// simulada (horizonte curto, ou vintage velho), cai na regra e depois no último ponto.
+function _mtHR(res) {
+  var pub = (D.motor_cfg || {}).hr || {}, i = -1;
+  if (pub.date) i = res.datas.indexOf(pub.date);
+  if (i < 0 || i >= res.n) { i = Math.min(MT_HR_TRI, res.n - 1); pub = {}; }
+  return {date: res.datas[i], i: i, reuniao: pub.reuniao || null, ipca: pub.ipca};
+}
+
+// Faixa cinza sobre o trecho projetado, cortada no horizonte relevante: até ele o tom é
+// mais forte, depois clareia. Um horizonte é uma fronteira, e "dentro vs. fora" é o que
+// a faixa já sabe dizer sem tinta nova — a linha tracejada em cima só nomeia o corte (e
+// de quebra esconde a emenda entre os dois retângulos). `layer:'below'` mantém tudo
+// atrás das séries; sem isso a faixa lava a cor das linhas.
+function _mtShapes(res) {
+  var t0 = res.datas[0], fim = res.datas[res.n - 1], hr = _mtHR(res);
+  function faixa(x0, x1, a) {
+    return {type: 'rect', xref: 'x', x0: x0, x1: x1, yref: 'paper', y0: 0, y1: 1,
+            fillcolor: 'rgba(31,40,83,' + a + ')', line: {width: 0}, layer: 'below'};
+  }
+  function rotulo(x, texto, alpha, fim2) {
+    return {x: x, y: 1, yref: 'paper', yanchor: 'bottom', showarrow: false, text: texto,
+            xanchor: fim2 ? 'right' : 'left', xshift: fim2 ? -3 : 3,
+            font: {family: 'JetBrains Mono,monospace', size: 9, color: 'rgba(31,40,83,' + alpha + ')'}};
+  }
+  return {shapes: [faixa(t0, hr.date, 0.075), faixa(hr.date, fim, 0.03),
+                   {type: 'line', x0: t0, x1: t0, yref: 'paper', y0: 0, y1: 1,
+                    line: {color: 'rgba(31,40,83,0.3)', width: 1, dash: 'dot'}},
+                   {type: 'line', x0: hr.date, x1: hr.date, yref: 'paper', y0: 0, y1: 1,
+                    line: {color: 'rgba(31,40,83,0.55)', width: 1.4, dash: 'dash'}}],
+          // O rótulo do HR vira para a esquerda quando ele está perto da borda direita,
+          // senão o texto sai do quadro.
+          annotations: [rotulo(t0, 'projeção →', 0.5, false),
+                        rotulo(hr.date, 'horizonte relevante', 0.62, hr.i > res.n - 4)]};
+}
+
+// Nota do horizonte relevante, sob os gráficos. Não é texto fixo porque a regra de
+// fallback depende de quantos trimestres a simulação tem — trocar o horizonte pode
+// mover o marcador.
+function mtNotaHR(res) {
+  var el = document.getElementById('mt-hr-nota');
+  if (!el) return;
+  var hr = _mtHR(res), pub = (D.motor_cfg || {}).hr || {};
+  var quando = '<b>' + fmtDate(hr.date, 'motor') + '</b>';
+  if (hr.reuniao) {
+    el.innerHTML = 'Desde a 264ª reunião o Copom persegue a meta seis trimestres à frente da '
+      + 'própria reunião (Decreto 12.079/2024): a ' + hr.reuniao + 'ª marcou ' + quando
+      + (hr.ipca != null ? ', e projetou ali IPCA de <b>' + fmtBR(hr.ipca, 2) + '%</b>' : '') + '.';
+    return;
+  }
+  el.innerHTML = 'Seis trimestres à frente do primeiro trimestre projetado (' + quando + '), '
+    + 'regime oficial desde a 264ª reunião — Decreto 12.079/2024. '
+    + (pub.date ? 'A data da ' + pub.reuniao + 'ª reunião cai fora desta janela, então vale a regra.'
+                : 'A data publicada pelo Copom não veio no payload, então vale a regra.');
+}
+
+// Só desenha a referência quando o cenário ativo REALMENTE difere dela — senão a linha
+// tracejada fica em cima da cheia e lê como bug.
+function mtIgualPadrao(cfg) {
+  var p = mtCfgPadrao(cfg.n);
+  return MT_SPEC.every(function(sp) {
+    var a = cfg[sp.key] || {}, b = p[sp.key];
+    if (sp.escalar) return _mtNum(a.v, null) === _mtNum(b.v, null);
+    if ((a.modo || 'manual') !== b.modo) return false;
+    if (b.modo === 'endog') return true;            // vals ignorados quando endógeno
+    return b.vals.every(function(x, i) { return _mtNum((a.vals || [])[i], x) === x; });
+  });
+}
+
+function mtComparados() {
+  var out = [];
+  if (MT_REF && MT_CFG && !mtIgualPadrao(MT_CFG)) {
+    var b = motorSim(mtCfgPadrao(MT_CFG.n));
+    if (b && !b.erro) out.push({nome: 'Referência (tudo endógeno)', res: b, cor: C.cinza});
+  }
+  // Cada cenário plotado é RE-SIMULADO da sua própria config, nunca de números gravados:
+  // depois de um update do painel ele continua significando "estas premissas".
+  mtLer().forEach(function(s) {
+    if (!MT_PLOT[s.id]) return;
+    var r = motorSim(s.cfg);
+    if (r && !r.erro) out.push({nome: s.nome, res: r, cor: mtCor(s.id)});
+  });
+  return out;
+}
+
+function mtDesenhar() {
+  var res = MT_RES;
+  if (!res || res.erro) return;
+  var comps = mtComparados();
+  function on(div) { return !!MT_LABELS[div]; }
+  function comparadas(k) {
+    return comps.map(function(c) {
+      return dashTrace({dates: c.res.datas, values: c.res[k]}, c.nome, c.cor, false, 2, '%');
+    });
+  }
+  function metaTrace(res2) {
+    var m = dashTrace(_mtLinhaMeta(res2), 'Meta', C.cinza, false, 2, '%');
+    m.line.width = 1.2; m.line.dash = 'dot'; m.line.shape = 'hv';
+    return m;
+  }
+
+  // 1. Inflação
+  var t1;
+  if (MT_INFL_MODO === 'acum') {
+    t1 = [lineTrace(_mtLinha('ipca_4t', 'ipca_4t', res), 'IPCA acum. 4T', C.dourado, on('chart-mt-infl'), 2, '%')];
+    t1[0].line.width = 2.6;
+    t1 = t1.concat(comparadas('ipca_4t'));
+    t1.push(metaTrace(res));
+  } else {
+    t1 = [lineTrace(_mtLinha('pi_IPCA', 'pi_IPCA', res), 'IPCA no trimestre', C.dourado, on('chart-mt-infl'), 2, '%'),
+          lineTrace(_mtLinha('pi_L', 'pi_L', res), 'Livres', C.verde, on('chart-mt-infl'), 2, '%'),
+          lineTrace(_mtLinha('pi_A', 'pi_A', res), 'Administrados', C.laranja, on('chart-mt-infl'), 2, '%')];
+    t1[0].line.width = 2.6;
+    t1 = t1.concat(comparadas('pi_IPCA'));
+  }
+  _reactPreserveX('chart-mt-infl', t1,
+    mkTimeseriesLayout(MT_INFL_MODO === 'acum' ? '% em 4 trimestres' : '% no trimestre', 420, t1, _mtShapes(res)));
+
+  // 2. Hiato. O choque persistente NÃO entra aqui: ele é uma das parcelas da eq. (2), e
+  // plotar uma parcela ao lado do total, sem as outras, sugere uma decomposição que não
+  // está sendo feita — a decomposição completa da IS é a aba Decomposição. Ele tem card e
+  // gráfico próprios na seção de inputs, que é onde vira pergunta ("e se houver choque?").
+  var t2 = [lineTrace(_mtLinha('h', 'h', res), 'Hiato do produto', C.azul, on('chart-mt-hiato'), 2, '%')];
+  t2[0].line.width = 2.6;
+  t2 = t2.concat(comparadas('h'));
+  _reactPreserveX('chart-mt-hiato', t2, mkTimeseriesLayout('% do produto potencial', 420, t2, _mtShapes(res)));
+
+  // 3. Juros
+  var t3 = [lineTrace(_mtLinha('selic', 'selic', res), 'Selic', C.azul, on('chart-mt-juros'), 2, '%'),
+            lineTrace(_mtLinha('r_real', 'r_real', res), 'Juro real ex-ante', C.dourado, on('chart-mt-juros'), 2, '%'),
+            dashTrace(_mtLinha('rr_IS_total', 'rr_IS', res), 'Taxa neutra da IS (r*)', C.verde, false, 2, '%'),
+            lineTrace(_mtLinha('r_hat', 'r_hat', res), 'Hiato de juros (r̂)', C.laranja, on('chart-mt-juros'), 2, ' p.p.')];
+  t3[0].line.width = 2.6;
+  t3 = t3.concat(comparadas('selic'));
+  _reactPreserveX('chart-mt-juros', t3, mkTimeseriesLayout('% a.a. / p.p.', 420, t3, _mtShapes(res)));
+
+  // 4. Expectativas
+  var t4 = [lineTrace(_mtLinha('pi_e', 'pi_e', res), 'Expectativa 12m (π^e)', C.azulCl, on('chart-mt-exp'), 2, '%'),
+            lineTrace(_mtLinha('ipca_4t', 'ipca_4t', res), 'IPCA acum. 4T', C.dourado, on('chart-mt-exp'), 2, '%')];
+  t4[0].line.width = 2.6;
+  t4 = t4.concat(comparadas('pi_e'));
+  t4.push(metaTrace(res));
+  _reactPreserveX('chart-mt-exp', t4, mkTimeseriesLayout('% em 12 meses', 420, t4, _mtShapes(res)));
+
+  mtNotaHR(res);
+  mtKPIs(res);
+  mtTabelaComparacao(res, comps);
+}
+
+function mtKPIs(res) {
+  var n = res.n - 1, rot = fmtDate(res.datas[n], 'motor');
+  setKPI('kpi-mt-selic', res.selic[n], rot, '%');
+  setKPI('kpi-mt-hiato', res.h[n], rot, '%');
+  setKPI('kpi-mt-ipca', res.ipca_4t[n], rot, '%');
+  setKPI('kpi-mt-pie', res.pi_e[n], rot, '%');
+  setKPI('kpi-mt-rhat', res.r_hat[n], rot + ' · r* ' + fmtBR(res.rr_IS[n], 2) + '%', ' p.p.');
+}
+
+function mtTabelaComparacao(res, comps) {
+  var el = document.getElementById('mt-cmp-table');
+  if (!el) return;
+  var linhas = [{nome: 'Cenário ativo', res: res, cor: C.azul}].concat(comps);
+  var h = '<thead><tr><th class="col-label">Cenário</th><th>Selic</th><th>Hiato</th>'
+        + '<th>IPCA 4T</th><th>π<sup>e</sup></th><th>r̂</th><th class="col-label">Fim</th></tr></thead><tbody>';
+  linhas.forEach(function(l, i) {
+    var r = l.res, k = r.n - 1;
+    h += '<tr' + (i === 0 ? ' class="is-total"' : '') + '>'
+       + '<td class="col-label"><span class="cmp-dot" style="background:' + l.cor + '"></span>' + _mtEsc(l.nome) + '</td>'
+       + '<td class="col-value">' + fmtBR(r.selic[k], 2) + '</td>'
+       + '<td class="col-value">' + fmtBR(r.h[k], 2) + '</td>'
+       + '<td class="col-value">' + fmtBR(r.ipca_4t[k], 2) + '</td>'
+       + '<td class="col-value">' + fmtBR(r.pi_e[k], 2) + '</td>'
+       + '<td class="col-value">' + fmtBR(r.r_hat[k], 2) + '</td>'
+       + '<td class="col-label">' + fmtDate(r.datas[k], 'motor') + '</td></tr>';
+  });
+  el.innerHTML = h + '</tbody>';
+}
+
+function mtDiagnostico(res) {
+  var el = document.getElementById('mt-diag');
+  if (!el) return;
+  if (!res || res.erro) { el.innerHTML = '<span class="diag-bad">' + _mtEsc((res && res.erro) || 'erro') + '</span>'; return; }
+  var d = res.diag || {}, p = [];
+  p.push('Selic ' + (d.taylor ? '<b>endógena (eq. 3)</b>' : 'premissa'));
+  p.push('expectativa ' + (d.eq5 ? '<b>endógena (eq. 5)</b>' : 'premissa'));
+  p.push('câmbio ' + (d.uip ? '<b>endógeno (eq. 4)</b>' : 'premissa'));
+  p.push('administrados <b>sempre premissa</b>');
+  var s = p.join(' · ');
+  if (d.eq5) {
+    var ok = d.resid != null && d.resid < 1e-8 && (d.folga == null || d.folga < 1e-4);
+    s += '<br>eq. (5): resíduo ' + (d.resid == null ? '—' : d.resid.toExponential(1))
+       + ' · teste de folga (dobrar o buffer) ' + (d.folga == null ? '—' : d.folga.toExponential(1)) + ' p.p. '
+       + (ok ? '<span class="diag-ok">estável</span>'
+             : '<span class="diag-bad">a condição terminal está determinando a resposta — não há caminho de expectativa bem definido</span>');
+  }
+  el.innerHTML = s;
+}
+
+// ── Cards de input ───────────────────────────────────────────────────────────
+// O que cada atalho escreve nas caixas. Todos preenchem `vals`; nenhum é um modo paralelo.
+function mtAtalho(key, acao) {
+  var sp = _mtSpec(key), n = MT_CFG.n, B = mtDefaults(n), M = D.motor_cfg, v;
+  if (acao === 'padrao') v = B[key];
+  else if (acao === 'zero') v = B[key].map(function() { return 0; });
+  else if (acao === 'flat') { var u = M.dflt.selic_ult; v = B[key].map(function() { return u; }); }
+  else if (acao === 'meta8') v = mtPathMeta(n);
+  else if (acao === 'bcb') v = B[key].map(function() { return MT_BCB_NEUTRA; });
+  else if (acao === 'copom') {
+    var c = (M.copom_adm || {}).caminho;
+    if (!c) return;
+    v = B[key].map(function(_, i) { return c[Math.min(i, c.length - 1)]; });
+  } else return;
+  MT_CFG[key].vals = v.slice();
+}
+
+// Choque no padrão do FX ("Apply shock…"): soma X ao caminho corrente por T trimestres e
+// depois ou segura o nível, ou dissipa a 0,8 ao trimestre — que é a forma do próprio
+// choque do C2 Boxe3 Graf 4A, o mesmo que a aba de IRF replica.
+function mtChoque(key, x, t, dissipa) {
+  var n = MT_CFG.n, B = mtDefaults(n);
+  var atual = MT_CFG[key].vals || [], out = [];
+  for (var i = 0; i < n; i++) {
+    var base = _mtNum(atual[i], B[key][Math.min(i, B[key].length - 1)]);
+    var f = i < t ? 1 : (dissipa ? Math.pow(0.8, i - t + 1) : 1);
+    out.push(base + x * f);
+  }
+  MT_CFG[key].vals = out;
+}
+
+// Resumo de uma linha no cabeçalho do card fechado: o suficiente para saber o que está
+// valendo sem abrir.
+function _mtStatus(sp) {
+  var cfg = MT_CFG[sp.key] || {}, M = D.motor_cfg;
+  if (sp.escalar) {
+    var v = _mtNum(cfg.v, null);
+    return v == null ? 'filtrado (' + fmtBR(M.ini[sp.key === 'h0' ? 'h' : 's_h'], 2) + ')' : fmtBR(v, sp.dec);
+  }
+  if (cfg.modo === 'endog') return 'endógeno';
+  var eff = MT_RES && MT_RES[sp.key];
+  if (!eff) return 'manual';
+  var a = eff[0], b = eff[MT_RES.n - 1];
+  return Math.abs(a - b) < 5e-3
+    ? 'constante em ' + fmtBR(a, sp.dec)
+    : fmtBR(a, sp.dec) + ' → ' + fmtBR(b, sp.dec);
+}
+
+function mtCardHtml(sp) {
+  var cfg = MT_CFG[sp.key], n = MT_CFG.n, datas = (D.motor_cfg || {}).datas || [];
+  var aberto = !!MT_CARD[sp.key];
+  var endog = sp.endogeno && cfg.modo === 'endog';
+  var hist = ser('motor', sp.hist);
+  var ult = lastValid(hist.dates, hist.values);
+  var boxes = '', i;
+  if (sp.escalar) {
+    boxes = '<div class="mt-box"><div class="mt-box-label">' + (D.motor_cfg || {}).t0 + '</div>'
+          + '<input type="text" inputmode="decimal" class="mt-box-input" data-est="' + sp.key + '"'
+          + ' value="' + _mtEsc(_mtFmtBox(cfg.v, sp.dec)) + '"'
+          + ' placeholder="' + fmtBR(D.motor_cfg.ini[sp.key === 'h0' ? 'h' : 's_h'], sp.dec) + '"></div>';
+  } else {
+    for (i = 0; i < n; i++) {
+      boxes += '<div class="mt-box">'
+             + '<div class="mt-box-label' + (endog ? ' endog' : '') + '">' + fmtDate(datas[i], 'motor') + (endog ? ' ⟳' : '') + '</div>'
+             + '<input type="text" inputmode="decimal" class="mt-box-input' + (endog ? ' endog' : '') + '"'
+             + ' data-k="' + sp.key + '" data-h="' + i + '" value="' + _mtEsc(_mtFmtBox((cfg.vals || [])[i], sp.dec)) + '"'
+             + (endog ? ' disabled title="O modelo resolve este caminho — troque para Manual para editar"' : '') + '></div>';
+    }
+  }
+  var toggle = sp.endogeno
+    ? '<div class="mt-mode-toggle" data-k="' + sp.key + '">'
+      + '<div class="mt-mode-btn' + (endog ? ' active' : '') + '" data-modo="endog">Endógeno</div>'
+      + '<div class="mt-mode-btn' + (endog ? '' : ' active') + '" data-modo="manual">Manual</div></div>'
+    : '';
+  var atalhos = (sp.atalhos || []).map(function(a) {
+    return '<div class="mt-link" data-k="' + sp.key + '" data-atalho="' + a.k + '">' + a.l + '</div>';
+  }).join('');
+  var ch = sp.choque || {rot: 'p.p.', v: 1, t: 4};
+  var painelChoque = (endog || sp.escalar) ? '' :
+      '<div class="mt-panel' + (MT_ABERTO[sp.key + '|choque'] ? ' open' : '') + '" data-painel-de="' + sp.key + '|choque">'
+    +   '<span>Choque de</span><input type="text" inputmode="decimal" class="mt-mini" data-ch="' + sp.key + '" data-f="x" value="' + ch.v + '">'
+    +   '<span>' + ch.rot + ' por</span><input type="text" inputmode="numeric" class="mt-mini" data-ch="' + sp.key + '" data-f="t" value="' + ch.t + '">'
+    +   '<span>trimestre(s), depois</span>'
+    +   '<select class="date-select mt-mini-sel" data-ch="' + sp.key + '" data-f="d">'
+    +     '<option value="0">permanece no nível</option><option value="1">dissipa a 0,8/tri</option></select>'
+    +   '<div class="mt-link forte" data-aplica="' + sp.key + '">Aplicar</div>'
+    + '</div>';
+  return '<div class="mt-card' + (endog ? ' is-endog' : '') + (aberto ? ' open' : '') + '" id="mt-card-' + sp.key + '">'
+    + '<div class="mt-card-bar" data-card="' + sp.key + '">'
+    +   '<span class="mt-chev">▸</span>'
+    +   '<span class="mt-card-label">' + sp.label + '</span>'
+    +   '<span class="inp-badge inp-' + sp.tipo + '">' + MT_TIPO_ROT[sp.tipo] + '</span>'
+    +   '<span class="mt-card-status">' + _mtStatus(sp) + '</span>'
+    +   '<span class="mt-card-unit">' + sp.unidade
+    +     (ult ? ' · último observado ' + fmtBR(ult.value, sp.dec) + ' (' + fmtDate(ult.date, 'motor') + ')' : '') + '</span>'
+    + '</div>'
+    + '<div class="mt-card-body">'
+    +   '<div class="mt-card-nota">' + sp.nota + '</div>'
+    +   '<div class="mt-card-actions">' + toggle + atalhos
+    +     ((endog || sp.escalar) ? '' : '<div class="mt-link" data-k="' + sp.key + '" data-painel="choque">Aplicar choque…</div>')
+    +     '<div class="mt-link" data-k="' + sp.key + '" data-painel="grafico">Ver gráfico</div>'
+    +   '</div>'
+    +   '<div class="mt-box-grid' + (sp.escalar ? ' estados' : '') + '">' + boxes + '</div>'
+    +   painelChoque
+    +   '<div class="mt-panel graf' + (MT_ABERTO[sp.key + '|grafico'] ? ' open' : '') + '" data-painel-de="' + sp.key + '|grafico">'
+    +     '<div id="mt-graf-' + sp.key + '" class="mt-graf-div"></div>'
+    +   '</div>'
+    + '</div></div>';
+}
+
+function mtRenderInputs() {
+  var box = document.getElementById('mt-inputs');
+  if (!box) return;
+  box.innerHTML = MT_GRUPOS.map(function(g) {
+    return '<div class="mt-grupo">' + g.titulo + '</div>'
+         + g.keys.map(function(k) { var sp = _mtSpec(k); return sp ? mtCardHtml(sp) : ''; }).join('');
+  }).join('');
+  mtWireInputs(box);
+  mtRefreshEndog();
+  Object.keys(MT_ABERTO).forEach(function(k) {
+    if (MT_ABERTO[k] && k.indexOf('|grafico') > 0 && MT_CARD[k.split('|')[0]]) mtGrafInput(k.split('|')[0]);
+  });
+}
+
+function mtWireInputs(box) {
+  box.querySelectorAll('.mt-card-bar').forEach(function(b) {
+    b.addEventListener('click', function(e) {
+      var k = b.dataset.card;
+      MT_CARD[k] = !MT_CARD[k];
+      var card = document.getElementById('mt-card-' + k);
+      if (card) card.classList.toggle('open', MT_CARD[k]);
+      if (MT_CARD[k] && MT_ABERTO[k + '|grafico']) mtGrafInput(k);
+    });
+  });
+  box.querySelectorAll('.mt-mode-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var k = b.parentNode.dataset.k, modo = b.dataset.modo;
+      if ((MT_CFG[k].modo || 'manual') === modo) return;
+      // Ao sair do endógeno as caixas herdam o caminho que o modelo acabou de resolver —
+      // editar parte de onde o modelo está, não do zero. É o mesmo princípio do
+      // "pré-preenchido com o último observado" do FX.
+      if (modo === 'manual' && MT_RES && MT_RES[k]) MT_CFG[k].vals = MT_RES[k].slice(0, MT_CFG.n);
+      MT_CFG[k].modo = modo;
+      mtRecalc();
+      mtRenderInputs();
+    });
+  });
+  box.querySelectorAll('.mt-link[data-atalho]').forEach(function(l) {
+    l.addEventListener('click', function() {
+      mtAtalho(l.dataset.k, l.dataset.atalho);
+      mtRecalc();
+      mtRenderInputs();
+    });
+  });
+  box.querySelectorAll('.mt-link[data-painel]').forEach(function(l) {
+    l.addEventListener('click', function() {
+      var id = l.dataset.k + '|' + l.dataset.painel;
+      MT_ABERTO[id] = !MT_ABERTO[id];
+      var p = box.querySelector('[data-painel-de="' + id + '"]');
+      if (p) p.classList.toggle('open', MT_ABERTO[id]);
+      if (MT_ABERTO[id] && l.dataset.painel === 'grafico') mtGrafInput(l.dataset.k);
+    });
+  });
+  box.querySelectorAll('.mt-box-input[data-k]').forEach(function(inp) {
+    inp.addEventListener('change', function() {
+      var k = inp.dataset.k;
+      MT_CFG[k].vals = MT_CFG[k].vals || [];
+      MT_CFG[k].vals[parseInt(inp.dataset.h, 10)] = inp.value;
+      mtRecalc();
+      if (MT_ABERTO[k + '|grafico']) mtGrafInput(k);
+    });
+  });
+  box.querySelectorAll('.mt-box-input[data-est]').forEach(function(inp) {
+    inp.addEventListener('change', function() {
+      MT_CFG[inp.dataset.est] = {v: inp.value};
+      mtRecalc();
+    });
+  });
+  box.querySelectorAll('.mt-link[data-aplica]').forEach(function(l) {
+    l.addEventListener('click', function() {
+      var k = l.dataset.aplica;
+      function campo(f) {
+        var e = box.querySelector('[data-ch="' + k + '"][data-f="' + f + '"]');
+        return e ? e.value : null;
+      }
+      mtChoque(k, _mtNum(campo('x'), 0), Math.max(1, Math.round(_mtNum(campo('t'), 1))), campo('d') === '1');
+      mtRecalc();
+      mtRenderInputs();
+    });
+  });
+}
+
+// Gráfico de um input: histórico dele + o caminho que está valendo, tracejado.
+function mtGrafInput(key) {
+  var sp = _mtSpec(key);
+  if (!sp || !MT_RES) return;
+  var div = 'mt-graf-' + key;
+  if (!document.getElementById(div)) return;
+  var cenKey = sp.escalar ? (key === 'h0' ? 'h' : 's_h') : key;
+  var t = [lineTrace(_mtLinha(sp.hist, null, MT_RES), _mtSemTag(sp.label) + ' — observado',
+                     C.azul, false, sp.dec, ''),
+           dashTrace({dates: MT_RES.datas, values: MT_RES[cenKey]}, 'cenário', C.dourado, false, sp.dec, '')];
+  _reactPreserveX(div, t, mkTimeseriesLayout(sp.unidade, 260, t, _mtShapes(MT_RES)));
+}
+
+function mtRecalc() {
+  MT_RES = motorSim(MT_CFG);
+  mtDiagnostico(MT_RES);
+  if (MT_RES && !MT_RES.erro) { mtDesenhar(); mtRefreshEndog(); mtRefreshStatus(); }
+}
+// Depois de simular, as caixas dos inputs endógenos passam a mostrar o caminho resolvido.
+function mtRefreshEndog() {
+  var box = document.getElementById('mt-inputs');
+  if (!box || !MT_RES) return;
+  MT_SPEC.forEach(function(sp) {
+    if (!sp.endogeno || (MT_CFG[sp.key] || {}).modo !== 'endog') return;
+    var v = MT_RES[sp.key];
+    if (!v) return;
+    box.querySelectorAll('.mt-box-input[data-k="' + sp.key + '"]').forEach(function(inp) {
+      var i = parseInt(inp.dataset.h, 10);
+      if (v[i] != null) inp.value = _mtFmtBox(v[i], sp.dec);
+    });
+  });
+}
+// O resumo do card fechado tem de acompanhar o cenário sem re-renderizar tudo (o que
+// fecharia o card em que o usuário está digitando).
+function mtRefreshStatus() {
+  var box = document.getElementById('mt-inputs');
+  if (!box) return;
+  MT_SPEC.forEach(function(sp) {
+    var card = document.getElementById('mt-card-' + sp.key);
+    if (!card) return;
+    var el = card.querySelector('.mt-card-status');
+    if (el) el.textContent = _mtStatus(sp);
+  });
+}
+
+// ── Cenários salvos ──────────────────────────────────────────────────────────
+// Resumo de uma linha: só o que foge do default, que é o que distingue um cenário do outro.
+function _mtResumo(cfg) {
+  var p = mtCfgPadrao(cfg.n), fora = [];
+  MT_SPEC.forEach(function(sp) {
+    var a = cfg[sp.key] || {}, b = p[sp.key], rot = _mtSemTag(sp.label);
+    if (sp.escalar) {
+      if (_mtNum(a.v, null) !== _mtNum(b.v, null)) fora.push(rot + ': ' + fmtBR(_mtNum(a.v, 0), sp.dec));
+      return;
+    }
+    var modoA = a.modo || 'manual';
+    if (modoA !== b.modo) { fora.push(rot + ': ' + (modoA === 'endog' ? 'endógeno' : 'manual')); return; }
+    if (modoA === 'endog') return;
+    var dif = 0;
+    b.vals.forEach(function(x, i) { if (_mtNum((a.vals || [])[i], x) !== x) dif++; });
+    if (dif) fora.push(rot + ': ' + dif + 'T editado(s)');
+  });
+  var s = (cfg.n || p.n) + 'T';
+  return fora.length ? s + ' · ' + fora.join(' · ') : s + ' · tudo no default';
+}
+
+function mtRenderCenarios() {
+  var el = document.getElementById('mt-sc-list');
+  if (!el) return;
+  var lista = mtLer();
+  if (!lista.length) {
+    el.innerHTML = '<div class="sc-vazio">Nenhum cenário salvo neste navegador ainda — monte os '
+                 + 'inputs acima e clique em "Salvar cenário atual".</div>';
+    return;
+  }
+  el.innerHTML = lista.slice().reverse().map(function(s) {
+    return '<div class="sc-card">'
+      + '<div class="sc-card-hdr"><div>'
+      +   '<div class="sc-nome">' + _mtEsc(s.nome) + '</div>'
+      +   '<div class="sc-meta">Salvo em ' + _mtEsc(s.em || '')
+      +     (s.editado ? ' · editado ' + _mtEsc(s.editado) : '') + '</div>'
+      +   '<div class="sc-meta">' + _mtEsc(_mtResumo(s.cfg)) + '</div>'
+      + '</div><div class="sc-acoes">'
+      +   '<label class="sc-plot"><input type="checkbox" data-plot="' + s.id + '"'
+      +     (MT_PLOT[s.id] ? ' checked' : '') + '>'
+      +     '<span class="sc-swatch" style="background:' + mtCor(s.id) + '"></span>Plotar</label>'
+      +   '<div class="sc-btn" data-id="' + s.id + '" data-acao="load">Carregar</div>'
+      +   '<div class="sc-btn" data-id="' + s.id + '" data-acao="edit">Editar</div>'
+      +   '<div class="sc-btn danger" data-id="' + s.id + '" data-acao="del">Excluir</div>'
+      + '</div></div>'
+      + (s.racional ? '<div class="sc-racional">' + _mtEsc(s.racional) + '</div>' : '')
+      + '</div>';
+  }).join('');
+  el.querySelectorAll('input[data-plot]').forEach(function(c) {
+    c.addEventListener('change', function() { MT_PLOT[c.dataset.plot] = c.checked; mtDesenhar(); });
+  });
+  el.querySelectorAll('.sc-btn').forEach(function(b) {
+    b.addEventListener('click', function() { mtAcaoCenario(b.dataset.id, b.dataset.acao); });
+  });
+}
+
+function mtCarregar(cfg) {
+  MT_CFG = mtClone(cfg);
+  var selN = document.getElementById('mt-horizonte');
+  if (selN) selN.value = String(MT_CFG.n);
+  mtRecalc();
+  mtRenderInputs();
+}
+
+function mtAcaoCenario(id, acao) {
+  var s = mtLer().filter(function(x) { return String(x.id) === String(id); })[0];
+  if (!s) return;
+  if (acao === 'del') {
+    if (!confirm('Excluir "' + s.nome + '"? Não dá para desfazer.')) return;
+    mtGravar(mtLer().filter(function(x) { return String(x.id) !== String(id); }));
+    delete MT_PLOT[id];
+    mtRenderCenarios();
+    mtDesenhar();
+    return;
+  }
+  if (acao === 'load') { mtCarregar(s.cfg); return; }
+  // Editar carrega as premissas do cenário nas caixas para ajuste; "Atualizar" re-fotografa
+  // o que estiver vivo de volta no MESMO cenário. Cancelar devolve as caixas ao que eram.
+  MT_EDIT = String(id);
+  MT_EDIT_REVERT = mtClone(MT_CFG);
+  mtCarregar(s.cfg);
+  document.getElementById('mt-sc-nome').value = s.nome || '';
+  document.getElementById('mt-sc-racional').value = s.racional || '';
+  document.getElementById('mt-sc-salvar').textContent = 'Atualizar';
+  var hint = document.getElementById('mt-sc-hint');
+  hint.textContent = 'As premissas deste cenário foram carregadas nas caixas acima — ajuste o que '
+                   + 'quiser e clique em Atualizar. Cancelar devolve as caixas ao que estavam.';
+  hint.style.display = '';
+  mtAbrirForm(true);
+}
+
+function mtAbrirForm(abrir) {
+  var form = document.getElementById('mt-sc-form'), btn = document.getElementById('mt-sc-novo');
+  if (form) form.style.display = abrir ? 'flex' : 'none';
+  if (btn) btn.classList.toggle('on', abrir);
+  if (!abrir) {
+    document.getElementById('mt-sc-nome').value = '';
+    document.getElementById('mt-sc-racional').value = '';
+    document.getElementById('mt-sc-salvar').textContent = 'Salvar';
+    var hint = document.getElementById('mt-sc-hint');
+    hint.textContent = ''; hint.style.display = 'none';
+    MT_EDIT = null; MT_EDIT_REVERT = null;
+  }
+}
+
+function mtWireCenarios() {
+  var abrir = document.getElementById('mt-sc-novo');
+  if (abrir) abrir.addEventListener('click', function() {
+    if (MT_EDIT) { mtCancelarEdicao(); return; }
+    mtAbrirForm(!abrir.classList.contains('on'));
+  });
+  var salvar = document.getElementById('mt-sc-salvar');
+  if (salvar) salvar.addEventListener('click', function() {
+    var nome = (document.getElementById('mt-sc-nome').value || '').trim() || 'Cenário sem nome';
+    var rac = (document.getElementById('mt-sc-racional').value || '').trim();
+    var lista = mtLer(), agora = new Date().toLocaleString('pt-BR');
+    if (MT_EDIT) {
+      lista = lista.map(function(s) {
+        return String(s.id) === MT_EDIT
+          ? Object.assign({}, s, {nome: nome, racional: rac, cfg: mtClone(MT_CFG), editado: agora})
+          : s;
+      });
+      if (!mtGravar(lista)) return;
+      MT_EDIT = null; MT_EDIT_REVERT = null;
+    } else {
+      var id = mtId();
+      lista.push({id: id, nome: nome, racional: rac, em: agora, cfg: mtClone(MT_CFG)});
+      if (!mtGravar(lista)) return;
+      MT_PLOT[id] = true;
+    }
+    mtAbrirForm(false);
+    mtRenderCenarios();
+    mtDesenhar();
+  });
+  var cancelar = document.getElementById('mt-sc-cancelar');
+  if (cancelar) cancelar.addEventListener('click', mtCancelarEdicao);
+  var exp = document.getElementById('mt-sc-export');
+  if (exp) exp.addEventListener('click', function() {
+    var blob = new Blob([JSON.stringify(mtLer(), null, 2)], {type: 'application/json'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cenarios_modelo_bc.json';
+    a.click();
+  });
+  var imp = document.getElementById('mt-sc-import'), file = document.getElementById('mt-sc-file');
+  if (imp && file) {
+    imp.addEventListener('click', function() { file.click(); });
+    file.addEventListener('change', function() {
+      var f = file.files && file.files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function() {
+        try {
+          var novos = JSON.parse(rd.result);
+          if (!Array.isArray(novos)) throw new Error('o arquivo não é uma lista de cenários');
+          var atual = mtLer(), ids = {};
+          atual.forEach(function(x) { ids[String(x.id)] = true; });
+          novos.forEach(function(x) { if (x && x.cfg && !ids[String(x.id)]) atual.push(x); });
+          mtGravar(atual);
+          mtRenderCenarios();
+        } catch (e) { alert('Arquivo inválido: ' + e.message); }
+        file.value = '';
+      };
+      rd.readAsText(f);
+    });
+  }
+}
+function mtCancelarEdicao() {
+  if (MT_EDIT && MT_EDIT_REVERT) { var r = MT_EDIT_REVERT; MT_EDIT = null; MT_EDIT_REVERT = null; mtCarregar(r); }
+  mtAbrirForm(false);
+}
+
+// Trocar o horizonte redimensiona os vetores em vez de descartá-los: encurtar corta o fim,
+// alongar continua no caminho default daquele input.
+function mtSetN(n) {
+  var B = mtDefaults(n);
+  MT_SPEC.forEach(function(sp) {
+    if (sp.escalar) return;
+    var v = (MT_CFG[sp.key].vals || []).slice(0, n);
+    for (var i = v.length; i < n; i++) v.push(B[sp.key][Math.min(i, B[sp.key].length - 1)]);
+    MT_CFG[sp.key].vals = v;
+  });
+  MT_CFG.n = n;
+}
+
+// Abre/fecha um gráfico. Um Plotly desenhado dentro de um container escondido sai com
+// largura zero, então expandir tem de forçar o resize.
+function mtToggleGraf(div, forcar) {
+  MT_GRAF[div] = forcar == null ? !MT_GRAF[div] : !!forcar;
+  var slot = document.getElementById('slot-' + div);
+  if (slot) slot.classList.toggle('open', MT_GRAF[div]);
+  var el = document.getElementById(div);
+  if (MT_GRAF[div] && el && el._fullLayout) Plotly.Plots.resize(el);
+}
+
+function renderMotor() {
+  var M = D.motor_cfg || {};
+  if (!M.par) {
+    var box = document.getElementById('mt-inputs');
+    if (box) box.innerHTML = '<div class="sc-vazio">Payload do motor ausente — rode '
+      + '<code>modelo_agregado.rodar()</code> e gere o relatório de novo.</div>';
+    return;
+  }
+  MT_CFG = mtCfgPadrao();
+  var t0 = document.getElementById('mt-t0');
+  if (t0) t0.textContent = M.t0;
+
+  var selN = document.getElementById('mt-horizonte');
+  if (selN) {
+    selN.innerHTML = (M.n_opcoes || [16]).map(function(k) {
+      return '<option value="' + k + '"' + (k === M.n ? ' selected' : '') + '>' + k + ' trimestres</option>';
+    }).join('');
+    selN.addEventListener('change', function() {
+      mtSetN(parseInt(selN.value, 10));
+      mtRecalc();
+      mtRenderInputs();
+    });
+  }
+  setupPillGroup('mt-infl-pills', [{key: 'acum', label: 'Acum. 4T'}, {key: 'tri', label: 'No trimestre'}],
+                 'acum', function(k) { MT_INFL_MODO = k; if (MT_RES) mtDesenhar(); });
+  Object.keys(MT_GRAF).forEach(function(div) {
+    wireDlToggle('dl-' + div, function(on) { MT_LABELS[div] = on; if (MT_RES) mtDesenhar(); });
+    var hit = document.getElementById('hit-' + div);
+    if (hit) hit.addEventListener('click', function() { mtToggleGraf(div); });
+    mtToggleGraf(div, MT_GRAF[div]);
+  });
+  wireDlToggle('mt-ref', function(on) { MT_REF = on; if (MT_RES) mtDesenhar(); });
+  var refEl = document.getElementById('mt-ref');
+  if (refEl) { refEl.classList.add('on'); MT_REF = true; }
+  var reset = document.getElementById('mt-reset');
+  if (reset) reset.addEventListener('click', function() { mtCarregar(mtCfgPadrao(MT_CFG.n)); });
+  var abrirTudo = document.getElementById('mt-abrir-tudo');
+  if (abrirTudo) abrirTudo.addEventListener('click', function() {
+    var algumFechado = MT_SPEC.some(function(sp) { return !MT_CARD[sp.key]; });
+    MT_SPEC.forEach(function(sp) { MT_CARD[sp.key] = algumFechado; });
+    mtRenderInputs();
+  });
+  mtWireCenarios();
+  mtRenderInputs();
+  mtRenderCenarios();
+  mtRecalc();
+}
+
+// ── Troca de aba — render lazy na primeira ativação ──────────────
+// O Plotly precisa de um div visível e com largura não-zero; renderizar uma aba escondida
+// dimensiona o gráfico errado. "projecoes" não entra no mapa — ainda é stub.
+var RENDERERS = {motor: renderMotor, cenarios: renderCenarios, decomp: renderDecomp,
+                 neutra: renderNeutra, hiato: renderHiato, appendix: renderAppendix};
+var tabRendered = {};
+function activateTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+  if (!tabRendered[tab] && RENDERERS[tab]) { RENDERERS[tab](); tabRendered[tab] = true; }
+}
+document.querySelectorAll('.tab-btn').forEach(function(b) {
+  b.addEventListener('click', function() { activateTab(this.dataset.tab); });
+});
+
+document.getElementById('generated-at').textContent = D.generated_at || '—';
+activateTab('motor');
+</script>
+
+</body>
+</html>

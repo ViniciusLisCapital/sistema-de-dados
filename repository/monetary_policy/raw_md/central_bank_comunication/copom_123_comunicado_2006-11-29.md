@@ -1,0 +1,9 @@
+Fonte: Banco Central do Brasil — API oficial de comunicados do Copom
+(https://www.bcb.gov.br/api/servico/sitebcb/copom/comunicados_detalhes?nro_reuniao=123)
+Reunião: 123ª reunião do Copom
+Data de referência: 2006-11-29
+Título: Nota à Imprensa - 123ª. Reunião
+
+---
+
+Avaliando o cenário macroeconômico e as perspectivas para a inflação, o Copom decidiu reduzir a taxa Selic para 13,25% a.a., sem viés, por cinco votos a favor e três votos pela redução da taxa Selic em 0,25 p.p.

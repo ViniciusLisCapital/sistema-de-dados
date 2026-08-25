@@ -7,8 +7,8 @@ na ordem curada) e que aparece em dois lugares novos: o `--group` do proprio job
 o botao de atualizar do relatorio de calendario.
 
 **Descoberto por convencao, nao mantido a mao.** Todo script em `domain/db/` declara
-`_TABLE = "<nome>"` (ou `TABLE`) e vive num arquivo com exatamente esse nome — 71 de
-71 seguem isso, verificado (o 72o arquivo e o `mt_caged_novo`, orquestrador que nao
+`_TABLE = "<nome>"` (ou `TABLE`) e vive num arquivo com exatamente esse nome — 72 de
+72 seguem isso, verificado (o 73o arquivo e o `mt_caged_novo`, orquestrador que nao
 declara `_TABLE` de proposito — as 3 tabelas dele vem por `_OVERRIDES`, abaixo). A
 contagem envelhece a cada tabela nova; a garantia nao e ela, e o `validar()`.
 Entao o mapa e derivado varrendo os arquivos, e

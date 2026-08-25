@@ -787,6 +787,12 @@ table.data-table.text-table th, table.data-table.text-table td { text-align: lef
   <!-- ══ Model tabs, fused from models/ppp_dashboard_template.html (2026-08) ══ -->
   <div class="tab-panel ppp-scope" id="tab-data">
 
+  <div id="pppNoData" style="display:none" class="no-data-msg">
+    No PPP-equilibrium data embedded in this build. Regenerate via
+    <code>uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run()"</code>
+    (needs MySQL plus a live FRED fetch for the US CPI).
+  </div>
+
   <div class="ppp-strip">
     <div class="hdr-badge" id="rangeBadge">—</div>
     <div class="hdr-date" id="genDate"></div>
@@ -2164,6 +2170,20 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
 
 (function () {
   "use strict";
+
+  // This one <script> block hosts all three model tabs, so a throw here aborts
+  // the whole block -- including the FXATTR_DATA/RIDGE_DATA guards further
+  // down, which then never run and leave those two panels blank instead of
+  // showing their own no-data message. Degrade here, never throw.
+  const pppNoDataEl = document.getElementById('pppNoData');
+  if (!PPP_DATA) {
+    pppNoDataEl.style.display = 'block';
+    const panel = document.getElementById('tab-data');
+    Array.prototype.forEach.call(panel.children, function (c) {
+      if (c !== pppNoDataEl) c.style.display = 'none';
+    });
+    return;
+  }
 
   const D = PPP_DATA; // { months, ptax, br_index, us_index, default_base_month }
   const N = D.months.length;

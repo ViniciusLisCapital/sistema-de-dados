@@ -1,0 +1,57 @@
+{
+ "so_demanda": {
+  "rotulo": "expectativa e cambio fixos",
+  "n": 17,
+  "pico_nosso": -0.05524851330269431,
+  "pico_pub": -0.23,
+  "tri_pico_nosso": 6,
+  "tri_pico_pub": 11,
+  "erro_medio": 0.11204028189102803,
+  "erro_abs_medio": 0.11346677408614839,
+  "erro_max": 0.19301021940879262,
+  "erro_t4": 0.026305697405439143
+ },
+ "com_expectativa": {
+  "rotulo": "cambio fixo, expectativa reagindo",
+  "n": 17,
+  "pico_nosso": -0.12178650143995151,
+  "pico_pub": -0.3,
+  "tri_pico_nosso": 9,
+  "tri_pico_pub": 12,
+  "erro_medio": 0.10156242103353251,
+  "erro_abs_medio": 0.10538752229787467,
+  "erro_max": 0.20726097249673953,
+  "erro_t4": -0.0003252876089901574
+ },
+ "completo": {
+  "rotulo": "modelo cheio",
+  "n": 17,
+  "pico_nosso": -0.11940783339260497,
+  "pico_pub": -0.27,
+  "tri_pico_nosso": 8,
+  "tri_pico_pub": 4,
+  "erro_medio": 0.12988300154973353,
+  "erro_abs_medio": 0.13016741770394194,
+  "erro_max": 0.18348941438240818,
+  "erro_t4": 0.18348941438240818
+ },
+ "motor_bcb": {
+  "rotulo": "nosso motor, parametros do BC",
+  "n": 17,
+  "pico_nosso": -0.2512122564913195,
+  "pico_pub": -0.3,
+  "tri_pico_nosso": 12,
+  "tri_pico_pub": 12,
+  "erro_abs_medio": 0.0298014133580918
+ },
+ "n": 17,
+ "pico_nosso": -0.11940783339260497,
+ "pico_pub": -0.27,
+ "tri_pico_nosso": 8,
+ "tri_pico_pub": 4,
+ "erro_medio": 0.12988300154973353,
+ "erro_abs_medio": 0.13016741770394194,
+ "erro_max": 0.18348941438240818,
+ "erro_t4": 0.18348941438240818,
+ "pico_completo": -0.27
+}

@@ -45,9 +45,14 @@ _SUFFIXED_TABLES = {
 # apenas (nao existe variante SA para "valores a precos correntes"), entao _load_flat() so agrupa
 # por name, sem sufixo. Usado para computar o peso anual (nao a serie em si) no metodo de
 # decomposicao de crescimento -- ver report.html/CLAUDE.md "PIB tab methodology".
+#
+# atv_renda_poupanca (grupo "renda_poupanca") e a mesma situacao -- NSA apenas, sem par SA no
+# agregado IBGE 2072 -- e alimenta a nova aba "Renda e Poupanca" (cascata PIB -> Renda Nacional ->
+# Poupanca -> Capacidade/Necessidade de Financiamento).
 _FLAT_TABLES = {
-    "ibcbr":   "atv_ibcbr",
-    "pib_val": "atv_pib_valores_correntes",
+    "ibcbr":         "atv_ibcbr",
+    "pib_val":       "atv_pib_valores_correntes",
+    "renda_poupanca": "atv_renda_poupanca",
 }
 
 

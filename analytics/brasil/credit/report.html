@@ -97,6 +97,14 @@
     .scale-legend .sc-p2 { background: rgba(65,135,145,0.20); }
     .row-n { color: var(--muted); font-family: var(--mono); font-size: 10.5px; }
 
+    /* Surpresa da PTC: celula pintada pelo sinal do desvio, para "veio acima/abaixo do
+       esperado" ser varrivel de relance. Cinza (dv-flat) = |desvio| <= 1/N do segmento,
+       ou seja cabe em UM respondente ter mudado de opiniao -- faixa de granularidade,
+       nao teste estatistico. Mesmos tons do .scale-legend. */
+    .dv-pos  { background: rgba(65,135,145,0.16); }
+    .dv-neg  { background: rgba(234,82,58,0.16); }
+    .dv-flat { color: var(--muted); }
+
     /* ── Appendix: click-to-expand methodology notes (native <details>/<summary>) ── */
     .appendix-item {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
@@ -532,6 +540,48 @@
       <div class="chart-card"><div id="chart-ptc"></div></div>
     </section>
 
+    <section>
+      <h2>Surpresa &mdash; Observado em (t) contra o Esperado em (t&minus;1), M&eacute;dia M&oacute;vel de 4 Trimestres</h2>
+      <p class="chart-caption">
+        A pesquisa pergunta as duas coisas na mesma rodada, ent&atilde;o a
+        <strong>esperada</strong> de um trimestre &eacute; uma previs&atilde;o
+        <em>verific&aacute;vel</em> pela <strong>observada</strong> do trimestre seguinte.
+        Aqui est&aacute; s&oacute; a diferen&ccedil;a:
+        <strong>desvio(t) = observada(t) &minus; esperada(t&minus;1)</strong> &mdash; o realizado
+        contra o que os pr&oacute;prios bancos declararam um trimestre antes <em>sobre esse
+        trimestre</em>. <strong>Acima de zero = veio melhor do que o painel previa</strong>
+        (aprova&ccedil;&atilde;o mais frouxa, ou procura mais forte); abaixo, pior. O primeiro
+        trimestre da amostra (2011-T2) n&atilde;o tem desvio, porque n&atilde;o h&aacute;
+        expectativa anterior a ele. Sele&ccedil;&atilde;o independente da tabela de n&iacute;vel
+        acima.<br><br>
+        A tabela abaixo mostra a <strong>m&eacute;dia m&oacute;vel de 4 trimestres</strong> desse
+        desvio, aparada &agrave; direita: cada c&eacute;lula &eacute; a m&eacute;dia daquele
+        trimestre e dos 3 anteriores, ou seja <em>o &uacute;ltimo ano fechado ali</em>. A pergunta
+        deixa de ser &quot;erraram neste trimestre?&quot; e passa a ser <strong>&quot;v&ecirc;m
+        errando para o mesmo lado ao longo de um ano?&quot;</strong> &mdash; um vi&eacute;s
+        acumulado que nenhum trimestre isolado deixa ver. O desvio trimestral cru continua no
+        gr&aacute;fico (linha fina) e no <em>hover</em> dele.
+      </p>
+      <div class="scale-legend">
+        <div class="sc-n2"><b>&minus;</b><span>o ano veio <b>abaixo</b> do esperado<br>(mais restritivo / procura mais fraca)</span></div>
+        <div><b>&asymp;0</b><span><b>em linha</b>: |MA 4T| &le; &sigma;<sub>0</sub><br>da pr&oacute;pria MA</span></div>
+        <div class="sc-p2"><b>+</b><span>o ano veio <b>acima</b> do esperado<br>(mais flex&iacute;vel / procura mais forte)</span></div>
+      </div>
+      <p class="chart-caption">Clique em &#9656; para abrir os 4 segmentos; marque os checkboxes para plotar. &quot;Em linha&quot; &eacute; <strong>|MA 4T| &le; &sigma;<sub>0</sub> da pr&oacute;pria MA</strong> (<strong>&sigma;<sub>0</sub> 4T</strong> no r&oacute;tulo de cada linha), onde &sigma;<sub>0</sub> &eacute; a dispers&atilde;o medida <strong>em torno de zero</strong> &mdash; e n&atilde;o em torno da m&eacute;dia da s&eacute;rie, que &eacute; onde estava o erro at&eacute; 2026-08: a faixa &eacute; centrada em zero, e medir a dispers&atilde;o em outro centro fazia s&eacute;rie enviesada acusar quase tudo (ver Ap&ecirc;ndice 15). N&atilde;o &eacute; o &sigma; do desvio trimestral, que &eacute; cerca de <em>duas vezes</em> maior: mediar 4 trimestres reduz a dispers&atilde;o, ent&atilde;o o limite trimestral deixaria a MA dentro da faixa quase sempre. Um crit&eacute;rio por s&eacute;rie, nunca comum (&sigma;<sub>0</sub> 4T vai de &plusmn;0,06 a &plusmn;0,20 entre as oito). A c&eacute;lula &eacute; classificada pelo n&uacute;mero <em>como exibido</em>, em 2 casas, para a cor nunca contradizer o valor impresso ao lado dela. N&atilde;o &eacute; teste de signific&acirc;ncia: o painel &eacute; um censo de si mesmo, n&atilde;o h&aacute; amostragem a testar. <strong>C&eacute;lulas vizinhas compartilham 3 dos 4 trimestres</strong> &mdash; n&atilde;o as leia como duas observa&ccedil;&otilde;es independentes.</p>
+      <div class="chart-card table-card">
+        <table class="data-table" id="ptc-desvio-table">
+          <thead id="ptc-desvio-table-head"></thead>
+          <tbody id="ptc-desvio-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Evolu&ccedil;&atilde;o da Surpresa &mdash; Trimestre e Tend&ecirc;ncia</h2>
+      <p class="chart-caption"><strong>Duas linhas por s&eacute;rie, mesma cor</strong>: a fina e apagada &eacute; o desvio de cada trimestre, a grossa &eacute; a m&eacute;dia m&oacute;vel de 4 trimestres &mdash; a tend&ecirc;ncia lida contra o ru&iacute;do de que ela saiu. As faixas s&atilde;o o <strong>&quot;em linha&quot;</strong>, <strong>&plusmn;&sigma;<sub>0</sub> da MA</strong> (o mesmo limite da tabela acima, para as duas n&atilde;o discordarem), uma por s&eacute;rie marcada, centradas em zero e <strong>pontilhadas na cor da pr&oacute;pria linha</strong> &mdash; com v&aacute;rias s&eacute;ries marcadas as faixas ficam encaixadas uma na outra, e a cor &eacute; o que diz de quem &eacute; qual (dois dos oito limites est&atilde;o a 0,0002 de dist&acirc;ncia). Com uma &uacute;nica s&eacute;rie marcada a faixa tamb&eacute;m ganha preenchimento. <strong>A linha fina sai da faixa com frequ&ecirc;ncia, e isso &eacute; o esperado</strong> &mdash; a faixa mede a varia&ccedil;&atilde;o t&iacute;pica da <em>m&eacute;dia</em>, n&atilde;o a do trimestre. No <em>hover</em> da linha fina vem o <strong>m&iacute;nimo de respondentes</strong> que precisam ter mudado de n&iacute;vel para produzir aquele desvio (|desvio| &times; N, arredondado para cima &mdash; limite inferior, n&atilde;o contagem: parte dos movimentos pode ter se cancelado); no <em>hover</em> da linha grossa vem a MA e tamb&eacute;m o valor cru daquele trimestre. Aviso de leitura: os AR(1) dos desvios ficam entre &minus;0,23 e +0,21, ou seja quase <strong>nenhuma persist&ecirc;ncia</strong> &mdash; a MA aqui suaviza ru&iacute;do praticamente independente, ent&atilde;o ela serve para ver vi&eacute;s acumulado, n&atilde;o para extrapolar ciclo.</p>
+      <div class="chart-card"><div id="chart-ptc-desvio"></div></div>
+    </section>
+
   </div>
 
   <!-- ═══════════ TAB — APÊNDICE ═══════════ -->
@@ -822,7 +872,7 @@
           é, aperto brando. Nos relatórios do BCB a mesma escala aparece como gradiente de cor, de
           vermelho pleno em −2 a verde pleno em +2.<br><br>
 
-          <strong>4. O intervalo é [−2, +2], não [−1, +1].</strong> Conferência ao vivo: 19 dos 960
+          <strong>4. O intervalo é [−2, +2], não [−1, +1].</strong> Conferência ao vivo: 19 dos 976
           pontos passam de 1 em módulo — extremos −1,21 (<code>mpme_oferta_esperada</code>, T1/2016) e
           +1,57 (<code>pfh_demanda_observada</code>, T4/2020) — exatamente porque o teto da escala é 2.
           Uma leitura de −1,17 em grandes empresas no T1/2015 quer dizer "o banco médio apertou um
@@ -908,7 +958,112 @@
           quantitativo das outras abas. O próprio BCB adverte que os resultados "representam unicamente
           a visão das instituições financeiras pesquisadas", não a do Banco Central.<br><br>
 
-          <strong>14. Correções de 2026-08.</strong> Duas, ambas registradas aqui para não se perderem:
+          <strong>14. Surpresa: o realizado contra a expectativa de um trimestre antes.</strong>
+          Como a pesquisa faz as duas perguntas na mesma rodada, a série <em>esperada</em> de um
+          trimestre é uma previsão que o trimestre seguinte verifica. A tabela e o gráfico de
+          surpresa mostram só a diferença:
+          <strong>desvio(t) = observada(t) − esperada(t−1)</strong>. Três cuidados. <em>(a)</em> O
+          alinhamento é <strong>defasado de um trimestre, nunca contemporâneo</strong>: comparar
+          observada(t) com esperada(t) seria confrontar o realizado com uma previsão sobre o trimestre
+          <em>seguinte</em> — não é surpresa, é a diferença entre dois períodos. <em>(b)</em> O primeiro
+          trimestre da amostra (2011-T2) não tem desvio, por não haver expectativa anterior a ele: a
+          série de desvio tem 60 pontos contra 61 das outras. <em>(c)</em> As duas médias são sobre
+          painéis de trimestres diferentes — quem respondeu em t−1 não é necessariamente quem
+          respondeu em t, e nem o N é o mesmo —, então parte de um desvio pode ser composição do
+          painel.<br><br>
+
+          <strong>15. O que conta como "em linha", e por que não é 1/N.</strong> A faixa do gráfico
+          e o cinza das células são <strong>|MA 4T| &le; &sigma;<sub>0</sub> da própria MA</strong>,
+          onde &sigma;<sub>0</sub> é a dispersão daquela série de médias móveis <strong>medida em torno
+          de zero</strong> — a raiz do quadrado médio, &radic;(média de <em>v</em>&sup2;) — e vai de
+          &plusmn;0,06 em PF Consumo oferta a &plusmn;0,20 em PF Habitacional demanda.<br><br>
+          <strong>Em torno de zero, e não em torno da média da série: aqui estava um erro, corrigido em
+          2026-08.</strong> A faixa é centrada em zero, porque zero é o ponto de nenhuma surpresa —
+          centrar na média responderia "em linha com o viés habitual", outra pergunta. Mas até esta
+          correção a <em>largura</em> vinha de um desvio-padrão calculado em torno da <em>média</em>,
+          e os dois centros não combinam. Numa série enviesada isso faz a faixa acusar quase tudo: a MA
+          de PF Consumo demanda tinha média &minus;0,09 contra largura 0,09 — o viés inteiro cabia
+          dentro de um &sigma; —, e 8 das 12 células visíveis saíam da faixa, todas negativas, só por a
+          série ser ela mesma. O RQM resolve por construção, já que
+          RQM&sup2; = média&sup2; + variância: série com viés ganha faixa mais larga, e sobra pintado o
+          trimestre de fato atípico. Efeito medido: a cobertura da faixa passou de 49%-68% entre as
+          oito séries para <strong>61%-70%</strong>, agrupada em torno dos ~68% que "1&sigma;" sugere,
+          e as células pintadas na janela visível caíram de 31 para <strong>23 de 96</strong>
+          (contadas na precisão exibida, a que dá para conferir na tela; na precisão cheia, de 36 para
+          27). O que era
+          sinal ficou: PF Habitacional oferta segue com 9 de 12 fora, porque ali a surpresa positiva é
+          real (média dos últimos 12 = +0,11 contra faixa 0,10), não artefato do centro errado.<br><br>
+          <strong>É o limite da MA e não o do desvio trimestral</strong> — que é cerca de duas vezes
+          maior, &plusmn;0,14 a &plusmn;0,37 — por duas razões: a tabela mostra a MA, então gráfico e
+          tabela têm de concordar sobre o que é "em linha"; e o limite trimestral deixaria a MA dentro
+          da faixa quase sempre, apagando justamente o que a MA serve para mostrar. Consequência
+          visível e correta: a linha fina do trimestre <em>sai</em> dessa faixa com frequência — ela é
+          o ruído que a média absorve. Uma faixa <em>por série</em>, nunca comum — 3,4&times; de
+          amplitude entre a menor e a maior significa que uma faixa única classificaria uma série pelo
+          padrão de outra. Uma escala robusta em torno de zero (mediana de |<em>v</em>| &divide; 0,6745)
+          fica a menos de 0,04 do &sigma;<sub>0</sub> trimestral, ou seja 2015-16 e 2020 não estão
+          inflando a conta.<br><br>
+          Dois detalhes de apresentação que vieram com a mesma correção. <em>(a)</em> <strong>A célula
+          é classificada pelo número como exibido</strong>, em 2 casas, e não na precisão cheia: a
+          célula imprime 2 casas e o rótulo da linha imprime o limite com 2 casas, então classificar no
+          valor cheio produzia célula pintada "fora da faixa" ao lado de um rótulo com o número
+          idêntico — 13 células de 456 se contradiziam assim. A faixa do <em>gráfico</em> continua no
+          valor cheio, onde não há arredondamento e a diferença é sub-pixel. <em>(b)</em> <strong>Cada
+          faixa é pontilhada na cor da sua própria linha.</strong> Antes eram retângulos cinza
+          idênticos: com duas ou mais séries marcadas ficavam encaixados um dentro do outro sem nada
+          que dissesse de quem era qual, e dois dos oito limites estão a 0,0002 de distância — não
+          eram nem distinguíveis como duas faixas.<br><br>
+          Uma versão anterior desta aba usava <strong>|desvio| &le; 1/N</strong>, com o argumento de que
+          um desvio desse tamanho "cabe em uma instituição ter mudado de opinião". <strong>O argumento
+          não se sustenta e foi retirado.</strong> Primeiro, 1/N é a <em>resolução</em> do índice num
+          trimestre com N fixo, não um piso de relevância: um desvio de 1/N é apenas <em>compatível</em>
+          com um respondente ter se movido, e sai igualmente de cinco subindo um nível contra quatro
+          descendo — muita mudança de opinião, não pouca. Segundo, a grade de 1/N só existe se N for o
+          mesmo nos dois trimestres, e não é: se N fosse sempre 7 em PF Habitacional, 100% dos desvios
+          cairiam em múltiplos de 1/7; caem 52%-58%. Terceiro, não há modelo amostral aqui para chamar
+          nada de ruído — o painel é um censo de si mesmo, e um desvio pequeno é uma resposta de verdade
+          que deu pequena. O que 1/N <em>dá</em> corretamente é o limite na outra direção, e está no
+          <em>hover</em> da linha fina de cada trimestre: <strong>|desvio| &times; N arredondado para cima é o mínimo de
+          respondentes que precisam ter mudado de nível</strong> (o +0,26 de Grandes Empresas em 2026-T2
+          exige ao menos 6 dos 22). Limite inferior, não contagem: parte dos movimentos pode ter se
+          cancelado.<br><br>
+          Nada aqui é modelo: o desvio é a subtração de dois números que o BCB já publica, e
+          &sigma;<sub>0</sub> é descritivo sobre os 60 desvios que existem.<br><br>
+          Achado lateral, sem exagerar a força: a média dos desvios é negativa em três das quatro
+          séries de <em>demanda</em> (−0,06 a −0,09) e ≈0 nas de <em>oferta</em> — os bancos tendem a
+          prever demanda um pouco mais forte do que a que reportam depois. Com 60 trimestres
+          autocorrelacionados isto <strong>não</strong> está sendo chamado de significante.<br><br>
+
+          <strong>16. A média móvel de 4 trimestres, e o que ela não é.</strong> A tabela e a linha
+          grossa do gráfico mostram a <strong>média móvel de 4 trimestres do desvio</strong>, aparada
+          à direita: o ponto de <em>t</em> é a média de <em>t&minus;3</em> a <em>t</em>, isto é o
+          último ano fechado ali, e nada olha para frente. Perde os 3 primeiros pontos (57 contra 60) e
+          só agrega janelas de 4 trimestres <em>consecutivos</em> de calendário — se um dia faltar um
+          trimestre na base, a janela é descartada em vez de mediar pontos separados por mais de um
+          ano. A pergunta muda: de "erraram neste trimestre?" para <strong>"vêm errando para o mesmo
+          lado ao longo de um ano?"</strong>.<br><br>
+          Três advertências de leitura. <em>(a)</em> <strong>Células vizinhas compartilham 3 dos 4
+          trimestres</strong>, logo os pontos da MA são fortemente correlacionados por construção —
+          não são observações independentes, e uma "sequência" de valores parecidos não é evidência de
+          nada por si só. <em>(b)</em> O &sigma;<sub>0</sub> da MA é <strong>cerca de metade</strong> do
+          trimestral (razões medidas de 0,38 a 0,69, média 0,51). E 0,50 é exatamente o
+          que se esperaria se os desvios fossem <em>independentes</em> entre trimestres
+          (&sigma;/&radic;4). <em>(c)</em> Coerente com isso, os AR(1) dos desvios trimestrais ficam
+          entre &minus;0,23 e +0,21 — <strong>quase nenhuma persistência</strong>. Ou seja: esta MA
+          está sobretudo <em>mediando ruído aproximadamente independente</em>, não revelando um ciclo
+          lento. Ela suaviza, e serve para ver <strong>viés acumulado</strong>; não é base para
+          extrapolar tendência.<br><br>
+          O que ela mostra bem, como exemplo: a MA de demanda de Grandes Empresas saiu de +0,07 para
+          &minus;0,14 nos 4 últimos trimestres — um ano inteiro de demanda vindo abaixo do que os
+          bancos previam, que nenhum trimestre isolado deixa ver. O valor cru de cada trimestre não
+          desapareceu: está na linha fina e no <em>hover</em> dela, e o <em>hover</em> da linha grossa
+          mostra a MA e o trimestre lado a lado.<br><br>
+
+          <strong>17. Correções de 2026-08.</strong> Três, todas registradas aqui para não se
+          perderem — a terceira é a da faixa "em linha", detalhada no item 15: a largura era um
+          desvio-padrão em torno da <em>média</em> da série enquanto a faixa é centrada em <em>zero</em>,
+          e numa série enviesada isso pintava quase toda a linha; passou a ser o RQM em torno de zero.
+          As outras duas:
           <em>(a)</em> uma versão anterior deste relatório guardava apenas 2 das 16 séries
           (<code>ptcc_grandes</code>/<code>ptcc_mpme</code> em <code>cred_inadimplencia_pj</code>) sob
           códigos SGS <strong>congelados desde 2022-10</strong> — o BCB nunca descontinuou a pesquisa,
@@ -1019,6 +1174,12 @@ var C = {
   amarelo: '#FBC852',
   cinza:   '#BFBFBF',
 };
+// hex -> rgba, para preenchimento translucido na cor exata de uma linha (faixas da PTC).
+function _hexToRgba(hex, alpha) {
+  var h = String(hex).replace('#', '');
+  return 'rgba(' + parseInt(h.slice(0, 2), 16) + ',' + parseInt(h.slice(2, 4), 16)
+       + ',' + parseInt(h.slice(4, 6), 16) + ',' + alpha + ')';
+}
 // scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
 var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
 
@@ -1998,6 +2159,236 @@ function renderPtcChart() {
   _bindYAutofit('chart-ptc');
   _ensureQuickRange('chart-ptc', _unionDates.apply(null, specs));
 }
+
+// ── PTC · Surpresa (adicao 2026-08) — desvio(t) = observada(t) - esperada(t-1): a unica
+// serie derivada desta aba, e ainda assim so uma subtracao entre dois pontos que o BCB
+// ja publica. Estado proprio (checked/expanded) de proposito, nao compartilhado com
+// ptcState: e uma leitura independente da tabela de nivel, e acoplar as duas faria um
+// clique la mudar em silencio o que se ve aqui. Sem pill de horizonte -- a surpresa nao
+// tem horizonte, ela E o par dos dois. Ver a secao "Surpresa" em ptc_tab.py.
+var ptcDesvioState = {checked: {}, expanded: {oferta__header: true, demanda__header: true}};
+['ge_oferta', 'ge_demanda'].forEach(function(k) { ptcDesvioState.checked[k] = true; });
+
+function ptcDesvioSeries(seriesKey) {
+  var v = (D.ptc.series || {})[seriesKey];
+  return (v && v.desvio) || {dates: [], values: []};
+}
+function ptcDesvioHasData(seriesKey) {
+  return ptcDesvioSeries(seriesKey).dates.length > 0;
+}
+// MA 4T aparada a direita, calculada em ptc_tab.py (o browser so le). E a leitura
+// PRINCIPAL desde 2026-08: a tabela mostra ela, e o grafico mostra ela grossa sobre o
+// desvio trimestral fino.
+function ptcDesvioMa(seriesKey) {
+  var v = (D.ptc.series || {})[seriesKey];
+  return (v && v.desvio_ma4) || {dates: [], values: []};
+}
+function ptcDesvioRefDates() {
+  // datas da MA, nao do trimestral: sao as colunas da tabela. Coincidem no fim (a MA
+  // aparada a direita termina no mesmo trimestre), so comecam 3 trimestres depois.
+  return ptcDesvioMa(D.ptc.anchor).dates.slice(-12);
+}
+// "Em linha" = |desvio| <= o RQM da PROPRIA serie de desvios (payload `rms`, calculado
+// em ptc_tab.py; medido em torno de zero, que e onde a faixa esta centrada e o ponto de
+// nenhuma surpresa -- ate 2026-08 era o desvio-padrao em torno da MEDIA da serie, o que
+// misturava dois centros e fazia serie enviesada acusar quase tudo). Substituiu antes uma
+// faixa de 1/N que nao se sustentava: 1/N e a resolucao do indice, nao um piso de
+// relevancia, e a grade de 1/N so existe se N nao mudar entre os dois trimestres -- e
+// muda (52%-58% dos desvios de PFH caem na grade de 1/7, nao 100%). O uso correto de 1/N
+// virou o limite inferior de respondentes no hover do grafico. Ver ptc_tab.py.
+//
+// Compara os numeros COMO EXIBIDOS (2 casas, o MESMO Math.round de fmtDiffusion, com a
+// mesma assimetria: Math.round(-6.5) da -6 em JS, entao abs(round(v)) e nao round(abs(v))
+// -- na segunda forma uma celula que imprime -0,06 com limite 0,06 saia pintada) e nao na
+// precisao cheia: a celula mostra 2 casas e o rotulo da linha mostra o limite com 2 casas,
+// entao classificar no valor cheio produzia celula pintada "fora da faixa" ao lado de um
+// rotulo com o numero identico (13 celulas de 456 se contradiziam assim). A faixa do
+// GRAFICO segue no valor cheio -- la nao ha arredondamento e a diferenca e sub-pixel.
+function ptcDesvioClass(v, lim) {
+  if (v == null || isNaN(v)) return '';
+  if (lim && Math.abs(Math.round(v * 100)) <= Math.round(lim * 100)) return 'dv-flat';
+  return v > 0 ? 'dv-pos' : (v < 0 ? 'dv-neg' : 'dv-flat');
+}
+function renderPtcDesvioTableHead() {
+  var thead = document.getElementById('ptc-desvio-table-head');
+  thead.innerHTML = '';
+  var tr = document.createElement('tr');
+  var thCheck = document.createElement('th'); thCheck.className = 'col-check';
+  var thLabel = document.createElement('th'); thLabel.textContent = 'Direção / Segmento';
+  tr.appendChild(thCheck); tr.appendChild(thLabel);
+  ptcDesvioRefDates().forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtQuarterShort(d);
+    tr.appendChild(th);
+  });
+  thead.appendChild(tr);
+}
+function renderPtcDesvioTable() {
+  renderPtcDesvioTableHead();
+  var tbody = document.getElementById('ptc-desvio-table-body');
+  tbody.innerHTML = '';
+  var dates = ptcDesvioRefDates();
+  flattenHierRows(D.ptc.tree, ptcDesvioState.expanded, 0).forEach(function(r) {
+    var node = r.node;
+    var hasData = ptcDesvioHasData(node.seriesKey);
+    var sv = ptcDesvioMa(node.seriesKey);          // tabela mostra a MA 4T
+    var valueByDate = {};
+    for (var i = 0; i < sv.dates.length; i++) valueByDate[sv.dates[i]] = sv.values[i];
+    var tr = document.createElement('tr');
+    if (node.children) tr.className = 'is-group';
+
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    if (hasData) {
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!ptcDesvioState.checked[node.key];
+      cb.addEventListener('change', function() {
+        if (cb.checked) ptcDesvioState.checked[node.key] = true; else delete ptcDesvioState.checked[node.key];
+        renderPtcDesvioChart();
+      });
+      tdCheck.appendChild(cb);
+    }
+
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = ptcDesvioState.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        ptcDesvioState.expanded[node.key] = !ptcDesvioState.expanded[node.key];
+        renderPtcDesvioTable();
+      });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+      // N (o painel, que da o limite inferior de respondentes no hover) e sigma (a
+      // variacao tipica dos desvios desta serie, que e a faixa "em linha" da linha).
+      if (node.n) {
+        var sn = document.createElement('span');
+        sn.className = 'row-n';
+        // limite da MA, porque e ele que define a faixa "em linha" desta tabela; o do
+        // trimestral (~2x) vem no hover do grafico, junto do proprio trimestre.
+        sn.textContent = '  N\u2248' + node.n
+          + (sv.rms ? '  \u00b7  \u03c3\u2080 4T \u00b1' + sv.rms.toFixed(2).replace('.', ',') : '');
+        tdLabel.appendChild(sn);
+      }
+    }
+
+    tr.appendChild(tdCheck); tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var tdValue = document.createElement('td');
+      tdValue.className = 'col-value';
+      if (hasData) {
+        var v = valueByDate[d];
+        tdValue.textContent = fmtDiffusion(v);
+        var cls = ptcDesvioClass(v, sv.rms);
+        if (cls) tdValue.className = 'col-value ' + cls;
+      } else {
+        tdValue.textContent = '—';
+      }
+      tr.appendChild(tdValue);
+    });
+    tbody.appendChild(tr);
+  });
+}
+// Barras, nao linhas: o objeto e um desvio com sinal em torno do zero e a leitura e
+// ponto a ponto. barmode 'group' e obrigatorio -- os segmentos nao se somam (nao existe
+// total na PTC, ver ptc_tab.py), entao empilhar produziria uma altura que nao e o desvio
+// de nada.
+function renderPtcDesvioChart() {
+  var specs = [], colorIdx = 0;
+  (function walk(tree) {
+    (tree || []).forEach(function(node) {
+      if (ptcDesvioState.checked[node.key] && ptcDesvioHasData(node.seriesKey)) {
+        var sq = ptcDesvioSeries(node.seriesKey), sm = ptcDesvioMa(node.seriesKey);
+        specs.push({dates: sq.dates, values: sq.values, maDates: sm.dates, maValues: sm.values,
+                    n: node.n, lim: sm.rms,
+                    label: node.label + ' \u2014 ' + (node.key.indexOf('_oferta') >= 0 ? 'oferta' : 'demanda'),
+                    color: HIER_CHART_COLORS[colorIdx++ % HIER_CHART_COLORS.length]});
+      }
+      if (node.children) walk(node.children);
+    });
+  })(D.ptc.tree);
+  // DUAS linhas por serie, mesma cor: o desvio trimestral fino e apagado (opacity), a MA
+  // 4T grossa por cima. Linhas e nao barras (pedido do usuario, 2026-08) -- e com duas
+  // series sobrepostas as barras agrupadas ficariam finas demais para se ver a MA junto.
+  var traces = [];
+  specs.forEach(function(sp) {
+    // Uso correto de 1/N: ceil(|desvio| * N) e o MINIMO de respondentes que precisam ter
+    // mudado de nivel. Limite inferior (movimentos podem se cancelar), nao contagem --
+    // por isso ">=". Vale para o desvio trimestral, nao para a media dele.
+    var minResp = sp.n ? sp.values.map(function(v) { return Math.ceil(Math.abs(v) * sp.n - 1e-9); }) : null;
+    traces.push({
+      type: 'scatter', mode: 'lines+markers', name: sp.label + ' (trim.)',
+      x: sp.dates, y: sp.values, opacity: 0.4,
+      line: {color: sp.color, width: 1}, marker: {color: sp.color, size: 3},
+      legendgroup: sp.label,
+      customdata: minResp,
+      hovertemplate: '<b>' + sp.label + '</b><br>%{x}<br>desvio do trimestre %{y:+.2f}'
+        + (minResp ? '<br>\u2265 %{customdata} de ' + sp.n + ' respondentes mudaram de n\u00edvel' : '')
+        + '<extra></extra>',
+    });
+    // hover da MA carrega tambem o trimestre correspondente -- a tabela agora mostra a
+    // MA, entao este e o lugar onde o numero cru do trimestre continua acessivel.
+    var qByDate = {};
+    sp.dates.forEach(function(d, i) { qByDate[d] = sp.values[i]; });
+    traces.push({
+      type: 'scatter', mode: 'lines', name: sp.label + ' (MA 4T)',
+      x: sp.maDates, y: sp.maValues,
+      line: {color: sp.color, width: 2.5},
+      legendgroup: sp.label,
+      customdata: sp.maDates.map(function(d) { return qByDate[d]; }),
+      hovertemplate: '<b>' + sp.label + '</b><br>%{x}<br>MA 4T %{y:+.2f}'
+        + '<br>trimestre %{customdata:+.2f}<extra></extra>',
+    });
+  });
+  // Faixa "em linha" = +- o RQM DA MA, centrada em zero. E o da MA e nao o do trimestral
+  // por duas razoes: a tabela mostra a MA e tinge por ele (grafico e tabela tem de
+  // concordar sobre o que e "em linha"), e o trimestral e ~2x maior, o que deixaria a MA
+  // dentro da faixa quase sempre. A linha fina VAI sair da faixa com frequencia --
+  // correto, ela e o ruido que a MA media.
+  //
+  // UMA FAIXA POR SERIE, NA COR DA SERIE (2026-08): antes eram retangulos cinza iguais,
+  // deduplicados por valor de sigma, e com 2+ series marcadas ficavam encaixados um dentro
+  // do outro sem nada que dissesse de quem era qual -- dois dos oito limites estao a
+  // 0,0002 de distancia, entao nem eram distinguiveis como duas faixas. A borda pontilhada
+  // na cor da linha e o que faz a atribuicao. O preenchimento so entra quando ha UMA serie
+  // marcada: com varias, retangulos translucidos encaixados escurecem o centro do grafico
+  // e a leitura piora em vez de melhorar.
+  // xref 'paper': acompanha o pan/zoom em x sem entrar no autorange de x.
+  // layer 'below': as linhas continuam legiveis por cima.
+  function _fmtLim(v) { return v.toFixed(2).replace('.', ','); }
+  var comFaixa = specs.filter(function(sp) { return sp.lim; });
+  var faixaUnica = comFaixa.length === 1;
+  var shapes = comFaixa.map(function(sp) {
+    return {type: 'rect', xref: 'paper', x0: 0, x1: 1, yref: 'y', y0: -sp.lim, y1: sp.lim,
+            fillcolor: faixaUnica ? _hexToRgba(sp.color, 0.10) : 'rgba(0,0,0,0)',
+            line: {color: sp.color, width: 1, dash: 'dot'}, layer: 'below'};
+  });
+  var annotations = [];
+  if (comFaixa.length) {
+    var lims = comFaixa.map(function(sp) { return sp.lim; }).sort(function(a, b) { return b - a; });
+    annotations.push({
+      xref: 'paper', x: 1, xanchor: 'right', yref: 'y', y: lims[0], yanchor: 'bottom',
+      // Um rotulo so, e sem repetir os valores por serie: com limites proximos os rotulos
+      // se sobreporiam, e o limite de cada serie ja esta no rotulo da tabela acima.
+      text: faixaUnica
+        ? 'faixa "em linha": \u00b1' + _fmtLim(lims[0])
+        : 'faixa "em linha", pontilhada na cor de cada linha: \u00b1' + _fmtLim(lims[lims.length - 1])
+          + ' a \u00b1' + _fmtLim(lims[0]),
+      showarrow: false, font: {size: 10, color: '#7A88A8'},
+    });
+  }
+  var layout = Object.assign(mkTimeseriesLayout('Desvio (observado \u2212 esperado), pontos da escala'),
+                             {shapes: shapes, annotations: annotations});
+  Plotly.react('chart-ptc-desvio', traces, layout, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-ptc-desvio');
+  _ensureQuickRange('chart-ptc-desvio', _unionDates.apply(null, specs));
+}
+
 function initPtcTab() {
   document.querySelectorAll('#ptc-horizonte-group .pill').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -2009,6 +2400,10 @@ function initPtcTab() {
   });
   renderPtcTable();
   renderPtcChart();
+  // A pill de horizonte nao mexe na surpresa (ela usa os dois horizontes de uma vez),
+  // entao estas duas so precisam rodar na abertura da aba.
+  renderPtcDesvioTable();
+  renderPtcDesvioChart();
 }
 
 var RENDERERS = {

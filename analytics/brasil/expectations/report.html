@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama de Expectativas (Focus) — LIS Capital</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <style>
+    /*THEME_CSS*/
+
+    /* ── Header ── */
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin: 20px 40px 0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+    header .brand em { font-style: normal; color: var(--lis-dourado); }
+    header h1 { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+    header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
+    header .meta strong { color: var(--text); }
+
+    /* ── Tab nav ── */
+    .tab-nav {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 101;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0 20px;
+      height: 44px;
+      font-family: var(--cond);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--lis-dourado); }
+
+    /* ── Main layout ── */
+    main { max-width: 1440px; margin: 0 auto; padding: 26px 28px 48px; }
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
+
+    /* ── Section headings ── */
+    section { display: flex; flex-direction: column; gap: 12px; }
+    section h2 {
+      font-family: var(--cond); font-size: 15px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text);
+      border-left: 4px solid var(--lis-dourado); padding-left: 10px;
+    }
+    section h3 {
+      font-family: var(--cond); font-size: 13px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text2); margin: 6px 0 0;
+    }
+    .lead { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 1100px; }
+    .lead code, .appendix-body code, .stub-note code {
+      font-family: var(--mono); font-size: 11px; background: rgba(31,40,83,0.05);
+      border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--text2);
+    }
+    .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+
+    /* ── Nota de leitura ── */
+    .stub-note {
+      background: var(--card-bg); border: 1px dashed rgba(31,40,83,0.28); border-radius: 12px;
+      padding: 18px 22px; color: var(--muted); font-size: 13px; line-height: 1.7; max-width: 1100px;
+    }
+    .stub-note h3 {
+      font-family: var(--cond); font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text2); margin: 0 0 8px;
+    }
+    .stub-note ul { margin: 6px 0 0 18px; }
+    .stub-note li { margin-bottom: 4px; }
+    .stub-note strong { color: var(--text2); }
+
+    /* ── Apêndice ── */
+    .appendix-item {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 2px 18px;
+    }
+    .appendix-item summary {
+      font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); padding: 14px 0; cursor: pointer; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .appendix-item summary::-webkit-details-marker { display: none; }
+    .appendix-item summary::after {
+      content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto;
+    }
+    .appendix-item[open] summary::after { content: '−'; }
+    .appendix-item .appendix-body {
+      font-size: 13px; color: var(--muted); line-height: 1.65; padding: 0 0 16px; max-width: 1100px;
+    }
+    .appendix-item .appendix-body strong { color: var(--text2); }
+    .appendix-item .appendix-body ul { margin: 8px 0 0 18px; }
+    .appendix-item .appendix-body li { margin-bottom: 5px; }
+    .appendix-item + .appendix-item { margin-top: 10px; }
+
+    /* ── Controles ── */
+    .ctrl-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px;
+    }
+    .ctrl-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .ctrl-sep { width: 1px; height: 20px; background: var(--border); }
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--muted);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+    .pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); font-weight: 600; }
+
+    .multiselect { position: relative; min-width: 230px; max-width: 420px; }
+    .multiselect-btn {
+      width: 100%; text-align: left; padding: 5px 10px; border: 1px solid var(--border);
+      border-radius: 6px; font-family: inherit; font-size: 13px; color: var(--text);
+      background: var(--card-bg); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .multiselect-btn:focus { outline: none; border-color: var(--lis-azul-cl); }
+    .multiselect-panel {
+      display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+      max-height: 340px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 8px; box-shadow: 0 4px 14px rgba(31,40,83,0.12); padding: 4px 0;
+    }
+    .multiselect-panel.open { display: block; }
+    .multiselect-group-header {
+      padding: 7px 12px 3px; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--lis-dourado);
+    }
+    .multiselect-panel label {
+      display: flex; align-items: center; gap: 7px; padding: 5px 12px; font-size: 13px;
+      color: var(--text); cursor: pointer; white-space: nowrap;
+    }
+    .multiselect-panel label:hover { background: var(--bg); }
+    .multiselect-panel input[type="checkbox"] { cursor: pointer; }
+
+    .date-select, .ind-select {
+      font-family: var(--mono); font-size: 12px; color: var(--text); padding: 4px 8px;
+      border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); cursor: pointer;
+      min-width: 110px;
+    }
+    .ind-select { font-family: var(--sans); font-size: 13px; min-width: 240px; max-width: 400px; }
+    .date-select:focus-visible, .ind-select:focus-visible { outline: none; border-color: var(--lis-azul-cl); }
+    .period-ctrl-bar { margin-bottom: 12px; }
+
+    .dl-toggle {
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer; user-select: none;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.03em; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 20px; padding: 4px 13px;
+      background: rgba(2,115,155,0.04); transition: all .15s;
+    }
+    .dl-toggle:hover { border-color: rgba(2,115,155,0.7); background: rgba(2,115,155,0.1); }
+    .dl-toggle.on { background: rgba(2,115,155,0.18); border-color: rgba(2,115,155,0.7); color: #025E82; font-weight: 600; }
+    .dl-toggle .toggle-icon {
+      width: 13px; height: 13px; border-radius: 3px; border: 1px solid rgba(2,115,155,0.5);
+      display: inline-flex; align-items: center; justify-content: center; font-size: 9px; line-height: 1;
+    }
+    .dl-toggle.on .toggle-icon { background: var(--lis-azul-cl); color: #fff; }
+    .dl-toggle.on .toggle-icon::after { content: '✓'; }
+
+    /* ── Tabelas ── */
+    .hier-table-wrap { overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+    .hier-table { border-collapse: collapse; width: 100%; font-size: 12px; white-space: nowrap; }
+    .hier-table th, .hier-table td { padding: 7px 13px; border-bottom: 1px solid var(--border); text-align: right; }
+    .hier-table th.col-label, .hier-table td.col-label { text-align: left; white-space: normal; }
+    .hier-table thead th { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); position: sticky; top: 0; background: var(--card-bg); z-index: 2; }
+    .hier-table td.col-value { font-family: var(--mono); color: var(--text); }
+    .hier-table tr.fam-row td {
+      font-family: var(--cond); font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--lis-azul); background: rgba(31,40,83,0.04);
+    }
+    .hier-table tr:hover td { background: rgba(2,115,155,0.05); }
+    .hier-table tr.fam-row:hover td { background: rgba(31,40,83,0.04); }
+    .up   { color: var(--lis-laranja); }
+    .down { color: var(--lis-verde); }
+    .flat { color: var(--muted); }
+    .tbl-scroll { max-height: 620px; overflow-y: auto; }
+
+    /* ── KPI ── */
+    .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .kpi-grid-5  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .kpi-value.up { color: var(--lis-laranja); }
+    .kpi-value.down { color: var(--lis-verde); }
+    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Gráficos ── */
+    .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    .chart-div  { width: 100%; height: 520px; }
+    .chart-div.tall { height: 600px; }
+    .chart-div.short { height: 380px; }
+
+    footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+    footer span { color: var(--text2); }
+
+    @media (max-width: 1100px) {
+      .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
+      .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      header, .tab-nav { padding-left: 20px; padding-right: 20px; }
+      main { padding: 18px 14px 36px; }
+    }
+    @media (max-width: 600px) {
+      .kpi-grid-3, .kpi-grid-4, .kpi-grid-5 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>Panorama de Expectativas — Focus</h1>
+  </div>
+  <div class="meta">
+    Última pesquisa <strong id="hdr-ultima">—</strong><br>
+    Gerado em <strong id="generated-at">—</strong> &nbsp;·&nbsp; BCB / Sistema de Expectativas de Mercado
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="boletim">Boletim</button>
+  <button class="tab-btn" data-tab="revisao">Revisão</button>
+  <button class="tab-btn" data-tab="copom">Curva do Copom</button>
+  <button class="tab-btn" data-tab="movel">Horizonte Móvel</button>
+  <button class="tab-btn" data-tab="trajetoria">Trajetória</button>
+  <button class="tab-btn" data-tab="dispersao">Dispersão</button>
+  <button class="tab-btn" data-tab="bases">Bases</button>
+  <button class="tab-btn" data-tab="appendix">Apêndice</button>
+</nav>
+
+<main>
+
+  <!-- ═══════ ABA — BOLETIM ═══════
+       O Boletim Focus propriamente dito, reconstruído da expc_focus_periodo (anual):
+       mediana de hoje contra 1/4/12/52 semanas atrás. As comparações andam pela GRADE
+       SEMANAL, não por data exata da pesquisa -- ver o Apêndice.
+  ═══════════════════════ -->
+  <div class="tab-panel active" id="tab-boletim">
+    <section>
+      <h2>Boletim — consenso do ano de referência</h2>
+      <div class="kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-ipca-l">IPCA</div>
+          <div class="kpi-value" id="kpi-bol-ipca-v">—</div><div class="kpi-sub" id="kpi-bol-ipca-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-selic-l">Selic</div>
+          <div class="kpi-value" id="kpi-bol-selic-v">—</div><div class="kpi-sub" id="kpi-bol-selic-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-cambio-l">Câmbio</div>
+          <div class="kpi-value" id="kpi-bol-cambio-v">—</div><div class="kpi-sub" id="kpi-bol-cambio-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-pib-l">PIB</div>
+          <div class="kpi-value" id="kpi-bol-pib-v">—</div><div class="kpi-sub" id="kpi-bol-pib-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-desoc-l">Desocupação</div>
+          <div class="kpi-value" id="kpi-bol-desoc-v">—</div><div class="kpi-sub" id="kpi-bol-desoc-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Ano de referência</span>
+        <div class="pill-group" id="pg-bol-ano"></div>
+      </div>
+
+      <p class="lead" id="bol-lead">—</p>
+      <div class="hier-table-wrap tbl-scroll"><table class="hier-table" id="tbl-boletim"></table></div>
+      <p class="chart-caption">Δ = variação da mediana em pontos da própria unidade do indicador
+        (p.p. para %, R$ para o câmbio, US$ bi para o setor externo). Laranja = revisão para cima,
+        verde = para baixo — direção, não juízo.</p>
+
+      <h3 style="margin-top:22px">O que se moveu nas últimas 4 semanas</h3>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Unidade</span>
+        <div class="pill-group" id="pg-bol-unidade"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Janela</span>
+        <div class="pill-group" id="pg-bol-janela"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-bol"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-bol-mov" class="chart-div"></div></div>
+      <p class="chart-caption">Só indicadores da mesma unidade entram no mesmo gráfico — somar p.p.
+        de IPCA com R$ de câmbio não significa nada.</p>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — REVISÃO ═══════
+       Fixa o período previsto e varre as datas de pesquisa. É a leitura que só a
+       expc_focus_periodo permite: a expc_focus tem horizonte móvel e por construção
+       mistura períodos de referência a cada semana.
+  ═══════════════════════ -->
+  <div class="tab-panel" id="tab-revisao">
+    <section>
+      <h2>Revisão — como o consenso sobre um período se moveu</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label" id="kpi-rev-hoje-l">Mediana hoje</div>
+          <div class="kpi-value" id="kpi-rev-hoje-v">—</div><div class="kpi-sub" id="kpi-rev-hoje-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Revisão em 4 semanas</div>
+          <div class="kpi-value" id="kpi-rev-r4-v">—</div><div class="kpi-sub" id="kpi-rev-r4-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Revisão em 52 semanas</div>
+          <div class="kpi-value" id="kpi-rev-r52-v">—</div><div class="kpi-sub" id="kpi-rev-r52-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Amplitude da série</div>
+          <div class="kpi-value" id="kpi-rev-amp-v">—</div><div class="kpi-sub" id="kpi-rev-amp-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Periodicidade</span>
+        <div class="pill-group" id="pg-rev-per"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Indicador</span>
+        <select class="ind-select" id="sel-rev-ind"></select>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Períodos</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-rev-btn">—</button>
+          <div class="multiselect-panel" id="ms-rev-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Eixo X</span>
+        <div class="pill-group" id="pg-rev-eixo"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-rev"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+
+      <div class="chart-card"><div id="chart-rev" class="chart-div tall"></div></div>
+      <p class="chart-caption" id="rev-cap">—</p>
+
+      <h3 style="margin-top:22px">Ritmo da revisão (variação em 4 semanas)</h3>
+      <p class="lead">A derivada da série acima. Serve para separar "o consenso mudou de nível"
+        de "o consenso está se movendo agora": barras próximas de zero por meses seguidos são
+        expectativa ancorada, mesmo que o nível esteja alto.</p>
+      <div class="chart-card"><div id="chart-rev-ritmo" class="chart-div short"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — CURVA DO COPOM ═══════
+       expc_focus_copom. A ordem cronológica das reuniões NÃO é alfabética e não é
+       derivável da data da pesquisa: vem de (ano, número) extraídos de "R<n>/<ano>".
+  ══════════════════════════════ -->
+  <div class="tab-panel" id="tab-copom">
+    <section>
+      <h2>Curva de Selic implícita no consenso</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label" id="kpi-cop-prox-l">Próxima reunião</div>
+          <div class="kpi-value" id="kpi-cop-prox-v">—</div><div class="kpi-sub" id="kpi-cop-prox-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label" id="kpi-cop-term-l">Última reunião cotada</div>
+          <div class="kpi-value" id="kpi-cop-term-v">—</div><div class="kpi-sub" id="kpi-cop-term-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Movimento embutido no ciclo</div>
+          <div class="kpi-value" id="kpi-cop-ciclo-v">—</div><div class="kpi-sub" id="kpi-cop-ciclo-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Reuniões cotadas</div>
+          <div class="kpi-value" id="kpi-cop-n-v">—</div><div class="kpi-sub" id="kpi-cop-n-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Base de cálculo</span>
+        <div class="pill-group" id="pg-cop-base"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Datas de pesquisa</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-cop-btn">—</button>
+          <div class="multiselect-panel" id="ms-cop-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-cop"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-cop-curva" class="chart-div"></div></div>
+      <p class="chart-caption">Eixo X é a sequência de reuniões ordinárias, não o calendário — o
+        Focus não publica a data de cada reunião, só a numeração.</p>
+
+      <h3 style="margin-top:22px">Selic esperada por horizonte, ao longo do tempo</h3>
+      <p class="lead">Cada linha fixa a posição na fila de reuniões (1ª à frente, 2ª, 4ª…) e
+        acompanha o que o consenso esperava dela em cada semana. Quantas reuniões o Focus cota à
+        frente cresceu com o tempo — 1 em 2004, ~12 na década de 2010, 16 desde 2021 — então as
+        linhas longas começam em datas diferentes.</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Horizontes</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-coph-btn">—</button>
+          <div class="multiselect-panel" id="ms-coph-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-coph"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-cop-hz" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Mapa da curva: horizonte × data de pesquisa</h3>
+      <div class="chart-card"><div id="chart-cop-heat" class="chart-div"></div></div>
+      <p class="chart-caption">Cada coluna é uma curva inteira. Faixas verticais uniformes = curva
+        plana (nada precificado); gradiente forte de baixo para cima = ciclo embutido.</p>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — HORIZONTE MÓVEL ═══════
+       expc_focus. "Quanto nos próximos 12/24 meses contados desta data" -- não há período
+       de referência nomeado, só a data da pesquisa.
+  ═══════════════════════════════ -->
+  <div class="tab-panel" id="tab-movel">
+    <section>
+      <h2>Horizonte móvel — 12 e 24 meses à frente</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label">IPCA 12 meses</div>
+          <div class="kpi-value" id="kpi-mov-12-v">—</div><div class="kpi-sub" id="kpi-mov-12-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">IPCA 24 meses</div>
+          <div class="kpi-value" id="kpi-mov-24-v">—</div><div class="kpi-sub" id="kpi-mov-24-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Inclinação 24m − 12m</div>
+          <div class="kpi-value" id="kpi-mov-sl-v">—</div><div class="kpi-sub" id="kpi-mov-sl-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Respondentes (IPCA 12m)</div>
+          <div class="kpi-value" id="kpi-mov-n-v">—</div><div class="kpi-sub" id="kpi-mov-n-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Séries</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-mov-btn">—</button>
+          <div class="multiselect-panel" id="ms-mov-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Horizonte</span>
+        <div class="pill-group" id="pg-mov-hz"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Suavizada</span>
+        <div class="pill-group" id="pg-mov-suav"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Base</span>
+        <div class="pill-group" id="pg-mov-base"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-mov"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-mov" class="chart-div"></div></div>
+      <p class="chart-caption" id="mov-cap">—</p>
+
+      <h3 style="margin-top:22px">Inclinação: 24 meses menos 12 meses</h3>
+      <p class="lead">Positivo = o mercado projeta inflação mais alta no segundo ano que no
+        primeiro. Negativo = espera desinflação à frente. Só as séries que existem nos dois
+        horizontes aparecem — IGP-M só é publicado a 12 meses.</p>
+      <div class="chart-card"><div id="chart-mov-slope" class="chart-div short"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — TRAJETÓRIA ═══════
+       A curva a frente inteira numa data de pesquisa, com datas anteriores sobrepostas.
+       X = período de referência (não a data da pesquisa, ao contrário da aba Revisão).
+  ══════════════════════════ -->
+  <div class="tab-panel" id="tab-trajetoria">
+    <section>
+      <h2>Trajetória esperada — a curva à frente</h2>
+      <p class="lead">O eixo X aqui é o <strong>período previsto</strong>, não a data da pesquisa:
+        cada linha é uma fotografia completa do que o consenso projetava numa semana. Ver duas
+        fotografias juntas mostra se a revisão foi de nível (curva inteira desloca) ou de timing
+        (curva gira).</p>
+
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Periodicidade</span>
+        <div class="pill-group" id="pg-tra-per"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Indicador</span>
+        <select class="ind-select" id="sel-tra-ind"></select>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Fotografias</span>
+        <div class="multiselect">
+          <button class="multiselect-btn" id="ms-tra-btn">—</button>
+          <div class="multiselect-panel" id="ms-tra-panel"></div>
+        </div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-tra"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-tra" class="chart-div"></div></div>
+
+      <h3 style="margin-top:22px">Deslocamento da curva</h3>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Hoje menos</span>
+        <div class="pill-group" id="pg-tra-comp"></div>
+      </div>
+      <div class="chart-card"><div id="chart-tra-desl" class="chart-div short"></div></div>
+      <p class="chart-caption">Barra por período de referência: quanto a mediana daquele período
+        mudou entre as duas fotografias.</p>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — DISPERSÃO ═══════
+       Desvio-padrão, coeficiente de variação e número de respondentes. min/max só
+       existem nos stores de expc_focus e expc_focus_copom -- ver o Apêndice.
+  ═════════════════════════ -->
+  <div class="tab-panel" id="tab-dispersao">
+    <section>
+      <h2>Dispersão — quanto o mercado discorda</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label">Desvio-padrão hoje</div>
+          <div class="kpi-value" id="kpi-dis-dp-v">—</div><div class="kpi-sub" id="kpi-dis-dp-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Percentil na própria história</div>
+          <div class="kpi-value" id="kpi-dis-pct-v">—</div><div class="kpi-sub" id="kpi-dis-pct-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Respondentes hoje</div>
+          <div class="kpi-value" id="kpi-dis-n-v">—</div><div class="kpi-sub" id="kpi-dis-n-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Coeficiente de variação</div>
+          <div class="kpi-value" id="kpi-dis-cv-v">—</div><div class="kpi-sub" id="kpi-dis-cv-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Fonte</span>
+        <div class="pill-group" id="pg-dis-fonte"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Série</span>
+        <select class="ind-select" id="sel-dis-ind"></select>
+        <select class="date-select" id="sel-dis-ref"></select>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Métrica</span>
+        <div class="pill-group" id="pg-dis-met"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-dis"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-dis" class="chart-div"></div></div>
+      <p class="chart-caption" id="dis-cap">—</p>
+
+      <h3 style="margin-top:22px">Tamanho do painel</h3>
+      <p class="lead">Número de instituições que responderam. Quedas bruscas costumam ser
+        feriado/recesso, não perda de interesse — e um desvio-padrão calculado sobre painel magro
+        é ruidoso, o que é a razão de olhar as duas séries juntas.</p>
+      <div class="chart-card"><div id="chart-dis-n" class="chart-div short"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — BASES ═══════
+       base 0 (janela de 30 dias) vs base 1 (4 dias úteis). Só expc_focus e
+       expc_focus_copom: a expc_focus_periodo carrega apenas a base 0.
+  ═════════════════════ -->
+  <div class="tab-panel" id="tab-bases">
+    <section>
+      <h2>Base 0 × base 1 — consenso amplo contra consenso fresco</h2>
+      <p class="lead">Não são duas pesquisas: é a mesma, com dois prazos de validade da submissão.
+        A <strong>base 0</strong> conta toda submissão dos últimos 30 dias — painel grande, mas
+        carrega opinião velha. A <strong>base 1</strong> conta só os últimos 4 dias úteis — painel
+        pequeno e atual. Depois de um choque a base 1 vira primeiro; a base 0 confirma semanas
+        depois. O gap entre as duas é, ele mesmo, um indicador de virada.</p>
+
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><div class="kpi-label">Base 1 hoje</div>
+          <div class="kpi-value" id="kpi-bas-b1-v">—</div><div class="kpi-sub" id="kpi-bas-b1-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Base 0 hoje</div>
+          <div class="kpi-value" id="kpi-bas-b0-v">—</div><div class="kpi-sub" id="kpi-bas-b0-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Gap (base 1 − base 0)</div>
+          <div class="kpi-value" id="kpi-bas-gap-v">—</div><div class="kpi-sub" id="kpi-bas-gap-s">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Maior gap da história</div>
+          <div class="kpi-value" id="kpi-bas-max-v">—</div><div class="kpi-sub" id="kpi-bas-max-s">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <span class="ctrl-label">Fonte</span>
+        <div class="pill-group" id="pg-bas-fonte"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Série</span>
+        <select class="ind-select" id="sel-bas-ind"></select>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-bas"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-bas" class="chart-div"></div></div>
+      <p class="chart-caption" id="bas-cap">—</p>
+
+      <h3 style="margin-top:22px">Gap e tamanho de cada painel</h3>
+      <div class="chart-card"><div id="chart-bas-gap" class="chart-div short"></div></div>
+    </section>
+  </div>
+
+  <!-- ═══════ ABA — APÊNDICE ═══════ -->
+  <div class="tab-panel" id="tab-appendix">
+    <section>
+      <h2>Apêndice</h2>
+
+      <div class="stub-note">
+        <h3>Escopo: só Focus</h3>
+        Este relatório lê <strong>exclusivamente</strong> as três tabelas do Sistema de
+        Expectativas de Mercado — <code>expc_focus</code>, <code>expc_focus_copom</code> e
+        <code>expc_focus_periodo</code>. Não há meta de inflação, não há série realizada e não há
+        projeção do próprio Copom em nenhum gráfico. Tudo o que se vê aqui é o que o
+        <em>mercado</em> esperava, na data em que foi perguntado. Comparações contra a meta,
+        contra o realizado ou contra o cenário do BC vivem nos relatórios de Inflação e de
+        Política Monetária, cada um com a sua própria fonte declarada.
+      </div>
+
+      <h3 style="margin-top:8px">Cobertura medida no banco</h3>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Tabela</span>
+        <div class="pill-group" id="pg-ap-tab"></div>
+      </div>
+      <div class="hier-table-wrap tbl-scroll"><table class="hier-table" id="tbl-cobertura"></table></div>
+      <p class="chart-caption">Primeira e última data de cada série, contadas na hora da geração —
+        não copiadas de documentação.</p>
+
+      <div style="margin-top:22px">
+        <details class="appendix-item"><summary>As quatro reformulações da pesquisa</summary>
+          <div class="appendix-body">
+            Séries com começo e fim descontínuos. Um gráfico "de 1999 até hoje" aparece cortado no
+            meio sem explicação se estas datas não forem conhecidas:
+            <ul>
+              <li><strong>2018-07-05</strong> — Top5 IGP-DI encerrado.</li>
+              <li><strong>2021-02-17</strong> — a família antiga de índices de preços encerrada no
+                  mesmo dia em <em>todos</em> os endpoints: IGP-DI, INPC, IPA-DI, IPA-M, IPC-Fipe,
+                  IPCA-15. Nenhuma delas está carregada; a carga só traz o que a pesquisa ainda
+                  publica.</li>
+              <li><strong>2021-09-13 → 09-14</strong> — troca em um dia. Sai "Produção industrial";
+                  saem PIB Agropecuária/Indústria/Serviços do endpoint <em>trimestral</em> — mas as
+                  versões <em>anuais</em> seguem vivas, assimetria real da fonte. Entram os 5
+                  componentes do IPCA, a Taxa de desocupação, os 5 componentes de demanda do PIB e
+                  Câmbio/IPCA trimestrais. É por isso que quase toda série de componente começa em
+                  setembro de 2021.</li>
+              <li><strong>2026-01-29</strong> — Top5 IGP-M e Top5 IPCA Administrados encerrados.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Base de cálculo 0 e 1, e por que uma tabela só tem a 0</summary>
+          <div class="appendix-body">
+            Definição do BCB: <strong>base 0</strong> usa as submissões a partir do 30º dia anterior
+            ao cálculo; <strong>base 1</strong>, a partir do 4º dia útil anterior. Mesma pesquisa,
+            duas janelas de validade — não dois painéis diferentes.
+            <br><br>
+            <strong>A base 1 não cobre o histórico todo, e isso vem da fonte:</strong> começa em
+            2014-01-02 nos endpoints de inflação e em 2021-03-31 no de Selic, contra 2001-11 e
+            2004-11 da base 0. Uma série de base 1 anterior a essas datas não existe — não é falha
+            de carga.
+            <br><br>
+            <code>expc_focus_periodo</code> carrega <strong>só a base 0</strong>, por decisão de
+            escopo: dobrar 1,28 milhão de linhas por uma leitura secundária não se paga. Por isso a
+            aba Bases oferece apenas horizonte móvel e Copom.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Grade semanal: o que "há 4 semanas" quer dizer aqui</summary>
+          <div class="appendix-body">
+            A pesquisa é diária (~250 datas por ano), mas o Boletim Focus é semanal. Toda série
+            deste relatório é reduzida a <strong>uma observação por semana ISO</strong> — a última
+            data de pesquisa da semana, tipicamente sexta-feira — e as três tabelas compartilham
+            uma única grade global de <span id="ap-grade-n">—</span> semanas
+            (<span id="ap-grade-ini">—</span> a <span id="ap-grade-fim">—</span>).
+            <br><br>
+            As comparações "há 1/4/12/52 semanas" andam por <em>data</em>: procuram o ponto da grade
+            mais recente que seja anterior ou igual a hoje menos 7/28/84/364 dias. Em semana de
+            feriado, o ponto encontrado pode estar a 8 ou 35 dias em vez de 7 ou 28.
+            <br><br>
+            Consequência para quem confere contra o Boletim publicado: os números <em>batem</em> na
+            data da pesquisa, mas a coluna "há 4 semanas" do BCB usa a data exata, não a grade.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>O que cada tabela responde (e por que são três)</summary>
+          <div class="appendix-body">
+            As três formas de chave são as três formas de pergunta que a API realmente tem:
+            <ul>
+              <li><code>expc_focus_periodo</code> — <strong>período de referência fixo</strong>:
+                  "quanto EM 2027", "quanto EM março de 2027". Duas datas independentes (quando
+                  perguntaram, sobre qual período), o que é exatamente o que permite a história da
+                  revisão. Abas Boletim, Revisão e Trajetória.</li>
+              <li><code>expc_focus</code> — <strong>horizonte móvel</strong>: "quanto nos próximos
+                  12 (ou 24) meses contados desta data". Não há período nomeado, então há uma data
+                  só. Aba Horizonte Móvel.</li>
+              <li><code>expc_focus_copom</code> — <strong>Selic por reunião do Copom</strong>: ~16
+                  reuniões à frente por data de pesquisa, ou seja a curva de política monetária
+                  implícita no consenso, não um número único. Aba Curva do Copom.</li>
+            </ul>
+            A <code>expc_focus</code> guarda horizonte móvel e por construção mistura períodos de
+            referência a cada semana — fixar um período nela é impossível. Daí a aba Revisão ler a
+            outra tabela.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>Suavizada, câmbio de fim de período, e outras pegadinhas de leitura</summary>
+          <div class="appendix-body">
+            <strong>Suavizada (S/N).</strong> A série suavizada interpola as previsões de
+            ano-calendário para produzir a janela móvel de 12 meses; a não suavizada é a leitura
+            crua da pesquisa. O IPCA não suavizado começa cinco semanas antes do suavizado.
+            <br><br>
+            <strong>Câmbio é fim de período, não média.</strong> A API não documenta isso e não há
+            campo que distinga. Foi medido contra a PTAX realizada: a previsão da última pesquisa de
+            cada ano fica mais perto do fechamento do ano em 9 dos 10 anos de 2016 a 2025. Não
+            comparar com média anual de PTAX sem converter.
+            <br><br>
+            <strong>A unidade "%" cobre duas coisas.</strong> Variação (IPCA, PIB, IGP-M) e nível
+            (Selic % a.a., Taxa de desocupação % da força de trabalho). A coluna de unidade sozinha
+            não distingue; a família do indicador, sim.
+            <br><br>
+            <strong>Balança comercial se subdivide</strong> em Exportações / Importações / Saldo —
+            é o único indicador com detalhe. Todos os outros vêm com detalhe vazio.
+            <br><br>
+            <strong>Mínimo e máximo</strong> só estão nos stores de horizonte móvel e Copom. Para
+            período de referência guardamos mediana, desvio-padrão e número de respondentes: as
+            cinco estatísticas em 268 mil linhas semanais dobrariam o tamanho do arquivo por uma
+            leitura secundária.
+          </div>
+        </details>
+
+        <details class="appendix-item"><summary>O que ficou de fora</summary>
+          <div class="appendix-body">
+            <strong>Top5.</strong> Os 6 endpoints Top5 (as 5 instituições mais assertivas) não estão
+            carregados no banco. A chave deles é idêntica à das três tabelas mais a dimensão
+            <code>tipo_calculo</code>, que já existe com valor <code>'geral'</code> — então
+            carregá-los é backfill de dados, não migração de schema, e a leitura "consenso vs. Top5"
+            entraria em todas as abas sem mudança de estrutura.
+            <br><br>
+            <strong><code>base_calculo = 1</code> na <code>expc_focus_periodo</code></strong>, pelo
+            motivo de tamanho descrito acima.
+            <br><br>
+            <strong>Séries encerradas.</strong> IGP-DI, INPC, IPA-DI, IPA-M, IPC-Fipe, IPCA-15 e
+            Produção industrial não são carregadas. Decisão explícita de escopo — todas morreram em
+            2021 e nenhuma tem continuação.
+            <br><br>
+            <strong>Referências mensais anteriores a <span id="ap-mensal-min">—</span></strong> no
+            store mensal: o endpoint mensal cota 25 meses à frente desde 2000, mas a história de
+            revisão de um mês de 2003 não tem leitor. Anual e trimestral entram inteiros.
+          </div>
+        </details>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  LIS <span>CAPITAL</span> &nbsp;·&nbsp; Panorama de Expectativas — Focus/BCB &nbsp;·&nbsp;
+  <span id="foot-fonte">expc_focus · expc_focus_copom · expc_focus_periodo</span>
+</footer>
+
+<script>
+/*REPORT_DATA*/
+
+// ── Dados & paleta ────────────────────────────────────────────────────────────
+if (typeof REPORT_DATA === 'undefined') {
+  document.querySelector('main').innerHTML = '<div style="background:#fff0f0;border:1px solid #c00;color:#c00;padding:24px;margin:24px;border-radius:8px;font-family:monospace;font-size:14px;">⚠️ Este é o arquivo de template — abra o relatório gerado em <b>reports/brasil/Expectations.html</b></div>';
+  throw new Error('REPORT_DATA undefined');
+}
+var D = REPORT_DATA;
+var C = {
+  azul:    '#1F2853',
+  dourado: '#BB9B1D',
+  verde:   '#418791',
+  azulCl:  '#02739B',
+  laranja: '#EA523A',
+  amarelo: '#FBC852',
+  cinza:   '#BFBFBF',
+};
+// Ciclo de cores para séries múltiplas (multiselect). Ordem escolhida para máximo
+// contraste entre vizinhos, não pela paleta institucional.
+var CICLO = [C.azul, C.laranja, C.verde, C.dourado, C.azulCl, C.amarelo, C.cinza,
+             '#7A4E9B', '#8C6E3F', '#4E7A9B'];
+function cor(i) { return CICLO[i % CICLO.length]; }
+
+var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+var GRADE = (D.meta && D.meta.grade) || [];
+var NG = GRADE.length;
+var P = D.periodo || {};
+var IDX = D.indice || {};
+var MOV = D.movel || {};
+var COP = D.copom || {};
+var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true};
+
+/*Y_AUTOFIT_JS*/
+
+// ── Helpers de valor e data ───────────────────────────────────────────────────
+function fmt(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2);
+}
+function fmtBR(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return v.toFixed(d != null ? d : 2).replace('.', ',');
+}
+// Labels SOBRE o gráfico: a convenção da skill lis-dashboard é TRUNCAR, não arredondar.
+function fmtTrunc(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  var dec = d != null ? d : 1;
+  var p = Math.pow(10, dec);
+  return (Math.floor(v * p) / p).toFixed(dec).replace('.', ',');
+}
+function fmtSig(v, d) {
+  if (v == null || isNaN(v)) return '—';
+  return (v > 0 ? '+' : '') + fmtBR(v, d);
+}
+function clsDelta(v) {
+  if (v == null || isNaN(v)) return 'flat';
+  if (Math.abs(v) < 1e-9) return 'flat';
+  return v > 0 ? 'up' : 'down';
+}
+function fmtDataBR(iso) {
+  if (!iso) return '—';
+  var p = iso.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+function mesAnoBR(iso) {
+  var p = iso.split('-');
+  return MESES[parseInt(p[1], 10) - 1] + '/' + p[0];
+}
+
+// ── Grade semanal ─────────────────────────────────────────────────────────────
+// Índice do ponto da grade mais recente que seja <= a data pedida. Busca binária:
+// chamado por snapshot, por indicador e por render.
+function gidxOnOrBefore(iso) {
+  var lo = 0, hi = NG - 1, best = -1;
+  while (lo <= hi) {
+    var mid = (lo + hi) >> 1;
+    if (GRADE[mid] <= iso) { best = mid; lo = mid + 1; } else { hi = mid - 1; }
+  }
+  return best;
+}
+// "Há N semanas" anda por DATA, não por contagem de pontos: em semana de feriado a
+// grade pula, e voltar N posições daria 35 dias em vez de 28. Ver o Apêndice.
+function gidxBackWeeks(w) {
+  if (!NG) return -1;
+  if (w === 0) return NG - 1;
+  var alvo = new Date(Date.parse(GRADE[NG - 1]) - w * 7 * 86400000).toISOString().slice(0, 10);
+  var i = gidxOnOrBefore(alvo);
+  return i < 0 ? 0 : i;
+}
+var SNAPS = [
+  {key: 'w0',  semanas: 0,  label: 'Hoje'},
+  {key: 'w1',  semanas: 1,  label: '1 semana'},
+  {key: 'w4',  semanas: 4,  label: '4 semanas'},
+  {key: 'w12', semanas: 12, label: '12 semanas'},
+  {key: 'w26', semanas: 26, label: '26 semanas'},
+  {key: 'w52', semanas: 52, label: '52 semanas'},
+  {key: 'w104', semanas: 104, label: '2 anos'},
+];
+SNAPS.forEach(function(s) { s.gi = gidxBackWeeks(s.semanas); s.data = GRADE[s.gi]; });
+function snapGi(key) {
+  for (var i = 0; i < SNAPS.length; i++) if (SNAPS[i].key === key) return SNAPS[i].gi;
+  return NG - 1;
+}
+
+// ── Leitura dos blocos comprimidos ────────────────────────────────────────────
+// Cada série do payload é {i0, m:[...], s:[...], n:[...]} -- bloco contíguo da grade a
+// partir de i0, com null nas semanas sem pesquisa. Expandir devolve {dates, values}
+// no shape que os traces esperam.
+function blkSerie(blk, stat) {
+  if (!blk) return {dates: [], values: []};
+  var arr = blk[stat] || [], d = new Array(arr.length), v = new Array(arr.length);
+  for (var i = 0; i < arr.length; i++) { d[i] = GRADE[blk.i0 + i]; v[i] = arr[i]; }
+  return {dates: d, values: v};
+}
+function blkAt(blk, stat, gi) {
+  if (!blk) return null;
+  var arr = blk[stat];
+  if (!arr) return null;
+  var j = gi - blk.i0;
+  return (j >= 0 && j < arr.length) ? arr[j] : null;
+}
+// Chaves: periodo = "indicador|detalhe|data_referencia"; indice = "indicador|detalhe".
+function pBlk(per, indKey, ref) { return (P[per] || {})[indKey + '|' + ref]; }
+function pMeta(per, indKey) { return (IDX[per] || {})[indKey]; }
+function movBlk(ind, hz, suav, base) { return MOV[ind + '|' + hz + '|' + suav + '|' + base]; }
+
+// Ordem cronológica de uma lista de períodos de referência: vem da POSIÇÃO em
+// meta.refs, que o gerador já ordenou por ref_date. Nunca .sort() sobre a string --
+// data_referencia mensal vem no formato do BCB ("MM/YYYY"), então "01/2027" ordenaria
+// antes de "12/2026", e o trimestral ("1/2027") tem o mesmo problema.
+function ordemCronologica(meta, refs) {
+  return refs.slice().sort(function(a, b) { return meta.refs.indexOf(a) - meta.refs.indexOf(b); });
+}
+// Um período de referência é "vigente ou futuro" se o FIM dele ainda não passou -- não
+// o começo. Comparar pelo começo (ref_date) exclui o ano corrente a partir de fevereiro,
+// que é justamente o mais observado: em agosto de 2026 o seletor da Revisão abria em 2027.
+function _fimPeriodo(per, refDataISO) {
+  var d = new Date(refDataISO);
+  var meses = per === 'anual' ? 12 : (per === 'trimestral' ? 3 : 1);
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + meses, 1))
+      .toISOString().slice(0, 10);
+}
+function vigenteOuFuturo(per, refDataISO, hojeISO) {
+  return _fimPeriodo(per, refDataISO) > hojeISO;
+}
+// Lista de indicadores de uma periodicidade, ordenada por família e rótulo.
+function indsDe(per) {
+  var idx = IDX[per] || {}, ordem = (D.meta && D.meta.ordemFamilia) || [];
+  return Object.keys(idx).map(function(k) {
+    return {key: k, label: idx[k].label, familia: idx[k].familia, meta: idx[k]};
+  }).sort(function(a, b) {
+    var fa = ordem.indexOf(a.familia), fb = ordem.indexOf(b.familia);
+    if (fa !== fb) return (fa < 0 ? 99 : fa) - (fb < 0 ? 99 : fb);
+    return a.label.localeCompare(b.label, 'pt-BR');
+  });
+}
+
+// ── Diferenças ────────────────────────────────────────────────────────────────
+// Série de variação em `w` semanas, alinhada pela grade (não pela posição no array):
+// um buraco na série não vira uma diferença de janela errada.
+function difSemanas(serie, w) {
+  var mapa = {}, d = [], v = [];
+  for (var i = 0; i < serie.dates.length; i++) mapa[serie.dates[i]] = serie.values[i];
+  for (var j = 0; j < serie.dates.length; j++) {
+    var gi = gidxOnOrBefore(serie.dates[j]);
+    var alvoISO = new Date(Date.parse(serie.dates[j]) - w * 7 * 86400000).toISOString().slice(0, 10);
+    var gj = gidxOnOrBefore(alvoISO);
+    var prev = (gj >= 0) ? mapa[GRADE[gj]] : null;
+    d.push(serie.dates[j]);
+    v.push((serie.values[j] != null && prev != null) ? Math.round((serie.values[j] - prev) * 10000) / 10000 : null);
+  }
+  return {dates: d, values: v};
+}
+
+// ── Fábricas de layout ────────────────────────────────────────────────────────
+function _traceXRange(traces) {
+  var lo = null, hi = null;
+  (traces || []).forEach(function(t) {
+    if (!t.x || !t.y) return;
+    for (var i = 0; i < t.x.length; i++) {
+      if (t.y[i] == null) continue;
+      var v = t.x[i];
+      if (lo == null || v < lo) lo = v;
+      if (hi == null || v > hi) hi = v;
+    }
+  });
+  return {lo: lo, hi: hi};
+}
+function _traceAllDates(traces) {
+  var set = {};
+  (traces || []).forEach(function(t) { (t.x || []).forEach(function(d) { if (d) set[d] = true; }); });
+  return Object.keys(set).sort();
+}
+// Presets de range rápido ancorados no MÁXIMO REAL do dado, aplicados via
+// Plotly.relayout() explícito -- NÃO pelo componente nativo xaxis.rangeselector, que
+// quebrou em produção duas vezes (ver .claude/rules/lis-dashboards.md).
+function _quickRangeOptions(dates) {
+  if (!dates.length) return [];
+  var hiISO = dates[dates.length - 1], loISO = dates[0];
+  var hiMs = Date.parse(hiISO);
+  function backISO(years) {
+    var d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - years);
+    return d.toISOString().slice(0, 10);
+  }
+  return [
+    {label: '1a',   from: backISO(1),  to: hiISO},
+    {label: '3a',   from: backISO(3),  to: hiISO},
+    {label: '5a',   from: backISO(5),  to: hiISO},
+    {label: '10a',  from: backISO(10), to: hiISO},
+    {label: 'Tudo', from: loISO,       to: hiISO},
+  ];
+}
+function _defaultXRange(traces) {
+  var r = _traceXRange(traces);
+  if (!r.lo || !r.hi) return null;
+  var loMs = Date.parse(r.lo), hiMs = Date.parse(r.hi);
+  var pad = Math.max((hiMs - loMs) * 0.02, 7 * 86400000);
+  return [new Date(loMs - pad).toISOString().slice(0, 10), new Date(hiMs + pad).toISOString().slice(0, 10)];
+}
+var _BASE_LAYOUT = {
+  dragmode: 'pan', hovermode: 'x unified',
+  hoverlabel: {bgcolor: C.azul, font: {family: 'Barlow,sans-serif', size: 12, color: '#fff'}},
+  legend: {orientation: 'h', y: -0.20, x: 0.5, xanchor: 'center', font: {size: 11}},
+  paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+  font: {family: 'Barlow,sans-serif', color: C.azul, size: 12},
+};
+// dragmode:'pan' + scrollZoom = arrastar move os dois eixos, scroll dá zoom nos dois,
+// double-click reseta, sem box-zoom. Modelo de interação padrão do projeto.
+function mkTsLayout(yTitle, height, traces, extra) {
+  var xr = _defaultXRange(traces);
+  return Object.assign({}, _BASE_LAYOUT, {
+    height: height || 520, margin: {l: 58, r: 28, t: 26, b: 66},
+    xaxis: Object.assign({type: 'date', gridcolor: '#eee'}, xr ? {range: xr, autorange: false} : {}),
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+  }, extra || {});
+}
+// Eixo X que NÃO é data (categoria ou número): sem range default calculado, sem barra
+// de período. Usado pela curva do Copom e pelo eixo "meses até o período".
+function mkCatLayout(yTitle, height, extra) {
+  return Object.assign({}, _BASE_LAYOUT, {
+    height: height || 520, margin: {l: 58, r: 28, t: 26, b: 66},
+    xaxis: {gridcolor: '#eee'},
+    yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+  }, extra || {});
+}
+
+// ── Tracking de X + barra de período ─────────────────────────────────────────
+// Guarda o range de X só a partir de valores que este código escreveu, ou de um evento
+// 'plotly_relayout' real -- NUNCA lê _fullLayout.xaxis.range de volta. Ler de volta
+// quebrou num browser real em economic_activity/: o Plotly resolve o range de data no
+// formato interno dele e devolvê-lo ao próximo react() colapsa o eixo.
+var _chartXRange = {};
+function _bindXRangeTracker(divId) {
+  var el = document.getElementById(divId);
+  if (!el || el._xRangeTrackerBound || !el.on) return;
+  el._xRangeTrackerBound = true;
+  el.on('plotly_relayout', function(ev) {
+    if (ev['xaxis.autorange']) { delete _chartXRange[divId]; return; }
+    var lo, hi;
+    if (Array.isArray(ev['xaxis.range'])) { lo = ev['xaxis.range'][0]; hi = ev['xaxis.range'][1]; }
+    else if (ev['xaxis.range[0]'] !== undefined && ev['xaxis.range[1]'] !== undefined) {
+      lo = ev['xaxis.range[0]']; hi = ev['xaxis.range[1]'];
+    } else return;
+    _chartXRange[divId] = [lo, hi];
+  });
+}
+function _ensurePeriodSelector(divId, dates) {
+  if (!dates.length) return;
+  var chartEl = document.getElementById(divId);
+  if (!chartEl) return;
+  var card = chartEl.closest('.chart-card');
+  if (!card || !card.parentNode) return;
+  var bar = card.previousElementSibling;
+  var isOurs = bar && bar.classList && bar.classList.contains('period-ctrl-bar') && bar.dataset.for === divId;
+  if (!isOurs) {
+    bar = document.createElement('div');
+    bar.className = 'ctrl-bar period-ctrl-bar';
+    bar.dataset.for = divId;
+    bar.innerHTML =
+      '<div class="pill-group" data-role="quick"></div>' +
+      '<div class="ctrl-sep"></div>' +
+      '<span class="ctrl-label">Período</span>' +
+      '<select class="date-select" data-role="from"></select>' +
+      '<span class="ctrl-label">até</span>' +
+      '<select class="date-select" data-role="to"></select>';
+    card.parentNode.insertBefore(bar, card);
+    bar.querySelector('[data-role=from]').addEventListener('change', function() { _applyPeriodSelector(divId); });
+    bar.querySelector('[data-role=to]').addEventListener('change', function() { _applyPeriodSelector(divId); });
+  }
+  var quickGroup = bar.querySelector('[data-role=quick]');
+  quickGroup.innerHTML = '';
+  _quickRangeOptions(dates).forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'pill'; btn.textContent = opt.label;
+    btn.addEventListener('click', function() { Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]}); });
+    quickGroup.appendChild(btn);
+  });
+  var fromEl = bar.querySelector('[data-role=from]'), toEl = bar.querySelector('[data-role=to]');
+  var range = _chartXRange[divId];
+  var wantFrom = range ? range[0] : (fromEl.value ? dates[parseInt(fromEl.value, 10)] : dates[0]);
+  var wantTo = range ? range[1] : (toEl.value ? dates[parseInt(toEl.value, 10)] : dates[dates.length - 1]);
+  fromEl.innerHTML = ''; toEl.innerHTML = '';
+  dates.forEach(function(d, i) {
+    var label = mesAnoBR(d);
+    fromEl.appendChild(new Option(label, String(i)));
+    toEl.appendChild(new Option(label, String(i)));
+  });
+  var fromIdx = dates.indexOf(wantFrom), toIdx = dates.indexOf(wantTo);
+  fromEl.value = String(fromIdx >= 0 ? fromIdx : 0);
+  toEl.value = String(toIdx >= 0 ? toIdx : dates.length - 1);
+}
+var _periodSelectorDates = {};
+function _applyPeriodSelector(divId) {
+  var bar = document.querySelector('.period-ctrl-bar[data-for="' + divId + '"]');
+  if (!bar) return;
+  var fromEl = bar.querySelector('[data-role=from]'), toEl = bar.querySelector('[data-role=to]');
+  var lo = _periodSelectorDates[divId] && _periodSelectorDates[divId][parseInt(fromEl.value, 10)];
+  var hi = _periodSelectorDates[divId] && _periodSelectorDates[divId][parseInt(toEl.value, 10)];
+  if (lo && hi) Plotly.relayout(divId, {'xaxis.range': [lo, hi]});
+}
+// PONTO DE ENTRADA de todo gráfico de eixo DATA. Redesenha preservando a janela de X já
+// visível: sem isso todo re-render disparado por um controle reseta o eixo e lê como "o
+// gráfico fica resetando". Y não é preservado de propósito -- refaz o fit pela janela
+// corrente via _bindYAutofit().
+function _reactPreserveX(divId, traces, layout, config) {
+  var prev = _chartXRange[divId];
+  if (prev) {
+    layout = Object.assign({}, layout, {
+      xaxis: Object.assign({}, layout.xaxis, {range: prev.slice(), autorange: false}),
+    });
+  } else {
+    var xr = layout.xaxis && layout.xaxis.range;
+    if (xr) _chartXRange[divId] = xr.slice();
+  }
+  var p = Plotly.react(divId, traces, layout, config || _PLOTLY_CONFIG);
+  _bindXRangeTracker(divId);
+  _bindYAutofit(divId);
+  if (prev) Plotly.relayout(divId, {'xaxis.range': prev});
+  _periodSelectorDates[divId] = _traceAllDates(traces);
+  _ensurePeriodSelector(divId, _periodSelectorDates[divId]);
+  return p;
+}
+// Ponto de entrada dos gráficos cujo X NÃO é data. Sem tracking e sem barra de período
+// (ambos falam em mês/ano), mas com o y-autofit, que trata eixo de categoria.
+function _reactPlain(divId, traces, layout, config) {
+  var p = Plotly.react(divId, traces, layout, config || _PLOTLY_CONFIG);
+  _bindYAutofit(divId);
+  return p;
+}
+// Um mesmo div pode alternar entre eixo de data e eixo de categoria (aba Revisão). Ao
+// trocar, o range guardado e a barra de período do modo anterior têm de sumir, ou o
+// próximo render herda uma janela em unidade errada.
+function _resetChartAxis(divId) {
+  delete _chartXRange[divId];
+  delete _periodSelectorDates[divId];
+  var bar = document.querySelector('.period-ctrl-bar[data-for="' + divId + '"]');
+  if (bar && bar.parentNode) bar.parentNode.removeChild(bar);
+}
+
+// ── Controles reutilizáveis ───────────────────────────────────────────────────
+function setupMultiselect(btnId, panelId, groups, defaultSelected, onChange, rotulo) {
+  var panel = document.getElementById(panelId), btn = document.getElementById(btnId);
+  if (!panel || !btn) return null;
+  var html = '';
+  groups.forEach(function(g) {
+    if (g.header) html += '<div class="multiselect-group-header">' + g.header + '</div>';
+    g.items.forEach(function(it) {
+      var checked = defaultSelected.indexOf(it.key) >= 0 ? ' checked' : '';
+      html += '<label><input type="checkbox" value="' + it.key + '"' + checked + '> ' + it.label + '</label>';
+    });
+  });
+  panel.innerHTML = html;
+  function selected() {
+    return Array.prototype.slice.call(panel.querySelectorAll('input:checked')).map(function(i) { return i.value; });
+  }
+  function updateLabel() {
+    var sel = selected();
+    btn.textContent = sel.length ? (sel.length + ' ' + (rotulo || 'selecionado(s)')) : 'Nenhum selecionado';
+  }
+  updateLabel();
+  if (!btn._msBound) {
+    btn._msBound = true;
+    btn.addEventListener('click', function(e) { e.stopPropagation(); panel.classList.toggle('open'); });
+    document.addEventListener('click', function(e) {
+      if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) panel.classList.remove('open');
+    });
+  }
+  panel.onchange = function() { updateLabel(); onChange(selected()); };
+  onChange(selected());
+  return selected;
+}
+function setupPillGroup(containerId, options, defaultKey, onChange) {
+  var box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = '';
+  options.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pill' + (opt.key === defaultKey ? ' active' : '');
+    btn.textContent = opt.label;
+    btn.addEventListener('click', function() {
+      box.querySelectorAll('.pill').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      onChange(opt.key);
+    });
+    box.appendChild(btn);
+  });
+  onChange(defaultKey);
+}
+// <select> com optgroup por família. options: [{key, label, familia}].
+function setupSelect(selId, options, defaultKey, onChange) {
+  var sel = document.getElementById(selId);
+  if (!sel) return;
+  var html = '', fam = null;
+  options.forEach(function(o) {
+    if (o.familia !== fam) {
+      if (fam !== null) html += '</optgroup>';
+      html += '<optgroup label="' + o.familia + '">';
+      fam = o.familia;
+    }
+    html += '<option value="' + o.key + '">' + o.label + '</option>';
+  });
+  if (fam !== null) html += '</optgroup>';
+  sel.innerHTML = html;
+  var inicial = (defaultKey && options.some(function(o) { return o.key === defaultKey; }))
+      ? defaultKey : (options[0] && options[0].key);
+  sel.value = inicial;
+  sel.onchange = function() { onChange(sel.value); };
+  onChange(inicial);
+}
+function wireDlToggle(toggleId, onChange) {
+  var el = document.getElementById(toggleId);
+  if (!el) return;
+  if (el._dlBound) { el._dlOn = el.classList.contains('on'); onChange(el._dlOn); return; }
+  el._dlBound = true;
+  el.addEventListener('click', function() {
+    el.classList.toggle('on');
+    onChange(el.classList.contains('on'));
+  });
+  onChange(false);
+}
+function dlText(values, decimals, suffix) {
+  var step = values.length > 60 ? 5 : (values.length > 30 ? 3 : 1);
+  return values.map(function(v, i) {
+    if (v == null || (i % step !== 0 && i !== values.length - 1)) return '';
+    return fmtTrunc(v, decimals) + (suffix != null ? suffix : '');
+  });
+}
+function lineTrace(series, label, color, showLabels, decimals, suffix, extra) {
+  var sfx = suffix != null ? suffix : '';
+  var dec = decimals != null ? decimals : 2;
+  return Object.assign({
+    type: 'scatter', mode: showLabels ? 'lines+text' : 'lines',
+    name: label, x: series.dates, y: series.values,
+    line: {color: color, width: 2},
+    text: showLabels ? dlText(series.values, dec, sfx) : undefined,
+    textposition: 'top center',
+    textfont: {family: 'JetBrains Mono,monospace', size: 9, color: color},
+    customdata: series.values.map(function(v) { return fmtBR(v, dec); }),
+    hovertemplate: '<b>' + label + '</b>: %{customdata}' + sfx + '<extra></extra>',
+    connectgaps: false,
+  }, extra || {});
+}
+function barTrace(series, label, color, showLabels, decimals, suffix, extra) {
+  var sfx = suffix != null ? suffix : '';
+  var dec = decimals != null ? decimals : 2;
+  return Object.assign({
+    type: 'bar', name: label, x: series.dates, y: series.values,
+    marker: {color: color},
+    text: showLabels ? dlText(series.values, dec, sfx) : undefined,
+    textposition: 'outside',
+    textfont: {family: 'JetBrains Mono,monospace', size: 9},
+    customdata: series.values.map(function(v) { return fmtBR(v, dec); }),
+    hovertemplate: '<b>' + label + '</b>: %{customdata}' + sfx + '<extra></extra>',
+  }, extra || {});
+}
+function setKPI(id, texto, sub, classe) {
+  var v = document.getElementById(id + '-v'), s = document.getElementById(id + '-s');
+  if (v) { v.textContent = texto; v.className = 'kpi-value' + (classe ? ' ' + classe : ''); }
+  if (s) s.textContent = sub;
+}
+function setKPILabel(id, texto) {
+  var l = document.getElementById(id + '-l');
+  if (l) l.textContent = texto;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — BOLETIM
+// ═══════════════════════════════════════════════════════════════════════════════
+var _bolAno = null, _bolUnidade = '%', _bolJanela = 4, _bolLabels = false;
+
+function _anosDisponiveis() {
+  var idx = IDX.anual || {}, hoje = (GRADE[NG - 1] || '').slice(0, 4), anos = {};
+  Object.keys(idx).forEach(function(k) {
+    idx[k].refs.forEach(function(r) { if (r >= hoje) anos[r] = true; });
+  });
+  return Object.keys(anos).sort().slice(0, 6);
+}
+function renderBoletim() {
+  var anos = _anosDisponiveis();
+  if (!anos.length) return;
+  setupPillGroup('pg-bol-ano', anos.map(function(a) { return {key: a, label: a}; }), anos[0],
+    function(k) { _bolAno = k; _bolTabela(); _bolKpis(); _bolGrafico(); });
+  setupPillGroup('pg-bol-unidade', [
+    {key: '%', label: '%'}, {key: 'R$/US$', label: 'R$/US$'},
+    {key: 'US$ bi', label: 'US$ bi'}, {key: '% do PIB', label: '% do PIB'},
+  ], '%', function(k) { _bolUnidade = k; _bolGrafico(); });
+  setupPillGroup('pg-bol-janela', [
+    {key: '1', label: '1 sem'}, {key: '4', label: '4 sem'},
+    {key: '12', label: '12 sem'}, {key: '52', label: '52 sem'},
+  ], '4', function(k) { _bolJanela = parseInt(k, 10); _bolGrafico(); });
+  wireDlToggle('dl-bol', function(on) { _bolLabels = on; _bolGrafico(); });
+}
+// Linha do Boletim para um indicador: mediana de hoje e as variações contra os pontos
+// da grade de 1/4/12/52 semanas atrás.
+function _bolLinha(ind) {
+  var blk = pBlk('anual', ind.key, _bolAno);
+  if (!blk) return null;
+  var gi = NG - 1;
+  var hoje = blkAt(blk, 'm', gi);
+  if (hoje == null) return null;
+  var l = {ind: ind, hoje: hoje, dec: ind.meta.dec, unidade: ind.meta.unidade,
+           n: blkAt(blk, 'n', gi), dp: blkAt(blk, 's', gi)};
+  [1, 4, 12, 52].forEach(function(w) {
+    var v = blkAt(blk, 'm', gidxBackWeeks(w));
+    l['v' + w] = v;
+    l['d' + w] = (v == null) ? null : Math.round((hoje - v) * 10000) / 10000;
+  });
+  return l;
+}
+function _bolTabela() {
+  var tb = document.getElementById('tbl-boletim');
+  if (!tb) return;
+  var ordem = (D.meta && D.meta.ordemFamilia) || [];
+  var linhas = indsDe('anual').map(_bolLinha).filter(Boolean);
+  var h = '<thead><tr><th class="col-label">Indicador</th><th class="col-label">Unidade</th>'
+        + '<th>Hoje</th><th>Δ 1 sem</th><th>Δ 4 sem</th><th>Δ 12 sem</th><th>Δ 52 sem</th>'
+        + '<th>Resp.</th><th>Desv.-pad.</th></tr></thead><tbody>';
+  ordem.forEach(function(fam) {
+    var doGrupo = linhas.filter(function(l) { return l.ind.familia === fam; });
+    if (!doGrupo.length) return;
+    h += '<tr class="fam-row"><td class="col-label" colspan="9">' + fam + '</td></tr>';
+    doGrupo.forEach(function(l) {
+      h += '<tr><td class="col-label">' + l.ind.label + '</td>'
+        + '<td class="col-label" style="color:var(--muted)">' + l.unidade + '</td>'
+        + '<td class="col-value"><strong>' + fmtBR(l.hoje, l.dec) + '</strong></td>';
+      [1, 4, 12, 52].forEach(function(w) {
+        var d = l['d' + w], v = l['v' + w];
+        h += '<td class="col-value ' + clsDelta(d) + '" title="'
+          + (v == null ? 'sem cotação' : fmtBR(v, l.dec) + ' em ' + fmtDataBR(GRADE[gidxBackWeeks(w)]))
+          + '">' + (d == null ? '—' : fmtSig(d, l.dec)) + '</td>';
+      });
+      h += '<td class="col-value" style="color:var(--muted)">' + (l.n == null ? '—' : l.n) + '</td>'
+        + '<td class="col-value" style="color:var(--muted)">' + fmtBR(l.dp, Math.max(l.dec, 2)) + '</td></tr>';
+    });
+  });
+  tb.innerHTML = h + '</tbody>';
+
+  var lead = document.getElementById('bol-lead');
+  if (lead) {
+    lead.innerHTML = 'Mediana das expectativas para <strong>' + _bolAno + '</strong> na pesquisa de '
+      + '<strong>' + fmtDataBR(GRADE[NG - 1]) + '</strong>, contra os pontos da grade de '
+      + fmtDataBR(GRADE[gidxBackWeeks(1)]) + ', ' + fmtDataBR(GRADE[gidxBackWeeks(4)]) + ', '
+      + fmtDataBR(GRADE[gidxBackWeeks(12)]) + ' e ' + fmtDataBR(GRADE[gidxBackWeeks(52)]) + '. '
+      + linhas.length + ' indicadores cotam esse ano.';
+  }
+}
+function _bolKpis() {
+  [['kpi-bol-ipca', 'IPCA|', 'IPCA'], ['kpi-bol-selic', 'Selic|', 'Selic'],
+   ['kpi-bol-cambio', 'Câmbio|', 'Câmbio'], ['kpi-bol-pib', 'PIB Total|', 'PIB Total'],
+   ['kpi-bol-desoc', 'Taxa de desocupação|', 'Desocupação']].forEach(function(t) {
+    var id = t[0], key = t[1], rot = t[2];
+    var meta = pMeta('anual', key);
+    setKPILabel(id, rot + ' ' + _bolAno);
+    if (!meta) { setKPI(id, '—', 'não cotado'); return; }
+    var blk = pBlk('anual', key, _bolAno);
+    var hoje = blkAt(blk, 'm', NG - 1);
+    var v4 = blkAt(blk, 'm', gidxBackWeeks(4));
+    var d4 = (hoje != null && v4 != null) ? hoje - v4 : null;
+    var sufixo = meta.unidade === '%' ? '%' : (meta.unidade === 'R$/US$' ? '' : ' ' + meta.unidade);
+    setKPI(id, hoje == null ? '—' : fmtBR(hoje, meta.dec) + sufixo,
+      d4 == null ? '—' : fmtSig(d4, meta.dec) + ' em 4 semanas', clsDelta(d4));
+  });
+}
+function _bolGrafico() {
+  var w = _bolJanela;
+  var linhas = indsDe('anual').map(_bolLinha).filter(function(l) {
+    return l && l.unidade === _bolUnidade && l['d' + w] != null;
+  }).sort(function(a, b) { return a['d' + w] - b['d' + w]; });
+  var y = linhas.map(function(l) { return l.ind.label; });
+  var x = linhas.map(function(l) { return l['d' + w]; });
+  var dec = linhas.length ? linhas[0].dec : 2;
+  var trace = {
+    type: 'bar', orientation: 'h', x: x, y: y,
+    marker: {color: x.map(function(v) { return v >= 0 ? C.laranja : C.verde; })},
+    text: _bolLabels ? x.map(function(v) { return fmtSig(v, dec); }) : undefined,
+    textposition: 'outside',
+    textfont: {family: 'JetBrains Mono,monospace', size: 10},
+    customdata: x.map(function(v) { return fmtSig(v, dec); }),
+    hovertemplate: '%{y}: %{customdata}<extra></extra>',
+  };
+  var alt = Math.max(280, 34 * y.length + 90);
+  var lay = mkCatLayout('Δ em ' + w + ' semana(s), ' + _bolUnidade, alt, {
+    hovermode: 'closest', showlegend: false,
+    margin: {l: 240, r: 60, t: 20, b: 44},
+    yaxis: {automargin: true, gridcolor: '#eee'},
+    xaxis: {zeroline: true, zerolinecolor: '#999', gridcolor: '#eee'},
+  });
+  document.getElementById('chart-bol-mov').style.height = alt + 'px';
+  _reactPlain('chart-bol-mov', y.length ? [trace] : [], lay);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — REVISÃO
+// ═══════════════════════════════════════════════════════════════════════════════
+var _revPer = 'anual', _revInd = null, _revRefs = [], _revEixo = 'data', _revLabels = false;
+
+function renderRevisao() {
+  setupPillGroup('pg-rev-eixo', [
+    {key: 'data', label: 'Data da pesquisa'},
+    {key: 'ate', label: 'Meses até o período'},
+  ], 'data', function(k) { _revEixo = k; _resetChartAxis('chart-rev'); _revDesenha(); });
+  wireDlToggle('dl-rev', function(on) { _revLabels = on; _revDesenha(); });
+  setupPillGroup('pg-rev-per', [
+    {key: 'anual', label: 'Anual'}, {key: 'trimestral', label: 'Trimestral'},
+    {key: 'mensal', label: 'Mensal'},
+  ], 'anual', function(k) { _revPer = k; _revMontaInd(); });
+}
+function _revMontaInd() {
+  var opts = indsDe(_revPer);
+  setupSelect('sel-rev-ind', opts, 'IPCA|', function(k) { _revInd = k; _revMontaRefs(); });
+}
+// Padrão de períodos: os 4 mais próximos do presente que ainda são cotados. Um seletor
+// que abre com 30 anos de referência marcados não é legível.
+function _revMontaRefs() {
+  var meta = pMeta(_revPer, _revInd);
+  if (!meta) return;
+  var hoje = GRADE[NG - 1] || '';
+  var comIdx = meta.refs.map(function(r, i) { return {ref: r, data: meta.refDates[i]}; });
+  var futuros = comIdx.filter(function(o) { return vigenteOuFuturo(_revPer, o.data, hoje); });
+  var base = futuros.length ? futuros : comIdx.slice(-4);
+  var padrao = base.slice(0, 4).map(function(o) { return o.ref; });
+  var items = comIdx.slice().reverse().map(function(o) { return {key: o.ref, label: o.ref}; });
+  setupMultiselect('ms-rev-btn', 'ms-rev-panel', [{header: meta.label, items: items}], padrao,
+    function(sel) { _revRefs = sel; _revDesenha(); }, 'período(s)');
+}
+function _revSerie(ref) {
+  return blkSerie(pBlk(_revPer, _revInd, ref), 'm');
+}
+// Eixo "meses até o período": x = quantos meses faltavam para o início do período de
+// referência na data da pesquisa. Sobrepõe anos diferentes na mesma escala, que é o
+// jeito de ver se a convergência é sempre igual.
+function _mesesAte(dataPesquisa, refDataISO) {
+  var a = new Date(dataPesquisa), b = new Date(refDataISO);
+  return (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth())
+       - (a.getUTCDate() > 15 ? 0.5 : 0);
+}
+function _revDesenha() {
+  var meta = pMeta(_revPer, _revInd);
+  if (!meta) return;
+  var dec = meta.dec, sfx = meta.unidade === '%' ? '%' : '';
+  var refsOrd = ordemCronologica(meta, _revRefs);
+  var traces = [], ritmo = [];
+  refsOrd.forEach(function(ref, i) {
+    var s = _revSerie(ref);
+    if (!s.dates.length) return;
+    var cr = cor(i);
+    if (_revEixo === 'ate') {
+      var refData = meta.refDates[meta.refs.indexOf(ref)];
+      var xs = s.dates.map(function(d) { return _mesesAte(d, refData); });
+      traces.push({
+        type: 'scatter', mode: _revLabels ? 'lines+text' : 'lines', name: ref, x: xs, y: s.values,
+        line: {color: cr, width: 2},
+        text: _revLabels ? dlText(s.values, dec, sfx) : undefined,
+        textposition: 'top center',
+        textfont: {family: 'JetBrains Mono,monospace', size: 9, color: cr},
+        customdata: s.values.map(function(v) { return fmtBR(v, dec); }),
+        hovertemplate: '<b>' + ref + '</b>: %{customdata}' + sfx + '<br>%{x:.0f} meses antes<extra></extra>',
+        connectgaps: false,
+      });
+    } else {
+      traces.push(lineTrace(s, ref, cr, _revLabels, dec, sfx));
+    }
+    ritmo.push(lineTrace(difSemanas(s, 4), ref, cr, false, dec, sfx));
+  });
+
+  if (_revEixo === 'ate') {
+    var lay = mkCatLayout(meta.unidade, 600, {
+      xaxis: {title: {text: 'Meses até o início do período de referência', font: {size: 11}},
+              autorange: 'reversed', gridcolor: '#eee', zeroline: true, zerolinecolor: '#999'},
+      hovermode: 'closest',
+    });
+    _reactPlain('chart-rev', traces, lay);
+  } else {
+    _reactPreserveX('chart-rev', traces, mkTsLayout(meta.unidade, 600, traces));
+  }
+  _reactPreserveX('chart-rev-ritmo', ritmo,
+    mkTsLayout('Δ 4 semanas (' + meta.unidade + ')', 380, ritmo, {legend: {orientation: 'h', y: -0.28, x: 0.5, xanchor: 'center', font: {size: 11}}}));
+
+  var cap = document.getElementById('rev-cap');
+  if (cap) {
+    cap.textContent = _revEixo === 'ate'
+      ? 'Eixo X invertido: o tempo corre da esquerda (previsão distante) para a direita (véspera do período). Zero = início do período de referência.'
+      : 'Cada linha é um período de referência fixo; o eixo X é a data em que a pergunta foi feita.';
+  }
+  _revKpis(refsOrd, meta);
+}
+function _revKpis(refs, meta) {
+  // O primeiro da lista cronológica = o período mais próximo entre os selecionados. É o
+  // que interessa num KPI; o mais distante quase nunca se move.
+  var ref = refs.length ? refs[0] : null;
+  setKPILabel('kpi-rev-hoje', ref ? 'Mediana para ' + ref : 'Mediana hoje');
+  if (!ref) { ['hoje', 'r4', 'r52', 'amp'].forEach(function(k) { setKPI('kpi-rev-' + k, '—', '—'); }); return; }
+  var blk = pBlk(_revPer, _revInd, ref), dec = meta.dec;
+  var hoje = blkAt(blk, 'm', NG - 1);
+  var v4 = blkAt(blk, 'm', gidxBackWeeks(4)), v52 = blkAt(blk, 'm', gidxBackWeeks(52));
+  var s = blkSerie(blk, 'm');
+  var vals = s.values.filter(function(v) { return v != null; });
+  var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+  setKPI('kpi-rev-hoje', hoje == null ? '—' : fmtBR(hoje, dec), meta.label + ' · ' + meta.unidade);
+  var d4 = (hoje != null && v4 != null) ? hoje - v4 : null;
+  var d52 = (hoje != null && v52 != null) ? hoje - v52 : null;
+  setKPI('kpi-rev-r4', d4 == null ? '—' : fmtSig(d4, dec), 'desde ' + fmtDataBR(GRADE[gidxBackWeeks(4)]), clsDelta(d4));
+  setKPI('kpi-rev-r52', d52 == null ? '—' : fmtSig(d52, dec), 'desde ' + fmtDataBR(GRADE[gidxBackWeeks(52)]), clsDelta(d52));
+  setKPI('kpi-rev-amp', vals.length ? fmtBR(mx - mn, dec) : '—',
+    vals.length ? ('mín ' + fmtBR(mn, dec) + ' · máx ' + fmtBR(mx, dec) + ' · ' + vals.length + ' semanas') : '—');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — CURVA DO COPOM
+// ═══════════════════════════════════════════════════════════════════════════════
+var _copBase = '0', _copSnaps = ['w0', 'w4', 'w12', 'w52'], _copHzs = ['1', '2', '4', '8'];
+var _copLabels = false, _cophLabels = false;
+
+// "R6/2026" -> {ano, n, ord}. A ordem cronológica NÃO é alfabética: "R10/2027" ordenaria
+// antes de "R2/2027" como string. Não há calendário do Copom no payload, e não precisa
+// haver -- a numeração publicada basta para ordenar.
+function _parseReuniao(r) {
+  var m = /^R(\d+)\/(\d{4})$/.exec(r);
+  if (!m) return null;
+  var n = parseInt(m[1], 10), ano = parseInt(m[2], 10);
+  return {n: n, ano: ano, ord: ano * 100 + n, label: 'R' + n + '/' + String(ano).slice(2)};
+}
+// Ordem do eixo de categorias da curva do Copom: união das reuniões de TODAS as curvas
+// desenhadas, em ordem cronológica. Sem isso o Plotly ordena categoria por ordem de
+// APARIÇÃO -- uma curva antiga cota reuniões que já passaram (R4/26, R5/26), que são
+// categorias novas para o eixo e iam parar no fim, depois de R5/28. Foi bug visual real.
+function _copCategorias(curvas) {
+  var vistos = {}, todas = [];
+  (curvas || []).forEach(function(c) {
+    c.forEach(function(o) {
+      if (vistos[o.label]) return;
+      vistos[o.label] = true;
+      todas.push(o);
+    });
+  });
+  return todas.sort(function(a, b) { return a.ord - b.ord; }).map(function(o) { return o.label; });
+}
+// Reuniões cotadas numa data da grade, já em ordem cronológica.
+function _copCurva(gi, base) {
+  var out = [];
+  Object.keys(COP).forEach(function(k) {
+    var p = k.split('|');
+    if (p[1] !== base) return;
+    var v = blkAt(COP[k], 'm', gi);
+    if (v == null) return;
+    var r = _parseReuniao(p[0]);
+    if (!r) return;
+    out.push({reuniao: p[0], ord: r.ord, label: r.label, valor: v,
+              n: blkAt(COP[k], 'n', gi), s: blkAt(COP[k], 's', gi),
+              lo: blkAt(COP[k], 'lo', gi), hi: blkAt(COP[k], 'hi', gi)});
+  });
+  return out.sort(function(a, b) { return a.ord - b.ord; });
+}
+// Matriz horizonte × grade, montada uma vez por base. hz[k-1][gi] = mediana da k-ésima
+// reunião à frente naquela semana. Quantas reuniões o Focus cota à frente cresceu com o
+// tempo (1 em 2004, 16 desde 2021), então as linhas de horizonte alto só começam depois.
+var _copHzCache = {};
+function _copMatriz(base) {
+  if (_copHzCache[base]) return _copHzCache[base];
+  var K = 20, hz = [], nn = [], ss = [], ll = [], hh = [];
+  for (var k = 0; k < K; k++) {
+    hz.push(new Array(NG).fill(null)); nn.push(new Array(NG).fill(null));
+    ss.push(new Array(NG).fill(null)); ll.push(new Array(NG).fill(null));
+    hh.push(new Array(NG).fill(null));
+  }
+  var ult = new Array(NG).fill(null), cnt = new Array(NG).fill(0);
+  for (var gi = 0; gi < NG; gi++) {
+    var c = _copCurva(gi, base);
+    cnt[gi] = c.length;
+    if (c.length) ult[gi] = c[c.length - 1].valor;
+    for (var j = 0; j < c.length && j < K; j++) {
+      hz[j][gi] = c[j].valor; nn[j][gi] = c[j].n; ss[j][gi] = c[j].s;
+      ll[j][gi] = c[j].lo; hh[j][gi] = c[j].hi;
+    }
+  }
+  _copHzCache[base] = {hz: hz, n: nn, s: ss, lo: ll, hi: hh, ultima: ult, cotadas: cnt, K: K};
+  return _copHzCache[base];
+}
+function renderCopom() {
+  setupPillGroup('pg-cop-base', [{key: '0', label: 'Base 0 (30 dias)'}, {key: '1', label: 'Base 1 (4 dias úteis)'}],
+    '0', function(k) { _copBase = k; _copDesenha(); _copHzDesenha(); _copHeat(); _copKpis(); });
+  setupMultiselect('ms-cop-btn', 'ms-cop-panel',
+    [{header: 'Data de pesquisa', items: SNAPS.filter(function(s) { return s.gi >= 0; }).map(function(s) {
+      return {key: s.key, label: s.label + ' — ' + fmtDataBR(s.data)};
+    })}], _copSnaps, function(sel) { _copSnaps = sel; _copDesenha(); }, 'data(s)');
+  wireDlToggle('dl-cop', function(on) { _copLabels = on; _copDesenha(); });
+
+  var hzItems = [];
+  for (var k = 1; k <= 16; k++) hzItems.push({key: String(k), label: k + 'ª reunião à frente'});
+  hzItems.push({key: 'ult', label: 'Última cotada (terminal)'});
+  setupMultiselect('ms-coph-btn', 'ms-coph-panel', [{header: 'Horizonte', items: hzItems}], _copHzs,
+    function(sel) { _copHzs = sel; _copHzDesenha(); }, 'horizonte(s)');
+  wireDlToggle('dl-coph', function(on) { _cophLabels = on; _copHzDesenha(); });
+  _copHeat();
+  _copKpis();
+}
+function _copDesenha() {
+  var traces = [], curvas = [], primeira = true;
+  SNAPS.forEach(function(s, i) {
+    if (_copSnaps.indexOf(s.key) < 0 || s.gi < 0) return;
+    var c = _copCurva(s.gi, _copBase);
+    if (!c.length) return;
+    curvas.push(c);
+    // Destaque vai para a curva mais RECENTE entre as selecionadas, não para SNAPS[0]:
+    // o usuário pode desmarcar "Hoje", e aí nenhuma linha ficaria sólida.
+    var destaque = primeira;
+    primeira = false;
+    var cr = cor(i);
+    traces.push({
+      type: 'scatter', mode: _copLabels ? 'lines+markers+text' : 'lines+markers',
+      name: s.label + ' (' + fmtDataBR(s.data) + ')',
+      x: c.map(function(o) { return o.label; }), y: c.map(function(o) { return o.valor; }),
+      line: {color: cr, width: destaque ? 3 : 2, dash: destaque ? 'solid' : 'dot'},
+      marker: {size: destaque ? 7 : 5, color: cr},
+      text: _copLabels ? c.map(function(o) { return fmtTrunc(o.valor, 2); }) : undefined,
+      textposition: 'top center',
+      textfont: {family: 'JetBrains Mono,monospace', size: 9, color: cr},
+      customdata: c.map(function(o) { return fmtBR(o.valor, 2) + '% · ' + (o.n || '—') + ' resp.'; }),
+      hovertemplate: '<b>%{x}</b>: %{customdata}<extra>' + s.label + '</extra>',
+    });
+  });
+  _reactPlain('chart-cop-curva', traces, mkCatLayout('Selic esperada (% a.a.)', 520, {
+    xaxis: {type: 'category', categoryorder: 'array', categoryarray: _copCategorias(curvas),
+            gridcolor: '#eee'},
+  }));
+}
+function _copHzDesenha() {
+  var M = _copMatriz(_copBase), traces = [];
+  _copHzs.slice().sort(function(a, b) {
+    if (a === 'ult') return 1;
+    if (b === 'ult') return -1;
+    return parseInt(a, 10) - parseInt(b, 10);
+  }).forEach(function(k, i) {
+    var vals = (k === 'ult') ? M.ultima : M.hz[parseInt(k, 10) - 1];
+    if (!vals) return;
+    var s = {dates: GRADE, values: vals};
+    traces.push(lineTrace(s, k === 'ult' ? 'Última cotada' : k + 'ª à frente', cor(i), _cophLabels, 2, '%'));
+  });
+  _reactPreserveX('chart-cop-hz', traces, mkTsLayout('Selic esperada (% a.a.)', 520, traces));
+}
+function _copHeat() {
+  var M = _copMatriz(_copBase);
+  var z = [], y = [];
+  for (var k = 0; k < 16; k++) { z.push(M.hz[k]); y.push(String(k + 1)); }
+  var trace = {
+    type: 'heatmap', x: GRADE, y: y, z: z,
+    colorscale: [[0, '#418791'], [0.35, '#8FB9A8'], [0.6, '#FBC852'], [0.85, '#BB9B1D'], [1, '#EA523A']],
+    hovertemplate: '%{x}<br>%{y}ª reunião à frente: %{z:.2f}%<extra></extra>',
+    colorbar: {title: {text: '% a.a.', side: 'right', font: {size: 10}}, thickness: 12, len: 0.85},
+    connectgaps: false,
+  };
+  _reactPreserveX('chart-cop-heat', [trace], mkTsLayout('Reunião à frente', 520, [{x: GRADE, y: y}], {
+    hovermode: 'closest',
+    yaxis: {title: {text: 'Reunião à frente', font: {size: 11}}, type: 'category', gridcolor: '#eee'},
+    xaxis: {type: 'date', gridcolor: '#eee', range: [GRADE[Math.max(0, NG - 320)], GRADE[NG - 1]], autorange: false},
+  }));
+}
+function _copKpis() {
+  var M = _copMatriz(_copBase), gi = NG - 1, gi4 = gidxBackWeeks(4);
+  var c = _copCurva(gi, _copBase);
+  if (!c.length) { ['prox', 'term', 'ciclo', 'n'].forEach(function(k) { setKPI('kpi-cop-' + k, '—', '—'); }); return; }
+  var prox = c[0], term = c[c.length - 1];
+  // Δ 4 semanas tem de ser da MESMA reunião, não "do que era a 1ª à frente naquela
+  // época": se houve Copom no meio, a 1ª à frente de 4 semanas atrás é outra reunião, e
+  // a diferença misturaria mudança de expectativa com mudança de horizonte.
+  var prox4 = blkAt(COP[prox.reuniao + '|' + _copBase], 'm', gi4);
+  var term4 = blkAt(COP[term.reuniao + '|' + _copBase], 'm', gi4);
+  setKPILabel('kpi-cop-prox', 'Próxima reunião — ' + prox.reuniao);
+  setKPI('kpi-cop-prox', fmtBR(prox.valor, 2) + '%',
+    (prox4 == null ? '—' : fmtSig(prox.valor - prox4, 2) + ' p.p. em 4 semanas'),
+    clsDelta(prox4 == null ? null : prox.valor - prox4));
+  setKPILabel('kpi-cop-term', 'Última cotada — ' + term.reuniao);
+  setKPI('kpi-cop-term', fmtBR(term.valor, 2) + '%',
+    (term4 == null ? '—' : fmtSig(term.valor - term4, 2) + ' p.p. em 4 semanas'),
+    clsDelta(term4 == null ? null : term.valor - term4));
+  var ciclo = term.valor - prox.valor;
+  setKPI('kpi-cop-ciclo', fmtSig(ciclo, 2) + ' p.p.',
+    'entre ' + prox.reuniao + ' e ' + term.reuniao, clsDelta(ciclo));
+  setKPI('kpi-cop-n', String(c.length), c.length + ' reuniões · ' + (prox.n || '—') + ' respondentes na próxima');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — HORIZONTE MÓVEL
+// ═══════════════════════════════════════════════════════════════════════════════
+var _movInds = ['IPCA'], _movHz = '12m', _movSuav = 'S', _movBase = '0', _movLabels = false;
+
+function _movIndicadores() {
+  var set = {};
+  Object.keys(MOV).forEach(function(k) { set[k.split('|')[0]] = true; });
+  return Object.keys(set).sort(function(a, b) {
+    if (a === 'IPCA') return -1;
+    if (b === 'IPCA') return 1;
+    return a.localeCompare(b, 'pt-BR');
+  });
+}
+function renderMovel() {
+  var inds = _movIndicadores();
+  setupMultiselect('ms-mov-btn', 'ms-mov-panel',
+    [{header: 'Indicador', items: inds.map(function(i) { return {key: i, label: i}; })}],
+    _movInds.filter(function(i) { return inds.indexOf(i) >= 0; }),
+    function(sel) { _movInds = sel; _movDesenha(); }, 'série(s)');
+  setupPillGroup('pg-mov-hz', [{key: '12m', label: '12 meses'}, {key: '24m', label: '24 meses'}],
+    '12m', function(k) { _movHz = k; _movDesenha(); });
+  setupPillGroup('pg-mov-suav', [{key: 'S', label: 'Suavizada'}, {key: 'N', label: 'Crua'}],
+    'S', function(k) { _movSuav = k; _movDesenha(); });
+  setupPillGroup('pg-mov-base', [{key: '0', label: 'Base 0'}, {key: '1', label: 'Base 1'}],
+    '0', function(k) { _movBase = k; _movDesenha(); });
+  wireDlToggle('dl-mov', function(on) { _movLabels = on; _movDesenha(); });
+}
+function _movDesenha() {
+  var traces = [], slope = [];
+  _movInds.forEach(function(ind, i) {
+    var blk = movBlk(ind, _movHz, _movSuav, _movBase);
+    if (blk) traces.push(lineTrace(blkSerie(blk, 'm'), ind, cor(i), _movLabels, 2, '%'));
+    var b12 = movBlk(ind, '12m', _movSuav, _movBase), b24 = movBlk(ind, '24m', _movSuav, _movBase);
+    if (b12 && b24) {
+      var s12 = blkSerie(b12, 'm'), mapa = {};
+      for (var j = 0; j < s12.dates.length; j++) mapa[s12.dates[j]] = s12.values[j];
+      var s24 = blkSerie(b24, 'm'), d = [], v = [];
+      for (var k = 0; k < s24.dates.length; k++) {
+        var a = mapa[s24.dates[k]], b = s24.values[k];
+        d.push(s24.dates[k]);
+        v.push((a != null && b != null) ? Math.round((b - a) * 10000) / 10000 : null);
+      }
+      slope.push(lineTrace({dates: d, values: v}, ind, cor(i), false, 2, ' p.p.'));
+    }
+  });
+  _reactPreserveX('chart-mov', traces, mkTsLayout('% em ' + _movHz.replace('m', ' meses'), 520, traces));
+  _reactPreserveX('chart-mov-slope', slope,
+    mkTsLayout('24m − 12m (p.p.)', 380, slope, {legend: {orientation: 'h', y: -0.28, x: 0.5, xanchor: 'center', font: {size: 11}}}));
+
+  var cap = document.getElementById('mov-cap');
+  if (cap) {
+    cap.textContent = 'Horizonte ' + _movHz + ' · série ' + (_movSuav === 'S' ? 'suavizada' : 'crua')
+      + ' · base ' + _movBase + '. Componentes do IPCA só existem a partir de 14/09/2021 (reformulação da pesquisa); '
+      + 'a base 1 só a partir de 02/01/2014.';
+  }
+  _movKpis();
+}
+function _movKpis() {
+  var gi = NG - 1, gi4 = gidxBackWeeks(4);
+  var b12 = movBlk('IPCA', '12m', _movSuav, _movBase), b24 = movBlk('IPCA', '24m', _movSuav, _movBase);
+  var v12 = blkAt(b12, 'm', gi), v24 = blkAt(b24, 'm', gi);
+  var p12 = blkAt(b12, 'm', gi4), p24 = blkAt(b24, 'm', gi4);
+  setKPI('kpi-mov-12', v12 == null ? '—' : fmtBR(v12, 2) + '%',
+    p12 == null ? '—' : fmtSig(v12 - p12, 2) + ' p.p. em 4 semanas', clsDelta(p12 == null ? null : v12 - p12));
+  setKPI('kpi-mov-24', v24 == null ? '—' : fmtBR(v24, 2) + '%',
+    p24 == null ? '—' : fmtSig(v24 - p24, 2) + ' p.p. em 4 semanas', clsDelta(p24 == null ? null : v24 - p24));
+  var sl = (v12 != null && v24 != null) ? v24 - v12 : null;
+  setKPI('kpi-mov-sl', sl == null ? '—' : fmtSig(sl, 2) + ' p.p.',
+    sl == null ? '—' : (sl < 0 ? 'desinflação esperada à frente' : 'inflação mais alta no 2º ano'), clsDelta(sl));
+  var n = blkAt(b12, 'n', gi), n52 = blkAt(b12, 'n', gidxBackWeeks(52));
+  setKPI('kpi-mov-n', n == null ? '—' : String(n),
+    n52 == null ? '—' : (n - n52 >= 0 ? '+' : '') + (n - n52) + ' contra 52 semanas atrás');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — TRAJETÓRIA
+// ═══════════════════════════════════════════════════════════════════════════════
+var _traPer = 'mensal', _traInd = null, _traSnaps = ['w0', 'w4', 'w26'], _traComp = 'w4', _traLabels = false;
+
+function renderTrajetoria() {
+  setupPillGroup('pg-tra-per', [
+    {key: 'mensal', label: 'Mensal'}, {key: 'trimestral', label: 'Trimestral'},
+    {key: 'anual', label: 'Anual'},
+  ], 'mensal', function(k) { _traPer = k; _traMontaInd(); });
+  setupMultiselect('ms-tra-btn', 'ms-tra-panel',
+    [{header: 'Data de pesquisa', items: SNAPS.filter(function(s) { return s.gi >= 0; }).map(function(s) {
+      return {key: s.key, label: s.label + ' — ' + fmtDataBR(s.data)};
+    })}], _traSnaps, function(sel) { _traSnaps = sel; _traDesenha(); }, 'data(s)');
+  setupPillGroup('pg-tra-comp', SNAPS.slice(1).map(function(s) { return {key: s.key, label: s.label}; }),
+    'w4', function(k) { _traComp = k; _traDeslocamento(); });
+  wireDlToggle('dl-tra', function(on) { _traLabels = on; _traDesenha(); });
+}
+function _traMontaInd() {
+  setupSelect('sel-tra-ind', indsDe(_traPer), 'IPCA|', function(k) { _traInd = k; _traDesenha(); });
+}
+// Fotografia: a curva a frente inteira numa data da grade. X = ref_date do período, o
+// que faz das três periodicidades o mesmo tipo de gráfico.
+function _traFoto(gi) {
+  var meta = pMeta(_traPer, _traInd);
+  if (!meta) return {dates: [], values: []};
+  var d = [], v = [];
+  meta.refs.forEach(function(ref, i) {
+    var val = blkAt(pBlk(_traPer, _traInd, ref), 'm', gi);
+    if (val == null) return;
+    d.push(meta.refDates[i]); v.push(val);
+  });
+  return {dates: d, values: v, refs: meta.refs};
+}
+function _traDesenha() {
+  var meta = pMeta(_traPer, _traInd);
+  if (!meta) return;
+  var traces = [], primeira = true;
+  SNAPS.forEach(function(s, i) {
+    if (_traSnaps.indexOf(s.key) < 0 || s.gi < 0) return;
+    var f = _traFoto(s.gi);
+    if (!f.dates.length) return;
+    var destaque = primeira;
+    primeira = false;
+    traces.push(lineTrace(f, s.label + ' (' + fmtDataBR(s.data) + ')', cor(i), _traLabels,
+      meta.dec, meta.unidade === '%' ? '%' : '',
+      {mode: _traLabels ? 'lines+markers+text' : 'lines+markers', marker: {size: 5, color: cor(i)},
+       line: {color: cor(i), width: destaque ? 3 : 2, dash: destaque ? 'solid' : 'dot'}}));
+  });
+  // O título do eixo entra DEPOIS da fábrica: passar um xaxis inteiro no `extra`
+  // substituiria o range justo que mkTsLayout calculou, e a view abriria com o autopad
+  // largo do Plotly.
+  var layTra = mkTsLayout(meta.unidade, 520, traces);
+  layTra.xaxis.title = {text: 'Período de referência', font: {size: 11}};
+  _reactPreserveX('chart-tra', traces, layTra);
+  _traDeslocamento();
+}
+function _traDeslocamento() {
+  var meta = pMeta(_traPer, _traInd);
+  if (!meta) return;
+  var hoje = _traFoto(NG - 1), antes = _traFoto(snapGi(_traComp));
+  var mapa = {};
+  for (var i = 0; i < antes.dates.length; i++) mapa[antes.dates[i]] = antes.values[i];
+  var d = [], v = [];
+  for (var j = 0; j < hoje.dates.length; j++) {
+    var a = mapa[hoje.dates[j]];
+    if (a == null || hoje.values[j] == null) continue;
+    d.push(hoje.dates[j]); v.push(Math.round((hoje.values[j] - a) * 10000) / 10000);
+  }
+  var lab = 'Hoje − ' + (SNAPS.filter(function(s) { return s.key === _traComp; })[0] || {}).label;
+  var trace = barTrace({dates: d, values: v}, lab, C.azulCl, false, meta.dec, meta.unidade === '%' ? ' p.p.' : '', {
+    marker: {color: v.map(function(x) { return x >= 0 ? C.laranja : C.verde; })},
+  });
+  _reactPreserveX('chart-tra-desl', [trace], mkTsLayout('Δ (' + meta.unidade + ')', 380, [trace], {showlegend: false}));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — DISPERSÃO
+// ═══════════════════════════════════════════════════════════════════════════════
+var _disFonte = 'anual', _disInd = null, _disRef = null, _disMet = 's', _disLabels = false;
+
+function renderDispersao() {
+  setupPillGroup('pg-dis-met', [
+    {key: 's', label: 'Desvio-padrão'}, {key: 'cv', label: 'Coef. de variação'},
+    {key: 'amp', label: 'Amplitude máx−mín'},
+  ], 's', function(k) { _disMet = k; _disDesenha(); });
+  wireDlToggle('dl-dis', function(on) { _disLabels = on; _disDesenha(); });
+  setupPillGroup('pg-dis-fonte', [
+    {key: 'anual', label: 'Anual'}, {key: 'trimestral', label: 'Trimestral'},
+    {key: 'mensal', label: 'Mensal'}, {key: 'movel', label: 'Horizonte móvel'},
+    {key: 'copom', label: 'Copom'},
+  ], 'anual', function(k) { _disFonte = k; _disMontaInd(); });
+}
+function _disMontaInd() {
+  var selRef = document.getElementById('sel-dis-ref');
+  if (_disFonte === 'movel') {
+    if (selRef) selRef.style.display = '';
+    var inds = _movIndicadores().map(function(i) { return {key: i, label: i, familia: 'Horizonte móvel'}; });
+    setupSelect('sel-dis-ind', inds, 'IPCA', function(k) {
+      _disInd = k;
+      setupSelectSimples('sel-dis-ref', [{key: '12m', label: '12 meses'}, {key: '24m', label: '24 meses'}],
+        '12m', function(r) { _disRef = r; _disDesenha(); });
+    });
+  } else if (_disFonte === 'copom') {
+    if (selRef) selRef.style.display = '';
+    setupSelect('sel-dis-ind', [{key: 'selic', label: 'Selic por reunião', familia: 'Copom'}], 'selic',
+      function(k) {
+        _disInd = k;
+        var hz = [];
+        for (var i = 1; i <= 16; i++) hz.push({key: String(i), label: i + 'ª à frente'});
+        setupSelectSimples('sel-dis-ref', hz, '1', function(r) { _disRef = r; _disDesenha(); });
+      });
+  } else {
+    if (selRef) selRef.style.display = '';
+    setupSelect('sel-dis-ind', indsDe(_disFonte), 'IPCA|', function(k) {
+      _disInd = k;
+      var meta = pMeta(_disFonte, k);
+      if (!meta) return;
+      var hoje = GRADE[NG - 1] || '';
+      var futuros = meta.refs.filter(function(r, i) {
+        return vigenteOuFuturo(_disFonte, meta.refDates[i], hoje);
+      });
+      var lista = meta.refs.slice().reverse().map(function(r) { return {key: r, label: r}; });
+      setupSelectSimples('sel-dis-ref', lista, futuros[0] || meta.refs[meta.refs.length - 1],
+        function(r) { _disRef = r; _disDesenha(); });
+    });
+  }
+}
+function setupSelectSimples(selId, options, defaultKey, onChange) {
+  var sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = options.map(function(o) { return '<option value="' + o.key + '">' + o.label + '</option>'; }).join('');
+  var inicial = options.some(function(o) { return o.key === defaultKey; }) ? defaultKey : (options[0] && options[0].key);
+  sel.value = inicial;
+  sel.onchange = function() { onChange(sel.value); };
+  onChange(inicial);
+}
+// Devolve o bloco e o rótulo da série escolhida, seja qual for a fonte. Copom é o único
+// caso em que a "série" não existe como bloco: é a k-ésima reunião à frente, montada da
+// matriz de horizonte.
+function _disBloco() {
+  if (_disFonte === 'movel') {
+    return {blk: movBlk(_disInd, _disRef || '12m', 'S', '0'),
+            rotulo: _disInd + ' ' + (_disRef || '12m') + ' (suavizada, base 0)', dec: 2, unidade: '%'};
+  }
+  if (_disFonte === 'copom') {
+    var M = _copMatriz('0'), k = parseInt(_disRef || '1', 10) - 1;
+    return {matriz: {m: M.hz[k], s: M.s[k], n: M.n[k], lo: M.lo[k], hi: M.hi[k]},
+            rotulo: 'Selic, ' + (k + 1) + 'ª reunião à frente (base 0)', dec: 2, unidade: '%'};
+  }
+  var meta = pMeta(_disFonte, _disInd);
+  if (!meta) return {};
+  return {blk: pBlk(_disFonte, _disInd, _disRef), rotulo: meta.label + ' — ' + _disRef,
+          dec: meta.dec, unidade: meta.unidade};
+}
+function _disSerie(fonte, stat) {
+  if (fonte.matriz) return {dates: GRADE, values: fonte.matriz[stat] || []};
+  return blkSerie(fonte.blk, stat);
+}
+function _disDesenha() {
+  var f = _disBloco();
+  if (!f || (!f.blk && !f.matriz)) {
+    _reactPreserveX('chart-dis', [], mkTsLayout('—', 520, []));
+    _reactPreserveX('chart-dis-n', [], mkTsLayout('Respondentes', 380, []));
+    return;
+  }
+  var med = _disSerie(f, 'm'), dp = _disSerie(f, 's'), nn = _disSerie(f, 'n');
+  var serie, ytitle, sfx = '';
+  if (_disMet === 'cv') {
+    var v = dp.values.map(function(x, i) {
+      var m = med.values[i];
+      return (x == null || m == null || Math.abs(m) < 1e-9) ? null : Math.round((x / Math.abs(m)) * 10000) / 100;
+    });
+    serie = {dates: dp.dates, values: v}; ytitle = 'Coef. de variação (%)'; sfx = '%';
+  } else if (_disMet === 'amp') {
+    var lo = _disSerie(f, 'lo'), hi = _disSerie(f, 'hi');
+    if (!lo.values.length || !hi.values.length) {
+      serie = {dates: [], values: []};
+      ytitle = 'Amplitude — indisponível nesta fonte';
+    } else {
+      serie = {dates: hi.dates, values: hi.values.map(function(x, i) {
+        var l = lo.values[i];
+        return (x == null || l == null) ? null : Math.round((x - l) * 10000) / 10000;
+      })};
+      ytitle = 'Máximo − mínimo (' + f.unidade + ')';
+    }
+  } else {
+    serie = dp; ytitle = 'Desvio-padrão (' + f.unidade + ')';
+  }
+  var t = lineTrace(serie, f.rotulo, C.azul, _disLabels, Math.max(f.dec, 2), sfx);
+  _reactPreserveX('chart-dis', [t], mkTsLayout(ytitle, 520, [t], {showlegend: false}));
+  var tn = lineTrace(nn, 'Respondentes', C.verde, false, 0, '');
+  _reactPreserveX('chart-dis-n', [tn], mkTsLayout('Instituições', 380, [tn], {showlegend: false}));
+
+  var cap = document.getElementById('dis-cap');
+  if (cap) {
+    cap.textContent = _disMet === 'amp'
+      ? 'Mínimo e máximo existem nas fontes Horizonte móvel e Copom; nas três periodicidades de período de referência o payload guarda só mediana, desvio-padrão e respondentes, e o gráfico fica vazio. Ver o Apêndice.'
+      : (_disMet === 'cv'
+        ? 'Desvio-padrão dividido pelo módulo da mediana: comparável entre séries de nível diferente, mas explode quando a mediana passa perto de zero (resultado primário, conta corrente).'
+        : 'Desvio-padrão das respostas individuais na unidade do próprio indicador.');
+  }
+  _disKpis(f, med, dp, nn);
+}
+function _disKpis(f, med, dp, nn) {
+  var iHoje = dp.dates.length - 1;
+  while (iHoje >= 0 && dp.values[iHoje] == null) iHoje--;
+  if (iHoje < 0) { ['dp', 'pct', 'n', 'cv'].forEach(function(k) { setKPI('kpi-dis-' + k, '—', '—'); }); return; }
+  var atual = dp.values[iHoje], dec = Math.max(f.dec, 2);
+  var vals = dp.values.filter(function(v) { return v != null; }).sort(function(a, b) { return a - b; });
+  var menores = vals.filter(function(v) { return v < atual; }).length;
+  var pct = vals.length ? Math.round(100 * menores / vals.length) : null;
+  setKPI('kpi-dis-dp', fmtBR(atual, dec), f.rotulo + ' · ' + fmtDataBR(dp.dates[iHoje]));
+  setKPI('kpi-dis-pct', pct == null ? '—' : pct + 'º',
+    'de ' + vals.length + ' semanas com dado', pct != null && pct >= 80 ? 'up' : (pct != null && pct <= 20 ? 'down' : ''));
+  var n = nn.values[iHoje], n52 = null;
+  var alvo = new Date(Date.parse(dp.dates[iHoje]) - 364 * 86400000).toISOString().slice(0, 10);
+  for (var j = nn.dates.length - 1; j >= 0; j--) if (nn.dates[j] <= alvo) { n52 = nn.values[j]; break; }
+  setKPI('kpi-dis-n', n == null ? '—' : String(n),
+    n52 == null ? '—' : (n - n52 >= 0 ? '+' : '') + (n - n52) + ' contra 52 semanas atrás');
+  var m = med.values[iHoje];
+  var cv = (m != null && Math.abs(m) > 1e-9) ? 100 * atual / Math.abs(m) : null;
+  setKPI('kpi-dis-cv', cv == null ? '—' : fmtBR(cv, 1) + '%',
+    m == null ? '—' : 'mediana ' + fmtBR(m, f.dec) + ' ' + f.unidade);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — BASES
+// ═══════════════════════════════════════════════════════════════════════════════
+var _basFonte = 'movel', _basInd = null, _basLabels = false;
+
+function renderBases() {
+  wireDlToggle('dl-bas', function(on) { _basLabels = on; _basDesenha(); });
+  setupPillGroup('pg-bas-fonte', [
+    {key: 'movel', label: 'Horizonte móvel'}, {key: 'copom', label: 'Curva do Copom'},
+  ], 'movel', function(k) { _basFonte = k; _basMontaInd(); });
+}
+function _basMontaInd() {
+  if (_basFonte === 'movel') {
+    var opts = [];
+    _movIndicadores().forEach(function(ind) {
+      ['12m', '24m'].forEach(function(hz) {
+        if (movBlk(ind, hz, 'S', '0') && movBlk(ind, hz, 'S', '1')) {
+          opts.push({key: ind + '|' + hz, label: ind + ' — ' + hz, familia: 'Suavizada, base 0 vs 1'});
+        }
+      });
+    });
+    setupSelect('sel-bas-ind', opts, 'IPCA|12m', function(k) { _basInd = k; _basDesenha(); });
+  } else {
+    var hz = [];
+    for (var i = 1; i <= 16; i++) hz.push({key: String(i), label: i + 'ª reunião à frente', familia: 'Selic por reunião'});
+    setupSelect('sel-bas-ind', hz, '1', function(k) { _basInd = k; _basDesenha(); });
+  }
+}
+function _basSeries() {
+  if (_basFonte === 'movel') {
+    var p = (_basInd || 'IPCA|12m').split('|');
+    return {
+      b0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'm'),
+      b1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'm'),
+      n0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'n'),
+      n1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'n'),
+      rotulo: p[0] + ' ' + p[1] + ' (suavizada)',
+    };
+  }
+  var k = parseInt(_basInd || '1', 10) - 1;
+  var M0 = _copMatriz('0'), M1 = _copMatriz('1');
+  return {
+    b0: {dates: GRADE, values: M0.hz[k]}, b1: {dates: GRADE, values: M1.hz[k]},
+    n0: {dates: GRADE, values: M0.n[k]}, n1: {dates: GRADE, values: M1.n[k]},
+    rotulo: 'Selic, ' + (k + 1) + 'ª reunião à frente',
+  };
+}
+function _basDesenha() {
+  var S = _basSeries();
+  var traces = [
+    lineTrace(S.b0, 'Base 0 — 30 dias', C.azul, _basLabels, 2, '%'),
+    lineTrace(S.b1, 'Base 1 — 4 dias úteis', C.laranja, _basLabels, 2, '%'),
+  ];
+  var yTitBas = _basFonte === 'copom' ? '% a.a.'
+      : '% em ' + ((_basInd || 'IPCA|12m').split('|')[1] || '12m').replace('m', ' meses');
+  _reactPreserveX('chart-bas', traces, mkTsLayout(yTitBas, 520, traces));
+
+  var mapa = {};
+  for (var i = 0; i < S.b0.dates.length; i++) mapa[S.b0.dates[i]] = S.b0.values[i];
+  var d = [], v = [];
+  for (var j = 0; j < S.b1.dates.length; j++) {
+    var a = mapa[S.b1.dates[j]], b = S.b1.values[j];
+    if (a == null || b == null) continue;
+    d.push(S.b1.dates[j]); v.push(Math.round((b - a) * 10000) / 10000);
+  }
+  var gap = {dates: d, values: v};
+  var tg = barTrace(gap, 'Gap (base 1 − base 0)', C.azulCl, false, 2, ' p.p.', {
+    marker: {color: v.map(function(x) { return x >= 0 ? C.laranja : C.verde; })}, yaxis: 'y',
+  });
+  var tn0 = lineTrace(S.n0, 'Respondentes base 0', C.azul, false, 0, '', {yaxis: 'y2', line: {color: C.azul, width: 1.5, dash: 'dot'}});
+  var tn1 = lineTrace(S.n1, 'Respondentes base 1', C.cinza, false, 0, '', {yaxis: 'y2', line: {color: C.cinza, width: 1.5, dash: 'dot'}});
+  _reactPreserveX('chart-bas-gap', [tg, tn0, tn1], mkTsLayout('Gap (p.p.)', 380, [tg], {
+    yaxis2: {title: {text: 'Respondentes', font: {size: 10}}, overlaying: 'y', side: 'right', showgrid: false},
+    legend: {orientation: 'h', y: -0.30, x: 0.5, xanchor: 'center', font: {size: 10}},
+  }));
+
+  var cap = document.getElementById('bas-cap');
+  if (cap) {
+    cap.textContent = S.rotulo + '. ' + (_basFonte === 'copom'
+      ? 'A base 1 da Selic por reunião só começa em 31/03/2021 — antes disso o BCB não publica, não é falha de carga.'
+      : 'A base 1 dos endpoints de inflação só começa em 02/01/2014; a base 0 vai a 07/11/2001.');
+  }
+  _basKpis(S, gap);
+}
+function _basKpis(S, gap) {
+  function ultimo(s) {
+    for (var i = s.values.length - 1; i >= 0; i--) if (s.values[i] != null) return {v: s.values[i], d: s.dates[i]};
+    return null;
+  }
+  var u0 = ultimo(S.b0), u1 = ultimo(S.b1), ug = ultimo(gap);
+  setKPI('kpi-bas-b1', u1 ? fmtBR(u1.v, 2) + '%' : '—',
+    u1 ? (fmtDataBR(u1.d) + ' · ' + (ultimo(S.n1) ? ultimo(S.n1).v + ' respondentes' : '')) : '—');
+  setKPI('kpi-bas-b0', u0 ? fmtBR(u0.v, 2) + '%' : '—',
+    u0 ? (fmtDataBR(u0.d) + ' · ' + (ultimo(S.n0) ? ultimo(S.n0).v + ' respondentes' : '')) : '—');
+  setKPI('kpi-bas-gap', ug ? fmtSig(ug.v, 2) + ' p.p.' : '—',
+    ug ? ('base 1 ' + (ug.v > 0 ? 'acima' : (ug.v < 0 ? 'abaixo' : 'igual')) + ' da base 0') : '—', ug ? clsDelta(ug.v) : '');
+  var mx = null, mxd = null;
+  for (var i = 0; i < gap.values.length; i++) {
+    if (gap.values[i] == null) continue;
+    if (mx == null || Math.abs(gap.values[i]) > Math.abs(mx)) { mx = gap.values[i]; mxd = gap.dates[i]; }
+  }
+  setKPI('kpi-bas-max', mx == null ? '—' : fmtSig(mx, 2) + ' p.p.', mxd ? fmtDataBR(mxd) : '—');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — APÊNDICE
+// ═══════════════════════════════════════════════════════════════════════════════
+var _apTab = 'expc_focus_periodo';
+
+function renderAppendix() {
+  var cob = D.cobertura || [];
+  var tabelas = [];
+  cob.forEach(function(r) { if (tabelas.indexOf(r.tabela) < 0) tabelas.push(r.tabela); });
+  setupPillGroup('pg-ap-tab', tabelas.map(function(t) { return {key: t, label: t}; }),
+    tabelas[0] || 'expc_focus_periodo', function(k) { _apTab = k; _apTabela(); });
+
+  var g = document.getElementById('ap-grade-n');
+  if (g) g.textContent = String(NG);
+  var gi = document.getElementById('ap-grade-ini');
+  if (gi) gi.textContent = fmtDataBR(GRADE[0]);
+  var gf = document.getElementById('ap-grade-fim');
+  if (gf) gf.textContent = fmtDataBR(GRADE[NG - 1]);
+  var mm = document.getElementById('ap-mensal-min');
+  if (mm) mm.textContent = fmtDataBR((D.meta && D.meta.mensalRefMin) || '');
+}
+function _apTabela() {
+  var tb = document.getElementById('tbl-cobertura');
+  if (!tb) return;
+  var linhas = (D.cobertura || []).filter(function(r) { return r.tabela === _apTab; })
+    .sort(function(a, b) {
+      if (a.recorte !== b.recorte) return a.recorte.localeCompare(b.recorte, 'pt-BR');
+      return a.serie.localeCompare(b.serie, 'pt-BR');
+    });
+  var h = '<thead><tr><th class="col-label">Recorte</th><th class="col-label">Série</th>'
+        + '<th>Primeira</th><th>Última</th><th>Linhas</th><th>Períodos de ref.</th>'
+        + '<th class="col-label">Situação</th></tr></thead><tbody>';
+  var ultimaGeral = (D.meta && D.meta[_apTab] && D.meta[_apTab].ultima) || GRADE[NG - 1];
+  linhas.forEach(function(r) {
+    // "Encerrada" = a série parou de ser publicada antes da última pesquisa da tabela.
+    // Com 60 dias de folga: uma série mensal pode faltar numa semana sem estar morta.
+    var viva = Date.parse(r.d1) >= Date.parse(ultimaGeral) - 60 * 86400000;
+    h += '<tr><td class="col-label" style="color:var(--muted)">' + r.recorte + '</td>'
+      + '<td class="col-label">' + r.serie + '</td>'
+      + '<td class="col-value">' + fmtDataBR(r.d0) + '</td>'
+      + '<td class="col-value">' + fmtDataBR(r.d1) + '</td>'
+      + '<td class="col-value">' + r.n.toLocaleString('pt-BR') + '</td>'
+      + '<td class="col-value">' + (r.nref == null ? '—' : r.nref) + '</td>'
+      + '<td class="col-label ' + (viva ? '' : 'up') + '">' + (viva ? 'ativa' : 'encerrada') + '</td></tr>';
+  });
+  tb.innerHTML = h + '</tbody>';
+}
+
+// ── Troca de aba — render lazy na primeira ativação ───────────────────────────
+// O Plotly precisa de um div visível e com largura não-zero; renderizar uma aba
+// escondida dimensiona o gráfico errado.
+var RENDERERS = {
+  boletim: renderBoletim, revisao: renderRevisao, copom: renderCopom, movel: renderMovel,
+  trajetoria: renderTrajetoria, dispersao: renderDispersao, bases: renderBases,
+  appendix: renderAppendix,
+};
+var tabRendered = {};
+function activateTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.toggle('active', p.id === 'tab-' + tab); });
+  if (!tabRendered[tab] && RENDERERS[tab]) { RENDERERS[tab](); tabRendered[tab] = true; }
+}
+document.querySelectorAll('.tab-btn').forEach(function(b) {
+  b.addEventListener('click', function() { activateTab(this.dataset.tab); });
+});
+
+document.getElementById('generated-at').textContent = D.generated_at || '—';
+document.getElementById('hdr-ultima').textContent = fmtDataBR(GRADE[NG - 1]);
+activateTab('boletim');
+</script>
+
+</body>
+</html>

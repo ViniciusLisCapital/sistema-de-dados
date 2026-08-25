@@ -1,0 +1,14 @@
+{
+ "focus__eq5": "Selic da Focus / Expectativa endogena (eq. 5)",
+ "focus__focus": "Selic da Focus / Expectativa fixa na Focus",
+ "focus__meta": "Selic da Focus / Expectativa convergindo a meta",
+ "constante__eq5": "Selic constante / Expectativa endogena (eq. 5)",
+ "constante__focus": "Selic constante / Expectativa fixa na Focus",
+ "constante__meta": "Selic constante / Expectativa convergindo a meta",
+ "alta100__eq5": "+100 pb por 4T / Expectativa endogena (eq. 5)",
+ "alta100__focus": "+100 pb por 4T / Expectativa fixa na Focus",
+ "alta100__meta": "+100 pb por 4T / Expectativa convergindo a meta",
+ "baixa100__eq5": "-100 pb por 4T / Expectativa endogena (eq. 5)",
+ "baixa100__focus": "-100 pb por 4T / Expectativa fixa na Focus",
+ "baixa100__meta": "-100 pb por 4T / Expectativa convergindo a meta"
+}

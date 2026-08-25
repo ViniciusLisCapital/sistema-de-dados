@@ -2,7 +2,7 @@
 Atualiza o banco de dados brasil com os dados mais recentes de todas as fontes.
 
 Uso:
-    uv run python jobs/update_db.py                      # passe completo (50 scripts)
+    uv run python jobs/update_db.py                      # passe completo (51 scripts)
     uv run python jobs/update_db.py --continuous         # so as series continuas (diarias)
     uv run python jobs/update_db.py --group ibge_ipca    # so uma divulgacao do calendario
     uv run python jobs/update_db.py --tables atv_pim,atv_pmc
@@ -41,8 +41,8 @@ logger = logging.getLogger("update_db")
 
 # IBGE
 from domain.db.brasil.ibge import (
-    atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_pim, atv_pim_uso, atv_pmc, atv_pms,
-    mt_pnad, mt_pnad_trimestral, inflc_decomposicao, inflc_dim,
+    atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_renda_poupanca, atv_pim, atv_pim_uso,
+    atv_pmc, atv_pms, mt_pnad, mt_pnad_trimestral, inflc_decomposicao, inflc_dim,
 )
 
 # BCB
@@ -84,6 +84,7 @@ _SCRIPTS = [
     ("IBGE · GDP / Contas Nacionais",  atv_pib,               {}),
     ("IBGE · GDP / Valores Correntes",  atv_pib_valores_correntes, {}),
     ("IBGE · GDP / Taxas Oficiais",     atv_pib_taxas,         {}),
+    ("IBGE · GDP / Renda e Poupanca",   atv_renda_poupanca,    {}),
     ("IBGE · PIM / Prod. Industrial",  atv_pim,               {}),
     ("IBGE · PIM / Categorias de Uso", atv_pim_uso,           {}),
     ("IBGE · PMC / Varejo",            atv_pmc,               {}),

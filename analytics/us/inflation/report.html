@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>US Inflation — CPI</title>
+<title>US Inflation — CPI and PCE</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 <style>
@@ -36,6 +36,7 @@ nav.tabs button:hover:not(.active) { color: var(--text2); }
 .card > h2 { font-family: var(--cond); font-size: 17px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin: 0 0 4px; }
 .card > .note { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0 0 12px; }
 .card > .note b { color: var(--text2); }
+.note.t1note { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0 0 10px; }
 
 .ctrl-bar { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 .ctrl { display: flex; align-items: center; gap: 7px; }
@@ -60,13 +61,14 @@ table.hier th.col-check { width: 30px; }
 table.hier td.col-label { min-width: 300px; }
 table.hier tr.is-group td.col-label { font-weight: 600; }
 table.hier tr:hover td { background: #FAFBFC; }
+/* Cabecalho de duas linhas da visao Table 1: a linha de grupos gruda no topo, a
+   de meses logo abaixo dela (altura de uma linha do thead: 10px de padding + 13
+   de texto + 1 de borda). */
+table.hier thead tr.grp th { text-align: center; }
+table.hier thead tr.mon th { top: 24px; }
+table.hier thead tr.mon th:first-child, table.hier thead tr.mon th:nth-child(2) { text-align: right; }
+table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
 .tree-toggle { display: inline-block; width: 13px; color: var(--lis-azul); cursor: pointer; user-select: none; font-size: 10px; }
-.badge { font-family: var(--mono); font-size: 9.5px; padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; }
-.badge.partial { background: #FDF0D5; color: #7A5D00; border: 1px solid #E8D08A; }
-.badge.special { background: #E7F0F2; color: #2C5F66; border: 1px solid #B9D6DA; }
-.badge.noweight { background: #F1F2F6; color: #5A6E96; border: 1px solid #D6DAE6; }
-.badge.detail { background: #EAF2E9; color: #3F6B39; border: 1px solid #C4DCC0; }
-.badge.stale { background: #FBEDEA; color: #A33520; border: 1px solid #F2C9C0; }
 .neg { color: var(--lis-laranja); }
 
 .range-bar { display: flex; gap: 5px; align-items: center; margin: 12px 0 6px; }
@@ -91,8 +93,8 @@ table.hier tr:hover td { background: #FAFBFC; }
 
 <header class="page">
   <div>
-    <h1>US Inflation — Consumer Price Index</h1>
-    <div class="sub">All-urban consumers (CPI-U), US city average · both of the CPI's published trees · levels from the database, variations computed in the browser</div>
+    <h1>US Inflation — CPI and PCE</h1>
+    <div class="sub">CPI-U (BLS), US city average, both published trees · PCE price index (BEA), by type of product · levels from the database, variations computed in the browser</div>
   </div>
   <div class="stamp" id="stamp"></div>
 </header>
@@ -102,6 +104,7 @@ table.hier tr:hover td { background: #FAFBFC; }
 <nav class="tabs">
   <button class="active" data-tab="release">Release Tree</button>
   <button data-tab="expenditure">Expenditure Tree</button>
+  <button data-tab="pce">PCE</button>
   <button data-tab="appendix">Appendix</button>
 </nav>
 
@@ -110,29 +113,14 @@ table.hier tr:hover td { background: #FAFBFC; }
   <div class="card">
     <h2>Release tree — food / energy / core</h2>
     <p class="note">
-      Table 1 of the CPI news release: <b>37 rows over 5 levels</b>. The structure the Fed and the market
-      read on release day. The hierarchy is <b>declared by the BLS</b> in the release page's own markup
-      (<code>&lt;p class="subN"&gt;</code> for depth, hierarchical row ids for parentage), not inferred from
-      indentation. Six nodes are special aggregates that do not exist in the expenditure tree at all — marked
-      <span class="badge special">agg</span>.
+      Table 1 of the news release: <b>37 rows over 5 levels</b>, plus <b id="rel-pointer-n"></b> drill-down
+      rows below each leaf. Only levels 0–2 partition the index — method and caveats in the <b>Appendix</b>.
     </p>
-    <p class="note">
-      <b>The 37 published rows, plus drill-down.</b> Table 1 itself stops at <i>Gasoline (all types)</i> and
-      <i>Electricity</i>. Wherever it stops, the expenditure tree continues underneath —
-      <b id="rel-pointer-n"></b> further rows, flagged <span class="badge detail">detail</span> — so the three
-      gasoline grades, roasted vs. instant coffee and new cars vs. new trucks are one click down instead of
-      one tab over. The published rows and their badges are untouched: <i>Motor fuel</i> stays
-      <span class="badge partial">partial</span> because the release omits <i>Other motor fuels</i>, which is
-      a sibling of <i>Gasoline (all types)</i>, not a deeper level.
-    </p>
-    <div class="warn">
-      <b>Only levels 0–2 partition the index.</b> Those three levels each sum to 100.000, so a decomposition
-      there is complete. Below that the release shows only the largest children of each parent: 7 of the 13
-      parents leave weight with no row, <b>25.583 index points in total</b> — 11.721 inside core services and
-      7.282 inside core goods. Rows with a <span class="badge partial">partial</span> badge do not equal the
-      sum of their visible children, and the badge states how much is missing.
-    </div>
     <div class="ctrl-bar">
+      <div class="ctrl"><label>View</label><div class="pill-group" id="release-view-group">
+        <button class="pill active" data-view="series">Series</button>
+        <button class="pill" data-view="table1">Table 1</button>
+      </div></div>
       <div class="ctrl"><label>Metric</label><div class="pill-group" id="release-metric-group">
         <button class="pill" data-metric="level">Index</button>
         <button class="pill active" data-metric="yoy">Y/Y %</button>
@@ -145,12 +133,13 @@ table.hier tr:hover td { background: #FAFBFC; }
         <button class="pill active" data-basis="SA">SA</button>
       </div></div>
     </div>
+    <div class="note t1note" id="release-t1note"></div>
     <div class="table-scroll"><table class="hier">
       <thead id="release-table-head"></thead><tbody id="release-table-body"></tbody>
     </table></div>
     <div class="range-bar" id="release-range"><span>Range</span></div>
     <div class="chart" id="chart-release"></div>
-    <div class="hint">Tick a row to plot it · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
+    <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 </section>
 
@@ -159,28 +148,15 @@ table.hier tr:hover td { background: #FAFBFC; }
   <div class="card">
     <h2>Expenditure tree — the full statistical structure</h2>
     <p class="note">
-      The CPI's complete expenditure hierarchy: <b><span id="exp-n"></span> items over
-      <span id="exp-levels"></span> levels</b>, from <i>All items</i> down to
-      <i>Bacon and related products</i>. No BLS source publishes this as parent/child pairs — it is assembled
-      from <code>cu.item</code> plus the published indentation of the annual relative-importance table, then
-      <b>proved by weight arithmetic: all 90 parents equal the sum of their children</b> (max error 0.001).
-      Two nodes had to be re-parented for that to hold; see the Appendix.
-    </p>
-    <p class="note">
-      <b><span id="exp-nw"></span> of those items sit below the relative-importance table</b>, which is where
-      the deepest published series live — gasoline by grade, coffee by preparation, new cars vs. new trucks,
-      smartphones, college textbooks, inpatient vs. outpatient hospital services. The BLS publishes an index
-      for each but <b>no weight</b>, so they are marked <span class="badge noweight">no weight</span> and
-      Contribution is blank for them by construction. Everything else on the page works normally.
-      <span class="badge stale">last 2024-09</span> marks a series with no observation for over three
-      months — the BLS has stopped publishing it — and gives its final month.
-    </p>
-    <p class="note">
-      Payload starts in <b id="exp-start"></b> for this tree (the database holds 1913 onwards) — most detail
-      items only begin in the 1990s, so full history here would be mostly empty. The Release Tree tab carries
-      full history.
+      The complete hierarchy: <b><span id="exp-n"></span> items over <span id="exp-levels"></span> levels</b>,
+      from <b id="exp-start"></b> onwards; <span id="exp-nw"></span> of them have an index but no published
+      weight. Method and caveats in the <b>Appendix</b>.
     </p>
     <div class="ctrl-bar">
+      <div class="ctrl"><label>View</label><div class="pill-group" id="expenditure-view-group">
+        <button class="pill active" data-view="series">Series</button>
+        <button class="pill" data-view="table1">Table 1</button>
+      </div></div>
       <div class="ctrl"><label>Metric</label><div class="pill-group" id="expenditure-metric-group">
         <button class="pill" data-metric="level">Index</button>
         <button class="pill active" data-metric="yoy">Y/Y %</button>
@@ -193,121 +169,272 @@ table.hier tr:hover td { background: #FAFBFC; }
         <button class="pill active" data-basis="SA">SA</button>
       </div></div>
     </div>
+    <div class="note t1note" id="expenditure-t1note"></div>
     <div class="table-scroll"><table class="hier">
       <thead id="expenditure-table-head"></thead><tbody id="expenditure-table-body"></tbody>
     </table></div>
     <div class="range-bar" id="expenditure-range"><span>Range</span></div>
     <div class="chart" id="chart-expenditure"></div>
-    <div class="hint">Tick a row to plot it · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
+    <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────── PCE ─────────────────────────────────── -->
+<section class="panel" id="panel-pce">
+  <div class="card">
+    <h2>PCE — the index the Fed targets</h2>
+    <p class="note">
+      BEA tables 2.4.4U and 2.4.5U: <b><span id="pce-n"></span> lines over
+      <span id="pce-levels"></span> levels</b>, from <b id="pce-start"></b> onwards, plus
+      <span id="pce-add"></span> addenda aggregates at the bottom — the core among them. Levels 1–4
+      each partition the index exactly. Method and caveats in the <b>Appendix</b>.
+    </p>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Metric</label><div class="pill-group" id="pce-metric-group">
+        <button class="pill" data-metric="level">Index</button>
+        <button class="pill active" data-metric="yoy">Y/Y %</button>
+        <button class="pill" data-metric="mom">M/M %</button>
+        <button class="pill" data-metric="ann3m">3M ann. %</button>
+        <button class="pill" data-metric="contrib">Contrib. to Y/Y</button>
+      </div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pce-basis-group">
+        <button class="pill disabled" data-basis="NSA"
+                title="The BEA publishes the monthly PCE price index seasonally adjusted only — there is no NSA counterpart to these tables.">NSA</button>
+        <button class="pill active" data-basis="SA">SA</button>
+      </div></div>
+    </div>
+    <div class="table-scroll"><table class="hier">
+      <thead id="pce-table-head"></thead><tbody id="pce-table-body"></tbody>
+    </table></div>
+    <div class="range-bar" id="pce-range"><span>Range</span></div>
+    <div class="chart" id="chart-pce"></div>
+    <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 </section>
 
 <!-- ───────────────────────────────── APPENDIX ───────────────────────────────── -->
 <section class="panel" id="panel-appendix">
   <div class="card appx">
-    <h2>Appendix — sources, method and what not to do with this</h2>
+    <h2>Appendix — sources, method, limits</h2>
 
     <h3>Where the data comes from</h3>
     <table>
       <tr><th>Layer</th><th>Source</th><th>Notes</th></tr>
       <tr><td><code>macro_us.inflc_cpi</code></td><td>BLS API v2 (<code>api.bls.gov/publicdata/v2</code>)</td>
-          <td>Index <b>levels</b>, CPI-U, SA and NSA. 340,907 rows, 1913-01 → latest. Registered key: 50 series / 20 years per request, 500 requests/day. A full reload costs ~90 requests.</td></tr>
+          <td>Index <b>levels</b>, CPI-U, SA and NSA. 340,907 rows, 1913-01 → latest. Registered key: 50 series / 20 years per request, 500 requests/day; a full reload costs ~90 requests.</td></tr>
       <tr><td><code>macro_us.inflc_cpi_dim</code></td><td><code>cu.item</code> flat file + relative-importance table + the release page's HTML</td>
-          <td>Both trees. 392 rows = 355 expenditure + 37 release.</td></tr>
+          <td>Both trees, 392 rows = 355 expenditure + 37 release.</td></tr>
       <tr><td><code>macro_us.inflc_cpi_pesos</code></td><td><code>relative-importance/&lt;year&gt;.xlsx</code></td>
           <td>December snapshots, CPI-U and CPI-W, 2020–2025. 3,864 rows.</td></tr>
+      <tr><td><code>macro_us.inflc_pce</code></td><td>BEA, Section 2 underlying detail
+          (<code>apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx</code>)</td>
+          <td>Price <b>index</b> (table 2.4.4U) and nominal <b>spending</b> (2.4.5U) for the same 402
+          lines, monthly, SA. 607,644 rows, 1959-01 → latest. One 12 MB download, <b>no API key and no
+          quota</b>.</td></tr>
+      <tr><td><code>macro_us.inflc_pce_dim</code></td><td>the published indentation of those same two
+          tables</td>
+          <td>402 lines = 368 in the tree + 34 addenda. Keyed by BEA line number, not series code — 13
+          codes appear on two lines each.</td></tr>
     </table>
 
-    <h3>Why the index level is stored and the variations are not</h3>
+    <h3>How the CPI's two trees are built</h3>
     <p>
-      Every percentage on this page is computed from the level, in the browser. The level is the published
-      quantity; Y/Y, M/M, 3-month annualised and contribution are all derivable from it without loss, and
-      storing both invites the two to disagree. It also keeps the payload roughly one eighth the size.
+      <b>Release tree</b> — Table 1 of the news release, 37 rows over 5 levels, the structure the market reads
+      on release day. Its hierarchy is <b>declared by the BLS</b> in the release page's own markup
+      (<code>&lt;p class="subN"&gt;</code> for depth, hierarchical row ids for parentage), not inferred from
+      indentation. Six of its nodes are special aggregates that do not exist in the expenditure tree at all.
     </p>
     <p>
-      <b>Never compare levels across items.</b> The base period varies by item — most are 1982-84=100, but many
+      Table 1 stops at <i>Gasoline (all types)</i> and <i>Electricity</i>. Wherever it stops, the expenditure
+      tree continues underneath it in that same tab, so the gasoline grades, roasted vs. instant coffee and
+      new cars vs. new trucks are one click down rather than one tab over. The drill-down only ever goes
+      <b>below</b> a row the release leaves as a leaf, never beside a published child — which is what keeps
+      the tab honest: <i>Motor fuel</i> is still short of its children, because the release omits <i>Other
+      motor fuels</i>, a sibling of <i>Gasoline (all types)</i> rather than a deeper level.
+    </p>
+    <p>
+      <b>Expenditure tree</b> — the full statistical structure, <b>355 items over 10 levels</b>, from
+      <i>All items</i> down to <i>Bacon and related products</i>. No BLS source publishes it as parent/child
+      pairs: it is assembled from <code>cu.item</code> plus the published indentation of the annual
+      relative-importance table, then <b>proved by weight arithmetic</b> — each of the 90 parents the weight
+      table covers equals the sum of its children, max error 0.001. The loaded tree has more parents than that
+      (130), because the deepest layer below has no weights to check.
+    </p>
+    <p>
+      Two nodes have to be re-parented for that proof to hold, and the weights themselves settle where they
+      belong: <code>Food and beverages</code> 14.539 = <code>Food</code> 13.698 + <code>Alcoholic
+      beverages</code> 0.840, and <code>Information and information processing</code> 3.181 = 1.466 +
+      <code>IT hardware</code> 1.714. The check re-runs on every load and <b>refuses to write</b> if it fails,
+      so a change in BLS's published indentation surfaces as an error instead of a quietly wrong tree.
+    </p>
+    <p>
+      <b>Below the relative-importance table.</b> The spreadsheet stops at 294 published lines;
+      <code>cu.item</code> goes deeper, and <b>83</b> of those deeper items have real index series — gasoline
+      by grade, coffee by preparation, new cars vs. new trucks, smartphones, college textbooks, inpatient vs.
+      outpatient hospital. They are attached by the same parent rule used for the rest (the last preceding
+      line one level up), validated before being trusted: on the 266 items the spreadsheet already positions
+      it reproduces the published parent 254 times, and all 12 disagreements are items whose true parent is a
+      special aggregate — none at the depth the graft touches. So the graft only ever <i>adds</i> leaves, and
+      the additivity proof above runs on the spreadsheet layer untouched.
+    </p>
+    <p>
+      Five further items, 0.861 index points with both a weight and a series published, were being dropped by
+      a one-comma difference between the two sources' labels; they are matched by position now, not by name.
+    </p>
+    <p>
+      Three <code>cu.item</code> entries are excluded on purpose — <i>Information technology commodities</i>,
+      <i>Video and audio products</i>, <i>Video and audio services</i>. They arrive at display level 1, which
+      would make them children of <i>All items</i>, and they appear in neither section of the spreadsheet:
+      cross-cutting aggregates with no place in this tree. The loader lists them on every run, so a genuinely
+      new BLS item shows up in the log instead of disappearing.
+    </p>
+    <p>
+      Two history windows: the release rows carry full history from 1913, the expenditure items start in 1990.
+      Most detail items only begin in the 1990s, so full history there would be mostly empty. And nothing is
+      written into the rows themselves — <b>hover a row</b> and it says whether the item is a special
+      aggregate, a drill-down row, unweighted, discontinued, or a parent its children do not sum to.
+    </p>
+
+    <h3>What the numbers are, and what they are not</h3>
+    <p>
+      Every percentage on this page is computed from the level, in the browser. The level is the published
+      quantity; Y/Y, M/M, 3-month annualised and contribution all derive from it without loss, and storing
+      both invites the two to disagree. It also keeps the payload roughly one eighth the size.
+    </p>
+    <p>
+      <b>Never compare levels across items.</b> The base period varies by item — most are 1982-84=100, many
       start at December of some specific year. Two items at the same level are not "at the same price"; only
       the variations are comparable.
     </p>
-
-    <h3>Contribution is an approximation, not an identity</h3>
     <p>
-      Contribution is weight × variation, with the weight joined in at read time: for a month in year Y, the
-      December snapshot of year Y−1, falling back to the nearest earlier one. That is the BLS's own
-      construction — the file named <code>2025.xlsx</code> has reference period December 2025 and is what
-      prices 2026 — and it is the better of the available choices: using each year's own snapshot instead of a
-      single fixed vector cuts the headline reconciliation error about 30% (0.0183 → 0.0124 p.p. mean
-      absolute, measured against this database).
+      <b>Contribution is an approximation, not an identity.</b> It is weight × variation, with the weight
+      joined at read time: for a month in year Y, the December snapshot of Y−1, falling back to the nearest
+      earlier one. That is the BLS's own construction — <code>2025.xlsx</code> has reference period December
+      2025 and is what prices 2026 — and it is the better of the available choices: using each year's own
+      snapshot rather than one fixed vector cuts the headline reconciliation error about 30% (0.0183 → 0.0124
+      p.p. mean absolute, measured against this database). About <b>0.015 p.p. is irreducible</b>, because
+      relative importance is a December snapshot of a quantity the BLS price-updates continuously. That is not
+      a seasonal-adjustment artefact — repeating the test on NSA series makes it slightly worse, which rules
+      that out.
     </p>
-    <p>Two reasons it still will not close exactly, both worth knowing before treating a decomposition as an identity:</p>
+    <div class="warn">
+      <b>Only levels 0–2 partition the index.</b> Those three levels each sum to 100.000, so a decomposition
+      there is complete. Below that the release shows only the largest children of each parent: 7 of its 13
+      parents leave weight with no row, <b>25.583 index points in total</b> — 11.721 inside core services and
+      7.282 inside core goods. Contributions summed at level ≥ 3 therefore do not add to the parent. The
+      expenditure tree does add up, and is the one to use when the detail matters.
+    </div>
+
+    <h3>The relative-importance column is reconstructed, not loaded</h3>
+    <p>
+      Table 1 dates its relative importance one month behind the reference month, and that figure is in no
+      file this database loads — the workbook publishes December only. It is recovered the way the BLS updates
+      a relative importance: the December weight times the item's own NSA index ratio since that December,
+      divided by the headline's ratio over the same span. Formally
+      <code>RI(t) = w(Dec) &times; [I(t)/I(Dec)] &divide; [I&#8320;(t)/I&#8320;(Dec)]</code>, with
+      <code>I&#8320;</code> the All-items NSA index. This is why no monthly weight table is loaded: the
+      release's own column drifts a long way from the annual one — Energy 7.432 in the July 2026 release
+      against 6.383 in the workbook — and is reproducible from what is already here.
+    </p>
+    <p>
+      Checked rather than asserted, two ways. Against the printed table: all <b>37</b> relative importances of
+      the July 2026 release come back within <b>0.001</b>, the rounding of the printed figure. Structurally:
+      the eight level-1 groups still sum to 100.000 after each is updated on its own. Both are in the test
+      suite, so a wrong weight snapshot or a shifted index base fails the build. The other eight columns are
+      plain arithmetic on the levels, and the All-items row reproduces the release exactly across all of them:
+      323.048 / 333.952 / 333.918, +3.4% and 0.0% unadjusted, +0.5 / &minus;0.4 / +0.1 seasonally adjusted.
+    </p>
+    <p>
+      In the expenditure tree the column fills for <b id="ap-ri-n"></b> of the 355 rows — blank for the ones
+      below the relative-importance table, which have no weight to update, and for the discontinued ones,
+      whose index stops before the reference month.
+    </p>
+
+    <h3>The PCE tree — a better-behaved source</h3>
+    <p>
+      The PCE price index is what the Fed targets, and it is not a rounding difference away from the CPI:
+      different weights (the national accounts, not a household survey), different scope (it counts what
+      employers and government pay on households' behalf, most visibly in health care) and a different
+      formula (chained Fisher, not a fixed-basket Laspeyres). The two tabs answer different questions and
+      are not meant to reconcile.
+    </p>
+    <p>
+      Both PCE tables come out of one public workbook — the BEA's Section 2 <i>underlying detail</i>
+      release, 12 MB, <b>no API key and no quota</b>. Table 2.4.4U is the price index (2017=100), 2.4.5U the
+      matching spending in millions of dollars. The two carry the <b>same 402 lines in the same order</b>,
+      so price and spending join by line number; nothing is matched by name, which is where every hard case
+      in the CPI tree came from.
+    </p>
+    <p>
+      The hierarchy is the published indentation, two spaces per level, and it is <b>proved by the spending
+      arithmetic</b>: all 122 checkable parents equal the sum of their children, across all 810 months. The
+      tolerance is not a chosen epsilon — the BEA rounds every line to whole millions, so k children against
+      a rounded parent can differ by up to (k+1)/2 from rounding alone, and the test is that the residual
+      fit inside that. It does, using at most 80% of the allowance; the largest discrepancy anywhere in the
+      table is $3 million against a $20 trillion total. The load refuses to write if that stops holding.
+    </p>
+    <p>
+      <b>Nineteen lines subtract.</b> Four say <i>Less:</i> in the label; the other fifteen are what sits
+      underneath one and inherits the sign without saying so. Their weights ship already negative, so a
+      contribution whose sign is opposite to the price change is the accounting rather than an error —
+      hover the row and it says which applies. A negative weight is not always one of those nineteen,
+      though: <i>Employee reimbursement</i> is a line whose own spending is negative (−$1.7 bn, it nets
+      out of used-car purchases), with an ordinary positive sign.
+    </p>
+    <p>
+      <b>Levels 1–4 each partition the index exactly</b>, at 100.00% of spending, and the tree's
+      <b id="ap-pce-folhas"></b> leaves sum to 100.0000%. That is two levels deeper than the CPI release
+      tree reaches, and it is why contribution can be trusted further down here. Below level 4 coverage
+      falls off because the tree is not of uniform depth — level 5 reaches 95.5% of spending, level 6 only
+      65.1% — so contributions summed at a fixed deep level are incomplete for that reason, not because
+      something failed to load.
+    </p>
+    <p>
+      <b>The weight is monthly, and dated at the base of the change.</b> The BEA publishes each line's
+      spending every month, so there is no December snapshot to carry forward and nothing to reconstruct:
+      the weight is that month's share of total PCE. <i>Which</i> month is a measured choice — a Y/Y change
+      is weighted by the share <b>12 months earlier</b>, which rebuilds the published headline to 0.0114
+      p.p. mean absolute error against 0.0202 using the current month's share. Monthly contributions land
+      at 0.0009 p.p., against 0.0124 p.p. for the CPI.
+    </p>
+    <p>
+      Three things are specific to this tab. <b>SA only</b> — the BEA publishes no unadjusted monthly
+      counterpart, which is why the NSA pill is greyed rather than absent. <b>Two lines have spending but
+      no price index</b> (<i>Net expenditures abroad by U.S. residents</i>, <i>Net foreign travel</i>):
+      they are nets of two flows, the BEA marks them <code>ZZZZZZ</code>, and their price columns are
+      blank. And the <b>34 addenda</b> at the bottom — Control group, PCE food and energy, PCE excluding
+      food and energy, the market-based family — are <b>not</b> part of the tree: they overlap each other
+      and must never be summed together. They sit in a flat block because the BEA's own indentation there
+      is inconsistent (<i>Market-based PCE</i> is printed deeper than the lines it heads), so giving them
+      parentage would mean inventing it. Latest month here is <b id="ap-pce-mes"></b>, normally a few weeks
+      behind the CPI's.
+    </p>
+
+    <h3>Limits</h3>
     <ul>
-      <li><b>~0.015 p.p. is irreducible.</b> Relative importance is a December snapshot of a quantity the BLS
-        price-updates continuously, so no single vector reproduces every month. This is <i>not</i> a seasonal-adjustment
-        artefact — repeating the test on NSA series makes it slightly worse, which rules that out.</li>
-      <li><b>The release tree is not exhaustive below level 2.</b> Contributions summed at level ≥ 3 do not add to
-        the parent, because the release omits the smaller children. The expenditure tree does add up (all 90
-        parents verified), and is the one to use when the detail matters.</li>
-    </ul>
-
-    <h3>Where the deepest items come from, and why they have no weight</h3>
-    <p>
-      The relative-importance table stops at 294 published lines. <code>cu.item</code> goes deeper, and those
-      deeper items have real published index series — 83 of them. They are attached to the tree by the same
-      parent rule used for the rest (the last preceding line one level up), applied to <code>cu.item</code>'s
-      own publication order.
-    </p>
-    <p>
-      That rule was validated before being trusted: on the 266 items the spreadsheet already positions, it
-      reproduces the published parent in 254, and all 12 disagreements are items whose true parent is a special
-      aggregate — none of them at the depth the graft touches. So the graft only ever <i>adds</i> leaves; it
-      never moves an item the spreadsheet has placed, and the weight-additivity proof runs on the spreadsheet
-      alone, untouched.
-    </p>
-    <p>
-      Five more items were being lost to a plain label mismatch: the spreadsheet writes
-      <i>"Men's underwear, nightwear, swimwear, and accessories"</i> and <code>cu.item</code> writes the same
-      thing without the second comma, so the name join failed and the item vanished — with both a weight and a
-      series published. Each of the five was confirmed by <b>position</b>, not by resemblance: each has exactly
-      one <code>cu.item</code> candidate sitting between its coded neighbours in publication order, and for two
-      of them the API's own <code>series_title</code> carries the spreadsheet's spelling. Together they are
-      0.861 index points that used to be invisible here.
-    </p>
-
-    <h3>The two re-parented nodes</h3>
-    <p>
-      In the expenditure tree, the published indentation puts <code>Alcoholic beverages</code> and
-      <code>Information technology, hardware and services</code> at a level where the weights do not add up.
-      The weights themselves settle it: <code>Food and beverages</code> 14.539 = <code>Food</code> 13.698 +
-      <code>Alcoholic beverages</code> 0.840, and <code>Information and information processing</code> 3.181 =
-      1.466 + <code>IT hardware</code> 1.714. With those two moved, all 90 parents close to within 0.001.
-      The check re-runs on every load and refuses to write if it fails, so a change in BLS's published
-      indentation surfaces as an error rather than as a quietly wrong tree.
-    </p>
-
-    <h3>Known gaps</h3>
-    <ul>
-      <li><b>Weights start in 2020</b> in this database, so contribution does too. The BLS does publish annual
-        December weights back to <b>1947</b>, in two older formats (decade zips of fixed-width text, plus one
-        historical workbook) that have no parser yet. This is a parsing gap, not a data gap.</li>
-      <li><b>A monthly weight exists</b> for the 37 release rows — the release's own weight column is one month
-        behind the reference month, and differs materially from the December snapshot (Energy was 7.432 in the
-        July 2026 release against 6.383 in the December 2025 workbook). Not loaded; recoverable from the
-        release archive, which needs the release-date calendar.</li>
-      <li><b>CPI-U only.</b> CPI-W and C-CPI-U are supported by the schema and the loader but not loaded.</li>
-      <li><b>SA coverage is thinner than NSA</b> by construction: 291 items have a seasonally adjusted series
-        against 361 with NSA. Items missing SA simply show no line when SA is selected.</li>
-      <li><b>19 items have no observation for more than three months</b> — 15 of the deepest ones (<i>Photo Processing</i>,
-        <i>Intercity train fare</i>, <i>New motorcycles</i>) plus four the BLS dropped in 2024 (<i>Legal
-        services</i>, <i>Household operations</i>, <i>Domestic services</i>, <i>Repair of household items</i>).
-        They are kept, with history, and badged <span class="badge stale">last 2024-09</span> so a line that
-        stops mid-chart reads as a fact about the series rather than a gap in the load. The badge needs a
-        three-month gap, so an item merely one month behind on release day is not mislabelled.</li>
-      <li><b>Three <code>cu.item</code> entries are deliberately excluded</b> from the expenditure tree:
-        <i>Information technology commodities</i>, <i>Video and audio products</i> and <i>Video and audio
-        services</i>. They arrive at display level 1, which would make them children of <i>All items</i>, and
-        they appear in neither section of the relative-importance table — cross-cutting aggregates with no
-        place in this tree. The loader lists them on every run, so a genuinely new BLS item shows up in the log
-        instead of disappearing.</li>
+      <li><b>Weights start in 2020</b>, so contribution does too. The BLS publishes annual December weights
+        back to <b>1947</b>, in two older formats (decade zips of fixed-width text, plus one historical
+        workbook) that have no parser yet. A parsing gap, not a data gap.</li>
+      <li><b>CPI-U only.</b> CPI-W and C-CPI-U are supported by the schema and the loader, not loaded.</li>
+      <li><b>SA coverage is thinner than NSA</b> by construction: <b>291</b> of the 361 items have a
+        seasonally adjusted series. The rest simply show no line when SA is selected.</li>
+      <li><b>19 series are discontinued</b> — 15 of the deepest ones (<i>Photo Processing</i>, <i>Intercity
+        train fare</i>, <i>New motorcycles</i>) plus four the BLS dropped in 2024 (<i>Legal services</i>,
+        <i>Household operations</i>, <i>Domestic services</i>, <i>Repair of household items</i>). Their
+        history is kept, so a line that stops mid-chart is a fact about the series, not a gap in the load.
+        Flagging needs a three-month gap, so an item merely one month behind on release day is not
+        mislabelled.</li>
+      <li><b>Prices only, and the spending they are weighted by.</b> The same workbook carries the
+        <i>real</i> counterparts at the identical 402-line granularity — 2.4.3U (quantity indexes) and
+        2.4.6U (chained dollars) — plus a coarse 46-line trio cut by major type of product <i>and</i>
+        major function. None are loaded, so nothing here decomposes <i>real</i> consumption. The detailed
+        by-function tree is a different table (2.5.x) and is not in this file at all.</li>
+      <li><b>Two PCE lines stop in 2001-12</b> — <i>Tenant-occupied stationary homes</i> and <i>Tenant
+        landlord durables</i>, both level-7 splits the BEA no longer publishes. Same convention as the CPI:
+        history kept, last month on hover.</li>
+      <li><b>Both deep trees ship from 1990 in the payload</b>, not from where the database starts (1913
+        for the CPI, 1959 for the PCE). Most detail series begin in the 1990s anyway, so full history would
+        be mostly nulls. The release-tree tab carries its whole history because it is only 37 rows.</li>
     </ul>
   </div>
 </section>
@@ -323,6 +450,7 @@ var COLORS = ['#1F2853','#BB9B1D','#418791','#02739B','#EA523A','#FBC852','#7A88
 
 // ── formatting ──────────────────────────────────────────────────────────────
 function fmtMonthShort(d) {
+  if (!d) return '';
   var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var p = d.split('-');
   return M[parseInt(p[1], 10) - 1] + '/' + p[0].slice(2);
@@ -336,15 +464,16 @@ function fmtValue(v, metric) {
 // A row shown by drill-down belongs to the other tab's series block -- the levels
 // travel once, in the tab that owns them, and are read from whichever tab has them.
 // Cheaper than shipping the same 163 series twice on two different date grids.
-function seriesSource(tabKey, code) {
-  if (D.tabs[tabKey].series[code]) return D.tabs[tabKey];
+function seriesOwner(tabKey, code) {
+  if (D.tabs[tabKey].series[code]) return tabKey;
   var keys = Object.keys(D.tabs);
   for (var i = 0; i < keys.length; i++) {
     var t = D.tabs[keys[i]];
-    if (t.series && t.series[code]) return t;
+    if (t.series && t.series[code]) return keys[i];
   }
-  return D.tabs[tabKey];
+  return tabKey;
 }
+function seriesSource(tabKey, code) { return D.tabs[seriesOwner(tabKey, code)]; }
 
 // ── metric computation, from the level array ────────────────────────────────
 // The payload ships levels only; everything else is derived here. Cached per
@@ -372,7 +501,7 @@ function metricSeries(tabKey, code, basis, metric) {
       if (a == null || b == null || !b) continue;
       var pct = (metric === 'ann3m') ? (Math.pow(a / b, 4) - 1) * 100 : (a / b - 1) * 100;
       if (isContrib) {
-        var w = weightFor(code, dates[i]);
+        var w = weightAt(tabKey, code, dates, i, lag);
         out[i] = (w == null) ? null : w / 100 * pct;
       } else {
         out[i] = pct;
@@ -383,11 +512,38 @@ function metricSeries(tabKey, code, basis, metric) {
   return _cache[ck];
 }
 
-// Weight-carry convention: for a month in year Y use the December snapshot of
-// Y-1; fall back to the nearest earlier snapshot, and to the earliest available
-// for months that precede the first one. See the Appendix.
+// Which weight prices a variation. Two conventions, because the two sources publish
+// weights differently -- and each was measured against its own headline:
+//
+//   CPI  the BLS publishes one relative importance per YEAR, so the weight is the
+//        December snapshot of the previous year (weightFor, below). 0.0124 p.p. mean
+//        absolute error rebuilding headline Y/Y.
+//   PCE  the BEA publishes nominal expenditure EVERY month, so the tab ships a weight
+//        array aligned to its own date grid and the weight is the share at the BASE
+//        period of the variation, w(t - lag). Measured on this database: 0.0114 p.p.
+//        mean absolute error at level 1 for Y/Y using w(t-12), against 0.0202 using
+//        w(t) -- a change over 12 months is weighted by where spending was 12 months
+//        ago, not by where it is now. The array is already SIGNED, so the 19 lines
+//        that enter the total negatively need no special case here.
+//
+// A tab is on the monthly convention if and only if it carries `weights`; no CPI tab
+// does. See _grade_pce in generate_report.py.
+function weightAt(tabKey, code, dates, i, lag) {
+  var tab = D.tabs[tabKey];
+  if (tab && tab.weights) {
+    var arr = tab.weights[code];
+    if (!arr) return null;
+    var j = i - lag;
+    return (j >= 0 && arr[j] != null) ? arr[j] : null;
+  }
+  return weightFor(code, dates[i]);
+}
+
+// Weight-carry convention for the CPI: for a month in year Y use the December
+// snapshot of Y-1; fall back to the nearest earlier snapshot, and to the earliest
+// available for months that precede the first one. See the Appendix.
 var _wYears = {};
-function weightFor(code, dateStr) {
+function weightYearFor(code, dateStr) {
   var w = D.weights[code];
   if (!w || !dateStr) return null;
   if (!_wYears[code]) {
@@ -399,7 +555,99 @@ function weightFor(code, dateStr) {
   var pick = null;
   for (var i = 0; i < years.length; i++) if (years[i] <= target) pick = years[i];
   if (pick === null) pick = years[0];
-  return w[String(pick)];
+  return pick;
+}
+function weightFor(code, dateStr) {
+  var yr = weightYearFor(code, dateStr);
+  return (yr === null) ? null : D.weights[code][String(yr)];
+}
+
+// ── the Table 1 view ────────────────────────────────────────────────────────
+// The column set of the news release: relative importance, three unadjusted
+// index levels, two unadjusted percent changes, three seasonally adjusted
+// monthly changes. Nothing new travels in the payload -- every one of those nine
+// columns is computed here from the levels and weights already shipped.
+var _monthIx = {};
+function monthIndex(tabKey, basis) {
+  var ck = tabKey + '|' + basis;
+  if (!_monthIx[ck]) {
+    var m = {}, ds = D.tabs[tabKey].dates[basis] || [];
+    // Chaveado por YYYY-MM: a grade traz datas inteiras (YYYY-MM-DD) e a ancora
+    // de dezembro da importancia relativa nasce de um ano + '-12'.
+    for (var i = 0; i < ds.length; i++) m[ds[i].slice(0, 7)] = i;
+    _monthIx[ck] = m;
+  }
+  return _monthIx[ck];
+}
+function levelAt(tabKey, code, basis, month) {
+  if (!month) return null;
+  var owner = seriesOwner(tabKey, code);
+  var byBasis = D.tabs[owner].series[code];
+  var lvl = byBasis && byBasis[basis];
+  if (!lvl) return null;
+  var i = monthIndex(owner, basis)[month.slice(0, 7)];
+  if (i === undefined) return null;
+  var v = lvl[i];
+  return (v == null || isNaN(v)) ? null : v;
+}
+function pctBetween(tabKey, code, basis, mNow, mBase) {
+  var a = levelAt(tabKey, code, basis, mNow), b = levelAt(tabKey, code, basis, mBase);
+  if (a == null || b == null || !b) return null;
+  return (a / b - 1) * 100;
+}
+// Relative importance updated from its December snapshot to `month`, the way the
+// BLS updates it: the item's own NSA index ratio divided by the headline's. This
+// reproduces all 37 relative importances printed in Table 1 to within 0.001 --
+// asserted in tests/test_us_inflation_js.js, explained in the Appendix.
+function riAt(tabKey, code, month) {
+  var w = weightFor(code, month), yr = weightYearFor(code, month);
+  if (w == null || yr === null) return null;
+  var anchor = yr + '-12';
+  var i = levelAt(tabKey, code, 'NSA', month), i0 = levelAt(tabKey, code, 'NSA', anchor);
+  var h = levelAt(tabKey, 'SA0', 'NSA', month), h0 = levelAt(tabKey, 'SA0', 'NSA', anchor);
+  if (i == null || !i0 || !h || !h0) return null;
+  return w * (i / i0) / (h / h0);
+}
+// The release dates its relative-importance column one month behind the
+// reference month, and shows the last three seasonally adjusted monthly changes.
+function table1Spec(tabKey) {
+  var nsa = D.tabs[tabKey].dates.NSA || [], sa = D.tabs[tabKey].dates.SA || [];
+  return {
+    ref: nsa[nsa.length - 1] || null,
+    prev: nsa[nsa.length - 2] || null,
+    ri: nsa[nsa.length - 2] || null,
+    yrAgo: nsa[nsa.length - 13] || null,
+    sa: sa.slice(-4)
+  };
+}
+function table1Cols(tabKey) {
+  var sp = table1Spec(tabKey), cols = [];
+  cols.push({grp: 'Relative importance', head: fmtMonthShort(sp.ri), first: true, dec: 3,
+             val: function(code) { return riAt(tabKey, code, sp.ri); }});
+  [sp.yrAgo, sp.prev, sp.ref].forEach(function(m, k) {
+    cols.push({grp: 'Unadjusted indexes', head: fmtMonthShort(m), first: k === 0, dec: 3,
+               val: function(code) { return levelAt(tabKey, code, 'NSA', m); }});
+  });
+  [[sp.yrAgo, true], [sp.prev, false]].forEach(function(pair) {
+    var base = pair[0];
+    cols.push({grp: 'Unadjusted percent change', head: fmtMonthShort(base) + '→' + fmtMonthShort(sp.ref),
+               first: pair[1], dec: 1, signed: true,
+               val: function(code) { return pctBetween(tabKey, code, 'NSA', sp.ref, base); }});
+  });
+  for (var i = 1; i < sp.sa.length; i++) {
+    (function(a, b, k) {
+      cols.push({grp: 'Seasonally adjusted percent change', head: fmtMonthShort(a) + '→' + fmtMonthShort(b),
+                 first: k === 1, dec: 1, signed: true,
+                 val: function(code) { return pctBetween(tabKey, code, 'SA', b, a); }});
+    })(sp.sa[i - 1], sp.sa[i], i);
+  }
+  return cols;
+}
+// The release prints "0.0", never "-0.0".
+function fmtT1(v, dec) {
+  if (v == null || isNaN(v)) return '—';
+  var s = v.toFixed(dec);
+  return (parseFloat(s) === 0) ? (0).toFixed(dec) : s;
 }
 
 // ── tree flattening ─────────────────────────────────────────────────────────
@@ -469,10 +717,15 @@ function renderQuickRange(barId, divId, lastDateFn) {
 // chart below. Two axes of state here rather than credit's metric x basis:
 // metric (level/yoy/mom/3M annualised/contribution) x adjustment (SA/NSA).
 function makeHierTab(opts) {
-  var state = {metric: null, basis: null, checked: {}, expanded: {}};
+  var state = {metric: null, basis: null, view: 'series', checked: {}, expanded: {}};
   (D.tabs[opts.dataKey].defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
-  // Root starts open so the tree is not a single collapsed line on load.
-  (D.tabs[opts.dataKey].tree || []).forEach(function(n) { state.expanded[n.key] = true; });
+  // Root starts open so the tree is not a single collapsed line on load -- except a
+  // root that asks not to (`startCollapsed`), which is the PCE tab's Addenda block:
+  // 34 rows that are not part of the tree would otherwise be most of the first
+  // screenful.
+  (D.tabs[opts.dataKey].tree || []).forEach(function(n) {
+    state.expanded[n.key] = !n.startCollapsed;
+  });
 
   function tab() { return D.tabs[opts.dataKey]; }
   function seriesFor(code) { return metricSeries(opts.dataKey, code, state.basis, state.metric); }
@@ -503,23 +756,43 @@ function makeHierTab(opts) {
     thead.appendChild(tr);
   }
 
-  function renderTable() {
-    renderHead();
-    var tbody = document.getElementById(opts.tableBodyId);
-    tbody.innerHTML = '';
-    var dates = refDates();
+  // Two header rows, grouped the way the release groups its columns.
+  function renderHeadT1(cols) {
+    var thead = document.getElementById(opts.tableHeadId);
+    thead.innerHTML = '';
+    var r1 = document.createElement('tr'); r1.className = 'grp';
+    var r2 = document.createElement('tr'); r2.className = 'mon';
+    var thc = document.createElement('th'); thc.className = 'col-check'; thc.rowSpan = 2;
+    var thl = document.createElement('th'); thl.textContent = opts.labelHeader; thl.rowSpan = 2;
+    r1.appendChild(thc); r1.appendChild(thl);
+    var i = 0;
+    while (i < cols.length) {
+      var j = i;
+      while (j < cols.length && cols[j].grp === cols[i].grp) j++;
+      var th = document.createElement('th');
+      th.textContent = cols[i].grp;
+      th.colSpan = j - i;
+      th.className = 'gsep';
+      r1.appendChild(th);
+      i = j;
+    }
+    cols.forEach(function(c) {
+      var th = document.createElement('th');
+      th.textContent = c.head;
+      if (c.first) th.className = 'gsep';
+      r2.appendChild(th);
+    });
+    thead.appendChild(r1); thead.appendChild(r2);
+  }
 
-    flattenHierRows(tab().tree, state.expanded, 0).forEach(function(r) {
-      var node = r.node;
-      var s = seriesFor(node.seriesKey);
-      var byDate = {};
-      for (var i = 0; i < s.dates.length; i++) byDate[s.dates[i]] = s.values[i];
-
-      var tr = document.createElement('tr');
-      if (node.children) tr.className = 'is-group';
-
-      var tdCheck = document.createElement('td');
-      tdCheck.className = 'col-check';
+  // The checkbox and the label cell -- identical in both views, so both call this.
+  function labelCells(node, depth) {
+    var tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    // `noSeries` is the PCE tab's synthetic "Addenda" header: a grouping row with no
+    // series of its own, so it gets no checkbox rather than a checkbox that plots
+    // nothing.
+    if (!node.noSeries) {
       var cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.checked = !!state.checked[node.key];
@@ -528,71 +801,120 @@ function makeHierTab(opts) {
         renderChart();
       });
       tdCheck.appendChild(cb);
+    }
 
-      var tdLabel = document.createElement('td');
-      tdLabel.className = 'col-label';
-      tdLabel.style.paddingLeft = (10 + r.depth * 17) + 'px';
-      if (node.children) {
-        var icon = document.createElement('span');
-        icon.className = 'tree-toggle';
-        icon.textContent = state.expanded[node.key] ? '▾' : '▸';
-        icon.addEventListener('click', function() {
-          state.expanded[node.key] = !state.expanded[node.key];
-          renderTable();
-        });
-        tdLabel.appendChild(icon);
-        tdLabel.appendChild(document.createTextNode(' ' + node.label));
-      } else {
-        tdLabel.appendChild(document.createTextNode(node.label));
-      }
-      if (node.special) {
-        var bs = document.createElement('span');
-        bs.className = 'badge special'; bs.textContent = 'agg';
-        bs.title = 'Special aggregate — exists only in the release tree, not in the expenditure tree';
-        tdLabel.appendChild(bs);
-      }
-      if (node.detail) {
-        var bd = document.createElement('span');
-        bd.className = 'badge detail'; bd.textContent = 'detail';
-        bd.title = 'Not a row of Table 1 — this is the expenditure tree continuing below the ' +
-                   'point where the release stops. Same series, same database.';
-        tdLabel.appendChild(bd);
-      }
-      if (node.noWeight) {
-        var bw = document.createElement('span');
-        bw.className = 'badge noweight'; bw.textContent = 'no weight';
-        bw.title = 'The BLS publishes an index for this item but no relative importance, so ' +
-                   'Contribution cannot be computed and its siblings do not sum to the parent. ' +
-                   'It sits below the deepest level of the relative-importance table.';
-        tdLabel.appendChild(bw);
-      }
-      if (node.stale) {
-        var be = document.createElement('span');
-        be.className = 'badge stale'; be.textContent = 'last ' + node.stale;
-        be.title = 'No observation after ' + node.stale + ' — the BLS has stopped publishing this ' +
-                   'series. History is kept; the line simply stops there.';
-        tdLabel.appendChild(be);
-      }
-      if (node.decomp === 'partial') {
-        var bp = document.createElement('span');
-        bp.className = 'badge partial';
-        bp.textContent = '−' + node.unshown.toFixed(3) + ' pp';
-        bp.title = 'The release shows only the largest children of this row: ' + node.unshown.toFixed(3) +
-                   ' index points have no row here, so the children do not sum to this parent.';
-        tdLabel.appendChild(bp);
-      }
-
-      tr.appendChild(tdCheck); tr.appendChild(tdLabel);
-      dates.forEach(function(d) {
-        var td = document.createElement('td');
-        td.className = 'col-value';
-        var v = byDate[d];
-        td.textContent = fmtValue(v, state.metric);
-        if (v != null && !isNaN(v) && v < 0 && state.metric !== 'level') td.classList.add('neg');
-        tr.appendChild(td);
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (10 + depth * 17) + 'px';
+    if (node.children) {
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle';
+      icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+      icon.addEventListener('click', function() {
+        state.expanded[node.key] = !state.expanded[node.key];
+        renderTable();
       });
+      tdLabel.appendChild(icon);
+      tdLabel.appendChild(document.createTextNode(' ' + node.label));
+    } else {
+      tdLabel.appendChild(document.createTextNode(node.label));
+    }
+    // No visible tags on the rows -- removed at the user's request. What they said
+    // is still said: on hover here, and in the notes above each tab. The payload
+    // flags themselves (special/detail/noWeight/stale/decomp) are unchanged.
+    var obs = [];
+    if (node.special) {
+      obs.push(opts.dataKey === 'pce'
+        ? 'Addendum, not part of the tree: an aggregate the BEA publishes alongside the ' +
+          'partition. These overlap each other, so they must never be summed together.'
+        : 'Special aggregate — exists only in the release tree, not in the expenditure tree.');
+    }
+    if (node.negativo) {
+      obs.push('This line SUBTRACTS from the total, so its contribution carries the opposite ' +
+               'sign of its price change — either it is a "Less:" line or it sits under one.');
+    }
+    if (node.noIndex) {
+      obs.push('The BEA publishes the spending on this line but no price index for it (it is a ' +
+               'net of two flows), so every price column here is blank.');
+    }
+    if (node.noSeries) {
+      obs.push('A heading, not a series — the rows under it are the BEA addenda, in published order.');
+    }
+    if (node.detail) {
+      obs.push('Not a row of Table 1 — the expenditure tree continuing below the point where the ' +
+               'release stops. Same series, same database.');
+    }
+    if (node.noWeight) {
+      obs.push('The BLS publishes an index for this item but no relative importance, so Contribution ' +
+               'and Relative importance are blank and its siblings do not sum to the parent.');
+    }
+    if (node.stale) {
+      obs.push('No observation after ' + node.stale + ' — ' +
+               (opts.dataKey === 'pce' ? 'the BEA' : 'the BLS') +
+               ' has stopped publishing this series. History is kept; the line simply stops there.');
+    }
+    if (node.decomp === 'partial') {
+      obs.push('The release shows only the largest children of this row: ' + node.unshown.toFixed(3) +
+               ' index points have no row here, so the children do not sum to this parent.');
+    }
+    if (obs.length) tdLabel.title = obs.join(' ');
+    return [tdCheck, tdLabel];
+  }
+
+  function renderTable() {
+    var cols = (state.view === 'table1') ? table1Cols(opts.dataKey) : null;
+    if (cols) renderHeadT1(cols); else renderHead();
+    var tbody = document.getElementById(opts.tableBodyId);
+    tbody.innerHTML = '';
+    var dates = cols ? null : refDates();
+
+    flattenHierRows(tab().tree, state.expanded, 0).forEach(function(r) {
+      var node = r.node;
+      var tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+      var cells = labelCells(node, r.depth);
+      tr.appendChild(cells[0]); tr.appendChild(cells[1]);
+
+      if (cols) {
+        cols.forEach(function(c) {
+          var td = document.createElement('td');
+          td.className = 'col-value' + (c.first ? ' gsep' : '');
+          var v = c.val(node.seriesKey);
+          td.textContent = fmtT1(v, c.dec);
+          // -0.04 prints as 0.0, so it must not print red either.
+          if (c.signed && v != null && !isNaN(v) && v <= -0.05) td.classList.add('neg');
+          tr.appendChild(td);
+        });
+      } else {
+        var s = seriesFor(node.seriesKey);
+        var byDate = {};
+        for (var i = 0; i < s.dates.length; i++) byDate[s.dates[i]] = s.values[i];
+        dates.forEach(function(d) {
+          var td = document.createElement('td');
+          td.className = 'col-value';
+          var v = byDate[d];
+          td.textContent = fmtValue(v, state.metric);
+          if (v != null && !isNaN(v) && v < 0 && state.metric !== 'level') td.classList.add('neg');
+          tr.appendChild(td);
+        });
+      }
       tbody.appendChild(tr);
     });
+    renderViewNote();
+  }
+
+  // Said once, above the table, because the Metric and Adjustment pills stop
+  // driving the columns in this view and that has to be visible.
+  function renderViewNote() {
+    var el = document.getElementById(opts.noteId);
+    if (!el) return;
+    if (state.view !== 'table1') { el.style.display = 'none'; el.innerHTML = ''; return; }
+    var sp = table1Spec(opts.dataKey);
+    el.style.display = '';
+    el.innerHTML =
+      'The release column set. Relative importance is dated <b>' + fmtMonthShort(sp.ri) + '</b> and is ' +
+      '<b>computed</b>, not published — Appendix. The <b>Metric</b> and <b>Adjustment</b> pills drive the ' +
+      'chart, not these columns.';
   }
 
   function yTitle() {
@@ -618,6 +940,15 @@ function makeHierTab(opts) {
   }
 
   function wire() {
+    document.querySelectorAll('#' + opts.viewGroupId + ' .pill').forEach(function(btn) {
+      if (btn.classList.contains('active')) state.view = btn.dataset.view;
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.viewGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.view = btn.dataset.view;
+        renderTable();
+      });
+    });
     document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
       if (btn.classList.contains('active')) state.metric = btn.dataset.metric;
       btn.addEventListener('click', function() {
@@ -631,6 +962,9 @@ function makeHierTab(opts) {
     document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(btn) {
       if (btn.classList.contains('active')) state.basis = btn.dataset.basis;
       btn.addEventListener('click', function() {
+        // The PCE tab's NSA pill is disabled, not absent: the question "where is NSA?"
+        // is better answered by a greyed pill that says why on hover than by silence.
+        if (btn.classList.contains('disabled')) return;
         document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         state.basis = btn.dataset.basis;
@@ -698,23 +1032,56 @@ document.getElementById('exp-n').textContent = D.meta.n_expenditure;
 document.getElementById('exp-levels').textContent = D.meta.niveis_expenditure;
 document.getElementById('exp-nw').textContent = D.meta.n_expenditure_sem_peso;
 document.getElementById('rel-pointer-n').textContent = D.meta.n_release_drill;
+document.getElementById('pce-n').textContent = D.meta.n_pce;
+document.getElementById('pce-levels').textContent = D.meta.niveis_pce;
+document.getElementById('pce-add').textContent = D.meta.n_pce_addenda;
+document.getElementById('pce-start').textContent = D.meta.inicio_pce;
+document.getElementById('ap-pce-mes').textContent = D.meta.ultimo_mes_pce;
+document.getElementById('ap-pce-folhas').textContent = D.meta.n_pce_folhas;
+
+// Counted here rather than in Python so the number in the Appendix comes from the
+// same code path that fills the column.
+(function() {
+  var el = document.getElementById('ap-ri-n');
+  if (!el) return;
+  var mes = table1Spec('expenditure').ri, n = 0;
+  (function walk(ns) {
+    (ns || []).forEach(function(x) {
+      if (riAt('expenditure', x.seriesKey, mes) != null) n++;
+      if (x.children) walk(x.children);
+    });
+  })(D.tabs.expenditure.tree);
+  el.textContent = n;
+})();
 
 renderKpis();
 
 var RELEASE_TAB = makeHierTab({
   dataKey: 'release', labelHeader: 'Expenditure category',
+  viewGroupId: 'release-view-group', noteId: 'release-t1note',
   metricGroupId: 'release-metric-group', basisGroupId: 'release-basis-group',
   tableHeadId: 'release-table-head', tableBodyId: 'release-table-body',
   chartDivId: 'chart-release', rangeBarId: 'release-range'
 });
 var EXPENDITURE_TAB = makeHierTab({
   dataKey: 'expenditure', labelHeader: 'Item',
+  viewGroupId: 'expenditure-view-group', noteId: 'expenditure-t1note',
   metricGroupId: 'expenditure-metric-group', basisGroupId: 'expenditure-basis-group',
   tableHeadId: 'expenditure-table-head', tableBodyId: 'expenditure-table-body',
   chartDivId: 'chart-expenditure', rangeBarId: 'expenditure-range'
 });
+// No view pills and no note div: the Series|Table 1 toggle is a CPI news-release
+// thing. makeHierTab tolerates both being absent (querySelectorAll finds nothing,
+// renderViewNote returns early on a null element) and stays on state.view='series'.
+var PCE_TAB = makeHierTab({
+  dataKey: 'pce', labelHeader: 'Type of product',
+  metricGroupId: 'pce-metric-group', basisGroupId: 'pce-basis-group',
+  tableHeadId: 'pce-table-head', tableBodyId: 'pce-table-body',
+  chartDivId: 'chart-pce', rangeBarId: 'pce-range'
+});
 RELEASE_TAB.init();
 EXPENDITURE_TAB.init();
+PCE_TAB.init();
 </script>
 </body>
 </html>

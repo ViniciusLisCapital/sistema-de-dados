@@ -31,7 +31,7 @@ import json
 import sys
 import threading
 import webbrowser
-from datetime import date
+from datetime import date, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -96,14 +96,18 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if rota == "/api/ping":
+            agora = datetime.now()
             self._json(200, {"ok": True, "modo": "servido",
-                             "hoje": date.today().isoformat()})
+                             "hoje": agora.date().isoformat(),
+                             "agora": agora.strftime("%H:%M")})
             return
 
         if rota == "/api/status":
             try:
                 from domain.release_calendar.sync import status_por_grupo
-                self._json(200, {"ok": True, "hoje": date.today().isoformat(),
+                agora = datetime.now()
+                self._json(200, {"ok": True, "hoje": agora.date().isoformat(),
+                                 "agora": agora.strftime("%H:%M"),
                                  "grupos": status_por_grupo()})
             except Exception as exc:
                 # banco fora do ar nao deve derrubar a pagina: ela cai no modo sem

@@ -109,6 +109,14 @@ ag.ics("Focus")   # texto cru do .ics
 ```
 
 **Detalhes técnicos** (confirmados ao vivo em 2026-08-17):
+- **Os feeds trazem HORA de divulgação**, em `DTSTART;TZID=America/Sao_Paulo` — fuso declarado pela
+  fonte, não inferido, e é o que `domain/release_calendar/` usa para não cobrar o dado antes do
+  anúncio. Medido lista por lista em 2026-08-24: PTC e IC-Br 14:30, notas de estatísticas e Focus
+  08:30, IBC-Br 09:00, ata do Copom e RPM 08:00. **A hora muda de era** (as notas de estatísticas
+  saíram de 10:30 em 2019 para 09:30 e depois 08:30 em 2023), então ela é propriedade do evento, não
+  da lista. A exceção é `Reuniões do Copom`: emite `00:00` nas 16 reuniões de 2026, que é placeholder
+  de evento de dia inteiro e não meia-noite (a decisão sai perto das 18:30) — quem consome tem que
+  descartar, não gravar.
 - `/api/exportarics/sitebcb/agendaics?lista=<Nome>` devolve `.ics` real, mas o horizonte é curto e
   em geral **preso ao ano corrente** — medido em 2026-08-17: 7 das 10 listas do calendário paravam em
   dez/2026, IBC-Br/ICBr chegavam a fev/2027, e só `Reuniões do Copom` ia a dez/2027 (publicado com
@@ -135,6 +143,39 @@ ag.ics("Focus")   # texto cru do .ics
 - Retorna `list[dict]`, não DataFrame como os outros connectors: é metadado de calendário, não
   série temporal, e o consumidor escreve YAML.
 - Único consumidor: `domain/release_calendar/update_calendar.py`.
+
+### `connectors/bcb_copom.py` — comunicados do Copom (JSON com HTML)
+
+```python
+from connectors import bcb_copom
+
+c = bcb_copom.comunicado(280)          # None se a reuniao nao existe no endpoint
+c.data_referencia, c.titulo            # '2026-08-05', 'Copom reduz a taxa Selic para 14,00% a.a.'
+c.markdown()                           # texto em markdown + cabecalho de procedencia
+c.nome_arquivo()                       # 'copom_280_comunicado_2026-08-05.md'
+
+bcb_copom.ultima_reuniao()             # 280 (sobe de um chute ate achar o vazio)
+for nro, c in bcb_copom.intervalo(48): ...   # itera o historico, gentil com o servidor
+```
+
+**Detalhes técnicos** (medidos ao vivo em 2026-08, varrendo as reuniões 1–281):
+- `api/servico/sitebcb/copom/comunicados_detalhes?nro_reuniao=N`, sem autenticação. Endpoint não
+  documentado, mas é o que o próprio site do BCB consome. Melhor que raspar a página: a **Tabela 1**
+  (projeções de inflação no cenário de referência) vem como `<table>` estruturada.
+- **Cobertura: reunião 48 (2000-06-20) → 280.** De 47 para trás devolve `conteudo: []`, sem erro.
+- **O servidor é instável** — timeouts esporádicos (WinError 10060) em requisições isoladas. `_get()`
+  tenta 3× com backoff; uma varredura completa do histórico sem isso falha no meio.
+- **`html_para_markdown()` não é conversor genérico** — resolve as quatro formas que o BCB usa:
+  `<p>`, `<ul>/<ol>`, `<table>` e ênfase inline. As listas **não** são opcionais: os comunicados de
+  2020-2023 põem as observações de cenário — e com elas as projeções — em `<li>`, e uma primeira
+  versão que só lia `<p>` perdeu 24 reuniões de dados sem erro nenhum.
+- Texto com lixo de editor SharePoint: NBSP, zero-width space no início de parágrafo, entidades
+  numéricas (`&#58;`), parágrafos-espaçador `<p><strong> </strong></p>`. Tudo limpo na conversão.
+- **As atas não saem por aqui.** São PDF, listadas em
+  `api/servico/sitebcb/atascopom/ultimas?quantidade=N&filtro=`, com o caminho no campo `Url`.
+  Não implementado.
+- Consumidor: `domain/db/brasil/bcb/_copom_texto.py` → `pm_copom_projecoes.py`. Panorama da fonte
+  por era em [`domain/db/brasil/bcb/copom_comunicados.md`](../domain/db/brasil/bcb/copom_comunicados.md).
 
 ### `connectors/bcb_tabelas_especiais.py` — "Tabelas especiais" de estatísticas fiscais do BCB (xlsx)
 
@@ -289,6 +330,76 @@ próprio BLS em cada observação; `catalog=True` devolve survey/área/item/sazo
   JOLTS (`jt`) e preços de importação/exportação (`ei`) respondem na mesma chamada — testado ao
   vivo com uma requisição cobrindo as cinco. Um connector serve inflação, mercado de trabalho e
   parte do setor externo.
+
+### `connectors/bea.py` — BEA (Bureau of Economic Analysis)
+
+**Sem chave e sem cota**, ao contrário do que o `us_project/inflation_fontes_dados.md` supunha ("Get
+the BEA key"). O BEA publica as tabelas NIPA inteiras como xlsx aberto no site de release, e o arquivo
+da Seção 2 traz as tabelas de *underlying detail* **mensais**, que são as de maior granularidade que
+existem. A API (essa sim com chave) serviria para vintages e outras seções — não para isto.
+
+```python
+from connectors.bea import ler_tabela, ABA_PCE_INDICE, ABA_PCE_NOMINAL
+
+t = ler_tabela(ABA_PCE_INDICE)     # "U20404-M" = tabela 2.4.4U, mensal
+t.titulo, t.unidade, t.periodo, t.publicado_em, t.sazonalidade   # metadados do arquivo
+t.periodos                          # ['1959M01', ..., '2026M06']
+t.estrutura                         # linha, code, rotulo, rotulo_bruto, indentacao
+t.observacoes                       # long: linha, date (dia 1), value
+```
+
+Uma requisição de 12 MB (`Section2All_xls.xlsx`), cacheada por dia no temp do sistema
+(`%TEMP%/lis_bea/`, não no repositório) e em memória por processo — os dois scripts de PCE rodam na mesma passada do `update_us.py` e não baixam duas vezes.
+
+As abas (o nome é o número da tabela sem pontos + a frequência). As 7 tabelas do arquivo, todas SA (linhas e meses medidos, não da documentação):
+
+| Aba | Tabela | Conteúdo | Linhas | Meses | Carregada |
+|---|---|---|---|---|---|
+| `U20404-M` | 2.4.4U | **Índice de preço** encadeado, 2017=100 | 402 | 810 | ✅ `inflc_pce`, `medida='indice'` |
+| `U20405-M` | 2.4.5U | **Despesa nominal**, US$ mi SAAR | 402 | 810 | ✅ `inflc_pce`, `medida='nominal'` |
+| `U20403-M` | 2.4.3U | PCE **real**, índices de quantidade | 402 | 810 | ❌ |
+| `U20406-M` | 2.4.6U | PCE **real**, dólares encadeados | 402 | 234 | ❌ |
+| `U20304-M` | 2.3.4U | Índice de preço, corte grosso | 46 | 810 | ❌ |
+| `U20305-M` | 2.3.5U | Despesa nominal, corte grosso | 46 | 810 | ❌ |
+| `U20306-M` | 2.3.6U | PCE real encadeado, corte grosso | 46 | 234 | ❌ |
+
+`-A`/`-Q` são as mesmas tabelas em anual e trimestral.
+
+**As `2.3.xU` NÃO são "o corte por função"** (uma versão anterior desta nota dizia isso e estava
+errada, corrigido ao ler os títulos das abas): são *"by Major Type of Product **and** by Major
+Function"*, 46 linhas — uma tabela grossa que mistura os dois critérios, não um espelho de 402 linhas
+por função. A árvore detalhada por função é a **2.5.x**, que não está neste arquivo; a nota de rodapé
+da 2.4.4U referencia as linhas da 2.5.4 exatamente porque é outra tabela.
+
+**As 4 tabelas `2.4.xU` compartilham as mesmas 402 linhas**, então a árvore de `inflc_pce_dim` serve
+para todas — adicionar quantidade ou encadeado é um `medida` novo, não uma dimensão nova.
+
+**Detalhes e armadilhas** (todas verificadas ao vivo):
+- **2.4.4U e 2.4.5U casam linha a linha** — as mesmas 402 linhas, na mesma ordem, com o mesmo rótulo e
+  a mesma indentação. Preço e despesa se juntam pelo NÚMERO DA LINHA, sem casar nome, que é o oposto
+  do lado do CPI (onde cinco itens sumiram por uma vírgula de diferença). `inflc_pce_dim` confere isso
+  a cada carga e se recusa a gravar se deixar de valer.
+- **A indentação é a hierarquia** (2 espaços por nível, coluna B) e é a única fonte de parentesco no
+  arquivo — não há coluna de pai.
+- **A linha 1 é indentada errado**: `Personal consumption expenditures` vem com 6 espaços e
+  `Goods`/`Services` com 0. Cosmético do stub head. O connector devolve `indentacao` crua; quem monta
+  a árvore trata a raiz.
+- **O bloco de addenda não é árvore.** Nas linhas 369-402, `Market-based PCE` vem MAIS indentado que
+  as linhas que ele encabeça. Inferir parentesco ali é inventar.
+- **13 códigos aparecem em duas linhas cada** (a mesma série entra 2x na árvore, com pais diferentes).
+  Valores idênticos nas duas posições, conferido série a série — por isso a chave é a linha.
+- **`ZZZZZZ` não é código**, é o marcador de "não publico série para esta linha": as duas linhas de
+  net (`Net expenditures abroad`, `Net foreign travel`) têm despesa e não têm índice de preço.
+- **`.....` = não disponível** (vira ausência de linha em `observacoes`), e as últimas linhas do
+  arquivo são notas de rodapé com texto na coluna A — descartadas porque o filtro exige número.
+- **O rótulo publicado carrega ruído**: marcadores de nota (`\1\`) e referências cruzadas para a
+  linha equivalente da tabela 2.5.4 (`(55)`, `(parts of 31, 33, and 36)`). 80 dos 402 rótulos têm um
+  ou outro; saem de `rotulo` e o original fica em `rotulo_bruto`. Auditado: todo sufixo removido é
+  referência cruzada ou nota, nenhum é parte do nome.
+- **Só existe SA.** O mensal do BEA é dessazonalizado e não há contrapartida NSA destas tabelas. É da
+  fonte, não da carga.
+- **O parser levanta se o layout mudar** — exige `"Line"` na coluna A da linha 8 e períodos no formato
+  `YYYYMnn`, e recusa um download menor que 1 MB (página de erro servida com HTTP 200).
 
 ### `connectors/bis.py` — BIS Statistics API v1
 

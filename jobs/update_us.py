@@ -29,17 +29,26 @@ mas custa ~5s e e idempotente, entao roda sempre: e ela que detecta o BLS mudand
 indentacao publicada ou um rotulo da Tabela 1, levantando em vez de gravar uma
 arvore silenciosamente errada.
 
+**O PCE nao tem esse vai-e-volta**: a arvore e as series saem do MESMO arquivo do
+BEA, entao `inflc_pce_dim` mede a cobertura direto da fonte e uma passada basta. Ela
+vem antes de `inflc_pce` so porque e ela que valida a estrutura -- se o BEA mudar a
+indentacao, o passo da arvore levanta antes de qualquer serie ser gravada.
+
 --------------------------------------------------------------------------------
 CUSTO
 --------------------------------------------------------------------------------
 Chave registrada do BLS = 50 series / 20 anos por requisicao, 500 requisicoes/dia.
+O BEA nao precisa de chave e nao tem cota: e um xlsx de 12 MB, baixado uma vez e
+reaproveitado no mesmo dia pelos dois passos de PCE.
 
-  rotina (--sem --full)   ~11 requisicoes,  ~20s   (2% da cota)
-  --full                  ~66 requisicoes,  ~2min  (13% da cota)
+  rotina (sem --full)     ~11 requisicoes BLS + 1 download BEA,  ~40s
+  --full                  ~66 requisicoes BLS + 1 download BEA,  ~3min
 
 Fontes:
   BLS — CPI-U: niveis por item (API v2), as duas arvores de itens
         (cu.item + Tabela 1 do news release) e a relative importance anual
+  BEA — PCE: tabelas 2.4.4U (indice de preco) e 2.4.5U (despesa nominal) do
+        arquivo de underlying detail da Secao 2, mensais, SA
 """
 
 import argparse
@@ -54,7 +63,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("update_us")
 
-from domain.db.us.inflation import inflc_cpi, inflc_cpi_dim, inflc_cpi_pesos
+from domain.db.us.inflation import (
+    inflc_cpi,
+    inflc_cpi_dim,
+    inflc_cpi_pesos,
+    inflc_pce,
+    inflc_pce_dim,
+)
 
 
 def _plano(full: bool):
@@ -63,6 +78,8 @@ def _plano(full: bool):
         ("BLS · CPI niveis",               inflc_cpi,       {"start_year": "all"} if full else {}),
         ("BLS · CPI pesos (rel. import.)", inflc_cpi_pesos, {}),
         ("BLS · CPI dim (cobertura)",      inflc_cpi_dim,   {}),
+        ("BEA · PCE arvore (2.4.4U/2.4.5U)", inflc_pce_dim,  {}),
+        ("BEA · PCE niveis + nominal",      inflc_pce,       {"start_year": "all"} if full else {}),
     ]
 
 

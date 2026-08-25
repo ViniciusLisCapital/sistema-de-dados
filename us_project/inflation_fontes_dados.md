@@ -29,7 +29,7 @@ Five series are read ad hoc by `analytics/oraculo/us/term_us.py`, marked `(orác
 | CPI major groups | **BLS** | ✅ `CPIUFDSL` (food), `CPIENGSL` (energy), `CPIHOSSL` (housing), `CPIMEDSL`/`CUSR0000SAM2` (medical), `CUSR0000SAH1` (shelter) | ✅ | FRED | ❌ | |
 | CPI analytical cuts | **BLS** | ✅ `CUSR0000SASLE` (services less energy), `CUSR0000SACL1E` (core goods), `CUSR0000SETA01`/`02` (new/used vehicles), `CUSR0000SEHA` (rent), `CUSR0000SEHC` (OER) | ✅ | FRED | ❌ | Core services ex-shelter — the current policy focus — is **not a published series**; it has to be built from components, which needs the weights |
 | **CPI weights and the full item tree** | **BLS** | ⚠️ FRED has indices, **not weights** | ✅ **solved 2026-08-18** — `cu.item` (400 items, `display_level` 0-8) + relative-importance xlsx per year | flat file / xlsx | ❌ | **Was the gap that mattered; no longer blocking.** `connectors/bls.py` reads both: the item tree from the flat file and the weight vector from `relative-importance/<year>.xlsx` (2020-2025, plus 1947-1986 historical). Expenditure tree verified to sum to 100. See Gotchas |
-| PCE price index, headline and core | **BEA** | ✅ `PCEPI`, `PCEPILFE` (both 1959-01→), `BPCERO1Q156NBEA`, `BPCCRO1Q156NBEA` (quarterly YoY) | 🔑 BEA key needed | FRED | ❌ (oráculo uses both) | **The Fed's target index.** The monthly percent-change series I guessed (`DPCERG3M086SBEA`, `DPCCRG3M086SBEA`) do **not** exist — compute from the index |
+| PCE price index, headline and core | **BEA** | ✅ `PCEPI`, `PCEPILFE` (both 1959-01→), `BPCERO1Q156NBEA`, `BPCCRO1Q156NBEA` (quarterly YoY) | ✅ **no key** — Section 2 underlying-detail xlsx, see Open items | **BEA direct.** FRED carries only a partial tree: `DGDSRG3M086SBEA`/`DSERRG3M086SBEA`/`DFXARG3M086SBEA`/`DNRGRG3M086SBEA` resolve, `DHUTRG3M086SBEA`/`DHLCRG3M086SBEA`/`DMOTRG3M086SBEA` do **not** (checked live 2026-08-20) | ✅ `macro_us.inflc_pce`, 368-line tree | **The Fed's target index.** The monthly percent-change series I guessed (`DPCERG3M086SBEA`, `DPCCRG3M086SBEA`) do **not** exist — compute from the index |
 | Trimmed-mean and median cores | **Dallas Fed**, **Cleveland Fed** | ✅ `PCETRIM12M159SFRBDAL`, `PCETRIM1M158SFRBDAL`, `MEDCPIM158SFRBCLE`, `TRMMEANCPIM158SFRBCLE`, `MEDCPIM094SFRBCLE` | ✅ | FRED | ❌ | The analogue of the BCB's núcleos. All live to 2026-06/07 |
 | Sticky vs. flexible price CPI | **Atlanta Fed** | ✅ `STICKCPIM159SFRBATL`, `CORESTICKM159SFRBATL`, `FLEXCPIM159SFRBATL`, `CORESTICKM158SFRBATL` | ✅ xlsx confirmed | FRED / xlsx | ❌ (oráculo uses sticky + flexible) | Already in the oráculo. The `…159…` ids are YoY rates, `…158…` are indices — easy to mix up |
 | PPI | **BLS** | ✅ `PPIACO` (**1913-01→**), `PPIFIS` (final demand, 2009-11→), `PPIFES` (core final demand), `PPIFID` (NSA), `WPSFD49207`, `WPSFD4131`, `WPSFD41312`, `WPUFD49207`, `PPIIDC` | ✅ `wp` flat file | FRED | ❌ (oráculo uses `PPIACO`) | The modern "final demand" family only starts **2009-11**; the long history is in the old "finished goods" family (`WPSFD49207`, 1947-04→). Not the same concept |
@@ -113,8 +113,17 @@ Latest data as probed: CPI/PPI/sticky/median through **2026-07**, PCE and trimme
   question is narrower: `1990-2019` has no relative-importance xlsx on the BLS page, so a
   decomposition that reaches back past 2020 needs either the 1947-1986 historical file (different
   format, 13 sheets by year range) or another source for the 1990s/2000s.
-- **Get the BEA key** for PCE at NIPA table granularity (component price indices, contributions).
+- ~~**Get the BEA key** for PCE at NIPA table granularity (component price indices, contributions).~~
+  — **resolved 2026-08-20, and the key was never needed.** The BEA publishes the whole Section 2
+  *underlying detail* release as an open xlsx (`apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx`,
+  12 MB, no auth, no quota), and its monthly sheets are the most granular form that exists: `U20404-M` =
+  table 2.4.4U (chained price index by type of product, 2017=100) and `U20405-M` = 2.4.5U (nominal
+  spending, US$ mn SAAR), both 1959-01 → latest, 402 lines that match line-for-line. That is component
+  price indices *and* the weights contributions need. Loaded into `macro_us.inflc_pce` / `inflc_pce_dim`
+  (608k rows) via `connectors/bea.py`, and charted as the PCE tab of `reports/us/Inflation.html`. A key
+  would still buy vintages and other sections — nothing for this. See
+  `analytics/us/inflation/CLAUDE.md`, "The PCE tab".
 - **Ingest the NY Fed SCE** — no FRED path exists and it is the best household expectation series.
 - **Not inventoried this round**: CPI-W and C-CPI-U, regional/metro CPI, the full PPI industry tree,
-  PCE component price indices, the Cleveland nowcast, the NY Fed MCT (url unresolved), and the Dallas
-  Fed's own trimmed-mean components.
+  the Cleveland nowcast, the NY Fed MCT (url unresolved), and the Dallas Fed's own trimmed-mean
+  components. (PCE component price indices *were* the gap here; they are loaded now — see above.)

@@ -195,6 +195,18 @@ audio products` (SERAC) and `Video and audio services` (SERAS). They arrive at `
 would make them children of *All items*, and they are in neither section of the spreadsheet —
 cross-cutting aggregates with nowhere to go in this tree.
 
+### 1b-bis. The monthly relative importance does not need to be scraped
+
+The relative-importance workbook is annual (December), but Table 1 of every monthly release prints a
+relative importance dated one month behind its reference month, and the two differ materially — Energy was
+6.383 in the December 2025 workbook against 7.432 in the July 2026 release. That looked like a loading gap
+until it turned out to be an arithmetic one: the monthly figure is the December weight updated by the
+item's own NSA index ratio since that December, divided by the All-items ratio over the same span. Checked
+against the July 2026 release, all **37** printed figures come back within **0.0008**, and the eight
+level-1 groups still sum to 100.000 after being updated one at a time. So the release's weight column is
+reproducible from what is already loaded, for any item that has a December weight — 265 of the 355
+expenditure items.
+
 ### 1c. Five items were lost to a label mismatch
 
 Also found 2026-08. The spreadsheet and `cu.item` disagree on five labels, and a name join drops the

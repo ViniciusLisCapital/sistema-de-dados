@@ -266,8 +266,11 @@ def run(output: str = "reports/brasil/Credit.html") -> None:
 
     try:
         data["ptc"] = _load_ptc_tab_data()
-        n_ptc = sum(len(v) for v in data["ptc"]["series"].values())
-        print(f"  ptc       (Pesquisa Trimestral de Condicoes de Credito): {n_ptc} series")
+        # 2 variantes vem do SGS (observada/esperada); desvio e desvio_ma4 sao derivadas
+        n_ptc = sum(1 for v in data["ptc"]["series"].values() for k in ptc_tab.HORIZONTES if v.get(k))
+        n_dv = sum(1 for v in data["ptc"]["series"].values() if v.get("desvio"))
+        print(f"  ptc       (Pesquisa Trimestral de Condicoes de Credito): {n_ptc} series"
+              f" + {n_dv} desvios (observada - esperada do trimestre anterior) + MA 4T de cada")
     except Exception as exc:
         print(f"  ptc       (Pesquisa Trimestral de Condicoes de Credito): FALHOU -- {exc}")
         data["ptc"] = {"tree": [], "anchor": None, "series": {}, "ref_date": None}

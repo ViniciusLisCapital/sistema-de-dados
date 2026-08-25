@@ -16,16 +16,19 @@ Sistema de dados da LIS Capital para coleta, processamento e visualização de v
 
 ```
 connectors/          — Clientes de APIs/fontes externas: IBGE, BCB (SGS + Focus/Olinda, agenda ICS,
-                       tabelas especiais xlsx, anexo estatístico do RPM), FRED, BIS, BLS, CFTC, IPEA,
+                       tabelas especiais xlsx, anexo estatístico do RPM, comunicados do Copom),
+                       FRED, BIS, BLS, BEA (tabelas NIPA da Secao 2, xlsx aberto — sem chave),
+                       CFTC, IPEA,
                        Comex Stat/MDIC (API ao vivo + CSV em massa), Tesouro (RTN via CKAN + Séries
                        Temporais + EFGG), PDET/MTE (FTP do Novo CAGED), Yahoo Finance, MySQL
                        ↳ assinatura, gotchas e limites de cada um: connectors/CLAUDE.md
 domain/
   db/                — ETL: fetch → transform → insert. Uma pasta por schema e, dentro dela, uma por
                        FONTE: brasil/{ibge,bcb,tesouro,mdic,mte,ipea,investing},
-                       international/{bis,cftc,fred,noaa,yfinance}, us/{inflation}. Um script por
+                       international/{bis,cftc,fred,noaa,yfinance}, us/{inflation} (CPI do BLS + PCE
+                       do BEA). Um script por
                        tabela, todos com a mesma interface run()
-    registry.py      — tabela → script, derivado da convenção `_TABLE` (71 tabelas; valida em vez de
+    registry.py      — tabela → script, derivado da convenção `_TABLE` (73 tabelas; valida em vez de
                        envelhecer em silêncio). É o que faz o --group/--tables/--continuous do
                        update_db.py e o botão do relatório de calendário funcionarem
                        ↳ tabelas ativas, fonte, range, chave primária e gotchas: domain/db/CLAUDE.md
@@ -43,11 +46,12 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
                        "Atualizar" roda o ETL do grupo (abrir_calendario.bat é o atalho de dois
                        cliques). Na raiz porque monitora o sistema inteiro, não uma área
   oraculo/           — Termômetro macro: notas 1–10 por variável (Brasil e EUA) → Power BI
-  brasil/            — 8 áreas: exchange_rate, inflation, economic_activity, fiscal_policy, credit,
-                       labor_market, monetary_policy (sem relatório HTML desde 2026-08),
+  brasil/            — 9 áreas: exchange_rate, inflation, economic_activity, fiscal_policy, credit,
+                       labor_market, monetary_policy (réplica do modelo agregado do BC +
+                       relatório de cenários, 2026-08-21), expectations (Focus, 2026-08-24),
                        painel_setores. Cada área = generate_report.py + report.html (+ um módulo por
                        aba) e o seu próprio CLAUDE.md, que é onde vivem abas, fontes e pendências
-  us/                — inflation (CPI-U), mesmo padrão; UI em inglês
+  us/                — inflation (CPI-U do BLS + PCE do BEA), mesmo padrão; UI em inglês
                        ↳ padrões compartilhados e a regra de corte país/raiz: analytics/CLAUDE.md
 jobs/                — Entry points. update_db.py: passe completo de macro_brasil (50 scripts) ou
                        recorte — --continuous (as 7 séries diárias, ~45s: é o que faz sentido agendar
@@ -110,17 +114,78 @@ Relatório HTML de decomposição do IPCA/IPCA-15. Decomposição por subitem vi
 
 ---
 
-## analytics/brasil/monetary_policy/ — Curva de Phillips e material de referência
+## analytics/brasil/monetary_policy/ — Modelo agregado do BC, cenários e Curva de Phillips
 
-Única área sem relatório HTML: a réplica do modelo pequeno do BCB foi **removida em 2026-08** (junto
-com as tabelas `pm_hiato_seed`/`pm_parametros`), e um modelo novo será construído sobre a extração
-automatizada do anexo do RPM (`pm_hiato_produto`/`_vintages`). Ficaram o `phillips_excel.py` (Curva de
-Phillips estimada → planilha de auditoria célula a célula) e o material de referência.
+A réplica do modelo pequeno do BCB foi **removida em 2026-08** (junto com as tabelas
+`pm_hiato_seed`/`pm_parametros`), e um modelo novo será construído sobre a extração automatizada do
+anexo do RPM (`pm_hiato_produto`/`_vintages`). Ficaram o `phillips_excel.py` (Curva de Phillips
+estimada → planilha de auditoria célula a célula) e o material de referência.
+
+**O modelo agregado do BC foi replicado de ponta a ponta** (2026-08-21), do boxe do RI de
+jun/2024: `modelo_painel.py` (painel trimestral, dois recortes de janela de HP) +
+`modelo_agregado.py` (espaço de estados, estimação, decomposições, simulador de cenários) →
+`generate_report.py` → `reports/brasil/Monetary Policy.html`, com as abas **Cenários**,
+**Decomposição**, **Taxa Neutra** e **Hiato** prontas (Projeções do Copom segue stub). Desde
+2026-08-24 a aba default é **Modelo BC — Agregado**, a única do projeto em que o modelo roda **no
+navegador**: o simulador está portado para JS, e a seção de inputs segue a estrutura da aba Ridge
+do FX Report (uma caixa por trimestre sempre visível, atalhos que preenchem as caixas, gráfico por
+input, cenários com plotar/carregar/editar). Cada input é endógeno, premissa ou estimativa do
+modelo, e os cenários ficam no `localStorage`. A Selic pode ser resposta ali, pela
+eq. (3) — extensão nossa, o `simular()` do Python só a aceita como caminho dado.
+
+Validação: **17 dos 22** parâmetros dentro do intervalo de credibilidade de 90% que o próprio BC
+publica, hiato latente com correlação **0,990** contra o `pm_hiato_produto`, e — o teste mais direto
+de implementação — **o mesmo motor rodado com as modas publicadas reproduz o IRF do BC com erro
+absoluto médio de 0,030 p.p., picando no mesmo trimestre**. O que sobra de diferença no IRF com os
+nossos parâmetros é estimativa, não código.
+
+**A equação (5) de expectativas está resolvida no simulador** (2026-08-21): o modelo é linear, então
+o ponto fixo é um sistema afim `(I−G)π^e = g`, resolvido de uma vez em vez de iterado (resíduo 1e-14).
+Isso reconcilia a nota antiga de que "Fair-Taylor divergiu por instabilidade" — o motor de então
+aproximava a Selic esperada pela corrente, o mesmo bug que inflava o IRF 4-5x, e era ele que inflava
+o laço; com `i^e` lido do caminho de juros o raio espectral cai para 0,68. Mas a fronteira é real:
+passa de 1 em φ₂ ≈ 0,32, e acima disso a condição terminal passa a determinar a resposta. Os φ vêm
+de estimador próprio (`estimar_eq5`, mínimos quadrados não lineares, R² 0,898); no filtro π^e segue
+como dado observado da Focus. **A única premissa que sobrou no cenário são os preços administrados.**
+306 asserções em `tests/test_monetary_policy_js.js` e 19 em `tests/test_eq5_expectativas.py` — as
+seções 19-25 do primeiro rodam o motor JS nas **mesmas 12 configurações** que o Python pré-simulou e
+exigem que batam série a série (discrepância máxima 5e-5, o piso do arredondamento do payload).
+
+**Comunicados do Copom → `pm_copom_projecoes`** (2026-08): o texto das 233 reuniões que a API do BCB
+devolve (48ª/2000-06 → 280ª) está versionado em
+`repository/monetary_policy/raw_md/central_bank_comunication/`, e as projeções de inflação do próprio
+Copom — IPCA/livres/administrados por período, com o ponto do horizonte relevante marcado — viraram
+tabela em `macro_brasil`. É a contrapartida oficial do `expc_focus*`: o que o BC projeta, não o que o
+mercado espera. Levantamento da fonte por era, e a armadilha do nome do cenário que trocou de
+significado em 2022, em [`domain/db/brasil/bcb/copom_comunicados.md`](domain/db/brasil/bcb/copom_comunicados.md).
 
 📄 **O que foi removido e por quê, a lacuna da curva forward que não deve ser repetida no modelo novo,
 conteúdo de `referencia/`/`models/`, pendências:**
 [`analytics/brasil/monetary_policy/CLAUDE.md`](analytics/brasil/monetary_policy/CLAUDE.md) — carrega sob
 demanda quando o Claude lê arquivos dentro de `analytics/brasil/monetary_policy/`.
+
+---
+
+## analytics/brasil/expectations/ — Panorama de Expectativas (Focus)
+
+Relatório de **escopo fechado** (2026-08-24): lê `expc_focus`, `expc_focus_copom` e
+`expc_focus_periodo` e **nada mais** — sem meta de inflação, sem realizado, sem projeção do Copom, por
+decisão explícita do usuário. 8 abas: Boletim (mediana de hoje × 1/4/12/52 semanas), Revisão (fixa o
+período previsto e varre as datas de pesquisa, com eixo alternativo em "meses até o período"), Curva
+do Copom (curva por reunião + horizonte ao longo do tempo + mapa de calor), Horizonte Móvel, Trajetória
+(a curva à frente inteira numa semana), Dispersão, Bases (0 × 1) e Apêndice.
+
+O que resolve o problema de tamanho: **grade semanal global** (1.425 semanas) e séries comprimidas
+como `{i0, m[], s[], n[]}` — 1,28 M de linhas viram um payload de 5,6 MB. Duas regras de redução
+diferentes de propósito (JOIN com o `MAX(date)` da semana na `expc_focus_periodo`, para a tabela do
+Boletim ser transversal a uma mesma data de pesquisa; último ponto por série nas outras duas). Dois
+testes: `tests/test_expectations_js.js` (framework + os 8 renderizadores contra o payload real) e
+`tests/test_expectations_data.py` (o **arquivo gerado** contra o MySQL, valor a valor — a compressão
+desloca séries no tempo sem lançar exceção nenhuma).
+
+📄 **Abas, grade/compressão, gotchas da fonte e pendências:**
+[`analytics/brasil/expectations/CLAUDE.md`](analytics/brasil/expectations/CLAUDE.md) — carrega sob
+demanda quando o Claude lê arquivos dentro de `analytics/brasil/expectations/`.
 
 ---
 
@@ -218,26 +283,32 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   toggle Nominal/Real/% PIB), Taxa & Spread e Inadimplência (formato bespoke, com overlay de Selic), +
   Impulso (3 tabelas via `makeImpulseTab()`) e PTC (`cred_ptc`, nova em 2026-08 — árvore
   Oferta/Demanda × 4 segmentos, pill Observada|Esperada, sem linha de total, régua da escala
-  −2..+2 no topo), + Apêndice.
+  −2..+2 no topo, mais uma 2ª tabela+gráfico de **surpresa**: o desvio
+  `observada(t) − esperada(t−1)` em **média móvel de 4 trimestres** na tabela e nas linhas grossas
+  do gráfico, com o trimestre cru na linha fina; faixa "em linha" = |MA| ≤ σ₀ da própria MA (RQM em torno de zero, não sd em torno da
+  média — a troca foi um bug corrigido em 2026-08) — um
+  critério de 1/N foi tentado antes e retirado, ver o CLAUDE.md da pasta), + Apêndice.
   Ver "Pending" em [`analytics/brasil/credit/CLAUDE.md`](analytics/brasil/credit/CLAUDE.md) (confirmação em
   browser real, `cred_credito_controle_capital.saldo`/`provisoes` ainda não charteados).
+- **`analytics/brasil/expectations/`**: construído e testado em 2026-08-24; falta **confirmação
+  visual num browser real** — em especial o mapa de calor da aba Copom (único gráfico não-linha) e o
+  eixo invertido da aba Revisão. Ver "Pending" em
+  [`analytics/brasil/expectations/CLAUDE.md`](analytics/brasil/expectations/CLAUDE.md).
 
 ### Média prioridade
-- **Expectativas Focus — consumo nos relatórios**: a camada de dados ficou pronta em 2026-08
-  (3 tabelas, 1,46 M linhas, histórico completo carregado e validado contra a API — ver
-  [`domain/db/brasil/bcb/focus_inventario.md`](domain/db/brasil/bcb/focus_inventario.md)), mas
-  **nenhum relatório grafica expectativas ainda** (o único consumo em dashboard era um KPI no
-  `bcb_model.html`, removido com a réplica em 2026-08). Por ordem de retorno: (a) `expc_focus_copom`
-  no modelo de política monetária novo — é a curva forward cuja ausência produziu o IRF 4-5x maior
-  que o do BCB na réplica removida (o motor aproximava a Selic futura pela taxa corrente); o
-  `MODEL_REPLICATION_PLAN.md` registra que `i^e_{t,t+4|t}` precisa da média ponderada
-  0,5/1/1/1/0,5 dos 4 trimestres à frente; (b) aba de
-  expectativas em `analytics/brasil/inflation/` — IPCA por componente a 12m/24m e medianas anuais
-  2026-2030 contra `inflc_meta`, mais a dispersão (`desvio_padrao`/`minimo`/`maximo`/
-  `numero_respondentes`) como faixa; (c) diferenciais ex-ante em `analytics/brasil/exchange_rate/`,
-  pendência já aberta em 3 `CLAUDE.md`; (d) consenso vs. realizado em `economic_activity/`,
-  `fiscal_policy/` e `labor_market/`. Transversal: o gráfico de convergência ("expectativa para o
-  ano Y conforme cada data de pesquisa") só é possível com `expc_focus_periodo.data_referencia`.
+- **Expectativas Focus — consumo nos relatórios**: **o relatório dedicado existe desde 2026-08-24**
+  (`analytics/brasil/expectations/` → `reports/brasil/Expectations.html`, 8 abas sobre as 3 tabelas e
+  nada mais — inclusive o gráfico de convergência, que só a `expc_focus_periodo.data_referencia`
+  permite). O que segue pendente é o consumo **dentro das outras áreas**, onde a expectativa entra
+  cruzada com meta/realizado/modelo — coisa que o relatório de escopo "só Focus" deliberadamente não
+  faz. Por ordem de retorno: (a) `expc_focus_copom` no modelo de política monetária — é a curva
+  forward cuja ausência produziu o IRF 4-5x maior que o do BCB na réplica removida (o motor
+  aproximava a Selic futura pela taxa corrente); o `MODEL_REPLICATION_PLAN.md` registra que
+  `i^e_{t,t+4|t}` precisa da média ponderada 0,5/1/1/1/0,5 dos 4 trimestres à frente; (b) aba de
+  expectativas em `analytics/brasil/inflation/` — o que o Panorama de Expectativas não pode mostrar:
+  as medianas anuais **contra `inflc_meta`**; (c) diferenciais ex-ante em
+  `analytics/brasil/exchange_rate/`, pendência já aberta em 3 `CLAUDE.md`; (d) consenso vs. realizado
+  em `economic_activity/`, `fiscal_policy/` e `labor_market/`.
 - **Focus Top5 não carregado**: os 6 endpoints Top5 têm a mesma forma de chave das 3 tabelas mais a
   dimensão `tipo_calculo`, que já existe na chave com valor `'geral'` — então é backfill de dados,
   não migração. Só vale se a leitura "consenso vs. Top5" interessar. `base_calculo=1` na
@@ -258,13 +329,29 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   despesa, 355 itens × 10 níveis na versão carregada, e a do news release, 37 linhas × 5 níveis — food/energy/core goods/
   core services, extraída da Tabela 1 do release, onde o BLS declara a hierarquia na própria marcação
   HTML; validada com 111/111 índices publicados batendo com a API).
-  **O ramo de inflação está construído** (2026-08): schema `macro_us` com 3 tabelas
-  (`inflc_cpi` 341 mil linhas 1913→hoje, `inflc_cpi_dim` as 2 árvores, `inflc_cpi_pesos` 2020-2025),
+  **O ramo de inflação está construído** (2026-08): schema `macro_us` com 5 tabelas
+  (`inflc_cpi` 341 mil linhas 1913→hoje, `inflc_cpi_dim` as 2 árvores, `inflc_cpi_pesos` 2020-2025,
+  mais `inflc_pce` 608 mil linhas 1959→hoje e `inflc_pce_dim`),
   ETL em `domain/db/us/inflation/` + `jobs/update_us.py`, e o relatório em `analytics/us/inflation/`.
   Validado contra a Tabela 1 publicada: os 111 índices conferem exatos e o headline/core/energy/food
-  y/y batem na arredondamento do BLS. **Falta**: as outras 7 áreas macro (nenhum connector além de
-  `bls.py`), os pesos pré-2020 (existem desde 1947 no site do BLS, em 2 formatos antigos sem parser —
-  é lacuna de parser, não de dado), e CPI-W/C-CPI-U (schema e loader suportam, não carregados).
+  y/y batem na arredondamento do BLS. Cada aba de árvore tem toggle **Series | Table 1** — a segunda
+  troca as 12 colunas de mês pelas 9 do news release, com a importância relativa *reconstruída* da
+  planilha de dezembro (as 37 publicadas batem em 0,0008), então não há tabela de pesos mensais a
+  carregar.
+  **O PCE entrou em 2026-08-20** como 3ª aba do mesmo relatório, e sem a chave do BEA que estava
+  registrada aqui como pendência: o BEA publica as tabelas 2.4.4U (índice de preço) e 2.4.5U (despesa
+  nominal) num xlsx aberto de 12 MB, mensais desde 1959, e as duas casam **linha a linha** — 368 linhas
+  de árvore em 9 níveis + 34 agregados de addenda. É fonte melhor que a do CPI em três pontos medidos:
+  os **níveis 1-4 particionam o índice exatamente** (contra 0-2 da árvore de divulgação do CPI), o peso
+  é **mensal** em vez de snapshot de dezembro, e a contribuição reconstrói o headline com 0,0009 p.p. de
+  erro médio contra 0,0124 do CPI. O detalhe que não se adivinha: **19 linhas entram subtraindo** no
+  total e só 4 dizem `Less:` no rótulo — a subárvore inteira herda o sinal, e somar um nível sem isso dá
+  116% do PCE.
+  **Falta**: as outras 7 áreas macro (só `bls.py` e `bea.py` existem), os pesos pré-2020 do CPI (existem
+  desde 1947 no site do BLS, em 2 formatos antigos sem parser — é lacuna de parser, não de dado),
+  CPI-W/C-CPI-U (schema e loader suportam, não carregados) e, do lado do PCE, as tabelas **reais** nas
+  mesmas 402 linhas (2.4.3U índices de quantidade e 2.4.6U dólares encadeados — seriam um `medida` novo
+  na mesma árvore, mas são atividade, não inflação: pelo critério de prefixo temático virariam `atv_`).
   Ver "Pending" em [`analytics/us/inflation/CLAUDE.md`](analytics/us/inflation/CLAUDE.md).
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): ver "Pending" em [`repository/CLAUDE.md`](repository/CLAUDE.md).
 - **Jobs de rotina incompletos** (a checagem de freshness em `domain/release_calendar/sync.py` confirmou
@@ -288,7 +375,22 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   a remoção da réplica quebrou foi menos do que se registrou na época.
 - **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta.
 - **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
-- **`analytics/brasil/monetary_policy/`**: o modelo novo sobre `pm_hiato_produto`/`_vintages` ainda não foi começado, e o material legado de curva de juros em `models/curva_juros/` nunca foi integrado a nada — ver "Pending" em [`analytics/brasil/monetary_policy/CLAUDE.md`](analytics/brasil/monetary_policy/CLAUDE.md).
+- **`analytics/brasil/monetary_policy/`**: a equação (5) e a escala do regressor de clima foram
+  resolvidas em 2026-08-21 (o ONI entra em **décimos de grau**, não em graus — α₅ e α₆ saíram do teto
+  da priori e caíram dentro do IC publicado; e a eq. (5) virou um sistema afim resolvido de uma vez
+  no simulador). O que restou, em ordem: o **bloco de preços administrados** (boxe do RI de set/2017),
+  que é a única premissa que ainda fecha o IPCA no cenário e o que separa o nosso IRF completo da
+  primeira linha do Graf 4B — os alvos de validação já estão levantados (10% de depreciação → +1,65
+  p.p. nos administrados, +0,72 nos livres, +0,96 no IPCA); a **aba Projeções do Copom**; e levar a
+  eq. (5) **para dentro do filtro**, que é a única via para testar se o α₁ᴵ se corrige (exige π^e como
+  estado e uma convenção, não publicada, para o que o modelo espera dos exógenos em cada trimestre da
+  amostra). Ver "Pending" em
+  [`analytics/brasil/monetary_policy/CLAUDE.md`](analytics/brasil/monetary_policy/CLAUDE.md).
+- **Taxa neutra: a premissa que domina os cenários.** Com dado até 2026T2 a especificação do boxe
+  põe r* em ~7,9% (tendência HP do juro real Focus + passeio aleatório), contra ~4,8% da mediana que
+  o BC publicou para 2024T2. Isso faz a Selic de 15% parecer pouco restritiva e uma Selic de 10%
+  parecer expansionista. Não é bug, é a definição — mas decidir se ela é aceitável vem antes de usar
+  os cenários para decisão.
 
 ### Baixa prioridade
 - (nenhuma pendência no momento)

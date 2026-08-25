@@ -42,6 +42,7 @@ import os
 import re
 import sys
 from datetime import date, datetime, timedelta
+from datetime import time as dtime
 from pathlib import Path
 
 import yaml
@@ -117,6 +118,86 @@ def periodo_para_data(ref: str | None) -> date | None:
     return None
 
 
+_RE_HORA = re.compile(r"^(\d{1,2}):(\d{2})$")
+
+
+def _hora(valor) -> dtime | None:
+    """Le `release_time` / `time` do YAML ("14:30") como hora de Brasilia.
+
+    Campo opcional e incremental: quase nenhum grupo tem horario declarado ainda, e
+    quem nao tem se comporta como antes (a divulgacao vale a partir do inicio do dia).
+    """
+    if valor is None:
+        return None
+    if isinstance(valor, dtime):
+        return valor
+    m = _RE_HORA.match(str(valor).strip())
+    if not m:
+        return None
+    h, mi = int(m.group(1)), int(m.group(2))
+    if h > 23 or mi > 59:
+        return None
+    return dtime(h, mi)
+
+
+_TZ_LOCAL = "America/Sao_Paulo"
+
+
+def hora_da_entrada(entrada: dict, grupo: dict, quando: date | None) -> dtime | None:
+    """Hora de Brasilia em que a divulgacao de `entrada` sai, ou None se nao declarada.
+
+    Precedencia: `time` da entrada > `release_time` do grupo. Se o grupo declara
+    `release_time_tz`, as horas dele estao no fuso da FONTE e sao convertidas para
+    Brasilia usando a data da propria entrada.
+
+    A conversao existe por causa das duas fontes americanas: o COT da CFTC sai as
+    15:30 e o comunicado do FOMC as 14:00, hora de Nova York. Como os EUA tem horario
+    de verao e o Brasil nao tem desde 2019, o MESMO horario da fonte cai em duas horas
+    diferentes aqui ao longo do ano — 15:30 ET e 16:30 em Brasilia de marco a comeco de
+    novembro e 17:30 no resto. Guardar um valor unico convertido a mao daria uma hora
+    de erro em metade do calendario, e o erro seria silencioso; guardar o fuso e
+    converter por entrada nao tem esse problema.
+    """
+    hora = _hora(entrada.get("time")) or _hora(grupo.get("release_time"))
+    if hora is None:
+        return None
+    tz = grupo.get("release_time_tz")
+    if not tz or quando is None:
+        return hora
+    try:
+        from zoneinfo import ZoneInfo
+
+        origem = datetime.combine(quando, hora, tzinfo=ZoneInfo(str(tz)))
+        return origem.astimezone(ZoneInfo(_TZ_LOCAL)).time()
+    except Exception:
+        # fuso desconhecido (tzdata ausente, nome com typo): cai para a hora crua em
+        # vez de derrubar a checagem, mesma politica do resto dos campos malformados
+        sys.stderr.write(
+            f"aviso: release_time_tz invalido em {grupo.get('group')}: {tz!r}" + chr(10)
+        )
+        return hora
+
+
+def _ja_saiu(quando: date, hora: dtime | None, corte: date, agora: datetime) -> bool:
+    """A divulgacao de `quando` (as `hora`) ja ocorreu, olhando de `corte`/`agora`?
+
+    Sem `hora` declarada, um evento datado hoje conta como ocorrido desde a meia-noite
+    — comportamento antigo, mantido para os 24 grupos sem horario. COM hora, o dia da
+    divulgacao so passa a contar depois dela: e o que evita cobrar a PTC (14:30) e
+    acender o botao "Atualizar" durante toda a manha do dia em que ela sai.
+
+    Nota sobre `--as-of`: numa simulacao, se a data simulada coincidir com a data da
+    divulgacao, a comparacao usa a hora REAL do relogio. E a leitura mais util ("neste
+    horario, naquele dia") e mantem a funcao pura em relacao a `agora`, que o teste
+    injeta.
+    """
+    if quando > corte:
+        return False
+    if quando < corte:
+        return True
+    return hora is None or agora.time() >= hora
+
+
 def _divulgada_em(entrada: dict) -> date | None:
     """Data a partir da qual a divulgacao pode ser considerada ocorrida.
 
@@ -154,7 +235,7 @@ def _menos_meses(d: date, n: int) -> date:
 
 
 def expectativas(
-    doc: dict, as_of: date, grace: int = 0
+    doc: dict, as_of: date, grace: int = 0, agora: datetime | None = None
 ) -> tuple[dict[str, dict], dict[str, str]]:
     """Para cada tabela, o periodo mais recente que o calendario diz que ja deveria estar la.
 
@@ -172,6 +253,7 @@ def expectativas(
     entre os grupos — o grupo que exige menos nao pode absolver o que outro ja cobra.
     """
     corte = as_of - timedelta(days=grace)
+    agora = agora or datetime.now()
     ovr = doc.get("expectation_overrides") or {}
 
     out: dict[str, dict] = {}
@@ -185,8 +267,9 @@ def expectativas(
             continue
         for e in g.get("entries") or []:
             quando = _divulgada_em(e)
-            if quando is None or quando > corte:
-                continue  # divulgacao futura (ou dentro do grace) — nada a exigir
+            hora = hora_da_entrada(e, g, quando)
+            if quando is None or not _ja_saiu(quando, hora, corte, agora):
+                continue  # divulgacao futura (ou hoje, antes da hora) — nada a exigir
             tem_passada.update(tabelas)
             for t in tabelas:
                 if t not in ultima_div or quando > ultima_div[t][0]:
@@ -376,12 +459,14 @@ def status(
     path: Path | str = _YAML_DEFAULT,
     as_of: date | None = None,
     grace: int = 0,
+    agora: datetime | None = None,
 ) -> list[dict]:
     """Uma linha por tabela do banco, com veredito. Nao imprime nada."""
-    as_of = as_of or date.today()
+    agora = agora or datetime.now()
+    as_of = as_of or agora.date()
     doc = carregar(path)
 
-    esperadas, motivos = expectativas(doc, as_of, grace)
+    esperadas, motivos = expectativas(doc, as_of, grace, agora)
     isentas = sem_divulgacao(doc)
     banco = estado_banco()
     no_yaml = {t for ts in tabelas_por_grupo(doc).values() for t in ts}

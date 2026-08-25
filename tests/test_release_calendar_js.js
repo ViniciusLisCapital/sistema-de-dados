@@ -48,10 +48,12 @@ Object.defineProperty(El.prototype, 'innerHTML', {
   set(v) { this._html = v; this.children = []; },
 });
 
-const ESTADOS_OK = ['bcb_credit_note', 'bcb_icbr', 'bcb_focus', 'bcb_fiscal_statistics',
+const ESTADOS_OK = ['bcb_ptc', 'bcb_credit_note', 'bcb_icbr', 'bcb_focus', 'bcb_fiscal_statistics',
                     'bcb_external_sector_note', 'bcb_ibcbr', 'bcb_ptc', 'bcb_rpm', 'cftc_cot'];
 
-function rodar(MODE) {
+function rodar(MODE, HOJE, AGORA) {
+  HOJE = HOJE || '2026-08-17';
+  AGORA = AGORA || '23:59';
   const els = {};
   const getEl = (id) => (els[id] = els[id] || new El('div'));
   const calls = [];
@@ -70,14 +72,14 @@ function rodar(MODE) {
     calls.push({ url, opts });
     if (MODE === 'file') return Promise.reject(new Error('sem servidor'));
     if (url === '/api/ping') {
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, modo: 'servido', hoje: '2026-08-17' }) });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, modo: 'servido', hoje: HOJE, agora: AGORA }) });
     }
     if (url === '/api/status') {
       const grupos = { ibge_pmc: { estado: 'atrasado', tabelas: [] },
                        bcb_copom_ata: { estado: 'vazio', tabelas: [] },
                        bcb_copom: { estado: 'indefinido', tabelas: [] } };
       ESTADOS_OK.forEach((g) => { grupos[g] = { estado: 'ok', tabelas: [] }; });
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, hoje: '2026-08-17', grupos }) });
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, hoje: HOJE, agora: AGORA, grupos }) });
     }
     if (url === '/api/run') {
       return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, n_ok: 1, n_erro: 0, sem_script: [] }) });
@@ -160,9 +162,59 @@ function rodar(MODE) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Cenario de HORARIO: a PTC de 20/08/2026 tem release_time 14:30 no YAML. Antes da
+// hora a linha nao pode oferecer botao (o dado ainda nao existe); depois, sim.
+// Regressao do pedido de 2026-08-20 ("quero introduzir a hora da divulgacao").
+// ---------------------------------------------------------------------------
+async function testeHorario() {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('HORARIO - PTC de 20/08 as 14:30');
+
+  for (const [agora, esperaBotao] of [['09:00', false], ['14:29', false],
+                                      ['14:30', true],  ['16:00', true]]) {
+    const els = {};
+    const getEl = (id) => (els[id] = els[id] || new El('div'));
+    global.document = { getElementById: getEl, createElement: (x) => new El(x),
+                        querySelector: () => null, body: new El('body'),
+                        execCommand: () => true, addEventListener: () => {} };
+    global.window = { isSecureContext: false };
+    global.navigator = {};
+    global.fetch = (url) => {
+      if (url === '/api/ping')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, modo: 'servido', hoje: '2026-08-20', agora }) });
+      if (url === '/api/status')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, hoje: '2026-08-20', agora,
+            grupos: { bcb_ptc: { estado: 'atrasado', tabelas: [] } } }) });
+      return Promise.reject(new Error('inesperado ' + url));
+    };
+    new Function(SRC)();
+    await new Promise((r) => setTimeout(r, 40));
+
+    const linha = getEl('table-body').children.map((c) => c.innerHTML)
+      .filter((h) => h && h.indexOf('20/08/2026') >= 0 && h.indexOf('PTC') >= 0);
+    if (linha.length !== 1) { check(`achou a linha da PTC as ${agora}`, false, linha.length); continue; }
+    const temBotao = linha[0].indexOf('upd-btn') >= 0;
+    const mostraHora = linha[0].indexOf('14:30') >= 0;
+    check(`${agora}: ${esperaBotao ? 'botao' : 'sem botao'}`, temBotao === esperaBotao,
+          `temBotao=${temBotao}`);
+    if (agora === '09:00') check('  a hora aparece na coluna de data', mostraHora, linha[0].slice(0, 120));
+  }
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
+}
+
 (async () => {
   const modos = process.env.MODE ? [process.env.MODE] : ['file', 'served'];
   for (const m of modos) await rodar(m);
+  if (!process.env.MODE) await testeHorario();
   console.log('\n' + '='.repeat(62));
   console.log(falhasTotais ? `${falhasTotais} FALHA(S)` : 'todos os asserts passaram');
   process.exit(falhasTotais ? 1 : 0);

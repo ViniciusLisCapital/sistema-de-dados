@@ -84,16 +84,23 @@ no_release:
 # subestimou tres (dollar_index_em, policy_rates, cambio_contratado); os valores atuais
 # vem da medicao. Re-medir com o mesmo metodo se aparecer atraso falso.
 max_age_days:
-  cmb_ptax:               5   # lag medido 0d (BCB publica no mesmo dia)
-  cmb_dollar_index:       5   # lag medido 0d
-  cmb_dollar_index_em:    9   # lag medido 5d -- FRED publica esta serie semanalmente
-  cmb_fx_latam:           5   # lag medido 0d
-  cmb_equity_us:          5   # lag medido 0d
-  comm_brent:             8   # lag medido 1d
-  cmb_policy_rates:      12   # lag medido 8d -- BIS republica em lote, o maior de todos
+  cmb_ptax: 5                 # lag medido 0d (BCB publica no mesmo dia)
+  cmb_dollar_index: 5         # lag medido 0d
+  # 12, nao 9: a tolerancia tem que cobrir o INTERVALO ENTRE DIVULGACOES, nao o lag
+  # medido uma vez. Estas duas sao serie DIARIA divulgada SEMANALMENTE, e nesse
+  # arranjo a idade do ultimo ponto anda de ~3 dias (dia da divulgacao) a ~10 (vespera
+  # da seguinte). Os 9 vinham de uma medicao unica do lag e davam ATRASADO falso toda
+  # segunda-feira -- confirmado em 2026-08-24, quando as duas apareceram atrasadas e a
+  # fonte foi consultada ao vivo: SGS 13961 terminava em 14/08 e o DTWEXEMEGS tambem
+  # (last_updated 2026-08-17), ou seja, nao havia dado novo para buscar.
+  cmb_dollar_index_em: 12     # H.10 do Fed, toda segunda, cobrindo ate a sexta anterior
+  cmb_fx_latam: 5             # lag medido 0d
+  cmb_equity_us: 5            # lag medido 0d
+  comm_brent: 8               # lag medido 1d
+  cmb_policy_rates: 12        # lag medido 8d -- BIS republica em lote, o maior de todos
   # Tem divulgacao mensal E conteudo diario -- checadas pelas duas regras
-  cmb_reservas_bc:        5   # lag medido 1d
-  cmb_cambio_contratado:  9   # lag medido 5d
+  cmb_reservas_bc: 5          # lag medido 1d
+  cmb_cambio_contratado: 12   # SGS diario, divulgado na Nota Cambial semanal (ver acima)
 
 # Correcoes por tabela para a checagem de freshness (sync.py), onde o vinculo
 # grupo->tabela em `tables:` significa "esta divulgacao e RELEVANTE para esta tabela"
@@ -153,12 +160,38 @@ expectation_overrides:
       A lista "Reuniões do CMN e COMOC" do BCB e a fonte provavel -- ver Pending no
       CLAUDE.md desta pasta.
 
+# Horario de divulgacao -- `release_time` no grupo, `time` na entrada.
+#
+# Hora oficial de Brasilia, comparada contra o relogio local da maquina. Nao existe
+# conversao de fuso em ponto nenhum: se isto um dia rodar num servidor em UTC, e aqui
+# que precisa mudar. Serve para nao cobrar o dado -- nem acender o botao "Atualizar" --
+# nas horas entre a meia-noite e o anuncio. Campo OPCIONAL: grupo sem hora se comporta
+# como antes, com a divulgacao contando como ocorrida desde o inicio do dia.
+#
+# `time:` na entrada vence `release_time:` do grupo. Os 10 grupos do BCB tem `time` em
+# toda entrada de 2026, escrito por `update_calendar.py --horas` a partir do DTSTART do
+# proprio feed ICS (TZID=America/Sao_Paulo, fuso declarado pela fonte). Fica por
+# ENTRADA, e nao no grupo, porque a hora muda de era: as notas de estatisticas sairam
+# de 10:30 em 2019 para 09:30 e depois 08:30 em 2023. A reuniao do Copom e a excecao
+# sem hora -- o feed emite 00:00, que e placeholder de evento de dia inteiro e nao
+# meia-noite (a decisao sai perto das 18:30); gravar isso reproduziria exatamente o
+# bug que a hora veio corrigir.
+#
+# `release_time` no grupo e para fonte SEM feed. Os 8 grupos do IBGE estao em 09:00,
+# hora padrao do instituto. A API de calendario do IBGE
+# (servicodados.ibge.gov.br/api/v3/calendario) tambem tem hora, mas em UTC e sem
+# declarar fuso: dos 197 eventos de 2026, 158 dizem 12:00 e 38 dizem 13:00 (mais um
+# 12:22:26, que e claramente timestamp de cadastro). O ancoramento e o IPCA, que a API
+# poe as 12:00 e o IBGE divulga as 9h -- dai UTC-3. Ou seja: derivado, nao declarado
+# pela fonte como no BCB. Corrigir a mao qualquer grupo que se saiba diferente.
+
 groups:
   - group: ibge_pim
     institution: IBGE
     name: "Pesquisa Industrial Mensal – Produção Física (PIM-PF)"
     tables: [atv_pim, atv_pim_uso]
     cadence: monthly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-09-02", reference_period: "2026-07", confirmed: true}
@@ -171,6 +204,7 @@ groups:
     name: "Pesquisa Mensal de Comércio (PMC)"
     tables: [atv_pmc]
     cadence: monthly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-08-13", reference_period: "2026-06", confirmed: true}
@@ -184,6 +218,7 @@ groups:
     name: "Pesquisa Mensal de Serviços (PMS)"
     tables: [atv_pms]
     cadence: monthly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-09-10", reference_period: "2026-07", confirmed: true}
@@ -194,8 +229,9 @@ groups:
   - group: ibge_pib_trimestral
     institution: IBGE
     name: "Contas Nacionais Trimestrais (PIB)"
-    tables: [atv_pib, atv_pib_valores_correntes, atv_pib_taxas]
+    tables: [atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_renda_poupanca]
     cadence: quarterly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-09-01", reference_period: "2026-Q2", confirmed: true}
@@ -206,6 +242,7 @@ groups:
     name: "PNAD Contínua Mensal"
     tables: [mt_pnad]
     cadence: monthly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-08-27", reference_period: "2026-07", confirmed: true}
@@ -219,6 +256,7 @@ groups:
     name: "PNAD Contínua Trimestral"
     tables: [mt_pnad_trimestral]
     cadence: quarterly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-08-14", reference_period: "2026-Q2", confirmed: true}
@@ -229,6 +267,7 @@ groups:
     name: "IPCA"
     tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
     cadence: monthly
+    release_time: "09:00"
     note: >
       BCB SGS mirrors this release (feeding inflc_agregados) within about a day;
       IBGE is the original source and the authoritative date.
@@ -244,6 +283,7 @@ groups:
     name: "IPCA-15"
     tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
     cadence: monthly
+    release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-08-26", reference_period: "2026-08", confirmed: true}
@@ -270,14 +310,14 @@ groups:
       lista: Índice de atividade econômica (IBC-Br)
       ref: {unit: month, lag: 2}
     entries:
-      - {date: "2026-05-18", reference_period: "2026-03", confirmed: true}
-      - {date: "2026-06-17", reference_period: "2026-04", confirmed: true}
-      - {date: "2026-07-17", reference_period: "2026-05", confirmed: true}
-      - {date: "2026-08-17", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-09-16", reference_period: "2026-07", confirmed: true}
-      - {date: "2026-10-16", reference_period: "2026-08", confirmed: true}
-      - {date: "2026-11-16", reference_period: "2026-09", confirmed: true}
-      - {date: "2026-12-11", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-05-18", time: "09:00", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-06-17", time: "09:00", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-07-17", time: "09:00", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-08-17", time: "09:00", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-09-16", time: "09:00", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-10-16", time: "09:00", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-16", time: "09:00", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-11", time: "09:00", reference_period: "2026-10", confirmed: true}
 
   - group: bcb_icbr
     institution: BCB
@@ -303,14 +343,14 @@ groups:
       lista: Índice de Commodities – Brasil (IC-Br)
       ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-05-06", reference_period: "2026-04", confirmed: true}
-      - {date: "2026-06-03", reference_period: "2026-05", confirmed: true}
-      - {date: "2026-07-08", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-08-05", reference_period: "2026-07", confirmed: true}
-      - {date: "2026-09-09", reference_period: "2026-08", confirmed: true}
-      - {date: "2026-10-07", reference_period: "2026-09", confirmed: true}
-      - {date: "2026-11-11", reference_period: "2026-10", confirmed: true}
-      - {date: "2026-12-09", reference_period: "2026-11", confirmed: true}
+      - {date: "2026-05-06", time: "14:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-03", time: "14:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-08", time: "14:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-05", time: "14:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-09", time: "14:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-07", time: "14:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-11", time: "14:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-09", time: "14:30", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_focus
     institution: BCB
@@ -333,46 +373,46 @@ groups:
     ics:
       lista: Focus
     entries:
-      - {date: "2026-05-04", confirmed: true}
-      - {date: "2026-05-11", confirmed: true}
-      - {date: "2026-05-18", confirmed: true}
-      - {date: "2026-05-25", confirmed: true}
-      - {date: "2026-06-01", confirmed: true}
-      - {date: "2026-06-08", confirmed: true}
-      - {date: "2026-06-15", confirmed: true}
-      - {date: "2026-06-22", confirmed: true}
-      - {date: "2026-06-29", confirmed: true}
-      - {date: "2026-07-06", confirmed: true}
-      - {date: "2026-07-13", confirmed: true}
-      - {date: "2026-07-20", confirmed: true}
-      - {date: "2026-07-27", confirmed: true}
-      - {date: "2026-08-03", confirmed: true}
-      - {date: "2026-08-10", confirmed: true}
-      - {date: "2026-08-17", confirmed: true}
-      - {date: "2026-08-24", confirmed: true}
-      - {date: "2026-08-31", confirmed: true}
-      - {date: "2026-09-08", confirmed: true, note: "Tuesday -- Sep 7 holiday (Independência)."}
-      - {date: "2026-09-14", confirmed: true}
-      - {date: "2026-09-21", confirmed: true}
-      - {date: "2026-09-28", confirmed: true}
-      - {date: "2026-10-05", confirmed: true}
-      - {date: "2026-10-13", confirmed: true, note: "Tuesday -- Oct 12 holiday (N. Sra. Aparecida)."}
+      - {date: "2026-05-04", time: "08:30", confirmed: true}
+      - {date: "2026-05-11", time: "08:30", confirmed: true}
+      - {date: "2026-05-18", time: "08:30", confirmed: true}
+      - {date: "2026-05-25", time: "08:30", confirmed: true}
+      - {date: "2026-06-01", time: "08:30", confirmed: true}
+      - {date: "2026-06-08", time: "08:30", confirmed: true}
+      - {date: "2026-06-15", time: "08:30", confirmed: true}
+      - {date: "2026-06-22", time: "08:30", confirmed: true}
+      - {date: "2026-06-29", time: "08:30", confirmed: true}
+      - {date: "2026-07-06", time: "08:30", confirmed: true}
+      - {date: "2026-07-13", time: "08:30", confirmed: true}
+      - {date: "2026-07-20", time: "08:30", confirmed: true}
+      - {date: "2026-07-27", time: "08:30", confirmed: true}
+      - {date: "2026-08-03", time: "08:30", confirmed: true}
+      - {date: "2026-08-10", time: "08:30", confirmed: true}
+      - {date: "2026-08-17", time: "08:30", confirmed: true}
+      - {date: "2026-08-24", time: "08:30", confirmed: true}
+      - {date: "2026-08-31", time: "08:30", confirmed: true}
+      - {date: "2026-09-08", time: "08:30", confirmed: true, note: "Tuesday -- Sep 7 holiday (Independência)."}
+      - {date: "2026-09-14", time: "08:30", confirmed: true}
+      - {date: "2026-09-21", time: "08:30", confirmed: true}
+      - {date: "2026-09-28", time: "08:30", confirmed: true}
+      - {date: "2026-10-05", time: "08:30", confirmed: true}
+      - {date: "2026-10-13", time: "08:30", confirmed: true, note: "Tuesday -- Oct 12 holiday (N. Sra. Aparecida)."}
       - {date: "2026-10-19", confirmed: true, note: "Feed carries 00:00 rather than 08:30 for this one entry -- almost certainly a data-entry quirk in BCB's list, not a real midnight release."}
-      - {date: "2026-10-26", confirmed: true}
-      - {date: "2026-11-03", confirmed: true, note: "Tuesday -- Nov 2 holiday (Finados)."}
-      - {date: "2026-11-09", confirmed: true}
-      - {date: "2026-11-16", confirmed: true}
-      - {date: "2026-11-23", confirmed: true}
-      - {date: "2026-11-30", confirmed: true}
-      - {date: "2026-12-07", confirmed: true}
-      - {date: "2026-12-14", confirmed: true}
-      - {date: "2026-12-21", confirmed: true}
-      - {date: "2026-12-28", confirmed: true}
+      - {date: "2026-10-26", time: "08:30", confirmed: true}
+      - {date: "2026-11-03", time: "08:30", confirmed: true, note: "Tuesday -- Nov 2 holiday (Finados)."}
+      - {date: "2026-11-09", time: "08:30", confirmed: true}
+      - {date: "2026-11-16", time: "08:30", confirmed: true}
+      - {date: "2026-11-23", time: "08:30", confirmed: true}
+      - {date: "2026-11-30", time: "08:30", confirmed: true}
+      - {date: "2026-12-07", time: "08:30", confirmed: true}
+      - {date: "2026-12-14", time: "08:30", confirmed: true}
+      - {date: "2026-12-21", time: "08:30", confirmed: true}
+      - {date: "2026-12-28", time: "08:30", confirmed: true}
 
   - group: bcb_copom
     institution: BCB
     name: "Reunião do Copom — decisão da taxa Selic"
-    tables: [cred_inadimplencia_pj, expc_focus, expc_focus_copom]
+    tables: [cred_inadimplencia_pj, expc_focus, expc_focus_copom, pm_copom_projecoes]
     cadence: "8x/year (~every 45 days)"
     note: >
       Two-day meeting (Tue+Wed); the Selic decision is announced at the close of day 2,
@@ -419,12 +459,12 @@ groups:
       lista: Atas e Comunicados do Copom
       summary_contains: Ata
     entries:
-      - {date: "2026-05-05", confirmed: true}
-      - {date: "2026-06-23", confirmed: true}
-      - {date: "2026-08-11", confirmed: true}
-      - {date: "2026-09-22", reference_period: "281ª reunião", confirmed: true}
-      - {date: "2026-11-10", reference_period: "282ª reunião", confirmed: true}
-      - {date: "2026-12-15", reference_period: "283ª reunião", confirmed: true}
+      - {date: "2026-05-05", time: "08:00", confirmed: true}
+      - {date: "2026-06-23", time: "08:00", confirmed: true}
+      - {date: "2026-08-11", time: "08:00", confirmed: true}
+      - {date: "2026-09-22", time: "08:00", reference_period: "281ª reunião", confirmed: true}
+      - {date: "2026-11-10", time: "08:00", reference_period: "282ª reunião", confirmed: true}
+      - {date: "2026-12-15", time: "08:00", reference_period: "283ª reunião", confirmed: true}
 
   - group: bcb_rpm
     institution: BCB
@@ -447,9 +487,9 @@ groups:
       lista: Relatório de Política Monetária
       ref: {unit: quarter, lag: 0}
     entries:
-      - {date: "2026-06-25", reference_period: "2026-Q2", confirmed: true}
-      - {date: "2026-09-24", reference_period: "2026-Q3", confirmed: true}
-      - {date: "2026-12-17", reference_period: "2026-Q4", confirmed: true}
+      - {date: "2026-06-25", time: "08:00", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-09-24", time: "08:00", reference_period: "2026-Q3", confirmed: true}
+      - {date: "2026-12-17", time: "08:00", reference_period: "2026-Q4", confirmed: true}
 
   - group: bcb_ptc
     institution: BCB
@@ -472,9 +512,9 @@ groups:
       summary_contains: PTC
       ref: {unit: quarter, lag: 1}
     entries:
-      - {date: "2026-05-21", reference_period: "2026-Q1", confirmed: true}
-      - {date: "2026-08-20", reference_period: "2026-Q2", confirmed: true}
-      - {date: "2026-11-19", reference_period: "2026-Q3", confirmed: true}
+      - {date: "2026-05-21", time: "14:30", reference_period: "2026-Q1", confirmed: true}
+      - {date: "2026-08-20", time: "14:30", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-11-19", time: "14:30", reference_period: "2026-Q3", confirmed: true}
 
   - group: bcb_credit_note
     institution: BCB
@@ -507,14 +547,14 @@ groups:
       lista: Estatísticas monetárias e de crédito
       ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-05-28", reference_period: "2026-04", confirmed: true}
-      - {date: "2026-07-01", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-07-30", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-08-28", reference_period: "2026-07", confirmed: true}
-      - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
-      - {date: "2026-10-29", reference_period: "2026-09", confirmed: true}
-      - {date: "2026-11-27", reference_period: "2026-10", confirmed: true}
-      - {date: "2026-12-28", reference_period: "2026-11", confirmed: true}
+      - {date: "2026-05-28", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-07-01", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-07-30", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-28", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-29", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-27", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-28", time: "08:30", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_caged_sgs_mirror
     institution: BCB
@@ -552,14 +592,14 @@ groups:
       lista: Estatísticas do setor externo
       ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-05-26", reference_period: "2026-04", confirmed: true}
-      - {date: "2026-06-26", reference_period: "2026-05", confirmed: true}
-      - {date: "2026-07-28", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-08-27", reference_period: "2026-07", confirmed: true}
-      - {date: "2026-09-28", reference_period: "2026-08", confirmed: true}
-      - {date: "2026-10-27", reference_period: "2026-09", confirmed: true}
-      - {date: "2026-11-26", reference_period: "2026-10", confirmed: true}
-      - {date: "2026-12-18", reference_period: "2026-11", confirmed: true}
+      - {date: "2026-05-26", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-26", time: "08:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-28", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-27", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-28", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-27", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-26", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-18", time: "08:30", reference_period: "2026-11", confirmed: true}
 
   - group: bcb_fiscal_statistics
     institution: BCB
@@ -583,14 +623,14 @@ groups:
       lista: Estatísticas fiscais
       ref: {unit: month, lag: 1}
     entries:
-      - {date: "2026-05-29", reference_period: "2026-04", confirmed: true}
-      - {date: "2026-06-30", reference_period: "2026-05", confirmed: true}
-      - {date: "2026-07-31", reference_period: "2026-06", confirmed: true}
-      - {date: "2026-08-31", reference_period: "2026-07", confirmed: true}
-      - {date: "2026-09-30", reference_period: "2026-08", confirmed: true}
-      - {date: "2026-10-30", reference_period: "2026-09", confirmed: true}
-      - {date: "2026-11-30", reference_period: "2026-10", confirmed: true}
-      - {date: "2026-12-30", reference_period: "2026-11", confirmed: true}
+      - {date: "2026-05-29", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-30", time: "08:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-31", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-31", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-30", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-30", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-30", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-30", time: "08:30", reference_period: "2026-11", confirmed: true}
 
   - group: tesouro_rtn
     institution: "Tesouro Nacional"
@@ -638,6 +678,10 @@ groups:
     name: "FOMC — Federal Open Market Committee meeting"
     tables: [diferenciais_juros]
     cadence: "8x/year"
+    # "For release at 2:00 p.m. EDT" no cabecalho do proprio comunicado do FOMC.
+    # Mesmo caso da CFTC acima: fuso da fonte, convertido por entrada.
+    release_time: "14:00"
+    release_time_tz: America/New_York
     note: >
       Two-day meeting; the rate decision is announced on day 2 at ~14:00 ET. `date` is
       day 2, `date_start` is day 1. Read directly off the Fed's own published calendar,
@@ -658,6 +702,14 @@ groups:
     name: "Commitments of Traders (COT)"
     tables: [cmb_cot_fx]
     cadence: weekly
+    # "The Commitments of Traders reports are released at 3:30 p.m. Eastern time",
+    # texto do proprio release schedule da CFTC. Declarado no fuso da FONTE: os EUA
+    # tem horario de verao e o Brasil nao, entao estas 15:30 sao 16:30 em Brasilia de
+    # marco a comeco de novembro e 17:30 no resto do ano. Quem converte por entrada e
+    # o sync.py (hora_da_entrada); congelar um valor unico aqui erraria por uma hora
+    # em metade do calendario, em silencio.
+    release_time: "15:30"
+    release_time_tz: America/New_York
     weekday: Friday
     note: >
       Released Fridays at 15:30 ET, reporting positions as of the PRIOR TUESDAY — so
@@ -695,6 +747,9 @@ groups:
     name: "Balança Comercial – Coletiva Mensal (Comex Stat)"
     tables: [cmb_comex_pais, cmb_comex_fator_agregado, cmb_comex_produto]
     cadence: monthly
+    # 15:00-18:30 na coluna "Horario" do proprio cronograma do MDIC (a coletiva
+    # mensal); guardado o INICIO da janela, que e quando o dado passa a existir.
+    release_time: "15:00"
     note: >
       This is the consolidated monthly press conference date, covering the FULL prior
       month (e.g. the 2026-09-04 release covers August 2026 data) -- align on

@@ -52,7 +52,9 @@ Percentage-type metrics (`taxa_juros`, `spread`, `icc`, `inadimplencia`, `pct_pi
   generalizing the factory.
 - The Apêndice item for PTC is the only one in this report carrying HTML tables (the 5-level scale and
   the per-segment panel size). `.appendix-body table` was already styled in the template — reuse it
-  rather than describing a matrix in prose.
+  rather than describing a matrix in prose. It runs to **17 numbered points** since 2026-08 (14 is the
+  surprise, 15 the σ band and the `1/N` retraction, 16 the 4Q MA, 17 the data corrections) — the harness
+  asserts the count, so adding one means bumping it.
 - `report.html`'s `makeImpulseTab(opts)` — a second, simpler factory (one control group instead of two,
   no Nominal/Real/% PIB axis) instantiated 3× by the Impulso tab. Kept separate from `makeHierTab()`
   because the impulse is already a ratio to GDP, so there is no basis to select — only a read frequency.
@@ -134,9 +136,11 @@ Same "Mostrar Selic" pattern as Taxa & Spread.
   in credit risk.
 
 **PTC** — the BCB's Pesquisa Trimestral de Condições de Crédito (`cred_ptc`, 16 series, quarterly
-since 2011-Q2), Brazil's Senior Loan Officer Opinion Survey. Bespoke JS (`ptcState` +
+since 2011-Q2, 61 quarters through 2026-Q2), Brazil's Senior Loan Officer Opinion Survey. Bespoke JS (`ptcState` +
 `renderPtcTable`/`renderPtcChart`), same shape as Taxa & Spread: one tree, one pill, no basis toggle.
-Built by `ptc_tab.py`, whose docstring is the spec.
+Built by `ptc_tab.py`, whose docstring is the spec. **Two table+chart pairs since 2026-08**: the level
+read, and the surprise (`renderPtcDesvioTable`/`renderPtcDesvioChart`, `ptcDesvioState`) — see the
+Surpresa bullets below.
 
 - **Official methodology: BCB Trabalhos para Discussão 245**, Annibal & Koyama (2011),
   [*Pesquisa Trimestral de Condições de Crédito no Brasil*](https://www.bcb.gov.br/pec/wps/port/TD245.pdf),
@@ -150,7 +154,7 @@ Built by `ptc_tab.py`, whose docstring is the spec.
   weight 1 and 2, direction *and intensity* live in the same number, so magnitude reads directly:
   |I| ≈ 1 = "the average bank said *moderadamente*", |I| ≈ 2 = "*consideravelmente*". A −0,32 is
   **not** "32% of banks tightened". The tab carries a `.scale-legend` strip spelling the 5 levels out.
-- **Range is [−2, +2].** 19 of 960 points break ±1 — extremes −1,21 (`mpme_oferta_esperada`,
+- **Range is [−2, +2].** 19 of 976 points break ±1 — extremes −1,21 (`mpme_oferta_esperada`,
   2016-Q1) and +1,57 (`pfh_demanda_observada`, 2020-Q4). The MySQL COMMENT used to say ±1;
   **corrected by `ALTER TABLE` in 2026-08**, and the −2..+2 scale plus the unweighted-mean
   definition now live in the `value` column's own COMMENT. Y axis is left on autoscale: the
@@ -192,6 +196,107 @@ Built by `ptc_tab.py`, whose docstring is the spec.
 - No STL, no deflation, no % PIB, no growth rates — a diffusion index takes none of them (the survey
   question is *already* relative to the previous quarter). `_load_ptc_tab_data()` also skips
   `_TAB_MIN_DATE` clipping: the series starts 2011-04, already inside the window.
+- **Surpresa (2026-08, user request)** — a second table+chart inside the same tab, showing **only**
+  `desvio(t) = observada(t) − esperada(t−1)`: the realized quarter against what the banks themselves
+  predicted one quarter earlier *about that quarter*. Positive = came in above what the panel
+  expected (looser approval, or stronger demand).
+  - **The lag is not optional.** `observada(t) − esperada(t)` is not a surprise at all — the
+    `esperada` of quarter *t* is a forecast about *t+1*, so the contemporaneous difference compares
+    two different periods. `ptc_tab._trimestre_anterior()` steps back by calendar month (−3, with
+    jan → oct of the prior year), not by list index, so a future hole in the series yields a missing
+    deviation instead of a wrong pair. The harness asserts the contemporaneous version would differ
+    on >300 of the 480 points, i.e. the lag is actually load-bearing.
+  - **60 points, not 61** — 2011-Q2 has no prior expectation. Its `ref_date` window is therefore
+    computed off the `desvio` series, not off `observada`.
+  - **"Em linha" is `|MA 4T| ≤ σ₀ of the MA`**, centred on zero — **the MA's limit, not the quarterly
+    one**, because the table shows the MA and the two must agree, and because the quarterly one (roughly
+    double) would swallow the MA. It runs 0,057 (`pfc_oferta`) to 0,197 (`pfh_demanda`), a 3,4× spread,
+    which is why the criterion is **per series and never shared**: one band would classify a series by
+    another's standard.
+    - **`σ₀` is the RMS about ZERO** — `sqrt(mean(v²))` in `ptc_tab._desvio_rms()`, on the payload as
+      `.desvio.rms` / `.desvio_ma4.rms`; the browser only reads it. **This was a bug until 2026-08**
+      (user caught it: "validate if the interval, for some seems wrong"): the width came from a
+      population sd about the series' *mean* while the band is centred on *zero*, and mixing the two
+      centres makes a biased series flag almost everything. `pfc_demanda`'s MA had mean −0,09 against
+      width 0,09 — the whole bias fitted inside one σ — so 8 of its 12 visible cells fell outside,
+      all negative, purely for the series being itself. RMS fixes it by construction, since
+      `RMS² = mean² + variance`. Measured effect: band coverage went from 49%-68% across the eight
+      series to **61%-70%** (clustered near the ~68% "1σ" implies) and painted cells in the visible
+      window from 31 to **23 of 96**. Signal survived: `pfh_oferta` still has 9 of 12 outside, because
+      there the positive surprise is real (last-12 mean +0,11 vs band 0,10).
+    - **Don't rename it back to `sd`.** The payload key was `sd` before; a name that says "standard
+      deviation" for a number measured about zero is exactly what let the mismatch hide. The harness
+      asserts `.sd` is *absent*.
+    - Centred on zero rather than on the mean deviation deliberately — zero is the no-surprise point;
+      centring on the mean would answer "in line with the usual bias", a different question. A robust
+      scale about zero (median |v| ÷ 0,6745) lands within 0,04, so 2015-16 and 2020 aren't inflating it.
+    - **The cell tint compares the numbers *as displayed*, 2 decimals** — `Math.abs(Math.round(v*100))`
+      against `Math.round(lim*100)`, i.e. `fmtDiffusion`'s own rounding *including* JS's asymmetric
+      `Math.round(-6.5) === -6`. Classifying at full precision printed a cell tinted "outside" next to
+      a row label showing the identical number (13 of 456 cells contradicted themselves), and using
+      `Math.round(Math.abs(v))` instead reintroduces it for exact negative half-cents (`−0,0650` prints
+      `−0,06`, must stay grey against a 0,06 limit). The **chart** band stays at full precision — no
+      rounding there, and the ≤0,003 disagreement is sub-pixel.
+    - It shows in three places: the cell tint (`dv-pos`/`dv-neg`/`dv-flat`), the row label
+      (`σ₀ 4T ±0,20`), and a band per checked series on the chart (`layout.shapes` rects,
+      `xref:'paper'` so they sweep the plot without entering the x autorange, `layer:'below'` so lines
+      stay on top).
+    - **Each band is dotted in its own series' colour** (2026-08, same round). They used to be
+      identical grey rects deduplicated by σ value: with 2+ series checked they nested with nothing
+      saying which was whose, and two of the eight limits are 0,0002 apart — not even distinguishable
+      as two bands. The fill only appears when exactly **one** series is checked; with several, nested
+      translucent rects darken the middle of the plot and read worse. One annotation only — with 3-4
+      nearby limits the per-band labels would collide — giving the value for a single series and the
+      range otherwise, and naming the colour convention.
+  - **This replaced a `1/N` band in 2026-08, and the retraction is the point.** The first version
+    called `|desvio| ≤ 1/N` "in line" on the grounds that such a deviation "fits inside one institution
+    changing its mind". The user pushed back and was right: `1/N` is the index's *resolution* at fixed
+    N, not a floor on relevance — a `1/N` net is merely *consistent* with one respondent moving, and
+    comes just as easily from five moving up against four moving down, which is a lot of churn. Worse,
+    the `1/N` grid only exists if N is equal in both quarters, and it isn't: **if N were always 7 in PF
+    Habitacional, 100% of its deviations would be multiples of 1/7; 52-58% are.** (GE's 90% is not
+    counter-evidence — with N=22 the 0,045 step is close to the published 0,01 rounding, so nearly
+    anything passes; where the test has power it refutes the grid.) And there is no sampling model to
+    call anything noise — the panel is a census of itself. **Don't reintroduce a `1/N` threshold.** Its
+    one correct use is the opposite bound, now in the chart's hover: `ceil(|desvio| × N)` is the
+    *minimum* number of respondents that must have changed level (GE's +0,26 in 2026-Q2 needs ≥6 of
+    22). A lower bound, never a count — offsetting moves are invisible to it.
+  - Side finding, deliberately not overstated: the mean deviation is negative in three of the four
+    *demanda* series (−0,06 to −0,09) and ≈0 in *oferta* — banks lean slightly optimistic on demand.
+    With 60 autocorrelated quarters this is **not** called significant anywhere in the report.
+  - **Lines, two per series, never bars** (user request, 2026-08 — the tab shipped with grouped bars
+    for one round). Quarterly: `lines+markers`, `width: 1`, `opacity: 0.4`. MA: `lines`, `width: 2.5`,
+    full opacity. Same colour and same `legendgroup` per series, names suffixed `(trim.)` / `(MA 4T)`.
+    No `barmode` in the layout at all. Bars were dropped partly on request and partly because two
+    overlaid series per segment would leave grouped bars too thin to read the MA against — but if bars
+    ever come back, they must be `'group'` and never stacked: the segments don't sum (there is no PTC
+    total), unlike Impulso where `'relative'` is required *because* the parts do sum.
+  - **Own `checked`/`expanded` state, not shared with `ptcState`** — it's an independent read, and
+    coupling them would make a click on the level table silently change what the surprise shows. The
+    harness asserts the horizonte pill / collapse / checkbox on the level table leave it untouched.
+    Default selection is GE oferta + GE demanda (the level table's is the 4 oferta segments).
+  - **The primary read is the 4Q moving average, not the raw quarterly deviation** (user request,
+    2026-08). `ptc_tab._ma4()` → `series[key].desvio_ma4`: trailing, so the point at *t* is the mean of
+    *t−3..t* (the last closed year, never looking forward), 57 points instead of 60, and it only
+    aggregates windows of 4 **consecutive** calendar quarters (checked via `_trimestre_anterior`) so a
+    future hole yields a dropped window instead of a mean over points a year-plus apart. The table shows
+    the MA and tints against the MA's σ; the chart shows **both** — quarterly thin/faded, MA thick.
+    - **The MA's σ₀ is ~half the quarterly σ₀** (measured ratios 0,38–0,69, mean 0,51), so the
+      band had to be recomputed: the quarterly σ would keep the MA inside the band almost always. Which
+      means the thin line *does* leave the band often — correct, and documented in the caption, since the
+      band describes the typical variation of the *mean*.
+    - **0,50 is what you'd get from independent deviations** (`σ/√4`), and the measured AR(1) of the
+      quarterly deviations runs −0,23 to +0,21 — near-zero persistence. So this MA is mostly averaging
+      approximately independent noise, **not** revealing a slow cycle. It's good for accumulated bias
+      (GE demanda's MA went +0,07 → −0,14 over four quarters, a full year of demand undershooting the
+      banks' own forecast), not for extrapolating trend. Both the caption and Apêndice point 16 say so.
+    - **Adjacent cells share 3 of their 4 quarters**, so MA points are strongly autocorrelated by
+      construction — never read two neighbouring cells as independent observations.
+    - The raw quarterly number left the table but not the tab: it's the thin line, and the MA line's
+      hover shows the MA *and* that quarter's raw deviation side by side.
+  - Payload: two derived variants on the same dict, `series[key].desvio` and `.desvio_ma4` — the pill
+    still only switches `observada`/`esperada`, and `generate_report`'s console count excludes both
+    (it iterates `ptc_tab.HORIZONTES`, so adding a variant can't inflate the "16 series" line).
 
 **Apêndice** — accordion of methodology notes for each tab above (small-base noise in near-extinct
 modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco break).
@@ -219,7 +324,8 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
   charted, in the Inadimplência tab's "Por Controle de Capital" group).
 - `cred_credito_resumo`'s residual un-charted series (`icc`, `concessao_sa`, the Tabela 14 "crédito não
   rotativo" cut) — no tab surfaces them yet.
-- PTC tab, possible next steps (none requested): a Selic or realized-credit-growth overlay (both
-  explicitly declined for this round), and the observada-vs-esperada surprise
-  (`observada(t) − esperada(t−1)`) as a derived read — worth little on its own, since the two agree in
-  sign 47 of 52 quarters for `ge_oferta`.
+- PTC tab, possible next steps (none requested): a Selic or realized-credit-growth overlay, both
+  explicitly declined. The observada-vs-esperada surprise **was built in 2026-08** at user request —
+  and it turned out to be worth more than the earlier note here guessed: the two horizons agreeing in
+  *sign* 47 of 52 quarters does not make the *gap* small, since only 25% of deviations fall inside the
+  1/N granularity band.

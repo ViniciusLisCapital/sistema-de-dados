@@ -13,6 +13,9 @@ Uso:
     # aplica as mudancas no YAML (preserva comentarios e notas escritas a mao)
     uv run python -m domain.release_calendar.update_calendar --write
 
+    # preenche so a HORA das entradas que ja existem (nao mexe em data)
+    uv run python -m domain.release_calendar.update_calendar --horas --write
+
     # quais tabelas do banco nao tem grupo de calendario
     uv run python -m domain.release_calendar.update_calendar --coverage
 
@@ -33,6 +36,11 @@ Notas de implementacao:
   como pendentes de preenchimento manual (o numero da reuniao do Copom, por exemplo,
   nao e derivavel do feed).
 - Entradas com data anterior ao corte sao preservadas como estao, nunca apagadas.
+- `time` (hora da divulgacao) vem do DTSTART do proprio feed — os 10 feeds do BCB
+  trazem hora de verdade, e ela muda de era, entao vive por entrada. Ver
+  `_horas_por_data()` para as duas regras que nao se adivinham (00:00 descartado,
+  empate no mesmo dia fica com a hora mais tarde). Grupo sem feed continua
+  dependendo do `release_time` escrito a mao no YAML.
 """
 
 from __future__ import annotations
@@ -148,6 +156,36 @@ def _gravar_entries(group: CommentedMap, itens: list) -> None:
 # ------------------------------------------------------------------- refresh
 
 
+def _horas_por_data(eventos: list[dict]) -> dict[date, str]:
+    """Hora de divulgacao por data, do DTSTART de cada evento do feed.
+
+    Os 10 feeds do BCB trazem hora de verdade (TZID=America/Sao_Paulo), conferido
+    ao vivo em 2026-08-24: PTC e IC-Br as 14:30, notas de estatisticas as 08:30,
+    Focus as 08:30, IBC-Br as 09:00, ata e RPM as 08:00 — e as horas mudaram de
+    era (as notas sairam de 10:30 em 2019 para 09:30 e depois 08:30 em 2023), o
+    que e justamente o motivo de a hora viver POR ENTRADA e nao no grupo.
+
+    Duas regras:
+
+    * `00:00` e descartado. Nao e "meia-noite", e o placeholder de evento de dia
+      inteiro — as 16 reunioes do Copom de 2026 estao todas assim, e a decisao sai
+      perto das 18:30. Gravar "00:00" reproduziria exatamente o bug que a hora
+      veio corrigir: a divulgacao considerada publicada desde a virada do dia.
+    * duas horas no mesmo dia: fica a mais TARDE. Nenhuma das 10 listas tem isso
+      hoje (medido: zero datas com mais de um evento apos o filtro de titulo), mas
+      se aparecer, liberar pela mais cedo destravaria o botao antes de o dado estar
+      completo.
+    """
+    horas: dict[date, str] = {}
+    for e in eventos:
+        h = e.get("time")
+        if not h or h == "00:00":
+            continue
+        if h > horas.get(e["date"], ""):
+            horas[e["date"]] = h
+    return horas
+
+
 def _feed_entries(group: dict, agenda: BCBAgenda, cutoff: date, until: date) -> list[dict]:
     """Entradas que o feed implica para um grupo, no formato do YAML."""
     cfg = group["ics"]
@@ -158,6 +196,7 @@ def _feed_entries(group: dict, agenda: BCBAgenda, cutoff: date, until: date) -> 
         summary_contains=cfg.get("summary_contains"),
     )
     datas = sorted({e["date"] for e in eventos})
+    horas = _horas_por_data(eventos)
 
     pares: list[tuple[date | None, date]]
     pares = _pair_days(datas) if cfg.get("pair_days") else [(None, d) for d in datas]
@@ -168,6 +207,9 @@ def _feed_entries(group: dict, agenda: BCBAgenda, cutoff: date, until: date) -> 
         item: dict = {"date": d.isoformat()}
         if inicio is not None:
             item["date_start"] = inicio.isoformat()
+        hora = horas.get(d)
+        if hora:
+            item["time"] = hora
         if ref:
             item["reference_period"] = _ref_period(d, ref["unit"], int(ref["lag"]))
         item["confirmed"] = True
@@ -188,6 +230,17 @@ def _diff(antigas: list[dict], novas: list[dict]) -> dict:
     nov_por_data = {str(e["date"]): e for e in novas}
 
     iguais = [n for n in novas if str(n["date"]) in ant_por_data]
+
+    # Mudanca de HORA na mesma data. Sai no relatorio em vez de entrar calada no
+    # --write, que e o ponto do dry-run. Comparado do lado do feed: entrada sem
+    # hora no feed nao e "hora removida", e feed sem hora para dar (Copom), e
+    # nesse caso o _merge preserva a que estiver escrita.
+    horas = []
+    for n in iguais:
+        a = ant_por_data[str(n["date"])]
+        nova_h = n.get("time")
+        if nova_h and str(a.get("time") or "") != str(nova_h):
+            horas.append((a, n))
     sobra_nov = [n for n in novas if str(n["date"]) not in ant_por_data]
     sobra_ant = [a for a in antigas if str(a["date"]) not in nov_por_data]
 
@@ -209,7 +262,7 @@ def _diff(antigas: list[dict], novas: list[dict]) -> dict:
             add.append(n)
 
     rem = [a for a in sobra_ant if id(a) not in casados]
-    return {"iguais": iguais, "shifts": shifts, "add": add, "rem": rem}
+    return {"iguais": iguais, "shifts": shifts, "add": add, "rem": rem, "horas": horas}
 
 
 def _em_escopo(entrada: dict, cutoff: date, until: date) -> bool:
@@ -265,6 +318,10 @@ def _merge(
         if antiga is not None:
             if "note" in antiga:
                 item["note"] = antiga["note"]
+            # hora escrita a mao sobrevive quando o feed nao tem hora para dar;
+            # quando tem, o feed vence (mesma regra da data)
+            if "time" not in item and "time" in antiga:
+                item["time"] = antiga["time"]
             if "reference_period" not in item and "reference_period" in antiga:
                 item["reference_period"] = antiga["reference_period"]
         elif usa_ref and "reference_period" not in item:
@@ -274,11 +331,87 @@ def _merge(
             )
 
         # ordem estavel das chaves, igual ao resto do arquivo
-        ordem = ["date", "date_start", "reference_period", "confirmed", "note"]
+        ordem = ["date", "date_start", "time", "reference_period", "confirmed", "note"]
         itens.append(_flow({k: item[k] for k in ordem if k in item}))
 
     itens.sort(key=lambda e: str(e["date"]))
     return itens, avisos
+
+
+def _preencher_horas(group: CommentedMap, agenda: BCBAgenda,
+                     cutoff: date, until: date) -> list[tuple[str, str, str]]:
+    """Escreve `time` nas entradas existentes, sem tocar em data nem em entrada.
+
+    Existe para poder backfillar hora no ano inteiro. Um `refresh` com a janela
+    aberta em janeiro tambem traria hora, mas de carona com 40 entradas passadas
+    que nunca foram preenchidas (e 5 reunioes do Copom sem numero derivavel) —
+    misturar as duas coisas numa gravacao so tira do dry-run a chance de servir
+    para algo. Aqui a unica chave que pode mudar e `time`.
+    """
+    cfg = group["ics"]
+    eventos = agenda.eventos(
+        cfg["lista"], start=cutoff, end=until,
+        summary_contains=cfg.get("summary_contains"),
+    )
+    horas = _horas_por_data(eventos)
+
+    mudancas = []
+    for entrada in group.get("entries") or []:
+        d = date.fromisoformat(str(entrada["date"]))
+        nova = horas.get(d)
+        if not nova or str(entrada.get("time") or "") == nova:
+            continue
+        mudancas.append((str(entrada["date"]), str(entrada.get("time") or "sem hora"), nova))
+        if "time" in entrada:
+            entrada["time"] = _dq(nova)
+        else:
+            # insert() em vez de atribuir: mantem a ordem de chaves do arquivo
+            # (date, date_start, time, reference_period, ...) e nao remonta o
+            # CommentedMap, entao nota e comentario de linha sobrevivem
+            entrada.insert(1 + ("date_start" in entrada), "time", _dq(nova))
+    return mudancas
+
+
+def preencher_horas(path: Path | str = _YAML_DEFAULT, cutoff: date | None = None,
+                    until: date | None = None, write: bool = False) -> int:
+    """Backfill de hora de divulgacao nas entradas que ja existem."""
+    path = Path(path)
+    cutoff = cutoff or date(date.today().year, 1, 1)
+    until = until or date(cutoff.year, 12, 31)
+
+    y = _yaml()
+    doc = y.load(path.read_text(encoding="utf-8"))
+    agenda = BCBAgenda()
+
+    print(f"calendario : {path.name}")
+    print(f"janela     : {cutoff} -> {until}   (so preenche hora)")
+    print(f"modo       : {'ESCRITA' if write else 'dry-run (nada sera gravado)'}")
+    print()
+
+    total = 0
+    for group in doc["groups"]:
+        if "ics" not in group:
+            continue
+        mudancas = _preencher_horas(group, agenda, cutoff, until)
+        total += len(mudancas)
+        marca = "*" if mudancas else " "
+        print(f"{marca} {group['group']}")
+        for quando, antes, depois in mudancas:
+            print(f"      h {quando}   {antes} -> {depois}")
+        if not mudancas:
+            print("      = nenhuma hora a preencher")
+
+    print()
+    if write and total:
+        buf = io.StringIO()
+        y.dump(doc, buf)
+        path.write_text(buf.getvalue(), encoding="utf-8", newline="\n")
+        print(f"gravado: {path}  ({total} entradas)")
+    elif total:
+        print(f"{total} entrada(s) a preencher — rode com --write para aplicar")
+    else:
+        print("nenhuma hora a preencher")
+    return total
 
 
 def refresh(
@@ -325,7 +458,7 @@ def refresh(
         # o feed simplesmente nao foi consultado ali
         d = _diff([e for e in antigas if _em_escopo(e, cutoff, until)], novas)
 
-        tem_mudanca = bool(d["shifts"] or d["add"] or d["rem"])
+        tem_mudanca = bool(d["shifts"] or d["add"] or d["rem"] or d["horas"])
         if tem_mudanca:
             mudados += 1
 
@@ -338,6 +471,9 @@ def refresh(
             print(f"      + {n['date']}   {n.get('reference_period', '')}   nova")
         for a in d["rem"]:
             print(f"      - {a['date']}   {a.get('reference_period', '')}   saiu do feed")
+        for a, n in d["horas"]:
+            antes = a.get("time") or "sem hora"
+            print(f"      h {n['date']}   {antes} -> {n['time']}   HORA")
         if not tem_mudanca:
             print(f"      = {len(d['iguais'])} entradas, sem mudanca")
 
@@ -496,6 +632,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="compara com as tabelas do banco e sai")
     p.add_argument("--listas", action="store_true",
                    help="enumera as listas de calendario do BCB e sai")
+    p.add_argument("--horas", action="store_true",
+                   help="preenche so a hora das entradas existentes e sai")
     p.add_argument("--horizonte", action="store_true",
                    help="mede ate onde cada feed ICS chega e sai (ver ROLLOVER.md)")
     args = p.parse_args(argv)
@@ -508,6 +646,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.coverage:
         coverage(args.yaml)
+        return 0
+    if args.horas:
+        preencher_horas(
+            path=args.yaml,
+            cutoff=date.fromisoformat(args.cutoff) if args.cutoff else None,
+            until=date.fromisoformat(args.until) if args.until else None,
+            write=args.write,
+        )
         return 0
 
     refresh(

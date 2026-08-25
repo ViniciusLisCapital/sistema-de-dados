@@ -30,6 +30,20 @@ def _load_groups() -> list[dict]:
     return doc["groups"]
 
 
+def _hora_brasilia(entrada: dict, grupo: dict) -> str | None:
+    """`"HH:MM"` de Brasilia para a entrada, ou None se o grupo nao declara horario."""
+    from datetime import date as _date
+
+    from domain.release_calendar.sync import hora_da_entrada
+
+    try:
+        quando = _date.fromisoformat(str(entrada["date"]))
+    except (KeyError, ValueError):
+        quando = None
+    hora = hora_da_entrada(entrada, grupo, quando)
+    return hora.strftime("%H:%M") if hora else None
+
+
 def _flatten_entries(groups: list[dict]) -> list[dict]:
     """One row per dated entry, group/institution metadata denormalized onto it --
     report.html's table and timeline both consume this flat list directly, no
@@ -41,6 +55,13 @@ def _flatten_entries(groups: list[dict]) -> list[dict]:
                 "date": e["date"],
                 "date_end": e.get("date_end"),
                 "reference_period": e.get("reference_period"),
+                # Hora de Brasilia, opcional. A resolucao vive no sync.py (mesma
+                # funcao que decide se a divulgacao ja saiu) para as duas nao poderem
+                # divergir: `time:` da entrada vence o `release_time:` do grupo, e
+                # grupo com `release_time_tz` tem a hora convertida da fonte para
+                # Brasilia com a data desta entrada -- o COT e o FOMC mudam de hora
+                # daqui quando os EUA entram e saem do horario de verao.
+                "release_time": _hora_brasilia(e, g),
                 "confirmed": e.get("confirmed", True),
                 "note": e.get("note"),
                 "group": g["group"],

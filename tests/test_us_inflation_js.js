@@ -79,18 +79,27 @@ function definePills(groupId, attr, values) {
     const p = makeEl('button');
     p.dataset[attr] = v.name;
     if (v.active) p.classList.add('active');
+    if (v.disabled) p.classList.add('disabled');
     p.classList.add('pill');
     return p;
   });
 }
+definePills('release-view-group', 'view', [{name: 'series', active: true}, {name: 'table1'}]);
+definePills('expenditure-view-group', 'view', [{name: 'series', active: true}, {name: 'table1'}]);
 definePills('release-metric-group', 'metric', [
   {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
 definePills('release-basis-group', 'basis', [{name: 'NSA'}, {name: 'SA', active: true}]);
 definePills('expenditure-metric-group', 'metric', [
   {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
 definePills('expenditure-basis-group', 'basis', [{name: 'NSA'}, {name: 'SA', active: true}]);
+// A aba de PCE nao tem pills de View (o toggle Series|Table 1 e coisa do release do
+// BLS) e a pill NSA dela nasce desabilitada: o BEA nao publica PCE mensal sem ajuste
+// sazonal.
+definePills('pce-metric-group', 'metric', [
+  {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
+definePills('pce-basis-group', 'basis', [{name: 'NSA', disabled: true}, {name: 'SA', active: true}]);
 
-const tabButtons = ['release', 'expenditure', 'appendix'].map(t => {
+const tabButtons = ['release', 'expenditure', 'pce', 'appendix'].map(t => {
   const b = makeEl('button'); b.dataset.tab = t; return b;
 });
 
@@ -191,7 +200,7 @@ ok(relDet === 163, 'mais 163 linhas de drill-down da arvore de despesa', relDet)
 ok(relDet === D.meta.n_release_drill, 'o meta bate com a arvore', D.meta.n_release_drill);
 
 // O drill-down entra SO abaixo de folha do release: nenhum no publicado pode ter
-// ganhado irmao novo, senao os badges "partial" da Tabela 1 passariam a mentir.
+// ganhado irmao novo, senao a decomposicao parcial da Tabela 1 passaria a mentir.
 let misturados = [];
 (function walk(ns) {
   ns.forEach(n => {
@@ -283,7 +292,7 @@ ok(encerradas.every(n => /^[0-9]{4}-[0-9]{2}$/.test(n.stale)),
 ok(!porCode['SEMC04'] || !porCode['SEMC04'].stale,
    'um item 1 mes atrasado NAO e marcado (Services by other medical professionals)');
 
-console.log('\n=== 7. os badges de "partial" carregam a massa faltante ======');
+console.log('\n=== 7. a decomposicao parcial carrega a massa faltante =======');
 let partials = [];
 (function walk(ns) { ns.forEach(n => { if (n.decomp === 'partial') partials.push(n); if (n.children) walk(n.children); }); })(relTree);
 ok(partials.length === 7, '7 pais parciais na arvore de divulgacao', partials.length);
@@ -358,6 +367,342 @@ const kpis = el('kpis');
 ok(kpis.children.length === 6, '6 cards de KPI', kpis.children.length);
 ok(kpis.children.every(c => c.innerHTML.indexOf('—') === -1),
    'nenhum KPI ficou sem valor');
+
+console.log('\n=== 12. a visao Table 1 =====================================');
+// As 37 importancias relativas IMPRESSAS na Tabela 1 do release de julho/2026.
+// A planilha de pesos so publica dezembro, entao a coluna e RECONSTRUIDA -- este
+// bloco e a prova de que a reconstrucao esta certa, contra o numero publicado.
+const RI_PUBLICADA = {
+  SA0: 100.000, SAF1: 13.522, SAF11: 8.231, SAF111: 1.023, SAF112: 1.959, SEFJ: 0.743,
+  SAF113: 1.283, SAF114: 0.981, SAF115: 2.242, SEFV: 5.290, SA0E: 7.432, SACE: 4.132,
+  SEHE01: 0.106, SETB: 3.971, SETB01: 3.852, SEHF: 3.300, SEHF01: 2.552, SEHF02: 0.748,
+  SA0L1E: 79.047, SACL1E: 18.829, SAA: 2.437, SETA01: 3.751, SETA02: 2.679, SAM1: 1.412,
+  SAF116: 0.823, SEGA: 0.445, SASLE: 60.217, SAH1: 35.304, SEHA: 7.716, SEHC: 25.849,
+  SAM2: 6.840, SEMC01: 1.660, SEMD01: 2.156, SAS4: 6.352, SETD: 1.048, SETE: 2.570,
+  SETG01: 1.091
+};
+const spec = table1Spec('release');
+ok(spec.ref.slice(0, 7) === D.meta.ultimo_mes,
+   'o mes de referencia e o ultimo mes da base', spec.ref);
+const mesAnterior = (function(ym) {
+  const a = parseInt(ym.slice(0, 4), 10), m = parseInt(ym.slice(5, 7), 10) - 1;
+  const tot = a * 12 + (m - 1);
+  return String(Math.floor(tot / 12)).padStart(4, '0') + '-' + String(tot % 12 + 1).padStart(2, '0');
+})(spec.ref.slice(0, 7));
+ok(spec.ri.slice(0, 7) === mesAnterior,
+   'a importancia relativa e datada um mes atras, como o release a data', spec.ri);
+
+let piorRI = 0, semRI = [], conferidas = 0;
+Object.keys(RI_PUBLICADA).forEach(function(code) {
+  const v = riAt('release', code, spec.ri);
+  if (v == null) { semRI.push(code); return; }
+  conferidas++;
+  piorRI = Math.max(piorRI, Math.abs(v - RI_PUBLICADA[code]));
+});
+ok(semRI.length === 0, 'as 37 linhas publicadas todas produzem uma importancia relativa',
+   semRI.join(','));
+// A contagem entra na assercao de proposito: sem ela, um riAt() que devolve null
+// para tudo deixa piorRI em 0 e o teste passa sem ter conferido nada -- foi
+// exatamente o que aconteceu na primeira rodada.
+ok(conferidas === 37 && piorRI <= 0.0015,
+   'e as 37 batem com o numero impresso na Tabela 1 (erro <= 0.001)',
+   conferidas + ' conferidas, erro ' + piorRI.toFixed(4));
+console.log('          erro maximo contra a Tabela 1 impressa: ' + piorRI.toFixed(4));
+
+// A linha All items, celula por celula, contra o release impresso.
+near(levelAt('release', 'SA0', 'NSA', spec.yrAgo), 323.048, 0.0005, 'indice NSA jul/25 = 323.048');
+near(levelAt('release', 'SA0', 'NSA', spec.prev), 333.952, 0.0005, 'indice NSA jun/26 = 333.952');
+near(levelAt('release', 'SA0', 'NSA', spec.ref), 333.918, 0.0005, 'indice NSA jul/26 = 333.918');
+near(pctBetween('release', 'SA0', 'NSA', spec.ref, spec.yrAgo), 3.4, 0.05, 'NSA 12 meses = 3.4%');
+near(pctBetween('release', 'SA0', 'NSA', spec.ref, spec.prev), 0.0, 0.05, 'NSA 1 mes = 0.0%');
+const saM = spec.sa;
+ok(saM.length === 4, 'a grade SA rende as 3 variacoes mensais do release', saM.length);
+near(pctBetween('release', 'SA0', 'SA', saM[1], saM[0]), 0.5, 0.05, 'SA abr->mai = +0.5%');
+near(pctBetween('release', 'SA0', 'SA', saM[2], saM[1]), -0.4, 0.05, 'SA mai->jun = -0.4%');
+near(pctBetween('release', 'SA0', 'SA', saM[3], saM[2]), 0.1, 0.05, 'SA jun->jul = +0.1%');
+
+// Prova estrutural, independente da Tabela 1 impressa: atualizar cada item
+// separadamente nao pode quebrar a soma. Os 8 grupos de nivel 1 da arvore de
+// despesa somam 100 antes e depois.
+const especExp = table1Spec('expenditure');
+const raizExp = D.tabs.expenditure.tree[0];
+const somaRI = raizExp.children.reduce(function(a, c) {
+  return a + (riAt('expenditure', c.seriesKey, especExp.ri) || 0);
+}, 0);
+near(somaRI, 100, 0.002, 'a importancia relativa atualizada dos 8 grupos de nivel 1 ainda soma 100');
+
+// Sem peso publicado nao ha importancia relativa a atualizar.
+ok(riAt('expenditure', 'SS47014', spec.ri) === null,
+   'um item sem peso (gasolina comum) nao inventa importancia relativa');
+ok(levelAt('expenditure', 'SS47014', 'NSA', spec.ref) != null,
+   'mas o indice dele esta la');
+
+// -0.04 imprime "0.0", nunca "-0.0" -- como o release imprime.
+ok(fmtT1(-0.0102, 1) === '0.0', 'fmtT1 nao produz "-0.0"', fmtT1(-0.0102, 1));
+ok(fmtT1(null, 3) === '—', 'celula vazia e em-dash');
+
+// E agora o caminho pelo DOM: clicar no pill e conferir a tabela renderizada.
+const pillT1 = pills['release-view-group'].find(x => x.dataset.view === 'table1');
+pillT1.click();
+const cabT1 = el('release-table-head');
+ok(cabT1.children.length === 2, 'cabecalho da Table 1 tem duas linhas', cabT1.children.length);
+ok(cabT1.children[0].children.length === 6,
+   'linha de grupos: check + label + 4 grupos', cabT1.children[0].children.length);
+ok(cabT1.children[1].children.length === 9,
+   'linha de meses: as 9 colunas do release', cabT1.children[1].children.length);
+ok(cabT1.children[0].children.map(x => x.textContent).join('|') ===
+   '|Expenditure category|Relative importance|Unadjusted indexes|Unadjusted percent change|' +
+   'Seasonally adjusted percent change',
+   'os grupos sao os do release', cabT1.children[0].children.map(x => x.textContent).join('|'));
+
+const linhaAll = el('release-table-body').children[0];
+ok(linhaAll.children.length === 11, 'linha tem check + label + 9 valores', linhaAll.children.length);
+const celulas = linhaAll.children.slice(2).map(td => td.textContent);
+ok(celulas.join(' ') === '100.000 323.048 333.952 333.918 3.4 0.0 0.5 -0.4 0.1',
+   'a linha All items reproduz a Tabela 1 celula por celula', celulas.join(' '));
+ok(linhaAll.children[8].classList.contains('neg') === false &&
+   linhaAll.children[9].classList.contains('neg') === true,
+   'so a celula negativa de verdade fica vermelha (0.0 nao)');
+ok(el('release-t1note').innerHTML.indexOf('Relative importance') === -1 ||
+   el('release-t1note').style.display === '',
+   'a nota da visao aparece');
+ok(el('release-t1note').innerHTML.indexOf('computed') > 0,
+   'e diz que a importancia relativa e calculada, nao publicada');
+
+// Uma linha de drill-down vive na outra aba: as colunas de indice tem de resolver.
+const linhas = el('release-table-body').children;
+ok(linhas.length === 4, 'a Table 1 nao mexeu na arvore, so nas colunas', linhas.length);
+ok(levelAt('release', 'SS47014', 'NSA', spec.ref) != null,
+   'e um codigo de drill-down resolve na aba de divulgacao (seriesOwner)');
+
+ok(/^\d+$/.test(el('ap-ri-n').textContent),
+   'o apendice recebeu a contagem de linhas com importancia relativa', el('ap-ri-n').textContent);
+const nRI = parseInt(el('ap-ri-n').textContent, 10);
+ok(nRI > 250 && nRI < D.meta.n_expenditure,
+   'a contagem e plausivel: menos que os 355 itens, mais que 250', nRI);
+
+// Voltar para Series restaura as 12 colunas de mes.
+pills['release-view-group'].find(x => x.dataset.view === 'series').click();
+ok(el('release-table-head').children.length === 1 &&
+   el('release-table-head').children[0].children.length === 14,
+   'voltar para Series traz as 12 colunas de mes de volta');
+
+console.log('\n=== 13. as linhas nao levam rotulo visivel ==================');
+// Os badges (agg / detail / no weight / last YYYY-MM / -X.XXX pp) foram removidos
+// a pedido do usuario. O que eles diziam foi para o title da celula do rotulo --
+// entao o teste confere as duas coisas: que nao ha rotulo, e que o fato nao sumiu.
+ok(html.indexOf('badge') === -1,
+   'a palavra "badge" nao aparece em lugar nenhum do HTML gerado (CSS incluido)');
+
+function textoLinha(tr) {
+  return (tr.children[1].children || [])
+    .map(c => c.textContent || '').join('').replace(/^[▾▸]\s*/, '').trim();
+}
+function acharLinha(rotulo) {
+  const linhas = el('release-table-body').children;
+  for (let i = 0; i < linhas.length; i++) if (textoLinha(linhas[i]) === rotulo) return linhas[i];
+  return null;
+}
+function abrir(rotulo) {
+  const linha = acharLinha(rotulo);
+  if (!linha) return false;
+  const tog = linha.children[1].children[0];
+  if (!tog || tog.className !== 'tree-toggle') return false;
+  tog.click();
+  return true;
+}
+['Energy', 'Energy commodities', 'Motor fuel', 'Gasoline (all types)'].forEach(function(r) {
+  ok(abrir(r), 'abriu ' + r);
+});
+
+const lMotor = acharLinha('Motor fuel');
+ok(!!lMotor, 'Motor fuel esta na arvore');
+ok(lMotor.children[1].children.filter(c => (c.className || '').indexOf('badge') >= 0).length === 0,
+   'Motor fuel nao renderiza nenhum span de rotulo');
+ok((lMotor.children[1].title || '').indexOf('0.119') > 0,
+   'mas o hover ainda diz quanto peso nao tem linha ali', lMotor.children[1].title);
+
+const lGas = acharLinha('Gasoline, unleaded regular');
+ok(!!lGas, 'a gasolina comum continua na arvore (drill-down)');
+ok(lGas.children[1].children.every(c => c.nodeType === 3),
+   'a celula dela tem so texto, nenhum elemento');
+ok((lGas.children[1].title || '').indexOf('no relative importance') > 0 &&
+   (lGas.children[1].title || '').indexOf('Table 1') > 0,
+   'e o hover diz que ela nao tem peso e nao e linha da Tabela 1', lGas.children[1].title);
+
+const lAll = acharLinha('All items');
+ok(!!lAll && !lAll.children[1].title,
+   'uma linha sem ressalva nenhuma nao ganha hover', lAll && lAll.children[1].title);
+
+let comRotulo = 0;
+['release-table-body', 'expenditure-table-body'].forEach(function(id) {
+  el(id).children.forEach(function(tr) {
+    (tr.children[1].children || []).forEach(function(c) {
+      if ((c.className || '').indexOf('badge') >= 0) comRotulo++;
+    });
+  });
+});
+ok(comRotulo === 0, 'nenhuma linha renderizada nas duas abas tem rotulo', comRotulo);
+
+console.log('\n=== 14. a aba de PCE =======================================');
+{
+ok(D.tabs.pce && D.tabs.pce.tree, 'o payload tem a aba pce');
+ok(D.meta.n_pce === 368, 'a arvore do PCE tem 368 linhas', D.meta.n_pce);
+ok(D.meta.n_pce_addenda === 34, 'mais 34 agregados de addenda', D.meta.n_pce_addenda);
+ok(D.meta.niveis_pce === 9, '9 niveis', D.meta.niveis_pce);
+ok(Object.keys(D.tabs.pce.dates).join(',') === 'SA',
+   'a grade do PCE so tem SA -- o BEA nao publica NSA mensal', Object.keys(D.tabs.pce.dates).join(','));
+ok(!!D.tabs.pce.weights, 'a aba carrega pesos alinhados a grade (convencao mensal)');
+ok(!D.tabs.release.weights && !D.tabs.expenditure.weights,
+   'e nenhuma aba de CPI carrega -- e assim que weightAt separa as duas convencoes');
+
+// O nivel publicado, contra o que a serie do FRED devolve (conferido ao vivo).
+const mesPce = D.tabs.pce.dates.SA[D.tabs.pce.dates.SA.length - 1];
+ok(mesPce.slice(0, 7) === D.meta.ultimo_mes_pce,
+   'o ultimo mes da grade do PCE e o do meta', mesPce);
+ok(D.meta.ultimo_mes_pce !== D.meta.ultimo_mes,
+   'e NAO e o mesmo do CPI: o PCE sai semanas depois',
+   D.meta.ultimo_mes_pce + ' vs ' + D.meta.ultimo_mes);
+function nivelPce(key) {
+  const s = metricSeries('pce', key, 'SA', 'level');
+  return s.values[s.values.length - 1];
+}
+near(nivelPce('1'), 131.392, 0.0005, 'PCE headline = 131.392 (= PCEPI no FRED)');
+near(nivelPce('374'), 130.266, 0.0005, 'PCE core = 130.266 (= PCEPILFE no FRED)');
+
+// M/M e a razao dos niveis, sem atalho.
+const lvlPce = metricSeries('pce', '1', 'SA', 'level').values;
+const momPce = metricSeries('pce', '1', 'SA', 'mom').values;
+const n = lvlPce.length - 1;
+near(momPce[n], (lvlPce[n] / lvlPce[n - 1] - 1) * 100, 1e-9,
+     'M/M do PCE e exatamente a razao dos niveis');
+
+// O TESTE QUE IMPORTA: as contribuicoes do nivel 1 somam a variacao do headline.
+// Exercita weightAt (peso mensal, defasado pelo lag) e o sinal acumulado de uma vez.
+const raizPce = D.tabs.pce.tree[0];
+ok(raizPce.key === '1' && raizPce.children.length === 2,
+   'a raiz do PCE tem 2 filhos (Goods, Services)',
+   raizPce.children.map(c => c.label).join(' | '));
+const yoyHead = metricSeries('pce', '1', 'SA', 'yoy').values;
+const contribN1 = raizPce.children.map(c => metricSeries('pce', c.seriesKey, 'SA', 'contrib').values);
+let piorSoma = 0, mesesSoma = 0;
+for (let i = lvlPce.length - 60; i < lvlPce.length; i++) {
+  if (yoyHead[i] == null) continue;
+  let s = 0, falta = false;
+  contribN1.forEach(v => { if (v[i] == null) falta = true; else s += v[i]; });
+  if (falta) continue;
+  mesesSoma++;
+  piorSoma = Math.max(piorSoma, Math.abs(s - yoyHead[i]));
+}
+ok(mesesSoma === 60, 'os 60 ultimos meses todos tem contribuicao nos dois filhos', mesesSoma);
+ok(piorSoma <= 0.12,
+   'e Goods + Services reconstroem o Y/Y do headline (erro <= 0.12 pp)', piorSoma.toFixed(4));
+console.log('          pior erro da soma nivel 1: ' + piorSoma.toFixed(4) + ' pp');
+
+// Os pesos do nivel 1 somam 100% -- com o sinal ja embutido.
+const iUlt = D.tabs.pce.dates.SA.length - 1;
+const somaW = raizPce.children.reduce((a, c) => a + D.tabs.pce.weights[c.seriesKey][iUlt], 0);
+near(somaW, 100, 0.02, 'os pesos de Goods + Services somam 100% do PCE');
+
+// As 19 linhas que subtraem: peso negativo, e o flag no no.
+function acharNo(tree, key) {
+  for (const nd of tree || []) {
+    if (nd.key === key) return nd;
+    const f = acharNo(nd.children, key);
+    if (f) return f;
+  }
+  return null;
+}
+
+// 19 linhas SUBTRAEM (sinal acumulado -1) mas 20 pesos saem negativos: a linha 16,
+// `Employee reimbursement`, tem despesa nominal negativa por conta propria (-1.735
+// US$ mi), com sinal +1. Peso negativo nao e sinonimo de linha "Less:".
+const negativos = Object.keys(D.tabs.pce.weights).filter(k => D.tabs.pce.weights[k][iUlt] < 0);
+ok(negativos.length === 20, '20 pesos saem negativos no ultimo mes', negativos.length);
+function contaNegativos(tree) {
+  return (tree || []).reduce((a, nd) =>
+    a + (nd.negativo ? 1 : 0) + contaNegativos(nd.children), 0);
+}
+ok(contaNegativos(D.tabs.pce.tree) === 19,
+   'mas so 19 nos estao marcados como negativos por SINAL', contaNegativos(D.tabs.pce.tree));
+ok(acharNo(D.tabs.pce.tree, '16') && !acharNo(D.tabs.pce.tree, '16').negativo,
+   'e a 20a (Employee reimbursement) nao esta: o negativo dela e a despesa, nao o sinal');
+const noLess = acharNo(D.tabs.pce.tree, '356');  // Less: Receipts from sales... (NPISH)
+ok(noLess && noLess.negativo === 1, 'a linha 356 (Less: Receipts...) esta marcada negativa');
+const noHerdado = acharNo(D.tabs.pce.tree, '357');  // filho dela, sem "Less:" no rotulo
+ok(noHerdado && noHerdado.negativo === 1 && noHerdado.label.indexOf('Less:') === -1,
+   'e um filho dela herda o sinal sem dizer "Less:" no rotulo', noHerdado && noHerdado.label);
+ok(D.tabs.pce.weights['357'][iUlt] < 0,
+   'o peso desse filho vem negativo no payload', D.tabs.pce.weights['357'][iUlt]);
+
+// As 2 linhas de net: tem peso, nao tem indice.
+const noNet = acharNo(D.tabs.pce.tree, '145');
+ok(noNet && noNet.noIndex === 1, 'a linha 145 (Net expenditures abroad) esta marcada sem indice');
+ok(metricSeries('pce', '145', 'SA', 'level').values.every(v => v == null),
+   'e nenhum mes dela tem indice');
+ok(D.tabs.pce.weights['145'][iUlt] != null, 'mas ela tem peso (o BEA publica a despesa)');
+
+// O bloco de addenda: achatado, sem serie propria no cabecalho.
+const grupoAdd = D.tabs.pce.tree[D.tabs.pce.tree.length - 1];
+ok(grupoAdd.key === 'ADDENDA' && grupoAdd.noSeries === 1,
+   'o ultimo no raiz e o cabecalho sintetico de addenda, sem serie');
+ok(grupoAdd.children.length === 34, 'com os 34 agregados dentro', grupoAdd.children.length);
+ok(grupoAdd.children.every(c => !c.children),
+   'nenhum deles ganhou filho -- o bloco e achatado de proposito');
+ok(grupoAdd.children.every(c => c.special === 1), 'e todos vem marcados como agregado');
+
+// A tabela renderizada.
+const linhasPce = el('pce-table-body').children;
+ok(linhasPce.length === 4,
+   'a tabela do PCE abre com 4 linhas: o bloco de addenda vem colapsado', linhasPce.length);
+const trRaiz = linhasPce[0];
+ok(trRaiz.children.length === 14, 'linha = check + label + 12 meses', trRaiz.children.length);
+const cabPce = el('pce-table-head').children[0];
+ok(cabPce.children[1].textContent === 'Type of product',
+   'o cabecalho da coluna de rotulo e o do PCE', cabPce.children[1].textContent);
+const trAdd = linhasPce[linhasPce.length - 1];
+ok(trAdd.children[0].children.length === 0,
+   'o cabecalho de addenda nao renderiza checkbox');
+ok(trRaiz.children[0].children.length === 1,
+   'mas uma linha de serie renderiza');
+ok((trAdd.children[1].title || '').indexOf('heading') > 0,
+   'e o hover dele diz que e cabecalho', trAdd.children[1].title);
+// Expandir mostra os 34, e ai sim eles tem checkbox.
+trAdd.children[1].children[0].click();
+ok(el('pce-table-body').children.length === 38,
+   'expandir addenda traz os 34 para a tabela', el('pce-table-body').children.length);
+const trAgg = el('pce-table-body').children[37];
+ok(trAgg.children[0].children.length === 1, 'e cada agregado tem checkbox proprio');
+ok((trAgg.children[1].title || '').indexOf('never be summed together') > 0,
+   'e o hover deles avisa que se sobrepoem', trAgg.children[1].title);
+el('pce-table-body').children[3].children[1].children[0].click();  // recolhe
+
+// A pill NSA e desabilitada e clicar nela nao muda nada.
+const pillNSA = pills['pce-basis-group'].find(x => x.dataset.basis === 'NSA');
+ok(pillNSA.classList.contains('disabled'), 'a pill NSA do PCE nasce desabilitada');
+const antes = el('pce-table-body').children[0].children[13].textContent;
+pillNSA.click();
+ok(pillNSA.classList.contains('active') === false,
+   'clicar nela nao a ativa');
+ok(el('pce-table-body').children[0].children[13].textContent === antes,
+   'e a tabela nao muda', el('pce-table-body').children[0].children[13].textContent);
+
+// Trocar de metrica na aba de PCE re-renderiza.
+pills['pce-metric-group'].find(x => x.dataset.metric === 'contrib').click();
+ok(reactCalls[reactCalls.length - 1].div === 'chart-pce',
+   'trocar para contribuicao redesenhou o grafico do PCE',
+   reactCalls[reactCalls.length - 1].div);
+ok(reactCalls[reactCalls.length - 1].layout.yaxis.title.text === 'p.p. of headline Y/Y',
+   'com o titulo de eixo da contribuicao',
+   reactCalls[reactCalls.length - 1].layout.yaxis.title.text);
+pills['pce-metric-group'].find(x => x.dataset.metric === 'yoy').click();
+
+// O apendice recebeu os dois numeros do PCE.
+ok(String(el('ap-pce-folhas').textContent) === String(D.meta.n_pce_folhas),
+   'o apendice recebeu a contagem de folhas do PCE', el('ap-pce-folhas').textContent);
+ok(el('ap-pce-mes').textContent === D.meta.ultimo_mes_pce,
+   'e o ultimo mes do PCE', el('ap-pce-mes').textContent);
+}
 
 console.log('\n' + '='.repeat(62));
 console.log(`${oks} ok, ${falhas} falharam`);

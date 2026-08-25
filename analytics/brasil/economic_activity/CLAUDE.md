@@ -1,10 +1,11 @@
 # analytics/brasil/economic_activity/ — Panorama de Atividade Econômica
 
 Self-contained HTML report on Brazilian real-activity data: GDP (PIB), industrial production (PIM),
-retail (PMC), services (PMS) and the BCB's monthly GDP proxy (IBC-Br) — all from `macro_brasil`, all
-already kept current by `jobs/update_db.py`. Same `/*REPORT_DATA*/` marker-substitution pattern as the
-other analytics reports, built directly on [`analytics/report_structure/`](../../report_structure/CLAUDE.md)
-(no Jinja2, no build step, no migration needed — unlike `inflation/`/`exchange_rate/`).
+retail (PMC), services (PMS), the BCB's monthly GDP proxy (IBC-Br), and the income/savings/capital
+account that extends PIB (Renda e Poupança) — all from `macro_brasil`, all already kept current by
+`jobs/update_db.py`. Same `/*REPORT_DATA*/` marker-substitution pattern as the other analytics reports,
+built directly on [`analytics/report_structure/`](../../report_structure/CLAUDE.md) (no Jinja2, no build
+step, no migration needed — unlike `inflation/`/`exchange_rate/`).
 
 Chart interaction (pan/zoom, quick-range buttons, period-selector dropdown, `_bindYAutofit`) follows the
 repo-wide convention — see [`.claude/rules/lis-dashboards.md`](../../../.claude/rules/lis-dashboards.md),
@@ -72,9 +73,9 @@ citable alternatives, not implemented (see Pending).
 
 ## Tabs
 
-Six tabs — PIB, Produção Industrial, Comércio, Serviços, IBC-Br, Apêndice — lazy-rendered on first
-activation. Apêndice holds every long methodology note as a `<details>/<summary>` accordion, keeping the
-data tabs uncluttered.
+Seven tabs — PIB, Produção Industrial, Comércio, Serviços, IBC-Br, Renda e Poupança, Apêndice —
+lazy-rendered on first activation. Apêndice holds every long methodology note as a `<details>/<summary>`
+accordion, keeping the data tabs uncluttered.
 
 - **PIB** — 4-card KPI grid (QoQ/YoY/Acum-4T official rates + carrego estatístico); Gráfico 1
   (YoY↔Acum-4T toggle, up to 21 selectable oferta/demanda components) and Gráfico 2 (QoQ); a
@@ -99,6 +100,18 @@ data tabs uncluttered.
 - **IBC-Br** — 4-card KPI grid; Gráfico 1/2 (5 components, including `ibcbr_impostos`, unchecked by
   default); a Momentum × Nível scatter (5 points, no exclusions — added for cross-tab parity, not an
   explicit request, see Pending); a flat 5-row heatmap.
+- **Renda e Poupança** — the only tab built around an actual HTML table instead of (only) charts, per
+  explicit user request ("com uma tabela-hierarquia"). 4-card KPI grid (PIB nominal, Poupança Bruta,
+  Formação Bruta de Capital, Capacidade/Necessidade de Financiamento — the last one's label flips
+  between "Capacidade" and "Necessidade" by the sign of the latest value); a hierarchy table
+  (`RENDA_POUPANCA_ROWS`, 12 rows, period pill 8/12/20/Todos trimestres) reproducing IBGE's own
+  "Contas econômicas trimestrais" page verbatim — PIB and each "(=)" subtotal at depth 0 (bold), the
+  "(+)/(−)" line items that feed the next subtotal at depth 1 (indented); a Gráfico with a Nível↔Y-Y
+  toggle over the 5 subtotals + PIB. This is a **linear cascade, not a branching tree** (every row has
+  at most one "child," the next line down) — deliberately not run through `makeHierTab()`
+  (`analytics/brasil/credit/`'s factory), which is built for real branching trees with a Nominal/Real/%PIB
+  axis this data doesn't have; the table/KPI/chart code here is bespoke, same precedent as the PIB tab's
+  own `officialRate()`/`renderRateChart()` not fitting the generic monthly-tab mold either.
 
 `PMC_RANKING_LABELS`/`PMS_RANKING_LABELS` in `report.html` kept their original names from when they fed
 a ranking bar chart — both now feed the scatter (`renderQuadrant()`) instead; `renderRanking()` itself
@@ -113,6 +126,7 @@ has been deleted (no callers left).
 | Comércio | `atv_pmc` | `PMC_CATS` (12 leaf segments) + `comercio_restrito_total`; `PMC_TREE` includes 2 rollup nodes the flat list excludes |
 | Serviços | `atv_pms` | `PMS_CATS`/`PMS_TREE` — 5 groups + 20 leaves + 3 mid-level rollups (tree only) |
 | IBC-Br | `atv_ibcbr` | `IBCBR_CATS` — 5 components, all reachable |
+| Renda e Poupança | `atv_renda_poupanca` | `RENDA_POUPANCA_ROWS` (12, table) / `RENDA_POUPANCA_CATS` (6, chart) |
 
 ## Gotchas
 
@@ -125,6 +139,11 @@ has been deleted (no callers left).
 - **`atv_pib` only goes back to 2016; `atv_pmc`/`atv_pms` only to 2023** — their own IBGE aggregates'
   start, not a project limitation. The 5a/10a quick-range buttons show "all available data" until more
   history accumulates.
+- **`atv_renda_poupanca` (IBGE Agregado 2072) has no SA variant at all** — confirmed against the API,
+  not assumed: the only other aggregates under the same "Contas Nacionais Trimestrais" subject are the
+  two rate tables in Pending below, neither an SA companion to 2072. The tab's Y-Y mode is therefore a
+  plain `growthN(...,4)` on the NSA level (valid for a currency level, unlike an index), not the
+  official-rate pattern PIB's `officialRate()` uses.
 - **Heatmap click-to-expand needs two listeners**: `plotly_click` (cell clicks only) *and* a DOM-level
   `click` listener delegating via `.closest('.ytick')` (axis-label-text clicks — what a user actually
   clicks — never fire `plotly_click` in real Plotly). Both resolve through the same per-div
@@ -150,6 +169,10 @@ has been deleted (no callers left).
 - `atv_pib_taxas.acum_ano` fetched/stored but not surfaced anywhere — add if requested.
 - IBC-Br's Momentum × Nível scatter was added for cross-tab parity, not an explicit request, and only has
   5 points — confirm with the user whether it's useful or should come back out.
+- IBGE's own **`Taxa de poupança`** (Agregado 6726) and **`Taxa de investimento`** (6727) — official %-of-
+  GDP versions of `poupanca_bruta`/`formacao_bruta_capital`, 4-quarter-rolling to smooth seasonality —
+  are citable but not loaded; a quarter-over-quarter `value/pib` ratio would NOT reproduce them (different
+  smoothing convention). Add only if the user wants the official rate, not a simple ratio.
 - `analytics/brasil/exchange_rate/report.html`'s BOP heatmap likely needs the same click-listener backport (see
   Gotchas) — only touch if/when that report comes up specifically.
 - No `agent_data.py`-style snapshot function yet (unlike `exchange_rate/`'s `get_fx_snapshot()`) — add if

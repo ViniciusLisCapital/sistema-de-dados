@@ -148,6 +148,16 @@
     .multiselect-panel label:hover { background: var(--bg); }
     .multiselect-panel input[type="checkbox"] { cursor: pointer; }
 
+    /* ── Hierarchy table (Renda e Poupança) ── */
+    .hier-table-wrap { overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+    .hier-table { border-collapse: collapse; width: 100%; font-size: 12px; white-space: nowrap; }
+    .hier-table th, .hier-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); text-align: right; }
+    .hier-table th.col-label, .hier-table td.col-label { text-align: left; white-space: normal; }
+    .hier-table thead th { font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .hier-table td.col-value { font-family: var(--mono); color: var(--text); }
+    .hier-table tr.is-total td { font-weight: 700; color: var(--text); background: rgba(31,40,83,0.03); }
+    .hier-table tr.is-total td.col-label { color: var(--lis-azul); }
+
     /* ── KPI grids ── */
     .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -173,6 +183,7 @@
     #chart-pmc-mom, #chart-pms-mom            { width: 100%; height: 480px; }
     #chart-ibcbr-yoy                          { width: 100%; height: 540px; }
     #chart-ibcbr-mom                          { width: 100%; height: 480px; }
+    #chart-renda                              { width: 100%; height: 540px; }
 
     /* ── Footer ── */
     footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
@@ -211,6 +222,7 @@
   <button class="tab-btn" data-tab="pmc">Comércio</button>
   <button class="tab-btn" data-tab="pms">Serviços</button>
   <button class="tab-btn" data-tab="ibcbr">IBC-Br</button>
+  <button class="tab-btn" data-tab="renda">Renda e Poupança</button>
   <button class="tab-btn" data-tab="appendix">Appendix</button>
 </nav>
 
@@ -651,6 +663,75 @@
 
   </div>
 
+  <!-- ═══════════ TAB — RENDA E POUPANÇA ═══════════ -->
+  <div class="tab-panel" id="tab-renda">
+
+    <section>
+      <h2>Indicadores do Período</h2>
+      <div class="kpi-grid-4">
+        <div class="kpi-card">
+          <div class="kpi-label">PIB Nominal</div>
+          <div class="kpi-value" id="kpi-renda-pib-value">—</div>
+          <div class="kpi-sub" id="kpi-renda-pib-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Poupança Bruta</div>
+          <div class="kpi-value" id="kpi-renda-poupanca-value">—</div>
+          <div class="kpi-sub" id="kpi-renda-poupanca-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Formação Bruta de Capital</div>
+          <div class="kpi-value" id="kpi-renda-fbcf-value">—</div>
+          <div class="kpi-sub" id="kpi-renda-fbcf-sub">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label" id="kpi-renda-capfin-label">Capacidade/Necessidade de Financiamento</div>
+          <div class="kpi-value" id="kpi-renda-capfin-value">—</div>
+          <div class="kpi-sub" id="kpi-renda-capfin-sub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cascata da Renda e Poupança — Tabela Hierárquica</h2>
+      <p class="chart-caption">IBGE, Agregado 2072 (Contas Econômicas Trimestrais). R$ milhões a preços correntes, sem ajuste sazonal (não existe variante SA para este agregado). Cada linha "(=)" é a soma acumulada das linhas "(+)/(−)" imediatamente acima — uma cascata única do PIB até a Capacidade/Necessidade Líquida de Financiamento, não uma árvore que ramifica.</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Período</span>
+        <div class="pill-group" id="renda-table-range">
+          <button type="button" class="pill" data-n="8">8 Trimestres</button>
+          <button type="button" class="pill active" data-n="12">12 Trimestres</button>
+          <button type="button" class="pill" data-n="20">20 Trimestres</button>
+          <button type="button" class="pill" data-n="0">Todo o Período</button>
+        </div>
+      </div>
+      <div class="hier-table-wrap">
+        <table class="hier-table" id="renda-hier-table">
+          <thead id="renda-hier-thead"></thead>
+          <tbody id="renda-hier-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Gráfico — Nível ou Variação Interanual (NSA)</h2>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Modo</span>
+        <div class="pill-group" id="renda-mode-toggle">
+          <button type="button" class="pill active" data-mode="level">Nível (R$ milhões)</button>
+          <button type="button" class="pill" data-mode="yoy">Interanual (Y/Y)</button>
+        </div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Componentes</span>
+        <div class="multiselect" id="renda-ms">
+          <button type="button" class="multiselect-btn" id="renda-ms-btn">—</button>
+          <div class="multiselect-panel" id="renda-ms-panel"></div>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-renda"></div></div>
+    </section>
+
+  </div>
+
   <!-- ═══════════ TAB — APPENDIX ═══════════ -->
   <div class="tab-panel" id="tab-appendix">
 
@@ -1078,6 +1159,27 @@ function setKPI(idPrefix, value, sub) {
 function setKPILabel(idPrefix, text) {
   var el = document.getElementById(idPrefix + '-label');
   if (el) el.textContent = text;
+}
+// R$ milhões -> "1.234 mi" / "12,3 bi" / "1,23 tri" -- auto-scaled currency KPI (Renda e Poupança
+// tab only; every other KPI in this report is a percentage, via setKPI() above).
+function fmtAutoCurrency(valueMillions) {
+  var abs = Math.abs(valueMillions);
+  if (abs >= 1e6) return (valueMillions / 1e6).toFixed(2).replace('.', ',') + ' tri';
+  if (abs >= 1e3) return (valueMillions / 1e3).toFixed(1).replace('.', ',') + ' bi';
+  return Math.round(valueMillions).toLocaleString('pt-BR') + ' mi';
+}
+function setKPICurrency(idPrefix, valueMillions, sub) {
+  var elV = document.getElementById(idPrefix + '-value');
+  if (!elV) return;
+  var elS = document.getElementById(idPrefix + '-sub');
+  if (valueMillions == null) {
+    elV.textContent = '—'; elV.className = 'kpi-value';
+    if (elS) elS.textContent = '—';
+    return;
+  }
+  elV.textContent = 'R$ ' + fmtAutoCurrency(valueMillions);
+  elV.className = 'kpi-value ' + (valueMillions >= 0 ? 'pos' : 'neg');
+  if (elS) elS.textContent = sub;
 }
 // Two-card pair (period-SA + YoY-NSA) for a single group/base, e.g. PIB, PIM, PMS, IBC-Br headline.
 function renderKPIPair(prefix, group, base, periodLabel, yoyLabel) {
@@ -1877,6 +1979,38 @@ var IBCBR_TREE = IBCBR_CATS.map(function(c) { return {key: c.base, base: c.base,
 var IBCBR_SCATTER_LABELS = {};
 IBCBR_CATS.forEach(function(c) { IBCBR_SCATTER_LABELS[c.base] = c.label; });
 
+// Renda e Poupança (IBGE Agregado 2072, D.renda_poupanca -- NSA apenas, sem sufixo _sa/_nsa, mesma
+// situacao de D.pib_val/D.ibcbr). Cascata LINEAR (nao arvore que ramifica): cada linha "(=)" e a
+// soma acumulada das linhas "(+)/(-)" imediatamente acima. depth 0 = PIB e cada subtotal "(=)"
+// (flush left, negrito); depth 1 = os itens "(+)/(-)" que alimentam o subtotal seguinte (indentado).
+// Rotulos = os publicados pelo IBGE, para casar 1:1 com a tabela do SIDRA.
+var RENDA_POUPANCA_ROWS = [
+  {key: 'pib',                                label: 'Produto Interno Bruto — PIB',                                                depth: 0},
+  {key: 'salarios_exterior',                  label: '(+) Salários (líquidos recebidos do exterior)',                             depth: 1},
+  {key: 'rendas_propriedade_exterior',        label: '(+) Rendas de Propriedade (líquidas recebidas do exterior)',                depth: 1},
+  {key: 'renda_nacional_bruta',               label: '(=) Renda Nacional Bruta',                                                  depth: 0},
+  {key: 'transferencias_correntes_exterior',  label: '(+) Outras Transferências Correntes (líquidas recebidas do exterior)',       depth: 1},
+  {key: 'renda_nacional_disponivel_bruta',    label: '(=) Renda Nacional Disponível Bruta',                                       depth: 0},
+  {key: 'despesa_consumo_final',              label: '(−) Despesa de Consumo Final',                                             depth: 1},
+  {key: 'poupanca_bruta',                     label: '(=) Poupança Bruta',                                                        depth: 0},
+  {key: 'formacao_bruta_capital',             label: '(−) Formação Bruta de Capital',                                            depth: 1},
+  {key: 'cessao_ativos_nao_financeiros',      label: '(+) Cessão de Ativos Não Financeiros Não Produzidos (aquisições líquidas)',  depth: 1},
+  {key: 'transferencias_capital_exterior',    label: '(+) Transferências de Capital (líquidas recebidas do exterior)',            depth: 1},
+  {key: 'capacidade_liquida_financiamento',   label: '(=) Capacidade/Necessidade Líquida de Financiamento',                       depth: 0},
+];
+// Componentes selecionaveis do Grafico (so os 5 subtotais "(=)" + PIB -- os itens "(+)/(-)" sao
+// pequenos demais frente aos subtotais para uma escala compartilhada fazer sentido; ficam so na tabela).
+var RENDA_POUPANCA_CATS = [
+  {base: 'pib',                             label: 'PIB',                                     color: C.azul},
+  {base: 'renda_nacional_bruta',             label: 'Renda Nacional Bruta',                    color: C.azulCl},
+  {base: 'renda_nacional_disponivel_bruta',  label: 'Renda Nacional Disponível Bruta',         color: C.verde},
+  {base: 'poupanca_bruta',                   label: 'Poupança Bruta',                          color: C.dourado},
+  {base: 'formacao_bruta_capital',           label: 'Formação Bruta de Capital',               color: C.amarelo},
+  {base: 'capacidade_liquida_financiamento', label: 'Capacidade/Necessidade de Financiamento', color: C.laranja},
+];
+var RENDA_POUPANCA_MS_GROUPS = [{header: 'Componentes', items: RENDA_POUPANCA_CATS.map(function(c) { return {key: c.base, label: c.label}; })}];
+var RENDA_POUPANCA_DEFAULT = ['pib', 'poupanca_bruta', 'capacidade_liquida_financiamento'];
+
 // PMC -- multiselect exposes the same 12 leaf segments as PMC_RANKING_LABELS (already the curated,
 // non-double-counting set -- see CLAUDE.md Gotchas) plus comercio_restrito_total as a 13th, since
 // Gráfico 1/2's "always-on total" line is comercio_ampliado_total (the broader, more current
@@ -2228,10 +2362,113 @@ function renderIBCBR() {
   renderTabHeatmap('ibcbr', IBCBR_TREE, 'chart-ibcbr-heatmap', 'ibcbr', 'ibcbr');
 }
 
+// R$ milhões -> "2.934.759" (pt-BR, sem decimais) -- valores da tabela hierarquica.
+function fmtRendaValue(v) {
+  if (v == null || isNaN(v)) return '—';
+  return Math.round(v).toLocaleString('pt-BR');
+}
+var rendaTableState = {n: 12};
+function renderRendaHierTable() {
+  var anchor = ser('renda_poupanca', 'pib');
+  var dates = rendaTableState.n > 0 ? anchor.dates.slice(-rendaTableState.n) : anchor.dates.slice();
+  var thead = document.getElementById('renda-hier-thead');
+  var theadTr = document.createElement('tr');
+  var thLabel = document.createElement('th'); thLabel.className = 'col-label'; thLabel.textContent = 'Tipos de Contas';
+  theadTr.appendChild(thLabel);
+  dates.forEach(function(d) {
+    var th = document.createElement('th'); th.className = 'col-value'; th.textContent = fmtDate(d, 'pib');
+    theadTr.appendChild(th);
+  });
+  thead.innerHTML = '';
+  thead.appendChild(theadTr);
+
+  var tbody = document.getElementById('renda-hier-tbody');
+  tbody.innerHTML = '';
+  RENDA_POUPANCA_ROWS.forEach(function(row) {
+    var byDate = toMap(ser('renda_poupanca', row.key));
+    var tr = document.createElement('tr');
+    if (row.depth === 0) tr.className = 'is-total';
+    var tdLabel = document.createElement('td');
+    tdLabel.className = 'col-label';
+    tdLabel.style.paddingLeft = (14 + row.depth * 18) + 'px';
+    tdLabel.textContent = row.label;
+    tr.appendChild(tdLabel);
+    dates.forEach(function(d) {
+      var td = document.createElement('td');
+      td.className = 'col-value';
+      td.textContent = fmtRendaValue(byDate[d]);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+function wireRendaTableRange() {
+  document.querySelectorAll('#renda-table-range .pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#renda-table-range .pill').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      rendaTableState.n = parseInt(this.dataset.n, 10);
+      renderRendaHierTable();
+    });
+  });
+}
+function renderRendaKPIs() {
+  var pib = ser('renda_poupanca', 'pib'), lp = lastValid(pib.dates, pib.values);
+  setKPICurrency('kpi-renda-pib', lp ? lp.value : null, lp ? fmtDate(lp.date, 'pib') : '—');
+
+  var poup = ser('renda_poupanca', 'poupanca_bruta'), lpo = lastValid(poup.dates, poup.values);
+  setKPICurrency('kpi-renda-poupanca', lpo ? lpo.value : null, lpo ? fmtDate(lpo.date, 'pib') : '—');
+
+  var fbcf = ser('renda_poupanca', 'formacao_bruta_capital'), lf = lastValid(fbcf.dates, fbcf.values);
+  setKPICurrency('kpi-renda-fbcf', lf ? lf.value : null, lf ? fmtDate(lf.date, 'pib') : '—');
+
+  var cap = ser('renda_poupanca', 'capacidade_liquida_financiamento'), lc = lastValid(cap.dates, cap.values);
+  setKPILabel('kpi-renda-capfin', (lc && lc.value < 0) ? 'Necessidade Líquida de Financiamento' : 'Capacidade Líquida de Financiamento');
+  setKPICurrency('kpi-renda-capfin', lc ? lc.value : null, lc ? fmtDate(lc.date, 'pib') : '—');
+}
+// mode: 'level' (R$ milhões correntes, NSA) | 'yoy' (var. % interanual sobre a mesma serie NSA --
+// valida para um nivel monetario, nao so para um indice de volume; n=4 porque D.renda_poupanca e
+// trimestral, mesma cadencia de D.pib).
+function renderRendaChart(mode, selected) {
+  var byBase = toByBase(RENDA_POUPANCA_CATS);
+  var traces = selected.map(function(b) { return byBase[b]; }).filter(Boolean).map(function(s) {
+    var raw = ser('renda_poupanca', s.base);
+    var d = mode === 'yoy' ? growthN(raw.dates, raw.values, 4) : raw;
+    return {
+      type: 'scatter', mode: 'lines', name: s.label, x: d.dates, y: d.values,
+      line: {color: s.color, width: 2},
+      hovertemplate: mode === 'yoy'
+        ? ('<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}%<extra></extra>')
+        : ('<b>' + s.label + '</b><br>%{x}<br>R$ %{y:,.0f} mi<extra></extra>'),
+    };
+  });
+  var yTitle = mode === 'yoy' ? 'Var. % interanual (NSA)' : 'R$ milhões correntes (NSA)';
+  _reactPreserveX('chart-renda', traces, mkTimeseriesLayout(yTitle, null, traces), _PLOTLY_CONFIG);
+}
+function wireRendaChart() {
+  var state = {mode: 'level', selected: RENDA_POUPANCA_DEFAULT.slice()};
+  function render() { renderRendaChart(state.mode, state.selected); }
+  setupMultiselect('renda-ms-btn', 'renda-ms-panel', RENDA_POUPANCA_MS_GROUPS, RENDA_POUPANCA_DEFAULT, function(sel) { state.selected = sel; render(); });
+  document.querySelectorAll('#renda-mode-toggle .pill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#renda-mode-toggle .pill').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      state.mode = this.dataset.mode;
+      render();
+    });
+  });
+}
+function renderRenda() {
+  renderRendaKPIs();
+  wireRendaTableRange();
+  renderRendaHierTable();
+  wireRendaChart();
+}
+
 // ── Tab switching — lazy render on first activation (Plotly needs a visible,
 // non-zero-width div; rendering a hidden tab's charts up front sizes them wrong) ──
 // "appendix" has no entry -- it's static methodology text, nothing to render from D.
-var RENDERERS = {pib: renderPIB, pim: renderPIM, pmc: renderPMC, pms: renderPMS, ibcbr: renderIBCBR};
+var RENDERERS = {pib: renderPIB, pim: renderPIM, pmc: renderPMC, pms: renderPMS, ibcbr: renderIBCBR, renda: renderRenda};
 var tabRendered = {};
 function activateTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });

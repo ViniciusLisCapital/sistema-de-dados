@@ -13,15 +13,19 @@ Segue o padrao do tests/test_ibge2.py: script executavel com asserts, nao pytest
 (o projeto nao tem pytest configurado).
 """
 
-from datetime import date
+from datetime import date, datetime
+from datetime import time as dtime
 
 from domain.release_calendar.sync import (
     _divulgada_em,
+    _hora,
+    hora_da_entrada,
     continuas,
     expectativas,
     periodo_para_data,
     sem_divulgacao,
 )
+from domain.release_calendar.update_calendar import _horas_por_data, _preencher_horas
 
 falhas = []
 
@@ -211,6 +215,161 @@ exp_s, _ = expectativas(DOC_SEM, AS_OF)
 check("sem max_age_days a continua nao e cobrada", "tab_diaria" in exp_s, False)
 check("  e a mista volta a expectativa mensal",
       exp_s["tab_mista"]["esperado"], date(2026, 6, 1))
+
+
+# ---------------------------------------------------------------------------
+# 6. hora da divulgacao — release_time no grupo, time na entrada
+# ---------------------------------------------------------------------------
+print("\n6. hora — o portao que evita cobrar o dado antes do anuncio")
+
+check("hora valida", _hora("14:30"), __import__("datetime").time(14, 30))
+check("hora sem zero a esquerda", _hora("9:05"), __import__("datetime").time(9, 5))
+# valor malformado nao derruba a checagem: cai para "sem hora", igual reference_period
+check("hora impossivel -> None", _hora("25:00"), None)
+check("hora sem sentido -> None", _hora("14h30"), None)
+check("vazio -> None", _hora(None), None)
+
+HOJE = date(2026, 8, 20)
+DOC_HORA = {
+    "groups": [
+        # grupo com hora propria, entrada sem hora -> vale a do grupo
+        {"group": "g_grupo", "institution": "IBGE", "tables": ["tab_grupo"],
+         "release_time": "09:00",
+         "entries": [{"date": "2026-08-20", "reference_period": "2026-07"},
+                     {"date": "2026-07-20", "reference_period": "2026-06"}]},
+        # entrada com hora propria VENCE a do grupo (feed do BCB escreve aqui)
+        {"group": "g_entrada", "institution": "BCB", "tables": ["tab_entrada"],
+         "release_time": "09:00",
+         "entries": [{"date": "2026-08-20", "time": "14:30", "reference_period": "2026-Q2"},
+                     {"date": "2026-05-20", "time": "14:30", "reference_period": "2026-Q1"}]},
+        # sem hora em lugar nenhum: comportamento antigo, vale desde a meia-noite
+        {"group": "g_sem", "institution": "BCB", "tables": ["tab_sem"],
+         "entries": [{"date": "2026-08-20", "reference_period": "2026-07"},
+                     {"date": "2026-07-20", "reference_period": "2026-06"}]},
+    ],
+}
+
+
+def esperado_as(hh, mm, tabela):
+    exp, _ = expectativas(DOC_HORA, HOJE, agora=datetime(2026, 8, 20, hh, mm))
+    return exp.get(tabela, {}).get("esperado")
+
+
+check("antes da hora do grupo, vale a divulgacao anterior",
+      esperado_as(8, 59, "tab_grupo"), date(2026, 6, 1))
+check("na hora exata, passa a valer a de hoje",
+      esperado_as(9, 0, "tab_grupo"), date(2026, 7, 1))
+
+# o caso que motivou o campo: PTC as 14:30 nao pode ser cobrada as 9h da manha
+check("PTC as 09:00 ainda cobra o trimestre anterior",
+      esperado_as(9, 0, "tab_entrada"), date(2026, 1, 1))
+check("PTC as 14:29 idem (limite)",
+      esperado_as(14, 29, "tab_entrada"), date(2026, 1, 1))
+check("PTC as 14:30 passa a cobrar o trimestre novo",
+      esperado_as(14, 30, "tab_entrada"), date(2026, 4, 1))
+check("PTC as 16:00 idem", esperado_as(16, 0, "tab_entrada"), date(2026, 4, 1))
+
+check("sem hora, cobra desde a meia-noite",
+      esperado_as(0, 1, "tab_sem"), date(2026, 7, 1))
+# divulgacao de ontem nao depende de hora nenhuma
+exp_h, _ = expectativas(DOC_HORA, date(2026, 8, 21), agora=datetime(2026, 8, 21, 0, 1))
+check("divulgacao passada ignora a hora", exp_h["tab_grupo"]["esperado"], date(2026, 7, 1))
+
+# fonte estrangeira: a hora e declarada no fuso DELA e convertida por entrada. Os EUA
+# tem horario de verao e o Brasil nao desde 2019, entao a mesma hora da fonte cai em
+# duas horas diferentes aqui ao longo do ano -- congelar um valor unico erraria por uma
+# hora em metade do calendario, calado.
+G_US = {"group": "cftc_cot", "release_time": "15:30",
+        "release_time_tz": "America/New_York"}
+check("15:30 ET no verao americano -> 16:30 aqui",
+      hora_da_entrada({}, G_US, date(2026, 10, 30)), dtime(16, 30))
+check("a MESMA 15:30 ET uma semana depois -> 17:30",
+      hora_da_entrada({}, G_US, date(2026, 11, 6)), dtime(17, 30))
+check("time da entrada tambem passa pela conversao",
+      hora_da_entrada({"time": "14:00"}, G_US, date(2026, 12, 9)), dtime(16, 0))
+check("grupo sem tz nao converte nada",
+      hora_da_entrada({}, {"release_time": "15:00"}, date(2026, 11, 6)), dtime(15, 0))
+# fuso com typo nao pode derrubar a checagem inteira
+check("tz invalido cai para a hora crua",
+      hora_da_entrada({}, {"group": "x", "release_time": "15:30",
+                           "release_time_tz": "Nao/Existe"}, date(2026, 11, 6)),
+      dtime(15, 30))
+check("grupo sem horario nenhum", hora_da_entrada({}, {}, date(2026, 11, 6)), None)
+
+# e o portao usa a hora CONVERTIDA, nao a da fonte
+DOC_US = {"groups": [dict(G_US, tables=["tab_us"], entries=[
+    {"date": "2026-11-06", "reference_period": "2026-11-03"},
+    {"date": "2026-10-30", "reference_period": "2026-10-27"}])]}
+
+
+def esperado_us(hh, mm):
+    exp, _ = expectativas(DOC_US, date(2026, 11, 6),
+                          agora=datetime(2026, 11, 6, hh, mm))
+    return exp.get("tab_us", {}).get("esperado")
+
+
+check("as 16:30 (hora da fonte + 1) ainda nao saiu",
+      esperado_us(16, 30), date(2026, 10, 27))
+check("as 17:30 saiu", esperado_us(17, 30), date(2026, 11, 3))
+
+
+
+# ---------------------------------------------------------------------------
+# 7. update_calendar — hora lida do feed ICS do BCB
+# ---------------------------------------------------------------------------
+print("\n7. _horas_por_data / _preencher_horas — o que vem do DTSTART")
+
+D = date(2026, 8, 20)
+check("hora do feed", _horas_por_data([{"date": D, "time": "14:30"}]), {D: "14:30"})
+# 00:00 e placeholder de evento de dia inteiro (as 16 reunioes do Copom de 2026 sao
+# assim); gravar como hora reproduziria o bug que a hora veio corrigir
+check("00:00 e descartado, nao gravado",
+      _horas_por_data([{"date": D, "time": "00:00"}]), {})
+check("evento sem hora", _horas_por_data([{"date": D, "time": None}]), {})
+# duas horas no mesmo dia: fica a mais tarde, para nao liberar antes de tudo sair
+check("empate no mesmo dia fica com a mais tarde",
+      _horas_por_data([{"date": D, "time": "08:30"}, {"date": D, "time": "14:00"}]),
+      {D: "14:00"})
+
+
+class _AgendaFake:
+    def __init__(self, eventos):
+        self._eventos = eventos
+
+    def eventos(self, lista, start=None, end=None, summary_contains=None):
+        return self._eventos
+
+
+def _grupo_ruamel(entradas):
+    from ruamel.yaml import YAML
+    y = YAML()
+    y.preserve_quotes = True
+    doc = y.load("group: g\nics: {lista: L}\nentries:\n" + entradas)
+    return doc
+
+
+g = _grupo_ruamel('    - {date: "2026-08-20", reference_period: "2026-Q2", confirmed: true}\n')
+mud = _preencher_horas(g, _AgendaFake([{"date": D, "time": "14:30"}]), D, D)
+check("preenche a entrada existente", mud, [("2026-08-20", "sem hora", "14:30")])
+# a ordem das chaves importa para o arquivo continuar legivel/diffavel
+check("time entra logo depois de date",
+      list(g["entries"][0].keys()), ["date", "time", "reference_period", "confirmed"])
+
+# segunda passada nao mexe em nada (o --write e idempotente)
+mud2 = _preencher_horas(g, _AgendaFake([{"date": D, "time": "14:30"}]), D, D)
+check("segunda passada nao muda nada", mud2, [])
+
+# nota escrita a mao sobrevive ao preenchimento
+g2 = _grupo_ruamel('    - {date: "2026-08-20", note: "escrita a mao", confirmed: true}\n')
+_preencher_horas(g2, _AgendaFake([{"date": D, "time": "14:30"}]), D, D)
+check("nota a mao sobrevive", str(g2["entries"][0]["note"]), "escrita a mao")
+
+# entrada que o feed nao cobre fica intacta
+g3 = _grupo_ruamel('    - {date: "2026-08-20", confirmed: true}\n')
+check("feed sem hora nao inventa nada",
+      _preencher_horas(g3, _AgendaFake([{"date": D, "time": "00:00"}]), D, D), [])
+check("  e nao cria a chave", "time" in g3["entries"][0], False)
+
 
 
 # ---------------------------------------------------------------------------

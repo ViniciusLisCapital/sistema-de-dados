@@ -80,6 +80,7 @@
     table.release-table tr:hover:not(.month-header) { background: rgba(31,40,83,0.02); }
     td.col-date { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
     td.col-date .end { color: var(--muted); font-weight: 400; }
+    td.col-date .hora { color: var(--lis-verde); font-weight: 500; font-size: 11px; margin-left: 2px; }
     td.col-name { color: var(--text); font-weight: 500; }
     td.col-ref { font-family: var(--mono); color: var(--text2); white-space: nowrap; }
     td.col-tables { font-family: var(--mono); font-size: 10.5px; color: var(--muted); max-width: 260px; }
@@ -341,7 +342,8 @@
         }
         var tr = document.createElement('tr');
         var color = institutionColor(e.institution);
-        var dateCell = fmtDateFull(e.date) + (e.date_end ? ' <span class="end">– ' + fmtDateFull(e.date_end) + '</span>' : '');
+        var dateCell = fmtDateFull(e.date) + (e.date_end ? ' <span class="end">– ' + fmtDateFull(e.date_end) + '</span>' : '')
+          + (e.release_time ? ' <span class="hora">' + e.release_time + '</span>' : '');
         var statusCell = e.confirmed
           ? '<span class="status-pill confirmed">Confirmado</span>'
           : '<span class="status-pill estimated">Estimado</span>';
@@ -370,12 +372,19 @@
        botão vermelho; em dia -> check). Sem servidor não há veredito possível, então
        toda linha passada ganha o botão neutro.
     */
-    var LIVE = { on: false, groups: null, today: null };
+    var LIVE = { on: false, groups: null, today: null, now: null };
 
     function rowState(e) {
       var hoje = LIVE.today || REPORT_DATA.reference_date;
       var quando = e.date_end || e.date;          // janela só conta depois do fim
       if (quando > hoje) return 'future';
+      // Divulgação de HOJE com horário declarado (ex: PTC 14:30) só conta depois da
+      // hora — senão o botão acenderia de madrugada, antes de o dado existir. Só no
+      // modo servido, que é o único onde sabemos a hora atual (LIVE.now vem do
+      // /api/ping); no modo arquivo não há relógio confiável e cai no comportamento
+      // anterior, que é inofensivo porque ali o botão não roda nada.
+      if (quando === hoje && e.release_time && LIVE.now &&
+          LIVE.now < e.release_time) return 'future';
       if (!e.tables || !e.tables.length) return 'notables';
       if (!LIVE.on || !LIVE.groups) return 'unknown';
       var g = LIVE.groups[e.group];
@@ -466,7 +475,7 @@
 
     function refreshStatus() {
       return fetch('/api/status').then(function(r) { return r.json(); }).then(function(s) {
-        if (s.ok) { LIVE.groups = s.grupos; LIVE.today = s.hoje; }
+        if (s.ok) { LIVE.groups = s.grupos; LIVE.today = s.hoje; LIVE.now = s.agora || LIVE.now; }
         else { LIVE.groups = null; }
         renderModeHint(s.ok ? null : s.erro);
       }).catch(function() { LIVE.groups = null; });
@@ -504,6 +513,7 @@
           if (!p || !p.ok) throw new Error('sem servidor');
           LIVE.on = true;
           LIVE.today = p.hoje;
+          LIVE.now = p.agora || null;
           return refreshStatus().then(function() { renderTable(); });
         })
         .catch(function() { LIVE.on = false; renderModeHint(); renderTable(); });

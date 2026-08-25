@@ -1,13 +1,15 @@
 """
-US Inflation report -- reads macro_us (inflc_cpi / inflc_cpi_dim / inflc_cpi_pesos),
-injects one JSON payload into report.html, writes a self-contained HTML file.
+US Inflation report -- reads macro_us (inflc_cpi / inflc_cpi_dim / inflc_cpi_pesos
+for the CPI, inflc_pce / inflc_pce_dim for the PCE), injects one JSON payload into
+report.html, writes a self-contained HTML file.
 
 Same /*REPORT_DATA*/ + /*THEME_CSS*/ + /*Y_AUTOFIT_JS*/ pattern as the Brazil
 reports (see analytics/report_structure/CLAUDE.md). First report under analytics/us/.
 
-Two tabs, one per CPI tree, both driven by the same JS hierarchy-table factory
-(`makeHierTab`) that analytics/brasil/credit and .../fiscal_policy use -- the
-table-plus-chart structure that analytics/brasil/inflation does NOT have:
+Three data tabs -- the CPI's two published trees plus the PCE -- all driven by the
+same JS hierarchy-table factory (`makeHierTab`) that analytics/brasil/credit and
+.../fiscal_policy use, the table-plus-chart structure that
+analytics/brasil/inflation does NOT have:
 
   Release Tree      Table 1 of the CPI news release -- 37 published rows over 5
                     levels (food / energy / core, core split into goods and services)
@@ -23,6 +25,18 @@ table-plus-chart structure that analytics/brasil/inflation does NOT have:
                     docstring): they carry `noWeight` in the payload, the table
                     badges them, and Contribution is blank for them by construction,
                     not by accident.
+  PCE Tree          The Fed's target index, from BEA tables 2.4.4U (price index) and
+                    2.4.5U (nominal expenditure): 368 lines x 9 levels, plus the 34
+                    addenda aggregates (Control group, PCE food and energy, PCE
+                    excluding food and energy, the market-based family) as a flat
+                    block. SA only -- the BEA publishes no NSA monthly counterpart.
+                    Three things differ from the CPI tabs, all of them because the
+                    source is better here: levels 1-4 each partition the index
+                    exactly (the CPI release tree only manages 0-2), the weight is
+                    monthly rather than a December snapshot, and 19 lines enter the
+                    total NEGATIVELY (the `Less:` rows and everything under them), so
+                    the payload ships the weight already signed. See `_arvore_pce`
+                    and `_grade_pce`.
 
 --------------------------------------------------------------------------------
 PAYLOAD SHAPE -- levels only, variations computed in the browser
@@ -90,6 +104,11 @@ _TEMPLATE = "analytics/us/inflation/report.html"
 # inteira. Ver "PAYLOAD SHAPE" na docstring.
 _INICIO_DETALHE = "1990-01-01"
 
+# Idem para o PCE: o banco guarda 1959-01 em diante, o payload comeca aqui. Sao 402
+# linhas x 2 medidas (indice e o peso derivado do nominal), entao a janela pesa o
+# dobro de uma arvore de CPI do mesmo tamanho.
+_INICIO_PCE = "1990-01-01"
+
 _INDICE = "CPI-U"
 
 
@@ -124,12 +143,24 @@ def _load():
             f"WHERE indice = '{_INDICE}' AND item_code IS NOT NULL",
             conn,
         )
+        pce_dim = pd.read_sql(
+            "SELECT linha, code, item_name, nivel, parent_linha, bloco, sinal, "
+            "       sinal_acumulado, n_filhos, is_leaf, tem_indice, sort_order, idx_end "
+            "FROM inflc_pce_dim ORDER BY sort_order",
+            conn,
+        )
+        pce_obs = pd.read_sql(
+            "SELECT date, linha, medida, value FROM inflc_pce "
+            f"WHERE date >= '{_INICIO_PCE}' ORDER BY linha, medida, date",
+            conn,
+        )
     finally:
         conn.close()
 
     obs["date"] = pd.to_datetime(obs["date"])
     pesos["reference_period"] = pd.to_datetime(pesos["reference_period"])
-    return dim, obs, pesos
+    pce_obs["date"] = pd.to_datetime(pce_obs["date"])
+    return dim, obs, pesos, pce_dim, pce_obs
 
 
 def _marcar(d: dict, r, ultimo_mes: str) -> None:
@@ -258,6 +289,118 @@ def _grade(obs: pd.DataFrame, codes: list[str], inicio: str | None):
     return grades, series
 
 
+def _arvore_pce(dim: pd.DataFrame, ultimo_mes: str) -> list[dict]:
+    """Arvore do PCE: o bloco principal aninhado, o de addenda achatado.
+
+    Duas diferencas em relacao as arvores de CPI, as duas vindas da fonte:
+
+    - **A chave e o numero da linha do BEA, nao o codigo.** 13 codigos aparecem em
+      duas linhas cada (`Health care` sob Household consumption e sob Market-based
+      PCE), entao chavear por codigo colapsaria linhas distintas da arvore. `key` e
+      `seriesKey` sao a linha; a serie viaja duplicada nas 13, o que custa nada.
+    - **O bloco de addenda nao vira arvore.** Sao 34 agregados que se sobrepoem
+      (Control group, PCE food and energy, o core, a familia market-based) e cuja
+      indentacao publicada e inconsistente -- `Market-based PCE` vem mais indentado
+      que as linhas que ele encabeca. Entram como filhos de um no sintetico, sem
+      serie propria (`noSeries`), em vez de terem um parentesco inventado.
+    """
+    por_linha = {int(r["linha"]): r for _, r in dim.iterrows()}
+    filhos: dict[int, list[int]] = {}
+    for _, r in dim.iterrows():
+        p = r["parent_linha"]
+        if p is not None and not pd.isna(p):
+            filhos.setdefault(int(p), []).append(int(r["linha"]))
+
+    def no(linha: int, addenda: bool = False) -> dict:
+        r = por_linha[linha]
+        d = {"key": str(linha), "label": r["item_name"], "seriesKey": str(linha),
+             "level": int(r["nivel"])}
+        if addenda:
+            d["special"] = 1
+        # Entra subtraindo no PCE. Sao 19 linhas, e so 4 dizem "Less:" no rotulo -- a
+        # subarvore inteira de um "Less:" herda o sinal. Sem isto uma contribuicao
+        # negativa parece deflacao quando e so o sinal da conta.
+        if int(r["sinal_acumulado"]) < 0:
+            d["negativo"] = 1
+        # As 2 linhas de net (ZZZZZZ): o BEA publica a despesa, nao o indice de preco.
+        if not int(r["tem_indice"]):
+            d["noIndex"] = 1
+        fim = r["idx_end"]
+        if isinstance(fim, str) and fim < _menos_meses(ultimo_mes, 3):
+            d["stale"] = fim
+        kids = filhos.get(linha)
+        if kids:
+            d["children"] = [no(c) for c in kids]
+        return d
+
+    principal = dim[dim["bloco"] == "principal"]
+    raizes = [no(int(r["linha"])) for _, r in principal.iterrows()
+              if r["parent_linha"] is None or pd.isna(r["parent_linha"])]
+
+    addenda = dim[dim["bloco"] == "addenda"].sort_values("sort_order")
+    if not addenda.empty:
+        raizes.append({
+            "key": "ADDENDA",
+            "label": "Addenda — special aggregates (overlapping, not a partition)",
+            "seriesKey": "ADDENDA",
+            "level": 0,
+            "noSeries": 1,
+            "startCollapsed": 1,
+            "children": [no(int(r["linha"]), addenda=True) for _, r in addenda.iterrows()],
+        })
+    return raizes
+
+
+def _grade_pce(obs: pd.DataFrame, sinal_ac: dict[int, int]):
+    """Grade mensal comum + indice por linha + PESO por linha, alinhado a mesma grade.
+
+    O peso e `nominal[linha] / nominal[linha 1] * sinal_acumulado`, em pontos
+    percentuais. Nao vem do banco: e derivavel do que esta la (ver a docstring de
+    `inflc_pce.py`), e o BEA publica o nominal de toda linha em todo mes -- entao,
+    ao contrario do CPI, nao ha snapshot anual para carregar para frente.
+
+    O sinal entra no proprio peso, e nao na hora de somar, para que a contribuicao de
+    uma linha que subtrai (`Less: Expenditures in the United States by nonresidents`
+    e os 12 itens sob `Less: Receipts from sales...`) ja saia com o sinal certo sem o
+    JS precisar saber de nada disso.
+    """
+    datas = pd.DatetimeIndex(sorted(obs["date"].unique()))
+    pos = {d: i for i, d in enumerate(datas)}
+    grade = [d.strftime("%Y-%m-%d") for d in datas]
+
+    idx = obs[obs["medida"] == "indice"]
+    nom = obs[obs["medida"] == "nominal"]
+
+    series: dict[str, dict[str, list]] = {}
+    for linha, g in idx.groupby("linha"):
+        vals: list[float | None] = [None] * len(datas)
+        for d, v in zip(g["date"], g["value"]):
+            vals[pos[d]] = None if pd.isna(v) else float(v)
+        series[str(int(linha))] = {"SA": vals}
+
+    total: list[float | None] = [None] * len(datas)
+    raiz = nom[nom["linha"] == 1]
+    for d, v in zip(raiz["date"], raiz["value"]):
+        total[pos[d]] = None if pd.isna(v) else float(v)
+    if not any(total):
+        raise RuntimeError(
+            "a linha 1 (Personal consumption expenditures) nao tem nominal em nenhum "
+            "mes da janela -- sem ela nao ha peso nem contribuicao no PCE."
+        )
+
+    pesos: dict[str, list] = {}
+    for linha, g in nom.groupby("linha"):
+        s = int(sinal_ac.get(int(linha), 1))
+        arr: list[float | None] = [None] * len(datas)
+        for d, v in zip(g["date"], g["value"]):
+            i = pos[d]
+            if total[i] and not pd.isna(v):
+                arr[i] = round(100.0 * float(v) / total[i] * s, 4)
+        pesos[str(int(linha))] = arr
+
+    return grade, series, pesos
+
+
 def _pesos_payload(pesos: pd.DataFrame, codes: set[str]) -> dict:
     """{item_code: {ano_do_snapshot: peso}} -- o JS escolhe o snapshot por data.
 
@@ -281,7 +424,7 @@ def _pesos_payload(pesos: pd.DataFrame, codes: set[str]) -> dict:
 
 
 def build_payload() -> dict:
-    dim, obs, pesos = _load()
+    dim, obs, pesos, pce_dim, pce_obs = _load()
 
     rel_codes = dim.loc[dim["arvore"] == "divulgacao", "item_code"].tolist()
     exp_codes = dim.loc[dim["arvore"] == "despesa", "item_code"].tolist()
@@ -294,6 +437,21 @@ def build_payload() -> dict:
 
     ultimo = obs["date"].max()
     cobertura = dim.set_index(["arvore", "item_code"])
+
+    # ── PCE ──────────────────────────────────────────────────────────────────
+    ultimo_pce = pce_obs["date"].max()
+    sinal_ac = dict(zip(pce_dim["linha"].astype(int),
+                        pce_dim["sinal_acumulado"].astype(int)))
+    pce_grade, pce_series, pce_pesos = _grade_pce(pce_obs, sinal_ac)
+    pce_tree = _arvore_pce(pce_dim, ultimo_pce.strftime("%Y-%m"))
+    pce_principal = pce_dim[pce_dim["bloco"] == "principal"]
+    pce_addenda = int((pce_dim["bloco"] == "addenda").sum())
+    print(f"  pce tree:         {len(pce_principal)} linhas em "
+          f"{int(pce_principal['nivel'].max()) + 1} niveis + {pce_addenda} agregados de "
+          f"addenda, grade {len(pce_grade)} meses SA (desde {_INICIO_PCE[:4]}), "
+          f"ultimo mes {ultimo_pce:%Y-%m}")
+    print(f"  pce pesos: {len(pce_pesos)} linhas, "
+          f"{int((pce_dim['sinal_acumulado'] < 0).sum())} com sinal negativo")
 
     n_drill = _conta_nos(_arvore(dim, "divulgacao", ultimo.strftime("%Y-%m"),
                                  detalhe_de="despesa")) - len(rel_codes)
@@ -322,6 +480,13 @@ def build_payload() -> dict:
             ),
             "niveis_expenditure": int(dim.loc[dim["arvore"] == "despesa", "nivel"].max()) + 1,
             "fonte": "BLS -- API v2, cu.item, Table 1 do news release, relative importance",
+            "ultimo_mes_pce": ultimo_pce.strftime("%Y-%m"),
+            "inicio_pce": _INICIO_PCE[:4],
+            "n_pce": int(len(pce_principal)),
+            "n_pce_addenda": pce_addenda,
+            "niveis_pce": int(pce_principal["nivel"].max()) + 1,
+            "n_pce_folhas": int(pce_principal["is_leaf"].sum()),
+            "fonte_pce": "BEA -- tabelas 2.4.4U e 2.4.5U, underlying detail da Secao 2",
         },
         "tabs": {
             "release": {
@@ -338,6 +503,17 @@ def build_payload() -> dict:
                 "series": exp_series,
                 "anchor": "SA0",
                 "defaultChecked": ["SAF", "SAH", "SAT", "SAM"],
+            },
+            # `weights` alinhado a grade e o que faz o JS usar o peso MENSAL do BEA em
+            # vez do snapshot anual do BLS -- ver `weightAt` no template. Nenhuma aba
+            # de CPI tem essa chave, e e assim que as duas convencoes convivem.
+            "pce": {
+                "tree": pce_tree,
+                "dates": {"SA": pce_grade},
+                "series": pce_series,
+                "weights": pce_pesos,
+                "anchor": "1",
+                "defaultChecked": ["1", "374", "370", "371"],
             },
         },
         "weights": pesos_pl,

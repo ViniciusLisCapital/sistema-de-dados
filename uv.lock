@@ -4296,6 +4296,7 @@ dependencies = [
     { name = "siconfipy" },
     { name = "statsmodels" },
     { name = "truststore" },
+    { name = "tzdata" },
     { name = "yfinance" },
 ]
 
@@ -4337,6 +4338,7 @@ requires-dist = [
     { name = "siconfipy" },
     { name = "statsmodels" },
     { name = "truststore", specifier = ">=0.10.4" },
+    { name = "tzdata", specifier = ">=2026.2" },
     { name = "yfinance", specifier = ">=1.5.2" },
 ]
 provides-extras = ["dev"]
