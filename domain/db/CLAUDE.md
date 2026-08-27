@@ -56,8 +56,9 @@ cmb_    — FX and its determinants (reserves, BOP, flow, terms of trade, contra
 inflc_  — IPCA/IPCA-15 (aggregates, subitem decomposition, dimension table)
 expc_   — market expectations (Focus)
 fisc_   — fiscal (public debt, NFSP, RTN revenue/expenditure)
-pm_     — monetary policy: BCB's own model estimates and published projections, not observed
-          series (pm_hiato_produto + pm_hiato_produto_vintages + pm_copom_projecoes)
+pm_     — monetary policy: BCB's own model estimates, published projections, and the policy
+          decision itself — not observed series (pm_hiato_produto + pm_hiato_produto_vintages
+          + pm_copom_projecoes + pm_copom_reuniao)
 ```
 
 `macro_international`:
@@ -116,7 +117,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `inflc_agregados` | BCB SGS (33 series — IPCA/IPCA-15 + cores) | 1980 → today | `brasil/bcb/inflc_agregados.py` |
 | `inflc_decomposicao` | IBGE, one aggregate per weighting-structure vintage — see `analytics/brasil/inflation/CLAUDE.md` (subitem: monthly var/weights/contribution) | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao.py` |
 | `inflc_decomposicao_item` | Same as above, one hierarchy level coarser (item, 4-digit, not subitem/7-digit) — feeds MA/MS/DP núcleos only, see `analytics/brasil/inflation/CLAUDE.md` | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao_item.py` |
-| `inflc_dim` | Subitem → Group/Subgroup/Item + tradable/non-tradable (`comercializavel`, added 2026-08) + core-inflation flag, all from BCB's official NT-57 vector (see `analytics/brasil/inflation/CLAUDE.md`) | — (no date) | `brasil/ibge/inflc_dim.py` |
+| `inflc_dim` | Subitem → **two independent classification axes**. BCB analytical: Group/Subgroup/Item + tradable/non-tradable (`comercializavel`, added 2026-08) + core-inflation flags, all from BCB's official NT-57 vector. IBGE expenditure: `ibge_grupo`/`ibge_subgrupo`/`ibge_item` (added 2026-08) — the parentage is the 7-digit code's own 1/2/4-digit prefix, only the names come from SIDRA. Neither derives from the other (see `analytics/brasil/inflation/CLAUDE.md`) | — (no date) | `brasil/ibge/inflc_dim.py` |
 | `expc_focus` | BCB Focus/Olinda, **horizonte móvel** — IPCA + 5 componentes (Livres/Administrados/Serviços/Bens industrializados/Alimentação no domicílio) a 12m e 24m, mais IGP-M a 12m. Cada série em 4 variantes: `suavizada` S/N × `base_calculo` 0/1 — ver docstring do script | IPCA/IGP-M 12m 2001-11 (não suavizado) / 2001-12 (suavizado); IPCA 24m 2021-03; componentes 2021-09 → today | `brasil/bcb/expc_focus.py` |
 | `expc_focus_copom` | BCB Focus/Olinda, **Selic esperada por reunião do Copom** — ~16 reuniões à frente por data de pesquisa, ou seja a curva de política monetária implícita no consenso. `base_calculo` 0 e 1. Substituiu as 5.458 linhas de `indicador='Selic'`/`horizonte='eop'` que a `expc_focus` colapsava (uma por data, sem coluna `reuniao`; a sobrevivente era a reunião mais distante, de painel mais fino) — apagadas em 2026-08, nenhum consumidor as lia | 2004-11 → today | `brasil/bcb/expc_focus_copom.py` |
 | `expc_focus_periodo` | BCB Focus/Olinda, **período de referência fixo** (o Boletim Focus propriamente dito) — 3 periodicidades × 26 indicadores vivos: IPCA e componentes, IGP-M, Câmbio, Selic, Taxa de desocupação, PIB total/setores/componentes de demanda, Resultado primário/nominal, Dívida bruta/líquida, Conta corrente, Balança comercial (3 detalhes), IED. **Duas datas independentes** (`date` = quando perguntaram, `data_referencia` = sobre qual período), o que é o que permite a história da revisão. Só `base_calculo` 0. Unidades heterogêneas, ver coluna `unidade` | anual 1999-04, mensal 2000-01, trimestral 2001-11 → today (indicadores da reformulação de 2021-09 começam ali) | `brasil/bcb/expc_focus_periodo.py` |
@@ -129,7 +130,8 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `fisc_nfsp` | BCB SGS (16 series — NFSP primário/nominal/juros, % PIB acum. 12m [10, incl. 5 por esfera] + fluxo mensal bruto R$ mi não acumulado [6, total + 5 por esfera, 2026-08 — alimenta o ajuste sazonal STL do impulso fiscal em `analytics/brasil/fiscal_policy/`]) | 1991-12 → today (varia por série) | `brasil/bcb/fisc_nfsp.py` |
 | `fisc_dlsp_fatores` | BCB, tabela especial `Facdetp.xlsx` (**não existe no SGS** — ver `connectors/bcb_tabelas_especiais.py`): fatores condicionantes da DLSP, detalhamento por item. 95 itens × 9 fatores = 855 séries (1 estoque + 8 fluxos: primário, juros, ajuste met. interno/externo, paridade, caixa-competência, reconhecimento de dívidas, privatizações), R$ milhões. Identidade `estoque[t]−estoque[t−1] = Σ 8 fluxos[t]` validada célula a célula. **Sinal "necessidade de financiamento" — fluxo positivo aumenta a dívida, logo `primario` positivo = déficit, oposto de `fisc_nfsp`** | 2001-12 → today (mensal) | `brasil/bcb/fisc_dlsp_fatores.py` |
 | `pm_hiato_produto` | BCB, anexo estatístico do RPM (**não existe no SGS** — ver `connectors/bcb_rpm.py`): hiato do produto, edição corrente. `central` (Cenário de referência) + `minimo`/`p25`/`p75`/`maximo` (dispersão entre modelos). % do produto potencial, nível — não anualizar. Recarregada com truncate a cada edição, `vintage` registra de qual | 2003-IV → trimestre de referência da edição (trimestral) | `brasil/bcb/pm_hiato_produto.py` |
-| `pm_copom_projecoes` | BCB, **texto dos comunicados do Copom** (`connectors/bcb_copom.py`; não existe no SGS nem no Focus): as projeções de inflação do próprio Copom no cenário de referência — IPCA, livres e administrados por período. É o que o BC projeta, não o que o mercado espera (`expc_focus*`), e por isso a única forma de medir o gap projeção-oficial-vs-meta. `horizonte_relevante` marca o ponto do horizonte que o Comitê diz perseguir, com `regime` dizendo qual dos três conceitos de horizonte vale ali; `cenario` classifica pelo **condicionamento** (`juros_focus`/`juros_constante`), não pelo rótulo publicado, porque "cenário de referência" significava o oposto em 2016-2017 — o rótulo original fica em `cenario_publicado`. Texto de cada reunião versionado em `repository/monetary_policy/raw_md/central_bank_comunication/` | reuniões 206 (2017-04-12) → 280, 396 linhas. As reuniões 48-205 estão baixadas mas **fora da carga** (até 2016 os comunicados não publicavam projeção; em 2016-2017 duas projeções de cenários diferentes dividem a mesma frase) | `brasil/bcb/pm_copom_projecoes.py` |
+| `pm_copom_projecoes` | BCB, **texto de duas publicações**, distinguidas pela coluna `documento` (nada disso existe no SGS nem no Focus): o **comunicado** de decisão (`connectors/bcb_copom.py`), que publica 2 ou 3 períodos escolhidos, e o **Relatório de Política Monetária** (`connectors/bcb_rpm.py`; chamado Relatório de Inflação até 2024-12), que sai 7 a 28 dias depois da mesma reunião e publica o **caminho trimestral contíguo inteiro**. É o que o BC projeta, não o que o mercado espera (`expc_focus*`), e por isso a única forma de medir o gap projeção-oficial-vs-meta. `horizonte_relevante` marca o ponto do horizonte que o Comitê persegue, com `regime` dizendo qual dos quatro conceitos vale ali (`hr_aproximado` = os 6 trimestres calculados por nós nas eras em que o HR de 6 trimestres não existia — só possível porque o relatório publica o caminho contíguo); `cenario` classifica pelo **condicionamento** (`juros_esperado`/`juros_constante`/`juros_decrescente`), não pelo rótulo publicado, porque "cenário de referência" significava o oposto até ~2020 — o rótulo original fica em `cenario_publicado` e a informação de fato usada em `input_juros` (`focus`/`di_swaps`/`constante`). Texto versionado em `repository/monetary_policy/raw_md/{central_bank_comunication,relatorio_politica_monetaria}/` | 2.363 linhas: comunicado reuniões 206 (2017-04-12) → 280, 396 linhas; relatório 108 das 109 edições (1999-09 → 2026-06), 1.967 linhas. Comunicados 48-205 baixados mas **fora da carga** (ver `copom_comunicados.md`); RI de 1999-06 não publica tabela numérica | `brasil/bcb/pm_copom_projecoes.py` |
+| `pm_copom_reuniao` | BCB **SGS 432** (meta Selic, diária de dia corrido) cruzada com o calendário de reuniões de `connectors/bcb_copom.calendario_reunioes()`. Uma linha por reunião: o nível herdado, o decidido, e o **passo em pontos-base** — a variação daquela reunião, não o acumulado do ciclo. Contrapartida de `pm_copom_projecoes`: as duas juntas permitem ler a reação (projeção no horizonte relevante × passo de juros). O passo é o nível 5 dias corridos depois da decisão menos o vigente no dia, e cinco dias não é folga arbitrária: das 152 mudanças da série, 147 entram 1 dia depois da reunião, 4 em 2 (feriado na quinta) e 1 em 5 (20/04/2011), enquanto os **8 movimentos por viés** — até 2003 o presidente do BCB podia mover a meta entre reuniões — estão todos a 7 dias ou mais; a janela separa decisão de viés exatamente, e `alterada_fora_da_reuniao` marca as 4 reuniões cujo nível de entrada não é o que a anterior deixou. A decisão em prosa do comunicado entra como **conferência independente**, não como fonte: 63 reuniões comparadas, zero divergência | 247 reuniões, 34ª (1999-04-14) → 280ª. As reuniões 21ª-33ª ficam fora — a meta Selic não existia, o instrumento eram a TBC e a TBAN | `brasil/bcb/pm_copom_reuniao.py` |
 | `pm_hiato_produto_vintages` | Mesma fonte, **todas** as edições: o que cada RI/RPM publicou para cada trimestre. É a dimensão que nenhuma outra tabela do banco tem — o que o BCB *achava* na época, não só o que acha hoje. **Quebra metodológica entre as edições 2024-06 e 2024-09** (um modelo + banda ±2 d.p. → dispersão entre modelos); só `central` é comparável entre os dois regimes | edições 2021-09 → hoje (a 1ª com anexo estatístico); trimestres 2003-II → hoje | `brasil/bcb/pm_hiato_produto_vintages.py` |
 | `fisc_rtn` | Tesouro Nacional, RTN (164 séries — receita/despesa/resultado do Governo Central por rubrica orçamentária, R$ milhões) — ver `analytics/brasil/fiscal_policy/CLAUDE.md` | 1997-01 → today | `brasil/tesouro/fisc_rtn.py` |
 | `fisc_investimento` | Tesouro Nacional, API de Séries Temporais, **Tema 13** (78 séries — investimento do Governo Federal por GND, R$ milhões, mensal). Dois cortes independentes do mesmo agregado: `funcao` (GND × função orçamentária, 60 séries, subtema 13.1) e `natureza` (GND × natureza da despesa, 18, subtema 13.2), que compartilham os 4 nós de cima (`total`/`gnd4`/`gnd5`/`ajuste_ordem_bancaria`) e divergem abaixo. Só os GNDs de capital — 4 Investimentos (cria ativo novo) e 5 Inversões Financeiras (só troca titularidade). Identidades `total = gnd4+gnd5+ajuste` e `pai = Σ filhos` validadas com desvio exato 0,0 | 2008-01 → today. **A metadata da API diz 1997-01 e mente**: 1997-2006 vem 0,0 em todas as 78 séries (zero = sem dado), e 2007 só tem o total do corte `funcao`, sem decomposição e contradizendo o total do corte `natureza` — `_START` corta em 2008-01 | `brasil/tesouro/fisc_investimento.py` |
@@ -142,6 +144,8 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 📄 **Focus/Olinda — inventário de cobertura por endpoint × indicador, as 4 reformulações da pesquisa que cortam séries no meio, e volumes:** [`brasil/bcb/focus_inventario.md`](brasil/bcb/focus_inventario.md). Medido ao vivo; redescobrir custa ~100 chamadas à API e nada disso está na documentação do serviço.
 
 📄 **Comunicados do Copom — os 5 regimes de comunicação (o que dá para extrair de cada era), a armadilha do nome do cenário que trocou de significado, os 3 conceitos de horizonte relevante, e o que a Ata acrescenta:** [`brasil/bcb/copom_comunicados.md`](brasil/bcb/copom_comunicados.md). Também medido ao vivo, varrendo as 233 reuniões que a API devolve.
+
+📄 **Relatório de Política Monetária — os 3 formatos de tabela por era, as 5 armadilhas silenciosas do PDF (a coluna central que muda de lugar, o separador ano/trimestre, o layout de 2 colunas, a fonte de subconjunto sem cmap, o rótulo que troca de significado), a grade 2×2 de cenários de 2016-2020 e como cada edição se liga à reunião que a condiciona:** [`brasil/bcb/relatorio_politica_monetaria.md`](brasil/bcb/relatorio_politica_monetaria.md). Levantado baixando e lendo as 109 edições.
 
 `expc_focus_pre202608` é o snapshot das 19.204 linhas da `expc_focus` antes da reescrita de 2026-08 — não é tabela de produção, nenhum script escreve ou lê dela. Já serviu: a variante `suavizada='S' AND base_calculo=0` da tabela nova reproduz as 13.746 linhas não-Selic dela **valor a valor, zero divergência** (verificado). Pode ser derrubada quando não fizer mais falta; as 5.458 linhas de Selic que ela ainda guarda são as colapsadas, sem valor analítico.
 
@@ -179,8 +183,8 @@ Built 2026-08, the first US branch. Full method, validation and gotchas:
 | `inflc_cpi` | BLS API v2 — CPI-U index **levels** by item, SA and NSA (340,907 rows). Variations are computed at read time, never stored | 1913-01 → today (NSA); 1947-01 → today (SA) | `us/inflation/inflc_cpi.py` |
 | `inflc_cpi_dim` | `cu.item` flat file + the annual relative-importance table + the news-release HTML — **both** of the CPI's trees, keyed apart by `arvore`: `despesa` (355 items × 10 levels, the statistical structure) and `divulgacao` (37 rows × 5 levels, Table 1 of the release) | — (no date) | `us/inflation/inflc_cpi_dim.py` |
 | `inflc_cpi_pesos` | `relative-importance/<year>.xlsx` — December snapshots, CPI-U and CPI-W, both sections of Table 1 (3,864 rows) | 2020-12 → 2025-12 (annual). BLS publishes back to **1947** in two older formats with no parser yet — parsing gap, not data gap | `us/inflation/inflc_cpi_pesos.py` |
-| `inflc_pce` | BEA, Section 2 *underlying detail* xlsx (**no API key, no quota**) — tables 2.4.4U (chained price index, 2017=100) and 2.4.5U (nominal spending, US$ mn SAAR) for the same 402 lines, monthly, **SA only** (the BEA publishes no NSA monthly counterpart). 607,644 rows. `medida` in the key, not two columns: the 2 `ZZZZZZ` "net" lines have spending and no price index | 1959-01 → today | `us/inflation/inflc_pce.py` |
-| `inflc_pce_dim` | The published **indentation** of those same two tables — 402 lines = 368 in the tree (9 levels) + 34 addenda aggregates. Keyed by BEA **line number**, because 13 series codes appear on two lines each | — (no date) | `us/inflation/inflc_pce_dim.py` |
+| `inflc_pce` | BEA **API** (dataset `NIUnderlyingDetail`, needs `BEA_API_KEY`) since 2026-08-26 — tables 2.4.4U (chained price index, 2017=100) and 2.4.5U (nominal spending, US$ mn SAAR) for the same 402 lines, monthly, **SA only** (the BEA publishes no NSA monthly counterpart). The API is the better contract for values (typed JSON instead of a spreadsheet parser) and only sends the requested window, so the routine 3-year run costs ~6 MB against the xlsx's fixed 12 MB. `fonte="xlsx"` remains as a fallback and gives identical numbers (608,442 observations cross-checked, 0 differing). Each load re-runs that cross-check for free whenever the xlsx is already cached — see `connectors/CLAUDE.md`. 608,442 rows. `medida` in the key, not two columns: the 2 `ZZZZZZ` "net" lines have spending and no price index | 1959-01 → today | `us/inflation/inflc_pce.py` |
+| `inflc_pce_dim` | **The one table in the project that is its own source of truth.** The hierarchy exists only in the xlsx — the BEA API publishes none at all (checked across every dataset in the service; 10 fields, none a parent/level/indent) — but it does not change month to month, so it is written once and thereafter **re-read from here** and re-proved against the API: same line set (number, label, and code on the index table), additivity closing in nominal over the stored parentage, levels 1–4 summing to 100%. Passing all three, only the coverage columns are rewritten. Failing any, the 12 MB xlsx is downloaded and the tree rebuilt — the file is a *repair* path, not a monthly dependency. `run(fonte="xlsx")` forces the rebuild; the API-only route was verified to produce a byte-identical table. The published **indentation** of those same two tables — 402 lines = 368 in the tree (9 levels) + 34 addenda aggregates. Keyed by BEA **line number**, because 13 series codes appear on two lines each | — (no date) | `us/inflation/inflc_pce_dim.py` |
 
 Three things about this trio that don't generalise from the Brazil tables:
 
@@ -217,9 +221,18 @@ The PCE pair inverts three of those CPI decisions, each time because the source 
   to carry forward — the weight is `nominal / nominal[line 1]` and is computed at read time, like the
   variations. Measured payoff: contribution rebuilds the published headline to 0.0009 p.p. (M/M), against
   0.0124 for the CPI's December-snapshot join.
-- **One dim pass, not two.** The tree and the series come from the same file, so `inflc_pce_dim` measures
-  `idx_begin`/`nom_end` from the source and does not depend on `inflc_pce` being loaded. It still runs
-  *first* in the job, because it is what validates the structure.
+- **One dim pass, not two.** `inflc_pce_dim` measures `idx_begin`/`nom_end` from the source and does not
+  depend on `inflc_pce` being loaded. It still runs *first* in the job, because it is what validates the
+  structure.
+- **The routine run touches no file at all** (2026-08-26). Both PCE steps go through the API; the xlsx is
+  fetched only when the structural check says the tree moved. Two details that cost a debugging round
+  each, both worth knowing before touching this: the API **returns a record only where there is data**,
+  so on a short window the 2 `ZZZZZZ` lines (no price index, ever) and the discontinued ones (157/158,
+  ended 2001-12) are legitimately absent — absence only means removal if the stored `idx_end`/`nom_end`
+  says the line should still be publishing. And the BEA **SeriesCode encodes the measure**: line 1 is
+  `DPCERG` in 2.4.4U and `DPCERC` in 2.4.5U. `inflc_pce_dim.code` therefore holds the *index* code, which
+  is also why `_validar_casamento` compares line/label/indentation between the two sheets and never the
+  code.
 - **The tree is proved, and the tolerance comes from the source, not from taste.** Every parent must equal
   the sum of its children × each child's sign, in nominal, across all 810 months. The BEA rounds each line
   to whole millions, so k children against a rounded parent can differ by up to `0.5*(k+1)` by rounding
@@ -288,16 +301,27 @@ PRIMARY KEY (vintage, date, variavel)     -- pm_hiato_produto_vintages (vintage 
 -- Projecoes do Copom: a REUNIAO entra na chave em vez da data dela, porque o
 -- numero da reuniao e a identidade natural da publicacao (e o que a API indexa, e
 -- o que o comunicado usa para se referir a si mesmo); `vintage` = a data dela fica
--- fora, como procedencia. `date` aqui e o periodo PROJETADO, nao o da publicacao --
--- as duas dimensoes de tempo que uma projecao tem, mesma logica do par
--- pm_hiato_produto_vintages, so com os papeis nomeados diferente.
-PRIMARY KEY (nro_reuniao, indice, cenario, date)
-                                          -- pm_copom_projecoes (indice = ipca | ipca_livres |
-                                          --  ipca_administrados; cenario = juros_focus |
-                                          --  juros_constante, pelo CONDICIONAMENTO e nao pelo
-                                          --  rotulo publicado -- ver o COMMENT da coluna;
+-- fora, como procedencia -- e para as linhas de relatorio `vintage` e a data de
+-- PUBLICACAO da edicao, dias depois da reuniao, entao os dois documentos da mesma
+-- reuniao tem vintages diferentes. `date` aqui e o periodo PROJETADO, nao o da
+-- publicacao -- as duas dimensoes de tempo que uma projecao tem, mesma logica do par
+-- pm_hiato_produto_vintages, so com os papeis nomeados diferente. `documento` esta na
+-- chave porque comunicado e relatorio projetam o MESMO periodo com numeros proprios.
+PRIMARY KEY (nro_reuniao, documento, indice, cenario, date)
+                                          -- pm_copom_projecoes (documento = comunicado |
+                                          --  relatorio; indice = ipca | ipca_livres |
+                                          --  ipca_administrados; cenario = juros_esperado |
+                                          --  juros_constante | juros_decrescente, pelo
+                                          --  CONDICIONAMENTO e nao pelo rotulo publicado --
+                                          --  ver o COMMENT da coluna;
                                           --  date = 1o mes do trimestre projetado, com o ano civil
                                           --  acumulado normalizado para o 4o trimestre daquele ano)
+
+-- Decisao de Selic: a reuniao E a linha, entao a PK e ela sozinha. `date` aqui e a data
+-- da DECISAO (dia 2 da reuniao), nao um periodo projetado -- diferente do papel que
+-- `date` tem na pm_copom_projecoes, e a razao de as duas nao serem uma tabela so.
+PRIMARY KEY (nro_reuniao)                 -- pm_copom_reuniao (decisao = elevacao | manutencao |
+                                          --  reducao, derivada do sinal de variacao_bps)
 
 -- Credit by modality/cut x metric (each cell's underlying SGS code differs by
 -- BOTH dimensions, not derivable from one alone — see cred_modalidade_*'s own

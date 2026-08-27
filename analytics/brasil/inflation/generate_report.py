@@ -15,6 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from analytics.brasil.inflation import inercia as _inercia
 from analytics.brasil.inflation.fetch_bcb import _apply_stl_ma3
 from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
@@ -110,6 +111,28 @@ def _to_records(df: pd.DataFrame, indice: str) -> dict:
         "min_date": dates[0] if dates else "",
         "max_date": dates[-1] if dates else "",
     }
+
+
+def _ibge_nomes(decomposicao: pd.DataFrame) -> dict:
+    """Prefixo do codigo IBGE -> nome, para os 3 niveis acima do subitem.
+
+    Deliberadamente NAO vai como coluna em cada registro: o codigo de 7
+    digitos que report.html ja carrega em `subitem` ("1101002 Arroz") ja
+    contem o parentesco por prefixo, entao o front-end recorta 1/2/4
+    digitos e consulta este mapa. Sao ~80 entradas contra ~262 mil
+    registros — a alternativa (3 strings por registro) engordaria um
+    arquivo que ja tem ~99 MB em troca de nenhuma informacao nova.
+    """
+    dim = decomposicao.drop_duplicates("subitem_codigo")
+    nomes: dict[str, str] = {}
+    for corte, col in ((1, "ibge_grupo"), (2, "ibge_subgrupo"), (4, "ibge_item")):
+        if col not in dim.columns:
+            continue
+        for codigo, nome in zip(dim["subitem_codigo"], dim[col]):
+            if nome is None or pd.isna(nome):
+                continue
+            nomes.setdefault(str(codigo)[:corte], str(nome))
+    return nomes
 
 
 def _series_dict(df: pd.DataFrame) -> dict:
@@ -444,6 +467,37 @@ def _compute_dp(decomposicao: pd.DataFrame, item: pd.DataFrame, indice: str, hea
     return pd.DataFrame({"dt": value.index, "value": value.values})
 
 
+def _splice_headline_15(sgs: dict | None, headline: pd.Series) -> pd.DataFrame:
+    """IPCA-15 headline as one series: BCB/SGS 7478 where it exists, subitem
+    reconstruction where it doesn't yet.
+
+    Why this has to exist: every other IPCA-15 series on the 3M SAAR charts and
+    the heatmap is computed in-house from `inflc_decomposicao`, so it lands the
+    day IBGE publishes. The headline was the one exception -- it came only from
+    the CSV, and SGS mirrors the IBGE release with about a day of lag. On
+    release day that left `IPCA15_ma3_sa` one month short of every núcleo drawn
+    beside it, which (a) cut the dotted "IPCA-15 (ref.)" line a month early and
+    (b) silently dropped the newest month from the whole heatmap, whose 12
+    columns are `compute3mSAAR('IPCA15').dates.slice(-12)`.
+
+    SGS keeps priority for every month it covers, so published history stays
+    exactly the official print -- only the not-yet-mirrored tail is
+    reconstructed. That tail carries IBGE's subitem rounding (~0.006 p.p. mean
+    deviation, 0.067 p.p. worst case over the 315 overlapping months; under
+    0.005 p.p. in the last 18), i.e. below the 1-2 decimals anything displays,
+    and it is replaced by the official value on the next fetch_bcb.py run.
+    """
+    recon = headline.dropna()
+    if recon.empty:
+        return pd.DataFrame(columns=["name", "dt", "value"])
+    if sgs and sgs.get("dates"):
+        official = pd.Series(sgs["values"], index=sgs["dates"]).dropna()
+        merged = official.combine_first(recon)
+    else:
+        merged = recon
+    return pd.DataFrame({"name": "IPCA15", "dt": merged.index, "value": merged.values})
+
+
 def run(output: str = "reports/brasil/Inflation.html") -> None:
     print("Carregando dados...")
     decomposicao = _load_decomposicao()
@@ -463,6 +517,17 @@ def run(output: str = "reports/brasil/Inflation.html") -> None:
     data["min_date_ipca15"] = ipca15["min_date"]
     data["max_date_ipca15"] = ipca15["max_date"]
     print(f"  IPCA-15: {len(data['records_ipca15'])} registros ({data['min_date_ipca15']} -> {data['max_date_ipca15']})")
+
+    data["ibge_nomes"] = _ibge_nomes(decomposicao)
+    print(f"  Árvore IBGE: {len(data['ibge_nomes'])} nós de grupo/subgrupo/item")
+
+    # Inércia: corr(yoy_t, yoy_t-12) por subitem, faixas de ~20% do peso.
+    # Estimada no IPCA e herdada pelo IPCA-15 (ver analytics/brasil/inflation/inercia.py).
+    data["inercia"] = _inercia.calcular(decomposicao)
+    _f = data["inercia"]["faixas"]
+    print(f"  Inércia: {data['inercia']['n_classificados']} subitens classificados em "
+          f"{len(_f)} faixas ({', '.join(f'Q{x[chr(113)]}={x[chr(110)]}' for x in _f)}), "
+          f"janela {data['inercia']['janela']['inicio']}→{data['inercia']['janela']['fim']}")
 
     data["bcb"] = _load_bcb()
 
@@ -491,6 +556,10 @@ def run(output: str = "reports/brasil/Inflation.html") -> None:
     if not dp_15.empty:
         dp_15 = dp_15.assign(name="IPCA15_nucleo_DP")[["name", "dt", "value"]]
         series15 = pd.concat([series15, dp_15], ignore_index=True)
+
+    ipca15_hl = _splice_headline_15(data["bcb"].get("IPCA15"), headline_15)
+    if not ipca15_hl.empty:
+        series15 = pd.concat([series15, ipca15_hl], ignore_index=True)
 
     if not series15.empty:
         sa15 = _apply_stl_ma3(series15, series=set(series15["name"].unique()))

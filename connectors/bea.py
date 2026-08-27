@@ -3,24 +3,55 @@ Connector para o BEA (Bureau of Economic Analysis) — tabelas NIPA da Secao 2
 (Personal Income and Outlays), no formato de "underlying detail".
 
 --------------------------------------------------------------------------------
-NAO PRECISA DE CHAVE
+DUAS PORTAS PARA O MESMO DADO: XLSX E API
 --------------------------------------------------------------------------------
-O `us_project/inflation_fontes_dados.md` registrava "Get the BEA key" como
-pendencia para chegar ao PCE com granularidade de tabela NIPA. Nao precisa: o BEA
-publica as tabelas inteiras como xlsx aberto no site de release, e o arquivo da
-Secao 2 traz as tabelas de underlying detail MENSAIS, que sao justamente as de
-maior granularidade. A API, com chave, serviria para vintages e para outras
-secoes — nao para isto.
+    xlsx  https://apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx
+    api   https://apps.bea.gov/api/data  (dataset NIUnderlyingDetail)
 
-    https://apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx
+O xlsx tem 12 MB, 22 abas, e nao pede chave nem tem cota. A API pede chave
+(`BEA_API_KEY` no `.env`; registro gratuito em https://apps.bea.gov/API/signup/).
 
-12 MB, 22 abas, sem autenticacao e sem cota. Medido ao vivo em 2026-08.
+A escolha inicial pelo xlsx foi por CONVENIENCIA, nao por robustez -- so nao pedia
+chave. Com a chave instalada em 2026-08-26 as duas portas foram medidas uma contra a
+outra, e o resultado divide o problema em dois:
+
+**Nos VALORES a API e melhor, e as duas concordam exatamente.** `tests/test_bea_api.py`
+confere valor a valor: **608.442 observacoes** (as duas tabelas, 1959-01 -> hoje),
+**zero diferentes, diferenca maxima 0**, nada existindo so de um lado, e os rotulos
+identicos depois da mesma `_limpar_rotulo()` (a API tambem traz a referencia cruzada
+"(55)" no rotulo -- ela nao vem mais limpa). A API e melhor porque entrega numero
+tipado: nao depende de `"Line"` na celula A8, de 2 espacos por nivel, de `.....` como
+ausente nem de nota de rodape no fim da coluna A. Tudo isso e camada de apresentacao,
+e um reformat cosmetico do BEA quebra este parser -- e por isso que ele levanta em vez
+de adivinhar. A conferencia entre as duas fontes e o que transforma esse risco em algo
+medido, do mesmo jeito que `connectors/bls.py` faz entre a API do BLS e o arquivo
+bruto.
+
+**Na ESTRUTURA a API nao serve: ela nao publica hierarquia nenhuma.** Medido no
+registro de `GetData`: 10 campos -- TableName, SeriesCode, LineNumber,
+LineDescription, TimePeriod, METRIC_NAME, CL_UNIT, UNIT_MULT, DataValue, NoteRef -- e
+nenhum e pai, nivel ou indentacao. `LineDescription` vem SEM os espacos da coluna B,
+e `LineNumber` e ordem na tabela, nao profundidade. A hierarquia existe so na camada
+de apresentacao, e e ela que faz a aba de PCE existir -- drill-down, contribuicao e o
+teste de particao todos dependem de pai. Por isso o desenho e HIBRIDO e nao uma troca
+de fonte, e por isso `TabelaNipa.fonte` existe: `inflc_pce_dim` exige `"xlsx"`.
+
+Duas divergencias entre o guia oficial (69 paginas, abr/2026) e a API de verdade,
+ambas medidas: o campo e `METRIC_NAME` em maiusculas (o guia escreve `Metric_Name`) e
+ha um decimo campo, `NoteRef`, que o guia nao lista. E a palavra "vintage" nao aparece
+uma vez no guia -- uma versao anterior desta nota afirmava que a chave serviria para
+vintages, e nao havia base para isso.
+
+**Limites.** Documentados: 100 requisicoes/min, 100 MB/min, 30 erros/min, com timeout
+de 1 minuto. Medido: `Year=X` traz a serie inteira numa requisicao -- 75 MB, 303.410
+registros, 10-20s -- e as duas tabelas seguidas (150 MB em ~40s) passaram sem
+estrangulamento, mesmo acima do limite anunciado de MB/min. O xlsx nao tem cota
+nenhuma; e a unica dimensao em que ele ganha.
 
 --------------------------------------------------------------------------------
 AS ABAS QUE INTERESSAM
 --------------------------------------------------------------------------------
-O nome da aba e o numero da tabela sem pontos, mais o sufixo de frequencia:
-
+O nome da aba e o numero da tabela sem pontos, mais o sufixo de frequencia.
 As 7 tabelas do arquivo, todas SA, com o numero de linhas e de meses medidos:
 
   aba         tabela   conteudo                                linhas   meses
@@ -92,9 +123,14 @@ lacuna de carga, e da fonte — e coerente com o uso (o PCE e lido dessazonaliza
 from __future__ import annotations
 
 import datetime as _dt
+import http.client
+import json
+import os
 import pathlib
 import re
 import tempfile
+import time
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 
@@ -144,6 +180,9 @@ class TabelaNipa:
                       rotulo_bruto, indentacao.
         observacoes:  formato longo — linha, date (1o dia do mes), value. Linhas sem
                       valor publicado simplesmente nao aparecem.
+        fonte:        "xlsx" ou "api". Importa porque a API nao traz hierarquia:
+                      `estrutura["indentacao"]` e nula quando `fonte == "api"`, e
+                      quem monta arvore tem de recusar essa fonte.
     """
 
     aba: str
@@ -154,6 +193,7 @@ class TabelaNipa:
     periodos: list[str]
     estrutura: pd.DataFrame
     observacoes: pd.DataFrame
+    fonte: str = "xlsx"
 
     @property
     def sazonalidade(self) -> str:
@@ -189,6 +229,46 @@ def baixar_secao2_underlying(force: bool = False) -> pathlib.Path:
         )
     dest.write_bytes(conteudo)
     return dest
+
+
+def caminho_cache_hoje() -> pathlib.Path | None:
+    """O xlsx de hoje ja esta em disco? Sem baixar nada.
+
+    Serve para uma conferencia oportunista: quem carrega pela API pode comparar com
+    o xlsx quando ele JA foi baixado na mesma passada (o script da arvore baixa), e
+    pular a conferencia quando isso custaria 12 MB so para conferir.
+
+    Returns:
+        O caminho, ou None se o arquivo de hoje nao estiver em cache.
+    """
+    dest = _CACHE_DIR / f"Section2All_Underlying_{_dt.date.today():%Y%m%d}.xlsx"
+    return dest if dest.exists() else None
+
+
+def anos_param(ini: int | None = None, fim: int | None = None) -> str:
+    """Monta o parametro `Year` da API.
+
+    A API aceita uma lista explicita de anos, e e por isso que ela e mais barata que
+    o xlsx numa carga de rotina: o xlsx traz sempre os 810 meses inteiros (12 MB),
+    enquanto aqui se pede exatamente a janela que vai ser gravada.
+
+    Args:
+        ini: primeiro ano. None (nos dois) devolve "X" = a serie inteira.
+        fim: ultimo ano.
+
+    Returns:
+        "X" ou "2024,2025,2026".
+
+    Raises:
+        ValueError: se so um dos dois for dado, ou se a janela estiver invertida.
+    """
+    if ini is None and fim is None:
+        return "X"
+    if ini is None or fim is None:
+        raise ValueError("passe os dois anos, ou nenhum (para a serie inteira)")
+    if fim < ini:
+        raise ValueError(f"janela invertida: {ini}..{fim}")
+    return ",".join(str(a) for a in range(int(ini), int(fim) + 1))
 
 
 def _workbook(caminho: pathlib.Path):
@@ -273,9 +353,288 @@ def ler_tabela(aba: str, caminho: pathlib.Path | None = None) -> TabelaNipa:
         periodos=periodos,
         estrutura=pd.DataFrame(estrutura),
         observacoes=pd.DataFrame({"linha": obs_linha, "date": obs_data, "value": obs_valor}),
+        fonte="xlsx",
     )
 
 
 # Abas usadas pelo ramo de PCE deste projeto.
 ABA_PCE_INDICE = "U20404-M"
 ABA_PCE_NOMINAL = "U20405-M"
+# ==============================================================================
+# CAMINHO DE API
+# ==============================================================================
+TABELA_PCE_INDICE = "U20404"
+TABELA_PCE_NOMINAL = "U20405"
+
+# aba do xlsx -> nome da tabela na API. As duas portas para o mesmo dado.
+ABA_PARA_TABELA = {
+    ABA_PCE_INDICE: TABELA_PCE_INDICE,
+    ABA_PCE_NOMINAL: TABELA_PCE_NOMINAL,
+}
+
+_URL_API = "https://apps.bea.gov/api/data"
+
+# Valores que a API manda no lugar de um numero, no campo DataValue.
+_SEM_VALOR = {"", "...", "(NA)", "(D)", "(L)", "(NM)"}
+
+
+def _chave() -> str:
+    """Le BEA_API_KEY do ambiente.
+
+    Raises:
+        RuntimeError: se nao estiver definida, dizendo como resolver.
+    """
+    k = os.environ.get("BEA_API_KEY", "").strip()
+    if not k:
+        raise RuntimeError(
+            "BEA_API_KEY nao esta no ambiente. O caminho de xlsx (`ler_tabela`) nao "
+            "precisa de chave -- so o de API (`ler_tabela_api`). Registro gratuito em "
+            "https://apps.bea.gov/API/signup/, e a chave vai no `.env` (ver "
+            "`.env.example`)."
+        )
+    return k
+
+
+def _get_api(**params) -> dict:
+    """Uma chamada a API do BEA, com as duas defesas que a medicao exigiu.
+
+    1. **Erro vem com HTTP 200.** Medido: chave invalida, chave vazia, tabela
+       inexistente, frequencia invalida e ano fora do range, todos respondem 200 -- e
+       o erro aparece em UM DE DOIS lugares, `BEAAPI.Error` (erro do dataset) ou
+       `BEAAPI.Results.Error` (erro de chave). Olhar so um deixa o outro passar como
+       resposta valida e vazia.
+    2. **`IncompleteRead` acontece e nao e limite de tamanho.** Medido: a serie
+       inteira desde 1959 vem numa requisicao de 75 MB sem reclamar, e o mesmo pedido
+       que falhou uma vez passou nas tres tentativas seguintes. E truncamento de
+       conexao, entao repete em vez de desistir ou de fatiar.
+
+    Args:
+        **params: parametros da query, sem UserID nem ResultFormat.
+
+    Returns:
+        O no `BEAAPI` da resposta.
+
+    Raises:
+        RuntimeError: se a API devolver erro em qualquer um dos dois nos.
+    """
+    q = {"UserID": _chave(), "ResultFormat": "JSON", **params}
+    url = _URL_API + "?" + urllib.parse.urlencode(q)
+    for tentativa in range(4):
+        try:
+            with urllib.request.urlopen(url, timeout=600) as r:
+                bruto = r.read()
+            break
+        except http.client.IncompleteRead:
+            if tentativa == 3:
+                raise
+            time.sleep(2 * (tentativa + 1))
+
+    api = json.loads(bruto)["BEAAPI"]
+    # CUIDADO: a resposta ECOA a chave de volta em Request.RequestParam (medido).
+    # Nunca colocar o corpo cru numa mensagem de erro nem num log.
+    erro = api.get("Error") or (api.get("Results") or {}).get("Error")
+    if erro:
+        det = (erro.get("ErrorDetail") or {}).get("Description", "")
+        alvo = ", ".join(f"{k}={v}" for k, v in params.items())
+        raise RuntimeError(
+            f"BEA API erro {erro.get('APIErrorCode')}: "
+            f"{erro.get('APIErrorDescription')} {det}".strip() + f"  ({alvo})"
+        )
+    return api
+
+
+def ler_tabela_api(tabela: str, anos: str = "X", freq: str = "M") -> TabelaNipa:
+    """Le uma tabela de underlying detail pela API, no lugar do xlsx.
+
+    Mesmo retorno de `ler_tabela`, com UMA diferenca que importa: `estrutura` volta
+    com `indentacao` nula, porque a API nao publica hierarquia nenhuma. Medido no
+    registro de `GetData`: 10 campos -- TableName, SeriesCode, LineNumber,
+    LineDescription, TimePeriod, METRIC_NAME, CL_UNIT, UNIT_MULT, DataValue, NoteRef
+    -- e nenhum e pai, nivel ou indentacao. `LineDescription` volta SEM os espacos de
+    indentacao que o xlsx tem na coluna B (conferido no repr) e `LineNumber` e ordem
+    dentro da tabela, nao profundidade. Por isso `fonte` existe no retorno e
+    `inflc_pce_dim` exige `fonte == "xlsx"`: montar a arvore por aqui e impossivel,
+    nao apenas pior.
+
+    Duas coisas que o guia oficial escreve diferente do que a API faz, medidas: o
+    campo e `METRIC_NAME` em maiusculas (o guia diz `Metric_Name`) e ha um decimo
+    campo, `NoteRef`, que o guia nao lista.
+
+    O que a API tem de melhor e o VALOR: numero tipado, sem depender de `"Line"` na
+    celula A8, de 2 espacos por nivel, de `.....` como ausente nem de nota de rodape
+    no fim da coluna A. As duas fontes foram conferidas valor a valor -- ver
+    `conferir_api_xlsx`.
+
+    Args:
+        tabela: nome da tabela na API, ex. "U20404" (2.4.4U) -- ver
+                `ABA_PARA_TABELA`.
+        anos:   "X" para a serie inteira (default) ou "2024,2025,2026".
+        freq:   "M", "Q" ou "A".
+
+    Returns:
+        TabelaNipa com `fonte="api"` e `estrutura["indentacao"]` nula.
+
+    Raises:
+        RuntimeError: erro da API, ou resposta sem registro nenhum.
+    """
+    api = _get_api(method="GetData", datasetname="NIUnderlyingDetail",
+                   TableName=tabela, Frequency=freq, Year=anos)
+    res = api["Results"]
+    dados = res.get("Data") or []
+    if not dados:
+        raise RuntimeError(f"BEA API devolveu 0 registros para {tabela}/{freq}/{anos}")
+
+    # A primeira nota traz titulo, unidade entre colchetes e data de revisao, tudo
+    # numa string: "Table 2.4.4U. Price Indexes ... [Index numbers, 2017=100; ...]
+    # - LastRevised: August 26, 2026". Conferido contra o xlsx: titulo e unidade saem
+    # identicos as linhas 1 e 2 do arquivo, e o LastRevised bate com o
+    # "Data published" dele.
+    nota = next((n["NoteText"] for n in (res.get("Notes") or [])
+                 if n.get("NoteRef") == tabela), "")
+    m = re.match(r"^(?P<titulo>[^\[]*?)\s*(?P<unidade>\[[^\]]*\])?"
+                 r"(?:\s*-\s*LastRevised:\s*(?P<rev>.*))?$", nota)
+    titulo = (m.group("titulo") or "").strip() if m else nota.strip()
+    unidade = (m.group("unidade") or "").strip() if m else ""
+    revisao = (m.group("rev") or "").strip() if m else ""
+
+    est: dict[int, dict] = {}
+    obs_linha: list[int] = []
+    obs_data: list[_dt.date] = []
+    obs_valor: list[float] = []
+    periodos: set[str] = set()
+    for r in dados:
+        n = int(r["LineNumber"])
+        periodos.add(r["TimePeriod"])
+        if n not in est:
+            bruto = r["LineDescription"]
+            est[n] = {
+                "linha": n,
+                "code": (r.get("SeriesCode") or "").strip() or None,
+                "rotulo": _limpar_rotulo(bruto),
+                "rotulo_bruto": bruto.strip(),
+                "indentacao": None,  # a API nao tem hierarquia -- ver docstring
+            }
+        v = (r.get("DataValue") or "").replace(",", "").strip()
+        if v in _SEM_VALOR:
+            continue
+        obs_linha.append(n)
+        obs_data.append(_mes(r["TimePeriod"]))
+        obs_valor.append(float(v))
+
+    ordenados = sorted(periodos)
+    return TabelaNipa(
+        aba=tabela,
+        titulo=titulo,
+        unidade=unidade,
+        periodo=(f"{freq} data from {ordenados[0]} to {ordenados[-1]}"
+                 if ordenados else ""),
+        publicado_em=(f"Data published {revisao}" if revisao else ""),
+        periodos=ordenados,
+        estrutura=pd.DataFrame([est[k] for k in sorted(est)]),
+        observacoes=pd.DataFrame({"linha": obs_linha, "date": obs_data,
+                                  "value": obs_valor}),
+        fonte="api",
+    )
+
+
+def indexar_obs(obs: pd.DataFrame, anos: tuple[int, int] | None = None) -> dict:
+    """`observacoes` -> {(linha, date): value}, opcionalmente recortado por ano.
+
+    Existe para que as comparacoes entre as duas portas usem UMA indexacao, e nao uma
+    por lugar que compara. `date` sai sempre como `datetime.date`, venha a coluna como
+    date ou como Timestamp do pandas -- se cada chamador normalizasse por conta, uma
+    comparacao entre um lado com date e outro com Timestamp daria "nada em comum" sem
+    levantar nada.
+
+    Args:
+        obs:  DataFrame com colunas linha, date, value.
+        anos: (primeiro, ultimo) inclusive, ou None para tudo.
+
+    Returns:
+        dict de (linha, date) -> value.
+    """
+    fora = {}
+    for r in obs.itertuples():
+        d = r.date.date() if hasattr(r.date, "date") else r.date
+        if anos and not (anos[0] <= d.year <= anos[1]):
+            continue
+        fora[(int(r.linha), d)] = r.value
+    return fora
+
+
+def comparar_obs(da: dict, dx: dict) -> dict:
+    """Compara duas indexacoes de observacoes.
+
+    Args:
+        da: um lado (por convencao, a API).
+        dx: o outro (por convencao, o xlsx).
+
+    Returns:
+        dict com `n_comum`, `n_so_a`, `n_so_b`, `n_diferentes`, `dif_max`, `onde_dif`.
+    """
+    comuns = da.keys() & dx.keys()
+    difs = [(abs(da[k] - dx[k]), k) for k in comuns]
+    pior, onde = max(difs) if difs else (0.0, None)
+    return {
+        "n_comum": len(comuns),
+        "n_so_a": len(da.keys() - dx.keys()),
+        "n_so_b": len(dx.keys() - da.keys()),
+        "n_diferentes": sum(1 for d, _ in difs if d > 0),
+        "dif_max": pior,
+        "onde_dif": onde,
+    }
+
+
+def conferir_api_xlsx(aba: str, caminho: pathlib.Path | None = None,
+                      anos: tuple[int, int] | None = None) -> dict:
+    """Confere as duas portas para a mesma tabela, valor a valor.
+
+    E o teste de aceitacao do caminho de API, e existe porque as duas fontes sao
+    independentes -- parser de planilha de um lado, JSON tipado do outro. Onde elas
+    concordam nao ha erro de leitura em nenhuma das duas. Mesma ideia da conferencia
+    que `connectors/bls.py` faz entre a API do BLS e o arquivo bruto.
+
+    Args:
+        aba:     aba do xlsx, ex. "U20404-M". A tabela da API sai de
+                 `ABA_PARA_TABELA` e a frequencia do sufixo da aba.
+        caminho: xlsx local. Default: baixa/reaproveita o do dia.
+        anos:    (primeiro, ultimo) para conferir so uma janela -- o pedido a API sai
+                 recortado tambem, entao uma janela curta e barata. None = tudo.
+
+    Returns:
+        dict com o resultado de `comparar_obs` mais `aba`, `tabela_api`,
+        `n_linhas_api`, `n_linhas_xlsx`, `n_rotulos_diferentes`, `n_codigos_diferentes`
+        e as datas de publicacao das duas.
+
+    Raises:
+        KeyError: se a aba nao tiver tabela correspondente na API.
+    """
+    if aba not in ABA_PARA_TABELA:
+        raise KeyError(f"aba {aba!r} nao tem tabela mapeada na API. "
+                       f"Conhecidas: {sorted(ABA_PARA_TABELA)}")
+    freq = aba.rsplit("-", 1)[-1]
+    a = ler_tabela_api(ABA_PARA_TABELA[aba], anos=anos_param(*(anos or (None, None))),
+                       freq=freq)
+    x = ler_tabela(aba, caminho=caminho)
+
+    fora = comparar_obs(indexar_obs(a.observacoes, anos),
+                        indexar_obs(x.observacoes, anos))
+
+    def _dif(col):
+        va = dict(zip(a.estrutura["linha"], a.estrutura[col]))
+        vx = dict(zip(x.estrutura["linha"], x.estrutura[col]))
+        return sum(1 for l, v in va.items() if l in vx and vx[l] != v), len(va), len(vx)
+
+    ndifr, n_api, n_xls = _dif("rotulo")
+    ndifc, _, _ = _dif("code")
+    fora.update({
+        "aba": aba,
+        "tabela_api": a.aba,
+        "n_linhas_api": n_api,
+        "n_linhas_xlsx": n_xls,
+        "n_rotulos_diferentes": ndifr,
+        "n_codigos_diferentes": ndifc,
+        "publicado_api": a.publicado_em,
+        "publicado_xlsx": x.publicado_em,
+    })
+    return fora

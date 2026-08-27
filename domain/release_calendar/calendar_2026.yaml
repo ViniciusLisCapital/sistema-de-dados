@@ -51,6 +51,15 @@ no_release:
   # Nao e serie divulgada: nada a esperar do calendario e nada a rodar por dia.
   not_a_series:
     - inflc_dim              # tabela de dimensao (IPCA)
+    - inflc_cpi_dim          # dimensao do CPI dos EUA (as 2 arvores publicadas)
+    - inflc_pce_dim          # dimensao do PCE dos EUA (arvore das tabelas 2.4.xU)
+    # Importancia relativa do CPI: snapshot ANUAL de dezembro, publicado junto com o
+    # CPI de janeiro. Entra aqui e nao como grupo proprio por um motivo mecanico, nao
+    # de escopo: a tabela e chaveada por `reference_period`/`weights_year` e NAO TEM a
+    # coluna `date`, entao a checagem do sync.py (MAX(date) >= periodo esperado) nao
+    # tem em que se apoiar. Pendura-la no grupo mensal bls_cpi produziria ATRASADO
+    # onze meses por ano, que e ruido, nao informacao.
+    - inflc_cpi_pesos
 
 # Tolerancia de atraso para conteudo DIARIO -- a checagem que faltava.
 #
@@ -412,7 +421,7 @@ groups:
   - group: bcb_copom
     institution: BCB
     name: "Reunião do Copom — decisão da taxa Selic"
-    tables: [cred_inadimplencia_pj, expc_focus, expc_focus_copom, pm_copom_projecoes]
+    tables: [cred_inadimplencia_pj, expc_focus, expc_focus_copom, pm_copom_projecoes, pm_copom_reuniao]
     cadence: "8x/year (~every 45 days)"
     note: >
       Two-day meeting (Tue+Wed); the Selic decision is announced at the close of day 2,
@@ -422,9 +431,10 @@ groups:
       #277 03-18, #278 04-29, #279 06-17, #280 08-05 as dataReferencia (= day 2). The
       three forward dates are now confirmed directly from BCB's own official
       release-calendar ICS feed (source_url), 2026-08-17 -- exactly matching what had
-      been read off independent secondary sources (CNN Brasil, Toro Investimentos). No
-      table is updated directly by this event; it's the policy event the Selic series
-      reflects.
+      been read off independent secondary sources (CNN Brasil, Toro Investimentos). Two
+      tables ARE written directly by this event: `pm_copom_projecoes` (the projections
+      the Comunicado publishes) and `pm_copom_reuniao` (the Selic step itself). The
+      others just reflect it.
     source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Reuni%C3%B5es%20do%20Copom
     ics:
       lista: Reuniões do Copom
@@ -558,7 +568,7 @@ groups:
 
   - group: bcb_caged_sgs_mirror
     institution: BCB
-    name: "Novo CAGED (mirrored into BCB SGS as mt_caged)"
+    name: "Novo CAGED (espelho no SGS)"
     tables: [mt_caged]
     cadence: monthly
     note: >
@@ -741,6 +751,99 @@ groups:
       - {date: "2026-12-11", reference_period: "2026-12-08", confirmed: true}
       - {date: "2026-12-18", reference_period: "2026-12-15", confirmed: true}
       - {date: "2026-12-28", reference_period: "2026-12-22", confirmed: true, note: "Officially delayed off Friday by Christmas."}
+
+  - group: bls_cpi
+    institution: "BLS"
+    name: "Consumer Price Index (CPI-U)"
+    tables: [inflc_cpi, inflc_cpi_dim]
+    cadence: monthly
+    # 08:30 na coluna "Release Time" da propria agenda do BLS, declarada no fuso da
+    # FONTE: os EUA tem horario de verao e o Brasil nao, entao estas 08:30 sao 09:30
+    # em Brasilia de marco a comeco de novembro e 10:30 no resto do ano. Mesma regra
+    # do cftc_cot acima -- quem converte por entrada e o sync.py (hora_da_entrada).
+    release_time: "08:30"
+    release_time_tz: America/New_York
+    note: >
+      Datas e horas da agenda oficial do BLS (a pagina por release, que e a UNICA
+      fonte do BLS com a coluna "Reference Month" -- o feed ICS geral do BLS so tem o
+      NOME do release no SUMMARY). Conferidas contra o proprio ICS do BLS e contra o
+      release 10 do FRED: as tres fontes batiam exatamente em 2026-08-26. O periodo de
+      referencia e sempre o mes anterior ao da divulgacao, mas fica LIDO e nao
+      derivado, porque e o que sobrevive a uma agenda irregular (ver bea_pce abaixo,
+      onde a regra teria errado 5 divulgacoes seguidas). A agenda do BLS cobre so o
+      ano corrente; 2027 nao existia em 2026-08-26.
+      A tabela de dimensao entra no grupo porque o botao do calendario precisa rodar a
+      cadeia inteira: `inflc_cpi_dim` mede `sa_begin`/`nsa_begin`/`nsa_end` a partir do
+      que esta em `inflc_cpi`, entao ela tem que rodar DEPOIS da serie -- e e essa a
+      ordem que o registry produz (alfabetica por modulo). `inflc_cpi_pesos` fica de
+      fora de proposito: e anual e independente das outras duas, e baixa um xlsx que
+      nao muda de mes para mes. A passada de validacao ANTES da serie, que
+      `jobs/update_us.py` faz, e a que se perde aqui; ela e redundante numa base ja
+      carregada (a arvore nao muda de mes para mes), so nao detecta o BLS mudando a
+      indentacao publicada antes de a serie ser gravada.
+    source_url: https://www.bls.gov/schedule/news_release/cpi.htm
+    us:
+      source: bls_schedule
+      match: cpi
+      fred_release_id: 10
+    entries:
+      - {date: "2026-01-13", time: "08:30", reference_period: "2025-12", confirmed: true}
+      - {date: "2026-02-13", time: "08:30", reference_period: "2026-01", confirmed: true}
+      - {date: "2026-03-11", time: "08:30", reference_period: "2026-02", confirmed: true}
+      - {date: "2026-04-10", time: "08:30", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-05-12", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-10", time: "08:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-14", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-12", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-11", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-14", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-10", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-10", time: "08:30", reference_period: "2026-11", confirmed: true}
+
+  - group: bea_pce
+    institution: "BEA"
+    name: "Personal Income and Outlays (PCE)"
+    tables: [inflc_pce, inflc_pce_dim]
+    cadence: monthly
+    release_time: "08:30"
+    release_time_tz: America/New_York
+    note: >
+      O PCE nao tem divulgacao propria: sai dentro do release "Personal Income and
+      Outlays" do BEA, e e por isso que o `match` e o titulo do release e nao o nome
+      do indice. Datas e horas do feed ICS do BEA, que traz o periodo de referencia no
+      proprio titulo do evento ("Personal Income and Outlays, August 2026") -- por
+      isso, ao contrario do BLS, aqui o ICS basta. Conferidas contra a pagina de
+      agenda do BEA e contra o release 54 do FRED (as tres batiam em 2026-08-26).
+      A agenda de 2026 e IRREGULAR no comeco do ano (22/01 as 10:00 para o dado de
+      novembro, depois 20/02, 13/03, 09/04 e 30/04 -- duas divulgacoes em abril, para
+      recuperar o atraso), o que e a razao concreta de as datas serem lidas da fonte
+      em vez de derivadas de uma regra de dia do mes. A agenda vai ate dez/2026;
+      2027 nao existia em 2026-08-26.
+      Como no bls_cpi, a dimensao entra no grupo para o botao rodar a cadeia inteira.
+      Aqui a ordem alfabetica poe a serie antes da arvore, e o que se perde e a
+      validacao PREVIA da estrutura (`inflc_pce_dim` levantaria antes de qualquer valor
+      ser gravado se o BEA reorganizasse a tabela); rodando depois, ela ainda levanta,
+      so que com a serie ja escrita. `jobs/update_us.py` continua sendo o caminho com a
+      ordem certa.
+    source_url: https://www.bea.gov/news/schedule
+    us:
+      source: bea_ics
+      match: Personal Income and Outlays
+      fred_release_id: 54
+    entries:
+      - {date: "2026-01-22", time: "10:00", reference_period: "2025-11", confirmed: true}
+      - {date: "2026-02-20", time: "08:30", reference_period: "2025-12", confirmed: true}
+      - {date: "2026-03-13", time: "08:30", reference_period: "2026-01", confirmed: true}
+      - {date: "2026-04-09", time: "08:30", reference_period: "2026-02", confirmed: true}
+      - {date: "2026-04-30", time: "08:30", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-05-28", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-25", time: "08:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-30", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-26", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-30", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-29", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-25", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-23", time: "08:30", reference_period: "2026-11", confirmed: true}
 
   - group: mdic_comex_stat
     institution: "MDIC"

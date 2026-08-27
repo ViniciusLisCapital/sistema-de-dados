@@ -123,13 +123,8 @@
     .kpi-value.neg { color: var(--lis-verde); }
     .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
 
-    /* ── Breadcrumb ── */
-    #breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-family: var(--mono); font-size: 12px; }
-    .bc-item { color: var(--muted); }
-    .bc-link  { color: var(--lis-azul-cl); cursor: pointer; }
-    .bc-link:hover { text-decoration: underline; }
-    .bc-sep   { color: var(--muted); font-size: 10px; }
-    #waterfall-subtitle, #scatter-subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
+    /* Legendas em itálico sob o título de uma seção. */
+    #tree-subtitle, #evo-subtitle, #scatter-subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
 
     /* ── Chart cards ── */
     /* overflow:hidden is a deliberate safety net: a Plotly layout.height that
@@ -140,8 +135,7 @@
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; overflow: hidden; }
     .chart-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .chart-col-title { font-family: var(--cond); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 6px; }
-    #chart-waterfall    { width: 100%; height: 580px; }
-    #chart-timeseries   { width: 100%; height: 580px; }
+    #chart-timeseries   { width: 100%; height: 680px; }
     #chart-comp-saar    { width: 100%; height: 520px; }
     #chart-nuc-saar     { width: 100%; height: 520px; }
     #chart-comp-yoy     { width: 100%; height: 520px; }
@@ -164,6 +158,93 @@
     td.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
     td.pos { color: var(--lis-laranja); font-weight: 600; }
     td.neg { color: var(--lis-verde);   font-weight: 600; }
+
+    /* ── Tabela hierárquica (Decomposição) ──
+       Mesmo formato das tabelas de árvore de analytics/brasil/credit e
+       analytics/us/inflation (makeHierTab): linha expansível + checkbox que
+       plota no gráfico abaixo + 12 colunas de mês. Precisa sobrescrever os
+       seletores nus `table`/`thead th`/`tbody td` acima, que valem para
+       qualquer tabela do relatório — em particular o thead navy com
+       cursor:pointer, que aqui não é clicável (não há ordenação). */
+    .ctrl-bar {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 9px 14px;
+    }
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .table-card { max-height: 640px; overflow: auto; padding: 0; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .data-table thead tr { background: var(--card-bg); color: var(--text); }
+    .data-table thead th {
+      position: sticky; top: 0; z-index: 1; background: var(--card-bg); text-align: left;
+      padding: 10px 14px; font-family: var(--mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+      border-bottom: 1px solid var(--border); cursor: default;
+    }
+    .data-table thead th:hover { background: var(--card-bg); }
+    .data-table th.col-check { width: 34px; padding-right: 0; }
+    .data-table th.col-value, .data-table td.col-value { text-align: right; min-width: 78px; }
+    .data-table tbody tr:nth-child(even) { background: transparent; }
+    .data-table td { padding: 6px 14px; border-bottom: 1px solid rgba(31,40,83,0.06); vertical-align: middle; }
+    .data-table td.col-check { padding-right: 0; }
+    .data-table td.col-check input { cursor: pointer; }
+    .data-table td.col-label { white-space: nowrap; }
+
+    /* ── Diferenciação pai/filho ──
+       Fundo em degradê e rótulo clareando junto, do total (mais escuro) até o
+       subitem (limpo). O recuo sozinho não basta: com 4 níveis e a tabela
+       rolando dentro de um card de 640px, o cabeçalho do nível some da vista e
+       duas linhas de profundidade parecida ficam ambíguas. `data-depth` sai do
+       próprio nó (ver _treeRowHtml), então não há um segundo lugar para manter
+       em sincronia com a árvore. */
+    .data-table tbody tr[data-depth="0"] { background: rgba(31,40,83,0.075); }
+    .data-table tbody tr[data-depth="1"] { background: rgba(31,40,83,0.045); }
+    .data-table tbody tr[data-depth="2"] { background: rgba(31,40,83,0.026); }
+    .data-table tbody tr[data-depth="3"] { background: rgba(31,40,83,0.012); }
+    .data-table tbody tr[data-depth="4"] { background: transparent; }
+    .data-table tbody tr[data-depth="0"] td.col-label { color: var(--text);  font-weight: 700; }
+    .data-table tbody tr[data-depth="1"] td.col-label { color: var(--text);  font-weight: 600; }
+    .data-table tbody tr[data-depth="2"] td.col-label { color: var(--text2); font-weight: 600; }
+    .data-table tbody tr[data-depth="3"] td.col-label { color: var(--text2); font-weight: 500; }
+    .data-table tbody tr[data-depth="4"] td.col-label { color: var(--muted); font-weight: 400; }
+    /* Depois das regras de profundidade de propósito: um nó COM filhos ganha
+       peso mesmo num nível fundo (ex.: um item que só existe em vigência antiga
+       e tem um subitem só), e a mesma especificidade faz a ordem decidir. */
+    .data-table tbody tr.is-group td.col-label { font-weight: 600; }
+    .data-table tbody tr.is-header td {
+      font-family: var(--cond); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 11px; color: var(--text2); background: var(--bg); padding-top: 12px;
+    }
+    /* Dourado, não um navy mais forte: o hover tem de se distinguir de QUALQUER
+       degrau do degradê acima, e mais navy se confundiria com a linha de cima. */
+    .data-table tbody tr:hover { background: rgba(187,155,29,0.13); }
+
+    .data-table td.col-value { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--text); }
+    /* Verde >0, vermelho <0 (pedido do usuário, 2026-08). É o INVERSO da
+       convenção `td.pos`/`td.neg` que o ranking desta mesma aba usa (laranja
+       para positivo, "inflação subindo"), daí as classes próprias `v-up`/`v-dn`
+       em vez de reaproveitar aquelas — reaproveitar deixaria duas semânticas
+       opostas penduradas no mesmo par de nomes. Sem o font-weight:600 delas
+       também: 12 colunas × ~700 linhas em negrito viram uma parede. */
+    .data-table td.col-value.v-up { color: var(--lis-verde);   font-weight: 400; }
+    .data-table td.col-value.v-dn { color: var(--lis-laranja); font-weight: 400; }
+    .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
+    .tree-toggle:hover { color: var(--text); }
+    .tree-spacer { display: inline-block; width: 16px; }
+    .chart-caption { font-size: 12px; color: var(--muted); line-height: 1.5; margin: -2px 0 0; max-width: 1000px; }
+    #chart-tree-sel { width: 100%; height: 600px; }
+    #chart-iner-sel { width: 100%; height: 600px; }
+    #chart-iner-faixas { width: 100%; height: 560px; }
+    #chart-iner-disp { width: 100%; height: 560px; }
+    /* Cartões da régua de faixas: o mesmo degradê do Q1 ao Q5 que a tabela usa,
+       para a faixa ser reconhecível nos dois lugares sem legenda. */
+    .iner-reguas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .iner-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px; }
+    .iner-card .q { font-family: var(--cond); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .iner-card .faixa { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .iner-card .val { font-family: var(--cond); font-size: 24px; font-weight: 600; line-height: 1.1; margin-top: 7px; }
+    .iner-card .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 1000px) { .iner-reguas { grid-template-columns: repeat(2, 1fr); } }
 
     /* ── Footer ── */
     footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
@@ -274,6 +355,7 @@
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="decomp">Decomposição</button>
   <button class="tab-btn" data-tab="nucleos">Núcleos &amp; Difusão</button>
+  <button class="tab-btn" data-tab="inercia">Inércia</button>
   <button class="tab-btn" data-tab="heatmap">Mapa de Calor</button>
 </nav>
 
@@ -317,14 +399,58 @@
     </section>
 
     <section id="sec-decomp">
-      <h2>Decomposição por Período</h2>
-      <div id="breadcrumb"></div>
-      <div id="waterfall-subtitle"></div>
-      <div class="chart-card"><div id="chart-waterfall"></div></div>
+      <h2 id="tree-h2">Árvore do IPCA — Estrutura IBGE</h2>
+      <p class="chart-caption">
+        Toda a árvore do índice, do total até o subitem, mais os núcleos num bloco à parte.
+        Clique em ▸ para abrir um nível; marque o checkbox de uma ou mais linhas para plotá-las
+        no gráfico abaixo. As colunas são os últimos 12 meses e mudam com a métrica escolhida —
+        <strong>independente do filtro de Período</strong> no topo, que continua valendo para os
+        KPIs e o ranking.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Árvore</span>
+        <div class="pill-group" id="tree-source-group">
+          <button type="button" class="pill active" data-tree="ibge">Estrutura IBGE</button>
+          <button type="button" class="pill" data-tree="bcb">Classificação BCB</button>
+        </div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Métrica</span>
+        <div class="pill-group" id="tree-metric-group">
+          <button type="button" class="pill active" data-metric="var">Var. mensal (%)</button>
+          <button type="button" class="pill" data-metric="contrib">Contribuição (p.p.)</button>
+          <button type="button" class="pill" data-metric="yoy">Var. 12M (%)</button>
+          <button type="button" class="pill" data-metric="peso">Peso (%)</button>
+        </div>
+        <button type="button" class="pill" id="tree-expand-toggle" style="margin-left:auto;">Expandir tudo</button>
+        <button type="button" class="pill" id="tree-clear-checks">Limpar seleção</button>
+      </div>
+      <div id="tree-subtitle"></div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="tree-table">
+          <thead id="tree-table-head"></thead>
+          <tbody id="tree-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sec-tree-chart">
+      <h2>Séries Selecionadas</h2>
+      <p class="chart-caption">Histórico completo das linhas marcadas na tabela acima, na métrica escolhida.</p>
+      <div class="chart-card"><div id="chart-tree-sel"></div></div>
     </section>
 
     <section id="sec-evolucao">
       <h2>Evolução Mensal — Histórico Completo</h2>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Profundidade</span>
+        <div class="pill-group" id="evo-level-group">
+          <button type="button" class="pill active" data-evo="1">Grupo</button>
+          <button type="button" class="pill" data-evo="2">Subgrupo</button>
+          <button type="button" class="pill" data-evo="3">Item</button>
+          <button type="button" class="pill" data-evo="4">Subitem</button>
+        </div>
+      </div>
+      <div id="evo-subtitle"></div>
       <div class="chart-card"><div id="chart-timeseries"></div></div>
     </section>
 
@@ -586,6 +712,104 @@
 
   </div>
 
+  <!-- ═══════════ TAB — INÉRCIA ═══════════ -->
+  <div class="tab-panel" id="tab-inercia">
+
+    <section>
+      <h2>Inércia dos Subitens — <span id="iner-medida">corr(y/y<sub>t</sub>, y/y<sub>t−12</sub>)</span></h2>
+      <p class="chart-caption" id="iner-intro">—</p>
+      <button class="glossario-toggle" id="iner-nota-toggle">
+        Como isto é medido, e o que a medida <em>não</em> sustenta <span class="glossario-caret" id="iner-nota-caret">▸</span>
+      </button>
+      <div class="glossario-panel" id="iner-nota-panel"></div>
+    </section>
+
+    <section>
+      <h2>As Cinco Faixas</h2>
+      <p class="chart-caption">Cada faixa carrega ~20% do peso do índice. O valor em destaque é a variação acumulada em 12 meses do agregado da faixa.</p>
+      <div class="iner-reguas" id="iner-cards"></div>
+    </section>
+
+    <section>
+      <h2>Agregado de Cada Faixa</h2>
+      <p class="chart-caption" id="iner-faixas-cap">—</p>
+      <div class="yoy-ctrl-bar" style="margin-bottom:12px;">
+        <span class="ctrl-label">Métrica</span>
+        <div class="pill-group" id="iner-faixas-metric-group">
+          <button type="button" class="pill active" data-metric="yoy">Var. 12M (%)</button>
+          <button type="button" class="pill" data-metric="var">Var. mensal (%)</button>
+          <button type="button" class="pill" data-metric="contrib">Contribuição (p.p.)</button>
+        </div>
+      </div>
+      <div class="chart-card"><div id="chart-iner-faixas"></div></div>
+    </section>
+
+    <section>
+      <h2>Onde Está o Peso</h2>
+      <p class="chart-caption">Um ponto por subitem: inércia no eixo X, peso no índice no eixo Y (escala log — os pesos vão de 0,001% a 5%). As linhas verticais são as fronteiras das faixas.</p>
+      <div class="chart-card"><div id="chart-iner-disp"></div></div>
+    </section>
+
+    <section id="sec-iner-tabela">
+      <h2 id="iner-h2">Faixas de inércia</h2>
+      <p class="chart-caption">Mesma tabela da aba Decomposição, sobre a árvore Faixa → Subitem. O <code>r</code> ao lado de cada subitem é a autocorrelação dele; o hover traz o nº de pares e o erro-padrão.</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Métrica</span>
+        <div class="pill-group" id="iner-metric-group">
+          <button type="button" class="pill active" data-metric="var">Var. mensal (%)</button>
+          <button type="button" class="pill" data-metric="contrib">Contribuição (p.p.)</button>
+          <button type="button" class="pill" data-metric="yoy">Var. 12M (%)</button>
+          <button type="button" class="pill" data-metric="peso">Peso (%)</button>
+        </div>
+        <button type="button" class="pill" id="iner-expand-toggle" style="margin-left:auto;">Expandir tudo</button>
+        <button type="button" class="pill" id="iner-clear-checks">Limpar seleção</button>
+      </div>
+      <div id="iner-subtitle"></div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="iner-table">
+          <thead id="iner-table-head"></thead>
+          <tbody id="iner-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Séries Selecionadas</h2>
+      <p class="chart-caption">Histórico completo das linhas marcadas na tabela acima, na métrica escolhida.</p>
+      <div class="chart-card"><div id="chart-iner-sel"></div></div>
+    </section>
+
+    <section id="sec-inerfix-tabela">
+      <h2 id="inerfix-h2">Reversibilidade — cortes fixos em r</h2>
+      <p class="chart-caption" id="inerfix-cap">—</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Métrica</span>
+        <div class="pill-group" id="inerfix-metric-group">
+          <button type="button" class="pill active" data-metric="var">Var. mensal (%)</button>
+          <button type="button" class="pill" data-metric="contrib">Contribuição (p.p.)</button>
+          <button type="button" class="pill" data-metric="yoy">Var. 12M (%)</button>
+          <button type="button" class="pill" data-metric="peso">Peso (%)</button>
+        </div>
+        <button type="button" class="pill" id="inerfix-expand-toggle" style="margin-left:auto;">Expandir tudo</button>
+        <button type="button" class="pill" id="inerfix-clear-checks">Limpar seleção</button>
+      </div>
+      <div id="inerfix-subtitle"></div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="inerfix-table">
+          <thead id="inerfix-table-head"></thead>
+          <tbody id="inerfix-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Séries Selecionadas — cortes fixos</h2>
+      <p class="chart-caption">Histórico completo das linhas marcadas na tabela de cortes fixos.</p>
+      <div class="chart-card"><div id="chart-inerfix-sel"></div></div>
+    </section>
+
+  </div>
+
   <!-- ═══════════ TAB 3 — MAPA DE CALOR ═══════════ -->
   <div class="tab-panel" id="tab-heatmap">
 
@@ -635,8 +859,6 @@ var C   = {
   amarelo: '#FBC852',
   cinza:   '#BFBFBF',
 };
-var LEVELS       = ['grupo', 'subgrupo', 'item', 'subitem'];
-var LEVEL_LABELS = {grupo:'Grupo', subgrupo:'Subgrupo', item:'Item', subitem:'Subitem'};
 var GROUP_COLORS = ['#EA523A','#02739B','#BB9B1D','#418791','#8E44AD','#16A085','#E67E22','#2980B9','#C0392B','#27AE60','#F39C12','#7F8C8D'];
 // scrollZoom: trackpad pinch / mouse-wheel zooms the chart in place instead of scrolling the page.
 var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
@@ -645,7 +867,8 @@ var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
 var currentIndex = 'ipca';
 var startDate    = '';
 var endDate      = '';
-var drillPath    = [];
+// Estado da árvore hierárquica vive dentro de cada instância de makeTreeTab().
+var evoLevel     = 1;        // profundidade do gráfico "Evolução Mensal": 1=Grupo … 4=Subitem
 var sortCol      = 'contribuicao';
 var sortAsc      = false;
 var scatterMonth = ''; // '' == latest available month; set from the month picker
@@ -667,9 +890,12 @@ function monthsBack(n, anchor) {
   m -= (n - 1); while (m <= 0) { m += 12; y--; }
   return y + '-' + String(m).padStart(2,'0');
 }
+// Decimal com VÍRGULA: o relatório é pt-BR inteiro e as tabelas já saíam assim
+// (fmtTreeValue/_fmtR convertiam por conta própria). Os KPIs, a tabela de
+// ranking e os cartões da aba Inércia usavam o toFixed cru e mostravam ponto.
 function fmt(v, d) {
   if (v == null || isNaN(v)) return '—';
-  return v.toFixed(d != null ? d : 2);
+  return v.toFixed(d != null ? d : 2).replace('.', ',');
 }
 function bcbValue(name, dt) {
   var d = D.bcb[name];
@@ -783,29 +1009,9 @@ function computeDifusaoFromRecords(records, filterFn) {
 }
 
 // ── Decomp helpers ────────────────────────────────────────────────────────────
-function applyDrillFilter(rows) {
-  for (var i = 0; i < drillPath.length; i++) {
-    var lv = drillPath[i].level, vl = drillPath[i].value;
-    rows = rows.filter(function(r) { return r[lv] === vl; });
-  }
-  return rows;
-}
 function getFiltered() {
   var s = startDate, e = endDate;
-  return applyDrillFilter(currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; }));
-}
-function currentLevel() { return LEVELS[Math.min(drillPath.length, LEVELS.length - 1)]; }
-function isLeaf()       { return drillPath.length >= LEVELS.length - 1; }
-function aggregateByLevel(rows, key) {
-  var agg = {};
-  for (var i = 0; i < rows.length; i++) {
-    var k = rows[i][key] || '(sem categoria)';
-    agg[k] = (agg[k] || 0) + (rows[i].contribuicao || 0);
-  }
-  var out = [];
-  for (var k in agg) out.push({label: k, contrib: agg[k]});
-  out.sort(function(a,b) { return b.contrib - a.contrib; });
-  return out;
+  return currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; });
 }
 function computeIpca(rows) {
   var byMonth = {};
@@ -819,9 +1025,8 @@ function computeIpca(rows) {
 
 // ── Decomp renders ────────────────────────────────────────────────────────────
 function renderAll() {
-  renderBreadcrumb();
   renderKPIs();
-  renderWaterfall();
+  DECOMP_TREE.render();
   renderTimeSeries();
   renderTable();
   renderScatterMomentum();
@@ -887,96 +1092,622 @@ function renderKPIs() {
   document.getElementById('kpi-12m-sub').textContent = '12M encerrado em ' + e;
 }
 
-function renderWaterfall() {
-  var agg    = aggregateByLevel(getFiltered(), currentLevel());
-  // No .reverse() here (unlike the old horizontal version): aggregateByLevel
-  // already sorts descending by contribution, and a vertical bar chart's
-  // category axis reads left-to-right in array order, so the highest
-  // contributor already lands leftmost without reversing.
-  var labels = agg.map(function(d) { return d.label; });
-  var values = agg.map(function(d) { return Math.round(d.contrib * 10000) / 10000; });
-  var colors = values.map(function(v) { return v >= 0 ? C.laranja : C.verde; });
-  document.getElementById('waterfall-subtitle').textContent = isLeaf()
-    ? 'Nível mais detalhado — veja o ranking abaixo'
-    : 'Clique em uma barra para detalhar por ' + LEVEL_LABELS[LEVELS[drillPath.length + 1] || 'subitem'];
-  // Deliberately left out of the dragmode:'pan'/_bindYAutofit treatment
-  // applied to every other chart in this report: this is a category
-  // ranking bar chart (x=category, y=value), not a time series — there is
-  // no time axis to pan/zoom through, so TradingView-style navigation
-  // doesn't apply here. Keeps Plotly's own default box-zoom interaction.
-  Plotly.react('chart-waterfall', [{
-    type:'bar',
-    x: labels, y: values, marker:{color: colors},
-    hovertemplate: '<b>%{x}</b><br>%{y:.3f} p.p.<extra></extra>',
-  }], {
-    height:580, margin:{l:60,r:30,t:20,b:150},
-    yaxis:{title:{text:'Contribuição (p.p.)',font:{size:12}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
-    xaxis:{tickfont:{size:11}, automargin:true, tickangle:-40},
-    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-    font:{family:'Barlow,sans-serif', color:'#1F2853', size:12}, bargap:0.35,
-  }, _PLOTLY_CONFIG);
+// ── Árvore hierárquica do índice ──────────────────────────────────────────────
+// Substituiu o waterfall "Decomposição por Período" em 2026-08 (pedido do
+// usuário): mesmo formato de tabela-árvore de analytics/brasil/credit e
+// analytics/us/inflation (makeHierTab) — linha expansível, checkbox que plota
+// no gráfico ao lado, 12 colunas de mês.
+//
+// Duas árvores sobre exatamente os mesmos registros de subitem, escolhidas pelo
+// pill "Árvore", porque são eixos INDEPENDENTES — nenhuma deriva da outra (um
+// subitem de "Alimentação e bebidas" pode ser Livre ou Monitorado):
+//
+//   'ibge' — a estrutura de despesa que o IBGE publica (Grupo > Subgrupo > Item
+//            > Subitem, 9/19/53/614). O parentesco NÃO viaja no payload: o
+//            código de 7 dígitos que cada registro já carrega em `subitem`
+//            ("1101002 Arroz") o contém por prefixo de 1/2/4 dígitos — regra do
+//            próprio IBGE, a mesma que inflc_decomposicao.py usa para detectar o
+//            nível de subitem. Só os ~80 nomes viajam, em D.ibge_nomes.
+//   'bcb'  — a classificação analítica do BC gravada em inflc_dim (Livres/
+//            Monitorados > Alimentos/Serviços/Bens Industriais > durabilidade e
+//            subjacência > Subitem), que é por onde o waterfall fazia drilldown.
+//
+// As chaves de nó são namespaced por nível de propósito: na árvore do BC o
+// rótulo "Monitorados" aparece como Grupo, como Subgrupo E como Item, então uma
+// chave só pelo rótulo colapsaria os três numa linha.
+var TREE_SEM = '(sem categoria)';
+var TREE_LEVEL_LABELS = ['Grupo', 'Subgrupo', 'Item', 'Subitem'];
+var NUC_FLAG_COLS = ['nucleo_ex0', 'nucleo_ex01', 'nucleo_ex02', 'nucleo_ex03',
+                     'nucleo_ex03_servicos', 'nucleo_ex03_industriais', 'nucleo_exfe'];
+
+function _fmtR(v) {
+  return v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(2).replace('.', ',');
 }
 
+// Cada fonte declara só como um REGISTRO vira caminho na árvore: as chaves de
+// cada nível, os rótulos, e (opcional) uma ordem explícita para o nível 1. O
+// resto -- agregação, ordenação, render, gráfico -- é comum, e é o que permite
+// a aba Inércia reusar a mesma máquina com uma árvore de 2 níveis em vez de 4.
+//
+// As chaves são namespaced por nível de propósito: na árvore do BC o rótulo
+// "Monitorados" aparece como Grupo, como Subgrupo E como Item, então uma chave
+// só pelo rótulo colapsaria os três numa linha.
+var TREE_SOURCES = {
+  ibge: {
+    label: 'Estrutura IBGE', tituloTabela: 'Estrutura IBGE',
+    niveis: ['Grupo', 'Subgrupo', 'Item', 'Subitem'],
+    // O parentesco vem do prefixo de 1/2/4 dígitos do código de 7 -- regra do
+    // próprio IBGE. Só os ~80 nomes viajam no payload, em D.ibge_nomes.
+    path: function(r, code) {
+      var raw = [code.slice(0, 1), code.slice(0, 2), code.slice(0, 4), code];
+      return {keys: raw, labels: [
+        D.ibge_nomes[raw[0]] || raw[0], D.ibge_nomes[raw[1]] || raw[1],
+        D.ibge_nomes[raw[2]] || raw[2], r.subitem,
+      ]};
+    },
+  },
+  bcb: {
+    label: 'Classificação BCB', tituloTabela: 'Classificação BCB',
+    niveis: ['Grupo', 'Subgrupo', 'Item', 'Subitem'],
+    path: function(r) {
+      var raw = [r.grupo || TREE_SEM, r.subgrupo || TREE_SEM, r.item || TREE_SEM, r.subitem || TREE_SEM];
+      return {keys: raw, labels: raw.slice()};
+    },
+  },
+  inercia: {
+    label: 'Faixa de inércia', tituloTabela: 'Faixa de inércia',
+    niveis: ['Faixa', 'Subitem'],
+    disponivel: function() { return !!(D.inercia && D.inercia.subitens); },
+    // Dois níveis só: Faixa -> Subitem. A faixa vem pronta do Python (ver
+    // analytics/brasil/inflation/inercia.py). Um código ausente do dict é um
+    // subitem DESCONTINUADO -- não tem dado no fim da janela, então não tem par
+    // para correlacionar. Devolver null tira a linha da árvore em vez de criar
+    // um ramo "Não classificado" com 237 filhos que só mostram travessão. Ele
+    // continua entrando na raiz (a raiz é o índice, não o classificado), e a
+    // diferença raiz - faixas é exatamente esse conjunto -- é o que o teste
+    // 13c fecha.
+    path: function(r, code) {
+      var e = D.inercia.subitens[code];
+      if (!e) return null;
+      return {
+        keys: ['q' + e[1], code],
+        labels: [D.inercia.rotulos[String(e[1])] || ('Q' + e[1]),
+                 r.subitem + '   r ' + _fmtR(e[0])],
+        ords: [e[1], 0],
+      };
+    },
+  },
+  // Mesmo r12, corte diferente: aqui os limites em r são fixos (±0,5) e o peso
+  // é que sai desigual, ao contrário da árvore acima, que iguala o peso e deixa
+  // os limites andarem. As duas convivem de propósito -- ver inercia.py.
+  inerciaFix: {
+    label: 'Faixa de reversibilidade', tituloTabela: 'Faixa de reversibilidade',
+    niveis: ['Faixa', 'Subitem'],
+    disponivel: function() { return !!(D.inercia && D.inercia.faixas_fixas); },
+    path: function(r, code) {
+      var e = D.inercia.subitens[code];
+      if (!e || e[3] == null) return null;
+      return {
+        keys: ['f' + e[3], code],
+        labels: [D.inercia.rotulos_fixos[String(e[3])] || ('F' + e[3]),
+                 r.subitem + '   r ' + _fmtR(e[0])],
+        ords: [e[3], 0],
+      };
+    },
+  },
+};
+
+var TREE_METRICS = {
+  var:     {label: 'Var. mensal (%)',     unit: '%', dec: 2, decHover: 2, sign: true,  cor: true,  y: 'Variação mensal (%)'},
+  contrib: {label: 'Contribuição (p.p.)', unit: '',  dec: 2, decHover: 3, sign: true,  cor: true,  y: 'Contribuição mensal (p.p.)'},
+  yoy:     {label: 'Var. 12M (%)',        unit: '%', dec: 2, decHover: 2, sign: true,  cor: false, y: 'Variação acumulada em 12 meses (%)'},
+  peso:    {label: 'Peso (%)',            unit: '%', dec: 2, decHover: 3, sign: false, cor: false, y: 'Peso no índice (%)'},
+};
+
+function _esc(s) {
+  return String(s).replace(/[&<>"]/g, function(c) {
+    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c];
+  });
+}
+function _monthIdx(dt) { var p = dt.split('-'); return parseInt(p[0], 10) * 12 + parseInt(p[1], 10); }
+
+// Cache de duas entradas: a aba Decomposição e a aba Inércia usam fontes
+// diferentes e ambas podem estar renderizadas ao mesmo tempo. Cada índice são
+// ~210 mil pares [contribuição, peso] (614 subitens x ~324 meses mais os níveis
+// acima), então guardar as combinações todas custaria memória à toa.
+// Três entradas: a aba Decomposição (ibge OU bcb) e as DUAS tabelas da aba
+// Inércia, que ficam renderizadas ao mesmo tempo. Com duas, cada render da aba
+// reconstruía um índice inteiro.
+var _treeCache = [];
+var _TREE_CACHE_MAX = 3;
+
+function buildTreeIndex(src) {
+  var ck = currentIndex + '|' + src;
+  for (var i = 0; i < _treeCache.length; i++) if (_treeCache[i].key === ck) return _treeCache[i];
+
+  var fonte = TREE_SOURCES[src];
+  var nNiveis = fonte.niveis.length;
+  var rows = currentAll();
+  var agg = {};    // nodeKey -> {dt: [contribuicao, peso]}
+  var nodes = {};
+  var root = {key: 'root', label: indexLabel(), depth: 0, children: [], kind: 'tree'};
+  nodes.root = root;
+  var pathCache = {};   // subitem -> chave de cada nível
+
+  function bump(key, dt, c, p) {
+    var a = agg[key] || (agg[key] = {});
+    var v = a[dt];
+    if (v) { v[0] += c; v[1] += p; } else { a[dt] = [c, p]; }
+  }
+
+  for (var r_i = 0; r_i < rows.length; r_i++) {
+    var r = rows[r_i];
+    var si = r.subitem || TREE_SEM;
+    var keys = pathCache[si];
+    if (!keys) {
+      var p = fonte.path(r, si.slice(0, 7));
+      keys = [];
+      // path() nulo = o subitem não pertence a esta árvore (ver `inercia`).
+      // Fica fora dos ramos mas segue somando na raiz e nos núcleos, senão a
+      // raiz deixaria de ser o índice publicado nos meses antigos.
+      if (p) {
+        var parent = root;
+        for (var d = 0; d < nNiveis; d++) {
+          var nk = src.charAt(0) + d + '|' + p.keys[d];
+          keys.push(nk);
+          var nd = nodes[nk];
+          if (!nd) {
+            nd = nodes[nk] = {key: nk, label: p.labels[d], depth: d + 1, children: [],
+                              kind: 'tree', ord: p.ords ? p.ords[d] : 0};
+            parent.children.push(nd);
+          }
+          parent = nd;
+        }
+      }
+      pathCache[si] = keys;
+    }
+    var c = r.contribuicao || 0, pe = r.pesos || 0, dt = r.dt;
+    bump('root', dt, c, pe);
+    for (var k = 0; k < keys.length; k++) bump(keys[k], dt, c, pe);
+    for (var f = 0; f < NUC_FLAG_COLS.length; f++) {
+      if (r[NUC_FLAG_COLS[f]] === 1) bump('flag|' + NUC_FLAG_COLS[f], dt, c, pe);
+    }
+  }
+
+  var dates = Object.keys(agg.root || {}).sort();
+  var last = dates.length ? dates[dates.length - 1] : '';
+
+  // Ordem: `ord` explícito primeiro (só a árvore de inércia usa, para manter
+  // Q1..Q5 em ordem em vez de por peso), depois peso do mês de referência
+  // decrescente -- a leitura útil de uma decomposição é "o que pesa mais
+  // primeiro". Um subitem descontinuado tem peso 0 no último mês e cai no
+  // desempate por |contribuição| acumulada em vez de embaralhar com os zeros.
+  function pesoAt(key) { var a = agg[key]; var v = a && a[last]; return v ? v[1] : 0; }
+  function totalAbs(key) { var a = agg[key] || {}, s = 0; for (var d in a) s += Math.abs(a[d][0]); return s; }
+  (function sortRec(n) {
+    n.children.sort(function(x, y) {
+      var d = (x.ord || 0) - (y.ord || 0);
+      if (d) return d;
+      d = pesoAt(y.key) - pesoAt(x.key);
+      if (d) return d;
+      d = totalAbs(y.key) - totalAbs(x.key);
+      if (d) return d;
+      return x.label < y.label ? -1 : x.label > y.label ? 1 : 0;
+    });
+    n.children.forEach(sortRec);
+  })(root);
+
+  // Núcleos como bloco PLANO ao lado da árvore, não como ramo dela: eles se
+  // sobrepõem entre si e não particionam o índice, então somar linhas irmãs aqui
+  // não dá o headline -- mesma decisão do bloco de addenda do PCE em
+  // analytics/us/inflation. A lista vem de activeNucleoList() (NUCLEO_ALL /
+  // NUCLEO_ALL_15) para que esta tabela não possa divergir da aba Núcleos; o
+  // headline sai porque já é a raiz da árvore.
+  var nucKids = activeNucleoList().filter(function(o) {
+    return o.value !== 'IPCA' && o.value !== 'IPCA15';
+  }).map(function(o) {
+    var n = {key: 'nuc|' + o.value, label: o.label, depth: 1, children: [], kind: 'nucleo',
+             serie: o.value, color: o.color, flag: _nucFlagFor(o.value)};
+    nodes[n.key] = n;
+    return n;
+  });
+  var nucHeader = {key: 'nucleos', label: 'Núcleos', depth: 0, children: nucKids, kind: 'header'};
+  nodes.nucleos = nucHeader;
+
+  var idx = {key: ck, src: src, agg: agg, nodes: nodes, root: root, nucHeader: nucHeader,
+             tree: [root, nucHeader], dates: dates, ref: dates.slice(-12), last: last};
+  _treeCache.unshift(idx);
+  _treeCache = _treeCache.slice(0, _TREE_CACHE_MAX);
+  return idx;
+}
+
+// Sufixo do nome da série -> coluna de pertencimento da NT-57 que os registros
+// já carregam. Existe só para os núcleos POR EXCLUSÃO: é o que permite mostrar
+// Peso para eles (a fatia do índice que a regra de exclusão cobre). P55, Médias
+// Aparadas e Dupla Ponderação são percentil, aparagem e reponderação por
+// volatilidade, não um recorte fixo de subitens.
+var _NUC_FLAG_BY_SUFFIX = {
+  EX0: 'nucleo_ex0', EX01: 'nucleo_ex01', EX02: 'nucleo_ex02', EX03: 'nucleo_ex03',
+  EX03_servicos: 'nucleo_ex03_servicos', EX03_industriais: 'nucleo_ex03_industriais',
+  EXFE: 'nucleo_exfe',
+};
+function _nucFlagFor(value) {
+  var m = /_nucleo_(.+)$/.exec(value);
+  return m ? (_NUC_FLAG_BY_SUFFIX[m[1]] || null) : null;
+}
+
+// {dt: [contribuicao, peso]} -> {dates, values} na métrica pedida.
+function _seriesFromAgg(a, metric) {
+  if (!a) return {dates: [], values: []};
+  var dates = Object.keys(a).sort();
+  if (metric === 'yoy') {
+    // Encadeia a razão mensal NÃO arredondada e arredonda só o resultado --
+    // mesma regra de computeYoYFromRecords (compor 12 valores já arredondados
+    // a 2 casas embute esse arredondamento no número de 12 meses, erro medido
+    // de até 0,02 p.p. em 2026-07). Exige os 12 meses CONTÍGUOS: um subitem
+    // descontinuado e reintroduzido teria uma janela que atravessa o buraco
+    // sem reclamar de nada.
+    var ratio = dates.map(function(d) { return a[d][1] > 0 ? a[d][0] / a[d][1] : null; });
+    var od = [], ov = [];
+    for (var i = 11; i < dates.length; i++) {
+      od.push(dates[i]);
+      if (_monthIdx(dates[i]) - _monthIdx(dates[i - 11]) !== 11) { ov.push(null); continue; }
+      var prod = 1, ok = true;
+      for (var j = i - 11; j <= i; j++) {
+        if (ratio[j] == null) { ok = false; break; }
+        prod *= (1 + ratio[j] / 100);
+      }
+      ov.push(ok ? Math.round((prod - 1) * 10000) / 100 : null);
+    }
+    return {dates: od, values: ov};
+  }
+  var values = dates.map(function(d) {
+    var v = a[d];
+    if (metric === 'contrib') return Math.round(v[0] * 10000) / 10000;
+    if (metric === 'peso')    return Math.round(v[1] * 1000000) / 10000;  // fração do índice -> %
+    return v[1] > 0 ? Math.round((v[0] / v[1]) * 10000) / 10000 : null;   // var. mensal ponderada
+  });
+  return {dates: dates, values: values};
+}
+
+// Série de um nó na métrica pedida. `null` (≠ série vazia) significa "esta
+// métrica não existe para este nó" e é o que faz a célula sair em branco.
+function treeSeriesDe(T, node, metric) {
+  if (node.kind === 'header') return null;
+  if (node.kind === 'nucleo') {
+    if (metric === 'contrib') return null;
+    if (metric === 'peso') return node.flag ? _seriesFromAgg(T.agg['flag|' + node.flag], 'peso') : null;
+    if (metric === 'yoy')   return nucleoSeriesValues(node.serie, computeYoY);
+    return nucleoSeriesValues(node.serie, function(k) { return D.bcb[k] || {dates: [], values: []}; });
+  }
+  return _seriesFromAgg(T.agg[node.key], metric);
+}
+
+function fmtTreeValue(v, metric) {
+  if (v == null || isNaN(v)) return '—';
+  var m = TREE_METRICS[metric];
+  var s = v.toFixed(m.dec).replace('.', ',');
+  if (m.sign && v > 0) s = '+' + s;
+  return s + m.unit;
+}
+
+function _treeTitle(n, src) {
+  if (n.kind === 'header') return 'Os núcleos se sobrepõem entre si e não particionam o índice — somar estas linhas não dá o headline.';
+  if (n.kind === 'nucleo') {
+    return n.flag
+      ? 'Núcleo por exclusão. O Peso é a fatia do índice que a regra de exclusão da NT-57 cobre; não tem contribuição, porque um núcleo não é parcela aditiva do headline.'
+      : 'Núcleo estatístico (percentil, aparagem ou reponderação por volatilidade) — não é um recorte fixo de subitens, então não tem peso nem contribuição.';
+  }
+  if (src === 'inercia' && n.depth === 2 && D.inercia) {
+    var e = D.inercia.subitens[n.key.slice(n.key.indexOf('|') + 1)];
+    if (!e) return 'Sem histórico suficiente na janela para estimar a autocorrelação — fora das faixas.';
+    var pares = e[2], max = D.inercia.pares_max || pares;
+    return 'corr(yoy_t, yoy_t-12) = ' + _fmtR(e[0]) + ', sobre ' + pares + ' pares'
+         + (pares < max ? ' (menos que os ' + max + ' de quem tem a janela inteira — subitem novo da estrutura de 2020, estimativa mais ruidosa)' : '')
+         + '. Erro-padrão aproximado ±' + (1 / Math.sqrt(pares)).toFixed(2).replace('.', ',') + '.';
+  }
+  return '';
+}
+
+function allTreeNodes(list, out) {
+  out = out || [];
+  for (var i = 0; i < list.length; i++) {
+    out.push(list[i]);
+    if (list[i].children.length) allTreeNodes(list[i].children, out);
+  }
+  return out;
+}
+function nodesAtDepth(T, depth) {
+  var out = [];
+  (function walk(list) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].depth === depth) out.push(list[i]);
+      else if (list[i].depth < depth) walk(list[i].children);
+    }
+  })(T.root.children);
+  return out;
+}
+
+// ── Fábrica da aba de árvore ─────────────────────────────────────────────────
+// Mesma ideia do makeHierTab() de analytics/brasil/credit: uma instância por
+// aba, com estado próprio (fonte, métrica, expandido, marcado) e os ids de DOM
+// vindos de fora. Virou fábrica em 2026-08 quando a aba Inércia passou a querer
+// a mesma tabela sobre uma árvore de 2 níveis -- antes os ids estavam cravados
+// dentro das funções de render.
+function makeTreeTab(opts) {
+  var st = {src: opts.fonte, metric: 'var', expanded: {root: true}, checked: {root: true}};
+
+  function index() { return buildTreeIndex(st.src); }
+  function el(id) { return document.getElementById(id); }
+  // As tabelas da aba Inércia mostram só a árvore: os núcleos são um recorte de
+  // outra natureza (se sobrepõem, não particionam) e nada têm a dizer sobre
+  // inércia -- pendurá-los ali só alonga a tabela.
+  function arvore(T) { return opts.semNucleos ? [T.root] : T.tree; }
+
+  function flatten(list, out) {
+    out = out || [];
+    for (var i = 0; i < list.length; i++) {
+      out.push(list[i]);
+      if (list[i].children.length && st.expanded[list[i].key]) flatten(list[i].children, out);
+    }
+    return out;
+  }
+  function grupos(T) { return allTreeNodes(arvore(T)).filter(function(n) { return n.children.length; }); }
+  function tudoAberto(T) { return grupos(T).every(function(n) { return !!st.expanded[n.key]; }); }
+
+  function rowHtml(n, ref) {
+    var s = treeSeriesDe(index(), n, st.metric);
+    var byDate = {};
+    if (s) for (var i = 0; i < s.dates.length; i++) byDate[s.dates[i]] = s.values[i];
+    var cls = n.kind === 'header' ? 'is-header'
+            : n.key === 'root' ? 'is-root'
+            : n.children.length ? 'is-group' : '';
+    var toggle = n.children.length
+      ? '<span class="tree-toggle" data-toggle="' + _esc(n.key) + '">' + (st.expanded[n.key] ? '▾' : '▸') + '</span> '
+      : '<span class="tree-spacer"></span>';
+    var check = n.kind === 'header' ? ''
+      : '<input type="checkbox" data-check="' + _esc(n.key) + '"' + (st.checked[n.key] ? ' checked' : '') + '>';
+    var cells;
+    if (n.kind === 'header') {
+      cells = '<td class="col-value" colspan="' + ref.length + '"></td>';
+    } else {
+      var pinta = TREE_METRICS[st.metric].cor;
+      cells = ref.map(function(d) {
+        var v = byDate[d];
+        var vc = (!pinta || v == null || isNaN(v)) ? '' : (v > 0 ? ' v-up' : v < 0 ? ' v-dn' : '');
+        return '<td class="col-value' + vc + '">' + fmtTreeValue(v, st.metric) + '</td>';
+      }).join('');
+    }
+    // O cabeçalho de Núcleos fica fora do degradê de profundidade -- tem estilo
+    // próprio (.is-header) e um data-depth="0" o pintaria como se fosse a raiz.
+    var depth = n.kind === 'header' ? '' : ' data-depth="' + n.depth + '"';
+    return '<tr class="' + cls + '"' + depth + '><td class="col-check">' + check + '</td>'
+         + '<td class="col-label" style="padding-left:' + (14 + n.depth * 18) + 'px"'
+         + ' title="' + _esc(_treeTitle(n, st.src)) + '">' + toggle + _esc(n.label) + '</td>'
+         + cells + '</tr>';
+  }
+
+  function renderTable() {
+    var T = index(), ref = T.ref;
+    if (opts.h2Id) {
+      el(opts.h2Id).textContent = opts.titulo(indexLabel(), TREE_SOURCES[st.src]);
+    }
+    el(opts.headId).innerHTML =
+      '<tr><th class="col-check"></th><th>' + _esc(TREE_SOURCES[st.src].tituloTabela) + '</th>'
+      + ref.map(function(d) { return '<th class="col-value">' + formatMonthLabel(d) + '</th>'; }).join('')
+      + '</tr>';
+    el(opts.bodyId).innerHTML = flatten(arvore(T)).map(function(n) { return rowHtml(n, ref); }).join('');
+    // O rótulo do botão sai do estado real da árvore, não de um flag próprio:
+    // trocar de árvore ou de índice zera st.expanded e um flag paralelo ficaria
+    // dizendo "Recolher tudo" numa tabela toda fechada.
+    if (opts.expandBtnId) el(opts.expandBtnId).textContent = tudoAberto(T) ? 'Recolher tudo' : 'Expandir tudo';
+  }
+
+  function renderChart() {
+    var T = index(), m = TREE_METRICS[st.metric];
+    var picked = allTreeNodes(arvore(T)).filter(function(n) {
+      return n.kind !== 'header' && st.checked[n.key];
+    });
+    var traces = [], vazios = 0;
+    picked.forEach(function(n, i) {
+      var s = treeSeriesDe(T, n, st.metric);
+      if (!s || !s.dates.length) { vazios++; return; }
+      traces.push({
+        type: 'scatter', mode: 'lines',
+        name: n.label.length > 26 ? n.label.slice(0, 26) + '…' : n.label,
+        x: s.dates, y: s.values,
+        line: {color: n.color || GROUP_COLORS[i % GROUP_COLORS.length],
+               width: n.key === 'root' ? 2.6 : 1.7,
+               dash: n.kind === 'nucleo' ? 'dot' : 'solid'},
+        // decHover, não dec: a tabela arredonda para 2 casas por pedido, e o hover
+        // é onde a contribuição/peso de um subitem continua legível (ver TREE_METRICS).
+        hovertemplate: '<b>' + n.label + '</b><br>%{x}<br>%{y:.' + m.decHover + 'f}'
+                       + (st.metric === 'contrib' ? ' p.p.' : '%') + '<extra></extra>',
+      });
+    });
+    if (opts.subtitleId) {
+      el(opts.subtitleId).textContent = picked.length
+        ? (picked.length + ' linha(s) marcada(s) · ' + m.label
+           + (vazios ? ' — ' + vazios + ' sem valor nesta métrica (ver o hover da linha)' : ''))
+        : 'Nenhuma linha marcada — marque o checkbox de uma linha da tabela para plotá-la.';
+    }
+    if (!traces.length) { Plotly.purge(opts.chartId); return; }
+    Plotly.react(opts.chartId, traces, {
+      // Legenda embaixo, não à direita (pedido do usuário, 2026-08): a coluna
+      // lateral comia ~190px de largura útil E truncava o próprio rótulo.
+      height: 600, margin: {l: 58, r: 30, t: 20, b: 150}, dragmode: 'pan',
+      xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+        buttons: [{count: 1, label: '1a', step: 'year', stepmode: 'backward'},
+                  {count: 3, label: '3a', step: 'year', stepmode: 'backward'},
+                  {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
+                  {step: 'all', label: 'Tudo'}],
+        bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1, activecolor: C.azul,
+        font: {size: 11, color: '#555'}, x: 0, y: -0.07, yanchor: 'top',
+      }},
+      yaxis: {title: {text: m.y, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+      legend: {orientation: 'h', x: 0, xanchor: 'left', y: -0.19, yanchor: 'top', font: {size: 10}},
+      paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+      font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+    }, _PLOTLY_CONFIG);
+    _bindYAutofit(opts.chartId);
+  }
+
+  function render() { renderTable(); renderChart(); }
+
+  function wire() {
+    var body = el(opts.bodyId);
+    // Delegação em vez de um listener por linha: com a árvore toda aberta são
+    // ~700 linhas, e 700 listeners de checkbox seriam recriados a cada render.
+    body.addEventListener('click', function(e) {
+      var k = e.target && e.target.getAttribute && e.target.getAttribute('data-toggle');
+      if (!k) return;
+      if (st.expanded[k]) delete st.expanded[k]; else st.expanded[k] = true;
+      renderTable();
+    });
+    body.addEventListener('change', function(e) {
+      var k = e.target && e.target.getAttribute && e.target.getAttribute('data-check');
+      if (!k) return;
+      if (e.target.checked) st.checked[k] = true; else delete st.checked[k];
+      renderChart();
+    });
+    if (opts.sourceGroupId) {
+      document.querySelectorAll('#' + opts.sourceGroupId + ' .pill').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.dataset.tree === st.src) return;
+          document.querySelectorAll('#' + opts.sourceGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          st.src = btn.dataset.tree;
+          // As chaves de nó são namespaced pela árvore ('i0|1' vs 'b0|Livres'),
+          // então expandido/marcado de uma não sobrevive na outra -- zera para o
+          // estado inicial em vez de deixar seleção fantasma sem linha.
+          st.expanded = {root: true};
+          st.checked = {root: true};
+          render();
+          if (opts.aoTrocarFonte) opts.aoTrocarFonte();
+        });
+      });
+    }
+    document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        st.metric = btn.dataset.metric;
+        render();
+      });
+    });
+    if (opts.expandBtnId) {
+      el(opts.expandBtnId).addEventListener('click', function() {
+        var T = index(), abrir = !tudoAberto(T);
+        st.expanded = {};
+        if (abrir) grupos(T).forEach(function(n) { st.expanded[n.key] = true; });
+        else st.expanded.root = true;   // recolhido = o estado inicial, não 2 linhas
+        renderTable();
+      });
+    }
+    if (opts.clearBtnId) {
+      el(opts.clearBtnId).addEventListener('click', function() {
+        st.checked = {};
+        render();
+      });
+    }
+  }
+
+  return {
+    estado: st, index: index, render: render, renderTable: renderTable, renderChart: renderChart,
+    wire: wire, flatten: flatten, grupos: grupos, tudoAberto: tudoAberto,
+    resetar: function() { st.expanded = {root: true}; st.checked = {root: true}; },
+  };
+}
+
+var DECOMP_TREE = makeTreeTab({
+  fonte: 'ibge', h2Id: 'tree-h2', subtitleId: 'tree-subtitle',
+  headId: 'tree-table-head', bodyId: 'tree-table-body', chartId: 'chart-tree-sel',
+  sourceGroupId: 'tree-source-group', metricGroupId: 'tree-metric-group',
+  expandBtnId: 'tree-expand-toggle', clearBtnId: 'tree-clear-checks',
+  titulo: function(idx, fonte) { return 'Árvore do ' + idx + ' — ' + fonte.label; },
+  aoTrocarFonte: function() { renderTimeSeries(); },   // a profundidade é a da árvore ativa
+});
+
+// ── Evolução Mensal — Histórico Completo ─────────────────────────────────────
+// A profundidade vem dos pills (2026-08). Antes vinha do drillPath do waterfall:
+// clicar numa barra empurrava um nível E filtrava o gráfico para aquele ramo, e
+// era esse filtro que mantinha o nível Subitem legível (chegava-se lá com ~20
+// subitens de um item só). Sem ele, Subitem empilharia 377-614 séries — daí o
+// corte Top-N: o que fica de fora vira UMA barra "Outros", então a pilha
+// continua sendo a partição completa do mês e a linha Total continua batendo
+// com a soma das barras.
+var EVO_TOP_N = 14;
+
 function renderTimeSeries() {
-  var level    = currentLevel();
-  var pathRows = applyDrillFilter(currentAll());
-  var allDates = [], dateSet = {};
-  for (var i = 0; i < currentAll().length; i++) {
-    var dt = currentAll()[i].dt;
-    if (!dateSet[dt]) { dateSet[dt] = true; allDates.push(dt); }
-  }
-  allDates.sort();
-  var groupSet = {};
-  for (var i = 0; i < pathRows.length; i++) groupSet[pathRows[i][level] || '(sem categoria)'] = true;
-  var groups = Object.keys(groupSet);
-  var byGD = {}, totalByD = {};
-  for (var i = 0; i < pathRows.length; i++) {
-    var r = pathRows[i], g = r[level] || '(sem categoria)';
-    if (!byGD[g]) byGD[g] = {};
-    byGD[g][r.dt] = (byGD[g][r.dt] || 0) + (r.contribuicao || 0);
-    totalByD[r.dt] = (totalByD[r.dt] || 0) + (r.contribuicao || 0);
-  }
-  var traces = groups.map(function(grp, idx) {
+  var T = DECOMP_TREE.index();
+  var allDates = T.dates;
+  var scored = nodesAtDepth(T, evoLevel).map(function(n) {
+    var a = T.agg[n.key] || {}, s = 0;
+    for (var d in a) s += Math.abs(a[d][0]);
+    return {node: n, score: s};
+  }).sort(function(x, y) { return y.score - x.score; });
+
+  var keep = scored.slice(0, EVO_TOP_N), rest = scored.slice(EVO_TOP_N);
+  var traces = keep.map(function(sp, idx) {
+    var a = T.agg[sp.node.key] || {};
     return {
-      type:'bar', name: grp.length > 35 ? grp.slice(0,35)+'…' : grp,
-      x: allDates, marker:{color: GROUP_COLORS[idx % GROUP_COLORS.length]},
-      y: allDates.map(function(d) { return Math.round(((byGD[grp]||{})[d]||0)*10000)/10000; }),
-      hovertemplate:'<b>'+grp+'</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+      type: 'bar',
+      name: sp.node.label.length > 26 ? sp.node.label.slice(0, 26) + '…' : sp.node.label,
+      x: allDates, marker: {color: GROUP_COLORS[idx % GROUP_COLORS.length]},
+      y: allDates.map(function(d) { return a[d] ? Math.round(a[d][0] * 10000) / 10000 : 0; }),
+      hovertemplate: '<b>' + sp.node.label + '</b><br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
     };
   });
+  if (rest.length) {
+    traces.push({
+      type: 'bar', name: 'Outros (' + rest.length + ')',
+      x: allDates, marker: {color: C.cinza},
+      y: allDates.map(function(d) {
+        var s = 0;
+        for (var i = 0; i < rest.length; i++) { var a = T.agg[rest[i].node.key]; if (a && a[d]) s += a[d][0]; }
+        return Math.round(s * 10000) / 10000;
+      }),
+      hovertemplate: 'Outros<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+    });
+  }
+  var rootAgg = T.agg.root || {};
   traces.push({
-    type:'scatter', mode:'lines', name:'Total',
-    x: allDates, line:{color:C.azul, width:2},
-    y: allDates.map(function(d) { return Math.round((totalByD[d]||0)*10000)/10000; }),
-    hovertemplate:'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
+    type: 'scatter', mode: 'lines', name: 'Total',
+    x: allDates, line: {color: C.azul, width: 2},
+    y: allDates.map(function(d) { return rootAgg[d] ? Math.round(rootAgg[d][0] * 10000) / 10000 : 0; }),
+    hovertemplate: 'Total<br>%{x}<br>%{y:.3f} p.p.<extra></extra>',
   });
+
+  document.getElementById('evo-subtitle').textContent =
+    TREE_SOURCES[DECOMP_TREE.estado.src].label + ' · ' + TREE_LEVEL_LABELS[evoLevel - 1] + ' — '
+    + scored.length + ' categoria(s)'
+    + (rest.length ? ', as ' + keep.length + ' maiores por contribuição acumulada + "Outros" com as demais ' + rest.length : '')
+    + '. As barras somam a linha Total.';
+
   Plotly.react('chart-timeseries', traces, {
-    // 'relative' (not 'stack'): stacks positive-valued traces upward from
-    // zero and negative-valued traces downward from zero independently per
-    // month. 'stack' instead stacks strictly in trace order regardless of
-    // sign, so a negative category pushes the *next* trace's baseline below
-    // zero even when that trace's own value is positive — misreading a
-    // positive contribution as negative.
-    barmode:'relative', height:580, margin:{l:55,r:190,t:20,b:40}, dragmode:'pan',
-    xaxis:{type:'date', gridcolor:'#eee', rangeselector:{
-      buttons:[{count:1,label:'1a',step:'year',stepmode:'backward'},{count:3,label:'3a',step:'year',stepmode:'backward'},{step:'all',label:'Tudo'}],
-      bgcolor:'#f5f6f8',bordercolor:'#dde1e9',borderwidth:1,activecolor:C.azul,font:{size:11,color:'#555'},x:0,y:-0.08,yanchor:'top',
+    // 'relative' (não 'stack'): empilha as positivas para cima do zero e as
+    // negativas para baixo, independentemente. 'stack' empilha na ordem das
+    // traces sem olhar o sinal, então uma categoria negativa empurra a base da
+    // trace SEGUINTE para baixo do zero mesmo quando o valor dela é positivo.
+    barmode: 'relative', height: 680, margin: {l: 55, r: 30, t: 20, b: 170}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+      buttons: [{count: 1, label: '1a', step: 'year', stepmode: 'backward'}, {count: 3, label: '3a', step: 'year', stepmode: 'backward'}, {step: 'all', label: 'Tudo'}],
+      bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1, activecolor: C.azul, font: {size: 11, color: '#555'}, x: 0, y: -0.06, yanchor: 'top',
     }},
-    // No fixedrange: drag/scroll pan/zoom the single shared axis directly.
-    // Bars and the Total line are the same unit (p.p.) and Total is
-    // literally their sum, so they share one y-axis -- a second, independently
-    // autoranged axis here would visually decouple the line from what the
-    // stacked bars actually add up to. _bindYAutofit still fits it whenever X
-    // moves WITHOUT Y also moving in the same event (e.g. the rangeselector
-    // preset buttons below, which only ever touch xaxis).
-    yaxis:{title:{text:'Contribuição mensal (p.p.)',font:{size:11}}, zeroline:true, zerolinecolor:'#bbb', gridcolor:'#eee'},
-    // Vertical legend to the right instead of wrapping above the chart — with
-    // dozens of subitems selected via drilldown, a horizontal legend wraps
-    // across many rows and covers the bars. Plotly scrolls this internally
-    // if it's taller than the plot, so it never spills over.
-    legend:{orientation:'v', x:1.02, xanchor:'left', y:1, yanchor:'top', font:{size:10}},
-    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-    font:{family:'Barlow,sans-serif', color:'#1F2853', size:12},
+    // Sem fixedrange: drag/scroll movem o eixo único diretamente. Barras e linha
+    // Total estão na mesma unidade (p.p.) e Total é literalmente a soma delas,
+    // então dividem um eixo Y só — um segundo eixo autoescalado desacoplaria
+    // visualmente a linha do que as barras somam. _bindYAutofit ainda reajusta
+    // quando X muda SEM Y mudar no mesmo evento (os botões de período abaixo).
+    yaxis: {title: {text: 'Contribuição mensal (p.p.)', font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    // Legenda embaixo (pedido do usuário, 2026-08), como no gráfico de séries
+    // selecionadas. A versão anterior era vertical à direita, com a justificativa
+    // de que dezenas de categorias quebrariam uma legenda horizontal em várias
+    // linhas -- razão que morreu com o corte Top-14 + "Outros": são no máximo 16
+    // entradas agora, e a margem inferior comporta as 2-3 linhas que elas ocupam.
+    legend: {orientation: 'h', x: 0, xanchor: 'left', y: -0.16, yanchor: 'top', font: {size: 10}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
   }, _PLOTLY_CONFIG);
   _bindYAutofit('chart-timeseries');
 }
@@ -1224,31 +1955,6 @@ function jumpScatterAnchor(dt) {
   scatterMonth = clampScatterAnchor(dt);
   document.getElementById('scatter-month-sel').value = scatterMonth;
   renderScatterMomentum();
-}
-
-function renderBreadcrumb() {
-  var html = '<span class="bc-item bc-link" data-idx="-1">Todos os Grupos</span>';
-  for (var i = 0; i < drillPath.length; i++) {
-    html += ' <span class="bc-sep">▶</span> ';
-    var cls = i < drillPath.length - 1 ? 'bc-item bc-link' : 'bc-item';
-    html += '<span class="'+cls+'" data-idx="'+i+'">'+drillPath[i].value+'</span>';
-  }
-  var el = document.getElementById('breadcrumb');
-  el.innerHTML = html;
-  el.querySelectorAll('.bc-link').forEach(function(node) {
-    node.addEventListener('click', function() {
-      drillPath = drillPath.slice(0, parseInt(this.dataset.idx) + 1);
-      renderAll();
-    });
-  });
-}
-
-function bindWaterfallClick() {
-  document.getElementById('chart-waterfall').on('plotly_click', function(data) {
-    if (isLeaf()) return;
-    drillPath.push({level: currentLevel(), value: data.points[0].x});
-    renderAll();
-  });
 }
 
 // ── 3M SAAR (seasonal-adjusted annual rate) ──────────────────────────────────
@@ -1945,8 +2651,235 @@ function renderYoYDrill() {
   _bindYAutofit('chart-yoy-drill');
 }
 
+// ── Aba Inércia ──────────────────────────────────────────────────────────────
+// Classifica cada subitem pela autocorrelação de ordem 12 da própria variação
+// acumulada em 12 meses -- corr(yoy_t, yoy_t-12) -- e o parte em 5 faixas de
+// ~20% do PESO do índice. O cálculo é do Python (analytics/brasil/inflation/
+// inercia.py); aqui só se lê D.inercia e se agrega.
+//
+// Por que o lag 12 sobre o y/y e não sobre a variação mensal: sobre o dado
+// mensal bruto o lag 12 é um detector de SAZONALIDADE (os 8 primeiros são todos
+// ensino, que reajusta em fevereiro), e dessazonalizar destrói o sinal. Sobre o
+// y/y as duas janelas são disjuntas, então não há sobreposição mecânica e a
+// sazonalidade já sai de graça -- uma janela de 12 meses contém cada mês do
+// calendário uma vez.
+//
+// O lag 1 sobre o y/y ficou de fora de propósito: janelas consecutivas
+// compartilham 11 meses, o que dá um piso mecânico de 0,895 (medido contra a
+// série embaralhada) -- ~97% do número seria construção.
+
+var INERCIA_TREE = makeTreeTab({
+  fonte: 'inercia', h2Id: 'iner-h2', subtitleId: 'iner-subtitle',
+  headId: 'iner-table-head', bodyId: 'iner-table-body', chartId: 'chart-iner-sel',
+  metricGroupId: 'iner-metric-group', semNucleos: true,
+  expandBtnId: 'iner-expand-toggle', clearBtnId: 'iner-clear-checks',
+  titulo: function(idx) { return 'Faixas de inércia — ' + idx + ' por subitem'; },
+});
+
+var INERCIA_FIX_TREE = makeTreeTab({
+  fonte: 'inerciaFix', h2Id: 'inerfix-h2', subtitleId: 'inerfix-subtitle',
+  headId: 'inerfix-table-head', bodyId: 'inerfix-table-body', chartId: 'chart-inerfix-sel',
+  metricGroupId: 'inerfix-metric-group', semNucleos: true,
+  expandBtnId: 'inerfix-expand-toggle', clearBtnId: 'inerfix-clear-checks',
+  titulo: function(idx) { return 'Reversibilidade — ' + idx + ' por subitem'; },
+});
+
+var inerFaixaMetric = 'yoy';
+// Do azul (menos inercial) ao dourado (mais inercial) -- mesma leitura de
+// intensidade que o degradê de profundidade da tabela, e não uma escala
+// vermelho/verde, que aqui significaria sinal e não ordem.
+var INER_CORES = ['#02739B', '#418791', '#BFBFBF', '#EA523A', '#BB9B1D'];
+
+function inerDisponivel() { return !!(D.inercia && D.inercia.subitens && D.inercia.faixas); }
+
+// Agregado de uma faixa: soma contribuição e peso dos subitens dela, mês a mês.
+// A pertença é fixa (vem da janela de estimação), os pesos são os de cada mês --
+// então a série reconstrói o que aquele conjunto de subitens fez ao longo de
+// toda a história, não só na janela.
+function inerFaixaSerie(q, metric) {
+  var T = INERCIA_TREE.index();
+  return _seriesFromAgg(T.agg['i0|q' + q], metric || inerFaixaMetric);
+}
+function _ultimoNaoNulo(s) {
+  if (!s) return null;
+  for (var i = s.values.length - 1; i >= 0; i--) if (s.values[i] != null) return s.values[i];
+  return null;
+}
+
+function renderInerciaCards() {
+  var alvo = document.getElementById('iner-cards');
+  var html = D.inercia.faixas.map(function(f, i) {
+    var doze = _ultimoNaoNulo(inerFaixaSerie(f.q, 'yoy'));
+    var peso = _ultimoNaoNulo(inerFaixaSerie(f.q, 'peso'));
+    return '<div class="iner-card" style="border-top:3px solid ' + INER_CORES[i] + '">'
+      + '<div class="q" style="color:' + INER_CORES[i] + '">' + _esc(f.rotulo) + '</div>'
+      + '<div class="faixa">r ∈ [' + _fmtR(f.lo) + ', ' + _fmtR(f.hi) + ']</div>'
+      + '<div class="val">' + (doze == null ? '—' : fmt(doze, 2) + '%') + '</div>'
+      + '<div class="sub">12 meses · ' + f.n + ' subitens · '
+      + (peso == null ? '—' : fmt(peso, 1) + '% do índice') + '</div>'
+      + '</div>';
+  }).join('');
+  alvo.innerHTML = html;
+}
+
+function renderInerciaFaixas() {
+  var m = TREE_METRICS[inerFaixaMetric];
+  var traces = D.inercia.faixas.map(function(f, i) {
+    var s = inerFaixaSerie(f.q, inerFaixaMetric);
+    return {
+      type: 'scatter', mode: 'lines', name: f.rotulo,
+      x: s.dates, y: s.values,
+      line: {color: INER_CORES[i], width: f.q === 1 || f.q === 5 ? 2.4 : 1.5},
+      hovertemplate: '<b>' + f.rotulo + '</b><br>%{x}<br>%{y:.' + m.decHover + 'f}'
+                     + (inerFaixaMetric === 'contrib' ? ' p.p.' : '%') + '<extra></extra>',
+    };
+  });
+  // O headline como referência: sem ele não dá para ver se uma faixa está acima
+  // ou abaixo do índice, só se está subindo ou descendo.
+  var raiz = _seriesFromAgg(INERCIA_TREE.index().agg.root, inerFaixaMetric);
+  traces.push({
+    type: 'scatter', mode: 'lines', name: indexLabel(),
+    x: raiz.dates, y: raiz.values,
+    line: {color: C.azul, width: 2, dash: 'dot'},
+    hovertemplate: '<b>' + indexLabel() + '</b><br>%{x}<br>%{y:.' + m.decHover + 'f}%<extra></extra>',
+  });
+  document.getElementById('iner-faixas-cap').textContent =
+    'Média ponderada dos subitens de cada faixa, mês a mês, com os pesos do próprio mês. '
+    + 'A pertença à faixa é fixa (estimada em ' + D.inercia.janela.inicio + '→' + D.inercia.janela.fim
+    + '), então a série antes da janela mostra o que esse mesmo conjunto de subitens fazia antes de ser classificado.';
+  Plotly.react('chart-iner-faixas', traces, {
+    height: 560, margin: {l: 58, r: 30, t: 20, b: 130}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
+      buttons: [{count: 3, label: '3a', step: 'year', stepmode: 'backward'},
+                {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
+                {step: 'all', label: 'Tudo'}],
+      bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1, activecolor: C.azul,
+      font: {size: 11, color: '#555'}, x: 0, y: -0.08, yanchor: 'top',
+    }},
+    yaxis: {title: {text: m.y, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    legend: {orientation: 'h', x: 0, xanchor: 'left', y: -0.21, yanchor: 'top', font: {size: 10}},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
+  }, _PLOTLY_CONFIG);
+  _bindYAutofit('chart-iner-faixas');
+}
+
+function renderInerciaDispersao() {
+  var T = INERCIA_TREE.index();
+  var last = T.last;
+  var pts = {x: [], y: [], t: [], c: []};
+  Object.keys(D.inercia.subitens).forEach(function(cod) {
+    var e = D.inercia.subitens[cod];
+    var a = T.agg['i1|' + cod];
+    var peso = a && a[last] ? a[last][1] * 100 : null;
+    if (peso == null || peso <= 0) return;
+    var no = T.nodes['i1|' + cod];
+    pts.x.push(e[0]);
+    pts.y.push(peso);
+    pts.t.push((no ? no.label : cod).replace(/\s+r [+-].*$/, ''));
+    pts.c.push(INER_CORES[e[1] - 1]);
+  });
+  // Fronteiras das faixas: onde um subitem deixa de ser Q(n) e vira Q(n+1).
+  var linhas = D.inercia.faixas.slice(0, -1).map(function(f, i) {
+    var corte = (f.hi + D.inercia.faixas[i + 1].lo) / 2;
+    return {type: 'line', x0: corte, x1: corte, yref: 'paper', y0: 0, y1: 1,
+            line: {color: 'rgba(31,40,83,0.25)', width: 1, dash: 'dot'}};
+  });
+  Plotly.react('chart-iner-disp', [{
+    type: 'scatter', mode: 'markers',
+    x: pts.x, y: pts.y, hovertext: pts.t,
+    marker: {color: pts.c, size: 9, line: {width: 1, color: '#fff'}},
+    hovertemplate: '<b>%{hovertext}</b><br>r = %{x:.3f}<br>peso %{y:.3f}%<extra></extra>',
+  }], {
+    height: 560, margin: {l: 62, r: 30, t: 20, b: 55}, dragmode: 'pan', shapes: linhas,
+    xaxis: {title: {text: 'corr(y/y ₜ, y/y ₜ₋₁₂) — mais à direita, mais inercial', font: {size: 11}},
+            zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
+    // Log: os pesos vão de ~0,001% a ~5%, então numa escala linear 90% dos
+    // pontos ficariam colados no eixo.
+    yaxis: {title: {text: 'Peso no índice (%, escala log)', font: {size: 11}},
+            type: 'log', gridcolor: '#eee'},
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12}, showlegend: false,
+  }, _PLOTLY_CONFIG);
+  // Sem _bindYAutofit: os dois eixos são valores, não tempo -- mesma razão do
+  // chart-scatter-momentum.
+}
+
+function renderInerciaNota() {
+  var J = D.inercia.janela, n = D.inercia;
+  document.getElementById('iner-intro').innerHTML =
+    'Cada subitem é ranqueado pela autocorrelação de ordem 12 da <strong>própria variação acumulada em 12 meses</strong>, '
+    + 'estimada em <strong>' + J.inicio + '→' + J.fim + '</strong> (' + J.n_pontos + ' observações). '
+    + '<strong>' + n.n_classificados + '</strong> subitens entram, cortados em 5 faixas de ~20% do peso do índice. '
+    + 'A classificação é estimada no ' + J.indice_base + ' e herdada pelo IPCA-15.';
+  document.getElementById('iner-nota-panel').innerHTML =
+    '<dl class="glossario-list">'
+    + '<dt>A medida</dt><dd>corr(y/y<sub>t</sub>, y/y<sub>t−12</sub>). As duas janelas de 12 meses são '
+    + '<strong>disjuntas</strong>, então não há sobreposição mecânica: para uma série sem dependência temporal a '
+    + 'estatística vale ~0. Confirmado por permutação — embaralhando a ordem dos meses de cada subitem, a média cai de '
+    + '+0,017 para −0,147. Sazonalidade também sai de graça, porque uma janela de 12 meses já contém cada mês do '
+    + 'calendário uma vez; não há etapa de dessazonalização aqui.</dd>'
+    + '<dt>Por que não sobre a variação mensal</dt><dd>Sobre o dado mensal bruto o lag 12 vira um detector de '
+    + 'sazonalidade: os 8 primeiros colocados seriam todos de ensino, que reajusta em fevereiro. Dessazonalizar o '
+    + 'mensal destrói o sinal (a média cai para −0,06 e o máximo, de 0,94 para 0,29).</dd>'
+    + '<dt>Por que não o lag 1</dt><dd>Duas janelas consecutivas de 12 meses compartilham 11 meses, então '
+    + 'corr(y/y<sub>t</sub>, y/y<sub>t−1</sub>) tem piso mecânico. Medido: 0,921 real contra 0,895 embaralhado — ~97% do '
+    + 'número é construção, e o que sobra ordena mais por volatilidade do print (o fundo do ranking seria pepino, '
+    + 'abobrinha, caranguejo) do que por inércia.</dd>'
+    + '<dt>Faixas por peso, não por contagem</dt><dd>Cada faixa carrega ~20% do <strong>peso</strong> do índice, então '
+    + 'dá para dizer "os 20% mais inerciais rodam a X%". O número de subitens por faixa é bem desigual por consequência.</dd>'
+    + '<dt>O que a medida NÃO sustenta</dt><dd><strong>O quintil é uma etiqueta de janela, não uma propriedade do '
+    + 'produto.</strong> Reestimando em 2006-2016 e comparando com 2016-2026, a correlação entre as duas estimativas é '
+    + 'de apenas <strong>+0,30</strong>, o mesmo quintil se repete em 32% dos casos e o Q5 continua Q5 em <strong>24%'
+    + '</strong> — contra 20% de puro acaso. Ou a economia mudou entre as duas décadas, ou o estimador é ruidoso demais '
+    + 'para separar; de todo modo, leia como "foi assim nos últimos 10 anos", não como "este item é estruturalmente '
+    + 'inercial". Some-se a isso que, com ~108 pares, o erro-padrão de cada correlação é ~0,10: as fronteiras entre Q2, '
+    + 'Q3 e Q4 estão dentro do ruído, e só os extremos carregam informação.</dd>'
+    + '<dt>Subitens novos</dt><dd>A safra que entrou na estrutura de ponderação de jan/2020 (Combo de telefonia, '
+    + 'Transporte por aplicativo, Cabeleireiro...) só tem 56 pares contra os 108 de quem tem a janela inteira, então a '
+    + 'estimativa dela é mais ruidosa. O hover de cada linha da tabela diz quantos pares a sustentam.</dd>'
+    + '</dl>';
+}
+
+// A legenda da segunda tabela é o resumo numérico do que ela é: os limites não
+// andam, o peso é que sai desigual. Sem isso ela parece uma segunda opinião
+// sobre a mesma coisa, quando é o mesmo r cortado de outro jeito.
+function renderInerciaFixCap() {
+  var ff = D.inercia.faixas_fixas || [];
+  var total = ff.reduce(function(s, f) { return s + f.peso; }, 0) || 1;
+  var partes = ff.map(function(f) {
+    return f.rotulo.split(' · ')[0] + ' ' + fmt(f.peso / total * 100, 1) + '%';
+  }).join(' · ');
+  document.getElementById('inerfix-cap').innerHTML =
+    'O mesmo <code>r</code> da tabela acima, cortado em faixas <strong>fixas</strong> de ±0,5 em vez de '
+    + 'faixas iguais em peso. Os limites não se movem com a amostra, mas o peso sai desigual: '
+    + _esc(partes) + '. '
+    + '<strong>Não é uma classificação estável:</strong> reestimando em 2006-2016, as duas pontas retêm '
+    + '13% e 4% dos subitens (κ = +0,11 no agregado, +0,22 só no sinal) — com erro-padrão da ordem de 0,25, '
+    + 'quem passa de ±0,5 numa década é em boa parte ruído de cauda, e regride ao meio na seguinte.';
+}
+
+function renderInerciaTab() {
+  if (!inerDisponivel()) {
+    document.getElementById('iner-intro').textContent =
+      'Classificação de inércia indisponível neste arquivo — regere o relatório com analytics/brasil/inflation/inercia.py presente.';
+    return;
+  }
+  renderInerciaNota();
+  renderInerciaCards();
+  renderInerciaFaixas();
+  renderInerciaDispersao();
+  INERCIA_TREE.render();
+  if (TREE_SOURCES.inerciaFix.disponivel()) {
+    renderInerciaFixCap();
+    INERCIA_FIX_TREE.render();
+  } else {
+    document.getElementById('sec-inerfix-tabela').style.display = 'none';
+  }
+}
+
 // ── Tab switching ─────────────────────────────────────────────────────────────
-var tabRendered = {decomp:true, nucleos:false, heatmap:false};
+var tabRendered = {decomp:true, nucleos:false, inercia:false, heatmap:false};
 
 function switchTab(id) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1958,6 +2891,7 @@ function switchTab(id) {
   if (!tabRendered[id]) {
     tabRendered[id] = true;
     if (id === 'nucleos') renderNucleosTab();
+    if (id === 'inercia') renderInerciaTab();
     if (id === 'heatmap') renderHeatmap();
   }
 }
@@ -1984,13 +2918,16 @@ document.querySelectorAll('[data-index]').forEach(function(btn) {
     document.getElementById('custom-end').setAttribute('max', currentMaxDate());
     document.getElementById('custom-start').value = startDate;
     document.getElementById('custom-end').value   = endDate;
-    drillPath = [];
+    _treeCache = [];  // a árvore é por índice: rótulo da raiz, núcleos e séries mudam junto
+    DECOMP_TREE.resetar();
+    if (typeof INERCIA_TREE !== 'undefined') INERCIA_TREE.resetar();
     scatterMonth = '';
     populateScatterMonthOptions();
     renderAll();
     populateYoYItems();
     renderYoYDrill();
     if (tabRendered.nucleos) renderNucleosTab();
+    if (tabRendered.inercia) renderInerciaTab();
     if (tabRendered.heatmap) renderHeatmap();
   });
 });
@@ -2075,6 +3012,33 @@ document.addEventListener('click', function(e) {
   document.addEventListener('click', function(e) { if (!ms.contains(e.target)) panel.classList.remove('open'); });
 });
 
+// Controles da árvore da aba Decomposição (delegação, pills de fonte/métrica,
+// expandir e limpar) são ligados por makeTreeTab().wire(), no bloco de Init.
+
+// ── Aba Inércia ──────────────────────────────────────────────────────────────
+document.getElementById('iner-nota-toggle').addEventListener('click', function() {
+  document.getElementById('iner-nota-panel').classList.toggle('open');
+  document.getElementById('iner-nota-caret').classList.toggle('open');
+});
+document.querySelectorAll('#iner-faixas-metric-group .pill').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#iner-faixas-metric-group .pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    inerFaixaMetric = btn.dataset.metric;
+    renderInerciaFaixas();
+  });
+});
+
+// Profundidade do gráfico "Evolução Mensal" — o que o drilldown do waterfall fazia
+document.querySelectorAll('#evo-level-group .pill').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#evo-level-group .pill').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    evoLevel = parseInt(btn.dataset.evo, 10);
+    renderTimeSeries();
+  });
+});
+
 // Ranking BCB filter
 document.getElementById('ranking-bcb-sel').addEventListener('change', function() {
   rankingBcbKey = this.value;
@@ -2138,9 +3102,12 @@ document.getElementById('custom-end').value   = endDate;
 
 populateScatterMonthOptions();
 
+DECOMP_TREE.wire();
+INERCIA_TREE.wire();
+INERCIA_FIX_TREE.wire();
+
 try {
   renderAll();
-  bindWaterfallClick();
   populateYoYItems();
   renderYoYDrill();
   // Núcleos-tab widgets (checklist/select) are (re)built by renderNucleosTab()

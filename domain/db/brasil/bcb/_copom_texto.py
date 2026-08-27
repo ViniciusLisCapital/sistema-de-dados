@@ -164,7 +164,7 @@ class Periodo:
 @dataclass
 class Projecao:
     indice: str  # ipca | ipca_livres | ipca_administrados
-    cenario: str  # juros_focus | juros_constante (pelo CONDICIONAMENTO, ver _ROTULOS)
+    cenario: str  # juros_esperado | juros_constante (pelo CONDICIONAMENTO, ver _ROTULOS)
     periodo: Periodo
     valor: float
     fonte: str  # tabela | prosa
@@ -190,6 +190,7 @@ class Comunicado:
     hr_ano_calendario: int | None = None  # regime antigo: "horizonte relevante, que inclui 2024"
 
     # condicionantes do cenario
+    juros_constante_nivel: float | None = None  # ver _JUROS_CONSTANTE_NIVEL
     cambio_inicial: float | None = None
     bandeira_tarifaria: str | None = None
     focus: dict[int, float] = field(default_factory=dict)
@@ -288,7 +289,7 @@ def _parse_tabela(texto: str, c: Comunicado) -> None:
             if v is not None:
                 # a Tabela 1 e sempre o cenario de referencia (juros da Focus, cambio por PPC)
                 c.projecoes.append(
-                    Projecao(indice, "juros_focus", p, v, "tabela", "cenario de referencia")
+                    Projecao(indice, "juros_esperado", p, v, "tabela", "cenario de referencia")
                 )
 
 
@@ -332,10 +333,12 @@ def _frases(texto: str) -> list[str]:
 # publicado como se fosse a mesma coisa produziria uma serie silenciosamente errada, por isso
 # `cenario` classifica pelo CONDICIONAMENTO e o rotulo original vai para `cenario_publicado`.
 #
-#   juros_focus      trajetoria de juros extraida da pesquisa Focus. Rotulos: "cenario de mercado"
-#                    (2016-2017), "cenario com trajetorias ... da pesquisa Focus" (2017-2020),
-#                    "cenario hibrido" (2020), "cenario basico" (2020-2022), "cenario de
-#                    referencia" (2022 em diante). E o cenario principal de hoje.
+#   juros_esperado   trajetoria de juros esperada pelo mercado. Nos comunicados e sempre a mediana
+#                    da pesquisa Focus; no RPM/RI antigo era a precificacao de futuros e swaps de
+#                    DI -- condicionam o modelo do mesmo jeito, e qual das duas e o caso fica em
+#                    `cenario_publicado`. Rotulos: "cenario de mercado" (2016-2017), "cenario com
+#                    trajetorias ... da pesquisa Focus" (2017-2020), "cenario hibrido" (2020),
+#                    "cenario basico" (2020-2022), "cenario de referencia" (2022 em diante).
 #   juros_constante  Selic mantida no nivel corrente ao longo do horizonte. Rotulos: "cenario de
 #                    referencia" (2016-2017, sentido invertido), "cenario com juros constantes"
 #                    (2017-2020), "cenario alternativo" (2023-2024).
@@ -352,12 +355,12 @@ _ROTULOS = [
     ("juros_constante", "juros constante"),
     ("juros_constante", "selic e mantida constante"),
     ("juros_constante", "selic constante"),
-    ("juros_focus", "extraida da pesquisa focus"),
-    ("juros_focus", "extraidas da pesquisa focus"),
-    ("juros_focus", "cenario hibrido"),
-    ("juros_focus", "cenario basico"),
-    ("juros_focus", "cenario de mercado"),
-    ("juros_focus", "cenario de referencia"),
+    ("juros_esperado", "extraida da pesquisa focus"),
+    ("juros_esperado", "extraidas da pesquisa focus"),
+    ("juros_esperado", "cenario hibrido"),
+    ("juros_esperado", "cenario basico"),
+    ("juros_esperado", "cenario de mercado"),
+    ("juros_esperado", "cenario de referencia"),
 ]
 
 
@@ -467,7 +470,7 @@ def _parse_prosa(texto: str, c: Comunicado) -> None:
 
     # O cenario e definido numa frase e referenciado nas seguintes ("Nesse cenario, as projecoes
     # para administrados..."), entao o rotulo corrente tem de ser carregado frase a frase.
-    cenario, rotulo = "juros_focus", None
+    cenario, rotulo = "juros_esperado", None
     for f in _frases(texto):
         fl = sem_acento(f).lower()
         achado = _detecta_cenario(fl)
@@ -485,7 +488,7 @@ def _parse_prosa(texto: str, c: Comunicado) -> None:
     if c.hr_prosa and c.hr_prosa_valor is not None and not c.periodos_tabela:
         c.projecoes.append(
             Projecao(
-                "ipca", "juros_focus", c.hr_prosa, c.hr_prosa_valor, "prosa",
+                "ipca", "juros_esperado", c.hr_prosa, c.hr_prosa_valor, "prosa",
                 "cenario de referencia",
             )
         )
@@ -498,6 +501,15 @@ def _parse_prosa(texto: str, c: Comunicado) -> None:
             )
 
 
+# Nivel em que o cenario de juros constantes segura a Selic. Ancorado em "juros" de proposito: a
+# MESMA frase declara "taxa de cambio constante a R$4,75/US$", e um padrao solto pegaria o cambio.
+# Medido nos 75 comunicados carregados: nivel unico em 20 das 26 reunioes com cenario constante,
+# zero ambiguidade, zero falso positivo nas 49 sem. As 6 sem nivel sao de 2022-2024, que dizem
+# "a taxa Selic e mantida constante ao longo de todo o horizonte relevante" sem nomear o valor.
+# ATENCAO: o nivel e a Selic VIGENTE, nao a decidida na reuniao -- na 229a o cenario constante e a
+# 4,25% e a reuniao cortou para 3,75%. E o contrafactual de "nao fazer nada", nao o resultado.
+_JUROS_CONSTANTE_NIVEL = r"juros\s+constantes?\s+(?:a|em|de)\s+(\d{1,2},\d{2})\s*%"
+
 _CAMBIO = [
     r"c[âa]mbio (?:parte|partindo) de\s*R\$\s*([\d,]+)\s*/?\s*US\$",      # 2021+ (R$5,10/US$)
     r"c[âa]mbio (?:parte|partindo) de\s*USD/BRL\s*([\d,]+)",              # 2021-2022 (USD/BRL 5,15)
@@ -508,6 +520,10 @@ _CAMBIO = [
 
 
 def _parse_condicionantes(texto: str, c: Comunicado) -> None:
+    m = re.search(_JUROS_CONSTANTE_NIVEL, texto, re.I)
+    if m:
+        c.juros_constante_nivel = num(m.group(1))
+
     for padrao in _CAMBIO:
         m = re.search(padrao, texto, re.I)
         if m:
@@ -573,7 +589,7 @@ def validar(c: Comunicado) -> list[str]:
             na_tabela = [
                 x.valor for x in c.projecoes
                 if x.fonte == "tabela" and x.indice == "ipca" and x.periodo.norm == c.hr_prosa.norm
-                and x.cenario == "juros_focus"
+                and x.cenario == "juros_esperado"
             ]
             if not na_tabela:
                 p.append("IPCA ausente na coluna do HR")

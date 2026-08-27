@@ -99,6 +99,29 @@ no `ref:` rule, so it must be typed in by hand after the write. Everything else 
 
 ---
 
+## 3b. The two US groups (`bls_cpi`, `bea_pce`)
+
+Automated like the BCB ones, but by `update_us_calendar.py` and with a different horizon:
+
+```powershell
+uv run python -m domain.release_calendar.update_us_calendar --until 2027-12-31           # dry-run
+uv run python -m domain.release_calendar.update_us_calendar --until 2027-12-31 --write
+```
+
+**Neither agency publishes more than the current year, and in 2026-08-26 neither had 2027 yet** —
+both ICS feeds stopped at December/2026 and `bls.gov/schedule/2027/home.htm` was a 404. So this is
+the same "re-run periodically through H1" situation as the BCB feeds, not a one-shot. The BLS
+normally posts the next year in the autumn.
+
+Until they post it, `agenda_da_tabela()` returns `proxima: None` for `inflc_cpi`/`inflc_pce` and the
+US inflation report's schedule strip shows only the last release — no error, no invented date.
+
+`FREDReleases.dates(10)` / `.dates(54)` is the quickest way to check whether next year exists without
+parsing anything: FRED mirrors the agencies' scheduled dates (`include_release_dates_with_no_data`),
+so a `max()` still in the current year means the agency hasn't published either.
+
+---
+
 ## 4. Re-research the 15 manual groups
 
 These have no ICS feed and stay manual. `update_calendar.py` names them at the end of every run so

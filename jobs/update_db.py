@@ -55,7 +55,7 @@ from domain.db.brasil.bcb import (
     expc_focus, expc_focus_copom, expc_focus_periodo,
     cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
-    pm_hiato_produto, pm_hiato_produto_vintages,
+    pm_hiato_produto, pm_hiato_produto_vintages, pm_copom_reuniao,
 )
 
 # IPEA
@@ -137,6 +137,10 @@ _SCRIPTS = [
     # corrente baixa 1 arquivo sempre. Ver domain/db/brasil/bcb/_rpm_hiato.py.
     ("BCB  · Hiato do Produto (RPM)",   pm_hiato_produto,      {}),
     ("BCB  · Hiato do Produto / vintages", pm_hiato_produto_vintages, {}),
+    # Decisao de Selic por reuniao do Copom: SGS 432 (4 requests) + a listagem de atas,
+    # segundos. Entra aqui e a irma `pm_copom_projecoes` nao porque esta le so API, enquanto
+    # aquela sincroniza 109 PDFs do RPM e 233 comunicados e segue sendo rodada a mao.
+    ("BCB  · Copom / decisao de Selic", pm_copom_reuniao,      {}),
     ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
     ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
     ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),

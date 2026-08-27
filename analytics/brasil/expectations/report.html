@@ -126,6 +126,7 @@
     }
     .ctrl-label { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
     .ctrl-sep { width: 1px; height: 20px; background: var(--border); }
+    .ctrl-hint { font-size: 12px; color: var(--text2); }
     .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .pill {
       font-family: var(--mono); padding: 4px 13px; font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
@@ -196,15 +197,45 @@
     }
     .hier-table tr:hover td { background: rgba(2,115,155,0.05); }
     .hier-table tr.fam-row:hover td { background: rgba(31,40,83,0.04); }
+    /* Linha que plota. O swatch e SEMPRE renderizado (transparente quando a linha nao
+       esta no grafico): so na linha marcada, ele empurraria o rotulo ao marcar. */
+    .hier-table tr.row-pick { cursor: pointer; }
+    .hier-table tr.row-sel td { background: rgba(2,115,155,0.12); }
+    .hier-table tr.row-sel td.col-label { font-weight: 600; box-shadow: inset 3px 0 0 var(--lis-azul-cl); }
+    .row-sw { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
     .up   { color: var(--lis-laranja); }
     .down { color: var(--lis-verde); }
     .flat { color: var(--muted); }
     .tbl-scroll { max-height: 620px; overflow-y: auto; }
 
+    /* ── Botao de informacao + card de definicao ── */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+      font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+      color: var(--muted); background: transparent;
+      border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+      vertical-align: middle; transition: all .15s;
+    }
+    .info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+    .info-pop {
+      position: absolute; z-index: 300; display: none; max-width: 380px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px; white-space: normal;
+    }
+    .info-pop.show { display: block; }
+    .info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+    .info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .info-pop .info-unit {
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+    }
+    .info-pop .info-unit span { display: block; }
+
     /* ── KPI ── */
     .kpi-grid-3  { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .kpi-grid-4  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    .kpi-grid-5  { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
     .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
     .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
     .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
@@ -214,6 +245,11 @@
 
     /* ── Gráficos ── */
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
+    /* Cabecalho DENTRO do card: um print do grafico circula sozinho, longe do <h2>. */
+    .chart-head { padding: 12px 14px 0; }
+    .chart-head .chart-title { font-family: var(--cond); font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.25; }
+    .chart-head .chart-sub { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+    .chart-head .chart-src { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px; }
     .chart-div  { width: 100%; height: 520px; }
     .chart-div.tall { height: 600px; }
     .chart-div.short { height: 380px; }
@@ -222,7 +258,6 @@
     footer span { color: var(--text2); }
 
     @media (max-width: 1100px) {
-      .kpi-grid-5 { grid-template-columns: repeat(3, 1fr); }
       .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 960px) {
@@ -230,7 +265,7 @@
       main { padding: 18px 14px 36px; }
     }
     @media (max-width: 600px) {
-      .kpi-grid-3, .kpi-grid-4, .kpi-grid-5 { grid-template-columns: 1fr; }
+      .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -268,20 +303,7 @@
   <div class="tab-panel active" id="tab-boletim">
     <section>
       <h2>Boletim — consenso do ano de referência</h2>
-      <div class="kpi-grid-5">
-        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-ipca-l">IPCA</div>
-          <div class="kpi-value" id="kpi-bol-ipca-v">—</div><div class="kpi-sub" id="kpi-bol-ipca-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-selic-l">Selic</div>
-          <div class="kpi-value" id="kpi-bol-selic-v">—</div><div class="kpi-sub" id="kpi-bol-selic-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-cambio-l">Câmbio</div>
-          <div class="kpi-value" id="kpi-bol-cambio-v">—</div><div class="kpi-sub" id="kpi-bol-cambio-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-pib-l">PIB</div>
-          <div class="kpi-value" id="kpi-bol-pib-v">—</div><div class="kpi-sub" id="kpi-bol-pib-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label" id="kpi-bol-desoc-l">Desocupação</div>
-          <div class="kpi-value" id="kpi-bol-desoc-v">—</div><div class="kpi-sub" id="kpi-bol-desoc-s">—</div></div>
-      </div>
-
-      <div class="ctrl-bar" style="margin-top:14px">
+      <div class="ctrl-bar">
         <span class="ctrl-label">Ano de referência</span>
         <div class="pill-group" id="pg-bol-ano"></div>
       </div>
@@ -290,7 +312,27 @@
       <div class="hier-table-wrap tbl-scroll"><table class="hier-table" id="tbl-boletim"></table></div>
       <p class="chart-caption">Δ = variação da mediana em pontos da própria unidade do indicador
         (p.p. para %, R$ para o câmbio, US$ bi para o setor externo). Laranja = revisão para cima,
-        verde = para baixo — direção, não juízo.</p>
+        verde = para baixo — direção, não juízo. <strong>Clique numa linha</strong> para plotar a série
+        dela abaixo; o <strong>i</strong> ao lado do nome abre a definição do indicador.</p>
+
+      <h3 style="margin-top:22px">Como a projeção do ano foi se formando</h3>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Linhas no gráfico</span>
+        <span class="ctrl-hint" id="bol-serie-sel">—</span>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="tg-bol-banda"><span class="toggle-icon"></span> Faixa ±1 desv.-pad.</div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-bol-serie"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div class="chart-title" id="bol-serie-t">—</div>
+          <div class="chart-sub" id="bol-serie-sub"></div>
+          <div class="chart-src" id="bol-serie-src"></div>
+        </div>
+        <div id="chart-bol-serie" class="chart-div"></div>
+      </div>
+      <p class="chart-caption" id="bol-serie-cap">—</p>
 
       <h3 style="margin-top:22px">O que se moveu nas últimas 4 semanas</h3>
       <div class="ctrl-bar">
@@ -1231,9 +1273,305 @@ function setKPILabel(id, texto) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// DEFINIÇÕES DOS INDICADORES — botão "i" + card
+// ═══════════════════════════════════════════════════════════════════════════════
+// Chave = "indicador|detalhe", a mesma do índice. `full` = nome oficial na fonte (só
+// entra no card quando difere do rótulo da linha), `desc` = o que o número é, `un` =
+// a unidade como TEMPLATE com {ano} — a MESMA string vai para o título do eixo Y do
+// gráfico de série, para as duas não divergirem com o tempo. A data de entrada na
+// pesquisa não está escrita aqui: é derivada do próprio payload (_primeiraSemana),
+// senão envelheceria em silêncio.
+var INFO = {
+  'IPCA|': {
+    full: 'Índice Nacional de Preços ao Consumidor Amplo (IBGE)',
+    desc: 'Índice oficial de inflação do país e a referência do regime de metas — a meta do CMN '
+        + 'é definida sobre ele. Mede o custo de vida de famílias de 1 a 40 salários mínimos em 16 '
+        + 'áreas urbanas. A projeção anual é a variação acumulada no ano, dezembro contra dezembro.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IPCA Administrados|': {
+    full: 'IPCA — preços administrados por contrato e monitorados',
+    desc: 'Subitens cujo preço é fixado em contrato ou por decisão de órgão público, e não pelo '
+        + 'encontro de oferta e demanda: energia elétrica, combustíveis, planos de saúde, transporte '
+        + 'público, água e esgoto, taxas. Respondem por cerca de um quarto do índice e são a parte '
+        + 'que a política monetária alcança menos.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IPCA Livres|': {
+    full: 'IPCA — preços livres',
+    desc: 'O complemento dos administrados: os subitens cujo preço se forma no mercado. É onde a '
+        + 'demanda e o câmbio aparecem primeiro, e o alvo efetivo da política monetária.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IPCA Alimentação no domicílio|': {
+    full: 'IPCA — alimentação no domicílio',
+    desc: 'Alimentos comprados para consumo em casa; refeições fora ficam em serviços. Depende de '
+        + 'safra, clima e câmbio, e é o componente mais volátil do índice.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IPCA Bens industrializados|': {
+    full: 'IPCA — bens industrializados (preços livres)',
+    desc: 'Bens duráveis, semiduráveis e não duráveis de preço livre. É por aqui que o câmbio entra '
+        + 'mais rápido, pelo custo de importados e de insumos.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IPCA Serviços|': {
+    full: 'IPCA — serviços (preços livres)',
+    desc: 'Aluguel, alimentação fora do domicílio, mão de obra, educação e saúde privadas. É o '
+        + 'componente mais ligado ao mercado de trabalho e o mais inercial — o reajuste de hoje olha '
+        + 'a inflação de ontem.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'IGP-M|': {
+    full: 'Índice Geral de Preços — Mercado (FGV)',
+    desc: 'Média de três índices da FGV: 60% IPA (atacado), 30% IPC (consumidor) e 10% INCC '
+        + '(construção), coletados do dia 21 ao dia 20. Indexador tradicional de aluguéis e contratos. '
+        + 'Muito mais volátil que o IPCA porque o atacado carrega commodities e câmbio quase direto.',
+    un: 'variação % acumulada em {ano}',
+  },
+  'Selic|': {
+    full: 'Meta da taxa Selic definida pelo Copom',
+    desc: 'A projeção anual é para a meta vigente NO FIM do ano, não para a média do ano. A curva '
+        + 'reunião a reunião, que é o que o mercado realmente negocia, está na aba Curva do Copom.',
+    un: '% a.a., meta ao fim de {ano}',
+  },
+  'Câmbio|': {
+    full: 'Taxa de câmbio R$/US$ — fim de período',
+    desc: 'Cotação esperada para o último dia do ano, não a média do ano — conferido contra a PTAX '
+        + 'realizada em 9 dos 10 últimos anos. Valor maior significa real mais fraco.',
+    un: 'R$/US$ ao fim de {ano}',
+  },
+  'PIB Total|': {
+    full: 'Produto Interno Bruto — variação real anual (IBGE, Contas Nacionais)',
+    desc: 'Crescimento real da economia no ano contra o ano anterior, já descontada a inflação.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Agropecuária|': {
+    full: 'PIB — valor adicionado da agropecuária',
+    desc: 'Variação real do valor adicionado do setor. Depende de safra e clima muito mais que de '
+        + 'demanda, então costuma descolar do PIB total.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Indústria|': {
+    full: 'PIB — valor adicionado da indústria',
+    desc: 'Extrativa, transformação, construção e serviços industriais de utilidade pública. É o setor '
+        + 'mais sensível a juros, por causa de bens duráveis e investimento.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Serviços|': {
+    full: 'PIB — valor adicionado dos serviços',
+    desc: 'Cerca de 70% do valor adicionado. Move-se com renda e emprego, e é o setor que mais pesa no '
+        + 'resultado agregado.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Despesa de consumo das famílias|': {
+    full: 'PIB pela ótica da despesa — consumo das famílias',
+    desc: 'O maior componente da demanda. Segue massa de renda, crédito e confiança.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Despesa de consumo da administração pública|': {
+    full: 'PIB pela ótica da despesa — consumo do governo',
+    desc: 'Consumo corrente do governo (pessoal e custeio); não inclui investimento público, que entra '
+        + 'na Formação Bruta de Capital Fixo, nem transferências como aposentadorias.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Formação Bruta de Capital Fixo|': {
+    full: 'PIB pela ótica da despesa — Formação Bruta de Capital Fixo (FBCF)',
+    desc: 'Investimento em máquinas, equipamentos e construção. É o componente mais volátil da demanda '
+        + 'e o que responde mais forte a juros e a incerteza.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Exportação de bens e serviços|': {
+    full: 'PIB pela ótica da despesa — exportações de bens e serviços',
+    desc: 'Em volume, não em dólares: é quanto se exportou, não quanto se faturou. Não confundir com a '
+        + 'linha Exportações da balança comercial, que é valor em US$.',
+    un: 'variação % real em {ano}',
+  },
+  'PIB Importação de bens e serviços|': {
+    full: 'PIB pela ótica da despesa — importações de bens e serviços',
+    desc: 'Em volume. Entra subtraindo na conta do PIB, mas a projeção aqui é a variação da própria '
+        + 'importação: crescer mais significa demanda interna mais forte.',
+    un: 'variação % real em {ano}',
+  },
+  'Taxa de desocupação|': {
+    full: 'Taxa de desocupação (PNAD Contínua, IBGE)',
+    desc: 'Percentual da força de trabalho que procurou trabalho e não encontrou. A projeção anual é '
+        + 'para o FIM do período, o trimestre out–dez, e não para a média do ano: conferida contra a '
+        + 'PNAD de 2021 a 2025, erra 0,2 p.p. contra o out–dez e 1,1 p.p. contra a média do ano.',
+    un: '% da força de trabalho, trimestre out–dez de {ano}',
+  },
+  'Resultado primário|': {
+    full: 'Resultado primário do setor público consolidado',
+    desc: 'Receitas menos despesas do governo, sem a conta de juros. Negativo é déficit. O setor '
+        + 'público consolidado soma União, estados, municípios e estatais (fora Petrobras e Eletrobras).',
+    un: '% do PIB acumulado em {ano}',
+  },
+  'Resultado nominal|': {
+    full: 'Resultado nominal do setor público consolidado',
+    desc: 'O primário mais os juros nominais — é este que mede de fato quanto a dívida cresce por '
+        + 'necessidade de financiamento no ano.',
+    un: '% do PIB acumulado em {ano}',
+  },
+  'Dívida líquida do setor público|': {
+    full: 'Dívida Líquida do Setor Público (DLSP)',
+    desc: 'A dívida descontados os ativos do setor público — reservas internacionais e créditos junto a '
+        + 'bancos públicos, entre outros. Por isso uma desvalorização do real a REDUZ: as reservas, em '
+        + 'dólar, valem mais em reais.',
+    un: '% do PIB ao fim de {ano}',
+  },
+  'Dívida bruta do governo geral|': {
+    full: 'Dívida Bruta do Governo Geral (DBGG)',
+    desc: 'Passivo de União, estados e municípios, sem descontar ativo nenhum, na metodologia do BCB — '
+        + 'que não conta os títulos na carteira do Banco Central sem lastro em compromissadas. É a '
+        + 'medida usada nas comparações internacionais.',
+    un: '% do PIB ao fim de {ano}',
+  },
+  'Balança comercial|Saldo': {
+    full: 'Balança comercial — saldo',
+    desc: 'Exportações menos importações de bens. Saldo, Exportações e Importações são TRÊS perguntas '
+        + 'separadas da pesquisa, e a mediana do saldo não é a diferença das outras duas medianas: nas '
+        + '8.310 datas em que as três existem, a diferença é de 3,4 US$ bi em média e as duas contas só '
+        + 'coincidem em 4,8% delas.',
+    un: 'US$ bilhões acumulados em {ano}',
+  },
+  'Balança comercial|Exportações': {
+    full: 'Balança comercial — exportações',
+    desc: 'Valor exportado de bens no ano, em dólares. Balança comercial é o único indicador do Focus '
+        + 'que se abre em detalhe (Saldo, Exportações, Importações).',
+    un: 'US$ bilhões acumulados em {ano}',
+  },
+  'Balança comercial|Importações': {
+    full: 'Balança comercial — importações',
+    desc: 'Valor importado de bens no ano, em dólares.',
+    un: 'US$ bilhões acumulados em {ano}',
+  },
+  'Conta corrente|': {
+    full: 'Saldo em transações correntes',
+    desc: 'Bens e serviços, mais renda primária (juros e lucros remetidos) e renda secundária. '
+        + 'Negativo significa que o país gasta com o resto do mundo mais do que recebe, e a diferença '
+        + 'tem de ser financiada por poupança externa.',
+    un: 'US$ bilhões acumulados em {ano}',
+  },
+  'Investimento direto no país|': {
+    full: 'Investimento Direto no País (IDP)',
+    desc: 'Participação de não residentes no capital de empresas aqui, mais operações entre matriz e '
+        + 'filial. É o financiamento externo de prazo mais longo — a leitura usual é compará-lo com o '
+        + 'déficit em conta corrente.',
+    un: 'US$ bilhões acumulados em {ano}',
+  },
+};
+
+// A unidade que o card mostra e a que vai para o eixo Y são a MESMA string.
+function unidadeDe(key, ano) {
+  var i = INFO[key];
+  if (i && i.un) return i.un.replace('{ano}', ano);
+  var m = pMeta('anual', key);
+  return m ? m.unidade : '';
+}
+// Primeira semana da grade em que o indicador aparece, sobre TODOS os períodos de
+// referência dele. Derivado do payload: escrever a data à mão envelheceria calado.
+var _primeiraCache = {};
+function _primeiraSemana(per, key) {
+  var ck = per + '|' + key;
+  if (_primeiraCache[ck] !== undefined) return _primeiraCache[ck];
+  var meta = pMeta(per, key), min = null;
+  if (meta) {
+    meta.refs.forEach(function(r) {
+      var b = pBlk(per, key, r);
+      if (b && (min === null || b.i0 < min)) min = b.i0;
+    });
+  }
+  _primeiraCache[ck] = (min === null) ? null : GRADE[min];
+  return _primeiraCache[ck];
+}
+
+// Um único card no documento, reposicionado a cada abertura -- não um por linha: são 28
+// indicadores e o card quase nunca está aberto. Hover abre, clique fixa (para o texto
+// poder ser lido e selecionado), clique fora ou Esc fecha.
+var _pop = null, _pinned = null;
+function _ensurePop() {
+  if (_pop) return _pop;
+  _pop = document.createElement('div');
+  _pop.className = 'info-pop';
+  document.body.appendChild(_pop);
+  _pop.addEventListener('mouseleave', function() { if (!_pinned) hideInfo(); });
+  document.addEventListener('click', function(e) {
+    if (_pinned && !_pop.contains(e.target) && e.target !== _pinned) hideInfo();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') hideInfo(); });
+  return _pop;
+}
+function hideInfo() {
+  if (!_pop) return;
+  _pop.classList.remove('show');
+  if (_pinned) { _pinned.classList.remove('pinned'); _pinned = null; }
+}
+function infoHtml(key, label, ano) {
+  var info = INFO[key];
+  if (!info) return '';
+  var h = '<h4>' + label + '</h4>';
+  // `full` só entra quando acrescenta algo ao rótulo que já está na tela.
+  if (info.full && info.full !== label) h += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) h += '<div class="info-desc">' + info.desc + '</div>';
+  var un = unidadeDe(key, ano), desde = _primeiraSemana('anual', key);
+  h += '<div class="info-unit"><span>Unidade: ' + un + '</span>';
+  if (desde) h += '<span>Na pesquisa desde ' + mesAnoBR(desde) + '</span>';
+  return h + '</div>';
+}
+function showInfo(btn, key, label) {
+  var pop = _ensurePop();
+  pop.innerHTML = infoHtml(key, label, _bolAno);
+  pop.classList.add('show');
+  var r = btn.getBoundingClientRect ? btn.getBoundingClientRect() : {left: 0, right: 0, top: 0, bottom: 0};
+  var w = pop.offsetWidth || 380, h = pop.offsetHeight || 140;
+  var sx = window.scrollX || 0, sy = window.scrollY || 0;
+  var raiz = document.documentElement || {clientWidth: 1200, clientHeight: 800};
+  var left = r.left + sx;
+  var maxLeft = sx + raiz.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(sx + 12, maxLeft);
+  var top = r.bottom + sy + 6;
+  if (r.bottom + h + 18 > raiz.clientHeight) top = r.top + sy - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+// Pendura o botão em qualquer elemento que mostre um rótulo curto. Não faz nada se a
+// chave não estiver no INFO -- é assim que o ícone só aparece onde tem o que dizer.
+function attachInfo(hostEl, key, label) {
+  if (!hostEl || !INFO[key]) return null;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.dataset.infoFor = key;
+  if (b.setAttribute) b.setAttribute('aria-label', 'Definição de ' + label);
+  b.addEventListener('mouseenter', function() { if (!_pinned) showInfo(b, key, label); });
+  b.addEventListener('mouseleave', function() {
+    if (_pinned) return;
+    setTimeout(function() {
+      if (!_pinned && !(_pop && _pop.matches && _pop.matches(':hover'))) hideInfo();
+    }, 120);
+  });
+  b.addEventListener('click', function(e) {
+    // Sem isto o clique no "i" também alternaria a linha da tabela, que é clicável.
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (_pinned === b) { hideInfo(); return; }
+    hideInfo();
+    _pinned = b;
+    b.classList.add('pinned');
+    showInfo(b, key, label);
+  });
+  hostEl.appendChild(b);
+  return b;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // ABA — BOLETIM
 // ═══════════════════════════════════════════════════════════════════════════════
 var _bolAno = null, _bolUnidade = '%', _bolJanela = 4, _bolLabels = false;
+// Linhas da tabela que estão plotadas no gráfico logo abaixo dela. A ORDEM é a ordem
+// de clique, e é ela que define a cor de cada série -- o quadradinho na tabela usa a
+// mesma cor pela mesma posição.
+var _bolSel = [], _bolSerieLabels = false, _bolBanda = false;
 
 function _anosDisponiveis() {
   var idx = IDX.anual || {}, hoje = (GRADE[NG - 1] || '').slice(0, 4), anos = {};
@@ -1246,7 +1584,9 @@ function renderBoletim() {
   var anos = _anosDisponiveis();
   if (!anos.length) return;
   setupPillGroup('pg-bol-ano', anos.map(function(a) { return {key: a, label: a}; }), anos[0],
-    function(k) { _bolAno = k; _bolTabela(); _bolKpis(); _bolGrafico(); });
+    function(k) { _bolAno = k; _bolTabela(); _bolSerie(); _bolGrafico(); });
+  wireDlToggle('tg-bol-banda', function(on) { _bolBanda = on; _bolSerie(); });
+  wireDlToggle('dl-bol-serie', function(on) { _bolSerieLabels = on; _bolSerie(); });
   setupPillGroup('pg-bol-unidade', [
     {key: '%', label: '%'}, {key: 'R$/US$', label: 'R$/US$'},
     {key: 'US$ bi', label: 'US$ bi'}, {key: '% do PIB', label: '% do PIB'},
@@ -1274,11 +1614,51 @@ function _bolLinha(ind) {
   });
   return l;
 }
+// Unidade da seleção corrente -- o que decide se uma linha nova SOMA ou SUBSTITUI.
+function _bolUnidadeSel() {
+  for (var i = 0; i < _bolSel.length; i++) {
+    var m = pMeta('anual', _bolSel[i]);
+    if (m) return m.unidade;
+  }
+  return null;
+}
+// Clique numa linha da tabela. Duas regras: nunca fica sem série (desmarcar a única
+// não faz nada), e unidades não se somam no mesmo eixo -- escolher um indicador de
+// outra unidade TROCA a seleção em vez de empilhar p.p. de IPCA com R$ de câmbio, que
+// é a mesma regra que o gráfico de revisões logo abaixo já seguia.
+function _bolToggle(key) {
+  var i = _bolSel.indexOf(key);
+  if (i >= 0) {
+    if (_bolSel.length === 1) return;
+    _bolSel.splice(i, 1);
+  } else {
+    var meta = pMeta('anual', key);
+    var atual = _bolUnidadeSel();
+    if (meta && atual && meta.unidade !== atual) _bolSel = [];
+    _bolSel.push(key);
+  }
+  _bolTabela();
+  _bolSerie();
+}
+// Mantém a seleção válida para o ano escolhido: quem não cota o ano sai, e se sobrar
+// vazio volta o primeiro disponível (IPCA quando existe).
+function _bolGarantirSel(linhas) {
+  var tem = {};
+  linhas.forEach(function(l) { tem[l.ind.key] = true; });
+  _bolSel = _bolSel.filter(function(k) { return tem[k]; });
+  if (!_bolSel.length && linhas.length) {
+    var ipca = linhas.filter(function(l) { return l.ind.key === 'IPCA|'; })[0];
+    _bolSel = [(ipca || linhas[0]).ind.key];
+  }
+}
 function _bolTabela() {
   var tb = document.getElementById('tbl-boletim');
   if (!tb) return;
   var ordem = (D.meta && D.meta.ordemFamilia) || [];
   var linhas = indsDe('anual').map(_bolLinha).filter(Boolean);
+  _bolGarantirSel(linhas);
+  var porChave = {};
+  linhas.forEach(function(l) { porChave[l.ind.key] = l; });
   var h = '<thead><tr><th class="col-label">Indicador</th><th class="col-label">Unidade</th>'
         + '<th>Hoje</th><th>Δ 1 sem</th><th>Δ 4 sem</th><th>Δ 12 sem</th><th>Δ 52 sem</th>'
         + '<th>Resp.</th><th>Desv.-pad.</th></tr></thead><tbody>';
@@ -1287,7 +1667,13 @@ function _bolTabela() {
     if (!doGrupo.length) return;
     h += '<tr class="fam-row"><td class="col-label" colspan="9">' + fam + '</td></tr>';
     doGrupo.forEach(function(l) {
-      h += '<tr><td class="col-label">' + l.ind.label + '</td>'
+      var iSel = _bolSel.indexOf(l.ind.key);
+      // O quadradinho é sempre renderizado, transparente quando a linha não está no
+      // gráfico: só na linha marcada, ele empurraria o rótulo a cada clique.
+      var sw = '<span class="row-sw" style="background:' + (iSel >= 0 ? cor(iSel) : 'transparent') + '"></span>';
+      h += '<tr class="row-pick' + (iSel >= 0 ? ' row-sel' : '') + '" data-row-key="' + l.ind.key + '">'
+        + '<td class="col-label">' + sw + l.ind.label
+        + '<span class="info-host" data-info-key="' + l.ind.key + '"></span></td>'
         + '<td class="col-label" style="color:var(--muted)">' + l.unidade + '</td>'
         + '<td class="col-value"><strong>' + fmtBR(l.hoje, l.dec) + '</strong></td>';
       [1, 4, 12, 52].forEach(function(w) {
@@ -1301,6 +1687,17 @@ function _bolTabela() {
     });
   });
   tb.innerHTML = h + '</tbody>';
+  // Listener por linha em vez de delegação no <table>: a tabela é reconstruída inteira
+  // a cada clique, então não há economia em delegar, e o alvo do clique dentro da linha
+  // varia (célula, texto, quadradinho).
+  tb.querySelectorAll('[data-row-key]').forEach(function(tr) {
+    var k = tr.dataset.rowKey;
+    tr.addEventListener('click', function() { _bolToggle(k); });
+  });
+  tb.querySelectorAll('[data-info-key]').forEach(function(host) {
+    var k = host.dataset.infoKey, l = porChave[k];
+    attachInfo(host, k, l ? l.ind.label : k);
+  });
 
   var lead = document.getElementById('bol-lead');
   if (lead) {
@@ -1311,23 +1708,83 @@ function _bolTabela() {
       + linhas.length + ' indicadores cotam esse ano.';
   }
 }
-function _bolKpis() {
-  [['kpi-bol-ipca', 'IPCA|', 'IPCA'], ['kpi-bol-selic', 'Selic|', 'Selic'],
-   ['kpi-bol-cambio', 'Câmbio|', 'Câmbio'], ['kpi-bol-pib', 'PIB Total|', 'PIB Total'],
-   ['kpi-bol-desoc', 'Taxa de desocupação|', 'Desocupação']].forEach(function(t) {
-    var id = t[0], key = t[1], rot = t[2];
-    var meta = pMeta('anual', key);
-    setKPILabel(id, rot + ' ' + _bolAno);
-    if (!meta) { setKPI(id, '—', 'não cotado'); return; }
-    var blk = pBlk('anual', key, _bolAno);
-    var hoje = blkAt(blk, 'm', NG - 1);
-    var v4 = blkAt(blk, 'm', gidxBackWeeks(4));
-    var d4 = (hoje != null && v4 != null) ? hoje - v4 : null;
-    var sufixo = meta.unidade === '%' ? '%' : (meta.unidade === 'R$/US$' ? '' : ' ' + meta.unidade);
-    setKPI(id, hoje == null ? '—' : fmtBR(hoje, meta.dec) + sufixo,
-      d4 == null ? '—' : fmtSig(d4, meta.dec) + ' em 4 semanas', clsDelta(d4));
+// O gráfico que a linha da tabela chama: a série da mediana daquele indicador para
+// AQUELE ano de referência, semana a semana, desde a primeira pesquisa que o cotou.
+function _bolSerie() {
+  var keys = _bolSel.filter(function(k) { return !!pBlk('anual', k, _bolAno); });
+  var traces = [], rotulos = [], unidades = {}, dec = 2;
+  keys.forEach(function(k, i) {
+    var meta = pMeta('anual', k), blk = pBlk('anual', k, _bolAno);
+    if (!meta || !blk) return;
+    var s = blkSerie(blk, 'm');
+    var sfx = meta.unidade === '%' ? '%' : '';
+    dec = meta.dec;
+    rotulos.push(meta.label);
+    unidades[unidadeDe(k, _bolAno)] = true;
+    // Faixa de ±1 desvio-padrão só com UMA série na tela: com duas, as áreas se
+    // sobrepõem e nem a faixa nem as linhas se leem.
+    if (_bolBanda && keys.length === 1) {
+      var sd = blkSerie(blk, 's');
+      var soma = function(sinal) {
+        return s.values.map(function(v, j) {
+          var d = sd.values[j];
+          return (v == null || d == null) ? null : Math.round((v + sinal * d) * 10000) / 10000;
+        });
+      };
+      traces.push({type: 'scatter', mode: 'lines', x: s.dates, y: soma(1), name: 'faixa sup.',
+                   line: {width: 0, color: cor(i)}, hoverinfo: 'skip', showlegend: false,
+                   connectgaps: false});
+      traces.push({type: 'scatter', mode: 'lines', x: s.dates, y: soma(-1), name: '±1 desv.-pad.',
+                   line: {width: 0, color: cor(i)}, fill: 'tonexty',
+                   fillcolor: 'rgba(2,115,155,0.13)', hoverinfo: 'skip', connectgaps: false});
+    }
+    traces.push(lineTrace(s, meta.label, cor(i), _bolSerieLabels, meta.dec, sfx,
+      {line: {color: cor(i), width: 2.5}}));
   });
+
+  var uns = Object.keys(unidades);
+  var yTit = uns.length === 1 ? uns[0]
+    : 'unidades mistas — ver a definição de cada linha no botão i da tabela';
+  _reactPreserveX('chart-bol-serie', traces, mkTsLayout(yTit, 520, traces));
+
+  // Cabeçalho DENTRO do card: título, o que mede e em que unidade, fonte e período.
+  // Recalculado a cada render -- escrito no HTML, começaria certo e passaria a mentir
+  // no primeiro clique.
+  var t = document.getElementById('bol-serie-t');
+  if (t) {
+    t.innerHTML = '';
+    t.textContent = rotulos.length ? rotulos.join(' · ') : 'Nenhuma linha selecionada';
+    if (keys.length === 1) attachInfo(t, keys[0], rotulos[0]);
+  }
+  var sub = document.getElementById('bol-serie-sub');
+  if (sub) {
+    sub.textContent = rotulos.length
+      ? ('Mediana das projeções para ' + _bolAno + ' · ' + yTit
+         + (_bolBanda && keys.length === 1 ? ' · faixa de ±1 desvio-padrão entre os respondentes' : ''))
+      : '';
+  }
+  var ext = _traceAllDates(traces);
+  var src = document.getElementById('bol-serie-src');
+  if (src) {
+    src.textContent = ext.length
+      ? ('Fonte: BCB, Sistema de Expectativas de Mercado (Focus) · '
+         + fmtDataBR(ext[0]) + ' a ' + fmtDataBR(ext[ext.length - 1]))
+      : '';
+  }
+  var hint = document.getElementById('bol-serie-sel');
+  if (hint) {
+    hint.textContent = keys.length + (keys.length === 1 ? ' linha marcada' : ' linhas marcadas')
+      + (uns.length === 1 ? '' : ' (unidades diferentes)');
+  }
+  var cap = document.getElementById('bol-serie-cap');
+  if (cap) {
+    cap.textContent = 'Eixo X é a data da pesquisa, não o período projetado: cada ponto é o que o '
+      + 'mercado esperava de ' + _bolAno + ' naquela semana. Clicar noutra linha da mesma unidade '
+      + 'acrescenta uma série; clicar numa linha de outra unidade troca a seleção, porque somar '
+      + 'p.p. com R$ no mesmo eixo não significa nada.';
+  }
 }
+
 function _bolGrafico() {
   var w = _bolJanela;
   var linhas = indsDe('anual').map(_bolLinha).filter(function(l) {

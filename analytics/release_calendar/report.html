@@ -27,7 +27,8 @@
     header .meta { text-align: right; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8; }
     header .meta strong { color: var(--text); }
 
-    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+    main { max-width: 1440px; margin: 0 auto; padding: 24px 32px 48px; }
+    .view { display: flex; flex-direction: column; gap: 24px; }
 
     /* ── Filter bar ── */
     .ctrl-bar {
@@ -131,6 +132,78 @@
     .recurring-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text2); }
     .recurring-item strong { color: var(--text); }
 
+    /* ── Abas ── */
+    .tab-bar {
+      max-width: 1440px; margin: 18px auto -8px; padding: 0 32px;
+      display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      font-family: var(--cond); font-size: 13px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 10px 20px; border: none; background: none;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: var(--text2); }
+    .tab-btn[aria-selected="true"] { color: var(--lis-dourado); border-bottom-color: var(--lis-dourado); }
+    .tab-btn:focus-visible { outline: 2px solid var(--lis-azul-cl); outline-offset: -2px; }
+    .view[hidden] { display: none; }
+
+    /* ── Aba Status dashboard ── */
+    .dash-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 24px 8px; }
+    .dash-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .dash-head h3 { font-family: var(--cond); font-size: 17px; font-weight: 700; color: var(--text); }
+    .dash-head .dash-out { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+    .dash-head .spacer { flex: 1; }
+    .dash-meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
+    .dash-meta strong { color: var(--text2); font-weight: 600; }
+    .dash-note { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.55; max-width: 78ch; }
+    .verdict {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 10px; white-space: nowrap;
+    }
+    .verdict.ok      { background: rgba(65,135,145,0.15); color: var(--lis-verde); }
+    .verdict.stale   { background: rgba(234,82,58,0.15); color: var(--lis-laranja); }
+    .verdict.unknown { background: rgba(31,40,83,0.06); color: var(--text2); }
+    .verdict.missing { background: rgba(187,155,29,0.15); color: var(--lis-dourado); }
+
+    table.dep-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    table.dep-table thead th {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); text-align: left;
+      padding: 6px 8px; border-bottom: 1px solid var(--border);
+    }
+    table.dep-table td { padding: 7px 8px; font-size: 12px; border-bottom: 1px solid rgba(31,40,83,0.05); vertical-align: top; }
+    table.dep-table tr:last-child td { border-bottom: none; }
+    td.dep-onde { white-space: nowrap; }
+    td.dep-ref { font-family: var(--mono); font-size: 10.5px; color: var(--text); word-break: break-all; }
+    td.dep-role { color: var(--text2); font-size: 11.5px; max-width: 42ch; }
+    td.dep-last { font-family: var(--mono); font-size: 11px; color: var(--text); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    td.dep-last .stamped { color: var(--muted); }
+    td.dep-sig { white-space: nowrap; text-align: right; }
+    .src-badge {
+      font-family: var(--mono); font-size: 9px; font-weight: 600; padding: 2px 8px;
+      border-radius: 8px; display: inline-block; white-space: nowrap;
+    }
+    .src-badge.own { background: rgba(31,40,83,0.07); color: var(--text2); }
+    .src-badge.out { background: rgba(2,115,155,0.14); color: var(--lis-azul-cl); }
+    .dep-flag {
+      font-family: var(--mono); font-size: 9px; font-weight: 600; padding: 2px 8px;
+      border-radius: 8px; display: inline-block;
+    }
+    .dep-flag.new { background: rgba(234,82,58,0.15); color: var(--lis-laranja); }
+    .dep-flag.err { background: rgba(187,155,29,0.18); color: var(--lis-dourado); }
+    .dep-flag.skip { background: rgba(31,40,83,0.05); color: var(--muted); }
+    .dash-head .upd-btn { margin-left: 4px; }
+    .dash-head .upd-none { font-size: 10px; margin-left: 4px; }
+    .dash-msg {
+      font-family: var(--mono); font-size: 10.5px; color: var(--lis-verde);
+      margin-top: 8px; word-break: break-all;
+    }
+    .dash-msg.err { color: var(--lis-laranja); }
+    .dep-sub { font-family: var(--sans); font-size: 11px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.5; }
+    .dep-sub code { font-family: var(--mono); font-size: 10px; color: var(--text2); }
+    tr.dep-modelo td.dep-ref, tr.dep-modelo td.dep-role { opacity: 0.72; }
+
     footer { max-width: 1440px; margin: 8px auto 40px; padding: 0 32px; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
   </style>
 </head>
@@ -147,7 +220,15 @@
     </div>
   </header>
 
+  <nav class="tab-bar" role="tablist" aria-label="Seções do relatório">
+    <button class="tab-btn" role="tab" id="tab-releases" aria-selected="true"
+            aria-controls="view-releases" data-view="view-releases">Divulgações</button>
+    <button class="tab-btn" role="tab" id="tab-dashboards" aria-selected="false"
+            aria-controls="view-dashboards" data-view="view-dashboards">Status dashboard</button>
+  </nav>
+
   <main>
+   <div class="view" id="view-releases" role="tabpanel" aria-labelledby="tab-releases">
     <div class="ctrl-bar">
       <span class="ctrl-label">Instituição</span>
       <div class="pill-group" id="institution-pills"></div>
@@ -197,6 +278,42 @@
         <tbody id="table-body"></tbody>
       </table>
     </div>
+   </div>
+
+   <div class="view" id="view-dashboards" role="tabpanel" aria-labelledby="tab-dashboards" hidden>
+    <div class="ctrl-bar">
+      <span class="ctrl-label">Área</span>
+      <div class="pill-group" id="dash-area-pills"></div>
+      <div class="ctrl-sep"></div>
+      <span class="ctrl-label">Dependências</span>
+      <div class="pill-group" id="dash-scope-pills"></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Dashboards Mapeados</span>
+        <span class="stat-value" id="dash-stat-count">—</span>
+        <span class="stat-sub" id="dash-stat-deps">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Com Dado Novo na Fonte</span>
+        <span class="stat-value" id="dash-stat-stale">—</span>
+        <span class="stat-sub" id="dash-stat-stale-sub">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Dependências Fora do MySQL</span>
+        <span class="stat-value" id="dash-stat-out">—</span>
+        <span class="stat-sub">CSV, artefato do modelo, YAML ou fonte externa — nenhum ETL daqui as move</span>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h2>O que cada dashboard consome</h2>
+      <div class="card-hint" id="dash-mode-hint"></div>
+    </div>
+
+    <div id="dash-cards" class="view"></div>
+   </div>
   </main>
 
   <footer>
@@ -423,9 +540,10 @@
       td.appendChild(s);
     }
 
-    function copyCommand(slug, td) {
-      var cmd = 'uv run python jobs/update_db.py --group ' + slug;
-      var done = function() { setCellMsg(td, 'comando copiado', false); };
+    /* Copia `cmd`, chamando done() no sucesso e semClipboard(cmd) quando nem a API
+       nem o execCommand funcionam (aí o comando é mostrado para copiar à mão).
+       Usado pelas duas abas — o botão de divulgação e o de regerar dashboard. */
+    function copiarTexto(cmd, done, semClipboard) {
       // clipboard API exige contexto seguro — file:// não é, daí o fallback
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(cmd).then(done, function() { fallback(); });
@@ -438,8 +556,15 @@
         var ok = false;
         try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
         document.body.removeChild(ta);
-        if (ok) done(); else setCellMsg(td, cmd, false);
+        if (ok) done(); else semClipboard(cmd);
       }
+    }
+
+    function copyCommand(slug, td) {
+      var cmd = 'uv run python jobs/update_db.py --group ' + slug;
+      copiarTexto(cmd,
+        function() { setCellMsg(td, 'comando copiado', false); },
+        function(c) { setCellMsg(td, c, false); });
     }
 
     function runGroup(slug, btn) {
@@ -514,7 +639,12 @@
           LIVE.on = true;
           LIVE.today = p.hoje;
           LIVE.now = p.agora || null;
-          return refreshStatus().then(function() { renderTable(); });
+          return refreshStatus().then(function() {
+            renderTable();
+            // O estado dos dashboards é a consulta mais cara das duas (MAX(date) de
+            // ~70 tabelas): vai depois da tabela de divulgações já ter pintado.
+            return refreshDashboards();
+          });
         })
         .catch(function() { LIVE.on = false; renderModeHint(); renderTable(); });
     }
@@ -525,10 +655,301 @@
       renderTable();
     }
 
+    /* ─────────────────────────── Aba "Status dashboard" ───────────────────────
+       De onde vem o dado desta aba: REPORT_DATA.dashboards é o retrato gravado na
+       geração (domain/dashboards/status.py::estado), e /api/dashboards devolve o
+       mesmo shape recalculado agora. Por isso um render só serve os dois modos —
+       no modo arquivo a aba mostra o estado de quando o HTML foi feito, e diz isso.
+
+       O veredito vem do Python, não daqui: comparar "último dado" com "o que o
+       relatório embutiu" exige o stamp, que só o gerador sabe gravar. */
+
+    var DASH = { rows: (REPORT_DATA.dashboards || []), ao_vivo: false, consultado: null,
+                 erro: null, area: 'todas', filtro: 'todas', msg: {} };
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function fmtDataHora(iso) {
+      if (!iso) return '—';
+      var m = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/.exec(iso);
+      if (m) return m[3] + '/' + m[2] + '/' + m[1] + ' ' + m[4] + ':' + m[5];
+      return iso;
+    }
+
+    function fmtDado(v) {
+      if (!v) return '—';
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v);
+      if (m) return m[3] + '/' + m[2] + '/' + m[1];
+      var mm = /^(\d{4})-(\d{2})$/.exec(v);      // CSV do IPCA vem em YYYY-MM
+      if (mm) return mm[2] + '/' + mm[1];
+      return v;
+    }
+
+    var VERDICT_CLASS = { 'em dia': 'ok', 'desatualizado': 'stale',
+                          'sem stamp': 'unknown', 'sem relatorio': 'missing' };
+    var VERDICT_LABEL = { 'em dia': 'em dia', 'desatualizado': 'dado novo na fonte',
+                          'sem stamp': 'sem stamp', 'sem relatorio': 'nunca gerado' };
+
+    function depVisivel(d) {
+      if (DASH.filtro === 'fora') return d.fora_do_mysql;
+      if (DASH.filtro === 'novos') return d.novo || d.arquivo_mais_novo;
+      return true;
+    }
+
+    function linhaDep(d) {
+      var flags = [];
+      if (d.novo) flags.push('<span class="dep-flag new">dado novo</span>');
+      else if (d.arquivo_mais_novo) flags.push('<span class="dep-flag new">arquivo mais novo</span>');
+      if (d.erro) flags.push('<span class="dep-flag err">' + esc(d.erro) + '</span>');
+      if (d.nao_checado) flags.push('<span class="dep-flag skip">não consultado</span>');
+
+      var sub = [];
+      if (d.owner) sub.push('escrito pelo <strong>' + esc(d.owner) + '</strong>, não por este projeto');
+      if (d.refresh) sub.push('atualizar: <code>' + esc(d.refresh) + '</code>');
+      if (d.note) sub.push(esc(d.note));
+
+      var valor = d.ultimo ? fmtDado(d.ultimo) : (d.mtime ? fmtDataHora(d.mtime) : '—');
+      var stamp = (d.stamp && d.stamp !== d.ultimo)
+        ? '<span class="stamped"> · no relatório: ' + fmtDado(d.stamp) + '</span>' : '';
+
+      return '<tr' + (d.scope === 'modelos' ? ' class="dep-modelo"' : '') + '>' +
+        '<td class="dep-onde"><span class="src-badge ' + (d.fora_do_mysql ? 'out' : 'own') + '">' +
+          esc(d.onde) + '</span></td>' +
+        '<td class="dep-ref">' + esc(d.ref) +
+          (d.scope === 'modelos' ? '<span class="dep-sub">só com as abas de modelo</span>' : '') + '</td>' +
+        '<td class="dep-role">' + esc(d.role || '') +
+          (sub.length ? '<span class="dep-sub">' + sub.join(' · ') + '</span>' : '') + '</td>' +
+        '<td class="dep-last">' + valor + stamp + '</td>' +
+        '<td class="dep-sig">' + flags.join(' ') + '</td>' +
+      '</tr>';
+    }
+
+    /* Botão de regerar, um por card. Cada dashboard é regerado SOZINHO -- decisão
+       explícita do usuário (2026-08-26): quem acabou de atualizar o IPCA quer escolher
+       qual dos seis dashboards que o consomem interessa agora, não regerar os seis.
+       Por isso não existe "regerar todos os atrasados" em lugar nenhum da aba.
+
+       Sem `module` (o Oráculo, cujo entry point é script solto) não ganha botão, pelo
+       mesmo critério que faz um grupo sem tabela não ganhar botão na outra aba: melhor
+       nenhum controle do que um que não funciona. */
+    function botaoRegerar(r) {
+      if (!r.module) {
+        return '<span class="upd-none" title="' + esc(r.command || '') +
+               '">só pela linha de comando</span>';
+      }
+      var classe = (r.veredito === 'desatualizado' || r.veredito === 'sem relatorio')
+        ? 'late' : 'neutral';
+      // LIVE.on (existe servidor?), NAO DASH.ao_vivo (o estado carregou?). As duas
+      // coisas se separam quando a pagina e servida mas o /api/dashboards falha: o
+      // /api/gerar continua funcionando, entao o botao tem de continuar sendo Regerar.
+      return '<button class="upd-btn ' + classe + ' dash-btn" data-key="' + esc(r.key) +
+             '">' + (LIVE.on ? 'Regerar' : 'Copiar cmd') + '</button>';
+    }
+
+    function cardDashboard(r) {
+      var deps = (r.deps || []).filter(depVisivel);
+      var meta = [];
+      meta.push('Gerado em <strong>' + fmtDataHora(r.gerado_em) + '</strong>');
+      if (r.tamanho_mb) meta.push(r.tamanho_mb.toFixed(1).replace('.', ',') + ' MB');
+      if (r.build_seconds) meta.push('~' + r.build_seconds + 's para regerar');
+      meta.push('<strong>' + r.n_deps + '</strong> dependências' +
+                (r.n_fora_mysql ? ' · <strong>' + r.n_fora_mysql + '</strong> fora do MySQL' : ''));
+
+      var corpo = deps.length
+        ? '<table class="dep-table"><thead><tr><th>Onde mora</th><th>Dependência</th>' +
+          '<th>Papel no dashboard</th><th>Último dado</th><th></th></tr></thead><tbody>' +
+          deps.map(linhaDep).join('') + '</tbody></table>'
+        : '<div class="dash-note">Nenhuma dependência no filtro selecionado.</div>';
+
+      var msg = DASH.msg[r.key];
+
+      return '<div class="dash-card" data-key="' + esc(r.key) + '">' +
+        '<div class="dash-head"><h3>' + esc(r.name) + '</h3>' +
+          '<span class="verdict ' + (VERDICT_CLASS[r.veredito] || 'unknown') + '">' +
+            esc(VERDICT_LABEL[r.veredito] || r.veredito || '—') + '</span>' +
+          '<span class="spacer"></span>' +
+          '<span class="dash-out">' + esc(r.output) + '</span>' +
+          botaoRegerar(r) + '</div>' +
+        (msg ? '<div class="dash-msg' + (msg.erro ? ' err' : '') + '">' +
+               esc(msg.texto) + '</div>' : '') +
+        '<div class="dash-meta">' + meta.join(' · ') + '</div>' +
+        (r.note ? '<div class="dash-note">' + esc(r.note) + '</div>' : '') +
+        corpo +
+      '</div>';
+    }
+
+    function renderDashControls() {
+      var areas = ['todas'];
+      DASH.rows.forEach(function(r) {
+        if (r.area && areas.indexOf(r.area) < 0) areas.push(r.area);
+      });
+      var rot = { todas: 'Todas', brasil: 'Brasil', us: 'EUA', raiz: 'Sistema' };
+      var el = document.getElementById('dash-area-pills');
+      el.innerHTML = '';
+      areas.forEach(function(a) {
+        var b = document.createElement('button');
+        b.className = 'pill' + (DASH.area === a ? ' active' : '');
+        b.textContent = rot[a] || a;
+        b.addEventListener('click', function() { DASH.area = a; renderDashboards(); });
+        el.appendChild(b);
+      });
+
+      var filtros = [['todas', 'Todas'], ['fora', 'Fora do MySQL'], ['novos', 'Com dado novo']];
+      var el2 = document.getElementById('dash-scope-pills');
+      el2.innerHTML = '';
+      filtros.forEach(function(f) {
+        var b = document.createElement('button');
+        b.className = 'pill' + (DASH.filtro === f[0] ? ' active' : '');
+        b.textContent = f[1];
+        b.addEventListener('click', function() { DASH.filtro = f[0]; renderDashboards(); });
+        el2.appendChild(b);
+      });
+    }
+
+    function renderDashboards() {
+      renderDashControls();
+
+      var rows = DASH.rows.filter(function(r) {
+        return DASH.area === 'todas' || r.area === DASH.area;
+      });
+
+      var nDeps = 0, nFora = 0, stale = [];
+      rows.forEach(function(r) {
+        nDeps += r.n_deps || 0;
+        nFora += r.n_fora_mysql || 0;
+        if (r.veredito === 'desatualizado') stale.push(r.name);
+      });
+
+      document.getElementById('dash-stat-count').textContent = rows.length;
+      document.getElementById('dash-stat-deps').textContent =
+        nDeps + ' dependências declaradas no total';
+      document.getElementById('dash-stat-stale').textContent = stale.length;
+      document.getElementById('dash-stat-stale-sub').textContent =
+        stale.length ? stale.join(' · ') : 'nenhum com fonte à frente do arquivo gerado';
+      document.getElementById('dash-stat-out').textContent = nFora;
+
+      document.getElementById('dash-cards').innerHTML = rows.map(cardDashboard).join('');
+
+      // Tres estados, nao dois: "servido mas sem estado" e diferente de "modo arquivo",
+      // e chamar os dois de arquivo esconderia uma falha do /api/dashboards.
+      var hint = document.getElementById('dash-mode-hint');
+      if (!DASH.rows.length) {
+        hint.innerHTML = '<span class="mode">sem manifesto</span>' +
+          'Nada declarado em domain/dashboards/manifest.yaml.';
+      } else if (DASH.ao_vivo) {
+        hint.innerHTML = '<span class="mode live">ao vivo</span>' +
+          'Estado consultado agora' + (DASH.consultado ? ' às ' + esc(DASH.consultado) : '') +
+          '. "Último dado" é o MAX(date) da tabela, a última linha do arquivo ou a última ' +
+          'observação da fonte externa. "Dado novo" = a fonte andou depois da geração do ' +
+          'relatório. O botão <strong>Regerar</strong> reconstrói aquele dashboard sozinho.';
+      } else if (LIVE.on) {
+        hint.innerHTML = '<span class="mode live">servido</span>' +
+          'O estado ao vivo não carregou' + (DASH.erro ? ' (' + esc(DASH.erro) + ')' : '') +
+          ' — os cards mostram o retrato da geração. O botão <strong>Regerar</strong> ' +
+          'funciona mesmo assim.';
+      } else {
+        hint.innerHTML = '<span class="mode">modo arquivo</span>' +
+          'Retrato de quando este HTML foi gerado, e o botão copia o comando. Para regerar ' +
+          'daqui, abra pelo <strong>abrir_calendario.bat</strong> — dois cliques no ' +
+          'reports/release_calendar.html cai neste modo mesmo com o servidor no ar.';
+      }
+    }
+
+    function refreshDashboards() {
+      return fetch('/api/dashboards').then(function(r) { return r.json(); }).then(function(s) {
+        if (s.ok && s.dashboards) {
+          DASH.rows = s.dashboards;
+          DASH.ao_vivo = true;
+          DASH.consultado = s.agora || null;
+          DASH.erro = null;
+        } else {
+          DASH.erro = s.erro || 'resposta sem dashboards';
+        }
+        renderDashboards();
+      }).catch(function(err) {
+        DASH.erro = String(err.message || err);
+        renderDashboards();
+      });
+    }
+
+    function setDashMsg(key, texto, erro) {
+      if (texto) DASH.msg[key] = { texto: texto, erro: !!erro };
+      else delete DASH.msg[key];
+    }
+
+    /* Regera UM dashboard. O POST devolve a linha nova daquele dashboard (o servidor
+       já recalculou o estado depois de gravar o stamp), então o card volta com o
+       veredito atualizado sem precisar reconsultar os outros dez. */
+    function regerarDashboard(key, btn) {
+      btn.disabled = true;
+      btn.textContent = 'regerando...';
+      setDashMsg(key, null);
+
+      fetch('/api/gerar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: key })
+      }).then(function(r) { return r.json(); }).then(function(res) {
+        if (res.erro) { throw new Error(res.erro); }
+        if (res.dashboard) {
+          for (var i = 0; i < DASH.rows.length; i++) {
+            if (DASH.rows[i].key === key) DASH.rows[i] = res.dashboard;
+          }
+        }
+        setDashMsg(key, 'regerado em ' + res.segundos + 's', false);
+        renderDashboards();
+      }).catch(function(err) {
+        setDashMsg(key, String(err.message || err), true);
+        renderDashboards();
+      });
+    }
+
+    function copyDashCommand(key) {
+      var linha = null;
+      for (var i = 0; i < DASH.rows.length; i++) {
+        if (DASH.rows[i].key === key) linha = DASH.rows[i];
+      }
+      var cmd = 'uv run python -m domain.dashboards.status --gerar ' + key;
+      copiarTexto(cmd,
+        function() { setDashMsg(key, 'comando copiado', false); renderDashboards(); },
+        function(c) { setDashMsg(key, c, false); renderDashboards(); });
+      return linha;
+    }
+
+    document.getElementById('dash-cards').addEventListener('click', function(ev) {
+      var btn = ev.target.closest ? ev.target.closest('button.dash-btn') : null;
+      if (!btn) return;
+      var key = btn.dataset.key;
+      if (LIVE.on) regerarDashboard(key, btn);
+      else copyDashCommand(key);
+    });
+
+    /* ───────────────────────────────── Abas ───────────────────────────────── */
+
+    function selecionarAba(viewId) {
+      var botoes = document.querySelectorAll('.tab-btn');
+      for (var i = 0; i < botoes.length; i++) {
+        var ativo = botoes[i].dataset.view === viewId;
+        botoes[i].setAttribute('aria-selected', ativo ? 'true' : 'false');
+        var v = document.getElementById(botoes[i].dataset.view);
+        if (v) v.hidden = !ativo;
+      }
+    }
+
+    document.querySelector('.tab-bar').addEventListener('click', function(ev) {
+      var b = ev.target.closest ? ev.target.closest('.tab-btn') : null;
+      if (b) selecionarAba(b.dataset.view);
+    });
+
     document.getElementById('generated-at').textContent = REPORT_DATA.generated_at;
     renderRecurring();
     renderModeHint();
     renderAll();
+    renderDashboards();
     initLive();
   </script>
 </body>

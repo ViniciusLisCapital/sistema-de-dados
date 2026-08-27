@@ -107,10 +107,14 @@ Banco: macro_us.inflc_pce_dim -- PRIMARY KEY (linha)
 
 from __future__ import annotations
 
+import datetime as _dt
+
 import pandas as pd
 
-from connectors.bea import ABA_PCE_INDICE, ABA_PCE_NOMINAL, ler_tabela
-from domain.db.us._gravar import gravar
+from connectors.bea import (ABA_PCE_INDICE, ABA_PCE_NOMINAL, TABELA_PCE_INDICE,
+                            TABELA_PCE_NOMINAL, anos_param, ler_tabela,
+                            ler_tabela_api)
+from domain.db.us._gravar import gravar, ler
 
 _DATABASE = "macro_us"
 _TABLE = "inflc_pce_dim"
@@ -324,18 +328,214 @@ def _cobertura(df: pd.DataFrame, indice: pd.DataFrame,
     return out.reset_index()
 
 
-def run(validar: bool = True) -> None:
-    """Reconstroi macro_us.inflc_pce_dim a partir do xlsx da Secao 2 do BEA.
+def _estrutura_gravada() -> pd.DataFrame | None:
+    """A estrutura que ja esta no MySQL, ou None se nao houver (ou o banco nao abrir).
+
+    Returns:
+        DataFrame com as colunas da tabela, `rotulo` no lugar de `item_name` (que e
+        como as funcoes de validacao daqui chamam a coluna), ou None.
+    """
+    try:
+        df = ler(_DATABASE, f"SELECT * FROM {_TABLE}")
+    except Exception as e:  # banco fora, tabela inexistente, primeira carga
+        print(f"  estrutura gravada indisponivel ({type(e).__name__}) -- vou pelo xlsx")
+        return None
+    if df.empty:
+        print("  nada gravado ainda -- primeira carga, vou pelo xlsx")
+        return None
+    return df.rename(columns={"item_name": "rotulo", "item_name_bruto": "rotulo_bruto"})
+
+
+def _conjunto_mudou(gravada: pd.DataFrame, api: pd.DataFrame, pref: str,
+                   inicio_janela: str, colunas: tuple[str, ...]) -> str | None:
+    """A API mostra o mesmo conjunto de linhas que esta gravado?
+
+    Compara numero, codigo e rotulo. E o que detecta o BEA inserir, remover, renomear
+    ou trocar o codigo de uma linha -- exatamente as mudancas que invalidam o
+    parentesco gravado.
+
+    **Ausencia nao e sinonimo de remocao.** A API devolve registro so onde ha dado,
+    entao numa janela curta faltam legitimamente (a) as 2 linhas `ZZZZZZ`, que nao tem
+    indice de preco em nenhuma janela, e (b) as linhas descontinuadas -- 157 e 158
+    terminaram em 2001-12. Uma linha ausente so acusa mudanca se ela DEVERIA estar
+    publicando na janela, e quem sabe isso e a propria coluna de cobertura gravada.
+
+    NAO detecta re-indentacao pura (o BEA mover uma linha para outro pai sem mudar
+    numero, rotulo nem codigo). Esse caso e coberto pela outra metade da checagem: a
+    aditividade em nominal roda contra os valores da API, e um pai trocado de lugar
+    move bilhoes, entao ela quebra. As duas juntas cobrem o espaco.
 
     Args:
-        validar: refaz os tres testes (casamento das abas, aditividade em nominal,
+        gravada:       estrutura do MySQL (coluna `rotulo`).
+        api:           `estrutura` de `ler_tabela_api`.
+        pref:          "idx" ou "nom" -- qual coluna de cobertura julga a ausencia.
+        inicio_janela: primeiro mes da janela pedida, "YYYY-MM".
+        colunas:       quais colunas comparar. `code` so vale para a tabela de
+                       INDICE: o SeriesCode do BEA codifica a medida no sufixo (a
+                       linha 1 e `DPCERG` na 2.4.4U e `DPCERC` na 2.4.5U), e a dim
+                       guarda o do indice. Comparar code contra a tabela nominal
+                       falharia em todas as 402 linhas -- e a mesma razao por que
+                       `_validar_casamento` nunca comparou codigo entre as abas.
+
+    Returns:
+        Descricao da primeira diferenca encontrada, ou None se baterem.
+    """
+    g = gravada.set_index("linha")
+    a = api.set_index("linha")
+
+    novas = sorted(set(a.index) - set(g.index))
+    if novas:
+        return f"{len(novas)} linhas novas na API: {novas[:6]}"
+
+    # Ausente E com dado esperado na janela = removida de verdade.
+    fim = g[f"{pref}_end"]
+    sumiram = sorted(l for l in set(g.index) - set(a.index)
+                     if pd.notna(fim.get(l)) and str(fim.get(l)) >= inicio_janela)
+    if sumiram:
+        return (f"{len(sumiram)} linhas que publicavam ate depois de "
+                f"{inicio_janela} pararam de vir da API: {sumiram[:6]}")
+
+    comuns = [l for l in g.index if l in a.index]
+    for col in colunas:
+        dif = [(int(l), g.at[l, col], a.at[l, col]) for l in comuns
+               if (g.at[l, col] or "") != (a.at[l, col] or "")]
+        if dif:
+            return (f"{len(dif)} linhas com {col} diferente, ex.: linha {dif[0][0]} "
+                    f"{dif[0][1]!r} -> {dif[0][2]!r}")
+    return None
+
+
+def _atualizar_cobertura(gravada: pd.DataFrame, indice: pd.DataFrame,
+                         nominal: pd.DataFrame) -> pd.DataFrame:
+    """Avanca o FIM da cobertura a partir da janela da API; mantem o comeco gravado.
+
+    O comeco de uma serie nao anda -- a primeira observacao publicada e a primeira
+    para sempre (se o BEA fizer backfill, aparece linha nova ou o conjunto muda, e ai
+    o caminho do xlsx recalcula tudo). O fim anda todo mes, e e o unico motivo pelo
+    qual esta tabela precisava ser reescrita mensalmente.
+
+    Uma linha sem observacao na janela conserva o fim gravado, em vez de perde-lo:
+    e o caso de uma serie descontinuada, cujo ultimo mes e no passado.
+
+    Args:
+        gravada: estrutura do MySQL.
+        indice:  observacoes de indice vindas da API (janela curta).
+        nominal: idem, nominal.
+
+    Returns:
+        A estrutura com `idx_end`/`nom_end` atualizados.
+    """
+    out = gravada.copy()
+    for obs, pref in ((indice, "idx"), (nominal, "nom")):
+        fim = obs.groupby("linha")["date"].max()
+        fim = fim.dt.strftime("%Y-%m") if hasattr(fim, "dt") else fim.map(
+            lambda d: d.strftime("%Y-%m"))
+        novo = out["linha"].map(fim)
+        out[f"{pref}_end"] = novo.fillna(out[f"{pref}_end"])
+    return out
+
+
+def _reaproveitar(validar: bool) -> pd.DataFrame | None:
+    """Tenta revalidar a estrutura gravada contra a API, sem baixar o xlsx.
+
+    Args:
+        validar: se False, so confere o conjunto de linhas (nao roda aditividade
+                 nem particao).
+
+    Returns:
+        A estrutura pronta para gravar, ou None se for preciso reconstruir do xlsx.
+    """
+    gravada = _estrutura_gravada()
+    if gravada is None:
+        return None
+
+    # Janela curta e de proposito: para conferir CONJUNTO e ADITIVIDADE, dois anos
+    # bastam -- um pai trocado de lugar nao fecha em nenhum mes, nao so nos antigos.
+    # Sao ~2,8 MB contra os 12 MB do xlsx.
+    hoje = _dt.date.today()
+    anos = anos_param(hoje.year - 1, hoje.year)
+    inicio = f"{hoje.year - 1}-01"
+    idx = ler_tabela_api(TABELA_PCE_INDICE, anos=anos)
+    nom = ler_tabela_api(TABELA_PCE_NOMINAL, anos=anos)
+    print(f"  API: {len(idx.estrutura)} linhas de indice, {len(nom.estrutura)} de "
+          f"nominal, janela {anos}")
+
+    for rotulo, est, pref, cols in (
+            ("indice", idx.estrutura, "idx", ("rotulo", "code")),
+            ("nominal", nom.estrutura, "nom", ("rotulo",))):
+        dif = _conjunto_mudou(gravada, est, pref, inicio, cols)
+        if dif:
+            print(f"  a estrutura MUDOU ({rotulo}): {dif}")
+            print("  -> reconstruindo do xlsx, que e o unico lugar com a indentacao")
+            return None
+    print(f"  conjunto de linhas identico ao gravado ({len(gravada)} linhas): "
+          "numero e rotulo nas duas tabelas, codigo na do indice")
+    print(f"  (as ausentes da janela sao esperadas: 2 linhas ZZZZZZ sem indice de "
+          f"preco e as descontinuadas antes de {inicio})")
+
+    obs_nom = nom.observacoes.copy()
+    obs_nom["date"] = pd.to_datetime(obs_nom["date"])
+    obs_idx = idx.observacoes.copy()
+    obs_idx["date"] = pd.to_datetime(obs_idx["date"])
+
+    if validar:
+        # A arvore GRAVADA contra os valores da API -- e isto que pega re-indentacao
+        # sem renomeacao, que a comparacao de conjunto acima nao ve.
+        _validar_aditividade(gravada, obs_nom)
+        _validar_particao(gravada, obs_nom)
+
+    return _atualizar_cobertura(gravada, obs_idx, obs_nom)
+
+
+def run(validar: bool = True, fonte: str = "auto") -> None:
+    """Atualiza macro_us.inflc_pce_dim.
+
+    Args:
+        validar: refaz os testes (casamento das abas, aditividade em nominal,
                  particao dos niveis) e levanta se algum falhar. Default True -- e o
                  que detecta o BEA mudando a indentacao publicada em vez de gravar
                  uma arvore errada em silencio.
+        fonte:   `"auto"` (default) reaproveita a estrutura gravada no MySQL e usa a
+                 API para provar que ela continua valida, baixando o xlsx so se a
+                 prova falhar. `"xlsx"` reconstroi do arquivo sempre -- e o caminho
+                 de reparo, e o que rodar depois de uma mudanca estrutural.
+
+    Raises:
+        ValueError: se qualquer validacao falhar (nada e gravado).
     """
+    if fonte not in ("auto", "xlsx"):
+        raise ValueError(f"fonte {fonte!r} invalida -- use 'auto' ou 'xlsx'")
+
+    if fonte == "auto":
+        print("BEA: conferindo a estrutura gravada contra a API...")
+        pronta = _reaproveitar(validar)
+        if pronta is not None:
+            # dropna(): as 2 linhas ZZZZZZ nao tem indice de preco, entao idx_end
+            # e NULL nelas e o max() de str com NaN estoura.
+            print(f"  cobertura atualizada: indice ate "
+                  f"{pronta['idx_end'].dropna().max()}, nominal ate "
+                  f"{pronta['nom_end'].dropna().max()}")
+            gravar(_DATABASE, _TABLE,
+                   pronta.rename(columns={"rotulo": "item_name",
+                                          "rotulo_bruto": "item_name_bruto"}),
+                   sonda="linha")
+            return
+
     print("BEA Secao 2 (underlying detail, mensal)...")
     t_idx = ler_tabela(ABA_PCE_INDICE)
     t_nom = ler_tabela(ABA_PCE_NOMINAL)
+    # A arvore SO pode vir do xlsx. A API do BEA serve os mesmos valores (conferido
+    # valor a valor, 608.442 observacoes, diferenca maxima 0) mas nao publica
+    # hierarquia nenhuma -- nenhum dos 10 campos de `GetData` e pai, nivel ou
+    # indentacao, e `LineDescription` volta sem os espacos da coluna B. Se alguem
+    # trocar a fonte aqui, `indentacao` vira nula e a arvore sai toda no nivel 0 sem
+    # levantar excecao -- por isso a checagem e explicita.
+    for t in (t_idx, t_nom):
+        if t.fonte != "xlsx":
+            raise RuntimeError(
+                f"a arvore precisa do xlsx: {t.aba} veio de fonte={t.fonte!r}, que nao "
+                "tem indentacao. Ver `connectors.bea.ler_tabela_api`."
+            )
     print(f"  {t_idx.titulo[:64]}")
     print(f"  {t_idx.publicado_em} | {t_idx.periodo} | {t_idx.sazonalidade}")
 

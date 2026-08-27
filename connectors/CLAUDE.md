@@ -156,7 +156,16 @@ c.nome_arquivo()                       # 'copom_280_comunicado_2026-08-05.md'
 
 bcb_copom.ultima_reuniao()             # 280 (sobe de um chute ate achar o vazio)
 for nro, c in bcb_copom.intervalo(48): ...   # itera o historico, gentil com o servidor
+
+bcb_copom.calendario_reunioes()        # {21: '1998-01-28', ..., 280: '2026-08-05'} -- UMA chamada
 ```
+
+**`calendario_reunioes()` vem da listagem de ATAS, não dos comunicados** (`api/servico/sitebcb/
+atascopom/ultimas`), e é por isso que existe: cobre **260 reuniões desde a 21ª (1998-01-28)**, contra
+233 dos comunicados, que só respondem da 48ª em diante. É a única fonte do projeto para o número das
+reuniões de 1998-2000, e o que permite ligar uma edição do RPM à reunião que a condiciona sem inferir
+numeração. Inclui as **extraordinárias** (a 28ª, de 1998-09-10), que entram na mesma sequência. Só
+número e data — o PDF da ata não está no pipeline.
 
 **Detalhes técnicos** (medidos ao vivo em 2026-08, varrendo as reuniões 1–281):
 - `api/servico/sitebcb/copom/comunicados_detalhes?nro_reuniao=N`, sem autenticação. Endpoint não
@@ -210,6 +219,31 @@ wb = anexo.abrir(vintages[-1])               # openpyxl read-only (150+ abas)
 ws, titulo = anexo.localizar_aba(wb, r"^grafico 2\.2\.\d+ .*hiato do produto")
 grade = anexo.grade(ws)                       # DataFrame cru, header=None
 ```
+
+**O módulo também serve o RELATÓRIO em si, não só o anexo** (adicionado 2026-08):
+
+```python
+from connectors.bcb_rpm import edicoes, baixar_pdf
+
+eds = edicoes()                # 109 edicoes, 1999-06 -> 2026-06, sem buraco, UMA requisicao
+eds[-1].ano_mes, eds[-1].vintage, eds[-1].url_pdf, eds[-1].nome_arquivo
+pdf_bytes = baixar_pdf(eds[-1])   # 3 tentativas com backoff -- o CDN da timeout esporadico
+```
+
+A coleção do endpoint chama-se **`rpm`** e devolve a série inteira desde 1999-06, inclusive as edições
+publicadas quando o relatório ainda se chamava RI. A coleção irmã `ri` é **subconjunto** (para em
+2024-12) e não serve. Descoberto por tentativa: `relatorioinflacao`,
+`relatoriopoliticamonetaria` e variantes dão **400**.
+
+Isso resolve a descoberta do **relatório**; não a do **anexo**, que a listagem não menciona e que só
+existe de 2021-09 em diante — por isso a enumeração de URLs do `AnexoRPM` continua necessária.
+
+**Gotcha do PDF**: a extração de texto tem cinco armadilhas silenciosas (coluna central que muda de
+lugar, separador ano/trimestre que muda, layout de 2 colunas que perde tabela larga ou linha de
+tabela, fonte de subconjunto sem cmap, rótulo de cenário que troca de significado). Todas
+documentadas em
+[`domain/db/brasil/bcb/relatorio_politica_monetaria.md`](../domain/db/brasil/bcb/relatorio_politica_monetaria.md)
+— ler antes de escrever qualquer parser novo sobre estes PDFs.
 
 A planilha que o BCB publica junto do Relatório de Política Monetária com os dados por trás de
 **cada gráfico e tabela** do relatório — uma aba por figura, 130-190 abas por edição.
@@ -333,20 +367,75 @@ próprio BLS em cada observação; `catalog=True` devolve survey/área/item/sazo
 
 ### `connectors/bea.py` — BEA (Bureau of Economic Analysis)
 
-**Sem chave e sem cota**, ao contrário do que o `us_project/inflation_fontes_dados.md` supunha ("Get
-the BEA key"). O BEA publica as tabelas NIPA inteiras como xlsx aberto no site de release, e o arquivo
-da Seção 2 traz as tabelas de *underlying detail* **mensais**, que são as de maior granularidade que
-existem. A API (essa sim com chave) serviria para vintages e outras seções — não para isto.
+**Duas portas para o mesmo dado**, e o connector serve as duas: o **xlsx** de release (sem chave, sem
+cota) e a **API** (`BEA_API_KEY` no `.env`, dataset `NIUnderlyingDetail`). A escolha inicial pelo xlsx
+foi por conveniência — só não pedia chave —, e desde 2026-08-26, com a chave instalada, as duas foram
+medidas uma contra a outra. O resultado divide o problema em dois, e é por isso que nenhuma das duas
+foi descartada:
+
+- **Nos valores a API é melhor, e as duas concordam exatamente.** `tests/test_bea_api.py` confere valor
+  a valor: **608.442 observações** (as duas tabelas, 1959-01→hoje), **0 diferentes, diferença máxima
+  0**, nada existindo só de um lado, rótulos idênticos após a mesma `_limpar_rotulo()`. A API entrega
+  número tipado, sem depender de `"Line"` na célula A8, de 2 espaços por nível, de `.....` como ausente
+  nem de nota de rodapé no fim da coluna A — camada de apresentação que um reformat cosmético do BEA
+  quebraria. A conferência é o que torna esse risco medido em vez de retórico, igual ao que `bls.py`
+  faz entre API e arquivo bruto.
+- **Na estrutura a API não serve: não publica hierarquia nenhuma.** Medido no registro de `GetData`:
+  **10** campos (TableName, SeriesCode, LineNumber, LineDescription, TimePeriod, METRIC_NAME, CL_UNIT,
+  UNIT_MULT, DataValue, NoteRef) e nenhum é pai, nível ou indentação; `LineDescription` vem **sem** os
+  espaços da coluna B e `LineNumber` é ordem, não profundidade. Daí `TabelaNipa.fonte`: `inflc_pce_dim`
+  exige `"xlsx"` e levanta se receber `"api"`, senão a árvore sairia toda no nível 0 sem exceção
+  nenhuma.
+- **Duas divergências entre o guia oficial (69 páginas, abr/2026) e a API real**, ambas medidas: o campo
+  é `METRIC_NAME` em maiúsculas (o guia escreve `Metric_Name`) e há um 10º campo, `NoteRef`, que o guia
+  não lista. "vintage" aparece **zero** vezes no guia — uma versão anterior desta nota dizia que a chave
+  serviria para vintages, sem base.
+- **Erro vem com HTTP 200**, em **um de dois** nós: `BEAAPI.Error` (tabela/frequência/ano inválidos) ou
+  `BEAAPI.Results.Error` (chave inválida ou vazia). Olhar só um deixa o outro passar como resposta
+  válida e vazia. E a resposta **ecoa a chave** em `Request.RequestParam` — nunca colocar o corpo cru
+  num log ou numa mensagem de erro.
+- **Limites.** Documentados: 100 req/min, 100 MB/min, 30 erros/min, timeout de 1 min. Medido: `Year=X`
+  traz a série inteira numa requisição (75 MB, 303.410 registros, 10-20s), e as duas tabelas seguidas
+  (150 MB em ~40s) passaram sem estrangulamento. `IncompleteRead` acontece e **não** é limite de
+  tamanho — é truncamento de conexão, então `_get_api` repete até 4 vezes. O xlsx não tem cota — a
+  única dimensão em que ele ganha.
 
 ```python
-from connectors.bea import ler_tabela, ABA_PCE_INDICE, ABA_PCE_NOMINAL
+from connectors.bea import (ler_tabela, ler_tabela_api, conferir_api_xlsx,
+                            ABA_PCE_INDICE, ABA_PCE_NOMINAL, ABA_PARA_TABELA)
 
-t = ler_tabela(ABA_PCE_INDICE)     # "U20404-M" = tabela 2.4.4U, mensal
+t = ler_tabela(ABA_PCE_INDICE)     # "U20404-M" = tabela 2.4.4U, mensal (xlsx)
 t.titulo, t.unidade, t.periodo, t.publicado_em, t.sazonalidade   # metadados do arquivo
-t.periodos                          # ['1959M01', ..., '2026M06']
+t.periodos                          # ['1959M01', ..., '2026M07']
 t.estrutura                         # linha, code, rotulo, rotulo_bruto, indentacao
 t.observacoes                       # long: linha, date (dia 1), value
+t.fonte                             # "xlsx"
+
+a = ler_tabela_api("U20404")        # mesmo retorno pela API; anos="X" = tudo
+a.fonte                             # "api" -- e estrutura["indentacao"] toda nula
+conferir_api_xlsx(ABA_PCE_INDICE)   # dict: n_comum, n_diferentes, dif_max, ...
+
+anos_param(2024, 2026)              # "2024,2025,2026" -- a API manda so a janela pedida
+caminho_cache_hoje()                # o xlsx de hoje ja em disco, ou None (nao baixa)
 ```
+
+**Quem usa qual porta:** `inflc_pce` (valores) carrega pela **API** desde 2026-08-26 — é o contrato
+melhor e só transfere a janela pedida, então a rotina de 3 anos custa ~6 MB contra os 12 MB fixos do
+xlsx. `inflc_pce_dim` (árvore) **também roda só de API no passe de rotina**, apesar de a hierarquia só
+existir no xlsx: ela é gravada uma vez e depois relida do MySQL, com a API provando que continua válida
+(mesmo conjunto de linhas + aditividade em nominal sobre o parentesco gravado). O xlsx é baixado só
+quando essa prova falha, e `ler_tabela_api` continua marcando `fonte="api"` justamente para o
+`inflc_pce_dim` recusar montar árvore de lá.
+
+Duas armadilhas medidas, ambas custaram uma rodada:
+
+- **A API devolve registro só onde há dado**, então `ler_tabela_api(anos=...)` numa janela curta traz
+  `estrutura` com MENOS linhas: faltam as 2 `ZZZZZZ` (sem índice de preço em janela nenhuma) e as
+  descontinuadas (157/158, terminadas em 2001-12). Ausência não é remoção — só é, se a cobertura
+  gravada disser que a linha deveria estar publicando.
+- **O `SeriesCode` codifica a medida**: a linha 1 é `DPCERG` na 2.4.4U e `DPCERC` na 2.4.5U. Comparar
+  código entre as duas tabelas falha nas 402 linhas — que é exatamente por que
+  `inflc_pce_dim._validar_casamento` sempre comparou linha/rótulo/indentação e nunca código.
 
 Uma requisição de 12 MB (`Section2All_xls.xlsx`), cacheada por dia no temp do sistema
 (`%TEMP%/lis_bea/`, não no repositório) e em memória por processo — os dois scripts de PCE rodam na mesma passada do `update_us.py` e não baixam duas vezes.
@@ -400,6 +489,64 @@ para todas — adicionar quantidade ou encadeado é um `medida` novo, não uma d
   fonte, não da carga.
 - **O parser levanta se o layout mudar** — exige `"Line"` na coluna A da linha 8 e períodos no formato
   `YYYYMnn`, e recusa um download menor que 1 MB (página de erro servida com HTTP 200).
+
+### `connectors/us_agenda.py` — Agenda de divulgações do BLS e do BEA
+
+Contrapartida americana do `bcb_agenda.py`. É daqui que saem as **datas e horas** que
+`domain/release_calendar/` grava para `inflc_cpi` e `inflc_pce` (grupos `bls_cpi` e `bea_pce`).
+
+```python
+from connectors.us_agenda import BLSAgenda, BEAAgenda, FREDReleases
+
+BLSAgenda().releases()            # 13 slugs com página de agenda (cpi, ppi, empsit, jolts, ...)
+BLSAgenda().schedule("cpi")       # [{reference_period, date, time, tz}]  <- a única fonte com o período
+BEAAgenda().eventos(summary_starts="Personal Income and Outlays")
+FREDReleases().dates(10)          # conferência independente; release_for_series() descobre o id
+```
+
+**Três fontes porque nenhuma sozinha tem as três coisas** (data + hora + período de referência),
+medido ao vivo em 2026-08-26:
+
+| fonte | data | hora | período | horizonte |
+|---|---|---|---|---|
+| BLS, página por release (`/schedule/news_release/<slug>.htm`) | ✅ | ✅ | **✅** | ano corrente |
+| BLS, feed ICS (`bls.ics`, 313 eventos) | ✅ | ✅ | ❌ | 2025-01 → 2026-12 |
+| BEA, feed ICS (119 eventos) | ✅ | ✅ | **✅** | 2025-01 → 2026-12 |
+| BEA, página de agenda (HTML) | ✅ | ✅ | ✅ | só o futuro (19 linhas) |
+| FRED `/fred/release/dates` | ✅ | ❌ | ❌ | 1948 → agendado |
+
+Daí: **no BLS a página é primária** (o ICS só tem o nome do release no `SUMMARY`, sem mês); **no BEA
+o ICS é primário** (o período vem no próprio título, `"Personal Income and Outlays, August 2026"`); e
+o **FRED é a terceira opinião** e o caminho de descoberta para série nova — 331 releases, e
+`release_for_series("PPIACO")` devolve o id sem adivinhação.
+
+Gotchas medidos, todos com custo real se ignorados:
+
+- **`bls.gov` responde 403 a User-Agent genérico**, não só `download.bls.gov`. O módulo reusa o `_UA`
+  de `connectors/bls.py`.
+- **O TZID do ICS do BLS não é nome IANA**: `DTSTART;TZID=US-Eastern:...`, e `ZoneInfo("US-Eastern")`
+  levanta. O bloco `VTIMEZONE` do arquivo declara as regras de `America/New_York` — daí o alias.
+- **O ICS do BEA vem em UTC com `Z`, e é o `Z` que carrega o horário de verão**: `20260930T123000Z` é
+  08:30 EDT e `20261125T133000Z` é 08:30 EST. Ler como ingênuo (o que `bcb_agenda._parse_dt` faz,
+  correto para o BCB) erraria em 4-5 horas e mudaria até o dia em alguns eventos.
+- **`APIDatasetMetaData` do BEA tem `ReleaseDate` e `NextReleaseDate` por tabela, e os dois estão
+  congelados em 2019** — `MetaDataUpdated: 2019-03-06` nas 386 tabelas do NIPA, todas dizendo
+  `NextReleaseDate: Mar 28 2019`. É o único campo da API do BEA que parece um calendário. Não usar.
+- **A API v2 do BLS não tem endpoint de calendário** — os quatro que existem são `timeseries/data/`,
+  `timeseries/popular`, `surveys` e `surveys/<id>`.
+- **O `DTSTAMP` do ICS do BEA é inútil como sinal de frescor**: os 119 eventos, de 2025-01 a 2026-12,
+  carregam todos `DTSTAMP:20250923T143030Z`. O conteúdo está em dia (conferido evento a evento contra
+  o HTML ao vivo); o carimbo é que é de geração única.
+- **Nenhuma das duas publicava 2027 em 2026-08-26** (os dois ICS terminam em dezembro/2026,
+  `/schedule/2027/home.htm` é 404).
+- **O release do FRED é um superconjunto**: um "release" lá é o conjunto de publicações que mexem
+  naquelas séries, não um evento com título. O 54 inclui as divulgações trimestrais de PIB, que
+  republicam o índice de preço do PCE — daí o FRED ter 2025-12-23 e a agenda do BEA, filtrada por
+  título, não. A conferência é direcional por isso.
+
+Testado por [`tests/test_us_agenda.py`](../tests/test_us_agenda.py): metade offline (os três formatos
+acima contra fixtures) e metade ao vivo (as três fontes uma contra a outra, mais a conversão de fuso
+nas duas pontas do ano).
 
 ### `connectors/bis.py` — BIS Statistics API v1
 

@@ -43,6 +43,10 @@ import urllib.request
 from dataclasses import dataclass
 
 BASE_URL = "https://www.bcb.gov.br/api/servico/sitebcb/copom/comunicados_detalhes"
+
+# Listagem de atas -- usada aqui SO para o par numero/data das reunioes, ver
+# `calendario_reunioes()`. O texto da ata (PDF) nao esta no pipeline.
+_API_ATAS = "https://www.bcb.gov.br/api/servico/sitebcb/atascopom"
 PRIMEIRA_REUNIAO = 48  # medido: 47 e anteriores devolvem conteudo vazio
 _UA = "Mozilla/5.0 (compatible; LIS Capital macro data pipeline)"
 
@@ -90,6 +94,30 @@ def _get(url: str, tentativas: int = 3, timeout: int = 40) -> dict:
             if k < tentativas - 1:
                 time.sleep(2 * (k + 1))
     raise RuntimeError(f"falhou em {tentativas} tentativas: {url} ({erro})")
+
+
+def calendario_reunioes(*, quantidade: int = 500, timeout: int = 60) -> dict[int, str]:
+    """Numero da reuniao -> data, para TODAS as reunioes que o BCB lista.
+
+    Vem da listagem de ATAS (`api/servico/sitebcb/atascopom/ultimas`), nao dos comunicados: a de
+    atas cobre da 21a (1998-01-28) a hoje -- 260 reunioes, contra 233 dos comunicados, que so
+    respondem da 48a em diante. E a unica fonte do projeto para o numero das reunioes de 1998-2000,
+    e a que permite ligar uma edicao do RPM/RI a reuniao que a condiciona sem inferir numeracao.
+
+    Inclui as reunioes EXTRAORDINARIAS (a 28a, de 1998-09-10, e uma), que entram na mesma sequencia
+    numerica das ordinarias.
+
+    Devolve `{numero: 'YYYY-MM-DD'}` -- data como string ISO, igual ao `data_referencia` do
+    `Comunicado`. O PDF da ata em si nao esta no pipeline (ver `copom_comunicados.md`).
+    """
+    d = _get(f"{_API_ATAS}/ultimas?quantidade={quantidade}&filtro=", timeout=timeout)
+    out: dict[int, str] = {}
+    for item in d.get("conteudo") or []:
+        m = re.match(r"\s*(\d+)", item.get("Titulo") or "")
+        if not m:
+            continue
+        out[int(m.group(1))] = (item.get("DataReferencia") or "")[:10]
+    return dict(sorted(out.items()))
 
 
 def comunicado(nro_reuniao: int) -> Comunicado | None:

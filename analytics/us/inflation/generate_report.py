@@ -6,10 +6,11 @@ report.html, writes a self-contained HTML file.
 Same /*REPORT_DATA*/ + /*THEME_CSS*/ + /*Y_AUTOFIT_JS*/ pattern as the Brazil
 reports (see analytics/report_structure/CLAUDE.md). First report under analytics/us/.
 
-Three data tabs -- the CPI's two published trees plus the PCE -- all driven by the
-same JS hierarchy-table factory (`makeHierTab`) that analytics/brasil/credit and
-.../fiscal_policy use, the table-plus-chart structure that
-analytics/brasil/inflation does NOT have:
+Duas abas de dado -- CPI e PCE --, ambas no mesmo factory de tabela hierarquica
+(`makeHierTab`) que analytics/brasil/credit e .../fiscal_policy usam. As DUAS
+arvores do CPI sao um seletor dentro da aba de CPI desde 2026-08-26, nao duas abas
+(mesmo arranjo das duas arvores de analytics/brasil/inflation), e a aba de CPI
+carrega ainda a tabela de maiores contribuicoes e o drill-down de 12 meses:
 
   Release Tree      Table 1 of the CPI news release -- 37 published rows over 5
                     levels (food / energy / core, core split into goods and services)
@@ -94,6 +95,7 @@ import datetime as _dt
 import pandas as pd
 
 from analytics.report_structure.builder import render_report
+from domain.release_calendar.sync import agenda_das_tabelas
 
 from connectors.mysql import MySQLDataRequester
 
@@ -110,6 +112,15 @@ _INICIO_DETALHE = "1990-01-01"
 _INICIO_PCE = "1990-01-01"
 
 _INDICE = "CPI-U"
+
+# Tabelas cuja agenda de divulgacao aparece no topo da pagina. Sao as tabelas de
+# SERIE, nao as de dimensao: a arvore roda junto no mesmo grupo do calendario, mas
+# nao e ela que o leitor esta esperando no dia 11.
+#
+# A lista e aqui e nao no template porque a ponte e por TABELA: quem adicionar uma
+# aba nova (PPI, expectativas) acrescenta a tabela aqui e declara o grupo no
+# calendar_2026.yaml -- nao ha data escrita em lugar nenhum deste arquivo.
+_TABELAS_AGENDA = ["inflc_cpi", "inflc_pce"]
 
 
 def _conn():
@@ -453,6 +464,17 @@ def build_payload() -> dict:
     print(f"  pce pesos: {len(pce_pesos)} linhas, "
           f"{int((pce_dim['sinal_acumulado'] < 0).sum())} com sinal negativo")
 
+    releases = agenda_das_tabelas(_TABELAS_AGENDA)
+    for tabela in _TABELAS_AGENDA:
+        r = releases.get(tabela)
+        if r is None:
+            print(f"  agenda: {tabela} sem grupo no calendario — a faixa nao mostra a serie")
+            continue
+        prox = r.get("proxima")
+        print(f"  agenda: {tabela} <- {r['grupo']} ({r['institution']}), proxima "
+              + (f"{prox['date']} {prox['time_fonte']} {prox['tz_fonte']}"
+                 if prox else "NAO AGENDADA (o calendario acabou — ver ROLLOVER.md)"))
+
     n_drill = _conta_nos(_arvore(dim, "divulgacao", ultimo.strftime("%Y-%m"),
                                  detalhe_de="despesa")) - len(rel_codes)
     print(f"  release tree:     {len(rel_codes)} linhas publicadas + {n_drill} de drill-down, "
@@ -517,6 +539,11 @@ def build_payload() -> dict:
             },
         },
         "weights": pesos_pl,
+        # Ultima e proxima divulgacao de cada serie, do calendario oficial das
+        # agencias (BLS/BEA) via domain/release_calendar/. Hora nos dois fusos: a
+        # conversao depende do horario de verao americano e por isso e feita por
+        # data, nunca congelada num valor so.
+        "releases": releases,
         "coverage": {
             code: {
                 "nsa_begin": None if pd.isna(row["nsa_begin"]) else int(row["nsa_begin"]),

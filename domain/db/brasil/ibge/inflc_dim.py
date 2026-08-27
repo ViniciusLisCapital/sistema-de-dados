@@ -1,9 +1,18 @@
 """
-Dimensao do IPCA/IPCA-15 por subitem: Grupo/Subgrupo/Item (classificacao
-BCB), marcacao de nucleo "Subjacente" (Servicos/Bens Industriais Subjacente),
-classificacao Comercializavel/Nao Comercializavel, e flags de pertencimento
-aos nucleos por exclusao oficiais do BC (EX-0/EX-01/EX-02/EX-03/EX-FE + os
-dois subcomponentes do EX-03).
+Dimensao do IPCA/IPCA-15 por subitem. Carrega DOIS eixos de classificacao,
+independentes e nenhum derivado do outro:
+
+  1. A classificacao ANALITICA do BC (colunas grupo/subgrupo/item): Livres/
+     Monitorados -> Alimentos/Servicos/Bens Industriais -> durabilidade
+     (duraveis/semiduraveis/nao duraveis) e subjacencia de servicos. Vem do
+     Vetores_NT_57.xlsx. Mais a marcacao "Subjacente", Comercializavel/Nao
+     Comercializavel, e as flags de pertencimento aos nucleos por exclusao
+     oficiais (EX-0/EX-01/EX-02/EX-03/EX-FE + os dois subcomponentes do EX-03).
+  2. A estrutura de DESPESA do IBGE (colunas ibge_grupo/ibge_subgrupo/
+     ibge_item, adicionadas 2026-08): "1. Alimentacao e bebidas" -> "11.
+     Alimentacao no domicilio" -> "1101. Cereais, leguminosas e oleaginosas"
+     -> "1101002. Arroz". O parentesco vem do proprio codigo de 7 digitos
+     (prefixo de 1/2/4), so os nomes vem da API — ver _hierarquia_ibge().
 
 Schema macro_brasil.inflc_dim:
   PRIMARY KEY (subitem_codigo)
@@ -13,7 +22,8 @@ Schema macro_brasil.inflc_dim:
            nucleo_ex0 TINYINT(1) | nucleo_ex01 TINYINT(1) |
            nucleo_ex02 TINYINT(1) | nucleo_ex03 TINYINT(1) |
            nucleo_ex03_servicos TINYINT(1) | nucleo_ex03_industriais TINYINT(1) |
-           nucleo_exfe TINYINT(1)
+           nucleo_exfe TINYINT(1) |
+           ibge_grupo VARCHAR(120) | ibge_subgrupo VARCHAR(120) | ibge_item VARCHAR(150)
 
 DDL:
   DROP TABLE IF EXISTS macro_brasil.inflc_dim;
@@ -32,12 +42,19 @@ DDL:
       nucleo_ex03_servicos     TINYINT(1),
       nucleo_ex03_industriais  TINYINT(1),
       nucleo_exfe              TINYINT(1),
+      ibge_grupo               VARCHAR(120),
+      ibge_subgrupo            VARCHAR(120),
+      ibge_item                VARCHAR(150),
       PRIMARY KEY (subitem_codigo)
   );
 
-  -- Adicionada 2026-08 a uma tabela ja existente:
+  -- Adicionadas 2026-08 a uma tabela ja existente:
   ALTER TABLE macro_brasil.inflc_dim
       ADD COLUMN comercializavel VARCHAR(30) AFTER subjacente;
+  ALTER TABLE macro_brasil.inflc_dim
+      ADD COLUMN ibge_grupo    VARCHAR(120) AFTER nucleo_exfe,
+      ADD COLUMN ibge_subgrupo VARCHAR(120) AFTER ibge_grupo,
+      ADD COLUMN ibge_item     VARCHAR(150) AFTER ibge_subgrupo;
 
 Fonte unica para Grupo/Subgrupo/Item/nucleos: analytics/brasil/inflation/data/
 Vetores_NT_57.xlsx, arquivo de apoio da Nota Tecnica do Banco Central do
@@ -131,7 +148,7 @@ from domain.db.brasil.ibge.inflc_decomposicao import VIGENCIAS, _extract_code, _
 
 _DATABASE = "macro_brasil"
 _TABLE = "inflc_dim"
-_DATA_DIR = Path(__file__).resolve().parents[4] / "analytics" / "inflation" / "data"
+_DATA_DIR = Path(__file__).resolve().parents[4] / "analytics" / "brasil" / "inflation" / "data"
 _VETORES_XLSX = _DATA_DIR / "Vetores_NT_57.xlsx"
 
 # Ordem cronologica; jan91-jul99 fora de escopo (ver docstring do modulo).
@@ -274,10 +291,15 @@ def _derive_classificacao(rolled: pd.DataFrame) -> pd.DataFrame:
     return dim
 
 
-def _nomes_por_vigencia() -> pd.DataFrame:
-    """Nome de exibicao canonico por subitem_codigo: vigencia mais nova
-    para a mais antiga (VIGENCIAS["IPCA"] — IPCA-15 e subconjunto, nunca
-    introduz codigo/nome que IPCA nao tenha), primeiro match vence."""
+def _nomes_por_nivel(tamanhos: tuple[int, ...]) -> dict[str, str]:
+    """codigo -> nome de exibicao, para os comprimentos de codigo pedidos.
+
+    Percorre VIGENCIAS["IPCA"] da vigencia mais nova para a mais antiga,
+    primeiro match vence — um codigo descontinuado antes de 2020 ainda
+    resolve para a grafia mais recente em que o IBGE o publicou. So IPCA:
+    IPCA-15 e subconjunto por codigo E nome (verificado), entao nunca
+    introduz um codigo/nome que IPCA nao tenha.
+    """
     nomes: dict[str, str] = {}
     for vig in reversed(VIGENCIAS["IPCA"]):
         for agregado in vig.agregados:
@@ -285,9 +307,45 @@ def _nomes_por_vigencia() -> pd.DataFrame:
             cls = cls[cls["classificacao_id"] == 315]
             for nome_raw in cls["categoria_nome"]:
                 code = _extract_code(nome_raw)
-                if code and len(code) == 7 and code not in nomes:
+                if code and len(code) in tamanhos and code not in nomes:
                     nomes[code] = str(nome_raw).split(".", 1)[1].strip()
+    return nomes
+
+
+def _nomes_por_vigencia() -> pd.DataFrame:
+    """Nome de exibicao canonico por subitem_codigo (7 digitos)."""
+    nomes = _nomes_por_nivel((7,))
     return pd.DataFrame(nomes.items(), columns=["subitem_codigo", "nome"])
+
+
+def _hierarquia_ibge(codigos: pd.Series) -> pd.DataFrame:
+    """Grupo/Subgrupo/Item da estrutura OFICIAL DO IBGE por subitem_codigo.
+
+    Eixo independente do grupo/subgrupo/item da NT-57 gravados pelas colunas
+    homonimas desta tabela, que sao a classificacao ANALITICA do BC (Livres/
+    Monitorados -> Alimentos/Servicos/Bens Industriais -> durabilidade/
+    subjacencia). Aqui e a arvore de despesa que o IBGE publica: "1.
+    Alimentacao e bebidas" -> "11. Alimentacao no domicilio" -> "1101.
+    Cereais, leguminosas e oleaginosas" -> "1101002. Arroz". As duas
+    convivem porque respondem perguntas diferentes e nenhuma deriva da
+    outra (ver o crosstab no CLAUDE.md da pasta analytics/brasil/inflation).
+
+    O parentesco nao precisa ser buscado em lugar nenhum: o codigo de 7
+    digitos JA o carrega por prefixo (1/2/4 digitos), regra do proprio IBGE
+    e a mesma ja usada por inflc_decomposicao.py para detectar o nivel de
+    subitem. So os NOMES vem da API, pelo mesmo caminho de
+    _nomes_por_vigencia(). Cobertura verificada 2026-08: 9 grupos, 19
+    subgrupos e 53 itens resolvem os 614 subitens da tabela, nenhum prefixo
+    orfao.
+    """
+    nomes = _nomes_por_nivel((1, 2, 4))
+    codigos = codigos.astype(str)
+    return pd.DataFrame({
+        "subitem_codigo": codigos,
+        "ibge_grupo":     codigos.str[:1].map(nomes),
+        "ibge_subgrupo":  codigos.str[:2].map(nomes),
+        "ibge_item":      codigos.str[:4].map(nomes),
+    })
 
 
 def run() -> None:
@@ -302,6 +360,7 @@ def run() -> None:
 
     nomes = _nomes_por_vigencia()
     dim = dim.merge(nomes, on="subitem_codigo", how="left")
+    dim = dim.merge(_hierarquia_ibge(dim["subitem_codigo"]), on="subitem_codigo", how="left")
 
     dim = dim.astype(object).where(pd.notna(dim), None)
     insert_data_into_database(_DATABASE, _TABLE, dim)

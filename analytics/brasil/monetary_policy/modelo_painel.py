@@ -182,6 +182,17 @@ def focus_ipca_12m() -> pd.Series:
 
 def focus_selic_12m() -> pd.Series:
     """Selic esperada NO horizonte de 12 meses (ponto) -- ver decisao 1 na docstring."""
+    return para_q(focus_selic_12m_diario())
+
+
+def focus_selic_12m_diario() -> pd.Series:
+    """A mesma coisa antes de virar trimestre, uma observacao por data de pesquisa.
+
+    Separada de `focus_selic_12m()` em 2026-08 para `condicoes_copom.py`, que precisa do
+    valor numa data especifica (o dia da reuniao do Copom) e nao numa media trimestral.
+    A definicao tem de continuar sendo uma so: duas leituras de juro real ex-ante no
+    mesmo relatorio seriam bug, nao variacao.
+    """
     d = focus_anual()
     d = d[d["indicador"] == "Selic"].copy()
     sel = serie("macro_international", "diferenciais_juros", "selic")
@@ -195,7 +206,7 @@ def focus_selic_12m() -> pd.Series:
             continue
         out[data] = float(np.interp(1.0, np.r_[0.0, g["h"].values],
                                     np.r_[g["i0"].iloc[0], g["mediana"].values]))
-    return para_q(pd.Series(out).sort_index())
+    return pd.Series(out).sort_index()
 
 
 def _ultima_curva(fim: pd.Period) -> pd.DataFrame:

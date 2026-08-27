@@ -73,8 +73,6 @@
       border-left: 4px solid var(--lis-dourado); padding-left: 10px;
     }
 
-    /* ── Nota metodológica ── */
-    .note-metodologia { font-size: 13px; color: var(--muted); line-height: 1.5; max-width: 1100px; }
     .chart-caption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-style: italic; }
 
     /* ── Appendix: click-to-expand methodology notes (native <details>/<summary>) ── */
@@ -101,23 +99,34 @@
     .appendix-item .appendix-body th { color: var(--text2); font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
     .appendix-item + .appendix-item { margin-top: 10px; }
 
-    /* ── KPI grid ── */
-    .kpi-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
-    .kpi-label { font-family: var(--mono); font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 4px; }
-    .kpi-value { font-family: var(--cond); font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
-    /* `pos`/`neg` são direção de leitura, não sinal: laranja = leitura ruim,
-       verde = boa. Nas taxas (desocupação etc.) subir é ruim, então yoy>=0 → pos;
-       no saldo do CAGED é o contrário, e o JS inverte na origem (setKpiRaw). */
-    .kpi-value.pos { color: var(--lis-laranja); }
-    .kpi-value.neg { color: var(--lis-verde); }
-    .kpi-sub    { font-size: 10px; color: var(--muted); margin-top: 3px; }
-    .kpi-sub.pos { color: var(--lis-laranja); }
-    .kpi-sub.neg { color: var(--lis-verde); }
-
     /* ── Chart cards ── */
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
-    .pnad-chart { width: 100%; height: 420px; }
+    .pnad-chart { width: 100%; height: 600px; }
+
+    /* ── Cabeçalho do gráfico ──
+       Existe para o gráfico se explicar sozinho: quem recebe um print dele não
+       vê o h2 do card (a barra de controles e a tabela ficam no meio) e teria
+       que deduzir tudo pelos eixos. Diz o quê, em que métrica/frequência, em
+       que unidade, de que fonte e de quando até quando. */
+    .chart-head { padding: 14px 18px 2px; }
+    .chart-head h3 {
+      font-family: var(--cond); font-size: 17px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); line-height: 1.2;
+    }
+    .chart-head .chart-sub { font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+    .chart-head .chart-src { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px; }
+
+    /* ── Botões de range, ABAIXO do gráfico (não o xaxis.rangeselector nativo
+       do Plotly, que só desenha acima e computa o `to` do range corrente em vez
+       do último ponto real — ver .claude/rules/lis-dashboards.md) ── */
+    .range-bar { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; padding: 6px 8px 10px; }
+    .range-btn {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); background: transparent; border: 1px solid var(--border);
+      border-radius: 999px; padding: 4px 12px; cursor: pointer;
+    }
+    .range-btn:hover { color: var(--text); border-color: var(--lis-azul-cl); }
+    .range-btn.active { color: #fff; background: var(--lis-azul); border-color: var(--lis-azul); }
 
     /* ── Per-table blocks (4 tabelas por aba de PNAD, 5 na de Emprego Formal) ── */
     .tables-container { display: flex; flex-direction: column; gap: 32px; }
@@ -150,6 +159,38 @@
     .data-table td { padding: 7px 14px; border-bottom: 1px solid rgba(31,40,83,0.06); vertical-align: middle; }
     .data-table tbody tr:hover { background: rgba(31,40,83,0.03); }
     .data-table tbody tr.is-group td.col-label { font-weight: 600; }
+    /* Unidade ao lado do rótulo da linha — só na visão Nível. Fica FORA do
+       rótulo (e não dentro dele, como "(mil pessoas)" ficava até 2026-08-27)
+       justamente para desaparecer na visão de variação, onde a unidade é p.p./%
+       e não mil pessoas. */
+    .row-unit { font-family: var(--mono); font-size: 9.5px; color: var(--muted); margin-left: 7px; white-space: nowrap; }
+
+    /* ── Botão de informação + card de definição ──
+       O rótulo da linha é curto; o nome oficial da fonte e a definição vivem
+       aqui, para não deformar a coluna da tabela. Um único card reposicionado
+       (não um por linha) — são 52 linhas com card em 17 tabelas. */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+      font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+      color: var(--muted); background: transparent;
+      border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+      vertical-align: middle; transition: color .15s, border-color .15s, background .15s;
+    }
+    .info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+    .info-pop {
+      position: absolute; z-index: 300; display: none; max-width: 380px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px;
+    }
+    .info-pop.show { display: block; }
+    .info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+    .info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .info-pop .info-unit {
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+    }
     .data-table td.col-value { font-family: var(--mono); white-space: nowrap; color: var(--text); }
     .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
     .tree-toggle:hover { color: var(--text); }
@@ -161,9 +202,6 @@
     @media (max-width: 960px) {
       header, .tab-nav { padding-left: 20px; padding-right: 20px; }
       main { padding: 18px 14px 36px; }
-    }
-    @media (max-width: 600px) {
-      .kpi-grid-3 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -192,40 +230,7 @@
 
   <!-- ═══════════ TAB — TAXAS ═══════════ -->
   <div class="tab-panel active" id="tab-taxas">
-
-    <p class="note-metodologia">
-      Só visualização nesta primeira versão — nenhuma métrica derivada (ex.: hiato, Okun) ainda, ver
-      Apêndice. Fonte: IBGE, PNAD Contínua — <strong>mt_pnad</strong> (mensal/trimestre móvel, sem
-      quebra, linha "Total" de cada tabela) e <strong>mt_pnad_trimestral</strong> (trimestral, cortes por
-      Sexo/Idade/Instrução/Cor ou Raça, filhos ▸ dos indicadores-headline). Cada tabela abaixo tem seu
-      próprio gráfico e seletor de Nível: clique numa linha com ▸ para expandir o corte; marque o
-      checkbox de uma ou mais linhas para plotá-las. <strong>Nível</strong> — valor do próprio período;
-      <strong>Var. Curto Prazo</strong> — mês contra mês anterior (linhas mensais) ou trimestre contra
-      trimestre anterior (linhas de corte trimestral); <strong>Var. Anual</strong> — mesmo período um ano
-      antes. Indicadores já expressos em % mostram a variação em <strong>pontos percentuais</strong>;
-      níveis em mil pessoas ou R$ mostram <strong>variação percentual</strong> — ver Apêndice.
-    </p>
-
-    <div class="kpi-grid-3">
-      <div class="kpi-card">
-        <div class="kpi-label">Taxa de Desocupação</div>
-        <div class="kpi-value" id="kpi-desocupacao-value">—</div>
-        <div class="kpi-sub" id="kpi-desocupacao-sub">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Taxa de Participação</div>
-        <div class="kpi-value" id="kpi-participacao-value">—</div>
-        <div class="kpi-sub" id="kpi-participacao-sub">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Taxa de Informalidade</div>
-        <div class="kpi-value" id="kpi-informalidade-value">—</div>
-        <div class="kpi-sub" id="kpi-informalidade-sub">—</div>
-      </div>
-    </div>
-
     <div class="tables-container" id="tables-taxas"></div>
-
   </div>
 
   <!-- ═══════════ TAB — OCUPAÇÃO ═══════════ -->
@@ -240,40 +245,7 @@
 
   <!-- ═══════════ TAB — EMPREGO FORMAL (CAGED/MTE) ═══════════ -->
   <div class="tab-panel" id="tab-formal">
-
-    <p class="note-metodologia">
-      Universo <strong>diferente</strong> do das abas anteriores: aqui é o emprego formal celetista
-      (registro administrativo), não a ocupação total medida pela pesquisa domiciliar do IBGE — os dois
-      não são comparáveis lado a lado, ver Apêndice. Fonte primária:
-      <strong>MTE/PDET, microdado do Novo CAGED</strong> (saldo, admissões e desligamentos por setor, UF
-      e faixa salarial — desde 2020-01), mais <strong>BCB/SGS</strong> para o estoque de vínculos
-      (desde 1992). O que o CAGED publica é <strong>fluxo</strong>: quantas contratações e desligamentos
-      houve no mês, e o saldo entre os dois. Por isso o seletor de <strong>Período</strong> oferece
-      Mensal / Acum. 12m / Acum. no ano em vez de variação percentual — saldo é fluxo líquido e cruza
-      zero, o que torna o "% de variação" ruído numérico (ver Apêndice). A tabela de Estoque, que nunca
-      cruza zero, tem seletor próprio com Var. Anual em %.
-    </p>
-
-    <div class="kpi-grid-3">
-      <div class="kpi-card">
-        <div class="kpi-label">Saldo no Mês</div>
-        <div class="kpi-value" id="kpi-saldo-value">—</div>
-        <div class="kpi-sub" id="kpi-saldo-sub">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Saldo Acum. 12 Meses</div>
-        <div class="kpi-value" id="kpi-saldo12m-value">—</div>
-        <div class="kpi-sub" id="kpi-saldo12m-sub">—</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Estoque de Vínculos Formais</div>
-        <div class="kpi-value" id="kpi-estoque-value">—</div>
-        <div class="kpi-sub" id="kpi-estoque-sub">—</div>
-      </div>
-    </div>
-
     <div class="tables-container" id="tables-formal"></div>
-
   </div>
 
   <!-- ═══════════ TAB — APÊNDICE ═══════════ -->
@@ -343,7 +315,7 @@
           só estabiliza cerca de <strong>12 meses</strong> depois de publicada. Os últimos meses da série
           tendem a ser revisados para cima. A atualização de rotina reprocessa os 6 releases mais
           recentes; a reconstrução completa do histórico é um job separado.</p>
-          <p><strong>Por que Mensal / Acum. 12m / Acum. no ano, e não Var. Mensal / Var. Anual %.</strong>
+          <p><strong>Por que Mensal / Acum. 12m / Acum. no ano, e não Var. Mensal / Diff Y/Y %.</strong>
           O saldo é um fluxo líquido e cruza zero — verificado nos dados: as 22 seções CNAE todas cruzam,
           e a variação anual em % do saldo nacional chega a <strong>696%</strong> em algum ponto da série.
           Variação percentual sobre uma série que troca de sinal não é uma leitura ruim, é ruído
@@ -351,7 +323,7 @@
           real da mudança. Acumular em 12 meses ou no ano é como o próprio MTE apresenta o dado, e
           responde à mesma pergunta ("o mercado formal está gerando ou destruindo vagas, e em que ritmo")
           sem o artefato. A tabela de <strong>Estoque</strong> é o caso oposto — nunca cruza zero — e por
-          isso mantém Var. Anual em %.</p>
+          isso mantém Diff Y/Y em %, ao lado da Var. Mensal em pessoas.</p>
           <p><strong>Faixas salariais</strong> são múltiplos do salário mínimo <em>vigente na
           competência</em>, não valores nominais em R$ fixos — é a convenção das publicações oficiais do
           CAGED, porque bandas em R$ nominal perdem sentido conforme a inflação salarial desloca a
@@ -365,20 +337,57 @@
         </div>
       </details>
       <details class="appendix-item">
-        <summary>Convenção de Variação — Pontos Percentuais vs. Percentual</summary>
+        <summary>Como ler as tabelas — Frequência, Métrica e unidades</summary>
         <div class="appendix-body">
-          <p>Indicadores já expressos em % (taxas de desocupação/participação/informalidade/subutilização,
-          níveis de ocupação/desocupação, % de desalentados, % de contribuintes da previdência) mostram
-          <strong>Var. Curto Prazo/Var. Anual em pontos percentuais</strong> (diferença simples) — uma taxa
-          que cai de 7,5% para 7,0% aparece como <strong>−0,5 p.p.</strong>, nunca como "−6,7%" (que seria a
-          variação percentual da própria taxa, uma leitura que confunde mais do que esclarece para uma série
-          que já é uma razão). Níveis em mil pessoas (ocupados, força de trabalho potencial, desalentados) ou
-          em R$ (rendimento, massa de rendimento) mostram <strong>variação percentual normal</strong>.</p>
+          <p>Cada tabela tem seu próprio gráfico e seus próprios seletores. Clique numa linha com ▸ para
+          expandir o corte; marque o checkbox de uma ou mais linhas para plotá-las. Os botões de range
+          (1a/3a/5a/10a/Tudo) ficam <em>abaixo</em> do gráfico, e além deles vale arrastar para mover,
+          rolar para dar zoom e duplo-clique para voltar ao range cheio.</p>
+          <p><strong>Frequência</strong> (abas de PNAD) separa as duas pesquisas em vez de misturá-las
+          numa tabela cheia de lacunas:</p>
+          <ul>
+            <li><strong>Mensal (trimestre móvel)</strong> — só <code>mt_pnad</code>, a série nacional sem
+            quebra, publicada todo mês para o trimestre encerrado naquele mês. Os cortes demográficos
+            <em>desaparecem da tabela</em> nesta visão, em vez de aparecerem como uma fila de travessões:
+            eles simplesmente não existem em frequência mensal.</li>
+            <li><strong>Trimestral</strong> — tudo, no eixo trimestral: os cortes por Sexo/Idade/
+            Instrução/Cor ou Raça de <code>mt_pnad_trimestral</code> <em>e</em> a linha "Total", que vem
+            de <code>mt_pnad</code> reamostrada nos meses que fecham cada trimestre.</li>
+          </ul>
+          <p>Esse casamento entre as duas pesquisas foi <strong>medido, não suposto</strong>: a data de
+          <code>mt_pnad_trimestral</code> é o primeiro mês do trimestre e a de <code>mt_pnad</code> é o
+          último do trimestre móvel, então o 2º trimestre (Abr-Jun) está em <code>mt_pnad</code> sob
+          junho. Reconstruindo o total nacional da taxa de desocupação a partir dos cortes por sexo
+          (ponderando população × taxa de participação) e comparando com <code>mt_pnad</code>, o erro
+          médio é <strong>0,038 p.p. em 57 trimestres</strong> contra o último mês — o próprio
+          arredondamento de 1 decimal da fonte — e 0,499 p.p. contra o primeiro, 13× pior.</p>
+          <p><strong>Métrica</strong> tem duas opções: <strong>Nível</strong> (o valor do próprio
+          período) e a variação contra o mesmo período do ano anterior — rotulada <strong>Diff Y/Y</strong>
+          nas tabelas 100% de taxa, <strong>Var. % Y/Y</strong> nas de nível/R$ e <strong>Var. Y/Y</strong>
+          nas mistas. A variação de curto prazo (mês contra mês, trimestre contra trimestre) foi retirada
+          desta versão.</p>
+          <p><strong>Pontos percentuais vs. percentual.</strong> Indicadores já expressos em % (taxas de
+          desocupação/participação/informalidade/subutilização, níveis de ocupação/desocupação, % de
+          desalentados, % de contribuintes da previdência) variam em <strong>pontos percentuais</strong>
+          (diferença simples) — uma taxa que cai de 7,5% para 7,0% aparece como <strong>−0,5 p.p.</strong>,
+          nunca como "−6,7%" (que seria a variação percentual da própria taxa, leitura que confunde mais do
+          que esclarece numa série que já é uma razão). Níveis em mil pessoas (ocupados, força de trabalho
+          potencial, desalentados) ou em R$ (rendimento, massa) variam em <strong>percentual normal</strong>.
+          Numa tabela mista as duas convivem, linha a linha.</p>
+          <p><strong>Unidades.</strong> O título do eixo Y diz o que a série mede, não só em que unidade
+          — "desocupados / força de trabalho, %" em vez de "%" —, e muda com a métrica selecionada: na
+          visão de variação ele passa a ser "p.p. contra o mesmo período do ano anterior", nunca a unidade
+          do nível. Na tabela, a unidade curta aparece ao lado do rótulo da linha, e só na visão Nível.
+          Os numeradores e denominadores de cada taxa foram <strong>reconstruídos dos próprios níveis da
+          <code>mt_pnad</code> e conferidos</strong> (erro médio ~0,025 p.p., o arredondamento da fonte);
+          duas coisas que a conferência corrigiu: a <em>taxa de subocupação por insuficiência de horas</em>
+          tem denominador <strong>ocupados</strong> (não força de trabalho), e o <em>nível da
+          ocupação/desocupação</em> tem denominador <strong>população de 14 anos ou mais</strong> — é por
+          isso que "nível da desocupação" e "taxa de desocupação" são números diferentes.</p>
           <p>Sem ajuste sazonal (STL) em nenhuma variante nesta versão — ao contrário de
-          <code>analytics/brasil/fiscal_policy/</code> e <code>analytics/brasil/credit/</code>, que dessazonalizam a
-          variação de curto prazo. PNAD já publica algumas séries com metodologia própria de trimestre móvel
-          (mt_pnad), o que já suaviza parte da sazonalidade mensal por construção; a trimestral
-          (mt_pnad_trimestral) não é dessazonalizada aqui.</p>
+          <code>analytics/brasil/fiscal_policy/</code> e <code>analytics/brasil/credit/</code>. A <code>mt_pnad</code>
+          já é trimestre móvel, o que suaviza parte da sazonalidade mensal por construção; a trimestral
+          (<code>mt_pnad_trimestral</code>) não é dessazonalizada aqui.</p>
         </div>
       </details>
       <details class="appendix-item">
@@ -441,55 +450,79 @@ function fmtMonthShort(dateStr) {
   var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
   return MESES[m - 1] + '/' + y;
 }
-function fmtMonthFull(dateStr) {
-  var p = dateStr.split('-'), y = p[0], m = parseInt(p[1], 10);
-  return MESES[m - 1] + '/' + y;
+
+function fmtMonthLong(dateStr) {
+  var p = dateStr.split('-'), m = parseInt(p[1], 10);
+  return MESES[m - 1].toLowerCase() + '/' + p[0];
+}
+function fmtQuarter(dateStr) {
+  var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
+  return (Math.floor((m - 1) / 3) + 1) + 'T' + y;
 }
 
-function setKpi(prefix, level, yoy, isRate) {
-  var elV = document.getElementById('kpi-' + prefix + '-value');
-  var elS = document.getElementById('kpi-' + prefix + '-sub');
-  if (level == null || isNaN(level)) { elV.textContent = '—'; elS.textContent = '—'; return; }
-  elV.textContent = level.toFixed(1).replace('.', ',') + '%';
-  elV.className = 'kpi-value';
-  if (yoy == null || isNaN(yoy)) { elS.textContent = '—'; return; }
-  var suffix = isRate ? ' p.p. a/a' : '% a/a';
-  elS.textContent = (yoy >= 0 ? '+' : '') + yoy.toFixed(1).replace('.', ',') + suffix;
-  elS.className = 'kpi-sub ' + (yoy >= 0 ? 'pos' : 'neg');
-}
-function renderKpis() {
-  ['taxa_desocupacao', 'taxa_participacao', 'taxa_informalidade'].forEach(function(key, i) {
-    var prefix = ['desocupacao', 'participacao', 'informalidade'][i];
-    var s = D.pnad.series[key];
-    if (!s) return;
-    var level = s.level.values[s.level.values.length - 1];
-    var yoy = s.yoy.values[s.yoy.values.length - 1];
-    setKpi(prefix, level, yoy, true);
-  });
-}
-
-// ── Chart layout factories ────────────────────────────────────────────────────
-function _rangeButtons() {
-  return [
-    {count: 1, label: '1a', step: 'year', stepmode: 'backward'},
-    {count: 3, label: '3a', step: 'year', stepmode: 'backward'},
-    {count: 5, label: '5a', step: 'year', stepmode: 'backward'},
-    {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
-    {step: 'all', label: 'Tudo'},
-  ];
-}
+// ── Chart layout factory ──────────────────────────────────────────────────────
+// Sem `xaxis.rangeselector`: os botões de range são HTML, ficam ABAIXO do
+// gráfico e chamam Plotly.relayout com um [de, até] computado dos próprios
+// dados — ver renderRangeBar() e .claude/rules/lis-dashboards.md.
 function mkTimeseriesLayout(yTitle, height) {
   return {
-    height: height || 560, margin: {l: 60, r: 30, t: 40, b: 70}, dragmode: 'pan',
-    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
-      buttons: _rangeButtons(), bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
-      activecolor: C.azul, font: {size: 11, color: '#555'},
-    }},
+    height: height || 560, margin: {l: 60, r: 30, t: 20, b: 70}, dragmode: 'pan',
+    xaxis: {type: 'date', gridcolor: '#eee'},
     yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
     legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
     font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
   };
+}
+
+// ── Botões de range (HTML, abaixo do gráfico) ─────────────────────────────────
+// Todo botão manda um [de, até] tirado das séries plotadas — INCLUSIVE o
+// "Tudo", que NÃO usa `xaxis.autorange: true`: autorange devolve a extensão dos
+// dados MAIS o padding percentual do Plotly, que numa série longa aparece como
+// uma faixa vazia de anos na direita (ver a nota "O botão All é a mesma
+// armadilha" em .claude/rules/lis-dashboards.md).
+var RANGE_OPTS = [
+  {label: '1a', anos: 1}, {label: '3a', anos: 3}, {label: '5a', anos: 5},
+  {label: '10a', anos: 10}, {label: 'Tudo', anos: null},
+];
+function _dataExtent(specs) {
+  var lo = null, hi = null;
+  (specs || []).forEach(function(s) {
+    (s.dates || []).forEach(function(d, i) {
+      if (s.values[i] == null || isNaN(s.values[i])) return;
+      if (lo === null || d < lo) lo = d;
+      if (hi === null || d > hi) hi = d;
+    });
+  });
+  return (lo === null) ? null : [lo, hi];
+}
+function applyRange(divId, specs, anos) {
+  var ext = _dataExtent(specs);
+  if (!ext) return;
+  var from = ext[0];
+  if (anos != null) {
+    var d = new Date(ext[1]);
+    d.setFullYear(d.getFullYear() - anos);
+    var iso = d.toISOString().slice(0, 10);
+    from = (iso > ext[0]) ? iso : ext[0];
+  }
+  Plotly.relayout(divId, {'xaxis.range': [from, ext[1]]});
+}
+function renderRangeBar(barId, divId, specsFn, activeIdx) {
+  var bar = document.getElementById(barId);
+  if (!bar) return;
+  bar.innerHTML = '';
+  RANGE_OPTS.forEach(function(opt, i) {
+    var b = document.createElement('button');
+    b.className = 'range-btn' + (i === activeIdx ? ' active' : '');
+    b.textContent = opt.label;
+    b.addEventListener('click', function() {
+      bar.querySelectorAll('.range-btn').forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      applyRange(divId, specsFn(), opt.anos);
+    });
+    bar.appendChild(b);
+  });
 }
 
 // ── Chart renderers ───────────────────────────────────────────────────────────
@@ -505,12 +538,18 @@ function renderLineChart(divId, specs, yTitle, height) {
   _bindYAutofit(divId);
 }
 
-function flattenHierRows(tree, expanded, depth) {
+// Achata a árvore em linhas visíveis. `visible(node)` decide se a linha existe
+// nesta frequência — ver visibleDeep() em makeSimpleHierTab(): uma linha que não
+// tem dado na frequência selecionada não aparece, em vez de aparecer como uma
+// fila de travessões (que era a queixa que originou o seletor de Frequência).
+function flattenHierRows(tree, expanded, depth, visible) {
   var rows = [];
   (tree || []).forEach(function(node) {
-    rows.push({node: node, depth: depth});
-    if (node.children && expanded[node.key]) {
-      rows = rows.concat(flattenHierRows(node.children, expanded, depth + 1));
+    if (visible && !visible(node)) return;
+    var kids = (node.children || []).filter(function(c) { return !visible || visible(c); });
+    rows.push({node: node, depth: depth, hasKids: kids.length > 0});
+    if (kids.length && expanded[node.key]) {
+      rows = rows.concat(flattenHierRows(kids, expanded, depth + 1, visible));
     }
   });
   return rows;
@@ -525,16 +564,28 @@ function flattenHierRows(tree, expanded, depth) {
 //
 // Controles: `opts.controls` é uma lista de 1+ seletores, cada um com suas
 // opções — a chave da variante é a concatenação dos valores selecionados com
-// "__", na ordem dos controles. As 12 tabelas de PNAD usam 1 controle (Nível:
-// level|curto|yoy); as de CAGED usam 2 (Métrica × Período → "saldo__acum12m")
-// ou 1 (Nacional: só período; Estoque: level|mom_diff|yoy). O caso especial
-// "curto" resolve para `mom` (mt_pnad, mensal) ou `qoq` (mt_pnad_trimestral)
-// conforme o que a série tiver — o JS não precisa saber de que tabela ela veio.
+// "__", na ordem dos controles. As 12 tabelas de PNAD usam 2 controles
+// (Frequência × Métrica → "mensal__yoy"); as de CAGED usam 2 (Métrica × Período
+// → "saldo__acum12m") ou 1 (Nacional: só período; Estoque: level|mom_diff|yoy).
 //
-// Formato/eixo Y vêm da OPÇÃO selecionada (`fmt`/`ytitle`), com a última opção
-// que define cada campo vencendo. `fmt:"auto"` (PNAD) decide por série via
-// RATE_KEYS, porque ali uma mesma tabela mistura taxas em % e níveis em mil
-// pessoas; no CAGED o formato é uniforme por controle, então vem direto.
+// FREQUÊNCIA (2026-08-27): a série de mt_pnad_trimestral só tem as variantes
+// `trimestral__*`, então na visão Mensal seriesFor() devolve {dates:[],values:[]}
+// e visibleDeep() esconde a linha inteira. O filtro é por ausência de dado, não
+// por marcação na árvore — assim uma linha nunca vira fila de travessões, e
+// nenhum nó precisa declarar em que frequência existe.
+//
+// Formato do valor na tabela vem da OPÇÃO selecionada (`fmt`, última que define
+// vence). `fmt:"auto"` (PNAD) decide por série via RATE_KEYS, porque ali uma
+// mesma tabela mistura taxas em % e níveis em mil pessoas; no CAGED o formato é
+// uniforme por controle, então vem direto.
+//
+// Título do eixo Y — duas fontes, porque o problema é diferente nos dois lados:
+//   · CAGED: `ypart` literal em cada opção, concatenados na ordem dos controles
+//     ("admissões — pessoas, acum. 12 meses"). A unidade é uniforme na tabela.
+//   · PNAD: `ymode` na opção, e o rótulo sai das SÉRIES MARCADAS — "unit" usa o
+//     `def` do nó ("desocupados / força de trabalho, %"), "diff" resolve p.p. vs
+//     % por RATE_KEYS. É o que impede o eixo de dizer "mil pessoas" numa visão
+//     de variação percentual.
 //
 // Linhas sem série própria (grupos "só cabeçalho", ver Apêndice — só existem
 // nas abas de PNAD) têm seriesKey ausente do dict: seriesFor() devolve
@@ -543,6 +594,73 @@ var PNAD_CHART_COLORS = [C.azul, C.dourado, C.verde, C.laranja, C.azulCl, C.amar
 
 function fmtPessoas(value) {
   return Math.round(value).toLocaleString('pt-BR');
+}
+
+// ── Card de definição ─────────────────────────────────────────────────────────
+// Um único card no <body>, reposicionado a cada abertura, em vez de um por
+// linha — 52 linhas têm card, e um popover por linha multiplicaria nós de DOM
+// que quase nunca são vistos. Passar o mouse abre; clicar fixa (para dar tempo
+// de ler e de selecionar o texto); clicar fora ou Esc fecha.
+var _infoPop = null, _infoPinned = null;
+function _ensureInfoPop() {
+  if (_infoPop) return _infoPop;
+  _infoPop = document.createElement('div');
+  _infoPop.className = 'info-pop';
+  document.body.appendChild(_infoPop);
+  _infoPop.addEventListener('mouseleave', function() { if (!_infoPinned) hideInfo(); });
+  document.addEventListener('click', function(e) {
+    if (_infoPinned && !_infoPop.contains(e.target) && e.target !== _infoPinned) hideInfo();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') hideInfo(); });
+  return _infoPop;
+}
+function hideInfo() {
+  if (!_infoPop) return;
+  _infoPop.classList.remove('show');
+  if (_infoPinned) { _infoPinned.classList.remove('pinned'); _infoPinned = null; }
+}
+function showInfo(btn, node) {
+  var pop = _ensureInfoPop();
+  var html = '<h4>' + node.label + '</h4>';
+  if (node.full) html += '<div class="info-full">' + node.full + '</div>';
+  if (node.desc) html += '<div class="info-desc">' + node.desc + '</div>';
+  if (node['def']) html += '<div class="info-unit">Unidade: ' + node['def'] + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+  // Posiciona abaixo-à-direita do botão, puxando para dentro da janela se
+  // estourar (as tabelas rolam na horizontal, então o botão pode estar na borda).
+  var r = btn.getBoundingClientRect();
+  var w = pop.offsetWidth || 380, h = pop.offsetHeight || 120;
+  var left = r.left + window.scrollX;
+  var maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  var top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) {
+    top = r.top + window.scrollY - h - 6;
+  }
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+function makeInfoButton(node) {
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definição de ' + node.label);
+  b.addEventListener('mouseenter', function() { if (!_infoPinned) showInfo(b, node); });
+  b.addEventListener('mouseleave', function() {
+    if (_infoPinned) return;
+    // Deixa o ponteiro atravessar o vão de 6px até o card antes de fechar.
+    setTimeout(function() { if (!_infoPinned && !_infoPop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (_infoPinned === b) { hideInfo(); return; }
+    hideInfo();
+    _infoPinned = b; b.classList.add('pinned');
+    showInfo(b, node);
+  });
+  return b;
 }
 function makeSimpleHierTab(opts) {
   var controls = opts.controls;
@@ -553,12 +671,12 @@ function makeSimpleHierTab(opts) {
   (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
   (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
 
-  // Última opção selecionada que define o campo vence; undefined se nenhuma.
   function selectedOpt(i) {
     var c = controls[i], v = state.values[i];
     for (var j = 0; j < c.options.length; j++) if (c.options[j].value === v) return c.options[j];
     return c.options[0];
   }
+  // Última opção selecionada que define o campo vence; undefined se nenhuma.
   function pick(field) {
     var found;
     for (var i = 0; i < controls.length; i++) {
@@ -567,15 +685,29 @@ function makeSimpleHierTab(opts) {
     }
     return found;
   }
+  function selectedValue(key) {
+    for (var i = 0; i < controls.length; i++) if (controls[i].key === key) return state.values[i];
+    return null;
+  }
   function variantKey() { return state.values.join('__'); }
 
   function seriesFor(seriesKey) {
     var s = opts.series[seriesKey];
     if (!s) return {dates: [], values: []};
-    var k = variantKey();
-    if (k === 'curto') return s.mom || s.qoq || {dates: [], values: []};
-    return s[k] || {dates: [], values: []};
+    return s[variantKey()] || {dates: [], values: []};
   }
+  function hasData(seriesKey) {
+    var s = opts.series[seriesKey];
+    if (!s) return false;
+    var v = s[variantKey()];
+    return !!(v && v.dates && v.dates.length);
+  }
+  // Um nó existe nesta frequência se ele tem dado ou algum descendente tem.
+  function visibleDeep(node) {
+    if (hasData(node.seriesKey)) return true;
+    return (node.children || []).some(visibleDeep);
+  }
+
   function fmtValue(value, seriesKey) {
     if (value == null || isNaN(value)) return '—';
     var fmt = pick('fmt') || 'auto';
@@ -583,19 +715,50 @@ function makeSimpleHierTab(opts) {
     if (fmt === 'pct') return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
     // 'auto' (PNAD): decide por série, e o "Nível" é o valor bruto.
     var isRate = !!RATE_KEYS[seriesKey];
-    if (variantKey() === 'level') {
+    if (selectedValue('metric') === 'level') {
       return isRate ? value.toFixed(1).replace('.', ',') + '%' : value.toLocaleString('pt-BR', {maximumFractionDigits: 1});
     }
     var suffix = isRate ? ' p.p.' : '%';
     return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + suffix;
   }
-  // Eixo de datas da tabela: o da primeira linha marcada por padrão, lido na
-  // variante ATUAL (todas as variantes de uma série compartilham `dates`, então
-  // a escolha do seletor não muda o eixo — só evita um segundo lookup).
-  function refDates() {
-    var s = seriesFor((opts.defaultChecked || [])[0]);
-    return (s.dates || []).slice(-12);
+  function fmtDate(d) {
+    return pick('dateFmt') === 'trimestre' ? fmtQuarter(d) : fmtMonthShort(d);
   }
+  // Eixo de datas da tabela: o da primeira linha marcada que exista na
+  // frequência corrente (na visão Trimestral esse eixo é trimestral).
+  function refDates() {
+    var keys = (opts.defaultChecked || []).concat(Object.keys(state.checked));
+    for (var i = 0; i < keys.length; i++) {
+      var s = seriesFor(keys[i]);
+      if (s.dates.length) return s.dates.slice(-12);
+    }
+    return [];
+  }
+
+  // ── Eixo Y: `ypart` literal (CAGED) ou derivado das séries marcadas (PNAD)
+  function _yFromNodes(mode, nodes) {
+    if (!nodes.length) return '';
+    if (mode === 'unit') {
+      var defs = [];
+      nodes.forEach(function(n) { if (n['def'] && defs.indexOf(n['def']) < 0) defs.push(n['def']); });
+      if (defs.length === 1) return defs[0];
+      return defs.length ? 'unidades mistas — ver a unidade de cada linha na tabela' : '';
+    }
+    var rates = nodes.filter(function(n) { return !!RATE_KEYS[n.seriesKey]; }).length;
+    if (rates === nodes.length) return 'p.p. contra o mesmo período do ano anterior';
+    if (rates === 0) return '% contra o mesmo período do ano anterior';
+    return 'p.p. (taxas) ou % (níveis) contra o mesmo período do ano anterior';
+  }
+  function yTitle(nodes) {
+    var parts = [];
+    for (var i = 0; i < controls.length; i++) {
+      var o = selectedOpt(i);
+      var part = o.ypart || (o.ymode ? _yFromNodes(o.ymode, nodes) : '');
+      if (part) parts.push(part);
+    }
+    return parts.join(' — ');
+  }
+
   function renderTableHead() {
     var thead = document.getElementById(opts.tableHeadId);
     thead.innerHTML = '';
@@ -606,7 +769,7 @@ function makeSimpleHierTab(opts) {
     refDates().forEach(function(d) {
       var th = document.createElement('th');
       th.className = 'col-value';
-      th.textContent = opts.fmtDate(d);
+      th.textContent = fmtDate(d);
       tr.appendChild(th);
     });
     thead.appendChild(tr);
@@ -616,13 +779,25 @@ function makeSimpleHierTab(opts) {
     var tbody = document.getElementById(opts.tableBodyId);
     tbody.innerHTML = '';
     var dates = refDates();
-    flattenHierRows(opts.tree, state.expanded, 0).forEach(function(r) {
+    var rows = flattenHierRows(opts.tree, state.expanded, 0, visibleDeep);
+    // A unidade só entra no rótulo da linha quando ela DESAMBIGUA: numa tabela
+    // toda em % ela repetiria "%" em cada linha sem informar nada (o eixo já
+    // diz), e numa tabela mista (taxa + mil pessoas) é o que evita ler um nível
+    // como se fosse uma taxa. E só na visão Nível — na de variação a unidade é
+    // p.p./% e não a do nível.
+    var unidades = [];
+    rows.forEach(function(r) {
+      if (r.node.unit && unidades.indexOf(r.node.unit) < 0) unidades.push(r.node.unit);
+    });
+    var mostrarUnidade = unidades.length > 1 &&
+      (selectedValue('metric') === 'level' || selectedValue('metric') == null);
+    rows.forEach(function(r) {
       var node = r.node;
       var s = seriesFor(node.seriesKey);
       var valueByDate = {};
       for (var i = 0; i < s.dates.length; i++) valueByDate[s.dates[i]] = s.values[i];
       var tr = document.createElement('tr');
-      if (node.children) tr.className = 'is-group';
+      if (r.hasKids) tr.className = 'is-group';
 
       var tdCheck = document.createElement('td');
       tdCheck.className = 'col-check';
@@ -638,7 +813,7 @@ function makeSimpleHierTab(opts) {
       var tdLabel = document.createElement('td');
       tdLabel.className = 'col-label';
       tdLabel.style.paddingLeft = (14 + r.depth * 18) + 'px';
-      if (node.children) {
+      if (r.hasKids) {
         var icon = document.createElement('span');
         icon.className = 'tree-toggle';
         icon.textContent = state.expanded[node.key] ? '▾' : '▸';
@@ -651,6 +826,13 @@ function makeSimpleHierTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      if (node.full || node.desc) tdLabel.appendChild(makeInfoButton(node));
+      if (mostrarUnidade && node.unit) {
+        var u = document.createElement('span');
+        u.className = 'row-unit';
+        u.textContent = node.unit;
+        tdLabel.appendChild(u);
+      }
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       dates.forEach(function(d) {
@@ -662,18 +844,70 @@ function makeSimpleHierTab(opts) {
       tbody.appendChild(tr);
     });
   }
-  function renderChart() {
+  function chartSpecs() {
     var specs = [], colorIdx = 0;
     (function walk(tree) {
       (tree || []).forEach(function(node) {
         if (state.checked[node.key]) {
           var s = seriesFor(node.seriesKey);
-          if (s.dates.length) specs.push({dates: s.dates, values: s.values, label: node.label, color: PNAD_CHART_COLORS[colorIdx++ % PNAD_CHART_COLORS.length]});
+          if (s.dates.length) specs.push({
+            dates: s.dates, values: s.values, label: node.label, node: node,
+            color: PNAD_CHART_COLORS[colorIdx++ % PNAD_CHART_COLORS.length],
+          });
         }
         if (node.children) walk(node.children);
       });
     })(opts.tree);
-    renderLineChart(opts.chartDivId, specs, pick('ytitle') || '', 420);
+    return specs;
+  }
+  // ── Cabeçalho do gráfico: o que está plotado, em que métrica/frequência, em
+  // que unidade, de que fonte e de quando até quando. Só aparece nas tabelas
+  // que declaram `chart_title` — sem ele o bloco fica oculto.
+  function renderChartHead(specs, ytitle) {
+    var el = document.getElementById(opts.chartHeadId);
+    if (!el) return;
+    if (!opts.chartTitle) { el.style.display = 'none'; return; }
+    el.style.display = '';
+
+    // Monta o subtítulo com o que informa, e SÓ com o que informa. Duas podas,
+    // porque o mesmo fato chega por três caminhos (rótulo do seletor, nome da
+    // série, título do eixo) e repetido vira ruído:
+    //   1. o rótulo da opção de nível ("Taxa"/"Nível") não diz nada que a
+    //      unidade logo adiante já não diga; e no CAGED o rótulo do seletor
+    //      ("Saldo", "Acum. 12m") já está dentro do título do eixo, via `ypart`.
+    //   2. qualquer pedaço que o título do eixo já contenha sai fora.
+    var bits = [];
+    // As séries plotadas, quando dizem algo além do título (ex.: Homens,
+    // Mulheres) — se a única série é o próprio indicador do título, é ruído.
+    var nomes = specs.map(function(s) { return s.label; });
+    if (nomes.length && !(nomes.length === 1 && opts.chartTitle.indexOf(nomes[0]) === 0)) {
+      bits.push(nomes.join(', '));
+    }
+    for (var i = 0; i < controls.length; i++) {
+      var o = selectedOpt(i);
+      if (o.ymode !== 'unit' && !o.ypart) bits.push(o.label);
+    }
+    var lowY = (ytitle || '').toLowerCase();
+    bits = bits.filter(function(b) { return lowY.indexOf(b.toLowerCase()) < 0; });
+    if (ytitle) bits.push(ytitle);
+
+    var ext = _dataExtent(specs);
+    var trimestral = pick('dateFmt') === 'trimestre';
+    var f = trimestral ? fmtQuarter : fmtMonthLong;
+    var periodo = ext ? f(ext[0]) + ' a ' + f(ext[1]) : '';
+
+    el.innerHTML =
+      '<h3>' + opts.chartTitle + '</h3>' +
+      '<div class="chart-sub">' + bits.join(' · ') + '</div>' +
+      '<div class="chart-src">' + (opts.chartSource || '') +
+        (periodo ? (opts.chartSource ? ' · ' : '') + periodo : '') + '</div>';
+  }
+  function renderChart() {
+    var specs = chartSpecs();
+    var ytitle = yTitle(specs.map(function(s) { return s.node; }));
+    renderChartHead(specs, ytitle);
+    renderLineChart(opts.chartDivId, specs, ytitle, 600);
+    renderRangeBar(opts.rangeBarId, opts.chartDivId, chartSpecs, RANGE_OPTS.length - 1);
   }
   function wireControls() {
     controls.forEach(function(c, i) {
@@ -704,6 +938,7 @@ function makeSimpleHierTab(opts) {
 function buildTableBlock(container, tabKey, table, series) {
   var uid = tabKey + '__' + table.key;
   var theadId = 'thead-' + uid, tbodyId = 'tbody-' + uid, chartDivId = 'chart-' + uid;
+  var rangeBarId = 'range-' + uid, chartHeadId = 'chead-' + uid;
   var controls = table.controls || [];
   var selectIds = controls.map(function(c) { return 'ctrl-' + uid + '-' + c.key; });
 
@@ -721,15 +956,18 @@ function buildTableBlock(container, tabKey, table, series) {
     '<h2>' + table.label + '</h2>' +
     '<div class="ctrl-bar">' + ctrlHtml + '</div>' +
     '<div class="chart-card table-card"><table class="data-table"><thead id="' + theadId + '"></thead><tbody id="' + tbodyId + '"></tbody></table></div>' +
-    '<div class="chart-card"><div id="' + chartDivId + '" class="pnad-chart"></div></div>';
+    '<div class="chart-card"><div class="chart-head" id="' + chartHeadId + '"></div>' +
+      '<div id="' + chartDivId + '" class="pnad-chart"></div>' +
+      '<div class="range-bar" id="' + rangeBarId + '"></div></div>';
   container.appendChild(sec);
 
   return makeSimpleHierTab({
     tree: table.tree, series: series, controls: controls, selectIds: selectIds,
-    tableHeadId: theadId, tableBodyId: tbodyId, chartDivId: chartDivId,
+    tableHeadId: theadId, tableBodyId: tbodyId, chartDivId: chartDivId, rangeBarId: rangeBarId,
+    chartHeadId: chartHeadId, chartTitle: table.chart_title || '', chartSource: table.chart_source || '',
     defaultChecked: table.default_checked || [],
     defaultExpanded: table.default_expanded || [],
-    fmtDate: fmtMonthShort, colLabel: 'Categoria',
+    colLabel: 'Categoria',
   });
 }
 function renderPnadTab(tabKey, containerId) {
@@ -747,44 +985,12 @@ function renderCagedTab() {
   });
 }
 
-// ── KPIs da aba Emprego Formal ────────────────────────────────────────────────
-function setKpiRaw(prefix, valueText, subText, sign) {
-  var elV = document.getElementById('kpi-' + prefix + '-value');
-  var elS = document.getElementById('kpi-' + prefix + '-sub');
-  elV.textContent = valueText;
-  // Saldo positivo = criação de vagas = leitura boa; o tema pinta `.pos` de
-  // laranja e `.neg` de verde (convenção herdada das taxas de desocupação, onde
-  // subir é ruim), então aqui o sinal é INVERTIDO de propósito.
-  elV.className = 'kpi-value' + (sign == null ? '' : (sign >= 0 ? ' neg' : ' pos'));
-  elS.textContent = subText;
-  elS.className = 'kpi-sub';
-}
-function renderCagedKpis() {
-  var s = D.caged.series || {};
-  var ref = D.caged.ref_date ? fmtMonthFull(D.caged.ref_date) : '—';
-
-  var saldo = s['nac__saldo'];
-  if (saldo) {
-    var m = saldo.mensal.values, v = m[m.length - 1];
-    setKpiRaw('saldo', (v >= 0 ? '+' : '') + fmtPessoas(v), 'vagas líquidas · ' + ref, v);
-    var a12 = saldo.acum12m.values, v12 = a12[a12.length - 1];
-    if (v12 != null) setKpiRaw('saldo12m', (v12 >= 0 ? '+' : '') + fmtPessoas(v12), 'acumulado até ' + ref, v12);
-  }
-  var est = s['caged_total'];
-  if (est) {
-    var lv = est.level.values, yy = est.yoy.values;
-    var last = lv[lv.length - 1], y = yy[yy.length - 1];
-    var sub = (y == null || isNaN(y)) ? ref : (y >= 0 ? '+' : '') + y.toFixed(1).replace('.', ',') + '% a/a · ' + ref;
-    setKpiRaw('estoque', (last / 1e6).toFixed(1).replace('.', ',') + ' mi', sub, y);
-  }
-}
-
 // ── Tab wiring ─────────────────────────────────────────────────────────────────
 var RENDERERS = {
-  taxas: function() { renderKpis(); renderPnadTab('taxas', 'tables-taxas'); },
+  taxas: function() { renderPnadTab('taxas', 'tables-taxas'); },
   ocupacao: function() { renderPnadTab('ocupacao', 'tables-ocupacao'); },
   rendimento: function() { renderPnadTab('rendimento', 'tables-rendimento'); },
-  formal: function() { renderCagedKpis(); renderCagedTab(); },
+  formal: function() { renderCagedTab(); },
 };
 var tabRendered = {};
 function activateTab(tab) {

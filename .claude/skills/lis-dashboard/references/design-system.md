@@ -18,8 +18,9 @@ Referência completa de CSS, componentes HTML e padrões de código para dashboa
 12. [JS — Formatação BR](#formatacao)
 13. [JS — Cores por variação](#cores)
 14. [JS — Stats dinâmicos](#stats-dinamicos)
-15. [Exemplo completo — Dashboard single-metric](#exemplo-single)
-16. [Exemplo completo — Dashboard multi-metric](#exemplo-multi)
+15. [Botão de informação + card de definição](#info-card)
+16. [Cabeçalho do gráfico](#cabecalho)
+17. [Unidade no eixo Y](#unidades)
 
 ---
 
@@ -88,7 +89,8 @@ body {
 .chart-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
 .chart-hdr-left { display: flex; flex-direction: column; gap: 2px; }
 .chart-title { font-family: var(--cond); font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
-.chart-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.chart-subtitle { font-size: 12px; color: var(--ice2); line-height: 1.4; margin-top: 3px; }
+.chart-src { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px; }
 .chart-hdr-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .chart-wrap { position: relative; height: 480px; }
 
@@ -194,12 +196,19 @@ body {
 ```
 
 ### Chart Container <a name="chart-container"></a>
+
+O título, o subtítulo e a linha de fonte são **obrigatórios** e o subtítulo é
+**preenchido por JS a cada render**, nunca escrito fixo no HTML — ver
+[Cabeçalho do gráfico](#cabecalho). As pills de range ficam **abaixo** do gráfico.
+
 ```html
 <div class="chart-container">
   <div class="chart-hdr">
     <div class="chart-hdr-left">
-      <div class="chart-title">TÍTULO DO GRÁFICO</div>
-      <div class="chart-subtitle">Descrição · contexto</div>
+      <div class="chart-title" id="chartTitle">TÍTULO DO GRÁFICO</div>
+      <!-- preenchidos por describeChart(), não escritos à mão -->
+      <div class="chart-subtitle" id="chartSub"></div>
+      <div class="chart-src" id="chartSrc"></div>
     </div>
     <div class="chart-hdr-right">
       <!-- filtros e/ou dl-toggle aqui -->
@@ -209,6 +218,7 @@ body {
     </div>
   </div>
   <div class="chart-wrap"><div id="mainChart" style="width:100%"></div></div>
+  <div class="range-pills" id="rangePills"></div>
 </div>
 ```
 
@@ -278,7 +288,10 @@ function quickRangeOptions(dates) {
     { label: 'Tudo', from: loISO,      to: hiISO },
   ];
 }
-// containerEl: elemento vazio (ex. <div class="range-pills"></div>) posicionado acima do gráfico.
+// containerEl: elemento vazio (ex. <div class="range-pills"></div>) posicionado ABAIXO do gráfico,
+// dentro do mesmo card (pedido explícito do usuário, 2026-08-27: "coloque o seletor de range de data
+// na parte debaixo do grafico; aplique em todos os graficos"). Acima também funciona, mas a régua de
+// tempo pertence ao pé do gráfico, junto do eixo X que ela controla.
 // Chamar de novo a cada re-render do gráfico (troca de filtro/série) -- é barato e mantém `dates`
 // (portanto o "to" de cada botão) sempre correto mesmo que o range de dados mude.
 function renderQuickRangeButtons(containerEl, divId, dates) {
@@ -326,6 +339,7 @@ function mkLayout(extra) {
 CSS mínimo para `.range-pill` (mesma linguagem visual dos outros controles pill do design system):
 
 ```css
+.range-pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; padding: 8px 0 2px; }
 .range-pill {
   font-family: var(--mono, 'JetBrains Mono'); font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
   padding: 4px 13px; border: 1px solid rgba(31,40,83,0.15); border-radius: 20px;
@@ -552,10 +566,285 @@ Eixos independentes (série secundária num eixo à direita): trace da série se
 
 ---
 
+## Botão de informação + card de definição <a name="info-card"></a>
+
+Pedido do usuário (2026-08-27): *"algumas linhas poderiam ter um nome mais simples com um card
+descritivo quando passa o mouse por cima ... um botão que você clica e consegue ver a definição e
+explicações, assim não precisa escrever tudo na linha e deixar a tabela deformada"*.
+
+O rótulo visível é o **nome curto**; o nome oficial da fonte e a explicação ficam num card que abre no
+hover e fixa no clique. Vale para qualquer rótulo que precise ser curto na tela mas ambíguo fora dela:
+linha de tabela, botão de toggle de série, label de stat card, título de gráfico.
+
+```
+┌─────────────────────────────────────────────┐
+│ Taxa Combinada — Horas                      │  ← nome curto (o que aparece)
+│ Taxa combinada de desocupação e de          │  ← nome oficial da fonte
+│ subocupação por insuficiência de horas...   │
+│                                             │
+│ Soma desocupados e subocupados por          │  ← a explicação
+│ insuficiência de horas, sobre a força...    │
+│ ───────────────────────────────────────     │
+│ Unidade: (desocupados + subocupados) /      │  ← reaproveita a unidade do eixo
+│ força de trabalho, %                        │
+└─────────────────────────────────────────────┘
+```
+
+**Quatro decisões que evitam refazer isto:**
+
+1. **Um único card no `<body>`, reposicionado a cada abertura** — não um popover por item. Numa
+   página com dezenas de rótulos, um nó por item é DOM que quase nunca é visto.
+2. **Só ganha botão quem precisa.** Rótulo que já se explica não leva `i`; o ícone tem que ser raro
+   para significar alguma coisa. Guarde a informação num mapa `chave → {full, desc}` e deixe o botão
+   nascer da presença da entrada, em vez de decidir item a item no markup.
+3. **Não repita o rótulo dentro do card.** Anexe `full` só quando ele **difere** do que já está na
+   tela — senão o card abre para dizer o que o usuário acabou de ler.
+4. **A última linha reaproveita a mesma string de unidade que vai para o título do eixo Y** (ver
+   [Unidade no eixo Y](#unidades)), para as duas não divergirem com o tempo.
+
+Hover abre, clique **fixa** (o texto precisa poder ser lido com calma e selecionado), clique fora ou
+Esc fecha. O card se prende à direita da janela e vira para cima quando não cabe embaixo — necessário
+porque tabelas e barras de toggle rolam na horizontal e o botão pode estar na borda.
+
+```css
+.info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+  color: var(--muted); background: transparent;
+  border: 1px solid var(--line); border-radius: 50%; cursor: pointer;
+  vertical-align: middle; transition: all .15s;
+}
+.info-btn:hover, .info-btn.pinned { color: #fff; background: var(--purple); border-color: var(--purple); }
+.info-pop {
+  position: absolute; z-index: 300; display: none; max-width: 380px;
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px;
+}
+.info-pop.show { display: block; }
+.info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--ice); line-height: 1.3; }
+.info-pop .info-full { font-size: 12px; color: var(--ice2); line-height: 1.45; margin-top: 5px; }
+.info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.info-pop .info-unit {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--line);
+}
+```
+
+```js
+// Mapa de informação: só o que precisa de card entra aqui.
+// chave -> { full: nome oficial da fonte, desc: explicação, unit: unidade }
+const INFO = {
+  ibov:  { full: 'Índice Bovespa (pontos de fechamento)', desc: 'Carteira teórica...', unit: 'pontos' },
+  // ...
+};
+
+let _pop = null, _pinned = null;
+function _ensurePop() {
+  if (_pop) return _pop;
+  _pop = document.createElement('div');
+  _pop.className = 'info-pop';
+  document.body.appendChild(_pop);
+  _pop.addEventListener('mouseleave', () => { if (!_pinned) hideInfo(); });
+  document.addEventListener('click', (e) => {
+    if (_pinned && !_pop.contains(e.target) && e.target !== _pinned) hideInfo();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideInfo(); });
+  return _pop;
+}
+function hideInfo() {
+  if (!_pop) return;
+  _pop.classList.remove('show');
+  if (_pinned) { _pinned.classList.remove('pinned'); _pinned = null; }
+}
+function showInfo(btn, label, info) {
+  const pop = _ensurePop();
+  let html = '<h4>' + label + '</h4>';
+  // `full` só entra quando acrescenta algo ao rótulo já visível.
+  if (info.full && info.full !== label) html += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) html += '<div class="info-desc">' + info.desc + '</div>';
+  if (info.unit) html += '<div class="info-unit">Unidade: ' + info.unit + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+
+  const r = btn.getBoundingClientRect();
+  const w = pop.offsetWidth || 380, h = pop.offsetHeight || 120;
+  let left = r.left + window.scrollX;
+  const maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  let top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) top = r.top + window.scrollY - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+// Pendura o botão em qualquer elemento que mostre um rótulo curto.
+// Não faz nada se a chave não estiver no INFO -- é assim que o ícone fica raro.
+function attachInfo(hostEl, key, label) {
+  const info = INFO[key];
+  if (!info || (!info.full && !info.desc)) return;
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definição de ' + label);
+  b.addEventListener('mouseenter', () => { if (!_pinned) showInfo(b, label, info); });
+  b.addEventListener('mouseleave', () => {
+    if (_pinned) return;
+    // Deixa o ponteiro atravessar o vão até o card antes de fechar.
+    setTimeout(() => { if (!_pinned && !_pop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (_pinned === b) { hideInfo(); return; }
+    hideInfo();
+    _pinned = b; b.classList.add('pinned');
+    showInfo(b, label, info);
+  });
+  hostEl.appendChild(b);
+}
+```
+
+Cuidado ao ler o rótulo de volta do DOM depois disso: `textContent` do elemento passa a incluir o "i"
+do botão. Se algum código compara rótulos (teste, filtro, busca), leia só os nós de texto —
+`[...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('')`.
+
+Implementação de referência: `analytics/brasil/labor_market/report.html`, 52 rótulos com card em 17
+tabelas.
+
+---
+
+## Cabeçalho do gráfico — ele tem que se explicar sozinho <a name="cabecalho"></a>
+
+Pedido do usuário (2026-08-27): *"se eu enviar o gráfico para alguém, a pessoa não fará a mínima ideia
+do que se passa, terá que ler os eixos"*. Um gráfico daqui costuma sair da página como print e circular
+sozinho, então ele precisa dizer **o quê, em que métrica, em que unidade, de que fonte e de quando até
+quando** — três linhas no topo do card, acima do plot:
+
+```
+Taxa de Desocupação — Brasil
+Mensal (trimestre móvel) · desocupados / força de trabalho, %
+Fonte: IBGE, PNAD Contínua · mar/2012 a jul/2026
+```
+
+**Regra dura: só o título e a fonte são texto fixo. O subtítulo e o período são recalculados a cada
+render.** Um subtítulo escrito no HTML começa certo e passa a mentir no instante em que alguém mexe num
+seletor — e é justamente o print tirado depois desse clique que vai circular. Pelo mesmo motivo o
+período sai da extensão real das séries plotadas, não de uma constante: numa visão de variação anual o
+gráfico legitimamente começa um ano depois.
+
+O subtítulo carrega, nesta ordem: as séries marcadas (quando dizem algo além do título), o estado dos
+**seletores** (frequência, janela, métrica) e a unidade — a mesma string do título do eixo Y, ver
+[Unidade no eixo Y](#unidades).
+
+**A poda é a parte que dá trabalho.** O mesmo fato chega por três caminhos — o rótulo da opção do
+seletor, o nome da série e o título do eixo — e imprimir os três lado a lado vira ruído ("Taxa de
+Desocupação · Mensal · Taxa · desocupados / força de trabalho, %"). Duas regras resolvem: **não repita
+o rótulo de um seletor cujo conteúdo já está no título do eixo** (o "Nível"/"Taxa" da visão de nível,
+cuja informação é a unidade; ou uma janela que o próprio eixo nomeia), e **descarte o nome da série
+quando ele é o próprio título do gráfico**. Na prática, filtre cada pedaço contra o título do eixo
+antes de juntar tudo.
+
+```js
+// Extensão real das séries plotadas -- nunca a constante do dataset inteiro,
+// nem o range atual do eixo (que traz o padding do Plotly).
+function dataExtent(series) {
+  let lo = null, hi = null;
+  (series || []).forEach((s) => (s.dates || []).forEach((d, i) => {
+    if (s.values[i] == null || isNaN(s.values[i])) return;
+    if (lo === null || d < lo) lo = d;
+    if (hi === null || d > hi) hi = d;
+  }));
+  return lo === null ? null : [lo, hi];
+}
+const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const fmtMesAno = (iso) => MESES[parseInt(iso.slice(5, 7), 10) - 1] + '/' + iso.slice(0, 4);
+
+// o = { title, subEl, srcEl, series, bits, unit, source, fmtDate }
+//   series : as séries EFETIVAMENTE plotadas ({name, dates, values})
+//   bits   : estado dos seletores já como rótulos ('Mensal', 'Acum. 12m', ...)
+//   unit   : o mesmo texto do título do eixo Y
+function describeChart(o) {
+  let bits = [];
+  const nomes = (o.series || []).map((s) => s.name);
+  // Nome da série só entra se disser algo além do título.
+  if (nomes.length && !(nomes.length === 1 && o.title.indexOf(nomes[0]) === 0)) bits.push(nomes.join(', '));
+  (o.bits || []).forEach((b) => { if (b) bits.push(b); });
+  // Nada que a unidade já diga.
+  const lowU = (o.unit || '').toLowerCase();
+  bits = bits.filter((b) => lowU.indexOf(b.toLowerCase()) < 0);
+  if (o.unit) bits.push(o.unit);
+
+  const ext = dataExtent(o.series);
+  const f = o.fmtDate || fmtMesAno;
+  const periodo = ext ? f(ext[0]) + ' a ' + f(ext[1]) : '';
+  o.subEl.textContent = bits.join(' · ');
+  o.srcEl.textContent = (o.source || '') + (periodo ? (o.source ? ' · ' : '') + periodo : '');
+}
+// Chamar de dentro da MESMA função que redesenha o gráfico, com as séries que
+// ela acabou de plotar -- não num init que roda uma vez só.
+```
+
+Aplicado nos 17 gráficos de `analytics/brasil/labor_market/report.html`, que é a implementação de
+referência (lá o subtítulo sai de uma árvore hierárquica de linhas marcadas; aqui, das séries ligadas
+nos toggles — a regra de poda é a mesma).
+
+---
+
+## Unidade no eixo Y — o que a série mede, não só em que unidade <a name="unidades"></a>
+
+Convenção do usuário (2026-08-27): **todo gráfico diz no eixo Y o que está medindo**, e o rótulo é
+uma definição curta, não o nome da unidade. "A taxa de desocupação mede o quê? O percentual de
+desempregados vis-à-vis a força de trabalho" — então o eixo diz `desocupados / força de trabalho, %`,
+não `%` nem `Taxa (%)`. Uma linha, do tamanho de um rótulo de eixo: **não é para escrever um livro no
+gráfico.**
+
+```js
+// Ruim: não informa nada que o título do card já não diga
+yaxis: { title: { text: '%' } }
+// Bom: numerador / denominador, unidade
+yaxis: { title: { text: 'desocupados / força de trabalho, %' } }
+```
+
+Exemplos do padrão (do relatório de mercado de trabalho, onde os denominadores foram conferidos
+contra os próprios níveis da fonte antes de virarem rótulo):
+
+| Série | Eixo Y |
+|---|---|
+| Taxa de desocupação | `desocupados / força de trabalho, %` |
+| Taxa de participação | `força de trabalho / população 14+, %` |
+| Nível da ocupação | `ocupados / população 14+, %` |
+| Rendimento médio | `rendimento médio mensal, R$ por pessoa` |
+| Massa de rendimento | `massa de rendimento mensal, R$ milhões` |
+| Saldo do CAGED | `saldo (admissões − desligamentos) — pessoas no mês` |
+
+**A unidade acompanha a métrica selecionada.** Se o gráfico tem um seletor Nível/Variação, o eixo
+**não pode** continuar dizendo a unidade do nível na visão de variação — foi exatamente o bug
+reportado ("mesmo sendo uma variação % Y/Y, ainda aparece como nível de mil pessoas"). Na visão de
+variação o eixo passa a ser `p.p. contra o mesmo período do ano anterior` (séries que já são razão) ou
+`% contra o mesmo período do ano anterior` (níveis e valores em R$).
+
+Duas consequências práticas:
+
+- **A unidade não vive no rótulo da série.** `"Pessoas Ocupadas (mil pessoas)"` mente na visão de
+  variação, porque o rótulo aparece na legenda em qualquer métrica. Guarde a unidade num campo
+  próprio do dado (ex.: `unit` curto para a tabela, `def` para o eixo) e monte o rótulo do eixo a
+  partir da métrica selecionada + das séries plotadas.
+- **Numa tabela/gráfico de unidades mistas** (uma taxa em % e um nível em mil pessoas marcados
+  juntos), o eixo não pode escolher uma das duas: diga `unidades mistas — ver a unidade de cada linha`
+  e mostre a unidade curta ao lado do rótulo de cada linha da tabela. Numa tabela toda na mesma
+  unidade, **não** repita a unidade linha a linha — o eixo já disse, e a repetição só polui.
+
+---
+
 ## Checklist antes de entregar
 
 - [ ] CDN: só Plotly (`https://cdn.plot.ly/plotly-2.35.2.min.js`) — sem Chart.js/chartjs-plugin-datalabels/hammer.js/chartjs-plugin-zoom
 - [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, sem `fixedrange`, sem `xaxis.rangeselector`) + botões de range rápido via `renderQuickRangeButtons()` (HTML + `Plotly.relayout()`, NÃO `xaxis.rangeselector` nativo) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
+- [ ] Rótulo longo vira nome curto + botão `i` com card de definição (nunca um rótulo que deforma a coluna/legenda). Ver [Botão de informação](#info-card)
+- [ ] Todo gráfico com cabeçalho de 3 linhas — título, subtítulo e fonte+período — e o subtítulo/período **recalculados a cada render**, nunca fixos no HTML. Ver [Cabeçalho do gráfico](#cabecalho)
+- [ ] Subtítulo reflete o estado dos seletores e não repete o que o título do eixo já diz
+- [ ] Botões de range **abaixo** do gráfico, dentro do mesmo card
+- [ ] Eixo Y diz o que a série mede (`desocupados / força de trabalho, %`), não só a unidade — e MUDA com a métrica selecionada (na visão de variação, `p.p./% contra o mesmo período do ano anterior`, nunca a unidade do nível). Unidade fora do rótulo da série. Ver [Unidade no eixo Y](#unidades)
 - [ ] Gráficos que não são série temporal (ranking horizontal, heatmap categórico) ficam com a interação padrão do Plotly — não force `_bindYAutofit` neles
 - [ ] Cada gráfico é um `<div id="...">` vazio, nunca `<canvas>`
 - [ ] Botão "Dados no gráfico" presente e funcional (`Plotly.restyle(..., {mode: 'lines+text'|'lines'}, [idx])`)

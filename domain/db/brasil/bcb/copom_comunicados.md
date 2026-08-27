@@ -6,6 +6,10 @@ todas as 233 que respondem. Redescobrir isso custa ~250 chamadas e nada está do
 Consumidores: [`_copom_texto.py`](_copom_texto.py) (sincronização + parsing),
 [`pm_copom_projecoes.py`](pm_copom_projecoes.py) (a tabela), `connectors/bcb_copom.py` (o cliente).
 
+Companheiro deste arquivo: [`relatorio_politica_monetaria.md`](relatorio_politica_monetaria.md), a
+mesma coisa para o RPM/RI — a outra metade da tabela `pm_copom_projecoes`, e a que estende a série de
+horizonte relevante para trás até 1999.
+
 ---
 
 ## As duas comunicações do Copom
@@ -52,7 +56,7 @@ O rótulo que o BCB usa mudou de significado no meio da série:
   do que o mesmo nome significava em 2016.
 
 Guardar o rótulo como se fosse a mesma coisa produziria uma série silenciosamente errada. Por isso a
-coluna `cenario` da tabela classifica pelo **condicionamento** (`juros_focus` / `juros_constante`) e
+coluna `cenario` da tabela classifica pelo **condicionamento** (`juros_esperado` / `juros_constante`) e
 o rótulo original vai para `cenario_publicado`.
 
 Ressalva de procedência: a definição do par referência/mercado de 2016–2017 vem da convenção do
@@ -88,8 +92,16 @@ fontes batem em todas, e o HR fica a exatamente 6 trimestres da reunião.
 
 ## Além das projeções
 
-O mesmo texto carrega, sem esforço extra de fonte e já extraído pelo parser (mas **ainda não
-gravado em tabela nenhuma**): o câmbio inicial do cenário, a hipótese de bandeira tarifária, as
-expectativas Focus que o Comitê cita, a decisão de Selic e a direção. Fora isso, ainda no texto e não
-extraído: o balanço de riscos (listas de alta/baixa e a assimetria), a forward guidance e o placar
-de votos.
+O mesmo texto carrega, sem esforço extra de fonte e já extraído pelo parser, mas **ainda não
+gravado em tabela nenhuma**: o câmbio inicial do cenário, a hipótese de bandeira tarifária e as
+expectativas Focus que o Comitê cita. A tabela irmã onde esses três cabem já existe —
+[`pm_copom_reuniao`](pm_copom_reuniao.py), atributos de reunião, criada em 2026-08-25.
+
+A **decisão de Selic e a direção** saíram dessa lista, e não porque foram gravadas daqui: a
+`pm_copom_reuniao` as tira da SGS 432 (meta diária, desde 1999-03-05) cruzada com o calendário de
+reuniões, que cobre 247 reuniões contra as 63 em que este texto escreve a decisão em prosa. O que o
+parser lê virou **conferência independente** — as duas fontes não compartilham nem dado nem código,
+e concordam nas 63.
+
+Fora isso, ainda no texto e não extraído: o balanço de riscos (listas de alta/baixa e a assimetria),
+a forward guidance e o placar de votos.

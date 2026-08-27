@@ -15,7 +15,7 @@ retroativa, que so o CAGED tem.
 
 ## Controles: por que NAO ha variacao percentual aqui
 
-As abas de PNAD usam Nivel/Var. Curto Prazo/Var. Anual. Para fluxo de CAGED isso
+As abas de PNAD usam Frequencia x Nivel/Diff Y-Y. Para fluxo de CAGED isso
 nao serve: saldo e liquido e cruza zero -- confirmado ao vivo (2026-08), as 22
 secoes CNAE cruzam, e a variacao anual em % do saldo nacional chega a 696%.
 Percentual sobre serie que troca de sinal e ruido numerico, nao leitura ruim.
@@ -23,7 +23,7 @@ As tabelas de fluxo usam entao Mensal / Acum. 12m / Acum. no ano -- que e como o
 proprio MTE publica, e continua sendo so visualizacao (nenhuma metrica derivada,
 mesma restricao de escopo da v1, ver CLAUDE.md).
 
-A tabela de Estoque tem seletor proprio (Nivel / Var. Mensal / Var. Anual):
+A tabela de Estoque tem seletor proprio (Nivel / Var. Mensal / Diff Y-Y):
 estoque nunca cruza zero, entao a variacao percentual e valida la -- e a Var.
 Mensal em pessoas e justamente a leitura de saldo dessa serie.
 
@@ -46,7 +46,7 @@ _SETOR_LABELS = {
     "industria_extrativa": "Indústria extrativa",
     "industria_transformacao": "Indústria de transformação",
     "eletricidade_gas": "Eletricidade e gás",
-    "agua_esgoto_residuos": "Água, esgoto e gestão de resíduos",
+    "agua_esgoto_residuos": "Água, esgoto e resíduos",
     "construcao": "Construção",
     "comercio": "Comércio",
     "transporte_armazenagem_correio": "Transporte, armazenagem e correio",
@@ -54,13 +54,13 @@ _SETOR_LABELS = {
     "informacao_comunicacao": "Informação e comunicação",
     "atividades_financeiras_seguros": "Atividades financeiras e seguros",
     "atividades_imobiliarias": "Atividades imobiliárias",
-    "atividades_profissionais_cientificas_tecnicas": "Atividades profissionais, científicas e técnicas",
-    "atividades_administrativas_servicos_complementares": "Atividades administrativas e serviços complementares",
-    "administracao_publica_defesa_seguridade_social": "Administração pública, defesa e seguridade social",
+    "atividades_profissionais_cientificas_tecnicas": "Ativ. profissionais e científicas",
+    "atividades_administrativas_servicos_complementares": "Ativ. administrativas",
+    "administracao_publica_defesa_seguridade_social": "Adm. pública e defesa",
     "educacao": "Educação",
     "saude_servicos_sociais": "Saúde e serviços sociais",
     "artes_cultura_esporte_recreacao": "Artes, cultura, esporte e recreação",
-    "outras_atividades_servicos": "Outras atividades de serviços",
+    "outras_atividades_servicos": "Outros serviços",
     "servicos_domesticos": "Serviços domésticos",
     "organismos_internacionais": "Organismos internacionais",
     "nao_identificado": "Não identificado",
@@ -100,27 +100,109 @@ _SALARIO_LABELS = {
 }
 
 _METRICAS = ["saldo", "admissoes", "desligamentos"]
-_METRICA_LABELS = {"saldo": "Saldo", "admissoes": "Admissões", "desligamentos": "Desligamentos"}
+
+# --- Informacao por linha: nome oficial + explicacao -------------------------
+# O rotulo da linha e curto; o nome completo da fonte e a definicao aparecem num
+# card ao passar o mouse / clicar no botao de informacao -- mesmo mecanismo de
+# pnad_tab.py, ver o comentario de _INFO la. seriesKey -> (nome oficial na
+# fonte, explicacao); qualquer um dos dois pode ser "".
+
+_INFO = {
+    "nac__saldo": (
+        "Saldo de movimentações: admissões menos desligamentos",
+        "É um fluxo LÍQUIDO: cruza zero, e por isso a tabela oferece acumulados em vez de "
+        "variação percentual. Não é o estoque de empregos — é quanto ele mudou no período.",
+    ),
+    "nac__admissoes": ("Admissões declaradas na competência", ""),
+    "nac__desligamentos": (
+        "Desligamentos declarados na competência",
+        "Inclui todos os motivos: demissão sem justa causa, pedido de demissão, fim de contrato "
+        "por prazo determinado, aposentadoria e falecimento.",
+    ),
+    "setor__agua_esgoto_residuos": (
+        "Água, esgoto, atividades de gestão de resíduos e descontaminação", ""),
+    "setor__atividades_profissionais_cientificas_tecnicas": (
+        "Atividades profissionais, científicas e técnicas", ""),
+    "setor__atividades_administrativas_servicos_complementares": (
+        "Atividades administrativas e serviços complementares",
+        "Inclui a terceirização de mão de obra (agências de emprego temporário, limpeza, "
+        "segurança) — costuma se mover antes dos setores que contratam esses serviços.",
+    ),
+    "setor__administracao_publica_defesa_seguridade_social": (
+        "Administração pública, defesa e seguridade social",
+        "Só o vínculo celetista: estatutários e militares não entram no CAGED, então este setor "
+        "é uma fração pequena do emprego público real.",
+    ),
+    "setor__outras_atividades_servicos": ("Outras atividades de serviços", ""),
+    "setor__nao_identificado": (
+        "Seção CNAE não identificada",
+        "Vínculos cujo CNAE não foi informado ou não pôde ser classificado — não é um setor, é "
+        "ausência de informação.",
+    ),
+    "uf__NI": (
+        "Unidade da federação não identificada",
+        "Vínculos sem UF declarada. Fica fora das cinco regiões de propósito: colocá-lo em uma "
+        "delas distorceria o subtotal regional.",
+    ),
+    "salario__nao_identificado": (
+        "Faixa salarial não identificada",
+        "Vínculos sem remuneração declarada — não significa salário baixo.",
+    ),
+    "salario__ate_1sm": (
+        "Até 1 salário mínimo",
+        "As faixas são múltiplos do salário mínimo VIGENTE NA COMPETÊNCIA, não valores nominais "
+        "fixos em R$ — é a convenção das publicações oficiais do CAGED, porque bandas em R$ "
+        "nominal perdem sentido conforme a inflação salarial desloca a distribuição inteira.",
+    ),
+    "caged_total": (
+        "Estoque de empregos formais celetistas (BCB/SGS 28763)",
+        "ESTOQUE, não saldo: é quantos vínculos existem, não quantos foram criados. A variação "
+        "mensal desta série é que reproduz o saldo do microdado — em 2026-06 as duas fontes dão "
+        "exatamente 145.161.",
+    ),
+    "caged_SIUP": (
+        "Serviços industriais de utilidade pública",
+        "Agregado do BCB: eletricidade e gás mais água, esgoto e gestão de resíduos. Fecha exato "
+        "com a soma dos dois filhos.",
+    ),
+    "caged_servicos": (
+        "Serviços (taxonomia do BCB)",
+        "Os quatro filhos publicados NÃO somam o total de Serviços — vários subsetores não têm "
+        "código SGS próprio. O agregado é a série boa; os filhos são um recorte parcial.",
+    ),
+}
+
+
+def _leaf(series_key: str, label: str, children: list | None = None, key: str | None = None) -> dict:
+    """_leaf() + o nome oficial/explicacao de _INFO, quando houver."""
+    node = th.direct(series_key, label, children, key)
+    nome, expl = _INFO.get(series_key, ("", ""))
+    if nome and nome != label:
+        node["full"] = nome
+    if expl:
+        node["desc"] = expl
+    return node
+
 
 # --- Estoque (mt_caged, BCB) -- arvore de 3 niveis, validada ao vivo somando as
 # partes (ver docstring de domain/db/brasil/bcb/mt_caged.py) -----------------
 
 _ESTOQUE_TREE = [
-    th.direct("caged_total", "Total — empregos formais", [
-        th.direct("caged_agropecuaria", "Agropecuária"),
-        th.direct("caged_ind_extrativa", "Indústria extrativa"),
-        th.direct("caged_ind_transformacao", "Indústria de transformação"),
-        th.direct("caged_SIUP", "Serviços industriais de utilidade pública (SIUP)", [
-            th.direct("caged_eletricidade_gas", "Eletricidade e gás"),
-            th.direct("caged_gestao_residuos", "Água, esgoto e gestão de resíduos"),
+    _leaf("caged_total", "Total Brasil", [
+        _leaf("caged_agropecuaria", "Agropecuária"),
+        _leaf("caged_ind_extrativa", "Indústria extrativa"),
+        _leaf("caged_ind_transformacao", "Indústria de transformação"),
+        _leaf("caged_SIUP", "SIUP", [
+            _leaf("caged_eletricidade_gas", "Eletricidade e gás"),
+            _leaf("caged_gestao_residuos", "Água, esgoto e gestão de resíduos"),
         ]),
-        th.direct("caged_construcao", "Construção"),
-        th.direct("caged_comercio", "Comércio"),
-        th.direct("caged_servicos", "Serviços", [
-            th.direct("caged_transp_arm_correios", "Transporte, armazenagem e correios"),
-            th.direct("caged_aloj_alimentacao", "Alojamento e alimentação"),
-            th.direct("caged_informacao_comunicacao", "Informação e comunicação"),
-            th.direct("caged_ativ_financeiras_seguros", "Atividades financeiras e seguros"),
+        _leaf("caged_construcao", "Construção"),
+        _leaf("caged_comercio", "Comércio"),
+        _leaf("caged_servicos", "Serviços", [
+            _leaf("caged_transp_arm_correios", "Transporte, armazenagem e correios"),
+            _leaf("caged_aloj_alimentacao", "Alojamento e alimentação"),
+            _leaf("caged_informacao_comunicacao", "Informação e comunicação"),
+            _leaf("caged_ativ_financeiras_seguros", "Atividades financeiras e seguros"),
         ]),
     ]),
 ]
@@ -132,29 +214,39 @@ DB_NAMES_ESTOQUE = [
 ]
 
 # --- Controles ----------------------------------------------------------------
-# Cada opcao pode carregar `fmt` (como formatar o valor na tabela) e `ytitle`
-# (rotulo do eixo Y). Quando ha 2 controles, a chave da variante e a concatenacao
-# dos dois valores com "__" e o fmt/ytitle do ULTIMO controle que define um vence
-# -- ver makeSimpleHierTab() em report.html.
+# Cada opcao pode carregar `fmt` (como formatar o valor na tabela) e `ypart` (um
+# TRECHO do rotulo do eixo Y). Quando ha 2 controles, a chave da variante e a
+# concatenacao dos dois valores com "__"; o `fmt` do ultimo controle que define
+# um vence, e os `ypart` de todos eles sao concatenados na ordem -- entao o eixo
+# diz o que esta medindo E em que janela ("admissões — pessoas, acum. 12 meses"),
+# em vez de so a janela. Ver makeSimpleHierTab() em report.html.
+#
+# As abas de PNAD nao usam `ypart`: la a unidade varia por LINHA (uma tabela
+# mistura taxa em % com nivel em mil pessoas), entao a opcao carrega `ymode` e o
+# JS resolve o rotulo a partir das series marcadas -- ver pnad_tab.py.
 
 _CTRL_METRICA = {
     "key": "metrica", "label": "Métrica",
-    "options": [{"value": m, "label": _METRICA_LABELS[m]} for m in _METRICAS],
+    "options": [
+        {"value": "saldo", "label": "Saldo", "ypart": "saldo (admissões − desligamentos)"},
+        {"value": "admissoes", "label": "Admissões", "ypart": "admissões"},
+        {"value": "desligamentos", "label": "Desligamentos", "ypart": "desligamentos"},
+    ],
 }
 _CTRL_PERIODO = {
     "key": "periodo", "label": "Período",
     "options": [
-        {"value": "mensal", "label": "Mensal", "fmt": "pessoas", "ytitle": "pessoas no mês"},
-        {"value": "acum12m", "label": "Acum. 12m", "fmt": "pessoas", "ytitle": "pessoas, acum. 12 meses"},
-        {"value": "acum_ano", "label": "Acum. no ano", "fmt": "pessoas", "ytitle": "pessoas, acum. no ano"},
+        {"value": "mensal", "label": "Mensal", "fmt": "pessoas", "ypart": "pessoas no mês"},
+        {"value": "acum12m", "label": "Acum. 12m", "fmt": "pessoas", "ypart": "pessoas, acum. 12 meses"},
+        {"value": "acum_ano", "label": "Acum. no ano", "fmt": "pessoas", "ypart": "pessoas, acum. no ano"},
     ],
 }
 _CTRL_ESTOQUE = {
-    "key": "metric", "label": "Nível",
+    "key": "metric", "label": "Métrica",
     "options": [
-        {"value": "level", "label": "Nível", "fmt": "pessoas", "ytitle": "vínculos formais (pessoas)"},
-        {"value": "mom_diff", "label": "Var. Mensal (pessoas)", "fmt": "pessoas", "ytitle": "variação mensal (pessoas)"},
-        {"value": "yoy", "label": "Var. Anual (%)", "fmt": "pct", "ytitle": "variação anual (%)"},
+        {"value": "level", "label": "Nível", "fmt": "pessoas", "ypart": "vínculos formais celetistas, pessoas"},
+        {"value": "mom_diff", "label": "Var. Mensal (pessoas)", "fmt": "pessoas", "ypart": "variação do estoque no mês, pessoas"},
+        {"value": "yoy", "label": "Diff Y/Y (%)", "fmt": "pct", "ypart": "variação do estoque em 12 meses, %"},
     ],
 }
 
@@ -162,34 +254,38 @@ _CTRL_ESTOQUE = {
 def _cut_tree(prefix: str, labels: dict, total_label: str) -> list:
     """Arvore de um corte plano: raiz "Total Brasil" (soma real, ver build()) com
     uma folha por categoria."""
-    children = [th.direct(f"{prefix}__{slug}", label) for slug, label in labels.items()]
-    return [th.direct(f"{prefix}__total", total_label, children)]
+    children = [_leaf(f"{prefix}__{slug}", label) for slug, label in labels.items()]
+    return [_leaf(f"{prefix}__total", total_label, children)]
 
 
 def _uf_tree() -> list:
     regioes = [
-        th.direct(
+        _leaf(
             f"uf__reg_{slug}", label,
-            [th.direct(f"uf__{sigla}", _UF_LABELS[sigla]) for sigla in siglas],
+            [_leaf(f"uf__{sigla}", _UF_LABELS[sigla]) for sigla in siglas],
         )
         for slug, label, siglas in _REGIOES
     ]
-    return [th.direct("uf__total", "Total Brasil", regioes + [th.direct("uf__NI", _UF_LABELS["NI"])])]
+    return [_leaf("uf__total", "Total Brasil", regioes + [_leaf("uf__NI", _UF_LABELS["NI"])])]
 
 
 TABLES = [
     {
         "key": "nacional", "label": "Nacional — Saldo, Admissões e Desligamentos",
+        "chart_title": "Emprego Formal Celetista — Brasil",
+        "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
         "controls": [_CTRL_PERIODO],
         "tree": [
-            th.direct("nac__saldo", "Saldo (admissões − desligamentos)"),
-            th.direct("nac__admissoes", "Admissões"),
-            th.direct("nac__desligamentos", "Desligamentos"),
+            _leaf("nac__saldo", "Saldo (admissões − desligamentos)"),
+            _leaf("nac__admissoes", "Admissões"),
+            _leaf("nac__desligamentos", "Desligamentos"),
         ],
         "default_checked": ["nac__saldo"],
     },
     {
         "key": "setor", "label": "Por Setor de Atividade (CNAE 2.0, seção)",
+        "chart_title": "Emprego Formal por Setor de Atividade — Brasil",
+        "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
         "controls": [_CTRL_METRICA, _CTRL_PERIODO],
         "tree": _cut_tree("setor", _SETOR_LABELS, "Total Brasil"),
         "default_checked": ["setor__total"],
@@ -197,6 +293,8 @@ TABLES = [
     },
     {
         "key": "uf", "label": "Por Unidade da Federação",
+        "chart_title": "Emprego Formal por Unidade da Federação",
+        "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
         "controls": [_CTRL_METRICA, _CTRL_PERIODO],
         "tree": _uf_tree(),
         "default_checked": [f"uf__reg_{slug}" for slug, _l, _s in _REGIOES],
@@ -204,6 +302,8 @@ TABLES = [
     },
     {
         "key": "salario", "label": "Por Faixa de Salário de Contratação (múltiplos do SM vigente)",
+        "chart_title": "Emprego Formal por Faixa de Salário de Contratação — Brasil",
+        "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
         "controls": [_CTRL_METRICA, _CTRL_PERIODO],
         "tree": _cut_tree("salario", _SALARIO_LABELS, "Total Brasil"),
         "default_checked": ["salario__total"],
@@ -211,6 +311,8 @@ TABLES = [
     },
     {
         "key": "estoque", "label": "Estoque de Empregos Formais (BCB/SGS, desde 1992)",
+        "chart_title": "Estoque de Empregos Formais — Brasil",
+        "chart_source": "Fonte: BCB/SGS, séries 28763-28776",
         "controls": [_CTRL_ESTOQUE],
         "tree": _ESTOQUE_TREE,
         "default_checked": ["caged_total"],

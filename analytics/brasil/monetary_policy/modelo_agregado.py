@@ -393,6 +393,7 @@ def simular(P: pd.DataFrame, par: dict, S: pd.DataFrame, n: int = 16, *,
             selic=None, pi_e=None, pi_A=None, de=None, pi_star=None, rp=None,
             clima: bool = False, w_ipca=(0.7672, 0.2328), t0=None,
             expectativa: str = "premissa", cambio: str = "premissa", phi=None,
+            rr=None, h0=None, sh0=None,
             folga: int = FOLGA, tol: float = 1e-9) -> pd.DataFrame:
     """Propaga (2.1) -> (2) -> (1) -> IPCA por `n` trimestres a partir de t0.
 
@@ -445,6 +446,22 @@ def simular(P: pd.DataFrame, par: dict, S: pd.DataFrame, n: int = 16, *,
 
     Fica fora: precos administrados. pi^A e premissa, e e o que separa este simulador
     do modelo cheio do BC -- ver `irf()`.
+
+    `rr`, `h0` e `sh0` sobrescrevem o estado inicial, e existem para rodar o modelo com o
+    conjunto de informacao de OUTRO agente em vez do nosso filtro (ver
+    `antecipa_copom.py`, que reproduz o cenario de referencia do BC). Todos None por
+    default, e nesse caso nada muda -- o estado sai de `S` e de `P` como antes, e os
+    cenarios validados contra o porte JS continuam identicos.
+
+      `rr`   taxa de juros real neutra (% a.a.). O BC ANUNCIA a que usa nas projecoes
+             (4,50% ate jun/2024, 4,75% de jun/2024, 5,00% de dez/2024), enquanto o
+             default daqui e a nossa estimativa, `rr_trend + rr_IS`, hoje 2,8 p.p. acima.
+             Passar `rr` recalcula tambem `rhat0` por `i_e - pi_e - rr`: usar o `r_hat` do
+             filtro com um r* diferente carregaria a neutra ANTIGA na defasagem da IS. A
+             identidade e exata no painel (conferida, diferenca 0,0).
+      `h0`   hiato do produto em t0 -- para plugar o que o BC publicou no vintage
+             (`pm_hiato_produto_vintages`) em vez do nosso estado latente.
+      `sh0`  choque de hiato em t0.
     """
     if expectativa not in ("premissa", "eq5"):
         raise ValueError("expectativa: 'premissa' ou 'eq5', nao %r" % expectativa)
@@ -482,9 +499,16 @@ def simular(P: pd.DataFrame, par: dict, S: pd.DataFrame, n: int = 16, *,
         de_p = vec(de, 0.0) if de is not None else de_ppc.copy()
 
     # estado inicial e historico necessario as defasagens, tudo lido EM t0
-    h0, sh0 = _em(S["h"], t0), _em(S["s_h"], t0)
-    rr_fix = _em(P["rr_trend"], t0) + _em(S["rr_IS"], t0)   # r* segue passeio aleatorio
-    rhat0 = _em(S["r_hat"], t0)
+    h0 = _em(S["h"], t0) if h0 is None else float(h0)
+    sh0 = _em(S["s_h"], t0) if sh0 is None else float(sh0)
+    if rr is None:
+        rr_fix = _em(P["rr_trend"], t0) + _em(S["rr_IS"], t0)   # r* segue passeio aleatorio
+        rhat0 = _em(S["r_hat"], t0)
+    else:
+        # r* dado por fora: `rhat0` TEM de ser recalculado, senao a defasagem da IS entra
+        # com a neutra que o filtro estimou e nao com a que o cenario assume.
+        rr_fix = float(rr)
+        rhat0 = _em(P["i_e"], t0) - _em(P["pi_e"], t0) - rr_fix
     piL0 = _em(P["pi_L"], t0)
     pie0 = _em(P["pi_e"], t0)
     ipca0 = list(P["pi_IPCA"][P["pi_IPCA"].index <= t0].dropna().iloc[-4:].values)

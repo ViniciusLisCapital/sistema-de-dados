@@ -27,7 +27,14 @@ nada antes de 2021-09 responde 200. O relatorio existe desde 1999, mas so passou
 a publicar anexo de dados nessa edicao. Antes disso os numeros existem apenas
 como imagem de grafico no PDF -- fora de alcance deste connector.
 
-## Sem listagem de diretorio
+## Listagem de edicoes: existe, e para o PDF
+
+`edicoes()` traz as 109 edicoes de 1999-06 a 2026-06 numa requisicao (`api/servico/sitebcb/rpm/
+ultimas`), com data de publicacao e URL do PDF. Isso resolve a descoberta do RELATORIO, nao a do
+anexo: a listagem nao diz nada sobre o xlsx, e nem toda edicao listada tem anexo (so de 2021-09 em
+diante). Por isso a enumeracao abaixo continua existindo para o anexo.
+
+## Sem listagem de diretorio (para o anexo)
 
 A pasta nao lista conteudo e a pagina do relatorio e SPA (requests traz so o
 shell). Entao `vintages_disponiveis()` ENUMERA os trimestres candidatos desde
@@ -59,13 +66,21 @@ from __future__ import annotations
 import datetime as dt
 import io
 import re
+import time
 import unicodedata
+from dataclasses import dataclass
 
 import openpyxl
 import pandas as pd
 import requests
 
 _BASE_URL = "https://www.bcb.gov.br/content/ri/relatorioinflacao"
+
+# Listagem de edicoes. A colecao chama-se `rpm` e devolve a serie INTEIRA desde 1999-06, inclusive
+# as edicoes publicadas quando o relatorio ainda se chamava RI -- a colecao irma `ri` e subconjunto
+# (para em 2024-12), entao nao serve. Descoberto por tentativa: `relatorioinflacao`,
+# `relatoriopoliticamonetaria` e variantes dao 400.
+_API_EDICOES = "https://www.bcb.gov.br/api/servico/sitebcb/rpm"
 
 # Primeira edicao com anexo estatistico (ver docstring do modulo).
 PRIMEIRO_VINTAGE = dt.date(2021, 9, 1)
@@ -103,6 +118,60 @@ def trimestres_desde(inicio: dt.date = PRIMEIRO_VINTAGE,
                 out.append(d)
         ano += 1
     return out
+
+
+@dataclass(frozen=True)
+class Edicao:
+    """Uma edicao do relatorio, como a API a devolve."""
+
+    vintage: dt.date  # data de publicacao (DataReferencia)
+    ano_mes: str      # '200006' -- e o que a URL usa, e o identificador natural da edicao
+    url_pdf: str
+    titulo: str
+
+    @property
+    def nome_arquivo(self) -> str:
+        return f"rpm_{self.ano_mes}_{self.vintage:%Y-%m-%d}.pdf"
+
+
+def edicoes(*, quantidade: int = 500, timeout: float = 60.0) -> list[Edicao]:
+    """Todas as edicoes publicadas, em ordem cronologica.
+
+    UMA requisicao devolve o arquivo inteiro -- 109 edicoes de 1999-06 a 2026-06 sem buraco
+    (medido 2026-08-25). Ver "Listagem de edicoes" na docstring do modulo.
+    """
+    resp = requests.get(f"{_API_EDICOES}/ultimas",
+                        params={"quantidade": quantidade, "filtro": ""},
+                        headers={"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    resp.raise_for_status()
+    out = []
+    for item in resp.json().get("conteudo") or []:
+        url = item["Url"]
+        m = re.search(r"/(\d{6})/", url)
+        if not m:
+            continue
+        out.append(Edicao(
+            vintage=dt.date.fromisoformat(item["DataReferencia"][:10]),
+            ano_mes=m.group(1),
+            url_pdf=url if url.startswith("http") else f"https://www.bcb.gov.br{url}",
+            titulo=item.get("Titulo", "").strip(),
+        ))
+    return sorted(out, key=lambda e: e.vintage)
+
+
+def baixar_pdf(edicao: Edicao, *, tentativas: int = 3, timeout: float = 180.0) -> bytes:
+    """Baixa o PDF de uma edicao. Retenta com backoff -- o CDN do BCB da timeout esporadico."""
+    ultimo: Exception | None = None
+    for k in range(tentativas):
+        try:
+            resp = requests.get(edicao.url_pdf, headers={"User-Agent": "Mozilla/5.0"},
+                                timeout=timeout)
+            resp.raise_for_status()
+            return resp.content
+        except requests.RequestException as err:  # noqa: PERF203
+            ultimo = err
+            time.sleep(2 * (k + 1))
+    raise RuntimeError(f"falhou baixar {edicao.url_pdf}: {ultimo}")
 
 
 class AnexoRPM:

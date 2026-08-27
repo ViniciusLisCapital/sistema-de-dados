@@ -104,6 +104,10 @@ El.prototype.on = function (k, f) { (this._plotly[k] = this._plotly[k] || []).pu
 El.prototype.emit = function (k, ev) { (this._plotly[k] || []).forEach((f) => f(ev)); };
 El.prototype.closest = function () { return this._closest || null; };
 El.prototype.contains = function () { return false; };
+El.prototype.matches = function () { return false; };
+El.prototype.getBoundingClientRect = function () {
+  return { left: 10, right: 24, top: 40, bottom: 54, width: 14, height: 14 };
+};
 El.prototype.querySelector = function (sel) {
   const m = /^\[data-role=([a-z]+)\]$/.exec(sel);
   if (m) return this._roles ? this._roles[m[1]] : null;
@@ -116,6 +120,11 @@ El.prototype.querySelectorAll = function (sel) {
   // desenhariam graficos vazios -- que e exatamente o que este harness precisa exercitar.
   if (sel === 'input:checked') return this._inputs.filter((i) => i.checked);
   if (sel === 'input') return this._inputs;
+  // A tabela do Boletim e montada por innerHTML e depois lida com
+  // querySelectorAll('[data-row-key]') / ('[data-info-key]') para pendurar o clique da
+  // linha e o botao "i". Sem parsear as marcas, nenhum dos dois seria testado.
+  if (sel === '[data-row-key]') return (this._marked || []).filter((e) => e.dataset.rowKey !== undefined);
+  if (sel === '[data-info-key]') return (this._marked || []).filter((e) => e.dataset.infoKey !== undefined);
   return [];
 };
 Object.defineProperty(El.prototype, 'innerHTML', {
@@ -130,6 +139,23 @@ Object.defineProperty(El.prototype, 'innerHTML', {
     const re = /<input type="checkbox" value="([^"]*)"( checked)?>/g;
     let m;
     while ((m = re.exec(v)) !== null) this._inputs.push({ value: m[1], checked: !!m[2] });
+    this._marked = [];
+    const reM = /<(tr|span)([^>]*)>/g;
+    let mk;
+    while ((mk = reM.exec(v)) !== null) {
+      const attrs = mk[2] || '';
+      const rk = /data-row-key="([^"]*)"/.exec(attrs);
+      const ik = /data-info-key="([^"]*)"/.exec(attrs);
+      if (!rk && !ik) continue;
+      const el = new El(mk[1]);
+      const cls = /class="([^"]*)"/.exec(attrs);
+      // A classe da <tr> e o que diz se a linha esta plotada -- sem ela nao da para
+      // afirmar sobre a selecao a partir do markup que o relatorio realmente gera.
+      if (cls) el.className = cls[1];
+      if (rk) el.dataset.rowKey = rk[1];
+      if (ik) el.dataset.infoKey = ik[1];
+      this._marked.push(el);
+    }
   },
 });
 
@@ -172,6 +198,8 @@ function makeDom() {
       return [];
     },
     addEventListener() {},
+    body: new El('body'),
+    documentElement: { clientWidth: 1400, clientHeight: 900 },
     _els: els, _tabBtns: tabBtns, _tabPanels: tabPanels,
   };
   return doc;
@@ -204,7 +232,7 @@ function makePlotly(doc, chamadas) {
 const doc = makeDom();
 const chamadas = [];
 global.document = doc;
-global.window = {};
+global.window = { scrollX: 0, scrollY: 0 };
 global.Option = function (label, value) { const o = new El('option'); o.textContent = label; o.value = value; return o; };
 global.Plotly = makePlotly(doc, chamadas);
 
@@ -214,7 +242,8 @@ const EXPORTS = ['D', 'GRADE', 'NG', 'SNAPS', 'RENDERERS', 'activateTab',
                  'movBlk', 'indsDe', 'difSemanas', '_quickRangeOptions', '_defaultXRange',
                  '_traceAllDates', 'mkTsLayout', 'mkCatLayout', '_reactPreserveX', '_reactPlain',
                  '_resetChartAxis', '_PLOTLY_CONFIG', '_parseReuniao', '_copCurva', '_copMatriz',
-                 '_bolLinha', '_traFoto', '_mesesAte', '_movIndicadores', '_disBloco', '_copCategorias', 'vigenteOuFuturo', '_fimPeriodo',
+                 '_bolLinha', '_bolToggle', '_bolSerie', '_bolTabela', 'INFO', 'unidadeDe', '_primeiraSemana',
+                 'attachInfo', 'infoHtml', 'hideInfo', '_traFoto', '_mesesAte', '_movIndicadores', '_disBloco', '_copCategorias', 'vigenteOuFuturo', '_fimPeriodo',
                  'ordemCronologica'];
 let R;
 try {
@@ -414,6 +443,49 @@ ok(R._fimPeriodo('anual', '2026-01-01') === '2027-01-01', 'fim do ano de referen
 ok(R._fimPeriodo('trimestral', '2026-10-01') === '2027-01-01', 'fim do 4o trimestre vira o ano',
    R._fimPeriodo('trimestral', '2026-10-01'));
 
+console.log('\n7d. Definicoes dos indicadores (botao "i")');
+// O card so aparece onde ha entrada no INFO. Se a pesquisa ganhar um indicador novo,
+// e aqui que se descobre -- mesmo papel do teste do mapa de familias.
+const INDS_ANUAIS = R.indsDe('anual').map((o) => o.key);
+const semInfo = INDS_ANUAIS.filter((k) => !R.INFO[k]);
+ok(semInfo.length === 0, 'todo indicador anual tem definicao no INFO', semInfo.join(' | '));
+const infoOrfao = Object.keys(R.INFO).filter((k) => INDS_ANUAIS.indexOf(k) < 0);
+ok(infoOrfao.length === 0, 'nenhuma definicao aponta para indicador que nao existe', infoOrfao.join(' | '));
+ok(Object.keys(R.INFO).every((k) => R.INFO[k].full && R.INFO[k].desc && R.INFO[k].un),
+   'toda definicao tem nome oficial, explicacao e unidade');
+// A unidade e template: o ano tem de ser substituido, senao o card mostra "{ano}".
+const unIpca = R.unidadeDe('IPCA|', '2027');
+ok(unIpca.indexOf('2027') >= 0 && unIpca.indexOf('{') < 0, 'unidadeDe substitui {ano}', unIpca);
+ok(R.unidadeDe('Selic|', '2027') !== R.unidadeDe('IPCA|', '2027'),
+   'Selic (fim de periodo) e IPCA (acumulado) nao dividem a mesma unidade');
+// "Na pesquisa desde" e derivado do payload, nao escrito a mao: tem de bater com o
+// menor i0 entre os periodos de referencia do indicador.
+function primeiraNaMao(key) {
+  const meta = R.pMeta('anual', key);
+  let min = null;
+  meta.refs.forEach((r) => {
+    const b = R.pBlk('anual', key, r);
+    if (b && (min === null || b.i0 < min)) min = b.i0;
+  });
+  return min === null ? null : R.GRADE[min];
+}
+const errosDesde = INDS_ANUAIS.filter((k) => R._primeiraSemana('anual', k) !== primeiraNaMao(k));
+ok(errosDesde.length === 0, '_primeiraSemana bate com o menor i0 de todos os indicadores',
+   errosDesde.join(' | '));
+// Os componentes do IPCA entraram na reformulacao de set/2021 -- a data derivada tem
+// de mostrar isso, e nao a data do IPCA cheio.
+ok(R._primeiraSemana('anual', 'IPCA Serviços|') > '2021-08-01',
+   'componente do IPCA aparece so depois de set/2021', R._primeiraSemana('anual', 'IPCA Serviços|'));
+ok(R._primeiraSemana('anual', 'IPCA|') < '2001-01-01',
+   'IPCA cheio vem do inicio da serie', R._primeiraSemana('anual', 'IPCA|'));
+// Regra do skill: `full` so entra quando acrescenta algo ao rotulo ja visivel.
+const htmlNormal = R.infoHtml('Balança comercial|Saldo', 'Balança comercial — Saldo', '2026');
+ok(htmlNormal.indexOf('info-full') >= 0, 'card mostra o nome oficial quando ele difere do rotulo');
+ok(htmlNormal.indexOf('Unidade: ') >= 0 && htmlNormal.indexOf('Na pesquisa desde') >= 0,
+   'card fecha com unidade e data de entrada na pesquisa');
+const htmlIgual = R.infoHtml('IPCA|', R.INFO['IPCA|'].full, '2026');
+ok(htmlIgual.indexOf('info-full') < 0, 'card NAO repete o rotulo quando full === label');
+
 console.log('\n8. Renderizadores rodam contra o payload real');
 ABAS.forEach((aba) => {
   chamadas.length = 0;
@@ -484,6 +556,111 @@ ok(reactTra && reactTra.layout.xaxis.title.text === 'Período de referência',
 const traces0 = reactTra ? reactTra.traces : [];
 ok(traces0.length && traces0[0].line.dash === 'solid' && traces0.slice(1).every((t) => t.line.dash === 'dot'),
    'so a primeira fotografia e solida', traces0.map((t) => t.line.dash).join(','));
+
+console.log('\n8c. Boletim: a linha da tabela chama o grafico');
+// Os retangulos de KPI sairam a pedido do usuario -- a checagem e no HTML cru porque o
+// stub de DOM cria elemento por demanda e nunca devolveria null.
+ok(fs.readFileSync(HTML, 'utf8').indexOf('kpi-bol-') < 0, 'nenhum KPI card sobrou na aba Boletim');
+
+const TBL = doc._els['tbl-boletim'];
+function bolRows() { return TBL.querySelectorAll('[data-row-key]'); }
+function bolRow(k) { return bolRows().filter((r) => r.dataset.rowKey === k)[0]; }
+function bolSel() { return bolRows().filter((r) => r.classList.contains('row-sel')).map((r) => r.dataset.rowKey); }
+function bolReact() { return chamadas.filter((c) => c.tipo === 'react' && c.divId === 'chart-bol-serie').pop(); }
+function bolLinhas() { return (bolReact() || { traces: [] }).traces.filter((t) => t.mode !== 'lines' || t.line.width > 0); }
+
+R.RENDERERS.boletim();
+const anoBol = doc._els['pg-bol-ano'].children[0].textContent;
+ok(bolRows().length > 20, 'toda linha da tabela e clicavel (data-row-key)', String(bolRows().length));
+ok(bolRows().every((r) => r.classList.contains('row-pick')), 'toda linha leva a classe row-pick');
+ok(bolSel().length === 1 && bolSel()[0] === 'IPCA|', 'abre com o IPCA plotado', bolSel().join(','));
+ok(bolLinhas().length === 1 && bolLinhas()[0].name === 'IPCA', 'uma serie no grafico',
+   bolLinhas().map((t) => t.name).join(','));
+ok(bolReact().layout.yaxis.title.text === R.unidadeDe('IPCA|', anoBol),
+   'titulo do eixo Y e a MESMA string de unidade que o card mostra',
+   bolReact().layout.yaxis.title.text);
+ok(doc._els['bol-serie-t'].textContent === 'IPCA', 'cabecalho do grafico traz o titulo',
+   doc._els['bol-serie-t'].textContent);
+ok(doc._els['bol-serie-sub'].textContent.indexOf(anoBol) >= 0
+   && doc._els['bol-serie-sub'].textContent.indexOf(R.unidadeDe('IPCA|', anoBol)) >= 0,
+   'subtitulo diz o ano de referencia e a unidade', doc._els['bol-serie-sub'].textContent);
+ok(/^Fonte: BCB.*\d{2}\/\d{2}\/\d{4} a \d{2}\/\d{2}\/\d{4}$/.test(doc._els['bol-serie-src'].textContent),
+   'linha de fonte tem o periodo real da serie', doc._els['bol-serie-src'].textContent);
+// O titulo do grafico tambem ganha o "i" quando ha uma serie so.
+ok(doc._els['bol-serie-t'].children.filter((c) => c.classList.contains('info-btn')).length === 1,
+   'titulo do grafico ganha o botao de definicao com uma serie na tela');
+
+// Todo rotulo da tabela tem o botao "i", e ele nasce da entrada no INFO.
+const hosts = TBL.querySelectorAll('[data-info-key]');
+ok(hosts.length === bolRows().length, 'um host de botao por linha', hosts.length + ' vs ' + bolRows().length);
+ok(hosts.every((hst) => hst.children.length === 1 && hst.children[0].classList.contains('info-btn')),
+   'toda linha ganhou o botao "i"');
+
+// Somar uma serie da MESMA unidade.
+chamadas.length = 0;
+bolRow('IGP-M|').fire('click');
+ok(bolSel().length === 2 && bolSel().indexOf('IGP-M|') >= 0, 'clique soma a linha a selecao', bolSel().join(','));
+ok(bolLinhas().length === 2, 'duas series no grafico', String(bolLinhas().length));
+ok(doc._els['bol-serie-t'].textContent.indexOf('IGP-M') >= 0, 'titulo lista as duas series',
+   doc._els['bol-serie-t'].textContent);
+ok(doc._els['bol-serie-t'].children.length === 0, 'sem botao "i" no titulo com duas series');
+
+// Mesma unidade "%", definicoes diferentes -> o eixo tem de admitir que sao coisas
+// diferentes em vez de rotular tudo como uma delas.
+chamadas.length = 0;
+bolRow('Selic|').fire('click');
+ok(bolReact().layout.yaxis.title.text.indexOf('unidades mistas') === 0,
+   'IPCA acumulado + Selic fim de periodo -> eixo declara unidades mistas',
+   bolReact().layout.yaxis.title.text);
+
+// Unidade DIFERENTE troca a selecao em vez de empilhar p.p. com R$.
+chamadas.length = 0;
+bolRow('Câmbio|').fire('click');
+ok(bolSel().length === 1 && bolSel()[0] === 'Câmbio|', 'linha de outra unidade substitui a selecao',
+   bolSel().join(','));
+ok(bolLinhas().length === 1 && bolLinhas()[0].name === 'Câmbio', 'grafico fica so com a nova serie');
+ok(bolReact().layout.yaxis.title.text === R.unidadeDe('Câmbio|', anoBol),
+   'e o eixo volta a ter unidade unica', bolReact().layout.yaxis.title.text);
+
+// Nunca fica sem serie: desmarcar a unica marcada nao faz nada.
+chamadas.length = 0;
+bolRow('Câmbio|').fire('click');
+ok(bolSel().length === 1 && bolSel()[0] === 'Câmbio|', 'desmarcar a unica linha nao esvazia o grafico',
+   bolSel().join(','));
+
+// Faixa de +-1 desvio-padrao: so com uma serie, e desenhada como area entre duas linhas.
+chamadas.length = 0;
+doc._els['tg-bol-banda'].fire('click');
+const trBanda = bolReact().traces;
+ok(trBanda.length === 3 && trBanda.filter((t) => t.fill === 'tonexty').length === 1,
+   'faixa entra como area entre duas linhas invisiveis', trBanda.length + ' traces');
+ok(trBanda[2].line.width > 0 && trBanda[0].line.width === 0 && trBanda[1].line.width === 0,
+   'a mediana e desenhada por cima da faixa');
+const banda = trBanda.filter((t) => t.fill === 'tonexty')[0];
+const mediana = trBanda[2];
+ok(banda.y.every((v, i) => v == null || mediana.y[i] == null || v <= mediana.y[i]),
+   'o limite inferior nunca passa da mediana');
+chamadas.length = 0;
+bolRow('Selic|').fire('click');   // outra unidade: substitui, entao ainda e uma serie so
+ok(bolSel().length === 1 && bolReact().traces.filter((t) => t.fill === 'tonexty').length === 1,
+   'a faixa sobrevive a troca de serie');
+bolRow('IPCA|').fire('click');    // mesma unidade: agora sao duas
+ok(bolSel().length === 2 && bolReact().traces.every((t) => t.fill !== 'tonexty'),
+   'com duas series a faixa sai (duas areas sobrepostas nao se leem)',
+   bolSel().join(',') + ' | ' + bolReact().traces.length + ' traces');
+doc._els['tg-bol-banda'].fire('click');
+
+// O clique no "i" nao pode alternar a linha embaixo dele.
+let parou = false;
+const btnInfo = TBL.querySelectorAll('[data-info-key]')[0].children[0];
+btnInfo.fire('click', { stopPropagation() { parou = true; } });
+ok(parou, 'clique no "i" para de propagar (senao alternaria a linha da tabela)');
+ok(btnInfo.classList.contains('pinned'), 'clicar fixa o card');
+R.hideInfo();
+ok(!btnInfo.classList.contains('pinned'), 'fechar solta o card');
+
+// Volta ao estado padrao para as secoes seguintes.
+R.RENDERERS.boletim();
 
 console.log('\n9. Layout: pan nos dois eixos, view inicial justa');
 const S = { dates: ['2024-03-01', '2024-06-01', '2024-09-01', '2024-12-01', '2025-03-01'],

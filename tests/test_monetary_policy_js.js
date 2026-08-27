@@ -32,7 +32,36 @@ if (!fs.existsSync(HTML)) {
 }
 const blocos = fs.readFileSync(HTML, 'utf8').match(/<script>([\s\S]*?)<\/script>/g) || [];
 if (!blocos.length) { console.error('nenhum <script> encontrado no HTML'); process.exit(1); }
+const RAW = fs.readFileSync(HTML, 'utf8');
 const SRC = blocos[blocos.length - 1].replace(/^<script>/, '').replace(/<\/script>$/, '');
+
+// ── Referencia do Python: os CSVs que modelo_agregado.rodar() gravou ─────────
+// Ate 2026-08-25 estas series chegavam pelo payload (D.cenarios), que a aba Cenarios
+// consumia. Com a aba removida o payload nao as carrega mais, e a referencia passou a ser
+// lida direto do artefato -- que e fonte MELHOR: precisao cheia, sem o arredondamento de
+// 4 casas que o _ser() do generate_report aplica antes de escrever no HTML.
+const DATA_DIR = path.join(__dirname, '..', 'analytics', 'brasil', 'monetary_policy', 'data');
+function lerCSV(nome) {
+  const linhas = fs.readFileSync(path.join(DATA_DIR, nome), 'utf8').trim().split(/\r?\n/);
+  const cols = linhas[0].split(',').slice(1);
+  const out = { _index: [] };
+  cols.forEach((c) => { out[c] = []; });
+  linhas.slice(1).forEach((l) => {
+    const campos = l.split(',');
+    out._index.push(campos[0]);
+    cols.forEach((c, i) => {
+      const v = campos[i + 1];
+      out[c].push(v === '' || v === undefined ? null : Number(v));
+    });
+  });
+  return out;
+}
+const _cenCache = {};
+function cenarioPy(jk, ek) {
+  const k = jk + '__' + ek;
+  if (!_cenCache[k]) _cenCache[k] = lerCSV('modelo_cenario_' + k + '.csv');
+  return _cenCache[k];
+}
 
 let falhas = 0;
 function ok(cond, nome, detalhe) {
@@ -186,7 +215,7 @@ function _descendentes(el, out) {
 
 function makeDom() {
   const els = {};
-  const ABAS = ['motor', 'cenarios', 'decomp', 'neutra', 'hiato', 'projecoes', 'appendix'];
+  const ABAS = ['motor', 'condicoes', 'projecoes', 'appendix'];
   const tabBtns = ABAS.map((t) => {
     const b = new El('button'); b.dataset.tab = t; return b;
   });
@@ -265,12 +294,17 @@ global.alert = () => {};
 const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText', 'lineTrace',
                  '_quickRangeOptions', '_defaultXRange', '_traceAllDates', 'mkTimeseriesLayout',
                  'mkBarLayout', '_reactPreserveX', 'activateTab', 'RENDERERS', 'setKPI', '_PLOTLY_CONFIG',
-                 'D', '_emenda', '_recorta', 'dashTrace',
+                 'D', 'dashTrace',
+                 'renderCondicoes', 'cdCor', 'cdVeredito', 'cdDataCurta', 'cdAlimenta',
                  'motorSim', 'mtCfgPadrao', 'mtClone', '_mtVals', '_mtSolve', 'MT_SPEC',
                  'mtRenderInputs', 'mtRenderCenarios', '_mtResumo',
                  'mtDefaults', 'mtPathMeta', 'mtAtalho', 'mtChoque', 'mtIgualPadrao',
                  '_mtLinha', '_mtShapes', 'MT_GRUPOS', 'mtToggleGraf',
-                 '_mtHR', 'mtNotaHR', 'MT_HR_TRI'];
+                 '_mtHR', 'mtNotaHR', 'MT_HR_TRI',
+                 'renderProjecoes', 'renderProjecoesSerie', 'renderProjecoesBacktest',
+                 'renderProjecoesPrevBox', 'renderProjecoesBtTabela',
+                 'pjLinhas', 'pjCorr', 'pjMAE', 'pjBtNivel', 'pjPrevisao', 'pjPrevValor',
+                 'pjMet', 'PJ_METODOS', 'PJ'];
 let MP;
 try {
   new Function(SRC + ';global.__MP = {' + EXPORTS.join(',')
@@ -283,14 +317,14 @@ try {
 
 console.log('\n1. Carga e troca de abas');
 ok(!!MP, 'script executa sem excecao');
-ok(Object.keys(MP.RENDERERS).sort().join(',') === 'appendix,cenarios,decomp,hiato,motor,neutra',
-   'RENDERERS tem as 6 abas construidas', JSON.stringify(Object.keys(MP.RENDERERS)));
-// projecoes e a unica aba ainda stub -- nao tem renderizador de proposito.
-ok(!('projecoes' in MP.RENDERERS), 'projecoes fica fora do RENDERERS (ainda e stub)');
+ok(Object.keys(MP.RENDERERS).sort().join(',') === 'appendix,condicoes,motor,projecoes',
+   'RENDERERS tem as 4 abas, todas construidas', JSON.stringify(Object.keys(MP.RENDERERS)));
+// A aba Projecoes deixou de ser stub em 2026-08-25 -- cobertura propria na secao 33.
+ok('projecoes' in MP.RENDERERS, 'projecoes entra no RENDERERS');
 // appendix TEM renderizador: preenche a tabela de validacao dos parametros a partir de D.info.
 ok('appendix' in MP.RENDERERS, 'appendix entra no RENDERERS (monta a tabela de validacao)');
 ok(doc._tabPanels[0].classList.contains('active'), 'aba inicial (motor) ativa no load');
-MP.activateTab('cenarios');
+MP.activateTab('condicoes');
 ok(doc._tabPanels[1].classList.contains('active') && !doc._tabPanels[0].classList.contains('active'),
    'activateTab troca o painel ativo');
 ok(doc._tabBtns[1].classList.contains('active'), 'activateTab troca o botao ativo');
@@ -307,8 +341,8 @@ ok(MP.fmtDate('2026-08-01', 'projecoes') === '2026 T3', 'fmtDate trimestral para
    MP.fmtDate('2026-08-01', 'projecoes'));
 // Todo grupo do relatorio e trimestral agora (o modelo e trimestral). Um grupo nao
 // declarado cai no default mensal, que e o caminho que este caso cobre.
-ok(MP.fmtDate('2026-08-01', 'neutra') === '2026 T3', 'fmtDate trimestral tambem para neutra',
-   MP.fmtDate('2026-08-01', 'neutra'));
+ok(MP.fmtDate('2026-08-01', 'motor') === '2026 T3', 'fmtDate trimestral tambem para motor',
+   MP.fmtDate('2026-08-01', 'motor'));
 ok(MP.fmtDate('2026-08-01', 'grupo_inexistente') === 'Ago/2026',
    'fmtDate cai em mensal quando o grupo nao esta em PERIODS_PER_YEAR',
    MP.fmtDate('2026-08-01', 'grupo_inexistente'));
@@ -438,26 +472,28 @@ MP.setKPI('kpi-teste', null);
 ok(doc._els['kpi-teste-value'].textContent === '—', 'KPI nulo vira em-dash');
 
 
-console.log('\n12. Abas do modelo agregado renderizam sem excecao');
+console.log('\n12. Abas renderizam sem excecao');
 // Renderizar de fato cada aba contra o payload REAL: pega chave de serie errada, campo
 // ausente em D.info e trace malformado -- o tipo de erro que `node --check` nao ve.
-['cenarios', 'decomp', 'neutra', 'hiato', 'appendix'].forEach((tab) => {
+// Cenarios, Decomposicao, Taxa Neutra e Hiato do Produto foram REMOVIDAS em 2026-08-25;
+// a aba do motor tem cobertura propria e muito mais funda nas secoes 19-30.
+['appendix', 'condicoes', 'projecoes'].forEach((tab) => {
   let erro = null;
   try { MP.RENDERERS[tab](); } catch (e) { erro = e; }
   ok(!erro, 'render' + tab[0].toUpperCase() + tab.slice(1) + ' executa', erro && String(erro));
 });
 
-console.log('\n13. Payload do modelo: as series que as abas pedem existem');
+console.log('\n13. Payload: o que as abas vivas pedem existe, e o das mortas nao sobrou');
 const D = MP.D || {};
-ok(Object.keys(D.cenarios || {}).length > 0, 'grupo cenarios populado');
-ok(!!(D.cenarios && D.cenarios['focus__focus__ipca_4t']), 'cenario focus/focus tem ipca_4t');
-ok(!!(D.cenarios && D.cenarios['irf__publicado_so_demanda']),
-   'IRF traz a linha publicada de canal de demanda (o alvo de validacao correto)');
-ok(!!(D.decomp && D.decomp['phillips__total']), 'decomposicao da Phillips tem total');
-ok(!!(D.neutra && D.neutra['r_IS']) && !!(D.neutra && D.neutra['pub_Modelos_BC']),
-   'taxa neutra traz o nosso r* e o "Modelos BC" publicado');
-ok(!!(D.hiato && D.hiato['nosso']) && !!(D.hiato && D.hiato['pub_central']),
-   'hiato traz o latente e o publicado');
+ok(Object.keys(D.motor || {}).length > 0, 'grupo motor populado');
+['selic', 'h', 'ipca_4t', 'pi_e', 'rr_IS_total'].forEach((k) => {
+  ok(!!(D.motor && D.motor[k]), 'motor traz o historico de ' + k);
+});
+// Apagar a aba sem apagar o loader deixaria o payload carregando series que ninguem le.
+// Num arquivo autocontido isso e peso morto invisivel -- so aparece no tamanho do .html.
+['cenarios', 'decomp', 'neutra', 'hiato'].forEach((g) => {
+  ok(!D[g], 'grupo ' + g + ' saiu do payload junto com a aba');
+});
 // 22 = os 19 do filtro + os 3 phi da eq. (5), que vem de estimador proprio.
 ok((D.info || {}).n_total === 22, 'info traz os 22 parametros da Tabela 1 do boxe',
    String((D.info || {}).n_total));
@@ -468,88 +504,48 @@ ok(_val.filter((r) => r.metodo === 'filtro').length === 19,
 ok(_val.filter((r) => r.metodo === 'dois passos').map((r) => r.param).sort().join(',') === 'f1,f2,f3',
    'os tres phi vem marcados como estimados fora do filtro');
 
-console.log('\n14. Decomposicoes somam o total (identidade, nao aproximacao)');
-// Cada bloco e construido com o residuo definido como o que sobra, entao a soma das
-// contribuicoes tem de reproduzir o total exatamente. Se um termo for esquecido no
-// renderizador, as barras deixam de fechar com a linha -- e isso pega.
-const TERMOS = {
-  phillips: ['inercia_livres', 'inercia_ipca', 'expectativa', 'commodities', 'cambio',
-             'hiato', 'clima', 'residuo'],
-  hiato: ['inercia', 'politica_monetaria', 'fiscal', 'choque_persistente', 'residuo'],
-  taylor: ['persistencia', 'ancora_real', 'meta', 'desvio_expectativa', 'residuo'],
-};
-Object.keys(TERMOS).forEach((bloco) => {
-  const tot = (D.decomp || {})[bloco + '__total'];
-  if (!tot) { ok(false, bloco + ': total ausente'); return; }
-  let pior = 0, n = 0;
-  for (let i = 0; i < tot.values.length; i++) {
-    if (tot.values[i] == null) continue;
-    let soma = 0, faltou = false;
-    TERMOS[bloco].forEach((t) => {
-      const s = (D.decomp || {})[bloco + '__' + t];
-      if (!s || s.values[i] == null) { faltou = true; return; }
-      soma += s.values[i];
-    });
-    if (faltou) continue;
-    pior = Math.max(pior, Math.abs(soma - tot.values[i]));
-    n++;
-  }
-  ok(n > 40 && pior < 1e-3, bloco + ': contribuicoes somam o total em ' + n + ' trimestres',
-     'erro maximo ' + pior.toExponential(2));
-});
-
-console.log('\n15. Emenda historico -> cenario');
-// _emenda cola o ultimo ponto observado no inicio do cenario para a linha nao nascer solta.
-const _h = {dates: ['2026-01-01', '2026-04-01'], values: [1, 2]};
-const _c = {dates: ['2026-07-01'], values: [3]};
-const _e = MP._emenda(_h, _c);
-ok(_e.dates.length === 2 && _e.dates[0] === '2026-04-01' && _e.values[0] === 2,
-   '_emenda prefixa o ultimo ponto observado', JSON.stringify(_e));
-ok(MP._emenda(null, _c).dates.length === 1, '_emenda sem historico devolve o cenario cru');
-ok(MP._recorta(_h, '2026-04-01').dates.length === 1, '_recorta corta pelo ISO');
-
+// As secoes 14 (identidade das decomposicoes) e 15 (_emenda/_recorta) sairam em 2026-08-25
+// com as abas Decomposicao e Cenarios. A numeracao das seguintes NAO foi corrida de
+// proposito: o CLAUDE.md da pasta cita as secoes 19, 22, 25, 28 e 31 pelo numero.
 
 console.log('\n16. Equacao (5): a expectativa endogena e resposta, nao premissa');
 // O cenario default e o endogeno. O teste que importa: no cenario 'eq5' pi^e VARIA ao
 // longo do horizonte (o modelo a move), enquanto no cenario 'focus' ela e uma constante
-// por construcao. Se a pill trocar de significado sem o payload trocar, isto pega.
-const _s = (k) => (D.cenarios || {})[k];
-function _spread(s) {
-  const v = (s && s.values || []).filter((x) => x != null);
+// por construcao.
+function _spread(vals) {
+  const v = (vals || []).filter((x) => x != null);
   return v.length ? Math.max.apply(null, v) - Math.min.apply(null, v) : 0;
 }
-const _pe5 = _s('focus__eq5__pi_e');
-const _pef = _s('focus__focus__pi_e');
-ok(_pe5 && _pe5.values.length > 0, 'existe cenario com expectativa endogena (eq. 5)');
+const _pe5 = cenarioPy('focus', 'eq5').pi_e;
+const _pef = cenarioPy('focus', 'focus').pi_e;
+ok(_pe5.length > 0, 'existe cenario com expectativa endogena (eq. 5)');
 ok(_spread(_pe5) > 0.1, 'pi^e endogena se move ao longo do cenario',
    'amplitude ' + _spread(_pe5).toFixed(4));
 ok(_spread(_pef) < 1e-9, 'pi^e da premissa Focus e constante, como anunciado',
    'amplitude ' + _spread(_pef).toFixed(9));
-ok(!!_s('focus__eq5__de'), 'o cenario traz a variacao cambial da eq. (4)');
+ok(cenarioPy('focus', 'eq5').de.length > 0, 'o cenario traz a variacao cambial da eq. (4)');
 const _f2 = ((D.info || {}).params || {}).f2;
 ok(_f2 > 0 && _f2 < 1, 'phi2 (peso da previsao do modelo) esta em (0,1)', String(_f2));
 
 console.log('\n17. IRF: a escada de validacao tem os tres pares e o motor com parametros do BC');
-const _PARES = [['irf__ipca_4t_so_demanda', 'irf__publicado_so_demanda'],
-                ['irf__ipca_4t_com_expectativa', 'irf__publicado_sem_cambio'],
-                ['irf__ipca_4t_completo', 'irf__publicado_completo']];
-_PARES.forEach((p) => {
-  ok(!!_s(p[0]) && !!_s(p[1]),
-     'par presente: ' + p[0] + ' vs ' + p[1]);
+const _IRF = lerCSV('modelo_irf.csv');
+const _PARES = [['ipca_4t_so_demanda', 'publicado_so_demanda'],
+                ['ipca_4t_com_expectativa', 'publicado_sem_cambio'],
+                ['ipca_4t_completo', 'publicado_completo']];
+_PARES.forEach((par) => {
+  ok(!!_IRF[par[0]] && !!_IRF[par[1]], 'par presente: ' + par[0] + ' vs ' + par[1]);
 });
-ok(!!_s('irf__ipca_4t_motor_bcb'),
-   'IRF traz a linha do nosso motor com os parametros publicados');
+ok(!!_IRF.ipca_4t_motor_bcb, 'IRF traz a linha do nosso motor com os parametros publicados');
 // Ligar a eq. (5) tem de FORTALECER a transmissao: o pico fica mais negativo. Se um dia
 // sair mais fraco, ou o sinal do canal de expectativa inverteu ou o phi degenerou.
 function _pico(k) {
-  const v = (_s(k).values || []).filter((x) => x != null);
+  const v = (_IRF[k] || []).filter((x) => x != null);
   return Math.min.apply(null, v);
 }
-ok(_pico('irf__ipca_4t_com_expectativa') < _pico('irf__ipca_4t_so_demanda') - 0.01,
+ok(_pico('ipca_4t_com_expectativa') < _pico('ipca_4t_so_demanda') - 0.01,
    'a eq. (5) aprofunda o IRF (canal de expectativa com sinal certo)',
-   _pico('irf__ipca_4t_so_demanda').toFixed(3) + ' -> '
-   + _pico('irf__ipca_4t_com_expectativa').toFixed(3));
-ok(_pico('irf__ipca_4t_motor_bcb') < _pico('irf__ipca_4t_com_expectativa'),
+   _pico('ipca_4t_so_demanda').toFixed(3) + ' -> ' + _pico('ipca_4t_com_expectativa').toFixed(3));
+ok(_pico('ipca_4t_motor_bcb') < _pico('ipca_4t_com_expectativa'),
    'com os parametros do BC o motor responde mais que com os nossos');
 const _vi = (D.info || {}).irf || {};
 ok(_vi.motor_bcb && _vi.motor_bcb.erro_abs_medio < 0.06,
@@ -565,8 +561,9 @@ console.log('\n19. Motor do modelo agregado: o porte JS reproduz o simulador Pyt
 // Este e o teste que sustenta a aba inteira. O motor JS refaz as equacoes que
 // modelo_agregado.simular() resolve em Python, e o unico jeito de saber se a traducao
 // esta certa e rodar as MESMAS 12 configuracoes que cenarios_padrao() pre-simulou e exigir
-// que batam serie a serie. A tolerancia e 3e-4 porque o payload chega arredondado em 4
-// casas (_ser() do generate_report), entao 5e-5 e o piso do que da para distinguir.
+// que batam serie a serie. A referencia vem dos CSVs de `data/` (precisao cheia); a
+// tolerancia segue 3e-4 porque `mtCfgPadrao()` monta o cenario a partir de `dflt`, que
+// CHEGA arredondado no payload -- o piso de discrepancia e esse, nao o do CSV.
 const _MC = (D.motor_cfg || {});
 ok(!!_MC.par && !!_MC.ini && !!_MC.dflt, 'payload do motor chegou (par + ini + dflt)');
 ok(typeof MP.motorSim === 'function', 'motorSim existe');
@@ -618,11 +615,11 @@ if (_MC.par && MP.motorSim) {
       if (!r || r.erro) { ok(false, jk + '__' + ek + ' simula', r && r.erro); return; }
       let maxd = 0, campo = '';
       _CAMPOS.forEach((c) => {
-        const py = (D.cenarios || {})[jk + '__' + ek + '__' + c];
-        if (!py || !py.values.length) return;
+        const py = cenarioPy(jk, ek)[c];
+        if (!py || !py.length) return;
         _conferidos++;
-        for (let i = 0; i < Math.min(py.values.length, r.n); i++) {
-          const d = Math.abs(py.values[i] - r[c][i]);
+        for (let i = 0; i < Math.min(py.length, r.n); i++) {
+          const d = Math.abs(py[i] - r[c][i]);
           if (d > maxd) { maxd = d; campo = c + '[' + i + ']'; }
         }
       });
@@ -637,9 +634,9 @@ if (_MC.par && MP.motorSim) {
   // quem abre a aba ve o mesmo cenario que a aba Cenarios chama de referencia. Guardar os
   // vetores ja arredondados para exibicao quebraria isto -- por isso `vals` guarda numeros.
   const _def = MP.motorSim(_cfg());
-  const _pyDef = (D.cenarios || {}).focus__eq5__ipca_4t;
+  const _pyDef = cenarioPy('focus', 'eq5').ipca_4t;
   let _dd = 0;
-  for (let i = 0; i < _def.n; i++) _dd = Math.max(_dd, Math.abs(_pyDef.values[i] - _def.ipca_4t[i]));
+  for (let i = 0; i < _def.n; i++) _dd = Math.max(_dd, Math.abs(_pyDef[i] - _def.ipca_4t[i]));
   ok(_dd < _TOL, 'o cfg default da interface e o focus__eq5 do Python', _dd.toExponential(2));
 
   console.log('\n20. Motor: a eq. (5) fecha e o teste de folga passa');
@@ -921,7 +918,7 @@ if (MP.MT_SPEC && MP.mtRenderInputs) {
   ok(MP.mtIgualPadrao(_cfgH0) === false, 'mexer na condicao inicial tambem conta como diferente');
 
   console.log('\n27. Graficos: historico e cenario na MESMA linha');
-  // A primeira versao usou _emenda(), que cola so o ULTIMO ponto observado -- desenhado num
+  // A primeira versao colava so o ULTIMO ponto observado -- desenhado num
   // eixo de 2018 a 2030 isso deixava os quatro graficos sem historico nenhum. A linha tem de
   // vir com os dois trechos, cortada em t0.
   const _res = MP.motorSim(MP.mtCfgPadrao());
@@ -1334,6 +1331,573 @@ ok(_raw.indexOf('Por que a equação (5) está fora') < 0,
    'a nota desatualizada da eq. (5) saiu do apendice');
 ok(_raw.indexOf('o que mudou desde a réplica anterior') >= 0,
    'e foi trocada pela nota de historico, que reconcilia a afirmacao antiga');
+
+console.log('\n32. Aba Condicoes: o anacronismo e a cor');
+// A afirmacao que a aba inteira faz e uma so: a coluna "na reuniao" so contem dado que ja
+// tinha sido DIVULGADO quando o Copom decidiu. E ela e verificavel do proprio payload,
+// porque `div_ant`/`div_hoje` carregam a data de divulgacao que justifica cada celula --
+// e por isso que elas estao la, e nao so para o tooltip.
+{
+  const Q = MP.D.condicoes || {};
+  ok(!!Q.linhas && Q.linhas.length > 0, 'payload de condicoes populado',
+     JSON.stringify(Object.keys(Q)));
+
+  // "05/08/2026 18:30" -> Date. Formato BR, montado no Python.
+  function brDate(s) {
+    if (!s) return null;
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?$/.exec(String(s));
+    if (!m) return null;
+    return new Date(+m[3], +m[2] - 1, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0);
+  }
+  const corteAnt = brDate(Q.ant.corte);
+  ok(!!corteAnt, 'corte da reuniao anterior chega como datetime', String(Q.ant.corte));
+
+  const comDiv = Q.linhas.filter((l) => l.div_ant);
+  ok(comDiv.length > 0, 'ha linhas indexadas por periodo de referencia no payload');
+  comDiv.forEach((l) => {
+    ok(brDate(l.div_ant) <= corteAnt,
+       '"' + l.label + '" na reuniao: divulgado ' + l.div_ant + ' <= corte ' + Q.ant.corte);
+  });
+  // E a coluna de hoje nao pode usar dado que ainda nao saiu.
+  const agora = new Date();
+  comDiv.forEach((l) => {
+    if (l.div_hoje) ok(brDate(l.div_hoje) <= agora,
+      '"' + l.label + '" hoje: divulgado ' + l.div_hoje + ', ja no passado');
+  });
+
+  // A proxima reuniao tem que estar a frente da anterior, e o rotulo da Focus so pode
+  // apontar para ela -- foi assim que se descobriu que "Selic da proxima reuniao" comparava
+  // DUAS reunioes diferentes se o rotulo fosse recalculado em cada corte.
+  ok(new Date(Q.prox.date) > new Date(Q.ant.date), 'proxima reuniao e depois da anterior');
+  ok(Q.prox.numero == null || Q.prox.numero === Q.ant.numero + 1,
+     'numeracao das reunioes e consecutiva', Q.ant.numero + ' -> ' + Q.prox.numero);
+
+  // As 4 categorias do resumo particionam as linhas com dado: contar "sem dado novo"
+  // junto com "neutro" foi bug numa primeira versao -- mudez nao e ausencia de movimento.
+  const R = Q.resumo;
+  ok(R.hawkish + R.dovish + R.neutro + R.sem_leitura + R.sem_dado === Q.linhas.length,
+     'resumo particiona as linhas',
+     [R.hawkish, R.dovish, R.neutro, R.sem_leitura, R.sem_dado, Q.linhas.length].join('/'));
+  const semDado = Q.linhas.filter((l) => l.novos === 0);
+  semDado.forEach((l) => {
+    ok(l.ref_ant === l.ref_hoje,
+       '"' + l.label + '" sem dado novo tem a MESMA referencia nas duas colunas',
+       l.ref_ant + ' vs ' + l.ref_hoje);
+    ok(l.delta === 0, '"' + l.label + '" sem dado novo tem delta zero');
+  });
+  // Sinal 0 = sem leitura hawk/dove. Nunca pode sair com z, ou a Selic esperada da Focus
+  // seria colorida pela propria reacao a decisao passada -- circular.
+  Q.linhas.filter((l) => l.sinal === 0).forEach((l) => {
+    ok(l.z == null, '"' + l.label + '" (sinal 0) nao recebe z', String(l.z));
+  });
+  // E toda linha com sinal e dado novo TEM que ter z: sem ele a celula sai branca e se
+  // confunde com "nada mudou".
+  Q.linhas.filter((l) => l.sinal !== 0 && l.novos > 0 && !l.erro).forEach((l) => {
+    ok(typeof l.z === 'number', '"' + l.label + '" com dado novo recebe z', String(l.z));
+    ok(Math.abs(l.z) <= 3.0001, '"' + l.label + '" tem z limitado a +-3', String(l.z));
+  });
+
+  // Nivel de preco entra em variacao PERCENTUAL: se o delta viesse em pontos, a celula
+  // diria "+0,04" ao lado de uma PTAX de 5,15 e seria lida como quatro centavos -- e o z
+  // estaria dividindo centavos por um sigma medido em log. Os dois tem de mudar juntos.
+  Q.linhas.filter((l) => l.delta_pct && l.novos > 0).forEach((l) => {
+    const esperado = (l.hoje / l.ant - 1) * 100;
+    ok(Math.abs(l.delta - esperado) < 1e-6,
+       '"' + l.label + '" tem delta em %, nao em pontos',
+       l.delta + ' vs ' + esperado.toFixed(6));
+    ok(Math.abs(l.delta) < Math.abs(l.hoje - l.ant) * 100,
+       '"' + l.label + '" nao esta com o delta em nivel disfarcado de %');
+  });
+  const _pct = Q.linhas.filter((l) => l.delta_pct).map((l) => l.key);
+  ok(_pct.length > 0 && _pct.indexOf('ptax') >= 0,
+     'o cambio e a linha em variacao percentual', JSON.stringify(_pct));
+
+  // cdCor: vermelho = hawkish, azul = dovish, nada = sem leitura.
+  ok(MP.cdCor(2).indexOf('234,82,58') === 0 || MP.cdCor(2).indexOf('rgba(234,82,58') === 0,
+     'z positivo pinta de laranja/vermelho', MP.cdCor(2));
+  ok(MP.cdCor(-2).indexOf('rgba(2,115,155') === 0, 'z negativo pinta de azul', MP.cdCor(-2));
+  ok(MP.cdCor(null) === 'transparent', 'z nulo nao pinta');
+  const _a3 = parseFloat(MP.cdCor(3).split(',')[3]);
+  const _a1 = parseFloat(MP.cdCor(1).split(',')[3]);
+  ok(_a3 > _a1, 'saturacao cresce com |z|', _a1 + ' -> ' + _a3);
+
+  // cdVeredito: a ordem dos testes e o ponto. Sem dado novo tem z=0 por construcao, e sem
+  // o teste vir antes a linha sairia rotulada "em linha" -- afirmando que ela nao mexeu.
+  ok(MP.cdVeredito({novos: 0, z: 0}).txt === 'sem dado novo',
+     'sem dado novo vence o z=0', MP.cdVeredito({novos: 0, z: 0}).txt);
+  ok(MP.cdVeredito({novos: 3, z: 0}).txt === 'em linha', 'z zero COM dado novo e "em linha"');
+  ok(MP.cdVeredito({novos: 3, z: 1}).cls === 'cd-hawk', 'z positivo e hawkish');
+  ok(MP.cdVeredito({novos: 3, z: -1}).cls === 'cd-dove', 'z negativo e dovish');
+  ok(MP.cdVeredito({novos: 3, z: null}).txt === 'reação de mercado', 'sinal 0 vira reacao');
+
+  // Markup: uma linha por variavel + um cabecalho por bloco, e a celula de hoje pintada.
+  MP.RENDERERS.condicoes();
+  const _tab = doc.getElementById('cd-tabela');
+  const _trs = _tab.querySelectorAll('tr');
+  const _blocos = _trs.filter((t) => t.classList.contains('cd-bloco'));
+  const _nBlocos = new Set(Q.linhas.map((l) => l.bloco)).size;
+  ok(_blocos.length === _nBlocos, 'um cabecalho por bloco',
+     _blocos.length + ' vs ' + _nBlocos);
+  ok(_trs.length === Q.linhas.length + _nBlocos + 1,
+     'uma linha por variavel (+ blocos + cabecalho)',
+     _trs.length + ' vs ' + (Q.linhas.length + _nBlocos + 1));
+  const _pintadas = _tab.querySelectorAll('td').filter(
+    (td) => (td._attrs.style || '').indexOf('rgba(') >= 0);
+  const _esperadas = Q.linhas.filter((l) => l.z != null && Math.abs(l.z) > 0.0001).length;
+  ok(_pintadas.length === _esperadas, 'so as celulas com z != 0 saem pintadas',
+     _pintadas.length + ' vs ' + _esperadas);
+  ok(doc.getElementById('cd-kpis').querySelectorAll('.kpi-card').length === 4,
+     'quatro KPI cards');
+
+  // Agenda: so o que ainda vai sair, e ordenado.
+  const _ag = Q.agenda || [];
+  ok(_ag.every((a) => new Date(a.date + 'T00:00:00') <= new Date(Q.prox.date + 'T23:59:59')),
+     'agenda nao passa da data da reuniao');
+  ok(_ag.every((a) => a.date >= Q.hoje), 'agenda nao contem evento passado');
+  ok(_ag.every((a, i) => i === 0 || _ag[i - 1].date <= a.date), 'agenda ordenada por data');
+  ok(!_ag.some((a) => a.grupo === 'bcb_copom'), 'a propria reuniao nao entra na agenda');
+  // A agenda e filtrada ao que alimenta a tabela (pedido explicito): todo evento tem de
+  // apontar para pelo menos uma variavel, e o rotulo apontado tem de existir de fato --
+  // um rotulo orfao aqui seria a agenda prometendo dado novo para uma linha inexistente.
+  const _labels = new Set(Q.linhas.map((l) => l.label));
+  ok(_ag.every((a) => (a.variaveis || []).length > 0),
+     'todo evento da agenda alimenta alguma variavel da tabela');
+  ok(_ag.every((a) => (a.variaveis || []).every((v) => _labels.has(v))),
+     'os rotulos da agenda existem na tabela');
+  // E o inverso: nenhum grupo do calendario fora dos que a tabela usa.
+  const _grupos = new Set(Q.linhas.map((l) => l.grupo).filter(Boolean));
+  ok(_ag.every((a) => _grupos.has(a.grupo) || (a.variaveis || []).length > 0),
+     'agenda restrita aos grupos que alimentam a tabela',
+     JSON.stringify([...new Set(_ag.map((a) => a.grupo))]));
+  const _agTab = doc.getElementById('cd-agenda').querySelectorAll('tr');
+  ok(_agTab.length === _ag.length + 1, 'tabela da agenda tem uma linha por evento',
+     _agTab.length + ' vs ' + (_ag.length + 1));
+  // cdAlimenta: 6 linhas da Focus numa celula so estouram a largura.
+  ok(MP.cdAlimenta(['a', 'b']) === 'a · b', 'ate dois rotulos saem inteiros');
+  ok(MP.cdAlimenta(['a', 'b', 'c', 'd']).indexOf('e mais 2') > 0,
+     'acima de dois, conta o resto', MP.cdAlimenta(['a', 'b', 'c', 'd']));
+  ok(MP.cdAlimenta([]).indexOf('—') >= 0, 'lista vazia nao inventa rotulo');
+}
+
+
+console.log('\n33. Aba Projecoes do Copom: projecao do HR x passo de Selic');
+{
+  const P = MP.D.projecoes || {};
+  const E = (P.cenarios || {}).juros_esperado || [];
+  const K = (P.cenarios || {}).juros_constante || [];
+  ok(E.length > 90, 'cenario juros_esperado tem a serie longa', String(E.length));
+  ok(K.length > 0, 'cenario juros_constante existe', String(K.length));
+
+  // O ponto de partida da aba: a serie e HOMOGENEA. Sem isto o eixo mistura um "horizonte
+  // relevante" que e o ano civil (distancia encurtando de 12 para 4 trimestres ao longo do
+  // proprio ano) com um que e distancia fixa, e o dente de serra resultante nao e mudanca de
+  // projecao nenhuma. Nao levanta excecao: so desenha errado.
+  ok(E.every((r) => r.qa === 6), 'toda projecao esta a exatamente 6 trimestres da reuniao',
+     JSON.stringify([...new Set(E.map((r) => r.qa))]));
+  ok(K.every((r) => r.qa === 6), 'idem no cenario de juros constante');
+
+  // Sem filtro de `documento` a mesma reuniao entra duas vezes, com numeros diferentes
+  // (o relatorio e vintage 7-28 dias posterior). Duplicata aqui e o sintoma.
+  ok(new Set(E.map((r) => r.nro)).size === E.length, 'uma linha por reuniao, sem duplicata');
+  ok(E.every((r, i) => i === 0 || E[i - 1].nro < r.nro), 'ordenada por numero de reuniao');
+  ok(E.every((r, i) => i === 0 || E[i - 1].decisao_date < r.decisao_date),
+     'e a data da decisao cresce junto');
+
+  // A DEFINICAO do passo: variacao decidida NESTA reuniao, nao acumulado do ciclo. Os dois
+  // niveis viajam no payload justamente para esta conferencia ser possivel aqui.
+  ok(E.every((r) => r.bps === Math.round((r.selic_dec - r.selic_ant) * 100)),
+     'bps e (selic decidida - selic anterior), reuniao por reuniao');
+  ok(E.every((r) => (r.bps > 0 ? r.decisao === 'elevacao'
+                   : r.bps < 0 ? r.decisao === 'reducao' : r.decisao === 'manutencao')),
+     'o rotulo da decisao segue o sinal do passo');
+  // Um ciclo de alta com passos iguais provaria pouco; este cobre o caso que distingue as
+  // duas leituras -- passos DIFERENTES em reunioes consecutivas.
+  const _seq = E.filter((r) => r.nro >= 265 && r.nro <= 269).map((r) => r.bps);
+  ok(_seq.length > 1 && _seq.every((b) => b > 0) && new Set(_seq).size > 1,
+     'no ciclo de alta de 2024-2025 os passos variam entre reunioes (nao e acumulado)',
+     JSON.stringify(_seq));
+
+  ok(E.every((r) => r.meta != null && r.meta > 0), 'toda reuniao tem meta para o periodo projetado');
+  ok(E.every((r) => (r.meta_estendida === 1) === (Number(r.periodo.slice(0, 4)) > P.ultimo_ano_meta)),
+     'meta_estendida marca exatamente os periodos depois do ultimo ano publicado');
+  ok(!(P.sem_decisao || []).length, 'nenhuma reuniao com projecao ficou sem decisao de Selic',
+     JSON.stringify(P.sem_decisao));
+
+  // Correlacao: contra calculo independente feito aqui.
+  const _xs = E.map((r) => r.proj - r.meta), _ys = E.map((r) => r.bps);
+  const _mx = _xs.reduce((a, b) => a + b, 0) / _xs.length;
+  const _my = _ys.reduce((a, b) => a + b, 0) / _ys.length;
+  let _cov = 0, _vx = 0, _vy = 0;
+  for (let i = 0; i < _xs.length; i++) {
+    _cov += (_xs[i] - _mx) * (_ys[i] - _my);
+    _vx += (_xs[i] - _mx) ** 2; _vy += (_ys[i] - _my) ** 2;
+  }
+  const _ref = _cov / Math.sqrt(_vx * _vy);
+  ok(Math.abs(MP.pjCorr(_xs, _ys) - _ref) < 1e-12, 'pjCorr bate com Pearson calculado a parte',
+     MP.pjCorr(_xs, _ys) + ' vs ' + _ref);
+  ok(MP.pjCorr([1, 2], [1, 2]) === null, 'pjCorr recusa menos de 3 pares');
+  ok(MP.pjCorr([1, 1, 1], [1, 2, 3]) === null, 'pjCorr recusa variancia nula');
+
+  // Render de verdade contra o payload real.
+  let _erro = null;
+  try { MP.RENDERERS.projecoes(); } catch (e) { _erro = e; }
+  ok(!_erro, 'renderProjecoes executa', _erro && String(_erro));
+
+  function ultimoReact(divId) {
+    const c = chamadas.filter((x) => x.tipo === 'react' && x.divId === divId);
+    return c.length ? c[c.length - 1] : null;
+  }
+  const _s = ultimoReact('chart-pj-serie');
+  ok(!!_s, 'o grafico principal foi plotado');
+  // 5 e nao 3: a previsao acrescenta a ponte tracejada e o ponto previsto.
+  ok(_s && _s.traces.length === (P.previsao ? 5 : 3),
+     'traces: barra do passo, meta, projecao e (com previsao) a ponte e o ponto previsto',
+     _s && String(_s.traces.length));
+  const _bar = _s && _s.traces.find((t) => t.type === 'bar');
+  ok(!!_bar && _bar.yaxis === 'y2', 'na escala de Nivel o passo vai no eixo da direita');
+  ok(!!_s && !!_s.layout.yaxis2, 'e o layout declara o segundo eixo');
+  // barmode:'relative' com UMA barra so nao empilha nada -- e o que faz o _bindYAutofit dobrar
+  // o zero dentro do range do eixo das barras. Sem isso, numa janela de ciclo de alta o autofit
+  // devolveria [20, 105] e as barras sairiam desenhadas do fundo do eixo, como se +25 pb fosse
+  // quase nada. E um erro puramente visual: nenhuma excecao, nenhum numero errado.
+  ok(_s && _s.layout.barmode === 'relative',
+     "barmode 'relative' presente, para o autofit de Y dobrar o zero no eixo do passo",
+     _s && String(_s.layout.barmode));
+  ok(_bar && _bar.y.length === E.length, 'uma barra por reuniao', _bar && String(_bar.y.length));
+
+  // ── O ponto previsto no grafico principal ──
+  // Ele e o unico numero da aba que ninguem publicou, e a asercao que importa e que ele NAO
+  // se confunda com dado: trace separada, x na data da proxima reuniao, e some quando o
+  // cenario ou a defasagem tiram o sentido dele.
+  const PV = P.previsao;
+  ok(!!PV, 'o payload traz a previsao da proxima reuniao');
+  if (PV) {
+    const _pt = _s.traces[4];
+    ok(_pt.x.length === 1 && _pt.x[0] === PV.data_reuniao,
+       'o ponto previsto esta na data da proxima reuniao, um ponto so',
+       JSON.stringify(_pt.x));
+    ok(Math.abs(_pt.y[0] - PV.previsto_focus) < 1e-12,
+       'e o valor e o do metodo default (delta da Focus)', _pt.y[0] + ' vs ' + PV.previsto_focus);
+    // O que distingue previsao de publicado e a COR e o tracejado, nao a forma: o losango
+    // vazado que estava aqui antes lia como sujeira no grafico. Bolinha da mesma medida da
+    // serie -- e a asercao le o tamanho da propria serie, para nao virar constante solta.
+    ok(_pt.marker.symbol === 'circle' && _pt.marker.size === _s.traces[2].marker.size,
+       'o ponto previsto e bolinha do mesmo tamanho dos marcadores da serie publicada',
+       _pt.marker.symbol + '/' + _pt.marker.size + ' vs ' + _s.traces[2].marker.size);
+    ok(_pt.marker.color === '#418791' && _pt.marker.color !== _s.traces[2].line.color,
+       'e a cor e outra -- verde da marca, nunca o dourado da serie', _pt.marker.color);
+    // A ponte tracejada nao pode virar dado: sem legenda e sem hover.
+    ok(_s.traces[3].showlegend === false && _s.traces[3].hoverinfo === 'skip',
+       'a ponte tracejada fica fora da legenda e do hover');
+    ok(_s.traces[3].x.length === 2 &&
+       _s.traces[3].x[0] === E[E.length - 1].decisao_date &&
+       _s.traces[3].x[1] === PV.data_reuniao,
+       'e ela liga exatamente o ultimo publicado ao previsto');
+    ok(_s.traces[1].y.length === E.length + 1 &&
+       _s.traces[1].y[E.length] === PV.meta,
+       'a linha da meta se estende ao ponto previsto',
+       _s.traces[1].y.length + ' vs ' + (E.length + 1));
+    ok(PV.meta === 3.0 && PV.meta_estendida === 1,
+       'e a meta dele vem do MESMO dicionario das linhas publicadas, com a extensao marcada',
+       PV.meta + '/' + PV.meta_estendida);
+
+    // Trocar de metodo troca o ponto. Os tres partem da mesma ancora, entao o que muda e o
+    // delta -- e o ingenuo tem de dar a ancora crua.
+    const _porMetodo = {};
+    ['focus', 'modelo', 'ingenuo'].forEach((k) => {
+      MP.PJ.metodo = k;
+      MP.renderProjecoesSerie();
+      _porMetodo[k] = ultimoReact('chart-pj-serie').traces[4].y[0];
+    });
+    ok(_porMetodo.ingenuo === PV.ancora, 'o metodo ingenuo poe o ponto na propria ancora',
+       _porMetodo.ingenuo + ' vs ' + PV.ancora);
+    ok(Math.abs(_porMetodo.modelo - (PV.ancora + PV.delta_modelo)) < 1e-9,
+       'o modelo poe ancora + delta do modelo');
+    ok(Math.abs(_porMetodo.focus - (PV.ancora + PV.delta_focus)) < 1e-9,
+       'e a Focus poe ancora + delta da Focus');
+    MP.PJ.metodo = 'focus';
+
+    // Escala desvio: o ponto tem de ser medido contra a mesma regua que a serie publicada.
+    MP.PJ.escala = 'desvio';
+    MP.renderProjecoesSerie();
+    ok(Math.abs(ultimoReact('chart-pj-serie').traces[4].y[0] -
+                (PV.previsto_focus - PV.meta)) < 1e-12,
+       'no modo Desvio o ponto previsto tambem vira previsto menos meta');
+    MP.PJ.escala = 'nivel';
+    MP.renderProjecoesSerie();
+
+    // A caixa verde: sem ela o ponto no grafico e um numero sem procedencia.
+    MP.renderProjecoesPrevBox();
+    ok(doc._els['pj-prev-box'].style.display !== 'none', 'a caixa da previsao aparece');
+    ok(doc._els['pj-prev-num'].textContent === '3,2%',
+       'e mostra UMA casa decimal, que e como o BC publica',
+       doc._els['pj-prev-num'].textContent);
+    ok(doc._els['pj-prev-sub'].innerHTML.indexOf(PV.ancora_doc) >= 0 &&
+       doc._els['pj-prev-sub'].innerHTML.indexOf('Corte de informa') >= 0,
+       'e diz de qual documento veio a ancora e qual corte de informacao usou');
+    // O corte e a data da GERACAO, nao a da reuniao: se o relatorio for gerado semanas antes,
+    // falta IPCA e faltam boletins Focus, e quem le tem de ser avisado.
+    ok(PV.corte_usado >= PV.data_reuniao ||
+       doc._els['pj-prev-sub'].innerHTML.indexOf('anterior à reunião') >= 0,
+       'com corte anterior a reuniao, a caixa avisa em vez de deixar passar');
+  }
+
+  // ── Backtest: o que estimamos contra o que o BC publicou ──
+  const BT = P.backtest || [];
+  ok(BT.length === 17, '17 reunioes no backtest -- a era em que o Copom declara o horizonte',
+     String(BT.length));
+  const _bt = ultimoReact('chart-pj-bt');
+  ok(!!_bt, 'o grafico do backtest foi plotado');
+  ok(_bt && _bt.traces.length === 4,
+     'quatro traces: o publicado e os tres metodos', _bt && String(_bt.traces.length));
+  ok(_bt && BT.every((r, i) => _bt.traces[0].y[i] === r.real),
+     'a linha grossa e o numero que o BC publicou');
+  // A proxima reuniao entra como ponto extra dos TRES metodos, e e o que o grafico existe para
+  // mostrar. O publicado nao ganha o ponto: o null e o que faz a linha dourada parar antes da
+  // vertical, e essa parada e o sinal de que ali nao ha contrapartida do BC.
+  if (PV) {
+    ok(_bt.traces[0].x.length === BT.length + 1 &&
+       _bt.traces[0].x[BT.length] === PV.data_reuniao,
+       'o eixo do backtest se estende a proxima reuniao', String(_bt.traces[0].x.length));
+    ok(_bt.traces[0].y[BT.length] === null,
+       'e o publicado fica null nela -- a linha dourada para antes');
+    MP.PJ_METODOS.forEach((m, i) => {
+      const _y = _bt.traces[i + 1].y;
+      const _esp = m.key === 'modelo' ? PV.previsto
+                 : (m.key === 'ingenuo' ? PV.ancora : PV.previsto_focus);
+      ok(_y.length === BT.length + 1 && Math.abs(_y[BT.length] - _esp) < 1e-12,
+         'e ' + m.label + ' aponta ' + _esp + ' para ela', String(_y[BT.length]));
+    });
+    // O ponto extra do backtest e o MESMO numero do ponto do grafico 1 e da caixa verde: tres
+    // consumidores do mesmo valor, e dois divergirem daria dois numeros na mesma tela.
+    ok(Math.abs(_bt.traces[1].y[BT.length] - _s.traces[4].y[0]) < 1e-12,
+       'e ele bate com o ponto previsto do grafico principal');
+    ok((_bt.layout.shapes || []).length === 1 &&
+       _bt.layout.shapes[0].x0 === PV.data_reuniao,
+       'uma vertical pontilhada separa o conferivel do nao conferivel');
+  }
+  // O metodo selecionado e o unico continuo -- a distincao visual e o ponto do grafico.
+  const _solidos = _bt.traces.slice(1).filter((t) => t.line.dash === 'solid');
+  ok(_solidos.length === 1, 'so o metodo selecionado vem continuo',
+     String(_solidos.length));
+  ok(_solidos[0].name === MP.pjMet('focus').label,
+     'e ele e o que os pills dizem', _solidos[0].name);
+  // Cada metodo parte da MESMA ancora: e a estrutura comum aos tres, e se ela se rompesse os
+  // MAEs deixariam de ser comparaveis sem lancar excecao nenhuma.
+  ok(BT.every((r) => Math.abs(MP.pjBtNivel(r, 'ingenuo') - r.ancora) < 1e-12),
+     'o nivel do ingenuo e a propria ancora');
+  ok(BT.every((r) => Math.abs(MP.pjBtNivel(r, 'modelo') - (r.ancora + r.delta_modelo)) < 1e-9),
+     'o do modelo e ancora + delta do modelo');
+  ok(BT.every((r) => r.delta_focus == null ||
+       Math.abs(MP.pjBtNivel(r, 'focus') - (r.ancora + r.delta_focus)) < 1e-9),
+     'e o da Focus e ancora + delta da Focus');
+  // O erro de cada metodo tem de ser o nivel dele menos o publicado -- se o CSV trouxesse a
+  // coluna de erro dessincronizada do delta, o grafico e a tabela discordariam em silencio.
+  ok(BT.every((r) => Math.abs(r.erro_ingenuo - (r.ancora - r.real)) < 1e-9),
+     'erro_ingenuo e ancora menos publicado');
+  ok(BT.every((r) => Math.abs(r.erro - (r.previsto - r.real)) < 1e-9),
+     'erro do modelo e previsto menos publicado');
+  ok(BT.every((r) => r.erro_focus == null ||
+       Math.abs(r.erro_focus - (r.ancora + r.delta_focus - r.real)) < 1e-9),
+     'e erro_focus e ancora + delta menos publicado');
+  ok(BT.every((r) => Math.abs(r.revisao - (r.real - r.ancora)) < 1e-9),
+     'e a revisao, que os tres tentam prever, e publicado menos ancora');
+
+  // MAE: contra media calculada aqui. E o numero que decide entre metodos, entao nao pode vir
+  // de uma funcao que ignora null de um jeito e da tabela de outro.
+  function _maeRef(campo) {
+    const vs = BT.map((r) => r[campo]).filter((v) => v != null && !isNaN(v));
+    return vs.reduce((a, b) => a + Math.abs(b), 0) / vs.length;
+  }
+  ['erro', 'erro_ingenuo', 'erro_focus'].forEach((campo) => {
+    ok(Math.abs(MP.pjMAE(BT, campo) - _maeRef(campo)) < 1e-12,
+       'pjMAE bate com a media calculada a parte em ' + campo);
+  });
+  ok(MP.pjMAE([], 'erro') === null, 'pjMAE devolve null sem linha nenhuma');
+  ok(MP.pjMAE([{erro: null}], 'erro') === null, 'e null quando toda linha esta vazia');
+  // O resultado que a aba existe para mostrar: a Focus ganha do ingenuo, e o modelo perde.
+  ok(MP.pjMAE(BT, 'erro_focus') < MP.pjMAE(BT, 'erro_ingenuo'),
+     'MAE da Focus < ingenuo (e o achado da aba)',
+     MP.pjMAE(BT, 'erro_focus').toFixed(4) + ' vs ' + MP.pjMAE(BT, 'erro_ingenuo').toFixed(4));
+  ok(MP.pjMAE(BT, 'erro') > MP.pjMAE(BT, 'erro_ingenuo'),
+     'e MAE do modelo > ingenuo -- o resultado negativo tambem esta medido',
+     MP.pjMAE(BT, 'erro').toFixed(4));
+
+  // Revisao x expansao de horizonte: os dois casos existem e alternam.
+  const _exp = BT.filter((r) => r.tipo === 'expansao');
+  const _rev = BT.filter((r) => r.tipo === 'revisao');
+  ok(_exp.length === 9 && _rev.length === 8, '9 expansoes e 8 revisoes',
+     _exp.length + '/' + _rev.length);
+  ok(BT.every((r, i) => i === 0 || r.tipo !== BT[i - 1].tipo),
+     'e elas alternam sem excecao -- 2 reunioes por trimestre, 1 RPM por trimestre');
+  ok(_exp.every((r) => r.anc_doc === 'relatorio'),
+     'na expansao a ancora vem SEMPRE do relatorio, que publica o caminho contiguo');
+  ok(_rev.every((r) => r.anc_doc === 'comunicado'),
+     'e na revisao vem do comunicado anterior');
+
+  // Eixo Erro: a trace 0 passa a ser a constante zero, nao o publicado.
+  MP.PJ.btEixo = 'erro';
+  MP.renderProjecoesBacktest();
+  const _btE = ultimoReact('chart-pj-bt');
+  ok(_btE.traces[0].y.every((v) => v === 0), 'no eixo Erro a referencia e a constante zero');
+  // E o eixo Erro NAO se estende: nao ha numero publicado para subtrair na proxima reuniao,
+  // entao um ponto ali seria erro contra nada.
+  ok(_btE.traces[0].x.length === BT.length,
+     'e ele nao se estende a proxima reuniao -- nao ha erro a plotar sem publicado',
+     String(_btE.traces[0].x.length));
+  ok(!(_btE.layout.shapes || []).length, 'nem a vertical da previsao aparece nele');
+  ok(_btE.traces.slice(1).every((t, i) =>
+       t.y.every((v, j) => v == null || Math.abs(v - BT[j][MP.PJ_METODOS[i].campo]) < 1e-12)),
+     'e cada metodo plota a coluna de erro dele');
+  MP.PJ.btEixo = 'nivel';
+  MP.renderProjecoesBacktest();
+
+  // O backtest E serie temporal em X (a data da reuniao), entao passa pelo _reactPreserveX --
+  // ao contrario da dispersao que ele substituiu, cujos dois eixos nao eram tempo. O efeito
+  // colateral que distingue os dois caminhos: _reactPreserveX liga DOIS listeners de
+  // plotly_relayout (tracker de X + y-autofit), Plotly.react cru nao liga nenhum.
+  ok((doc.getElementById('chart-pj-serie')._plotly['plotly_relayout'] || []).length === 2,
+     'a serie principal ganha o tracker de X e o y-autofit',
+     String((doc.getElementById('chart-pj-serie')._plotly['plotly_relayout'] || []).length));
+  ok((doc.getElementById('chart-pj-bt')._plotly['plotly_relayout'] || []).length === 2,
+     'e o backtest tambem, porque o X dele tambem e tempo',
+     String((doc.getElementById('chart-pj-bt')._plotly['plotly_relayout'] || []).length));
+
+  const _btTab = doc.getElementById('pj-bt-tabela');
+  ok(_btTab.querySelectorAll('tr').length === BT.length + 2,
+     'tabela do backtest: uma linha por reuniao + cabecalho + linha de MAE',
+     _btTab.querySelectorAll('tr').length + ' vs ' + (BT.length + 2));
+  ok(_btTab.innerHTML.indexOf('MAE') >= 0, 'e a linha de MAE esta la');
+  // As duas tabelas viraram click-drop (<details>). Fechadas por default, entao o <summary> tem
+  // de dizer o que ha dentro -- um "+" sozinho nao diz. O JS escreve a contagem la.
+  ok(doc._els['pj-bt-sum'].textContent.indexOf(String(BT.length)) === 0,
+     'o summary do backtest anuncia a contagem de reunioes',
+     doc._els['pj-bt-sum'].textContent);
+  ok(RAW.indexOf('<details class="tbl-fold"') >= 0 &&
+     RAW.split('class="tbl-fold"').length - 1 === 2,
+     'as duas tabelas da aba estao dentro de um details.tbl-fold',
+     String(RAW.split('class="tbl-fold"').length - 1));
+
+  const _tab = doc.getElementById('pj-tabela');
+  ok(_tab.querySelectorAll('tr').length === E.length + 1,
+     'tabela com uma linha por reuniao (+ cabecalho)',
+     _tab.querySelectorAll('tr').length + ' vs ' + (E.length + 1));
+  ok(doc._els['kpi-pj-proj-value'].textContent !== '—' &&
+     doc._els['kpi-pj-passo-value'].textContent !== '—' &&
+     doc._els['kpi-pj-corr-value'].textContent !== '—' &&
+     doc._els['kpi-pj-n-value'].textContent !== '—', 'os quatro KPI cards preenchidos');
+  ok(doc._els['kpi-pj-n-value'].textContent === String(E.length),
+     'o card de cobertura conta as reunioes da serie',
+     doc._els['kpi-pj-n-value'].textContent);
+  ok(doc._els['pj-sum'].textContent.indexOf(String(E.length)) === 0,
+     'e o summary da tabela grande tambem, com o cenario ao lado',
+     doc._els['pj-sum'].textContent);
+
+  // Escala: no modo desvio a linha de referencia e a constante zero; no modo nivel e a meta.
+  MP.PJ.escala = 'nivel';
+  MP.renderProjecoesSerie();
+  const _ref1 = ultimoReact('chart-pj-serie').traces[1];
+  // A linha da meta tem UM ponto a mais que a serie publicada quando ha previsao: ela se
+  // estende ao ponto previsto, senao o unico ponto sem referencia seria justo esse.
+  ok(E.every((r, i) => _ref1.y[i] === r.meta), 'no modo Nivel a referencia e a meta');
+  ok(_ref1.y.length === E.length + (P.previsao ? 1 : 0),
+     'e ela cobre a serie publicada mais o ponto previsto',
+     _ref1.y.length + ' vs ' + (E.length + (P.previsao ? 1 : 0)));
+  ok(ultimoReact('chart-pj-serie').traces[2].y.every((v, i) => v === E[i].proj),
+     'e a linha dourada e a projecao');
+  MP.PJ.escala = 'desvio';
+  MP.renderProjecoesSerie();
+  ok(ultimoReact('chart-pj-serie').traces[1].y.every((v) => v === 0),
+     'no modo Desvio a referencia e a constante zero');
+  ok(ultimoReact('chart-pj-serie').traces[2].y.every(
+       (v, i) => Math.abs(v - (E[i].proj - E[i].meta)) < 1e-12),
+     'e a linha dourada e projecao menos meta');
+  // UM eixo so no modo Desvio, e a razao e unidade: desvio e passo estao ambos em pontos
+  // percentuais, entao dividir regua e o que torna "o desvio era +1,0 e o Comite mexeu +1,0"
+  // uma frase legivel do grafico. Duas coisas tem de acontecer juntas -- as barras mudarem de
+  // eixo E o yaxis2 sair do layout: um eixo sobreposto sem trace nenhuma ainda desenha titulo
+  // e ticks na direita, e o leitor le duas escalas onde ha uma.
+  const _sd = ultimoReact('chart-pj-serie');
+  const _barD = _sd.traces.find((tr) => tr.type === 'bar');
+  ok(_barD.yaxis === 'y', 'no modo Desvio o passo vem para o eixo da esquerda', _barD.yaxis);
+  ok(_sd.layout.yaxis2 === undefined,
+     'e o segundo eixo sai do layout, senao sobrariam ticks de uma escala vazia');
+  ok(_barD.y.every((v, i) => Math.abs(v - E[i].bps / 100) < 1e-12),
+     'e o passo passa a pontos percentuais (100 pb = 1,00 p.p.), a mesma unidade do desvio');
+  ok(_barD.hovertemplate.indexOf('p.p.') >= 0,
+     'com o hover na unidade nova', _barD.hovertemplate);
+  // O rotulo em cima da barra segue em pb, de proposito: passo de Selic se fala em pb.
+  MP.PJ.dlSerie = true;
+  MP.renderProjecoesSerie();
+  const _txt = ultimoReact('chart-pj-serie').traces.find((tr) => tr.type === 'bar').text;
+  ok(_txt.some((s) => s === '+50' || s === '+25' || s === '-50'),
+     'mas o rotulo no grafico continua em pontos-base', JSON.stringify(_txt.slice(0, 4)));
+  MP.PJ.dlSerie = false;
+  // E barmode 'relative' tem de sobreviver: com desvio e passo no MESMO eixo, e ele que
+  // garante que o zero fique no range -- e zero e a linha da meta.
+  ok(_sd.layout.barmode === 'relative', "barmode 'relative' segue no modo Desvio");
+  MP.PJ.escala = 'nivel';
+  MP.renderProjecoesSerie();
+  ok(ultimoReact('chart-pj-serie').traces.find((tr) => tr.type === 'bar').yaxis === 'y2' &&
+     !!ultimoReact('chart-pj-serie').layout.yaxis2,
+     'e voltar para Nivel devolve o eixo duplo -- o estado nao vaza entre as escalas');
+
+  // Defasagem: o par passa a ser a projecao de hoje contra o passo da reuniao SEGUINTE, e a
+  // ultima reuniao sai da amostra porque ainda nao existe passo seguinte.
+  MP.PJ.defasagem = true;
+  const _def = MP.pjLinhas();
+  ok(_def.length === E.length - 1, 'a defasagem tira exatamente a ultima reuniao',
+     _def.length + ' vs ' + (E.length - 1));
+  // O ponto que isto fixa: a serie desenhada e trimestral (o relatorio sai 4x/ano) e salta 2-3
+  // reunioes por ponto, entao "proxima reuniao" NAO e o proximo ponto do grafico. bps_prox vem
+  // de pm_copom_reuniao, que tem as 247, e nro_prox prova de qual reuniao ele e.
+  ok(_def.every((r) => r.nro_prox === r.nro + 1),
+     'o passo defasado e o da reuniao imediatamente seguinte no calendario');
+  const _saltos = _def.filter((r, i) => i + 1 < _def.length && _def[i + 1].nro !== r.nro + 1);
+  ok(_saltos.length > 50,
+     'e a serie de fato salta reunioes, senao a asercao acima seria vacua',
+     String(_saltos.length));
+  MP.renderProjecoesSerie();
+  ok(ultimoReact('chart-pj-serie').traces[0].y.every((v, i) => v === _def[i].bps_prox),
+     'e e ele que vai para as barras');
+  // Com defasagem a previsao SAI do grafico, e essa e a decisao que a asercao fixa: a serie
+  // desenhada para na penultima reuniao, entao o tracejado saltaria por cima de uma reuniao ja
+  // publicada -- daria a entender que ela tambem e previsao.
+  ok(ultimoReact('chart-pj-serie').traces.length === 3,
+     'e com defasagem o ponto previsto sai do grafico',
+     String(ultimoReact('chart-pj-serie').traces.length));
+  MP.PJ.defasagem = false;
+
+  // O stub de DOM CRIA elemento para qualquer id (getElementById nunca devolve null), entao um
+  // id que o JS busca e o markup nao tem passaria por todos os testes acima e renderizaria uma
+  // aba vazia no browser -- a classe de bug que este harness estruturalmente nao pega. Checagem
+  // estatica: todo getElementById('pj-*'|'kpi-pj-*'|'chart-pj-*'|'dl-chart-pj-*') e todo
+  // setupPillGroup/wireDlToggle desta aba tem de casar com um id="..." no HTML.
+  const _idsJs = new Set();
+  const _reId = /(?:getElementById|setupPillGroup|wireDlToggle)\(\s*'((?:pj-|kpi-pj-|chart-pj-|dl-chart-pj-)[\w-]+)'/g;
+  let _m;
+  while ((_m = _reId.exec(SRC))) _idsJs.add(_m[1]);
+  // os prefixos de setKPI/pjKPI viram -value e -sub no DOM
+  const _rePref = /pjKPI\(\s*'(kpi-pj-[\w-]+)'/g;
+  while ((_m = _rePref.exec(SRC))) { _idsJs.add(_m[1] + '-value'); _idsJs.add(_m[1] + '-sub'); }
+  ok(_idsJs.size >= 12, 'a checagem de ids achou os alvos da aba no script', String(_idsJs.size));
+  const _faltando = [...(_idsJs)].filter((id) => RAW.indexOf('id="' + id + '"') < 0);
+  ok(!_faltando.length, 'todo id que o JS da aba busca existe no markup', JSON.stringify(_faltando));
+
+  // Trocar de cenario nao pode deixar estado do anterior atras.
+  MP.PJ.cenario = 'juros_constante';
+  MP.renderProjecoesSerie();
+  ok(ultimoReact('chart-pj-serie').traces[0].y.length === K.length,
+     'trocar para juros constante replota com a amostra dele',
+     ultimoReact('chart-pj-serie').traces[0].y.length + ' vs ' + K.length);
+  // A previsao e condicionada na curva de Selic da Focus, que E o condicionamento do cenario
+  // de juros esperado. No de juros constante ela nao tem leitura, e desenha-la ali seria pior
+  // que nao desenhar: o ponto pareceria comparavel a uma serie que ele nao continua.
+  ok(MP.pjPrevisao() === null, 'e no cenario de juros constante a previsao nao existe');
+  ok(ultimoReact('chart-pj-serie').traces.length === 3,
+     'entao o grafico volta a tres traces', String(ultimoReact('chart-pj-serie').traces.length));
+  MP.PJ.cenario = 'juros_esperado';
+}
 
 console.log('\n' + (falhas ? falhas + ' FALHA(S)' : 'todos os testes passaram'));
 process.exit(falhas ? 1 : 0);

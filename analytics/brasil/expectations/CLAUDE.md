@@ -20,7 +20,7 @@ Editar `report.html`, nunca o gerado.
 
 | Aba | Tabela | O que responde |
 |---|---|---|
-| Boletim | `expc_focus_periodo` (anual) | mediana de hoje × 1/4/12/52 semanas, por indicador e ano de referência, + barra de maiores revisões |
+| Boletim | `expc_focus_periodo` (anual) | mediana de hoje × 1/4/12/52 semanas, por indicador e ano de referência. **Clicar na linha plota a série dela**; o botão `i` abre a definição do indicador. + barra de maiores revisões |
 | Revisão | `expc_focus_periodo` (3 periodicidades) | fixa o período previsto e varre as datas de pesquisa. Eixo X alternável: data da pesquisa ou **meses até o período** (sobrepõe anos diferentes na mesma escala) |
 | Curva do Copom | `expc_focus_copom` | curva por reunião em várias datas, Selic esperada por horizonte ao longo do tempo, e mapa de calor horizonte × semana |
 | Horizonte Móvel | `expc_focus` | IPCA/IGP-M e componentes a 12m/24m, toggles suavizada e base, + inclinação 24m−12m |
@@ -55,6 +55,40 @@ nas três periodicidades.
 recente ≤ hoje − 28 dias. Contar 4 posições daria 35 dias numa semana de feriado. A coluna
 equivalente do Boletim publicado pelo BCB usa a data exata, então pode haver diferença de dias.
 
+## Aba Boletim: a linha chama o gráfico (2026-08-27)
+
+Pedido do usuário: fora os cartões de KPI, e cada linha da tabela passa a chamar o gráfico da série
+daquele indicador **para aquele ano de referência** — o eixo X é a data da pesquisa, então o gráfico
+mostra como a projeção do ano foi se formando (o IPCA de 2026 estava em 3,00 em jan/2022 e está em
+5,02). Duas regras governam a seleção: nunca fica vazia (desmarcar a única marcada não faz nada) e
+**unidade diferente troca a seleção em vez de somar** — é a mesma regra que a barra de revisões
+logo abaixo já seguia, e sem ela o eixo empilharia p.p. de IPCA com R$ de câmbio. A faixa de ±1
+desvio-padrão só desenha com **uma** série na tela; com duas, as áreas se sobrepõem e nada se lê.
+
+O eixo Y pode dizer `unidades mistas` mesmo com a regra acima: ela agrupa por `unidade` (`%`), e IPCA
+(variação acumulada) e Selic (meta ao fim do ano) são as duas `%`. São coisas diferentes no mesmo
+eixo, e o título admite isso em vez de rotular tudo como uma delas.
+
+**Cards de definição** (`INFO`, padrão do skill `lis-dashboard`): um mapa `chave → {full, desc, un}`
+para os 28 indicadores anuais, um único `.info-pop` no documento, hover abre e clique fixa. Três
+decisões que valem para o próximo port:
+
+- **`un` é template com `{ano}`, e é a MESMA string que vai para o título do eixo Y** — fixa, ela
+  passaria a mentir ao trocar o ano no pill.
+- **"Na pesquisa desde" é derivado do payload** (`_primeiraSemana()`, o menor `i0` entre os períodos
+  de referência do indicador), não escrito na prosa do card: escrito à mão, envelheceria calado.
+- O teste falha se a pesquisa ganhar um indicador sem entrada no `INFO` — mesmo papel que o teste do
+  mapa `_FAMILIAS` do gerador.
+
+Duas coisas foram **medidas** contra o banco para o card não afirmar o que não se sabe:
+
+- **`Taxa de desocupação` anual é fim de período, não média do ano.** Contra a PNAD realizada de 2021
+  a 2025, a última mediana de cada ano erra **0,2 p.p.** contra o trimestre out–dez e **1,1 p.p.**
+  contra a média dos 12 trimestres móveis.
+- **O saldo da balança comercial não é `Exportações − Importações`.** São três perguntas separadas da
+  pesquisa, e mediana de diferença não é diferença de medianas: nas 8.310 datas em que as três
+  existem, a diferença média é de **3,4 US$ bi** e as duas contas só coincidem em **4,8%** delas.
+
 ## Gotchas da fonte (o resumo; o completo está no Apêndice do próprio relatório)
 
 - **Quatro reformulações** cortaram séries: 2018-07-05, **2021-02-17** (família antiga de índices de
@@ -88,8 +122,10 @@ equivalente do Boletim publicado pelo BCB usa a data exata, então pode haver di
 - **Confirmação visual num browser real** — o ambiente não tem browser, e a primeira rodada de
   revisão no browser (2026-08-24) já pagou: o eixo desordenado da curva do Copom só aparece com duas
   curvas na tela. Falta olhar: (a) o mapa de calor da aba Copom, único gráfico não-linha do
-  relatório; (b) a tabela do Boletim com scroll horizontal e cabeçalho fixo; (c) o eixo invertido
-  ("meses até o período") da aba Revisão.
+  relatório; (b) a tabela do Boletim com scroll horizontal e cabeçalho fixo, agora com linha
+  clicável e botão `i` — em especial se o card de definição se posiciona bem numa linha do fim da
+  tabela (ele vira para cima quando não cabe embaixo) e dentro do scroll horizontal; (c) o eixo
+  invertido ("meses até o período") da aba Revisão.
 - **Top5 não carregado** — os 6 endpoints Top5 têm a mesma forma de chave mais `tipo_calculo`, que já
   existe na PK com valor `'geral'`. É backfill de dados, não migração: uma vez carregados, "consenso
   vs. Top5" entra como pill em todas as abas sem mudança de estrutura. Ver

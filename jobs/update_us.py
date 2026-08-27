@@ -29,26 +29,64 @@ mas custa ~5s e e idempotente, entao roda sempre: e ela que detecta o BLS mudand
 indentacao publicada ou um rotulo da Tabela 1, levantando em vez de gravar uma
 arvore silenciosamente errada.
 
-**O PCE nao tem esse vai-e-volta**: a arvore e as series saem do MESMO arquivo do
-BEA, entao `inflc_pce_dim` mede a cobertura direto da fonte e uma passada basta. Ela
-vem antes de `inflc_pce` so porque e ela que valida a estrutura -- se o BEA mudar a
-indentacao, o passo da arvore levanta antes de qualquer serie ser gravada.
+**O PCE nao tem esse vai-e-volta**, e desde 2026-08-26 o passe de rotina dele nao
+baixa arquivo nenhum: os dois passos vao pela API.
+
+A arvore do PCE so pode ser montada do xlsx -- a API nao publica hierarquia (checado
+em todos os datasets do servico). Mas ela nao precisa ser RECONSTRUIDA todo mes: e
+gravada em `inflc_pce_dim` e, nas rodadas seguintes, `run(fonte="auto")` a RELE do
+MySQL e usa a API para provar que continua valida:
+
+  - o conjunto de linhas (numero, rotulo, e codigo na tabela de indice) bate com o
+    gravado -> nenhuma linha foi inserida, removida, renomeada ou recodificada;
+  - a aditividade em nominal fecha contra os valores da API, sobre a arvore GRAVADA
+    -> nenhuma linha trocou de pai (re-indentacao sem renomeacao, que a comparacao
+    de conjunto nao veria, move bilhoes e nao fecha);
+  - a particao dos niveis 1-4 da 100%.
+
+Passando as tres, so a COBERTURA e reescrita (`idx_end`/`nom_end` andam todo mes; o
+comeco de uma serie nao anda). Falhando qualquer uma, o xlsx e baixado e a arvore
+reconstruida do zero -- o arquivo virou caminho de REPARO, nao dependencia mensal.
+Conferido: a tabela que o caminho auto grava e identica em todas as 18 colunas a que
+a reconstrucao completa grava.
+
+A ordem ainda importa -- a arvore antes das series --, porque e ela que valida a
+estrutura: se o BEA reorganizou a tabela, o passo da arvore levanta antes de qualquer
+serie ser gravada.
+
+**O que se perde:** a conferencia valor-a-valor de `inflc_pce.run(conferir=True)`
+contra o xlsx era gratuita porque o arquivo estava em cache, e agora ele nao e mais
+baixado -- entao ela e PULADA no passe de rotina, e o log diz isso. Ela nao
+desapareceu: roda em `tests/test_bea_api.py` (as duas portas, historia inteira) e em
+qualquer execucao com `fonte="xlsx"`. O guarda de rotina passou a ser o estrutural
+acima.
 
 --------------------------------------------------------------------------------
 CUSTO
 --------------------------------------------------------------------------------
 Chave registrada do BLS = 50 series / 20 anos por requisicao, 500 requisicoes/dia.
-O BEA nao precisa de chave e nao tem cota: e um xlsx de 12 MB, baixado uma vez e
-reaproveitado no mesmo dia pelos dois passos de PCE.
+O BEA precisa da `BEA_API_KEY` no `.env` (100 req/min, 100 MB/min, 30 erros/min). O
+xlsx de 12 MB nao entra no passe de rotina -- so quando a estrutura muda, ou com
+`fonte="xlsx"` explicito.
 
-  rotina (sem --full)     ~11 requisicoes BLS + 1 download BEA,  ~40s
-  --full                  ~66 requisicoes BLS + 1 download BEA,  ~3min
+  rotina (sem --full)     ~11 req BLS + 4 req API (~9 MB),   ~45s   sem xlsx
+  --full                  ~66 req BLS + 4 req API (~153 MB), ~4min  sem xlsx
+  reparo de estrutura     + 1 download de 12 MB, so quando a checagem acusa
+
+As 4 requisicoes de BEA sao 2 da arvore (janela de 2 anos, so para conferir conjunto
+e aditividade) e 2 das series. O `--full` pela API e mais pesado do que era pelo xlsx
+-- 150 MB de JSON contra 12 MB de planilha comprimida -- e passa perto do limite de
+100 MB/min, medido em 2026-08-26 sem estrangulamento, mas sem margem para rodar duas
+vezes no mesmo minuto. A rotina ficou mais leve nas duas pontas: a API entrega
+exatamente a janela pedida, e a arvore deixou de exigir o arquivo inteiro.
 
 Fontes:
   BLS — CPI-U: niveis por item (API v2), as duas arvores de itens
         (cu.item + Tabela 1 do news release) e a relative importance anual
-  BEA — PCE: tabelas 2.4.4U (indice de preco) e 2.4.5U (despesa nominal) do
-        arquivo de underlying detail da Secao 2, mensais, SA
+  BEA — PCE: tabelas 2.4.4U (indice de preco) e 2.4.5U (despesa nominal), mensais,
+        SA. Tudo pela API (dataset NIUnderlyingDetail) no passe de rotina; a arvore
+        vem do xlsx de underlying detail da Secao 2 -- unico lugar onde a hierarquia
+        existe -- mas so na carga inicial e quando a estrutura muda
 """
 
 import argparse
@@ -78,8 +116,10 @@ def _plano(full: bool):
         ("BLS · CPI niveis",               inflc_cpi,       {"start_year": "all"} if full else {}),
         ("BLS · CPI pesos (rel. import.)", inflc_cpi_pesos, {}),
         ("BLS · CPI dim (cobertura)",      inflc_cpi_dim,   {}),
-        ("BEA · PCE arvore (2.4.4U/2.4.5U)", inflc_pce_dim,  {}),
-        ("BEA · PCE niveis + nominal",      inflc_pce,       {"start_year": "all"} if full else {}),
+        ("BEA · PCE arvore (2.4.4U/2.4.5U)", inflc_pce_dim,
+         {"fonte": "xlsx"} if full else {}),
+        ("BEA · PCE niveis + nominal (API)",       inflc_pce,
+         {"start_year": "all"} if full else {}),
     ]
 
 

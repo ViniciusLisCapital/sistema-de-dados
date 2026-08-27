@@ -1,11 +1,12 @@
 # domain/release_calendar/ — Context for Claude
 
-Static config tracking when Brazilian macro data actually gets published, so a future report/dashboard can show "next release" instead of only historical values. Lives under `domain/` (parallel to `db/`) because it's about data provenance/timing, not an analytics deliverable — but it isn't ETL: nothing here writes to MySQL, it's read-only reference data.
+Static config tracking when macro data actually gets published — Brazil first, plus the US sources the reports read (CFTC, FOMC, and since 2026-08-26 BLS/BEA) — so a report can show "next release" instead of only historical values. Lives under `domain/` (parallel to `db/`) because it's about data provenance/timing, not an analytics deliverable — but it isn't ETL: nothing here writes to MySQL, it's read-only reference data.
 
 ## Files
 
 - `calendar_2026.yaml` — one entry per official release **event** (not per series). BCB in particular bundles dozens of series into a single monthly "nota" (e.g. the credit statistics note covers all 12 `cred_*` tables at once) — grouping by event instead of by series avoids listing the same date a dozen times.
 - `update_calendar.py` — refreshes the BCB dates from the ICS feeds, audits DB coverage, enumerates BCB's calendar lists. Uses `connectors/bcb_agenda.py` for the HTTP/ICS layer (the usual split: connector = external API client, `domain/` = orchestration).
+- `update_us_calendar.py` — o mesmo do lado BLS/BEA, sobre `connectors/us_agenda.py`. Reusa os helpers de escrita do irmão (`_diff`/`_merge`/`_gravar_entries`) em vez de duplicar a manipulação de ruamel. Ver a seção **Grupos americanos** abaixo.
 - `sync.py` — confronts the calendar against the database: did the data actually arrive when the calendar said it would? See its own section below.
 - `ROLLOVER.md` — step-by-step runbook for carrying the calendar into the next year. Self-contained on purpose: the year boundary comes up once a year, by which point nobody remembers the traps.
 - No `loader.py` — `sync.py` reads the YAML directly with `yaml.safe_load` (read-only; only `update_calendar.py` needs ruamel). A separate loader was never needed.
@@ -21,7 +22,7 @@ uv run python -m domain.release_calendar.update_calendar --listas     # as 29 li
 uv run python -m domain.release_calendar.update_calendar --horizonte  # até onde cada feed chega
 ```
 
-Covers only the 10 groups that carry an `ics:` block (all BCB). The other 15 have no equivalent feed and stay manual — the report names them each run so that stays visible rather than looking like full coverage.
+Covers only the 10 groups that carry an `ics:` block (all BCB); os 2 com bloco `us:` são de `update_us_calendar.py`. Os outros 15 não têm feed equivalente e seguem manuais — o relatório nomeia todos a cada rodada, para isso ficar visível em vez de parecer cobertura completa.
 
 **Dry-run is the default on purpose**: the YAML is hand-curated (long per-group notes, reliability caveats) and is the source of truth for metadata. The script only swaps dates; anything surprising in the diff deserves a human look first.
 
@@ -55,11 +56,13 @@ uv run python -m domain.release_calendar.sync --as-of 2026-09-15   # simula outr
 that already happened; `observado` = `MAX(date)` of the table; late iff `observado < esperado`.
 No "when did we last run" marker, so a missed day causes no drift and a recovered gap
 self-heals. Two facts make it possible with zero per-table config: the YAML already says
-which *period* each release delivers, and **68 of the 69 tables share an identical
-`date DATE` column** in the same convention (month start for monthly, quarter start for
-quarterly). The 1 without it (`inflc_dim`) is a dimension table, not a published series.
-(`pm_parametros` / `pm_hiato_seed` were the other two exceptions until 2026-08-18, when
-the BCB-model replication that owned them was removed.)
+which *period* each release delivers, and **73 of the 77 tables dos três schemas share an
+identical `date DATE` column** in the same convention (month start for monthly, quarter start
+for quarterly). As 4 sem ela são tabela de dimensão ou snapshot anual, não série divulgada:
+`inflc_dim`, `inflc_cpi_dim`, `inflc_pce_dim` e `inflc_cpi_pesos` (esta chaveada por
+`reference_period`/`weights_year`). `macro_us` entrou em `_SCHEMAS` em 2026-08-26, com os grupos
+`bls_cpi`/`bea_pce`; `pm_parametros`/`pm_hiato_seed` eram exceção até 2026-08-18, quando a
+réplica do modelo do BCB que as usava foi removida.
 
 Five verdicts: `OK`, `ATRASADO`, `SEM EXPECTATIVA` (covered by a group, but no past release
 with a datable period — the report says which of the three causes), `SEM CALENDARIO`,
@@ -247,6 +250,75 @@ Coberto por `tests/test_sync_calendar.py` (seções 6 e 7: limite exato 14:29/14
 entrada×grupo, descarte do `00:00`, ordem das chaves e idempotência do `--horas`) e
 `tests/test_release_calendar_js.js` (o botão em 09:00/14:29/14:30/16:00).
 
+## Grupos americanos (`bls_cpi`, `bea_pce`) e o bloco `us:` — 2026-08-26
+
+Os dois grupos que datam `macro_us` são refrescados por `update_us_calendar.py`, o irmão do
+`update_calendar.py` do lado BLS/BEA. A camada HTTP/parse é `connectors/us_agenda.py`, que documenta
+as três fontes e os gotchas de formato (TZID não-IANA do BLS, UTC-com-`Z` do BEA,
+`APIDatasetMetaData` congelado em 2019).
+
+```powershell
+uv run python -m domain.release_calendar.update_us_calendar             # dry-run
+uv run python -m domain.release_calendar.update_us_calendar --write     # aplica
+uv run python -m domain.release_calendar.update_us_calendar --catalogo  # o que dá para adicionar
+```
+
+**Adicionar uma série nova é declarativo**, mesma forma do `ics:` dos grupos do BCB — um bloco `us:`
+no grupo e `--write`, sem tocar em código:
+
+```yaml
+      us:
+        source: bls_schedule      # bls_schedule | bls_ics | bea_ics
+        match: ppi                # slug da página do BLS, ou título do release, no BEA
+        fred_release_id: 46       # opcional: conferência independente
+```
+
+`--catalogo` lista os valores válidos de `match` dos dois lados (13 releases com página no BLS, 34
+títulos no feed do BEA) e o id de FRED de algumas séries. `bls_schedule` é o default do BLS porque a
+página é a única fonte com o período de referência; `bls_ics` só para release sem página própria, e aí
+o período tem de ser escrito à mão (o script avisa entrada por entrada).
+
+**A conferência pelo FRED é direcional, e a assimetria não é descuido.** Data nossa que o FRED não
+tem é *suspeita* (parser leu errado, ou a agência mudou a agenda). Data do FRED que não é nossa é
+*esperada*: um "release" do FRED é o conjunto de publicações que atualizam aquelas séries, então o 54
+inclui as divulgações trimestrais de PIB, que republicam o índice de preço do PCE sem se chamarem
+"Personal Income and Outlays" — medido, o FRED tem 2025-12-23 e o feed do BEA não. Sai como nota, não
+como alerta.
+
+**Por que as datas são lidas e não derivadas de uma regra de dia do mês**: a agenda do BEA de 2026 é
+irregular no começo do ano — 22/01 às 10:00 (dado de novembro), 20/02, 13/03, 09/04 **e** 30/04, duas
+divulgações em abril para recuperar atraso. Uma regra "mês da divulgação menos um" teria errado cinco
+seguidas, em silêncio.
+
+**As tabelas de dimensão entram no `tables:` do grupo de propósito**, para o botão do calendário rodar
+a cadeia inteira. Elas não têm coluna `date`, então nunca podem gerar `ATRASADO` — caem em
+`SEM DIVULGACAO` pela declaração em `no_release.not_a_series`. O que se perde em relação a
+`jobs/update_us.py` é só a passada de validação *antes* da série (a ordem que o registry produz é
+alfabética por módulo); o note de cada grupo no YAML detalha. `inflc_cpi_pesos` fica de fora: é anual,
+independente das outras duas, e é chaveada por `reference_period`, sem `date`.
+
+## `agenda_da_tabela()` / `agenda_das_tabelas()` — a ponte para os relatórios
+
+`sync.py` expõe, além do veredito de freshness, a agenda em si:
+
+```python
+from domain.release_calendar.sync import agenda_das_tabelas
+agenda_das_tabelas(["inflc_cpi", "inflc_pce"])
+# {"inflc_cpi": {"institution": "BLS", "name": "...", "grupo": "bls_cpi",
+#                "ultima": {...}, "proxima": {"date": "2026-09-11", "time_fonte": "08:30",
+#                "tz_fonte": "America/New_York", "time_local": "09:30", ...}}}
+```
+
+Devolve **a hora nos dois fusos**: a da fonte é o fato publicado e o que confere com qualquer outra
+referência; a local é quando estar na frente da tela. A conversão é a mesma `hora_da_entrada()` que o
+gate do botão usa — o relógio do relatório e o do gate não podem divergir. Tabela sem grupo devolve
+`None` (não um dict vazio), para o template distinguir "sem agenda" de "agenda vazia".
+
+Primeiro consumidor: `analytics/us/inflation/generate_report.py`, que injeta o resultado como
+`payload["releases"]` e renderiza a faixa no topo da página. A contagem regressiva ("in 12 days") é
+feita **no navegador**, não no payload: esses arquivos são enviados por email e abertos dias depois, e
+um "in 12 days" congelado mentiria com confiança — se aparecer *past due*, o arquivo está velho.
+
 ## Rolling over to the next year
 
 📄 **Full runbook: [`ROLLOVER.md`](ROLLOVER.md)** — read it before touching the year boundary. Short version:
@@ -254,6 +326,10 @@ entrada×grupo, descarte do `00:00`, ordem das chaves e idempotência do `--hora
 - **Don't create a new file.** `--until 2027-12-31 --write` extends the existing one; the `_em_escopo` guard makes a multi-year file safe. A per-year file needs two hardcoded-year code edits and quietly costs the blank lines between groups.
 - **It's not a once-a-year chore.** Measured 2026-08-17 via `--horizonte`: 7 of the 10 BCB feeds stop at 31/12 of the running year, `bcb_copom` reaches +16 months, IBC-Br/IC-Br +6. IBGE's API is the same. So the next year fills in over several months — re-run periodically through H1.
 - **Measure, never assume, the horizon** — that's what `--horizonte` is for. The claim "~18 months forward" sat wrong in three files for months because nobody re-checked.
+- **BLS e BEA publicam um ano por vez, e em 2026-08-26 nenhum dos dois tinha 2027** — os dois ICS
+  terminam em dezembro/2026 e `/schedule/2027/home.htm` responde 404. O BLS costuma postar o ano
+  seguinte no outono. Enquanto não postarem, `agenda_da_tabela()` devolve `proxima: None` para
+  `inflc_cpi`/`inflc_pce`, e a faixa do relatório de inflação americana fica só com a última.
 
 ## `ics:` block (machine-readable refresh config)
 
@@ -276,7 +352,7 @@ groups:
   - group: <english_slug>            # stable key, used as a lookup id
     institution: <IBGE|BCB|Tesouro Nacional|MTE/PDET|MDIC>
     name: "<official Portuguese release name>"
-    tables: [<macro_brasil/macro_international table names this release feeds>]
+    tables: [<macro_brasil/macro_international/macro_us table names this release feeds>]
     cadence: monthly|quarterly|weekly
     release_time: "HH:MM"            # OPCIONAL, hora (fonte SEM feed: IBGE, MDIC, CFTC, FOMC)
     release_time_tz: America/New_York  # OPCIONAL, fuso DA FONTE; sem isso a hora e de Brasilia
@@ -389,11 +465,11 @@ converted by hand, is in the release-time section above.
 - **`inflc_meta` / `atv_pib_usd` / `cmb_risco_pais`** — still no dedicated release-calendar research. `inflc_meta` rides with CMN decisions (`Reuniões do CMN e COMOC` list exists, not yet pulled).
 - **The remaining `confirmed: false` entries are only `bcb_caged_sgs_mirror`** — derived from MTE's calendar rather than a BCB source, so the ICS feed doesn't help it.
 
-### Coverage audit: what the 16 uncovered tables actually are
+### Coverage audit: what the uncovered tables actually are
 
-`--coverage` reports 53/69 tables covered (re-measured 2026-08-18, after `pm_hiato_produto`/`pm_hiato_produto_vintages` were added and `pm_hiato_seed`/`pm_parametros` dropped). Triaged 2026-08-17 so future runs don't re-litigate the same list:
+`--coverage` reports **60/77** tables covered (re-measured 2026-08-26, com `macro_us` incluído). Das 5 tabelas americanas, 4 entraram nos grupos `bls_cpi`/`bea_pce` e só `inflc_cpi_pesos` fica de fora, declarada em `not_a_series` — as duas de dimensão estão nas duas listas ao mesmo tempo, e isso não é contradição: o `tables:` do grupo diz o que o botão roda, o `not_a_series` diz que não há `MAX(date)` a cobrar. Triaged 2026-08-17 so future runs don't re-litigate the same list:
 
-- **Deliberate, no release event exists** — continuous daily market data: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `cmb_equity_us`, `cmb_ptax`, `comm_brent`. Plus `inflc_dim` (dimension table). `pm_hiato_seed` / `pm_parametros` were here too until 2026-08-18, when they were dropped with the BCB-model replication.
+- **Deliberate, no release event exists** — continuous daily market data: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `cmb_equity_us`, `cmb_ptax`, `comm_brent`. Plus as 4 tabelas sem coluna `date`: `inflc_dim`, `inflc_cpi_dim`, `inflc_pce_dim` (dimensão) e `inflc_cpi_pesos` (snapshot anual de dezembro). `pm_hiato_seed` / `pm_parametros` were here too until 2026-08-18, when they were dropped with the BCB-model replication.
 - **`expc_focus_pre202608`** — surfaced by the 2026-08-18 re-measure, not in the 2026-08-17 triage. Frozen snapshot of the pre-rewrite Focus table; if it's dead weight it should be dropped rather than covered, but that hasn't been confirmed.
 - **Genuine gaps, need research**: `atv_pib_usd`, `cmb_risco_pais`, `clima_oni` (NOAA CPC), the BIS trio `cmb_reer` / `cmb_policy_rates` / `cmb_real_rates`, and `fisc_investimento` (Tesouro's Séries Temporais API, Tema 13 — a different release from RTN/EFGG, would need its own group).
 - **`atv_pib_mensal`** — BCB SGS 4380/4382. Likely rides with the monetary/credit note (it's the same 12-month-accumulated GDP denominator BCB uses for `cred_credito_resumo.pct_pib_*`), but that's an inference, not verified — left uncovered rather than asserted.

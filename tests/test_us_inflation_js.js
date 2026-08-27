@@ -63,6 +63,15 @@ function makeEl(tag) {
     get() { return _html; },
     set(v) { _html = v; if (v === '') e.children.length = 0; }
   });
+  // Batizar um elemento tem de torna-lo achavel por getElementById, como no
+  // browser. Sem isto, um <button> que o proprio script cria e batiza (o toggle de
+  // valores) existia em duas copias: o produto mexia na que criou, o teste lia uma
+  // vazia que o registry inventava na hora.
+  let _id = '';
+  Object.defineProperty(e, 'id', {
+    get() { return _id; },
+    set(v) { _id = v; if (v) registry[v] = e; }
+  });
   return e;
 }
 
@@ -84,27 +93,37 @@ function definePills(groupId, attr, values) {
     return p;
   });
 }
-definePills('release-view-group', 'view', [{name: 'series', active: true}, {name: 'table1'}]);
-definePills('expenditure-view-group', 'view', [{name: 'series', active: true}, {name: 'table1'}]);
-definePills('release-metric-group', 'metric', [
-  {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
-definePills('release-basis-group', 'basis', [{name: 'NSA'}, {name: 'SA', active: true}]);
-definePills('expenditure-metric-group', 'metric', [
-  {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
-definePills('expenditure-basis-group', 'basis', [{name: 'NSA'}, {name: 'SA', active: true}]);
-// A aba de PCE nao tem pills de View (o toggle Series|Table 1 e coisa do release do
-// BLS) e a pill NSA dela nasce desabilitada: o BEA nao publica PCE mensal sem ajuste
+// Uma aba de CPI so, com as duas arvores num seletor (2026-08-26). Nao ha mais
+// pills de View: a visao Table 1 saiu, e as duas arvores deixaram de ser duas abas.
+definePills('cpi-tree-group', 'tree', [{name: 'release', active: true}, {name: 'expenditure'}]);
+definePills('cpi-metric-group', 'metric', [
+  {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'},
+  {name: 'contrib'}, {name: 'contribm'}]);
+definePills('cpi-basis-group', 'basis', [{name: 'NSA'}, {name: 'SA', active: true}]);
+definePills('cpi-window-group', 'win', [
+  {name: '1'}, {name: '3'}, {name: '6'}, {name: '12', active: true}]);
+// A pill NSA do PCE nasce desabilitada: o BEA nao publica PCE mensal sem ajuste
 // sazonal.
 definePills('pce-metric-group', 'metric', [
-  {name: 'level'}, {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'}, {name: 'contrib'}]);
+  {name: 'yoy', active: true}, {name: 'mom'}, {name: 'ann3m'},
+  {name: 'contrib'}, {name: 'contribm'}]);
 definePills('pce-basis-group', 'basis', [{name: 'NSA', disabled: true}, {name: 'SA', active: true}]);
 
-const tabButtons = ['release', 'expenditure', 'pce', 'appendix'].map(t => {
+const tabButtons = ['cpi', 'pce', 'appendix'].map(t => {
   const b = makeEl('button'); b.dataset.tab = t; return b;
 });
 
 const relayoutCalls = [];
 const reactCalls = [];
+const restyleCalls = [];
+
+// As gavetas do apendice sao lidas do PROPRIO html, nao listadas aqui: renomear
+// uma secao no template tem de quebrar o teste, e nao virar um stub vazio que
+// passa sem testar nada.
+const htmlBruto = fs.readFileSync(HTML, 'utf8');
+const drawerIds = [...htmlBruto.matchAll(/<details class="acc" id="([\w-]+)"/g)].map(m => m[1]);
+drawerIds.forEach(id => { el(id).open = htmlBruto.indexOf('id="' + id + '" open') >= 0; });
+const panelIds = ['panel-cpi', 'panel-pce', 'panel-appendix'];
 
 global.document = {
   getElementById: (id) => el(id),
@@ -115,7 +134,8 @@ global.document = {
     const m = sel.match(/^#([\w-]+) \.pill$/);
     if (m) return pills[m[1]] || [];
     if (sel === 'nav.tabs button') return tabButtons;
-    if (sel === '.panel') return [];
+    if (sel === '.panel') return panelIds.map(el);
+    if (sel === '#panel-appendix details.acc') return drawerIds.map(el);
     return [];
   }
 };
@@ -123,12 +143,13 @@ global.Plotly = {
   react: (div, traces, layout, config) => { reactCalls.push({div, traces, layout, config}); },
   newPlot: () => {},
   relayout: (div, upd) => { relayoutCalls.push({div, upd}); return Promise.resolve(); },
+  restyle: (div, upd, idx) => { restyleCalls.push({div, upd, idx}); return Promise.resolve(); },
   Plots: { resize: () => {} }
 };
 global.window = global;
 
 // ── run the report's real script ----------------------------------------------
-const html = fs.readFileSync(HTML, 'utf8');
+const html = htmlBruto;
 const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 if (!scripts.length) { console.log('FALHOU: nenhum <script> inline encontrado'); process.exit(1); }
 const code = scripts[scripts.length - 1];
@@ -302,9 +323,9 @@ ok(partials.every(n => typeof n.unshown === 'number' && n.unshown > 0),
    'todo no parcial tem unshown numerico positivo');
 
 console.log('\n=== 8. o factory renderizou tabela e grafico de verdade ======');
-const corpo = el('release-table-body');
+const corpo = el('cpi-table-body');
 ok(corpo.children.length === 4, 'tbody da release tem 4 linhas no estado inicial (raiz expandida)', corpo.children.length);
-const cab = el('release-table-head');
+const cab = el('cpi-table-head');
 ok(cab.children.length === 1 && cab.children[0].children.length === 14,
    'cabecalho tem check + label + 12 meses', cab.children[0] && cab.children[0].children.length);
 const primeira = corpo.children[0];
@@ -314,7 +335,7 @@ ok(valores.every(v => v === '—' || /^[+-]\d+\.\d{2}$/.test(v)),
    'celulas formatadas como +/-N.NN ou em-dash', JSON.stringify(valores.slice(0, 4)));
 
 ok(reactCalls.length >= 2, 'Plotly.react chamado para os dois graficos', reactCalls.length);
-const rel = reactCalls.find(c => c.div === 'chart-release');
+const rel = reactCalls.find(c => c.div === 'chart-cpi');
 ok(!!rel, 'chart-release foi plotado');
 ok(rel.traces.length === 3, 'plota os 3 nos marcados por default', rel.traces.length);
 ok(rel.layout.dragmode === 'pan', 'dragmode = pan');
@@ -324,33 +345,123 @@ ok(rel.traces.every(t => t.x.length === t.y.length && t.x.length > 100),
    'traces tem x e y do mesmo tamanho e historico longo');
 
 console.log('\n=== 9. clicar nos pills muda tabela e grafico ================');
-const antes = reactCalls.length;
-const pillLevel = pills['release-metric-group'].find(p => p.dataset.metric === 'level');
-pillLevel.click();
-ok(reactCalls.length > antes, 'clicar em "Index" re-renderizou o grafico');
-const depois = reactCalls[reactCalls.length - 1];
-ok(depois.layout.yaxis.title.text.indexOf('Index') === 0,
-   'titulo do Y virou "Index ..."', depois.layout.yaxis.title.text);
-const celulaNivel = el('release-table-body').children[0].children[2].textContent;
-ok(/^\d+\.\d{2}$/.test(celulaNivel) || celulaNivel === '—',
-   'celula em modo Index nao leva sinal', celulaNivel);
+// A pill "Index" saiu a pedido do usuario. O NIVEL continua sendo o que viaja no
+// payload e do que toda metrica deriva -- so deixou de ser escolhivel.
+ok(!pills['cpi-metric-group'].some(p => p.dataset.metric === 'level'),
+   'a metrica Index nao e mais oferecida');
+ok(html.indexOf('data-metric="level"') === -1,
+   'e nao sobrou nenhum data-metric="level" no HTML gerado');
+ok(metricSeries('release', 'SA0', 'SA', 'level').values.some(v => v != null),
+   'mas o caminho do nivel continua vivo por dentro -- e a base de todo o resto');
 
-const pillContrib = pills['release-metric-group'].find(p => p.dataset.metric === 'contrib');
-pillContrib.click();
-ok(reactCalls[reactCalls.length - 1].layout.yaxis.title.text.indexOf('p.p.') === 0,
-   'titulo do Y para contribuicao e em p.p.', reactCalls[reactCalls.length - 1].layout.yaxis.title.text);
+const nAntes9 = reactCalls.length;
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'mom').click();
+ok(reactCalls.length > nAntes9, 'clicar em "M/M %" re-renderizou o grafico');
+ok(reactCalls[reactCalls.length - 1].traces.every(x => x.type === 'scatter'),
+   'metrica de variacao continua desenhada como linha');
 
-const pillNSA = pills['release-basis-group'].find(p => p.dataset.basis === 'NSA');
+// --- contribuicao: barra empilhada + o total em linha ------------------------
+// O que este bloco protege e a LEITURA do grafico, nao a forma do objeto: que a
+// pilha e mesmo uma pilha, que o total e uma linha e nao mais uma barra, e que as
+// barras somam a linha quando os marcados particionam o indice.
+const rotuloHeadRel = D.tabs.release.tree[0].label;
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'contrib').click();
+const cY = reactCalls[reactCalls.length - 1];
+ok(cY.layout.yaxis.title.text === 'p.p. of headline Y/Y',
+   'titulo do Y para contribuicao e em p.p.', cY.layout.yaxis.title.text);
+ok(cY.layout.barmode === 'relative',
+   'empilha em barmode "relative" -- contribuicao negativa desce abaixo do zero em vez ' +
+   'de sumir dentro da pilha positiva', cY.layout.barmode);
+const barrasY = cY.traces.filter(x => x.type === 'bar');
+const totaisY = cY.traces.filter(x => x.type === 'scatter');
+ok(barrasY.length === 3 && totaisY.length === 1,
+   '3 barras (os nos marcados) + 1 linha (o total)',
+   `${barrasY.length} barras, ${totaisY.length} linhas`);
+ok(totaisY[0].name.indexOf(rotuloHeadRel) === 0 && totaisY[0].name.indexOf('Y/Y') > 0,
+   'a linha e o headline, rotulada com o horizonte', totaisY[0].name);
+ok(totaisY[0].line.width > barrasY.length * 0 + 2 && totaisY[0].line.color === '#111111',
+   'a linha do total e preta e mais grossa -- nao le como mais um componente',
+   totaisY[0].line.color);
+
+function ultimoIndiceCheio(bars, tot) {
+  for (let i = tot.y.length - 1; i >= 0; i--) {
+    if (tot.y[i] != null && bars.every(b => b.y[i] != null)) return i;
+  }
+  return -1;
+}
+const ixY = ultimoIndiceCheio(barrasY, totaisY[0]);
+ok(ixY >= 0, 'ha um mes com contribuicao em todos os tres nos e no total');
+const somaY = barrasY.reduce((s, b) => s + b.y[ixY], 0);
+console.log(`          [medido] Y/Y ${totaisY[0].x[ixY].slice(0, 7)}: barras ` +
+            `${somaY.toFixed(3)} vs linha ${totaisY[0].y[ixY].toFixed(3)}`);
+near(somaY, totaisY[0].y[ixY], 0.15,
+     'as barras empilhadas reconstroem a linha do total (nivel 1 particiona o indice)');
+ok(el('cpi-t1note').innerHTML.indexOf('decomposition') > 0 &&
+   el('cpi-t1note').innerHTML.indexOf('partition') > 0,
+   'a nota diz que a pilha so alcanca a linha quando os marcados particionam o indice');
+
+// --- a metrica nova: contribuicao para o M/M ---------------------------------
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'contribm').click();
+const cM = reactCalls[reactCalls.length - 1];
+ok(cM.layout.yaxis.title.text === 'p.p. of headline M/M',
+   'contribuicao M/M tem titulo de Y proprio', cM.layout.yaxis.title.text);
+ok(cM.layout.barmode === 'relative', 'e tambem empilha');
+const barrasM = cM.traces.filter(x => x.type === 'bar');
+const totaisM = cM.traces.filter(x => x.type === 'scatter');
+ok(barrasM.length === 3 && totaisM.length === 1, '3 barras + 1 linha tambem no M/M');
+ok(totaisM[0].name.indexOf('M/M') > 0, 'a linha do total agora diz M/M', totaisM[0].name);
+const ixM = ultimoIndiceCheio(barrasM, totaisM[0]);
+const somaM = barrasM.reduce((s, b) => s + b.y[ixM], 0);
+console.log(`          [medido] M/M ${totaisM[0].x[ixM].slice(0, 7)}: barras ` +
+            `${somaM.toFixed(4)} vs linha ${totaisM[0].y[ixM].toFixed(4)}`);
+near(somaM, totaisM[0].y[ixM], 0.06,
+     'as contribuicoes de nivel 1 reconstroem tambem a variacao MENSAL do headline');
+
+// A contribuicao mensal e uma ordem de grandeza menor que a anual: com 2 casas a
+// coluna vira uma parede de "+0.00". Por isso 3 casas, e so nela.
+const celulaM = el('cpi-table-body').children[0].children[2].textContent;
+ok(celulaM === '—' || /^[+-]\d+\.\d{3}$/.test(celulaM),
+   'celula de contribuicao M/M sai com 3 casas decimais', celulaM);
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'contrib').click();
+const celulaY = el('cpi-table-body').children[0].children[2].textContent;
+ok(celulaY === '—' || /^[+-]\d+\.\d{2}$/.test(celulaY),
+   'e a de Y/Y continua com 2', celulaY);
+
+// --- o caso que o desenho existe para tratar: o total marcado ---------------
+// A aba de PCE nasce com a linha 1 (o proprio total) marcada. Empilhada junto com
+// os componentes ela dobraria o grafico -- entao ela vira a linha.
+ok(D.tabs.pce.defaultChecked.indexOf(D.tabs.pce.anchor) >= 0,
+   'a aba PCE nasce com o proprio total marcado');
+pills['pce-metric-group'].find(p => p.dataset.metric === 'contrib').click();
+const cP = reactCalls[reactCalls.length - 1];
+ok(cP.div === 'chart-pce', 'o grafico redesenhado e o do PCE', cP.div);
+const barrasP = cP.traces.filter(x => x.type === 'bar');
+const totaisP = cP.traces.filter(x => x.type === 'scatter');
+const rotuloHeadPce = D.tabs.pce.tree[0].label;
+ok(barrasP.length === 3 && totaisP.length === 1,
+   'o total marcado vira a LINHA, nao uma 4a barra empilhada sobre os proprios componentes',
+   `${barrasP.length} barras, ${totaisP.length} linhas`);
+ok(!barrasP.some(x => x.name === rotuloHeadPce),
+   'e nenhuma barra leva o rotulo do total', barrasP.map(x => x.name).join(' | '));
+ok(totaisP[0].name.indexOf(rotuloHeadPce) === 0,
+   'a linha, sim', totaisP[0].name);
+pills['pce-metric-group'].find(p => p.dataset.metric === 'yoy').click();
+ok(reactCalls[reactCalls.length - 1].traces.every(x => x.type === 'scatter'),
+   'e voltar para Y/Y no PCE traz o total de volta como linha entre linhas');
+
+const pillNSA = pills['cpi-basis-group'].find(p => p.dataset.basis === 'NSA');
 const nAntes = reactCalls.length;
 pillNSA.click();
 ok(reactCalls.length > nAntes, 'trocar SA->NSA re-renderizou');
 
 console.log('\n=== 10. botoes de range chamam Plotly.relayout ===============');
-const barra = el('release-range');
+const barra = el('cpi-range');
 const botoes = barra.children.filter(c => c.className === 'rb');
-ok(botoes.length === 5, '5 botoes de range (3y/5y/10y/20y/All)', botoes.length);
+ok(botoes.length === 6, '6 botoes de range (1y/3y/5y/10y/20y/All)', botoes.length);
+ok(botoes.map(b => b.textContent).join('/') === '1y/3y/5y/10y/20y/All',
+   'nessa ordem', botoes.map(b => b.textContent).join('/'));
 relayoutCalls.length = 0;
-botoes[0].click();
+botoes[1].click();
 ok(relayoutCalls.length === 1, 'clicar em "3y" chamou relayout uma vez', relayoutCalls.length);
 const r = relayoutCalls[0].upd['xaxis.range'];
 ok(Array.isArray(r) && r.length === 2, 'relayout passou um par [de, ate]', JSON.stringify(r));
@@ -359,8 +470,21 @@ near(anosJan, 3, 0.15, 'a janela de "3y" cobre ~3 anos');
 ok(r[1] === D.tabs.release.dates.NSA[D.tabs.release.dates.NSA.length - 1],
    'o fim da janela e o ultimo ponto REAL da serie, nao a data de hoje', r[1]);
 relayoutCalls.length = 0;
-botoes[4].click();
-ok(relayoutCalls[0].upd['xaxis.autorange'] === true, '"All" volta para autorange');
+botoes[0].click();
+const r1 = relayoutCalls[0].upd['xaxis.range'];
+near((new Date(r1[1]) - new Date(r1[0])) / (365.25 * 24 * 3600 * 1000), 1, 0.1,
+     'e a de "1y" cobre ~1 ano');
+// "All" manda as duas pontas REAIS, nao `xaxis.autorange`: o autorange devolve o
+// range com o padding do proprio Plotly, que numa serie que comeca em 1913 e uma
+// faixa vazia visivel depois do ultimo ponto.
+relayoutCalls.length = 0;
+botoes[5].click();
+const rAll = relayoutCalls[0].upd['xaxis.range'];
+ok(relayoutCalls[0].upd['xaxis.autorange'] === undefined,
+   '"All" nao usa autorange');
+const gradeNSA = D.tabs.release.dates.NSA;
+ok(Array.isArray(rAll) && rAll[0] === gradeNSA[0] && rAll[1] === gradeNSA[gradeNSA.length - 1],
+   'manda as duas pontas reais da grade', JSON.stringify(rAll));
 
 console.log('\n=== 11. KPIs ================================================');
 const kpis = el('kpis');
@@ -368,10 +492,16 @@ ok(kpis.children.length === 6, '6 cards de KPI', kpis.children.length);
 ok(kpis.children.every(c => c.innerHTML.indexOf('—') === -1),
    'nenhum KPI ficou sem valor');
 
-console.log('\n=== 12. a visao Table 1 =====================================');
+console.log('\n=== 12. o peso reconstruido (a visao Table 1 saiu) ==========');
 // As 37 importancias relativas IMPRESSAS na Tabela 1 do release de julho/2026.
-// A planilha de pesos so publica dezembro, entao a coluna e RECONSTRUIDA -- este
+// A planilha de pesos so publica dezembro, entao o numero e RECONSTRUIDO -- este
 // bloco e a prova de que a reconstrucao esta certa, contra o numero publicado.
+//
+// A VISAO de nove colunas que imprimia isso na cara da aba saiu em 2026-08-26 a
+// pedido do usuario. A aritmetica dela NAO saiu junto: riAt alimenta a coluna
+// Weight da tabela de contribuicoes e levelAt/pctBetween alimentam a coluna Change,
+// entao esta conferencia sobreviveu a visao que a motivou -- que e a razao de nao
+// apagar o bloco com ela.
 const RI_PUBLICADA = {
   SA0: 100.000, SAF1: 13.522, SAF11: 8.231, SAF111: 1.023, SAF112: 1.959, SEFJ: 0.743,
   SAF113: 1.283, SAF114: 0.981, SAF115: 2.242, SEFV: 5.290, SA0E: 7.432, SACE: 4.132,
@@ -381,20 +511,32 @@ const RI_PUBLICADA = {
   SAM2: 6.840, SEMC01: 1.660, SEMD01: 2.156, SAS4: 6.352, SETD: 1.048, SETE: 2.570,
   SETG01: 1.091
 };
-const spec = table1Spec('release');
-ok(spec.ref.slice(0, 7) === D.meta.ultimo_mes,
-   'o mes de referencia e o ultimo mes da base', spec.ref);
+
+ok(!pills['cpi-view-group'] && !pills['expenditure-view-group'],
+   'nao ha mais grupo de pills de View em aba nenhuma');
+ok(html.indexOf('data-view="table1"') === -1,
+   'e nenhum data-view="table1" sobrou no HTML gerado');
+ok(typeof table1Cols === 'undefined' && typeof fmtT1 === 'undefined',
+   'as funcoes que so serviam aquela visao sumiram do script -- nao viraram codigo morto');
+ok(typeof pctBetween === 'function' && typeof riAt === 'function',
+   'mas as que tem consumidor novo continuam');
+
+const nsaRel = D.tabs.release.dates.NSA, saRel = D.tabs.release.dates.SA;
+const mRef = nsaRel[nsaRel.length - 1];
+const mPrev = nsaRel[nsaRel.length - 2];
+const mYr = nsaRel[nsaRel.length - 13];
+ok(mRef.slice(0, 7) === D.meta.ultimo_mes, 'o mes de referencia e o ultimo mes da base', mRef);
 const mesAnterior = (function(ym) {
   const a = parseInt(ym.slice(0, 4), 10), m = parseInt(ym.slice(5, 7), 10) - 1;
   const tot = a * 12 + (m - 1);
   return String(Math.floor(tot / 12)).padStart(4, '0') + '-' + String(tot % 12 + 1).padStart(2, '0');
-})(spec.ref.slice(0, 7));
-ok(spec.ri.slice(0, 7) === mesAnterior,
-   'a importancia relativa e datada um mes atras, como o release a data', spec.ri);
+})(mRef.slice(0, 7));
+ok(riMonth('release').slice(0, 7) === mesAnterior,
+   'a importancia relativa e datada um mes atras, como o release a data', riMonth('release'));
 
 let piorRI = 0, semRI = [], conferidas = 0;
 Object.keys(RI_PUBLICADA).forEach(function(code) {
-  const v = riAt('release', code, spec.ri);
+  const v = riAt('release', code, mPrev);
   if (v == null) { semRI.push(code); return; }
   conferidas++;
   piorRI = Math.max(piorRI, Math.abs(v - RI_PUBLICADA[code]));
@@ -409,13 +551,14 @@ ok(conferidas === 37 && piorRI <= 0.0015,
    conferidas + ' conferidas, erro ' + piorRI.toFixed(4));
 console.log('          erro maximo contra a Tabela 1 impressa: ' + piorRI.toFixed(4));
 
-// A linha All items, celula por celula, contra o release impresso.
-near(levelAt('release', 'SA0', 'NSA', spec.yrAgo), 323.048, 0.0005, 'indice NSA jul/25 = 323.048');
-near(levelAt('release', 'SA0', 'NSA', spec.prev), 333.952, 0.0005, 'indice NSA jun/26 = 333.952');
-near(levelAt('release', 'SA0', 'NSA', spec.ref), 333.918, 0.0005, 'indice NSA jul/26 = 333.918');
-near(pctBetween('release', 'SA0', 'NSA', spec.ref, spec.yrAgo), 3.4, 0.05, 'NSA 12 meses = 3.4%');
-near(pctBetween('release', 'SA0', 'NSA', spec.ref, spec.prev), 0.0, 0.05, 'NSA 1 mes = 0.0%');
-const saM = spec.sa;
+// A linha All items, celula por celula, contra o release impresso. Continua sendo
+// exatamente o caminho que a coluna Change da tabela de contribuicoes percorre.
+near(levelAt('release', 'SA0', 'NSA', mYr), 323.048, 0.0005, 'indice NSA jul/25 = 323.048');
+near(levelAt('release', 'SA0', 'NSA', mPrev), 333.952, 0.0005, 'indice NSA jun/26 = 333.952');
+near(levelAt('release', 'SA0', 'NSA', mRef), 333.918, 0.0005, 'indice NSA jul/26 = 333.918');
+near(pctBetween('release', 'SA0', 'NSA', mRef, mYr), 3.4, 0.05, 'NSA 12 meses = 3.4%');
+near(pctBetween('release', 'SA0', 'NSA', mRef, mPrev), 0.0, 0.05, 'NSA 1 mes = 0.0%');
+const saM = saRel.slice(-4);
 ok(saM.length === 4, 'a grade SA rende as 3 variacoes mensais do release', saM.length);
 near(pctBetween('release', 'SA0', 'SA', saM[1], saM[0]), 0.5, 0.05, 'SA abr->mai = +0.5%');
 near(pctBetween('release', 'SA0', 'SA', saM[2], saM[1]), -0.4, 0.05, 'SA mai->jun = -0.4%');
@@ -424,68 +567,32 @@ near(pctBetween('release', 'SA0', 'SA', saM[3], saM[2]), 0.1, 0.05, 'SA jun->jul
 // Prova estrutural, independente da Tabela 1 impressa: atualizar cada item
 // separadamente nao pode quebrar a soma. Os 8 grupos de nivel 1 da arvore de
 // despesa somam 100 antes e depois.
-const especExp = table1Spec('expenditure');
-const raizExp = D.tabs.expenditure.tree[0];
-const somaRI = raizExp.children.reduce(function(a, c) {
-  return a + (riAt('expenditure', c.seriesKey, especExp.ri) || 0);
+const somaRI = D.tabs.expenditure.tree[0].children.reduce(function(a, c) {
+  return a + (riAt('expenditure', c.seriesKey, riMonth('expenditure')) || 0);
 }, 0);
 near(somaRI, 100, 0.002, 'a importancia relativa atualizada dos 8 grupos de nivel 1 ainda soma 100');
 
 // Sem peso publicado nao ha importancia relativa a atualizar.
-ok(riAt('expenditure', 'SS47014', spec.ri) === null,
+ok(riAt('expenditure', 'SS47014', mPrev) === null,
    'um item sem peso (gasolina comum) nao inventa importancia relativa');
-ok(levelAt('expenditure', 'SS47014', 'NSA', spec.ref) != null,
+ok(levelAt('expenditure', 'SS47014', 'NSA', mRef) != null,
    'mas o indice dele esta la');
+// Uma linha de drill-down vive na outra arvore: o codigo tem de resolver pela de
+// divulgacao tambem (seriesOwner).
+ok(levelAt('release', 'SS47014', 'NSA', mRef) != null,
+   'e resolve tambem pela arvore de divulgacao, onde ela e linha enxertada');
 
-// -0.04 imprime "0.0", nunca "-0.0" -- como o release imprime.
-ok(fmtT1(-0.0102, 1) === '0.0', 'fmtT1 nao produz "-0.0"', fmtT1(-0.0102, 1));
-ok(fmtT1(null, 3) === '—', 'celula vazia e em-dash');
-
-// E agora o caminho pelo DOM: clicar no pill e conferir a tabela renderizada.
-const pillT1 = pills['release-view-group'].find(x => x.dataset.view === 'table1');
-pillT1.click();
-const cabT1 = el('release-table-head');
-ok(cabT1.children.length === 2, 'cabecalho da Table 1 tem duas linhas', cabT1.children.length);
-ok(cabT1.children[0].children.length === 6,
-   'linha de grupos: check + label + 4 grupos', cabT1.children[0].children.length);
-ok(cabT1.children[1].children.length === 9,
-   'linha de meses: as 9 colunas do release', cabT1.children[1].children.length);
-ok(cabT1.children[0].children.map(x => x.textContent).join('|') ===
-   '|Expenditure category|Relative importance|Unadjusted indexes|Unadjusted percent change|' +
-   'Seasonally adjusted percent change',
-   'os grupos sao os do release', cabT1.children[0].children.map(x => x.textContent).join('|'));
-
-const linhaAll = el('release-table-body').children[0];
-ok(linhaAll.children.length === 11, 'linha tem check + label + 9 valores', linhaAll.children.length);
-const celulas = linhaAll.children.slice(2).map(td => td.textContent);
-ok(celulas.join(' ') === '100.000 323.048 333.952 333.918 3.4 0.0 0.5 -0.4 0.1',
-   'a linha All items reproduz a Tabela 1 celula por celula', celulas.join(' '));
-ok(linhaAll.children[8].classList.contains('neg') === false &&
-   linhaAll.children[9].classList.contains('neg') === true,
-   'so a celula negativa de verdade fica vermelha (0.0 nao)');
-ok(el('release-t1note').innerHTML.indexOf('Relative importance') === -1 ||
-   el('release-t1note').style.display === '',
-   'a nota da visao aparece');
-ok(el('release-t1note').innerHTML.indexOf('computed') > 0,
-   'e diz que a importancia relativa e calculada, nao publicada');
-
-// Uma linha de drill-down vive na outra aba: as colunas de indice tem de resolver.
-const linhas = el('release-table-body').children;
-ok(linhas.length === 4, 'a Table 1 nao mexeu na arvore, so nas colunas', linhas.length);
-ok(levelAt('release', 'SS47014', 'NSA', spec.ref) != null,
-   'e um codigo de drill-down resolve na aba de divulgacao (seriesOwner)');
+// A tabela nao tem mais visao que troque o conjunto de colunas.
+ok(el('cpi-table-head').children.length === 1 &&
+   el('cpi-table-head').children[0].children.length === 14,
+   'o cabecalho e sempre uma linha de check + label + 12 meses',
+   el('cpi-table-head').children.length);
 
 ok(/^\d+$/.test(el('ap-ri-n').textContent),
    'o apendice recebeu a contagem de linhas com importancia relativa', el('ap-ri-n').textContent);
 const nRI = parseInt(el('ap-ri-n').textContent, 10);
 ok(nRI > 250 && nRI < D.meta.n_expenditure,
    'a contagem e plausivel: menos que os 355 itens, mais que 250', nRI);
-
-// Voltar para Series restaura as 12 colunas de mes.
-pills['release-view-group'].find(x => x.dataset.view === 'series').click();
-ok(el('release-table-head').children.length === 1 &&
-   el('release-table-head').children[0].children.length === 14,
-   'voltar para Series traz as 12 colunas de mes de volta');
 
 console.log('\n=== 13. as linhas nao levam rotulo visivel ==================');
 // Os badges (agg / detail / no weight / last YYYY-MM / -X.XXX pp) foram removidos
@@ -499,7 +606,7 @@ function textoLinha(tr) {
     .map(c => c.textContent || '').join('').replace(/^[▾▸]\s*/, '').trim();
 }
 function acharLinha(rotulo) {
-  const linhas = el('release-table-body').children;
+  const linhas = el('cpi-table-body').children;
   for (let i = 0; i < linhas.length; i++) if (textoLinha(linhas[i]) === rotulo) return linhas[i];
   return null;
 }
@@ -535,7 +642,7 @@ ok(!!lAll && !lAll.children[1].title,
    'uma linha sem ressalva nenhuma nao ganha hover', lAll && lAll.children[1].title);
 
 let comRotulo = 0;
-['release-table-body', 'expenditure-table-body'].forEach(function(id) {
+['cpi-table-body', 'pce-table-body'].forEach(function(id) {
   el(id).children.forEach(function(tr) {
     (tr.children[1].children || []).forEach(function(c) {
       if ((c.className || '').indexOf('badge') >= 0) comRotulo++;
@@ -560,15 +667,37 @@ ok(!D.tabs.release.weights && !D.tabs.expenditure.weights,
 const mesPce = D.tabs.pce.dates.SA[D.tabs.pce.dates.SA.length - 1];
 ok(mesPce.slice(0, 7) === D.meta.ultimo_mes_pce,
    'o ultimo mes da grade do PCE e o do meta', mesPce);
-ok(D.meta.ultimo_mes_pce !== D.meta.ultimo_mes,
-   'e NAO e o mesmo do CPI: o PCE sai semanas depois',
+// O PCE do mes M sai ~2 semanas depois do CPI do mes M, entao durante parte do mes
+// ele esta um mes atras -- mas no fim do mes ALCANCA. Uma versao anterior deste
+// teste exigia que os dois nunca coincidissem, o que era um estado transitorio
+// escrito como invariante e quebrou sozinho em 2026-08-26. O invariante real e que
+// o PCE nunca esta a FRENTE do CPI.
+ok(D.meta.ultimo_mes_pce <= D.meta.ultimo_mes,
+   'e nunca esta a frente do CPI (sai depois, do mesmo mes de referencia)',
    D.meta.ultimo_mes_pce + ' vs ' + D.meta.ultimo_mes);
-function nivelPce(key) {
+// Mes FIXO, nao "o ultimo" -- pinar no ultimo mes fez este teste quebrar sozinho
+// quando o dado avancou. Mas mes fixo NAO significa valor imutavel: o BEA revisa os
+// meses anteriores em cada divulgacao mensal, e junho de 2026 saiu de 131.392 para
+// 131.454 entre 20 e 26/08/2026 (conferido no FRED: ele mostra 131.454 tambem, ou
+// seja a revisao e do BEA, nao erro nosso).
+//
+// Entao o que esta assercao protege e o CAMINHO -- payload -> metricSeries -> nivel
+// exibido --, nao a veracidade do numero contra o mundo. Essa segunda pergunta mudou
+// de lugar: `tests/test_bea_api.py` secao 7 confere as linhas 1 e 374 contra PCEPI e
+// PCEPILFE do FRED ao vivo, que e onde da para ter rede. Se ESTA assercao falhar,
+// rode aquela antes de suspeitar do relatorio: se a de la passar, foi revisao e o
+// numero abaixo e que esta velho.
+const MES_ANCORA = '2026-06-01';
+function nivelPceEm(key, mes) {
   const s = metricSeries('pce', key, 'SA', 'level');
-  return s.values[s.values.length - 1];
+  const i = s.dates.indexOf(mes);
+  if (i < 0) throw new Error('mes ' + mes + ' nao esta na grade do PCE');
+  return s.values[i];
 }
-near(nivelPce('1'), 131.392, 0.0005, 'PCE headline = 131.392 (= PCEPI no FRED)');
-near(nivelPce('374'), 130.266, 0.0005, 'PCE core = 130.266 (= PCEPILFE no FRED)');
+near(nivelPceEm('1', MES_ANCORA), 131.454, 0.0005,
+     'PCE headline em 2026-06 = 131.454 (vintage de 26/08/2026)');
+near(nivelPceEm('374', MES_ANCORA), 130.338, 0.0005,
+     'PCE core em 2026-06 = 130.338 (vintage de 26/08/2026)');
 
 // M/M e a razao dos niveis, sem atalho.
 const lvlPce = metricSeries('pce', '1', 'SA', 'level').values;
@@ -598,6 +727,27 @@ ok(mesesSoma === 60, 'os 60 ultimos meses todos tem contribuicao nos dois filhos
 ok(piorSoma <= 0.12,
    'e Goods + Services reconstroem o Y/Y do headline (erro <= 0.12 pp)', piorSoma.toFixed(4));
 console.log('          pior erro da soma nivel 1: ' + piorSoma.toFixed(4) + ' pp');
+
+// A contrapartida MENSAL, que so passou a ser observavel quando a metrica existiu.
+// Aqui o peso mensal do BEA aparece pelo que ele vale: a contribuicao para o M/M usa
+// a participacao do mes ANTERIOR, nao um snapshot de dezembro carregado o ano todo,
+// e a reconstrucao fica uma ordem de grandeza melhor que a do CPI. Comparar esta
+// linha de log com a do CPI na secao 9 e o ponto -- e por isso que a decomposicao
+// mensal e confiavel nesta aba e so indicativa nas outras duas.
+const contribMN1 = raizPce.children.map(c => metricSeries('pce', c.seriesKey, 'SA', 'contribm').values);
+let piorSomaM = 0, mesesSomaM = 0;
+for (let i = lvlPce.length - 60; i < lvlPce.length; i++) {
+  if (momPce[i] == null) continue;
+  let s = 0, falta = false;
+  contribMN1.forEach(v => { if (v[i] == null) falta = true; else s += v[i]; });
+  if (falta) continue;
+  mesesSomaM++;
+  piorSomaM = Math.max(piorSomaM, Math.abs(s - momPce[i]));
+}
+ok(mesesSomaM === 60, 'os mesmos 60 meses tem contribuicao M/M nos dois filhos', mesesSomaM);
+ok(piorSomaM <= 0.01,
+   'e Goods + Services reconstroem o M/M do headline (erro <= 0.01 pp)', piorSomaM.toFixed(4));
+console.log('          pior erro da soma M/M nivel 1: ' + piorSomaM.toFixed(4) + ' pp');
 
 // Os pesos do nivel 1 somam 100% -- com o sinal ja embutido.
 const iUlt = D.tabs.pce.dates.SA.length - 1;
@@ -702,6 +852,545 @@ ok(String(el('ap-pce-folhas').textContent) === String(D.meta.n_pce_folhas),
    'o apendice recebeu a contagem de folhas do PCE', el('ap-pce-folhas').textContent);
 ok(el('ap-pce-mes').textContent === D.meta.ultimo_mes_pce,
    'e o ultimo mes do PCE', el('ap-pce-mes').textContent);
+}
+
+
+console.log('\n=== 15. as duas arvores num seletor =========================');
+{
+// (ii) do pedido: a arvore de despesa deixou de ser uma ABA e virou uma VISAO da
+// mesma tabela. O que este bloco protege e o que a fusao pode quebrar em silencio:
+// o cabecalho tem de andar com o seletor, e as marcas tem de ser POR ARVORE -- as
+// duas chamam All items de SA0, entao um mapa `checked` compartilhado carregaria
+// uma selecao para dentro de uma arvore onde ela significa outra coisa.
+ok(html.indexOf('data-tab="expenditure"') === -1, 'a aba Expenditure Tree nao existe mais');
+ok(html.indexOf('id="panel-expenditure"') === -1, 'nem o painel dela');
+ok(html.indexOf('data-tab="cpi"') > 0, 'e ha uma aba CPI no lugar das duas');
+ok(pills['cpi-tree-group'].length === 2, 'o seletor de arvore tem as duas', pills['cpi-tree-group'].length);
+
+// Trocar de arvore redesenha a tabela E avisa as duas secoes abaixo, entao a ULTIMA
+// chamada do Plotly e a do drill-down, nao a da tabela. Ler reactCalls[last] aqui
+// mediria o grafico errado -- foi o que aconteceu na primeira rodada.
+function ultimoCpi() {
+  const cs = reactCalls.filter(c => c.div === 'chart-cpi');
+  return cs[cs.length - 1];
+}
+
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'yoy').click();
+ok(el('cpi-h2').textContent.indexOf('Release tree') === 0,
+   'o cabecalho comeca na arvore de divulgacao', el('cpi-h2').textContent);
+ok(el('cpi-note').innerHTML.indexOf(String(D.meta.n_release_drill)) > 0,
+   'e a nota dele traz o numero de linhas de drill-down');
+ok(el('cpi-table-head').children[0].children[1].textContent === 'Expenditure category',
+   'o rotulo da coluna de nome e o da arvore ativa',
+   el('cpi-table-head').children[0].children[1].textContent);
+
+// Marca uma linha a mais na arvore de divulgacao -- uma acao do usuario, nao o
+// default -- para depois provar que ela sobreviveu a ida e volta.
+function marcarLinha(bodyId, i, on) {
+  const cb = el(bodyId).children[i].children[0].children[0];
+  cb.checked = on;
+  cb.fire('change');
+}
+marcarLinha('cpi-table-body', 0, true);   // All items
+const nRel = ultimoCpi().traces.length;
+ok(nRel === 4, 'com All items marcado a mais, a arvore de divulgacao plota 4', nRel);
+
+pills['cpi-tree-group'].find(p => p.dataset.tree === 'expenditure').click();
+ok(el('cpi-h2').textContent.indexOf('Expenditure tree') === 0,
+   'trocar de arvore trocou o cabecalho', el('cpi-h2').textContent);
+ok(el('cpi-note').innerHTML.indexOf(String(D.meta.n_expenditure)) > 0,
+   'e a nota', el('cpi-note').innerHTML.slice(0, 60));
+ok(el('cpi-table-head').children[0].children[1].textContent === 'Item',
+   'e o rotulo da coluna', el('cpi-table-head').children[0].children[1].textContent);
+const grafExp = ultimoCpi();
+ok(reactCalls[reactCalls.length - 1].div === 'chart-cpi-drill',
+   'trocar de arvore redesenha tambem o drill-down -- ele segue o seletor',
+   reactCalls[reactCalls.length - 1].div);
+ok(grafExp.traces.length === 4,
+   'e plota as 4 marcas proprias da arvore de despesa, nao as 4 da outra',
+   grafExp.traces.map(x => x.name).join(' | '));
+ok(el('cpi-table-body').children.length === 9,
+   'a raiz da arvore de despesa abre nos 8 grupos de nivel 1', el('cpi-table-body').children.length);
+
+pills['cpi-tree-group'].find(p => p.dataset.tree === 'release').click();
+ok(ultimoCpi().traces.length === 4,
+   'voltar devolve a selecao da arvore de divulgacao intacta -- as marcas sao por arvore',
+   ultimoCpi().traces.length);
+marcarLinha('cpi-table-body', 0, false);  // desmarca All items de volta
+ok(ultimoCpi().traces.length === 3, 'e desmarcar volta a 3');
+}
+
+console.log('\n=== 16. tabela de maiores contribuicoes =====================');
+{
+// O fato que decidiu a formula da coluna Contribution, e que vale ficar preso num
+// teste: OUTUBRO DE 2025 NAO FOI DIVULGADO (paralisacao do governo americano). E o
+// unico buraco da base, e apaga DOIS passos mensais -- o proprio e o de novembro --,
+// entao somar contribuicoes mes a mes numa janela de 12 deixaria a coluna inteira em
+// branco. A janela e razao dos extremos por causa disto.
+const iOut = D.tabs.release.dates.NSA.indexOf('2025-10-01');
+ok(iOut > 0, 'outubro de 2025 esta na grade', iOut);
+const nivelRel = metricSeries('release', 'SA0', 'NSA', 'level').values;
+ok(nivelRel[iOut] == null, 'mas o headline nao tem indice nesse mes -- o CPI nao saiu');
+ok(nivelRel[iOut - 1] != null && nivelRel[iOut + 1] != null,
+   'e os vizinhos tem: e um mes so, nao o fim da serie');
+const momRel = metricSeries('release', 'SA0', 'NSA', 'mom').values;
+ok(momRel[iOut] == null && momRel[iOut + 1] == null,
+   'um indice faltando apaga dois M/M -- o do mes e o do seguinte');
+ok(metricSeries('release', 'SA0', 'NSA', 'yoy').values[iOut + 1] != null,
+   'mas o Y/Y de novembro sobrevive: ele so precisa das duas pontas');
+
+// (iii) do pedido: o equivalente do "Maiores Contribuições no Período" do Brasil.
+// A ancora fica em NSA e 12 meses, que e o corte publicado -- assim o numero do
+// rodape tem contra o que ser conferido.
+pills['cpi-basis-group'].find(p => p.dataset.basis === 'NSA').click();
+pills['cpi-window-group'].find(p => p.dataset.win === '12').click();
+
+const cab = el('cpi-rank-head').children[0];
+ok(cab.children.length === 7, '7 colunas', cab.children.length);
+ok(cab.children.map(x => x.textContent).join('|') ===
+   '#|Level 1|Parent|Item|Weight|Change 12M (%)|Contribution (p.p.)',
+   'com os rotulos do ranking', cab.children.map(x => x.textContent).join('|'));
+ok(el('cpi-rank-body').children.length === 20, 'mostra 20 linhas', el('cpi-rank-body').children.length);
+
+function col(tr, i) { return parseFloat(tr.children[i].textContent); }
+const contribs = el('cpi-rank-body').children.map(tr => col(tr, 6)).filter(v => !isNaN(v));
+ok(contribs.length === 20 && contribs.every((v, i) => i === 0 || contribs[i - 1] >= v - 1e-9),
+   'ordenadas por contribuicao decrescente', contribs.slice(0, 3).join(' '));
+
+// Cobertura: nas folhas ela NAO chega a 100, e e por isso que a linha existe.
+const coberturaFolhas = el('cpi-rank-cover').innerHTML;
+ok(coberturaFolhas.indexOf('of the index') > 0 && coberturaFolhas.indexOf('coverage, not error') > 0,
+   'o rodape declara a cobertura e avisa que a diferenca nao e erro');
+const pesoFolhas = parseFloat((coberturaFolhas.match(/<b>([\d.]+)<\/b> of the index/) || [])[1]);
+ok(pesoFolhas > 0 && pesoFolhas < 99,
+   'e nas folhas da arvore de divulgacao ela fica claramente abaixo de 100', pesoFolhas);
+console.log('          [medido] cobertura das folhas: ' + pesoFolhas.toFixed(1) + ' de 100');
+
+// "Show all" abre a lista inteira e volta.
+const btn = el('cpi-rank-toggle');
+btn.click();
+const todas = el('cpi-rank-body').children.length;
+ok(todas > 20, 'Show all abre a lista inteira', todas);
+ok(btn.textContent.indexOf('Show top') === 0, 'e o botao passa a oferecer a volta', btn.textContent);
+btn.click();
+ok(el('cpi-rank-body').children.length === 20, 'e volta para 20');
+
+// A janela muda o cabecalho e os numeros.
+pills['cpi-window-group'].find(p => p.dataset.win === '1').click();
+ok(el('cpi-rank-head').children[0].children[5].textContent === 'Change 1M (%)',
+   'trocar a janela renomeia a coluna de variacao',
+   el('cpi-rank-head').children[0].children[5].textContent);
+ok(el('cpi-rank-h2').textContent.indexOf('over 1M') > 0,
+   'e o titulo da secao', el('cpi-rank-h2').textContent);
+pills['cpi-window-group'].find(p => p.dataset.win === '12').click();
+
+// O TESTE QUE IMPORTA: no nivel 1 a arvore particiona, entao peso e contribuicao
+// tem contra o que fechar. A contribuicao no periodo e a SOMA das 12 contribuicoes
+// mensais -- nao peso x variacao acumulada --, e o que se confere aqui e que essa
+// soma reconstroi a variacao de 12 meses do headline.
+const pillL1 = el('cpi-rank-level-group').children.filter(b => b.textContent === 'Level 1')[0];
+ok(!!pillL1, 'ha uma pill de Level 1');
+pillL1.click();
+const linhas = el('cpi-rank-body').children;
+ok(linhas.length === 3,
+   'o nivel 1 da arvore de divulgacao tem 3 linhas (food, energy, core)', linhas.length);
+const somaPeso = linhas.reduce((a, tr) => a + col(tr, 4), 0);
+near(somaPeso, 100, 0.01, 'os pesos das 3 somam 100 -- o nivel 1 particiona o indice');
+const somaContrib = linhas.reduce((a, tr) => a + col(tr, 6), 0);
+const headline12 = pctBetween('release', 'SA0', 'NSA', mRef, mYr);
+console.log(`          [medido] soma das contribuicoes de nivel 1: ${somaContrib.toFixed(3)} vs ` +
+            `headline ${headline12.toFixed(3)}%`);
+// A tolerancia e o erro de reconciliacao ja documentado da convencao de peso do CPI
+// (a importancia relativa e snapshot de dezembro de um numero que o BLS atualiza a
+// preco continuamente), nao folga: ~0.012 p.p. em media, 0.036 medido aqui. Apertar
+// mais faria o teste quebrar sozinho a cada mes novo; afrouxar deixaria passar um
+// peso trocado.
+near(somaContrib, headline12, 0.10,
+     'e as contribuicoes de nivel 1 reconstroem a variacao de 12 meses do headline');
+const cobertura1 = parseFloat((el('cpi-rank-cover').innerHTML.match(/<b>([\d.]+)<\/b> of the index/) || [])[1]);
+near(cobertura1, 100, 0.01, 'e a linha de cobertura diz 100 quando a cobertura e mesmo 100');
+
+// Ordenar: primeiro clique numa coluna de texto sobe, numa de numero desce.
+cab.children[3].click();  // Item
+const nomes = el('cpi-rank-body').children.map(tr => tr.children[3].textContent);
+ok(nomes.every((v, i) => i === 0 || nomes[i - 1] <= v),
+   'clicar em Item ordena A-Z', nomes.join(' | '));
+cab.children[3].click();
+const nomes2 = el('cpi-rank-body').children.map(tr => tr.children[3].textContent);
+ok(nomes2.every((v, i) => i === 0 || nomes2[i - 1] >= v), 'e o segundo clique inverte');
+cab.children[6].click();  // Contribution, volta ao default
+const c2 = el('cpi-rank-body').children.map(tr => col(tr, 6));
+ok(c2.every((v, i) => i === 0 || c2[i - 1] >= v - 1e-9), 'e a coluna numerica volta a descer');
+
+// Trocar de arvore refaz a secao (o CPI_TAB avisa).
+pills['cpi-tree-group'].find(p => p.dataset.tree === 'expenditure').click();
+const l1exp = el('cpi-rank-level-group').children.filter(b => b.textContent === 'Level 1')[0];
+l1exp.click();
+ok(el('cpi-rank-body').children.length === 8,
+   'na arvore de despesa o nivel 1 tem os 8 grupos -- a secao seguiu o seletor',
+   el('cpi-rank-body').children.length);
+const somaPesoExp = el('cpi-rank-body').children.reduce((a, tr) => a + col(tr, 4), 0);
+near(somaPesoExp, 100, 0.01, 'e os 8 pesos tambem somam 100');
+pills['cpi-tree-group'].find(p => p.dataset.tree === 'release').click();
+}
+
+console.log('\n=== 17. drill-down de 12 meses =============================');
+{
+// (iv) do pedido: a replica do "Variação 12M — Drilldown de Componentes". A
+// diferenca que importa esta na ultima assercao -- no Brasil o agregado de um nivel
+// e RECONSTRUIDO (media ponderada encadeada), aqui e o indice publicado do proprio
+// no, entao o valor plotado tem de bater EXATO com metricSeries, sem tolerancia.
+const pillsNivel = el('cpi-drill-level-group').children;
+ok(pillsNivel.length >= 3 && pillsNivel[0].textContent === 'Level 1',
+   'pills de nivel, comecando no 1', pillsNivel.map(b => b.textContent).join(','));
+ok(pillsNivel[0].classList.contains('active'), 'e o nivel 1 nasce ativo');
+
+function ultimoDrill() {
+  const cs = reactCalls.filter(c => c.div === 'chart-cpi-drill');
+  return cs[cs.length - 1];
+}
+const g = ultimoDrill();
+ok(!!g, 'o grafico do drill-down foi plotado');
+ok(g.traces.length === 3, 'nasce com 3 componentes marcados', g.traces.length);
+ok(g.layout.yaxis.title.text.indexOf('% Y/Y') === 0,
+   'o eixo Y diz Y/Y e o ajuste', g.layout.yaxis.title.text);
+ok(g.layout.dragmode === 'pan' && g.config.scrollZoom === true,
+   'e o grafico segue o modelo de interacao da pagina');
+
+const nivel1 = D.tabs.release.tree[0].children;
+ok(g.traces.map(x => x.name).join('|') === nivel1.slice(0, 3).map(n => n.label).join('|'),
+   'os 3 sao os primeiros componentes do nivel -- food / energy / core',
+   g.traces.map(x => x.name).join('|'));
+
+// O valor plotado E o do indice publicado, nao uma reconstrucao.
+const pub = metricSeries('release', nivel1[0].seriesKey, 'NSA', 'yoy');
+const iPub = pub.values.length - 1;
+ok(g.traces[0].y[iPub] === pub.values[iPub] && g.traces[0].x[iPub] === pub.dates[iPub],
+   'e e exatamente o Y/Y do indice publicado do no, sem reconstrucao',
+   g.traces[0].y[iPub] + ' vs ' + pub.values[iPub]);
+
+// Uma serie so sai preenchida; varias, nao.
+const caixas = el('cpi-drill-panel').children.map(lab => lab.children[0]);
+ok(caixas.length === nivel1.length, 'o painel lista todos os componentes do nivel', caixas.length);
+caixas[1].checked = false; caixas[1].fire('change');
+caixas[2].checked = false; caixas[2].fire('change');
+const g1 = ultimoDrill();
+ok(g1.traces.length === 1, 'desmarcar deixa uma serie', g1.traces.length);
+ok(g1.traces[0].fill === 'tozeroy', 'e uma serie sozinha sai preenchida ate o zero', g1.traces[0].fill);
+ok(el('cpi-drill-btn').textContent === nivel1[0].label,
+   'o botao do multiselect passa a mostrar o nome dela', el('cpi-drill-btn').textContent);
+caixas[1].checked = true; caixas[1].fire('change');
+ok(!ultimoDrill().traces.some(x => x.fill), 'com duas, nenhuma e preenchida');
+ok(el('cpi-drill-btn').textContent.indexOf('2 of ') === 0,
+   'e o botao passa a contar', el('cpi-drill-btn').textContent);
+
+// Trocar de nivel repovoa a lista.
+const pillN2 = pillsNivel.filter(b => b.textContent === 'Level 2')[0];
+pillN2.click();
+ok(el('cpi-drill-panel').children.length === nodesAtDepth(D.tabs.release.tree, 2).length,
+   'trocar de nivel repovoa o painel com os componentes daquele nivel',
+   el('cpi-drill-panel').children.length);
+ok(ultimoDrill().traces.length === 3, 'e volta a marcar 3', ultimoDrill().traces.length);
+
+// Clear esvazia sem quebrar.
+el('cpi-drill-clear').click();
+ok(ultimoDrill().traces.length === 0, 'Clear tira todas as series', ultimoDrill().traces.length);
+ok(el('cpi-drill-btn').textContent === 'Select…', 'e o botao volta ao placeholder',
+   el('cpi-drill-btn').textContent);
+
+// A barra de range do drill-down e propria.
+relayoutCalls.length = 0;
+const rbDrill = el('cpi-drill-range').children.filter(c => c.className === 'rb');
+ok(rbDrill.length === 6, 'o drill-down tem a sua propria barra de range', rbDrill.length);
+rbDrill[0].click();
+ok(relayoutCalls.length === 1 && relayoutCalls[0].div === 'chart-cpi-drill',
+   'e ela mexe no grafico dele, nao no de cima', relayoutCalls[0] && relayoutCalls[0].div);
+}
+
+// ── faixa de agenda de divulgacao ────────────────────────────────────────────
+// O que esta secao protege: a faixa mistura dado do payload (data, hora nos dois
+// fusos, periodo) com uma conta feita no NAVEGADOR (o "in N days"), e as duas
+// falham de jeitos diferentes. Um payload sem `releases` tem de sumir com a faixa
+// em vez de renderizar uma caixa vazia; e a contagem tem de ser contra o relogio
+// de quem abre, senao um arquivo enviado por email mente com confianca.
+console.log('\n-- agenda de divulgacao ------------------------------------');
+{
+const faixa = el('releases').innerHTML;
+
+ok(D.releases && D.releases.inflc_cpi && D.releases.inflc_pce,
+   'o payload traz a agenda das duas series', Object.keys(D.releases || {}));
+
+const cpi = D.releases.inflc_cpi;
+ok(cpi.institution === 'BLS' && cpi.grupo === 'bls_cpi',
+   'o CPI vem do grupo bls_cpi do calendario', cpi.institution + '/' + cpi.grupo);
+ok(D.releases.inflc_pce.institution === 'BEA' && D.releases.inflc_pce.grupo === 'bea_pce',
+   'e o PCE do grupo bea_pce', D.releases.inflc_pce.grupo);
+
+ok(faixa.indexOf('CPI · ') >= 0 && faixa.indexOf('PCE · ') >= 0,
+   'a faixa renderizou os dois cartoes');
+ok((faixa.match(/class="rel-row/g) || []).length === 4,
+   'com ultima e proxima em cada um', (faixa.match(/class="rel-row/g) || []).length);
+
+// A hora sai nos DOIS fusos. E o ponto todo de guardar release_time_tz em vez de
+// um valor ja convertido: as 08:30 de Nova York nao sao a mesma hora de Brasilia o
+// ano inteiro.
+ok(faixa.indexOf(cpi.proxima.time_fonte + ' ET') >= 0,
+   'a hora da fonte aparece marcada como ET', cpi.proxima.time_fonte);
+ok(faixa.indexOf(cpi.proxima.time_local + ' BRT') >= 0,
+   'e a convertida como BRT', cpi.proxima.time_local);
+ok(cpi.proxima.tz_fonte === 'America/New_York',
+   'o fuso guardado e o da fonte, nao o local', cpi.proxima.tz_fonte);
+
+// A conversao tem de mudar com o horario de verao americano. Verificado sobre o
+// proprio payload: se as duas divulgacoes caem em regimes diferentes de DST, a
+// diferenca fonte->local nao pode ser a mesma nas duas.
+function difMin(e) {
+  const f = e.time_fonte.split(':'), l = e.time_local.split(':');
+  return (+l[0] * 60 + +l[1]) - (+f[0] * 60 + +f[1]);
+}
+ok(difMin(cpi.proxima) === 60 || difMin(cpi.proxima) === 120,
+   'a diferenca ET->BRT e de 1h (EDT) ou 2h (EST), nunca zero', difMin(cpi.proxima));
+
+// Periodo de referencia: e o mes do DADO, nao o da divulgacao. E a distincao que
+// separa "o CPI de agosto" de "o CPI que sai em setembro".
+ok(cpi.proxima.reference_period < cpi.proxima.date.slice(0, 7),
+   'o periodo de referencia antecede o mes da divulgacao',
+   cpi.proxima.reference_period + ' vs ' + cpi.proxima.date.slice(0, 7));
+ok(faixa.indexOf('ref. ') >= 0, 'e a faixa mostra o periodo, nao so a data');
+
+// A conta de dias e contra o relogio de quem abre o arquivo.
+const hoje = new Date();
+const hojeISO = hoje.getFullYear() + '-' +
+  String(hoje.getMonth() + 1).padStart(2, '0') + '-' +
+  String(hoje.getDate()).padStart(2, '0');
+const esperado = cpi.proxima.date < hojeISO ? 'past due' :
+                 cpi.proxima.date === hojeISO ? 'today' : 'in ';
+ok(faixa.indexOf(esperado) >= 0,
+   'o badge da proxima reflete o relogio de agora (' + esperado.trim() + ')');
+ok(faixa.indexOf('rel-row next') >= 0, 'e a linha da proxima esta marcada como tal');
+
+// Payload sem agenda: a faixa some, nao renderiza caixa vazia.
+const guardado = D.releases;
+D.releases = {};
+el('releases').innerHTML = '';
+el('releases').style.display = '';
+(function() {
+  var alvo = el('releases');
+  var R = D.releases || {};
+  var ordem = [['inflc_cpi', 'CPI'], ['inflc_pce', 'PCE']];
+  var html = '';
+  ordem.forEach(function(par) { if (R[par[0]]) html += 'x'; });
+  alvo.innerHTML = html;
+  if (!html) alvo.style.display = 'none';
+})();
+ok(el('releases').style.display === 'none',
+   'sem agenda no payload a faixa e escondida');
+D.releases = guardado;
+}
+
+console.log('\n=== 18. o apendice em gavetas ==============================');
+{
+// O apendice era oito <h3> empilhados: ~2.700 palavras sem estado fechado nenhum.
+// Agora cada secao e um <details>, e o resumo ao lado do titulo e o que faz o
+// fechado valer -- as oito juntas viram um indice do que esta documentado.
+ok(drawerIds.length === 8, 'o apendice tem 8 gavetas', drawerIds.length);
+const esperados = ['ap-sources', 'ap-calendar', 'ap-trees', 'ap-numbers',
+                   'ap-weights', 'ap-readings', 'ap-pce', 'ap-limits'];
+ok(esperados.every(id => drawerIds.indexOf(id) >= 0),
+   'com os ids que os links do relatorio usam', drawerIds.join(','));
+
+const i0 = html.indexOf('<section class="panel" id="panel-appendix">');
+const apx = html.slice(i0, html.indexOf('</section>', i0));
+ok(apx.indexOf('<h3>') < 0, 'nenhum <h3> sobrou solto la dentro');
+ok((apx.match(/<summary>/g) || []).length === 8, 'cada gaveta tem um summary');
+ok((apx.match(/class="acc-t"/g) || []).length === 8, 'com titulo');
+ok((apx.match(/class="acc-s"/g) || []).length === 8,
+   'e o resumo de uma linha, que e o que o leitor le antes de decidir abrir');
+ok((apx.match(/<details class="acc" id="[\w-]+" open>/g) || []).length === 1,
+   'so a primeira nasce aberta -- as outras sete sao indice');
+ok(html.indexOf('.appx h3 {') < 0, 'e a regra de CSS do <h3> saiu junto, sem seletor morto');
+
+// Os tres numeros que o script escreve no apendice continuam la, agora dentro de
+// gavetas -- um <span> perdido na reorganizacao ficaria vazio em silencio.
+['ap-ri-n', 'ap-pce-folhas', 'ap-pce-mes'].forEach(id => {
+  ok(apx.indexOf('id="' + id + '"') >= 0, 'o span ' + id + ' segue no apendice');
+});
+ok(String(el('ap-ri-n').textContent).length > 0,
+   'e o script continua preenchendo ap-ri-n', el('ap-ri-n').textContent);
+ok(String(el('ap-pce-folhas').textContent).length > 0,
+   'e ap-pce-folhas', el('ap-pce-folhas').textContent);
+
+// Todo link do relatorio aponta para uma gaveta que existe. Sem isto, renomear
+// uma secao deixaria um link mudo -- clica e nao acontece nada.
+// Dois formatos, de proposito: os links escritos no HTML chamam goAppendix
+// direto, e os que nascem dentro de string JS passam por axLink. O teste varre
+// os dois -- varrer so um deixaria metade das referencias sem cobertura.
+const alvos = [
+  ...html.matchAll(/goAppendix\((?:&#39;|')([\w-]+)(?:&#39;|')\)/g),
+  ...html.matchAll(/axLink\('([\w-]+)'/g),
+].map(m => m[1]);
+ok(alvos.length >= 6, 'ha links para o apendice espalhados pelo relatorio', alvos.length);
+const orfaos = alvos.filter(a => drawerIds.indexOf(a) < 0);
+ok(orfaos.length === 0, 'e nenhum aponta para gaveta inexistente', orfaos.join(','));
+const cobertos = new Set(alvos);
+['ap-trees', 'ap-numbers', 'ap-weights', 'ap-readings', 'ap-pce', 'ap-calendar'].forEach(id => {
+  ok(cobertos.has(id), 'a secao ' + id + ' e alcancavel por link');
+});
+// As duas que sobram sao de proposito: 'onde vem o dado' e 'limites' nao respondem
+// a nenhuma afirmacao especifica da pagina, entao nenhum ponto do relatorio tem um
+// lugar natural para apontar. Fixado aqui para nao parecer descuido depois.
+const semLink = drawerIds.filter(id => !cobertos.has(id));
+ok(semLink.length === 2 && semLink.indexOf('ap-sources') >= 0 && semLink.indexOf('ap-limits') >= 0,
+   'e so ap-sources e ap-limits ficam sem link de entrada, por nao terem referente',
+   semLink.join(','));
+
+// O destino de 'so os niveis 0-2 particionam o indice' e a gaveta que documenta a
+// afirmacao (ap-numbers, onde vive o aviso), nao a que explica como a arvore e
+// montada -- a primeira versao apontava para a errada.
+ok(html.indexOf("axLink('ap-numbers', 'why that matters')") >= 0,
+   'a nota da arvore de divulgacao aponta a particao para ap-numbers');
+
+// axLink e o unico gerador desses links no JS, e escapa a aspa com entidade
+// porque o onclick vive dentro de uma string JS ja delimitada por aspas simples.
+const marcado = axLink('ap-limits', 'Appendix');
+ok(marcado.indexOf('goAppendix(&#39;ap-limits&#39;)') >= 0,
+   'axLink escapa a aspa com &#39;, para caber dentro do atributo onclick', marcado);
+ok(marcado.indexOf('class="axlink"') >= 0, 'e marca o link com a classe que o CSS estiliza');
+
+// goAppendix faz as duas coisas de uma vez: troca de aba E abre a gaveta.
+el('ap-limits').open = false;
+tabButtons.forEach(b => b.classList.remove('active'));
+panelIds.forEach(id => el(id).classList.remove('active'));
+const devolveu = goAppendix('ap-limits');
+ok(devolveu === false, 'goAppendix devolve false, para o clique nao navegar');
+ok(el('ap-limits').open === true, 'a gaveta alvo abre');
+ok(el('ap-limits').classList.contains('flash'),
+   'e pisca -- cair numa gaveta ja aberta seria indistinguivel de nada ter acontecido');
+ok(tabButtons.find(b => b.dataset.tab === 'appendix').classList.contains('active'),
+   'a aba do apendice fica ativa');
+ok(el('panel-appendix').classList.contains('active'), 'com o painel dela ligado');
+ok(!el('panel-cpi').classList.contains('active'), 'e o painel de CPI desligado');
+
+// Um id que nao existe nao pode derrubar a pagina: o link ainda troca de aba.
+tabButtons.forEach(b => b.classList.remove('active'));
+ok(goAppendix('ap-nao-existe') === false, 'um id inexistente nao lanca excecao');
+ok(tabButtons.find(b => b.dataset.tab === 'appendix').classList.contains('active'),
+   'e a troca de aba acontece assim mesmo');
+
+// Expand all / Collapse all, que e o que fazer antes de imprimir.
+el('appx-collapse').click();
+ok(drawerIds.every(id => el(id).open === false), 'Collapse all fecha as oito');
+el('appx-expand').click();
+ok(drawerIds.every(id => el(id).open === true), 'Expand all abre as oito');
+
+// mostrarAba foi extraida do handler de clique; o clique tem de continuar usando-a.
+tabButtons.find(b => b.dataset.tab === 'pce').click();
+ok(el('panel-pce').classList.contains('active'),
+   'clicar na aba de PCE continua ligando o painel dela');
+ok(!el('panel-appendix').classList.contains('active'), 'e desligando o do apendice');
+tabButtons.find(b => b.dataset.tab === 'cpi').click();
+ok(el('panel-cpi').classList.contains('active'), 'e voltar para CPI religa o de cima');
+}
+
+console.log('\n=== 19. conformidade com o design system da skill ===========');
+{
+// .claude/skills/lis-dashboard/references/design-system.md. So as regras que valem
+// para um relatorio analitico multi-serie -- as do genero "dashboard de NAV de um
+// ativo so" (3 stat cards min/max, spline navy unica com fill, virgula decimal BR)
+// nao se aplicam e estao registradas no CLAUDE.md da pasta.
+ok(html.indexOf('cdn.plot.ly/plotly-2.35.2.min.js') >= 0,
+   'Plotly 2.35.2, a versao que os outros oito relatorios usam');
+['chart.js', 'chartjs-plugin', 'hammer.min.js'].forEach(lib => {
+  ok(html.toLowerCase().indexOf(lib) < 0, 'sem ' + lib + ' -- so Plotly');
+});
+ok(html.indexOf('<canvas') < 0, 'nenhum <canvas>: todo grafico e um <div> vazio');
+['Barlow', 'Barlow+Condensed', 'JetBrains+Mono'].forEach(f => {
+  ok(html.indexOf(f) >= 0, 'a fonte ' + f.replace('+', ' ') + ' esta no link do Google Fonts');
+});
+
+// Config unico, nao copiado por grafico.
+ok(PLOTLY_CONFIG.scrollZoom === true, 'scrollZoom ligado no config compartilhado');
+ok(PLOTLY_CONFIG.displayModeBar === 'hover',
+   'a modebar aparece no hover, para nao competir com os botoes de janela',
+   PLOTLY_CONFIG.displayModeBar);
+ok(PLOTLY_CONFIG.displaylogo === false, 'sem logo do Plotly');
+ok(['lasso2d', 'select2d', 'autoScale2d'].every(b => PLOTLY_CONFIG.modeBarButtonsToRemove.indexOf(b) >= 0),
+   'lasso/select/autoScale removidos da modebar');
+const cfgs = new Set(reactCalls.map(c => c.config));
+ok(cfgs.size === 1 && cfgs.has(PLOTLY_CONFIG),
+   'e os tres graficos passam O MESMO objeto -- um config so, nao um por renderizador',
+   cfgs.size);
+
+// Layout: a fabrica unica cobre gesto, hover, eixos e fundo.
+const L = mkLayout();
+ok(L.dragmode === 'pan', 'dragmode pan (drag = pan nos dois eixos, sem box-zoom)');
+ok(L.hovermode === 'x unified', 'hovermode x unified');
+ok(L.hoverlabel.bgcolor === '#1F2853' && L.hoverlabel.font.family === 'Barlow'
+   && L.hoverlabel.font.size === 12, 'tooltip navy em Barlow 12');
+ok(L.xaxis.showgrid === false && L.xaxis.showline === true
+   && L.xaxis.linecolor === 'rgba(31,40,83,0.1)',
+   'eixo X sem grid, so linha de base');
+ok(L.xaxis.tickfont.family === 'JetBrains Mono' && L.xaxis.tickfont.size === 10
+   && L.xaxis.tickfont.color === '#7A88A8', 'ticks do X em JetBrains Mono 10');
+ok(L.yaxis.gridcolor === 'rgba(31,40,83,0.06)' && L.yaxis.tickfont.family === 'JetBrains Mono',
+   'grid do Y na cor da referencia e ticks em mono');
+ok(L.xaxis.fixedrange === undefined && L.yaxis.fixedrange === undefined,
+   'sem fixedrange em eixo nenhum -- o Y tem de ficar livre junto com o X');
+ok(L.xaxis.rangeselector === undefined,
+   'sem xaxis.rangeselector -- os botoes de janela vivem fora do Plotly, ver a ' +
+   'caixa de atencao do design system');
+ok(L.paper_bgcolor === 'rgba(0,0,0,0)' && L.plot_bgcolor === 'rgba(0,0,0,0)',
+   'fundo transparente, o card por baixo e que pinta');
+ok(L.font.family.indexOf('Barlow') === 0 && L.font.size === 12, 'fonte base Barlow 12');
+// O merge de `extra` nao pode apagar o resto do eixo.
+const L2 = mkLayout({yaxis: {title: {text: 'x'}}, barmode: 'relative'});
+ok(L2.yaxis.title.text === 'x' && L2.yaxis.gridcolor === 'rgba(31,40,83,0.06)',
+   'passar um extra de yaxis funde, nao substitui o eixo inteiro');
+ok(L2.barmode === 'relative', 'e chaves de topo passam direto');
+
+// "Values on chart" -- o "Dados no grafico" obrigatorio do design system.
+const dl = document.getElementById('chart-cpi-dl');
+ok(!!dl && dl.className === 'dl-toggle', 'o toggle existe na barra do grafico');
+ok(!dl.classList.contains('on'), 'e comeca DESLIGADO, como manda a referencia');
+const marcaTexto = reactCalls.filter(c => c.div === 'chart-cpi').pop();
+ok(marcaTexto.traces[0].mode === 'lines', 'entao as traces nascem em mode "lines"');
+ok(Array.isArray(marcaTexto.traces[0].text), 'mas ja carregam o array de texto');
+ok(marcaTexto.traces[0].textfont.family === 'JetBrains Mono'
+   && marcaTexto.traces[0].textfont.size === 9, 'rotulos em JetBrains Mono 9');
+// O passo da referencia: >60 pontos a cada 5, >30 a cada 3, senao todos.
+ok(passoDeRotulo(1363) === 5 && passoDeRotulo(45) === 3 && passoDeRotulo(20) === 1,
+   'o passo de rotulos segue a regra da skill');
+const naoVazios = marcaTexto.traces[0].text.filter(x => x !== '').length;
+const preenchidos = marcaTexto.traces[0].y.filter(v => v != null && !isNaN(v)).length;
+ok(naoVazios < preenchidos / 3,
+   'e o passo realmente rareia os rotulos -- ' + naoVazios + ' de ' + preenchidos,
+   naoVazios + '/' + preenchidos);
+restyleCalls.length = 0;
+dl.click();
+ok(restyleCalls.length === 1 && restyleCalls[0].upd.mode === 'lines+text',
+   'clicar liga os valores por Plotly.restyle, sem re-renderizar o grafico',
+   JSON.stringify(restyleCalls[0] && restyleCalls[0].upd));
+ok(dl.classList.contains('on'), 'e o botao fica marcado');
+dl.click();
+ok(restyleCalls[1].upd.mode === 'lines' && !dl.classList.contains('on'),
+   'clicar de novo desliga');
+
+// No grafico de contribuicao o toggle e desabilitado de proposito: sao ate 14
+// series de barra empilhada, e um numero por segmento nao produz nada legivel.
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'contrib').click();
+ok(dl.classList.contains('disabled'), 'em modo contribuicao o toggle fica desabilitado');
+restyleCalls.length = 0;
+dl.click();
+ok(restyleCalls.length === 0, 'e clicar nele nao faz nada');
+pills['cpi-metric-group'].find(p => p.dataset.metric === 'yoy').click();
+ok(!dl.classList.contains('disabled'), 'voltar para uma metrica de linha reabilita');
+
+// Marca e rodape, como nos outros relatorios de analytics/.
+ok(html.indexOf('LIS <em>CAPITAL</em>') >= 0, 'o cabecalho traz a marca LIS CAPITAL');
+ok(html.indexOf('<footer>') >= 0 && html.indexOf('LIS Capital \u2014 Internal use') >= 0,
+   'e ha rodape com as fontes e a marca');
+ok(html.indexOf('BLS \u2014 Consumer Price Index') >= 0 && html.indexOf('BEA \u2014 NIPA Section 2') >= 0,
+   'o rodape nomeia as duas fontes');
 }
 
 console.log('\n' + '='.repeat(62));

@@ -94,12 +94,32 @@ def _recurring_groups(groups: list[dict]) -> list[dict]:
     ]
 
 
+def _load_dashboards() -> list[dict]:
+    """Estado dos dashboards para a aba "Status dashboard", ou [] se nao der.
+
+    Esta e a UNICA parte do relatorio que toca MySQL, e por isso e a unica dentro de
+    try/except: o resto sai do YAML e nao tem como falhar por banco fora do ar. O que
+    vai embutido e um RETRATO -- no modo servido a aba refaz a consulta em
+    /api/dashboards e substitui. Sem isso, o HTML aberto por fora (ou recebido por
+    email) mostraria a estrutura de dependencias com a coluna de dado vazia.
+    """
+    try:
+        from domain.dashboards.status import estado
+
+        return estado()
+    except Exception as exc:
+        print(f"  Aviso: aba Status dashboard sem estado embutido — "
+              f"{type(exc).__name__}: {exc}")
+        return []
+
+
 def run(output: str = "reports/release_calendar.html") -> None:
     print("Carregando calendario de divulgacoes...")
     groups = _load_groups()
     entries = _flatten_entries(groups)
     recurring = _recurring_groups(groups)
     institutions = sorted({g["institution"] for g in groups})
+    dashboards = _load_dashboards()
 
     data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -108,8 +128,15 @@ def run(output: str = "reports/release_calendar.html") -> None:
         "entries": entries,
         "recurring": recurring,
         "institutions": institutions,
+        "dashboards": dashboards,
     }
     print(f"  {len(groups)} grupos, {len(entries)} divulgacoes datadas, {len(recurring)} recorrentes (sem data fixa)")
+    if dashboards:
+        atrasados = [d["name"] for d in dashboards if d["veredito"] == "desatualizado"]
+        n_deps = sum(d["n_deps"] for d in dashboards)
+        print(f"  {len(dashboards)} dashboards, {n_deps} dependencias declaradas"
+              + (f" — {len(atrasados)} com dado novo na fonte: {', '.join(atrasados)}"
+                 if atrasados else ""))
 
     out = render_report(_TEMPLATE, data, output)
     print(f"Relatorio salvo: {out}")

@@ -134,6 +134,40 @@ months, and the "próxima divulgação" stat card is still correct only because 
 against `reference_date`, not against the first row. The 15 non-BCB groups are still
 future-only, so the past coverage is BCB-only and uneven by design, not by accident.
 
+## Tab "Status dashboard" (2026-08-26)
+
+The report gained a tab bar; the release table is now the first of two tabs. The second answers the
+other half of the update question: the calendar button updates the **database**, and nothing was
+regenerating the **reports** that read it — a release could land, the button go green, and every HTML
+in `reports/` stay a week behind with no visible sign.
+
+One card per dashboard, from
+[`domain/dashboards/manifest.yaml`](../../domain/dashboards/CLAUDE.md): what it consumes, which table
+each item lives in (or that it's **outside MySQL** — CSV, model artifact, YAML or live source), the
+role it plays, and the last data available at the source. Verdict pill per dashboard: `em dia` /
+`dado novo na fonte` / `sem stamp` / `nunca gerado`.
+
+Both modes work off the same renderer, because `REPORT_DATA.dashboards` (embedded at generation) and
+`GET /api/dashboards` (recomputed now) carry the same shape:
+
+- **Servido** — live state, ~2s. `?live=1` also probes the external sources (FRED), one network call
+  per series, which is why it's off by default.
+- **Arquivo** — the snapshot from when the HTML was generated, and the hint says so. Without this the
+  emailed report would show the dependency tree with an empty "último dado" column.
+
+`_garantir_html()` generates through `status.gerar()` rather than `run()` so the calendar stamps
+itself — otherwise its own row would sit permanently in "sem stamp".
+
+**Each card has its own Regerar button** (`POST /api/gerar`, same key-allowlist shape as
+`/api/run`'s slug allowlist — the page never sends a module path). One dashboard at a time, by
+explicit decision: **there is no "regenerate all stale" control anywhere**, and a test enforces
+its absence. The POST returns the regenerated dashboard's new state row only, so the card flips
+to "em dia" without re-querying the other ten. In file mode the same button copies
+`uv run python -m domain.dashboards.status --gerar <key>`.
+
+So the two tabs split the work the way the update actually happens: **tab 1 updates the data
+that was released, tab 2 regenerates whichever dashboards you care about right now.**
+
 ## Pending
 
 - Add the remaining gaps listed in `domain/release_calendar/CLAUDE.md`'s "Known gaps" (international
@@ -142,6 +176,17 @@ future-only, so the past coverage is BCB-only and uneven by design, not by accid
   `cred_ptc` is no longer pending: it's confirmed and charted as `bcb_ptc`.
 - Not wired into `jobs/update_db.py` or any other routine job — this is a one-off/on-demand report, run
   manually when the calendar YAML changes.
+- **Confirmed in a real browser (2026-08-26)** — cards, dependency table and the Regerar button in
+  served mode. What that round also caught: the button's label was following `DASH.ao_vivo` (did the
+  state load?) instead of `LIVE.on` (is there a server?). The two only diverge when `/api/dashboards`
+  fails on a served page — the button fell back to "Copiar cmd" and the hint said "modo arquivo",
+  both wrong, while `/api/gerar` was up the whole time. Fixed, and the mode hint now has three
+  states instead of two. Regression covered by the "SERVIDO SEM ESTADO" section of
+  `tests/test_release_calendar_js.js`. Still unconfirmed visually: the two filter pill rows and the
+  file-mode clipboard fallback.
+- **Chaining the two tabs was considered and rejected** (2026-08-26): one click that updates a group
+  *and* regenerates everything it feeds. The user wants to pick which dashboards get rebuilt, so the
+  calendar button stays data-only. Don't "helpfully" add it back.
 - The update button's **served mode has not been confirmed in a real browser** — the interaction is
   covered by [`tests/test_release_calendar_js.js`](../../tests/test_release_calendar_js.js) (real
   script, stubbed DOM/fetch, click dispatched) and the endpoints by

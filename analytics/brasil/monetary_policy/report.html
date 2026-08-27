@@ -199,6 +199,56 @@
     .dl-toggle.on .toggle-icon::after { content: '✓'; }
 
     /* ── Tabela hierárquica (para abas com árvore de linhas expansíveis) ── */
+    /* -- Aba Projecoes: caixa da previsao --
+       Verde da marca porque e o unico numero do relatorio que NAO foi publicado por ninguem:
+       tem de se distinguir do dourado (serie observada) e do laranja/azul (decisao). */
+    .pj-prev {
+      background: rgba(65,135,145,0.07); border: 1px solid rgba(65,135,145,0.35);
+      border-left: 4px solid var(--lis-verde); border-radius: 10px;
+      padding: 14px 18px; margin-top: 14px; max-width: 1100px;
+    }
+    .pj-prev-tag {
+      display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: #2E6A73;
+      background: rgba(65,135,145,0.16); border-radius: 999px; padding: 2px 9px;
+    }
+    .pj-prev-num {
+      font-family: var(--mono); font-size: 26px; font-weight: 700; color: #2E6A73;
+      line-height: 1.1; margin: 6px 0 2px;
+    }
+    .pj-prev-sub { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .pj-prev-sub b { color: var(--text2); }
+    .pj-met { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+    /* -- Tabela em click-drop: <details>/<summary> nativo, mesma mecanica do apendice --
+       As duas tabelas da aba Projecoes tem 17 e 107 linhas; abertas por default elas empurram
+       tudo que vem depois para fora da tela. O <summary> carrega a contagem, escrita pelo JS,
+       para a tabela fechada ainda dizer o que tem dentro. */
+    .tbl-fold {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+    }
+    .tbl-fold > summary {
+      font-family: var(--cond); font-size: 13.5px; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--text); padding: 13px 18px; cursor: pointer; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .tbl-fold > summary::-webkit-details-marker { display: none; }
+    .tbl-fold > summary::after {
+      content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto;
+    }
+    .tbl-fold[open] > summary::after { content: '−'; }
+    .tbl-fold > summary:hover { color: var(--lis-dourado); }
+    .tbl-fold > summary .tbl-fold-n {
+      font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    /* A moldura passa a ser do <details>, entao o wrap interno perde a dele e mantem so o
+       scroll horizontal, que e a razao de ele existir. */
+    .tbl-fold .hier-table-wrap {
+      border: 0; border-top: 1px solid var(--border); border-radius: 0; background: transparent;
+    }
+    .tbl-fold > .chart-caption { display: block; padding: 11px 18px 14px; }
+
     .hier-table-wrap { overflow-x: auto; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
     .hier-table { border-collapse: collapse; width: 100%; font-size: 12px; white-space: nowrap; }
     .hier-table th, .hier-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); text-align: right; }
@@ -207,6 +257,34 @@
     .hier-table td.col-value { font-family: var(--mono); color: var(--text); }
     .hier-table tr.is-total td { font-weight: 700; color: var(--text); background: rgba(31,40,83,0.03); }
     .hier-table tr.is-total td.col-label { color: var(--lis-azul); }
+
+    /* ── Aba Condições: heatmap hawk/dove ──
+       O fundo colorido é escrito inline por renderCondicoes() (uma cor por linha, calculada
+       do z), então aqui só ficam a tipografia e os estados que NÃO dependem de z. */
+    .cd-bloco td {
+      background: rgba(31,40,83,0.05); font-family: var(--cond); font-size: 12.5px;
+      font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--lis-azul); padding-top: 11px; padding-bottom: 6px;
+    }
+    .cd-val { font-family: var(--mono); font-size: 13px; color: var(--text); }
+    .cd-ref { display: block; font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
+    .cd-var { white-space: normal; max-width: 300px; }
+    .cd-unid { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
+    /* Linha sem dado novo: apagada de propósito. Ela não é "neutra" -- não foi perguntada. */
+    .cd-mudo .cd-val, .cd-mudo .col-label { opacity: 0.5; }
+    .cd-tag {
+      display: inline-block; padding: 2px 8px; border-radius: 999px; font-family: var(--mono);
+      font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .cd-hawk  { background: rgba(234,82,58,0.14);  color: #B03A26; }
+    .cd-dove  { background: rgba(2,115,155,0.14);  color: #02627F; }
+    .cd-flat  { background: rgba(31,40,83,0.07);   color: var(--muted); }
+    .cd-est   { color: var(--lis-dourado); font-family: var(--mono); font-size: 10px; cursor: help; }
+    .cd-pend  { color: var(--lis-laranja); font-family: var(--mono); font-size: 10px; cursor: help; }
+    .cd-regua { display: flex; align-items: center; gap: 10px; margin: 0 2px 12px; }
+    .cd-regua-barra { flex: 1; height: 9px; border-radius: 5px; }
+    .cd-regua-lbl { font-family: var(--mono); font-size: 9.5px; color: var(--muted); white-space: nowrap; }
+    .cd-agenda-hoje td { border-top: 2px solid var(--lis-dourado); }
 
     /* ── KPI grids ── */
     .kpi-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -424,10 +502,7 @@
 
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="motor">Modelo BC — Agregado</button>
-  <button class="tab-btn" data-tab="cenarios">Cenários</button>
-  <button class="tab-btn" data-tab="decomp">Decomposição</button>
-  <button class="tab-btn" data-tab="neutra">Taxa Neutra</button>
-  <button class="tab-btn" data-tab="hiato">Hiato do Produto</button>
+  <button class="tab-btn" data-tab="condicoes">Condições para a reunião</button>
   <button class="tab-btn" data-tab="projecoes">Projeções do Copom</button>
   <button class="tab-btn" data-tab="appendix">Apêndice</button>
 </nav>
@@ -542,8 +617,8 @@
         ativo difere dela. Juro real é diferença simples
         i<sup>e</sup> − π<sup>e</sup>, como na eq. (2.1), não Fisher exato. O choque persistente
         s<sup>h</sup> não entra no gráfico do hiato de propósito — ele é <em>uma</em> parcela da
-        eq. (2), e a decomposição completa é a aba Decomposição; aqui ele tem card e gráfico
-        próprios, entre os inputs.
+        eq. (2), e plotar uma parcela ao lado do total sugere uma decomposição que não está sendo
+        feita; aqui ele tem card e gráfico próprios, entre os inputs.
       </p>
     </section>
 
@@ -601,184 +676,377 @@
   </div>
 
 
-  <!-- ═══════ ABA — CENÁRIOS ═══════
-       Trajetórias pré-simuladas por modelo_agregado.cenarios_padrao(); a interface escolhe
-       entre elas, não roda o modelo. Duas dimensões de escolha, e a segunda está exposta
-       de propósito: sem a eq. (5) a expectativa de inflação é PREMISSA, não resposta.
-  ════════════════════════ -->
-  <div class="tab-panel" id="tab-cenarios">
+  <!-- ═══════ ABA — CONDIÇÕES PARA A REUNIÃO ═══════
+       O que o Copom viu na última decisão contra o que já está na mesa para a próxima.
+       Todo o cálculo vive em condicoes_copom.py -- inclusive a regra de corte, que é o
+       ponto delicado: uma série mensal é indexada pelo MÊS DE REFERÊNCIA e só sai semanas
+       depois, então ler o banco por "data <= reunião" daria ao Comitê um dado que ele
+       ainda não tinha. Aqui só se desenha o que o payload já traz resolvido.
+  ═══════════════════════════════════ -->
+  <div class="tab-panel" id="tab-condicoes">
     <section>
-      <h2>Construção de cenários</h2>
-      <div class="kpi-grid-5">
-        <div class="kpi-card"><div class="kpi-label">Selic</div>
-          <div class="kpi-value" id="kpi-selic-v">—</div><div class="kpi-sub" id="kpi-selic-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Hiato do produto</div>
-          <div class="kpi-value" id="kpi-hiato-v">—</div><div class="kpi-sub" id="kpi-hiato-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Taxa neutra (IS)</div>
-          <div class="kpi-value" id="kpi-rstar-v">—</div><div class="kpi-sub" id="kpi-rstar-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Juro real − neutro</div>
-          <div class="kpi-value" id="kpi-rhat-v">—</div><div class="kpi-sub" id="kpi-rhat-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">IPCA 4T no fim do cenário</div>
-          <div class="kpi-value" id="kpi-ipca-v">—</div><div class="kpi-sub" id="kpi-ipca-s">—</div></div>
+      <h2 id="cd-titulo">Condições para a próxima reunião</h2>
+      <p class="lead" id="cd-lead">—</p>
+
+      <div class="kpi-grid-4" id="cd-kpis"></div>
+
+      <div class="cd-regua" style="margin-top:20px">
+        <span class="cd-regua-lbl">mais dovish</span>
+        <div class="cd-regua-barra" id="cd-regua-barra"></div>
+        <span class="cd-regua-lbl">mais hawkish</span>
       </div>
-
-      <div class="ctrl-bar" style="margin-top:14px">
-        <span class="ctrl-label">Trajetória da Selic</span>
-        <div class="pill-group" id="pg-cen-juros"></div>
-        <div class="ctrl-sep"></div>
-        <span class="ctrl-label">Expectativa de inflação</span>
-        <div class="pill-group" id="pg-cen-exp"></div>
-        <div class="ctrl-sep"></div>
-        <div class="dl-toggle" id="dl-cen"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-
-      <div class="stub-note" style="margin-top:14px">
-        <h3>O que este cenário resolve e o que ele condiciona</h3>
-        A trajetória de Selic escolhida resolve exatamente o <code>iᵉ(t,t+4|t)</code> que
-        estourou a réplica anterior deste modelo: num cenário o caminho de juros é conhecido por
-        construção, então a expectativa de juro é exata e não uma curva forward estimada.
-        <ul>
-          <li><strong>Expectativa de inflação é resposta, no default.</strong> A equação (5) do boxe
-              está resolvida — <span id="cen-eq5">—</span> As duas premissas fixas seguem no pill
-              como <em>contrafactual</em>: a distância entre elas e a endógena é o tamanho do canal
-              de expectativa.</li>
-          <li><strong>O câmbio também responde</strong>, pela equação (4): o diferencial de juros
-              se move com a Selic e <code>δ = 1,95</code> traduz em variação cambial. Aqui não há
-              ponto fixo — juro externo e CDS ficam constantes.</li>
-          <li><strong>Preços administrados continuam premissa.</strong> O modelo agregado determina
-              preços livres; o IPCA fecha com <code>πᵃ</code> na meta/4 e pesos de 0,767 (livres) e
-              0,233 (administrados), recuperados por regressão. É a única premissa que sobrou, e é
-              o que separa o nosso IRF do modelo cheio do BC — no modelo deles o repasse cambial
-              dos administrados é o dobro do de livres.</li>
-        </ul>
-      </div>
-
-      <h3 style="margin-top:22px">Selic e juro real esperado</h3>
-      <div class="chart-card"><div id="chart-cen-selic" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Hiato do produto e grau de aperto</h3>
-      <div class="chart-card"><div id="chart-cen-hiato" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">IPCA acumulado em 4 trimestres</h3>
-      <div class="chart-card"><div id="chart-cen-ipca" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Expectativa de inflação e câmbio no cenário</h3>
-      <div class="chart-card"><div id="chart-cen-exp" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Validação: resposta a +1 p.p. de Selic por 4 trimestres</h3>
-      <p class="lead" id="irf-lead">—</p>
-      <div class="chart-card"><div id="chart-cen-irf" class="chart-div"></div></div>
+      <div class="hier-table-wrap"><table class="hier-table" id="cd-tabela"></table></div>
+      <p class="chart-caption" id="cd-nota">—</p>
     </section>
-  </div>
 
-  <!-- ═══════ ABA — DECOMPOSIÇÃO ═══════
-       Contribuições das eqs. (1), (2) e (3). Cada bloco soma o total EXATAMENTE por
-       construção: o resíduo é definido como o que sobra.
-  ════════════════════════════ -->
-  <div class="tab-panel" id="tab-decomp">
     <section>
-      <h2>Decomposição</h2>
-      <p class="lead">Contribuição de cada termo das equações estimadas. As barras somam a linha
-        do total exatamente — o resíduo é o que sobra depois dos termos nomeados.</p>
-      <div class="ctrl-bar">
-        <span class="ctrl-label">Equação</span>
-        <div class="pill-group" id="pg-dec-bloco"></div>
-        <div class="ctrl-sep"></div>
-        <div class="dl-toggle" id="dl-dec"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-      <p class="lead" id="dec-lead" style="margin-top:12px">—</p>
-      <div class="chart-card"><div id="chart-dec" class="chart-div"></div></div>
+      <h2>Ainda sai antes da decisão</h2>
+      <p class="lead" id="cd-agenda-lead">—</p>
+      <div class="hier-table-wrap"><table class="hier-table" id="cd-agenda"></table></div>
+      <p class="chart-caption">
+        Do <code>domain/release_calendar/calendar_2026.yaml</code>, e só o que alimenta uma das
+        variáveis da tabela acima — o calendário inteiro tem relatório próprio. O que já saiu
+        <b>desde</b> a última reunião não está aqui: está na tabela acima, linha a linha e de
+        forma exata.
+      </p>
     </section>
-  </div>
 
-  <!-- ═══════ ABA — TAXA NEUTRA ═══════
-       r* latente do modelo (dois estados distintos: IS e Taylor, desvinculados desde a
-       versão de 2024) contra as 5 medidas do C2 Boxe2 Graf 1 do anexo. A coluna
-       "Modelos BC" é o r* que o próprio BC filtra dos semiestruturais — o comparável direto.
-  ═════════════════════════ -->
-  <div class="tab-panel" id="tab-neutra">
     <section>
-      <h2>Taxa Neutra</h2>
-      <div class="kpi-grid-4">
-        <div class="kpi-card"><div class="kpi-label">r* da curva IS</div>
-          <div class="kpi-value" id="kpi-nis-v">—</div><div class="kpi-sub" id="kpi-nis-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">r* da regra de Taylor</div>
-          <div class="kpi-value" id="kpi-ntay-v">—</div><div class="kpi-sub" id="kpi-ntay-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Tendência HP do juro real</div>
-          <div class="kpi-value" id="kpi-ntr-v">—</div><div class="kpi-sub" id="kpi-ntr-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Mediana publicada pelo BC</div>
-          <div class="kpi-value" id="kpi-npub-v">—</div><div class="kpi-sub" id="kpi-npub-s">—</div></div>
+      <h2>Como isto é calculado</h2>
+      <div style="margin-top:6px">
+        <details class="appendix-item"><summary>A regra de corte, e por que ela é o ponto todo</summary>
+          <div class="appendix-body">
+            O comunicado sai no <b>fim do dia 2</b> da reunião (~18:30 BRT), então tudo divulgado
+            até ali <b>pode</b> ter sido usado. Aplicar isso exige separar dois tipos de série,
+            porque a data que indexa cada uma significa coisas diferentes:
+            <br><br>
+            <b>Série de mercado ou Focus</b> — o índice <i>é</i> a data em que o dado existiu
+            (pregão, pesquisa). Corte direto, sem regra nenhuma.
+            <br><br>
+            <b>Série de referência mensal</b> — o índice é o <i>mês a que o dado se refere</i>, e ele
+            só é publicado semanas depois. O IPCA de julho está no banco com data 01/07 e foi
+            divulgado em ~13/08: na reunião de 05/08 o Copom ainda estava com o de junho. Ler o
+            banco por "data ≤ reunião" daria julho e seria um anacronismo silencioso — é o erro que
+            esta aba existe para não cometer.
+            <br><br>
+            Para o segundo tipo a data de divulgação vem do próprio
+            <code>domain/release_calendar/calendar_2026.yaml</code>. Onde ele tem a entrada exata do
+            período, ela é usada; onde não tem — o arquivo começa em 13/08/2026 e a última reunião
+            foi antes disso — a data é <b>estimada</b> pela regra ajustada do próprio grupo (mediana
+            da defasagem em meses e mediana do índice de dia útil no mês de divulgação), e a linha
+            é marcada com <span class="cd-est">≈</span>. O horário entra junto e não é detalhe: o
+            IC-Br de julho saiu às 14:30 de 05/08, o mesmo dia da 280ª reunião — entrou no conjunto
+            de informação por quatro horas.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>A cor, e por que a Selic da Focus não tem uma</summary>
+          <div class="appendix-body">
+            <code>z = sinal × (valor de hoje − valor na reunião) / σ</code>, com σ = escala típica
+            da variação da <b>mesma</b> série sobre o <b>mesmo</b> número de observações que separou
+            as duas leituras, medida nos últimos <span id="cd-anos-sigma">10</span> anos. Sem
+            normalizar, 0,2 p.p. no IPCA e 0,2 p.p. no Brent teriam a mesma cor.
+            <br><br>
+            σ é escala <b>robusta</b> (1,4826 × desvio absoluto mediano), não desvio-padrão: dez anos
+            de história contêm 2020-2021, e com desvio-padrão aquele episódio vira a régua.
+            <br><br>
+            Num <b>nível de preço</b> a diferença em pontos não é a notícia: o câmbio entra em
+            variação <b>percentual</b> — o repasse é proporcional, e 10 centavos a 3,00 não são a
+            mesma notícia que 10 centavos a 6,00. O σ dessa linha é medido na mesma escala
+            (variação de log), senão numerador e denominador estariam em unidades diferentes.
+            <br><br>
+            <code>sinal</code> é +1 quando subir é hawkish, −1 quando subir é dovish e 0 quando a
+            variável não tem leitura hawk/dove. O juro real ex-ante é o caso de −1: mais alto é
+            política <i>já</i> mais apertada, logo argumento para cortar. As expectativas de Selic
+            da Focus são o caso de 0 — elas são <b>reação</b> do mercado à decisão passada, não
+            condição que antecede a próxima, e colori-las de vermelho seria circular. Aparecem
+            porque o número interessa; só não recebem veredito.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>Dessazonalização das métricas de margem</summary>
+          <div class="appendix-body">
+            Núcleos, EX3, taxa de desocupação e saldo do CAGED são dessazonalizados por STL com
+            <b>fatores congelados</b> até dezembro do ano anterior — mesma convenção de
+            <code>analytics/brasil/inflation/fetch_bcb.py</code>. Congelar importa mais aqui do que
+            lá: com fatores reestimados a cada rodada, o valor "na reunião passada" mudaria junto
+            com o de hoje, e a diferença entre as duas colunas deixaria de ser só dado novo.
+            <br><br>
+            A amostra do ajuste começa em 2000. Não é detalhe: <code>inflc_agregados</code> guarda o
+            IPCA desde 1980, e ajustar sazonalidade aditiva numa série que passa de 80% ao mês para
+            0,4% produzia fator sazonal de −2,0 p.p. em agosto — o "dessazonalizado" saía
+            <i>mais</i> volátil que o bruto, e esse ruído ia direto para o σ que define a cor.
+            <br><br>
+            O IBC-Br é a exceção: entra pela série que o próprio BCB dessazonaliza
+            (<code>ibcbr_sa</code>), porque não há motivo para rodar STL em cima de um ajuste
+            oficial. A taxa de desocupação não tem essa saída — o IBGE só publica ajuste da PNAD
+            trimestral, não da mensal.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>Escopo: o que está fora, e por quê</summary>
+          <div class="appendix-body">
+            Nada é reconstruído para trás: a aba compara <b>sempre</b> a última reunião já realizada
+            com o conjunto de informação de hoje, e se renova sozinha quando uma reunião passa. Não
+            há histórico de reuniões anteriores — foi decisão explícita.
+            <br><br>
+            Fora do recorte atual, todos por falta de dado e não de método: PIM/PMC/PMS e o hiato
+            do BCB, crédito e fiscal, CDS de 5 anos (<code>cmb_risco_pais</code> é CSV exportado à
+            mão e costuma estar semanas atrás) e Treasury de 10 anos (não está no banco).
+            Acrescentar qualquer um é
+            uma entrada nova em <code>SPEC</code>, em <code>condicoes_copom.py</code> — a mecânica
+            de corte, σ e cor já é genérica.
+          </div>
+        </details>
       </div>
-      <div class="ctrl-bar" style="margin-top:14px">
-        <span class="ctrl-label">Séries</span>
-        <div class="multiselect">
-          <button class="multiselect-btn" id="ms-neutra-btn">—</button>
-          <div class="multiselect-panel" id="ms-neutra-panel"></div>
-        </div>
-        <div class="ctrl-sep"></div>
-        <div class="dl-toggle" id="dl-neutra"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-      <div class="chart-card" style="margin-top:14px"><div id="chart-neutra" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Grau de aperto: juro real ex-ante menos neutro</h3>
-      <p class="lead">Positivo = política restritiva. É o <code>r̂</code> da eq. (2.1), a variável
-        pela qual a Selic entra na curva IS — e o objeto cuja média importa mais que a de r*.</p>
-      <div class="chart-card"><div id="chart-neutra-aperto" class="chart-div"></div></div>
-    </section>
-  </div>
-
-  <!-- ═══════ ABA — HIATO DO PRODUTO ═══════
-       Hiato latente do modelo (estado suavizado) contra pm_hiato_produto.
-       As duas faixas do publicado medem coisas diferentes e NÃO são a mesma coisa:
-       banda_sup/banda_inf (edições <=2024-06) é incerteza de UM modelo; minimo/p25/p75/
-       maximo (>=2024-09) é desacordo ENTRE modelos da suíte. Comparável entre edições: central.
-  ══════════════════════════════ -->
-  <div class="tab-panel" id="tab-hiato">
-    <section>
-      <h2>Hiato do Produto</h2>
-      <div class="kpi-grid-3">
-        <div class="kpi-card"><div class="kpi-label">Nosso hiato</div>
-          <div class="kpi-value" id="kpi-hn-v">—</div><div class="kpi-sub" id="kpi-hn-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Publicado pelo BC</div>
-          <div class="kpi-value" id="kpi-hp-v">—</div><div class="kpi-sub" id="kpi-hp-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Correlação na amostra do boxe</div>
-          <div class="kpi-value" id="kpi-hc-v">—</div><div class="kpi-sub" id="kpi-hc-s">—</div></div>
-      </div>
-      <div class="ctrl-bar" style="margin-top:14px">
-        <div class="dl-toggle" id="dl-hiato"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-      <div class="chart-card" style="margin-top:14px"><div id="chart-hiato" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Choque persistente da IS</h3>
-      <p class="lead">O componente <code>sʰ</code> da eq. (2.2), AR(1) com coeficiente estimado.
-        É a parte do hiato que nem juro, nem fiscal, nem inércia explicam — e o lugar onde a
-        versão de 2024 do modelo põe a persistência que antes era ruído branco.</p>
-      <div class="chart-card"><div id="chart-hiato-choque" class="chart-div"></div></div>
     </section>
   </div>
 
   <!-- ═══════ ABA — PROJEÇÕES DO COPOM ═══════
-       Única aba ainda não construída. Ler ANTES de escrever o loader:
-       domain/db/brasil/bcb/copom_comunicados.md.
+       A projeção do BC para o horizonte relevante contra o passo de Selic da MESMA reunião.
+       Ler ANTES de mexer nos filtros: domain/db/brasil/bcb/copom_comunicados.md e
+       relatorio_politica_monetaria.md. Sem filtro de `documento` a reunião aparece duas
+       vezes; sem filtro de `regime`, quatro conceitos de horizonte se misturam.
   ═════════════════════════════ -->
   <div class="tab-panel" id="tab-projecoes">
     <section>
-      <h2>Projeções do Copom</h2>
-      <div class="stub-note">
-        <h3>Aba em construção</h3>
-        A projeção do próprio BC para o horizonte relevante, por reunião — o número que o Comitê
-        diz estar perseguindo quando decide a Selic, e portanto o gap projeção-vs-meta que motiva
-        a decisão. Contrapartida oficial do <code>expc_focus*</code>, que é expectativa de mercado.
-        <ul>
-          <li>Fonte: <code>macro_brasil.pm_copom_projecoes</code></li>
-          <li>Filtro da leitura principal: <code>horizonte_relevante = 1</code>,
-              <code>cenario = 'juros_focus'</code>, <code>indice = 'ipca'</code>,
-              <code>regime = 'hr_6_trimestres'</code></li>
-          <li>Escala: variação do IPCA acumulada em <strong>4 trimestres</strong> (%). Não
-              anualizar, não acumular. Pode ser negativa (administrados em −3,9% para 2022).</li>
-          <li>Uso natural aqui: alvo de validação do cenário. Se o modelo reproduz a projeção que
-              o BC publicou para o HR, está calibrado contra o número que o próprio Comitê olha.</li>
-        </ul>
+      <h2>Projeção do horizonte relevante × passo de Selic</h2>
+      <p class="lead" id="pj-lead">—</p>
+
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Cenário de juros</span>
+        <div class="pill-group" id="pj-cenario"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Projeção</span>
+        <div class="pill-group" id="pj-escala"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Passo</span>
+        <div class="pill-group" id="pj-defasagem"></div>
+        <div class="ctrl-sep"></div>
+        <span class="ctrl-label">Previsão</span>
+        <div class="pill-group" id="pj-metodo"></div>
+      </div>
+
+      <div class="pj-prev" id="pj-prev-box" style="display:none">
+        <span class="pj-prev-tag" id="pj-prev-tag">projeção — não publicada</span>
+        <div class="pj-prev-num" id="pj-prev-num">—</div>
+        <div class="pj-prev-sub" id="pj-prev-sub">—</div>
+      </div>
+
+      <div class="kpi-grid-4" style="margin-top:14px">
+        <div class="kpi-card"><div class="kpi-label" id="kpi-pj-proj-label">Projeção na última reunião</div><div class="kpi-value" id="kpi-pj-proj-value">—</div><div class="kpi-sub" id="kpi-pj-proj-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Passo decidido</div><div class="kpi-value" id="kpi-pj-passo-value">—</div><div class="kpi-sub" id="kpi-pj-passo-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Correlação desvio × passo</div><div class="kpi-value" id="kpi-pj-corr-value">—</div><div class="kpi-sub" id="kpi-pj-corr-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Reuniões na série</div><div class="kpi-value" id="kpi-pj-n-value">—</div><div class="kpi-sub" id="kpi-pj-n-sub">—</div></div>
+      </div>
+
+      <div class="ctrl-bar" style="margin-top:14px">
+        <div class="dl-toggle" id="dl-chart-pj-serie"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-pj-serie"></div></div>
+      <p class="chart-caption" id="pj-cap-serie">—</p>
+    </section>
+
+    <section>
+      <h2>O que estimamos contra o que o BC publicou</h2>
+      <p class="lead" id="pj-lead-bt">—</p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Eixo</span>
+        <div class="pill-group" id="pj-bt-eixo"></div>
+        <div class="ctrl-sep"></div>
+        <div class="dl-toggle" id="dl-chart-pj-bt"><span class="toggle-icon"></span> Dados no gráfico</div>
+      </div>
+      <div class="chart-card"><div id="chart-pj-bt"></div></div>
+      <p class="chart-caption" id="pj-cap-bt">—</p>
+      <details class="tbl-fold" style="margin-top:14px">
+        <summary>Reunião a reunião do backtest<span class="tbl-fold-n" id="pj-bt-sum">—</span></summary>
+        <div class="hier-table-wrap"><table class="hier-table" id="pj-bt-tabela"></table></div>
+        <p class="chart-caption" id="pj-nota-bt">—</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>Reunião a reunião</h2>
+      <details class="tbl-fold">
+        <summary>Projeção, meta, desvio e passo<span class="tbl-fold-n" id="pj-sum">—</span></summary>
+        <div class="hier-table-wrap"><table class="hier-table" id="pj-tabela"></table></div>
+        <p class="chart-caption" id="pj-nota">—</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>Como isto é montado</h2>
+      <div style="margin-top:6px">
+        <details class="appendix-item"><summary>O passo é o da reunião, não o acumulado do ciclo</summary>
+          <div class="appendix-body">
+            <code>variacao_bps</code> é o que <b>aquela</b> reunião decidiu: a meta Selic vigente
+            cinco dias depois menos a vigente no dia da decisão. Uma sequência parado, parado,
+            +25, +50 aparece como 0, 0, +25, +50 — não 0, 0, +25, +75. As duas leituras coincidem
+            na primeira alta de um ciclo e divergem da segunda em diante; esta é a variável de
+            decisão, e é comparável entre ciclos porque não depende de quantas reuniões o ciclo
+            já teve.
+            <br><br>
+            Cinco dias não é folga arbitrária. A meta nova vale do dia útil seguinte, mas feriado
+            emendado empurra isso: das 152 mudanças de nível desde 1999, 147 entram 1 dia depois
+            da reunião, 4 entram em 2 (reunião de quarta com feriado na quinta — Corpus Christi de
+            2003, 2007 e 2009, e o 7 de setembro de 2017) e 1 em 5 (20/04/2011, com Tiradentes na
+            quinta e Sexta-feira Santa no dia seguinte). Os <b>8 movimentos por viés</b> — até 2003
+            o comunicado podia autorizar o presidente do BCB a mover a meta entre reuniões — estão
+            todos a 7 dias ou mais. A janela de cinco dias separa decisão de viés exatamente:
+            não perde decisão nem atribui viés a reunião.
+            <br><br>
+            Fonte: <code>macro_brasil.pm_copom_reuniao</code>, derivada da série SGS 432 (meta
+            Selic, diária de dia corrido desde 05/03/1999) cruzada com o calendário de reuniões.
+            O texto do comunicado entra como <b>conferência independente</b>, não como fonte:
+            nas 63 reuniões em que ele escreve a decisão em prosa, as duas fontes concordam em
+            todas.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>Por que a série mistura comunicado e relatório, e por que só um conceito de horizonte</summary>
+          <div class="appendix-body">
+            A mesma reunião pode ter <b>duas</b> projeções com números diferentes: uma no
+            comunicado, publicada no dia da decisão, e uma no Relatório de Política Monetária, que
+            sai 7 a 28 dias depois. Aqui o comunicado ganha quando existe — é o conjunto de
+            informação exato daquele dia — e o relatório completa o resto. Da 264ª reunião em
+            diante os dois publicam o <b>mesmo</b> número para o horizonte relevante (60 células
+            de 60), então a preferência é inócua justamente onde ela seria mais visível; antes
+            divergem 0,037 p.p. em média.
+            <br><br>
+            A expressão "horizonte relevante" cobre quatro conceitos diferentes na fonte, e só um
+            é uma distância fixa. Esta série é sempre o ponto a <b>seis trimestres</b> da reunião —
+            declarado assim pelo próprio Copom de 2024-07 em diante, e aplicado por nós ao caminho
+            trimestral contínuo que o relatório publica desde 1999. Os regimes
+            <code>ano_calendario</code> e <code>horizonte_suavizado</code> do comunicado pré-2024
+            ficam fora de propósito: um "horizonte relevante" que é o ano civil encurta de doze
+            para quatro trimestres à frente ao longo do próprio ano, e isso põe na série um dente
+            de serra que não é mudança de projeção. Custa 14 reuniões de 2020-2024; compra uma
+            unidade só.
+            <br><br>
+            <code>cenario</code> classifica pelo <b>condicionamento</b>, não pelo rótulo publicado:
+            "cenário de referência" significava juros constantes até ~2020 e juros da Focus depois.
+            O cenário de <b>juros constantes</b> é o mais próximo de uma função de reação — é a
+            projeção se o Comitê não fizer nada — mas o BC parou de publicá-lo, e a série dele
+            termina em 2024.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>A meta, e o que acontece depois de 2026</summary>
+          <div class="appendix-body">
+            O desvio é <code>projeção − meta do ano do período projetado</code>, com a meta de
+            <code>macro_brasil.inflc_meta</code>. Comparar o nível da projeção sem a meta ao lado
+            não diz nada ao longo de 27 anos: 3,7% em 2026 é acima da meta, 3,7% em 2005 estaria
+            bem abaixo dela.
+            <br><br>
+            A tabela de metas é anual e termina em <span id="pj-ano-meta">—</span>; os trimestres
+            projetados vão além. A meta do último ano publicado é estendida para frente, o que sob
+            o regime de <b>meta contínua</b> (3%, em vigor desde janeiro de 2025) não é
+            extrapolação — é o próprio desenho da meta, que deixou de ser um número por ano
+            civil. As reuniões em que isso vale aparecem marcadas com
+            <span class="cd-est">≈</span> na coluna de meta.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>O que a correlação diz, e o que ela não diz</summary>
+          <div class="appendix-body">
+            O número no cartão é a correlação simples entre o desvio da projeção e o passo de
+            juros, na amostra que os seletores definem. Ela é positiva e modesta, e é isso que se
+            deveria esperar: se o Copom já reagiu, a projeção condicionada à trajetória de juros
+            esperada volta para perto da meta — o desvio pequeno é <b>resultado</b> da política,
+            não ausência de reação a ela. Por isso o cenário de juros constantes, quando existe,
+            é a leitura mais informativa dos dois.
+            <br><br>
+            O seletor de <b>defasagem</b> existe para o outro lado da mesma pergunta. Na mesma
+            reunião a projeção já conhece a decisão — o comunicado sai junto com ela, e o
+            relatório sai depois. Com "próxima reunião" o par é a projeção de hoje contra o passo
+            seguinte, que é a leitura de sinal: o desvio de agora antecipa o que o Comitê vai
+            fazer?
+            <br><br>
+            Nenhuma das duas é estimativa de função de reação. Falta a variável que o próprio
+            modelo desta pasta usa na equação (3): o juro real contra a neutra. Duas reuniões com
+            o mesmo desvio de projeção e Selic em 8% ou em 15% não pedem o mesmo passo.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>As três metodologias de previsão, e por que a pior delas é o modelo</summary>
+          <div class="appendix-body">
+            Todas as três têm a <b>mesma estrutura — âncora + delta</b>, e nenhuma prevê o nível.
+            A âncora é o último número que o BC publicou para <b>aquele mesmo trimestre-alvo</b>,
+            e o que muda entre os métodos é de onde vem o delta. Ancorar não é atalho: o viés de
+            nível de qualquer previsor aqui é grande e o de derivada não é. O modelo põe 2028T1
+            em 3,23 e a Focus em 4,02, contra 3,2 publicado — nenhum dos dois serve como nível,
+            e os dois deltas servem, porque o viés constante cancela na diferença.
+            <br><br>
+            <b>1. Ingênuo</b> — delta zero: o BC não vai revisar. Parece preguiça e não é: o BC
+            publica com <b>uma casa decimal</b> e 13 das 17 revisões da amostra cabem dentro de
+            um tique de arredondamento. MAE de <b>0,106 p.p.</b> É o número que qualquer método
+            tem de bater para acrescentar algo.
+            <br><br>
+            <b>2. Modelo agregado</b> — o espaço de estados desta pasta rodado <b>duas vezes</b>:
+            uma com o conjunto de informação do corte de hoje, outra com o da data em que a
+            âncora foi publicada; o delta é a diferença entre as duas projeções para o mesmo
+            trimestre. Todos os insumos são cortados na data: Selic e administrados da Focus,
+            câmbio observado até o corte e PPC depois, hiato inicial do vintage que o BC
+            publicou (não o nosso latente), e a taxa real neutra que o próprio BC declara usar
+            no RPM — 4,50% até jun/2024, 4,75% da 263ª, 5,00% da 267ª, e não a nossa estimativa
+            de 7,81%, que sozinha põe 2028T1 0,4 p.p. acima. MAE de <b>0,145 p.p.</b>: perde do
+            ingênuo. Com as <b>modas publicadas do BC</b> em lugar dos nossos parâmetros piora
+            para 0,208 — o que diz que o problema é <b>estrutura, não ajuste</b>.
+            <br><br>
+            <b>3. Delta da Focus</b> — mesma âncora, e o delta é o quanto a <b>própria mediana da
+            Focus</b> se moveu para o IPCA acumulado nos quatro trimestres que terminam no alvo,
+            entre a data da âncora e o corte. MAE de <b>0,082 p.p.</b>, 23% melhor que o ingênuo,
+            direção certa em 9 das 12 revisões não nulas e correlação de <b>0,70</b> com a
+            revisão do BC. É o método que a caixa verde usa por default.
+            <br><br>
+            A explicação de por que o modelo perde é <b>conjunto de informação, não ajuste</b>. A
+            revisão do BC entre duas reuniões vem sobretudo do <b>IPCA mensal novo</b>, que a
+            pesquisa semanal incorpora e um modelo trimestral não vê: um trimestre só fecha
+            quando sai o IPCA do último mês dele, então <code>t0</code> fica até 4,5 meses atrás
+            da reunião, e duas reuniões do mesmo par chegam a compartilhar o mesmo
+            <code>t0</code>. Condicionar o câmbio não resolve — move o MAE de 0,1452 para 0,1453,
+            porque o <code>a3</code> estimado aqui é 0,0024 contra 0,011 do BC e porque o bloco de
+            preços administrados, onde o repasse cambial é mais que o dobro, não existe no nosso
+            modelo.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>Revisão de horizonte × expansão de horizonte: os dois casos funcionam</summary>
+          <div class="appendix-body">
+            São duas situações diferentes e elas <b>alternam</b>. Há duas reuniões por trimestre e
+            o horizonte relevante é seis trimestres à frente do <b>trimestre</b> da reunião, então
+            a primeira reunião de cada trimestre <b>estreia</b> um alvo (expansão) e a segunda
+            <b>revisa</b> o dela. Das 17 reuniões da amostra: <b>9 expansões e 8 revisões</b>,
+            perfeitamente alternadas, sem uma única exceção.
+            <br><br>
+            A expansão <b>não exige extrapolar nada</b>, e é isto que faz o método funcionar nos
+            dois casos: o Relatório de Política Monetária publica o caminho trimestral
+            <b>contíguo</b>, não só o ponto do horizonte relevante, então o trimestre que o
+            comunicado está estreando já tem número publicado lá. Nas 9 expansões a âncora é o
+            RPM, em todas; nas 8 revisões é o comunicado anterior. O ramo "nenhum documento cobre
+            o alvo" nunca disparou.
+            <br><br>
+            E a expansão é o caso <b>mais fácil</b>, não o mais difícil: MAE de 0,080 pela Focus
+            contra 0,089 do ingênuo, contra 0,084 e 0,125 nas revisões. O motivo é o intervalo —
+            a âncora do RPM está a 34-41 dias da reunião, a do comunicado anterior a 35-49, e
+            revisão maior é o que se espera de mais tempo de notícia acumulada.
+          </div>
+        </details>
+        <details class="appendix-item"><summary>O que a caixa verde não é</summary>
+          <div class="appendix-body">
+            Ela é o <b>único número deste relatório que ninguém publicou</b> — daí a cor e a
+            marcação tracejada no gráfico. Três limites que ela carrega e que não desaparecem
+            por estar num gráfico bonito:
+            <br><br>
+            <b>O corte é a data em que o relatório foi gerado, não a da reunião.</b> Se ele foi
+            gerado semanas antes, o conjunto de informação da reunião ainda não existe: falta
+            IPCA, faltam boletins Focus. A caixa diz qual corte usou. Regerar perto da data
+            muda a resposta, e é para isso que serve regerar.
+            <br><br>
+            <b>Prever o número do BC não é prever a inflação.</b> O alvo aqui é o que o Comitê
+            vai escrever no comunicado — que é uma projeção condicionada ao cenário <i>dele</i>,
+            com a Selic da Focus e a neutra que ele declara. Acertar isso não diz nada sobre o
+            IPCA que vai sair.
+            <br><br>
+            <b>n = 17.</b> A era em que o Copom declara o horizonte relevante começa em julho de
+            2024. Toda estatística desta aba está medida em 17 observações, e as diferenças de
+            MAE entre métodos, embora consistentes, não são significantes nesse tamanho. É por
+            isso que o repasse do delta é <b>1:1</b> e não um coeficiente estimado: estimar um
+            fator com 17 pontos é pescaria.
+          </div>
+        </details>
       </div>
     </section>
   </div>
@@ -953,11 +1221,9 @@ var C = {
   cinza:   '#BFBFBF',
 };
 var MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-// Frequência de cada grupo de D -- usada por fmtDate() e pelos cálculos de variação. Projeções do
-// Copom e hiato são TRIMESTRAIS; Focus/Selic, mensal. Declarar aqui todo grupo novo.
-// Todo grupo de D e TRIMESTRAL aqui -- o modelo e trimestral e o painel tambem.
-var PERIODS_PER_YEAR = {cenarios: 4, decomp: 4, neutra: 4, hiato: 4, projecoes: 4,
-                        motor: 4};
+// Frequência de cada grupo de D -- usada por fmtDate() e pelos cálculos de variação.
+// Todo grupo é TRIMESTRAL aqui: o modelo é trimestral e o painel também. Declarar todo grupo novo.
+var PERIODS_PER_YEAR = {projecoes: 4, motor: 4};
 // scrollZoom: pinça do trackpad / roda do mouse dá zoom no gráfico em vez de rolar a página.
 var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true};
 
@@ -1341,263 +1607,6 @@ function dashTrace(series, label, color, showLabels, decimals, suffix) {
 // Não chamar Plotly.newPlot/react direto -- _reactPreserveX faz o bind do y-autofit, do tracker de
 // X e da barra de período.
 
-function _cenKey() {
-  return (_cenJuros || 'focus') + '__' + (_cenExp || 'eq5');
-}
-var _cenJuros = 'focus', _cenExp = 'eq5', _cenLabels = false;
-
-// Cola o último ponto observado no início do cenário, para a linha não nascer solta.
-function _emenda(hist, cen) {
-  if (!hist || !hist.dates.length || !cen || !cen.dates.length) return cen || {dates: [], values: []};
-  return {dates: [hist.dates[hist.dates.length - 1]].concat(cen.dates),
-          values: [hist.values[hist.values.length - 1]].concat(cen.values)};
-}
-function _recorta(s, desdeISO) {
-  if (!s) return {dates: [], values: []};
-  var d = [], v = [];
-  for (var i = 0; i < s.dates.length; i++) {
-    if (s.dates[i] >= desdeISO) { d.push(s.dates[i]); v.push(s.values[i]); }
-  }
-  return {dates: d, values: v};
-}
-
-function renderCenarios() {
-  var info = D.info || {}, rot = info.rotulos || {};
-  var jopts = [{key: 'focus', label: 'Focus'}, {key: 'constante', label: 'Constante'},
-               {key: 'alta100', label: '+100 pb'}, {key: 'baixa100', label: '−100 pb'}];
-  var eopts = [{key: 'eq5', label: 'Endógena (eq. 5)'}, {key: 'focus', label: 'Fixa na Focus'},
-               {key: 'meta', label: 'Converge à meta'}];
-
-  setKPI('kpi-selic', info.selic_hoje, 'meta, ' + fmtTri(info.ultimo_tri), '%');
-  setKPI('kpi-hiato', info.h_hoje, '% do produto potencial', '');
-  setKPI('kpi-rstar', info.r_is_hoje, 'tendência HP + desvio latente', '%');
-  setKPI('kpi-rhat', info.r_hat_hoje, 'positivo = restritivo', ' p.p.');
-
-  var e5t = document.getElementById('cen-eq5');
-  if (e5t) {
-    var pp = info.params || {}, e5 = info.eq5 || {};
-    var wm = 1 - (pp.f1 || 0) - (pp.f2 || 0) - (pp.f3 || 0);
-    e5t.innerHTML = '<code>πᵉ</code> pesa ' + fmtBR(pp.f1, 2) + ' de inércia, '
-      + fmtBR(pp.f2, 2) + ' da previsão que o próprio modelo faz para os quatro trimestres '
-      + 'seguintes, ' + fmtBR(pp.f3, 2) + ' de inflação passada e ' + fmtBR(wm, 2) + ' da meta. '
-      + 'Como o modelo é linear, esse ponto fixo no caminho é um sistema afim e sai resolvido '
-      + 'de uma vez, não iterado — o resíduo fica na ordem de 10⁻¹⁴. O raio espectral do laço '
-      + 'é ' + fmtBR(e5.raio, 2) + ': acima de 1 (que acontece por <code>φ₂</code> ≈ 0,32) a '
-      + 'expectativa deixaria de ter caminho bem definido.';
-  }
-
-  var lead = document.getElementById('irf-lead');
-  if (lead && info.irf) {
-    var f = info.irf, mb = f.motor_bcb || {}, ce = f.com_expectativa || {}, sd = f.so_demanda || {};
-    lead.innerHTML = 'Trajetória exógena do C2 Boxe3 Graf 4A: +1 p.p. por 4 trimestres, depois '
-      + 'decaindo a fator 0,8 — escolhida pelo BC para silenciar a regra de Taylor. O Graf 4B '
-      + 'publica <strong>três</strong> respostas, uma por conjunto de canais ligados, e o '
-      + 'simulador tem exatamente essas três configurações: cada linha cheia abaixo tem a sua '
-      + 'tracejada correspondente. '
-      + '<br><br>Ligar a equação (5) leva o nosso pico de <strong>' + fmtBR(sd.pico_nosso, 3)
-      + ' p.p.</strong> para <strong>' + fmtBR(ce.pico_nosso, 3) + ' p.p.</strong> (alvo: '
-      + fmtBR(ce.pico_pub, 3) + '), então o canal de expectativa responde por mais da metade da '
-      + 'transmissão e a sua ausência era a maior lacuna do modelo. O que ainda falta é '
-      + '<em>parâmetro, não código</em>: o mesmo motor rodado com as modas publicadas pica em '
-      + '<strong>' + fmtBR(mb.pico_nosso, 3) + ' p.p.</strong> no T' + mb.tri_pico_nosso
-      + ' contra ' + fmtBR(mb.pico_pub, 3) + ' no T' + mb.tri_pico_pub + ', com erro absoluto '
-      + 'médio de <strong>' + fmtBR(mb.erro_abs_medio, 3) + ' p.p.</strong>';
-  }
-
-  function desenha() {
-    var k = _cenKey(), sl = _cenLabels;
-    var desde = '2015-01-01';
-    var hs = _recorta(ser('cenarios', 'hist__selic'), desde);
-    var hh = _recorta(ser('cenarios', 'hist__h'), desde);
-    var hr = _recorta(ser('cenarios', 'hist__r_hat'), desde);
-    var hi = _recorta(ser('cenarios', 'hist__ipca_4t'), desde);
-    var hm = _recorta(ser('cenarios', 'hist__meta'), desde);
-
-    var t1 = [lineTrace(hs, 'Selic observada', C.cinza, sl, 2, '%'),
-              lineTrace(_emenda(hs, ser('cenarios', k + '__selic')), 'Selic no cenário', C.azul, sl, 2, '%'),
-              lineTrace(ser('cenarios', k + '__i_e'), 'Selic esperada a 12m', C.dourado, sl, 2, '%')];
-    _reactPreserveX('chart-cen-selic', t1, mkTimeseriesLayout('% a.a.', 520, t1));
-
-    var t2 = [lineTrace(hh, 'Hiato observado', C.cinza, sl, 2, '%'),
-              lineTrace(_emenda(hh, ser('cenarios', k + '__h')), 'Hiato no cenário', C.azul, sl, 2, '%'),
-              lineTrace(_emenda(hr, ser('cenarios', k + '__r_hat')), 'Juro real − neutro', C.laranja, sl, 2, ' p.p.')];
-    _reactPreserveX('chart-cen-hiato', t2, mkTimeseriesLayout('% / p.p.', 520, t2));
-
-    var t3 = [lineTrace(hi, 'IPCA 4T observado', C.cinza, sl, 2, '%'),
-              lineTrace(_emenda(hi, ser('cenarios', k + '__ipca_4t')), 'IPCA 4T no cenário', C.azul, sl, 2, '%'),
-              lineTrace(hm, 'Meta', C.verde, false, 2, '%')];
-    _reactPreserveX('chart-cen-ipca', t3, mkTimeseriesLayout('% em 4 trimestres', 520, t3));
-
-    var cen = ser('cenarios', k + '__ipca_4t');
-    var ult = lastValid(cen.dates, cen.values);
-    setKPI('kpi-ipca', ult ? ult.value : null, (rot[k] || k), '%');
-
-    var he = _recorta(ser('cenarios', 'hist__pi_e'), desde);
-    var t5 = [lineTrace(he, 'Expectativa observada (Focus)', C.cinza, sl, 2, '%'),
-              lineTrace(_emenda(he, ser('cenarios', k + '__pi_e')), 'Expectativa no cenário', C.dourado, sl, 2, '%'),
-              lineTrace(hm, 'Meta', C.verde, false, 2, '%'),
-              lineTrace(ser('cenarios', k + '__de'), 'Variação cambial no trimestre', C.laranja, sl, 2, '%')];
-    _reactPreserveX('chart-cen-exp', t5, mkTimeseriesLayout('% / % no trimestre', 520, t5));
-
-    // A escada de validacao: cada configuracao de canais tem uma linha publicada.
-    // Cor = configuracao; cheia = nossa, tracejada = a do BC.
-    var t4 = [
-      lineTrace(ser('cenarios', 'irf__ipca_4t_so_demanda'), 'Nosso — só demanda', C.azulCl, sl, 3, ' p.p.'),
-      dashTrace(ser('cenarios', 'irf__publicado_so_demanda'), 'BC — expectativa e câmbio fixos', C.azulCl, false, 3, ' p.p.'),
-      lineTrace(ser('cenarios', 'irf__ipca_4t_com_expectativa'), 'Nosso — + equação (5)', C.azul, sl, 3, ' p.p.'),
-      dashTrace(ser('cenarios', 'irf__publicado_sem_cambio'), 'BC — câmbio fixo', C.azul, false, 3, ' p.p.'),
-      lineTrace(ser('cenarios', 'irf__ipca_4t_completo'), 'Nosso — + câmbio (eq. 4)', C.laranja, sl, 3, ' p.p.'),
-      dashTrace(ser('cenarios', 'irf__publicado_completo'), 'BC — modelo cheio', C.laranja, false, 3, ' p.p.'),
-      lineTrace(ser('cenarios', 'irf__ipca_4t_motor_bcb'), 'Nosso motor, parâmetros do BC', C.dourado, sl, 3, ' p.p.')];
-    _reactPreserveX('chart-cen-irf', t4, mkTimeseriesLayout('desvio do base (p.p.)', 560, t4));
-  }
-
-  setupPillGroup('pg-cen-juros', jopts, 'focus', function(k) { _cenJuros = k; desenha(); });
-  setupPillGroup('pg-cen-exp', eopts, 'eq5', function(k) { _cenExp = k; desenha(); });
-  wireDlToggle('dl-cen', function(on) { _cenLabels = on; desenha(); });
-}
-
-var DEC_BLOCOS = {
-  phillips: {
-    label: 'Inflação de livres', y: '% no trimestre', dec: 2,
-    termos: [['inercia_livres', 'Inércia (livres)', C.azul],
-             ['inercia_ipca', 'Inércia (IPCA)', C.azulCl],
-             ['expectativa', 'Expectativa', C.dourado],
-             ['commodities', 'Commodities', C.verde],
-             ['cambio', 'Câmbio', C.laranja],
-             ['hiato', 'Hiato', C.amarelo],
-             ['clima', 'Clima', '#8FB8C4'],
-             ['residuo', 'Resíduo', C.cinza]],
-    nota: 'Termos da eq. (1). O peso da expectativa é <code>1−α₁ᴸ−α₁ⁱ</code>, o que garante '
-        + 'neutralidade de longo prazo por construção. Nossa estimativa põe 0,65 nesse peso contra '
-        + '0,38 do BC — a diferença substantiva da réplica, e provavelmente consequência de a eq. (5) '
-        + 'estar fora: com <code>πᵉ</code> exógeno e informativo, a verossimilhança se apoia nele de graça.'
-  },
-  hiato: {
-    label: 'Hiato do produto', y: '% do produto potencial', dec: 2,
-    termos: [['inercia', 'Inércia', C.azul],
-             ['mp_juro', 'Juro vs tendência', C.laranja],
-             ['mp_neutro', 'Desvio de r*', C.amarelo],
-             ['fiscal', 'Fiscal', C.verde],
-             ['choque_persistente', 'Choque persistente', C.azulCl],
-             ['residuo', 'Resíduo (crises)', C.cinza]],
-    nota: 'Termos da eq. (2). A contribuição de política monetária está aberta em duas: o juro real '
-        + 'contra a tendência de r* e o desvio de r* em relação a essa tendência. Somadas dão o efeito '
-        + 'total; separadas mostram quanto do aperto medido vem da premissa de neutro. O resíduo '
-        + 'carrega os choques de crise de 2008/09 e 2020, cuja variância é inflada na estimação.'
-  },
-  taylor: {
-    label: 'Selic', y: '% a.a.', dec: 2,
-    termos: [['persistencia', 'Persistência', C.azul],
-             ['ancora_real', 'Âncora real (r*)', C.dourado],
-             ['meta', 'Meta', C.verde],
-             ['desvio_expectativa', 'Desvio da expectativa', C.laranja],
-             ['residuo', 'Resíduo', C.cinza]],
-    nota: 'Termos da eq. (3). A persistência domina porque <code>θ₁+θ₂</code> ≈ 0,82 na nossa '
-        + 'estimativa — o peso da âncora de longo prazo é só <code>1−θ₁−θ₂</code>. Não há termo de '
-        + 'reação ao hiato: o boxe registra que não se mostrou identificado, o que não quer dizer que '
-        + 'o BC ignore atividade — as expectativas já são correlacionadas ao hiato.'
-  }
-};
-var _decBloco = 'phillips', _decLabels = false;
-
-function renderDecomp() {
-  function desenha() {
-    var cfg = DEC_BLOCOS[_decBloco];
-    var nota = document.getElementById('dec-lead');
-    if (nota) nota.innerHTML = cfg.nota;
-    var traces = cfg.termos.map(function(t) {
-      var s = ser('decomp', _decBloco + '__' + t[0]);
-      return {type: 'bar', name: t[1], x: s.dates, y: s.values,
-              marker: {color: t[2]},
-              text: _decLabels ? dlText(s.values, cfg.dec, '') : undefined,
-              textposition: 'auto',
-              textfont: {family: 'JetBrains Mono,monospace', size: 8},
-              customdata: s.values.map(function(v) { return fmtBR(v, cfg.dec); }),
-              hovertemplate: '<b>' + t[1] + '</b>: %{customdata}<extra></extra>'};
-    });
-    var tot = ser('decomp', _decBloco + '__total');
-    traces.push({type: 'scatter', mode: 'lines+markers', name: 'Total', x: tot.dates, y: tot.values,
-                 line: {color: '#111', width: 2}, marker: {size: 3, color: '#111'},
-                 customdata: tot.values.map(function(v) { return fmtBR(v, cfg.dec); }),
-                 hovertemplate: '<b>Total</b>: %{customdata}<extra></extra>'});
-    _reactPreserveX('chart-dec', traces,
-      mkBarLayout(cfg.y, 560, traces, {barmode: 'relative', showlegend: true,
-        legend: {orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: {size: 10}}}));
-  }
-  setupPillGroup('pg-dec-bloco',
-    Object.keys(DEC_BLOCOS).map(function(k) { return {key: k, label: DEC_BLOCOS[k].label}; }),
-    'phillips', function(k) { _decBloco = k; desenha(); });
-  wireDlToggle('dl-dec', function(on) { _decLabels = on; desenha(); });
-}
-
-var NEUTRA_SERIES = [
-  {key: 'r_IS', label: 'r* da IS (nosso)', color: C.azul},
-  {key: 'r_TAY', label: 'r* da Taylor (nosso)', color: C.azulCl},
-  {key: 'tendencia', label: 'Tendência HP do juro real', color: C.dourado},
-  {key: 'r_focus', label: 'Juro real ex-ante (Focus)', color: C.cinza},
-  {key: 'pub_Modelos_BC', label: 'BC — Modelos', color: C.laranja},
-  {key: 'pub_Focus', label: 'BC — Focus', color: C.verde},
-  {key: 'pub_NTN-B', label: 'BC — NTN-B', color: C.amarelo},
-  {key: 'pub_Externas', label: 'BC — Externas', color: '#8FB8C4'},
-  {key: 'pub_AF_e_BF', label: 'BC — AF e BF', color: '#B79ACA'}
-];
-var _neutraSel = ['r_IS', 'r_TAY', 'tendencia', 'pub_Modelos_BC'], _neutraLabels = false;
-
-function renderNeutra() {
-  var info = D.info || {};
-  setKPI('kpi-nis', info.r_is_hoje, 'tendência HP + desvio latente', '%');
-  setKPI('kpi-ntay', info.r_tay_hoje, 'desvinculada da IS desde 2024', '%');
-  var tr = ser('neutra', 'tendencia'), ut = lastValid(tr.dates, tr.values);
-  setKPI('kpi-ntr', ut ? ut.value : null, 'HP com cauda de projeção Focus', '%');
-  setKPI('kpi-npub', info.neutra_pub_ult, 'mediana dos 5 grupos, ' + fmtTri(info.neutra_pub_tri), '%');
-
-  function desenha() {
-    var t = [];
-    NEUTRA_SERIES.forEach(function(s) {
-      if (_neutraSel.indexOf(s.key) < 0) return;
-      var d = ser('neutra', s.key);
-      if (d.dates.length) t.push(lineTrace(d, s.label, s.color, _neutraLabels, 2, '%'));
-    });
-    if (t.length) _reactPreserveX('chart-neutra', t, mkTimeseriesLayout('% a.a.', 540, t));
-    var ap = [lineTrace(ser('neutra', 'r_hat'), 'Juro real − neutro', C.laranja, _neutraLabels, 2, ' p.p.')];
-    _reactPreserveX('chart-neutra-aperto', ap, mkTimeseriesLayout('p.p.', 460, ap));
-  }
-  setupMultiselect('ms-neutra-btn', 'ms-neutra-panel',
-    [{header: 'Nosso modelo', items: NEUTRA_SERIES.slice(0, 4).map(function(s) { return {key: s.key, label: s.label}; })},
-     {header: 'Publicado pelo BC (C2 Boxe2 Graf 1)', items: NEUTRA_SERIES.slice(4).map(function(s) { return {key: s.key, label: s.label}; })}],
-    _neutraSel, function(sel) { _neutraSel = sel; desenha(); });
-  wireDlToggle('dl-neutra', function(on) { _neutraLabels = on; desenha(); });
-}
-
-function renderHiato() {
-  var info = D.info || {};
-  var n = ser('hiato', 'nosso'), un = lastValid(n.dates, n.values);
-  var p = ser('hiato', 'pub_central'), up = lastValid(p.dates, p.values);
-  setKPI('kpi-hn', un ? un.value : null, 'estado suavizado, ' + (un ? fmtDate(un.date, 'hiato') : ''), '%');
-  setKPI('kpi-hp', up ? up.value : null, 'pm_hiato_produto, ' + (up ? fmtDate(up.date, 'hiato') : ''), '%');
-  setKPI('kpi-hc', info.hiato_corr, (info.hiato_n || 0) + ' trimestres, 2003T4–2023T4', '');
-
-  function desenha(sl) {
-    var t = [];
-    // dispersão da suíte de modelos (edições >=2024-09) como faixa; NÃO é a mesma coisa
-    // que a banda de +-2 d.p. de um modelo só das edições anteriores
-    var lo = ser('hiato', 'pub_minimo'), hi = ser('hiato', 'pub_maximo');
-    if (lo.dates.length && hi.dates.length) {
-      t.push({type: 'scatter', mode: 'lines', name: 'Suíte do BC (mín–máx)', x: hi.dates, y: hi.values,
-              line: {width: 0}, hoverinfo: 'skip', showlegend: false});
-      t.push({type: 'scatter', mode: 'lines', name: 'Suíte do BC (mín–máx)', x: lo.dates, y: lo.values,
-              line: {width: 0}, fill: 'tonexty', fillcolor: 'rgba(65,135,145,0.13)', hoverinfo: 'skip'});
-    }
-    t.push(lineTrace(ser('hiato', 'pub_central'), 'BC — central', C.verde, sl, 2, '%'));
-    t.push(lineTrace(ser('hiato', 'nosso'), 'Nosso (latente)', C.azul, sl, 2, '%'));
-    _reactPreserveX('chart-hiato', t, mkTimeseriesLayout('% do produto potencial', 540, t));
-    var ch = [lineTrace(ser('hiato', 'choque_persistente'), 'Choque persistente sʰ', C.laranja, sl, 2, '%')];
-    _reactPreserveX('chart-hiato-choque', ch, mkTimeseriesLayout('% do produto potencial', 440, ch));
-  }
-  wireDlToggle('dl-hiato', function(on) { desenha(on); });
-}
-
 // ══════════════════════════════════════════════════════════════════════════════
 // APÊNDICE — descrição do modelo, equação por equação
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1695,8 +1704,7 @@ function MODELO_ITENS() {
     + 'fiscal fecha o hiato.'
     + '<br><br><strong>O choque persistente <code>sʰ</code> não é um estado separado do resíduo</strong> '
     + '— é o mesmo <code>εʰ</code> que entra em <code>h</code>, e o que o AR(1) de ' + fmtBR(p.b5, 3)
-    + ' faz é dar cauda a ele. É a parcela que a aba Decomposição isola e que o input "choque no '
-    + 'hiato" do simulador edita.'
+    + ' faz é dar cauda a ele. É o que o input "choque no hiato" do simulador edita.'
     + '<br><br>As duas dummies de crise (2008T4–2009T4 e 2020T1–2020T4) <strong>não mexem na '
     + 'média</strong>: só multiplicam o desvio-padrão do choque por <code>k₀₈ = ' + fmtBR(p.k08, 2)
     + '</code> e <code>k₂₀ = ' + fmtBR(p.k20, 2) + '</code>. Sem isso, quatro trimestres de Covid '
@@ -1946,9 +1954,9 @@ function renderAppendix() {
 // ══════════════════════════════════════════════════════════════════════════════
 // MOTOR DO MODELO AGREGADO — porte JS de modelo_agregado.simular()
 // ══════════════════════════════════════════════════════════════════════════════
-// A aba Cenários escolhe entre trajetórias que o Python pré-simulou. Esta aba é o
-// contrário: o simulador roda AQUI, a cada mudança de input, porque a pergunta que ela
-// responde ("e se eu fixar isto e deixar aquilo endógeno?") tem combinação demais para
+// O Python pré-simula uma grade de cenários em `cenarios_padrao()` (hoje só o teste os lê,
+// desde que a aba Cenários foi removida). Esta aba é o contrário: o simulador roda AQUI, a
+// cada mudança de input, porque a pergunta que ela responde ("e se eu fixar isto e deixar aquilo endógeno?") tem combinação demais para
 // pré-calcular. O payload que `_motor_cfg()` manda não é resultado, é insumo:
 // parâmetros, condições iniciais lidas em t0 e o caminho default de cada condicionante.
 //
@@ -2443,7 +2451,7 @@ function _mtSemTag(s) { return String(s).replace(/<[^>]+>/g, ''); }
 
 // ── Séries para os gráficos ──────────────────────────────────────────────────
 // Histórico e cenário viram UMA linha contínua, cortada em t0. Colar só o último ponto
-// observado (o que `_emenda()` faz, para a aba Cenários) deixaria os quatro gráficos desta
+// observado deixaria os quatro gráficos desta
 // aba sem histórico nenhum — foi assim que a primeira versão saiu, com o eixo indo de 2018
 // a 2030 e a linha começando em 2026.
 function _mtLinha(histKey, cenKey, res) {
@@ -2588,7 +2596,7 @@ function mtDesenhar() {
 
   // 2. Hiato. O choque persistente NÃO entra aqui: ele é uma das parcelas da eq. (2), e
   // plotar uma parcela ao lado do total, sem as outras, sugere uma decomposição que não
-  // está sendo feita — a decomposição completa da IS é a aba Decomposição. Ele tem card e
+  // está sendo feita (`decompor_hiato()` no Python é quem a faz). Ele tem card e
   // gráfico próprios na seção de inputs, que é onde vira pergunta ("e se houver choque?").
   var t2 = [lineTrace(_mtLinha('h', 'h', res), 'Hiato do produto', C.azul, on('chart-mt-hiato'), 2, '%')];
   t2[0].line.width = 2.6;
@@ -3146,11 +3154,763 @@ function renderMotor() {
   mtRecalc();
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+//  ABA CONDIÇÕES PARA A REUNIÃO
+//
+//  Zero cálculo aqui de propósito: D.condicoes já vem com valor, referência, delta,
+//  sigma e z resolvidos por condicoes_copom.py. O que o JS faz é desenhar — inclusive
+//  a cor, que é função só do z. Recalcular qualquer coisa neste lado abriria a porta
+//  para o relatório e o Python discordarem, que é a classe de bug que a aba do motor
+//  precisa de 306 asserções para evitar.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Vermelho = a informação nova é mais hawkish; azul = mais dovish. Saturação pelo |z|,
+// que já vem limitado a ±3 pelo Python. O piso de 0,05 existe para um z minúsculo não
+// virar branco e se confundir com "sem dado novo", que tem tratamento próprio.
+function cdCor(z, alfaMax) {
+  // 'transparent', e não rgba(...,0), quando não há nada a dizer: um alfa zero pinta
+  // igual mas deixa no DOM um atributo de cor que afirma uma leitura inexistente.
+  if (z == null || !isFinite(z) || Math.abs(z) <= 0.0001) return 'transparent';
+  var a = Math.max(Math.min(Math.abs(z) / 2.5, 1) * (alfaMax || 0.72), 0.05);
+  var rgb = z >= 0 ? '234,82,58' : '2,115,155';
+  return 'rgba(' + rgb + ',' + a.toFixed(3) + ')';
+}
+
+function cdDataBR(iso) {
+  if (!iso) return '—';
+  var p = String(iso).split('-');
+  return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : iso;
+}
+function cdDataCurta(iso) {
+  if (!iso) return '—';
+  var p = String(iso).split('-');
+  return p.length === 3 ? p[2] + '/' + p[1] : iso;
+}
+
+// Veredito por linha. A ordem dos testes importa: "sem dado novo" tem de vir ANTES de
+// qualquer leitura de z, porque nessa situação z é 0 por construção e a linha seria
+// lida como "em linha" -- dizer que a variável não mexeu quando na verdade ela não foi
+// perguntada.
+function cdVeredito(l) {
+  if (l.erro) return {cls: 'cd-flat', txt: 'sem dado'};
+  if (l.novos === 0) return {cls: 'cd-flat', txt: 'sem dado novo'};
+  if (l.z == null) return {cls: 'cd-flat', txt: 'reação de mercado'};
+  if (l.z > 0.05) return {cls: 'cd-hawk', txt: 'mais hawkish'};
+  if (l.z < -0.05) return {cls: 'cd-dove', txt: 'mais dovish'};
+  return {cls: 'cd-flat', txt: 'em linha'};
+}
+
+// A Focus alimenta 6 linhas de uma vez -- listar as seis estoura a célula, então lista
+// duas e conta o resto.
+function cdAlimenta(vs) {
+  vs = vs || [];
+  if (!vs.length) return '<span class="cd-unid">—</span>';
+  if (vs.length <= 2) return vs.join(' · ');
+  return vs.slice(0, 2).join(' · ') +
+         '<span class="cd-ref">e mais ' + (vs.length - 2) + '</span>';
+}
+
+function renderCondicoes() {
+  var Q = D.condicoes || {};
+  var tab = document.getElementById('cd-tabela');
+  if (!Q.linhas || Q.erro) {
+    document.getElementById('cd-lead').textContent =
+      Q.erro || 'Payload de condições ausente — rode generate_report.py com acesso ao banco.';
+    tab.innerHTML = '';
+    return;
+  }
+  var A = Q.ant, P = Q.prox, R = Q.resumo;
+  var nAnt = A.numero ? A.numero + 'ª' : 'última';
+  var nProx = P.numero ? P.numero + 'ª' : 'próxima';
+
+  document.getElementById('cd-titulo').textContent =
+    'Condições para a ' + nProx + ' reunião — ' +
+    (P.date_start ? cdDataCurta(P.date_start) + ' e ' : '') + cdDataBR(P.date);
+
+  document.getElementById('cd-lead').innerHTML =
+    'O que o Copom tinha na mesa quando decidiu a Selic na <b>' + nAnt + ' reunião</b> (' +
+    cdDataBR(A.date) + ', corte às ' + (A.corte || '').slice(-5) + ') contra o que já está ' +
+    'na mesa hoje. Cada linha é lida no conjunto de informação da <i>data</i>, não no mês de ' +
+    'referência: o que ainda não tinha sido divulgado na reunião não entra na coluna dela.';
+
+  document.getElementById('cd-anos-sigma').textContent = Q.anos_sigma || 10;
+  document.getElementById('cd-regua-barra').style.background =
+    'linear-gradient(90deg,' + cdCor(-3) + ',' + cdCor(-1) + ',rgba(255,255,255,0),' +
+    cdCor(1) + ',' + cdCor(3) + ')';
+
+  var saldoTxt = R.saldo == null ? '—'
+    : (R.saldo > 0 ? '+' : '') + fmtBR(R.saldo, 2) + ' σ';
+  var saldoSub = R.saldo == null ? 'sem variável com leitura'
+    : (Math.abs(R.saldo) < 0.15 ? 'condições praticamente inalteradas'
+       : (R.saldo > 0 ? 'condições mais hawkish' : 'condições mais dovish'))
+      + ' · média de ' + R.n_saldo + ' variáveis';
+
+  document.getElementById('cd-kpis').innerHTML = [
+    ['Faltam para a decisão', P.dias + (P.dias === 1 ? ' dia' : ' dias'),
+     nProx + ' reunião' + (P.rotulo_focus ? ' · ' + P.rotulo_focus + ' na Focus' : '')],
+    ['Saldo das condições', saldoTxt, saldoSub],
+    ['Mais hawkish · mais dovish', R.hawkish + ' · ' + R.dovish,
+     R.neutro + ' em linha, ' + R.sem_leitura + ' sem leitura hawk/dove'],
+    ['Sem dado novo', String(R.sem_dado),
+     'de ' + Q.linhas.length + ' variáveis — nada mudou nelas desde a ' + nAnt],
+  ].map(function(k) {
+    return '<div class="kpi-card"><div class="kpi-label">' + k[0] + '</div>' +
+           '<div class="kpi-value">' + k[1] + '</div>' +
+           '<div class="kpi-sub">' + k[2] + '</div></div>';
+  }).join('');
+
+  var h = '<thead><tr>' +
+    '<th class="col-label">Variável</th>' +
+    '<th>Na ' + nAnt + ' — ' + cdDataCurta(A.date) + '</th>' +
+    '<th>Hoje — ' + cdDataCurta(Q.hoje) + '</th>' +
+    '<th>Δ</th><th class="col-label">Leitura</th></tr></thead><tbody>';
+
+  var bloco = null, estimadas = 0, pendentes = 0;
+  Q.linhas.forEach(function(l) {
+    if (l.bloco !== bloco) {
+      bloco = l.bloco;
+      h += '<tr class="cd-bloco"><td class="col-label" colspan="5">' + bloco + '</td></tr>';
+    }
+    var v = cdVeredito(l);
+    var mudo = (l.novos === 0 || l.erro) ? ' cd-mudo' : '';
+    var d = l.casas != null ? l.casas : 2;
+
+    var marcas = '';
+    if (l.exata === false) { estimadas++; marcas += ' <span class="cd-est" title="Data de divulgação estimada pela regra ajustada do grupo, não lida do calendário.">≈</span>'; }
+    if (l.pendente) { pendentes++; marcas += ' <span class="cd-pend" title="O calendário diz que já saiu dado mais recente, mas ele ainda não está carregado no banco.">!</span>'; }
+
+    // O title carrega a nota metodológica e a divulgação que sustenta cada coluna --
+    // é a auditoria da linha, e é o que separa um número de uma afirmação verificável.
+    var tt = (l.nota || '').replace(/"/g, '&quot;');
+    if (l.div_ant || l.div_hoje) {
+      tt += '\n\nDivulgação: ' + (l.div_ant || '—') + '  →  ' + (l.div_hoje || '—');
+    }
+    if (l.sigma != null) tt += '\nσ da variação de ' + l.novos + ' obs.: ' + fmtBR(l.sigma, 3);
+
+    h += '<tr class="' + mudo + '" title="' + tt + '">' +
+      '<td class="col-label cd-var">' + l.label + marcas +
+        '<span class="cd-ref cd-unid">' + l.unidade + '</span></td>';
+
+    if (l.erro) {
+      h += '<td colspan="4" class="col-label" style="color:var(--muted);font-style:italic">' +
+           'não carregada — ' + l.erro + '</td></tr>';
+      return;
+    }
+    h += '<td class="cd-val">' + fmtBR(l.ant, d) +
+         '<span class="cd-ref">' + l.ref_ant + '</span></td>' +
+         '<td class="cd-val" style="background:' + cdCor(l.z) + '">' + fmtBR(l.hoje, d) +
+         '<span class="cd-ref">' + l.ref_hoje + '</span></td>' +
+         '<td class="cd-val">' +
+           (l.novos === 0 ? '—'
+            : (l.delta > 0 ? '+' : '') + fmtBR(l.delta, l.delta_pct ? 2 : d) +
+              (l.delta_pct ? '%' : '')) + '</td>' +
+         '<td class="col-label"><span class="cd-tag ' + v.cls + '">' + v.txt + '</span></td></tr>';
+  });
+  tab.innerHTML = h + '</tbody>';
+
+  var notas = ['Passe o mouse sobre a linha para a definição da variável, as datas de ' +
+               'divulgação que sustentam cada coluna e o σ usado na cor.'];
+  if (estimadas) notas.push('<span class="cd-est">≈</span> em ' + estimadas +
+    ' variáveis: data de divulgação estimada pela regra ajustada do grupo, não lida do calendário.');
+  if (pendentes) notas.push('<span class="cd-pend">!</span> em ' + pendentes +
+    ' variáveis: o calendário diz que já saiu dado mais recente e ele ainda não está no banco.');
+  if ((Q.avisos || []).length) notas.push('Avisos da geração: ' + Q.avisos.join(' · '));
+  document.getElementById('cd-nota').innerHTML = notas.join('<br>');
+
+  // ── Agenda ──
+  var ag = Q.agenda || [];
+  document.getElementById('cd-agenda-lead').innerHTML = ag.length
+    ? '<b>' + ag.length + ' divulgações</b> entre hoje e o corte da ' + nProx +
+      ' reunião, e todas alimentam uma das variáveis da tabela acima — são as que ainda ' +
+      'podem virar a mesa. O resto do calendário está no relatório de divulgações.'
+    : 'Nenhuma das variáveis acima recebe dado novo entre hoje e a decisão.';
+
+  var ah = '<thead><tr><th class="col-label">Data</th><th class="col-label">Divulgação</th>' +
+           '<th class="col-label">Referência</th><th class="col-label">Alimenta</th></tr></thead><tbody>';
+  ag.forEach(function(a) {
+    ah += '<tr><td class="col-label cd-val">' + cdDataCurta(a.date) +
+          ' <span class="cd-unid">' + a.hora + '</span></td>' +
+          '<td class="col-label cd-var">' + a.nome +
+          '<span class="cd-ref">' + a.instituicao +
+          (a.confirmado ? '' : ' · data estimada') + '</span></td>' +
+          '<td class="col-label cd-val">' + (a.referencia || '—') + '</td>' +
+          '<td class="col-label cd-var">' + cdAlimenta(a.variaveis) + '</td></tr>';
+  });
+  document.getElementById('cd-agenda').innerHTML = ah + '</tbody>';
+}
+
+// ── Aba Projeções do Copom ────────────────────────────────────────────────────
+// A projeção do BC para o horizonte relevante contra o passo de Selic da MESMA reunião.
+// A unidade de tempo aqui é a REUNIÃO, não um período de calendário: as datas do eixo X são
+// as datas de decisão, espaçadas de ~45 dias e sem grade regular.
+var PJ = {cenario: 'juros_esperado', escala: 'nivel', defasagem: 0, metodo: 'focus',
+          btEixo: 'nivel', dlSerie: false, dlBt: false};
+
+var PJ_CENARIOS = [
+  {key: 'juros_esperado',  label: 'Juros esperado'},
+  {key: 'juros_constante', label: 'Juros constante'},
+];
+// Os tres metodos tem a MESMA estrutura -- ancora publicada + delta -- e diferem so em de onde
+// vem o delta. Ordem = do melhor para o pior no backtest, e o default e o primeiro.
+var PJ_METODOS = [
+  {key: 'focus',   label: 'Delta da Focus', cor: '#418791', campo: 'erro_focus'},
+  {key: 'modelo',  label: 'Modelo',         cor: '#02739B', campo: 'erro'},
+  {key: 'ingenuo', label: 'Ingênuo',        cor: '#BFBFBF', campo: 'erro_ingenuo'},
+];
+function pjMet(k) {
+  var m = PJ_METODOS.filter(function(o) { return o.key === (k || PJ.metodo); });
+  return m.length ? m[0] : PJ_METODOS[0];
+}
+
+var PJ_DECISAO = {
+  elevacao:   {cls: 'cd-hawk', txt: 'elevação',   cor: C.laranja},
+  reducao:    {cls: 'cd-dove', txt: 'redução',    cor: C.azulCl},
+  manutencao: {cls: 'cd-flat', txt: 'manutenção', cor: C.cinza},
+};
+
+function pjLinhas() {
+  var cen = ((D.projecoes || {}).cenarios || {})[PJ.cenario] || [];
+  if (!PJ.defasagem) return cen;
+  // Defasagem: o par é a projeção desta reunião contra o passo da SEGUINTE. A última reunião
+  // sai da amostra -- não há passo seguinte ainda.
+  return cen.filter(function(r) { return r.bps_prox != null; });
+}
+function pjPasso(r) { return PJ.defasagem ? r.bps_prox : r.bps; }
+function pjValor(r) { return PJ.escala === 'desvio' ? (r.proj - r.meta) : r.proj; }
+function pjRef(r)   { return PJ.escala === 'desvio' ? 0 : r.meta; }
+function pjDecisao(r) {
+  var b = pjPasso(r);
+  return PJ_DECISAO[b > 0 ? 'elevacao' : (b < 0 ? 'reducao' : 'manutencao')];
+}
+
+// A previsao existe so no cenario de juros esperado: ela e construida condicionando na curva
+// de Selic da Focus, que E o condicionamento desse cenario. No de juros constante nao ha
+// leitura dela -- devolve null e o grafico fica sem o ponto tracejado.
+function pjPrevisao() {
+  var P = D.projecoes || {};
+  if (!P.previsao || PJ.cenario !== 'juros_esperado') return null;
+  return P.previsao;
+}
+// Nivel previsto, cru. Ingenuo = a propria ancora (delta zero); os outros dois somam o delta
+// deles a ela. Tres consumidores -- o ponto do grafico 1, a caixa verde e a ponta do backtest --
+// e eles TEM de concordar: dois deles divergindo daria dois numeros diferentes na mesma tela.
+function pjPrevBruto(pv, metodo) {
+  var k = metodo || PJ.metodo;
+  return k === 'modelo' ? pv.previsto : (k === 'ingenuo' ? pv.ancora : pv.previsto_focus);
+}
+// O mesmo valor na escala que os pills pedem.
+function pjPrevValor(pv, metodo) {
+  var v = pjPrevBruto(pv, metodo);
+  if (v == null) return null;
+  return PJ.escala === 'desvio' ? (v - pv.meta) : v;
+}
+// MAE de uma coluna de erro do backtest, ignorando linha sem valor.
+function pjMAE(rows, campo) {
+  var s = 0, n = 0;
+  rows.forEach(function(r) {
+    if (r[campo] == null || isNaN(r[campo])) return;
+    s += Math.abs(r[campo]); n++;
+  });
+  return n ? s / n : null;
+}
+
+// Correlação de Pearson. Devolve null com menos de 3 pares ou variância nula em um dos lados.
+function pjCorr(xs, ys) {
+  var n = xs.length;
+  if (n < 3) return null;
+  var mx = 0, my = 0, i;
+  for (i = 0; i < n; i++) { mx += xs[i]; my += ys[i]; }
+  mx /= n; my /= n;
+  var cov = 0, vx = 0, vy = 0;
+  for (i = 0; i < n; i++) {
+    var a = xs[i] - mx, b = ys[i] - my;
+    cov += a * b; vx += a * a; vy += b * b;
+  }
+  if (vx <= 0 || vy <= 0) return null;
+  return cov / Math.sqrt(vx * vy);
+}
+
+function renderProjecoesSerie() {
+  var L = pjLinhas();
+  if (!L.length) { document.getElementById('chart-pj-serie').innerHTML = ''; return; }
+  var x = L.map(function(r) { return r.decisao_date; });
+  var passo = L.map(pjPasso);
+  var valor = L.map(pjValor);
+  var ref = L.map(pjRef);
+  var cores = L.map(function(r) { return pjDecisao(r).cor; });
+
+  // A previsao entra so com "Mesma reunião": com defasagem a serie desenhada para na
+  // penultima reuniao (a ultima nao tem passo seguinte), e o tracejado saltaria por cima de
+  // uma reuniao que JA foi publicada -- daria a entender que ela tambem e previsao.
+  var pv = PJ.defasagem ? null : pjPrevisao();
+  var yPrev = pv ? pjPrevValor(pv) : null;
+  if (yPrev == null) pv = null;
+  // A linha da meta se estende ao ponto previsto: sem isso o unico ponto sem referencia no
+  // grafico e justo o que precisa dela.
+  var xRef = pv ? x.concat([pv.data_reuniao]) : x;
+  var refExt = pv ? ref.concat([PJ.escala === 'desvio' ? 0 : pv.meta]) : ref;
+
+  // UM eixo so na escala "desvio da meta", DOIS na escala de nivel, e o motivo e unidade.
+  // Desvio e passo estao ambos em pontos percentuais (100 pb = 1,00 p.p.), entao no mesmo eixo
+  // eles sao diretamente comparaveis: "o desvio era +1,0 p.p. e o Comite mexeu +1,0 p.p." e
+  // uma frase que se le do grafico. Na escala de nivel nao ha essa leitura -- 3,5% de IPCA
+  // projetado e +50 pb de Selic nao dividem regua nenhuma -- e ali o eixo duplo e o certo.
+  var umEixo = PJ.escala === 'desvio';
+  var passoY = umEixo ? passo.map(function(v) { return v / 100; }) : passo;
+  var eixoProj = umEixo ? 'Desvio da meta e passo da Selic (p.p.)'
+                        : 'IPCA projetado, acum. 4T (%)';
+  var traces = [
+    {
+      x: x, y: passoY, type: 'bar',
+      name: umEixo ? 'Passo da Selic (p.p.)' : 'Passo da Selic (pb)',
+      yaxis: umEixo ? 'y' : 'y2',
+      marker: {color: cores, line: {width: 0}}, opacity: 0.75,
+      // O rotulo do dado no grafico segue em pontos-base mesmo com o eixo em p.p.: passo de
+      // Selic se fala em pb, e "+50 pb" e mais legivel que "+0,5 p.p." em cima de uma barra.
+      text: PJ.dlSerie ? passo.map(function(v) { return v === 0 ? '0' : (v > 0 ? '+' : '') + v; }) : undefined,
+      textposition: 'outside', textfont: {size: 9, family: 'Barlow,sans-serif'},
+      hovertemplate: umEixo
+        ? '%{y:+.2f} p.p.<extra>Passo da Selic</extra>'
+        : '%{y:+.0f} pb<extra>Passo da Selic</extra>',
+    },
+    {
+      x: xRef, y: refExt, type: 'scatter', mode: 'lines',
+      name: PJ.escala === 'desvio' ? 'Meta (desvio zero)' : 'Meta de inflação',
+      line: {color: C.cinza, width: 1.5, dash: 'dash'}, hovertemplate: '%{y:.2f}<extra>Meta</extra>',
+    },
+    {
+      x: x, y: valor, type: 'scatter', mode: PJ.dlSerie ? 'lines+markers+text' : 'lines+markers',
+      name: umEixo ? 'Projeção − meta' : eixoProj,
+      line: {color: C.dourado, width: 2.2}, marker: {size: 5},
+      text: PJ.dlSerie ? valor.map(function(v) { return fmtTrunc(v, 1); }) : undefined,
+      textposition: 'top center', textfont: {size: 9, family: 'Barlow,sans-serif'},
+      hovertemplate: '%{y:.2f}<extra>' + (PJ.escala === 'desvio' ? 'Desvio' : 'Projeção') + '</extra>',
+    },
+  ];
+
+  if (pv) {
+    // Duas traces e nao uma: a ponte tracejada nao pode aparecer na legenda nem no hover --
+    // ela e so o fio que liga o ultimo publicado ao previsto, nao um dado.
+    traces.push({
+      x: [x[x.length - 1], pv.data_reuniao], y: [valor[valor.length - 1], yPrev],
+      type: 'scatter', mode: 'lines', line: {color: C.verde, width: 2, dash: 'dot'},
+      hoverinfo: 'skip', showlegend: false,
+    });
+    traces.push({
+      x: [pv.data_reuniao], y: [yPrev], type: 'scatter',
+      mode: PJ.dlSerie ? 'markers+text' : 'markers',
+      name: 'Previsão · ' + pjMet().label + ' (não publicada)',
+      // Bolinha do MESMO tamanho dos marcadores da serie publicada (5), so em outra cor: o
+      // losango vazado que estava aqui antes lia como sujeira no grafico, nao como ponto.
+      // O que distingue previsao de dado publicado e a cor e o tracejado que leva ate ela,
+      // nao a forma do marcador.
+      marker: {color: C.verde, size: 5, symbol: 'circle'},
+      text: PJ.dlSerie ? [fmtTrunc(yPrev, 1)] : undefined,
+      textposition: 'top center',
+      textfont: {size: 9, family: 'Barlow,sans-serif', color: C.verde},
+      hovertemplate: '%{y:.2f}<extra>' + pv.nro + 'ª · PREVISÃO, não publicada</extra>',
+    });
+  }
+
+  // barmode:'relative' NÃO é para empilhar (há uma barra só) -- é o que faz o _bindYAutofit
+  // dobrar o zero dentro do range do eixo das barras. Sem isso, numa janela em que todo passo
+  // é positivo o autofit devolveria [20, 105] e as barras seriam desenhadas a partir do fundo
+  // do eixo, como se +25 pb fosse quase nada e +100 fosse tudo. O eixo da projeção (linha, não
+  // barra) segue com fit justo, que é o certo lá.
+  var extraSerie = {
+    barmode: 'relative',
+    legend: {orientation: 'h', y: -0.18, x: 0.5, xanchor: 'center', font: {size: 11}},
+  };
+  // Com um eixo so, `yaxis2` nao pode ficar declarado: um eixo sobreposto sem trace nenhuma
+  // ainda desenha titulo e ticks na direita, e o leitor le duas escalas onde ha uma.
+  if (!umEixo) {
+    extraSerie.yaxis2 = {
+      title: {text: 'Passo da Selic (pontos-base)', font: {size: 11}},
+      overlaying: 'y', side: 'right', zeroline: true, zerolinecolor: '#bbb',
+      showgrid: false,
+    };
+  }
+  var layout = mkTimeseriesLayout(eixoProj, 560, traces, extraSerie);
+  _reactPreserveX('chart-pj-serie', traces, layout);
+
+  var docs = {};
+  L.forEach(function(r) { docs[r.doc] = (docs[r.doc] || 0) + 1; });
+  document.getElementById('pj-cap-serie').textContent =
+    'Barras: passo da Selic ' + (PJ.defasagem ? 'na reunião SEGUINTE' : 'na própria reunião') +
+    (umEixo ? '' : ', eixo da direita') + '. Linha dourada: ' +
+    (umEixo ? 'projeção menos meta' : 'projeção do IPCA no horizonte relevante') +
+    (umEixo
+      ? '. Um eixo só, porque as duas coisas estão em pontos percentuais — 100 pb de Selic é '
+        + '1,00 p.p. de desvio, e a comparação é direta.'
+      : ', eixo da esquerda.') + ' ' + L.length + ' reuniões — ' +
+    Object.keys(docs).sort().map(function(d) { return docs[d] + ' do ' + d; }).join(' e ') + '.' +
+    (pv
+      ? ' Losango verde vazado, ligado por tracejado: a ' + pv.nro + 'ª reunião, ainda NÃO ' +
+        'publicada — previsão nossa por ' + pjMet().label.toLowerCase() + '.'
+      : (PJ.defasagem && pjPrevisao()
+          ? ' A previsão da próxima reunião fica oculta com "próxima reunião": o passo seguinte ' +
+            'a ela não existe.'
+          : ''));
+}
+
+// ── Caixa da previsão ────────────────────────────────────────────────────────
+// O único número desta aba que ninguém publicou. Fica fora do grid de KPIs de propósito: os
+// quatro cartões descrevem o histórico e este descreve o futuro, e misturar os dois no mesmo
+// bloco visual apagaria justo a distinção que importa.
+function renderProjecoesPrevBox() {
+  var box = document.getElementById('pj-prev-box');
+  if (!box) return;
+  var pv = pjPrevisao();
+  if (!pv) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  var met = pjMet();
+  var bruto = pjPrevBruto(pv);
+  var delta = PJ.metodo === 'modelo' ? pv.delta_modelo
+            : (PJ.metodo === 'ingenuo' ? 0 : pv.delta_focus);
+  var bt = ((D.projecoes || {}).backtest) || [];
+  var mae = pjMAE(bt, met.campo);
+  var maeIng = pjMAE(bt, 'erro_ingenuo');
+
+  document.getElementById('pj-prev-tag').textContent =
+    pv.nro + 'ª reunião · ' + pv.data_reuniao.split('-').reverse().join('/') +
+    ' · projeta ' + fmtDate(pv.periodo, 'projecoes') + ' · não publicada';
+  // O BC publica com UMA casa: mostrar duas daria falsa precisão a um número que ele arredonda.
+  document.getElementById('pj-prev-num').textContent =
+    bruto == null ? '—' : fmtBR(Math.round(bruto * 10) / 10, 1) + '%';
+
+  var atraso = pv.corte_usado < pv.data_reuniao;
+  document.getElementById('pj-prev-sub').innerHTML =
+    '<b>' + met.label + '</b>: âncora de ' + fmtBR(pv.ancora, 1) + '% (' + pv.ancora_doc +
+    ' de ' + pv.ancora_vintage.split('-').reverse().join('/') + ', ' + pv.ancora_dias +
+    ' dias antes)' + (delta == null ? '' : ' ' + (delta >= 0 ? '+ ' : '− ') +
+      fmtBR(Math.abs(delta), 3) + ' p.p. de delta') + ' = ' +
+    (bruto == null ? '—' : fmtBR(bruto, 3)) + ', que o BC publicaria como <b>' +
+    (bruto == null ? '—' : fmtBR(Math.round(bruto * 10) / 10, 1)) + '</b>. ' +
+    (pv.tipo === 'revisao'
+      ? 'É <b>revisão</b> de um horizonte que o comunicado já cobria.'
+      : 'É <b>expansão</b> de horizonte — alvo novo para o comunicado, ancorado no RPM.') +
+    '<br>' +
+    (mae == null ? '' : 'MAE de <b>' + fmtBR(mae, 3) + ' p.p.</b> no backtest de ' + bt.length +
+      ' reuniões, contra ' + (maeIng == null ? '—' : fmtBR(maeIng, 3)) + ' do ingênuo. ') +
+    'Corte de informação: <b>' + pv.corte_usado.split('-').reverse().join('/') + '</b>' +
+    (atraso
+      ? ' — <b>anterior à reunião</b>: o IPCA e os boletins Focus que faltam entre as duas ' +
+        'datas ainda vão entrar. Regerar o relatório perto de ' +
+        pv.data_reuniao.split('-').reverse().join('/') + ' muda a resposta.'
+      : '.') +
+    (PJ.metodo !== 'modelo' ? '' :
+      ' r* de ' + fmtBR(pv.rr, 2) + '% (a declarada pelo BC), t0 em ' + pv.t0 + '.');
+}
+
+// ── Backtest: o que estimamos contra o que o BC publicou ─────────────────────
+function pjBtNivel(r, k) {
+  if (k === 'modelo') return r.previsto;
+  if (k === 'ingenuo') return r.ancora;
+  return (r.delta_focus == null) ? null : Math.round((r.ancora + r.delta_focus) * 10000) / 10000;
+}
+function renderProjecoesBacktest() {
+  var bt = ((D.projecoes || {}).backtest) || [];
+  var el = document.getElementById('chart-pj-bt');
+  if (!bt.length) {
+    if (el) el.innerHTML = '';
+    var lb = document.getElementById('pj-lead-bt');
+    if (lb) lb.textContent = 'Sem backtest: rode antecipa_copom.salvar() para gerar ' +
+      'data/antecipa_backtest.csv e data/antecipa_previsao.json.';
+    return;
+  }
+  var nivel = PJ.btEixo === 'nivel';
+  // A proxima reuniao entra como ponto extra de cada metodo -- e o que eles estao APONTANDO,
+  // que e a leitura que o grafico existe para dar. So no eixo Nivel: no eixo Erro nao ha erro
+  // a plotar, porque nao ha numero publicado para subtrair ainda.
+  var pv = pjPrevisao();
+  var estende = nivel && !!pv;
+  var x = bt.map(function(r) { return r.reuniao; });
+  if (estende) x = x.concat([pv.data_reuniao]);
+  var traces = [];
+
+  if (nivel) {
+    // A linha do publicado NAO ganha o ponto extra: o null e o que faz ela parar antes dele, e
+    // essa parada e o sinal visual de que a ultima coluna nao tem contrapartida do BC.
+    traces.push({
+      x: x, y: bt.map(function(r) { return r.real; }).concat(estende ? [null] : []),
+      type: 'scatter',
+      mode: PJ.dlBt ? 'lines+markers+text' : 'lines+markers', name: 'Publicado pelo BC',
+      line: {color: C.dourado, width: 3}, marker: {size: 8},
+      text: PJ.dlBt ? bt.map(function(r) { return fmtTrunc(r.real, 1); }) : undefined,
+      textposition: 'top center', textfont: {size: 9, family: 'Barlow,sans-serif'},
+      hovertemplate: '%{y:.2f}<extra>Publicado</extra>',
+    });
+  } else {
+    traces.push({
+      x: x, y: x.map(function() { return 0; }), type: 'scatter', mode: 'lines',
+      name: 'Erro zero', line: {color: C.cinza, width: 1.5, dash: 'dash'},
+      hoverinfo: 'skip',
+    });
+  }
+  // O método selecionado vem grosso e contínuo, os outros dois finos e pontilhados. Os três
+  // ficam sempre no gráfico: escolher um método sem ver os outros é escolher no escuro.
+  PJ_METODOS.forEach(function(m) {
+    var sel = m.key === PJ.metodo;
+    var y = nivel
+      ? bt.map(function(r) { return pjBtNivel(r, m.key); })
+      : bt.map(function(r) { return r[m.campo]; });
+    if (estende) y = y.concat([pjPrevBruto(pv, m.key)]);
+    traces.push({
+      x: x, y: y, type: 'scatter',
+      mode: sel && PJ.dlBt ? 'lines+markers+text' : 'lines+markers',
+      name: m.label,
+      line: {color: m.cor, width: sel ? 2.4 : 1.1, dash: sel ? 'solid' : 'dot'},
+      marker: {size: sel ? 7 : 4, symbol: sel ? 'circle' : 'circle-open'},
+      opacity: sel ? 1 : 0.55,
+      text: sel && PJ.dlBt ? y.map(function(v) { return fmtTrunc(v, 2); }) : undefined,
+      textposition: 'bottom center',
+      textfont: {size: 9, family: 'Barlow,sans-serif', color: m.cor},
+      hovertemplate: '%{y:.3f}<extra>' + m.label + '</extra>',
+    });
+  });
+
+  var eixo = nivel ? 'IPCA projetado no horizonte relevante, acum. 4T (%)'
+                   : 'Erro de previsão (p.p.) — previsto menos publicado';
+  var extraBt = {
+    legend: {orientation: 'h', y: -0.2, x: 0.5, xanchor: 'center', font: {size: 11}},
+  };
+  if (estende) {
+    // Linha vertical na proxima reuniao: separa o que ja pode ser conferido do que nao pode.
+    extraBt.shapes = [{
+      type: 'line', x0: pv.data_reuniao, x1: pv.data_reuniao,
+      yref: 'paper', y0: 0, y1: 1, layer: 'below',
+      line: {color: C.verde, width: 1.2, dash: 'dot'},
+    }];
+  }
+  _reactPreserveX('chart-pj-bt', traces, mkTimeseriesLayout(eixo, 500, traces, extraBt));
+
+  var maes = {};
+  PJ_METODOS.forEach(function(m) { maes[m.key] = pjMAE(bt, m.campo); });
+  document.getElementById('pj-lead-bt').innerHTML =
+    'Cada ponto é uma reunião da era em que o Copom <b>declara</b> o horizonte relevante — ' +
+    bt.length + ' reuniões desde ' + bt[0].reuniao.slice(0, 4) + ': o que cada método teria ' +
+    'dito contra o que o Comitê publicou. Erro absoluto médio de ' +
+    PJ_METODOS.map(function(m) {
+      return '<b>' + (maes[m.key] == null ? '—' : fmtBR(maes[m.key], 3)) + '</b> ' +
+             m.label.toLowerCase();
+    }).join(', ') + '. O ingênuo é a barra a bater, e o modelo não bate.';
+
+  document.getElementById('pj-cap-bt').textContent =
+    (nivel
+      ? 'Linha dourada grossa: o número que o BC publicou. As outras três: o que cada método ' +
+        'teria previsto para a mesma reunião, com a selecionada nos pills em contínuo.'
+      : 'Previsto menos publicado, em pontos percentuais. Acima de zero o método projetou ' +
+        'inflação alta demais.') +
+    ' Todos os três partem da mesma âncora publicada e diferem só no delta. ' +
+    'Backtest fora da amostra no sentido do conjunto de informação — cada ponto usa só o que ' +
+    'existia na data da reunião —, mas os parâmetros do modelo foram estimados na amostra cheia.' +
+    (estende
+      ? ' À direita da vertical pontilhada, a ' + pv.nro + 'ª: o que cada método aponta para ' +
+        'ela. A linha dourada para antes porque o BC ainda não publicou o número.'
+      : '');
+
+  renderProjecoesBtTabela(bt, maes);
+}
+
+function renderProjecoesBtTabela(bt, maes) {
+  var el = document.getElementById('pj-bt-tabela');
+  if (!el) return;
+  var h = '<thead><tr>' +
+    '<th class="col-label">Reunião</th><th class="col-label">Decisão em</th>' +
+    '<th class="col-label">Projeta</th><th class="col-label">Tipo</th>' +
+    '<th>Âncora</th><th>Publicado</th><th>Revisão</th>' +
+    PJ_METODOS.map(function(m) { return '<th>Erro ' + m.label.toLowerCase() + '</th>'; }).join('') +
+    '</tr></thead><tbody>';
+  bt.slice().reverse().forEach(function(r) {
+    h += '<tr>' +
+      '<td class="col-label">' + r.nro + 'ª</td>' +
+      '<td class="col-label">' + r.reuniao.split('-').reverse().join('/') + '</td>' +
+      '<td class="col-label">' + r.alvo + '</td>' +
+      '<td class="col-label"><span class="cd-unid">' +
+        (r.tipo === 'revisao' ? 'revisão' : 'expansão') + '</span></td>' +
+      '<td class="col-value">' + fmtBR(r.ancora, 1) + '</td>' +
+      '<td class="col-value">' + fmtBR(r.real, 1) + '</td>' +
+      '<td class="col-value">' + (r.revisao > 0 ? '+' : '') + fmtBR(r.revisao, 2) + '</td>' +
+      PJ_METODOS.map(function(m) {
+        var v = r[m.campo];
+        return '<td class="col-value"' +
+          (m.key === PJ.metodo ? ' style="font-weight:700"' : '') + '>' +
+          (v == null ? '—' : (v > 0 ? '+' : '') + fmtBR(v, 2)) + '</td>';
+      }).join('') +
+      '</tr>';
+  });
+  h += '<tr class="is-total">' +
+    '<td class="col-label">MAE</td><td class="col-label"></td><td class="col-label"></td>' +
+    '<td class="col-label"></td><td class="col-value"></td><td class="col-value"></td>' +
+    '<td class="col-value"></td>' +
+    PJ_METODOS.map(function(m) {
+      return '<td class="col-value">' +
+        (maes[m.key] == null ? '—' : fmtBR(maes[m.key], 3)) + '</td>';
+    }).join('') +
+    '</tr>';
+  el.innerHTML = h + '</tbody>';
+  var sum = document.getElementById('pj-bt-sum');
+  if (sum) sum.textContent = bt.length + ' reuniões · MAE de cada método';
+
+  var tipos = {};
+  bt.forEach(function(r) { tipos[r.tipo] = (tipos[r.tipo] || 0) + 1; });
+  document.getElementById('pj-nota-bt').innerHTML =
+    'Da mais recente para a mais antiga. <b>Âncora</b> é o último número que o BC havia ' +
+    'publicado para o mesmo trimestre; <b>revisão</b> é publicado menos âncora, e é o que os ' +
+    'três métodos tentam prever. ' +
+    (tipos.expansao || 0) + ' expansões de horizonte e ' + (tipos.revisao || 0) +
+    ' revisões — alternadas, sem exceção, porque há duas reuniões por trimestre e uma edição ' +
+    'do RPM por trimestre. A coluna em negrito é o método selecionado nos pills.';
+}
+
+// setKPI() roda fmtBR(value) com duas casas e decide a classe pelo sinal do NUMERO -- aqui os
+// quatro cartoes querem coisas diferentes (p.p. com sinal, pontos-base inteiros, correlacao sem
+// unidade, contagem), entao escrevem no DOM direto. Mesmo caminho do renderCondicoes().
+function pjKPI(prefixo, txt, sub, sinal) {
+  var v = document.getElementById(prefixo + '-value');
+  var s = document.getElementById(prefixo + '-sub');
+  if (v) {
+    v.textContent = txt;
+    v.className = 'kpi-value' + (sinal == null ? '' : (sinal >= 0 ? ' pos' : ' neg'));
+  }
+  if (s) s.textContent = sub;
+}
+
+function renderProjecoesKPIs() {
+  var L = pjLinhas();
+  if (!L.length) return;
+  var u = L[L.length - 1];
+  var dec = pjDecisao(u);
+  var xs = L.map(function(r) { return r.proj - r.meta; });
+  var c = pjCorr(xs, L.map(pjPasso));
+  var vProj = pjValor(u);
+
+  document.getElementById('kpi-pj-proj-label').textContent =
+    PJ.escala === 'desvio' ? 'Desvio na última reunião' : 'Projeção na última reunião';
+  pjKPI('kpi-pj-proj',
+    (PJ.escala === 'desvio' && vProj > 0 ? '+' : '') + fmtBR(vProj, 2) +
+      (PJ.escala === 'desvio' ? ' p.p.' : '%'),
+    u.nro + 'ª reunião · projeta ' + fmtDate(u.periodo, 'projecoes') + ' · meta ' +
+      fmtBR(u.meta, 2) + '%' + (u.meta_estendida ? ' (estendida)' : ''),
+    PJ.escala === 'desvio' ? vProj : null);
+  pjKPI('kpi-pj-passo',
+    (u.bps > 0 ? '+' : '') + u.bps + ' pb',
+    PJ_DECISAO[u.bps > 0 ? 'elevacao' : (u.bps < 0 ? 'reducao' : 'manutencao')].txt + ' · ' +
+      fmtBR(u.selic_ant, 2) + '% → ' + fmtBR(u.selic_dec, 2) + '%' +
+      (PJ.defasagem ? ' · o gráfico usa o passo da reunião seguinte' : ''),
+    u.bps);
+  pjKPI('kpi-pj-corr', c == null ? '—' : fmtBR(c, 2),
+    L.length + ' reuniões · passo ' + (PJ.defasagem ? 'da seguinte' : 'da própria'), c);
+  var docs = {};
+  L.forEach(function(r) { docs[r.doc] = (docs[r.doc] || 0) + 1; });
+  pjKPI('kpi-pj-n', String(L.length),
+    L[0].decisao_date.slice(0, 7).replace('-', '/') + ' → ' +
+      u.decisao_date.slice(0, 7).replace('-', '/') + ' · ' +
+      Object.keys(docs).sort().map(function(d) { return docs[d] + ' ' + d; }).join(' + '),
+    null);
+  void dec;
+}
+
+function renderProjecoesTabela() {
+  var L = pjLinhas().slice().reverse();
+  var h = '<thead><tr>' +
+    '<th class="col-label">Reunião</th><th class="col-label">Decisão em</th>' +
+    '<th class="col-label">Projeta</th><th>Projeção</th><th>Meta</th><th>Desvio</th>' +
+    '<th>Passo (pb)</th><th class="col-label">Sinal</th><th class="col-label">Fonte</th>' +
+    '</tr></thead><tbody>';
+  L.forEach(function(r) {
+    var d = pjDecisao(r);
+    h += '<tr' + (r.fora ? ' class="cd-mudo"' : '') + '>' +
+      '<td class="col-label">' + r.nro + 'ª</td>' +
+      '<td class="col-label">' + r.decisao_date.split('-').reverse().join('/') + '</td>' +
+      '<td class="col-label">' + fmtDate(r.periodo, 'projecoes') + '</td>' +
+      '<td class="col-value">' + fmtBR(r.proj, 2) + '</td>' +
+      '<td class="col-value">' + fmtBR(r.meta, 2) +
+        (r.meta_estendida ? ' <span class="cd-est" title="meta contínua de 3% estendida para além do último ano publicado">≈</span>' : '') + '</td>' +
+      '<td class="col-value">' + (r.proj - r.meta > 0 ? '+' : '') + fmtBR(r.proj - r.meta, 2) + '</td>' +
+      '<td class="col-value">' + (pjPasso(r) > 0 ? '+' : '') + pjPasso(r) + '</td>' +
+      '<td class="col-label"><span class="cd-tag ' + d.cls + '">' + d.txt + '</span></td>' +
+      '<td class="col-label"><span class="cd-unid">' + r.doc + '</span></td>' +
+      '</tr>';
+  });
+  document.getElementById('pj-tabela').innerHTML = h + '</tbody>';
+  var sum = document.getElementById('pj-sum');
+  if (sum) sum.textContent = L.length + ' reuniões · ' + PJ_CENARIOS.filter(function(o) {
+    return o.key === PJ.cenario;
+  }).map(function(o) { return o.label.toLowerCase(); })[0];
+
+  var fora = pjLinhas().filter(function(r) { return r.fora; });
+  document.getElementById('pj-nota').innerHTML =
+    'Da mais recente para a mais antiga. <b>Projeção</b> é a variação do IPCA acumulada em quatro ' +
+    'trimestres (%) no trimestre da coluna "Projeta", sempre seis trimestres à frente da reunião. ' +
+    '<b>Passo</b> é o da ' + (PJ.defasagem ? 'reunião SEGUINTE' : 'própria reunião') + '. ' +
+    (fora.length
+      ? 'Atenuadas: ' + fora.length + ' reunião(ões) cujo nível de entrada não é o que a reunião ' +
+        'anterior deixou — a meta se moveu por viés no intervalo.'
+      : 'Nenhuma reunião desta série foi precedida de alteração da meta fora de reunião.');
+}
+
+function renderProjecoes() {
+  var P = D.projecoes || {};
+  if (!P.cenarios || !(P.cenarios.juros_esperado || []).length) {
+    document.getElementById('pj-lead').textContent =
+      'Sem dado: pm_copom_projecoes ou pm_copom_reuniao não carregou.';
+    return;
+  }
+  var e = document.getElementById('pj-ano-meta');
+  if (e) e.textContent = P.ultimo_ano_meta || '—';
+
+  function redraw() {
+    renderProjecoesKPIs();
+    renderProjecoesPrevBox();
+    renderProjecoesSerie();
+    renderProjecoesBacktest();
+    renderProjecoesTabela();
+  }
+
+  var disponiveis = PJ_CENARIOS.filter(function(o) { return (P.cenarios[o.key] || []).length; });
+  var primeiro = true;
+  setupPillGroup('pj-cenario', disponiveis, PJ.cenario, function(k) {
+    PJ.cenario = k; if (!primeiro) redraw();
+  });
+  setupPillGroup('pj-escala', [{key: 'nivel', label: 'Nível'}, {key: 'desvio', label: 'Desvio da meta'}],
+    PJ.escala, function(k) { PJ.escala = k; if (!primeiro) redraw(); });
+  setupPillGroup('pj-defasagem', [{key: '0', label: 'Mesma reunião'}, {key: '1', label: 'Próxima reunião'}],
+    '0', function(k) { PJ.defasagem = (k === '1'); if (!primeiro) redraw(); });
+  // O mesmo metodo governa o ponto previsto do 1o grafico e o destaque do backtest: escolher
+  // um metodo e ver o historico DELE e o ponto dele e a leitura que faz sentido.
+  setupPillGroup('pj-metodo', PJ_METODOS, PJ.metodo, function(k) {
+    PJ.metodo = k; if (!primeiro) redraw();
+  });
+  setupPillGroup('pj-bt-eixo', [{key: 'nivel', label: 'Nível projetado'}, {key: 'erro', label: 'Erro'}],
+    PJ.btEixo, function(k) { PJ.btEixo = k; if (!primeiro) renderProjecoesBacktest(); });
+  wireDlToggle('dl-chart-pj-serie', function(on) { PJ.dlSerie = on; if (!primeiro) renderProjecoesSerie(); });
+  wireDlToggle('dl-chart-pj-bt', function(on) { PJ.dlBt = on; if (!primeiro) renderProjecoesBacktest(); });
+  primeiro = false;
+
+  var todas = P.cenarios[PJ.cenario] || [];
+  document.getElementById('pj-lead').innerHTML =
+    'O que o Copom <b>projetava</b> para o horizonte relevante contra o que ele <b>fez</b> com a ' +
+    'Selic, reunião a reunião, de ' + todas[0].decisao_date.slice(0, 4) + ' a ' +
+    todas[todas.length - 1].decisao_date.slice(0, 4) + '. A projeção é sempre o ponto a ' +
+    '<b>seis trimestres</b> da reunião, e o passo é o que <b>aquela</b> reunião decidiu — não o ' +
+    'acumulado do ciclo.' +
+    (P.previsao
+      ? ' O último ponto é <b>previsão nossa</b>, não publicada — losango vazado e tracejado, e ' +
+        'a caixa verde diz de onde ele vem.'
+      : '') +
+    (P.sem_decisao && P.sem_decisao.length
+      ? ' ' + P.sem_decisao.length + ' reunião(ões) com projeção ficaram fora por não ter decisão de Selic no banco.'
+      : '');
+
+  redraw();
+}
+
 // ── Troca de aba — render lazy na primeira ativação ──────────────
 // O Plotly precisa de um div visível e com largura não-zero; renderizar uma aba escondida
-// dimensiona o gráfico errado. "projecoes" não entra no mapa — ainda é stub.
-var RENDERERS = {motor: renderMotor, cenarios: renderCenarios, decomp: renderDecomp,
-                 neutra: renderNeutra, hiato: renderHiato, appendix: renderAppendix};
+// dimensiona o gráfico errado.
+var RENDERERS = {motor: renderMotor, condicoes: renderCondicoes,
+                 projecoes: renderProjecoes, appendix: renderAppendix};
 var tabRendered = {};
 function activateTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === tab); });

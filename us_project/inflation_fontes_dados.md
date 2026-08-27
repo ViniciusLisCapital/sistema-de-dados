@@ -120,8 +120,12 @@ Latest data as probed: CPI/PPI/sticky/median through **2026-07**, PCE and trimme
   table 2.4.4U (chained price index by type of product, 2017=100) and `U20405-M` = 2.4.5U (nominal
   spending, US$ mn SAAR), both 1959-01 → latest, 402 lines that match line-for-line. That is component
   price indices *and* the weights contributions need. Loaded into `macro_us.inflc_pce` / `inflc_pce_dim`
-  (608k rows) via `connectors/bea.py`, and charted as the PCE tab of `reports/us/Inflation.html`. A key
-  would still buy vintages and other sections — nothing for this. See
+  (608k rows) via `connectors/bea.py`, and charted as the PCE tab of `reports/us/Inflation.html`.
+  **The key arrived on 2026-08-26 and the value load moved to the API** (`BEA_API_KEY` in the `.env`).
+  Measured against the xlsx first: same values exactly (608,442 observations, 0 differing), but **no
+  hierarchy at all** in the API — so the tree stays on the xlsx and `inflc_pce_dim` refuses an
+  API-sourced table. `tests/test_bea_api.py` is the cross-check, and it also pins the two lines against
+  FRED's `PCEPI`/`PCEPILFE`. See
   `analytics/us/inflation/CLAUDE.md`, "The PCE tab".
 - **Ingest the NY Fed SCE** — no FRED path exists and it is the best household expectation series.
 - **Not inventoried this round**: CPI-W and C-CPI-U, regional/metro CPI, the full PPI industry tree,

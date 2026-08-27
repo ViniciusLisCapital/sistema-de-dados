@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>US Inflation — CPI and PCE</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <style>
 /*THEME_CSS*/
 
@@ -14,7 +14,11 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); marg
 
 header.page { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
 header.page h1 { font-family: var(--cond); font-size: 30px; font-weight: 700; letter-spacing: .2px; margin: 0; text-transform: uppercase; }
+header.page .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+header.page .brand em { font-style: normal; color: var(--lis-dourado); }
 header.page .sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+footer { color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+footer span { color: var(--text2); }
 header.page .stamp { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 12px; margin-bottom: 16px; }
@@ -22,6 +26,20 @@ header.page .stamp { font-family: var(--mono); font-size: 11px; color: var(--mut
 .kpi .k { font-family: var(--cond); font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
 .kpi .v { font-family: var(--mono); font-size: 22px; font-weight: 500; margin-top: 4px; }
 .kpi .d { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* release schedule strip -- fed by domain/release_calendar/, see the Appendix */
+.releases { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.rel-card { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--lis-verde); border-radius: 8px; padding: 11px 14px; }
+.rel-card .rc-h { font-family: var(--cond); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.rel-card .rc-h b { color: var(--text2); font-weight: 600; font-size: 13px; }
+.rel-row { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.rel-row .rl { font-family: var(--cond); text-transform: uppercase; letter-spacing: .5px; font-size: 10.5px; color: var(--muted); width: 32px; flex: none; }
+.rel-row .rd { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+.rel-row .rt { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+.rel-row .rr { font-size: 11px; color: var(--muted); }
+.rel-row.next .rd { color: var(--lis-verde); }
+.rel-in { font-family: var(--mono); font-size: 10.5px; color: var(--lis-dourado); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; }
+.rel-in.due { color: var(--lis-laranja); }
 
 nav.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 18px; flex-wrap: wrap; }
 nav.tabs button { font-family: var(--cond); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
@@ -61,31 +79,98 @@ table.hier th.col-check { width: 30px; }
 table.hier td.col-label { min-width: 300px; }
 table.hier tr.is-group td.col-label { font-weight: 600; }
 table.hier tr:hover td { background: #FAFBFC; }
-/* Cabecalho de duas linhas da visao Table 1: a linha de grupos gruda no topo, a
-   de meses logo abaixo dela (altura de uma linha do thead: 10px de padding + 13
-   de texto + 1 de borda). */
-table.hier thead tr.grp th { text-align: center; }
-table.hier thead tr.mon th { top: 24px; }
-table.hier thead tr.mon th:first-child, table.hier thead tr.mon th:nth-child(2) { text-align: right; }
-table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
 .tree-toggle { display: inline-block; width: 13px; color: var(--lis-azul); cursor: pointer; user-select: none; font-size: 10px; }
 .neg { color: var(--lis-laranja); }
 
+/* Tabela de maiores contribuicoes: mesma casca da .hier, mas ordenavel e plana.
+   A convencao de cor e a desta pagina (so o negativo pinta, em laranja), NAO a do
+   ranking do relatorio brasileiro, onde a contribuicao positiva e que sai laranja --
+   inverter aqui deixaria duas tabelas da mesma pagina lendo ao contrario. */
+table.rank { border-collapse: collapse; width: 100%; font-size: 12px; }
+table.rank th, table.rank td { padding: 5px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+table.rank thead th { position: sticky; top: 0; background: #EEF0F5; font-family: var(--cond); font-size: 11px;
+  text-transform: uppercase; letter-spacing: .5px; color: var(--text2); text-align: right; z-index: 2;
+  cursor: pointer; user-select: none; }
+table.rank thead th.txt { text-align: left; }
+table.rank thead th.fixed { cursor: default; }
+table.rank thead th:hover:not(.fixed) { background: #E3E7F0; }
+table.rank thead th.sorted-asc::after  { content: ' \25B2'; opacity: .6; }
+table.rank thead th.sorted-desc::after { content: ' \25BC'; opacity: .6; }
+table.rank td.num { font-family: var(--mono); text-align: right; font-size: 11.5px; }
+table.rank td.rk  { font-family: var(--mono); text-align: right; font-size: 11px; color: var(--muted); width: 34px; }
+table.rank td.txt { max-width: 320px; overflow: hidden; text-overflow: ellipsis; }
+table.rank td.dim { color: var(--muted); }
+table.rank tr:hover td { background: #FAFBFC; }
+
+/* Multi-select de componentes do drill-down -- mesmo padrao do
+   analytics/brasil/inflation, onde uma lista de 614 subitens tornou o <select>
+   multiplo inviavel. */
+.multiselect { position: relative; min-width: 260px; max-width: 460px; }
+.multiselect-btn { width: 100%; text-align: left; padding: 5px 10px; border: 1px solid var(--border);
+  border-radius: 6px; font-family: var(--sans); font-size: 12px; color: var(--text);
+  background: var(--card-bg); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.multiselect-btn:hover { background: #EEF0F5; }
+.multiselect-panel { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+  max-height: 280px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 8px; box-shadow: 0 4px 14px rgba(31,40,83,0.14); padding: 4px 0; }
+.multiselect-panel.open { display: block; }
+.multiselect-panel label { display: flex; align-items: center; gap: 7px; padding: 4px 12px; font-size: 12px;
+  color: var(--text); cursor: pointer; white-space: nowrap; }
+.multiselect-panel label:hover { background: var(--bg); }
+
 .range-bar { display: flex; gap: 5px; align-items: center; margin: 12px 0 6px; }
 .range-bar span { font-family: var(--cond); font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-right: 3px; }
-.rb { font-family: var(--sans); font-size: 11.5px; background: var(--card-bg); border: 1px solid var(--border);
-  border-radius: 5px; padding: 3px 10px; cursor: pointer; color: var(--text2); }
-.rb:hover { background: #EEF0F5; }
-.chart { width: 100%; height: 430px; }
+/* .rb e .dl-toggle seguem o .range-pill de
+   .claude/skills/lis-dashboard/references/design-system.md: mono 11px, pilula. */
+.rb, .dl-toggle { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .03em;
+  padding: 4px 13px; border: 1px solid rgba(31,40,83,0.15); border-radius: 20px;
+  background: rgba(31,40,83,0.03); color: var(--muted); cursor: pointer; transition: all .15s; }
+.rb:hover, .dl-toggle:hover { color: var(--lis-azul); border-color: rgba(31,40,83,0.3); }
+.dl-toggle { margin-left: auto; }
+.dl-toggle.on { background: var(--lis-azul); border-color: var(--lis-azul); color: #fff; }
+.dl-toggle.disabled { opacity: .38; cursor: not-allowed; }
+.dl-toggle.disabled:hover { color: var(--muted); border-color: rgba(31,40,83,0.15); }
+.chart { position: relative; width: 100%; height: 480px; }
 .hint { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 6px; }
+/* A linha de cobertura do ranking nao e uma dica: e o que impede ler a tabela como
+   uma decomposicao completa, coisa que ela nao e em nivel nenhum das duas arvores. */
+.cover { font-size: 12px; color: var(--text2); line-height: 1.55; margin-top: 9px;
+  border-left: 3px solid var(--lis-verde); background: #F2F7F7; padding: 7px 11px; border-radius: 0 6px 6px 0; }
+.cover b { font-family: var(--mono); font-size: 11.5px; }
 
-.appx h3 { font-family: var(--cond); font-size: 15px; text-transform: uppercase; letter-spacing: .5px; margin: 20px 0 6px; }
 .appx p, .appx li { font-size: 12.5px; line-height: 1.65; color: var(--text2); }
+.appx p + p { margin-top: 9px; }
+.appx ul { padding-left: 19px; margin: 9px 0 2px; }
+.appx li + li { margin-top: 6px; }
 .appx table { border-collapse: collapse; font-size: 12px; margin: 8px 0 14px; width: 100%; }
 .appx th, .appx td { border: 1px solid var(--border); padding: 5px 9px; text-align: left; vertical-align: top; }
 .appx th { background: #EEF0F5; font-family: var(--cond); text-transform: uppercase; font-size: 11px; letter-spacing: .5px; }
 .appx code { font-family: var(--mono); font-size: 11.5px; background: #EEF0F5; padding: 1px 4px; border-radius: 3px; }
 .warn { border-left: 3px solid var(--lis-dourado); background: #FDF9EE; padding: 10px 13px; border-radius: 0 6px 6px 0; font-size: 12.5px; line-height: 1.6; color: var(--text2); margin: 10px 0; }
+/* O apendice sao ~2.700 palavras que ninguem le em ordem -- e como oito <h3>
+   empilhados ele nao tem estado fechado nenhum. Cada secao vira uma gaveta, e o
+   resumo cinza ao lado do titulo e o que faz o fechado valer: diz o que ha dentro
+   sem precisar abrir. Fechadas, as oito sao um indice do que esta documentado. */
+.acc-bar { display: flex; gap: 6px; margin: 12px 0 12px; }
+details.acc { border: 1px solid var(--border); border-radius: 7px; margin: 7px 0; overflow: hidden; }
+details.acc > summary { list-style: none; cursor: pointer; user-select: none;
+  padding: 10px 14px; background: var(--bg); display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+details.acc > summary::-webkit-details-marker { display: none; }
+/* O ::before de um container flex E um item de flex, entao a seta se alinha pela
+   mesma baseline do titulo sozinha. Absoluta exigiria um `top` chutado -- e nao ha
+   browser neste ambiente para acertar o chute. */
+details.acc > summary::before { content: '\25B8'; color: var(--lis-verde); font-size: 12px; flex: none; width: 9px; }
+details.acc[open] > summary::before { content: '\25BE'; }
+details.acc[open] > summary { border-bottom: 1px solid var(--border); }
+details.acc > summary:hover { background: #EAEEF4; }
+details.acc > summary:focus-visible { outline: 2px solid var(--lis-verde); outline-offset: -2px; }
+.acc-t { font-family: var(--cond); font-size: 15px; text-transform: uppercase; letter-spacing: .5px; color: var(--lis-azul); }
+.acc-s { font-size: 11.5px; color: var(--muted); }
+.acc-b { padding: 2px 15px 13px; }
+.acc-b > :first-child { margin-top: 10px; }
+details.acc.flash { box-shadow: 0 0 0 2px var(--lis-dourado); }
+a.axlink { color: var(--lis-verde); font-weight: 600; border-bottom: 1px solid currentColor; cursor: pointer; }
+a.axlink:hover { color: var(--lis-azul); }
 </style>
 </head>
 <body>
@@ -93,6 +178,7 @@ table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
 
 <header class="page">
   <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
     <h1>US Inflation — CPI and PCE</h1>
     <div class="sub">CPI-U (BLS), US city average, both published trees · PCE price index (BEA), by type of product · levels from the database, variations computed in the browser</div>
   </div>
@@ -101,101 +187,113 @@ table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
 
 <div class="kpis" id="kpis"></div>
 
+<div class="releases" id="releases"></div>
+
 <nav class="tabs">
-  <button class="active" data-tab="release">Release Tree</button>
-  <button data-tab="expenditure">Expenditure Tree</button>
+  <button class="active" data-tab="cpi">CPI</button>
   <button data-tab="pce">PCE</button>
   <button data-tab="appendix">Appendix</button>
 </nav>
 
-<!-- ─────────────────────────────── RELEASE TREE ─────────────────────────────── -->
-<section class="panel active" id="panel-release">
+<!-- ─────────────────────────────────── CPI ─────────────────────────────────── -->
+<!-- Uma aba, duas arvores: o par Release|Expenditure e um SELETOR dentro da mesma
+     tabela desde 2026-08-26, como as duas arvores (IBGE e BCB) da aba Decomposicao
+     do relatorio de inflacao do Brasil. Nenhuma deriva da outra -- sao dois cortes
+     independentes do mesmo indice, e por isso o cabecalho e a nota andam com o
+     seletor em vez de ficarem escritos aqui. -->
+<section class="panel active" id="panel-cpi">
   <div class="card">
-    <h2>Release tree — food / energy / core</h2>
-    <p class="note">
-      Table 1 of the news release: <b>37 rows over 5 levels</b>, plus <b id="rel-pointer-n"></b> drill-down
-      rows below each leaf. Only levels 0–2 partition the index — method and caveats in the <b>Appendix</b>.
-    </p>
+    <h2 id="cpi-h2"></h2>
+    <p class="note" id="cpi-note"></p>
     <div class="ctrl-bar">
-      <div class="ctrl"><label>View</label><div class="pill-group" id="release-view-group">
-        <button class="pill active" data-view="series">Series</button>
-        <button class="pill" data-view="table1">Table 1</button>
+      <div class="ctrl"><label>Tree</label><div class="pill-group" id="cpi-tree-group">
+        <button class="pill active" data-tree="release">Release</button>
+        <button class="pill" data-tree="expenditure">Expenditure</button>
       </div></div>
-      <div class="ctrl"><label>Metric</label><div class="pill-group" id="release-metric-group">
-        <button class="pill" data-metric="level">Index</button>
+      <div class="ctrl"><label>Metric</label><div class="pill-group" id="cpi-metric-group">
         <button class="pill active" data-metric="yoy">Y/Y %</button>
         <button class="pill" data-metric="mom">M/M %</button>
         <button class="pill" data-metric="ann3m">3M ann. %</button>
         <button class="pill" data-metric="contrib">Contrib. to Y/Y</button>
+        <button class="pill" data-metric="contribm">Contrib. to M/M</button>
       </div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="release-basis-group">
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="cpi-basis-group">
         <button class="pill" data-basis="NSA">NSA</button>
         <button class="pill active" data-basis="SA">SA</button>
       </div></div>
     </div>
-    <div class="note t1note" id="release-t1note"></div>
+    <div class="note t1note" id="cpi-t1note"></div>
     <div class="table-scroll"><table class="hier">
-      <thead id="release-table-head"></thead><tbody id="release-table-body"></tbody>
+      <thead id="cpi-table-head"></thead><tbody id="cpi-table-body"></tbody>
     </table></div>
-    <div class="range-bar" id="release-range"><span>Range</span></div>
-    <div class="chart" id="chart-release"></div>
+    <div class="range-bar" id="cpi-range"><span>Range</span></div>
+    <div class="chart" id="chart-cpi"></div>
     <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
-</section>
 
-<!-- ───────────────────────────── EXPENDITURE TREE ───────────────────────────── -->
-<section class="panel" id="panel-expenditure">
   <div class="card">
-    <h2>Expenditure tree — the full statistical structure</h2>
+    <h2 id="cpi-rank-h2">Largest contributions</h2>
     <p class="note">
-      The complete hierarchy: <b><span id="exp-n"></span> items over <span id="exp-levels"></span> levels</b>,
-      from <b id="exp-start"></b> onwards; <span id="exp-nw"></span> of them have an index but no published
-      weight. Method and caveats in the <b>Appendix</b>.
+      Who moved the index over the window, ranked by contribution — the counterpart of the Brazilian
+      report's <i>Maiores Contribuições no Período</i>. Contribution is the row's own weight times its
+      own change across the window; <b>Weight</b> is the relative importance updated to the reference
+      month — <a class="axlink" onclick="return goAppendix('ap-weights')">reconstructed, not
+      loaded</a> — the figure the release itself prints. The line under the table says how much of the index
+      the ranked rows actually cover — see the <a class="axlink" onclick="return goAppendix('ap-readings')">Appendix</a> for why that
+      matters here and not in Brazil.
     </p>
     <div class="ctrl-bar">
-      <div class="ctrl"><label>View</label><div class="pill-group" id="expenditure-view-group">
-        <button class="pill active" data-view="series">Series</button>
-        <button class="pill" data-view="table1">Table 1</button>
+      <div class="ctrl"><label>Window</label><div class="pill-group" id="cpi-window-group">
+        <button class="pill" data-win="1">1M</button>
+        <button class="pill" data-win="3">3M</button>
+        <button class="pill" data-win="6">6M</button>
+        <button class="pill active" data-win="12">12M</button>
       </div></div>
-      <div class="ctrl"><label>Metric</label><div class="pill-group" id="expenditure-metric-group">
-        <button class="pill" data-metric="level">Index</button>
-        <button class="pill active" data-metric="yoy">Y/Y %</button>
-        <button class="pill" data-metric="mom">M/M %</button>
-        <button class="pill" data-metric="ann3m">3M ann. %</button>
-        <button class="pill" data-metric="contrib">Contrib. to Y/Y</button>
-      </div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="expenditure-basis-group">
-        <button class="pill" data-basis="NSA">NSA</button>
-        <button class="pill active" data-basis="SA">SA</button>
-      </div></div>
+      <div class="ctrl"><label>Rank</label><div class="pill-group" id="cpi-rank-level-group"></div></div>
+      <button class="rb" id="cpi-rank-toggle" style="margin-left:auto;">Show all</button>
     </div>
-    <div class="note t1note" id="expenditure-t1note"></div>
-    <div class="table-scroll"><table class="hier">
-      <thead id="expenditure-table-head"></thead><tbody id="expenditure-table-body"></tbody>
+    <div class="table-scroll"><table class="rank">
+      <thead id="cpi-rank-head"></thead><tbody id="cpi-rank-body"></tbody>
     </table></div>
-    <div class="range-bar" id="expenditure-range"><span>Range</span></div>
-    <div class="chart" id="chart-expenditure"></div>
-    <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
+    <div class="cover" id="cpi-rank-cover"></div>
+  </div>
+
+  <div class="card">
+    <h2>12-month change — component drill-down</h2>
+    <p class="note">
+      Pick a level and plot as many of its components as you like, without walking the tree above.
+      Y/Y from each component's <b>own published index</b> — the US publishes an index for every node,
+      so nothing is reconstructed from a weighted average of children here (<a class="axlink"
+      onclick="return goAppendix('ap-readings')">Appendix</a>).
+    </p>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Level</label><div class="pill-group" id="cpi-drill-level-group"></div></div>
+      <div class="ctrl"><label>Components</label>
+        <div class="multiselect" id="cpi-drill-ms">
+          <button type="button" class="multiselect-btn" id="cpi-drill-btn">—</button>
+          <div class="multiselect-panel" id="cpi-drill-panel"></div>
+        </div>
+      </div>
+      <button class="rb" id="cpi-drill-clear" style="margin-left:auto;">Clear</button>
+    </div>
+    <div class="range-bar" id="cpi-drill-range"><span>Range</span></div>
+    <div class="chart" id="chart-cpi-drill"></div>
+    <div class="hint">Follows the <b>Tree</b> and <b>Adjustment</b> pills above · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 </section>
 
 <!-- ─────────────────────────────────── PCE ─────────────────────────────────── -->
 <section class="panel" id="panel-pce">
   <div class="card">
-    <h2>PCE — the index the Fed targets</h2>
-    <p class="note">
-      BEA tables 2.4.4U and 2.4.5U: <b><span id="pce-n"></span> lines over
-      <span id="pce-levels"></span> levels</b>, from <b id="pce-start"></b> onwards, plus
-      <span id="pce-add"></span> addenda aggregates at the bottom — the core among them. Levels 1–4
-      each partition the index exactly. Method and caveats in the <b>Appendix</b>.
-    </p>
+    <h2 id="pce-h2"></h2>
+    <p class="note" id="pce-note"></p>
     <div class="ctrl-bar">
       <div class="ctrl"><label>Metric</label><div class="pill-group" id="pce-metric-group">
-        <button class="pill" data-metric="level">Index</button>
         <button class="pill active" data-metric="yoy">Y/Y %</button>
         <button class="pill" data-metric="mom">M/M %</button>
         <button class="pill" data-metric="ann3m">3M ann. %</button>
         <button class="pill" data-metric="contrib">Contrib. to Y/Y</button>
+        <button class="pill" data-metric="contribm">Contrib. to M/M</button>
       </div></div>
       <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pce-basis-group">
         <button class="pill disabled" data-basis="NSA"
@@ -203,6 +301,7 @@ table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
         <button class="pill active" data-basis="SA">SA</button>
       </div></div>
     </div>
+    <div class="note t1note" id="pce-t1note"></div>
     <div class="table-scroll"><table class="hier">
       <thead id="pce-table-head"></thead><tbody id="pce-table-body"></tbody>
     </table></div>
@@ -217,227 +316,391 @@ table.hier th.gsep, table.hier td.gsep { border-left: 1px solid #C3C9D8; }
   <div class="card appx">
     <h2>Appendix — sources, method, limits</h2>
 
-    <h3>Where the data comes from</h3>
-    <table>
-      <tr><th>Layer</th><th>Source</th><th>Notes</th></tr>
-      <tr><td><code>macro_us.inflc_cpi</code></td><td>BLS API v2 (<code>api.bls.gov/publicdata/v2</code>)</td>
-          <td>Index <b>levels</b>, CPI-U, SA and NSA. 340,907 rows, 1913-01 → latest. Registered key: 50 series / 20 years per request, 500 requests/day; a full reload costs ~90 requests.</td></tr>
-      <tr><td><code>macro_us.inflc_cpi_dim</code></td><td><code>cu.item</code> flat file + relative-importance table + the release page's HTML</td>
-          <td>Both trees, 392 rows = 355 expenditure + 37 release.</td></tr>
-      <tr><td><code>macro_us.inflc_cpi_pesos</code></td><td><code>relative-importance/&lt;year&gt;.xlsx</code></td>
-          <td>December snapshots, CPI-U and CPI-W, 2020–2025. 3,864 rows.</td></tr>
-      <tr><td><code>macro_us.inflc_pce</code></td><td>BEA, Section 2 underlying detail
-          (<code>apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx</code>)</td>
-          <td>Price <b>index</b> (table 2.4.4U) and nominal <b>spending</b> (2.4.5U) for the same 402
-          lines, monthly, SA. 607,644 rows, 1959-01 → latest. One 12 MB download, <b>no API key and no
-          quota</b>.</td></tr>
-      <tr><td><code>macro_us.inflc_pce_dim</code></td><td>the published indentation of those same two
-          tables</td>
-          <td>402 lines = 368 in the tree + 34 addenda. Keyed by BEA line number, not series code — 13
-          codes appear on two lines each.</td></tr>
-    </table>
-
-    <h3>How the CPI's two trees are built</h3>
-    <p>
-      <b>Release tree</b> — Table 1 of the news release, 37 rows over 5 levels, the structure the market reads
-      on release day. Its hierarchy is <b>declared by the BLS</b> in the release page's own markup
-      (<code>&lt;p class="subN"&gt;</code> for depth, hierarchical row ids for parentage), not inferred from
-      indentation. Six of its nodes are special aggregates that do not exist in the expenditure tree at all.
+    <p class="note">
+      Eight sections, one drawer each — <b>click a heading to open it</b>. Closed, the line beside each
+      title says what is inside, so the appendix reads as an index of what is documented rather than as a
+      wall of text. <b>Expand all</b> opens every drawer at once, which is also what to press before
+      printing. The links elsewhere in the report — the <b>Appendix</b> marks in the notes, and
+      <i>schedule</i> in the release strip — open the drawer that answers them and flash it, rather than
+      leaving you to find it.
     </p>
-    <p>
-      Table 1 stops at <i>Gasoline (all types)</i> and <i>Electricity</i>. Wherever it stops, the expenditure
-      tree continues underneath it in that same tab, so the gasoline grades, roasted vs. instant coffee and
-      new cars vs. new trucks are one click down rather than one tab over. The drill-down only ever goes
-      <b>below</b> a row the release leaves as a leaf, never beside a published child — which is what keeps
-      the tab honest: <i>Motor fuel</i> is still short of its children, because the release omits <i>Other
-      motor fuels</i>, a sibling of <i>Gasoline (all types)</i> rather than a deeper level.
-    </p>
-    <p>
-      <b>Expenditure tree</b> — the full statistical structure, <b>355 items over 10 levels</b>, from
-      <i>All items</i> down to <i>Bacon and related products</i>. No BLS source publishes it as parent/child
-      pairs: it is assembled from <code>cu.item</code> plus the published indentation of the annual
-      relative-importance table, then <b>proved by weight arithmetic</b> — each of the 90 parents the weight
-      table covers equals the sum of its children, max error 0.001. The loaded tree has more parents than that
-      (130), because the deepest layer below has no weights to check.
-    </p>
-    <p>
-      Two nodes have to be re-parented for that proof to hold, and the weights themselves settle where they
-      belong: <code>Food and beverages</code> 14.539 = <code>Food</code> 13.698 + <code>Alcoholic
-      beverages</code> 0.840, and <code>Information and information processing</code> 3.181 = 1.466 +
-      <code>IT hardware</code> 1.714. The check re-runs on every load and <b>refuses to write</b> if it fails,
-      so a change in BLS's published indentation surfaces as an error instead of a quietly wrong tree.
-    </p>
-    <p>
-      <b>Below the relative-importance table.</b> The spreadsheet stops at 294 published lines;
-      <code>cu.item</code> goes deeper, and <b>83</b> of those deeper items have real index series — gasoline
-      by grade, coffee by preparation, new cars vs. new trucks, smartphones, college textbooks, inpatient vs.
-      outpatient hospital. They are attached by the same parent rule used for the rest (the last preceding
-      line one level up), validated before being trusted: on the 266 items the spreadsheet already positions
-      it reproduces the published parent 254 times, and all 12 disagreements are items whose true parent is a
-      special aggregate — none at the depth the graft touches. So the graft only ever <i>adds</i> leaves, and
-      the additivity proof above runs on the spreadsheet layer untouched.
-    </p>
-    <p>
-      Five further items, 0.861 index points with both a weight and a series published, were being dropped by
-      a one-comma difference between the two sources' labels; they are matched by position now, not by name.
-    </p>
-    <p>
-      Three <code>cu.item</code> entries are excluded on purpose — <i>Information technology commodities</i>,
-      <i>Video and audio products</i>, <i>Video and audio services</i>. They arrive at display level 1, which
-      would make them children of <i>All items</i>, and they appear in neither section of the spreadsheet:
-      cross-cutting aggregates with no place in this tree. The loader lists them on every run, so a genuinely
-      new BLS item shows up in the log instead of disappearing.
-    </p>
-    <p>
-      Two history windows: the release rows carry full history from 1913, the expenditure items start in 1990.
-      Most detail items only begin in the 1990s, so full history there would be mostly empty. And nothing is
-      written into the rows themselves — <b>hover a row</b> and it says whether the item is a special
-      aggregate, a drill-down row, unweighted, discontinued, or a parent its children do not sum to.
-    </p>
-
-    <h3>What the numbers are, and what they are not</h3>
-    <p>
-      Every percentage on this page is computed from the level, in the browser. The level is the published
-      quantity; Y/Y, M/M, 3-month annualised and contribution all derive from it without loss, and storing
-      both invites the two to disagree. It also keeps the payload roughly one eighth the size.
-    </p>
-    <p>
-      <b>Never compare levels across items.</b> The base period varies by item — most are 1982-84=100, many
-      start at December of some specific year. Two items at the same level are not "at the same price"; only
-      the variations are comparable.
-    </p>
-    <p>
-      <b>Contribution is an approximation, not an identity.</b> It is weight × variation, with the weight
-      joined at read time: for a month in year Y, the December snapshot of Y−1, falling back to the nearest
-      earlier one. That is the BLS's own construction — <code>2025.xlsx</code> has reference period December
-      2025 and is what prices 2026 — and it is the better of the available choices: using each year's own
-      snapshot rather than one fixed vector cuts the headline reconciliation error about 30% (0.0183 → 0.0124
-      p.p. mean absolute, measured against this database). About <b>0.015 p.p. is irreducible</b>, because
-      relative importance is a December snapshot of a quantity the BLS price-updates continuously. That is not
-      a seasonal-adjustment artefact — repeating the test on NSA series makes it slightly worse, which rules
-      that out.
-    </p>
-    <div class="warn">
-      <b>Only levels 0–2 partition the index.</b> Those three levels each sum to 100.000, so a decomposition
-      there is complete. Below that the release shows only the largest children of each parent: 7 of its 13
-      parents leave weight with no row, <b>25.583 index points in total</b> — 11.721 inside core services and
-      7.282 inside core goods. Contributions summed at level ≥ 3 therefore do not add to the parent. The
-      expenditure tree does add up, and is the one to use when the detail matters.
+    <div class="acc-bar">
+      <button class="rb" id="appx-expand">Expand all</button>
+      <button class="rb" id="appx-collapse">Collapse all</button>
     </div>
 
-    <h3>The relative-importance column is reconstructed, not loaded</h3>
-    <p>
-      Table 1 dates its relative importance one month behind the reference month, and that figure is in no
-      file this database loads — the workbook publishes December only. It is recovered the way the BLS updates
-      a relative importance: the December weight times the item's own NSA index ratio since that December,
-      divided by the headline's ratio over the same span. Formally
-      <code>RI(t) = w(Dec) &times; [I(t)/I(Dec)] &divide; [I&#8320;(t)/I&#8320;(Dec)]</code>, with
-      <code>I&#8320;</code> the All-items NSA index. This is why no monthly weight table is loaded: the
-      release's own column drifts a long way from the annual one — Energy 7.432 in the July 2026 release
-      against 6.383 in the workbook — and is reproducible from what is already here.
-    </p>
-    <p>
-      Checked rather than asserted, two ways. Against the printed table: all <b>37</b> relative importances of
-      the July 2026 release come back within <b>0.001</b>, the rounding of the printed figure. Structurally:
-      the eight level-1 groups still sum to 100.000 after each is updated on its own. Both are in the test
-      suite, so a wrong weight snapshot or a shifted index base fails the build. The other eight columns are
-      plain arithmetic on the levels, and the All-items row reproduces the release exactly across all of them:
-      323.048 / 333.952 / 333.918, +3.4% and 0.0% unadjusted, +0.5 / &minus;0.4 / +0.1 seasonally adjusted.
-    </p>
-    <p>
-      In the expenditure tree the column fills for <b id="ap-ri-n"></b> of the 355 rows — blank for the ones
-      below the relative-importance table, which have no weight to update, and for the discontinued ones,
-      whose index stops before the reference month.
-    </p>
+    <details class="acc" id="ap-sources" open>
+      <summary><span class="acc-t">Where the data comes from</span><span class="acc-s">Five tables — CPI from the BLS API, PCE from one open BEA workbook</span></summary>
+      <div class="acc-b">
+        <table>
+          <tr><th>Layer</th><th>Source</th><th>Notes</th></tr>
+          <tr><td><code>macro_us.inflc_cpi</code></td><td>BLS API v2 (<code>api.bls.gov/publicdata/v2</code>)</td>
+              <td>Index <b>levels</b>, CPI-U, SA and NSA. 340,907 rows, 1913-01 → latest. Registered key: 50 series / 20 years per request, 500 requests/day; a full reload costs ~90 requests.</td></tr>
+          <tr><td><code>macro_us.inflc_cpi_dim</code></td><td><code>cu.item</code> flat file + relative-importance table + the release page's HTML</td>
+              <td>Both trees, 392 rows = 355 expenditure + 37 release.</td></tr>
+          <tr><td><code>macro_us.inflc_cpi_pesos</code></td><td><code>relative-importance/&lt;year&gt;.xlsx</code></td>
+              <td>December snapshots, CPI-U and CPI-W, 2020–2025. 3,864 rows.</td></tr>
+          <tr><td><code>macro_us.inflc_pce</code></td><td>BEA, Section 2 underlying detail
+              (<code>apps.bea.gov/national/Release/XLS/Underlying/Section2All_xls.xlsx</code>)</td>
+              <td>Price <b>index</b> (table 2.4.4U) and nominal <b>spending</b> (2.4.5U) for the same 402
+              lines, monthly, SA. 607,644 rows, 1959-01 → latest. One 12 MB download, <b>no API key and no
+              quota</b>.</td></tr>
+          <tr><td><code>macro_us.inflc_pce_dim</code></td><td>the published indentation of those same two
+              tables</td>
+              <td>402 lines = 368 in the tree + 34 addenda. Keyed by BEA line number, not series code — 13
+              codes appear on two lines each.</td></tr>
+        </table>
+      </div>
+    </details>
 
-    <h3>The PCE tree — a better-behaved source</h3>
-    <p>
-      The PCE price index is what the Fed targets, and it is not a rounding difference away from the CPI:
-      different weights (the national accounts, not a household survey), different scope (it counts what
-      employers and government pay on households' behalf, most visibly in health care) and a different
-      formula (chained Fisher, not a fixed-basket Laspeyres). The two tabs answer different questions and
-      are not meant to reconcile.
-    </p>
-    <p>
-      Both PCE tables come out of one public workbook — the BEA's Section 2 <i>underlying detail</i>
-      release, 12 MB, <b>no API key and no quota</b>. Table 2.4.4U is the price index (2017=100), 2.4.5U the
-      matching spending in millions of dollars. The two carry the <b>same 402 lines in the same order</b>,
-      so price and spending join by line number; nothing is matched by name, which is where every hard case
-      in the CPI tree came from.
-    </p>
-    <p>
-      The hierarchy is the published indentation, two spaces per level, and it is <b>proved by the spending
-      arithmetic</b>: all 122 checkable parents equal the sum of their children, across all 810 months. The
-      tolerance is not a chosen epsilon — the BEA rounds every line to whole millions, so k children against
-      a rounded parent can differ by up to (k+1)/2 from rounding alone, and the test is that the residual
-      fit inside that. It does, using at most 80% of the allowance; the largest discrepancy anywhere in the
-      table is $3 million against a $20 trillion total. The load refuses to write if that stops holding.
-    </p>
-    <p>
-      <b>Nineteen lines subtract.</b> Four say <i>Less:</i> in the label; the other fifteen are what sits
-      underneath one and inherits the sign without saying so. Their weights ship already negative, so a
-      contribution whose sign is opposite to the price change is the accounting rather than an error —
-      hover the row and it says which applies. A negative weight is not always one of those nineteen,
-      though: <i>Employee reimbursement</i> is a line whose own spending is negative (−$1.7 bn, it nets
-      out of used-car purchases), with an ordinary positive sign.
-    </p>
-    <p>
-      <b>Levels 1–4 each partition the index exactly</b>, at 100.00% of spending, and the tree's
-      <b id="ap-pce-folhas"></b> leaves sum to 100.0000%. That is two levels deeper than the CPI release
-      tree reaches, and it is why contribution can be trusted further down here. Below level 4 coverage
-      falls off because the tree is not of uniform depth — level 5 reaches 95.5% of spending, level 6 only
-      65.1% — so contributions summed at a fixed deep level are incomplete for that reason, not because
-      something failed to load.
-    </p>
-    <p>
-      <b>The weight is monthly, and dated at the base of the change.</b> The BEA publishes each line's
-      spending every month, so there is no December snapshot to carry forward and nothing to reconstruct:
-      the weight is that month's share of total PCE. <i>Which</i> month is a measured choice — a Y/Y change
-      is weighted by the share <b>12 months earlier</b>, which rebuilds the published headline to 0.0114
-      p.p. mean absolute error against 0.0202 using the current month's share. Monthly contributions land
-      at 0.0009 p.p., against 0.0124 p.p. for the CPI.
-    </p>
-    <p>
-      Three things are specific to this tab. <b>SA only</b> — the BEA publishes no unadjusted monthly
-      counterpart, which is why the NSA pill is greyed rather than absent. <b>Two lines have spending but
-      no price index</b> (<i>Net expenditures abroad by U.S. residents</i>, <i>Net foreign travel</i>):
-      they are nets of two flows, the BEA marks them <code>ZZZZZZ</code>, and their price columns are
-      blank. And the <b>34 addenda</b> at the bottom — Control group, PCE food and energy, PCE excluding
-      food and energy, the market-based family — are <b>not</b> part of the tree: they overlap each other
-      and must never be summed together. They sit in a flat block because the BEA's own indentation there
-      is inconsistent (<i>Market-based PCE</i> is printed deeper than the lines it heads), so giving them
-      parentage would mean inventing it. Latest month here is <b id="ap-pce-mes"></b>, normally a few weeks
-      behind the CPI's.
-    </p>
+    <details class="acc" id="ap-calendar">
+      <summary><span class="acc-t">Release calendar — where the dates and times come from</span><span class="acc-s">Read from the agencies’ own schedules, and why each needed a different one</span></summary>
+      <div class="acc-b">
+        <p>
+          The strip at the top of the page is not a rule of thumb about which day of the month the data
+          usually lands. Every date and time there is <b>read from the agency's own published calendar</b>,
+          stored in <code>domain/release_calendar/calendar_2026.yaml</code> and refreshed by
+          <code>domain.release_calendar.update_us_calendar</code>.
+        </p>
+        <table>
+          <tr><th>Series</th><th>Primary source</th><th>Cross-check</th></tr>
+          <tr><td><b>CPI</b></td>
+              <td>BLS, <i>Schedule of Releases for the Consumer Price Index</i>
+                  (<code>bls.gov/schedule/news_release/cpi.htm</code>)</td>
+              <td>the BLS <code>bls.ics</code> feed and FRED release&nbsp;10 — all three agreed exactly
+                  when last refreshed</td></tr>
+          <tr><td><b>PCE</b></td>
+              <td>BEA, release-calendar <code>.ics</code> subscription feed
+                  (<code>bea.gov/news/schedule</code>)</td>
+              <td>BEA's own HTML schedule page and FRED release&nbsp;54 — all three agreed exactly</td></tr>
+        </table>
+        <p>
+          The two agencies had to be handled differently, and the reason is worth stating because it decides
+          which file to fix when a date looks wrong. <b>The BLS ICS feed carries no reference month</b> — its
+          event titles are just <i>"Consumer Price Index"</i> — so the per-release HTML page, the only BLS
+          source with a <i>Reference Month</i> column, is the primary one. <b>The BEA feed carries the period
+          in the event title itself</b> (<i>"Personal Income and Outlays, August 2026"</i>), so there the feed
+          is enough. Neither reference month is derived from a "release month minus one" rule: BEA's own 2026
+          calendar breaks it, running Jan&nbsp;22, Feb&nbsp;20, Mar&nbsp;13, Apr&nbsp;9 <i>and</i> Apr&nbsp;30
+          while it caught up on a delayed schedule.
+        </p>
+        <p>
+          Times are stored in the <b>source's</b> time zone and converted per date, never frozen as one
+          converted value. Both agencies publish at 08:30 in New York; the United States keeps daylight
+          saving and Brazil dropped it in 2019, so that same 08:30 is 09:30 in São Paulo from March to early
+          November and 10:30 for the rest of the year. A single hard-coded local time would be wrong for half
+          the year, silently.
+        </p>
+        <p>
+          Two limits to know. The agencies publish <b>one year at a time</b> — as of this build neither had
+          posted a 2027 calendar — so the next-release line runs out at the end of the year until they do.
+          And the <b>countdown</b> ("in 12 days") is computed against the clock of whoever opens the file,
+          not baked in at generation: if it reads <i>past due</i>, this file is stale and the number above it
+          is behind the published data.
+        </p>
+      </div>
+    </details>
 
-    <h3>Limits</h3>
-    <ul>
-      <li><b>Weights start in 2020</b>, so contribution does too. The BLS publishes annual December weights
-        back to <b>1947</b>, in two older formats (decade zips of fixed-width text, plus one historical
-        workbook) that have no parser yet. A parsing gap, not a data gap.</li>
-      <li><b>CPI-U only.</b> CPI-W and C-CPI-U are supported by the schema and the loader, not loaded.</li>
-      <li><b>SA coverage is thinner than NSA</b> by construction: <b>291</b> of the 361 items have a
-        seasonally adjusted series. The rest simply show no line when SA is selected.</li>
-      <li><b>19 series are discontinued</b> — 15 of the deepest ones (<i>Photo Processing</i>, <i>Intercity
-        train fare</i>, <i>New motorcycles</i>) plus four the BLS dropped in 2024 (<i>Legal services</i>,
-        <i>Household operations</i>, <i>Domestic services</i>, <i>Repair of household items</i>). Their
-        history is kept, so a line that stops mid-chart is a fact about the series, not a gap in the load.
-        Flagging needs a three-month gap, so an item merely one month behind on release day is not
-        mislabelled.</li>
-      <li><b>Prices only, and the spending they are weighted by.</b> The same workbook carries the
-        <i>real</i> counterparts at the identical 402-line granularity — 2.4.3U (quantity indexes) and
-        2.4.6U (chained dollars) — plus a coarse 46-line trio cut by major type of product <i>and</i>
-        major function. None are loaded, so nothing here decomposes <i>real</i> consumption. The detailed
-        by-function tree is a different table (2.5.x) and is not in this file at all.</li>
-      <li><b>Two PCE lines stop in 2001-12</b> — <i>Tenant-occupied stationary homes</i> and <i>Tenant
-        landlord durables</i>, both level-7 splits the BEA no longer publishes. Same convention as the CPI:
-        history kept, last month on hover.</li>
-      <li><b>Both deep trees ship from 1990 in the payload</b>, not from where the database starts (1913
-        for the CPI, 1959 for the PCE). Most detail series begin in the 1990s anyway, so full history would
-        be mostly nulls. The release-tree tab carries its whole history because it is only 37 rows.</li>
-    </ul>
+    <details class="acc" id="ap-trees">
+      <summary><span class="acc-t">How the CPI's two trees are built</span><span class="acc-s">37 rows the BLS declares, 355 assembled ones, and the arithmetic that proves the parentage</span></summary>
+      <div class="acc-b">
+        <p>
+          They are <b>two views of one table</b>, picked with the <b>Tree</b> pills, the same arrangement the
+          Brazilian inflation report uses for its two trees (the IBGE expenditure structure and the central
+          bank's analytical one). Neither derives from the other: they are independent cuts of the same index,
+          and the heading, the note and the level pills all move with the selector. Ticked rows and open
+          branches are remembered <b>per tree</b> — both trees call All items <code>SA0</code>, but a selection
+          three levels down means something different in each.
+        </p>
+        <p>
+          <b>Release tree</b> — Table 1 of the news release, 37 rows over 5 levels, the structure the market reads
+          on release day. Its hierarchy is <b>declared by the BLS</b> in the release page's own markup
+          (<code>&lt;p class="subN"&gt;</code> for depth, hierarchical row ids for parentage), not inferred from
+          indentation. Six of its nodes are special aggregates that do not exist in the expenditure tree at all.
+        </p>
+        <p>
+          Table 1 stops at <i>Gasoline (all types)</i> and <i>Electricity</i>. Wherever it stops, the expenditure
+          tree continues underneath it in that same view, so the gasoline grades, roasted vs. instant coffee and
+          new cars vs. new trucks are one click down rather than a tree away. The drill-down only ever goes
+          <b>below</b> a row the release leaves as a leaf, never beside a published child — which is what keeps
+          the tab honest: <i>Motor fuel</i> is still short of its children, because the release omits <i>Other
+          motor fuels</i>, a sibling of <i>Gasoline (all types)</i> rather than a deeper level.
+        </p>
+        <p>
+          <b>Expenditure tree</b> — the full statistical structure, <b>355 items over 10 levels</b>, from
+          <i>All items</i> down to <i>Bacon and related products</i>. No BLS source publishes it as parent/child
+          pairs: it is assembled from <code>cu.item</code> plus the published indentation of the annual
+          relative-importance table, then <b>proved by weight arithmetic</b> — each of the 90 parents the weight
+          table covers equals the sum of its children, max error 0.001. The loaded tree has more parents than that
+          (130), because the deepest layer below has no weights to check.
+        </p>
+        <p>
+          Two nodes have to be re-parented for that proof to hold, and the weights themselves settle where they
+          belong: <code>Food and beverages</code> 14.539 = <code>Food</code> 13.698 + <code>Alcoholic
+          beverages</code> 0.840, and <code>Information and information processing</code> 3.181 = 1.466 +
+          <code>IT hardware</code> 1.714. The check re-runs on every load and <b>refuses to write</b> if it fails,
+          so a change in BLS's published indentation surfaces as an error instead of a quietly wrong tree.
+        </p>
+        <p>
+          <b>Below the relative-importance table.</b> The spreadsheet stops at 294 published lines;
+          <code>cu.item</code> goes deeper, and <b>83</b> of those deeper items have real index series — gasoline
+          by grade, coffee by preparation, new cars vs. new trucks, smartphones, college textbooks, inpatient vs.
+          outpatient hospital. They are attached by the same parent rule used for the rest (the last preceding
+          line one level up), validated before being trusted: on the 266 items the spreadsheet already positions
+          it reproduces the published parent 254 times, and all 12 disagreements are items whose true parent is a
+          special aggregate — none at the depth the graft touches. So the graft only ever <i>adds</i> leaves, and
+          the additivity proof above runs on the spreadsheet layer untouched.
+        </p>
+        <p>
+          Five further items, 0.861 index points with both a weight and a series published, were being dropped by
+          a one-comma difference between the two sources' labels; they are matched by position now, not by name.
+        </p>
+        <p>
+          Three <code>cu.item</code> entries are excluded on purpose — <i>Information technology commodities</i>,
+          <i>Video and audio products</i>, <i>Video and audio services</i>. They arrive at display level 1, which
+          would make them children of <i>All items</i>, and they appear in neither section of the spreadsheet:
+          cross-cutting aggregates with no place in this tree. The loader lists them on every run, so a genuinely
+          new BLS item shows up in the log instead of disappearing.
+        </p>
+        <p>
+          Two history windows: the release rows carry full history from 1913, the expenditure items start in 1990.
+          Most detail items only begin in the 1990s, so full history there would be mostly empty. And nothing is
+          written into the rows themselves — <b>hover a row</b> and it says whether the item is a special
+          aggregate, a drill-down row, unweighted, discontinued, or a parent its children do not sum to.
+        </p>
+      </div>
+    </details>
+
+    <details class="acc" id="ap-numbers">
+      <summary><span class="acc-t">What the numbers are, and what they are not</span><span class="acc-s">Everything derives from the level · contribution is an approximation, and by how much</span></summary>
+      <div class="acc-b">
+        <p>
+          Every percentage on this page is computed from the level, in the browser. The level is the published
+          quantity; Y/Y, M/M, 3-month annualised and contribution all derive from it without loss, and storing
+          both invites the two to disagree. It also keeps the payload roughly one eighth the size.
+        </p>
+        <p>
+          <b>Never compare levels across items.</b> The base period varies by item — most are 1982-84=100, many
+          start at December of some specific year. Two items at the same level are not "at the same price"; only
+          the variations are comparable.
+        </p>
+        <p>
+          <b>Contribution is an approximation, not an identity.</b> It is weight × variation, with the weight
+          joined at read time: for a month in year Y, the December snapshot of Y−1, falling back to the nearest
+          earlier one. That is the BLS's own construction — <code>2025.xlsx</code> has reference period December
+          2025 and is what prices 2026 — and it is the better of the available choices: using each year's own
+          snapshot rather than one fixed vector cuts the headline reconciliation error about 30% (0.0183 → 0.0124
+          p.p. mean absolute, measured against this database). About <b>0.015 p.p. is irreducible</b>, because
+          relative importance is a December snapshot of a quantity the BLS price-updates continuously. That is not
+          a seasonal-adjustment artefact — repeating the test on NSA series makes it slightly worse, which rules
+          that out.
+        </p>
+        <p>
+          <b>That error is a rounding detail on a year and a fifth of the value on a month.</b> Contribution to
+          Y/Y and contribution to M/M are the same arithmetic at two different lags, but a month's contribution is
+          an order of magnitude smaller than a year's: ~0.012 p.p. is nothing against a 3.4% annual change and is
+          a fifth of a 0.1% monthly one. So the <b>monthly</b> decomposition on the two CPI tabs reads as an
+          ordering of who moved the index, not as an exact split. On the <b>PCE</b> tab it is exact — 0.0027 p.p.
+          at worst over the last sixty months — because the BEA publishes the weight every month and there is no
+          December snapshot being carried forward. Both figures are asserted in the test suite. Contribution to
+          M/M prints to three decimals for the same reason: at two, most rows below level 2 would read "+0.00".
+        </p>
+        <p>
+          <b>Both contribution metrics draw as a decomposition, not as lines</b> — stacked bars for the ticked
+          rows and a black line for the headline they decompose. A ticked row that <i>is</i> the headline becomes
+          that line rather than a bar stacked on its own components. The bars reach the line only when the ticked
+          rows partition the index, which is what the warning below is about.
+        </p>
+        <div class="warn">
+          <b>Only levels 0–2 partition the index.</b> Those three levels each sum to 100.000, so a decomposition
+          there is complete. Below that the release shows only the largest children of each parent: 7 of its 13
+          parents leave weight with no row, <b>25.583 index points in total</b> — 11.721 inside core services and
+          7.282 inside core goods. Contributions summed at level ≥ 3 therefore do not add to the parent. The
+          expenditure tree does add up, and is the one to use when the detail matters.
+        </div>
+      </div>
+    </details>
+
+    <details class="acc" id="ap-weights">
+      <summary><span class="acc-t">The weight column is reconstructed, not loaded</span><span class="acc-s">The release’s own relative importance, recovered from a December snapshot</span></summary>
+      <div class="acc-b">
+        <p>
+          The <b>Weight</b> column of the contributions table is the release's own relative importance, dated one
+          month behind the reference month — and that figure is in no
+          file this database loads — the workbook publishes December only. It is recovered the way the BLS updates
+          a relative importance: the December weight times the item's own NSA index ratio since that December,
+          divided by the headline's ratio over the same span. Formally
+          <code>RI(t) = w(Dec) &times; [I(t)/I(Dec)] &divide; [I&#8320;(t)/I&#8320;(Dec)]</code>, with
+          <code>I&#8320;</code> the All-items NSA index. This is why no monthly weight table is loaded: the
+          release's own column drifts a long way from the annual one — Energy 7.432 in the July 2026 release
+          against 6.383 in the workbook — and is reproducible from what is already here.
+        </p>
+        <p>
+          Checked rather than asserted, two ways. Against the printed table: all <b>37</b> relative importances of
+          the July 2026 release come back within <b>0.001</b>, the rounding of the printed figure. Structurally:
+          the eight level-1 groups still sum to 100.000 after each is updated on its own. Both are in the test
+          suite, so a wrong weight snapshot or a shifted index base fails the build. The levels behind them
+          reconcile with the release too, and the All-items row is checked across the whole published column set:
+          323.048 / 333.952 / 333.918, +3.4% and 0.0% unadjusted, +0.5 / &minus;0.4 / +0.1 seasonally adjusted.
+        </p>
+        <p>
+          The nine-column <b>Table 1 view</b> that used to print those figures on the face of the tab was removed
+          in August 2026 — it duplicated a table the BLS itself publishes on release day. The arithmetic behind it
+          did not go with it: the same <code>levelAt</code> / <code>pctBetween</code> path now fills the
+          contributions table's <b>Change</b> column, and the reconciliation above is asserted against it
+          directly, so the check survives the view that motivated it.
+        </p>
+        <p>
+          In the expenditure tree the column fills for <b id="ap-ri-n"></b> of the 355 rows — blank for the ones
+          below the relative-importance table, which have no weight to update, and for the discontinued ones,
+          whose index stops before the reference month.
+        </p>
+      </div>
+    </details>
+
+    <details class="acc" id="ap-readings">
+      <summary><span class="acc-t">The two readings below the table</span><span class="acc-s">What the ranking and the drill-down do, and what the coverage line is for</span></summary>
+      <div class="acc-b">
+        <p>
+          <b>Largest contributions</b> ranks whichever rows the <b>Rank</b> pills pick — the tree's leaves, or
+          every row at one depth — by their contribution over a 1, 3, 6 or 12-month window. Contribution over the
+          window is the row's <b>weight times its own change across the window</b>, the same arithmetic as the
+          chart's contribution metrics at a different lag, so it uses the same two weight conventions and carries
+          the same measured error. Change is the item's own index over the same two months; a row whose index is
+          missing at either end shows nothing rather than a partial figure, which is what keeps discontinued items
+          out of the ranking instead of ranking them on a short window.
+        </p>
+        <p>
+          <b>Summing the monthly contributions instead would have left the column empty</b>, and the reason is
+          worth knowing before building anything month-by-month on this database: <b>October 2025 was never
+          published</b>. It is the only gap in the whole CPI table — 613 of 634 series blank for that one month,
+          21 with a value — a consequence of the US government shutdown. One missing index kills <i>two</i>
+          monthly changes, its own and the following month's, so any window crossing it has no complete monthly
+          path. Taking the ratio of the two endpoints steps over the hole without inventing anything, because it
+          only ever needs the levels at the ends.
+        </p>
+        <p>
+          <b>It prints its own coverage, and that line is the point.</b> The Brazilian report's equivalent ranks
+          the 614 subitems, which partition the IPCA exactly, so it can stay silent about what it covers. Nothing
+          here partitions: not the leaves of either tree, and not any release-tree level below 2 (see the warning
+          above). So the line under the table says how much weight the ranked rows carry out of 100 and what their
+          contributions sum to against the headline over the same window. A gap there is coverage, not error —
+          reading the ranking as a complete decomposition is the mistake the line exists to prevent.
+        </p>
+        <p>
+          <b>12-month change — component drill-down</b> is the same idea as the Brazilian report's <i>Variação 12M
+          — Drilldown de Componentes</i>, with one simplification the source allows. There, a level's aggregate has
+          to be <b>reconstructed</b> — weighted average of the subitems' monthly changes, chained into an index —
+          because the IBGE publishes the data only at subitem level. Here the BLS publishes an index for every node
+          of the tree, so the line plotted is the published index's own Y/Y: nothing is reconstructed and there is
+          no chaining error to explain. What it adds over ticking rows in the table above is reach — every
+          component of one level at once, without opening parent by parent. It follows the <b>Tree</b> and
+          <b>Adjustment</b> pills, and is fixed at Y/Y, which is what its title says.
+        </p>
+      </div>
+    </details>
+
+    <details class="acc" id="ap-pce">
+      <summary><span class="acc-t">The PCE tree — a better-behaved source</span><span class="acc-s">Monthly weights, four levels that partition exactly, and nineteen lines that subtract</span></summary>
+      <div class="acc-b">
+        <p>
+          The PCE price index is what the Fed targets, and it is not a rounding difference away from the CPI:
+          different weights (the national accounts, not a household survey), different scope (it counts what
+          employers and government pay on households' behalf, most visibly in health care) and a different
+          formula (chained Fisher, not a fixed-basket Laspeyres). The two tabs answer different questions and
+          are not meant to reconcile.
+        </p>
+        <p>
+          Both PCE tables come out of one public workbook — the BEA's Section 2 <i>underlying detail</i>
+          release, 12 MB, <b>no API key and no quota</b>. Table 2.4.4U is the price index (2017=100), 2.4.5U the
+          matching spending in millions of dollars. The two carry the <b>same 402 lines in the same order</b>,
+          so price and spending join by line number; nothing is matched by name, which is where every hard case
+          in the CPI tree came from.
+        </p>
+        <p>
+          The hierarchy is the published indentation, two spaces per level, and it is <b>proved by the spending
+          arithmetic</b>: all 122 checkable parents equal the sum of their children, across all 810 months. The
+          tolerance is not a chosen epsilon — the BEA rounds every line to whole millions, so k children against
+          a rounded parent can differ by up to (k+1)/2 from rounding alone, and the test is that the residual
+          fit inside that. It does, using at most 80% of the allowance; the largest discrepancy anywhere in the
+          table is $3 million against a $20 trillion total. The load refuses to write if that stops holding.
+        </p>
+        <p>
+          <b>Nineteen lines subtract.</b> Four say <i>Less:</i> in the label; the other fifteen are what sits
+          underneath one and inherits the sign without saying so. Their weights ship already negative, so a
+          contribution whose sign is opposite to the price change is the accounting rather than an error —
+          hover the row and it says which applies. A negative weight is not always one of those nineteen,
+          though: <i>Employee reimbursement</i> is a line whose own spending is negative (−$1.7 bn, it nets
+          out of used-car purchases), with an ordinary positive sign.
+        </p>
+        <p>
+          <b>Levels 1–4 each partition the index exactly</b>, at 100.00% of spending, and the tree's
+          <b id="ap-pce-folhas"></b> leaves sum to 100.0000%. That is two levels deeper than the CPI release
+          tree reaches, and it is why contribution can be trusted further down here. Below level 4 coverage
+          falls off because the tree is not of uniform depth — level 5 reaches 95.5% of spending, level 6 only
+          65.1% — so contributions summed at a fixed deep level are incomplete for that reason, not because
+          something failed to load.
+        </p>
+        <p>
+          <b>The weight is monthly, and dated at the base of the change.</b> The BEA publishes each line's
+          spending every month, so there is no December snapshot to carry forward and nothing to reconstruct:
+          the weight is that month's share of total PCE. <i>Which</i> month is a measured choice — a Y/Y change
+          is weighted by the share <b>12 months earlier</b>, which rebuilds the published headline to 0.0114
+          p.p. mean absolute error against 0.0202 using the current month's share. Monthly contributions land
+          at 0.0009 p.p., against 0.0124 p.p. for the CPI.
+        </p>
+        <p>
+          Three things are specific to this tab. <b>SA only</b> — the BEA publishes no unadjusted monthly
+          counterpart, which is why the NSA pill is greyed rather than absent. <b>Two lines have spending but
+          no price index</b> (<i>Net expenditures abroad by U.S. residents</i>, <i>Net foreign travel</i>):
+          they are nets of two flows, the BEA marks them <code>ZZZZZZ</code>, and their price columns are
+          blank. And the <b>34 addenda</b> at the bottom — Control group, PCE food and energy, PCE excluding
+          food and energy, the market-based family — are <b>not</b> part of the tree: they overlap each other
+          and must never be summed together. They sit in a flat block because the BEA's own indentation there
+          is inconsistent (<i>Market-based PCE</i> is printed deeper than the lines it heads), so giving them
+          parentage would mean inventing it. Latest month here is <b id="ap-pce-mes"></b>, normally a few weeks
+          behind the CPI's.
+        </p>
+      </div>
+    </details>
+
+    <details class="acc" id="ap-limits">
+      <summary><span class="acc-t">Limits</span><span class="acc-s">Where the data stops, and what is deliberately not loaded</span></summary>
+      <div class="acc-b">
+        <ul>
+          <li><b>Weights start in 2020</b>, so contribution does too. The BLS publishes annual December weights
+            back to <b>1947</b>, in two older formats (decade zips of fixed-width text, plus one historical
+            workbook) that have no parser yet. A parsing gap, not a data gap.</li>
+          <li><b>CPI-U only.</b> CPI-W and C-CPI-U are supported by the schema and the loader, not loaded.</li>
+          <li><b>SA coverage is thinner than NSA</b> by construction: <b>291</b> of the 361 items have a
+            seasonally adjusted series. The rest simply show no line when SA is selected.</li>
+          <li><b>19 series are discontinued</b> — 15 of the deepest ones (<i>Photo Processing</i>, <i>Intercity
+            train fare</i>, <i>New motorcycles</i>) plus four the BLS dropped in 2024 (<i>Legal services</i>,
+            <i>Household operations</i>, <i>Domestic services</i>, <i>Repair of household items</i>). Their
+            history is kept, so a line that stops mid-chart is a fact about the series, not a gap in the load.
+            Flagging needs a three-month gap, so an item merely one month behind on release day is not
+            mislabelled.</li>
+          <li><b>Prices only, and the spending they are weighted by.</b> The same workbook carries the
+            <i>real</i> counterparts at the identical 402-line granularity — 2.4.3U (quantity indexes) and
+            2.4.6U (chained dollars) — plus a coarse 46-line trio cut by major type of product <i>and</i>
+            major function. None are loaded, so nothing here decomposes <i>real</i> consumption. The detailed
+            by-function tree is a different table (2.5.x) and is not in this file at all.</li>
+          <li><b>Two PCE lines stop in 2001-12</b> — <i>Tenant-occupied stationary homes</i> and <i>Tenant
+            landlord durables</i>, both level-7 splits the BEA no longer publishes. Same convention as the CPI:
+            history kept, last month on hover.</li>
+          <li><b>Both deep trees ship from 1990 in the payload</b>, not from where the database starts (1913
+            for the CPI, 1959 for the PCE). Most detail series begin in the 1990s anyway, so full history would
+            be mostly nulls. The release-tree tab carries its whole history because it is only 37 rows.</li>
+        </ul>
+      </div>
+    </details>
   </div>
 </section>
+
+<footer>
+  Sources: <span>BLS — Consumer Price Index (CPI-U) &nbsp;·&nbsp; BEA — NIPA Section 2, underlying detail</span>
+  &nbsp;|&nbsp; LIS Capital — Internal use
+</footer>
 
 </div>
 
@@ -455,10 +718,14 @@ function fmtMonthShort(d) {
   var p = d.split('-');
   return M[parseInt(p[1], 10) - 1] + '/' + p[0].slice(2);
 }
+// Contribution to M/M gets a third decimal. A month's contribution is an order of
+// magnitude smaller than a year's, so at two decimals most rows below level 2 print
+// as "+0.00" -- the same trap measured on the Brazilian inflation table, where 68.5%
+// of subitem contributions collapsed to zero at two decimals.
+function decimalsFor(metric) { return metric === 'contribm' ? 3 : 2; }
 function fmtValue(v, metric) {
   if (v == null || isNaN(v)) return '—';
-  if (metric === 'level') return v.toFixed(2);
-  return (v >= 0 ? '+' : '') + v.toFixed(2);
+  return (v >= 0 ? '+' : '') + v.toFixed(decimalsFor(metric));
 }
 
 // A row shown by drill-down belongs to the other tab's series block -- the levels
@@ -489,12 +756,20 @@ function metricSeries(tabKey, code, basis, metric) {
   var dates = tab.dates[basis] || [];
   if (!lvl) { _cache[ck] = {dates: [], values: []}; return _cache[ck]; }
 
+  // 'level' is no longer offered as a metric -- the Index pill was dropped -- but the
+  // branch stays: it is the raw published series every other metric is derived from,
+  // and the test harness reads it directly.
   var out;
   if (metric === 'level') {
     out = lvl.slice();
   } else {
-    var isContrib = (metric === 'contrib');
-    var lag = (metric === 'mom') ? 1 : (metric === 'ann3m') ? 3 : 12;
+    // Two contribution metrics, differing only in the lag they price: 'contrib' is the
+    // contribution to the 12-month change, 'contribm' to the 1-month change. Both go
+    // through the same weight rule, which is what keeps the two weighting conventions
+    // (CPI annual snapshot vs PCE monthly share) in one place.
+    var isContrib = (metric === 'contrib' || metric === 'contribm');
+    var lag = (metric === 'mom' || metric === 'contribm') ? 1
+            : (metric === 'ann3m') ? 3 : 12;
     out = new Array(lvl.length).fill(null);
     for (var i = lag; i < lvl.length; i++) {
       var a = lvl[i], b = lvl[i - lag];
@@ -562,11 +837,12 @@ function weightFor(code, dateStr) {
   return (yr === null) ? null : D.weights[code][String(yr)];
 }
 
-// ── the Table 1 view ────────────────────────────────────────────────────────
-// The column set of the news release: relative importance, three unadjusted
-// index levels, two unadjusted percent changes, three seasonally adjusted
-// monthly changes. Nothing new travels in the payload -- every one of those nine
-// columns is computed here from the levels and weights already shipped.
+// ── reading a level at a given month ────────────────────────────────────────
+// A visao "Table 1" -- as nove colunas do news release -- foi retirada em
+// 2026-08-26 a pedido do usuario. O que sobrou daqui NAO e residuo dela: e o
+// caminho por MES (e nao por posicao na grade), que a tabela de contribuicoes usa
+// para a coluna de variacao no periodo e para o peso, e que o Apendice usa para
+// contar quantas linhas tem importancia relativa.
 var _monthIx = {};
 function monthIndex(tabKey, basis) {
   var ck = tabKey + '|' + basis;
@@ -608,48 +884,12 @@ function riAt(tabKey, code, month) {
   if (i == null || !i0 || !h || !h0) return null;
   return w * (i / i0) / (h / h0);
 }
-// The release dates its relative-importance column one month behind the
-// reference month, and shows the last three seasonally adjusted monthly changes.
-function table1Spec(tabKey) {
-  var nsa = D.tabs[tabKey].dates.NSA || [], sa = D.tabs[tabKey].dates.SA || [];
-  return {
-    ref: nsa[nsa.length - 1] || null,
-    prev: nsa[nsa.length - 2] || null,
-    ri: nsa[nsa.length - 2] || null,
-    yrAgo: nsa[nsa.length - 13] || null,
-    sa: sa.slice(-4)
-  };
+// O mes a que a importancia relativa e datada: o release a publica um mes atras do
+// mes de referencia, e `riAt` reconstroi seguindo essa datacao.
+function riMonth(tabKey) {
+  var nsa = D.tabs[tabKey].dates.NSA || [];
+  return nsa[nsa.length - 2] || null;
 }
-function table1Cols(tabKey) {
-  var sp = table1Spec(tabKey), cols = [];
-  cols.push({grp: 'Relative importance', head: fmtMonthShort(sp.ri), first: true, dec: 3,
-             val: function(code) { return riAt(tabKey, code, sp.ri); }});
-  [sp.yrAgo, sp.prev, sp.ref].forEach(function(m, k) {
-    cols.push({grp: 'Unadjusted indexes', head: fmtMonthShort(m), first: k === 0, dec: 3,
-               val: function(code) { return levelAt(tabKey, code, 'NSA', m); }});
-  });
-  [[sp.yrAgo, true], [sp.prev, false]].forEach(function(pair) {
-    var base = pair[0];
-    cols.push({grp: 'Unadjusted percent change', head: fmtMonthShort(base) + '→' + fmtMonthShort(sp.ref),
-               first: pair[1], dec: 1, signed: true,
-               val: function(code) { return pctBetween(tabKey, code, 'NSA', sp.ref, base); }});
-  });
-  for (var i = 1; i < sp.sa.length; i++) {
-    (function(a, b, k) {
-      cols.push({grp: 'Seasonally adjusted percent change', head: fmtMonthShort(a) + '→' + fmtMonthShort(b),
-                 first: k === 1, dec: 1, signed: true,
-                 val: function(code) { return pctBetween(tabKey, code, 'SA', b, a); }});
-    })(sp.sa[i - 1], sp.sa[i], i);
-  }
-  return cols;
-}
-// The release prints "0.0", never "-0.0".
-function fmtT1(v, dec) {
-  if (v == null || isNaN(v)) return '—';
-  var s = v.toFixed(dec);
-  return (parseFloat(s) === 0) ? (0).toFixed(dec) : s;
-}
-
 // ── tree flattening ─────────────────────────────────────────────────────────
 function flattenHierRows(tree, expanded, depth) {
   var rows = [];
@@ -663,72 +903,288 @@ function flattenHierRows(tree, expanded, depth) {
 }
 
 // ── chart ───────────────────────────────────────────────────────────────────
-function renderLineChart(divId, specs, yTitle) {
-  var traces = specs.map(function(s) {
-    return {
-      x: s.dates, y: s.values, name: s.label, type: 'scatter', mode: 'lines',
-      line: {color: s.color, width: 1.7}, connectgaps: false,
-      hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:.2f}<extra></extra>'
-    };
-  });
-  var layout = {
+
+// Config e layout vivem em UM lugar so, como manda
+// .claude/skills/lis-dashboard/references/design-system.md. Antes eram dois objetos
+// copiados a mao, um por tipo de grafico, que ja tinham comecado a divergir.
+var PLOTLY_CONFIG = {
+  responsive: true,
+  displayModeBar: 'hover',
+  displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+  scrollZoom: true
+};
+
+function mkLayout(extra) {
+  var base = {
     margin: {l: 58, r: 18, t: 12, b: 40},
     dragmode: 'pan',
     hovermode: 'x unified',
+    hoverlabel: {bgcolor: '#1F2853', bordercolor: '#1F2853',
+                 font: {family: 'Barlow', size: 12, color: '#fff'}},
     showlegend: true,
     legend: {orientation: 'h', y: -0.16, font: {size: 10.5}},
-    xaxis: {type: 'date', gridcolor: 'rgba(31,40,83,0.07)', tickfont: {size: 10.5}},
-    yaxis: {title: {text: yTitle, font: {size: 11}}, gridcolor: 'rgba(31,40,83,0.07)',
-            tickfont: {size: 10.5}, zeroline: true, zerolinecolor: 'rgba(31,40,83,0.22)'},
-    paper_bgcolor: '#FFFFFF', plot_bgcolor: '#FFFFFF',
-    font: {family: 'Barlow, sans-serif', color: '#1F2853'}
+    xaxis: {
+      type: 'date',
+      showgrid: false, showline: true, linecolor: 'rgba(31,40,83,0.1)',
+      tickfont: {family: 'JetBrains Mono', size: 10, color: '#7A88A8'},
+      rangeslider: {visible: false}
+      // Sem `fixedrange` e sem `rangeselector` -- os dois eixos ficam livres e os
+      // botoes de janela vivem fora do Plotly. Ver a caixa de atencao da referencia.
+    },
+    yaxis: {
+      gridcolor: 'rgba(31,40,83,0.06)',
+      tickfont: {family: 'JetBrains Mono', size: 10, color: '#7A88A8'},
+      zeroline: true, zerolinecolor: 'rgba(31,40,83,0.22)'
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow, sans-serif', color: '#1F2853', size: 12}
   };
-  Plotly.react(divId, traces, layout, {responsive: true, scrollZoom: true, displayModeBar: false});
+  if (!extra) return base;
+  Object.keys(extra).forEach(function(k) {
+    if (k === 'xaxis' || k === 'yaxis') base[k] = Object.assign({}, base[k], extra[k]);
+    else base[k] = extra[k];
+  });
+  return base;
+}
+
+// Valores sobre o grafico (o "Dados no grafico" do design system). O passo segue a
+// regra da referencia -- >60 pontos a cada 5, >30 a cada 3 --, sem o que os 1.363
+// meses de historia do CPI viram uma mancha de texto. Formatacao com PONTO decimal
+// e nao virgula: e um relatorio americano, e 3,4% nao e como se le um CPI.
+var VALORES = {};
+function passoDeRotulo(n) { return n > 60 ? 5 : n > 30 ? 3 : 1; }
+function textoDaSerie(values, dec) {
+  var passo = passoDeRotulo(values.length);
+  return values.map(function(v, i) {
+    return (i % passo === 0 && v != null && !isNaN(v)) ? v.toFixed(dec) : '';
+  });
+}
+function dlBotao(divId) { return document.getElementById(divId + '-dl'); }
+function dlHabilitar(divId, ligado) {
+  var b = dlBotao(divId);
+  if (!b) return;
+  b.classList.toggle('disabled', !ligado);
+  b.title = ligado ? 'Print each series\u2019 value on the chart'
+                   : 'Not available on the stacked contribution chart';
+}
+function alternarValores(divId) {
+  var b = dlBotao(divId);
+  if (b && b.classList.contains('disabled')) return;
+  VALORES[divId] = !VALORES[divId];
+  if (b) b.classList.toggle('on', !!VALORES[divId]);
+  Plotly.restyle(divId, {mode: VALORES[divId] ? 'lines+text' : 'lines'});
+}
+
+function renderLineChart(divId, specs, yTitle) {
+  var mostrar = !!VALORES[divId];
+  var traces = specs.map(function(s) {
+    var tr = {
+      x: s.dates, y: s.values, name: s.label, type: 'scatter',
+      mode: mostrar ? 'lines+text' : 'lines',
+      text: textoDaSerie(s.values, 2), textposition: 'top center',
+      textfont: {family: 'JetBrains Mono', size: 9, color: s.color},
+      line: {color: s.color, width: 1.7}, connectgaps: false,
+      hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:.2f}<extra></extra>'
+    };
+    if (s.fill) { tr.fill = 'tozeroy'; tr.fillcolor = 'rgba(31,40,83,0.08)'; }
+    return tr;
+  });
+  var layout = mkLayout({yaxis: {title: {text: yTitle, font: {size: 11}}}});
+  Plotly.react(divId, traces, layout, PLOTLY_CONFIG);
+  dlHabilitar(divId, true);
+}
+
+// Contribution is a decomposition, so it is drawn as one: stacked bars for the parts
+// and a line for the headline they decompose.
+//
+// barmode 'relative', not 'stack': contributions go negative -- a falling price, or
+// one of the 19 PCE lines that enter the total with a minus sign -- and 'relative'
+// puts those below the zero line, where they can be read, instead of netting them
+// inside the positive stack where they cannot.
+//
+// The total line is black rather than a palette colour so it never reads as one more
+// component: the bars keep the same colour they had as lines, and the line on top is
+// unambiguously the thing they add up to.
+function renderContribChart(divId, specs, total, yTitle, dec) {
+  var barTpl = '%{fullData.name}<br>%{x|%b %Y}: %{y:.' + dec + 'f} p.p.<extra></extra>';
+  var traces = specs.map(function(s) {
+    return {
+      x: s.dates, y: s.values, name: s.label, type: 'bar',
+      marker: {color: s.color, line: {width: 0}},
+      hovertemplate: barTpl
+    };
+  });
+  traces.push({
+    x: total.dates, y: total.values, name: total.label, type: 'scatter', mode: 'lines',
+    line: {color: '#111111', width: 2.1}, connectgaps: false,
+    hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:.' + dec + 'f}%<extra></extra>'
+  });
+  var layout = mkLayout({
+    barmode: 'relative', bargap: 0.15,
+    yaxis: {title: {text: yTitle, font: {size: 11}}}
+  });
+  Plotly.react(divId, traces, layout, PLOTLY_CONFIG);
+  // Valores sobre o grafico ficam de fora aqui de proposito: sao ate 14 series de
+  // barra empilhada, e imprimir um numero por segmento nao produz nada legivel.
+  dlHabilitar(divId, false);
 }
 
 // Plain HTML range buttons calling Plotly.relayout with a range computed from the
 // chart's own data -- never from the axis's current range. See
 // .claude/rules/lis-dashboards.md ("Quick-range buttons") for why the native
 // xaxis.rangeselector was dropped.
-function renderQuickRange(barId, divId, lastDateFn) {
+function renderQuickRange(barId, divId, spanFn) {
   var bar = document.getElementById(barId);
-  [['3y', 3], ['5y', 5], ['10y', 10], ['20y', 20], ['All', null]].forEach(function(opt) {
+  [['1y', 1], ['3y', 3], ['5y', 5], ['10y', 10], ['20y', 20], ['All', null]].forEach(function(opt) {
     var b = document.createElement('button');
     b.className = 'rb';
     b.textContent = opt[0];
     b.addEventListener('click', function() {
-      var last = lastDateFn();
+      var span = spanFn() || [];
+      var first = span[0], last = span[1];
       if (!last) return;
+      // "All" tambem manda um par explicito, e nao `xaxis.autorange`: o autorange
+      // devolve o range COM o padding automatico do Plotly, que numa serie de
+      // 1913 em diante e uma faixa vazia visivel depois do ultimo ponto real.
       if (opt[1] === null) {
-        Plotly.relayout(divId, {'xaxis.autorange': true});
+        Plotly.relayout(divId, {'xaxis.range': [first, last]});
         return;
       }
       var to = new Date(last + 'T00:00:00Z');
       var from = new Date(Date.UTC(to.getUTCFullYear() - opt[1], to.getUTCMonth(), 1));
-      Plotly.relayout(divId, {'xaxis.range': [from.toISOString().slice(0, 10), last]});
+      var alvo = from.toISOString().slice(0, 10);
+      Plotly.relayout(divId, {'xaxis.range': [alvo < first ? first : alvo, last]});
     });
     bar.appendChild(b);
   });
+  // O toggle de valores mora na mesma barra, encostado a direita.
+  var dl = document.createElement('button');
+  dl.className = 'dl-toggle';
+  dl.id = divId + '-dl';
+  dl.textContent = 'Values on chart';
+  dl.addEventListener('click', function() { alternarValores(divId); });
+  bar.appendChild(dl);
 }
+
+// ── tree geometry ───────────────────────────────────────────────────────────
+// Tudo aqui anda por PROFUNDIDADE na arvore renderizada, nunca por `node.level`.
+// Os dois numeros nao coincidem: uma linha de drill-down carrega o nivel da arvore
+// de DESPESA enquanto ocupa a profundidade da arvore de divulgacao, entao filtrar
+// por node.level misturaria os dois cortes num nivel so.
+function treeDepth(tree) {
+  var mx = 0;
+  (function walk(ns, d) {
+    (ns || []).forEach(function(n) {
+      if (d > mx) mx = d;
+      if (n.children) walk(n.children, d + 1);
+    });
+  })(tree, 0);
+  return mx;
+}
+function nodesAtDepth(tree, depth) {
+  var out = [];
+  (function walk(ns, d) {
+    (ns || []).forEach(function(n) {
+      if (d === depth) { if (!n.noSeries) out.push(n); }
+      else if (n.children) walk(n.children, d + 1);
+    });
+  })(tree, 0);
+  return out;
+}
+function leafNodes(tree) {
+  var out = [];
+  (function walk(ns) {
+    (ns || []).forEach(function(n) {
+      if (n.children) walk(n.children);
+      else if (!n.noSeries) out.push(n);
+    });
+  })(tree);
+  return out;
+}
+// Rotulo do ancestral de profundidade 1 e do pai imediato -- as duas colunas de
+// contexto do ranking, o equivalente de Grupo / Item no relatorio do Brasil.
+function ancestryMap(tree) {
+  var m = {};
+  (function walk(ns, d, top, parent) {
+    (ns || []).forEach(function(n) {
+      var topo = (d === 1) ? n.label : top;
+      m[n.key] = {top: topo, parent: parent};
+      if (n.children) walk(n.children, d + 1, topo, n.label);
+    });
+  })(tree, 0, null, null);
+  return m;
+}
+
+// Cabecalho e paragrafo de cada arvore. Ficam aqui e nao no HTML porque as duas
+// arvores de CPI dividem UMA tabela desde 2026-08-26: o titulo tem de andar com as
+// pills de Tree, como as duas arvores (IBGE e BCB) da aba Decomposicao do
+// relatorio de inflacao do Brasil.
+var TREE_INFO = {
+  release: {
+    h2: 'Release tree — food / energy / core',
+    labelHeader: 'Expenditure category',
+    note: function() {
+      return 'Table 1 of the news release: <b>' + D.meta.n_release + ' rows over 5 levels</b>, plus <b>' +
+        D.meta.n_release_drill + '</b> drill-down rows below each leaf. Only levels 0–2 partition the ' +
+        'index — ' + axLink('ap-numbers', 'why that matters') + ', and ' +
+        axLink('ap-trees', 'how the tree is built') + '.';
+    }
+  },
+  expenditure: {
+    h2: 'Expenditure tree — the full statistical structure',
+    labelHeader: 'Item',
+    note: function() {
+      return 'The complete hierarchy: <b>' + D.meta.n_expenditure + ' items over ' +
+        D.meta.niveis_expenditure + ' levels</b>, from <b>' + D.meta.inicio_detalhe + '</b> onwards; ' +
+        D.meta.n_expenditure_sem_peso + ' of them have an index but no published weight. Method and ' +
+        'caveats in the ' + axLink('ap-trees', 'Appendix') + '.';
+    }
+  },
+  pce: {
+    h2: 'PCE — the index the Fed targets',
+    labelHeader: 'Type of product',
+    note: function() {
+      return 'BEA tables 2.4.4U and 2.4.5U: <b>' + D.meta.n_pce + ' lines over ' + D.meta.niveis_pce +
+        ' levels</b>, from <b>' + D.meta.inicio_pce + '</b> onwards, plus ' + D.meta.n_pce_addenda +
+        ' addenda aggregates at the bottom — the core among them. Levels 1–4 each partition the index ' +
+        'exactly. Method and caveats in the ' + axLink('ap-pce', 'Appendix') + '.';
+    }
+  }
+};
 
 // ── the hierarchy-table factory ─────────────────────────────────────────────
 // Same table+chart structure as analytics/brasil/credit's makeHierTab(): a
 // hierarchical table whose rows expand/collapse and whose checkboxes drive the
-// chart below. Two axes of state here rather than credit's metric x basis:
-// metric (level/yoy/mom/3M annualised/contribution) x adjustment (SA/NSA).
+// chart below. Three axes of state: TREE (which of this tab's trees is showing) x
+// metric (yoy/mom/3M annualised/contribution to Y/Y or to M/M) x adjustment
+// (SA/NSA). The two contribution metrics render as stacked bars plus a total line
+// rather than as lines -- see renderContribChart.
+//
+// `opts.trees` is a list, and that is the whole of what folding the Expenditure tab
+// in cost: the CPI tab passes two keys and gets a Tree pill group, the PCE tab
+// passes one and gets none. Ticks and open/closed rows are kept PER TREE -- the two
+// trees share codes (SA0 is All items in both) but not structure, so one shared
+// `checked` map would silently carry a selection into a tree where it means
+// something else.
 function makeHierTab(opts) {
-  var state = {metric: null, basis: null, view: 'series', checked: {}, expanded: {}};
-  (D.tabs[opts.dataKey].defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
-  // Root starts open so the tree is not a single collapsed line on load -- except a
-  // root that asks not to (`startCollapsed`), which is the PCE tab's Addenda block:
-  // 34 rows that are not part of the tree would otherwise be most of the first
-  // screenful.
-  (D.tabs[opts.dataKey].tree || []).forEach(function(n) {
-    state.expanded[n.key] = !n.startCollapsed;
+  var state = {dataKey: opts.trees[0], metric: null, basis: null};
+  var subs = [];
+  var per = {};
+  opts.trees.forEach(function(k) {
+    var st = {checked: {}, expanded: {}};
+    (D.tabs[k].defaultChecked || []).forEach(function(c) { st.checked[c] = true; });
+    // Root starts open so the tree is not a single collapsed line on load -- except a
+    // root that asks not to (`startCollapsed`), which is the PCE tab's Addenda block:
+    // 34 rows that are not part of the tree would otherwise be most of the first
+    // screenful.
+    (D.tabs[k].tree || []).forEach(function(n) { st.expanded[n.key] = !n.startCollapsed; });
+    per[k] = st;
   });
 
-  function tab() { return D.tabs[opts.dataKey]; }
-  function seriesFor(code) { return metricSeries(opts.dataKey, code, state.basis, state.metric); }
+  function tab() { return D.tabs[state.dataKey]; }
+  function ts() { return per[state.dataKey]; }
+  function seriesFor(code) { return metricSeries(state.dataKey, code, state.basis, state.metric); }
 
   // Last 12 months of the anchor series' grid, used as the common column set for
   // every row -- so a row that is one month behind does not shift the columns.
@@ -740,13 +1196,19 @@ function makeHierTab(opts) {
     var dates = tab().dates[state.basis] || [];
     return dates.length ? dates[dates.length - 1] : null;
   }
+  // As duas pontas da grade em vigor. O botao "All" manda esse par explicito, em
+  // vez de `xaxis.autorange`, para nao reintroduzir o padding do proprio Plotly.
+  function dateSpan() {
+    var dates = tab().dates[state.basis] || [];
+    return dates.length ? [dates[0], dates[dates.length - 1]] : [null, null];
+  }
 
   function renderHead() {
     var thead = document.getElementById(opts.tableHeadId);
     thead.innerHTML = '';
     var tr = document.createElement('tr');
     var thc = document.createElement('th'); thc.className = 'col-check';
-    var thl = document.createElement('th'); thl.textContent = opts.labelHeader;
+    var thl = document.createElement('th'); thl.textContent = TREE_INFO[state.dataKey].labelHeader;
     tr.appendChild(thc); tr.appendChild(thl);
     refDates().forEach(function(d) {
       var th = document.createElement('th');
@@ -756,36 +1218,7 @@ function makeHierTab(opts) {
     thead.appendChild(tr);
   }
 
-  // Two header rows, grouped the way the release groups its columns.
-  function renderHeadT1(cols) {
-    var thead = document.getElementById(opts.tableHeadId);
-    thead.innerHTML = '';
-    var r1 = document.createElement('tr'); r1.className = 'grp';
-    var r2 = document.createElement('tr'); r2.className = 'mon';
-    var thc = document.createElement('th'); thc.className = 'col-check'; thc.rowSpan = 2;
-    var thl = document.createElement('th'); thl.textContent = opts.labelHeader; thl.rowSpan = 2;
-    r1.appendChild(thc); r1.appendChild(thl);
-    var i = 0;
-    while (i < cols.length) {
-      var j = i;
-      while (j < cols.length && cols[j].grp === cols[i].grp) j++;
-      var th = document.createElement('th');
-      th.textContent = cols[i].grp;
-      th.colSpan = j - i;
-      th.className = 'gsep';
-      r1.appendChild(th);
-      i = j;
-    }
-    cols.forEach(function(c) {
-      var th = document.createElement('th');
-      th.textContent = c.head;
-      if (c.first) th.className = 'gsep';
-      r2.appendChild(th);
-    });
-    thead.appendChild(r1); thead.appendChild(r2);
-  }
-
-  // The checkbox and the label cell -- identical in both views, so both call this.
+  // The checkbox and the label cell.
   function labelCells(node, depth) {
     var tdCheck = document.createElement('td');
     tdCheck.className = 'col-check';
@@ -795,9 +1228,9 @@ function makeHierTab(opts) {
     if (!node.noSeries) {
       var cb = document.createElement('input');
       cb.type = 'checkbox';
-      cb.checked = !!state.checked[node.key];
+      cb.checked = !!ts().checked[node.key];
       cb.addEventListener('change', function() {
-        if (cb.checked) state.checked[node.key] = true; else delete state.checked[node.key];
+        if (cb.checked) ts().checked[node.key] = true; else delete ts().checked[node.key];
         renderChart();
       });
       tdCheck.appendChild(cb);
@@ -809,9 +1242,9 @@ function makeHierTab(opts) {
     if (node.children) {
       var icon = document.createElement('span');
       icon.className = 'tree-toggle';
-      icon.textContent = state.expanded[node.key] ? '▾' : '▸';
+      icon.textContent = ts().expanded[node.key] ? '▾' : '▸';
       icon.addEventListener('click', function() {
-        state.expanded[node.key] = !state.expanded[node.key];
+        ts().expanded[node.key] = !ts().expanded[node.key];
         renderTable();
       });
       tdLabel.appendChild(icon);
@@ -824,7 +1257,7 @@ function makeHierTab(opts) {
     // flags themselves (special/detail/noWeight/stale/decomp) are unchanged.
     var obs = [];
     if (node.special) {
-      obs.push(opts.dataKey === 'pce'
+      obs.push(state.dataKey === 'pce'
         ? 'Addendum, not part of the tree: an aggregate the BEA publishes alongside the ' +
           'partition. These overlap each other, so they must never be summed together.'
         : 'Special aggregate — exists only in the release tree, not in the expenditure tree.');
@@ -846,11 +1279,11 @@ function makeHierTab(opts) {
     }
     if (node.noWeight) {
       obs.push('The BLS publishes an index for this item but no relative importance, so Contribution ' +
-               'and Relative importance are blank and its siblings do not sum to the parent.');
+               'and Weight are blank and its siblings do not sum to the parent.');
     }
     if (node.stale) {
       obs.push('No observation after ' + node.stale + ' — ' +
-               (opts.dataKey === 'pce' ? 'the BEA' : 'the BLS') +
+               (state.dataKey === 'pce' ? 'the BEA' : 'the BLS') +
                ' has stopped publishing this series. History is kept; the line simply stops there.');
     }
     if (node.decomp === 'partial') {
@@ -862,93 +1295,137 @@ function makeHierTab(opts) {
   }
 
   function renderTable() {
-    var cols = (state.view === 'table1') ? table1Cols(opts.dataKey) : null;
-    if (cols) renderHeadT1(cols); else renderHead();
+    renderHead();
     var tbody = document.getElementById(opts.tableBodyId);
     tbody.innerHTML = '';
-    var dates = cols ? null : refDates();
+    var dates = refDates();
 
-    flattenHierRows(tab().tree, state.expanded, 0).forEach(function(r) {
+    flattenHierRows(tab().tree, ts().expanded, 0).forEach(function(r) {
       var node = r.node;
       var tr = document.createElement('tr');
       if (node.children) tr.className = 'is-group';
       var cells = labelCells(node, r.depth);
       tr.appendChild(cells[0]); tr.appendChild(cells[1]);
 
-      if (cols) {
-        cols.forEach(function(c) {
-          var td = document.createElement('td');
-          td.className = 'col-value' + (c.first ? ' gsep' : '');
-          var v = c.val(node.seriesKey);
-          td.textContent = fmtT1(v, c.dec);
-          // -0.04 prints as 0.0, so it must not print red either.
-          if (c.signed && v != null && !isNaN(v) && v <= -0.05) td.classList.add('neg');
-          tr.appendChild(td);
-        });
-      } else {
-        var s = seriesFor(node.seriesKey);
-        var byDate = {};
-        for (var i = 0; i < s.dates.length; i++) byDate[s.dates[i]] = s.values[i];
-        dates.forEach(function(d) {
-          var td = document.createElement('td');
-          td.className = 'col-value';
-          var v = byDate[d];
-          td.textContent = fmtValue(v, state.metric);
-          if (v != null && !isNaN(v) && v < 0 && state.metric !== 'level') td.classList.add('neg');
-          tr.appendChild(td);
-        });
-      }
+      var s = seriesFor(node.seriesKey);
+      var byDate = {};
+      for (var i = 0; i < s.dates.length; i++) byDate[s.dates[i]] = s.values[i];
+      dates.forEach(function(d) {
+        var td = document.createElement('td');
+        td.className = 'col-value';
+        var v = byDate[d];
+        td.textContent = fmtValue(v, state.metric);
+        if (v != null && !isNaN(v) && v < 0) td.classList.add('neg');
+        tr.appendChild(td);
+      });
       tbody.appendChild(tr);
     });
-    renderViewNote();
+    renderNote();
   }
 
-  // Said once, above the table, because the Metric and Adjustment pills stop
-  // driving the columns in this view and that has to be visible.
-  function renderViewNote() {
+  // Said here rather than left to be inferred from the picture: a stack only reaches
+  // the line when the ticked rows partition the index, and this table lets you tick
+  // rows that contain one another.
+  function renderNote() {
     var el = document.getElementById(opts.noteId);
     if (!el) return;
-    if (state.view !== 'table1') { el.style.display = 'none'; el.innerHTML = ''; return; }
-    var sp = table1Spec(opts.dataKey);
+    if (!isContribMetric()) { el.style.display = 'none'; el.innerHTML = ''; return; }
     el.style.display = '';
     el.innerHTML =
-      'The release column set. Relative importance is dated <b>' + fmtMonthShort(sp.ri) + '</b> and is ' +
-      '<b>computed</b>, not published — Appendix. The <b>Metric</b> and <b>Adjustment</b> pills drive the ' +
-      'chart, not these columns.';
+      'Contribution plots as a <b>decomposition</b>: stacked bars for the ticked rows, and the ' +
+      '<b>' + nodeLabel(anchorCode()) + '</b> line for the total they decompose (ticking that row ' +
+      'draws it as the line, not as a bar). The bars reach the line only when the ticked rows ' +
+      '<b>partition</b> the index — tick a row together with its own parent, or two overlapping ' +
+      'addenda, and the overlap is counted twice.';
+  }
+
+  function renderHeader() {
+    var info = TREE_INFO[state.dataKey];
+    if (!info) return;
+    var h = document.getElementById(opts.h2Id);
+    var n = document.getElementById(opts.headNoteId);
+    if (h) h.textContent = info.h2;
+    if (n) n.innerHTML = info.note();
+  }
+
+  function isContribMetric() {
+    return state.metric === 'contrib' || state.metric === 'contribm';
+  }
+
+  // The headline this tab's contributions are contributions TO: `anchor` in the
+  // payload, 'SA0' for the two CPI trees and '1' for the PCE.
+  function anchorCode() { return tab().anchor; }
+  function nodeLabel(code) {
+    var found = null;
+    (function walk(ns) {
+      (ns || []).forEach(function(n) {
+        if (found) return;
+        if (n.seriesKey === code) { found = n.label; return; }
+        if (n.children) walk(n.children);
+      });
+    })(tab().tree);
+    return found || code;
   }
 
   function yTitle() {
-    if (state.metric === 'level') return 'Index (base varies by item)';
     if (state.metric === 'contrib') return 'p.p. of headline Y/Y';
+    if (state.metric === 'contribm') return 'p.p. of headline M/M';
     if (state.metric === 'ann3m') return '% (3M, annualised)';
     return '%';
   }
 
   function renderChart() {
+    var contrib = isContribMetric(), anchor = anchorCode();
     var specs = [], idx = 0;
     (function walk(tree) {
       (tree || []).forEach(function(node) {
-        if (state.checked[node.key]) {
-          var s = seriesFor(node.seriesKey);
-          specs.push({dates: s.dates, values: s.values, label: node.label,
-                      color: COLORS[idx++ % COLORS.length]});
+        if (ts().checked[node.key]) {
+          // In a decomposition the headline is the LINE, never one of the bars --
+          // stacked on its own components it would double the total. It stays a
+          // normal series in every other metric, so this is the only place that
+          // has to know. The PCE tab ships it ticked by default.
+          if (!(contrib && node.seriesKey === anchor)) {
+            var s = seriesFor(node.seriesKey);
+            specs.push({dates: s.dates, values: s.values, label: node.label,
+                        color: COLORS[idx++ % COLORS.length]});
+          }
         }
         if (node.children) walk(node.children);
       });
     })(tab().tree);
-    renderLineChart(opts.chartDivId, specs, yTitle());
+
+    if (!contrib) {
+      renderLineChart(opts.chartDivId, specs, yTitle());
+      return;
+    }
+    // The headline's contribution to itself is its own change (its weight is 100 by
+    // construction), so the line is just the plain percentage over the same lag --
+    // one less weighted series to compute, and no rounding path of its own.
+    var mom = (state.metric === 'contribm');
+    var head = metricSeries(state.dataKey, anchor, state.basis, mom ? 'mom' : 'yoy');
+    renderContribChart(opts.chartDivId, specs,
+                       {dates: head.dates, values: head.values,
+                        label: nodeLabel(anchor) + (mom ? ' — M/M' : ' — Y/Y')},
+                       yTitle(), decimalsFor(state.metric));
   }
 
+  // Trocar de arvore ou de ajuste muda o conjunto de dados inteiro, entao as duas
+  // secoes abaixo (ranking e drill-down) sao avisadas. Trocar de METRICA nao as
+  // afeta: o ranking tem a propria janela e o drill-down e sempre 12 meses.
+  function notificar() { subs.forEach(function(fn) { fn(); }); }
+
   function wire() {
-    document.querySelectorAll('#' + opts.viewGroupId + ' .pill').forEach(function(btn) {
-      if (btn.classList.contains('active')) state.view = btn.dataset.view;
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('#' + opts.viewGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        state.view = btn.dataset.view;
-        renderTable();
+    if (opts.treeGroupId) {
+      document.querySelectorAll('#' + opts.treeGroupId + ' .pill').forEach(function(btn) {
+        if (btn.classList.contains('active')) state.dataKey = btn.dataset.tree;
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('#' + opts.treeGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          state.dataKey = btn.dataset.tree;
+          renderHeader(); renderTable(); renderChart(); notificar();
+        });
       });
-    });
+    }
     document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
       if (btn.classList.contains('active')) state.metric = btn.dataset.metric;
       btn.addEventListener('click', function() {
@@ -968,7 +1445,7 @@ function makeHierTab(opts) {
         document.querySelectorAll('#' + opts.basisGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
         state.basis = btn.dataset.basis;
-        renderTable(); renderChart();
+        renderTable(); renderChart(); notificar();
       });
     });
   }
@@ -976,11 +1453,356 @@ function makeHierTab(opts) {
   return {
     init: function() {
       wire();
+      renderHeader();
       renderTable();
       renderChart();
-      renderQuickRange(opts.rangeBarId, opts.chartDivId, lastDate);
+      renderQuickRange(opts.rangeBarId, opts.chartDivId, dateSpan);
       _bindYAutofit(opts.chartDivId);
+    },
+    dataKey: function() { return state.dataKey; },
+    basis: function() { return state.basis; },
+    lastDate: lastDate,
+    dateSpan: dateSpan,
+    onChange: function(fn) { subs.push(fn); }
+  };
+}
+
+// ── pill groups built in JS ─────────────────────────────────────────────────
+// As pills de nivel dependem da arvore ativa (a de divulgacao tem 5 niveis, a de
+// despesa 10), entao nascem em JS e sao refeitas quando a arvore troca.
+function buildPills(groupId, items, activeValue, onPick) {
+  var host = document.getElementById(groupId);
+  if (!host) return;
+  host.innerHTML = '';
+  var botoes = [];
+  items.forEach(function(it) {
+    var b = document.createElement('button');
+    b.className = 'pill';
+    if (String(it.value) === String(activeValue)) b.classList.add('active');
+    b.textContent = it.label;
+    b.dataset.value = String(it.value);
+    b.addEventListener('click', function() {
+      botoes.forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      onPick(it.value);
+    });
+    botoes.push(b);
+    host.appendChild(b);
+  });
+}
+
+// ── largest contributions ───────────────────────────────────────────────────
+// O equivalente americano do "Maiores Contribuições no Período" do relatorio de
+// inflacao do Brasil, com uma diferenca que nao e de estilo e sim da fonte:
+//
+//   No Brasil os 614 subitens PARTICIONAM o IPCA, entao o ranking e uma
+//   decomposicao completa e nao precisa dizer nada sobre si. Aqui nenhum nivel da
+//   arvore de divulgacao particiona abaixo do 2, e as folhas de nenhuma das duas
+//   particionam. Por isso a tabela imprime a PROPRIA COBERTURA embaixo -- quanto
+//   peso as linhas ranqueadas carregam e quanto as contribuicoes delas somam contra
+//   o headline. Sem essa linha o ranking implicaria uma decomposicao que ele nao e.
+//
+// A contribuicao na janela e peso x variacao acumulada entre os DOIS EXTREMOS, a
+// mesma formula das duas metricas de contribuicao do grafico com um lag qualquer --
+// e nao a soma das contribuicoes mensais, que foi a primeira escolha e nao sobrevive
+// aos dados: **outubro de 2025 nao foi divulgado**. E o unico mes com buraco em toda
+// a inflc_cpi (613 das 634 series em branco, so 21 com valor), consequencia da
+// paralisacao do governo americano. Um mes sem indice apaga DOIS passos mensais --
+// o do proprio mes e o do seguinte --, entao qualquer janela que o atravesse ficaria
+// com a coluna inteira em branco. A razao dos extremos passa por cima do buraco sem
+// inventar nada, porque so precisa dos dois niveis das pontas.
+function makeRankSection(opts) {
+  var state = {win: 12, level: 'leaves', showAll: false, sortCol: 'contrib', sortAsc: false};
+  var TOPO = 20;
+
+  // A coluna de peso: para o CPI, a importancia relativa ATUALIZADA ate o mes de
+  // referencia (riAt) -- o numero que o proprio release imprime, e que se afasta
+  // bastante do snapshot de dezembro ao longo do ano (Energy 7.432 em jul/2026
+  // contra 6.383 na planilha). Para uma aba com peso mensal de verdade (PCE), o
+  // peso do mes.
+  function pesoDe(tabKey, code, month) {
+    var tabD = D.tabs[tabKey];
+    if (tabD && tabD.weights) {
+      var arr = tabD.weights[code], grid = tabD.dates.SA || [];
+      var i = grid.indexOf(month);
+      return (i >= 0 && arr && arr[i] != null) ? arr[i] : null;
     }
+    var v = riAt(tabKey, code, month);
+    return (v == null) ? weightFor(code, month) : v;
+  }
+
+  function nivelPills() {
+    var tree = D.tabs[opts.dataKey()].tree;
+    var prof = treeDepth(tree);
+    var items = [{value: 'leaves', label: 'Leaves'}];
+    for (var d = 1; d <= Math.min(prof, 3); d++) items.push({value: d, label: 'Level ' + d});
+    if (state.level !== 'leaves' && +state.level > Math.min(prof, 3)) state.level = 'leaves';
+    buildPills(opts.levelGroupId, items, state.level, function(v) {
+      state.level = v; render();
+    });
+  }
+
+  function calcular() {
+    var key = opts.dataKey(), basis = opts.basis(), tabD = D.tabs[key];
+    var grid = tabD.dates[basis] || [];
+    if (grid.length < state.win + 1) return null;
+    var iEnd = grid.length - 1;
+    var mEnd = grid[iEnd], mStart = grid[iEnd - state.win];
+    var anc = ancestryMap(tabD.tree);
+    var nos = (state.level === 'leaves') ? leafNodes(tabD.tree) : nodesAtDepth(tabD.tree, +state.level);
+
+    var linhas = [];
+    nos.forEach(function(n) {
+      var pct = pctBetween(key, n.seriesKey, basis, mEnd, mStart);
+      // weightAt e o mesmo das metricas do grafico, entao as duas convencoes de peso
+      // (snapshot de dezembro no CPI, participacao do mes-base no PCE) continuam
+      // definidas num lugar so.
+      var w = weightAt(key, n.seriesKey, grid, iEnd, state.win);
+      var a = anc[n.key] || {};
+      linhas.push({
+        top: a.top || '—', parent: a.parent || '—', label: n.label,
+        weight: pesoDe(key, n.seriesKey, mEnd),
+        change: pct,
+        contrib: (pct == null || w == null) ? null : w / 100 * pct
+      });
+    });
+
+    var pesoTotal = 0, contribTotal = 0;
+    linhas.forEach(function(r) {
+      if (r.weight != null) pesoTotal += r.weight;
+      if (r.contrib != null) contribTotal += r.contrib;
+    });
+    return {
+      linhas: linhas, mEnd: mEnd, mStart: mStart,
+      pesoTotal: pesoTotal, contribTotal: contribTotal,
+      headline: pctBetween(key, tabD.anchor, basis, mEnd, mStart)
+    };
+  }
+
+  function colunas() {
+    return [
+      {key: 'rank',    head: '#',                                cls: 'rk',  fixo: true},
+      {key: 'top',     head: 'Level 1',                          cls: 'txt', texto: true, dim: true},
+      {key: 'parent',  head: 'Parent',                           cls: 'txt', texto: true, dim: true},
+      {key: 'label',   head: 'Item',                             cls: 'txt', texto: true},
+      {key: 'weight',  head: 'Weight',                           cls: 'num', dec: 3},
+      {key: 'change',  head: 'Change ' + state.win + 'M (%)',    cls: 'num', dec: 2, sinal: true},
+      {key: 'contrib', head: 'Contribution (p.p.)',              cls: 'num', dec: 3, sinal: true}
+    ];
+  }
+
+  function ordenar(linhas) {
+    var col = state.sortCol, asc = state.sortAsc;
+    var texto = (col === 'top' || col === 'parent' || col === 'label');
+    linhas.sort(function(x, y) {
+      var a = x[col], b = y[col];
+      if (texto) {
+        a = a || ''; b = b || '';
+        return a < b ? (asc ? -1 : 1) : a > b ? (asc ? 1 : -1) : 0;
+      }
+      // Nulos sempre no fim, nas duas direcoes -- um item descontinuado nao deve
+      // encabecar o ranking so porque a ordenacao e crescente.
+      if (a == null || isNaN(a)) return (b == null || isNaN(b)) ? 0 : 1;
+      if (b == null || isNaN(b)) return -1;
+      return asc ? a - b : b - a;
+    });
+  }
+
+  function render() {
+    var r = calcular();
+    var thead = document.getElementById(opts.headId);
+    var tbody = document.getElementById(opts.bodyId);
+    thead.innerHTML = ''; tbody.innerHTML = '';
+    if (!r) return;
+
+    ordenar(r.linhas);
+    var mostradas = state.showAll ? r.linhas : r.linhas.slice(0, TOPO);
+
+    var tr = document.createElement('tr');
+    colunas().forEach(function(c) {
+      var th = document.createElement('th');
+      th.textContent = c.head;
+      th.className = (c.texto ? 'txt' : '') + (c.fixo ? ' fixed' : '');
+      if (!c.fixo) {
+        if (state.sortCol === c.key) th.classList.add(state.sortAsc ? 'sorted-asc' : 'sorted-desc');
+        th.addEventListener('click', function() {
+          if (state.sortCol === c.key) state.sortAsc = !state.sortAsc;
+          // Primeiro clique numa coluna nova: texto sobe (A-Z), numero desce (maior
+          // primeiro). E o que se espera das duas, e o inverso surpreende nas duas.
+          else { state.sortCol = c.key; state.sortAsc = !!c.texto; }
+          render();
+        });
+      }
+      tr.appendChild(th);
+    });
+    thead.appendChild(tr);
+
+    mostradas.forEach(function(d, i) {
+      var linha = document.createElement('tr');
+      colunas().forEach(function(c) {
+        var td = document.createElement('td');
+        if (c.key === 'rank') {
+          td.className = 'rk';
+          td.textContent = String(i + 1);
+        } else if (c.texto) {
+          td.className = 'txt' + (c.dim ? ' dim' : '');
+          td.textContent = d[c.key] || '—';
+        } else {
+          td.className = 'num';
+          var v = d[c.key];
+          if (v == null || isNaN(v)) td.textContent = '—';
+          else {
+            td.textContent = (c.sinal && v >= 0 ? '+' : '') + v.toFixed(c.dec);
+            if (v < 0) td.classList.add('neg');
+          }
+        }
+        linha.appendChild(td);
+      });
+      tbody.appendChild(linha);
+    });
+
+    var h2 = document.getElementById(opts.h2Id);
+    if (h2) {
+      h2.textContent = 'Largest contributions over ' + state.win + 'M — ' +
+        (state.showAll ? ('all ' + r.linhas.length + ' rows') : ('top ' + Math.min(TOPO, r.linhas.length)));
+    }
+    var btn = document.getElementById(opts.toggleId);
+    if (btn) btn.textContent = state.showAll ? ('Show top ' + TOPO) : ('Show all ' + r.linhas.length);
+
+    var cov = document.getElementById(opts.coverId);
+    if (cov) {
+      var nome = (state.level === 'leaves') ? 'leaves' : ('level-' + state.level + ' rows');
+      cov.innerHTML =
+        r.linhas.length + ' ' + nome + ' · they carry <b>' + r.pesoTotal.toFixed(1) +
+        '</b> of the index\u2019s 100 and their contributions sum to <b>' +
+        (r.contribTotal >= 0 ? '+' : '') + r.contribTotal.toFixed(2) + ' p.p.</b>, against a headline ' +
+        (r.headline == null ? '—' : ((r.headline >= 0 ? '+' : '') + r.headline.toFixed(2) + '%')) +
+        ' over ' + fmtMonthShort(r.mStart) + '\u2192' + fmtMonthShort(r.mEnd) +
+        '. A gap between the two is coverage, not error — see the ' +
+        axLink('ap-readings', 'Appendix') + '.';
+    }
+  }
+
+  return {
+    init: function() {
+      document.querySelectorAll('#' + opts.winGroupId + ' .pill').forEach(function(btn) {
+        if (btn.classList.contains('active')) state.win = parseInt(btn.dataset.win, 10);
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('#' + opts.winGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          state.win = parseInt(btn.dataset.win, 10);
+          render();
+        });
+      });
+      var tg = document.getElementById(opts.toggleId);
+      if (tg) tg.addEventListener('click', function() { state.showAll = !state.showAll; render(); });
+      nivelPills();
+      render();
+    },
+    refresh: function() { state.showAll = false; nivelPills(); render(); }
+  };
+}
+
+// ── 12-month change, component drill-down ───────────────────────────────────
+// Replica do "Variação 12M — Drilldown de Componentes" do relatorio do Brasil, com
+// uma simplificacao que a fonte permite: la o agregado de um nivel tem de ser
+// RECONSTRUIDO (media ponderada das variacoes dos subitens, encadeada num indice),
+// porque o IBGE so publica o dado no nivel do subitem. Aqui o BLS publica um indice
+// para cada no da arvore, entao o Y/Y plotado e o do proprio indice publicado --
+// nada de reconstrucao, e nenhum erro de encadeamento para explicar.
+//
+// O que ele acrescenta a tabela acima, que tambem plota linhas marcadas: pegar de
+// uma vez todos os componentes de um nivel sem abrir pai por pai.
+function makeDrillSection(opts) {
+  var state = {depth: 1, picked: [], aberto: false};
+  var caixas = [];
+
+  function tabD() { return D.tabs[opts.dataKey()]; }
+
+  function nivelPills() {
+    var prof = treeDepth(tabD().tree);
+    var items = [];
+    for (var d = 1; d <= Math.min(prof, 4); d++) items.push({value: d, label: 'Level ' + d});
+    if (state.depth > Math.min(prof, 4)) state.depth = 1;
+    buildPills(opts.levelGroupId, items, state.depth, function(v) {
+      state.depth = v; popular(); render();
+    });
+  }
+
+  function nos() { return nodesAtDepth(tabD().tree, state.depth); }
+
+  // Ao trocar de nivel ou de arvore a selecao anterior deixa de existir, entao ela e
+  // refeita com os 3 primeiros componentes -- no nivel 1 da arvore de divulgacao
+  // isso e exatamente food / energy / core, que e a leitura de sempre.
+  function popular() {
+    var lista = nos();
+    state.picked = lista.slice(0, 3).map(function(n) { return n.key; });
+    var panel = document.getElementById(opts.panelId);
+    panel.innerHTML = '';
+    caixas = [];
+    lista.forEach(function(n) {
+      var lab = document.createElement('label');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = state.picked.indexOf(n.key) >= 0;
+      cb.addEventListener('change', function() {
+        if (cb.checked) { if (state.picked.indexOf(n.key) < 0) state.picked.push(n.key); }
+        else state.picked = state.picked.filter(function(k) { return k !== n.key; });
+        rotulo(); render();
+      });
+      lab.appendChild(cb);
+      lab.appendChild(document.createTextNode(' ' + n.label));
+      caixas.push(cb);
+      panel.appendChild(lab);
+    });
+    rotulo();
+  }
+
+  function rotulo() {
+    var btn = document.getElementById(opts.btnId);
+    if (!btn) return;
+    var lista = nos();
+    if (!state.picked.length) btn.textContent = 'Select…';
+    else if (state.picked.length === 1) {
+      var only = lista.filter(function(n) { return n.key === state.picked[0]; })[0];
+      btn.textContent = only ? only.label : '1 selected';
+    } else btn.textContent = state.picked.length + ' of ' + lista.length + ' selected';
+  }
+
+  function render() {
+    var key = opts.dataKey(), basis = opts.basis();
+    var lista = nos().filter(function(n) { return state.picked.indexOf(n.key) >= 0; });
+    var unico = lista.length === 1;
+    var specs = lista.map(function(n, i) {
+      var s = metricSeries(key, n.seriesKey, basis, 'yoy');
+      return {dates: s.dates, values: s.values, label: n.label,
+              color: unico ? '#1F2853' : COLORS[i % COLORS.length],
+              fill: unico};
+    });
+    renderLineChart(opts.chartDivId, specs, '% Y/Y' + (basis === 'SA' ? ', SA' : ', NSA'));
+  }
+
+  return {
+    init: function() {
+      var btn = document.getElementById(opts.btnId);
+      var panel = document.getElementById(opts.panelId);
+      if (btn) btn.addEventListener('click', function() {
+        state.aberto = !state.aberto;
+        panel.classList.toggle('open', state.aberto);
+      });
+      var clr = document.getElementById(opts.clearId);
+      if (clr) clr.addEventListener('click', function() {
+        state.picked = [];
+        caixas.forEach(function(cb) { cb.checked = false; });
+        rotulo(); render();
+      });
+      nivelPills();
+      popular();
+      render();
+      renderQuickRange(opts.rangeBarId, opts.chartDivId, opts.dateSpan);
+      _bindYAutofit(opts.chartDivId);
+    },
+    refresh: function() { nivelPills(); popular(); render(); }
   };
 }
 
@@ -1010,41 +1832,146 @@ function renderKpis() {
 }
 
 // ── tabs ────────────────────────────────────────────────────────────────────
-document.querySelectorAll('nav.tabs button').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('nav.tabs button').forEach(function(b) { b.classList.remove('active'); });
-    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-    // Plotly needs a resize once its container stops being display:none.
-    var div = document.getElementById('chart-' + btn.dataset.tab);
+// A aba de CPI tem dois graficos desde que o drill-down entrou, entao a lista e
+// declarada em vez de derivada do nome da aba.
+var PANEL_CHARTS = {cpi: ['chart-cpi', 'chart-cpi-drill'], pce: ['chart-pce']};
+// Extraida do handler de clique porque os links do apendice tambem trocam de aba:
+// um so caminho para "mostrar a aba X", em vez de o link reimplementar metade dele.
+function mostrarAba(nome) {
+  document.querySelectorAll('nav.tabs button').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.tab === nome);
+  });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  var painel = document.getElementById('panel-' + nome);
+  if (painel) painel.classList.add('active');
+  // Plotly needs a resize once its container stops being display:none.
+  (PANEL_CHARTS[nome] || []).forEach(function(id) {
+    var div = document.getElementById(id);
     if (div && div.data) Plotly.Plots.resize(div);
   });
+}
+document.querySelectorAll('nav.tabs button').forEach(function(btn) {
+  btn.addEventListener('click', function() { mostrarAba(btn.dataset.tab); });
 });
+
+// ── appendix drawers ────────────────────────────────────────────────────
+// O apendice e o texto mais longo da pagina e ninguem o le em ordem. Fechado, cada
+// gaveta mostra titulo + uma linha do que ha dentro, entao as oito juntas sao um
+// indice. E as referencias "Appendix" espalhadas pelas notas deixam de ser um
+// pedido para o leitor procurar: cada uma abre a gaveta que responde a ela.
+function drawersDoApendice() {
+  return document.querySelectorAll('#panel-appendix details.acc');
+}
+function axLink(id, texto) {
+  // &#39; e nao aspas simples: o atributo onclick esta dentro de string JS que ja
+  // usa aspas simples, e a entidade e decodificada antes do JS do handler rodar.
+  return '<a class="axlink" onclick="return goAppendix(&#39;' + id + '&#39;)">' + texto + '</a>';
+}
+function goAppendix(id) {
+  mostrarAba('appendix');
+  var d = document.getElementById(id);
+  if (!d) return false;
+  d.open = true;
+  if (d.scrollIntoView) d.scrollIntoView({behavior: 'smooth', block: 'start'});
+  // Chegar numa gaveta ja aberta e indistinguivel de nao ter acontecido nada; o
+  // realce diz qual das oito respondeu ao clique.
+  d.classList.add('flash');
+  setTimeout(function() { d.classList.remove('flash'); }, 1400);
+  return false;
+}
+(function() {
+  function todas(aberto) {
+    var ds = drawersDoApendice();
+    if (ds && ds.forEach) ds.forEach(function(d) { d.open = aberto; });
+  }
+  var be = document.getElementById('appx-expand');
+  if (be) be.addEventListener('click', function() { todas(true); });
+  var bc = document.getElementById('appx-collapse');
+  if (bc) bc.addEventListener('click', function() { todas(false); });
+})();
+
+// ── release schedule ────────────────────────────────────────────────────────
+// Dates and times come from domain/release_calendar/, which reads them from the
+// agencies' own published calendars (see the Appendix). The countdown, though, is
+// computed against the READER's clock and not baked into the payload: these files
+// get emailed and opened days later, and a frozen "in 16 days" would be a lie the
+// page tells confidently. Past due therefore means "this file is stale", which is
+// exactly what a reader needs to know before trusting the latest month above.
+var REL_MESES = ['January','February','March','April','May','June','July',
+                 'August','September','October','November','December'];
+
+function relDia(iso) {
+  var p = String(iso).split('-');
+  return REL_MESES[+p[1] - 1].slice(0, 3) + ' ' + (+p[2]) + ', ' + p[0];
+}
+function relMes(ym) {
+  if (!ym) return '';
+  var p = String(ym).split('-');
+  return p.length < 2 ? String(ym) : REL_MESES[+p[1] - 1] + ' ' + p[0];
+}
+function relDias(iso) {
+  var p = String(iso).split('-');
+  var alvo = Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  var h = new Date();
+  var hoje = Date.UTC(h.getFullYear(), h.getMonth(), h.getDate());
+  return Math.round((alvo - hoje) / 86400000);
+}
+function relBadge(iso) {
+  var d = relDias(iso);
+  if (d < 0) return '<span class="rel-in due">past due · regenerate</span>';
+  if (d === 0) return '<span class="rel-in">today</span>';
+  if (d === 1) return '<span class="rel-in">tomorrow</span>';
+  return '<span class="rel-in">in ' + d + ' days</span>';
+}
+function relLinha(rotulo, e, ehProxima) {
+  if (!e || !e.date) return '';
+  // Both clocks on purpose: the source time is the published fact and the one that
+  // reconciles with any other reference; the local time is when to be at the screen.
+  // The two drift apart twice a year -- the US keeps DST, Brazil dropped it in 2019 --
+  // so 08:30 ET is 09:30 in Sao Paulo from March to early November and 10:30 after.
+  var hora = e.time_fonte
+    ? '<span class="rt">' + e.time_fonte + ' ET · ' + (e.time_local || '--') + ' BRT</span>'
+    : '';
+  var ref = e.reference_period
+    ? '<span class="rr">ref. ' + relMes(e.reference_period) + '</span>' : '';
+  return '<div class="rel-row' + (ehProxima ? ' next' : '') + '">' +
+         '<span class="rl">' + rotulo + '</span>' +
+         '<span class="rd">' + relDia(e.date) + '</span>' + hora + ref +
+         (ehProxima ? relBadge(e.date) : '') + '</div>';
+}
+(function() {
+  var alvo = document.getElementById('releases');
+  var R = D.releases || {};
+  var ordem = [['inflc_cpi', 'CPI'], ['inflc_pce', 'PCE']];
+  var html = '';
+  ordem.forEach(function(par) {
+    var r = R[par[0]];
+    if (!r) return;
+    html += '<div class="rel-card">' +
+      '<div class="rc-h"><b>' + par[1] + ' · ' + (r.name || '') + '</b>' +
+      '<span>' + (r.institution || '') + ' · ' + axLink('ap-calendar', 'schedule') + '</span></div>' +
+      relLinha('last', r.ultima, false) +
+      relLinha('next', r.proxima, true) +
+      '</div>';
+  });
+  alvo.innerHTML = html;
+  if (!html) alvo.style.display = 'none';
+})();
 
 // ── boot ────────────────────────────────────────────────────────────────────
 document.getElementById('stamp').innerHTML =
   'latest month: <b>' + D.meta.ultimo_mes + '</b><br>' +
   D.meta.n_release + ' release rows · ' + D.meta.n_expenditure + ' expenditure items<br>' +
   'generated ' + D.meta.gerado_em;
-document.getElementById('exp-start').textContent = D.meta.inicio_detalhe;
-document.getElementById('exp-n').textContent = D.meta.n_expenditure;
-document.getElementById('exp-levels').textContent = D.meta.niveis_expenditure;
-document.getElementById('exp-nw').textContent = D.meta.n_expenditure_sem_peso;
-document.getElementById('rel-pointer-n').textContent = D.meta.n_release_drill;
-document.getElementById('pce-n').textContent = D.meta.n_pce;
-document.getElementById('pce-levels').textContent = D.meta.niveis_pce;
-document.getElementById('pce-add').textContent = D.meta.n_pce_addenda;
-document.getElementById('pce-start').textContent = D.meta.inicio_pce;
 document.getElementById('ap-pce-mes').textContent = D.meta.ultimo_mes_pce;
 document.getElementById('ap-pce-folhas').textContent = D.meta.n_pce_folhas;
 
 // Counted here rather than in Python so the number in the Appendix comes from the
-// same code path that fills the column.
+// same code path that fills the Weight column of the contributions table.
 (function() {
   var el = document.getElementById('ap-ri-n');
   if (!el) return;
-  var mes = table1Spec('expenditure').ri, n = 0;
+  var mes = riMonth('expenditure'), n = 0;
   (function walk(ns) {
     (ns || []).forEach(function(x) {
       if (riAt('expenditure', x.seriesKey, mes) != null) n++;
@@ -1056,32 +1983,47 @@ document.getElementById('ap-pce-folhas').textContent = D.meta.n_pce_folhas;
 
 renderKpis();
 
-var RELEASE_TAB = makeHierTab({
-  dataKey: 'release', labelHeader: 'Expenditure category',
-  viewGroupId: 'release-view-group', noteId: 'release-t1note',
-  metricGroupId: 'release-metric-group', basisGroupId: 'release-basis-group',
-  tableHeadId: 'release-table-head', tableBodyId: 'release-table-body',
-  chartDivId: 'chart-release', rangeBarId: 'release-range'
+// Uma aba de CPI com DUAS arvores no seletor, e o PCE com uma. Os ids continuam
+// prefixados pelo painel, nao pela arvore -- e por isso que trocar de arvore nao
+// toca em nenhum id.
+var CPI_TAB = makeHierTab({
+  trees: ['release', 'expenditure'],
+  h2Id: 'cpi-h2', headNoteId: 'cpi-note', noteId: 'cpi-t1note',
+  treeGroupId: 'cpi-tree-group',
+  metricGroupId: 'cpi-metric-group', basisGroupId: 'cpi-basis-group',
+  tableHeadId: 'cpi-table-head', tableBodyId: 'cpi-table-body',
+  chartDivId: 'chart-cpi', rangeBarId: 'cpi-range'
 });
-var EXPENDITURE_TAB = makeHierTab({
-  dataKey: 'expenditure', labelHeader: 'Item',
-  viewGroupId: 'expenditure-view-group', noteId: 'expenditure-t1note',
-  metricGroupId: 'expenditure-metric-group', basisGroupId: 'expenditure-basis-group',
-  tableHeadId: 'expenditure-table-head', tableBodyId: 'expenditure-table-body',
-  chartDivId: 'chart-expenditure', rangeBarId: 'expenditure-range'
-});
-// No view pills and no note div: the Series|Table 1 toggle is a CPI news-release
-// thing. makeHierTab tolerates both being absent (querySelectorAll finds nothing,
-// renderViewNote returns early on a null element) and stays on state.view='series'.
 var PCE_TAB = makeHierTab({
-  dataKey: 'pce', labelHeader: 'Type of product',
+  trees: ['pce'],
+  h2Id: 'pce-h2', headNoteId: 'pce-note', noteId: 'pce-t1note',
   metricGroupId: 'pce-metric-group', basisGroupId: 'pce-basis-group',
   tableHeadId: 'pce-table-head', tableBodyId: 'pce-table-body',
   chartDivId: 'chart-pce', rangeBarId: 'pce-range'
 });
-RELEASE_TAB.init();
-EXPENDITURE_TAB.init();
+CPI_TAB.init();
 PCE_TAB.init();
+
+// As duas secoes abaixo da tabela leem a arvore e o ajuste do CPI_TAB, entao sao
+// construidas depois dele e se re-renderizam quando ele avisa. Deliberadamente NAO
+// estao na aba de PCE: o pedido foi para a arvore de divulgacao, e o ranking do PCE
+// precisaria de uma decisao propria sobre os 34 agregados de addenda, que se
+// sobrepoem e nunca podem ser somados juntos.
+var CPI_RANK = makeRankSection({
+  dataKey: CPI_TAB.dataKey, basis: CPI_TAB.basis,
+  h2Id: 'cpi-rank-h2', winGroupId: 'cpi-window-group', levelGroupId: 'cpi-rank-level-group',
+  headId: 'cpi-rank-head', bodyId: 'cpi-rank-body',
+  toggleId: 'cpi-rank-toggle', coverId: 'cpi-rank-cover'
+});
+var CPI_DRILL = makeDrillSection({
+  dataKey: CPI_TAB.dataKey, basis: CPI_TAB.basis, lastDate: CPI_TAB.lastDate,
+  dateSpan: CPI_TAB.dateSpan,
+  levelGroupId: 'cpi-drill-level-group', btnId: 'cpi-drill-btn', panelId: 'cpi-drill-panel',
+  clearId: 'cpi-drill-clear', chartDivId: 'chart-cpi-drill', rangeBarId: 'cpi-drill-range'
+});
+CPI_RANK.init();
+CPI_DRILL.init();
+CPI_TAB.onChange(function() { CPI_RANK.refresh(); CPI_DRILL.refresh(); });
 </script>
 </body>
 </html>

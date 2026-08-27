@@ -60,7 +60,7 @@ O output é um **artifact HTML direto no chat** (não salvar em pasta específic
 - **Página**: `padding: 24px 32px`, sem `max-width` (full-width)
 - **Header**: logo "LIS CAPITAL", título central, badge + data à direita
 - **Stats cards**: grid de 3 colunas acima do gráfico (último valor + data, máxima + data, mínima + data)
-- **Chart container**: card branco com título, subtítulo, e botão "Dados no gráfico"
+- **Chart container**: card branco com cabeçalho de 3 linhas (título fixo, subtítulo derivado, fonte + período), o gráfico, as pills de range **abaixo** dele, e o botão "Dados no gráfico"
 - **Footer**: linha centralizada com contexto
 
 ### Gráficos — Plotly
@@ -72,6 +72,21 @@ O output é um **artifact HTML direto no chat** (não salvar em pasta específic
 - **Cada gráfico é um `<div id="...">` vazio** (nunca `<canvas>`) — `Plotly.newPlot(divId, traces, layout, config)`
 - **Chart wrap**: `position:relative; height:480px;` (o `layout.height` do Plotly deve ficar próximo desse valor)
 - **Zoom/pan interativo (obrigatório)**: arrastar move os dois eixos (pan), scroll/pinch dá zoom nos dois eixos, double-click reseta, sem gesto de box-zoom, mais botões de range rápido (1a/3a/5a/10a/Tudo) — via `dragmode:'pan'` + `scrollZoom:true` (nativo do Plotly) + `_bindYAutofit(divId)` chamado logo após cada `Plotly.newPlot`/`react`. **Os botões de range rápido são HTML normais + `Plotly.relayout()` direto, NÃO `xaxis.rangeselector` nativo do Plotly** — esse componente nativo quebrou em produção duas vezes (não suporta range exato por botão, e ainda ancora no range atual do eixo, que pode estar com padding automático) — ver `references/design-system.md#zoom-pan` para o porquê completo e o código (`mkLayout()`, `PLOTLY_CONFIG`, `quickRangeOptions()`/`renderQuickRangeButtons()`, `_bindYAutofit`) — mesmo padrão já usado em `analytics/brasil/economic_activity/report.html` (origem da correção) e nos demais relatórios analíticos.
+
+### Cabeçalho descritivo (obrigatório em todo gráfico)
+- Três linhas no topo do card, **acima** do gráfico: título, subtítulo e `Fonte: ... · <período>`
+- **Só o título e a fonte são texto fixo.** O subtítulo e o período são preenchidos por JS **a cada render** — um subtítulo escrito no HTML passa a mentir assim que o usuário mexe num seletor, e é o print tirado depois desse clique que vai circular
+- O subtítulo diz, nesta ordem: séries plotadas (quando acrescentam algo ao título) · estado dos **seletores** · unidade (a mesma string do título do eixo Y)
+- Não repetir: pedaço que o título do eixo já contenha sai fora, e o nome da série some quando é o próprio título do gráfico
+- O período vem da extensão **real** das séries plotadas, não de uma constante — numa visão de variação anual o gráfico começa um ano depois, e tem que dizer isso
+- Código e o porquê: `references/design-system.md#cabecalho` (`describeChart()`, `dataExtent()`)
+
+### Rótulos longos: nome curto + botão de definição
+- Rótulo que não cabe (linha de tabela, toggle de série, label de stat card) vira **nome curto** + um botão `i` de 14px; o nome oficial da fonte e a explicação abrem num card no hover, e o clique fixa
+- **Só ganha botão quem precisa** — a informação vive num mapa `chave → {full, desc, unit}`, e o ícone nasce da presença da entrada. Ícone em tudo não significa nada
+- **Um único `.info-pop` no `<body>`**, reposicionado a cada abertura — nunca um popover por item
+- `full` só entra no card quando difere do rótulo já visível; a última linha reaproveita a mesma string de unidade do título do eixo Y
+- Código e o porquê: `references/design-system.md#info-card` (`attachInfo()`, `showInfo()`)
 
 ### Botão "Dados no gráfico"
 OBRIGATÓRIO em todo dashboard. Comportamento:

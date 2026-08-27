@@ -15,6 +15,7 @@ anexo do RPM, enquanto gerar o HTML tem de ser rápido. Nesta ordem:
 uv run python analytics/brasil/monetary_policy/modelo_painel.py     # 2 painéis + sigma calibrado
 uv run python analytics/brasil/monetary_policy/modelo_agregado.py   # estima, decompõe, valida
 uv run python analytics/brasil/monetary_policy/generate_report.py   # HTML
+uv run python analytics/brasil/monetary_policy/antecipa_copom.py    # backtest + previsão
 node tests/test_monetary_policy_js.js                               # asserções do relatório
 uv run python tests/test_eq5_expectativas.py                        # 19 asserções (eq. 5)
 ```
@@ -23,7 +24,12 @@ uv run python tests/test_eq5_expectativas.py                        # 19 asserç
 |---|---|
 | `modelo_painel.py` | Painel trimestral dos insumos. Escreve **dois**: `_est` (HP até 2023T4, fiel ao conjunto de informação do boxe — o único em que comparar parâmetros é legítimo) e `_full` (HP até hoje, para estender os estados e partir daí nos cenários). |
 | `modelo_agregado.py` | Espaço de estados + estimação + decomposições + simulador + validações. `rodar()` grava tudo em `data/`. |
+| `condicoes_copom.py` | O conjunto de informação da última reunião contra o de hoje. Independente do modelo: lê MySQL e o `domain/release_calendar/` na hora, não usa `data/`. |
+| `antecipa_copom.py` | Antecipa a projeção do BC para o horizonte relevante da próxima reunião. Independente do relatório; lê MySQL e os artefatos de `data/`. |
 | `generate_report.py` | Lê os artefatos de `data/` e injeta em `report.html`. |
+
+O teste de `condicoes_copom.py` roda junto: `uv run python tests/test_condicoes_copom.py`
+(não toca no banco — varre o calendário e séries sintéticas).
 
 `data/` é versionada de propósito: `rodar()` sempre re-estima (não há caminho barato para recriar só
 as séries derivadas) e `tests/test_eq5_expectativas.py` roda self-contained a partir de
@@ -167,17 +173,22 @@ chamar `Plotly.newPlot`/`react` direto.**
 | Aba | Fonte | Estado |
 |---|---|---|
 | **Modelo BC — Agregado** | o simulador **rodando no navegador** (aba default) | pronta |
-| Cenários | 12 trajetórias pré-simuladas + a escada de validação do IRF | pronta |
-| Decomposição | contribuições das eqs. (1), (2) e (3) | pronta |
-| Taxa Neutra | r* latente (IS e Taylor) + as 5 medidas publicadas | pronta |
-| Hiato do Produto | latente vs. `pm_hiato_produto` + dispersão da suíte | pronta |
-| Projeções do Copom | `pm_copom_projecoes` | **stub** |
+| Condições para a reunião | `condicoes_copom.py` — MySQL + `domain/release_calendar/` | pronta |
+| Projeções do Copom | `pm_copom_projecoes` × `pm_copom_reuniao` | pronta |
 | Apêndice | descrição do modelo + validação dos parâmetros + notas | pronta |
 
-Os **cenários** da aba homônima são pré-calculados em Python (`cenarios_padrao()`): caminho de Selic
-(Focus / constante / ±100 pb por 4T) × tratamento da expectativa (endógena pela eq. 5, default / fixa
-na Focus / convergindo à meta). As duas premissas fixas são contrafactual — a distância até a
-endógena é o tamanho do canal de expectativa.
+**Quatro abas foram removidas em 2026-08-25** a pedido do usuário — Cenários, Decomposição, Taxa
+Neutra e Hiato do Produto — junto com os `_load_*` delas, para o payload não carregar série que
+ninguém lê (a seção 13 do teste cobra isso nos dois sentidos). O que **não** mudou: `rodar()`
+continua gravando todos os artefatos em `data/`, e dois consumidores dependem deles — o
+`_motor_cfg()` lê `modelo_cenario_focus__eq5.csv` para a curva de Selic da Focus, e o teste JS lê os
+12 CSVs de cenário e o `modelo_irf.csv` como referência do Python. Antes essa referência vinha pelo
+payload; ler do artefato é melhor, porque não passa pelo arredondamento de 4 casas do `_ser()`.
+
+Os **cenários** seguem pré-calculados por `cenarios_padrao()`: caminho de Selic (Focus / constante /
+±100 pb por 4T) × tratamento da expectativa (endógena pela eq. 5, default / fixa na Focus /
+convergindo à meta). As duas premissas fixas são contrafactual — a distância até a endógena é o
+tamanho do canal de expectativa. Hoje só o teste os lê.
 
 ### A seção "O modelo, equação por equação" (2026-08-25)
 
@@ -258,6 +269,267 @@ Armadilhas já pisadas — cada uma custou um bug:
 - **Cenários salvos guardam a configuração, nunca os números** (`localStorage`,
   `lis_mp_motor_cenarios_v1`): um cenário plotado é re-simulado do zero.
 
+### A aba Condições para a reunião (2026-08-25)
+
+O que o Copom tinha na mesa na última decisão contra o que já está na mesa para a próxima,
+17 variáveis em quatro blocos — inflação corrente (IPCA 12m, média dos 5 núcleos e EX3 em
+mm3m anualizada), atividade e mercado de trabalho (IBC-Br 3m/3m anualizada, desocupação da
+PNAD, saldo do CAGED), expectativas da Focus (IPCA de dois anos + 12m, PIB de dois anos,
+Selic) e condições financeiras (juro real ex-ante, PTAX, Brent, IC-Br). Mais a agenda de
+divulgações até o corte, **filtrada ao que alimenta uma das linhas** — o calendário inteiro
+tem relatório próprio. Renova-se sozinha quando uma reunião passa; **não há histórico de
+reuniões anteriores**, por decisão explícita.
+
+**O ponto todo é a regra de corte, e ela não é sobre a reunião — é sobre a natureza do
+índice de cada série.** Uma série de mercado ou da Focus é indexada pela data em que o dado
+existiu: corte direto. Uma série mensal é indexada pelo **mês de referência** e só é
+publicada semanas depois — o IPCA de julho está no banco com data 01/07 e saiu em ~13/08, de
+modo que na reunião de 05/08 o Comitê ainda estava com o de junho. Ler o banco por
+`date <= reunião` daria julho, e **não levantaria exceção nenhuma**: devolveria um número
+plausível do período errado. Para essas, a data de divulgação vem do `calendar_2026.yaml`.
+
+O corte é `datetime(dia 2, 18:30)`, não a data. Três consequências que já custariam bug:
+o horário decide o IC-Br (o de julho saiu às 14:30 de 05/08, o dia da 280ª — entrou por
+quatro horas); no dia 2 antes das 18:30 a reunião em curso ainda é a *próxima*, senão a aba
+compararia a reunião consigo mesma; e a "Selic esperada na próxima reunião" fixa o **mesmo
+rótulo da Focus** (`R6/2026`) nas duas colunas — recalculá-lo por corte compararia duas
+reuniões diferentes.
+
+Onde o calendário não tem a entrada exata (ele começa em 2026-08-13, depois da 280ª), a data
+é **estimada** pela regra ajustada do grupo: mediana da defasagem em meses e mediana do
+índice de dia útil. `regra()` devolve junto o **erro máximo medido** contra as próprias
+entradas, e `montar()` só avisa quando a estimativa cai a menos desse erro do corte — ou
+seja, quando ele poderia virar a célula. O erro não é uniforme: IPCA e IPCA-15 são ancorados
+no mês e fecham em ≤4 dias; o IC-Br sai em cadência de 4-5 semanas ancorada em **quarta-feira**
+e a regra mensal erra até 5 dias ali (nunca exercida — o IC-Br tem entrada exata desde
+2026-05).
+
+Outras decisões que custaram uma rodada cada:
+
+- **`_sa()` começa em 2000.** `inflc_agregados` guarda o IPCA desde 1980, e ajuste sazonal
+  aditivo numa série que vai de 80% ao mês para 0,4% produzia fator sazonal de −2,0 p.p. em
+  agosto: o "dessazonalizado" saía **mais volátil que o bruto** (sd 1,03 contra 0,39), e esse
+  ruído ia direto para o σ que define a cor. Com a janela certa, serviços mm3m anualizada
+  passou de "+0,39, z=+0,13" para "+1,81, z=+1,21" — o sinal hawkish estava escondido pelo
+  próprio ajuste.
+- **σ é escala robusta (1,4826 × MAD), não desvio-padrão.** Dez anos de história contêm
+  2020-2021, e com desvio-padrão aquele episódio vira a régua.
+- **Nível de preço entra em variação percentual** (`modo='pct'`, hoje só o câmbio): o repasse
+  cambial é proporcional, e 10 centavos a 3,00 não são a mesma notícia que 10 centavos a 6,00.
+  O σ dessa linha é medido em 100×Δlog, senão o z dividiria centavos por uma escala de log.
+  Brent e IC-Br são o mesmo tipo de variável e continuam em nível — é um campo, se mudar.
+- **Fatores sazonais congelados** até dezembro do ano anterior: reestimá-los a cada rodada
+  faria o valor "na reunião passada" mudar junto com o de hoje, e a diferença entre as duas
+  colunas deixaria de ser só dado novo.
+- **`sinal = 0` não recebe cor.** As expectativas de Selic da Focus são *reação* do mercado à
+  decisão passada, não condição que antecede a próxima — colori-las seria circular. Aparecem
+  porque o número interessa; só não recebem veredito.
+- **"Sem dado novo" não é "neutro".** As duas coisas têm `z = 0` e significados opostos —
+  mudez contra ausência de movimento. Contá-las juntas foi bug na primeira versão do resumo.
+- **A coluna "hoje" é limitada pelo banco**, não só pelo calendário: se o calendário diz que
+  já saiu dado mais recente e o ETL não rodou, a linha vem marcada `pendente` em vez de
+  afirmar um valor que não está carregado.
+
+Cobertura: seção 32 de `tests/test_monetary_policy_js.js` (o payload já pronto — nenhuma
+célula da coluna "na reunião" veio de divulgação posterior ao corte, as categorias do resumo
+particionam, a cor sai do z) e `tests/test_condicoes_copom.py` (a mecânica que produz aquelas
+datas, varrida dia a dia contra checagem independente). O primeiro não alcança o segundo:
+errar o mês não lança exceção.
+
+### A aba Projeções do Copom (2026-08-25)
+
+A projeção do BC para o horizonte relevante contra o **passo de Selic da mesma reunião** — o que o
+Comitê projetava contra o que ele fez —, mais a **previsão da próxima**. Três seções: a série
+temporal (barras de pontos-base no eixo da direita, projeção no da esquerda, e o ponto previsto em
+losango vazado ligado por tracejado), o **backtest** do que estimamos contra o que o BC publicou, e a
+tabela reunião a reunião. Pills de cenário (juros esperado | constante), escala (nível | desvio da
+meta), **defasagem** (mesma reunião | próxima) e **previsão** (delta da Focus | modelo | ingênuo).
+
+A **dispersão desvio × passo foi retirada em 2026-08-25** a pedido do usuário e o backtest ficou no
+lugar dela. Com isso a aba deixou de ter gráfico que não é série temporal em X, e a exceção ao
+`_reactPreserveX` que ela documentava desapareceu junto: os dois gráficos de hoje passam por ele.
+
+O lado da decisão veio de tabela nova, `macro_brasil.pm_copom_reuniao` — 247 reuniões da 34ª
+(1999-04) à 280ª, derivadas da **SGS 432** cruzada com o calendário de reuniões. Não é o texto do
+comunicado: aquele só é parseado da 206ª em diante, e o passo precisa cobrir a série toda. O texto
+entra como **conferência independente**, e nas 63 reuniões em que ele escreve a decisão em prosa as
+duas fontes concordam em todas.
+
+**O passo é o da reunião, não o acumulado do ciclo** (decisão explícita do usuário): parado, parado,
++25, +50 aparece como 0, 0, +25, +50. É a variável de decisão, e é comparável entre ciclos porque
+não depende de quantas reuniões o ciclo já teve.
+
+Quatro coisas que decidiram o resultado:
+
+- **A janela de cinco dias**, e ela é medida, não escolhida. A meta nova vale do dia útil seguinte,
+  mas feriado emendado empurra isso: das 152 mudanças de nível desde 1999, 147 entram 1 dia depois
+  da reunião, 4 em 2 (reunião de quarta com feriado na quinta — Corpus Christi de 2003/2007/2009 e
+  o 7 de setembro de 2017) e 1 em 5 (20/04/2011, Tiradentes na quinta e Sexta-feira Santa no dia
+  seguinte). Os **8 movimentos por viés** estão todos a 7 dias ou mais. Uma primeira versão pegava
+  o *último* ponto de uma janela de 12 dias e com isso atribuía à 45ª reunião um corte por viés
+  ocorrido 7 dias depois dela; pegar o *primeiro* ponto quebrava o caso contrário, a 209ª, cujo
+  corte só entrou 2 dias depois por causa do feriado. Cinco dias separa as duas coisas exatamente,
+  e foi a conferência contra o comunicado que apontou o erro.
+- **Uma unidade de horizonte só.** A série é sempre o ponto a **seis trimestres** da reunião. Os
+  regimes `ano_calendario` e `horizonte_suavizado` do comunicado pré-2024 ficam fora: um horizonte
+  relevante que é o ano civil encurta de 12 para 4 trimestres à frente ao longo do próprio ano, e
+  isso põe na série um dente de serra que não é mudança de projeção nenhuma. Custa 14 reuniões de
+  2020-2024 e sobram 107.
+- **Comunicado ganha do relatório na mesma reunião**, porque sai no dia da decisão. Sem filtro de
+  `documento` a reunião entra duas vezes com números diferentes. Da 264ª em diante os dois publicam
+  o mesmo número, então a preferência é inócua justo onde seria mais visível.
+- **Um eixo Y na escala "desvio da meta", dois na de nível** (2026-08-25, a pedido do usuário), e a
+  razão é unidade. Desvio e passo estão ambos em pontos percentuais — 100 pb de Selic é 1,00 p.p. de
+  desvio —, então dividir régua é o que torna "o desvio era +1,0 e o Comitê mexeu +1,0" uma frase
+  legível do gráfico. Na escala de nível não existe essa leitura (3,5% de IPCA projetado e +50 pb não
+  dividem régua nenhuma) e ali o eixo duplo é o certo. Duas coisas têm de acontecer juntas: as barras
+  mudarem para `y` **e** o `yaxis2` sair do layout — um eixo sobreposto sem trace nenhuma ainda
+  desenha título e ticks à direita, e o leitor lê duas escalas onde há uma. O rótulo em cima da barra
+  segue em **pb** mesmo com o eixo em p.p., porque passo de Selic se fala em pb.
+- **`barmode: 'relative'` com uma barra só** não empilha nada — é o que faz o `_bindYAutofit` dobrar
+  o zero dentro do range do eixo das barras. Sem isso, numa janela de ciclo de alta o autofit
+  devolveria `[20, 105]` e as barras sairiam desenhadas do fundo do eixo, como se +25 pb fosse quase
+  nada. Erro puramente visual: nenhuma exceção, nenhum número errado.
+
+**A previsão dentro da aba** (2026-08-25). O ponto previsto entra no gráfico principal como duas
+traces separadas — uma ponte tracejada sem legenda e sem hover, e um losango vazado verde — e nunca
+como mais um ponto da série dourada: é o único número da aba que ninguém publicou, e a caixa verde
+acima do gráfico diz de onde ele vem (âncora, documento, delta, MAE do método, corte de informação).
+Três decisões que a seção 33 do teste fixa, porque nenhuma delas lança exceção se quebrar:
+
+- **Só no cenário de juros esperado.** A previsão é construída condicionando na curva de Selic da
+  Focus, que *é* o condicionamento desse cenário. No de juros constante ela não tem leitura, e
+  desenhá-la ali seria pior que omitir: o ponto pareceria continuar uma série que ele não continua.
+- **Só com "mesma reunião".** Com defasagem a série desenhada para na penúltima reunião (a última
+  não tem passo seguinte), então o tracejado saltaria por cima de uma reunião **já publicada**.
+- **A linha da meta se estende ao ponto previsto**, senão o único ponto do gráfico sem referência
+  seria justo o que mais precisa dela. E a meta dele vem do mesmo dicionário das linhas publicadas,
+  com `meta_estendida` marcado — na escala "desvio" a régua tem de ser a mesma.
+- **Bolinha, não losango.** O marcador é círculo do mesmo tamanho dos da série publicada, só em
+  verde: o losango vazado da primeira versão foi rejeitado pelo usuário — lia como sujeira, não
+  como ponto. O que distingue previsão de dado publicado é a cor e o tracejado que leva até ela.
+
+**O backtest também aponta para a frente** (2026-08-25, ainda a pedido do usuário): no eixo Nível
+as três linhas de método ganham um ponto extra na próxima reunião, com uma vertical pontilhada
+separando o que já pode ser conferido do que não pode, e a linha do publicado recebe `null` ali — é
+essa parada que sinaliza a ausência de contrapartida do BC. No eixo **Erro** não estende, porque não
+há número publicado para subtrair. O valor do ponto extra é lido pelo mesmo `pjPrevBruto()` que
+alimenta o gráfico principal e a caixa verde, e o teste cobra que os três batam: são três
+consumidores do mesmo número na mesma tela.
+
+**As duas tabelas da aba são click-drop** (`<details class="tbl-fold">`, mesma mecânica do
+apêndice), fechadas por default — 17 e 107 linhas abertas empurravam tudo que vem depois para fora
+da tela. O `<summary>` recebe a contagem pelo JS, senão a tabela fechada não diz o que tem dentro.
+
+O relatório **não roda o modelo**: `antecipa_copom.salvar()` grava `data/antecipa_backtest.csv` e
+`data/antecipa_previsao.json`, e `_load_antecipa()` só os lê. Sem os arquivos a aba mostra o
+histórico publicado e nada mais — `antecipar()` roda o espaço de estados duas vezes e o backtest 34,
+o que não cabe num `generate_report`. O contrapeso é que os artefatos envelhecem em silêncio: o
+`corte_usado` fica no JSON e a caixa avisa quando ele é anterior à reunião.
+
+A meta vem de `inflc_meta`, anual e terminando em 2026; os trimestres projetados vão a 2028. A meta
+do último ano publicado é estendida para frente, o que sob o regime de **meta contínua** (3%, desde
+janeiro de 2025) não é extrapolação — é o próprio desenho da meta. As reuniões afetadas vêm marcadas
+com `meta_estendida` e o `generate_report.py` imprime a contagem.
+
+Correlação desvio × passo: **0,27** contemporânea e 0,28 contra o passo seguinte, em 107 reuniões. O
+sinal é o esperado e a magnitude modesta também: se o Copom já reagiu, a projeção condicionada aos
+juros esperados volta para perto da meta, e o desvio pequeno é *resultado* da política. Por isso o
+cenário de **juros constantes** é a leitura mais informativa dos dois — e é justo o que o BC parou
+de publicar em 2024. Nenhuma das duas é estimativa de função de reação: falta o juro real contra a
+neutra, que a eq. (3) deste modelo usa e que separa duas reuniões com o mesmo desvio e Selic em 8%
+ou em 15%.
+
+Cobertura: seção 33 de `tests/test_monetary_policy_js.js` (107 asserções — homogeneidade do
+horizonte, ausência de duplicata por reunião, `bps` conferido contra os dois níveis que viajam no
+payload, `pjCorr` contra Pearson calculado à parte, e o que cada pill faz com os traces).
+
+## Antecipar a projeção do BC (`antecipa_copom.py`, 2026-08-25)
+
+Prever **que número o Copom vai publicar** para o horizonte relevante na próxima reunião — não
+qual vai ser a inflação. O horizonte é sempre 6 trimestres à frente do *trimestre* da reunião
+(17/17 na era em que o Copom o declara) e há duas reuniões por trimestre, então reuniões
+consecutivas costumam ter o mesmo trimestre-alvo e o BC já publicou um número para ele. O método é
+**âncora + delta**, nunca nível: `projeção(281ª) = 3,2 publicado para 2028T1 + delta`.
+
+### O resultado, medido nas 17 reuniões da era declarada
+
+| método | MAE | direção da revisão |
+|---|---|---|
+| ingênuo ("não vai revisar") | 0,106 p.p. | — |
+| modelo agregado, nossos parâmetros | 0,145 | 7/12 |
+| modelo agregado, **modas publicadas do BC** | 0,208 | 6/12 |
+| **delta da Focus** | **0,082** | **9/12** |
+
+**O modelo agregado não serve para isto.** Com as modas do BC fica *pior*, então não é a nossa
+estimação — é a estrutura. O que funciona é a revisão da própria Focus para o mesmo
+trimestre-alvo, com correlação de **0,70** contra a revisão do BC, e ela acerta justo a que o
+modelo mais erra: na 267ª a revisão real foi +0,4 e o delta da Focus deu +0,31.
+
+A explicação é o conjunto de informação, não o ajuste: a revisão do BC entre duas reuniões vem
+sobretudo do **IPCA mensal novo**, que a pesquisa semanal incorpora e um modelo trimestral não vê —
+aqui `t0` fica até 4,5 meses atrás da reunião, porque um trimestre só fecha quando sai o IPCA do
+último mês dele. Reuniões do mesmo par chegam a compartilhar `t0`, e aí o delta do modelo vem
+apenas da curva da Focus, dos administrados e de r*.
+
+Duas coisas foram testadas e não salvaram o modelo, e as duas ficaram implementadas com
+interruptor (`backtest(parametros=..., cambio=...)`) porque a comparação **é** o resultado:
+
+- **Condicionar o câmbio** (observado até o corte, PPC depois) move o MAE de 0,1452 para 0,1453. O
+  canal é mudo porque `a3` aqui é 0,0024 contra 0,011 do BC e porque o bloco de administrados — onde
+  o repasse cambial deles é 1,65 p.p. por 10% de depreciação, mais que o dobro do de livres — não
+  existe. Com `a3` tão pequeno, 2 p.p. de depreciação extra valem 0,005 p.p. de inflação.
+- **Usar as modas do BC** piora, como a tabela mostra.
+
+### A taxa neutra que o BC anuncia, que não é a nossa
+
+Achado desta rodada, e ele é a peça que mais move o nível. O BC **declara** no RPM a r\* real que
+usa nas projeções, fixa por várias reuniões, e avisa quando muda:
+
+| decidido na reunião | RPM que anuncia | r\* real |
+|---|---|---|
+| até a 262ª | — | 4,50% |
+| **263ª** (jun/2024) | 2024-06-27, p.74 | **4,75%** |
+| **267ª** (dez/2024) | 2024-12-19, p.59 | **5,00%** |
+| segue valendo | 2026-06-25, p.66 reafirma | 5,00% |
+
+Não confundir com a mediana das *medidas* de r\* do boxe de jun/2024 (4,8% para 2024T2, que a p.95
+daquela edição diz ter subido para 5,0%): aquilo é estimativa da neutra, isto é o valor plugado no
+cenário. Trocar a nossa r\* de 7,81% por esses 5,00% move 2028T1 de **3,45 para 3,07** (contra 3,2
+publicado) e vira o hiato de +0,35 para −0,75 — a política passa a ser genuinamente restritiva.
+`simular()` ganhou três argumentos opcionais para isso (`rr`, `h0`, `sh0`), todos inertes por
+default; conferido que os 12 cenários padrão não se movem.
+
+**A frase da neutra não está no `raw_md`**: a extração do RPM guarda só as páginas com tabela de
+projeção, e ela vive numa página sem tabela. Está nos PDFs em disco. `R_NEUTRA_BC` no módulo é a
+transcrição, com edição e página.
+
+### Insumos do cenário, todos cortados na data da decisão
+
+| insumo | fonte | armadilha |
+|---|---|---|
+| r\* real | `R_NEUTRA_BC` (RPM) | muda 2× na amostra |
+| Selic | `expc_focus_copom` | **a Focus descarta as reuniões que já aconteceram** — em 21/08/2026 o primeiro rótulo é R6/2026, a 280ª sumiu. Como `t0` fica meses atrás, a janela começa no passado: o caminho é realizado até o corte e esperado depois, agregado por **média** ponderada por dias (é assim que o `selic` do painel é construído) |
+| π^A | `expc_focus_periodo`, administrados trimestral | horizonte trimestral vai a 2028T2, não precisa trimestralizar |
+| câmbio | `cmb_ptax` | observado até o corte, PPC depois |
+| hiato inicial | `pm_hiato_produto_vintages` | o que o BC publicou, não o nosso latente — evita reconstruir o painel 17 vezes |
+
+O painel e os estados entram na versão **corrente**, de propósito: as séries que `simular()` lê em
+`t0` ou não sofrem revisão ou são indexadas pela data em que o dado existiu. O único genuinamente
+revisado é o hiato, e é justo o que vem do vintage.
+
+`date = 2026-10-01` é **ambíguo** e isso decidiu a busca da âncora: significa o trimestre 2026T4 ou
+o ano civil 2026, que a tabela normaliza para o T4. Como o IPCA acumulado nos 4 trimestres até o T4
+*é* o ano civil, os dois são o mesmo objeto econômico — filtrar `periodo_tipo='trimestre'`
+descartava o comunicado da 270ª e pegava um relatório dois meses mais velho.
+
+O benchmark é severo e por isso é reportado sempre: as revisões têm |média| de 0,106 p.p. e **13 das
+17** caem dentro de um tique de arredondamento (o BC publica com uma casa). Só 4 excedem um tique.
+
+Cobertura: `tests/test_antecipa_copom.py` (41 asserções — cada seção nasceu de um erro que devolvia
+número plausível e errado sem levantar exceção: `t0` no trimestre não fechado, r\* confundida com a
+estimativa, a curva da Focus sem as decisões já tomadas, e a âncora filtrada por `periodo_tipo`).
+
 ## O resultado que precisa de olhar
 
 Com dado até 2026T2, a tendência HP do juro real Focus está em **7,7%** e o r* da IS em **7,9%** —
@@ -282,22 +554,88 @@ domina todo cenário, e vale decidir se ela é aceitável antes de usar os cená
 - **`data/`** — artefatos do modelo (`modelo_*`), a planilha da Phillips, e os caches dos pulls
   lentos (`modelo_nuci_fgv.csv`, `modelo_desoc_retro.csv`, `modelo_neutra_pub.csv`, `modelo_irf_pub.csv`).
 
-## Comunicados do Copom
+## Projeções do próprio BC: comunicados + RPM
 
-O texto dos comunicados virou dado estruturado **fora desta pasta**, porque é ETL:
-`connectors/bcb_copom.py` → `domain/db/brasil/bcb/_copom_texto.py` → `pm_copom_projecoes`. As 233
-reuniões que a API devolve ficam versionadas em
-`repository/monetary_policy/raw_md/central_bank_comunication/`; a tabela carrega da 206ª (2017-04),
-396 linhas. Levantamento da fonte, os 5 regimes de comunicação e a armadilha do nome do cenário:
-[`domain/db/brasil/bcb/copom_comunicados.md`](../../../domain/db/brasil/bcb/copom_comunicados.md).
+O texto das duas publicações de política monetária virou dado estruturado **fora desta pasta**, porque
+é ETL. As duas alimentam a mesma tabela, `pm_copom_projecoes`, separadas pela coluna `documento`:
+
+- **comunicado**: `connectors/bcb_copom.py` → `_copom_texto.py`. 233 reuniões versionadas em
+  `raw_md/central_bank_comunication/`; carga da 206ª (2017-04) em diante, **396 linhas**.
+- **relatório** (RPM, chamado RI até 2024-12): `connectors/bcb_rpm.py` → `_rpm_projecoes.py`.
+  **109 edições** de 1999-06 a 2026-06 em `raw_md/relatorio_politica_monetaria/`; **1.967 linhas**
+  de 108 delas.
+
+O relatório não é redundante: o comunicado publica 2 ou 3 períodos escolhidos, o relatório publica o
+caminho trimestral **contíguo**. Por isso o ponto a 6 trimestres à frente existe em toda edição desde
+1999, e a série de horizonte relevante passou de 52 pontos (2020→) para **150 (1999-09 → 2026-08)**.
+Onde os dois cobrem a mesma célula, batem **exatamente da 264ª reunião em diante** (60 de 60); antes
+divergem 0,037 p.p. em média, porque o relatório é vintage posterior (7 a 28 dias) e porque em
+2017-2020 o comunicado publicava o cenário **híbrido** (juros Focus com câmbio constante) enquanto o
+relatório publica os puros.
+
+**Para o uso aqui como alvo de validação, isso importa**: a projeção da mesma reunião pode existir
+duas vezes com números diferentes. Filtrar `documento` é obrigatório — e o relatório é o que dá o
+caminho inteiro, não só o HR.
+
+Desde 2026-08-25 há uma terceira tabela no par, `pm_copom_reuniao`: uma linha por reunião com o
+**passo de Selic** decidido, das 247 reuniões desde 1999. Não vem de texto — vem da SGS 432 cruzada
+com o calendário de reuniões, e é o que fecha o par projeta/faz que a aba Projeções usa.
+
+Levantamento das duas fontes:
+[`copom_comunicados.md`](../../../domain/db/brasil/bcb/copom_comunicados.md) (5 regimes de
+comunicação, a armadilha do nome do cenário) e
+[`relatorio_politica_monetaria.md`](../../../domain/db/brasil/bcb/relatorio_politica_monetaria.md)
+(3 formatos de tabela, 5 armadilhas silenciosas do PDF, a grade 2×2 de cenários de 2016-2020).
 
 ## Pending
+- **Antecipar a projeção — o que falta testar.** O delta da Focus ganha do ingênuo (MAE 0,082 contra
+  0,106) com repasse 1:1 e sem ajuste nenhum. Três coisas por ordem de retorno: (a) a Focus de
+  **administrados** e de **livres** separadas, já que é o bloco de administrados que o modelo não tem;
+  (b) o delta do **IPCA de curto prazo** (a Focus mensal dos próximos 3 meses), que é o canal pelo
+  qual a notícia entra; (c) um coeficiente estimado no lugar do 1:1 — com n=17 isso é pescaria, então
+  só vale quando a amostra crescer. Não tentar melhorar o modelo agregado para esta finalidade: o
+  backtest mostra que o problema é o conjunto de informação trimestral, não o ajuste. Medido por
+  tipo de horizonte, a **expansão é o caso mais fácil** (MAE 0,080 pela Focus contra 0,089 do
+  ingênuo) e a **revisão o mais difícil** (0,084 contra 0,125), o que aponta o intervalo entre
+  âncora e reunião como a variável a explorar antes de qualquer coisa nova.
+- **Os artefatos da previsão não têm job.** `antecipa_copom.salvar()` roda à mão, e o
+  `generate_report.py` só lê o que estiver em `data/`. Se o relatório for regerado sem regravá-los, a
+  previsão fica velha e o único aviso é o `corte_usado` na caixa. Duas saídas: encadear o `salvar()`
+  no início do `generate_report.run()` (custa ~35 rodadas do espaço de estados por geração) ou
+  agendá-lo junto do `bcb_copom` no `release_calendar`. A segunda é a certa; nenhuma foi feita.
 
-- **Aba Projeções do Copom** — a única não construída. Uso natural: alvo de validação do cenário. Se
-  o modelo reproduz a projeção que o BC publicou para o horizonte relevante, está calibrado contra o
-  número que o próprio Comitê olha. Ler `copom_comunicados.md` antes: sem filtro de `regime` três
-  conceitos de horizonte relevante se misturam, e `cenario` classifica pelo condicionamento, não
-  pelo rótulo publicado.
+- **Aba Condições — ampliar o recorte.** As 17 variáveis de hoje cobrem inflação corrente,
+  atividade e mercado de trabalho, expectativas e condições financeiras. Fora, todos por falta
+  de dado e não de método: PIM/PMC/PMS e o hiato do BCB, crédito e fiscal, CDS de 5 anos
+  (`cmb_risco_pais` é CSV exportado à mão e costuma estar semanas atrás) e Treasury de 10
+  anos (não está no banco). Acrescentar qualquer um é uma entrada nova em `SPEC` — a mecânica
+  de corte, σ e cor já é genérica. **Antes de acrescentar, conferir que o grupo do
+  `calendar_2026.yaml` tem `reference_period` nas entradas**: sem ele `regra()` devolve
+  `None` e a série não tem como ser cortada por divulgação. O `bcb_focus` é a exceção que já
+  existe — não tem `reference_period` (cada boletim é o estado corrente, não um período
+  fechado), e por isso entra como `grupo_agenda`, que só alimenta a agenda e não corta série.
+- **Aba Condições — virada de ano.** `condicoes_copom.py` lê `calendar_2026.yaml` por nome
+  fixo. Quando o calendário virar, ver `domain/release_calendar/ROLLOVER.md`; sem reunião
+  futura no arquivo a aba degrada com mensagem em vez de quebrar, mas para de servir.
+- **Aba Projeções — comparar trajetória contra trajetória.** A aba construída em 2026-08-25 usa um
+  ponto por reunião (o horizonte relevante). O RPM publica o **caminho trimestral inteiro** de cada
+  edição desde 1999, e o modelo desta pasta produz um caminho também — então o alvo de validação
+  natural é curva contra curva, não ponto contra ponto: se o cenário reproduz a trajetória que o BC
+  publicou, está calibrado contra o que o próprio Comitê olhou. Isso não cabe na aba atual, cujo eixo
+  é a reunião; é uma segunda seção com o eixo no período projetado e uma edição selecionável.
+- **Aba Projeções — a variável que falta para virar função de reação.** A correlação de 0,27 entre
+  desvio e passo é o que se mede hoje, e ela é fraca por construção: o desvio pequeno é resultado da
+  política, não ausência de reação. O passo seguinte é acrescentar o juro real contra a neutra (que a
+  eq. (3) já estima nesta pasta) — sem ele, duas reuniões com o mesmo desvio e Selic em 8% ou em 15%
+  entram na mesma nuvem.
+- **RPM: 43 tabelas lidas e não gravadas, todas por motivo registrado em `avisos`.** 32 são cenários
+  **mistos** da grade 2×2 de 2016-2020 (juros de um tipo, câmbio de outro), que não cabem numa coluna
+  `cenario` que classifica só o juro — precisariam de uma dimensão de câmbio. 4 são o par
+  Básico/Alternativo com o mesmo juro (RI de dez/2002 e mar/2003), 4 ficaram sem cenário identificado
+  (título em fonte de subconjunto sem cmap legível) e 7 foram classificadas por **ordem** das tabelas
+  na página, e por isso têm `cenario_publicado` nulo. O **leque** de confiança (limites de 50/30/10%)
+  está no `.md` de cada edição e não foi gravado, por decisão explícita de escopo. O RI de 1999-06
+  não entra: publica o leque só como gráfico.
 - **Equação (5) dentro do filtro** — exige (a) π^e como estado e (b) uma convenção para o que o
   modelo espera dos exógenos em cada trimestre da amostra, que o boxe não publica e que move E_t π
   mais do que os φ. É a única via para testar se o α₁ᴵ se corrige.
@@ -313,7 +651,9 @@ reuniões que a API devolve ficam versionadas em
   exportação) + PIB dos parceiros via FRED/BIS, que é a receita da nota 9 do boxe.
 - **CDS pré-2008** — a UIP fica inativa em 17 dos 81 trimestres. O EMBI+ do IPEADATA emendaria.
 - **`models/curva_juros/`** — decidir entre integrar ou descartar.
-- **Comunicados: o que o parser lê mas não grava** — câmbio inicial do cenário, bandeira tarifária,
-  decisão/direção da Selic. São atributos de reunião, então pedem uma tabela irmã
-  `pm_copom_reuniao`. O câmbio inicial explica boa parte das revisões de projeção entre reuniões.
+- **Comunicados: o que o parser lê mas não grava** — câmbio inicial do cenário e bandeira tarifária.
+  São atributos de reunião, e a tabela irmã onde eles cabem já existe: `pm_copom_reuniao`, criada em
+  2026-08-25 com a decisão de Selic. O câmbio inicial explica boa parte das revisões de projeção
+  entre reuniões, e acrescentá-lo é uma coluna nova ali, sem migração. A decisão/direção saiu desta
+  lista: está gravada, e de fonte melhor que o parser (SGS 432 cobre desde 1999, o texto só da 206ª).
 - **Atas não estão no pipeline** — só o comunicado. A ata sai ~1 semana depois, em PDF.

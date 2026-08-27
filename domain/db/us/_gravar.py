@@ -47,6 +47,29 @@ def contar(database: str, table: str) -> int:
         conn.close()
 
 
+def ler(database: str, sql: str) -> pd.DataFrame:
+    """Roda um SELECT e devolve DataFrame, fechando a conexao.
+
+    Existe porque o ramo de `macro_us` passou a LER do banco, e nao so a escrever:
+    a arvore do PCE (`inflc_pce_dim`) so pode ser montada do xlsx, entao ela e
+    gravada uma vez e nas rodadas seguintes e RELIDA daqui e revalidada contra a API,
+    em vez de o arquivo de 12 MB ser baixado de novo a cada mes.
+
+    Args:
+        database: schema.
+        sql:      a consulta.
+
+    Returns:
+        O resultado. Nao trata erro de conexao de proposito -- quem chama decide se
+        cai para outro caminho (ver `inflc_pce_dim._estrutura_gravada`).
+    """
+    conn = _conn(database)
+    try:
+        return pd.read_sql(sql, conn)
+    finally:
+        conn.close()
+
+
 def gravar(database: str, table: str, df: pd.DataFrame, sonda: str) -> int:
     """Grava `df` em `database`.`table` e confirma no banco que os dados chegaram.
 

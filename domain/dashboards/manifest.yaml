@@ -1,0 +1,323 @@
+# De que cada dashboard depende -- config estatica, uma entrada por relatorio.
+#
+# Existe para responder a pergunta que nenhuma outra peca do sistema respondia: "este
+# relatorio esta olhando para dado velho?". O calendario (domain/release_calendar/)
+# sabe QUANDO cada dado sai e o registry (domain/db/registry.py) sabe QUEM escreve
+# cada tabela; faltava o outro lado, QUEM LE. Sem isso, apertar "Atualizar" no
+# calendario deixava o banco em dia e todo HTML em reports/ parado no dia anterior.
+#
+# Lido por domain/dashboards/status.py, que resolve o estado ao vivo de cada
+# dependencia (MAX(date) no MySQL, ultima linha no CSV, mtime no artefato) e compara
+# com o stamp gravado na ultima geracao. A aba "Status dashboard" do relatorio de
+# calendario e a vista disso.
+#
+# -- POR QUE DECLARADO A MAO, E NAO DERIVADO DO CODIGO --
+# O registry consegue derivar tabela->script porque todo script de ETL declara
+# `_TABLE`. Do lado do consumo nao ha convencao equivalente: cada generate_report.py
+# le tabela por caminhos diferentes (MySQLDataRequester direto, _load_flat(),
+# pd.read_sql com JOIN, e um caso que le uma tabela de OUTRO projeto). Varrer isso com
+# regex daria falso negativo silencioso, que e exatamente o erro que este arquivo
+# existe para impedir. Entao e declaracao, e `status.validar()` cobra o que der para
+# cobrar: toda tabela declarada tem de existir no banco.
+#
+# -- CAMPOS --
+# key            id estavel; e o que o botao de regerar vai mandar
+# name           rotulo na aba
+# output         caminho do arquivo gerado, relativo a raiz
+# module         modulo com run(output=...). Null quando o entry point nao segue o padrao
+# command        linha de comando equivalente (o que a aba mostra no modo arquivo)
+# build_seconds  MEDIDO em 2026-08-26 contra o banco real, nao estimado
+# deps[].kind    mysql | csv | artifact | live | yaml
+# deps[].ref     schema.tabela (mysql) ou caminho relativo a raiz (resto)
+# deps[].date_col  coluna de data; `null` = tabela de dimensao, sem serie temporal
+# deps[].scope   dados | modelos -- "modelos" so entra com include_models=True (so FX)
+# deps[].owner   quando a fonte NAO e alimentada por este projeto
+# deps[].refresh como atualizar aquela dependencia, quando nao e o ETL normal
+
+dashboards:
+  - key: brasil_economic_activity
+    name: "Atividade Econômica"
+    area: brasil
+    output: reports/brasil/Economic Activity.html
+    module: analytics.brasil.economic_activity.generate_report
+    command: 'uv run python -c "from analytics.brasil.economic_activity.generate_report import run; run()"'
+    build_seconds: 12
+    deps:
+      - {kind: mysql, ref: macro_brasil.atv_pib, role: "PIB trimestral (aba PIB)"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_taxas, role: "Taxas oficiais do IBGE, para conferir a decomposição"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_valores_correntes, role: "Peso nominal anual da decomposição de crescimento"}
+      - {kind: mysql, ref: macro_brasil.atv_renda_poupanca, role: "Aba Renda e Poupança"}
+      - {kind: mysql, ref: macro_brasil.atv_pim, role: "Produção industrial (aba PIM)"}
+      - {kind: mysql, ref: macro_brasil.atv_pim_uso, role: "Categorias de uso, mesma aba da PIM"}
+      - {kind: mysql, ref: macro_brasil.atv_pmc, role: "Comércio (aba PMC)"}
+      - {kind: mysql, ref: macro_brasil.atv_pms, role: "Serviços (aba PMS)"}
+      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br (aba própria)"}
+
+  - key: brasil_credit
+    name: "Crédito"
+    area: brasil
+    output: reports/brasil/Credit.html
+    module: analytics.brasil.credit.generate_report
+    command: 'uv run python -c "from analytics.brasil.credit.generate_report import run; run()"'
+    build_seconds: 24
+    deps:
+      - {kind: mysql, ref: macro_brasil.cred_credito_amplo, role: "Crédito ampliado ao setor não financeiro (2ª tabela da aba Saldo)"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_resumo, role: "Resumo por recurso × segmento — a espinha das abas Saldo/Concessão/Taxa"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_familias, role: "Endividamento e comprometimento de renda das famílias"}
+      - {kind: mysql, ref: macro_brasil.cred_inadimplencia_pj, role: "Selic + proxies de estresse PJ"}
+      - {kind: mysql, ref: macro_brasil.cred_ptc, role: "Pesquisa Trimestral de Condições de Crédito (aba PTC)"}
+      - {kind: mysql, ref: macro_brasil.cred_modalidade_livre_pj, role: "Modalidades — livre PJ (Saldo, Concessão, Taxa, Inadimplência)"}
+      - {kind: mysql, ref: macro_brasil.cred_modalidade_livre_pf, role: "Modalidades — livre PF"}
+      - {kind: mysql, ref: macro_brasil.cred_modalidade_direcionado_pj, role: "Modalidades — direcionado PJ"}
+      - {kind: mysql, ref: macro_brasil.cred_modalidade_direcionado_pf, role: "Modalidades — direcionado PF"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_porte, role: "Porte de empresa (saldo, inadimplência e risco)"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_atividade_economica, role: "Atividade econômica (PJ)"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_tipo_cliente, role: "Tipo de cliente (aba Saldo)"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_controle_capital, role: "Controle de capital — só a métrica de inadimplência é charteada"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, deflator do toggle Nominal/Real"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_mensal, role: "PIB acumulado em 12m, denominador do toggle % do PIB"}
+
+  - key: brasil_fiscal_policy
+    name: "Política Fiscal"
+    area: brasil
+    output: reports/brasil/Fiscal Policy.html
+    module: analytics.brasil.fiscal_policy.generate_report
+    command: 'uv run python -c "from analytics.brasil.fiscal_policy.generate_report import run; run()"'
+    build_seconds: 30
+    deps:
+      - {kind: mysql, ref: macro_brasil.fisc_efgg, role: "GFSM (aba Receitas e Despesas) + IEG (aba Impulso)"}
+      - {kind: mysql, ref: macro_brasil.fisc_rtn, role: "RTN (aba Receitas e Despesas)"}
+      - {kind: mysql, ref: macro_brasil.fisc_dlsp_fatores, role: "DLSP e fatores condicionantes (aba Dívida Líquida)"}
+      - {kind: mysql, ref: macro_brasil.fisc_investimento, role: "Investimento federal por GND × função/natureza"}
+      - {kind: mysql, ref: macro_brasil.fisc_nfsp, role: "Resultado primário, no impulso fiscal"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_valores_correntes, role: "PIB nominal trimestral, denominador de % PIB"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_mensal, role: "PIB mensal e acumulado 12m, denominador de % PIB"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_taxas, role: "Comparação com a taxa oficial do PIB"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, deflator das séries reais"}
+
+  - key: brasil_labor_market
+    name: "Mercado de Trabalho"
+    area: brasil
+    output: reports/brasil/Labor Market.html
+    module: analytics.brasil.labor_market.generate_report
+    command: 'uv run python -c "from analytics.brasil.labor_market.generate_report import run; run()"'
+    build_seconds: 5
+    deps:
+      - {kind: mysql, ref: macro_brasil.mt_pnad, role: "PNAD mensal (abas Taxas/Ocupação/Rendimento)"}
+      - {kind: mysql, ref: macro_brasil.mt_pnad_trimestral, role: "PNAD trimestral, mesmas abas"}
+      - {kind: mysql, ref: macro_brasil.mt_caged, role: "CAGED via SGS — estoque, na aba Emprego Formal"}
+      - {kind: mysql, ref: macro_brasil.mt_caged_setor, role: "Novo CAGED por setor"}
+      - {kind: mysql, ref: macro_brasil.mt_caged_uf, role: "Novo CAGED por UF"}
+      - {kind: mysql, ref: macro_brasil.mt_caged_salario, role: "Novo CAGED por faixa salarial"}
+
+  - key: brasil_inflation
+    name: "Inflação (BR)"
+    area: brasil
+    output: reports/brasil/Inflation.html
+    module: analytics.brasil.inflation.generate_report
+    command: 'uv run python -c "from analytics.brasil.inflation.generate_report import run; run()"'
+    build_seconds: 30
+    note: >
+      O único relatório do projeto cuja série principal NÃO vem só do MySQL: os
+      agregados do BCB/SGS entram por um CSV que nenhum job atualiza.
+    deps:
+      - {kind: mysql, ref: macro_brasil.inflc_decomposicao, role: "IPCA e IPCA-15 por subitem — a base de tudo na aba"}
+      - {kind: mysql, ref: macro_brasil.inflc_dim, date_col: null, role: "Dimensão de subitem: grupo, subgrupo e os vetores de núcleo da NT-57"}
+      - {kind: mysql, ref: macro_brasil.inflc_decomposicao_item, role: "Nível de item, para Médias Aparadas e Dupla Ponderação"}
+      - kind: csv
+        ref: analytics/brasil/inflation/data/ipca_bcb_series.csv
+        date_col: dt
+        role: "Agregados BCB/SGS: headline, componentes e núcleos oficiais"
+        refresh: uv run python analytics/brasil/inflation/fetch_bcb.py
+        note: >
+          Não está em jobs/update_db.py nem em nenhum outro job. Já ficou um mês
+          parado sem erro visível. Duplica boa parte de inflc_agregados, com nomes
+          em maiúscula, e carrega uma série sem par no banco (IPCA_12m, SGS 13522).
+
+  - key: brasil_expectations
+    name: "Expectativas (Focus)"
+    area: brasil
+    output: reports/brasil/Expectations.html
+    module: analytics.brasil.expectations.generate_report
+    command: 'uv run python -c "from analytics.brasil.expectations.generate_report import run; run()"'
+    build_seconds: 53
+    deps:
+      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Medianas por indicador e data de pesquisa"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Curva de Selic por reunião do Copom"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativa por período de referência — 1,1 M de linhas, o loader mais pesado do projeto"}
+
+  - key: brasil_monetary_policy
+    name: "Política Monetária"
+    area: brasil
+    output: reports/brasil/Monetary Policy.html
+    module: analytics.brasil.monetary_policy.generate_report
+    command: 'uv run python -c "from analytics.brasil.monetary_policy.generate_report import run; run()"'
+    build_seconds: 23
+    note: >
+      Gerar o HTML NÃO roda o modelo: a estimação leva minutos e depende de MySQL,
+      IPEADATA e do anexo do RPM. As abas leem os artefatos que modelo_agregado.py e
+      antecipa_copom.py gravam em data/ — se esses estiverem velhos, o relatório sai
+      novo com número velho, e o único aviso é o corte_usado na caixa da previsão.
+    deps:
+      # date aqui e o trimestre PROJETADO (vai a 2028), nao quando o dado passou a
+      # existir -- por isso a coluna de frescor e a vintage, que e a data da publicacao.
+      # Com `date`, a aba anunciaria "ultimo dado 2028-10-01", que nao e leitura de
+      # frescor nenhuma.
+      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções"}
+      - {kind: mysql, ref: macro_brasil.pm_hiato_produto, date_col: vintage, role: "Hiato publicado no RPM, validação do modelo — vintage é a edição do RPM"}
+      - {kind: mysql, ref: macro_brasil.inflc_meta, role: "Meta de inflação, a régua do desvio — date é o ANO da meta, então o 'último dado' é o último ano com meta publicada"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA e núcleos, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.mt_pnad, role: "Taxa de desocupação, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Saldo de emprego formal, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA da Focus"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Curva de Selic esperada — entra na eq. (5) e na previsão"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativa por período; é o delta desta série que prevê a revisão do BC"}
+      - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.comm_icbr, role: "Índice de commodities Brasil, aba Condições"}
+      - {kind: mysql, ref: macro_international.comm_brent, role: "Brent, aba Condições"}
+      - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação — é o que decide o que o Copom tinha na mesa em cada reunião"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_painel_full.csv, role: "Painel trimestral estimado", refresh: uv run python analytics/brasil/monetary_policy/modelo_painel.py}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados.csv, role: "Estados latentes do modelo", refresh: uv run python analytics/brasil/monetary_policy/modelo_agregado.py}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados_est.csv, role: "Estados com parâmetros estimados"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_cenario_focus__eq5.csv, role: "Curva de Selic da Focus que o motor JS carrega"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_neutra_pub.csv, role: "Taxa neutra publicada pelo BC"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_params.json, role: "Parâmetros do motor portado para o navegador"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_eq5_diag.json, role: "Raio espectral do laço da eq. (5)"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao.csv, role: "Tabela de validação do Apêndice"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao_irf.json, role: "IRF contra o do BC, Apêndice"}
+      - kind: artifact
+        ref: analytics/brasil/monetary_policy/data/antecipa_backtest.csv
+        role: "Backtest dos 3 métodos de previsão, aba Projeções"
+        refresh: 'uv run python -c "from analytics.brasil.monetary_policy.antecipa_copom import salvar; salvar()"'
+      - kind: artifact
+        ref: analytics/brasil/monetary_policy/data/antecipa_previsao.json
+        role: "Previsão da próxima projeção do BC"
+        refresh: 'uv run python -c "from analytics.brasil.monetary_policy.antecipa_copom import salvar; salvar()"'
+        note: >
+          Gravado à mão. Regerar o relatório sem regravar isto mostra previsão velha
+          com aparência de nova.
+
+  - key: brasil_exchange_rate
+    name: "Câmbio"
+    area: brasil
+    output: reports/brasil/FX Report.html
+    module: analytics.brasil.exchange_rate.generate_report
+    command: 'uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run()"'
+    build_seconds: 43
+    note: >
+      As 3 abas de modelo (PPP, FX Attribution, Ridge) são opcionais — run(include_models=False)
+      pula FRED e os fits e sai em poucos segundos. As dependências marcadas com
+      scope "modelos" só valem quando elas entram.
+    deps:
+      - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "PTAX e volume interbancário"}
+      - {kind: mysql, ref: macro_brasil.cmb_reservas_bc, role: "Reservas e posicionamento do BC"}
+      - {kind: mysql, ref: macro_brasil.cmb_fluxo_cambial, role: "Fluxo cambial"}
+      - {kind: mysql, ref: macro_brasil.cmb_balanco_pagmt, role: "Balanço de pagamentos"}
+      - {kind: mysql, ref: macro_brasil.cmb_comex_pais, role: "Comex Stat por país"}
+      - {kind: mysql, ref: macro_brasil.cmb_comex_fator_agregado, role: "Comex Stat por fator agregado"}
+      - {kind: mysql, ref: macro_brasil.cmb_comex_produto, role: "Comex Stat por produto"}
+      - {kind: mysql, ref: macro_brasil.cmb_termos_troca, role: "Termos de troca (Funcex/IPEA)"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_usd, role: "PIB em USD, normalizador do BOP"}
+      - {kind: mysql, ref: macro_international.diferenciais_juros, role: "Diferenciais de juros Brasil × EUA"}
+      - {kind: mysql, ref: macro_international.cmb_reer, role: "REER do BIS"}
+      - {kind: mysql, ref: macro_international.cmb_cot_fx, role: "Posicionamento especulativo CFTC"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, scope: modelos, role: "IPCA, o deflator brasileiro do PPP"}
+      - {kind: mysql, ref: macro_brasil.inflc_meta, scope: modelos, role: "Meta de inflação, no núcleo PPP — date é o ANO da meta"}
+      - {kind: mysql, ref: macro_brasil.cmb_risco_pais, scope: modelos, role: "CDS 5Y, canal fiscal do Ridge", refresh: "CSV exportado à mão do investing.com — não automatiza"}
+      - {kind: mysql, ref: macro_brasil.comm_icbr_usd, scope: modelos, role: "Commodities em USD, canal de termos de troca"}
+      - {kind: mysql, ref: macro_international.cmb_dollar_index, scope: modelos, role: "DXY"}
+      - {kind: mysql, ref: macro_international.cmb_dollar_index_em, scope: modelos, role: "Dólar contra EM"}
+      - {kind: mysql, ref: macro_international.cmb_equity_us, scope: modelos, role: "S&P 500"}
+      - {kind: mysql, ref: macro_international.cmb_fx_latam, scope: modelos, role: "Câmbio MX/CL/CO/PE, comparação regional"}
+      - {kind: mysql, ref: macro_international.cmb_policy_rates, scope: modelos, role: "Policy rates do BIS"}
+      - kind: mysql
+        ref: base_mercado.interest_rates
+        scope: modelos
+        owner: CentralManagement
+        role: "Curvas de juros (breakeven, inclinação, juro real) do núcleo PPP"
+        note: >
+          Única dependência fora dos schemas macro_*. Quem escreve é o projeto
+          CentralManagement, pela tarefa agendada "Atualizacao da base de dados"
+          (09:30 diário) — não há nada neste repositório que a atualize.
+      - kind: live
+        ref: FRED:CPIAUCSL
+        scope: modelos
+        role: "CPI dos EUA, o outro lado do PPP"
+        note: Buscado no FRED durante a geração; não passa pelo MySQL.
+      - kind: live
+        ref: FRED:DFII10
+        scope: modelos
+        role: "Juro real de 10 anos dos EUA, regressor do Ridge"
+        note: Buscado no FRED durante a geração; não passa pelo MySQL.
+      - kind: csv
+        ref: analytics/brasil/exchange_rate/models/fx_attribution_data/verde_asset/claims.csv
+        date_col: date
+        scope: modelos
+        role: "Atribuição cambial — cartas da Verde, extraídas à mão"
+        refresh: extração manual a partir dos PDFs
+      - kind: csv
+        ref: analytics/brasil/exchange_rate/models/fx_attribution_data/kinea/claims.csv
+        date_col: date
+        scope: modelos
+        role: "Atribuição cambial — Kinea, extraída à mão"
+        refresh: extração manual a partir dos PDFs
+      - kind: csv
+        ref: analytics/brasil/exchange_rate/models/fx_attribution_data/kapitalo/claims.csv
+        date_col: date
+        scope: modelos
+        role: "Atribuição cambial — Kapitalo, extraída à mão"
+        refresh: extração manual a partir dos PDFs
+
+  - key: us_inflation
+    name: "Inflation (US)"
+    area: us
+    output: reports/us/Inflation.html
+    module: analytics.us.inflation.generate_report
+    command: 'uv run python -c "from analytics.us.inflation.generate_report import run; run()"'
+    build_seconds: 13
+    deps:
+      - {kind: mysql, ref: macro_us.inflc_cpi, role: "Níveis do CPI-U por item"}
+      - {kind: mysql, ref: macro_us.inflc_cpi_dim, date_col: null, role: "As duas árvores do CPI (despesa e Tabela 1)"}
+      - {kind: mysql, ref: macro_us.inflc_cpi_pesos, date_col: reference_period, role: "Relative importance anual"}
+      - {kind: mysql, ref: macro_us.inflc_pce, role: "Índice de preço e despesa nominal do PCE"}
+      - {kind: mysql, ref: macro_us.inflc_pce_dim, date_col: null, role: "Árvore do PCE, com os sinais de subtração"}
+      - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas e horas de divulgação do CPI (BLS) e do PCE (BEA) — a faixa no topo da página"}
+
+  - key: oraculo
+    name: "Oráculo (Power BI)"
+    area: brasil
+    output: analytics/oraculo/base/Central_base.csv
+    module: null
+    command: uv run python jobs/update_oraculo.py
+    build_seconds: null
+    note: >
+      Não é HTML: é o CSV que alimenta o Power BI. Entra aqui porque é consumidor de
+      banco como qualquer outro relatório e some da vista justamente por não ser um
+      arquivo em reports/ — aparece em 8 dos 25 grupos do calendário.
+    deps:
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, núcleo e difusão"}
+      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA 12m"}
+      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Emprego formal"}
+      - {kind: mysql, ref: macro_brasil.mt_pnad, role: "Força de trabalho"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_amplo, role: "Crédito ampliado"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_familias, role: "Condições das famílias"}
+      - {kind: mysql, ref: macro_brasil.atv_pib, role: "PIB por setor"}
+      - {kind: mysql, ref: macro_brasil.atv_pms, role: "Serviços"}
+      - {kind: mysql, ref: macro_brasil.atv_pim, role: "Indústria"}
+      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br"}
+
+  - key: release_calendar
+    name: "Calendário de Divulgações"
+    area: raiz
+    output: reports/release_calendar.html
+    module: analytics.release_calendar.generate_report
+    command: 'uv run python -c "from analytics.release_calendar.generate_report import run; run()"'
+    build_seconds: 1
+    note: >
+      Este relatório. Não lê MySQL na geração — o YAML é a fonte inteira, e o estado
+      do banco entra ao vivo pelo serve.py.
+    deps:
+      - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação, uma entrada por evento"}
+      - {kind: yaml, ref: domain/dashboards/manifest.yaml, role: "Este arquivo — alimenta a aba Status dashboard"}

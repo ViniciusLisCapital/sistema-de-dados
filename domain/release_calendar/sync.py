@@ -50,7 +50,7 @@ import yaml
 _AQUI = Path(__file__).parent
 _YAML_DEFAULT = _AQUI / "calendar_2026.yaml"
 
-_SCHEMAS = ("macro_brasil", "macro_international")
+_SCHEMAS = ("macro_brasil", "macro_international", "macro_us")
 
 # Coluna de tempo comum a toda tabela de dado publicado. Remedido 2026-08-18:
 # 68 das 69 tabelas dos dois schemas tem exatamente esta coluna, e a unica excecao
@@ -227,6 +227,116 @@ def carregar(path: Path | str = _YAML_DEFAULT) -> dict:
 
 def tabelas_por_grupo(doc: dict) -> dict[str, list[str]]:
     return {g["group"]: [str(t) for t in (g.get("tables") or [])] for g in doc["groups"]}
+
+
+# ------------------------------------------------------- agenda para relatorios
+
+
+def _entrada_publica(entrada: dict, grupo: dict) -> dict:
+    """Uma entrada do YAML no formato que um relatorio consome.
+
+    Traz a hora nos DOIS fusos de proposito. Um relatorio de dado americano lido no
+    Brasil precisa das duas: "08:30 ET" e o fato que a fonte publica e o que confere
+    com qualquer outra referencia, e "09:30 (Brasilia)" e a hora em que a pessoa
+    olhando a tela tem que estar acordada. Mostrar so a convertida esconde a
+    dependencia de horario de verao; mostrar so a da fonte obriga a conta mental.
+    """
+    quando = _divulgada_em(entrada)
+    fonte = _hora(entrada.get("time")) or _hora(grupo.get("release_time"))
+    local = hora_da_entrada(entrada, grupo, quando)
+    return {
+        "date": quando.isoformat() if quando else None,
+        "reference_period": entrada.get("reference_period"),
+        "confirmed": bool(entrada.get("confirmed")),
+        "time_fonte": fonte.strftime("%H:%M") if fonte else None,
+        "tz_fonte": str(grupo.get("release_time_tz") or _TZ_LOCAL),
+        "time_local": local.strftime("%H:%M") if local else None,
+        "tz_local": _TZ_LOCAL,
+        "note": entrada.get("note"),
+    }
+
+
+def agenda_da_tabela(
+    tabela: str,
+    path: Path | str = _YAML_DEFAULT,
+    as_of: date | None = None,
+    agora: datetime | None = None,
+    doc: dict | None = None,
+) -> dict | None:
+    """Ultima e proxima divulgacao de uma tabela, prontas para um relatorio.
+
+    Devolve None para tabela que nenhum grupo cobre — inclusive as de
+    `no_release` (serie continua, tabela de dimensao): nao ha divulgacao a mostrar,
+    e um dict vazio seria pior que a ausencia, porque o template nao teria como
+    distinguir "sem agenda" de "agenda vazia".
+
+    Uma tabela pode estar em varios grupos (`expc_focus` esta em tres). A ultima e a
+    mais recente ja ocorrida entre todos; a proxima e a mais proxima ainda por vir —
+    que e a leitura util para "quando muda o que estou vendo".
+
+    A fronteira entre passada e futura respeita a HORA: no dia 11/09/2026 as 09:00 de
+    Brasilia o CPI de agosto ainda nao saiu (08:30 em Nova York = 09:30 aqui), e
+    aparece como proxima, nao como ultima. E a mesma regra que segura o botao
+    "Atualizar" do calendario durante a manha do dia da divulgacao.
+    """
+    agora = agora or datetime.now()
+    as_of = as_of or agora.date()
+    doc = doc if doc is not None else carregar(path)
+
+    passadas: list[tuple[date, dict, dict]] = []
+    futuras: list[tuple[date, dict, dict]] = []
+
+    for g in doc["groups"]:
+        if str(tabela) not in [str(t) for t in (g.get("tables") or [])]:
+            continue
+        for e in g.get("entries") or []:
+            quando = _divulgada_em(e)
+            if quando is None:
+                continue
+            hora = hora_da_entrada(e, g, quando)
+            destino = passadas if _ja_saiu(quando, hora, as_of, agora) else futuras
+            destino.append((quando, e, g))
+
+    if not passadas and not futuras:
+        return None
+
+    ultima = max(passadas, key=lambda x: x[0]) if passadas else None
+    proxima = min(futuras, key=lambda x: x[0]) if futuras else None
+    ref = ultima or proxima
+    assert ref is not None
+    grupo = ref[2]
+
+    return {
+        "tabela": str(tabela),
+        "grupo": grupo.get("group"),
+        "institution": grupo.get("institution"),
+        "name": grupo.get("name"),
+        "cadence": grupo.get("cadence"),
+        "source_url": grupo.get("source_url"),
+        "ultima": _entrada_publica(ultima[1], ultima[2]) if ultima else None,
+        "proxima": _entrada_publica(proxima[1], proxima[2]) if proxima else None,
+    }
+
+
+def agenda_das_tabelas(
+    tabelas,
+    path: Path | str = _YAML_DEFAULT,
+    as_of: date | None = None,
+    agora: datetime | None = None,
+) -> dict[str, dict]:
+    """`agenda_da_tabela` para varias tabelas, lendo o YAML uma vez so.
+
+    E este o ponto de entrada dos relatorios: `generate_report.py` chama com as
+    tabelas que a pagina mostra e injeta o resultado no payload. Tabela sem agenda
+    simplesmente nao aparece no dict — o template testa a presenca da chave.
+    """
+    doc = carregar(path)
+    out = {}
+    for t in tabelas:
+        info = agenda_da_tabela(t, as_of=as_of, agora=agora, doc=doc)
+        if info is not None:
+            out[str(t)] = info
+    return out
 
 
 def _menos_meses(d: date, n: int) -> date:

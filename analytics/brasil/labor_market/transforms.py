@@ -1,27 +1,43 @@
 """
-Variantes de exibicao (Nivel/Var. curto prazo/Var. anual) para as series de
-mt_pnad (mensal/trimestre movel) e mt_pnad_trimestral (trimestral) -- v1 do
-Panorama de Mercado de Trabalho, so visualizacao (sem STL/dessazonalizacao,
-deflacao ou %PIB -- ao contrario de analytics/brasil/fiscal_policy/transforms.py, que
-resolve um problema mais amplo). Reusa pct_change()/pp_diff() de la em vez de
-duplicar.
+Variantes de exibicao das series do Panorama de Mercado de Trabalho -- so
+visualizacao (sem STL/dessazonalizacao, deflacao ou %PIB, ao contrario de
+analytics/brasil/fiscal_policy/transforms.py, que resolve um problema mais
+amplo). Reusa pct_change()/pp_diff() de la em vez de duplicar.
 
-Duas familias de serie, unidades diferentes:
+Duas familias de unidade nas series de PNAD:
   - "rate" (True): series ja em % (taxa_desocupacao, taxa_participacao,
     taxa_informalidade, taxa_subutil_*, nivel_ocupacao/desocupacao,
     pct_desalentados, pct_contribuintes_previdencia) -- variacao em PONTOS
     PERCENTUAIS (pp_diff), nao em variacao percentual da taxa (pct_change
     daria "taxa caiu 6,7%" quando na verdade caiu de 7,5% para 7,0%, ou seja
     -0,5 p.p. -- unidade errada para uma serie que ja e uma razao).
-  - "rate=False": niveis em milhares de pessoas (ocup_*, forca_*,
-    subutil_subocupado_horas/forca_potencial/desalentado) ou R$
-    (rend_*, massa_*) -- variacao percentual normal (pct_change).
+  - "rate=False": niveis em mil pessoas (ocup_*, ocupado/desocupado/
+    fora_da_forca_trabalho, subutil_*), R$/mes (rend_*) ou R$ milhoes/mes
+    (massa_*) -- variacao percentual normal (pct_change).
 
-mt_pnad (mensal/trimestre movel): curto prazo = m/m (lag 1), longo = a/a
-(lag 12). mt_pnad_trimestral (trimestral "cheia", ver docstring do script de
-ingestao): curto prazo = t/t (lag 1), longo = a/a (lag 4).
+FREQUENCIA (2026-08-27, a pedido do usuario -- "como temos dados mensais e
+trimestrais, separe a visualizacao"): cada serie de PNAD ganha as variantes nas
+DUAS frequencias, chaveadas "{freq}__{metrica}" (o lado JS monta essa chave
+concatenando os seletores da tabela). mt_pnad e mensal (trimestre movel) e
+existe nas duas; mt_pnad_trimestral e trimestral e existe so em `trimestral__*`
+-- e e isso que permite ao JS esconder a linha em vez de imprimir uma fila de
+travessoes na visao mensal.
 
-Terceira familia, adicionada em 2026-08 com a aba "Emprego Formal" (CAGED):
+O alinhamento entre as duas nao e suposto, foi MEDIDO (2026-08-27): a data de
+mt_pnad_trimestral e o PRIMEIRO mes do trimestre (2026-04 = 2o tri) e a de
+mt_pnad e o ULTIMO mes do trimestre movel, entao o trimestre fechado Abr-Jun
+esta em mt_pnad sob 2026-06. Reconstruindo o total nacional da taxa de
+desocupacao a partir dos cortes por sexo de mt_pnad_trimestral (ponderando
+populacao x taxa de participacao) e comparando com mt_pnad: MAE 0,038 p.p. em
+57 trimestres (max 0,097) contra o ultimo mes, e 0,499 p.p. (max 1,426) contra
+o primeiro -- ou seja, o casamento pelo ultimo mes e exato a menos do
+arredondamento de 1 decimal da fonte, e o pelo primeiro esta 13x pior. Por isso
+to_quarterly() colhe os meses 3/6/9/12 e REDATA para o 1o mes do trimestre.
+
+Var. curto prazo (m/m e t/t) foi REMOVIDA em 2026-08-27, a pedido explicito do
+usuario ("pode retirar a metrica de curto prazo de todos os graficos").
+
+Terceira familia, da aba "Emprego Formal" (CAGED):
   - FLUXO (mt_caged_setor/_uf/_salario -- saldo/admissoes/desligamentos):
     Mensal / Acum. 12m / Acum. no ano. Deliberadamente SEM variacao percentual
     -- saldo e fluxo liquido e cruza zero (as 22 secoes CNAE cruzam, e o a/a %
@@ -33,26 +49,50 @@ Terceira familia, adicionada em 2026-08 com a aba "Emprego Formal" (CAGED):
 """
 from analytics.brasil.fiscal_policy.transforms import pct_change, pp_diff
 
+# Mes que fecha o trimestre -> mes que ABRE o mesmo trimestre (a convencao de
+# data de mt_pnad_trimestral). Ver a medicao na docstring do modulo.
+_FECHA_PARA_ABRE = {3: "01", 6: "04", 9: "07", 12: "10"}
+
 
 def _diff_fn(rate: bool):
     return pp_diff if rate else pct_change
 
 
-def variants_mensal(dates: list[str], values: list, rate: bool) -> dict:
+def to_quarterly(dates: list[str], values: list) -> tuple[list[str], list]:
+    """Serie mensal de mt_pnad -> serie trimestral na convencao de data de
+    mt_pnad_trimestral (1o mes do trimestre). Colhe so os meses que FECHAM um
+    trimestre (3/6/9/12), porque a observacao de mt_pnad e um trimestre movel
+    rotulado pelo seu ultimo mes -- ver a medicao na docstring do modulo."""
+    out_d, out_v = [], []
+    for d, v in zip(dates, values):
+        abre = _FECHA_PARA_ABRE.get(int(d[5:7]))
+        if abre is None:
+            continue
+        out_d.append(f"{d[:4]}-{abre}-01")
+        out_v.append(v)
+    return out_d, out_v
+
+
+def variants_pnad_mensal(dates: list[str], values: list, rate: bool) -> dict:
+    """mt_pnad: existe nas duas frequencias. Lag 12 no mensal, lag 4 no
+    trimestral -- os dois sao "mesmo periodo um ano antes"."""
     diff = _diff_fn(rate)
+    qd, qv = to_quarterly(dates, values)
     return {
-        "level": {"dates": dates, "values": values},
-        "mom": {"dates": dates, "values": diff(values, 1)},
-        "yoy": {"dates": dates, "values": diff(values, 12)},
+        "mensal__level":     {"dates": dates, "values": values},
+        "mensal__yoy":       {"dates": dates, "values": diff(values, 12)},
+        "trimestral__level": {"dates": qd, "values": qv},
+        "trimestral__yoy":   {"dates": qd, "values": diff(qv, 4)},
     }
 
 
-def variants_trimestral(dates: list[str], values: list, rate: bool) -> dict:
+def variants_pnad_trimestral(dates: list[str], values: list, rate: bool) -> dict:
+    """mt_pnad_trimestral: so trimestral. A AUSENCIA das chaves `mensal__*` e o
+    que faz o JS esconder a linha na visao mensal (em vez de imprimir "--")."""
     diff = _diff_fn(rate)
     return {
-        "level": {"dates": dates, "values": values},
-        "qoq": {"dates": dates, "values": diff(values, 1)},
-        "yoy": {"dates": dates, "values": diff(values, 4)},
+        "trimestral__level": {"dates": dates, "values": values},
+        "trimestral__yoy":   {"dates": dates, "values": diff(values, 4)},
     }
 
 

@@ -63,7 +63,7 @@ _AQUI = Path(__file__).parent
 _YAML_DEFAULT = _AQUI / "calendar_2026.yaml"
 
 # Schemas varridos por --coverage.
-_SCHEMAS = ("macro_brasil", "macro_international")
+_SCHEMAS = ("macro_brasil", "macro_international", "macro_us")
 
 
 # --------------------------------------------------------------------- helpers

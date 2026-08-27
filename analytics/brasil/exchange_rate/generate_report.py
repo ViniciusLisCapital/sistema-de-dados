@@ -133,19 +133,41 @@ def _load_cot_fx() -> dict:
 
 
 def _load_bcb_positioning() -> dict:
-    """Reservas internacionais, posição de câmbio (BCB/bancos) e intervenções.
+    """Reservas internacionais, posicao de cambio (BCB/bancos) e intervencoes.
 
-    Alimenta a aba "BCB Positioning". `cmb_reservas_bc` mistura frequências
-    (mensal para reservas/swap, diária para reservas_liquidity/intervenções)
-    numa única tabela — pivotar tudo junto criaria um índice de datas comum
-    onde a maioria das linhas mensais ficaria cercada de nulls (a série
+    Alimenta a aba "Posicionamento do BCB". `cmb_reservas_bc` mistura frequencias
+    (mensal para reservas/swap, diaria para reservas_liquidity/intervencoes)
+    numa unica tabela -- pivotar tudo junto criaria um indice de datas comum
+    onde a maioria das linhas mensais ficaria cercada de nulls (a serie
     "quebraria" visualmente com connectgaps=false). Em vez disso, cada
-    subgrupo abaixo pivota só suas próprias séries e carrega seu próprio
+    subgrupo abaixo pivota so suas proprias series e carrega seu proprio
     eixo "dates".
 
-    Todas as séries usadas aqui (reservas, ouro, swap, intervenções) estão em
-    USD MM na fonte — convertidas para USD Bi (/1000) para exibição no
-    relatório. `reserves_gold_volume` (troy oz) não é usada nesta função.
+    Todas as series usadas aqui (reservas, ouro, swap, intervencoes) estao em
+    USD MM na fonte -- convertidas para USD Bi (/1000) para exibicao no
+    relatorio. `reserves_gold_volume` (troy oz) nao e usada nesta funcao.
+
+    Dois subgrupos alimentam tabelas hierarquicas (2026-08-27):
+
+    `reservas_arvore` -- o template de reservas do FMI que o BCB publica em SGS
+    3546-3556/7323, e cuja aditividade fecha na fonte (medido: residuo medio
+    0,0005 USD Bi, maximo 0,010 em 307 meses):
+        total = moeda estrangeira + ouro + DES + posicao no FMI + outros
+        moeda estrangeira = titulos + moeda e depositos
+        outros = compromissadas reversas + emprestimos + derivativos
+    E ESTOQUE, nao fluxo: o relatorio agrega por FIM DE PERIODO, nunca somando.
+
+    `intervencoes` -- as 4 series de intervencao liquida liquidada, somadas em
+    meses. A tabela **descarta os zeros** por decisao do ETL (ver
+    `_drop_zero_interventions` em domain/db/brasil/bcb/cmb_reservas_bc.py), entao
+    dia ausente dentro da janela de publicacao e intervencao zero, e nao dado
+    faltante -- e isso que justifica somar sobre um calendario completo em vez de
+    propagar null. A janela de publicacao NAO pode sair do max() das proprias
+    series (o BCB passa meses sem intervir -- 2023 nao tem nenhum registro de
+    spot, e cortar ali esconderia meses de zeros legitimos): vem de
+    `reserves_total_daily`, que e diaria na mesma tabela e nao sofre a remocao de
+    zeros. O ultimo mes so entra se essa serie alcancou o ultimo dia util dele,
+    mesma regra de _load_cambio_contratado().
     """
     try:
         df = _fetch("macro_brasil", "cmb_reservas_bc")
@@ -160,23 +182,179 @@ def _load_bcb_positioning() -> dict:
             wide = sub.pivot(index="date", columns="name", values="value").sort_index()
             return {"dates": _dates(wide.index), **{n: _col(wide, n) for n in names}}
 
+        # PIB mensal em USD, reindexado para a grade de cada subgrupo. Nas reservas
+        # o denominador e a soma movel de 12 meses (estoque / PIB anual, a leitura
+        # usual de adequacao de reservas); nas intervencoes e a soma na MESMA janela
+        # do bucket, como no resto do relatorio.
+        gdp_wide = _pivot("macro_brasil", "atv_pib_usd")
+        gdp_m = ((gdp_wide["pib_usd"] / 1000.0)
+                 if gdp_wide is not None and "pib_usd" in gdp_wide.columns else None)
+
+        # -- arvore de reservas (mensal, template do FMI) ----------------------
+        _ARV = ["reserves_total_monthly", "reserves_fx_total", "reserves_fx_securities",
+                "reserves_fx_currency_deposits", "reserves_gold_usd", "reserves_sdrs",
+                "reserves_imf_position", "reserves_other_total", "reserves_other_reverse_repo",
+                "reserves_other_loans", "reserves_other_derivatives"]
+        sub = df[df["name"].isin(_ARV)]
+        arvore = {}
+        if not sub.empty:
+            w = sub.pivot(index="date", columns="name", values="value").sort_index()
+            # Corte em 2001-01, onde a decomposicao comeca. O total sozinho vai a
+            # 1971, mas mante-lo aqui abriria a arvore com 30 anos em que so a raiz
+            # tem valor -- o grafico de manchete da secao acima e quem mostra essa
+            # historia longa, e ele nao e arvore.
+            w = w[w.index >= pd.Timestamp("2001-01-01")]
+            w = w.reindex(pd.date_range(w.index.min(), w.index.max(), freq="MS"))
+            arvore = {"dates": _dates(w.index), **{n: _col(w, n) for n in _ARV}}
+            if gdp_m is not None:
+                arvore["gdp_usd_bi"] = _to_list(gdp_m.reindex(w.index))
+
+        # -- intervencoes (diarias, somadas em meses) --------------------------
+        _INT = ["bcb_intervention_spot", "bcb_intervention_forwards",
+                "bcb_intervention_fx_loans_repos", "bcb_intervention_repo_lines"]
+        sub = df[df["name"].isin(_INT)]
+        interv = {}
+        if not sub.empty:
+            w = sub.pivot(index="date", columns="name", values="value").sort_index()
+            diario = df[df["name"] == "reserves_total_daily"]["date"]
+            alcance = diario.max() if not diario.empty else w.index.max()
+            w = w.reindex(pd.date_range(w.index.min(), alcance, freq="D")).fillna(0.0)
+            mensal = w.resample("MS").sum(min_count=0)
+            if alcance < (alcance + pd.offsets.BMonthEnd(0)):
+                mensal = mensal.iloc[:-1]
+            for c in _INT:
+                if c not in mensal.columns:
+                    mensal[c] = 0.0
+            mensal["bcb_intervention_total"] = mensal[_INT].sum(axis=1)
+            interv = {"dates": _dates(mensal.index),
+                      **{c: _to_list(mensal[c]) for c in _INT + ["bcb_intervention_total"]}}
+            if gdp_m is not None:
+                interv["gdp_usd_bi"] = _to_list(gdp_m.reindex(mensal.index))
+            interv["ultimo_dia_diario"] = alcance.strftime("%Y-%m-%d")
+
+        # A secao de posicao cambial ganhou tabela em 2026-08-27: precisa do mesmo
+        # denominador de 12 meses da arvore de reservas, porque tambem e posicao em
+        # aberto e nao fluxo.
+        swap = _subgroup(["bcb_swap_cambial_position", "bcb_fx_stock_repos_loans",
+                          "bcb_fx_other_assets_liabilities", "bank_fx_spot_position"])
+        if swap and gdp_m is not None:
+            swap["gdp_usd_bi"] = _to_list(gdp_m.reindex(pd.to_datetime(swap["dates"])))
+
         return {
             "reserves": _subgroup(["reserves_liquidity_daily", "reserves_total_monthly"]),
-            "gold":     _subgroup(["reserves_gold_usd"]),
-            "swap":     _subgroup(["bcb_swap_cambial_position", "bank_fx_spot_position"]),
-            "interventions": _subgroup([
-                "bcb_intervention_spot",
-                "bcb_intervention_forwards",
-                "bcb_intervention_fx_loans_repos",
-                "bcb_intervention_repo_lines",
-            ]),
+            # As tres linhas do BCB sao a exposicao cambial dele FORA das reservas;
+            # a dos bancos e de outra entidade e entra so como contraparte. Nao vira
+            # arvore: a fonte nao publica total das tres, e somar por conta propria
+            # seria inventar um agregado.
+            "swap":     swap,
+            "reservas_arvore": arvore,
+            "intervencoes":    interv,
         }
     except Exception as exc:
-        print(f"  Aviso: erro em cmb_reservas_bc — {exc}")
+        print(f"  Aviso: erro em cmb_reservas_bc -- {exc}")
+        return {}
+
+
+def _load_cambio_contratado() -> dict:
+    """Câmbio contratado entre bancos e clientes — a fonte de fluxo cambial do relatório.
+
+    Tabelas 13 (diária, desde set/2008) e 14 (mensal, desde 2011) dos Indicadores
+    Econômicos Selecionados do BCB — ver o docstring de
+    domain/db/brasil/bcb/cmb_cambio_contratado.py para o mapa código→série.
+
+    Substituiu `cmb_fluxo_cambial` nesta aba em 2026-08-27, porque aquela tabela
+    **não contém fluxo cambial**: o `total_saldo` dela vai de 81,0 a 82,9 ao longo
+    de 307 meses e NUNCA troca de sinal, enquanto um saldo de fluxo cambial oscila
+    em torno de zero (o dado real troca de sinal em 107 dos 216 meses em comum).
+    A correlação entre os dois é 0,05 e as magnitudes diferem ~60x. Os códigos SGS
+    24352/24363/24364/24369/24370/24371 que aquele script usa não são o que o
+    docstring dele afirma — e ele próprio já registrava a dúvida ("confirmar
+    unidade na BCB SGS"). Ver analytics/brasil/exchange_rate/CLAUDE.md.
+
+    Aqui as identidades fecham EXATAMENTE (resíduo 0,000 em 4.501 dias):
+        saldo_total     = saldo_comercial + saldo_financeiro
+        saldo_comercial = exportação − importação
+        exportação      = ACC + PA + demais
+        saldo_financeiro = compras − vendas
+        saldo_fin_det   = serviços + rendas + capitais BR + capitais estrangeiros
+
+    As séries diárias são somadas em meses; o mês em curso é DESCARTADO em vez de
+    somado pela metade (regra de período incompleto, ver analytics/metric_layers.md).
+    """
+    try:
+        wide = _pivot("macro_brasil", "cmb_cambio_contratado")
+        if wide is None:
+            return {}
+
+        diarias = ["cc_saldo_total", "cc_saldo_comercial", "cc_export_total", "cc_export_acc",
+                   "cc_export_pa", "cc_export_outros", "cc_import_total",
+                   "cc_fin_saldo", "cc_fin_compras", "cc_fin_vendas"]
+        diarias = [c for c in diarias if c in wide.columns]
+        mensais = ["cc_fin_saldo_det", "cc_fin_servicos", "cc_fin_rendas",
+                   "cc_fin_cap_bras", "cc_fin_cap_ext"]
+        mensais = [c for c in mensais if c in wide.columns]
+
+        mensal = wide[diarias].resample("MS").sum(min_count=1)
+
+        # O mês em curso só entra se a série alcançou o último DIA ÚTIL dele. Sem
+        # isto, agosto com 15 pregões apareceria somado ao lado de meses de 22 —
+        # o mesmo defeito de período incompleto corrigido em aggregateSum().
+        # Feriado no último dia útil faz descartar um mês que estava completo:
+        # erra para menos, que é o lado seguro.
+        ultimo = wide[diarias].dropna(how="all").index.max()
+        if ultimo is not None and ultimo < (ultimo + pd.offsets.BMonthEnd(0)):
+            mensal = mensal.iloc[:-1]
+
+        mensal = mensal / 1000.0  # USD MM -> USD Bi
+        det = (wide[mensais] / 1000.0).reindex(mensal.index) if mensais else None
+
+        out = {"dates": _dates(mensal.index)}
+        for c in diarias:
+            out[c] = _to_list(mensal[c])
+        if det is not None:
+            for c in mensais:
+                out[c] = _to_list(det[c])
+        out["ultimo_dia_diario"] = ultimo.strftime("%Y-%m-%d") if ultimo is not None else None
+        return out
+    except Exception as exc:
+        print(f"  Aviso: erro em cmb_cambio_contratado — {exc}")
+        return {}
+
+
+def _load_interbancario() -> dict:
+    """Volume interbancário de câmbio (T+1/T+2), diário em `cmb_ptax`, somado em meses.
+
+    Mesma regra de mês incompleto de _load_cambio_contratado().
+    """
+    try:
+        wide = _pivot("macro_brasil", "cmb_ptax")
+        if wide is None or "fx_interbank_vol_t1" not in wide.columns:
+            return {}
+        cols = ["fx_interbank_vol_t1", "fx_interbank_vol_t2"]
+        mensal = wide[cols].resample("MS").sum(min_count=1)
+        ultimo = wide[cols].dropna(how="all").index.max()
+        if ultimo is not None and ultimo < (ultimo + pd.offsets.BMonthEnd(0)):
+            mensal = mensal.iloc[:-1]
+        mensal = mensal / 1e9  # USD -> USD Bi (esta série vem em USD, não USD MM)
+        return {
+            "dates":     _dates(mensal.index),
+            "vol_t1":    _to_list(mensal["fx_interbank_vol_t1"]),
+            "vol_t2":    _to_list(mensal["fx_interbank_vol_t2"]),
+            "vol_total": _to_list(mensal["fx_interbank_vol_t1"] + mensal["fx_interbank_vol_t2"]),
+        }
+    except Exception as exc:
+        print(f"  Aviso: erro em cmb_ptax (volume interbancário) — {exc}")
         return {}
 
 
 def _load_fluxo() -> dict:
+    """ATENÇÃO — esta tabela NÃO contém fluxo cambial; ver _load_cambio_contratado().
+
+    Mantida porque `agent_data.get_fx_snapshot()` ainda a consome, e retirá-la de lá
+    é decisão de quem cuida do agente `cambio-analyst`. O relatório parou de usá-la
+    em 2026-08-27. A tabela e o script `domain/db/brasil/bcb/cmb_fluxo_cambial.py`
+    precisam de uma decisão: corrigir os códigos SGS ou dropar.
+    """
     try:
         wide = _pivot("macro_brasil", "cmb_fluxo_cambial")
         if wide is None:
@@ -284,6 +462,7 @@ def _load_bop() -> dict:
             "portfolio_ativos", "outros_inv_ativos", "portfolio_passivos", "acoes_passivos", "fundos_passivos",
             "acoes_ativos", "fundos_ativos", "titulos_ativos_cp", "titulos_ativos_lp",
             "titulos_dom", "titulos_externo_cp", "titulos_externo_lp",
+            "outros_inv_passivos", "emprestimos_cp_passivos", "emprestimos_lp_passivos",
             "derivativos", "ativos_reserva", "erros_omissoes",
         ]:
             out[name] = _col(wide, name)
@@ -312,6 +491,14 @@ def _load_bop() -> dict:
         )
         out["emprestimos_titulos_cp_externo"] = _to_list(
             wide["titulos_externo_cp"] + wide["emprestimos_cp_passivos"]
+        )
+        # Residual de "Outros Investimentos — Passivos" além dos dois empréstimos
+        # publicados (moeda e depósitos, créditos comerciais, outros passivos):
+        # os dois empréstimos NÃO fecham a conta (resíduo médio de 1,4 e máximo de
+        # 16,7 USD Bi), então o ramo precisa da linha de resto para somar ao pai —
+        # mesma construção de `demais_servicos`.
+        out["demais_outros_passivos"] = _to_list(
+            wide["outros_inv_passivos"] - wide["emprestimos_cp_passivos"] - wide["emprestimos_lp_passivos"]
         )
         out["demais_passivos"] = _to_list(
             wide["portfolio_passivos"] + wide["outros_inv_passivos"]
@@ -346,16 +533,29 @@ def _load_comex_pais() -> dict:
             return {}
         wide = wide / 1e9  # USD -> USD Bi
 
+        # Além do saldo, a fonte publica exportação e importação SEPARADAS por
+        # parceiro — detalhe que a Balança de Bens do BPM6 não abre. A árvore
+        # da aba usa os três níveis (total -> parceiro -> exportação/importação),
+        # por isso os dois lados brutos vão no payload, não só a diferença.
         out = {"dates": _dates(wide.index)}
-        saldo_paises = None
+        saldo_paises = export_paises = import_paises = None
         for pais in _COMEX_PAISES:
-            saldo = wide[f"{pais}_export"] - wide[f"{pais}_import"]
+            export, import_ = wide[f"{pais}_export"], wide[f"{pais}_import"]
+            saldo = export - import_
             out[f"saldo_{pais}"] = _to_list(saldo)
+            out[f"export_{pais}"] = _to_list(export)
+            out[f"import_{pais}"] = _to_list(import_)
             saldo_paises = saldo if saldo_paises is None else saldo_paises + saldo
+            export_paises = export if export_paises is None else export_paises + export
+            import_paises = import_ if import_paises is None else import_paises + import_
 
-        saldo_mundo = wide["mundo_export"] - wide["mundo_import"]
-        out["saldo_demais"] = _to_list(saldo_mundo - saldo_paises)
-        out["saldo_mundo"] = _to_list(saldo_mundo)
+        export_mundo, import_mundo = wide["mundo_export"], wide["mundo_import"]
+        out["saldo_demais"] = _to_list(export_mundo - import_mundo - saldo_paises)
+        out["export_demais"] = _to_list(export_mundo - export_paises)
+        out["import_demais"] = _to_list(import_mundo - import_paises)
+        out["saldo_mundo"] = _to_list(export_mundo - import_mundo)
+        out["export_mundo"] = _to_list(export_mundo)
+        out["import_mundo"] = _to_list(import_mundo)
         return out
     except Exception as exc:
         print(f"  Aviso: erro em cmb_comex_pais — {exc}")
@@ -390,14 +590,24 @@ def _load_comex_fator_agregado() -> dict:
         # buracos onde as outras 3 categorias têm dado completo.
         wide = wide.fillna(0)
 
+        # Mesma abertura exportação/importação de _load_comex_pais() — aqui o
+        # total é a soma direta das 4 categorias (partição exata), então não há
+        # "mundo" separado nem residual.
         out = {"dates": _dates(wide.index)}
-        saldo_total = None
+        saldo_total = export_total = import_total = None
         for cat in _COMEX_FATOR_AGREGADO_CATEGORIAS:
-            saldo = wide[f"{cat}_export"] - wide[f"{cat}_import"]
+            export, import_ = wide[f"{cat}_export"], wide[f"{cat}_import"]
+            saldo = export - import_
             out[f"saldo_{cat}"] = _to_list(saldo)
+            out[f"export_{cat}"] = _to_list(export)
+            out[f"import_{cat}"] = _to_list(import_)
             saldo_total = saldo if saldo_total is None else saldo_total + saldo
+            export_total = export if export_total is None else export_total + export
+            import_total = import_ if import_total is None else import_total + import_
 
         out["saldo_total"] = _to_list(saldo_total)
+        out["export_total"] = _to_list(export_total)
+        out["import_total"] = _to_list(import_total)
         return out
     except Exception as exc:
         print(f"  Aviso: erro em cmb_comex_fator_agregado — {exc}")
@@ -431,16 +641,26 @@ def _load_comex_produto() -> dict:
         # completos (354/354), então o fillna só afeta as séries esparsas.
         wide = wide.fillna(0)
 
+        # Mesma abertura exportação/importação de _load_comex_pais().
         out = {"dates": _dates(wide.index)}
-        saldo_produtos = None
+        saldo_produtos = export_produtos = import_produtos = None
         for prod in _COMEX_PRODUTOS:
-            saldo = wide[f"{prod}_export"] - wide[f"{prod}_import"]
+            export, import_ = wide[f"{prod}_export"], wide[f"{prod}_import"]
+            saldo = export - import_
             out[f"saldo_{prod}"] = _to_list(saldo)
+            out[f"export_{prod}"] = _to_list(export)
+            out[f"import_{prod}"] = _to_list(import_)
             saldo_produtos = saldo if saldo_produtos is None else saldo_produtos + saldo
+            export_produtos = export if export_produtos is None else export_produtos + export
+            import_produtos = import_ if import_produtos is None else import_produtos + import_
 
-        saldo_mundo = wide["mundo_export"] - wide["mundo_import"]
-        out["saldo_demais"] = _to_list(saldo_mundo - saldo_produtos)
-        out["saldo_mundo"] = _to_list(saldo_mundo)
+        export_mundo, import_mundo = wide["mundo_export"], wide["mundo_import"]
+        out["saldo_demais"] = _to_list(export_mundo - import_mundo - saldo_produtos)
+        out["export_demais"] = _to_list(export_mundo - export_produtos)
+        out["import_demais"] = _to_list(import_mundo - import_produtos)
+        out["saldo_mundo"] = _to_list(export_mundo - import_mundo)
+        out["export_mundo"] = _to_list(export_mundo)
+        out["import_mundo"] = _to_list(import_mundo)
         return out
     except Exception as exc:
         print(f"  Aviso: erro em cmb_comex_produto — {exc}")
@@ -551,7 +771,11 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
         "reer":            _load_reer(),
         "cot_fx":          _load_cot_fx(),
         "bcb_positioning": _load_bcb_positioning(),
-        "fluxo":           _load_fluxo(),
+        # `fluxo` (cmb_fluxo_cambial) saiu do payload em 2026-08-27 — não é fluxo
+        # cambial, ver o docstring de _load_fluxo(). A aba passou a ler
+        # cmb_cambio_contratado, que é a fonte que o BCB publica para isso.
+        "cambio_contratado": _load_cambio_contratado(),
+        "interbancario":     _load_interbancario(),
         "bop":             _load_bop(),
         "comex_pais":      _load_comex_pais(),
         "comex_fator_agregado": _load_comex_fator_agregado(),
