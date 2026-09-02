@@ -371,7 +371,11 @@ const semRegua = Object.keys(cardOf).filter(divId => {
   return !(w && w.classList.contains('chart-with-range') && w.querySelector('.range-bar'));
 });
 ok(semRegua.length === 0, 'nenhum grafico ficou sem regua de periodo', semRegua.join(', '));
-ok(Object.keys(cardOf).length >= 17, 'a contagem de graficos cobre as 6 abas de dados', Object.keys(cardOf).length);
+// Piso de fumaca: confirma que o harness achou os graficos de verdade, e nao que
+// a contagem esta num numero exato -- este relatorio ganha e perde grafico por
+// pedido do usuario (6 abas de dados no inicio, 4 desde 2026-09-01). Quem afirma
+// composicao exata e a secao 15, e so para a aba que acabou de mudar.
+ok(Object.keys(cardOf).length >= 14, 'o harness achou os graficos das abas de dados', Object.keys(cardOf).length);
 
 console.log('\n=== 4. seletor por grafico, nao por aba ======================');
 ['bop', 'comex-pais', 'comex-fator', 'comex-produto'].forEach(pfx => {
@@ -963,7 +967,8 @@ function botaoInfo(tr) {
 
   // 12c. `full` nunca repete o rotulo exibido
   const todasArvores = [BOP_TREE_FULL, COMEX_PAIS_TREE, COMEX_FATOR_TREE, COMEX_PRODUTO_TREE,
-                        CC_TREE, CC_DET_TREE, IB_TREE, RES_TREE, INTERV_TREE, SWAP_TREE];
+                        CC_TREE, CC_DET_TREE, IB_TREE, RES_TREE, INTERV_TREE, SWAP_TREE,
+                        COT_ROWS];
   const nos = [];
   todasArvores.forEach(t => (function walk(l) {
     (l || []).forEach(n => { nos.push(n); walk(n.children); });
@@ -1049,7 +1054,7 @@ function botaoInfo(tr) {
 }
 
 
-console.log('\n=== 13. aba Posicionamento do BCB ===========================');
+console.log('\n=== 13. aba Posicionamento: BCB e mercado ===================');
 // A aba ganhou duas arvores em 2026-08-27. A que importa testar e a de RESERVAS,
 // porque ela e a primeira do relatorio a agregar ESTOQUE: toda a maquinaria da
 // fabrica foi escrita para fluxo, e somar tres meses de reservas devolveria ~1.100
@@ -1270,7 +1275,368 @@ console.log('\n=== 13. aba Posicionamento do BCB ===========================');
 
   // 13k. a aba e a terceira do nav
   const abas = (htmlBruto.match(/data-tab="tab-[\w-]+"/g) || []).map(m => m.slice(10, -1));
-  ok(abas[2] === 'tab-bcb', 'Posicionamento do BCB e a terceira aba', abas.slice(0, 4).join(', '));
+  ok(abas[2] === 'tab-bcb', 'Posicionamento: BCB e mercado e a terceira aba', abas.slice(0, 4).join(', '));
+}
+
+console.log('\n=== 14. reorganizacao das abas (2026-09-01) =================');
+// A aba Cotacao foi apagada e os seus dois vizinhos redistribuidos, a pedido do
+// usuario: o PTAX foi para Valuation (e o nivel contra o qual as outras tres secoes
+// da aba sao lidas) e o posicionamento especulativo da CFTC saiu de Valuation para a
+// aba do BCB, que passou a se chamar "Posicionamento: BCB e mercado" justamente
+// porque agora carrega as duas pontas.
+//
+// A assercao que importa aqui e a de PERTENCIMENTO. Um grafico que continua
+// existindo, continua sendo desenhado e continua passando em todo o resto deste
+// arquivo pode ter ficado no painel errado sem levantar erro nenhum -- ele so nunca
+// aparece onde o leitor foi procura-lo. E a mesma classe do bug de aba que nenhum
+// teste de configuracao pega: o objeto esta certo, o lugar e que nao.
+{
+  const abas14 = (htmlBruto.match(/data-tab="tab-[\w-]+"/g) || []).map(m => m.slice(10, -1));
+
+  // Fatia o HTML nos limites dos paineis para responder "que aba hospeda este div?".
+  const limites = [...htmlBruto.matchAll(/<div class="tab-panel[^"]*" id="([\w-]+)">/g)]
+    .map(m => ({ id: m[1], i: m.index }));
+  function abaDe(divId) {
+    const k = htmlBruto.indexOf('id="' + divId + '"');
+    if (k < 0) return null;
+    let atual = null;
+    limites.forEach(l => { if (l.i < k) atual = l.id; });
+    return atual;
+  }
+
+  // 14a. a aba Cotacao nao existe mais, em nenhuma das tres formas em que existia
+  ok(abas14.indexOf('tab-quotation') < 0, 'a aba Cotacao saiu do nav', abas14.join(', '));
+  ok(htmlBruto.indexOf('id="tab-quotation"') < 0, 'e o painel dela saiu do HTML');
+  ok(htmlBruto.indexOf('sec-quotation-ptax') < 0, 'e a secao antiga do PTAX nao ficou orfa');
+
+  // 14b. todo botao aponta para um painel que existe, e vice-versa. E o que pega um
+  // painel esquecido sem botao (invisivel para sempre) ou um botao sem painel (clique
+  // que nao mostra nada) -- os dois modos de falha de mexer no nav.
+  const idsPaineis = tabPanels.map(p => p.id);
+  const semPainel = abas14.filter(a => idsPaineis.indexOf(a) < 0);
+  const semBotao  = idsPaineis.filter(i => abas14.indexOf(i) < 0);
+  ok(semPainel.length === 0 && semBotao.length === 0,
+     'nenhum botao sem painel e nenhum painel sem botao',
+     'sem painel: ' + semPainel.join(', ') + ' / sem botao: ' + semBotao.join(', '));
+  ok(abas14.length === 7, 'sobraram 7 abas', abas14.join(', '));
+
+  // 14c. o rotulo da aba anuncia as duas pontas
+  ok(htmlBruto.indexOf('data-tab="tab-bcb">Posicionamento: BCB e mercado<') > 0,
+     'a aba do BCB se chama "Posicionamento: BCB e mercado"');
+
+  // 14d. onde cada grafico foi parar -- os dois que mudaram...
+  ok(abaDe('chart-cot-brl') === 'tab-bcb',
+     'o posicionamento especulativo mora na aba do BCB', abaDe('chart-cot-brl'));
+  ok(abaDe('chart-ptax') === 'tab-valuation',
+     'o PTAX mora na aba Valuation', abaDe('chart-ptax'));
+  // ...e os que nao mudaram, para a mudanca nao ter arrastado vizinho junto
+  ['chart-reer', 'chart-termos'].forEach(id => {
+    ok(abaDe(id) === 'tab-valuation', 'segue em Valuation: ' + id, abaDe(id));
+  });
+  ['chart-resv-tree', 'chart-bcb-swap', 'chart-intv-tree'].forEach(id => {
+    ok(abaDe(id) === 'tab-bcb', 'segue na aba do BCB: ' + id, abaDe(id));
+  });
+
+  // 14e. o PTAX ABRE a aba Valuation: e o preco que as outras tres secoes qualificam
+  const painelVal = htmlBruto.slice(htmlBruto.indexOf('id="tab-valuation"'));
+  ok(painelVal.indexOf('chart-ptax') < painelVal.indexOf('chart-reer') &&
+     painelVal.indexOf('chart-reer') < painelVal.indexOf('chart-termos'),
+     'a ordem em Valuation e PTAX -> cambio real -> termos de troca');
+
+  // 14f. e o especulativo entra DEPOIS das tres secoes do BCB -- e a ordem que o
+  // nome da aba promete ("BCB e mercado", nessa ordem)
+  const painelBcb = htmlBruto.slice(htmlBruto.indexOf('id="tab-bcb"'));
+  ok(painelBcb.indexOf('chart-intv-tree') < painelBcb.indexOf('chart-cot-brl'),
+     'na aba do BCB o mercado vem depois do BCB');
+
+  // 14g. os dois graficos movidos mantiveram o cabecalho. Eles vieram de painel E o
+  // bloco de JS que os desenha foi movido junto: e a combinacao em que um
+  // finishChart deixado para tras passa despercebido.
+  ['chart-ptax', 'chart-cot-brl'].forEach(id => {
+    ok(cardOf[id] && cabecalho(id) && cabecalho(id).indexOf('Fonte:') > 0,
+       'o grafico movido manteve o cabecalho: ' + id, cabecalho(id));
+  });
+
+  // 14h. a nota do especulativo tem de dizer QUAL sinal e qual aposta. A anterior
+  // falava de "net comprado em USD (vendido em BRL)" sem dizer o que a barra positiva
+  // significa -- lida do lado errado, ela inverte a leitura do grafico inteiro, que e
+  // o unico erro possivel aqui que nao tem tell visual.
+  const iCot = htmlBruto.indexOf('id="sec-bcb-cot"');
+  const secCot = htmlBruto.slice(iCot, htmlBruto.indexOf('</section>', iCot));
+  ok(secCot.indexOf('positivo = comprado em real') > 0,
+     'a nota diz que positivo = comprado em real');
+  ok(/open interest/i.test(secCot),
+     'e explica o que o eixo da direita acrescenta');
+  ok(secCot.indexOf('exposição do <strong>BCB</strong>') > 0 &&
+     secCot.indexOf('do <strong>mercado</strong>') > 0,
+     'e diz de quem e a posicao, ja que a aba agora hospeda duas pontas');
+}
+
+console.log('\n=== 15. Diferenciais de Juros removidos (2026-09-01) ========');
+// Pedido do usuario: apagar os tres graficos da secao (Taxas Basicas, Diferencial
+// Nominal, Juros Reais ex-post). Removida a secao inteira, os tres CHART_META, os
+// tres IIFEs e a chave `diferenciais` do payload.
+//
+// Sao tres modos de sobra que nao levantam erro nenhum, e cada um deixa um rastro
+// diferente -- e por isso que o teste afirma sobre os quatro artefatos, e nao so
+// sobre o div: um CHART_META orfao vive para sempre em silencio, um IIFE orfao faz
+// um Plotly.newPlot num id inexistente, e 39 KB de payload morto so aparecem na
+// balanca do arquivo.
+{
+  const IDS = ['chart-nominal-rates', 'chart-diferencial-nominal', 'chart-taxas-reais'];
+
+  // 15a. nem div, nem secao no HTML
+  IDS.forEach(id => {
+    ok(htmlBruto.indexOf('id="' + id + '"') < 0, 'o div sumiu do HTML: ' + id);
+  });
+  ok(htmlBruto.indexOf('sec-valuation-juros') < 0, 'e a secao que os abrigava tambem');
+
+  // 15b. nenhum Plotly.newPlot/react apontou para eles -- o rastro de um IIFE que
+  // tivesse ficado para tras, desenhando num id que nao existe mais
+  const desenhados = newPlotCalls.concat(reactCalls).map(c => c.div);
+  IDS.forEach(id => {
+    ok(desenhados.indexOf(id) < 0, 'nada tentou desenhar: ' + id);
+  });
+
+  // 15c. e nenhum CHART_META orfao ficou. Vale para os tres removidos E para o
+  // mapa inteiro: uma entrada sem div e texto que nunca aparece na tela.
+  const idsMeta = [...(scripts.join('\n').match(/'(chart-[\w-]+)':\s*\{\s*\n\s*title:/g) || [])]
+    .map(m => m.slice(1, m.indexOf("'", 1)));
+  const orfaos = idsMeta.filter(id => htmlBruto.indexOf('id="' + id + '"') < 0);
+  // 8, e nao 15: as abas de arvore declaram title/source nas opcoes de
+  // makeTreeChartTab(), nao aqui -- e la um div que sumisse quebraria a fabrica
+  // em voz alta, que e o motivo de nao precisarem deste mapa.
+  ok(idsMeta.length >= 7, 'o mapa CHART_META foi encontrado', idsMeta.length + ' entradas');
+  ok(orfaos.length === 0, 'nenhuma entrada de CHART_META sem div correspondente',
+     orfaos.join(', '));
+
+  // 15d. o payload nao carrega mais `diferenciais` -- eram 39 KB para tres graficos
+  // que nao existem mais. O loader continua no generate_report.py de proposito
+  // (agent_data.py o importa), so nao entra mais AQUI.
+  ok(!REPORT_DATA.diferenciais, 'a chave `diferenciais` saiu do payload',
+     REPORT_DATA.diferenciais && Object.keys(REPORT_DATA.diferenciais).join(', '));
+
+  // 15e. Valuation ficou com exatamente os 3 graficos que o usuario listou
+  const iVal = htmlBruto.indexOf('id="tab-valuation"');
+  const fimVal = htmlBruto.indexOf('<div class="tab-panel', iVal + 10);
+  const noVal = chartDivIds.filter(id => {
+    const k = htmlBruto.indexOf('id="' + id + '"');
+    return k > iVal && k < fimVal;
+  });
+  ok(noVal.length === 3 && noVal.join(',') === 'chart-ptax,chart-reer,chart-termos',
+     'Valuation tem so PTAX, cambio efetivo real e termos de troca', noVal.join(', '));
+}
+
+console.log('\n=== 16. posicionamento no futuro de real (CFTC) =============');
+// A secao foi reconstruida em 2026-09-01: o grafico unico (uma serie de barras mais
+// o open interest numa linha pontilhada de eixo secundario) virou tabela com caixa
+// que plota, cinco categorias de participante em vez de uma, e media movel de 12 e
+// 24 semanas.
+{
+  const corpoCot = registry['cot-tree-body'];
+  const linhasCot = () => corpoCot.children;
+  const caixaDe = (chave) => {
+    const tr = linhasCot().find(x => x.dataset.key === chave);
+    return tr && tr.children[0].children[0];
+  };
+  const marcar = (chave, v) => { const cb = caixaDe(chave); cb.checked = v; cb.fire('change'); };
+  const D = REPORT_DATA.cot_fx;
+  const CATS = ['cot_dealer', 'cot_asset', 'cot_lev', 'cot_other', 'cot_nonrept'];
+  const SERIE = { cot_oi: 'open_interest', cot_dealer: 'dealer_net', cot_asset: 'asset_mgr_net',
+                  cot_lev: 'lev_net', cot_other: 'other_net', cot_nonrept: 'nonrept_net' };
+
+  // 16a. o payload tem as cinco categorias, e nao so os alavancados
+  ok(!!D && !!D.dates, 'o payload do COT chegou');
+  const faltando = Object.values(SERIE).filter(k => !Array.isArray(D[k]));
+  ok(faltando.length === 0, 'as 5 categorias + o open interest estao no payload', faltando.join(', '));
+  ok(D.dates.length > 700, 'a serie semanal veio inteira', D.dates.length + ' semanas');
+
+  // 16b. AS DUAS IDENTIDADES DA FONTE, conferidas no ARQUIVO ENTREGUE e nao so no
+  // banco. Sao elas que autorizam as duas leituras do grafico: sem a primeira,
+  // empilhar os cinco liquidos seria juntar coisas que nao somam nada; sem a
+  // segunda, "participacao no open interest" nao seria participacao em coisa
+  // nenhuma. Uma perna trocada de sinal ou uma categoria esquecida no loader passam
+  // por qualquer outro teste deste arquivo e morrem aqui.
+  const PS = ['dealer', 'asset_mgr', 'lev', 'other', 'nonrept'];
+  let piorNet = 0, piorLong = 0, piorShort = 0;
+  for (let i = 0; i < D.dates.length; i++) {
+    const soma = CATS.reduce((a, k) => a + (D[SERIE[k]][i] || 0), 0);
+    piorNet = Math.max(piorNet, Math.abs(soma));
+    // spread e comprado E vendido ao mesmo tempo: entra uma vez de cada lado
+    const sp = PS.reduce((a, p) => a + ((D[p + '_spread'] || [])[i] || 0), 0);
+    piorLong  = Math.max(piorLong,
+      Math.abs(PS.reduce((a, p) => a + D[p + '_long'][i], 0)  + sp - D.open_interest[i]));
+    piorShort = Math.max(piorShort,
+      Math.abs(PS.reduce((a, p) => a + D[p + '_short'][i], 0) + sp - D.open_interest[i]));
+  }
+  ok(piorNet === 0, 'as 5 posicoes liquidas somam exatamente zero em toda semana', piorNet);
+  ok(piorLong === 0 && piorShort === 0,
+     'e (comprado + spread) das 5, dos DOIS lados, da o open interest',
+     piorLong + ' / ' + piorShort);
+
+  // ...e o open interest NAO e a soma dos liquidos: e o tamanho do mercado. Sao
+  // duas quantidades diferentes, que e por que ele nao pode entrar na mesma pilha.
+  const ultimo = D.dates.length - 1;
+  const somaAbs = CATS.reduce((a, k) => a + Math.abs(D[SERIE[k]][ultimo]), 0);
+  ok(D.open_interest[ultimo] > 0 && D.open_interest[ultimo] !== somaAbs,
+     'o open interest nao e a soma dos liquidos', D.open_interest[ultimo]);
+
+  // 16b2. os NUMEROS que a nota e os cartoes afirmam. Escrever "os alavancados sao
+  // 28% do open interest, o dealer e 36%" e uma afirmacao sobre o dado, e ela
+  // envelhece a cada divulgacao -- entao ou o teste a confere ou ela nao devia estar
+  // escrita. A participacao inclui o spread, senao as cinco somam 91% e nao 100%.
+  function participacao(p) {
+    let acc = 0;
+    for (let i = 0; i < D.dates.length; i++) {
+      const sp = (D[p + '_spread'] || [])[i] || 0;
+      acc += ((D[p + '_long'][i] + D[p + '_short'][i]) / 2 + sp) / D.open_interest[i];
+    }
+    return acc / D.dates.length * 100;
+  }
+  const share = {}; PS.forEach(p => { share[p] = participacao(p); });
+  const somaShare = PS.reduce((a, p) => a + share[p], 0);
+  ok(Math.abs(somaShare - 100) < 0.05, 'as 5 participacoes somam 100%', somaShare.toFixed(2));
+  ok(Math.abs(share.dealer - 36) < 1, 'o dealer e ~36% do open interest, como a nota diz',
+     share.dealer.toFixed(1));
+  ok(Math.abs(share.lev - 28) < 1, 'e os alavancados ~28%, como a nota e o cartao dizem',
+     share.lev.toFixed(1));
+  ok(share.dealer > share.lev,
+     'e o dealer e MAIOR que os alavancados -- a frase que motivou o pedido',
+     share.dealer.toFixed(1) + ' vs ' + share.lev.toFixed(1));
+  const secCotN = htmlBruto.slice(htmlBruto.indexOf('id="sec-bcb-cot"'),
+                                  htmlBruto.indexOf('</section>', htmlBruto.indexOf('id="sec-bcb-cot"')));
+  ok(secCotN.indexOf('28% do open interest') > 0 && secCotN.indexOf('36%') > 0,
+     'e sao esses os numeros escritos na nota');
+
+  // 16c. a tabela tem as 6 linhas, e o default marca as 5 categorias (a pergunta
+  // "quem mais esta no mercado" tem de estar respondida ao abrir)
+  ok(linhasCot().length === 6, 'a tabela tem 6 linhas', linhasCot().length);
+  const marcadasIni = linhasCot().filter(tr => tr.children[0].children[0].checked).map(tr => tr.dataset.key);
+  ok(marcadasIni.length === 5 && marcadasIni.indexOf('cot_oi') < 0,
+     'abre com as 5 categorias marcadas e o open interest fora', marcadasIni.join(', '));
+
+  // 16d. TODAS as series plotadas sao BARRAS (pedido explicito: o open interest era
+  // uma linha pontilhada de eixo secundario e passou a ser barra como as outras)
+  let r16 = ultimoReact('chart-cot-brl');
+  ok(r16.traces.length === 5 && r16.traces.every(t => t.type === 'bar'),
+     'o default plota 5 barras e nenhuma linha',
+     r16.traces.map(t => t.type).join(', '));
+  ok(!r16.layout.yaxis2, 'nao ha mais eixo Y secundario');
+  ok((r16.layout.yaxis.title.text || '').indexOf('contratos') >= 0,
+     'o eixo diz a unidade', r16.layout.yaxis.title.text);
+
+  // 16e. marcar o open interest o poe em OUTRA pilha. Este e o unico jeito de ele
+  // ser barra sem virar um agregado inventado -- somado a pilha dos liquidos, o topo
+  // deixaria de significar coisa alguma.
+  marcar('cot_oi', true);
+  r16 = ultimoReact('chart-cot-brl');
+  ok(r16.traces.length === 6 && r16.traces.every(t => t.type === 'bar'),
+     'com o open interest marcado sao 6 barras', r16.traces.length);
+  const grpOI = r16.traces.find(t => t.name.indexOf('Open Interest') === 0).offsetgroup;
+  const grpsNet = r16.traces.filter(t => t.name.indexOf('Open Interest') !== 0)
+                            .map(t => t.offsetgroup);
+  ok(grpOI !== grpsNet[0], 'o open interest fica numa offsetgroup propria', grpOI + ' vs ' + grpsNet[0]);
+  ok(new Set(grpsNet).size === 1, 'e as 5 categorias dividem a mesma pilha', [...new Set(grpsNet)].join(', '));
+  marcar('cot_oi', false);
+
+  // 16f. MEDIA MOVEL: entra como LINHA sobre as barras, uma por serie marcada
+  registry['sel-cot-ma'].value = '12'; registry['sel-cot-ma'].change();
+  r16 = ultimoReact('chart-cot-brl');
+  const barras16 = r16.traces.filter(t => t.type === 'bar');
+  const linhas16 = r16.traces.filter(t => t.type === 'scatter');
+  ok(barras16.length === 5 && linhas16.length === 5,
+     'com MM12 sao 5 barras + 5 linhas', barras16.length + ' / ' + linhas16.length);
+  ok(linhas16.every(t => /MM12s$/.test(t.name)), 'as linhas sao as medias moveis',
+     linhas16.map(t => t.name).join(', '));
+  // as linhas vem DEPOIS das barras no array, senao ficariam por baixo da pilha
+  ok(r16.traces.findIndex(t => t.type === 'scatter') > r16.traces.map(t => t.type).lastIndexOf('bar'),
+     'as medias moveis sao desenhadas por cima das barras');
+  ok((cabecalho('chart-cot-brl') || '').indexOf('12 semanas') > 0,
+     'o cabecalho anuncia a media movel', cabecalho('chart-cot-brl'));
+
+  // 16g. O VALOR da media movel, recalculado aqui, e a regra que a torna honesta.
+  // "12 semanas" tem de ser 12 SEMANAS, nao 12 observacoes: a serie tem 16 buracos
+  // maiores que uma semana ate 2015, um deles de 196 dias. Uma janela de 12 linhas
+  // cobrindo oito meses continuaria produzindo um numero, e ele estaria rotulado
+  // errado -- entao ela sai em branco.
+  const lev = D.lev_net, dts = D.dates.map(x => Date.parse(String(x).replace(' ', 'T') + 'Z'));
+  function mmEsperada(k) {
+    const out = new Array(lev.length).fill(null);
+    const limite = ((k - 1) * 7 + 10) * 86400000;
+    for (let i = k - 1; i < lev.length; i++) {
+      if (dts[i] - dts[i - k + 1] > limite) continue;
+      let soma = 0, furo = false;
+      for (let j = i - k + 1; j <= i; j++) {
+        if (lev[j] == null || isNaN(lev[j])) { furo = true; break; }
+        soma += lev[j];
+      }
+      if (!furo) out[i] = soma / k;
+    }
+    return out;
+  }
+  const esp12 = mmEsperada(12);
+  const got12 = linhas16.find(t => t.name.indexOf('Fundos Alavancados') === 0).y;
+  let dif = 0, comparados = 0, brancosOk = true;
+  for (let i = 0; i < esp12.length; i++) {
+    if (esp12[i] === null) { if (got12[i] !== null) brancosOk = false; continue; }
+    comparados++;
+    dif = Math.max(dif, Math.abs(got12[i] - esp12[i]));
+  }
+  ok(comparados > 600 && dif < 1e-9, 'a MM12 bate valor a valor com o recalculo',
+     comparados + ' pontos, pior diferenca ' + dif);
+  ok(brancosOk, 'e o que o guarda de span veta sai em branco, nao com um numero');
+
+  // ...e o guarda tem de MORDER: se nao vetasse nada, ele nao estaria testado
+  const vetados = esp12.filter((v, i) => v === null && i >= 11).length;
+  ok(vetados > 20, 'o guarda de span veta pontos de verdade (os buracos ate 2015)', vetados);
+  // ...mas so la atras: apagar a amostra moderna seria um custo real, e nao ha
+  const ultimoVetado = D.dates[esp12.reduce((acc, v, i) => (v === null && i >= 11 ? i : acc), -1)];
+  ok(String(ultimoVetado) < '2016', 'e nenhum ponto depois de 2015 e vetado', String(ultimoVetado).slice(0, 10));
+
+  // 16h. MM24 existe e e mais curta que a MM12 (janela maior come mais pontas)
+  registry['sel-cot-ma'].value = '24'; registry['sel-cot-ma'].change();
+  const got24 = ultimoReact('chart-cot-brl').traces
+    .find(t => /MM24s$/.test(t.name || '')).y;
+  const n12 = got12.filter(v => v !== null).length, n24 = got24.filter(v => v !== null).length;
+  ok(n24 > 500 && n24 < n12, 'a MM24 tem menos pontos validos que a MM12', n24 + ' vs ' + n12);
+
+  // 16i. sem media movel nao sobra nenhuma linha -- o estado default e barras puras
+  registry['sel-cot-ma'].value = '0'; registry['sel-cot-ma'].change();
+  ok(ultimoReact('chart-cot-brl').traces.every(t => t.type === 'bar'),
+     'voltando para "Nenhuma" nao sobra linha nenhuma');
+
+  // 16j. o seletor de tipo troca tudo para linha
+  registry['sel-cot-kind'].value = 'lines'; registry['sel-cot-kind'].change();
+  ok(ultimoReact('chart-cot-brl').traces.every(t => t.type === 'scatter'),
+     'em "Linhas" nao sobra barra');
+  registry['sel-cot-kind'].value = 'bars'; registry['sel-cot-kind'].change();
+
+  // 16k. as 6 linhas tem cartao de definicao -- e o cartao e onde a resposta a
+  // "quem sao os outros participantes" fica por escrito
+  const semCartao = linhasCot().filter(tr => !botaoInfo(tr)).map(tr => tr.dataset.key);
+  ok(semCartao.length === 0, 'as 6 linhas tem botao "i"', semCartao.join(', '));
+  botaoInfo(linhasCot().find(tr => tr.dataset.key === 'cot_dealer')).fire('mouseenter');
+  ok(_infoPop.innerHTML.indexOf('sell side') > 0,
+     'o cartao do dealer explica o papel dele, nao so o nome');
+  ok(_infoPop.innerHTML.indexOf('Unidade: contratos') > 0,
+     'e a unidade do cartao e a do grafico', _infoPop.innerHTML.slice(-120));
+  hideInfo();
+  botaoInfo(linhasCot().find(tr => tr.dataset.key === 'cot_oi')).fire('mouseenter');
+  ok(_infoPop.innerHTML.indexOf('Não é a soma') > 0,
+     'e o cartao do open interest avisa que ele nao e a soma dos liquidos');
+  hideInfo();
+
+  // 16l. o grafico de manchete das Reservas foi removido (item (i) do pedido)
+  ok(htmlBruto.indexOf('chart-bcb-reserves') < 0, 'o grafico de Reservas Internacionais saiu');
+  ok(htmlBruto.indexOf('sec-bcb-reserves"') < 0, 'e a secao dele tambem');
+  ok(newPlotCalls.concat(reactCalls).every(c => c.div !== 'chart-bcb-reserves'),
+     'e nada tentou desenha-lo');
+  // a arvore de reservas continua de pe, e a nota dela nao pode mais mandar o leitor
+  // olhar "o grafico acima", que nao existe
+  ok(htmlBruto.indexOf('chart-resv-tree') > 0, 'a arvore de reservas continua');
+  const iArv = htmlBruto.indexOf('id="sec-bcb-reserves-tree"');
+  const secArv = htmlBruto.slice(iArv, htmlBruto.indexOf('</section>', iArv));
+  ok(secArv.indexOf('gráfico acima') < 0, 'a nota da arvore nao aponta mais para um grafico que nao existe');
 }
 
 console.log(`\n${oks} ok, ${falhas} falhou`);

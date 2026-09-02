@@ -14,7 +14,7 @@ Uso:
     uv run python -c "from analytics.brasil.credit.generate_report import run; run()"
 """
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -144,6 +144,37 @@ def _load_concessao_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
     return concessao_tab.build(raw, ipca, pib_acum_12m)
 
 
+def _load_copom_reunioes() -> list:
+    """[(data_iso, decisao)] de macro_brasil.pm_copom_reuniao, em ordem cronologica --
+    as faixas de ciclo de politica monetaria ao fundo dos graficos da aba Impulso.
+    Unica leitura de fora do dominio de credito neste relatorio (fora o PIB e o IPCA,
+    que sao denominador e deflator); a tabela e escrita por
+    domain/db/brasil/bcb/pm_copom_reuniao.py e mora no mesmo schema."""
+    req = MySQLDataRequester(_DATABASE, "pm_copom_reuniao")
+    req.connect()
+    df = req.request_data()
+    req.close_connection()
+    df = df.dropna(subset=["decisao"]).sort_values("date")
+    return [(d.strftime("%Y-%m-%d"), str(dec)) for d, dec in zip(pd.to_datetime(df["date"]), df["decisao"])]
+
+
+def _load_ciclos(resumo_series: dict) -> list:
+    """Faixas de ciclo de politica monetaria, COMPARTILHADAS pelas abas Saldo e Impulso
+    (D.ciclos). A janela vai do inicio comum das abas (_TAB_MIN_DATE) ate o ultimo mes do
+    saldo total -- a espinha do relatorio -- mais meia barra mensal de folga, sem a qual
+    a faixa para no centro da ultima barra e deixa metade dela sem pintar.
+
+    Este recorte so limita o PAYLOAD. O recorte que importa e por grafico e roda em JS
+    (`_ciclosShapes`), porque cada tabela comeca num ano diferente e uma shape com
+    xref:'x' entra no autorange do Plotly.
+    """
+    total = resumo_series.get("saldo_total_total", {}).get("dates") or []
+    if not total:
+        return []
+    fim = (date.fromisoformat(total[-1]) + timedelta(days=15)).isoformat()
+    return impulso_tab.build_ciclos(_load_copom_reunioes(), inicio=_TAB_MIN_DATE, fim=fim)
+
+
 def _load_impulso_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
     """Aba Impulso: so precisa do SALDO NOMINAL bruto + PIB 12m -- sem IPCA (a metrica
     ja e uma razao contra o PIB nominal, o deflator cancelaria) e sem STL (a diferenca
@@ -156,6 +187,14 @@ def _load_impulso_tab_data(resumo_series: dict, pib_acum_12m: dict) -> dict:
     raw = {k: _clip_from(s, _TAB_MIN_DATE) for k, s in raw.items()}
 
     return impulso_tab.build(raw, pib_acum_12m)
+
+
+def _load_fluxo_tab_data() -> dict:
+    """4a tabela da aba Impulso: fluxo financeiro e impulso de credito no conceito do
+    BCB (`cred_fluxo_financeiro`, anexo estatistico do RPM). Sem PIB, sem IPCA e sem
+    `_clip_from(_TAB_MIN_DATE)`: a fonte ja publica em % do PIB acumulado em 12 meses e
+    comeca em 2015-01, dentro da janela."""
+    return impulso_tab.build_fluxo(_load_flat(impulso_tab.FLUXO_TABLE))
 
 
 def _load_ptc_tab_data() -> dict:
@@ -227,6 +266,15 @@ def run(output: str = "reports/brasil/Credit.html") -> None:
         pib_acum_12m = {"dates": [], "values": []}
 
     try:
+        data["ciclos"] = _load_ciclos(data.get("resumo", {}))
+        print(f"  ciclos    (faixas de fundo, Copom): {len(data['ciclos'])} faixas")
+    except Exception as exc:
+        # Faixa de ciclo e pano de fundo, nao dado -- se pm_copom_reuniao falhar, os
+        # graficos saem sem faixa em vez de o relatorio inteiro nao sair.
+        print(f"  ciclos    (faixas de fundo, Copom): FALHOU -- {exc}")
+        data["ciclos"] = []
+
+    try:
         data["saldo"] = _load_saldo_tab_data(data.get("resumo", {}), pib_acum_12m)
         print(f"  saldo     (arvore de modalidades): {len(data['saldo']['series'])} series, STL + deflacao IPCA")
     except Exception as exc:
@@ -246,6 +294,15 @@ def run(output: str = "reports/brasil/Credit.html") -> None:
     except Exception as exc:
         print(f"  impulso   (3 tabelas de decomposicao): FALHOU -- {exc}")
         data["impulso"] = {"trees": {}, "anchors": {}, "series": {}, "ref_date": None}
+
+    try:
+        data["fluxo"] = _load_fluxo_tab_data()
+        s = data["fluxo"]["series"].get(impulso_tab.FLUXO_ANCHOR, {}).get("fluxo", {}).get("m12", {})
+        print(f"  fluxo     (fluxo financeiro + impulso do BCB): {len(data['fluxo']['series'])} series,"
+              f" {(s.get('dates') or ['-'])[0]} -> {(s.get('dates') or ['-'])[-1]}")
+    except Exception as exc:
+        print(f"  fluxo     (fluxo financeiro + impulso do BCB): FALHOU -- {exc}")
+        data["fluxo"] = {"tree": [], "anchor": None, "series": {}, "ref_date": None}
 
     try:
         data["amplo_hier"] = _load_amplo_tab_data(data.get("amplo", {}), pib_acum_12m)

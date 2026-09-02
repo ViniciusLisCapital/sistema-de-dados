@@ -25,7 +25,7 @@ Fixed template (`report.html`) with a `/*REPORT_DATA*/` marker inside a `<script
 
 **Since 2026-08**, `_bindYAutofit()`/`_toComparableX()` are no longer inline in this `report.html` — a `/*Y_AUTOFIT_JS*/` marker is filled in at generation time from `analytics/report_structure/y_autofit.js` (edit that file, not this one — see [`../report_structure/CLAUDE.md`](../../report_structure/CLAUDE.md)). **The theme CSS is *not* migrated** — this report's `:root` palette/typography predates the 2026-07 LIS-dashboard reskin `inflation/` got (navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `report_structure/theme.css`), so swapping in the shared `/*THEME_CSS*/` marker as-is would silently change this report's look without an actual design pass. That reskin is a separate follow-up (see root `CLAUDE.md`'s `analytics/` Pendências / `report_structure/CLAUDE.md`'s Migration status) — do it first, then point at the shared theme file.
 
-Eight tabs, real switching via JS `display` toggling (not scroll anchors) — five data tabs, in nav order: Balanço de Pagamentos (`tab-bop`), Fluxo Cambial (`tab-flow`), Posicionamento do BCB (`tab-bcb`), Cotação (`tab-quotation`), Valuation (`tab-valuation`); then three model tabs: Equilíbrio PPP (`tab-data`), FX Attribution (`tab-fxattr`), Ridge (`tab-ridge`). A sexta aba de dados, **Mapa de Calor — BP**, foi removida a pedido do usuário em 2026-08-27 (ver abaixo).
+Seven tabs, real switching via JS `display` toggling (not scroll anchors) — four data tabs, in nav order: Balanço de Pagamentos (`tab-bop`), Fluxo Cambial (`tab-flow`), **Posicionamento: BCB e mercado** (`tab-bcb`), Valuation (`tab-valuation`); then three model tabs: Equilíbrio PPP (`tab-data`), FX Attribution (`tab-fxattr`), FX Model (`tab-ridge`, chamada "Ridge" até 2026-09-01). Duas abas de dados saíram a pedido do usuário: **Mapa de Calor — BP** em 2026-08-27 e **Cotação** em 2026-09-01 (as duas, abaixo).
 
 **How the two halves coexist** (they were written years apart against different design systems, so the merge scoped rather than reconciled them):
 - `activateTab()` is the single owner of tab state. The model tabs kept their own lazy-render listeners (they key off `btn.dataset.tab`, so they still fire), but the ex-dashboard's own class-toggling loop was dropped — re-adding one would double-toggle. `activateTab()` also resizes `.chart-wrap`/`.mini-chart-wrap` divs, not just `.chart-card > div`: the model tabs' Plotly divs live in the former, and a chart first drawn inside a `display:none` panel renders at zero width until resized.
@@ -358,16 +358,329 @@ A seção 11 de `tests/test_fx_report_js.js` foi invertida: em vez de afirmar qu
 plotados, afirma que **nenhum** é — um painel morto que continua sendo desenhado não aparece na UI
 e só se descobre pelo custo — e que as 3 árvores continuam de pé. Saída: 2,14 MB (era 2,26).
 
+## As abas de posicionamento e de valuation foram redistribuídas (2026-09-01)
+
+Pedido do usuário: renomear a aba do BCB para **Posicionamento: BCB e mercado**, trazer o
+posicionamento especulativo em real para dentro dela, levar o PTAX para **Valuation** e **apagar a
+aba Cotação**. Nenhum gráfico foi criado ou destruído — os dois que mudaram de casa são os mesmos
+`chart-cot-brl` e `chart-ptax` de sempre, com os mesmos loaders.
+
+O que a redistribuição resolve é uma **incoerência de critério** que as duas abas carregavam. A aba
+do BCB media *exposição cambial em aberto* — reservas, swap, posição dos bancos, intervenção — e
+parava exatamente onde o mercado especulativo começa; o posicionamento da CFTC, que é a mesma
+pergunta feita da outra ponta, morava em Valuation, entre medidas de **valor justo** (juros, câmbio
+real, termos de troca) com as quais não compartilha nem unidade nem lógica. Trocados de lugar, cada
+aba passa a responder uma pergunta só: *quem está posicionado como* de um lado, *o preço está caro ou
+barato* do outro. O nome novo da aba é o que torna isso legível — "Posicionamento do BCB" não
+comportaria a seção da CFTC.
+
+O PTAX abre Valuation porque é **o nível que as outras seções qualificam**: o câmbio efetivo real e
+os termos de troca não significam nada sem o preço contra o qual são lidos. Sozinho ele nunca
+justificou uma aba — a de Cotação tinha um gráfico só, e a pendência de moedas pares que a povoaria
+segue bloqueada em coleta de dado nova.
+
+**Ainda em 2026-09-01, a seção Diferenciais de Juros saiu inteira** (pedido do usuário), com os seus
+três gráficos: Taxas Básicas — Brasil e EUA, Diferencial de Juros Nominal, e Juros Reais ex-post e
+Diferencial. Valuation ficou com **PTAX, câmbio efetivo real e termos de troca**, e o relatório com
+15 gráficos nas abas de dados. O carry não sumiu do relatório — `diferenciais_juros.diferencial_nominal`
+segue sendo um dos canais explicativos da aba **Ridge**, por `ppp_equilibrium.load_data()`; o que
+saiu foi a leitura descritiva dele.
+
+**Remover um gráfico é remover quatro coisas, e três delas somem em silêncio.** O div é a única que
+tem sintoma visual. Um **CHART_META órfão** é texto que nunca aparece na tela; um **IIFE órfão**
+chama `Plotly.newPlot` num id inexistente (o Plotly não levanta nada de útil, e o gráfico
+simplesmente não existe); e a **chave do payload** continua sendo serializada — aqui eram **39 KB**
+de `diferenciais` para três gráficos que não existem mais, 1,41 → 1,37 MB de payload e 2,25 → 2,21 MB
+de arquivo. `tests/test_fx_report_js.js` §15 afirma sobre os quatro, mais uma varredura de
+**CHART_META órfão no mapa inteiro** (não só nos três removidos), e §15e fixa a composição exata de
+Valuation. Verificado contra 5 mutantes — div órfão, meta órfã, payload vivo, IIFE órfão desenhando,
+e um quarto gráfico em Valuation; os 5 são pegos.
+
+Duas decisões de limpeza que ficaram registradas no código, porque o padrão delas é o reutilizável:
+**`_load_diferenciais()` fica no `generate_report.py`** mesmo sem consumidor no payload — quem o
+importa é `agent_data.py`, para o snapshot do subagente `cambio-analyst`, que não passa por esse
+caminho; e **o `.chart-grid-2` fica no CSS** apesar de a seção removida ter sido a única a usá-lo.
+É utilitário de layout, não markup de um gráfico, e o `closest()` do `_ensureRangeBar` existe
+justamente para sobreviver a um embrulho desses — tirar os dois juntos é o que faz a régua quebrar
+quando alguém recriar uma grade de dois. Os dois casos estão comentados no ponto de uso.
+
+Três detalhes de implementação que valem para qualquer remanejo de aba deste relatório:
+
+- **Mover a `<section>` basta; o JS não precisa acompanhar.** Todos os gráficos das abas de dados são
+  desenhados no load, direto no `id` do div, e `activateTab()` chama `Plotly.Plots.resize()` no painel
+  que abre — que é o que salva um chart desenhado dentro de um `display:none`. Os blocos de JS foram
+  movidos junto **só por legibilidade**, para o arquivo continuar lido na ordem das abas.
+- **A assertion que faltava era a de PERTENCIMENTO.** As 238 asserções que já existiam continuavam
+  todas verdes com o gráfico no painel errado: ele existe, é desenhado, tem cabeçalho, tem régua, os
+  dados batem. O único sintoma é que o leitor não o encontra onde foi procurar. `tests/test_fx_report_js.js`
+  §14 fatia o HTML nos limites dos painéis e afirma qual aba hospeda cada div, mais o par
+  botão↔painel dos dois lados — um painel sem botão fica invisível para sempre, um botão sem painel é
+  clique morto, e nenhum dos dois levanta erro. Verificado contra 5 mutantes (CFTC de volta em
+  Valuation, botão de Cotação sem painel, nome antigo da aba, nota sem o sinal, PTAX no fim de
+  Valuation); os 5 são pegos.
+- **A nota do CFTC tinha de dizer o sinal, e não dizia.** O texto anterior — *"Net comprado em USD
+  (vendido em BRL) tende a coincidir com pressão de depreciação"* — é verdadeiro e não responde a
+  única pergunta que o gráfico levanta: **o que a barra positiva significa**. `lev_net = lev_long −
+  lev_short` em contratos do futuro de real da CME, que é cotado em **dólares por real**, então
+  positivo é comprado em real. Lida do lado errado, a frase inverte a leitura do gráfico inteiro, e
+  esse é o único erro possível ali que não tem tell visual — as barras continuam verdes e laranjas do
+  mesmo jeito. A nota nova declara o sinal, o que o open interest acrescenta, e que a foto é semanal,
+  com data de terça, e só do real negociado em Chicago.
+
+## O posicionamento da CFTC virou tabela, e o dado ganhou os outros quatro participantes (2026-09-01)
+
+Pedido do usuário, em quatro partes: apagar o gráfico de manchete das **Reservas Internacionais**;
+pôr uma caixa de seleção no gráfico do posicionamento para escolher entre open interest e posição
+líquida, **os dois em barras** e as médias móveis em linha; mostrar **quem são os outros
+participantes** além dos fundos alavancados; e acrescentar médias móveis de **12 e 24 semanas**.
+
+**A terceira parte era uma lacuna de dado, não de gráfico.** `cmb_cot_fx` guardava só
+`open_interest`, `lev_*` e `nonrept_*` — o relatório TFF da CFTC classifica cada participante em
+**cinco** categorias, e três delas nunca foram carregadas. `connectors/cftc.py` passou a extrair as
+15 colunas brutas (long/short/spread das quatro reportáveis, long/short da não-reportável, que a
+fonte não abre em spread) e a derivar os cinco líquidos; a tabela foi recarregada de 2011 a hoje e
+saiu de 6 para **20 séries por moeda**, 9.534 → 31.444 linhas.
+
+O que a expansão mostra, e é o motivo do pedido: **os fundos alavancados não são o maior grupo do
+contrato de real.** Medido nas 748 semanas, o Dealer/Intermediário é **36%** do open interest e os
+alavancados **28%** — depois Asset Manager 20,5%, Outros Reportáveis 10,5% e Não-Reportáveis 5,0%.
+Ler "posicionamento especulativo" como se fosse o mercado inteiro é ler pouco mais de um quarto dele.
+
+Cinco coisas medidas ou decididas que valem além desta seção:
+
+- **Duas identidades fecham EXATAMENTE nas 748 semanas, e cada uma autoriza uma leitura diferente.**
+  Os cinco líquidos somam **zero** (um futuro é jogo de soma zero) — é isso que autoriza a pilha, e
+  é o que a pilha mostra: quem está do outro lado de quem. E `Σ(comprado + spread) = Σ(vendido +
+  spread) = open interest` — é isso que faz "participação no open interest" ser participação em
+  alguma coisa. Resíduo zero nas duas, dos dois lados.
+- **O open interest não é a soma dos líquidos, então não pode entrar na mesma pilha.** O pedido era
+  "os dois em barras", e a saída não é escolher entre barra e correção: é `offsetgroup`. Os cinco
+  líquidos dividem uma pilha, o open interest tem a sua, os dois são barra, e nenhum topo de pilha
+  passa a significar algo que não existe. Ele também saiu do **eixo Y secundário** que tinha — e
+  isso foi medido antes de mexer: a amplitude do open interest e a do maior líquido são a **mesma
+  ordem de grandeza** (razão 1,0), então o eixo duplo nunca foi necessário e só dificultava comparar.
+- **"12 semanas" tem de ser 12 semanas, não 12 observações.** A série tem 16 buracos maiores que uma
+  semana até 2015, um deles de **196 dias** (out/2011 → abr/2012), então uma janela de 12 linhas pode
+  cobrir oito meses. A média móvel carrega um **guarda de span**: sai em branco quando a janela se
+  estica além de `(k−1)×7 + 10` dias. Medido, ele apaga 58 pontos na MM12 e 94 na MM24, **todos
+  anteriores a 2016** — custa nada na amostra que se lê e impede um rótulo falso onde custaria.
+  A folga de 10 dias existe porque 8 das 748 datas caem na **segunda**, não na terça (semana de
+  feriado nos EUA).
+- **O `spread` entra no payload mesmo sem nenhum gráfico desenhá-lo.** Sem ele a identidade bruta não
+  fecha no arquivo entregue e as participações que a nota **afirma em número** deixam de ser
+  reproduzíveis por quem lê. Custou ~25 KB e transformou três frases de prosa em asserção: o teste
+  recalcula as cinco participações do payload, exige que somem 100% (sem o spread somam **91%**), e
+  confere 36% e 28% contra o que está escrito na nota.
+- **A tabela é plana e escrita à parte da fábrica de árvores.** `makeTreeChartTab()` agrega em
+  mês/trimestre/ano sobre USD Bi com denominador de PIB; aqui o dado é **semanal** e a unidade é
+  contrato. Herdar dela custaria mais override do que código próprio, e generalizá-la poria em risco
+  as 7 tabelas que já a usam. `COT_ROWS` é global, como as outras árvores, porque é assim que o
+  harness resolve as chaves de `NODE_INFO` — uma lista escondida dentro do IIFE viraria seis cartões
+  que nenhuma asserção alcança.
+
+**A remoção do gráfico de Reservas custa duas coisas, e vale registrar quais.** A árvore de
+composição começa em **jan/2001**, então a história de 1971-2000 do total agora só existe na
+linha-raiz daquela tabela (que carrega a série inteira) e não em gráfico nenhum ao abrir a aba. E o
+**conceito liquidez** (SGS 13982, diário desde 2008) **sai do relatório por completo** — ele não está
+na árvore de propósito, por ser medida alternativa do mesmo estoque e não componente dele. A nota da
+árvore foi reescrita para não mandar mais o leitor olhar "o gráfico acima".
+
+`tests/test_fx_report_js.js` §16 (34 asserções) cobre as duas identidades no arquivo entregue, as
+participações contra a prosa, as duas `offsetgroup`, a MM recalculada valor a valor com o guarda de
+span (incluindo que ele **morde** e que nada depois de 2015 é vetado), a ordem das linhas sobre as
+barras e os seis cartões. Verificado contra 8 mutantes — open interest na pilha dos líquidos, MM sem
+guarda, MM em barras, open interest de volta como linha de eixo secundário, MM desenhada por baixo,
+número errado na nota, série faltando no payload e gráfico de reservas de volta; os 8 são pegos.
+
+## O PPP voltou ao modelo Ridge com beta fixo em 1 (2026-09-01)
+
+Pedido do usuário, e **não** é reversão da decisão de 2026-07-30 ("Remove the ppp entirely, let the alfa
+capture it"). Aquela decisão era sobre um coeficiente **estimado livremente**, e continua certa para
+esse caso; o que ela nunca cobriu foi um coeficiente **imposto**, que é outro objeto — uma identidade
+que o modelo é mandado respeitar, não um parâmetro que ele é convidado a aprender.
+
+**"Colocar o PPP" significa três coisas, e duas não fazem nada com a tendência.** Medido nas 222
+observações do painel (2008-01 a 2026-06, movimento acumulado do câmbio +107,2 pp de log):
+
+| variante | MSE walk-forward | IC95 | R² | α acum | PPP acum |
+|---|---|---|---|---|---|
+| sem PPP (spec anterior) | 6,968 | — | 0,677 | **+96,8** | 0 |
+| PPP z-scored, β livre (`include_ppp=True`) | 7,054 | [−1,7; +5,1] | 0,679 | **+100,1** | **−2,1** |
+| PPP cru, β livre | 7,014 | [−1,6; +3,3] | 0,679 | +74,2 | +23,7 |
+| **PPP com β=1 (`ppp_offset=True`)** | **7,013** | **[−3,2; +4,8]** | 0,677 | **+41,5** | **+57,7** |
+
+O achado que motiva a escolha: **o `include_ppp=True` que já existia no código não captura tendência
+nenhuma, porque z-score subtrai a média e a média É a tendência.** O α não cai — sobe, de 96,8 para
+100,1 pp. Quem tiver testado "PPP como canal" no passado testou isso.
+
+**Por que 1 é o número certo mesmo com o ajuste mensal não conseguindo enxergá-lo.** Os dois fatos são
+o mesmo visto duas vezes: o `Δppp` mensal tem **0,79% da variância** do câmbio (dp 0,40 contra 4,47
+pp/mês) e correlação +0,155, então mínimos quadrados mensais ajustam ruído — o β livre sai +0,41 na
+amostra inteira mas percorre −0,76 a +0,87 no rolling, com **sinal contrário em 60% das janelas**. No
+horizonte longo a relação aparece limpa: regredindo a variação de log do PTAX em h meses contra o
+diferencial acumulado no mesmo h, o β é 1,74 / 2,79 / 2,19 / 1,92 / 1,76 / 1,98 em h = 1/12/24/36/60/120,
+**distinguível de 0 em todos** (Newey-West t 2,25 a 3,39) e **de 1 em nenhum** (t 0,95 a 1,75), com R²
+subindo de 0,02 para 0,32.
+
+**O que se ganha:** o α deixa de ser uma tendência estatisticamente real que o modelo não explica —
++0,435 pp/mês com t=+2,48 antes, **+0,187 pp/mês com t=+1,06 depois**. Os canais quase não se mexem
+(dxy_em +8,8 → +8,9 pp acumulados, sp500 +6,0 → +6,3, icbr_usd +5,8 → +5,4): o que foi realocado é a
+**tendência**, não a história dos canais.
+
+**O limite honesto:** o PPP leva 54% da tendência, não toda. No período o PTAX subiu 192%, o
+diferencial de inflação acumulado responde por 78% e sobram **64% de depreciação real** — os 41,5 pp
+que ficam no α. Ele deixa de ser significante; não deixa de existir.
+
+Cinco coisas de implementação que valem para qualquer termo fixo futuro:
+
+- **Offset, não regressor.** `walk_forward_lambda()`/`fit_whole_sample()`/`rolling_fit()` ganharam
+  `offset_col=`: ajustam em `y − offset` e preveem `offset + α + Xβ`, o que mantém **todo erro e R²
+  reportado na escala do `delta_fx`** e portanto comparável com um ajuste sem offset. Sem isso, o R²
+  passaria a medir "quanto dos resíduos ex-PPP os canais explicam", que é outra pergunta.
+- **O PPP não entra no balde Baseline.** Ele tem barra própria na decomposição. Enfiá-lo junto do α
+  desfaria exatamente o que ele foi adicionado para mostrar.
+- **Na grade de previsão ele é mais um canal, sem ramo próprio no simulador.** O truque é o que a
+  aba expõe como "nível": o **índice de preços relativos** (IPCA ÷ CPI, rebaseado em 100), com
+  `is_log_return: true` e estatísticas identidade — assim o `channelDeltas()` que já existia produz
+  exatamente o `delta_ppp`, e no modo "%Δ m/m" a caixa se lê como *quanto o Brasil inflacionou a mais
+  que os EUA naquele mês*, que é o input sobre o qual alguém tem opinião.
+- **"Plano por default" deixa de ser neutro quando o nível é um índice.** Congelar o índice significa
+  Brasil e EUA inflacionando igual por 12 meses — hipótese forte disfarçada de ausência de hipótese, e
+  enviesaria toda previsão intocada em ~3 pp/ano. As caixas do PPP nascem seguindo a **deriva média dos
+  últimos 12 meses** (`TREND_SEEDED_RG`), e o botão *Reset shocks* devolve a mesma semente, não o índice
+  congelado.
+- **O cache da banda de erro precisou de chave de spec.** `window`/`horizon` continuam idênticos com e
+  sem o offset, então sem um campo `spec` o `forecast_error_bands_w72.json` antigo seria reaproveitado
+  e a banda entregue descreveria um modelo que a página não roda mais.
+
+`tests/test_ridge_ppp_js.js` (44 asserções, **primeiro teste da aba Ridge**) afirma sobre o arquivo
+entregue: as identidades β=1 nos três lugares do payload, que diferenciar a série de nível reproduz a
+contribuição mensal, que **a previsão é a soma das barras** (é a asserção que pega o offset caindo no
+resíduo — a ponte de nível continua fechando quando isso acontece), a ponte, a semente por deriva, o
+`spec` do cache e a separação de cor CIEDE2000. Verificado contra **15 mutantes**, todos pegos.
+Descoberta lateral: as cores do mapa do Ridge **não passam** na régua de ΔE≥20 da regra do
+`lis-dashboard` (curve_steep_real × sp500 = 10,6; fiscal × dxy_em = 10,8) — a nova (#7A9E1F, ΔE 21,6)
+passa, o resto é anterior à regra e ficou registrado como pendência.
+
+**O que este teste NÃO cobre:** execução do bloco de `<script>` das abas de modelo. Ele só confere
+sintaxe. O stub de DOM completo existe apenas para o primeiro bloco (`tests/test_fx_report_js.js`); um
+stub genérico por Proxy foi tentado e dá **falso negativo** (a aba PPP quebra no stub, não no produto).
+
+## E os canais foram cortados de 8 para 5, no mesmo dia
+
+Pedido do usuário ("enxugue os canais para 5"), medido **com o PPP já no modelo** — a eliminação
+pré-PPP foi refeita, não reaproveitada.
+
+**O que torna o corte fácil é que quase nada era identificado.** Drop-one walk-forward, IC de bootstrap
+de blocos entre colchetes: `fiscal` +28,5% [+12,7; +47,4] — **o único cujo intervalo exclui zero** —,
+depois `dxy_em` +13,6% [−8,1; +39,7], `icbr_usd` +4,6%, `sp500` +2,5%, `curve_steep_real` +1,6%,
+`carry_vol` +0,6%, `real_yield_diff` +0,2% e `dxy` **−0,3%**. A causa é colinearidade, e ela é
+mensurável: as contribuições **únicas** ao R² somam 0,196 de um total de 0,677, ou seja **71% do ajuste
+é compartilhado**. Nove regressores estavam medindo umas três coisas.
+
+Eliminação backward gulosa (melhor conjunto em cada tamanho): 8 → 7,0132 · 7 → 6,9922 · 6 → 6,9633 ·
+**5 → 6,9602** · 4 → 7,1629. Cinco é o **mínimo da curva** — o modelo enxuto pontua marginalmente
+melhor fora da amostra que o de oito —, e de 8 até 3 tudo está dentro do ruído de qualquer jeito.
+
+**A escolha do 5º canal não foi por MSE, e é o ponto que vale reter.** O guloso pega
+`curve_steep_real` (6,9602); `carry_vol` dá 7,0410. A diferença é **1,15%**, dentro de uma faixa em que
+uma diferença de 8,9% já não era distinguível — então o erro não decide. Decide a **estabilidade de
+sinal**: com `curve_steep_real`, o coeficiente dele **cruza zero** nas 151 janelas móveis (−0,47 a
++1,21), e um canal que troca de sinal não explica nada, só ajusta. Com `carry_vol`, os **seis**
+coeficientes mantêm o sinal em todas as janelas, e o R² é marginalmente maior (0,6614 contra 0,6607).
+Benefício secundário: `curve_steep_real` e `real_yield_diff` eram os dois canais vindos de
+`base_mercado.interest_rates`, o schema externo do CentralManagement — sem eles, os canais do modelo
+ficam inteiramente em tabelas deste projeto (mais o FRED).
+
+Spec entregue (n=222, 2008-01 a 2026-06): λ 0,010, R² 0,6614, R² médio das janelas 0,701, α **+0,199
+pp/mês com t=+1,12** — não distinguível de zero, que é o efeito do offset de PPP. Decomposição
+acumulada dos +107,2 pp: PPP +57,7 · α +44,2 · dxy_em +9,9 · sp500 +8,3 · icbr_usd +4,8 · carry_vol
+−3,3 · fiscal −0,0 · AR(1) −14,3.
+
+Quatro coisas que o corte obrigou, e que valem para o próximo:
+
+- **A lista do JS tem de bater com o payload, conjunto a conjunto.** `CHANNEL_ORDER_RIDGE` alimenta
+  `DECOMP_CHANNELS_RG`, que indexa `contrib_monthly`/`level_decomposition` direto: chave a mais faz o
+  loop ler `undefined`, chave a menos **apaga uma barra em silêncio**. §12 do teste compara os dois
+  conjuntos e varre os três mapas (rótulo de série, cor, rótulo de parâmetro) atrás de buraco e de
+  órfão.
+- **A tag do cache da banda de erro passou a ser derivada do channel set.** `window`/`horizon` ficam
+  idênticos quando o modelo muda, então a tag literal `ppp_offset_b1` que bastava para o offset não
+  bastaria para o corte — o cache de 8 canais seria reaproveitado e a banda entregue descreveria um
+  modelo que a página não roda.
+- **`composite_primitives` passou a ser filtrado pelos canais ativos.** Sem isso o payload continuaria
+  carregando (e lendo do banco) os três rendimentos que só serviam a `real_yield_diff` e
+  `curve_steep_real`, e o cliente ofereceria "Break down into parts" para canal sem cartão.
+- **A paleta teve de ser remedida, e não passava antes.** Separabilidade é propriedade do conjunto
+  que está no gráfico junto. Com 8 canais, `fiscal × dxy_em` dava ΔE 10,8 e `curve_steep_real × sp500`
+  dava 10,6 — as duas piores entre as séries mais desenhadas. Com o conjunto novo, duas cores mudaram
+  por busca em grade (`dxy_em` para âmbar `#EE9900`, `sp500` para azul `#0088CC`) e **os 36 pares agora
+  ficam em ΔE ≥ 20**, pior par `fiscal × fx_lag1` em 20,5.
+
+`tests/test_ridge_ppp_js.js` cobre PPP e corte junto: **56 asserções, 22 mutantes, todos pegos**.
+
+## A aba virou "FX Model", e o que mudou na apresentação (2026-09-01)
+
+Seis ajustes pedidos pelo usuário na mesma rodada. Cinco são de apresentação e um muda o
+que o leitor digita.
+
+- **Nome.** `Ridge` → **`FX Model`**. "Ridge" nomeia o *estimador*, que é detalhe de
+  implementação; a aba é o modelo.
+- **A metodologia virou click-drop** (`<details class="fold" id="ridgeMethodFold">`, fechado por
+  default) e foi reescrita. A equação saiu de uma linha corrida de nove termos para um bloco em
+  display, **uma linha por termo**, com o símbolo à esquerda e a leitura em linguagem comum à
+  direita — e o termo de coeficiente imposto marcado à parte (`.eq-fixed`).
+- **"Descriptive stats" saiu.** Os números não sumiram: viraram **uma linha** dentro da
+  metodologia (`#ridgeFitLine`, montada do payload). Três cartões no topo anunciando λ e
+  contagem de janelas apareciam antes de o leitor saber o que é λ.
+- **"Rolling Coefficient" e "R² Over Time" foram para um click-drop no fim** (`#ridgeDiagFold`).
+  São diagnósticos *do modelo*, não leitura do câmbio.
+- **Baseline + PPP viraram uma barra só, "Trend"**, com a composição no rodapé do gráfico.
+- **O input do PPP virou inflação em % a/a.**
+
+Quatro coisas técnicas que valem para a próxima:
+
+- **Gráfico dentro de `<details>` fechado renderiza com largura zero e continua assim depois de
+  aberto** — o Plotly mede o container uma vez. Mesmo motivo pelo qual `activateTab()` chama
+  `resize` ao trocar de aba. O evento `toggle` do `<details>` **não borbulha**, então é um
+  listener por bloco.
+- **A fusão Baseline+PPP é de APRESENTAÇÃO, feita no cliente.** O payload continua trazendo as
+  duas séries separadas — são dado. `DECOMP_CHANNELS_RG` mantém o PPP (a grade de previsão o
+  edita como qualquer canal) e só `DECOMP_BARS_RG` o exclui. O rodape é recalculado a cada
+  render, porque a janela escolhida muda os três pedaços, e ele diz que eles **compõem, não
+  somam**: em pontos de log somam, em percentual multiplicam, e escrever "+78% +55% −13% = ..."
+  seria falso.
+- **A conversão do input em % a/a é exata e não encadeia.** O estado canônico segue sendo o
+  índice de preços relativos (é o que `channelDeltas()` consome); a caixa mostra
+  `100·ln(nível(h) / nível(h−12))`. Como o horizonte é de 12 meses, **o nível(h−12) de toda caixa
+  cai dentro do histórico**, nunca em outra caixa — é isso que torna a conversão independente da
+  ordem de edição: editar a caixa 5 não move o que a caixa 6 mostra.
+- **As caixas passaram a imprimir a unidade de exibição arredondada.** Elas imprimiam
+  `levels[key][h]` cru, o que num canal em % a/a mostraria o índice (177,76) no lugar da
+  inflação — e em qualquer canal vazava a precisão inteira do float (`178.102290899`, no print
+  que motivou o pedido).
+
+**E o erro de edição que vale registrar, porque é reincidente**: o anchor `<h2>What this tab is</h2>`
+usado para achar a introdução casou com a **aba FX Attribution**, que tem uma seção de mesmo título e
+vem antes no arquivo. O slice apagou aquela aba inteira mais a abertura do painel `tab-ridge`.
+Quem pegou foi `tests/test_fx_report_js.js` **§14b** — a asserção de que todo botão tem painel e
+todo painel tem botão, escrita em 2026-09-01 para outra coisa. É a segunda vez que este arquivo
+pune um anchor não ancorado no painel (a primeira foi no próprio teste, mesma seção): **num
+relatório de 9 abas, fatie pelo painel antes de procurar qualquer título.**
+
+`tests/test_ridge_ppp_js.js` §13 cobre os seis ajustes (91 asserções no arquivo, 40 mutantes entre
+os dois harnesses de mutação, todos pegos).
+
 ## Section → schema → table mapping
 
 | Report tab | Loader (`generate_report.py`) | Schema | Table(s) |
 |---|---|---|---|
-| Cotação | `_load_ptax` | `macro_brasil` | `cmb_ptax` |
-| Valuation | `_load_diferenciais` | `macro_international` | `diferenciais_juros` |
+| Valuation | `_load_ptax` | `macro_brasil` | `cmb_ptax` |
+| ~~Valuation~~ | `_load_diferenciais` | `macro_international` | `diferenciais_juros` — **fora do relatório desde 2026-09-01** (a seção Diferenciais de Juros saiu); a função fica porque `agent_data.py` a importa, e a tabela segue alimentando o canal de carry da aba Ridge via `ppp_equilibrium` |
 | Valuation | `_load_reer` | `macro_international` | `cmb_reer` |
-| Valuation | `_load_cot_fx` | `macro_international` | `cmb_cot_fx` |
 | Valuation | `_load_termos` | `macro_brasil` | `cmb_termos_troca` |
-| Posicionamento do BCB | `_load_bcb_positioning` | `macro_brasil` | `cmb_reservas_bc` (4 recortes: `reserves`/`swap` diretos, `reservas_arvore` mensal 2001+, `intervencoes` diária→mensal) |
+| Posicionamento: BCB e mercado | `_load_cot_fx` | `macro_international` | `cmb_cot_fx` (20 séries por moeda desde 2026-09-01: as 5 categorias do TFF × long/short/spread/net, + `open_interest`) |
+| Posicionamento: BCB e mercado | `_load_bcb_positioning` | `macro_brasil` | `cmb_reservas_bc` (4 recortes: `reserves`/`swap` diretos, `reservas_arvore` mensal 2001+, `intervencoes` diária→mensal) |
 | Fluxo Cambial | `_load_cambio_contratado` | `macro_brasil` | `cmb_cambio_contratado` (diária→mensal) |
 | Fluxo Cambial — volume interbancário | `_load_interbancario` | `macro_brasil` | `cmb_ptax` (diária→mensal) |
 | ~~Fluxo Cambial~~ | `_load_fluxo` | `macro_brasil` | ~~`cmb_fluxo_cambial`~~ — **não é fluxo cambial**, fora do relatório desde 2026-08-27 (ver acima); só `agent_data.py` ainda consome |
@@ -376,7 +689,7 @@ e só se descobre pelo custo — e que as 3 árvores continuam de pé. Saída: 2
 | Comex Stat — by aggregate factor | `_load_comex_fator_agregado` | `macro_brasil` | `cmb_comex_fator_agregado` (saldo + export/import) |
 | Comex Stat — by product | `_load_comex_produto` | `macro_brasil` | `cmb_comex_produto` (saldo + export/import) |
 
-Note: interbank FX volume (`fx_interbank_vol_t1`/`t2`) lives in `cmb_ptax` but is charted under Fluxo Cambial, not Cotação — Cotação shows only the spot level.
+Note: interbank FX volume (`fx_interbank_vol_t1`/`t2`) lives in `cmb_ptax` but is charted under Fluxo Cambial, not Valuation — the PTAX section shows only the spot level.
 
 The three model tabs don't go through `_load_*()` at all: they source through `models/ppp_equilibrium.load_data()` (a much wider set — `cmb_ptax`, IPCA, `cmb_risco_pais`, `cmb_dollar_index*`, `cmb_policy_rates`, `cmb_fx_latam`, `inflc_meta`, the external `base_mercado.interest_rates`, plus a live FRED CPI fetch) and the hand-extracted CSVs under `models/fx_attribution_data/`. See `models/` below.
 
@@ -392,7 +705,31 @@ The three model tabs don't go through `_load_*()` at all: they source through `m
 - **`lucros_reinvestidos` (BCB SGS 22815) has no data 1999–2010** (confirmed 404 from the BCB API, not a pipeline bug) — already `fillna(0)`'d before summing into `lucros_dividendos`.
 - **No "gross reserves" series** — SGS 13127 (`reservas_brutas_usd`) times out consistently (wrong/discontinued code); resolved by using the liquidity concept (`cmb_reservas_bc.reserves_liquidity_daily`) plus its detailed components instead. Not a gap to revisit.
 
+## Os dois arquivos do Ridge que a geração lê e nunca reescreve (declarados em 2026-09-01)
+
+`build_dashboard_payload()` lê dois JSON de `models/ridge_results/` a cada geração, e nenhum dos
+dois estava declarado em `domain/dashboards/manifest.yaml` até 2026-09-01 — invisibilidade da mesma
+classe que motivou a camada de `procedures` na política monetária: arquivo calculado que o relatório
+consome, com atraso que nenhuma tela mostrava.
+
+| arquivo | o que é | por que **não** é um `procedures:` |
+|---|---|---|
+| `model_fit_cutoff.json` | mês até onde os coeficientes são estimados (`cutoff_month`, hoje 2026-06) | fixado **por decisão** do usuário (2026-08: *"I still don't want to re-run the model"* quando só alguns canais têm dado novo). Avançar é escolha, não consequência de ter saído dado |
+| `forecast_error_bands_w72.json` | desvio-padrão do erro por passo à frente, 139 reajustes móveis | estatística da amostra inteira, ~90s; muda junto com o ajuste, não com o mês novo |
+
+Há um motivo técnico além da decisão, e ele vale para qualquer cache futuro: **o corte da banda é um
+mínimo, e a regra de `reads` compara com um máximo.** O painel da banda termina no mês em que
+*todos* os canais já têm dado (o `dropna()` de `build_deltas_contemporaneous`), enquanto
+`estado_procedimentos()` marca atraso contra a fonte **mais adiantada** — declarar como passo faria
+o Regerar recalcular 90s todo mês, o corte não avançaria (o canal atrasado continua atrasado) e o
+passo ficaria atrasado para sempre. É o laço que essa camada evita em toda parte.
+
+O que mudou no código: `forecast_error_bands_w72()` passou a gravar `data_max` no JSON, o mês do
+painel a que ela chegou. Caches escritos antes disso só têm mtime — declarar `json_date: data_max`
+no dep passa a valer depois do primeiro recálculo, e por isso o dep hoje não declara.
+
 ## Reference material (`referencia/`)
+
 
 Not read by any script — background only. **Reorganized into subfolders 2026-08**; `ppp_dashboard.html` moved out entirely (it was a code-generated deliverable, not background reading, and is now three tabs of `report.html` — see "Model tabs" below):
 - `balance_payments_breakdown.xlsx` — the official SGS-code mapping behind `cmb_balanco_pagmt.py`; check this before adding or changing BOP series. Kept loose at the top level, unrelated to either subfolder below.
@@ -433,7 +770,7 @@ What's actually still here:
 
 - **`ppp_equilibrium.py`** — the shared data-loading and PPP-equilibrium core every surviving model tab sits on top of. `load_data()` builds the relative-PPP equilibrium candidate (headline IPCA index ÷ headline CPI index, anchored to actual PTAX at a selectable base month, sample 1994-07→today) from BR IPCA/PTAX (MySQL) + US CPI (live FRED fetch, not cached), and also fetches the full set of candidate explanatory channels the Ridge model draws on — carry (`diferenciais_juros`), terms-of-trade (`cmb_termos_troca`), breakeven inflation expectations and the CMN de-anchoring gap (`base_mercado.interest_rates` + `inflc_meta`), fiscal risk/CDS (`cmb_risco_pais`), DXY and the EM dollar index, nominal and real 10Y-2Y curve steepening (`base_mercado.interest_rates`), the BR-US real yield differential, S&P 500, the USD-denominated commodity index, and LatAm-peer-relative carry/carry-vol variants (`cmb_policy_rates`/`cmb_fx_latam`) — sourced across `macro_brasil`/`macro_international` plus one external fund-ops schema. `build_payload()` shapes all of this for the Equilíbrio PPP tab's charts; `compute_equilibrium()`/`compute_deviation()` are the equilibrium/deviation math reused by every model that needs it. Its `render()` (which used to fill the standalone dashboard's markers) is gone — `generate_report.py` owns rendering now, and `run()` here is diagnostics-only (per-channel coverage + latest deviation, no file written).
 - **`fx_attribution_model.py`** (+ `fx_attribution_model.md`, `generate_fx_attribution_pdf.py`, `fx_attribution_data/`) — turns qualitative FX commentary from asset-manager monthly letters into a numeric monthly time series across 9 fixed causal categories (`fiscal_br`, `monetary_br`, `politics_br`, `global_usd`, `commodities`, `risk_sentiment`, `china_em`, `trade_policy`, `capital_flows` — full taxonomy/extraction rules in `fx_attribution_model.md`). Sign convention: +1 = strongly BRL-appreciation-supportive, −1 = strongly depreciation-driving, scored on the claim's effect on BRL, never on the claim's own subject. Manual-extraction pilot, not an automated pipeline: each manager's `documents.csv`/`claims.csv`/`monthly.csv`/`fx_attribution.xlsx` under `fx_attribution_data/<manager>/` is hand-extracted from source letters (currently `kinea/`, `verde_asset/`, `kapitalo/`); the module itself only covers claims → monthly matrix → Excel export (`export_excel()`) and → dashboard payload (`build_manager_payload()`/`build_dashboard_payload()`). Framework is manager-agnostic by design — onboarding a new manager means hand-extracting its own `fx_attribution_data/<manager>/` folder, no code changes.
-- **`ridge_deviation_model.py`** (+ `generate_layman_model_doc.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. PPP itself was tested as an additional regressor and then dropped entirely (alpha absorbs the average drift instead); the shipped channel set is fiscal (CDS), a carry-to-volatility metric, DXY, the EM dollar index, real curve steepening, the BR-US real yield differential, S&P 500, and the USD commodity index. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_layman_model_doc.py` generates `reports/brasil/ridge_model_explained.pdf`, a plain-English (no jargon, no equations) companion documenting the shipped channel spec, aimed at a non-technical internal audience. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
+- **`ridge_deviation_model.py`** (+ `generate_layman_model_doc.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. **Relative PPP re-entered the spec in 2026-09-01 with its coefficient pinned at 1** (see the section above) — it is an *offset*, not a regressor, and never appears in `delta_cols`. **The channel set was cut from eight to five the same day** (`_CHANNELS_5`): fiscal (CDS), the EM dollar index, a carry-to-volatility metric, S&P 500 and the USD commodity index. Out went DXY, real curve steepening and the BR-US real yield differential. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_layman_model_doc.py` generates `reports/brasil/ridge_model_explained.pdf`, a plain-English (no jargon, no equations) companion documenting the shipped channel spec, aimed at a non-technical internal audience. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
 
 - **`real_rates_comparison.py`** (+ `real_rates_comparison_template.html`) — the one thing in this
   folder with an output of its own: `reports/brasil/real_rates_comparison.html`, a self-contained page
@@ -462,7 +799,7 @@ What's actually still here:
 - **Confirm the merged report in a real browser** — the 2026-08 fusion was verified by generating the file and driving its real inline scripts through a jsdom harness with a stubbed Plotly (all 9 tabs activate with exactly one panel visible, all 36 chart divs render, every id the JS reaches for exists, no uncaught error from any tab/select/toggle, y-autofit fires; re-run 2026-08-24 after the PPP guard fix — both the full build and the `include_models=False` build come back with zero errors, the latter now showing three no-data messages instead of three blank panels, and every option of all 7 model-tab selects plus the Ridge tab's 8 buttons and 197 numeric inputs fire clean). That covers wiring, not *looks*: nobody has yet eyeballed the two typographies side by side, the model panels' spacing inside this report's `main` (they were laid out for a wider `.page`), or the model tabs' first paint after a tab switch (they're drawn hidden, then resized).
 - **Unify the two design systems** — the reskin item below is now also a merge cleanup: the six data tabs are `system-ui`/navy-header era, the three model tabs are the 2026-07 Barlow/JetBrains reskin. Doing the reskin collapses `.ppp-scope` and both Plotly layout factories (`mkLayout()` + `plotlyBaseLayout()`) into one each.
 - **BOP "Financiamento Externo" — 10 lines with no SGS code identified**: asset-side bank/non-bank split, and the public/private/direct/other split within LP external loans (both inflows and amortizations). Two next steps identified, neither executed: (1) accept the coarser breakdown `balance_payments_breakdown.xlsx` already provides instead of forcing an exact match, or (2) search the BCB SGS series finder for codes outside the 22701–23060 range already in use.
-- **Interest differentials are ex-post only** — ex-ante (Focus Selic/IPCA 12m for Brazil; Fed funds futures/OIS and Michigan survey or breakevens for the US) is not implemented. Add as new `_ex_ante`-suffixed series in `diferenciais_juros`, not a replacement of the existing ones.
-- **Cotação tab shows only BRL/USD** — explicit user ask for EM peer currencies (MXN, CLP, COP) side by side; no spot series for those pairs exists in the DB yet (FRED has candidates like `DEXMXUS`) — blocked on authorization for new data collection, not on a technical blocker.
+- **Interest differentials are ex-post only** — ex-ante (Focus Selic/IPCA 12m for Brazil; Fed funds futures/OIS and Michigan survey or breakevens for the US) is not implemented. Add as new `_ex_ante`-suffixed series in `diferenciais_juros`, not a replacement of the existing ones. Note que **desde 2026-09-01 nenhuma aba de dados desenha essa tabela** — o consumidor vivo é o canal de carry da aba Ridge e o `agent_data.py`, então um diferencial ex-ante entraria hoje por ali, não por uma seção de Valuation.
+- **The PTAX section shows only BRL/USD** — explicit user ask for EM peer currencies (MXN, CLP, COP) side by side; no spot series for those pairs exists in the DB yet (FRED has candidates like `DEXMXUS`) — blocked on authorization for new data collection, not on a technical blocker.
 - **Fluxo cambial — CEP/CBE sub-items** (candidate SGS codes 24372–24376) returned data in an initial search but descriptions are unconfirmed — cross-check against the BCB's weekly Nota Cambial before using them.
 - **Cupom cambial + B3 FX futures (DOL/WDO)** — deferred indefinitely; requires Bloomberg (`blpapi`/`xbbg`) on the running machine.

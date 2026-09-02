@@ -97,6 +97,44 @@ implement this; reuses walk_forward_lambda()/fit_whole_sample()/rolling_fit()
 unchanged, since none of those three assume anything about a column's name
 beyond it being present in the sample.
 
+PPP RE-ENTERED THE SHIPPED SPEC IN 2026-09-01, WITH ITS COEFFICIENT PINNED
+AT 1 -- direct user request ("pode aplicar esse modelo de PPP com B = 1"),
+and it is NOT a reversal of the 2026-07-30 "Remove the ppp entirely, let the
+alfa capture it" decision above. That decision was about a FREELY ESTIMATED
+PPP coefficient, and it was right about that: re-measured 2026-09-01, the
+free estimate is +0.41 whole-sample with a 72m rolling path running
+-0.76..+0.87 and the OPPOSITE sign in 60% of windows. What it never covered
+is an IMPOSED coefficient, which is a different object -- an accounting
+identity the model is told to respect, not a parameter it is asked to learn.
+
+The reason the monthly fit cannot learn it, and the reason 1 is nonetheless
+the right number, are the same fact seen twice: relative PPP is a
+low-frequency relation. Monthly, delta_ppp carries 0.79% of the exchange
+rate's variance (sd 0.40 vs 4.47 pp) and correlates +0.155 with it, so
+least squares fits noise. Over h months, regressing the log change of PTAX
+on the accumulated inflation differential gives beta 1.74/2.79/2.19/1.92/
+1.76/1.98 at h = 1/12/24/36/60/120, each distinguishable from 0
+(Newey-West t 2.25..3.39) and NONE distinguishable from 1 (t 0.95..1.75),
+with R2 rising from 0.02 to 0.32.
+
+What changed in the shipped numbers (8 channels + AR(1), n=222, 2008-01 to
+2026-06): OOS MSE 6.9675 -> 7.0132, +0.66% with a block-bootstrap CI of
+[-3.2, +4.8] -- free. R2 essentially unchanged (0.6772 -> 0.6769). And the
+thing it was done for: of the sample's +107.2 pp of accumulated log move,
+alpha's share falls from +96.8 to +41.5 pp while PPP takes +57.7, and alpha
+stops being a statistically real drift -- +0.435 pp/month at t=+2.48 before,
++0.187 pp/month at t=+1.06 after. The channels move barely at all (dxy_em
++8.8 -> +8.9 pp, sp500 +6.0 -> +6.3, icbr_usd +5.8 -> +5.4).
+
+Implementation shape, since it is unusual for this module: delta_ppp is an
+OFFSET, never a member of delta_cols. walk_forward_lambda()/
+fit_whole_sample()/rolling_fit() take offset_col=, fit on y - offset, and
+predict offset + alpha + X.beta, so every error and R2 they report stays on
+delta_fx's own scale and remains comparable with a fit that has no offset.
+See build_plain_regression_sample()'s ppp_offset docstring for the full
+measurement record and the honest limit (PPP takes 54% of the trend; the
++50.3 pp of REAL depreciation over the sample is still alpha's).
+
 Usage:
     uv run python -c "from analytics.brasil.exchange_rate.models.ridge_deviation_model import run; run()"
     uv run python -c "from analytics.brasil.exchange_rate.models.ridge_deviation_model import run_carry_level_variant; run_carry_level_variant()"
@@ -257,6 +295,42 @@ _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP = [
     c for c in _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR if c != "curve_steep"
 ]
 
+# THE SHIPPED CHANNEL SET since 2026-09-01 -- direct user request ("enxugue os
+# canais para 5"), measured against the 8-channel set above WITH the PPP offset
+# already in place (the pre-PPP ranking was re-run, not reused).
+#
+# The measurement that makes the cut easy: of the eight, only `fiscal` is
+# statistically distinguishable at all. Drop-one walk-forward, block-bootstrap
+# CI in brackets: fiscal +28.5% [+12.7, +47.4] -- the only one whose interval
+# excludes zero -- then dxy_em +13.6% [-8.1, +39.7], icbr_usd +4.6%, sp500
+# +2.5%, curve_steep_real +1.6%, carry_vol +0.6%, real_yield_diff +0.2%, dxy
+# -0.3%. The reason so little is identified is collinearity, and it is
+# measurable: the drop-one unique R2 contributions sum to 0.196 of a total
+# 0.677, so 71% of the fit is SHARED. Nine regressors were measuring about
+# three things.
+#
+# Greedy backward elimination (best set at each size) bottoms out here rather
+# than at the full set: 8 -> 7.0132, 7 -> 6.9922, 6 -> 6.9633, 5 -> 6.9602,
+# 4 -> 7.1629. Five is the minimum of the curve, and every point from 8 down
+# to 3 is inside the noise band anyway.
+#
+# WHY carry_vol AND NOT curve_steep_real, which greedy picks: the two differ by
+# 1.15% of MSE (6.9602 vs 7.0410), far inside a band where an 8.9% difference
+# was not distinguishable, so error does not decide this. Sign stability does.
+# With curve_steep_real, that channel's own coefficient CROSSES ZERO across the
+# 151 rolling windows (-0.47 to +1.21) -- a channel that changes sign explains
+# nothing, it only fits. With carry_vol, all six coefficients hold their sign in
+# every window, and R2 is marginally higher (0.6614 vs 0.6607). Secondary
+# benefit: curve_steep_real and real_yield_diff are the two channels sourced
+# from `base_mercado.interest_rates`, the external CentralManagement schema, so
+# dropping both leaves the model's channels entirely on tables this project
+# owns (plus FRED).
+#
+# What the shipped spec then reads (n=222, 2008-01..2026-06): lambda 0.010,
+# R2 0.6614, alpha +0.199 pp/month at t=+1.12 (not distinguishable from zero,
+# which is the point of the PPP offset -- see the module docstring).
+_CHANNELS_5 = ["fiscal", "dxy_em", "carry_vol", "sp500", "icbr_usd"]
+
 # Channels whose month-over-month change is a LOG-RETURN (100*diff(log(.))),
 # not a plain level diff -- price indices in the thousands/hundreds, where a
 # raw point change isn't the right transform (unlike every other channel
@@ -284,6 +358,12 @@ _CHANNELS_SHRUNK = ["fiscal", "carry_vol", "dxy", "curve_steep"]
 # the resulting OOS score wouldn't be trustworthy this early.
 _MAX_LAG = 6
 _LAG_MIN_TRAIN = 72
+
+# The one term in the shipped spec whose coefficient is IMPOSED (at 1) rather
+# than estimated -- the BR-US relative inflation differential, i.e. relative
+# PPP. See build_plain_regression_sample()'s ppp_offset docstring for the
+# measurements behind both the choice to include it and the choice to pin it.
+_PPP_OFFSET_COL = "delta_ppp"
 
 
 def _deltas_with_extra_channels(df: pd.DataFrame, channels: list[str]) -> pd.DataFrame:
@@ -401,7 +481,8 @@ def run_ar1_variant(channels: list[str] | None = None, window: int = 60, label: 
 
 def build_plain_regression_sample(df: pd.DataFrame | None = None,
                                    channels: list[str] | None = None,
-                                   include_ppp: bool = True) -> tuple[pd.DataFrame, dict, list[str]]:
+                                   include_ppp: bool = True,
+                                   ppp_offset: bool = False) -> tuple[pd.DataFrame, dict, list[str]]:
     """A genuinely different model from every other spec in this module --
     direct user request ("instead of considering the ppp as equilibrium,
     incorporate it in the regression as a channel... rerun without
@@ -448,13 +529,64 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     wrong transform. This module-local special-casing is deliberate --
     bayesian_deviation_model.py isn't part of the dashboard pipeline anymore
     (Ridge is the only model wired into the FX report), so new channels
-    are handled entirely here, not in that module's own delta-builder."""
+    are handled entirely here, not in that module's own delta-builder.
+
+    ppp_offset=True (2026-09-01, direct user request "pode aplicar esse
+    modelo de PPP com B = 1") is the THIRD way this function can treat
+    PPP, and the three are not variations on one idea -- they answer
+    different questions, and only this one puts the trend anywhere:
+
+      include_ppp=True   delta_ppp as a Z-SCORED channel, beta estimated.
+                         Captures NOTHING of the trend, because z-scoring
+                         subtracts the mean and the mean IS the trend --
+                         measured 2026-09-01: alpha's cumulative share of
+                         the sample's +107.2 pp actually RISES from +96.8
+                         to +100.1 pp when this is switched on.
+      (raw, beta free)   Not offered here. Beta comes out +0.41 whole-
+                         sample but its 72m rolling path runs -0.76..+0.87
+                         with the OPPOSITE sign in 60% of windows: the
+                         monthly delta_ppp carries 0.79% of the exchange
+                         rate's own variance (sd 0.40 vs 4.47 pp/month,
+                         corr +0.155), so a monthly least-squares fit is
+                         estimating noise, not the long-run relation.
+      ppp_offset=True    delta_ppp in RAW units with beta IMPOSED at 1,
+                         i.e. an offset, not a regressor. Takes +57.7 pp
+                         of the trend off alpha (+96.8 -> +41.5) at a cost
+                         of +0.66% walk-forward OOS MSE, CI [-3.2, +4.8].
+
+    Why 1 is the right number even though the monthly fit can't see it:
+    regressing the h-month log change of PTAX on the h-month inflation
+    differential gives beta 1.74 (h=1) to 2.79 (h=12), 1.76 at h=60 with
+    R2 0.32, and at EVERY horizon tested (1/12/24/36/60/120) the estimate
+    is distinguishable from 0 (Newey-West t 2.25..3.39) and NOT
+    distinguishable from 1 (t 0.95..1.75). The information about this
+    coefficient lives at low frequency; imposing it is how a monthly
+    regression gets to use it.
+
+    What it buys: alpha stops being a statistically real drift the model
+    doesn't explain. Without the offset alpha is +0.435 pp/month, t=+2.48;
+    with it, +0.187 pp/month, t=+1.06 -- not distinguishable from zero.
+    The channels barely move (dxy_em +8.8 -> +8.9 pp cumulative, sp500
+    +6.0 -> +6.3, icbr_usd +5.8 -> +5.4), so this reallocates the TREND,
+    not the channel story.
+
+    Honest limit: PPP takes 54% of the trend, not all of it. Over the
+    sample PTAX moved +107.9 pp of log (2.94x) against +57.5 pp (1.78x)
+    of accumulated inflation differential, leaving +50.3 pp (1.65x) of
+    REAL depreciation. The 41.5 pp alpha keeps is that; it stops being
+    significant, it does not stop being there.
+
+    Mutually exclusive with include_ppp -- the same column can't be both
+    a free regressor and a pinned offset."""
     channels = _CHANNELS_SHRUNK if channels is None else channels
+    if ppp_offset and include_ppp:
+        raise ValueError("include_ppp and ppp_offset are mutually exclusive: delta_ppp is "
+                         "either a free regressor or a pinned offset, never both")
     df = load_data() if df is None else df
 
     out = pd.DataFrame(index=df.index)
     out["delta_fx"] = 100 * np.log(df["ptax"]).diff()
-    if include_ppp:
+    if include_ppp or ppp_offset:
         out["delta_ppp"] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
     for c in channels:
         if c in _LOG_RETURN_CHANNELS:
@@ -470,6 +602,15 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     z["delta_fx_lag1"] = sample["delta_fx_lag1"]
     stats["delta_fx_lag1"] = (0.0, 1.0)  # identity -- kept in native units, not standardized
     z["delta_fx"] = sample["delta_fx"]
+    if ppp_offset:
+        # RAW, deliberately NOT standardized: the whole point is to carry the
+        # mean, and the mean is the trend -- _standardize_ext() would remove
+        # exactly the part this term exists to supply. Stats recorded as the
+        # identity so the forecast tab can treat delta_ppp as one more
+        # channel whose z-scoring happens to be a no-op, with no branch of
+        # its own anywhere in the client-side simulator.
+        z["delta_ppp"] = sample["delta_ppp"]
+        stats["delta_ppp"] = (0.0, 1.0)
 
     reg_cols = standardize_cols + ["delta_fx_lag1"]
     return z, stats, reg_cols
@@ -788,8 +929,21 @@ def build_lag_dashboard_payload(channels: list[str] | None = None, max_lag: int 
     }
 
 
+def _offset_vec(z: pd.DataFrame, offset_col: str | None) -> np.ndarray:
+    """The fixed-coefficient term, or zeros when there isn't one.
+
+    `offset_col` names a regressor whose coefficient is IMPOSED at 1
+    instead of estimated (today: delta_ppp -- see the PPP section of the
+    module docstring). Everything downstream then works on
+    `y - offset` for fitting and `offset + alpha + X.beta` for
+    prediction, which keeps every reported error/R2 on the ORIGINAL y's
+    scale and therefore comparable with a fit that has no offset at all."""
+    return np.zeros(len(z)) if offset_col is None else z[offset_col].values
+
+
 def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | None = None,
-                         min_train: int = 36, y_col: str = "delta_dev") -> pd.DataFrame:
+                         min_train: int = 36, y_col: str = "delta_dev",
+                         offset_col: str | None = None) -> pd.DataFrame:
     """Selects lambda by one-step-ahead walk-forward validation: for each
     candidate lambda, fit Ridge on z[:t] and score the squared error on
     z[t] (never used for that fit), for every t from min_train to the end,
@@ -802,11 +956,18 @@ def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndar
     passes y_col="dev" for the level-space variant, where the dependent
     variable isn't a delta at all.
 
+    offset_col: see _offset_vec(). The penalty never touches the offset
+    (its coefficient is imposed, not estimated), and the score is still
+    computed against y_col itself, so lambdas picked with and without an
+    offset are directly comparable.
+
     Returns one row per lambda (lambda, mean OOS squared error, fold count),
     sorted by error ascending -- best_lambda() just takes the top row."""
     lambdas = _LAMBDA_GRID if lambdas is None else lambdas
     X = z[delta_cols].values
     y = z[y_col].values
+    off = _offset_vec(z, offset_col)
+    y_fit = y - off
     n = len(z)
 
     rows = []
@@ -814,8 +975,8 @@ def walk_forward_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndar
         errors = []
         for t in range(min_train, n):
             model = Ridge(alpha=lam, fit_intercept=True)
-            model.fit(X[:t], y[:t])
-            pred = model.predict(X[t:t + 1])[0]
+            model.fit(X[:t], y_fit[:t])
+            pred = off[t] + model.predict(X[t:t + 1])[0]
             errors.append((y[t] - pred) ** 2)
         rows.append({"lambda": float(lam), "mse": float(np.mean(errors)), "n_folds": len(errors)})
     return pd.DataFrame(rows).sort_values("mse").reset_index(drop=True)
@@ -827,22 +988,34 @@ def best_lambda(z: pd.DataFrame, delta_cols: list[str], lambdas: np.ndarray | No
     return float(cv.iloc[0]["lambda"])
 
 
-def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float, y_col: str = "delta_dev") -> dict:
+def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float, y_col: str = "delta_dev",
+                      offset_col: str | None = None) -> dict:
     """Single Ridge fit on the full available sample at the chosen lambda --
     the "whole-sample reference" line the rolling tab compares each window
     against, same role beer_model.py's own whole-sample fit plays for its
-    rolling tab. y_col: see walk_forward_lambda()'s docstring."""
+    rolling tab. y_col/offset_col: see walk_forward_lambda()'s docstring.
+
+    With an offset the returned R2 is still measured against y_col, i.e.
+    it answers "how much of the exchange rate's own move does the whole
+    model explain", offset included -- NOT "how much of the ex-offset
+    residual do the estimated channels explain", which is a different and
+    much less useful number. The offset's own coefficient is reported in
+    `beta` as an exact 1.0 so consumers can treat it like any other term."""
     X = z[delta_cols].values
     y = z[y_col].values
+    off = _offset_vec(z, offset_col)
     model = Ridge(alpha=lam, fit_intercept=True)
-    model.fit(X, y)
-    fitted = model.predict(X)
+    model.fit(X, y - off)
+    fitted = off + model.predict(X)
     ss_res = float(np.sum((y - fitted) ** 2))
     ss_tot = float(np.sum((y - y.mean()) ** 2))
     r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+    beta = {c: float(b) for c, b in zip(delta_cols, model.coef_)}
+    if offset_col is not None:
+        beta[offset_col] = 1.0
     return {
         "alpha": float(model.intercept_),
-        "beta": {c: float(b) for c, b in zip(delta_cols, model.coef_)},
+        "beta": beta,
         "r2": r2,
         "n": len(z),
         "lambda": lam,
@@ -850,7 +1023,8 @@ def fit_whole_sample(z: pd.DataFrame, delta_cols: list[str], lam: float, y_col: 
 
 
 def rolling_fit(z: pd.DataFrame, delta_cols: list[str], lam: float, window: int = 60,
-                 step: int = 1, y_col: str = "delta_dev") -> pd.DataFrame:
+                 step: int = 1, y_col: str = "delta_dev",
+                 offset_col: str | None = None) -> pd.DataFrame:
     """Ridge coefficients re-estimated every `step` months on a trailing
     `window`-month sample -- same 60-month/monthly-step design as
     beer_model.py's rolling_fit(), swapped to a Ridge (not OLS+HAC)
@@ -858,18 +1032,27 @@ def rolling_fit(z: pd.DataFrame, delta_cols: list[str], lam: float, window: int 
     picked (chosen once, globally -- re-selecting lambda inside every one of
     ~160 windows would let lambda itself drift for reasons unrelated to the
     coefficients' own stability, which is the thing being tested here).
-    y_col: see walk_forward_lambda()'s docstring."""
+    y_col/offset_col: see walk_forward_lambda()'s docstring.
+
+    An offset column gets a constant `beta_<col>` of 1.0 in every row --
+    it is imposed, not estimated, so its "rolling path" is a flat line by
+    construction. Emitted anyway so a consumer iterating the coefficient
+    columns doesn't hit a KeyError; the dashboard deliberately leaves it
+    out of the Rolling Coefficient selector, since a flat line there would
+    read as a finding rather than as an assumption."""
     X = z[delta_cols].values
     y = z[y_col].values
+    off = _offset_vec(z, offset_col)
     n = len(z)
 
     rows = []
     for start in range(0, n - window + 1, step):
         win_X = X[start:start + window]
         win_y = y[start:start + window]
+        win_off = off[start:start + window]
         model = Ridge(alpha=lam, fit_intercept=True)
-        model.fit(win_X, win_y)
-        fitted = model.predict(win_X)
+        model.fit(win_X, win_y - win_off)
+        fitted = win_off + model.predict(win_X)
         ss_res = float(np.sum((win_y - fitted) ** 2))
         ss_tot = float(np.sum((win_y - win_y.mean()) ** 2))
         r2 = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
@@ -879,6 +1062,8 @@ def rolling_fit(z: pd.DataFrame, delta_cols: list[str], lam: float, window: int 
         }
         for c, b in zip(delta_cols, model.coef_):
             row[f"beta_{c}"] = float(b)
+        if offset_col is not None:
+            row[f"beta_{offset_col}"] = 1.0
         rows.append(row)
     return pd.DataFrame(rows).set_index("window_end")
 
@@ -967,19 +1152,33 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     force=True or the cache file doesn't exist yet, rather than on every
     build_dashboard_payload() call (which needs to stay cheap, since it also
     runs at render time)."""
+    # `spec` invalidates a cache built under a DIFFERENT model, which
+    # window/horizon alone can't detect -- the 2026-09-01 PPP-offset change
+    # kept both of those identical while changing what the band measures, and
+    # the channel cut the same day did it again. Derived from the channel list
+    # rather than hand-written, so a future channel change can't forget to
+    # bump it and ship a band belonging to a model the page no longer runs.
+    channels_tag = channels if channels is not None else _CHANNELS_5
+    spec_tag = "ppp_offset_b1|" + ",".join(sorted(channels_tag))
     if not force and _FORECAST_BANDS_CACHE.exists():
         import json
         with open(_FORECAST_BANDS_CACHE) as fh:
             cached = json.load(fh)
-        if cached.get("window") == window and cached.get("horizon") == horizon:
+        if (cached.get("window") == window and cached.get("horizon") == horizon
+                and cached.get("spec") == spec_tag):
             return cached
 
-    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
+    channels = _CHANNELS_5 if channels is None else channels
     df = load_data()
     out = pd.DataFrame(index=df.index)
     out["ptax"] = df["ptax"]
     out["delta_fx"] = 100 * np.log(df["ptax"]).diff()
     out["delta_fx_lag1"] = out["delta_fx"].shift(1)
+    # PPP enters here exactly as it does in the shipped fit: pinned at 1, so
+    # it is subtracted from the target before fitting and added back to every
+    # simulated step. Leaving it out would make this band describe a model
+    # the dashboard doesn't run.
+    out[_PPP_OFFSET_COL] = 100 * (np.log(df["ipca_index"]) - np.log(df["cpi_index"])).diff()
     delta_cols = []
     for c in channels:
         if c in _LOG_RETURN_CHANNELS:
@@ -987,7 +1186,7 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
         else:
             out[f"delta_{c}"] = df[c].diff()
         delta_cols.append(f"delta_{c}")
-    out = out.dropna(subset=["ptax", "delta_fx", "delta_fx_lag1"] + delta_cols)
+    out = out.dropna(subset=["ptax", "delta_fx", "delta_fx_lag1", _PPP_OFFSET_COL] + delta_cols)
 
     n = len(out)
     max_f = horizon
@@ -1004,13 +1203,15 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
         z, stats = _standardize_ext(train, reference, delta_cols)
         z["delta_fx_lag1"] = train["delta_fx_lag1"]
         z["delta_fx"] = train["delta_fx"]
+        z[_PPP_OFFSET_COL] = train[_PPP_OFFSET_COL]   # raw, pinned at 1
         reg_cols = delta_cols + ["delta_fx_lag1"]
 
         min_train = max(6, window // 2)
-        cv = walk_forward_lambda(z, reg_cols, y_col="delta_fx", min_train=min_train)
+        cv = walk_forward_lambda(z, reg_cols, y_col="delta_fx", min_train=min_train,
+                                 offset_col=_PPP_OFFSET_COL)
         lam = float(cv.iloc[0]["lambda"])
         model = Ridge(alpha=lam, fit_intercept=True)
-        model.fit(z[reg_cols].values, z["delta_fx"].values)
+        model.fit(z[reg_cols].values, (z["delta_fx"] - z[_PPP_OFFSET_COL]).values)
 
         z_future = pd.DataFrame(index=future.index)
         for c in delta_cols:
@@ -1023,7 +1224,10 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
         for h, dt in enumerate(future.index, start=1):
             row = z_future.loc[dt, delta_cols].values
             x = np.concatenate([row, [prev_delta_fx]])
-            delta_pred = model.predict(x.reshape(1, -1))[0]
+            # Realized PPP for that month, same treatment as the realized
+            # channels around it -- this measures the model's error, not the
+            # error of forecasting inflation.
+            delta_pred = future.loc[dt, _PPP_OFFSET_COL] + model.predict(x.reshape(1, -1))[0]
             cum_sim += delta_pred
             prev_delta_fx = delta_pred
 
@@ -1035,7 +1239,14 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     result = {
         "window": window,
         "horizon": horizon,
+        "spec": spec_tag,
         "n_folds": n_folds,
+        # Ate que mes do PAINEL isto foi calculado. Sem este campo o unico sinal de frescor
+        # do cache era o mtime, que diz quando o arquivo foi escrito e nao com que dado --
+        # a distincao que `domain/dashboards/manifest.yaml` chama de corte (2026-09-01).
+        # Declarar `json_date: data_max` no dep passa a valer depois do primeiro recalculo
+        # que gravar o campo; caches escritos antes disto so tem mtime.
+        "data_max": str(out.index.max().date()),
         "steps": list(range(1, horizon + 1)),
         "std_error_pct": [round(float(np.std(step_errors[h])), 4) for h in range(1, horizon + 1)],
         "mean_error_pct": [round(float(np.mean(step_errors[h])), 4) for h in range(1, horizon + 1)],
@@ -1088,8 +1299,13 @@ def refit_from_latest_data(channels: list[str] | None = None, force: bool = Fals
         if existing is not None:
             return existing
 
-    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
-    z, _, _ = build_plain_regression_sample(channels=channels, include_ppp=False)
+    channels = _CHANNELS_5 if channels is None else channels
+    # ppp_offset=True so the cutoff is pinned against the SAME sample the fit
+    # will use. In practice identical (load_data()'s core join is already
+    # bounded by ipca_index/cpi_index, so delta_ppp never drops a row the
+    # other columns kept), but tying them together means a future change to
+    # that join can't silently pin a cutoff the fit then can't reach.
+    z, _, _ = build_plain_regression_sample(channels=channels, include_ppp=False, ppp_offset=True)
     latest = z.index.max().strftime("%Y-%m")
 
     _RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1200,9 +1416,17 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     it's cached to a JSON file and only recomputed when the underlying
     sample/spec changes, not on every build_dashboard_payload() call -- see
     that function's own docstring."""
-    channels = _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP if channels is None else channels
-    z, stats, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False)
+    channels = _CHANNELS_5 if channels is None else channels
+    z, stats, reg_cols = build_plain_regression_sample(channels=channels, include_ppp=False,
+                                                       ppp_offset=True)
     delta_cols = reg_cols
+    # delta_ppp rides along in `z` as a PINNED term (beta = 1), never in
+    # delta_cols -- see build_plain_regression_sample()'s ppp_offset note.
+    # Everything below has to add it back where the model's prediction is
+    # assembled; `delta_cols` stays the list of ESTIMATED coefficients.
+    # ppp_vals is taken AFTER the cutoff truncation below, not here: `z`
+    # still carries whatever months the DB has past the pinned cutoff.
+    ppp_col = _PPP_OFFSET_COL
 
     # Pinned fit cutoff (see refit_from_latest_data()'s own docstring): z
     # above is naturally bounded by whichever channel's data lags furthest
@@ -1214,14 +1438,29 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     cutoff_month = refit_from_latest_data(channels=channels)
     cutoff_period = pd.Period(cutoff_month, freq="M")
     z = z.loc[z.index.to_period("M") <= cutoff_period]
+    ppp_vals = z[ppp_col].values
 
-    cv = walk_forward_lambda(z, delta_cols, y_col="delta_fx")
+    cv = walk_forward_lambda(z, delta_cols, y_col="delta_fx", offset_col=ppp_col)
     lam = float(cv.iloc[0]["lambda"])
-    whole = fit_whole_sample(z, delta_cols, lam, y_col="delta_fx")
-    roll = rolling_fit(z, delta_cols, lam, window=window, y_col="delta_fx")
+    whole = fit_whole_sample(z, delta_cols, lam, y_col="delta_fx", offset_col=ppp_col)
+    roll = rolling_fit(z, delta_cols, lam, window=window, y_col="delta_fx", offset_col=ppp_col)
 
     df = load_data()
     months = [d.strftime("%Y-%m") for d in z.index]
+
+    # --- PPP's own "level" for the forecast tab: the BR/US relative price
+    # index (IPCA / US CPI), rebased to 100 at the sample start. Chosen so
+    # the tab's EXISTING log-return machinery differences it into exactly
+    # delta_ppp -- 100*log(RPI(t)/RPI(t-1)) is the month's BR-US inflation
+    # differential in pp -- which is what lets PPP ride the forecast grid as
+    # one more channel (is_log_return=True, identity stats, beta 1) with no
+    # PPP-specific branch anywhere in the client-side simulator. In the
+    # grid's %-change mode the box then reads directly as "how much more did
+    # Brazil inflate than the US this month", which is the input a user
+    # actually has a view on -- the whole practical point of moving the
+    # trend out of a fixed alpha. ---
+    ppp_index_full = (df["ipca_index"] / df["cpi_index"]).dropna()
+    ppp_index_full = 100 * ppp_index_full / float(ppp_index_full.loc[z.index[0]])
 
     # --- nowcast: real observed values beyond the pinned fit cutoff,
     # wherever the DB already has them, assessed INDEPENDENTLY per channel
@@ -1247,6 +1486,20 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             "months": [d.strftime("%Y-%m") for d in s.index],
             "values": [round(float(v), 4) for v in s.values],
         }
+    # PPP's nowcast can't come from load_channel_series() -- it isn't a
+    # channel, it's built from the same ipca_index/cpi_index that bound
+    # load_data()'s core join. In practice this is USUALLY EMPTY, and for a
+    # reason worth stating rather than discovering later: the cutoff is
+    # pinned at the last month every channel has in common, and the two
+    # series behind PPP are routinely the slowest publishers in the whole
+    # frame (US CPI ~2 weeks past month-end, IBGE IPCA similar), so there is
+    # rarely anything past it. Emitted anyway so the box grid treats PPP
+    # exactly like every other row when there IS something.
+    ppp_nc = ppp_index_full[ppp_index_full.index > cutoff_ts].dropna()
+    nowcast_channels["ppp"] = {
+        "months": [d.strftime("%Y-%m") for d in ppp_nc.index],
+        "values": [round(float(v), 4) for v in ppp_nc.values],
+    }
     # current_month lets the client tell a FINAL nowcast month (already
     # fully elapsed -- safe to lock outright) from the CURRENT, still-
     # in-progress one (e.g. "2026-08" read from a source updated daily,
@@ -1267,7 +1520,14 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     # 'provisional' independently, exactly like any other box. See
     # load_primitive_series()'s docstring for why br_real_10y is one
     # series shared by two composites, not two independent ones. ---
-    primitive_names = sorted({p for prims in _COMPOSITE_PRIMITIVES.values() for p in prims})
+    # Only the composites that are actually IN the channel set -- otherwise the
+    # 2026-09-01 cut would keep paying for (and shipping) the primitives of
+    # channels the model no longer has: real_yield_diff and curve_steep_real
+    # between them pull three yield series nothing would ever plot, and the
+    # client would offer a "Break down into parts" button for a channel with no
+    # card to attach it to.
+    composite_primitives = {k: v for k, v in _COMPOSITE_PRIMITIVES.items() if k in channels}
+    primitive_names = sorted({p for prims in composite_primitives.values() for p in prims})
     raw_primitives = load_primitive_series(primitive_names)
     primitives_payload = {}
     for p in primitive_names:
@@ -1283,9 +1543,11 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
         }
 
     # --- historical fit (delta space), whole-sample point estimate ---
+    # ppp_vals enters with an implicit coefficient of 1 -- it is part of the
+    # model's prediction, so it belongs here and NOT in the residual.
     X = z[delta_cols].values
     beta_vec = np.array([whole["beta"][c] for c in delta_cols])
-    fitted_delta = whole["alpha"] + X @ beta_vec
+    fitted_delta = ppp_vals + whole["alpha"] + X @ beta_vec
     actual_delta = z["delta_fx"].values
     residual = actual_delta - fitted_delta
 
@@ -1308,9 +1570,16 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     # rather than shown as three separate bars, so the chart visually
     # separates "structural/mechanical" from "the four things the model
     # actually explains the move with." ---
+    #
+    # PPP is NOT folded into Baseline (2026-09-01): it is the one term whose
+    # whole purpose is to carry the trend that used to sit inside alpha, so
+    # hiding it in the same bucket as alpha would undo the point of adding
+    # it. It gets its own bar, listed first among the channels because it is
+    # the only one that is an accounting identity rather than an estimate.
     ar1_col = "delta_fx_lag1"
-    channel_cols = [c for c in delta_cols if c != ar1_col]
+    channel_cols = [ppp_col] + [c for c in delta_cols if c != ar1_col]
     contributions = {c: whole["beta"][c] * z[c].values for c in delta_cols}
+    contributions[ppp_col] = ppp_vals.copy()   # beta pinned at 1
     baseline_monthly = np.full(len(z), whole["alpha"]) + contributions[ar1_col]
     cum_baseline = np.cumsum(baseline_monthly)
     cum_contrib = {c: np.cumsum(contributions[c]) for c in channel_cols}
@@ -1362,17 +1631,21 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
     # consistent (each bridges its own anchor to the actual rate exactly). ---
     last_row = roll.iloc[-1]
     last_alpha = float(last_row["alpha"])
-    last_beta = {c: float(last_row[f"beta_{c}"]) for c in delta_cols}
+    # ppp_col included so the client sees a complete coefficient vector; its
+    # value is 1.0 in every window by construction, not an estimate.
+    last_beta = {c: float(last_row[f"beta_{c}"]) for c in [ppp_col] + delta_cols}
     last_window_months = months[-window:]
     z_last = z.iloc[-window:]
 
     X_last = z_last[delta_cols].values
     beta_vec_last = np.array([last_beta[c] for c in delta_cols])
-    fitted_delta_last = last_alpha + X_last @ beta_vec_last
+    ppp_last = z_last[ppp_col].values
+    fitted_delta_last = ppp_last + last_alpha + X_last @ beta_vec_last
     actual_delta_last = z_last["delta_fx"].values
     residual_last = actual_delta_last - fitted_delta_last
 
     contributions_last = {c: last_beta[c] * z_last[c].values for c in delta_cols}
+    contributions_last[ppp_col] = ppp_last.copy()   # beta pinned at 1, in every window
     baseline_monthly_last = np.full(len(z_last), last_alpha) + contributions_last[ar1_col]
 
     contrib_monthly_last_window = {
@@ -1392,7 +1665,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
         },
         "whole_sample": {
             "alpha": round(whole["alpha"], 4),
-            "beta": {c: round(whole["beta"][c], 4) for c in delta_cols},
+            "beta": {c: round(whole["beta"][c], 4) for c in [ppp_col] + delta_cols},
             "r2": round(whole["r2"], 4),
         },
         "fit_delta": {
@@ -1418,7 +1691,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             "start_index": len(months) - window,
             "end_index": len(months) - 1,
             "alpha": round(last_alpha, 4),
-            "beta": {c: round(last_beta[c], 4) for c in delta_cols},
+            "beta": {c: round(last_beta[c], 4) for c in [ppp_col] + delta_cols},
             "r2": round(float(last_row["r2"]), 4),
             "anchor_level": round(float(actual_ptax_full.loc[z_last.index[0] - pd.DateOffset(months=1)]), 4),
             "contrib_monthly": contrib_monthly_last_window,
@@ -1428,7 +1701,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             "seed_level": round(float(actual_level[-1]), 4),
             "seed_delta_fx_lag1": round(float(z["delta_fx"].iloc[-1]), 4),
             "alpha": round(last_alpha, 4),
-            "beta": {c: round(last_beta[c], 4) for c in delta_cols},
+            "beta": {c: round(last_beta[c], 4) for c in [ppp_col] + delta_cols},
             "channel_stats": {
                 c: {"mean": round(float(stats[c][0]), 6), "std": round(float(stats[c][1]), 6)}
                 for c in channel_cols
@@ -1463,14 +1736,25 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             # ("how unusual is this level" vs. "how big a signal is this
             # month's move"), and the level reading is what was asked for.
             "channel_history": {
-                c: {
+                **{
+                    c: {
+                        "months": months,
+                        "values": [round(float(v), 4) for v in df[c].reindex(z.index).values],
+                        "is_log_return": c in _LOG_RETURN_CHANNELS,
+                        "level_mean": round(float(np.nanmean(df[c].reindex(z.index).values)), 6),
+                        "level_std": round(float(np.nanstd(df[c].reindex(z.index).values, ddof=1)), 6),
+                    }
+                    for c in channels
+                },
+                # is_log_return=True is what makes the box grid difference this
+                # index into exactly delta_ppp -- see ppp_index_full above.
+                "ppp": {
                     "months": months,
-                    "values": [round(float(v), 4) for v in df[c].reindex(z.index).values],
-                    "is_log_return": c in _LOG_RETURN_CHANNELS,
-                    "level_mean": round(float(np.nanmean(df[c].reindex(z.index).values)), 6),
-                    "level_std": round(float(np.nanstd(df[c].reindex(z.index).values, ddof=1)), 6),
-                }
-                for c in channels
+                    "values": [round(float(v), 4) for v in ppp_index_full.reindex(z.index).values],
+                    "is_log_return": True,
+                    "level_mean": round(float(np.nanmean(ppp_index_full.reindex(z.index).values)), 6),
+                    "level_std": round(float(np.nanstd(ppp_index_full.reindex(z.index).values, ddof=1)), 6),
+                },
             },
             "nowcast": {
                 "fit_cutoff": cutoff_month,
@@ -1482,7 +1766,7 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
                 "channels": nowcast_channels,
             },
             "primitives": primitives_payload,
-            "composite_primitives": _COMPOSITE_PRIMITIVES,
+            "composite_primitives": composite_primitives,
         },
         "forecast_error_bands": forecast_error_bands_w72(channels=channels, window=window, horizon=12),
         "rolling": {

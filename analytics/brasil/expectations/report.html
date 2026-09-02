@@ -267,6 +267,29 @@
     @media (max-width: 600px) {
       .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
     }
+      /* ── Texto explicativo: justificado, e sem cap de largura ──────────────────
+       Convenção do projeto desde 2026-09-01, a pedido do usuário: todo texto explicativo
+       e todo texto de apêndice sai JUSTIFICADO e ocupa a largura do bloco que o contém.
+       Tirar o `max-width` em `ch` faz duas coisas de uma vez — cobre o vazio à direita do
+       parágrafo e, ocupando mais linha, deixa o bloco MAIS BAIXO.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       texto abre rios de espaço branco entre as palavras da linha. O que faz a hifenização
+       funcionar é o `lang` no <html> — sem ele o browser não sabe que dicionário usar e
+       não hifeniza nada, então a regra pareceria aplicada e produziria justamente os rios.
+
+       Fica de fora, de propósito: célula de tabela e popover de definição (container
+       estreito é exatamente onde os rios aparecem), linha de metadado em mono (é lista de
+       campos separada por `·`, não prosa) e o que é centralizado por decisão de layout. */
+    .appendix-body,
+    .chart-caption,
+    .lead,
+    .stub-note {
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
   </style>
 </head>
 <body>

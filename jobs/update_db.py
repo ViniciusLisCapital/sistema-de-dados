@@ -7,6 +7,7 @@ Uso:
     uv run python jobs/update_db.py --group ibge_ipca    # so uma divulgacao do calendario
     uv run python jobs/update_db.py --tables atv_pim,atv_pmc
     uv run python jobs/update_db.py --list               # o que existe para selecionar
+    uv run python jobs/update_db.py --group ibge_ipca --sem-gerar   # so o ETL
 
 Cada script e independente: se um falhar, os demais continuam.
 Exit code 1 se houver qualquer falha.
@@ -24,6 +25,20 @@ script, descoberto por convencao) em vez de uma segunda lista mantida a mao:
 
 O passe completo (sem argumento) segue existindo e inalterado — e a rede de seguranca
 que pega revisao de historico fora de qualquer evento de divulgacao.
+
+Atualizar dado e atualizar metrica sao o mesmo passo
+----------------------------------------------------
+Terminado o ETL, o job regera os dashboards que LEEM as tabelas que acabaram de ser
+escritas — mas so os que ficaram de fato para tras. Quem responde "quem le esta
+tabela" e `domain/dashboards/manifest.yaml` (a contrapartida do registry, que responde
+quem escreve), e quem decide se e preciso regerar e o veredito de
+`domain/dashboards/status.estado()`: um passe que nao trouxe linha nova deixa todo
+mundo "em dia" e nao regera nada. `--sem-gerar` desliga.
+
+Isto vale para a linha de comando. O botao "Atualizar" do relatorio de calendario
+chama `executar_grupo()` diretamente e continua NAO encadeando regeracao — a aba
+"Status dashboard" existe para o usuario escolher qual reconstruir, decisao explicita
+de 2026-08-26.
 """
 
 import argparse
@@ -51,7 +66,7 @@ from domain.db.brasil.bcb import (
     cred_credito_resumo, cred_inadimplencia_pj, cred_modalidade_livre_pj,
     cred_modalidade_livre_pf, cred_modalidade_direcionado_pj, cred_modalidade_direcionado_pf,
     cred_credito_porte, cred_credito_atividade_economica, cred_credito_tipo_cliente,
-    cred_credito_controle_capital, cred_ptc, inflc_agregados,
+    cred_credito_controle_capital, cred_ptc, cred_fluxo_financeiro, inflc_agregados,
     expc_focus, expc_focus_copom, expc_focus_periodo,
     cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
@@ -60,6 +75,7 @@ from domain.db.brasil.bcb import (
 
 # IPEA
 from domain.db.brasil.ipea import cmb_termos_troca
+from utils.console import stdout_utf8
 
 # MDIC
 from domain.db.brasil.mdic import cmb_comex_fator_agregado, cmb_comex_pais, cmb_comex_produto
@@ -136,6 +152,11 @@ _SCRIPTS = [
     # bytes nos trimestres em que nao ha edicao nova, e ~1MB quando ha. O da serie
     # corrente baixa 1 arquivo sempre. Ver domain/db/brasil/bcb/_rpm_hiato.py.
     ("BCB  · Hiato do Produto (RPM)",   pm_hiato_produto,      {}),
+    # Mesma fonte, outro grafico do mesmo anexo: fluxo financeiro do credito
+    # (concessoes - pagamentos), de onde sai o impulso de credito no conceito do
+    # BCB. Baixa DUAS edicoes -- a corrente e a de 2025-03, que traz o trecho
+    # anterior a 2018 e a quebra Livre/Direcionado que so saiu naquele boxe.
+    ("BCB  · Fluxo Financeiro (RPM)",   cred_fluxo_financeiro, {}),
     ("BCB  · Hiato do Produto / vintages", pm_hiato_produto_vintages, {}),
     # Decisao de Selic por reuniao do Copom: SGS 432 (4 requests) + a listagem de atas,
     # segundos. Entra aqui e a irma `pm_copom_projecoes` nao porque esta le so API, enquanto
@@ -245,7 +266,46 @@ def _listar() -> None:
         print(f"    {slug:28s} {', '.join(tabelas) or '(sem tabelas)'}")
 
 
+def _regerar(tabelas: list[str]) -> None:
+    """Regera os dashboards que leem `tabelas` e ficaram desatualizados.
+
+    Falha aqui NAO derruba o job: o dado ja esta no banco, e um gerador quebrado e um
+    problema do relatorio, nao da ingestao. Fica no log e no veredito da aba
+    "Status dashboard", que passa a acusar "desatualizado" ate alguem regerar.
+    """
+    try:
+        from domain.dashboards.status import regerar_afetados
+        linhas = regerar_afetados(tabelas)
+    except Exception as exc:
+        logger.error("Nao deu para checar os dashboards: %s: %s",
+                     type(exc).__name__, exc)
+        return
+
+    if not linhas:
+        logger.info("Nenhum dashboard declara estas tabelas")
+        return
+
+    gerados = [l for l in linhas if l["acao"] == "gerado"]
+    if not gerados:
+        logger.info("Dashboards que leem estas tabelas: %d, nenhum desatualizado",
+                    len(linhas))
+    for l in linhas:
+        if l["acao"] == "gerado":
+            logger.info("  regerado  %-28s %ss  -> %s",
+                        l["name"], l["segundos"], l["output"])
+        elif l["acao"] == "falhou":
+            logger.error("  FALHOU    %-28s %s", l["name"], l["erro"])
+        elif l["acao"] == "manual":
+            logger.warning("  manual    %-28s sem run(); rode: %s",
+                           l["name"], l.get("command"))
+
+
 def main(argv: list[str] | None = None) -> None:
+    # Console em UTF-8 antes de qualquer coisa: desde 2026-08-28 este job REGERA os
+    # dashboards que leem as tabelas que escreveu, e o resumo do relatorio de inflacao
+    # imprime uma seta que o cp1252 do console do Windows nao encodifica -- o ETL
+    # terminava e a regeracao morria no print. Ver utils/console.py.
+    stdout_utf8()
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     p.add_argument("--group", action="append", metavar="SLUG",
                    help="grupo do calendario de divulgacoes (pode repetir)")
@@ -255,6 +315,8 @@ def main(argv: list[str] | None = None) -> None:
                    help="so as series continuas/diarias (sem data de divulgacao)")
     p.add_argument("--list", action="store_true", dest="listar",
                    help="lista os grupos e as tabelas continuas, e sai")
+    p.add_argument("--sem-gerar", action="store_false", dest="gerar",
+                   help="nao regera os dashboards que leem as tabelas atualizadas")
     args = p.parse_args(argv)
 
     if args.listar:
@@ -284,10 +346,13 @@ def main(argv: list[str] | None = None) -> None:
         logger.info("Atualizacao seletiva — %d tabela(s) alvo", len(alvos))
         out = executar_tabelas(alvos)
         resultados, sem_script = out["resultados"], out["sem_script"]
+        escritas = [t for t in alvos if t not in set(sem_script)]
     else:
         logger.info("Iniciando atualizacao — %d scripts", len(_SCRIPTS))
         resultados = _executar(_SCRIPTS)
         sem_script = []
+        from domain.db.registry import tabelas as _tabelas_conhecidas
+        escritas = sorted(_tabelas_conhecidas())
 
     erros = [(r["label"], r["erro"]) for r in resultados if not r["ok"]]
     elapsed = (datetime.now() - inicio).seconds
@@ -302,6 +367,9 @@ def main(argv: list[str] | None = None) -> None:
         logger.error("%d script(s) falharam:", len(erros))
         for label, err in erros:
             logger.error("  - %s: %s", label, err)
+
+    if args.gerar:
+        _regerar(escritas)
 
     if erros or sem_script:
         sys.exit(1)

@@ -5,7 +5,8 @@ IPCA/IPCA-15 decomposition report: self-contained HTML that reads MySQL (`macro_
 ## Generate the report
 
 ```powershell
-uv run python analytics/brasil/inflation/fetch_bcb.py               # refresh data/ipca_bcb_series.csv — NOT scheduled, run manually
+uv run python -m domain.dashboards.status --gerar brasil_inflation   # fetches the CSV if it is behind, then generates
+uv run python analytics/brasil/inflation/fetch_bcb.py               # just the CSV (data/ipca_bcb_series.csv)
 uv run python -c "from analytics.brasil.inflation.generate_report import run; run()"
 # Output: reports/brasil/Inflation.html (self-contained, ~99 MB as of the
 # 2026-07 historical extension back to ago/1999 — up from ~14 MB, since the
@@ -14,7 +15,19 @@ uv run python -c "from analytics.brasil.inflation.generate_report import run; ru
 # at this size.)
 ```
 
-`inflc_decomposicao`/`inflc_dim` (MySQL) are already refreshed by `jobs/update_db.py` — only the BCB/SGS aggregates CSV needs the manual `fetch_bcb.py` step above.
+`inflc_decomposicao`/`inflc_dim` (MySQL) are refreshed by `jobs/update_db.py`. **The BCB/SGS
+aggregates CSV is refreshed by the Regerar button since 2026-09-01** — it is declared as a
+`procedures:` step in [`domain/dashboards/manifest.yaml`](../../../domain/dashboards/CLAUDE.md), so
+`status.gerar('brasil_inflation')` (the button, and the CLI line above) re-fetches it when it is
+behind and only then builds the HTML. ~18s, and the verdict compares the file's own `MAX(dt)` with
+`inflc_decomposicao`, which receives the *same* release — the real source (BCB/SGS) is not a
+declared dependency, so the table that moves on the same day is the honest proxy.
+
+**It was a month behind when that was measured** (2026-09-01: file through 2026-07,
+`inflc_decomposicao` already at 2026-08 — August's IPCA-15), which is the second instance of the
+same class of bug as the monetary-policy one: an input the generator reads and never refreshes,
+with no screen showing its lag. The manual line still exists and still works; what changed is that
+forgetting it no longer ships a stale report.
 
 ## Architecture
 
@@ -315,7 +328,13 @@ All Plotly charts here (except `chart-waterfall`, a vertical category-ranking ba
 
 - **The tree's root reproduces the published headline only to IBGE's own publication precision, and that is measured, not assumed.** The table's root row is `sum(contribuicao)/sum(pesos)` over the subitens, while `D.bcb.IPCA` is BCB's mirror of IBGE's printed monthly rate. Measured 2026-08 across the full history: **IPCA mean 0.0070 p.p. over 319 months, worst 0.0719 in mai/2000; IPCA-15 mean 0.0059 over 316 months, worst 0.0674, also mai/2000** — and under 0.006 p.p. for both since 2021. That reproduces, from an independent measurement, exactly the figures `_splice_headline_15()` already recorded in `generate_report.py`. The error concentrates in 1999-2003 because monthly inflation was larger then: IBGE rounds **each subitem** to 2 decimals before we recombine ~380 of them, so the rounding is absolute while the rate is not. There is no more precise published input to fix it with. `tests/test_inflation_js.js` asserts three separate bounds (mean, worst-since-2021, worst-ever) rather than one loose ceiling, so a real regression cannot hide under the historical tail.
 
-- **`fetch_bcb.py` has no scheduled run** — it is not in `jobs/update_db.py`. It has gone silently stale for a full month before with no visible error.
+- **`fetch_bcb.py` has no scheduled run** — it is not in `jobs/update_db.py`, and no ETL group
+  touches it. Since 2026-09-01 the **Regerar** button covers it (see "Generate the report" above),
+  so the failure mode is narrower than it was: it has gone silently stale for a full month twice
+  (once before 2026-08, once caught on 2026-09-01), and both times the only visible symptom was a
+  chart quietly one month short. What is still not covered: nobody clicking Regerar. A scheduled
+  run alongside the IPCA release group would close it.
+
 
 - **Núcleos por exclusão for IPCA-15 are computed in-house, not published by BCB.** BCB only publishes núcleo series (EX-0/EX-01/…/P55/MA/MS/DP) for the full IPCA; `inflc_agregados`/`fetch_bcb.py` only carry the IPCA-15 headline (SGS 7478). Since 2026-07, `generate_report.py::_compute_ipca15_nucleos()` derives EX-0/EX-01/EX-02/EX-03/EX-03-Serviços/EX-03-Industriais/EX-FE for IPCA-15 directly from `inflc_decomposicao` + `inflc_dim`'s official `nucleo_*` membership flags (same NT-57 vector already used for Difusão-by-núcleo) — weighted average of `contribuicao`/`pesos` among flagged subitems each month, then run through the same STL+MA3 pipeline as BCB series (`fetch_bcb._apply_stl_ma3`, now generalized to accept an explicit `series` set instead of only its own module-level `_SAAR_SERIES`) so the front-end's existing `compute3mSAAR`/`computeYoY` work unmodified — the computed series are merged into `data["bcb"]` under names like `IPCA15_nucleo_EX0` (see `NUCLEO_ALL_15` in `report.html`). **P55, Médias Aparadas (MA/MS), and Dupla Ponderação remain out of reach this way** — they need the full statistical methodology (percentile, tail-trimming, volatility weighting), not just a fixed exclusion filter; see Pending.
 

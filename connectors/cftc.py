@@ -8,13 +8,39 @@ not the commodity disaggregated report.
 Source: https://www.cftc.gov/files/dea/history/fut_fin_txt_{YYYY}.zip
 No authentication required.
 
-Columns extracted per contract:
-  open_interest  — Open_Interest_All
-  lev_long       — Lev_Money_Positions_Long_All  (Leveraged Funds = speculative)
-  lev_short      — Lev_Money_Positions_Short_All
-  lev_net        — lev_long - lev_short
-  nonrept_long   — NonRept_Positions_Long_All
-  nonrept_short  — NonRept_Positions_Short_All
+Columns extracted per contract, for ALL FIVE trader categories of the TFF report
+(the four reportable ones plus the residual), not just leveraged funds:
+
+  open_interest    — Open_Interest_All (total contracts outstanding)
+
+  <p>_long / <p>_short / <p>_spread / <p>_net, with <p> in:
+    dealer    — Dealer/Intermediary (sell side: banks and swap dealers hedging
+                the OTC book they run for clients; the largest single group in
+                BRL, ~36% of open interest)
+    asset_mgr — Asset Manager/Institutional (real money: funds, pensions,
+                insurers, endowments)
+    lev       — Leveraged Funds (hedge funds and CTAs — the speculative money
+                the report headline usually means)
+    other     — Other Reportables (reportable size, none of the three roles
+                above: mostly corporates and family offices)
+    nonrept   — Nonreportable (everyone below the CFTC reporting threshold).
+                Has NO spread column in the source — the CFTC does not break
+                the residual down that way — so `nonrept_spread` is not stored.
+
+Two identities hold EXACTLY in this data (verified against the 2025 BRL file,
+zero residual in all 52 weeks, both sides):
+
+  open_interest = Σ_p (<p>_long + <p>_spread)   =   Σ_p (<p>_short + <p>_spread)
+  Σ_p <p>_net   = 0
+
+The second is why a stacked chart of the five nets piles to zero: a futures
+market is zero-sum by construction, and the chart's whole point is showing who
+is on the other side of whom. The first is why the gross views (`_long`, plus
+the spread that is simultaneously long and short) DO sum to the market's size.
+
+`lev_long`/`lev_short`/`lev_net`/`nonrept_long`/`nonrept_short` predate the
+2026-09-01 expansion and keep their historical names — the other categories
+follow the same `<p>_<side>` convention.
 """
 
 import io
@@ -46,13 +72,30 @@ _CONTRACT_MAP: Dict[str, str] = {
 _DATE_COL_NEW = "Report_Date_as_YYYY-MM-DD"
 _DATE_COL_OLD = "Report_Date_as_MM_DD_YYYY"
 
-_VALUE_COLS = [
-    "Open_Interest_All",
-    "Lev_Money_Positions_Long_All",
-    "Lev_Money_Positions_Short_All",
-    "NonRept_Positions_Long_All",
-    "NonRept_Positions_Short_All",
-]
+# prefixo tidy -> prefixo da coluna do CFTC. A ordem e a do proprio relatorio TFF.
+_PARTIES: Dict[str, str] = {
+    "dealer":    "Dealer",
+    "asset_mgr": "Asset_Mgr",
+    "lev":       "Lev_Money",
+    "other":     "Other_Rept",
+    "nonrept":   "NonRept",
+}
+
+# NonRept nao tem coluna de spread na fonte (o CFTC nao abre o residual assim).
+_SIDES = ("Long", "Short", "Spread")
+
+
+def _raw_cols() -> List[str]:
+    cols = ["Open_Interest_All"]
+    for pref in _PARTIES.values():
+        for side in _SIDES:
+            if pref == "NonRept" and side == "Spread":
+                continue
+            cols.append(f"{pref}_Positions_{side}_All")
+    return cols
+
+
+_VALUE_COLS = _raw_cols()
 
 # Keep _DATE_COL for backwards compat (used in _parse signature reference)
 _DATE_COL = _DATE_COL_NEW
@@ -74,13 +117,13 @@ def _build_session() -> requests.Session:
 
 def _col_to_name(col: str) -> str:
     """Map raw CSV column to tidy series name."""
-    return {
-        "Open_Interest_All":              "open_interest",
-        "Lev_Money_Positions_Long_All":   "lev_long",
-        "Lev_Money_Positions_Short_All":  "lev_short",
-        "NonRept_Positions_Long_All":     "nonrept_long",
-        "NonRept_Positions_Short_All":    "nonrept_short",
-    }[col]
+    if col == "Open_Interest_All":
+        return "open_interest"
+    for tidy_pref, raw_pref in _PARTIES.items():
+        for side in _SIDES:
+            if col == f"{raw_pref}_Positions_{side}_All":
+                return f"{tidy_pref}_{side.lower()}"
+    raise KeyError(col)
 
 
 class CFTC:
@@ -108,8 +151,9 @@ class CFTC:
             Tidy DataFrame with columns:
                 date      Timestamp (Tuesday = report week)
                 currency  str  (BRL | MXN | CLP | COP)
-                name      str  (open_interest | lev_long | lev_short | lev_net |
-                                nonrept_long | nonrept_short)
+                name      str  (open_interest, plus <p>_long / <p>_short /
+                                <p>_spread / <p>_net for p in dealer, asset_mgr,
+                                lev, other, nonrept — nonrept has no spread)
                 value     float64
         """
         if contract_names is None:
@@ -221,16 +265,21 @@ class CFTC:
         tidy["name"] = tidy["_col"].map(_col_to_name)
         tidy = tidy.drop(columns="_col").dropna(subset=["value"])
 
-        # Add derived net position for leveraged funds
+        # Posicao liquida derivada, uma por categoria. `spread` NAO entra: uma
+        # posicao travada e comprada e vendida ao mesmo tempo, entao cancela no
+        # liquido -- some-la de um lado inflaria a exposicao direcional. E por isso
+        # que os cinco nets somam exatamente zero (conferido: residuo 0).
         wide = df[["date", "currency"] + _VALUE_COLS].copy()
-        net = wide[["date", "currency"]].copy()
-        net["name"] = "lev_net"
-        net["value"] = (
-            wide["Lev_Money_Positions_Long_All"]
-            - wide["Lev_Money_Positions_Short_All"]
-        )
-        net = net.dropna(subset=["value"])
+        nets = []
+        for tidy_pref, raw_pref in _PARTIES.items():
+            n = wide[["date", "currency"]].copy()
+            n["name"] = f"{tidy_pref}_net"
+            n["value"] = (
+                wide[f"{raw_pref}_Positions_Long_All"]
+                - wide[f"{raw_pref}_Positions_Short_All"]
+            )
+            nets.append(n.dropna(subset=["value"]))
 
-        result = pd.concat([tidy, net], ignore_index=True)
+        result = pd.concat([tidy] + nets, ignore_index=True)
         result["date"] = pd.to_datetime(result["date"])
         return result[["date", "currency", "name", "value"]].reset_index(drop=True)

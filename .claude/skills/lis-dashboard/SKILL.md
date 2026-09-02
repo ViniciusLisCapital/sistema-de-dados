@@ -81,6 +81,21 @@ O output é um **artifact HTML direto no chat** (não salvar em pasta específic
 - O período vem da extensão **real** das séries plotadas, não de uma constante — numa visão de variação anual o gráfico começa um ano depois, e tem que dizer isso
 - Código e o porquê: `references/design-system.md#cabecalho` (`describeChart()`, `dataExtent()`)
 
+### Texto explicativo: justificado e na largura do bloco
+- **Todo texto explicativo e de apêndice sai `text-align: justify`** — legenda de gráfico, corpo de apêndice, nota de metodologia, lead de seção
+- **`hyphens: auto` junto, sempre**, e o `<html lang="pt-BR">` (ou `en`) é o que faz a hifenização existir: sem o `lang` o browser não hifeniza e o justificado abre rios de espaço branco
+- **Sem `max-width` em `ch` na prosa.** Ela ocupa a largura do bloco — o que cobre o vazio à direita e, ocupando mais linha, deixa o bloco mais baixo
+- **Não justifique** célula de tabela, popover de definição (`.info-pop`), linha de metadado em mono nem legenda centralizada: container estreito é onde os rios aparecem
+- Código, medições e a tabela do que fica de fora: `references/design-system.md#prosa`
+
+### E escrito para quem nunca viu o dashboard
+- **A prosa do dashboard não é a nossa conversa sobre ele.** Cada bloco responde "o que é isto que estou vendo, e o que isso muda para mim?" — no vocabulário do domínio (dado, cálculo, relatório, banco), não no do repositório
+- **Fora:** nome de função/arquivo do repositório, nome de tabela, comando de terminal, data de decisão nossa ("desde 2026-…"), pendência nossa ("segundos não medidos")
+- **Nome de mecanismo → consequência**: não "granularidade trimestral", e sim "fica velho quando abre um trimestre novo". **Identificador → nome que se lê**: não `expc_focus_periodo`, e sim "a pesquisa Focus" — guarde o nome legível ao lado do técnico na estrutura de dados, para não divergirem
+- **Ordem interna de funções não é explicação.** Diga o que pode dar errado e como se corrige
+- O que é decisão, medição e "por que" continua sendo escrito — no `CLAUDE.md` da pasta e nos comentários, não na página
+- Vale um teste: extraia os blocos de prosa do HTML renderizado e proíba a lista de termos, rodando contra o payload real. Ver `references/design-system.md#audiencia`
+
 ### Rótulos longos: nome curto + botão de definição
 - Rótulo que não cabe (linha de tabela, toggle de série, label de stat card) vira **nome curto** + um botão `i` de 14px; o nome oficial da fonte e a explicação abrem num card no hover, e o clique fixa
 - **Só ganha botão quem precisa** — a informação vive num mapa `chave → {full, desc, unit}`, e o ícone nasce da presença da entrada. Ícone em tudo não significa nada
@@ -115,9 +130,17 @@ OBRIGATÓRIO em todo dashboard. Comportamento:
 - Primeiro botão = período completo (ex: "2026"), depois meses individuais
 - Ao trocar filtro, atualizar gráfico E stats cards
 
+### Cores de séries: duas linhas do mesmo gráfico nunca podem ser confundidas
+- **ΔE2000 ≥ 20 entre quaisquer duas séries que possam aparecer no mesmo gráfico.** Limiar calibrado contra as paletas publicadas de referência (Okabe-Ito fecha em 21,7; Tol bright em 20,5) — não é um número escolhido a esmo
+- Use a `PALETTE` de 14 cores de `references/design-system.md#cores-series` (mínimo interno 20,8). `PALETTE[0]`, o navy da marca, é **reservado para a linha de total/agregado**
+- **A cor sai da POSIÇÃO da série**, via `assignSeriesColors(cats, defaults)`, com as marcadas por padrão na frente da fila — nunca um literal `color:` por categoria. Foi exatamente isso que produziu, num relatório real, três pares de séries com a **mesma** cor na vista padrão: duas listas coloridas em momentos diferentes não sabem uma da outra
+- **Acima de 13 séries, troque de canal**: a cor volta ao início da paleta e o `line.dash` muda. 13 matizes separáveis é o teto prático; não empilhe mais matizes
+- **Verifique com o `deltaE()` do design-system no harness de teste**, por gráfico — e marque tudo de propósito para exercitar o tracejado, que nenhuma vista padrão alcança
+- Cores da paleta antiga que **não** passam e saíram: `#02739B` (13,0 de `#418791`), `#FBC852` (13,9 de `#BB9B1D`), `#BFBFBF` (9,3 de `#9E9E9E`)
+
 ### Toggle de séries (quando multi-variável)
 - Botões coloridos por série com `.toggle-btn`
-- Cada série tem cor fixa: navy (primária), `#02739B` (secundária), `#BB9B1D` (terciária)
+- Cores vêm da `PALETTE` pela ordem (ver acima), não escolhidas à mão
 - Séries secundárias começam desligadas
 - Eixos independentes: primária à esquerda, secundárias à direita
 

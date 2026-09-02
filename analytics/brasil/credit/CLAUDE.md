@@ -3,7 +3,7 @@
 Self-contained HTML report on Brazilian bank credit, built on `cred_credito_amplo`, `cred_credito_resumo`,
 `cred_credito_familias`, `cred_inadimplencia_pj`, the 4 `cred_modalidade_*` tables, `cred_credito_porte`,
 `cred_credito_atividade_economica`, `cred_credito_tipo_cliente`, `cred_credito_controle_capital`, and
-`cred_ptc` — all `macro_brasil`. Same `/*REPORT_DATA*/` marker-substitution pattern as the other analytics reports, built
+`cred_ptc` and `cred_fluxo_financeiro` — all `macro_brasil`. Same `/*REPORT_DATA*/` marker-substitution pattern as the other analytics reports, built
 directly on [`analytics/report_structure/`](../../report_structure/CLAUDE.md) (no Jinja2, no build step).
 
 Replaces `analytics/credit_stress/` (deleted by the user, along with its `insolv_falencia_rj` table and
@@ -55,9 +55,81 @@ Percentage-type metrics (`taxa_juros`, `spread`, `icc`, `inadimplencia`, `pct_pi
   rather than describing a matrix in prose. It runs to **17 numbered points** since 2026-08 (14 is the
   surprise, 15 the σ band and the `1/N` retraction, 16 the 4Q MA, 17 the data corrections) — the harness
   asserts the count, so adding one means bumping it.
-- `report.html`'s `makeImpulseTab(opts)` — a second, simpler factory (one control group instead of two,
-  no Nominal/Real/% PIB axis) instantiated 3× by the Impulso tab. Kept separate from `makeHierTab()`
-  because the impulse is already a ratio to GDP, so there is no basis to select — only a read frequency.
+- `report.html`'s `makeImpulseTab(opts)` — a second, simpler factory (no Nominal/Real/% PIB axis)
+  instantiated 4× by the Impulso tab. Kept separate from `makeHierTab()` because the impulse is
+  already a ratio to GDP, so there is no basis to select — only a read frequency. It takes **two
+  payload shapes**, and which one applies is decided by whether `opts.treeKey` is set: with it, the
+  group holds `trees`/`anchors` maps and series are `[key][freq]` (tables a-c); without it, the group
+  holds a single `tree`/`anchor` and series are `[key][variant][freq]` (table d, `fluxo`|`impulso`).
+  Table d also passes `variantMeta`, which feeds the Y-axis title, the hover unit and the chart
+  header from one place — the unit changes with the selector, so three copies of it would drift.
+- **Background bands = the Selic cycle** (2026-08-28, user request; Impulso first, then Saldo).
+  Red for a hiking cycle, gray for a hold, blue for a cutting cycle, ~10% alpha, `layer: 'below'`.
+  The classification is Python (`impulso_tab.build_ciclos()` over `pm_copom_reuniao`, emitted once as
+  the **top-level `D.ciclos`** — it belongs to the report, not to a tab); the colours are `CICLO_CORES`
+  in the HTML, mirrored by `.ciclo-legend i` in the CSS (the harness asserts the two strings are
+  identical, since nothing else keeps them in sync). Five things not to re-derive:
+  - **No smoothing parameter, and that was measured.** Absorbing a run of holds into the surrounding
+    cycle when both sides move the same way reads more like market narrative (32 segments instead of 50)
+    but swallows the **14-month plateau at 6,50% between mai/2018 and jul/2019**, painting it as a
+    continuation of the 2016-2020 easing. A plateau over a year long is the one thing the gray band
+    exists to show. Cost of refusing it, also measured: 6 single-meeting bands in the whole series, all
+    pre-2005 and so outside every chart's window.
+  - **The clip is per chart, not per payload.** The charts share one `ciclos` list but start in
+    different years (saldo 2007, impulso/recurso 2002, porte and atividade 2012, fluxo 2015), and a
+    `shape` with `xref: 'x'` enters Plotly's autorange — emitting the 2000 band on the porte chart drags
+    its axis back 12 years and opens it with colour and no data. Caught by the harness on its first run;
+    `_ciclosShapes(dates)` derives the window from the plotted traces, per the rule in
+    `.claude/rules/lis-dashboards.md`.
+  - **The last cycle extends forward to the end of the data, on purpose** — the report is almost always
+    generated between two meetings, so the regime decided at the last one is still in force. That is why
+    the segment closes at `fim` and not at its own start date.
+  - **`comCiclos` is opt-in per call, never a default.** `renderLineChart()` draws Saldo, Crédito
+    Ampliado, Concessão, Taxa & Spread and Inadimplência — turning bands on by default would paint all
+    five. They are off on Taxa & Spread (the Y axis is itself an interest rate) and on Inadimplência
+    (which already overlays the Selic); Concessão was simply not asked for. The harness asserts the
+    negative case too, precisely because Saldo and Concessão come out of the same factory.
+  - **On Saldo the Y axis is a stock**, so in `Nível` the band says under which regime that balance was
+    accumulated; only the growth metrics put it next to something moving on the decision's own horizon.
+    Said in the tab's note rather than left for the reader to work out.
+- **Definition cards on every row** (2026-08-28, user request, pointing at
+  `analytics/brasil/fiscal_policy`'s: *"coloque essas tag de explicação/definição nos itens"*). The
+  row label is the short name; the BCB's official name and an explanation open in a card on hover and
+  pin on click — the `lis-dashboard` pattern, fifth report to get it. 165 entries in `NODE_INFO`
+  cover **378 of the 409 rows** across the 11 tables. Five things not to re-derive:
+  - **The key is namespaced, and here that is load-bearing, not tidiness.** `saldo_livre_pj` is a
+    stock in the Saldo tab and a *contribution to the impulse* in the Impulso tab; `porte__mpme` lives
+    in three tabs measuring three things. A bare-key map makes one table explain another and **nothing
+    throws** — the card opens, with the wrong text. Each table declares its namespaces in order
+    (`['saldo','modal']`, `['imp']`, `['spread','modal']`…) and `infoOf()` walks them.
+  - **The `modal:` namespace is what makes 51 entries cover ~200 rows.** The BCB's modality tree
+    repeats identically in Saldo, Concessão, Taxa & Spread and Inadimplência under four prefixes
+    (`livre_pj__`/`livre_pf__`/`direcionado_pj__`/`direcionado_pf__`), so the lookup also tries the
+    suffix after the last `__`. It works because the card describes **what the modality is** while the
+    unit line says what is being measured — one text for four metrics. Full key beats suffix inside
+    the same namespace, which is how `modal:ativ__outros` avoids inheriting `modal:outros`.
+  - **`unit` per entry, overriding the table's unit function** — new in this port. The Inadimplência
+    tree carries three units at once: inadimplência (>90d), *saldo de maior risco* (% of the PJ
+    balance, Res. 2.682 and 4.966) and *atraso 15-90 dias*. The honest fix is a per-row override, not
+    a mixed-unit axis string. Everywhere else the unit comes from the same function that titles the
+    Y axis, so the selectors (Nível/Nominal-Real/%PIB, Fluxo/Impulso) move both together.
+  - **Writing the cards exposed a unit that was already wrong.** `renderTaxaChart()` titled both trees
+    `% a.a.`, but the spread is a *difference between two rates* and is measured in p.p. — the card
+    would have contradicted the axis. Both now read `taxaYTitle()`, and the harness asserts they do.
+  - **Three card sentences were measured before being written**, and one of them came out backwards
+    from the obvious text: *Atraso 15-90 dias PJ* does **not** lead the >90d series — correlation
+    peaks at lag 0 (0,51 over 185 months) and decays monotonically. Also measured: `total_rotativo`
+    is a cross-cutting aggregate that reconstitutes the PF total together with `total_nao_rotativo`
+    (702,3 = 702,3 R$ bi in jul/2026), so checking it alongside the modalities double-counts; and the
+    published *concessão* total excludes card revolving/instalment and *composição de dívidas* — the
+    PF leaves add to R$ 407 bi against R$ 345 bi published.
+  Covered by `tests/test_credit_info_js.js` (69 assertions), which resolves every map entry against
+  the real trees (**zero orphans** — a typo produces a button that never appears, with no error and
+  no visible gap), requires the same key to read differently in two namespaces, and checks the unit
+  follows each selector. Verified to fail on an injected typo and on an injected namespace collision.
+  One trap it hit first: matching rendered rows to tree nodes **by label** gives false positives —
+  "Outros", "Pessoa Jurídica" and "Pessoa Física" repeat dozens of times — so it matches by position
+  with the tree fully expanded.
 - Every interactive tab clips series to `_TAB_MIN_DATE = "2000-01-01"` before building — most
   modality-level codes only start 2007-03, so a shared start keeps every row on a comparable window.
   PTC is the one exception, and only vacuously: `cred_ptc` starts 2011-04, already inside the window,
@@ -87,6 +159,13 @@ branches, the fine sectoral detail stays in Saldo). One control per table, `Mens
 `Anual (dez)` — **the same series, not two calculations**: in December the monthly formula already
 collapses into the annual one the IBRE publishes.
 
+A **fourth table (d)** carries the *other* impulse — the BCB's own, off the financial flow — see its
+own block below. Everything from "Background bands" to "Series start" describes (a)-(c).
+
+- **Background bands = the Selic cycle** — shared with the Saldo tab, documented under Shared
+  toolkit. Reading caveat specific to this tab: the band is a **point-in-time** state and the
+  impulse is a **24-month window** (the formula uses t, t−12, t−24), so the band does not explain
+  the bar above it — it says which cycle that point was observed in. Printed in the tab's note.
 - **The decompositions are exact.** The metric is linear in the stock and every row shares the GDP
   denominator, so children sum to their parent with no residual — verified live at ~2e-4 p.p. across
   the whole series, and re-asserted on the *rendered* table by the Node harness.
@@ -112,6 +191,56 @@ collapses into the annual one the IBRE publishes.
   ~R$37bn (1,3%) apart at the 2020 peak — so (a) does not reconcile to the decimal with (b)/(c).
 - Series start: recurso×segmento 2009-03, porte/atividade 2014-01 (the formula eats 24 months of
   history). The table always shows the last 12 observations *with a value*, never leading blanks.
+
+**Impulso — table (d): fluxo financeiro and the BCB's own impulse** (2026-08-28, user request:
+"eu quero ver o fluxo financeiro e o impulso"). A different *metric*, not another cut of the same one,
+and the difference is exactly the critique BCB's EE 110/2021 makes of Biggs et al.: (a)-(c) start from
+the change in the **stock**, so accrued interest, FX revaluation and write-offs count as new credit;
+this one starts from the **financial flow** — concessões minus pagamentos —, which is only money that
+changed hands. Two readings behind one `Fluxo | Impulso` pill: `Fluxo` is the published level, in
+**% of GDP accumulated over 12 months**; `Impulso` is `Fluxo(t) − Fluxo(t−12)`, in **p.p. of GDP**,
+derived in `impulso_tab.build_fluxo()` (the table stores what was published, the report computes the
+metric — same split as everywhere else here). Tree: Total → PJ/PF, additive and exact, jan/2015 to the
+current edition. Source: `cred_fluxo_financeiro` — see
+[`domain/db/brasil/bcb/cred_fluxo_financeiro.py`](../../../domain/db/brasil/bcb/cred_fluxo_financeiro.py).
+Five things worth not re-deriving:
+
+- **The sign reads backwards at first.** Negative flow = households and firms paid the banking system
+  *more* than they borrowed, which is the normal state. The 2024 impulse of +1,2 p.p. happened with the
+  flow negative all year (−1,9% → −0,7%), and it reproduces the "+1,1% do PIB" the mar/2025 box prints
+  (the 0,1 gap is vintage revision, not method).
+- **Three series and only three, and that is a constraint, not a scope preference.** Total/PJ/PF is what
+  *both* sources publish: the recurring flow chart in every edition, and the mar/2025 box, which carries
+  the same three back to jan/2015 and is therefore what makes 2015-2017 possible at all. The box also
+  publishes a Livre/Direcionado split, and that stays **out** — with two sources publishing *different
+  sets*, the newer edition overwrites the parent and not the child, the two land on different vintages
+  and **additivity stops closing** (0,095 p.p. on PJ, 0,196 on PF, the size of the revision between
+  editions; caught by the harness on its first run, and invisible otherwise — the chart's stack would
+  simply have stopped touching the total line). With both sources on the same three, an edition writes
+  all of them for all of its months at once and the problem cannot arise. Re-adding the split means
+  re-deriving a splice rule (*one edition per month*), not just loading more columns.
+- **The impulse itself is not a published series.** It came in a *boxe*, twice in the 20 editions with
+  an annex (set/2021 and mar/2025), and footnote 1 of the first says there is "no intention of
+  calculating these series recurrently or systematically". The flow is what recurs; the impulse is
+  derived here.
+- **The two sources chain, measured.** Same definition, same unit, 85 overlapping months
+  (jan/2018–jan/2025) differing only by vintage revision: PJ 0,038 p.p. mean / 0,095 max, PF 0,059 /
+  0,196, Total 0,090 / 0,241. No level correction is applied. Since the current edition wins on overlap,
+  the visible seam sits where its window starts (mar/2018 today) and the step there is **0,343 p.p. on
+  the total** — the 79th percentile of the series' own monthly steps, inside a stretch rising from
+  −5,92 to −4,60, so it does not read as a break. It matters in the *impulse*, where the 12 points whose
+  12-month window crosses it carry that revision. Only the **% of GDP** reading is loaded: the same
+  recurring chart came out in R$ deflated to the edition's own month through dez/2025, and chaining
+  editions there needs a rebasing that does not close (implied factor 1,2655 against 1,2208 of IPCA
+  between set/2021 and mar/2025, R² 0,996). `_PADRAO_RECORRENTE` requires "acumulado em 12 meses" in the
+  title so an older edition raises instead of silently loading R$ as if it were %.
+- **This chart carries a header** (title · what it measures in what unit · source and window), rebuilt
+  on every render, per [`.claude/rules/lis-dashboards.md`](../../../.claude/rules/lis-dashboards.md).
+  It is the only chart in this report that has one — the others predate the convention — and it is the
+  case that most needs it: with a selector that swaps the *unit*, a fixed caption starts lying on the
+  first click. `tests/test_credit_fluxo_js.js` (59 assertions) asserts axis title, hover unit and header
+  move together, recomputes the impulse from the flow in the payload, and pins the scope — a fourth
+  series means the box's split came back, which needs the splice rule redone.
 
 **Taxa & Spread** — a `Taxa Média | Spread` source switch, not a metric/basis toggle (no STL/deflation/%
 PIB — already percentages). Taxa Média has smaller modality coverage than Saldo (no "Outros" rate
@@ -312,6 +441,19 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
 - Small-base modalities (e.g. "Arrendamento Mercantil — Veículos", ~R$5-13mi saldo) can show
   thousands-of-percent swings month to month — mathematically correct, not a bug; read by level, not
   growth rate, documented in the Apêndice.
+- **The Impulso tab is only as current as `atv_pib_mensal`, and it truncates silently.** The formula
+  needs GDP at t, so a credit series reaching July against a `pib_acum_12m` stopping in June yields
+  `None` for July — and `makeImpulseTab()`'s `refDates()` takes the last 12 **non-null** observations,
+  so the table just shows a window ending a month earlier, with no gap and no warning. Hit for real on
+  2026-08-28: the credit note was loaded and the dashboard regenerated, and Impulso still ended in
+  jun/2026 while every other tab showed jul/2026. `atv_pib_mensal` was in **no** calendar group at all
+  (the `--coverage` audit had been listing it); it is now in `bcb_credit_note` **and** in
+  `bcb_external_sector_note`, which is where the monthly-GDP block actually lands — a day earlier, and
+  the only one of BCB's three M-1 notes that needs GDP in dollars (SGS 4385/4192). It is not tied to
+  the IBC-Br, contrary to the natural guess: the IBC-Br runs a 2-month lag (2026-08-17 delivered
+  2026-06) while the four GDP series already held 2026-07, so monthly GDP is a month **ahead** of the
+  activity index. If Impulso ever looks a month behind again, check `atv_pib_mensal`'s `MAX(date)`
+  before anything else.
 - No browser has been used to visually confirm any interaction in this report — same standing sandbox
   limitation as every report in this project. Verification so far is a Node harness (stub
   `document`/`Plotly`, not jsdom) run against the real generated `<script>` and real DB output.
@@ -320,6 +462,11 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
 
 - Open `reports/brasil/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
   interactions across all 6 data tabs, plus pan/zoom/quick-range behavior on every chart.
+- **Confirm the cycle bands in a real browser** (2026-08-28, Impulso and Saldo): whether ~10% alpha
+  reads as "subtle but visible" both under stacked bars (Impulso) and under thin lines (Saldo),
+  and whether 26-47 bands across ~20 years look like a regime map or like stripes. If it's too
+  busy, the lever is the alpha in `CICLO_CORES` + `.ciclo-legend i` (keep the two in sync — the
+  harness asserts it), not the classification.
 - `cred_credito_controle_capital`'s `saldo`/`provisoes` metrics are still unused (only `inadimplencia` is
   charted, in the Inadimplência tab's "Por Controle de Capital" group).
 - `cred_credito_resumo`'s residual un-charted series (`icc`, `concessao_sa`, the Tabela 14 "crédito não

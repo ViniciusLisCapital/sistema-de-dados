@@ -66,6 +66,7 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.cred_credito_familias, role: "Endividamento e comprometimento de renda das famílias"}
       - {kind: mysql, ref: macro_brasil.cred_inadimplencia_pj, role: "Selic + proxies de estresse PJ"}
       - {kind: mysql, ref: macro_brasil.cred_ptc, role: "Pesquisa Trimestral de Condições de Crédito (aba PTC)"}
+      - {kind: mysql, ref: macro_brasil.cred_fluxo_financeiro, role: "Fluxo financeiro e impulso de crédito no conceito do BCB (4ª tabela da aba Impulso)"}
       - {kind: mysql, ref: macro_brasil.cred_modalidade_livre_pj, role: "Modalidades — livre PJ (Saldo, Concessão, Taxa, Inadimplência)"}
       - {kind: mysql, ref: macro_brasil.cred_modalidade_livre_pf, role: "Modalidades — livre PF"}
       - {kind: mysql, ref: macro_brasil.cred_modalidade_direcionado_pj, role: "Modalidades — direcionado PJ"}
@@ -76,6 +77,7 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.cred_credito_controle_capital, role: "Controle de capital — só a métrica de inadimplência é charteada"}
       - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, deflator do toggle Nominal/Real"}
       - {kind: mysql, ref: macro_brasil.atv_pib_mensal, role: "PIB acumulado em 12m, denominador do toggle % do PIB"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão do Copom por reunião — faixas de ciclo ao fundo dos gráficos da aba Impulso"}
 
   - key: brasil_fiscal_policy
     name: "Política Fiscal"
@@ -86,7 +88,7 @@ dashboards:
     build_seconds: 30
     deps:
       - {kind: mysql, ref: macro_brasil.fisc_efgg, role: "GFSM (aba Receitas e Despesas) + IEG (aba Impulso)"}
-      - {kind: mysql, ref: macro_brasil.fisc_rtn, role: "RTN (aba Receitas e Despesas)"}
+      - {kind: mysql, ref: macro_brasil.fisc_rtn, role: "RTN: aba Receitas e Despesas + impulso acima da linha (aba Impulso Fiscal)"}
       - {kind: mysql, ref: macro_brasil.fisc_dlsp_fatores, role: "DLSP e fatores condicionantes (aba Dívida Líquida)"}
       - {kind: mysql, ref: macro_brasil.fisc_investimento, role: "Investimento federal por GND × função/natureza"}
       - {kind: mysql, ref: macro_brasil.fisc_nfsp, role: "Resultado primário, no impulso fiscal"}
@@ -118,8 +120,10 @@ dashboards:
     command: 'uv run python -c "from analytics.brasil.inflation.generate_report import run; run()"'
     build_seconds: 30
     note: >
-      O único relatório do projeto cuja série principal NÃO vem só do MySQL: os
-      agregados do BCB/SGS entram por um CSV que nenhum job atualiza.
+      Parte das séries deste relatório — os núcleos oficiais e os agregados de IPCA que o Banco
+      Central publica — não vem do banco de dados: vem de um arquivo que este dashboard busca por
+      conta própria, listado abaixo. O Regerar busca de novo quando esse arquivo está atrás do
+      IPCA que já saiu, e só então monta o HTML.
     deps:
       - {kind: mysql, ref: macro_brasil.inflc_decomposicao, role: "IPCA e IPCA-15 por subitem — a base de tudo na aba"}
       - {kind: mysql, ref: macro_brasil.inflc_dim, date_col: null, role: "Dimensão de subitem: grupo, subgrupo e os vetores de núcleo da NT-57"}
@@ -130,9 +134,40 @@ dashboards:
         role: "Agregados BCB/SGS: headline, componentes e núcleos oficiais"
         refresh: uv run python analytics/brasil/inflation/fetch_bcb.py
         note: >
-          Não está em jobs/update_db.py nem em nenhum outro job. Já ficou um mês
-          parado sem erro visível. Duplica boa parte de inflc_agregados, com nomes
-          em maiúscula, e carrega uma série sem par no banco (IPCA_12m, SGS 13522).
+          Buscado direto no Banco Central, sem passar pelo banco de dados — nenhuma atualização da
+          base o alcança. Repete boa parte dos agregados que o banco já tem, e traz uma série que
+          não existe lá: o IPCA acumulado em 12 meses.
+
+    # Um passo so, e e um FETCH e nao um calculo: este arquivo e o unico insumo do relatorio que
+    # nao vem do MySQL, entao nenhum ETL o move e o botao Atualizar nao o alcanca. Antes disto,
+    # ficar atras era invisivel -- e estava: em 2026-09-01 o arquivo tinha ate 2026-07 e a
+    # `inflc_decomposicao` ja tinha 2026-08 (o IPCA-15 de agosto), um mes de defasagem que nenhuma
+    # tela mostrava. Foi o segundo caso da mesma classe do que motivou a camada em 2026-08-31.
+    procedures:
+      - id: series_bcb
+        label: "Séries agregadas do IPCA (Banco Central)"
+        module: analytics.brasil.inflation.fetch_bcb
+        call: run
+        seconds: 18
+        writes:
+          - analytics/brasil/inflation/data/ipca_bcb_series.csv
+        # O corte e o MAX da coluna `dt` (o dep declara `date_col`), nao o ultimo rotulo do
+        # arquivo: este CSV e longo e ordenado por serie, entao a ultima linha e a serie
+        # alfabeticamente final, nao o mes mais recente. Casou por sorte quando testado.
+        cut_from: analytics/brasil/inflation/data/ipca_bcb_series.csv
+        granularidade: mes
+        # A fonte real e o SGS do BCB, que nao e dep declarada -- entao a comparacao e contra a
+        # tabela que recebe a MESMA divulgacao (IPCA e IPCA-15 por subitem, do IBGE). Medido em
+        # 2026-09-01: depois do fetch o arquivo alcanca o mesmo mes da tabela (2026-08), que e o
+        # que impede este passo de ficar rodando para sempre a cada Regerar.
+        reads:
+          - macro_brasil.inflc_decomposicao
+        note: >
+          Busca no Banco Central as 34 séries agregadas de IPCA que o relatório mostra ao lado da
+          decomposição por subitem — headline, livres e monitorados, serviços e industriais, e os
+          núcleos oficiais — e recalcula a versão dessazonalizada de 20 delas. É o único insumo
+          deste relatório que não vem do banco de dados: sem este passo, o arquivo só andava
+          quando alguém rodava o script à mão.
 
   - key: brasil_expectations
     name: "Expectativas (Focus)"
@@ -154,10 +189,13 @@ dashboards:
     command: 'uv run python -c "from analytics.brasil.monetary_policy.generate_report import run; run()"'
     build_seconds: 23
     note: >
-      Gerar o HTML NÃO roda o modelo: a estimação leva minutos e depende de MySQL,
-      IPEADATA e do anexo do RPM. As abas leem os artefatos que modelo_agregado.py e
-      antecipa_copom.py gravam em data/ — se esses estiverem velhos, o relatório sai
-      novo com número velho, e o único aviso é o corte_usado na caixa da previsão.
+      Réplica do modelo agregado do Banco Central. Três das quatro abas mostram resultados de um
+      modelo que precisa ser estimado antes de o relatório existir — não são consultas ao banco. É
+      por isso que este dashboard tem cálculos próprios, listados abaixo: o Regerar refaz os que
+      estiverem atrás dos dados e só então monta o HTML, de modo que o modelo que aparece no
+      relatório é sempre o modelo rodado com o dado mais recente. A caixa de previsão da aba
+      "Projeções do Copom" repete essa conferência dentro do próprio arquivo, para quem abre o
+      relatório longe desta página.
     deps:
       # date aqui e o trimestre PROJETADO (vai a 2028), nao quando o dado passou a
       # existir -- por isso a coluna de frescor e a vintage, que e a data da publicacao.
@@ -166,6 +204,10 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções"}
       - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções"}
       - {kind: mysql, ref: macro_brasil.pm_hiato_produto, date_col: vintage, role: "Hiato publicado no RPM, validação do modelo — vintage é a edição do RPM"}
+      # `pm_hiato_produto_vintages` e uma dependencia da PREVISAO, nao da validacao:
+      # `hiato_vintage()` le o hiato em t0 como o BC publicou na ultima edicao ANTES do
+      # corte, e nao a serie corrente da linha de cima.
+      - {kind: mysql, ref: macro_brasil.pm_hiato_produto_vintages, date_col: vintage, role: "Hiato por edição do RPM — é o vintage que a previsão da próxima projeção lê"}
       - {kind: mysql, ref: macro_brasil.inflc_meta, role: "Meta de inflação, a régua do desvio — date é o ANO da meta, então o 'último dado' é o último ano com meta publicada"}
       - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA e núcleos, aba Condições"}
       - {kind: mysql, ref: macro_brasil.mt_pnad, role: "Taxa de desocupação, aba Condições"}
@@ -179,6 +221,9 @@ dashboards:
       - {kind: mysql, ref: macro_international.comm_brent, role: "Brent, aba Condições"}
       - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação — é o que decide o que o Copom tinha na mesa em cada reunião"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_painel_full.csv, role: "Painel trimestral estimado", refresh: uv run python analytics/brasil/monetary_policy/modelo_painel.py}
+      # Escalar, sem data interna -- entra por causa do `faltando`: sem ele a estimacao para,
+      # e a linha "1 arquivo ainda nao existe" e o unico aviso possivel.
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_sigma_rr.txt, date_col: null, role: "Escala do choque da taxa neutra, calibrada pelos painéis e lida na estimação"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados.csv, role: "Estados latentes do modelo", refresh: uv run python analytics/brasil/monetary_policy/modelo_agregado.py}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados_est.csv, role: "Estados com parâmetros estimados"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_cenario_focus__eq5.csv, role: "Curva de Selic da Focus que o motor JS carrega"}
@@ -194,10 +239,123 @@ dashboards:
       - kind: artifact
         ref: analytics/brasil/monetary_policy/data/antecipa_previsao.json
         role: "Previsão da próxima projeção do BC"
+        # O frescor deste artefato NAO e o mtime: o que importa e o conjunto de
+        # informacao com que ele foi calculado, que ele mesmo grava em `corte_usado`.
+        # Um salvar() rodado hoje contra o Focus de anteontem tem mtime de hoje.
+        json_date: corte_usado
         refresh: 'uv run python -c "from analytics.brasil.monetary_policy.antecipa_copom import salvar; salvar()"'
         note: >
-          Gravado à mão. Regerar o relatório sem regravar isto mostra previsão velha
-          com aparência de nova.
+          Guarda, junto com a previsão, a data do último dado usado para calculá-la. É essa data
+          que diz se a previsão está em dia: a data do arquivo não serve, porque um cálculo feito
+          hoje com dado de anteontem tem arquivo de hoje.
+
+    # ── Procedimentos: o que o botao Regerar recalcula ANTES de gerar o HTML ─────
+    # Sao DOIS botoes no sistema, e so dois: "Atualizar" (aba Divulgacoes) mexe na base
+    # de dados, e "Regerar" (aba Status dashboard) reconstroi o dashboard -- e reconstruir
+    # inclui refazer o que estiver atras. Cada procedimento e um passo de recalculo:
+    # `{id, label, module, call, seconds, writes[], cut_from, reads[], granularidade}`.
+    # `module` + `call` sao importados, como o `module` + run() do dashboard, entao a
+    # pagina manda um id e quem resolve id -> funcao e o nosso lado. Sem shell.
+    #
+    # A ORDEM da lista e a ordem de execucao, e `gerar()` reavalia a cada passo -- entao
+    # `painel` ganhar um trimestre novo poe `modelo` atras na mesma rodada, em cascata.
+    #
+    # `writes` liga o procedimento aos artefatos (e nao o contrario): `salvar()` grava
+    # dois arquivos e `rodar()` sete, e declarado do lado do dep a mesma rodada apareceria
+    # duas e sete vezes.
+    #
+    # ## O que decide se um passo esta atras
+    #
+    # `cut_from` e o artefato que carrega o CORTE do proprio procedimento, `reads` sao as
+    # fontes dele, e `granularidade` e a unidade em que os dois se comparam. Isso existe
+    # porque um artefato calculado tem DUAS datas e so uma era observavel: quando foi
+    # escrito (mtime) e com que dado (o corte). Um `salvar()` rodado hoje contra o Focus
+    # de anteontem tem mtime de hoje -- foi o que passou por "em dia" em 2026-08-31.
+    #
+    # A granularidade nao e detalhe: e o que da a cada passo a frequencia dele. O painel e
+    # trimestral, entao o corte dele e o ultimo trimestre do CSV e ele so fica atras quando
+    # um trimestre NOVO abre -- uma vez por trimestre, nao todo dia que a Focus anda. A
+    # previsao e diaria, e fica atras assim que a pesquisa anda. Sem isso, a estimacao do
+    # modelo seria refeita a cada boletim, mudando os 22 parametros por nada.
+    procedures:
+      - id: painel
+        label: "Painéis trimestrais"
+        module: analytics.brasil.monetary_policy.modelo_painel
+        call: construir_tudo
+        seconds: 90
+        writes:
+          - analytics/brasil/monetary_policy/data/modelo_painel_full.csv
+          - analytics/brasil/monetary_policy/data/modelo_neutra_pub.csv
+          - analytics/brasil/monetary_policy/data/modelo_sigma_rr.txt
+
+        # O corte do painel é o último trimestre que ele tem, que é o próprio índice do
+        # CSV. Comparado em TRIMESTRE contra as fontes: só fica atrás quando um trimestre
+        # novo abre, não a cada boletim Focus.
+        cut_from: analytics/brasil/monetary_policy/data/modelo_painel_full.csv
+        granularidade: trimestre
+        reads:
+          - macro_brasil.atv_ibcbr
+          - macro_brasil.inflc_agregados
+          - macro_brasil.inflc_meta
+          - macro_brasil.expc_focus
+          - macro_brasil.expc_focus_periodo
+          - macro_brasil.cmb_ptax
+          - macro_brasil.comm_icbr
+          - macro_brasil.mt_caged
+        note: >
+          Monta a base trimestral que o modelo estima — hiato do produto, juro real, inflação,
+          câmbio e commodities numa mesma tabela — e a taxa de juro neutra que o Banco Central
+          publica. É o insumo do passo seguinte: refazer isto muda tudo o que vem depois.
+      - id: modelo
+        label: "Estimação do modelo agregado"
+        module: analytics.brasil.monetary_policy.modelo_agregado
+        call: rodar
+        seconds: 240
+        writes:
+          - analytics/brasil/monetary_policy/data/modelo_estados.csv
+          - analytics/brasil/monetary_policy/data/modelo_estados_est.csv
+          - analytics/brasil/monetary_policy/data/modelo_params.json
+          - analytics/brasil/monetary_policy/data/modelo_cenario_focus__eq5.csv
+          - analytics/brasil/monetary_policy/data/modelo_eq5_diag.json
+          - analytics/brasil/monetary_policy/data/modelo_validacao.csv
+          - analytics/brasil/monetary_policy/data/modelo_validacao_irf.json
+        # A fonte deste passo é o PAINEL, não o banco — `reads` aceita artefato pelo mesmo
+        # motivo que aceita tabela: o que importa é "o que eu leio andou depois de mim?".
+        # É isso que faz a cascata: painel ganha trimestre -> modelo fica atrás.
+        cut_from: analytics/brasil/monetary_policy/data/modelo_estados.csv
+        granularidade: trimestre
+        reads:
+          - analytics/brasil/monetary_policy/data/modelo_painel_full.csv
+        note: >
+          Estima o modelo sobre essa base: os parâmetros das equações, as duas séries que não se
+          observam (o hiato do produto e a taxa de juro neutra) e a comparação com os valores que
+          o Banco Central publicou. É o que abastece o simulador de cenários da primeira aba e a
+          tabela de validação do Apêndice.
+      - id: previsao
+        label: "Previsão da próxima projeção do BC + backtest"
+        module: analytics.brasil.monetary_policy.antecipa_copom
+        call: salvar
+        seconds: 55
+        writes:
+          - analytics/brasil/monetary_policy/data/antecipa_backtest.csv
+          - analytics/brasil/monetary_policy/data/antecipa_previsao.json
+        cut_from: analytics/brasil/monetary_policy/data/antecipa_previsao.json
+        # Diária: as fontes são a pesquisa Focus e a PTAX, e a previsão fica atrás assim
+        # que uma delas anda. É o passo que roda com mais frequência, e o mais barato.
+        granularidade: dia
+        reads:
+          - macro_brasil.expc_focus_periodo
+          - macro_brasil.expc_focus_copom
+          - macro_brasil.pm_copom_projecoes
+          - macro_brasil.pm_copom_reuniao
+          - macro_brasil.pm_hiato_produto_vintages
+          - macro_brasil.cmb_ptax
+        note: >
+          Calcula que número o Copom deve publicar para a inflação no horizonte relevante na
+          próxima reunião, e refaz o backtest dos três métodos nas reuniões passadas. É
+          o losango no fim da série e a tabela de erros da aba "Projeções do Copom". Depende da
+          pesquisa Focus, que anda toda semana, então é o cálculo que fica atrás dos dados mais
+          rápido — e o mais barato de refazer.
 
   - key: brasil_exchange_rate
     name: "Câmbio"
@@ -207,9 +365,9 @@ dashboards:
     command: 'uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run()"'
     build_seconds: 43
     note: >
-      As 3 abas de modelo (PPP, FX Attribution, Ridge) são opcionais — run(include_models=False)
-      pula FRED e os fits e sai em poucos segundos. As dependências marcadas com
-      scope "modelos" só valem quando elas entram.
+      As três abas de modelo (PPP, Atribuição e Ridge) podem ser puladas na geração: sem elas o
+      relatório sai em poucos segundos e não busca nada em fonte externa. As dependências marcadas
+      como "modelos" só valem quando essas abas entram.
     deps:
       - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "PTAX e volume interbancário"}
       - {kind: mysql, ref: macro_brasil.cmb_reservas_bc, role: "Reservas e posicionamento do BC"}
@@ -251,8 +409,35 @@ dashboards:
         scope: modelos
         role: "Juro real de 10 anos dos EUA, regressor do Ridge"
         note: Buscado no FRED durante a geração; não passa pelo MySQL.
+      # Os dois arquivos do modelo Ridge que a GERACAO le e nunca reescreve. Ficaram sem
+      # declaracao ate 2026-09-01: eram o caso classico de artefato calculado cujo atraso nao
+      # aparecia em tela nenhuma. Entram como DEPENDENCIA e nao como `procedures`, e a razao e
+      # diferente em cada um -- ver as notas. Nenhum dos dois tem calendario proprio: os dois
+      # andam quando alguem decide reestimar o modelo.
+      - kind: artifact
+        ref: analytics/brasil/exchange_rate/models/ridge_results/model_fit_cutoff.json
+        scope: modelos
+        role: "Mês até onde os coeficientes do Ridge são estimados"
+        json_date: cutoff_month
+        refresh: 'uv run python -c "from analytics.brasil.exchange_rate.models.ridge_deviation_model import refit_from_latest_data; refit_from_latest_data(force=True)"'
+        note: >
+          O ajuste do modelo está fixado neste mês de propósito: regerar o relatório traz dado
+          novo para os gráficos, mas não reestima os coeficientes. Avançar o mês é uma decisão de
+          quem cuida do modelo — normalmente quando todos os canais já têm o mesmo mês —, não uma
+          consequência de ter saído dado novo, e é por isso que o Regerar não mexe aqui.
+      - kind: artifact
+        ref: analytics/brasil/exchange_rate/models/ridge_results/forecast_error_bands_w72.json
+        scope: modelos
+        role: "Largura da banda de erro da projeção, por mês à frente"
+        refresh: 'uv run python -c "from analytics.brasil.exchange_rate.models.ridge_deviation_model import forecast_error_bands_w72; forecast_error_bands_w72(force=True)"'
+        note: >
+          Calculada de uma vez e guardada em arquivo — são 139 reajustes do modelo ao longo da
+          amostra, cerca de um minuto e meio. Refazer vem junto com a reestimação do modelo, não
+          com o dado novo do mês: a banda é uma estatística de erro da amostra inteira, e não
+          muda de forma por causa de um mês a mais.
       - kind: csv
         ref: analytics/brasil/exchange_rate/models/fx_attribution_data/verde_asset/claims.csv
+
         date_col: date
         scope: modelos
         role: "Atribuição cambial — cartas da Verde, extraídas à mão"
@@ -285,6 +470,30 @@ dashboards:
       - {kind: mysql, ref: macro_us.inflc_pce_dim, date_col: null, role: "Árvore do PCE, com os sinais de subtração"}
       - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas e horas de divulgação do CPI (BLS) e do PCE (BEA) — a faixa no topo da página"}
 
+  - key: us_labor_market
+    name: "Labor Market (US)"
+    area: us
+    output: reports/us/Labor Market.html
+    module: analytics.us.labor_market.generate_report
+    command: 'uv run python -c "from analytics.us.labor_market.generate_report import run; run()"'
+    build_seconds: 95
+    note: >
+      Mercado de trabalho dos EUA, com as três pesquisas mensais do BLS na mesma página.
+      O payroll (pesquisa de estabelecimentos) traz emprego por 839 indústrias mais horas
+      e ganhos; a pesquisa domiciliar traz desemprego, participação, duração e as seis
+      medidas de subutilização; e o JOLTS traz vagas abertas e rotatividade por indústria,
+      tamanho de estabelecimento e região. A aba de derivadas é a única que calcula algo:
+      vagas por desempregado, contratação líquida, curva de Beveridge e a divergência
+      entre as duas medidas de emprego.
+      As dependências de cada pesquisa vêm do mesmo download, então andam juntas: um passe
+      do CES escreve tabela e árvore, e o mesmo vale para o JOLTS.
+    deps:
+      - {kind: mysql, ref: macro_us.mt_jolts, role: "Vagas, contratações e separações por indústria, tamanho de estabelecimento e região"}
+      - {kind: mysql, ref: macro_us.mt_jolts_dim, date_col: null, role: "As três árvores do release (raízes diferentes: Total nonfarm, Total private, Total US)"}
+      - {kind: mysql, ref: macro_us.mt_ces, role: "Emprego, horas e ganhos por indústria — o payroll do Employment Situation"}
+      - {kind: mysql, ref: macro_us.mt_ces_dim, date_col: null, role: "A árvore de 839 indústrias da CES, com a cobertura dos filhos em cada nó"}
+      - {kind: mysql, ref: macro_us.mt_cps, role: "Manchetes da pesquisa domiciliar: desemprego, participação, duração, U-1 a U-6"}
+
   - key: oraculo
     name: "Oráculo (Power BI)"
     area: brasil
@@ -293,9 +502,9 @@ dashboards:
     command: uv run python jobs/update_oraculo.py
     build_seconds: null
     note: >
-      Não é HTML: é o CSV que alimenta o Power BI. Entra aqui porque é consumidor de
-      banco como qualquer outro relatório e some da vista justamente por não ser um
-      arquivo em reports/ — aparece em 8 dos 25 grupos do calendário.
+      Não é um relatório HTML: é o CSV que alimenta os dashboards de Power BI. Está nesta lista
+      porque consome o banco como qualquer relatório, e as dez tabelas de que depende aparecem em
+      8 dos 25 grupos de divulgação da outra aba.
     deps:
       - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, núcleo e difusão"}
       - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA 12m"}
@@ -316,8 +525,9 @@ dashboards:
     command: 'uv run python -c "from analytics.release_calendar.generate_report import run; run()"'
     build_seconds: 1
     note: >
-      Este relatório. Não lê MySQL na geração — o YAML é a fonte inteira, e o estado
-      do banco entra ao vivo pelo serve.py.
+      Esta página. A geração não lê o banco de dados: as datas de divulgação vêm do arquivo de
+      calendário, e o estado de cada tabela é consultado ao vivo enquanto a página está aberta — é
+      o que a coluna "Último dado" mostra.
     deps:
       - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação, uma entrada por evento"}
       - {kind: yaml, ref: domain/dashboards/manifest.yaml, role: "Este arquivo — alimenta a aba Status dashboard"}

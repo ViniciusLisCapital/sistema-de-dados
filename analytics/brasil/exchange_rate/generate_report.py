@@ -112,7 +112,29 @@ def _load_reer() -> dict:
         return {}
 
 
+# As cinco categorias de participante do TFF, na ordem em que o proprio relatorio
+# da CFTC as lista. Carregadas desde 2026-09-01 (antes so `lev` e `nonrept`, e o
+# relatorio so desenhava `lev_net`) -- a pergunta "alem dos alavancados, quem mais
+# esta no mercado" nao tinha resposta no dado.
+_COT_PARTIES = ["dealer", "asset_mgr", "lev", "other", "nonrept"]
+
+
 def _load_cot_fx() -> dict:
+    """Posicionamento COT do futuro de BRL na CME (CFTC TFF), semanal.
+
+    Serializa o open interest e, por categoria, a posicao liquida mais as pernas
+    bruta comprada e vendida. Duas identidades fecham EXATAMENTE nas 748 semanas
+    (conferido contra o banco, residuo 0): a soma dos cinco liquidos e zero, e a
+    soma de (comprado + spread) de todos e o open interest -- as mesmas dos dois
+    lados. Sao elas que autorizam a pilha do grafico.
+
+    A serie e semanal com data de TERCA (740 das 748; as 8 restantes caem na
+    segunda, semana de feriado) e tem buracos: 16 intervalos maiores que 8 dias
+    ate 2015, um deles de 196 dias entre out/2011 e abr/2012. O relatorio nao
+    reindexa para uma grade semanal densa -- a media movel la aplica um guarda de
+    span justamente para nao chamar de "12 semanas" uma janela de 12 OBSERVACOES
+    que cobre oito meses.
+    """
     try:
         df = _fetch("macro_international", "cmb_cot_fx")
         if df is None:
@@ -120,13 +142,19 @@ def _load_cot_fx() -> dict:
         df["value"] = df["value"].astype(float)
         brl = df[df["currency"] == "BRL"].copy()
         wide = brl.pivot(index="date", columns="name", values="value").sort_index()
-        return {
-            "dates":         _dates(wide.index),
-            "lev_net":       _col(wide, "lev_net"),
-            "lev_long":      _col(wide, "lev_long"),
-            "lev_short":     _col(wide, "lev_short"),
-            "open_interest": _col(wide, "open_interest"),
-        }
+        out = {"dates": _dates(wide.index), "open_interest": _col(wide, "open_interest")}
+        for p in _COT_PARTIES:
+            # `spread` entra apesar de nenhum grafico o desenhar: sem ele a
+            # identidade bruta (comprado + spread, somado nas 5 categorias = open
+            # interest) nao fecha no arquivo entregue, e a participacao de cada
+            # grupo no mercado -- que as notas e os cartoes AFIRMAM em numero --
+            # deixa de ser reproduzivel por quem le. `nonrept` nao tem spread na
+            # fonte, entao a coluna sai ausente e `_col` devolve nulos.
+            for suf in ("net", "long", "short", "spread"):
+                if p == "nonrept" and suf == "spread":
+                    continue
+                out[f"{p}_{suf}"] = _col(wide, f"{p}_{suf}")
+        return out
     except Exception as exc:
         print(f"  Aviso: erro em cmb_cot_fx — {exc}")
         return {}
@@ -767,7 +795,10 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
     report_data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "ptax":            _load_ptax(),
-        "diferenciais":    _load_diferenciais(),
+        # `diferenciais` saiu do payload em 2026-09-01, com a secao Diferenciais de
+        # Juros (pedido do usuario) -- eram 39 KB para tres graficos que nao existem
+        # mais. `_load_diferenciais()` FICA: agent_data.py o importa para montar o
+        # snapshot do subagente cambio-analyst, que nao passa por este payload.
         "reer":            _load_reer(),
         "cot_fx":          _load_cot_fx(),
         "bcb_positioning": _load_bcb_positioning(),

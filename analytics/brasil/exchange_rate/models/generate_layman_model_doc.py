@@ -1,6 +1,6 @@
 """Generates a plain-language internal PDF explaining the shipped Ridge
 USD/BRL model (ridge_deviation_model.py) -- what it predicts, why each of
-its 8 ingredients is in it, how it re-learns over time, how good it has
+its 6 ingredients is in it, how it re-learns over time, how good it has
 been, and how the dashboard's forecast tool works. Written for a
 non-technical reader: no jargon left unexplained, no equations, no
 rejected-channel history (shipped 8-channel spec only, per direct user
@@ -105,7 +105,7 @@ def ingredient_card(name, plain_name, definition, thesis, direction_note=None):
     definition avoiding jargon, then the plain-English thesis for why it's
     believed to move the exchange rate. direction_note, when given, is an
     extra callout for a counter-intuitive sign (only real_yield_diff needs
-    this among the 8 shipped channels)."""
+    this among the shipped channels)."""
     rows = [
         [Paragraph(f'<font color="#BB9B1D"><b>{name}</b></font> <font color="#7A88A8">— {plain_name}</font>', ParagraphStyle("ing_h", fontName="DejaVuSans-Bold", fontSize=11.2, leading=14))],
         [Paragraph(f"<b>What it is:</b> {definition}", BODY_TIGHT)],
@@ -179,7 +179,7 @@ def build_story():
 
     story.append(Paragraph(
         "This model tries to guess how much the Brazilian Real will move against the US Dollar each month, "
-        "using 8 pieces of real-world information. This document explains, in plain language, what those 8 "
+        "using 6 pieces of real-world information. This document explains, in plain language, what those 6 "
         "pieces are, why we picked each one, how the model keeps itself up to date, how good its guesses have "
         "actually been, and how you can use the dashboard's new tool to test your own \"what if\" scenarios for "
         "the next 12 months.",
@@ -197,21 +197,21 @@ def build_story():
     story += section_header("1", "The Big Idea", "How the model turns information into a guess")
 
     story.append(Paragraph(
-        "Think of the model as a recipe. Every month, it looks at how much 8 different real-world things "
+        "Think of the model as a recipe. Every month, it looks at how much 6 different real-world things "
         "changed — for example, how much riskier Brazil looked to investors, or how strong the US dollar was "
         "against currencies worldwide. Over about 18 years of history, the model has learned roughly how much "
         "each of those changes tends to push the Real up or down against the Dollar.",
         BODY,
     ))
     story.append(Paragraph(
-        "Each month, it adds up all 8 \"pushes,\" plus one more ingredient — the exchange rate's own momentum "
+        "Each month, it adds up all 6 \"pushes,\" plus one more ingredient — the exchange rate's own momentum "
         "from the month before — to produce its best single guess for how much the Real will move this month.",
         BODY,
     ))
     story.append(Paragraph(
         "It's a bit like a recipe where every ingredient has a learned \"how much it matters\" weight. A pinch "
-        "of salt changes a dish less than a cup of sugar — the model has learned similar weights for its 8 "
-        "ingredients, based on what has actually moved the exchange rate in the past.",
+        "of salt changes a dish less than a cup of sugar — the model has learned similar weights for 5 of its 6 "
+        "ingredients, based on what has actually moved the exchange rate in the past. The ninth, the inflation gap, is the one exception: its weight is set by hand rather than learned. Section 2 explains why.",
         BODY,
     ))
     story.append(Paragraph(
@@ -224,15 +224,34 @@ def build_story():
     # ========================================================================
     # 2. The 8 ingredients
     # ========================================================================
-    story += section_header("2", "The 8 Ingredients", "What the model watches, and why each one is believed to matter")
+    story += section_header("2", "The 6 Ingredients", "What the model watches, and why each one is believed to matter")
 
     story.append(Paragraph(
-        "These are the 8 pieces of information the model uses every month. Each one was chosen because, when "
+        "These are the 6 pieces of information the model uses every month. Each one was chosen because, when "
         "tested against nearly two decades of real history, it reliably helped explain the Real's actual moves — "
         "not because it sounded reasonable in theory.",
         BODY,
     ))
     story.append(Spacer(1, 4))
+
+    story.append(ingredient_card(
+        "The Inflation Gap", "how much faster Brazilian prices rise than American ones",
+        "Each month, how much more Brazil's consumer prices went up than US consumer prices did. If a loaf of "
+        "bread costs 6% more in Brazil this year and 2% more in the US, the gap is 4%.",
+        "This is the one ingredient whose weight is NOT learned from the data — it is set to pass straight "
+        "through, one for one. The reason is simple arithmetic: if Brazilian prices rise 4% faster than "
+        "American ones, the exchange rate has to move about 4% just for the two currencies to buy the same "
+        "amount of stuff as before. That is not a market reaction anyone has to estimate; it is what the "
+        "numbers mean.",
+        "Why not let the model learn this weight like the others? Because a single month is far too short a "
+        "window to see it. Month to month, the inflation gap accounts for well under 1% of how much the Real "
+        "moves — currency swings are simply much bigger and much noisier than inflation differences. A model "
+        "that tried to learn the weight from monthly data would be reading noise, and it shows: the learned "
+        "answer flips sign depending on which six-year stretch you look at. Measured over longer stretches, "
+        "though — one year, five years, ten — the relationship comes through clearly and lands right where "
+        "the arithmetic says it should. So the model is told the answer instead of asked to guess it.",
+    ))
+    story.append(Spacer(1, 8))
 
     story.append(ingredient_card(
         "Fiscal Risk", "how worried investors are about Brazil's government finances",
@@ -258,15 +277,6 @@ def build_story():
     ))
     story.append(Spacer(1, 8))
 
-    story.append(ingredient_card(
-        "Global Dollar Strength", "whether the US Dollar is broadly strong or weak against major world currencies",
-        "A widely used index (the \"Dollar Index,\" or DXY) that tracks the Dollar against a basket of major "
-        "currencies like the Euro, Yen, and British Pound — mostly other large, developed economies.",
-        "When the Dollar strengthens broadly against the whole world, it usually strengthens against the Real "
-        "too, for reasons that have little to do with Brazil specifically — it's simply a stronger Dollar "
-        "everywhere.",
-    ))
-    story.append(Spacer(1, 8))
 
     story.append(ingredient_card(
         "Emerging-Market Dollar Strength", "whether the US Dollar is strong specifically against other emerging-market currencies",
@@ -281,18 +291,6 @@ def build_story():
     story.append(Spacer(1, 8))
     story.append(PageBreak())
 
-    story.append(ingredient_card(
-        "Inflation-Protected Bond Curve Steepening", "how much more Brazil pays to borrow for 10 years versus 2 years, after stripping out inflation",
-        "The extra interest rate Brazil pays on 10-year government bonds compared to 2-year bonds, using bonds "
-        "that are protected against inflation. When this gap widens (\"steepens\"), it means long-term lending "
-        "to Brazil has become relatively more expensive than short-term lending.",
-        "This is another way of reading fiscal risk — but focused purely on the real (inflation-adjusted) cost "
-        "of long-term borrowing, separate from the CDS-based fiscal-risk ingredient above. Brazil holds large "
-        "dollar reserves, which makes an outright default on foreign debt unlikely even when domestic finances "
-        "look shakier — so this ingredient can pick up worries that the CDS insurance price doesn't fully "
-        "capture.",
-    ))
-    story.append(Spacer(1, 8))
 
     story.append(ingredient_card(
         "The US Stock Market", "how the S&amp;P 500 (a broad US stock index) has been performing",
@@ -307,24 +305,6 @@ def build_story():
     ))
     story.append(Spacer(1, 8))
 
-    story.append(ingredient_card(
-        "Brazil-US Real Interest Rate Gap", "a second, independent read on how much risk investors see in Brazil",
-        "The gap between Brazil's 10-year inflation-protected government bond rate and the equivalent US "
-        "10-year inflation-protected rate.",
-        "This ingredient is not another version of the carry-trade ingredient above — it's a <b>risk-premium "
-        "gauge</b>, like fiscal risk and curve steepening, just measured through interest rates instead of an "
-        "insurance price or a borrowing-cost gap. The idea: when investors demand an unusually high real "
-        "interest rate to hold Brazilian government debt, that's usually them pricing in extra risk, not "
-        "just offering a reward for patient investors.",
-        direction_note=(
-            "Because this ingredient measures risk rather than reward, it moves the exchange rate the "
-            "<b>opposite</b> way from a typical carry-trade ingredient. A bigger gap has actually gone together "
-            "with a <b>weaker</b> Real, not a stronger one — consistent with reading it as a warning sign about "
-            "risk, the same underlying story as the fiscal-risk and curve-steepening ingredients, not a "
-            "coincidence or a data quirk."
-        ),
-    ))
-    story.append(Spacer(1, 8))
     story.append(PageBreak())
 
     story.append(ingredient_card(
@@ -342,7 +322,7 @@ def build_story():
         "Plus one more ingredient that isn't really \"news\" about the world: the exchange rate's own momentum "
         "from last month. Currencies, like many things in economics, tend to keep moving a little in the same "
         "direction they were already moving — this ingredient lets the model account for that momentum "
-        "directly, on top of the 8 news-driven ingredients above.",
+        "directly, on top of the 6 ingredients above.",
         BODY,
     ))
     story.append(PageBreak())
@@ -353,7 +333,7 @@ def build_story():
     story += section_header("3", "How the Model Keeps Itself Up to Date", "Why the recipe's weights are re-measured, not fixed forever")
 
     story.append(Paragraph(
-        "The relationship between these 8 ingredients and the exchange rate doesn't stay exactly the same "
+        "The relationship between these ingredients and the exchange rate doesn't stay exactly the same "
         "forever. What mattered most in, say, 2015 might matter a bit differently today — the Brazilian and "
         "global economy keep changing, and a model that assumed one fixed relationship across 18 years would "
         "be describing an average of very different periods, calm and turbulent alike.",
@@ -361,7 +341,7 @@ def build_story():
     ))
     story.append(Paragraph(
         "So instead of measuring the weights once and freezing them, the model re-measures them regularly: "
-        "every month, it looks back over the most recent 6 years of data, re-learns how much each of the 8 "
+        "every month, it looks back over the most recent 6 years of data, re-learns how much each of the 5 learned "
         "ingredients currently matters, and drops the oldest month from that 6-year window. It's a rolling "
         "6-year memory, not a fixed, forever answer.",
         BODY,
@@ -374,7 +354,7 @@ def build_story():
     story += caution(
         "The model is also careful not to overreact to any single ingredient's month-to-month noise. Behind "
         "the scenes, it applies a mild \"be careful not to overfit\" brake (called Ridge regularization) that "
-        "keeps its weights sensible even when a few of the 8 ingredients happen to move in similar ways at the "
+        "keeps its weights sensible even when a few of the ingredients happen to move in similar ways at the "
         "same time. You don't need to know how this works — only that it's a deliberate safeguard, not an "
         "afterthought.",
         label="A technical safeguard, in one sentence",
@@ -395,10 +375,10 @@ def build_story():
 
     story.append(Paragraph("Explaining the past", H2))
     story.append(Paragraph(
-        "Looking back across its full ~18-year history, the model's 8 ingredients together explain roughly "
+        "Looking back across its full ~18-year history, the model's 6 ingredients together explain roughly "
         "61% of the actual month-to-month moves in the exchange rate (using its most recent 6-year "
         "\"memory window\" — the same window described in Section 3). The remaining share is noise, surprises, "
-        "and short-term moves the 8 ingredients simply don't capture — no model of a currency this actively "
+        "and short-term moves the ingredients simply don't capture — no model of a currency this actively "
         "traded should be expected to explain everything.",
         BODY,
     ))
@@ -452,7 +432,7 @@ def build_story():
     story += section_header("5", "The Forecast Tool on the Dashboard", "How to test your own \"what if\" scenario for the next 12 months")
 
     story.append(Paragraph(
-        "The dashboard includes a hands-on tool that lets you type in your own expectations for each of the 8 "
+        "The dashboard includes a hands-on tool that lets you type in your own expectations for each of the 6 "
         "ingredients over the next 12 months, and see what the model would guess for the exchange rate under "
         "that scenario — without needing to touch any code or run anything yourself.",
         BODY,
@@ -460,7 +440,7 @@ def build_story():
 
     story.append(Paragraph("Entering your own numbers", H2))
     story.append(Paragraph(
-        "For each of the 8 ingredients, you get 12 boxes — one per month ahead. You can fill each box in "
+        "For each of the 6 ingredients, you get 12 boxes — one per month ahead. You can fill each box in "
         "whichever way is easier for you to think in: the actual expected level of that ingredient (for "
         "example, \"the fiscal-risk insurance price will be around 250\"), or the expected percentage change "
         "from the month before (for example, \"up 3% from last month\"). A toggle button switches the boxes "
@@ -492,8 +472,8 @@ def build_story():
         BODY,
     ))
     story += caution(
-        "This tool tells you what the model would guess <b>given your own assumptions</b> about the 8 "
-        "ingredients — it does not forecast those 8 ingredients themselves. If your assumptions turn out to be "
+        "This tool tells you what the model would guess <b>given your own assumptions</b> about the 6 "
+        "ingredients — it does not forecast those 6 ingredients themselves. If your assumptions turn out to be "
         "wrong, the resulting exchange-rate guess will be wrong in the same way, no matter how carefully the "
         "underlying model was built. Use the regressor charts described above to keep your own assumptions "
         "grounded in what has actually happened before.",

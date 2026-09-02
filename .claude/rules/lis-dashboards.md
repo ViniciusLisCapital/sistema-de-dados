@@ -178,6 +178,272 @@ Applied verbatim to `analytics/brasil/exchange_rate/report.html`, `analytics/bra
 
 `_bindYAutofit`'s core min/max-over-visible-range logic was unit-tested against synthetic/mock objects (category vs. date axes, single vs. dual y-axis, plain vs. stacked bars) before being embedded in any report, then re-verified by actually executing each Plotly report's real generated `<script>` against a stubbed `document`/`Plotly` and firing synthetic `plotly_relayout` events against the *real* embedded data — both the "X-only changed → autofit fires" case and the "X and Y changed together → autofit stays out of the way" case, across all three reports including the dual-axis (`chart-timeseries`, `chart-cot-brl`) and category-axis (`monetary_policy`) charts. This caught one real bug before it shipped: `el.layout || el._fullLayout` has the precedence backwards for reading the auto-detected `xaxis.type` — Plotly only resolves that onto `_fullLayout`, never back onto the raw `layout` object — fixed to `el._fullLayout || el.layout` everywhere. The Chart.js side has no auxiliary function left to test (native `mode:'xy'` handles everything) — its zoom/pan config was checked for syntax validity only. **Actual browser rendering of any of this has still not been visually confirmed** — do that before fully trusting the feel of the interaction.
 
+## Texto explicativo: justificado e na largura do bloco (2026-09-01)
+
+Pedido direto do usuário, a partir de um print do card de status do calendário: *"Por que
+você não faz card menores e expande o texto para cobrir a parte em vermelho? Eu quero que
+todos os textos explicativos e do apêndice sejam justificados."* O vermelho era o vazio à
+direita de cada parágrafo — a prosa tinha `max-width` em `ch` (78 e 82) dentro de um card de
+~1.300 px.
+
+**Tirar o cap resolve as duas metades do pedido de uma vez.** O texto cobre a largura *e*,
+ocupando mais linha, o bloco fica mais baixo — que era o "cards menores". Medido no
+calendário: a nota de 526 caracteres caiu de 7 para 3 linhas, as três notas de procedimento
+de 10 para 5, ~160 px de card.
+
+Três coisas que fazem a regra funcionar, cada uma a origem de um erro possível:
+
+- **`hyphens: auto` é obrigatório junto do `justify`.** Sem hifenização o português abre rios
+  de espaço branco entre as palavras da linha — palavras longas, poucas monossílabas para o
+  navegador usar de folga.
+- **A hifenização depende do `lang` no `<html>`.** Sem ele o browser não sabe que dicionário
+  usar e não hifeniza nada: a regra *parece* aplicada e produz exatamente os rios que ela
+  existia para evitar. Os 9 relatórios já declaravam (`pt-BR`, e `en` no de inflação dos
+  EUA), o que é por que a regra funcionou de primeira — não conte com isso num arquivo novo.
+- **A ressalva de leitura, dita ao usuário e decidida por ele:** num bloco de 1.300 px a
+  12 px a linha passa de 200 caracteres, bem acima da faixa confortável (45–90). Ele optou
+  por cobrir a largura. Se algum dia o contrário incomodar, o corretivo é um `max-width`
+  generoso (~120ch), não voltar aos 78ch.
+
+**O que fica de fora, de propósito:** célula de tabela (`td.dep-role`, 42ch) e popover de
+definição (`.info-pop`, ~320 px) — container estreito é justamente onde os rios aparecem;
+linha de metadado em mono (`rodou em … · ~90s · em dia com a fonte`), que é lista de campos
+separada por `·` e não prosa; e o que é centralizado por decisão de layout (rodapé de
+metodologia, `.ftr-note`).
+
+Aplicado em `analytics/release_calendar/report.html` (origem, 3 seletores) e nos 9
+relatórios: exchange_rate (4), monetary_policy (7), economic_activity (3), fiscal_policy (3),
+credit (3), expectations (4), labor_market (2), inflation (1), us/inflation (3).
+**Promovido para a skill** no mesmo dia, a pedido do usuário:
+`.claude/skills/lis-dashboard/references/design-system.md#prosa`, mais a regra em `SKILL.md`
+e uma linha no checklist de entrega.
+
+### O card de status virou click-drop no mesmo dia
+
+Do mesmo print: *"Coloque um click-drop para cada dash."* São 11 dashboards × 27
+dependências, e abertos empurram tudo que vem depois para fora da tela. Cada card virou um
+`<details class="dash-card">` fechado por default, no padrão do `.tbl-fold` dos relatórios de
+análise. Duas coisas que a porta ganhou e valem para qualquer card que hospede um botão:
+
+- **Um `<button>` dentro de `<summary>` precisa de `stopPropagation` E `preventDefault`.**
+  Abrir/fechar é a *ação default* de um clique no summary, então sem o `preventDefault` o
+  card pisca a cada clique no Regerar. É o mesmo gotcha do botão `i` dentro de um `<label>`.
+- **O estado aberto tem de sobreviver ao re-render.** `renderDashboards()` reescreve o
+  `innerHTML` inteiro, e é isso que o POST de Regerar dispara — sem guardar quem está aberto
+  num mapa e reaplicar o atributo `open`, o card que você abriu fecha sozinho no meio da
+  operação. O evento `toggle` do `<details>` **não borbulha**, então é um listener por card,
+  religado a cada render, em vez de delegação.
+
+O que fica no `<summary>` é o que se lê com o card fechado: nome, veredito, a linha de meta e
+o botão — mais a **mensagem** do último Regerar, que não pode desaparecer só porque o card
+estava fechado. Nota, procedimentos e tabela de dependências ficam no corpo.
+
+### E o texto tinha de ser reescrito para o LEITOR, não para nós (2026-09-01)
+
+Terceira mensagem do mesmo print, e a mais importante: *"Essas explicações não fazem sentido
+nenhum, pois no final, você está transferindo nossa conversa daqui para o dash, e eu não quero
+isso. Lá deve ser a explicação do que está acontecendo ali, para alguém que nunca viu o
+dashboard e não sabe da nossa conversa. 'O Regerar refaz antes de gerar · nada atrasado' isso
+não significa nada."*
+
+Estava certo, e o defeito é sistemático — não era uma frase infeliz. As notas do
+`manifest.yaml` e os rótulos do card tinham sido escritos **na mesma sessão em que o mecanismo
+foi construído**, então herdaram o vocabulário da construção: `generate_report`, `procedures`,
+`granularidade`, "Desde 2026-08-31", "Segundos não medidos", "Roda ANTES do modelo, que lê o
+que este grava". Cada uma dessas frases é verdadeira e nenhuma responde a pergunta de quem
+abre a página.
+
+O que foi reescrito: as 10 notas do `manifest.yaml` (5 de dashboard, 3 de procedimento, 2 de
+dependência), o cabeçalho e a nota do bloco de procedimentos, a linha de metadado de cada
+passo, os três vereditos de `procVeredito()`, a dica de modo da aba e a faixa de frescor da
+aba Projeções do Copom do relatório de política monetária.
+
+Quatro trocas explicam quase todas as edições, e valem como regra:
+
+- **Nome do mecanismo → consequência dele.** `cada trimestre` era a *unidade de comparação*
+  entre o corte do cálculo e o dado. Virou **"fica velho quando abre um trimestre novo"**, que
+  é a mesma informação na forma em que ela é útil. A palavra `granularidade` não aparece mais
+  na página, e há um assert para isso.
+- **Identificador → nome que se lê.** A faixa dizia `expc_focus_periodo já tinha 31/08`. O
+  nome legível passou a viver **ao lado** do técnico na estrutura de dados
+  (`_FONTES_FRESCOR[tab] = (coluna, nome)`), o que é o que impede os dois de divergirem: a
+  faixa diz "a pesquisa Focus já tinha dado de 31/08".
+- **Data de decisão → nada.** "Desde 2026-08-31" só levanta "e antes disso?" para quem lê. Ela
+  pertence a este arquivo e ao git log, e continua aqui.
+- **Ordem interna → efeito visível.** `O Regerar refaz antes de gerar` descrevia a sequência de
+  duas funções. O bloco agora se chama **"O que este dashboard prepara por conta própria"** e
+  traz uma nota que explica o problema em vez do procedimento: *"se um deles usou dado mais
+  antigo do que o banco já tem, o número dentro do relatório fica velho mesmo que o arquivo
+  seja novo — é isso que o botão Regerar corrige"*. **"Prepara", e não "calcula", porque um
+  passo pode ser uma busca** — o da inflação é um fetch no Banco Central, e chamar tudo de
+  cálculo mentiria naquele card. Mesma razão para "atualizado em" no lugar de "calculado em" e
+  "usou os dados até" no lugar de "foi calculado com": o verbo tem de servir aos dois.
+
+**O guarda é o que impede a recaída**, e ele é fácil: a prosa era o único conteúdo do card que
+nenhuma asserção olhava. `tests/test_release_calendar_js.js` extrai os blocos
+`.dash-note`/`.proc-note`/`.proc-hint` do HTML renderizado e proíbe uma lista de termos
+(`generate_report`, `manifest.yaml`, `procedures`, `granularidade`, `mtime`, `artefato`, `ETL`,
+`serve.py`, `run(`, `MySQL`, `YAML`, `Desde 2026`, `não medidos`, `corte de informação`), mais
+um piso de 60 caracteres para a nota não ficar vazia de conteúdo. Duas escolhas o fazem valer:
+ele roda **só no MODE=file**, onde os cards vêm do payload real, então cobre o que está escrito
+no `manifest.yaml` e não só o que o template monta; e foi verificado contra um mutante que
+reinjeta "Desde 2026-08-31 o generate_report…", que ele pega pelos três termos de uma vez.
+
+Do lado do relatório, a faixa laranja passou a ser testada **sinteticamente** — ela não aparece
+no payload de um relatório recém-regerado, que é exatamente o estado em que ninguém percebe que
+o texto dela envelheceu.
+
+**Promovido para a skill** no mesmo dia:
+`.claude/skills/lis-dashboard/references/design-system.md#audiencia`, mais a regra em `SKILL.md`
+e uma linha no checklist de entrega.
+
+## Uma coluna "% do total" divide pela raiz DA PROPRIA arvore (2026-09-01)
+
+De `analytics/us/labor_market/report.html`, a pedido do usuario (*"coloque tambem percentual do
+total (nivel). por exemplo, quanto Mining & logging representa das vagas abertas"*). A pagina
+hospeda tres arvores com **raizes diferentes** — Total nonfarm, Total private, Total US — e e
+exatamente essa a armadilha.
+
+- **O denominador e a raiz da arvore que o leitor esta lendo, nao um total unico da pagina.**
+  Usar o mesmo total nas tres faz as seis classes de tamanho somarem **88,86%** em vez de 100%,
+  porque a raiz daquele corte e Total private e os 11,14% que faltam sao governo, setor que o
+  corte nao cobre. **Nada levanta** — os numeros so saem baixos, e 88,86 e plausivel. As tres
+  asserções que fecham isso: a raiz le exatamente 100, as irmas de nivel 1 somam 100, e as
+  classes de tamanho somam 100 **e nao** 88,86.
+- **Barra empilhada vale para participacao e nao vale para taxa**, e o motivo e o denominador:
+  irmas em participacao dividem pelo MESMO numero, entao somam; taxas dividem pelo emprego de
+  cada categoria, entao nao somam nada. E o primeiro controle desta pagina cuja validade difere
+  entre os dois tipos de razao — o que reforca a regra da secao do estoque acima: **a validade
+  de um controle e propriedade do dado, nao do widget**.
+- **A transformacao se aplica a PARTICIPACAO, nao aos niveis atras dela.** MM3 e a media de tres
+  participacoes, nao a razao de duas medias; as duas diferem na quarta decimal do mes corrente,
+  o que passa em silencio se o teste comparar contra so uma delas. O jeito de garantir isso sem
+  um caminho de codigo separado e materializar a serie derivada **sob a mesma convencao de chave
+  das publicadas** (aqui `corte|cat|medida|share|ajuste` dentro do proprio `D.series`): o
+  transformador e o cache seguem valendo sem saber que a serie e derivada. `12M total` fica
+  desligado (somar doze participacoes nao produz participacao) e o Y/Y sai em **p.p.**
+- **O titulo do eixo tem de nomear o denominador**, e por isso ele e template e nao string:
+  `"share of {raiz} job openings, %"`, com `{raiz}` resolvido contra o rotulo da raiz daquela
+  arvore. Um eixo que diga so "share of the total" nao responde de que total — e num relatorio
+  com tres raizes essa e a pergunta toda. O teste exige o placeholder presente nas seis medidas.
+
+E o cuidado que a redacao do apendice exigiu: **arredondamento da fonte vira erro relativo
+grande quando o denominador e pequeno**. O BLS arredonda todo nivel ao milhar; as irmas somam 100
+com folga de 0,15 p.p. em tudo, menos em *other separations*, cujo total cai a 168 mil e cujo pior
+mes da **1,07 p.p.** Os niveis atras disso estao dentro da tolerancia que a carga exige — a
+amplificacao e o denominador, nao um defeito. Vale medir antes de escrever "somam exatamente".
+
+Coberto por `tests/test_labor_market_us_js.js` §6b, verificado contra seis mutantes (denominador
+compartilhado, `12M total` habilitado, barras desligadas, eixo sem o nome do denominador, MM3 sobre
+os niveis, e a faixa de KPI de volta). O do acumulado mostrou uma lacuna real do teste antes de
+passar: ele era exercitado com **vagas**, cuja pill ja esta desligada pela regra do estoque, entao
+mascarava a regra da participacao — a asserção precisa de uma medida de **fluxo** para dizer algo.
+
+## Uma hierarquia publicada pode ter mais de um EIXO, e o `display_level` não avisa (2026-09-01)
+
+De `analytics/us/labor_market/` ao carregar a CES (o payroll do BLS). O padrão deste projeto
+para árvore sem coluna de pai já estava estabelecido em três fontes — `jt.industry` do JOLTS,
+`cu.item` do CPI, `ce.industry` agora — e é *"o pai é o registro anterior, na ordem de
+`sort_sequence`, com `display_level` um a menos"*. **Na CES ele produz uma árvore errada, e
+não de leve.**
+
+O que muda de figura, e é a lição transferível: a lista publicada não é uma árvore, é **uma
+travessia de várias hierarquias sobrepostas impressa numa coluna só**. Três formas disso, com
+sintomas diferentes:
+
+- **Agregados irmãos que se sobrepõem.** Os quatro nós de nível 1 da CES (Total private,
+  Goods-producing, Service-providing, Private service-providing) somam **257% do total
+  nonfarm**. E como a derivação olha para trás no sort, *Mining and logging* herda *Private
+  service-providing* — mineração dentro de serviços.
+- **Um segundo eixo intercalado.** A CES publica os contratantes de serviços especializados
+  por subsetor NAICS **e**, em paralelo, divididos em residencial/não-residencial, com os dois
+  cortes fechando no mesmo pai. Empilhados dão 163%. Isso não é um nível que faltou, é um eixo
+  — e um eixo não cabe na mesma árvore, do mesmo jeito que "Empr./Tít. LP Externo" não cabia na
+  árvore do BP do relatório cambial.
+- **Um nível que faltou.** `Health care` (NAICS 621,2,3) é impresso como *irmão* dos seus três
+  próprios filhos, e é exatamente a soma deles em 439 meses. Aqui a correção é inseri-lo como
+  pai, o que transforma 177% de sobreposição em dois níveis que fecham.
+
+**As três se distinguem numericamente, não sintaticamente**, e é isso que dá o procedimento:
+
+1. Derive pelo `display_level`, com o topo **declarado** onde ele se sobrepõe.
+2. Meça, para cada pai, `soma(filhos) / pai`. **Sobreposição é sempre erro de árvore** — um
+   pai cujos filhos somam MAIS que ele nunca é dado ruim, é parentesco errado. Cobertura
+   *abaixo* de 100% é legítima (a fonte publica só parte do detalhe) e vira coluna, não exceção.
+3. Para cada sobreposição, teste se algum filho é a soma de um subconjunto dos irmãos. Se for,
+   é um nível que faltou: re-parenteie. Se não for, é um eixo: marque e tire da árvore.
+4. **Deixe o guarda no loader.** A declaração diz o que se afirma e a validação refaz a conta a
+   cada carga — uma re-indentação da fonte não sobrevive em silêncio.
+
+Um detalhe de implementação que custou uma depuração: ao declarar o topo, **reinicie a pilha
+de derivação nos nós declarados**. Sem isso, `Government` (declarado, e com `display_level` 2)
+não reinicia, `Federal` herda o último nível-2 anterior no sort — *Other services* — e a
+cobertura daquele pai vai a **485%** enquanto a do Federal cai a 39%. Nenhum erro.
+
+### E a aditividade é garantia da FONTE só no dado bruto
+
+Segunda metade do mesmo achado, e ela vale para qualquer série dessazonalizada que se pretenda
+empilhar. O BLS dessazonaliza **cada série independentemente** e diz isso em nota de pé. Medido
+nos 284 pais da árvore da CES:
+
+| dado | pior excesso dos filhos sobre o pai | pais acima de 0,05% |
+|---|---|---|
+| sem ajuste sazonal | +0,068% | 1 de 284 |
+| com ajuste sazonal | **+15,5%** | 222 de 284 |
+
+Consequências práticas, nesta ordem:
+
+- **Valide a árvore no dado BRUTO.** Validar no ajustado reprova uma árvore correta — foi o
+  que aconteceu na primeira execução, com 12 pais "sobrepostos" em 100,3-101,7% que não tinham
+  nada de errado.
+- **Meça e GRAVE o desvio do ajustado** em vez de rejeitá-lo (`desvio_sa` na dimensão), para a
+  página poder dizer o tamanho do erro. No topo o BLS *impõe* a aditividade (níveis 0-2 fecham
+  exatos) e no detalhe ela é livre, então a mesma pilha é honesta a um décimo de por cento em
+  cima e não é embaixo.
+- **A nota do card diz isso ao leitor**, porque uma barra empilhada afirma que as partes somam.
+  O mesmo efeito aparece na pesquisa domiciliar: ocupados + desocupados dá 169.093 contra
+  169.094 publicados, e a asserção do teste que exigia igualdade exata estava errada — não o
+  dado.
+- **A tolerância tem duas metades**: o arredondamento da fonte (`0,5 × (k+1)` para k filhos
+  contra um pai arredondado ao milhar) e um piso relativo de 0,1%, que cobre as revisões
+  históricas de séries de 80 anos, onde a absoluta é apertada demais.
+
+### Uma fonte pode não ter "último mês"
+
+Terceira parte, e é o que quebra a checagem de grade. A CES publica os níveis agregados na
+primeira divulgação de um mês e o detalhe fino na seguinte: níveis 0-4 têm o mês novo, o nível
+5 tem 54 de 241 séries, os níveis 6-7 não têm nenhuma. **No mês mais recente, 27 das 555
+folhas têm dado.**
+
+Então uma checagem como a do JOLTS — *levante se os cortes não compartilharem a janela* —
+**reprova um passe correto**, e a página tem de conviver com o degrau em vez de escondê-lo: o
+cabeçalho do gráfico imprime quantas das 839 linhas o mês novo realmente tem, porque um ramo
+profundo lido sem isso parece ter caído a zero. É o mesmo instinto da regra de janela
+incompleta (`analytics/metric_layers.md`), um nível acima: ali o buraco é no tempo, aqui é na
+profundidade.
+
+### Uma razão publicada pode ser o recíproco da citada
+
+Da aba de derivadas do mesmo relatório. O BLS publica a razão vagas/desempregado ele mesmo —
+mas como **desempregados por vaga**. Em jul/2009 a série dele marca 6,50 e a razão citada é
+0,153; são o mesmo número invertido. O guarda pegou a inversão na primeira execução, com erro
+médio de 1,58.
+
+Duas coisas que fazem o guarda valer:
+
+- **Ele existe porque a razão está perto de 1 hoje** (1,05 contra 0,95 publicado). Uma
+  inversão ali não deforma nenhum gráfico, não muda ordem de grandeza e não deixa rastro. É o
+  caso em que "parece certo" é a pior evidência disponível.
+- **Compare na direção em que a fonte publica**, não na sua. O BLS publica com uma decimal,
+  então ali a tolerância é 0,05 — metade do último dígito, não um número escolhido — e o
+  máximo medido é exatamente 0,05. Invertendo para o nosso lado, o mesmo arredondamento vira
+  um erro que depende do nível da razão (1/1,0 contra 1/1,05 é 0,05, mas 1/0,2 contra 1/0,25 é
+  1,0) e o teste passaria a reprovar meses corretos de 2009.
+
+Corolário para qualquer métrica que cruze fontes: **antes de dividir duas séries, procure se a
+fonte já publica a razão.** Se publica, ela é o gabarito; se não, a métrica não tem gabarito
+nenhum e isso precisa estar escrito na página.
+
 ## Related conventions
 
 Brand colors/typography are a separate concern from this rule — see the `project-lis-brand-colors` memory and each dashboard's own `:root` CSS variables.
@@ -271,9 +537,12 @@ per the two notes above. `_bindYAutofit` is unaffected — it reacts to the `plo
 produces exactly as it did to the native buttons'. Promoted into the skill's `design-system.md`
 (`renderQuickRangeButtons()`'s comment, a `.range-pills` container placed after the chart in the Chart
 Container markup, its CSS, and the delivery checklist). `exchange_rate/report.html`'s six
-**data** tabs migrated 2026-08-27 (see the next section — the latent bug surfaced for real there);
-`inflation/report.html` and `exchange_rate`'s three **model** tabs still keep the native selector
-above the chart.
+**data** tabs migrated 2026-08-27 (see the next section — the latent bug surfaced for real there),
+`fiscal_policy/report.html` on 2026-08-28 (see "Fifth face" below), `economic_activity/report.html` on
+2026-09-01 (see "Sixth face" below — that one had the HTML buttons already, just above the chart).
+Still on the native selector, above the chart: `inflation/report.html` (4 layout factories),
+`exchange_rate`'s three **model** tabs (`PLOTLY_RANGE_SELECTOR`) and
+`exchange_rate/models/real_rates_comparison_template.html`.
 
 ### The latent bug is not latent: measured, in production (2026-08-27)
 
@@ -338,6 +607,57 @@ Two rules come out of it, and they generalize past this report:
 Covered by `tests/test_fx_report_js.js` §2b, which snapshots the window each chart applies on first
 paint — before the test itself clicks anything — and requires it to sit within half a step of the
 plotted data at both ends, for all 21 charts. Verified to fail on the pre-fix file.
+
+### Fifth face: a report that was never on the list (2026-08-28)
+
+`analytics/brasil/fiscal_policy/report.html`, from a user screenshot of the Impulso tab — empty band
+at **both** ends of a 15-year quarterly bar chart. It had never appeared in the list above because
+nobody had looked: it carried the native `xaxis.rangeselector` inside its single shared
+`mkTimeseriesLayout()`, so **all 10 charts across its four data tabs** had it, and the report has no
+chart that isn't a time series along X. Fixed by the standard migration (`_rangeOptions()` /
+`_ensureRangeBar()` / `finishChart()`, ported from `exchange_rate`), plus the fourth face's rule —
+the first paint applies "Tudo" explicitly instead of leaving the axis on `autorange`.
+
+Two things worth carrying past this report:
+
+- **Bars pad more than lines.** Plotly reserves room for the whole bar *and then* pads, so the
+  "a few percent of the span" figure from the line-chart cases understates it: here it was ~0.75
+  year on each side of a 15.5-year span, ~4.8%. Most impulse/contribution charts are bars, which is
+  where this reads worst — a blank column where a quarter should be.
+- **Grep for `rangeselector:` with the colon, not the bare word.** After a migration the word
+  survives in the comments explaining why the component left, so a bare-word sweep reports six
+  reports as unfixed that are fine. The property is what matters.
+
+Covered by `tests/test_impulso_rtn_js.js` §11 (14 assertions), which asserts on the window each
+button produces and on the window the **first paint** applies — verified to fail on a build with the
+native selector restored.
+
+### Sixth face: the chart the shared layout factory doesn't build (2026-09-01)
+
+`analytics/brasil/economic_activity/report.html` was the *origin* of the HTML-button pattern (its own
+`_quickRangeOptions()` comment is where the two rangeselector failures were first written down), so it
+looked done. It wasn't, in two places, and both generalize.
+
+- **The buttons were above the chart** — inserted with `card.parentNode.insertBefore(bar, card)`, i.e.
+  outside the card entirely, because they predate the 2026-08-27 "buttons go BELOW" rule. Moving them
+  means the bar becomes a child of the card, appended **after** the chart div. Worth asserting on the
+  DOM, not on the CSS: the test that matters is `card.children.indexOf(foot) > card.children.indexOf(chartDiv)`.
+- **Its 6 heatmaps never went through the shared layout factory**, so they never got the computed
+  first-paint range that fixed the fourth face for every other chart — they were still on `autorange`,
+  in a report whose line and bar charts had been fixed months earlier. **A per-chart-type layout
+  branch is where an axis fix leaks out**: grep for every place a layout object is built, not for the
+  callers of the factory.
+
+And the reason the heatmaps' extent was wrong even after being handed to the shared code: **in a
+heatmap `y` is the row LABELS, not values**, so `t.y[i] != null` answers "does column *i* have data?"
+only for the first N columns, N = number of categories. On a 4-row × 122-quarter panel that reports
+the first 4 quarters as the entire series. Test `z` before `y` — the same guard the shared
+`y_autofit.js` already carries for a different reason.
+
+Covered by `tests/test_economic_activity_js.js` §2–§4 (the rodapé-after-chart ordering, the window each
+of the 5 buttons produces on all 21 time-series charts, and the first-paint window in a **second,
+clean vm context** so no click has happened yet). Verified to fail on mutants that put the bar back
+above the chart and that restore `autorange`.
 
 ## A hierarchical table that holds a STOCK needs a different aggregator (2026-08-27)
 
@@ -462,6 +782,135 @@ realized PNAD), and that the trade-balance median is not the difference of the e
 medians (3,4 US$ bi apart across 8.310 survey dates). Both read as obvious either way; only one of
 each pair is true.
 
+**Fourth report, and the rule the first three never needed: the key has to be NAMESPACED**
+(2026-08-28, `analytics/brasil/fiscal_policy/report.html`, 99 entries covering 184 rows across 10
+tables). The first three reports each had one table shape per concept, so a flat `key → {full, desc}`
+map was safe. This one has **two trees in the same tab using the same keys for different things**:
+`receita_total` and `despesa_total` exist in the GFSM tree and in the RTN tree, and the two
+methodologies disagree on where constitutional transfers go — GFSM books them as expense (code 26),
+RTN deducts them from revenue. A flat map makes one table explain the other, and **nothing throws**:
+the card opens, with the wrong text. Store `namespace:key` and let each table declare its own.
+
+Two extensions that came with it and are worth having in any port big enough to need namespaces:
+
+- **Accept a LIST of namespaces, tried in order.** When a second table reuses the same tree but
+  changes what a few nodes *mean* (here: the rubricas become *contribution to the impulse*, signed),
+  the specific ones get their own entry and the ~30 others fall through to the shared definitions.
+  `['imprtn', 'rtn']`. Without it those 30 texts get duplicated and drift apart.
+- **On a miss, retry with the suffix after the last `__`.** One category definition then serves all
+  four spheres (`geral__folha`, `central__folha`, …) and one DLSP item serves its `interna__` /
+  `externa__` / `total__` variants. That is why 99 entries cover 184 rows.
+
+**Fifth report, and the two things it adds (2026-08-28,
+`analytics/brasil/credit/report.html`, 165 entries covering 378 of 409 rows across 11 tables).** Same
+namespaced map as `fiscal_policy`, and the port is worth reading for two additions.
+
+- **`unit` on the ENTRY, overriding the table's unit function.** The four reports before this one had
+  one unit per table, so reusing the Y-axis function was enough. The Inadimplência tree here carries
+  three at once — inadimplência (>90d), *saldo de maior risco* (% of the PJ balance, Res. CMN 2.682
+  and 4.966) and *atraso 15-90 dias*. Widening the axis title to cover all three would make it wrong
+  for every row; the honest fix is a per-row override that wins over the table's function, with the
+  function still serving the rows that do share the table's unit.
+- **The suffix fallback earns its keep when the same tree is reused across METRICS.** 51 shared
+  entries cover ~200 rows, because the BCB modality tree repeats under four prefixes in four tabs
+  (saldo, concessão, taxa, inadimplência). It works for one reason worth stating: **the card
+  describes what the row IS, and the unit line says what is being measured** — so one text serves a
+  stock, a flow, a rate and a default rate. When that split doesn't hold, the row needs its own
+  namespaced entry, which is exactly the Impulso case (every row there means *contribution to the
+  impulse*, not the stock the same key names in Saldo).
+
+And, as in every port so far, **writing the cards found a defect the page already had**: the Taxa &
+Spread chart titled both trees `% a.a.`, but a spread is the difference between two rates and is
+measured in p.p. Nothing had contradicted it before, because nothing else on the page stated the
+unit twice. The card would have. Both now read the same `taxaYTitle()`.
+
+**And test for the orphan key, not just for the card.** A typo in a key produces a button that never
+gets created — no error, no visible gap, nothing to notice. Resolve every key in the map against the
+real trees and require zero orphans. That assertion, on its first run, caught two `full` fields that
+merely repeated their own row label (rule 3 above, violated) and it was verified to fail on an
+injected `pessoal_encargos_socias`. Related, from the same round: after the button exists, the label
+cell's `textContent` includes the "i" — the gotcha this file already warned about, which surfaced in
+the *test* rather than in the page. Read text nodes only; filtering by tag becomes a list of
+exceptions that ages. (Confirmed the hard way in the credit port: the two pre-existing harnesses there
+filtered `tag !== 'span'`, which had covered `tree-toggle` and `row-n` and silently stopped covering
+anything once the button arrived — and their DOM stub had no `setAttribute`, so the whole page threw
+on load. A new element in a shared cell breaks every harness that reads that cell.)
+
+**One more test trap, from the same port: match rendered rows to tree nodes by POSITION, not by
+label.** "Outros", "Pessoa Jurídica" and "Pessoa Física" appear dozens of times in these trees, so
+`nodes.find(n => n.label === row.label)` checks the wrong node and reports a card as missing where it
+is present. Expand every group first, then zip the flattened tree against the rendered rows — and
+assert the two counts match before zipping, so the day they diverge you find out.
+
+**Sixth report, and the first with no hierarchical table to hang the cards on** (2026-09-01,
+`analytics/brasil/economic_activity/report.html`, 122 entries covering 100 checkbox items in 6
+dropdowns, the 12 rows of the Renda e Poupança cascade and 26 KPI-card labels). Everything the five
+earlier ports established carried over unchanged — namespaced keys, content outside the tree, unit as
+a function, entry-level `unit` winning. What's new is the **host**, and it costs three things:
+
+- **A checkbox dropdown item is a `<label>`, and a button inside a label activates the checkbox.**
+  Both guards are needed on the `i` button's click: `stopPropagation` (so the label never sees the
+  event and can't forward it to its control) *and* `preventDefault`. Neither alone is enough to reason
+  about safely, and the failure is silent-but-visible — the card opens and the series toggles.
+- **You cannot hang anything off a list built with `innerHTML`.** The multiselect had to be rebuilt
+  with `createElement` first. That is the actual precondition for this port, and it pays twice: the
+  checkbox array replaces a `querySelectorAll('input:checked')` and the panel becomes testable
+  without a real browser.
+- **Put the short label in its own `<span>`.** With the button appended to the label, the label's
+  `textContent` includes the "i" — the gotcha this file already warns about, except here the reader
+  is the *legend text and the test*, not a table cell. A dedicated `.ms-label` span gives the clean
+  string without a text-node filter at every call site.
+
+Two smaller things worth carrying: a **KPI-card label** works as a host, but the label is rewritten by
+the code that flips "Carrego Estatístico" to "Var. Realizada" — so the button must be stripped
+*before* the text is read and recreated after, every render, or the second render bakes the "i" into
+the label. And rule 3 (`full` only when it differs from the label) was violated **31 times** on this
+map's first test run, which is the argument for asserting it rather than trusting the writing: at ~120
+entries the eye stops catching it. Ten of those 31 had no `desc` at all, so removing the duplicate
+`full` would have silently deleted the card — the fix is to write the explanation, not to drop the
+entry.
+
+## Two series in one chart must be measurably distinguishable (2026-09-01)
+
+User request, from `analytics/brasil/economic_activity/report.html`: *"a cor de consumo das famílias e
+de exportações está muito próximo, faça um cor diferente para exportações. Coloque esse cuidado da
+skill /lis-dashboard para sempre garantir que as cores não serão confundidas."*
+
+Auditing that one pair found the actual defect, which was bigger and duller than "too close": the PIB
+tab's **default view had three pairs of literally identical colours**. Oferta and demanda had been
+coloured independently, each list cycling its own array from the same 7-colour palette — reasonable,
+until you notice the multiselect lets a user check across both. The reported pair was ΔE2000 **13,0**;
+the three worse ones were **0,0**.
+
+Four things worth carrying:
+
+- **"Too close" is a measurement.** ΔE2000 ≥ 20 between any two series that can share a chart, with the
+  threshold *calibrated against published palettes* rather than picked: Okabe-Ito's own worst pair is
+  21,7 and Tol bright's is 20,5, so 20 is "as separable as the references". The LIS palette was
+  rebuilt to close at 20,8 — 14 colours, brand anchors kept.
+- **The colour must come from POSITION, not from a literal per category.** A literal is what let two
+  lists collide; and a per-list cycle can't know about the other list. `assignSeriesColors(cats,
+  defaults)` walks the default-checked series first, so the view almost everyone sees is the one with
+  the most separated colours. Changing one series' colour becomes reordering, and the guarantee covers
+  the whole list instead of the pair someone happened to look at.
+- **Past ~13 series, add a channel instead of hues.** No published qualitative palette exceeds 8–9;
+  this one gets 13 by relaxing colourblind-safety. Beyond that the palette restarts and `line.dash`
+  changes. That makes PIM's 30 categories work — and it needs its own assertion, because **no default
+  view reaches 13**, so a test that only inspects the initial render passes with `dash` deleted
+  (confirmed on a mutant).
+- **Colourblind safety is a weaker guarantee than it sounds, and the brand caps it.** Under
+  deuteranopia/protanopia the LIS gold × orange pair collapses to ΔE 5,4 and no choice of the other
+  twelve colours fixes it — both are brand anchors. Worth stating rather than papering over: on the
+  same measure Okabe-Ito falls to 9,1 and Tol bright to 1,2. Report the number; don't gate on it.
+
+Covered by `tests/test_economic_activity_js.js` §8 (CIEDE2000 ported to ~50 lines of JS, checked
+against the Python used to pick the palette), which asserts per chart on the traces actually plotted,
+and separately with all 30 PIM categories checked. Verified to fail on a mutant that duplicates a
+palette entry and on one that drops `dash`. Promoted into the skill:
+`.claude/skills/lis-dashboard/references/design-system.md` gained a "Cores para séries múltiplas"
+section with the palette, `assignSeriesColors()` and `deltaE()`, and `SKILL.md` plus the delivery
+checklist carry the rule.
+
 ## Every chart carries its own header (2026-08-27)
 
 "Se eu enviar o gráfico para alguém, a pessoa não fará a mínima ideia do que se passa, terá que ler os
@@ -498,6 +947,28 @@ and source left empty in the HTML, since JS fills them), and both `SKILL.md` and
 carry the rule. The skill's dashboards drive the subtitle off their series toggles instead of a row
 tree, but the pruning rules are identical.
 
+**Second report, and the two things a 25-chart page needs that a 17-chart one didn't** (2026-09-01,
+`analytics/brasil/economic_activity/report.html`):
+
+- **Title and source belong in a per-div map, not in the markup.** `CHART_META[divId] = {title,
+  source}` plus one `_ensureChartFrame(divId)` that builds the three lines inside the card. Writing 25
+  header blocks by hand into the HTML means 25 chances for a title to drift from what the chart
+  actually plots, and the header has to be *inside* the card anyway (a screenshot of the chart region
+  won't include the section `<h2>`) — so it is being built in JS regardless.
+- **With more than about three series the subtitle should say the COUNT, not the names.** This report's
+  PIB tab can plot 22 lines; joining their names produces a paragraph. But the pruning rule in the
+  original still applies to the reason: these charts have a legend below the plot, so the names are
+  already in the screenshot. `N séries (ver legenda)` is the honest fragment. `labor_market` joins
+  names because its host is a table with no legend — the rule is "don't say it twice", not "always
+  list them".
+
+One case the original didn't cover: a chart whose X axis **isn't** time (here the four Momentum × Nível
+scatters) still gets the header, but its "when" is a single date and its unit is *two* units. The date
+goes in the subtitle (`Um ponto por categoria na leitura de Jun/2026`) and both axes are named there
+(`eixo X: … · eixo Y: …`) — same instinct as the mixed-unit table rule: name both rather than pick one.
+Which also means the source line legitimately carries no period range, so a test that requires one has
+to exempt them.
+
 ## Chart axis titles say what the series measures (2026-08-27)
 
 Same review, same report: "coloque as unidades no grafico. Por exemplo, a taxa de desocupação mede o
@@ -531,3 +1002,91 @@ meses`). And the numerators/denominators that go in those strings were **reconst
 source's own level series and checked** rather than copied from documentation — which is how two of them
 turned out to be wrong on the first pass (see the report's `pnad_tab.py` docstring). Promoted into
 `design-system.md` as "Unidade no eixo Y".
+
+## Sétima face: o relatório irmão que ninguém tinha olhado (2026-09-01)
+
+`analytics/us/inflation/report.html` **tem as pills de range ACIMA do gráfico**, nos três charts
+(`cpi-range`, `cpi-drill-range`, `pce-range`, todos imediatamente antes do respectivo `<div
+class="chart">`). Ele foi construído em 2026-08-26, um dia antes da regra "os botões vão ABAIXO",
+e nunca entrou na lista de migração porque a lista foi escrita olhando os relatórios do Brasil.
+
+Nada nele está quebrado — os botões calculam `[from, to]` dos dados reais, inclusive o "All", e
+não há `rangeselector` nativo. É só a posição. Achado ao construir
+`analytics/us/labor_market/report.html` sobre o mesmo CSS.
+
+A lição de processo, e é a única parte reutilizável: **quando uma regra de UI é promovida, a lista
+de "quem ainda falta migrar" tem de ser levantada por `grep` no repositório inteiro, não escrita de
+memória.** O `grep` que acha este caso é a ordem no HTML, não uma propriedade do JS:
+
+```powershell
+# range-bar ANTES do chart no mesmo card = ainda não migrado
+uv run python -c "import re,pathlib;[print(f) for f in pathlib.Path('analytics').rglob('report.html') if re.search(r'range-bar[^>]*>.{0,80}?<div class=\"chart', pathlib.Path(f).read_text(encoding='utf-8'), re.S)]"
+```
+
+## Um controle cuja validade depende do DADO fica na tela, desligado, com o motivo (2026-09-01)
+
+De `analytics/us/labor_market/report.html`, o relatório do JOLTS. Ele tem um seletor de leitura
+(Mensal / MM3 / MM12 / Acum. 12M / Y-Y) que serve seis medidas, e **uma das seis é estoque**: vagas
+em aberto é a posição no último dia útil do mês, as outras cinco são fluxos do mês inteiro. Somar 12
+meses de vagas dá **12,0×** o nível (medido) e continua parecendo um gráfico de vagas — é a mesma
+armadilha que a árvore de reservas do relatório cambial documenta, agora num seletor em vez de num
+agregador de período.
+
+Três decisões que valem para qualquer dashboard em que a combinação (controle × dado) pode ser
+inválida:
+
+- **A pill fica na tela, desligada, com o motivo no `title`.** Um controle ausente não responde
+  "onde está o acumulado de 12 meses?"; um cinza com explicação responde. Mesma escolha do pill de
+  NSA desabilitado na aba PCE de `analytics/us/inflation`.
+- **O que desliga a pill é a AUSÊNCIA do rótulo de eixo daquela combinação**, não um `if` sobre o
+  nome da medida. Aqui `y_acum: None` no payload é o que desliga o acumulado para vagas. A
+  alternativa que parece equivalente — deixar a pill ligada e fazer um `.replace()` no título do
+  eixo — falha em silêncio: o replace não casa, e o gráfico de acumulado sai rotulado com a unidade
+  do mensal.
+- **Ao invalidar o estado, caia de volta explicitamente.** Trocar Nível→Taxa com "Acum. 12M"
+  selecionado tem de voltar para "Mensal", não ficar num acumulado de razões. Sem isso o estado
+  fica válido no objeto e inválido na tela, e o gráfico plota uma quantidade que não existe.
+
+**Corolário para as barras empilhadas:** elas exigem aditividade entre irmãs, então saem para taxa
+(razões contra bases diferentes) e para variação anual (percentuais não somam) — e o motivo entra no
+`title` do mesmo jeito. Sem isso a fábrica empilha alegremente séries que não somam nada, que é o
+mesmo defeito de "It isn't a hierarchy is not a reason to skip the table" por outro caminho.
+
+Coberto por `tests/test_labor_market_us_js.js` §5-§6, que exige a pill desligada, o `title` com o
+motivo, **e que o clique nela não mude o estado** — verificado num mutante que liga o acumulado para
+o estoque e noutro que liga as barras para taxa.
+
+**E o `title` é uma AFIRMAÇÃO sobre o dado: ele envelhece como a prosa de um card** (2026-09-01,
+mesmo relatório). Ao ganhar o tipo "% do total" e a leitura M/M, a pill de barras empilhadas seguia
+desligada no Y/Y com o motivo *"variações percentuais não somam entre irmãs"* — frase verdadeira do
+Y/Y de um **nível** e falsa do Y/Y de uma **participação**, que ali é diferença em p.p. e soma. O
+defeito estava no motivo exibido, na tela, e o corretivo obrigou a escrever a regra de aditividade
+inteira em vez de uma condição por caso:
+
+| | soma entre irmãs? |
+|---|---|
+| nível | sim (e a média dele, a soma dele e o M/M dele) |
+| participação no total | sim — toda irmã divide pela mesma raiz, então M/M e Y/Y em p.p. também somam |
+| taxa | nunca — o denominador é o emprego de cada categoria |
+| **variação %** de um nível | não — as partes não têm % que somem o % do total |
+
+Lido assim, `barrasOk()` virou três linhas, o Y/Y de participação **ganhou** as barras que a regra
+antiga negava, e cada motivo exibido passou a valer para o caso em que aparece. A regra de leitura:
+quando um controle passa a servir um tipo de dado novo, releia os `title` dos estados desligados —
+eles não quebram, só passam a mentir.
+
+**Corolário da mesma rodada: uma leitura "M/M" tem de ser DIFERENÇA, não variação percentual.** Mil
+vagas a mais é "+89"; 89% a mais também é "+89" numa legenda. São dois números com a mesma cara e
+duas ordens de grandeza de diferença, e o único lugar em que a distinção aparece é o título do eixo
+(`change vs. the previous month, thousands` contra `p.p. change vs. the previous month`) — daí a
+asserção ser "o eixo do nível contém 'thousands' e NÃO contém '%'". Vantagem colateral de ser
+diferença: ela herda a aditividade da base, então a barra empilhada continua valendo onde valia para
+o nível, o que uma variação percentual não permitiria.
+
+### E o título do gráfico também é reescrito a cada render, quando a métrica é um seletor
+
+A regra do cabeçalho diz "só o título e a fonte são texto fixo". Isso vale quando cada gráfico é uma
+métrica. Aqui um gráfico serve seis medidas, então o título (`Job openings — by industry`) é
+derivado da pill, exatamente como o subtítulo. A regra de fundo é **"nenhum texto que um clique
+possa contradizer"**, não "o título é sagrado" — o que fica fixo é o que não depende de seletor
+nenhum, e num relatório com seletor de métrica isso é só a fonte.

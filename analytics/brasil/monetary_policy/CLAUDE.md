@@ -598,11 +598,28 @@ comunicação, a armadilha do nome do cenário) e
   tipo de horizonte, a **expansão é o caso mais fácil** (MAE 0,080 pela Focus contra 0,089 do
   ingênuo) e a **revisão o mais difícil** (0,084 contra 0,125), o que aponta o intervalo entre
   âncora e reunião como a variável a explorar antes de qualquer coisa nova.
-- **Os artefatos da previsão não têm job.** `antecipa_copom.salvar()` roda à mão, e o
-  `generate_report.py` só lê o que estiver em `data/`. Se o relatório for regerado sem regravá-los, a
-  previsão fica velha e o único aviso é o `corte_usado` na caixa. Duas saídas: encadear o `salvar()`
-  no início do `generate_report.run()` (custa ~35 rodadas do espaço de estados por geração) ou
-  agendá-lo junto do `bcb_copom` no `release_calendar`. A segunda é a certa; nenhuma foi feita.
+- **Os artefatos da previsão entraram no botão Regerar** (2026-08-31, depois de o usuário regerar o
+  relatório e a previsão continuar a de seis dias antes). `generate_report.py` continua só lendo
+  `data/` — de propósito: encadear `salvar()` dentro do `run()` custaria 36 rodadas do espaço de
+  estados a cada geração. O que mudou é uma camada acima: `domain/dashboards/manifest.yaml` declara os
+  três passos de recálculo deste relatório em `procedures:` (`painel`, `modelo`, `previsao`), e
+  `status.gerar()` — que é o que o botão **Regerar** da aba "Status dashboard" chama — refaz antes os
+  que estiverem atrás. Medido em 2026-08-31: `salvar()` em 50,5s + geração em 15,8s. Os dois passos do
+  modelo são declarados **trimestrais**, então não são refeitos a cada boletim Focus; a previsão é
+  diária.
+  Em paralelo, `antecipa_copom.frescor()` compara o `corte_usado` gravado no artefato com o `MAX` das
+  seis tabelas que `antecipar()` lê, `_load_antecipa()` embute isso em `previsao.frescor`, e a caixa
+  da previsão imprime uma faixa — laranja se o HTML foi feito com artefato velho, verde se em dia.
+  Funciona em arquivo estático, então viaja com o relatório enviado por email.
+  **O texto da faixa foi reescrito em 2026-09-01** (correção do usuário: a prosa dos dashboards
+  não pode ser a nossa conversa sobre eles). Ela não imprime mais nome de tabela nem comando de
+  terminal: `_FONTES_FRESCOR` passou a guardar `(coluna, nome)` — "a pesquisa Focus", "as
+  projeções publicadas pelo Copom" — e `frescor()` devolve `fonte_nome` junto do `fonte_ref`, que
+  segue existindo para o aviso de console da geração. O teste passou a exercitar a faixa laranja
+  **sinteticamente**: ela não aparece no payload de um relatório recém-regerado, que é justamente
+  o estado em que ninguém percebe que o texto dela envelheceu.
+  **Segue pendente** o agendamento (junto do `bcb_copom`), que é o que tiraria a dependência de
+  alguém clicar. Ver `domain/dashboards/CLAUDE.md`.
 
 - **Aba Condições — ampliar o recorte.** As 17 variáveis de hoje cobrem inflação corrente,
   atividade e mercado de trabalho, expectativas e condições financeiras. Fora, todos por falta

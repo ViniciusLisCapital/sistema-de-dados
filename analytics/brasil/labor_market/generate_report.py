@@ -38,10 +38,16 @@ def _load_flat(table: str) -> dict:
     result = {}
     for name, grp in df.groupby("name"):
         grp = grp.sort_values("date")
-        result[name] = {
+        item = {
             "dates":  grp["date"].dt.strftime("%Y-%m-%d").tolist(),
             "values": [None if pd.isna(v) else round(float(v), 4) for v in grp["value"]],
         }
+        # So `mt_caged` tem a coluna: ela marca com fonte='mte' os meses que o
+        # BCB ainda nao publicou e o tampao reconstruiu somando o saldo do
+        # microdado -- ver domain/db/brasil/bcb/mt_caged.py.
+        if "fonte" in grp.columns:
+            item["fonte"] = grp["fonte"].tolist()
+        result[name] = item
     return result
 
 

@@ -142,6 +142,30 @@
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
     .chart-card > div { width: 100%; height: 560px; }
 
+    /* Legenda das faixas de ciclo do Copom (aba Impulso). E um <p>, nao um <div>, de
+       proposito: `.chart-card > div` acima carimba 560px de altura em todo div filho
+       direto do cartao. Os quadradinhos usam o MESMO rgba das faixas do grafico e ficam
+       sobre o mesmo fundo, entao compoem a cor identica sem hardcode -- a borda existe
+       so para o quadrado quase branco continuar sendo um quadrado. */
+    .ciclo-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
+                    padding: 8px 12px 2px; font-size: 11px; color: var(--muted); }
+    .ciclo-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .ciclo-legend i { width: 22px; height: 11px; border-radius: 2px; border: 1px solid var(--border); }
+    .ciclo-legend i.sw-alta   { background: rgba(234, 82, 58, 0.10); }
+    .ciclo-legend i.sw-manut  { background: rgba(120, 126, 145, 0.11); }
+    .ciclo-legend i.sw-queda  { background: rgba(2, 115, 155, 0.10); }
+    .ciclo-legend em { font-style: italic; opacity: 0.8; }
+
+    /* Cabecalho do grafico (regra de .claude/rules/lis-dashboards.md): titulo, o que
+       mede em que unidade, e fonte + janela. Dentro do cartao, para sair no print do
+       grafico. <p> pelo mesmo motivo da .ciclo-legend acima. Preenchidos por JS a cada
+       render -- vazios no HTML de proposito. Hoje so a tabela (d) da aba Impulso os
+       usa; as outras sao anteriores a esta convencao. */
+    .chart-head-titulo { padding: 10px 12px 0; font-size: 14px; font-weight: 600; color: var(--text); }
+    .chart-head-sub    { padding: 2px 12px 0; font-size: 11.5px; color: var(--muted); }
+    .chart-head-fonte  { padding: 2px 12px 0; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+    .chart-head-titulo:empty, .chart-head-sub:empty, .chart-head-fonte:empty { display: none; }
+
     /* ── Controls: quick-range pills ── */
     .ctrl-bar {
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -181,6 +205,35 @@
     .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
     .tree-toggle:hover { color: var(--text); }
 
+    /* ── Botao de informacao + cartao de definicao ──
+       O rotulo da linha e o nome curto; o nome oficial do BCB e a explicacao vivem no
+       cartao, para nao deformar a coluna. UM cartao no <body>, reposicionado a cada
+       abertura -- sao ~250 linhas com cartao em 11 tabelas, e um no por linha seria DOM
+       que quase nunca e visto. */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+      font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+      color: #8a8f9e; background: transparent;
+      border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+      vertical-align: middle; transition: color .15s, border-color .15s, background .15s;
+    }
+    .info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+    .info-pop {
+      position: absolute; z-index: 300; display: none; max-width: 380px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px;
+      text-align: left;
+    }
+    .info-pop.show { display: block; }
+    .info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--lis-azul); line-height: 1.3; }
+    .info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+    .info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .info-pop .info-unit {
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+    }
+
     /* ── Footer ── */
     footer { background: transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
     footer span { color: var(--text2); }
@@ -194,6 +247,28 @@
     }
     @media (max-width: 600px) {
       .kpi-grid, .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
+    }
+      /* ── Texto explicativo: justificado, e sem cap de largura ──────────────────
+       Convenção do projeto desde 2026-09-01, a pedido do usuário: todo texto explicativo
+       e todo texto de apêndice sai JUSTIFICADO e ocupa a largura do bloco que o contém.
+       Tirar o `max-width` em `ch` faz duas coisas de uma vez — cobre o vazio à direita do
+       parágrafo e, ocupando mais linha, deixa o bloco MAIS BAIXO.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       texto abre rios de espaço branco entre as palavras da linha. O que faz a hifenização
+       funcionar é o `lang` no <html> — sem ele o browser não sabe que dicionário usar e
+       não hifeniza nada, então a regra pareceria aplicada e produziria justamente os rios.
+
+       Fica de fora, de propósito: célula de tabela e popover de definição (container
+       estreito é exatamente onde os rios aparecem), linha de metadado em mono (é lista de
+       campos separada por `·`, não prosa) e o que é centralizado por decisão de layout. */
+    .appendix-body,
+    .chart-caption,
+    .note-metodologia {
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
     }
   </style>
 </head>
@@ -231,9 +306,21 @@
       consignado, capital de giro, BNDES, rural, imobiliário etc.), mais cortes estruturais por
       porte de empresa, atividade econômica e tipo de cliente. Clique numa linha com ▸ para
       expandir o detalhe; marque o checkbox de uma ou mais linhas para plotá-las no gráfico abaixo.
+      O botão <strong>i</strong> ao lado de um rótulo abre a definição daquela linha — nome oficial do
+      BCB, o que ela mede e em que unidade; passe o mouse para ver, clique para fixar. Vale em todas as
+      tabelas do relatório.
       <strong>Nível/Y-Y/M-M/T-T</strong> e <strong>Nominal/Real/% PIB</strong> recalculam a coluna de
       valor e o gráfico ao vivo (% PIB só tem a variante Nível) — ver Apêndice para a metodologia
       completa (dessazonalização STL, definição de T/T, deflator usado no Real, PIB usado no % PIB).
+      <br><br>
+      <strong>As faixas de fundo dos dois gráficos são o ciclo da Selic</strong> —
+      <strong style="color:#C2412C">alta</strong>, <strong style="color:#6C7285">manutenção</strong> e
+      <strong style="color:#02739B">queda</strong>, do <code>pm_copom_reuniao</code>. O regime entre duas
+      reuniões é a decisão tomada na primeira delas, e decisões iguais consecutivas viram uma faixa só;
+      não há suavização, então um platô é sempre cinza mesmo cercado por cortes dos dois lados. Aqui o
+      eixo é um <strong>estoque</strong> (ou a sua variação), e não um fluxo: em <strong>Nível</strong> a
+      faixa diz sob que regime aquele saldo foi acumulado, e só nas métricas de crescimento ela fica ao
+      lado de algo que se move no mesmo horizonte da decisão. As mesmas faixas estão na aba Impulso.
     </p>
 
     <section>
@@ -262,7 +349,15 @@
     <section>
       <h2>Evolução — Séries Selecionadas</h2>
       <p class="chart-caption">Marque uma ou mais linhas na tabela acima para plotar aqui — a série muda com os toggles de Nível/Crescimento e Nominal/Real/% PIB.</p>
-      <div class="chart-card"><div id="chart-saldo"></div></div>
+      <div class="chart-card">
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-saldo"></div>
+      </div>
     </section>
 
     <section>
@@ -287,7 +382,15 @@
           <tbody id="amplo-table-body"></tbody>
         </table>
       </div>
-      <div class="chart-card"><div id="chart-amplo"></div></div>
+      <div class="chart-card">
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-amplo"></div>
+      </div>
     </section>
 
   </div>
@@ -361,6 +464,20 @@
       para baixo com a linha ainda positiva significa que aquele segmento <em>subtraiu</em> impulso
       enquanto o agregado seguiu acelerando. Marcar um pai e seus filhos ao mesmo tempo não duplica a
       pilha — o nível mais fino da seleção prevalece e o pai sai das barras.
+      <br><br>
+      <strong>As faixas de fundo são o ciclo da Selic</strong> — <strong style="color:#C2412C">alta</strong>,
+      <strong style="color:#6C7285">manutenção</strong> e <strong style="color:#02739B">queda</strong>. O regime
+      vigente entre duas reuniões é a decisão tomada na primeira delas, e decisões iguais consecutivas
+      viram uma faixa só (fonte: <code>pm_copom_reuniao</code>, 247 reuniões desde 1999). Não há
+      suavização: um platô é sempre cinza, mesmo cercado por cortes dos dois lados — é assim que os
+      14 meses da Selic em 6,50% entre mai/2018 e jul/2019 aparecem como manutenção, e não como
+      continuação do ciclo de queda de 2016-2020.
+      <br><br>
+      <strong>Cuidado ao ler faixa contra barra:</strong> a faixa é um estado pontual (a Selic naquele
+      dia) e o impulso é uma janela de 24 meses — a fórmula usa <em>t</em>, <em>t</em>−12 e
+      <em>t</em>−24. A faixa situa o ciclo em que aquele ponto foi observado; ela não explica a barra
+      que está em cima dela, e a defasagem entre decisão de juros e fluxo de crédito é justamente o
+      que o gráfico deixa você medir a olho.
     </p>
 
     <section>
@@ -378,7 +495,15 @@
           <tbody id="imp-recurso-table-body"></tbody>
         </table>
       </div>
-      <div class="chart-card"><div id="chart-imp-recurso"></div></div>
+      <div class="chart-card">
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-imp-recurso"></div>
+      </div>
     </section>
 
     <section>
@@ -396,7 +521,15 @@
           <tbody id="imp-porte-table-body"></tbody>
         </table>
       </div>
-      <div class="chart-card"><div id="chart-imp-porte"></div></div>
+      <div class="chart-card">
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-imp-porte"></div>
+      </div>
     </section>
 
     <section>
@@ -414,7 +547,82 @@
           <tbody id="imp-ativ-table-body"></tbody>
         </table>
       </div>
-      <div class="chart-card"><div id="chart-imp-ativ"></div></div>
+      <div class="chart-card">
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-imp-ativ"></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>d) Fluxo Financeiro e Impulso de Crédito — conceito do BCB</h2>
+      <p class="note-metodologia">
+        <strong>Outra métrica, não outro corte.</strong> As três tabelas acima partem da variação do
+        <strong>saldo</strong>, então juros acruados, variação cambial e baixas para prejuízo entram no
+        número como se fossem crédito novo. Esta parte do <strong>fluxo financeiro</strong> —
+        <strong>concessões menos pagamentos</strong> —, que só contém dinheiro que trocou de mão. É
+        exatamente a crítica que o BCB faz a Biggs et al. no Estudo Especial 110/2021, e a resposta
+        dele; as duas convivem aqui de propósito.
+        <br><br>
+        <strong>Fluxo</strong> é um nível, em <strong>% do PIB acumulado em 12 meses</strong>, e o
+        <strong>sinal engana à primeira leitura</strong>: negativo significa que famílias e empresas
+        pagaram ao sistema financeiro <em>mais</em> do que tomaram emprestado — que é o caso normal,
+        pela remuneração dos serviços financeiros. Os −0,9% de dez/2024 são o BCB dizendo "o sistema
+        recebeu 0,9% do PIB em recursos líquidos do setor não financeiro".
+        <strong>Impulso</strong> é a variação em 12 meses desse fluxo, em <strong>p.p. do
+        PIB</strong>: positivo = sobrou mais recurso líquido para o setor real do que doze meses
+        antes. Reproduz o número que o próprio BCB publica — o fluxo vai de −2,06% (dez/2023) a
+        −0,93% (dez/2024), impulso +1,13 p.p., contra o "+1,1% do PIB" escrito no boxe.
+        <br><br>
+        <strong>O impulso não é série publicada — o fluxo é.</strong> O impulso de crédito não sai no
+        SGS e não aparece em toda edição: ele veio em <em>boxe</em>, duas vezes desde que o anexo
+        estatístico existe (set/2021 e mar/2025), e a nota de rodapé do primeiro diz que "não há
+        intenção de calcular essas séries de forma recorrente ou sistemática". O que <strong>é</strong>
+        recorrente é o gráfico do fluxo, no capítulo de conjuntura de toda edição — é dele que esta
+        tabela vive, e o impulso é calculado aqui a partir dele.
+        <br><br>
+        <strong>São três séries e só três.</strong> Total, PJ e PF, que é o que o gráfico recorrente
+        publica. O boxe de mar/2025 traz as mesmas três desde jan/2015 e entra por isso — pelo trecho
+        2015-2017, que o gráfico recorrente não alcança em % do PIB. A quebra Livre/Direcionado que o
+        boxe também publica fica <em>fora</em>: ela não se repete, e misturar duas fontes com
+        conjuntos de séries diferentes é o que faria pai e filho caírem em edições distintas e a
+        árvore deixar de fechar. As duas fontes encadeiam — mesma definição, mesma unidade, 85 meses
+        de sobreposição em que diferem só por revisão de vintage (0,09 p.p. em média no total, 0,24 no
+        máximo). Ver Apêndice.
+      </p>
+      <p class="chart-caption">Clique em ▸ para abrir PJ e PF; marque os checkboxes para plotar. PJ + PF reproduzem o Total exatamente (resíduo 0,000000 na fonte). A janela de cada edição são 8 anos e rola um trimestre por vez — a tabela acumula o que já saiu, então o histórico cresce de edição em edição em vez de deslizar junto com a fonte.</p>
+      <div class="ctrl-bar">
+        <div class="pill-group" id="imp-fluxo-medida-group">
+          <button type="button" class="pill active" data-variant="fluxo">Fluxo (% do PIB)</button>
+          <button type="button" class="pill" data-variant="impulso">Impulso (p.p. do PIB)</button>
+        </div>
+        <div class="pill-group" id="imp-fluxo-freq-group">
+          <button type="button" class="pill active" data-freq="m12">Mensal (12m)</button>
+          <button type="button" class="pill" data-freq="anual">Anual (dez)</button>
+        </div>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="imp-fluxo-table">
+          <thead id="imp-fluxo-table-head"></thead>
+          <tbody id="imp-fluxo-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card">
+        <p class="chart-head-titulo" id="imp-fluxo-h-titulo"></p>
+        <p class="chart-head-sub" id="imp-fluxo-h-sub"></p>
+        <p class="chart-head-fonte" id="imp-fluxo-h-fonte"></p>
+        <p class="ciclo-legend">
+          <span><i class="sw-alta"></i>Ciclo de alta</span>
+          <span><i class="sw-manut"></i>Manutenção</span>
+          <span><i class="sw-queda"></i>Ciclo de queda</span>
+          <em>faixa de fundo = decisão do Copom vigente naquela data</em>
+        </p>
+        <div id="chart-imp-fluxo"></div>
+      </div>
     </section>
 
   </div>
@@ -734,8 +942,9 @@
           juros acruados, variação cambial de contratos indexados em moeda estrangeira e baixas para
           prejuízo continuam dentro do número. Essa é exatamente a crítica que o BCB faz a Biggs et al.
           no Estudo Especial 110/2021 ("Fluxo financeiro e impulso de crédito"), onde constrói uma
-          versão limpa a partir do SCR — que depende de dados de juros, câmbio e baixas que o BCB não
-          publica e que, por isso, não está neste relatório. Implicação de leitura: uma linha pode
+          versão limpa a partir do SCR. Essa versão <strong>está na tabela (d)</strong> desta aba, no
+          alcance que o BCB publica dela — o item seguinte do Apêndice explica o que ela ganha e o que
+          ela perde em troca. Implicação de leitura: uma linha pode
           marcar impulso positivo apenas por <em>repricing</em> (juros altos inflando o estoque) sem
           nenhum crédito novo. Vale para o total e vale dentro de cada célula.<br><br>
 
@@ -755,6 +964,88 @@
           +2,78); e a versão mensal cruza zero em nov/2021 (+0,08), o mês que o post cita como de
           neutralidade. As diferenças residuais em 2020 (total +4,29 aqui vs. +4,4 publicado) são
           revisões do BCB no saldo e no PIB desde a publicação do post, não divergência de método.
+        </div>
+      </details>
+
+      <details>
+        <summary>Aba Impulso, tabela (d) — Fluxo financeiro e impulso no conceito do BCB</summary>
+        <div class="appendix-body">
+          <strong>Definição.</strong> <code>Fluxo(t) = Concessões(t) − Pagamentos(t)</code>, acumulado
+          em 12 meses e dividido pelo PIB nominal de 12 meses — o volume líquido de recursos que o
+          sistema financeiro transferiu ao setor não financeiro. O <strong>impulso</strong> é a
+          variação desse fluxo: <code>I(t) = Fluxo(t) − Fluxo(t−12)</code>, em p.p. do PIB. O BCB
+          apresentou as duas no boxe <em>"Fluxo financeiro e impulso de crédito"</em> do Relatório de
+          Inflação de set/2021 e as atualizou no boxe <em>"…em 2024"</em> do RPM de mar/2025.<br><br>
+
+          <strong>Por que ela existe ao lado da métrica de Biggs et al.</strong> A de cima parte da
+          variação do saldo; esta parte do fluxo de caixa. A diferença é a nota 10 do próprio boxe de
+          2021: <em>"o indicador apresentado diferencia-se por excluir da variação do saldo os efeitos
+          não decorrentes dos fluxos de concessão e pagamento, ou seja, juros, variação cambial e
+          baixas para prejuízo"</em>. Em troca da limpeza conceitual, esta série é mais curta
+          (2015-01, contra 2009-03) e tem três níveis, não modalidade/porte/atividade.<br><br>
+
+          <strong>O sinal negativo é o normal.</strong> O fluxo é usualmente negativo — o setor real
+          paga ao SFN mais do que toma emprestado, pela remuneração dos serviços financeiros. Ler
+          −0,9% do PIB como "o crédito encolheu" é erro: significa que o sistema recebeu 0,9% do PIB
+          em recursos líquidos, e o que interessa para atividade é a <em>variação</em> disso, que é o
+          impulso. Em 2024 o fluxo melhorou de −2,1% para −0,9% do PIB, ou seja impulso de
+          +1,1 p.p. — positivo, com o fluxo ainda negativo o ano inteiro.<br><br>
+
+          <strong>Pagamentos são estimados, não observados.</strong> O BCB não os mede: deriva-os da
+          identidade de decomposição do saldo — <code>Saldo(t) = Saldo(t−1) + Concessões + Juros
+          acruados + Atualização cambial − Pagamentos − Baixas para prejuízo</code>, reordenada para
+          isolar os pagamentos. A nota 1 do boxe é explícita: <em>"não há intenção de calcular essas
+          séries de forma recorrente ou sistemática"</em>. Consequência prática: <strong>não dá para
+          reconstruir a série por fora</strong> — concessões estão no SGS, mas juros acruados, câmbio
+          e baixas não são publicados.<br><br>
+
+          <strong>De onde vem a série desta tabela.</strong> Do gráfico "Fluxo financeiro acumulado em
+          12 meses" (% do PIB, colunas PJ/PF/Total) que sai no capítulo de conjuntura de <em>toda</em>
+          edição do RPM, mais o trecho <strong>2015-2017</strong> do boxe de mar/2025, que publica as
+          mesmas três séries e é o único jeito de ir antes de 2018 nesta unidade. O que fica de fora do
+          boxe é a quebra Livre/Direcionado dentro de PJ e PF — não por ser pouco útil, mas porque duas
+          fontes com <em>conjuntos de séries diferentes</em> põem pai e filho em edições distintas
+          assim que a mais nova sobrepõe o trecho comum, e a árvore deixa de fechar (medido: resíduo de
+          0,095 p.p. em PJ e 0,196 em PF). Com as duas publicando as mesmas três, o problema não
+          existe: cada edição escreve as três de todos os seus meses de uma vez.<br><br>
+
+          <strong>As duas fontes encadeiam.</strong> Mesma definição, mesma unidade, 85 meses de
+          sobreposição (jan/2018 a jan/2025) em que diferem só por revisão de vintage: PJ 0,038 p.p. em
+          média e 0,095 no máximo, PF 0,059 e 0,196, Total 0,090 e 0,241. Nenhuma correção de nível é
+          aplicada — deslocar o trecho antigo para casar com o novo inventaria dado que ninguém
+          publicou. Como a edição corrente vence na sobreposição, a emenda visível fica onde começa a
+          janela dela (mar/2018 hoje) e o degrau ali é de <strong>0,343 p.p. no total</strong>, o 79º
+          percentil dos passos mensais da própria série, num trecho que sobe de −5,92 a −4,60 em volta
+          — ou seja, não se vê. No <em>impulso</em> é que ela importa: os 12 pontos cuja janela de 12
+          meses cruza a emenda carregam essa revisão.<br><br>
+
+          <strong>Só a leitura em % do PIB, e isso não é escolha estética.</strong> O mesmo gráfico
+          recorrente saía em <em>R$ bilhões deflacionados</em> até a edição de dez/2025 e passou a % do
+          PIB em mar/2026. A versão em R$ vem "em reais do mês da edição", com base de deflator
+          diferente a cada trimestre, e encadear duas edições ali exige rebasear — medido entre
+          set/2021 e mar/2025, o fator implícito é 1,266 contra 1,221 de IPCA no período, ou seja o
+          rebaseamento sozinho não fecha. Em % do PIB o problema não existe.<br><br>
+
+          <strong>A janela é móvel e a tabela acumula.</strong> Cada edição publica 8 anos que rolam
+          um trimestre por vez. A carga é <em>upsert</em>, não substituição: a edição nova reescreve
+          os meses que cobre e os anteriores, que ela já não publica, ficam. Então o histórico cresce
+          de edição em edição em vez de deslizar junto com a fonte, e a coluna <code>vintage</code>
+          registra de qual edição veio cada mês. Isso também mantém a aditividade sem regra nenhuma:
+          uma edição escreve as 3 séries de todos os seus meses de uma vez, então um mês qualquer tem
+          sempre as 3 vindas da <em>mesma</em> edição. Quando a janela da edição corrente passar de
+          jan/2025, o boxe deixa de ser sobreposto na parte de cima e sobra só pelo trecho
+          2015-2017.<br><br>
+
+          <strong>Aditividade.</strong> Exata na fonte, conferida a cada carga: PJ + PF = Total,
+          resíduo máximo 0,000000. A carga <em>falha</em> em vez de gravar se isso deixar de valer.
+          Vale a mesma regra de empilhamento da tabela (a): um nó marcado que tenha descendente
+          marcado sai das barras.<br><br>
+
+          <strong>Precisão.</strong> O gráfico recorrente publica com 1 casa decimal (−3,8; −4,2) e o
+          boxe com precisão cheia (−2,062), então o impulso carrega até ±0,1 p.p. de arredondamento na
+          parte recente. Sobre um impulso que se move em pontos percentuais inteiros é ruído de
+          leitura, não de sinal — mas não leia diferenças de 0,1 p.p. entre dois meses como
+          informação.
         </div>
       </details>
 
@@ -1332,7 +1623,12 @@ function _ensureQuickRange(divId, dates) {
 
 // ── Chart renderers ───────────────────────────────────────────────────────────
 // specs: [{dates, values, label, color}] -- one line per pre-computed series.
-function renderLineChart(divId, specs, yTitle, height) {
+// `comCiclos` e opt-in por chamada, nao um default: as faixas de ciclo da Selic sao uma
+// leitura util onde o eixo Y e um agregado de credito lido contra a politica monetaria
+// (Saldo, Credito Ampliado, Impulso) e sao so ruido colorido nos graficos que ja tem
+// a Selic desenhada por cima (Inadimplencia) ou cujo eixo e ele proprio uma taxa de
+// juros (Taxa & Spread). Ligar aqui por default pintaria os 5 graficos de uma vez.
+function renderLineChart(divId, specs, yTitle, height, comCiclos) {
   var traces = specs.map(function(s) {
     return {
       type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
@@ -1340,9 +1636,12 @@ function renderLineChart(divId, specs, yTitle, height) {
       hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
     };
   });
-  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
+  var dates = _unionDates.apply(null, specs);
+  var layout = mkTimeseriesLayout(yTitle, height);
+  if (comCiclos) layout.shapes = _ciclosShapes(dates);
+  Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
-  _ensureQuickRange(divId, _unionDates.apply(null, specs));
+  _ensureQuickRange(divId, dates);
 }
 // specs: [{dates, values, label, color}] -- stacked bar composition over time.
 function renderStackedBarChart(divId, specs, yTitle, height) {
@@ -1368,11 +1667,54 @@ function renderStackedBarChart(divId, specs, yTitle, height) {
 // e negativos abaixo -- e so assim que o topo liquido da pilha coincide com a linha do
 // total, que e justamente a leitura visual que essa aba existe para dar. _bindYAutofit
 // ja reconhece os dois modos e refaz o Y somando pos/neg separadamente.
-function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers) {
+// Faixas de ciclo de politica monetaria ao fundo. As cores sao de propriedade da
+// aparencia e vivem aqui; a classificacao das datas e de propriedade do dado e vem
+// pronta do Python (impulso_tab.build_ciclos -- inclusive o recorte a janela plotada,
+// sem o qual uma faixa de 1999 esticaria o eixo X). Alfa baixo e `layer: 'below'`: a
+// faixa e pano de fundo, tem que se ler sem competir com a barra que esta em cima dela.
+// Os mesmos rgba estao no CSS de `.ciclo-legend` -- se mudar um, mude o outro.
+var CICLO_CORES = {
+  alta:       'rgba(234, 82, 58, 0.10)',
+  manutencao: 'rgba(120, 126, 145, 0.11)',
+  queda:      'rgba(2, 115, 155, 0.10)',
+};
+// `dates`: a uniao ORDENADA das datas efetivamente plotadas -- e o recorte tem de sair
+// DAI, nunca do payload. Os graficos que usam as faixas (Saldo, Credito Ampliado e as 3
+// tabelas de Impulso) compartilham uma lista de ciclos so, mas comecam em anos
+// diferentes -- porte e atividade so em 2012 --, e uma shape com xref:'x' entra no
+// autorange do Plotly: emitir a faixa de 2000 no grafico de porte puxaria o eixo 12 anos
+// para tras e o abriria com faixa de cor e nenhum dado. Mesma regra ja documentada em
+// .claude/rules/lis-dashboards.md -- derive o extent do que o grafico tem, nao do que o
+// payload traz.
+function _ciclosShapes(dates) {
+  var ciclos = ((typeof D !== 'undefined' && D.ciclos) || []);
+  if (!dates || !dates.length) return [];
+  var lo = dates[0];
+  // Meia barra mensal de folga na direita: sem ela a faixa para no centro do ultimo mes
+  // e deixa metade da ultima barra sem pintar. 15 dias cabem dentro da largura da
+  // propria barra, entao isso nao estica o eixo.
+  var hi = new Date(Date.parse(dates[dates.length - 1] + 'T00:00:00Z') + 15 * 864e5)
+             .toISOString().slice(0, 10);
+  var out = [];
+  ciclos.forEach(function(c) {
+    if (c.ate <= lo || c.de >= hi) return;
+    out.push({
+      type: 'rect', xref: 'x', yref: 'paper', y0: 0, y1: 1,
+      x0: c.de < lo ? lo : c.de, x1: c.ate > hi ? hi : c.ate,
+      fillcolor: CICLO_CORES[c.tipo] || 'rgba(0,0,0,0)', line: {width: 0}, layer: 'below',
+    });
+  });
+  return out;
+}
+// `unit`: sufixo do hover. Default 'p.p. do PIB' (as 3 tabelas de Biggs et al.); a 4a
+// tabela troca para '% do PIB' quando mostra o FLUXO, que e um nivel e nao uma variacao
+// -- sem isso o hover afirmaria a unidade errada em metade dos estados do seletor.
+function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers, unit) {
+  var u = unit || 'p.p. do PIB';
   var traces = bars.map(function(s) {
     return {
       type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
-      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+      hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:+.2f} ' + u + '<extra></extra>',
     };
   });
   if (lineSpec) {
@@ -1380,13 +1722,15 @@ function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers) {
       type: 'scatter', mode: withMarkers ? 'lines+markers' : 'lines', name: lineSpec.label,
       x: lineSpec.dates, y: lineSpec.values,
       line: {color: C.azul, width: 2.5}, marker: {color: C.azul, size: 5},
-      hovertemplate: '<b>' + lineSpec.label + '</b><br>%{x}<br>%{y:+.2f} p.p. do PIB<extra></extra>',
+      hovertemplate: '<b>' + lineSpec.label + '</b><br>%{x}<br>%{y:+.2f} ' + u + '<extra></extra>',
     });
   }
-  var layout = Object.assign(mkTimeseriesLayout(yTitle), {barmode: 'relative', bargap: 0.15});
+  var dates = _unionDates.apply(null, bars.concat(lineSpec ? [lineSpec] : []));
+  var layout = Object.assign(mkTimeseriesLayout(yTitle),
+                             {barmode: 'relative', bargap: 0.15, shapes: _ciclosShapes(dates)});
   Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
-  _ensureQuickRange(divId, _unionDates.apply(null, bars.concat(lineSpec ? [lineSpec] : [])));
+  _ensureQuickRange(divId, dates);
 }
 
 // ── Tab renderers ──────────────────────────────────────────────────────────────
@@ -1424,6 +1768,538 @@ function fmtQuarterShort(dateStr) {
   var p = dateStr.split('-'), y = p[0].slice(2), m = parseInt(p[1], 10);
   return 'T' + (Math.floor((m - 1) / 3) + 1) + '/' + y;
 }
+// ── Cartoes de definicao das linhas (padrao .claude/rules/lis-dashboards.md) ──
+// O rotulo da linha e o nome CURTO; o nome oficial do BCB e a explicacao vivem num
+// cartao que abre no hover e fixa no clique. UM cartao no <body>, reposicionado a cada
+// abertura -- sao ~250 linhas com cartao espalhadas por 11 tabelas em 6 abas.
+//
+// A CHAVE E NAMESPACED, e aqui isso nao e zelo: `saldo_livre_pj` existe na aba Saldo
+// (estoque de credito livre PJ) e na aba Impulso (contribuicao desse estoque ao impulso,
+// em p.p. do PIB), e `porte__mpme` existe em tres abas medindo tres coisas. Um mapa de
+// chave nua faz uma tabela explicar a outra e NADA lanca: o cartao abre, com o texto
+// errado. Cada tabela declara os seus namespaces em ordem; o especifico ganha entrada
+// propria e o resto cai no compartilhado.
+//
+// `modal:` e o compartilhado das modalidades do BCB, que se repetem identicas em Saldo,
+// Concessao, Taxa & Spread e Inadimplencia com prefixos diferentes
+// (livre_pj__/livre_pf__/direcionado_pj__/direcionado_pf__). Por isso o lookup tenta
+// tambem o SUFIXO depois do ultimo `__` -- e o que faz ~55 entradas cobrirem ~200 linhas.
+// Chave cheia sempre vence o sufixo dentro do mesmo namespace, que e como
+// `modal:ativ__outros` nao herda o texto de `modal:outros`.
+//
+// A UNIDADE nao esta escrita aqui (salvo onde a linha foge da unidade da tabela): vem da
+// mesma funcao que monta o titulo do eixo Y. Estas tabelas tem seletor de
+// Nivel/Nominal-Real/%PIB e de Fluxo/Impulso -- uma string fixa passaria a mentir no
+// primeiro clique.
+//
+// Fonte das definicoes: as notas de rodape das Tabelas 1-27 da planilha "Tabelas de
+// Estatisticas Monetarias e de Credito" do BCB (nesta pasta) e a Nota de Credito. As
+// afirmacoes numericas foram MEDIDAS contra o payload antes de escritas -- ver as que
+// citam valor.
+var NODE_INFO = {
+  // ── modal: modalidades e cortes do BCB, compartilhados por 4 abas ────────────
+  'modal:capital_de_giro_total': {
+    full: 'Capital de giro — Total',
+    desc: 'Empréstimo sem destinação vinculada a um bem, para o ciclo operacional da empresa (folha, estoque, fornecedores). É a maior modalidade de crédito livre PJ. A quebra por prazo abaixo <b>não</b> inclui o teto rotativo, que sai em linha própria.',
+  },
+  'modal:capital_de_giro_prazo_maior_365_dias': {
+    full: 'Capital de giro — Prazo maior 365 dias',
+    desc: 'Contratos com prazo original acima de um ano. É a fatia que responde a decisão de investimento, não a aperto de caixa.',
+  },
+  'modal:capital_de_giro_prazo_menor_365_dias': {
+    full: 'Capital de giro — Prazo menor 365 dias',
+    desc: 'Contratos de até um ano — a fatia curta, que gira com a necessidade de caixa.',
+  },
+  'modal:capital_de_giro_teto_rotativo': {
+    full: 'Capital de giro — Teto rotativo',
+    desc: 'Limite pré-aprovado que a empresa saca e repõe livremente. Fica fora da classificação por prazo justamente por não ter prazo definido: o saldo anda com o <b>uso</b> do limite, não com contratações novas.',
+  },
+  'modal:cartao_de_credito_total': {
+    full: 'Cartão de crédito — Total',
+    desc: 'Soma das três linhas abaixo. A maior parte não é dívida cara: é a fatura ainda não vencida.',
+  },
+  'modal:cartao_de_credito_a_vista': {
+    full: 'Cartão de crédito — À vista',
+    desc: 'A parte da fatura que <b>não</b> é financiada — compras à vista e o parcelado sem juros do lojista. Entra no saldo porque o banco carrega o gasto entre a compra e o pagamento da fatura. É a maior linha de cartão e a que menos informa sobre estresse do tomador.',
+  },
+  'modal:cartao_de_credito_rotativo': {
+    full: 'Cartão de crédito — Rotativo',
+    desc: 'O que ficou da fatura não paga, financiado a juros; inclui saques. Desde abr/2017 só pode permanecer 30 dias, sendo depois migrado obrigatoriamente para o parcelado — isso desloca saldo entre esta linha e a de baixo <b>sem que nada tenha mudado</b> para o tomador.',
+  },
+  'modal:cartao_de_credito_parcelado': {
+    full: 'Cartão de crédito — Parcelado',
+    desc: 'Parcelamento com juros da fatura, incluindo o rotativo migrado após 30 dias. O parcelado sem juros do lojista não entra aqui — está em "À vista".',
+  },
+  'modal:cartao_de_credito': {
+    desc: 'Na inadimplência o BCB publica o cartão PJ como série <b>única</b>, sem a quebra à vista/rotativo/parcelado que existe em saldo, concessão e taxa. Não é lacuna nossa: a planilha-fonte não traz o detalhe.',
+  },
+  'modal:acc': {
+    full: 'ACC — Adiantamento sobre Contrato de Câmbio',
+    desc: 'O banco adianta em reais o valor de uma exportação já contratada, antes do embarque. É operação denominada em moeda estrangeira: o saldo em R$ sobe quando o câmbio sobe, mesmo sem contratação nova.',
+  },
+  'modal:repasse_externo': {
+    desc: 'Recursos captados pelo banco no exterior e repassados à empresa local. Também denominada em moeda estrangeira — o saldo carrega variação cambial.',
+  },
+  'modal:financiamento_importacoes': {
+    desc: 'Denominada em moeda estrangeira, como o ACC e o repasse externo.',
+  },
+  'modal:financiamento_exportacoes': {
+    desc: 'Financiamento à produção e à comercialização de exportações. Diferente do ACC, o BCB não a marca como operação em moeda estrangeira.',
+  },
+  'modal:antecipacao_de_faturas_de_cartao': {
+    desc: 'O estabelecimento recebe antes do prazo o valor de vendas já feitas no cartão. É desconto de recebível — não financia consumo novo, financia o descasamento entre a venda e o repasse da credenciadora.',
+  },
+  'modal:conta_garantida': {
+    desc: 'Limite rotativo em conta apartada da conta corrente, com garantia (duplicatas, recebíveis). É o equivalente PJ do cheque especial, com colateral — e taxa bem menor por isso.',
+  },
+  'modal:cheque_especial': {
+    desc: 'Limite rotativo na própria conta corrente, sem garantia. Uma das taxas mais altas do sistema; saldo pequeno e muito sensível a estresse de caixa.',
+  },
+  'modal:compror': {
+    desc: 'O banco paga o fornecedor à vista e o <b>comprador</b> paga o banco a prazo. Financia a compra: o tomador é quem compra.',
+  },
+  'modal:vendor': {
+    desc: 'O banco paga o fornecedor à vista e o cliente dele paga a prazo, com o fornecedor como coobrigado. Financia a <b>venda</b> — a operação nasce no fornecedor, não no comprador. É o espelho do Compror.',
+  },
+  'modal:desconto_de_duplicatas_e_recebiveis': {
+    desc: 'A empresa troca um recebível de venda a prazo por caixa hoje. Prazo curto e giro alto: a linha domina as <b>concessões</b> PJ sem dominar o saldo.',
+  },
+  'modal:desconto_de_cheques': {
+    desc: 'Antecipação de cheques pré-datados já recebidos. Mesmo mecanismo do desconto de duplicatas, com o cheque no lugar da duplicata.',
+  },
+  'modal:aquisicao_de_veiculos': {
+    desc: 'Financiamento com o próprio veículo em garantia (alienação fiduciária). Garantia forte, taxa baixa em relação ao crédito pessoal.',
+  },
+  'modal:aquisicao_de_outros_bens': {
+    desc: 'Financiamento de bens que não veículos, com o bem em garantia.',
+  },
+  'modal:arrendamento_mercantil_veiculos': {
+    desc: 'Leasing: durante o contrato o bem é do arrendador, e o cliente paga contraprestações com opção de compra ao final. Concorre com "Aquisição de veículos" pelo mesmo público, com tratamento contábil e tributário diferente.',
+  },
+  'modal:arrendamento_mercantil_outros_bens': {
+    desc: 'Leasing de bens que não veículos — máquinas, equipamentos, TI.',
+  },
+  'modal:outros': {
+    desc: 'Residual: operações que não se classificam em nenhuma modalidade identificada.',
+  },
+  'modal:direcionado_pj__outros': {
+    desc: 'Residual do direcionado, e não é pequeno: além de renegociações, inclui os <b>programas emergenciais</b> — Pronampe e o FGI/Peac. Movimentos bruscos nesta linha costumam ser decisão de política, não demanda.',
+  },
+  'modal:direcionado_pf__outros': {
+    desc: 'Residual do direcionado PF: renegociações e linhas de programa que não têm modalidade própria.',
+  },
+  'modal:credito_pessoal_consignado_total': {
+    full: 'Crédito pessoal — Consignado — Total',
+    desc: 'Empréstimo com desconto direto em folha ou benefício. O risco de inadimplência é muito menor que o do não consignado, e a taxa acompanha — é a maior linha de crédito livre PF depois do cartão.',
+  },
+  'modal:credito_pessoal_consignado_beneficiarios_do_inss': {
+    full: 'Crédito pessoal — Consignado — Beneficiários do INSS',
+    desc: 'Aposentados e pensionistas. Teto de taxa definido pelo Conselho Nacional de Previdência Social, o que faz o volume reagir a decisão administrativa e não só a juros.',
+  },
+  'modal:credito_pessoal_consignado_servidores_publicos': {
+    full: 'Crédito pessoal — Consignado — Servidores públicos',
+    desc: 'Estatutários e celetistas do setor público, com desconto em folha do próprio ente.',
+  },
+  'modal:credito_pessoal_consignado_trabalhadores_setor_privado': {
+    full: 'Crédito pessoal — Consignado — Trabalhadores setor privado',
+    desc: 'A fatia historicamente menor das três, por depender de convênio entre o banco e cada empregador.',
+  },
+  'modal:credito_pessoal_nao_consignado_total': {
+    full: 'Crédito pessoal — Não consignado — Total',
+    desc: 'Empréstimo pessoal sem desconto em folha. Sem o mecanismo de cobrança automática, taxa e inadimplência ficam bem acima das do consignado.',
+  },
+  'modal:credito_pessoal_nao_consignado_com_garantias': {
+    full: 'Crédito pessoal — Não consignado com garantias',
+    desc: 'Empréstimo pessoal com imóvel ou veículo em garantia (home equity e afins). Série publicada só a partir de 2020 — antes as duas vinham juntas.',
+  },
+  'modal:credito_pessoal_nao_consignado_sem_garantias': {
+    full: 'Crédito pessoal — Não consignado sem garantias',
+    desc: 'Empréstimo pessoal puro, sem colateral nem consignação. A linha mais cara do bloco de crédito pessoal.',
+  },
+  'modal:composicao_de_dividas': {
+    desc: 'Renegociação de dívida vencida: o banco refinancia num contrato novo o que o cliente já devia. <b>Não é crédito novo</b> — e nas concessões o BCB deixa esta linha fora do total publicado, justamente por isso.',
+  },
+  'modal:total_rotativo': {
+    desc: 'Recorte <b>transversal</b>, não uma modalidade: soma cheque especial, rotativo do cartão e cartão à vista (medido: R$ 702,3 bi contra 702,3 bi da soma em jul/2026). Com "Total não rotativo" reconstitui exatamente o total PF, então marcá-lo ao lado das modalidades conta o mesmo saldo duas vezes.',
+  },
+  'modal:total_nao_rotativo': {
+    desc: 'O complemento do rotativo — tudo que tem prazo e parcela definidos. Mesmo recorte transversal: ver "Total rotativo".',
+  },
+  'modal:credito_com_recursos_do_bndes_total': {
+    full: 'Crédito com recursos do BNDES — Total',
+    desc: 'Operações contratadas diretamente com o BNDES ou repassadas por outra instituição financeira. A distinção importa na inadimplência: na contratação direta o risco é do BNDES; no repasse, do banco repassador.',
+  },
+  'modal:credito_com_recursos_do_bndes_capital_de_giro': {
+    full: 'Crédito com recursos do BNDES — Capital de giro',
+    desc: 'Giro com funding do BNDES — cresceu como instrumento anticíclico nos programas emergenciais.',
+  },
+  'modal:credito_com_recursos_do_bndes_financiamento_a_investimentos': {
+    full: 'Crédito com recursos do BNDES — Financiamento a investimentos',
+    desc: 'A linha clássica do banco: máquinas, equipamentos e projetos. É a que liga o crédito direcionado à FBCF.',
+  },
+  'modal:credito_com_recursos_do_bndes_financiamento_agroindustrial': {
+    full: 'Crédito com recursos do BNDES — Financiamento agroindustrial',
+    desc: 'Investimento na cadeia agroindustrial com funding do BNDES — distinto do crédito rural, que tem funding e regra próprios.',
+  },
+  'modal:credito_rural_total': {
+    full: 'Crédito rural — Total',
+    desc: 'Direcionado com funding <b>obrigatório</b> de depósitos à vista e da poupança rural, nas regras do Manual de Crédito Rural (MCR). Segue o calendário do Plano Safra, não o ciclo de juros.',
+  },
+  'modal:credito_rural_taxas_reguladas': {
+    full: 'Crédito rural — Taxas reguladas',
+    desc: 'Parcela com taxa fixada pelo CMN no Plano Safra, abaixo do mercado — é aqui que mora a subvenção.',
+  },
+  'modal:credito_rural_taxas_de_mercado': {
+    full: 'Crédito rural — Taxas de mercado',
+    desc: 'Mesma finalidade e mesmo funding obrigatório, taxa livre. Cresce quando a exigibilidade excede o que as linhas subvencionadas absorvem.',
+  },
+  'modal:financiamentos_imobiliarios_total': {
+    full: 'Financiamentos imobiliários — Total',
+    desc: 'Habitacional com funding da poupança (SBPE) e, na PF, também do FGTS. Da exigibilidade, <b>80% tem de ir para taxas reguladas</b> e até 20% pode ir para taxas de mercado — a divisão abaixo é essa regra, não uma escolha comercial.',
+  },
+  'modal:financiamentos_imobiliarios_taxas_reguladas': {
+    full: 'Financiamentos imobiliários — Taxas reguladas',
+    desc: 'A fatia com teto de taxa (SFH). É a que a captação líquida da poupança limita.',
+  },
+  'modal:financiamentos_imobiliarios_taxas_de_mercado': {
+    full: 'Financiamentos imobiliários — Taxas de mercado',
+    desc: 'Até 20% da exigibilidade, com taxa livre. Ganha espaço quando a poupança perde recurso para outras aplicações.',
+  },
+  'modal:microcredito': {
+    desc: 'Microcrédito a pessoas físicas, direcionado por exigibilidade sobre depósitos à vista. Volume pequeno em R$, alcance grande em número de operações.',
+  },
+  'modal:programas_mpme': {
+    desc: 'Linhas de programa para micro, pequenas e médias empresas — Pronampe, FGI/Peac e similares. Movimenta-se por decisão de política, não por condição de mercado.',
+  },
+  'modal:porte__mpme': {
+    full: 'MPME — Micro, pequenas e médias empresas',
+    desc: 'Classificação do BCB por tamanho da tomadora: receita bruta anual até R$ 300 milhões <b>ou</b> ativo total até R$ 240 milhões.',
+  },
+  'modal:porte__grande': {
+    desc: 'Receita bruta anual acima de R$ 300 milhões ou ativo total acima de R$ 240 milhões. É a fatia que tem acesso ao mercado de capitais e por isso substitui crédito bancário por dívida emitida quando o spread abre.',
+  },
+
+  // ── saldo: raizes e os 3 recortes que so existem nesta tabela ────────────────
+  'saldo:saldo_total_total': {
+    full: 'Crédito do sistema financeiro — Saldo total',
+    desc: 'Estoque de todas as operações de crédito do SFN, livres e direcionadas, PJ e PF. É a manchete da Nota de Crédito do BCB.',
+  },
+  'saldo:saldo_livre_total': {
+    full: 'Recursos livres — Total',
+    desc: 'Taxa, prazo e destinação negociados entre banco e cliente, com funding de mercado. É a metade que responde à Selic.',
+  },
+  'saldo:saldo_direcionado_total': {
+    full: 'Recursos direcionados — Total',
+    desc: 'Destinação, taxa e funding definidos por norma — poupança, FGTS, exigibilidade rural, BNDES. Responde a decisão regulatória tanto quanto a juros, e é por isso que a leitura de "condições de crédito" precisa separar as duas metades.',
+  },
+  'saldo:saldo_livre_pj': { desc: 'Estoque de crédito livre a empresas.' },
+  'saldo:saldo_livre_pf': { desc: 'Estoque de crédito livre a famílias.' },
+  'saldo:saldo_direcionado_pj': { desc: 'Estoque de crédito direcionado a empresas — BNDES, rural e imobiliário.' },
+  'saldo:saldo_direcionado_pf': { desc: 'Estoque de crédito direcionado a famílias — sobretudo habitacional e rural.' },
+  'saldo:porte__total': {
+    full: 'Saldo a pessoas jurídicas por porte de empresa',
+    desc: 'Recorte <b>alternativo</b> do mesmo saldo PJ, não um item novo: não soma com Livre/Direcionado acima. Este total é sintetizado por nós (MPME + Grande) — o BCB não publica código SGS próprio para ele.',
+  },
+  'saldo:ativ__total': {
+    full: 'Saldo por atividade econômica (PJ)',
+    desc: 'Outro recorte do saldo PJ, por CNAE do tomador. Vem de <b>outra fonte de dados</b> — informação de monitoramento de crédito, não a estatística agregada —, então difere do saldo PJ das demais tabelas: R$ 2.742 bi contra R$ 2.732 bi em jul/2026, 0,4%. O BCB registra a diferença na nota da própria Tabela 24.',
+  },
+  'saldo:ativ__agropecuaria': { desc: 'Produção agropecuária, por CNAE. Não é o mesmo que crédito rural: o corte aqui é o setor do tomador, não a origem do funding.' },
+  'saldo:ativ__industria_total': { desc: 'Indústria, incluindo construção e SIUP. Total sintetizado por nós a partir dos subsetores.' },
+  'saldo:ativ__servicos_total': { desc: 'Serviços, incluindo comércio, transportes e administração pública. Total sintetizado por nós.' },
+  'saldo:ativ__outros': { desc: 'Inclui crédito a empresas sediadas no exterior.' },
+  'saldo:ativ__industria_construcao': { desc: 'Construção <b>exceto</b> infraestrutura, que sai em linha própria. Inclui insumos para construção.' },
+  'saldo:ativ__industria_siup': { full: 'SIUP — Serviços industriais de utilidade pública', desc: 'Energia elétrica, água, esgoto e saneamento. Setor de capital intensivo e de horizonte longo — o saldo anda com o calendário de concessões e leilões.' },
+  'saldo:ativ__industria_mineracao': { desc: 'Não inclui extração de petróleo e gás, que está em "Petróleo, gás e álcool".' },
+  'saldo:ativ__servicos_administracao_publica': { desc: 'Crédito a entes e empresas da administração pública classificados por CNAE — leitura diferente da do corte por tipo de cliente, que separa governo de setor privado.' },
+  'saldo:ativ__servicos_demais_prestados_familias': { full: 'Demais serviços prestados a famílias', desc: 'Educação, saúde, habitação, alimentação e serviços pessoais.' },
+  'saldo:ativ__servicos_demais_prestados_empresas': { full: 'Demais serviços prestados a empresas', desc: 'Consultoria, serviços de escritório e apoio administrativo, gestão de ativos, monitoramento e segurança.' },
+  'saldo:ativ__servicos_comercio_geral_veiculos_automotores': { full: 'Comércio — Geral — Veículos automotores', desc: 'Comércio de veículos. Não inclui locação de veículos, classificada em serviços prestados a famílias e a empresas.' },
+  'saldo:tipocliente__total': {
+    full: 'Saldo por tipo de cliente',
+    desc: 'O mesmo Total Geral das linhas de cima, aberto por <b>tomador</b>. É o único lugar da planilha do BCB que separa o governo como tomador de crédito bancário — diferente do Crédito Ampliado, que vê o governo como emissor de dívida.',
+  },
+  'saldo:tipocliente__setor_publico_total': {
+    full: 'Setor público — Total',
+    desc: 'Governo federal, estados e municípios como tomadores. Fatia pequena do saldo, mas é a que se move por autorização e renegociação, não por demanda.',
+  },
+  'saldo:tipocliente__setor_privado_total': { full: 'Setor privado — Total', desc: 'Empresas e famílias. Soma com o setor público exatamente o Total Geral.' },
+
+  // ── amplo: credito ampliado ao setor nao financeiro (Tabela 1 do BCB) ────────
+  'amplo:amplo__total': {
+    full: 'Crédito ampliado ao setor não financeiro',
+    desc: 'Endividamento total do setor real: além do empréstimo bancário, títulos de dívida e dívida externa. Mede o funding que chega a governo, empresas e famílias por <b>qualquer</b> via, não só a que passa pelo balanço dos bancos — por isso é a métrica certa para dizer se o crédito está apertando quando o mercado de capitais substitui o banco.',
+  },
+  'amplo:amplo__governo_total': { desc: 'Governo federal, estadual e municipal como devedor. Dominado por títulos públicos, não por empréstimo bancário.' },
+  'amplo:amplo__empresas_total': { desc: 'Sociedades não financeiras. É onde a substituição entre banco e mercado de capitais aparece.' },
+  'amplo:amplo__familias_total': { desc: 'Praticamente só empréstimo do SFN — as famílias quase não emitem dívida.' },
+  'amplo:amplo__gov_emprestimos_sfn': {
+    full: 'Governo — Empréstimos — SFN',
+    desc: 'Empréstimos do sistema financeiro a governos federal, estadual e municipal. <b>Difere da dívida bancária das estatísticas fiscais</b>: aqui não se excluem operações baixadas para prejuízo, entre outros fatores.',
+  },
+  'amplo:amplo__gov_titulos_publicos': {
+    full: 'Governo — Títulos de dívida — Títulos públicos',
+    desc: 'Títulos federais em poder do mercado, <b>excluindo</b> a carteira do Banco Central e os títulos de não residentes (esses vão para dívida externa). Inclui dívida securitizada.',
+  },
+  'amplo:amplo__gov_emprestimos_divida_externa': { full: 'Governo — Dívida externa — Empréstimos', desc: 'Empréstimos tomados no exterior pelo setor público.' },
+  'amplo:amplo__gov_divida_ext_mercado_externo': { full: 'Governo — Dívida externa — Títulos emitidos no mercado externo', desc: 'Títulos soberanos emitidos lá fora, em moeda estrangeira.' },
+  'amplo:amplo__gov_divida_ext_mercado_interno': {
+    full: 'Governo — Dívida externa — Títulos emitidos no mercado doméstico',
+    desc: 'Títulos em poder de <b>não residentes</b>, mas denominados e liquidados em reais. Contam como dívida externa pelo critério de residência do credor, não pela moeda.',
+  },
+  'amplo:amplo__emp_emprestimos_sfn': {
+    full: 'Empresas — Empréstimos — SFN',
+    desc: 'Empréstimos do sistema financeiro. <b>Exclui</b> operações a entidades de intermediação financeira, então este total difere do das demais tabelas de crédito deste relatório.',
+  },
+  'amplo:amplo__emp_emprestimos_osf': {
+    full: 'Empresas — Empréstimos — Outras sociedades financeiras',
+    desc: 'Empréstimos de fundos de pensão, administradoras de consórcio e empresas do grupo BNDES — fora do SFN, mas crédito ao mesmo tomador.',
+  },
+  'amplo:amplo__emp_emprestimos_fundos_gov': {
+    full: 'Empresas — Empréstimos — Fundos governamentais',
+    desc: 'Fundos constitucionais (operações fora do crédito SFN) e o Fies. Canal fiscal, não bancário.',
+  },
+  'amplo:amplo__emp_titulos_divida_privado': { full: 'Empresas — Títulos de dívida — Privados', desc: 'Debêntures e notas comerciais emitidas no mercado doméstico. É o substituto direto do empréstimo bancário.' },
+  'amplo:amplo__emp_titulos_divida_securitizado': { full: 'Empresas — Títulos de dívida — Securitizados', desc: 'CRI, CRA e direitos creditórios em FIDC.' },
+  'amplo:amplo__emp_divida_externa_mercado_ext': { full: 'Empresas — Dívida externa — Títulos emitidos no mercado externo', desc: 'Bonds corporativos emitidos lá fora.' },
+  'amplo:amplo__emp_divida_externa_mercado_int': { full: 'Empresas — Dívida externa — Títulos emitidos no mercado doméstico', desc: 'Títulos em reais em poder de não residentes — dívida externa por residência do credor, não por moeda.' },
+  'amplo:amplo__fam_emprestimos_sfn': { full: 'Famílias — Empréstimos — SFN', desc: 'O grosso do endividamento das famílias. Compara-se diretamente com o saldo PF da aba Saldo.' },
+  'amplo:amplo__fam_emprestimos_osf': { full: 'Famílias — Empréstimos — Outras sociedades financeiras', desc: 'Consórcios e fundos de pensão, sobretudo.' },
+  'amplo:amplo__fam_emprestimos_fundos_gov': { full: 'Famílias — Empréstimos — Fundos governamentais', desc: 'Fundos constitucionais e Fies.' },
+  'amplo:amplo__fam_titulos_securitizado': { full: 'Famílias — Títulos de dívida — Securitizados', desc: 'Recebíveis de famílias cedidos a CRI, CRA e FIDC — o crédito saiu do balanço do banco, mas a família continua devendo.' },
+  'amplo:amplo__fam_emprestimos_divida_externa': {
+    full: 'Famílias — Dívida externa',
+    desc: 'Sobretudo empréstimos de não residentes; inclui títulos emitidos no exterior por instituições sem fins lucrativos a serviço das famílias. Linha residual.',
+  },
+
+  // ── concessao: fluxo, nao estoque -- e o total exclui linhas ─────────────────
+  'concessao:concessao_total_total': {
+    full: 'Concessões de crédito — Total',
+    desc: 'Volume de operações <b>novas</b> contratadas no mês (fluxo), não o estoque. Neste relatório sai dessazonalizado e em média móvel de 3 meses, porque a série bruta é dominada por calendário. Atenção ao somar as linhas: o total publicado pelo BCB <b>exclui</b> as concessões de rotativo e parcelado do cartão e, na PF, a composição de dívidas.',
+  },
+  'concessao:concessao_livre_total': { full: 'Recursos livres — Total', desc: 'Contratações novas com taxa e prazo negociados. É a leitura mais tempestiva de apetite por crédito — o saldo demora a virar porque carrega o estoque antigo.' },
+  'concessao:concessao_direcionado_total': { full: 'Recursos direcionados — Total', desc: 'Contratações novas de linhas com regra de destinação. Andam com Plano Safra e programas, não com a Selic.' },
+  'concessao:concessao_livre_pj': { desc: 'Contratações novas a empresas. Dominadas pelo desconto de recebíveis, de prazo curto e giro alto — por isso o volume mensal é da ordem do saldo, o que não acontece na PF.' },
+  'concessao:concessao_livre_pf': {
+    desc: 'Contratações novas a famílias. Medido em jul/2026: as folhas de modalidade somam R$ 407 bi contra R$ 345 bi do total publicado, e a diferença (R$ 62 bi) é exatamente o rotativo, o parcelado do cartão e a composição de dívidas, que o BCB deixa fora do total.',
+  },
+  'concessao:concessao_direcionado_pj': { desc: 'Contratações novas de BNDES, rural e imobiliário a empresas. As folhas somam <b>menos</b> que o total: o BCB não publica código SGS para todas as células desta tabela.' },
+  'concessao:concessao_direcionado_pf': { desc: 'Contratações novas de habitacional, rural e BNDES a famílias.' },
+
+  // ── taxa: taxa media de juros das concessoes ─────────────────────────────────
+  'taxa:taxa_juros_total_total': {
+    full: 'Taxa média de juros das concessões — Total',
+    desc: 'Taxa das operações <b>novas</b> do mês, ponderada por volume. Não é o custo da carteira já contratada (isso é o ICC). Sobe e desce tanto por mudança de mix entre modalidades quanto por decisão de preço do banco — uma alta pode ser só cartão pesando mais no mês.',
+  },
+  'taxa:taxa_juros_livre_total': { full: 'Recursos livres — Total', desc: 'A metade que responde à Selic, e onde a dispersão entre modalidades é enorme: do ACC ao cheque especial vão duas ordens de grandeza.' },
+  'taxa:taxa_juros_direcionado_total': { full: 'Recursos direcionados — Total', desc: 'Taxas em boa parte fixadas por norma (TR + teto no habitacional, Plano Safra no rural, TLP no BNDES). Move-se por decisão administrativa antes de se mover por mercado.' },
+  'taxa:taxa_juros_livre_pj': { desc: 'Taxa média das concessões livres a empresas.' },
+  'taxa:taxa_juros_livre_pf': { desc: 'Taxa média das concessões livres a famílias — estruturalmente acima da PJ, por mix (cartão e crédito pessoal) e por risco.' },
+  'taxa:taxa_juros_direcionado_pj': { desc: 'Taxa média das concessões direcionadas a empresas.' },
+  'taxa:taxa_juros_direcionado_pf': { desc: 'Taxa média das concessões direcionadas a famílias.' },
+
+  // ── spread: aplicacao menos captacao ────────────────────────────────────────
+  'spread:spread_total_total': {
+    full: 'Spread médio — Total',
+    desc: 'Diferença entre a taxa de aplicação e a taxa de <b>captação</b> da instituição, em pontos percentuais. O BCB não publica a taxa de captação por modalidade via SGS — só este spread já calculado, o que é por que esta árvore tem 7 linhas e a de taxa tem 66.',
+  },
+  'spread:spread_livre_total': { full: 'Recursos livres — Spread', desc: 'Onde o spread de fato se forma: inadimplência esperada, tributos, custo administrativo e margem.' },
+  'spread:spread_direcionado_total': { full: 'Recursos direcionados — Spread', desc: 'Comprimido por construção — a taxa de aplicação é tabelada e a captação é a mesma do resto do balanço.' },
+  'spread:spread_livre_pj': { desc: 'Spread das concessões livres a empresas.' },
+  'spread:spread_livre_pf': { desc: 'Spread das concessões livres a famílias.' },
+  'spread:spread_direcionado_pj': { desc: 'Spread das concessões direcionadas a empresas.' },
+  'spread:spread_direcionado_pf': { desc: 'Spread das concessões direcionadas a famílias.' },
+
+  // ── inad: inadimplencia e os cortes de risco ────────────────────────────────
+  'inad:inadimplencia_total_total': {
+    full: 'Inadimplência — Total',
+    desc: 'Percentual da carteira com pelo menos uma parcela em atraso há <b>mais de 90 dias</b>. É estoque sobre estoque: cai quando a carteira cresce rápido, mesmo sem melhora nenhuma do tomador — o denominador é a armadilha desta série.',
+  },
+  'inad:inadimplencia_livre_total': { full: 'Recursos livres — Inadimplência', desc: 'Bem acima da direcionada, por mix de produto e por ausência de garantia real na maior parte das linhas.' },
+  'inad:inadimplencia_direcionado_total': { full: 'Recursos direcionados — Inadimplência', desc: 'Baixa por construção: habitacional com alienação fiduciária e rural com garantia real dominam a carteira.' },
+  'inad:inadimplencia_livre_pj': { desc: 'Inadimplência do crédito livre a empresas.' },
+  'inad:inadimplencia_livre_pf': { desc: 'Inadimplência do crédito livre a famílias.' },
+  'inad:inadimplencia_direcionado_pj': { desc: 'Inadimplência do crédito direcionado a empresas.' },
+  'inad:inadimplencia_direcionado_pf': { desc: 'Inadimplência do crédito direcionado a famílias.' },
+  'inad:pj__atraso_pj': {
+    full: 'Atraso de 15 a 90 dias — Pessoas jurídicas',
+    desc: 'Atraso curto, antes de a operação virar inadimplência. A intuição diz que antecede a série de 90 dias; <b>neste dado não antecede</b>: a correlação é máxima no mesmo mês (0,51 em 185 meses) e cai monotonicamente com a defasagem. Não tem equivalente PF na base.',
+    unit: '% da carteira PJ com atraso de 15 a 90 dias',
+  },
+  'inad:porte___header': {
+    full: 'Inadimplência por porte de empresa',
+    desc: 'Mesma carteira PJ, aberta por tamanho da tomadora. Cabeçalho sem série própria — o BCB não publica código SGS para o total desta quebra.',
+  },
+  'inad:controle___header': {
+    full: 'Inadimplência por controle de capital',
+    desc: 'Aberta pelo controle da <b>instituição credora</b>, não do tomador. Diferenças de nível entre as três dizem mais sobre mix de produto e de público-alvo do que sobre política de crédito.',
+  },
+  'inad:controle__publicas': { full: 'Instituições financeiras públicas', desc: 'Carteira pesada em direcionado (habitacional, rural, BNDES), o que puxa a inadimplência para baixo pelo mix.' },
+  'inad:controle__privadas_nacionais': { full: 'Instituições financeiras privadas nacionais', desc: 'Maior exposição a crédito livre PF, onde a inadimplência é estruturalmente mais alta.' },
+  'inad:controle__estrangeiras': { full: 'Instituições financeiras estrangeiras', desc: 'Carteira menor e mais concentrada em grandes empresas e em atacado.' },
+  'inad:riscoant__total': {
+    full: 'Saldo de maior risco — Res. CMN 2.682',
+    desc: 'Percentual do saldo PJ classificado nos níveis de risco <b>E, F, G e H</b> da Res. 2.682/1999. Métrica mais ampla que a inadimplência: capta operações provisionadas antes de vencerem. <b>Descontinuada em jan/2025</b>, quando entrou a classificação por estágios.',
+    unit: '% do saldo PJ',
+  },
+  'inad:riscoant__mpme': { full: 'Saldo de maior risco (Res. 2.682) — MPME', desc: 'Recorte de porte da série descontinuada em jan/2025.', unit: '% do saldo PJ' },
+  'inad:riscoant__grande': { full: 'Saldo de maior risco (Res. 2.682) — Grande', desc: 'Recorte de porte da série descontinuada em jan/2025.', unit: '% do saldo PJ' },
+  'inad:riscores4966__total': {
+    full: 'Saldo de maior risco — Res. CMN 4.966',
+    desc: 'Percentual do saldo PJ em instrumentos alocados no <b>estágio 3</b> ou identificados como ativos com problema de recuperação de crédito, na Res. CMN 4.966/2021. Substitui a série acima a partir de jan/2025 — as duas <b>não são comparáveis nível a nível</b>, e por isso aparecem como blocos separados em vez de uma série emendada.',
+    unit: '% do saldo PJ',
+  },
+  'inad:riscores4966__mpme': { full: 'Saldo de maior risco (Res. 4.966) — MPME', desc: 'Recorte de porte da métrica vigente desde jan/2025.', unit: '% do saldo PJ' },
+  'inad:riscores4966__grande': { full: 'Saldo de maior risco (Res. 4.966) — Grande', desc: 'Recorte de porte da métrica vigente desde jan/2025.', unit: '% do saldo PJ' },
+
+  // ── imp: aqui cada linha e CONTRIBUICAO AO IMPULSO, nao estoque ──────────────
+  'imp:saldo_total_total': {
+    full: 'Impulso de crédito — Total',
+    desc: 'Segunda diferença do saldo sobre o PIB: quanto o crédito adicionou à demanda em relação ao que já vinha adicionando 12 meses antes. Positivo <b>não</b> quer dizer crédito crescendo — quer dizer crescendo mais rápido que antes. Biggs, Mayer & Pick (2009), na aplicação do IBRE/FGV.',
+  },
+  'imp:saldo_livre_total': { full: 'Recursos livres — Contribuição ao impulso', desc: 'Quanto do impulso total veio do crédito livre. Soma com o direcionado exatamente o impulso total.' },
+  'imp:saldo_direcionado_total': { full: 'Recursos direcionados — Contribuição ao impulso', desc: 'A parcela do impulso decidida por política — programas, Plano Safra, BNDES. É a que domina 2020.' },
+  'imp:saldo_livre_pj': { full: 'Livre PJ — Contribuição ao impulso', desc: 'Contribuição do crédito livre a empresas ao impulso total, em p.p. do PIB.' },
+  'imp:saldo_livre_pf': { full: 'Livre PF — Contribuição ao impulso', desc: 'Contribuição do crédito livre a famílias ao impulso total, em p.p. do PIB.' },
+  'imp:saldo_direcionado_pj': { full: 'Direcionado PJ — Contribuição ao impulso', desc: 'Contribuição do crédito direcionado a empresas, em p.p. do PIB.' },
+  'imp:saldo_direcionado_pf': { full: 'Direcionado PF — Contribuição ao impulso', desc: 'Contribuição do crédito direcionado a famílias, em p.p. do PIB — dominada pelo habitacional.' },
+  'imp:porte__total': {
+    full: 'Impulso do crédito PJ por porte',
+    desc: '<b>Não é comparável ao impulso total</b>: a base é só o saldo PJ, então o nível é menor por construção. Serve para ler a composição, não a magnitude.',
+  },
+  'imp:porte__mpme': { full: 'MPME — Contribuição ao impulso PJ', desc: 'Micro, pequenas e médias (receita bruta anual até R$ 300 mi ou ativo até R$ 240 mi). É o segmento que os programas emergenciais alcançam.' },
+  'imp:porte__grande': { full: 'Grande — Contribuição ao impulso PJ', desc: 'Grandes empresas. Contribui negativamente quando elas trocam crédito bancário por emissão de dívida — movimento que o Crédito Ampliado mostra e este corte não.' },
+  'imp:ativ__total': {
+    full: 'Impulso do crédito PJ por atividade',
+    desc: 'Mesma ressalva do corte por porte: base só PJ, e ainda de outra fonte de dados (ver a aba Saldo), então o total difere em ~0,4% do saldo PJ das demais tabelas.',
+  },
+  'imp:ativ__agropecuaria': { full: 'Agropecuária — Contribuição ao impulso PJ', desc: 'Anda com o calendário do Plano Safra e com a safra em si, não com a Selic.' },
+  'imp:ativ__industria_total': { full: 'Indústria — Contribuição ao impulso PJ', desc: 'Agregado dos ~17 subsetores industriais; o detalhe fino fica na aba Saldo.' },
+  'imp:ativ__servicos_total': { full: 'Serviços — Contribuição ao impulso PJ', desc: 'Agregado que inclui comércio e transportes — o maior bloco do crédito PJ.' },
+  'imp:ativ__outros': { full: 'Outros — Contribuição ao impulso PJ', desc: 'Residual, inclui crédito a empresas sediadas no exterior.' },
+
+  // ── fluxo: a metrica do BCB, conceito diferente do de cima ───────────────────
+  'fluxo:fluxo_total': {
+    full: 'Fluxo financeiro do crédito bancário — Total',
+    desc: 'Concessões <b>menos</b> pagamentos, acumulado em 12 meses. Diferente das tabelas acima, parte do dinheiro que efetivamente trocou de mãos: exclui juros acruados, variação cambial e baixas para prejuízo, que inflam a variação do saldo sem ninguém ter recebido nada. Negativo significa que o setor real paga líquido ao sistema financeiro — que é o estado normal. Do anexo estatístico do RPM.',
+  },
+  'fluxo:fluxo_pj': { full: 'Pessoas jurídicas — Fluxo financeiro', desc: 'A metade PJ do fluxo. Soma com a PF exatamente o total.' },
+  'fluxo:fluxo_pf': { full: 'Pessoas físicas — Fluxo financeiro', desc: 'A metade PF do fluxo.' },
+
+  // ── ptc: pesquisa trimestral de condicoes de credito ────────────────────────
+  'ptc:oferta__header': {
+    desc: 'O que os bancos respondem sobre a própria disposição de aprovar crédito. Positivo = afrouxaram os critérios. É <b>percepção declarada</b>, não dado de operação — o equivalente brasileiro do Senior Loan Officer Survey do Fed (BCB, TD 245).',
+  },
+  'ptc:demanda__header': {
+    desc: 'Percepção dos bancos sobre a procura que recebem. Positivo = mais procura. Média aritmética simples das respostas numa escala de −2 a +2 — não é saldo líquido de respostas.',
+  },
+  'ptc:ge_oferta': { full: 'Grandes empresas — Oferta', desc: 'Painel pequeno: cada resposta pesa muito, e o movimento trimestre a trimestre é ruidoso.' },
+  'ptc:mpme_oferta': { full: 'MPME — Oferta', desc: 'Micro, pequenas e médias empresas. O segmento mais sensível a garantia e a programa público.' },
+  'ptc:pfc_oferta': { full: 'Pessoa física — Consumo — Oferta', desc: 'Crédito pessoal, veículos e cartão.' },
+  'ptc:pfh_oferta': { full: 'Pessoa física — Habitacional — Oferta', desc: 'Habitacional, onde a restrição costuma ser funding de poupança, não apetite de risco.' },
+  'ptc:ge_demanda': { full: 'Grandes empresas — Demanda', desc: 'Cai quando o mercado de capitais está aberto — a empresa grande substitui banco por emissão.' },
+  'ptc:mpme_demanda': { full: 'MPME — Demanda', desc: 'Micro, pequenas e médias empresas.' },
+  'ptc:pfc_demanda': { full: 'Pessoa física — Consumo — Demanda', desc: 'Crédito pessoal, veículos e cartão.' },
+  'ptc:pfh_demanda': { full: 'Pessoa física — Habitacional — Demanda', desc: 'Habitacional.' },
+
+  // ── ptcsurp: mesma arvore, medida diferente (observada - esperada) ───────────
+  'ptcsurp:oferta__header': {
+    full: 'Surpresa da oferta',
+    desc: 'O que os bancos <b>observaram</b> no trimestre menos o que eles próprios <b>esperavam</b> um trimestre antes. Subtração, nada modelado — o BCB não publica esta série. Positivo = afrouxou mais do que se esperava.',
+  },
+  'ptcsurp:demanda__header': {
+    full: 'Surpresa da demanda',
+    desc: 'Procura observada menos a esperada no trimestre anterior. A faixa "em linha" é ±σ₀ da própria média móvel, medido em torno de zero (RQM), não desvio em torno da média.',
+  },
+};
+
+// Resolve a chave num dos namespaces da tabela, em ordem. Dentro de cada namespace a
+// chave CHEIA vence o sufixo -- e o que permite `modal:ativ__outros` nao herdar
+// `modal:outros`. O sufixo e o pedaco depois do ultimo `__`, que e o que faz uma
+// definicao de modalidade servir livre_pj__/livre_pf__/direcionado_pj__/direcionado_pf__
+// de uma vez.
+function infoOf(ns, key) {
+  var nss = Array.isArray(ns) ? ns : [ns];
+  var sufixo = String(key).indexOf('__') >= 0 ? String(key).split('__').pop() : null;
+  for (var i = 0; i < nss.length; i++) {
+    var hit = NODE_INFO[nss[i] + ':' + key] || (sufixo && NODE_INFO[nss[i] + ':' + sufixo]);
+    if (hit && (hit.full || hit.desc)) return hit;
+  }
+  return null;
+}
+
+var _infoPop = null, _infoPinned = null;
+function _ensureInfoPop() {
+  if (_infoPop) return _infoPop;
+  _infoPop = document.createElement('div');
+  _infoPop.className = 'info-pop';
+  document.body.appendChild(_infoPop);
+  _infoPop.addEventListener('mouseleave', function() { if (!_infoPinned) hideInfo(); });
+  document.addEventListener('click', function(e) {
+    if (_infoPinned && !_infoPop.contains(e.target) && e.target !== _infoPinned) hideInfo();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') hideInfo(); });
+  return _infoPop;
+}
+function hideInfo() {
+  if (!_infoPop) return;
+  _infoPop.classList.remove('show');
+  if (_infoPinned) { _infoPinned.classList.remove('pinned'); _infoPinned = null; }
+}
+function showInfo(btn, label, info, unitFn) {
+  var pop = _ensureInfoPop();
+  var html = '<h4>' + label + '</h4>';
+  // `full` so entra quando difere do rotulo ja na tela -- senao o cartao abre para
+  // repetir de volta a linha que o leitor acabou de ler.
+  if (info.full && info.full !== label) html += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) html += '<div class="info-desc">' + info.desc + '</div>';
+  // A unidade vem da MESMA funcao que monta o titulo do eixo Y da tabela; `info.unit` so
+  // existe onde a LINHA foge da unidade da tabela (saldo de maior risco, atraso 15-90d).
+  var un = info.unit || null;
+  if (!un) { try { un = unitFn ? unitFn() : null; } catch (e) { un = null; } }
+  if (un) html += '<div class="info-unit">Unidade: ' + un + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+  // Abaixo-a-direita do botao, puxado para dentro da janela se estourar (as tabelas
+  // rolam na horizontal, entao o botao pode estar na borda) e virado para cima quando
+  // nao couber embaixo.
+  var r = btn.getBoundingClientRect();
+  var w = pop.offsetWidth || 380, h = pop.offsetHeight || 120;
+  var left = r.left + window.scrollX;
+  var maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  var top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) top = r.top + window.scrollY - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+// Pendura o botao na celula do rotulo. Nao faz nada quando nao ha entrada no mapa -- e
+// assim que o icone continua raro e, por isso, informativo.
+function attachInfo(hostEl, ns, node, unitFn) {
+  var info = infoOf(ns, node.key);
+  if (!info) return null;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definição de ' + node.label);
+  b.addEventListener('mouseenter', function() { if (!_infoPinned) showInfo(b, node.label, info, unitFn); });
+  b.addEventListener('mouseleave', function() {
+    if (_infoPinned) return;
+    // Deixa o ponteiro atravessar o vao de 6px ate o cartao antes de fechar.
+    setTimeout(function() { if (!_infoPinned && _infoPop && !_infoPop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (_infoPinned === b) { hideInfo(); return; }
+    hideInfo();
+    _infoPinned = b; b.classList.add('pinned');
+    showInfo(b, node.label, info, unitFn);
+  });
+  hostEl.appendChild(b);
+  return b;
+}
+
 function flattenHierRows(tree, expanded, depth) {
   var rows = [];
   (tree || []).forEach(function(node) {
@@ -1435,7 +2311,8 @@ function flattenHierRows(tree, expanded, depth) {
   return rows;
 }
 // opts: {dataKey, anchorSeriesKey, metricGroupId, basisGroupId, tableHeadId,
-//        tableBodyId, chartDivId, defaultChecked: [keys], yTitle(metric, basis, refDate)}
+//        tableBodyId, chartDivId, defaultChecked: [keys], yTitle(metric, basis, refDate),
+//        infoNs: namespace(s) do NODE_INFO desta tabela}
 function makeHierTab(opts) {
   var state = {metric: null, basis: 'nominal', checked: {}, expanded: {}};
   opts.defaultChecked.forEach(function(k) { state.checked[k] = true; });
@@ -1458,6 +2335,7 @@ function makeHierTab(opts) {
   // mais completo da arvore) como referencia comum de datas para todas as linhas, em
   // vez de cada serie usar seus proprios ultimos 12 pontos (o que desalinharia as
   // colunas se uma linha tivesse um mes de atraso em relacao a outra).
+  function infoUnit() { return opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date); }
   function refDates() {
     var byBasis = D[opts.dataKey].series[opts.anchorSeriesKey];
     var dates = (byBasis && byBasis.nominal && byBasis.nominal.level && byBasis.nominal.level.dates) || [];
@@ -1518,6 +2396,11 @@ function makeHierTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      // O botao de definicao nasce da PRESENCA da entrada em NODE_INFO, nao de uma
+      // decisao linha a linha no markup -- e o que mantem o icone raro e informativo.
+      // A unidade do cartao sai da mesma funcao que titula o eixo Y (seletor de
+      // Nivel/Nominal-Real/%PIB muda as duas juntas).
+      if (opts.infoNs) attachInfo(tdLabel, opts.infoNs, node, infoUnit);
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       dates.forEach(function(d) {
@@ -1540,7 +2423,8 @@ function makeHierTab(opts) {
         if (node.children) walk(node.children);
       });
     })(D[opts.dataKey].tree);
-    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date));
+    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date),
+                    undefined, !!opts.ciclos);
   }
   function wireControls() {
     document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
@@ -1592,16 +2476,16 @@ function _hierYTitle(metric, basis, refDate, levelLabelNominal, levelLabelRealPr
 }
 
 var SALDO_TAB = makeHierTab({
-  dataKey: 'saldo', anchorSeriesKey: 'saldo_total_total',
+  dataKey: 'saldo', anchorSeriesKey: 'saldo_total_total', infoNs: ['saldo', 'modal'],
   metricGroupId: 'saldo-metric-group', basisGroupId: 'saldo-basis-group',
-  tableHeadId: 'saldo-table-head', tableBodyId: 'saldo-table-body', chartDivId: 'chart-saldo',
+  tableHeadId: 'saldo-table-head', tableBodyId: 'saldo-table-body', chartDivId: 'chart-saldo', ciclos: true,
   defaultChecked: ['saldo_livre_total', 'saldo_direcionado_total'],
   yTitle: function(metric, basis, refDate) {
     return _hierYTitle(metric, basis, refDate, 'R$ mi', 'R$ mi (a preços de ');
   },
 });
 var CONCESSAO_TAB = makeHierTab({
-  dataKey: 'concessao', anchorSeriesKey: 'concessao_total_total',
+  dataKey: 'concessao', anchorSeriesKey: 'concessao_total_total', infoNs: ['concessao', 'modal'],
   metricGroupId: 'concessao-metric-group', basisGroupId: 'concessao-basis-group',
   tableHeadId: 'concessao-table-head', tableBodyId: 'concessao-table-body', chartDivId: 'chart-concessao',
   defaultChecked: ['concessao_livre_total', 'concessao_direcionado_total'],
@@ -1610,9 +2494,9 @@ var CONCESSAO_TAB = makeHierTab({
   },
 });
 var AMPLO_TAB = makeHierTab({
-  dataKey: 'amplo_hier', anchorSeriesKey: 'amplo__total',
+  dataKey: 'amplo_hier', anchorSeriesKey: 'amplo__total', infoNs: ['amplo'],
   metricGroupId: 'amplo-metric-group', basisGroupId: 'amplo-basis-group',
-  tableHeadId: 'amplo-table-head', tableBodyId: 'amplo-table-body', chartDivId: 'chart-amplo',
+  tableHeadId: 'amplo-table-head', tableBodyId: 'amplo-table-body', chartDivId: 'chart-amplo', ciclos: true,
   defaultChecked: ['amplo__governo_total', 'amplo__empresas_total', 'amplo__familias_total'],
   yTitle: function(metric, basis, refDate) {
     return _hierYTitle(metric, basis, refDate, 'R$ mi', 'R$ mi (a preços de ');
@@ -1625,24 +2509,46 @@ var AMPLO_TAB = makeHierTab({
 // impulso_tab.py). D.impulso = {trees: {recurso|porte|atividade}, anchors, series:
 // {key: {m12|anual: {dates, values}}}} -- tudo pre-computado em Python.
 // opts: {treeKey, freqGroupId, tableHeadId, tableBodyId, chartDivId, defaultChecked,
-//        defaultExpanded, labelHeader}
+//        defaultExpanded, labelHeader, infoNs,
+//        dataKey?, variantGroupId?, defaultVariant?, variantMeta?, headerIds?}
+//
+// Dois formatos de payload, porque as duas metricas da aba tem shape diferente e
+// generalizar a de cima seria mexer em 3 tabelas que ja funcionam:
+//   - `treeKey` definido -> D[dataKey].trees[treeKey] / .anchors[treeKey], series
+//     indexadas por [chave][freq]        (as 3 tabelas de Biggs et al.)
+//   - `treeKey` ausente  -> D[dataKey].tree / .anchor, series indexadas por
+//     [chave][variante][freq]            (a 4a tabela, fluxo|impulso do BCB)
+// `variantMeta[v]` = {y, unit, titulo, sub} alimenta eixo, hover e cabecalho do grafico.
 function makeImpulseTab(opts) {
-  var state = {freq: 'm12', checked: {}, expanded: {}};
+  var state = {freq: 'm12', variant: opts.defaultVariant || null, checked: {}, expanded: {}};
   (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
   (opts.defaultExpanded || []).forEach(function(k) { state.expanded[k] = true; });
 
-  function grp() { return D.impulso || {trees: {}, anchors: {}, series: {}}; }
-  function tree() { return grp().trees[opts.treeKey] || []; }
+  function grp() { return D[opts.dataKey || 'impulso'] || {trees: {}, anchors: {}, series: {}}; }
+  function tree() {
+    var g = grp();
+    return (opts.treeKey ? (g.trees || {})[opts.treeKey] : g.tree) || [];
+  }
+  function anchorKey() {
+    var g = grp();
+    return opts.treeKey ? (g.anchors || {})[opts.treeKey] : g.anchor;
+  }
+  function meta() { return (opts.variantMeta || {})[state.variant] || {}; }
+  // Unidade do cartao de definicao: a MESMA de meta().y, que titula o eixo Y e alimenta
+  // o hover. Nas 3 tabelas de Biggs nao ha variante, entao cai no default.
+  function infoUnit() { return meta().y || 'p.p. do PIB'; }
   function seriesFor(seriesKey) {
-    var byFreq = grp().series[seriesKey];
-    return (byFreq && byFreq[state.freq]) || {dates: [], values: []};
+    var s = (grp().series || {})[seriesKey];
+    if (s && state.variant) s = s[state.variant];
+    return (s && s[state.freq]) || {dates: [], values: []};
   }
   // Ultimas 12 observacoes COM valor da serie-ancora -- os primeiros 24 meses de
   // qualquer serie sao null por construcao (a formula precisa de t-24), entao pegar o
   // rabo cru da lista deixaria colunas vazias nos cortes de historico mais curto
   // (porte/atividade comecam em 2012-01, primeiro impulso so em 2014-01).
   function refDates() {
-    var anchor = grp().series[grp().anchors[opts.treeKey]];
+    var anchor = (grp().series || {})[anchorKey()];
+    if (anchor && state.variant) anchor = anchor[state.variant];
     var s = anchor && anchor[state.freq];
     if (!s) return [];
     var out = [];
@@ -1716,6 +2622,9 @@ function makeImpulseTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      // Namespace proprio: `saldo_livre_pj` aqui e a CONTRIBUICAO ao impulso, nao o
+      // estoque que a aba Saldo mostra com a mesma chave.
+      if (opts.infoNs) attachInfo(tdLabel, opts.infoNs, node, infoUnit);
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       dates.forEach(function(d) {
@@ -1759,19 +2668,46 @@ function makeImpulseTab(opts) {
     })(nodes);
     return {bars: bars, line: line};
   }
-  function renderChart() {
-    var spec = chartSpecs();
-    renderImpulseChart(opts.chartDivId, spec.bars, spec.line, 'p.p. do PIB', state.freq === 'anual');
+  // Cabecalho do grafico, na regra de .claude/rules/lis-dashboards.md: um print do
+  // grafico circula sozinho, longe do <h2> e da nota. Reconstruido a cada render --
+  // com um seletor que troca a UNIDADE (% do PIB vs p.p. do PIB), texto fixo mentiria
+  // no primeiro clique. A janela sai das series efetivamente plotadas, nao do payload.
+  function renderHeader() {
+    if (!opts.headerIds) return;
+    var m = meta(), spec = chartSpecs();
+    var dates = _unionDates.apply(null, spec.bars.concat(spec.line ? [spec.line] : []));
+    var set = function(id, txt) {
+      var el = id && document.getElementById(id);
+      if (el) el.textContent = txt;
+    };
+    set(opts.headerIds.titulo, m.titulo || '');
+    set(opts.headerIds.sub,
+        (state.freq === 'anual' ? 'Anual (dezembro)' : 'Mensal') + ' · ' + (m.sub || ''));
+    set(opts.headerIds.fonte,
+        (opts.fonte || '') + (dates.length
+          ? ' · ' + fmtMonthShort(dates[0]) + ' a ' + fmtMonthShort(dates[dates.length - 1])
+          : ''));
   }
-  function wireControls() {
-    document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(btn) {
+  function renderChart() {
+    var spec = chartSpecs(), m = meta();
+    renderHeader();
+    renderImpulseChart(opts.chartDivId, spec.bars, spec.line,
+                       m.y || 'p.p. do PIB', state.freq === 'anual', m.unit);
+  }
+  function wirePills(groupId, apply) {
+    if (!groupId) return;
+    document.querySelectorAll('#' + groupId + ' .pill').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        document.querySelectorAll('#' + opts.freqGroupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('#' + groupId + ' .pill').forEach(function(b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        state.freq = btn.dataset.freq;
+        apply(btn);
         renderTable(); renderChart();
       });
     });
+  }
+  function wireControls() {
+    wirePills(opts.freqGroupId, function(btn) { state.freq = btn.dataset.freq; });
+    wirePills(opts.variantGroupId, function(btn) { state.variant = btn.dataset.variant; });
   }
   return {
     init: function() { wireControls(); renderTable(); renderChart(); },
@@ -1779,25 +2715,52 @@ function makeImpulseTab(opts) {
 }
 
 var IMP_RECURSO_TAB = makeImpulseTab({
-  treeKey: 'recurso', freqGroupId: 'imp-recurso-freq-group',
+  treeKey: 'recurso', freqGroupId: 'imp-recurso-freq-group', infoNs: ['imp'],
   tableHeadId: 'imp-recurso-table-head', tableBodyId: 'imp-recurso-table-body',
   chartDivId: 'chart-imp-recurso', labelHeader: 'Recurso / Segmento',
   defaultChecked: ['saldo_total_total', 'saldo_livre_total', 'saldo_direcionado_total'],
   defaultExpanded: ['saldo_total_total'],
 });
 var IMP_PORTE_TAB = makeImpulseTab({
-  treeKey: 'porte', freqGroupId: 'imp-porte-freq-group',
+  treeKey: 'porte', freqGroupId: 'imp-porte-freq-group', infoNs: ['imp'],
   tableHeadId: 'imp-porte-table-head', tableBodyId: 'imp-porte-table-body',
   chartDivId: 'chart-imp-porte', labelHeader: 'Porte de Empresa',
   defaultChecked: ['porte__total', 'porte__mpme', 'porte__grande'],
   defaultExpanded: ['porte__total'],
 });
 var IMP_ATIV_TAB = makeImpulseTab({
-  treeKey: 'atividade', freqGroupId: 'imp-ativ-freq-group',
+  treeKey: 'atividade', freqGroupId: 'imp-ativ-freq-group', infoNs: ['imp'],
   tableHeadId: 'imp-ativ-table-head', tableBodyId: 'imp-ativ-table-body',
   chartDivId: 'chart-imp-ativ', labelHeader: 'Atividade Econômica',
   defaultChecked: ['ativ__total', 'ativ__agropecuaria', 'ativ__industria_total', 'ativ__servicos_total', 'ativ__outros'],
   defaultExpanded: ['ativ__total'],
+});
+// 4a tabela: metrica DIFERENTE das 3 de cima (ver impulso_tab.py e o Apendice). Dois
+// niveis so -- Total > PJ/PF -- porque e o conjunto que as DUAS fontes publicam (o
+// grafico recorrente e o boxe de 2025-03, que so entra pelo trecho 2015-2017). A quebra
+// Livre/Direcionado do boxe ficou fora: ver impulso_tab.py para por que ela quebrava a
+// aditividade.
+var IMP_FLUXO_TAB = makeImpulseTab({
+  dataKey: 'fluxo', freqGroupId: 'imp-fluxo-freq-group', infoNs: ['fluxo'],
+  variantGroupId: 'imp-fluxo-medida-group', defaultVariant: 'fluxo',
+  tableHeadId: 'imp-fluxo-table-head', tableBodyId: 'imp-fluxo-table-body',
+  chartDivId: 'chart-imp-fluxo', labelHeader: 'Segmento',
+  headerIds: {titulo: 'imp-fluxo-h-titulo', sub: 'imp-fluxo-h-sub', fonte: 'imp-fluxo-h-fonte'},
+  fonte: 'Fonte: BCB, anexo estatístico do RPM',
+  variantMeta: {
+    fluxo: {
+      y: '% do PIB', unit: '% do PIB',
+      titulo: 'Fluxo Financeiro do Crédito Bancário — Brasil',
+      sub: 'concessões − pagamentos, acumulado em 12 meses, % do PIB · negativo = o setor real paga líquido ao SFN',
+    },
+    impulso: {
+      y: 'p.p. do PIB', unit: 'p.p. do PIB',
+      titulo: 'Impulso de Crédito (conceito BCB) — Brasil',
+      sub: 'variação em 12 meses do fluxo financeiro, p.p. do PIB · positivo = mais recurso líquido do que 12 meses antes',
+    },
+  },
+  defaultChecked: ['fluxo_total', 'fluxo_pj', 'fluxo_pf'],
+  defaultExpanded: ['fluxo_total'],
 });
 
 // ── Taxa & Spread — nao usa makeHierTab(): sem metrica/base (taxa e spread ja sao
@@ -1808,6 +2771,15 @@ var IMP_ATIV_TAB = makeImpulseTab({
 var taxaState = {source: 'taxa_media', checked: {taxa_juros_total_total: true}, expanded: {}, showSelic: false};
 
 function taxaGroup() { return D.taxa[taxaState.source]; }
+// Titulo do eixo Y (e unidade do cartao de definicao). Taxa media e % a.a.; spread e a
+// DIFERENCA entre aplicacao e captacao, que se mede em p.p. -- antes as duas saiam como
+// "% a.a.", o que o cartao de definicao tornaria uma contradicao explicita.
+function taxaYTitle() {
+  return taxaState.source === 'spread' ? 'p.p. (aplicação − captação)' : '% a.a.';
+}
+// Namespace do cartao por ARVORE, nao pela aba: as duas usam chaves diferentes, mas a
+// mesma modalidade significa taxa numa e spread na outra.
+function taxaInfoNs() { return [taxaState.source === 'spread' ? 'spread' : 'taxa', 'modal']; }
 function taxaSeries(seriesKey) {
   var s = taxaGroup().series[seriesKey];
   return s || {dates: [], values: []};
@@ -1871,8 +2843,10 @@ function renderTaxaTable() {
       });
       tdLabel.appendChild(icon);
       tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      attachInfo(tdLabel, taxaInfoNs(), node, taxaYTitle);
     } else {
       tdLabel.appendChild(document.createTextNode(node.label));
+      attachInfo(tdLabel, taxaInfoNs(), node, taxaYTitle);
     }
 
     tr.appendChild(tdCheck); tr.appendChild(tdLabel);
@@ -1899,7 +2873,7 @@ function renderTaxaChart() {
   if (taxaState.showSelic && D.taxa.selic) {
     specs.push({dates: D.taxa.selic.dates, values: D.taxa.selic.values, label: 'Selic', color: C.cinza});
   }
-  renderLineChart('chart-taxa', specs, '% a.a.');
+  renderLineChart('chart-taxa', specs, taxaYTitle());
 }
 function initTaxaTab() {
   document.querySelectorAll('#taxa-source-group .pill').forEach(function(btn) {
@@ -1926,6 +2900,7 @@ function initTaxaTab() {
 // inadimplencia_tab.py); (2) "Mostrar Selic" reusa a mesma logica de Taxa & Spread.
 var inadState = {checked: {inadimplencia_total_total: true}, expanded: {}, showSelic: false};
 
+function inadInfoUnit() { return '% da carteira com atraso > 90 dias'; }
 function inadSeries(seriesKey) {
   var s = D.inadimplencia.series[seriesKey];
   return s || {dates: [], values: []};
@@ -1990,8 +2965,13 @@ function renderInadTable() {
       });
       tdLabel.appendChild(icon);
       tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      attachInfo(tdLabel, ['inad', 'modal'], node, inadInfoUnit);
     } else {
       tdLabel.appendChild(document.createTextNode(node.label));
+      // Unidade da TABELA e "% da carteira em atraso > 90 dias"; as linhas de saldo de
+      // maior risco e a de atraso 15-90d medem outra coisa e carregam `unit` propria no
+      // NODE_INFO, que vence a da tabela.
+      attachInfo(tdLabel, ['inad', 'modal'], node, inadInfoUnit);
     }
 
     tr.appendChild(tdCheck); tr.appendChild(tdLabel);
@@ -2039,6 +3019,8 @@ function initInadTab() {
 var ptcState = {horizonte: 'observada', checked: {}, expanded: {oferta__header: true, demanda__header: true}};
 ['ge_oferta', 'mpme_oferta', 'pfc_oferta', 'pfh_oferta'].forEach(function(k) { ptcState.checked[k] = true; });
 
+function ptcInfoUnit() { return 'índice de difusão, escala −2 a +2'; }
+function ptcDesvioInfoUnit() { return 'p.p. de índice de difusão (observada − esperada), média móvel 4T'; }
 function ptcHasData(seriesKey) {
   return !!(D.ptc.series || {})[seriesKey];
 }
@@ -2111,8 +3093,10 @@ function renderPtcTable() {
       });
       tdLabel.appendChild(icon);
       tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      attachInfo(tdLabel, ['ptc'], node, ptcInfoUnit);
     } else {
       tdLabel.appendChild(document.createTextNode(node.label));
+      attachInfo(tdLabel, ['ptc'], node, ptcInfoUnit);
       // N do painel: e o que fixa o degrau minimo do indice (1/N) naquele segmento.
       if (node.n) {
         var sn = document.createElement('span');
@@ -2262,8 +3246,10 @@ function renderPtcDesvioTable() {
       });
       tdLabel.appendChild(icon);
       tdLabel.appendChild(document.createTextNode(' ' + node.label));
+      attachInfo(tdLabel, ['ptcsurp', 'ptc'], node, ptcDesvioInfoUnit);
     } else {
       tdLabel.appendChild(document.createTextNode(node.label));
+      attachInfo(tdLabel, ['ptcsurp', 'ptc'], node, ptcDesvioInfoUnit);
       // N (o painel, que da o limite inferior de respondentes no hover) e sigma (a
       // variacao tipica dos desvios desta serie, que e a faixa "em linha" da linha).
       if (node.n) {
@@ -2409,7 +3395,7 @@ function initPtcTab() {
 var RENDERERS = {
   saldo: function() { SALDO_TAB.init(); AMPLO_TAB.init(); },
   concessao: function() { CONCESSAO_TAB.init(); },
-  impulso: function() { IMP_RECURSO_TAB.init(); IMP_PORTE_TAB.init(); IMP_ATIV_TAB.init(); },
+  impulso: function() { IMP_RECURSO_TAB.init(); IMP_PORTE_TAB.init(); IMP_ATIV_TAB.init(); IMP_FLUXO_TAB.init(); },
   taxa: function() { initTaxaTab(); },
   inadimplencia: function() { initInadTab(); },
   ptc: function() { initPtcTab(); },

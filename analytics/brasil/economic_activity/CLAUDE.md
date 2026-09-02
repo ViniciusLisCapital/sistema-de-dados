@@ -7,9 +7,30 @@ account that extends PIB (Renda e Poupança) — all from `macro_brasil`, all al
 built directly on [`analytics/report_structure/`](../../report_structure/CLAUDE.md) (no Jinja2, no build
 step, no migration needed — unlike `inflation/`/`exchange_rate/`).
 
-Chart interaction (pan/zoom, quick-range buttons, period-selector dropdown, `_bindYAutofit`) follows the
+Chart interaction (pan/zoom, quick-range buttons, period-selector dropdown, `_bindYAutofit`), the
+3-line chart header, the definition cards and the "axis says what it measures" rule all follow the
 repo-wide convention — see [`.claude/rules/lis-dashboards.md`](../../../.claude/rules/lis-dashboards.md),
-not repeated here.
+not repeated here. Report-specific pieces of that convention:
+
+- **`CHART_META`** (one `{title, source}` per chart div, 25 entries) + `_ensureChartFrame(divId)` build
+  the header inside the `.chart-card` and the range bar **below** the chart div; `describeChart()`
+  rewrites subtitle and period on every render. Nothing about a chart's header is written in the HTML.
+- **`unitPIB()` / `unitMensal(group, mode)`** are the single source of the Y-axis title, the subtitle's
+  unit fragment and the definition card's "Unidade:" line — the three cannot drift.
+- **`PALETTE` + `assignSeriesColors(cats, defaults, fixos)`** assign every series colour **by position**,
+  default-checked ones first, so no view repeats a colour; past 13 series the palette restarts and
+  `line.dash` changes. No category carries a `color:` literal any more — that is what had left three
+  pairs of the PIB default view with identical colours. `PALETTE[0]` (navy) is reserved for each tab's
+  total line, and the Renda cascade's PIB via `fixos`.
+- **`INFO`** (122 namespaced entries) + `attachInfo()` hang the `i` button on the 6 multiselect
+  dropdowns, the 12 Renda rows and the 26 KPI labels. `setupMultiselect()` builds with `createElement`
+  (not `innerHTML`) precisely so items can host a button; the short label lives in its own
+  `.ms-label` span because the label's `textContent` includes the "i" once the button exists.
+
+`tests/test_economic_activity_js.js` (399 assertions) runs the real generated `<script>` against a DOM
+parsed from the real generated HTML, and covers all of the above plus the `% do PIB` arithmetic. It
+takes `EA_REPORT=<path>` to run against a mutated copy, which is how each assertion was verified to
+actually fail.
 
 ## Generate
 
@@ -106,8 +127,8 @@ accordion, keeping the data tabs uncluttered.
   between "Capacidade" and "Necessidade" by the sign of the latest value); a hierarchy table
   (`RENDA_POUPANCA_ROWS`, 12 rows, period pill 8/12/20/Todos trimestres) reproducing IBGE's own
   "Contas econômicas trimestrais" page verbatim — PIB and each "(=)" subtotal at depth 0 (bold), the
-  "(+)/(−)" line items that feed the next subtotal at depth 1 (indented); a Gráfico with a Nível↔Y-Y
-  toggle over the 5 subtotals + PIB. This is a **linear cascade, not a branching tree** (every row has
+  "(+)/(−)" line items that feed the next subtotal at depth 1 (indented); a Gráfico with a
+  **Nível ↔ % do PIB ↔ Y-Y** toggle over the 5 subtotals + PIB. This is a **linear cascade, not a branching tree** (every row has
   at most one "child," the next line down) — deliberately not run through `makeHierTab()`
   (`analytics/brasil/credit/`'s factory), which is built for real branching trees with a Nominal/Real/%PIB
   axis this data doesn't have; the table/KPI/chart code here is bespoke, same precedent as the PIB tab's
@@ -144,16 +165,27 @@ has been deleted (no callers left).
   two rate tables in Pending below, neither an SA companion to 2072. The tab's Y-Y mode is therefore a
   plain `growthN(...,4)` on the NSA level (valid for a currency level, unlike an index), not the
   official-rate pattern PIB's `officialRate()` uses.
+- **The `% do PIB` mode inherits that gap, which is why its window is a control and not a constant**
+  (`rendaShareOfGDP(base, janela)`, 2026-09-01). Numerator and denominator come from the same table at
+  current prices, so no deflator is involved; the default sums **4 quarters on both sides**, because
+  the single-quarter ratio is pure seasonality — measured, Poupança Bruta swings 10,8%→16,6% of GDP
+  across the last 8 quarters raw vs. 14,4% flat on the 4-quarter window. "Trimestre Isolado" exposes
+  the raw ratio deliberately. Two things not to mistake for bugs: the PIB line is **dropped** in this
+  mode (it is 100% by construction and squashes the scale — the subtitle says so), and the result is
+  **not** IBGE's published taxa de investimento (Agregado 6727), whose numerator is FBCF while this
+  cascade's line is the broader Formação Bruta de Capital. Both points are in the Apêndice.
 - **Heatmap click-to-expand needs two listeners**: `plotly_click` (cell clicks only) *and* a DOM-level
   `click` listener delegating via `.closest('.ytick')` (axis-label-text clicks — what a user actually
   clicks — never fire `plotly_click` in real Plotly). Both resolve through the same per-div
   `_tabHeatmapCtx` cache (rebuilt every render, never captured by closure). `analytics/brasil/exchange_rate/
   report.html`'s BOP heatmap shares this same architecture and almost certainly has the same gap —
   never confirmed live there, check before trusting its click-to-expand rows.
-- **No browser has visually confirmed any interaction in this report** — verification so far is a jsdom
-  harness (ad hoc in scratchpad, not a repo dependency) evaluating the real generated `<script>` against
-  real DB output: tabs activate, charts render with the right trace/point counts, toggles/checkboxes
-  re-render, captions populate. Layout, real Plotly rendering, and pan/zoom feel are unconfirmed.
+- **No browser has visually confirmed any interaction in this report** — verification is
+  `tests/test_economic_activity_js.js` (in the repo since 2026-09-01; it replaced an ad-hoc scratchpad
+  harness), which runs the real generated `<script>` against a DOM parsed from the real generated HTML
+  and a Plotly stub. It asserts on DOM order, on the window every range button and the first paint
+  produce, on axis/subtitle/card units moving together, on card coverage and orphan keys, and on the
+  `% do PIB` arithmetic. Layout, real Plotly rendering and pan/zoom feel are still unconfirmed.
 
 ## Pending
 
@@ -169,10 +201,11 @@ has been deleted (no callers left).
 - `atv_pib_taxas.acum_ano` fetched/stored but not surfaced anywhere — add if requested.
 - IBC-Br's Momentum × Nível scatter was added for cross-tab parity, not an explicit request, and only has
   5 points — confirm with the user whether it's useful or should come back out.
-- IBGE's own **`Taxa de poupança`** (Agregado 6726) and **`Taxa de investimento`** (6727) — official %-of-
-  GDP versions of `poupanca_bruta`/`formacao_bruta_capital`, 4-quarter-rolling to smooth seasonality —
-  are citable but not loaded; a quarter-over-quarter `value/pib` ratio would NOT reproduce them (different
-  smoothing convention). Add only if the user wants the official rate, not a simple ratio.
+- IBGE's own **`Taxa de poupança`** (Agregado 6726) and **`Taxa de investimento`** (6727) still aren't
+  loaded. The tab's `% do PIB` mode (2026-09-01) now computes the ratio itself on the same 4-quarter
+  window IBGE uses, so the *smoothing* is no longer the gap — what remains is the **numerator**: 6727
+  uses FBCF, this cascade only carries the broader Formação Bruta de Capital. Load the two aggregates
+  if the published rate itself is wanted; the computed ratio is labelled as computed, not official.
 - `analytics/brasil/exchange_rate/report.html`'s BOP heatmap likely needs the same click-listener backport (see
   Gotchas) — only touch if/when that report comes up specifically.
 - No `agent_data.py`-style snapshot function yet (unlike `exchange_rate/`'s `get_fx_snapshot()`) — add if

@@ -11,7 +11,9 @@ seguem apagadas; `fisc_divida` continua alimentada por jobs/update_db.py sem ser
 aqui (ver Pending no CLAUDE.md desta pasta).
 
 Le de macro_brasil: fisc_efgg (GFSM + IEG), fisc_rtn (RTN), fisc_dlsp_fatores (DLSP),
-fisc_investimento (Investimento), fisc_nfsp (impulso via resultado primario),
+fisc_investimento (Investimento), fisc_nfsp (impulso via resultado primario
+abaixo da linha) e de novo fisc_rtn (impulso acima da linha, decomposto em
+receita x despesa -- ver impulso_rtn_tab.py),
 atv_pib_valores_correntes/atv_pib_mensal (denominadores de %PIB), inflc_agregados
 (deflator IPCA) e atv_pib_taxas (comparacao com o PIB oficial) -- e injeta no template
 report.html, gerando um arquivo HTML autocontido. Mesmo padrao /*REPORT_DATA*/ de
@@ -28,7 +30,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from analytics.brasil.fiscal_policy import dlsp_tab, gfsm_tab, investimento_tab, rtn_tab
+from analytics.brasil.fiscal_policy import (
+    dlsp_tab, gfsm_tab, impulso_rtn_tab, investimento_tab, rtn_tab,
+)
 from analytics.brasil.fiscal_policy import transforms as tf
 from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
@@ -267,7 +271,8 @@ _IMPULSO_NFSP_FLUXO_ESFERAS = {
 }
 
 
-def _impulso_quarter_via_stl(flow: dict, gdp_by_date: dict, target_dates: list[str]) -> list:
+def _impulso_quarter_via_stl(flow: dict, gdp_by_date: dict, target_dates: list[str],
+                             sign: int = -1) -> list:
     """Leitura T/T geniunamente dessazonalizada (STL) do impulso via resultado
     primario (2026-08, substitui o atalho anterior -- pp_diff(3) sobre o proprio
     acumulado em 12m, sem rodar STL -- a pedido explicito do usuario: "We have the
@@ -298,8 +303,11 @@ def _impulso_quarter_via_stl(flow: dict, gdp_by_date: dict, target_dates: list[s
           por isso o STL aqui e necessario, ao contrario do acum12m acima);
       (4) pp_diff(3) sobre a serie dessazonalizada = variacao trimestral genuina
           (trimestre terminado em t contra o trimestre terminado 3 meses antes);
-      (5) sinal invertido (como `impulso` acima) para bater com a convencao
-          "positivo = expansionista".
+      (5) multiplicado por `sign` (default -1, o caso do resultado primario) para
+          bater com a convencao "positivo = expansionista". O default cobre toda serie
+          de RESULTADO -- uma piora do resultado e expansionista. Uma serie de DESPESA
+          passa sign=+1 (gastar mais e expansionista) e uma de RECEITA, sign=-1
+          (arrecadar menos e expansionista); ver impulso_rtn_tab.py.
 
     Resultado alinhado (por data, nao por posicao) a `target_dates` -- o grid de
     resultado_primario_pct_pib_12m, para o campo "quarter" conviver no mesmo array
@@ -321,7 +329,7 @@ def _impulso_quarter_via_stl(flow: dict, gdp_by_date: dict, target_dates: list[s
     sa_by_date = {d.strftime("%Y-%m-%d"): v for d, v in sa_dense.items()}
     sa = [sa_by_date.get(d) for d in dates]
     delta = tf.pp_diff(sa, 3)
-    quarter_by_date = dict(zip(dates, (None if v is None else -v for v in delta)))
+    quarter_by_date = dict(zip(dates, (None if v is None else sign * v for v in delta)))
     return [quarter_by_date.get(d) for d in target_dates]
 
 
@@ -714,6 +722,88 @@ def _load_ieg() -> dict:
     }
 
 
+def _load_impulso_rtn() -> dict:
+    """4a secao da aba Impulso Fiscal (2026-08-28): o mesmo impulso via resultado
+    primario, mas ACIMA DA LINHA (fisc_rtn, Governo Central) e decomposto em receita x
+    despesa. Soma-se a _load_fiscal_impulse_nfsp(), nao a substitui -- a racional
+    completa, os sinais por ramo e as medidas de aditividade estao em
+    analytics/brasil/fiscal_policy/impulso_rtn_tab.py.
+
+    Cada no vira `sign * Delta12(serie acumulada em 12m / PIB acumulado em 12m * 100)`,
+    a mesma transformacao que o lado do NFSP aplica ao resultado primario -- so que
+    aplicada a cada rubrica, o que a fonte abaixo da linha nao permite. Duas variantes,
+    como as outras secoes da aba:
+
+      acum12m  janela anual contra janela anual (TTM/TTM), sem dessazonalizar: a soma de
+               12 meses ja cancela sazonalidade por construcao.
+      quarter  soma movel de 3 meses / PIB dos mesmos 3 meses, STL (period=12) e
+               pp_diff(3) -- _impulso_quarter_via_stl() com o `sign` do no.
+
+    O total plotado como LINHA e o impulso do proprio `resultado_primario_governo_central`
+    (codigo 8055, serie que o Tesouro publica), nao a soma dos dois ramos -- assim a linha
+    e a serie oficial e a reconciliacao com as barras vira uma AFIRMACAO checavel, nao uma
+    identidade imposta pela construcao. `residuo_max_pp` carrega o resultado dessa checagem
+    para o Apendice e para o teste.
+    """
+    rtn = _load_flat("fisc_rtn")
+    pib = _load_flat("atv_pib_mensal")
+    pib12 = dict(zip(pib["pib_acum_12m"]["dates"], pib["pib_acum_12m"]["values"]))
+    gdp_by_date = dict(zip(pib["pib_mensal"]["dates"], pib["pib_mensal"]["values"]))
+
+    total_raw = rtn[impulso_rtn_tab.TOTAL_CODE]
+    dates = total_raw["dates"]
+
+    def pct_pib_12m(serie: dict) -> list:
+        """Serie bruta mensal (R$ mi) -> % do PIB acumulado em 12 meses, no grid `dates`.
+
+        Realinhada POR DATA antes do rolling: rolling_sum()/pp_diff() sao posicionais, e
+        as series do RTN nao comecam todas no mesmo mes -- alinhar por posicao deslocaria
+        a janela de 12 meses de quem comeca depois.
+        """
+        by_date = dict(zip(serie["dates"], serie["values"]))
+        aligned = [by_date.get(d) for d in dates]
+        acum = tf.rolling_sum(aligned, window=12)
+        return [None if (v is None or pib12.get(d) in (None, 0)) else v / pib12[d] * 100
+                for v, d in zip(acum, dates)]
+
+    def contribuicao(serie: dict, sign: int) -> list:
+        delta = tf.pp_diff(pct_pib_12m(serie), 12)
+        return [None if v is None else round(sign * v, 4) for v in delta]
+
+    series = {}
+    for node in impulso_rtn_tab.flat_nodes():
+        code = node["seriesKey"]
+        bruta = rtn.get(code)
+        if bruta is None:
+            series[code] = {"acum12m": [None] * len(dates), "quarter": [None] * len(dates)}
+            continue
+        series[code] = {
+            "acum12m": contribuicao(bruta, node["sign"]),
+            "quarter": _impulso_quarter_via_stl(bruta, gdp_by_date, dates, sign=node["sign"]),
+        }
+
+    impulso = contribuicao(total_raw, -1)
+    impulso_quarter = _impulso_quarter_via_stl(total_raw, gdp_by_date, dates, sign=-1)
+
+    # Checagem de nivel 1: as duas barras de topo tem de somar a linha do total. Sai no
+    # payload (o Apendice imprime) e e o que tests/test_impulso_rtn.py afirma.
+    rec = series["receita_liquida"]["acum12m"]
+    desp = series["despesa_total"]["acum12m"]
+    residuos = [abs(r + d - t) for r, d, t in zip(rec, desp, impulso)
+                if None not in (r, d, t)]
+
+    return {
+        "dates": dates,
+        "impulso": impulso,
+        "impulso_quarter": impulso_quarter,
+        "series": series,
+        "tree": impulso_rtn_tab.tree(),
+        "aditividade_desde": impulso_rtn_tab.ADITIVIDADE_DESDE,
+        "residuo_max_pp": round(max(residuos), 6) if residuos else None,
+        "n_meses_checados": len(residuos),
+    }
+
+
 def run(output: str = "reports/brasil/Fiscal Policy.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
@@ -784,6 +874,16 @@ def run(output: str = "reports/brasil/Fiscal Policy.html") -> None:
     except Exception as exc:
         print(f"  fiscal_impulse_nfsp: FALHOU -- {exc}")
         data["fiscal_impulse_nfsp"] = {}
+
+    try:
+        impulso_rtn = _load_impulso_rtn()
+        data["impulso_rtn"] = impulso_rtn
+        print(f"  impulso_rtn (fisc_rtn, acima da linha): {len(impulso_rtn['dates'])} meses, "
+              f"{len(impulso_rtn['series'])} rubricas, residuo max "
+              f"{impulso_rtn['residuo_max_pp']} p.p. em {impulso_rtn['n_meses_checados']} meses")
+    except Exception as exc:
+        print(f"  impulso_rtn: FALHOU -- {exc}")
+        data["impulso_rtn"] = {}
 
     out = render_report(_TEMPLATE, data, output)
     print(f"Relatorio salvo: {out}")

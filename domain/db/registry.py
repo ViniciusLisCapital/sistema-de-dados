@@ -51,11 +51,20 @@ _OVERRIDES = {
     "mt_caged_setor": f"{_PKG}.brasil.mte.mt_caged_novo",
     "mt_caged_uf": f"{_PKG}.brasil.mte.mt_caged_novo",
     "mt_caged_salario": f"{_PKG}.brasil.mte.mt_caged_novo",
+    # Mesmo racional: `mt_jolts.run()` baixa jt.data.1.AllItems (34 MB) uma vez e
+    # alimenta as duas tabelas no mesmo passe -- rodar `mt_jolts_dim` a parte baixaria
+    # o arquivo de novo so para validar a arvore.
+    "mt_jolts_dim": f"{_PKG}.us.labor_market.mt_jolts",
+    # E de novo: `mt_ces.run()` le os 30 arquivos da CES (78 MB so os de emprego) e
+    # monta a arvore no mesmo passe. `mt_ces_dim` a parte reliria os 18 arquivos de
+    # emprego so para validar a aditividade.
+    "mt_ces_dim": f"{_PKG}.us.labor_market.mt_ces",
 }
 
 # Modulos que declaram _TABLE mas nao devem ser oferecidos como script de tabela
 # (sao alimentados por um orquestrador; ver _OVERRIDES acima).
-_NAO_DIRETOS = {"mt_caged_setor", "mt_caged_uf", "mt_caged_salario"}
+_NAO_DIRETOS = {"mt_caged_setor", "mt_caged_uf", "mt_caged_salario", "mt_jolts_dim",
+                "mt_ces_dim"}
 
 
 def _varrer() -> tuple[dict[str, str], list[str]]:

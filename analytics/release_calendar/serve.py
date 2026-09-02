@@ -17,9 +17,10 @@ Ctrl+C para parar.
 
 Seguranca — o que existe e por que:
   * escuta so em 127.0.0.1 (nao 0.0.0.0), entao nada na rede alcanca
-  * o POST aceita um SLUG DE GRUPO e resolve os scripts pelo YAML — nunca recebe nome
-    de modulo, caminho ou comando da pagina. Slug fora da lista = 400. Nao ha shell
-    envolvido em nenhum ponto
+  * ha DOIS POST e so dois, um por botao: /api/run recebe um SLUG DE GRUPO e /api/gerar
+    uma KEY de dashboard, e os dois resolvem script/modulo do nosso lado, pelo YAML e
+    pelo manifesto — nunca recebe nome de modulo, caminho ou comando da pagina. Id fora
+    da lista = 400. Nao ha shell envolvido em nenhum ponto
   * confere o header Host: sem isso, um site qualquer aberto no mesmo browser poderia
     apontar um dominio para 127.0.0.1 e disparar POSTs (DNS rebinding)
 """
@@ -31,6 +32,8 @@ import json
 import sys
 import threading
 import webbrowser
+
+from utils.console import stdout_utf8
 from datetime import date, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -213,6 +216,13 @@ class Handler(BaseHTTPRequestHandler):
         IPCA escolhe qual dos seis dashboards que o consomem interessa agora. Nao
         existe "regerar todos os atrasados" aqui nem na pagina.
 
+        "Regerar" inclui RECALCULAR: `status.gerar()` refaz antes os `procedures` que
+        estiverem atras (a estimacao de um modelo, um backtest) e devolve, em
+        `procedimentos`, o que rodou. Foi pedido explicito do usuario (2026-08-31) que
+        isto fosse um botao so -- houve por algumas horas um terceiro botao, por
+        procedimento, e o processo ficou confuso. Por isso a resposta pode levar minutos
+        quando ha metrica atrasada; a pagina anuncia o tempo estimado antes do clique.
+
         Mesma guarda do /api/run, so que por `key`: a pagina manda um id do manifesto
         e quem resolve id -> modulo e o nosso lado. Nunca chega caminho nem nome de
         modulo pela rede, e nao ha shell em ponto nenhum.
@@ -286,6 +296,7 @@ def run(port: int = 8765, abrir: bool = True) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
+    stdout_utf8()
     p = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     p.add_argument("--port", type=int, default=8765)
     p.add_argument("--no-browser", action="store_true",

@@ -116,6 +116,32 @@
     .upd-msg { font-family: var(--mono); font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
     .upd-msg.err { color: var(--lis-laranja); }
 
+    /* ── Texto explicativo: ocupa a largura do bloco e vai JUSTIFICADO ─────────
+       Pedido explícito do usuário (2026-08-31), a partir de um print: os textos tinham
+       `max-width` em ch e o card é largo, então sobrava um vazio grande à direita de cada
+       parágrafo. Tirar o cap resolve as duas coisas de uma vez — o texto cobre a largura
+       e, ocupando mais linha, o card fica MAIS BAIXO em vez de mais alto.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       português (palavras longas, poucas monossílabas) abre rios de espaço branco entre
+       as palavras da linha. O que faz a hifenização funcionar é o `<html lang="pt-BR">`
+       lá em cima — sem o lang o browser não sabe que dicionário usar e não hifeniza nada.
+
+       Fica de fora: célula de tabela (`td.dep-role`, 42ch — justificar coluna estreita é
+       exatamente onde os rios aparecem), linha de metadado em mono (`.dash-meta`,
+       `.proc-meta`, `.proc-writes`: são listas de campo separadas por `·`, não prosa) e o
+       rodapé, que é centralizado de propósito. */
+    .dash-note,
+    .proc-note,
+    .proc-hint,
+    .table-card .card-hint {
+
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
+
     .table-card .card-hint {
       font-family: var(--mono); font-size: 10.5px; color: var(--muted);
       margin: -8px 0 14px; line-height: 1.6;
@@ -149,14 +175,35 @@
     .view[hidden] { display: none; }
 
     /* ── Aba Status dashboard ── */
-    .dash-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 24px 8px; }
+    /* O card é um click-drop (<details>), fechado por default: são 11 dashboards com 27
+       dependências cada, e abertos empurram tudo que vem depois para fora da tela. Mesma
+       mecânica do `.tbl-fold` dos relatórios de análise. O <summary> carrega o que se
+       precisa ver com o card fechado — nome, veredito, meta e o botão —, e o corpo carrega
+       a explicação, os procedimentos e a tabela de dependências.
+
+       `padding-right` no summary abre espaço para o `+`/`−`, que é `::after` absoluto: pôr
+       o caret no fluxo do .dash-head o faria disputar espaço com o botão a cada
+       `flex-wrap`. */
+    details.dash-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+    details.dash-card > summary {
+      list-style: none; cursor: pointer; padding: 18px 44px 14px 24px; position: relative;
+    }
+    details.dash-card > summary::-webkit-details-marker { display: none; }
+    details.dash-card > summary::after {
+      content: '+'; position: absolute; right: 22px; top: 15px;
+      font-family: var(--mono); font-size: 17px; color: var(--muted);
+    }
+    details.dash-card[open] > summary::after { content: '−'; }
+    details.dash-card > summary:hover .dash-head h3 { color: var(--lis-dourado); }
+    .dash-body { padding: 0 24px 10px; border-top: 1px solid rgba(31,40,83,0.06); }
+    .dash-body > .dash-note:first-child { margin-top: 12px; }
     .dash-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
     .dash-head h3 { font-family: var(--cond); font-size: 17px; font-weight: 700; color: var(--text); }
     .dash-head .dash-out { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
     .dash-head .spacer { flex: 1; }
     .dash-meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
     .dash-meta strong { color: var(--text2); font-weight: 600; }
-    .dash-note { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.55; max-width: 78ch; }
+    .dash-note { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.55; }
     .verdict {
       font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em;
       text-transform: uppercase; padding: 3px 10px; border-radius: 10px; white-space: nowrap;
@@ -203,6 +250,36 @@
     .dep-sub { font-family: var(--sans); font-size: 11px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.5; }
     .dep-sub code { font-family: var(--mono); font-size: 10px; color: var(--text2); }
     tr.dep-modelo td.dep-ref, tr.dep-modelo td.dep-role { opacity: 0.72; }
+
+    /* Procedimentos: o que ESCREVE os artefatos. Bloco proprio dentro do card, acima da
+       tabela de dependencias, porque a acao e de natureza diferente da do botao do card
+       -- aquele reconstroi a SAIDA (o HTML), estes reescrevem os INSUMOS. */
+    .proc-box { margin-top: 14px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .proc-box > h4 {
+      font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); margin: 0;
+      padding: 7px 12px; background: rgba(31,40,83,0.03); border-bottom: 1px solid var(--border);
+    }
+    .proc-row {
+      display: flex; align-items: flex-start; gap: 12px; padding: 9px 12px;
+      border-bottom: 1px solid rgba(31,40,83,0.05);
+    }
+    .proc-row:last-child { border-bottom: none; }
+    .proc-row.late { background: rgba(234,82,58,0.05); }
+    .proc-main { flex: 1; min-width: 0; }
+    .proc-label { font-size: 12.5px; color: var(--text); font-weight: 500; }
+    .proc-meta {
+      font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+      margin-top: 3px; line-height: 1.7;
+    }
+    .proc-meta strong { color: var(--text2); font-weight: 600; }
+    .proc-meta .late { color: var(--lis-laranja); }
+    .proc-note { font-size: 11px; color: var(--muted); margin-top: 5px; line-height: 1.55; }
+    .proc-hint {
+      font-size: 11px; color: var(--muted); line-height: 1.55;
+      padding: 9px 12px 10px; border-bottom: 1px solid rgba(31,40,83,0.05);
+    }
+    .proc-writes { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; word-break: break-all; }
 
     footer { max-width: 1440px; margin: 8px auto 40px; padding: 0 32px; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
   </style>
@@ -303,7 +380,7 @@
       <div class="stat-card">
         <span class="stat-label">Dependências Fora do MySQL</span>
         <span class="stat-value" id="dash-stat-out">—</span>
-        <span class="stat-sub">CSV, artefato do modelo, YAML ou fonte externa — nenhum ETL daqui as move</span>
+        <span class="stat-sub">CSV, arquivo de cálculo, configuração ou fonte externa — o botão Atualizar não alcança nenhuma</span>
       </div>
     </div>
 
@@ -665,7 +742,7 @@
        relatório embutiu" exige o stamp, que só o gerador sabe gravar. */
 
     var DASH = { rows: (REPORT_DATA.dashboards || []), ao_vivo: false, consultado: null,
-                 erro: null, area: 'todas', filtro: 'todas', msg: {} };
+                 erro: null, area: 'todas', filtro: 'todas', msg: {}, abertos: {} };
 
     function esc(s) {
       return String(s == null ? '' : s)
@@ -700,7 +777,7 @@
       return true;
     }
 
-    function linhaDep(d) {
+    function linhaDep(d, procs) {
       var flags = [];
       if (d.novo) flags.push('<span class="dep-flag new">dado novo</span>');
       else if (d.arquivo_mais_novo) flags.push('<span class="dep-flag new">arquivo mais novo</span>');
@@ -709,7 +786,16 @@
 
       var sub = [];
       if (d.owner) sub.push('escrito pelo <strong>' + esc(d.owner) + '</strong>, não por este projeto');
-      if (d.refresh) sub.push('atualizar: <code>' + esc(d.refresh) + '</code>');
+      /* Onde existe procedimento declarado, a linha diz que o Regerar cuida dele, em vez
+         de imprimir um comando para copiar: o `refresh:` como texto era o estado anterior
+         das coisas — a aba mostrava, ninguém executava. Onde não existe (extração manual
+         de PDF, CSV exportado à mão), o texto continua sendo a única resposta honesta. */
+      if (d.procedimento && procs && procs[d.procedimento]) {
+        sub.push('refeito pelo Regerar, no passo <strong>' +
+                 esc(procs[d.procedimento]) + '</strong>');
+      } else if (d.refresh) {
+        sub.push('atualizar: <code>' + esc(d.refresh) + '</code>');
+      }
       if (d.note) sub.push(esc(d.note));
 
       var valor = d.ultimo ? fmtDado(d.ultimo) : (d.mtime ? fmtDataHora(d.mtime) : '—');
@@ -741,8 +827,8 @@
         return '<span class="upd-none" title="' + esc(r.command || '') +
                '">só pela linha de comando</span>';
       }
-      var classe = (r.veredito === 'desatualizado' || r.veredito === 'sem relatorio')
-        ? 'late' : 'neutral';
+      var classe = (r.veredito === 'desatualizado' || r.veredito === 'sem relatorio'
+                    || r.n_proc_atrasados) ? 'late' : 'neutral';
       // LIVE.on (existe servidor?), NAO DASH.ao_vivo (o estado carregou?). As duas
       // coisas se separam quando a pagina e servida mas o /api/dashboards falha: o
       // /api/gerar continua funcionando, entao o botao tem de continuar sendo Regerar.
@@ -750,36 +836,148 @@
              '">' + (LIVE.on ? 'Regerar' : 'Copiar cmd') + '</button>';
     }
 
+    /* Procedimentos: os passos de RECÁLCULO que o botão Regerar refaz antes de gerar o
+       HTML. Não têm botão próprio, e isso é pedido explícito do usuário (2026-08-31):
+       são dois botões no sistema e só dois — "Atualizar" mexe na base de dados, "Regerar"
+       reconstrói o dashboard, e reconstruir inclui refazer o que ficou atrás. Um terceiro
+       botão por procedimento existiu por algumas horas e deixou o processo confuso.
+
+       O bloco fica como LEITURA: o que vai ser refeito, por quê, e quanto custa — para o
+       tempo do botão não ser surpresa. O veredito de cada passo tem a granularidade dele
+       (o painel é trimestral, a previsão é diária), e é isso que evita refazer 4 minutos
+       de estimação a cada boletim Focus.
+
+       "Atrasado" quer dizer que o passo foi calculado com dado anterior ao que o banco já
+       tem — mtime novo, número velho. É o caso que motivou tudo isto: relatório gerado no
+       dia, previsão calculada com Focus de seis dias antes. */
+    /* A granularidade é a unidade em que o corte do cálculo se compara com o dado. Quem
+       lê o card não precisa dessa frase — precisa da consequência dela: de quanto em
+       quanto tempo este cálculo fica velho. */
+    var PROC_QUANDO = {
+      dia: 'fica velho quando o dado anda, dia a dia',
+      mes: 'fica velho quando abre um mês novo',
+      trimestre: 'fica velho quando abre um trimestre novo',
+    };
+
+    function procVeredito(pr) {
+      if (pr.atrasado === null || pr.atrasado === undefined) {
+        return { classe: '', texto: 'não há como conferir se está em dia' };
+      }
+      if (!pr.atrasado) {
+        return { classe: '', texto: 'em dia: usou os dados até <strong>' +
+                 esc(pr.corte) + '</strong>' };
+      }
+      var d = pr.dias_atras;
+      return { classe: 'late',
+               texto: '<span class="late">atrás dos dados: usou o que havia até ' +
+                      '<strong>' + esc(pr.corte) + '</strong>, e já existe dado de ' +
+                      '<strong>' + esc(pr.fonte_max) + '</strong>' +
+                      (d ? ', ' + d + (d === 1 ? ' dia depois' : ' dias depois') : '') +
+                      ' — o Regerar refaz</span>' };
+    }
+
+    function procSegundos(r) {
+      // Só o que está atrasado entra na conta: é o que o Regerar vai de fato rodar.
+      return (r.procedimentos || []).reduce(function(s, pr) {
+        return s + (pr.atrasado && pr.seconds ? pr.seconds : 0);
+      }, 0);
+    }
+
+    function blocoProcedimentos(r) {
+      var procs = r.procedimentos || [];
+      if (!procs.length) return '';
+      var linhas = procs.map(function(pr) {
+        var v = procVeredito(pr);
+        var meta = ['atualizado em <strong>' + fmtDataHora(pr.rodou_em) + '</strong>'];
+        if (pr.seconds) meta.push('leva ~' + pr.seconds + 's');
+        meta.push(PROC_QUANDO[pr.granularidade] || PROC_QUANDO.dia);
+        meta.push(v.texto);
+        if (pr.faltando && pr.faltando.length) {
+          meta.push('<span class="late">' + pr.faltando.length +
+                    ' arquivo(s) ainda não existe(m)</span>');
+        }
+        return '<div class="proc-row' + (v.classe ? ' ' + v.classe : '') + '">' +
+          '<div class="proc-main">' +
+            '<div class="proc-label">' + esc(pr.label) + '</div>' +
+            '<div class="proc-meta">' + meta.join(' · ') + '</div>' +
+            '<div class="proc-writes">guarda o resultado em ' + pr.writes.length +
+              ' arquivo' + (pr.writes.length === 1 ? '' : 's') + ': ' +
+              pr.writes.map(function(w) { return esc(w.split('/').pop()); }).join(', ') +
+            '</div>' +
+            (pr.note ? '<div class="proc-note">' + esc(pr.note) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+      var n = procs.filter(function(pr) { return pr.atrasado; }).length;
+      // O texto do bloco é para quem nunca viu este dashboard: diz o que são estes itens
+      // e por que um número velho pode aparecer dentro de um arquivo novo.
+      return '<div class="proc-box"><h4>O que este dashboard prepara por conta própria' +
+        (n ? ' · <span class="late">' + n + ' atrás dos dados, +' + procSegundos(r) +
+             's no Regerar</span>'
+           : ' · tudo em dia') +
+        '</h4>' +
+        '<div class="proc-hint">Nem tudo o que este relatório mostra vem de uma consulta ao ' +
+        'banco de dados: os itens abaixo são preparados pelo próprio dashboard — um cálculo, ' +
+        'uma busca em fonte externa — e guardados em arquivo, que é o que a geração lê. Se um ' +
+        'deles usou dado mais antigo do que o banco já tem, o número dentro do relatório fica ' +
+        'velho mesmo que o arquivo seja novo — é isso que o botão Regerar corrige, refazendo ' +
+        'o passo antes de montar a página.</div>' +
+        linhas + '</div>';
+    }
+
     function cardDashboard(r) {
       var deps = (r.deps || []).filter(depVisivel);
       var meta = [];
       meta.push('Gerado em <strong>' + fmtDataHora(r.gerado_em) + '</strong>');
       if (r.tamanho_mb) meta.push(r.tamanho_mb.toFixed(1).replace('.', ',') + ' MB');
-      if (r.build_seconds) meta.push('~' + r.build_seconds + 's para regerar');
+      if (r.build_seconds) {
+        // O tempo anunciado tem de ser o do CLIQUE, não o do generate_report: o Regerar
+        // refaz antes o que estiver atrás, e é isso que o usuário vai esperar.
+        var extra = procSegundos(r);
+        meta.push('~' + (r.build_seconds + extra) + 's para regerar' +
+                  (extra ? ' (' + r.build_seconds + 's + ' + extra + 's de recálculo)' : ''));
+      }
       meta.push('<strong>' + r.n_deps + '</strong> dependências' +
                 (r.n_fora_mysql ? ' · <strong>' + r.n_fora_mysql + '</strong> fora do MySQL' : ''));
+      if (r.n_proc) {
+        meta.push('<strong>' + r.n_proc + '</strong> procedimento' + (r.n_proc === 1 ? '' : 's') +
+                  (r.n_proc_atrasados ? ' · <strong>' + r.n_proc_atrasados + '</strong> atrasado' +
+                   (r.n_proc_atrasados === 1 ? '' : 's') : ''));
+      }
+
+      var pmap = {};
+      (r.procedimentos || []).forEach(function(pr) { pmap[pr.id] = pr.label; });
 
       var corpo = deps.length
         ? '<table class="dep-table"><thead><tr><th>Onde mora</th><th>Dependência</th>' +
           '<th>Papel no dashboard</th><th>Último dado</th><th></th></tr></thead><tbody>' +
-          deps.map(linhaDep).join('') + '</tbody></table>'
+          deps.map(function(x) { return linhaDep(x, pmap); }).join('') + '</tbody></table>'
         : '<div class="dash-note">Nenhuma dependência no filtro selecionado.</div>';
 
       var msg = DASH.msg[r.key];
 
-      return '<div class="dash-card" data-key="' + esc(r.key) + '">' +
-        '<div class="dash-head"><h3>' + esc(r.name) + '</h3>' +
-          '<span class="verdict ' + (VERDICT_CLASS[r.veredito] || 'unknown') + '">' +
-            esc(VERDICT_LABEL[r.veredito] || r.veredito || '—') + '</span>' +
-          '<span class="spacer"></span>' +
-          '<span class="dash-out">' + esc(r.output) + '</span>' +
-          botaoRegerar(r) + '</div>' +
-        (msg ? '<div class="dash-msg' + (msg.erro ? ' err' : '') + '">' +
-               esc(msg.texto) + '</div>' : '') +
-        '<div class="dash-meta">' + meta.join(' · ') + '</div>' +
-        (r.note ? '<div class="dash-note">' + esc(r.note) + '</div>' : '') +
-        corpo +
-      '</div>';
+      // Cabeçalho, meta e mensagem ficam no <summary>: são o que tem de ser legível com o
+      // card FECHADO. A mensagem sobretudo — depois de um Regerar, "recalculou X e regerou
+      // em Ys" não pode desaparecer só porque o card estava fechado.
+      return '<details class="dash-card" data-key="' + esc(r.key) + '"' +
+             (DASH.abertos[r.key] ? ' open' : '') + '>' +
+        '<summary>' +
+          '<div class="dash-head"><h3>' + esc(r.name) + '</h3>' +
+            '<span class="verdict ' + (VERDICT_CLASS[r.veredito] || 'unknown') + '">' +
+              esc(VERDICT_LABEL[r.veredito] || r.veredito || '—') + '</span>' +
+            '<span class="spacer"></span>' +
+            '<span class="dash-out">' + esc(r.output) + '</span>' +
+            botaoRegerar(r) + '</div>' +
+          (msg ? '<div class="dash-msg' + (msg.erro ? ' err' : '') + '">' +
+                 esc(msg.texto) + '</div>' : '') +
+          '<div class="dash-meta">' + meta.join(' · ') + '</div>' +
+        '</summary>' +
+        '<div class="dash-body">' +
+          (r.note ? '<div class="dash-note">' + esc(r.note) + '</div>' : '') +
+          blocoProcedimentos(r) +
+          corpo +
+        '</div>' +
+      '</details>';
     }
 
     function renderDashControls() {
@@ -810,6 +1008,24 @@
       });
     }
 
+    /* Guarda quem está aberto. `renderDashboards()` reescreve o innerHTML inteiro (é o que
+       o POST de Regerar dispara), então sem isto o card que você abriu fecharia sozinho no
+       meio da operação. O evento `toggle` do <details> NÃO borbulha, por isso é um listener
+       por card em vez de delegação — e por isso ele é religado a cada render. Ler
+       `d.open` dentro do `toggle` é o único jeito sem assumir a ordem entre o listener e
+       a ação default do clique. */
+    function wireDashFolds() {
+      var nos = document.getElementById('dash-cards')
+                        .querySelectorAll('details.dash-card');
+      for (var i = 0; i < nos.length; i++) {
+        (function(d) {
+          d.addEventListener('toggle', function() {
+            DASH.abertos[d.dataset.key] = !!d.open;
+          });
+        })(nos[i]);
+      }
+    }
+
     function renderDashboards() {
       renderDashControls();
 
@@ -833,6 +1049,7 @@
       document.getElementById('dash-stat-out').textContent = nFora;
 
       document.getElementById('dash-cards').innerHTML = rows.map(cardDashboard).join('');
+      wireDashFolds();
 
       // Tres estados, nao dois: "servido mas sem estado" e diferente de "modo arquivo",
       // e chamar os dois de arquivo esconderia uma falha do /api/dashboards.
@@ -843,9 +1060,15 @@
       } else if (DASH.ao_vivo) {
         hint.innerHTML = '<span class="mode live">ao vivo</span>' +
           'Estado consultado agora' + (DASH.consultado ? ' às ' + esc(DASH.consultado) : '') +
-          '. "Último dado" é o MAX(date) da tabela, a última linha do arquivo ou a última ' +
+          '. "Último dado" é a data mais recente que existe na tabela, a última linha do ' +
+          'arquivo ou a última ' +
           'observação da fonte externa. "Dado novo" = a fonte andou depois da geração do ' +
-          'relatório. O botão <strong>Regerar</strong> reconstrói aquele dashboard sozinho.';
+          'relatório. O botão <strong>Regerar</strong> faz tudo o que aquele dashboard ' +
+          'precisa: refaz os passos que ficaram atrás dos dados, quando o dashboard ' +
+
+          'tiver algum, e reconstrói o arquivo. São dois botões no sistema — ' +
+          '<strong>Atualizar</strong>, na outra aba, para a base de dados; ' +
+          '<strong>Regerar</strong>, aqui, para o dashboard.';
       } else if (LIVE.on) {
         hint.innerHTML = '<span class="mode live">servido</span>' +
           'O estado ao vivo não carregou' + (DASH.erro ? ' (' + esc(DASH.erro) + ')' : '') +
@@ -885,8 +1108,14 @@
        já recalculou o estado depois de gravar o stamp), então o card volta com o
        veredito atualizado sem precisar reconsultar os outros dez. */
     function regerarDashboard(key, btn) {
+      var linha = null;
+      for (var i = 0; i < DASH.rows.length; i++) {
+        if (DASH.rows[i].key === key) linha = DASH.rows[i];
+      }
+      var extra = linha ? procSegundos(linha) : 0;
       btn.disabled = true;
-      btn.textContent = 'regerando...';
+      btn.textContent = extra ? 'refazendo os passos... (~' +
+        ((linha.build_seconds || 0) + extra) + 's)' : 'regerando...';
       setDashMsg(key, null);
 
       fetch('/api/gerar', {
@@ -900,7 +1129,25 @@
             if (DASH.rows[i].key === key) DASH.rows[i] = res.dashboard;
           }
         }
-        setDashMsg(key, 'regerado em ' + res.segundos + 's', false);
+        // Diz o que foi REFEITO, não só que gerou: sem isso o usuário não tem como
+        // saber que a métrica dentro do relatório também andou.
+        var refeitos = (res.procedimentos || []).filter(function(x) {
+          return x.acao === 'rodado';
+        });
+        var falhou = (res.procedimentos || []).filter(function(x) {
+          return x.acao === 'falhou';
+        });
+        var msg = refeitos.length
+          ? 'refez ' + refeitos.map(function(x) {
+              return x.label + ' (' + x.segundos + 's)';
+            }).join(', ') + ' e regerou em ' + res.segundos + 's'
+          : 'regerado em ' + res.segundos + 's — nada estava atrás dos dados';
+        if (falhou.length) {
+          msg += ' — FALHOU: ' + falhou.map(function(x) {
+            return x.label + ' (' + x.erro + ')';
+          }).join(', ') + '; o relatório saiu com o artefato antigo';
+        }
+        setDashMsg(key, msg, falhou.length > 0);
         renderDashboards();
       }).catch(function(err) {
         setDashMsg(key, String(err.message || err), true);
@@ -923,6 +1170,13 @@
     document.getElementById('dash-cards').addEventListener('click', function(ev) {
       var btn = ev.target.closest ? ev.target.closest('button.dash-btn') : null;
       if (!btn) return;
+      /* O botão vive DENTRO do <summary>, e abrir/fechar é a ação default de um clique
+         ali. Os dois são necessários e por motivos diferentes: `stopPropagation` impede
+         que o summary veja o evento, `preventDefault` mata a ação default — sem ele o
+         card pisca aberto/fechado a cada Regerar. Mesmo gotcha do botão `i` dentro de
+         um <label> nos outros relatórios. */
+      ev.stopPropagation();
+      ev.preventDefault();
       var key = btn.dataset.key;
       if (LIVE.on) regerarDashboard(key, btn);
       else copyDashCommand(key);

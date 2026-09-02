@@ -41,6 +41,7 @@ if it doesn't exist, so a new country needs no setup step.
 | `brasil/expectations/` | Panorama de Expectativas — Focus (HTML report, 2026-08-24 — 8 abas sobre as 3 tabelas `expc_focus*` e **nada mais**: sem meta, sem realizado, sem projeção do Copom) | [`brasil/expectations/CLAUDE.md`](brasil/expectations/CLAUDE.md) |
 | **`us/`** | | |
 | `us/inflation/` | US Inflation (HTML report — the CPI-U's two published trees plus the PCE price index, three tabs on one hierarchy-table structure). First report under `us/`, 2026-08 | [`us/inflation/CLAUDE.md`](us/inflation/CLAUDE.md) |
+| `us/labor_market/` | US Labor Market (HTML report — JOLTS: openings, hires, quits, layoffs and separations, three tabs for the three cuts the release publishes). Second report under `us/`, 2026-09-01. Scope is JOLTS only and **no derived metrics**, by explicit user decision | [`us/labor_market/CLAUDE.md`](us/labor_market/CLAUDE.md) |
 | **cross-country (root)** | | |
 | `oraculo/` | Macro thermometer scores (1–10), feeds Power BI. Country split is *internal* (`oraculo/brasil/`, `oraculo/us/`, shared `oraculo/base/`), so it stays at the root | [`oraculo/CLAUDE.md`](oraculo/CLAUDE.md) |
 | `release_calendar/` | Calendário de Divulgações (HTML report — forward-looking, reads a local YAML, not MySQL) | [`release_calendar/CLAUDE.md`](release_calendar/CLAUDE.md) |

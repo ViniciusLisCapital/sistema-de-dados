@@ -303,6 +303,7 @@ const EXPORTS = ['fmtBR', 'fmtTrunc', 'fmtDate', 'lastValid', 'growthN', 'dlText
                  '_mtHR', 'mtNotaHR', 'MT_HR_TRI',
                  'renderProjecoes', 'renderProjecoesSerie', 'renderProjecoesBacktest',
                  'renderProjecoesPrevBox', 'renderProjecoesBtTabela',
+                 'renderProjecoesFrescor', '_pjDia',
                  'pjLinhas', 'pjCorr', 'pjMAE', 'pjBtNivel', 'pjPrevisao', 'pjPrevValor',
                  'pjMet', 'PJ_METODOS', 'PJ'];
 let MP;
@@ -1640,6 +1641,82 @@ console.log('\n33. Aba Projecoes do Copom: projecao do HR x passo de Selic');
     ok(PV.corte_usado >= PV.data_reuniao ||
        doc._els['pj-prev-sub'].innerHTML.indexOf('anterior à reunião') >= 0,
        'com corte anterior a reuniao, a caixa avisa em vez de deixar passar');
+    // A frase que estava ERRADA ate 2026-08-31: dizia que regerar o relatorio muda a
+    // resposta, e nao muda -- o gerador so le o artefato. Se ela voltar, cai aqui.
+    ok(doc._els['pj-prev-sub'].innerHTML.indexOf('Regerar o relatório perto de') < 0,
+       'a caixa nao promete que regerar o relatorio recalcula a previsao');
+
+    // ── Faixa de frescor ──
+    // O diagnostico que faltava. Um artefato calculado tem DUAS datas -- quando foi
+    // escrito e com que conjunto de informacao -- e so a primeira era observavel. A
+    // faixa compara a segunda com o que o banco tinha na geracao.
+    const FR = PV.frescor || {};
+    ok(typeof FR.corte === 'string' && Array.isArray(FR.fontes) && FR.fontes.length >= 5,
+       'o payload traz o frescor: o corte e as fontes conferidas na geracao',
+       JSON.stringify(Object.keys(FR)));
+    ok(FR.corte === PV.corte_usado,
+       'o corte do frescor e o mesmo corte_usado que a caixa imprime');
+    ok(FR.atrasado === true || FR.atrasado === false,
+       'e o veredito e definido (havia MySQL na geracao)', String(FR.atrasado));
+    const _warn = doc._els['pj-prev-warn'];
+    ok(!!_warn && _warn.style.display !== 'none', 'a faixa de frescor aparece');
+    if (FR.atrasado) {
+      ok(_warn.className === 'pj-prev-warn',
+         'atrasada, a faixa sai em laranja (sem a classe ok)', _warn.className);
+      ok(_warn.innerHTML.indexOf('desatualizada') >= 0 &&
+         _warn.innerHTML.indexOf(FR.fonte_nome) >= 0,
+         'e nomeia a fonte que passou o corte, pelo nome que se le');
+      // O ponto todo: a faixa tem de dizer O QUE FAZER. Desde 2026-08-31 a resposta e
+      // "Regerar", porque o Regerar passou a refazer os passos atrasados antes de gerar.
+      ok(_warn.innerHTML.indexOf('<b>Regerar</b>') >= 0,
+         'a faixa aponta o Regerar, que agora recalcula antes de gerar');
+      ok(_warn.innerHTML.indexOf('não</b> corrige') < 0,
+         'e nao diz mais que regerar nao corrige -- corrige');
+      // Data diaria, nao trimestre: fmtDate() e do grupo trimestral e devolveria
+      // "2026 T3" para uma data de pesquisa. Foi corrigido para _pjDia().
+      ok(_warn.innerHTML.indexOf(FR.corte.split('-').reverse().join('/')) >= 0,
+         'a data do corte sai em dd/mm/aaaa, nao como trimestre',
+         _warn.innerHTML.slice(0, 160));
+    } else {
+      ok(_warn.className.indexOf('ok') >= 0 &&
+         _warn.innerHTML.indexOf('em dia') >= 0,
+         'em dia, a faixa sai em verde e diz isso', _warn.className);
+    }
+    // A faixa LARANJA tem de ser testada mesmo com a previsao em dia: e o caso que o
+    // leitor precisa entender, e ele nao aparece no payload de um relatorio recem-gerado.
+    const _pvAtras = JSON.parse(JSON.stringify(PV));
+    _pvAtras.frescor = { corte: '2026-08-25', fontes: [], fonte_max: '2026-08-31',
+                         fonte_nome: 'a pesquisa Focus', fonte_ref: 'expc_focus_periodo',
+                         atrasado: true, dias: 6 };
+    MP.renderProjecoesFrescor(_pvAtras);
+    const _wa = doc._els['pj-prev-warn'];
+    ok(_wa.className === 'pj-prev-warn', 'atrasada, a faixa sai em laranja', _wa.className);
+    ok(_wa.innerHTML.indexOf('desatualizada') >= 0 &&
+       _wa.innerHTML.indexOf('a pesquisa Focus') >= 0 &&
+       _wa.innerHTML.indexOf('25/08/2026') >= 0 &&
+       _wa.innerHTML.indexOf('31/08/2026') >= 0 &&
+       _wa.innerHTML.indexOf('6 dias') >= 0,
+       'e diz com que dado foi feita, que dado havia, e a diferenca',
+       _wa.innerHTML.slice(0, 200));
+    ok(_wa.innerHTML.indexOf('<b>Regerar</b>') >= 0,
+       'a faixa diz o que fazer, apontando o botao que corrige');
+    // Nome de tabela, comando de terminal e data de decisao nossa nao entram numa faixa
+    // que o leitor le -- pedido explicito do usuario (2026-09-01).
+    ok(_wa.innerHTML.indexOf('expc_focus_periodo') < 0 &&
+       _wa.innerHTML.indexOf('status.py') < 0 &&
+       _wa.innerHTML.toLowerCase().indexOf('desde 2026') < 0 &&
+       _wa.innerHTML.indexOf('<code>') < 0,
+       'sem nome de tabela, sem comando e sem data de decisao nossa',
+       _wa.innerHTML.slice(0, 200));
+
+    // E sem veredito nao se inventa faixa nenhuma.
+    const _pvSem = JSON.parse(JSON.stringify(PV));
+
+    _pvSem.frescor = { corte: '2026-08-25', fontes: [], atrasado: null };
+    MP.renderProjecoesFrescor(_pvSem);
+    ok(doc._els['pj-prev-warn'].style.display === 'none',
+       'sem veredito de corte a faixa desaparece, em vez de afirmar algo');
+    MP.renderProjecoesPrevBox();
   }
 
   // ── Backtest: o que estimamos contra o que o BC publicou ──

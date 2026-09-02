@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>US Labor Market — JOLTS</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+/*THEME_CSS*/
+
+body { font-family: var(--sans); background: var(--bg); color: var(--text); margin: 0; }
+.wrap { max-width: 1560px; margin: 0 auto; padding: 22px 26px 60px; }
+
+header.page { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+header.page h1 { font-family: var(--cond); font-size: 30px; font-weight: 700; letter-spacing: .2px; margin: 0; text-transform: uppercase; }
+header.page .brand { font-family: Georgia, serif; font-size: 20px; letter-spacing: 0.06em; color: var(--text); }
+header.page .brand em { font-style: normal; color: var(--lis-dourado); }
+header.page .sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+header.page .stamp { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
+footer { color: var(--muted); font-family: var(--mono); font-size: 10px; text-align: center; padding: 18px 40px 26px; }
+footer span { color: var(--text2); }
+
+
+nav.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border); margin-bottom: 18px; flex-wrap: wrap; }
+nav.tabs button { font-family: var(--cond); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px;
+  background: none; border: none; border-bottom: 3px solid transparent; padding: 9px 15px; cursor: pointer; color: var(--muted); margin-bottom: -2px; }
+nav.tabs button.active { color: var(--lis-azul); border-bottom-color: var(--lis-dourado); }
+nav.tabs button:hover:not(.active) { color: var(--text2); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin-bottom: 16px; }
+.card > h2 { font-family: var(--cond); font-size: 17px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin: 0 0 4px; }
+.card > .note { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0 0 12px; }
+.card > .note b { color: var(--text2); }
+
+.ctrl-bar { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.ctrl { display: flex; align-items: center; gap: 7px; }
+.ctrl > label { font-family: var(--cond); font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
+.pill-group { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; flex-wrap: wrap; }
+.pill { font-family: var(--sans); font-size: 12px; font-weight: 500; background: var(--card-bg); border: none;
+  border-right: 1px solid var(--border); padding: 5px 11px; cursor: pointer; color: var(--text2);
+  display: inline-flex; align-items: center; }
+.pill:last-child { border-right: none; }
+.pill.active { background: var(--lis-azul); color: #fff; }
+.pill.disabled { opacity: .38; cursor: not-allowed; }
+.pill:hover:not(.active):not(.disabled) { background: #EEF0F5; }
+/* O botao `i` dentro de uma pill ativa precisa de contraste proprio -- sem isto ele
+   fica cinza-sobre-navy e desaparece justamente na pill que o leitor esta usando. */
+.pill.active .info-btn { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+table.hier { border-collapse: collapse; width: 100%; font-size: 12px; }
+table.hier th, table.hier td { padding: 5px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+table.hier thead th { position: sticky; top: 0; background: #EEF0F5; font-family: var(--cond); font-size: 11px;
+  text-transform: uppercase; letter-spacing: .5px; color: var(--text2); text-align: right; z-index: 2; }
+table.hier thead th:first-child, table.hier thead th:nth-child(2) { text-align: left; }
+table.hier td.col-value { font-family: var(--mono); text-align: right; font-size: 11.5px; }
+table.hier td.col-check { width: 30px; text-align: center; }
+table.hier th.col-check { width: 30px; }
+table.hier td.col-label { min-width: 320px; }
+table.hier tr.is-group td.col-label { font-weight: 600; }
+table.hier tr:hover td { background: #FAFBFC; }
+/* O quadradinho de cor so aparece na linha marcada, e por isso ele precisa de um
+   espacador na linha nao marcada -- senao o rotulo pula ao clicar na caixa, que foi
+   o "recuo bagunçado" investigado no relatorio cambial. */
+.swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.swatch.empty { background: transparent; }
+.tree-toggle { display: inline-block; width: 13px; color: var(--lis-azul); cursor: pointer; user-select: none; font-size: 10px; }
+.neg { color: var(--lis-laranja); }
+.prelim { color: var(--lis-dourado); font-family: var(--mono); font-size: 9px; vertical-align: super; }
+
+/* Cabecalho de grafico: 3 linhas DENTRO do card, acima do plot -- um print da regiao
+   do grafico nao pega o <h2> da secao. Subtitulo e periodo sao reescritos a cada
+   render; so a fonte e fixa. Ver design-system.md#cabecalho. */
+.chart-frame { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.ch-title { font-family: var(--cond); font-size: 15.5px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--lis-azul); }
+.ch-sub { font-size: 12px; color: var(--text2); line-height: 1.4; margin-top: 3px; }
+.ch-src { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+.chart { position: relative; width: 100%; height: 600px; margin-top: 8px; }
+
+/* Regua de tempo ABAIXO do grafico (pedido explicito do usuario, 2026-08-27). */
+.range-bar { display: flex; gap: 5px; align-items: center; margin: 10px 0 2px; flex-wrap: wrap; }
+.range-bar > span { font-family: var(--cond); font-size: 11.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-right: 3px; }
+.rb, .dl-toggle { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .03em;
+  padding: 4px 13px; border: 1px solid rgba(31,40,83,0.15); border-radius: 20px;
+  background: rgba(31,40,83,0.03); color: var(--muted); cursor: pointer; transition: all .15s; }
+.rb:hover, .dl-toggle:hover { color: var(--lis-azul); border-color: rgba(31,40,83,0.3); }
+.rb.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); }
+.dl-toggle { margin-left: auto; }
+.dl-toggle.on { background: var(--lis-azul); border-color: var(--lis-azul); color: #fff; }
+.dl-toggle.disabled { opacity: .38; cursor: not-allowed; }
+.dl-toggle.disabled:hover { color: var(--muted); border-color: rgba(31,40,83,0.15); }
+
+.chart-hint { font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 2px 2px 14px; letter-spacing: .02em; }
+.hint { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 6px; }
+
+/* Botao de informacao + card de definicao. UM .info-pop no <body>, reposicionado a
+   cada abertura -- nunca um popover por linha. Ver design-system.md#info-card. */
+.info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+  font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+  color: var(--muted); background: transparent;
+  border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+  vertical-align: middle; transition: all .15s;
+}
+.info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+.info-pop {
+  position: absolute; z-index: 300; display: none; max-width: 390px;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px;
+}
+.info-pop.show { display: block; }
+.info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--lis-azul); line-height: 1.3; margin: 0; }
+.info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+.info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.info-pop .info-desc b { color: var(--text2); }
+.info-pop .info-unit {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+}
+
+.appx p, .appx li { font-size: 12.5px; line-height: 1.65; color: var(--text2); }
+.appx p + p { margin-top: 9px; }
+.appx ul { padding-left: 19px; margin: 9px 0 2px; }
+.appx li + li { margin-top: 6px; }
+.appx table { border-collapse: collapse; font-size: 12px; margin: 8px 0 14px; width: 100%; }
+.appx th, .appx td { border: 1px solid var(--border); padding: 5px 9px; text-align: left; vertical-align: top; }
+.appx th { background: #EEF0F5; font-family: var(--cond); text-transform: uppercase; font-size: 11px; letter-spacing: .5px; }
+.appx code { font-family: var(--mono); font-size: 11.5px; background: #EEF0F5; padding: 1px 4px; border-radius: 3px; }
+.warn { border-left: 3px solid var(--lis-dourado); background: #FDF9EE; padding: 10px 13px; border-radius: 0 6px 6px 0; font-size: 12.5px; line-height: 1.6; color: var(--text2); margin: 10px 0; }
+.warn b { color: var(--lis-azul); }
+
+details.acc { border: 1px solid var(--border); border-radius: 7px; margin: 7px 0; overflow: hidden; }
+details.acc > summary { list-style: none; cursor: pointer; user-select: none;
+  padding: 10px 14px; background: var(--bg); display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+details.acc > summary::-webkit-details-marker { display: none; }
+details.acc > summary::before { content: '\25B8'; color: var(--lis-verde); font-size: 12px; flex: none; width: 9px; }
+details.acc[open] > summary::before { content: '\25BE'; }
+details.acc[open] > summary { border-bottom: 1px solid var(--border); }
+details.acc > summary:hover { background: #EAEEF4; }
+.acc-t { font-family: var(--cond); font-size: 15px; text-transform: uppercase; letter-spacing: .5px; color: var(--lis-azul); }
+.acc-s { font-size: 11.5px; color: var(--muted); }
+.acc-b { padding: 2px 15px 13px; }
+.acc-b > :first-child { margin-top: 10px; }
+
+/* Texto explicativo justificado, na largura do bloco (convencao do projeto,
+   2026-09-01). `hyphens: auto` e obrigatorio junto do justify -- sem ele o texto abre
+   rios de espaco branco -- e o que faz a hifenizacao funcionar e o `lang` no <html>.
+   Ficam de fora celula de tabela e popover (container estreito e onde os rios
+   aparecem) e o que e mono/centralizado. */
+.appx p, .appx li, .hint, .card > .note { text-align: justify; text-justify: inter-word; -webkit-hyphens: auto; hyphens: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page">
+  <div>
+    <div class="brand">LIS <em>CAPITAL</em></div>
+    <h1>US Labor Market</h1>
+    <div class="sub">Job Openings and Labor Turnover Survey (JOLTS) &mdash; openings, hires, quits, layoffs and separations by industry, establishment size and region</div>
+  </div>
+  <div class="stamp" id="stamp"></div>
+</header>
+
+<div class="chart-hint">Every chart: scroll/pinch to zoom (both axes) &middot; drag to pan (both axes) &middot; double-click to reset &middot; the time ruler sits below each chart</div>
+
+<nav class="tabs" id="tabs">
+  <button data-panel="p-payroll" class="active">Payroll</button>
+  <button data-panel="p-household">Household</button>
+  <button data-panel="p-jolts">JOLTS</button>
+  <button data-panel="p-derived">Derived</button>
+  <button data-panel="p-appx">Appendix</button>
+</nav>
+
+<!-- ── JOLTS: os tres cortes, um card cada ──────────────────────────────────────
+     Um painel so (pedido do usuario). Cada corte mantem seu <h2>, sua nota e seus
+     cinco grupos de pill: eles NAO compartilham estado, porque as tres arvores tem
+     raizes diferentes (Total nonfarm, Total private, Total US) e um controle unico
+     sugeriria que o total significa a mesma coisa nos tres. -->
+<section class="panel" id="p-jolts">
+
+  <!-- ── Industry ───────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-industria"></h2>
+    <div class="note" id="note-industria"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-industria-medida"></div></div>
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-industria-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-industria-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-industria-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-industria-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-industria"></thead><tbody id="tb-industria"></tbody></table>
+    </div>
+    <div class="hint">Tick a row to plot it. In stacked bars, a ticked row that also has a ticked descendant is drawn as a <b>line</b> &mdash; so a total never sits on top of its own parts as one more bar.</div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-industria"></div>
+      <div class="ch-sub" id="cs-industria"></div>
+      <div class="ch-src" id="cr-industria"></div>
+      <div class="chart" id="chart-industria"></div>
+      <div class="range-bar" id="rb-industria"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Establishment size ─────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-tamanho"></h2>
+    <div class="note" id="note-tamanho"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-tamanho-medida"></div></div>
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-tamanho-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-tamanho-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-tamanho-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-tamanho-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-tamanho"></thead><tbody id="tb-tamanho"></tbody></table>
+    </div>
+    <div class="hint">Size class counts employees at the <b>establishment</b> (the physical location), not at the firm &mdash; a small branch of a large company is counted in a small class.</div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-tamanho"></div>
+      <div class="ch-sub" id="cs-tamanho"></div>
+      <div class="ch-src" id="cr-tamanho"></div>
+      <div class="chart" id="chart-tamanho"></div>
+      <div class="range-bar" id="rb-tamanho"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Region ─────────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-regiao"></h2>
+    <div class="note" id="note-regiao"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-regiao-medida"></div></div>
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-regiao-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-regiao-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-regiao-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-regiao-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-regiao"></thead><tbody id="tb-regiao"></tbody></table>
+    </div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-regiao"></div>
+      <div class="ch-sub" id="cs-regiao"></div>
+      <div class="ch-src" id="cr-regiao"></div>
+      <div class="chart" id="chart-regiao"></div>
+      <div class="range-bar" id="rb-regiao"><span>Range</span></div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ── Payroll: as duas familias da CES ────────────────────────────────────────
+     Duas arvores e nao uma, porque as RAIZES sao diferentes: a CES nao publica horas
+     nem ganhos do setor publico, entao a segunda comeca em Total private. Um seletor
+     de medida numa arvore so faria o total mudar de significado no clique. -->
+<section class="panel active" id="p-payroll">
+
+  <!-- ── Payroll employment ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-ces-emprego"></h2>
+    <div class="note" id="note-ces-emprego"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-ces-emprego-medida"></div></div>
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-ces-emprego-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-ces-emprego-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-ces-emprego-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-ces-emprego-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-ces-emprego"></thead><tbody id="tb-ces-emprego"></tbody></table>
+    </div>
+    <div class="hint" id="hint-ces-emprego"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-ces-emprego"></div>
+      <div class="ch-sub" id="cs-ces-emprego"></div>
+      <div class="ch-src" id="cr-ces-emprego"></div>
+      <div class="chart" id="chart-ces-emprego"></div>
+      <div class="range-bar" id="rb-ces-emprego"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Hours and earnings ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-ces-horas"></h2>
+    <div class="note" id="note-ces-horas"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-ces-horas-medida"></div></div>
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-ces-horas-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-ces-horas-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-ces-horas-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-ces-horas-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-ces-horas"></thead><tbody id="tb-ces-horas"></tbody></table>
+    </div>
+    <div class="hint" id="hint-ces-horas"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-ces-horas"></div>
+      <div class="ch-sub" id="cs-ces-horas"></div>
+      <div class="ch-src" id="cr-ces-horas"></div>
+      <div class="chart" id="chart-ces-horas"></div>
+      <div class="range-bar" id="rb-ces-horas"><span>Range</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── Household: os quatro blocos da CPS ──────────────────────────────────────
+     So o primeiro e aditivo (populacao = forca + fora dela), e por isso e o unico com
+     arvore. Os outros tres sao tabelas planas com os controles que nao se aplicam
+     desligados -- barra empilhada exigiria aditividade, e taxas com denominadores
+     diferentes nao somam nada. -->
+<section class="panel" id="p-household">
+
+  <!-- ── Labor force status ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-cps-status"></h2>
+    <div class="note" id="note-cps-status"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-cps-status-tipo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-status-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-status-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-status-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-cps-status"></thead><tbody id="tb-cps-status"></tbody></table>
+    </div>
+    <div class="hint" id="hint-cps-status"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-cps-status"></div>
+      <div class="ch-sub" id="cs-cps-status"></div>
+      <div class="ch-src" id="cr-cps-status"></div>
+      <div class="chart" id="chart-cps-status"></div>
+      <div class="range-bar" id="rb-cps-status"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Unemployment rates by group ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-cps-taxa_grupo"></h2>
+    <div class="note" id="note-cps-taxa_grupo"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-taxa_grupo-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-taxa_grupo-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-taxa_grupo-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-cps-taxa_grupo"></thead><tbody id="tb-cps-taxa_grupo"></tbody></table>
+    </div>
+    <div class="hint" id="hint-cps-taxa_grupo"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-cps-taxa_grupo"></div>
+      <div class="ch-sub" id="cs-cps-taxa_grupo"></div>
+      <div class="ch-src" id="cr-cps-taxa_grupo"></div>
+      <div class="chart" id="chart-cps-taxa_grupo"></div>
+      <div class="range-bar" id="rb-cps-taxa_grupo"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Composition of unemployment ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-cps-composicao"></h2>
+    <div class="note" id="note-cps-composicao"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Cut</label><div class="pill-group" id="pg-cps-composicao-eixo"></div></div>
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-composicao-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-composicao-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-composicao-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-cps-composicao"></thead><tbody id="tb-cps-composicao"></tbody></table>
+    </div>
+    <div class="hint" id="hint-cps-composicao"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-cps-composicao"></div>
+      <div class="ch-sub" id="cs-cps-composicao"></div>
+      <div class="ch-src" id="cr-cps-composicao"></div>
+      <div class="chart" id="chart-cps-composicao"></div>
+      <div class="range-bar" id="rb-cps-composicao"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Alternative measures ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-cps-alternativa"></h2>
+    <div class="note" id="note-cps-alternativa"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-alternativa-ajuste"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-alternativa-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-alternativa-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-cps-alternativa"></thead><tbody id="tb-cps-alternativa"></tbody></table>
+    </div>
+    <div class="hint" id="hint-cps-alternativa"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-cps-alternativa"></div>
+      <div class="ch-sub" id="cs-cps-alternativa"></div>
+      <div class="ch-src" id="cr-cps-alternativa"></div>
+      <div class="chart" id="chart-cps-alternativa"></div>
+      <div class="range-bar" id="rb-cps-alternativa"><span>Range</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── Derived: as unicas contas que nao sao transformacao de exibicao ─────────
+     Cada uma cruza pesquisas, e a nota de cada card diz de onde vem cada perna. -->
+<section class="panel" id="p-derived">
+
+  <!-- ── Vacancies per unemployed person ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-dv-vu"></h2>
+    <div class="note" id="note-dv-vu"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-dv-vu"></div>
+      <div class="ch-sub" id="cs-dv-vu"></div>
+      <div class="ch-src" id="cr-dv-vu"></div>
+      <div class="chart" id="chart-dv-vu"></div>
+      <div class="range-bar" id="rb-dv-vu"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Gross flows and net hiring ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-dv-liq"></h2>
+    <div class="note" id="note-dv-liq"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-dv-liq"></div>
+      <div class="ch-sub" id="cs-dv-liq"></div>
+      <div class="ch-src" id="cr-dv-liq"></div>
+      <div class="chart" id="chart-dv-liq"></div>
+      <div class="range-bar" id="rb-dv-liq"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Beveridge curve ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-dv-bev"></h2>
+    <div class="note" id="note-dv-bev"></div>
+    <div class="ctrl-bar"><div class="ctrl"><label>Period</label><div class="pill-group" id="pg-dv-bev-opt"></div></div></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-dv-bev"></div>
+      <div class="ch-sub" id="cs-dv-bev"></div>
+      <div class="ch-src" id="cr-dv-bev"></div>
+      <div class="chart" id="chart-dv-bev"></div>
+      <div class="range-bar" id="rb-dv-bev"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Establishment vs. household survey ─────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-dv-div"></h2>
+    <div class="note" id="note-dv-div"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-dv-div"></div>
+      <div class="ch-sub" id="cs-dv-div"></div>
+      <div class="ch-src" id="cr-dv-div"></div>
+      <div class="chart" id="chart-dv-div"></div>
+      <div class="range-bar" id="rb-dv-div"><span>Range</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── Appendix ─────────────────────────────────────────────────────────────── -->
+<section class="panel appx" id="p-appx">
+  <div class="card">
+    <h2>Appendix &mdash; source, method and what to watch out for</h2>
+    <div class="note">Everything below is either quoted from the release's own Technical Note or measured against this database. Where a number is measured, it says so.</div>
+
+    <details class="acc">
+      <summary><span class="acc-t">The payroll tree could not be inferred the usual way</span><span class="acc-s">the four top branches sum to 257% of the total</span></summary>
+      <div class="acc-b">
+        <p>The BLS publishes an industry list with an indentation level and a sort order, and no parent
+        column — the same shape as the JOLTS and CPI catalogues, where "the parent is the preceding row
+        one level up" is enough. Here that rule builds a wrong tree, and not subtly. <b>Total private,
+        Goods-producing, Service-providing and Private service-providing are all at the same level and
+        they overlap</b>: added together they come to <b>257%</b> of total nonfarm. Worse, the naive rule
+        makes <i>Mining and logging</i> a child of <i>Private service-providing</i>, because that is the
+        row immediately above it.</p>
+        <p>So the top of the tree on this page is declared, not derived:</p>
+        <table>
+          <tr><th>Level</th><th>Node</th><th>Children sum to it?</th></tr>
+          <tr><td>0</td><td>Total nonfarm</td><td>Total private + Government, exactly</td></tr>
+          <tr><td>1</td><td>Total private</td><td>Goods-producing + Private services, exactly</td></tr>
+          <tr><td>1</td><td>Government</td><td>Federal + State + Local, exactly</td></tr>
+          <tr><td>2</td><td>the 10 private supersectors</td><td>each under goods or services</td></tr>
+        </table>
+        <p><b>Service-providing is deliberately not in the tree.</b> It equals private services plus
+        government, so it crosses the Total private boundary — it cannot be a level of the same hierarchy
+        without double-counting. It is loaded in the database; what it loses is a position, not the data.
+        The same applies to the ten residential/non-residential contractor lines in construction: the BLS
+        publishes specialty trade contractors <i>both</i> by NAICS subsector <i>and</i> split into
+        residential and non-residential, and both cuts close on the same parent — which makes them two
+        axes, not two levels. Mixing them stacked to 163% of the parent.</p>
+        <p>Four more places needed a correction the indentation does not give, and each one is re-checked
+        against the data every time the table is loaded:</p>
+        <table>
+          <tr><th>Row</th><th>What the indentation says</th><th>What the data says</th></tr>
+          <tr><td>Health care (621,2,3)</td><td>sibling of Ambulatory, Hospitals, Nursing</td><td>their sum, exactly, in 439 months</td></tr>
+          <tr><td>Motor vehicles and parts</td><td>sibling of 3361, 3362, 3363</td><td>their sum, in 438 months</td></tr>
+          <tr><td>Other Federal government</td><td>inside the Postal Service</td><td>1,256 thousand against the Postal Service's 603 — it belongs to Federal ex-Postal</td></tr>
+          <tr><td>Investment banking</td><td>printed one level up, before its own parent</td><td>a part of securities brokerage, not a sibling of it</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The parts add up — in the not-adjusted data</span><span class="acc-s">+0.07% raw against +15% adjusted</span></summary>
+      <div class="acc-b">
+        <p>The BLS seasonally adjusts every series <b>independently</b>, and says so in a footnote to its
+        own summary table. Measured across the 284 parents of this tree:</p>
+        <table>
+          <tr><th>Data</th><th>Worst excess of children over parent</th><th>Parents over 0.05%</th></tr>
+          <tr><td>Not seasonally adjusted</td><td>+0.068%</td><td>1 of 284</td></tr>
+          <tr><td>Seasonally adjusted</td><td>+15.5%</td><td>222 of 284</td></tr>
+        </table>
+        <p>So additivity is a construction guarantee only in the raw data. In the adjusted view the BLS
+        <i>imposes</i> it at the top — levels 0 to 2 close exactly — and leaves it free in the detail. That
+        is why the load validates the tree on the raw series and stores the adjusted deviation instead of
+        rejecting it: validating on the adjusted data would fail a correct tree, which is what happened on
+        the first run. A stacked view of the adjusted data is right to a tenth of a percent at the
+        supersector level and drifts with depth.</p>
+        <p><b>Incomplete coverage is not an error either.</b> The CES publishes only selected detail: 260 of
+        the 284 parents have children that close in every month, and the 24 that do not are all at levels
+        4 to 6. In a complete month the 555 leaves come to <b>97.8%</b> of total nonfarm.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The newest month is missing most of the industry detail</span><span class="acc-s">27 of 555 leaves, and it is the calendar, not a gap</span></summary>
+      <div class="acc-b">
+        <p>The first release of a reference month carries the aggregate levels; the fine industry detail
+        arrives with the following month's release. Measured on the current vintage:</p>
+        <table>
+          <tr><th>Tree level</th><th>Series with the newest month</th></tr>
+          <tr><td>0 to 4 (119 industries)</td><td>all of them</td></tr>
+          <tr><td>5 (241)</td><td>54</td></tr>
+          <tr><td>6 and 7 (482)</td><td>none</td></tr>
+        </table>
+        <p>So <b>there is no single "last month" for this survey</b> — there is one per depth. Reading a
+        deep industry's chart as having fallen off a cliff in the last month is reading the publication
+        calendar. The chart header prints how many of the 839 rows the newest month actually has.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Only four of the thirteen payroll measures add across industries</span><span class="acc-s">an average per worker is not a quantity</span></summary>
+      <div class="acc-b">
+        <table>
+          <tr><th>Adds across industries</th><th>Does not</th></tr>
+          <tr><td>Employment, aggregate weekly hours, aggregate weekly payrolls, aggregate overtime</td>
+              <td>Every average per worker (weekly hours, hourly and weekly earnings, overtime hours) and every index (2007 = 100)</td></tr>
+        </table>
+        <p>Adding the average hourly earnings of two industries produces the average earnings of nothing:
+        it is a weighted mean, and the weight — employment — is not in the series. Stacking two indexes on
+        a 2007 base is the same mistake wearing a different unit. For the measures that do not add, stacked
+        bars and the "% of total" type are switched off, with the reason on the disabled control. The same
+        quantity in thousands of hours or dollars <i>is</i> in the measure list and does add — the index
+        exists because it is the form the release publishes.</p>
+        <p><b>Nothing in this survey accumulates over twelve months.</b> Employment is a stock; hours and
+        earnings are weekly rates; the aggregates are one week's worth. Twelve months of a weekly payroll
+        is not a year of payroll, so the 12-month total reading is disabled across the whole survey.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The household survey: October 2025, and three concepts that look alike</span><span class="acc-s">found by checking every series against the printed release</span></summary>
+      <div class="acc-b">
+        <p><b>October 2025 does not exist in this survey.</b> The federal shutdown cancelled collection;
+        the payroll survey and JOLTS continued. A missing month empties <i>two</i> monthly changes — October's
+        and November's — which is different from one month without data, and it is why those points are
+        blank rather than bridged.</p>
+        <p>Every one of the 43 concepts on this page is checked against the number printed in the release
+        before it is stored. That check found three series whose names read right and whose concepts are
+        wrong:</p>
+        <table>
+          <tr><th>Line in the release</th><th>The obvious series</th><th>The right one</th></tr>
+          <tr><td>Part time for noneconomic reasons (22,770)</td><td>"Part-Time for Noneconomic Reasons" → 22,345</td><td>the <i>at work 1-34 hours</i> series → 22,770</td></tr>
+          <tr><td>Unemployed 15 to 26 weeks (1,157)</td><td>a series named "15 weeks &amp; over" → 2,929</td><td>the 15-26 week series → 1,157</td></tr>
+          <tr><td>Marginally attached (1,806)</td><td>the unadjusted series → 1,871</td><td>the adjusted one → 1,806</td></tr>
+        </table>
+        <p>None of the three would have raised an error. Two more things worth knowing: the
+        <b>population line is never seasonally adjusted</b> — the BLS footnotes it, and it shows a dash in
+        the adjusted view; and the rows here are only <b>approximately additive even before the detail</b>,
+        for the same independent-adjustment reason as the payroll tree (employed plus unemployed came to
+        169,093 against a published labour force of 169,094 in the latest month).</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The derived metrics, and where each leg comes from</span><span class="acc-s">the published ratio is the reciprocal of the quoted one</span></summary>
+      <div class="acc-b">
+        <table>
+          <tr><th>Metric</th><th>Numerator</th><th>Denominator</th></tr>
+          <tr><td>Vacancies per unemployed person</td><td>JOLTS job openings</td><td>household-survey unemployment</td></tr>
+          <tr><td>Net hiring</td><td>JOLTS hires</td><td>JOLTS total separations</td></tr>
+          <tr><td>Beveridge curve</td><td>JOLTS openings rate</td><td>household unemployment rate</td></tr>
+          <tr><td>Establishment vs. household</td><td>payroll employment</td><td>household employment</td></tr>
+        </table>
+        <p><b>Only the first has an external answer key, and it is upside down.</b> The BLS publishes the
+        ratio itself — as <i>unemployed persons per job opening</i>, the reciprocal of the figure that is
+        normally quoted. In July 2009 the published series reads 6.50 and vacancies per unemployed person
+        was 0.153; those are the same number inverted. This page shows vacancies per unemployed person and
+        checks it against the reciprocal of the published series, which agrees to within the one decimal
+        the BLS publishes. The check matters because <b>today the ratio is near 1</b> — about 1.05 against
+        a published 0.95 — where an inversion would look entirely normal.</p>
+        <p>Three cautions on the other three. <b>Net hiring is not the payroll change</b>: different sample,
+        universe and imputation, so read it as the turnover behind a small net number rather than as a
+        second estimate of it. <b>The Beveridge curve's two legs share a unit and not a base</b>: the
+        openings rate divides by employment plus openings, the unemployment rate by the labour force.
+        And <b>the establishment/household divergence is by construction</b> — one counts filled jobs at
+        businesses (two jobs count twice, the self-employed not at all), the other counts people (the
+        self-employed count, two jobs count once). They will never reconcile, and the household series is
+        far noisier: 60,000 households against 119,000 businesses.</p>
+      </div>
+    </details>
+
+    <details class="acc" open>
+      <summary><span class="acc-t">One measure is a stock, five are flows</span><span class="acc-s">why adding three months of openings gives the wrong quarter</span></summary>
+      <div class="acc-b">
+        <div class="warn">
+          <b>Job openings</b> is the number of positions open on the <b>last business day</b> of the month &mdash; a
+          one-day snapshot. <b>Hires, total separations, quits, layoffs and discharges, and other separations</b> are
+          counts of everything that passed through the payroll <b>during the entire month</b>. The release states this
+          in a footnote to Table 7.
+        </div>
+        <p>The consequence is arithmetic, and it is easy to get wrong without any error appearing: summing three months
+        of openings to make a quarter returns roughly three times the right number, and still looks like a plausible
+        chart of job openings. This report therefore offers <b>moving averages</b> for every measure and a
+        <b>12-month total</b> only for the five flows &mdash; the pill greys out on Job openings, because accumulating a
+        stock produces no quantity at all.</p>
+        <p>The distinction is carried in the database too, as <code>mt_jolts.natureza</code>, so a future consumer does
+        not have to know it by heart.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Rates: two different denominators</span><span class="acc-s">measured, not paraphrased</span></summary>
+      <div class="acc-b">
+        <p>The <b>openings rate</b> divides by employment <i>plus</i> openings &mdash; all jobs, filled and unfilled. The
+        other five divide by <b>employment</b> alone. That is what the Technical Note says, and it is checkable from the
+        published numbers alone: implied employment comes out of <code>hires level / (hires rate / 100)</code>, and with it</p>
+        <table>
+          <tr><th>Reconstruction</th><th>Mean absolute error</th><th>Max</th></tr>
+          <tr><td><code>openings / (employment + openings)</code></td><td>0.038 p.p.</td><td>0.275 p.p.</td></tr>
+          <tr><td><code>openings / employment</code> &mdash; the wrong hypothesis</td><td>0.150 p.p.</td><td>1.483 p.p.</td></tr>
+          <tr><td><code>separations / employment</code></td><td>0.035 p.p.</td><td>1.048 p.p.</td></tr>
+          <tr><td><code>quits / employment</code></td><td>0.029 p.p.</td><td>0.147 p.p.</td></tr>
+          <tr><td><code>layoffs / employment</code></td><td>0.028 p.p.</td><td>0.952 p.p.</td></tr>
+          <tr><td><code>other separations / employment</code></td><td>0.027 p.p.</td><td>0.141 p.p.</td></tr>
+        </table>
+        <p>8,624 cells each, seasonally adjusted, whole history. The residual that remains is the rounding of the
+        published rate to one decimal, which implied employment inherits.</p>
+        <p>Two things follow. First, the axis title on this page names the ratio rather than the unit &mdash;
+        <code>openings / (employment + openings), %</code> instead of <code>%</code>. Second, <b>the difference between two
+        rates of the same month is not a quantity</b>: openings rate minus hires rate subtracts two ratios that do not
+        share a base.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Share of total: the denominator is each table&rsquo;s own total</span><span class="acc-s">mining and logging is 0.30% of openings</span></summary>
+      <div class="acc-b">
+        <p>The <b>% of total</b> type divides a row by the total at the top of the <i>same table</i>, in the same measure
+        and the same seasonal adjustment. Mining and logging had 22 thousand job openings in July 2026 against 7,271
+        thousand for total nonfarm &mdash; <b>0.30%</b>. Its share of hires that month was 0.47% and of quits 0.52%: a
+        small industry can matter more for turnover than for the level of vacancies.</p>
+        <p><b>The denominator is that table&rsquo;s own total, not one national figure for the whole page.</b> The three
+        tables do not share a total (see the next section), so a size class is expressed as a share of <b>Total
+        private</b> (6,461 thousand openings in July 2026), a region as a share of <b>Total US</b> and an industry as a
+        share of <b>Total nonfarm</b>. Dividing the six size classes by total nonfarm instead would make them sum to
+        88.86%, with the missing 11.14% being government &mdash; a sector that cut does not cover at all.</p>
+        <p>Because sibling rows all divide by the same number, <b>shares add up the way levels do</b>: in July 2026 the
+        two branches of total nonfarm are 88.86% and 11.14%, the four regions 16.72 / 36.34 / 21.52 / 25.42, and the six
+        size classes sum to 100.00%. That is why <b>stacked bars are available here and not for rates</b> &mdash; a rate
+        divides by each category&rsquo;s own employment, so sibling rates share no base and stacking them would invent a
+        total. The row for the total itself reads 100.00 by construction.</p>
+        <p>The one caveat is arithmetic, not method: the BLS publishes each level rounded to the thousand, and that
+        rounding is invisible against a 7-million total but not against a small one. Across the whole history the
+        siblings&rsquo; shares sum to 100 within <b>0.15 p.p.</b> for every measure except <i>other separations</i>,
+        whose total falls as low as 168 thousand and where the worst month is <b>1.07 p.p.</b> (size classes, not
+        seasonally adjusted, November 2024). The levels behind it are within the rounding tolerance the load enforces.</p>
+        <p>Moving averages and year-over-year apply to the <b>share</b>, not to the levels behind it: a 3-month average
+        is the average share over three months, and year-over-year is a difference in <b>percentage points</b>. A
+        12-month total is not offered &mdash; adding twelve shares produces no share.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The three cuts, and why they have different roots</span><span class="acc-s">6,461 is not 7,271</span></summary>
+      <div class="acc-b">
+        <p>JOLTS does not publish a cube. Each axis exists only at the total of the others, so the three tables on this page are
+        three separate trees rather than three views of one:</p>
+        <table>
+          <tr><th>Table</th><th>Root</th><th>Rows</th><th>Levels</th><th>Series</th></tr>
+          <tr><td>Industry</td><td>Total nonfarm</td><td id="ax-ind-n"></td><td id="ax-ind-l"></td><td id="ax-ind-s"></td></tr>
+          <tr><td>Establishment size</td><td><b>Total private</b></td><td id="ax-tam-n"></td><td id="ax-tam-l"></td><td id="ax-tam-s"></td></tr>
+          <tr><td>Region</td><td>Total US (nonfarm)</td><td id="ax-reg-n"></td><td id="ax-reg-l"></td><td id="ax-reg-s"></td></tr>
+        </table>
+        <p>The size-class root is the one that catches people out: it is the <b>private sector only</b>, so its total is
+        810 thousand openings smaller than the industry table's in July 2026. A tree that hung the six size classes under
+        Total nonfarm would fail to close by exactly that, which reads as a plausible rounding gap and is not one.</p>
+        <p><b>Levels are additive; rates are not.</b> Children sum to their parent in levels across the whole history,
+        with a maximum residual of 3 thousand on the industry tree and 2 thousand on the other two. That tolerance is not
+        chosen: the BLS publishes each level rounded to the thousand, so <i>k</i> children against a rounded parent can
+        differ by up to <code>0.5&nbsp;&times;&nbsp;(k+1)</code> by rounding alone. The load refuses to write if any
+        parent exceeds it &mdash; 40,656 checks per run.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">State estimates are gone</span><span class="acc-s">all 51 series stop in December 2025</span></summary>
+      <div class="acc-b">
+        <p>The BLS catalogue still lists 51 states plus the District of Columbia for JOLTS, and every one of those series
+        ends at <b>2025-M12</b>. They are deliberately not loaded and not shown: in a report about the current month they
+        would be dead history sitting next to live series, which is worse than an absence. The four Census regions are
+        current (through the same month as the national series) and are the geographic cut this page offers instead.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Revisions: two months every month, five years every January</span><span class="acc-s">why there is no &ldquo;routine window&rdquo;</span></summary>
+      <div class="acc-b">
+        <p>The last two months move with questionnaires that arrive after publication &mdash; the July 2026 release revised
+        June's openings down by 177 thousand. And with the January release, <b>five years</b> of data are re-benchmarked
+        to CES employment and re-seasonally-adjusted at once.</p>
+        <p>So the load rewrites the whole history every run rather than topping up the tip. Writing only recent months
+        would leave two vintages abutting inside the table, and that failure is invisible in the level: a permanent step
+        at the seam becomes a twelve-month trough in the year-over-year reading, shaped exactly like an economic event.
+        That is a defect this project has actually shipped once, on the Brazilian CAGED series.</p>
+        <p>Months the BLS marks preliminary are flagged with a <span class="prelim">p</span> in the table.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Data gaps</span><span class="acc-s">one month, and not in the JOLTS series themselves</span></summary>
+      <div class="acc-b">
+        <p>Openings, hires and separations have <b>no gap at all</b> over 2000-12 to the present. The only blank in the
+        JOLTS files is the <i>unemployed persons per job opening</i> ratio in <b>October 2025</b>, footnoted "Data
+        unavailable due to the 2025 lapse in appropriations" &mdash; that ratio's denominator comes from the household
+        survey, which stopped; the JOLTS collection did not. It is the same missing month as in this project's US CPI
+        table.</p>
+        <p>That ratio is loaded in <code>mt_jolts</code> and deliberately not charted here &mdash; see the last section.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Readings offered, and why these</span><span class="acc-s">display transforms, computed in the browser</span></summary>
+      <div class="acc-b">
+        <p>The payload carries the <b>published monthly value</b> and nothing else; the five readings are derived on the
+        fly. Shipping them pre-computed would be five times the numbers for information the monthly value already
+        implies, and would let stored and displayed figures drift apart.</p>
+        <table>
+          <tr><th>Reading</th><th>What it does</th><th>When it is unavailable</th></tr>
+          <tr><td>Monthly</td><td>The published value.</td><td>&mdash;</td></tr>
+          <tr><td>Month-over-month</td><td>This month minus last month. A <b>difference</b>, so thousands for a level and percentage points for a rate or a share &mdash; never a percentage.</td><td>&mdash;</td></tr>
+          <tr><td>3-month average</td><td>Trailing mean; needs all three months.</td><td>&mdash;</td></tr>
+          <tr><td>12-month average</td><td>Trailing mean; needs all twelve.</td><td>&mdash;</td></tr>
+          <tr><td>12-month total</td><td>Trailing sum; needs all twelve.</td><td><b>Job openings</b> (a stock does not accumulate), every rate and every share.</td></tr>
+          <tr><td>Year-over-year</td><td>% change for levels, p.p. difference for rates and shares.</td><td>&mdash;</td></tr>
+        </table>
+        <p>A moving average is well defined for a stock, a flow, a rate and a share alike, which is why it is offered
+        everywhere; a trailing sum is not, which is why it is offered only where it means something. <b>Stacked bars</b>
+        follow the same logic: available for levels and for shares of the total under the first four readings (a mean of
+        sums is the sum of means, a sum of sums is a sum, and sibling shares divide by the same total), unavailable for
+        rates and for year-over-year, because neither adds across siblings.</p>
+        <p><b>Month-over-month is the change the release itself headlines</b> &mdash; job openings
+        <b>+89</b> thousand in July 2026, hires &minus;278, quits &minus;157. It is deliberately a difference and
+        not a percentage: a level in thousands and a percentage change of it are easy to confuse in a chart
+        legend, and &ldquo;+89&rdquo; means 89 thousand more openings, not 89% more. Because differences of
+        additive quantities are themselves additive, the M/M of the parts sums to the M/M of the total, so
+        stacked bars work here as they do on the level itself.</p>
+        <p>The <b>type</b> control is a third axis alongside these: <b>Level</b> is the published count in thousands,
+        <b>Rate</b> the published ratio against employment, and <b>% of total</b> a share of the table&rsquo;s own
+        total, derived here rather than published. The two published types are stored as the BLS releases them; the
+        share and the five readings are computed in the browser from the monthly level.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">What is not in this round</span><span class="acc-s">no derived metrics, on purpose</span></summary>
+      <div class="acc-b">
+        <p>This page shows what the BLS publishes and computes nothing beyond the display readings above. No
+        vacancies-per-unemployed ratio, no net hiring (hires &minus; separations), no Beveridge curve &mdash; those cross
+        into the household survey or invent a construction, and the plan is to bring the rest of the US employment data
+        in first and build derived measures on the whole set rather than on JOLTS alone.</p>
+        <p>Loaded and waiting: the BLS's own <i>unemployed persons per job opening</i> series
+        (<code>mt_jolts</code>, <code>medida='UO'</code>, published seasonally adjusted only, national and by state). Not
+        loaded: the two survey response-rate series, which measure collection quality rather than the labour market.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Provenance</span><span class="acc-s">files, tables and validation</span></summary>
+      <div class="acc-b">
+        <p>Source: <b>BLS, Job Openings and Labor Turnover Survey</b>, via the bulk file
+        <code>jt.data.1.AllItems</code> on <code>download.bls.gov</code> &mdash; one request, whole history, no API quota.
+        The API is used on every load as an independent check that the file is on the current vintage: ten headline
+        series over two years, and any disagreement raises rather than writing.</p>
+        <p>Tables: <code>macro_us.mt_jolts</code> (values) and <code>macro_us.mt_jolts_dim</code> (the three trees, with
+        the parent derived from the BLS's <code>display_level</code> and <code>sort_sequence</code>, which publish no
+        parent column). ETL: <code>domain/db/us/labor_market/</code>, run by
+        <code>jobs/update_us.py</code>.</p>
+        <p>Validation on load: all 168 cells of the release's own Table A and all 42 of Table 7 reproduce <b>exactly</b>
+        from this database for July 2026, plus the additivity checks described above.</p>
+        <p>Survey design: a stratified random sample of about 21,000 nonfarm establishments, benchmarked monthly to CES
+        employment and seasonally adjusted with X-13ARIMA-SEATS. Standard errors are published separately by the BLS and
+        are <b>not</b> in this report &mdash; a month-on-month move in a small industry is frequently inside them.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  Lis Capital &middot; <span>US Labor Market &mdash; JOLTS</span> &middot; <span id="ftr-src"></span>
+</footer>
+</div>
+
+<script>
+/*REPORT_DATA*/
+/*Y_AUTOFIT_JS*/
+
+var D = REPORT_DATA;
+
+// ── formatting ──────────────────────────────────────────────────────────────
+// Formato AMERICANO: ponto decimal, virgula de milhar. E um relatorio dos EUA lido
+// contra o release dos EUA -- "7,271" e "4.4", nao "7.271" e "4,4".
+var MESES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtMonth(iso) { return MESES[parseInt(iso.slice(5, 7), 10) - 1] + ' ' + iso.slice(0, 4); }
+function fmtMonthShort(iso) { return MESES[parseInt(iso.slice(5, 7), 10) - 1] + '/' + iso.slice(2, 4); }
+function fmtNum(v, dec) {
+  if (v == null || isNaN(v)) return '—';
+  var s = Math.abs(v).toFixed(dec);
+  var partes = s.split('.');
+  partes[0] = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return (v < 0 ? '−' : '') + partes.join('.');
+}
+
+// ── info cards ──────────────────────────────────────────────────────────────
+// A chave e NAMESPACED (`corte:categoria`, `medida:JO`): '00' e categoria em dois
+// cortes com significados diferentes -- Total private num, Total US no outro --, e um
+// mapa de chave nua faria um cartao explicar o outro sem lancar nada.
+var _pop = null, _pinned = null;
+function _ensurePop() {
+  if (_pop) return _pop;
+  _pop = document.createElement('div');
+  _pop.className = 'info-pop';
+  document.body.appendChild(_pop);
+  _pop.addEventListener('mouseleave', function() { if (!_pinned) hideInfo(); });
+  document.addEventListener('click', function(e) {
+    if (_pinned && !_pop.contains(e.target) && e.target !== _pinned) hideInfo();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') hideInfo(); });
+  return _pop;
+}
+function hideInfo() {
+  if (!_pop) return;
+  _pop.classList.remove('show');
+  if (_pinned) { _pinned.classList.remove('pinned'); _pinned = null; }
+}
+function showInfo(btn, label, info, unitFn) {
+  var pop = _ensurePop();
+  var html = '<h4>' + label + '</h4>';
+  // `full` so entra quando acrescenta algo ao rotulo que ja esta na tela.
+  if (info.full && info.full !== label) html += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) html += '<div class="info-desc">' + info.desc + '</div>';
+  // A unidade e FUNCAO dos seletores, nao string guardada: o cartao imprime a mesma
+  // que o titulo do eixo Y, senao as duas divergem no primeiro clique.
+  var unit = unitFn ? unitFn() : null;
+  if (unit) html += '<div class="info-unit">Unit: ' + unit + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+
+  var r = btn.getBoundingClientRect();
+  var w = pop.offsetWidth || 390, h = pop.offsetHeight || 130;
+  var left = r.left + window.scrollX;
+  var maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  var top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) top = r.top + window.scrollY - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+function attachInfo(hostEl, key, label, unitFn) {
+  var info = D.info[key];
+  if (!info || (!info.full && !info.desc)) return null;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definition of ' + label);
+  b.addEventListener('mouseenter', function() { if (!_pinned) showInfo(b, label, info, unitFn); });
+  b.addEventListener('mouseleave', function() {
+    if (_pinned) return;
+    setTimeout(function() { if (!_pinned && _pop && !_pop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', function(e) {
+    // stopPropagation E preventDefault: a pill de medida e um <button>, e a celula da
+    // tabela hospeda o toggle da arvore -- sem os dois o clique no `i` tambem dispara
+    // o host, e a falha e silenciosa-mas-visivel (o cartao abre e a serie troca).
+    e.stopPropagation();
+    e.preventDefault();
+    if (_pinned === b) { hideInfo(); return; }
+    hideInfo();
+    _pinned = b; b.classList.add('pinned');
+    showInfo(b, label, info, unitFn);
+  });
+  hostEl.appendChild(b);
+  return b;
+}
+
+// ── series colours ──────────────────────────────────────────────────────────
+// PALETTE[0] (navy da marca) e reservado para o total/agregado; qualquer outro par
+// fecha em dE2000 >= 20,8. A cor sai da POSICAO, nunca de um literal por categoria --
+// ver design-system.md#cores-series. Acima de 13 series a paleta reinicia e o
+// tracejado muda, que e o segundo canal: a arvore de industria tem 28 linhas, entao
+// isso e exercitado de verdade aqui.
+var PALETTE = [
+  '#1F2853', '#EA523A', '#418791', '#BB9B1D', '#8E44AD', '#1565C0', '#5D6B1F',
+  '#AD1457', '#795548', '#7CB342', '#F06292', '#64B5F6', '#9E9E9E', '#B39DDB'
+];
+var SERIES_DASH = ['solid', 'dash', 'dot'];
+function assignSeriesColors(keys, defaults, fixos) {
+  fixos = fixos || {};
+  var ordem = [];
+  (defaults || []).forEach(function(k) { if (keys.indexOf(k) >= 0 && ordem.indexOf(k) < 0) ordem.push(k); });
+  keys.forEach(function(k) { if (ordem.indexOf(k) < 0) ordem.push(k); });
+  var n = PALETTE.length - 1;   // PALETTE[0] fica de fora: e a cor do total
+  var mapa = {}, k = 0;
+  ordem.forEach(function(key) {
+    if (fixos[key]) { mapa[key] = {color: fixos[key], dash: 'solid'}; return; }
+    mapa[key] = {
+      color: PALETTE[1 + (k % n)],
+      dash: SERIES_DASH[Math.min(SERIES_DASH.length - 1, Math.floor(k / n))]
+    };
+    k++;
+  });
+  return mapa;
+}
+
+// ── plotly ──────────────────────────────────────────────────────────────────
+var PLOTLY_CONFIG = {
+  responsive: true,
+  displayModeBar: 'hover',
+  displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+  scrollZoom: true
+};
+function mkLayout(extra) {
+  var base = {
+    margin: {l: 66, r: 18, t: 10, b: 38},
+    dragmode: 'pan',
+    hovermode: 'x unified',
+    hoverlabel: {bgcolor: '#1F2853', bordercolor: '#1F2853',
+                 font: {family: 'Barlow', size: 12, color: '#fff'}},
+    showlegend: true,
+    legend: {orientation: 'h', y: -0.14, font: {size: 10.5}},
+    xaxis: {
+      type: 'date',
+      showgrid: false, showline: true, linecolor: 'rgba(31,40,83,0.1)',
+      tickfont: {family: 'JetBrains Mono', size: 10, color: '#7A88A8'},
+      rangeslider: {visible: false}
+      // Sem `fixedrange` e sem `rangeselector`: os dois eixos ficam livres e os botoes
+      // de janela vivem fora do Plotly. Ver .claude/rules/lis-dashboards.md.
+    },
+    yaxis: {
+      gridcolor: 'rgba(31,40,83,0.06)',
+      tickfont: {family: 'JetBrains Mono', size: 10, color: '#7A88A8'},
+      zeroline: true, zerolinecolor: 'rgba(31,40,83,0.22)'
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: {family: 'Barlow, sans-serif', color: '#1F2853', size: 12}
+  };
+  if (!extra) return base;
+  Object.keys(extra).forEach(function(k) {
+    if (k === 'xaxis' || k === 'yaxis') base[k] = Object.assign({}, base[k], extra[k]);
+    else base[k] = extra[k];
+  });
+  return base;
+}
+
+// Valores sobre o grafico. Passo pela regra da referencia -- >60 pontos a cada 5,
+// >30 a cada 3 --, sem o que 308 meses viram uma mancha de texto.
+var VALORES = {};
+function passoDeRotulo(n) { return n > 60 ? 5 : n > 30 ? 3 : 1; }
+function textoDaSerie(values, dec) {
+  var passo = passoDeRotulo(values.length);
+  return values.map(function(v, i) {
+    return (i % passo === 0 && v != null && !isNaN(v)) ? fmtNum(v, dec) : '';
+  });
+}
+
+// ── the time ruler, and the window the chart opens with ─────────────────────
+// Tudo aqui deriva de `gd.data` -- o que o grafico DE FATO tem plotado --, nunca do
+// array de datas que quem chama passou, e nunca do range corrente do eixo (que traz o
+// padding do Plotly). As tres versoes anteriores deste componente, em outros
+// relatorios, quebraram por exatamente isso: ver .claude/rules/lis-dashboards.md,
+// "Quick-range buttons" e as seis "faces" do mesmo defeito.
+function _extentPlotado(divId) {
+  var gd = document.getElementById(divId);
+  var traces = (gd && gd.data) || [];
+  var lo = null, hi = null, passo = null;
+  traces.forEach(function(t) {
+    if (!t.x || !t.y) return;
+    var ultimoX = null, penultimoX = null;
+    for (var i = 0; i < t.x.length; i++) {
+      var v = t.y[i];
+      if (v == null || isNaN(v)) continue;      // um y nulo ainda tem x: nao conta
+      var x = t.x[i];
+      if (lo === null || x < lo) lo = x;
+      if (hi === null || x > hi) hi = x;
+      penultimoX = ultimoX; ultimoX = x;
+    }
+    if (ultimoX && penultimoX) {
+      var d = Date.parse(ultimoX + 'T00:00:00Z') - Date.parse(penultimoX + 'T00:00:00Z');
+      if (d > 0 && (passo === null || d < passo)) passo = d;
+    }
+  });
+  if (lo === null) return null;
+  // Padding a direita = METADE do passo da propria serie (15 dias no mensal). Barra e
+  // celula sao centradas no x, entao uma janela que termina exatamente no ultimo ponto
+  // corta a ultima barra ao meio.
+  var fim = passo ? new Date(Date.parse(hi + 'T00:00:00Z') + passo / 2).toISOString().slice(0, 10) : hi;
+  return {lo: lo, hi: hi, fimPad: fim};
+}
+function _rangeOptions(ext) {
+  var opts = [];
+  [1, 3, 5, 10, 20].forEach(function(anos) {
+    var d = new Date(Date.parse(ext.hi + 'T00:00:00Z'));
+    d.setUTCFullYear(d.getUTCFullYear() - anos);
+    var from = d.toISOString().slice(0, 10);
+    if (from <= ext.lo) return;               // janela maior que a serie: "All" cobre
+    opts.push({label: anos + 'y', from: from, to: ext.fimPad});
+  });
+  opts.push({label: 'All', from: ext.lo, to: ext.fimPad});
+  return opts;
+}
+var _RANGE_MEM = {};
+function finishChart(divId, barId) {
+  var ext = _extentPlotado(divId);
+  var bar = document.getElementById(barId);
+  if (!bar) return;
+  // Limpa so os botoes, preservando o <span>Range</span> e o toggle de valores.
+  Array.prototype.slice.call(bar.querySelectorAll('button.rb')).forEach(function(b) { b.remove(); });
+  if (!ext) return;
+
+  var opts = _rangeOptions(ext);
+  var dl = bar.querySelector('.dl-toggle');
+  var escolhido = _RANGE_MEM[divId];
+  var idxAtivo = -1;
+  opts.forEach(function(o, i) { if (o.label === escolhido) idxAtivo = i; });
+  if (idxAtivo < 0) idxAtivo = opts.length - 1;   // sem escolha guardada: "All"
+
+  opts.forEach(function(o, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'rb' + (i === idxAtivo ? ' active' : '');
+    b.textContent = o.label;
+    b.addEventListener('click', function() {
+      _RANGE_MEM[divId] = o.label;
+      Array.prototype.slice.call(bar.querySelectorAll('button.rb')).forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      Plotly.relayout(divId, {'xaxis.range': [o.from, o.to]});
+    });
+    if (dl) bar.insertBefore(b, dl); else bar.appendChild(b);
+  });
+
+  // A vista inicial e uma janela CALCULADA, exatamente como a de um botao -- nunca
+  // `autorange`, que devolve o extent mais o padding do Plotly (uma faixa vazia
+  // visivel a direita numa serie longa) e que percorre o array x, entao um y nulo no
+  // inicio ainda empurra o eixo para tras.
+  var alvo = opts[idxAtivo];
+  Plotly.relayout(divId, {'xaxis.range': [alvo.from, alvo.to]});
+  _bindYAutofit(divId);
+}
+function _ensureDlToggle(barId, divId, onToggle) {
+  var bar = document.getElementById(barId);
+  if (!bar || bar.querySelector('.dl-toggle')) return;
+  var dl = document.createElement('button');
+  dl.type = 'button';
+  dl.className = 'dl-toggle';
+  dl.id = divId + '-dl';
+  dl.textContent = 'Values on chart';
+  dl.addEventListener('click', function() {
+    if (dl.classList.contains('disabled')) return;
+    VALORES[divId] = !VALORES[divId];
+    dl.classList.toggle('on', !!VALORES[divId]);
+    onToggle();
+  });
+  bar.appendChild(dl);
+}
+function dlHabilitar(divId, ligado, motivo) {
+  var b = document.getElementById(divId + '-dl');
+  if (!b) return;
+  b.classList.toggle('disabled', !ligado);
+  b.title = ligado ? 'Print each series’ value on the chart' : (motivo || '');
+}
+
+// ── chart header ────────────────────────────────────────────────────────────
+// Tres linhas dentro do card. Titulo, subtitulo e periodo sao TODOS reescritos a cada
+// render -- o titulo tambem, porque aqui a medida e um seletor, e um titulo fixo
+// passaria a mentir no primeiro clique (a regra e "nada de texto que um clique
+// contradiga", nao "o titulo e sagrado"). So a fonte e constante.
+function dataExtent(series) {
+  var lo = null, hi = null;
+  (series || []).forEach(function(s) {
+    (s.dates || []).forEach(function(d, i) {
+      if (s.values[i] == null || isNaN(s.values[i])) return;
+      if (lo === null || d < lo) lo = d;
+      if (hi === null || d > hi) hi = d;
+    });
+  });
+  return lo === null ? null : [lo, hi];
+}
+function describeChart(o) {
+  o.titleEl.textContent = o.title;
+  var bits = [];
+  var nomes = (o.series || []).map(function(s) { return s.name; });
+  // Acima de 3 series o nome de cada uma vira paragrafo, e a legenda embaixo do plot
+  // ja esta no print -- entao a contagem e o fragmento honesto.
+  if (nomes.length && nomes.length <= 3) {
+    if (!(nomes.length === 1 && o.title.indexOf(nomes[0]) === 0)) bits.push(nomes.join(', '));
+  } else if (nomes.length) {
+    bits.push(nomes.length + ' series (see legend)');
+  }
+  (o.bits || []).forEach(function(b) { if (b) bits.push(b); });
+  var lowU = (o.unit || '').toLowerCase();
+  bits = bits.filter(function(b) { return lowU.indexOf(b.toLowerCase()) < 0; });
+  if (o.unit) bits.push(o.unit);
+
+  var ext = dataExtent(o.series);
+  var periodo = ext ? fmtMonth(ext[0]) + ' to ' + fmtMonth(ext[1]) : '';
+  o.subEl.textContent = bits.join(' · ');
+  o.srcEl.textContent = 'Source: ' + o.source + (periodo ? ' · ' + periodo : '');
+}
+
+// ── transforms ──────────────────────────────────────────────────────────────
+// Derivadas do valor mensal, cacheadas por (chave, transformacao). Nada disso viaja no
+// payload -- ver a docstring de generate_report.py.
+var TRANSFORMS = [
+  {key: 'm',     label: 'Monthly'},
+  {key: 'mm',    label: 'M/M'},
+  {key: 'ma3',   label: '3M avg'},
+  {key: 'ma12',  label: '12M avg'},
+  {key: 'sum12', label: '12M total'},
+  {key: 'yoy',   label: 'Y/Y'}
+];
+function _janela(v, k, dividir) {
+  var out = new Array(v.length).fill(null);
+  for (var i = k - 1; i < v.length; i++) {
+    var s = 0, ok = true;
+    for (var j = i - k + 1; j <= i; j++) {
+      var x = v[j];
+      if (x == null || isNaN(x)) { ok = false; break; }
+      s += x;
+    }
+    // Janela incompleta mostra NADA, nao a media dos meses que tem -- convencao de
+    // analytics/metric_layers.md, e o defeito que o relatorio cambial teve por meses
+    // (uma conta corrente de meio ano rotulada com o ano inteiro).
+    if (ok) out[i] = dividir ? s / k : s;
+  }
+  return out;
+}
+// M/M e uma DIFERENCA em todos os tipos: mil vagas a mais que no mes passado, ou p.p. a
+// mais numa taxa / numa participacao. Ao contrario do Y/Y, nao precisa saber se a serie e
+// razao -- uma diferenca de niveis e um nivel, uma diferenca de razoes e p.p., e a conta
+// e a mesma. E o que a faixa de manchete do release publica ("openings +89k in July").
+function _mm(v) {
+  var out = new Array(v.length).fill(null);
+  for (var i = 1; i < v.length; i++) {
+    var a = v[i], b = v[i - 1];
+    if (a == null || b == null || isNaN(a) || isNaN(b)) continue;
+    out[i] = a - b;
+  }
+  return out;
+}
+function _yoy(v, ehTaxa) {
+  var out = new Array(v.length).fill(null);
+  for (var i = 12; i < v.length; i++) {
+    var a = v[i], b = v[i - 12];
+    if (a == null || b == null || isNaN(a) || isNaN(b)) continue;
+    out[i] = ehTaxa ? (a - b) : (b === 0 ? null : (a / b - 1) * 100);
+  }
+  return out;
+}
+var _CACHE = {};
+function serieTransformada(chave, transform, ehTaxa) {
+  var ck = chave + '@' + transform;
+  if (ck in _CACHE) return _CACHE[ck];
+  var bruta = D.series[chave];
+  var out = null;
+  if (bruta) {
+    if (transform === 'm') out = bruta;
+    else if (transform === 'mm') out = _mm(bruta);
+    else if (transform === 'ma3') out = _janela(bruta, 3, true);
+    else if (transform === 'ma12') out = _janela(bruta, 12, true);
+    else if (transform === 'sum12') out = _janela(bruta, 12, false);
+    else if (transform === 'yoy') out = _yoy(bruta, ehTaxa);
+  }
+  _CACHE[ck] = out;
+  return out;
+}
+
+// ── tree helpers ────────────────────────────────────────────────────────────
+function flattenHierRows(tree, expanded, depth) {
+  var rows = [];
+  (tree || []).forEach(function(node) {
+    rows.push({node: node, depth: depth});
+    if (node.children && expanded[node.key]) {
+      rows = rows.concat(flattenHierRows(node.children, expanded, depth + 1));
+    }
+  });
+  return rows;
+}
+function achatar(tree) {
+  var out = [];
+  (function walk(ns) {
+    (ns || []).forEach(function(n) { out.push(n); walk(n.children); });
+  })(tree);
+  return out;
+}
+
+// ── pills ───────────────────────────────────────────────────────────────────
+// `items`: {value, label, disabled?, title?, infoKey?}. Uma pill desabilitada FICA na
+// tela, com o motivo no title -- um controle ausente nao responde "onde esta o
+// acumulado de 12 meses?", um cinza com explicacao responde.
+function buildPills(groupId, items, ativo, onPick, unitFn) {
+  var g = document.getElementById(groupId);
+  if (!g) return;
+  g.innerHTML = '';
+  items.forEach(function(it) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pill' + (it.value === ativo ? ' active' : '') + (it.disabled ? ' disabled' : '');
+    if (it.title) b.title = it.title;
+    var span = document.createElement('span');
+    span.textContent = it.label;
+    b.appendChild(span);
+    if (!it.disabled) b.addEventListener('click', function() { onPick(it.value); });
+    if (it.infoKey) attachInfo(b, it.infoKey, it.label, unitFn);
+    g.appendChild(b);
+  });
+}
+
+// ── the tab factory ─────────────────────────────────────────────────────────
+function makeJoltsTab(corte) {
+  var cfg = D.cortes[corte];
+  var nos = achatar(cfg.tree);
+  var todasKeys = nos.map(function(n) { return n.key; });
+
+  // Default marcado: a raiz mais os filhos diretos dela. E a leitura de manchete do
+  // corte (o total e a particao imediata) e ja exercita a regra barra/linha.
+  var raiz = cfg.tree[0];
+  var defaults = [raiz.key].concat((raiz.children || []).map(function(n) { return n.key; }));
+
+  // A cor sai da POSICAO na arvore, com as marcadas por default na frente da fila, e
+  // e calculada UMA vez: assim uma linha mantem a cor quando o leitor marca outra.
+  // A raiz fica presa ao navy da marca (PALETTE[0]), que e a cor do agregado.
+  var fixos = {};
+  fixos[raiz.key] = PALETTE[0];
+  var CORES = assignSeriesColors(todasKeys, defaults, fixos);
+
+  var rotulo = {};
+  nos.forEach(function(n) { rotulo[n.key] = n.label; });
+
+  var state = {
+    medida: 'JO', tipo: 'nivel', ajuste: 'sa', transform: 'm', kind: 'lines',
+    checked: {}, expanded: {}
+  };
+  defaults.forEach(function(k) { state.checked[k] = true; });
+  state.expanded[raiz.key] = true;
+
+  var els = {
+    h2: document.getElementById('h2-' + corte),
+    note: document.getElementById('note-' + corte),
+    thead: document.getElementById('th-' + corte),
+    tbody: document.getElementById('tb-' + corte),
+    chart: 'chart-' + corte,
+    bar: 'rb-' + corte,
+    ct: document.getElementById('ct-' + corte),
+    cs: document.getElementById('cs-' + corte),
+    cr: document.getElementById('cr-' + corte)
+  };
+
+  function med() { return D.medidas[state.medida]; }
+  function ehTaxa() { return state.tipo === 'taxa'; }
+  function ehShare() { return state.tipo === 'share'; }
+  // Taxa e participacao sao as duas RAZOES: a variacao anual delas sai em p.p., nao em
+  // %, e nenhuma das duas se acumula.
+  function ehRazao() { return ehTaxa() || ehShare(); }
+  function chave(cat) {
+    return [corte, cat, state.medida, state.tipo, state.ajuste].join('|');
+  }
+  // A participacao no total NAO viaja no payload: `mt_jolts` nao tem esse tipo. E o
+  // nivel dividido pelo nivel da RAIZ DA PROPRIA ARVORE -- Total nonfarm na industria,
+  // Total private no tamanho, Total US na regiao. O denominador ser o da arvore e o
+  // ponto: os tres cortes tem totais diferentes, e usar um so faria a participacao das
+  // seis classes de tamanho somar ~89% em vez de 100%.
+  //
+  // Materializada em `D.series` sob a chave sintetica `...|share|...` de proposito:
+  // assim `serieTransformada()` e o cache dela seguem valendo sem saber que a serie e
+  // derivada, e as medias moveis / a variacao anual saem da PARTICIPACAO, nao dos niveis.
+  function chaveShare(cat) {
+    var ck = [corte, cat, state.medida, 'share', state.ajuste].join('|');
+    if (ck in D.series) return ck;
+    var num = D.series[[corte, cat, state.medida, 'nivel', state.ajuste].join('|')];
+    var den = D.series[[corte, raiz.key, state.medida, 'nivel', state.ajuste].join('|')];
+    D.series[ck] = (num && den) ? num.map(function(a, i) {
+      var b = den[i];
+      // Denominador nulo ou zero e "nao sei", nao zero: propaga nulo.
+      return (a == null || b == null || b === 0) ? null : (a / b) * 100;
+    }) : null;
+    return ck;
+  }
+  function serie(cat) {
+    return serieTransformada(ehShare() ? chaveShare(cat) : chave(cat),
+                             state.transform, ehRazao());
+  }
+
+  // ---- disponibilidade dos controles
+  // O acumulado de 12 meses existe so para o NIVEL de uma medida de FLUXO. Para vagas
+  // (estoque) nao existe quantidade nenhuma a acumular, e para uma taxa somar 12
+  // razoes nao produz razao. `y_acum: null` no payload e o que desliga -- e nao um
+  // .replace() no titulo do eixo, que falharia em silencio deixando a unidade do
+  // mensal num grafico de acumulado.
+  function acumOk() { return state.tipo === 'nivel' && !!med().y_acum; }
+  // Barra empilhada exige aditividade entre irmaos.
+  //
+  //   nivel        soma (e media de somas e soma de medias, e soma de somas e soma)
+  //   participacao soma -- todas as irmas dividem pelo MESMO denominador, a raiz
+  //   taxa         NUNCA soma -- o denominador e o emprego de cada categoria
+  //
+  // E uma DIFERENCA de coisas que somam tambem soma: o M/M das partes soma o M/M do
+  // total, e na participacao isso vale tambem para o Y/Y, que ali e p.p. So a VARIACAO
+  // PERCENTUAL de um nivel nao soma (as partes nao tem % que somem o % do total).
+  function barrasOk() {
+    if (ehTaxa()) return false;
+    if (ehShare()) return true;
+    return state.transform !== 'yoy';
+  }
+  function normalizar() {
+    if (state.transform === 'sum12' && !acumOk()) state.transform = 'm';
+    if (state.kind === 'bars' && !barrasOk()) state.kind = 'lines';
+  }
+
+  // ---- unidade / titulo de eixo: uma definicao curta, nao o nome da unidade
+  function yTitle() {
+    var m = med();
+    if (state.transform === 'yoy') {
+      return ehRazao() ? 'p.p. change vs. the same month a year earlier'
+                       : '% change vs. the same month a year earlier';
+    }
+    // M/M e diferenca tambem no nivel: mil pessoas a mais que no mes anterior. Nao e "%"
+    // -- confundir os dois faria +89 mil vagas ser lido como +89%.
+    if (state.transform === 'mm') {
+      return ehRazao() ? 'p.p. change vs. the previous month'
+                       : 'change vs. the previous month, thousands';
+    }
+    if (state.transform === 'sum12') return m.y_acum;
+    // `{raiz}` e resolvido aqui, contra o rotulo da raiz DESTA arvore: e o unico jeito
+    // de o eixo nomear o denominador que a serie de fato usa.
+    var base = ehShare() ? m.y_share.replace('{raiz}', raiz.label)
+                         : (ehTaxa() ? m.y_taxa : m.y_nivel);
+    if (state.transform === 'ma3') return base + ', 3-month average';
+    if (state.transform === 'ma12') return base + ', 12-month average';
+    return base;
+  }
+  function decimais() {
+    if (state.transform === 'yoy') return 1;
+    // M/M no nivel e uma contagem (0 casas, como o proprio nivel); nas razoes cai nas
+    // regras de razao abaixo, que dao 2 casas.
+    if (state.transform === 'mm' && !ehRazao()) return 0;
+    // Participacao sempre com 2 casas: mining and logging e ~0,3% das vagas, e com uma
+    // casa a linha inteira do setor viraria "0,3" em todo mes.
+    if (ehShare()) return 2;
+    if (ehTaxa()) return state.transform === 'm' ? 1 : 2;
+    return 0;
+  }
+
+  // ---- tabela
+  function refDates() { return D.dates.slice(-12); }
+  function renderHead() {
+    els.thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var thc = document.createElement('th'); thc.className = 'col-check';
+    var thl = document.createElement('th'); thl.textContent = cfg.colLabel;
+    tr.appendChild(thc); tr.appendChild(thl);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.textContent = fmtMonthShort(d);
+      tr.appendChild(th);
+    });
+    els.thead.appendChild(tr);
+  }
+  function renderTable() {
+    els.tbody.innerHTML = '';
+    var dec = decimais();
+    var iRef = D.dates.length - 12;
+    var prelim = D.meta.preliminares || [];
+
+    flattenHierRows(cfg.tree, state.expanded, 0).forEach(function(row) {
+      var node = row.node, tr = document.createElement('tr');
+      if (node.children) tr.className = 'is-group';
+
+      var tdc = document.createElement('td');
+      tdc.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[node.key];
+      cb.addEventListener('change', function() {
+        state.checked[node.key] = cb.checked;
+        renderTable(); renderChart();
+      });
+      tdc.appendChild(cb);
+      tr.appendChild(tdc);
+
+      var tdl = document.createElement('td');
+      tdl.className = 'col-label';
+      tdl.style.paddingLeft = (9 + row.depth * 16) + 'px';
+      var cor = document.createElement('span');
+      // Espacador quando nao marcada: sem ele o rotulo pula ao clicar na caixa.
+      cor.className = 'swatch' + (state.checked[node.key] ? '' : ' empty');
+      if (state.checked[node.key]) cor.style.background = CORES[node.key].color;
+      tdl.appendChild(cor);
+      var caret = document.createElement('span');
+      caret.className = 'tree-toggle';
+      caret.textContent = node.children ? (state.expanded[node.key] ? '▾' : '▸') : '';
+      if (node.children) {
+        caret.addEventListener('click', function() {
+          state.expanded[node.key] = !state.expanded[node.key];
+          renderTable();
+        });
+      }
+      tdl.appendChild(caret);
+      tdl.appendChild(document.createTextNode(node.label));
+      attachInfo(tdl, corte + ':' + node.key, node.label, yTitle);
+      tr.appendChild(tdl);
+
+      var v = serie(node.key) || [];
+      refDates().forEach(function(d, k) {
+        var td = document.createElement('td');
+        td.className = 'col-value';
+        var valor = v[iRef + k];
+        td.textContent = fmtNum(valor, dec);
+        if (valor != null && valor < 0) td.className += ' neg';
+        if (prelim.indexOf(d) >= 0 && valor != null) {
+          var sup = document.createElement('span');
+          sup.className = 'prelim'; sup.textContent = 'p';
+          td.appendChild(sup);
+        }
+        tr.appendChild(td);
+      });
+      els.tbody.appendChild(tr);
+    });
+  }
+
+  // ---- grafico
+  function temDescendenteMarcado(node) {
+    var achou = false;
+    (function walk(ns) {
+      (ns || []).forEach(function(n) {
+        if (state.checked[n.key]) achou = true;
+        walk(n.children);
+      });
+    })(node.children);
+    return achou;
+  }
+  function specs() {
+    var out = [];
+    (function walk(ns) {
+      (ns || []).forEach(function(n) {
+        if (state.checked[n.key]) {
+          var v = serie(n.key);
+          if (v) {
+            out.push({
+              name: n.label, dates: D.dates, values: v,
+              color: CORES[n.key].color, dash: CORES[n.key].dash,
+              // Em barra empilhada, um no marcado que tenha descendente marcado vira
+              // LINHA. Isso reproduz "componentes + total por cima" e torna a dupla
+              // contagem impossivel: duas barras nunca ficam aninhadas.
+              comoLinha: temDescendenteMarcado(n)
+            });
+          }
+        }
+        walk(n.children);
+      });
+    })(cfg.tree);
+    return out;
+  }
+  function renderChart() {
+    var ss = specs(), dec = decimais(), yt = yTitle();
+    var mostrar = !!VALORES[els.chart];
+    var barras = state.kind === 'bars';
+    var traces = ss.map(function(s) {
+      var comoBarra = barras && !s.comoLinha;
+      if (comoBarra) {
+        return {
+          x: s.dates, y: s.values, name: s.name, type: 'bar',
+          marker: {color: s.color, line: {width: 0}},
+          hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'
+        };
+      }
+      return {
+        x: s.dates, y: s.values, name: s.name, type: 'scatter',
+        mode: mostrar ? 'lines+text' : 'lines',
+        text: textoDaSerie(s.values, dec), textposition: 'top center',
+        textfont: {family: 'JetBrains Mono', size: 9, color: s.color},
+        line: {color: s.color, width: barras ? 2.2 : 1.8, dash: s.dash || 'solid'},
+        connectgaps: false,
+        hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'
+      };
+    });
+    var extra = {yaxis: {title: {text: yt, font: {size: 11}}}};
+    if (barras) { extra.barmode = 'relative'; extra.bargap = 0.12; }
+    Plotly.react(els.chart, traces, mkLayout(extra), PLOTLY_CONFIG);
+
+    describeChart({
+      title: med().label + ' — by ' + cfg.label.toLowerCase(),
+      titleEl: els.ct, subEl: els.cs, srcEl: els.cr,
+      series: ss,
+      bits: [
+        rotuloDe(D.ajustes, state.ajuste),
+        state.transform === 'm' ? null : rotuloDe(TRANSFORMS, state.transform, 'key'),
+        barras ? 'stacked bars' : null
+      ],
+      unit: yt,
+      source: D.meta.fonte
+    });
+
+    _ensureDlToggle(els.bar, els.chart, renderChart);
+    // Valores sobre o grafico ficam desligados na visao de barra empilhada: um numero
+    // por segmento em ate 28 series nao produz nada legivel.
+    dlHabilitar(els.chart, !barras, barras ? 'Not available on the stacked bar chart' : '');
+    finishChart(els.chart, els.bar);
+  }
+  function rotuloDe(lista, valor, campo) {
+    campo = campo || 'key';
+    var achado = null;
+    lista.forEach(function(x) { if (x[campo] === valor) achado = x.label; });
+    return achado;
+  }
+
+  // ---- controles
+  function renderPills() {
+    normalizar();
+    buildPills('pg-' + corte + '-medida',
+      D.ordemMedidas.map(function(m) {
+        return {value: m, label: D.medidas[m].label, infoKey: 'medida:' + m};
+      }),
+      state.medida, function(v) { state.medida = v; tudo(); }, yTitle);
+
+    buildPills('pg-' + corte + '-tipo',
+      D.tipos.map(function(t) { return {value: t.key, label: t.label}; }),
+      state.tipo, function(v) { state.tipo = v; tudo(); });
+
+    buildPills('pg-' + corte + '-ajuste',
+      D.ajustes.map(function(a) { return {value: a.key, label: a.label}; }),
+      state.ajuste, function(v) { state.ajuste = v; tudo(); });
+
+    buildPills('pg-' + corte + '-transform',
+      TRANSFORMS.map(function(t) {
+        var ok = t.key !== 'sum12' || acumOk();
+        return {
+          value: t.key, label: t.label, disabled: !ok,
+          title: ok ? '' : (ehShare()
+            ? 'A share of the total is a ratio: adding twelve of them does not produce a share.'
+            : (state.tipo === 'taxa'
+              ? 'A rate is a ratio: adding twelve of them does not produce a ratio.'
+              : 'Job openings is a stock — the position on the last business day of the month. '
+                + 'Accumulating it produces no quantity at all.'))
+        };
+      }),
+      state.transform, function(v) { state.transform = v; tudo(); });
+
+    buildPills('pg-' + corte + '-kind', [
+      {value: 'lines', label: 'Lines'},
+      {value: 'bars', label: 'Stacked bars', disabled: !barrasOk(),
+       title: barrasOk() ? '' : (ehTaxa()
+         ? 'Rates are ratios against each category’s own employment — siblings do not sum, so stacking them would invent a total.'
+         : 'A percentage change does not add across siblings: the parts of a total do not have percentage changes that sum to the total’s. The M/M and Y/Y differences of a share do, and are available there.')}
+    ], state.kind, function(v) { state.kind = v; tudo(); });
+  }
+  function tudo() { normalizar(); renderPills(); renderHead(); renderTable(); renderChart(); }
+
+  els.h2.textContent = cfg.label + ' — JOLTS';
+  els.note.innerHTML = cfg.note;
+  tudo();
+  return {state: state, redraw: tudo, cores: CORES, specs: specs, yTitle: yTitle,
+          acumOk: acumOk, barrasOk: barrasOk, serie: serie, raiz: raiz};
+}
+
+// ── series comprimidas {i0, v} ──────────────────────────────────────────────
+// A CES vai de 1939 a 2026 e a maioria das series comeca em 1990: um array cheio de
+// nulos por serie punha 26 MB no arquivo contra 11,5. `i0` e o indice na grade da
+// aba, e `v` e CONTIGUA mes a mes -- buraco interno vira null dentro de `v`, nunca um
+// mes removido (remover desloca todo o resto no tempo, sem erro).
+var _EXP = {};
+function _expandir(ns, mapa, chave, n) {
+  var ck = ns + '#' + chave;
+  if (ck in _EXP) return _EXP[ck];
+  var s = mapa[chave], out = null;
+  if (s) {
+    out = new Array(n).fill(null);
+    for (var i = 0; i < s.v.length; i++) {
+      var j = s.i0 + i;
+      if (j >= 0 && j < n) out[j] = s.v[i];
+    }
+  }
+  _EXP[ck] = out;
+  return out;
+}
+var _TRC = {};
+function _transformar(ns, arr, chave, transform, ehRazao) {
+  var ck = ns + '#' + chave + '@' + transform;
+  if (ck in _TRC) return _TRC[ck];
+  var out = null;
+  if (arr) {
+    if (transform === 'm') out = arr;
+    else if (transform === 'mm') out = _mm(arr);
+    else if (transform === 'ma3') out = _janela(arr, 3, true);
+    else if (transform === 'ma12') out = _janela(arr, 12, true);
+    else if (transform === 'sum12') out = _janela(arr, 12, false);
+    else if (transform === 'yoy') out = _yoy(arr, ehRazao);
+  }
+  _TRC[ck] = out;
+  return out;
+}
+
+// ── fabrica comum das tabelas hierarquicas de CES e CPS ─────────────────────
+// Igual a do JOLTS no que nao depende da fonte (celula mes a mes, caixa que plota,
+// cor por posicao, cartao, cabecalho, regua) e diferente no que depende: a chave da
+// serie, a grade de datas, quais tipos existem e o que e aditivo.
+function makeGenericTab(opt) {
+  var pref = opt.pref;
+  var nos = achatar(opt.tree);
+  var raiz = opt.tree[0];
+  var defaults = opt.defaults || [raiz.key].concat(
+    (raiz.children || []).map(function(n) { return n.key; }));
+  var fixos = {}; fixos[raiz.key] = PALETTE[0];
+  var CORES = assignSeriesColors(nos.map(function(n) { return n.key; }), defaults, fixos);
+
+  var state = {
+    medida: opt.ordemMedidas ? opt.ordemMedidas[0] : null,
+    tipo: 'nivel', ajuste: 'sa', transform: 'm', kind: 'lines',
+    eixo: opt.eixos ? opt.eixos[0].key : null,
+    checked: {}, expanded: {}
+  };
+  defaults.forEach(function(k) { state.checked[k] = true; });
+  (opt.expandidos || [raiz.key]).forEach(function(k) { state.expanded[k] = true; });
+
+  var els = {
+    h2: document.getElementById('h2-' + pref),
+    note: document.getElementById('note-' + pref),
+    hint: document.getElementById('hint-' + pref),
+    thead: document.getElementById('th-' + pref),
+    tbody: document.getElementById('tb-' + pref),
+    chart: 'chart-' + pref, bar: 'rb-' + pref,
+    ct: document.getElementById('ct-' + pref),
+    cs: document.getElementById('cs-' + pref),
+    cr: document.getElementById('cr-' + pref)
+  };
+
+  function med() { return state.medida ? opt.medidas[state.medida] : null; }
+  function aditivo(no) { return opt.aditivo(state, no); }
+  function ehShare() { return state.tipo === 'share'; }
+  function ehRazao(no) { return ehShare() || opt.ehRazao(state, no); }
+
+  function bruta(cat) {
+    return _expandir(pref, opt.series, opt.chave(state, cat), opt.dates.length);
+  }
+  function serie(no) {
+    var cat = no.key;
+    if (ehShare()) {
+      var num = bruta(cat), den = bruta(raiz.key);
+      if (!num || !den) return null;
+      var ck = 'share:' + opt.chave(state, cat);
+      var arr = _EXP[pref + '#' + ck];
+      if (!arr) {
+        arr = num.map(function(a, i) {
+          var b = den[i];
+          return (a == null || b == null || b === 0) ? null : (a / b) * 100;
+        });
+        _EXP[pref + '#' + ck] = arr;
+      }
+      return _transformar(pref, arr, ck, state.transform, true);
+    }
+    return _transformar(pref, bruta(cat), opt.chave(state, cat), state.transform,
+                        ehRazao(no));
+  }
+
+  // ---- disponibilidade
+  function tiposDisponiveis() {
+    var out = [{key: 'nivel', label: 'Level'}];
+    if (opt.shareOk(state)) out.push({key: 'share', label: '% of total'});
+    return out;
+  }
+  function acumOk() { return false; }          // nada na CES/CPS acumula: ver o apendice
+  function barrasOk() {
+    if (!opt.barrasOk(state)) return false;
+    return state.transform !== 'yoy' || ehShare();
+  }
+  function normalizar() {
+    if (state.transform === 'sum12') state.transform = 'm';
+    if (state.tipo === 'share' && !opt.shareOk(state)) state.tipo = 'nivel';
+    if (state.kind === 'bars' && !barrasOk()) state.kind = 'lines';
+  }
+
+  function yTitle() {
+    var t = opt.yTitle(state, ehShare(), raiz);
+    if (state.transform === 'yoy') {
+      return (ehShare() || opt.ehRazao(state, null))
+        ? 'p.p. change vs. the same month a year earlier'
+        : '% change vs. the same month a year earlier';
+    }
+    if (state.transform === 'mm') {
+      return (ehShare() || opt.ehRazao(state, null))
+        ? 'p.p. change vs. the previous month'
+        : opt.yTitleMm(state, raiz);
+    }
+    if (state.transform === 'ma3') return t + ', 3-month average';
+    if (state.transform === 'ma12') return t + ', 12-month average';
+    return t;
+  }
+  function decimais() {
+    if (ehShare()) return 2;
+    if (state.transform === 'yoy') return 1;
+    return opt.dec(state);
+  }
+
+  // ---- tabela
+  function refDates() { return opt.dates.slice(-12); }
+  function linhasVisiveis() {
+    var t = opt.filtro ? opt.filtro(state, opt.tree) : opt.tree;
+    return flattenHierRows(t, state.expanded, 0);
+  }
+  function renderHead() {
+    els.thead.innerHTML = '';
+    var tr = document.createElement('tr');
+    var a = document.createElement('th'); a.className = 'col-check';
+    var b = document.createElement('th'); b.textContent = opt.colLabel;
+    tr.appendChild(a); tr.appendChild(b);
+    refDates().forEach(function(d) {
+      var th = document.createElement('th');
+      th.textContent = fmtMonthShort(d);
+      tr.appendChild(th);
+    });
+    els.thead.appendChild(tr);
+  }
+  function renderTable() {
+    els.tbody.innerHTML = '';
+    var dec = decimais(), iRef = opt.dates.length - 12;
+    linhasVisiveis().forEach(function(row) {
+      var no = row.node, tr = document.createElement('tr');
+      if (no.children) tr.className = 'is-group';
+      var tdc = document.createElement('td');
+      tdc.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state.checked[no.key];
+      cb.addEventListener('change', function() {
+        state.checked[no.key] = cb.checked; renderTable(); renderChart();
+      });
+      tdc.appendChild(cb); tr.appendChild(tdc);
+
+      var tdl = document.createElement('td');
+      tdl.className = 'col-label';
+      tdl.style.paddingLeft = (9 + row.depth * 16) + 'px';
+      var cor = document.createElement('span');
+      cor.className = 'swatch' + (state.checked[no.key] ? '' : ' empty');
+      if (state.checked[no.key]) cor.style.background = CORES[no.key].color;
+      tdl.appendChild(cor);
+      var caret = document.createElement('span');
+      caret.className = 'tree-toggle';
+      caret.textContent = no.children ? (state.expanded[no.key] ? '▾' : '▸') : '';
+      if (no.children) {
+        caret.addEventListener('click', function() {
+          state.expanded[no.key] = !state.expanded[no.key]; renderTable();
+        });
+      }
+      tdl.appendChild(caret);
+      tdl.appendChild(document.createTextNode(no.label));
+      attachInfo(tdl, opt.infoKey(no), no.label, yTitle);
+      tr.appendChild(tdl);
+
+      var v = serie(no) || [];
+      refDates().forEach(function(d, k) {
+        var td = document.createElement('td');
+        td.className = 'col-value';
+        var valor = v[iRef + k];
+        td.textContent = fmtNum(valor, dec);
+        if (valor != null && valor < 0) td.className += ' neg';
+        tr.appendChild(td);
+      });
+      els.tbody.appendChild(tr);
+    });
+  }
+
+  // ---- grafico
+  function temDescendenteMarcado(no) {
+    var achou = false;
+    (function walk(ns) {
+      (ns || []).forEach(function(n) {
+        if (state.checked[n.key]) achou = true;
+        walk(n.children);
+      });
+    })(no.children);
+    return achou;
+  }
+  function specs() {
+    var out = [];
+    (function walk(ns) {
+      (ns || []).forEach(function(n) {
+        if (state.checked[n.key]) {
+          var v = serie(n);
+          if (v) out.push({
+            name: n.label, dates: opt.dates, values: v,
+            color: CORES[n.key].color, dash: CORES[n.key].dash,
+            // Em barra empilhada: pai com filho marcado vira linha, e uma linha que
+            // NAO e aditiva (uma razao, uma media) tambem -- empilhar uma media com
+            // niveis inventaria um agregado.
+            comoLinha: temDescendenteMarcado(n) || !aditivo(n)
+          });
+        }
+        walk(n.children);
+      });
+    })(opt.filtro ? opt.filtro(state, opt.tree) : opt.tree);
+    return out;
+  }
+  function renderChart() {
+    var ss = specs(), dec = decimais(), yt = yTitle();
+    var mostrar = !!VALORES[els.chart], barras = state.kind === 'bars';
+    var traces = ss.map(function(s) {
+      if (barras && !s.comoLinha) {
+        return {x: s.dates, y: s.values, name: s.name, type: 'bar',
+                marker: {color: s.color, line: {width: 0}},
+                hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'};
+      }
+      return {x: s.dates, y: s.values, name: s.name, type: 'scatter',
+              mode: mostrar ? 'lines+text' : 'lines',
+              text: textoDaSerie(s.values, dec), textposition: 'top center',
+              textfont: {family: 'JetBrains Mono', size: 9, color: s.color},
+              line: {color: s.color, width: barras ? 2.2 : 1.8, dash: s.dash || 'solid'},
+              connectgaps: false,
+              hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'};
+    });
+    var extra = {yaxis: {title: {text: yt, font: {size: 11}}}};
+    if (barras) { extra.barmode = 'relative'; extra.bargap = 0.12; }
+    Plotly.react(els.chart, traces, mkLayout(extra), PLOTLY_CONFIG);
+
+    describeChart({
+      title: opt.titulo(state), titleEl: els.ct, subEl: els.cs, srcEl: els.cr,
+      series: ss, bits: opt.bits(state, barras), unit: yt, source: opt.fonte
+    });
+    _ensureDlToggle(els.bar, els.chart, renderChart);
+    dlHabilitar(els.chart, !barras, barras ? 'Not available on the stacked bar chart' : '');
+    finishChart(els.chart, els.bar);
+  }
+
+  // ---- controles
+  function renderPills() {
+    normalizar();
+    if (opt.ordemMedidas && opt.ordemMedidas.length > 1) {
+      buildPills('pg-' + pref + '-medida', opt.ordemMedidas.map(function(m) {
+        return {value: m, label: opt.medidas[m].label, infoKey: opt.medidaInfoKey(m)};
+      }), state.medida, function(v) { state.medida = v; tudo(); }, yTitle);
+    }
+    if (document.getElementById('pg-' + pref + '-tipo')) {
+      var td = tiposDisponiveis();
+      var todos = td.concat(td.length === 1
+        ? [{key: 'share', label: '% of total', disabled: true,
+            title: opt.shareMotivo(state)}] : []);
+      buildPills('pg-' + pref + '-tipo', todos.map(function(t) {
+        return {value: t.key, label: t.label, disabled: !!t.disabled, title: t.title || ''};
+      }), state.tipo, function(v) { state.tipo = v; tudo(); });
+    }
+    if (opt.eixos) {
+      buildPills('pg-' + pref + '-eixo', opt.eixos.map(function(e) {
+        return {value: e.key, label: e.label};
+      }), state.eixo, function(v) { state.eixo = v; tudo(); });
+    }
+    buildPills('pg-' + pref + '-ajuste', D.ajustes.map(function(a) {
+      return {value: a.key, label: a.label, disabled: !opt.ajusteOk(state, a.key),
+              title: opt.ajusteOk(state, a.key) ? '' : opt.ajusteMotivo(a.key)};
+    }), state.ajuste, function(v) { state.ajuste = v; tudo(); });
+
+    buildPills('pg-' + pref + '-transform', TRANSFORMS.map(function(t) {
+      var ok = t.key !== 'sum12';
+      return {value: t.key, label: t.label, disabled: !ok,
+              title: ok ? '' : opt.acumMotivo(state)};
+    }), state.transform, function(v) { state.transform = v; tudo(); });
+
+    buildPills('pg-' + pref + '-kind', [
+      {value: 'lines', label: 'Lines'},
+      {value: 'bars', label: 'Stacked bars', disabled: !barrasOk(),
+       title: barrasOk() ? '' : opt.barrasMotivo(state)}
+    ], state.kind, function(v) { state.kind = v; tudo(); });
+  }
+  function tudo() {
+    normalizar(); renderPills(); renderHead(); renderTable(); renderChart();
+    if (els.hint) els.hint.innerHTML = opt.hint(state);
+  }
+
+  els.h2.textContent = opt.h2;
+  els.note.innerHTML = opt.note;
+  tudo();
+  return {state: state, redraw: tudo, cores: CORES, specs: specs, yTitle: yTitle,
+          serie: serie, raiz: raiz, barrasOk: barrasOk, acumOk: acumOk,
+          tiposDisponiveis: tiposDisponiveis};
+}
+
+// ── CES ─────────────────────────────────────────────────────────────────────
+function makeCesTab(aba) {
+  var cfg = D.ces.abas[aba], MED = D.ces.medidas;
+  var raizLabel = cfg.raizLabel;
+  function m(state) { return MED[state.medida]; }
+  return makeGenericTab({
+    pref: 'ces-' + aba, tree: cfg.tree, colLabel: cfg.colLabel,
+    dates: D.ces.dates, series: D.ces.series, medidas: MED,
+    ordemMedidas: cfg.ordemMedidas, fonte: D.meta.fonteCes,
+    h2: cfg.label + ' — CES', note: cfg.note,
+    chave: function(st, cat) { return [cat, st.medida, st.ajuste].join('|'); },
+    infoKey: function(no) { return 'ces:' + no.key; },
+    medidaInfoKey: function(k) { return 'medida_ces:' + k; },
+    aditivo: function(st) { return !!m(st).aditivo; },
+    ehRazao: function(st) { return !m(st).aditivo; },
+    shareOk: function(st) { return !!m(st).y_share; },
+    shareMotivo: function(st) {
+      return m(st).natureza === 'indice'
+        ? 'An index has no total to be a share of — the same quantity in thousands is in this list and does.'
+        : 'This is an average per worker, not a quantity: industries do not add up to a total it could be a share of.';
+    },
+    barrasOk: function(st) { return !!m(st).aditivo; },
+    barrasMotivo: function(st) {
+      if (!m(st).aditivo) {
+        return m(st).natureza === 'indice'
+          ? 'Indexes on a 2007 = 100 base do not add across industries.'
+          : 'An average per worker is weighted by employment, and the weight is not in the series — industries do not add.';
+      }
+      return 'A percentage change does not add across siblings.';
+    },
+    acumMotivo: function() {
+      return 'Nothing in this survey accumulates: employment is a stock, and hours and '
+           + 'earnings are weekly rates. Twelve months of a weekly payroll is not a year of payroll.';
+    },
+    ajusteOk: function() { return true; },
+    ajusteMotivo: function() { return ''; },
+    yTitle: function(st, share) {
+      return share ? m(st).y_share.replace('{raiz}', raizLabel) : m(st).y_nivel;
+    },
+    yTitleMm: function(st) {
+      var n = m(st).natureza;
+      if (n === 'estoque') return 'change vs. the previous month, thousands of jobs';
+      if (n === 'agregado') return 'change vs. the previous month, thousands';
+      if (n === 'indice') return 'index-point change vs. the previous month';
+      return 'change vs. the previous month, same unit as the level';
+    },
+    dec: function(st) { return m(st).dec; },
+    titulo: function(st) { return m(st).label + ' — by industry'; },
+    bits: function(st, barras) {
+      var out = [rotuloDeLista(D.ajustes, st.ajuste),
+                 st.transform === 'm' ? null : rotuloDeLista(TRANSFORMS, st.transform, 'key'),
+                 barras ? 'stacked bars' : null];
+      // A borda direita e irregular: se o ultimo mes ainda nao tem o detalhe, o
+      // cabecalho diz, em vez de deixar o grafico parecer uma queda.
+      var n = D.ces.coberturaMes[D.ces.dates.length - 1];
+      var tot = D.ces.nLinhasArvore;
+      if (aba === 'emprego' && n < tot) {
+        out.push('detail for ' + fmtMonth(D.ces.dates[D.ces.dates.length - 1])
+                 + ' is still partial: ' + n + ' of ' + tot + ' industries');
+      }
+      return out;
+    },
+    hint: function(st) {
+      var base = 'Tick a row to plot it.';
+      if (m(st).aditivo) {
+        base += ' Branches sum to their parent in the <b>not adjusted</b> view; '
+             + 'seasonal adjustment is independent per series, so in the adjusted view '
+             + 'they add only approximately.';
+      } else {
+        base += ' This measure is an average per worker, so rows do not add up — '
+             + 'stacking and shares are switched off.';
+      }
+      return base;
+    }
+  });
+}
+
+// ── CPS ─────────────────────────────────────────────────────────────────────
+function makeCpsTab(bloco) {
+  var cfg = null;
+  D.cps.blocos.forEach(function(b) { if (b.key === bloco) cfg = b; });
+  if (!cfg) throw new Error('bloco da CPS desconhecido: ' + bloco);
+  var UN = D.cps.unidades, ROT = D.cps.rotuloUnidade;
+  var porKey = {};
+  cfg.linhas.forEach(function(l) { porKey[l.key] = l; });
+
+  // Arvore: o bloco `status` tem parentesco declarado; os outros sao planos.
+  var tree = [];
+  if (bloco === 'status') {
+    var filhos = {}, raizes = [];
+    cfg.linhas.forEach(function(l) {
+      var n = {key: l.key, label: l.label};
+      if (l.pai) { (filhos[l.pai] = filhos[l.pai] || []).push(n); } else raizes.push(n);
+    });
+    (function liga(ns) {
+      ns.forEach(function(n) {
+        if (filhos[n.key]) { n.children = filhos[n.key]; liga(n.children); }
+      });
+    })(raizes);
+    tree = raizes;
+  } else {
+    tree = cfg.linhas.map(function(l) { return {key: l.key, label: l.label}; });
+  }
+
+  function linha(no) { return porKey[no.key] || {}; }
+  var primeiras = cfg.linhas.slice(0, bloco === 'status' ? 4 : 6)
+                            .map(function(l) { return l.key; });
+
+  return makeGenericTab({
+    pref: 'cps-' + bloco, tree: tree, colLabel: 'Indicator',
+    dates: D.cps.dates, series: D.cps.series, medidas: {},
+    ordemMedidas: null, fonte: D.meta.fonteCps,
+    h2: cfg.label + ' — CPS', defaults: primeiras,
+    expandidos: cfg.linhas.map(function(l) { return l.key; }),
+    eixos: bloco === 'composicao' ? D.cps.eixos : null,
+    note: ({
+      status: 'The household survey counts PEOPLE, not jobs: someone with two jobs is '
+            + 'one employed person here and two on the payroll survey, and the '
+            + 'self-employed count here and not there. The four boxed rows nest '
+            + '(population = labour force + not in the labour force), so they stack — '
+            + '<b>to within about a thousand</b>: the BLS adjusts each series for '
+            + 'seasonality independently, and its own footnote says the detail will not '
+            + 'necessarily add to the totals. The three rates below them are ratios and '
+            + 'always draw as lines.',
+      taxa_grupo: 'Each rate has its own labour force in the denominator, so these do '
+                + 'not add up to anything and stacking is switched off. The teenage '
+                + 'rate is by far the most volatile — a small population with a large '
+                + 'share of it entering and leaving the labour force every month.',
+      composicao: 'Reason, duration and part-time status are three separate cuts of the '
+                + 'same unemployed total — each one sums to it, so they can never be '
+                + 'siblings in one table. Pick a cut.',
+      alternativa: 'The six official measures of labour underutilisation, from the '
+                 + 'narrowest to the broadest. They are nested by definition but not '
+                 + 'additive: U-4, U-5 and U-6 add people to the DENOMINATOR as well '
+                 + 'as the numerator, so U-6 is not U-3 plus a number.'
+    })[bloco],
+    chave: function(st, cat) { return [cat, st.ajuste].join('|'); },
+    infoKey: function(no) { return 'cps:' + no.key; },
+    medidaInfoKey: function() { return null; },
+    aditivo: function(st, no) {
+      if (!cfg.aditivo) return false;
+      return no ? !linha(no).razao : true;
+    },
+    ehRazao: function(st, no) {
+      if (no) return !!linha(no).razao;
+      return !cfg.aditivo;
+    },
+    shareOk: function() { return !!cfg.aditivo; },
+    shareMotivo: function() {
+      return bloco === 'alternativa'
+        ? 'These six measures have different denominators, so they are not parts of one total.'
+        : 'Each of these has its own base, so there is no total for them to be a share of.';
+    },
+    barrasOk: function() { return !!cfg.aditivo; },
+    barrasMotivo: function() {
+      return 'The rows in this block do not add up to a total — each has its own base.';
+    },
+    acumMotivo: function() {
+      return 'These are stocks and rates measured in a reference week, not monthly flows: '
+           + 'adding twelve of them produces no quantity.';
+    },
+    ajusteOk: function(st, a) {
+      // A populacao nao e dessazonalizada, e a Summary table A marca a linha. No bloco
+      // `status` a pill de SA continua valida para as outras linhas -- so a populacao
+      // fica sem serie, e a tabela mostra travessao.
+      return true;
+    },
+    ajusteMotivo: function() { return ''; },
+    filtro: function(st, t) {
+      if (bloco !== 'composicao') return t;
+      return t.filter(function(n) { return linha(n).eixo === st.eixo; });
+    },
+    yTitle: function(st, share) {
+      if (share) return 'share of ' + (cfg.linhas[0] || {}).label + ', %';
+      var uns = {};
+      (st.__vis || []).forEach(function(k) { uns[UN[k]] = 1; });
+      return cpsUnidade(st, cfg, UN, ROT, porKey);
+    },
+    yTitleMm: function(st) {
+      var u = cpsUnidadeCurta(st, cfg, UN, porKey);
+      return u === 'pct' ? 'p.p. change vs. the previous month'
+           : u === 'semanas' ? 'change vs. the previous month, weeks'
+           : 'change vs. the previous month, thousands of people';
+    },
+    dec: function(st) {
+      var u = cpsUnidadeCurta(st, cfg, UN, porKey);
+      return u === 'mil' ? 0 : 1;
+    },
+    titulo: function(st) {
+      if (bloco !== 'composicao') return cfg.label;
+      var r = '';
+      D.cps.eixos.forEach(function(e) { if (e.key === st.eixo) r = e.label; });
+      return cfg.label + ' — ' + r.toLowerCase();
+    },
+    bits: function(st, barras) {
+      return [rotuloDeLista(D.ajustes, st.ajuste),
+              st.transform === 'm' ? null : rotuloDeLista(TRANSFORMS, st.transform, 'key'),
+              barras ? 'stacked bars' : null];
+    },
+    hint: function(st) {
+      var h = 'Tick a row to plot it.';
+      if (bloco === 'status') {
+        h += ' The population row exists only without seasonal adjustment — the BLS does '
+          + 'not adjust it — so it shows a dash in the adjusted view.';
+      }
+      h += ' <b>October 2025 is missing from this survey</b>: the shutdown cancelled '
+        + 'collection, which also empties the monthly change for October and November.';
+      return h;
+    }
+  });
+}
+// Unidade do eixo da CPS: uma so quando as linhas plotadas concordam, e o aviso de
+// unidades mistas quando nao -- mesma regra do relatorio de mercado de trabalho do
+// Brasil, e ela existe porque estas tabelas misturam pessoas, % e semanas.
+function cpsUnidadesPlotadas(st, cfg, UN, porKey) {
+  var uns = {};
+  cfg.linhas.forEach(function(l) {
+    if (!st.checked[l.key]) return;
+    if (st.eixo && l.eixo && l.eixo !== st.eixo) return;
+    uns[UN[l.key] || 'mil'] = 1;
+  });
+  return Object.keys(uns);
+}
+function cpsUnidadeCurta(st, cfg, UN, porKey) {
+  var u = cpsUnidadesPlotadas(st, cfg, UN, porKey);
+  return u.length === 1 ? u[0] : 'mista';
+}
+function cpsUnidade(st, cfg, UN, ROT, porKey) {
+  var u = cpsUnidadesPlotadas(st, cfg, UN, porKey);
+  if (u.length === 1) return ROT[u[0]] || u[0];
+  if (!u.length) return 'no series selected';
+  return 'mixed units — see each row in the table';
+}
+
+function rotuloDeLista(lista, valor, campo) {
+  campo = campo || 'key';
+  var achado = null;
+  lista.forEach(function(x) { if (x[campo] === valor) achado = x.label; });
+  return achado;
+}
+
+// ── derivadas ───────────────────────────────────────────────────────────────
+function makeDerivadasTab() {
+  var DV = D.derivadas, G = DV.grade;
+  function arr(s) {
+    if (!s || s.i0 == null) return null;
+    var i = G.indexOf(s.i0), out = new Array(G.length).fill(null);
+    if (i < 0) return null;
+    for (var k = 0; k < s.v.length; k++) if (i + k < G.length) out[i + k] = s.v[k];
+    return out;
+  }
+  function plotar(pref, titulo, nota, traces, ytitle, sub, extra) {
+    document.getElementById('h2-' + pref).textContent = titulo;
+    document.getElementById('note-' + pref).innerHTML = nota;
+    var lay = mkLayout(Object.assign({yaxis: {title: {text: ytitle, font: {size: 11}}}},
+                                     extra || {}));
+    Plotly.react('chart-' + pref, traces, lay, PLOTLY_CONFIG);
+    describeChart({
+      title: titulo, titleEl: document.getElementById('ct-' + pref),
+      subEl: document.getElementById('cs-' + pref),
+      srcEl: document.getElementById('cr-' + pref),
+      // Num grafico cujo X NAO e tempo (a curva de Beveridge, cujo x sao taxas de
+      // desemprego), `dates` seriam numeros e o `fmtMonth` do cabecalho estouraria ao
+      // tentar formata-los como mes. Nesses casos o periodo vai escrito no `bits` e a
+      // linha de fonte sai sem faixa de datas -- mesma regra dos scatters de momentum
+      // do relatorio de atividade do Brasil.
+      series: (extra && extra.xaxis) ? [] : traces.map(function(t) {
+        return {name: t.name, dates: t.x, values: t.y};
+      }).filter(function(t) { return t.dates && t.values; }),
+      bits: sub, unit: ytitle, source: 'BLS, JOLTS · CES · CPS'
+    });
+    var bar = document.getElementById('rb-' + pref);
+    if (extra && extra.xaxis) {
+      // A regua de tempo nao se aplica a um grafico cujo X nao e tempo: `_rangeOptions`
+      // constroi janelas de data a partir do extent plotado, e ali o extent sao taxas
+      // de desemprego. O controle de periodo daquele card e a pill de Period, e a regua
+      // sai da tela em vez de ficar desligada -- ela nao e um controle indisponivel, e
+      // um controle inaplicavel. Mesma escolha dos scatters de momentum do relatorio de
+      // atividade do Brasil, que ficam fora do _bindYAutofit.
+      if (bar) bar.style.display = 'none';
+      return;
+    }
+    if (bar) bar.style.display = '';
+    finishChart('chart-' + pref, 'rb-' + pref);
+  }
+
+  // 1. vagas por desempregado
+  var vu = arr(DV.vu), uo = arr(DV.uoBls);
+  plotar('dv-vu', 'Vacancies per unemployed person',
+    'Job openings from JOLTS divided by unemployment from the household survey. '
+    + 'The dashed line is the BLS\'s own published ratio, inverted: the bureau '
+    + 'publishes <i>unemployed persons per opening</i>, the reciprocal of the figure '
+    + 'that is usually quoted. Reproducing it is what proves the two legs are the '
+    + 'right series — measured agreement is ' + DV.vuAferido.erroMedio
+    + ' on average over ' + DV.vuAferido.n + ' months, against the one decimal the BLS '
+    + 'publishes. <b>October 2025 is blank</b>: the shutdown cancelled the household survey.',
+    [{x: G, y: vu, name: 'Openings per unemployed person', type: 'scatter', mode: 'lines',
+      line: {color: PALETTE[0], width: 2}, connectgaps: false},
+     {x: G, y: uo, name: 'BLS published ratio, inverted', type: 'scatter', mode: 'lines',
+      line: {color: PALETTE[3], width: 1.4, dash: 'dot'}, connectgaps: false}],
+    'openings / unemployed people, ratio',
+    ['both seasonally adjusted']);
+
+  // 2. fluxos brutos e contratacao liquida
+  plotar('dv-liq', 'Gross flows and net hiring',
+    'Hires and total separations are both JOLTS gross flows — everyone who joined and '
+    + 'everyone who left a payroll during the month, which is millions either way. '
+    + 'Their difference is <b>not</b> the payroll change: the two surveys have different '
+    + 'samples, universes and imputation, and the BLS publishes a note on the gap. Read '
+    + 'it as the turnover behind a small net number.',
+    [{x: G, y: arr(DV.contratacoes), name: 'Hires', type: 'scatter', mode: 'lines',
+      line: {color: PALETTE[2], width: 1.5}, connectgaps: false},
+     {x: G, y: arr(DV.desligamentos), name: 'Total separations', type: 'scatter',
+      mode: 'lines', line: {color: PALETTE[4], width: 1.5}, connectgaps: false},
+     {x: G, y: arr(DV.liquida), name: 'Net (hires − separations)', type: 'bar',
+      marker: {color: PALETTE[0]}}],
+    'people during the month, thousands', ['seasonally adjusted']);
+
+  // 3. curva de Beveridge
+  var bx = arr(DV.beveridge.x), by = arr(DV.beveridge.y);
+  var PERIODOS = [
+    {key: 'all', label: 'All', de: null, ate: null},
+    {key: 'pre', label: '2000-2007', de: '2000-01-01', ate: '2007-12-01'},
+    {key: 'gfc', label: '2008-2019', de: '2008-01-01', ate: '2019-12-01'},
+    {key: 'pos', label: '2020 on', de: '2020-01-01', ate: null}
+  ];
+  var perAtivo = 'all';
+  function bev() {
+    var p = PERIODOS.filter(function(x) { return x.key === perAtivo; })[0];
+    var xs = [], ys = [], tx = [];
+    for (var i = 0; i < G.length; i++) {
+      if (bx[i] == null || by[i] == null) continue;
+      if (p.de && G[i] < p.de) continue;
+      if (p.ate && G[i] > p.ate) continue;
+      xs.push(bx[i]); ys.push(by[i]); tx.push(fmtMonth(G[i]));
+    }
+    plotar('dv-bev', 'Beveridge curve',
+      'The job openings rate against the unemployment rate, one point per month. Both '
+      + 'legs are ratios, and <b>their denominators are different</b>: the openings rate '
+      + 'divides by employment plus openings, the unemployment rate by the labour force. '
+      + 'They share a unit, not a base. A shift of the whole cloud away from the origin '
+      + 'is the standard read on matching efficiency getting worse.',
+      [{x: xs, y: ys, text: tx, name: 'Month', type: 'scatter', mode: 'markers',
+        marker: {color: ys.map(function(_, i) { return i; }), colorscale: 'Viridis',
+                 size: 6, showscale: false},
+        hovertemplate: '%{text}<br>unemployment %{x:.1f}%<br>openings %{y:.1f}%<extra></extra>'}],
+      'job openings / (employment + openings), %',
+      ['one point per month', 'x axis: unemployed / labour force, %',
+       xs.length ? (tx[0] + ' to ' + tx[tx.length - 1]) : 'no months in range'],
+      {xaxis: {title: {text: 'unemployment rate, %', font: {size: 11}},
+               type: 'linear', showgrid: true, gridcolor: 'rgba(31,40,83,0.06)',
+               tickfont: {family: 'JetBrains Mono', size: 10, color: '#7A88A8'}}});
+  }
+  buildPills('pg-dv-bev-opt', PERIODOS.map(function(p) {
+    return {value: p.key, label: p.label};
+  }), perAtivo, function(v) { perAtivo = v; bev(); });
+  bev();
+
+  // 4. CES x CPS
+  plotar('dv-div', 'Establishment vs. household survey',
+    'The monthly change in employment as each survey measures it. They will never '
+    + 'reconcile, and that is by construction: the payroll survey counts FILLED JOBS at '
+    + 'establishments (two jobs count twice, the self-employed not at all), the household '
+    + 'survey counts PEOPLE (the self-employed count, two jobs count once). The household '
+    + 'series is also far noisier — a sample of 60,000 households against 119,000 '
+    + 'businesses. <b>October and November 2025 are blank on the household side</b>: a '
+    + 'missing month kills two monthly changes.',
+    [{x: G, y: arr(DV.cesMm), name: 'Payroll survey (CES)', type: 'scatter', mode: 'lines',
+      line: {color: PALETTE[0], width: 1.6}, connectgaps: false},
+     {x: G, y: arr(DV.cpsMm), name: 'Household survey (CPS)', type: 'scatter',
+      mode: 'lines', line: {color: PALETTE[5], width: 1.4}, connectgaps: false}],
+    'change vs. the previous month, thousands', ['seasonally adjusted']);
+
+  return {bev: bev, periodo: function() { return perAtivo; }};
+}
+
+// ── boot ────────────────────────────────────────────────────────────────────
+function wireTabs() {
+  var botoes = Array.prototype.slice.call(document.querySelectorAll('nav.tabs button'));
+  botoes.forEach(function(b) {
+    b.addEventListener('click', function() {
+      botoes.forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      Array.prototype.slice.call(document.querySelectorAll('.panel')).forEach(function(p) {
+        p.classList.remove('active');
+      });
+      var painel = document.getElementById(b.dataset.panel);
+      painel.classList.add('active');
+      // Um grafico plotado num painel escondido nasce com largura ZERO: o Plotly le o
+      // container no momento do plot. Hoje os tres graficos vivem no painel que ja
+      // esta ativo no boot, entao nascem com largura real e este resize e um no-op --
+      // fica como guarda para o dia em que a aba default mudar ou um grafico novo
+      // nascer num painel escondido, que e uma falha silenciosa (grafico em branco,
+      // sem erro).
+      Array.prototype.slice.call(painel.querySelectorAll('.chart')).forEach(function(c) {
+        if (c.data) Plotly.Plots.resize(c);
+      });
+    });
+  });
+}
+function preencherApendice() {
+  var mapa = {industria: 'ind', tamanho: 'tam', regiao: 'reg'};
+  Object.keys(mapa).forEach(function(corte) {
+    var p = mapa[corte], cfg = D.cortes[corte], cob = D.cobertura[corte];
+    document.getElementById('ax-' + p + '-n').textContent = cfg.nLinhas;
+    document.getElementById('ax-' + p + '-l').textContent = cfg.niveis;
+    document.getElementById('ax-' + p + '-s').textContent = cob.nSeries;
+  });
+}
+
+document.getElementById('stamp').innerHTML =
+  'Reference month <b>' + fmtMonth(D.meta.ultimoMes) + '</b><br>'
+  + D.meta.nSeries + ' series · ' + D.meta.nMeses + ' months from ' + fmtMonth(D.meta.primeiroMes)
+  + '<br>generated ' + D.meta.gerado;
+document.getElementById('ftr-src').textContent =
+  D.meta.fonte + ' · ' + fmtMonth(D.meta.primeiroMes) + ' to ' + fmtMonth(D.meta.ultimoMes);
+
+preencherApendice();
+wireTabs();
+var TABS = {
+  industria: makeJoltsTab('industria'),
+  tamanho: makeJoltsTab('tamanho'),
+  regiao: makeJoltsTab('regiao'),
+  ces_emprego: makeCesTab('emprego'),
+  ces_horas: makeCesTab('horas'),
+  cps_status: makeCpsTab('status'),
+  cps_taxa_grupo: makeCpsTab('taxa_grupo'),
+  cps_composicao: makeCpsTab('composicao'),
+  cps_alternativa: makeCpsTab('alternativa'),
+  derivadas: makeDerivadasTab()
+};
+</script>
+</body>
+</html>

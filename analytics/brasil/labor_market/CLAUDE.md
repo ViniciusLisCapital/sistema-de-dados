@@ -95,6 +95,63 @@ is numerical noise, not a poor reading. The four flow tables use **Mensal / Acum
 (how the MTE itself publishes) instead. Estoque never crosses zero, so it keeps **Nível / Var. Mensal
 (pessoas) / Var. Anual (%)** — and its Var. Mensal *is* the saldo reading of that series.
 
+**Third control on the three cut tables: Visão — Nível / Contribuição Y/Y** (2026-08-28, user
+request: "quem está contribuindo para a diferença no saldo"). It answers *who moved the annual
+change*, and three decisions in it are the reusable part.
+
+**It is derived in JS, not stored in the payload.** The control carries `derived: True`, which takes it
+out of `variantKey()` — it does not pick a pre-computed series, it transforms the one the other two
+controls picked, as `v(t) − v(t−12)`. Storing it would mean 3 metrics × 3 periods × 2 views = 18
+variants per series to persist a subtraction.
+
+**It is an exact decomposition, and the reason is the tree, not the arithmetic.** The rows sum to their
+parent *in level*, so the difference of the parts sums to the difference of the total with no residual —
+verified at 0 across 570 cells (9 metric×period combinations × months). That holds because these are
+movement counts, additive by construction; the same control would be wrong on a rate, which is why it
+is absent from the PNAD tabs.
+
+**Contribution renders as a stacked bar, and a checked parent with checked children becomes a line.**
+Stacking Total on top of its own sections would double count. Deriving the line/bar split from the
+checkboxes (`temDescendenteMarcado`) makes that impossible instead of leaving it to whoever ticks the
+boxes — same rule as the tree tables in `analytics/brasil/exchange_rate`. `barmode` is `'relative'`,
+not `'stack'`: contributions change sign, and `relative` puts the negative ones below zero instead of
+subtracting them from the positive pile.
+
+**M/M was deliberately left out** (asked for, then dropped after the seasonality point): the raw monthly
+saldo is strongly seasonal — December is negative every year — so "who contributed to the change against
+last month" answers nearly the same thing every December. Y/Y neutralises it by construction. Adding it
+back is one option literal with `"lag": 1`.
+
+Side note on the axis: the contribution option carries `ypartDrops: ["periodo"]`, so the Período's unit
+string leaves the Y title (it would read "pessoas, acum. 12 meses — contribuição …, pessoas") and its
+*label* reappears in the chart subtitle instead — the basis is still information, it just isn't a unit.
+
+**Na tabela Estoque a decomposição é outra métrica, não o mesmo controle** (2026-08-28). Ali a
+contribuição é em **pontos percentuais** — `[S_i(t) − S_i(t−12)] / S_total(t−12) × 100`, que soma o
+y/y do total e faz a linha do total ser idêntica à métrica `Diff Y/Y (%)` que já existia. Por depender
+do **total** como denominador, não dá para derivar por série no JS como nos cortes: é uma variante
+calculada no Python (`transforms.variants_caged_estoque`), e é a única razão pela qual as duas metades
+desta funcionalidade não compartilham código. O seletor é a própria Métrica da tabela, não um terceiro
+controle — ali só existe um.
+
+Três coisas que essa árvore exigiu e que valem para qualquer decomposição do BCB:
+
+- **"Demais serviços", uma linha derivada por diferença.** Os 4 filhos de Serviços com código SGS
+  somam ~1/3 do pai (7,6 de 23,5 milhões em jul/2026) porque vários subsetores não têm código
+  próprio. Empilhar só eles mostraria um terço do que existe sem indicar que falta algo, então
+  `_com_demais_servicos()` fecha a conta. É aritmética exata sobre séries publicadas, mas é derivada,
+  e o cartão de definição da linha diz isso.
+- **A decomposição só sai de dez/2008 em diante, e o nível continua indo a 1992.** Não é escolha
+  estética: **6 das 14 séries do BCB só começam em jan/2007** (as duas de SIUP e os quatro filhos de
+  Serviços), e o resíduo `Total − os 7 setores` era de −57.655 vínculos em 1992, caindo
+  monotonicamente até −64 a partir de 2008. `_primeiro_aditivo()` acha essa data medindo, com
+  tolerância de 1.000 vínculos sobre um estoque de 48 milhões; a contribuição começa 12 meses depois
+  dela, porque a fórmula lê os dois pontos.
+- **Alinhar por DATA, nunca por posição.** Com metade das séries começando em 1992 e metade em 2007,
+  indexar o denominador por posição desloca 15 anos sem lançar exceção. Foi exatamente assim que a
+  primeira versão quebrou (`list index out of range`, que é o caso feliz — a versão que não quebra é
+  a que dá número errado).
+
 **Two sector taxonomies that don't reconcile** — deliberately in separate tables: the microdata's 22
 CNAE 2.0 sections vs. the BCB's own 3-level tree (SIUP, Serviços as intermediate aggregates, no 1:1
 mapping; Serviços is only partially decomposed since not every subsector has its own SGS code).
@@ -283,6 +340,18 @@ table's own `controls` list — so a 2-select table needs no bespoke markup.
 
 ## Gotchas
 
+- **Um buraco de 12 meses no y/y do estoque formal era vintage misto, não economia** (2026-08-28,
+  achado pelo usuário num print da aba). O BCB reancorou o nível de `mt_caged` para baixo em
+  1.357.851 vínculos, revisando 1992-01 a 2024-05 de uma vez, e como `run()` só reescreve os
+  últimos 24 meses a tabela ficou com dois vintages encostados em 2024-06. Corrigido com
+  `run(start="all")` — as 14 séries agora batem com a API do SGS em todos os meses, zero
+  diferenças, e a varredura que isso motivou virou `tests/test_sgs_vintage.py` (26 tabelas,
+  ~630 séries; achou o mesmo defeito, menor, em outras 7). Duas coisas que valem além deste caso: **um degrau de nível numa série longa só
+  aparece na variação** (ninguém confere o nível de 1992 a olho, mas o y/y despencou de 1,74 milhão
+  para 380 mil por exatamente 12 meses e voltou sozinho), então uma aba que mostre y/y de estoque é
+  o detector natural desse defeito; e a leitura econômica mudou com a correção — o emprego formal
+  desacelera de forma contínua desde set/2024 (+4,19 p.p.) até jul/2026 (+1,88), sem o vale
+  artificial que estava no meio.
 - **`mt_pnad`'s "condição na força de trabalho" columns have NO `forca_` prefix**, despite the script's
   own module docstring listing them under a `forca_*` header — the actual column names are `ocupado`/
   `desocupado`/`fora_da_forca_trabalho` (see `mt_pnad.py`'s own inline comment on `_FORCA`: "nomes ja
@@ -304,6 +373,16 @@ table's own `controls` list — so a 2-select table needs no bespoke markup.
   tab, the composite `desligamentos__acum12m` variant resolving correctly, `fmt` switching between
   pessoas and %, `default_expanded`, and (regression) that PNAD's `curto`→`mom` fallback and its
   per-series p.p.-vs-% split still work inside one table.
+- **The Estoque series is one release ahead of the BCB, and says so** (2026-08-28). The BCB
+  publishes the stock a release later than the MTE publishes the microdata — in 2026-08 the SGS
+  stopped at jun/2026 while the Novo CAGED already had jul/2026. Since the stock's monthly difference
+  *is* the microdata's saldo, `mt_caged` now fills the gap itself (column `fonte`: `bcb` vs `mte`, see
+  [`domain/db/brasil/bcb/mt_caged.py`](../../../domain/db/brasil/bcb/mt_caged.py)) and the report
+  carries the flag through: `_load_flat()` reads the column when the table has it, and
+  `_tables_com_provisorio()` names the provisional month in the chart's source line. It disappears on
+  its own when the BCB publishes — nothing to unwind. **The point worth reusing**: the note goes on
+  the chart *header*, not in a paragraph next to it, because that line is what travels inside a
+  screenshot of the chart.
 - **`mt_caged` (BCB) is a STOCK, not a saldo** — its docstring claimed otherwise until 2026-08. Fixed
   there and documented in the table's native MySQL `COMMENT`. Confirmed live: SGS 28763 reads 48,032,308
   for 2026-06, and its month-over-month difference is **exactly** the microdata saldo (145,161) — the

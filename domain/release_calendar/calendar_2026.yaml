@@ -479,7 +479,7 @@ groups:
   - group: bcb_rpm
     institution: BCB
     name: "Relatório de Política Monetária (RPM)"
-    tables: [expc_focus, expc_focus_periodo, inflc_meta, pm_hiato_produto, pm_hiato_produto_vintages]
+    tables: [cred_fluxo_financeiro, expc_focus, expc_focus_periodo, inflc_meta, pm_hiato_produto, pm_hiato_produto_vintages]
     cadence: quarterly
     note: >
       Quarterly flagship inflation/policy report (successor to the Relatório de
@@ -542,6 +542,7 @@ groups:
       - cred_credito_atividade_economica
       - cred_credito_tipo_cliente
       - cred_credito_controle_capital
+      - atv_pib_mensal
     cadence: monthly
     note: >
       Dates below are parsed directly from the raw ICS of BCB's own official
@@ -552,6 +553,19 @@ groups:
       systematically ONE DAY EARLY on all five forward dates, so any future fallback to
       pattern-matching here should skew a day later. Covers the prior month (M-1) and
       lands one business day before the fiscal note, a day after the external-sector note.
+      `atv_pib_mensal` (SGS 4380/4382) was added 2026-08-28. BCB publishes credit as
+      % of GDP in this very note, so the 12m nominal GDP denominator is guaranteed to be
+      available by now -- verified on the 2026-07 vintage, where BCB's own
+      `cred_credito_resumo.pct_pib_total_total` (55,57) reproduces exactly as
+      saldo / pib_acum_12m (55,567) using the July value of SGS 4382. That is a lower
+      bound on availability, not the publisher: the monthly-GDP block actually lands with
+      the external-sector note, a day earlier, and is listed there too (see that group's
+      note, which also records why the IBC-Br release is NOT what extends it). It stays
+      duplicated here so a credit-only refresh can never miss the denominator. Leaving it out
+      silently truncated the credit-impulse metric by one month: the formula needs GDP at
+      t, so a credit series that reaches July against a GDP series stopping in June yields
+      None for July, with no gap and no warning (the impulse tab shows the last 12
+      NON-NULL observations). Also a dep of the fiscal dashboard.
     source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Estat%C3%ADsticas%20monet%C3%A1rias%20e%20de%20cr%C3%A9dito
     ics:
       lista: Estatísticas monetárias e de crédito
@@ -587,7 +601,8 @@ groups:
   - group: bcb_external_sector_note
     institution: BCB
     name: "Estatísticas do Setor Externo – Nota para a Imprensa"
-    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado]
+    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado,
+             atv_pib_usd, atv_pib_mensal]
     cadence: monthly
     note: >
       Dates below are read directly from BCB's own official release-calendar ICS feed
@@ -597,6 +612,18 @@ groups:
       rule). The official date is notably earlier than that window would have suggested
       for December: 2026-12-18 vs. a guessed 23-29. Covers the prior month (M-1) and
       consistently lands a few days BEFORE the credit note.
+      `atv_pib_usd` (SGS 4385/4192, monthly GDP in USD) and `atv_pib_mensal` (SGS
+      4380/4382, in R$) were added 2026-08-28: this is the EARLIEST of BCB's three M-1
+      monthly notes, and GDP in dollars has no consumer at BCB other than this note's
+      own "% PIB" tables -- so the whole monthly-GDP block is available here, a day
+      before the credit note and four before the fiscal one. `atv_pib_mensal` is listed
+      in bcb_credit_note as well, on purpose: whoever refreshes the credit release must
+      get the denominator in the same run even if they never ran this group.
+      Measured, and worth recording because the intuition points the other way: this
+      block does NOT ride on the IBC-Br release. The IBC-Br carries a 2-month lag
+      (2026-08-17 delivered 2026-06), while all four GDP series already held 2026-07 --
+      the monthly GDP runs one month AHEAD of the IBC-Br, so the activity index cannot
+      be what extends it.
     source_url: https://www.bcb.gov.br/api/exportarics/sitebcb/agendaics?lista=Estat%C3%ADsticas%20do%20setor%20externo
     ics:
       lista: Estatísticas do setor externo
@@ -645,10 +672,22 @@ groups:
   - group: tesouro_rtn
     institution: "Tesouro Nacional"
     name: "Resultado do Tesouro Nacional (RTN)"
-    tables: [fisc_rtn]
+    tables: [fisc_rtn, fisc_investimento]
     cadence: monthly
     source_url: https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/55039_1735642/anexos/28614_964310/2026_2sem.pdf
-    note: "Official 2026-2S calendar itself carries a \"sujeito a alterações\" (subject to change) caveat, last updated 2026-06-26 -- still marked confirmed here since it's a direct official publication, not a pattern guess."
+    note: >
+      Official 2026-2S calendar itself carries a "sujeito a alterações" (subject to
+      change) caveat, last updated 2026-06-26 -- still marked confirmed here since it's a
+      direct official publication, not a pattern guess.
+
+      fisc_investimento joined this group on 2026-08-28. It is Tema 13 of the Tesouro's
+      Séries Temporais API, not the RTN workbook, so nothing on the RTN's own calendar
+      page names it -- but the two temas publish TOGETHER, measured against the live API:
+      Tema 10 (RTN, série 8056) and Tema 13 (investimento, série 8420) both run
+      1997-01 -> 2026-07 with exactly 355 observations each, identical coverage rather
+      than a coincident endpoint. Before this it sat in NO group at all, so neither the
+      calendar button nor any job ever wrote it, and it silently lagged the RTN by a
+      month (found 2026-08-28: RTN at 2026-07, investimento still at 2026-06).
     entries:
       - {date: "2026-08-28", reference_period: "2026-07", confirmed: true}
       - {date: "2026-09-29", reference_period: "2026-08", confirmed: true}
@@ -844,6 +883,89 @@ groups:
       - {date: "2026-10-29", time: "08:30", reference_period: "2026-09", confirmed: true}
       - {date: "2026-11-25", time: "08:30", reference_period: "2026-10", confirmed: true}
       - {date: "2026-12-23", time: "08:30", reference_period: "2026-11", confirmed: true}
+
+  - group: bls_empsit
+    institution: "BLS"
+    name: "The Employment Situation (payroll + household survey)"
+    tables: [mt_ces, mt_ces_dim, mt_cps]
+    cadence: monthly
+    release_time: "08:30"
+    release_time_tz: America/New_York
+    note: >
+      As DUAS pesquisas saem no mesmo release, na primeira sexta-feira do mes seguinte
+      ao de referencia -- muito antes do JOLTS, que tem um mes de defasagem a mais: o
+      Employment Situation de 07/08/2026 entrega JULHO, e o JOLTS de 01/09 entrega o
+      mesmo julho.
+      A tabela de dimensao entra no grupo para o botao rodar a cadeia inteira, e aqui
+      isso e de graca: `mt_ces.run()` grava `mt_ces` e `mt_ces_dim` no mesmo passe (os
+      30 arquivos do FTP alimentam valores e arvore), e o `registry` colapsa as duas
+      num script so via `_OVERRIDES`, como no mt_jolts e no mt_caged_novo.
+      Duas coisas deste grupo nao se adivinham. A primeira: a CES tem BORDA DIREITA
+      IRREGULAR -- a divulgacao de um mes traz os niveis agregados e o detalhe fino vem
+      com a divulgacao seguinte, entao no mes mais recente so 27 das 555 folhas da
+      arvore tem dado, e um alerta de "dado faltando" no detalhe seria falso alarme.
+      A segunda: a CPS **nao tem outubro de 2025** -- a paralisacao do governo cancelou
+      a coleta, e o mes nao vai aparecer em revisao nenhuma.
+    source_url: https://www.bls.gov/schedule/news_release/empsit.htm
+    us:
+      - {date: "2026-01-09", time: "08:30", reference_period: "2025-12", confirmed: true}
+      - {date: "2026-02-06", time: "08:30", reference_period: "2026-01", confirmed: true}
+      - {date: "2026-03-06", time: "08:30", reference_period: "2026-02", confirmed: true}
+      - {date: "2026-04-03", time: "08:30", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-05-08", time: "08:30", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-05", time: "08:30", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-07-03", time: "08:30", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-08-07", time: "08:30", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-04", time: "08:30", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-10-02", time: "08:30", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-11-06", time: "08:30", reference_period: "2026-10", confirmed: true}
+      - {date: "2026-12-04", time: "08:30", reference_period: "2026-11", confirmed: true}
+
+  - group: bls_jolts
+    institution: "BLS"
+    name: "Job Openings and Labor Turnover Survey (JOLTS)"
+    tables: [mt_jolts, mt_jolts_dim]
+    cadence: monthly
+    # 10:00 e nao 08:30 -- o JOLTS sai mais tarde no dia que o CPI, e a hora esta na
+    # coluna "Release Time" da propria agenda do BLS, no fuso da FONTE. Convertida por
+    # data pelo sync.py, porque os EUA tem horario de verao e o Brasil nao.
+    release_time: "10:00"
+    release_time_tz: America/New_York
+    note: >
+      O JOLTS tem UM MES DE DEFASAGEM A MAIS que o CPI, e isso e a coisa mais
+      importante deste grupo: a divulgacao de 01/09/2026 entrega o dado de JULHO,
+      enquanto o CPI de 11/09 entrega agosto. Por isso o `reference_period` fica LIDO
+      da agenda e nao derivado de "mes anterior ao da divulgacao" -- a regra do
+      bls_cpi erraria todas as 13 entradas aqui.
+      Datas e horas da pagina de agenda do BLS por release (a unica fonte do BLS com a
+      coluna "Reference Month"). Conferidas contra o release 192 do FRED: as duas
+      fontes batem exatamente nas 8 datas de 2026 que ambas cobrem, e a de 01/09 e a
+      hora de 10:00 batem tambem com o rodape do proprio release em PDF. A agenda do
+      BLS cobre so o ano corrente mais o dezembro anterior.
+      A tabela de dimensao entra no grupo para o botao rodar a cadeia inteira, mas aqui
+      isso e de graca: `mt_jolts.run()` grava as duas no mesmo passe (um download de
+      34 MB alimenta valores e arvore), e o `registry` colapsa as duas tabelas num
+      script so via `_OVERRIDES` -- o mesmo arranjo do mt_caged_novo.
+      Nao ha janela de rotina a escolher: o BLS revisa 5 anos na divulgacao de janeiro
+      e os dois ultimos meses todo mes, entao cada passe reescreve a historia inteira.
+    source_url: https://www.bls.gov/schedule/news_release/jolts.htm
+    us:
+      source: bls_schedule
+      match: jolts
+      fred_release_id: 192
+    entries:
+      - {date: "2026-01-07", time: "10:00", reference_period: "2025-11", confirmed: true}
+      - {date: "2026-02-05", time: "10:00", reference_period: "2025-12", confirmed: true}
+      - {date: "2026-03-13", time: "10:00", reference_period: "2026-01", confirmed: true}
+      - {date: "2026-03-31", time: "10:00", reference_period: "2026-02", confirmed: true}
+      - {date: "2026-05-05", time: "10:00", reference_period: "2026-03", confirmed: true}
+      - {date: "2026-06-02", time: "10:00", reference_period: "2026-04", confirmed: true}
+      - {date: "2026-06-30", time: "10:00", reference_period: "2026-05", confirmed: true}
+      - {date: "2026-08-04", time: "10:00", reference_period: "2026-06", confirmed: true}
+      - {date: "2026-09-01", time: "10:00", reference_period: "2026-07", confirmed: true}
+      - {date: "2026-09-29", time: "10:00", reference_period: "2026-08", confirmed: true}
+      - {date: "2026-11-03", time: "10:00", reference_period: "2026-09", confirmed: true}
+      - {date: "2026-12-01", time: "10:00", reference_period: "2026-10", confirmed: true}
 
   - group: mdic_comex_stat
     institution: "MDIC"

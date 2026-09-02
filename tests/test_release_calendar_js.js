@@ -40,6 +40,25 @@ El.prototype.removeChild = function (c) {
 };
 El.prototype.addEventListener = function (k, f) { this._listeners[k] = f; };
 El.prototype.querySelector = function () { return null; };
+// O DOM aqui e string, nao arvore: um `querySelectorAll` honesto nao acha nada dentro de
+// um innerHTML. Devolver [] deixa `wireDashFolds()` ser no-op no teste -- o que da para
+// afirmar sobre o click-drop e a MARCACAO (details/summary/open), que e onde vive a
+// decisao (o `open` sai de DASH.abertos a cada render).
+El.prototype.querySelectorAll = function () { return []; };
+
+/* Clique sintetico que REGISTRA stopPropagation/preventDefault. Importa porque o botao
+   Regerar vive dentro de um <summary>, e abrir/fechar e a acao default de um clique ali:
+   sem os dois, o card pisca aberto/fechado a cada Regerar. O evento antes nao tinha os
+   metodos e o handler quebrava -- o teste denunciou na primeira execucao. */
+function cliqueEm(alvo, btn) {
+  const marcas = { stop: 0, prevent: 0 };
+  alvo._listeners['click']({
+    target: { closest: () => btn },
+    stopPropagation: () => { marcas.stop++; },
+    preventDefault: () => { marcas.prevent++; },
+  });
+  return marcas;
+}
 El.prototype.remove = function () {};
 El.prototype.select = function () {};
 El.prototype.closest = function () { return this; };
@@ -71,10 +90,43 @@ const DASHBOARDS_STUB = [
     output: 'reports/us/Inflation.html', build_seconds: 13, veredito: 'em dia',
     module: 'analytics.us.inflation.generate_report',
     gerado_em: '2026-08-26T09:00:00', tamanho_mb: 5.6, n_deps: 1, n_fora_mysql: 0, n_novos: 0,
+    n_proc: 2, n_proc_atrasados: 1,
     deps: [
       { ref: 'macro_us.inflc_cpi', kind: 'mysql', onde: 'macro_us', fora_do_mysql: false,
         role: 'Níveis do CPI-U', scope: 'dados', ultimo: '2026-07-01', stamp: '2026-07-01',
         novo: false, arquivo_mais_novo: false },
+      // Artefato com procedimento declarado. O `ultimo` dele e o CORTE lido de dentro do
+      // arquivo (json_date), nao o mtime -- e o que faz o veredito de atraso existir.
+      { ref: 'analytics/us/inflation/data/previsao.json', kind: 'artifact', onde: 'arquivo',
+        fora_do_mysql: true, role: 'Previsão', scope: 'dados', ultimo: '2026-08-25',
+        mtime: '2026-08-25T17:33:48', novo: false, arquivo_mais_novo: false,
+        procedimento: 'previsao',
+        refresh: 'uv run python -c "from x import salvar; salvar()"' },
+      { ref: 'analytics/us/inflation/data/painel.csv', kind: 'artifact', onde: 'arquivo',
+        fora_do_mysql: true, role: 'Painel', scope: 'dados', ultimo: '2026Q3',
+        mtime: '2026-08-21T15:54:56', novo: false, arquivo_mais_novo: false,
+        procedimento: 'painel' },
+    ],
+    procedimentos: [
+      // Trimestral e EM DIA: e o caso que impede o Regerar de refazer 4 min de estimacao
+      // a cada boletim diario. Se a granularidade parar de valer, este passo entra na
+      // conta de segundos do botao e a assercao de tempo abaixo falha.
+      { id: 'painel', label: 'Painéis trimestrais', seconds: 90,
+        writes: ['analytics/us/inflation/data/painel.csv'],
+        reads: ['macro_us.inflc_cpi'], granularidade: 'trimestre',
+        cut_from: 'analytics/us/inflation/data/painel.csv', corte: '2026Q3',
+        fonte_max: '2026Q3', fonte_ref: 'macro_us.inflc_cpi',
+        atrasado: false, dias_atras: null, rodou_em: '2026-08-21T15:54:56', faltando: [],
+        command: 'uv run python -c "from a import b; b()"',
+        note: 'Depende do IPEADATA.' },
+      { id: 'previsao', label: 'Previsão + backtest', seconds: 110,
+        writes: ['analytics/us/inflation/data/previsao.json'],
+        reads: ['macro_us.inflc_cpi'], granularidade: 'dia',
+        cut_from: 'analytics/us/inflation/data/previsao.json', corte: '2026-08-25',
+        fonte_max: '2026-08-28', fonte_ref: 'macro_us.inflc_cpi',
+        atrasado: true, dias_atras: 3, rodou_em: '2026-08-25T17:33:48', faltando: [],
+        command: 'uv run python -c "from x import salvar; salvar()"',
+        note: '36 rodadas do espaço de estados.' },
     ] },
 ];
 
@@ -196,7 +248,7 @@ function rodar(MODE, HOJE, AGORA) {
       const btn = new El('button');
       btn.dataset.group = 'ibge_pmc';
       btn.textContent = 'Atualizar';
-      getEl('table-body')._listeners['click']({ target: { closest: () => btn } });
+      cliqueEm(getEl('table-body'), btn);
       setTimeout(() => {
         const post = calls.filter((c) => c.url === '/api/run');
         check('clique dispara POST /api/run', post.length === 1, post.length);
@@ -282,7 +334,7 @@ async function testeStatusDashboard(MODE) {
   global.document = mkDoc(getEl);
   global.window = { isSecureContext: false };
   global.navigator = {};
-  global.fetch = (url) => {
+  global.fetch = (url, opts) => {
     calls.push(url);
     if (MODE === 'file') return Promise.reject(new Error('sem servidor'));
     if (url === '/api/ping')
@@ -295,6 +347,27 @@ async function testeStatusDashboard(MODE) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve(
         { ok: true, agora: '10:00', dashboards: DASHBOARDS_STUB }) });
     if (url === '/api/gerar') {
+      // Responde pela KEY do corpo: o Regerar de um dashboard COM procedimento atrasado
+      // devolve o que recalculou, e o de um SEM devolve lista vazia. Sao as duas
+      // mensagens diferentes que a aba tem de saber escrever.
+      const key = JSON.parse((opts && opts.body) || '{}').key;
+      if (key === 'us_inflation') {
+        const nova = JSON.parse(JSON.stringify(DASHBOARDS_STUB[1]));
+        nova.n_proc_atrasados = 0;
+        nova.procedimentos[1].atrasado = false;
+        nova.procedimentos[1].corte = '2026-08-28';
+        nova.procedimentos[1].dias_atras = 0;
+        nova.deps[1].ultimo = '2026-08-28';
+        nova.gerado_em = '2026-08-26T10:02:30';
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, key, segundos: 13.4, segundos_total: 121.8,
+            n_recalculados: 1, n_falhou: 0, dashboard: nova,
+            procedimentos: [
+              { id: 'painel', label: 'Painéis trimestrais', acao: 'em dia' },
+              { id: 'previsao', label: 'Previsão + backtest', acao: 'rodado',
+                segundos: 108.4 },
+            ] }) });
+      }
       // o servidor devolve a linha nova SO do dashboard regerado
       const nova = JSON.parse(JSON.stringify(DASHBOARDS_STUB[0]));
       nova.veredito = 'em dia';
@@ -303,12 +376,17 @@ async function testeStatusDashboard(MODE) {
       nova.deps[0].novo = false;
       nova.deps[0].stamp = '2026-08-01';
       return Promise.resolve({ ok: true, json: () => Promise.resolve(
-        { ok: true, key: 'brasil_inflation', segundos: 31.2, dashboard: nova }) });
+        { ok: true, key: 'brasil_inflation', segundos: 31.2, segundos_total: 31.2,
+          n_recalculados: 0, n_falhou: 0, procedimentos: [], dashboard: nova }) });
     }
     return Promise.reject(new Error('inesperado ' + url));
   };
 
-  new Function(SRC)();
+  // Expoe DASH/renderDashboards: o estado de aberto/fechado do click-drop nao da para
+  // testar pelo DOM (o stub e string), mas da para testar pelo RENDER -- marcar aberto e
+  // exigir que o `open` reapareca.
+  new Function(SRC + ';global.__CAL = {DASH: DASH, '
+              + 'renderDashboards: renderDashboards};')();
   await new Promise((r) => setTimeout(r, 60));
 
   const cards = getEl('dash-cards').innerHTML;
@@ -316,6 +394,35 @@ async function testeStatusDashboard(MODE) {
 
   check('renderizou cards de dashboard', cards.indexOf('dash-card') >= 0);
   check('mostra o caminho do arquivo gerado', cards.indexOf('reports/') >= 0);
+
+  // ── a prosa do card e para quem NUNCA viu o dashboard ─────────────────────
+  // Pedido explicito do usuario (2026-09-01), sobre um print: as notas tinham virado
+  // transcricao da nossa conversa -- decisoes ("Desde 2026-08-31"), nomes de funcao e
+  // de arquivo do repositorio, e medicoes nossas ("Segundos nao medidos"). O texto tem
+  // de explicar o que esta acontecendo ALI. O teste roda contra o payload REAL, entao
+  // ele cobre o que esta escrito no manifest.yaml, nao so o que o template monta.
+  // So no MODE=file: la os cards vem do payload REAL embutido, entao a asserção cobre o
+  // que esta escrito no manifest.yaml. No MODE=served as notas sao stubs curtos.
+  if (MODE === 'file') {
+    const PROSA = (cards.match(
+      /<div class="(?:dash-note|proc-note|proc-hint)">([\s\S]*?)<\/div>/g) || [])
+      .map((b) => b.replace(/<[^>]*>/g, ''));
+    check('cada card com nota rende um bloco de prosa', PROSA.length >= 5, PROSA.length);
+    const JARGAO = ['generate_report', 'manifest.yaml', 'procedures', 'granularidade',
+                    'mtime', 'artefato', 'ETL', 'serve.py', 'run(', 'MySQL', 'YAML',
+                    'Desde 2026', 'não medidos', 'corte de informação'];
+    const vazamentos = [];
+    PROSA.forEach((t) => JARGAO.forEach((j) => {
+      if (t.indexOf(j) >= 0) vazamentos.push(j + ' -> ' + t.slice(0, 60));
+    }));
+    check('a prosa nao carrega jargao do repositorio nem data de decisao',
+          vazamentos.length === 0, vazamentos.join(' | '));
+    // ... e nao e vazia de conteudo: cada nota tem de dizer algo sobre o dashboard.
+    check('cada bloco de prosa tem pelo menos uma frase de verdade',
+          PROSA.every((t) => t.trim().length > 60),
+          JSON.stringify(PROSA.map((t) => t.length)));
+  }
+
   check('toda dependencia declara onde mora',
         (cards.match(/src-badge/g) || []).length >= 2,
         (cards.match(/src-badge/g) || []).length);
@@ -367,7 +474,43 @@ async function testeStatusDashboard(MODE) {
           soUs.indexOf('Inflation (US)') >= 0 && soUs.indexOf('Inflação (BR)') < 0);
   }
 
-  // ── botao de regerar, um por card ────────────────────────────────────────
+  // ── click-drop: um <details> por dashboard ───────────────────────────────
+  // 11 dashboards x 27 dependencias abertos empurram tudo para fora da tela, entao o card
+  // e um click-drop fechado por default. O que fica no <summary> e o que se le fechado.
+  check('cada dashboard e um <details>', cards.indexOf('<details class="dash-card"') >= 0);
+  check('e nenhum vem aberto por default', cards.indexOf('<details class="dash-card" data-key="'
+        ) >= 0 && cards.indexOf(' open>') < 0, 'algum card veio com open');
+  check('o cabecalho fica no <summary>',
+        /<summary><div class="dash-head">/.test(cards));
+  check('a meta tambem, para ser legivel com o card fechado',
+        cards.indexOf('dash-meta') >= 0 &&
+        cards.indexOf('</div></summary>') >= 0);
+  check('nota, procedimentos e tabela ficam no corpo',
+        /<\/summary><div class="dash-body">/.test(cards));
+  // O estado aberto tem de sobreviver ao re-render: `renderDashboards()` reescreve o
+  // innerHTML inteiro, e e isso que o POST de Regerar dispara. Sem isto o card que voce
+  // abriu fecharia sozinho no meio da operacao.
+  // Os filtros da secao anterior deixaram a area em "EUA" no modo servido; volta para
+  // todas, senao o card que se vai abrir nem esta renderizado.
+  const pillsArea = getEl('dash-area-pills').children;
+  if (pillsArea.length) pillsArea[0]._listeners['click']();
+  const chaveAberta = ((getEl('dash-cards').innerHTML
+                        .match(/data-key="([^"]+)"/) || [])[1]);
+  if (chaveAberta && global.__CAL) {
+    global.__CAL.DASH.abertos[chaveAberta] = true;
+    global.__CAL.renderDashboards();
+    const reaberto = getEl('dash-cards').innerHTML;
+    check('card marcado como aberto volta aberto depois do re-render',
+          reaberto.indexOf('data-key="' + chaveAberta + '" open>') >= 0,
+          reaberto.slice(0, 90));
+    check('e os outros continuam fechados',
+          (reaberto.match(/ open>/g) || []).length === 1,
+          (reaberto.match(/ open>/g) || []).length);
+    global.__CAL.DASH.abertos[chaveAberta] = false;
+    global.__CAL.renderDashboards();
+    check('e fechar de novo tira o atributo',
+          getEl('dash-cards').innerHTML.indexOf(' open>') < 0);
+  }
   check('card oferece botao de regerar', cards.indexOf('dash-btn') >= 0);
   check('botao carrega a key do dashboard', cards.indexOf('data-key="') >= 0);
   check('botao rotulado conforme o modo',
@@ -387,7 +530,11 @@ async function testeStatusDashboard(MODE) {
     const btnGerar = new El('button');
     btnGerar.dataset.key = 'brasil_inflation';
     btnGerar.textContent = 'Regerar';
-    getEl('dash-cards')._listeners['click']({ target: { closest: () => btnGerar } });
+    const marcasGerar = cliqueEm(getEl('dash-cards'), btnGerar);
+    // O botao esta dentro do <summary>: sem barrar a acao default, o clique no
+    // Regerar abriria/fecharia o card junto.
+    check('o clique no Regerar barra o toggle do click-drop',
+          marcasGerar.stop === 1 && marcasGerar.prevent === 1, JSON.stringify(marcasGerar));
     check('botao desabilita durante a regeneracao', btnGerar.disabled === true);
     check('botao avisa que esta rodando', btnGerar.textContent === 'regerando...');
 
@@ -397,18 +544,120 @@ async function testeStatusDashboard(MODE) {
     check('clique dispara POST /api/gerar', post.length === 1, post.length);
     check('veredito do card regerado vira "em dia"',
           posGerar.indexOf('verdict ok') >= 0);
-    check('card mostra quanto demorou', posGerar.indexOf('regerado em 31.2s') >= 0);
+    check('card mostra quanto demorou, e que nao havia o que recalcular',
+          posGerar.indexOf('regerado em 31.2s') >= 0 &&
+          posGerar.indexOf('nada estava atrás dos dados') >= 0);
     // O outro dashboard NAO pode ter sido tocado -- o POST devolve so uma linha.
     check('o outro dashboard segue como estava',
           posGerar.indexOf('Inflation (US)') >= 0);
     check('marca de "dado novo" sumiu do dashboard regerado',
           (posGerar.match(/dep-flag new/g) || []).length === 0,
           (posGerar.match(/dep-flag new/g) || []).length);
+
+    // ── bloco de procedimentos: LEITURA, sem botao proprio ────────────────
+    // Sao dois botoes no sistema e so dois (pedido do usuario, 2026-08-31): Atualizar
+    // para a base, Regerar para o dashboard. Um terceiro botao por procedimento existiu
+    // por horas e deixou o processo confuso -- se voltar, cai aqui.
+    check('o bloco de procedimentos nao tem botao proprio',
+          posGerar.indexOf('proc-btn') < 0 && posGerar.indexOf('>Rodar<') < 0);
+    check('card renderiza o bloco de procedimentos', posGerar.indexOf('proc-box') >= 0);
+    // O cabecalho e a nota do bloco sao para quem nunca viu o dashboard: dizem o que
+    // aqueles itens SAO, nao o que combinamos sobre eles.
+    check('o cabecalho do bloco nomeia o que o bloco contem',
+          posGerar.indexOf('O que este dashboard prepara por conta própria') >= 0);
+    check('o bloco explica por que um numero velho cabe num arquivo novo',
+          posGerar.indexOf('proc-hint') >= 0 &&
+          posGerar.indexOf('preparados pelo próprio dashboard') >= 0 &&
+          posGerar.indexOf('fica velho mesmo que o arquivo seja novo') >= 0);
+    // Um passo pode ser CALCULO (o modelo) ou BUSCA (o fetch do IPCA no BCB), e o texto
+    // do bloco vale para os dois: chamar tudo de "cálculo" mentiria no card da inflacao.
+    check('o bloco nao chama todo passo de calculo',
+          posGerar.indexOf('resultados de cálculo') < 0 &&
+          posGerar.indexOf('refazendo o cálculo') < 0);
+    check('procedimento aparece com o rotulo declarado',
+          posGerar.indexOf('Previsão + backtest') >= 0 &&
+          posGerar.indexOf('Painéis trimestrais') >= 0);
+    check('procedimento diz onde o resultado fica',
+          posGerar.indexOf('guarda o resultado em 1 arquivo: previsao.json') >= 0);
+    check('procedimento atrasado diz que vai ser refeito, com corte e fonte',
+          posGerar.indexOf('atrás dos dados: usou o que havia até') >= 0 &&
+          posGerar.indexOf('2026-08-25') >= 0 && posGerar.indexOf('2026-08-28') >= 0 &&
+          posGerar.indexOf('3 dias depois') >= 0 &&
+          posGerar.indexOf('o Regerar refaz') >= 0);
+    check('linha do procedimento atrasado ganha a classe late',
+          posGerar.indexOf('proc-row late') >= 0);
+    // A granularidade e o que da a cada passo a frequencia dele -- e o que impede a
+    // estimacao trimestral de ser refeita a cada boletim diario.
+    // ... e mostra a CONSEQUENCIA dela (de quanto em quanto tempo fica velho), nao a
+    // palavra "granularidade", que nao diz nada a quem abre a pagina.
+    check('cada passo mostra de quanto em quanto tempo fica velho',
+          posGerar.indexOf('fica velho quando abre um trimestre novo') >= 0 &&
+          posGerar.indexOf('fica velho quando o dado anda, dia a dia') >= 0);
+    check('a palavra "granularidade" nao aparece na pagina renderizada',
+          posGerar.indexOf('granularidade') < 0);
+    check('o passo trimestral em dia NAO e marcado para refazer',
+          posGerar.indexOf('em dia: usou os dados até') >= 0);
+    // O tempo anunciado tem de ser o do CLIQUE: geracao + o que vai ser recalculado.
+    // 13s de build + 110s da previsao = 123s; os 90s do painel NAO entram.
+    check('o tempo do botao soma a geracao e so o recalculo atrasado',
+          posGerar.indexOf('~123s para regerar') >= 0 &&
+          posGerar.indexOf('13s + 110s de rec') >= 0,
+          posGerar.indexOf('para regerar') >= 0 ? 'sem os 123s' : 'sem a frase');
+    check('o cabecalho do bloco soma os segundos do recalculo',
+          posGerar.indexOf('+110s') >= 0);
+    // A dependencia aponta para o Regerar, nao para um comando a copiar.
+    check('dep com procedimento diz que o Regerar cuida dela',
+          posGerar.indexOf('refeito pelo Regerar') >= 0 &&
+          posGerar.indexOf('from x import salvar') < 0);
+    // ... e onde NAO ha procedimento, o texto continua sendo a resposta honesta.
+    check('dep sem procedimento mantem o comando em texto',
+          posGerar.indexOf('fetch_bcb.py') >= 0);
+
+    // ── Regerar num dashboard COM metrica atrasada ────────────────────────
+    const btnUS = new El('button');
+    btnUS.dataset.key = 'us_inflation';
+    btnUS.textContent = 'Regerar';
+    cliqueEm(getEl('dash-cards'), btnUS);
+    check('o botao anuncia o tempo do recalculo enquanto roda',
+          btnUS.textContent === 'refazendo os passos... (~123s)', btnUS.textContent);
+
+    await new Promise((r) => setTimeout(r, 40));
+    const posUS = getEl('dash-cards').innerHTML;
+    check('um POST /api/gerar por clique',
+          calls.filter((u) => u === '/api/gerar').length === 2,
+          calls.filter((u) => u === '/api/gerar').length);
+    // A mensagem tem de dizer o que foi REFEITO, senao o usuario nao sabe que a metrica
+    // dentro do relatorio tambem andou.
+    check('a mensagem lista o que foi recalculado',
+          posUS.indexOf('refez Previsão + backtest (108.4s)') >= 0 &&
+          posUS.indexOf('regerou em 13.4s') >= 0);
+    check('o passo em dia nao entra na mensagem',
+          posUS.indexOf('Painéis trimestrais (') < 0);
+    check('depois do Regerar nada fica atrasado',
+          posUS.indexOf('proc-row late') < 0);
+    check('e o corte do passo refeito alcancou a fonte',
+          posUS.indexOf('em dia: usou os dados até <strong>2026-08-28') >= 0);
+  } else {
+    // Modo arquivo: o payload embutido e o real, e o piloto de `procedures` esta nele.
+    check('payload embutido traz o bloco de procedimentos do piloto',
+          cards.indexOf('proc-box') >= 0);
+    check('no modo arquivo tambem nao ha botao de procedimento',
+          cards.indexOf('proc-btn') < 0);
+    check('e o bloco diz o que aqueles itens sao',
+          cards.indexOf('O que este dashboard prepara por conta própria') >= 0);
+    // O piloto deixou de ser piloto em 2026-09-01: a inflacao tambem tem passo, e o dela
+    // e um FETCH -- o unico insumo daquele relatorio que nao vem do MySQL.
+    check('o payload real traz o passo da inflacao tambem',
+          cards.indexOf('Séries agregadas do IPCA (Banco Central)') >= 0);
+    check('e ele e mensal, nao diario nem trimestral',
+          cards.indexOf('fica velho quando abre um mês novo') >= 0);
+
+
   }
 
   // troca de aba: o clique delegado tem de despir a aba de divulgacoes
   const btnDash = global.document._tabBtns[1];
-  global.document._tabBar._listeners['click']({ target: { closest: () => btnDash } });
+  cliqueEm(global.document._tabBar, btnDash);
   check('clique na aba marca aria-selected',
         btnDash.getAttribute('aria-selected') === 'true' &&
         global.document._tabBtns[0].getAttribute('aria-selected') === 'false');

@@ -216,20 +216,38 @@ Esfera e Categoria" below (the old standalone "IEG" line chart and "IEG × PIB" 
 **removed 2026-08** at user request, redundant with those two). Multipliers are the paper's own
 published values, **not re-estimated** for this project's data.
 
-**Visão Combinada** — single chart at the TOP of the tab, now overlaying **three impulse metrics on one
-shared y-axis**: IEG (total), Impulso via Resultado Primário (total), and Impulso via Crédito a Inst.
-Financ. Oficiais (% GDP, see below). Switchable via one "Comparação" dropdown
+**Visão Combinada** — single chart at the TOP of the tab, overlaying **four impulse metrics on one
+shared y-axis** (four since 2026-08-28, user request): IEG (total), the primary-result impulse in
+**both apurações** — BCB below-the-line/consolidated and RTN above-the-line/Governo Central — and
+Impulso via Crédito a Inst. Financ. Oficiais (% GDP, see below). Switchable via one "Comparação"
+dropdown
 (`impulso-combinado-view-select`) between **4T/12m Acumulado (Y/Y)** and **Trimestre (T/T)** (genuinely
 seasonally-adjusted since 2026-08, not a shortcut).
 
 - **The GDP line was removed 2026-08 at user request** — with it went `yaxis2`, so this is a
   single-axis chart again. `atv_pib_taxas` is still loaded into `D.pib_yoy` (`acum_4t`/`qoq`/`yoy`) but
   nothing plots it; don't "restore" it without asking.
-- **The three metrics share an axis but are not the same transformation.** IEG and the PB impulse are
+- **The four metrics share an axis but are not the same transformation.** IEG and both PB impulses are
   *changes* (p.p. of GDP between two annual windows); the credit metric is a *flow* accumulated over 12
   months as % of GDP. They share the axis because the order of magnitude matches and the sign means the
-  same thing in all three (positive = expansionary) — spelled out in the chart caption so a reader
+  same thing in all four (positive = expansionary) — spelled out in the chart caption so a reader
   doesn't take it for a common transformation.
+- **The two primary-result lines are encoded as a PAIR, and that is load-bearing** — same colour family
+  (`C.dourado` solid / `C.amarelo` dashed), adjacent in the legend, names carrying the apuração
+  (`Res. Primário — BCB (abaixo da linha, consolidado)` / `— RTN (acima da linha, Gov. Central)`). They
+  measure the same quantity by independent routes, so *tracking each other is the information*
+  (correlation 0.99 over 272 months, mean gap 0.26 p.p. — scope, not method). Giving the new one a
+  different hue would read as a fifth independent metric, which is the opposite of what it is. The old
+  generic label `Impulso via Resultado Primário` was retired: with two lines it can't say which. Both
+  the pairing and the retirement are asserted in `tests/test_impulso_rtn_js.js` §9.
+- **The RTN line is the only one that reaches the newest month.** Measured on the shipped file: IEG ends
+  2026-01, BCB and credit end 2026-06, RTN ends **2026-07**. That gap only exists during the 1–3 days
+  between the Tesouro's release and the BCB's fiscal note, and the chart only shows it because the four
+  series keep their own date arrays instead of being truncated to a common grid — asserted, since an
+  alignment bug would erase it silently.
+- **Under Trimestre the two apurações diverge more than under Acumulado**, and that is the STL, not a
+  disagreement between sources: each series runs its own fit and STL is not linear. Same caveat already
+  documented for the per-esfera decomposition below.
 - **The credit line is always the 12m accumulation**, regardless of the Comparação dropdown — the metric
   has no quarterly variant, and its trace name carries "acum. 12m" explicitly so that reads as
   deliberate rather than a bug. Asserted in the harness (switching to Trimestre changes IEG but leaves
@@ -331,6 +349,47 @@ table.
   (deliberately excluded). And this is a **flow**, not the stock — the item's balance today is a ~R$204bn
   asset (1.5% of GDP), far below the cycle peak.
 
+**Impulso via Resultado Primário — RTN (acima da linha)** (new 2026-08-28, user request — "o impulso
+do resultado primário poderia ser feito com os dados do RTN, ao invés de usar os dados que o BCB
+divulga, pois os dados do tesouro parecem que saem primeiro"). **Added alongside the NFSP section
+above, not replacing it** — explicit user choice once the trade-off was measured. `impulso_rtn_tab.py`
+(tree + signs) + `generate_report.py`'s `_load_impulso_rtn()`.
+
+- **What it adds that the below-the-line reading cannot: the revenue × expense split.** `fisc_rtn` is
+  an above-the-line apuração, so `receita_liquida − despesa_total = resultado_primário` holds exactly
+  (355 months, |max| 0,00), and the impulse decomposes into the two branches with **zero residual** —
+  and then into rubrica within each. As of Jun/2026 the +1,19 p.p. impulse is +1,49 from spending and
+  −0,30 from revenue: the expansion is entirely spending, with revenue contracting. `fisc_nfsp` cannot
+  say this at all.
+- **Sign is per branch, not per table** — the one thing to not "simplify". From
+  `impulso = −Δ(primário/PIB)`: revenue carries −1 (collecting *less* is expansionary), spending +1.
+  The exception that isn't guessable is **Transferências por Repartição**, which sits *inside* Receita
+  Líquida but enters subtracting, so its sign flips back to +1. `tests/test_impulso_rtn_js.js` carries
+  a negative control for exactly this: with a uniform sign the reconciliation breaks, and the test was
+  verified to fail when the exception is flipped.
+- **Reconciliation, measured**: level 1 sums the total line to **0,0001 p.p.** worst case over 332
+  months (payload rounding), and the plotted line is the Tesouro's own
+  `resultado_primario_governo_central` — not the sum of the bars — so that is a checkable claim rather
+  than an imposed identity. **Deeper levels only close from 2016-01**: the source itself doesn't
+  publish the full decomposition before then (`receita_administrada_rfb` closes on its 9 taxes from
+  2016, `despesas_executivo_prog_financeira` from 2008, `beneficios_previdenciarios` from 2001).
+- **The timing gain that motivated the request is real but small — 1,8 day on average** (measured
+  against both official 2026 calendars: 28/08 vs 31/08, 29/09 vs 30/09, 29/10 vs 30/10, 27/11 vs
+  30/11, 29/12 vs 30/12). During those 1–3 days the RTN sits one reference month ahead, which is the
+  window the user happened to look in. **And switching source would bring no new data**:
+  `fisc_rtn.resultado_primario_abaixo_linha` is *identical* to `fisc_nfsp` (Gov. Federal + BC) over 330
+  months, |max| 0,00 — the Tesouro republishes the BCB's own figure inside the RTN, one month behind.
+  The decomposition is the reason this section exists; the calendar isn't.
+- **Why both sections stay**: the RTN covers only Governo Central. Measured, that is 96% of the
+  consolidated impulse in magnitude (correlation 0,993) but the sign disagrees in 7% of months, and
+  replacing would have dropped Estados/Municípios/Empresas Estatais entirely. The two totals correlate
+  0,99 with a 0,26 p.p. mean gap that is scope, not method — and the Tesouro publishes the bridge
+  between the two apurações: `abaixo = acima + ajustes metodológicos + discrepância estatística`, exact
+  over 354 months.
+- Same `makeImpulsoHierTab()` factory, same Nível dropdown (Acum. 12m / Trimestre-STL, the latter via
+  `_impulso_quarter_via_stl()` which gained a `sign` parameter for this — default −1 keeps every
+  existing caller unchanged). Default checked: the two top branches, which stack exactly onto the line.
+
 **5. Apêndice** — methodology notes for the four tabs above (accordion, `<details>`/`<summary>`).
 
 **Historical, not current**: 3 earlier tabs (Visão Geral, Dívida Pública, Resultado Fiscal) were
@@ -341,6 +400,46 @@ above). `fisc_divida` (BCB SGS, DBGG/DLSP) is still untouched by `report.html` �
 6 `*_fluxo_mensal`, see above) — `resultado_nominal_pct_pib_12m`/`juros_nominais_pct_pib_12m` remain
 unused by this report. Full detail on what the 3 still-deleted tabs looked like is in git history, not
 duplicated here — see Pending.
+
+## Cartões de definição nas linhas das tabelas (2026-08-28)
+
+Padrão do skill `lis-dashboard` (origem: `analytics/brasil/labor_market`, depois
+`analytics/brasil/exchange_rate`), aplicado a pedido do usuário. O rótulo da linha fica curto; o nome
+oficial da fonte, a explicação e a unidade vivem num cartão que abre no hover e fixa no clique.
+**99 entradas** em `NODE_INFO` (dentro de `report.html`, fora do payload), cobrindo 184 linhas nas 10
+tabelas das 4 abas de dados. Ligado nas três fábricas por um `opts.infoNs`.
+
+O que este relatório acrescentou ao padrão, e que vale carregar para um quarto port:
+
+- **A busca é por NAMESPACE, e isso é obrigatório aqui, não estilo.** `receita_total` e
+  `despesa_total` existem na árvore da GFSM **e** na do RTN querendo dizer coisas diferentes — a GFSM
+  classifica as transferências constitucionais como despesa (código 26), o RTN as deduz da receita.
+  Um mapa de chave nua faria uma tabela explicar a outra sem lançar nada. Cada instância declara o seu
+  `infoNs`; são 8 namespaces (`gfsm` · `rtn` · `imprtn` · `inv` · `ieg` · `imprp` · `dlsp` · `credof`).
+- **`infoNs` aceita uma LISTA, tentada em ordem.** A tabela de impulso via RTN usa
+  `['imprtn', 'rtn']`: só os 3 nós cujo *significado* muda ali (viram contribuição ao impulso, com
+  sinal) têm entrada própria, e as ~30 rubricas abaixo caem nas definições já escritas para a aba
+  Receitas e Despesas. Sem isso seriam 30 textos duplicados que envelheceriam separados.
+- **Segunda regra de busca: sufixo depois do último `__`.** É o que faz uma definição de categoria do
+  IEG servir às 4 esferas (`geral__folha`, `central__folha`, …) e um item da DLSP servir sob
+  `interna__`/`externa__`/`total__`. 99 entradas cobrem 184 linhas por causa disso.
+- **A unidade do cartão vem da MESMA função que monta o título do eixo Y** (`infoUnit()` em cada
+  fábrica, delegando ao `yTitle` da instância). Estas tabelas têm até três seletores
+  (Nível/Nominal-Real/Modelagem); uma string fixa passaria a mentir no primeiro clique. Testado: a
+  linha de unidade muda quando o seletor muda.
+
+Três defeitos que o harness pegou nesta rodada, todos da classe "não lança nada":
+
+- **Chave órfã.** Um erro de digitação numa chave do `NODE_INFO` produz um cartão que nunca abre — sem
+  erro, sem lacuna visível, só um botão que deixou de nascer. `tests/test_impulso_rtn_js.js` §10
+  resolve toda chave do mapa contra as árvores reais e exige zero órfãs; verificado que falha ao
+  injetar um `pessoal_encargos_socias`.
+- **`full` repetindo o rótulo.** `dlsp:interna` e `dlsp:externa` tinham `full` idêntico ao label, então
+  o cartão abria só para devolver a linha que o leitor acabou de ler (regra 3 do padrão). Viraram
+  entradas com `desc` de verdade.
+- **O gotcha que o próprio padrão documenta**, e que aqui apareceu no *teste*: depois do botão, o
+  `textContent` da célula passa a incluir o "i". A extração de rótulo do harness agora lê só os nós de
+  texto — filtrar por tag viraria uma lista de exceções que envelhece.
 
 ## Excel audit workbook
 
@@ -377,6 +476,7 @@ keep:
 | Investimento | `fisc_investimento` (78 series = 60 `funcao` + 18 `natureza`), `atv_pib_mensal.pib_acum_12m` (SGS 4382 — the **only** %PIB denominator here, all four Níveis; convention B), `inflc_agregados.ipca` (Real deflator) |
 | Impulso Fiscal — via Crédito a Inst. Financ. Oficiais | `fisc_dlsp_fatores` (`primario` fator of `interna__gov_federal__creditos_inst_fin_oficiais` + 2 subcomponents), `atv_pib_mensal.pib_acum_12m` |
 | Impulso Fiscal — IEG | `fisc_efgg` (4 expense categories × 4 esferas), `atv_pib_valores_correntes` (`pib_pm` — both raw quarterly, for STL, and rolled TTM, for Acumulado), `atv_pib_taxas` (`acum_4t`+`qoq` indicadores — Visão Combinada; `yoy` loaded but unplotted) |
+| Impulso Fiscal — via Resultado Primário (RTN, acima da linha) | `fisc_rtn` (35 códigos: os 2 ramos da `RTN_TREE` + `resultado_primario_governo_central` como linha de total), `atv_pib_mensal` (`pib_acum_12m` — denominador do Acum. 12m; `pib_mensal` — denominador do STL trimestral) |
 | Impulso Fiscal — via Resultado Primário (NFSP) | `fisc_nfsp` (`resultado_primario_pct_pib_12m` + 5 esfera `*_pct_pib_12m` — Acum. 12m; `resultado_primario_fluxo_mensal` + 5 esfera `*_fluxo_mensal` — Trimestre/STL), `atv_pib_mensal.pib_mensal` (raw monthly GDP, STL denominator) |
 | Impulso Fiscal — Visão Combinada | Reads already-loaded `ieg`/`fiscal_impulse_nfsp`/`pib_yoy` payloads, no new table |
 
@@ -385,6 +485,60 @@ and each script's own docstring — not duplicated here.
 
 ## Gotchas
 
+- **Os 10 gráficos abriam com faixa vazia nas duas pontas** (achado 2026-08-28, print do usuário na
+  aba Impulso). Era o `xaxis.rangeselector` nativo do Plotly dentro do `mkTimeseriesLayout()`
+  compartilhado — um só ponto, logo todos os gráficos das 4 abas de dados. Trocado pela régua HTML
+  abaixo do gráfico (`_rangeOptions()`/`_ensureRangeBar()`/`finishChart()`, portados de
+  `analytics/brasil/exchange_rate`), com a vista inicial aplicando "Tudo" **explicitamente** em vez
+  de ficar no `autorange`. O que este relatório acrescentou ao histórico do bug: em **barras** o
+  padding do Plotly é maior que em linhas (~0,75 ano de cada lado num span de 15,5 — 4,8%), porque
+  ele reserva a barra inteira e só então preenche; e a varredura por `rangeselector` **precisa do
+  dois-pontos**, senão os comentários que explicam a migração fazem seis relatórios já corrigidos
+  parecerem pendentes. Fechado por `tests/test_impulso_rtn_js.js` §11, que afirma sobre a janela de
+  cada botão e sobre a do primeiro paint — e foi verificado falhando num build com o componente
+  nativo de volta. Ver `.claude/rules/lis-dashboards.md`, "Fifth face".
+- **A seção Balanço por Entidade nunca tinha sido exercitada pelo harness**, e o motivo é reutilizável:
+  ela popula o seletor de Fator em runtime (`sel.innerHTML = '<option …>'`), e o stub de DOM guardava
+  a string sem virar `options`/`value`. Resultado: `state.fator` ficava `''`, `seriesFor()` devolvia
+  `{dates: [], values: []}` e o gráfico plotava **5 traces vazios sem lançar nada** — a mesma classe de
+  bug que motivou o harness existir. O stub aprendeu a parsear `<option>` no setter de `innerHTML`.
+  Vale para qualquer `<select>` preenchido por JS.
+
+- **A aba Investimentos ficava um mês atrás sem nada avisar: a tabela não estava em nenhum grupo do
+  calendário** (achado 2026-08-28, a partir da pergunta do usuário "os dados de investimento ainda não
+  foram divulgados?"). Tinham sido, sim — a resposta é o mecanismo, não o dado. `fisc_investimento` é
+  o **Tema 13** da API de Séries Temporais do Tesouro, e o `calendar_2026.yaml` só listava
+  `fisc_rtn` (Tema 10) no grupo `tesouro_rtn`. Consequência: existia no `registry.py` (logo, rodava
+  por `--tables`), mas **nenhum botão e nenhum job jamais a escreviam**, e o `sync.py` não podia
+  acusar atraso de uma tabela que ele classificava como "sem divulgação no arquivo". Ela entrou no
+  grupo `tesouro_rtn`, e a justificativa foi **medida contra a API ao vivo**, não suposta: as séries
+  8056 (RTN) e 8420 (investimento) têm ambas 355 observações de 1997-01 a 2026-07 — cobertura
+  idêntica, não só o mesmo ponto final hoje. A lição que generaliza: uma tabela no `registry` mas
+  fora do calendário é **invisível para os dois lados da vigilância** — não tem gatilho e não tem
+  alarme. Vale varrer `registry.tabelas()` contra as `tables:` do YAML antes de confiar no relatório
+  de atraso.
+
+- **Updating the RTN does not move the impulse metrics, and the vintages differ by design** (found
+  2026-08-28, user expectation, not a bug — the second time the RTN/impulse boundary has confused a
+  reader, see the next bullet). As atualizacoes de `fisc_rtn` **nao movem as tres metricas originais
+  da aba** — nenhuma delas le essa tabela. Cada uma tem a sua fonte e o seu calendario:
+
+  | métrica | fonte | frequência | divulgação |
+  |---|---|---|---|
+  | IEG | `fisc_efgg` (Tesouro/EFGG) + `atv_pib_valores_correntes` | trimestral | grupo `tesouro_efgg`, ~1x/trimestre |
+  | Impulso via Resultado Primário | `fisc_nfsp` (BCB, abaixo da linha) | mensal | grupo `bcb_fiscal_statistics`, penúltimo dia útil do mês |
+  | Impulso via Crédito a Inst. Financ. Oficiais | `fisc_dlsp_fatores` (BCB, Facdetp.xlsx) | mensal | mesma divulgação acima |
+
+  **Desde 2026-08-28 a aba TEM uma leitura do RTN** — a seção "Impulso via Resultado Primário —
+  RTN (acima da linha)", adicionada em resposta a esta mesma confusão. Ela é Governo Central e vai
+  até 2026-07; as três métricas do quadro acima continuam nas suas próprias fontes e vintages, então
+  a aba passou a mostrar **dois meses de referência diferentes lado a lado, de propósito**. Medido em 2026-08-28,
+  com todas as quatro tabelas no seu vintage mais recente publicado: RTN em **2026-07**, os dois
+  impulsos mensais em **2026-06** (a nota fiscal do BCB de julho só sai em 31/08) e o IEG em
+  **2026-Q1** (o boletim EFGG do Q2 só sai em 01/10). O IEG fica estruturalmente ~2 trimestres atrás
+  do RTN e isso não é atraso de ingestão — é a fonte. Antes de investigar "o impulso não atualizou",
+  rode `uv run python -m domain.dashboards.status --detalhe brasil_fiscal_policy`: ele mostra, por
+  dependência, o que está no banco contra o que está dentro do HTML.
 - **NFSP impulse vs. RTN Resultado Primário — different series, don't cross-check directly** (found
   2026-08, real user confusion, not a bug): the Impulso Fiscal tab's "Impulso via Resultado Primário"
   uses `fisc_nfsp` (BCB, setor público consolidado). The RTN tab's own "Resultado Primário" row
@@ -504,6 +658,11 @@ and each script's own docstring — not duplicated here.
   "not by sphere" (bars rendered too narrow to read, not a data/methodology bug). Whenever a new
   `chart-*` div is added to this report, it MUST be added to that same selector list or it silently
   renders broken.
+- **Uma linha nova numa árvore não ganha cartão sozinha, e uma chave errada não avisa** — o
+  `NODE_INFO` é keyed por `namespace:chave` e a única rede é o §10 de
+  `tests/test_impulso_rtn_js.js`, que resolve toda chave do mapa contra as árvores reais. Ao renomear
+  uma chave de árvore (ou ao mover um nó entre tabelas, que troca o namespace), rode o harness antes
+  de assumir que os cartões continuam aparecendo.
 - **`makeHierTab()` now reads TWO payload shapes** (2026-08, with the Investimento tab) — the original
   `{dates, values}`-per-variant one (`gfsm`/`rtn`) and the compact shared-dates one (`investimento`:
   `dates` once at the payload root, each variant a bare value array or the scalar `0`/`null`). Which one
@@ -558,7 +717,12 @@ and each script's own docstring — not duplicated here.
 - **Fix the GFSM Governo-Geral double-count** (see Gotchas) — needs `fisc_efgg.py`'s `_build_geral()`
   to net out intergovernmental transfers before summing; a dedicated reconciliation project, not a
   one-line fix.
-- **Revenue-side fiscal-impulse multiplier — methodology undecided.** Data (`receita_*`, 44 series ×
+- **Revenue-side fiscal-impulse multiplier — methodology undecided.** **Partly answered by the RTN
+  section (2026-08-28)**: the revenue side is now *shown*, exactly and unweighted, as its own branch of
+  the above-the-line decomposition — which is option 3 below ("show revenue change as context only with
+  no multiplier"), taken for the Governo Central. What remains open is the *weighted* version — a
+  combined index that multiplies revenue and spending by different multipliers — and that is still
+  blocked on the same missing estimate. Data (`receita_*`, 44 series ×
   4 esferas) is ingested and charted in the GFSM tab, but there's no reliable multiplier to weight a
   revenue change into a combined fiscal-impulse index (the IEG paper itself excludes revenue —
   multipliers disagree even in sign across studies, endogeneity with the business cycle). Three options

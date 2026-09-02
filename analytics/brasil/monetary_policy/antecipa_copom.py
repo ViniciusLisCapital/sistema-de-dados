@@ -746,6 +746,62 @@ def antecipar(nro: int | None = None, corte=None, verbose: bool = True,
 
 
 # -- artefatos para a aba Projecoes do Copom ---------------------------------
+# ── frescor: o corte gravado no artefato contra o que as fontes ja tem ───────
+# As tabelas que `antecipar()` consulta, com a coluna que responde "ate quando esta fonte
+# foi publicada". `pm_copom_projecoes` e `pm_hiato_produto_vintages` vao por VINTAGE: o
+# `date` das duas e o periodo projetado (vai a 2028), que nao e leitura de frescor nenhuma.
+#
+# Esta lista e a mesma do `reads:` do procedimento `previsao` em
+# domain/dashboards/manifest.yaml. A duplicacao e consciente: aqui ela existe para o
+# proprio relatorio se autodiagnosticar quando aberto por fora, sem manifesto nem
+# servidor; la, para a aba de status oferecer o botao. Mexeu numa, mexa na outra.
+# Cada fonte tem a coluna de data e um NOME que se possa imprimir no relatorio. O nome
+# existe porque quem abre a aba nao sabe o que e `expc_focus_periodo`: dizer "a pesquisa
+# Focus ja tinha dado de 31/08" e a mesma informacao numa forma que se le.
+_FONTES_FRESCOR = {
+    "expc_focus_periodo": ("date", "a pesquisa Focus"),
+    "expc_focus_copom": ("date", "a pesquisa Focus (curva do Copom)"),
+    "pm_copom_projecoes": ("vintage", "as projeções publicadas pelo Copom"),
+    "pm_copom_reuniao": ("date", "o histórico de decisões do Copom"),
+    "pm_hiato_produto_vintages": ("vintage", "o hiato do produto publicado pelo BC"),
+    "cmb_ptax": ("date", "a taxa de câmbio PTAX"),
+}
+
+
+def frescor(corte_usado: str | None) -> dict:
+    """O corte gravado no artefato contra o MAX de cada fonte HOJE.
+
+    Existe porque um artefato calculado tem DUAS datas e so uma delas e visivel: quando
+    foi ESCRITO (mtime — que `salvar()` move e regerar o relatorio nao) e com que
+    CONJUNTO DE INFORMACAO (o `corte_usado`, que so ele grava). Sem comparar a segunda
+    com o banco, o relatorio sai novo com previsao velha e a unica pista e esse campo no
+    meio da prosa da caixa. Foi o que aconteceu em 2026-08-31.
+
+    Devolve `{}` sem corte, e cada fonte que falhar entra com `ultimo: None`: isto e um
+    aviso sobre a geracao, nao pode derrubar a geracao.
+    """
+    if not corte_usado:
+        return {}
+    fontes, mx, mx_ref, mx_nome = [], None, None, None
+    for tab, (col, nome) in _FONTES_FRESCOR.items():
+        try:
+            v = q("macro_brasil", f"SELECT MAX({col}) AS mx FROM {tab}").iloc[0, 0]
+            u = None if v is None else str(pd.Timestamp(v).date())
+        except Exception:                                        # noqa: BLE001
+            u = None
+        fontes.append({"tabela": tab, "coluna": col, "nome": nome, "ultimo": u})
+        if u and (mx is None or u > mx):
+            mx, mx_ref, mx_nome = u, tab, nome
+
+    corte = str(corte_usado)
+    if mx is None:
+        return {"corte": corte, "fontes": fontes, "atrasado": None}
+    return {"corte": corte, "fontes": fontes, "fonte_max": mx, "fonte_ref": mx_ref,
+            "fonte_nome": mx_nome, "atrasado": corte < mx,
+            "dias": int((pd.Timestamp(mx) - pd.Timestamp(corte)).days)}
+
+
+
 def salvar(corte=None, parametros: str = "nossos", cambio: bool = True) -> dict:
     """Grava o backtest e a previsao em `data/`, que e o que `generate_report.py` le.
 

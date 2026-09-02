@@ -87,6 +87,13 @@ Fontes:
         SA. Tudo pela API (dataset NIUnderlyingDetail) no passe de rotina; a arvore
         vem do xlsx de underlying detail da Secao 2 -- unico lugar onde a hierarquia
         existe -- mas so na carga inicial e quando a estrutura muda
+  BLS — JOLTS: vagas, contratacoes e separacoes por industria, tamanho de
+        estabelecimento e regiao, pelo dump `jt.data.1.AllItems` (34 MB, 1
+        requisicao, sem cota), com a API conferindo a vintage. **O passo do JOLTS
+        ignora `--full`**: o dump ja traz 2000-12 -> hoje, e como o BLS revisa 5
+        anos e reancora tudo na divulgacao de janeiro, gravar so a ponta deixaria
+        vintages encostados na tabela -- o defeito que `mt_caged` documenta do lado
+        Brasil. ~40s por passe, sempre a historia inteira
 """
 
 import argparse
@@ -108,6 +115,7 @@ from domain.db.us.inflation import (
     inflc_pce,
     inflc_pce_dim,
 )
+from domain.db.us.labor_market import mt_ces, mt_cps, mt_jolts
 
 
 def _plano(full: bool):
@@ -120,6 +128,18 @@ def _plano(full: bool):
          {"fonte": "xlsx"} if full else {}),
         ("BEA · PCE niveis + nominal (API)",       inflc_pce,
          {"start_year": "all"} if full else {}),
+        # JOLTS ignora --full: nao ha janela de rotina, o arquivo bruto ja e a
+        # historia inteira e o BLS revisa 5 anos a cada janeiro. Ver a docstring
+        # de mt_jolts. Grava mt_jolts_dim no mesmo passe (um download).
+        ("BLS · JOLTS (vagas e rotatividade)",      mt_jolts,        {}),
+        # Employment Situation. A CES le 30 arquivos e grava mt_ces_dim no mesmo passe;
+        # --full traz 1939 em diante (~3,3 M linhas, dezenas de minutos), o default
+        # traz 4 anos, que e o que a revisao anual do benchmark reescreve.
+        ("BLS · CES (payroll, horas e ganhos)",     mt_ces,
+         {"anos": "all"} if full else {}),
+        # A CPS sao ~90 series pela API: o historico inteiro custa 8 requisicoes, entao
+        # nao ha janela de rotina a escolher e ela ignora --full de proposito.
+        ("BLS · CPS (manchetes domiciliares)",      mt_cps,          {}),
     ]
 
 

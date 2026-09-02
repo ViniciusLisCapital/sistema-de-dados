@@ -268,7 +268,15 @@ valor diferente em cada edição. Nenhuma outra fonte do projeto diz o que o BCB
   uma forma diferente e o parsing fica no script de domínio.
 - Consumidores hoje: `domain/db/brasil/bcb/pm_hiato_produto.py` e `pm_hiato_produto_vintages.py`,
   ambos via o parser compartilhado `domain/db/brasil/bcb/_rpm_hiato.py` (que documenta as cinco
-  armadilhas da aba do hiato — vale ler antes de adicionar a 3ª série deste anexo).
+  armadilhas da aba do hiato — vale ler antes de adicionar a 3ª série deste anexo); e
+  `cred_fluxo_financeiro.py`, que lê o gráfico recorrente de **fluxo financeiro do crédito** e, pelo
+  trecho 2015-2017, o boxe de 2025-03. Duas lições dele que valem para qualquer série nova daqui:
+  **o mesmo gráfico muda de unidade entre eras** (o fluxo saía em R$ deflacionados até a edição
+  2025-12 e passou a % do PIB na 2026-03 — só a segunda encadeia entre edições, e o padrão de título
+  exige o "acumulado em 12 meses" justamente para levantar em vez de carregar R$ como se fosse %); e
+  **emendar duas fontes do anexo só é seguro se as duas publicarem o MESMO conjunto de séries** —
+  onde o boxe publica um nível a mais que o gráfico recorrente, a edição nova sobrepõe o pai e não o
+  filho, e a hierarquia deixa de fechar.
 
 ### `connectors/fred.py` — API FRED (Federal Reserve)
 
@@ -364,6 +372,20 @@ próprio BLS em cada observação; `catalog=True` devolve survey/área/item/sazo
   JOLTS (`jt`) e preços de importação/exportação (`ei`) respondem na mesma chamada — testado ao
   vivo com uma requisição cobrindo as cinco. Um connector serve inflação, mercado de trabalho e
   parte do setor externo.
+- **Mas nem sempre a API é o caminho certo, e o JOLTS é o contra-exemplo medido** (2026-09-01): as 913
+  séries úteis da pesquisa `jt` são **19 requisições** de API por janela de 20 anos contra **uma**
+  requisição de 34 MB (`get_data_file("jt", "jt.data.1.AllItems")`) que traz a história inteira em
+  1,6 s e não gasta cota nenhuma. O dump venceu nas duas pontas — backfill e rotina —, e a API ficou
+  como **conferência de vintage**: 10 séries de manchete em 2 anos, uma requisição, e qualquer
+  divergência levanta em vez de gravar um mês atrasado em silêncio. A regra que sai disso: compare o
+  número de requisições contra o tamanho do dump antes de escolher; para uma pesquisa pequena e larga
+  (muitas séries, história curta) o dump ganha, e o inverso do `inflc_cpi`, onde a janela de rotina é
+  estreita e a série é longuíssima, é o que faz a API ganhar lá.
+- **O layout do `series_id` tem largura fixa e errar a contagem devolve `None`, não erro.** No JOLTS
+  são 21 caracteres — `JT` + S/U + indústria(6) + estado(2) + área(5) + tamanho(2) + medida(2) + L/R —
+  e uma primeira tentativa com 19 fez as 168 células da Tabela A voltarem vazias, o que se lê como
+  "o dado não existe" e não como "o id está errado". `mt_jolts_dim.series_id()` valida o comprimento
+  antes de devolver; vale copiar o padrão para qualquer pesquisa nova do BLS.
 
 ### `connectors/bea.py` — BEA (Bureau of Economic Analysis)
 
@@ -756,8 +778,23 @@ from connectors.cftc import CFTC
   autenticação.
 - Contratos de **moeda (BRL, MXN, …) estão no relatório TFF** (Traders in Financial Futures),
   não no disaggregated de commodities — procurar no arquivo errado é o erro fácil aqui.
-- Colunas extraídas por contrato: `open_interest`, `lev_long`/`lev_short`/`lev_net`
-  (Leveraged Funds = a perna especulativa) e `nonrept_long`/`nonrept_short`.
+- **Desde 2026-09-01 extrai as CINCO categorias de participante do TFF**, não só os fundos
+  alavancados: `open_interest`, mais `<p>_long`/`_short`/`_spread`/`_net` para `dealer`
+  (Dealer/Intermediary), `asset_mgr` (Asset Manager/Institutional), `lev` (Leveraged Funds),
+  `other` (Other Reportables) e `nonrept` (Nonreportable). Os nomes antigos (`lev_*`,
+  `nonrept_*`) foram preservados, então a expansão é backfill, não migração — mas as séries
+  novas **só existem nas linhas recarregadas**, e a recarga completa é
+  `run(years=list(range(2011, ANO+1)))`.
+- **`nonrept` não tem coluna de spread na fonte** — o CFTC não abre o resíduo assim. Uma leitura
+  que assuma as 5 × 4 séries acha 20 e encontra 19.
+- **`spread` fica fora do líquido**: uma posição travada é comprada e vendida ao mesmo tempo e
+  cancela na exposição direcional. É o que faz os cinco líquidos somarem **exatamente zero** —
+  conferido nas 748 semanas do BRL, resíduo 0, junto com `Σ(long + spread) = Σ(short + spread) =
+  open_interest`.
+- **Cobertura do BRL: começa em 2011-04-05.** O arquivo de 2010 não tem uma linha de BRAZILIAN
+  REAL, então não há backfill anterior — e há 16 buracos maiores que uma semana até 2015, um
+  deles de 196 dias. Quem consumir isto como série semanal densa precisa tratar os buracos; o
+  relatório cambial o faz com um guarda de span na média móvel.
 
 ### `connectors/ipeadata.py` — API do Ipeadata (OData v4)
 

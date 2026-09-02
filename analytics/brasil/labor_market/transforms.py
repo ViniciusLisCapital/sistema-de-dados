@@ -148,17 +148,49 @@ def variants_caged_periodo(dates: list[str], values: list) -> dict:
     }
 
 
-def variants_caged_estoque(dates: list[str], values: list) -> dict:
+def variants_caged_estoque(dates: list[str], values: list,
+                           total: dict | None = None,
+                           desde: str | None = None) -> dict:
     """Estoque de vinculos formais (mt_caged, BCB). `mom_diff` (diferenca em
     pessoas) e a leitura de fluxo desta serie -- e o que aproxima o saldo do
-    microdado. `yoy` em % e valido porque estoque nunca cruza zero."""
+    microdado. `yoy` em % e valido porque estoque nunca cruza zero.
+
+    `contrib_yy` e a decomposicao da variacao anual, em pontos percentuais:
+
+        contrib_i(t) = [ S_i(t) - S_i(t-12) ] / S_total(t-12) * 100
+
+    O denominador e o estoque TOTAL de 12 meses atras, o mesmo dos irmaos --
+    e por isso que as contribuicoes somam o `yoy` do total, e por isso que
+    esta variante precisa de `total` de fora (as outras tres so olham a
+    propria serie). Na linha do total, `contrib_yy` == `yoy` por construcao.
+
+    `total` e um dict {data: nivel}, NAO uma lista: as 6 sub-series do estoque
+    comecam em 2007-01 e as 8 restantes em 1992-01, entao casar por posicao
+    pegaria o denominador de outro mes -- sem lancar excecao nenhuma.
+
+    `desde` e a primeira data (ISO) em que a arvore fecha; antes dela as partes
+    nao somam o pai e uma barra empilhada mentiria (ver
+    caged_tab._primeiro_aditivo)."""
     diffs = [None] * len(values)
     for i in range(1, len(values)):
         a, b = values[i - 1], values[i]
         if a is not None and b is not None:
             diffs[i] = round(float(b) - float(a))
+
+    contrib = [None] * len(values)
+    if total is not None:
+        for i in range(12, len(values)):
+            d, d12 = dates[i], dates[i - 12]
+            if desde is not None and d12 < desde:
+                continue
+            a, b, den = values[i - 12], values[i], total.get(d12)
+            if a is None or b is None or den in (None, 0):
+                continue
+            contrib[i] = round(100.0 * (float(b) - float(a)) / float(den), 4)
+
     return {
         "level": {"dates": dates, "values": values},
         "mom_diff": {"dates": dates, "values": diffs},
         "yoy": {"dates": dates, "values": pct_change(values, 12)},
+        "contrib_yy": {"dates": dates, "values": contrib},
     }

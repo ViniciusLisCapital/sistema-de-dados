@@ -210,6 +210,12 @@
       margin-top: 5px;
     }
 
+    /* Sem uso desde 2026-09-01, quando a secao Diferenciais de Juros saiu (era o
+       unico lugar que punha dois graficos lado a lado). Mantido de proposito: e
+       utilitario de layout, nao markup de um grafico especifico, e o `closest()`
+       do _ensureRangeBar existe justamente para sobreviver a um embrulho como
+       este -- tirar os dois juntos e o que faz a regua quebrar quando alguem
+       recriar uma grade de dois. */
     .chart-grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -425,7 +431,7 @@
 .note-formula .g-obs { color: var(--gold); font-weight: 700; }
 .note-formula .g-eq { color: var(--navy); font-weight: 700; }
 .note-formula .g-sec { color: var(--purple); font-weight: 600; }
-.note-sub { font-size: 12px; color: var(--muted); margin-top: 6px; max-width: 100ch; }
+.note-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
 
 /* Controls (base-month selector) */
 .controls {
@@ -708,6 +714,72 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 .callout b { color: var(--navy); }
 
 .no-data-msg { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+
+/* Click-drop (<details> nativo) das secoes longas da aba FX Model: metodologia
+   no topo, diagnosticos do ajuste no rodape. Mesmo padrao do .appendix-item de
+   analytics/brasil/credit. Fechado por default -- as duas secoes juntas passavam
+   de uma tela e empurravam para fora o que se olha todo dia. */
+.fold {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 2px 20px; margin-bottom: 20px;
+}
+.fold > summary {
+  font-family: var(--cond); font-size: 15px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ice); padding: 15px 0; cursor: pointer;
+  list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after { content: '+'; font-family: var(--mono); font-size: 18px; color: var(--muted); flex: 0 0 auto; }
+.fold[open] > summary::after { content: '2'; }
+.fold > summary .fold-hint {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 400; letter-spacing: 0;
+  text-transform: none; color: var(--muted); margin-left: auto; text-align: right;
+}
+.fold-body { padding: 0 0 18px; }
+
+/* Equacao em display: uma linha por termo, com o simbolo alinhado a esquerda e a
+   leitura em linguagem comum a direita. Uma equacao de nove termos numa linha
+   corrida e ilegivel; foi assim que ela vivia ate 2026-09-01. */
+.eq { font-family: var(--mono); font-size: 13.5px; color: var(--ice); background: var(--bg);
+      border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 4px 0 16px;
+      overflow-x: auto; }
+.eq-row { display: flex; gap: 10px; align-items: baseline; white-space: nowrap; }
+.eq-op { width: 1.1em; flex: 0 0 auto; color: var(--muted); text-align: right; }
+.eq-term { flex: 0 0 auto; }
+.eq-note { font-family: var(--sans); font-size: 11.5px; color: var(--muted); white-space: normal; }
+.eq-lhs { color: var(--navy); font-weight: 700; }
+.eq-fixed { color: #7A9E1F; font-weight: 700; }
+
+/* Rodape de grafico: explica a composicao de uma barra agregada sem poluir o
+   subtitulo, que descreve o grafico inteiro. */
+.chart-foot {
+  font-size: 11.5px; color: var(--muted); line-height: 1.55; padding: 10px 14px 14px;
+  text-align: justify; hyphens: auto;
+}
+.chart-foot b { color: var(--ice2); }
+      /* ── Texto explicativo: justificado, e sem cap de largura ──────────────────
+       Convenção do projeto desde 2026-09-01, a pedido do usuário: todo texto explicativo
+       e todo texto de apêndice sai JUSTIFICADO e ocupa a largura do bloco que o contém.
+       Tirar o `max-width` em `ch` faz duas coisas de uma vez — cobre o vazio à direita do
+       parágrafo e, ocupando mais linha, deixa o bloco MAIS BAIXO.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       texto abre rios de espaço branco entre as palavras da linha. O que faz a hifenização
+       funcionar é o `lang` no <html> — sem ele o browser não sabe que dicionário usar e
+       não hifeniza nada, então a regra pareceria aplicada e produziria justamente os rios.
+
+       Fica de fora, de propósito: célula de tabela e popover de definição (container
+       estreito é exatamente onde os rios aparecem), linha de metadado em mono (é lista de
+       campos separada por `·`, não prosa) e o que é centralizado por decisão de layout. */
+    .note-panel,
+    .note-sub,
+    .chart-hint,
+    .scenario-form-hint {
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
   </style>
 </head>
 <body>
@@ -726,12 +798,11 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 <nav>
   <button class="tab-btn" data-tab="tab-bop">Balanço de Pagamentos</button>
   <button class="tab-btn" data-tab="tab-flow">Fluxo Cambial</button>
-  <button class="tab-btn" data-tab="tab-bcb">Posicionamento do BCB</button>
-  <button class="tab-btn" data-tab="tab-quotation">Cotação</button>
+  <button class="tab-btn" data-tab="tab-bcb">Posicionamento: BCB e mercado</button>
   <button class="tab-btn" data-tab="tab-valuation">Valuation</button>
   <button class="tab-btn" data-tab="tab-data">Equilíbrio PPP</button>
   <button class="tab-btn" data-tab="tab-fxattr">FX Attribution</button>
-  <button class="tab-btn" data-tab="tab-ridge">Ridge</button>
+  <button class="tab-btn" data-tab="tab-ridge">FX Model</button>
 </nav>
 
 <main>
@@ -991,18 +1062,12 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 
   </div>
 
-  <!-- ══ c) Posicionamento do BCB ══ -->
+  <!-- ══ c) Posicionamento: BCB e mercado ══ -->
   <div class="tab-panel" id="tab-bcb">
-
-    <section id="sec-bcb-reserves">
-      <h2>Reservas Internacionais</h2>
-      <div class="chart-card"><div id="chart-bcb-reserves"></div></div>
-      <div class="note">O estoque total, mensal desde 1971, e o <strong>conceito liquidez</strong>, diário desde 2008. Os dois medem o mesmo colchão por réguas diferentes — o conceito liquidez soma às reservas as linhas de recompra em aberto, então fica acima do total quando há linha viva e igual a ele quando não há. É uma <strong>medida alternativa</strong> do mesmo estoque, não um componente dele: por isso vive aqui, fora da árvore da seção seguinte, onde entraria quebrando a aditividade.</div>
-    </section>
 
     <section id="sec-bcb-reserves-tree">
       <h2>Composição das Reservas</h2>
-      <div class="note">As reservas abertas pelo <strong>template do FMI</strong> que o BCB publica: moeda estrangeira (títulos e depósitos), ouro, Direitos Especiais de Saque, posição de reserva no FMI e outros ativos. A aditividade fecha na fonte — resíduo médio de 0,0005 e máximo de 0,010 USD Bi em 307 meses, que é o arredondamento de uma fonte publicada em USD milhões. A árvore começa em <strong>jan/2001</strong>, onde a decomposição começa; a história longa do total está no gráfico acima.</div>
+      <div class="note">As reservas abertas pelo <strong>template do FMI</strong> que o BCB publica: moeda estrangeira (títulos e depósitos), ouro, Direitos Especiais de Saque, posição de reserva no FMI e outros ativos. A aditividade fecha na fonte — resíduo médio de 0,0005 e máximo de 0,010 USD Bi em 307 meses, que é o arredondamento de uma fonte publicada em USD milhões. A árvore começa em <strong>jan/2001</strong>, onde a decomposição começa — antes disso o BCB publica só o total, que a linha-raiz desta mesma tabela carrega de volta até <strong>1971</strong>.</div>
       <div class="note">Isto é <strong>estoque, não fluxo</strong>: a agregação é o saldo no <strong>fim</strong> do período, nunca a soma dos meses — somar doze saldos de reservas não significa nada. Um trimestre ou ano incompleto sai em branco pela mesma razão de sempre: ainda não tem fim. Marque uma ou mais linhas para plotá-las; em <strong>Barras empilhadas</strong>, uma linha marcada que tenha descendente também marcado vira <strong>linha</strong>, para o total não ser contado duas vezes.</div>
       <div class="chart-ctrl">
         <div class="ctrl-field">
@@ -1112,30 +1177,46 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       <div class="note">"% do PIB" segue a convenção das abas de fluxo: valor do bucket ÷ PIB somado <strong>na mesma janela</strong>. Forwards só têm registro entre fev/2011 e mar/2012 (11 dias em toda a série) — o resto é zero de verdade, não lacuna.</div>
     </section>
 
-  </div>
-
-  <!-- ══ d) Cotação ══ -->
-  <div class="tab-panel" id="tab-quotation">
-
-    <section id="sec-quotation-ptax">
-      <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
-      <div class="chart-card"><div id="chart-ptax"></div></div>
-      <div class="note">Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário, usada em contratos e balanços. Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver analytics/brasil/exchange_rate/CLAUDE.md.</div>
+    <section id="sec-bcb-cot">
+      <h2>Posicionamento no Futuro de Real — CFTC (CME)</h2>
+      <div class="note">A outra ponta do posicionamento desta aba: as três seções acima mostram a exposição do <strong>BCB</strong>, esta mostra a do <strong>mercado</strong>. A CFTC classifica cada participante do futuro de real da CME em <strong>cinco grupos</strong>, e os fundos alavancados — o "posicionamento especulativo" de que se costuma falar — são só um deles, com <strong>28% do open interest</strong>. O maior é o <strong>Dealer/Intermediário</strong>, com 36%.</div>
+      <div class="note">O sinal segue o contrato, que é cotado em <strong>dólares por real</strong>: <strong>positivo = comprado em real</strong> (aposta em apreciação), negativo = vendido em real. Marque uma ou mais linhas para plotá-las. <strong>As cinco posições líquidas somam exatamente zero</strong> — um mercado futuro é jogo de soma zero, e é isso que a pilha mostra: quem está do outro lado de quem. O <strong>Open Interest</strong> não é a soma delas, é o tamanho do mercado; ele fica na sua própria pilha, ao lado, e serve para dizer se um movimento veio de dinheiro novo entrando no contrato ou de uma virada de mão dentro do mesmo tamanho.</div>
+      <div class="chart-ctrl">
+        <div class="ctrl-field">
+          <label for="sel-cot-ma">Média móvel</label>
+          <select class="chart-select" id="sel-cot-ma">
+            <option value="0" selected>Nenhuma</option>
+            <option value="12">12 semanas (3 meses)</option>
+            <option value="24">24 semanas (6 meses)</option>
+          </select>
+        </div>
+        <div class="ctrl-field">
+          <label for="sel-cot-kind">Gráfico</label>
+          <select class="chart-select" id="sel-cot-kind">
+            <option value="bars" selected>Barras</option>
+            <option value="lines">Linhas</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-card">
+        <table class="data-table" id="cot-tree-table">
+          <thead id="cot-tree-head"></thead>
+          <tbody id="cot-tree-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-cot-brl"></div></div>
+      <div class="note">Semanal, com data de <strong>terça-feira</strong> (a foto que a CFTC publica na sexta seguinte). O BRL só entra no relatório TFF em <strong>abr/2011</strong> — não há histórico anterior na fonte — e tem 16 buracos maiores que uma semana até 2015, incluindo um de <strong>196 dias</strong> entre out/2011 e abr/2012. Por isso a média móvel de 12 e 24 semanas <strong>sai em branco onde a janela estaria esticada</strong> por um buraco, em vez de fingir que 12 observações são 12 semanas: na prática isso só apaga pontos anteriores a 2016. Cobre apenas o real negociado em <strong>Chicago</strong>, não o dólar futuro da B3, que é o mercado maior.</div>
     </section>
 
   </div>
 
-  <!-- ══ e) Valuation ══ -->
+  <!-- ══ d) Valuation ══ -->
   <div class="tab-panel" id="tab-valuation">
 
-    <section id="sec-valuation-juros">
-      <h2>Diferenciais de Juros</h2>
-      <div class="chart-grid-2">
-        <div class="chart-card"><div id="chart-nominal-rates"></div></div>
-        <div class="chart-card"><div id="chart-diferencial-nominal"></div></div>
-      </div>
-      <div class="chart-card"><div id="chart-taxas-reais"></div></div>
-      <div class="note">Selic vs Fed Funds e o diferencial entre elas — a base do carry trade tradicional do BRL frente ao USD. Taxas reais usam inflação de 12m realizada (ex-post), não expectativas.</div>
+    <section id="sec-valuation-ptax">
+      <h2>PTAX — Câmbio à Vista (BRL/USD)</h2>
+      <div class="chart-card"><div id="chart-ptax"></div></div>
+      <div class="note">O nível contra o qual tudo o mais nesta aba é lido. Taxa de câmbio de referência do BCB (PTAX, venda) — média das cotações de venda no mercado interbancário apuradas em quatro janelas do dia, usada em contratos e balanços. Cotações de moedas pares (MXN, CLP, COP etc.) ainda não estão na base — pendência conhecida, ver analytics/brasil/exchange_rate/CLAUDE.md.</div>
     </section>
 
     <section id="sec-valuation-reer">
@@ -1148,12 +1229,6 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       <h2>Termos de Troca</h2>
       <div class="chart-card"><div id="chart-termos"></div></div>
       <div class="note">Razão entre índices de preço de exportação e de importação (Funcex) — alta beneficia a balança comercial e tende a se associar a apreciação do câmbio real.</div>
-    </section>
-
-    <section id="sec-valuation-cot">
-      <h2>Posicionamento Especulativo — CFTC (BRL Futuros CME)</h2>
-      <div class="chart-card"><div id="chart-cot-brl"></div></div>
-      <div class="note">Posição líquida de fundos alavancados (leveraged money — hedge funds/CTAs) em futuros de BRL na CME. Net comprado em USD (vendido em BRL) tende a coincidir com pressão de depreciação do real, e vice-versa.</div>
     </section>
 
   </div>
@@ -1331,61 +1406,131 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 
   <div id="ridgeContent" style="display:none">
 
-    <div class="model-section">
-      <h2>What this tab is</h2>
-      <div class="callout">
-        <p><b>The model:</b> Δfx(t) = α + φ·Δfx(t-1) + β<sub>fiscal</sub>·Δfiscal(t) + β<sub>carry/vol</sub>·Δcarry_vol(t) + β<sub>dxy</sub>·Δdxy(t) + β<sub>dxy_em</sub>·Δdxy_em(t) + β<sub>steep_real</sub>·Δcurve_steep_real(t) + β<sub>sp500</sub>·Δsp500(t) + β<sub>ry_diff</sub>·Δreal_yield_diff(t) + β<sub>icbr</sub>·Δicbr_usd(t) + ε(t) — the exchange rate's own month-over-month log return, regressed on eight economic channels plus its own one-month lag, estimated by <b>Ridge (L2 penalty)</b> instead of OLS or a Bayesian fit. λ is chosen by walk-forward temporal cross-validation (fit on an expanding window, score one step ahead, keep the λ with the best average out-of-sample error), and coefficients are re-estimated on a rolling 72-month window so they can track regime change instead of describing one average relationship across calm and crisis periods.</p>
-        <p><b>Fiscal</b> — Brazil's 5-year sovereign CDS (USD), a direct market price of default/fiscal risk. Positive coefficient: rising fiscal risk pushes the exchange rate the same direction as a depreciation.</p>
-        <p><b>Carry / FX vol</b> — the BR-US policy rate differential divided by BRL's own trailing 6-month realized volatility, a risk-adjusted carry-attractiveness measure. Negative coefficient here — the same "wrong sign vs. simple UIP" finding this project's other carry-based models keep landing on.</p>
-        <p><b>Dollar index (DXY)</b> — a global, not Brazil-specific, dollar-strength gauge (mostly G10 currencies). Positive coefficient: broad dollar strength depreciates BRL alongside every other EM currency, independent of anything specific to Brazil.</p>
-        <p><b>EM dollar index (Broad-EM)</b> — the Fed's own trade-weighted basket of ~19 emerging-market currencies (BRL, CNY, MXN, KRW, etc.), tested alongside DXY to isolate EM-specific co-movement from the broader, mostly-G10 dollar gauge. Comes in strong and positive — in fact larger and more stable than DXY itself once both are in the regression, suggesting most of what DXY was proxying for BRL is really EM-specific co-movement.</p>
-        <p><b>Curve steepening (10Y-2Y, real)</b> — Brazil's inflation-linked curve's 10-year rate minus its 2-year rate, an alternate, market-based fiscal-risk proxy alongside CDS, isolating the real term premium net of inflation-expectations effects a nominal curve would mix in. Motivation: 5-year USD CDS may understate purely domestic fiscal-sustainability risk, since Brazil's large USD reserve buffer keeps external-default-priced CDS relatively muted even when domestic debt dynamics worsen. Same sign as fiscal risk itself. The nominal (non-inflation-linked) version of this same steepening was tested alongside it and dropped — it added no out-of-sample signal once the real version and the other seven channels were already in the regression (dropping it improved walk-forward OOS error by 1.4%, with no material change to any other channel's coefficient).</p>
-        <p><b>S&P 500</b> — the US equity index's own monthly log return, testing a "competing for capital" hypothesis: a stronger US equity market pulls capital toward US assets, pressuring the exchange rate up independently of anything Brazil-specific. Positive and one of the most stable coefficients in the model (never crosses zero across any 6-year rolling window). Tested alongside VIX and the US 10-year real yield in isolation — neither improved out-of-sample prediction, so read this narrowly as a level-of-the-index / capital-competition effect, not a general risk-appetite (risk-on/risk-off) signal.</p>
-        <p><b>Real yield differential (10Y, BR-US)</b> — Brazil's real (inflation-linked) 10-year yield minus the US 10-year TIPS real yield, a risk-premium measure. Positive coefficient — read carefully: this means a WIDER BR-US real-rate gap moves the exchange rate the same direction as a depreciation, the opposite of a naive carry-attractiveness story (which would expect a higher real yield to draw capital in and strengthen BRL). Consistent instead with reading Brazil's own real yield as a risk premium, moving with fiscal risk and curve steepening rather than against them. Different from testing the US real yield alone (tried earlier, didn't improve prediction) — it's specifically the BR-US differential that carries signal.</p>
-        <p><b>Commodity index (IC-Br, USD)</b> — the USD-denominated version of the BCB's IC-Br commodity price index (distinct from the BRL-denominated version used elsewhere in this project's inflation work, which embeds BRL's own move by construction and would be circular here). The single largest new coefficient this round: reliably negative across nearly every rolling window. Sign makes clean sense for a major commodity exporter — rising global commodity prices strengthen BRL.</p>
-        <p><b>AR(1)</b> — Δfx(t-1) itself, kept in raw units (not z-scored). Small and negative: a month that moves more than usual tends to see a modest partial reversal the next month. Replaced an earlier version of this tab that instead gave every channel its own 6-month lag structure (48 parameters) — a walk-forward test showed that version overfits (out-of-sample error got worse with every added lag), while this single shared term, at the cost of one extra parameter, genuinely improves out-of-sample prediction.</p>
-        <p><b>Baseline</b>, on the decomposition chart below, combines three things that aren't one of the eight economic channels: the anchor rate (where the bridge starts), α (the constant drift), and the AR(1) term (the exchange rate's own momentum). None of the three is a fundamental driver on its own, so they're shown as one bucket rather than three separate bars.</p>
-        <p>PPP itself was tested here too — as a freely-estimated channel (the BR-US relative inflation differential), not as an assumed equilibrium the exchange rate is measured against. Its coefficient came out unstable across rolling windows (whole-sample +0.34, rolling mean +0.04, swinging from −0.86 to +1.48) — dropping it cost almost nothing in-sample and genuinely improved out-of-sample prediction, so it's excluded and α absorbs its average drift instead, same as every channel this tab has dropped for the same reason.</p>
-      </div>
-    </div>
+    <details class="fold" id="ridgeMethodFold">
+      <summary>Methodology
+        <span class="fold-hint">What the model is, what each term means, and how it is fitted</span>
+      </summary>
+      <div class="fold-body">
 
-    <div class="model-section">
-      <h2>Descriptive stats</h2>
-      <div class="stats-row" id="ridgeStatsRow"></div>
-    </div>
+        <p>The model explains <b>the Real&#39;s monthly move against the Dollar</b> &mdash; not its level,
+        its change. Each month it asks how much six things moved, converts each into a push on the
+        exchange rate, and adds them up. Whatever it cannot account for is left over as a residual, so
+        nothing is hidden inside a fitted term.</p>
 
-    <div class="chart-container">
-      <div class="chart-hdr">
-        <div class="chart-hdr-left">
-          <div class="chart-title">Rolling Coefficient</div>
-          <div class="chart-subtitle">Point estimate per 6-year window, vs. the whole-sample estimate (dashed) — no confidence band shown: Ridge is a penalized point estimate, not a distribution</div>
+        <div class="eq">
+          <div class="eq-row"><span class="eq-op"></span><span class="eq-term eq-lhs">&Delta;fx<sub>t</sub></span><span class="eq-op">=</span><span class="eq-term eq-fixed">&Delta;ppp<sub>t</sub></span><span class="eq-note">inflation gap, Brazil minus US &mdash; coefficient fixed at 1, not fitted</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&alpha;</span><span class="eq-note">constant drift &mdash; what the channels leave unexplained on average</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&phi; &middot; &Delta;fx<sub>t&minus;1</sub></span><span class="eq-note">last month&#39;s own move (momentum)</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&beta;<sub>fis</sub> &middot; z(&Delta;fiscal<sub>t</sub>)</span><span class="eq-note">5-year sovereign CDS</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&beta;<sub>emd</sub> &middot; z(&Delta;dxy_em<sub>t</sub>)</span><span class="eq-note">Fed broad emerging-market dollar index</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&beta;<sub>car</sub> &middot; z(&Delta;carry_vol<sub>t</sub>)</span><span class="eq-note">BR&minus;US policy-rate gap &divide; realized FX volatility</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&beta;<sub>spx</sub> &middot; z(&Delta;sp500<sub>t</sub>)</span><span class="eq-note">S&amp;P 500 log return</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&beta;<sub>icb</sub> &middot; z(&Delta;icbr_usd<sub>t</sub>)</span><span class="eq-note">IC-Br commodity index, in dollars</span></div>
+          <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&epsilon;<sub>t</sub></span><span class="eq-note">residual &mdash; the part no term accounts for</span></div>
         </div>
-        <div class="chart-hdr-right">
-          <select id="ridgeParamSelect" class="base-select"></select>
-        </div>
-      </div>
-      <div class="chart-wrap"><div id="ridgeParamChart" style="width:100%"></div></div>
-      <div class="legend-row">
-        <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Rolling estimate</div>
-        <div class="legend-item"><span class="legend-dot" style="background:var(--muted)"></span>Whole-sample estimate</div>
-      </div>
-    </div>
 
-    <div class="chart-container">
-      <div class="chart-hdr">
-        <div class="chart-hdr-left">
-          <div class="chart-title">R² Over Time</div>
-          <div class="chart-subtitle">Share of variance explained by the rolling fit, per 6-year window</div>
-        </div>
+        <p>&Delta; is the month-over-month change, and <b>z(&middot;)</b> standardizes it. That is what makes
+        each &beta; readable on its own: it is <i>how many percent the exchange rate moves in a month when
+        that channel has a one-standard-deviation move</i>, on the same scale for every channel. Two
+        terms are deliberately left unstandardized &mdash; the momentum term keeps its own units, and the
+        inflation gap enters raw, because its size in percentage points is exactly the point of it.</p>
+
+        <h3>How it is fitted</h3>
+        <p>Coefficients come from a <b>ridge regression</b>: least squares with a penalty on large
+        coefficients. The penalty earns its place here because the channels overlap &mdash; several respond
+        to the same underlying events, and unpenalized regression answers that by handing one a large
+        positive weight and its neighbour a large negative one, which describes the past well and
+        predicts nothing.</p>
+
+        <p>The penalty&#39;s strength is not set by hand. It is chosen by <b>walk-forward validation</b>:
+        fit on everything up to a given month, predict the month after, never let that month influence
+        its own prediction, walk that forward across the whole history, and keep the setting with the
+        smallest average out-of-sample error.</p>
+
+        <p>The coefficients are also <b>re-measured rather than frozen</b>. Alongside the whole-sample
+        fit, the model is re-estimated every month on a trailing <b>72-month window</b>, so a
+        relationship that changed after 2015 shows up as a coefficient that moved instead of being
+        averaged against a decade that no longer applies. The window length came from testing
+        training-window and forecast-horizon combinations against each other.</p>
+
+        <p id="ridgeFitLine"></p>
+
+        <h3>The inflation gap, and why its coefficient is fixed at 1</h3>
+        <p>If Brazilian prices rise faster than American ones, the exchange rate has to move by that
+        difference for the two currencies to buy the same basket as before. That is arithmetic, not a
+        market reaction, so the term passes straight through instead of being estimated.</p>
+
+        <p>Letting the data choose it was tried and does not work: the fitted value swings from
+        &minus;0.8 to +0.9 depending on the six-year window, taking the opposite sign in most of them.
+        That is what a monthly regression does with a relationship that only appears over years &mdash;
+        month to month the inflation gap accounts for well under 1% of the exchange rate&#39;s movement,
+        so a fit is reading noise. Over longer stretches it comes through clearly: at every horizon from
+        one to ten years the relationship is firmly present and statistically indistinguishable from
+        one-for-one. Fixing the coefficient costs essentially nothing in accuracy, and in exchange the
+        constant stops standing in for something the model can account for.</p>
+
+        <p>What that reallocates: over the sample shown here the exchange rate rose 192%. Accumulated
+        inflation differences alone would have produced a 78% rise; the further 64% on top of that is
+        <b>real depreciation</b> &mdash; the currency weakening by more than the price gap justifies.
+        Before this term existed both halves sat inside &alpha;, which made the model look like it
+        carried one large unexplained trend. Now only the second half does.</p>
+
+        <h3>The five channels</h3>
+        <p><b>Fiscal</b> &mdash; Brazil&#39;s 5-year sovereign CDS in dollars, a direct market price of
+        default risk. Positive coefficient: rising fiscal risk moves the exchange rate the same way a
+        depreciation does. It is the strongest channel by a wide margin, and the only one whose
+        contribution can be told apart from chance on its own.</p>
+
+        <p><b>EM dollar index (Broad-EM)</b> &mdash; the Fed&#39;s trade-weighted basket of around
+        nineteen emerging-market currencies. Positive: when the dollar strengthens against emerging
+        markets as a group, the Real weakens with them, independently of anything Brazilian. Second
+        strongest. A broader index weighted toward developed currencies (the DXY) was tested alongside
+        it and removed &mdash; once this one is in the regression the broader gauge adds nothing
+        measurable, which says most of what a general dollar index picks up for the Real is really
+        emerging-market co-movement.</p>
+
+        <p><b>Carry / FX vol</b> &mdash; the BR&minus;US policy-rate gap divided by the Real&#39;s own
+        trailing six-month realized volatility: how attractive the interest-rate advantage is per unit
+        of turbulence. The coefficient is negative, the opposite of what textbook carry logic predicts,
+        and the same sign this project&#39;s other carry models keep landing on.</p>
+
+        <p><b>S&amp;P 500</b> &mdash; the US equity index&#39;s own monthly log return, testing a
+        competing-for-capital idea: a stronger US stock market pulls capital toward US assets. Positive,
+        and one of the most stable coefficients here. The VIX and the US 10-year real yield were tried
+        as alternatives and neither improved prediction, so read this narrowly as a capital-competition
+        effect rather than a general risk-appetite signal.</p>
+
+        <p><b>Commodity index (IC-Br, in dollars)</b> &mdash; the dollar-denominated version of the
+        central bank&#39;s commodity price index. The Real-denominated version used elsewhere in this
+        project would be circular here, since it already embeds the exchange rate by construction.
+        Reliably negative in every rolling window: rising commodity prices strengthen the currency of a
+        major exporter.</p>
+
+        <h3>Why only five</h3>
+        <p>An earlier version watched eight. Removing them one at a time showed that only fiscal risk
+        is strong enough to stand on its own &mdash; leave any of the other seven out and the model&#39;s
+        accuracy changes by an amount too small to separate from chance. The reason is overlap: the
+        eight were largely describing the same three or four underlying forces in different words, so
+        most of what any one contributed, another was already contributing. Cutting to five costs no
+        measurable accuracy &mdash; the five-channel model actually scores marginally better out of
+        sample &mdash; and buys something the longer list did not have: every remaining coefficient
+        keeps the same sign in every six-year window tested. A coefficient that flips sign from window
+        to window is not explaining anything, it is fitting.</p>
+
+        <h3>What this is not</h3>
+        <p>It is an explanation of the same month, not a forecast of the next one: every channel enters
+        at the same date as the move it explains. The forecast tool further down inherits that &mdash; it
+        tells you what the model implies <i>given a path you supply for the channels</i>, and does not
+        predict those channels itself.</p>
+
       </div>
-      <div class="chart-wrap"><div id="ridgeR2Chart" style="width:100%"></div></div>
-    </div>
+    </details>
 
     <div class="chart-container">
       <div class="chart-hdr">
         <div class="chart-hdr-left">
           <div class="chart-title">Exchange Rate Decomposition</div>
-          <div class="chart-subtitle" id="ridgeDecompSubtitle">Bridged from an anchor rate up to the actual PTAX rate — no PPP/equilibrium layer, since the model targets the FX rate directly. Pick a start month to REBASE the bridge from that month's actual rate forward (not just zoom the same whole-sample bars), and optionally an end month to decompose a fixed window instead of running to the latest data — e.g. 2010-01 → 2012-12 to see how the model explains that specific period's move.</div>
+          <div class="chart-subtitle" id="ridgeDecompSubtitle">Bridged from an anchor rate up to the actual PTAX rate: each bar is what that piece added to the rate over the window, and they stack up to the level the model implies. Pick a start month to REBASE the bridge from that month's actual rate forward (not just zoom the same whole-sample bars), and optionally an end month to decompose a fixed window instead of running to the latest data — e.g. 2010-01 → 2012-12 to see how the model explains that specific period's move.</div>
         </div>
         <div class="chart-hdr-right">
           <div class="dl-toggle" id="ridgeLastWindowToggle"><span class="toggle-icon"></span> Use last-window (72mo) parameters</div>
@@ -1397,6 +1542,7 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
         </div>
       </div>
       <div class="chart-wrap"><div id="ridgeDecompChart" style="width:100%"></div></div>
+      <div class="chart-foot" id="ridgeDecompFoot"></div>
     </div>
 
     <div class="chart-container">
@@ -1437,6 +1583,46 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       </div>
       <div class="scenario-list" id="scenarioList"></div>
     </div>
+
+    <details class="fold" id="ridgeDiagFold">
+      <summary>Fit diagnostics
+        <span class="fold-hint">How each coefficient and the fit itself have moved over time</span>
+      </summary>
+      <div class="fold-body">
+        <p class="chart-foot" style="padding:0 0 12px">These two charts are about the model rather
+        than about the exchange rate. The first shows what each coefficient would have been if the
+        model had been estimated on any given six-year stretch, against the single whole-sample value
+        for reference &mdash; a coefficient that wanders but keeps its sign is a relationship that
+        changed strength, while one that crosses zero is one the data does not really pin down. The
+        second shows how much of the monthly variation the fit accounted for in each of those same
+        windows.</p>
+      <div class="chart-container">
+        <div class="chart-hdr">
+          <div class="chart-hdr-left">
+            <div class="chart-title">Rolling Coefficient</div>
+            <div class="chart-subtitle">Point estimate per 6-year window, vs. the whole-sample estimate (dashed) — no confidence band shown: Ridge is a penalized point estimate, not a distribution</div>
+          </div>
+          <div class="chart-hdr-right">
+            <select id="ridgeParamSelect" class="base-select"></select>
+          </div>
+        </div>
+        <div class="chart-wrap"><div id="ridgeParamChart" style="width:100%"></div></div>
+        <div class="legend-row">
+          <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span>Rolling estimate</div>
+          <div class="legend-item"><span class="legend-dot" style="background:var(--muted)"></span>Whole-sample estimate</div>
+        </div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-hdr">
+          <div class="chart-hdr-left">
+            <div class="chart-title">R² Over Time</div>
+            <div class="chart-subtitle">Share of variance explained by the rolling fit, per 6-year window</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><div id="ridgeR2Chart" style="width:100%"></div></div>
+      </div>
+      </div>
+    </details>
 
   </div>
   <!-- /ridgeContent -->
@@ -1764,33 +1950,10 @@ var CHART_META = {
     title:  'Volume Interbancário de Câmbio',
     source: 'BCB — SGS (volume interbancário T+1 e T+2)',
   },
-  'chart-bcb-reserves': {
-    title:  'Reservas Internacionais — Brasil',
-    bits:   ['Conceito liquidez (diário) e conceito caixa (mensal) — dois recortes do mesmo agregado',
-             'estoque em USD bilhões'],
-    source: 'BCB — SGS 13982 e 3546',
-  },
   'chart-ptax': {
     title:  'PTAX — Câmbio à Vista',
     bits:   ['Taxa de venda do dólar, cotação de fechamento do dia', 'reais por dólar (BRL/USD)'],
     source: 'BCB — SGS 1 (série em reais desde jul/1994)',
-  },
-  'chart-nominal-rates': {
-    title:  'Taxas Básicas — Brasil e EUA',
-    bits:   ['Meta Selic e Fed Funds efetivo', '% ao ano'],
-    source: 'BCB — SGS 432 · FRED — FEDFUNDS',
-  },
-  'chart-diferencial-nominal': {
-    title:  'Diferencial de Juros Nominal',
-    bits:   ['Selic menos Fed Funds — o carry bruto de aplicar em reais contra o dólar',
-             'pontos percentuais ao ano'],
-    source: 'BCB — SGS 432 · FRED — FEDFUNDS',
-  },
-  'chart-taxas-reais': {
-    title:  'Juros Reais ex-post e Diferencial',
-    bits:   ['Juro nominal menos inflação dos 12 meses JÁ ocorridos, em cada país, e a diferença entre os dois',
-             '% ao ano'],
-    source: 'BCB — SGS 432 e 13522 · FRED — FEDFUNDS e CPIAUCSL',
   },
   'chart-reer': {
     title:  'Câmbio Efetivo Real — Brasil e Pares Latinos',
@@ -1980,6 +2143,35 @@ function subtractArrays(a, b) {
 // linha exibe. `desc` = o que a linha mede e o que faz ela se mover. `def` =
 // unidade, só onde ela NÃO é a do seletor do tab (o resto herda unitLine()).
 var NODE_INFO = {
+  // ══ Posicionamento no futuro de real (CFTC TFF) ══
+  // As cinco categorias sao as do proprio relatorio da CFTC, e as participacoes
+  // citadas foram MEDIDAS contra as 748 semanas do banco -- (comprado + vendido)/2
+  // mais o spread, sobre o open interest -- e nao copiadas de documentacao.
+  cot_oi: {
+    full: 'Open interest — contratos em aberto',
+    desc: 'O tamanho do mercado: quantos contratos existem vivos naquela terça, contando cada um uma vez (não a soma de compras e vendas, que seria o dobro). <strong>Não é a soma das cinco posições líquidas</strong> — essas somam zero — e por isso ele fica na sua própria pilha, ao lado. Serve para ler o resto: uma posição líquida que dobra com o open interest parado é virada de mão entre os mesmos participantes; com o open interest subindo junto, é dinheiro novo entrando.',
+  },
+  cot_dealer: {
+    full: 'Dealer/Intermediary — posição líquida',
+    desc: 'O <em>sell side</em>: bancos e swap dealers que fazem mercado e cobrem aqui o livro de balcão que rodam para clientes. <strong>É o maior grupo do contrato de real — 36% do open interest em média</strong>, mais que os fundos alavancados. A posição deles é em boa parte o espelho da dos clientes, então ela costuma andar contra o resto do mercado: ler o número como uma aposta direcional do banco é o erro clássico desta tabela.',
+  },
+  cot_asset: {
+    full: 'Asset Manager/Institutional — posição líquida',
+    desc: 'O <em>real money</em>: fundos de investimento, fundos de pensão, seguradoras e endowments, comprando exposição a real como parte de uma carteira. 20,5% do open interest. Gira mais devagar que o dinheiro alavancado — é onde a média móvel de 24 semanas costuma ser mais informativa que a leitura semanal.',
+  },
+  cot_lev: {
+    full: 'Leveraged Funds — posição líquida',
+    desc: 'Hedge funds e CTAs. É o que a imprensa chama de "posicionamento especulativo" quando cita um número só, e são <strong>28% do open interest</strong> — a segunda maior categoria, não a maior. Gira rápido e é a que mais se associa a momentum de curto prazo do câmbio.',
+  },
+  cot_other: {
+    full: 'Other Reportables — posição líquida',
+    desc: 'Quem opera acima do limite de reporte da CFTC mas não se encaixa nos três papéis acima: sobretudo tesourarias de empresas e family offices. 10,5% do open interest.',
+  },
+  cot_nonrept: {
+    full: 'Nonreportable — posição líquida',
+    desc: 'O resíduo: todo mundo cuja posição fica abaixo do limite a partir do qual a CFTC exige identificação. 5% do open interest, e é a única categoria que a fonte não abre em posições travadas (<em>spread</em>).',
+  },
+
   // ══ Conta Corrente ══
   conta_corrente: {
     full: 'Transações correntes — saldo',
@@ -3093,22 +3285,7 @@ makeTreeChartTab({
 }).init();
 
 
-// ── b) Posicionamento do BCB ──────────────────────────────────────────────────
-
-(function() {
-  var d = REPORT_DATA.bcb_positioning && REPORT_DATA.bcb_positioning.reserves;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-bcb-reserves', [
-    tLine(d.dates, d.reserves_liquidity_daily, 'Reservas — Liquidez (diária)', C.verde,
-      { line: { color: C.verde, width: 2.5 } }),
-    tLine(d.dates, d.reserves_total_monthly,   'Reservas — Total (mensal)',    C.dourado,
-      { line: { color: C.dourado, width: 1.8, dash: 'dot' }, connectgaps: true }),
-  ],
-  mkLayout({
-    yaxis: { zeroline: false, hoverformat: '.1f' },
-  }), CONFIG);
-  finishChart('chart-bcb-reserves', d.dates);
-})();
+// ── b) Posicionamento: BCB e mercado ──────────────────────────────────────────
 
 // Tabela PLANA na fabrica de arvores (2026-08-27, pedido do usuario: "mesmo que nao
 // tenha hierarquia, voce pode colocar uma tabela ... assim como as tags de
@@ -3218,7 +3395,229 @@ makeTreeChartTab({
   defaultExpanded: ['int_total'],
 }).init();
 
-// ── d) Cotação ────────────────────────────────────────────────────────────────
+// Posicionamento especulativo: a contraparte de mercado das tres secoes acima.
+// Mora nesta aba desde 2026-09-01 (pedido do usuario, junto com a renomeacao da
+// aba para "Posicionamento: BCB e mercado") -- antes era a ultima secao de
+// Valuation, onde ficava solta entre medidas de valor justo.
+// ── Posicionamento no futuro de real (CFTC TFF) ───────────────────────────────
+// Tabela PLANA com caixa que plota, no espirito da fabrica de arvores, mas escrita
+// a parte: a fabrica agrega em mes/trimestre/ano sobre USD Bi com denominador de
+// PIB, e aqui o dado e SEMANAL e a unidade e contrato. Herdar dela custaria mais
+// override do que codigo proprio, e mexer nela poria em risco as 7 tabelas que ja
+// a usam.
+//
+// Duas regras de dado governam este bloco, as duas medidas contra o banco nas 748
+// semanas, residuo ZERO:
+//   (1) as cinco posicoes liquidas somam 0 -- o futuro e jogo de soma zero. Por
+//       isso elas empilham entre si.
+//   (2) o open interest NAO e a soma delas; e o tamanho do mercado (soma das pernas
+//       brutas + spread). Empilha-lo junto seria inventar um agregado, entao ele vai
+//       numa `offsetgroup` propria: continua barra, ao lado, nunca dentro da pilha.
+// Global, como SWAP_TREE e as demais arvores: o harness de teste resolve as chaves
+// de NODE_INFO contra elas, e uma lista escondida dentro do IIFE viraria seis
+// cartoes que nenhuma assercao alcanca.
+var COT_ROWS = [
+  { key: 'cot_oi',      label: 'Open Interest (total do mercado)', serie: 'open_interest', total: true },
+  { key: 'cot_dealer',  label: 'Dealer / Intermediário',           serie: 'dealer_net' },
+  { key: 'cot_asset',   label: 'Asset Manager / Institucional',    serie: 'asset_mgr_net' },
+  { key: 'cot_lev',     label: 'Fundos Alavancados',               serie: 'lev_net' },
+  { key: 'cot_other',   label: 'Outros Reportáveis',               serie: 'other_net' },
+  { key: 'cot_nonrept', label: 'Não-Reportáveis',                  serie: 'nonrept_net' },
+];
+
+(function() {
+  var st = { ma: 0, kind: 'bars', checked: new Set(['cot_dealer', 'cot_asset', 'cot_lev', 'cot_other', 'cot_nonrept']) };
+
+  var colorOf = {};
+  COT_ROWS.forEach(function(r, i) { colorOf[r.key] = HIER_COLORS[i % HIER_COLORS.length]; });
+
+  function data() { return REPORT_DATA.cot_fx || {}; }
+  function ready() { var d = data(); return !!(d.dates && d.dates.length); }
+  function serie(r) { return data()[r.serie] || []; }
+
+  // Media movel de k SEMANAS, e nao de k observacoes. A distincao importa porque a
+  // serie tem buracos (196 dias entre out/2011 e abr/2012, mais 15 menores): uma
+  // janela de 12 linhas pode cobrir oito meses, e chama-la de "12 semanas" seria
+  // falso. O guarda de span devolve branco nesse caso -- medido, ele so apaga
+  // pontos anteriores a 2016, entao custa nada na amostra que se le.
+  function mediaMovel(values, dates, k) {
+    var out = new Array(values.length).fill(null);
+    if (!k) return out;
+    var limite = (k - 1) * 7 + 10;   // folga de 10 dias: 8 das 748 datas caem na segunda
+    for (var i = k - 1; i < values.length; i++) {
+      var span = (Date.parse(dates[i]) - Date.parse(dates[i - k + 1])) / 86400000;
+      if (span > limite) continue;
+      var soma = 0, n = 0, furo = false;
+      for (var j = i - k + 1; j <= i; j++) {
+        var v = values[j];
+        if (v === null || v === undefined || isNaN(v)) { furo = true; break; }
+        soma += v; n++;
+      }
+      if (!furo && n === k) out[i] = soma / n;
+    }
+    return out;
+  }
+
+  function maTxt() { return st.ma ? ('média móvel de ' + st.ma + ' semanas') : null; }
+  function unitLine() {
+    return 'contratos em aberto na CME, leitura semanal de terça-feira'
+         + (st.ma ? ' · ' + maTxt() : '');
+  }
+
+  function fmtContratos(v) {
+    if (v === null || v === undefined || isNaN(v)) return '—';
+    return Math.round(v).toLocaleString('pt-BR');
+  }
+
+  function refDates() { return (data().dates || []).slice(-12); }
+
+  function renderTable() {
+    var thead = document.getElementById('cot-tree-head');
+    var tbody = document.getElementById('cot-tree-body');
+    if (!thead || !tbody) return;
+    var dates = refDates();
+    var todas = data().dates || [];
+
+    thead.innerHTML = '';
+    var trh = document.createElement('tr');
+    var thCheck = document.createElement('th'); thCheck.className = 'col-check'; trh.appendChild(thCheck);
+    var thLabel = document.createElement('th'); thLabel.textContent = 'Participante'; trh.appendChild(thLabel);
+    dates.forEach(function(dt) {
+      var th = document.createElement('th');
+      th.className = 'col-value';
+      th.textContent = String(dt).slice(8, 10) + '/' + String(dt).slice(5, 7);
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+
+    tbody.innerHTML = '';
+    COT_ROWS.forEach(function(r) {
+      var vals = serie(r);
+      var byDate = {};
+      for (var i = 0; i < todas.length; i++) byDate[todas[i]] = vals[i];
+
+      var tr = document.createElement('tr');
+      // O total ganha o filete de separacao das linhas de conta das outras tabelas:
+      // ele nao e componente dos cinco liquidos e a tabela precisa dizer isso.
+      tr.className = r.total ? 'is-account' : '';
+      tr.dataset.key = r.key;
+
+      var tdCheck = document.createElement('td');
+      tdCheck.className = 'col-check';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = st.checked.has(r.key);
+      cb.addEventListener('change', function() {
+        if (cb.checked) st.checked.add(r.key); else st.checked.delete(r.key);
+        renderTable();
+        renderChart();
+      });
+      tdCheck.appendChild(cb);
+      tr.appendChild(tdCheck);
+
+      var tdLabel = document.createElement('td');
+      tdLabel.className = 'col-label';
+      tdLabel.style.paddingLeft = '14px';
+      // Os dois espacadores das outras tabelas: sem hierarquia nao ha seta, mas a
+      // coluna de rotulos so alinha se o espaco dela existir mesmo assim.
+      var icon = document.createElement('span');
+      icon.className = 'tree-toggle is-empty';
+      tdLabel.appendChild(icon);
+      var dot = document.createElement('span');
+      dot.className = st.checked.has(r.key) ? 'swatch-dot' : 'swatch-dot is-off';
+      dot.style.background = colorOf[r.key];
+      tdLabel.appendChild(dot);
+      tdLabel.appendChild(document.createTextNode(r.label));
+      var info = infoOf(r);
+      if (info) tdLabel.appendChild(makeInfoButton(r, info, unitLine));
+      tr.appendChild(tdLabel);
+
+      dates.forEach(function(dt) {
+        var td = document.createElement('td');
+        var v = byDate[dt];
+        var na = (v === null || v === undefined || isNaN(v));
+        td.className = na ? 'col-value is-na' : 'col-value';
+        td.textContent = fmtContratos(v);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderChart() {
+    var d = data();
+    var marcadas = COT_ROWS.filter(function(r) { return st.checked.has(r.key); });
+    var traces = [], barras = [];
+
+    marcadas.forEach(function(r) {
+      var y = serie(r);
+      if (st.kind === 'lines') {
+        traces.push(tLine(d.dates, y, r.label, colorOf[r.key],
+                          { line: { color: colorOf[r.key], width: st.ma ? 1 : 2 },
+                            opacity: st.ma ? 0.45 : 1 }));
+      } else {
+        barras.push({
+          x: d.dates, y: y, type: 'bar', name: r.label,
+          marker: { color: colorOf[r.key] },
+          // Duas pilhas, e nao uma: o total nao e componente dos liquidos.
+          offsetgroup: r.total ? 'oi' : 'net',
+          opacity: st.ma ? 0.5 : 1,
+        });
+      }
+    });
+    traces = barras.concat(traces);
+
+    // As medias moveis entram POR ULTIMO para ficarem por cima das barras, mesma
+    // razao pela qual a fabrica poe o total sobre a pilha.
+    if (st.ma) {
+      marcadas.forEach(function(r) {
+        traces.push(tLine(d.dates, mediaMovel(serie(r), d.dates, st.ma),
+                          r.label + ' — MM' + st.ma + 's', colorOf[r.key],
+                          { line: { color: colorOf[r.key], width: 2.5 } }));
+      });
+    }
+
+    var layout = mkLayout({
+      barmode: 'relative',
+      yaxis: {
+        zeroline: true, hoverformat: ',.0f',
+        title: { text: 'contratos', standoff: 8 },
+      },
+    });
+
+    var nomes = marcadas.map(function(r) { return r.label; });
+    var oQue = nomes.length === 0 ? 'nenhuma linha marcada'
+             : nomes.length > 4   ? nomes.length + ' linhas marcadas'
+             : nomes.join(', ');
+    var meta = {
+      title: 'Posicionamento no Futuro de Real — CME',
+      bits: [oQue,
+             'semanal (terça-feira)',
+             'posição líquida em número de contratos; positivo = comprado em real',
+             st.kind === 'lines' ? 'linhas' : 'barras',
+             maTxt()].filter(Boolean),
+      source: 'CFTC — Traders in Financial Futures (TFF)',
+    };
+    Plotly.react('chart-cot-brl', traces, layout, CONFIG);
+    finishChart('chart-cot-brl', d.dates, meta);
+  }
+
+  if (!ready()) return;
+  ['sel-cot-ma', 'sel-cot-kind'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', function() {
+      if (id === 'sel-cot-ma') st.ma = parseInt(el.value, 10) || 0;
+      else st.kind = el.value;
+      renderTable();
+      renderChart();
+    });
+  });
+  renderTable();
+  renderChart();
+})();
+
+// ── c) Valuation ──────────────────────────────────────────────────────────────
 
 (function() {
   var d = REPORT_DATA.ptax;
@@ -3232,51 +3631,6 @@ makeTreeChartTab({
     yaxis: { title: { text: 'BRL/USD', standoff: 8 }, zeroline: false },
   }), CONFIG);
   finishChart('chart-ptax', d.dates);
-})();
-
-// ── e) Valuation ──────────────────────────────────────────────────────────────
-
-(function() {
-  var d = REPORT_DATA.diferenciais;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-nominal-rates', [
-    tLine(d.dates, d.selic,     'Selic',     C.verde,   { line: { color: C.verde,   width: 2.5 } }),
-    tLine(d.dates, d.fed_funds, 'Fed Funds', C.laranja, { line: { color: C.laranja, width: 2   } }),
-  ],
-  mkLayout({
-    yaxis: { ticksuffix: '%', zeroline: false },
-  }), CONFIG);
-  finishChart('chart-nominal-rates', d.dates);
-})();
-
-(function() {
-  var d = REPORT_DATA.diferenciais;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-diferencial-nominal', [
-    Object.assign(
-      tLine(d.dates, d.diferencial_nominal, 'Diferencial Nominal', C.dourado),
-      { fill: 'tozeroy', fillcolor: 'rgba(187,155,29,0.10)' }
-    ),
-  ],
-  mkLayout({
-    yaxis: { ticksuffix: ' p.p.', zeroline: true },
-  }), CONFIG);
-  finishChart('chart-diferencial-nominal', d.dates);
-})();
-
-(function() {
-  var d = REPORT_DATA.diferenciais;
-  if (!d || !d.dates) return;
-  Plotly.newPlot('chart-taxas-reais', [
-    tLine(d.dates, d.real_br_ex_post,  'Taxa Real Brasil (ex-post)', C.verde,   {}),
-    tLine(d.dates, d.real_us_ex_post,  'Taxa Real EUA (ex-post)',    C.laranja, {}),
-    tLine(d.dates, d.diferencial_real, 'Diferencial Real',            C.dourado,
-      { line: { color: C.dourado, width: 2, dash: 'dot' } }),
-  ],
-  mkLayout({
-    yaxis: { ticksuffix: '%', zeroline: true },
-  }), CONFIG);
-  finishChart('chart-taxas-reais', d.dates);
 })();
 
 (function() {
@@ -3315,37 +3669,6 @@ makeTreeChartTab({
     yaxis: { zeroline: false },
   }), CONFIG);
   finishChart('chart-termos', d.dates);
-})();
-
-(function() {
-  var d = REPORT_DATA.cot_fx;
-  if (!d || !d.dates) return;
-  var barColors = (d.lev_net || []).map(function(v) {
-    return (v === null || v === undefined) ? C.cinza : (v >= 0 ? C.verde : C.laranja);
-  });
-  Plotly.newPlot('chart-cot-brl', [
-    {
-      x: d.dates, y: d.lev_net, type: 'bar',
-      name: 'Posição Líquida (Leveraged Money)',
-      marker: { color: barColors },
-      yaxis: 'y',
-    },
-    tLine(d.dates, d.open_interest, 'Open Interest', C.dourado, {
-      yaxis: 'y2',
-      line:  { color: C.dourado, width: 1.5, dash: 'dot' },
-    }),
-  ],
-  mkLayout({
-    barmode: 'relative',
-    yaxis:   { title: { text: 'Contratos', standoff: 8 }, zeroline: true },
-    yaxis2:  {
-      title:      { text: 'Open Interest', standoff: 8 },
-      overlaying: 'y', side: 'right',
-      showgrid:   false, zeroline: false,
-    },
-    margin: { t: 16, r: 82, b: 100, l: 62 },
-  }), CONFIG);
-  finishChart('chart-cot-brl', d.dates);
 })();
 
 // ── Default tab ───────────────────────────────────────────────────────────────
@@ -4106,29 +4429,47 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   // bare channel name. Colors reuse the same hex values already assigned to
   // these channels on the "Equilibrium & Data" tab's channel dropdown (see
   // CLAUDE.md) so the same variable reads as the same color across tabs.
+  // delta_ppp is the one term whose coefficient is IMPOSED (at 1), not
+  // estimated -- see ridge_deviation_model.py's ppp_offset docstring. It
+  // belongs in the decomposition and in the forecast grid, and deliberately
+  // NOT in the Rolling Coefficient dropdown (a flat line at 1.000 would read
+  // as a finding about the data instead of as an assumption).
   const PARAM_LABELS_RIDGE = {
-    alpha: 'α (constant)', delta_fiscal: 'β fiscal', delta_carry_vol: 'β carry/vol',
-    delta_dxy: 'β dollar index (DXY)', delta_dxy_em: 'β EM dollar index (Broad-EM)',
-    delta_curve_steep_real: 'β curve steepening (10Y-2Y, real)',
-    delta_sp500: 'β S&P 500', delta_real_yield_diff: 'β real yield differential (10Y, BR-US)',
-    delta_icbr_usd: 'β commodity index (IC-Br, USD)', delta_fx_lag1: 'φ AR(1) — Δfx(t-1)',
+    alpha: 'α (constant)', delta_ppp: 'PPP (β fixed at 1)', delta_fiscal: 'β fiscal',
+    delta_dxy_em: 'β EM dollar index (Broad-EM)', delta_carry_vol: 'β carry/vol',
+    delta_sp500: 'β S&P 500', delta_icbr_usd: 'β commodity index (IC-Br, USD)',
+    delta_fx_lag1: 'φ AR(1) — Δfx(t-1)',
   };
   const CHANNEL_COLORS_RIDGE = {
-    delta_fiscal: '#EA523A', delta_carry_vol: '#9B5DE5', delta_dxy: '#FBC852',
-    delta_dxy_em: '#D46A6A', delta_curve_steep_real: '#02739B',
-    delta_sp500: '#5D7A9B', delta_real_yield_diff: '#C97B4A', delta_icbr_usd: '#4A9B7F',
+    // Todos os 36 pares desta paleta ficam a CIEDE2000 >= 20, a regua da regra
+    // .claude/rules/lis-dashboards.md -- pior par fiscal x fx_lag1, 20,5. Ela
+    // NAO passava antes do corte de canais de 2026-09-01: fiscal x dxy_em dava
+    // 10,8 e curve_steep_real x sp500 dava 10,6, e as duas piores eram entre as
+    // series mais desenhadas. Duas cores mudaram para fechar a regua com o
+    // conjunto novo, escolhidas por busca em grade e nao a olho: dxy_em de
+    // #D46A6A (vermelho empoeirado, colidia com o vermelho do fiscal) para
+    // ambar, e sp500 de #5D7A9B (ardosia, colidia com o roxo do carry_vol) para
+    // azul. Trocar o conjunto de canais exige refazer essa medicao: uma paleta
+    // so e separavel em relacao a quem esta no grafico junto.
+    delta_ppp: '#7A9E1F', delta_fiscal: '#EA523A', delta_dxy_em: '#EE9900',
+    delta_carry_vol: '#9B5DE5', delta_sp500: '#0088CC', delta_icbr_usd: '#4A9B7F',
     delta_fx_lag1: '#8C6A5D',
   };
   const CHANNEL_LABELS_RIDGE = {
-    delta_fiscal: 'Fiscal', delta_carry_vol: 'Carry / FX vol', delta_dxy: 'Dollar index (DXY)',
-    delta_dxy_em: 'EM dollar index (Broad-EM)',
-    delta_curve_steep_real: 'Curve steepening (10Y-2Y, real)', delta_sp500: 'S&P 500',
-    delta_real_yield_diff: 'Real yield differential (10Y, BR-US)', delta_icbr_usd: 'Commodity index (IC-Br, USD)',
+    delta_ppp: 'PPP (BR-US inflation differential)', delta_fiscal: 'Fiscal',
+    delta_dxy_em: 'EM dollar index (Broad-EM)', delta_carry_vol: 'Carry / FX vol',
+    delta_sp500: 'S&P 500', delta_icbr_usd: 'Commodity index (IC-Br, USD)',
     delta_fx_lag1: 'AR(1) — Δfx(t-1)',
   };
-  const CHANNEL_ORDER_RIDGE = ['delta_fiscal', 'delta_carry_vol', 'delta_dxy', 'delta_dxy_em',
-    'delta_curve_steep_real', 'delta_sp500', 'delta_real_yield_diff',
-    'delta_icbr_usd', 'delta_fx_lag1'];
+  // Tem de bater EXATAMENTE com o channel set do payload: DECOMP_CHANNELS_RG
+  // sai daqui e indexa contrib_monthly/level_decomposition direto, entao uma
+  // chave a mais quebra a decomposicao e uma a menos apaga uma barra sem aviso.
+  const CHANNEL_ORDER_RIDGE = ['delta_ppp', 'delta_fiscal', 'delta_dxy_em', 'delta_carry_vol',
+    'delta_sp500', 'delta_icbr_usd', 'delta_fx_lag1'];
+  // Terms whose coefficient the model does not estimate. Excluded from the
+  // Rolling Coefficient dropdown; everywhere else they behave like any other
+  // channel.
+  const PINNED_PARAMS_RIDGE = ['delta_ppp'];
 
   // "Break down into parts" (2026-08, direct user request: "some variables
   // are less intuitive in aggregate... start from bottom up") -- lets
@@ -4144,14 +4485,13 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     selic: 'Selic (BR policy rate)',
     fed_funds: 'Fed Funds (US policy rate)',
     fx_vol: 'BRL realized FX vol (6m ann.)',
-    br_real_10y: 'BR real 10Y yield (NTN-B)',
-    us_real_10y: 'US real 10Y yield (DFII10)',
-    br_real_2y: 'BR real 2Y yield (NTN-B)',
   };
+  // carry_vol e o unico composto que sobrou no channel set (2026-09-01). O
+  // payload ja filtra composite_primitives pelos canais ativos, entao formulas
+  // dos canais removidos nunca seriam alcancadas -- fora, para nao ficarem como
+  // codigo que nenhum caminho exercita.
   const COMPOSITE_FORMULAS = {
     carry_vol: (p) => (p.selic - p.fed_funds) / p.fx_vol,
-    real_yield_diff: (p) => p.br_real_10y - p.us_real_10y,
-    curve_steep_real: (p) => p.br_real_10y - p.br_real_2y,
   };
 
   const noDataEl = document.getElementById('ridgeNoData');
@@ -4172,33 +4512,34 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     const R = D.rolling;
 
     // ---- stats ----
-    document.getElementById('ridgeStatsRow').innerHTML = `
-      <div class="stat-card">
-        <div class="stat-label">Selected λ</div>
-        <div class="stat-val">${fmtNumRg(D.lambda, 3)}</div>
-        <div class="stat-sub">walk-forward CV, ${D.lambda_cv.lambdas.length} candidates tested</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Whole-sample fit</div>
-        <div class="stat-val">${D.n}</div>
-        <div class="stat-sub">months · ${monthLabelRg(D.sample_range[0])} → ${monthLabelRg(D.sample_range[1])} · R²=${fmtNumRg(D.whole_sample.r2, 3)}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Rolling windows</div>
-        <div class="stat-val">${R.n_windows}</div>
-        <div class="stat-sub">${R.window_months}-month window · R² ${fmtNumRg(Math.min(...R.r2), 2)}–${fmtNumRg(Math.max(...R.r2), 2)}</div>
-      </div>`;
+    // A faixa de cartoes "Descriptive stats" saiu em 2026-09-01 (pedido do
+    // usuario). Os numeros nao sumiram: viram uma linha de ficha tecnica dentro
+    // da metodologia, que e onde eles respondem a alguma pergunta -- tres
+    // cartoes no topo da aba anunciavam lambda e contagem de janelas antes de o
+    // leitor saber o que e lambda. Montada aqui, do payload, para nao envelhecer
+    // como texto fixo.
+    const fitLineEl = document.getElementById('ridgeFitLine');
+    if (fitLineEl) {
+      fitLineEl.innerHTML =
+        '<b>As fitted today:</b> ' + D.n + ' months, ' + monthLabelRg(D.sample_range[0]) + ' to ' +
+        monthLabelRg(D.sample_range[1]) + '. The whole-sample fit accounts for ' +
+        fmtNumRg(100 * D.whole_sample.r2, 0) + '% of the month-to-month variation (R\u00b2 ' +
+        fmtNumRg(D.whole_sample.r2, 3) + '), with a penalty of ' + fmtNumRg(D.lambda, 3) +
+        ' chosen from ' + D.lambda_cv.lambdas.length + ' candidates. The rolling read covers ' +
+        R.n_windows + ' overlapping ' + R.window_months + '-month windows, in which R\u00b2 ranges from ' +
+        fmtNumRg(Math.min.apply(null, R.r2), 2) + ' to ' + fmtNumRg(Math.max.apply(null, R.r2), 2) + '.';
+    }
 
     // ---- rolling coefficient chart ----
     const selEl = document.getElementById('ridgeParamSelect');
-    const paramKeys = ['alpha', ...CHANNEL_ORDER_RIDGE];
+    const paramKeys = ['alpha', ...CHANNEL_ORDER_RIDGE.filter(k => !PINNED_PARAMS_RIDGE.includes(k))];
     paramKeys.forEach(k => {
       const opt = document.createElement('option');
       opt.value = k;
       opt.textContent = PARAM_LABELS_RIDGE[k];
       selEl.appendChild(opt);
     });
-    selEl.value = CHANNEL_ORDER_RIDGE[0];
+    selEl.value = paramKeys[1];
 
     function paramSeriesRg(key) {
       return key === 'alpha' ? R.alpha : R.channels[key];
@@ -4230,6 +4571,21 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         customdata: R.r2.map(v => fmtNumRg(v, 3)), hovertemplate: 'R²: %{customdata}<extra></extra>' },
     ], { height: 340, yaxis: { range: [0, 1] } });
 
+    // Um grafico desenhado dentro de um <details> FECHADO renderiza com largura
+    // zero e continua assim depois de aberto: o Plotly mede o container uma vez.
+    // Mesmo motivo pelo qual activateTab() chama resize ao trocar de aba. O
+    // evento 'toggle' do <details> NAO borbulha, entao e um listener por bloco.
+    ['ridgeMethodFold', 'ridgeDiagFold'].forEach(function (id) {
+      const foldEl = document.getElementById(id);
+      if (!foldEl) return;
+      foldEl.addEventListener('toggle', function () {
+        if (!foldEl.open) return;
+        Array.prototype.forEach.call(foldEl.querySelectorAll('.chart-wrap > div'), function (gd) {
+          if (gd && gd.id) Plotly.Plots.resize(gd);
+        });
+      });
+    });
+
     // ---- decomposition / level bridge, rebasable to a chosen start month ----
     // "baseline" bundles anchor + alpha + AR(1) into one bucket (see the
     // tab's own callout) -- an ABSOLUTE level, same role "equilibrium"/
@@ -4242,9 +4598,19 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     const CM = D.contrib_monthly;
     const LW = D.last_window;
     const DECOMP_CHANNELS_RG = CHANNEL_ORDER_RIDGE.filter(k => k !== 'delta_fx_lag1');
+    // O grafico de decomposicao mostra o PPP DENTRO do balde de tendencia
+    // (2026-09-01, pedido do usuario: "coloque o baseline + PPP como tendencia
+    // ... no grafico, deixe como algo unico"). O payload continua trazendo as
+    // duas series separadas -- a fusao e de APRESENTACAO, feita aqui, e a
+    // composicao e declarada no rodape do grafico em vez de virar mais uma
+    // barra. DECOMP_CHANNELS_RG segue com o PPP porque a grade de previsao
+    // abaixo o edita como qualquer outro canal; so as BARRAS o excluem.
+    const TREND_EXTRA_RG = 'delta_ppp';
+    const DECOMP_BARS_RG = DECOMP_CHANNELS_RG.filter(k => k !== TREND_EXTRA_RG);
     const levelColorsRg = { baseline: '#1F2853', ...CHANNEL_COLORS_RIDGE, residual: '#C9CEDB' };
-    const levelLabelsRg = { baseline: 'Baseline (anchor + α + AR(1))', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
-    const levelOrderRg = ['baseline', ...DECOMP_CHANNELS_RG, 'residual'];
+    const levelLabelsRg = { baseline: 'Trend', ...CHANNEL_LABELS_RIDGE, residual: 'Residual (unexplained)' };
+    const levelOrderRg = ['baseline', ...DECOMP_BARS_RG, 'residual'];
+    function somaArrRg(a, b) { return a.map((v, i) => v + b[i]); }
 
     const decompStartEl = document.getElementById('ridgeDecompStart');
     const decompEndEl = document.getElementById('ridgeDecompEnd');
@@ -4388,23 +4754,24 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       const anchorForWindow = i0 === 0 ? D.fit_level.anchor_level : L.actual[i0 - 1];
       const li0 = toLocal(i0), li1 = toLocal(i1);
 
-      const cumBaseline = cumFromRg(currentArr('baseline'), li0, li1);
+      const trendMonthly = somaArrRg(currentArr('baseline'), currentArr(TREND_EXTRA_RG));
+      const cumBaseline = cumFromRg(trendMonthly, li0, li1);
       const cumChannels = {};
-      DECOMP_CHANNELS_RG.forEach(key => { cumChannels[key] = cumFromRg(currentArr(key), li0, li1); });
+      DECOMP_BARS_RG.forEach(key => { cumChannels[key] = cumFromRg(currentArr(key), li0, li1); });
       const cumResidual = cumFromRg(currentArr('residual'), li0, li1);
 
       const bars = {};
       let actualSeries, fittedSeries;
       if (pctMode) {
         bars.baseline = cumBaseline;
-        DECOMP_CHANNELS_RG.forEach(key => { bars[key] = cumChannels[key]; });
+        DECOMP_BARS_RG.forEach(key => { bars[key] = cumChannels[key]; });
         bars.residual = cumResidual;
         actualSeries = slicedMonths.map((_, i) => 100 * Math.log(L.actual[i0 + i] / anchorForWindow));
-        fittedSeries = cumBaseline.map((v, i) => v + DECOMP_CHANNELS_RG.reduce((s, key) => s + cumChannels[key][i], 0));
+        fittedSeries = cumBaseline.map((v, i) => v + DECOMP_BARS_RG.reduce((s, key) => s + cumChannels[key][i], 0));
       } else {
         let prevArr = cumBaseline.map(v => anchorForWindow * Math.exp(v / 100));
         bars.baseline = prevArr;
-        DECOMP_CHANNELS_RG.forEach(key => {
+        DECOMP_BARS_RG.forEach(key => {
           const nxt = cumChannels[key].map((v, i) => prevArr[i] * Math.exp(v / 100));
           bars[key] = nxt.map((v, i) => v - prevArr[i]);
           prevArr = nxt;
@@ -4413,6 +4780,33 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         const finalArr = cumResidual.map((v, i) => prevArr[i] * Math.exp(v / 100));
         bars.residual = finalArr.map((v, i) => v - prevArr[i]);
         actualSeries = L.actual.slice(i0, i1 + 1);
+      }
+
+      // Rodape: o balde "Trend" e uma barra so no grafico, entao a composicao
+      // dele tem de estar escrita em algum lugar -- e recalculada a cada render,
+      // porque a janela escolhida muda os tres pedacos. Em pontos de log eles
+      // somam; em percentual eles COMPOEM, e o texto diz isso em vez de somar
+      // numeros que nao somam.
+      const foundEl = document.getElementById('ridgeDecompFoot');
+      if (foundEl) {
+        const nMes = li1 - li0 + 1;
+        const alphaMes = useLastWindow ? LW.alpha : D.whole_sample.alpha;
+        const somaJanela = (arr) => { let t = 0; for (let i = li0; i <= li1; i++) t += arr[i]; return t; };
+        const ppp = somaJanela(currentArr(TREND_EXTRA_RG));
+        const baseTot = somaJanela(currentArr('baseline'));
+        const alphaTot = alphaMes * nMes;
+        const ar1 = baseTot - alphaTot;
+        const pct = (lp) => fmtSignedRg(100 * (Math.exp(lp / 100) - 1), 1) + '%';
+        foundEl.innerHTML =
+          '<b>Trend</b> is drawn as one bar because its three pieces all describe the same thing &mdash; ' +
+          'where the exchange rate drifts when none of the five channels move. It combines the ' +
+          '<b>inflation gap</b> (' + pct(ppp) + ' over this window), the <b>constant drift &alpha;</b> (' +
+          pct(alphaTot) + ') and the <b>momentum term</b> (' + pct(ar1) + '), starting from the actual rate ' +
+          'the month before the window opens. The first is arithmetic &mdash; prices rising faster in Brazil ' +
+          'than in the US have to show up in the rate. The second is real depreciation the channels do not ' +
+          'account for. The third is the exchange rate reacting to its own previous move. ' +
+          'The three compound rather than add, so they multiply out to ' +
+          pct(ppp + alphaTot + ar1) + ' together.';
       }
 
       const fmtBar = pctMode ? fmtPctRg : (v, key) => (key === 'baseline' ? fmtRateRg(v) : fmtSignedRg(v, 3));
@@ -4541,6 +4935,42 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // each variable"), confirmed PER-CHANNEL (not one global switch) via
     // AskUserQuestion.
     const boxMode = {};
+    // "Flat by default" means NO CHANGE, and for every channel here except
+    // one that is the same thing as holding the level: a CDS that stays at
+    // 180 contributes nothing, which is the neutral guess an untouched box
+    // should make.
+    //
+    // PPP is the exception, and getting it wrong would be invisible. Its
+    // "level" is a price INDEX, so freezing it does not mean "no change" --
+    // it means Brazil and the US inflate at exactly the same rate for
+    // twelve straight months, which has essentially never happened. The
+    // neutral guess for an index is to keep DRIFTING at its recent pace, so
+    // its untouched boxes continue the trailing 12-month average monthly
+    // differential. Anyone who wants the frozen-index scenario can still
+    // type it; nobody should get it by not touching anything.
+    // O PPP e o unico canal cujo "nivel" nao e uma grandeza que alguem tenha
+    // opiniao: e um indice de precos relativos (177,76). O input dele e a
+    // INFLACAO ACUMULADA EM 12 MESES, Brasil menos EUA, em % (2026-09-01,
+    // pedido do usuario). O estado canonico continua sendo o indice -- e o que
+    // channelDeltas() consome --, e a conversao e exata nos dois sentidos:
+    //     y/y(h) = 100 * ln( nivel(h) / nivel(h-12) )
+    // Como o horizonte e de 12 meses, o nivel(h-12) de TODA caixa cai dentro do
+    // historico, nunca em outra caixa: a caixa h (0-based) refere-se ao mes
+    // (ultimo + h + 1), cujo mes 12 atras e o indice L-12+h do historico. Isso
+    // e o que torna a conversao independente da ordem de edicao -- editar a
+    // caixa 5 nao move o que a caixa 6 mostra.
+    const YOY_INPUT_RG = ['delta_ppp'];
+    function yoyRefRg(key, h) {
+      const hist = FC.channel_history[key.replace(/^delta_/, '')];
+      const v = hist.values;
+      return v[v.length - 12 + h];
+    }
+    function levelToYoyRg(key, h, nivel) { return 100 * Math.log(nivel / yoyRefRg(key, h)); }
+    function yoyToLevelRg(key, h, yoy) { return yoyRefRg(key, h) * Math.exp(yoy / 100); }
+
+    const TREND_SEEDED_RG = ['delta_ppp'];
+    const TREND_LOOKBACK_RG = 12;
+    const boxSeedRg = {};
     DECOMP_CHANNELS_RG.forEach(key => {
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
@@ -4550,11 +4980,17 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         if (!nc || !nc.months.includes(m)) return false;
         return m === currentMonth ? 'provisional' : 'final';
       });
+      let drift = 0;
+      if (TREND_SEEDED_RG.includes(key)) {
+        const v = hist.values, k = Math.min(TREND_LOOKBACK_RG, v.length - 1);
+        if (k > 0) drift = 100 * Math.log(v[v.length - 1] / v[v.length - 1 - k]) / k;
+      }
+      boxSeedRg[key] = drift;
       levels[key] = futureMonthsForBoxes.map((m, h) => {
         if (resolvedFlags[key][h]) return nc.values[nc.months.indexOf(m)];
-        return lastVal;
+        return drift === 0 ? lastVal : lastVal * Math.exp(drift * (h + 1) / 100);
       });
-      boxMode[key] = 'level';
+      boxMode[key] = YOY_INPUT_RG.includes(key) ? 'yoy' : 'level';
     });
 
     // Primitive-level state for the "break down into parts" panels --
@@ -4646,6 +5082,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // observation for month 1) -- the level-diff channels' plain % of
     // level, log-return channels' own log-return already expressed as %.
     function levelsToDisplay(key) {
+      if (boxMode[key] === 'yoy') return levels[key].map((v, h) => levelToYoyRg(key, h, v));
       if (boxMode[key] === 'level') return levels[key].slice();
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
@@ -4678,6 +5115,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // levelsToDisplay() above, applied to a single index rather than the
     // whole array, since only one box changes per edit.
     function displayToLevel(key, h, displayVal) {
+      if (boxMode[key] === 'yoy') return yoyToLevelRg(key, h, displayVal);
       if (boxMode[key] === 'level') return displayVal;
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
@@ -4745,8 +5183,15 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       // month/value so the dashed line connects seamlessly to the solid
       // one, with no visual gap.
       const projMonths = [hist.months[hist.months.length - 1], ...futureMonths.slice(1)];
-      const histValues = hist.values;
-      const projValues = [hist.values[hist.values.length - 1], ...levels[key]];
+      // Para o PPP o grafico segue a mesma unidade da caixa: um indice de precos
+      // relativos em nivel nao se le, a inflacao acumulada em 12 meses se le.
+      const yoyChart = boxMode[key] === 'yoy';
+      const histValues = yoyChart
+        ? hist.values.map((v, i) => i >= 12 ? 100 * Math.log(v / hist.values[i - 12]) : null)
+        : hist.values;
+      const projValues = yoyChart
+        ? [histValues[histValues.length - 1], ...levels[key].map((v, h) => levelToYoyRg(key, h, v))]
+        : [hist.values[hist.values.length - 1], ...levels[key]];
 
       // "Observed (since fit)" (2026-08, direct user request: "compare our
       // scenario/model with the observable data") -- the same real,
@@ -4871,21 +5316,34 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     }
 
     // Cards ordered by impact, highest |beta| first (2026-08, direct user
-    // request: "rank the regressors by importance"). Every channel here
-    // (everything except delta_fx_lag1, shown in its own AR(1) row
+    // request: "rank the regressors by importance"). Every ESTIMATED channel
+    // here (everything except delta_fx_lag1, shown in its own AR(1) row
     // elsewhere) is z-scored before Ridge sees it, so beta IS directly
     // "delta_fx's response, in %, to a 1-standard-deviation move in this
     // channel" -- comparable across channels as-is, no extra scaling
     // needed. Uses FC.beta (the last window's own fit -- the same
     // coefficients simulateForecast() actually runs), not the whole-
     // sample beta shown elsewhere on this tab.
-    const CHANNELS_BY_IMPORTANCE = DECOMP_CHANNELS_RG.slice().sort((a, b) => Math.abs(FC.beta[b]) - Math.abs(FC.beta[a]));
+    //
+    // The pinned terms are sorted OUT of that comparison and pinned first
+    // (2026-09-01). Their beta is on a different scale -- delta_ppp's 1.0
+    // multiplies a raw pp quantity whose own sd is 0.40, not a z-score whose
+    // sd is 1 -- so ranking it by |beta| would place it as if it were 2.5x
+    // more important than it is. Pinned first because it is an identity the
+    // model respects rather than a channel it weighs, which is also the
+    // order the decomposition draws.
+    const CHANNELS_BY_IMPORTANCE = [
+      ...DECOMP_CHANNELS_RG.filter(k => PINNED_PARAMS_RIDGE.includes(k)),
+      ...DECOMP_CHANNELS_RG.filter(k => !PINNED_PARAMS_RIDGE.includes(k))
+        .sort((a, b) => Math.abs(FC.beta[b]) - Math.abs(FC.beta[a])),
+    ];
 
     const shockGridEl = document.getElementById('ridgeForecastShocks');
     CHANNELS_BY_IMPORTANCE.forEach((key, rankIdx) => {
       const rawKey = key.replace(/^delta_/, '');
       const hist = FC.channel_history[rawKey];
       const nc = FC.nowcast && FC.nowcast.channels[rawKey];
+      const isYoy = boxMode[key] === 'yoy';
       // "Last observed" reads off the true latest real value, which may be
       // AHEAD of the fit cutoff (nowcast) even though the model's own fit
       // still stops at FC.nowcast.fit_cutoff -- see resolvedFlags above.
@@ -4895,6 +5353,11 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       const betaFmt = (beta >= 0 ? '+' : '') + beta.toFixed(3);
       const card = document.createElement('div');
       card.className = 'fc-shock-card';
+      // As caixas nascem ja na UNIDADE DE EXIBICAO do canal e arredondadas.
+      // Antes elas imprimiam levels[key][h] cru: num canal em % a/a isso mostraria
+      // o indice de precos relativos (177,76) no lugar da inflacao, e em qualquer
+      // canal vazava a precisao inteira do float (178.102290899).
+      const dispVals = levelsToDisplay(key);
       const boxesHtml = futureMonthsForBoxes.map((m, h) => {
         const state = resolvedFlags[key][h]; // 'final' | 'provisional' | false
         const cls = state ? ' ' + state : '';
@@ -4905,21 +5368,26 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         return `
         <div class="fc-level-box">
           <div class="fc-level-box-label${cls}">${monthLabelRg(m)}${mark}</div>
-          <input type="text" inputmode="decimal" class="fc-level-input${cls}" data-channel="${key}" data-h="${h}" value="${levels[key][h]}"${disabledAttr}${title}>
+          <input type="text" inputmode="decimal" class="fc-level-input${cls}" data-channel="${key}" data-h="${h}" value="${Math.round(dispVals[h] * 100) / 100}"${disabledAttr}${title}>
         </div>`;
       }).join('');
       card.innerHTML = `
         <div class="fc-shock-hdr">
           <div>
             <div class="fc-shock-label">#${rankIdx + 1} ${CHANNEL_LABELS_RIDGE[key]}</div>
-            <div class="fc-shock-unit">Last observed: ${fmtNumRg(lastRealVal, 2)} (${lastRealMonth})</div>
-            <div class="fc-shock-unit">β = ${betaFmt} (Δfx % per 1σ move, last-window fit)</div>
+            ${isYoy
+              ? `<div class="fc-shock-unit">Now running at ${fmtSignedRg(levelToYoyRg(key, 11, lastRealVal), 2)}% over 12 months (to ${lastRealMonth})</div>
+                 <div class="fc-shock-unit">Enter the 12-month inflation gap you expect, Brazil minus US, in %</div>`
+              : `<div class="fc-shock-unit">Last observed: ${fmtNumRg(lastRealVal, 2)} (${lastRealMonth})</div>
+                 <div class="fc-shock-unit">β = ${betaFmt} (Δfx % per 1σ move, last-window fit)</div>`}
           </div>
           <div class="fc-shock-actions">
-            <div class="fc-mode-toggle" data-channel="${key}">
+            ${isYoy
+              ? `<div class="fc-mode-toggle"><div class="fc-mode-btn active">% a/a</div></div>`
+              : `<div class="fc-mode-toggle" data-channel="${key}">
               <div class="fc-mode-btn active" data-mode="level">Level</div>
               <div class="fc-mode-btn" data-mode="pct">%Δ m/m</div>
-            </div>
+            </div>`}
             <div class="fc-shock-avg-btn" data-channel="${key}">Reset to flat</div>
             <div class="fc-quickshock-btn" data-channel="${key}">Apply shock...</div>
             <div class="fc-shock-graph-btn" data-channel="${key}">Show regressor chart</div>
@@ -5108,7 +5576,14 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         // whole non-final range is also skipped -- it's computed from the
         // primitives panel below, not this bulk tool.
         if (expandedComposites.has(rawKey)) return;
-        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final' ? v : lastVal);
+        // "Reset to flat" devolve a semente com que a caixa nasceu, deriva
+        // incluida -- para o PPP, "plano" no indice significaria inflacao igual
+        // a dos EUA por 12 meses, que e hipotese forte, nao ausencia de
+        // hipotese. Mesmo motivo do Reset shocks global. Ver boxSeedRg.
+        const driftCh = boxSeedRg[key] || 0;
+        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final'
+          ? v
+          : (driftCh === 0 ? lastVal : lastVal * Math.exp(driftCh * (h + 1) / 100)));
         refreshBoxDisplay(key);
         if (document.getElementById('graph-panel-' + key).classList.contains('open')) renderChannelGraph(key);
         renderForecastChart();
@@ -5189,7 +5664,14 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         const rawKey = key.replace(/^delta_/, '');
         if (expandedComposites.has(rawKey)) return; // computed from primitives, not this bulk tool
         const lastVal = FC.channel_history[rawKey].values[FC.channel_history[rawKey].values.length - 1];
-        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final' ? v : lastVal);
+        // Reset restores the SAME seed the boxes were built with, drift
+        // included -- resetting PPP to a frozen index would quietly assume
+        // zero inflation differential, which is the thing boxSeedRg exists
+        // to avoid. See the seeding block above.
+        const drift = boxSeedRg[key] || 0;
+        levels[key] = levels[key].map((v, h) => resolvedFlags[key][h] === 'final'
+          ? v
+          : (drift === 0 ? lastVal : lastVal * Math.exp(drift * (h + 1) / 100)));
         refreshBoxDisplay(key);
         if (document.getElementById('graph-panel-' + key).classList.contains('open')) renderChannelGraph(key);
       });

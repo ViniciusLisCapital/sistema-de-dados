@@ -192,6 +192,10 @@
       margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
     }
     .data-table td.col-value { font-family: var(--mono); white-space: nowrap; color: var(--text); }
+    /* Só na visão de contribuição: numa tabela de nível a cor seria um bloco
+       uniforme (saldo é quase sempre positivo) e não informaria nada. */
+    .data-table td.col-value.contrib-pos { color: #418791; }
+    .data-table td.col-value.contrib-neg { color: #EA523A; }
     .tree-toggle { display: inline-block; width: 16px; cursor: pointer; color: var(--muted); user-select: none; }
     .tree-toggle:hover { color: var(--text); }
 
@@ -202,6 +206,27 @@
     @media (max-width: 960px) {
       header, .tab-nav { padding-left: 20px; padding-right: 20px; }
       main { padding: 18px 14px 36px; }
+    }
+      /* ── Texto explicativo: justificado, e sem cap de largura ──────────────────
+       Convenção do projeto desde 2026-09-01, a pedido do usuário: todo texto explicativo
+       e todo texto de apêndice sai JUSTIFICADO e ocupa a largura do bloco que o contém.
+       Tirar o `max-width` em `ch` faz duas coisas de uma vez — cobre o vazio à direita do
+       parágrafo e, ocupando mais linha, deixa o bloco MAIS BAIXO.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       texto abre rios de espaço branco entre as palavras da linha. O que faz a hifenização
+       funcionar é o `lang` no <html> — sem ele o browser não sabe que dicionário usar e
+       não hifeniza nada, então a regra pareceria aplicada e produziria justamente os rios.
+
+       Fica de fora, de propósito: célula de tabela e popover de definição (container
+       estreito é exatamente onde os rios aparecem), linha de metadado em mono (é lista de
+       campos separada por `·`, não prosa) e o que é centralizado por decisão de layout. */
+    .appendix-body,
+    .chart-caption {
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
     }
   </style>
 </head>
@@ -464,9 +489,10 @@ function fmtQuarter(dateStr) {
 // Sem `xaxis.rangeselector`: os botões de range são HTML, ficam ABAIXO do
 // gráfico e chamam Plotly.relayout com um [de, até] computado dos próprios
 // dados — ver renderRangeBar() e .claude/rules/lis-dashboards.md.
-function mkTimeseriesLayout(yTitle, height) {
+function mkTimeseriesLayout(yTitle, height, barmode) {
   return {
     height: height || 560, margin: {l: 60, r: 30, t: 20, b: 70}, dragmode: 'pan',
+    barmode: barmode || 'group',
     xaxis: {type: 'date', gridcolor: '#eee'},
     yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
     legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
@@ -526,15 +552,29 @@ function renderRangeBar(barId, divId, specsFn, activeIdx) {
 }
 
 // ── Chart renderers ───────────────────────────────────────────────────────────
-function renderLineChart(divId, specs, yTitle, height) {
+// Linhas por padrão; barra empilhada quando a série é uma CONTRIBUIÇÃO, que é
+// o formato em que uma decomposição se lê (as partes somam a altura da coluna).
+// `s.kind` vem do chartSpecs() — ver a regra de dupla contagem lá.
+function renderSeriesChart(divId, specs, yTitle, height) {
+  var temBarra = specs.some(function(s) { return s.kind === 'bar'; });
   var traces = specs.map(function(s) {
+    if (s.kind === 'bar') {
+      return {
+        type: 'bar', name: s.label, x: s.dates, y: s.values,
+        marker: {color: s.color},
+        hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.0f}<extra></extra>',
+      };
+    }
     return {
       type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
       line: {color: s.color, width: 2},
       hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
     };
   });
-  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
+  // 'relative' e não 'stack': contribuições trocam de sinal, e o 'relative'
+  // empilha as negativas abaixo do zero em vez de subtrair da pilha positiva.
+  Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height, temBarra ? 'relative' : 'group'),
+               _PLOTLY_CONFIG);
   _bindYAutofit(divId);
 }
 
@@ -689,12 +729,44 @@ function makeSimpleHierTab(opts) {
     for (var i = 0; i < controls.length; i++) if (controls[i].key === key) return state.values[i];
     return null;
   }
-  function variantKey() { return state.values.join('__'); }
-
+  // Um controle `derived` NÃO entra na chave da variante: ele não escolhe uma
+  // série pré-calculada no payload, ele transforma a que os outros escolheram.
+  function variantKey() {
+    var parts = [];
+    for (var i = 0; i < controls.length; i++) {
+      if (!controls[i].derived) parts.push(state.values[i]);
+    }
+    return parts.join('__');
+  }
+  function derivedLag() {
+    var lag = 0;
+    for (var i = 0; i < controls.length; i++) {
+      var o = selectedOpt(i);
+      if (o.lag != null) lag = o.lag;
+    }
+    return lag;
+  }
+  // Contribuição para a variação: v(t) − v(t−lag), calculada aqui e não no
+  // payload — 3 métricas × 3 períodos × 2 visões seriam 18 variantes por série
+  // para guardar o que é uma subtração.
+  //
+  // Isto É uma decomposição exata, e o motivo é a árvore: as linhas somam o pai
+  // em nível, então a diferença das partes soma a diferença do total, sem
+  // resíduo. Vale para saldo, admissões e desligamentos (contagens de
+  // movimentação, aditivas por construção) — não valeria para uma taxa.
+  function applyLag(s, lag) {
+    if (!lag || !s.values) return s;
+    var out = new Array(s.values.length);
+    for (var i = 0; i < s.values.length; i++) {
+      var a = s.values[i - lag], b = s.values[i];
+      out[i] = (i >= lag && a != null && b != null && !isNaN(a) && !isNaN(b)) ? (b - a) : null;
+    }
+    return {dates: s.dates, values: out};
+  }
   function seriesFor(seriesKey) {
     var s = opts.series[seriesKey];
     if (!s) return {dates: [], values: []};
-    return s[variantKey()] || {dates: [], values: []};
+    return applyLag(s[variantKey()] || {dates: [], values: []}, derivedLag());
   }
   function hasData(seriesKey) {
     var s = opts.series[seriesKey];
@@ -713,6 +785,7 @@ function makeSimpleHierTab(opts) {
     var fmt = pick('fmt') || 'auto';
     if (fmt === 'pessoas') return fmtPessoas(value);
     if (fmt === 'pct') return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
+    if (fmt === 'pp') return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',');
     // 'auto' (PNAD): decide por série, e o "Nível" é o valor bruto.
     var isRate = !!RATE_KEYS[seriesKey];
     if (selectedValue('metric') === 'level') {
@@ -749,9 +822,21 @@ function makeSimpleHierTab(opts) {
     if (rates === 0) return '% contra o mesmo período do ano anterior';
     return 'p.p. (taxas) ou % (níveis) contra o mesmo período do ano anterior';
   }
-  function yTitle(nodes) {
-    var parts = [];
+  // Uma opção pode DERRUBAR o `ypart` de outro controle (`ypartDrops`): a visão
+  // de contribuição já diz a unidade, e deixar a do Período junto produziria
+  // "pessoas, acum. 12 meses — contribuição ..., pessoas". O rótulo do controle
+  // derrubado não some — volta no subtítulo, via droppedLabels().
+  function droppedKeys() {
+    var out = {};
     for (var i = 0; i < controls.length; i++) {
+      (selectedOpt(i).ypartDrops || []).forEach(function(k) { out[k] = true; });
+    }
+    return out;
+  }
+  function yTitle(nodes) {
+    var parts = [], drop = droppedKeys();
+    for (var i = 0; i < controls.length; i++) {
+      if (drop[controls[i].key]) continue;
       var o = selectedOpt(i);
       var part = o.ypart || (o.ymode ? _yFromNodes(o.ymode, nodes) : '');
       if (part) parts.push(part);
@@ -838,20 +923,41 @@ function makeSimpleHierTab(opts) {
       dates.forEach(function(d) {
         var tdValue = document.createElement('td');
         tdValue.className = 'col-value';
-        tdValue.textContent = fmtValue(valueByDate[d], node.seriesKey);
+        var v = valueByDate[d];
+        if (isContrib() && v != null && !isNaN(v) && v !== 0) {
+          tdValue.className += (v > 0) ? ' contrib-pos' : ' contrib-neg';
+        }
+        tdValue.textContent = fmtValue(v, node.seriesKey);
         tr.appendChild(tdValue);
       });
       tbody.appendChild(tr);
     });
   }
+  function temDescendenteMarcado(node) {
+    return (node.children || []).some(function(c) {
+      return state.checked[c.key] || temDescendenteMarcado(c);
+    });
+  }
+  // Visão de contribuição: ou o controle derivado aplica a defasagem aqui
+  // (tabelas de corte), ou a variante já vem pronta do payload porque precisou
+  // do total como denominador (tabela Estoque, em p.p.). As duas empilham e as
+  // duas colorem a célula por sinal.
+  function isContrib() { return derivedLag() > 0 || !!pick('contrib'); }
   function chartSpecs() {
     var specs = [], colorIdx = 0;
+    var empilhar = isContrib();
     (function walk(tree) {
       (tree || []).forEach(function(node) {
         if (state.checked[node.key]) {
           var s = seriesFor(node.seriesKey);
           if (s.dates.length) specs.push({
             dates: s.dates, values: s.values, label: node.label, node: node,
+            // Um pai marcado que tenha filho marcado vira LINHA: empilhá-lo
+            // sobre os próprios filhos contaria duas vezes. Com isso o total
+            // aparece por cima das partes, que é a leitura que se quer, e a
+            // dupla contagem fica impossível em vez de ficar por conta de quem
+            // marca as caixas.
+            kind: (empilhar && !temDescendenteMarcado(node)) ? 'bar' : 'line',
             color: PNAD_CHART_COLORS[colorIdx++ % PNAD_CHART_COLORS.length],
           });
         }
@@ -883,8 +989,13 @@ function makeSimpleHierTab(opts) {
     if (nomes.length && !(nomes.length === 1 && opts.chartTitle.indexOf(nomes[0]) === 0)) {
       bits.push(nomes.join(', '));
     }
+    var drop = droppedKeys();
     for (var i = 0; i < controls.length; i++) {
       var o = selectedOpt(i);
+      // Controle cujo ypart foi derrubado do eixo aparece aqui pelo rótulo — a
+      // base (Mensal / Acum. 12m) continua sendo informação, mesmo na visão de
+      // contribuição.
+      if (drop[controls[i].key]) { bits.push(o.label); continue; }
       if (o.ymode !== 'unit' && !o.ypart) bits.push(o.label);
     }
     var lowY = (ytitle || '').toLowerCase();
@@ -906,7 +1017,7 @@ function makeSimpleHierTab(opts) {
     var specs = chartSpecs();
     var ytitle = yTitle(specs.map(function(s) { return s.node; }));
     renderChartHead(specs, ytitle);
-    renderLineChart(opts.chartDivId, specs, ytitle, 600);
+    renderSeriesChart(opts.chartDivId, specs, ytitle, 600);
     renderRangeBar(opts.rangeBarId, opts.chartDivId, chartSpecs, RANGE_OPTS.length - 1);
   }
   function wireControls() {

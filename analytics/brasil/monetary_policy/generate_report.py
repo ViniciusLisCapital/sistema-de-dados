@@ -122,6 +122,15 @@ def _load_antecipa(meta_ano: dict, ultimo_ano_meta) -> dict:
     if not (csv.exists() and js.exists()):
         return {}
     prev = json.loads(js.read_text(encoding="utf-8"))
+    # O diagnostico que faltava: o `corte_usado` gravado no artefato contra o que as
+    # fontes tem AGORA. Roda na geracao (o unico momento em que ha MySQL do lado) e vai
+    # embutido, entao viaja com o arquivo -- quem receber o HTML por email ve o aviso
+    # tambem. `salvar()` e o que conserta; regerar o relatorio, nao.
+    try:
+        from analytics.brasil.monetary_policy.antecipa_copom import frescor
+        prev["frescor"] = frescor(prev.get("corte_usado"))
+    except Exception as exc:                                     # noqa: BLE001
+        prev["frescor"] = {"erro": f"{type(exc).__name__}: {exc}"}
     ano = int(str(prev["periodo"])[:4])
     mt = meta_ano.get(ano, meta_ano.get(ultimo_ano_meta))
     prev["meta"] = round(mt, 4) if mt is not None else None
@@ -579,11 +588,18 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
                   f"{pv['previsto_focus_publicado']} / modelo {pv['previsto_publicado']}"
                   + (f" | MAE focus {mae:.3f} em {len(pj['backtest'])} reunioes"
                      if mae is not None else ""))
-            # O corte e a data em que ISTO rodou, nao a da reuniao: quem le o log tem de saber
-            # que regerar perto da reuniao muda a resposta.
-            if pv["corte_usado"] < pv["data_reuniao"]:
-                print(f"             AVISO  corte de informacao {pv['corte_usado']} anterior a "
-                      f"reuniao: regerar perto de {pv['data_reuniao']}")
+            # O aviso que importa nao e "o corte e anterior a reuniao" (isso e normal e
+            # so vai deixar de ser no dia dela), e "o corte e anterior ao que o banco JA
+            # tem": ai a previsao embutida esta velha e regerar o relatorio nao conserta,
+            # porque o gerador so le o artefato.
+            fr = pv.get("frescor") or {}
+            if fr.get("atrasado"):
+                print(f"             AVISO  previsao calculada com dado ate "
+                      f"{fr['corte']}, mas {fr['fonte_ref']} ja tem {fr['fonte_max']} "
+                      f"({fr['dias']}d): rode antecipa_copom.salvar() e regere")
+            elif pv["corte_usado"] < pv["data_reuniao"]:
+                print(f"             corte de informacao {pv['corte_usado']}, em dia com "
+                      f"o banco; ate {pv['data_reuniao']} entram mais boletins")
         else:
             print("  previsao   ausente -- rode antecipa_copom.salvar() para gerar "
                   "data/antecipa_{backtest.csv,previsao.json}")

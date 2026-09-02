@@ -168,6 +168,91 @@ to "em dia" without re-querying the other ten. In file mode the same button copi
 So the two tabs split the work the way the update actually happens: **tab 1 updates the data
 that was released, tab 2 regenerates whichever dashboards you care about right now.**
 
+**Regerar also RECALCULATES (2026-08-31).** Direct user request, after the three-button version
+of this — a per-procedure "Rodar" button — was judged confusing: *"Eu quero apenas dois botoes:
+(i) Atualizar os dados na base de dados (ii) regenerar o dashboard (trazendo os dados novos,
+recalculando as metricas, tudo que houver para atualizar e recalcular)."* So `status.gerar()`
+now runs, before generating, whatever `procedures:` the manifest declares as **behind** — a model
+estimation, a backtest — and `POST /api/gerar` returns in `procedimentos` what it ran, which the
+card prints ("refez X (50.5s) e regerou em 15.8s"). The block inside the card is read-only:
+it says what will be redone and how long that costs, so the button's time is announced before the
+click (`~Xs para regerar (Ys de geração + Zs de recálculo)`).
+
+What keeps this from becoming "run everything, always" is the `granularidade` of each step (see
+[`domain/dashboards/CLAUDE.md`](../../domain/dashboards/CLAUDE.md)): the quarterly panel only falls
+behind when a new quarter opens, so a typical click on Monetary Policy is ~55s of recalculation,
+and once a quarter it is ~6 min. A step that fails does not block generation — the report comes
+out with the old artifact and the card says so, in red.
+
+### The card's prose is product text, not our conversation (2026-09-01)
+
+Direct user correction, from a screenshot of the Monetary Policy card: *"você está transferindo
+nossa conversa daqui para o dash, e eu não quero isso. Lá deve ser a explicação do que está
+acontecendo ali, para alguém que nunca viu o dashboard."* And, on the procedures block's own
+heading: *"'O Regerar refaz antes de gerar · nada atrasado' isso não significa nada."*
+
+They were right, and the defect was systematic rather than one bad sentence: the notes and labels
+had been written **in the same session that built the mechanism**, so they inherited its
+vocabulary — `generate_report`, `procedures`, `granularidade`, "Desde 2026-08-31", "Segundos não
+medidos". Every one of those is true and none answers the question the reader has.
+
+Rewritten: the manifest's 10 `note:` fields, the procedures block heading and note, each step's
+metadata line, all three `procVeredito()` verdicts, the tab's mode hint, and the freshness strip in
+the monetary policy report. The four substitutions that cover almost every edit are written up in
+[`.claude/rules/lis-dashboards.md`](../../.claude/rules/lis-dashboards.md) and were promoted into
+the `lis-dashboard` skill; the two worth remembering here:
+
+- **A mechanism's name is not an explanation of it.** `cada trimestre` was the *unit of comparison*
+  between the step's cut and the source. It now reads "fica velho quando abre um trimestre novo",
+  which is the same fact in the form that is useful. The word `granularidade` no longer appears on
+  the page, and an assertion enforces that.
+- **The block's heading names what the block contains** — "O que este dashboard calcula por conta
+  própria" — and its note explains the *problem* (a number computed from older data than the
+  database already has stays old inside a brand-new file) instead of the procedure.
+
+The guard is what prevents relapse, and it is cheap: prose was the only content of the card that no
+assertion looked at. `tests/test_release_calendar_js.js` pulls the `.dash-note`/`.proc-note`/
+`.proc-hint` blocks out of the rendered HTML and rejects a term list. It runs **only in MODE=file**,
+where the cards come from the real embedded payload — so it covers what is written in
+`manifest.yaml`, not just what the template assembles — and it was verified against a mutant that
+re-injects the old sentence.
+
+### A second dashboard got its own recalculation step (2026-09-01)
+
+User asked to extend the `procedures:` pilot to the other dashboards, "like the monetary policy one".
+The survey is the result worth recording: of the 12 dashboards, **two** have a step to declare —
+monetary policy's three (panels, estimation, forecast) and **inflation's one**, which is a *fetch*
+rather than a calculation. `data/ipca_bcb_series.csv` is the only input that report reads from outside
+MySQL, so **neither button reached it**: Atualizar writes to the database, and the generator only
+reads. It was a month behind when measured (file through 2026-07, `inflc_decomposicao` already at
+2026-08), invisible on every screen. Regerar now re-fetches it in ~18s when it is behind.
+
+The other ten legitimately have nothing: they read the database and compute in-process, so the honest
+card is the one they already show, with no block. Câmbio is the interesting near-miss — its two Ridge
+caches are now **declared as dependencies** (they never were), but deliberately not as steps; the
+reasons, including a `min`-vs-`max` trap that would have made a step recalculate forever, are in
+[`analytics/brasil/exchange_rate/CLAUDE.md`](../brasil/exchange_rate/CLAUDE.md).
+
+### The console encoding could fail a Regerar, and did (2026-09-01)
+
+Found while wiring that step. `serve.py` inherits the console's encoding, and the Windows console
+`abrir_calendario.bat` opens is **cp1252** — so a progress `print` carrying a character it cannot
+encode raises `UnicodeEncodeError` *inside* the generator. The inflation report's own summary prints
+an arrow (U+2192), which means clicking Regerar on that card returned an error and did not rebuild
+the file, **for a reason with nothing to do with the data**.
+
+Measured both ways: `status.gerar('brasil_inflation')` in a cp1252 shell dies on `'\u2192'`; with
+`PYTHONIOENCODING=utf-8` it finishes in 19.9s. Fixed at the layer that owns the process's streams —
+`utils/console.stdout_utf8()`, called first in `main()`, reconfigures stdout/stderr to UTF-8 with
+`errors="replace"`, because a character the terminal cannot draw must never cost the operation.
+Verified through the real server: `POST /api/gerar` for `brasil_inflation` returned ok in 17.8s with
+zero tracebacks.
+
+**Three entry points needed it, not one**, and the other two were already broken before this round:
+`jobs/update_db.py` regenerates the dashboards it affects (since 2026-08-28), so
+`--group ibge_ipca` finished the ETL and then died in the regeneration; `status.py --gerar` the same.
+A test asserts all three call it, since the failure only shows up in a real cp1252 console.
+
 ## Pending
 
 - Add the remaining gaps listed in `domain/release_calendar/CLAUDE.md`'s "Known gaps" (international

@@ -41,7 +41,7 @@ domain/
                        envelhecer em silêncio). É o que faz o --group/--tables/--continuous do
                        update_db.py e o botão do relatório de calendário funcionarem
                        ↳ tabelas ativas, fonte, range, chave primária e gotchas: domain/db/CLAUDE.md
-  release_calendar/  — Config estática de QUANDO cada dado é divulgado (calendar_2026.yaml, 27 grupos,
+  release_calendar/  — Config estática de QUANDO cada dado é divulgado (calendar_2026.yaml, 28 grupos,
                        uma entrada por evento) + sync.py (o dado chegou quando devia? e, desde
                        2026-08-26, `agenda_das_tabelas()`, a última/próxima divulgação que os
                        relatórios mostram) + update_calendar.py (datas do BCB, feeds ICS) e
@@ -61,13 +61,15 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
                        relatório de cenários, 2026-08-21), expectations (Focus, 2026-08-24),
                        painel_setores. Cada área = generate_report.py + report.html (+ um módulo por
                        aba) e o seu próprio CLAUDE.md, que é onde vivem abas, fontes e pendências
-  us/                — inflation (CPI-U do BLS + PCE do BEA), mesmo padrão; UI em inglês
+  us/                — inflation (CPI-U do BLS + PCE do BEA) e labor_market (JOLTS, 2026-09-01),
+                       mesmo padrão; UI em inglês
                        ↳ padrões compartilhados e a regra de corte país/raiz: analytics/CLAUDE.md
 jobs/                — Entry points. update_db.py: passe completo de macro_brasil (50 scripts) ou
                        recorte — --continuous (as 7 séries diárias, ~45s: é o que faz sentido agendar
                        todo dia), --group <slug> (o que o botão do calendário chama), --tables a,b,
-                       --list. Mais update_international.py (3 scripts), update_us.py (4 passos e a
-                       ORDEM importa — ver docstring) e update_oraculo.py
+                       --list. Mais update_international.py (3 scripts), update_us.py (5 passos e a
+                       ORDEM importa — ver docstring; o 5º, JOLTS, ignora --full de propósito)
+                       e update_oraculo.py
 reports/             — Outputs gerados, não versionados, autocontidos e enviáveis. Espelha o país >
                        área de analytics/ (reports/brasil/, reports/us/) — sem isso o Inflation.html
                        do Brasil colidiria com o dos EUA; release_calendar.html fica na raiz pelo
@@ -88,9 +90,10 @@ Três camadas, todas declarativas, cada uma respondendo uma pergunta:
 
 | pergunta | onde | como |
 |---|---|---|
-| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 25 grupos de divulgação |
+| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 28 grupos de divulgação |
 | QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE` |
-| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 11 dashboards, 116 dependências |
+| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 122 dependências |
+| QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 2 dashboards, 4 passos (2026-09-01) |
 
 O relatório de calendário tem **duas abas, e elas dividem o trabalho como a atualização
 acontece de verdade**:
@@ -101,20 +104,74 @@ acontece de verdade**:
   último dado na fonte e se ela andou depois da geração; e **regera o dashboard que interessa**,
   um por vez, via `POST /api/gerar` → `status.gerar()` (roda `run()` + grava o stamp).
 
+**A quarta camada é nova, e existe para o sistema ter DOIS botões e só dois** (2026-08-31, pedido
+explícito do usuário: *"Atualizar os dados na base de dados"* e *"regenerar o dashboard, trazendo os
+dados novos, recalculando as métricas, tudo que houver para atualizar e recalcular"*). O bloco
+`procedures:` do manifesto declara, por dashboard, os passos de recálculo que ficam **entre** o ETL e
+a geração — a estimação de um modelo, um backtest —, e `status.gerar()` refaz os que estiverem atrás
+antes de gerar o HTML. Não há botão por procedimento: houve por algumas horas e o usuário disse que o
+processo tinha ficado confuso.
+
+O que motivou: o usuário atualizou a Focus, regerou o dashboard de política monetária, e a previsão
+dentro dele continuou a de seis dias antes — porque `generate_report` **lê** os artefatos e nunca os
+recalcula. O achado reutilizável é que **um artefato calculado tem duas datas e só uma era
+observável**: quando foi escrito (mtime) e com que conjunto de informação. `cut_from` aponta o
+artefato que grava o próprio corte (`json_date` nomeia a chave num JSON; num CSV indexado o último
+rótulo já é o corte), `reads` são as fontes dele — tabela ou outro artefato, o que faz a cascata
+existir —, e **`granularidade` é o que impede isto de virar "roda tudo sempre"**: o painel é
+trimestral, então só fica atrás quando um trimestre novo abre, não a cada boletim diário. Na prática
+um Regerar de política monetária custa ~55s de recálculo, e ~6 min na virada de trimestre. Um passo
+que falha não bloqueia: o relatório sai com o artefato antigo e diz isso. O relatório também se
+autodiagnostica — `frescor()` roda na geração e a caixa da previsão imprime a comparação, o que
+funciona em arquivo estático enviado por email.
+
+**O piloto foi estendido em 2026-09-01, e o levantamento é o resultado que vale**: dos 12
+dashboards, só **dois** têm passo a declarar. Política monetária tem os 3 (painéis, estimação,
+previsão) e **inflação tem 1** — e ele é um *fetch*, não um cálculo: o `ipca_bcb_series.csv` é o
+único insumo daquele relatório que não vem do MySQL, então nenhum ETL o move e o botão Atualizar
+não o alcança. Estava **um mês atrás** quando foi medido (arquivo até 2026-07, `inflc_decomposicao`
+já com 2026-08, o IPCA-15 de agosto), invisível em toda tela do sistema — a mesma classe do caso de
+2026-08-31, por um caminho diferente. Agora o Regerar da Inflação busca de novo em ~18s quando o
+arquivo está atrás do IPCA que já saiu. Os outros nove leem o banco e calculam durante a geração,
+então a resposta honesta para eles é **não ter bloco nenhum**.
+O câmbio é o terceiro caso e ficou de propósito **fora** do `procedures:`: os dois arquivos do
+modelo Ridge que a geração lê (`model_fit_cutoff.json`, `forecast_error_bands_w72.json`) passaram a
+ser **declarados** — até então nem isso — mas o corte do ajuste é fixado por decisão do usuário
+(2026-08: regerar não reestima) e a banda de erro é estatística da amostra inteira; os dois andam
+quando alguém reestima o modelo, não quando sai dado novo.
+
 **Não há regeneração em lote em lugar nenhum da página, e isso é decisão explícita do usuário**
 (2026-08-26): quem acabou de atualizar o IPCA escolhe qual dos seis dashboards que o consomem
 quer reconstruir agora. O calendário não encadeia regeração — foi considerado e recusado.
+
+**Na linha de comando, sim — desde 2026-08-28, e a pedido do usuário** ("quando atualizar os
+dados, as métricas também devem ser atualizadas"). Terminado o ETL, `update_db.py` regera os
+dashboards que **leem** as tabelas que acabou de escrever, e só os que ficaram para trás:
+`status.afetados()` responde quem lê (a contrapartida do `registry`, que responde quem escreve)
+e o veredito de `status.estado()` decide se é preciso — um passe que não trouxe linha nova
+deixa todo mundo "em dia" e não regera nada. `--sem-gerar` desliga. A página continua como
+estava: ela chama `executar_grupo()` direto, que não passa por esse caminho, então a escolha
+um-a-um da aba "Status dashboard" segue intacta.
+
+**O que motivou** (2026-08-28): o usuário atualizou o RTN e esperou as medidas de impulso
+fiscal se moverem. Elas não leem `fisc_rtn` — leem `fisc_efgg` (trimestral, IEG), `fisc_nfsp`
+e `fisc_dlsp_fatores`, cada uma no seu próprio calendário. Nada no sistema dizia isso nem
+regerava o que de fato lê. As duas metades da resposta são um mapa "quem lê esta tabela" e um
+gatilho que só dispara para quem ficou atrás; o caso concreto está em
+[`analytics/brasil/fiscal_policy/CLAUDE.md`](analytics/brasil/fiscal_policy/CLAUDE.md).
 
 Custo medido (2026-08-26, contra o banco real): Labor Market 5s, Economic Activity 12s, US
 Inflation 13s, Monetary Policy 23s, Credit 24s, Fiscal 30s, Inflation 30s (saída de 104 MB),
 FX 43s (com os modelos, inclui FRED ao vivo), Expectations 53s — 233s se alguém regerar os
 nove pelo `--gerar todos` do CLI, que existe para carga inicial de stamp.
 
-Três coisas que **nenhum botão resolve**, e por isso saem marcadas como "fora do MySQL":
-o CSV `ipca_bcb_series.csv` do relatório de inflação (só `fetch_bcb.py`, sem job), os ~11
-artefatos de `analytics/brasil/monetary_policy/data/` (rodar o modelo leva minutos e não faz
-parte da geração) e `base_mercado.interest_rates`, que é escrita pelo projeto
-CentralManagement. O FX ainda busca CPIAUCSL e DFII10 no FRED durante a geração.
+O que **nenhum botão resolve** encolheu para três coisas em 2026-09-01, e nenhuma delas é
+resolvível daqui: `base_mercado.interest_rates`, escrita pelo projeto CentralManagement; as 3
+planilhas de atribuição cambial, extraídas à mão de PDFs; e os 2 arquivos do modelo Ridge, que
+dependem de uma decisão de reestimar (ver acima). O CSV do IPCA e os ~11 artefatos de
+`analytics/brasil/monetary_policy/data/` **saíram desta lista** — o Regerar refaz os dois.
+O FX ainda busca CPIAUCSL e DFII10 no FRED durante a geração.
+
 
 Não há **nenhuma tarefa agendada deste projeto** — a "Atualizacao da base de dados" das 09:30
 no Windows pertence ao CentralManagement.
@@ -260,10 +317,121 @@ um total seria inventar um agregado, não escolher uma visualização.
 
 **A aba Mapa de Calor — BP foi removida em 2026-08-27**, a pedido do usuário: eram 3 painéis de
 z-score (média/desvio móveis de 12 trimestres) sobre a mesma hierarquia do BP que a aba Balanço de
-Pagamentos já mostra em tabela. O relatório ficou com **5 abas de dados** e caiu de 2,26 para 2,14 MB.
+Pagamentos já mostra em tabela. O relatório ficou com **5 abas de dados** (4 desde 2026-09-01, abaixo) e caiu de 2,26 para 2,14 MB.
 Saíram junto `rollingZScore()`, `renderHeatmapPanel()`, `applyHeatmapTextVisibility()`, `rowLabel()`
 e o ramo de matriz `z` de `_extentPlotado()` — nada mais os usava. As 3 `BOP_TREE_*` **ficaram**: elas
 nunca foram do heatmap, são a declaração em pedaços da árvore do BP.
+
+**E em 2026-09-01 as duas últimas abas de dados foram redistribuídas**, também a pedido do usuário:
+a aba do BCB virou **Posicionamento: BCB e mercado** e recebeu o posicionamento especulativo da
+CFTC, o PTAX foi para **Valuation** e a aba **Cotação** foi apagada — 4 abas de dados agora.
+Nenhum gráfico nasceu ou morreu; o que mudou foi o critério de cada aba, que estava trocado. A do
+BCB media exposição cambial em aberto e parava onde o mercado especulativo começa, enquanto a
+posição da CFTC — a mesma pergunta feita da outra ponta — morava entre medidas de valor justo com as
+quais não divide nem unidade nem lógica; e o PTAX é justamente **o nível que juros, câmbio real e
+termos de troca qualificam**, então abre Valuation em vez de ocupar uma aba de um gráfico só.
+O achado de teste é o que vale reter: **as 238 asserções que já existiam ficavam todas verdes com o
+gráfico no painel errado** — ele existe, é desenhado, tem cabeçalho, tem régua, os dados batem, e o
+único sintoma é o leitor não achar. A §14 nova de `tests/test_fx_report_js.js` fatia o HTML nos
+limites dos painéis e afirma **pertencimento**, mais o par botão↔painel dos dois lados (painel sem
+botão fica invisível, botão sem painel é clique morto, nenhum dos dois levanta erro). Junto, a nota
+do CFTC passou a **declarar o sinal**: `lev_net = long − short` em contratos de um futuro cotado em
+dólares por real, logo positivo = comprado em real — a redação anterior falava do lado vendido sem
+dizer o que a barra positiva significa, e lida ao contrário inverte o gráfico inteiro sem nenhum
+tell visual.
+
+**A seção Diferenciais de Juros saiu no mesmo dia**, também a pedido do usuário — os três gráficos
+(Taxas Básicas Brasil × EUA, diferencial nominal, juros reais ex-post). Valuation ficou com PTAX,
+câmbio efetivo real e termos de troca; o carry continua no relatório como **canal explicativo da aba
+Ridge**, que é onde ele entra estimado em vez de descrito. O que vale reter é o **inventário**:
+remover um gráfico é remover quatro coisas e **três somem em silêncio** — o div é a única com
+sintoma visual, enquanto um `CHART_META` órfão é texto que nunca aparece, um IIFE órfão desenha num
+id inexistente, e a chave do payload continua sendo serializada (aqui, **39 KB** para três gráficos
+que não existem mais; 2,25 → 2,21 MB de arquivo). A §15 nova do teste afirma sobre os quatro e
+varre o mapa inteiro atrás de meta órfã, pega em 5 mutantes. Duas peças ficaram de propósito, com o
+motivo no ponto de uso: `_load_diferenciais()`, porque `agent_data.py` a importa para o subagente
+`cambio-analyst`, e o `.chart-grid-2`, porque é utilitário de layout e o `closest()` do
+`_ensureRangeBar` existe para sobreviver a ele.
+
+**E a seção do posicionamento da CFTC foi reconstruída no mesmo dia** (pedido em quatro partes:
+apagar o gráfico de manchete das Reservas, caixa de seleção entre open interest e posição líquida
+com **os dois em barras**, mostrar os outros participantes, e médias móveis de 12 e 24 semanas). A
+terceira parte era **lacuna de dado, não de gráfico**: `cmb_cot_fx` guardava só os fundos
+alavancados e o resíduo não-reportável, enquanto o relatório TFF da CFTC classifica cada
+participante em **cinco** categorias. O `connectors/cftc.py` passou a extrair as 15 colunas brutas,
+a tabela foi recarregada de 2011 a hoje e saiu de 6 para **20 séries por moeda**. O achado que
+motivava o pedido está medido: **os alavancados não são o maior grupo do contrato de real** — são
+28% do open interest contra **36% do Dealer/Intermediário**.
+
+Quatro coisas reutilizáveis. **Duas identidades fecham exatamente nas 748 semanas e cada uma
+autoriza uma leitura**: os cinco líquidos somam zero (é o que autoriza a pilha e é o que ela mostra
+— quem está do outro lado de quem) e `Σ(comprado + spread) = open interest` (é o que faz
+"participação" ser participação em algo). **O open interest não é a soma dos líquidos, então "os
+dois em barras" se resolve com `offsetgroup`** e não escolhendo entre o pedido e a correção — duas
+pilhas lado a lado, nenhum topo significando o que não existe; ele saiu também do eixo Y secundário,
+que a medição mostrou nunca ter sido necessário (as amplitudes são da mesma ordem, razão 1,0).
+**"12 semanas" tem de ser 12 semanas e não 12 observações** — a série tem um buraco de 196 dias em
+2011-2012 e mais 15 menores, então a média móvel carrega um guarda de span que sai em branco quando
+a janela estica; medido, ele só apaga pontos anteriores a 2016. E **o `spread` entra no payload
+mesmo sem nenhum gráfico desenhá-lo**, porque sem ele as participações que a nota afirma em número
+não são reproduzíveis por quem lê — o que transformou três frases de prosa em asserção (sem o
+spread as cinco somam 91%, não 100%). §16 do teste, 34 asserções, 8 mutantes.
+
+**O modelo Ridge voltou a ter PPP, com o coeficiente fixado em 1** (2026-09-01, pedido do usuário) —
+e o achado que vale além deste modelo é que **"colocar o PPP" são três coisas diferentes, e duas não
+movem tendência nenhuma**. Como canal z-scored (que é o que o `include_ppp=True` do código já fazia) ele
+captura *nada*: o z-score subtrai a média e a média **é** a tendência, então o α até sobe, de +96,8 para
++100,1 pp dos +107,2 pp de movimento acumulado. Com β livre em unidade crua ele leva 23,7 pp, mas o
+coeficiente não é identificado — +0,41 na amostra inteira e **sinal contrário em 60% das janelas** de 72
+meses. Com **β imposto em 1** ele leva **+57,7 pp** e custa +0,66% de MSE walk-forward, IC [−3,2; +4,8],
+ou seja nada. A justificativa de impor não é gosto: o `Δppp` mensal tem **0,79% da variância** do câmbio
+(dp 0,40 contra 4,47 pp/mês), então o ajuste mensal só vê ruído, enquanto a mesma regressão em horizontes
+de 1 a 120 meses dá β entre 1,74 e 2,79, **distinguível de zero em todos e de 1 em nenhum**. O ganho
+concreto é o α deixar de ser tendência real não explicada: **+0,435 pp/mês com t=+2,48 antes, +0,187 com
+t=+1,06 depois**. O limite honesto também está medido — o PPP responde por 54% da tendência, e os 41,5 pp
+que sobram no α são **depreciação real** (o PTAX subiu 192% no período, a inflação relativa explica 78% e
+sobram 64%). Três coisas reutilizáveis: o termo entra como **offset** (`offset_col=`, ajusta em `y−offset`
+e prevê `offset+α+Xβ`), o que mantém erro e R² na escala do próprio câmbio e comparáveis com o ajuste sem
+ele; **"plano por default" deixa de ser neutro quando o nível é um índice** — congelar o índice de preços
+relativos assume Brasil e EUA inflacionando igual por 12 meses, então as caixas de previsão nascem
+seguindo a deriva de 12 meses; e o cache da banda de erro precisou de **chave de spec**, porque
+`window`/`horizon` ficam idênticos com e sem o offset e o arquivo velho seria reaproveitado em silêncio.
+`tests/test_ridge_ppp_js.js` (44 asserções, primeiro teste da aba Ridge, 15 mutantes) — a asserção que
+importa é "a previsão é a soma das barras", porque tirar o offset da previsão **mantém a ponte de nível
+fechando** (o resíduo absorve) e não tem sintoma visual nenhum.
+
+**E os canais do Ridge foram cortados de 8 para 5 no mesmo dia** (pedido do usuário), com a
+eliminação **refeita com o PPP já dentro** em vez de reaproveitada. O que torna o corte fácil é que
+quase nada era identificado: no drop-one com IC de bootstrap, só `fiscal` exclui zero (+28,5%
+[+12,7; +47,4]); `dxy_em` vem a +13,6% [−8,1; +39,7] e os outros seis entre −0,3% e +4,6%. A causa é
+colinearidade e ela é mensurável — **as contribuições únicas ao R² somam 0,196 de 0,677, então 71% do
+ajuste é compartilhado**: nove regressores mediam umas três coisas. A eliminação gulosa tem **mínimo
+em cinco** (8 → 7,0132 · 6 → 6,9633 · **5 → 6,9602** · 4 → 7,1629), ou seja o enxuto pontua melhor
+fora da amostra que o completo. **O 5º canal não foi escolhido por MSE**, e é o que vale reter: o
+guloso pega `curve_steep_real`, mas ele fica 1,15% à frente de `carry_vol` — dentro de uma faixa em que
+8,9% já não era distinguível — e **o coeficiente dele cruza zero nas 151 janelas**. Com `carry_vol` os
+seis coeficientes mantêm o sinal em todas as janelas e o R² é marginalmente maior. Spec entregue:
+`fiscal, dxy_em, carry_vol, sp500, icbr_usd` + AR(1) + PPP fixo, R² 0,6614, α +0,199 pp/mês (t=+1,12).
+Três armadilhas do corte, todas silenciosas: **a lista de canais do JS indexa o payload direto**, então
+chave a mais lê `undefined` e chave a menos apaga uma barra sem aviso; **a tag do cache da banda de erro
+teve de virar derivada do channel set**, porque `window`/`horizon` não mudam quando o modelo muda; e
+**a paleta é propriedade do conjunto, não das cores** — com 8 canais os dois piores pares eram
+`fiscal × dxy_em` (ΔE 10,8) e `curve_steep_real × sp500` (10,6), entre as séries mais desenhadas, e só
+depois do corte deu para fechar os 36 pares em ΔE ≥ 20 trocando duas cores.
+
+**A aba do modelo virou "FX Model" e foi reorganizada** (2026-09-01, seis ajustes do usuário):
+metodologia e diagnósticos em click-drop, "Descriptive stats" fora, Baseline+PPP como uma barra
+só ("Trend") com a composição no rodapé, e o input do PPP em **inflação % a/a** em vez do
+índice de preços relativos. Quatro achados reutilizáveis: **gráfico dentro de `<details>` fechado
+renderiza com largura zero e fica assim** (o `toggle` do `<details>` não borbulha — um listener por
+bloco); **a fusão de baldes é de apresentação e mora no cliente**, com o payload continuando a
+trazer as séries separadas, porque são dado; **partes de uma barra agregada compõem, não somam**,
+e o rodapé diz isso em vez de somar percentuais; e **um input em % a/a só é independente da ordem
+de edição porque o horizonte é de 12 meses** — a referência de toda caixa cai no histórico, nunca
+em outra caixa. O erro de edição da rodada também vale: o anchor `<h2>What this tab is</h2>` casou
+com a aba FX Attribution (mesmo título, vem antes) e apagou aquela aba inteira — pego pela
+asserção "todo botão tem painel" de `tests/test_fx_report_js.js` §14b. **Num relatório de 9 abas,
+fatie pelo painel antes de procurar qualquer título.**
 
 📄 **Como gerar, arquitetura do relatório, mapeamento seção→schema→tabela, gotchas atuais, pendências:** [`analytics/brasil/exchange_rate/CLAUDE.md`](analytics/brasil/exchange_rate/CLAUDE.md) — carrega sob demanda quando o Claude lê arquivos dentro de `analytics/brasil/exchange_rate/`.
 
@@ -536,8 +704,18 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   confirmar visualmente num browser real (sandbox sem browser disponível).
 - **`analytics/brasil/fiscal_policy/`**: 5 abas (Receitas e Despesas GFSM+RTN — aba padrão, com seletor de Esfera
   União/Estados/Municípios/Geral —, Dívida Líquida/DLSP — 9 tabelas, uma por fator condicionante, nova em
-  2026-08 —, Investimento — GND × função e GND × natureza, nova em 2026-08 —, Impulso Fiscal/IEG,
-  Apêndice). Das 3 abas antigas apagadas a pedido do usuário, Dívida
+  2026-08 —, Investimento — GND × função e GND × natureza, nova em 2026-08 —, Impulso Fiscal,
+  Apêndice). A aba de impulso tem **4 métricas** desde 2026-08-28: IEG, resultado primário abaixo da
+  linha (`fisc_nfsp`, setor público consolidado, quebra por esfera), crédito a instituições
+  financeiras oficiais, e — nova — resultado primário **acima da linha** (`fisc_rtn`, Governo
+  Central), a única que decompõe o impulso em **receita × despesa** e por rubrica (identidade fechando
+  em 0,0001 p.p.). Ela **somou** à do BCB em vez de substituí-la, e o motivo é medido: o RTN sai só
+  1,8 dia antes em média, e o próprio RTN já republica o número do BCB
+  (`resultado_primario_abaixo_linha`, idêntico ao `fisc_nfsp` em 330 meses) — o que justifica a
+  métrica é a decomposição, não o calendário. As 10 tabelas das 4 abas de dados ganharam os
+  **cartões de definição** do padrão `lis-dashboard` em 2026-08-28 (99 entradas cobrindo 184 linhas)
+  — aqui o mapa precisou ser **por namespace**, porque `receita_total` existe na árvore da GFSM e na
+  do RTN significando coisas diferentes. Das 3 abas antigas apagadas a pedido do usuário, Dívida
   Pública foi superada pela nova aba Dívida Líquida (fonte melhor); Visão Geral e Resultado Fiscal seguem
   sem reconstrução. Ver "Pending" em [`analytics/brasil/fiscal_policy/CLAUDE.md`](analytics/brasil/fiscal_policy/CLAUDE.md)
   (inclui o double-count de transferências intergovernamentais no total Governo Geral, re-estimação dos
@@ -546,13 +724,35 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   `insolv_falencia_rj` e `connectors/datajud.py` a pedido do usuário — histórico só em git log). Hoje
   tem Saldo (+ 2ª tabela para Crédito Ampliado), Concessão (ambas via a fábrica JS `makeHierTab()`,
   toggle Nominal/Real/% PIB), Taxa & Spread e Inadimplência (formato bespoke, com overlay de Selic), +
-  Impulso (3 tabelas via `makeImpulseTab()`) e PTC (`cred_ptc`, nova em 2026-08 — árvore
+  Impulso (via `makeImpulseTab()`, **4 tabelas** desde 2026-08-28: as 3 do impulso de Biggs et
+  al./IBRE mais uma com o **fluxo financeiro** e o **impulso no conceito do BCB** — a versão que
+  exclui juros acruados, câmbio e baixas, em `cred_fluxo_financeiro`, do anexo do RPM. Total/PJ/PF de
+  2015-01 até a edição corrente, e são 3 séries por **restrição**, não por escopo: é o conjunto que as
+  duas fontes publicam (o gráfico recorrente de toda edição e o boxe de mar/2025, que dá o trecho
+  2015-2017). A quebra Livre/Direcionado que o boxe também traz fica fora — com conjuntos diferentes,
+  a edição nova sobrepõe o pai e não o filho, os dois caem em vintages distintos e a árvore deixa de
+  fechar, 0,095 p.p. em PJ e 0,196 em PF, pego pelo harness na primeira execução). Desde 2026-08-28, **Saldo e Impulso têm faixas de ciclo da
+  Selic ao fundo** — alta/manutenção/queda de `pm_copom_reuniao`, no `D.ciclos` do topo do payload,
+  sem suavização de propósito: o platô de 14 meses em 6,50% de 2018-2019 fica cinza e não vira
+  continuação do ciclo de queda de 2016-2020. O recorte é por gráfico, nunca do payload — `shape`
+  com `xref:'x'` entra no autorange do Plotly) e PTC (`cred_ptc`, nova em 2026-08 — árvore
   Oferta/Demanda × 4 segmentos, pill Observada|Esperada, sem linha de total, régua da escala
   −2..+2 no topo, mais uma 2ª tabela+gráfico de **surpresa**: o desvio
   `observada(t) − esperada(t−1)` em **média móvel de 4 trimestres** na tabela e nas linhas grossas
   do gráfico, com o trimestre cru na linha fina; faixa "em linha" = |MA| ≤ σ₀ da própria MA (RQM em torno de zero, não sd em torno da
   média — a troca foi um bug corrigido em 2026-08) — um
   critério de 1/N foi tentado antes e retirado, ver o CLAUDE.md da pasta), + Apêndice.
+  As 11 tabelas ganharam os **cartões de definição** do padrão `lis-dashboard` em 2026-08-28 (165
+  entradas cobrindo 378 das 409 linhas) — 5º relatório a receber o padrão, e o que mais depende do
+  **sufixo** da chave: 51 definições de modalidade servem ~200 linhas porque a mesma árvore do BCB se
+  repete em 4 abas com 4 prefixos, o que só funciona porque o cartão diz *o que a linha é* e a linha
+  de unidade diz *o que está sendo medido*. Novidade em relação ao `fiscal_policy`: `unit` por
+  **entrada**, vencendo a da tabela — a árvore de Inadimplência carrega três unidades ao mesmo tempo
+  (inadimplência >90d, saldo de maior risco em % do saldo PJ, atraso 15-90d). Escrever os cartões
+  achou uma unidade errada que já estava lá (o gráfico de Taxa & Spread titulava as duas árvores como
+  "% a.a.", e spread é diferença de duas taxas, em p.p.) e derrubou uma frase plausível: o atraso de
+  15-90 dias **não** antecede a inadimplência de 90 dias neste dado — correlação máxima no mesmo mês
+  (0,51 em 185 meses), caindo monotonicamente com a defasagem.
   Ver "Pending" em [`analytics/brasil/credit/CLAUDE.md`](analytics/brasil/credit/CLAUDE.md) (confirmação em
   browser real, `cred_credito_controle_capital.saldo`/`provisoes` ainda não charteados).
 - **`analytics/brasil/expectations/`**: construído e testado em 2026-08-24; falta **confirmação
@@ -642,7 +842,57 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   então numa janela curta as 2 linhas `ZZZZZZ` e as descontinuadas em 2001 faltam legitimamente; e o
   **SeriesCode codifica a medida** (`DPCERG` no índice, `DPCERC` no nominal), que é por que a dim
   guarda o código do índice e `_validar_casamento` nunca comparou código entre as abas.
-  **Falta**: as outras 7 áreas macro (só `bls.py` e `bea.py` existem), os pesos pré-2020 do CPI (existem
+  **O ramo de mercado de trabalho ficou completo nas três pesquisas mensais do BLS em
+  2026-09-01.** Além do JOLTS (abaixo), entraram a **CES** (`mt_ces` 3,3 M linhas /
+  12.000 séries desde 1939, `mt_ces_dim` a árvore de 839 indústrias) e a **CPS**
+  (`mt_cps`, 43 conceitos de manchete, 62 mil linhas desde 1948) — o *Employment
+  Situation* inteiro, mais uma aba de derivadas que cruza as três (vagas por
+  desempregado, contratação líquida, curva de Beveridge, divergência CES × CPS).
+  Cinco achados que valem além deste ramo. **(1) A árvore da CES não se deriva pela
+  indentação**, ao contrário do JOLTS e do CPI: os quatro nós de `display_level` 1 se
+  sobrepõem e somam **257% do total nonfarm**, e a regra ingênua põe mineração dentro
+  de serviços. O topo é declarado com guarda numérica, mais 4 correções que os dados
+  provam e 11 linhas marcadas `alternativo` que são um **segundo eixo** e não caberiam
+  em árvore nenhuma (Service-providing atravessa a fronteira de Total private; o corte
+  residencial/não-residencial da construção fecha no mesmo pai que o corte NAICS —
+  empilhados dão 163%). **(2) Aditividade é garantia só no dado bruto**: o BLS
+  dessazonaliza cada série independentemente, e o excesso dos filhos sobre o pai vai de
+  +0,068% no bruto a **+15,5% no ajustado** (222 de 284 pais acima de 0,05%) — validar
+  no ajustado reprova uma árvore correta, e foi o que aconteceu na primeira execução.
+  **(3) A CES não tem "último mês"**: a primeira divulgação traz os agregados e o
+  detalhe vem na seguinte, então no mês corrente só 27 das 555 folhas têm dado — um
+  `_grade()` como o do JOLTS reprovaria um passe correto. **(4) Conferir cada série
+  contra o número impresso no release achou três conceitos trocados na CPS** cujos
+  nomes leem certo (o tempo parcial não-econômico é a série de *at work 1-34 hours*,
+  22.770 contra 22.345; "15 a 26 semanas" não é a série chamada "15 semanas ou mais").
+  **(5) A razão vagas/desempregado que o BLS publica é o recíproco da citada** — em
+  jul/2009 a série dele marca 6,50 e a razão é 0,153 — e o guarda pegou a inversão
+  porque hoje a razão está perto de 1 (1,05 contra 0,95 publicado), onde ela passaria
+  batida. Ver [`analytics/us/labor_market/CLAUDE.md`](analytics/us/labor_market/CLAUDE.md).
+
+  **O escopo JOLTS, de 2026-09-01:** Duas tabelas novas em
+  `macro_us` (`mt_jolts`, 295.988 linhas sobre 913 séries, 2000-12 → hoje; `mt_jolts_dim`, as 3
+  árvores do release) e o relatório em `analytics/us/labor_market/` → `reports/us/Labor Market.html`.
+  Validado contra o release publicado: as 168 células da Tabela A e as 42 da Tabela 7 conferem
+  **exatas** a partir do banco, e a aditividade dos níveis fecha em 40.656 checagens com resíduo
+  máximo de 3 mil num total de 7,3 milhões (o limite que o arredondamento ao milhar do BLS admite).
+  **Escopo fechado por decisão explícita do usuário**: só os dados, nenhuma métrica derivada — sem
+  razão vagas/desempregado, sem contratação líquida, sem curva de Beveridge, porque a rodada seguinte
+  traz o resto do dado de emprego e as derivadas se constroem sobre o conjunto.
+  Quatro coisas medidas que valem além deste ramo: **uma das 6 medidas é estoque e cinco são fluxo**
+  (vagas é a posição no último dia útil; somar 12 meses dela dá 12,0× e continua parecendo um gráfico
+  de vagas — daí a pill de acumulado nascer desligada); **a raiz do corte de tamanho é Total private e
+  não Total nonfarm**, 810 mil vagas de governo de diferença, o que é por que a chave dos cartões de
+  definição precisou de namespace; **as três árvores compartilham a série do ápice**, e um mapa
+  1-para-1 de `series_id` fez um corte perder a raiz inteira em silêncio na primeira carga; e **os
+  denominadores das taxas foram medidos, não parafraseados** — o emprego implícito nas contratações
+  reproduz a taxa de vagas com 0,038 p.p. de erro contra 0,150 p.p. da hipótese errada. **Os estados
+  ficaram fora de propósito**: as 51 séries terminam em 2025-12, o BLS parou de publicar.
+  Ver [`analytics/us/labor_market/CLAUDE.md`](analytics/us/labor_market/CLAUDE.md).
+
+  **Falta**: as outras 6 áreas macro (só `bls.py` e `bea.py` existem como connectors), o resto do
+  mercado de trabalho (CPS, CES, claims semanais, ECI — é o que destrava as derivadas acima), os
+  pesos pré-2020 do CPI (existem
   desde 1947 no site do BLS, em 2 formatos antigos sem parser — é lacuna de parser, não de dado),
   CPI-W/C-CPI-U (schema e loader suportam, não carregados) e, do lado do PCE, as tabelas **reais** nas
   mesmas 402 linhas (2.4.3U índices de quantidade e 2.4.6U dólares encadeados — seriam um `medida` novo
@@ -650,7 +900,12 @@ rodada-a-rodada de como cada um chegou ao estado atual vive só no git log, não
   **As datas de divulgação entraram em 2026-08-26**: `connectors/us_agenda.py` + os grupos `bls_cpi`
   e `bea_pce` no calendário, e uma faixa no topo do relatório com última/próxima divulgação, hora em
   ET e em Brasília (convertida por data — os EUA têm horário de verão e o Brasil não) e o mês de
-  referência que cada uma entrega. Adicionar série nova é declarativo: um bloco `us:` no grupo.
+  referência que cada uma entrega. Adicionar série nova é declarativo: um bloco `us:` no grupo — o
+  `bls_jolts` de 2026-09-01 custou exatamente isso. Ele traz o gotcha que o `bls_cpi` não tinha: o
+  **JOLTS tem um mês de defasagem a mais**, a divulgação de 01/09 entrega julho enquanto o CPI de
+  11/09 entrega agosto, então derivar `reference_period` de "mês anterior ao da divulgação" erraria
+  todas as 13 entradas. Sai às **10:00 ET**, não 08:30. Datas conferidas contra o release 192 do
+  FRED: as duas fontes batem nas 8 datas de 2026 que ambas cobrem.
   Com isso o botão "Atualizar" do calendário passou a valer para CPI e PCE também.
   Ver "Pending" em [`analytics/us/inflation/CLAUDE.md`](analytics/us/inflation/CLAUDE.md).
 - **`repository/` — curation pending items** (conceptual maps, bibliography gaps, trader scope): ver "Pending" em [`repository/CLAUDE.md`](repository/CLAUDE.md).

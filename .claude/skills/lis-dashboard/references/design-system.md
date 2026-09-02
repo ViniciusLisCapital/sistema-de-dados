@@ -18,9 +18,10 @@ Referência completa de CSS, componentes HTML e padrões de código para dashboa
 12. [JS — Formatação BR](#formatacao)
 13. [JS — Cores por variação](#cores)
 14. [JS — Stats dinâmicos](#stats-dinamicos)
-15. [Botão de informação + card de definição](#info-card)
-16. [Cabeçalho do gráfico](#cabecalho)
-17. [Unidade no eixo Y](#unidades)
+15. [Cores para séries múltiplas — e como garantir que não se confundem](#cores-series)
+16. [Botão de informação + card de definição](#info-card)
+17. [Cabeçalho do gráfico](#cabecalho)
+18. [Unidade no eixo Y](#unidades)
 
 ---
 
@@ -550,17 +551,168 @@ function buildStats(data, valueKey, label, suffix) {
 
 ---
 
-## Cores para séries múltiplas
+## Cores para séries múltiplas <a name="cores-series"></a>
 
-Coluna "Dash" usa a sintaxe do Plotly (`line.dash`: string, não array de pixels como no Chart.js):
+**Duas séries do mesmo gráfico têm que ser distinguíveis, e isso é uma medida, não uma
+impressão.** Pedido explícito do usuário (2026-09-01), depois de reportar que "a cor de
+consumo das famílias e de exportações está muito próximo" em
+`analytics/brasil/economic_activity/report.html`: *"coloque esse cuidado da skill
+/lis-dashboard para sempre garantir que as cores não serão confundidas"*.
 
-| Série      | Linha      | Fill                    | Dash     |
-|------------|------------|-------------------------|----------|
-| Primária   | #1F2853    | rgba(31,40,83,0.08)     | solid    |
-| Secundária | #02739B    | rgba(2,115,155,0.08)    | dash     |
-| Terciária  | #BB9B1D    | rgba(187,155,29,0.12)   | dot      |
-| Quaternária| #EA523A    | rgba(234,82,58,0.08)    | longdash |
-| Quinquenária| #418791   | rgba(65,135,145,0.08)   | dashdot  |
+O que a auditoria daquele relatório achou é o motivo de isto virar regra: o par reportado
+estava a **ΔE2000 = 13,0**, mas na mesma vista havia **três pares com a cor idêntica** —
+as óticas da oferta e da demanda tinham sido coloridas em separado, como se nunca fossem
+plotadas juntas, e o multiselect deixa. Nada disso lança exceção: o gráfico renderiza
+perfeitamente.
+
+### A regra
+
+**ΔE2000 ≥ 20 entre quaisquer duas séries que possam aparecer no mesmo gráfico.**
+
+O 20 é calibrado, não inventado: é onde fecham as duas paletas publicadas que são
+referência em legibilidade — **Okabe-Ito** (8 cores, mínimo 21,7) e **Tol bright** (7
+cores, mínimo 20,5). A paleta antiga desta skill fechava em 13,0.
+
+### A paleta
+
+Qualquer par tem ΔE2000 ≥ 20,8. `PALETTE[0]` (navy da marca) fica **reservado para a linha
+de total/agregado** — a série de referência do gráfico —, e as 4 primeiras são cores da
+marca. As últimas são mais claras e só entram quando há muita série marcada ao mesmo tempo.
+
+```js
+const PALETTE = [
+  '#1F2853', // navy (marca) -- reservado para o total
+  '#EA523A', // laranja (marca)
+  '#418791', // verde-petróleo (marca)
+  '#BB9B1D', // dourado (marca)
+  '#8E44AD', // roxo
+  '#1565C0', // azul
+  '#5D6B1F', // oliva
+  '#AD1457', // magenta escuro
+  '#795548', // marrom
+  '#7CB342', // verde claro
+  '#F06292', // rosa
+  '#64B5F6', // azul pastel
+  '#9E9E9E', // cinza
+  '#B39DDB', // lilás
+];
+```
+
+Cores que **saíram** por não passarem no limiar, e que estavam na paleta antiga: `#02739B`
+(azul claro — 13,0 do verde-petróleo, o par que o usuário viu), `#FBC852` (amarelo — 13,9
+do dourado) e `#BFBFBF` (cinza claro — 9,3 do cinza da paleta). Usar qualquer uma delas
+junto do seu par é o defeito, não a cor em si.
+
+Isto vale para **séries dentro de um gráfico**, não para cromo de interface: o `--purple`
+(`#02739B`) segue sendo a cor de botões, badges e do botão `i` — ali ele nunca compete com
+`#418791` pela atenção do leitor no mesmo eixo.
+
+### Acima de 13 séries, mude de canal
+
+13 matizes separáveis é o teto prático — 30 não existem, e nenhuma paleta publicada passa
+de 8–9. Passando disso, a cor **volta ao início da paleta e o tracejado muda**
+(`line.dash`, sintaxe do Plotly: string, não array de pixels como no Chart.js). É o segundo
+canal que mantém as séries distinguíveis quando o primeiro se esgota — não empilhe mais
+matizes.
+
+### A cor sai da POSIÇÃO, não de um literal por série
+
+Escrever a cor em cada categoria é o que produz colisão: duas listas coloridas em momentos
+diferentes não sabem uma da outra. Atribua por posição, com as séries **marcadas por
+padrão na frente da fila** — assim a vista inicial, que é a que quase todo mundo vê, nunca
+repete cor.
+
+```js
+const SERIES_DASH = ['solid', 'dash', 'dot'];
+// `fixos` prende uma série a uma cor (o agregado de referência do gráfico, p.ex.).
+function assignSeriesColors(cats, defaults, fixos) {
+  fixos = fixos || {};
+  const ordem = [];
+  (defaults || []).forEach((b) => cats.forEach((c) => {
+    if (c.base === b && ordem.indexOf(c) < 0) ordem.push(c);
+  }));
+  cats.forEach((c) => { if (ordem.indexOf(c) < 0) ordem.push(c); });
+  const n = PALETTE.length - 1;   // PALETTE[0] fica de fora: é a cor do total
+  let k = 0;
+  ordem.forEach((c) => {
+    if (fixos[c.base]) { c.color = fixos[c.base]; c.dash = 'solid'; return; }
+    c.color = PALETTE[1 + (k % n)];
+    c.dash = SERIES_DASH[Math.min(SERIES_DASH.length - 1, Math.floor(k / n))];
+    k++;
+  });
+  return cats;
+}
+// no trace: line: { color: s.color, width: 2, dash: s.dash || 'solid' }
+```
+
+Trocar a cor de uma série específica passa a ser **mudar a ordem dela na lista**, não
+editar um literal — e a garantia vale para a lista inteira, não para o par que alguém
+lembrou de olhar.
+
+### Verifique, não confie no olho
+
+ΔE2000 em ~50 linhas de JS, para rodar no harness de teste do dashboard. Asserção mínima:
+para **cada gráfico**, nenhum par de traces com o mesmo `dash` pode ficar abaixo de 20.
+
+```js
+function _lin(c) { c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function _lab(hex) {
+  const h = hex.replace('#', '');
+  const r = _lin(parseInt(h.slice(0, 2), 16)), g = _lin(parseInt(h.slice(2, 4), 16)), b = _lin(parseInt(h.slice(4, 6), 16));
+  const x = (r * 0.4124564 + g * 0.3575761 + b * 0.1804375) / 0.95047;
+  const y = (r * 0.2126729 + g * 0.7151522 + b * 0.0721750);
+  const z = (r * 0.0193339 + g * 0.1191920 + b * 0.9503041) / 1.08883;
+  const f = (t) => (t > 216 / 24389 ? Math.cbrt(t) : (841 / 108) * t + 4 / 29);
+  const fx = f(x), fy = f(y), fz = f(z);
+  return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+}
+function deltaE(hex1, hex2) {                       // CIEDE2000
+  const A = _lab(hex1), B = _lab(hex2);
+  const C1 = Math.hypot(A[1], A[2]), C2 = Math.hypot(B[1], B[2]), Cb = (C1 + C2) / 2;
+  const G = 0.5 * (1 - Math.sqrt(Math.pow(Cb, 7) / (Math.pow(Cb, 7) + Math.pow(25, 7))));
+  const a1p = (1 + G) * A[1], a2p = (1 + G) * B[1];
+  const C1p = Math.hypot(a1p, A[2]), C2p = Math.hypot(a2p, B[2]);
+  const h1p = (Math.atan2(A[2], a1p) * 180 / Math.PI + 360) % 360;
+  const h2p = (Math.atan2(B[2], a2p) * 180 / Math.PI + 360) % 360;
+  const dLp = B[0] - A[0], dCp = C2p - C1p;
+  let dhp = 0;
+  if (C1p * C2p !== 0) { dhp = h2p - h1p; if (dhp > 180) dhp -= 360; else if (dhp < -180) dhp += 360; }
+  const dHp = 2 * Math.sqrt(C1p * C2p) * Math.sin(dhp * Math.PI / 360);
+  const Lbp = (A[0] + B[0]) / 2, Cbp = (C1p + C2p) / 2;
+  let hbp;
+  if (C1p * C2p === 0) hbp = h1p + h2p;
+  else if (Math.abs(h1p - h2p) <= 180) hbp = (h1p + h2p) / 2;
+  else hbp = (h1p + h2p + (h1p + h2p < 360 ? 360 : -360)) / 2;
+  const rad = (d) => d * Math.PI / 180;
+  const T = 1 - 0.17 * Math.cos(rad(hbp - 30)) + 0.24 * Math.cos(rad(2 * hbp))
+            + 0.32 * Math.cos(rad(3 * hbp + 6)) - 0.20 * Math.cos(rad(4 * hbp - 63));
+  const dTheta = 30 * Math.exp(-Math.pow((hbp - 275) / 25, 2));
+  const Rc = 2 * Math.sqrt(Math.pow(Cbp, 7) / (Math.pow(Cbp, 7) + Math.pow(25, 7)));
+  const Sl = 1 + (0.015 * Math.pow(Lbp - 50, 2)) / Math.sqrt(20 + Math.pow(Lbp - 50, 2));
+  const Sc = 1 + 0.045 * Cbp, Sh = 1 + 0.015 * Cbp * T;
+  const Rt = -Math.sin(rad(2 * dTheta)) * Rc;
+  return Math.sqrt(Math.pow(dLp / Sl, 2) + Math.pow(dCp / Sc, 2) + Math.pow(dHp / Sh, 2)
+                   + Rt * (dCp / Sc) * (dHp / Sh));
+}
+```
+
+E **exercite o segundo canal de propósito**: nenhuma vista padrão chega a 13 séries, então
+um teste que só olhe a vista inicial passa mesmo com o `dash` removido das linhas
+(verificado num mutante que fazia exatamente isso). Marque tudo e asserte que aparece mais
+de um tracejado.
+
+### Daltonismo: o que dá para prometer, e o que não dá
+
+Medido nesta paleta: sob **deuteranopia/protanopia** o par **dourado × laranja da marca**
+cai para ΔE 5,4, e nenhuma escolha das outras cores conserta isso — as duas são âncoras de
+marca. Um gráfico que precise ser legível para daltônicos não pode usar as duas juntas; a
+saída é tracejado diferente ou trocar uma delas.
+
+Isso **não** é um defeito exclusivo desta paleta: na mesma medida a própria Okabe-Ito cai
+para 9,1 e a Tol bright para 1,2. Segurança para daltônicos é uma garantia mais fraca do
+que o senso comum sugere — trate como um número a reportar, não como uma porta a fechar.
+
+### Eixos independentes
 
 Eixos independentes (série secundária num eixo à direita): trace da série secundária ganha `yaxis: 'y2'`, e o layout ganha `yaxis2: { overlaying: 'y', side: 'right', gridcolor: 'rgba(31,40,83,0.06)', tickfont: {...} }` — `_bindYAutofit` já é dual-axis-aware (agrupa por `t.yaxis || 'y'`), não precisa de tratamento especial.
 
@@ -708,8 +860,28 @@ Cuidado ao ler o rótulo de volta do DOM depois disso: `textContent` do elemento
 do botão. Se algum código compara rótulos (teste, filtro, busca), leia só os nós de texto —
 `[...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('')`.
 
+**Quinta decisão, quando a página tem mais de uma tabela: a chave do mapa precisa de NAMESPACE.**
+Descoberta em `analytics/brasil/fiscal_policy` (2026-08-28), onde a mesma chave `receita_total`
+aparece em duas árvores da mesma aba significando coisas diferentes — uma classifica as
+transferências constitucionais como despesa, a outra as deduz da receita. Um mapa de chave nua faz
+uma tabela explicar a outra, e **nada lança**: o cartão abre, com o texto errado. Guarde
+`namespace:chave` e faça cada tabela declarar o seu. Duas extensões que valem junto:
+
+- **Aceite uma LISTA de namespaces, tentada em ordem.** Quando uma segunda tabela reusa a mesma
+  árvore mudando o significado de poucos nós (lá: as rubricas viram *contribuição ao impulso*, com
+  sinal), o específico ganha entrada própria e o resto cai no compartilhado — em vez de duplicar
+  dezenas de textos que envelheceriam separados.
+- **Se a chave não bater, tente o sufixo depois do último `__`.** É o que faz uma definição servir a
+  todas as variantes de um mesmo item (`geral__folha`, `central__folha`, …). Lá, 99 entradas cobrem
+  184 linhas por causa disso.
+
+**Teste a órfã, não só o card.** Um erro de digitação numa chave produz um botão que deixa de nascer:
+sem erro, sem lacuna visível. Resolva toda chave do mapa contra as árvores reais e exija zero órfãs —
+foi o que pegou dois `full` que só repetiam o rótulo e uma chave inexistente naquele port.
+
 Implementação de referência: `analytics/brasil/labor_market/report.html`, 52 rótulos com card em 17
-tabelas.
+tabelas; a variante com namespace está em `analytics/brasil/fiscal_policy/report.html`, 99 entradas
+cobrindo 184 linhas em 10 tabelas.
 
 ---
 
@@ -836,10 +1008,122 @@ Duas consequências práticas:
 
 ---
 
+## Texto explicativo: justificado e na largura do bloco <a name="prosa"></a>
+
+Convenção do projeto desde 2026-09-01, a pedido do usuário, a partir de um print: **todo
+texto explicativo e todo texto de apêndice sai justificado e ocupa a largura do bloco que o
+contém.** Nada de `max-width` em `ch` na prosa.
+
+```css
+/* Liste aqui as classes de PROSA do dashboard — legenda de gráfico, corpo de apêndice,
+   nota de metodologia, lead de seção. Não `.kpi-sub`, não célula de tabela, não linha de
+   metadado em mono. */
+.chart-caption,
+.appendix-body,
+.note-metodologia,
+.lead {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+```
+
+Três coisas que fazem a regra funcionar, e cada uma é o motivo de um erro possível:
+
+- **`hyphens: auto` é obrigatório junto do `justify`, não é enfeite.** Sem hifenização o
+  texto abre rios de espaço branco entre as palavras da linha — pior em português, que tem
+  palavras longas e poucas monossílabas para o navegador usar de folga.
+- **A hifenização depende do `lang` no `<html>`.** Sem ele o browser não sabe que dicionário
+  usar e não hifeniza nada: a regra *parece* aplicada e produz justamente os rios que ela
+  existia para evitar. `<html lang="pt-BR">` (ou `en` num dashboard em inglês).
+- **Tirar o `max-width` em `ch` resolve duas coisas de uma vez.** Cobre o vazio à direita do
+  parágrafo *e*, ocupando mais linha, deixa o bloco **mais baixo** — o que num card cheio de
+  nota é a diferença entre caber e não caber na tela. Medido no relatório do calendário: uma
+  nota de 526 caracteres caiu de 7 para 3 linhas, e o card encurtou ~160 px.
+
+**O que fica de fora, e por quê:**
+
+| não justifique | motivo |
+|---|---|
+| célula de tabela (`td` com `max-width` em ch) | container estreito é exatamente onde os rios aparecem |
+| popover de definição (`.info-pop`, ~320 px) | mesmo motivo |
+| linha de metadado em mono (`rodou em … · ~90s · em dia`) | é lista de campos separada por `·`, não prosa |
+| rodapé/legenda centralizada | `text-align: center` é decisão de layout; justificar exigiria tirá-la |
+| rótulo curto (`.kpi-sub`, `.stat-sub`) | uma linha não tem o que justificar |
+
+A ressalva a levar ao usuário quando o container é muito largo: num bloco de 1.300 px a
+12 px a linha passa de 200 caracteres, bem acima da faixa confortável de leitura (45–90).
+Foi decisão explícita do usuário cobrir a largura; se ele reclamar do contrário, o
+corretivo é um `max-width` generoso (~120ch), não voltar aos 78ch.
+
+Aplicado em: `analytics/release_calendar/` (origem) e nos 9 relatórios de `analytics/brasil/`
+e `analytics/us/`.
+
+## O texto explicativo é para quem nunca viu o dashboard <a name="audiencia"></a>
+
+Pedido direto do usuário (2026-09-01), sobre um print de um card cheio de nota: *"você está
+transferindo nossa conversa daqui para o dash, e eu não quero isso. Lá deve ser a explicação do
+que está acontecendo ali, para alguém que nunca viu o dashboard e não sabe da nossa conversa."*
+
+O sintoma é fácil de reconhecer depois de nomeado: a prosa tinha virado transcrição da sessão
+em que o dashboard foi construído.
+
+| o que estava escrito | por que não serve |
+|---|---|
+| "Desde 2026-08-31 o Regerar refaz…" | a data é do dia em que **nós** mudamos o código; o leitor não estava lá |
+| "as abas leem artefatos que o `generate_report` NÃO calcula" | nomes do repositório — função, arquivo, tabela |
+| "Segundos não medidos" | anotação de pendência nossa, não informação sobre o dado |
+| "cada trimestre" (a granularidade) | é o nome do mecanismo, não a consequência dele |
+| "O Regerar refaz antes de gerar · nada atrasado" | descreve a ordem interna de duas funções, não o que o leitor vê |
+
+A regra que substitui: **cada bloco de prosa responde "o que é isto que estou vendo, e o que
+isso muda para mim?"**, no vocabulário do domínio (dado, cálculo, relatório, banco), não no do
+repositório. Quatro trocas cobrem quase todos os casos:
+
+- **Nome de mecanismo → consequência.** `cada trimestre` → *fica velho quando abre um trimestre
+  novo*. Quem lê precisa saber de quanto em quanto tempo aquilo desatualiza, não em que unidade
+  duas datas são comparadas.
+- **Identificador → nome que se lê.** `expc_focus_periodo já tinha 31/08` → *a pesquisa Focus já
+  tinha dado de 31/08*. Guarde o nome legível **ao lado** do técnico na própria estrutura de
+  dados (um campo `nome` no mapa de fontes), para os dois não divergirem depois.
+- **Data de decisão → nada.** "Desde 2026-08-31" pertence ao `CLAUDE.md` e ao git log; no
+  dashboard ela só levanta a pergunta "e antes disso?".
+- **Ordem interna → efeito visível.** Em vez de *"o Regerar refaz antes de gerar"*, diga o que
+  pode dar errado e como se corrige: *"se um destes foi calculado com dado mais antigo do que o
+  banco já tem, o número dentro do relatório fica velho mesmo que o arquivo seja novo — é isso
+  que o botão Regerar corrige"*.
+
+O que **fica**: decisões, medições e o "por que" continuam sendo escritos — no `CLAUDE.md` da
+pasta e nos comentários do código, que é onde a próxima sessão procura. Nada disso é apagado; é
+movido.
+
+**Vale testar**, porque a prosa é o único conteúdo do dashboard que nenhuma asserção olhava.
+Extraia os blocos de prosa do HTML renderizado e proíba uma lista de termos — e rode contra o
+payload **real**, para cobrir o que está escrito na configuração e não só o que o template monta:
+
+```js
+const PROSA = (cards.match(/<div class="(?:dash-note|proc-note|proc-hint)">([\s\S]*?)<\/div>/g) || [])
+  .map((b) => b.replace(/<[^>]*>/g, ''));
+const JARGAO = ['generate_report', 'manifest.yaml', 'granularidade', 'mtime', 'ETL',
+                'run(', 'Desde 2026', 'não medidos'];
+// nenhum termo em nenhum bloco; e cada bloco com texto de verdade (> 60 caracteres)
+```
+
+Aplicado em `analytics/release_calendar/report.html` + as 10 notas de
+`domain/dashboards/manifest.yaml`, e na faixa de frescor de
+`analytics/brasil/monetary_policy/report.html`. Fechado por `tests/test_release_calendar_js.js`
+(o guarda acima, verificado contra um mutante que reinjeta a frase antiga) e por
+`tests/test_monetary_policy_js.js`, que exercita a faixa laranja sinteticamente — ela não
+aparece no payload de um relatório recém-gerado, que é justamente o caso que o leitor precisa
+entender.
+
 ## Checklist antes de entregar
 
 - [ ] CDN: só Plotly (`https://cdn.plot.ly/plotly-2.35.2.min.js`) — sem Chart.js/chartjs-plugin-datalabels/hammer.js/chartjs-plugin-zoom
 - [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, sem `fixedrange`, sem `xaxis.rangeselector`) + botões de range rápido via `renderQuickRangeButtons()` (HTML + `Plotly.relayout()`, NÃO `xaxis.rangeselector` nativo) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
+- [ ] Texto explicativo e de apêndice **justificado** (`text-align: justify` + `hyphens: auto`), sem `max-width` em `ch`, e o `<html>` com `lang` — sem o `lang` não há hifenização e o justificado abre rios. Não justifique célula de tabela, `.info-pop` nem legenda centralizada. Ver [Texto explicativo](#prosa)
+- [ ] Texto explicativo escrito para quem **nunca viu o dashboard**: sem nome de arquivo/função do repositório, sem data de decisão nossa ("desde 2026-…"), sem o nome do mecanismo no lugar da consequência. Ver [Para quem nunca viu o dashboard](#audiencia)
 - [ ] Rótulo longo vira nome curto + botão `i` com card de definição (nunca um rótulo que deforma a coluna/legenda). Ver [Botão de informação](#info-card)
 - [ ] Todo gráfico com cabeçalho de 3 linhas — título, subtítulo e fonte+período — e o subtítulo/período **recalculados a cada render**, nunca fixos no HTML. Ver [Cabeçalho do gráfico](#cabecalho)
 - [ ] Subtítulo reflete o estado dos seletores e não repete o que o título do eixo já diz
@@ -852,6 +1136,7 @@ Duas consequências práticas:
 - [ ] Step adequado ao número de pontos
 - [ ] Stats cards com último/máxima/mínima
 - [ ] Marcadores coloridos por variação (verde/vermelho) via `marker.color` (array por ponto)
+- [ ] Cores de séries pela `PALETTE` via `assignSeriesColors()` (nunca um `color:` literal por série), com ΔE2000 ≥ 20 entre quaisquer duas séries do mesmo gráfico — conferido com `deltaE()`, não a olho. Ver [Cores para séries múltiplas](#cores-series)
 - [ ] Tooltip via `customdata`+`hovertemplate`, mostrando todas as métricas disponíveis, formatado em BR
 - [ ] Formato BR: vírgula decimal, R$ para preços, k para milhares
 - [ ] Footer com contexto

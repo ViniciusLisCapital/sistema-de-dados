@@ -118,8 +118,57 @@
        (ver Gotchas em analytics/brasil/fiscal_policy/CLAUDE.md). A aba Dívida Líquida gera
        seus 9 graficos por JS, entao usa a classe .dlsp-chart em vez de 9 ids. */
     #chart-impulso-combinado, #chart-ieg-hier, #chart-impulso-rp-esfera,
+    #chart-impulso-rtn,
     #chart-gfsm, #chart-rtn, .dlsp-chart,
     #chart-inv-funcao, #chart-inv-natureza                      { width: 100%; height: 560px; }
+
+    /* -- Régua de período (abaixo do gráfico) --
+       Botões HTML, não o xaxis.rangeselector nativo do Plotly: aquele ancora o fim
+       da janela no range ATUAL do eixo, que com autorange já traz o padding
+       automático junto -- daí a faixa vazia nas duas pontas. Ver
+       .claude/rules/lis-dashboards.md. E o componente nativo só desenha ACIMA do
+       gráfico; a régua pertence ao pé, junto do eixo X que ela controla. */
+    .chart-with-range { display: flex; flex-direction: column; gap: 8px; }
+    .range-bar { display: flex; gap: 6px; flex-wrap: wrap; padding-left: 2px; }
+    .range-btn {
+      padding: 4px 13px; font-size: 11px; font-weight: 600; font-family: inherit;
+      color: var(--lis-azul); background: #fff;
+      border: 1px solid var(--border); border-radius: 20px; cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .range-btn:hover { border-color: var(--lis-dourado); }
+    .range-btn.active { background: var(--lis-azul); color: #fff; border-color: var(--lis-azul); }
+
+    /* ── Botão de informação + cartão de definição ──
+       Padrão do skill lis-dashboard (referência: analytics/brasil/labor_market,
+       depois analytics/brasil/exchange_rate). O rótulo da linha fica curto; o nome
+       oficial da fonte e a explicação vivem no cartão, para não deformar a coluna.
+       UM cartão no <body>, reposicionado a cada abertura — são ~150 linhas com
+       cartão espalhadas por 14 tabelas em 4 abas, e um nó por linha seria DOM que
+       quase nunca é visto. */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; margin-left: 6px; padding: 0; flex: 0 0 auto;
+      font-family: var(--mono); font-size: 9px; font-weight: 600; line-height: 1;
+      color: #8a8f9e; background: transparent;
+      border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
+      vertical-align: middle; transition: color .15s, border-color .15s, background .15s;
+    }
+    .info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+    .info-pop {
+      position: absolute; z-index: 300; display: none; max-width: 380px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(31,40,83,0.16); padding: 12px 14px;
+      text-align: left;
+    }
+    .info-pop.show { display: block; }
+    .info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--lis-azul); line-height: 1.3; }
+    .info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+    .info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+    .info-pop .info-unit {
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border);
+    }
 
     /* ── Controls (select dropdowns) ── */
     .ctrl-bar {
@@ -165,6 +214,28 @@
     }
     @media (max-width: 600px) {
       .kpi-grid, .kpi-grid-3, .kpi-grid-4 { grid-template-columns: 1fr; }
+    }
+      /* ── Texto explicativo: justificado, e sem cap de largura ──────────────────
+       Convenção do projeto desde 2026-09-01, a pedido do usuário: todo texto explicativo
+       e todo texto de apêndice sai JUSTIFICADO e ocupa a largura do bloco que o contém.
+       Tirar o `max-width` em `ch` faz duas coisas de uma vez — cobre o vazio à direita do
+       parágrafo e, ocupando mais linha, deixa o bloco MAIS BAIXO.
+
+       `hyphens: auto` não é enfeite: é obrigatório junto do `justify`. Sem hifenização o
+       texto abre rios de espaço branco entre as palavras da linha. O que faz a hifenização
+       funcionar é o `lang` no <html> — sem ele o browser não sabe que dicionário usar e
+       não hifeniza nada, então a regra pareceria aplicada e produziria justamente os rios.
+
+       Fica de fora, de propósito: célula de tabela e popover de definição (container
+       estreito é exatamente onde os rios aparecem), linha de metadado em mono (é lista de
+       campos separada por `·`, não prosa) e o que é centralizado por decisão de layout. */
+    .appendix-body,
+    .chart-caption,
+    .note-metodologia {
+      text-align: justify;
+      text-justify: inter-word;
+      -webkit-hyphens: auto;
+      hyphens: auto;
     }
   </style>
 </head>
@@ -512,30 +583,43 @@
   <div class="tab-panel" id="tab-impulso">
 
     <p class="note-metodologia">
-      Métrica experimental de impulso fiscal, ao lado das três abas anteriores — não é a metodologia
-      oficial "abaixo da linha" do BCB. Detalhe metodológico completo na aba <strong>Apêndice</strong>.
+      Métricas experimentais de impulso fiscal, ao lado das três abas anteriores — só uma delas
+      (Res. Primário — BCB) é a metodologia oficial "abaixo da linha". Detalhe metodológico completo
+      na aba <strong>Apêndice</strong>.
     </p>
 
     <section>
-      <h2>Visão Combinada — As Três Métricas de Impulso</h2>
+      <h2>Visão Combinada — As Quatro Métricas de Impulso</h2>
       <p class="chart-caption">
-        As três métricas desta aba no mesmo eixo: <strong>IEG</strong>,
-        <strong>Impulso via Resultado Primário</strong> e
-        <strong>Crédito a Inst. Financ. Oficiais</strong> (o canal parafiscal, em % do PIB).<br><br>
+        As quatro métricas desta aba no mesmo eixo: <strong>IEG</strong>, o
+        <strong>Impulso via Resultado Primário</strong> nas suas <strong>duas apurações</strong> —
+        BCB, abaixo da linha, setor público consolidado; e RTN, acima da linha, Governo Central
+        (adicionada em 2026-08-28) — e o <strong>Crédito a Inst. Financ. Oficiais</strong> (o canal
+        parafiscal, em % do PIB).<br><br>
+        <strong>As duas linhas de resultado primário são um par, e é assim que devem ser lidas</strong>
+        — mesma cor em tons diferentes, a do RTN tracejada. Elas medem a mesma coisa por caminhos
+        independentes, então <em>andarem juntas é a informação</em>: correlação de 0,99 em 272 meses,
+        com diferença média de 0,26 p.p. que é <strong>escopo, não método</strong> (o RTN não cobre
+        Estados, Municípios nem Empresas Estatais). Quando destoarem, o interesse está na diferença.
+        A do RTN chega um mês de referência antes durante os 1 a 3 dias entre a divulgação do Tesouro
+        e a Nota para a Imprensa do BCB — nessa janela ela é a única das quatro com o mês mais
+        recente.<br><br>
         <strong>4T/12m Acumulado (Y/Y)</strong>: cada métrica compara uma janela anual contra a janela
-        anual anterior — o IEG compara o acumulado em 4 trimestres contra o de 4 trimestres antes, e o
-        Impulso PB compara o acumulado em 12 meses contra o de 12 meses antes.<br><br>
+        anual anterior — o IEG compara o acumulado em 4 trimestres contra o de 4 trimestres antes, e os
+        dois Impulsos PB comparam o acumulado em 12 meses contra o de 12 meses antes.<br><br>
         <strong>Trimestre (T/T)</strong> (2026-08, reescrito — ver Apêndice) é uma variação trimestral
-        genuinamente dessazonalizada (STL) em cada uma das duas
-        séries — IEG sobre a série trimestral bruta do EFGG, Impulso PB sobre o fluxo mensal bruto do
-        BCB (suavizado numa soma móvel de 3 meses antes do ajuste sazonal) — nenhuma das duas é mais
-        um atalho sobre o acumulado em 12m/4T. Os fatores sazonais do STL são estimados apenas até o
+        genuinamente dessazonalizada (STL) em cada uma das três séries que a oferecem — IEG sobre a
+        série trimestral bruta do EFGG, e cada Impulso PB sobre o fluxo mensal bruto da sua fonte
+        (suavizado numa soma móvel de 3 meses antes do ajuste sazonal) — nenhuma delas é mais um atalho
+        sobre o acumulado em 12m/4T. Os fatores sazonais do STL são estimados apenas até o
         <strong>último ano civil completo</strong> e aplicados congelados ao ano corrente (ver
-        Apêndice).<br><br>
-        <strong>Leitura das unidades — as três dividem um eixo, mas não são a mesma coisa.</strong>
-        IEG e Impulso PB são <em>variações</em> (p.p. do PIB entre duas janelas); o Crédito a Inst.
-        Financ. Oficiais é o <em>fluxo</em> acumulado em 12 meses como % do PIB. Compartilham o eixo
-        porque a ordem de grandeza é a mesma e o sinal tem o mesmo significado nas três
+        Apêndice). Como o STL não é linear e cada série roda o seu próprio ajuste, neste toggle as duas
+        apurações do resultado primário divergem mais do que no acumulado — isso é o ajuste sazonal,
+        não uma discordância entre as fontes.<br><br>
+        <strong>Leitura das unidades — as quatro dividem um eixo, mas não são a mesma coisa.</strong>
+        IEG e os dois Impulsos PB são <em>variações</em> (p.p. do PIB entre duas janelas); o Crédito a
+        Inst. Financ. Oficiais é o <em>fluxo</em> acumulado em 12 meses como % do PIB. Compartilham o
+        eixo porque a ordem de grandeza é a mesma e o sinal tem o mesmo significado nas quatro
         (<strong>positivo = expansionista</strong>), não porque sejam a mesma transformação. E a linha
         do crédito é <strong>sempre a acumulada em 12 meses</strong>, independente do seletor
         Comparação — a métrica foi definida assim e não tem variante trimestral (por isso o rótulo
@@ -630,6 +714,63 @@
         </table>
       </div>
       <div class="chart-card"><div id="chart-impulso-rp-esfera"></div></div>
+    </section>
+
+    <section>
+      <h2>Impulso via Resultado Primário — RTN (acima da linha)</h2>
+      <p class="chart-caption">
+        A mesma pergunta da seção anterior — <em>o resultado primário piorou, e quanto disso é
+        impulso?</em> — respondida pela outra metodologia. Aqui a fonte é o
+        <strong>Resultado do Tesouro Nacional</strong> (<code>fisc_rtn</code>, "acima da linha"),
+        que apura o primário somando receita e subtraindo despesa, em vez de deduzi-lo da variação
+        da dívida. As duas seções <strong>convivem de propósito</strong>, porque nenhuma contém a
+        outra: o BCB cobre o <strong>setor público consolidado</strong> com quebra por esfera, e o
+        RTN cobre só o <strong>Governo Central</strong> — mas decompõe o impulso em
+        <strong>receita × despesa e, dentro de cada uma, por rubrica orçamentária</strong>, leitura
+        que a apuração abaixo da linha não permite.<br><br>
+        <strong>Sinal por ramo, não por tabela.</strong> Como
+        <code>primário = receita líquida − despesa</code> e o impulso é
+        <code>−Δ(primário/PIB)</code>, a receita entra com sinal negativo (arrecadar
+        <em>menos</em> é expansionista) e a despesa com positivo (gastar <em>mais</em> é
+        expansionista). O sinal já vem aplicado: qualquer valor positivo na tabela é
+        expansionista, venha ele de receita ou de despesa. A exceção que não se adivinha são as
+        <em>Transferências por Repartição de Receita</em> — elas ficam dentro de Receita Líquida
+        mas entram subtraindo, então o sinal delas volta a inverter.<br><br>
+        <strong>Reconciliação.</strong> As duas linhas de topo somam a linha do total
+        <strong>exatamente</strong>, em toda a amostra — resíduo máximo <code>0,0001 p.p.</code> em
+        332 meses, só arredondamento — e a linha plotada é o
+        <code>resultado_primario_governo_central</code> que o próprio Tesouro publica, não a soma
+        das barras, para que essa reconciliação seja uma afirmação checável e não uma identidade
+        imposta. <strong>Níveis mais fundos só fecham a partir de janeiro/2016</strong>: antes
+        disso o próprio RTN não publica a decomposição completa (a Receita Administrada só fecha
+        nos 9 tributos a partir de 2016, as Despesas do Executivo a partir de 2008 e os Benefícios
+        Previdenciários a partir de 2001). É cobertura da fonte, não do nosso parser.<br><br>
+        <strong>Por que não substituiu o BCB.</strong> O RTN sai 1 a 3 dias antes da Nota para a
+        Imprensa (média de 1,8 dia, medido contra as duas agendas oficiais de 2026), e nesses dias
+        está um mês de referência à frente — mas o ganho para por aí, e o próprio RTN já
+        <em>republica</em> o número do BCB: a série <code>resultado_primario_abaixo_linha</code> é
+        idêntica ao <code>fisc_nfsp</code> (Governo Federal + BC) em 330 meses, diferença máxima
+        <code>0,00</code>, apenas um mês atrasada. As duas leituras contam a mesma história —
+        correlação de <strong>0,99</strong> entre esta série e a do setor público consolidado, com
+        diferença média de 0,26 p.p. que é o escopo, não o método. E a ponte entre as duas
+        apurações é publicada pelo próprio Tesouro:
+        <code>abaixo = acima + ajustes metodológicos + discrepância estatística</code>, exata em
+        354 meses.
+      </p>
+      <div class="ctrl-bar">
+        <span class="ctrl-label">Nível</span>
+        <select id="impulso-rtn-accum-select" class="ctrl-select">
+          <option value="acum12m" selected>Acum. 12m (Y/Y)</option>
+          <option value="quarter">Trimestre (T/T)</option>
+        </select>
+      </div>
+      <div class="chart-card table-card">
+        <table class="data-table" id="impulso-rtn-table">
+          <thead id="impulso-rtn-table-head"></thead>
+          <tbody id="impulso-rtn-table-body"></tbody>
+        </table>
+      </div>
+      <div class="chart-card"><div id="chart-impulso-rtn"></div></div>
     </section>
 
     <section>
@@ -1347,6 +1488,23 @@ function impulsoRPEsfera(key, variant) {
   var values = s && s[variant];
   return values ? {dates: g.dates || [], values: values} : {dates: [], values: []};
 }
+// D.impulso_rtn -- impulso via resultado primario ACIMA DA LINHA (fisc_rtn, Governo
+// Central), decomposto em receita x despesa. Mesma forma de D.fiscal_impulse_nfsp: as
+// series sao arrays CRUS contra o `dates` da raiz, entao reembrulha aqui (ver o bug de
+// 2026-08 anotado em impulsoRPEsfera() -- trace com x/y undefined nao desenha e nao
+// lanca). `sign` ja foi aplicado no Python: um valor positivo aqui e sempre
+// expansionista, seja ele de receita (que caiu) ou de despesa (que subiu).
+function impulsoRTNTotal(variant) {
+  var g = D.impulso_rtn || {};
+  var key = variant === 'quarter' ? 'impulso_quarter' : 'impulso';
+  return {dates: g.dates || [], values: g[key] || []};
+}
+function impulsoRTNSerie(key, variant) {
+  var g = D.impulso_rtn || {};
+  var s = g.series && g.series[key];
+  var values = s && s[variant];
+  return values ? {dates: g.dates || [], values: values} : {dates: [], values: []};
+}
 // Impulso via credito a inst. financeiras oficiais, em % do PIB (acum. 12m) -- a
 // serie plotada na Visao Combinada. D.credito_oficial.series[item] guarda arrays NUS
 // contra o `dates` da raiz da payload, entao re-embrulha em {dates, values} aqui: um
@@ -1383,22 +1541,146 @@ function setKPI(idPrefix, value, sub, unit) {
 }
 
 // ── Chart layout factories ────────────────────────────────────────────────────
-function _rangeButtons() {
+// -- Regua de periodo -----------------------------------------------------------
+// Botoes HTML abaixo do grafico, cada um mandando um [from, to] calculado das
+// PROPRIAS series plotadas. Substituiu o xaxis.rangeselector nativo em 2026-08-28,
+// pelo defeito que o usuario viu: faixa vazia nas duas pontas do grafico.
+//
+// Por que: o autorange do Plotly nao devolve o extremo do dado, devolve o extremo
+// mais um padding automatico (percentual do span, e maior ainda num grafico de
+// barras, que reserva espaco para a barra inteira). Num historico de ~15 anos isso
+// vale quase um ano de cada lado. E um botao stepmode:'backward' herda o problema,
+// porque ancora o fim da janela nesse range inflado. Calculando a janela do dado,
+// os dois somem -- inclusive a que significa "tudo", que tambem e um range e nao
+// uma omissao. Ver .claude/rules/lis-dashboards.md.
+
+var _rangeSelected = {};   // divId -> rotulo ativo, para sobreviver a um redesenho
+
+// Meia distancia entre os dois ultimos pontos: barra e centrada no seu x, entao
+// terminar a janela exatamente no ultimo ponto corta a ultima barra ao meio. E
+// padding tirado do espacamento real da serie (15 dias no mensal, ~45 no
+// trimestral), nao o percentual arbitrario que causou o bug.
+function _rangeHalfStepMs(dates) {
+  if (!dates || dates.length < 2) return 15 * 86400000;
+  var a = Date.parse(dates[dates.length - 2]);
+  var b = Date.parse(dates[dates.length - 1]);
+  if (isNaN(a) || isNaN(b) || b <= a) return 15 * 86400000;
+  return (b - a) / 2;
+}
+function _rangeIso(ms) { return new Date(ms).toISOString().slice(0, 19).replace('T', ' '); }
+
+function _rangeOptions(dates) {
+  if (!dates || !dates.length) return [];
+  var loMs = Date.parse(dates[0]);
+  var hiMs = Date.parse(dates[dates.length - 1]);
+  if (isNaN(loMs) || isNaN(hiMs)) return [];
+  var pad   = _rangeHalfStepMs(dates);
+  var start = _rangeIso(loMs - pad);
+  var end   = _rangeIso(hiMs + pad);
+  function back(years) {
+    var d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - years);
+    return d.getTime() <= loMs ? start : _rangeIso(d.getTime());
+  }
   return [
-    {count: 1, label: '1a', step: 'year', stepmode: 'backward'},
-    {count: 3, label: '3a', step: 'year', stepmode: 'backward'},
-    {count: 5, label: '5a', step: 'year', stepmode: 'backward'},
-    {count: 10, label: '10a', step: 'year', stepmode: 'backward'},
-    {step: 'all', label: 'Tudo'},
+    {label: '1a',   from: back(1),  to: end},
+    {label: '3a',   from: back(3),  to: end},
+    {label: '5a',   from: back(5),  to: end},
+    {label: '10a',  from: back(10), to: end},
+    {label: 'Tudo', from: start,    to: end},
   ];
+}
+
+// Datas REALMENTE plotadas: um x cujo y e nulo continua empurrando o autorange, e
+// as tabelas hierarquicas deste relatorio compartilham uma grade so -- a serie do
+// RTN vai a 2026-07 e a do IEG termina em 2026-01, a DLSP comeca muito depois da
+// GFSM. Derivando do que o div tem, nenhum grafico novo pode esquecer de aparar.
+function _extentPlotado(traces) {
+  var seen = {};
+  (traces || []).forEach(function(t) {
+    if (!t.x || !t.y) return;
+    for (var i = 0; i < t.x.length; i++) {
+      var v = t.y[i];
+      if (v === null || v === undefined || (typeof v === 'number' && isNaN(v))) continue;
+      seen[t.x[i]] = 1;
+    }
+  });
+  var out = Object.keys(seen);
+  out.sort();          // ISO 'YYYY-MM-DD' ordena lexicograficamente = cronologicamente
+  return out;
+}
+
+function _ensureRangeBar(divId, dates) {
+  var el = document.getElementById(divId);
+  if (!el) return;
+  var card = el.closest ? el.closest('.chart-card') : null;
+  if (!card || !card.parentNode) return;
+  // O card e embrulhado numa coluna flex para a regua ficar DENTRO do mesmo item
+  // de layout, e nao virar irma solta do card.
+  var wrap = card.parentNode;
+  if (!wrap.classList || !wrap.classList.contains('chart-with-range')) {
+    wrap = document.createElement('div');
+    wrap.className = 'chart-with-range';
+    card.parentNode.insertBefore(wrap, card);
+    wrap.appendChild(card);
+  }
+  var bar = wrap.querySelector('.range-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'range-bar';
+    wrap.appendChild(bar);
+  }
+  var opts = _rangeOptions(dates);
+  bar.innerHTML = '';
+  if (!opts.length) return;
+  opts.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'range-btn' + (_rangeSelected[divId] === opt.label ? ' active' : '');
+    btn.textContent = opt.label;
+    btn.addEventListener('click', function() {
+      _rangeSelected[divId] = opt.label;
+      var sib = bar.querySelectorAll('.range-btn');
+      for (var i = 0; i < sib.length; i++) sib[i].classList.remove('active');
+      btn.classList.add('active');
+      Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]});
+    });
+    opt.btn = btn;
+    bar.appendChild(btn);
+  });
+  // Redesenho (marcar uma linha, trocar Nivel/Base/Modelagem) reinicia o eixo:
+  // reaplica a faixa escolhida, e sem faixa escolhida aplica "Tudo" EXPLICITAMENTE
+  // em vez de deixar no autorange -- que e justamente o que abre a faixa vazia.
+  var keep = _rangeSelected[divId] || 'Tudo';
+  for (var i = 0; i < opts.length; i++) {
+    if (opts[i].label === keep) {
+      if (!_rangeSelected[divId]) opts[i].btn.classList.add('active');
+      Plotly.relayout(divId, {'xaxis.range': [opts[i].from, opts[i].to]});
+      return;
+    }
+  }
+}
+
+// _bindYAutofit registra um listener por chamada; estes graficos sao redesenhados a
+// cada toggle, entao sem isto acumularia um listener por redesenho.
+var _autofitBound = {};
+function _bindYAutofitOnce(divId) {
+  if (_autofitBound[divId]) return;
+  _autofitBound[divId] = true;
+  _bindYAutofit(divId);
+}
+
+// O que todo grafico faz depois de plotado: refaz o Y quando so o X anda, e instala
+// (ou reaplica) a regua de periodo sobre a extensao real das series.
+function finishChart(divId) {
+  _bindYAutofitOnce(divId);
+  var el = document.getElementById(divId);
+  _ensureRangeBar(divId, _extentPlotado((el && el.data) || []));
 }
 function mkTimeseriesLayout(yTitle, height) {
   return {
     height: height || 560, margin: {l: 60, r: 30, t: 40, b: 70}, dragmode: 'pan',
-    xaxis: {type: 'date', gridcolor: '#eee', rangeselector: {
-      buttons: _rangeButtons(), bgcolor: '#f5f6f8', bordercolor: '#dde1e9', borderwidth: 1,
-      activecolor: C.azul, font: {size: 11, color: '#555'},
-    }},
+    xaxis: {type: 'date', gridcolor: '#eee'},
     yaxis: {title: {text: yTitle, font: {size: 11}}, zeroline: true, zerolinecolor: '#bbb', gridcolor: '#eee'},
     legend: {orientation: 'h', y: -0.22, x: 0.5, xanchor: 'center', font: {size: 11}},
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
@@ -1422,7 +1704,7 @@ function renderLineChart(divId, specs, yTitle, height) {
     };
   });
   Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
-  _bindYAutofit(divId);
+  finishChart(divId);
 }
 // barSpecs: [{dates, values, label, color}] -- barras 'relative' (mistura sinal) somando ao total.
 // totalSpec: {dates, values, label, color} -- linha do total, mesmo eixo (nao secundario).
@@ -1439,12 +1721,495 @@ function renderRelativeBarWithLine(divId, barSpecs, totalSpec, yTitle, height) {
     hovertemplate: '<b>' + totalSpec.label + '</b><br>%{x}<br>%{y:,.3f} p.p.<extra></extra>',
   });
   Plotly.react(divId, traces, mkRelativeBarLayout(yTitle, height), _PLOTLY_CONFIG);
-  _bindYAutofit(divId);
+  finishChart(divId);
 }
 // ── Aba Receitas e Despesas (GFSM) — hierarchical table + chart, same pattern as
 // analytics/brasil/credit/report.html's makeHierTab() (Saldo/Concessão tabs), adapted here
 // for a single tab with quarterly data (fmtDate passed via opts instead of a
 // hardcoded fmtMonthShort — this report's dates are quarter-starts, not months). ──
+// ── Cartão de definição das linhas ────────────────────────────────────────────
+// Padrão do skill lis-dashboard. Um único cartão no <body>, reposicionado a cada
+// abertura; hover abre, clique fixa (para o texto poder ser lido com calma e
+// selecionado), clique fora ou Esc fecha.
+//
+// A busca é por NAMESPACE, e isso não é decoração: `receita_total` existe na árvore
+// da GFSM e na do RTN querendo dizer coisas DIFERENTES (a GFSM classifica por
+// natureza econômica e conta as transferências constitucionais como despesa; o RTN
+// as deduz da receita). Um mapa de chave nua faria uma tabela explicar a outra sem
+// erro nenhum. Cada instância declara o seu `infoNs`.
+//
+// `infoNs` aceita uma LISTA, tentada em ordem: a tabela de impulso via RTN usa
+// ['imprtn','rtn'] — o que muda ali é o significado dos dois ramos de topo (viram
+// contribuição, com sinal), e as ~30 rubricas abaixo continuam sendo as mesmas
+// coisas descritas na tabela de Receitas e Despesas.
+//
+// Segunda regra de busca: se `ns:chave` não existir, tenta `ns:<sufixo depois do
+// último "__">`. É o que faz uma definição só servir para as 4 esferas do IEG
+// (`geral__folha`, `central__folha`, ...) e para os mesmos itens da DLSP sob
+// `interna__`/`externa__`/`total__`, sem replicar o texto 4 vezes.
+// Conteúdo dos cartões de definição, por `namespace:chave`. Fica FORA das árvores de
+// propósito: elas já carregam key/label/seriesKey/children, e três parágrafos dentro de
+// cada literal tornariam a estrutura da hierarquia ilegível justamente onde ela precisa
+// ser lida de relance. Só entra aqui o rótulo que precisa de cartão — o ícone tem que ser
+// raro para significar alguma coisa.
+//
+// Namespaces: gfsm · rtn · imprtn (sobrepõe rtn na tabela de impulso) · inv · ieg ·
+// imprp · dlsp · credof. Ver infoOf() acima para a regra de busca (namespace, depois
+// sufixo depois do último "__").
+var NODE_INFO = {
+
+  // ───────────────────────────── Receitas e Despesas — GFSM (fisc_efgg, EFGG/Tesouro)
+  'gfsm:receita_total': {
+    full: 'Receita total do governo — GFSM 2014, código 1',
+    desc: 'Classificada por natureza econômica, não por rubrica orçamentária. O escopo segue o seletor Esfera acima: em <b>Governo Geral</b> as três esferas são somadas célula a célula, sem anular as transferências entre elas — o mesmo repasse aparece como receita de quem recebe e despesa de quem paga.',
+  },
+  'gfsm:receita_impostos': {
+    full: 'Impostos — GFSM 11',
+    desc: 'Tributos compulsórios sem contrapartida direta ao contribuinte. Não incluem as contribuições sociais, que a GFSM classifica à parte justamente porque geram direito a benefício.',
+  },
+  'gfsm:receita_impostos_bens_servicos': {
+    full: 'Impostos sobre bens e serviços — GFSM 114',
+    desc: 'Tributação sobre o consumo: ICMS, ISS, IPI, Cofins e PIS/Pasep entram aqui, somando as três esferas.',
+  },
+  'gfsm:receita_impostos_folha': {
+    full: 'Impostos sobre folha de pagamentos — GFSM 112',
+    desc: 'Tributos incidentes sobre a folha que não são contribuição previdenciária — essa fica em Contribuições Sociais.',
+  },
+  'gfsm:receita_contribuicoes_sociais': {
+    full: 'Contribuições sociais — GFSM 12',
+    desc: 'Contribuições previdenciárias e sociais de empregadores e trabalhadores. Separadas dos impostos porque há contrapartida: geram direito a benefício.',
+  },
+  'gfsm:receita_transferencias_doacoes': {
+    full: 'Transferências e doações recebidas — GFSM 13',
+    desc: 'Recursos recebidos de outra esfera de governo ou do exterior, sem contrapartida. É a linha que produz dupla contagem quando as três esferas são somadas: ela é a contraparte da despesa GFSM 26 de quem repassou.',
+  },
+  'gfsm:receita_outras_receitas': {
+    full: 'Outras receitas — GFSM 14',
+    desc: 'Rendas de propriedade (dividendos, royalties, juros recebidos), venda de bens e serviços e multas.',
+  },
+  'gfsm:despesa_total': {
+    full: 'Despesa total — GFSM 2 + 31',
+    desc: 'Gasto corrente mais investimento líquido. Ao contrário do RTN, <b>inclui os juros</b> da dívida (GFSM 24): a GFSM mede o resultado nominal, não o primário.',
+  },
+  'gfsm:gasto': {
+    full: 'Gasto corrente — GFSM 2',
+    desc: 'Despesa que não cria ativo: remuneração, uso de bens e serviços, depreciação, juros, subsídios, transferências e benefícios.',
+  },
+  'gfsm:remuneracao_empregados': {
+    full: 'Remuneração de empregados — GFSM 21',
+    desc: 'Salários e vencimentos mais a contribuição social paga pelo governo na condição de empregador.',
+  },
+  'gfsm:salarios_vencimentos': {
+    full: 'Salários e vencimentos — GFSM 211',
+    desc: 'É a linha que alimenta a categoria <b>Folha</b> do IEG, na aba Impulso Fiscal, com multiplicador 1,32.',
+  },
+  'gfsm:contribuicoes_sociais': {
+    full: 'Contribuições sociais do empregador — GFSM 212',
+    desc: 'Contribuição patronal do governo pelos seus próprios servidores. Não confundir com <i>Contribuições Sociais</i> do lado da receita (GFSM 12), que é arrecadação — conceitos diferentes com nome parecido.',
+  },
+  'gfsm:uso_bens_servicos': {
+    full: 'Uso de bens e serviços — GFSM 22',
+    desc: 'Custeio da máquina: materiais, serviços contratados, manutenção.',
+  },
+  'gfsm:consumo_capital_fixo': {
+    full: 'Consumo de capital fixo — GFSM 23',
+    desc: 'Depreciação do estoque de ativos do governo. É uma despesa <b>imputada</b>, não um desembolso de caixa — por isso reaparece subtraindo no Investimento Líquido.',
+  },
+  'gfsm:juros': {
+    full: 'Juros — GFSM 24',
+    desc: 'Juros da dívida pública. Fora do resultado primário por definição; aparece aqui porque a GFSM apura o resultado nominal.',
+  },
+  'gfsm:subsidios': {
+    full: 'Subsídios — GFSM 25',
+    desc: 'Transferências correntes a empresas para influenciar preço ou nível de produção.',
+  },
+  'gfsm:transferencias_doacoes': {
+    full: 'Transferências e doações concedidas — GFSM 26',
+    desc: 'O lado pagador da linha de mesmo nome na receita, e inclui as transferências constitucionais a estados e municípios. <b>É aqui que a GFSM diverge do RTN</b>: o RTN deduz essas transferências da receita (Receita Líquida) em vez de contá-las como despesa — a mesma operação, em lados opostos do demonstrativo.',
+  },
+  'gfsm:beneficios_previdenciarios_assistenciais': {
+    full: 'Benefícios previdenciários e assistenciais — GFSM 27',
+    desc: 'Aposentadorias, pensões e benefícios assistenciais. Alimenta a categoria <b>Transferências</b> do IEG (multiplicador 1,46).',
+  },
+  'gfsm:outros_gastos': {
+    full: 'Outros gastos — GFSM 28',
+    desc: 'Gasto corrente que não se encaixa nas categorias acima.',
+  },
+  'gfsm:investimento_liquido': {
+    full: 'Investimento líquido em ativos não financeiros — GFSM 31',
+    desc: 'Aquisição menos venda de ativos não financeiros, menos o consumo de capital fixo. <b>Líquido</b>: mede a variação do estoque de capital, não o desembolso bruto.',
+  },
+  'gfsm:aquisicao_ativos_nao_financeiros': {
+    full: 'Aquisição de ativos não financeiros — GFSM 31.1',
+    desc: 'O investimento bruto. Alimenta a categoria <b>Investimentos</b> do IEG (multiplicador 1,66), o maior dos quatro.',
+  },
+  'gfsm:venda_ativos_nao_financeiros': {
+    full: 'Venda de ativos não financeiros — GFSM 31.2',
+    desc: 'Alienação de bens. Entra subtraindo no investimento líquido.',
+  },
+  'gfsm:investimento_consumo_capital_fixo': {
+    full: 'Consumo de capital fixo no investimento — GFSM 31.3',
+    desc: 'A mesma depreciação já contada no gasto corrente, subtraída aqui para que o investimento fique líquido.',
+  },
+
+  // ───────────────────────────────── Receitas e Despesas — RTN (fisc_rtn, Tesouro)
+  'rtn:receita_liquida': {
+    full: 'Receita Líquida do Governo Central — RTN 10.01.2',
+    desc: 'Receita Total <b>menos</b> as transferências por repartição de receita a estados e municípios. É esta — e não a Receita Total — a linha que se compara com a Despesa Total: a receita bruta inclui recursos que nunca chegam a ser gastos pelo Governo Central.',
+  },
+  'rtn:receita_total': {
+    full: 'Receita Total do Governo Central — RTN 10.01.1',
+    desc: 'Arrecadação bruta, antes de deduzir as transferências constitucionais. <b>Não é comparável à Despesa Total</b> — parte dela é repasse obrigatório a outros entes.',
+  },
+  'rtn:receita_administrada_rfb': {
+    full: 'Receita administrada pela Receita Federal do Brasil',
+    desc: 'Os tributos que a RFB arrecada e fiscaliza. Não inclui a arrecadação previdenciária, que o RTN publica em linha própria logo abaixo.',
+  },
+  'rtn:imposto_de_importacao': { full: 'Imposto de Importação (II)' },
+  'rtn:ipi': {
+    full: 'Imposto sobre Produtos Industrializados',
+    desc: 'Inclui o IPI vinculado à importação, além do incidente sobre automóveis, bebidas e fumo.',
+  },
+  'rtn:imposto_de_renda': {
+    full: 'Imposto de Renda (IRPF + IRPJ + IRRF)',
+    desc: 'Soma pessoa física, pessoa jurídica e retido na fonte. Parte do IR é repartida com estados e municípios via FPE/FPM — a dedução aparece em Transferências, não aqui.',
+  },
+  'rtn:iof': { full: 'Imposto sobre Operações Financeiras' },
+  'rtn:cofins': { full: 'Contribuição para o Financiamento da Seguridade Social' },
+  'rtn:pis_pasep': { full: 'Programa de Integração Social / Programa de Formação do Patrimônio do Servidor Público' },
+  'rtn:csll': { full: 'Contribuição Social sobre o Lucro Líquido' },
+  'rtn:receita_da_cide_combustiveis': { full: 'Contribuição de Intervenção no Domínio Econômico — Combustíveis' },
+  'rtn:outras_administradas_pela_rfb': {
+    full: 'Demais receitas administradas pela RFB',
+    desc: 'O resíduo da arrecadação administrada, fora dos oito tributos listados acima.',
+  },
+  'rtn:arrecadacao_liquida_rgps': {
+    full: 'Arrecadação líquida para o Regime Geral de Previdência Social',
+    desc: 'Contribuições previdenciárias do setor privado, líquidas de restituições e compensações. Contra os Benefícios Previdenciários do lado da despesa, forma o resultado da Previdência que o RTN apura separado do Tesouro.',
+  },
+  'rtn:incentivos_fiscais': {
+    full: 'Incentivos fiscais (LRF, art. 14)',
+    desc: 'Renúncia de receita — isenções, anistias, remissões, créditos presumidos. Entra <b>deduzindo</b>, então é estruturalmente negativa ou zero, ao contrário das outras três linhas de Receita Total. Medido na série de 1997 a hoje: 98 meses negativos, 254 exatamente zero e 2 positivos de arredondamento; está zerada em praticamente todo mês desde janeiro/2024.',
+  },
+  'rtn:receitas_nao_administradas_rfb': {
+    full: 'Receitas não administradas pela RFB',
+    desc: 'O que não passa pela Receita Federal: concessões e permissões, dividendos de estatais, exploração de recursos naturais, receitas próprias de órgãos. Mais volátil que a receita tributária, porque depende de eventos pontuais como leilões.',
+  },
+  'rtn:transferencias_reparticao_receita': {
+    full: 'Transferências por repartição de receita — RTN 10.02.1',
+    desc: 'A parcela da arrecadação federal que a Constituição destina a estados e municípios: FPM, FPE, IPI-Exportação e demais repartições. Sai antes de qualquer decisão de gasto — é exatamente o que separa Receita Total de Receita Líquida.',
+  },
+  'rtn:despesa_total': {
+    full: 'Despesa Total do Governo Central — RTN 10.03.1',
+    desc: 'Despesa <b>primária</b>: exclui os juros da dívida. Classificada por rubrica orçamentária, e não por natureza econômica como na tabela GFSM ao lado — os dois totais não devem ser reconciliados linha a linha.',
+  },
+  'rtn:beneficios_previdenciarios': {
+    full: 'Benefícios previdenciários do RGPS',
+    desc: 'Aposentadorias, pensões e demais benefícios do Regime Geral, incluindo sentenças judiciais e precatórios. Aberto em clientela urbana e rural.',
+  },
+  'rtn:beneficios_previdenciarios_urbano': { full: 'Benefícios previdenciários — clientela urbana' },
+  'rtn:beneficios_previdenciarios_rural': { full: 'Benefícios previdenciários — clientela rural' },
+  'rtn:pessoal_encargos_sociais': {
+    full: 'Pessoal e encargos sociais',
+    desc: 'Folha dos três Poderes federais — ativos, inativos e pensionistas —, mais encargos, sentenças judiciais e precatórios de pessoal.',
+  },
+  'rtn:outras_despesas_obrigatorias': {
+    full: 'Outras despesas obrigatórias',
+    desc: 'Obrigatórias que não são folha nem benefício do RGPS: abono e seguro-desemprego, BPC/LOAS, subsídios e subvenções, complemento do FGTS, entre outras. A execução decorre de lei, não de decisão do ano.',
+  },
+  'rtn:despesas_executivo_prog_financeira': {
+    full: 'Despesas do Poder Executivo sujeitas à programação financeira',
+    desc: 'A parte do orçamento que o Executivo pode contingenciar ao longo do ano — obrigatórias com controle de fluxo mais as discricionárias. É onde o ajuste de curto prazo acontece quando a arrecadação frustra.',
+  },
+  'rtn:obrigatorias_com_controle_de_fluxo': {
+    full: 'Despesas obrigatórias com controle de fluxo',
+    desc: 'Obrigatórias no valor, mas com o desembolso cronogramado pelo Executivo dentro do ano: pisos de saúde e educação, Bolsa Família, benefícios a servidores.',
+  },
+  'rtn:despesas_discricionarias_do_poder_executivo': {
+    full: 'Despesas discricionárias do Poder Executivo',
+    desc: 'Custeio e investimento alocados por decisão própria dentro do limite orçamentário — a rubrica que absorve primeiro um contingenciamento. Aberta abaixo por função orçamentária.',
+  },
+  'rtn:discricionarias_administracao': {
+    full: 'Discricionárias — função Administração',
+    desc: 'Custeio da máquina administrativa federal fora das funções finalísticas.',
+  },
+  'rtn:discricionarias_demais': {
+    full: 'Discricionárias — demais funções',
+    desc: 'As funções orçamentárias fora das oito listadas acima, agregadas.',
+  },
+  'rtn:resultado_primario_governo_central': {
+    full: 'Resultado primário do Governo Central — RTN 10.04.1 (código STN 8055)',
+    desc: 'Receita Líquida menos Despesa Total, apurado <b>acima da linha</b>. Positivo = superávit. Difere do número do BCB (abaixo da linha, setor público consolidado) por escopo e por método, e o próprio RTN publica a ponte: <code>abaixo = acima + ajustes metodológicos + discrepância estatística</code>.',
+  },
+
+  // ───────────── Impulso via Resultado Primário — RTN (sobrepõe rtn: só onde muda)
+  'imprtn:receita_liquida': {
+    full: 'Contribuição da receita ao impulso fiscal',
+    desc: 'Entra com <b>sinal invertido</b>: arrecadar menos é expansionista, então uma queda da receita líquida em % do PIB aparece como contribuição positiva. Não é o nível da receita — é a variação dela entre duas janelas anuais.',
+  },
+  'imprtn:despesa_total': {
+    full: 'Contribuição da despesa ao impulso fiscal',
+    desc: 'Entra com sinal direto: gastar mais é expansionista. Como <code>primário = receita líquida − despesa</code>, esta linha e a de receita somam exatamente o impulso total.',
+  },
+  'imprtn:transferencias_reparticao_receita': {
+    full: 'Contribuição das transferências ao impulso fiscal',
+    desc: 'O sinal inverte <b>duas vezes</b> e volta ao positivo: as transferências estão dentro da Receita Líquida, mas subtraindo dela. Transferir mais a estados e municípios reduz a receita líquida do Governo Central, e isso é expansionista <i>para o Governo Central</i> — o gasto migra para outra esfera, que esta tabela não cobre.',
+  },
+
+  // ─────────────────────────────────────────── Investimento (fisc_investimento)
+  'inv:total': {
+    full: 'Investimento total do Governo Federal',
+    desc: 'GND 4 + GND 5 + ajuste de ordem bancária. Marcá-lo junto com os dois GNDs empilha o mesmo valor duas vezes — por isso o padrão da aba é marcar os dois GNDs separados, não o total.',
+  },
+  'inv:gnd4': {
+    full: 'Grupo de Natureza da Despesa 4 — Investimentos',
+    desc: 'Despesa que <b>cria um ativo novo</b>: obras, instalações, equipamentos e material permanente, mais transferências de capital a outros entes para o mesmo fim.',
+  },
+  'inv:gnd5': {
+    full: 'Grupo de Natureza da Despesa 5 — Inversões Financeiras',
+    desc: 'Aquisição de ativo <b>já existente</b> ou participação em capital: compra de imóveis, integralização de cotas, capitalização de empresas e fundos. Não cria capacidade produtiva nova. É a distinção que este corte existe para mostrar — o pico de 1,38% do PIB em 2020 é quase todo GND 5.',
+  },
+  'inv:ajuste_ordem_bancaria': {
+    full: 'Ajuste de ordem bancária',
+    desc: 'Diferença entre a despesa liquidada e a efetivamente paga por ordem bancária no período. <b>Cruza o zero com frequência</b> — negativa em 61 dos 222 meses da série —, então variação percentual sobre esta linha não tem leitura econômica.',
+  },
+  'inv:gnd4__aplicacoes_diretas': {
+    full: 'Aplicações diretas da União',
+    desc: 'Investimento executado pelo próprio governo federal, sem passar por transferência a outro ente.',
+  },
+  'inv:gnd4__transf_estados_df': {
+    full: 'Transferências de capital a Estados e ao Distrito Federal',
+    desc: 'Recurso federal para investimento executado por outro ente. Aparece como investimento da União no orçamento e como receita de capital de quem recebe.',
+  },
+  'inv:gnd5__participacao_uniao_capital': {
+    full: 'Participação da União no capital de empresas',
+    desc: 'Capitalização de estatais e de empresas em que a União tem participação. Troca caixa por participação acionária — operação financeira, não formação de capital.',
+  },
+  'inv:gnd5__integralizacao_cotas': {
+    full: 'Integralização de cotas em fundos',
+    desc: 'Aportes em fundos garantidores de crédito e em organismos internacionais.',
+  },
+
+  // ──────────────────────────────────────── Impulso Fiscal — IEG (fisc_efgg)
+  'ieg:geral': {
+    full: 'Governo Geral — União, estados e municípios',
+    desc: 'É a linha fixa do gráfico. As três esferas marcadas empilham exatamente sobre ela no nível 4T Acumulado; no Trimestre há um resíduo pequeno, porque cada esfera roda o seu próprio ajuste sazonal e o STL não é linear.',
+  },
+  'ieg:central': {
+    full: 'União (Governo Central no EFGG)',
+    desc: 'Mesmo escopo do RTN, mas em classificação GFSM e cadência trimestral — os números não batem linha a linha com a aba Receitas e Despesas.',
+  },
+  'ieg:estados': { full: 'Governos estaduais e do Distrito Federal' },
+  'ieg:municipios': { full: 'Governos municipais' },
+  'ieg:folha': {
+    full: 'Folha de pagamento — multiplicador 1,32',
+    desc: 'Salários e vencimentos (GFSM 211). O multiplicador é o valor publicado por Resende &amp; Pires (FGV/Tesouro, 2024) e <b>não foi reestimado</b> com os dados deste projeto.',
+  },
+  'ieg:transferencias': {
+    full: 'Transferências — multiplicador 1,46',
+    desc: 'Benefícios previdenciários e assistenciais (GFSM 27).',
+  },
+  'ieg:investimentos': {
+    full: 'Investimentos — multiplicador 1,66',
+    desc: 'Aquisição de ativos não financeiros (GFSM 31.1). O maior multiplicador dos quatro: um real deslocado para investimento gera mais impulso que o mesmo real em qualquer outra categoria.',
+  },
+  'ieg:outras': {
+    full: 'Outras despesas — multiplicador 0,64',
+    desc: 'O restante do gasto primário. O menor multiplicador — é essa dispersão que faz a <b>composição</b> do gasto, e não só o total, mover o IEG.',
+  },
+
+  // ──────────────────── Impulso via Resultado Primário — BCB/NFSP (fisc_nfsp)
+  'imprp:governo_federal': {
+    full: 'Governo Federal, exclusive Banco Central',
+    desc: 'Tesouro Nacional e Previdência Social. O BCB é publicado pelo próprio BCB como série separada, na linha abaixo.',
+  },
+  'imprp:banco_central': {
+    full: 'Banco Central do Brasil',
+    desc: 'Resultado primário do próprio BCB. Historicamente próximo de zero — está listado por completude, não por relevância fiscal. Desmarque para tirá-lo do gráfico.',
+  },
+  'imprp:estados': { full: 'Governos estaduais e do Distrito Federal' },
+  'imprp:municipios': { full: 'Governos municipais' },
+  'imprp:empresas_estatais': {
+    full: 'Empresas estatais federais, estaduais e municipais',
+    desc: 'Petrobras e Eletrobras estão <b>fora</b> do conceito de setor público usado pelo BCB nesta apuração.',
+  },
+
+  // ─────────────────────── Impulso via Crédito a Inst. Financ. Oficiais (fisc_dlsp_fatores)
+  'credof:creditos_inst_fin_oficiais': {
+    full: 'Créditos concedidos a instituições financeiras oficiais — fator Primário',
+    desc: 'O <b>canal parafiscal</b>. Quando o Tesouro empresta a um banco público, a operação é financeira: cria um ativo e não passa pela despesa primária, mas coloca funding subsidiado na economia. Sinal invertido em relação à planilha do BCB, para que positivo = emprestando = expansionista.',
+  },
+  'credof:creditos_bndes': {
+    full: 'Créditos junto ao BNDES',
+    desc: 'O grosso do canal: +4,65% do PIB no pico de maio/2010 (capitalização pós-crise) e −2,65% em agosto/2018 (pré-pagamentos do BNDES ao Tesouro).',
+  },
+  'credof:instrumentos_hibridos': {
+    full: 'Instrumentos híbridos de capital e dívida',
+    desc: 'Aportes que contam como capital regulatório da instituição sem serem participação acionária.',
+  },
+
+  // ────────────────────────────────── Dívida Líquida — DLSP (fisc_dlsp_fatores)
+  'dlsp:total': {
+    full: 'Dívida líquida do setor público (DLSP)',
+    desc: 'Passivos menos ativos financeiros do setor público não financeiro <b>mais</b> o Banco Central. Inclui estatais e BCB — a DBGG não inclui nenhum dos dois, e por isso os dois números não se reconciliam.',
+  },
+  'dlsp:interna': {
+    desc: 'Posição em moeda nacional — dívida mobiliária, bancária, compromissadas e base monetária de um lado; Conta Única, créditos a bancos públicos e dívidas renegociadas do outro. É a maior parte da DLSP.',
+  },
+  'dlsp:externa': {
+    desc: 'Posição em moeda estrangeira. É onde as reservas internacionais entram — <b>dentro</b> da posição externa líquida do Banco Central, não como linha própria.',
+  },
+  'dlsp:gov_federal': {
+    full: 'Governo Federal',
+    desc: 'A posição bruta inclui créditos e débitos <b>contra o próprio governo</b> (marcados ⇄ no rótulo), que se anulam na consolidação. Nunca some a coluna bruta entre entidades: dá R$ 18,4 tri de passivos contra R$ 12,0 tri consolidados. O líquido, esse sim, soma corretamente.',
+  },
+  'dlsp:bacen': {
+    full: 'Banco Central do Brasil',
+    desc: 'Base monetária e operações compromissadas do lado do passivo; reservas internacionais e a Conta Única do Tesouro do lado do ativo. As duas pontas contra o Tesouro (⇄) se anulam no consolidado.',
+  },
+  'dlsp:gov_est': { full: 'Governos estaduais e do Distrito Federal' },
+  'dlsp:gov_mun': { full: 'Governos municipais' },
+  'dlsp:estatais': {
+    full: 'Empresas estatais',
+    desc: 'Federais, estaduais e municipais. Petrobras e Eletrobras estão fora do conceito de setor público usado aqui.',
+  },
+  'dlsp:passivo': {
+    full: 'Passivos',
+    desc: 'O que a entidade deve: dívida mobiliária, bancária, compromissadas, base monetária, obrigações externas.',
+  },
+  'dlsp:caixa': {
+    full: 'Caixa e equivalentes',
+    desc: 'Disponibilidades e ativos de alta liquidez. <b>Este conceito só existe nesta visão por entidade</b>: o colchão do Tesouro é a Conta Única (~R$ 2,06 tri), mas ela é um depósito no BCB e desaparece na consolidação — sobram ~R$ 54 bi em depósitos à vista em bancos comerciais.',
+  },
+  'dlsp:credito': {
+    full: 'Títulos e créditos',
+    desc: 'Ativos que não são caixa: créditos concedidos a bancos públicos, aplicações em fundos e programas, dívidas renegociadas a receber.',
+  },
+  'dlsp:mobiliaria_mercado': {
+    full: 'Dívida mobiliária em poder do mercado',
+    desc: 'Títulos públicos federais fora da carteira do Banco Central. É o maior passivo isolado do Governo Federal.',
+  },
+  'dlsp:base_monetaria': {
+    full: 'Base monetária',
+    desc: 'Papel-moeda em poder do público mais reservas bancárias. Passivo do Banco Central que não rende juros.',
+  },
+  'dlsp:compromissadas': {
+    full: 'Operações compromissadas',
+    desc: 'Venda de títulos com compromisso de recompra — o instrumento com que o BCB enxuga a liquidez diária. Passivo remunerado à Selic.',
+  },
+  'dlsp:relac_bacen': {
+    full: 'Relacionamento com o Banco Central ⇄',
+    desc: 'A Conta Única do Tesouro e a carteira de títulos do Bacen, vistas do lado do Tesouro. Par intragoverno: cancela exatamente contra a linha espelhada do BCB e some no consolidado.',
+  },
+  'dlsp:relac_gov_federal': {
+    full: 'Relacionamento com o Governo Federal ⇄',
+    desc: 'A mesma posição da linha acima, vista do lado do Banco Central e com o sinal oposto.',
+  },
+  'dlsp:reneg_9496_2185': {
+    full: 'Dívidas renegociadas — Lei nº 9.496/1997 e MP nº 2.185 ⇄',
+    desc: 'A renegociação das dívidas estaduais e municipais com a União. Par intragoverno: crédito da União e débito dos estados/municípios somam <b>zero em todos os 295 meses</b> da série.',
+  },
+  'dlsp:reneg_8727': {
+    full: 'Dívidas renegociadas — Lei nº 8.727/1993 ⇄',
+    desc: 'Refinanciamento anterior de dívidas de estados, municípios e estatais com a União. Também se anula na consolidação.',
+  },
+  'dlsp:creditos_inst_fin_oficiais': {
+    full: 'Créditos concedidos a instituições financeiras oficiais',
+    desc: 'Empréstimos do Tesouro a bancos públicos, com o BNDES no centro. O <b>fator Primário</b> desta mesma linha é o que a aba Impulso Fiscal usa como canal parafiscal. O saldo hoje é bem menor que o pico do ciclo.',
+  },
+  'dlsp:previdencia': {
+    full: 'Previdência social',
+    desc: 'Posição do RGPS. É um dos poucos itens que trocam de sinal ao longo da série — classificado por conceito, não pelo sinal observado no mês.',
+  },
+  'dlsp:dep_bacen': {
+    full: 'Depósitos no Banco Central',
+    desc: 'Recursos de terceiros depositados no BCB, fora as reservas bancárias.',
+  },
+};
+
+function infoOf(ns, key) {
+  var nss = Array.isArray(ns) ? ns : [ns];
+  var sufixo = String(key).indexOf('__') >= 0 ? String(key).split('__').pop() : null;
+  for (var i = 0; i < nss.length; i++) {
+    var hit = NODE_INFO[nss[i] + ':' + key] || (sufixo && NODE_INFO[nss[i] + ':' + sufixo]);
+    if (hit && (hit.full || hit.desc)) return hit;
+  }
+  return null;
+}
+
+var _infoPop = null, _infoPinned = null;
+function _ensureInfoPop() {
+  if (_infoPop) return _infoPop;
+  _infoPop = document.createElement('div');
+  _infoPop.className = 'info-pop';
+  document.body.appendChild(_infoPop);
+  _infoPop.addEventListener('mouseleave', function() { if (!_infoPinned) hideInfo(); });
+  document.addEventListener('click', function(e) {
+    if (_infoPinned && !_infoPop.contains(e.target) && e.target !== _infoPinned) hideInfo();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') hideInfo(); });
+  return _infoPop;
+}
+function hideInfo() {
+  if (!_infoPop) return;
+  _infoPop.classList.remove('show');
+  if (_infoPinned) { _infoPinned.classList.remove('pinned'); _infoPinned = null; }
+}
+function showInfo(btn, label, info, unitFn) {
+  var pop = _ensureInfoPop();
+  var html = '<h4>' + label + '</h4>';
+  // `full` só entra quando difere do rótulo já na tela — senão o cartão abre para
+  // repetir de volta a linha que o leitor acabou de ler.
+  if (info.full && info.full !== label) html += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) html += '<div class="info-desc">' + info.desc + '</div>';
+  // A unidade vem da MESMA função que monta o título do eixo Y da tabela, nunca de
+  // uma string fixa: estas tabelas têm seletores de Nível/Nominal-Real/Modelagem, e
+  // uma unidade escrita à mão passaria a mentir no primeiro clique.
+  var un = null;
+  try { un = unitFn ? unitFn() : null; } catch (e) { un = null; }
+  if (un) html += '<div class="info-unit">Unidade: ' + un + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+  // Abaixo-à-direita do botão, puxado para dentro da janela se estourar (as tabelas
+  // rolam na horizontal, então o botão pode estar na borda) e virado para cima
+  // quando não couber embaixo.
+  var r = btn.getBoundingClientRect();
+  var w = pop.offsetWidth || 380, h = pop.offsetHeight || 120;
+  var left = r.left + window.scrollX;
+  var maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  var top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) top = r.top + window.scrollY - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+// Pendura o botão na célula do rótulo. Não faz nada quando não há entrada no mapa --
+// é assim que o ícone continua raro e, por isso, informativo.
+function attachInfo(hostEl, ns, node, unitFn) {
+  var info = infoOf(ns, node.key);
+  if (!info) return null;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definição de ' + node.label);
+  b.addEventListener('mouseenter', function() { if (!_infoPinned) showInfo(b, node.label, info, unitFn); });
+  b.addEventListener('mouseleave', function() {
+    if (_infoPinned) return;
+    // Deixa o ponteiro atravessar o vão de 6px até o cartão antes de fechar.
+    setTimeout(function() { if (!_infoPinned && _infoPop && !_infoPop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (_infoPinned === b) { hideInfo(); return; }
+    hideInfo();
+    _infoPinned = b; b.classList.add('pinned');
+    showInfo(b, node.label, info, unitFn);
+  });
+  hostEl.appendChild(b);
+  return b;
+}
+
 var GFSM_CHART_COLORS = [C.azul, C.dourado, C.verde, C.laranja, C.azulCl, C.amarelo, '#8E44AD', '#16A085'];
 // R$ milhoes -> string auto-escalada (mi/bi/tri) -- linhas variam de dezenas de R$mi
 // (Venda de Ativos Não Financeiros) a ~R$2tri (Receita/Despesa Total).
@@ -1585,6 +2350,11 @@ function makeHierTab(opts) {
   // acompanha automaticamente o accum selecionado (inclui o colapso trimestral
   // acima), em vez de sempre olhar para as datas de "bruto" como antes (o que
   // fazia a Trimestral da RTN repetir 3x o mesmo valor -- ver CLAUDE.md Gotchas).
+  // Unidade do cartão de definição: a MESMA string do título do eixo Y, com os três
+  // seletores (Nível/Nominal-Real/Modelagem) já aplicados.
+  function infoUnit() {
+    return opts.yTitle(state.metric, state.basis, rootFor().ref_date, state.accum);
+  }
   function refDates() {
     var prevMetric = state.metric;
     state.metric = 'level';
@@ -1647,6 +2417,11 @@ function makeHierTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      // Botão "i" + cartão de definição (padrão lis-dashboard). Nasce da presença da
+      // entrada em NODE_INFO, não de uma decisão linha a linha no markup -- é o que
+      // mantém o ícone raro. `infoUnit` é a MESMA expressão que monta o título do eixo
+      // Y desta tabela, para o cartão não passar a mentir quando um seletor muda.
+      if (opts.infoNs) attachInfo(tdLabel, opts.infoNs, node, infoUnit);
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       dates.forEach(function(d) {
@@ -1773,6 +2548,11 @@ function _gfsmYTitle(metric, basis, refDate, accum) {
   return accum === 'acum' ? base + ' — Acum. 4T' : base;
 }
 var GFSM_TAB = makeHierTab({
+  // Namespace do cartao de definicao. NAO pode ser compartilhado com 'rtn': as duas
+  // arvores usam as chaves `receita_total`/`despesa_total` querendo dizer coisas
+  // diferentes (a GFSM conta as transferencias constitucionais como despesa, o RTN as
+  // deduz da receita) -- um mapa de chave nua faria uma tabela explicar a outra.
+  infoNs: 'gfsm',
   dataKey: 'gfsm', anchorSeriesKey: 'despesa_total', esferaSelectId: 'gfsm-esfera-select',
   metricSelectId: 'gfsm-metric-select', basisSelectId: 'gfsm-basis-select', accumSelectId: 'gfsm-accum-select',
   tableHeadId: 'gfsm-table-head', tableBodyId: 'gfsm-table-body', chartDivId: 'chart-gfsm',
@@ -1806,6 +2586,7 @@ function _rtnYTitle(metric, basis, refDate, accum) {
   return base;
 }
 var RTN_TAB = makeHierTab({
+  infoNs: 'rtn',
   dataKey: 'rtn', anchorSeriesKey: 'despesa_total',
   metricSelectId: 'rtn-metric-select', basisSelectId: 'rtn-basis-select', accumSelectId: 'rtn-accum-select',
   tableHeadId: 'rtn-table-head', tableBodyId: 'rtn-table-body', chartDivId: 'chart-rtn',
@@ -1851,6 +2632,7 @@ function _invMetricAvailability(accum) {
 }
 function _invTab(corte) {
   return makeHierTab({
+    infoNs: 'inv',
     root: function() { return D.investimento.cortes[corte]; },
     sharedDates: function() { return D.investimento.dates; },
     defaultAccumKey: 'mensal', quarterlyStepAccum: 'trimestral',
@@ -1931,6 +2713,7 @@ function makeDlspHierTab(opts) {
     return (value >= 0 ? '+' : '') + value.toFixed(2).replace('.', ',') + '%';
   }
   function refDates() { return dates.slice(-12); }
+  var infoUnit = function() { return yTitle(); };
   function yTitle() {
     if (opts.yTitle) return opts.yTitle(state);
     if (state.metric === 'pctpib') {
@@ -1993,6 +2776,11 @@ function makeDlspHierTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      // Botão "i" + cartão de definição (padrão lis-dashboard). Nasce da presença da
+      // entrada em NODE_INFO, não de uma decisão linha a linha no markup -- é o que
+      // mantém o ícone raro. `infoUnit` é a MESMA expressão que monta o título do eixo
+      // Y desta tabela, para o cartão não passar a mentir quando um seletor muda.
+      if (opts.infoNs) attachInfo(tdLabel, opts.infoNs, node, infoUnit);
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       cols.forEach(function(d) {
@@ -2066,6 +2854,7 @@ function renderDlspBalanco() {
   }).join('');
   var roots = ((D.dlsp && D.dlsp.balanco_tree) || []).map(function(n) { return n.key; });
   DLSP_BALANCO_TAB = makeDlspHierTab({
+    infoNs: 'dlsp',
     treeKey: 'balanco_tree',
     fator: fatores[0].key,
     fatorSelectId: 'dlsp-balanco-fator-select',
@@ -2117,6 +2906,7 @@ function renderDlspTab() {
 
   DLSP_TABS = fatores.map(function(f) {
     return makeDlspHierTab({
+      infoNs: 'dlsp',
       fator: f.key,
       metricSelectId: 'dlsp-' + f.key + '-metric-select',
       tableHeadId: 'dlsp-' + f.key + '-table-head',
@@ -2139,6 +2929,7 @@ function renderDlspTab() {
 // JA e o fator `primario`, acumulado em 12m e com sinal invertido -- ver
 // _load_impulso_credito_oficial() em generate_report.py).
 var CREDITO_OFICIAL_TAB = makeDlspHierTab({
+  infoNs: 'credof',
   dataKey: 'credito_oficial', noFator: true,
   metricSelectId: 'credito-oficial-metric-select',
   tableHeadId: 'credito-oficial-table-head', tableBodyId: 'credito-oficial-table-body',
@@ -2183,6 +2974,7 @@ function makeImpulsoHierTab(opts) {
     if (value == null || isNaN(value)) return '—';
     return (value >= 0 ? '+' : '') + value.toFixed(3).replace('.', ',') + ' p.p.';
   }
+  function infoUnit() { return 'p.p. (' + opts.accumLabel(state.accum) + ')'; }
   // Ultimas 12 colunas, lidas da linha de total (sempre presente, o grid mais completo)
   // -- acompanha automaticamente o Nivel selecionado.
   function refDates() { return (totalFor().dates || []).slice(-12); }
@@ -2238,6 +3030,11 @@ function makeImpulsoHierTab(opts) {
       } else {
         tdLabel.appendChild(document.createTextNode(node.label));
       }
+      // Botão "i" + cartão de definição (padrão lis-dashboard). Nasce da presença da
+      // entrada em NODE_INFO, não de uma decisão linha a linha no markup -- é o que
+      // mantém o ícone raro. `infoUnit` é a MESMA expressão que monta o título do eixo
+      // Y desta tabela, para o cartão não passar a mentir quando um seletor muda.
+      if (opts.infoNs) attachInfo(tdLabel, opts.infoNs, node, infoUnit);
 
       tr.appendChild(tdCheck); tr.appendChild(tdLabel);
       dates.forEach(function(d) {
@@ -2284,6 +3081,9 @@ function makeImpulsoHierTab(opts) {
 }
 
 var IEG_HIER_TAB = makeImpulsoHierTab({
+  // A busca por sufixo faz uma definicao de categoria servir as 4 esferas:
+  // `geral__folha`, `central__folha`, ... todas caem em 'ieg:folha'.
+  infoNs: 'ieg',
   dataKey: 'ieg', accumSelectId: 'ieg-accum-select',
   tableHeadId: 'ieg-hier-table-head', tableBodyId: 'ieg-hier-table-body', chartDivId: 'chart-ieg-hier',
   colLabel: 'Esfera / Categoria de Despesa', defaultAccum: 'acum4t', fmtDate: fmtQuarterShort,
@@ -2298,6 +3098,7 @@ var IEG_HIER_TAB = makeImpulsoHierTab({
 });
 
 var IMPULSO_RP_TAB = makeImpulsoHierTab({
+  infoNs: 'imprp',
   dataKey: 'fiscal_impulse_nfsp', accumSelectId: 'impulso-rp-esfera-accum-select',
   tableHeadId: 'impulso-rp-table-head', tableBodyId: 'impulso-rp-table-body', chartDivId: 'chart-impulso-rp-esfera',
   colLabel: 'Esfera', defaultAccum: 'acum12m', fmtDate: fmtMonthShort,
@@ -2306,6 +3107,28 @@ var IMPULSO_RP_TAB = makeImpulsoHierTab({
   seriesFor: function(key, accum) { return impulsoRPEsfera(key, accum); },
   totalFor: function(accum) { return impulsoRPTotal(accum); },
   totalLabel: 'Impulso (total, Setor Público Consolidado)',
+  accumLabel: function(accum) { return accum === 'quarter' ? 'Trimestre (T/T)' : 'Acum. 12m (Y/Y), sinal invertido'; },
+});
+
+// Impulso via resultado primario ACIMA DA LINHA (RTN, Governo Central), 2026-08-28.
+// Convive com IMPULSO_RP_TAB (abaixo da linha, consolidado) de proposito -- ver a caption
+// da secao e o docstring de analytics/brasil/fiscal_policy/impulso_rtn_tab.py.
+var IMPULSO_RTN_TAB = makeImpulsoHierTab({
+  // Lista, tentada em ordem: 'imprtn' redefine so os 3 nos cujo SIGNIFICADO muda aqui
+  // (viram contribuicao ao impulso, com sinal); as ~30 rubricas abaixo continuam sendo
+  // as mesmas coisas ja descritas na tabela de Receitas e Despesas.
+  infoNs: ['imprtn', 'rtn'],
+  dataKey: 'impulso_rtn', accumSelectId: 'impulso-rtn-accum-select',
+  tableHeadId: 'impulso-rtn-table-head', tableBodyId: 'impulso-rtn-table-body',
+  chartDivId: 'chart-impulso-rtn',
+  colLabel: 'Receita / Despesa (contribuição ao impulso)',
+  defaultAccum: 'acum12m', fmtDate: fmtMonthShort,
+  // Default: os 2 ramos de topo fechados e marcados -- eles empilham EXATAMENTE na linha
+  // do total (residuo maximo medido: 0,0001 p.p., so arredondamento), em toda a amostra.
+  defaultChecked: ['receita_liquida', 'despesa_total'], defaultExpanded: [],
+  seriesFor: function(key, accum) { return impulsoRTNSerie(key, accum); },
+  totalFor: function(accum) { return impulsoRTNTotal(accum); },
+  totalLabel: 'Impulso (total, Governo Central — RTN)',
   accumLabel: function(accum) { return accum === 'quarter' ? 'Trimestre (T/T)' : 'Acum. 12m (Y/Y), sinal invertido'; },
 });
 
@@ -2321,12 +3144,23 @@ function renderImpulsoCombinado() {
   var pbVariant = view === 'quarter' ? 'quarter' : 'acum12m';
 
   var ieg = iegTotal(iegVariant), pb = impulsoRPTotal(pbVariant);
+  // 4a metrica (2026-08-28, a pedido do usuario): a MESMA grandeza da anterior, apurada
+  // acima da linha (RTN, Governo Central). Segue o mesmo toggle -- as duas variantes
+  // existem nas duas fontes, entao ela nao precisa da ressalva "sempre 12m" do credito.
+  var rtn = impulsoRTNTotal(pbVariant);
   // Terceira metrica (2026-08, a pedido do usuario): o canal parafiscal, em % do PIB.
   // Sempre o acumulado em 12 MESES, independente do dropdown Comparacao -- e como a
   // metrica foi definida ("summing up the 12m"), nao ha variante trimestral dela, e o
   // rotulo do trace diz isso para nao dar a impressao de que acompanha o toggle.
   var credito = creditoOficialTotal('pctpib');
   var CREDITO_LABEL = 'Crédito a Inst. Financ. Oficiais (% PIB, acum. 12m)';
+
+  // As duas apuracoes do resultado primario sao um PAR: mesma familia de cor (dourado /
+  // amarelo) e a de cima tracejada. Uma cor de matiz diferente as leria como metricas
+  // independentes, que e justamente o contrario do que elas sao -- medem a mesma grandeza
+  // por caminhos independentes, e o valor do grafico esta em ver as duas juntas.
+  var PB_LABEL = 'Res. Primário — BCB (abaixo da linha, consolidado)';
+  var RTN_LABEL = 'Res. Primário — RTN (acima da linha, Gov. Central)';
 
   var traces = [
     {
@@ -2335,9 +3169,14 @@ function renderImpulsoCombinado() {
       hovertemplate: '<b>IEG</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
     },
     {
-      type: 'scatter', mode: 'lines', name: 'Impulso via Resultado Primário', x: pb.dates, y: pb.values,
+      type: 'scatter', mode: 'lines', name: PB_LABEL, x: pb.dates, y: pb.values,
       line: {color: C.dourado, width: 2}, yaxis: 'y',
-      hovertemplate: '<b>Impulso via Resultado Primário</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
+      hovertemplate: '<b>' + PB_LABEL + '</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
+    },
+    {
+      type: 'scatter', mode: 'lines', name: RTN_LABEL, x: rtn.dates, y: rtn.values,
+      line: {color: C.amarelo, width: 2, dash: 'dash'}, yaxis: 'y',
+      hovertemplate: '<b>' + RTN_LABEL + '</b><br>%{x}<br>%{y:,.2f} p.p.<extra></extra>',
     },
     {
       type: 'scatter', mode: 'lines', name: CREDITO_LABEL, x: credito.dates, y: credito.values,
@@ -2345,9 +3184,9 @@ function renderImpulsoCombinado() {
       hovertemplate: '<b>' + CREDITO_LABEL + '</b><br>%{x}<br>%{y:,.2f}% do PIB<extra></extra>',
     },
   ];
-  var layout = mkTimeseriesLayout('% do PIB / p.p. (as três métricas de impulso)');
+  var layout = mkTimeseriesLayout('% do PIB / p.p. (as quatro métricas de impulso)');
   Plotly.react('chart-impulso-combinado', traces, layout, _PLOTLY_CONFIG);
-  _bindYAutofit('chart-impulso-combinado');
+  finishChart('chart-impulso-combinado');
 
   if (sel && !sel._wired) {
     sel.addEventListener('change', renderImpulsoCombinado);
@@ -2361,7 +3200,7 @@ var RENDERERS = {
   gfsm: function() { GFSM_TAB.init(); RTN_TAB.init(); },
   dlsp: function() { renderDlspTab(); },
   investimento: function() { renderInvestimentoTab(); },
-  impulso: function() { renderImpulsoCombinado(); IEG_HIER_TAB.init(); IMPULSO_RP_TAB.init(); CREDITO_OFICIAL_TAB.init(); },
+  impulso: function() { renderImpulsoCombinado(); IEG_HIER_TAB.init(); IMPULSO_RP_TAB.init(); IMPULSO_RTN_TAB.init(); CREDITO_OFICIAL_TAB.init(); },
 };
 var tabRendered = {};
 function activateTab(tab) {

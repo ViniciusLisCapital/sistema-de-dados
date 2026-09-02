@@ -2,7 +2,7 @@
 
 ETL scripts that populate `macro_brasil` (`brasil/`), `macro_international` (`international/`) and `macro_us` (`us/`) on the MySQL server at `192.168.15.200` (credentials in `.env`, never hardcoded). See [`.claude/rules/domain-scripts.md`](../../.claude/rules/domain-scripts.md) for the shared `run()`-only script pattern.
 
-One subfolder per **source**, not per theme: `brasil/` has `ibge/`, `bcb/`, `tesouro/`, `mdic/`, `mte/`, `ipea/` (só `cmb_termos_troca` — séries que o SGS não tem) and `investing/` (só `cmb_risco_pais` — CSV exportado à mão, o único script aqui sem connector); `international/` has `bis/`, `cftc/`, `fred/`, `noaa/`, `yfinance/`; `us/` has `inflation/`. A table's schema follows the rule below, not the folder it's loaded from — `cmb_termos_troca` comes from IPEA and still lives in `macro_brasil`.
+One subfolder per **source**, not per theme: `brasil/` has `ibge/`, `bcb/`, `tesouro/`, `mdic/`, `mte/`, `ipea/` (só `cmb_termos_troca` — séries que o SGS não tem) and `investing/` (só `cmb_risco_pais` — CSV exportado à mão, o único script aqui sem connector); `international/` has `bis/`, `cftc/`, `fred/`, `noaa/`, `yfinance/`; `us/` has `inflation/` and `labor_market/`. A table's schema follows the rule below, not the folder it's loaded from — `cmb_termos_troca` comes from IPEA and still lives in `macro_brasil`.
 
 ## `registry.py` — tabela → script
 
@@ -26,6 +26,37 @@ One override: the three Novo CAGED cut tables (`mt_caged_setor`/`_uf`/`_salario`
 them separately would download the same ~50MB/month from the FTP three times.
 `scripts_para_tabelas()` therefore collapses those three tables into one script, and returns any
 unmappable table in a separate `sem_script` list rather than skipping it silently.
+
+## Carga por janela e revisão de histórico — `tests/test_sgs_vintage.py`
+
+26 scripts de `brasil/bcb/` atualizam por **janela** (`get_sgs_ultimos`, `n_meses` 24 ou 36).
+Quando o BCB **revisa o histórico**, a janela reescreve só a ponta e a tabela fica com dois
+vintages encostados. Nada levanta exceção: a chave é a mesma, o insert é upsert, o range não muda —
+e o sintoma não é o nível, é a **variação**, porque um degrau permanente de nível vira um vale de
+exatamente 12 meses no y/y, com a forma de um evento econômico.
+
+Achado assim em 2026-08-28 (`mt_caged`, buraco de 12 meses num print do relatório de mercado de
+trabalho: −1.357.851 vínculos revisados de 1992-01 a 2024-05, 389 dos 414 meses no vintage velho).
+A varredura das 26 tabelas achou o mesmo defeito, menor, em outras 7 — `atv_ibcbr`,
+`atv_pib_mensal`, `atv_pib_usd`, `cmb_fluxo_cambial`, `cred_credito_amplo`, `cred_credito_resumo`,
+`fisc_divida`, mais uma revisão recente em `cmb_reservas_bc`. Todas recarregadas com
+`run(start="all")`; as ~630 séries hoje batem com o SGS em todos os meses.
+
+**O que separa incômodo de defeito visível é o degrau na emenda, não o tamanho da revisão.** Uma
+revisão espalhada pelo histórico (o caso das séries **dessazonalizadas**, que o BCB reestima inteiras
+a cada divulgação) desloca todos os meses um pouco e não produz salto: medido, o degrau ficou entre
+0,00 e 0,65 vez a variação mensal típica de cada série. No `mt_caged` era **7,5 vezes** — daí ser a
+única que apareceu a olho.
+
+```powershell
+uv run python tests/test_sgs_vintage.py                      # as 26, ~3 min
+uv run python tests/test_sgs_vintage.py --tabelas mt_caged   # uma
+```
+
+O teste casa série gravada com série oficial **pelos valores**, não pelo mapeamento nome→código do
+script — de propósito: lendo o mapeamento, um script que aponta para o código errado passaria
+(há um caso vivo, `cmb_fluxo_cambial`, que guarda IBC-Br com nomes de fluxo cambial). Rode depois de
+qualquer carga histórica e sempre que uma variação anual mudar de patamar sem notícia que a explique.
 
 ## Schema criterion: domain/geography, not raw-vs-computed
 
@@ -75,6 +106,10 @@ inflc_  — CPI (levels, the two item trees, relative importance) and PCE (price
           nominal spending, the BEA tree). Same prefix on purpose: both are consumer
           price indices, and the theme prefix classifies what the data IS, not which
           agency publishes it
+mt_     — labor market. JOLTS (mt_jolts + mt_jolts_dim), CES (mt_ces + mt_ces_dim)
+          and CPS (mt_cps) — the three monthly BLS surveys; the same
+          unabbreviated prefix macro_brasil uses, so a labour-market table reads the
+          same on both sides of the schema split
 ```
 
 `diferenciais_juros` is deliberately unprefixed despite being FX/rate-themed — don't add `cmb_` to it in a future cleanup without reconfirming. A table only gets a prefix if the theme helps group it visually among others in the same schema.
@@ -97,7 +132,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `atv_pib_mensal` | BCB SGS 4380/4382 (2 séries — PIB mensal e PIB acumulado 12m, R$ milhões correntes). O `pib_acum_12m` é **o mesmo denominador que o próprio BCB usa** para publicar `cred_credito_resumo.pct_pib_*` (confirmado ao vivo: saldo / pib_acum_12m × 100 reproduz `pct_pib_total_total` exatamente, 55,76% em 2026-06) — por isso é ele que sustenta todo `% PIB` calculado na camada de consumo (`credit/transforms.py::compute_pct_pib`, `fiscal_policy/`). Distinto de `atv_pib_usd` (SGS 4385, em dólar, para o toggle % PIB do Balanço de Pagamentos) — séries e propósitos separados | ver script (`run(n_meses=36)` por default) | `brasil/bcb/atv_pib_mensal.py` |
 | `mt_pnad` | IBGE 6318/6320/6323/6379/6380/6381/6387/6388/6389/6390/6391/6392/6393/5944/6438/6439/6440/6441/6785/6807/8501/8513/3919 (ocupação, força de trabalho, subutilização, informalidade, rendimento, massa salarial, taxas/níveis agregados — ver docstring do script) | 2012-03 → today (confirmado ao vivo contra o banco, 2026-08; corrigido de "2024" que estava desatualizado) | `brasil/ibge/mt_pnad.py` |
 | `mt_pnad_trimestral` | IBGE 24 agregados (4093-6406, pesquisa DD — cortes por sexo, grupo de idade, nível de instrução, cor/raça, posição na ocupação, atividade e grupamento ocupacional que a mensal não tem; ver docstring do script para a lista completa e o que ficou fora nesta rodada) | 2012-01 → today, só nível Brasil (N1) — nível UF/N3, suportado pela API para quase todos esses agregados, ficou fora deliberadamente nesta rodada (multiplicaria o volume por ~27x) | `brasil/ibge/mt_pnad_trimestral.py` |
-| `mt_caged` | BCB SGS (14 series) — **ESTOQUE** de vínculos formais celetistas, total e por setor (taxonomia própria do BCB, distinta das 22 seções CNAE do microdado). Não é saldo/fluxo: a diferença mensal desta série é que reproduz o saldo (confirmado ao vivo, 2026-08: bate exatamente com `mt_caged_setor`). Rotulagem corrigida em 2026-08, tem `COMMENT` nativo | 1992 → today | `brasil/bcb/mt_caged.py` |
+| `mt_caged` | BCB SGS (14 series) — **ESTOQUE** de vínculos formais celetistas, total e por setor (taxonomia própria do BCB, distinta das 22 seções CNAE do microdado). Não é saldo/fluxo: a diferença mensal desta série é que reproduz o saldo (confirmado ao vivo, 2026-08: bate exatamente com `mt_caged_setor`). Rotulagem corrigida em 2026-08, tem `COMMENT` nativo. **O BCB reancora o nível retroativamente** (medido: −1.357.851 vínculos no total, de 1992-01 a 2024-05, sem mexer nos fluxos mensais) e `run(n_meses=...)` **não** captura isso — só `run(start="all")`. Vintage misto não levanta exceção: o sintoma é um buraco de 12 meses no y/y, não no nível. **Coluna `fonte`** desde 2026-08-28: `bcb` = nível publicado no SGS, `mte` = tampão para o release que o BCB ainda não divulgou, reconstruído somando o saldo de `mt_caged_setor` ao último nível do BCB — provisório e sobrescrito sozinho quando o SGS publicar. Ver a docstring do módulo | 1992 → today | `brasil/bcb/mt_caged.py` |
 | `mt_caged_setor` | MTE/PDET, microdado do Novo CAGED via FTP (saldo/admissões/desligamentos por seção CNAE 2.0 — 22 seções) | 2020-01 → today | `brasil/mte/mt_caged_setor.py` (rodar via `mt_caged_novo.py`) |
 | `mt_caged_uf` | Idem, por UF (27 + "NI") | 2020-01 → today | `brasil/mte/mt_caged_uf.py` (idem) |
 | `mt_caged_salario` | Idem, por faixa de salário em múltiplos do salário mínimo vigente (10 bandas + `nao_identificado`) | 2020-01 → today | `brasil/mte/mt_caged_salario.py` (idem) |
@@ -114,6 +149,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `cred_credito_tipo_cliente` | BCB SGS (7 series — saldo por tipo de cliente, setor privado PJ/PF × setor público federal/estadual-municipal; Tabela 25) | 2012-01 → today | `brasil/bcb/cred_credito_tipo_cliente.py` |
 | `cred_credito_controle_capital` | BCB SGS (9 series — saldo/inadimplência/provisões por controle de capital da instituição, públicas/privadas nacionais/estrangeiras; Tabela 26) | 1988-06 → today | `brasil/bcb/cred_credito_controle_capital.py` |
 | `cred_ptc` | BCB SGS (16 series — Pesquisa Trimestral de Condições de Crédito: 4 segmentos [grandes empresas/MPME/PF consumo/PF habitacional] × oferta/demanda × observada/esperada; índice de difusão, equivalente ao Senior Loan Officer Opinion Survey do Fed. Substitui os códigos 21397/21399/21401/21403 usados antes em `cred_inadimplencia_pj`/`painel_setores.py`, que ficaram congelados desde 2022-10 — o BCB não descontinuou a pesquisa, só trocou de código; corrigido em 2026-08) | 2011-04 → today (trimestral) | `brasil/bcb/cred_ptc.py` |
+| `cred_fluxo_financeiro` | BCB, **anexo estatístico do RPM** (não existe no SGS — ver `connectors/bcb_rpm.py`): fluxo financeiro do crédito bancário (concessões − pagamentos), **% do PIB acumulado em 12 meses**, Total/PJ/PF. É a série de que sai o *impulso de crédito no conceito do BCB* — a versão que exclui juros acruados, câmbio e baixas, ao contrário da de Biggs et al. O impulso em si **não** é gravado (nem é publicado como série pelo BCB: sai em boxe, 2 vezes em 20 edições) — é derivado em `analytics/brasil/credit/impulso_tab.py`. Negativo = o setor real paga líquido ao SFN. Duas fontes do mesmo anexo, ambas publicando as **mesmas 3 séries**: o gráfico recorrente de toda edição e o boxe de 2025-03 (só pelo trecho 2015-2017; a quebra Livre/Direcionado que ele também traz fica de fora, porque conjuntos diferentes põem pai e filho em vintages distintos e quebram a aditividade). Carga upsert sobre uma janela móvel de 8 anos, então o histórico **acumula** de edição em edição | 2015-01 → mês de referência da edição corrente | `brasil/bcb/cred_fluxo_financeiro.py` |
 | `inflc_agregados` | BCB SGS (33 series — IPCA/IPCA-15 + cores) | 1980 → today | `brasil/bcb/inflc_agregados.py` |
 | `inflc_decomposicao` | IBGE, one aggregate per weighting-structure vintage — see `analytics/brasil/inflation/CLAUDE.md` (subitem: monthly var/weights/contribution) | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao.py` |
 | `inflc_decomposicao_item` | Same as above, one hierarchy level coarser (item, 4-digit, not subitem/7-digit) — feeds MA/MS/DP núcleos only, see `analytics/brasil/inflation/CLAUDE.md` | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao_item.py` |
@@ -184,6 +220,11 @@ Built 2026-08, the first US branch. Full method, validation and gotchas:
 | `inflc_cpi_dim` | `cu.item` flat file + the annual relative-importance table + the news-release HTML — **both** of the CPI's trees, keyed apart by `arvore`: `despesa` (355 items × 10 levels, the statistical structure) and `divulgacao` (37 rows × 5 levels, Table 1 of the release) | — (no date) | `us/inflation/inflc_cpi_dim.py` |
 | `inflc_cpi_pesos` | `relative-importance/<year>.xlsx` — December snapshots, CPI-U and CPI-W, both sections of Table 1 (3,864 rows) | 2020-12 → 2025-12 (annual). BLS publishes back to **1947** in two older formats with no parser yet — parsing gap, not data gap | `us/inflation/inflc_cpi_pesos.py` |
 | `inflc_pce` | BEA **API** (dataset `NIUnderlyingDetail`, needs `BEA_API_KEY`) since 2026-08-26 — tables 2.4.4U (chained price index, 2017=100) and 2.4.5U (nominal spending, US$ mn SAAR) for the same 402 lines, monthly, **SA only** (the BEA publishes no NSA monthly counterpart). The API is the better contract for values (typed JSON instead of a spreadsheet parser) and only sends the requested window, so the routine 3-year run costs ~6 MB against the xlsx's fixed 12 MB. `fonte="xlsx"` remains as a fallback and gives identical numbers (608,442 observations cross-checked, 0 differing). Each load re-runs that cross-check for free whenever the xlsx is already cached — see `connectors/CLAUDE.md`. 608,442 rows. `medida` in the key, not two columns: the 2 `ZZZZZZ` "net" lines have spending and no price index | 1959-01 → today | `us/inflation/inflc_pce.py` |
+| `mt_jolts` | BLS/JOLTS, via the bulk file `jt.data.1.AllItems` on `download.bls.gov` (one request, whole history, no API quota) with the API used every load as an **independent vintage check** — ten headline series over two years, any disagreement raises. 295,988 rows over 913 series. Three cuts, and each axis exists only at the total of the others: industry (28) × the national total, establishment size (6) × **Total private**, region (4) × Total nonfarm. `natureza` distinguishes the one **stock** (job openings, the position on the last business day) from the five **flows** (hires and the four separation types, counts over the whole month) — summing three months of a stock gives 3× and looks plausible. Also carries the BLS's own `UO` ratio (unemployed per opening, SA only, `tipo='razao'`), whose single gap is 2025-10, the same appropriations lapse that blanks `inflc_cpi`. **No routine window**: the BLS revises two months every month and five years every January, so each pass rewrites the whole history | 2000-12 → today (monthly). **State estimates excluded on purpose**: all 51 series stop 2025-12 | `us/labor_market/mt_jolts.py` (writes both tables in one pass) |
+| `mt_jolts_dim` | The three trees, with the parent **derived** from the BLS's `display_level` + `sort_sequence` — `jt.industry` publishes no parent column. Carries `industry_code`/`state_code`/`sizeclass_code` per row, so the series_id each line resolves to is data rather than documentation. Validation refuses to write unless children sum to their parent in levels across the whole history: **40,656 checks**, tolerance `0.5*(k+1)` from the BLS's own thousand-unit rounding, worst residual 3 thousand on a 7.3 million total. Rates are excluded from that check on purpose — they are ratios against each category's own employment and do not add | — (no date) | `us/labor_market/mt_jolts_dim.py` (run via `mt_jolts`) |
+| `mt_ces` | BLS/CES (the payroll), via the 30 flat files on `download.bls.gov` (there is no `AllItems` for this survey — files are partitioned by supersector × measure family, 78 MB for employment alone), with the API used every load as an independent vintage check (189 cells, max diff 0.000). **3,317,450 rows over 12,000 series.** 13 measures: employment, hours and earnings of all employees, the real (1982-84 US$) earnings the BLS publishes ready-deflated, and the aggregate hours/payroll levels and indexes. `aditivo` is the load-bearing column — only employment and the three aggregates add across industries; every average per worker is an employment-weighted mean whose weight is not in the series, and every index is on a 2007=100 base. **Nothing accumulates over 12 months**: employment is a stock and the rest are weekly rates. `series_id` is 13 chars and the adjustment is the PREFIX (`CES` adjusted, `CEU` raw), like `CUSR`/`CUUR` and `JTS`/`JTU`. **The right edge is ragged by design**: the first release of a month carries the aggregates and the detail arrives with the next one — levels 0-4 all have the newest month, levels 6-7 have none | 1939-01 → today (monthly) | `us/labor_market/mt_ces.py` (writes both tables in one pass) |
+| `mt_ces_dim` | The industry tree, **839 of the 850 catalogue rows**. The parent could NOT be derived the way `mt_jolts_dim` and `inflc_cpi_dim` derive theirs: the four `display_level` 1 nodes are overlapping aggregates that add to **257% of total nonfarm**, and the naive rule makes Mining and logging a child of Private service-providing. So the top is declared (`_TOPO`) with a numeric guard, plus 4 corrections the indentation does not give (each re-derived from the data on every load) and 11 `alternativo` rows that are a SECOND AXIS and cannot nest — Service-providing crosses the Total private boundary, and the ten `part 238` rows are a residential/non-residential cut of the same NAICS subsectors. **Validated on the RAW data**, because the BLS adjusts each series independently: worst excess of children over parent is +0.068% raw against **+15.5% adjusted** (222 of 284 parents over 0.05%), so validating on the adjusted series rejects a correct tree. `agregavel`, `cobertura` and `desvio_sa` carry the measurement instead of an exception | — (no date) | `us/labor_market/mt_ces_dim.py` (run via `mt_ces`) |
+| `mt_cps` | BLS/CPS (household survey), **via the API and not a flat file** — `ln.data.1.AllData` holds 68,630 series and this table wants 43 concepts, so 90 series × 4 windows = 8 requests against a 500/day quota. The rule this branch follows: the file when series count in the hundreds, the API when they count in dozens. Scope is the release's Summary table A, table A-15 (U-1 to U-6) and the group rates. **Every concept is checked against the number printed in the release before it is stored**, and that caught three series whose names read right and whose concepts are wrong (the noneconomic part-time line is the *at work 1-34 hours* series, 22,770 against 22,345; "15 to 26 weeks" is not the series named "15 weeks & over", 1,157 against 2,929; marginally attached has an adjusted version and it is the one published, 1,806 against 1,871). The SA/NSA pair is NOT a prefix swap — the 2-digit field changes too (`LNS11`→`LNU01`), and every derived id is verified against the catalogue. **October 2025 is absent** (the shutdown cancelled collection), which empties two monthly changes, not one | 1948-01 → today (monthly) | `us/labor_market/mt_cps.py` |
 | `inflc_pce_dim` | **The one table in the project that is its own source of truth.** The hierarchy exists only in the xlsx — the BEA API publishes none at all (checked across every dataset in the service; 10 fields, none a parent/level/indent) — but it does not change month to month, so it is written once and thereafter **re-read from here** and re-proved against the API: same line set (number, label, and code on the index table), additivity closing in nominal over the stored parentage, levels 1–4 summing to 100%. Passing all three, only the coverage columns are rewritten. Failing any, the 12 MB xlsx is downloaded and the tree rebuilt — the file is a *repair* path, not a monthly dependency. `run(fonte="xlsx")` forces the rebuild; the API-only route was verified to produce a byte-identical table. The published **indentation** of those same two tables — 402 lines = 368 in the tree (9 levels) + 34 addenda aggregates. Keyed by BEA **line number**, because 13 series codes appear on two lines each | — (no date) | `us/inflation/inflc_pce_dim.py` |
 
 Three things about this trio that don't generalise from the Brazil tables:
@@ -263,6 +304,11 @@ PRIMARY KEY (date, name, seasonal_adjs)   -- atv_pim, atv_pim_uso, atv_pib, atv_
 
 -- Not seasonally adjusted
 PRIMARY KEY (date, name)                  -- inflc_agregados, mt_caged, cred_credito_amplo, atv_ibcbr, cred_credito_familias, atv_pib_valores_correntes, fisc_divida, fisc_nfsp, fisc_rtn, fisc_efgg, cred_inadimplencia_pj, cred_credito_resumo, cred_credito_atividade_economica, cred_credito_tipo_cliente
+                                          -- cred_fluxo_financeiro tambem: `vintage` fica FORA da PK,
+                                          --  como procedencia -- a janela publicada e movel, a carga e
+                                          --  upsert e ha duas fontes (grafico recorrente + boxe), entao
+                                          --  a tabela acumula meses de varias edicoes e a coluna diz de
+                                          --  qual veio cada um
 PRIMARY KEY (date, name, region)          -- mt_pnad
 
 -- Novo CAGED por corte x metrica (uma tabela por corte, cortes independentes e
@@ -402,6 +448,21 @@ PRIMARY KEY (date, linha, medida)               -- inflc_pce (medida = indice | 
 PRIMARY KEY (linha)                             -- inflc_pce_dim (bloco = principal | addenda;
                                                 --  parent_linha NULL na raiz E em todo o
                                                 --  bloco addenda, que nao e arvore)
+
+-- JOLTS: seis colunas na chave, e nenhuma e dispensavel. `corte` porque a MESMA serie
+-- do BLS ocupa duas arvores (Total private e no do corte de industria E raiz do de
+-- tamanho; Total nonfarm, raiz do de industria E do de regiao) -- sem ela um dos dois
+-- cortes perde a raiz no upsert, em silencio. `tipo` porque nivel e taxa sao series
+-- diferentes do BLS, nao duas colunas da mesma. `ajuste` porque SA e NSA idem.
+PRIMARY KEY (date, corte, categoria, medida, tipo, ajuste)
+                                                -- mt_jolts (corte = industria | tamanho |
+                                                --  regiao; medida = JO HI TS QU LD OS UO;
+                                                --  tipo = nivel (mil) | taxa (%) | razao
+                                                --  (pessoas/vaga); `natureza` = estoque |
+                                                --  fluxo | razao, FORA da chave: e
+                                                --  propriedade da medida, e o que diz se
+                                                --  a serie pode ser somada no tempo)
+PRIMARY KEY (corte, categoria)                  -- mt_jolts_dim
 
 PRIMARY KEY (reference_period, indice, secao, indent_level, item_name)
                                                 -- inflc_cpi_pesos (secao = expenditure |

@@ -158,17 +158,29 @@ _INFO = {
         "Estoque de empregos formais celetistas (BCB/SGS 28763)",
         "ESTOQUE, não saldo: é quantos vínculos existem, não quantos foram criados. A variação "
         "mensal desta série é que reproduz o saldo do microdado — em 2026-06 as duas fontes dão "
-        "exatamente 145.161.",
+        "exatamente 145.161. É essa igualdade que permite o tampão: quando o BCB está um release "
+        "atrás do Novo CAGED, o mês que falta entra somando o saldo do microdado ao último nível "
+        "publicado, e a linha de fonte do gráfico diz qual mês é provisório.",
     ),
     "caged_SIUP": (
         "Serviços industriais de utilidade pública",
         "Agregado do BCB: eletricidade e gás mais água, esgoto e gestão de resíduos. Fecha exato "
-        "com a soma dos dois filhos.",
+        "com a soma dos dois filhos — em todos os 235 meses em que os dois existem. O agregado vai "
+        "a 1992; os dois filhos, só a jan/2007.",
     ),
     "caged_servicos": (
         "Serviços (taxonomia do BCB)",
-        "Os quatro filhos publicados NÃO somam o total de Serviços — vários subsetores não têm "
-        "código SGS próprio. O agregado é a série boa; os filhos são um recorte parcial.",
+        "Vários subsetores de serviços não têm código SGS próprio, então o BCB publica só quatro "
+        "filhos. O que falta entra aqui como “Demais serviços”, calculado por diferença — sem ele "
+        "os filhos somariam um terço do pai e uma decomposição empilhada mentiria.",
+    ),
+    "caged_servicos_outros": (
+        "Demais serviços (resíduo, calculado por diferença)",
+        "NÃO é uma série do BCB: é Serviços menos os quatro subsetores que têm código SGS próprio. "
+        "São os serviços que o SGS não abre — imobiliárias, profissionais e científicas, "
+        "administrativas, administração pública, educação, saúde, e os demais. Hoje respondem por "
+        "cerca de dois terços do estoque de Serviços, e existem para que a árvore feche: sem esta "
+        "linha, a soma dos filhos não dá o pai.",
     ),
 }
 
@@ -203,6 +215,7 @@ _ESTOQUE_TREE = [
             _leaf("caged_aloj_alimentacao", "Alojamento e alimentação"),
             _leaf("caged_informacao_comunicacao", "Informação e comunicação"),
             _leaf("caged_ativ_financeiras_seguros", "Atividades financeiras e seguros"),
+            _leaf("caged_servicos_outros", "Demais serviços"),
         ]),
     ]),
 ]
@@ -211,6 +224,17 @@ DB_NAMES_ESTOQUE = [
     "caged_SIUP", "caged_eletricidade_gas", "caged_gestao_residuos", "caged_construcao",
     "caged_comercio", "caged_servicos", "caged_transp_arm_correios", "caged_aloj_alimentacao",
     "caged_informacao_comunicacao", "caged_ativ_financeiras_seguros",
+]
+# Filhos publicados de Servicos -- o resto vira "caged_servicos_outros" por
+# diferenca, em build().
+_SERVICOS_FILHOS = [
+    "caged_transp_arm_correios", "caged_aloj_alimentacao",
+    "caged_informacao_comunicacao", "caged_ativ_financeiras_seguros",
+]
+# Os 7 setores de 1o nivel, que somam o total.
+_ESTOQUE_TOPO = [
+    "caged_agropecuaria", "caged_ind_extrativa", "caged_ind_transformacao", "caged_SIUP",
+    "caged_construcao", "caged_comercio", "caged_servicos",
 ]
 
 # --- Controles ----------------------------------------------------------------
@@ -241,12 +265,35 @@ _CTRL_PERIODO = {
         {"value": "acum_ano", "label": "Acum. no ano", "fmt": "pessoas", "ypart": "pessoas, acum. no ano"},
     ],
 }
+# Terceiro eixo dos cortes: nao escolhe uma serie, TRANSFORMA a que os dois
+# primeiros escolheram -- daí `derived: True`, que tira este controle da chave
+# da variante no JS. `lag` e a defasagem em meses da diferenca.
+#
+# So Y/Y por enquanto (pedido do usuario, 2026-08-28). O M/M sobre o saldo cru
+# ficou de fora de proposito: o saldo mensal e fortemente sazonal (dezembro e
+# negativo todo ano), entao a contribuicao contra o mes anterior responde quase
+# sempre a mesma coisa. O Y/Y neutraliza a sazonalidade por construcao.
+_CTRL_VISAO = {
+    "key": "visao", "label": "Visão", "derived": True,
+    "options": [
+        {"value": "nivel", "label": "Nível"},
+        {
+            "value": "contrib_yy", "label": "Contribuição Y/Y", "lag": 12,
+            "ypart": "contribuição para a variação contra o mesmo mês do ano anterior, pessoas",
+            "ypartDrops": ["periodo"],
+        },
+    ],
+}
 _CTRL_ESTOQUE = {
     "key": "metric", "label": "Métrica",
     "options": [
         {"value": "level", "label": "Nível", "fmt": "pessoas", "ypart": "vínculos formais celetistas, pessoas"},
         {"value": "mom_diff", "label": "Var. Mensal (pessoas)", "fmt": "pessoas", "ypart": "variação do estoque no mês, pessoas"},
         {"value": "yoy", "label": "Diff Y/Y (%)", "fmt": "pct", "ypart": "variação do estoque em 12 meses, %"},
+        {
+            "value": "contrib_yy", "label": "Contribuição Y/Y (p.p.)", "fmt": "pp", "contrib": True,
+            "ypart": "contribuição para a variação do estoque em 12 meses, p.p.",
+        },
     ],
 }
 
@@ -286,7 +333,7 @@ TABLES = [
         "key": "setor", "label": "Por Setor de Atividade (CNAE 2.0, seção)",
         "chart_title": "Emprego Formal por Setor de Atividade — Brasil",
         "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
-        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO, _CTRL_VISAO],
         "tree": _cut_tree("setor", _SETOR_LABELS, "Total Brasil"),
         "default_checked": ["setor__total"],
         "default_expanded": ["setor__total"],
@@ -295,7 +342,7 @@ TABLES = [
         "key": "uf", "label": "Por Unidade da Federação",
         "chart_title": "Emprego Formal por Unidade da Federação",
         "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
-        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO, _CTRL_VISAO],
         "tree": _uf_tree(),
         "default_checked": [f"uf__reg_{slug}" for slug, _l, _s in _REGIOES],
         "default_expanded": ["uf__total"],
@@ -304,7 +351,7 @@ TABLES = [
         "key": "salario", "label": "Por Faixa de Salário de Contratação (múltiplos do SM vigente)",
         "chart_title": "Emprego Formal por Faixa de Salário de Contratação — Brasil",
         "chart_source": "Fonte: MTE/PDET, Novo CAGED (microdado)",
-        "controls": [_CTRL_METRICA, _CTRL_PERIODO],
+        "controls": [_CTRL_METRICA, _CTRL_PERIODO, _CTRL_VISAO],
         "tree": _cut_tree("salario", _SALARIO_LABELS, "Total Brasil"),
         "default_checked": ["salario__total"],
         "default_expanded": ["salario__total"],
@@ -319,6 +366,105 @@ TABLES = [
         "default_expanded": ["caged_total"],
     },
 ]
+
+
+_MESES_PT = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def _mes_ano(iso: str) -> str:
+    return f"{_MESES_PT[int(iso[5:7]) - 1]}/{iso[:4]}"
+
+
+def _tables_com_provisorio(estoque: dict) -> list[dict]:
+    """Anota na linha de fonte do grafico de estoque os meses que vieram do
+    tampao (`fonte='mte'` em mt_caged): o BCB ainda nao publicou e o nivel foi
+    reconstruido somando o saldo do microdado. Sem isso o cabecalho diria
+    "Fonte: BCB/SGS" sobre um ponto que o BCB nao imprimiu -- e o cabecalho e
+    justamente a parte que viaja junto num print do grafico.
+
+    Some sozinha quando o BCB publica: a coluna volta a 'bcb' e nao ha mais
+    nada a anotar. Devolve TABLES intacto nesse caso."""
+    serie = estoque.get("caged_total", {})
+    prov = [d for d, f in zip(serie.get("dates", []), serie.get("fonte", [])) if f != "bcb"]
+    if not prov:
+        return TABLES
+
+    rotulo = _mes_ano(prov[0]) if len(prov) == 1 else f"{_mes_ano(prov[0])} a {_mes_ano(prov[-1])}"
+    saida = []
+    for tabela in TABLES:
+        if tabela["key"] == "estoque":
+            tabela = dict(tabela)
+            tabela["chart_source"] += (
+                f" · {rotulo} provisório: o BCB ainda não publicou, nível reconstruído "
+                "somando o saldo do Novo CAGED"
+            )
+        saida.append(tabela)
+    return saida
+
+
+def _com_demais_servicos(estoque: dict) -> dict:
+    """Acrescenta `caged_servicos_outros` = Serviços − os 4 filhos publicados.
+
+    Sem ele a árvore do estoque não fecha em Serviços: os 4 subsetores com
+    código SGS somam cerca de um terço do pai (7,6 de 23,5 milhões em jul/2026),
+    e uma barra empilhada dessa decomposição mostraria um terço do que existe
+    sem indicar que falta algo. É aritmética exata sobre séries publicadas, não
+    uma estimativa -- mas é uma série DERIVADA, e o cartão de definição da linha
+    diz isso."""
+    pai = estoque.get("caged_servicos")
+    filhos = [estoque.get(k) for k in _SERVICOS_FILHOS]
+    if pai is None or any(f is None for f in filhos):
+        return estoque
+    # Casa por DATA: os 4 filhos comecam em 2007-01 e o pai em 1992-01.
+    mapas = [dict(zip(f["dates"], f["values"])) for f in filhos]
+    datas, valores = [], []
+    for d, v in zip(pai["dates"], pai["values"]):
+        partes = [m.get(d) for m in mapas]
+        if v is None or any(p is None for p in partes):
+            continue
+        datas.append(d)
+        valores.append(round(float(v) - sum(float(p) for p in partes), 4))
+    saida = dict(estoque)
+    saida["caged_servicos_outros"] = {"dates": datas, "values": valores}
+    return saida
+
+
+# Tolerância do teste de aditividade, em vínculos, sobre um estoque de ~48
+# milhões. Medido: de 2007-12 em diante o resíduo máximo é 93 vínculos (Total
+# menos os 7 setores) e 0 (SIUP menos os 2 filhos, e Serviços menos os 5 depois
+# de _com_demais_servicos); nos anos 1990 o primeiro chega a 57.655. É a
+# separação entre arredondamento e discrepância de verdade.
+_TOL_ADITIVIDADE = 1000
+
+
+def _primeiro_aditivo(estoque: dict) -> str | None:
+    """Primeira data (ISO) a partir da qual a árvore do estoque fecha e continua
+    fechando até o fim; None se nunca fecha.
+
+    Duas coisas a impedem, e as duas importam: **as 6 sub-séries do BCB só
+    começam em 2007-01** (o agregado vai a 1992-01, então antes disso não há o
+    que decompor), e nos anos 1990 o total excede a soma dos 7 setores em até
+    57.655 vínculos. A contribuição só sai daí em diante — janela em que a conta
+    não fecha mostra nada, em vez de mostrar uma pilha cuja altura não é o
+    total."""
+    total = estoque["caged_total"]
+    mapa = {k: dict(zip(v["dates"], v["values"])) for k, v in estoque.items()}
+    grupos = [("caged_total", _ESTOQUE_TOPO),
+              ("caged_SIUP", ["caged_eletricidade_gas", "caged_gestao_residuos"]),
+              ("caged_servicos", _SERVICOS_FILHOS + ["caged_servicos_outros"])]
+    ultima_ruim_idx = -1
+    for i, d in enumerate(total["dates"]):
+        for pai, filhos in grupos:
+            v = mapa[pai].get(d)
+            partes = [mapa[k].get(d) for k in filhos]
+            if v is None or any(p is None for p in partes):
+                ultima_ruim_idx = i
+                break
+            if abs(float(v) - sum(float(p) for p in partes)) > _TOL_ADITIVIDADE:
+                ultima_ruim_idx = i
+                break
+    j = ultima_ruim_idx + 1
+    return total["dates"][j] if j < len(total["dates"]) else None
 
 
 def _sum_metricas(cortes: list[dict]) -> dict:
@@ -396,14 +542,20 @@ def build(setor: dict, uf: dict, salario: dict, estoque: dict) -> dict:
     for metrica in _METRICAS:
         series[f"nac__{metrica}"] = tf.variants_caged_periodo(dates, totais["setor"][metrica])
 
-    for name in DB_NAMES_ESTOQUE:
+    estoque = _com_demais_servicos(estoque)
+    total = estoque.get("caged_total")
+    desde = _primeiro_aditivo(estoque) if total else None
+    total_por_data = dict(zip(total["dates"], total["values"])) if total else None
+    for name in DB_NAMES_ESTOQUE + ["caged_servicos_outros"]:
         s = estoque.get(name)
         if s is None:
             continue
-        series[name] = tf.variants_caged_estoque(s["dates"], s["values"])
+        series[name] = tf.variants_caged_estoque(
+            s["dates"], s["values"], total=total_por_data, desde=desde,
+        )
 
     return {
-        "tables": TABLES,
+        "tables": _tables_com_provisorio(estoque),
         "series": series,
         "ref_date": dates[-1],
         "ref_date_estoque": estoque["caged_total"]["dates"][-1] if "caged_total" in estoque else None,

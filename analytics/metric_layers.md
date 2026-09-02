@@ -241,6 +241,18 @@ GFSM and RTN tables use **A** (adopted 2026-08 — `compute_pct_pib_same_period(
 (matching the BCB's own published ratio); the DLSP tab uses **B** with a 12m-rolled numerator for its
 flows, which preserves the stock–flow identity in %GDP terms.
 
+**A third case, from 2026-09-01: when the numerator has no seasonally-adjusted variant, the window is
+not a convention choice — it is the whole answer.** `economic_activity/`'s Renda e Poupança tab is on
+**A** (both sides in the same window, both from the same table), but its window is exposed as the
+user's own toggle with the **4-quarter sum as the default**, because the single-quarter ratio is
+dominated by seasonality: measured on `atv_renda_poupanca` (IBGE Agregado 2072, NSA-only), Poupança
+Bruta swings between **10,8% and 16,6% of GDP inside the last 8 quarters** raw, against **14,4% flat**
+on the 4-quarter window. IBGE's own published taxa de poupança/taxa de investimento use the same
+4-quarter convention. Two rules follow: **check for an SA variant before offering the native-frequency
+ratio at all**, and **don't call the result the official rate** — the same window on a broader
+numerator (here Formação Bruta de Capital, which includes inventories, vs. the FBCF the official taxa
+de investimento uses) is a different number with the same name.
+
 **Direction of travel is B**, chosen for the newest tab; GFSM/RTN were offered the retrofit and left on
 A for now, so the same report currently serves both conventions. A tab on B must say so on its own y-axis
 (Investimento's reads `% do PIB 12m (<Nível>)`) — otherwise its Mensal figure looks ~12x smaller than the

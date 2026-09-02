@@ -131,7 +131,11 @@ S.stamp("fake", DOC)
 check("regerar + restampar volta para 'em dia'",
       S.estado(DOC)[0]["veredito"] == "em dia")
 
-# gerar por fora deixa o stamp para tras -- nao pode virar "em dia" mentiroso
+# gerar por fora deixa o stamp para tras -- nao pode virar "em dia" mentiroso.
+# O sleep nao e decoracao: o veredito compara `output_mtime_ns`, e o relogio de
+# arquivo do Windows anda em passos de ~15ms -- duas escritas no mesmo passo saem com
+# mtime_ns identico e o teste falha por flake, nao por bug (visto em 2026-08-28).
+time.sleep(0.05)
 saida.write_text("<html>gerado na mao</html>", encoding="utf-8")
 linha = S.estado(DOC)[0]
 check("arquivo mexido por fora do fluxo -> 'sem stamp', nao 'em dia'",
@@ -163,6 +167,61 @@ DOC_RUIM = {"dashboards": [{
 probs = S.validar(DOC_RUIM)
 check("validar() acusa arquivo declarado que nao existe",
       any("nao existe" in p for p in probs), probs)
+
+
+# ---------------------------------------------------------------------------
+print("\n2b. afetados() / regerar_afetados() -- atualizar dado regera a metrica")
+# ---------------------------------------------------------------------------
+# O caso que motivou isto (2026-08-28): o usuario atualizou fisc_rtn e esperava as
+# medidas de impulso fiscal se moverem. Elas nao leem fisc_rtn -- mas nada no sistema
+# dizia isso, nem regerava o que de fato le. As duas metades da resposta sao um mapa
+# "quem le esta tabela" e um gatilho que so dispara para quem ficou para tras.
+
+DOC_AF = {"dashboards": [
+    {"key": "a", "name": "A", "output": "reports/A.html", "module": None,
+     "command": "echo a", "deps": [
+        {"kind": "mysql", "ref": "macro_brasil.fisc_rtn", "role": "rtn"},
+        {"kind": "mysql", "ref": "macro_brasil.inflc_agregados", "role": "ipca"}]},
+    {"key": "b", "name": "B", "output": "reports/B.html", "module": None,
+     "command": "echo b", "deps": [
+        {"kind": "mysql", "ref": "macro_brasil.fisc_nfsp", "role": "nfsp"}]},
+    {"key": "c", "name": "C", "output": "reports/C.html", "module": None,
+     "command": "echo c", "deps": [
+        {"kind": "mysql", "ref": "base_mercado.interest_rates", "role": "curvas"},
+        {"kind": "csv", "ref": "dados/serie.csv", "date_col": "dt", "role": "csv"}]},
+]}
+
+check("afetados() acha quem le a tabela",
+      S.afetados(["fisc_rtn"], DOC_AF) == ["a"], S.afetados(["fisc_rtn"], DOC_AF))
+check("uma tabela pode nao ter leitor nenhum",
+      S.afetados(["fisc_investimento"], DOC_AF) == [])
+check("varias tabelas somam sem repetir dashboard",
+      S.afetados(["fisc_rtn", "inflc_agregados", "fisc_nfsp"], DOC_AF) == ["a", "b"])
+# O ETL fala em nome nu, o manifesto em schema.tabela -- o casamento e pelo sufixo.
+check("casa nome nu com a ref qualificada do manifesto",
+      S.afetados(["macro_brasil.fisc_rtn"], DOC_AF) == ["a"])
+check("lista vazia nao varre nada", S.afetados([], DOC_AF) == [])
+# base_mercado e MySQL mas quem escreve e outro projeto: rodar ETL daqui nao a move,
+# entao ela nunca pode disparar regeracao por conta de um passe nosso.
+check("dependencia fora dos nossos schemas nao dispara",
+      S.afetados(["interest_rates"], DOC_AF) == [])
+check("csv nao dispara por nome de tabela",
+      S.afetados(["serie.csv"], DOC_AF) == [])
+
+# regerar_afetados(): o filtro por veredito e o que separa "regera o que precisa" de
+# "regera tudo que toca a tabela". Aqui nenhum dos tres tem arquivo em disco, entao
+# todos saem "sem relatorio" -- veredito deliberadamente FORA do gatilho default.
+res = S.regerar_afetados(["fisc_rtn"], DOC_AF)
+check("regerar_afetados() so olha quem le a tabela",
+      [r["key"] for r in res] == ["a"], [r["key"] for r in res])
+check("'sem relatorio' nao dispara geracao sozinho",
+      res[0]["acao"] == "em dia" and res[0]["veredito"] == "sem relatorio", res[0])
+check("tabela sem leitor devolve lista vazia",
+      S.regerar_afetados(["fisc_investimento"], DOC_AF) == [])
+# Dashboard sem module (o Oraculo) nao pode fingir que gerou.
+res = S.regerar_afetados(["fisc_rtn"], DOC_AF, vereditos=("sem relatorio",))
+check("dashboard sem run() sai como 'manual', com o comando",
+      res[0]["acao"] == "manual" and res[0]["command"] == "echo a", res[0])
 
 S._RAIZ, S._STAMPS = _RAIZ_ORIG, _STAMPS_ORIG
 
@@ -230,9 +289,25 @@ try:
     sql = [dep for l in linhas for dep in l["deps"]
            if dep["kind"] == "mysql" and not dep.get("erro")]
     com_data = [dep for dep in sql if dep["ultimo"]]
-    # As 3 tabelas de dimensao nao tem data por definicao; o resto tem de responder.
-    check("tabela de serie responde MAX(date)", len(com_data) >= len(sql) - 4,
-          f"{len(com_data)}/{len(sql)}")
+    # Tabela de DIMENSAO nao tem data por definicao, e o manifesto declara isso com
+    # `date_col: null`. A isencao sai dessa declaracao e nao de um numero: a versao
+    # anterior admitia "ate 4 sem data", e ao entrar a quinta dimensao (mt_ces_dim, em
+    # 2026-09-01) o teste reprovou uma adicao correta. Um numero magico aqui envelhece
+    # a cada tabela nova; a declaracao nao.
+    sem_data_declarada = {
+        f"{d.get('ref')}"
+        for dash in ds for d in dash.get("deps", [])
+        if d.get("kind") == "mysql" and "date_col" in d and d.get("date_col") is None
+    }
+    devem_responder = [dep for dep in sql if dep["ref"] not in sem_data_declarada]
+    mudos = [dep["ref"] for dep in devem_responder if not dep["ultimo"]]
+    check("tabela de serie responde MAX(date)", not mudos,
+          f"{len(com_data)}/{len(sql)} com data; sem responder: {mudos}")
+    # E a contrapartida: uma tabela declarada sem data nao pode devolver data -- seria
+    # sinal de que a declaracao esta errada e o estado dela nunca sera comparado.
+    falsas = [dep["ref"] for dep in sql
+              if dep["ref"] in sem_data_declarada and dep["ultimo"]]
+    check("dimensao declarada sem data de fato nao tem data", not falsas, str(falsas))
 
     # A tabela mais compartilhada do projeto: se ela some, cinco relatorios param.
     quem_le_ipca = [l["name"] for l in linhas
