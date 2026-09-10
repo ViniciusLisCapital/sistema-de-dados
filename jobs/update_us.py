@@ -115,7 +115,7 @@ from domain.db.us.inflation import (
     inflc_pce,
     inflc_pce_dim,
 )
-from domain.db.us.labor_market import mt_ces, mt_cps, mt_jolts
+from domain.db.us.labor_market import mt_ces, mt_cps, mt_jolts, mt_produtividade
 
 
 def _plano(full: bool):
@@ -140,6 +140,10 @@ def _plano(full: bool):
         # A CPS sao ~90 series pela API: o historico inteiro custa 8 requisicoes, entao
         # nao ha janela de rotina a escolher e ela ignora --full de proposito.
         ("BLS · CPS (manchetes domiciliares)",      mt_cps,          {}),
+        # Productivity and Costs: 282 series num arquivo de 3,2 MB, entao a historia
+        # inteira vem numa requisicao e ela tambem ignora --full. E a unica pesquisa
+        # TRIMESTRAL do schema, e sai num calendario proprio (duas vezes por trimestre).
+        ("BLS · Produtividade e custos (MSPC)",     mt_produtividade, {}),
     ]
 
 

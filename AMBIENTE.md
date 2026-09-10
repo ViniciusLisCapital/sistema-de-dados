@@ -199,7 +199,7 @@ Pontos de atenção:
   sem marcador de qual é qual.
 
 Contexto de quando usar X-13 em vez de STL, escopo por série, e os problemas
-práticos conhecidos: [`analytics/seasonal_adjustment.md`](analytics/seasonal_adjustment.md).
+práticos conhecidos: [`analytics/mds/seasonal_adjustment.md`](analytics/mds/seasonal_adjustment.md).
 
 ---
 

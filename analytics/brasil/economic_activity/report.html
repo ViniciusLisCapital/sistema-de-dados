@@ -3217,7 +3217,7 @@ function rendaShareOfGDP(base, janela) {
     for (var j = i - 3; j <= i; j++) {
       var x = v[j], p = pib[d[j]];
       // Janela incompleta nao vira numero parcial: um trimestre faltando no numerador
-      // ou no denominador deixa a razao em branco (convencao de analytics/metric_layers.md).
+      // ou no denominador deixa a razao em branco (convencao de .claude/skills/lis-dashboard/references/design-system.md#metricas).
       if (x == null || p == null) { ok = false; break; }
       num += x; den += p;
     }

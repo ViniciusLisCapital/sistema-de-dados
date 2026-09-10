@@ -41,7 +41,7 @@ if it doesn't exist, so a new country needs no setup step.
 | `brasil/expectations/` | Panorama de Expectativas — Focus (HTML report, 2026-08-24 — 8 abas sobre as 3 tabelas `expc_focus*` e **nada mais**: sem meta, sem realizado, sem projeção do Copom) | [`brasil/expectations/CLAUDE.md`](brasil/expectations/CLAUDE.md) |
 | **`us/`** | | |
 | `us/inflation/` | US Inflation (HTML report — the CPI-U's two published trees plus the PCE price index, three tabs on one hierarchy-table structure). First report under `us/`, 2026-08 | [`us/inflation/CLAUDE.md`](us/inflation/CLAUDE.md) |
-| `us/labor_market/` | US Labor Market (HTML report — JOLTS: openings, hires, quits, layoffs and separations, three tabs for the three cuts the release publishes). Second report under `us/`, 2026-09-01. Scope is JOLTS only and **no derived metrics**, by explicit user decision | [`us/labor_market/CLAUDE.md`](us/labor_market/CLAUDE.md) |
+| `us/labor_market/` | US Labor Market (HTML report — **6 tabs over 4 BLS surveys**: Payroll/CES, Household/CPS, JOLTS, Productivity and a Derived tab crossing the three monthly ones). Second report under `us/`, 2026-09-01; the payroll and household surveys plus the derived metrics landed the same day and the quarterly productivity release on 2026-09-03. It is the only report here mixing a **quarterly** source with monthly ones | [`us/labor_market/CLAUDE.md`](us/labor_market/CLAUDE.md) |
 | **cross-country (root)** | | |
 | `oraculo/` | Macro thermometer scores (1–10), feeds Power BI. Country split is *internal* (`oraculo/brasil/`, `oraculo/us/`, shared `oraculo/base/`), so it stays at the root | [`oraculo/CLAUDE.md`](oraculo/CLAUDE.md) |
 | `release_calendar/` | Calendário de Divulgações (HTML report — forward-looking, reads a local YAML, not MySQL) | [`release_calendar/CLAUDE.md`](release_calendar/CLAUDE.md) |
@@ -54,11 +54,11 @@ level** (native frequency → quarter/semester/12m/year, rolling or closed calen
 real**, and **modelling** (Nível / Y-Y / marginal / % PIB) — applied in a fixed order (deflate at the
 native frequency → seasonally adjust → aggregate → compare). The spec, the degenerate combinations to
 disable, the incomplete-period rule, which primitive to reuse, and the conventions still left open
-(notably the `% PIB` denominator for flows): [`metric_layers.md`](metric_layers.md).
+(notably the `% PIB` denominator for flows): [`metric_layers.md`](mds/metric_layers.md).
 
 ## Seasonal adjustment
 
-Two methods available — STL (in-process, the incumbent, ~391 series) and X-13ARIMA-SEATS (US Census Bureau binary, installed 2026-08, not yet used in production). **Which one applies is decided case by case, not by a blanket rule** (explicit user decision, 2026-08). Full inventory of which series use which, the measured X-13-vs-STL scorecard against IBGE's official adjustment, X-13's practical failure modes, and the parallel-subprocess recipe: [`seasonal_adjustment.md`](seasonal_adjustment.md).
+Two methods available — STL (in-process, the incumbent, ~391 series) and X-13ARIMA-SEATS (US Census Bureau binary, installed 2026-08, not yet used in production). **Which one applies is decided case by case, not by a blanket rule** (explicit user decision, 2026-08). Full inventory of which series use which, the measured X-13-vs-STL scorecard against IBGE's official adjustment, X-13's practical failure modes, and the parallel-subprocess recipe: [`seasonal_adjustment.md`](mds/seasonal_adjustment.md).
 
 ## Shared report pattern (all of `brasil/`'s report folders)
 

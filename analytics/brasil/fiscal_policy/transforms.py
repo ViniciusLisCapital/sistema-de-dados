@@ -190,7 +190,7 @@ def pct_change(values: list, periods: int) -> list:
 
     None TAMBEM quando a base e exatamente zero -- ver a docstring gemea em
     analytics/brasil/credit/transforms.py's pct_change() para o porque (o guard que
-    analytics/metric_layers.md registrava como pendente, "Zero base -> Infinity";
+    analytics/mds/metric_layers.md registrava como pendente, "Zero base -> Infinity";
     implementado 2026-08 nas duas copias da funcao ao mesmo tempo).
     """
     vals = pd.Series(values, dtype="float64")
@@ -247,7 +247,7 @@ def _quarter_start_of(date: str) -> str:
 
 def quarterly_step_qoq_sa(dates: list[str], step_values: list) -> list:
     """T/T DESSAZONALIZADO de um degrau de trimestre calendario, alinhado de volta a
-    grade mensal de `dates` (2026-08 -- fecha a lacuna que analytics/metric_layers.md
+    grade mensal de `dates` (2026-08 -- fecha a lacuna que analytics/mds/metric_layers.md
     registrava em "SA on an already-aggregated level": uma comparacao marginal sobre um
     agregado de calendario tem que ser ajustada no periodo DO AGREGADO).
 
@@ -259,8 +259,8 @@ def quarterly_step_qoq_sa(dates: list[str], step_values: list) -> list:
     re-expandido nos 3 meses de cada trimestre, para o collapseToQuarterStart() do JS
     reduzir de novo na exibicao.
 
-    So o T/T e ajustado. Y/Y continua NSA por construcao (ver metric_layers.md, "(iii)
-    Y/Y is NSA; marginal comparisons are SA").
+    So o T/T e ajustado. Y/Y continua NSA por construcao (ver design-system.md#metricas,
+    camada 2 -- o Y/Y ja cancela a estacao, ajustar antes so injeta o erro do ajuste).
     """
     qd, qv = _collapse_to_quarters(dates, step_values)
     sa = stl_seasonal_adjust(qd, qv, period=4)
@@ -492,7 +492,7 @@ def compute_variants_quarterly_step(
 
     `seasonal` (2026-08, default False): quando True, o T/T passa a ser dessazonalizado
     por quarterly_step_qoq_sa() (STL period=4 sobre a serie trimestral colapsada), que e
-    o que analytics/metric_layers.md pede em "(iii) SA on an already-aggregated level" --
+    o que analytics/mds/metric_layers.md pede em "SA on an already-aggregated level" --
     a execucao orcamentaria federal e sistematicamente concentrada no 4o trimestre, entao
     o T/T cru le T1-contra-T4 como colapso todo ano. **Default False de proposito**: a
     aba Investimento liga (escolha explicita do usuario, 2026-08), a RTN NAO, para nao

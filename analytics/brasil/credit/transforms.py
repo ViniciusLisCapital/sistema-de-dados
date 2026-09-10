@@ -97,7 +97,7 @@ def pct_change(values: list, periods: int) -> list:
     guard antigo (`np.isnan`) nao pegava, entao um `Infinity` literal vazava para o
     JSON e renderizava na tabela (e destruia o range Y do grafico -- uma trace com um
     ponto infinito faz o autorange do Plotly e o `_bindYAutofit` colapsarem). E o guard
-    que analytics/metric_layers.md registrava como pendente ("Zero base -> Infinity");
+    que analytics/mds/metric_layers.md registrava como pendente ("Zero base -> Infinity");
     implementado 2026-08. Uma variacao percentual sobre base zero e indefinida, nao
     infinita -- e uma serie esparsa (a maioria das 28 funcoes orcamentarias nunca recebe
     inversao financeira) esta cheia dessas transicoes.

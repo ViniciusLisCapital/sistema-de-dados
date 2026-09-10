@@ -23,7 +23,7 @@ Updating the DB first is optional — only needed for fresher data. `generate_re
 
 Fixed template (`report.html`) with a `/*REPORT_DATA*/` marker inside a `<script>` block, plus `/*PPP_DATA*/`, `/*FXATTR_DATA*/` and `/*RIDGE_DATA*/` for the model tabs (filled via `render_report()`'s `extra_markers=`, which substitutes the bare JSON, or the literal `null` when that payload wasn't built). `generate_report.py` loads each table, serializes to JSON, and hands it to `analytics.report_structure.builder.render_report()` — no Jinja2, no templating engine, just marker substitution. Every `_load_*()` function is independently try/excepted, so one missing or broken table degrades just that section (prints a warning) instead of failing the whole report; `_load_models()` degrades the same way, per model tab.
 
-**Since 2026-08**, `_bindYAutofit()`/`_toComparableX()` are no longer inline in this `report.html` — a `/*Y_AUTOFIT_JS*/` marker is filled in at generation time from `analytics/report_structure/y_autofit.js` (edit that file, not this one — see [`../report_structure/CLAUDE.md`](../../report_structure/CLAUDE.md)). **The theme CSS is *not* migrated** — this report's `:root` palette/typography predates the 2026-07 LIS-dashboard reskin `inflation/` got (navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `report_structure/theme.css`), so swapping in the shared `/*THEME_CSS*/` marker as-is would silently change this report's look without an actual design pass. That reskin is a separate follow-up (see root `CLAUDE.md`'s `analytics/` Pendências / `report_structure/CLAUDE.md`'s Migration status) — do it first, then point at the shared theme file.
+**Since 2026-08**, `_bindYAutofit()`/`_toComparableX()` are no longer inline in this `report.html` — a `/*Y_AUTOFIT_JS*/` marker is filled in at generation time from `analytics/report_structure/y_autofit.js` (edit that file, not this one — see [`analytics/report_structure/CLAUDE.md`](../../report_structure/CLAUDE.md)). **The theme CSS is *not* migrated** — this report's `:root` palette/typography predates the 2026-07 LIS-dashboard reskin `inflation/` got (navy header, `system-ui` font, no Barlow/JetBrains Mono import, different `--bg`/`--border`/`--text` values than `report_structure/theme.css`), so swapping in the shared `/*THEME_CSS*/` marker as-is would silently change this report's look without an actual design pass. That reskin is a separate follow-up (see root `CLAUDE.md`'s `analytics/` Pendências / `report_structure/CLAUDE.md`'s Migration status) — do it first, then point at the shared theme file.
 
 Seven tabs, real switching via JS `display` toggling (not scroll anchors) — four data tabs, in nav order: Balanço de Pagamentos (`tab-bop`), Fluxo Cambial (`tab-flow`), **Posicionamento: BCB e mercado** (`tab-bcb`), Valuation (`tab-valuation`); then three model tabs: Equilíbrio PPP (`tab-data`), FX Attribution (`tab-fxattr`), FX Model (`tab-ridge`, chamada "Ridge" até 2026-09-01). Duas abas de dados saíram a pedido do usuário: **Mapa de Calor — BP** em 2026-08-27 e **Cotação** em 2026-09-01 (as duas, abaixo).
 
@@ -155,7 +155,7 @@ tivesse, sem exigir que estivesse fechado: um "T3/26" de um mês só, um "2026" 
 número: a conta corrente de 2026 saía **−36,0 contra −66,7 de 2025**, que se lê como uma
 melhora de 46% e é só o ano pela metade.
 
-Isso **contraria a convenção escrita** em [`../../metric_layers.md`](../../metric_layers.md)
+Isso **contraria a convenção escrita** em [`design-system.md#metricas`](../../../.claude/skills/lis-dashboard/references/design-system.md#metricas)
 ("uma janela incompleta mostra nada — nem soma parcial, nem estimativa sinalizada"), e era
 anterior a esta rodada: os gráficos de composição antigos tinham o mesmo comportamento. O
 que mudou foi a visibilidade — enquanto era a última barra de um gráfico passava batido;
@@ -578,6 +578,11 @@ depois `dxy_em` +13,6% [−8,1; +39,7], `icbr_usd` +4,6%, `sp500` +2,5%, `curve_
 mensurável: as contribuições **únicas** ao R² somam 0,196 de um total de 0,677, ou seja **71% do ajuste
 é compartilhado**. Nove regressores estavam medindo umas três coisas.
 
+> Os números deste parágrafo e da tabela do PPP acima são da rodada de **01/09/2026**, sobre o CDS do
+> investing.com. Foram refeitos em 08/09 com o CDS da Bloomberg e o **ranking não mudou** — `fiscal`
+> segue sozinho na frente, agora em +35,9%, e `dxy_em` em segundo, em +23,3%. Ver "Spec entregue"
+> abaixo. Ficam aqui porque são o registro de **por que** o corte para cinco canais foi feito.
+
 Eliminação backward gulosa (melhor conjunto em cada tamanho): 8 → 7,0132 · 7 → 6,9922 · 6 → 6,9633 ·
 **5 → 6,9602** · 4 → 7,1629. Cinco é o **mínimo da curva** — o modelo enxuto pontua marginalmente
 melhor fora da amostra que o de oito —, e de 8 até 3 tudo está dentro do ruído de qualquer jeito.
@@ -588,14 +593,41 @@ uma diferença de 8,9% já não era distinguível — então o erro não decide.
 sinal**: com `curve_steep_real`, o coeficiente dele **cruza zero** nas 151 janelas móveis (−0,47 a
 +1,21), e um canal que troca de sinal não explica nada, só ajusta. Com `carry_vol`, os **seis**
 coeficientes mantêm o sinal em todas as janelas, e o R² é marginalmente maior (0,6614 contra 0,6607).
-Benefício secundário: `curve_steep_real` e `real_yield_diff` eram os dois canais vindos de
+Benefício secundário na época: `curve_steep_real` e `real_yield_diff` eram os dois canais vindos de
 `base_mercado.interest_rates`, o schema externo do CentralManagement — sem eles, os canais do modelo
-ficam inteiramente em tabelas deste projeto (mais o FRED).
+ficavam inteiramente em tabelas deste projeto (mais o FRED). Esse argumento caducou em 03/09/2026:
+a tabela virou `macro_brasil.br_interest_rate`, deste projeto, e não é mais externa. A decisão de
+ficar com `carry_vol` continua válida pelos motivos de sinal e R² acima, que são os que importam.
 
-Spec entregue (n=222, 2008-01 a 2026-06): λ 0,010, R² 0,6614, R² médio das janelas 0,701, α **+0,199
-pp/mês com t=+1,12** — não distinguível de zero, que é o efeito do offset de PPP. Decomposição
-acumulada dos +107,2 pp: PPP +57,7 · α +44,2 · dxy_em +9,9 · sp500 +8,3 · icbr_usd +4,8 · carry_vol
-−3,3 · fiscal −0,0 · AR(1) −14,3.
+Spec entregue, **reestimada em 2026-09-08 sobre o CDS da Bloomberg** (n=245, **2006-02** a 2026-06):
+λ 0,010, R² 0,6532, R² médio das janelas 0,695, α **−0,043 pp/mês com t=−0,25** — não distinguível de
+zero, que é o efeito do offset de PPP. Decomposição acumulada dos +84,8 pp: PPP +58,7 · dxy_em +30,9 ·
+sp500 +30,6 · icbr_usd −11,2 · **fiscal −3,5** · carry_vol −0,1 · linha de base −20,6.
+Os números de α e da decomposição são de **depois** da correção de centragem do mesmo dia (ver a seção
+"A padronização escala, não centra" abaixo); λ, R² e todos os β são anteriores a ela e não mudaram.
+
+**A troca de fonte do canal `fiscal` é a mudança que importa nesses números, e ela vai na direção
+esperada de dado melhor.** O corte de fim continua fixado em jun/2026 por decisão explícita; o que
+mudou foi o começo (2008-01 → 2006-02, porque o CDS deixou de ser o canal que amarrava o início e o
+`dxy_em` passou a sê-lo, começando em 2006-01) e todo valor do canal. Três leituras:
+
+- ~~**O `fiscal` saiu de −0,0 pp para +49,0 pp da decomposição acumulada.**~~ **Esta leitura estava
+  errada e foi retirada no mesmo dia.** O +49,0 pp não era o canal passando a explicar: era a
+  centragem do `_standardize_ext` sendo ligada pela referência mais longa (a série nova começa em
+  2001-10 a 1100 bps, então a média das variações mensais virou −3,28 bps e injetava +52,5 pp de
+  deriva na barra). Corrigido, o fiscal contribui **−3,5 pp** — o CDS terminou a amostra perto de onde
+  começou, e é isso que a barra tem de dizer. O −0,0 pp da série antiga era a resposta certa pelo
+  motivo errado: aquela referência começava em 2007-12, num nível parecido com o de hoje, então a
+  média era ~0 e o artefato não aparecia. Detalhe em "A padronização escala, não centra", abaixo.
+- **A identificação melhorou nos dois canais que já eram os únicos com sinal.** Drop-one
+  walk-forward: `fiscal` de +28,5% para **+35,9%**, `dxy_em` de +13,6% para **+23,3%**. Os outros
+  quatro seguem entre +2,0% e +4,7%, então o corte para cinco canais continua de pé.
+- **Os seis coeficientes mantêm o sinal nas 174 janelas móveis** (eram 151), que é o critério pelo
+  qual `carry_vol` foi escolhido em vez de `curve_steep_real` — ele sobrevive à amostra maior.
+
+λ não mudou (0,010) e o MSE walk-forward melhorou de leve (6,9602 → 6,9520). O R² caiu de 0,6614
+para 0,6532, e isso **não é piora**: são 23 meses a mais, entre eles a corrida da GFC, que é período
+mais difícil de ajustar que a média da amostra antiga.
 
 Quatro coisas que o corte obrigou, e que valem para o próximo:
 
@@ -671,6 +703,495 @@ relatório de 9 abas, fatie pelo painel antes de procurar qualquer título.**
 `tests/test_ridge_ppp_js.js` §13 cobre os seis ajustes (91 asserções no arquivo, 40 mutantes entre
 os dois harnesses de mutação, todos pegos).
 
+## Cenários base para os canais exógenos (2026-09-08)
+
+Pedido do usuário: um click-drop **acima de "Fit diagnostics"**, com um click-drop **por variável
+exógena** dentro dele, para "estressar cenários" com ordem de magnitude medida — começando pelo CDS,
+nos T-12 meses antes do 1º e do 2º turno e nas crises de 2008, 2015-16 e 2020. Módulo novo,
+`models/exog_scenarios.py`; entra no payload como `RIDGE_DATA.exog_scenarios`, com try/except próprio
+(é a única parte daquele payload que relê as tabelas para chegar ao grid **diário**, então pode falhar
+por motivo alheio ao ajuste).
+
+**O resultado que responde ao pedido**, medindo todo episódio pela mesma regra — base = fechamento
+mensal do mês em que a subida começa, pico = **maior fechamento mensal** da janela de 12 meses:
+
+| | multiplicador no pico | meses até o pico |
+|---|---|---|
+| **eleição 2002** | **3,44x** | 11 |
+| GFC 2008 | 3,07x | 6 |
+| COVID 2020 | 3,00x | 3 |
+| Fiscal/downgrade 2015-16 | 2,73x | 12 |
+| eleição 2018 | 1,76x | 10 |
+| eleição 2022 | 1,27x | 11 |
+| eleição 2014 | 1,23x | 3 |
+| eleição 2010 | 1,05x | 3 |
+| eleição 2006 | 1,00x | 0 |
+| eleição 2026 (em curso) | 1,02x | 1 |
+
+**A tabela acima é a de 2026-09-08 depois da troca de fonte do CDS** (investing.com → Bloomberg, ver
+`domain/db/brasil/bloomberg/cmb_risco_pais.py`), e a manchete **inverteu**. Antes eram 8 episódios,
+com crise em 2,7–3,3x e eleição em 1,0–1,8x, e a frase que ficava era *"a maior corrida eleitoral do
+histórico é menor que a mais branda das três crises"*. Ela só era verdadeira porque a série começava
+em 2007-12: com 2001-2007 na amostra, **a maior eleição supera as três crises**.
+
+O que substitui a frase não é uma faixa maior, é uma **forma diferente**: as eleições são
+**bimodais**. Seis ficam em 1,00x–1,76x e uma está sozinha no topo da biblioteca inteira. Isso dá ao
+leitor um critério em vez de um intervalo — eleição é o evento menor **a menos que o mercado duvide
+do regime**, e 2002 é o caso em que duvidou. As três crises seguem apertadas (2,73x–3,07x) e o que as
+separa entre si continua sendo **velocidade, não tamanho** (3, 6 e 12 meses até o pico).
+
+Seis achados que valem além deste canal:
+
+- **Multiplicativo, e isso foi medido.** Reancorar um episódio no nível de hoje pode ser somar os bps
+  ou multiplicar a razão, e a escolha não é estética: as bases dos episódios vão de 103 a 1100 bps.
+  Por quartil de nível, a variação mensal absoluta média corre **15,4 / 19,6 / 24,9 / 128,5 bps** e
+  **12,3% / 12,2% / 11,3% / 14,2% do nível** — `corr(|Δbps|, nível) = +0,741` contra
+  `corr(|Δlog|, nível) = +0,122`. O CDS anda em proporção, então a razão é o objeto transferível.
+  `is_multiplicative` é **por canal**, não global: um canal em pontos percentuais provavelmente
+  testará ao contrário. **O achado não mudou com a troca de fonte; a evidência dele sim** — na série
+  antiga eram +0,334 contra +0,030, com a coluna de bps apenas dobrando. A diferença é o alcance: a
+  fonte velha parava em 471 bps e esta chega a 3790, que é exatamente onde uma regra proporcional e
+  uma aditiva deixam de concordar.
+- **Na grade mensal, T-12 → 1º turno e T-12 → 2º turno são a MESMA janela.** Nas sete eleições os
+  dois turnos caem em outubro, então os caminhos saíram idênticos na terceira decimal. Em vez de
+  entregar sete pares duplicados, há **uma linha por eleição** e a pergunta dos turnos é respondida
+  onde ela é respondível: no **diário**. E ali está o achado mais consistente da biblioteca — o CDS
+  **caiu entre os dois turnos nas seis eleições completas** (−298, −24, −12, −10, −39, −33 bps; −8%,
+  −18%, −11%, −5%, −16%, −11%). Ele valia 4 de 4 quando foi encontrado; 2002 e 2006, que entraram
+  com a troca de fonte, são o **primeiro teste fora da amostra em que ele nasceu**, e as duas caíram
+  também. O que vem *depois* não repete: abriu 3 meses após em 2010 e 2014, fechou em 2018 e 2022.
+- **O pico mensal e o spike diário são grandezas diferentes, e a coluna tem de mostrar as duas.**
+  Em out/2008 o mercado imprimiu **acima de 560 bps por quatro dias**, com pico em 587, contra
+  fechamento mensal de 316 — 4,50x contra 3,07x. Um caminho de 12 meses não consegue representar
+  quatro dias, então todo múltiplo da tabela é
+  mensal; a coluna "Worst day" existe para o leitor não ler 3,1x como o pior que houve. A
+  primeira versão calculava o `spike` no payload e **não o desenhava em lugar nenhum** — série morta
+  mais uma promessa solta na prosa, o mesmo modo de falha que as SGS 29534/29535 deste relatório.
+  E a frase que o explica **era escrita à mão**: citava 606 bps, "cinco vezes a base", "por três
+  dias" e um fechamento de 335, quatro afirmações da fonte antiga que a troca deixou erradas (587,
+  4,50x e 316). Virou derivada em 2026-09-09, e o teste a afirma **dentro do rodapé fatiado** — os
+  mesmos números aparecem na coluna da tabela, então uma busca no HTML inteiro passava com o rodapé
+  inteiramente inventado (mutante que escapou na primeira rodada).
+- **"Foi o Brasil ou o mundo" tem de ser medido da base ao PICO, não ao fim da janela.** Medido até o
+  fim, um episódio completo de 13 meses é uma ida e volta: a COVID sai com o dólar EM em **−0,3%**
+  (jan/2020 → jan/2021) contra **+8,7%** na perna que de fato aconteceu. A coluna existe porque o
+  `dxy_em` é **outro canal da mesma regressão** — carregar o caminho do CDS de 2018 deixando aquele
+  parado é um cenário diferente do que 2018 foi, e a página diz isso. A ordem é a afirmação, não a
+  magnitude — e desde 2026-09-09 ela é **derivada**, porque a frase à mão dizia *"as duas eleições
+  cujo CDS subiu são as duas que vieram com movimento de dólar, e as duas quietas vieram com nada"*
+  e nasceu quando **quatro** eleições tinham leitura. Com sete, ela descreve uma tabela que não
+  existe mais: cinco têm leitura e duas não (o `dxy_em` começa em 2006-01, então 2002 e 2006 saem
+  com travessão). A afirmação que o dado sustenta hoje é mais forte que a antiga: das cinco que o
+  índice alcança, **as duas cuja perna de dólar foi negativa são exatamente as duas corridas mais
+  calmas em CDS** (2010 e 2026), e as três crises vieram todas com o dólar subindo. A página também
+  diz por que a célula está vazia — travessão sem motivo é convite a ler 2002 como episódio
+  doméstico.
+- **Episódio em andamento tem cauda NULA, e ela não pode ser preenchida por conveniência.** A
+  eleição de 2026 tem 11 dos 12 meses. `path` carrega `null` no resto — nunca o último valor
+  repetido, que leria como "o CDS parou de andar" — e o gráfico usa `connectgaps: false`, senão uma
+  reta liga o último mês real ao fim da janela e inventa dado. (Enquanto a seção escrevia nas caixas,
+  a mesma cauda exigia manter a última razão real em vez de voltar a 1,0x; com as tags fora, esse
+  caminho saiu junto.) Junto: `_last_at()` devolve a última cotação *antes* de uma data, então para
+  uma eleição futura ela devolveria a cotação de hoje carimbada como "nível no dia do 1º turno" — há
+  guarda explícita, e é a asserção mais silenciosa do teste.
+- **As duas ressalvas de dado sumiram na troca de fonte, e as duas mexiam numa manchete.** Eram
+  propriedades do export manual do investing.com, não dos episódios: 2008-04-21 a 2008-09-24 era
+  **uma cotação congelada** (121,65 repetida em 113 observações) e caía justamente na base da GFC,
+  o que obrigava a hedgear *"entre 3,28x e 2,16x"* — a resposta real é **3,07x**, perto do teto e
+  não no meio; e dez/2015 **faltava inteiro**, dentro do episódio de 2015-16, então o "fechamento"
+  daquele mês era o print de 1º/12 (436 bps) quando o mês de fato fechou em **495**. Hoje
+  `flat_runs` volta **vazio** na série inteira no limiar de 20 observações (a maior repetição da
+  Bloomberg é de 3 dias) e nenhum episódio tem `caveat`. Os dois campos **continuam no payload de
+  propósito**: lista vazia é a medição de que não há o que declarar, e o próximo canal a ser
+  preenchido recebe o mesmo tratamento. O caminho de renderização da ressalva, que o dado real
+  deixou de exercitar, passou a ser exercitado **sinteticamente** no teste.
+
+### Segunda rodada: a seção virou somente leitura, e o gráfico ganhou duas vistas (2026-09-09)
+
+Quatro ajustes do usuário, e três deles são a mesma lição por caminhos diferentes.
+
+**(i) As tags que carregavam o episódio nas caixas saíram** — *"eu não quero que as tag de cenarios
+que clica e já vai direto para os inputs (vou usa-la de forma mais qualitativa para definir os
+cenários de stress)"*. A seção existe para dar **ordem de magnitude antes** de alguém escrever um
+cenário, e um clique que preenche as doze caixas pula exatamente o passo que ela deveria informar.
+Saíram as tags, a caixa de mensagem, `scenApplyEpisode()`, `scenEffectivePath()` e o listener;
+saiu também toda dependência da seção em relação ao estado da grade (`levels`, `resolvedFlags`,
+`expandedComposites`, `refreshBoxDisplay`, `renderForecastChart`). O que **sobrevive** é a medição
+de que aquela versão dependia: reancorar é **multiplicar**, e `is_multiplicative` continua no
+payload — mas agora ele é lido para **escolher a instrução na tela** ("multiply today's level by
+them" contra "add the episode's own difference"), o que impede o flag de virar campo morto e impede
+o próximo canal de herdar a resposta do CDS por acidente. O teste afirma as duas metades: que nada
+no código toca o estado da grade, e que um canal marcado como aditivo recebe a instrução contrária.
+
+**(ii) "Como você classificou o início e o fim da crise?"** A resposta é que **as duas pontas são
+declaradas de formas diferentes, e só uma é julgamento** — e isso não estava na página, só no
+código-fonte do módulo. O **início** é escolhido: os três episódios são os que foram pedidos, e a
+base é o último fechamento mensal calmo antes de a subida começar (ago/2008, set/2014, jan/2020).
+Deliberadamente **não** é um detector de picos: uma regra que varresse esta série procurando os
+trechos mais agudos seria depois validada contra a mesma série, e toda crise sairia parecendo aguda
+por construção. O **fim não é escolha nenhuma**: toda janela corre 12 meses desde a base, porque 12
+meses é o que a grade de caixas pede e porque a biblioteca precisa de **uma régua** para dois tipos
+de episódio. Consequência que a página agora diz, derivada: *o fechamento da janela não significa
+que o episódio se resolveu* — 2015-16 termina **no próprio pico** e a COVID termina com o nível
+ainda 69% acima da base. Junto, `ep.note` **passou a ser desenhado**: os três episódios traziam uma
+frase de caráter no payload e nenhum desenho a usava — campo morto, mais o leitor sem a única frase
+que diz por que estas datas e não outras. Duas dessas notas também **carregavam número velho** da
+fonte antiga ("4% acima" onde hoje é 2,6%, "64% acima" onde hoje é 69%) e uma trazia `--` em ASCII,
+que sai literal: os números saíram das notas (a tabela e a frase derivada já os imprimem) e o
+travessão virou entidade.
+
+**(iii) O gráfico virou duas vistas, com mês de calendário na eleitoral.** Pedido: *"Como o recorte
+temporal é bem definido, pode colocar o grafico com os meses de fato (e não 1, 2 etc...) ... Eu
+clico em 'Eleitoral' e ele traz os dados de eleição, eu clico 'Crise' e ele traz os dados de
+crise"*. O que faz isso funcionar é uma propriedade dos episódios, não uma escolha de eixo: **as
+sete eleições partem do mesmo mês do calendário** (a base é o mês do voto menos doze, e todo 1º
+turno cai em outubro), então **um conjunto de rótulos serve as sete** — `Oct (base)`, `Nov`, …,
+`Sep`, e então os dois turnos (abaixo). As crises **não** compartilham mês-base (ago, set, jan),
+então ali o eixo só pode contar meses. É por isso que os dois tipos não dividem mais um gráfico: **desenhar os dez
+juntos força o mais fraco dos dois eixos sobre o par**. Cinco decisões que valem além deste
+gráfico:
+
+- **Os rótulos são derivados, com guarda.** `scenSharedTicks()` devolve os treze nomes só se todos
+  os episódios da vista partirem do mesmo mês; se divergirem, devolve `null` e o gráfico volta a
+  contar meses, que é sempre verdade. Escrever "Oct" à mão passaria a mentir no dia em que a data
+  do 1º turno mudasse, sem levantar nada. O teste exercita os dois lados (eleições ✓, crises ✗) e
+  ainda um caso sintético de base divergente.
+- **O primeiro e o último rótulo são o mesmo nome de mês um ano depois**, que é precisamente a
+  confusão que o eixo poderia criar — daí `(base)` e `(vote)`.
+- **O mês real vai para o hover, nas duas vistas.** Na eleitoral o rótulo é um nome compartilhado
+  por sete anos; na de crise é uma contagem. Em nenhuma das duas o eixo diz de que mês é o ponto.
+- **A cor vem da posição no acervo inteiro, não na vista**, senão um episódio troca de cor quando a
+  vista troca. Só a vista **eleitoral** distingue as duas regras (as crises são os três primeiros do
+  acervo, então lá os dois índices coincidem) — a primeira versão da asserção media a vista errada e
+  o mutante escapou.
+- **`type: 'linear'` continua obrigatório**, inclusive na vista eleitoral: os rótulos entram por
+  `ticktext` sobre os mesmos inteiros 0..12. Medido com Plotly real depois da mudança: **339 ms** na
+  eleitoral (13 ticks, `tickmode` de array) e **643 ms** na de crise, com o eixo resolvendo `linear`
+  nas duas e sem `rangeselector`. Ver a seção do travamento abaixo.
+
+E a pill de um tipo sem episódio **fica na tela, desligada, com o motivo no `title`** — pill ausente
+não responde "onde estão as crises deste canal?". Exercitado sinteticamente, porque o único canal
+medido tem os dois tipos.
+
+**E outubro virou dois pontos, na mesma rodada** — *"separe o outubro da eleição em dois pontos: 1º
+turno e 2º turno ... pode fazer uma marcação em cinza claro para diferenciar"*. Era um ponto só, e
+era o **fechamento mensal** de outubro, que cai **depois** do 2º turno: a única parte da corrida que
+acontece em dias ficava invisível justamente no gráfico da corrida, enquanto a tabela logo abaixo já
+media os dois turnos. Agora a vista eleitoral tem **14 posições** — doze fechamentos mensais (base
+até setembro) e os dois turnos, cada um lido na **série diária no dia dele** (`inter_round.at_r1` /
+`at_r2`, divididos pela mesma base). Quatro coisas valem além deste gráfico:
+
+- **A base de medição muda no meio do eixo, então isso tem de estar marcado.** Os doze primeiros
+  pontos são fechamentos de mês e os dois últimos são a cotação de um dia; sem a faixa cinza atrás
+  deles, eles leriam como mais dois meses. A faixa é `shape` com `yref: 'paper'` e `layer: 'below'`,
+  cobrindo exatamente `[horizon − 0,5; horizon + 1,5]`.
+- **A faixa tem de ser passada VAZIA na vista de crise**, não omitida: com `Plotly.react` um layout
+  sem a chave herda a forma do desenho anterior, e a vista de crise ficaria com a marca dos turnos
+  por cima de dois meses quaisquer. Mutante próprio (`: []` → `: null`).
+- **O fechamento de outubro não some do relatório**, só do gráfico: ele continua sendo a coluna
+  "At month 12" da tabela, e o cabeçalho do gráfico diz isso. Nenhuma eleição tem pico em outubro do
+  ano do voto, então nada de visual se perdeu — conferido episódio a episódio.
+- **Eleição futura não ganha ponto.** 2026 não tem `inter_round`, então as duas posições saem `null`
+  e a linha termina em setembro. Um `at()` que devolvesse 1,0x no lugar do nulo desenharia a eleição
+  chegando ao voto exatamente na base — é o mutante 24.
+
+O rótulo dos dois pontos é o mesmo nas sete eleições (`1st round`, `Runoff`), então a **data** de
+cada turno vive no hover, junto com o nível e o múltiplo. Medido com Plotly real depois da mudança:
+289 ms na vista eleitoral (14 ticks, uma shape) e 632 ms na de crise (13 ticks, zero shapes).
+
+**(iv) "Eu não entendi o gráfico 'Where any path you type sits against history'"** — e o motivo era
+uma **troca de unidade sem aviso**. A distribuição é medida como variação em **log por cento**, que é
+a coisa certa a medir e a errada a imprimir ali: toda a seção fala em **múltiplos de uma base**, e as
+duas unidades se parecem sem serem a mesma. A tabela imprimia os números de log sob um cabeçalho de
+"%", ao lado de uma tabela de múltiplos, e a prosa lia *"+50% é mais ou menos um ano em dez"* quando
+o percentil 90 de doze meses é **1,79x**, ou seja +79%; *"+100% é perto do pior do histórico"* quando
+o pior é **3,89x**. Nada na página podia contradizer a leitura errada. A tabela passou a sair em
+múltiplos, e a conversão é **exata, não aproximada**: um quantil sobrevive a qualquer transformação
+crescente, então `exp()` do percentil 90 do log **é** o percentil 90 da razão. (O desvio-padrão não
+sobreviveria — e é por isso que ele não é impresso.) Junto:
+
+- **Os cabeçalhos passaram a ser frequência, não percentil**: `Calmest 1 in 20`, `Median`,
+  `Worst 1 in 10`, `Worst 1 in 20`, `Worst 1 in 100`, `Worst on record`. É o que a tabela responde.
+- **O título virou a pergunta** — *"How rare is a move that size?"* em vez de "where any path you
+  type sits against history", que descrevia um mecanismo que já não existe.
+- **A tabela ganhou a frase que a liga aos episódios**, derivada dos mesmos percentis: a mais branda
+  das três crises (2,73x) fica **dentro do pior 1 em 20** dos trechos de doze meses e a mais dura
+  (3,07x) **acima de 99 em 100**, como 2002 (3,44x).
+- **E o achado que justifica a tabela existir**: a **pior janela de doze meses do histórico não é
+  nenhum dos episódios nomeados** — é out/2007 → out/2008, a **3,89x**, acima dos 3,44x de 2002. É a
+  mesma crise de um dos episódios, sobre uma janela que nenhuma regra desta biblioteca escolheria:
+  um episódio é ancorado no último fechamento calmo *antes* da corrida, e os doze piores meses de uma
+  crise não precisam começar ali. Isso sai de `ch.history`, que era **outro campo morto do payload**.
+- **A sobreposição é declarada**: as janelas são uma por mês, então `n` conta meses e não episódios
+  independentes (a mesma ressalva da aba Inércia do relatório de inflação).
+
+**E a manchete de 2026-09-08 tinha ficado errada na página, não só na doc.** A frase *"a maior
+corrida eleitoral do histórico é menor que a mais branda das três crises"* estava **hard-coded** ao
+lado de duas faixas **derivadas** que a contradiziam desde a troca de fonte (1,0x–3,4x contra
+2,7x–3,1x), e nenhuma asserção olhava para ela — a prosa era o único conteúdo da seção que o teste
+lia apenas por lista de termos proibidos. Agora a leitura bimodal inteira é derivada (quantas
+eleições ficam abaixo da pior crise, qual é a exceção, e quantas crises ela supera), e há um guarda
+explícito: a frase aposentada não pode voltar, e `bimodal` mais o rótulo do episódio outlier têm de
+estar na tela. Mesmo dia, mesmo defeito, terceira ocorrência: **a única defesa contra prosa que
+envelhece é derivá-la e afirmar sobre o texto renderizado.**
+
+### E a seção travou a aba, por um eixo de data (2026-09-08, mesmo dia)
+
+Reportado pelo usuário: clicar em FX Model travava o relatório. **Não era laço infinito nem dado
+grande — era o eixo X do gráfico novo resolvendo para `date`.**
+
+`plotlyBaseLayout()` funde o `layoutExtra` de quem chama **por chave**
+(`Object.assign({}, base.xaxis, extra.xaxis)`), e o `base.xaxis` carrega `type: 'date'` e o
+`rangeselector` de passos anuais — defaults corretos para os dez gráficos de série temporal destas
+abas. O gráfico de cenários passava `xaxis: { title, dtick: 1 }` sem `type`, então herdava os dois:
+os 13 inteiros de "meses desde a base" (0..12) passaram a ser lidos como **milissegundos desde
+1970**, e o `dtick: 1` — que eu escrevi querendo "um mês" — passou a significar **um milissegundo**.
+
+Medido com Plotly de verdade (jsdom + `plotly.js-dist-min`), contra o arquivo entregue:
+
+| estado | eixo resolvido | ticks | tempo para pintar |
+|---|---|---|---|
+| como estava | `date`, janela de **47 anos** (1967→2014) | **1.001** rótulos em precisão de ms | **107 s** |
+| corrigido | `linear`, [−0,74; 12,74] | 13 | **0,3 s** |
+
+**O que vale reter é o formato do defeito, não o eixo.** `dtick: 1` é a mesma linha de código com
+dois significados a **três ordens de grandeza** de distância, e nada além do `type` resolvido
+distingue — não há erro, não há aviso, e o sintoma (aba travando) não aponta para o gráfico. É a
+armadilha oposta à do `xaxis.rangeselector` já registrada aqui: lá o componente nativo ancorava a
+janela no range errado, aqui o **default de tipo** da fábrica é que estava errado para um gráfico
+que não é série temporal.
+
+O fix tem **três camadas, e cada uma sozinha evita o travamento** (medido, uma a uma): o gráfico
+declara `type: 'linear'`; `plotlyBaseLayout()` **apaga `rangeselector`/`rangeslider` quando o
+chamador declara um `type` não-data**, em vez de deixar a limpeza a cargo de quem chama; e
+`plotlyRenderAndBind()` **infere `linear`** quando a primeira abscissa é número e ninguém declarou
+tipo. A redundância é deliberada: os dez gráficos existentes plotam string de data e nenhum é
+tocado, então a inferência custa nada e fecha a armadilha para o próximo gráfico não-temporal
+destas abas. Achado lateral: com `type` explícito o Plotly **já ignora** um rangeselector em eixo
+não-data (medido, 491 ms) — mas isso é tolerância de terceiro verificada numa versão só, então a
+limpeza fica e o teste a exige.
+
+**Por que 265 asserções passaram com a aba travada.** O harness passava um `plotlyRenderAndBind`
+**de mentira**, então capturava o `layoutExtra` que a seção *pede* e nunca o layout que a página
+*resolve* — e o defeito vivia exatamente nessa diferença. `tests/test_exog_scenarios_js.js` agora
+**extrai `plotlyBaseLayout`/`plotlyRenderAndBind`/`_bindPlotlyYAutofit` do próprio HTML entregue** e
+passa os reais, afirmando sobre o eixo resolvido: `type === 'linear'`, ≤40 ticks, sem
+`rangeselector`, mais a regra genérica *abscissa numérica nunca resolve para eixo `date`* para
+qualquer gráfico futuro da seção. 399 asserções, e os 6 cenários de mutação do eixo dão o veredito
+certo nos 6.
+
+Dois detalhes do harness que custaram tempo e se repetem: **o arquivo entregue tem CRLF**, então um
+terminador de fatia com `
+}
+` não casa nunca e a extração devolvia **string vazia sem erro** —
+o harness voltaria a medir um stub achando que media o real (daí o guarda de tamanho mínimo por
+fatia e o abort explícito); e o `_bindPlotlyYAutofit` real chama `el.on(...)`, então o stub de
+elemento precisou de `on()` ou o caminho de layout real não roda.
+
+**O que fica pendente e é decisão do usuário:** a prova com Plotly real roda num projeto npm
+temporário (`jsdom` + `plotly.js-dist-min`). Torná-la teste permanente exige um `package.json` e
+`node_modules` no repositório, que hoje não existem — o `tests/*.js` inteiro roda em Node puro sem
+dependência. O guarda de eixo já está no harness sem dependência nenhuma; o que a prova real
+acrescenta é medir o **tempo** de pintura, que só o Plotly de verdade dá.
+
+**Canal pendente rende fold, não ausência.** Os outros quatro (dxy_em, carry_vol, sp500, icbr_usd)
+aparecem com o click-drop e dizem que não foram medidos — esconder leria como "este canal não tem
+cenário", que é outra afirmação. Preenchê-los é escolher os episódios *deles*: um trimestre que abre
+spread de crédito não é automaticamente o que move índice de commodity, e eleição não é obviamente
+evento para o S&P 500.
+
+`tests/test_exog_scenarios_js.js` (446 asserções, 26 mutantes + os 6 cenários do eixo, todos com
+veredito certo) **executa** o código da seção fatiado do arquivo entregue contra um stub de
+DOM/Plotly — não só confere sintaxe. Cobre as identidades de medição por episódio, a manchete
+refeita do payload (um mutante que a escreva à mão é pego), as duas vistas do gráfico, a
+distribuição em múltiplos, o critério de janela na tela, e uma **lista de termos proibidos na prosa**
+no padrão de `tests/test_release_calendar_js.js`. Esse último guarda pegou dois defeitos reais na
+primeira execução: o rodapé imprimia `macro_brasil.cmb_risco_pais`, e o texto de canal pendente dizia
+*"done first at the user's request"* — quem abre a página não sabe que houve pedido nem de quem.
+
+Um detalhe do stub que mudou em 2026-09-09 e vale para qualquer harness deste tipo: o
+`querySelectorAll` do elemento fingido passou a **cachear por seletor** enquanto o `innerHTML` não
+muda. Num DOM real duas consultas devolvem os MESMOS nós, e é disso que depende despachar um clique
+num nó consultado depois do render e cair no handler que o render ligou. Sem o cache, o stub
+devolvia nós novos a cada chamada e deixava de exercitar justamente o par "escrevi HTML / religo os
+handlers nele" — a única coisa que ele existe para cobrir.
+
+## O gráfico de cada regressor mostra a história inteira (2026-09-08)
+
+Pedido do usuário: *"coloque o gráfico com os dados completos de todos os regressores"*, e no mesmo
+dia o princípio que decide o formato — *"esses gráficos servem para dar uma ordem de grandeza dos
+movimentos das séries, por isso é importante colocarmos lá o maior histórico que temos"*.
+
+O gráfico é o que já existia: o de dentro do card de cada canal, atrás do botão *Show regressor
+chart*. O que mudou é o que ele recebe. O `channel_history` saía **reindexado em `z.index`**, ou
+seja, cortado na amostra do ajuste — o CDS começa em 2001-10 e o painel dele abria em 2006-02, sem o
+pico de 2002 (3790 bps, 30x o nível de hoje), que é justamente a maior ordem de grandeza que a série
+tem para oferecer. Hoje cada canal vem na sua própria história: sp500 desde 1990, ppp 1994, icbr_usd
+1998, carry_vol 1999, fiscal 2001, dxy_em só 2006.
+
+**O corte de FIM continua no ajuste, e isso é load-bearing.** A linha histórica tem de encostar no
+caminho projetado que sai da ponta dela, e os meses depois do corte já são desenhados pela linha
+*Observed (since fit)*, que vem do nowcast — estender o fim poria duas linhas em cima dos mesmos
+pontos e moveria a âncora das caixas. Só o começo cresce.
+
+**Duas versões erradas antes desta, e as duas ensinam.**
+
+A primeira padronizava. Cinco unidades não dividem um eixo, então z-score — e z-score entrega
+desvios-padrão, que é exatamente a unidade que **apaga** magnitude. Pior, ele escondia o histórico
+que o pedido queria ver: padronizado na janela do ajuste, o CDS de 2002 sai a **46 desvios**, o eixo
+Y precisa de [−2,8; +46,3] e tudo o que acontece dentro do ajuste fica espremido em **12,1% da
+altura** (57,2% padronizando na história de cada série). A série de 2001 estava desenhada e não dava
+para ver que estava.
+
+A segunda pôs os cinco painéis em unidade nativa — certo — **numa seção nova no fim da aba**, e o
+usuário recusou: *"cada regressor tem uma sessão de gráfico, por que você criou outra sessão lá em
+baixo?"*. Também certo, e o argumento é de arquitetura, não de gosto: a mesma série passava a ter
+dois gráficos, com dois recortes e duas escalas, e nada na tela dizia qual responder. O histórico
+foi para dentro do gráfico que já existe e a seção extra saiu inteira — div, JS, e o
+`channel_history_full` do payload.
+
+Quatro decisões que valem além deste gráfico:
+
+- **`log` é medido, não escolhido.** Num eixo linear uma série que percorre 61x mostra só o pico de
+  2002 e achata vinte anos no rodapé. Em log, distância vertical igual é movimento proporcional
+  igual — que é o que "ordem de grandeza de um movimento" quer dizer. O critério: estritamente
+  positiva e amplitude ≥ `_LOG_SPAN_MIN` (8x). Hoje pega fiscal (61x), carry_vol (29x) e sp500 (25x)
+  e deixa dxy_em (1,6x), icbr_usd (3,7x) e ppp (3,7x) em linear. O `span` vai no payload ao lado do
+  `log`, para a ficha poder dizer **por que**, e o teste exige que a regra separe de fato — se todos
+  caíssem do mesmo lado, ela não estaria decidindo nada.
+- **E ele sai fora do nível cru.** Z-score e variação em 12 meses assumem valores negativos, e log
+  de negativo **some do gráfico sem levantar nada** — a condição é `hist.log && modo === 'level' &&
+  !yoy`, com o eixo virando log, nunca os dados sendo transformados.
+- **A cauda é o contrato.** Todo o resto do template lê só o fim desta série: `values[len-1]` ancora
+  as doze caixas e o botão de cenário, `values[len-12+h]` é a referência da leitura em % a/a do PPP.
+  Foi isso que tornou a extensão para trás segura, e é isso que o teste afirma mês a mês
+  (`months.slice(off)` contra `D.months`) em vez de conferir só o comprimento.
+- **A faixa do pré-ajuste tem piso de 6 meses, e a mesma condição governa o desenho e a frase.** O
+  canal que **amarra** a amostra começa um mês antes dela (a diferenciação come a primeira
+  observação), então sem piso o dxy_em ganharia um risco cinza de 1 mês com um rótulo por cima da
+  própria linha — ruído anunciando que não há nada para ver. Quem explica aquele caso é a ficha, que
+  diz que aquele é o canal que decide onde a amostra começa. `binding_channel` é **derivado** dos
+  próprios `start`, no cliente e no teste, nunca escrito: era `fiscal` até esta data e virou `dxy_em`
+  sozinho quando o CDS trocou de fonte.
+
+Junto vieram a unidade no eixo Y (`Level, bps` — campo da série, não string no rótulo, pela razão de
+sempre) e uma ficha embaixo do gráfico com período, faixa de valores e amplitude: *"Full history:
+Oct/2001 to Jun/2026 (297 months) · low 62,15, high 3790,00 bps — a 61x range · log scale…"*.
+Detalhe pequeno com dente: `fmtNumRg` **trunca**, então a amplitude sai de `Math.round` — 60,97
+virando "60x" seria uma amplitude que a série não tem.
+
+**E o `_bindPlotlyYAutofit` compartilhado precisou de guarda**, achado ainda na versão de painéis e
+que continua valendo: ele junta os traces num `yaxis.range` só, **em unidade crua**, e num eixo log
+`range` é em **log10** — [62; 3790] cru pediria uma faixa de 10^62 a 10^3790. Ele sai fora quando há
+mais de um eixo Y ou quando o eixo é log; o autorange nativo resolve os dois casos.
+
+Cobertura: `tests/test_ridge_ppp_js.js` §14 (201 asserções no arquivo), **10 mutantes**, todos pegos
+— o `channel_history` de volta cortado no ajuste, a série estendida também pelo fim, `log` escrito à
+mão num canal de 1,6x, `level_mean` de volta à janela do ajuste, a cauda desalinhada, o div da seção
+separada de volta, log ligado no z-score, o eixo Y com rótulo fixo, a ficha desenhada acima do
+gráfico e o binding channel cravado. O bloco de `<script>` das abas de modelo não é executado por
+harness permanente; a verificação de execução foi feita à parte, extraindo `renderChannelGraph` do
+arquivo entregue e rodando-o contra o payload real com a **fábrica de layout real**, afirmando sobre
+o eixo *resolvido* (a lição da "oitava face") — 6 canais sem exceção, eixo X em `date`, log em 3 e
+linear em 3, faixa e ficha coerentes, e o z-score derrubando o log.
+
+## A padronização escala, não centra (2026-09-08)
+
+Achado pelo usuário lendo o gráfico do regressor: *"no começo de 2006, o CDS era de ~120 pontos,
+atualmente está próximo disso também. Como o CDS pode ter contribuído com 48% da desvalorização do
+real no período?"*
+
+Não podia. `_standardize_ext` subtraía a média da janela de referência, e **toda coluna que passa por
+ali é uma diferença** (`delta_fiscal = CDS(t) − CDS(t−1)`). A média de uma diferença é uma **deriva**:
+subtraí-la injeta um sinal constante de `−μ/σ` em todo mês, inclusive nos meses em que o canal não se
+mexeu. Com o CDS da Bloomberg a referência começa em out/2001 a 1100 bps, μ = **−3,28 bps/mês**, e a
+decomposição acumulada do canal fiscal se abria assim:
+
+| | pp da variação log do PTAX |
+|---|---|
+| o que o CDS de fato fez (178,0 em jan/06 → 124,8 em jun/26, **−53 bps**) | **−3,5** |
+| a média da referência subtraída 245 vezes | **+52,5** |
+| = o que a barra mostrava | **+49,0** |
+
+### O ajuste nunca dependeu disso
+
+`Ridge(fit_intercept=True)` do sklearn **não penaliza o intercepto**, então somar uma constante a uma
+coluna de X move só o α. Medido rodando os dois lados: **β idêntico a 2e-16**, R² idêntico
+(0,653217), λ idêntico (0,01), valores ajustados idênticos a **3,6e-15**. Só o α muda, de −0,107 para
+−0,043 pp/mês. Nada de previsão, banda de erro, drop-one ou coeficiente móvel se altera — foi por
+isso que a correção não exigiu reestimar nem mexer no corte fixado.
+
+O que muda é a decomposição acumulada dos +84,8 pp:
+
+| balde | antes | agora |
+|---|---|---|
+| PPP | +58,7 | +58,7 |
+| dxy_em | +1,3 | **+30,9** |
+| sp500 | +9,0 | **+30,6** |
+| icbr_usd | +3,4 | **−11,2** |
+| fiscal | **+49,0** | **−3,5** |
+| carry_vol | −0,2 | −0,1 |
+| linha de base (α·n + AR1) | −36,3 | −20,6 |
+
+### Por que escala-sem-centro, e não as outras duas
+
+Foram medidas quatro convenções sobre o mesmo dado e o mesmo modelo. O β por unidade nativa é o mesmo
+em todas (8,2499 / 8,2499 / 8,1746 / 8,2499 no fiscal — a terceira difere 0,9% só porque o λ dela sai
+do piso), então **a decomposição acumulada não é identificada pelos dados: ela é a escolha de onde a
+constante mora.** Três leituras:
+
+- **Centrar na amostra (o z-score de livro) dá zero por tautologia.** `Σ(x − x̄) = 0` é a definição de
+  média, então nenhum regressor em diferença pode explicar movimento acumulado nenhum, quaisquer que
+  sejam os dados — todos os cinco canais saem exatamente 0,00 e os 84,8 pp vão inteiros para PPP +
+  linha de base. Não é o zero honesto, é aritmética disfarçada de achado.
+- **Centrar na referência dá um número arbitrário.** Ele depende de onde a janela começa, que é
+  acidente de vintage: era ~0 com o CDS do investing.com (série começando em 2007-12, perto do nível
+  de hoje) e virou +49 com o da Bloomberg (2001-10, a 1100 bps) sem nada ter mudado no CDS.
+- **Só a escala dá um número que é propriedade do dado.** A contribuição vira `β·Δx/σ`, e como o β é
+  estimado em unidades de σ ele é proporcional a σ — o σ **se cancela**. Recalculada a partir de um
+  ajuste feito com o σ da amostra (4x menor no fiscal), a barra do fiscal dá **−3,44** contra −3,47.
+  É a única das três cujo número não muda quando se mexe na padronização.
+
+### E o cliente já fazia isso — os dois lados discordavam
+
+`simulateForecast()` sempre calculou `z = raw / stat.std` e **nunca leu `channel_stats[...].mean`**.
+Ou seja, o servidor ajustava com `(Δ−μ)/σ` e o navegador previa com `Δ/σ`. Medido, o viés era
+`Σβ·μ/σ` = **−0,185 pp/mês**, **−2,22 pp em 12 meses**, contra um α de −0,12 pp/mês — maior que o
+próprio intercepto. A correção zera isso, e a direção dela é a que o cliente já assumia, o que é a
+evidência de que a subtração nunca foi intencional: ela veio de o `_standardize_ext` ter sido escrito
+para resolver **escala** e ter trazido a média junto.
+
+Por isso `stats` publica `mean = 0.0` em vez de guardar a média medida: `channel_stats` é o
+**transforme** que o cliente aplica, não uma descrição da série. Guardar ali a média convidaria
+alguém a subtraí-la de novo.
+
+### Achado lateral: o σ do fiscal é 4x o da amostra
+
+| canal | σ referência (2000+) | σ amostra do ajuste | razão |
+|---|---|---|---|
+| fiscal | 126,52 | 31,52 | **4,01x** |
+| dxy_em | 1,82 | 1,83 | 1,00x |
+| carry_vol | 0,115 | 0,098 | 1,17x |
+| sp500 | 4,41 | 4,42 | 1,00x |
+| icbr_usd | 3,25 | 3,49 | 0,93x |
+
+A janela de referência — a razão de ser do `_standardize_ext` — só faz diferença material para **um**
+canal, e o que ela faz lá é quadruplicar o σ ao incluir 2002. Consequência: o `β = +10,4` do card do
+fiscal é *pp por 1σ*, e esse 1σ vale **126 bps**, um movimento de 2002, não os 31,5 bps que a amostra
+tem. O mesmo σ governa o `+ noise (±1σ)` da ferramenta de choque, e o ranking dos cards lê 8,25
+contra 1,87 do dxy_em onde em σ da própria amostra seria 2,05 contra 1,87. **Não foi mexido** —
+ficou como pendência, porque ao contrário da centragem essa escolha tem argumento dos dois lados (o σ
+longo inclui um regime que pode voltar).
+
+### Cobertura
+
+§15 de `tests/test_ridge_ppp_js.js` (228 asserções no arquivo), **6 mutantes, todos pegos**: o
+`channel_stats` voltando a trazer média, as contribuições de volta à convenção antiga, só a barra do
+fiscal de volta a +49, o cliente subtraindo `stat.mean`, a prosa da aba perdendo a explicação, e o
+`_standardize_ext` voltando a centrar na fonte. A asserção que não envelhece é a identidade
+`contribuição acumulada == β·(x_fim − x_início)/σ`, canal a canal, com os níveis lidos do
+`channel_history` — sob a convenção antiga ela falha no fiscal por 52 pp.
+
 ## Section → schema → table mapping
 
 | Report tab | Loader (`generate_report.py`) | Schema | Table(s) |
@@ -691,7 +1212,7 @@ os dois harnesses de mutação, todos pegos).
 
 Note: interbank FX volume (`fx_interbank_vol_t1`/`t2`) lives in `cmb_ptax` but is charted under Fluxo Cambial, not Valuation — the PTAX section shows only the spot level.
 
-The three model tabs don't go through `_load_*()` at all: they source through `models/ppp_equilibrium.load_data()` (a much wider set — `cmb_ptax`, IPCA, `cmb_risco_pais`, `cmb_dollar_index*`, `cmb_policy_rates`, `cmb_fx_latam`, `inflc_meta`, the external `base_mercado.interest_rates`, plus a live FRED CPI fetch) and the hand-extracted CSVs under `models/fx_attribution_data/`. See `models/` below.
+The three model tabs don't go through `_load_*()` at all: they source through `models/ppp_equilibrium.load_data()` (a much wider set — `cmb_ptax`, IPCA, `cmb_risco_pais`, `cmb_dollar_index*`, `cmb_fx_latam`, `inflc_meta`, `br_interest_rate` e `inter_interest_rate` (as duas pela curva `POLICY`, desde que a `cmb_policy_rates` saiu em 2026-09-03), plus a live FRED CPI fetch) and the hand-extracted CSVs under `models/fx_attribution_data/`. See `models/` below.
 
 `agent_data.py` (`get_fx_snapshot()`, consumed by the `cambio-analyst` subagent) reuses these same `_load_*()` functions and reduces each series to latest value + 1m/3m/12m deltas + a `stale` flag (per-group expected-gap thresholds hardcoded in `_EXPECTED_GAP_DAYS`).
 
@@ -768,7 +1289,7 @@ Statistical models testing FX theory directly against this database — distinct
 
 What's actually still here:
 
-- **`ppp_equilibrium.py`** — the shared data-loading and PPP-equilibrium core every surviving model tab sits on top of. `load_data()` builds the relative-PPP equilibrium candidate (headline IPCA index ÷ headline CPI index, anchored to actual PTAX at a selectable base month, sample 1994-07→today) from BR IPCA/PTAX (MySQL) + US CPI (live FRED fetch, not cached), and also fetches the full set of candidate explanatory channels the Ridge model draws on — carry (`diferenciais_juros`), terms-of-trade (`cmb_termos_troca`), breakeven inflation expectations and the CMN de-anchoring gap (`base_mercado.interest_rates` + `inflc_meta`), fiscal risk/CDS (`cmb_risco_pais`), DXY and the EM dollar index, nominal and real 10Y-2Y curve steepening (`base_mercado.interest_rates`), the BR-US real yield differential, S&P 500, the USD-denominated commodity index, and LatAm-peer-relative carry/carry-vol variants (`cmb_policy_rates`/`cmb_fx_latam`) — sourced across `macro_brasil`/`macro_international` plus one external fund-ops schema. `build_payload()` shapes all of this for the Equilíbrio PPP tab's charts; `compute_equilibrium()`/`compute_deviation()` are the equilibrium/deviation math reused by every model that needs it. Its `render()` (which used to fill the standalone dashboard's markers) is gone — `generate_report.py` owns rendering now, and `run()` here is diagnostics-only (per-channel coverage + latest deviation, no file written).
+- **`ppp_equilibrium.py`** — the shared data-loading and PPP-equilibrium core every surviving model tab sits on top of. `load_data()` builds the relative-PPP equilibrium candidate (headline IPCA index ÷ headline CPI index, anchored to actual PTAX at a selectable base month, sample 1994-07→today) from BR IPCA/PTAX (MySQL) + US CPI (live FRED fetch, not cached), and also fetches the full set of candidate explanatory channels the Ridge model draws on — carry (`diferenciais_juros`), terms-of-trade (`cmb_termos_troca`), breakeven inflation expectations and the CMN de-anchoring gap (`interest_rate` + `inflc_meta`), fiscal risk/CDS (`cmb_risco_pais`), DXY and the EM dollar index, nominal and real 10Y-2Y curve steepening (`interest_rate`), the BR-US real yield differential, S&P 500, the USD-denominated commodity index, and LatAm-peer-relative carry/carry-vol variants (`cmb_policy_rates`/`cmb_fx_latam`) — sourced entirely across `macro_brasil`/`macro_international` since 2026-09-03, when `interest_rate` was migrated in from CentralManagement's external `base_mercado` schema. `build_payload()` shapes all of this for the Equilíbrio PPP tab's charts; `compute_equilibrium()`/`compute_deviation()` are the equilibrium/deviation math reused by every model that needs it. Its `render()` (which used to fill the standalone dashboard's markers) is gone — `generate_report.py` owns rendering now, and `run()` here is diagnostics-only (per-channel coverage + latest deviation, no file written).
 - **`fx_attribution_model.py`** (+ `fx_attribution_model.md`, `generate_fx_attribution_pdf.py`, `fx_attribution_data/`) — turns qualitative FX commentary from asset-manager monthly letters into a numeric monthly time series across 9 fixed causal categories (`fiscal_br`, `monetary_br`, `politics_br`, `global_usd`, `commodities`, `risk_sentiment`, `china_em`, `trade_policy`, `capital_flows` — full taxonomy/extraction rules in `fx_attribution_model.md`). Sign convention: +1 = strongly BRL-appreciation-supportive, −1 = strongly depreciation-driving, scored on the claim's effect on BRL, never on the claim's own subject. Manual-extraction pilot, not an automated pipeline: each manager's `documents.csv`/`claims.csv`/`monthly.csv`/`fx_attribution.xlsx` under `fx_attribution_data/<manager>/` is hand-extracted from source letters (currently `kinea/`, `verde_asset/`, `kapitalo/`); the module itself only covers claims → monthly matrix → Excel export (`export_excel()`) and → dashboard payload (`build_manager_payload()`/`build_dashboard_payload()`). Framework is manager-agnostic by design — onboarding a new manager means hand-extracting its own `fx_attribution_data/<manager>/` folder, no code changes.
 - **`ridge_deviation_model.py`** (+ `generate_layman_model_doc.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. **Relative PPP re-entered the spec in 2026-09-01 with its coefficient pinned at 1** (see the section above) — it is an *offset*, not a regressor, and never appears in `delta_cols`. **The channel set was cut from eight to five the same day** (`_CHANNELS_5`): fiscal (CDS), the EM dollar index, a carry-to-volatility metric, S&P 500 and the USD commodity index. Out went DXY, real curve steepening and the BR-US real yield differential. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_layman_model_doc.py` generates `reports/brasil/ridge_model_explained.pdf`, a plain-English (no jargon, no equations) companion documenting the shipped channel spec, aimed at a non-technical internal audience. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
 
@@ -783,6 +1304,16 @@ What's actually still here:
   It is also the **only** consumer of `cmb_real_rates`, which is why that table isn't orphaned.
 
 ## Pending / next steps
+
+- **Cenários base dos outros 4 canais exógenos** (`dxy_em`, `carry_vol`, `sp500`, `icbr_usd`) — o
+  arcabouço está pronto e genérico (`models/exog_scenarios.py`), inclusive as duas vistas do gráfico
+  (um canal cujos episódios não compartilhem mês-base cai sozinho na contagem de meses) e a
+  instrução de transferência derivada do `is_multiplicative`. Cada um custa escolher a lista de
+  episódios e medir. Duas coisas a decidir por canal, não herdar do CDS: **quais janelas são episódios
+  para ele** (eleição brasileira não é evento para o S&P 500) e **se o movimento é proporcional** —
+  `is_multiplicative` é por canal justamente porque `carry_vol` é uma razão e um episódio dela
+  provavelmente se transfere em diferença, não em múltiplo. A seção já rende fold para os quatro,
+  dizendo que não foram medidos.
 
 - **As 3 abas de modelo ainda usam o `xaxis.rangeselector` nativo**, via
   `PLOTLY_RANGE_SELECTOR`/`plotlyBaseLayout()` no segundo bloco de `<script>` — carregam o mesmo bug

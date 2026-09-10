@@ -34,16 +34,30 @@ Usar Python (openpyxl/pandas/csv) para:
 ### Passo 2 — Perguntar ao usuário
 ANTES de montar qualquer gráfico, perguntar ao usuário:
 - Quais gráficos ou visualizações ele quer
-- Qual métrica principal (% NAV, preço, quantidade, etc.)
+- Qual a série principal (que ativo, que entidade, que medida)
 - Se quer filtros por período, toggle de séries, etc.
 - Qualquer preferência específica
 
 **Não assumir os gráficos por conta própria.** O usuário decide o que quer ver.
 
+**Mas não pergunte quais métricas oferecer** — nível, média móvel, % do total, variação, % do PIB.
+Isso se deriva do dado no Passo 4, e perguntar joga de volta para o usuário um trabalho que a
+declaração do dado já responde. O que se pergunta sobre métrica é só o que o dado **não** decide:
+qual janela o denominador usa quando há mais de uma convenção, qual deflator, e se alguma camada
+deve nascer num default diferente.
+
 ### Passo 3 — Ler a referência de design
 `view` o arquivo `references/design-system.md` nesta skill para CSS base, componentes e padrões JS.
 
-### Passo 4 — Montar os dashboards
+### Passo 4 — Declarar o dado e derivar as camadas de métrica
+Antes de escrever o primeiro gráfico, preencher o descritor de cada série/árvore (`kind` estoque ou
+fluxo ou razão, `freq` nativa, se há variante ajustada, se há raiz e se as irmãs particionam o pai,
+se cruza zero, se a fonte já publica a variação) e **derivar dele** quais das 7 camadas existem e com
+que opções. A barra de controles é gerada a partir disso, não escrita à mão — camada com uma opção só
+não vira controle. Apresentar ao usuário as camadas escolhidas e o motivo de cada uma, para ele fazer
+o ajuste fino. Ver `references/design-system.md#metricas`.
+
+### Passo 5 — Montar os dashboards
 Seguir as regras de design abaixo. Confirmar o NAV do fundo se necessário para cálculos de % — o usuário pode ter informado nas memórias.
 
 ## Estrutura do output
@@ -55,6 +69,27 @@ O output é um **artifact HTML direto no chat** (não salvar em pasta específic
 - Dados embarcados como array JS (não fetch externo)
 
 ## Regras obrigatórias
+
+### Organização de métricas — as 7 camadas
+As opções de métrica de todo dashboard saem de **um pipeline de 7 camadas ortogonais**, na ordem
+`BASE -> AJUSTE -> JANELA -> DENOMINADOR -> COMPARAÇÃO -> SUAVIZAÇÃO -> GRÁFICO`. A ordem é fixa
+porque as operações **não comutam**: trocá-la muda o número, não o rótulo.
+- **As camadas 1-4 mudam o que o número é** (grandeza e unidade), **a 5 muda contra o que ele é medido**, **a 6 muda só o ruído** e **a 7 não muda nada**. É esta leitura que decide onde um rótulo novo entra
+- **Nunca funda janela e suavização num seletor só.** `Acum. 12m` e `Mensal` são camada 3 (mudam a grandeza); `MM3` e `MM12` de uma variação são camada 6. Fundidas, escolher `M/M` exclui `MM3` e a leitura "+170k na média dos últimos 3 meses" fica **inalcançável** sem que nada levante erro
+- **`Δ` (diferença) e `%` (variação) são opções distintas da camada 5**, em qualquer denominador — "+89" pode ser mil pessoas a mais ou 89% a mais, e só o eixo distingue. O `Δ` herda a aditividade da base; a variação % não
+- **As camadas são derivadas de um descritor do dado**, não escolhidas: `kind` (flow/stock/rate/price/index) decide o agregador da janela e se acumulação existe; `freq` decide a escada (só reduz, nunca inventa); `root` + `additive` decidem `% do total` e barras empilhadas; série que já é razão sai em p.p.; série que cruza zero perde as opções de %; se a fonte publica a variação, a camada **escolhe a série publicada** em vez de calcular
+- **Camada com uma opção só não vira controle** — é isto que evita a barra de doze pills. Opção inválida dadas as outras camadas fica na tela **desabilitada, com o motivo no `title`**, e o estado cai de volta ao default explicitamente
+- **O rótulo do eixo Y e o subtítulo são função do caminho inteiro**, recalculados a cada render. Num gráfico com seletor de métrica, o **título** também — só a fonte é fixa
+- **Se a natureza do dado for propriedade da LINHA e não da medida** (uma tabela que mistura contagens, taxas e durações), o descritor sai das **linhas marcadas**, e são dois flags: `razao` exige que **todas** sejam porcentagem (põe o `Δ` em p.p.), e um segundo basta que **uma** seja (proíbe o `%`, porque o eixo é um só). Com unidades mistas o `Δ` continua valendo e o eixo diz que são mistas. E "não soma" **não** quer dizer "é porcentagem" — quem decide p.p. contra % é a unidade
+- **O denominador da camada 4 tem de existir no estado das outras camadas** e não é necessariamente uma linha da tabela: sem essa checagem a participação divide por série ausente e a página sai **inteira em branco**, sem erro. Se a caixa de seleção alimenta o descritor, ela refaz a **barra**, não só o gráfico
+- Taxonomia completa, plano de cada camada (opções, o que as decide, default, quando desabilitar, efeito na unidade), o pipeline em código e as armadilhas medidas: `references/design-system.md#metricas`
+
+### A forma de um controle segue a largura
+- **Um grupo de pills tem de caber em UMA linha.** Acima disso o controle é um `<select>` — vale para camada de métrica, medida ou recorte, porque o que decide é o espaço que a lista ocupa, não o papel da opção
+- **Faça a troca automática**, derivada da largura estimada (`larguraPills()` / `PILL_MAX_PX`), em vez de escolher o formato controle por controle: acrescentar uma opção amanhã já basta para ela acontecer. Medido num relatório de 38 grupos, o mais largo que cabia tinha 763px e os dois que estouravam tinham 1.752px e 2.807px
+- **Um `<select>` mostra uma opção por vez, então o cartão de definição também**: um botão `i` só, do item selecionado, ao lado do controle. Sem isso a troca apaga em silêncio um cartão por opção
+- **Teste com um helper que resolve os dois formatos** e varra TODOS os grupos exigindo que nenhum em pills passe do orçamento — o defeito nasce de uma opção acrescentada a um grupo que hoje cabe
+- Código, o corte medido e as três armadilhas: `references/design-system.md#metricas` (seção "A forma do controle segue a LARGURA")
 
 ### Layout
 - **Página**: `padding: 24px 32px`, sem `max-width` (full-width)

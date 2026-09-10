@@ -17,10 +17,12 @@ Ctrl+C para parar.
 
 Seguranca — o que existe e por que:
   * escuta so em 127.0.0.1 (nao 0.0.0.0), entao nada na rede alcanca
-  * ha DOIS POST e so dois, um por botao: /api/run recebe um SLUG DE GRUPO e /api/gerar
-    uma KEY de dashboard, e os dois resolvem script/modulo do nosso lado, pelo YAML e
-    pelo manifesto — nunca recebe nome de modulo, caminho ou comando da pagina. Id fora
-    da lista = 400. Nao ha shell envolvido em nenhum ponto
+  * ha DOIS POST e so dois: /api/run recebe um SLUG DE GRUPO e /api/gerar uma KEY de
+    dashboard, e os dois resolvem script/modulo do nosso lado, pelo YAML e pelo
+    manifesto — nunca recebe nome de modulo, caminho ou comando da pagina. Id fora da
+    lista = 400. Nao ha shell envolvido em nenhum ponto. Os botoes de "pendentes" de
+    cada aba NAO acrescentaram rota: eles chamam estes mesmos dois, um item por
+    requisicao, em serie
   * confere o header Host: sem isso, um site qualquer aberto no mesmo browser poderia
     apontar um dominio para 127.0.0.1 e disparar POSTs (DNS rebinding)
 """
@@ -212,9 +214,11 @@ class Handler(BaseHTTPRequestHandler):
     def _gerar_dashboard(self, corpo: dict) -> None:
         """POST /api/gerar — regera UM dashboard e devolve o estado novo dele.
 
-        Um de cada vez, por decisao explicita do usuario: quem acabou de atualizar o
-        IPCA escolhe qual dos seis dashboards que o consomem interessa agora. Nao
-        existe "regerar todos os atrasados" aqui nem na pagina.
+        Um por requisicao, e continua sendo assim depois do botao "Regerar pendentes"
+        (2026-09-03): o lote e um laco NO CLIENTE sobre este mesmo endpoint, em serie.
+        Nao ha rota de lote, entao a guarda por `key` abaixo continua sendo a unica
+        porta; e cada card vira "em dia" na tela quando o dele volta, em vez de a
+        pagina esperar minutos por uma resposta so.
 
         "Regerar" inclui RECALCULAR: `status.gerar()` refaz antes os `procedures` que
         estiverem atras (a estimacao de um modelo, um backtest) e devolve, em

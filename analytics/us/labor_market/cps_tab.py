@@ -42,6 +42,49 @@ DOIS AVISOS QUE A PAGINA TEM DE DAR
 - **Outubro de 2025 nao existe na CPS.** A paralisacao do governo cancelou a coleta;
   o JOLTS e a CES continuaram. Isso apaga *duas* variacoes mensais (a de outubro e a
   de novembro), o que e diferente de "um mes sem dado".
+
+--------------------------------------------------------------------------------
+AS 7 CAMADAS DE METRICA AQUI: A NATUREZA E PROPRIEDADE DA LINHA (2026-09-04)
+--------------------------------------------------------------------------------
+Taxonomia geral em `.claude/skills/lis-dashboard/references/design-system.md#metricas`.
+Esta e a primeira aba do projeto em que a natureza do dado nao pertence a uma MEDIDA e
+sim a cada LINHA: o mesmo bloco mistura pessoas (mil), taxas (%) e duracao (semanas).
+Duas consequencias, e as duas eram defeitos aqui:
+
+1. **O descritor sai das linhas MARCADAS.** O valor era calculado por linha (variacao
+   percentual para um nivel, diferenca em p.p. para uma taxa) e o rotulo do eixo por
+   BLOCO -- nada reconciliava os dois, e o resultado era o mesmo bug nos dois sentidos:
+   nos tres blocos nao aditivos o eixo dizia *"p.p. change"* enquanto a conta era
+   percentual (Job losers **-5,86%** no ultimo mes), e no bloco de status dizia
+   *"% change"* enquanto as tres taxas vinham em p.p. Agora `razao` exige que TODAS as
+   linhas plotadas sejam porcentagem (e o que faz a diferenca sair em p.p.) e
+   `pctMotivo` basta que UMA seja (e o que proibe a variacao percentual, porque o eixo
+   e um so). Com unidades mistas a diferenca continua valendo -- ela e honesta nas duas
+   ao mesmo tempo -- e o eixo diz *"mixed units"* em vez de escolher a unidade de
+   metade das linhas.
+2. **`nao_soma` NAO quer dizer "e porcentagem".** Duracao media e mediana nao somam com
+   ninguem e estao em SEMANAS: a variacao percentual delas e legitima (**+7,35% a/a**
+   em ago/2026) e saia rotulada em p.p. E a mesma confusao entre `aditivo` e `razao`
+   que a aba de horas da CES tinha, por outro caminho -- aqui o campo declara
+   *"nao e parte do total"* e quem decide p.p. contra % e a coluna `unidade`, lida do
+   banco.
+
+E o terceiro defeito, que e de denominador e nao de unidade: **"% do total" na vista
+ajustada do bloco de status plotava ZERO series.** A populacao e a unica linha que o
+BLS nunca dessazonaliza, a vista ajustada e a default, e a divisao era por uma serie
+inexistente -- tabela e grafico inteiros em branco, sem erro nenhum. Mesma classe do
+overtime na CES. A camada 4 passou a exigir que o denominador **exista no ajuste
+corrente**, e o motivo aparece na tela com o caminho de saida ("switch to Not
+adjusted"). Duas coisas medidas junto:
+
+- **A fonte ja publica duas dessas razoes, e por isso elas sao o gabarito**: forca de
+  trabalho sobre populacao *e* a taxa de participacao (bate a menos de 0,069 p.p. em
+  943 meses; o nivel sai ao milhar e a taxa a 1 decimal, entao 0,05 e do
+  arredondamento). Ocupados sobre populacao *e* a razao emprego-populacao.
+- **O denominador nao e necessariamente uma linha da tabela.** No bloco de composicao
+  as partes somam os `desocupados`, que vive no bloco de status: usar a raiz da arvore
+  visivel daria "share of job losers" e as 4 razoes somariam **220%** (medido).
+  Dai `BLOCOS` e `EIXOS_COMPOSICAO` declararem a chave do total.
 """
 
 from __future__ import annotations
@@ -49,12 +92,17 @@ from __future__ import annotations
 import pandas as pd
 
 # ── os quatro blocos ─────────────────────────────────────────────────────────
-# (chave do bloco, rotulo, aditivo?)
+# (chave do bloco, rotulo, aditivo?, chave do total)
+#
+# O TOTAL e declarado junto porque a camada 4 ("% do total") precisa dele e ele nao e
+# sempre a raiz da arvore visivel: no bloco de composicao as partes somam os
+# `desocupados`, que e uma linha do bloco de status. Bloco sem total nao oferece a
+# camada -- e o motivo aparece na tela, por bloco.
 BLOCOS = [
-    ("status", "Labor force status", 1),
-    ("taxa_grupo", "Unemployment rates by group", 0),
-    ("composicao", "Composition of unemployment", 0),
-    ("alternativa", "Alternative measures of underutilization", 0),
+    ("status", "Labor force status", 1, "populacao"),
+    ("taxa_grupo", "Unemployment rates by group", 0, None),
+    ("composicao", "Composition of unemployment", 0, None),
+    ("alternativa", "Alternative measures of underutilization", 0, None),
 ]
 
 # rotulo curto + arvore do bloco aditivo. `pai` None = raiz do bloco.
@@ -73,11 +121,11 @@ LINHAS: dict[str, dict] = {
                      "bloco": "status"},
     # as tres taxas de manchete acompanham o bloco, como razoes (nao somam)
     "participacao": {"label": "Participation rate", "pai": None, "bloco": "status",
-                     "razao": True},
+                     "nao_soma": True},
     "razao_emprego_pop": {"label": "Employment-population ratio", "pai": None,
-                          "bloco": "status", "razao": True},
+                          "bloco": "status", "nao_soma": True},
     "taxa_desemprego": {"label": "Unemployment rate", "pai": None, "bloco": "status",
-                        "razao": True},
+                        "nao_soma": True},
     # ── taxas por grupo ───────────────────────────────────────────────────
     "taxa_25_mais": {"label": "25 years and over", "bloco": "taxa_grupo"},
     "taxa_homens_20": {"label": "Men, 20 and over", "bloco": "taxa_grupo"},
@@ -101,9 +149,9 @@ LINHAS: dict[str, dict] = {
     "dur_15_26s": {"label": "15 to 26 weeks", "bloco": "composicao", "eixo": "duracao"},
     "dur_27s_mais": {"label": "27 weeks and over", "bloco": "composicao", "eixo": "duracao"},
     "dur_media": {"label": "Average duration", "bloco": "composicao", "eixo": "duracao",
-                  "razao": True},
+                  "nao_soma": True},
     "dur_mediana": {"label": "Median duration", "bloco": "composicao", "eixo": "duracao",
-                    "razao": True},
+                    "nao_soma": True},
     "parcial_economico": {"label": "Part time for economic reasons",
                           "bloco": "composicao", "eixo": "parcial"},
     "parcial_falta_trabalho": {"label": "— slack work or business conditions",
@@ -121,10 +169,28 @@ LINHAS: dict[str, dict] = {
     "u6": {"label": "U-6", "bloco": "alternativa"},
 }
 
+# (chave, rotulo, soma no total?, chave do total)
+#
+# A aditividade de cada corte foi MEDIDA contra o proprio nivel de desocupados, no dado
+# bruto e no ajustado (2026-09-04, 391 meses desde 1994):
+#
+#   motivo  -> desocupados   bruto: pior 2 mil (0,034%), 0 meses acima de 0,1%
+#                          ajustado: pior 249 mil (2,24%), 340 de 391 meses acima
+#   duracao -> desocupados   bruto: pior 1 mil (0,019%), 0 meses acima de 0,1%
+#                          ajustado: pior 384 mil (3,09%), 351 de 391 meses acima
+#
+# E o mesmo achado da arvore da CES por outra fonte: **aditividade e garantia so no
+# dado bruto**, porque o BLS dessazonaliza cada serie sozinha. Os dois cortes SOMAM, e
+# a nota do bloco diz o tamanho do erro na vista ajustada em vez de esconde-lo.
+#
+# O corte por tempo parcial NAO soma, e a razao nao e sazonalidade: as duas linhas
+# indentadas sao 2 das 4 razoes que o release publica para o parcial involuntario, e
+# cobrem 87% dele no pior mes (pior lacuna 543 mil, 13,2%, em ago/2007). Cobertura
+# abaixo de 100% e legitima; empilhar como se fosse total nao e.
 EIXOS_COMPOSICAO = [
-    ("motivo", "By reason"),
-    ("duracao", "By duration"),
-    ("parcial", "Part-time status"),
+    ("motivo", "By reason", 1, "desocupados"),
+    ("duracao", "By duration", 1, "desocupados"),
+    ("parcial", "Part-time status", 0, None),
 ]
 
 # ── cartoes ──────────────────────────────────────────────────────────────────
@@ -286,6 +352,17 @@ UNIDADES = {
     "semanas": "weeks",
 }
 
+# O rotulo do eixo Y quando TODAS as linhas plotadas sao porcentagem. `UNIDADES["pct"]`
+# serve de fallback e e vago de proposito (serve os quatro blocos); aqui cada bloco diz
+# o que a porcentagem dele mede, que e a regra do eixo Y deste projeto -- uma definicao
+# curta, nao um nome de unidade. Nao ha entrada para `composicao` porque nenhuma linha
+# dele e porcentagem: as duas que nao somam estao em SEMANAS.
+ROTULO_PCT = {
+    "status": "each rate against its own base, %",
+    "taxa_grupo": "unemployed as a share of that group's labor force, %",
+    "alternativa": "underutilized as a share of the relevant labor force, %",
+}
+
 
 def linhas_do_bloco(bloco: str, presentes: set[str]) -> list[dict]:
     """As linhas declaradas do bloco que existem no banco, na ordem de LINHAS."""
@@ -298,10 +375,20 @@ def linhas_do_bloco(bloco: str, presentes: set[str]) -> list[dict]:
             "label": cfg["label"],
             "pai": cfg.get("pai"),
             "eixo": cfg.get("eixo"),
-            "razao": int(bool(cfg.get("razao"))),
+            "naoSoma": int(bool(cfg.get("nao_soma"))),
             "soNsa": int(bool(cfg.get("so_nsa"))),
         })
     return out
+
+
+def rotulo(slug: str) -> str:
+    """Rotulo curto de qualquer linha, inclusive de outro bloco.
+
+    Existe porque o total de um bloco pode morar em outro (`desocupados` e o total do
+    bloco de composicao), e o eixo Y tem de saber NOMEAR o denominador -- "share of the
+    total" nao responde de que total.
+    """
+    return LINHAS[slug]["label"] if slug in LINHAS else slug
 
 
 def orfaos(presentes: set[str]) -> list[str]:

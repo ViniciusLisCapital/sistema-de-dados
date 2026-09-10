@@ -307,7 +307,7 @@ def _load_cambio_contratado() -> dict:
         saldo_fin_det   = serviços + rendas + capitais BR + capitais estrangeiros
 
     As séries diárias são somadas em meses; o mês em curso é DESCARTADO em vez de
-    somado pela metade (regra de período incompleto, ver analytics/metric_layers.md).
+    somado pela metade (regra de período incompleto, ver .claude/skills/lis-dashboard/references/design-system.md#metricas).
     """
     try:
         wide = _pivot("macro_brasil", "cmb_cambio_contratado")

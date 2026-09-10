@@ -419,7 +419,7 @@ Então uma checagem como a do JOLTS — *levante se os cortes não compartilhare
 **reprova um passe correto**, e a página tem de conviver com o degrau em vez de escondê-lo: o
 cabeçalho do gráfico imprime quantas das 839 linhas o mês novo realmente tem, porque um ramo
 profundo lido sem isso parece ter caído a zero. É o mesmo instinto da regra de janela
-incompleta (`analytics/metric_layers.md`), um nível acima: ali o buraco é no tempo, aqui é na
+incompleta (`.claude/skills/lis-dashboard/references/design-system.md#metricas`), um nível acima: ali o buraco é no tempo, aqui é na
 profundidade.
 
 ### Uma razão publicada pode ser o recíproco da citada
@@ -443,6 +443,458 @@ Duas coisas que fazem o guarda valer:
 Corolário para qualquer métrica que cruze fontes: **antes de dividir duas séries, procure se a
 fonte já publica a razão.** Se publica, ela é o gabarito; se não, a métrica não tem gabarito
 nenhum e isso precisa estar escrito na página.
+
+## Uma pill de leitura pode ESCOLHER UMA SÉRIE em vez de calcular (2026-09-03)
+
+De `analytics/us/labor_market/`, ao entrar o release de produtividade do BLS (`prod2`).
+Toda aba deste projeto trata a barra de leitura (Mensal / MM3 / Y/Y / …) como
+**transformação**: uma função aplicada à série de nível. Aqui a fonte publica as três
+leituras — índice, variação sobre o trimestre anterior anualizada, variação anual — como
+**séries distintas**, e a pill passou a escolher qual ler.
+
+O que isso custou na fábrica compartilhada foi um flag (`calcTransform: false`, que põe o
+estado da pill dentro da chave da série) e não uma segunda fábrica. O que vale reter:
+
+- **Quando a fonte publica a variação, ela é o gabarito, e o motivo não é precisão.** Foi a
+  primeira hipótese e estava errada: medido, o arquivo do BLS traz o **índice com 3
+  decimais** e as variações com 1, e recontar do índice concorda com a taxa publicada em
+  **0,0500 p.p. no máximo, nunca acima** — o resíduo é o arredondamento da própria taxa. O
+  motivo real é que **o número publicado é o citável**: quem compara com a manchete quer
+  1,4, não 1,3999, e a leitura anual da página passa a ser a da fonte em vez da nossa.
+- **O aviso reutilizável é sobre o PDF, não sobre o arquivo.** Recontar a partir do índice
+  **impresso na tabela de divulgação** (1 decimal) erra 0,27 p.p. em média e **1,35 p.p.**
+  no máximo. Não reconstrua série a partir de número impresso em release.
+- **Um especificador de formato do Plotly que você não consegue verificar não entra.** O
+  rótulo de trimestre do hover pedia `%q`, que não aparece no bundle 2.35.2 num grep e que
+  só um browser confirmaria. Virou uma função JS — a **mesma** que rotula a coluna da
+  tabela —, o que torna as duas pontas testáveis e impede que divirjam.
+
+### E "nada aqui é aditivo" pode ter duas causas ao mesmo tempo
+
+A mesma aba é o caso mais limpo da regra de que a validade de um controle é propriedade do
+dado, porque as duas causas são independentes e cada uma bastaria:
+
+1. **Os seis setores se CONTÊM em vez de particionar** — *Business* ⊃ *Nonfarm business* ⊃
+   {*Manufacturing*, *Nonfinancial corporations*}. Não há total, e nenhum subconjunto soma
+   a um.
+2. **E o único par que particiona de verdade também não soma**, porque o que se publica é
+   **índice**: durável + não-durável sobre transformação dá **2,02** (medido), que é o que
+   dois índices de base 100 sempre dão.
+
+Então barras empilhadas, "% do total" e a regra pai-vira-linha saem da aba inteira, com o
+motivo na pill desabilitada. A hierarquia visual fica — *Durable* e *Nondurable* seguem
+indentados sob *Manufacturing* —, e a nota diz o que o recuo significa ali: **contenção,
+não soma**. É a mesma distinção do eixo alternativo da árvore da CES, um nível acima.
+
+### Uma identidade que a própria fonte escreve como subtração pode estar errada
+
+O texto do release diz *"productivity increased 1.4 percent, as output increased 1.7
+percent and hours worked increased 0.3 percent"*, e 1,7 − 0,3 = 1,4 exato. A relação
+verdadeira é multiplicativa. Medido nas 317 observações do *nonfarm* e nas 157 do durável:
+
+| forma | erro médio | erro máximo |
+|---|---|---|
+| subtração | 0,14 p.p. | **15,9 p.p.** |
+| multiplicativa | 0,04 p.p. | 0,18 p.p. |
+
+O pior caso é 2020T3 no durável: produto +91,3%, horas +37,1%, subtração diz +54,2%, o
+publicado é **+39,5%**. A armadilha é a mesma da razão vagas/desempregado: **a forma errada
+funciona exatamente na faixa em que se costuma olhar** (taxas de 1-3%) e quebra onde ninguém
+confere. Afirme as duas formas no teste — a que fecha e a que erra —, senão uma
+"simplificação" futura para a subtração passa produzindo número plausível.
+
+### Uma coluna que funde dois conceitos precisa dizer isso QUANDO os dois estão na tela
+
+O release avisa em prosa que o produto da indústria de transformação não é comparável com o
+do *business*. O aviso não precisa de fé: as medidas de **valor adicionado** existem só nos
+três setores de um lado e as de **produto setorial** só nos três do outro — nenhum setor
+tem as duas. A tabela funde o par num slug e carrega o conceito em coluna; e o **subtítulo
+do gráfico imprime o aviso só quando os dois conceitos estão de fato plotados**, que é o
+que o torna informação em vez de rodapé. Mesmo instinto do "não diga duas vezes" do
+cabeçalho: um aviso que aparece sempre deixa de ser lido.
+
+## Um botão de LOTE é um laço no cliente, não um endpoint novo (2026-09-03)
+
+De `analytics/release_calendar/report.html`, a pedido do usuário: um "Atualizar pendentes" na aba
+de divulgações e um "Regerar pendentes" na de dashboards, cada um resolvendo de uma vez tudo o que
+está atrás. Os botões de linha e de card ficaram — o lote é adição, não substituição.
+
+**A decisão de arquitetura que vale reter é não criar rota de lote.** Cada botão percorre a fila
+chamando o *mesmo* POST de um item, em série. Quatro consequências, todas desejadas:
+
+- o servidor continua recebendo **um id por requisição**, validado contra a config (aqui, um slug
+  no YAML e uma key no manifesto) — a história de segurança dos endpoints existentes fica intacta
+  e não há rota nova para auditar;
+- cada linha/card **atualiza na tela quando a dela volta**, em vez de a página congelar por
+  minutos esperando uma resposta só;
+- dois processos pesados **nunca disputam o mesmo banco**;
+- o tempo anunciado é a **soma dos anúncios por item**, que é a conta que o botão individual já
+  fazia — não uma estimativa nova que pode divergir dela.
+
+Três regras que não têm sintoma nenhum quando erradas:
+
+- **A fila é fotografada ANTES da primeira requisição.** Recalculá-la entre itens parece
+  equivalente e não é: um item que continua pendente *depois* de rodar — um grupo sem script, um
+  dashboard cujo passo de recálculo falhou — volta para a fila e é retentado para sempre. O
+  mutante que faz isso não reprova o harness: ele **trava** o processo, o que só aparece se o
+  runner de mutantes tiver timeout próprio.
+- **Uma falha não interrompe a fila.** Ela entra no card/linha do item e no resumo final
+  (`1 de 2 regerado(s) · falhou: X`), e o resto roda. Mesmo instinto de um pipeline de passos:
+  um passo quebrado não é motivo para pular tudo o que vem depois.
+- **"Pendente" é mais estreito que "não está verde".** Aqui entram *dado novo na fonte* e *passo
+  atrás dos dados*, e ficam fora `nunca gerado` (construir um relatório pela primeira vez é
+  decisão, não consequência de o dado ter andado) e `sem stamp` (não é atraso, é a ausência do
+  retrato que permitiria afirmar que bate). Um lote que age sobre "tudo que não está verde" gasta
+  minutos e não corrige nada.
+
+**E o lote precisa do mesmo terceiro estado que a página já tinha.** Onde o veredito vem da rede,
+"não há servidor" e "não sei" são coisas diferentes de "nada pendente" — dizer *nenhuma pendente*
+sem veredito é afirmar o que ninguém sabe. As duas abas divergiram exatamente aí: o retrato
+embutido da aba de dashboards **carrega** veredito, então lá o lote é real mesmo em modo arquivo e
+degrada para copiar **uma linha de comando por item**; na aba de divulgações o veredito vem de um
+endpoint, então sem servidor o controle é uma frase explicando por que não há lista.
+
+Detalhe de contagem que vale para qualquer lote sobre uma tabela: **a unidade da ação não é a
+linha.** Aqui um grupo de divulgação tem várias linhas passadas (o ICBr tem 4), e o botão roda o
+ETL *do grupo* — contar linha pediria o mesmo trabalho quatro vezes, sem erro nenhum, só 4x mais
+lento. Deduplique pela unidade que a ação usa, e escreva a asserção num grupo que tenha mais de
+uma linha, senão ela não segura nada (o primeiro cenário do teste tinha dois grupos de uma linha
+cada, e o mutante que remove a deduplicação passava).
+
+E o lote **acompanha o filtro da aba** em que vive (recorte de instituição/mês na primeira, de área
+na segunda): agir sobre linha que não está listada é surpresa. Com os filtros no default isso é a
+página inteira.
+
+Coberto por quatro cenários novos em `tests/test_release_calendar_js.js` e verificado contra 14
+mutantes. Dois bugs de *harness* apareceram no caminho e são fáceis de repetir: o stub do endpoint
+de estado devolvia o fixture **por referência**, e o código sob teste escreve dentro dele — então o
+primeiro clique de um cenário anterior gravava "em dia" no fixture compartilhado e o cenário de
+lote, que roda depois, via zero pendentes legitimamente (copie fundo o que o stub devolve); e um
+captor de "o que foi copiado" que só espia `navigator.clipboard` **perde o caminho do
+`execCommand`**, que é o que roda quando o contexto não é seguro — o stub devolve `true`, a cópia
+"dá certo" sem capturar nada, e a falha lê como bug da página.
+
+## Quando a natureza do dado e propriedade da LINHA, o descritor sai do que esta MARCADO (2026-09-04)
+
+De `analytics/us/labor_market/`, ao migrar as quatro tabelas da pesquisa domiciliar (CPS) para o
+modelo de 7 camadas de
+`.claude/skills/lis-dashboard/references/design-system.md#metricas`. Nas abas anteriores cada aba
+mostrava **uma medida por vez**, entao `natureza` era propriedade da medida. Aqui o mesmo bloco
+mistura **contagens em milhares, taxas em % e duracoes em semanas** — e um grafico tem um eixo Y.
+
+**O defeito que isso produz aparece nos dois sentidos e nao levanta nada:** o valor era calculado
+por LINHA (variacao percentual para um nivel, diferenca em p.p. para uma taxa) e o rotulo do eixo
+por BLOCO. Medido no arquivo anterior a migracao: nos tres blocos nao aditivos o eixo dizia
+*"p.p. change"* enquanto a conta era percentual (Job losers **−5,86%** no ultimo mes), e no bloco
+aditivo dizia *"% change"* enquanto as tres taxas saiam em p.p.
+
+A correcao sao **dois flags, nao um**, e e a parte reutilizavel:
+
+- **`razao` exige que TODAS as linhas plotadas sejam porcentagem** — e o que poe a diferenca em p.p.
+- **Um segundo flag basta que UMA seja** — e o que proibe a variacao percentual, porque o eixo e um
+  so e *"% change"* mentiria sobre metade das linhas.
+- **Com unidades mistas o `Δ` continua valendo.** Ele e honesto nas duas ao mesmo tempo, e o eixo diz
+  *"unidades mistas — ver cada linha na tabela"* em vez de escolher a unidade de metade delas.
+
+**E "nao soma" nao quer dizer "e porcentagem".** Duracao media e mediana nao somam com ninguem e
+estao em SEMANAS: a variacao percentual delas e legitima (**+7,35% a/a**) e saia rotulada em p.p. E a
+mesma confusao entre `aditivo` e `razao` da aba de horas da CES, alcancada pelo outro lado — o campo
+declara *"nao e parte do total"* e a coluna de **unidade**, lida do banco, decide p.p. contra %.
+
+### O denominador tem de EXISTIR no estado das outras camadas
+
+Terceiro defeito da mesma aba, e o mais silencioso: **"% do total" na vista ajustada plotava ZERO
+series.** O total daquele bloco e a populacao civil, a unica linha que o BLS **nunca**
+dessazonaliza; a vista ajustada e a default; a divisao era por uma serie inexistente. Tabela e
+grafico inteiros em branco, sem excecao. Mesma classe do overtime da CES por um terceiro caminho.
+
+Tres regras saem disso:
+
+- **Desabilite a camada quando a serie denominadora falta naquele ajuste** (ou naquela base, ou
+  naquela janela), e ponha o **caminho de saida** no motivo: *"troque Ajuste para Sem ajuste"*, nao
+  so a constatacao.
+- **O denominador nao e necessariamente uma linha da tabela.** As razoes do desemprego somam o
+  *nivel de desocupados*, que vive em outro bloco: usar a raiz da arvore visivel titula o eixo com a
+  primeira linha do recorte e faz as partes somarem **220%** (medido). A regra da raiz continua
+  valendo — o que ela exige e que o denominador seja o total **daquele recorte**.
+- **A participacao de uma arvore aditiva costuma reproduzir uma razao que a fonte ja publica**, e ai
+  ela e o gabarito: forca de trabalho sobre populacao *e* a taxa de participacao, batendo em
+  **0,069 p.p. em 943 meses** (0,05 disso e arredondamento da fonte — nivel ao milhar, taxa a 1
+  decimal). A asserção que importa continua sendo a raiz ler exatamente **100**.
+
+### Se a caixa de selecao alimenta o descritor, ela refaz a BARRA
+
+Consequencia de encanamento que vale registrar: marcar uma taxa ao lado de niveis muda **que opcoes
+valem** e muda o **rotulo do eixo**, entao o listener da caixa nao pode mais chamar so
+`renderTable`/`renderChart`. Sem isso a variacao percentual segue clicavel e o estado fica valido no
+objeto e invalido na tela — o mesmo modo de falha que a camada 5 tem sem o fallback.
+
+E isso obriga um guarda no fallback de selecao: ele dispara em **"nada no escopo com algo marcado
+fora dele"**, nunca em "nada marcado". Sem a distincao, desmarcar a ultima linha a mao remarca tres
+sozinho. O mutante que remove o guarda so e pego por uma asserção que **desmarca tudo**; e o que
+verifica o listener so e pego por uma que dispare o evento `change` de verdade, em vez de escrever
+em `state.checked` e chamar `redraw()`.
+
+### Aditividade, de novo, medida por corte
+
+Mesma auditoria que a arvore da CES exigiu, agora nos tres cortes do desemprego (391 meses desde
+1994):
+
+| corte | dado bruto | dessazonalizado |
+|---|---|---|
+| por motivo -> desocupados | pior 2 mil (0,034%), 0 de 391 meses acima de 0,1% | pior 249 mil (**2,24%**), 340 acima |
+| por duracao -> desocupados | pior 1 mil (0,019%), 0 de 391 meses acima de 0,1% | pior 384 mil (**3,09%**), 351 acima |
+| tempo parcial | nao fecha: as 2 linhas indentadas sao 2 das 4 razoes publicadas (pior lacuna 543 mil, 13,2%) | — |
+
+Barras e participacao entram nos dois primeiros e saem no terceiro, com o motivo na tela; e a nota
+do bloco diz ao leitor que a pilha ajustada e **um bom retrato e nao uma identidade**, porque uma
+barra empilhada afirma que as partes somam.
+
+Coberto por §14b de `tests/test_labor_market_us_js.js` (76 asserções), verificado contra 9 mutantes.
+A camada 6 ganhou a **media de 6 meses** na mesma rodada, a pedido do usuario: uma linha em tres
+lugares (a lista, o pipeline e o rotulo do eixo), que e o que aquela camada ganha por nunca
+desabilitar nada e nunca mexer na unidade.
+
+
+## Oitava face: a fábrica de layout tem um TIPO de eixo default, e ele também erra (2026-09-08)
+
+De `analytics/brasil/exchange_rate/report.html`, aba FX Model. As sete faces anteriores são todas
+sobre a **janela** do eixo X. Esta é sobre o **tipo** dele, e o sintoma é pior: a aba trava.
+
+Um gráfico novo cujo X é **contagem de meses** (0..12, "meses desde a base do episódio") passou
+`xaxis: { title, dtick: 1 }` para a fábrica compartilhada. A fábrica funde **por chave**
+(`Object.assign({}, base.xaxis, extra.xaxis)`) e o `base.xaxis` dela carrega `type: 'date'` — o
+default certo para os dez gráficos de série temporal daquelas abas. Resultado: os 13 inteiros
+passaram a ser lidos como **milissegundos desde 1970**, e `dtick: 1` deixou de significar "um mês"
+para significar **"um milissegundo"**.
+
+Medido com Plotly real (jsdom + `plotly.js-dist-min`) contra o arquivo entregue:
+
+| | eixo resolvido | ticks | pintura |
+|---|---|---|---|
+| como estava | `date`, janela de **47 anos** | **1.001** rótulos em precisão de ms | **107 s** |
+| corrigido | `linear`, [−0,74; 12,74] | 13 | **0,3 s** |
+
+Quatro coisas reutilizáveis:
+
+- **`dtick` é a mesma linha de código com dois significados a três ordens de grandeza de
+  distância**, e só o `type` resolvido distingue. Num eixo linear é uma unidade do dado; num eixo
+  de data é um milissegundo. Não há erro, não há aviso, e o sintoma — a aba congelando — não aponta
+  para gráfico nenhum.
+- **Todo gráfico que não é série temporal em X tem de declarar `type` explicitamente**, e a fábrica
+  compartilhada deve **apagar os componentes que só existem para eixo de data** (`rangeselector`,
+  `rangeslider`) quando o chamador declara um tipo não-data, em vez de deixar a limpeza para quem
+  chama. Achado lateral: com o `type` correto o Plotly **já ignora** um rangeselector em eixo
+  não-data (medido, 491 ms) — mas isso é tolerância de terceiro verificada numa versão só, então a
+  limpeza vale por si.
+- **Vale inferir no ponto de passagem.** `plotlyRenderAndBind()` ganhou: se a primeira abscissa é
+  número e ninguém declarou tipo, força `linear`. Custa nada para os gráficos existentes (todos
+  plotam string de data) e fecha a armadilha para o próximo gráfico não-temporal, que é onde a
+  memória de quem escreve não ajuda.
+- **A assertion que faltava era sobre o layout RESOLVIDO, não sobre o pedido.** O harness da seção
+  passava um `plotlyRenderAndBind` de mentira, então capturava o `layoutExtra` que o gráfico *pede*
+  e nunca o que a página *resolve* — 265 asserções verdes com a aba travada. A correção é extrair a
+  fábrica real (`plotlyBaseLayout`/`plotlyRenderAndBind`/`_bindPlotlyYAutofit`) do próprio HTML
+  entregue e passá-la ao código sob teste, afirmando então sobre o eixo resolvido: mais a regra
+  genérica **abscissa numérica nunca resolve para eixo `date`**. Verificado contra 6 cenários de
+  mutação (cada camada do fix removida isoladamente e todas juntas).
+
+Dois detalhes de harness que se repetem: **o HTML entregue tem CRLF**, então um terminador de fatia
+com `
+}
+` nunca casa e a extração devolve **string vazia sem erro** — o teste volta a medir um
+stub achando que mede o real, daí o guarda de tamanho mínimo por fatia; e o `_bindPlotlyYAutofit`
+real chama `el.on(...)`, então o stub de elemento precisa de `on()`.
+
+## Nona face: dois tipos de episódio não dividem um eixo X (2026-09-09)
+
+De `analytics/brasil/exchange_rate/report.html`, aba FX Model, seção de cenários base. As oito
+faces anteriores são sobre a **janela** e o **tipo** do eixo X. Esta é sobre **quantos eixos a
+mesma pergunta precisa** — e o pedido do usuário foi por um dos dois: *"Como o recorte temporal é
+bem definido, pode colocar o grafico com os meses de fato (e não 1, 2 etc...) ... Eu clico em
+'Eleitoral' e ele traz os dados de eleição, eu clico 'Crise' e ele traz os dados de crise"*.
+
+O gráfico tinha dez linhas — sete corridas eleitorais e três crises — todas em "meses desde a base
+do episódio". Funciona, e desperdiça o que um dos dois grupos tem: **as sete eleições partem do
+mesmo mês do calendário**, porque a base é o mês do voto menos doze e todo 1º turno cai em outubro.
+Um conjunto de rótulos serve as sete (`Oct (base)`, `Nov`, …, `Sep`, e então os dois turnos), e com
+ele "onde no ano estamos" passa a ser legível em vez de implícito. As três crises não compartilham
+mês-base (ago/2008, set/2014, jan/2020), então ali o eixo só pode contar meses. **Desenhar os dois
+grupos juntos impõe o mais fraco dos dois eixos ao par** — e é por isso que a resposta é duas
+vistas, não um gráfico.
+
+Cinco coisas reutilizáveis:
+
+- **Rotular por calendário é uma propriedade DO DADO, então derive com guarda.** A função devolve
+  os treze nomes só se todos os episódios da vista partirem do mesmo mês; se divergirem, devolve
+  `null` e o gráfico volta a contar meses, que é sempre verdade. Escrever "Oct" à mão passa a mentir
+  no dia em que a data do evento mudar, sem levantar nada — e o teste tem de exercitar **os dois
+  lados** (o grupo que compartilha, o grupo que não) mais um caso sintético de base divergente, senão
+  a asserção não separa nada.
+- **Se dois rótulos forem o mesmo nome de mês em anos diferentes, distinga-os.** É exatamente a
+  confusão que o eixo de calendário pode criar; aqui, `(base)` no primeiro.
+- **E um ponto do eixo pode ser um EVENTO, não um período.** O último "mês" desta janela contém
+  **dois** eventos — os dois turnos, três ou quatro semanas apart —, e o fechamento mensal cai
+  depois do segundo: o único trecho que acontece em dias ficava invisível no gráfico da corrida. Ele
+  virou dois pontos, lidos na série **diária** no dia de cada turno. Três consequências: a base de
+  medição muda no meio do eixo e **isso tem de estar marcado** (faixa cinza, `yref: 'paper'`,
+  `layer: 'below'`); o rótulo dos dois pontos é o mesmo em todos os episódios, então a **data** de
+  cada um vive no hover; e o valor que saiu do gráfico (o fechamento do mês) tem de continuar em
+  algum lugar declarado — aqui, uma coluna da tabela, dito no cabeçalho do próprio gráfico.
+- **Uma `shape` tem de ser passada VAZIA quando não se aplica, nunca omitida.** Com `Plotly.react`,
+  um layout sem a chave herda as formas do desenho anterior — a marca dos turnos apareceria na vista
+  de crise por cima de dois meses quaisquer, sem erro nenhum. Mesmo instinto do `ticktext`.
+- **O mês real vai para o hover, nas duas vistas.** Numa o rótulo é um nome compartilhado por sete
+  anos diferentes, na outra é uma contagem: em nenhuma o eixo sozinho diz de que mês é o ponto. O
+  `%{x}` do Plotly não serve para isso em nenhuma das duas — vá de `customdata`.
+- **A cor vem da posição no ACERVO, não na vista**, senão um episódio troca de cor quando a vista
+  troca e a memória visual entre as duas se perde. A asserção precisa ser escrita na vista em que os
+  dois índices **diferem**: aqui as crises são os três primeiros do acervo, então na vista de crise
+  índice-na-vista e índice-no-acervo coincidem e o mutante passa.
+- **`type: 'linear'` continua obrigatório**, inclusive quando o eixo mostra nomes de mês: os rótulos
+  entram por `tickvals`/`ticktext` sobre os mesmos inteiros. Medido com Plotly real depois da
+  mudança: 339 ms na vista com rótulo de calendário e 643 ms na de contagem, eixo resolvendo `linear`
+  nas duas. Ver a oitava face para o que acontece sem isso.
+
+E o de sempre para um controle novo: **a pill de um tipo sem dado fica na tela, desligada, com o
+motivo no `title`** — pill ausente não responde "onde estão as crises deste canal?".
+
+Coberto por `tests/test_exog_scenarios_js.js` §7d–§7e, verificado contra 14 mutantes só desta parte
+(vistas misturadas, rótulos perdidos, guarda do mês-base removido, clique que não redesenha, clique
+na pill já ativa redesenhando, cor pelo índice da vista, os dois turnos sumindo, a faixa não sendo
+desenhada, a faixa vazando para a outra vista, o ponto do turno virando o fechamento do mês, os dois
+turnos trocados, e o episódio em curso ganhando ponto inventado no lugar do nulo).
+
+## Duas unidades que se parecem: uma medida em log ao lado de uma tabela em múltiplos (2026-09-09)
+
+Mesma seção, e o pedido foi o sintoma: *"Eu não entendi o grafico 'Where any path you type sits
+against history'"*. O bloco é uma tabela de percentis da variação da série em cada horizonte, e
+estava impresso na unidade em que foi **medido** — variação em **log por cento** — dentro de uma
+seção que fala inteira em **múltiplos de uma base** (3,07x, 1,76x). As duas unidades se parecem e
+não são a mesma: `+100` em log é **2,72x**, não 2,0x.
+
+O que isso produziu não foi um número ilegível, foi **prosa errada ao lado da tabela**: a nota lia
+*"+50% é mais ou menos um ano em dez"* quando o percentil 90 de doze meses é **1,79x** (+79%), e
+*"+100% é perto do pior do histórico"* quando o pior é **3,89x** (+289%). Nada na página podia
+contradizer.
+
+Quatro regras:
+
+- **Imprima na unidade da SEÇÃO, não na unidade da medição.** Se as duas divergem, converta na
+  renderização e diga no comentário por que a conversão é legítima.
+- **Aqui ela é exata, e vale saber por quê**: um quantil sobrevive a qualquer transformação
+  crescente, então `exp()` do percentil 90 do log **é** o percentil 90 da razão. Um desvio-padrão
+  **não** sobreviveria — e é por isso que ele deixou de ser impresso em vez de ser convertido.
+- **Cabeçalho de percentil vira cabeçalho de frequência.** `Calmest 1 in 20` / `Worst 1 in 10` /
+  `Worst 1 in 100` responde a pergunta que a tabela existe para responder; "5th / 90th / 99th"
+  obriga o leitor a traduzir. E o título da tabela é a pergunta (*"How rare is a move that size?"*),
+  não o nome do mecanismo.
+- **Ligue a tabela ao resto da página com uma frase derivada dos mesmos percentis.** Sem ela a
+  tabela é um bloco solto: aqui, a mais branda das três crises cai **dentro do pior 1 em 20** dos
+  trechos de doze meses e a mais dura **acima de 99 em 100**. A asserção correspondente tem de
+  refazer a conta **no teste**, e não comparar o texto impresso com o retorno da própria função —
+  as duas pontas mutam juntas e a asserção vira tautologia (foi o que aconteceu na primeira versão).
+
+Achado lateral que justificou a tabela ficar em vez de sair: **a pior janela do histórico não é
+nenhum dos episódios nomeados.** Os episódios são ancorados numa base escolhida por regra (o último
+fechamento calmo antes da corrida), e os doze piores meses da mesma crise não precisam começar ali —
+out/2007 → out/2008 dá 3,89x contra os 3,07x que o episódio da GFC mede. Uma tabela de "todas as
+janelas" ao lado de uma de "janelas nomeadas" só se paga se disser algo que a primeira não diz.
+
+## Prosa que afirma número tem de ser derivada — e afirmada sobre o texto RENDERIZADO (2026-09-09)
+
+Terceira ocorrência do mesmo defeito na mesma seção, em dois dias, e por isso vale como regra e não
+como nota. O relatório trocou a fonte do CDS e ganhou 2001-2007. Três frases sobreviveram à troca
+dizendo o que os números ao lado delas passaram a negar:
+
+1. A manchete: *"a maior corrida eleitoral do histórico é menor que a mais branda das três crises"* —
+   **hard-coded**, entre duas faixas **derivadas** que a contradiziam na mesma frase (eleição
+   1,0x–3,4x, crise 2,7x–3,1x).
+2. O rodapé do pior dia: *"em outubro de 2008 o mercado imprimiu 606, cinco vezes a base, por três
+   dias, contra um fechamento de 335"* — quatro afirmações, três erradas na fonte nova (587, 4,50x,
+   316).
+3. A leitura da coluna de dólar EM: *"as duas eleições cujo CDS subiu são as duas que vieram com
+   movimento de dólar"* — escrita quando **quatro** eleições tinham leitura; com sete, descrevia uma
+   tabela que não existia mais.
+
+O padrão é sempre o mesmo: **o número derivado se atualiza e a frase que o interpreta não**, e a
+frase é mais visível que o número. Duas defesas, e as duas são necessárias:
+
+- **Derive a interpretação, não só o número.** Quantos episódios ficam abaixo do maior, qual é a
+  exceção, quantos itens a coluna alcança, quantos ficaram de fora e por quê — tudo isso é
+  contável. Onde a afirmação não é contável, ela não deveria estar escrita.
+- **Afirme sobre o texto renderizado, e proíba a frase aposentada por nome.** Uma lista de termos
+  proibidos pega vocabulário de mecanismo (ver a seção de audiência acima); ela **não** pega uma
+  frase que era verdadeira. Para essa, o guarda é a string literal da versão antiga mais a exigência
+  de que a leitura nova esteja na tela. E fatie o bloco antes de procurar o número: os mesmos valores
+  aparecem na tabela, então uma busca no HTML inteiro passa com o rodapé inteiramente inventado —
+  foi um mutante escapando.
+
+## Uma série que já tem gráfico não ganha um segundo (2026-09-08)
+
+De `analytics/brasil/exchange_rate/report.html`, aba FX Model, e a frase do usuário é a regra:
+*"cada regressor tem uma sessão de gráfico, por que você criou outra sessão lá em baixo? — corrija
+isso"*.
+
+O pedido anterior tinha sido *"coloque o gráfico com os dados completos de todos os regressores"*, e
+a resposta foi uma **seção nova** no fim da aba, com os cinco canais em painéis empilhados. Os
+painéis estavam certos; a seção não. Cada canal já tinha um gráfico, dentro do próprio card, e a
+mesma série passou a ter **dois**, com recortes e escalas diferentes e nada na tela dizendo qual
+responde o quê. O corretivo foi levar o dado novo para dentro do gráfico existente e apagar a seção
+— div, JS e a chave que a alimentava no payload.
+
+O que faz disso regra, e não preferência: um gráfico duplicado **não é neutro**, ele obriga o leitor
+a reconciliar duas versões da mesma coisa e obriga quem edita a manter as duas. Antes de acrescentar
+um gráfico, procure se aquela série já é desenhada em algum lugar da página; se for, a pergunta é o
+que falta **naquele** gráfico.
+
+E há um caso em que a duplicata é a resposta certa — quando os dois gráficos respondem perguntas
+diferentes **e** cada um diz qual é a sua. Aqui não era: os dois mostravam nível histórico da mesma
+série, um cortado na amostra do modelo e outro não.
+
+### O corolário do dado: "ordem de grandeza" proíbe z-score
+
+O que motivou o gráfico foi o usuário dizendo para que estes gráficos servem — *"dar uma ordem de
+grandeza dos movimentos das séries, por isso é importante colocarmos lá o maior histórico que
+temos"*. Duas coisas saem disso, e as duas são medidas:
+
+- **Z-score entrega desvios-padrão, que é justamente a unidade que apaga magnitude.** Ele costuma
+  entrar por uma restrição autoimposta — "cinco unidades não cabem num eixo" —, e a saída é um
+  painel por série em unidade nativa, compartilhando só o eixo do tempo. Junto some a ressalva de
+  que a linha do zero significa período diferente em cada série: o problema desaparece com a
+  normalização que o criava. E o custo de padronizar não é só conceitual: com a base na janela do
+  ajuste, o CDS de 2002 sai a **46 desvios**, o eixo Y precisa de [−2,8; +46,3] e o período que o
+  leitor foi ver fica com **12% da altura**. A série estava desenhada e não dava para ver que
+  estava.
+- **Escala log onde a amplitude exige, com critério medido.** Num eixo linear uma série que percorre
+  61x mostra só o pico e achata vinte anos no rodapé; em log, distância vertical igual é movimento
+  proporcional igual, que é o que "ordem de grandeza de um movimento" quer dizer. O critério:
+  estritamente positiva e amplitude (max/min) ≥ **8x** — aqui separa fiscal (61x), carry/vol (29x) e
+  S&P (25x) dos que ficam lineares (1,6x a 3,7x). Guarde o `span` ao lado do flag, para o rodapé
+  poder dizer **por que** em vez de o leitor ter de confiar na escolha, e afirme no teste que a
+  regra **separa de fato**: se todas as séries caírem do mesmo lado, ela não está decidindo nada.
+
+Três armadilhas do log, todas silenciosas:
+
+- **Ele só vale no nível cru.** Z-score e variação percentual assumem valores negativos, e log de
+  negativo **some do gráfico** sem levantar nada — a condição tem de incluir o modo de leitura, não
+  só a propriedade da série.
+- **`_bindPlotlyYAutofit` precisa sair fora.** Ele junta os traces num `yaxis.range` em unidade
+  crua, e num eixo log `range` é em **log10**: [62; 3790] cru pede uma faixa de 10^62 a 10^3790. O
+  guarda é `mais de um eixo Y, ou eixo log → return`; o autorange nativo cobre os dois casos.
+- **Um formatador que trunca mente sobre a amplitude.** 60,97 impresso como "60x" é uma amplitude
+  que a série não tem — arredonde a razão em vez de passá-la pelo formatador de números da página.
+
+### E estender uma série histórica: cresça pelo COMEÇO, nunca pelo fim
+
+O mesmo gráfico desenha, depois do histórico, um caminho projetado e uma linha de dado observado
+após o corte do modelo. Estender a série histórica pelo **fim** poria duas linhas sobre os mesmos
+meses e moveria a âncora de que dependem as caixas de input (`values[len-1]`) e a leitura em % a/a
+(`values[len-12+h]`). Nada disso levanta erro.
+
+A assertion que segura isso não é o comprimento do array: é **a cauda, mês a mês**, contra a grade
+do modelo (`months.slice(off)` igual a `D.months`, com `off` derivado do próprio rótulo de mês). Um
+`slice(-n)` continua fechando quando a série desliza no tempo, que é o defeito que ele deveria pegar.
 
 ## Related conventions
 

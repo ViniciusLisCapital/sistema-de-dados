@@ -2,7 +2,7 @@
 Atualiza o banco de dados brasil com os dados mais recentes de todas as fontes.
 
 Uso:
-    uv run python jobs/update_db.py                      # passe completo (51 scripts)
+    uv run python jobs/update_db.py                      # passe completo (54 scripts)
     uv run python jobs/update_db.py --continuous         # so as series continuas (diarias)
     uv run python jobs/update_db.py --group ibge_ipca    # so uma divulgacao do calendario
     uv run python jobs/update_db.py --tables atv_pim,atv_pmc
@@ -71,6 +71,7 @@ from domain.db.brasil.bcb import (
     cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
     pm_hiato_produto, pm_hiato_produto_vintages, pm_copom_reuniao,
+    mt_desocupacao_retro,
 )
 
 # IPEA
@@ -158,6 +159,11 @@ _SCRIPTS = [
     # anterior a 2018 e a quebra Livre/Direcionado que so saiu naquele boxe.
     ("BCB  · Fluxo Financeiro (RPM)",   cred_fluxo_financeiro, {}),
     ("BCB  · Hiato do Produto / vintages", pm_hiato_produto_vintages, {}),
+    # Terceiro grafico do mesmo anexo: taxa de desocupacao retropolada (Alves e
+    # Fasolo, WP 400/2015) -- a serie de emprego do modelo agregado do BC, que
+    # comeca 8 anos antes da PNAD. O cache de bytes do AnexoRPM e por instancia e
+    # cada script cria a sua, entao isto baixa o xlsx da edicao corrente de novo.
+    ("BCB  · Desocupação retropolada (RPM)", mt_desocupacao_retro, {}),
     # Decisao de Selic por reuniao do Copom: SGS 432 (4 requests) + a listagem de atas,
     # segundos. Entra aqui e a irma `pm_copom_projecoes` nao porque esta le so API, enquanto
     # aquela sincroniza 109 PDFs do RPM e 233 comunicados e segue sendo rodada a mao.

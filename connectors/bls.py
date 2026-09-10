@@ -107,7 +107,13 @@ _UA = "LIS Capital macro research (fabian@liscapital.com.br)"
 # BLS so publica semestralmente (em cu.data.1.AllItems, 100 das 201 series sao
 # semestrais e 101 mensais -- nenhuma tem as duas, conferido ao vivo). Filtra-las
 # apagaria dado legitimo. Use a coluna `period` para separar frequencias.
-_AGGREGATE_PERIODS = {"M13", "S03", "A01"}
+#
+# Q05 (media anual das pesquisas TRIMESTRAIS, como `pr`) entrou em 2026-09-03. Antes
+# dela, uma linha Q05 era descartada por um caminho DIFERENTE do dos outros agregados:
+# `_to_date` nao conhecia o codigo, devolvia None, e o `dropna(subset=['date'])` de
+# `get_data_file` a comia. O resultado era o mesmo por acidente, e `include_aggregates
+# =True` nao trazia a media anual de jeito nenhum.
+_AGGREGATE_PERIODS = {"M13", "S03", "A01", "Q05"}
 
 # Primeiro ano com dado em qualquer pesquisa do BLS (CPI-U NSA comeca em 1913).
 _MIN_YEAR = 1913
@@ -675,7 +681,7 @@ def _invalid_series(messages: list[str]) -> set[str]:
 def _to_date(year, period) -> pd.Timestamp | None:
     """Converte (year, period) do BLS num Timestamp no primeiro dia do periodo.
 
-    M01-M12 -> mes. M13/S03/A01 (media anual) -> 1 de janeiro. S01/S02
+    M01-M12 -> mes. M13/S03/A01/Q05 (media anual) -> 1 de janeiro. S01/S02
     (semestres) -> 1 de janeiro / 1 de julho. Q01-Q04 -> inicio do trimestre.
     Qualquer outro codigo -> None.
 
@@ -707,8 +713,12 @@ def _to_date(year, period) -> pd.Timestamp | None:
             2: pd.Timestamp(year=y, month=7, day=1),
             3: pd.Timestamp(year=y, month=1, day=1),
         }.get(n)
-    if kind == "Q" and 1 <= n <= 4:
-        return pd.Timestamp(year=y, month=(n - 1) * 3 + 1, day=1)
+    if kind == "Q":
+        if 1 <= n <= 4:
+            return pd.Timestamp(year=y, month=(n - 1) * 3 + 1, day=1)
+        if n == 5:  # media anual, mesma convencao de M13/A01
+            return pd.Timestamp(year=y, month=1, day=1)
+        return None
     if kind == "A":
         return pd.Timestamp(year=y, month=1, day=1)
     return None

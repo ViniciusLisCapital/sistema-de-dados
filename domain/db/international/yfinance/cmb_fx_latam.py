@@ -12,7 +12,7 @@ convencao de cotacao do PTAX (maior = moeda local mais fraca):
   CO  COP=X
   PE  PEN=X
 
-Nao inclui AR -- mesma exclusao ja aplicada em cmb_policy_rates.py (regime
+Nao inclui AR -- mesma exclusao ja aplicada em cmb_real_rates.py (regime
 idiossincratico, BIS parou de atualizar a taxa de politica monetaria em
 2025-07; nao ha razao para tratar o cambio de forma diferente aqui).
 

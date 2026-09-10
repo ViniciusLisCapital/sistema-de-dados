@@ -12,6 +12,25 @@ pelo mesmo motivo: uma aba unica com um seletor de medida faria o total mudar de
 significado sem dizer.
 
 --------------------------------------------------------------------------------
+`aditivo` NAO QUER DIZER "JA E PORCENTAGEM" -- E ISSO ERA UM BUG
+--------------------------------------------------------------------------------
+Achado em 2026-09-04, ao migrar as duas abas para as 7 camadas de metrica. O relatorio
+derivava "esta serie e uma razao" de `not aditivo`, e as duas coisas sao diferentes:
+
+    ganho medio por hora   nao soma entre industrias (e media ponderada)  E ESTA EM US$
+    horas semanais         nao soma entre industrias                      E ESTA EM HORAS
+    indice 2007=100        nao soma entre industrias                      E EM PONTOS
+
+Consequencia medida: em 9 das 12 medidas desta aba, a variacao mensal e a anual sairam
+como DIFERENCA rotulada "p.p. change" -- para um numero em dolares. E o efeito colateral
+era pior que o rotulo: "average hourly earnings up 0.9% from a year earlier", que e o
+numero que toda manchete cita, **nao era obtenivel na pagina**; saia +0,31 chamado de p.p.
+
+Nenhuma medida da CES e porcentagem. `razao` agora vem de `natureza == "taxa"` (nao
+existe aqui), e `dif` declara a unidade de uma diferenca por medida -- o antigo
+"same unit as the level" era verdade e inutil num eixo.
+
+--------------------------------------------------------------------------------
 O QUE SOMA ENTRE INDUSTRIAS, E O QUE ISSO DESLIGA
 --------------------------------------------------------------------------------
 `aditivo` decide tres controles ao mesmo tempo (barras empilhadas, "% do total" e a
@@ -26,7 +45,28 @@ tampouco.
 
 **Nenhuma medida da CES acumula em 12 meses.** Emprego e estoque; horas e ganhos sao
 taxas semanais; os agregados sao "de uma semana". Somar doze meses de folha semanal
-agregada nao da a folha do ano. Por isso `y_acum` e None nas treze.
+agregada nao da a folha do ano. Por isso `y_acum` e None nas treze -- e por isso a
+camada de janela nao renderiza controle em nenhuma das duas abas.
+
+--------------------------------------------------------------------------------
+TRES MEDIDAS SO EXISTEM NA TRANSFORMACAO, E A ARVORE TEM DE SEGUIR ISSO
+--------------------------------------------------------------------------------
+`overtime_semana`, `ganho_hora_ex_ot` e `overtime_agreg` sao coletadas so na industria
+de transformacao: cobrem **21 das 94 linhas** desta aba, e o conjunto e uma subarvore
+completa de raiz unica (Manufacturing) -- medido, nenhum filho sem dado sob pai com
+dado, e as tres cobrem exatamente o mesmo conjunto.
+
+O sintoma, reportado pelo usuario em 2026-09-04, eram **dois vazios silenciosos**: as
+marcadas por default (Total private, Goods-producing, Private services) nao estao entre
+as 21, entao o grafico saia sem linha nenhuma; e "% do total" oferecia dividir pela
+serie de overtime de Total private, **que nao existe**.
+
+A correcao nao e esconder as medidas, e a arvore visivel seguir o escopo: `filtro()`
+devolve as subarvores cobertas, a raiz passa a ser Manufacturing (e o denominador da
+participacao com ela), a selecao cai de volta para linhas que existem, e o cabecalho do
+grafico imprime "published only within Manufacturing" -- senao a tabela mais curta le
+como dado que faltou. Mesmo argumento do corte de tamanho do JOLTS, que comeca em Total
+private e nao em Total nonfarm.
 
 --------------------------------------------------------------------------------
 A BORDA DIREITA IRREGULAR E CONTEUDO, NAO BUG
@@ -51,6 +91,7 @@ MEDIDAS: dict[str, dict] = {
         "natureza": "estoque", "aditivo": 1,
         "dec": 1,
         "y_nivel": "employees on payrolls, thousands",
+        "dif": "thousands of jobs",
         "y_share": "share of {raiz} employment, %",
         "y_acum": None,
     },
@@ -59,6 +100,7 @@ MEDIDAS: dict[str, dict] = {
         "natureza": "media", "aditivo": 0,
         "dec": 1,
         "y_nivel": "average weekly hours per employee",
+        "dif": "hours per employee",
         "y_share": None, "y_acum": None,
     },
     "overtime_semana": {
@@ -66,20 +108,33 @@ MEDIDAS: dict[str, dict] = {
         "natureza": "media", "aditivo": 0,
         "dec": 1,
         "y_nivel": "average weekly overtime hours per employee",
+        "dif": "overtime hours per employee",
         "y_share": None, "y_acum": None,
     },
     "ganho_hora": {
+        # Nominal e real sao a mesma grandeza em duas BASES (camada 1), e a fonte
+        # publica as duas nas mesmas 94 industrias -- medido. Entao `ganho_hora_real`
+        # sai da lista de medidas e vira a opcao Real desta.
+        "bases": [{"key": "nominal", "label": "Nominal US$", "medida": "ganho_hora"},
+                  {"key": "real", "label": "Constant 1982-84 US$", "medida": "ganho_hora_real"}],
         "label": "Hourly earnings", "short": "AHE", "familia": "horas",
         "natureza": "media", "aditivo": 0,
         "dec": 2,
         "y_nivel": "average hourly earnings, US$",
+        "dif": "US$ per hour",
         "y_share": None, "y_acum": None,
     },
     "ganho_semana": {
+        # Nominal e real sao a mesma grandeza em duas BASES (camada 1), e a fonte
+        # publica as duas nas mesmas 94 industrias -- medido. Entao `ganho_semana_real`
+        # sai da lista de medidas e vira a opcao Real desta.
+        "bases": [{"key": "nominal", "label": "Nominal US$", "medida": "ganho_semana"},
+                  {"key": "real", "label": "Constant 1982-84 US$", "medida": "ganho_semana_real"}],
         "label": "Weekly earnings", "short": "AWE", "familia": "horas",
         "natureza": "media", "aditivo": 0,
         "dec": 2,
         "y_nivel": "average weekly earnings, US$",
+        "dif": "US$ per week",
         "y_share": None, "y_acum": None,
     },
     "ganho_hora_real": {
@@ -87,6 +142,7 @@ MEDIDAS: dict[str, dict] = {
         "natureza": "media", "aditivo": 0,
         "dec": 2,
         "y_nivel": "average hourly earnings, constant 1982-84 US$",
+        "dif": "constant 1982-84 US$ per hour",
         "y_share": None, "y_acum": None,
     },
     "ganho_semana_real": {
@@ -94,6 +150,7 @@ MEDIDAS: dict[str, dict] = {
         "natureza": "media", "aditivo": 0,
         "dec": 2,
         "y_nivel": "average weekly earnings, constant 1982-84 US$",
+        "dif": "constant 1982-84 US$ per week",
         "y_share": None, "y_acum": None,
     },
     "ganho_hora_ex_ot": {
@@ -101,6 +158,7 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "media", "aditivo": 0,
         "dec": 2,
         "y_nivel": "average hourly earnings excluding overtime, US$",
+        "dif": "US$ per hour",
         "y_share": None, "y_acum": None,
     },
     "horas_agreg": {
@@ -108,6 +166,7 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "agregado", "aditivo": 1,
         "dec": 0,
         "y_nivel": "hours worked in the week, thousands",
+        "dif": "thousands of hours",
         "y_share": "share of {raiz} aggregate hours, %", "y_acum": None,
     },
     "folha_agreg": {
@@ -115,6 +174,7 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "agregado", "aditivo": 1,
         "dec": 0,
         "y_nivel": "payrolls for the week, thousands of US$",
+        "dif": "thousands of US$",
         "y_share": "share of {raiz} aggregate payrolls, %", "y_acum": None,
     },
     "overtime_agreg": {
@@ -122,6 +182,7 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "agregado", "aditivo": 1,
         "dec": 0,
         "y_nivel": "overtime hours in the week, thousands",
+        "dif": "thousands of hours",
         "y_share": "share of {raiz} aggregate overtime, %", "y_acum": None,
     },
     "idx_horas": {
@@ -129,6 +190,7 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "indice", "aditivo": 0,
         "dec": 1,
         "y_nivel": "index of aggregate weekly hours, 2007 = 100",
+        "dif": "index points",
         "y_share": None, "y_acum": None,
     },
     "idx_folha": {
@@ -136,16 +198,36 @@ MEDIDAS: dict[str, dict] = {
         "familia": "horas", "natureza": "indice", "aditivo": 0,
         "dec": 1,
         "y_nivel": "index of aggregate weekly payrolls, 2007 = 100",
+        "dif": "index points",
         "y_share": None, "y_acum": None,
     },
 }
 
 ORDEM_EMPREGO = ["emprego"]
+# `ganho_hora_real` e `ganho_semana_real` NAO estao aqui: elas sao a opcao Real da
+# camada de base das duas medidas nominais correspondentes. Seguem em MEDIDAS, porque
+# o payload as carrega e a chave da serie e resolvida por `bases`.
 ORDEM_HORAS = [
-    "horas_semana", "ganho_hora", "ganho_semana", "ganho_hora_real",
-    "ganho_semana_real", "ganho_hora_ex_ot", "overtime_semana",
-    "horas_agreg", "folha_agreg", "overtime_agreg", "idx_horas", "idx_folha",
+    "horas_semana", "ganho_hora", "ganho_semana", "ganho_hora_ex_ot",
+    "overtime_semana", "horas_agreg", "folha_agreg", "overtime_agreg",
+    "idx_horas", "idx_folha",
 ]
+
+def medidas_carregadas(ordem: list[str]) -> list[str]:
+    """As medidas de `ordem` mais as que so existem como opcao de BASE de uma delas.
+
+    A consulta do payload e dirigida pela lista de medidas, entao mover uma serie da
+    lista para dentro de `bases` a tira do arquivo -- e o sintoma nao e erro nenhum: a
+    opcao Real renderiza e o grafico sai vazio. Aconteceu em 2026-09-04, e custou 376
+    series (94 industrias x 2 medidas x 2 ajustes) e 0,68 MB de arquivo.
+    """
+    fora = list(ordem)
+    for slug in ordem:
+        for b in MEDIDAS[slug].get("bases", []):
+            if b["medida"] not in fora:
+                fora.append(b["medida"])
+    return fora
+
 
 # A aba de horas/ganhos leva so os niveis 0-4 da arvore, por tamanho de payload: sao
 # 94 industrias contra 549, e e a granularidade que as tabelas B-2/B-3/B-4 do proprio

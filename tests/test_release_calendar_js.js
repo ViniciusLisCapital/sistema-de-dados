@@ -128,6 +128,35 @@ const DASHBOARDS_STUB = [
         command: 'uv run python -c "from x import salvar; salvar()"',
         note: '36 rodadas do espaço de estados.' },
     ] },
+  // ── os tres que o lote tem de DEIXAR DE FORA ──────────────────────────────
+  // 1. sem entry point automatico: nao tem nem botao de card (o Oraculo real e assim).
+  { key: 'oraculo', name: 'Oráculo (Power BI)', area: 'raiz',
+    output: 'reports/oraculo.csv', build_seconds: 20, veredito: 'desatualizado',
+    module: null, command: 'uv run python jobs/update_oraculo.py',
+    gerado_em: '2026-08-01T09:00:00', tamanho_mb: 0.2, n_deps: 1, n_fora_mysql: 0,
+    n_novos: 1,
+    deps: [{ ref: 'macro_brasil.atv_ibcbr', kind: 'mysql', onde: 'macro_brasil',
+             fora_do_mysql: false, role: 'IBC-Br', scope: 'dados', ultimo: '2026-06-01',
+             stamp: '2026-06-01', novo: false, arquivo_mais_novo: false }] },
+  // 2. nunca gerado: construir pela primeira vez e uma decisao, nao consequencia de dado.
+  { key: 'brasil_credit', name: 'Crédito', area: 'brasil',
+    output: 'reports/brasil/Credit.html', build_seconds: 24, veredito: 'sem relatorio',
+    module: 'analytics.brasil.credit.generate_report',
+    gerado_em: null, tamanho_mb: null, n_deps: 1, n_fora_mysql: 0, n_novos: 0,
+    deps: [{ ref: 'macro_brasil.cred_saldo_modalidade', kind: 'mysql',
+             onde: 'macro_brasil', fora_do_mysql: false, role: 'Saldo por modalidade',
+             scope: 'dados', ultimo: '2026-07-01', stamp: null, novo: false,
+             arquivo_mais_novo: false }] },
+  // 3. sem stamp: nao e atraso, e a falta do retrato que permitiria afirmar que bate.
+  { key: 'brasil_exchange_rate', name: 'Câmbio', area: 'brasil',
+    output: 'reports/brasil/FX Report.html', build_seconds: 43, veredito: 'sem stamp',
+    module: 'analytics.brasil.exchange_rate.generate_report',
+    gerado_em: '2026-08-25T19:31:45', tamanho_mb: 2.2, n_deps: 1, n_fora_mysql: 1,
+    n_novos: 0,
+    deps: [{ ref: 'analytics/brasil/exchange_rate/data/model_fit_cutoff.json',
+             kind: 'artifact', onde: 'arquivo', fora_do_mysql: true,
+             role: 'Corte do ajuste do modelo', scope: 'modelos', ultimo: '2026-06',
+             mtime: '2026-08-01T10:00:00', novo: false, arquivo_mais_novo: false }] },
 ];
 
 // document stub compartilhado. A aba nova usa querySelector('.tab-bar') e
@@ -345,7 +374,8 @@ async function testeStatusDashboard(MODE) {
         { ok: true, hoje: '2026-08-26', agora: '10:00', grupos: {} }) });
     if (url === '/api/dashboards')
       return Promise.resolve({ ok: true, json: () => Promise.resolve(
-        { ok: true, agora: '10:00', dashboards: DASHBOARDS_STUB }) });
+        { ok: true, agora: '10:00',
+          dashboards: JSON.parse(JSON.stringify(DASHBOARDS_STUB)) }) });
     if (url === '/api/gerar') {
       // Responde pela KEY do corpo: o Regerar de um dashboard COM procedimento atrasado
       // devolve o que recalculou, e o de um SEM devolve lista vazia. Sao as duas
@@ -440,7 +470,7 @@ async function testeStatusDashboard(MODE) {
     check('pediu /api/dashboards', calls.some((u) => u === '/api/dashboards'));
     check('hint anuncia estado ao vivo', hint.indexOf('ao vivo') >= 0, hint.slice(0, 90));
     const n = (cards.match(/class="dash-card"/g) || []).length;
-    check('usou o payload ao vivo (2 dashboards do stub)', n === 2, n);
+    check('usou o payload ao vivo (5 dashboards do stub)', n === 5, n);
     check('dependencia com dado novo ganha marca',
           cards.indexOf('dep-flag new') >= 0 && cards.indexOf('dado novo') >= 0);
     check('mostra o que o relatorio embutiu, ao lado do que a fonte tem',
@@ -517,11 +547,42 @@ async function testeStatusDashboard(MODE) {
         cards.indexOf(MODE === 'file' ? 'Copiar cmd' : 'Regerar') >= 0);
 
   if (MODE === 'served') {
-    // Nao pode existir controle de lote: a regeneracao e um dashboard por vez, por
-    // decisao explicita do usuario. Se alguem reintroduzir "regerar todos", cai aqui.
-    check('nenhum controle de regeneracao em lote na aba',
-          cards.indexOf('regerar todos') < 0 &&
-          getEl('dash-mode-hint').innerHTML.indexOf('todos') < 0);
+    // ── "Regerar pendentes": quem entra na fila e quem NAO entra ────────────
+    // A regra e o que importa aqui, nao o botao: dos 5 do stub, tres estao vermelhos ou
+    // chamativos de algum jeito e so DOIS podem entrar. Errar isso nao levanta nada --
+    // gera relatorio a mais (ou de menos) em silencio.
+    const lote = getEl('bulk-dashboards').innerHTML;
+    check('a aba oferece o lote', lote.indexOf('bulk-gerar-btn') >= 0, lote.slice(0, 120));
+    check('a fila tem os 2 pendentes de verdade, nao os 5',
+          lote.indexOf('Regerar pendentes (2)') >= 0, lote.slice(0, 160));
+    // desatualizado entra; passo atras dos dados entra
+    check('o titulo do lote nomeia quem vai ser regerado',
+          lote.indexOf('Inflação (BR)') >= 0 && lote.indexOf('Inflation (US)') >= 0);
+    // ... e os tres excluidos NAO aparecem
+    check('sem entry point automatico fica fora da fila',
+          lote.indexOf('Oráculo') < 0, lote.slice(0, 200));
+    check('nunca gerado fica fora da fila (construir e uma decisao)',
+          lote.indexOf('Crédito') < 0, lote.slice(0, 200));
+    check('sem stamp fica fora da fila (nao e atraso)',
+          lote.indexOf('Câmbio') < 0, lote.slice(0, 200));
+    // O tempo anunciado e o do clique: 30s da inflacao BR + 13s de build do US + 110s
+    // do passo atrasado dele. Os 90s do painel trimestral, que esta em dia, NAO entram.
+    check('o lote anuncia a soma dos tempos, com o recalculo de cada um',
+          lote.indexOf('~153s no total') >= 0, lote.slice(0, 260));
+    // O botao de card continua existindo -- o lote nao substitui a escolha um-a-um.
+    check('o botao de cada card continua no lugar',
+          (cards.match(/dash-btn/g) || []).length >= 4,
+          (cards.match(/dash-btn/g) || []).length);
+
+    // O filtro de area vale para o lote tambem: agir sobre card que nao esta listado
+    // seria surpresa.
+    const areasLote = getEl('dash-area-pills').children;
+    const iUs2 = areasLote.map((b) => b.textContent).indexOf('EUA');
+    areasLote[iUs2]._listeners['click']();
+    check('o lote acompanha o filtro de area',
+          getEl('bulk-dashboards').innerHTML.indexOf('Regerar pendentes (1)') >= 0,
+          getEl('bulk-dashboards').innerHTML.slice(0, 160));
+    areasLote[0]._listeners['click']();
 
     // Os filtros acima deixaram a area em "EUA"; volta para todas, senao o card do
     // dashboard que vamos regerar nem esta renderizado.
@@ -652,6 +713,42 @@ async function testeStatusDashboard(MODE) {
     check('e ele e mensal, nao diario nem trimestral',
           cards.indexOf('fica velho quando abre um mês novo') >= 0);
 
+    // ── lote no modo arquivo: copia um comando por dashboard pendente ───────
+    // O retrato embutido carrega veredito, entao aqui a fila E conhecida (ao contrario
+    // da outra aba, onde sem servidor nao ha veredito nenhum). Injeta o stub para haver
+    // pendencia: no payload real do momento pode nao haver nenhuma.
+    if (global.__CAL) {
+      let copiado = null;
+      global.navigator = { clipboard: { writeText: (t) => {
+        copiado = t; return Promise.resolve();
+      } } };
+      // ... e o caminho do execCommand, que e o que roda quando o contexto nao e
+      // seguro (file:// nao e): le o valor do <textarea> que `copiarTexto` acabou de
+      // pendurar no body.
+      global.document.execCommand = () => {
+        const filhos = global.document.body.children;
+        if (filhos.length) copiado = filhos[filhos.length - 1].value;
+        return true;
+      };
+      global.__CAL.DASH.rows = JSON.parse(JSON.stringify(DASHBOARDS_STUB));
+      global.__CAL.renderDashboards();
+      const loteArq = getEl('bulk-dashboards').innerHTML;
+      check('sem servidor o lote copia em vez de rodar',
+            loteArq.indexOf('Copiar cmds (2)') >= 0, loteArq.slice(0, 160));
+      cliqueEm(getEl('bulk-dashboards'), new El('button'));
+      await new Promise((r) => setTimeout(r, 20));
+      const linhasCmd = (copiado || '').split('\n').filter(Boolean);
+      check('copiou uma linha por dashboard pendente', linhasCmd.length === 2,
+            JSON.stringify(copiado));
+      check('cada linha e o --gerar daquela key',
+            linhasCmd.length === 2 &&
+            linhasCmd[0].indexOf('--gerar brasil_inflation') > 0 &&
+            linhasCmd[1].indexOf('--gerar us_inflation') > 0,
+            JSON.stringify(linhasCmd));
+      check('e nenhuma linha e o --gerar todos',
+            (copiado || '').indexOf('--gerar todos') < 0);
+    }
+
 
   }
 
@@ -719,12 +816,307 @@ async function testeServidoSemEstado() {
   falhasTotais += falhas;
 }
 
+
+// ---------------------------------------------------------------------------
+// "Regerar pendentes" -- o CLIQUE. Em cenario proprio para nao regerar os cards antes
+// dos testes de clique um-a-um de testeStatusDashboard().
+//
+// O que precisa ser verdade e nao da para ver na marcacao: um POST por dashboard, EM
+// SERIE (nao ha endpoint de lote, e dois geradores nao podem disputar o banco), a fila
+// fotografada antes de comecar, e uma falha no meio nao interrompendo o resto.
+// ---------------------------------------------------------------------------
+async function testeLoteDashboards(comFalha) {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('LOTE DE DASHBOARDS - ' + (comFalha ? 'com uma falha no meio' : 'tudo OK'));
+
+  const els = {};
+  const getEl = (id) => (els[id] = els[id] || new El('div'));
+  const postados = [];
+  let emVoo = 0, maxEmVoo = 0;
+
+  global.document = mkDoc(getEl);
+  global.window = { isSecureContext: false };
+  global.navigator = {};
+  global.fetch = (url, opts) => {
+    if (url === '/api/ping')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, modo: 'servido', hoje: '2026-08-26', agora: '10:00' }) });
+    if (url === '/api/status')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, hoje: '2026-08-26', agora: '10:00', grupos: {} }) });
+    if (url === '/api/dashboards')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, agora: '10:00', dashboards: JSON.parse(JSON.stringify(DASHBOARDS_STUB)) }) });
+    if (url === '/api/gerar') {
+      const key = JSON.parse((opts && opts.body) || '{}').key;
+      postados.push(key);
+      emVoo++; maxEmVoo = Math.max(maxEmVoo, emVoo);
+      // resposta assincrona de verdade: se o lote disparasse os dois de uma vez,
+      // maxEmVoo chegaria a 2 e a assercao de serie pegaria.
+      return new Promise((resolve) => setTimeout(() => {
+        emVoo--;
+        if (comFalha && key === 'brasil_inflation') {
+          resolve({ ok: true, json: () => Promise.resolve(
+            { erro: 'RuntimeError: banco fora do ar' }) });
+          return;
+        }
+        const idx = key === 'us_inflation' ? 1 : 0;
+        const nova = JSON.parse(JSON.stringify(DASHBOARDS_STUB[idx]));
+        nova.veredito = 'em dia';
+        nova.n_novos = 0;
+        nova.n_proc_atrasados = 0;
+        nova.gerado_em = '2026-08-26T10:05:00';
+        nova.deps.forEach((d) => { d.novo = false; d.arquivo_mais_novo = false; });
+        (nova.procedimentos || []).forEach((pr) => { pr.atrasado = false; });
+        resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, key, segundos: 12.0, segundos_total: 12.0,
+            n_recalculados: 0, n_falhou: 0, dashboard: nova, procedimentos: [] }) });
+      }, 10));
+    }
+    return Promise.reject(new Error('inesperado ' + url));
+  };
+
+  new Function(SRC)();
+  await new Promise((r) => setTimeout(r, 60));
+
+  check('antes do clique nada foi postado', postados.length === 0, postados.length);
+  cliqueEm(getEl('bulk-dashboards'), new El('button'));
+
+  // o primeiro POST tem de sair sem esperar render nenhum
+  await new Promise((r) => setTimeout(r, 5));
+  check('o botao do lote desabilita enquanto roda',
+        getEl('bulk-dashboards').innerHTML.indexOf('disabled') >= 0,
+        getEl('bulk-dashboards').innerHTML.slice(0, 160));
+  check('e diz em qual dashboard esta',
+        getEl('bulk-dashboards').innerHTML.indexOf('regerando 1 de 2') >= 0,
+        getEl('bulk-dashboards').innerHTML.slice(0, 220));
+
+  await new Promise((r) => setTimeout(r, 120));
+
+  check('um POST por dashboard pendente, e so por eles',
+        postados.length === 2, JSON.stringify(postados));
+  check('na ordem em que a aba lista',
+        postados[0] === 'brasil_inflation' && postados[1] === 'us_inflation',
+        JSON.stringify(postados));
+  check('EM SERIE: nunca dois geradores ao mesmo tempo', maxEmVoo === 1, maxEmVoo);
+  check('nenhum POST para os excluidos',
+        postados.indexOf('oraculo') < 0 && postados.indexOf('brasil_credit') < 0 &&
+        postados.indexOf('brasil_exchange_rate') < 0, JSON.stringify(postados));
+
+  const lote = getEl('bulk-dashboards').innerHTML;
+  const cards = getEl('dash-cards').innerHTML;
+
+  if (comFalha) {
+    // O ponto todo: a falha do primeiro NAO impede o segundo de rodar.
+    check('a falha nao interrompeu a fila', postados.length === 2, postados.length);
+    check('o resumo conta quantos deram certo e nomeia quem falhou',
+          lote.indexOf('1 de 2 regerado(s)') >= 0 &&
+          lote.indexOf('falhou: Inflação (BR)') >= 0, lote.slice(0, 260));
+    check('o resumo do lote sai marcado como erro',
+          lote.indexOf('upd-msg err') >= 0, lote.slice(0, 200));
+    check('o card de quem falhou mostra o motivo',
+          cards.indexOf('banco fora do ar') >= 0);
+    // ... e o que falhou continua pendente, entao o lote continua sendo oferecido
+    check('quem falhou continua na fila do proximo clique',
+          lote.indexOf('Regerar pendentes (1)') >= 0, lote.slice(0, 200));
+  } else {
+    check('o resumo diz que os dois foram regerados',
+          lote.indexOf('2 de 2 regerado(s)') >= 0, lote.slice(0, 260));
+    check('o resumo NAO sai marcado como erro', lote.indexOf('upd-msg err') < 0);
+    check('cada card recebeu a mensagem do proprio Regerar',
+          (cards.match(/regerado em 12s/g) || []).length === 2,
+          (cards.match(/regerado em 12s/g) || []).length);
+    check('os dois vereditos viraram "em dia"',
+          (cards.match(/verdict ok/g) || []).length >= 2,
+          (cards.match(/verdict ok/g) || []).length);
+    // Com a fila vazia o controle deixa de ser um botao: nao ha clique morto na tela.
+    check('com nada pendente o lote deixa de oferecer botao',
+          lote.indexOf('bulk-gerar-btn') < 0 &&
+          lote.indexOf('nenhum dashboard pendente') >= 0, lote.slice(0, 200));
+  }
+
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
+}
+
+// ---------------------------------------------------------------------------
+// "Atualizar pendentes" -- o lote da aba de divulgacoes. Dois grupos atrasados, um
+// deles falhando, para exercitar a mesma regra de fila da outra aba.
+//
+// E o terceiro estado, que e o que separa esta aba da outra: sem servidor NAO HA
+// veredito de freshness, entao nao existe lista de pendentes para copiar -- e dizer
+// "nenhuma pendente" ali seria afirmar um veredito que ninguem tem.
+// ---------------------------------------------------------------------------
+async function testeLoteDivulgacoes() {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('LOTE DE DIVULGACOES - 2 atrasados, 1 falha');
+
+  const els = {};
+  const getEl = (id) => (els[id] = els[id] || new El('div'));
+  const postados = [];
+  let rodados = 0;
+
+  // ESTADOS_OK primeiro, atrasados DEPOIS: `bcb_icbr` esta na lista de "ok" e aqui
+  // precisa estar atrasado, senao a ordem o sobrescreve.
+  const grupos = () => {
+    const g = {};
+    ESTADOS_OK.forEach((k) => { g[k] = { estado: 'ok', tabelas: [] }; });
+    g.ibge_pmc = { estado: rodados > 0 ? 'ok' : 'atrasado', tabelas: [] };
+    g.bcb_icbr = { estado: 'atrasado', tabelas: [] };   // 4 divulgacoes passadas
+    return g;
+  };
+
+  global.document = mkDoc(getEl);
+  global.window = { isSecureContext: false };
+  global.navigator = {};
+  global.fetch = (url, opts) => {
+    if (url === '/api/ping')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, modo: 'servido', hoje: '2026-08-17', agora: '23:59' }) });
+    if (url === '/api/status')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, hoje: '2026-08-17', agora: '23:59', grupos: grupos() }) });
+    if (url === '/api/dashboards')
+      return Promise.resolve({ ok: true, json: () => Promise.resolve(
+        { ok: true, agora: '23:59', dashboards: [] }) });
+    if (url === '/api/run') {
+      const slug = JSON.parse((opts && opts.body) || '{}').group;
+      postados.push(slug);
+      return new Promise((resolve) => setTimeout(() => {
+        if (slug === 'bcb_icbr') {
+          resolve({ ok: true, json: () => Promise.resolve(
+            { ok: false, n_ok: 0, n_erro: 1, sem_script: [] }) });
+          return;
+        }
+        rodados++;
+        resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, n_ok: 1, n_erro: 0, sem_script: [] }) });
+      }, 10));
+    }
+    return Promise.reject(new Error('inesperado ' + url));
+  };
+
+  new Function(SRC)();
+  await new Promise((r) => setTimeout(r, 60));
+
+  const antes = getEl('bulk-releases').innerHTML;
+  check('a aba oferece o lote', antes.indexOf('bulk-run-btn') >= 0, antes.slice(0, 140));
+  // Sao 2 GRUPOS atrasados e 5 LINHAS atrasadas (a PMC tem 1 divulgacao passada, o ICBr
+  // tem 4). O botao roda o ETL de um grupo, entao contar linha pediria o mesmo ETL
+  // quatro vezes -- e nada levantaria, so demoraria 4x.
+  check('conta GRUPO e nao linha (2 grupos, 5 linhas atrasadas)',
+        antes.indexOf('Atualizar pendentes (2)') >= 0, antes.slice(0, 200));
+  // ... e o Focus, com 16 linhas passadas e 'ok', nao entra.
+  check('grupo em dia nao entra na conta', antes.indexOf('Focus') < 0, antes.slice(0, 200));
+
+  cliqueEm(getEl('bulk-releases'), new El('button'));
+  await new Promise((r) => setTimeout(r, 5));
+  check('avisa em qual divulgacao esta',
+        getEl('bulk-releases').innerHTML.indexOf('atualizando 1 de 2') >= 0,
+        getEl('bulk-releases').innerHTML.slice(0, 200));
+
+  await new Promise((r) => setTimeout(r, 120));
+  check('um POST /api/run por grupo pendente', postados.length === 2,
+        JSON.stringify(postados));
+  check('a falha de um nao interrompe o outro',
+        postados.indexOf('ibge_pmc') >= 0 &&
+        postados.indexOf('bcb_icbr') >= 0, JSON.stringify(postados));
+  // ... e o grupo de 4 linhas foi postado UMA vez, nao quatro
+  check('um POST por grupo, mesmo com 4 divulgacoes atrasadas nele',
+        postados.filter((x) => x === 'bcb_icbr').length === 1,
+        JSON.stringify(postados));
+
+  const depois = getEl('bulk-releases').innerHTML;
+  check('o resumo conta os que deram certo e nomeia o que falhou',
+        depois.indexOf('1 de 2 atualizada(s)') >= 0 &&
+        depois.indexOf('falhou') >= 0, depois.slice(0, 260));
+  // O estado do banco e reconsultado UMA vez, no fim: a linha do grupo que rodou tem
+  // de ter virado check verde sem F5.
+  const linhas = getEl('table-body').children.map((c) => c.innerHTML).filter(Boolean);
+  const pmc = linhas.filter((h) => h.indexOf('13/08/2026') >= 0 && h.indexOf('Comércio') >= 0);
+  check('a tabela reflete o grupo que rodou, sem recarregar',
+        pmc.length === 1 && pmc[0].indexOf('upd-ok') >= 0, pmc[0] && pmc[0].slice(0, 160));
+  check('e o que falhou continua oferecendo botao',
+        depois.indexOf('Atualizar pendentes (1)') >= 0, depois.slice(0, 200));
+
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
+}
+
+// ---------------------------------------------------------------------------
+// Sem servidor a aba de divulgacoes NAO tem veredito, entao nao pode existir lista de
+// pendentes -- nem botao, nem "nenhuma pendente". O terceiro estado, que e onde as
+// duas abas divergem (o retrato embutido da outra aba carrega veredito; este nao).
+// ---------------------------------------------------------------------------
+async function testeLoteSemVeredito() {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('LOTE SEM VEREDITO - modo arquivo e banco fora do ar');
+
+  for (const caso of ['arquivo', 'banco']) {
+    const els = {};
+    const getEl = (id) => (els[id] = els[id] || new El('div'));
+    global.document = mkDoc(getEl);
+    global.window = { isSecureContext: false };
+    global.navigator = {};
+    global.fetch = (url) => {
+      if (caso === 'arquivo') return Promise.reject(new Error('sem servidor'));
+      if (url === '/api/ping')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, modo: 'servido', hoje: '2026-08-17', agora: '23:59' }) });
+      if (url === '/api/status')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: false, erro: 'OperationalError: banco fora do ar' }) });
+      if (url === '/api/dashboards')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, agora: '23:59', dashboards: [] }) });
+      return Promise.reject(new Error('inesperado ' + url));
+    };
+
+    new Function(SRC)();
+    await new Promise((r) => setTimeout(r, 60));
+
+    const lote = getEl('bulk-releases').innerHTML;
+    check(caso + ': nao oferece botao de lote', lote.indexOf('bulk-run-btn') < 0,
+          lote.slice(0, 160));
+    check(caso + ': e NAO afirma que nada esta pendente',
+          lote.indexOf('nenhuma divulgação pendente') < 0, lote.slice(0, 160));
+    check(caso + ': diz por que nao ha lista',
+          lote.indexOf('não há') >= 0 || lote.indexOf('Sem') >= 0, lote.slice(0, 160));
+    // clique nao pode fazer nada: nao ha botao, mas o listener existe
+    cliqueEm(getEl('bulk-releases'), new El('button'));
+    await new Promise((r) => setTimeout(r, 20));
+    check(caso + ': o clique nao dispara nada', true);
+  }
+
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
+}
+
 (async () => {
   const modos = process.env.MODE ? [process.env.MODE] : ['file', 'served'];
   for (const m of modos) await rodar(m);
   for (const m of modos) await testeStatusDashboard(m);
   if (!process.env.MODE) await testeServidoSemEstado();
   if (!process.env.MODE) await testeHorario();
+  if (!process.env.MODE) await testeLoteDashboards(false);
+  if (!process.env.MODE) await testeLoteDashboards(true);
+  if (!process.env.MODE) await testeLoteDivulgacoes();
+  if (!process.env.MODE) await testeLoteSemVeredito();
   console.log('\n' + '='.repeat(62));
   console.log(falhasTotais ? `${falhasTotais} FALHA(S)` : 'todos os asserts passaram');
   process.exit(falhasTotais ? 1 : 0);

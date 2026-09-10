@@ -3,13 +3,24 @@ Taxa real de juros ex-post (policy rate - CPI YoY) — BIS Statistics API,
 combinando WS_CBPOL (policy rate, mensal) e WS_LONG_CPI (CPI, variacao YoY).
 
 Paises acompanhados: BR, MX, CL, CO, PE (Argentina excluida — BIS parou de
-atualizar seu policy rate em meados de 2025, ver cmb_policy_rates.py).
+atualizar seu policy rate em meados de 2025; a serie dela sobrevive em
+macro_international.inter_interest_rate, curva POLICY, com o gap no fim).
 
 Cada pais so tem dado a partir do inicio da sua propria serie de policy rate
 no BIS (o fator limitante — o CPI do BIS cobre um periodo muito mais longo
 para todos eles): BR 1994-07 (truncado por decisao do usuario, Plano Real,
-mesmo criterio de cmb_policy_rates.py), CO 1995-04, CL 1997-02, MX 1998-11,
+mesmo criterio das tabelas de juros), CO 1995-04, CL 1997-02, MX 1998-11,
 PE 2003-09.
+
+ESTA TABELA GUARDA UMA 3a COPIA DO POLICY RATE, e isso e uma pendencia
+conhecida. As colunas `policy_rate` (mensal) sao o fechamento de mes das
+series diarias que hoje vivem em `br_interest_rate`/`inter_interest_rate`
+(curva POLICY) -- as duas tabelas que absorveram a `cmb_policy_rates`,
+removida em 2026-09-03 exatamente por ser copia. Aqui elas ficaram porque sao
+os DOIS TERMOS da subtracao que a tabela existe para publicar, e sem eles o
+`real_rate_ex_post` nao e auditavel. Se a duplicacao incomodar, o caminho e
+ler o policy das tabelas de juros e guardar so `cpi_yoy` e
+`real_rate_ex_post` -- decisao em aberto, nao esquecimento.
 
 Nota: Brasil ja tem uma serie de taxa real (Selic - IPCA) em
 macro_international.diferenciais_juros, calculada com dados oficiais BCB

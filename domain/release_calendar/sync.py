@@ -389,7 +389,15 @@ def expectativas(
                 continue
             for t in tabelas:
                 atual = out.get(t)
-                if atual is None or esperado > atual["esperado"]:
+                # O `>=` com desempate pela data de divulgacao existe porque um grupo
+                # pode divulgar o MESMO periodo duas vezes -- `bls_prod` publica cada
+                # trimestre preliminar e depois revisado. Com `>` estrito, `divulgado_em`
+                # e `dias` ficavam apontando para a leitura PRELIMINAR mesmo depois de a
+                # revisada sair, o que se le como "28 dias desde a divulgacao" no dia da
+                # divulgacao. O `esperado` e o mesmo nas duas, entao o veredito nao muda.
+                if (atual is None or esperado > atual["esperado"]
+                        or (esperado == atual["esperado"]
+                            and quando > atual["divulgado_em"])):
                     out[t] = {
                         "esperado": esperado,
                         "grupo": g["group"],

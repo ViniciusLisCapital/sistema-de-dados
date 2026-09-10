@@ -39,7 +39,7 @@ Cada serie carrega as 4 janelas lado a lado (ver analytics/brasil/fiscal_policy/
     acum12m     soma movel de 12 meses        Y/Y, M/M, T/T            %PIB / PIB 12m
     acum_ano    soma no ano civil (reseta)    Y/Y                      %PIB / PIB 12m
 
-**%PIB usa a convencao B de analytics/metric_layers.md** (escolha explicita do usuario,
+**%PIB usa a convencao B de analytics/mds/metric_layers.md** (escolha explicita do usuario,
 2026-08, resolvendo a "Open convention 1" daquele arquivo): o NUMERADOR acompanha a
 janela do Nivel, o DENOMINADOR e sempre o PIB acumulado em 12 meses
 (`atv_pib_mensal.pib_acum_12m`, SGS 4382). Le-se como "share anualizado do produto", e a

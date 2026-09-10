@@ -107,7 +107,7 @@ calendar group — worst verdict among its tables — which drives the update bu
   **The tolerances are measured, not guessed.** Right after a `--continuous` that finished 9/9 OK,
   `today − MAX(date)` per table isolates the *source's* own publication lag; tolerance = that lag + ~4
   days for weekend/holiday. The first guess understated three of the nine (`cmb_dollar_index_em` needs
-  more than 6 — FRED publishes it weekly; `cmb_policy_rates` 12 not 8 — BIS republishes in batches;
+  more than 6 — FRED publishes it weekly; `inter_interest_rate` 12 not 8 — the BIS republishes in batches;
   `cmb_cambio_contratado` more than 8). Re-measure the same way if false lateness shows up; don't
   tighten to 1–2 days, that fires every Monday.
 
@@ -456,7 +456,7 @@ converted by hand, is in the release-time section above.
   3. The weekly detail (CEP/CBE sub-items) is **not ingested at all**. The script's own docstring
      already flagged this: the SGS codes for that granularity "não foram identificados com certeza na
      fase de pesquisa". Still open.
-- **International — still missing.** `cmb_reer` / `cmb_policy_rates` / `cmb_real_rates` (**BIS** — cadence not verified, do not assume the "3rd week of the month" figure that circulated in an earlier draft; it was an unchecked assumption, never confirmed) and `clima_oni` (**NOAA CPC** — monthly, but the "2nd Thursday" rule is likewise unverified). Both were left OUT of the YAML rather than guessed. `cmb_cot_fx` (CFTC) and `diferenciais_juros`' Fed side (FOMC) **are now in** — both read off the issuing body's own published calendar.
+- **International — still missing.** `cmb_reer` / `cmb_real_rates` (**BIS** — cadence not verified, do not assume the "3rd week of the month" figure that circulated in an earlier draft; it was an unchecked assumption, never confirmed) and `clima_oni` (**NOAA CPC** — monthly, but the "2nd Thursday" rule is likewise unverified). Both were left OUT of the YAML rather than guessed. `cmb_cot_fx` (CFTC) and `diferenciais_juros`' Fed side (FOMC) **are now in** — both read off the issuing body's own published calendar.
 - **Daily market series need no calendar entries**: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `comm_brent` are continuous market/daily data with no discrete release event. Deliberately not modelled as dated entries.
 - **LatAm CPI dates** (INEGI/INE/DANE/INEI — feed `cmb_real_rates`) not researched.
 - **`atv_pib_usd`, `comm_icbr`, `inflc_meta`, `cmb_risco_pais`** — BCB SGS series (or manual CSV, for the last one) with no dedicated release-calendar research done yet. `comm_icbr` (IC-Br) is known to share a BCB calendar page with IBC-Br/IBCR, so it likely rides along with `bcb_ibcbr`.
@@ -471,7 +471,7 @@ converted by hand, is in the release-time section above.
 
 - **Deliberate, no release event exists** — continuous daily market data: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `cmb_equity_us`, `cmb_ptax`, `comm_brent`. Plus as 4 tabelas sem coluna `date`: `inflc_dim`, `inflc_cpi_dim`, `inflc_pce_dim` (dimensão) e `inflc_cpi_pesos` (snapshot anual de dezembro). `pm_hiato_seed` / `pm_parametros` were here too until 2026-08-18, when they were dropped with the BCB-model replication.
 - **`expc_focus_pre202608`** — surfaced by the 2026-08-18 re-measure, not in the 2026-08-17 triage. Frozen snapshot of the pre-rewrite Focus table; if it's dead weight it should be dropped rather than covered, but that hasn't been confirmed.
-- **Genuine gaps, need research**: `atv_pib_usd`, `cmb_risco_pais`, `clima_oni` (NOAA CPC), the BIS trio `cmb_reer` / `cmb_policy_rates` / `cmb_real_rates`, and `fisc_investimento` (Tesouro's Séries Temporais API, Tema 13 — a different release from RTN/EFGG, would need its own group).
+- **Genuine gaps, need research**: `atv_pib_usd`, `cmb_risco_pais`, `clima_oni` (NOAA CPC), the BIS pair `cmb_reer` / `cmb_real_rates`, and `fisc_investimento` (Tesouro's Séries Temporais API, Tema 13 — a different release from RTN/EFGG, would need its own group).
 - **`atv_pib_mensal`** — BCB SGS 4380/4382. Likely rides with the monetary/credit note (it's the same 12-month-accumulated GDP denominator BCB uses for `cred_credito_resumo.pct_pib_*`), but that's an inference, not verified — left uncovered rather than asserted.
 - **Two were found miscategorized by this audit and fixed**: `fisc_dlsp_fatores` now sits under `bcb_fiscal_statistics` (it comes from the Facdetp.xlsx tabela especial, overwritten at each monthly fiscal release), and `comm_icbr_usd` under `bcb_icbr` (SGS 29042, same release as `comm_icbr`).
 - The 502-dead BCB calendar pages no longer matter for date sourcing — point 4's ICS feeds replaced every derived-rule date. No need to keep re-checking them.

@@ -1,0 +1,21 @@
+{
+  "rmse_medio": {
+    "sazonal": 0.3892088757549737,
+    "ridge": 0.3905876014832969,
+    "focus_saz": 0.3912692323837676,
+    "focus": 0.3999759045477414,
+    "lstm": 0.4036169629920274,
+    "media12": 0.42769944417031447
+  },
+  "melhor_benchmark": "sazonal",
+  "delta_pct_lstm_vs_benchmark": 3.7018907159055425,
+  "diag_lstm": {
+    "janelas": 175,
+    "n_treino": 104,
+    "n_val": 35,
+    "purga": 36,
+    "parametros": 7948,
+    "par_por_janela": 76.4,
+    "epoca_media": 94.2
+  }
+}

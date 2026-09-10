@@ -72,10 +72,18 @@ const hist = D.forecast.channel_history.ppp;
 ok(!!hist, 'a grade de previsao expoe uma serie de nivel para o PPP');
 ok(hist && hist.is_log_return === true,
    'marcada como log-retorno -- e o que faz a caixa virar diferencial de inflacao');
-ok(hist && hist.values.length === n, 'com um ponto por mes da amostra');
+// 2026-09-08: a serie passou a vir na historia INTEIRA (ver a secao 14), entao
+// a amostra do ajuste e a CAUDA dela. O deslocamento e derivado do proprio mes,
+// nunca de um slice(-n) -- se a cauda deixar de bater com D.months, e isso que
+// tem de reprovar, e nao uma reconstrucao deslocada que continua fechando.
+const offPpp = hist ? hist.months.indexOf(D.months[0]) : -1;
+ok(offPpp >= 0 && hist.months.slice(offPpp).join(',') === D.months.join(','),
+   'a cauda da serie e exatamente a amostra do ajuste, mes a mes');
+const hv = hist ? hist.values.slice(offPpp) : [];
+ok(hv.length === n, 'com um ponto por mes da amostra', hv.length + ' vs ' + n);
 let piorRecon = 0;
 for (let i = 1; i < n; i++) {
-  const recalc = 100 * Math.log(hist.values[i] / hist.values[i - 1]);
+  const recalc = 100 * Math.log(hv[i] / hv[i - 1]);
   piorRecon = Math.max(piorRecon, Math.abs(recalc - CM[PPP][i]));
 }
 ok(piorRecon < 5e-3,
@@ -88,7 +96,7 @@ ok(piorRecon < 5e-3,
 // ANTERIOR a amostra, que a serie de nivel exposta aqui nao carrega.
 const acumPPP = CM[PPP].reduce((s, v) => s + v, 0);
 const acumPPPdo2 = CM[PPP].slice(1).reduce((s, v) => s + v, 0);
-const pontaAponta = 100 * Math.log(hist.values[n - 1] / hist.values[0]);
+const pontaAponta = 100 * Math.log(hv[n - 1] / hv[0]);
 ok(perto(acumPPPdo2, pontaAponta, 0.02),
    'o acumulado da barra do PPP e o movimento ponta a ponta do indice relativo',
    acumPPPdo2.toFixed(3) + ' vs ' + pontaAponta.toFixed(3));
@@ -424,6 +432,16 @@ ok(/<b>Trend<\/b> is drawn as one bar/.test(src) &&
    'e o rodape diz de que a barra e composta');
 ok(/compound rather than add/.test(src),
    'avisando que as partes compoem, nao somam -- sao percentuais');
+// O SENTIDO de alpha tem de sair do sinal. A frase dizia "real depreciation"
+// fixo e ficou errada em 2026-09-08, quando a reestimacao sobre o CDS da
+// Bloomberg virou alpha para -0,107 pp/mes: o numero ao lado ja saia com o
+// sinal certo, entao nada na tela se contradizia -- a prosa so passou a afirmar
+// o contrario do numero que ela mesma imprime. Sem guarda isso volta na proxima
+// reestimacao que mude o lado.
+ok(/alphaTot >= 0[\s\S]{0,160}real depreciation[\s\S]{0,160}real appreciation/.test(src),
+   'e o sentido de alpha e derivado do SINAL, nunca escrito fixo');
+ok(!/The second is real depreciation/.test(src),
+   'a frase fixa de depreciacao nao voltou');
 // a grade de previsao CONTINUA editando o PPP: a fusao e so do grafico
 ok(/DECOMP_CHANNELS_RG\.forEach\(key => \{ deltasByChannel\[key\] = channelDeltas/.test(src),
    'a simulacao segue percorrendo DECOMP_CHANNELS_RG (com o PPP dentro)');
@@ -457,6 +475,286 @@ const nivel = vv[vv.length - 1] * 1.0123;
 const volta = ref * Math.exp((100 * Math.log(nivel / ref)) / 100);
 ok(Math.abs(volta - nivel) < 1e-9, 'a conversao ida-e-volta e exata',
    Math.abs(volta - nivel).toExponential(2));
+
+// ---------------------------------------------------------------------------
+// 14. historico COMPLETO dos regressores (2026-09-08, pedido do usuario)
+// ---------------------------------------------------------------------------
+// 14. o grafico de cada regressor mostra a HISTORIA INTEIRA (2026-09-08)
+// ---------------------------------------------------------------------------
+// O `channel_history` saia reindexado em `z.index`, entao o grafico de um canal
+// abria na amostra do ajuste: o CDS comeca em 2001-10 e o painel dele comecava
+// em 2006-02, sem o pico de 2002 (3790 bps) -- a maior ordem de grandeza que a
+// serie tem, e o proposito declarado destes graficos.
+//
+// A correcao anterior tinha construido uma SEGUNDA secao no fim da aba, o que o
+// usuario recusou ("cada regressor tem uma sessao de grafico, por que voce criou
+// outra sessao la em baixo?"). Entao o historico foi para dentro do grafico que
+// ja existe, e a secao extra saiu.
+//
+// Quatro coisas quebram em silencio aqui:
+//   * estender a serie pelo FIM: os meses depois do corte ja sao desenhados
+//     pela linha do nowcast, e a caixa de previsao se ancora em `values[len-1]`
+//     -- as duas linhas passariam a repetir os mesmos meses e a ancora mudaria;
+//   * o alinhamento da CAUDA com `D.months`: e dele que saem `values[len-1]` e
+//     o `values[len-12+h]` da leitura em % a/a do PPP, em todo o template;
+//   * `log` escrito a mao em vez de derivado da amplitude medida;
+//   * log ligado fora do nivel cru: z-score e variacao a/a tem valores
+//     negativos, e log de negativo some do grafico sem levantar nada.
+sec('14. o grafico de cada regressor mostra a historia inteira');
+const CH = D.forecast.channel_history;
+ok(!!CH, 'o payload traz channel_history');
+const chaves = Object.keys(CH);
+ok(chaves.length === 6, 'os 5 canais mais o PPP', chaves.join(', '));
+['fiscal', 'dxy_em', 'carry_vol', 'sp500', 'icbr_usd', 'ppp'].forEach(c =>
+  ok(chaves.indexOf(c) >= 0, 'o canal ' + c + ' esta no historico'));
+
+ok(!('channel_history_full' in D),
+   'e o bloco duplicado do payload saiu junto com a secao extra');
+
+// A cauda: e o que todo o resto do template le, e o que a extensao para tras
+// nao pode ter movido.
+chaves.forEach(c => {
+  const h = CH[c];
+  ok(h.months.length === h.values.length, c + ': meses e valores alinhados',
+     h.months.length + ' vs ' + h.values.length);
+  ok(h.end === D.sample_range[1],
+     c + ': a serie termina no corte do ajuste, nao depois dele',
+     h.end + ' vs ' + D.sample_range[1]);
+  const off = h.months.indexOf(D.months[0]);
+  ok(off >= 0, c + ': a grade do ajuste comeca dentro da serie', String(off));
+  ok(off >= 0 && h.months.slice(off).join(',') === D.months.join(','),
+     c + ': e a CAUDA e exatamente a amostra do ajuste, mes a mes');
+  // Nenhum canal pode carregar mes ALEM do corte -- ali quem desenha e o
+  // nowcast, e duas linhas repetiriam os mesmos pontos.
+  const nc = D.forecast.nowcast.channels[c];
+  if (nc && nc.months.length) {
+    ok(nc.months[0] > h.end,
+       c + ': o nowcast comeca depois do fim do historico, sem sobreposicao',
+       nc.months[0] + ' > ' + h.end);
+  }
+});
+
+// O ganho: pelo menos um canal comeca ANTES do ajuste. Sem isto a mudanca nao
+// acrescentou nada, e e esse o estado em que ela deveria ser revertida.
+const antes = chaves.filter(c => CH[c].start < D.sample_range[0]);
+ok(antes.length >= 1, 'ao menos um canal comeca antes da amostra do ajuste',
+   antes.join(', '));
+ok(CH.fiscal.months.length > D.months.length,
+   'o CDS tem mais meses que o ajuste -- e o caso que motivou a correcao',
+   CH.fiscal.months.length + ' contra ' + D.months.length);
+ok(CH.fiscal.start <= '2001-12',
+   'e ele carrega o historico de 2001 que a fonte nova trouxe', CH.fiscal.start);
+ok(CH.fiscal.values[0] > 500,
+   'com o NIVEL de 2001 no primeiro ponto, nao um resto de grade',
+   String(CH.fiscal.values[0]));
+ok(CH.fiscal.max > 5 * CH.fiscal.values[CH.fiscal.values.length - 1],
+   'o pico historico e ordens de grandeza acima do nivel de hoje -- que e o que'
+   + ' o grafico existe para mostrar',
+   CH.fiscal.max + ' contra ' + CH.fiscal.values[CH.fiscal.values.length - 1]);
+
+// Campos de escala, todos derivados.
+const canaisSemPpp = chaves.filter(c => c !== 'ppp');
+chaves.forEach(c => {
+  const h = CH[c];
+  ok(!!h.unit, c + ': declara a unidade nativa, para o eixo poder cita-la');
+  const vivos = h.values.filter(v => v !== null);
+  ok(vivos.length === h.n, c + ': n bate com os valores nao nulos',
+     vivos.length + ' vs ' + h.n);
+  ok(perto(h.min, Math.min.apply(null, vivos), 1e-3)
+     && perto(h.max, Math.max.apply(null, vivos), 1e-3),
+     c + ': min/max declarados batem com a serie');
+  ok(h.span === null || perto(h.span, Math.round(100 * h.max / h.min) / 100, 1e-2),
+     c + ': span e max/min, medido', String(h.span));
+  // `log` DERIVADO da amplitude. Um mutante que ligue log num canal de 1,6x so
+  // e pego por isto.
+  ok(h.log === (h.span !== null && h.span >= 8),
+     c + ': log e derivado de span >= 8', 'span ' + h.span + ' log ' + h.log);
+  if (h.log) ok(h.min > 0, c + ': so entra em log porque e estritamente positivo');
+  // level_mean/level_std tem de ser da serie DESENHADA, nao da janela do
+  // ajuste: padronizar o que se ve por uma media que exclui os anos extremos e
+  // o defeito que a versao anterior tinha (o CDS de 2002 a 46 desvios).
+  const media = vivos.reduce((s, v) => s + v, 0) / vivos.length;
+  ok(perto(h.level_mean, media, Math.max(1e-3, Math.abs(media) * 1e-4)),
+     c + ': level_mean e a media da serie inteira', h.level_mean + ' vs ' + media);
+});
+const mediaAjuste = (function () {
+  const off = CH.fiscal.months.indexOf(D.months[0]);
+  const v = CH.fiscal.values.slice(off);
+  return v.reduce((s, x) => s + x, 0) / v.length;
+})();
+ok(Math.abs(CH.fiscal.level_mean - mediaAjuste) > 1,
+   'e no CDS ela e mesmo diferente da media da janela do ajuste',
+   CH.fiscal.level_mean + ' vs ' + mediaAjuste.toFixed(2));
+
+// A escolha de escala tem de ser MISTA, senao a regra nao esta separando nada.
+const nLog = chaves.filter(c => CH[c].log).length;
+ok(nLog >= 1 && nLog < chaves.length,
+   'a regra de log separa de fato: alguns canais em log, outros em linear',
+   nLog + ' de ' + chaves.length);
+
+// O canal que amarra o inicio da amostra, derivado dos proprios `start`.
+const maisTarde = canaisSemPpp.reduce((a, b) => CH[a].start > CH[b].start ? a : b);
+function mesesEntre(a, b) {
+  const [ay, am] = a.split('-').map(Number), [by, bm] = b.split('-').map(Number);
+  return (by - ay) * 12 + (bm - am);
+}
+// O ajuste roda na INTERSECCAO, entao o canal de comeco mais tarde manda em
+// tudo. Nao e igualdade exata: a regressao e em DIFERENCAS, e a primeira
+// observacao de cada serie e consumida pela propria diferenca -- hoje sao
+// exatamente esses 1 mes. Mais que isso significa que quem amarra a amostra
+// deixou de ser um canal, e e isso que esta assercao existe para pegar.
+const folga = mesesEntre(CH[maisTarde].start, D.sample_range[0]);
+ok(folga >= 0 && folga <= 2,
+   'a amostra do ajuste comeca onde o canal de comeco mais tarde comeca, a menos'
+   + ' do mes que a diferenciacao consome',
+   maisTarde + ' ' + CH[maisTarde].start + ' -> ' + D.sample_range[0]
+   + ' (' + folga + ' mes/meses)');
+canaisSemPpp.forEach(c => ok(CH[c].start <= CH[maisTarde].start,
+  c + ': nao comeca depois do canal que amarra a amostra'));
+
+// ---- o lado do template ----
+// Regex sobre o src, no padrao do resto deste arquivo -- o bloco de <script>
+// das abas de modelo nao e executado por harness permanente (ver o CLAUDE.md da
+// pasta), entao o que da para afirmar e a forma do codigo entregue.
+ok(!/ridgeFullHistChart|renderFullHistChart|channel_history_full/.test(src),
+   'a secao separada de historico completo saiu da pagina inteira');
+ok(/id="regressor-graph-\$\{key\}"/.test(src),
+   'o grafico continua sendo o de dentro do card de cada regressor');
+ok(/id="graph-note-\$\{key\}"/.test(src), 'com uma ficha de escala propria');
+ok(src.indexOf('id="regressor-graph-${key}"') < src.indexOf('id="graph-note-${key}"'),
+   'e a ficha vem DEPOIS do grafico no DOM (regra de 2026-08-27)');
+ok(/connectgaps: false/.test(src),
+   'connectgaps false -- buraco interno da fonte nao vira reta');
+ok(/const usaLog = !!hist\.log && graphMode\[key\] === 'level' && !yoyChart/.test(src),
+   'log so no nivel cru, e so quando o payload manda');
+ok(/if \(usaLog\) layout\.yaxis\.type = 'log'/.test(src),
+   'e e o eixo Y que vira log, nao os dados que sao transformados');
+ok(/let yTitle = hist\.unit \? 'Level, ' \+ hist\.unit : 'Level'/.test(src),
+   'o eixo Y cita a unidade que vem da serie, nao uma string fixa');
+ok(/x1: fitIni/.test(src) && /const fitIni = D\.sample_range\[0\] \+ '-01'/.test(src),
+   'a faixa sombreada termina no inicio do ajuste, derivado do payload');
+ok(/text: 'before the fit sample'/.test(src),
+   'e diz o que ela significa, em vez de ser um cinza sem legenda');
+ok(/renderChannelGraphNote\(key, hist, usaLog, preAjuste >= 6\)/.test(src),
+   'a ficha e reconstruida a cada render, junto com o grafico');
+// A faixa so aparece quando ha o que mostrar, e a MESMA condicao governa o
+// desenho e a frase que fala dele -- separadas, a ficha passa a descrever um
+// cinza que nao esta na tela. O canal que amarra a amostra comeca um mes antes
+// dela, entao sem piso ele ganharia um risco de 1 mes com rotulo por cima.
+ok(/const preAjuste = hist\.months\.length \? mesesEntreRg\(hist\.months\[0\], D\.sample_range\[0\]\) : 0;/.test(src)
+   && /if \(preAjuste >= 6\) \{/.test(src),
+   'a faixa tem piso de 6 meses, medido do proprio inicio da serie');
+ok(/function renderChannelGraphNote\(key, hist, usaLog, temFaixa\)/.test(src)
+   && /if \(temFaixa\) \{/.test(src),
+   'e a frase que a descreve depende da mesma condicao, nao de um teste proprio');
+ok(/Math\.round\(hist\.span\)/.test(src) && !/fmtNumRg\(hist\.span/.test(src),
+   'a amplitude e arredondada, nao truncada -- fmtNumRg faria 60,97 virar "60x"');
+// binding channel derivado no cliente tambem -- nada escrito a mao.
+ok(/const bindingChannelRg = \(function \(\)/.test(src)
+   && /h\.start > FC\.channel_history\[melhor\]\.start/.test(src),
+   'o canal que amarra a amostra e derivado no cliente, nunca escrito');
+ok(!/bindingChannelRg = 'dxy_em'|bindingChannelRg = "dxy_em"/.test(src),
+   'e nao ha nome de canal cravado nele');
+
+// ---------------------------------------------------------------------------
+// 15. a padronizacao ESCALA, nao centra (2026-09-08)
+// ---------------------------------------------------------------------------
+// O usuario achou o defeito pela leitura obvia do grafico: *"no comeco de 2006
+// o CDS era ~120 pontos, atualmente esta proximo disso. Como o CDS pode ter
+// contribuido com 48% da desvalorizacao do real no periodo?"*
+//
+// Nao podia. `_standardize_ext` subtraia a media da janela de referencia, e
+// toda coluna que passa por ali e' uma DIFERENCA -- a media de uma diferenca e'
+// uma deriva, entao subtrai-la injeta um sinal constante de -mu/sd em todo mes,
+// inclusive nos meses em que o canal ficou parado. Com o CDS da Bloomberg a
+// referencia comeca em 2001-10 a 1100 bps, mu = -3,28 bps/mes, e a deriva valia
+// +52,5 pp dos +49,0 pp que a barra do canal mostrava.
+//
+// O ajuste nunca dependeu disso (o Ridge do sklearn nao penaliza o intercepto,
+// entao a constante ia toda para o alpha), o que torna estas assercoes baratas
+// de manter: elas afirmam a ATRIBUICAO, que e' o unico lugar onde a convencao
+// aparece.
+//
+// Quatro regressoes silenciosas que isto pega:
+//   * `mean` voltando a ser diferente de zero no payload -- o cliente le so o
+//     `std`, entao servidor e navegador passariam a discordar sem sintoma
+//     (media -0,185 pp/mes, -2,22 pp em 12 meses, quando foi medido);
+//   * o simulador do cliente passando a subtrair o `mean`, o outro lado da
+//     mesma moeda;
+//   * a contribuicao acumulada de um canal deixando de ser o que o canal fez;
+//   * centrar na propria amostra, que zera TODO canal por identidade
+//     aritmetica e se le como achado.
+sec('15. a padronizacao escala, nao centra');
+const CS = D.forecast.channel_stats;
+Object.keys(CS).forEach(k => {
+  ok(CS[k].mean === 0, k + ': media do transforme e exatamente zero',
+     String(CS[k].mean));
+  ok(CS[k].std > 0, k + ': e a escala e positiva', String(CS[k].std));
+});
+
+// Servidor e cliente aplicam o MESMO transforme. O cliente faz `raw / std`; se
+// o payload trouxer media, o vies e sum(beta*mu/sd) por mes -- exatamente a
+// quantidade abaixo, que tem de ser zero.
+const viesMes = Object.keys(CS)
+  .filter(k => CS[k].std > 0 && D.forecast.beta[k] !== undefined)
+  .reduce((s, k) => s + D.forecast.beta[k] * CS[k].mean / CS[k].std, 0);
+ok(Math.abs(viesMes) < 1e-12,
+   'o ajuste do servidor e a simulacao do navegador nao tem vies entre si',
+   viesMes.toExponential(2) + ' pp/mes');
+ok(/const z = stat\.std > 0 \? raw \/ stat\.std : raw;/.test(src),
+   'e o simulador do cliente divide pelo std sem subtrair nada');
+ok(!/stat\.mean|channel_stats\[[^\]]*\]\.mean/.test(src),
+   'o cliente nunca le o campo mean -- se ler, os dois lados divergem de novo');
+
+// A assercao central, e a unica que nao envelhece: a contribuicao acumulada de
+// um canal e o MOVIMENTO DELE, nada mais. beta * (x_fim - x_inicio) / sd, com
+// os niveis lidos do channel_history e o log-retorno onde e o caso.
+// Sob a convencao antiga isto falhava no fiscal por 52 pp.
+const LOGRET = ['sp500', 'icbr_usd'];
+canais.map(c => 'delta_' + c).forEach(k => {
+  const raw = k.replace(/^delta_/, '');
+  const h = D.forecast.channel_history[raw];
+  const off = h.months.indexOf(D.months[0]);
+  // o primeiro delta da amostra e contra o mes ANTERIOR ao primeiro mes dela
+  const x0 = h.values[off - 1], x1 = h.values[h.values.length - 1];
+  const dx = LOGRET.indexOf(raw) >= 0 ? 100 * Math.log(x1 / x0) : x1 - x0;
+  const esperado = D.whole_sample.beta[k] * dx / CS[k].std;
+  const obtido = D.contrib_monthly[k].reduce((s, v) => s + v, 0);
+  ok(perto(esperado, obtido, 0.05),
+     raw + ': a barra acumulada e o movimento do proprio canal',
+     'esperado ' + esperado.toFixed(2) + ', payload ' + obtido.toFixed(2));
+});
+
+// E a leitura que motivou tudo: um canal que termina perto de onde comecou nao
+// pode carregar uma fatia grande do movimento acumulado.
+const hF = D.forecast.channel_history.fiscal;
+const offF = hF.months.indexOf(D.months[0]);
+const cdsIni = hF.values[offF - 1], cdsFim = hF.values[hF.values.length - 1];
+const totalMov = D.fit_delta.actual.reduce((s, v) => s + v, 0);
+ok(Math.abs(cdsFim / cdsIni - 1) < 0.5,
+   'o CDS termina a amostra na mesma ordem de grandeza em que comecou',
+   cdsIni.toFixed(1) + ' -> ' + cdsFim.toFixed(1) + ' bps');
+ok(Math.abs(D.contrib_monthly.delta_fiscal.reduce((s, v) => s + v, 0)) < 0.15 * Math.abs(totalMov),
+   'entao a barra dele nao pode carregar uma fatia grande do movimento acumulado',
+   D.contrib_monthly.delta_fiscal.reduce((s, v) => s + v, 0).toFixed(2)
+   + ' pp de ' + totalMov.toFixed(2));
+
+// O lado do servidor: a funcao que faz o transforme nao pode voltar a centrar.
+const PY = fs.readFileSync(
+  path.join(__dirname, '..', 'analytics', 'brasil', 'exchange_rate', 'models',
+            'ridge_deviation_model.py'), 'utf8');
+const corpo = PY.slice(PY.indexOf('def _standardize_ext('), PY.indexOf('# Started as ["fiscal"'));
+ok(corpo.length > 500, 'o corpo de _standardize_ext foi encontrado', String(corpo.length));
+ok(/z\[c\] = sample\[c\] \/ sd/.test(corpo),
+   '_standardize_ext divide pelo desvio-padrao da referencia');
+ok(/stats\[c\] = \(0\.0, sd\)/.test(corpo),
+   'e publica media zero, que e o que o cliente assume');
+ok(!/\(sample\[c\] - mu\)|ref_col\.mean\(\)/.test(corpo),
+   'e nao subtrai media nenhuma');
+// A prosa da aba tem de explicar isso ao leitor, senao o grafico de
+// decomposicao afirma algo cuja convencao nao esta em lugar nenhum.
+ok(/Nothing is subtracted before the division/.test(src),
+   'e a metodologia da aba diz ao leitor que nada e subtraido');
 
 console.log('\n' + oks + ' ok, ' + falhas + ' falhou');
 process.exit(falhas ? 1 : 0);

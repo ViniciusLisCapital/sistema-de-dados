@@ -22,9 +22,6 @@ domain/db/brasil/bcb/_backups/
 analytics/oraculo/brasil/base/
 analytics/oraculo/us/base/
 analytics/oraculo/base/
-analytics/brasil/exchange_rate/models/bayesian_results/
-analytics/brasil/exchange_rate/models/state_space_results/
-analytics/brasil/exchange_rate/models/beer_results/
 analytics/brasil/exchange_rate/models/ridge_results/
 
 # Large binary files
@@ -54,3 +51,14 @@ analytics/brasil/exchange_rate/models/ridge_results/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Pesos/checkpoints do teste LSTM (binarios grandes; os CSV de previsao ficam versionados)
+analytics/brasil/monetary_policy/teste_lstm/data/*.pt
+analytics/brasil/monetary_policy/teste_lstm/data/*.pth
+analytics/brasil/monetary_policy/teste_lstm/data/checkpoints/
+
+# Cache do TaxaSwap da B3 (~5.100 CSV por pregao, reproduzivel da fonte)
+domain/db/brasil/b3/cache/
+
+# Logs da tarefa agendada (atualizar_diario.bat, um por dia, poda em 30 dias)
+logs/

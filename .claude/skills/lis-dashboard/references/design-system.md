@@ -22,6 +22,9 @@ Referência completa de CSS, componentes HTML e padrões de código para dashboa
 16. [Botão de informação + card de definição](#info-card)
 17. [Cabeçalho do gráfico](#cabecalho)
 18. [Unidade no eixo Y](#unidades)
+19. [Texto explicativo: justificado e na largura do bloco](#prosa)
+20. [O texto explicativo e para quem nunca viu o dashboard](#audiencia)
+21. [Organizacao de metricas - as 7 camadas](#metricas)
 
 ---
 
@@ -1118,8 +1121,388 @@ Aplicado em `analytics/release_calendar/report.html` + as 10 notas de
 aparece no payload de um relatório recém-gerado, que é justamente o caso que o leitor precisa
 entender.
 
+## Organização de métricas — as 7 camadas <a name="metricas"></a>
+
+Toda tabela e todo gráfico interativo deste padrão expõem as mesmas **camadas ortogonais** sobre a
+série publicada. Elas são um **pipeline**: cada camada é uma operação, e a ordem é fixa porque as
+operações **não comutam** — trocá-la muda o número, não o rótulo. Por isso a estrutura *é* a ordem, e
+não uma lista de seletores a escolher por gosto.
+
+**Derive as camadas antes de escrever o primeiro gráfico** (Passo 4 do fluxo em `SKILL.md`). Elas
+saem de propriedades declaradas do dado, não da conversa: se você está perguntando ao usuário "quer
+M/M ou média móvel?", o que está faltando é a declaração do dado. Ao usuário cabe o ajuste fino —
+rótulos, defaults, e as convenções que o dado não decide.
+
+### O pipeline
+
+```
+SÉRIE (entidade × medida)        <- a tabela / os checkboxes; não é camada
+ |
+ 1  BASE          deflacionar · converter moeda · reindexar (=100)
+ |                na frequência NATIVA, antes de qualquer agregação
+ 2  AJUSTE        sazonal · dias úteis · nenhum
+ |                exigido por comparação marginal; irrelevante para Y/Y
+ 3  JANELA        mensal · trimestral · acum. 12m · acum. no ano · anual
+ |                o agregador vem do tipo da série; só reduz, nunca inventa
+ 4  DENOMINADOR   bruto · % do total · % do PIB · per capita
+ |                numerador e denominador na MESMA janela
+ 5  COMPARAÇÃO    valor · Δ período · % período · Δ Y/Y · % Y/Y · contribuição
+ |                % para nível, p.p. para razão
+ 6  SUAVIZAÇÃO    nenhuma · média 3 · média 6 · média 12
+ |                nunca muda a grandeza nem a unidade
+ 7  GRÁFICO       linhas · barras empilhadas · área
+                  validade decidida pelas camadas 4 e 5
+```
+
+### A regra que resolve os casos duvidosos
+
+| Camadas | O que mudam |
+|---|---|
+| 1 · 2 · 3 · 4 | **o que o número é** — a grandeza e/ou a unidade |
+| 5 | **contra o que ele é medido** |
+| 6 | **só o ruído** — nem a grandeza, nem a unidade |
+| 7 | nada sobre o número |
+
+### Onde cada rótulo comum entra
+
+| Rótulo que se usa | Camada | Por que ali |
+|---|---|---|
+| Nominal / Real · em USD · índice 2017=100 | **1** | muda a unidade do valor, não a grandeza |
+| Com / sem ajuste sazonal | **2** | muda a série, não a unidade |
+| Mensal / Trimestral / Anual | **3** | muda a grandeza (gasto do mês não é gasto do ano) |
+| Acum. 12m · Acum. no ano | **3** | é soma: muda a grandeza |
+| % do total · % do PIB · per capita | **4** | muda o denominador |
+| Δ M/M em mil pessoas · % M/M · Δ ou % Y/Y | **5** | é comparação, em qualquer denominador |
+| Contribuição para a variação do pai | **5** | comparação decomposta |
+| MM3 / MM12 **de uma variação** | **6** | reduz ruído de um número já derivado |
+
+### A média é a única linha ambígua, e há um teste para ela
+
+*Quero o Y/Y da média, ou a média do Y/Y?* Se é o Y/Y da média, a média é **camada 3** — ela é a
+grandeza que se está reportando. Se é a média do Y/Y, é **camada 6**. Se a resposta é "os dois", o
+dashboard tem as duas camadas, e isso é normal: são posições diferentes do pipeline, não conflito.
+
+**Não funda a 3 e a 6 num seletor só.** Com uma pill de leitura única, escolher `M/M` exclui
+`3M avg`, e a leitura padrão de payroll — "+170k na média dos últimos 3 meses" — fica
+**inalcançável** sem que nada levante erro: o seletor existe, todas as opções funcionam, e a
+composição que o leitor quer simplesmente não tem como ser pedida.
+
+### A declaração: é daqui que as camadas saem
+
+Um descritor por árvore (ou por medida, quando a mesma árvore serve várias). Ele viaja no payload e é
+o único lugar em que estas propriedades são afirmadas.
+
+```js
+var DESC = {
+  kind:     'flow',    // flow | stock | rate | price | index -> agregador da camada 3
+  freq:     'M',       // D | W | M | Q | A                   -> escada da camada 3
+  unit:     {noun: 'pessoas', scale: 'mil',
+             def: 'ocupados, mil pessoas'},  // a definição curta que vai ao eixo Y
+  money:    false,     // + deflator disponível               -> camada 1 ganha 'real'
+  deflator: null,      // chave da série de preços
+  sa:       true,      // existe variante ajustada            -> camada 2 existe
+  root:     'total_nonfarm',   // raiz DESTA árvore, ou null  -> camada 4 ganha '% do total'
+  rootLabel: 'Total nonfarm',  // nomeia o denominador no eixo
+  additive: true,      // irmãs particionam o pai             -> empilhadas + % do total
+  crossesZero: false,  // -> camada 5 perde as opções de %
+  hasExactZero: false, // -> % de base zero é em branco, nunca Infinity
+  published: {yoy: 'chave'},  // a fonte já publica -> ESCOLHER a série, não calcular
+  gaps:     true       // -> guarda de span na camada 6
+};
+```
+
+### Plano por camada
+
+Cada bloco diz o que a camada oferece, o que decide as opções, o default, quando desabilitar (e com
+que motivo na tela) e o efeito na unidade.
+
+#### 1 — BASE (`basis`) · em que unidade de valor a história é expressa
+
+- **Oferece** `nominal` · `real` (a preços constantes do último mês do deflator) · moeda alternativa · `indice` (=100 numa data).
+- **Decidida por** `money` **e** `deflator` presentes. Sem os dois, a camada não aparece.
+- **Default** `nominal`.
+- **Desabilitar** `real` em série que já é razão (taxa, spread, `% do PIB`): deflacionar um percentual não produz grandeza nenhuma. Motivo na tela: *"esta série já é uma razão — não há valor a deflacionar."*
+- **Unidade** `real` acrescenta "a preços de <mês do deflator>"; `indice` substitui a unidade por "índice, <data>=100".
+- **Gotcha, load-bearing:** deflacione na frequência **nativa**, antes da camada 3. `Σ(deflacionado)` não é `deflacionar(Σ nominal)` sempre que a inflação anda dentro da janela — a segunda forma precifica doze meses de gasto ao nível de preços do último mês.
+
+#### 2 — AJUSTE (`adjust`) · sazonalidade e dias úteis
+
+- **Oferece** `sa` · `nsa`.
+- **Decidida por** `sa` no descritor: existe variante ajustada publicada (ou a série tem tamanho para ajustar aqui).
+- **Default** `sa` quando a camada 5 é marginal; `nsa` quando o dado só existe bruto.
+- **Desabilitar** a camada inteira quando não há variante. E desabilite a **escolha** quando a camada 5 é `Y/Y`: a comparação com o mesmo período do ano anterior já cancela a estação, e ajustar antes só injeta o erro do próprio ajuste. Motivo: *"o Y/Y já cancela a sazonalidade; ajustar antes só acrescenta o erro do ajuste."*
+- **Unidade** inalterada.
+- **Gotcha:** **aditividade é garantia da fonte só no dado bruto.** Agências ajustam cada série independentemente — medido numa árvore de 284 pais, o excesso dos filhos sobre o pai vai de +0,068% no bruto a **+15,5% no ajustado**. Valide a árvore no bruto, **meça** o desvio do ajustado e diga o tamanho dele na nota; não rejeite o ajustado, e não valide nele.
+
+#### 3 — JANELA (`window`) · sobre quanto tempo a grandeza é definida
+
+- **Oferece** a frequência nativa e qualquer janela mais grossa: `mensal` · `trimestral` (calendário fechado) · `semestral` · `acum. 12m` (móvel) · `acum. no ano` · `anual`.
+- **Decidida por** `freq` (a escada: **só reduz, nunca inventa** — série trimestral não tem leitura mensal) e `kind` (o agregador):
+
+| `kind` | agregador | acumula? |
+|---|---|---|
+| `flow` | soma | sim (12m, YTD) |
+| `stock` | **último do bucket**, atribuído sem condição | **não** — acumular estoque não produz grandeza nenhuma |
+| `rate` · `price` · `index` | média | não |
+
+- **Default** a frequência nativa.
+- **Desabilitar** toda janela mais fina que a nativa (não listar); acumulação para estoque e razão; `M/M` sobre trimestre de calendário fechado (constante dentro do passo: 0% por dois meses e um salto artificial na virada); `M/M` e `T/T` sobre acum. no ano (cruzam o reset de janeiro).
+- **Unidade** a janela entra no rótulo ("no mês", "acum. 12m").
+- **Gotchas:** **janela incompleta mostra vazio**, nunca soma parcial — um "trimestre" de dois meses na mesma linha dos de três lê-se como colapso do nível, e rodapé não desfaz o que o gráfico já mostrou. O YTD é a exceção deliberada, porque a comparação dele é like-for-like por construção, e por isso oferece **só** Y/Y. Móvel e calendário fechado são janelas **diferentes**, as duas legítimas, nunca intercambiáveis. Ao repetir o passo trimestral numa grade mensal, **colapse para uma coluna por trimestre no display** — tabela repetindo o mesmo número três meses seguidos já foi bug reportado por usuário.
+- **Estoque com toggle de razão:** um estoque não tem "PIB do trimestre" que lhe corresponda. Construa a razão na grade nativa contra o denominador de **12 meses** e agregue a razão depois. A asserção que importa não é a magnitude — é que o valor **não muda de escala** quando a camada 3 muda.
+
+#### 4 — DENOMINADOR (`denom`) · dividido por quê
+
+- **Oferece** `bruto` · `% do total` · `% do PIB` · `per capita` / `por ocupado`.
+- **Decidida por** `root` presente (a árvore tem raiz) e por haver série denominadora carregada.
+- **Default** `bruto`.
+- **Desabilitar** `% do total` quando as irmãs **não** particionam o pai (se contêm, ou são eixos alternativos do mesmo agregado) e em série que já é taxa. Motivo: *"estas linhas se contêm em vez de dividir o total — a soma delas não é o total."*
+- **Unidade** `%` de quê; e a camada 5 sobre um denominador sai em **p.p.**
+- **Gotcha, o mais silencioso de todos:** o denominador é a raiz da **árvore que o leitor está lendo**, não um total único da página. Numa página com três árvores de raízes diferentes, usar o mesmo total faz as classes somarem **88,86%** em vez de 100% — e **nada levanta**: os números só saem baixos, e 88,86 é plausível. Três asserções fecham isso: a raiz lê exatamente 100, as irmãs de nível 1 somam 100, e o corte inteiro soma 100 e **não** 88,86.
+- **O título do eixo nomeia o denominador, então ele é template e não string:** `"% do {raiz}"`, resolvido contra o rótulo da raiz daquela árvore. Um eixo que diga só "% do total" não responde de que total — e numa página com três raízes essa é a pergunta toda.
+- Numerador e denominador saem da **mesma** janela da camada 3 — ou sempre de 12 meses, se essa for a convenção da aba. As duas estão em uso neste repo; **pergunte antes de construir** e registre a resposta (ver o fim desta seção).
+- **O denominador tem de EXISTIR no estado das outras camadas, e a checagem óbvia não cobre isso.** O caso medido: o total de uma aba era a única linha que a fonte **nunca dessazonaliza**, e a vista ajustada era o default — a participação dividia por uma série inexistente e a tabela e o gráfico saíam **inteiros em branco**, sem exceção nenhuma. Desabilite a camada quando a série denominadora falta *naquele* ajuste (ou naquela base, ou naquela janela) e ponha o **caminho de saída** no motivo, não só a constatação: *"troque Ajuste para Sem ajuste para ler participações"*.
+- **O denominador não é necessariamente uma linha da tabela.** Um recorte cujas partes somam um total publicado em OUTRO bloco (as razões do desemprego somam o nível de desocupados, que vive na tabela de manchetes) precisa declarar a chave do total. Usar a raiz da árvore visível ali titula o eixo com a primeira linha do recorte e faz as partes somarem **220%** (medido). A regra da raiz continua valendo — o que ela exige é que o denominador seja **o total daquele recorte**, não que seja uma linha renderizada.
+- **A participação de uma árvore aditiva costuma reproduzir uma razão que a fonte já publica** — e aí ela é o gabarito, não a sua conta. Medido: força de trabalho sobre população *é* a taxa de participação, batendo em **0,069 p.p. em 943 meses** (0,05 disso é o arredondamento da fonte: nível ao milhar, taxa a 1 decimal). Vale como asserção, e a que importa é a raiz ler exatamente 100.
+- **Arredondamento da fonte vira erro relativo grande quando o denominador é pequeno.** Antes de escrever "somam exatamente", meça: numa árvore cujas irmãs fecham com 0,15 p.p. de folga, o corte de menor total dava **1,07 p.p.** no pior mês.
+
+#### 5 — COMPARAÇÃO (`compare`) · contra o que
+
+- **Oferece** `valor` · `Δ período` · `% período` · `Δ Y/Y` · `% Y/Y` · `contribuição para a variação do pai`.
+- **Decidida por** o dado: série já é razão -> diferença em **p.p.**, nunca %; `crossesZero` -> **nenhuma** opção de %; `hasExactZero` -> % de base zero é indefinido, célula em branco (nunca `Infinity`, que colapsa o autorange do Plotly junto); `published` -> a camada **escolhe a série publicada** em vez de calcular.
+- **Default** `valor`.
+- **Desabilitar** as opções de % em série que troca de sinal. Motivo: *"variação percentual de série que troca de sinal é ruído numérico, não uma leitura fraca."*
+- **Unidade** nível -> `%` (variação) ou a unidade do próprio nível (Δ); razão ou participação -> `p.p.`
+- **Gotcha: `Δ` e `%` são opções diferentes, não a mesma.** "+89" pode ser mil vagas a mais ou 89% a mais — dois números com a mesma cara e duas ordens de grandeza de diferença, e o único lugar em que a distinção aparece é o título do eixo. Vantagem colateral do `Δ`: ele **herda a aditividade da base** (a diferença de coisas que somam também soma), o que a variação % não permite.
+- **A natureza pode ser propriedade da LINHA, e não da medida — e aí o descritor sai das linhas MARCADAS.** Numa aba em que cada linha tem a sua unidade (contagem, taxa, duração), o valor tende a ser calculado por linha e o rótulo do eixo por aba, e **nada reconcilia os dois**: medido, o eixo dizia *"p.p. change"* onde a conta era percentual (−5,86% num nível) e *"% change"* onde a conta era diferença. São dois flags e não um: **`razao` exige que TODAS as linhas plotadas sejam porcentagem** (é o que põe a diferença em p.p.) e **um segundo flag basta que UMA seja** (é o que proíbe a variação percentual, porque o eixo é um só). Com unidades mistas o `Δ` **continua valendo** — ele é honesto nas duas ao mesmo tempo — e o eixo diz *"unidades mistas — ver cada linha na tabela"* em vez de escolher a unidade de metade das linhas.
+- **"Não soma" não quer dizer "é porcentagem".** Uma duração média não soma com ninguém e está em **semanas**: a variação percentual dela é legítima (+7,35% a/a, medido) e saía rotulada em p.p. Declare *"não é parte do total"* num campo e deixe a **unidade** decidir p.p. contra %; ler um do outro é o mesmo defeito que confundir `aditivo` com `razao`.
+- **Se a caixa de seleção da linha alimenta o descritor, ela tem de refazer a BARRA, não só o gráfico.** Marcar uma taxa ao lado de níveis muda que opções valem e muda o rótulo do eixo; sem re-render a variação percentual segue clicável e o estado fica válido no objeto e inválido na tela. E aí o fallback de seleção precisa de guarda: ele dispara em *"nada no escopo com algo marcado fora dele"*, nunca em *"nada marcado"* — senão desmarcar a última linha à mão remarca três sozinho.
+- **Um bloco 100% razão nomeia a BASE dele no eixo.** `"% da base relevante"` não responde nada numa página com três bases diferentes; uma definição curta por bloco (*"desocupados sobre a força de trabalho daquele grupo, %"*) responde. Mesma exigência do template `% do {raiz}` da camada 4.
+- **Quando a fonte publica a variação, ela é o gabarito** — e o motivo não é precisão. Medido num release trimestral: recontar a partir do índice do arquivo concorda com a taxa publicada em 0,05 p.p., que é o arredondamento da própria taxa. O motivo é que o número publicado é o **citável**: quem compara com a manchete quer 1,4, não 1,3999. O aviso de verdade é sobre o **PDF** — reconstruir série a partir do índice **impresso** no release erra até **1,35 p.p.**
+- **Antes de dividir duas séries, procure se a fonte já publica a razão.** Se publica, ela é o gabarito, e compare **na direção em que ela publica** — uma razão perto de 1 pode estar invertida sem deformar gráfico nenhum (medido: 1,05 contra 0,95 publicado, erro médio 1,58 no histórico).
+- **Uma identidade que a fonte escreve como subtração pode estar errada.** "produtividade = produto − horas" é como o texto de um release escreve, e erra até **15,9 p.p.**; a relação é multiplicativa. A forma errada funciona exatamente na faixa em que se costuma olhar (1-3%) e quebra onde ninguém confere — afirme as duas formas no teste, a que fecha e a que erra.
+
+#### 6 — SUAVIZAÇÃO (`smooth`) · reduzir ruído, e nada mais
+
+- **Oferece** `nenhuma` · `média 3` · `média 6` · `média 12`. Acrescentar uma janela aqui é **uma linha em três lugares** (a lista, o pipeline e o rótulo do eixo) e nunca uma decisão por aba — é o que esta camada ganha por não desabilitar nada e não mexer na unidade. Se houver escolha entre centrada e trailing, declare qual — trailing é o default, porque centrada usa dado do futuro e a última observação some.
+- **Decidida por** quase nada: está disponível em qualquer série. O que ela **não** pode é se apresentar como se mudasse a grandeza.
+- **Default** `nenhuma` — exceto quando a própria fonte publica a manchete suavizada, e aí o default é o dela.
+- **Desabilitar** nada. Se você está pensando em desabilitar uma opção aqui, o que você tem é uma **camada 3 disfarçada** — volte e ponha na 3.
+- **Unidade inalterada.** A suavização acrescenta "média de N períodos" ao rótulo e nada mais. Se o rótulo mudou de unidade, a operação não era suavização.
+- **Gotcha: "3 meses" tem de ser 3 meses, não 3 observações.** Numa série com buracos (`gaps`), uma média de N observações estica a janela em silêncio — carregue um guarda de span que sai em branco quando a janela real excede N períodos. Medido numa série semanal com um buraco de 196 dias, o guarda só apaga pontos anteriores ao primeiro trecho contínuo.
+- **Ela entra depois da camada 5, e a ordem é observável:** a média de três participações não é a razão de duas médias. As duas diferem na quarta decimal do mês corrente, o que passa em silêncio se o teste comparar contra só uma delas.
+- **Materialize a série derivada sob a MESMA convenção de chave das publicadas** (o estado da camada dentro da chave do cache). Assim o transformador e o cache seguem valendo sem saber que a série é derivada, e não nasce um segundo caminho de código.
+
+#### 7 — GRÁFICO (`chart`) · como desenhar
+
+- **Oferece** `linhas` · `barras empilhadas` · `área`.
+- **Decidida pelas camadas 4 e 5**, não por gosto. A tabela de aditividade:
+
+| o que está plotado | irmãs somam? |
+|---|---|
+| nível — e a média, a soma e o `Δ` dele | sim |
+| participação no total | sim: toda irmã divide pela mesma raiz, então `Δ` em p.p. também soma |
+| taxa | nunca — o denominador é o de cada categoria |
+| **variação %** de um nível | não — as partes não têm % que somem o % do total |
+
+- **Default** `linhas`. Empilhadas só quando a tabela acima diz sim **e** `additive` é verdadeiro.
+- Numa hierarquia, **um nó marcado que tenha descendente marcado vira linha** — o que reproduz a leitura "componentes + total por cima" e torna a dupla contagem impossível, já que duas barras nunca ficam aninhadas.
+- **Gotcha:** empilhar séries que não somam nada não é preferência de visualização, é **inventar um agregado**. Numa tabela plana (sem hierarquia) nada vira linha pela regra acima, então passe `linhas` como default explícito e **não renderize** o seletor de tipo.
+
+### O controle na tela
+
+- **Um `<select>` por camada**, numa linha, rótulo em cima. Mostra o estado de todas as camadas de relance, escala para 6 opções e é o mesmo padrão dos seletores por gráfico já em uso. Pills seguem válidas para uma camada de duas opções que se troca toda hora.
+- **Camada com uma opção só não vira controle.** É isto que evita a barra de doze pills: a maioria dos dashboards mostra duas ou três camadas, porque o dado não oferece as outras.
+- **Opção inválida dadas as outras camadas fica na tela, desabilitada, com o motivo no `title`.** Um controle ausente não responde "onde está o acumulado de 12 meses?"; um cinza com explicação responde.
+- **Ao invalidar o estado, caia de volta explicitamente.** Trocar a camada 4 com uma opção da 5 que deixou de valer tem de voltar ao default da 5 — senão o estado fica válido no objeto e inválido na tela, e o gráfico plota uma grandeza que não existe.
+- **O `title` do desabilitado é uma afirmação sobre o dado e envelhece como prosa de card.** Quando uma camada passa a servir um tipo de dado novo, releia os motivos dos estados desligados: eles não quebram, só passam a mentir. Já aconteceu — *"variações percentuais não somam entre irmãs"* é verdade do Y/Y de um nível e falsa do Y/Y de uma participação, que soma.
+
+### O pipeline em código
+
+A ordem é o contrato. Trocar duas linhas desta função muda o número, não o rótulo.
+
+```js
+var AGG = {flow: 'sum', stock: 'last', rate: 'mean', price: 'mean', index: 'mean'};
+var ESCADA = {D: ['d','m','q','s','a12','ytd','a'], M: ['m','q','s','a12','ytd','a'],
+              Q: ['q','s','a12','a'], A: ['a']};
+
+function applyLayers(raw, st, ctx) {
+  var v = raw;                                        // série publicada, frequência nativa
+  v = rebase(v, st.basis, ctx);                       // 1  antes de agregar, sempre
+  v = pickAdjust(v, st.adjust, ctx);                  // 2  escolhe a variante, não calcula
+  v = aggregate(v, st.window, AGG[ctx.desc.kind]);    // 3  soma | último | média
+  v = normalize(v, st.denom, st.window, ctx);         // 4  num e den na MESMA janela
+  v = compare(v, st.compare, ctx);                    // 5  % para nível, p.p. para razão
+  v = smooth(v, st.smooth, ctx);                      // 6  não muda a unidade
+  return v;                                           // 7 decide só COMO desenhar
+}
+
+// Quais camadas existem, e com que opções -- derivado do descritor, nunca escrito à mão.
+function layersFor(d) {
+  var L = [];
+  if (d.money && d.deflator) L.push({id: 'basis', label: 'Base', def: 'nominal', options: [
+    {key: 'nominal', label: 'Nominal'}, {key: 'real', label: 'Real'}]});
+  if (d.sa) L.push({id: 'adjust', label: 'Ajuste', def: 'sa', options: [
+    {key: 'sa', label: 'Com ajuste sazonal'}, {key: 'nsa', label: 'Sem ajuste'}]});
+  var win = ESCADA[d.freq].slice();
+  if (AGG[d.kind] !== 'sum') win = win.filter(function(w) { return w !== 'a12' && w !== 'ytd'; });
+  if (win.length > 1) L.push({id: 'window', label: 'Janela', def: win[0],
+    options: win.map(rotuloJanela)});
+  var den = [{key: 'bruto', label: 'Bruto'}];
+  if (d.root && d.additive) den.push({key: 'share', label: '% do ' + d.rootLabel});
+  if (d.pib) den.push({key: 'pib', label: '% do PIB'});
+  if (den.length > 1) L.push({id: 'denom', label: 'Denominador', def: 'bruto', options: den});
+  var cmp = [{key: 'valor', label: 'Valor'}, {key: 'dPer', label: 'Δ período'},
+             {key: 'dYoY', label: 'Δ Y/Y'}];
+  if (!d.crossesZero) cmp.splice(2, 0, {key: 'pPer', label: '% período'},
+                                       {key: 'pYoY', label: '% Y/Y'});
+  L.push({id: 'compare', label: 'Comparação', def: 'valor', options: cmp});
+  L.push({id: 'smooth', label: 'Suavização', def: 'none', options: [
+    {key: 'none', label: 'Nenhuma'}, {key: 'ma3', label: 'Média 3'}, {key: 'ma12', label: 'Média 12'}]});
+  return L;   // camada com uma opção só nunca entra: não vira controle
+}
+```
+
+### O eixo Y e o subtítulo são o caminho inteiro
+
+A unidade é **função do caminho**, não uma string por série — é por isso que a regra de
+[Unidade no eixo Y](#unidades) diz que ela não pode viver no rótulo da série. Monte-a percorrendo o
+estado das camadas na mesma ordem do pipeline:
+
+```js
+function unitFor(st, ctx) {
+  var d = ctx.desc, u = d.unit.def;                             // 'ocupados, mil pessoas'
+  if (st.basis === 'real')  u += ', a preços de ' + ctx.refDate;         // 1
+  if (st.denom === 'share') u = '% do ' + ctx.rootLabel;                 // 4 (template!)
+  if (st.denom === 'pib')   u = '% do PIB' + (ctx.pibJanela || '');
+  var razao = st.denom !== 'bruto' || d.kind === 'rate';
+  if (st.compare === 'dPer') u = razao ? 'p.p. contra o período anterior'               // 5
+                                       : 'variação contra o período anterior, ' + d.unit.noun;
+  if (st.compare === 'pPer') u = '% contra o período anterior';
+  if (st.compare === 'dYoY') u = razao ? 'p.p. contra o mesmo período do ano anterior'
+                                       : 'variação contra o mesmo período do ano anterior, ' + d.unit.noun;
+  if (st.compare === 'pYoY') u = '% contra o mesmo período do ano anterior';
+  if (st.window !== ctx.nativa) u += ' · ' + rotuloJanela(st.window).label;              // 3
+  if (st.smooth !== 'none')     u += ' · média de ' + SPAN[st.smooth] + ' períodos';     // 6
+  return u;
+}
+```
+
+**Nenhum texto que um clique possa contradizer pode ser fixo.** Num gráfico com seletor de métrica
+isso inclui o **título**: o que sobra de fixo é só a fonte. Ver [Cabeçalho do gráfico](#cabecalho).
+
+### A forma do controle segue a LARGURA, não o papel da opção
+
+Pedido explícito do usuário (2026-09-04), a partir de um print em que as 10 medidas de uma aba
+quebravam para uma segunda linha de pills: *"na maioria das vezes eu não quero coisas desse tipo,
+por que não usar um click box?"*
+
+**A regra: um grupo de pills tem de caber em UMA linha. Acima disso o controle é um `<select>`.**
+Não importa se a opção é uma camada de métrica, uma medida ou um recorte — importa quanto espaço a
+lista ocupa. E o modo de falha não levanta erro nenhum: o grupo simplesmente embrulha, e quem
+acrescentar a sétima opção meses depois não vê nada de errado.
+
+**Faça a troca automática, derivada da largura estimada**, em vez de escolher o formato aba por aba —
+assim acrescentar uma opção amanhã já basta para ela acontecer:
+
+```js
+// padding 11px de cada lado + 1px de borda + ~6,4px por caractere em Barlow 12px,
+// mais ~20px quando a pill hospeda o botao `i` de definicao.
+var PILL_MAX_PX = 1200;
+function larguraPills(items) {
+  var w = 0;
+  items.forEach(function(it) {
+    w += 24 + String(it.label).length * 6.4 + (it.infoKey ? 20 : 0);
+  });
+  return w;
+}
+function buildControl(groupId, items, ativo, onPick, unitFn) {
+  var g = document.getElementById(groupId);
+  if (!g) return;
+  g.innerHTML = '';
+  if (larguraPills(items) > PILL_MAX_PX) return buildSelect(g, items, ativo, onPick, unitFn);
+  g.className = 'pill-group';
+  /* ... as pills ... */
+}
+```
+
+**O corte não foi escolhido, foi medido** — varra os grupos que a página realmente renderiza e olhe
+a distribuição. Num relatório de 38 grupos de controle, a folga era enorme: o mais largo que cabia
+tinha **763px** (6 medidas, cada uma com cartão de definição) e os dois que estouravam tinham
+**1.752px** (10 medidas, 2 linhas) e **2.807px** (19 medidas, 3 linhas). Qualquer corte entre 800 e
+1.700 dava o mesmo resultado, o que é o sinal de que a regra não está no fio da navalha.
+
+Três coisas que fazem a troca não perder nada:
+
+- **Um `<select>` mostra uma opção por vez, então o cartão de definição também.** Um botão `i` só,
+  do item **selecionado**, ao lado do controle — uma `<option>` não hospeda botão, e sem este passo
+  a troca apagaria 10 e 19 cartões em silêncio. Vale a asserção "um cartão por controle", não zero
+  e não N.
+- **O `title` de uma `<option>` desabilitada não aparece em navegador nenhum**, ao contrário do de um
+  `<button>`. Se o grupo tiver opção inválida, o motivo tem de ir para o DOM (uma linha de texto
+  abaixo do controle) — ver [O controle na tela](#metricas) acima.
+- **O teste tem de escolher a opção sem saber o formato.** Um helper que só clica em pill quebra no
+  dia em que o grupo virar select, e um que só mexe em select nunca cobriu os pequenos. Escreva
+  `escolherNoGrupo(pref, grupo, rotulo)` resolvendo os dois, senão cada asserção passa a depender do
+  formato em vez do comportamento.
+
+E o guarda que impede a recaída é a varredura, não a inspeção do caso que doeu: percorra **todos** os
+grupos renderizados e exija que nenhum em pills passe do orçamento. Ele pega a opção nova que alguém
+acrescentar a um grupo que hoje cabe — que é exatamente como este defeito nasceu.
+
+### O leitor também precisa do plano
+
+Uma barra com quatro ou cinco `<select>` é ilegível sem isso: o leitor vê "Janela" e "Suavização"
+lado a lado e não tem como saber que uma muda a grandeza e a outra não. **Cada camada que renderiza
+controle ganha uma linha no apêndice**, escrita na regra de
+[Para quem nunca viu o dashboard](#audiencia) — vocabulário do domínio, não o nome da camada.
+
+A linha diz três coisas, nesta ordem: **o que o controle troca**, **o que ele não troca**, e **quando
+uma opção aparece cinza**. A segunda é a que evita a leitura errada, e a terceira é a que impede o
+leitor de achar que a página está quebrada.
+
+```
+Janela        Troca o período que cada ponto resume: um mês, um trimestre, ou a soma
+              dos últimos doze. Muda a grandeza — a soma de doze meses é um número
+              doze vezes maior, não a mesma série suavizada. Um período que ainda não
+              fechou sai em branco, em vez de aparecer como queda.
+Suavização    Tira o ruído do que já está no gráfico, sem mudar a unidade nem a escala.
+              A média de três meses da variação mensal é a leitura que se cita.
+Comparação    Troca o ponto de referência: o valor em si, quanto mudou desde o mês
+              passado, ou desde o mesmo mês do ano anterior. Em série que troca de
+              sinal as opções de porcentagem ficam cinza, porque variação percentual
+              em torno do zero é ruído, não informação.
+```
+
+Duas armadilhas de manutenção, as duas já vistas em produção: **o texto do apêndice envelhece quando
+uma camada passa a servir um tipo de dado novo** (a frase "variações percentuais não somam entre
+irmãs" é verdadeira do Y/Y de um nível e falsa do Y/Y de uma participação); e **a lista do apêndice
+tem de ser gerada a partir das camadas que realmente renderizaram**, senão ela explica um controle
+que aquele dado não oferece.
+
+### O que não está aqui
+
+Esta seção é a taxonomia — geral, serve tanto um relatório macro quanto um CSV de posições. O que é
+**convenção deste repositório** e não decorre do dado fica em
+[`analytics/mds/metric_layers.md`](../../../../analytics/mds/metric_layers.md): qual janela o
+denominador de `% PIB` usa (mesma janela ou sempre 12m — as duas estão em uso, então **pergunte**),
+qual deflator se aplica a cada tipo de gasto, e o método de ajuste sazonal, em
+[`analytics/mds/seasonal_adjustment.md`](../../../../analytics/mds/seasonal_adjustment.md).
+
+Uma aba que precise de uma **camada nova**, um tipo de janela novo, um denominador novo ou uma regra
+de ajuste diferente é decisão do usuário, não default a escolher: pergunte, e registre a resposta
+naqueles arquivos para o próximo dashboard herdar.
+
+---
+
 ## Checklist antes de entregar
 
+- [ ] Camadas de métrica derivadas do descritor do dado (não escolhidas na conversa), na ordem `BASE -> AJUSTE -> JANELA -> DENOMINADOR -> COMPARAÇÃO -> SUAVIZAÇÃO -> GRÁFICO`; janela e suavização em camadas **separadas**; `Δ` e `%` como opções distintas. Ver [Organização de métricas](#metricas)
+- [ ] Nenhum grupo de pills quebra para uma segunda linha: acima de ~1.200px estimados o controle vira `<select>`, com UM botão `i` do item selecionado. A troca é derivada da largura, não escolhida controle por controle
+- [ ] Camada com uma opção só não renderiza controle; opção inválida fica desabilitada **com o motivo no `title`**, e o estado inválido cai de volta ao default
+- [ ] Agregador da janela vem do `kind`: soma para fluxo, **último do bucket** para estoque, média para razão/preço — e acumulação não existe para estoque nem para razão
+- [ ] Numa tabela de unidades mistas, o descritor sai das **linhas marcadas**: `%` proibido se **uma** for porcentagem, `Δ` em p.p. só se **todas** forem, eixo dizendo "unidades mistas" no resto — e a caixa de seleção refaz a barra, não só o gráfico
+- [ ] O denominador do `% do total` **existe** no ajuste/base/janela correntes e é o total daquele recorte (pode não ser uma linha da tabela); a raiz lê exatamente 100; se a fonte publica a razão, ela é o gabarito
 - [ ] CDN: só Plotly (`https://cdn.plot.ly/plotly-2.35.2.min.js`) — sem Chart.js/chartjs-plugin-datalabels/hammer.js/chartjs-plugin-zoom
 - [ ] Todo gráfico com série temporal em `mkLayout()` (`dragmode:'pan'`, `scrollZoom:true` no config, sem `fixedrange`, sem `xaxis.rangeselector`) + botões de range rápido via `renderQuickRangeButtons()` (HTML + `Plotly.relayout()`, NÃO `xaxis.rangeselector` nativo) + `_bindYAutofit(divId)` chamado logo após `Plotly.newPlot`/`react`
 - [ ] Texto explicativo e de apêndice **justificado** (`text-align: justify` + `hyphens: auto`), sem `max-width` em `ch`, e o `<html>` com `lang` — sem o `lang` não há hifenização e o justificado abre rios. Não justifique célula de tabela, `.info-pop` nem legenda centralizada. Ver [Texto explicativo](#prosa)

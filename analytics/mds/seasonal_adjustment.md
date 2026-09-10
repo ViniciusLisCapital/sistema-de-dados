@@ -22,10 +22,10 @@ Four call sites, each with its own wrapper:
 
 | Wrapper | Where | Period |
 |---|---|---|
-| `_saar_sa()` (inline in `run()`) | [`analytics/brasil/inflation/fetch_bcb.py`](brasil/inflation/fetch_bcb.py) | 12 |
-| `stl_seasonal_adjust()` | [`analytics/brasil/credit/transforms.py`](brasil/credit/transforms.py) | 12 |
-| `stl_seasonal_adjust()` | [`analytics/brasil/fiscal_policy/transforms.py`](brasil/fiscal_policy/transforms.py) | 4 (and 12 via `credit`'s) |
-| `Score_SA()` | [`utils/thermometer.py`](../utils/thermometer.py) | 12 |
+| `_saar_sa()` (inline in `run()`) | [`analytics/brasil/inflation/fetch_bcb.py`](../brasil/inflation/fetch_bcb.py) | 12 |
+| `stl_seasonal_adjust()` | [`analytics/brasil/credit/transforms.py`](../brasil/credit/transforms.py) | 12 |
+| `stl_seasonal_adjust()` | [`analytics/brasil/fiscal_policy/transforms.py`](../brasil/fiscal_policy/transforms.py) | 4 (and 12 via `credit`'s) |
+| `Score_SA()` | [`utils/thermometer.py`](../../utils/thermometer.py) | 12 |
 
 ### X-13ARIMA-SEATS — `statsmodels.tsa.x13.x13_arima_analysis`
 
@@ -159,11 +159,11 @@ at all — see (iv).
 
 | Consumer | Period | Series | Fits | Persisted? |
 |---|---|---|---|---|
-| [`inflation/fetch_bcb.py`](brasil/inflation/fetch_bcb.py) — `_SAAR_SERIES` + MA(3) | 12 | 20 | 20 | yes → `data/ipca_bcb_series.csv` as `*_ma3_sa` |
-| [`credit/`](brasil/credit/) — Saldo (122), Concessão (72), Ampliado (21) | 12 | 215 | 430 | no, report-time |
-| [`fiscal_policy/rtn_tab.py`](brasil/fiscal_policy/rtn_tab.py) — RTN Gov. Central | 12 | 35 | 70 | no |
-| [`fiscal_policy/`](brasil/fiscal_policy/) — GFSM (108) + PIB/impulso | 4 | ~119 | 238 | no |
-| [`oraculo/brasil/scores.py`](oraculo/brasil/scores.py) via `Score_SA` | 12 | 2 | 2 | as scores |
+| [`inflation/fetch_bcb.py`](../brasil/inflation/fetch_bcb.py) — `_SAAR_SERIES` + MA(3) | 12 | 20 | 20 | yes → `data/ipca_bcb_series.csv` as `*_ma3_sa` |
+| [`credit/`](../brasil/credit/) — Saldo (122), Concessão (72), Ampliado (21) | 12 | 215 | 430 | no, report-time |
+| [`fiscal_policy/rtn_tab.py`](../brasil/fiscal_policy/rtn_tab.py) — RTN Gov. Central | 12 | 35 | 70 | no |
+| [`fiscal_policy/`](../brasil/fiscal_policy/) — GFSM (108) + PIB/impulso | 4 | ~119 | 238 | no |
+| [`oraculo/brasil/scores.py`](../oraculo/brasil/scores.py) via `Score_SA` | 12 | 2 | 2 | as scores |
 
 Fits ≈ 2 × series because `compute_variants()` adjusts the nominal and the IPCA-deflated version
 separately — genuinely different inputs, so each needs its own fit. Only 12 of the 500 monthly
@@ -192,8 +192,8 @@ next to the official SA benchmark — that pairing is what made the scorecard ab
 
 ### Deliberately not adjusted
 
-[`labor_market/`](brasil/labor_market/) — visualisation only, no derived metric (explicit user decision).
-[`economic_activity/`](brasil/economic_activity/) — consumes IBGE's own SA rather than computing any.
+[`labor_market/`](../brasil/labor_market/) — visualisation only, no derived metric (explicit user decision).
+[`economic_activity/`](../brasil/economic_activity/) — consumes IBGE's own SA rather than computing any.
 
 ### Where X-13 is worth adopting first
 
@@ -257,7 +257,7 @@ also the most likely explanation for PMC's residual seasonality above.
 **Machine-local install, not captured in the repo.** The binary is not a Python package, so
 `uv sync` does not bring it — `X13PATH` is a User environment variable set per machine. A fresh
 clone will not find it, and the call raises rather than falling back. Install steps and the
-verification command are in [`AMBIENTE.md`](../AMBIENTE.md) ("Dependência de sistema opcional:
+verification command are in [`AMBIENTE.md`](../../AMBIENTE.md) ("Dependência de sistema opcional:
 X-13ARIMA-SEATS").
 
 **Runtime is highly variable** — 445 ms to 9.0 s per call in the sample. The slow calls are the

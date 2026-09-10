@@ -37,8 +37,8 @@
 no_release:
   # Serie continua de mercado: um dado novo por dia util, sem anuncio para apontar.
   # Criterio para entrar aqui: run() busca da fonte sozinho. Por isso cmb_risco_pais
-  # NAO esta na lista, apesar de ser serie de mercado -- o run() dele le CSVs
-  # exportados a mao do investing.com (CDS 5Y e serie paga), entao um job diario nao
+  # NAO esta na lista, apesar de ser serie de mercado -- o run() dele le uma planilha
+  # exportada a mao da Bloomberg (CDS 5Y e serie paga), entao um job diario nao
   # traria dado novo nenhum.
   continuous:
     - cmb_ptax               # PTAX + volume interbancario, diario
@@ -47,7 +47,39 @@ no_release:
     - cmb_fx_latam           # cambio MX/CL/CO/PE, diario
     - cmb_equity_us          # equity US, diario
     - comm_brent             # Brent, diario
-    - cmb_policy_rates       # policy rate BIS (BR/MX/CL/CO/PE/AR), diaria
+    # Estrutura a termo (DIPRE/PREJS/NTNBJS) do arquivo de pregao da B3, um por
+    # dia util. Entrou em 2026-09-03, quando a tabela saiu do CentralManagement.
+    # A B3 solta o arquivo DEPOIS do fechamento, entao um passe de manha traz o
+    # dia anterior -- run() reescreve os ultimos 10 dias uteis por upsert, o que
+    # fecha esse atraso no passe seguinte sem exigir horario especial.
+    - br_interest_rate
+    # Curva do Treasury (11 vertices) + meta do Fed, do FRED. Diaria, sem
+    # divulgacao discreta a apontar. Entrou em 2026-09-03 junto com a curva
+    # brasileira; a meta do Fed vigora todo dia corrido, a curva so em dia util.
+    - us_interest_rate
+    # Meta de politica monetaria de MX/CL/CO/PE/AR, buscada no BIS (WS_CBPOL).
+    #
+    # Nao ha dependencia de ordem entre os tres desde 2026-09-03 (2a rodada):
+    # cada um busca a sua propria fonte -- B3 + BIS aqui do lado brasileiro,
+    # FRED no americano, BIS neste. Ate aquele dia a POLICY de br_interest_rate
+    # LIA a tabela cmb_policy_rates, que roda depois dela (o registry agrupa por
+    # modulo, nao pela ordem desta lista), entao a meta brasileira ficava um
+    # passe atras -- e isso, so isso, o upsert retroativo cura.
+    #
+    # O que a ordem NAO explica, e e o motivo de verdade para a tabela
+    # intermediaria ter saido: uma tabela derivada so pode estar tao fresca
+    # quanto a que ela le. A cmb_policy_rates estava parada em 18/08 (medido no
+    # backup: BR/CL/MX 18/08, PE 17/08, CO 12/08 -- o padrao por pais bate com o
+    # lag do proprio BIS num unico passe daquele dia) porque nada a rodava, e a
+    # POLICY brasileira herdou a data. Um fetch ao vivo no dia da remocao deu
+    # 01/09: **14 dias**. E a checagem obvia -- "a curva POLICY bate com a
+    # cmb_policy_rates?" -- concordava perfeitamente, porque a defasagem era
+    # justamente o que as duas compartilhavam.
+    #
+    # A ORDEM DESTA LISTA CONTINUA NAO SENDO A ORDEM DE EXECUCAO (o registry
+    # agrupa por modulo) -- so nao importa mais para ninguem. Se algum dia
+    # importar, o lugar e um passo explicito em jobs/, nao esta lista.
+    - inter_interest_rate
   # Nao e serie divulgada: nada a esperar do calendario e nada a rodar por dia.
   not_a_series:
     - inflc_dim              # tabela de dimensao (IPCA)
@@ -106,7 +138,9 @@ max_age_days:
   cmb_fx_latam: 5             # lag medido 0d
   cmb_equity_us: 5            # lag medido 0d
   comm_brent: 8               # lag medido 1d
-  cmb_policy_rates: 12        # lag medido 8d -- BIS republica em lote, o maior de todos
+  # O lag do BIS (8d medido, 12 de folga, o maior de todas as fontes) migrou para
+  # as duas tabelas que passaram a busca-lo direto, quando cmb_policy_rates saiu.
+  inter_interest_rate: 12     # lag medido 8d -- BIS republica em lote
   # Tem divulgacao mensal E conteudo diario -- checadas pelas duas regras
   cmb_reservas_bc: 5          # lag medido 1d
   cmb_cambio_contratado: 12   # SGS diario, divulgado na Nota Cambial semanal (ver acima)
@@ -479,7 +513,7 @@ groups:
   - group: bcb_rpm
     institution: BCB
     name: "Relatório de Política Monetária (RPM)"
-    tables: [cred_fluxo_financeiro, expc_focus, expc_focus_periodo, inflc_meta, pm_hiato_produto, pm_hiato_produto_vintages]
+    tables: [cred_fluxo_financeiro, expc_focus, expc_focus_periodo, inflc_meta, mt_desocupacao_retro, pm_hiato_produto, pm_hiato_produto_vintages]
     cadence: quarterly
     note: >
       Quarterly flagship inflation/policy report (successor to the Relatório de
@@ -908,6 +942,10 @@ groups:
       a coleta, e o mes nao vai aparecer em revisao nenhuma.
     source_url: https://www.bls.gov/schedule/news_release/empsit.htm
     us:
+      source: bls_schedule
+      match: empsit
+      fred_release_id: 50
+    entries:
       - {date: "2026-01-09", time: "08:30", reference_period: "2025-12", confirmed: true}
       - {date: "2026-02-06", time: "08:30", reference_period: "2026-01", confirmed: true}
       - {date: "2026-03-06", time: "08:30", reference_period: "2026-02", confirmed: true}
@@ -966,6 +1004,50 @@ groups:
       - {date: "2026-09-29", time: "10:00", reference_period: "2026-08", confirmed: true}
       - {date: "2026-11-03", time: "10:00", reference_period: "2026-09", confirmed: true}
       - {date: "2026-12-01", time: "10:00", reference_period: "2026-10", confirmed: true}
+
+  - group: bls_prod
+    institution: "BLS"
+    name: "Productivity and Costs (major sectors)"
+    tables: [mt_produtividade]
+    cadence: quarterly
+    release_time: "08:30"
+    release_time_tz: America/New_York
+    note: >
+      Unico grupo dos EUA com DUAS divulgacoes para o MESMO periodo de referencia, e
+      isso e a coisa a saber aqui: cada trimestre sai uma leitura preliminar e, ~4
+      semanas depois, uma revisada -- 10 entradas em 2026 para 5 trimestres. A agenda do
+      BLS marca as duas com "(P)" e "(R)" na coluna de referencia, sufixo que o
+      `reference_period` nao carrega, entao duas entradas do grupo tem o mesmo
+      "2026-Q2". A checagem de frescor lida com isso sozinha (as duas geram a mesma data
+      esperada, 2026-04-01), mas quem for ler o grupo a olho precisa saber que a
+      repeticao e a fonte, nao erro de digitacao.
+      A revisao nao e cosmetica: em 2026-Q2 a produtividade da industria de
+      transformacao subiu de 1,9% para 2,4% da preliminar para a revisada, e o custo
+      unitario do trabalho do nonfarm caiu de 1,3% para 1,2%. O proprio BLS publica o
+      intervalo: 80% das vezes a terceira estimativa fica entre -1,1 e +1,4 p.p. da
+      primeira.
+      A defasagem e a maior deste schema -- a preliminar sai ~40 dias depois do fim do
+      trimestre, entao em setembro de 2026 o dado mais recente e o 2o trimestre. Nao ha
+      janela de rotina: as 282 series vem num arquivo de 3,2 MB e cada passe reescreve a
+      historia inteira, o que e o certo aqui porque a revisao alcanca trimestres antigos.
+      Datas e horas da pagina de agenda do BLS por release, a mesma fonte do bls_cpi e do
+      bls_jolts; conferidas contra a nota de rodape do proprio release em PDF, que anuncia
+      a preliminar do 3o trimestre para 05/11/2026 as 08:30 ET.
+    source_url: https://www.bls.gov/schedule/news_release/prod2.htm
+    us:
+      source: bls_schedule
+      match: prod2
+    entries:
+      - {date: "2026-01-08", time: "08:30", reference_period: "2025-Q3", confirmed: true}
+      - {date: "2026-01-29", time: "08:30", reference_period: "2025-Q3", confirmed: true}
+      - {date: "2026-03-05", time: "08:30", reference_period: "2025-Q4", confirmed: true}
+      - {date: "2026-03-24", time: "08:30", reference_period: "2025-Q4", confirmed: true}
+      - {date: "2026-05-07", time: "08:30", reference_period: "2026-Q1", confirmed: true}
+      - {date: "2026-06-04", time: "08:30", reference_period: "2026-Q1", confirmed: true}
+      - {date: "2026-08-06", time: "08:30", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-09-03", time: "08:30", reference_period: "2026-Q2", confirmed: true}
+      - {date: "2026-11-05", time: "08:30", reference_period: "2026-Q3", confirmed: true}
+      - {date: "2026-12-08", time: "08:30", reference_period: "2026-Q3", confirmed: true}
 
   - group: mdic_comex_stat
     institution: "MDIC"

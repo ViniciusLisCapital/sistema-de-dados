@@ -159,11 +159,11 @@ Both modes work off the same renderer, because `REPORT_DATA.dashboards` (embedde
 itself — otherwise its own row would sit permanently in "sem stamp".
 
 **Each card has its own Regerar button** (`POST /api/gerar`, same key-allowlist shape as
-`/api/run`'s slug allowlist — the page never sends a module path). One dashboard at a time, by
-explicit decision: **there is no "regenerate all stale" control anywhere**, and a test enforces
-its absence. The POST returns the regenerated dashboard's new state row only, so the card flips
-to "em dia" without re-querying the other ten. In file mode the same button copies
-`uv run python -m domain.dashboards.status --gerar <key>`.
+`/api/run`'s slug allowlist — the page never sends a module path). The POST returns the regenerated
+dashboard's new state row only, so the card flips to "em dia" without re-querying the other eleven.
+In file mode the same button copies `uv run python -m domain.dashboards.status --gerar <key>`.
+Alongside it, since 2026-09-03, a **batch control per tab** — see "Atualizar/Regerar pendentes"
+below; the per-row and per-card buttons did not go anywhere.
 
 So the two tabs split the work the way the update actually happens: **tab 1 updates the data
 that was released, tab 2 regenerates whichever dashboards you care about right now.**
@@ -217,6 +217,69 @@ where the cards come from the real embedded payload — so it covers what is wri
 `manifest.yaml`, not just what the template assembles — and it was verified against a mutant that
 re-injects the old sentence.
 
+### "Atualizar pendentes" / "Regerar pendentes" — one click for the whole backlog (2026-09-03)
+
+Direct user request, one button per tab: *"colocar um botao, 'Regenerar pendentes' que regenerar
+todos os dash pendentes; coloque esse botão tambem no calendar 'Atualiza pendentes'"*. This
+**reverses the 2026-08-26 decision** that there would be no batch control anywhere on the page (the
+old reasoning: after updating the IPCA you pick which of the six dashboards that read it you want
+now). The per-row and per-card buttons are untouched — the batch is an addition, not a replacement,
+and it exists for the other case: the answer is "everything that fell behind".
+
+Both live in the card header, right of the `<h2>`, and both carry a count so the click is never a
+surprise: `Atualizar pendentes (3)` · `Regerar pendentes (2) · ~153s no total`.
+
+**There is no batch endpoint, and that is the design.** Each button loops over the *existing*
+single-item POST, one at a time. Four things follow, all of them wanted:
+
+- the server keeps receiving one slug (or one key) per request, validated against the YAML or the
+  manifest — the security story of the two POSTs is unchanged, and no new route exists to audit;
+- each row/card updates on screen as its own request returns, instead of the page freezing for
+  minutes with no signal;
+- two ETL scripts (or two generators) never fight over the same database;
+- **the announced time is the sum of the per-item announcements**, which for dashboards means
+  generation *plus* whatever each one will recalculate first — the same arithmetic the card button
+  already did, added up.
+
+Three rules that are easy to get wrong and produce no error when you do:
+
+- **The queue is snapshotted before the first request.** Recomputing it between items looks
+  equivalent and isn't: an item that is *still* pending after running — a group with no script, a
+  dashboard whose recalculation step failed — goes back into the queue and is retried forever. The
+  mutant that does this doesn't fail the harness, it hangs it.
+- **A failure does not abort the queue.** It lands in that item's own card/row and in the closing
+  summary (`1 de 2 regerado(s) · falhou: Inflação (BR)`), and the rest still runs. Same instinct as
+  `recalcular_atrasados()`: one broken step is not a reason to skip everything after it.
+- **"Pending" is narrower than "not green".** For dashboards the queue is `dado novo na fonte` plus
+  *a step behind the data*, and deliberately **not** `nunca gerado` (building a report for the first
+  time is a decision, not a consequence of data moving — the same rule `regerar_afetados()` applies
+  on the CLI) nor `sem stamp` (not lateness: the absence of the snapshot that would let us claim it
+  matches). Missing an automatic entry point is out too, by the same criterion as the card button.
+
+**The two tabs differ on one point, and it is the interesting one: the releases tab has a third
+state.** Its verdict comes from `/api/status`, so with no server — or with the database down —
+there is no freshness verdict at all and therefore no list of pending releases. It says that,
+rather than a button or a reassuring "nothing pending", which would be asserting a verdict nobody
+has. The dashboards tab has no such gap: its embedded snapshot carries verdicts, so in file mode the
+batch is real and degrades to copying **one `--gerar <key>` line per pending dashboard**. Not
+`--gerar todos` — that one generates all twelve *without* recalculating, which is not what the
+button does.
+
+Covered by four new scenarios in `tests/test_release_calendar_js.js` (batch happy path, batch with a
+failure mid-queue, the releases batch, and the two no-verdict cases), verified against 14 mutants —
+including parallel-instead-of-serial, each excluded verdict individually let back in, queue
+recomputed mid-flight, and the file-mode copy collapsing to `--gerar todos`. The old assertion that
+*forbade* a batch control was removed; it had gone stale in place, and would have passed anyway,
+since it only looked inside `#dash-cards`.
+
+Two harness bugs surfaced while writing those, both worth remembering: the `/api/dashboards` stub
+was handing out `DASHBOARDS_STUB` **by reference**, and `aplicarLinha()` writes into `DASH.rows` — so
+the first Regerar of an earlier scenario stamped "em dia" into the shared fixture and the batch
+scenario, running later, legitimately saw zero pending. And a capture of "what got copied" that only
+stubs `navigator.clipboard` misses the `execCommand` path, which `copiarTexto()` takes whenever the
+context isn't secure — the stub returns `true`, so the copy "succeeds" with nothing captured and the
+failure reads as a bug in the page.
+
 ### A second dashboard got its own recalculation step (2026-09-01)
 
 User asked to extend the `procedures:` pilot to the other dashboards, "like the monetary policy one".
@@ -269,9 +332,10 @@ A test asserts all three call it, since the failure only shows up in a real cp12
   states instead of two. Regression covered by the "SERVIDO SEM ESTADO" section of
   `tests/test_release_calendar_js.js`. Still unconfirmed visually: the two filter pill rows and the
   file-mode clipboard fallback.
-- **Chaining the two tabs was considered and rejected** (2026-08-26): one click that updates a group
-  *and* regenerates everything it feeds. The user wants to pick which dashboards get rebuilt, so the
-  calendar button stays data-only. Don't "helpfully" add it back.
+- **Chaining the two tabs was considered and rejected** (2026-08-26, still true): one click that
+  updates a group *and* regenerates everything it feeds. The calendar button stays data-only. Note
+  that the 2026-09-03 batch buttons are *not* this — each one stays inside its own tab, so updating
+  data and rebuilding reports remain two deliberate actions. Don't collapse them.
 - The update button's **served mode has not been confirmed in a real browser** — the interaction is
   covered by [`tests/test_release_calendar_js.js`](../../tests/test_release_calendar_js.js) (real
   script, stubbed DOM/fetch, click dispatched) and the endpoints by

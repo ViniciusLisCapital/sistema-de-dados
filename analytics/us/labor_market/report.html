@@ -51,6 +51,21 @@ nav.tabs button:hover:not(.active) { color: var(--text2); }
    fica cinza-sobre-navy e desaparece justamente na pill que o leitor esta usando. */
 .pill.active .info-btn { color: #fff; border-color: rgba(255,255,255,0.5); }
 
+/* Barra das 7 camadas de metrica: um <select> por camada que EXISTE naquele dado. */
+.layer-bar { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 8px; }
+.layer { display: flex; flex-direction: column; gap: 3px; }
+.layer > label { font-family: var(--cond); font-size: 11.5px; text-transform: uppercase;
+  letter-spacing: .6px; color: var(--muted); }
+.layer-sel { font-family: var(--sans); font-size: 12px; color: var(--text);
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 8px; min-width: 132px; cursor: pointer; }
+.layer-sel:focus { outline: none; border-color: var(--lis-azul); }
+.sel-wrap { display: inline-flex; align-items: center; gap: 7px; }
+.layer-why { margin-bottom: 12px; }
+.why-line { font-family: var(--sans); font-size: 11.5px; color: var(--muted);
+  text-align: justify; hyphens: auto; margin-top: 2px; }
+.why-line b { color: var(--text2); font-weight: 600; }
+
 .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
 table.hier { border-collapse: collapse; width: 100%; font-size: 12px; }
 table.hier th, table.hier td { padding: 5px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -173,6 +188,7 @@ details.acc > summary:hover { background: #EAEEF4; }
   <button data-panel="p-payroll" class="active">Payroll</button>
   <button data-panel="p-household">Household</button>
   <button data-panel="p-jolts">JOLTS</button>
+  <button data-panel="p-prod">Productivity</button>
   <button data-panel="p-derived">Derived</button>
   <button data-panel="p-appx">Appendix</button>
 </nav>
@@ -268,13 +284,8 @@ details.acc > summary:hover { background: #EAEEF4; }
   <div class="card">
     <h2 id="h2-ces-emprego"></h2>
     <div class="note" id="note-ces-emprego"></div>
-    <div class="ctrl-bar">
-      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-ces-emprego-medida"></div></div>
-      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-ces-emprego-tipo"></div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-ces-emprego-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-ces-emprego-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-ces-emprego-kind"></div></div>
-    </div>
+    <div class="layer-bar" id="lb-ces-emprego"></div>
+    <div class="layer-why" id="lw-ces-emprego"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-ces-emprego"></thead><tbody id="tb-ces-emprego"></tbody></table>
     </div>
@@ -294,11 +305,9 @@ details.acc > summary:hover { background: #EAEEF4; }
     <div class="note" id="note-ces-horas"></div>
     <div class="ctrl-bar">
       <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-ces-horas-medida"></div></div>
-      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-ces-horas-tipo"></div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-ces-horas-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-ces-horas-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-ces-horas-kind"></div></div>
     </div>
+    <div class="layer-bar" id="lb-ces-horas"></div>
+    <div class="layer-why" id="lw-ces-horas"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-ces-horas"></thead><tbody id="tb-ces-horas"></tbody></table>
     </div>
@@ -325,12 +334,8 @@ details.acc > summary:hover { background: #EAEEF4; }
   <div class="card">
     <h2 id="h2-cps-status"></h2>
     <div class="note" id="note-cps-status"></div>
-    <div class="ctrl-bar">
-      <div class="ctrl"><label>Type</label><div class="pill-group" id="pg-cps-status-tipo"></div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-status-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-status-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-status-kind"></div></div>
-    </div>
+    <div class="layer-bar" id="lb-cps-status"></div>
+    <div class="layer-why" id="lw-cps-status"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-cps-status"></thead><tbody id="tb-cps-status"></tbody></table>
     </div>
@@ -348,11 +353,8 @@ details.acc > summary:hover { background: #EAEEF4; }
   <div class="card">
     <h2 id="h2-cps-taxa_grupo"></h2>
     <div class="note" id="note-cps-taxa_grupo"></div>
-    <div class="ctrl-bar">
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-taxa_grupo-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-taxa_grupo-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-taxa_grupo-kind"></div></div>
-    </div>
+    <div class="layer-bar" id="lb-cps-taxa_grupo"></div>
+    <div class="layer-why" id="lw-cps-taxa_grupo"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-cps-taxa_grupo"></thead><tbody id="tb-cps-taxa_grupo"></tbody></table>
     </div>
@@ -372,10 +374,9 @@ details.acc > summary:hover { background: #EAEEF4; }
     <div class="note" id="note-cps-composicao"></div>
     <div class="ctrl-bar">
       <div class="ctrl"><label>Cut</label><div class="pill-group" id="pg-cps-composicao-eixo"></div></div>
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-composicao-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-composicao-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-composicao-kind"></div></div>
     </div>
+    <div class="layer-bar" id="lb-cps-composicao"></div>
+    <div class="layer-why" id="lw-cps-composicao"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-cps-composicao"></thead><tbody id="tb-cps-composicao"></tbody></table>
     </div>
@@ -393,11 +394,8 @@ details.acc > summary:hover { background: #EAEEF4; }
   <div class="card">
     <h2 id="h2-cps-alternativa"></h2>
     <div class="note" id="note-cps-alternativa"></div>
-    <div class="ctrl-bar">
-      <div class="ctrl"><label>Adjustment</label><div class="pill-group" id="pg-cps-alternativa-ajuste"></div></div>
-      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-cps-alternativa-transform"></div></div>
-      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-cps-alternativa-kind"></div></div>
-    </div>
+    <div class="layer-bar" id="lb-cps-alternativa"></div>
+    <div class="layer-why" id="lw-cps-alternativa"></div>
     <div class="table-scroll">
       <table class="hier"><thead id="th-cps-alternativa"></thead><tbody id="tb-cps-alternativa"></tbody></table>
     </div>
@@ -408,6 +406,54 @@ details.acc > summary:hover { background: #EAEEF4; }
       <div class="ch-src" id="cr-cps-alternativa"></div>
       <div class="chart" id="chart-cps-alternativa"></div>
       <div class="range-bar" id="rb-cps-alternativa"><span>Range</span></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── Productivity: a unica aba TRIMESTRAL da pagina ──────────────────────────
+     A pill de leitura escolhe uma SERIE PUBLICADA (indice, variacao trimestral
+     anualizada, variacao anual) em vez de calcular uma transformacao -- o BLS publica
+     as tres, e recomputa-las a partir do indice de uma decimal erra meio digito.
+     Barras empilhadas e "% do total" ficam fora da tela inteira: os setores se contem
+     em vez de particionar, e o que se publica e indice. -->
+<section class="panel" id="p-prod">
+
+  <!-- ── Produtividade, custos e remuneracao por setor ───────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-prod"></h2>
+    <div class="note" id="note-prod"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Measure</label><div class="pill-group" id="pg-prod-medida"></div></div>
+      <div class="ctrl"><label>Reading</label><div class="pill-group" id="pg-prod-transform"></div></div>
+      <div class="ctrl"><label>Chart</label><div class="pill-group" id="pg-prod-kind"></div></div>
+    </div>
+    <div class="table-scroll">
+      <table class="hier"><thead id="th-prod"></thead><tbody id="tb-prod"></tbody></table>
+    </div>
+    <div class="hint" id="hint-prod"></div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-prod"></div>
+      <div class="ch-sub" id="cs-prod"></div>
+      <div class="ch-src" id="cr-prod"></div>
+      <div class="chart" id="chart-prod"></div>
+      <div class="range-bar" id="rb-prod"><span>Range</span></div>
+    </div>
+  </div>
+
+  <!-- ── Ciclos economicos: os graficos 3 e 4 do release ─────────────────────────────── -->
+  <div class="card">
+    <h2 id="h2-prod-ciclo"></h2>
+    <div class="note" id="note-prod-ciclo"></div>
+    <div class="ctrl-bar">
+      <div class="ctrl"><label>Sector</label><div class="pill-group" id="pg-prod-ciclo-setor"></div></div>
+    </div>
+    <div class="chart-frame">
+      <div class="ch-title" id="ct-prod-ciclo"></div>
+      <div class="ch-sub" id="cs-prod-ciclo"></div>
+      <div class="ch-src" id="cr-prod-ciclo"></div>
+      <div class="chart" id="chart-prod-ciclo"></div>
+      <div class="range-bar" id="rb-prod-ciclo"><span>Range</span></div>
     </div>
   </div>
 
@@ -477,6 +523,258 @@ details.acc > summary:hover { background: #EAEEF4; }
   <div class="card">
     <h2>Appendix &mdash; source, method and what to watch out for</h2>
     <div class="note">Everything below is either quoted from the release's own Technical Note or measured against this database. Where a number is measured, it says so.</div>
+
+    <details class="acc">
+      <summary><span class="acc-t">The controls on the two payroll tables</span><span class="acc-s">what each one changes, and what it leaves alone</span></summary>
+      <div class="acc-b">
+        <p>The controls above the two payroll tables are independent, and they are applied in the
+        order they are listed. Two of them change <b>what the number is</b>, one changes <b>what it
+        is measured against</b>, one changes <b>only how noisy it looks</b>, and the last one
+        changes nothing about the number at all. <b>Which controls appear depends on the data</b>:
+        a choice the numbers do not offer is not shown as an empty control, it is simply absent.</p>
+        <table>
+          <tr><th>Control</th><th>What it changes</th></tr>
+          <tr><td><b>Adjustment</b></td><td>Whether the normal seasonal rhythm of hiring is taken
+            out. The unadjusted view is the one where an industry's parts add up to the industry:
+            the BLS adjusts each series on its own, so in the adjusted view the parts add only
+            approximately.</td></tr>
+          <tr><td><b>Denominator</b></td><td>Whether you see the count of jobs or that count as a
+            share of the whole payroll. Every industry is divided by the same total, so shares can
+            be read against each other and stacked.</td></tr>
+          <tr><td><b>Comparison</b></td><td>The reference point. <i>Value</i> is the level itself;
+            <i>Change</i> is how many jobs were added since last month or since the same month a
+            year ago; <i>%</i> is that same movement as a percentage. Change and % are not the same
+            reading &mdash; a month can be "+127" thousand jobs and "+0.09" percent, and only the
+            axis label tells you which one is on screen.</td></tr>
+          <tr><td><b>Smoothing</b></td><td>Averages the line over three, six or twelve months to
+            take out month-to-month noise. It never changes the unit or the scale: the three-month
+            average of the monthly change is still a monthly change in jobs, which is the figure
+            most commentary quotes.</td></tr>
+          <tr><td><b>Chart</b></td><td>Lines or stacked bars. Stacking is only offered where the
+            rows genuinely add up to their total.</td></tr>
+        </table>
+        <p>On the hours and earnings table a sixth control appears for average hourly and average
+        weekly earnings: <b>Basis</b>, which switches between earnings in current dollars and the
+        same earnings in constant 1982-84 dollars, as the BLS publishes them. It is the first thing
+        applied, before any comparison, and it is not shown for the measures where the survey has
+        no constant-dollar counterpart.</p>
+        <p>Some options are greyed out depending on the others, and when that happens the reason is
+        printed under the controls rather than hidden in a tooltip. On hours and earnings, what
+        greys out changes with the measure you pick: an average per worker has no total to be a
+        share of, and industries cannot be stacked into one, while the aggregate hours and payrolls
+        measures can be both. Two controls are missing on both tables on purpose: there is nothing
+        to pick for <i>window</i>, because these are headcounts and weekly rates &mdash; adding
+        twelve months of a weekly payroll would not give a year of payroll &mdash; and the payroll
+        employment table has a single measure, so it shows no measure control either.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">The controls on the four household tables</span><span class="acc-s">the same five controls, and why they grey out more often here</span></summary>
+      <div class="acc-b">
+        <p>The household tables carry the same five controls as the payroll ones, in the same order,
+        and they mean the same things. What is different is that a row of one of these tables can be
+        <b>a count of people, a rate, or a length of time</b> &mdash; the labour-force table holds
+        four counts in thousands and three rates in percent, and the duration cut holds four counts
+        and two averages in weeks. A chart has one vertical axis, so <b>what you tick decides which
+        controls still make sense</b>, and the ones that stop making sense are greyed with the
+        reason printed underneath.</p>
+        <table>
+          <tr><th>What you have ticked</th><th>What that leaves available</th></tr>
+          <tr><td>Only counts of people</td><td>Everything. Percent changes read as percent
+            changes, and the rows can be stacked where they are parts of a total.</td></tr>
+          <tr><td>Only rates</td><td><i>Change</i> is offered and comes out in percentage points;
+            the <i>%</i> readings are greyed. A percent change of a percentage misleads: the
+            unemployment rate went from 4.3 to 4.1 over the year to August 2026, which is
+            &minus;0.2 points and would read as "&minus;4.7%".</td></tr>
+          <tr><td>Rates and counts together</td><td>The <i>%</i> readings are greyed for the same
+            reason, and <i>Change</i> stays &mdash; a difference is honest in both units at once,
+            so the axis says the units are mixed and the table shows each row's own.</td></tr>
+          <tr><td>An average duration in weeks</td><td>Percent changes are offered: weeks are not
+            a percentage, so "average duration rose 7.4% over the year" is a real reading. But a
+            duration does not stack with a count of people, so it always draws as a line.</td></tr>
+        </table>
+        <p><b>Shares need a total that exists.</b> In the labour-force table the total is the
+        civilian population, and that is the one line this survey never adjusts for seasonality
+        &mdash; so <i>% of total</i> is only available in the unadjusted view, and the control says
+        so instead of drawing an empty chart. Read that view and you get the published rates back:
+        the labour force as a share of the population <i>is</i> the participation rate, and
+        employment as a share of the population <i>is</i> the employment-population ratio, both to
+        within a tenth of a point. In the composition table the total is the level of unemployment,
+        which lives in the first table rather than in the one you are reading &mdash; which is why
+        the axis names it. The rates tables and the U-1 to U-6 table have no total at all: each row
+        already divides by its own base.</p>
+        <p>Two of the three cuts of unemployment do stack. In the unadjusted data the four reasons
+        and the four duration buckets each close on the unemployment level to within a thousand
+        people; in the adjusted data they land within about 3%, because each series is adjusted on
+        its own. The part-time cut does not stack: the two indented lines are two of the four
+        reasons the survey publishes for involuntary part-time work, so they cover most of that
+        line and not all of it.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">"Productivity = output minus hours" is off by up to 15.9 points</span><span class="acc-s">and the release itself writes the identity that way</span></summary>
+      <div class="acc-b">
+        <p>The release text reads <i>"productivity increased 1.4 percent, as output increased 1.7
+        percent and hours worked increased 0.3 percent"</i> — and 1.7 − 0.3 is exactly 1.4. The
+        subtraction works at ordinary rates and <b>breaks at large ones</b>, because the real
+        relation is a ratio, not a difference: one plus productivity growth equals one plus output
+        growth divided by one plus hours growth.</p>
+        <p>Measured across the 317 quarters of nonfarm business and the 157 of durable
+        manufacturing:</p>
+        <table>
+          <tr><th>Form</th><th>Mean error</th><th>Worst error</th></tr>
+          <tr><td>Subtraction</td><td>0.14 p.p.</td><td><b>15.9 p.p.</b></td></tr>
+          <tr><td>Ratio</td><td>0.04 p.p.</td><td>0.18 p.p.</td></tr>
+        </table>
+        <p>The worst case is durable manufacturing in 2020 Q3: output rose at a 91.3% annual rate
+        and hours at 37.1%. The subtraction says productivity rose 54.2%; the published figure is
+        <b>39.5%</b>. Nothing about 54.2% looks wrong. The 0.04 p.p. that remain in the correct
+        form are the rounding of three series published to one decimal, and they do not shrink
+        further. The same applies to unit labor costs, which are hourly compensation divided by
+        productivity, not minus it.</p>
+        <p>This is why the page shows the published series for each reading rather than deriving
+        one from another, and why the load refuses to store the table unless both identities close
+        in ratio form — and separately in the index, where they close to 0.002.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Nothing on the productivity tab adds up</span><span class="acc-s">the sectors overlap, and what is published is an index</span></summary>
+      <div class="acc-b">
+        <p>Two independent reasons, and either one alone would be enough.</p>
+        <p><b>The six sectors contain one another instead of partitioning.</b> Business is nonfarm
+        business plus farms. Manufacturing and nonfinancial corporations are both cuts from inside
+        nonfarm business. There is no total, and no set of these rows sums to one.</p>
+        <table>
+          <tr><th>Sector</th><th>Share of nominal GDP, 2025</th><th>Relation</th></tr>
+          <tr><td>Business</td><td>~77%</td><td>the widest</td></tr>
+          <tr><td>Nonfarm business</td><td>~76%</td><td>business minus farms</td></tr>
+          <tr><td>Nonfinancial corporations</td><td>~51%</td><td>inside nonfarm business</td></tr>
+          <tr><td>Manufacturing</td><td>—</td><td>also inside nonfarm business</td></tr>
+        </table>
+        <p><b>And the one pair that does partition still does not add</b>, because what is
+        published is an index. Durable plus nondurable manufacturing is manufacturing in levels,
+        but two indexes based at 100 in 2017 come to about 200 — measured, the ratio averages 2.02
+        on productivity. So stacked bars and a "% of total" reading are switched off across the
+        whole tab, with the reason on the disabled control, and a ticked parent never turns into a
+        line over its own parts, because it has none.</p>
+        <p>Manufacturing's two components are still shown indented under it. That indent marks
+        <b>containment</b>, which is real, and not a sum, which is not.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">One "Output" column, two output concepts</span><span class="acc-s">and the incomparability is in the catalogue, not just the footnote</span></summary>
+      <div class="acc-b">
+        <p>The release warns in prose that the concepts, sources and methods behind manufacturing
+        output differ from those behind business and nonfarm business output, and that the two are
+        not directly comparable. That warning does not have to be taken on trust — it is visible in
+        which series exist:</p>
+        <table>
+          <tr><th>Output concept</th><th>Sectors</th><th>Built from</th></tr>
+          <tr><td>Value added</td><td>business, nonfarm business, nonfinancial corporations</td>
+              <td>GDP with general government, nonprofits, households and (for nonfarm) farms
+              excluded</td></tr>
+          <tr><td>Sectoral output</td><td>manufacturing, durable, nondurable</td>
+              <td>Census value-of-production data deflated by BLS price indexes, with
+              transactions inside the sector removed; quarterly movement from the Federal
+              Reserve's industrial production indexes</td></tr>
+        </table>
+        <p>No sector publishes both. This page follows the release's own Table A1 in showing one
+        Output row across all six — the alternative, two separate rows, would leave every chart
+        half empty — and prints the warning in the chart subtitle whenever both concepts are
+        actually plotted together, so it appears where it is relevant rather than only here.</p>
+        <p>Four more measures are published for <b>nonfinancial corporations only</b>: profits,
+        unit profits, unit nonlabor costs and unit combined input costs. That is the release's
+        Table 6, and it exists because those corporations are the only sector where the accounts
+        separate profits from the rest of nonlabor payments. Their pills stay on screen, disabled,
+        rather than disappearing.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">Three readings, two precisions, and one number not to rebuild</span><span class="acc-s">the file carries three decimals; the printed release carries one</span></summary>
+      <div class="acc-b">
+        <p>Every quantity here comes as three separate published series: the index, the change from
+        the previous quarter compounded to an annual rate, and the change from the same quarter a
+        year earlier. Those are the three panels of every table in the release, and the reading
+        pill picks between them rather than computing anything.</p>
+        <p>The precisions differ, and the direction is the useful part: <b>the index is published
+        to three decimals and the two growth rates to one</b>. Three decimals is exactly what the
+        BLS says it computes with; the one-decimal index in the printed release is described there
+        as being for convenience. Measured consequence:</p>
+        <table>
+          <tr><th>Rebuilding the growth rate from…</th><th>Mean error</th><th>Worst error</th></tr>
+          <tr><td>the index as published in the data file (3 dp)</td><td>0.025 p.p.</td>
+              <td>0.0500 p.p., never above</td></tr>
+          <tr><td>the index as printed in the release (1 dp)</td><td>0.27 p.p.</td>
+              <td><b>1.35 p.p.</b></td></tr>
+        </table>
+        <p>So the first row's residual is entirely the rounding of the <i>published rate</i> — half
+        of its last digit — and the rebuild is, if anything, finer. The reason this page shows the
+        published series anyway is that the published number is the citable one: someone comparing
+        against a headline wants 1.4, not 1.3999, and the year-over-year reading here is the BLS's
+        rather than ours. The transferable warning is about the second row: <b>do not rebuild a
+        series from figures printed in a release table.</b></p>
+        <p>One consequence of the three-series design worth knowing: in the annual average the two
+        growth readings carry the <b>same</b> value, because "previous quarter" and "same quarter a
+        year earlier" both collapse to the previous year. The annual average is also published only
+        for complete years, so the current year never has one.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">What the business-cycle bars measure, and what they do not</span><span class="acc-s">endpoints, not an average of quarters — and two spans that differ</span></summary>
+      <div class="acc-b">
+        <p>Each bar is the growth rate between the <b>endpoints</b> of its window, annualized: the
+        index at the start against the index at the end. It is not the average of the quarterly
+        rates, which is a different and generally larger number whenever growth is uneven — for
+        nonfarm business productivity since 2019 Q4 the two differ by about a fifth of a point.
+        The release computes it the first way, and so does this page.</p>
+        <p>Two caveats the chart cannot hide:</p>
+        <table>
+          <tr><th>Window</th><th>Nonfarm business</th><th>Manufacturing</th></tr>
+          <tr><td>Current cycle, from 2019 Q4</td><td>6.5 years</td><td>6.5 years</td></tr>
+          <tr><td>Previous cycle, 2007 Q4 to 2019 Q4</td><td>12 years</td><td>12 years</td></tr>
+          <tr><td>Long term</td><td><b>from 1947 Q1</b></td><td><b>from 1987 Q1</b></td></tr>
+        </table>
+        <p>The long-term bar starts where each sector's own series starts, which is what the
+        release quotes — a fixed date would give manufacturing a long run its data does not cover.
+        So the two sectors' long-term bars are not measured over the same span, and the chart's
+        axis labels say which span each one used.</p>
+        <p>The cycle dates are the NBER peaks the BLS uses. A window that ends at a peak and one
+        that ends in the middle of an expansion are not the same kind of object, and the current
+        cycle is the second kind: it has not ended.</p>
+        <p>Ten of these rates are quoted in the release text, and the build refuses to publish the
+        report unless it reproduces all ten.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary><span class="acc-t">These numbers get revised, and the release says by how much</span><span class="acc-s">the first estimate has moved by −1.1 to +1.4 points</span></summary>
+      <div class="acc-b">
+        <p>Each quarter is published twice, about four weeks apart, and both are on this page's
+        release calendar. The revision is not cosmetic: in 2026 Q2, manufacturing productivity was
+        revised from a 1.9% increase to <b>2.4%</b>, and nonfarm unit labor costs from 1.3% to
+        1.2%.</p>
+        <p>The BLS publishes the size of this uncertainty rather than leaving it to be guessed:
+        about 80% of the time, the third estimate of nonfarm business quarterly productivity growth
+        has differed from the first by between <b>−1.1 and +1.4 percentage points</b>, measured over
+        reference quarters from 2001 Q1 to 2026 Q1. On a series whose quarterly readings are
+        typically 1 to 3%, that interval is wide enough to change the sign.</p>
+        <p>Two practical consequences. The first is that a single quarter is weak evidence, which
+        is why the release frames productivity against the business cycle and why the second chart
+        here does the same. The second is that there is no routine window to load: revisions reach
+        back years, and the annual revision reaches back further, so every refresh rewrites the
+        whole history rather than the tip.</p>
+        <p>The labor share is published as an index rather than as a percentage, so the level the
+        release quotes — 52.8% of nonfarm business output in 2026 Q2, the lowest since the series
+        began in 1947 — is not in the series itself. The index is, and it is at its own series low
+        in the same quarter.</p>
+      </div>
+    </details>
 
     <details class="acc">
       <summary><span class="acc-t">The payroll tree could not be inferred the usual way</span><span class="acc-s">the four top branches sum to 257% of the total</span></summary>
@@ -839,6 +1137,11 @@ var D = REPORT_DATA;
 var MESES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmtMonth(iso) { return MESES[parseInt(iso.slice(5, 7), 10) - 1] + ' ' + iso.slice(0, 4); }
 function fmtMonthShort(iso) { return MESES[parseInt(iso.slice(5, 7), 10) - 1] + '/' + iso.slice(2, 4); }
+// A grade de produtividade e de INICIO DE TRIMESTRE, entao o mes carrega o trimestre:
+// 01 -> Q1, 04 -> Q2, 07 -> Q3, 10 -> Q4.
+function _tri(iso) { return Math.floor((parseInt(iso.slice(5, 7), 10) - 1) / 3) + 1; }
+function fmtQuarter(iso) { return iso.slice(0, 4) + ' Q' + _tri(iso); }
+function fmtQuarterShort(iso) { return 'Q' + _tri(iso) + '/' + iso.slice(2, 4); }
 function fmtNum(v, dec) {
   if (v == null || isNaN(v)) return '—';
   var s = Math.abs(v).toFixed(dec);
@@ -1166,7 +1469,7 @@ function _janela(v, k, dividir) {
       s += x;
     }
     // Janela incompleta mostra NADA, nao a media dos meses que tem -- convencao de
-    // analytics/metric_layers.md, e o defeito que o relatorio cambial teve por meses
+    // .claude/skills/lis-dashboard/references/design-system.md#metricas, e o defeito que o relatorio cambial teve por meses
     // (uma conta corrente de meio ano rotulada com o ano inteiro).
     if (ok) out[i] = dividir ? s / k : s;
   }
@@ -1235,10 +1538,29 @@ function achatar(tree) {
 // `items`: {value, label, disabled?, title?, infoKey?}. Uma pill desabilitada FICA na
 // tela, com o motivo no title -- um controle ausente nao responde "onde esta o
 // acumulado de 12 meses?", um cinza com explicacao responde.
+// Um grupo de pills tem de caber em UMA LINHA. Acima disso o controle vira um
+// <select>, e a troca e automatica: acrescentar uma medida amanha basta para ela
+// acontecer sozinha. A largura e estimada e nao medida (nao ha browser no harness, e o
+// que importa e o corte, nao o pixel): padding 11px de cada lado + 1px de borda + ~6,4px
+// por caractere em Barlow 12px, mais ~20px quando a pill hospeda o botao `i`.
+//
+// Medido neste relatorio em 2026-09-04, e a folga e grande: o grupo mais largo que cabe
+// tem 763px (as 6 medidas do JOLTS, com cartao) e os dois que estouravam tinham 1.752px
+// (as 10 medidas da CES, em 2 linhas) e 2.807px (as 19 de produtividade, em 3).
+var PILL_MAX_PX = 1200;
+function larguraPills(items) {
+  var w = 0;
+  items.forEach(function(it) {
+    w += 24 + String(it.label).length * 6.4 + (it.infoKey ? 20 : 0);
+  });
+  return w;
+}
 function buildPills(groupId, items, ativo, onPick, unitFn) {
   var g = document.getElementById(groupId);
   if (!g) return;
   g.innerHTML = '';
+  if (larguraPills(items) > PILL_MAX_PX) return buildSelect(g, items, ativo, onPick, unitFn);
+  g.className = 'pill-group';
   items.forEach(function(it) {
     var b = document.createElement('button');
     b.type = 'button';
@@ -1251,6 +1573,29 @@ function buildPills(groupId, items, ativo, onPick, unitFn) {
     if (it.infoKey) attachInfo(b, it.infoKey, it.label, unitFn);
     g.appendChild(b);
   });
+}
+// O <select> mostra UMA opcao por vez, entao o cartao de definicao tambem: um botao `i`
+// so, do item selecionado, ao lado do controle. Uma <option> nao hospeda botao -- e sem
+// este passo a troca de pills por select apagaria 10 e 19 cartoes em silencio.
+function buildSelect(g, items, ativo, onPick, unitFn) {
+  g.className = 'sel-wrap';
+  var sel = document.createElement('select');
+  sel.className = 'layer-sel';
+  sel.id = g.id + '-sel';
+  items.forEach(function(it) {
+    var op = document.createElement('option');
+    op.value = it.value;
+    op.textContent = it.label + (it.disabled ? ' — n/a' : '');
+    if (it.disabled) { op.disabled = true; if (it.title) op.title = it.title; }
+    if (it.value === ativo) op.selected = true;
+    sel.appendChild(op);
+  });
+  sel.value = ativo;
+  sel.addEventListener('change', function() { onPick(sel.value); });
+  g.appendChild(sel);
+  var at = null;
+  items.forEach(function(it) { if (it.value === ativo) at = it; });
+  if (at && at.infoKey) attachInfo(g, at.infoKey, at.label, unitFn);
 }
 
 // ── the tab factory ─────────────────────────────────────────────────────────
@@ -1637,14 +1982,244 @@ function _transformar(ns, arr, chave, transform, ehRazao) {
   return out;
 }
 
-// ── fabrica comum das tabelas hierarquicas de CES e CPS ─────────────────────
-// Igual a do JOLTS no que nao depende da fonte (celula mes a mes, caixa que plota,
-// cor por posicao, cartao, cabecalho, regua) e diferente no que depende: a chave da
-// serie, a grade de datas, quais tipos existem e o que e aditivo.
+// ── as 7 camadas de metrica ─────────────────────────────────────────────────
+// Pipeline: BASE -> AJUSTE -> JANELA -> DENOMINADOR -> COMPARACAO -> SUAVIZACAO ->
+// GRAFICO, na ordem, porque as operacoes NAO comutam. Taxonomia completa em
+// .claude/skills/lis-dashboard/references/design-system.md#metricas
+//
+// Aplicado por enquanto so na aba "Payroll employment — CES" (`opt.camadas`). O que
+// esta aba mostra de cada regra:
+//   camada 1 BASE      nao existe -- emprego nao e valor monetario
+//   camada 3 JANELA    uma opcao so -- emprego e ESTOQUE, e estoque nao acumula
+//   camada 5 % M/M     existe, mas fica CINZA quando o denominador e participacao
+// As duas primeiras nao renderizam controle nenhum; a terceira renderiza cinza com o
+// motivo. Sao situacoes diferentes: "o dado nunca oferece" contra "nao vale com o
+// estado atual das outras camadas", e a segunda volta a valer com um clique.
+function _dif(v, lag) {
+  var out = new Array(v.length).fill(null);
+  for (var i = lag; i < v.length; i++) {
+    var a = v[i], b = v[i - lag];
+    if (a == null || b == null || isNaN(a) || isNaN(b)) continue;
+    out[i] = a - b;
+  }
+  return out;
+}
+function _pctv(v, lag) {
+  var out = new Array(v.length).fill(null);
+  for (var i = lag; i < v.length; i++) {
+    var a = v[i], b = v[i - lag];
+    // Base zero nao e infinito, e indefinido: celula em branco.
+    if (a == null || b == null || isNaN(a) || isNaN(b) || b === 0) continue;
+    out[i] = (a / b - 1) * 100;
+  }
+  return out;
+}
+// `Change` e `%` sao opcoes DISTINTAS, nao a mesma: "+89" pode ser mil empregos a mais
+// ou 89% a mais, e so o titulo do eixo distingue. A diferenca herda a aditividade da
+// base (a diferenca de coisas que somam soma), a variacao percentual nao -- e e por
+// isso que barras empilhadas dependem desta camada.
+var CAMADA_COMPARA = [
+  {key: 'valor', label: 'Value'},
+  {key: 'dPer',  label: 'Change M/M'},
+  {key: 'pPer',  label: '% M/M'},
+  {key: 'dYoY',  label: 'Change Y/Y'},
+  {key: 'pYoY',  label: '% Y/Y'}
+];
+// A camada 6 nunca desabilita nada e nunca muda a unidade -- e por isso que
+// acrescentar uma janela aqui e uma linha em tres lugares (a lista, o pipeline e o
+// rotulo do eixo) e nao uma decisao por aba.
+var CAMADA_SUAVIZA = [
+  {key: 'none', label: 'None'},
+  {key: 'ma3',  label: '3-month average'},
+  {key: 'ma6',  label: '6-month average'},
+  {key: 'ma12', label: '12-month average'}
+];
+var _PCT_COMPARA = {pPer: 1, pYoY: 1};
+
+// A ORDEM E O CONTRATO: trocar duas linhas aqui muda o numero, nao o rotulo. E o par
+// que NAO comuta e janela x comparacao (e, dentro de serie(), denominador x
+// suavizacao) -- diferenca e media movel sao filtros lineares invariantes no tempo,
+// entao MA3(dif) == dif(MA3) no interior da serie e um teste escrito nesse par passa
+// nas duas ordens sem segurar nada.
+function _aplicarCamadas(ns, arr, chave, st) {
+  var ck = ns + '#' + chave + '@' + st.janela + '|' + st.compara + '|' + st.suaviza;
+  if (ck in _TRC) return _TRC[ck];
+  var v = arr;
+  if (v) {
+    // 3 JANELA. Numa participacao o certo e agregar numerador e denominador separado
+    // e dividir depois (convencao A); nao existe esse caso nesta aba, porque emprego
+    // e estoque e a camada tem uma opcao so. Ao entrar uma medida de FLUXO aqui, a
+    // agregacao tem de subir para dentro de serie(), antes da divisao.
+    if (st.janela === 'sum12') v = _janela(v, 12, false);
+    if (st.compara === 'dPer') v = _dif(v, 1);                    // 5 COMPARACAO
+    else if (st.compara === 'pPer') v = _pctv(v, 1);
+    else if (st.compara === 'dYoY') v = _dif(v, 12);
+    else if (st.compara === 'pYoY') v = _pctv(v, 12);
+    if (st.suaviza === 'ma3') v = _janela(v, 3, true);            // 6 SUAVIZACAO
+    else if (st.suaviza === 'ma6') v = _janela(v, 6, true);
+    else if (st.suaviza === 'ma12') v = _janela(v, 12, true);
+  }
+  _TRC[ck] = v;
+  return v;
+}
+
+// Deriva do descritor do dado quais camadas existem e com que opcoes -- nunca escrito
+// a mao. Camada que sobra com uma opcao so nao entra na lista, e portanto nao vira
+// controle: e isso que tira da barra a pill solitaria de medida e o "12M total" que
+// ficava permanentemente cinza nesta aba.
+function camadasDe(desc, st, barrasOk, barrasMotivo) {
+  var L = [];
+  // 1 BASE. `bases` diz que duas series publicadas sao a MESMA grandeza em unidades
+  // de valor diferentes -- na CES, ganho nominal e o mesmo ganho em dolares de
+  // 1982-84. Sem isso as duas ficam na lista de medidas parecendo conceitos distintos.
+  if (desc.bases) {
+    L.push({id: 'base', label: 'Basis', valor: st.base, options: desc.bases});
+  }
+  if (desc.sa) {                                                  // 2 AJUSTE
+    L.push({id: 'ajuste', label: 'Adjustment', valor: st.ajuste,
+      options: D.ajustes.map(function(a) { return {key: a.key, label: a.label}; })});
+  }
+  var jan = [{key: 'nativa', label: 'Monthly'}];                  // 3 JANELA
+  if (desc.acumula) jan.push({key: 'sum12', label: '12-month total'});
+  if (jan.length > 1) {
+    L.push({id: 'janela', label: 'Window', valor: st.janela, options: jan});
+  }
+  var den = [{key: 'nivel', label: 'Level'}];                     // 4 DENOMINADOR
+  den.push(desc.share
+    ? {key: 'share', label: '% of ' + desc.rootLabel}
+    : {key: 'share', label: '% of total', disabled: true, motivo: desc.shareMotivo});
+  L.push({id: 'tipo', label: 'Denominator', valor: st.tipo, options: den});
+
+  // 5 COMPARACAO. A variacao percentual e proibida por TRES motivos diferentes, e o
+  // texto exibido tem de dizer qual -- a camada 4 poe a serie em porcentagem, a
+  // medida inteira JA e uma porcentagem, ou so ALGUMA das linhas plotadas e. O
+  // terceiro caso nao existia enquanto a natureza era propriedade da medida; ele
+  // aparece na primeira aba em que ela e propriedade da LINHA (a CPS mistura pessoas,
+  // % e semanas na mesma tabela) e o eixo Y continua sendo um so.
+  var pctOff = '';
+  if (st.tipo === 'share') {
+    pctOff = 'A share is already a percentage, so its honest change is in percentage '
+           + 'points — that is what "Change" gives here. Set the denominator back to '
+           + 'Level for a percent change.';
+  } else if (desc.razao) {
+    pctOff = 'This measure is already a ratio: a percent change of a percentage reads '
+           + 'as "-6.7%" where the fact is "-0.5 p.p.".';
+  } else if (desc.pctMotivo) {
+    pctOff = desc.pctMotivo;
+  }
+  L.push({id: 'compara', label: 'Comparison', valor: st.compara,
+    options: CAMADA_COMPARA.map(function(c) {
+      var off = !!_PCT_COMPARA[c.key] && !!pctOff;
+      return {key: c.key, label: c.label, disabled: off, motivo: off ? pctOff : ''};
+    })});
+  // 6 SUAVIZACAO. Nunca desabilita nada: se uma opcao daqui precisasse ser
+  // desligada, ela seria uma camada 3 disfarcada.
+  L.push({id: 'suaviza', label: 'Smoothing', valor: st.suaviza, options: CAMADA_SUAVIZA});
+
+  L.push({id: 'kind', label: 'Chart', valor: st.kind, options: [   // 7 GRAFICO
+    {key: 'lines', label: 'Lines'},
+    {key: 'bars', label: 'Stacked bars', disabled: !barrasOk,
+     motivo: barrasOk ? '' : barrasMotivo}]});
+  return L;
+}
+
+// Um <select> por camada, numa linha. O motivo de uma opcao cinza vai para uma linha
+// de texto abaixo da barra, e nao para o `title` da <option>: navegador nenhum mostra
+// tooltip de option de forma confiavel -- e um <button> desabilitado mostrava. Foi o
+// que a troca de pills por selects custou, e o corretivo e por o motivo no DOM.
+function renderLayerBar(barId, whyId, layers, onPick) {
+  var box = document.getElementById(barId);
+  if (!box) return;
+  box.innerHTML = '';
+  var motivos = [];
+  layers.forEach(function(L) {
+    var wrap = document.createElement('div');
+    wrap.className = 'layer';
+    var lab = document.createElement('label');
+    lab.textContent = L.label;
+    lab.htmlFor = barId + '-' + L.id;
+    var sel = document.createElement('select');
+    sel.className = 'layer-sel';
+    sel.id = barId + '-' + L.id;
+    L.options.forEach(function(o) {
+      var op = document.createElement('option');
+      op.value = o.key;
+      op.textContent = o.label + (o.disabled ? ' — n/a' : '');
+      if (o.disabled) {
+        op.disabled = true;
+        if (o.motivo) motivos.push([L.label + ' · ' + o.label, o.motivo]);
+      }
+      if (o.key === L.valor) op.selected = true;
+      sel.appendChild(op);
+    });
+    sel.value = L.valor;
+    sel.addEventListener('change', function() { onPick(L.id, sel.value); });
+    wrap.appendChild(lab);
+    wrap.appendChild(sel);
+    box.appendChild(wrap);
+  });
+  var why = document.getElementById(whyId);
+  if (!why) return;
+  why.innerHTML = '';
+  motivos.forEach(function(p) {
+    var d = document.createElement('div');
+    d.className = 'why-line';
+    var b = document.createElement('b');
+    b.textContent = p[0] + ' — ';
+    d.appendChild(b);
+    d.appendChild(document.createTextNode(p[1]));
+    why.appendChild(d);
+  });
+}
+
+// O rotulo do eixo Y e funcao do CAMINHO INTEIRO, percorrido na ordem do pipeline --
+// e por isso que a unidade nao pode viver no rotulo da serie.
+function unitCamadas(desc, st) {
+  var u = st.tipo === 'share' ? desc.yShare : desc.yNivel;        // 4
+  var razao = st.tipo === 'share' || desc.razao;
+  if (st.compara === 'dPer') {                                    // 5
+    u = razao ? 'p.p. change vs. the previous month' : desc.yDifPer;
+  } else if (st.compara === 'pPer') {
+    u = '% change vs. the previous month';
+  } else if (st.compara === 'dYoY') {
+    u = razao ? 'p.p. change vs. the same month a year earlier' : desc.yDifYoY;
+  } else if (st.compara === 'pYoY') {
+    u = '% change vs. the same month a year earlier';
+  }
+  if (st.janela === 'sum12') u += ', 12-month total';              // 3
+  if (st.suaviza === 'ma3') u += ', 3-month average';              // 6
+  else if (st.suaviza === 'ma6') u += ', 6-month average';
+  else if (st.suaviza === 'ma12') u += ', 12-month average';
+  return u;
+}
+
+// ── fabrica comum das tabelas hierarquicas de CES, CPS e produtividade ──────
+// Igual a do JOLTS no que nao depende da fonte (celula periodo a periodo, caixa que
+// plota, cor por posicao, cartao, cabecalho, regua) e diferente no que depende: a chave
+// da serie, a grade de datas, quais tipos existem e o que e aditivo.
+//
+// Quatro parametros existem so por causa da aba de produtividade, que e TRIMESTRAL e
+// cuja pill de leitura escolhe uma SERIE PUBLICADA em vez de calcular:
+//   opt.fmtCol        rotulo da coluna da tabela          (default fmtMonthShort)
+//   opt.fmtHover      rotulo de data do hover, funcao      (default: %{x|%b %Y})
+//   opt.nCols         quantas colunas de periodo          (default 12)
+//   opt.transforms    a lista da pill de leitura          (default TRANSFORMS)
+//   opt.calcTransform false = a pill entra em opt.chave() e nada e transformado aqui
+// Sem eles a aba trimestral herdaria rotulo de mes e recomputaria uma variacao que a
+// fonte publica melhor -- ver o docstring de prod_tab.py.
 function makeGenericTab(opt) {
   var pref = opt.pref;
   var nos = achatar(opt.tree);
   var raiz = opt.tree[0];
+  // A arvore visivel e a raiz dela seguem o ESCOPO da medida selecionada, nao o
+  // payload. A CES coleta overtime so na industria de transformacao, entao as 3
+  // medidas de overtime cobrem 21 das 94 linhas -- e as marcadas por default (Total
+  // private, Goods-producing, Private services) nao estao entre elas. O que se via era
+  // um grafico VAZIO, sem erro nenhum, e um "% do total" que dividia por uma serie
+  // inexistente. Mesmo argumento do corte de tamanho do JOLTS, que comeca em Total
+  // private e nao em Total nonfarm: a raiz de um corte e o que aquele dado cobre.
+  function arvoreAtual() { return opt.filtro ? opt.filtro(state, opt.tree) : opt.tree; }
+  function raizAtual() { return arvoreAtual()[0] || raiz; }
   var defaults = opt.defaults || [raiz.key].concat(
     (raiz.children || []).map(function(n) { return n.key; }));
   var fixos = {}; fixos[raiz.key] = PALETTE[0];
@@ -1652,7 +2227,10 @@ function makeGenericTab(opt) {
 
   var state = {
     medida: opt.ordemMedidas ? opt.ordemMedidas[0] : null,
-    tipo: 'nivel', ajuste: 'sa', transform: 'm', kind: 'lines',
+    tipo: 'nivel', ajuste: 'sa', kind: 'lines',
+    transform: opt.transforms ? opt.transforms[0].key : 'm',
+    // As camadas 3, 5 e 6, que antes viviam fundidas em `transform`.
+    base: 'nominal', janela: 'nativa', compara: 'valor', suaviza: 'none',
     eixo: opt.eixos ? opt.eixos[0].key : null,
     checked: {}, expanded: {}
   };
@@ -1675,16 +2253,43 @@ function makeGenericTab(opt) {
   function aditivo(no) { return opt.aditivo(state, no); }
   function ehShare() { return state.tipo === 'share'; }
   function ehRazao(no) { return ehShare() || opt.ehRazao(state, no); }
+  // Com as camadas ligadas isto SAI DO DESCRITOR, e nao do `opt.ehRazao` antigo, que
+  // e `!aditivo` -- confundir "nao soma entre irmas" com "ja e porcentagem" era o bug
+  // desta aba. Duas leituras da mesma pergunta em dois lugares fazem `camadasDe`
+  // habilitar a opcao e `normalizar` desfazer a escolha, sem erro nenhum.
+  function ehRazaoAtual() {
+    if (opt.camadas) return ehShare() || !!opt.desc(state, raizAtual()).razao;
+    return ehShare() || opt.ehRazao(state, null);
+  }
+  // Mais largo que `ehRazaoAtual`: a variacao percentual tambem cai quando SO ALGUMA
+  // das linhas plotadas e porcentagem. Nesse caso a serie nao e uma razao (a
+  // diferenca dela nao sai em p.p.), mas o eixo e um so e "% change" mentiria sobre
+  // parte das linhas.
+  function pctBloqueado() {
+    if (!opt.camadas) return ehRazaoAtual();
+    var d = opt.desc(state, raizAtual());
+    return ehShare() || !!d.razao || !!d.pctMotivo;
+  }
 
   function bruta(cat) {
     return _expandir(pref, opt.series, opt.chave(state, cat), opt.dates.length);
   }
+  // O denominador da camada 4 e a raiz da arvore visivel por DEFAULT, e nao por
+  // definicao: no bloco de composicao do desemprego as partes somam os `desocupados`,
+  // que e uma linha de OUTRO bloco -- a raiz da arvore ali e so a primeira linha do
+  // corte. Ver a regra "% do total divide pela raiz DA PROPRIA arvore": o que ela
+  // exige e que o denominador seja o total daquele recorte, nao que seja uma linha da
+  // tabela.
+  function denKeyAtual() {
+    return opt.denKey ? opt.denKey(state) : raizAtual().key;
+  }
   function serie(no) {
     var cat = no.key;
     if (ehShare()) {
-      var num = bruta(cat), den = bruta(raiz.key);
+      var dk = denKeyAtual();
+      var num = bruta(cat), den = bruta(dk);
       if (!num || !den) return null;
-      var ck = 'share:' + opt.chave(state, cat);
+      var ck = 'share:' + dk + ':' + opt.chave(state, cat);
       var arr = _EXP[pref + '#' + ck];
       if (!arr) {
         arr = num.map(function(a, i) {
@@ -1693,8 +2298,13 @@ function makeGenericTab(opt) {
         });
         _EXP[pref + '#' + ck] = arr;
       }
+      if (opt.calcTransform === false) return arr;
+      // 4 DENOMINADOR ja aplicado acima; daqui em diante o pipeline segue.
+      if (opt.camadas) return _aplicarCamadas(pref, arr, ck, state);
       return _transformar(pref, arr, ck, state.transform, true);
     }
+    if (opt.calcTransform === false) return bruta(cat);
+    if (opt.camadas) return _aplicarCamadas(pref, bruta(cat), opt.chave(state, cat), state);
     return _transformar(pref, bruta(cat), opt.chave(state, cat), state.transform,
                         ehRazao(no));
   }
@@ -1708,16 +2318,48 @@ function makeGenericTab(opt) {
   function acumOk() { return false; }          // nada na CES/CPS acumula: ver o apendice
   function barrasOk() {
     if (!opt.barrasOk(state)) return false;
+    // Aditividade entre irmas: nivel soma, participacao soma, DIFERENCA de qualquer
+    // dos dois soma (herda da base) -- so a variacao percentual nao soma. A
+    // suavizacao nao entra: media de coisas que somam continua somando.
+    if (opt.camadas) return !_PCT_COMPARA[state.compara];
+    if (opt.calcTransform === false) return true;   // a validade ja e do dado, nao da leitura
     return state.transform !== 'yoy' || ehShare();
   }
   function normalizar() {
-    if (state.transform === 'sum12') state.transform = 'm';
+    if (opt.calcTransform !== false && state.transform === 'sum12') state.transform = 'm';
     if (state.tipo === 'share' && !opt.shareOk(state)) state.tipo = 'nivel';
+    // Trocar o denominador para participacao invalida as variacoes percentuais: caia
+    // para 'valor' em vez de deixar o estado valido no objeto e invalido na tela.
+    if (opt.camadas && _PCT_COMPARA[state.compara] && pctBloqueado()) state.compara = 'valor';
     if (state.kind === 'bars' && !barrasOk()) state.kind = 'lines';
+    // Trocar de medida (ou de corte) pode deixar TODO o conjunto marcado fora do
+    // escopo do novo. Cai para a raiz coberta e os filhos diretos dela -- a mesma
+    // regra de "cair de volta explicitamente" das camadas, aplicada as linhas em vez
+    // do estado.
+    //
+    // A condicao NAO e "nada marcado": e "nada marcado que esteja no escopo, com algo
+    // marcado fora dele". Sem essa distincao, desmarcar a ultima linha a mao remarca
+    // tres sozinho -- o que so ficou possivel quando a caixa passou a chamar tudo().
+    if (opt.filtro) {
+      var vis = achatar(arvoreAtual()).map(function(n) { return n.key; });
+      var algum = false, algumFora = false;
+      vis.forEach(function(k) { if (state.checked[k]) algum = true; });
+      Object.keys(state.checked).forEach(function(k) {
+        if (state.checked[k] && vis.indexOf(k) < 0) algumFora = true;
+      });
+      if (!algum && algumFora && vis.length) {
+        var r0 = raizAtual();
+        state.checked[r0.key] = true;
+        state.expanded[r0.key] = true;
+        (r0.children || []).forEach(function(c) { state.checked[c.key] = true; });
+      }
+    }
   }
 
   function yTitle() {
+    if (opt.camadas) return unitCamadas(opt.desc(state, raizAtual()), state);
     var t = opt.yTitle(state, ehShare(), raiz);
+    if (opt.calcTransform === false) return t;
     if (state.transform === 'yoy') {
       return (ehShare() || opt.ehRazao(state, null))
         ? 'p.p. change vs. the same month a year earlier'
@@ -1734,15 +2376,17 @@ function makeGenericTab(opt) {
   }
   function decimais() {
     if (ehShare()) return 2;
-    if (state.transform === 'yoy') return 1;
+    if (opt.camadas && _PCT_COMPARA[state.compara]) return 1;
+    if (opt.calcTransform !== false && state.transform === 'yoy') return 1;
     return opt.dec(state);
   }
 
   // ---- tabela
-  function refDates() { return opt.dates.slice(-12); }
+  function nCols() { return opt.nCols || 12; }
+  function fmtCol(d) { return (opt.fmtCol || fmtMonthShort)(d); }
+  function refDates() { return opt.dates.slice(-nCols()); }
   function linhasVisiveis() {
-    var t = opt.filtro ? opt.filtro(state, opt.tree) : opt.tree;
-    return flattenHierRows(t, state.expanded, 0);
+    return flattenHierRows(arvoreAtual(), state.expanded, 0);
   }
   function renderHead() {
     els.thead.innerHTML = '';
@@ -1752,14 +2396,14 @@ function makeGenericTab(opt) {
     tr.appendChild(a); tr.appendChild(b);
     refDates().forEach(function(d) {
       var th = document.createElement('th');
-      th.textContent = fmtMonthShort(d);
+      th.textContent = fmtCol(d);
       tr.appendChild(th);
     });
     els.thead.appendChild(tr);
   }
   function renderTable() {
     els.tbody.innerHTML = '';
-    var dec = decimais(), iRef = opt.dates.length - 12;
+    var dec = decimais(), iRef = opt.dates.length - nCols();
     linhasVisiveis().forEach(function(row) {
       var no = row.node, tr = document.createElement('tr');
       if (no.children) tr.className = 'is-group';
@@ -1769,7 +2413,14 @@ function makeGenericTab(opt) {
       cb.type = 'checkbox';
       cb.checked = !!state.checked[no.key];
       cb.addEventListener('change', function() {
-        state.checked[no.key] = cb.checked; renderTable(); renderChart();
+        state.checked[no.key] = cb.checked;
+        // Com as camadas ligadas a caixa nao mexe so no grafico: numa aba em que a
+        // natureza e propriedade da LINHA, marcar uma taxa ao lado de niveis muda que
+        // opcoes valem (a variacao percentual cai, a participacao cai) e muda o rotulo
+        // do eixo. Sem refazer a barra, o estado fica valido no objeto e invalido na
+        // tela -- o mesmo modo de falha que a camada 5 tem sem o fallback.
+        if (opt.camadas) { tudo(); return; }
+        renderTable(); renderChart();
       });
       tdc.appendChild(cb); tr.appendChild(tdc);
 
@@ -1834,25 +2485,32 @@ function makeGenericTab(opt) {
         }
         walk(n.children);
       });
-    })(opt.filtro ? opt.filtro(state, opt.tree) : opt.tree);
+    })(arvoreAtual());
     return out;
   }
   function renderChart() {
     var ss = specs(), dec = decimais(), yt = yTitle();
     var mostrar = !!VALORES[els.chart], barras = state.kind === 'bars';
+    var hov = '%{fullData.name}<br>'
+            + (opt.fmtHover ? '%{customdata}' : '%{x|%b %Y}')
+            + ': %{y:,.' + dec + 'f}<extra></extra>';
+    function rotulos(datas) {
+      return opt.fmtHover ? datas.map(opt.fmtHover) : undefined;
+    }
     var traces = ss.map(function(s) {
       if (barras && !s.comoLinha) {
         return {x: s.dates, y: s.values, name: s.name, type: 'bar',
                 marker: {color: s.color, line: {width: 0}},
-                hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'};
+                customdata: rotulos(s.dates), hovertemplate: hov};
       }
       return {x: s.dates, y: s.values, name: s.name, type: 'scatter',
+              customdata: rotulos(s.dates),
               mode: mostrar ? 'lines+text' : 'lines',
               text: textoDaSerie(s.values, dec), textposition: 'top center',
               textfont: {family: 'JetBrains Mono', size: 9, color: s.color},
               line: {color: s.color, width: barras ? 2.2 : 1.8, dash: s.dash || 'solid'},
               connectgaps: false,
-              hovertemplate: '%{fullData.name}<br>%{x|%b %Y}: %{y:,.' + dec + 'f}<extra></extra>'};
+              hovertemplate: hov};
     });
     var extra = {yaxis: {title: {text: yt, font: {size: 11}}}};
     if (barras) { extra.barmode = 'relative'; extra.bargap = 0.12; }
@@ -1860,8 +2518,18 @@ function makeGenericTab(opt) {
 
     describeChart({
       title: opt.titulo(state), titleEl: els.ct, subEl: els.cs, srcEl: els.cr,
-      series: ss, bits: opt.bits(state, barras), unit: yt, source: opt.fonte
+      series: ss, bits: opt.bits(state, barras, raizAtual()), unit: yt, source: opt.fonte
     });
+    // Com a medida fora da barra (uma opcao so nao vira controle), o cartao de
+    // definicao dela passa a pendurar no titulo do grafico -- que describeChart
+    // reescreve a cada render, entao o botao e recriado aqui e nao num init.
+    if (opt.camadas && opt.tituloInfoKey) {
+      // describeChart acabou de reescrever o titulo, o que num browser apaga os
+      // filhos junto -- mas nao apaga num stub de teste que so troca o textContent.
+      // Limpar explicitamente faz a regra "um botao, nao um por render" valer nos dois.
+      els.ct.querySelectorAll('.info-btn').forEach(function(b) { b.remove(); });
+      attachInfo(els.ct, opt.tituloInfoKey(state), opt.titulo(state), yTitle);
+    }
     _ensureDlToggle(els.bar, els.chart, renderChart);
     dlHabilitar(els.chart, !barras, barras ? 'Not available on the stacked bar chart' : '');
     finishChart(els.chart, els.bar);
@@ -1870,10 +2538,26 @@ function makeGenericTab(opt) {
   // ---- controles
   function renderPills() {
     normalizar();
+    // A medida e o CORTE sao seletores de SERIE, nao camadas de metrica: "que entidade,
+    // medida em que" fica acima do pipeline, e o pipeline comeca depois. Os dois seguem
+    // em pills -- e o que preserva os cartoes de definicao, ja que uma <option> nao
+    // hospeda botao -- e os dois sao construidos ANTES do desvio das camadas, porque
+    // valem nas duas formas de barra.
     if (opt.ordemMedidas && opt.ordemMedidas.length > 1) {
       buildPills('pg-' + pref + '-medida', opt.ordemMedidas.map(function(m) {
         return {value: m, label: opt.medidas[m].label, infoKey: opt.medidaInfoKey(m)};
       }), state.medida, function(v) { state.medida = v; tudo(); }, yTitle);
+    }
+    if (opt.eixos) {
+      buildPills('pg-' + pref + '-eixo', opt.eixos.map(function(e) {
+        return {value: e.key, label: e.label};
+      }), state.eixo, function(v) { state.eixo = v; tudo(); });
+    }
+    if (opt.camadas) {
+      renderLayerBar('lb-' + pref, 'lw-' + pref,
+        camadasDe(opt.desc(state, raizAtual()), state, barrasOk(), opt.barrasMotivo(state)),
+        function(id, v) { state[id] = v; tudo(); });
+      return;
     }
     if (document.getElementById('pg-' + pref + '-tipo')) {
       var td = tiposDisponiveis();
@@ -1884,20 +2568,15 @@ function makeGenericTab(opt) {
         return {value: t.key, label: t.label, disabled: !!t.disabled, title: t.title || ''};
       }), state.tipo, function(v) { state.tipo = v; tudo(); });
     }
-    if (opt.eixos) {
-      buildPills('pg-' + pref + '-eixo', opt.eixos.map(function(e) {
-        return {value: e.key, label: e.label};
-      }), state.eixo, function(v) { state.eixo = v; tudo(); });
-    }
     buildPills('pg-' + pref + '-ajuste', D.ajustes.map(function(a) {
       return {value: a.key, label: a.label, disabled: !opt.ajusteOk(state, a.key),
               title: opt.ajusteOk(state, a.key) ? '' : opt.ajusteMotivo(a.key)};
     }), state.ajuste, function(v) { state.ajuste = v; tudo(); });
 
-    buildPills('pg-' + pref + '-transform', TRANSFORMS.map(function(t) {
-      var ok = t.key !== 'sum12';
+    buildPills('pg-' + pref + '-transform', (opt.transforms || TRANSFORMS).map(function(t) {
+      var ok = opt.calcTransform === false || t.key !== 'sum12';
       return {value: t.key, label: t.label, disabled: !ok,
-              title: ok ? '' : opt.acumMotivo(state)};
+              title: ok ? (t.desc || '') : opt.acumMotivo(state)};
     }), state.transform, function(v) { state.transform = v; tudo(); });
 
     buildPills('pg-' + pref + '-kind', [
@@ -1915,21 +2594,75 @@ function makeGenericTab(opt) {
   els.note.innerHTML = opt.note;
   tudo();
   return {state: state, redraw: tudo, cores: CORES, specs: specs, yTitle: yTitle,
-          serie: serie, raiz: raiz, barrasOk: barrasOk, acumOk: acumOk,
-          tiposDisponiveis: tiposDisponiveis};
+          serie: serie, raiz: raiz, raizAtual: raizAtual, arvoreAtual: arvoreAtual,
+          barrasOk: barrasOk, acumOk: acumOk, tiposDisponiveis: tiposDisponiveis};
 }
 
 // ── CES ─────────────────────────────────────────────────────────────────────
 function makeCesTab(aba) {
   var cfg = D.ces.abas[aba], MED = D.ces.medidas;
   var raizLabel = cfg.raizLabel;
-  function m(state) { return MED[state.medida]; }
+  // `mNom` e a medida que a pill mostra; `m` e a serie que a camada de base escolheu.
+  // As duas coincidem em 8 das 10 medidas desta aba.
+  function mNom(state) { return MED[state.medida]; }
+  function medEfetiva(state) {
+    var bs = (MED[state.medida] || {}).bases;
+    if (!bs) return state.medida;
+    var achado = state.medida;
+    bs.forEach(function(o) { if (o.key === state.base) achado = o.medida; });
+    return achado;
+  }
+  function m(state) { return MED[medEfetiva(state)]; }
   return makeGenericTab({
     pref: 'ces-' + aba, tree: cfg.tree, colLabel: cfg.colLabel,
+    camadas: true,
+    tituloInfoKey: function(st) { return 'medida_ces:' + medEfetiva(st); },
+    // O descritor: e DELE que as camadas saem. `natureza` e `aditivo` ja eram
+    // declarados em ces_tab.py e nao chegavam ao JS -- agora sao load-bearing.
+    //
+    // `razao` sai de `natureza === 'taxa'` e NAO de `!aditivo`. As duas coisas foram
+    // confundidas ate 2026-09-04, e o custo era grande: ganho medio por hora nao soma
+    // entre industrias (e media ponderada) mas esta em DOLARES, entao a variacao dele
+    // saia como diferenca rotulada "p.p." e o "+0,9% a/a" da manchete nao era pedivel.
+    // Nenhuma medida da CES e porcentagem, logo `razao` e falso nas dez.
+    desc: function(st, raizAt) {
+      var mm = m(st), n = mm.natureza;
+      var rl = (raizAt && raizAt.label) || raizLabel;
+      return {
+        kind: n, freq: 'M', sa: true,
+        bases: mNom(st).bases || null,
+        aditivo: !!mm.aditivo, razao: n === 'taxa',
+        acumula: !!mm.y_acum,
+        share: !!mm.y_share, rootLabel: rl,
+        shareMotivo: n === 'indice'
+          ? 'An index has no total to be a share of — the same quantity in thousands is in this list and does.'
+          : 'This is an average per worker, not a quantity: industries do not add up to a total it could be a share of.',
+        yNivel: mm.y_nivel,
+        yShare: mm.y_share ? mm.y_share.replace('{raiz}', rl) : null,
+        yDifPer: 'change vs. the previous month, ' + mm.dif,
+        yDifYoY: 'change vs. the same month a year earlier, ' + mm.dif
+      };
+    },
     dates: D.ces.dates, series: D.ces.series, medidas: MED,
     ordemMedidas: cfg.ordemMedidas, fonte: D.meta.fonteCes,
     h2: cfg.label + ' — CES', note: cfg.note,
-    chave: function(st, cat) { return [cat, st.medida, st.ajuste].join('|'); },
+    chave: function(st, cat) { return [cat, medEfetiva(st), st.ajuste].join('|'); },
+    // Overtime e coletado so na transformacao: as 3 medidas de overtime cobrem 21 das
+    // 94 linhas, e o conjunto e uma subarvore COMPLETA de raiz unica (Manufacturing) --
+    // medido, nenhum filho sem dado sob pai com dado. Entao filtrar por cobertura da
+    // uma arvore bem formada, e nao uma lista de sobras.
+    filtro: function(st, tree) {
+      var md = medEfetiva(st), aj = st.ajuste;
+      function tem(k) { return !!D.ces.series[[k, md, aj].join('|')]; }
+      if (tem(tree[0].key)) return tree;
+      var out = [];
+      (function walk(ns) {
+        (ns || []).forEach(function(n) {
+          if (tem(n.key)) out.push(n); else walk(n.children);
+        });
+      })(tree);
+      return out.length ? out : tree;
+    },
     infoKey: function(no) { return 'ces:' + no.key; },
     medidaInfoKey: function(k) { return 'medida_ces:' + k; },
     aditivo: function(st) { return !!m(st).aditivo; },
@@ -1947,7 +2680,12 @@ function makeCesTab(aba) {
           ? 'Indexes on a 2007 = 100 base do not add across industries.'
           : 'An average per worker is weighted by employment, and the weight is not in the series — industries do not add.';
       }
-      return 'A percentage change does not add across siblings.';
+      // Precisa agora que a camada 5 separa diferenca de variacao: a diferenca SOMA
+      // entre irmas, e ela esta a um clique de distancia na mesma barra.
+      return 'A percent change does not add across siblings: the parts of a total do not '
+           + 'have percent changes that sum to the total’s. The M/M and Y/Y '
+           + 'changes do — they inherit it from the level — and are in the same '
+           + 'Comparison list.';
     },
     acumMotivo: function() {
       return 'Nothing in this survey accumulates: employment is a stock, and hours and '
@@ -1966,11 +2704,22 @@ function makeCesTab(aba) {
       return 'change vs. the previous month, same unit as the level';
     },
     dec: function(st) { return m(st).dec; },
-    titulo: function(st) { return m(st).label + ' — by industry'; },
-    bits: function(st, barras) {
-      var out = [rotuloDeLista(D.ajustes, st.ajuste),
-                 st.transform === 'm' ? null : rotuloDeLista(TRANSFORMS, st.transform, 'key'),
-                 barras ? 'stacked bars' : null];
+    titulo: function(st) { return mNom(st).label + ' — by industry'; },
+    bits: function(st, barras, raizAt) {
+      // Cada camada que saiu do default entra no subtitulo, na ordem do pipeline.
+      var bs = mNom(st).bases, out = [];
+      if (bs && st.base !== 'nominal') out.push(rotuloDeLista(bs, st.base, 'key'));
+      // Escopo: uma medida que nao cobre a arvore inteira tem de dizer onde ela vale,
+      // senao a tabela mais curta le como dado que faltou.
+      if (raizAt && raizAt.key !== cfg.tree[0].key) {
+        out.push('published only within ' + raizAt.label);
+      }
+      out.push(rotuloDeLista(D.ajustes, st.ajuste));
+      if (st.janela !== 'nativa') out.push('12-month total');
+      if (st.tipo === 'share') out.push('% of ' + raizLabel);
+      if (st.compara !== 'valor') out.push(rotuloDeLista(CAMADA_COMPARA, st.compara, 'key'));
+      if (st.suaviza !== 'none') out.push(rotuloDeLista(CAMADA_SUAVIZA, st.suaviza, 'key'));
+      out.push(barras ? 'stacked bars' : null);
       // A borda direita e irregular: se o ultimo mes ainda nao tem o detalhe, o
       // cabecalho diz, em vez de deixar o grafico parecer uma queda.
       var n = D.ces.coberturaMes[D.ces.dates.length - 1];
@@ -1997,6 +2746,20 @@ function makeCesTab(aba) {
 }
 
 // ── CPS ─────────────────────────────────────────────────────────────────────
+// A primeira aba em que a NATUREZA e propriedade da LINHA e nao de uma medida: o mesmo
+// bloco mistura pessoas (mil), taxas (%) e duracao (semanas). Isso muda duas coisas em
+// relacao a CES, e as duas eram defeitos aqui antes de 2026-09-04:
+//
+//   1. O DESCRITOR SAI DAS LINHAS MARCADAS. O valor era calculado por linha (variacao
+//      percentual para um nivel, diferenca em p.p. para uma taxa) e o rotulo do eixo
+//      por BLOCO -- nada reconciliava os dois. Nos tres blocos nao aditivos o eixo
+//      dizia "p.p. change" enquanto a conta era percentual; no bloco de status dizia
+//      "% change" enquanto as tres taxas vinham em p.p. Os dois sentidos do mesmo bug,
+//      em abas diferentes, sem excecao nenhuma.
+//   2. `naoSoma` NAO QUER DIZER "E PORCENTAGEM". Duracao media e mediana nao somam com
+//      ninguem e estao em SEMANAS: a variacao percentual delas e legitima (+7,4% a/a
+//      em ago/2026) e saia rotulada em p.p. E a mesma confusao que a aba de horas da
+//      CES tinha entre `aditivo` e `razao`, por um caminho diferente.
 function makeCpsTab(bloco) {
   var cfg = null;
   D.cps.blocos.forEach(function(b) { if (b.key === bloco) cfg = b; });
@@ -2024,88 +2787,191 @@ function makeCpsTab(bloco) {
   }
 
   function linha(no) { return porKey[no.key] || {}; }
+  function unidade(k) { return UN[k] || 'mil'; }
   var primeiras = cfg.linhas.slice(0, bloco === 'status' ? 4 : 6)
                             .map(function(l) { return l.key; });
 
+  // O corte selecionado (so o bloco de composicao tem um) decide TRES coisas: quais
+  // linhas existem, se elas somam, e qual e o total delas.
+  function corte(st) {
+    if (bloco !== 'composicao') return null;
+    var e = null;
+    D.cps.eixos.forEach(function(x) { if (x.key === st.eixo) e = x; });
+    return e;
+  }
+  function somaNoTotal(st) {
+    var c = corte(st);
+    return c ? !!c.aditivo : !!cfg.aditivo;
+  }
+  function total(st) {
+    var c = corte(st);
+    return c ? {key: c.denKey, label: c.denLabel}
+             : {key: cfg.denKey, label: cfg.denLabel};
+  }
+  // As linhas que o grafico plota de fato -- o corte esconde as dos outros eixos, e
+  // uma linha escondida nao pode entrar no descritor.
+  function plotadas(st) {
+    var out = [];
+    cfg.linhas.forEach(function(l) {
+      if (!st.checked[l.key]) return;
+      if (st.eixo && l.eixo && l.eixo !== st.eixo) return;
+      out.push(l);
+    });
+    return out;
+  }
+  function unidadesPlotadas(st) {
+    var u = {};
+    plotadas(st).forEach(function(l) { u[unidade(l.key)] = 1; });
+    return Object.keys(u);
+  }
+
+  // A camada 4 tem TRES formas de nao existir aqui, e sao motivos diferentes na tela.
+  function participacao(st) {
+    var t = total(st);
+    if (!somaNoTotal(st) || !t.key) {
+      return {ok: false, den: t, motivo: ({
+        taxa_grupo: 'Each of these rates already divides by its own labour force, so '
+                  + 'there is no total for them to be a share of.',
+        alternativa: 'These six measures have different bases — U-4, U-5 and U-6 add '
+                   + 'people to the denominator as well as to the count — so they are '
+                   + 'not parts of one total.',
+        composicao: 'The two indented lines sit inside part-time work for economic '
+                  + 'reasons and cover only part of it: the survey splits that total '
+                  + 'four ways and publishes these two. Nothing in this cut sums to a '
+                  + 'total. The other two cuts do.'
+      })[bloco] || 'Nothing in this block sums to a total.'};
+    }
+    // O total tem de EXISTIR no ajuste corrente. A populacao e a unica linha da
+    // pesquisa que o BLS nunca dessazonaliza, e a vista ajustada e a default -- entao
+    // a participacao saia dividindo por uma serie inexistente e a tabela e o grafico
+    // ficavam INTEIROS em branco, sem erro nenhum. Mesma classe do overtime na CES.
+    if (!D.cps.series[[t.key, st.ajuste].join('|')]) {
+      return {ok: false, den: t,
+              motivo: 'The total here is the civilian population, and it is the one '
+                    + 'line the survey never adjusts for seasonality. Switch Adjustment '
+                    + 'to "Not adjusted" to read shares.'};
+    }
+    var fora = [];
+    plotadas(st).forEach(function(l) { if (l.naoSoma) fora.push(l.label); });
+    if (fora.length) {
+      return {ok: false, den: t,
+              motivo: 'A share needs the plotted rows to be parts of the total, and '
+                    + 'these are not — each has its own base: ' + fora.join(', ')
+                    + '. Untick them to read shares.'};
+    }
+    return {ok: true, den: t, motivo: ''};
+  }
+
+  var NOTA = {
+    status: 'The household survey counts PEOPLE, not jobs: someone with two jobs is '
+          + 'one employed person here and two on the payroll survey, and the '
+          + 'self-employed count here and not there. The four boxed rows nest '
+          + '(population = labour force + not in the labour force), so they stack — '
+          + '<b>to within about a thousand</b>: the survey adjusts each series for '
+          + 'seasonality independently, and its own footnote says the detail will not '
+          + 'necessarily add to the totals. The three rates below them are ratios and '
+          + 'always draw as lines. Read them as shares of the population and you get '
+          + 'the published rates back: labour force over population <i>is</i> the '
+          + 'participation rate.',
+    taxa_grupo: 'Each rate has its own labour force in the denominator, so these do '
+              + 'not add up to anything and stacking is switched off. The teenage '
+              + 'rate is by far the most volatile — a small population with a large '
+              + 'share of it entering and leaving the labour force every month.',
+    composicao: 'Reason, duration and part-time status are three separate cuts of the '
+              + 'same unemployed total — each one sums to it, so they can never be '
+              + 'siblings in one table. Pick a cut. Reason and duration do stack: in '
+              + 'the raw data they close on the unemployment level to within a '
+              + 'thousand people, and in the adjusted data to within 3% — the survey '
+              + 'adjusts each series on its own, so a stacked bar of the adjusted '
+              + 'series is a good picture and not an identity. Part-time status does '
+              + 'not stack: the two indented lines are two of the four reasons the '
+              + 'survey publishes for involuntary part-time work.',
+    alternativa: 'The six official measures of labour underutilisation, from the '
+               + 'narrowest to the broadest. They are nested by definition but not '
+               + 'additive: U-4, U-5 and U-6 add people to the DENOMINATOR as well '
+               + 'as the numerator, so U-6 is not U-3 plus a number. U-3 is the same '
+               + 'series as the headline unemployment rate in the first block.'
+  };
+
   return makeGenericTab({
     pref: 'cps-' + bloco, tree: tree, colLabel: 'Indicator',
+    camadas: true,
     dates: D.cps.dates, series: D.cps.series, medidas: {},
     ordemMedidas: null, fonte: D.meta.fonteCps,
     h2: cfg.label + ' — CPS', defaults: primeiras,
     expandidos: cfg.linhas.map(function(l) { return l.key; }),
     eixos: bloco === 'composicao' ? D.cps.eixos : null,
-    note: ({
-      status: 'The household survey counts PEOPLE, not jobs: someone with two jobs is '
-            + 'one employed person here and two on the payroll survey, and the '
-            + 'self-employed count here and not there. The four boxed rows nest '
-            + '(population = labour force + not in the labour force), so they stack — '
-            + '<b>to within about a thousand</b>: the BLS adjusts each series for '
-            + 'seasonality independently, and its own footnote says the detail will not '
-            + 'necessarily add to the totals. The three rates below them are ratios and '
-            + 'always draw as lines.',
-      taxa_grupo: 'Each rate has its own labour force in the denominator, so these do '
-                + 'not add up to anything and stacking is switched off. The teenage '
-                + 'rate is by far the most volatile — a small population with a large '
-                + 'share of it entering and leaving the labour force every month.',
-      composicao: 'Reason, duration and part-time status are three separate cuts of the '
-                + 'same unemployed total — each one sums to it, so they can never be '
-                + 'siblings in one table. Pick a cut.',
-      alternativa: 'The six official measures of labour underutilisation, from the '
-                 + 'narrowest to the broadest. They are nested by definition but not '
-                 + 'additive: U-4, U-5 and U-6 add people to the DENOMINATOR as well '
-                 + 'as the numerator, so U-6 is not U-3 plus a number.'
-    })[bloco],
+    note: NOTA[bloco],
     chave: function(st, cat) { return [cat, st.ajuste].join('|'); },
+    denKey: function(st) { return total(st).key; },
     infoKey: function(no) { return 'cps:' + no.key; },
     medidaInfoKey: function() { return null; },
+    // O corte esconde as linhas dos outros eixos. E tambem o que liga o fallback de
+    // selecao em `normalizar`: sem ele, o corte por tempo parcial abre com NENHUMA
+    // linha marcada (as 6 do default sao de motivo e duracao) e o grafico sai vazio --
+    // a mesma classe do overtime na CES, num terceiro caminho.
+    filtro: function(st, t) {
+      if (bloco !== 'composicao') return t;
+      return t.filter(function(n) { return linha(n).eixo === st.eixo; });
+    },
+    // O descritor: sai das LINHAS MARCADAS, nao de uma medida. `razao` exige que TODAS
+    // sejam porcentagem (e o que faz a diferenca sair em p.p.); `pctMotivo` basta que
+    // UMA seja (e o que proibe a variacao percentual, porque o eixo e um so).
+    desc: function(st) {
+      var us = unidadesPlotadas(st), pa = participacao(st);
+      var soPct = us.length === 1 && us[0] === 'pct';
+      var algumPct = us.indexOf('pct') >= 0;
+      // Para uma porcentagem o rotulo e o do BLOCO, nao o generico: um eixo que diga
+      // "% of the relevant base" nao responde de que base -- e a mesma exigencia que
+      // faz o "% do total" nomear a raiz da arvore.
+      var nomeUnidade = us.length === 0 ? 'no series selected'
+                      : us.length > 1 ? 'mixed units — see each row in the table'
+                      : (us[0] === 'pct' && cfg.rotuloPct) ? cfg.rotuloPct
+                      : (ROT[us[0]] || us[0]);
+      return {
+        kind: soPct ? 'taxa' : 'estoque', freq: 'M', sa: true,
+        bases: null, aditivo: somaNoTotal(st), acumula: false,
+        razao: soPct,
+        pctMotivo: (algumPct && !soPct)
+          ? 'One of the plotted rows is a rate, and a percent change of a percentage '
+          + 'misleads: the unemployment rate fell from 4.3 to 4.1 over the year to '
+          + 'August 2026, which is −0.2 p.p. and reads as "−4.7%". Untick the rate '
+          + 'rows, or use Change — a difference is honest in both units at once.'
+          : '',
+        share: pa.ok, rootLabel: pa.den.label, shareMotivo: pa.motivo,
+        yNivel: nomeUnidade,
+        yShare: 'share of ' + (pa.den.label || '').toLowerCase() + ', %',
+        yDifPer: 'change vs. the previous month, ' + nomeUnidade,
+        yDifYoY: 'change vs. the same month a year earlier, ' + nomeUnidade
+      };
+    },
+    // Aditividade por linha: precisa somar no total do corte E estar em pessoas. Uma
+    // duracao media em semanas nao empilha com contagens de pessoas.
     aditivo: function(st, no) {
-      if (!cfg.aditivo) return false;
-      return no ? !linha(no).razao : true;
+      if (!somaNoTotal(st)) return false;
+      if (!no) return true;
+      return !linha(no).naoSoma && unidade(no.key) === 'mil';
     },
     ehRazao: function(st, no) {
-      if (no) return !!linha(no).razao;
-      return !cfg.aditivo;
+      // Do UNIDADE, nunca de `naoSoma`: e a distincao que faltava.
+      return no ? unidade(no.key) === 'pct' : false;
     },
-    shareOk: function() { return !!cfg.aditivo; },
-    shareMotivo: function() {
-      return bloco === 'alternativa'
-        ? 'These six measures have different denominators, so they are not parts of one total.'
-        : 'Each of these has its own base, so there is no total for them to be a share of.';
-    },
-    barrasOk: function() { return !!cfg.aditivo; },
-    barrasMotivo: function() {
-      return 'The rows in this block do not add up to a total — each has its own base.';
+    shareOk: function(st) { return participacao(st).ok; },
+    shareMotivo: function(st) { return participacao(st).motivo; },
+    barrasOk: function(st) { return somaNoTotal(st); },
+    barrasMotivo: function(st) {
+      var pa = participacao(st);
+      return somaNoTotal(st) ? '' : pa.motivo;
     },
     acumMotivo: function() {
       return 'These are stocks and rates measured in a reference week, not monthly flows: '
            + 'adding twelve of them produces no quantity.';
     },
-    ajusteOk: function(st, a) {
-      // A populacao nao e dessazonalizada, e a Summary table A marca a linha. No bloco
-      // `status` a pill de SA continua valida para as outras linhas -- so a populacao
-      // fica sem serie, e a tabela mostra travessao.
-      return true;
-    },
+    ajusteOk: function() { return true; },
     ajusteMotivo: function() { return ''; },
-    filtro: function(st, t) {
-      if (bloco !== 'composicao') return t;
-      return t.filter(function(n) { return linha(n).eixo === st.eixo; });
-    },
-    yTitle: function(st, share) {
-      if (share) return 'share of ' + (cfg.linhas[0] || {}).label + ', %';
-      var uns = {};
-      (st.__vis || []).forEach(function(k) { uns[UN[k]] = 1; });
-      return cpsUnidade(st, cfg, UN, ROT, porKey);
-    },
-    yTitleMm: function(st) {
-      var u = cpsUnidadeCurta(st, cfg, UN, porKey);
-      return u === 'pct' ? 'p.p. change vs. the previous month'
-           : u === 'semanas' ? 'change vs. the previous month, weeks'
-           : 'change vs. the previous month, thousands of people';
-    },
     dec: function(st) {
-      var u = cpsUnidadeCurta(st, cfg, UN, porKey);
-      return u === 'mil' ? 0 : 1;
+      var us = unidadesPlotadas(st);
+      return (us.length === 1 && us[0] === 'mil') ? 0 : 1;
     },
     titulo: function(st) {
       if (bloco !== 'composicao') return cfg.label;
@@ -2114,15 +2980,27 @@ function makeCpsTab(bloco) {
       return cfg.label + ' — ' + r.toLowerCase();
     },
     bits: function(st, barras) {
-      return [rotuloDeLista(D.ajustes, st.ajuste),
-              st.transform === 'm' ? null : rotuloDeLista(TRANSFORMS, st.transform, 'key'),
-              barras ? 'stacked bars' : null];
+      // Na ordem do pipeline, e so o que saiu do default.
+      var out = [rotuloDeLista(D.ajustes, st.ajuste)];
+      if (st.tipo === 'share') {
+        out.push('% of ' + (participacao(st).den.label || '').toLowerCase());
+      }
+      if (st.compara !== 'valor') {
+        out.push(rotuloDeLista(CAMADA_COMPARA, st.compara, 'key'));
+        // O aviso entra so onde ele muda a leitura: uma vista de nivel tem um mes em
+        // branco, uma de variacao tem dois. Um aviso que aparece sempre nao e lido.
+        out.push('October 2025 was not collected, so any change touching it is blank');
+      }
+      if (st.suaviza !== 'none') out.push(rotuloDeLista(CAMADA_SUAVIZA, st.suaviza, 'key'));
+      if (barras) out.push('stacked bars');
+      return out;
     },
     hint: function(st) {
       var h = 'Tick a row to plot it.';
       if (bloco === 'status') {
-        h += ' The population row exists only without seasonal adjustment — the BLS does '
-          + 'not adjust it — so it shows a dash in the adjusted view.';
+        h += ' The population row exists only without seasonal adjustment — the survey '
+          + 'does not adjust it — so it shows a dash in the adjusted view, and shares '
+          + 'need the unadjusted view to have a denominator.';
       }
       h += ' <b>October 2025 is missing from this survey</b>: the shutdown cancelled '
         + 'collection, which also empties the monthly change for October and November.';
@@ -2130,34 +3008,206 @@ function makeCpsTab(bloco) {
     }
   });
 }
-// Unidade do eixo da CPS: uma so quando as linhas plotadas concordam, e o aviso de
-// unidades mistas quando nao -- mesma regra do relatorio de mercado de trabalho do
-// Brasil, e ela existe porque estas tabelas misturam pessoas, % e semanas.
-function cpsUnidadesPlotadas(st, cfg, UN, porKey) {
-  var uns = {};
-  cfg.linhas.forEach(function(l) {
-    if (!st.checked[l.key]) return;
-    if (st.eixo && l.eixo && l.eixo !== st.eixo) return;
-    uns[UN[l.key] || 'mil'] = 1;
-  });
-  return Object.keys(uns);
-}
-function cpsUnidadeCurta(st, cfg, UN, porKey) {
-  var u = cpsUnidadesPlotadas(st, cfg, UN, porKey);
-  return u.length === 1 ? u[0] : 'mista';
-}
-function cpsUnidade(st, cfg, UN, ROT, porKey) {
-  var u = cpsUnidadesPlotadas(st, cfg, UN, porKey);
-  if (u.length === 1) return ROT[u[0]] || u[0];
-  if (!u.length) return 'no series selected';
-  return 'mixed units — see each row in the table';
-}
 
 function rotuloDeLista(lista, valor, campo) {
   campo = campo || 'key';
   var achado = null;
   lista.forEach(function(x) { if (x[campo] === valor) achado = x.label; });
   return achado;
+}
+
+// ── produtividade (prod2 / MSPC) ────────────────────────────────────────────
+// A unica aba trimestral, e a unica em que a pill de leitura nao calcula nada:
+// `calcTransform: false` faz `state.transform` entrar na chave da serie, entao
+// trocar de leitura troca de SERIE PUBLICADA. Ver prod_tab.py para o porque.
+function makeProdTab() {
+  var P = D.prod, MED = P.medidas;
+  var COMBOS = {};
+  P.combos.forEach(function(c) { COMBOS[c] = true; });
+  function m(st) { return MED[st.medida]; }
+  function ehIndice(st) { return st.transform === 'indice'; }
+
+  // Quais setores marcados de fato publicam a medida corrente. E o que decide se a
+  // pill fica desabilitada -- as quatro medidas de lucro existem so nas nao
+  // financeiras, e plotar nada e pior que dizer por que.
+  function setoresDaMedida(medida) {
+    var out = [];
+    achatar(P.setores).forEach(function(no) {
+      if (COMBOS[no.key + '|' + medida]) out.push(no);
+    });
+    return out;
+  }
+  // Os dois conceitos de produto plotados juntos: o release avisa em prosa que nao
+  // sao comparaveis, e aqui o aviso sai do dado.
+  function conceitosPlotados(st) {
+    var vistos = {};
+    achatar(P.setores).forEach(function(no) {
+      if (st.checked[no.key] && COMBOS[no.key + '|' + st.medida]) {
+        vistos[P.conceito[no.key]] = true;
+      }
+    });
+    return Object.keys(vistos);
+  }
+
+  var api = makeGenericTab({
+    pref: 'prod', tree: P.setores, colLabel: 'Sector',
+    dates: P.dates, series: P.series, medidas: MED,
+    ordemMedidas: P.ordemMedidas, defaults: P.defaultSetores,
+    expandidos: ['manufacturing'], fonte: P.fonte,
+    // trimestral: rotulo de coluna, hover e numero de colunas
+    fmtCol: fmtQuarterShort, fmtHover: fmtQuarter, nCols: 12,
+    // a leitura e um seletor de serie, nao uma transformacao
+    transforms: P.duracoes, calcTransform: false,
+    h2: 'Productivity and costs — by major sector',
+    note: 'Labor productivity, hourly compensation and unit labor costs for the six '
+        + 'major sectors the BLS publishes, quarterly since 1947 (1987 for '
+        + 'manufacturing). <b>Nothing on this tab adds up.</b> The sectors contain one '
+        + 'another rather than partition — business includes nonfarm business, which '
+        + 'includes both manufacturing and nonfinancial corporations — and even durable '
+        + 'plus nondurable, which do partition manufacturing in levels, do not add here, '
+        + 'because what is published is an index: two indexes based at 100 come to about '
+        + '200. Manufacturing is indented under nothing to suggest a total; the indent '
+        + 'inside it marks containment, not a sum. The reading pill picks one of the '
+        + 'three series the BLS publishes for every quantity — the index, the change '
+        + 'from the previous quarter at an annual rate, and the change from the same '
+        + 'quarter a year earlier — rather than computing any of them here. They are '
+        + 'the three panels of every table in the release, so the number on screen is '
+        + 'the number the BLS printed, to the decimal it printed it at.',
+    chave: function(st, cat) { return [cat, st.medida, st.transform].join('|'); },
+    infoKey: function(no) { return 'setor:' + no.key; },
+    medidaInfoKey: function(k) { return 'medida_prod:' + k; },
+    // nada e aditivo: nem indice, nem setor que contem outro
+    aditivo: function() { return false; },
+    ehRazao: function() { return true; },
+    shareOk: function() { return false; },
+    shareMotivo: function() {
+      return 'There is no total to be a share of: the sectors contain one another '
+           + 'instead of partitioning, and an index has no total either.';
+    },
+    barrasOk: function() { return false; },
+    barrasMotivo: function() {
+      return 'Nothing here adds across rows — the sectors overlap, and indexes on a '
+           + '2017 = 100 base do not add even where the levels behind them do.';
+    },
+    acumMotivo: function() { return ''; },
+    ajusteOk: function(st, k) { return k === 'sa'; },
+    ajusteMotivo: function() {
+      return 'This survey is published seasonally adjusted only — there is no '
+           + 'unadjusted counterpart of these series.';
+    },
+    yTitle: function(st) {
+      return ehIndice(st) ? m(st).y_indice
+           : m(st).y_variacao + (st.transform === 'tri_anual'
+               ? ' from the previous quarter, annual rate'
+               : ' from the same quarter a year earlier');
+    },
+    yTitleMm: function(st) { return m(st).y_variacao; },
+    dec: function() { return 1; },
+    titulo: function(st) { return m(st).label + ' — by major sector'; },
+    bits: function(st) {
+      var out = [];
+      var cs = conceitosPlotados(st);
+      if (cs.length > 1) {
+        out.push('two output concepts plotted together — value added for business and '
+               + 'nonfinancial corporations, sectoral output for manufacturing; the BLS '
+               + 'states they are not directly comparable');
+      }
+      var faltando = [];
+      achatar(P.setores).forEach(function(no) {
+        if (st.checked[no.key] && !COMBOS[no.key + '|' + st.medida]) {
+          faltando.push(no.label);
+        }
+      });
+      if (faltando.length) {
+        out.push('not published for ' + faltando.join(', '));
+      }
+      return out;
+    },
+    hint: function(st) {
+      var base = 'Tick a sector to plot it. Rows never sum: see the note above.';
+      var s = setoresDaMedida(st.medida);
+      if (s.length < achatar(P.setores).length) {
+        base += ' <b>' + m(st).label + '</b> is published for '
+              + s.map(function(n) { return n.label; }).join(', ') + ' only.';
+      }
+      return base;
+    }
+  });
+  return api;
+}
+
+// ── ciclos economicos: os graficos 3 e 4 do release ─────────────────────────
+// X nao e tempo (sao as tres janelas), entao nao ha regua de tempo e o periodo vai
+// escrito no subtitulo -- mesma regra da curva de Beveridge.
+function makeProdCiclos() {
+  var P = D.prod, C = P.ciclos;
+  var state = {setor: 'nonfarm_business'};
+  var ROT = {};
+  achatar(P.setores).forEach(function(n) { ROT[n.key] = n.label; });
+  var CORES = assignSeriesColors(C.medidas, C.medidas, {});
+
+  // O payload traz o periodo na forma compacta do pandas ('1947Q1'); o rotulo do eixo
+  // usa a mesma forma que o hover e a coluna da tabela, com espaco.
+  function tri(p) { return String(p).replace(/^(\d{4})Q([1-4])$/, '$1 Q$2'); }
+  function label(ciclo, inicio) {
+    if (ciclo.key === 'atual') return 'Current cycle (2019 Q4 → ' + tri(C.fim) + ')';
+    if (ciclo.key === 'anterior') return 'Previous cycle (2007 Q4 → 2019 Q4)';
+    return 'Long term (' + tri(inicio) + ' → ' + tri(C.fim) + ')';
+  }
+  function render() {
+    var t = C.porSetor[state.setor];
+    var eixoX = C.janelas.map(function(j) { return label(j, t.inicio); });
+    var traces = C.medidas.map(function(md) {
+      return {
+        x: eixoX,
+        y: C.janelas.map(function(j) {
+          var v = t.taxas[j.key + ':' + md];
+          return v == null ? null : Math.round(v * 10) / 10;
+        }),
+        name: P.medidas[md].label, type: 'bar',
+        marker: {color: CORES[md].color, line: {width: 0}},
+        hovertemplate: '%{fullData.name}<br>%{x}: %{y:.1f}%<extra></extra>'
+      };
+    });
+    var yt = 'annualized rate of growth between the endpoints, % per year';
+    Plotly.react('chart-prod-ciclo', traces,
+      mkLayout({yaxis: {title: {text: yt, font: {size: 11}}},
+                xaxis: {type: 'category'}, barmode: 'group', bargap: 0.28}),
+      PLOTLY_CONFIG);
+    var titulo = 'Productivity growth across business cycles — ' + ROT[state.setor];
+    document.getElementById('h2-prod-ciclo').textContent =
+      'Business-cycle comparison';
+    describeChart({
+      title: titulo,
+      titleEl: document.getElementById('ct-prod-ciclo'),
+      subEl: document.getElementById('cs-prod-ciclo'),
+      srcEl: document.getElementById('cr-prod-ciclo'),
+      series: [],
+      bits: ['computed from the published index between the endpoints of each window, '
+             + 'not as an average of the quarterly rates',
+             'series starts in ' + tri(t.inicio)],
+      unit: yt, source: P.fonte
+    });
+    var bar = document.getElementById('rb-prod-ciclo');
+    if (bar) bar.style.display = 'none';
+    buildPills('pg-prod-ciclo-setor', achatar(P.setores).map(function(n) {
+      return {value: n.key, label: n.label, infoKey: 'setor:' + n.key};
+    }), state.setor, function(v) { state.setor = v; render(); });
+  }
+
+  document.getElementById('note-prod-ciclo').innerHTML =
+    'The release frames productivity against the business cycle rather than against the '
+    + 'quarter, and these are its own charts 3 and 4. Each bar is the <b>annualized rate '
+    + 'between the endpoints</b> of the window — the index at the start against the index '
+    + 'at the end — and not the average of the quarterly rates, which is a different and '
+    + 'larger number whenever growth is uneven. The cycle dates are the NBER peaks the '
+    + 'BLS uses; the long-term window starts where each sector\'s own series starts, '
+    + 'which is 1947 Q1 for business and nonfarm business and 1987 Q1 for manufacturing, '
+    + 'so the two long-term bars are not measured over the same span. Ten of these rates '
+    + 'are printed in the release text and the build refuses to publish unless it '
+    + 'reproduces all ten.';
+  render();
+  return {state: state, redraw: render};
 }
 
 // ── derivadas ───────────────────────────────────────────────────────────────
@@ -2348,6 +3398,8 @@ var TABS = {
   cps_taxa_grupo: makeCpsTab('taxa_grupo'),
   cps_composicao: makeCpsTab('composicao'),
   cps_alternativa: makeCpsTab('alternativa'),
+  prod: makeProdTab(),
+  prod_ciclos: makeProdCiclos(),
   derivadas: makeDerivadasTab()
 };
 </script>

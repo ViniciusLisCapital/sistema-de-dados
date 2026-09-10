@@ -383,22 +383,34 @@ dashboards:
       - {kind: mysql, ref: macro_international.cmb_cot_fx, role: "Posicionamento especulativo CFTC"}
       - {kind: mysql, ref: macro_brasil.inflc_agregados, scope: modelos, role: "IPCA, o deflator brasileiro do PPP"}
       - {kind: mysql, ref: macro_brasil.inflc_meta, scope: modelos, role: "Meta de inflação, no núcleo PPP — date é o ANO da meta"}
-      - {kind: mysql, ref: macro_brasil.cmb_risco_pais, scope: modelos, role: "CDS 5Y, canal fiscal do Ridge", refresh: "CSV exportado à mão do investing.com — não automatiza"}
+      - {kind: mysql, ref: macro_brasil.cmb_risco_pais, scope: modelos, role: "CDS 5Y, canal fiscal do Ridge", refresh: "planilha exportada à mão da Bloomberg — não automatiza"}
       - {kind: mysql, ref: macro_brasil.comm_icbr_usd, scope: modelos, role: "Commodities em USD, canal de termos de troca"}
       - {kind: mysql, ref: macro_international.cmb_dollar_index, scope: modelos, role: "DXY"}
       - {kind: mysql, ref: macro_international.cmb_dollar_index_em, scope: modelos, role: "Dólar contra EM"}
       - {kind: mysql, ref: macro_international.cmb_equity_us, scope: modelos, role: "S&P 500"}
       - {kind: mysql, ref: macro_international.cmb_fx_latam, scope: modelos, role: "Câmbio MX/CL/CO/PE, comparação regional"}
-      - {kind: mysql, ref: macro_international.cmb_policy_rates, scope: modelos, role: "Policy rates do BIS"}
       - kind: mysql
-        ref: base_mercado.interest_rates
+        ref: macro_international.inter_interest_rate
         scope: modelos
-        owner: CentralManagement
+        role: "Juro básico de México, Chile, Colômbia, Peru e Argentina — o carry do Brasil contra os vizinhos"
+        note: >
+          A taxa que cada banco central da região define, dia a dia, vinda do BIS.
+          O modelo usa a média dos quatro vizinhos (a Argentina fica fora: o BIS
+          parou de publicar a dela em meados de 2025) para medir o quanto o juro
+          brasileiro paga acima do da vizinhança — se pagar mais, atrai capital.
+      - kind: mysql
+        ref: macro_brasil.br_interest_rate
+        scope: modelos
         role: "Curvas de juros (breakeven, inclinação, juro real) do núcleo PPP"
         note: >
-          Única dependência fora dos schemas macro_*. Quem escreve é o projeto
-          CentralManagement, pela tarefa agendada "Atualizacao da base de dados"
-          (09:30 diário) — não há nada neste repositório que a atualize.
+          Estrutura a termo de juros do Brasil, um valor por dia, curva e vértice.
+          As taxas vêm do arquivo de pregão da B3, que publica um arquivo por dia
+          útil. São três curvas: o swap de DI contra prefixado (a mais líquida),
+          a taxa da NTN-F e a taxa da NTN-B, esta última em juro real. Um vértice
+          só é gravado quando há título ou contrato negociado que o sustente,
+          então a cobertura é desigual: o vértice de 20 anos do DI começa em 2014
+          e o de 10 anos da NTN-F existe apenas nos anos seguintes a uma emissão.
+          O botão Atualizar traz os dias novos.
       - kind: live
         ref: FRED:CPIAUCSL
         scope: modelos
@@ -431,10 +443,12 @@ dashboards:
         role: "Largura da banda de erro da projeção, por mês à frente"
         refresh: 'uv run python -c "from analytics.brasil.exchange_rate.models.ridge_deviation_model import forecast_error_bands_w72; forecast_error_bands_w72(force=True)"'
         note: >
-          Calculada de uma vez e guardada em arquivo — são 139 reajustes do modelo ao longo da
+          Calculada de uma vez e guardada em arquivo — são 163 reajustes do modelo ao longo da
           amostra, cerca de um minuto e meio. Refazer vem junto com a reestimação do modelo, não
           com o dado novo do mês: a banda é uma estatística de erro da amostra inteira, e não
-          muda de forma por causa de um mês a mais.
+          muda de forma por causa de um mês a mais. O arquivo guarda de que amostra ele saiu, e
+          se refaz sozinho quando ela muda — foi o que aconteceu quando o CDS trocou de fonte e
+          a amostra passou a começar dois anos antes.
       - kind: csv
         ref: analytics/brasil/exchange_rate/models/fx_attribution_data/verde_asset/claims.csv
 
@@ -476,23 +490,27 @@ dashboards:
     output: reports/us/Labor Market.html
     module: analytics.us.labor_market.generate_report
     command: 'uv run python -c "from analytics.us.labor_market.generate_report import run; run()"'
-    build_seconds: 95
+    build_seconds: 105
     note: >
       Mercado de trabalho dos EUA, com as três pesquisas mensais do BLS na mesma página.
       O payroll (pesquisa de estabelecimentos) traz emprego por 839 indústrias mais horas
       e ganhos; a pesquisa domiciliar traz desemprego, participação, duração e as seis
-      medidas de subutilização; e o JOLTS traz vagas abertas e rotatividade por indústria,
-      tamanho de estabelecimento e região. A aba de derivadas é a única que calcula algo:
-      vagas por desempregado, contratação líquida, curva de Beveridge e a divergência
-      entre as duas medidas de emprego.
+      medidas de subutilização; o JOLTS traz vagas abertas e rotatividade por indústria,
+      tamanho de estabelecimento e região; e a aba de produtividade traz produtividade do
+      trabalho, remuneração por hora e custo unitário do trabalho por setor maior. A aba
+      de derivadas é a única que calcula algo: vagas por desempregado, contratação
+      líquida, curva de Beveridge e a divergência entre as duas medidas de emprego.
       As dependências de cada pesquisa vêm do mesmo download, então andam juntas: um passe
-      do CES escreve tabela e árvore, e o mesmo vale para o JOLTS.
+      do CES escreve tabela e árvore, e o mesmo vale para o JOLTS. A produtividade é a
+      única fonte trimestral da página e sai num calendário próprio, duas vezes por
+      trimestre — uma leitura preliminar e uma revisada.
     deps:
       - {kind: mysql, ref: macro_us.mt_jolts, role: "Vagas, contratações e separações por indústria, tamanho de estabelecimento e região"}
       - {kind: mysql, ref: macro_us.mt_jolts_dim, date_col: null, role: "As três árvores do release (raízes diferentes: Total nonfarm, Total private, Total US)"}
       - {kind: mysql, ref: macro_us.mt_ces, role: "Emprego, horas e ganhos por indústria — o payroll do Employment Situation"}
       - {kind: mysql, ref: macro_us.mt_ces_dim, date_col: null, role: "A árvore de 839 indústrias da CES, com a cobertura dos filhos em cada nó"}
       - {kind: mysql, ref: macro_us.mt_cps, role: "Manchetes da pesquisa domiciliar: desemprego, participação, duração, U-1 a U-6"}
+      - {kind: mysql, ref: macro_us.mt_produtividade, role: "Produtividade do trabalho, remuneração por hora e custo unitário por setor maior — trimestral, a única da página"}
 
   - key: oraculo
     name: "Oráculo (Power BI)"

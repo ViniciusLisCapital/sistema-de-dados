@@ -162,7 +162,7 @@ tab 1, built by `investimento_tab.py`.
   STL `period=12` for M/M and T/T), **Trimestral** (calendar quarter step, `quarterlyStepAccum` collapses
   the display to one column per quarter), **Acum. 12m** (rolling), **Acum. no ano** (YTD, resets each
   January — `transforms.compute_variants_ytd()`/`ytd_sum()`). Audited against
-  [`analytics/metric_layers.md`](../../metric_layers.md) in 2026-08; the three findings that pass are
+  [`analytics/mds/metric_layers.md`](../../mds/metric_layers.md) in 2026-08; the three findings that pass are
   recorded there, the three that changed the tab are below.
 - **% PIB uses convention B — denominator is always `atv_pib_mensal.pib_acum_12m` (SGS 4382)**, in all
   four Níveis, with only the numerator following the selected window (user choice, 2026-08, resolving
@@ -184,8 +184,8 @@ tab 1, built by `investimento_tab.py`.
   unchanged): **M/M at Trimestral** (the value is a constant step inside the quarter, so month-on-month
   is 0% within it and an artificial jump at the turn) and **M/M + T/T at Acum. no ano** (both would
   cross the January reset, where a closed year becomes one month). **These are settled, not a judgment
-  call** — `metric_layers.md`'s "Degenerate combinations to disable" table mandates exactly these two,
-  and its YTD section gives the reason ("YTD offers **only** Y/Y"). The user's original instruction
+  call** — the skill's layer-3 plan (`design-system.md#metricas`) mandates exactly these two,
+  and its YTD rule gives the reason ("YTD offers **only** Y/Y"). The user's original instruction
   asked for M/M and T/T on every accumulation and I was about to enable all four cells on that basis;
   the spec settles it the other way. Don't re-open without changing the spec first.
 - **8 of the 78 series cross zero, and keep their growth options anyway** (user choice, 2026-08).

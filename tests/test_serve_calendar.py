@@ -123,8 +123,18 @@ if d.get("ok"):
     check("  FRED entra como fonte fora do MySQL, nao consultada por default",
           any(dep["onde"] == "FRED" and dep["fora_do_mysql"] and dep.get("nao_checado")
               for dep in fx["deps"]))
-    check("  base_mercado marcada como de outro projeto",
-          any(dep["ref"].startswith("base_mercado.") and dep.get("owner")
+    # Ate 2026-09-03 a asserção aqui era o contrario: `base_mercado.interest_rates`
+    # era a unica dependencia de outro projeto, e o teste exigia que ela viesse
+    # marcada com `owner`. A tabela foi trazida para macro_brasil e reabastecida
+    # pela B3, entao o manifesto passou a nao ter NENHUMA dependencia fora dos
+    # nossos schemas -- e e isso que vale afirmar, senao a asserção antiga
+    # continuaria verde apenas por nao haver mais nada para ela olhar.
+    check("  nenhuma dependencia de outro projeto sobrou no manifesto",
+          not [dep for x in ds for dep in x["deps"] if dep.get("owner")],
+          [dep["ref"] for x in ds for dep in x["deps"] if dep.get("owner")])
+    check("  as curvas de juros sao alcancaveis pelo botao (schema nosso)",
+          any(dep["ref"] == "macro_brasil.br_interest_rate"
+              and not dep["fora_do_mysql"] and dep.get("ultimo")
               for dep in fx["deps"]))
     print(f"         vereditos: {sorted({x['veredito'] for x in ds})}")
 

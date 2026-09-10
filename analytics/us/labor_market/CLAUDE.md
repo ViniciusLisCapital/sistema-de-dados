@@ -1,33 +1,102 @@
 # analytics/us/labor_market/ — US Labor Market report
 
 Second report under `analytics/us/`. Built 2026-09-01 with JOLTS only; the payroll and
-household surveys plus the derived metrics were added the same day. Reads `mt_jolts`,
-`mt_ces`, `mt_cps` and their dimension tables; writes `reports/us/Labor Market.html`
-(11,7 MB, ~95 s).
+household surveys plus the derived metrics were added the same day, and the productivity
+release on 2026-09-03. Reads `mt_jolts`, `mt_ces`, `mt_cps`, `mt_produtividade` and the
+two dimension tables; writes `reports/us/Labor Market.html` (12,1 MB, ~105 s).
 
 ```powershell
 uv run python -c "from analytics.us.labor_market.generate_report import run; run()"
 uv run python tests/test_jolts.py                 # 51 assercoes, precisa do banco
-node tests/test_labor_market_us_js.js             # 324 assercoes, precisa do HTML gerado
+uv run python tests/test_produtividade.py         # 47 assercoes, precisa do banco
+node tests/test_labor_market_us_js.js             # 389 assercoes, precisa do HTML gerado
 ```
 
-**UI in English**, like `analytics/us/inflation/`.
+**UI in English**, like `analytics/us/inflation/`. The three source releases live in
+`referencia/` (the repo-wide convention: nothing reads that folder) —
+`jolts_2026-07.pdf`, `employment_situation_2026-07.pdf` and
+`productivity_costs_2026Q2R.pdf`, which are the documents every published literal
+in the two test suites was read off.
 
-## Five tabs, three surveys
+## Six tabs, four surveys
 
-| Tab | Cards | Source |
-|---|---|---|
-| Payroll (default) | employment tree (839 industries), hours and earnings tree (94) | CES |
-| Household | labour force status, rates by group, composition, U-1 to U-6 | CPS |
-| JOLTS | industry, establishment size, region | JOLTS |
-| Derived | vacancies per unemployed, gross flows, Beveridge, CES vs CPS | all three |
-| Appendix | 16 drawers | — |
+| Tab | Cards | Source | Frequency |
+|---|---|---|---|
+| Payroll (default) | employment tree (839 industries), hours and earnings tree (94) | CES | monthly |
+| Household | labour force status, rates by group, composition, U-1 to U-6 | CPS | monthly |
+| JOLTS | industry, establishment size, region | JOLTS | monthly |
+| Productivity | sector table + chart, business-cycle comparison | MSPC (`prod2`) | **quarterly** |
+| Derived | vacancies per unemployed, gross flows, Beveridge, CES vs CPS | all three monthly | monthly |
+| Appendix | 21 drawers | — | — |
 
-Payload is 11,7 MB with the `{i0, v}` compression from `analytics/brasil/expectations`
+Payload is 12,1 MB with the `{i0, v}` compression from `analytics/brasil/expectations`
 (26 MB without it: the CES starts in 1939 and most industries in 1990, so a full array
 per series was mostly the word `null`). Hours and earnings ship only to tree level 4 —
 94 industries against 549, the granularity the release's own B-2/B-4 tables publish; the
 database holds all of them.
+
+## Productivity: the first quarterly tab, and the first whose pill picks a SERIES
+
+`mt_produtividade` (BLS/MSPC, the `prod2` release) broke two assumptions the page had
+carried since it was built, and both cost a parameter on `makeGenericTab` rather than a
+second factory:
+
+- **Quarterly, not monthly.** `opt.fmtCol` (column header), `opt.fmtHover` (the hover
+  label) and `opt.nCols` replaced hardcoded month formatting. The hover label is built in
+  JS rather than with Plotly's `%q` specifier, which is not in the 2.35.2 bundle as far as
+  a grep can tell and cannot be verified here without a browser — so the column header and
+  the hover come from the same function and a test compares both.
+- **The reading pill selects a published series instead of computing one.**
+  `opt.calcTransform: false` puts `state.transform` into `opt.chave()`, so clicking Y/Y
+  reads the BLS's own year-over-year series. The source publishes all three readings for
+  every quantity — they are the three panels of every table in the release.
+
+The precision story here was measured, and the first version of these notes had it
+**backwards**: the flat file carries the index at **three** decimals and the two growth
+rates at one. Rebuilding a growth rate from the file's index agrees with the published one
+to 0.0500 p.p. and never more — the residual is the rounding of the *published rate*.
+What errs is rebuilding from the index **as printed in the release PDF** (1 decimal): mean
+0.27, max **1.35 p.p.** So the reason to carry three series is that the published number
+is the citable one, not that the arithmetic fails.
+
+### Nothing on that tab adds up, for two independent reasons
+
+The six sectors **contain** one another (business ⊃ nonfarm business ⊃ manufacturing and
+nonfinancial corporations), and the one pair that genuinely partitions — durable +
+nondurable = manufacturing — still does not add, because what is published is an index:
+the ratio averages **2.02**. So stacked bars, "% of total" and the parent-becomes-a-line
+rule are all off across the tab, with the reason on the disabled control. It is the
+cleanest case in the repo of the rule that a control's validity is a property of the data.
+
+### "Productivity = output − hours" is the release's own wording and errs by 15.9 p.p.
+
+The text writes the identity as a subtraction, and 1.7 − 0.3 = 1.4 exactly. The true
+relation is a ratio. Measured over 317 nonfarm quarters and 157 durable ones: subtraction
+is off by 0.14 p.p. on average and **15.9 p.p.** at worst; the ratio form closes to 0.04 /
+0.18. The worst case is durable manufacturing in 2020 Q3 — output +91.3%, hours +37.1%,
+subtraction says +54.2%, published is **+39.5%**. Both forms are asserted, so a future
+"simplification" to the subtraction fails instead of producing a plausible number.
+
+### One "Output" row, two output concepts — and the catalogue says so
+
+Measures 04/05/14 (value added) exist only for business, nonfarm business and nonfinancial
+corporations; 21/22/23 (sectoral) only for the three manufacturing sectors. No sector
+publishes both, so the release's prose warning that they are not comparable is visible in
+which series exist. The table merges each pair into one slug and carries
+`conceito_produto` on every row; the chart subtitle prints the warning **only when both
+concepts are actually plotted**, which is the default view. Four more measures (profits,
+unit profits, unit nonlabor costs, unit combined input costs) are nonfinancial-corporations
+only — Table 6 — and their pills stay on screen disabled.
+
+### The business-cycle card is the release's charts 3 and 4
+
+Each bar is the annualized rate **between the endpoints** of its window, not the average of
+the quarterly rates (which differs by ~0.06 p.p. on nonfarm productivity since 2019). Ten of
+those rates are quoted in the release text and `_ciclos()` **refuses to build the payload**
+unless it reproduces all ten — a wrong window produces a plausible number, so this is not a
+test-only check. The long-term window starts at each sector's own first quarter (1947 Q1 for
+business, 1987 Q1 for manufacturing), which is what the release quotes and what the axis
+label prints; a fixed date would give manufacturing a span its data does not cover.
 
 ## The payroll tree is the hard part of this branch
 
@@ -251,6 +320,190 @@ and false of a share's, since that one is a p.p. difference. The bug was in the 
 reason**, and it was visible on screen. Worth generalizing: a disabled control's tooltip is an
 assertion about the data, and it ages the same way prose in a card does.
 
+## The 7 metric layers — the two CES tabs (2026-09-04)
+
+`Payroll employment — CES` and `Hours and earnings — CES` are on the layered control model from
+[`design-system.md#metricas`](../../../.claude/skills/lis-dashboard/references/design-system.md#metricas).
+The other 10 tabs still carry the old pill bar, deliberately, so the two models are comparable side
+by side.
+
+What the single `Reading` pill was doing wrong: it fused **three** layers into one single-select —
+window (`12M total`), comparison (`M/M`, `Y/Y`) and smoothing (`3M avg`, `12M avg`). Because it was
+single-select, picking `M/M` excluded `3M avg`, so *"the 3-month average of the monthly change"* —
+the standard payroll read — **could not be asked for at all**, and nothing about the UI said so.
+
+The tab now renders five `<select>`s: Adjustment · Denominator · Comparison · Smoothing · Chart.
+Reachable states went from 20 to **48**, with no option invented — the gains are the compositions
+(3M/12M average *of* a change or of a Y/Y), plus `Change Y/Y` in thousands of jobs, which the old
+`Y/Y` never produced on a level, and `% M/M`, which the old `M/M` never produced either.
+
+Four things this pilot established that the next tab should reuse:
+
+- **The descriptor was already written and the JS ignored it.** `ces_tab.py` and `jolts_tab.py`
+  declare `natureza` (estoque/fluxo/media/agregado/indice) and `aditivo`, but the controls keyed off
+  the *absence of an axis label* (`y_acum: None`, `y_share: None`) instead. `opt.desc(state)` now
+  builds the layer set from `natureza`/`aditivo`, and the labels are consequences rather than causes.
+- **Two different reasons for an option not to be pickable, and they look different on screen.** A
+  layer the data never offers renders **nothing** (Measure, because this family has one measure;
+  Window, because employment is a stock; Basis, because it is not money) — that is what removes the
+  lonely one-pill group and the permanently-greyed `12M total`. A layer whose option is invalid
+  *given the other layers* renders **greyed with the reason** (`% M/M` while the denominator is a
+  share).
+- **Moving from pills to selects loses the tooltip.** A disabled `<button>` shows its `title`;
+  a disabled `<option>` does not, in any browser. So the reason moved into the DOM, as a
+  `.layer-why` line under the bar — which is also why it is now assertable instead of trusted.
+- **The order assertion has to be written on a pair that does NOT commute.** Difference and moving
+  average are linear time-invariant filters, so `MA3(Δx) == Δ(MA3(x))` in the interior (measured:
+  1,049 months identical) — a test written on that pair passes in both orders. The pairs that do
+  discriminate are denominator × smoothing (mean of a ratio ≠ ratio of means: 1,050 months differ)
+  and window × comparison.
+
+`tests/test_labor_market_us_js.js` §13b, 37 assertions.
+
+### Hours and earnings added four things the first tab could not show
+
+- **`aditivo` does not mean "already a percentage", and treating it as one was a live bug.** The
+  report derived *"this series is a ratio"* from `not aditivo`, and those are different properties:
+  average hourly earnings does not add across industries (it is an employment-weighted mean) and is
+  measured in **US$**. Measured consequence on 9 of the 12 measures: the monthly and annual change
+  came out as a *difference labelled "p.p. change"* for a figure in dollars — and worse than the
+  label, **"average hourly earnings up 0.9% from a year earlier" was not obtainable on the page**;
+  you got +0.31 called p.p. No CES measure is a percentage, so `razao` now comes from
+  `natureza === 'taxa'` and `dif` declares the difference unit per measure (the old nature-switch
+  said *"same unit as the level"*, which is true and useless on an axis).
+- **The same question must not be answered in two places.** `camadasDe()` read the new descriptor
+  while `normalizar()` still read the old `ehRazao`, so the bar *enabled* `% M/M` and the state
+  handler *undid* the choice — no error, no visual tell. The emprego tab hid this because its one
+  measure is additive, which made the old flag accidentally right.
+- **Nominal and real are one measure in two bases, not two measures.** `ganho_hora_real` and
+  `ganho_semana_real` left the measure list and became the Real option of layer 1, which renders
+  only for those two measures. The precondition was measured first: the BLS publishes the real
+  series for the **same 94 industries** as the nominal one, so there is no per-row availability
+  problem the layer model could not express. Sticky by design — picking Real, switching to a
+  measure with no real counterpart, and coming back keeps Real.
+- **Moving a series into a basis layer silently drops it from the payload.** The CES query is driven
+  by the measure list, so taking the two real keys out of `ORDEM_HORAS` cost **376 series** (94
+  industries × 2 measures × 2 adjustments) and 0.68 MB — and the symptom is not an error: the Real
+  option renders and the chart is empty. `ces_tab.medidas_carregadas()` now adds back whatever
+  `bases` references.
+
+Also worth keeping: **the measure selector stays outside the layer bar** — measure is upstream of the
+pipeline (*entity × measure*, not a layer). §13c, 29 assertions.
+
+### A measure that covers part of the tree needs the tree to say so (2026-09-04)
+
+User report: `Overtime hours`, `Hourly earnings ex-overtime` and `Aggregate overtime hours` rendered
+**empty**. The CES collects overtime only in manufacturing, so those three cover **21 of the 94 rows**
+of this tab, and none of the default-checked rows (Total private, Goods-producing, Private services)
+is among them. Two silent blanks, not one: a chart with no line at all, and a `% of total` that
+offered to divide by a Total private overtime series **that does not exist**.
+
+Pre-dates the layer migration — the measures were equally empty as pills. What the migration changed
+is that the bar now reshapes per measure, which is what made it visible.
+
+The fix is not to hide the measures but to let the visible tree follow the scope, and it reuses
+`opt.filtro`, which existed unused: the tree collapses to the covered subtrees, the root becomes
+Manufacturing (and the share denominator with it), the checked set falls back to rows that exist, and
+the chart header prints *published only within Manufacturing*. Two things made this safe to derive
+rather than declare: the covered set is a **complete single-rooted subtree** (measured: no dataless
+child under a parent with data) and the three measures cover **exactly the same** 21 rows. The
+assertion that proves the denominator moved is that the root reads exactly 100. §13e, 24 assertions.
+
+### And the control's FORM follows its width (2026-09-04, user request)
+
+From a screenshot of the 10 measure pills wrapping to a second line. A pill group must fit one line;
+above that the control is a `<select>`, and the switch is **derived from the estimated width** rather
+than chosen per tab, so adding an option tomorrow is enough for it to happen. Measured across the
+report's 38 control groups: the widest that fits is **763px** (the 6 JOLTS measures, each with a
+definition card), and the two that overflowed were **1,752px** (CES hours, 10 measures, 2 lines) and
+**2,807px** (productivity, 19 measures, 3 lines) — so any cut between 800 and 1,700 gives the same
+answer.
+
+Two consequences worth not re-deriving: a `<select>` shows one option at a time, so it gets **one**
+`i` button, for the selected item (an `<option>` hosts no button — without that step the switch
+deletes 10 and 19 definition cards in silence); and the harness needed
+`escolherNoGrupo(pref, grupo, rotulo)`, which resolves either form, because 15 call sites clicked a
+pill that had become an option. §13d sweeps all 38 groups and requires none in pills to exceed the
+budget — the defect starts as one option added to a group that fits today.
+
+
+## The four household tables: the nature is a property of the ROW (2026-09-04)
+
+Same layered model, and the CPS is the case that stretched it. In the CES a tab has one measure at
+a time, so `natureza` is a property of the *measure*; here the same block mixes **counts in
+thousands, rates in percent and durations in weeks**, and a chart has one Y axis. Three defects came
+out of it, all pre-dating the migration and none of them raising anything.
+
+**The label and the arithmetic disagreed, in both directions.** The value was computed per row
+(percent change for a level, p.p. difference for a rate) and the axis title per *block* — nothing
+reconciled them. In the three non-additive blocks the axis read *"p.p. change"* while the number was
+a percent change (Job losers **−5.86%** in the last month); in the additive block it read
+*"% change"* while the three rates were coming out in p.p. The fix is two flags rather than one:
+`razao` requires **every** plotted row to be a percentage (that is what puts the difference in p.p.)
+and `pctMotivo` needs only **one** to be (that is what bans the percent change, because the axis is
+single). With mixed units the difference stays available — it is honest in both at once — and the
+axis says *"mixed units"* instead of picking the unit of half the lines.
+
+**`naoSoma` is not "is a percentage".** Average and median duration sum with nothing and are measured
+in **weeks**, so a percent change of them is a real reading (**+7.35% y/y** in Aug 2026) and it was
+being labelled p.p. Same conflation the hours tab had between `aditivo` and `razao`, reached from the
+other side: the field now declares *"not a part of the total"* and the `unidade` column — read from
+the database, not declared — decides p.p. versus %.
+
+**And `% of total` in the adjusted view of the labour-force block plotted ZERO series.** The
+population is the one line the BLS never seasonally adjusts, the adjusted view is the default, and
+the division was by a series that does not exist — table and chart entirely blank. Same class as the
+overtime case, third path to it. Layer 4 now requires the denominator to **exist in the current
+adjustment**, and the greyed control names the way out ("switch to Not adjusted").
+
+Two things measured while writing that, both reusable:
+
+- **The source already publishes two of those ratios, so they are the answer key.** Labour force over
+  population *is* the participation rate — matching within **0.069 p.p. across 943 months**, and 0.05
+  of that is the source's own rounding (levels to the thousand, rates to one decimal). Employed over
+  population *is* the employment-population ratio. This is the rule from
+  `.claude/rules/lis-dashboards.md` ("before dividing two series, look for whether the source
+  publishes the ratio") holding on the friendly side for once.
+- **The denominator need not be a row of the table.** In the composition block the parts sum to the
+  *unemployment level*, which lives in the first block; using the visible tree's root would title the
+  axis "share of job losers" and make the four shares sum to **220%** (measured). So the block and
+  each cut declare the total's key, and `opt.denKey` overrides the root.
+
+Two cuts of unemployment do stack and one does not, and that was measured rather than assumed — the
+same audit the CES tree needed:
+
+| cut | raw data | seasonally adjusted |
+|---|---|---|
+| by reason → unemployed | worst 2k (0.034%), 0 of 391 months over 0.1% | worst 249k (**2.24%**), 340 of 391 over |
+| by duration → unemployed | worst 1k (0.019%), 0 of 391 months over 0.1% | worst 384k (**3.09%**), 351 of 391 over |
+| part-time status | does not close: the two indented lines are 2 of the 4 published reasons (worst gap 543k, 13.2%) | — |
+
+So stacking and shares are on for the first two, off for the third with the reason on screen, and the
+block note tells the reader the adjusted stack is a good picture and not an identity.
+
+Two smaller things the port needed:
+
+- **The checkbox now calls `tudo()`, not `renderTable()` + `renderChart()`.** Once the descriptor
+  reads the ticked rows, ticking a rate has to rebuild the bar — otherwise the percent change stays
+  clickable and the state is valid in the object and invalid on screen. That forced a guard in
+  `normalizar`: the selection fallback fires on *"nothing in scope while something is ticked outside
+  it"*, never on *"nothing ticked"*, or unticking the last row by hand re-ticks three by itself.
+- **A pure-rate block names its base on the axis.** `% of the relevant base` answers nothing in a
+  report with three different bases, so `ROTULO_PCT` carries one short definition per block
+  (*"unemployed as a share of that group's labor force, %"*). The generic string stays as the
+  fallback.
+
+`Cut` stays in pills: a cut selects *which rows exist*, which is upstream of the pipeline, like the
+measure pill on the CES tabs. Covered by §14b of `tests/test_labor_market_us_js.js` (76 assertions),
+verified against 9 mutants — including one that only the checkbox path catches, which is why that
+assertion fires the real `change` event instead of poking `state.checked`.
+
+**The 6-month average** was added to layer 6 in the same round (user request). It is one line in
+three places — the list, the pipeline and the axis label — precisely because that layer never
+disables anything and never changes the unit; the 10 tabs still on the old pill bar do not have it
+and will get it when they migrate.
+
+
 ## The interaction model, and why the harness asserts on windows
 
 Everything from `.claude/rules/lis-dashboards.md` is in place from the start: `dragmode:'pan'`
@@ -285,7 +538,25 @@ test that only inspects the initial render passes with `dash` deleted.
 
 ## Pending
 
+📄 **Lista completa e datada das pendências, com o contexto para retomar cada uma:**
+[`mds/pendencias_2026-09-03.md`](mds/pendencias_2026-09-03.md) — inclui um problema de
+calendário achado nesta rodada que é de outra área (`bcb_credit_note` com um
+`reference_period` derivado do mês da divulgação em vez do mês entregue, e 2026-05 sem
+nenhuma entrada), mais os três erros da rodada e a regra que sai do terceiro deles (um
+patch por script cujo texto de substituição contém a própria âncora não é idempotente).
+O resumo abaixo fica como índice.
+
+- **The layered bar is on the two CES tabs and the four CPS blocks.** Migrating the other 6 is open
+  work: the JOLTS cuts are the interesting ones (a Window layer that genuinely renders, with
+  `12M total` greyed only on job openings) and
+  productivity is the case
+  where the fused pill is *correct* — the source publishes each reading, so Comparison picks a
+  series instead of computing. Two decisions are the user's, both recorded in the plan: whether
+  `Change M/M` over a `12M total` stays pickable (it reads as acceleration of the window — RTN
+  disables it, Investimento offers it with a caption) and whether productivity gains a Smoothing
+  layer on top of the published readings.
 - **Real-browser confirmation.** No browser in this environment. Worth checking in particular:
+  the five selects on one line at narrow widths, the `.layer-why` line under the bar, and
   the stacked-bar view with the root drawn as a line over its own parts, the info card's
   position when the table is scrolled horizontally, and the pill `i` button's contrast on an
   active (navy) pill.
@@ -310,7 +581,13 @@ test that only inspects the initial render passes with `dash` deleted.
 - **The CPS is loaded at headline depth only** — 43 concepts of 68,630 series. The
   demographic cross-tabs (race × sex × age × education × veteran × disability × nativity)
   are a project of their own and nothing on this page consumes them.
-- **Still missing from the branch**: weekly claims, ECI, productivity. Claims are the only
-  weekly series in the area and would be the first non-monthly grid here.
+- **Still missing from the branch**: weekly claims and the ECI. Claims would be the only
+  **weekly** grid here (productivity, added 2026-09-03, is the first non-monthly one).
+- **Productivity: the annual average is loaded and not shown.** `mt_produtividade` carries
+  `periodicidade='anual'` (Q05, 16.555 rows, complete years only), and the tab reads the
+  quarterly grid alone. Showing it needs a pill, not new data.
+- **Total factor productivity is a different release** (`mp` survey, annual, published in
+  March) and is not loaded. So is industry-level productivity (`ip`, 40 MB) — that one
+  would be the first place this page could cross productivity with the CES industry tree.
 - **Next cuts from JOLTS itself**: nothing else is published nationally, so expansion there
   means the other surveys, not more JOLTS.

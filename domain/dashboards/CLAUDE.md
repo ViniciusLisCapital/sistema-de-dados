@@ -163,9 +163,9 @@ HTML com as fontes dele, isto compara um *insumo* com as fontes. Se virasse `des
 veredito não se apagaria com uma regeração e `regerar_afetados()` viveria em laço. Sai como
 `n_proc_atrasados`, sinal próprio, e o recálculo entra uma vez, por dentro do `gerar()`.
 
-Declarado hoje só em **`brasil_monetary_policy`** (`painel`, `modelo`, `previsao`) — é piloto, à
-espera de validação antes de expandir. `rodar_procedimento()` + `--rodar KEY:PROC` continuam
-existindo para rodar um passo isolado sem gerar, mas não há botão para isso.
+Declarado em **`brasil_monetary_policy`** (`painel`, `modelo`, `previsao`) e em
+**`brasil_inflation`** (o fetch do CSV do IPCA). `rodar_procedimento()` + `--rodar KEY:PROC`
+continuam existindo para rodar um passo isolado sem gerar, mas não há botão para isso.
 
 ## `afetados()` / `regerar_afetados()` — fechar o circuito dado → métrica
 
@@ -182,8 +182,14 @@ Três decisões que valem reter:
 
 - **`sem relatorio` não dispara.** Construir pela primeira vez um relatório que nunca existiu é
   uma decisão, não uma consequência de atualizar dado.
-- **Dependência fora dos nossos schemas nunca dispara.** `base_mercado.interest_rates` é MySQL,
-  mas nenhum ETL daqui a move — um passe nosso não pode alegar tê-la atualizado.
+- **Dependência fora dos nossos schemas nunca dispara.** Uma tabela pode ser MySQL e ainda assim
+  não ser movida por nenhum ETL daqui — e um passe nosso não pode alegar tê-la atualizado. O caso
+  que motivou a regra era `base_mercado.interest_rates`, do CentralManagement; ela **saiu do
+  manifesto em 2026-09-03** (virou `macro_brasil.br_interest_rate`, com ETL nosso), então hoje
+  **nenhuma dependência declarada tem `owner`** e este ramo não tem usuário vivo. Ficou porque a
+  situação volta assim que alguém declarar dependência de outro projeto — e `test_serve_calendar.py`
+  agora afirma o contrário (que não sobrou nenhuma), o que é o que impede a regra de virar código
+  morto sem ninguém notar.
 - **Falha de geração não derruba o job de ETL.** O dado já está no banco; um gerador quebrado é
   problema do relatório. Fica no log e no veredito, que passa a acusar `desatualizado`.
 
@@ -220,21 +226,36 @@ contagens de linha vêm aproximadas do `information_schema` de propósito — `C
 mesmo conjunto custava 7,6s de varredura completa para preencher uma coluna informativa.
 `--live` acrescenta uma chamada de rede por série externa.
 
-## Um de cada vez, por decisão
+## Um por requisição — e, desde 2026-09-03, um botão que percorre a fila
 
-**Não existe "regerar todos os atrasados"** — nem na aba, nem no endpoint, e isso é escolha do
-usuário (2026-08-26), não uma etapa que faltou. Quem acabou de atualizar o IPCA escolhe qual dos
-seis dashboards que o consomem interessa naquele momento; regerar os seis levaria 151s para
-entregar cinco arquivos que ninguém ia abrir.
+**O endpoint continua sendo um dashboard por requisição** (`POST /api/gerar` recebe uma `key`), e
+isso não é só higiene de segurança: é o que faz cada card virar "em dia" na tela no momento em que
+o dele volta, em vez de a página congelar por minutos.
 
-O `--gerar todos` do CLI continua existindo para o caso de carga inicial (é o que dá stamp a
-todos de uma vez), mas a página nunca oferece lote. Há um teste que cobra isso — se alguém
-reintroduzir um botão de lote na aba, a seção "STATUS DASHBOARD" do harness JS falha.
+O que mudou é a página. Ela ganhou **"Regerar pendentes"**, a pedido explícito do usuário
+(*"colocar um botao, 'Regenerar pendentes' que regenerar todos os dash pendentes"*), o que
+**reverte a decisão de 2026-08-26** de não haver lote em lugar nenhum — o argumento de então era
+que quem acabou de atualizar o IPCA escolhe qual dos seis dashboards que o consomem interessa
+naquele momento. Os botões de card ficaram: o lote é adição, não substituição, e serve o caso em
+que a resposta é "tudo o que ficou para trás".
 
-**A regeração automática de `update_db.py` (2026-08-28) não contradiz isto**, e a diferença é a
-que importa: ela não é lote, é *o que ficou para trás por causa do dado que acabou de entrar* —
-tipicamente um dashboard, às vezes nenhum. O usuário na página continua escolhendo; quem roda
-o ETL pela linha de comando não fica com a métrica velha sem saber.
+Ele é um **laço no cliente sobre o mesmo endpoint**, em série — não há rota de lote para auditar, e
+dois geradores nunca disputam o banco. A fila é fotografada antes do primeiro POST (um dashboard que
+continue pendente depois de gerar, porque um passo dele falhou, voltaria para a fila e seria
+retentado para sempre) e uma falha não interrompe o resto.
+
+**A fila é mais estreita que "não está verde"**, e é aqui que ela conversa com o resto deste
+arquivo: entram `desatualizado` e *passo atrás dos dados*; ficam fora `sem relatorio` — construir
+pela primeira vez é decisão, a mesma regra de `regerar_afetados()` — e `sem stamp`, que não é
+atraso e sim a ausência do retrato. Sem `module` também fica fora.
+
+O `--gerar todos` do CLI é outra coisa e continua sendo: ele gera os doze **sem recalcular**, para
+carga inicial de stamp. É por isso que o modo arquivo do botão copia uma linha `--gerar <key>` por
+dashboard pendente em vez de `--gerar todos`.
+
+**A regeração automática de `update_db.py` (2026-08-28) também não é isto**, e a diferença
+continua valendo: ela não é lote nem escolha, é *o que ficou para trás por causa do dado que acabou
+de entrar* — tipicamente um dashboard, às vezes nenhum.
 
 ## Pending
 

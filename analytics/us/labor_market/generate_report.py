@@ -60,7 +60,8 @@ from pathlib import Path
 import pandas as pd
 
 from analytics.report_structure.builder import render_report
-from analytics.us.labor_market import ces_tab, cps_tab, derivadas_tab, jolts_tab
+from analytics.us.labor_market import (ces_tab, cps_tab, derivadas_tab,
+                                       jolts_tab, prod_tab)
 from domain.db.us._gravar import ler
 
 _DATABASE = "macro_us"
@@ -106,7 +107,9 @@ def _ler_ces() -> tuple[pd.DataFrame, pd.DataFrame]:
             "mt_ces.run(anos='all')` primeiro."
         )
     niveis_horas = ces_tab.NIVEL_MAX_HORAS
-    medidas_horas = "','".join(ces_tab.ORDEM_HORAS)
+    # ORDEM_HORAS mais as medidas que so existem como opcao de base -- ver a docstring
+    # de ces_tab.medidas_carregadas().
+    medidas_horas = "','".join(ces_tab.medidas_carregadas(ces_tab.ORDEM_HORAS))
     dados = ler(
         _DATABASE,
         "SELECT c.date, c.categoria, c.medida, c.ajuste, c.valor "
@@ -141,6 +144,179 @@ def _grade_simples(dados: pd.DataFrame) -> list[str]:
     """
     a, b = dados["date"].min(), dados["date"].max()
     return [d.strftime("%Y-%m-%d") for d in pd.date_range(a, b, freq="MS")]
+
+
+def _ler_prod() -> pd.DataFrame:
+    """As series trimestrais de `mt_produtividade`.
+
+    A media anual (`periodicidade='anual'`) fica FORA: ela e o mesmo numero das duas
+    duracoes de variacao colapsadas no ano, e numa grade trimestral cairia no primeiro
+    trimestre de cada ano, sobrepondo dado real.
+    """
+    d = ler(_DATABASE,
+            "SELECT date, setor, medida, duracao, valor, conceito_produto "
+            "FROM mt_produtividade WHERE periodicidade = 'trimestral' ORDER BY date")
+    if d.empty:
+        raise RuntimeError("mt_produtividade vazia -- rode o ETL de produtividade")
+    d["date"] = pd.to_datetime(d["date"])
+    d["valor"] = pd.to_numeric(d["valor"], errors="coerce")
+    return d
+
+
+def _grade_trimestral(dados: pd.DataFrame) -> list[str]:
+    """Grade contigua de INICIO DE TRIMESTRE.
+
+    `freq='QS'` e nao `'MS'`: a compressao `{i0, v}` indexa posicoes contiguas, e numa
+    grade mensal cada serie trimestral teria dois nulos entre pontos -- o array
+    triplicaria e o `connectgaps: false` do grafico partiria toda linha.
+    """
+    a, b = dados["date"].min(), dados["date"].max()
+    grade = [d.strftime("%Y-%m-%d") for d in pd.date_range(a, b, freq="QS")]
+    fora = set(dados["date"].dt.strftime("%Y-%m-%d")) - set(grade)
+    if fora:
+        raise RuntimeError(
+            f"{len(fora)} datas fora do inicio de trimestre: {sorted(fora)[:5]}. "
+            "A convencao de `mt_produtividade` e o primeiro dia do trimestre."
+        )
+    return grade
+
+
+def _cagr(serie: pd.Series, de: str, ate: str) -> float | None:
+    """Taxa anualizada entre as PONTAS de uma janela, do indice publicado.
+
+    E como o release calcula os graficos 3 e 4 -- nao a media das taxas trimestrais.
+    O arredondamento do indice a uma decimal custa ~0,0008 p.p./ano numa janela de 26
+    trimestres, tres ordens de grandeza abaixo do digito publicado; e por isso que aqui
+    a reconta e legitima e no trimestre a trimestre nao e (ver o docstring do ETL).
+    """
+    a, b = pd.Period(de, "Q"), pd.Period(ate, "Q")
+    if a not in serie.index or b not in serie.index or a >= b:
+        return None
+    va, vb = serie[a], serie[b]
+    if pd.isna(va) or pd.isna(vb) or va <= 0:
+        return None
+    anos = (b - a).n / 4.0
+    return round(((vb / va) ** (1 / anos) - 1) * 100, 3)
+
+
+def _ciclos(dados: pd.DataFrame) -> dict:
+    """As janelas de ciclo do release, por setor e medida, mais o gabarito publicado.
+
+    O `longo` comeca no primeiro trimestre de cada setor (1947 em business/nonfarm,
+    1987 na transformacao), que e o que o release cita -- uma data fixa daria a
+    manufatura um "longo prazo" que a serie dela nao cobre.
+    """
+    idx = dados[dados["duracao"] == "indice"].copy()
+    idx["q"] = pd.PeriodIndex(idx["date"], freq="Q")
+    fim = str(idx["q"].max())
+
+    saida: dict[str, dict] = {}
+    for setor in {n["key"] for n in prod_tab.SETORES} | {
+            c["key"] for n in prod_tab.SETORES for c in n.get("children", [])}:
+        sub = idx[idx["setor"] == setor]
+        if sub.empty:
+            continue
+        por_setor: dict[str, float | None] = {}
+        for medida in prod_tab.CICLO_MEDIDAS:
+            s = sub[sub["medida"] == medida].set_index("q")["valor"].sort_index()
+            s = s[~s.index.duplicated()]
+            if s.empty:
+                continue
+            inicio = str(s.index.min())
+            for ciclo in prod_tab.CICLOS:
+                de = ciclo["de"] or inicio
+                ate = ciclo["ate"] or fim
+                por_setor[f"{ciclo['key']}:{medida}"] = _cagr(s, de, ate)
+        saida[setor] = {
+            "taxas": por_setor,
+            "inicio": str(sub["q"].min()),
+        }
+
+    # O release imprime 12 destas taxas. Conferir aqui, e nao so no teste, porque um
+    # erro de janela produz um numero plausivel: 1,8 em vez de 2,1 nao chama atencao.
+    erros = []
+    for setor, esperado in prod_tab.CICLO_PUBLICADO.items():
+        got = saida.get(setor, {}).get("taxas", {})
+        for chave, pub in esperado.items():
+            v = got.get(chave)
+            if v is None or abs(round(v, 1) - pub) > 0.051:
+                erros.append(f"{setor}/{chave}: {v} contra {pub} publicado")
+    if erros:
+        raise RuntimeError(
+            "as taxas de ciclo nao reproduzem o release:\n  " + "\n  ".join(erros)
+        )
+    return {"janelas": prod_tab.CICLOS, "medidas": prod_tab.CICLO_MEDIDAS,
+            "porSetor": saida, "fim": fim,
+            "nAferidas": sum(len(v) for v in prod_tab.CICLO_PUBLICADO.values())}
+
+
+def _payload_prod() -> dict:
+    """A aba Productivity: 6 setores x 19 medidas x 3 duracoes, em grade trimestral."""
+    dados = _ler_prod()
+    grade = _grade_trimestral(dados)
+    series = _series_por(dados, grade, ["setor", "medida", "duracao"], dec=3)
+
+    setores = list(prod_tab.SETORES)
+    chaves_setor = {n["key"] for n in setores} | {
+        c["key"] for n in setores for c in n.get("children", [])}
+    chaves_medida = set(prod_tab.MEDIDAS)
+
+    presentes = set(dados["setor"])
+    if presentes - chaves_setor:
+        raise RuntimeError(f"setores no banco fora da arvore: {sorted(presentes - chaves_setor)}")
+    if chaves_setor - presentes:
+        raise RuntimeError(f"setores da arvore sem dado: {sorted(chaves_setor - presentes)}")
+    no_banco = set(dados["medida"])
+    if no_banco != chaves_medida:
+        raise RuntimeError(
+            f"medidas divergem: so no banco {sorted(no_banco - chaves_medida)}, "
+            f"so no modulo {sorted(chaves_medida - no_banco)}"
+        )
+
+    orf = prod_tab.orfaos(chaves_setor, chaves_medida)
+    if orf:
+        raise RuntimeError(
+            f"{len(orf)} chaves do INFO de produtividade nao resolvem: {orf}. "
+            "Uma chave errada produz um botao que nunca nasce."
+        )
+    faltam = prod_tab.sem_cartao(chaves_setor, chaves_medida)
+    if faltam:
+        raise RuntimeError(f"{len(faltam)} setores/medidas sem cartao: {faltam}")
+    rotulos = {f"setor:{n['key']}": n["label"]
+               for n in setores + [c for x in setores for c in x.get("children", [])]}
+    rotulos.update({f"medida_prod:{k}": v["label"] for k, v in prod_tab.MEDIDAS.items()})
+    red = prod_tab.full_redundante(rotulos)
+    if red:
+        raise RuntimeError(
+            f"{len(red)} cartoes de produtividade com `full` igual ao rotulo: {red}. "
+            "O cartao abriria para repetir o que o leitor acabou de ler."
+        )
+
+    # Quais (setor, medida) existem de verdade: a grade e esburacada e a pagina precisa
+    # desabilitar a pill em vez de plotar nada.
+    combos = sorted({f"{a}|{b}" for a, b in
+                     zip(dados["setor"], dados["medida"])})
+    conceito = (dados.groupby("setor")["conceito_produto"].agg(
+        lambda x: sorted(set(x))))
+    maus = conceito[conceito.map(len) > 1]
+    if len(maus):
+        raise RuntimeError(f"setores com mais de um conceito de produto: {list(maus.index)}")
+
+    return {
+        "dates": grade,
+        "series": series,
+        "setores": setores,
+        "defaultSetores": prod_tab.DEFAULT_SETORES,
+        "medidas": prod_tab.MEDIDAS,
+        "ordemMedidas": prod_tab.ORDEM_MEDIDAS,
+        "duracoes": prod_tab.DURACOES,
+        "combos": combos,
+        "conceito": {k: v[0] for k, v in conceito.items()},
+        "ciclos": _ciclos(dados),
+        "info": prod_tab.INFO,
+        "fonte": "BLS, Major Sector Productivity and Costs",
+        "nSeries": len(series),
+    }
 
 
 def _series_por(dados: pd.DataFrame, grade: list[str], chaves: list[str],
@@ -255,11 +431,13 @@ def construir() -> dict:
 
     ces = _payload_ces()
     cps = _payload_cps()
+    prod = _payload_prod()
     derivadas = _payload_derivadas()
 
     info = dict(jolts_tab.INFO)
     info.update(ces["info"])
     info.update(cps_tab.INFO)
+    info.update(prod["info"])
 
     return {
         "meta": {
@@ -267,13 +445,16 @@ def construir() -> dict:
             "ultimoMes": grade[-1],
             "primeiroMes": grade[0],
             "nMeses": len(grade),
-            "nSeries": len(series) + len(ces["series"]) + len(cps["series"]),
+            "nSeries": (len(series) + len(ces["series"]) + len(cps["series"])
+                        + len(prod["series"])),
             "preliminares": prelim,
             "fonte": "BLS, Job Openings and Labor Turnover Survey (JOLTS)",
             "fonteCes": "BLS, Current Employment Statistics (establishment survey)",
             "fonteCps": "BLS, Current Population Survey (household survey)",
             "cesUltimoMes": ces["dates"][-1],
             "cpsUltimoMes": cps["dates"][-1],
+            "prodUltimoTri": prod["dates"][-1],
+            "fonteProd": prod["fonte"],
         },
         "dates": grade,
         "medidas": jolts_tab.MEDIDAS,
@@ -285,6 +466,7 @@ def construir() -> dict:
         "series": series,
         "ces": ces,
         "cps": cps,
+        "prod": prod,
         "derivadas": derivadas,
         "info": info,
     }
@@ -391,18 +573,22 @@ def _payload_cps() -> dict:
             f"{len(red)} cartoes da CPS tem `full` igual ao rotulo curto: {red}")
 
     blocos = []
-    for chave, rotulo, aditivo in cps_tab.BLOCOS:
-        if chave == "composicao":
-            linhas = cps_tab.linhas_do_bloco("composicao", presentes)
-        else:
-            linhas = cps_tab.linhas_do_bloco(chave, presentes)
+    for chave, rotulo, aditivo, den in cps_tab.BLOCOS:
+        linhas = cps_tab.linhas_do_bloco(chave, presentes)
         blocos.append({"key": chave, "label": rotulo, "aditivo": aditivo,
+                       "denKey": den, "denLabel": cps_tab.rotulo(den) if den else None,
+                       "rotuloPct": cps_tab.ROTULO_PCT.get(chave),
                        "linhas": linhas})
     return {
         "dates": grade,
         "series": series,
         "blocos": blocos,
-        "eixos": [{"key": k, "label": v} for k, v in cps_tab.EIXOS_COMPOSICAO],
+        # `denKey`/`denLabel` por corte: a camada 4 do bloco de composicao divide pelos
+        # `desocupados`, que e uma linha de OUTRO bloco. O rotulo viaja junto porque o
+        # eixo Y tem de nomear o denominador.
+        "eixos": [{"key": k, "label": v, "aditivo": a, "denKey": d,
+                   "denLabel": cps_tab.rotulo(d) if d else None}
+                  for k, v, a, d in cps_tab.EIXOS_COMPOSICAO],
         "unidades": cps_tab.unidade_por_linha(dados),
         "rotuloUnidade": cps_tab.UNIDADES,
     }
@@ -451,6 +637,10 @@ def run(output: str | Path | None = None) -> Path:
     print(f"  cps        {len(dados['cps']['series']):,} series, "
           f"{sum(len(b['linhas']) for b in dados['cps']['blocos'])} linhas em "
           f"{len(dados['cps']['blocos'])} blocos")
+    pr = dados["prod"]
+    print(f"  prod       {pr['nSeries']:,} series, {pr['dates'][0]} -> {pr['dates'][-1]}, "
+          f"{len(pr['combos'])} pares setor x medida")
+    print(f"             {pr['ciclos']['nAferidas']} taxas de ciclo conferidas contra o release")
     af = dados["derivadas"]["vuAferido"]
     print(f"  derivadas  vagas/desempregado conferida contra o BLS em {af['n']} meses "
           f"(erro medio {af['erroMedio']})")

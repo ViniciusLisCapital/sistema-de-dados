@@ -19,35 +19,80 @@ Kinea Investimentos, **the entire archive available in
 `repository/mental_model/`** as of 2026-07-29 — both of their monthly
 publications: `repository/mental_model/kinea/` (the "Carta do Gestor" main
 letter, ~monthly, end of month) and `repository/mental_model/kinea_insights/`
-(a separate single-topic deep-dive piece, ~monthly, mid-month). 124 documents
-total (60 `kinea` + 64 `kinea_insights`), listed in
-`fx_attribution_data/documents.csv`, spanning 2021-05 through 2026-06 (62
-calendar months). Coverage isn't perfectly uniform:
+(a separate single-topic deep-dive piece, ~monthly, mid-month). **128 documents
+total (62 `kinea` + 66 `kinea_insights`)**, listed in
+`fx_attribution_data/kinea/documents.csv`, spanning **2021-05 through 2026-08
+(64 calendar months)**. Coverage is uniform from 2022 on; the irregularity is
+confined to the archive's opening year:
+
+**All of the per-year counts below are on the reference month** (the month a
+letter covers), which is what `month` holds since 2026-09-08. They read very
+differently from the publication-month counts this section used to carry —
+see the correction note after the list.
 
 - 2021: the archive starts mid-year — first `kinea` letter is 2021-05-16,
-  first `kinea_insights` is 2021-05-18. May 2021 itself has two main letters
-  ("A primavera da esperança," May 16, and "Da primavera ao verão econômico,"
-  May 17). `kinea` covers May-Nov 2021 (7 months; no Dec 2021 main letter —
-  insights only); `kinea_insights` covers May-Dec 2021 (8 months).
-- 2022: `kinea` has 12 main letters across 10 distinct months (Jan and Oct
-  each got two separate letters — Jan 3/Jan 31, Oct 3/Oct 31; Sep and Dec
-  have no main letter, insights only); `kinea_insights` has all 12 months.
-- 2023: `kinea` has 13 main letters across 10 distinct months (Jan, Apr, and
-  Aug each got two separate letters that month; Mar and May have no main
-  letter, insights only); `kinea_insights` has all 12 months.
-- 2024: April has no main letter (insights only), and November has two main
-  letters ("O Alquimista," Nov 1, and "O Conde de Monte Cristo," Nov 29) —
-  both real, confirmed from each document's own publication date, not a data
-  error. `kinea_insights` covers all 12 months.
-- 2025: coverage is complete (exactly one of each per month, including two
-  `kinea_insights` issues in December — 2025-12-15 and 2025-12-19, the latter
-  in English, see below).
-- 2026: the archive currently runs through June 2026 (both series, one issue
-  per month, no gaps or doubles).
+  first `kinea_insights` is 2021-05-18. May 2021 genuinely has two main
+  letters ("A primavera da esperança," May 16, and "Da primavera ao verão
+  econômico," May 17 — seventeen days apart, the one real double in the
+  archive). `kinea` then has a true **Jun-Aug gap** and covers Sep-Dec (the
+  December letter is the one published 2022-01-03); 6 letters over 5 distinct
+  months. `kinea_insights` covers May-Dec (9 issues, May doubled).
+- 2022: `kinea` has **12 main letters in 12 distinct months** — no collision,
+  no gap. `kinea_insights` has all 12 months.
+- 2023: `kinea` has **12 main letters in 12 distinct months**.
+  `kinea_insights` has all 12 months.
+- 2024: **12 main letters in 12 distinct months.** This year used to read as
+  "April missing, November doubled" — both documents are real, but "O
+  Alquimista" (published Nov 1) is the **October** letter, and moving it
+  closes the April-to-November run at the same time. `kinea_insights` covers
+  all 12 months.
+- 2025: complete — 12 main letters in 12 months, plus two `kinea_insights`
+  issues in December (2025-12-15 and 2025-12-19, the latter in English, see
+  below).
+- 2026: the archive runs through August 2026 (see the 2026H2 refresh section
+  below). **Exactly one issue of each series per month, Jan through Ago** —
+  "Dr. Strangelove" (published 01/08) is the Jul/2026 letter and "A hora do
+  pesadelo" (31/08) is the Ago/2026 one. Before the 2026-09-08 month
+  migration these two stacked into Ago/2026 and left Jul/2026 empty, which is
+  what made the defect visible.
 
-The double-letter-in-one-month pattern (2021 May, 2022 Jan/Oct, 2023
-Jan/Apr/Aug, 2024 Nov) recurs often enough across years that it reads as a
-genuine, if irregular, Kinea publishing habit rather than a one-off.
+**The "double-letter-in-one-month pattern" was an artifact, and this paragraph
+used to assert the opposite.** It read: *recurs often enough across years that
+it reads as a genuine, if irregular, Kinea publishing habit rather than a
+one-off.* Wrong. Those months (2022 Jan/Oct, 2023 Jan/Apr/Aug, 2024 Nov, 2026
+Apr/Ago) were the old publication-month convention filing a letter one month
+late, on top of the next one. Keyed on the covered month, **2022 through 2026
+are uniform — 12 main letters in 12 distinct months every full year, zero
+collisions and zero gaps** (2026 is 8 in 8 through August); corpus-wide the
+count goes from 10 collision months and 12 empty months to **1 and 3**. Kinea's
+real habit is one main letter per closed month, published in that month's last
+days or the next month's first few. The only genuine double is **May 2021**,
+the archive's opening, and the only genuine gap is **Jun-Aug 2021**, before the
+series settled.
+
+The reusable half: **a corpus statistic can manufacture a finding about the
+source when the indexing convention is wrong**, and the more consistently the
+convention is applied, the more solid the false finding looks — here it
+survived long enough to be written up twice as a property of how Kinea
+publishes. The check that catches it is structural, not textual: count
+documents per bucket, and distrust any source that publishes N per period yet
+produces buckets of 2 and 0. Verde and Kapitalo were audited the same way on
+2026-09-08 and are clean (see below).
+
+**Verde and Kapitalo were checked against an independent source, not just
+re-read.** Both encode the reference month in the source filename
+(`Verde-REL-YYYY_MM.md`, `kapitalo_k10_MMYYYY.md`), so the filename validates
+the `month` column without coming from the same place: **0 mismatches in 200
+and 85 documents**, no month with two documents, no empty month in either span.
+Their publication lag is the tell that the two columns are genuinely different
+things and both are right — Verde publishes one month after the covered month
+in 199 of 200 cases (the exception is Jul/2011, published 2011-09-26, which
+matches that PDF's own `/CreationDate` exactly, so it is a genuinely late
+letter and not an error), while Kapitalo has a lag of exactly zero by
+construction, since its `date` is a placeholder (the covered month's last day)
+rather than a recovered publication date — its PDFs carry no `/CreationDate`.
+`claims.csv` agrees with `documents.csv` on `(source_file, month, date)` for
+every claim in all three managers, with no orphan claims.
 
 **Language shift, late 2025.** `kinea_insights_19122025.md` ("The Hidden Side
 of Artificial Intelligence") is the first document in the corpus written in
@@ -63,9 +108,11 @@ more FX-explicit than any prior year — they now routinely name "a moeda" or
 terms-of-trade windfall, risk sentiment), often as its own subsection, rather
 than leaving the currency implication to be inferred from a broader macro
 discussion the way 2021-2024 letters mostly did. This shows up directly in
-the claim count: the 6 available 2026 `kinea` letters produced 17 claims on
-their own — nearly a claim per category per letter — versus roughly 1-3
-claims per letter in earlier years. Whether this reflects a genuine change
+the claim count. Measured per main letter, after the 2026-09-08
+re-extraction and month migration: 2021 1.3 · 2022 1.1 · 2023 1.1 · 2024 1.8 ·
+2025 1.5 · **2026 2.5** (8 letters, 20 claims). The gap is real but smaller
+than this note first claimed — it read "nearly a claim per category per
+letter," which 2.8 claims across a 9-category taxonomy never supported. Whether this reflects a genuine change
 in how Kinea writes, or just a coincidence of an eventful first half of 2026
 (an Iran/Strait-of-Hormuz oil shock, a hawkish Fed transition under Kevin
 Warsh, a tense Brazilian election year), isn't something a single
@@ -160,6 +207,14 @@ alone. Planned fix once this becomes a chart: a stacked bar per category
 each month is visible directly, rather than inferred from a footnote column.
 
 ## Findings from the full-history run (101 claims, 124 documents, 2021-05 to 2026-06)
+
+> **Snapshot, not current state.** These counts and percentages are the
+> 2026-07-29 full-history run and are kept as written. The corpus is now
+> 128 documents / 104 claims through Ago/2026, and every `month` here is a
+> publication month — the reference-month migration of 2026-09-08 (see
+> Corpus above) moved 18 documents and 27 claims. The findings below hold
+> in substance (category shares, `trade_policy` never firing, the rule-6
+> zeros); the arithmetic is of that run.
 
 - **`trade_policy` is the only category that has never fired once, across
   five-plus years** — despite Trump tariffs (both the 2018-19 and 2025-26
@@ -314,8 +369,9 @@ backward a fourth time to 2014-01 ("run for 2014-2017") — all four same-day
 extensions, 2026-07-29. Extended a fifth and sixth time (still same
 underlying pattern, new day) to 2010-01, in one round covering both 2010-2011
 and 2012-2013 in parallel ("run the fx contributor for the year of
-2010-2013," 2026-07-30) — **197 months total, 2010-01 through 2026-05, a
-single continuous run.** Still not the full archive:
+2010-2013," 2026-07-30) — **200 months total, 2010-01 through 2026-08, a
+single continuous run** (197 at the time of that round; the 2026H2 refresh
+of 2026-09-08 added Jun/Jul/Ago 2026). Still not the full archive:
 `repository/mental_model/verde_asset/raw_pdf/` goes back to 1999, but only
 2010+ is extracted so far. A further backward extension (to 1999, 11 more
 years) would be a distinct next step, not an assumed follow-on.
@@ -789,15 +845,153 @@ Rerun via:
 uv run python -c "from analytics.brasil.exchange_rate.models.fx_attribution_model import run; run(manager='kapitalo')"
 ```
 
+## 2026H2 refresh — all three managers brought current (2026-09-08)
+
+First incremental round after the initial full-history builds, and it took
+**two passes**: the first appended 18 claims, the user challenged both the
+extraction and the Kinea dates, and the re-extraction that followed cut those
+18 to **6**. Both halves of that correction are recorded here, because the
+failure modes are the reusable part.
+
+Net: **+9 documents, +6 claims**, taking the corpus to Verde 200/175, Kinea
+128/104, Kapitalo 85/15 (documents/claims). Coverage runs to **Ago/2026** for
+Verde and Kinea and **Jul/2026** for Kapitalo — Kapitalo's August letter was
+not yet published when this ran. New material: Verde 2026_06/07/08, Kapitalo
+062026/072026, Kinea's "Dr. Strangelove" (published 01/08, the **July** letter)
+and "A hora do pesadelo" (31/08, the August letter), plus the two Insights of
+the period (both AI/tech deep-dives, zero FX claims — normal for that series).
+
+### The first pass ignored extraction rule 2, and it cost 12 of 18 claims
+
+The extraction was done having read this file's Corpus, Taxonomy and tail, but
+**not** the "Extraction rules" section above — so claims were included on
+topical relevance and our own economic priors instead of on the manager's own
+stated FX link. Audited mechanically (does the quote itself contain câmbio /
+cambial / dólar / real / moeda / BRL?), the first pass scored **6 of 18**.
+
+Removed, all for the same reason — the quote names a topic that would
+plausibly move the currency and never says it did:
+
+| gestora | documento | categoria | por que saiu |
+|---|---|---|---|
+| Verde | 2026_06 | `capital_flows`, `politics_br`, `fiscal_br` | saída de fluxos, ciclo eleitoral e o acelerador parafiscal, nenhum ligado ao câmbio |
+| Verde | 2026_07 | `politics_br` | volatilidade eleitoral prospectiva, sem link com moeda |
+| Verde | 2026_08 | `politics_br` | pontuado sobre o mercado **acionário**, que é onde a carta observa a reprecificação |
+| Verde | 2026_08 | `global_usd` +0.3 | também **regra 3**: segunda claim de mesma direção no mesmo documento |
+| Kapitalo | 062026 | `risk_sentiment` | cesta genérica de moedas emergentes — a mesma barra de especificidade que excluiu Abr/2020, Maio/2022, Nov/2022 e Jan/2026 |
+| Kapitalo | 072026 | `monetary_br` | comentário puro de juros; o parágrafo de Brasil da carta não menciona moeda nenhuma |
+| Kinea | 01082026 | `fiscal_br` | "pautas-bomba", "pé no acelerador" — fiscal, nunca câmbio |
+| Kinea | 31082026 | `capital_flows`, `politics_br`, `monetary_br`, `fiscal_br` | quatro claims temáticas, nenhuma citação com palavra de moeda |
+
+Two rows were **changed rather than deleted**, and both are worth reading:
+
+- **Kinea 01082026 `commodities` went from −0.2 to 0.0** — extraction rule 6.
+  The letter's only direct BRL observation is that the real was well-behaved
+  *despite* the energy shock, i.e. it names the channel and reports it did
+  **not** move the currency. Scoring that negative read our own prior into an
+  explicit non-move. Same pattern as Dec/2023's "teimosamente" and the Jun/2021
+  export-boom puzzle.
+- **Kinea 31082026 gained a `global_usd` −0.3** the first pass had missed:
+  "Mantemos viés comprado em dólar. Além do avanço *hawk* do Fed…" — a
+  positioning statement with an explicit stated reason, so it clears rule 5.
+  Scored moderate because the framing is mixed under rule 4 (the Fed leg is
+  broad, the elaboration is about Europe). **Leaving a valid claim out is the
+  mirror of the error being fixed**, so the re-extraction looked in both
+  directions, not only for rows to delete.
+
+The six survivors pass the rule-2 audit 6 of 6, violate rule 3 nowhere, and
+every quote segment was re-checked verbatim against `clean_md/`.
+
+**What this costs the earlier writeup:** the "clearest cross-manager
+disagreement in the corpus" claimed for Ago/2026 — Verde +0.4 vs. Kinea −0.4 on
+`politics_br`, plus both reporting foreign outflows — **does not survive**. All
+four of those rows failed rule 2. Both managers do write those things; neither
+ties them to the currency, so the model correctly has nothing to say about it.
+Same for the `monetary_br` disagreement between Kapitalo and Kinea. That is
+rule 2 stated as a result: **a real disagreement between two houses is not an
+FX attribution unless they frame it as one.**
+
+**One cross-manager disagreement does survive, and it is a better example than
+the one it replaces**, because both sides state it in currency terms. Verde and
+Kinea agree on `global_usd` in Jul/2026 (+0.3 each, both reading the July FOMC
+as removing the dollar premium) and split in **Ago/2026**: Verde +0.5, on
+Bessent's long-end intervention "enfraquecendo o Dólar e beneficiando outras
+moedas"; Kinea −0.3, on "Mantemos viés comprado em dólar. Além do avanço *hawk*
+do Fed…". Same month, same channel, opposite sign, and each quote names the
+currency itself — which is exactly the difference between this and the
+`politics_br` pair that had to be withdrawn.
+
+### The Kinea `month` was the publication month, and that is now fixed
+
+The user reported the Kinea dates looked wrong. They followed the convention
+already in the data — `documents.csv` had always keyed `month` on the
+**publication** date — but the convention itself was the defect, and it was
+Kinea-only: **Verde and Kapitalo already key `month` on the reference month**
+(Verde by the `Verde-REL-YYYY_MM` filename, Kapitalo by the covered month's last
+day), so Kinea was the odd one out rather than the standard.
+
+Kinea publishes the "Carta do Gestor" for a closed month either in its last
+days or in the first days of the next one. Under publication-month bucketing
+that puts two letters in one month and none in its neighbour. Measured across
+the 62 main letters:
+
+| | meses com 2 cartas | meses vazios no span |
+|---|---|---|
+| `month` = publicação (antes) | **10** | **12** |
+| `month` = referência (agora) | **1** | **3** |
+
+2026 is where it became visible, because Kinea's timing turned irregular —
+"Apollo 13" on 30/06, "Dr. Strangelove" on 01/08, "A hora do pesadelo" on 31/08
+— stacking two letters into Ago/2026 and leaving Jul/2026 empty, which is the
+screenshot that prompted the question. In 2024 the same convention shifted
+**every** letter one month late without ever colliding, so the defect produced
+no visible symptom for two years. Confirmed from content, not inferred:
+`kinea_01082026.md` says "durante o mês de julho" and `kinea_01082024.md` says
+"No mês de julho" three times.
+
+**The migration:** for `source == 'kinea'` (the main letter only), a
+publication date on day ≤ 5 moves `month` back one; `date` is untouched and is
+still the real publication date. **`kinea_insights` is deliberately not
+migrated** — those are thematic deep-dives, not monthly letters covering a
+prior period, so their publication month *is* their reference month. 18 rows in
+`documents.csv` and 27 in `claims.csv` moved; Kinea 2026 now reads one main
+letter plus one Insights piece per month, Jan through Ago, with no empty month.
+`repository/mental_model/kinea/fetch_kinea.py`'s docstring asserted the old
+convention and was corrected with it.
+
+**The reusable half:** a date convention that is *consistently applied* can
+still be *wrong*, and consistency is what hides it. The test that exposed it is
+structural, not textual — count documents per bucket and look for a source that
+publishes N per period producing buckets of 2 and 0.
+
+### And two acquisition notes still worth carrying
+
+- **The publication date is in the PDF, not in a guess.** Verde's
+  `documents.csv` dates match each PDF's own `creationDate` exactly on all four
+  2026 rows checked. The gap between reference month and publication is not
+  constant (3 to 11 days here), so deriving one from the other is wrong.
+- **Quotes must be verified against the right reading text, and it is not
+  always the raw dump.** Kapitalo's letters are two-column and the pdfplumber
+  extraction interleaves them line by line, so *nothing longer than a line* is
+  contiguous in `raw_md/` — a quote check against it fails on correct quotes.
+  Rebuild column-aware (crop each page at mid-width) for verification. Verde
+  fails for a different reason: the legal disclaimer is re-extracted at every
+  page break, splitting sentences that span one, so verify against `clean_md/`.
+
 ## Files
 
 - `fx_attribution_data/<manager>/documents.csv` — registry of that manager's
   source documents (date, month, source, filename) — the authoritative list
   for `n_documents`, independent of whether a document yielded any claims.
-  Kinea's currently has 124 rows.
+  Kinea's currently has 128 rows (Verde 200, Kapitalo 85). For Kinea the
+  `month` of a main letter is the month it COVERS, not the one it is
+  published in (migrated 2026-09-08, see the refresh section above);
+  `kinea_insights` rows are keyed on publication, which for those is the
+  same thing.
 - `fx_attribution_data/<manager>/claims.csv` — that manager's hand-extracted
   claims (source of truth): date, month, source, source_file, category,
-  direction, quote, note. Kinea's currently has 101 rows.
+  direction, quote, note. Kinea's currently has 104 rows (Verde 175,
+  Kapitalo 15).
 - `fx_attribution_data/<manager>/monthly.csv` — derived: one row per month,
   regenerated by `aggregate_monthly()` from the two CSVs above.
 - `fx_attribution_data/<manager>/fx_attribution.xlsx` — same data, three

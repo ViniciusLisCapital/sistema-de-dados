@@ -373,6 +373,55 @@ check("  e nao cria a chave", "time" in g3["entries"][0], False)
 
 
 # ---------------------------------------------------------------------------
+print("\n8. a FORMA do calendario real — o erro de chave que nao levanta")
+# Este bloco e o unico do arquivo que le o calendar_2026.yaml de verdade, e existe
+# por um defeito medido em 2026-09-04: o grupo `bls_empsit` (payroll) tinha as suas
+# 12 datas escritas debaixo de `us:`, que e o bloco de ESPECIFICACAO DA FONTE
+# (`{source, match, fred_release_id}`), e nao debaixo de `entries:`, que e onde as
+# datas moram. Nada levantou, e o grupo ficou funcionando pela metade:
+#
+#   - `tabelas_por_grupo` o listava, entao `--group bls_empsit` rodava o ETL e o
+#     botao da pagina funcionava -- o que e por que ninguem notou;
+#   - `expectativas()` le `entries`, entao NENHUMA expectativa era gerada, e o
+#     veredito do grupo ficava "indefinido" em vez de "ok"/"atrasado": a checagem de
+#     frescor nao conseguia acusar um payroll atrasado e o botao de LOTE o pulava;
+#   - `_flatten_entries()` tambem le `entries`, entao a divulgacao **nao aparecia**
+#     na tabela nem na linha do tempo da pagina;
+#   - e `_recurring_groups()` seleciona justamente quem NAO tem `entries`, entao ele
+#     era exibido como regra de cadencia sem data fixa, ao lado de coisa tipo "toda
+#     segunda-feira" -- com 12 datas exatas escritas no arquivo.
+#
+# As duas asserções pegam o defeito pelas duas pontas: a forma do bloco de fonte, e
+# a presenca do bloco de datas.
+from domain.release_calendar.sync import carregar as _carregar_real
+
+_doc_real = _carregar_real()
+
+_fonte_ruim = []
+for _g in _doc_real["groups"]:
+    for _chave in ("us", "ics"):
+        _blk = _g.get(_chave)
+        if _blk is None:
+            continue
+        if not isinstance(_blk, dict):
+            _fonte_ruim.append(f"{_g['group']}.{_chave} e {type(_blk).__name__}, nao mapa")
+        elif _chave == "us" and not _blk.get("source"):
+            _fonte_ruim.append(f"{_g['group']}.us sem `source`")
+check("todo bloco us:/ics: e mapa de especificacao, nunca uma lista de datas",
+      _fonte_ruim, [])
+
+# Um grupo sem `entries` e legitimo SO se for regra de cadencia declarada (`weekday`).
+# Sem esta segunda metade, mover as datas para qualquer outra chave errada continuaria
+# passando: o grupo simplesmente sairia da pagina em silencio.
+_sem_datas = [
+    _g["group"] for _g in _doc_real["groups"]
+    if "entries" not in _g and not _g.get("weekday")
+]
+check("grupo sem entries: tem que declarar weekday (ser regra, nao lista perdida)",
+      _sem_datas, [])
+
+
+# ---------------------------------------------------------------------------
 print("\n" + "=" * 70)
 if falhas:
     print(f"{len(falhas)} FALHA(S): {', '.join(falhas)}")

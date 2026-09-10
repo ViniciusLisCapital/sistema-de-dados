@@ -26,11 +26,14 @@ the dashboard first, decide on the regression afterward):
           1994-07+ to match the rest of this dashboard
   fiscal  cmb_risco_pais.cds_5y_usd (Brazil 5Y CDS in USD, manually
           ingested from investing.com exports, macro_brasil) from 2007-12
-  breakeven  10y bond-implied inflation expectation, PREJS - NTNBJS @ 120M
-          tenor, from base_mercado.interest_rates — an EXTERNAL schema (fund
-          ops, not this project's own ETL, read live via MySQLDataRequester
-          same as carry_model.py already does for its BR-2y carry spec).
-          From 2006-01. Long-term-expectation proxy added 2026-07-23 at the
+  breakeven  10y market-implied inflation expectation, DIPRE - NTNBJS @ 120M
+          tenor, from macro_brasil.br_interest_rate. Was base_mercado.interest_rates
+          — an external fund-ops schema — until 2026-09-03, when the curves were
+          migrated into this project's own macro_brasil and the CentralManagement
+          feed was retired; read live via MySQLDataRequester either way. The
+          nominal leg was PREJS (the NTN-F yield) until 2026-09-03 and is now
+          DIPRE (the DI x pre swap) — see _load_breakeven() for the coverage
+          measurement that motivated it. From 2006-01. Long-term-expectation proxy added 2026-07-23 at the
           user's request, after confirming BCB Focus's own longest horizon
           (IPCA 24m, macro_brasil.expc_focus) only goes back to 2021-03 —
           too short to be useful here.
@@ -41,7 +44,9 @@ the dashboard first, decide on the regression afterward):
           the state-space model's explicability alongside carry/tot/
           breakeven/fiscal.
   relative_carry  Selic minus the equal-weighted average policy rate of
-          MX/CL/CO/PE (macro_international.cmb_policy_rates, BIS WS_CBPOL) --
+          MX/CL/CO/PE (the POLICY curve of macro_international.
+          inter_interest_rate, BIS WS_CBPOL; was cmb_policy_rates until
+          2026-09-03, dropped as an exact duplicate) --
           Brazil's rate advantage relative to its LatAm peers, rather than
           only against the US (`carry` above). AR excluded (BIS stopped
           updating it 2025-07; also a structural outlier vs. the other four
@@ -68,8 +73,8 @@ the dashboard first, decide on the regression afterward):
           unused by any model until now.
   curve_steep_real  BR REAL yield-curve steepening, 10Y minus 2Y on the
           inflation-linked curve (NTNBJS @ 120M minus NTNBJS @ 24M,
-          base_mercado.interest_rates -- same external schema/table
-          curve_steep and breakeven already read). Added 2026-07-31 at the
+          macro_brasil.br_interest_rate -- same table curve_steep and
+          breakeven already read). Added 2026-07-31 at the
           user's request, as an alternate fiscal-risk proxy to `curve_steep`
           (nominal) and `fiscal` (5y USD CDS): the hypothesis is that CDS,
           priced in USD against EXTERNAL default risk, understates domestic
@@ -78,11 +83,11 @@ the dashboard first, decide on the regression afterward):
           debt/GDP trajectory looks worse. A real (inflation-linked) curve
           isolates the real term premium the market demands to hold
           long-dated BR government risk, net of inflation-expectations
-          effects that contaminate the nominal steepening. Same
-          `_PREJS_120M_BUG_WINDOWS`-style masking is unnecessary here --
-          NTNBJS@120M is the confirmed-clean series (see _load_breakeven()'s
-          docstring); only PREJS@120M has the bug. Real coverage starts
-          2006-01, same as curve_steep.
+          effects that contaminate the nominal steepening. No masking is
+          needed here and none exists anywhere any more -- the 2010 defect
+          lived in the retired Tesouro-Direto construction, not in the B3
+          source (see the _PREJS_120M_BUG_WINDOWS note below). Real coverage
+          starts 2006-01, same as curve_steep.
   sp500   macro_international.cmb_equity_us.sp500 (Yahoo Finance ^GSPC, S&P
           500 index close) from 1990-01. Added 2026-07-31 at the user's
           request, testing a "competing for capital" hypothesis: a stronger
@@ -107,7 +112,7 @@ the dashboard first, decide on the regression afterward):
           sentiment proxy) added nothing once sp500 was already in the
           regression.
   real_yield_diff  10Y REAL yield differential, BR minus US -- NTNBJS @ 120M
-          (base_mercado.interest_rates, the same series curve_steep_real
+          (macro_brasil.br_interest_rate, the same series curve_steep_real
           already reads) minus DFII10 (US 10Y TIPS real yield, FRED). Added
           2026-07-31 at the user's request, as a risk-premium measure. NOT
           the same test as the earlier "US 10Y real yield" entry above (that
@@ -170,8 +175,10 @@ the dashboard first, decide on the regression afterward):
           below. This is now the real, documented fix the concept note asked
           for ("fix the bug in production for now"), not the prior throwaway
           plotting script — though note the fix still lives in this project's
-          code, not in the external base_mercado table itself, since that
-          table isn't ours to write to.
+          code, not in the source rows. Until 2026-09-03 that was forced (the
+          table lived in the external base_mercado schema, not ours to write
+          to); since the migration to macro_brasil.br_interest_rate it is a
+          choice, and fixing it at the source is now on the table.
 All ten are left-joined onto the core (ptax/ipca/cpi) monthly index, so
 each column is simply null before its own series starts — no padding or
 back-filling.
@@ -218,63 +225,107 @@ def _monthly_series(database: str, table: str, name: str, rename_to: str) -> pd.
     return s.resample("MS").last().rename(rename_to)
 
 
-# Confirmed bad windows in PREJS@120M (base_mercado.interest_rates, external
-# schema) — see load_data()'s docstring. Isolated to this one curve/tenor.
-_PREJS_120M_BUG_WINDOWS = [
-    ("2010-01-22", "2010-02-05"),
-    ("2010-03-02", "2010-03-04"),
-]
+# Retired 2026-09-03. These two windows in early 2010 were where PREJS@120M read
+# 3,16% and PREJS@240M read −30,09% — masked here since 2026-07 because nothing
+# upstream could fix them. The source changed and the masking became harmful, so
+# it is gone rather than kept "just in case":
+#
+#   ("2010-01-22", "2010-02-05")  — macro_brasil.br_interest_rate now has NO row at
+#       all in this window (PREJS@120M starts 2010-02-08: the B3 grid does not
+#       reach 3.653 days back then, and we never extrapolate). Masking a window
+#       with no data is a no-op.
+#   ("2010-03-02", "2010-03-04")  — now reads 13,065 / 13,056 / 13,116, clean and
+#       continuous with its neighbours. Masking it DESTROYED three good days and
+#       replaced them with a straight line.
+#
+# The defect itself is gone at the source: it came from the Tesouro Direto
+# construction (a placeholder quote, `Taxa Compra = 0,00`, on the longest bond,
+# levered 2,3x by unbounded extrapolation). The curves now come from the B3
+# TaxaSwap file, which never extrapolates — see connectors/b3_curvas.py. The
+# guard that would have caught it on day one lives in
+# domain/db/brasil/b3/br_interest_rate.py (`problemas_do_pregao`) and runs on every
+# load; tests/test_curvas_juros_b3.py keeps both windows as positive controls.
 
 
 def _load_interest_rate_curves() -> pd.DataFrame:
-    """Raw base_mercado.interest_rates table, read once and shared by
-    _load_breakeven() and _load_curve_steepening() -- both need PREJS@120M,
-    and re-reading the same external table twice per load_data() call would
-    be a wasted round-trip on a schema outside this project's own ETL --
-    same precedent as _load_policy_rates_monthly() being shared by
-    _load_relative_carry()/_load_carry_vol_metrics()."""
-    curves = _read_table("base_mercado", "interest_rates")
+    """Raw macro_brasil.br_interest_rate table, read once and shared by
+    _load_breakeven() and _load_curve_steepening() -- both need DIPRE@120M,
+    and re-reading the same table twice per load_data() call would be a
+    wasted round-trip -- same precedent as _load_policy_rates_monthly()
+    being shared by _load_relative_carry()/_load_carry_vol_metrics().
+
+    History: on 2026-09-03 the curves left base_mercado.interest_rates
+    (CentralManagement's fund-ops schema, feed retired) for
+    macro_brasil.br_interest_rate. The rows are NOT the same ones -- the
+    inherited Tesouro-Direto-interpolated history was discarded and the table
+    was rebuilt from the B3 TaxaSwap pregao files, which also renamed the
+    nominal DI curve from CDI to DIPRE and shortened PREJS's usable range
+    (PREJS@120M only from 2010-02, ~40% of pregoes, because the loader refuses
+    to extrapolate outside B3's published grid). That is why breakeven and
+    curve_steep now start in 2010-02 instead of 2006-01. US_TREASURY moved to
+    macro_us.us_interest_rate and is not read here -- the US real 10Y this
+    module uses comes from FRED DFII10 live, not from that table."""
+    curves = _read_table("macro_brasil", "br_interest_rate")
     curves["date"] = pd.to_datetime(curves["date"])
     curves["value"] = curves["value"].astype(float)
     return curves
 
 
 def _load_breakeven(curves: pd.DataFrame) -> pd.Series:
-    """10y bond-implied breakeven inflation (PREJS - NTNBJS @ 120M), monthly,
-    with the confirmed PREJS@120M bug windows masked and linearly interpolated."""
-    prejs = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    """10y market-implied breakeven inflation (DIPRE − NTNBJS @ 120M), monthly.
+
+    **Nominal leg switched from PREJS to DIPRE on 2026-09-03**, at the user's
+    request, and the reason is coverage rather than preference. On the
+    B3-sourced table PREJS@120M carries only **107 of the 249 months** in the
+    span, and the holes are not random: the Tesouro issues NTN-F at ~2-year
+    intervals, so a 10-year point exists only in the years right after an issue
+    — 2013, 2021 and 2025 have ZERO months, and 2011/2015/2017/2019/2023 have
+    exactly one. DIPRE@120M (the DI×pré swap, the most liquid nominal instrument
+    at that tenor) gives **249/249** and correlates **0,991** with the PREJS
+    version on the 107 shared months, |dif| 0,16 p.p. mean and 0,93 max.
+
+    What changes economically: the nominal leg is now a swap rate rather than a
+    bond yield, so the spread no longer contains the bond-vs-swap basis on the
+    nominal side while still containing it on the real side (NTNBJS is a bond).
+    A fully homogeneous alternative exists and was measured — the B3 also
+    publishes DIC, the DI×IPCA swap, which is a *real* curve on the identical
+    grid, so DIPRE − DIC would put both legs in the same instrument and source.
+    It is NOT used here: the two disagree by ~0,5 p.p. at 120M (mean over 2026)
+    and much more at the short end, which is a real basis and a separate
+    decision, not a data fix."""
+    dipre = curves[(curves["curve"] == "DIPRE") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
     ntnbjs = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
 
-    for start, end in _PREJS_120M_BUG_WINDOWS:
-        prejs.loc[start:end] = pd.NA
-    prejs = prejs.astype(float).interpolate(method="time")
-
-    breakeven = (prejs - ntnbjs).dropna()
+    breakeven = (dipre - ntnbjs).dropna()
     return breakeven.resample("MS").last().rename("breakeven")
 
 
 def _load_curve_steepening(curves: pd.DataFrame) -> pd.Series:
-    """BR nominal yield-curve steepening, 10Y minus 2Y (PREJS @ 120M minus
-    PREJS @ 24M, base_mercado.interest_rates -- same external fund-ops
-    schema _load_breakeven() reads) -- added 2026-07-30, direct user request,
+    """BR nominal yield-curve steepening, 10Y minus 2Y (DIPRE @ 120M minus
+    DIPRE @ 24M, macro_brasil.br_interest_rate -- same table
+    _load_breakeven() reads) -- added 2026-07-30, direct user request,
     as an alternate, market-based proxy for fiscal risk alongside (not
     replacing) the CDS-based `fiscal` channel: when markets price rising
     long-run fiscal risk (debt-sustainability concerns, monetization risk),
     long-dated rates move more than short, policy-anchored ones, steepening
-    the curve independently of whether 5y CDS itself moves. PREJS@120M's
-    confirmed bug windows (see _PREJS_120M_BUG_WINDOWS / _load_breakeven())
-    are masked and interpolated here too, same treatment, same reason --
-    isolated to that one curve/tenor, so PREJS@24M needs no equivalent
-    masking. Real coverage starts 2006-01 (verified against Tesouro Direto
-    -- no BR pre-fixed bond traded past ~1.6y maturity before then)."""
-    prejs_120 = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
-    prejs_24 = curves[(curves["curve"] == "PREJS") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
+    the curve independently of whether 5y CDS itself moves.
 
-    for start, end in _PREJS_120M_BUG_WINDOWS:
-        prejs_120.loc[start:end] = pd.NA
-    prejs_120 = prejs_120.astype(float).interpolate(method="time")
+    **Switched from PREJS to DIPRE on 2026-09-03**, at the user's request, for
+    the coverage reason spelled out in _load_breakeven(): the NTN-F 10-year
+    point exists only in the years following an issue, so the PREJS version had
+    107 of 249 months with 2013/2021/2025 empty — the sparsest channel in the
+    model by a wide margin. DIPRE gives 249/249 and correlates 0,991 with it on
+    the shared months (|dif| 0,16 p.p. mean).
 
-    steepening = (prejs_120 - prejs_24).dropna()
+    The swap curve is arguably the better instrument for this channel anyway:
+    both legs now come from the same instrument at both tenors, so the slope is
+    not contaminated by a bond-vs-swap basis that differs between the 2Y and the
+    10Y. It also restores the series' start to 2006-01 (PREJS only reached
+    2010-02)."""
+    dipre_120 = curves[(curves["curve"] == "DIPRE") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
+    dipre_24 = curves[(curves["curve"] == "DIPRE") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
+
+    steepening = (dipre_120 - dipre_24).dropna()
     return steepening.resample("MS").last().rename("curve_steep")
 
 
@@ -283,9 +334,10 @@ def _load_curve_steepening_real(curves: pd.DataFrame) -> pd.Series:
     curve (NTNBJS @ 120M minus NTNBJS @ 24M) -- added 2026-07-31, direct user
     request, as an alternate fiscal-risk proxy alongside `curve_steep`
     (nominal) and `fiscal` (CDS): isolates the real term premium, net of
-    inflation-expectations effects that a nominal curve mixes in. No bug-
-    window masking needed -- NTNBJS@120M is the confirmed-clean series (only
-    PREJS@120M has the documented bug, see _PREJS_120M_BUG_WINDOWS)."""
+    inflation-expectations effects that a nominal curve mixes in. No masking
+    anywhere any more: the 2010 defect belonged to the retired Tesouro-Direto
+    construction, not to the B3 source (see the retired
+    _PREJS_120M_BUG_WINDOWS note above)."""
     ntnbjs_120 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()
     ntnbjs_24 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "24M")].set_index("date")["value"].sort_index()
 
@@ -295,7 +347,7 @@ def _load_curve_steepening_real(curves: pd.DataFrame) -> pd.Series:
 
 def _load_real_yield_diff(curves: pd.DataFrame) -> pd.Series:
     """10Y REAL yield differential, BR minus US -- NTNBJS @ 120M
-    (base_mercado.interest_rates, the same series curve_steep_real already
+    (macro_brasil.br_interest_rate, the same series curve_steep_real already
     reads, confirmed-clean, no bug-window masking needed) minus DFII10 (US
     10Y TIPS real yield, FRED). Added 2026-07-31, direct user request, as a
     risk-premium measure alongside the CDS/curve-based fiscal-risk proxies
@@ -321,11 +373,32 @@ _LATAM_PEERS = ["MX", "CL", "CO", "PE"]
 
 
 def _load_policy_rates_monthly() -> pd.DataFrame:
-    """Wide monthly BIS policy rates (macro_international.cmb_policy_rates),
-    one column per country_code (BR + the 4 LatAm peers, AR excluded -- see
-    load_data()'s docstring) -- shared by _load_relative_carry() and
-    _load_carry_vol_metrics() so the table is only read/pivoted once."""
-    rates = _read_table("macro_international", "cmb_policy_rates")
+    """Wide monthly BIS policy rates, one column per country_code (BR + the 4
+    LatAm peers, AR excluded -- see load_data()'s docstring) -- shared by
+    _load_relative_carry() and _load_carry_vol_metrics() so the tables are only
+    read/pivoted once.
+
+    Reads the POLICY curve of the two rate tables, not the retired
+    macro_international.cmb_policy_rates. That table WAS the BIS ETL until
+    2026-09-03, when it turned out to hold nothing the rate tables didn't: all
+    53,663 of its rows were reproduced exactly (max diff 0.0, no orphan rows
+    either way) by macro_brasil.br_interest_rate's POLICY curve plus
+    macro_international.inter_interest_rate's, so it was dropped at the user's
+    request. The split is a schema rule, not a data one -- Brazil has its own
+    schema, the peers don't -- so BR comes from one table and the peers from the
+    other, and the union below is what puts them back in one frame.
+
+    Same BIS series, same daily grain, same numbers as before: this loader's
+    output is unchanged by the migration."""
+    br = _read_table("macro_brasil", "br_interest_rate")
+    br = br[br["curve"] == "POLICY"].copy()
+    br["country_code"] = "BR"
+
+    peers = _read_table("macro_international", "inter_interest_rate")
+    peers = peers[peers["curve"] == "POLICY"].copy()
+
+    cols = ["date", "country_code", "value"]
+    rates = pd.concat([br[cols], peers[cols]], ignore_index=True)
     rates["date"] = pd.to_datetime(rates["date"])
     rates["value"] = rates["value"].astype(float)
     wide = rates.pivot_table(index="date", columns="country_code", values="value")
@@ -570,9 +643,9 @@ def load_primitive_series(primitives: list[str] | None = None) -> dict[str, pd.S
         selic        -- BR policy rate (BCB SGS 432, via diferenciais_juros)
         fed_funds    -- US policy rate (FRED FEDFUNDS, via diferenciais_juros)
         fx_vol       -- BRL trailing-6m annualized realized vol (daily PTAX)
-        br_real_10y  -- BR real 10Y yield, NTNBJS@120M (base_mercado.interest_rates)
+        br_real_10y  -- BR real 10Y yield, NTNBJS@120M (macro_brasil.br_interest_rate)
         us_real_10y  -- US real 10Y yield, DFII10 (FRED)
-        br_real_2y   -- BR real 2Y yield, NTNBJS@24M (base_mercado.interest_rates)
+        br_real_2y   -- BR real 2Y yield, NTNBJS@24M (macro_brasil.br_interest_rate)
     None of the six needs curve_steep/breakeven's PREJS@120M bug-window
     masking -- that bug is isolated to PREJS (nominal), not NTNBJS (real),
     per _load_breakeven()'s own docstring."""

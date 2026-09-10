@@ -205,21 +205,63 @@ def build_deltas_contemporaneous(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _standardize_ext(sample: pd.DataFrame, reference: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, dict]:
-    """Z-scores `sample` using each column's mean/std computed from `reference`
-    instead of from `sample` itself -- inlined from the retired
-    bayesian_deviation_model.py (see module docstring above). Lets channels
-    with longer real history (e.g. carry, dxy) be standardized against their
-    own full 2000-01+ window even when the fitting sample itself is bound to
-    a narrower overlap forced by a late-starting channel (e.g. fiscal/CDS,
-    2007-12+). `reference` need not share `sample`'s index; each column's
-    stats are computed independently over its own non-null rows."""
+    """Escala `sample` pelo desvio-padrao que cada coluna tem em `reference`.
+    SEM centrar -- `z = x / sd`, nao `(x - mu) / sd`.
+
+    Inlined from the retired bayesian_deviation_model.py (see module docstring
+    above). O proposito e a ESCALA: deixar um canal com historia longa (carry,
+    dxy) usar o sd da propria janela 2000-01+ mesmo quando a amostra do ajuste
+    e' estreitada por um canal que comeca tarde. `reference` nao precisa
+    compartilhar o indice de `sample`; o sd de cada coluna sai das linhas nao
+    nulas dela.
+
+    **Nao centrar e' uma correcao de 2026-09-08, e a razao vale para qualquer
+    regressor em DIFERENCA.** Ate aqui esta funcao subtraia tambem a media da
+    referencia. Toda coluna que passa por aqui e' um `delta_<canal>`, e a media
+    de uma diferenca e' uma DERIVA: subtrai-la injeta um sinal constante de
+    -mu/sd em todo mes, inclusive nos meses em que o canal nao se mexeu.
+
+    Isso nao muda o ajuste -- o `Ridge(fit_intercept=True)` do sklearn nao
+    penaliza o intercepto, entao somar uma constante a uma coluna de X move so
+    o alpha. Medido nos dois lados: beta identico a 2e-16, R2 identico
+    (0,653217), lambda identico (0,01), valores ajustados identicos a 3,6e-15.
+    O que muda e' a ATRIBUICAO, e ela mudava muito: a deriva do CDS entrava na
+    decomposicao acumulada como **+52,5 pp** dos +49,0 pp que a barra do canal
+    fiscal mostrava, contra **-3,5 pp** do movimento que o CDS de fato teve
+    (178,0 bps em jan/2006 -> 124,8 em jun/2026). O usuario achou pela leitura
+    obvia: *"no comeco de 2006 o CDS era ~120 e hoje esta perto disso; como ele
+    pode ter contribuido com 48% da desvalorizacao?"*.
+
+    Tres coisas que fecham o argumento, todas medidas:
+
+    * **O numero de B e' o unico que e' propriedade do dado.** Sob `z = x/sd` a
+      contribuicao acumulada e' `beta * dx / sd`, e como o beta e' estimado em
+      unidades de sd ele e' proporcional a sd -- o sd se cancela. Recalculada a
+      partir de um ajuste com o sd da AMOSTRA (4x menor no fiscal), a barra do
+      fiscal da -3,44 contra -3,47. Centrando na referencia o numero depende de
+      onde a janela comeca (era ~0 com o CDS do investing.com, que comecava em
+      2007-12, e virou +49 com o da Bloomberg, que comeca em 2001-10 a 1100
+      bps, sem nada ter mudado no CDS).
+    * **Centrar na propria amostra nao e' a alternativa.** Ali `sum(x - xbar)`
+      e' zero por definicao, entao TODO canal em diferenca contribui exatamente
+      zero para o movimento acumulado, quaisquer que sejam os dados. E
+      tautologia, nao achado.
+    * **O simulador do navegador ja fazia `raw / std` e nunca leu o `mean`.**
+      Servidor e cliente discordavam em `sum(beta*mu/sd)` = **-0,185 pp/mes**,
+      -2,22 pp em 12 meses, num alpha de -0,12 pp/mes -- vies maior que o
+      proprio intercepto. Esta correcao faz os dois concordarem, e a direcao e'
+      a que o cliente ja assumia.
+
+    A media zerada volta em `stats` como 0.0 de proposito: `stats` e' o
+    TRANSFORME que o payload publica e o cliente aplica, nao uma descricao da
+    serie. Guardar ali a media medida convidaria alguem a subtrai-la de novo.
+    """
     stats = {}
     z = sample.copy()
     for c in cols:
-        ref_col = reference[c].dropna()
-        mu, sd = ref_col.mean(), ref_col.std()
-        z[c] = (sample[c] - mu) / sd
-        stats[c] = (mu, sd)
+        sd = reference[c].dropna().std()
+        z[c] = sample[c] / sd
+        stats[c] = (0.0, sd)
     return z, stats
 
 # Started as ["fiscal", "dxy"], grown same day to the four carry variants,
@@ -1123,6 +1165,29 @@ def run(channels: list[str] | None = None, window: int = 60) -> dict:
 _FORECAST_BANDS_CACHE = _RESULTS_DIR / "forecast_error_bands_w72.json"
 
 
+def _sample_tag(out: pd.DataFrame) -> str:
+    """Identifica a AMOSTRA sobre a qual a banda de erro foi calculada.
+
+    `spec` (canais + convencao do PPP) responde "que modelo"; isto responde
+    "sobre que dado". Sao perguntas independentes e a segunda nao tinha
+    guarda: em 2026-09-08 a serie do canal `fiscal` trocou de fonte
+    (investing.com -> Bloomberg), o que mudou TODO valor do canal e puxou o
+    inicio da amostra de 2008-01 para 2006-02 -- com `spec` identico, porque
+    a lista de canais nao mudou. O cache velho teria sido reaproveitado em
+    silencio, publicando uma banda de um modelo estimado noutro dado, que e'
+    exatamente o modo de falha que o comentario do `spec` descreve, alcancado
+    pelo outro lado.
+
+    Primeiro mes, ultimo mes e numero de observacoes: o par de pontas pega
+    janela diferente, e o `n` pega buraco preenchido ou linha perdida no meio
+    sem mexer nas pontas (dez/2015, na mesma troca de fonte). O que ele NAO
+    pega e' revisao de valor que preserve a grade -- para isso o sinal e' o
+    `data_max` de cada dependencia no `manifest.yaml`, nao este campo.
+    """
+    return "%s..%s|n=%d" % (out.index.min().strftime("%Y-%m"),
+                            out.index.max().strftime("%Y-%m"), len(out))
+
+
 def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72,
                               horizon: int = 12, force: bool = False) -> dict:
     """Per-forecast-step standard error for a W=72-month-trained, multi-step
@@ -1160,13 +1225,6 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     # bump it and ship a band belonging to a model the page no longer runs.
     channels_tag = channels if channels is not None else _CHANNELS_5
     spec_tag = "ppp_offset_b1|" + ",".join(sorted(channels_tag))
-    if not force and _FORECAST_BANDS_CACHE.exists():
-        import json
-        with open(_FORECAST_BANDS_CACHE) as fh:
-            cached = json.load(fh)
-        if (cached.get("window") == window and cached.get("horizon") == horizon
-                and cached.get("spec") == spec_tag):
-            return cached
 
     channels = _CHANNELS_5 if channels is None else channels
     df = load_data()
@@ -1187,6 +1245,20 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
             out[f"delta_{c}"] = df[c].diff()
         delta_cols.append(f"delta_{c}")
     out = out.dropna(subset=["ptax", "delta_fx", "delta_fx_lag1", _PPP_OFFSET_COL] + delta_cols)
+
+    # A checagem do cache acontece DEPOIS de montar `out` de proposito: a
+    # amostra e' parte do que a banda mede, e so existe depois do dropna.
+    # Montar `out` custa um load_data() e uns diffs; o que o cache evita e' o
+    # laco de folds abaixo, que e' o passo de ~70-80s. Ver `sample_tag`.
+    sample_tag = _sample_tag(out)
+    if not force and _FORECAST_BANDS_CACHE.exists():
+        import json
+        with open(_FORECAST_BANDS_CACHE) as fh:
+            cached = json.load(fh)
+        if (cached.get("window") == window and cached.get("horizon") == horizon
+                and cached.get("spec") == spec_tag
+                and cached.get("sample") == sample_tag):
+            return cached
 
     n = len(out)
     max_f = horizon
@@ -1240,6 +1312,7 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
         "window": window,
         "horizon": horizon,
         "spec": spec_tag,
+        "sample": sample_tag,
         "n_folds": n_folds,
         # Ate que mes do PAINEL isto foi calculado. Sem este campo o unico sinal de frescor
         # do cache era o mtime, que diz quando o arquivo foi escrito e nao com que dado --
@@ -1321,6 +1394,106 @@ def refit_from_latest_data(channels: list[str] | None = None, force: bool = Fals
 # from a saved trace, since fitting cost here is milliseconds, not the
 # minutes-per-run every PyMC model in this package needs to amortize.
 # ---------------------------------------------------------------------------
+
+# Unidade nativa de cada regressor, para o cabecalho do grafico de historico
+# completo poder dizer o que cada linha mede. Fica aqui e nao no template porque
+# a unidade e' propriedade do dado, nao da tela -- mesma razao pela qual
+# `.claude/rules/lis-dashboards.md` manda a unidade sair de um campo da serie e
+# nao de uma string no rotulo.
+_CHANNEL_UNITS: dict[str, str] = {
+    "fiscal": "bps",
+    "dxy": "index",
+    "dxy_em": "index",
+    "carry": "pp",
+    "carry_vol": "ratio (pp of carry per pp of annualized FX vol)",
+    "relative_carry": "pp",
+    "relative_carry_vol": "ratio",
+    "curve_steep": "pp",
+    "curve_steep_real": "pp",
+    "real_yield_diff": "pp",
+    "breakeven_gap": "pp",
+    "sp500": "index",
+    "icbr_usd": "index",
+    "tot": "index",
+}
+
+
+# Amplitude (max/min) a partir da qual o painel de historico completo usa
+# eixo logaritmico. 8x e o ponto em que um eixo linear deixa de mostrar o
+# movimento da metade baixa da serie: com 61x (o CDS) os 20 anos fora do
+# pico de 2002 viram uma linha rente ao rodape. Vale so para serie
+# estritamente positiva -- log nao existe para o resto.
+_LOG_SPAN_MIN = 8.0
+
+
+def _hist_regressor(
+    s: pd.Series,
+    fit_end: pd.Timestamp,
+    unit: str,
+    is_log_return: bool,
+) -> dict:
+    """Um regressor pronto para o grafico do PROPRIO canal, na historia inteira.
+
+    2026-09-08, pedido do usuario: *"esses graficos servem para dar uma ordem de
+    grandeza dos movimentos das series, por isso e importante colocarmos la o
+    maior historico que temos"*. Ate aqui este bloco saia reindexado em
+    `z.index`, ou seja cortado na amostra do ajuste -- o CDS comeca em 2001-10 e
+    o grafico dele abria em 2006-02, escondendo o pico de 2002 (3790 bps, 30x o
+    nivel de hoje), que e' justamente a maior ordem de grandeza que a serie tem
+    para oferecer.
+
+    **O corte de FIM continua no ajuste, e isso e' load-bearing.** A linha
+    historica deste grafico tem de encostar no caminho projetado que sai da
+    ponta dela, e os meses depois do corte ja sao desenhados pela linha
+    "Observed (since fit)", que vem do nowcast. Estender o fim duplicaria esses
+    meses em duas linhas com o mesmo valor. Entao o que cresce e' so o comeco.
+
+    Todo o resto do template le apenas a CAUDA desta serie (`values[len-1]` como
+    ancora das caixas, `values[len-12+h]` para a leitura em % a/a do PPP), que a
+    extensao para tras nao move -- foi o que tornou a mudanca segura.
+
+    Os campos de escala (`unit`, `min`, `max`, `span`, `log`) existem porque em
+    historia inteira o eixo linear deixa de servir: uma serie que percorre 61x
+    mostra so o pico e achata vinte anos no rodape. Em log, distancia vertical
+    igual e' movimento proporcional igual, que e' o que "ordem de grandeza de um
+    movimento" quer dizer. O criterio e' medido, nao escolhido: estritamente
+    positiva e amplitude >= `_LOG_SPAN_MIN`. Hoje pega fiscal (61x), carry_vol
+    (29x) e sp500 (25x), e deixa dxy_em (1,6x) e icbr_usd (3,7x) em linear.
+    `span` vai junto de `log` para o rodape poder dizer POR QUE, em vez de o
+    leitor ter de confiar na escolha.
+
+    `level_mean`/`level_std` passam a ser da serie inteira, nao da janela do
+    ajuste, porque e' ela que esta desenhada: padronizar o que se ve por uma
+    media que exclui os quatro anos mais extremos poe o CDS de 2002 a 46
+    desvios e espreme todo o resto do grafico em 12% da altura.
+    """
+    s = s[s.index <= fit_end]
+    vivo = s.dropna()
+    if len(vivo):
+        # Apara o vazio das pontas (um canal comeca onde comeca), mas mantem
+        # buraco INTERNO como None: o grafico plota com connectgaps=false, e
+        # inventar uma reta por cima de um mes que a fonte nao publicou seria
+        # exatamente o que este grafico existe para nao fazer.
+        s = s.loc[vivo.index.min(): vivo.index.max()]
+        vivo = s.dropna()
+    positiva = bool(len(vivo) and (vivo > 0).all())
+    span = float(vivo.max() / vivo.min()) if positiva else None
+    return {
+        "months": [d.strftime("%Y-%m") for d in s.index],
+        "values": [None if pd.isna(v) else round(float(v), 4) for v in s.values],
+        "is_log_return": is_log_return,
+        "level_mean": round(float(np.nanmean(s.values)), 6) if len(vivo) else 0.0,
+        "level_std": round(float(np.nanstd(s.values, ddof=1)), 6) if len(vivo) > 1 else 0.0,
+        "unit": unit,
+        "start": vivo.index.min().strftime("%Y-%m") if len(vivo) else None,
+        "end": vivo.index.max().strftime("%Y-%m") if len(vivo) else None,
+        "n": int(len(vivo)),
+        "min": round(float(vivo.min()), 4) if len(vivo) else None,
+        "max": round(float(vivo.max()), 4) if len(vivo) else None,
+        "span": round(span, 2) if span is not None else None,
+        "log": bool(span is not None and span >= _LOG_SPAN_MIN),
+    }
+
 
 def build_dashboard_payload(channels: list[str] | None = None, window: int = 72) -> dict:
     """Payload for the "Ridge (Regularized, Rolling)" dashboard tab: the
@@ -1711,50 +1884,41 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             # regressors"): the shock inputs had no visible connection to
             # each channel's own actual recent values or units -- a bare
             # "+50" was meaningless without seeing what level that's
-            # relative to. channel_history exposes each channel's own last
-            # 24 months of RAW (native-unit) values so the template can
-            # plot "actual history -> shocked path forward" per channel,
-            # same idea as the main decomposition/forecast chart but for
-            # the regressors themselves rather than the FX rate they drive.
-            # is_log_return flags sp500/icbr_usd so the client projects
-            # their shocked path multiplicatively (level*exp(shock/100)^h)
-            # instead of additively (level+shock*h), matching how each is
-            # actually differenced in build_plain_regression_sample().
+            # relative to. channel_history exposes each channel's own RAW
+            # (native-unit) values so the template can plot "actual history
+            # -> shocked path forward" per channel, same idea as the main
+            # decomposition/forecast chart but for the regressors themselves
+            # rather than the FX rate they drive. is_log_return flags
+            # sp500/icbr_usd so the client projects their shocked path
+            # multiplicatively (level*exp(shock/100)^h) instead of additively
+            # (level+shock*h), matching how each is actually differenced in
+            # build_plain_regression_sample().
             #
-            # 2026-07-31, same day, direct user follow-up ("put a button
-            # ... I can see the regressor graph (all history) + forecast
-            # future (dot) - with the option to see the Z-score too") --
-            # extended from the last 24 months to the FULL sample so the
-            # expanded regressor chart can show all available history, not
-            # just the tail the compact sparkline needed. level_mean/
-            # level_std (NEW here -- distinct from channel_stats' own
-            # mean/std, which standardize the DELTA, not the level) let the
-            # template's Z-score toggle standardize the raw level itself:
-            # confirmed via AskUserQuestion this should be a z-score of the
-            # LEVEL (a new, distinct statistic), not of the delta the model
-            # actually regresses on -- the two answer different questions
-            # ("how unusual is this level" vs. "how big a signal is this
-            # month's move"), and the level reading is what was asked for.
+            # 2026-09-08: cada canal passou a vir na SUA historia inteira e
+            # nao mais reindexado em `z.index` -- ver `_hist_regressor()`,
+            # que e' onde mora o porque e o que exatamente muda. O fim
+            # continua no corte do ajuste; so o comeco cresce.
             "channel_history": {
                 **{
-                    c: {
-                        "months": months,
-                        "values": [round(float(v), 4) for v in df[c].reindex(z.index).values],
-                        "is_log_return": c in _LOG_RETURN_CHANNELS,
-                        "level_mean": round(float(np.nanmean(df[c].reindex(z.index).values)), 6),
-                        "level_std": round(float(np.nanstd(df[c].reindex(z.index).values, ddof=1)), 6),
-                    }
+                    c: _hist_regressor(
+                        raw_series[c],
+                        z.index.max(),
+                        _CHANNEL_UNITS.get(c, ""),
+                        c in _LOG_RETURN_CHANNELS,
+                    )
                     for c in channels
                 },
                 # is_log_return=True is what makes the box grid difference this
                 # index into exactly delta_ppp -- see ppp_index_full above.
-                "ppp": {
-                    "months": months,
-                    "values": [round(float(v), 4) for v in ppp_index_full.reindex(z.index).values],
-                    "is_log_return": True,
-                    "level_mean": round(float(np.nanmean(ppp_index_full.reindex(z.index).values)), 6),
-                    "level_std": round(float(np.nanstd(ppp_index_full.reindex(z.index).values, ddof=1)), 6),
-                },
+                # Ele nao sai de load_channel_series() (nao e' canal, e' o
+                # quociente de dois indices de preco do `core`), entao vem do
+                # proprio ppp_index_full, que ja e' a serie inteira.
+                "ppp": _hist_regressor(
+                    ppp_index_full,
+                    z.index.max(),
+                    "index (BR/US prices, 100 at the fit start)",
+                    True,
+                ),
             },
             "nowcast": {
                 "fit_cutoff": cutoff_month,
@@ -1769,6 +1933,12 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             "composite_primitives": composite_primitives,
         },
         "forecast_error_bands": forecast_error_bands_w72(channels=channels, window=window, horizon=12),
+        # Base scenarios for the exogenous channels (2026-09-08). Its own
+        # try/except: it re-reads the raw channel tables to get at the DAILY
+        # grid (this module works monthly throughout), so it is the one part
+        # of this payload that can fail for a reason unrelated to the fit --
+        # and the fold it feeds is worth less than the tab it sits in.
+        "exog_scenarios": _exog_scenarios(),
         "rolling": {
             "window_months": window,
             "n_windows": len(roll),
@@ -1787,6 +1957,22 @@ def build_dashboard_payload(channels: list[str] | None = None, window: int = 72)
             },
         },
     }
+
+
+def _exog_scenarios() -> dict | None:
+    """The exogenous channels' scenario library, or None if it cannot be built.
+
+    Imported here rather than at module scope so a failure in the scenario
+    module's own imports cannot stop this one from loading -- the forecast tab
+    works without the fold, not the other way round.
+    """
+    try:
+        from analytics.brasil.exchange_rate.models import exog_scenarios
+
+        return exog_scenarios.build_payload()
+    except Exception as exc:  # noqa: BLE001 -- degrade, never throw
+        print(f"  Aviso: cenarios base dos canais exogenos sem dados — {exc}")
+        return None
 
 
 def render_dashboard() -> None:

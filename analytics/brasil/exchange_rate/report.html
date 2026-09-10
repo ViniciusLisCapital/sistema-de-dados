@@ -596,6 +596,11 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 .fc-graph-panel { display: none; margin-top: 12px; }
 .fc-graph-panel.open { display: block; }
 .fc-graph-hdr { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.fc-graph-note {
+  font-family: var(--mono); font-size: 9px; line-height: 1.6; color: var(--muted);
+  margin-top: 8px; text-align: justify; hyphens: auto;
+}
+.fc-graph-note b { color: var(--navy); font-weight: 600; }
 /* Quick-shock tool (2026-08, direct user request: "% increase/decrease +
    time shock" rather than hand-typing all 12 boxes) -- fills the SAME
    canonical levels[] state the 12 boxes already read from, so nothing
@@ -736,6 +741,116 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
   text-transform: none; color: var(--muted); margin-left: auto; text-align: right;
 }
 .fold-body { padding: 0 0 18px; }
+
+/* Cenarios base dos canais exogenos (2026-09-08). O fold externo e um .fold
+   normal; estes sao os aninhados, um por canal. Menores de proposito -- cinco
+   deles empilhados dentro de um .fold ja aberto viram uma parede se cada um
+   tiver o mesmo peso tipografico do pai. */
+.scen-intro {
+  font-family: var(--sans); font-size: 12.5px; line-height: 1.55; color: var(--ice2);
+  text-align: justify; hyphens: auto; margin: 0 0 12px;
+}
+.scen-ch {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+  padding: 0 16px; margin-bottom: 10px;
+}
+.scen-ch > summary {
+  font-family: var(--cond); font-size: 13.5px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ice); padding: 11px 0; cursor: pointer;
+  list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.scen-ch > summary::-webkit-details-marker { display: none; }
+.scen-ch > summary::after { content: '+'; font-family: var(--mono); font-size: 16px; color: var(--muted); flex: 0 0 auto; }
+.scen-ch[open] > summary::after { content: '2'; }
+.scen-ch-hint {
+  font-family: var(--sans); font-size: 11px; font-weight: 400; letter-spacing: 0;
+  text-transform: none; color: var(--muted); margin-left: auto; text-align: right;
+}
+.scen-ch-body { padding: 2px 0 16px; }
+.scen-pending {
+  font-family: var(--sans); font-size: 12.5px; color: var(--muted); line-height: 1.55;
+  text-align: justify; hyphens: auto; padding: 4px 0 6px;
+}
+.scen-note {
+  font-family: var(--sans); font-size: 12.5px; line-height: 1.55; color: var(--ice2);
+  text-align: justify; hyphens: auto; margin: 0 0 12px;
+}
+.scen-headline {
+  font-family: var(--sans); font-size: 12.5px; line-height: 1.55; color: var(--ice);
+  background: var(--bg2); border: 1px solid var(--line); border-left: 3px solid var(--gold);
+  border-radius: 8px; padding: 11px 14px; margin: 0 0 14px;
+  text-align: justify; hyphens: auto;
+}
+.scen-sub {
+  font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ice2); margin: 16px 0 8px;
+}
+.scen-table-wrap { overflow-x: auto; margin-bottom: 6px; }
+table.scen-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+table.scen-table th {
+  font-family: var(--cond); font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted); text-align: right; padding: 7px 8px;
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+table.scen-table th:first-child { text-align: left; }
+table.scen-table td {
+  font-family: var(--mono); text-align: right; padding: 6px 8px;
+  border-bottom: 1px solid var(--line); color: var(--ice); white-space: nowrap;
+}
+table.scen-table td.scen-lbl {
+  font-family: var(--sans); font-weight: 600; text-align: left; white-space: normal; min-width: 150px;
+}
+table.scen-table tr.scen-partial td { color: var(--muted); }
+table.scen-table tr.scen-kind-hd td {
+  font-family: var(--cond); font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--muted); text-align: left;
+  background: var(--bg2); padding: 6px 8px;
+}
+/* Pills de tipo de episodio (2026-09-09). Crise e eleicao nunca dividem o
+   grafico: os dois eixos X nao sao o mesmo eixo -- a eleicao tem mes de
+   calendario, a crise so tem contagem de meses. Um tipo sem episodio fica
+   na tela, desligado, com o motivo no title. */
+.scen-kind-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 8px; }
+.scen-kind-pill {
+  font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--purple); cursor: pointer;
+  border: 1px solid var(--line); border-radius: 20px; padding: 4px 13px; white-space: nowrap;
+  background: var(--bg2); display: inline-block;
+}
+.scen-kind-pill:hover { color: #025E82; border-color: #02739B; }
+.scen-kind-pill.is-on { background: var(--ice); color: var(--bg); border-color: var(--ice); }
+.scen-kind-pill.is-on:hover { color: var(--bg); border-color: var(--ice); }
+.scen-kind-pill.is-off { color: var(--muted); cursor: not-allowed; border-style: dashed; }
+.scen-kind-pill.is-off:hover { color: var(--muted); border-color: var(--line); }
+/* Cabecalho do proprio grafico, reconstruido a cada troca de pill: com um
+   controle escolhendo o que e plotado, texto fixo aqui seria contradito por
+   um clique. */
+.scen-cap { margin: 2px 0 6px; }
+.scen-cap-title {
+  font-family: var(--cond); font-size: 14px; font-weight: 700; color: var(--ice);
+  letter-spacing: 0.02em;
+}
+.scen-cap-sub {
+  font-family: var(--sans); font-size: 11.5px; line-height: 1.45; color: var(--muted);
+  text-align: justify; hyphens: auto; margin-top: 2px;
+}
+.scen-ep-notes {
+  margin: 2px 0 12px; padding-left: 18px;
+  font-family: var(--sans); font-size: 12px; line-height: 1.5; color: var(--ice2);
+}
+.scen-ep-notes li { margin-bottom: 5px; text-align: justify; hyphens: auto; }
+.scen-ep-notes b { color: var(--ice); }
+.scen-caveat {
+  font-family: var(--sans); font-size: 11.5px; line-height: 1.5; color: var(--ice2);
+  background: rgba(234,82,58,0.07); border: 1px solid rgba(234,82,58,0.25);
+  border-radius: 8px; padding: 9px 12px; margin: 4px 0 12px;
+  text-align: justify; hyphens: auto;
+}
+.scen-caveat b { color: var(--ice); }
+.scen-foot {
+  font-family: var(--sans); font-size: 11.5px; line-height: 1.5; color: var(--muted);
+  text-align: justify; hyphens: auto; margin: 6px 0 0;
+}
 
 /* Equacao em display: uma linha por termo, com o simbolo alinhado a esquerda e a
    leitura em linguagem comum a direita. Uma equacao de nove termos numa linha
@@ -1380,7 +1495,7 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       <h2>Claims</h2>
       <div class="chart-hdr" style="margin-bottom:12px;">
         <div class="chart-hdr-left">
-          <div class="chart-subtitle">Every extracted claim for the selected manager, most recent first</div>
+          <div class="chart-subtitle">Every extracted claim for the selected manager, most recent first. <b>Month</b> is the month the letter covers &mdash; it is what the two charts above aggregate on. <b>Published</b> is when the letter came out, which for a monthly letter can fall in the following month.</div>
         </div>
         <div class="chart-hdr-right">
           <select id="fxattrCategorySelect" class="base-select"></select>
@@ -1429,11 +1544,17 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
           <div class="eq-row"><span class="eq-op">+</span><span class="eq-term">&epsilon;<sub>t</sub></span><span class="eq-note">residual &mdash; the part no term accounts for</span></div>
         </div>
 
-        <p>&Delta; is the month-over-month change, and <b>z(&middot;)</b> standardizes it. That is what makes
-        each &beta; readable on its own: it is <i>how many percent the exchange rate moves in a month when
-        that channel has a one-standard-deviation move</i>, on the same scale for every channel. Two
-        terms are deliberately left unstandardized &mdash; the momentum term keeps its own units, and the
-        inflation gap enters raw, because its size in percentage points is exactly the point of it.</p>
+        <p>&Delta; is the month-over-month change, and <b>z(&middot;)</b> puts every channel on one
+        common scale by dividing it by its own historical standard deviation. That is what makes each
+        &beta; readable on its own: it is <i>how many percent the exchange rate moves in a month when
+        that channel has a one-standard-deviation move</i>, the same yardstick for a spread in basis
+        points and an index in points. Nothing is subtracted before the division, and that matters for
+        reading the decomposition below: a month in which a channel does not move counts as zero for
+        that channel. Subtracting its average change instead &mdash; the textbook z-score &mdash; would
+        credit the channel every single month with a slice of whatever it has drifted historically,
+        which is a property of the sample you picked and not of the channel. Two terms are left on
+        their own scale on purpose: the momentum term keeps its own units, and the inflation gap enters
+        raw, because its size in percentage points is exactly the point of it.</p>
 
         <h3>How it is fitted</h3>
         <p>Coefficients come from a <b>ridge regression</b>: least squares with a penalty on large
@@ -1549,7 +1670,7 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       <div class="chart-hdr">
         <div class="chart-hdr-left">
           <div class="chart-title">12-Month Forecast (Stress Test)</div>
-          <div class="chart-subtitle">Walks the last 72-month window's fitted model forward, feeding its own simulated AR(1) term at every step. Each channel below gets 12 editable boxes — one per forecast month — pre-filled with its last observed level; enter the level you expect that month, and the model converts your entered path into month-over-month deltas (chained box-to-box, anchored on the last real observation) and z-scores them the same way every other month in the fit is standardized. Shaded band is the ±1 std-error interval from the same model's own historical 72mo-window, 12-month-ahead walk-forward forecast error, widening step by step.</div>
+          <div class="chart-subtitle">Walks the last 72-month window's fitted model forward, feeding its own simulated AR(1) term at every step. Each channel below gets 12 editable boxes — one per forecast month — pre-filled with its last observed level; enter the level you expect that month, and the model converts your entered path into month-over-month deltas (chained box-to-box, anchored on the last real observation) and puts them on exactly the same scale every other month in the fit is on. Shaded band is the ±1 std-error interval from the same model's own historical 72mo-window, 12-month-ahead walk-forward forecast error, widening step by step.</div>
         </div>
         <div class="chart-hdr-right">
           <div class="dl-toggle" id="ridgeForecastReset"><span class="toggle-icon">↺</span> Reset shocks</div>
@@ -1583,6 +1704,37 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
       </div>
       <div class="scenario-list" id="scenarioList"></div>
     </div>
+
+    <!-- Base scenarios for the exogenous channels (2026-09-08). Sits ABOVE Fit
+         diagnostics at the user's request: it is about the inputs you type into
+         the forecast card above, so it belongs next to that card, while the
+         diagnostics below are about the model rather than the scenario.
+         One nested <details> per channel -- five folds, and only the CDS is
+         measured so far. A pending channel still renders its fold and says so:
+         hiding it would read as "this channel has no scenarios", which is a
+         different claim from "not measured yet". -->
+    <details class="fold" id="ridgeScenFold">
+      <summary>Base scenarios for the exogenous channels
+        <span class="fold-hint">How big a twelve months has actually been, per channel &mdash; elections and crises, measured</span>
+      </summary>
+      <div class="fold-body">
+        <p class="scen-intro">The forecast card above asks for twelve levels per channel and offers no
+        sense of scale for any of them. This section supplies one: for each channel, a short library of
+        dated episodes from its own history, each reduced the same way, so &ldquo;a bad twelve months&rdquo;
+        becomes a number instead of a feeling. It is deliberately read-only &mdash; the episodes are a
+        yardstick for a scenario you write yourself, not a set of scenarios to load.</p>
+        <p class="scen-intro"><b>How each episode is measured.</b> The <b>base</b> is the month the run-up
+        starts from, and every multiple divides by it. The <b>peak</b> is the highest <i>monthly close</i>
+        in the window, never the highest single day: the model runs on monthly data, so a monthly path
+        cannot represent a three-day spike, and pricing a scenario off one would promise the boxes
+        something they cannot hold. Where a spike is worth knowing, it is reported separately. An episode
+        is carried onto today&rsquo;s level by <b>multiplying</b>, not by adding its points &mdash; see
+        each channel&rsquo;s own note for whether that was the right rule for it, which is a question about
+        the data rather than a convention. The <b>window</b> always runs twelve months from the base, and
+        each channel says which of its two ends is a judgement and which one is arithmetic.</p>
+        <div id="scenChannels"></div>
+      </div>
+    </details>
 
     <details class="fold" id="ridgeDiagFold">
       <summary>Fit diagnostics
@@ -2027,7 +2179,7 @@ var _MESES_POR_BUCKET = { quarterly: 3, annual: 12 };
 //      com um mês só e um "2026" com sete, somados e apresentados ao lado de
 //      trimestres e anos completos: a conta corrente de 2026 aparecia como −36,0
 //      contra −66,7 de 2025, o que se lê como melhora de 46% e é só o ano pela
-//      metade. É a convenção escrita em analytics/metric_layers.md ("uma janela
+//      metade. É a convenção escrita em .claude/skills/lis-dashboard/references/design-system.md#metricas ("uma janela
 //      incompleta mostra nada — nem soma parcial, nem estimativa sinalizada"), que
 //      esta função não seguia. Enquanto isso era só a última barra de um gráfico
 //      passava; virou uma coluna rotulada "2026" quando a aba ganhou tabela.
@@ -3754,6 +3906,19 @@ function _bindPlotlyYAutofit(divId) {
     // xaxis.type onto _fullLayout, never back onto the raw layout object.
     const layout = el._fullLayout || el.layout;
     if (!layout || !layout.xaxis || !layout.xaxis.range) return;
+    // Esta funcao junta TODOS os traces num `yaxis.range` so, em unidade crua.
+    // As duas hipoteses embutidas nisso deixam de valer em dois casos, e nos
+    // dois ela nao erra de leve -- ela destroi o grafico:
+    //   * varios paineis: escreveria no `yaxis` (o primeiro) uma faixa
+    //     calculada com os valores dos cinco, misturando 7691 do S&P com 0,08
+    //     do carry/vol;
+    //   * eixo log: `range` ali e' em LOG10, entao escrever [62; 3790] cru pede
+    //     ao Plotly uma faixa de 10^62 a 10^3790.
+    // Sair fora e' o comportamento certo: o Plotly ja autoescala Y sozinho, e o
+    // que esta funcao existe para consertar (janela de X mudada por botao sem
+    // gesto em Y) o autorange nativo resolve quando nao ha range fixado.
+    const nPaineis = Object.keys(layout).filter((k) => /^yaxis\d*$/.test(k)).length;
+    if (nPaineis > 1 || (layout.yaxis && layout.yaxis.type === 'log')) return;
     const lo = Date.parse(layout.xaxis.range[0]);
     const hi = Date.parse(layout.xaxis.range[1]);
     const stacked = layout.barmode === 'stack' || layout.barmode === 'relative';
@@ -3822,10 +3987,37 @@ function plotlyBaseLayout(extra) {
     if (k === 'xaxis' || k === 'yaxis' || k === 'legend') base[k] = Object.assign({}, base[k], extra[k]);
     else base[k] = extra[k];
   });
+  // O merge acima e por CHAVE, entao um `xaxis` parcial do chamador herda
+  // `type: 'date'` e o `rangeselector` de passos anuais -- que sao os defaults
+  // certos para os dez graficos de serie temporal destas abas e catastroficos
+  // para qualquer outro. Medido em 2026-09-08, com Plotly real: um grafico de
+  // 13 pontos cujo x e 0..12 passa a ler os valores como MILISSEGUNDOS desde
+  // 1970, o `dtick: 1` do chamador passa a significar 1 ms, e o eixo resolve
+  // para uma janela de 47 ANOS com 1.001 rotulos de data em precisao de
+  // milissegundo: 67.480 ms para pintar, contra 221 ms com o eixo certo. Nao
+  // levanta erro nenhum -- a aba simplesmente trava.
+  // Declarar um `type` nao-data agora tira os dois componentes que so existem
+  // para eixo de data, em vez de deixar a limpeza a cargo de quem chama.
+  if (base.xaxis && base.xaxis.type && base.xaxis.type !== 'date') {
+    delete base.xaxis.rangeselector;
+    delete base.xaxis.rangeslider;
+  }
   return base;
 }
 
 function plotlyRenderAndBind(divId, traces, layoutExtra) {
+  // Cinto e suspensorio para a armadilha descrita em plotlyBaseLayout(): se as
+  // abscissas sao numeros e quem chama nao declarou um `type`, o eixo NAO pode
+  // ficar no default de data. O custo de errar aqui e a aba travar, e o sintoma
+  // e indistinguivel de lentidao geral -- entao a correcao mora no ponto por
+  // onde todo grafico destas abas passa, nao na memoria de quem escrever o
+  // proximo. Os dez graficos de serie temporal existentes plotam string de
+  // data e nao sao tocados por isto.
+  const extra = layoutExtra || {};
+  const firstX = (traces || []).map((t) => t && t.x && t.x[0]).filter((v) => v !== undefined)[0];
+  if (typeof firstX === 'number' && !(extra.xaxis && extra.xaxis.type)) {
+    layoutExtra = Object.assign({}, extra, { xaxis: Object.assign({ type: 'linear' }, extra.xaxis) });
+  }
   Plotly.react(divId, traces, plotlyBaseLayout(layoutExtra), PLOTLY_CONFIG);
   _bindPlotlyYAutofit(divId);
 }
@@ -4347,12 +4539,19 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     const claims = M.claims
       .filter((c) => catFilter === '__all__' || c.category === catFilter)
       .slice()
-      .sort((a, b) => b.date.localeCompare(a.date));
+      // Sort on the REFERENCE month first, because that is what the two charts
+      // above bucket on. Sorting on `date` alone puts a letter published on the
+      // 1st above the previous month's letter published on the 31st, which
+      // reads as the covered month being empty -- exactly what it looked like
+      // before this column existed.
+      .sort((a, b) => (b.month || '').localeCompare(a.month || '')
+                      || b.date.localeCompare(a.date));
     const rows = claims.map((c) => {
       const cat = CAT_MAP[c.category];
       const dirClass = c.direction > 0 ? 'up' : c.direction < 0 ? 'dn' : '';
       return `<tr>
-        <td style="text-align:left;font-family:var(--mono)">${escapeHtmlFx(c.date)}</td>
+        <td style="text-align:left;font-family:var(--mono)">${escapeHtmlFx(c.month || '')}</td>
+        <td style="text-align:left;font-family:var(--mono);color:var(--muted)">${escapeHtmlFx(c.date)}</td>
         <td style="text-align:left"><span class="legend-dot" style="background:${cat ? cat.color : '#999'};display:inline-block;margin-right:6px;vertical-align:middle;"></span>${escapeHtmlFx(cat ? cat.label : c.category)}</td>
         <td class="${dirClass}">${fmtSignedFx(c.direction, 1)}</td>
         <td style="text-align:left">${escapeHtmlFx(c.source)}</td>
@@ -4361,13 +4560,14 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     }).join('');
     document.getElementById('fxattrClaimsTable').innerHTML = `
       <thead><tr>
-        <th style="text-align:left">Date</th>
+        <th style="text-align:left">Month</th>
+        <th style="text-align:left">Published</th>
         <th style="text-align:left">Category</th>
         <th>Direction</th>
         <th style="text-align:left">Source</th>
         <th style="text-align:left">Quote</th>
       </tr></thead>
-      <tbody>${rows || '<tr><td colspan="5" style="text-align:center">No claims for this filter</td></tr>'}</tbody>`;
+      <tbody>${rows || '<tr><td colspan="6" style="text-align:center">No claims for this filter</td></tr>'}</tbody>`;
   }
 
   function renderAll() {
@@ -4797,14 +4997,26 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
         const alphaTot = alphaMes * nMes;
         const ar1 = baseTot - alphaTot;
         const pct = (lp) => fmtSignedRg(100 * (Math.exp(lp / 100) - 1), 1) + '%';
+        // O sentido de alpha e' DERIVADO do sinal, nunca escrito fixo. A frase
+        // dizia "real depreciation" desde que a barra existe, e ficou errada em
+        // 2026-09-08 quando alpha virou negativo com a reestimacao -- o numero
+        // ao lado ja saia com o sinal certo, entao nada na tela se contradizia
+        // e a prosa simplesmente passou a afirmar o contrario dele. Mesmo modo
+        // de falha dos `title` de pill que .claude/rules/lis-dashboards.md
+        // registra: texto que envelhece porque o dado mudou de lado.
+        const alphaSentido = alphaTot >= 0
+          ? 'real depreciation the channels do not account for'
+          : 'real appreciation the channels do not account for';
         foundEl.innerHTML =
           '<b>Trend</b> is drawn as one bar because its three pieces all describe the same thing &mdash; ' +
           'where the exchange rate drifts when none of the five channels move. It combines the ' +
           '<b>inflation gap</b> (' + pct(ppp) + ' over this window), the <b>constant drift &alpha;</b> (' +
           pct(alphaTot) + ') and the <b>momentum term</b> (' + pct(ar1) + '), starting from the actual rate ' +
           'the month before the window opens. The first is arithmetic &mdash; prices rising faster in Brazil ' +
-          'than in the US have to show up in the rate. The second is real depreciation the channels do not ' +
-          'account for. The third is the exchange rate reacting to its own previous move. ' +
+          'than in the US have to show up in the rate. The second is ' + alphaSentido + ', and it is not ' +
+          'statistically distinguishable from no drift at all &mdash; which is the point of splitting the ' +
+          'inflation gap out of it, and the reason the bar is read as one number rather than three. ' +
+          'The third is the exchange rate reacting to its own previous move. ' +
           'The three compound rather than add, so they multiply out to ' +
           pct(ppp + alphaTot + ar1) + ' together.';
       }
@@ -5171,9 +5383,34 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // mean/std, which standardize the DELTA the model actually regresses
     // on -- the two answer different questions, "how unusual is this
     // level" vs. "how big a signal is this month's move", and the level
-    // reading is what was asked for here). ---
+    // reading is what was asked for here).
+    //
+    // 2026-09-08: "all history" passou a ser verdade. Ate aqui o payload vinha
+    // cortado na amostra do ajuste, entao o grafico do CDS abria em 2006 e o
+    // pico de 2002 (3790 bps, 30x o nivel de hoje) nao existia na tela --
+    // exatamente a maior ordem de grandeza que a serie tem, que e para o que o
+    // usuario disse que estes graficos servem. Junto vieram a unidade no eixo,
+    // a escala log onde a amplitude exige, e a faixa que separa o que o modelo
+    // ajusta do que ele apenas mostra. ---
     const graphMode = {};
     DECOMP_CHANNELS_RG.forEach(key => { graphMode[key] = 'level'; });
+
+    // Quem amarra o inicio da amostra: o canal cujo primeiro mes e o mais
+    // tarde, porque o ajuste roda na INTERSECCAO dos cinco. Derivado dos
+    // proprios `start`, nunca escrito -- era o `fiscal` ate 2026-09-08 e virou
+    // `dxy_em` sozinho quando o CDS trocou de fonte e ganhou seis anos. O PPP
+    // fica de fora: ele entra como offset, nao como canal da interseccao.
+    const bindingChannelRg = (function () {
+      let melhor = null;
+      DECOMP_CHANNELS_RG.forEach(key => {
+        const rawKey = key.replace(/^delta_/, '');
+        if (rawKey === 'ppp') return;
+        const h = FC.channel_history[rawKey];
+        if (!h || !h.start) return;
+        if (!melhor || h.start > FC.channel_history[melhor].start) melhor = rawKey;
+      });
+      return melhor;
+    })();
 
     function renderChannelGraph(key) {
       const rawKey = key.replace(/^delta_/, '');
@@ -5187,7 +5424,8 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       // relativos em nivel nao se le, a inflacao acumulada em 12 meses se le.
       const yoyChart = boxMode[key] === 'yoy';
       const histValues = yoyChart
-        ? hist.values.map((v, i) => i >= 12 ? 100 * Math.log(v / hist.values[i - 12]) : null)
+        ? hist.values.map((v, i) => (i >= 12 && v != null && hist.values[i - 12] != null)
+            ? 100 * Math.log(v / hist.values[i - 12]) : null)
         : hist.values;
       const projValues = yoyChart
         ? [histValues[histValues.length - 1], ...levels[key].map((v, h) => levelToYoyRg(key, h, v))]
@@ -5206,18 +5444,28 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
       const obsMonths = hasObserved ? [hist.months[hist.months.length - 1], ...nc.months] : [];
       const obsValues = hasObserved ? [hist.values[hist.values.length - 1], ...nc.values] : [];
 
-      const zOf = v => hist.level_std > 0 ? (v - hist.level_mean) / hist.level_std : v - hist.level_mean;
-      let plotHist = histValues, plotProj = projValues, plotObs = obsValues, yTitle = 'Level';
+      const zOf = v => v == null ? null
+        : (hist.level_std > 0 ? (v - hist.level_mean) / hist.level_std : v - hist.level_mean);
+      let plotHist = histValues, plotProj = projValues, plotObs = obsValues;
+      // O eixo diz o que a linha MEDE, nao so a palavra "Level" -- e a unidade
+      // e campo da serie (`unit`), pela razao de sempre: escrita como string no
+      // rotulo, ela passa a mentir no primeiro clique de modo.
+      let yTitle = hist.unit ? 'Level, ' + hist.unit : 'Level';
       if (graphMode[key] === 'zscore') {
         plotHist = histValues.map(zOf);
         plotProj = projValues.map(zOf);
         plotObs = obsValues.map(zOf);
-        yTitle = 'Z-score (level)';
+        yTitle = 'Z-score (level, own full history)';
+      } else if (yoyChart) {
+        yTitle = '% over 12 months';
       }
 
       const traces = [
         { type: 'scatter', mode: 'lines', name: 'Historical', x: hist.months, y: plotHist,
           line: { color: CHANNEL_COLORS_RIDGE[key], width: 2 },
+          // Buraco interno da fonte fica buraco: ligado, o Plotly desenha uma
+          // reta por cima de meses que ninguem publicou.
+          connectgaps: false,
           customdata: plotHist.map(v => fmtNumRg(v, 3)), hovertemplate: 'Historical: %{customdata}<extra></extra>' },
         { type: 'scatter', mode: 'lines', name: 'Entered path (forecast)', x: projMonths, y: plotProj,
           line: { color: CHANNEL_COLORS_RIDGE[key], width: 2, dash: 'dash' },
@@ -5229,10 +5477,88 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
           customdata: plotObs.map(v => fmtNumRg(v, 3)), hovertemplate: 'Observed: %{customdata}<extra></extra>' });
       }
 
-      plotlyRenderAndBind('regressor-graph-' + key, traces, {
-        height: 260, showlegend: true,
-        yaxis: { title: yTitle },
-      });
+      // Escala log so no nivel cru, so onde a amplitude justifica, e o criterio
+      // vem do payload (`log`, derivado de `span`), nunca escrito aqui. Fora do
+      // nivel ela nao pode existir: z-score e variacao a/a assumem valores
+      // negativos, e log de negativo some do grafico sem levantar nada.
+      const usaLog = !!hist.log && graphMode[key] === 'level' && !yoyChart;
+      // 600px a pedido do usuario (2026-09-08). Os 260 vinham de 2026-07-31,
+      // quando este grafico substituiu uma sparkline de 90px e mostrava a
+      // janela do ajuste; com a serie inteira -- 25 anos no CDS, 36 no S&P --
+      // sobravam ~190px de area de plot para carregar quatro vezes mais tempo.
+      const layout = { height: 600, showlegend: true, yaxis: { title: yTitle } };
+      if (usaLog) layout.yaxis.type = 'log';
+
+      // A parte anterior ao ajuste fica sombreada: com o historico inteiro na
+      // tela, quem olha assume que o modelo usou tudo. O limite vem de
+      // D.sample_range -- derivado do ajuste, nunca escrito aqui.
+      //
+      // O piso de 6 meses nao e cosmetica: o canal que AMARRA a amostra comeca
+      // um mes antes dela (a diferenciacao come a primeira observacao), entao
+      // sem ele ele ganha um risco cinza de 1 mes com um rotulo por cima da
+      // propria linha -- ruido anunciando que nao ha nada para ver. Quem
+      // explica aquele caso e a ficha, que diz que este e o canal que decide
+      // onde a amostra comeca.
+      const fitIni = D.sample_range[0] + '-01';
+      const preAjuste = hist.months.length ? mesesEntreRg(hist.months[0], D.sample_range[0]) : 0;
+      if (preAjuste >= 6) {
+        layout.shapes = [{
+          type: 'rect', xref: 'x', yref: 'paper',
+          x0: hist.months[0] + '-01', x1: fitIni, y0: 0, y1: 1,
+          fillcolor: 'rgba(31,40,83,0.05)', line: { width: 0 }, layer: 'below',
+        }];
+        layout.annotations = [{
+          xref: 'x', yref: 'paper', x: hist.months[0] + '-01', y: 1,
+          xanchor: 'left', yanchor: 'top', showarrow: false,
+          text: 'before the fit sample',
+          font: { family: 'JetBrains Mono', size: 9, color: '#7A88A8' },
+        }];
+      }
+
+      plotlyRenderAndBind('regressor-graph-' + key, traces, layout);
+      renderChannelGraphNote(key, hist, usaLog, preAjuste >= 6);
+    }
+
+    // Distancia em meses entre dois rotulos 'AAAA-MM'.
+    function mesesEntreRg(a, b) {
+      const [ay, am] = a.split('-').map(Number), [by, bm] = b.split('-').map(Number);
+      return (by - ay) * 12 + (bm - am);
+    }
+
+    // Ficha de escala embaixo do grafico: o periodo que a serie cobre, a faixa
+    // de valores dentro dele e, quando o eixo e log, por que ele e log. E a
+    // leitura de "ordem de grandeza" em numero, que um eixo log nao entrega de
+    // relance.
+    function renderChannelGraphNote(key, hist, usaLog, temFaixa) {
+      const el = document.getElementById('graph-note-' + key);
+      if (!el) return;
+      const rawKey = key.replace(/^delta_/, '');
+      const partes = [];
+      if (hist.start && hist.end) {
+        partes.push('<b>Full history:</b> ' + monthLabelRg(hist.start) + ' to ' + monthLabelRg(hist.end)
+          + ' (' + hist.n + ' months)');
+      }
+      if (hist.min != null && hist.max != null) {
+        partes.push('low ' + fmtNumRg(hist.min, 2) + ', high ' + fmtNumRg(hist.max, 2)
+          + (hist.unit ? ' ' + hist.unit : '')
+          // fmtNumRg TRUNCA, e 60,97 virando "60x" e uma amplitude que a serie nao tem.
+          + (hist.span != null ? ' &mdash; a ' + Math.round(hist.span) + 'x range' : ''));
+      }
+      if (usaLog) {
+        partes.push('log scale, so equal vertical distance is equal proportional move &mdash; on a '
+          + 'linear axis a range this wide shows only the peak and flattens the rest into the floor');
+      }
+      let txt = partes.join(' &middot; ') + '.';
+      if (temFaixa) {
+        txt += ' The shaded stretch is before the fit sample begins (' + monthLabelRg(D.sample_range[0])
+          + '): history the coefficients do not use, kept here for scale.';
+      }
+      if (rawKey === bindingChannelRg) {
+        txt += ' <b>This is the channel that sets where the sample starts</b> &mdash; the fit runs on '
+          + 'the intersection of the five, so the latest-starting one binds all of them. Reaching '
+          + 'further back means dropping this channel, not finding more data for the others.';
+      }
+      el.innerHTML = txt;
     }
 
     // Re-renders one channel's 12 boxes' DISPLAYED values from the
@@ -5421,6 +5747,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
             </div>
           </div>
           <div id="regressor-graph-${key}" style="width:100%"></div>
+          <div class="fc-graph-note" id="graph-note-${key}"></div>
         </div>`;
       shockGridEl.appendChild(card);
     });
@@ -6128,6 +6455,713 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
     // (plottedScenarioIds, scenarioColor/loadScenarios) is initialized by
     // this point.
     renderForecastChart();
+  
+
+    // ---- Base scenarios for the exogenous channels (2026-09-08) ----------
+    // Renders into #scenChannels, inside the fold that sits above Fit
+    // diagnostics.
+    //
+    // READ-ONLY since 2026-09-09. The first version ended in a row of tags
+    // that rewrote the twelve forecast boxes for the channel in one click.
+    // They came out: this section is read to get a qualitative sense of scale
+    // BEFORE a scenario is written, and a one-click path skips exactly the
+    // step it exists to inform. Nothing here writes into the forecast state
+    // any more, which also means the section can no longer disagree with the
+    // boxes above -- there is no second copy of the path.
+    //
+    // What survives from that version is the measurement it needed: an
+    // episode transfers onto today's level by MULTIPLYING, never by adding
+    // its bps, and that is a property of the data rather than a convention
+    // (see the module docstring of models/exog_scenarios.py). The channel's
+    // note is DERIVED from `is_multiplicative` for that reason -- the next
+    // channel to be filled in must not inherit the CDS's answer by accident,
+    // and a channel measured in percentage points will very likely test the
+    // other way.
+    const SCEN = D.exog_scenarios;
+
+    const SCEN_MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function scenFmt(v, dec) {
+      if (v === null || v === undefined || isNaN(v)) return '—';
+      return fmtNumRg(v, dec === undefined ? 0 : dec);
+    }
+    function scenSigned(v, dec, suffix) {
+      if (v === null || v === undefined || isNaN(v)) return '—';
+      return fmtSignedRg(v, dec === undefined ? 0 : dec) + (suffix || '');
+    }
+    function scenMonth(m) {
+      return m ? monthLabelRg(m + '-01') : '—';
+    }
+    // The month h months after 'YYYY-MM'. Used for the hover in both views:
+    // on the election axis a tick is a month NAME shared by seven different
+    // years, and on the crisis axis it is a count -- in neither case does the
+    // axis itself say which month a given point actually was.
+    function scenAddMonths(m, h) {
+      const y = parseInt(String(m).slice(0, 4), 10);
+      const mo = parseInt(String(m).slice(5, 7), 10) - 1 + h;
+      if (isNaN(y) || isNaN(mo)) return '—';
+      return SCEN_MONTH_ABBR[((mo % 12) + 12) % 12] + '/' + (y + Math.floor(mo / 12));
+    }
+
+    // Deliberately NOT the model's own channel palette: these are episodes of
+    // one channel, not different channels, so borrowing CHANNEL_COLORS_RIDGE
+    // would make "2018 election" read as the same series as a regressor
+    // somewhere else on the tab.
+    //
+    // Dez cores desde 2026-09-08, quando as eleicoes de 2002 e 2006 entraram na
+    // biblioteca. Nao foi so acrescentar duas: a lista de oito tinha pior par
+    // #02739B x #418791 em dE2000 13,0, abaixo do minimo de 20 que
+    // .claude/rules/lis-dashboards.md exige entre series que podem dividir um
+    // grafico -- e o teste antigo so conferia que as cores eram DISTINTAS como
+    // string, que 13,0 satisfaz. O verde da marca saiu por isso: com ele fixo
+    // nenhuma escolha das outras nove passa de 13,0, porque o conflito e entre
+    // duas ancoras. Sem ele o conjunto fecha em 25,7 (mediana 40,9), acima do
+    // pior par do Okabe-Ito (21,7) e do Tol bright (20,5).
+    // Sob deuteranopia cai para 3,8 e nao ha escolha que resolva mantendo as
+    // ancoras -- numero declarado, nao mascarado; o episodio em andamento sai
+    // tracejado, e desde 2026-09-09 crise e eleicao nunca dividem o grafico.
+    const SCEN_EP_COLORS = ['#EA523A', '#BB9B1D', '#02739B', '#1F2853', '#C555D6',
+                            '#55D6BC', '#2A6B37', '#6B4D2A', '#893752', '#95A7D6'];
+
+    // Which half of the library the chart is showing, per channel. Two views
+    // rather than one chart with ten lines, and the reason is the X axis: the
+    // elections all start in the same calendar month, so theirs can BE the
+    // calendar, while the crises each start wherever their own run-up started
+    // and can only be counted in months from there. Drawing both at once
+    // forces the weaker of the two axes onto the pair.
+    const SCEN_VIEW = {};
+
+    function scenEpisodesOf(ch, kind) {
+      return (ch.episodes || []).filter(e => e.kind === kind);
+    }
+
+    // Thirteen calendar-month labels, or null.
+    //
+    // The elections share them because the base is the vote month minus twelve
+    // and every Brazilian first round falls in October -- so one set of labels
+    // serves all seven run-ups, and "where in the year we are" becomes
+    // readable instead of implied. That is a property of the episodes, not an
+    // assumption: if the base months ever stop agreeing (a calendar change, or
+    // a channel whose episodes are dated some other way) this returns null and
+    // the chart falls back to counting months, which is always true.
+    function scenSharedTicks(eps, n) {
+      if (!eps.length) return null;
+      const mos = eps.map(e => parseInt(String(e.base_month).slice(5, 7), 10));
+      if (mos.some(v => !v || v !== mos[0])) return null;
+      const out = [];
+      for (let h = 0; h < n; h++) out.push(SCEN_MONTH_ABBR[(mos[0] - 1 + h) % 12]);
+      out[0] = out[0] + ' (base)';
+      return out;
+    }
+
+    // The election axis: twelve monthly closes, then the TWO ROUNDS.
+    //
+    // October used to be one point, and it was the month's close -- which
+    // falls after the runoff and hides the only part of the run-up that
+    // happens in days rather than months. The vote is two events three or four
+    // weeks apart, and the most consistent finding in this library lives
+    // between them, so they are two points read off the daily series on each
+    // round's own day. The shaded band behind them says the basis changed
+    // there; October's monthly close stays in the table, as "At month 12".
+    function scenElectionTicks(eps) {
+      const meses = scenSharedTicks(eps, SCEN.horizon);
+      const out = [];
+      for (let h = 0; h < SCEN.horizon; h++) out.push(meses ? meses[h] : String(h));
+      out.push('1st round');
+      out.push('Runoff');
+      return out;
+    }
+
+    function scenElectionPath(ep) {
+      const out = ep.path.slice(0, SCEN.horizon);
+      const ir = ep.inter_round || {};
+      const at = v => (v === null || v === undefined || !ep.base) ? null : v / ep.base;
+      out.push(at(ir.at_r1));
+      out.push(at(ir.at_r2));
+      return out;
+    }
+
+    function scenHoverCell(ch, label, r, level) {
+      return label + ' · ' + ((r === null || r === undefined || isNaN(r))
+        ? 'not yet'
+        : fmtNumRg(r, 2) + 'x · ' + fmtNumRg(level, 0) + ' ' + (ch.unit || ''));
+    }
+
+    function scenElectionHover(ch, ep) {
+      const p = scenElectionPath(ep);
+      const ir = ep.inter_round || {};
+      const out = [];
+      for (let h = 0; h < SCEN.horizon; h++) {
+        out.push(scenHoverCell(ch, scenAddMonths(ep.base_month, h), p[h], ep.levels[h]));
+      }
+      out.push(scenHoverCell(ch, '1st round, ' + ep.round1, p[SCEN.horizon], ir.at_r1));
+      out.push(scenHoverCell(ch, 'Runoff, ' + ep.round2, p[SCEN.horizon + 1], ir.at_r2));
+      return out;
+    }
+
+    function scenRenderChart(chKey) {
+      const ch = SCEN.channels[chKey];
+      const divId = 'scen-chart-' + chKey;
+      if (!ch || !document.getElementById(divId)) return;
+      const kind = SCEN_VIEW[chKey] || 'election';
+      const all = ch.episodes || [];
+      const eps = scenEpisodesOf(ch, kind);
+      const rounds = kind === 'election';
+      // 14 posicoes na vista eleitoral (doze fechamentos mensais + os dois
+      // turnos), 13 na de crise (a contagem de meses inteira).
+      const nPts = SCEN.horizon + (rounds ? 2 : 1);
+      const xs = [];
+      for (let h = 0; h < nPts; h++) xs.push(h);
+      const named = rounds && scenSharedTicks(eps, SCEN.horizon) !== null;
+      const ticks = rounds ? scenElectionTicks(eps) : null;
+      const traces = eps.map(function (ep) {
+        // Colour by position in the WHOLE library rather than in the filtered
+        // view, so an episode keeps its colour when the view is switched.
+        const i = all.indexOf(ep);
+        return {
+          type: 'scatter', mode: 'lines+markers', name: ep.label,
+          x: xs, y: rounds ? scenElectionPath(ep) : ep.path.slice(),
+          line: {
+            color: SCEN_EP_COLORS[i % SCEN_EP_COLORS.length],
+            width: ep.complete ? 1.9 : 2.6,
+            dash: ep.complete ? 'solid' : 'dot',
+          },
+          marker: { size: 4 },
+          connectgaps: false,
+          customdata: rounds ? scenElectionHover(ch, ep)
+            : ep.path.map((r, h) => scenHoverCell(ch, scenAddMonths(ep.base_month, h), r, ep.levels[h])),
+          hovertemplate: '%{fullData.name}<br>%{customdata}<extra></extra>',
+        };
+      });
+      // The 1.0x line: without it "a multiple of the base" has no visible
+      // zero, and an episode that ends BELOW its base (most of the quiet
+      // elections do) reads as a small rise instead of a fall.
+      traces.push({
+        type: 'scatter', mode: 'lines', name: 'base', x: xs, y: xs.map(() => 1),
+        line: { color: '#BFBFBF', width: 1, dash: 'dash' }, hoverinfo: 'skip', showlegend: false,
+      });
+      // A faixa cinza atras dos dois turnos. Ela nao e decoracao: ali a base de
+      // medicao troca de fechamento MENSAL para leitura DIARIA no dia do turno,
+      // e sem marcacao os dois ultimos pontos leriam como mais dois meses.
+      // Sempre passada, `[]` inclusive, para a vista de crise limpar a da
+      // eleitoral em vez de herda-la no Plotly.react.
+      const shapes = rounds ? [{
+        type: 'rect', xref: 'x', yref: 'paper',
+        x0: SCEN.horizon - 0.5, x1: SCEN.horizon + 1.5, y0: 0, y1: 1,
+        fillcolor: 'rgba(31,40,83,0.07)', line: { width: 0 }, layer: 'below',
+      }] : [];
+      // `type: 'linear'` e obrigatorio, nao cosmetico: o x aqui e a CONTAGEM DE
+      // POSICOES desde a base, nao uma data -- inclusive na vista eleitoral, em
+      // que os nomes de mes e os dois turnos entram por `ticktext` sobre os
+      // mesmos inteiros. Sem ele o eixo herda `type: 'date'` da fabrica de
+      // layout, os inteiros passam a ser milissegundos desde 1970, o `dtick: 1`
+      // passa a significar um milissegundo, e pintar este grafico leva 67
+      // segundos em vez de 0,2 -- que e a aba travando. Ver o comentario em
+      // plotlyBaseLayout().
+      plotlyRenderAndBind(divId, traces, {
+        height: 380, showlegend: true,
+        legend: { orientation: 'h', y: -0.22 },
+        shapes: shapes,
+        xaxis: Object.assign({
+          type: 'linear', dtick: 1,
+          title: rounds ? 'The run-up, month by month, and then the two rounds'
+                        : 'Months from the base month',
+        }, ticks ? { tickvals: xs, ticktext: ticks } : {}),
+        yaxis: { title: 'Multiple of the base level', tickformat: '.1f', ticksuffix: 'x' },
+      });
+      scenRenderCaption(chKey, kind, eps, named);
+    }
+
+    // The chart's own header, rebuilt on every view change. Both lines are
+    // derived: with a pill deciding which half of the library is plotted,
+    // anything fixed here would be contradicted by a click.
+    function scenRenderCaption(chKey, kind, eps, named) {
+      const el = document.getElementById('scen-cap-' + chKey);
+      if (!el) return;
+      const live = eps.filter(e => !e.complete).length;
+      const froms = eps.map(e => e.base_month).sort();
+      const tos = eps.map(e => e.end_month).sort();
+      const title = kind === 'election'
+        ? 'Election years — the twelve months into the vote, and the vote itself'
+        : 'Crises — the twelve months from the last quiet close';
+      const bits = [eps.length + ' episode' + (eps.length === 1 ? '' : 's'),
+                    'each divided by its own base month, so 1.0x is that month'];
+      if (froms.length) bits.push(scenMonth(froms[0]) + ' to ' + scenMonth(tos[tos.length - 1]));
+      if (live) bits.push('dotted line still in progress');
+      const how = kind === 'election'
+        ? ((named
+              ? 'Every run-up covers the same twelve calendar months, so the axis names them. '
+              : 'These run-ups do not share a calendar month, so the months are counted from each episode&rsquo;s own base. ')
+            + 'The <b>shaded stretch is the vote</b>, and it is two points rather than one: the level on '
+            + 'each round&rsquo;s own day, read off the daily series. October&rsquo;s monthly close falls '
+            + 'after the runoff and stays in the table above, as the &ldquo;At month 12&rdquo; column.')
+        : 'Each crisis starts from its own month, so the axis counts months rather than naming them. Hover any point for the month it actually was.';
+      el.innerHTML = '<div class="scen-cap-title">' + title + '</div>'
+        + '<div class="scen-cap-sub">' + bits.join(' · ') + '</div>'
+        + '<div class="scen-cap-sub">' + how + '</div>';
+    }
+    // A kind with no episodes stays on screen, disabled, with the reason in
+    // its tooltip -- an absent pill does not answer "where are the crises for
+    // this channel?", and a greyed one does.
+    function scenKindPills(chKey, ch) {
+      const cur = SCEN_VIEW[chKey];
+      return '<div class="scen-kind-row" id="scen-kind-' + chKey + '">'
+        + [['election', 'Election years'], ['crisis', 'Crises']].map(function (p) {
+            const n = scenEpisodesOf(ch, p[0]).length;
+            return '<span class="scen-kind-pill' + (n && p[0] === cur ? ' is-on' : '')
+              + (n ? '' : ' is-off') + '" data-scen-ch="' + chKey + '" data-scen-kind="' + p[0] + '"'
+              + (n ? '' : ' title="No episodes of this kind have been measured for this channel"')
+              + '>' + p[1] + (n ? ' (' + n + ')' : '') + '</span>';
+          }).join('')
+        + '</div>';
+    }
+
+    function scenEpisodeRows(chKey, ch) {
+      const rows = [];
+      let lastKind = null;
+      ch.episodes.forEach((ep, i) => {
+        if (ep.kind !== lastKind) {
+          lastKind = ep.kind;
+          rows.push('<tr class="scen-kind-hd"><td colspan="10">'
+            + (ep.kind === 'crisis' ? 'Crises' : 'Election years — the twelve months into the vote')
+            + '</td></tr>');
+        }
+        const conc = ep.concurrent || {};
+        rows.push('<tr' + (ep.complete ? '' : ' class="scen-partial"') + '>'
+          + '<td class="scen-lbl">' + ep.label + (ep.complete ? '' : ' <span style="font-weight:400">(in progress)</span>') + '</td>'
+          + '<td>' + scenMonth(ep.base_month) + '</td>'
+          + '<td>' + scenFmt(ep.base, 0) + '</td>'
+          + '<td>' + scenMonth(ep.peak_month) + '</td>'
+          + '<td>' + scenFmt(ep.peak, 0) + '</td>'
+          + '<td><b>' + scenFmt(ep.peak_x, 2) + 'x</b></td>'
+          + '<td>' + ep.months_to_peak + '</td>'
+          + '<td>' + (ep.complete ? scenFmt(ep.end_x, 2) + 'x' : '—') + '</td>'
+          // O pico do DIA, ao lado do pico mensal e nunca no lugar dele. E a
+          // coluna que impede a leitura "3,3x foi o pior que ficou" -- em 2008
+          // o mercado imprimiu 4,98x por tres dias, e uma serie mensal nao tem
+          // como mostrar isso.
+          + '<td>' + (ep.spike ? scenFmt(ep.spike.value, 0) + ' <span style="color:var(--muted)">('
+              + scenFmt(ep.spike.x, 2) + 'x)</span>' : '—') + '</td>'
+          + '<td>' + scenSigned(conc.dxy_em, 1, '%') + '</td>'
+          + '</tr>');
+      });
+      return rows.join('');
+    }
+
+    function scenRoundRows(ch) {
+      const rows = [];
+      ch.episodes.filter(ep => ep.kind === 'election').forEach(ep => {
+        const ir = ep.inter_round;
+        const post = ep.post;
+        rows.push('<tr' + (ir && ir.at_r2 !== null ? '' : ' class="scen-partial"') + '>'
+          + '<td class="scen-lbl">' + ep.label + '</td>'
+          + '<td>' + (ir ? scenFmt(ir.at_r1, 0) : '—') + '</td>'
+          + '<td>' + (ir ? scenFmt(ir.at_r2, 0) : '—') + '</td>'
+          + '<td>' + (ir ? scenSigned(ir.bps, 0) : '—') + '</td>'
+          + '<td>' + (ir ? scenSigned(ir.pct, 1, '%') : '—') + '</td>'
+          + '<td>' + (post ? scenSigned(post.bps, 0) : '—') + '</td>'
+          + '<td>' + (post ? scenSigned(post.pct, 1, '%') : '—') + '</td>'
+          + '</tr>');
+      });
+      return rows.join('');
+    }
+
+    // ---- the reference distribution, printed in MULTIPLES ------------------
+    // It is measured as a log change in percent, which is the right thing to
+    // measure and the wrong thing to print here: every other number in this
+    // section is a multiple of a base, and the two units look alike without
+    // being alike -- a twelve-month log change of +100 is 2.7x, not 2.0x. The
+    // first version printed the log figures under a "%" header next to a table
+    // of multiples, and described +50 as a one-in-ten year when the actual
+    // ninetieth percentile is 1.79x. Nothing on the page could catch that,
+    // which is why the table now speaks the section's own unit.
+    //
+    // The conversion is EXACT, not an approximation: a quantile survives any
+    // increasing transform, so exp() of the 90th percentile of the log change
+    // IS the 90th percentile of the multiple. (A standard deviation would not
+    // survive it -- which is why it is not printed.)
+    function scenMx(v) { return Math.exp(v / 100); }
+    function scenXCell(v) {
+      if (v === null || v === undefined || isNaN(v)) return '—';
+      return fmtNumRg(scenMx(v), 2) + 'x';
+    }
+    const SCEN_HORIZON_LABEL = { '1m': '1 month', '3m': '3 months', '6m': '6 months', '12m': '12 months' };
+
+    function scenDistRows(ch) {
+      const d = ch.distribution || {};
+      return ['1m', '3m', '6m', '12m'].filter(k => d[k]).map(k => {
+        const r = d[k];
+        return '<tr><td class="scen-lbl">' + (SCEN_HORIZON_LABEL[k] || k) + '</td>'
+          + '<td>' + scenXCell(r.p5) + '</td>'
+          + '<td>' + scenXCell(r.p50) + '</td>'
+          + '<td>' + scenXCell(r.p90) + '</td>'
+          + '<td>' + scenXCell(r.p95) + '</td>'
+          + '<td>' + scenXCell(r.p99) + '</td>'
+          + '<td>' + scenXCell(r.max) + '</td>'
+          + '<td>' + r.n + '</td></tr>';
+      }).join('');
+    }
+
+    // Where a given multiple falls among the percentiles the table prints.
+    // Derived, so the sentence that locates the named episodes cannot drift
+    // from the row above it.
+    function scenWhereX(row, x) {
+      if (!row || x === null || x === undefined || isNaN(x)) return '—';
+      if (x > scenMx(row.max)) return 'beyond anything in the record';
+      if (x >= scenMx(row.p99)) return 'worse than 99 in every 100';
+      if (x >= scenMx(row.p95)) return 'inside the worst 1 in 20';
+      if (x >= scenMx(row.p90)) return 'inside the worst 1 in 10';
+      if (x >= scenMx(row.p50)) return 'in the upper half';
+      return 'in the calmer half';
+    }
+
+    // The worst k-month stretch anywhere in the history, and when it was.
+    // This is what makes the table more than a restatement of the episodes: a
+    // named episode is anchored on a base month chosen by a rule, and the
+    // worst twelve months of the same crisis need not start there.
+    function scenWorstWindow(ch, k) {
+      const h = ch.history;
+      if (!h || !h.values || h.values.length <= k) return null;
+      let best = null;
+      for (let i = 0; i + k < h.values.length; i++) {
+        const a = h.values[i], b = h.values[i + k];
+        if (!a || a <= 0 || !b || b <= 0) continue;
+        const x = b / a;
+        if (!best || x > best.x) best = { x: x, from: h.months[i], to: h.months[i + k] };
+      }
+      return best;
+    }
+
+    function scenChannelBody(chKey, ch) {
+      if (ch.pending || !ch.episodes || !ch.episodes.length) {
+        return '<div class="scen-pending">No episodes measured for this channel yet. Sovereign '
+          + 'risk was done first because it is the strongest channel in the model and the one an '
+          + 'election year bears on most directly. The rest are not a copy of the same dates: a '
+          + 'quarter that widens a credit spread is not automatically the quarter that moves a '
+          + 'commodity index, and an election is not obviously an event for US equities at all, so '
+          + 'each channel needs the episodes that are episodes <i>for it</i>. Until then, use the '
+          + 'forecast boxes above directly for this one.</div>';
+      }
+      const crises = ch.episodes.filter(e => e.kind === 'crisis');
+      const elections = ch.episodes.filter(e => e.kind === 'election');
+      const crisisX = crises.map(e => e.peak_x);
+      const elecX = elections.filter(e => e.complete).map(e => e.peak_x);
+      const rng = a => a.length ? fmtNumRg(Math.min.apply(null, a), 1) + 'x&ndash;' + fmtNumRg(Math.max.apply(null, a), 1) + 'x' : '—';
+      const mult = ch.is_multiplicative !== false;
+
+      let html = '';
+
+      // The headline is the answer to "give me an order of magnitude", and it
+      // is computed from the episodes rather than written out, so it cannot
+      // drift from the table underneath it.
+      //
+      // It also INVERTED once, on 2026-09-08, when the series behind it gained
+      // 2001-2007: until then the largest election run-up was smaller than the
+      // mildest crisis, and that sentence sat here hard-coded while the ranges
+      // beside it were derived. It survived the change and went on contradicting
+      // the very numbers next to it. Everything below is derived for that
+      // reason, including which episode is the outlier and how many are not.
+      const topElecX = elecX.length ? Math.max.apply(null, elecX) : null;
+      const topElec = topElecX === null ? null : elections.filter(e => e.peak_x === topElecX)[0];
+      const worstCrisisX = crisisX.length ? Math.max.apply(null, crisisX) : null;
+      const mildX = worstCrisisX === null ? [] : elecX.filter(x => x < worstCrisisX);
+      html += '<div class="scen-headline">'
+        + '<b>Order of magnitude.</b> Measured from each episode&rsquo;s own base month, a '
+        + '<b>crisis multiplies this channel by ' + rng(crisisX) + '</b> at its worst monthly close, and an '
+        + '<b>election year by ' + rng(elecX) + '</b>. ';
+      if (mildX.length && topElec && topElecX > worstCrisisX) {
+        html += 'The election range is wide because it is <b>bimodal</b>, not because it is uncertain: '
+          + mildX.length + ' of the ' + elecX.length + ' completed run-ups sit at or below '
+          + fmtNumRg(Math.max.apply(null, mildX), 1) + 'x, and one &mdash; <b>' + topElec.label
+          + '</b> &mdash; stands alone at ' + fmtNumRg(topElecX, 2) + 'x, above all ' + crises.length
+          + ' crises. So the reading is not '
+          + 'that an election is the smaller event; it is that an election is the smaller event '
+          + '<i>unless the market doubts the regime</i>, and then it is the largest thing here. ';
+      }
+      html += 'What separates the crises from each other is speed, not size &mdash; '
+        + crises.map(e => e.label + ' took ' + e.months_to_peak + ' month'
+            + (e.months_to_peak === 1 ? '' : 's')).join(', ')
+        + '.</div>';
+
+      html += '<p class="scen-note">' + (ch.scale_evidence || '') + '</p>';
+
+      html += '<div class="scen-sub">Episodes</div>';
+      html += '<div class="scen-table-wrap"><table class="scen-table"><thead><tr>'
+        + '<th>Episode</th><th>Base</th><th>Level</th><th>Peak month</th><th>Level</th>'
+        + '<th>Peak &divide; base</th><th>Months</th><th>At month 12</th>'
+        + '<th title="The highest single day inside the window, which a monthly path cannot represent">Worst day</th>'
+        + '<th title="The Fed broad-EM dollar index over the same base-to-peak leg">EM USD, same leg</th>'
+        + '</tr></thead><tbody>' + scenEpisodeRows(chKey, ch) + '</tbody></table></div>';
+      // Derivado, e nao escrito. A versao anterior desta frase citava 606 bps,
+      // "cinco vezes a base", "por tres dias" e um fechamento de 335 -- quatro
+      // afirmacoes da fonte antiga do CDS que a troca de fonte deixou erradas
+      // (587, 4,50x e 316) e que nada na pagina podia contradizer. Mesmo
+      // defeito da manchete acima, no mesmo dia.
+      const spikeEp = ch.episodes.filter(e => e.spike).sort((a, b) => b.spike.x - a.spike.x)[0];
+      if (spikeEp) {
+        const hist = ch.history || {};
+        const mIdx = (hist.months || []).indexOf(String(spikeEp.spike.date).slice(0, 7));
+        const closeAt = mIdx >= 0 ? hist.values[mIdx] : null;
+        html += '<p class="scen-foot"><b>Worst day</b> is the highest single print inside the window, and '
+          + 'it sits next to the monthly peak rather than replacing it because the two answer different '
+          + 'questions. The worst day in this library belongs to ' + spikeEp.label + ': '
+          + scenFmt(spikeEp.spike.value, 0) + ' ' + (ch.unit || '') + ' on ' + spikeEp.spike.date + ', '
+          + fmtNumRg(spikeEp.spike.x, 2) + 'x its base'
+          + (closeAt ? ', while the month it fell in closed at ' + scenFmt(closeAt, 0) + ' &mdash; only '
+              + fmtNumRg(closeAt / spikeEp.base, 2) + 'x' : '')
+          + '. A twelve-month path can hold the second number and not the first, so every multiple in this '
+          + 'table is a monthly one; read the worst-day column as what the panic looked like while it was '
+          + 'happening.</p>';
+      }
+      // A frase de ordenamento era escrita a mao e nasceu com QUATRO eleicoes
+      // com leitura ("as duas que subiram, as duas quietas"). Com sete eleicoes
+      // ela passou a descrever uma tabela que nao existe mais, e sem sintoma:
+      // as duas mais antigas nao tem leitura e ha cinco, nao quatro, que tem.
+      // Agora e derivada, inclusive o motivo da celula vazia.
+      const comConc = elections.filter(e => e.concurrent && e.concurrent.dxy_em !== undefined);
+      const semConc = elections.filter(e => !(e.concurrent && e.concurrent.dxy_em !== undefined));
+      const dolarCaiu = comConc.filter(e => e.concurrent.dxy_em < 0);
+      const maisCalmas = comConc.slice().sort((a, b) => a.peak_x - b.peak_x).slice(0, dolarCaiu.length);
+      const mesmoConjunto = dolarCaiu.length > 0 && dolarCaiu.every(e => maisCalmas.indexOf(e) >= 0);
+      html += '<p class="scen-foot">The last column is what the Fed&rsquo;s broad emerging-market dollar '
+        + 'index did over the same base-to-peak stretch, and it is there because that index is a '
+        + '<b>separate channel in the same regression</b>. Taking an episode from here while leaving that '
+        + 'one flat is a different scenario from the episode itself. Read down the column and the ordering '
+        + 'is the point: '
+        + (mesmoConjunto
+            ? 'of the ' + comConc.length + ' elections the index reaches, the ' + dolarCaiu.length
+              + ' whose dollar leg was <i>negative</i> are exactly the ' + dolarCaiu.length + ' calmest '
+              + 'CDS run-ups (' + dolarCaiu.map(e => e.label).join(' and ') + '), while every crisis here '
+              + 'came with the dollar rising as well. An election&rsquo;s CDS run-up is the part of this '
+              + 'story that is least separable from the world&rsquo;s.'
+            : 'the elections whose CDS ran up are not the ones that came with a quiet dollar.')
+        + (semConc.length
+            ? ' The blank cells are the ' + semConc.length + ' earliest elections, which this index does '
+              + 'not reach &mdash; so nothing in this column says whether ' + semConc[0].label
+              + ' was a domestic episode or not.'
+            : '')
+        + '</p>';
+
+      // ---- how each window was chosen ------------------------------------
+      // Answers a question the section used to leave to the module's own
+      // source: the start of a crisis is a judgement and the end of one is
+      // not, so reading a twelve-month window as "how long the crisis lasted"
+      // gets both halves wrong.
+      const endsOnPeak = crises.filter(e => e.peak_month === e.end_month);
+      const endsHigh = crises.filter(e => e.complete && e.peak_month !== e.end_month && e.end_x >= 1.25);
+      html += '<div class="scen-sub">Where each window starts and stops</div>';
+      html += '<p class="scen-note"><b>An election window is arithmetic.</b> The base is the monthly '
+        + 'close twelve months before the month of the vote and the last point is the vote month itself, '
+        + 'so no judgement enters &mdash; which is also why the chart below can name real calendar months '
+        + 'on that view.</p>';
+      html += '<p class="scen-note"><b>A crisis window is declared</b>, and its two ends are declared very '
+        + 'differently. The <b>start</b> is a choice: these are the episodes named as the crises they are, '
+        + 'and each base is the last quiet monthly close before that run-up began'
+        + (crises.length ? ' (' + crises.map(e => scenMonth(e.base_month)).join(', ') + ')' : '')
+        + '. Deliberately not a peak-finder: a rule that searched this series for its own sharpest '
+        + 'stretches would then be measured against the same series, and every crisis would come out '
+        + 'looking sharp by construction. The <b>end</b> is not a choice at all &mdash; every window runs '
+        + 'exactly ' + SCEN.horizon + ' months from its base, because ' + SCEN.horizon + ' months is what '
+        + 'the forecast card above asks for, and episodes of different lengths could not be read against '
+        + 'each other line for line. So a window closing does not mean the episode resolved: '
+        + endsOnPeak.map(e => '<b>' + e.label + '</b> ends on its own peak')
+            .concat(endsHigh.map(e => '<b>' + e.label + '</b> ends with the level still '
+              + fmtNumRg(100 * (e.end_x - 1), 0) + '% above where it started'))
+            .join(', ')
+        + '.</p>';
+      // ep.note carried the one-line character of each episode and nothing
+      // drew it -- a dead field in the data plus a reader left without the
+      // one sentence that says why these three dates and not others.
+      const notes = ch.episodes.filter(e => e.note);
+      if (notes.length) {
+        html += '<ul class="scen-ep-notes">'
+          + notes.map(e => '<li><b>' + e.label + '.</b> ' + e.note + '</li>').join('')
+          + '</ul>';
+      }
+
+      if (elections.length) {
+        html += '<div class="scen-sub">First round vs. runoff</div>';
+        html += '<p class="scen-note">On a monthly grid the twelve months into the first round and the '
+          + 'twelve into the runoff are the <b>same window</b> &mdash; both rounds fall in October in every '
+          + 'election on record, so the two paths are identical and there is one row per election above, not '
+          + 'two. The round-to-round question is a daily one, and this is it: the level on each round&rsquo;s '
+          + 'own day, and what happened in the three or four weeks between them.</p>';
+        html += '<div class="scen-table-wrap"><table class="scen-table"><thead><tr>'
+          + '<th>Election</th><th>At 1st round</th><th>At runoff</th><th>Between, bps</th><th>Between, %</th>'
+          + '<th>3 months after, bps</th><th>3 months after, %</th>'
+          + '</tr></thead><tbody>' + scenRoundRows(ch) + '</tbody></table></div>';
+        const comPost = elections.filter(e => e.post);
+        const abriu = comPost.filter(e => e.post.bps > 0);
+        html += '<p class="scen-foot">The middle columns are the most consistent thing in this library: '
+          + 'the spread <b>narrowed between the two rounds in every completed election</b>. Whatever the '
+          + 'run-up did, the fortnight in which the result stopped being uncertain took some of it back. '
+          + 'What follows the vote does not repeat: three months on it was <b>wider after ' + abriu.length
+          + '</b> of the ' + comPost.length + ' and narrower after the other '
+          + (comPost.length - abriu.length) + ', which is why the run-up and the relief are worth reading '
+          + 'as two separate things.</p>';
+      }
+
+      html += '<div class="scen-sub">The episodes on one axis</div>';
+      html += '<p class="scen-note">Each line is one episode divided by its own base month, which is what '
+        + 'makes two of them comparable at all: 1.0x is that episode&rsquo;s starting level, whatever it '
+        + 'happened to be in ' + (ch.unit || 'level') + '. The two pills are the two kinds of window, and '
+        + 'they are kept apart because their axes are not the same axis &mdash; the elections share the '
+        + 'same calendar months and end on a date, while each crisis starts wherever its own run-up '
+        + 'started and can only be counted in months from there. On the election view the last two points '
+        + 'are the <b>two rounds</b> rather than a thirteenth month: the vote is two events three or four '
+        + 'weeks apart, and the shaded band marks where the reading stops being a monthly close and '
+        + 'becomes the level on the day itself.</p>';
+      html += scenKindPills(chKey, ch);
+      html += '<div class="scen-cap" id="scen-cap-' + chKey + '"></div>';
+      html += '<div class="chart-wrap"><div id="scen-chart-' + chKey + '" style="width:100%"></div></div>';
+
+      // ---- carrying one over by hand -------------------------------------
+      html += '<div class="scen-sub">Carrying one of these into the boxes above</div>';
+      html += '<p class="scen-note">Nothing in this section writes into the forecast card, on purpose: an '
+        + 'episode is a yardstick, not a forecast, and the twelve boxes are where the judgement belongs. '
+        + 'To carry one over, take its column of multiples and '
+        + (mult
+            ? '<b>multiply</b> today&rsquo;s level by them (' + scenFmt(ch.last_value, 0) + ' '
+              + (ch.unit || '') + ' as of ' + scenMonth(ch.last_month) + '), because this channel moves '
+              + 'proportionally rather than in fixed steps &mdash; see the note under the headline.'
+            : '<b>add</b> the episode&rsquo;s own difference in ' + (ch.unit || 'level') + ' to '
+              + 'today&rsquo;s level (' + scenFmt(ch.last_value, 0) + ' ' + (ch.unit || '') + ' as of '
+              + scenMonth(ch.last_month) + '), because this channel does not move proportionally &mdash; '
+              + 'see the note under the headline.')
+        + ' Two things are easy to lose while doing it. The path you type replaces the model&rsquo;s own '
+        + 'for <i>this channel only</i>, so the other channels <b>stay where you left them</b> &mdash; '
+        + 'which is a choice you are making, not a neutral default, since none of these episodes happened '
+        + 'with the rest of the world holding still (the last column of the episode table is the size of '
+        + 'that). And a month already closed is observed data: overwriting it with a historical analogue '
+        + 'reprices something that has already happened.</p>';
+
+      // Caveats belong next to the episode they qualify, not in a footnote
+      // block: a base month that is a frozen quote changes what its multiple
+      // means, and a reader taking that episode away should see it.
+      ch.episodes.filter(ep => ep.caveat).forEach(ep => {
+        html += '<div class="scen-caveat"><b>' + ep.label + ' — read the base with care.</b> '
+          + ep.caveat + '</div>';
+      });
+
+      // ---- the reference distribution ------------------------------------
+      if (ch.distribution) {
+        const d12 = ch.distribution[SCEN.horizon + 'm'];
+        const worst12 = scenWorstWindow(ch, SCEN.horizon);
+        const firstMonth = (ch.history && ch.history.months && ch.history.months.length)
+          ? ch.history.months[0] : null;
+        html += '<div class="scen-sub">How rare is a move that size?</div>';
+        html += '<p class="scen-note">The table above names ' + ch.episodes.length + ' windows. This one '
+          + 'counts <b>every</b> window in this channel&rsquo;s history &mdash; every stretch of one, '
+          + 'three, six and twelve months' + (firstMonth ? ' since ' + scenMonth(firstMonth) : '')
+          + ' &mdash; and says how far the level moved across it, in the same multiples as the rest of '
+          + 'this section. That is what turns a path into a frequency: <i>worst 1 in 10</i> means nine of '
+          + 'every ten stretches of that length moved less than this one. The windows overlap, one per '
+          + 'month, so the count is of months and not of independent episodes.</p>';
+        html += '<div class="scen-table-wrap"><table class="scen-table"><thead><tr>'
+          + '<th>Stretch</th><th title="Only 1 in 20 stretches were calmer than this">Calmest 1 in 20</th>'
+          + '<th>Median</th><th title="1 in 10 stretches moved more than this">Worst 1 in 10</th>'
+          + '<th>Worst 1 in 20</th><th>Worst 1 in 100</th><th>Worst on record</th>'
+          + '<th title="Overlapping windows, one per month">Windows</th>'
+          + '</tr></thead><tbody>' + scenDistRows(ch) + '</tbody></table></div>';
+        if (d12 && crisisX.length) {
+          const lo = Math.min.apply(null, crisisX), hi = Math.max.apply(null, crisisX);
+          html += '<p class="scen-foot"><b>The named episodes, read against the last row.</b> The mildest '
+            + 'of the ' + crises.length + ' crises, at ' + fmtNumRg(lo, 2) + 'x, is ' + scenWhereX(d12, lo)
+            + ' twelve-month stretches; the harshest, at ' + fmtNumRg(hi, 2) + 'x, is ' + scenWhereX(d12, hi)
+            + (topElec ? '; and ' + topElec.label + ', at ' + fmtNumRg(topElecX, 2) + 'x, is '
+                + scenWhereX(d12, topElecX) : '') + '. '
+            + (worst12
+                ? 'And the worst twelve months in the record is none of them: ' + scenMonth(worst12.from)
+                  + ' to ' + scenMonth(worst12.to) + ', at ' + fmtNumRg(worst12.x, 2) + 'x. That is the '
+                  + 'same crisis as one of the episodes above, over a window no rule in this library would '
+                  + 'have picked &mdash; an episode is anchored on the last quiet close before its run-up, '
+                  + 'and the worst twelve months of a crisis need not start there. '
+                : '')
+            + 'Both tails are of the same order once they are read proportionally, which is easy to forget '
+            + 'when every named episode here is a widening: the calmest twentieth of twelve-month stretches '
+            + 'left the level at ' + scenXCell(d12.p5) + ' of where it started.</p>';
+        }
+      }
+
+      html += '<p class="scen-foot">Source: ' + (ch.source || '—')
+        + '. Monthly closes' + (ch.last_daily_date ? ', daily readings through ' + ch.last_daily_date : '')
+        + '.</p>';
+      return html;
+    }
+
+    (function renderScenarios() {
+      const host = document.getElementById('scenChannels');
+      if (!host) return;
+      if (!SCEN || !SCEN.channels) {
+        host.innerHTML = '<div class="scen-pending">No scenario data embedded in this build.</div>';
+        return;
+      }
+      const order = SCEN.order || Object.keys(SCEN.channels);
+      // The default view per channel, set BEFORE the body is built so the
+      // pills and the chart cannot start out disagreeing. Elections where
+      // there are any: the tab is being read in an election year, and it is
+      // the view whose axis carries real months.
+      order.forEach(k => {
+        const ch = SCEN.channels[k];
+        if (!ch) return;
+        SCEN_VIEW[k] = scenEpisodesOf(ch, 'election').length ? 'election' : 'crisis';
+      });
+      host.innerHTML = order.filter(k => SCEN.channels[k]).map(k => {
+        const ch = SCEN.channels[k];
+        const measured = !ch.pending && ch.episodes && ch.episodes.length;
+        const hint = measured
+          ? ch.episodes.length + ' episodes · crises and election years, ' + (ch.unit || '')
+          : 'Not measured yet';
+        // Only the measured channel opens by default. Five open folds inside
+        // an open fold is the wall this structure exists to avoid.
+        return '<details class="scen-ch" id="scen-ch-' + k + '"' + (measured ? ' open' : '') + '>'
+          + '<summary>' + (CHANNEL_LABELS_RIDGE['delta_' + k] || ch.label || k)
+          + '<span class="scen-ch-hint">' + hint + '</span></summary>'
+          + '<div class="scen-ch-body">' + scenChannelBody(k, ch) + '</div></details>';
+      }).join('');
+
+      order.forEach(k => {
+        const ch = SCEN.channels[k];
+        if (!ch || ch.pending || !ch.episodes || !ch.episodes.length) return;
+        scenRenderChart(k);
+      });
+
+      // One list, captured once: the click handler toggles the active state on
+      // the SAME nodes it was bound to, so it does not depend on the host
+      // still being re-queryable after the innerHTML above.
+      const pills = Array.prototype.slice.call(host.querySelectorAll('.scen-kind-pill'));
+      pills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          if (this.classList.contains('is-off')) return;
+          const chKey = this.dataset.scenCh, kind = this.dataset.scenKind;
+          if (!chKey || !kind || SCEN_VIEW[chKey] === kind) return;
+          SCEN_VIEW[chKey] = kind;
+          pills.forEach(function (other) {
+            if (other.dataset.scenCh !== chKey) return;
+            other.classList.toggle('is-on', other.dataset.scenKind === kind);
+          });
+          scenRenderChart(chKey);
+        });
+      });
+
+      // A chart drawn inside a CLOSED <details> measures its container once,
+      // at width zero, and stays that way after it opens. The `toggle` event
+      // does NOT bubble, so this needs a listener per fold -- the outer one
+      // AND each channel's own, since the chart lives two folds deep and
+      // opening only the outer one would leave a nested-closed chart at zero.
+      const outer = document.getElementById('ridgeScenFold');
+      const folds = [outer].concat(Array.prototype.slice.call(host.querySelectorAll('details.scen-ch')));
+      folds.filter(Boolean).forEach(function (foldEl) {
+        foldEl.addEventListener('toggle', function () {
+          if (!foldEl.open) return;
+          Array.prototype.forEach.call(foldEl.querySelectorAll('.chart-wrap > div'), function (gd) {
+            if (gd && gd.id && gd._fullLayout) Plotly.Plots.resize(gd);
+          });
+        });
+      });
+    })();
+
   }
 
   document.querySelectorAll('.tab-btn').forEach(btn => {

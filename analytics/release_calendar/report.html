@@ -116,6 +116,17 @@
     .upd-msg { font-family: var(--mono); font-size: 10px; color: var(--muted); display: block; margin-top: 2px; }
     .upd-msg.err { color: var(--lis-laranja); }
 
+    /* ── Controle de lote, um por aba ──────────────────────────────────────────
+       Fica no cabecalho do bloco, alinhado a direita do <h2>: e a acao que vale para
+       a LISTA inteira, ao lado do titulo dela, e nao dentro de nenhuma linha. O botao
+       de linha continua existindo — o lote nao substitui a escolha um-a-um, so poupa
+       os cliques quando o que se quer e "resolve tudo o que ficou para tras". */
+    .card-head { display: flex; align-items: baseline; gap: 16px; }
+    .card-head h2 { margin-bottom: 14px; }
+    .bulk { margin-left: auto; text-align: right; padding-bottom: 14px; white-space: nowrap; }
+    .bulk .upd-msg { max-width: 420px; white-space: normal; }
+    .bulk .upd-none { display: inline-block; max-width: 380px; white-space: normal; text-align: right; }
+
     /* ── Texto explicativo: ocupa a largura do bloco e vai JUSTIFICADO ─────────
        Pedido explícito do usuário (2026-08-31), a partir de um print: os textos tinham
        `max-width` em ch e o card é largo, então sobrava um vazio grande à direita de cada
@@ -338,7 +349,10 @@
     <div class="recurring-card" id="recurring-card"></div>
 
     <div class="table-card">
-      <h2>Lista de Divulgações</h2>
+      <div class="card-head">
+        <h2>Lista de Divulgações</h2>
+        <div class="bulk" id="bulk-releases"></div>
+      </div>
       <div class="card-hint" id="mode-hint"></div>
       <table class="release-table">
         <thead>
@@ -385,7 +399,10 @@
     </div>
 
     <div class="table-card">
-      <h2>O que cada dashboard consome</h2>
+      <div class="card-head">
+        <h2>O que cada dashboard consome</h2>
+        <div class="bulk" id="bulk-dashboards"></div>
+      </div>
       <div class="card-hint" id="dash-mode-hint"></div>
     </div>
 
@@ -518,6 +535,10 @@
 
     function renderTable() {
       var entries = filteredEntries();
+      // O controle de lote acompanha o MESMO recorte da tabela (instituição, mês,
+      // divulgação): agir sobre linha que não está listada seria surpresa. Com os
+      // filtros no default ("Todos"/"Tudo"/"Todas") isso é o calendário inteiro.
+      renderBulkReleases();
       var tbody = document.getElementById('table-body');
       tbody.innerHTML = '';
       if (!entries.length) {
@@ -696,9 +717,112 @@
       } else {
         el.innerHTML = '<span class="mode live">servido</span>' +
           'Divulgação já ocorrida e dado ausente no banco → botão vermelho. ' +
-          'Já no banco → em dia. Futura → nada a fazer.';
+          'Já no banco → em dia. Futura → nada a fazer. ' +
+          '<strong>Atualizar pendentes</strong>, no alto, busca de uma vez o dado de toda ' +
+          'divulgação vermelha do recorte selecionado, uma depois da outra.';
       }
     }
+
+    /* ─────────────────── "Atualizar pendentes": o lote da aba ───────────────────
+       Pedido do usuário: um botão que atualiza de uma vez tudo o que está pendente, em
+       vez de um clique por linha. O botão de linha continua no lugar — quem quer só o
+       IPCA clica no IPCA; o lote é para quando a resposta é "tudo o que ficou para trás".
+
+       Pendente aqui é o mesmo estado que pinta o botão de laranja: a divulgação já
+       ocorreu e o dado não está no banco (`rowState() === 'late'`). Três coisas fazem o
+       lote se comportar:
+
+       - **A fila é fotografada ANTES de começar.** Cada POST muda o veredito de um
+         grupo, e recalcular a fila no meio faria um grupo sem script — que continua
+         atrasado depois de rodar — ser tentado para sempre.
+       - **Um grupo por requisição, em série.** Reusa o mesmo /api/run do botão de linha,
+         então o servidor continua recebendo um slug de cada vez, validado contra o YAML;
+         não há endpoint de lote nem shell em ponto nenhum. Em série porque são scripts
+         de ETL disputando o mesmo banco.
+       - **Uma falha não interrompe a fila.** O que falhou entra no resumo do fim; os
+         outros grupos rodam.
+
+       O estado do banco é reconsultado UMA vez, no fim: `/api/status` custa uma consulta
+       e o veredito intermediário de cada grupo não interessa a ninguém. */
+    var BULK = { rodando: false, msg: null };
+
+    function pendentesDivulgacao() {
+      var vistos = {}, out = [];
+      filteredEntries().forEach(function(e) {
+        if (rowState(e) !== 'late' || vistos[e.group]) return;
+        vistos[e.group] = 1;
+        out.push({ group: e.group, name: e.institution + ' — ' + e.name });
+      });
+      return out;
+    }
+
+    function renderBulkReleases() {
+      var el = document.getElementById('bulk-releases');
+      if (!el) return;
+      var msg = BULK.msg ? '<span class="upd-msg' + (BULK.msg.erro ? ' err' : '') + '">' +
+                           esc(BULK.msg.texto) + '</span>' : '';
+      // Três estados, não dois: "não há servidor" e "há servidor, mas o banco não
+      // respondeu" são coisas diferentes, e chamar as duas de "nada pendente" afirmaria
+      // um veredito que ninguém tem.
+      if (!LIVE.on) {
+        el.innerHTML = '<span class="upd-none">Esta página está aberta como arquivo, então ' +
+          'não há como saber o que está pendente. Abra pelo abrir_calendario.bat.</span>' + msg;
+        return;
+      }
+      if (!LIVE.groups) {
+        el.innerHTML = '<span class="upd-none">O banco de dados não respondeu, então não ' +
+          'há como saber o que está pendente.</span>' + msg;
+        return;
+      }
+      var pend = pendentesDivulgacao();
+      if (!pend.length) {
+        el.innerHTML = '<span class="upd-ok">✓ nenhuma divulgação pendente</span>' + msg;
+        return;
+      }
+      el.innerHTML = '<button class="upd-btn late" id="bulk-run-btn" title="' +
+        esc('Roda o ETL de: ' + pend.map(function(p) { return p.name; }).join(' · ')) +
+        '"' + (BULK.rodando ? ' disabled' : '') +
+        '>Atualizar pendentes (' + pend.length + ')</button>' + msg;
+    }
+
+    function rodarPendentes() {
+      var fila = pendentesDivulgacao();
+      if (!fila.length || BULK.rodando) return Promise.resolve();
+      BULK.rodando = true;
+      var ok = 0, falhas = [];
+
+      function passo(i) {
+        if (i >= fila.length) {
+          BULK.rodando = false;
+          BULK.msg = { texto: ok + ' de ' + fila.length + ' atualizada(s)' +
+                              (falhas.length ? ' · falhou: ' + falhas.join(', ') : ''),
+                       erro: falhas.length > 0 };
+          return refreshStatus().then(function() { renderTable(); });
+        }
+        BULK.msg = { texto: 'atualizando ' + (i + 1) + ' de ' + fila.length + ': ' +
+                            fila[i].name, erro: false };
+        renderBulkReleases();
+        return fetch('/api/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ group: fila[i].group })
+        }).then(function(r) { return r.json(); }).then(function(res) {
+          if (res.erro) { throw new Error(res.erro); }
+          if (res.n_erro) falhas.push(fila[i].name + ' (' + res.n_erro + ' script)');
+          else if (res.sem_script && res.sem_script.length)
+            falhas.push(fila[i].name + ' (sem script)');
+          else ok++;
+        }).catch(function(err) {
+          falhas.push(fila[i].name + ' (' + String(err.message || err) + ')');
+        }).then(function() { return passo(i + 1); });
+      }
+      return passo(0);
+    }
+
+    document.getElementById('bulk-releases').addEventListener('click', function(ev) {
+      var btn = ev.target.closest ? ev.target.closest('button') : null;
+      if (btn && LIVE.on) rodarPendentes();
+    });
 
     document.getElementById('table-body').addEventListener('click', function(ev) {
       var btn = ev.target.closest ? ev.target.closest('button.upd-btn') : null;
@@ -1050,6 +1174,9 @@
 
       document.getElementById('dash-cards').innerHTML = rows.map(cardDashboard).join('');
       wireDashFolds();
+      // O lote acompanha o MESMO recorte de área dos cards: agir sobre dashboard que
+      // não está listado seria surpresa. No default ("Todas") é a página inteira.
+      renderBulkDashboards();
 
       // Tres estados, nao dois: "servido mas sem estado" e diferente de "modo arquivo",
       // e chamar os dois de arquivo esconderia uma falha do /api/dashboards.
@@ -1063,12 +1190,13 @@
           '. "Último dado" é a data mais recente que existe na tabela, a última linha do ' +
           'arquivo ou a última ' +
           'observação da fonte externa. "Dado novo" = a fonte andou depois da geração do ' +
-          'relatório. O botão <strong>Regerar</strong> faz tudo o que aquele dashboard ' +
-          'precisa: refaz os passos que ficaram atrás dos dados, quando o dashboard ' +
-
-          'tiver algum, e reconstrói o arquivo. São dois botões no sistema — ' +
-          '<strong>Atualizar</strong>, na outra aba, para a base de dados; ' +
-          '<strong>Regerar</strong>, aqui, para o dashboard.';
+          'relatório. O botão <strong>Regerar</strong> de um card faz tudo o que aquele ' +
+          'dashboard precisa: refaz os passos que ficaram atrás dos dados, quando o ' +
+          'dashboard tiver algum, e reconstrói o arquivo. ' +
+          '<strong>Regerar pendentes</strong>, no alto, faz isso em cada dashboard que ' +
+          'está com dado novo na fonte ou com um passo atrás dela, um depois do outro. ' +
+          'Fica de fora quem nunca foi gerado — construir um relatório pela primeira vez ' +
+          'é uma decisão, não uma consequência de o dado ter andado.';
       } else if (LIVE.on) {
         hint.innerHTML = '<span class="mode live">servido</span>' +
           'O estado ao vivo não carregou' + (DASH.erro ? ' (' + esc(DASH.erro) + ')' : '') +
@@ -1104,50 +1232,70 @@
       else delete DASH.msg[key];
     }
 
-    /* Regera UM dashboard. O POST devolve a linha nova daquele dashboard (o servidor
-       já recalculou o estado depois de gravar o stamp), então o card volta com o
-       veredito atualizado sem precisar reconsultar os outros dez. */
-    function regerarDashboard(key, btn) {
-      var linha = null;
+    function linhaDash(key) {
       for (var i = 0; i < DASH.rows.length; i++) {
-        if (DASH.rows[i].key === key) linha = DASH.rows[i];
+        if (DASH.rows[i].key === key) return DASH.rows[i];
       }
+      return null;
+    }
+
+    /* O POST devolve a linha nova SÓ do dashboard regerado (o servidor já recalculou o
+       estado depois de gravar o stamp), então o card volta com o veredito atualizado sem
+       pagar a consulta dos outros onze. */
+    function aplicarLinha(key, nova) {
+      for (var i = 0; i < DASH.rows.length; i++) {
+        if (DASH.rows[i].key === key) DASH.rows[i] = nova;
+      }
+    }
+
+    /* A mensagem de um Regerar. Vive aqui, e não dentro do clique, porque o botão de um
+       dashboard e o de lote escrevem a MESMA frase no card — duplicada, ela divergiria
+       na primeira vez que uma das duas mudasse. Ela diz o que foi REFEITO e não só que
+       gerou: sem isso não há como saber que a métrica dentro do relatório também andou. */
+    function msgDoGerar(res) {
+      var refeitos = (res.procedimentos || []).filter(function(x) {
+        return x.acao === 'rodado';
+      });
+      var falhou = (res.procedimentos || []).filter(function(x) {
+        return x.acao === 'falhou';
+      });
+      var texto = refeitos.length
+        ? 'refez ' + refeitos.map(function(x) {
+            return x.label + ' (' + x.segundos + 's)';
+          }).join(', ') + ' e regerou em ' + res.segundos + 's'
+        : 'regerado em ' + res.segundos + 's — nada estava atrás dos dados';
+      if (falhou.length) {
+        texto += ' — FALHOU: ' + falhou.map(function(x) {
+          return x.label + ' (' + x.erro + ')';
+        }).join(', ') + '; o relatório saiu com o artefato antigo';
+      }
+      return { texto: texto, erro: falhou.length > 0 };
+    }
+
+    function postGerar(key) {
+      return fetch('/api/gerar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: key })
+      }).then(function(r) { return r.json(); }).then(function(res) {
+        if (res.erro) { throw new Error(res.erro); }
+        if (res.dashboard) aplicarLinha(key, res.dashboard);
+        var m = msgDoGerar(res);
+        setDashMsg(key, m.texto, m.erro);
+        return m;
+      });
+    }
+
+    /* Regera UM dashboard. */
+    function regerarDashboard(key, btn) {
+      var linha = linhaDash(key);
       var extra = linha ? procSegundos(linha) : 0;
       btn.disabled = true;
       btn.textContent = extra ? 'refazendo os passos... (~' +
         ((linha.build_seconds || 0) + extra) + 's)' : 'regerando...';
       setDashMsg(key, null);
 
-      fetch('/api/gerar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: key })
-      }).then(function(r) { return r.json(); }).then(function(res) {
-        if (res.erro) { throw new Error(res.erro); }
-        if (res.dashboard) {
-          for (var i = 0; i < DASH.rows.length; i++) {
-            if (DASH.rows[i].key === key) DASH.rows[i] = res.dashboard;
-          }
-        }
-        // Diz o que foi REFEITO, não só que gerou: sem isso o usuário não tem como
-        // saber que a métrica dentro do relatório também andou.
-        var refeitos = (res.procedimentos || []).filter(function(x) {
-          return x.acao === 'rodado';
-        });
-        var falhou = (res.procedimentos || []).filter(function(x) {
-          return x.acao === 'falhou';
-        });
-        var msg = refeitos.length
-          ? 'refez ' + refeitos.map(function(x) {
-              return x.label + ' (' + x.segundos + 's)';
-            }).join(', ') + ' e regerou em ' + res.segundos + 's'
-          : 'regerado em ' + res.segundos + 's — nada estava atrás dos dados';
-        if (falhou.length) {
-          msg += ' — FALHOU: ' + falhou.map(function(x) {
-            return x.label + ' (' + x.erro + ')';
-          }).join(', ') + '; o relatório saiu com o artefato antigo';
-        }
-        setDashMsg(key, msg, falhou.length > 0);
+      postGerar(key).then(function() {
         renderDashboards();
       }).catch(function(err) {
         setDashMsg(key, String(err.message || err), true);
@@ -1155,17 +1303,125 @@
       });
     }
 
+    function cmdDash(key) {
+      return 'uv run python -m domain.dashboards.status --gerar ' + key;
+    }
+
     function copyDashCommand(key) {
-      var linha = null;
-      for (var i = 0; i < DASH.rows.length; i++) {
-        if (DASH.rows[i].key === key) linha = DASH.rows[i];
-      }
-      var cmd = 'uv run python -m domain.dashboards.status --gerar ' + key;
-      copiarTexto(cmd,
+      copiarTexto(cmdDash(key),
         function() { setDashMsg(key, 'comando copiado', false); renderDashboards(); },
         function(c) { setDashMsg(key, c, false); renderDashboards(); });
-      return linha;
+      return linhaDash(key);
     }
+
+    /* ─────────────────── "Regerar pendentes": o lote da aba ─────────────────────
+       Pedido do usuário, junto com o "Atualizar pendentes" da outra aba. O botão de cada
+       card continua existindo: o lote não substitui a escolha um-a-um, ele resolve o caso
+       em que a resposta é "reconstrói tudo o que ficou para trás".
+
+       O que conta como pendente, e por que dois dos estados chamativos ficam fora:
+
+       - **`dado novo na fonte`** — a fonte andou depois da geração. Entra.
+       - **Passo atrás dos dados** (`n_proc_atrasados`) — o arquivo é novo e o número
+         dentro dele é velho. Entra: é o caso que o Regerar existe para corrigir.
+       - **`nunca gerado`** fica FORA. Construir pela primeira vez um relatório que nunca
+         existiu é uma decisão, não uma consequência de o dado ter andado — a mesma regra
+         que a regeração automática da linha de comando aplica.
+       - **`sem stamp`** fica FORA. Não é atraso: é a ausência do retrato que permitiria
+         afirmar que bate. Regerar por isso gastaria minutos para trocar uma incerteza por
+         um "em dia" sobre dado que já estava lá.
+
+       Sem entry point automático também fica fora, pelo mesmo critério do botão de card:
+       um controle que não funciona é pior do que nenhum. */
+    var BULKD = { rodando: false, msg: null };
+
+    function pendentesDashboard() {
+      return DASH.rows.filter(function(r) {
+        if (DASH.area !== 'todas' && r.area !== DASH.area) return false;
+        if (!r.module) return false;
+        return r.veredito === 'desatualizado' || !!r.n_proc_atrasados;
+      });
+    }
+
+    function renderBulkDashboards() {
+      var el = document.getElementById('bulk-dashboards');
+      if (!el) return;
+      var msg = BULKD.msg ? '<span class="upd-msg' + (BULKD.msg.erro ? ' err' : '') + '">' +
+                            esc(BULKD.msg.texto) + '</span>' : '';
+      var pend = pendentesDashboard();
+      if (!pend.length) {
+        el.innerHTML = '<span class="upd-ok">✓ nenhum dashboard pendente</span>' + msg;
+        return;
+      }
+      // O tempo anunciado é o do CLIQUE: a geração de cada um mais o que cada um vai
+      // recalcular antes de gerar. Mesma conta do botão de card, somada.
+      var segs = pend.reduce(function(t, r) {
+        return t + (r.build_seconds || 0) + procSegundos(r);
+      }, 0);
+      var rot = (LIVE.on ? 'Regerar pendentes (' : 'Copiar cmds (') + pend.length + ')';
+      el.innerHTML = '<button class="upd-btn late" id="bulk-gerar-btn" title="' +
+        esc(pend.map(function(r) { return r.name; }).join(' · ')) + '"' +
+        (BULKD.rodando ? ' disabled' : '') + '>' + rot + '</button>' +
+        (segs ? '<span class="upd-msg">~' + Math.round(segs) + 's no total</span>' : '') +
+        msg;
+    }
+
+    /* Um POST por dashboard, em SÉRIE — não é um endpoint de lote. Três consequências,
+       todas desejadas: o servidor continua recebendo uma key de cada vez, validada contra
+       o manifesto; cada card vira "em dia" na tela assim que o dele volta, em vez de a
+       página congelar por minutos sem sinal; e dois geradores nunca disputam o banco.
+
+       A fila é fotografada ANTES de começar — um dashboard que continue pendente depois
+       de gerar, porque um passo dele falhou, não pode voltar para a fila — e uma falha
+       não interrompe o resto: ela entra no resumo do fim e no card daquele dashboard. */
+    function regerarPendentes() {
+      var fila = pendentesDashboard();
+      if (!fila.length || BULKD.rodando) return Promise.resolve();
+      BULKD.rodando = true;
+      var ok = 0, falhas = [];
+
+      function passo(i) {
+        if (i >= fila.length) {
+          BULKD.rodando = false;
+          BULKD.msg = { texto: ok + ' de ' + fila.length + ' regerado(s)' +
+                                (falhas.length ? ' · falhou: ' + falhas.join(', ') : ''),
+                        erro: falhas.length > 0 };
+          renderDashboards();
+          return Promise.resolve();
+        }
+        BULKD.msg = { texto: 'regerando ' + (i + 1) + ' de ' + fila.length + ': ' +
+                             fila[i].name, erro: false };
+        renderDashboards();
+        return postGerar(fila[i].key).then(function(m) {
+          if (m.erro) falhas.push(fila[i].name); else ok++;
+        }).catch(function(err) {
+          setDashMsg(fila[i].key, String(err.message || err), true);
+          falhas.push(fila[i].name);
+        }).then(function() { return passo(i + 1); });
+      }
+      return passo(0);
+    }
+
+    function copyBulkDashCommands() {
+      var fila = pendentesDashboard();
+      if (!fila.length) return;
+      // Uma linha por dashboard, e não um comando de lote: o `--gerar todos` existe, mas
+      // gera os doze SEM recalcular, que não é o que este botão faz.
+      var cmd = fila.map(function(r) { return cmdDash(r.key); }).join('\n');
+      copiarTexto(cmd,
+        function() {
+          BULKD.msg = { texto: fila.length + ' comando(s) copiado(s)', erro: false };
+          renderDashboards();
+        },
+        function(c) { BULKD.msg = { texto: c, erro: false }; renderDashboards(); });
+    }
+
+    document.getElementById('bulk-dashboards').addEventListener('click', function(ev) {
+      var btn = ev.target.closest ? ev.target.closest('button') : null;
+      if (!btn) return;
+      if (LIVE.on) regerarPendentes();
+      else copyBulkDashCommands();
+    });
 
     document.getElementById('dash-cards').addEventListener('click', function(ev) {
       var btn = ev.target.closest ? ev.target.closest('button.dash-btn') : null;
