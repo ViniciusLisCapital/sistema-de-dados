@@ -221,7 +221,7 @@ e `clima_oni`.
 ## Active tables (`macro_us`)
 
 Built 2026-08, the first US branch. Full method, validation and gotchas:
-[`us_project/inflation_hierarchy.md`](../../us_project/inflation_hierarchy.md) and each script's docstring.
+[`analytics/us/inflation/inflation_hierarchy.md`](../../analytics/us/inflation/inflation_hierarchy.md) and each script's docstring.
 
 | Table | Source | Available range | Script |
 |---|---|---|---|

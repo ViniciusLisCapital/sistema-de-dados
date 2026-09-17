@@ -18,6 +18,15 @@ already carries its own internal `brasil/`+`us/` split around a shared `base/`).
 source, not the audience: a module that reads only `macro_brasil` belongs to `brasil/`; one that
 reads both, or reads no schema at all, belongs at the root.
 
+**The source survey lives with the area.** An area whose sources needed a live survey keeps it as
+`<area>/fontes_dados.md` — a coverage table naming, per datum, the primary source, which
+distributor republishes which slice, and whether it is in the database yet. Three exist under
+`brasil/` (credit, fiscal_policy, labor_market — written where the source was tangled enough to
+need one) and eight under `us/`, one per area, because the US side was surveyed all at once
+before anything was built. What is common to all eight US areas — access status per source, the
+API keys, the 377-series FRED probe — is in [`us/CLAUDE.md`](us/CLAUDE.md), the only
+country-level `CLAUDE.md`; `brasil/` has none because it never had a cross-cutting survey.
+
 **`reports/` mirrors this.** A report's output goes to `reports/<country>/` — `analytics/brasil/credit/`
 writes `reports/brasil/Credit.html`. Cross-country outputs stay at the root of `reports/`, which today
 means only `release_calendar.html`. The reason is collision, not tidiness: Brazil and the US both
@@ -42,6 +51,7 @@ if it doesn't exist, so a new country needs no setup step.
 | **`us/`** | | |
 | `us/inflation/` | US Inflation (HTML report — the CPI-U's two published trees plus the PCE price index, three tabs on one hierarchy-table structure). First report under `us/`, 2026-08 | [`us/inflation/CLAUDE.md`](us/inflation/CLAUDE.md) |
 | `us/labor_market/` | US Labor Market (HTML report — **6 tabs over 4 BLS surveys**: Payroll/CES, Household/CPS, JOLTS, Productivity and a Derived tab crossing the three monthly ones). Second report under `us/`, 2026-09-01; the payroll and household surveys plus the derived metrics landed the same day and the quarterly productivity release on 2026-09-03. It is the only report here mixing a **quarterly** source with monthly ones | [`us/labor_market/CLAUDE.md`](us/labor_market/CLAUDE.md) |
+| `us/economic_activity/` `us/credit/` `us/external_sector/` `us/fiscal_policy/` `us/housing/` `us/monetary_policy/` | **Nothing yet — these six hold only the source survey** (`fontes_dados.md`), moved here from the ex-`us_project/` on 2026-09-10. `monetary_policy` is the closest to real: its Treasury curve is loaded as `macro_us.us_interest_rate`, it just has no report | [`us/CLAUDE.md`](us/CLAUDE.md) |
 | **cross-country (root)** | | |
 | `oraculo/` | Macro thermometer scores (1–10), feeds Power BI. Country split is *internal* (`oraculo/brasil/`, `oraculo/us/`, shared `oraculo/base/`), so it stays at the root | [`oraculo/CLAUDE.md`](oraculo/CLAUDE.md) |
 | `release_calendar/` | Calendário de Divulgações (HTML report — forward-looking, reads a local YAML, not MySQL) | [`release_calendar/CLAUDE.md`](release_calendar/CLAUDE.md) |

@@ -12,7 +12,7 @@ O MESMO item_code aparece nas duas com nivel e pai diferentes -- `Apparel` (SAA)
 um grupo de nivel 1 na arvore de despesa e um componente de core goods no nivel 3 da
 de divulgacao. Por isso a chave e (arvore, item_code) e nao item_code.
 
-Detalhe completo, com a validacao de cada arvore: us_project/inflation_hierarchy.md
+Detalhe completo, com a validacao de cada arvore: analytics/us/inflation/inflation_hierarchy.md
 
 --------------------------------------------------------------------------------
 COMO CADA ARVORE E CONSTRUIDA (as duas de fonte primaria, ao vivo)

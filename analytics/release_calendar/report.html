@@ -766,7 +766,7 @@
       // um veredito que ninguém tem.
       if (!LIVE.on) {
         el.innerHTML = '<span class="upd-none">Esta página está aberta como arquivo, então ' +
-          'não há como saber o que está pendente. Abra pelo abrir_calendario.bat.</span>' + msg;
+          'não há como saber o que está pendente. Abra pelo arquivo jobs\\abrir_calendario.bat, na pasta do projeto.</span>' + msg;
         return;
       }
       if (!LIVE.groups) {
@@ -1205,7 +1205,7 @@
       } else {
         hint.innerHTML = '<span class="mode">modo arquivo</span>' +
           'Retrato de quando este HTML foi gerado, e o botão copia o comando. Para regerar ' +
-          'daqui, abra pelo <strong>abrir_calendario.bat</strong> — dois cliques no ' +
+          'daqui, abra pelo <strong>jobs\\abrir_calendario.bat</strong> — dois cliques no ' +
           'reports/release_calendar.html cai neste modo mesmo com o servidor no ar.';
       }
     }

@@ -50,7 +50,8 @@ desenvolvimento não tem.
   — todos disponíveis no mesmo microdado já baixado, adicionar é só uma tabela irmã nova com o
   mesmo padrão (`categoria`/`metrica`), sem migração;
   (b) `mt_pnad_trimestral`: nível UF/N3 deixado de fora deliberadamente, sem previsão.
-- **US — expandir dados**: o mapeamento das 8 áreas macro está em [`us_project/`](us_project/)
+- **US — expandir dados**: o mapeamento das 8 áreas macro está em [`analytics/us/`](analytics/us/), um `fontes_dados.md`
+  por área
   (levantado ao vivo contra as APIs, 377 séries FRED conferidas uma a uma). Inflação e mercado de
   trabalho já foram construídos — ver os dois `CLAUDE.md` da tabela acima.
   **Falta**: as outras 6 áreas macro (só `bls.py` e `bea.py` existem como connectors), o resto do

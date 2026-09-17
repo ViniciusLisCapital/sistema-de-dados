@@ -11,11 +11,12 @@ description: >
 
 # Handover
 
-Writes `HANDOVER.md` at the repo root, overwriting whatever was there before. This is
+Writes `handovers/HANDOVER.md`, overwriting whatever was there before (create the
+folder first if it is missing — `mkdir -p handovers`). This is
 a working note for continuing a task, not documentation — it is untracked
 (`.gitignore`d) and disposable. Do not confuse this with the auto-memory system: memory
 holds durable facts that should survive indefinitely across many future sessions;
-`HANDOVER.md` holds this-task-in-progress context that stops being useful once the
+the handover holds this-task-in-progress context that stops being useful once the
 task is done, and gets overwritten by the next handover.
 
 ## Step 1 — Scope
@@ -61,7 +62,7 @@ Skip any section that's genuinely empty for this session — don't pad with "N/A
 - If something belongs in the auto-memory system (a durable fact about the user, a
   standing preference, project context that will matter beyond this task), name it in
   a short closing note ("→ also save to memory: ...") rather than relying on the
-  handover file alone — `HANDOVER.md` gets overwritten by the next handover and won't
+  handover file alone — `handovers/HANDOVER.md` gets overwritten by the next one and won't
   carry it forward.
 - If something belongs in `CLAUDE.md` (an architecture decision, a new pending item
   for the "Pendências" section), say so the same way rather than only writing it into
@@ -71,7 +72,7 @@ Skip any section that's genuinely empty for this session — don't pad with "N/A
 
 ## Step 4 — Write
 
-Whatever is currently at `HANDOVER.md` (if anything) is stale content from a past
+Whatever is currently at `handovers/HANDOVER.md` (if anything) is stale content from a past
 session and has zero value to this one — never `Read` it, and never check whether it
 exists first, both of which would just burn tokens on content that's about to be
 discarded anyway.
@@ -79,7 +80,8 @@ discarded anyway.
 **Do not use the Write tool for this file.** The Write tool refuses to overwrite an
 existing file unless it's been `Read` first, which would defeat the whole point.
 Instead, write it directly through the shell in one call, which has no such
-requirement — a Bash heredoc (`cat > HANDOVER.md <<'EOF' ... EOF`) on this platform,
+requirement — a Bash heredoc (`mkdir -p handovers && cat > handovers/HANDOVER.md <<'EOF' ... EOF`)
+on this platform,
 or the PowerShell equivalent if Bash isn't available. This blind-overwrites the file
 in a single shot with no read step at all.
 

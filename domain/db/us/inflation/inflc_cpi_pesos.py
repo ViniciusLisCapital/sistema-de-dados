@@ -79,7 +79,7 @@ de falhar em silencio.
 
 Ha ainda um peso MENSAL, para as 37 linhas da Tabela 1 do news release, que nao esta
 nesta tabela -- vem do HTML do release e nao da planilha. Ver
-us_project/inflation_hierarchy.md, secao 2.
+analytics/us/inflation/inflation_hierarchy.md, secao 2.
 
 --------------------------------------------------------------------------------
 DDL

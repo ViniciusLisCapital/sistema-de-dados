@@ -45,7 +45,7 @@ que é do CentralManagement.
 O que ela chama é **`.venv\Scripts\pythonw.exe jobs/atualizar_diario.py`**, um envelope fino em
 volta de `update_db.main(["--continuous"])` que só acrescenta log em arquivo, poda e código de saída
 — a lista de tabelas continua vindo de `no_release.continuous` no `calendar_2026.yaml`, e a
-regeração dos dashboards continua sendo a do próprio `update_db`. O `atualizar_diario.bat` ficou
+regeração dos dashboards continua sendo a do próprio `update_db`. O `jobs/atualizar_diario.bat` ficou
 como atalho de dois cliques (mesma lógica, com `python` em vez de `pythonw` para dar saída na tela);
 a tarefa **não** passa por ele.
 

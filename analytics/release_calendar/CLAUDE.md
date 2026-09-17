@@ -44,7 +44,7 @@ uv run python analytics/release_calendar/serve.py          # modo servido: o bot
 uv run python analytics/release_calendar/serve.py --port 9000 --no-browser
 ```
 
-Or double-click [`abrir_calendario.bat`](../../abrir_calendario.bat) in the repo root — same thing
+Or double-click [`jobs/abrir_calendario.bat`](../../jobs/abrir_calendario.bat) — same thing
 without the terminal, added because "do I have to type this every time?" is the obvious first
 reaction. **The served page must be reached at `127.0.0.1:8765`**; double-clicking
 `reports/release_calendar.html` yields file mode even while the server runs, since a `file://` page

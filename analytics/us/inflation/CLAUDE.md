@@ -9,7 +9,7 @@ uv run python -c "from analytics.us.inflation.generate_report import run; run()"
 ```
 
 **UI is in English**, unlike the Brazil reports. It is a US product read against US sources, and
-`us_project/`'s notes are already in English. Say the word if it should be Portuguese instead — it is
+the branch notes in this folder are already in English. Say the word if it should be Portuguese instead — it is
 a template-only change.
 
 ## What it is
@@ -243,7 +243,7 @@ What was actually wrong, so the same drift is recognisable next time:
   the three excluded `cu.item` entries are a method decision. *Limits* now holds four real ones: pre-2020
   weights, CPI-U only, SA 291 of 361, 19 discontinued series.
 - **Maintenance history mistaken for reader method.** The five-item label-mismatch story is one sentence here
-  now; the full account belongs in [`us_project/inflation_hierarchy.md`](../../../us_project/inflation_hierarchy.md)
+  now; the full account belongs in [`inflation_hierarchy.md`](inflation_hierarchy.md)
   §1c and in `inflc_cpi_dim`'s docstring.
 
 Every number in it was re-checked against the database in that pass: 340,907 rows, 392 dim rows = 355 + 37,
@@ -359,7 +359,7 @@ against the API**, so the 12 MB file is fetched only when the structure actually
 table 2.4.4U (price index, 2017=100) and `U20405-M` is 2.4.5U (nominal spending, US$ mn SAAR), both
 monthly from 1959-01.
 
-It started as xlsx-only, because `us_project/inflation_fontes_dados.md` had "Get the BEA key" as an open
+It started as xlsx-only, because [`fontes_dados.md`](fontes_dados.md) had "Get the BEA key" as an open
 item and the xlsx turned out not to need it. **But "not needed" is not the same as "better", and the
 first version of this note conflated them.** The key arrived on 2026-08-26, the two doors were measured
 against each other, and the load moved to the API for everything the API can serve —
@@ -570,8 +570,8 @@ never on what a click did.
 - **The monthly weight** (release column, 37 rows) isn't used — it would tighten the reconciliation but
   has to be harvested release by release. The blocker named here is gone: the release-date calendar
   now exists (`bls_cpi` in `calendar_2026.yaml`, dates back to 1948 via `FREDReleases.dates(10)`), so
-  what remains is the harvesting itself. See `us_project/inflation_hierarchy.md` §2.
-- **No expectations or PPI tabs.** `us_project/inflation_fontes_dados.md` has the rest of the branch
+  what remains is the harvesting itself. See [`inflation_hierarchy.md`](inflation_hierarchy.md) §2.
+- **No expectations or PPI tabs.** [`fontes_dados.md`](fontes_dados.md) has the rest of the branch
   mapped; the trimmed-mean/median cores (Dallas and Cleveland Fed) are on FRED and would be the cheapest
   next addition.
 - **PCE: only prices and the nominal spending they need.** The same workbook carries the *real*

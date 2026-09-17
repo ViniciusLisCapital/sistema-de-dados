@@ -6,7 +6,7 @@ do BLS que estao no banco: JOLTS (`mt_jolts`), CES (`mt_ces`, o payroll) e CPS
     uv run python -c "from analytics.us.labor_market.generate_report import run; run()"
 
 **UI em ingles**, como `analytics/us/inflation/` -- e um produto americano lido
-contra fontes americanas, e as notas de `us_project/` ja estao em ingles.
+contra fontes americanas, e as notas de fontes desta pasta ja estao em ingles.
 
 --------------------------------------------------------------------------------
 O QUE VAI NO PAYLOAD, E O QUE E DERIVADO NO NAVEGADOR

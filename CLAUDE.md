@@ -50,10 +50,17 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
                        o ETL e regeram dashboards. Na raiz porque monitora o sistema inteiro
   oraculo/           — Termômetro macro: notas 1–10 por variável (Brasil e EUA) → Power BI
   brasil/ · us/      — Um diretório por área, cada um = generate_report.py + report.html (+ um módulo
-                       por aba) + o seu próprio CLAUDE.md. Ver a tabela de relatórios abaixo
+                       por aba) + o seu próprio CLAUDE.md. Ver a tabela de relatórios abaixo.
+                       A área que teve levantamento de fontes guarda o `fontes_dados.md` dela aqui
+                       (3 no brasil/, 8 no us/ — o us/ tem as 8 porque foi levantado de uma vez,
+                       antes de construir; 6 dessas pastas ainda são só o levantamento)
                        ↳ padrões compartilhados e a regra de corte país/raiz: analytics/CLAUDE.md
+                       ↳ acesso por fonte, chaves de API e as 377 séries FRED conferidas: analytics/us/CLAUDE.md
 jobs/                — Entry points: update_db.py (macro_brasil), update_us.py, update_international.py,
-                       update_oraculo.py e atualizar_diario.py (o que a tarefa agendada chama)
+                       update_oraculo.py e atualizar_diario.py (o que a tarefa agendada chama).
+                       Os dois .bat de dois cliques moraram na raiz ate 2026-09-10 e vivem aqui:
+                       abrir_calendario.bat e atualizar_diario.bat (ambos sobem um nivel e rodam
+                       da raiz; a tarefa agendada nao passa por eles)
                        ↳ recortes, a tarefa agendada e as armadilhas dela: jobs/CLAUDE.md
 reports/             — Outputs gerados, não versionados, autocontidos e enviáveis. Espelha o país >
                        área de analytics/ (reports/brasil/, reports/us/) — sem isso o Inflation.html
@@ -63,7 +70,6 @@ repository/          — Base de conhecimento curada: bibliografia, mapas concei
 obsidian/            — Vault de conhecimento macro por área, para leitura humana. Deliberadamente
                        paralelo ao repository/, por instrução explícita do usuário ↳ obsidian/CLAUDE.md
 team_materials/      — Sínteses apresentáveis para discussão com o time
-us_project/          — Mapeamento de fontes das 8 áreas macro dos EUA (377 séries FRED conferidas)
 utils/               — Funções auxiliares compartilhadas
 tests/               — Testes pontuais (pytest + harness .js), cada um nascido de um bug específico —
                        não é suíte de cobertura
