@@ -531,6 +531,40 @@ subindo de 0,02 para 0,32.
 diferencial de inflação acumulado responde por 78% e sobram **64% de depreciação real** — os 41,5 pp
 que ficam no α. Ele deixa de ser significante; não deixa de existir.
 
+### Remedido em 2026-09-17: a leitura continua, os números não
+
+A tabela acima é de 2026-09-01, com **8 canais** e a fonte de CDS da época. O que está no ar hoje
+é `_CHANNELS_5` + AR(1), e a amostra mudou de janela: a troca da fonte do CDS levou o canal
+`fiscal` até 2001-10, então quem passa a limitar o começo é o `dxy_em` (2006-01) e o painel vai
+de **2008-01..2026-06 (n=222) para 2006-02..2026-06 (n=245)**, com o corte do ajuste fixado em
+2026-06 pelo `refit_from_latest_data()`.
+
+| | MSE walk-forward | R² | α (pp/mês) | α acum | PPP acum |
+|---|---|---|---|---|---|
+| sem offset | 6,9428 | 0,6507 | +0,197 (t=+1,12) | +48,2 | 0 |
+| **com β=1 (o que roda)** | **6,9520** | **0,6532** | **−0,043 (t=−0,25)** | **−10,6** | **+58,7** |
+
+A decisão segue de pé e ficou **mais barata**: o offset custa +0,13% de MSE fora da amostra (era
++0,66%), e os canais de novo quase não se mexem (dxy_em +31,4 → +30,9 pp acumulados, sp500
++30,5 → +30,6, icbr_usd −12,6 → −11,2). O λ continua **0,010**, e vale saber que ele é o
+**piso da grade**, sem empate: o MSE é monotônico crescente nos 25 pontos (6,9520 em 0,01 até
+15,57 em 1000), ou seja a CV pede a penalização mais fraca disponível — este Ridge é OLS com
+freio nominal.
+
+**Duas coisas do parágrafo acima não sobrevivem, e vale dizer quais.** A amostra começa dois anos
+antes, com o real mais fraco, então o movimento acumulado cai de +107,2 para **+84,8 pp de log**
+(2,33x) e o diferencial de inflação responde por **+58,7 pp (1,80x)** — o PPP passa a levar **69%
+da tendência**, não 54%, e sobram +26,1 pp (1,30x) de depreciação real. E a frase *"os 41,5 pp que
+ficam no α são a depreciação real"* deixa de valer: o α acumulado é **−10,6 pp**, então o
+resíduo real está espalhado pelas contribuições dos canais (dxy_em +30,9, sp500 +30,6, icbr_usd
+−11,2, AR(1) −10,0, fiscal −3,5, carry_vol −0,1), não no intercepto. Aquela identificação era
+coincidência da amostra que começava em 2008.
+
+**E os números antigos não voltam cortando a amostra em 2008-01.** Esse recorte do dado atual dá
+n=222 com R² 0,6665 e α +0,045 (t=+0,25), contra os 0,6614 e +0,199 (t=+1,12) registrados antes
+— a troca do CDS mudou os valores do canal `fiscal` também no período em comum, então aquela
+safra não é recuperável daqui. Ler a diferença como efeito de tamanho de amostra seria errado.
+
 Cinco coisas de implementação que valem para qualquer termo fixo futuro:
 
 - **Offset, não regressor.** `walk_forward_lambda()`/`fit_whole_sample()`/`rolling_fit()` ganharam
@@ -1293,6 +1327,20 @@ What's actually still here:
 - **`fx_attribution_model.py`** (+ `fx_attribution_model.md`, `generate_fx_attribution_pdf.py`, `fx_attribution_data/`) — turns qualitative FX commentary from asset-manager monthly letters into a numeric monthly time series across 9 fixed causal categories (`fiscal_br`, `monetary_br`, `politics_br`, `global_usd`, `commodities`, `risk_sentiment`, `china_em`, `trade_policy`, `capital_flows` — full taxonomy/extraction rules in `fx_attribution_model.md`). Sign convention: +1 = strongly BRL-appreciation-supportive, −1 = strongly depreciation-driving, scored on the claim's effect on BRL, never on the claim's own subject. Manual-extraction pilot, not an automated pipeline: each manager's `documents.csv`/`claims.csv`/`monthly.csv`/`fx_attribution.xlsx` under `fx_attribution_data/<manager>/` is hand-extracted from source letters (currently `kinea/`, `verde_asset/`, `kapitalo/`); the module itself only covers claims → monthly matrix → Excel export (`export_excel()`) and → dashboard payload (`build_manager_payload()`/`build_dashboard_payload()`). Framework is manager-agnostic by design — onboarding a new manager means hand-extracting its own `fx_attribution_data/<manager>/` folder, no code changes.
 - **`ridge_deviation_model.py`** (+ `generate_layman_model_doc.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. **Relative PPP re-entered the spec in 2026-09-01 with its coefficient pinned at 1** (see the section above) — it is an *offset*, not a regressor, and never appears in `delta_cols`. **The channel set was cut from eight to five the same day** (`_CHANNELS_5`): fiscal (CDS), the EM dollar index, a carry-to-volatility metric, S&P 500 and the USD commodity index. Out went DXY, real curve steepening and the BR-US real yield differential. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_layman_model_doc.py` generates `reports/brasil/ridge_model_explained.pdf`, a plain-English (no jargon, no equations) companion documenting the shipped channel spec, aimed at a non-technical internal audience. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
 
+- **`ridge_vs_random_walk.md`** — text only, nothing executes. The 2026-09-10 horse race between the
+  shipped Ridge spec and a random walk at h=3/6/9/12, out of sample (rolling 72m, λ re-picked inside
+  each fold, **realized** channels and inflation differential, AR(1) fed its own prediction). Answers
+  a question `referencia/equilibrium_model/ridge_window_horizon_grid.md` never asked: that note ran
+  the same folds and reported MSE/R² with **no benchmark**. Result: Ridge wins at all four horizons
+  (Theil U 0.58-0.60), significant by Clark-West (the right test — the driftless RW is *nested*, so DM
+  is undersized and disagrees at 12m: p=0.076 vs 0.015). Three things in it are load-bearing before
+  anyone quotes the number: the channels carrying the entire result (`fiscal`, `carry_vol`) are
+  themselves **less forecastable than the exchange rate**, so this measures the channel→FX mapping and
+  not forecasting ability; **the other three channels add nothing** out of sample on these 163 origins;
+  and the model's edge is undetectable in origins 2020-2022, when the BRL round-tripped. The harness
+  reproduces `ridge_results/forecast_error_bands_w72.json` to 2×10⁻⁵ pp, which is what establishes it
+  ran the shipped model rather than a lookalike.
+
 - **`real_rates_comparison.py`** (+ `real_rates_comparison_template.html`) — the one thing in this
   folder with an output of its own: `reports/brasil/real_rates_comparison.html`, a self-contained page
   (same `/*REPORT_DATA*/` + `render_report()` harness as `report.html`) comparing Brazil's ex-post real
@@ -1302,6 +1350,216 @@ What's actually still here:
   the FX report and not run by any job — generate it on demand:
   `uv run python -c "from analytics.brasil.exchange_rate.models.real_rates_comparison import run; run()"`.
   It is also the **only** consumer of `cmb_real_rates`, which is why that table isn't orphaned.
+
+## O relatório narrativo em PDF — `FX Outlook` (2026-09-10)
+
+`generate_fx_outlook_pdf.py` → `reports/brasil/FX Outlook.pdf` (17 páginas, 16 gráficos). Pedido direto do usuário:
+o `FX Report.html` mostra tudo e não conclui nada, e faltava o documento que **lê os mesmos dados,
+separa margem de nível, e termina em cenários com probabilidade**. Público não-técnico, em português,
+sem jargão. Cobre as quatro abas de dados (uma seção cada), o FX Attribution numa seção própria de
+mudança marginal, e o FX Model como base de três cenários a doze meses. Pula a aba Equilíbrio PPP.
+
+```
+uv run python -c "from analytics.brasil.exchange_rate.generate_fx_outlook_pdf import run; run()"
+uv run python tests/test_fx_outlook.py     # 8 checagens, ~3 min (o payload do modelo leva ~65 s)
+```
+
+Os dados vêm dos **carregadores do próprio dashboard** (`generate_report._load_*`), não de SQL
+próprio, para que o PDF não possa divergir dele — inclusive na inversão de sinal do BP, que é
+convenção de apresentação e não do banco. O toolkit de PDF (fontes DejaVu, paleta, `chart_box`,
+`results_table`) é copiado de `models/generate_fx_attribution_pdf.py`, seguindo a convenção de cada
+script de PDF ser autocontido.
+
+### `models/fx_forecast_sim.py` — a projeção do modelo, portada para Python
+
+O ajuste do FX Model vive em Python, mas **a projeção para frente só existia em JavaScript**, dentro
+do bloco de script de `report.html` (`channelDeltas` + `simulateForecast`). Rodar cenários num PDF
+exigia portar o laço. Ele não reestima nada: lê `alpha`, `beta`, `channel_stats`, `seed_level` e
+`seed_delta_fx_lag1` de `build_dashboard_payload()`, e o corte congelado em `model_fit_cutoff.json`
+continua congelado.
+
+**Como verificar um port assim, e a armadilha que quase passou por erro.** A checagem óbvia — rodar
+o JS contra o `RIDGE_DATA` do `FX Report.html` entregue — deu diferença de 0,0007 no terceiro mês, e
+isso *parecia* bug de port. Não era: o HTML tinha sido construído horas antes e o nowcast do S&P de
+set/2026 era **7.592,44** ali contra **7.600,05** no payload novo. Vintage de dado, não lógica.
+`tests/test_fx_outlook.py` roda o JS de verdade (via `node`) contra o **mesmo** payload que o Python
+recebe, e aí bate a 1e-9. A regra: ao validar um port, os dois lados têm de receber o mesmo dado, não
+só o mesmo código.
+
+**Duas armadilhas do original, ambas silenciosas:**
+
+- **O salto fantasma.** No JS, uma caixa não editada volta ao valor do corte do ajuste (jun/2026), e
+  não ao último dado conhecido. Como os três primeiros meses vêm preenchidos com o realizado, a
+  quarta caixa produz um degrau artificial — medido, **+3,7% de depreciação em out/2026**, idêntico
+  nos três cenários, ou seja invisível na comparação entre eles. `build_paths(anchor_last_real=True)`
+  ancora as caixas livres no último valor realizado. O teste exige as duas coisas: que o degrau
+  **exista** no default do JS (senão a correção virou código morto sem ninguém notar) e que **não
+  exista** no caminho corrigido.
+- **O horizonte não é o do modelo.** O modelo ancora em jun/2026 e anda 12 meses, terminando em
+  jun/2027. Doze meses a contar do último dado (set/2026) exigem **15 passos**: três consomem o
+  realizado, doze são cenário. `HORIZON_DEFAULT = 15`, e a banda de ±1σ publicada (h=1..12) é aplicada
+  a partir de set/2026, que é onde a projeção de fato começa (`error_band(offset=n_real)`).
+
+**E o modelo tem um resíduo contra o spot que precisa ser dito.** Alimentado com os canais já
+realizados, ele explica set/2026 como R$ 5,02 contra os R$ 5,10 negociados: **+1,54%**. Está dentro da
+margem de erro (2,7% em um mês) e não é significativo, mas se os cenários partirem do nível que o
+modelo explica em vez do que o mercado negocia, os três endpoints carregam 1,5% que não tem nada a ver
+com o cenário. `build_paths(rebase_to_spot=True)` reescala; `spot_residual()` continua reportando o
+resíduo, que é conteúdo e não ruído.
+
+### A calibragem dos cenários sai da própria série, e o condicionamento inverte a leitura
+
+As probabilidades (20/35/45 para otimista/neutro/pessimista) não foram escolhidas. A base é a
+frequência histórica das faixas de multiplicador do CDS em 12 meses, e **o achado é que condicionar
+pelo nível de partida vira a conta de cabeça para baixo**:
+
+| faixa em 12 meses | todas as 288 janelas | janelas partindo de nível baixo (n=73) |
+|---|---|---|
+| até 0,89x | 50,0% | 16,4% |
+| 0,89x a 1,33x | 24,7% | 31,5% |
+| 1,33x ou mais | **25,3%** | **52,1%** |
+
+O quartil inferior do nível de partida é 138 bps; hoje o CDS está em **112**, abaixo dele. Reforçando:
+nas seis eleições anteriores, medindo de setembro do ano eleitoral a setembro do seguinte, o CDS caiu
+em quatro — mas **as duas em que subiu (2010 ×1,74 e 2014 ×2,73) são as duas que partiram das bases
+mais baixas**, e a correlação de ordem entre nível de partida e multiplicador seguinte é **−0,77**.
+Com n=6 não é prova, e o documento diz isso. O ajuste de 52% para 45% é explícito no texto, com as
+duas razões (janelas sobrepostas; posição externa hoje mais sólida).
+
+**O sinal do S&P muda o desenho do cenário pessimista, e isso tem de ser quantificado.** No modelo,
+bolsa americana caindo 10% deixa o real **1,5% mais forte** (competição por capital). Um cenário de
+aversão a risco que derrube o S&P junto com o CDS **compensa parte do choque em vez de somar**: no
+pessimista, a queda de 12% do S&P subtrai **1,8 p.p.** de um total de +16,0 p.p. — sem esse efeito o
+cenário terminaria perto de R$ 6,09 em vez de R$ 5,98. Um cenário montado somando tudo na mesma
+direção superestima em ~1,8%.
+
+### O gráfico é o corpo da evidência (2026-09-10, segunda rodada)
+
+Revisão do usuário sobre a primeira versão, e as quatro frases valem como regra para qualquer PDF
+desta casa: *"os graficos ficaram pequenos. Os graficos são o corpo de evidencia do relatorio. Evite
+graficos duplos. Coloque graficos um pouco maiores. Não deixe grafico com legendas em cima das
+linhas."*
+
+- **Um `scale = min(1.0, ...)` só encolhe.** `chart_box()` reduzia a imagem para caber e nunca a
+  ampliava, então uma figura desenhada com folga saía impressa **menor do que a coluna comporta** —
+  o defeito não é de tamanho da figura, é do ajuste. Virou `min(max_width / nat_w, 1.25)`, com o
+  quadro passando de 470 para **481 pt**, que é a coluna inteira (A4 menos duas margens de 20 mm).
+  O teto de 1,25x mantém o raster acima de 160 dpi efetivos.
+- **Dois painéis numa figura custam mais do que uma página.** As quatro figuras de meia largura
+  viraram oito de largura inteira (REER · termos de troca; pauta · parceiro; ouro · swap; mix ·
+  divergência). O documento cresceu duas páginas e ganhou área de gráfico por página; e o problema
+  de título encostando lateralmente, documentado abaixo, **deixou de existir por não haver mais o
+  caso**. A assertion que segura isso é `len(fig.axes) == 1` para toda função `fig_*`.
+- **Legenda dentro do quadro cobre a série.** O fundo branco translúcido que existia antes só troca
+  "legenda ilegível" por "linha coberta". A saída é `fig.legend(..., bbox_to_anchor=(0.5, 0.0))` —
+  coordenadas de **figura**, ancorada abaixo de tudo o que existe no eixo, inclusive rótulo de mês
+  rotacionado, e por isso impossível de colidir. `bbox_inches="tight"` no savefig estende o recorte
+  para incluí-la, então nada é cortado. Os call sites continuam passando `loc=`, que a função
+  descarta.
+- **A ressalva é nota de rodapé, não caixa de alerta.** São cinco, todas em vermelho e no corpo do
+  texto: juntas competiam com o parágrafo que existem para qualificar. Regra fina, 7,4 pt, cor
+  apagada — o conteúdo intacto.
+
+**A verificação que faltava**: nenhuma das três regras tem sintoma quando quebra — um painel de meia
+largura continua gerando, e uma legenda em cima da série só some com o dado. `tests/test_fx_outlook.py`
+§5 percorre **todas** as funções `fig_*`, exige um eixo por figura, exige `ax.get_legend() is None`
+com `fig.legends` não vazio quando há série rotulada, e mede a **largura impressa** de cada imagem no
+PDF (`page.get_image_bbox`), com piso de 430 pt. Verificado contra os dois mutantes sintéticos: com
+`ax.legend()` no lugar, `ax.get_legend() is None` dá `False` e `fig.legends` dá vazio — as duas
+asserções separam.
+
+### O gráfico de reservas não dizia nada, e o achado estava na razão
+
+Do mesmo pedido: *"O Grafico de reversas, mostre o seu insight, uma coluna empilhada como a que está
+não fornece nada."* Estava certo, e o motivo é medível: a parcela em moeda estrangeira é **~83% do
+total** e esmaga as outras três, então a coluna empilhada era uma barra azul com uma tira colorida em
+cima, plana por quinze anos. O texto ao lado dela dizia o achado e o desenho não mostrava nada.
+
+O achado não está no nível, está na **razão** — e ele só aparece pondo as séries em múltiplo de uma
+mesma base (jan/2021 = 1x): reservas totais **1,0x**, ouro em dólar **6,1x**, volume de ouro em onças
+**2,6x**, este último subindo em degraus. O que a linha de volume sobe é compra; a distância dela para
+a linha de valor é preço. São exatamente as duas causas que o parágrafo separa, agora ditas pelo
+desenho. Regra transferível: **quando uma parcela domina o total, a pilha esconde o que mudou** — e a
+saída não é escala log nem eixo secundário, é trocar a pergunta de "quanto" para "quantas vezes".
+
+Custo de encanamento: o volume de ouro não está em carregador nenhum, só a série do pivot
+(`gr._pivot("macro_brasil", "cmb_reservas_bc")`, em **mil onças**), e a versão anterior guardava só os
+dois pontos do texto. A série inteira passou a ser guardada em `D["gold_vol"]`.
+
+### O cenário começa pelo caminho já andado
+
+Terceiro pedido: *"No caso dos cenários, comece com um pouco de contexto do historico recente, como
+pode ser decomposto o movimento do cambio desde dez/2024 e então jogue o cenário para frente."*
+
+A peça que faltava já existia no payload e não estava sendo usada: **`contrib_monthly`** é a
+contribuição *não acumulada* de cada balde, um número por mês, então somá-la sobre uma janela dá a
+contribuição daquela janela — exata, porque o balde `residual` fecha a identidade por construção.
+Somar a série **acumulada** no lugar arrastaria o acervo desde 2006 para dentro da conta de 2025.
+
+O que a janela dez/2024 → jun/2026 (18 meses, R$ 6,19 → R$ 5,18, −16,4%) devolve, em pontos de log:
+
+| força | contribuição |
+|---|---|
+| dólar global contra emergentes | **−10,1** |
+| não explicado pelas seis forças | **−7,0** |
+| risco Brasil (CDS) | −6,0 |
+| commodities · juro por volatilidade | −1,7 · −1,7 |
+| base do modelo (constante e inércia) | +1,6 |
+| diferença de inflação | +2,9 |
+| bolsa americana | +4,2 |
+| **total observado** | **−17,9** |
+
+Três coisas que a decomposição mudou no texto, e nenhuma delas é decoração:
+
+- **Ela dá o argumento dos cenários em vez de introduzi-los.** As duas forças que mais moveram o
+  preço na volta — dólar global e risco Brasil, 16,1 dos 17,9 pontos — são exatamente as duas que os
+  três cenários estressam. Antes isso era uma escolha declarada; agora é uma consequência medida.
+- **O resíduo de −7,0 pontos (39% do movimento) é o achado, e ele não estava dito em lugar nenhum.**
+  O real ficou mais forte do que os canais justificam, e o documento já mostrava, duas seções antes,
+  que a posição comprada em real está sendo desmontada. As duas páginas passaram a conversar.
+- **Somar as parcelas em módulo dá mais que o total, e isso tem de estar escrito.** Cinco forças
+  empurraram para baixo, duas para cima; o observado é a diferença. A primeira redação dizia "duas
+  forças explicam mais da metade" e logo abaixo "juntas, 90% do movimento" — as duas verdadeiras,
+  contra denominadores diferentes, e juntas ilegíveis. A frase só fecha dizendo as duas pontas.
+
+E uma contagem que passou errada na primeira geração: **a janela do modelo e a do movimento não são a
+mesma.** O ajuste termina em jun/26 (18 meses desde dez/24) e o dado vai até set/26 (21 meses). O
+texto usa as duas e diz qual é qual.
+
+### Duas armadilhas de renderização
+
+- **`$` abre mathtext no matplotlib.** `ax.set_ylabel("R$ por US$")` sai como **"RporUS"** — sem erro,
+  sem aviso, só com o texto comido entre os dois cifrões. `matplotlib.rcParams["text.parse_math"] =
+  False` resolve para o arquivo inteiro e é a única linha necessária quando não há equação nenhuma.
+- **Título e subtítulo de gráfico se sobrepõem.** `set_title(pad=10)` mais um subtítulo em
+  `transAxes` y=1.02 colidem; `pad=22` e y=1.012 separam. O caso pior, de dois painéis com títulos
+  longos encostando lateralmente, deixou de existir com o fim das figuras duplas.
+- **Rótulo de eixo X com duas linhas ainda colide na horizontal.** Sete categorias em 6,4 pol dão
+  ~0,9 pol por rótulo, e `"Dólar global\ncontra emergentes"` ao lado de `"Bolsa\namericana"` saía
+  como **"contra emergentesamericana"** — sem erro, e legível o suficiente para passar numa leitura
+  rápida. Não há folga a ganhar em fonte: encurte o rótulo (`"Dólar global\n(emergentes)"`). Vale
+  medir o caractere contra a largura da fatia antes de escrever o rótulo.
+
+### Acentuação: escreva com acento desde o começo
+
+O texto foi escrito sem acentos por hábito de código e reacentuado depois por script. Custou várias
+rodadas e **introduziu erros** que não existiam: as regras de bigrama que trocam `e` por `é` acertam a
+maioria e quebram frases como *"uma origem só **e** uma piora escondida"* ou *"perde muito **e** de uma
+vez"*, onde o `e` é conjunção. Só uma leitura do texto renderizado pega isso. Num documento em
+português destinado a leitor externo, escreva acentuado no fonte — o DejaVu tem cobertura Unicode
+completa e o `?` no terminal Windows é artefato de codepage, não corrupção.
+
+### O que o documento imprime como ressalva, e por quê
+
+Cinco, todas porque impedem o leitor de somar o que não soma: Comex Stat não reconcilia com o BP; o
+modelo corta em jun/26 enquanto os dados vão até set/26; o sinal do BP é invertido em relação ao
+banco; no FX Attribution a agregação é soma e zero pode ser silêncio; e a reserva em ouro subiu por
+preço **e** por volume (US$ 14,4 → 24,6 bi, +71%, com o volume indo de 4,168 a 5,544 milhões de onças,
++33% — o BCB comprou ouro, não só remarcou). O teste proíbe vocabulário de bastidor na página
+(`generate_report`, `build_dashboard_payload`, `MySQL`, `delta_fiscal`, `nowcast`, `channel_stats`).
+
+Desde 2026-09-10 elas são **nota de rodapé** e não caixa vermelha — ver a seção do corpo de evidência
+acima para o porquê.
 
 ## Pending / next steps
 

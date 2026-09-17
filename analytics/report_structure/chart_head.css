@@ -1,0 +1,29 @@
+/* ── Cabeçalho do gráfico: 3 linhas DENTRO do card, acima do plot ──
+   Um gráfico daqui sai da página como print e circula sozinho, longe do <h2> da
+   seção e das notas de metodologia. Ele tem que dizer, por conta própria, o quê,
+   em que métrica, em que unidade, de que fonte e de quando até quando.
+
+   Só o título e a fonte são texto fixo (CHART_META); o subtítulo e o período são
+   reescritos a cada render por describeChart() — um subtítulo escrito no HTML
+   começa certo e passa a mentir no primeiro clique de seletor, e é o print tirado
+   depois desse clique que vai circular.
+
+   Ver .claude/rules/lis-dashboards.md, "Every chart carries its own header". */
+.chart-head { padding: 14px 18px 2px; }
+.chart-head .chart-title {
+  font-family: var(--cond); font-size: 17px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--text); line-height: 1.2;
+}
+.chart-head .chart-sub {
+  font-size: 12px; color: var(--text2); margin-top: 3px; line-height: 1.4;
+}
+.chart-head .chart-src {
+  font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 5px;
+}
+.chart-head .chart-sub:empty, .chart-head .chart-src:empty { display: none; }
+/* Painel auxiliar (gráfico pequeno dentro de um card que já nomeia a variável):
+   o cabeçalho existe pelo mesmo motivo, mas em corpo menor. */
+.chart-head.compact { padding: 8px 12px 2px; }
+.chart-head.compact .chart-title { font-size: 14px; }
+.chart-head.compact .chart-sub { font-size: 11px; }
+.chart-head.compact .chart-src { font-size: 9.5px; }

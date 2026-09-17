@@ -65,12 +65,21 @@ jobs/                — Entry points: update_db.py (macro_brasil), update_us.py
 reports/             — Outputs gerados, não versionados, autocontidos e enviáveis. Espelha o país >
                        área de analytics/ (reports/brasil/, reports/us/) — sem isso o Inflation.html
                        do Brasil colidiria com o dos EUA. Nomes em Title Case com espaço
-repository/          — Base de conhecimento curada: bibliografia, mapas conceituais e o pipeline de
-                       ingestão de PDFs (`repository/ingestion/`) ↳ repository/CLAUDE.md
+repository/          — Base de conhecimento curada: fontes brutas por área, os mapas derivados delas
+                       (bibliografia, inventário de dados, mapa conceitual) em agent_mapping/, e o
+                       pipeline de ingestão de PDFs (`repository/ingestion/`) ↳ repository/CLAUDE.md
 obsidian/            — Vault de conhecimento macro por área, para leitura humana. Deliberadamente
                        paralelo ao repository/, por instrução explícita do usuário ↳ obsidian/CLAUDE.md
-team_materials/      — Sínteses apresentáveis para discussão com o time
-utils/               — Funções auxiliares compartilhadas
+team_materials/      — Só o que é MOSTRADO: PDFs, painéis HTML interativos, vídeos, diagramas e as
+                       introduções narrativas. Lista, inventário e mapa vivem no repository/, qualquer
+                       que seja a voz em que foram escritos — foi por essa regra que as 3 .md de base
+                       de câmbio saíram daqui em 2026-09-10. Material DE área aninha por área
+                       (<área>/agent_materials/); o que é do projeto inteiro fica em
+                       structure_materials/, no primeiro nível ↳ team_materials/CLAUDE.md
+utils/               — Funções auxiliares compartilhadas, mais o caminho curto entre uma tabela do
+                       MySQL e um gráfico durante a construção de um modelo (`explore.py` +
+                       `analise_template.py`, célula `#%%` no VS Code — não é relatório)
+                       ↳ utils/CLAUDE.md
 tests/               — Testes pontuais (pytest + harness .js), cada um nascido de um bug específico —
                        não é suíte de cobertura
 ```
@@ -87,12 +96,21 @@ Todas declarativas, cada uma respondendo uma pergunta, e é a combinação delas
 | QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 30 grupos de divulgação |
 | QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 86 tabelas |
 | QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 129 dependências |
-| QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 2 dashboards, 4 passos |
+| QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 1 dashboard, 3 passos |
 
 A quarta existe porque **um artefato calculado tem duas datas e só uma era observável**: quando foi
-escrito (mtime) e com que conjunto de informação. Dos 12 dashboards só dois têm passo a declarar —
-os outros dez leem o banco e calculam durante a geração, então a resposta honesta para eles é não
-ter bloco nenhum.
+escrito (mtime) e com que conjunto de informação. Dos 12 dashboards só um tem passo a declarar — os
+outros onze leem o banco e calculam durante a geração, então a resposta honesta para eles é não ter
+bloco nenhum.
+
+**E quanto menos passos, melhor: um passo é dívida, não recurso.** A inflação teve um até
+2026-09-11 e o que ele fazia era buscar no SGS uma cópia de `inflc_agregados`, tabela que o
+`update_db.py` já mantinha em dia. Um insumo que só o Regerar alcança é um insumo que o Atualizar
+não alcança, e o veredito que decide se aquele passo roda é mais uma coisa que pode estar errada —
+naquele caso estava, e o relatório publicou núcleo e difusão de um mês atrás com a tela verde. Antes
+de declarar um passo novo, a pergunta é se aquilo não deveria ser uma tabela: se a resposta for sim,
+o passo certo é não existir. Os três que restam são estimação de modelo, que é cálculo de verdade e
+não tem tabela que o substitua.
 
 O relatório de calendário tem duas abas que dividem o trabalho como a atualização acontece de
 verdade: **Divulgações** atualiza o dado que saiu, **Status dashboard** reconstrói o relatório que o
@@ -119,6 +137,7 @@ de mexer, e é lá que se escreve depois.
 | área | saída | pasta |
 |---|---|---|
 | Câmbio | `reports/brasil/FX Report.html` | [`analytics/brasil/exchange_rate/`](analytics/brasil/exchange_rate/CLAUDE.md) |
+| Câmbio — leitura narrativa | `reports/brasil/FX Outlook.pdf` | mesma pasta. É o **único relatório em PDF, e não em HTML**: lê os mesmos dados do dashboard, separa mudança marginal de nível estrutural e termina em três cenários com probabilidade |
 | Inflação | `reports/brasil/Inflation.html` | [`analytics/brasil/inflation/`](analytics/brasil/inflation/CLAUDE.md) |
 | Atividade | `reports/brasil/Economic Activity.html` | [`analytics/brasil/economic_activity/`](analytics/brasil/economic_activity/CLAUDE.md) |
 | Fiscal | `reports/brasil/Fiscal Policy.html` | [`analytics/brasil/fiscal_policy/`](analytics/brasil/fiscal_policy/CLAUDE.md) |
@@ -126,6 +145,7 @@ de mexer, e é lá que se escreve depois.
 | Mercado de trabalho | `reports/brasil/Labor Market.html` | [`analytics/brasil/labor_market/`](analytics/brasil/labor_market/CLAUDE.md) |
 | Política monetária | `reports/brasil/Monetary Policy.html` | [`analytics/brasil/monetary_policy/`](analytics/brasil/monetary_policy/CLAUDE.md) |
 | Expectativas (Focus) | `reports/brasil/Expectations.html` | [`analytics/brasil/expectations/`](analytics/brasil/expectations/CLAUDE.md) |
+| Modelo estrutural | `reports/brasil/Structural Model.html` | [`analytics/brasil/structural_model/`](analytics/brasil/structural_model/CLAUDE.md) — versão simplificada do modelo do BC, estimada equação por equação, com o câmbio do FX Report como equação cambial. Hoje só a aba de dados da curva de Phillips |
 | Inflação US | `reports/us/Inflation.html` | [`analytics/us/inflation/`](analytics/us/inflation/CLAUDE.md) |
 | Mercado de trabalho US | `reports/us/Labor Market.html` | [`analytics/us/labor_market/`](analytics/us/labor_market/CLAUDE.md) |
 | Calendário | `reports/release_calendar.html` | [`analytics/release_calendar/`](analytics/release_calendar/CLAUDE.md) |

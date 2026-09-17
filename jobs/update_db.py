@@ -57,7 +57,8 @@ logger = logging.getLogger("update_db")
 # IBGE
 from domain.db.brasil.ibge import (
     atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_renda_poupanca, atv_pim, atv_pim_uso,
-    atv_pmc, atv_pms, mt_pnad, mt_pnad_trimestral, inflc_decomposicao, inflc_dim,
+    atv_pmc, atv_pms, mt_pnad, mt_pnad_trimestral, inflc_decomposicao,
+    inflc_decomposicao_item, inflc_dim,
 )
 
 # BCB
@@ -109,6 +110,12 @@ _SCRIPTS = [
     ("IBGE · PNAD / Emprego",          mt_pnad,               {}),
     ("IBGE · PNAD Trimestral",         mt_pnad_trimestral,    {}),
     ("IBGE · IPCA Decomposicao",       inflc_decomposicao,    {}),
+    # Nivel de item (4 digitos), que alimenta Medias Aparadas e Dupla Ponderacao do
+    # relatorio de inflacao. Ficou fora da rotina ate 2026-09-11 -- o botao Atualizar do
+    # calendario o alcancava (ele resolve pelo registry, e a tabela esta declarada nos
+    # grupos do IPCA), mas a tarefa agendada nao, entao tres nucleos envelheciam sozinhos
+    # entre um clique e outro. Custa ~2s: 1224 registros por indice.
+    ("IBGE · IPCA Decomposicao Item",  inflc_decomposicao_item, {}),
     ("IBGE · IPCA Dimensao",           inflc_dim,             {}),
     # BCB
     ("BCB  · IBC-Br",                  atv_ibcbr,             {}),

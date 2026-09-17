@@ -35,7 +35,7 @@ concept → check `synthesis/` (is the condensation enough for the task?) → if
 
 ## History
 
-**2026-08 — `raw/` removed, three-tier model adopted.** Each topic previously also had a `raw/` folder holding full, unclean, per-source extractions (e.g. `capital_mobility_exchange_rates_regimes (R. A. Mundell, 1963).md` — the complete text of the paper, reformatted with markdown headers but not trimmed at all). That duplicated `repository/<topic>/raw_md/`'s role once the `raw_pdf/raw_md/clean_md` convention was applied there the same day (see [`repository/CLAUDE.md`](../repository/CLAUDE.md)). So `raw/` was removed from every topic and its contents moved to `repository/<topic>/raw_md/`:
+**2026-08 — `raw/` removed, three-tier model adopted.** Each topic previously also had a `raw/` folder holding full, unclean, per-source extractions (e.g. `capital_mobility_exchange_rates_regimes (Mundell, 1963).md` — the complete text of the paper, reformatted with markdown headers but not trimmed at all). That duplicated `repository/<topic>/raw_md/`'s role once the `raw_pdf/raw_md/clean_md` convention was applied there the same day (see [`repository/CLAUDE.md`](../repository/CLAUDE.md)). So `raw/` was removed from every topic and its contents moved to `repository/<topic>/raw_md/`:
 
 | Topic | Files moved | Notes |
 |---|---|---|

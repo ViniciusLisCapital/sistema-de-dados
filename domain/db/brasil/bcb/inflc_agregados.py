@@ -1,8 +1,9 @@
 """
 IPCA/IPCA-15 agregados: indices de precos e nucleos do BCB/SGS.
 
-Series SGS coletadas (33 series):
-  Headline   : ipca (433), ipca15 (7478), ipca_indice_difusao (21379)
+Series SGS coletadas (34 series):
+  Headline   : ipca (433), ipca15 (7478), ipca_12m (13522),
+               ipca_indice_difusao (21379)
   Componentes: administrado, livres, industriais, alimentacao, servicos,
                bens_nao_duraveis, bens_semi_duraveis, bens_duraveis,
                comercializaveis, nao_comercializaveis
@@ -37,6 +38,7 @@ _SERIES = {
     # Headline e gerais
     "ipca":                                433,
     "ipca15":                             7478,
+    "ipca_12m":                          13522,
     "ipca_indice_difusao":               21379,
     # Componentes por tipo de bem/servico
     "ipca_administrado":                  4449,

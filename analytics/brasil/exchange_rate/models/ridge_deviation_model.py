@@ -117,14 +117,26 @@ on the accumulated inflation differential gives beta 1.74/2.79/2.19/1.92/
 (Newey-West t 2.25..3.39) and NONE distinguishable from 1 (t 0.95..1.75),
 with R2 rising from 0.02 to 0.32.
 
-What changed in the shipped numbers (8 channels + AR(1), n=222, 2008-01 to
-2026-06): OOS MSE 6.9675 -> 7.0132, +0.66% with a block-bootstrap CI of
-[-3.2, +4.8] -- free. R2 essentially unchanged (0.6772 -> 0.6769). And the
-thing it was done for: of the sample's +107.2 pp of accumulated log move,
-alpha's share falls from +96.8 to +41.5 pp while PPP takes +57.7, and alpha
-stops being a statistically real drift -- +0.435 pp/month at t=+2.48 before,
-+0.187 pp/month at t=+1.06 after. The channels move barely at all (dxy_em
-+8.8 -> +8.9 pp, sp500 +6.0 -> +6.3, icbr_usd +5.8 -> +5.4).
+What changed in the shipped numbers, as measured the day this was decided
+(2026-09-01, 8 channels + AR(1), n=222, 2008-01 to 2026-06, and the CDS
+vintage of the time): OOS MSE 6.9675 -> 7.0132, +0.66% with a block-
+bootstrap CI of [-3.2, +4.8] -- free. R2 essentially unchanged (0.6772 ->
+0.6769). And the thing it was done for: of the sample's +107.2 pp of
+accumulated log move, alpha's share falls from +96.8 to +41.5 pp while PPP
+takes +57.7, and alpha stops being a statistically real drift -- +0.435
+pp/month at t=+2.48 before, +0.187 pp/month at t=+1.06 after. The channels
+move barely at all (dxy_em +8.8 -> +8.9 pp, sp500 +6.0 -> +6.3, icbr_usd
++5.8 -> +5.4).
+
+Re-measured 2026-09-17 on what actually ships now (_CHANNELS_5 + AR(1),
+n=245, 2006-02 to 2026-06): the reading holds and the price got smaller.
+OOS MSE 6.9428 -> 6.9520, +0.13%; R2 0.6507 -> 0.6532; of the sample's
++84.8 pp of accumulated log move, alpha's share falls from +48.2 pp to
+-10.6 pp while PPP takes +58.7, and alpha goes from +0.197 pp/month at
+t=+1.12 to -0.043 pp/month at t=-0.25. The channels again barely move
+(dxy_em +31.4 -> +30.9 pp cumulative, sp500 +30.5 -> +30.6, icbr_usd
+-12.6 -> -11.2), so what the offset reallocates is still the TREND and not
+the channel story.
 
 Implementation shape, since it is unusual for this module: delta_ppp is an
 OFFSET, never a member of delta_cols. walk_forward_lambda()/
@@ -362,15 +374,37 @@ _CHANNELS_SHRUNK_EM_REAL_SP500_RY_ICBR_NOSTEEP = [
 # With curve_steep_real, that channel's own coefficient CROSSES ZERO across the
 # 151 rolling windows (-0.47 to +1.21) -- a channel that changes sign explains
 # nothing, it only fits. With carry_vol, all six coefficients hold their sign in
-# every window, and R2 is marginally higher (0.6614 vs 0.6607). Secondary
+# every window, and R2 is marginally higher (0.6614 vs 0.6607) -- an A/B on
+# the data vintage of that day, NOT the R2 the shipped spec reads now (see
+# the re-measurement below). Secondary
 # benefit: curve_steep_real and real_yield_diff are the two channels sourced
 # from `base_mercado.interest_rates`, the external CentralManagement schema, so
 # dropping both leaves the model's channels entirely on tables this project
 # owns (plus FRED).
 #
-# What the shipped spec then reads (n=222, 2008-01..2026-06): lambda 0.010,
-# R2 0.6614, alpha +0.199 pp/month at t=+1.12 (not distinguishable from zero,
-# which is the point of the PPP offset -- see the module docstring).
+# What the shipped spec reads, re-measured 2026-09-17 against the live DB
+# (n=245, 2006-02..2026-06, fit cutoff pinned at 2026-06 -- see
+# refit_from_latest_data()): lambda 0.010, R2 0.6532, alpha -0.0431 pp/month
+# at t=-0.25 (not distinguishable from zero, which is the point of the PPP
+# offset -- see the module docstring). Betas: fiscal +8.24, dxy_em +1.87,
+# carry_vol -0.52, sp500 +0.76, icbr_usd -0.56, AR(1) -0.13, delta_ppp
+# pinned at 1.
+#
+# Two things about that lambda worth writing down rather than re-deriving:
+# it lands on the FLOOR of _LAMBDA_GRID, and it is not a near-tie -- the
+# walk-forward OOS MSE is monotone increasing across all 25 grid points
+# (6.9520 at lambda=0.01 up to 15.57 at lambda=1000), i.e. the CV is asking
+# for the weakest penalty available, so this Ridge is OLS with a nominal
+# brake. Widening the grid downward would only make that more literal.
+#
+# And the SAMPLE START moved, 2008-01 -> 2006-02: the CDS source behind
+# `fiscal` was swapped and now reaches back to 2001-10, so dxy_em (from
+# 2006-01) binds the start instead. The numbers this comment carried before
+# (n=222, R2 0.6614, alpha +0.199 at t=+1.12) do NOT come back by cutting
+# the current data at 2008-01 -- that subsample gives n=222, R2 0.6665,
+# alpha +0.045 at t=+0.25. The swap changed the fiscal channel's own values
+# over the overlap too, so that vintage isn't recoverable from here; don't
+# read the gap as a sample-length effect.
 _CHANNELS_5 = ["fiscal", "dxy_em", "carry_vol", "sp500", "icbr_usd"]
 
 # Channels whose month-over-month change is a LOG-RETURN (100*diff(log(.))),
@@ -595,6 +629,10 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
                          i.e. an offset, not a regressor. Takes +57.7 pp
                          of the trend off alpha (+96.8 -> +41.5) at a cost
                          of +0.66% walk-forward OOS MSE, CI [-3.2, +4.8].
+                         Re-measured 2026-09-17 on the spec that ships
+                         (_CHANNELS_5 + AR(1), n=245, 2006-02..2026-06):
+                         +58.7 pp off alpha (+48.2 -> -10.6) for +0.13%
+                         OOS MSE.
 
     Why 1 is the right number even though the monthly fit can't see it:
     regressing the h-month log change of PTAX on the h-month inflation
@@ -610,13 +648,29 @@ def build_plain_regression_sample(df: pd.DataFrame | None = None,
     with it, +0.187 pp/month, t=+1.06 -- not distinguishable from zero.
     The channels barely move (dxy_em +8.8 -> +8.9 pp cumulative, sp500
     +6.0 -> +6.3, icbr_usd +5.8 -> +5.4), so this reallocates the TREND,
-    not the channel story.
+    not the channel story. Same three readings re-measured 2026-09-17 on
+    the shipped spec (n=245, 2006-02..2026-06): +0.197 pp/month at t=+1.12
+    without, -0.043 pp/month at t=-0.25 with, and dxy_em +31.4 -> +30.9 pp,
+    sp500 +30.5 -> +30.6, icbr_usd -12.6 -> -11.2.
 
     Honest limit: PPP takes 54% of the trend, not all of it. Over the
     sample PTAX moved +107.9 pp of log (2.94x) against +57.5 pp (1.78x)
     of accumulated inflation differential, leaving +50.3 pp (1.65x) of
     REAL depreciation. The 41.5 pp alpha keeps is that; it stops being
     significant, it does not stop being there.
+
+    That share is a property of the SAMPLE, so it moves when the sample
+    does. On the current one (2026-09-17, n=245, 2006-02..2026-06, which
+    starts two years earlier and therefore from a weaker BRL) PTAX moved
+    +84.8 pp of log (2.33x) against +58.7 pp (1.80x) of accumulated
+    differential, so PPP now takes 69% and the REAL depreciation left over
+    is +26.1 pp (1.30x). What does NOT survive the re-measurement is the
+    last sentence's identification: alpha is -10.6 pp cumulative here, so
+    the residual real depreciation no longer sits in alpha -- it is spread
+    across the channels' own cumulative contributions (dxy_em +30.9,
+    sp500 +30.6, icbr_usd -11.2, AR(1) -10.0, fiscal -3.5, carry_vol -0.1).
+    Read "alpha keeps the real depreciation" as a coincidence of the
+    2008-start sample, not as a property of the spec.
 
     Mutually exclusive with include_ppp -- the same column can't be both
     a free regressor and a pinned offset."""

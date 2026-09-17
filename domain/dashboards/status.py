@@ -867,7 +867,7 @@ def validar(doc: dict | None = None) -> list[str]:
             continue
         # `csv` entra junto de `artifact`: o que separa os dois no manifesto e COMO a data sai
         # do arquivo (coluna declarada vs. rotulo de indice/`json_date`), nao quem o escreve --
-        # o `fetch_bcb.py` grava um dep `csv`. Cobrar so `artifact` aqui rejeitaria um `writes`
+        # um passo pode gravar um dep `csv`. Cobrar so `artifact` aqui rejeitaria um `writes`
         # correto.
         refs_art = {dep["ref"] for dep in d["deps"]
                     if dep["kind"] in ("artifact", "csv")}

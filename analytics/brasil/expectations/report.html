@@ -9,6 +9,8 @@
   <style>
     /*THEME_CSS*/
 
+    /*CHART_HEAD_CSS*/
+
     /* ── Header ── */
     header {
       background: var(--card-bg);
@@ -842,6 +844,42 @@ var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true}
 
 /*Y_AUTOFIT_JS*/
 
+/*CHART_HEAD_JS*/
+
+// -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
+// O subtitulo e o periodo sao reescritos a cada render por describeChart(), chamado de
+// dentro dos DOIS pontos de entrada de grafico deste relatorio -- e o que faz um grafico
+// novo nascer com cabecalho em vez de depender de quem o escreve lembrar.
+// A fonte e uma so: tudo nesta pagina vem da mesma pesquisa.
+var SRC_FOCUS = 'BCB — Sistema de Expectativas de Mercado (Focus)';
+var CHART_META = {
+  'chart-bol-serie':  {title: 'Boletim Focus — Consenso do Ano de Referência', source: SRC_FOCUS},
+  'chart-bol-mov':    {title: 'O Que se Moveu nas Últimas 4 Semanas', source: SRC_FOCUS},
+  'chart-rev':        {title: 'Revisão — Como o Consenso sobre um Período se Moveu', source: SRC_FOCUS},
+  'chart-rev-ritmo':  {title: 'Ritmo da Revisão — Variação em 4 Semanas', source: SRC_FOCUS},
+  'chart-cop-curva':  {title: 'Curva de Selic Implícita no Consenso', source: SRC_FOCUS},
+  'chart-cop-hz':     {title: 'Selic Esperada por Reunião à Frente', source: SRC_FOCUS},
+  'chart-cop-heat':   {title: 'Mapa da Curva — Horizonte × Data de Pesquisa', source: SRC_FOCUS},
+  'chart-mov':        {title: 'Horizonte Móvel — 12 e 24 Meses à Frente', source: SRC_FOCUS},
+  'chart-mov-slope':  {title: 'Inclinação do Horizonte Móvel — 24 Meses Menos 12 Meses', source: SRC_FOCUS},
+  'chart-tra':        {title: 'Trajetória Esperada — a Curva à Frente', source: SRC_FOCUS},
+  'chart-tra-desl':   {title: 'Deslocamento da Trajetória entre Duas Pesquisas', source: SRC_FOCUS},
+  'chart-dis':        {title: 'Dispersão — Quanto o Mercado Discorda', source: SRC_FOCUS},
+  'chart-dis-n':      {title: 'Tamanho do Painel — Instituições Respondentes', source: SRC_FOCUS},
+  'chart-bas':        {title: 'Base 0 × Base 1 — Consenso Amplo contra Consenso Fresco', source: SRC_FOCUS},
+  'chart-bas-gap':    {title: 'Gap entre as Duas Bases e o Tamanho de Cada Painel', source: SRC_FOCUS},
+};
+// A unidade do subtitulo e o proprio titulo do eixo Y do layout que acabou de ser
+// aplicado: ler dali, e nao de uma string repetida no call site, e o que impede as duas
+// de divergirem quando um seletor troca a unidade.
+function _descDoLayout(divId, traces, layout, opts) {
+  var u = layout && layout.yaxis && layout.yaxis.title && layout.yaxis.title.text;
+  describeChart(divId, traces, (opts && opts.bits) || [], u || '',
+                {titulo: opts && opts.titulo, freq: (opts && opts.freq) || 'dia',
+                 periodo: opts && opts.periodo});
+}
+
+
 // ── Helpers de valor e data ───────────────────────────────────────────────────
 function fmt(v, d) {
   if (v == null || isNaN(v)) return '—';
@@ -1149,13 +1187,17 @@ function _reactPreserveX(divId, traces, layout, config) {
   if (prev) Plotly.relayout(divId, {'xaxis.range': prev});
   _periodSelectorDates[divId] = _traceAllDates(traces);
   _ensurePeriodSelector(divId, _periodSelectorDates[divId]);
+  _descDoLayout(divId, traces, layout);
   return p;
 }
 // Ponto de entrada dos gráficos cujo X NÃO é data. Sem tracking e sem barra de período
 // (ambos falam em mês/ano), mas com o y-autofit, que trata eixo de categoria.
-function _reactPlain(divId, traces, layout, config) {
+function _reactPlain(divId, traces, layout, config, desc) {
   var p = Plotly.react(divId, traces, layout, config || _PLOTLY_CONFIG);
   _bindYAutofit(divId);
+  // X nao e data aqui: derivar a janela das abscissas imprimiria uma faixa de categorias
+  // na linha da fonte. Quem chama diz o periodo, ou ele simplesmente nao sai.
+  _descDoLayout(divId, traces, layout, Object.assign({periodo: ''}, desc || {}));
   return p;
 }
 // Um mesmo div pode alternar entre eixo de data e eixo de categoria (aba Revisão). Ao

@@ -1414,6 +1414,67 @@ tree, but the pruning rules are identical.
   names because its host is a table with no legend — the rule is "don't say it twice", not "always
   list them".
 
+### Terceiro round: a regra estava promovida e cinco relatorios nunca a tinham (2026-09-14)
+
+Pedido do usuario, com um print do cabecalho do `labor_market` como referencia: *"coloque a
+descricao dos dados dos graficos nos dashboards que ainda estao faltando... de certo eu sei
+que o dash de politica monetaria, credito, fiscal, inflacao nao possuem"*. Ele estava certo
+nos quatro, e a varredura achou mais.
+
+**O achado que vale como regra e de processo, nao de UI.** A regra foi promovida em
+2026-08-27 com uma lista de "quem falta migrar" escrita **de memoria** -- exatamente a falha
+que a setima face desta secao ja tinha documentado, e que aconteceu de novo, maior. O
+levantamento por varredura:
+
+| relatorio | cobertura antes | |
+|---|---|---|
+| `monetary_policy` | 0 de 7 | nenhum cabecalho |
+| `credit` | 1 de 11 | so o Fluxo Financeiro, com markup proprio |
+| `fiscal_policy` | 0 de 19 | 10 estaticos + 9 secoes de fator montadas em runtime |
+| `inflation` | 0 de 14 | |
+| `us/inflation` | 0 de 3 | nunca entrou na lista: ela foi escrita olhando o Brasil |
+| `expectations` | 1 de 15 | o usuario achava coberto -- o Boletim esta, os outros 14 nao |
+| `exchange_rate` | 7 de 18 | as abas de dados sim, as tres de modelo nao |
+| `labor_market`, `us/labor_market` | completos | mecanica propria, anterior |
+
+O corretivo e **um arquivo compartilhado, nao a nona copia da mesma funcao**:
+`analytics/report_structure/chart_head.{css,js}`, inlinado pelos marcadores
+`/*CHART_HEAD_CSS*/` e `/*CHART_HEAD_JS*/` -- mesma convencao do `theme.css` e do
+`y_autofit.js`. O contrato de `describeChart()` e o que cada relatorio continua declarando
+estao em [`analytics/report_structure/CLAUDE.md`](../../analytics/report_structure/CLAUDE.md).
+
+Cinco coisas que a migracao dos sete relatorios ensinou, todas reutilizaveis:
+
+- **Chame do PONTO DE ENTRADA do grafico, nao de cada call site.** Onde o relatorio ja tem
+  um (`_reactPreserveX` no de expectativas, `renderLineChart`/`renderRelativeBarWithLine` no
+  fiscal, `plotlyRenderAndBind` no cambial), uma linha la cobre os 15 graficos **e** o
+  decimo sexto, que ainda nao existe. Onde nao tem, o cabecalho passa a depender da memoria
+  de quem escrever o proximo -- que e precisamente o que falhou aqui.
+- **A unidade e o proprio `yTitle` que o renderer recebeu**, passado adiante, nunca uma
+  string reescrita no call site. Foi assim que o eixo da inadimplencia dizia so `%` e o do
+  hiato so `% do produto potencial`: nada na pagina os contradizia. Com o subtitulo
+  imprimindo a MESMA string, escrever a definicao no eixo passou a se pagar em dois lugares.
+- **A janela impressa segue o SELETOR, nao so o dado.** No impulso de credito em modo anual
+  a linha dizia "dez/2015 a dez/2025" -- um mes que aquele grafico nao mostra. `freq` existe
+  por isso, e o mutante que a remove so e pego por uma assercao que **clica** na pill de
+  frequencia.
+- **Um grafico cujo X nao e tempo precisa de `periodo` pronto.** Derivar a janela das
+  abscissas de uma dispersao imprime "0,12 a 8,4" na linha da fonte, lido como periodo. Os
+  dois casos aqui (inercia x peso, momentum x nivel) passaram a dizer a janela de estimacao
+  e o mes da leitura.
+- **Um card que ja traz `.chart-head` no markup e reaproveitado, nao ganha um segundo.** E o
+  que deixa o grafico do Boletim manter o botao de definicao no titulo enquanto todo o resto
+  do arquivo passa pelo caminho compartilhado.
+
+E o guarda que impede a terceira repeticao: `tests/test_chart_head_js.js` **varre
+`analytics/**/report.html`** e reprova um relatorio que plota e nao tem cabecalho. A lista de
+quem falta deixou de ser escrita a mao.
+
+Efeito colateral medido, e que ja era pendencia declarada: as tres reguas de tempo de
+`analytics/us/inflation/report.html` estavam **acima** do grafico (a "setima face" desta
+secao). Foram para baixo na mesma passagem, porque e o que poe o cabecalho colado no plot
+que ele descreve.
+
 One case the original didn't cover: a chart whose X axis **isn't** time (here the four Momentum × Nível
 scatters) still gets the header, but its "when" is a single date and its unit is *two* units. The date
 goes in the subtitle (`Um ponto por categoria na leitura de Jun/2026`) and both axes are named there

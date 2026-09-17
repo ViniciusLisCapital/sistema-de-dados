@@ -9,6 +9,7 @@ Build-time-only building blocks for the `/*REPORT_DATA*/`-template reports (`exc
 | `builder.py` | `render_report(template_path, data, output_path, extra_markers=None)` — reads the template, JSON-serializes `data`, substitutes markers, writes the output, returns the resolved `Path` | — |
 | `theme.css` | The shared LIS brand `:root` palette + universal reset/body rules (`--lis-azul`, `--lis-dourado`, etc. — see `project_lis_brand_colors` memory for the canonical hex values) | `/*THEME_CSS*/` |
 | `y_autofit.js` | `_bindYAutofit()`/`_toComparableX()` — the Plotly rangeselector Y-refit helper described in `.claude/rules/lis-dashboards.md`'s "Plotly setup" section | `/*Y_AUTOFIT_JS*/` |
+| `chart_head.css` / `chart_head.js` | The 3-line header every chart carries inside its own card — `describeChart(divId, traces, bits, unit, opts)`, `_ensureChartFrame()`, `fmtPeriodo()`. Added 2026-09-14, when a repo-wide sweep found five reports with no chart header at all | `/*CHART_HEAD_CSS*/`, `/*CHART_HEAD_JS*/` |
 | `tree_helpers.py` | `leaf()`/`group()`/`direct()` — the node builders every hierarchical-table tab uses to assemble its `{key, label, seriesKey, children}` tree. **Not a marker: a plain runtime import**, unlike the other three files here | — (imported, not substituted) |
 
 `render_report()` always substitutes `/*REPORT_DATA*/`; it only touches `/*THEME_CSS*/`/`/*Y_AUTOFIT_JS*/` if the template actually contains those markers, so a report can adopt one piece without adopting all of them.
@@ -60,6 +61,36 @@ def run(output: str = "reports/xxx.html") -> None:
 - **`monetary_policy/`** — the old `report.html` (BCB-model replication) was deleted in 2026-08 without ever being migrated. The **new** one, scaffolded 2026-08-21, was built directly onto both markers plus `render_report()` — same as `economic_activity/`/`fiscal_policy/`, no migration step.
 - **`economic_activity/`** — built directly onto both markers from day one (2026-08), the first report to start here rather than migrate here — no separate migration step was ever needed.
 - **`fiscal_policy/`** — same as `economic_activity/`: built directly onto both markers from day one (2026-08), no migration needed.
+
+## `chart_head.js` — what each report still owns
+
+The shared file carries the *mechanism*; the report keeps the two things that are its own:
+
+- **`CHART_META = {divId: {title, source}}`**, declared by the report. The shared file
+  deliberately does not declare it, so the two can be inlined in any order without one
+  overwriting the other (`_chMeta()` reads it through a `typeof` guard).
+- **The call**, from inside the same function that redraws the chart, with the traces it
+  just plotted and the **same string it gave the Y axis** as `unit`. Passing the unit
+  rather than reading it back is what keeps axis and subtitle from drifting; passing a
+  second copy of the string at the call site is what would let them drift, so each report
+  routes the call through a one-line local wrapper that takes `yTitle` from the renderer.
+
+`opts` covers what varies: `titulo` (a chart whose metric is a selector must derive its
+title too — a fixed one starts lying on the first click), `fonte`, `freq`
+(`mes`/`tri`/`ano`/`dia` — a quarterly axis labelled by month announces a month the chart
+does not show), `compact` (a small panel inside a card that already names the variable),
+`fmt` (a report in English passes its own month names) and `periodo` (a chart whose X is
+**not** time: deriving the window from the abscissas would print a range of *values* on
+the source line, read as if it were a period).
+
+**A card whose markup already carries a `.chart-head` is reused, not given a second one** —
+that is how `expectations`'s Boletim chart keeps the definition button on its title while
+every other chart in the file goes through the shared path.
+
+Coverage is enforced by `tests/test_chart_head_js.js`, which executes this file against a
+fake DOM **and sweeps `analytics/**/report.html`** for a report that plots but has no
+header. The sweep exists because the first time this rule was promoted the migration list
+was written from memory and missed five reports — see `.claude/rules/lis-dashboards.md`.
 
 ## Why build-time, not a runtime shared module
 

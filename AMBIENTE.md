@@ -218,8 +218,8 @@ uv add nome-do-pacote
 # Adicionar com versão mínima
 uv add "pandas>=2.0"
 
-# Adicionar uma dependência de desenvolvimento (grupo "dev": ipython, ipdb...)
-uv add --optional dev nome-do-pacote
+# Adicionar uma dependência de desenvolvimento (grupo "dev": ipython, ipykernel, plotly...)
+uv add --group dev nome-do-pacote
 
 # Remover um pacote
 uv remove nome-do-pacote
@@ -230,6 +230,13 @@ uv sync
 
 > Sempre que você der `git pull` e o `pyproject.toml`/`uv.lock` tiverem mudado,
 > rode `uv sync` para alinhar seu `.venv`.
+
+> **Por que `--group` e não `--extra`.** O grupo `dev` vive em
+> `[dependency-groups]` (PEP 735), e o `uv sync` **sem flag nenhuma** já o
+> instala — é preciso `--no-dev` para pular. Enquanto ele morava em
+> `[project.optional-dependencies]`, o `uv sync` que esta página documenta
+> **desinstalava** o `ipykernel` e o `plotly` em silêncio, e as células `#%%`
+> paravam de rodar sem erro nenhum. Migrado em 2026-09-16.
 
 ---
 

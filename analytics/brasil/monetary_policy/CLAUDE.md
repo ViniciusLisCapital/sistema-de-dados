@@ -587,6 +587,22 @@ comunicação, a armadilha do nome do cenário) e
 [`relatorio_politica_monetaria.md`](../../../domain/db/brasil/bcb/relatorio_politica_monetaria.md)
 (3 formatos de tabela, 5 armadilhas silenciosas do PDF, a grade 2×2 de cenários de 2016-2020).
 
+## Cabecalho de cada grafico (2026-09-14)
+
+Os 6 principais mais os paineis por input graficos desta pasta passaram a carregar, dentro do proprio card e acima do plot, as
+tres linhas do padrao: titulo, subtitulo derivado e `Fonte: … · <periodo>`. So o titulo e a
+fonte sao texto fixo (`CHART_META` no `report.html`); subtitulo e periodo sao reescritos a
+cada render. A mecanica e compartilhada -- `/*CHART_HEAD_CSS*/` e `/*CHART_HEAD_JS*/`, de
+`analytics/report_structure/chart_head.{css,js}` --, entao o que mora aqui e so o
+`CHART_META` e a chamada de `describeChart()`, feita de dentro de `mtDesenhar()`, `mtGrafInput()` e dos dois renders da aba Projecoes.
+
+Nas duas abas em que uma pill troca o que a linha E -- escala da aba Projecoes, eixo do
+backtest -- o **titulo tambem e derivado**: ali o unico texto fixo e a fonte. Os paineis
+de input usam a variante `compact`.
+
+Coberto por `tests/test_chart_head_js.js`; o porque e o levantamento de quem faltava
+estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own header".
+
 ## Pending
 - **Antecipar a projeção — o que falta testar.** O delta da Focus ganha do ingênuo (MAE 0,082 contra
   0,106) com repasse 1:1 e sem ajuste nenhum. Três coisas por ordem de retorno: (a) a Focus de

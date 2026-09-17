@@ -419,21 +419,27 @@ ok(linhas[0].valores.join('|') !== ultFl.map((d) => fmt(mFl[d])).join('|'),
 // ==============================================================================
 secao('6. Cabecalho do grafico -- muda junto e imprime a janela plotada');
 
+// O cabecalho nao e mais markup proprio desta aba: desde que os 11 graficos passaram a
+// ter um, ele e construido por describeChart() dentro do .chart-card do grafico. Ler as
+// tres linhas de la e o que mantem a assercao apontando para o que o leitor ve -- ler os
+// ids antigos passaria a testar markup que nao existe mais.
 function head() {
-  return {
-    titulo: doc.getElementById('imp-fluxo-h-titulo').textContent,
-    sub: doc.getElementById('imp-fluxo-h-sub').textContent,
-    fonte: doc.getElementById('imp-fluxo-h-fonte').textContent,
+  const card = doc.getElementById('chart-imp-fluxo')._closest;
+  const h = card.children.find((c) => c.classList.contains('chart-head'));
+  const txt = (cls) => {
+    const el = h && h.children.find((c) => c.classList.contains(cls));
+    return el ? el.textContent : '';
   };
+  return {titulo: txt('chart-title'), sub: txt('chart-sub'), fonte: txt('chart-src')};
 }
 const hImp = head();
 ok(/Impulso de Crédito/.test(hImp.titulo), 'titulo nomeia a medida corrente', hImp.titulo);
 ok(/p\.p\. do PIB/.test(hImp.sub), 'subtitulo traz a unidade corrente', hImp.sub);
-ok(/Fonte: BCB, anexo estatístico do RPM/.test(hImp.fonte), 'linha de fonte presente', hImp.fonte);
-// `fmtMonthShort` imprime "Abr/26", com ano de 2 digitos -- exigir 4 aqui seria testar
-// uma formatacao que o relatorio nao usa em lugar nenhum.
-ok(/\w{3}\/\d{2} a \w{3}\/\d{2}/.test(hImp.fonte), 'linha de fonte traz a janela', hImp.fonte);
-ok(/^Mensal/.test(hImp.sub), 'subtitulo diz a frequencia corrente', hImp.sub);
+ok(/Fonte: BCB — anexo estatístico do Relatório de Política Monetária/.test(hImp.fonte),
+   'linha de fonte presente', hImp.fonte);
+ok(/\w{3}\/\d{4} a \w{3}\/\d{4}/.test(hImp.fonte), 'linha de fonte traz a janela', hImp.fonte);
+ok(/variação em 12 meses do fluxo financeiro/.test(hImp.sub),
+   'subtitulo diz o que a serie e', hImp.sub);
 
 clicar('imp-fluxo-medida-group', (b) => b.dataset.variant === 'fluxo');
 const hFlx = head();
@@ -441,7 +447,10 @@ ok(/Fluxo Financeiro/.test(hFlx.titulo) && /% do PIB/.test(hFlx.sub) && !/p\.p\.
    'cabecalho volta para o fluxo', hFlx.titulo + ' / ' + hFlx.sub);
 
 clicar('imp-fluxo-freq-group', (b) => b.dataset.freq === 'anual');
-ok(/^Anual \(dezembro\)/.test(head().sub), 'subtitulo acompanha a frequencia', head().sub);
+// Em modo anual a janela impressa tem de virar ano a ano -- e a mesma pergunta que a
+// frequencia responde na tabela, so que na linha que viaja no print.
+ok(/\d{4} a \d{4}/.test(head().fonte) && !/\w{3}\//.test(head().fonte),
+   'a janela do cabecalho acompanha a frequencia', head().fonte);
 const cabAnual = colunas('imp-fluxo-table-head');
 ok(cabAnual.length > 0 && cabAnual.every((t) => /^\d{4}$/.test(t)), 'cabecalho anual mostra anos',
    cabAnual.join(','));

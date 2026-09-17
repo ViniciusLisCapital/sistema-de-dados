@@ -35,8 +35,17 @@ repository/
                                   topic folders) + scripts/ (extract.py/clean_code.py/run.py/etc.),
                                   see repository/ingestion/INGESTION.md
   agent_mapping/
-    conceptual_maps/            — <topic>_conceptual_map.md, one per area (only exchange_rate exists so far)
-    recommended_bibliography/   — <topic>_bibliography_candidates.md / _gaps.md
+    conceptual_maps/            — <topic>_conceptual_map.md, ONE PER AREA and no second map beside it
+                                  (only exchange_rate exists so far). Each cluster carries two layers:
+                                  concepts read out of the literature, cited by source slug, and a
+                                  "Data that backs this cluster" block citing the data inventory's
+                                  section numbers — folded in 2026-09-10 from what had been a separate
+                                  integration file
+    recommended_bibliography/   — two kinds of file, and the distinction is the point:
+                                  <topic>_bibliography_candidates.md / _gaps.md track ACQUISITION (what
+                                  to source, with priority and suggested filename), while
+                                  exchange_rate_bibliography.md is the consolidated LIST of all 36
+                                  sources with a synthesis of each, acquired or not
     recommended_data/           — <topic>_data_inventory.md
     data_tracker.xlsx
   mental_model/                 — 291 files, raw sources (asset manager letters): kapitalo/ (83 PDF,
@@ -47,7 +56,7 @@ repository/
                                   verde_asset/DOWNLOAD_PROCESS.md for the URL pattern/download process)
 ```
 
-**`consolidated/` moved out of here in 2026-07** — the presentable exchange-rate synthesis now lives in [`team_materials/agent_materials/exchange_rate/`](../team_materials/agent_materials/exchange_rate/). See the root `CLAUDE.md` for the full three-branch distinction for exchange-rate material.
+**`consolidated/` moved out in 2026-07 and its base `.md` files came back in 2026-09-10.** The round trip is worth knowing because it is the rule that settles where a file goes: `team_materials/` holds only what is *shown* — slides, PDFs, the two interactive explorers, the narrative introductions — and every list, inventory and map lives here, whatever its voice. So the three base documents that had been sitting in `team_materials/` are now in `agent_mapping/`: the consolidated bibliography as `agent_mapping/recommended_bibliography/exchange_rate_bibliography.md`, the data × literature join folded into `agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` (it had arrived as its own file and was merged the same day, once the one-map-per-area rule was stated — it was organized by the same 9 clusters, so it was a second map by another name), and the data inventory merged into `agent_mapping/recommended_data/exchange_rate_data_inventory.md` (a strict subset of it, minus the status columns — only its per-category *Why it matters* rationale was new). See [`team_materials/CLAUDE.md`](../team_materials/CLAUDE.md) for the split from the other side, and `obsidian/CLAUDE.md` for the third branch, which stays deliberately parallel to both.
 
 **`raw_pdf/`/`raw_md/`/`clean_md/` convention applied 2026-08** to every direct child of `repository/` except `agent_mapping/` — `exchange_rate`, `monetary_policy`, `trader`, `economic_activity`, `fiscal_policy`, `inflation`, `labor_market` — mirroring the per-source structure already used inside `mental_model/` (e.g. `mental_model/kapitalo/`). This was a pure file move (PDFs relocated into each topic's new `raw_pdf/`); no PDF→raw_md extraction or raw_md→clean_md curation has been done yet for `trader`, `economic_activity`, or `labor_market`.
 

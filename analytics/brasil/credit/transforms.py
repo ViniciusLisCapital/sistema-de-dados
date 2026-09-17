@@ -13,7 +13,7 @@ compute_variants() vs. compute_variants_ma3() abaixo):
     ruidosas mes a mes que um estoque. Crescimento (M/M, T/T) e calculado sobre essa
     base ja suavizada.
 
-Convencao de ajuste sazonal (mesma de analytics/brasil/inflation/fetch_bcb.py — ver
+Convencao de ajuste sazonal (mesma de analytics/brasil/inflation/generate_report.py — ver
 .claude/rules/lis-dashboards.md e analytics/brasil/inflation/CLAUDE.md): STL com fatores
 "amostra anual" — ajustados uma vez sobre o historico ate o ultimo dezembro completo
 (auto-detectado), depois aplicados congelados a serie inteira, incluindo meses
@@ -227,7 +227,7 @@ def compute_variants(
 def moving_average(values: list, window: int) -> list:
     """Media movel trailing (janela termina no ponto atual — [t-window+1, t]), com
     None enquanto a janela nao estiver completa. Mesma convencao MA(3) ja usada em
-    analytics/brasil/inflation/fetch_bcb.py's _apply_stl_ma3."""
+    analytics/brasil/inflation/generate_report.py's _apply_stl_ma3."""
     vals = pd.Series(values, dtype="float64")
     ma = vals.rolling(window=window, min_periods=window).mean()
     return [None if np.isnan(v) else float(v) for v in ma]

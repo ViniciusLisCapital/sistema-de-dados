@@ -83,5 +83,4 @@ desenvolvimento não tem.
   ppp_equilibrium), `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_equity_us`
   (ppp_equilibrium) e `cmb_real_rates` (real_rates_comparison.py) todas têm consumidor vivo — o que
   a remoção da réplica quebrou foi menos do que se registrou na época.
-- **`team_materials/agent_materials/exchange_rate/` — notas desatualizadas**: `data_inventory.md` ainda diz que o `conceptual_map.md` "não foi construído" (já foi); `introduction_pt.md` não lista o `conceptual_map.md` entre os documentos da pasta.
-- **Kinea PDF órfão**: `team_materials/agent_materials/exchange_rate/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `bibliography.md` ainda marca Kinea como "pendente" — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).
+- **Kinea PDF órfão**: `team_materials/exchange_rate/agent_materials/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` ainda marca Kinea como "pendente" no cluster 9 — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).

@@ -547,6 +547,21 @@ Written this way because of the lesson in
 bugs shipped in `economic_activity` precisely because the tests asserted on button *definitions* and
 never on what a click did.
 
+## Cabecalho de cada grafico (2026-09-14)
+
+Os 3 graficos desta pasta passaram a carregar, dentro do proprio card e acima do plot, as
+tres linhas do padrao: titulo, subtitulo derivado e `Fonte: … · <periodo>`. So o titulo e a
+fonte sao texto fixo (`CHART_META` no `report.html`); subtitulo e periodo sao reescritos a
+cada render. A mecanica e compartilhada -- `/*CHART_HEAD_CSS*/` e `/*CHART_HEAD_JS*/`, de
+`analytics/report_structure/chart_head.{css,js}` --, entao o que mora aqui e so o
+`CHART_META` e a chamada de `describeChart()` pelos dois renderers (`renderLineChart`, `renderContribChart`).
+
+Escrito em ingles, como o resto do relatorio. As tres reguas de tempo, que estavam ACIMA do
+grafico desde 2026-08-26, foram para baixo na mesma passagem.
+
+Coberto por `tests/test_chart_head_js.js`; o porque e o levantamento de quem faltava
+estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own header".
+
 ## Pending
 
 - **Not confirmed in a real browser** — no browser in this environment. The JS is verified behaviourally

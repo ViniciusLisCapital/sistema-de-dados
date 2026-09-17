@@ -706,12 +706,19 @@ async function testeStatusDashboard(MODE) {
           cards.indexOf('proc-btn') < 0);
     check('e o bloco diz o que aqueles itens sao',
           cards.indexOf('O que este dashboard prepara por conta própria') >= 0);
-    // O piloto deixou de ser piloto em 2026-09-01: a inflacao tambem tem passo, e o dela
-    // e um FETCH -- o unico insumo daquele relatorio que nao vem do MySQL.
-    check('o payload real traz o passo da inflacao tambem',
-          cards.indexOf('Séries agregadas do IPCA (Banco Central)') >= 0);
-    check('e ele e mensal, nao diario nem trimestral',
-          cards.indexOf('fica velho quando abre um mês novo') >= 0);
+    // A inflacao teve um passo entre 2026-09-01 e 2026-09-11, e ele era um FETCH: buscava no
+    // SGS uma copia de `inflc_agregados`, tabela que o update_db.py ja mantinha. Foi apagado
+    // junto com o CSV, e a asserção agora cobra o INVERSO -- que aquele relatorio nao tenha
+    // passo nenhum. Um passo que volte a existir ali e um insumo que o botao Atualizar deixou
+    // de alcancar, que foi exatamente o defeito.
+    check('a inflacao nao tem passo: todo insumo dela vem do banco',
+          cards.indexOf('Séries agregadas do IPCA (Banco Central)') < 0);
+    // E o bloco de passos que sobra e de estimacao de modelo, com granularidade trimestral --
+    // calculo de verdade, que nenhuma tabela substitui.
+    check('o payload real traz os passos do modelo de politica monetaria',
+          cards.indexOf('Painéis trimestrais') >= 0);
+    check('e eles sao trimestrais, nao mensais',
+          cards.indexOf('fica velho quando abre um trimestre novo') >= 0);
 
     // ── lote no modo arquivo: copia um comando por dashboard pendente ───────
     // O retrato embutido carrega veredito, entao aqui a fila E conhecida (ao contrario

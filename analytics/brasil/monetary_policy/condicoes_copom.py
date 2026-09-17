@@ -59,7 +59,7 @@ nao condicao que a antecede, e colori-las de vermelho seria circular.
 
 As metricas de margem (nucleos, EX3, desocupacao e saldo do CAGED) sao dessazonalizadas
 por STL com FATORES CONGELADOS ate dezembro do ano anterior -- mesma convencao de
-`analytics/brasil/inflation/fetch_bcb.py`. Congelar importa aqui mais do que la: com
+`analytics/brasil/inflation/generate_report.py`. Congelar importa aqui mais do que la: com
 fatores reestimados a cada rodada o valor "na reuniao passada" mudaria junto com o de
 hoje, e a diferenca entre as duas colunas deixaria de ser so dado novo. O IBC-Br e a
 excecao: usa a serie que o proprio BCB ja dessazonaliza.
@@ -92,7 +92,7 @@ HORA_DECISAO = dt.time(18, 30)
 HORA_PADRAO = dt.time(9, 0)
 ANOS_SIGMA = 10
 # Inicio da amostra do ajuste sazonal -- ver `_sa()`. 2000 e o mesmo corte de
-# analytics/brasil/inflation/fetch_bcb.py, ja com o regime de metas rodando.
+# analytics/brasil/inflation/generate_report.py, ja com o regime de metas rodando.
 INICIO_SA = "2000-01"
 
 # Os 5 nucleos que o BCB acompanha no RPM. EX3 e o EX03 da tabela; MS e
@@ -296,14 +296,14 @@ def _sa(r: pd.Series) -> pd.Series:
     """STL aditivo na TAXA mensal, fatores congelados ate dez do ano anterior.
 
     Dezembro fica fora da amostra ate janeiro seguinte chegar -- mesma regra de
-    `_seasonal_cutoff()` em analytics/brasil/inflation/fetch_bcb.py.
+    `_seasonal_cutoff()` em analytics/brasil/inflation/generate_report.py.
 
     A amostra comeca em `INICIO_SA`, e isso NAO e detalhe: `inflc_agregados` guarda o
     IPCA desde 1980, e ajustar sazonalidade aditiva numa serie que passa de 80% ao mes
     para 0,4% produz fator sazonal de -2,0 p.p. em agosto. Com a serie inteira o
     "dessazonalizado" saia MAIS volatil que o bruto (sd de 1,03 contra 0,39 no IPCA
     cheio, 0,46 contra 0,34 em servicos) -- ou seja, o ajuste estava injetando ruido, e
-    esse ruido ia direto para o sigma que define a cor. `fetch_bcb.py` nunca viu o
+    esse ruido ia direto para o sigma que define a cor. O gerador da inflacao nunca viu o
     problema porque puxa do SGS a partir de 2000.
     """
     r = r.dropna()

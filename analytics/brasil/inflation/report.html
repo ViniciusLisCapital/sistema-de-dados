@@ -9,6 +9,8 @@
   <style>
     /*THEME_CSS*/
 
+    /*CHART_HEAD_CSS*/
+
     /* ── Header ── */
     header {
       background: var(--card-bg);
@@ -1570,6 +1572,15 @@ function makeTreeTab(opts) {
       font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
     }, _PLOTLY_CONFIG);
     _bindYAutofit(opts.chartId);
+    // O titulo troca com o INDICE e com a arvore selecionada, entao e derivado como o
+    // subtitulo. A unidade e a mesma string que titula o eixo Y logo acima.
+    describeChart(opts.chartId, traces,
+                  [picked.length + ' linha(s) marcada(s) na tabela acima',
+                   vazios ? vazios + ' sem valor nesta métrica' : ''],
+                  m.y,
+                  {titulo: opts.chartTitulo
+                     ? opts.chartTitulo(indexLabel(), TREE_SOURCES[st.src])
+                     : (opts.titulo ? opts.titulo(indexLabel(), TREE_SOURCES[st.src]) : '')});
   }
 
   function render() { renderTable(); renderChart(); }
@@ -1704,6 +1715,12 @@ function renderTimeSeries() {
     + (rest.length ? ', as ' + keep.length + ' maiores por contribuição acumulada + "Outros" com as demais ' + rest.length : '')
     + '. As barras somam a linha Total.';
 
+  describeChart('chart-timeseries', traces,
+                [TREE_SOURCES[DECOMP_TREE.estado.src].label,
+                 TREE_LEVEL_LABELS[evoLevel - 1],
+                 'as barras somam a linha Total'],
+                'contribuição mensal ao índice, p.p.',
+                {titulo: 'Evolução Mensal do ' + indexLabel() + ' — Contribuição por Categoria'});
   Plotly.react('chart-timeseries', traces, {
     // 'relative' (não 'stack'): empilha as positivas para cima do zero e as
     // negativas para baixo, independentemente. 'stack' empilha na ordem das
@@ -1926,6 +1943,11 @@ function renderScatterMomentum() {
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
     font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12}, showlegend: false,
   }, _PLOTLY_CONFIG);
+  describeChart('chart-scatter-momentum', [], [indexLabel(), 'um ponto por categoria'],
+                'eixo X: variação acumulada em 12 meses, % · ' +
+                'eixo Y: momentum de 3 meses anualizado, % a.a. (sem ajuste sazonal)',
+                {titulo: 'Momentum × Variação em 12 Meses, por Categoria',
+                 periodo: 'leitura de ' + formatMonthLabel(anchor)});
   // No _bindYAutofit here: both axes are plain % values, not a date axis --
   // same reasoning as economic_activity's renderQuadrant, which this chart
   // otherwise mirrors (see .claude/rules/lis-dashboards.md).
@@ -2027,7 +2049,8 @@ function renderCompSAAR() {
       line:{color:s.color, width:s.width, dash:s.dash||'solid'},
       hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-saar', traces, _nucLayout('3M SAAR (% a.a.)', 520), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-saar', traces, _nucLayout('variação dos últimos 3 meses anualizada, % a.a.', 520), _PLOTLY_CONFIG);
+  describeChart('chart-comp-saar', traces, [indexLabel()], 'variação dos últimos 3 meses anualizada, % a.a.');
 }
 
 // Master list of every núcleo series selectable in the two checklist-driven
@@ -2160,10 +2183,55 @@ function renderNucSAAR() {
       line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
       hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.1f}% SAAR<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-nuc-saar', traces, _nucLayout('3M SAAR (% a.a.)', 520), _PLOTLY_CONFIG);
+  Plotly.react('chart-nuc-saar', traces, _nucLayout('variação dos últimos 3 meses anualizada, % a.a.', 520), _PLOTLY_CONFIG);
+  describeChart('chart-nuc-saar', traces, [indexLabel()], 'variação dos últimos 3 meses anualizada, % a.a.');
 }
 
 /*Y_AUTOFIT_JS*/
+
+/*CHART_HEAD_JS*/
+
+// -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
+// O subtitulo e o periodo sao reescritos a cada render por describeChart(). Um grafico
+// daqui sai da pagina como print e circula sozinho, longe do <h2> da secao e da nota de
+// metodologia: ele tem que dizer o que, em que metrica, em que unidade, de que fonte e de
+// quando ate quando. Onde um seletor troca o INDICE (IPCA / IPCA-15) ou a medida, o titulo
+// tambem e derivado -- so a fonte e fixa.
+var SRC_IBGE = 'IBGE — IPCA e IPCA-15';
+var SRC_BCB  = 'BCB — núcleos e difusão do IPCA (séries do SGS)';
+// Rotulo da opcao selecionada de cada <select> de controle. Sai do proprio <option>,
+// nunca de uma copia da lista: uma opcao nova amanha ja aparece no subtitulo.
+function _selLabels(ids) {
+  var out = [];
+  (ids || []).forEach(function(id) {
+    var el = id && document.getElementById(id);
+    if (!el || !el.options) return;
+    for (var i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === el.value) {
+        if (el.options[i].text) out.push(String(el.options[i].text).trim());
+        break;
+      }
+    }
+  });
+  return out;
+}
+var CHART_META = {
+  'chart-tree-sel':           {title: '', source: SRC_IBGE},
+  'chart-timeseries':         {title: '', source: SRC_IBGE},
+  'chart-scatter-momentum':   {title: '', source: SRC_IBGE},
+  'chart-yoy-drill':          {title: '', source: SRC_IBGE},
+  'chart-comp-saar':          {title: 'Composição do IPCA — Momentum de 3 Meses Anualizado', source: SRC_IBGE},
+  'chart-nuc-saar':           {title: 'Núcleos do IPCA — Momentum de 3 Meses Anualizado', source: SRC_BCB},
+  'chart-comp-yoy':           {title: 'Composição do IPCA — Variação Acumulada em 12 Meses', source: SRC_IBGE},
+  'chart-nuc-yoy':            {title: 'Núcleos do IPCA — Variação Acumulada em 12 Meses', source: SRC_BCB},
+  'chart-nucleo-sel':         {title: '', source: SRC_BCB},
+  'chart-difusao-categoria':  {title: '', source: SRC_BCB},
+  'chart-iner-faixas':        {title: 'Inflação por Faixa de Inércia', source: SRC_IBGE},
+  'chart-iner-disp':          {title: 'Inércia × Peso — um Ponto por Subitem', source: SRC_IBGE},
+  'chart-iner-sel':           {title: '', source: SRC_IBGE},
+  'chart-inerfix-sel':        {title: '', source: SRC_IBGE},
+};
+
 
 // ── Núcleos tab renders ───────────────────────────────────────────────────────
 function renderNucleosTab() {
@@ -2237,8 +2305,11 @@ function renderNucleoSelecionado() {
     hovertemplate:'<b>' + label + ' — 12M a/a</b><br>%{x}<br>%{y:.2f}%<extra></extra>',
   });
   if (!traces.length) { Plotly.purge('chart-nucleo-sel'); return; }
-  Plotly.react('chart-nucleo-sel', traces, _nucLayout(label + ' (%)', 480), _PLOTLY_CONFIG);
+  var uSel = 'variação do ' + label + ', %';
+  Plotly.react('chart-nucleo-sel', traces, _nucLayout(uSel, 480), _PLOTLY_CONFIG);
   _bindYAutofit('chart-nucleo-sel');
+  describeChart('chart-nucleo-sel', traces, [indexLabel()], uSel,
+                {titulo: label + ' — Momentum de 3 Meses e Variação em 12 Meses'});
 }
 
 function renderComponentesYoY() {
@@ -2259,7 +2330,8 @@ function renderComponentesYoY() {
       line:{color:s.color, width:s.width},
       hovertemplate:'<b>'+s.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('variação acumulada em 12 meses, % contra os 12 meses anteriores', 520), _PLOTLY_CONFIG);
+  describeChart('chart-comp-yoy', traces, [indexLabel()], 'variação acumulada em 12 meses, % contra os 12 meses anteriores');
 }
 
 function renderNucleosYoY() {
@@ -2274,7 +2346,8 @@ function renderNucleosYoY() {
       line:{color:opt.color, width:opt.width||1.5, dash:opt.dash||'solid'},
       hovertemplate:'<b>'+opt.label+'</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-nuc-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
+  Plotly.react('chart-nuc-yoy', traces, _nucLayout('variação acumulada em 12 meses, % contra os 12 meses anteriores', 520), _PLOTLY_CONFIG);
+  describeChart('chart-nuc-yoy', traces, [indexLabel()], 'variação acumulada em 12 meses, % contra os 12 meses anteriores');
 }
 
 // ── IPCA-15 Núcleos tab renders ───────────────────────────────────────────────
@@ -2294,7 +2367,8 @@ function renderCompYoY15() {
       line: {color: s.color, width: s.width},
       hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:.2f}% a/a<extra></extra>'};
   }).filter(Boolean);
-  Plotly.react('chart-comp-yoy', traces, _nucLayout('Var. 12M (% a/a)', 520), _PLOTLY_CONFIG);
+  Plotly.react('chart-comp-yoy', traces, _nucLayout('variação acumulada em 12 meses, % contra os 12 meses anteriores', 520), _PLOTLY_CONFIG);
+  describeChart('chart-comp-yoy', traces, [indexLabel()], 'variação acumulada em 12 meses, % contra os 12 meses anteriores');
 }
 
 // ── Difusão por Categoria (Grupo/Subgrupo/Item drilldown) ────────────────────
@@ -2377,7 +2451,8 @@ function renderDifusaoCategoria() {
   // Monthly is noisy background context (thin, muted gray), drawn first so
   // the moving averages — drawn after, bolder and saturated — read as the
   // clear focal series on top of it.
-  Plotly.react('chart-difusao-categoria', [
+  var uDif = 'subitens com variação positiva no mês / total de subitens, %';
+  var difTraces = [
     {type: 'scatter', mode: 'lines', name: 'Difusão mensal', x: d.dates, y: d.values,
      line: {color: C.cinza, width: 1},
      hovertemplate: '<b>' + label + '</b><br>%{x}<br>%{y:.1f}%<extra></extra>'},
@@ -2387,8 +2462,11 @@ function renderDifusaoCategoria() {
     {type: 'scatter', mode: 'lines', name: 'MM 6M', x: d.dates, y: ma6,
      line: {color: C.laranja, width: 2.5},
      hovertemplate: 'MM 6M<br>%{x}<br>%{y:.1f}%<extra></extra>'},
-  ], _nucLayout('% subitens c/ var. positiva — ' + label, 460), _PLOTLY_CONFIG);
+  ];
+  Plotly.react('chart-difusao-categoria', difTraces, _nucLayout(uDif, 460), _PLOTLY_CONFIG);
   _bindYAutofit('chart-difusao-categoria');
+  describeChart('chart-difusao-categoria', difTraces, [indexLabel()], uDif,
+                {titulo: 'Difusão — ' + label});
 }
 
 // dragmode:'pan' lets drag/scroll move both axes directly, TradingView-
@@ -2665,10 +2743,14 @@ function renderYoYDrill() {
     return trace;
   }).filter(Boolean);
   if (!traces.length) { Plotly.purge('chart-yoy-drill'); return; }
-  Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('Var. 12M (% a/a)', 520), {
+  Plotly.react('chart-yoy-drill', traces, Object.assign({}, _nucLayout('variação acumulada em 12 meses, % contra os 12 meses anteriores', 520), {
     showlegend: !single,
   }), _PLOTLY_CONFIG);
   _bindYAutofit('chart-yoy-drill');
+  describeChart('chart-yoy-drill', traces,
+                [indexLabel()].concat(_selLabels(['yoy-bcb-sel', 'yoy-level-sel'])),
+                'variação acumulada em 12 meses, % contra os 12 meses anteriores',
+                {titulo: 'Variação em 12 Meses — Drilldown de Componentes'});
 }
 
 // ── Aba Inércia ──────────────────────────────────────────────────────────────
@@ -2782,6 +2864,9 @@ function renderInerciaFaixas() {
     font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12},
   }, _PLOTLY_CONFIG);
   _bindYAutofit('chart-iner-faixas');
+  describeChart('chart-iner-faixas', traces,
+                [indexLabel(), 'pertença à faixa fixada em ' + D.inercia.janela.inicio +
+                 '→' + D.inercia.janela.fim], m.y);
 }
 
 function renderInerciaDispersao() {
@@ -2821,6 +2906,13 @@ function renderInerciaDispersao() {
     paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
     font: {family: 'Barlow,sans-serif', color: '#1F2853', size: 12}, showlegend: false,
   }, _PLOTLY_CONFIG);
+  // Os dois eixos sao valores, entao `periodo` vem pronto: derivar a janela das abscissas
+  // imprimiria uma faixa de correlacoes na linha da fonte, lida como se fosse periodo.
+  describeChart('chart-iner-disp', [], [indexLabel(), pts.x.length + ' subitens'],
+                'eixo X: correlação de ordem 12 da variação em 12 meses · ' +
+                'eixo Y: peso no índice, % (escala log)',
+                {periodo: 'janela de estimação ' + D.inercia.janela.inicio +
+                          '→' + D.inercia.janela.fim});
   // Sem _bindYAutofit: os dois eixos são valores, não tempo -- mesma razão do
   // chart-scatter-momentum.
 }

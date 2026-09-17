@@ -458,6 +458,23 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
   limitation as every report in this project. Verification so far is a Node harness (stub
   `document`/`Plotly`, not jsdom) run against the real generated `<script>` and real DB output.
 
+## Cabecalho de cada grafico (2026-09-14)
+
+Os 11 graficos desta pasta passaram a carregar, dentro do proprio card e acima do plot, as
+tres linhas do padrao: titulo, subtitulo derivado e `Fonte: … · <periodo>`. So o titulo e a
+fonte sao texto fixo (`CHART_META` no `report.html`); subtitulo e periodo sao reescritos a
+cada render. A mecanica e compartilhada -- `/*CHART_HEAD_CSS*/` e `/*CHART_HEAD_JS*/`, de
+`analytics/report_structure/chart_head.{css,js}` --, entao o que mora aqui e so o
+`CHART_META` e a chamada de `describeChart()` pelos tres renderers (`renderLineChart`, `renderStackedBarChart`, `renderImpulseChart`) e pelos dois graficos da aba PTC.
+
+O cabecalho proprio que a aba Fluxo Financeiro tinha (markup `chart-head-*` + `renderHeader()`)
+**saiu**: duas mecanicas para a mesma linha de texto divergem. O `variantMeta` daquela aba
+trocou o campo `sub` por `def` + `nota`, porque no compartilhado a unidade ja vem do eixo e
+repeti-la seria dizer duas vezes.
+
+Coberto por `tests/test_chart_head_js.js`; o porque e o levantamento de quem faltava
+estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own header".
+
 ## Pending
 
 - Open `reports/brasil/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart

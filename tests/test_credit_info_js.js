@@ -470,7 +470,9 @@ ok(/p\.p\./.test(R.taxaYTitle()), 'taxaYTitle() em Spread muda para p.p.', R.tax
 ok(R.taxaInfoNs()[0] === 'spread', 'taxaInfoNs() acompanha a árvore selecionada', R.taxaInfoNs().join(','));
 R.taxaState.source = 'taxa_media';
 ok(R.taxaInfoNs()[0] === 'taxa', 'taxaInfoNs() volta para taxa', R.taxaInfoNs().join(','));
-const usaTaxaYTitle = /renderLineChart\('chart-taxa', specs, taxaYTitle\(\)\)/.test(SRC);
+// Prefixo, nao a chamada inteira: o argumento de descricao do cabecalho entrou depois, e
+// uma assercao presa na aridade reprova uma chamada correta.
+const usaTaxaYTitle = /renderLineChart\('chart-taxa', specs, taxaYTitle\(\)/.test(SRC);
 ok(usaTaxaYTitle, 'o eixo Y do grafico de Taxa & Spread usa a MESMA funcao do cartao');
 
 // ── 7. `unit` da linha vence a da tabela ─────────────────────────────────────

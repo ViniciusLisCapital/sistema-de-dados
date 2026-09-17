@@ -120,54 +120,25 @@ dashboards:
     command: 'uv run python -c "from analytics.brasil.inflation.generate_report import run; run()"'
     build_seconds: 30
     note: >
-      Parte das séries deste relatório — os núcleos oficiais e os agregados de IPCA que o Banco
-      Central publica — não vem do banco de dados: vem de um arquivo que este dashboard busca por
-      conta própria, listado abaixo. O Regerar busca de novo quando esse arquivo está atrás do
-      IPCA que já saiu, e só então monta o HTML.
+      Decomposição do IPCA e do IPCA-15 por subitem, ao lado dos agregados que o Banco Central
+      publica — headline, livres e monitorados, serviços e industriais, os núcleos oficiais e o
+      índice de difusão. Tudo o que a página mostra vem do banco de dados, então o botão Atualizar
+      alcança cada série e o Regerar só precisa montar o HTML.
     deps:
       - {kind: mysql, ref: macro_brasil.inflc_decomposicao, role: "IPCA e IPCA-15 por subitem — a base de tudo na aba"}
       - {kind: mysql, ref: macro_brasil.inflc_dim, date_col: null, role: "Dimensão de subitem: grupo, subgrupo e os vetores de núcleo da NT-57"}
       - {kind: mysql, ref: macro_brasil.inflc_decomposicao_item, role: "Nível de item, para Médias Aparadas e Dupla Ponderação"}
-      - kind: csv
-        ref: analytics/brasil/inflation/data/ipca_bcb_series.csv
-        date_col: dt
-        role: "Agregados BCB/SGS: headline, componentes e núcleos oficiais"
-        refresh: uv run python analytics/brasil/inflation/fetch_bcb.py
-        note: >
-          Buscado direto no Banco Central, sem passar pelo banco de dados — nenhuma atualização da
-          base o alcança. Repete boa parte dos agregados que o banco já tem, e traz uma série que
-          não existe lá: o IPCA acumulado em 12 meses.
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "Agregados do IPCA que o Banco Central publica: headline, componentes, núcleos oficiais e difusão"}
 
-    # Um passo so, e e um FETCH e nao um calculo: este arquivo e o unico insumo do relatorio que
-    # nao vem do MySQL, entao nenhum ETL o move e o botao Atualizar nao o alcanca. Antes disto,
-    # ficar atras era invisivel -- e estava: em 2026-09-01 o arquivo tinha ate 2026-07 e a
-    # `inflc_decomposicao` ja tinha 2026-08 (o IPCA-15 de agosto), um mes de defasagem que nenhuma
-    # tela mostrava. Foi o segundo caso da mesma classe do que motivou a camada em 2026-08-31.
-    procedures:
-      - id: series_bcb
-        label: "Séries agregadas do IPCA (Banco Central)"
-        module: analytics.brasil.inflation.fetch_bcb
-        call: run
-        seconds: 18
-        writes:
-          - analytics/brasil/inflation/data/ipca_bcb_series.csv
-        # O corte e o MAX da coluna `dt` (o dep declara `date_col`), nao o ultimo rotulo do
-        # arquivo: este CSV e longo e ordenado por serie, entao a ultima linha e a serie
-        # alfabeticamente final, nao o mes mais recente. Casou por sorte quando testado.
-        cut_from: analytics/brasil/inflation/data/ipca_bcb_series.csv
-        granularidade: mes
-        # A fonte real e o SGS do BCB, que nao e dep declarada -- entao a comparacao e contra a
-        # tabela que recebe a MESMA divulgacao (IPCA e IPCA-15 por subitem, do IBGE). Medido em
-        # 2026-09-01: depois do fetch o arquivo alcanca o mesmo mes da tabela (2026-08), que e o
-        # que impede este passo de ficar rodando para sempre a cada Regerar.
-        reads:
-          - macro_brasil.inflc_decomposicao
-        note: >
-          Busca no Banco Central as 34 séries agregadas de IPCA que o relatório mostra ao lado da
-          decomposição por subitem — headline, livres e monitorados, serviços e industriais, e os
-          núcleos oficiais — e recalcula a versão dessazonalizada de 20 delas. É o único insumo
-          deste relatório que não vem do banco de dados: sem este passo, o arquivo só andava
-          quando alguém rodava o script à mão.
+    # Sem `procedures:`, e isso e a correcao de 2026-09-11. Ate aqui os agregados do BCB vinham de
+    # `data/ipca_bcb_series.csv`, que o proprio relatorio buscava no SGS por um passo declarado
+    # aqui -- uma copia de `inflc_agregados`, tabela que ja existia, ja estava no `update_db.py` e
+    # ja estava em dia. Duas coisas quebravam por causa disso: o botao Atualizar nao alcancava o
+    # arquivo (nenhum ETL o movia), e o veredito do passo lia `MAX(dt)` sobre o CSV inteiro, com
+    # todas as series no mesmo balde -- entao as linhas de IPCA-15, que andam duas semanas antes,
+    # levavam o maximo para o mes novo e escondiam que os 33 agregados de IPCA cheio estavam um mes
+    # atras. Verde na tela, nucleo e difusao velhos no relatorio. Migrado: 10.556 observacoes
+    # comparadas entre CSV e tabela, diferenca zero.
 
   - key: brasil_expectations
     name: "Expectativas (Focus)"
@@ -356,6 +327,29 @@ dashboards:
           o losango no fim da série e a tabela de erros da aba "Projeções do Copom". Depende da
           pesquisa Focus, que anda toda semana, então é o cálculo que fica atrás dos dados mais
           rápido — e o mais barato de refazer.
+
+  # Sem bloco `procedures:` de proposito: o painel trimestral e derivado direto das
+  # tabelas abaixo e sai em ~3s na geracao, entao nao ha calculo que o Atualizar nao
+  # alcance. Isso muda quando as equacoes forem estimadas -- ai sim ha calculo de
+  # verdade, com data de corte propria, e o passo passa a existir.
+  - key: brasil_structural_model
+    name: "Modelo Estrutural"
+    area: brasil
+    output: reports/brasil/Structural Model.html
+    module: analytics.brasil.structural_model.generate_report
+    command: 'uv run python -c "from analytics.brasil.structural_model.generate_report import run; run()"'
+    build_seconds: 4
+    note: >
+      Reúne, em frequência trimestral, as séries que explicam a inflação brasileira: a própria
+      inflação, o que o mercado espera dela, o quanto a economia está aquecida, o câmbio e as
+      commodities em dólar. Por enquanto mostra só os dados — o peso de cada uma na inflação
+      ainda não foi calculado. Fica velho quando abre um trimestre novo em qualquer das fontes.
+    deps:
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "Inflação acumulada em 12 meses, a série que a relação explica"}
+      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Inflação esperada para os 12 meses seguintes, da pesquisa semanal do Banco Central"}
+      - {kind: mysql, ref: macro_brasil.pm_hiato_produto, role: "Quanto a economia produz acima ou abaixo do que sustenta sem pressionar preços"}
+      - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, de onde sai a variação de cada trimestre"}
+      - {kind: mysql, ref: macro_brasil.comm_icbr_usd, role: "Preço das commodities em dólar, o canal de custo importado"}
 
   - key: brasil_exchange_rate
     name: "Câmbio"

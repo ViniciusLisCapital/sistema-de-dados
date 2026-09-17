@@ -36,11 +36,13 @@ dependencies = [
     "tzdata>=2026.2",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ipython",
     "ipdb",
     "ipykernel",
+    "plotly>=7.1.0",
+    "nbformat>=5.11.1",
 ]
 
 [tool.setuptools.packages.find]

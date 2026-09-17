@@ -9,6 +9,8 @@
   <style>
     /*THEME_CSS*/
 
+    /*CHART_HEAD_CSS*/
+
     /* ── Header ── */
     header {
       background: var(--card-bg);
@@ -1272,6 +1274,29 @@ var PERIODS_PER_YEAR = {projecoes: 4, motor: 4};
 var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true};
 
 /*Y_AUTOFIT_JS*/
+
+/*CHART_HEAD_JS*/
+
+// -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
+// O subtitulo e o periodo saem de describeChart() a cada render. Um grafico daqui sai da
+// pagina como print e circula sozinho, longe do <h2> da secao e das notas de metodologia:
+// ele tem que dizer o que, em que metrica, em que unidade, de que fonte e de quando ate
+// quando. Onde a metrica e um seletor -- a aba Projecoes -- o TITULO tambem e derivado, e
+// entra por `titulo` no opts; ali o unico texto fixo e a fonte.
+var SRC_MOTOR = 'Réplica LIS Capital do modelo semiestrutural do Banco Central (boxe do RPM de jun/2024)';
+var SRC_COPOM = 'BCB — comunicados do Copom e Relatório de Política Monetária; decisões de Selic da SGS 432';
+var CHART_META = {
+  'chart-mt-infl':  {title: 'Inflação — IPCA no cenário simulado', source: SRC_MOTOR},
+  'chart-mt-hiato': {title: 'Hiato do Produto no Cenário Simulado', source: SRC_MOTOR},
+  'chart-mt-juros': {title: 'Juros — Selic, Juro Real Ex-Ante e Taxa Neutra', source: SRC_MOTOR},
+  'chart-mt-exp':   {title: 'Expectativa de Inflação a 12 Meses', source: SRC_MOTOR},
+  'chart-pj-serie': {title: '', source: SRC_COPOM},
+  'chart-pj-bt':    {title: '', source: SRC_COPOM},
+};
+// A parte do desenho que e histórico e a que e cenário viajam na mesma linha, e isso e o
+// que o leitor de um print precisa saber antes de qualquer outra coisa.
+var BIT_MOTOR = 'histórico observado e cenário simulado';
+
 
 // ── Helpers de valor e data ───────────────────────────────────────────────────
 function ser(group, key) {
@@ -2635,8 +2660,9 @@ function mtDesenhar() {
     t1[0].line.width = 2.6;
     t1 = t1.concat(comparadas('pi_IPCA'));
   }
-  _reactPreserveX('chart-mt-infl', t1,
-    mkTimeseriesLayout(MT_INFL_MODO === 'acum' ? '% em 4 trimestres' : '% no trimestre', 420, t1, _mtShapes(res)));
+  var uInfl = MT_INFL_MODO === 'acum' ? '% em 4 trimestres' : '% no trimestre';
+  _reactPreserveX('chart-mt-infl', t1, mkTimeseriesLayout(uInfl, 420, t1, _mtShapes(res)));
+  describeChart('chart-mt-infl', t1, [BIT_MOTOR], uInfl, {freq: 'tri'});
 
   // 2. Hiato. O choque persistente NÃO entra aqui: ele é uma das parcelas da eq. (2), e
   // plotar uma parcela ao lado do total, sem as outras, sugere uma decomposição que não
@@ -2645,7 +2671,9 @@ function mtDesenhar() {
   var t2 = [lineTrace(_mtLinha('h', 'h', res), 'Hiato do produto', C.azul, on('chart-mt-hiato'), 2, '%')];
   t2[0].line.width = 2.6;
   t2 = t2.concat(comparadas('h'));
-  _reactPreserveX('chart-mt-hiato', t2, mkTimeseriesLayout('% do produto potencial', 420, t2, _mtShapes(res)));
+  var uHiato = 'produto efetivo − potencial, % do potencial';
+  _reactPreserveX('chart-mt-hiato', t2, mkTimeseriesLayout(uHiato, 420, t2, _mtShapes(res)));
+  describeChart('chart-mt-hiato', t2, [BIT_MOTOR], uHiato, {freq: 'tri'});
 
   // 3. Juros
   var t3 = [lineTrace(_mtLinha('selic', 'selic', res), 'Selic', C.azul, on('chart-mt-juros'), 2, '%'),
@@ -2654,7 +2682,9 @@ function mtDesenhar() {
             lineTrace(_mtLinha('r_hat', 'r_hat', res), 'Hiato de juros (r̂)', C.laranja, on('chart-mt-juros'), 2, ' p.p.')];
   t3[0].line.width = 2.6;
   t3 = t3.concat(comparadas('selic'));
-  _reactPreserveX('chart-mt-juros', t3, mkTimeseriesLayout('% a.a. / p.p.', 420, t3, _mtShapes(res)));
+  var uJuros = 'taxas anualizadas, % a.a. — hiato de juros (r̂ = real − neutra) em p.p.';
+  _reactPreserveX('chart-mt-juros', t3, mkTimeseriesLayout(uJuros, 420, t3, _mtShapes(res)));
+  describeChart('chart-mt-juros', t3, [BIT_MOTOR], uJuros, {freq: 'tri'});
 
   // 4. Expectativas
   var t4 = [lineTrace(_mtLinha('pi_e', 'pi_e', res), 'Expectativa 12m (π^e)', C.azulCl, on('chart-mt-exp'), 2, '%'),
@@ -2662,7 +2692,9 @@ function mtDesenhar() {
   t4[0].line.width = 2.6;
   t4 = t4.concat(comparadas('pi_e'));
   t4.push(metaTrace(res));
-  _reactPreserveX('chart-mt-exp', t4, mkTimeseriesLayout('% em 12 meses', 420, t4, _mtShapes(res)));
+  var uExp = 'inflação esperada para os 12 meses seguintes, %';
+  _reactPreserveX('chart-mt-exp', t4, mkTimeseriesLayout(uExp, 420, t4, _mtShapes(res)));
+  describeChart('chart-mt-exp', t4, [BIT_MOTOR], uExp, {freq: 'tri'});
 
   mtNotaHR(res);
   mtKPIs(res);
@@ -2921,6 +2953,10 @@ function mtGrafInput(key) {
                      C.azul, false, sp.dec, ''),
            dashTrace({dates: MT_RES.datas, values: MT_RES[cenKey]}, 'cenário', C.dourado, false, sp.dec, '')];
   _reactPreserveX(div, t, mkTimeseriesLayout(sp.unidade, 260, t, _mtShapes(MT_RES)));
+  // Painel pequeno dentro do card do proprio input: cabecalho compacto, mas pelo mesmo
+  // motivo dos grandes -- o print sai do card e o nome do input vai junto com ele.
+  describeChart(div, t, [BIT_MOTOR], sp.unidade,
+                {freq: 'tri', compact: true, titulo: _mtSemTag(sp.label), fonte: SRC_MOTOR});
 }
 
 function mtRecalc() {
@@ -3576,6 +3612,17 @@ function renderProjecoesSerie() {
   }
   var layout = mkTimeseriesLayout(eixoProj, 560, traces, extraSerie);
   _reactPreserveX('chart-pj-serie', traces, layout);
+  // O titulo tambem e derivado: a escala troca o que a linha dourada E, e um titulo fixo
+  // passaria a mentir no clique da pill. Fixo aqui so a fonte.
+  describeChart('chart-pj-serie', traces, [
+    'cenário de ' + (PJ.cenario === 'juros_constante' ? 'juros constante' : 'juros esperado'),
+    PJ.defasagem ? 'passo da reunião seguinte' : 'passo da própria reunião',
+    pv ? 'com a previsão da ' + pv.nro + 'ª (' + pjMet().label.toLowerCase() + ')' : '',
+  ], eixoProj, {
+    freq: 'dia',
+    titulo: umEixo ? 'Desvio da Projeção do Copom em Relação à Meta e o Passo da Selic'
+                   : 'Projeção de IPCA do Copom e o Passo da Selic',
+  });
 
   var docs = {};
   L.forEach(function(r) { docs[r.doc] = (docs[r.doc] || 0) + 1; });
@@ -3775,6 +3822,14 @@ function renderProjecoesBacktest() {
     }];
   }
   _reactPreserveX('chart-pj-bt', traces, mkTimeseriesLayout(eixo, 500, traces, extraBt));
+  describeChart('chart-pj-bt', traces, [
+    'método em destaque: ' + pjMet().label.toLowerCase(),
+    estende ? 'com o ponto apontado para a ' + pv.nro + 'ª, ainda não publicada' : '',
+  ], eixo, {
+    freq: 'dia',
+    titulo: nivel ? 'Backtest — o Que Cada Método Teria Previsto'
+                  : 'Backtest — Erro de Previsão de Cada Método',
+  });
 
   var maes = {};
   PJ_METODOS.forEach(function(m) { maes[m.key] = pjMAE(bt, m.campo); });

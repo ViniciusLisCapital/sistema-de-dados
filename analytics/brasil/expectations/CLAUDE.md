@@ -117,6 +117,22 @@ Duas coisas foram **medidas** contra o banco para o card não afirmar o que não
 - Indicador novo na fonte cai em `"Outros"` no mapa `_FAMILIAS` do gerador; o teste JS falha se isso
   acontecer, que é o sinal de que a pesquisa mudou.
 
+## Cabecalho de cada grafico (2026-09-14)
+
+Os 15 graficos desta pasta passaram a carregar, dentro do proprio card e acima do plot, as
+tres linhas do padrao: titulo, subtitulo derivado e `Fonte: … · <periodo>`. So o titulo e a
+fonte sao texto fixo (`CHART_META` no `report.html`); subtitulo e periodo sao reescritos a
+cada render. A mecanica e compartilhada -- `/*CHART_HEAD_CSS*/` e `/*CHART_HEAD_JS*/`, de
+`analytics/report_structure/chart_head.{css,js}` --, entao o que mora aqui e so o
+`CHART_META` e a chamada de `describeChart()`, chamada de dentro de `_reactPreserveX()` e `_reactPlain()` -- os dois pontos de entrada de grafico do arquivo.
+
+Chamar do ponto de entrada, e nao de cada call site, e o que faz um grafico novo nascer com
+cabecalho. O do Boletim mantem o markup proprio (o titulo dele hospeda o botao de definicao)
+e o compartilhado o **reaproveita** em vez de criar um segundo.
+
+Coberto por `tests/test_chart_head_js.js`; o porque e o levantamento de quem faltava
+estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own header".
+
 ## Pending
 
 - **Confirmação visual num browser real** — o ambiente não tem browser, e a primeira rodada de

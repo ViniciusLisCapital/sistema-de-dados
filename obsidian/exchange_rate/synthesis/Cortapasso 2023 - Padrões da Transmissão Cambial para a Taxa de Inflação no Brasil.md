@@ -4,7 +4,7 @@
 **Tags:** #repasse-cambial #brasil #var #ipca #assimetria #metas-de-inflacao #selic
 **Source:** J.P. Cortapasso, 2023
 **Language:** Portuguese
-**Source file:** [[padrao_trasmissao_cambial (Cortapasso, J.P., 2023)]]
+**Source file:** [[padrao_transmissao_cambial (Cortapasso, 2023)]]
 
 ---
 

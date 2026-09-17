@@ -414,6 +414,12 @@ try {
     fatia('const PLOTLY_CONFIG = {', NL + '};'),
     fatia('function _bindPlotlyYAutofit(divId) {', CLOSE),
     fatia('function plotlyBaseLayout(extra) {', CLOSE),
+    // A linha de fonte de cada grafico das abas de modelo entra junto: ela e chamada de
+    // dentro do plotlyRenderAndBind, entao fatiar so ele deixaria o harness lancando por
+    // funcao ausente -- e isso lê como bug da pagina, que e o oposto do que o teste mede.
+    fatia('var MODEL_SRC = [', NL + '];'),
+    fatia('function _modelSrc(divId) {', CLOSE),
+    fatia('function renderModelSrc(divId, traces) {', CLOSE),
     fatia('function plotlyRenderAndBind(divId, traces, layoutExtra) {', CLOSE),
     'return { plotlyBaseLayout: plotlyBaseLayout, plotlyRenderAndBind: plotlyRenderAndBind };',
   ].join(NL))(PlotlyStub, globalDoc);

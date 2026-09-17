@@ -9,6 +9,8 @@
 <style>
 /*THEME_CSS*/
 
+/*CHART_HEAD_CSS*/
+
 body { font-family: var(--sans); background: var(--bg); color: var(--text); margin: 0; }
 .wrap { max-width: 1560px; margin: 0 auto; padding: 22px 26px 60px; }
 
@@ -248,8 +250,8 @@ a.axlink:hover { color: var(--lis-azul); }
     <div class="table-scroll"><table class="hier">
       <thead id="cpi-table-head"></thead><tbody id="cpi-table-body"></tbody>
     </table></div>
-    <div class="range-bar" id="cpi-range"><span>Range</span></div>
     <div class="chart" id="chart-cpi"></div>
+    <div class="range-bar" id="cpi-range"><span>Range</span></div>
     <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 
@@ -298,8 +300,8 @@ a.axlink:hover { color: var(--lis-azul); }
       </div>
       <button class="rb" id="cpi-drill-clear" style="margin-left:auto;">Clear</button>
     </div>
-    <div class="range-bar" id="cpi-drill-range"><span>Range</span></div>
     <div class="chart" id="chart-cpi-drill"></div>
+    <div class="range-bar" id="cpi-drill-range"><span>Range</span></div>
     <div class="hint">Follows the <b>Tree</b> and <b>Adjustment</b> pills above · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 </section>
@@ -327,8 +329,8 @@ a.axlink:hover { color: var(--lis-azul); }
     <div class="table-scroll"><table class="hier">
       <thead id="pce-table-head"></thead><tbody id="pce-table-body"></tbody>
     </table></div>
-    <div class="range-bar" id="pce-range"><span>Range</span></div>
     <div class="chart" id="chart-pce"></div>
+    <div class="range-bar" id="pce-range"><span>Range</span></div>
     <div class="hint">Tick a row to plot it · hover a row for caveats on that item · scroll/pinch to zoom, drag to pan (both axes), double-click to reset</div>
   </div>
 </section>
@@ -730,6 +732,41 @@ a.axlink:hover { color: var(--lis-azul); }
 /*REPORT_DATA*/
 /*Y_AUTOFIT_JS*/
 
+/*CHART_HEAD_JS*/
+
+// Title and source are the only two fixed strings in a chart header; the subtitle and the
+// period are rewritten on every render by describeChart(). A chart from this page leaves
+// it as a screenshot and travels on its own, away from the section heading and the notes:
+// it has to say what it is, on what metric, in what unit, from what source and over what
+// period. Where a selector changes what the series IS, the title is derived too.
+CH_CARD_SEL = '.card';
+var SRC_CPI = 'BLS — Consumer Price Index';
+var SRC_PCE = 'BEA — Personal Consumption Expenditures Price Index';
+var CHART_META = {
+  'chart-cpi':       {title: 'CPI — Selected Categories', source: SRC_CPI},
+  'chart-cpi-drill': {title: 'CPI Drill-Down — Selected Items', source: SRC_CPI},
+  'chart-pce':       {title: 'PCE Price Index — Selected Categories', source: SRC_PCE},
+};
+// Label of each control's active pill, read from the pill itself rather than from a copy
+// of the list -- a new option tomorrow shows up in the subtitle on its own.
+function _pillLabels(ids) {
+  var out = [];
+  if (!document.querySelector) return out;
+  (ids || []).forEach(function(id) {
+    if (!id) return;
+    var b = document.querySelector('#' + id + ' .pill.active');
+    if (b && b.textContent) out.push(b.textContent.trim());
+  });
+  return out;
+}
+var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function fmtPeriodoEN(iso) {
+  var p = String(iso).split('-');
+  return MONTHS_EN[parseInt(p[1], 10) - 1] + ' ' + p[0];
+}
+
+
 var D = REPORT_DATA;
 var COLORS = ['#1F2853','#BB9B1D','#418791','#02739B','#EA523A','#FBC852','#7A88A8','#2C5F66','#9A6B00','#5A6E96'];
 
@@ -998,7 +1035,7 @@ function alternarValores(divId) {
   Plotly.restyle(divId, {mode: VALORES[divId] ? 'lines+text' : 'lines'});
 }
 
-function renderLineChart(divId, specs, yTitle) {
+function renderLineChart(divId, specs, yTitle, desc) {
   var mostrar = !!VALORES[divId];
   var traces = specs.map(function(s) {
     var tr = {
@@ -1015,6 +1052,7 @@ function renderLineChart(divId, specs, yTitle) {
   var layout = mkLayout({yaxis: {title: {text: yTitle, font: {size: 11}}}});
   Plotly.react(divId, traces, layout, PLOTLY_CONFIG);
   dlHabilitar(divId, true);
+  _descChart(divId, traces, yTitle, desc);
 }
 
 // Contribution is a decomposition, so it is drawn as one: stacked bars for the parts
@@ -1028,7 +1066,7 @@ function renderLineChart(divId, specs, yTitle) {
 // The total line is black rather than a palette colour so it never reads as one more
 // component: the bars keep the same colour they had as lines, and the line on top is
 // unambiguously the thing they add up to.
-function renderContribChart(divId, specs, total, yTitle, dec) {
+function renderContribChart(divId, specs, total, yTitle, dec, desc) {
   var barTpl = '%{fullData.name}<br>%{x|%b %Y}: %{y:.' + dec + 'f} p.p.<extra></extra>';
   var traces = specs.map(function(s) {
     return {
@@ -1050,6 +1088,15 @@ function renderContribChart(divId, specs, total, yTitle, dec) {
   // Valores sobre o grafico ficam de fora aqui de proposito: sao ate 14 series de
   // barra empilhada, e imprimir um numero por segmento nao produz nada legivel.
   dlHabilitar(divId, false);
+  _descChart(divId, traces, yTitle, desc);
+}
+
+// The subtitle's unit is ALWAYS the chart's own Y-axis title, never a string written out
+// again at the call site: the two say the same thing, and a copy ages on its own.
+function _descChart(divId, traces, yTitle, desc) {
+  desc = desc || {};
+  describeChart(divId, traces, desc.bits, yTitle,
+                {titulo: desc.titulo, fmt: fmtPeriodoEN});
 }
 
 // Plain HTML range buttons calling Plotly.relayout with a range computed from the
@@ -1417,7 +1464,8 @@ function makeHierTab(opts) {
     })(tab().tree);
 
     if (!contrib) {
-      renderLineChart(opts.chartDivId, specs, yTitle());
+      renderLineChart(opts.chartDivId, specs, yTitle(),
+                      {bits: _pillLabels([opts.treeGroupId, opts.metricGroupId, opts.basisGroupId])});
       return;
     }
     // The headline's contribution to itself is its own change (its weight is 100 by
@@ -1428,7 +1476,8 @@ function makeHierTab(opts) {
     renderContribChart(opts.chartDivId, specs,
                        {dates: head.dates, values: head.values,
                         label: nodeLabel(anchor) + (mom ? ' — M/M' : ' — Y/Y')},
-                       yTitle(), decimalsFor(state.metric));
+                       yTitle(), decimalsFor(state.metric),
+                       {bits: _pillLabels([opts.treeGroupId, opts.metricGroupId, opts.basisGroupId])});
   }
 
   // Trocar de arvore ou de ajuste muda o conjunto de dados inteiro, entao as duas
@@ -1801,7 +1850,10 @@ function makeDrillSection(opts) {
               color: unico ? '#1F2853' : COLORS[i % COLORS.length],
               fill: unico};
     });
-    renderLineChart(opts.chartDivId, specs, '% Y/Y' + (basis === 'SA' ? ', SA' : ', NSA'));
+    renderLineChart(opts.chartDivId, specs,
+                    '% change vs. the same month a year earlier' +
+                    (basis === 'SA' ? ', seasonally adjusted' : ', not seasonally adjusted'),
+                    {bits: [lista.length + (lista.length === 1 ? ' item' : ' items')]});
   }
 
   return {

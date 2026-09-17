@@ -1,14 +1,18 @@
 # Exchange Rate Data Inventory
 
-**Purpose:** inventory of the data categories relevant to exchange rate (BRL) analysis, mapping each analytical category to what already exists in the database (`macro_brasil` / `macro_international` — see `domain/db/CLAUDE.md`; `macro_analytics` was discontinued in 2026-07) and to what's still missing. Meant to inform the exchange rate analysis agent (see `.claude/agents/cambio-analyst.md`) about which series are available to support each type of argument.
+**Purpose:** inventory of the data categories relevant to exchange rate (BRL) analysis — what each category is *for* analytically, and what already exists in the database (`macro_brasil` / `macro_international` — see `domain/db/CLAUDE.md`; `macro_analytics` was discontinued in 2026-07) and to what's still missing. Meant to inform the exchange rate analysis agent (see `.claude/agents/cambio-analyst.md`) about which series are available to support each type of argument.
 
-**Not cross-linked yet** to `exchange_rate_conceptual_map.md` (theory/bibliography) — that's left for a later step, by the user's decision. For now this file documents only the data side.
+**Cross-linked to the literature in two places.** Each section below opens with a **Why it matters** line naming the argument the category serves; the reverse direction — which theory each of these categories is evidence *for* — lives inside `../conceptual_maps/exchange_rate_conceptual_map.md`, whose clusters each carry a *Data that backs this cluster* block citing the section numbers used here. The reading list itself is `../recommended_bibliography/exchange_rate_bibliography.md`. That join is at **cluster** level only: individual concepts are not linked to individual series.
+
+**The Why-it-matters lines were merged in on 2026-09-10** from a second, presentation-layer copy of this inventory that lived in `team_materials/` (as `data_inventory.md`), when that folder was narrowed to presentation-only material. That copy carried the same 8 categories in the same order, minus the database/status columns — so only the analytical rationale was new, and the file was deleted rather than kept in parallel. Its category order is the one used here: the price itself, then the two fastest-moving determinants (carry, terms of trade), then balance-of-payments flow and stock measures, then market positioning.
 
 Technical details on schema, SGS codes and observation counts live in `analytics/brasil/exchange_rate/CLAUDE.md` — this file organizes the same information by analytical category instead of by table.
 
 ---
 
 ## 1. Spot price — ✓ resolved (2026-07)
+
+**Why it matters:** the dependent variable — every other category in this inventory exists to explain moves in this one series.
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
@@ -22,6 +26,8 @@ Script: `domain/db/brasil/bcb/cmb_ptax.py`. Daily series — historical load chu
 ---
 
 ## 2. Interest rate differential (carry)
+
+**Why it matters:** Selic and Fed Funds are the domestic and foreign legs of every carry argument (Verde's §3.1/§3.2 mental models). The **real ex-post** differential is the UIP-relevant comparison — it strips the pure inflation-differential effect out of the real-rate signal — while the **ex-ante** version is what markets are actually pricing, which is the input UIP and the fair-value models in the bibliography's cluster 2 actually need. The **cupom cambial** is the BCB's own named gauge for the cost of onshore dollar liquidity, Brazil's local instance of the CIP-basis concept, and Verde's tracked carry instrument (§3.4); DOL/WDO futures give the market-implied forward points directly.
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
@@ -40,6 +46,8 @@ Script: `domain/db/international/fred/diferenciais_juros.py`. Full history load 
 
 ## 3. Terms of trade / commodity prices
 
+**Why it matters:** the aggregate index is the signal behind every commodity-exporter currency argument (BEER's fundamental driver set, GSFEER's current-account channel). Individual commodity prices decompose *which* commodity is driving a move — needed to tell a structural, volume-driven surplus from a cyclical, price-driven one (Verde's §2.1/§2.2).
+
 | What we have | Table | Series | Note |
 |---|---|---|---|
 | Terms of trade index (PX/PM, base 2018=100) | `macro_brasil.cmb_termos_troca` | `termos_de_troca_funcex` (IPEADATA `FUNCEX12_TTR12`) | 1978 → today, monthly |
@@ -55,6 +63,8 @@ Script: `domain/db/brasil/ipea/cmb_termos_troca.py`. Source: Funcex, via the IPE
 
 ## 4. Balance of payments
 
+**Why it matters:** the flow-side counterpart to the trade-balance/capital-account identity at the base of the whole determination cluster. The FDI-vs-portfolio split is not cosmetic: FDI is the safest instrument in the capital-inflow riskiness ranking (Ostry et al. 2010), portfolio flows the riskier and more reversible counterpart — and that split is what the capital-controls literature (bibliography cluster 7) is built around, so tracking them separately is what lets crisis vulnerability be read at all.
+
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
 | Current account, trade balance+services, goods exports | `macro_brasil.cmb_balanco_pagmt` | `conta_corrente`, `balanca_comercial_servicos`, `exportacao_bens` | 2001 → today |
@@ -68,6 +78,8 @@ Script: `domain/db/brasil/bcb/cmb_balanco_pagmt.py`. BPM6 methodology.
 ---
 
 ## 5. FX flow (registered vs. contracted)
+
+**Why it matters:** registered flow is the broadest registered-channel measure, the empirical counterpart to the flow-supply/demand channel in the current-account-adjustment framework; contracted FX is the transactional, settlement-level view of the same market.
 
 Two distinct tables measuring different channels — **not substitutes for one another**:
 
@@ -98,6 +110,8 @@ Script: `domain/db/brasil/bcb/cmb_cambio_contratado.py`. ~46k observations.
 
 ## 6. International reserves and BCB intervention
 
+**Why it matters:** the stock side is how much ammunition the BCB has, central to every fixed/managed-rate defense argument in the bibliography's cluster 3. Banks' net FX spot position is the banking-system mirror of the carry trade (`posicao_vendida_carry_incentive` in the conceptual map, sourced from the BCB's own technical note) — who is actually short or long FX onshore. The swap position is the off-balance-sheet instrument the BCB uses *instead of* spot intervention, and the repo-line stock is temporary liquidity, distinct from a permanent reserves change. The intervention series are the flow side: what the BCB is doing right now, as opposed to what it holds.
+
 | What we have | Table | Series (main) | Frequency |
 |---|---|---|---|
 | Total reserves and by component (FX securities, deposits, IMF, SDR, gold, other assets) | `macro_brasil.cmb_reservas_bc` | `reserves_total_monthly`, `reserves_fx_*`, `reserves_imf_position`, `reserves_sdrs`, `reserves_gold_*`, `reserves_other_*` | monthly |
@@ -117,6 +131,8 @@ Script: `domain/db/brasil/bcb/cmb_reservas_bc.py`. ~19k observations total. Full
 
 ## 7. Real effective exchange rate (REER)
 
+**Why it matters:** the core equilibrium-valuation benchmark underlying BEER/GSDEER-style arguments. The peer set is what lets BRL's REER move be read relative to comparable currencies rather than in isolation — which matters more here than it would elsewhere, since the base's non-Brazil EM depth is otherwise thin (see bibliography cluster 3).
+
 | What we have | Table | Coverage |
 |---|---|---|
 | Real (broad) and nominal (broad) REER — Brazil, Mexico, Chile, Colombia | `macro_international.cmb_reer` | 1994 → today (BIS, full history) |
@@ -130,6 +146,8 @@ Script: `domain/db/international/bis/cmb_reer.py`. Source: BIS Statistics API.
 ---
 
 ## 8. Speculative positioning (FX futures)
+
+**Why it matters:** the standard futures-market positioning gauge, and the data behind Verde's §5.3 positioning-as-contrarian-signal mental model. Options-based positioning (skew, risk reversal) would be the volatility-market complement — it ties directly to the FX-options gap in bibliography cluster 1 (Garman-Kohlhagen and the options/risk-reversal primer), so the data gap and the literature gap here are the same gap seen from two sides.
 
 | What we have | Table | Series | Coverage |
 |---|---|---|---|
@@ -146,6 +164,8 @@ Script: `domain/db/international/cftc/cmb_cot_fx.py`. Source: CFTC Traders in Fi
 
 ## 9. Inflation differential and market expectations
 
+**Why it matters:** IPCA and US CPI are the two legs needed to turn the nominal Selic–Fed Funds spread into a real one (§2). Focus is the forward-looking domestic input the ex-ante differential needs, and the raw material for any credibility/anchoring argument (Verde's §1.7).
+
 | What we have | Table | Note |
 |---|---|---|
 | IPCA (28 series, incl. cores) | `macro_brasil.inflc_agregados` | 1980 → today |
@@ -160,7 +180,7 @@ Scripts: `domain/db/brasil/bcb/inflc_agregados.py`, `domain/db/brasil/bcb/expc_f
 
 ## 10. Domestic activity backdrop (context, not FX-specific)
 
-General `macro_brasil` series that help contextualize the domestic cycle (relevant for carry/country risk, but not "FX data" per se): `atv_ibcbr` (monthly GDP proxy), `atv_pib`, `atv_pim` (industrial production), `atv_pmc`/`atv_pms` (retail/services), `mt_pnad` (labor market), `mt_caged`, `cred_credito_amplo`, `cred_credito_familias`. Full table in `CLAUDE.md`.
+**Not an FX category, kept as context.** The presentation-layer copy merged in here dropped this section outright, on the grounds that it is general macro backdrop rather than FX-specific data — a fair call for a reading audience, but the series are worth keeping listed for the agent. General `macro_brasil` series that help contextualize the domestic cycle (relevant for carry/country risk, but not "FX data" per se): `atv_ibcbr` (monthly GDP proxy), `atv_pib`, `atv_pim` (industrial production), `atv_pmc`/`atv_pms` (retail/services), `mt_pnad` (labor market), `mt_caged`, `cred_credito_amplo`, `cred_credito_familias`. Full table in `CLAUDE.md`.
 
 On the US side, activity/inflation data today only exists ad hoc inside `analytics/oraculo/us/term_us.py` (via FRED) — there's no persistent `macro_us` schema equivalent to `macro_brasil` (already logged as a pending item in `CLAUDE.md`, "Média prioridade — US expandir dados").
 

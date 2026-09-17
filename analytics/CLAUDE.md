@@ -47,6 +47,7 @@ if it doesn't exist, so a new country needs no setup step.
 | `brasil/fiscal_policy/` | Panorama Fiscal (HTML report — receita/despesa GFSM+RTN, dívida líquida/DLSP, investimento federal por GND, impulso fiscal) | [`brasil/fiscal_policy/CLAUDE.md`](brasil/fiscal_policy/CLAUDE.md) |
 | `brasil/credit/` | Panorama de Crédito (HTML report — novo, substitui `credit_stress/`) | [`brasil/credit/CLAUDE.md`](brasil/credit/CLAUDE.md) |
 | `brasil/labor_market/` | Panorama de Mercado de Trabalho (HTML report — IBGE/PNAD + CAGED/MTE, só visualização) | [`brasil/labor_market/CLAUDE.md`](brasil/labor_market/CLAUDE.md) |
+| `brasil/structural_model/` | Modelo Estrutural (HTML report, 2026-09-17) — versão simplificada do modelo semiestrutural do BC, **estimada equação por equação**, com o Ridge do FX Report reestimado em trimestral como equação cambial. Hoje **uma aba só**: o painel de dados da curva de Phillips (IPCA 12m, expectativa Focus, hiato do BCB, variação do câmbio e do IC-Br em dólar, 2001T4→2026T3). Nenhuma equação estimada ainda | [`brasil/structural_model/CLAUDE.md`](brasil/structural_model/CLAUDE.md) |
 | `brasil/expectations/` | Panorama de Expectativas — Focus (HTML report, 2026-08-24 — 8 abas sobre as 3 tabelas `expc_focus*` e **nada mais**: sem meta, sem realizado, sem projeção do Copom) | [`brasil/expectations/CLAUDE.md`](brasil/expectations/CLAUDE.md) |
 | **`us/`** | | |
 | `us/inflation/` | US Inflation (HTML report — the CPI-U's two published trees plus the PCE price index, three tabs on one hierarchy-table structure). First report under `us/`, 2026-08 | [`us/inflation/CLAUDE.md`](us/inflation/CLAUDE.md) |
@@ -76,6 +77,13 @@ Two methods available — STL (in-process, the incumbent, ~391 series) and X-13A
 - `report.html` is a fixed template: HTML + CSS + Plotly.js from CDN, tabs via JS `display` toggling, nothing server-side.
 - Chart interaction is identical across all four: free pan/zoom on both axes (`dragmode:'pan'` + `scrollZoom:true`), plus a `_bindYAutofit()` helper that re-fits Y only when a rangeselector preset button moves X without an accompanying user gesture on Y — see [`.claude/rules/lis-dashboards.md`](../.claude/rules/lis-dashboards.md) for the full model and history. Same interaction, two implementations inside `exchange_rate/`: its model tabs came in with their own `_bindPlotlyYAutofit()`/`plotlyBaseLayout()`, kept as-is by the merge.
 - `data/` vs `referencia/` convention: `data/` holds what the scripts actually read/write (e.g. `inflation/data/ipca_bcb_series.csv`); `referencia/` holds context nothing reads (PDFs, literature, the original BCB model spec). Same split, repo-wide since 2026-07. `economic_activity/` needs neither — everything it reads is already in MySQL, no local data files at all.
+- **Every chart carries a 3-line header inside its own card** — title, a subtitle rebuilt on every
+  render, and `Fonte: … · <período>` taken from the series actually plotted. Shared since 2026-09-14
+  as `report_structure/chart_head.{css,js}` (`/*CHART_HEAD_CSS*/`, `/*CHART_HEAD_JS*/`); each report
+  still declares its own `CHART_META = {divId: {title, source}}` and calls `describeChart()` from
+  whatever function redraws the chart. `labor_market/` and `exchange_rate/` keep their own earlier
+  mechanism. `tests/test_chart_head_js.js` sweeps `analytics/**/report.html` so a report that plots
+  can no longer ship without one.
 - **Since 2026-08, the boilerplate pieces of this pattern (the theme CSS, the `_bindYAutofit` JS, the substitution/write-out plumbing) live in [`report_structure/`](report_structure/CLAUDE.md) as shared build-time assets, not hand-copy-pasted per report.** `inflation/` (fully migrated) was the pilot; `exchange_rate/` is partially migrated (JS + harness, not theme CSS — needs the 2026-07 reskin first); `economic_activity/` was built directly onto both markers from the start, no migration needed — see `report_structure/CLAUDE.md`'s Migration status.
 
 ## `brasil/painel_setores/`

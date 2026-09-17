@@ -4,7 +4,7 @@
 **Tags:** #pass-through #brazil #var #ipca #ipa #tradables #brl #inflation-targeting
 **Source:** Agnès Belaisch, IMF Working Paper, 2003
 **Language:** English
-**Source file:** [[depreciation_passtrought (Belaisch, 2003)]]
+**Source file:** [[depreciation_pass_through (Belaisch, 2003)]]
 
 ---
 

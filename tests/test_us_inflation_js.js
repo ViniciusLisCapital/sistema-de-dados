@@ -1052,8 +1052,11 @@ function ultimoDrill() {
 const g = ultimoDrill();
 ok(!!g, 'o grafico do drill-down foi plotado');
 ok(g.traces.length === 3, 'nasce com 3 componentes marcados', g.traces.length);
-ok(g.layout.yaxis.title.text.indexOf('% Y/Y') === 0,
-   'o eixo Y diz Y/Y e o ajuste', g.layout.yaxis.title.text);
+// O eixo diz o que a serie MEDE, nao a sigla dela ("% Y/Y" nao informa contra o que) --
+// entao a assercao cobra as duas metades do significado, nao a abreviacao.
+ok(/a year earlier/.test(g.layout.yaxis.title.text)
+   && /(not seasonally|seasonally) adjusted/.test(g.layout.yaxis.title.text),
+   'o eixo Y diz a comparacao e o ajuste', g.layout.yaxis.title.text);
 ok(g.layout.dragmode === 'pan' && g.config.scrollZoom === true,
    'e o grafico segue o modelo de interacao da pagina');
 

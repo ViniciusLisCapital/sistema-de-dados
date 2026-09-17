@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo Estrutural — LIS Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+/*THEME_CSS*/
+/*CHART_HEAD_CSS*/
+
+.page { padding: 24px 32px; }
+
+/* ── Cabecalho da pagina ── */
+.hdr { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+       padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
+       margin-bottom: 18px; gap: 16px; flex-wrap: wrap; }
+.hdr-logo { font-family: Georgia, serif; font-size: 22px; letter-spacing: 0.06em; color: var(--text); }
+.hdr-logo span { color: var(--lis-dourado); }
+.hdr-center { font-family: var(--cond); font-size: 13px; font-weight: 600; letter-spacing: 0.2em;
+              text-transform: uppercase; color: var(--text2); }
+.hdr-right { display: flex; align-items: center; gap: 12px; }
+.hdr-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.hdr-badge { font-family: var(--mono); font-size: 10px; padding: 4px 12px; border-radius: 100px;
+             background: rgba(2,115,155,0.08); border: 1px solid rgba(2,115,155,0.25); color: var(--lis-azul-cl); }
+
+/* ── Abas ── */
+.tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab-btn { font-family: var(--cond); font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+           text-transform: uppercase; padding: 9px 20px; border-radius: 9px; cursor: pointer;
+           border: 1px solid var(--border); background: var(--card-bg); color: var(--muted); transition: all .15s; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { background: rgba(31,40,83,0.06); border-color: rgba(31,40,83,0.28); color: var(--text); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Prosa ──
+   Justificada e na largura do bloco, com hifenizacao. O `lang="pt-BR"` no <html> e o
+   que faz o browser hifenizar; sem ele o justificado abre rios de espaco branco. */
+.prose { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+.intro { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+         padding: 18px 22px; margin-bottom: 16px; }
+.intro h2 { font-family: var(--cond); font-size: 19px; font-weight: 600; letter-spacing: 0.04em;
+            color: var(--text); margin-bottom: 8px; }
+.intro p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.intro p + p { margin-top: 9px; }
+.intro .eq { font-family: var(--mono); font-size: 12px; color: var(--text); background: rgba(31,40,83,0.04);
+             border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 11px 0;
+             text-align: left; hyphens: none; overflow-x: auto; }
+.chart-hint { font-family: var(--mono); font-size: 10px; color: var(--muted);
+              padding: 2px 2px 14px; letter-spacing: 0.02em; }
+.flag { font-family: var(--mono); font-size: 10.5px; color: var(--text2); background: rgba(187,155,29,0.10);
+        border: 1px solid rgba(187,155,29,0.35); border-radius: 8px; padding: 7px 12px; margin-bottom: 16px; }
+
+/* ── Cartoes de grafico ──
+   O div do grafico e filho DIRETO do cartao: e a partir dele que o cabecalho se
+   ancora. A altura vai numa classe propria, e nao numa regra `.chart-card > div`,
+   para nao carimbar altura no cabecalho nem na regua de tempo. */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(540px, 1fr)); gap: 14px; }
+.chart-card { position: relative; background: var(--card-bg); border: 1px solid var(--border);
+              border-radius: 12px; padding: 4px 6px 8px; }
+.chart-plot { width: 100%; height: 340px; }
+.card-tools { position: absolute; top: 12px; right: 14px; z-index: 5;
+              display: flex; align-items: center; gap: 8px; }
+
+.dl-toggle { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.05em; padding: 5px 11px;
+             border-radius: 8px; cursor: pointer; border: 1px solid rgba(2,115,155,0.4);
+             background: rgba(2,115,155,0.06); color: var(--lis-azul-cl); transition: all .2s;
+             user-select: none; display: flex; align-items: center; gap: 6px; }
+.dl-toggle:hover { border-color: rgba(2,115,155,0.7); background: rgba(2,115,155,0.1); }
+.dl-toggle.on { background: rgba(2,115,155,0.18); border-color: rgba(2,115,155,0.7); font-weight: 600; }
+.dl-toggle .toggle-icon { width: 11px; height: 11px; border-radius: 3px; border: 1.5px solid currentColor; }
+.dl-toggle.on .toggle-icon { background: var(--lis-azul-cl); }
+
+/* ── Regua de tempo: ABAIXO do grafico, dentro do mesmo cartao ── */
+.range-pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; padding: 8px 0 2px; }
+.range-pill { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.03em;
+              padding: 4px 13px; border: 1px solid rgba(31,40,83,0.15); border-radius: 20px;
+              background: rgba(31,40,83,0.03); color: var(--muted); cursor: pointer; transition: all .15s; }
+.range-pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
+.range-pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); }
+
+/* ── Ultimo / maxima / minima ── */
+.stats-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 2px 12px 8px; }
+.stat-card { background: rgba(31,40,83,0.025); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+.stat-label { font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase;
+              color: var(--muted); margin-bottom: 3px; }
+.stat-val { font-family: var(--cond); font-size: 21px; font-weight: 600; color: var(--text); line-height: 1; }
+.stat-sub { font-family: var(--mono); font-size: 9.5px; color: var(--muted); margin-top: 3px; }
+.up { color: var(--lis-verde) !important; }
+.dn { color: var(--lis-laranja) !important; }
+
+/* ── Botao de definicao + cartao ── */
+.info-btn { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px;
+            padding: 0; flex: 0 0 auto; font-family: var(--mono); font-size: 9px; font-weight: 600;
+            line-height: 1; color: var(--muted); background: transparent; border: 1px solid var(--border);
+            border-radius: 50%; cursor: pointer; transition: all .15s; }
+.info-btn:hover, .info-btn.pinned { color: #fff; background: var(--lis-azul-cl); border-color: var(--lis-azul-cl); }
+.info-pop { position: absolute; z-index: 300; display: none; max-width: 380px; background: var(--card-bg);
+            border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 6px 24px rgba(31,40,83,0.16);
+            padding: 12px 14px; }
+.info-pop.show { display: block; }
+.info-pop h4 { font-family: var(--cond); font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.info-pop .info-full { font-size: 12px; color: var(--text2); line-height: 1.45; margin-top: 5px; }
+.info-pop .info-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.info-pop .info-unit { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 9px;
+                       padding-top: 8px; border-top: 1px solid var(--border); }
+
+/* ── Tabela do painel ── */
+.fold { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+        margin-top: 16px; padding: 0 18px; }
+.fold > summary { font-family: var(--cond); font-size: 16px; font-weight: 600; letter-spacing: 0.04em;
+                  color: var(--text); cursor: pointer; padding: 14px 0; list-style: none; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::before { content: '▸ '; color: var(--muted); }
+.fold[open] > summary::before { content: '▾ '; }
+.fold .fold-body { padding-bottom: 16px; }
+.tbl-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+table.data-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+table.data-table th { position: sticky; top: 0; background: var(--card-bg); text-align: right;
+                      font-weight: 500; font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase;
+                      color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--border); }
+table.data-table th:first-child, table.data-table td:first-child { text-align: left; }
+table.data-table td { text-align: right; padding: 5px 10px; color: var(--text2);
+                      border-bottom: 1px solid rgba(31,40,83,0.05); }
+table.data-table tr.aberto td { color: var(--muted); font-style: italic; background: rgba(31,40,83,0.03); }
+.tbl-note { font-size: 11.5px; color: var(--muted); margin-top: 9px; line-height: 1.5; }
+
+.ftr { text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 18px 0 6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr">
+    <div class="hdr-logo">LIS <span>CAPITAL</span></div>
+    <div class="hdr-center">Modelo Estrutural — Brasil</div>
+    <div class="hdr-right">
+      <div class="hdr-badge" id="hdrBadge">TRIMESTRAL</div>
+      <div class="hdr-date" id="hdrDate"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-phillips" type="button">Curva de Phillips</button>
+  </div>
+
+  <!-- ═══════════ ABA — CURVA DE PHILLIPS ═══════════ -->
+  <div class="tab-panel active" id="tab-phillips">
+
+    <div class="intro">
+      <h2>As cinco séries que explicam a inflação</h2>
+      <p class="prose">Esta página reúne os dados de uma única relação: a que diz que a inflação de
+      um trimestre é, em boa parte, a inflação do trimestre anterior e o que se esperava dela, mais
+      três pressões que empurram para cima ou para baixo — o quanto a economia está aquecida, o
+      quanto o câmbio andou e o quanto as commodities encareceram.</p>
+      <div class="eq" id="eqBox">inflação = (inércia) × inflação anterior + (1 − inércia) × expectativa
++ (sensibilidade ao aquecimento) × hiato
++ (repasse cambial) × variação do câmbio
++ (repasse de commodities) × variação do IC-Br em dólar</div>
+      <p class="prose">Os pesos ainda não foram estimados: por enquanto o que está aqui são os
+      insumos, para conferir se cada série mede o que deveria medir e cobre o período necessário
+      antes de qualquer conta. Tudo é trimestral, porque é a frequência em que a estimativa do
+      aquecimento da economia é publicada — e misturar frequências faria a conta depender de uma
+      interpolação que ninguém observou.</p>
+      <p class="prose" id="introNota"></p>
+    </div>
+
+    <div class="flag" id="flagAberto" style="display:none"></div>
+
+    <div class="chart-hint">Todo gráfico: scroll/pinch para zoom (2 eixos) · arraste para mover (2 eixos) · double-click para resetar</div>
+
+    <div class="grid" id="chartGrid"></div>
+
+    <details class="fold" id="foldTabela">
+      <summary>Painel trimestral, trimestre a trimestre</summary>
+      <div class="fold-body">
+        <div class="tbl-wrap"><table class="data-table" id="tblPainel"></table></div>
+        <p class="tbl-note prose" id="tblNota"></p>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="ftr" id="ftr">LIS Capital · Modelo Estrutural</div>
+</div>
+
+<script>
+/*REPORT_DATA*/
+
+if (typeof REPORT_DATA === 'undefined') {
+  document.body.innerHTML = '<div style="font-family:system-ui;padding:60px;max-width:640px;margin:0 auto">'
+    + '<h2>Este é o modelo da página, não a página</h2>'
+    + '<p>Abra o arquivo gerado em <code>reports/brasil/Structural Model.html</code>.</p></div>';
+  throw new Error('template aberto direto');
+}
+
+var D = REPORT_DATA;
+
+// ── Formatacao BR ─────────────────────────────────────────────────────────────
+function fmt(v, dec) {
+  if (v == null || isNaN(v)) return '—';
+  dec = (dec == null) ? 2 : dec;
+  return v.toFixed(dec).replace('.', ',');
+}
+// Rotulo sobre o ponto: TRUNCA, nao arredonda -- 16,951 vira "16,9", nao "17,0".
+function fmtLabel(v) {
+  if (v == null || isNaN(v)) return '';
+  var t = (v < 0 ? -1 : 1) * Math.floor(Math.abs(v) * 10) / 10;
+  return t.toFixed(1).replace('.', ',') + '%';
+}
+
+// ── Cores de serie ────────────────────────────────────────────────────────────
+// Qualquer par da paleta tem dE2000 >= 20,8. PALETTE[0] (navy da marca) fica
+// reservado para a serie de referencia do grafico -- aqui, a variavel que a
+// equacao explica.
+var PALETTE = ['#1F2853', '#EA523A', '#418791', '#BB9B1D', '#8E44AD', '#1565C0', '#5D6B1F',
+               '#AD1457', '#795548', '#7CB342', '#F06292', '#64B5F6', '#9E9E9E', '#B39DDB'];
+var SERIES_DASH = ['solid', 'dash', 'dot'];
+function assignSeriesColors(cats, defaults, fixos) {
+  fixos = fixos || {};
+  var ordem = [];
+  (defaults || []).forEach(function (b) {
+    cats.forEach(function (c) { if (c.base === b && ordem.indexOf(c) < 0) ordem.push(c); });
+  });
+  cats.forEach(function (c) { if (ordem.indexOf(c) < 0) ordem.push(c); });
+  var n = PALETTE.length - 1;
+  var k = 0;
+  ordem.forEach(function (c) {
+    if (fixos[c.base]) { c.color = fixos[c.base]; c.dash = 'solid'; return; }
+    c.color = PALETTE[1 + (k % n)];
+    c.dash = SERIES_DASH[Math.min(SERIES_DASH.length - 1, Math.floor(k / n))];
+    k++;
+  });
+  return cats;
+}
+
+// ── Cartao de definicao ───────────────────────────────────────────────────────
+var _pop = null, _pinned = null;
+function _ensurePop() {
+  if (_pop) return _pop;
+  _pop = document.createElement('div');
+  _pop.className = 'info-pop';
+  document.body.appendChild(_pop);
+  _pop.addEventListener('mouseleave', function () { if (!_pinned) hideInfo(); });
+  document.addEventListener('click', function (e) {
+    if (_pinned && !_pop.contains(e.target) && e.target !== _pinned) hideInfo();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideInfo(); });
+  return _pop;
+}
+function hideInfo() {
+  if (!_pop) return;
+  _pop.classList.remove('show');
+  if (_pinned) { _pinned.classList.remove('pinned'); _pinned = null; }
+}
+function showInfo(btn, label, info) {
+  var pop = _ensurePop();
+  var html = '<h4>' + label + '</h4>';
+  // `full` so entra quando acrescenta algo ao rotulo que ja esta na tela.
+  if (info.full && info.full !== label) html += '<div class="info-full">' + info.full + '</div>';
+  if (info.desc) html += '<div class="info-desc">' + info.desc + '</div>';
+  if (info.eixo) html += '<div class="info-unit">Unidade: ' + info.eixo + '</div>';
+  pop.innerHTML = html;
+  pop.classList.add('show');
+  var r = btn.getBoundingClientRect();
+  var w = pop.offsetWidth || 380, h = pop.offsetHeight || 140;
+  var left = r.left + window.scrollX;
+  var maxLeft = window.scrollX + document.documentElement.clientWidth - w - 12;
+  if (left > maxLeft) left = Math.max(window.scrollX + 12, maxLeft);
+  var top = r.bottom + window.scrollY + 6;
+  if (r.bottom + h + 18 > document.documentElement.clientHeight) top = r.top + window.scrollY - h - 6;
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+}
+function attachInfo(hostEl, key, label) {
+  var info = D.info[key];
+  if (!info || (!info.full && !info.desc)) return;
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'info-btn';
+  b.textContent = 'i';
+  b.setAttribute('aria-label', 'Definição de ' + label);
+  b.addEventListener('mouseenter', function () { if (!_pinned) showInfo(b, label, info); });
+  b.addEventListener('mouseleave', function () {
+    if (_pinned) return;
+    setTimeout(function () { if (!_pinned && _pop && !_pop.matches(':hover')) hideInfo(); }, 120);
+  });
+  b.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (_pinned === b) { hideInfo(); return; }
+    hideInfo();
+    _pinned = b; b.classList.add('pinned');
+    showInfo(b, label, info);
+  });
+  hostEl.appendChild(b);
+  return b;
+}
+
+// ── Plotly: config e layout ───────────────────────────────────────────────────
+var PLOTLY_CONFIG = {
+  responsive: true,
+  displayModeBar: 'hover',
+  displaylogo: false,
+  modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+  scrollZoom: true,
+};
+function mkLayout(extra) {
+  var base = {
+    // 'closest', e nao 'x unified', por causa do eixo trimestral: o cabecalho do
+    // hover unificado imprime a data do ponto, e a data do ponto e o primeiro mes
+    // do trimestre -- diria "abr/2026" para o que a fonte chama 2026T2, dois nomes
+    // para a mesma observacao. Aqui o rotulo do trimestre vai dentro do proprio
+    // hover de cada serie, escrito como a fonte o escreve.
+    hovermode: 'closest',
+    dragmode: 'pan',
+    hoverlabel: { bgcolor: '#1F2853', bordercolor: '#1F2853',
+                  font: { family: 'Barlow', size: 12, color: '#fff' } },
+    showlegend: false,
+    margin: { l: 52, r: 18, t: 8, b: 34 },
+    height: 340,
+    shapes: [],
+    xaxis: {
+      type: 'date',
+      tickformat: '%Y',
+      showgrid: false, showline: true, linecolor: 'rgba(31,40,83,0.1)',
+      tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
+      rangeslider: { visible: false },
+    },
+    yaxis: {
+      gridcolor: 'rgba(31,40,83,0.06)', zeroline: false,
+      tickfont: { family: 'JetBrains Mono', size: 10, color: '#7A88A8' },
+      titlefont: { family: 'Barlow', size: 11, color: '#7A88A8' },
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'Barlow, sans-serif', color: '#1F2853', size: 12 },
+  };
+  if (!extra) return base;
+  Object.keys(extra).forEach(function (k) {
+    if (k === 'xaxis' || k === 'yaxis') base[k] = Object.assign({}, base[k], extra[k]);
+    else base[k] = extra[k];
+  });
+  return base;
+}
+
+// ── Regua de tempo ────────────────────────────────────────────────────────────
+// `[from, to]` sai SEMPRE dos dados reais do grafico, inclusive no "Tudo" -- nunca
+// de `autorange`, que devolve a extensao mais o padding do Plotly e abre a janela
+// com anos vazios depois do ultimo ponto. A folga nas pontas e meio passo da propria
+// serie (~45 dias num eixo trimestral), para o primeiro e o ultimo ponto nao
+// encostarem na borda.
+function _meioPasso(dates) {
+  if (dates.length < 2) return 45 * 864e5;
+  return (Date.parse(dates[dates.length - 1]) - Date.parse(dates[dates.length - 2])) / 2;
+}
+function _iso(ms) { return new Date(ms).toISOString().slice(0, 10); }
+function quickRangeOptions(dates) {
+  if (!dates.length) return [];
+  var pad = _meioPasso(dates);
+  var hiMs = Date.parse(dates[dates.length - 1]) + pad;
+  var loMs = Date.parse(dates[0]) - pad;
+  function back(anos) {
+    var d = new Date(hiMs);
+    d.setUTCFullYear(d.getUTCFullYear() - anos);
+    return Math.max(d.getTime(), loMs);
+  }
+  return [
+    { label: '3a',  from: _iso(back(3)),  to: _iso(hiMs) },
+    { label: '5a',  from: _iso(back(5)),  to: _iso(hiMs) },
+    { label: '10a', from: _iso(back(10)), to: _iso(hiMs) },
+    { label: 'Tudo', from: _iso(loMs),    to: _iso(hiMs) },
+  ];
+}
+function renderQuickRangeButtons(containerEl, divId, dates, ativo) {
+  containerEl.innerHTML = '';
+  var opts = quickRangeOptions(dates);
+  opts.forEach(function (opt, i) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'range-pill' + (i === ativo ? ' active' : '');
+    btn.textContent = opt.label;
+    btn.addEventListener('click', function () {
+      Array.prototype.forEach.call(containerEl.children, function (c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      Plotly.relayout(divId, { 'xaxis.range': [opt.from, opt.to] });
+    });
+    containerEl.appendChild(btn);
+  });
+  return opts;
+}
+
+/*Y_AUTOFIT_JS*/
+
+/*CHART_HEAD_JS*/
+
+// Titulo e fonte de cada grafico. Sao o unico texto fixo do cartao: o subtitulo e o
+// periodo sao reescritos a cada render por describeChart().
+var CHART_META = {
+  'ch-infl':   { title: 'Inflação corrente e esperada', source: 'IBGE e Banco Central (pesquisa Focus)' },
+  'ch-hiato':  { title: 'Hiato do produto', source: 'Banco Central, anexo do Relatório de Política Monetária' },
+  'ch-cambio': { title: 'Variação do câmbio', source: 'Banco Central, PTAX venda' },
+  'ch-icbr':   { title: 'Variação das commodities em dólar', source: 'Banco Central (série 29042)' },
+};
+
+// ── Os quatro graficos ────────────────────────────────────────────────────────
+// Inflacao e expectativa dividem UM grafico: estao na mesma unidade, e a equacao diz
+// que a inflacao e uma media ponderada das duas -- lidas em cartoes separados, a
+// distancia entre elas, que e o que a relacao afirma, some. As outras tres tem
+// unidades e escalas proprias e ficam cada uma no seu.
+var CHARTS = [
+  { div: 'ch-infl',   keys: ['ipca_12m', 'pi_e'], eixo: 'variação do IPCA em 12 meses, %',
+    zero: false, fill: false, fixo: 'ipca_12m' },
+  { div: 'ch-hiato',  keys: ['hiato'], eixo: 'produto efetivo − potencial, % do potencial',
+    zero: true, fill: true },
+  { div: 'ch-cambio', keys: ['de'], eixo: 'variação da taxa média do trimestre, %',
+    zero: true, fill: true },
+  { div: 'ch-icbr',   keys: ['pi_star_usd'], eixo: 'variação da média do trimestre, %',
+    zero: true, fill: true },
+];
+
+var LABELS_ON = {};   // por div: o botao "Dados no gráfico" esta ligado?
+
+function _step(n) { return n > 60 ? 5 : n > 30 ? 3 : 1; }
+
+/* Marcadores coloridos por variacao: verde subiu, vermelho caiu. So em grafico de UMA
+   serie -- com duas, a cor do ponto competiria com a cor da linha, que e o que separa
+   as series uma da outra. */
+function _coresPorVariacao(vals) {
+  return vals.map(function (v, i) {
+    if (i === 0 || v == null || vals[i - 1] == null) return 'rgba(31,40,83,0.6)';
+    return v >= vals[i - 1] ? 'rgba(65,135,145,0.7)' : 'rgba(234,82,58,0.7)';
+  });
+}
+
+function _traces(cfg) {
+  var n = D.x.length, st = _step(n);
+  var cats = cfg.keys.map(function (k) { return { base: k }; });
+  var fixos = {};
+  if (cfg.fixo) fixos[cfg.fixo] = PALETTE[0];
+  assignSeriesColors(cats, cfg.keys, fixos);
+  var uma = cfg.keys.length === 1;
+
+  return cats.map(function (c) {
+    var vals = D.s[c.base];
+    var nome = D.info[c.base].nome;
+    var tr = {
+      type: 'scatter',
+      mode: LABELS_ON[cfg.div] ? 'lines+markers+text' : 'lines+markers',
+      name: nome,
+      x: D.x, y: vals,
+      connectgaps: false,
+      line: { color: c.color, width: 2, shape: 'spline', smoothing: 0.25, dash: c.dash || 'solid' },
+      marker: { color: uma ? _coresPorVariacao(vals) : c.color, size: 3 },
+      text: vals.map(function (v, i) { return i % st === 0 ? fmtLabel(v) : ''; }),
+      textposition: 'top center',
+      textfont: { family: 'JetBrains Mono', size: 9, color: c.color },
+      customdata: vals.map(function (v, i) { return [D.rot[i], fmt(v) + '%']; }),
+      hovertemplate: '<b>%{customdata[0]}</b><br>' + nome + ': %{customdata[1]}<extra></extra>',
+    };
+    if (cfg.fill && uma) { tr.fill = 'tozeroy'; tr.fillcolor = 'rgba(31,40,83,0.06)'; }
+    return tr;
+  });
+}
+
+/* A faixa cinza do trimestre em aberto. Sempre passada, mesmo vazia: com
+   `Plotly.react`, um layout SEM a chave herda as formas do desenho anterior, e a
+   marca reapareceria num grafico que nao a tem. */
+function _shapesAberto() {
+  var a = D.meta.aberto;
+  if (!a) return [];
+  return [{ type: 'rect', xref: 'x', yref: 'paper', x0: a.x0, x1: a.x1, y0: 0, y1: 1,
+            fillcolor: 'rgba(31,40,83,0.055)', line: { width: 0 }, layer: 'below' }];
+}
+
+function _statsHtml(key) {
+  var vals = D.s[key], rot = D.rot;
+  var iUlt = -1, iMax = -1, iMin = -1;
+  for (var i = 0; i < vals.length; i++) {
+    if (vals[i] == null) continue;
+    iUlt = i;
+    if (iMax < 0 || vals[i] > vals[iMax]) iMax = i;
+    if (iMin < 0 || vals[i] < vals[iMin]) iMin = i;
+  }
+  if (iUlt < 0) return '';
+  function card(lab, i, cls) {
+    return '<div class="stat-card"><div class="stat-label">' + lab + '</div>'
+         + '<div class="stat-val' + (cls ? ' ' + cls : '') + '">' + fmt(vals[i]) + '</div>'
+         + '<div class="stat-sub">' + rot[i] + '</div></div>';
+  }
+  return card('Último', iUlt, '') + card('Máxima', iMax, 'up') + card('Mínima', iMin, 'dn');
+}
+
+function montarCartao(cfg) {
+  var card = document.createElement('div');
+  card.className = 'chart-card';
+
+  var tools = document.createElement('div');
+  tools.className = 'card-tools';
+  cfg.keys.forEach(function (k) { attachInfo(tools, k, D.info[k].nome); });
+  var dl = document.createElement('div');
+  dl.className = 'dl-toggle';
+  dl.innerHTML = '<span class="toggle-icon"></span> Dados no gráfico';
+  dl.addEventListener('click', function () {
+    LABELS_ON[cfg.div] = !LABELS_ON[cfg.div];
+    dl.classList.toggle('on', !!LABELS_ON[cfg.div]);
+    var m = LABELS_ON[cfg.div] ? 'lines+markers+text' : 'lines+markers';
+    Plotly.restyle(cfg.div, { mode: m });
+  });
+  tools.appendChild(dl);
+  card.appendChild(tools);
+
+  // O cabecalho ja vem montado aqui: assim a ordem dentro do cartao fica sob controle
+  // (cabecalho, resumo, grafico, regua) em vez de depender de onde o ajudante o insere.
+  //
+  // E o cartao ja entrega o quadro PRONTO em `_chFrame`. describeChart() so procura um
+  // cabecalho existente quando esse campo esta vazio, e a procura dele varre
+  // `card.children` com `.filter` -- que e um metodo de Array e nao de HTMLCollection,
+  // o objeto que um navegador devolve ali. Entregando o quadro montado, aquela varredura
+  // nao chega a rodar.
+  var head = document.createElement('div');
+  head.className = 'chart-head';
+  var partes = {};
+  ['chart-title', 'chart-sub', 'chart-src'].forEach(function (cl) {
+    var d = document.createElement('div'); d.className = cl; head.appendChild(d);
+    partes[cl] = d;
+  });
+  card.appendChild(head);
+  card._chFrame = { head: head, title: partes['chart-title'],
+                    sub: partes['chart-sub'], src: partes['chart-src'] };
+
+  var stats = document.createElement('div');
+  stats.className = 'stats-mini';
+  stats.innerHTML = _statsHtml(cfg.keys[0]);
+  card.appendChild(stats);
+
+  var plot = document.createElement('div');
+  plot.id = cfg.div;
+  plot.className = 'chart-plot';
+  card.appendChild(plot);
+
+  var pills = document.createElement('div');
+  pills.className = 'range-pills';
+  pills.id = 'rp-' + cfg.div;
+  card.appendChild(pills);
+
+  return card;
+}
+
+function desenhar(cfg) {
+  var traces = _traces(cfg);
+  var yextra = { title: cfg.eixo, ticksuffix: '%' };
+  if (cfg.zero) { yextra.zeroline = true; yextra.zerolinecolor = 'rgba(31,40,83,0.25)'; yextra.zerolinewidth = 1; }
+
+  Plotly.newPlot(cfg.div, traces, mkLayout({ yaxis: yextra, shapes: _shapesAberto() }), PLOTLY_CONFIG);
+  _bindYAutofit(cfg.div);
+  describeChart(cfg.div, traces, [], cfg.eixo, { freq: 'tri' });
+
+  // A janela da PRIMEIRA pintura tambem e calculada, nao `autorange` -- e a unica
+  // vista que ninguem pede clicando, e por isso a que costuma passar despercebida.
+  var opts = renderQuickRangeButtons(document.getElementById('rp-' + cfg.div), cfg.div, D.x,
+                                     quickRangeOptions(D.x).length - 1);
+  var tudo = opts[opts.length - 1];
+  if (tudo) Plotly.relayout(cfg.div, { 'xaxis.range': [tudo.from, tudo.to] });
+}
+
+// ── Tabela do painel ──────────────────────────────────────────────────────────
+function montarTabela() {
+  var cols = D.ordem;
+  var h = '<thead><tr><th>Trimestre</th>';
+  cols.forEach(function (c) { h += '<th>' + D.info[c].nome + '</th>'; });
+  h += '</tr></thead><tbody>';
+  for (var i = D.x.length - 1; i >= 0; i--) {
+    h += '<tr' + (D.completo[i] ? '' : ' class="aberto"') + '><td>' + D.rot[i]
+       + (D.completo[i] ? '' : ' (em aberto)') + '</td>';
+    cols.forEach(function (c) { h += '<td>' + fmt(D.s[c][i]) + '</td>'; });
+    h += '</tr>';
+  }
+  document.getElementById('tblPainel').innerHTML = h + '</tbody>';
+
+  var nota = 'Do trimestre mais recente para o mais antigo. Todos os valores em por cento: '
+    + 'as duas primeiras colunas são acumulados de doze meses, o hiato é um nível e as duas '
+    + 'últimas são a variação dentro do próprio trimestre.';
+  if (D.meta.aberto) {
+    nota += ' A linha de ' + D.meta.aberto.rot + ' está marcada porque o trimestre ainda não '
+      + 'fechou — ela existe para não esconder o dado mais recente, mas não entra em conta nenhuma.';
+  }
+  document.getElementById('tblNota').textContent = nota;
+}
+
+// ── Abas ──────────────────────────────────────────────────────────────────────
+function activateTab(id) {
+  Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) {
+    b.classList.toggle('active', b.getAttribute('data-tab') === id);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.tab-panel'), function (p) {
+    p.classList.toggle('active', p.id === id);
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) {
+  b.addEventListener('click', function () { activateTab(b.getAttribute('data-tab')); });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+function init() {
+  document.getElementById('hdrDate').textContent = D.meta.gerado;
+  document.getElementById('hdrBadge').textContent = D.meta.n + ' TRIMESTRES';
+  document.getElementById('ftr').textContent =
+    'LIS Capital · Modelo Estrutural · ' + D.meta.ini + ' a ' + D.meta.fim;
+
+  document.getElementById('introNota').textContent =
+    'A série mais curta é o hiato do produto, que começa em ' + _inicioDe('hiato')
+    + ' — é ela que define de quando em diante a equação pode ser estimada. As demais vão até '
+    + D.meta.ini + '.';
+
+  if (D.meta.aberto) {
+    var f = document.getElementById('flagAberto');
+    f.style.display = '';
+    f.textContent = 'A faixa cinza no fim de cada gráfico é ' + D.meta.aberto.rot
+      + ', um trimestre que ainda não fechou: o número existe, mas foi calculado com parte dos '
+      + 'meses. O último trimestre inteiro é ' + D.meta.fim_completo + '.';
+  }
+
+  var grid = document.getElementById('chartGrid');
+  CHARTS.forEach(function (cfg) { grid.appendChild(montarCartao(cfg)); });
+  CHARTS.forEach(desenhar);
+  montarTabela();
+}
+
+function _inicioDe(key) {
+  var v = D.s[key];
+  for (var i = 0; i < v.length; i++) { if (v[i] != null) return D.rot[i]; }
+  return D.meta.ini;
+}
+
+init();
+</script>
+</body>
+</html>

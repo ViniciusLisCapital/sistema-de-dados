@@ -1,0 +1,11 @@
+{
+  "window": 120,
+  "min_train": 60,
+  "horizons": [
+    1
+  ],
+  "specs": [
+    "fundamentals"
+  ],
+  "built_at": "2026-09-14T16:12:35"
+}

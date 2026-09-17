@@ -2,8 +2,13 @@
 Gerador do Panorama de Inflacao em HTML.
 
 Le a decomposicao do IPCA e IPCA-15 por subitem de macro_brasil.inflc_decomposicao
-(join com macro_brasil.inflc_dim), mescla com os agregados BCB/SGS (CSV) e
-injeta no template report.html, gerando um arquivo HTML autocontido.
+(join com macro_brasil.inflc_dim), mescla com os agregados BCB/SGS
+(macro_brasil.inflc_agregados) e injeta no template report.html, gerando um
+arquivo HTML autocontido.
+
+Todo insumo vem do MySQL: nao ha arquivo buscado por fora, entao o botao
+Atualizar do calendario alcanca tudo o que este relatorio le, e o Regerar nao
+tem passo proprio a rodar antes de montar o HTML.
 
 Uso:
     uv run python analytics/brasil/inflation/generate_report.py
@@ -16,14 +21,12 @@ from pathlib import Path
 import pandas as pd
 
 from analytics.brasil.inflation import inercia as _inercia
-from analytics.brasil.inflation.fetch_bcb import _apply_stl_ma3
 from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
 
 _HERE = Path(__file__).parent
 _TEMPLATE = _HERE / "report.html"
 _DATA = _HERE / "data"
-_BCB_CSV = _DATA / "ipca_bcb_series.csv"
 
 _DATABASE = "macro_brasil"
 
@@ -146,11 +149,200 @@ def _series_dict(df: pd.DataFrame) -> dict:
     return result
 
 
+# Series BCB/SGS que ganham versao dessazonalizada (usadas nos graficos de 3M
+# SAAR). Todos os nucleos estao aqui para que o dropdown "Nucleo Selecionado"
+# sempre tenha SAAR disponivel, qualquer que seja o nucleo escolhido.
+_SAAR_SERIES = {
+    "IPCA", "IPCA15", "IPCA_administrado", "IPCA_livres", "IPCA_industriais",
+    "IPCA_alimentacao", "IPCA_servicos",
+    "IPCA_comercializaveis", "IPCA_nao_comercializaveis",
+    "IPCA_nucleo_medias_aparadas", "IPCA_nucleo_medias_aparadas_sem_suavizacao",
+    "IPCA_nucleo_EX0", "IPCA_nucleo_EX01", "IPCA_nucleo_EX02", "IPCA_nucleo_EX03",
+    "IPCA_nucleo_EX03_servicos", "IPCA_nucleo_EX03_industriais",
+    "IPCA_nucleo_P55", "IPCA_nucleo_EXFE", "IPCA_nucleo_DP",
+}
+
+# macro_brasil.inflc_agregados grava em minusculo; report.html le os nomes
+# historicos, herdados de quando estes agregados vinham de um CSV proprio. O
+# mapa e a traducao entre os dois, e `_load_bcb()` LEVANTA se a tabela trouxer
+# uma serie que nao esta aqui -- acrescentar uma serie ao ETL e esquecer desta
+# linha passa a quebrar a geracao em vez de sumir com a serie do relatorio em
+# silencio, que foi como um nucleo inteiro pode desaparecer antes.
+_BCB_RENAME = {
+    "ipca":                                       "IPCA",
+    "ipca15":                                     "IPCA15",
+    "ipca_12m":                                   "IPCA_12m",
+    "ipca_administrado":                          "IPCA_administrado",
+    "ipca_alimentacao":                           "IPCA_alimentacao",
+    "ipca_bens_duraveis":                         "IPCA_bens_duraveis",
+    "ipca_bens_nao_duraveis":                     "IPCA_bens_nao_duraveis",
+    "ipca_bens_semi_duraveis":                    "IPCA_bens_semi_duraveis",
+    "ipca_comercializaveis":                      "IPCA_comercializaveis",
+    "ipca_grupo_alimentacao_bebidas":             "IPCA_grupo_alimentacao_bebidas",
+    "ipca_grupo_artigos_residencia":              "IPCA_grupo_artigos_residencia",
+    "ipca_grupo_comunicacao":                     "IPCA_grupo_comunicacao",
+    "ipca_grupo_despesas_pessoais":               "IPCA_grupo_despesas_pessoais",
+    "ipca_grupo_educacao":                        "IPCA_grupo_educacao",
+    "ipca_grupo_habitacao":                       "IPCA_grupo_habitacao",
+    "ipca_grupo_saude_cuidados_pessoais":         "IPCA_grupo_saude_cuidados_pessoais",
+    "ipca_grupo_transporte":                      "IPCA_grupo_transporte",
+    "ipca_grupo_vestuario":                       "IPCA_grupo_vestuario",
+    "ipca_indice_difusao":                        "IPCA_indice_difusao",
+    "ipca_industriais":                           "IPCA_industriais",
+    "ipca_livres":                                "IPCA_livres",
+    "ipca_nao_comercializaveis":                  "IPCA_nao_comercializaveis",
+    "ipca_nucleo_dp":                             "IPCA_nucleo_DP",
+    "ipca_nucleo_ex0":                            "IPCA_nucleo_EX0",
+    "ipca_nucleo_ex01":                           "IPCA_nucleo_EX01",
+    "ipca_nucleo_ex02":                           "IPCA_nucleo_EX02",
+    "ipca_nucleo_ex03":                           "IPCA_nucleo_EX03",
+    "ipca_nucleo_ex03_industriais":               "IPCA_nucleo_EX03_industriais",
+    "ipca_nucleo_ex03_servicos":                  "IPCA_nucleo_EX03_servicos",
+    "ipca_nucleo_exfe":                           "IPCA_nucleo_EXFE",
+    "ipca_nucleo_medias_aparadas":                "IPCA_nucleo_medias_aparadas",
+    "ipca_nucleo_medias_aparadas_sem_suavizacao": "IPCA_nucleo_medias_aparadas_sem_suavizacao",
+    "ipca_nucleo_p55":                            "IPCA_nucleo_P55",
+    "ipca_servicos":                              "IPCA_servicos",
+}
+
+# A tabela tem historia ate 1980, o relatorio sempre mostrou destes agregados de
+# 2000 em diante. O piso fica explicito aqui para a migracao do CSV para o banco
+# nao mexer, de carona, na amostra que estima os fatores sazonais -- estender a
+# serie e uma decisao a tomar, nao efeito colateral de trocar de fonte.
+_BCB_INICIO = "2000-01"
+
+
 def _load_bcb() -> dict:
-    if not _BCB_CSV.exists():
-        return {}
-    df = pd.read_csv(_BCB_CSV, encoding="utf-8-sig")
+    """Agregados BCB/SGS: le inflc_agregados e deriva as versoes dessazonalizadas.
+
+    Ate 2026-09 isto lia `data/ipca_bcb_series.csv`, uma copia que o proprio
+    relatorio buscava no SGS e que nenhuma atualizacao da base alcancava -- foi
+    como os nucleos e a difusao ficaram um mes atras do resto do relatorio sem
+    nada na tela acusar. A tabela ja existia, ja estava no `jobs/update_db.py` e
+    ja estava em dia; o CSV era duplicata (10.556 observacoes comparadas,
+    diferenca zero). As `_ma3_sa` sao derivacao, nao fonte: ficam aqui, refeitas
+    a cada geracao.
+    """
+    req = MySQLDataRequester(_DATABASE, "inflc_agregados")
+    req.connect()
+    df = req.request_data()
+    req.close_connection()
+
+    desconhecidas = sorted(set(df["name"].unique()) - set(_BCB_RENAME))
+    if desconhecidas:
+        raise KeyError(
+            f"inflc_agregados tem serie sem nome no _BCB_RENAME: {desconhecidas}. "
+            f"Acrescente a traducao -- sem ela a serie sumiria do relatorio.")
+
+    df = df.rename(columns={"date": "dt"})
+    df["dt"] = pd.to_datetime(df["dt"]).dt.strftime("%Y-%m")
+    df["name"] = df["name"].map(_BCB_RENAME)
+    df = df[df["dt"] >= _BCB_INICIO]
+    df = (df.dropna(subset=["value"])
+            .sort_values(["name", "dt"])
+            .reset_index(drop=True))
+    df["value"] = df["value"].astype(float)
+
+    sa = _apply_stl_ma3(df)
+    if not sa.empty:
+        df = pd.concat([df, sa]).sort_values(["name", "dt"]).reset_index(drop=True)
     return _series_dict(df)
+
+
+def _seasonal_cutoff(dts: "pd.Series") -> str:
+    """Return the in-sample cutoff December for seasonal factor estimation.
+
+    Factors are recalculated only when January of a new year arrives —
+    that is when the previous December is considered complete and added
+    to the in-sample period. December itself is always out-of-sample
+    until the following January is observed.
+
+    Examples:
+        data through 2026-05 → cutoff 2025-12
+        data through 2026-12 → cutoff 2025-12  (Dec still OOS)
+        data through 2027-01 → cutoff 2026-12  (Jan triggers recalc)
+    """
+    last_year = int(dts.max()[:4])
+    return f"{last_year - 1}-12"
+
+
+def _apply_stl_ma3(df: pd.DataFrame, series: set[str] | None = None) -> pd.DataFrame:
+    """Seasonally adjust each SAAR series via STL, then take MA(3), store as _ma3_sa.
+
+    Seasonal factors are estimated on data up to the last complete December
+    (auto-detected). The 12 monthly factors are then applied to the full
+    series — including months beyond the cutoff — preventing STL end-effects
+    from flattening recent SAAR readings.
+
+    STL is fit on the raw monthly series, not on a pre-smoothed MA(3) of it —
+    averaging first would blend several calendar months' seasonal patterns
+    into one number before STL ever sees it. Seasonally adjust first, then
+    average, matching standard practice (BLS/X-13, Dallas Fed annualizing
+    convention).
+
+    Deliberately still STL, not the BLS/Census X-13ARIMA-SEATS itself — see
+    the STL-ordering gotcha in analytics/brasil/inflation/CLAUDE.md for why
+    (external binary, no pip package, breaks uv-based reproducibility).
+
+    `series` defaults to the module-level `_SAAR_SERIES` (BCB/SGS series this
+    file fetches). generate_report.py passes its own set here to run the same
+    pipeline over the in-house IPCA-15 núcleo series it computes from
+    inflc_decomposicao/inflc_dim — those never appear in `df` fetched by
+    `run()`, so reusing `_SAAR_SERIES` for them would silently skip them.
+    """
+    import numpy as np
+    from statsmodels.tsa.seasonal import STL
+
+    series = series if series is not None else _SAAR_SERIES
+    sa_frames = []
+    for name, grp in df.groupby("name"):
+        if name not in series:
+            continue
+        grp = grp.sort_values("dt").reset_index(drop=True)
+        vals = grp["value"].astype(float)
+        if vals.count() < 24:
+            continue
+
+        dts = grp["dt"]
+        cutoff = _seasonal_cutoff(dts)
+        in_mask = (dts <= cutoff).values
+        month_num = pd.to_datetime(dts + "-01").dt.month.values  # 1-12
+
+        # Step 1: fit STL only on the in-sample raw monthly series
+        vals_in = vals[in_mask].interpolate(method="linear").ffill().bfill()
+        if len(vals_in) < 24:
+            continue
+
+        try:
+            fit = STL(vals_in.values, period=12, robust=True).fit()
+        except Exception as e:
+            print(f"  STL failed for {name}: {e}")
+            continue
+
+        # Step 2: average seasonal component by calendar month (frozen factors)
+        months_in = month_num[in_mask]
+        sf = {}
+        for m in range(1, 13):
+            idx = months_in == m
+            if idx.any():
+                sf[m] = float(fit.seasonal[idx].mean())
+
+        # Step 3: apply frozen factors to the full raw series
+        seasonal = pd.Series(
+            [sf.get(m, 0.0) for m in month_num],
+            index=vals.index,
+        )
+        monthly_sa = vals - seasonal
+
+        # Step 4: MA(3) of the already seasonally-adjusted monthly series
+        ma3_sa = monthly_sa.rolling(3).mean()
+
+        sa_grp = grp.copy()
+        sa_grp["name"] = name + "_ma3_sa"
+        sa_grp["value"] = ma3_sa.values
+        sa_frames.append(sa_grp)
+
+    return pd.concat(sa_frames, ignore_index=True) if sa_frames else pd.DataFrame(columns=df.columns)
 
 
 # Grupo/Subgrupo membership -> in-house IPCA-15 series name, same pattern as
@@ -485,7 +677,7 @@ def _splice_headline_15(sgs: dict | None, headline: pd.Series) -> pd.DataFrame:
     reconstructed. That tail carries IBGE's subitem rounding (~0.006 p.p. mean
     deviation, 0.067 p.p. worst case over the 315 overlapping months; under
     0.005 p.p. in the last 18), i.e. below the 1-2 decimals anything displays,
-    and it is replaced by the official value on the next fetch_bcb.py run.
+    and it is replaced by the official value on the next inflc_agregados load.
     """
     recon = headline.dropna()
     if recon.empty:

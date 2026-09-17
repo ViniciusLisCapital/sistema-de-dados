@@ -481,6 +481,7 @@ select#baseMonth:focus-visible { outline: 2px solid var(--purple); outline-offse
 .chart-container { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
 .chart-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
 .chart-hdr-left { display: flex; flex-direction: column; gap: 2px; }
+.chart-hdr-left .chart-src { font-family: var(--mono); font-size: 10px; color: #8a8f9e; margin-top: 4px; }
 .chart-title { font-family: var(--cond); font-size: 18px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ice); }
 .chart-subtitle { font-family: var(--mono); font-size: 10px; color: var(--muted); }
 .chart-hdr-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -4005,6 +4006,56 @@ function plotlyBaseLayout(extra) {
   return base;
 }
 
+// Fonte de cada grafico das tres abas de MODELO, por div ou por prefixo do id (os
+// graficos de canal e de primitiva sao criados em tempo de execucao, um por regressor).
+// Os das abas de DADOS continuam no CHART_META acima, que carrega titulo e subtitulo --
+// aqui os dois ja estao escritos no proprio card, e o que falta e a procedencia.
+var MODEL_SRC = [
+  ['mainChart',        'BCB (PTAX) e índices de preço de Brasil e EUA — cálculo LIS Capital'],
+  ['devChart',         'BCB (PTAX) e índices de preço de Brasil e EUA — cálculo LIS Capital'],
+  ['channelChart',     'BCB (SGS) e FRED — cálculo LIS Capital'],
+  ['fxattr',           'Cartas mensais de gestores — extração e classificação LIS Capital'],
+  ['ridge',            'Modelo Ridge da LIS Capital sobre a PTAX (BCB) e os regressores de cada canal'],
+  ['regressor-graph-', 'Séries dos regressores do modelo — ver a tabela de fontes no apêndice'],
+  ['primitive-graph-', 'Séries dos regressores do modelo — ver a tabela de fontes no apêndice'],
+  ['exog',             'Modelo Ridge da LIS Capital sobre a PTAX (BCB) e os regressores de cada canal'],
+];
+function _modelSrc(divId) {
+  for (var i = 0; i < MODEL_SRC.length; i++) {
+    if (String(divId).indexOf(MODEL_SRC[i][0]) === 0) return MODEL_SRC[i][1];
+  }
+  return '';
+}
+// A janela sai das series efetivamente plotadas, nunca de uma constante. Num grafico cujo
+// X e contagem de meses (os episodios da aba FX Model) as abscissas sao numeros: ali a
+// linha traz so a fonte -- imprimir "0 a 12" leria como periodo e nao e.
+function renderModelSrc(divId, traces) {
+  var el = document.getElementById(divId);
+  if (!el || !el.closest) return;
+  var cont = el.closest('.chart-container');
+  var left = cont && cont.querySelector ? cont.querySelector('.chart-hdr-left') : null;
+  if (!left) return;
+  var fonte = _modelSrc(divId);
+  if (!fonte) return;
+  var linha = left.querySelector('.chart-src');
+  if (!linha) {
+    linha = document.createElement('div');
+    linha.className = 'chart-src';
+    left.appendChild(linha);
+  }
+  var datas = [];
+  (traces || []).forEach(function (t) {
+    if (!t || !t.x || !t.y) return;
+    for (var i = 0; i < t.x.length; i++) {
+      if (t.y[i] == null || typeof t.x[i] !== 'string') continue;
+      datas.push(t.x[i]);
+    }
+  });
+  datas.sort();
+  var periodo = datas.length ? _periodoDe([datas[0], datas[datas.length - 1]]) : '';
+  linha.textContent = 'Fonte: ' + fonte + (periodo ? ' · ' + periodo : '');
+}
+
 function plotlyRenderAndBind(divId, traces, layoutExtra) {
   // Cinto e suspensorio para a armadilha descrita em plotlyBaseLayout(): se as
   // abscissas sao numeros e quem chama nao declarou um `type`, o eixo NAO pode
@@ -4020,6 +4071,7 @@ function plotlyRenderAndBind(divId, traces, layoutExtra) {
   }
   Plotly.react(divId, traces, plotlyBaseLayout(layoutExtra), PLOTLY_CONFIG);
   _bindPlotlyYAutofit(divId);
+  renderModelSrc(divId, traces);
 }
 
 (function () {

@@ -8,7 +8,7 @@ aliases: ["Mundell 1963"]
 **Source:** The Canadian Journal of Economics and Political Science, Vol. 29, No. 4 (Nov. 1963), pp. 475–485  
 **Type:** Foundational theoretical article  
 **Tags:** #mundell-fleming #exchange-rate #fiscal-policy #monetary-policy #capital-mobility #fixed-vs-floating #foundational  
-**Source file:** [[capital_mobility_exchange_rates_regimes (R. A. Mundell, 1963)]]
+**Source file:** [[capital_mobility_exchange_rates_regimes (Mundell, 1963)]]
 
 ---
 

@@ -1,0 +1,207 @@
+{
+  "built_at": "2026-09-14T16:08:23",
+  "rows": 393,
+  "first": "1994-01-01",
+  "last": "2026-09-01",
+  "coverage": {
+    "ptax": [
+      "1994-07-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "cds": [
+      "2001-10-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "dxy": [
+      "1994-01-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "dxy_em": [
+      "2006-01-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "sp500": [
+      "1994-01-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "brent": [
+      "1994-01-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "fx_mx": [
+      "2003-12-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "fx_cl": [
+      "2003-12-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "fx_co": [
+      "2003-01-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "vol_3m": [
+      "1994-09-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "vol_12m": [
+      "1995-07-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "cc_total": [
+      "2008-09-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "cc_fin": [
+      "2008-09-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "cc_com": [
+      "2008-09-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "selic": [
+      "1999-03-01 00:00:00",
+      "2026-08-01 00:00:00"
+    ],
+    "fed_funds": [
+      "1995-01-01 00:00:00",
+      "2026-07-01 00:00:00"
+    ],
+    "icbr_usd": [
+      "1998-02-01 00:00:00",
+      "2026-08-01 00:00:00"
+    ],
+    "reer": [
+      "1994-02-01 00:00:00",
+      "2026-07-01 00:00:00"
+    ],
+    "tot": [
+      "1994-01-01 00:00:00",
+      "2026-06-01 00:00:00"
+    ],
+    "cot_lev_net": [
+      "2011-04-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "cot_asset_net": [
+      "2011-04-01 00:00:00",
+      "2026-09-01 00:00:00"
+    ],
+    "ipca_index": [
+      "1994-02-01 00:00:00",
+      "2026-08-01 00:00:00"
+    ],
+    "cpi_index": [
+      "1994-02-01 00:00:00",
+      "2026-08-01 00:00:00"
+    ]
+  },
+  "availability": {
+    "ptax": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "BCB PTAX is published the same afternoon."
+    },
+    "cds": {
+      "kind": "daily",
+      "pub_delay_days": 1,
+      "why": "5y USD CDS quote; one day of slack for a stale tape."
+    },
+    "dxy": {
+      "kind": "daily",
+      "pub_delay_days": 1,
+      "why": "FRED DTWEXBGS, ~1 day."
+    },
+    "dxy_em": {
+      "kind": "daily",
+      "pub_delay_days": 1,
+      "why": "FRED DTWEXEMEGS, ~1 day."
+    },
+    "sp500": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "Close, same day."
+    },
+    "brent": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "Close, same day."
+    },
+    "fx_mx": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "Spot close."
+    },
+    "fx_cl": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "Spot close."
+    },
+    "fx_co": {
+      "kind": "daily",
+      "pub_delay_days": 0,
+      "why": "Spot close."
+    },
+    "cc_total": {
+      "kind": "daily",
+      "pub_delay_days": 4,
+      "why": "BCB contracted FX posts on a ~2-business-day delay."
+    },
+    "cc_fin": {
+      "kind": "daily",
+      "pub_delay_days": 4,
+      "why": "Same source as cc_total."
+    },
+    "cc_com": {
+      "kind": "daily",
+      "pub_delay_days": 4,
+      "why": "Same source as cc_total."
+    },
+    "selic": {
+      "kind": "monthly",
+      "avail_lag": 0,
+      "why": "Policy rate — known continuously, no publication lag."
+    },
+    "fed_funds": {
+      "kind": "monthly",
+      "avail_lag": 0,
+      "why": "Policy rate, as above."
+    },
+    "ipca_index": {
+      "kind": "monthly",
+      "avail_lag": 1,
+      "why": "IBGE publishes month m around the 10th of m+1."
+    },
+    "cpi_index": {
+      "kind": "monthly",
+      "avail_lag": 1,
+      "why": "BLS publishes month m mid-m+1 (FRED CPIAUCSL)."
+    },
+    "icbr_usd": {
+      "kind": "monthly",
+      "avail_lag": 1,
+      "why": "Monthly table in this repo; BCB posts early in m+1."
+    },
+    "reer": {
+      "kind": "monthly",
+      "avail_lag": 1,
+      "why": "BIS effective rates publish ~3rd week of m+1."
+    },
+    "tot": {
+      "kind": "monthly",
+      "avail_lag": 2,
+      "why": "FUNCEX terms of trade run ~2 months behind."
+    },
+    "cot_lev_net": {
+      "kind": "weekly",
+      "pub_delay_days": 4,
+      "why": "CFTC: Tuesday positions released the following Friday."
+    },
+    "cot_asset_net": {
+      "kind": "weekly",
+      "pub_delay_days": 4,
+      "why": "As above."
+    }
+  }
+}

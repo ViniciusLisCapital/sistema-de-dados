@@ -9,6 +9,8 @@
   <style>
     /*THEME_CSS*/
 
+    /*CHART_HEAD_CSS*/
+
     /* ── Header ── */
     header {
       background: var(--card-bg);
@@ -161,10 +163,6 @@
        grafico. <p> pelo mesmo motivo da .ciclo-legend acima. Preenchidos por JS a cada
        render -- vazios no HTML de proposito. Hoje so a tabela (d) da aba Impulso os
        usa; as outras sao anteriores a esta convencao. */
-    .chart-head-titulo { padding: 10px 12px 0; font-size: 14px; font-weight: 600; color: var(--text); }
-    .chart-head-sub    { padding: 2px 12px 0; font-size: 11.5px; color: var(--muted); }
-    .chart-head-fonte  { padding: 2px 12px 0; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
-    .chart-head-titulo:empty, .chart-head-sub:empty, .chart-head-fonte:empty { display: none; }
 
     /* ── Controls: quick-range pills ── */
     .ctrl-bar {
@@ -612,9 +610,6 @@
         </table>
       </div>
       <div class="chart-card">
-        <p class="chart-head-titulo" id="imp-fluxo-h-titulo"></p>
-        <p class="chart-head-sub" id="imp-fluxo-h-sub"></p>
-        <p class="chart-head-fonte" id="imp-fluxo-h-fonte"></p>
         <p class="ciclo-legend">
           <span><i class="sw-alta"></i>Ciclo de alta</span>
           <span><i class="sw-manut"></i>Manutenção</span>
@@ -1476,6 +1471,33 @@ var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
 
 /*Y_AUTOFIT_JS*/
 
+/*CHART_HEAD_JS*/
+
+// -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
+// O subtitulo e o periodo sao reescritos a cada render por describeChart(). Um grafico
+// daqui sai da pagina como print e circula sozinho, longe do <h2> da secao: ele tem que
+// dizer o que, em que metrica, em que unidade, de que fonte e de quando ate quando.
+// Onde a metrica e um seletor o TITULO tambem e derivado (passa por `titulo` no opts) --
+// nas tres tabelas de impulso e na de fluxo, onde a pill troca o que a barra significa.
+var SRC_SGS   = 'BCB — Estatísticas Monetárias e de Crédito (SGS)';
+var SRC_AMPLO = 'BCB — Crédito Ampliado ao Setor Não Financeiro';
+var SRC_RPM   = 'BCB — anexo estatístico do Relatório de Política Monetária';
+var SRC_PTC   = 'BCB — Pesquisa Trimestral sobre Condições de Crédito (PTC)';
+var CHART_META = {
+  'chart-saldo':       {title: 'Saldo de Crédito por Modalidade', source: SRC_SGS},
+  'chart-amplo':       {title: 'Crédito Ampliado ao Setor Não Financeiro', source: SRC_AMPLO},
+  'chart-concessao':   {title: 'Concessões de Crédito por Modalidade', source: SRC_SGS},
+  'chart-imp-recurso': {title: 'Impulso de Crédito por Recurso e Segmento', source: SRC_SGS},
+  'chart-imp-porte':   {title: 'Impulso de Crédito por Porte de Empresa', source: SRC_SGS},
+  'chart-imp-ativ':    {title: 'Impulso de Crédito por Atividade Econômica', source: SRC_SGS},
+  'chart-imp-fluxo':   {title: '', source: SRC_RPM},
+  'chart-taxa':        {title: 'Taxa Média de Juros e Spread Bancário', source: SRC_SGS},
+  'chart-inad':        {title: 'Inadimplência e Saldo de Maior Risco', source: SRC_SGS},
+  'chart-ptc':         {title: 'Condições de Crédito Percebidas pelos Bancos', source: SRC_PTC},
+  'chart-ptc-desvio':  {title: 'Surpresa nas Condições de Crédito — Observado contra o Esperado', source: SRC_PTC},
+};
+
+
 // ── Value/date helpers ────────────────────────────────────────────────────────
 function ser(group, key) {
   var g = D[group] || {};
@@ -1628,7 +1650,7 @@ function _ensureQuickRange(divId, dates) {
 // (Saldo, Credito Ampliado, Impulso) e sao so ruido colorido nos graficos que ja tem
 // a Selic desenhada por cima (Inadimplencia) ou cujo eixo e ele proprio uma taxa de
 // juros (Taxa & Spread). Ligar aqui por default pintaria os 5 graficos de uma vez.
-function renderLineChart(divId, specs, yTitle, height, comCiclos) {
+function renderLineChart(divId, specs, yTitle, height, comCiclos, desc) {
   var traces = specs.map(function(s) {
     return {
       type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
@@ -1642,9 +1664,10 @@ function renderLineChart(divId, specs, yTitle, height, comCiclos) {
   Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, dates);
+  _descChart(divId, traces, yTitle, desc);
 }
 // specs: [{dates, values, label, color}] -- stacked bar composition over time.
-function renderStackedBarChart(divId, specs, yTitle, height) {
+function renderStackedBarChart(divId, specs, yTitle, height, desc) {
   var traces = specs.map(function(s) {
     return {
       type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
@@ -1654,6 +1677,7 @@ function renderStackedBarChart(divId, specs, yTitle, height) {
   Plotly.react(divId, traces, mkStackedBarLayout(yTitle, height), _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, _unionDates.apply(null, specs));
+  _descChart(divId, traces, yTitle, desc);
 }
 
 // Impulso de credito: componentes como barras empilhadas + o total como linha por
@@ -1709,7 +1733,7 @@ function _ciclosShapes(dates) {
 // `unit`: sufixo do hover. Default 'p.p. do PIB' (as 3 tabelas de Biggs et al.); a 4a
 // tabela troca para '% do PIB' quando mostra o FLUXO, que e um nivel e nao uma variacao
 // -- sem isso o hover afirmaria a unidade errada em metade dos estados do seletor.
-function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers, unit) {
+function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers, unit, desc) {
   var u = unit || 'p.p. do PIB';
   var traces = bars.map(function(s) {
     return {
@@ -1731,6 +1755,25 @@ function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers, unit) {
   Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, dates);
+  _descChart(divId, traces, yTitle, desc);
+}
+
+// A unidade do subtitulo e SEMPRE o proprio titulo do eixo Y do grafico, nunca uma string
+// escrita de novo no call site: as duas dizem a mesma coisa e uma copia envelhece sozinha.
+function _pillsAtivas(ids) {
+  var out = [];
+  if (!document.querySelector) return out;
+  (ids || []).forEach(function(id) {
+    if (!id) return;
+    var b = document.querySelector('#' + id + ' .pill.active');
+    if (b && b.textContent) out.push(b.textContent.trim());
+  });
+  return out;
+}
+function _descChart(divId, traces, yTitle, desc) {
+  desc = desc || {};
+  describeChart(divId, traces, desc.bits, yTitle,
+                {freq: desc.freq || 'mes', titulo: desc.titulo, compact: desc.compact});
 }
 
 // ── Tab renderers ──────────────────────────────────────────────────────────────
@@ -2424,7 +2467,8 @@ function makeHierTab(opts) {
       });
     })(D[opts.dataKey].tree);
     renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, D[opts.dataKey].ref_date),
-                    undefined, !!opts.ciclos);
+                    undefined, !!opts.ciclos,
+                    {bits: _pillsAtivas([opts.metricGroupId, opts.basisGroupId])});
   }
   function wireControls() {
     document.querySelectorAll('#' + opts.metricGroupId + ' .pill').forEach(function(btn) {
@@ -2510,7 +2554,7 @@ var AMPLO_TAB = makeHierTab({
 // {key: {m12|anual: {dates, values}}}} -- tudo pre-computado em Python.
 // opts: {treeKey, freqGroupId, tableHeadId, tableBodyId, chartDivId, defaultChecked,
 //        defaultExpanded, labelHeader, infoNs,
-//        dataKey?, variantGroupId?, defaultVariant?, variantMeta?, headerIds?}
+//        dataKey?, variantGroupId?, defaultVariant?, variantMeta?}
 //
 // Dois formatos de payload, porque as duas metricas da aba tem shape diferente e
 // generalizar a de cima seria mexer em 3 tabelas que ja funcionam:
@@ -2518,7 +2562,7 @@ var AMPLO_TAB = makeHierTab({
 //     indexadas por [chave][freq]        (as 3 tabelas de Biggs et al.)
 //   - `treeKey` ausente  -> D[dataKey].tree / .anchor, series indexadas por
 //     [chave][variante][freq]            (a 4a tabela, fluxo|impulso do BCB)
-// `variantMeta[v]` = {y, unit, titulo, sub} alimenta eixo, hover e cabecalho do grafico.
+// `variantMeta[v]` = {y, unit, titulo, def, nota} alimenta eixo, hover e cabecalho.
 function makeImpulseTab(opts) {
   var state = {freq: 'm12', variant: opts.defaultVariant || null, checked: {}, expanded: {}};
   (opts.defaultChecked || []).forEach(function(k) { state.checked[k] = true; });
@@ -2668,31 +2712,22 @@ function makeImpulseTab(opts) {
     })(nodes);
     return {bars: bars, line: line};
   }
-  // Cabecalho do grafico, na regra de .claude/rules/lis-dashboards.md: um print do
-  // grafico circula sozinho, longe do <h2> e da nota. Reconstruido a cada render --
-  // com um seletor que troca a UNIDADE (% do PIB vs p.p. do PIB), texto fixo mentiria
-  // no primeiro clique. A janela sai das series efetivamente plotadas, nao do payload.
-  function renderHeader() {
-    if (!opts.headerIds) return;
-    var m = meta(), spec = chartSpecs();
-    var dates = _unionDates.apply(null, spec.bars.concat(spec.line ? [spec.line] : []));
-    var set = function(id, txt) {
-      var el = id && document.getElementById(id);
-      if (el) el.textContent = txt;
-    };
-    set(opts.headerIds.titulo, m.titulo || '');
-    set(opts.headerIds.sub,
-        (state.freq === 'anual' ? 'Anual (dezembro)' : 'Mensal') + ' · ' + (m.sub || ''));
-    set(opts.headerIds.fonte,
-        (opts.fonte || '') + (dates.length
-          ? ' · ' + fmtMonthShort(dates[0]) + ' a ' + fmtMonthShort(dates[dates.length - 1])
-          : ''));
-  }
+  // O cabecalho desta aba era montado a mao aqui, em markup proprio, quando ela era o
+  // unico grafico do relatorio a ter um. Desde que os 11 passaram a ter, ele saiu: duas
+  // mecanicas para a mesma linha de texto divergem, e a compartilhada ja faz o que esta
+  // fazia -- inclusive a janela vinda das series plotadas e o titulo trocando com a pill
+  // de medida. `variantMeta[v].titulo/.sub` continuam sendo a fonte do texto.
   function renderChart() {
     var spec = chartSpecs(), m = meta();
-    renderHeader();
     renderImpulseChart(opts.chartDivId, spec.bars, spec.line,
-                       m.y || 'p.p. do PIB', state.freq === 'anual', m.unit);
+                       m.y || 'p.p. do PIB', state.freq === 'anual', m.unit,
+                       // A pill de MEDIDA nao entra nos bits: ela ja decide o titulo, e
+                       // repeti-la logo abaixo dele e o "nao diga duas vezes".
+                       // A janela impressa segue a frequencia de LEITURA: em modo anual
+                       // "dez/2015 a dez/2025" anuncia um mes que o grafico nao mostra.
+                       {bits: [m.def || '', m.nota || ''].concat(_pillsAtivas([opts.freqGroupId])),
+                        titulo: m.titulo,
+                        freq: state.freq === 'anual' ? 'ano' : 'mes'});
   }
   function wirePills(groupId, apply) {
     if (!groupId) return;
@@ -2745,18 +2780,18 @@ var IMP_FLUXO_TAB = makeImpulseTab({
   variantGroupId: 'imp-fluxo-medida-group', defaultVariant: 'fluxo',
   tableHeadId: 'imp-fluxo-table-head', tableBodyId: 'imp-fluxo-table-body',
   chartDivId: 'chart-imp-fluxo', labelHeader: 'Segmento',
-  headerIds: {titulo: 'imp-fluxo-h-titulo', sub: 'imp-fluxo-h-sub', fonte: 'imp-fluxo-h-fonte'},
-  fonte: 'Fonte: BCB, anexo estatístico do RPM',
   variantMeta: {
     fluxo: {
       y: '% do PIB', unit: '% do PIB',
       titulo: 'Fluxo Financeiro do Crédito Bancário — Brasil',
-      sub: 'concessões − pagamentos, acumulado em 12 meses, % do PIB · negativo = o setor real paga líquido ao SFN',
+      def: 'concessões − pagamentos, acumulado em 12 meses',
+      nota: 'negativo = o setor real paga líquido ao SFN',
     },
     impulso: {
       y: 'p.p. do PIB', unit: 'p.p. do PIB',
       titulo: 'Impulso de Crédito (conceito BCB) — Brasil',
-      sub: 'variação em 12 meses do fluxo financeiro, p.p. do PIB · positivo = mais recurso líquido do que 12 meses antes',
+      def: 'variação em 12 meses do fluxo financeiro',
+      nota: 'positivo = mais recurso líquido do que 12 meses antes',
     },
   },
   defaultChecked: ['fluxo_total', 'fluxo_pj', 'fluxo_pf'],
@@ -2873,7 +2908,11 @@ function renderTaxaChart() {
   if (taxaState.showSelic && D.taxa.selic) {
     specs.push({dates: D.taxa.selic.dates, values: D.taxa.selic.values, label: 'Selic', color: C.cinza});
   }
-  renderLineChart('chart-taxa', specs, taxaYTitle());
+  renderLineChart('chart-taxa', specs, taxaYTitle(), undefined, false, {
+    bits: _pillsAtivas(['taxa-source-group']),
+    titulo: taxaState.source === 'spread' ? 'Spread Bancário por Modalidade'
+                                          : 'Taxa Média de Juros por Modalidade',
+  });
 }
 function initTaxaTab() {
   document.querySelectorAll('#taxa-source-group .pill').forEach(function(btn) {
@@ -2998,7 +3037,7 @@ function renderInadChart() {
   if (inadState.showSelic && D.inadimplencia.selic) {
     specs.push({dates: D.inadimplencia.selic.dates, values: D.inadimplencia.selic.values, label: 'Selic', color: C.cinza});
   }
-  renderLineChart('chart-inad', specs, '%');
+  renderLineChart('chart-inad', specs, 'carteira em atraso / saldo da modalidade, %');
 }
 function initInadTab() {
   document.getElementById('inad-show-selic').addEventListener('change', function(e) {
@@ -3139,9 +3178,11 @@ function renderPtcChart() {
   });
   // Eixo deixado em autoscale de proposito: a escala teorica e -2..+2, mas o observado
   // nunca passa de |1,57| -- fixar em +-2 achataria toda a serie contra o zero.
-  Plotly.react('chart-ptc', traces, mkTimeseriesLayout('Média das respostas (−2 a +2)'), _PLOTLY_CONFIG);
+  var uPtc = 'média das respostas dos bancos, escala de −2 (muito mais restritivo) a +2';
+  Plotly.react('chart-ptc', traces, mkTimeseriesLayout(uPtc), _PLOTLY_CONFIG);
   _bindYAutofit('chart-ptc');
   _ensureQuickRange('chart-ptc', _unionDates.apply(null, specs));
+  _descChart('chart-ptc', traces, uPtc, {freq: 'tri', bits: _pillsAtivas(['ptc-horizonte-group'])});
 }
 
 // ── PTC · Surpresa (adicao 2026-08) — desvio(t) = observada(t) - esperada(t-1): a unica
@@ -3368,11 +3409,13 @@ function renderPtcDesvioChart() {
       showarrow: false, font: {size: 10, color: '#7A88A8'},
     });
   }
-  var layout = Object.assign(mkTimeseriesLayout('Desvio (observado \u2212 esperado), pontos da escala'),
+  var uDesvio = 'Desvio (observado \u2212 esperado), pontos da escala';
+  var layout = Object.assign(mkTimeseriesLayout(uDesvio),
                              {shapes: shapes, annotations: annotations});
   Plotly.react('chart-ptc-desvio', traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit('chart-ptc-desvio');
   _ensureQuickRange('chart-ptc-desvio', _unionDates.apply(null, specs));
+  _descChart('chart-ptc-desvio', traces, uDesvio, {freq: 'tri'});
 }
 
 function initPtcTab() {

@@ -9,6 +9,8 @@
   <style>
     /*THEME_CSS*/
 
+    /*CHART_HEAD_CSS*/
+
     /* ── Header ── */
     header {
       background: var(--card-bg);
@@ -1436,6 +1438,49 @@ var _PLOTLY_CONFIG = {responsive:true, displayModeBar:false, scrollZoom:true};
 
 /*Y_AUTOFIT_JS*/
 
+/*CHART_HEAD_JS*/
+
+// -- Titulo e fonte de cada grafico: os DOIS unicos textos fixos do cabecalho -------
+// O subtitulo e o periodo sao reescritos a cada render por describeChart(). Um grafico
+// daqui sai da pagina como print e circula sozinho, longe do <h2> da secao: ele tem que
+// dizer o que, em que metrica, em que unidade, de que fonte e de quando ate quando.
+// As 9 secoes por fator da aba Divida Liquida sao montadas em tempo de execucao, entao
+// registram a propria entrada aqui na hora -- ver renderDlspTab().
+var SRC_GFSM  = 'Tesouro Nacional / BCB — estatísticas fiscais no padrão GFSM 2014';
+var SRC_RTN   = 'Tesouro Nacional — Resultado do Tesouro Nacional (RTN)';
+var SRC_DLSP  = 'BCB — Dívida Líquida e Necessidades de Financiamento do Setor Público';
+var SRC_INV   = 'Tesouro Nacional — execução orçamentária do Governo Federal';
+var SRC_IMP   = 'Cálculo LIS Capital sobre NFSP (BCB), RTN (Tesouro) e PIB (IBGE)';
+var CHART_META = {
+  'chart-gfsm':               {title: 'Receitas e Despesas do Governo Geral — GFSM 2014', source: SRC_GFSM},
+  'chart-rtn':                {title: 'Receitas e Despesas do Governo Central — RTN', source: SRC_RTN},
+  'chart-dlsp-balanco':       {title: 'Dívida Líquida do Setor Público — Balanço por Entidade', source: SRC_DLSP},
+  'chart-inv-funcao':         {title: 'Investimento do Governo Federal por Função Orçamentária', source: SRC_INV},
+  'chart-inv-natureza':       {title: 'Investimento do Governo Federal por Natureza da Despesa', source: SRC_INV},
+  'chart-impulso-combinado':  {title: 'Impulso Fiscal — as Quatro Métricas Lado a Lado', source: SRC_IMP},
+  'chart-ieg-hier':           {title: 'Esforço Fiscal (IEG) — Contribuição por Esfera e Categoria', source: SRC_IMP},
+  'chart-impulso-rp-esfera':  {title: 'Impulso via Resultado Primário, por Esfera de Governo', source: SRC_IMP},
+  'chart-impulso-rtn':        {title: 'Impulso via Resultado Primário Acima da Linha (RTN)', source: SRC_RTN},
+  'chart-credito-oficial':    {title: 'Impulso via Crédito a Instituições Financeiras Oficiais', source: SRC_DLSP},
+};
+// Rotulo da opcao selecionada de cada <select> de controle. Sai do proprio <option>, nunca
+// de uma copia da lista: uma opcao nova amanha ja aparece no subtitulo sem tocar aqui.
+function _selLabels(ids) {
+  var out = [];
+  (ids || []).forEach(function(id) {
+    var el = id && document.getElementById(id);
+    if (!el || !el.options) return;
+    for (var i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === el.value) {
+        if (el.options[i].text) out.push(String(el.options[i].text).trim());
+        break;
+      }
+    }
+  });
+  return out;
+}
+
+
 // ── Value/date helpers ────────────────────────────────────────────────────────
 function fmt(v, d) {
   if (v == null || isNaN(v)) return '—';
@@ -1695,7 +1740,7 @@ function mkRelativeBarLayout(yTitle, height) {
 
 // ── Chart renderers ───────────────────────────────────────────────────────────
 // specs: [{dates, values, label, color}] -- one line per pre-computed series.
-function renderLineChart(divId, specs, yTitle, height) {
+function renderLineChart(divId, specs, yTitle, height, desc) {
   var traces = specs.map(function(s) {
     return {
       type: 'scatter', mode: 'lines', name: s.label, x: s.dates, y: s.values,
@@ -1705,10 +1750,11 @@ function renderLineChart(divId, specs, yTitle, height) {
   });
   Plotly.react(divId, traces, mkTimeseriesLayout(yTitle, height), _PLOTLY_CONFIG);
   finishChart(divId);
+  _descChart(divId, traces, yTitle, desc);
 }
 // barSpecs: [{dates, values, label, color}] -- barras 'relative' (mistura sinal) somando ao total.
 // totalSpec: {dates, values, label, color} -- linha do total, mesmo eixo (nao secundario).
-function renderRelativeBarWithLine(divId, barSpecs, totalSpec, yTitle, height) {
+function renderRelativeBarWithLine(divId, barSpecs, totalSpec, yTitle, height, desc) {
   var traces = barSpecs.map(function(s) {
     return {
       type: 'bar', name: s.label, x: s.dates, y: s.values, marker: {color: s.color},
@@ -1722,6 +1768,14 @@ function renderRelativeBarWithLine(divId, barSpecs, totalSpec, yTitle, height) {
   });
   Plotly.react(divId, traces, mkRelativeBarLayout(yTitle, height), _PLOTLY_CONFIG);
   finishChart(divId);
+  _descChart(divId, traces, yTitle, desc);
+}
+// A unidade do subtitulo e SEMPRE o proprio titulo do eixo Y, nunca uma string escrita de
+// novo no call site: as duas dizem a mesma coisa e uma copia envelhece sozinha.
+function _descChart(divId, traces, yTitle, desc) {
+  desc = desc || {};
+  describeChart(divId, traces, desc.bits, yTitle,
+                {freq: desc.freq || 'mes', titulo: desc.titulo});
 }
 // ── Aba Receitas e Despesas (GFSM) — hierarchical table + chart, same pattern as
 // analytics/brasil/credit/report.html's makeHierTab() (Saldo/Concessão tabs), adapted here
@@ -2444,7 +2498,12 @@ function makeHierTab(opts) {
         if (node.children) walk(node.children);
       });
     })(rootFor().tree);
-    renderLineChart(opts.chartDivId, specs, opts.yTitle(state.metric, state.basis, rootFor().ref_date, state.accum));
+    renderLineChart(opts.chartDivId, specs,
+                    opts.yTitle(state.metric, state.basis, rootFor().ref_date, state.accum),
+                    undefined,
+                    {bits: _selLabels([opts.esferaSelectId, opts.accumSelectId,
+                                       opts.basisSelectId, opts.metricSelectId]),
+                     freq: 'tri'});
   }
   function wireControls() {
     if (opts.esferaSelectId) {
@@ -2803,7 +2862,9 @@ function makeDlspHierTab(opts) {
         if (node.children) walk(node.children);
       });
     })(tree());
-    renderLineChart(opts.chartDivId, specs, yTitle());
+    renderLineChart(opts.chartDivId, specs, yTitle(), undefined,
+                    {bits: _selLabels([opts.fatorSelectId, opts.metricSelectId]),
+                     titulo: opts.titulo});
   }
   function wireControls() {
     // Seletor de Fator: so existe na secao Balanco por Entidade, que mostra os
@@ -2905,6 +2966,7 @@ function renderDlspTab() {
   }).join('');
 
   DLSP_TABS = fatores.map(function(f) {
+    CHART_META['chart-dlsp-' + f.key] = {title: f.label, source: SRC_DLSP};
     return makeDlspHierTab({
       infoNs: 'dlsp',
       fator: f.key,
@@ -3065,7 +3127,9 @@ function makeImpulsoHierTab(opts) {
     renderRelativeBarWithLine(
       opts.chartDivId, bars,
       {dates: total.dates, values: total.values, label: opts.totalLabel, color: C.laranja},
-      'p.p. (' + opts.accumLabel(state.accum) + ')'
+      'p.p. (' + opts.accumLabel(state.accum) + ')',
+      undefined,
+      {bits: _selLabels([opts.accumSelectId])}
     );
   }
   function wireControls() {
@@ -3184,9 +3248,12 @@ function renderImpulsoCombinado() {
       hovertemplate: '<b>' + CREDITO_LABEL + '</b><br>%{x}<br>%{y:,.2f}% do PIB<extra></extra>',
     },
   ];
-  var layout = mkTimeseriesLayout('% do PIB / p.p. (as quatro métricas de impulso)');
+  var uComb = '% do PIB / p.p. (as quatro métricas de impulso)';
+  var layout = mkTimeseriesLayout(uComb);
   Plotly.react('chart-impulso-combinado', traces, layout, _PLOTLY_CONFIG);
   finishChart('chart-impulso-combinado');
+  _descChart('chart-impulso-combinado', traces, uComb,
+             {bits: _selLabels(['impulso-combinado-view-select'])});
 
   if (sel && !sel._wired) {
     sel.addEventListener('change', renderImpulsoCombinado);
