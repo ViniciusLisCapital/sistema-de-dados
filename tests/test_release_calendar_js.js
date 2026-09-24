@@ -59,6 +59,18 @@ function cliqueEm(alvo, btn) {
   });
   return marcas;
 }
+/* O listener da tabela procura DOIS seletores agora (o botao de atualizar e o
+   cabecalho de semana), entao um `closest` que devolve sempre o mesmo objeto nao
+   distingue os dois caminhos. Este recebe um mapa seletor -> alvo. */
+function cliqueSeletivo(alvo, mapa) {
+  const marcas = { stop: 0, prevent: 0 };
+  alvo._listeners['click']({
+    target: { closest: (sel) => (Object.prototype.hasOwnProperty.call(mapa, sel) ? mapa[sel] : null) },
+    stopPropagation: () => { marcas.stop++; },
+    preventDefault: () => { marcas.prevent++; },
+  });
+  return marcas;
+}
 El.prototype.remove = function () {};
 El.prototype.select = function () {};
 El.prototype.closest = function () { return this; };
@@ -217,7 +229,12 @@ function rodar(MODE, HOJE, AGORA) {
     return Promise.reject(new Error('rota inesperada ' + url));
   };
 
-  new Function(SRC)();
+  // Expoe o recorte: o padrao da aba passou a ser UM MES, entao as asserções amplas
+  // (as ~224 linhas do ano) precisam abrir o recorte de proposito -- e as do recorte
+  // padrao precisam poder ler o estado que o produziu.
+  new Function(SRC + ';global.__CAL = Object.assign(global.__CAL || {}, '
+              + '{state: state, renderAll: renderAll, renderTable: renderTable, '
+              + 'hojeRef: hojeRef, segundaDa: segundaDa});')();
 
   let falhas = 0;
   const check = (rotulo, cond, extra) => {
@@ -227,12 +244,166 @@ function rodar(MODE, HOJE, AGORA) {
 
   return new Promise((resolve) => {
     setTimeout(() => {
+      const CAL = global.__CAL;
+      console.log('\nMODE=' + MODE);
+
+      // ── (1) O RECORTE PADRAO: mes corrente, em blocos de semana ─────────────
+      // Pedido do usuario: a pagina abre no mes que esta correndo, nao no ano inteiro,
+      // e dentro do mes a lista vem em blocos por semana, com a semana corrente aberta.
+      // O "hoje" e o da pagina (data de geracao, trocada pela do servidor no ping), nao
+      // o relogio da maquina que roda o teste.
+      const mesAtual = CAL.hojeRef().slice(0, 7);
+      check('abre no mes corrente, nao em "Tudo"', CAL.state.month === mesAtual,
+            CAL.state.month + ' vs ' + mesAtual);
+      check('os outros tres seletores abrem em "todos"',
+            CAL.state.pais === 'Todos' && CAL.state.institution === 'Todos' &&
+            CAL.state.divulgacao === 'Todas',
+            [CAL.state.pais, CAL.state.institution, CAL.state.divulgacao].join(','));
+      check('o seletor de mes existe e esta no mes corrente',
+            getEl('mes-select').value === mesAtual, getEl('mes-select').value);
+      check('e sai marcado como recorte estreito',
+            getEl('mes-select').className.indexOf('narrow') >= 0,
+            getEl('mes-select').className);
+      check('o seletor de pais tem Todos + BR/US/INT',
+            getEl('pais-select').children.map((o) => o.value).join(',') === 'Todos,BR,US,INT',
+            getEl('pais-select').children.map((o) => o.value).join(','));
+      check('fonte e divulgacao tambem sao seletores, nao pills',
+            getEl('fonte-select').children.length > 3 &&
+            getEl('divulgacao-select').children.length > 3,
+            getEl('fonte-select').children.length + '/' +
+            getEl('divulgacao-select').children.length);
+
+      const padrao = getEl('table-body').children;
+      const cabSem = padrao.filter((c) => (c.className || '').indexOf('week-header') >= 0);
+      check('a lista do mes vem em blocos por semana', cabSem.length >= 3, cabSem.length);
+      const abertas = cabSem.filter((c) => c.innerHTML.indexOf('wk-caret">\u2212') >= 0);
+      check('exatamente uma semana vem aberta', abertas.length === 1, abertas.length);
+      const semanaHoje = CAL.segundaDa(CAL.hojeRef());
+      const marcada = cabSem.filter((c) => c.innerHTML.indexOf('wk-now') >= 0);
+      check('a semana corrente e a marcada e a aberta',
+            marcada.length === 1 &&
+            marcada[0].innerHTML.indexOf('data-week="' + semanaHoje + '"') >= 0 &&
+            abertas[0].innerHTML.indexOf('data-week="' + semanaHoje + '"') >= 0,
+            marcada.length + ' | ' + (abertas[0] && abertas[0].innerHTML.slice(0, 80)));
+      const linhasSemana = padrao.filter((c) => c.innerHTML.indexOf('col-update') >= 0);
+      check('so as linhas da semana aberta sao renderizadas',
+            linhasSemana.length > 0 && linhasSemana.length < 40, linhasSemana.length);
+      check('cada linha tras o selo de pais',
+            linhasSemana.every((c) => /pais-badge (br|us|int)"/.test(c.innerHTML)),
+            linhasSemana.map((c) => c.innerHTML.slice(0, 60))[0]);
+      check('a dica explica o clique-expande da semana',
+            getEl('list-hint').innerHTML.indexOf('semana') >= 0,
+            getEl('list-hint').innerHTML.slice(0, 60));
+
+      // Os 3 stat cards sairam a pedido do usuario; as contagens que eles carregavam
+      // ficaram, numa linha ao lado do titulo. Ela conta o RECORTE inteiro -- nem so as
+      // linhas visiveis (a semana fechada continua sendo divulgacao do mes), nem o
+      // calendario todo (seria um numero que a tabela ao lado contradiz).
+      const nDoResumo = (h) => parseInt(
+        (h.match(/<strong>(\d+)<\/strong> divulga/) || [0, '0'])[1], 10);
+      const resumo = getEl('list-resumo').innerHTML;
+      check('o resumo do recorte substitui os stat cards',
+            nDoResumo(resumo) > 0 &&
+            (/data estimada/.test(resumo) || /data confirmada/.test(resumo)),
+            resumo.slice(0, 120));
+      const somaSemanas = cabSem.reduce((t, c) => t + parseInt(
+        (c.innerHTML.match(/wk-count">(\d+)/) || [0, '0'])[1], 10), 0);
+      check('e conta o mes inteiro, nao so a semana aberta',
+            nDoResumo(resumo) === somaSemanas && somaSemanas > linhasSemana.length,
+            nDoResumo(resumo) + ' vs ' + somaSemanas + ' (visiveis ' + linhasSemana.length + ')');
+
+      // A semana e de segunda a domingo, e as contas sao em UTC. Domingo pertence a
+      // semana que COMECOU na segunda anterior -- um `getDay()` local, ou um Date
+      // construido sem o Z, desloca o bloco inteiro e um dado de segunda aparece no
+      // bloco da semana passada, sem erro nenhum.
+      check('domingo cai na semana que comecou na segunda anterior',
+            CAL.segundaDa('2026-09-06') === '2026-08-31', CAL.segundaDa('2026-09-06'));
+      check('segunda comeca a propria semana',
+            CAL.segundaDa('2026-09-07') === '2026-09-07', CAL.segundaDa('2026-09-07'));
+      check('sabado ainda e da semana da segunda anterior',
+            CAL.segundaDa('2026-09-12') === '2026-09-07', CAL.segundaDa('2026-09-12'));
+
+      // O que ja saiu recua; o que esta ATRASADO nao recua, porque e a unica linha da
+      // pagina que pede acao. Os dois lados precisam ser afirmados: so o primeiro
+      // passaria num mutante que apaga a linha laranja junto.
+      const jaSaiu = padrao.filter((c) => c.innerHTML.indexOf('upd-ok') >= 0 ||
+                                          c.innerHTML.indexOf('sem tabela') >= 0);
+      const futuras0 = padrao.filter((c) => c.innerHTML.indexOf('upd-none">\u2014') >= 0);
+      check('divulgacao que ja saiu fica em cinza',
+            jaSaiu.length > 0 &&
+            jaSaiu.every((c) => (c.className || '').indexOf('done') >= 0),
+            jaSaiu.length + ' | ' + jaSaiu.map((c) => c.className).join('|'));
+      check('e a futura nao fica',
+            futuras0.length > 0 &&
+            futuras0.every((c) => (c.className || '').indexOf('done') < 0),
+            futuras0.length + ' | ' + futuras0.map((c) => c.className).join('|'));
+
+      // Clicar no cabecalho fecha a semana; clicar de novo reabre. O `closest` do stub
+      // distingue os dois seletores que o listener procura -- com um closest unico, o
+      // clique da semana seria lido como clique no botao de atualizar.
+      const tdSem = { dataset: { week: semanaHoje } };
+      cliqueSeletivo(getEl('table-body'), { 'button.upd-btn': null, '[data-week]': tdSem });
+      const fechada = getEl('table-body').children;
+      check('clique no cabecalho fecha a semana',
+            fechada.filter((c) => c.innerHTML.indexOf('col-update') >= 0).length === 0,
+            fechada.filter((c) => c.innerHTML.indexOf('col-update') >= 0).length);
+      check('e nenhuma outra abre sozinha no lugar',
+            fechada.filter((c) => c.innerHTML.indexOf('wk-caret">\u2212') >= 0).length === 0);
+      cliqueSeletivo(getEl('table-body'), { 'button.upd-btn': null, '[data-week]': tdSem });
+      check('clicar de novo reabre',
+            getEl('table-body').children.filter(
+              (c) => c.innerHTML.indexOf('col-update') >= 0).length === linhasSemana.length);
+
+      // ── (1b) O filtro de pais, e a cascata que vem com ele ─────────────────
+      CAL.state.month = 'Tudo';
+      CAL.state.mesEscolhido = true;
+      CAL.state.pais = 'US';
+      CAL.renderAll();
+      const soUS = getEl('table-body').children
+        .filter((c) => c.innerHTML.indexOf('col-update') >= 0);
+      check('filtrar por US deixa so as linhas americanas',
+            soUS.length > 0 && soUS.every((c) => c.innerHTML.indexOf('pais-badge us') >= 0),
+            soUS.length);
+      check('e a lista de fontes estreita junto (BLS/BEA, sem IBGE)',
+            getEl('fonte-select').children.map((o) => o.value).indexOf('IBGE') < 0 &&
+            getEl('fonte-select').children.map((o) => o.value).indexOf('BLS') >= 0,
+            getEl('fonte-select').children.map((o) => o.value).join(','));
+      // Uma fonte que nao existe sob o pais escolhido tem de CAIR DE VOLTA para "todas",
+      // e nao ficar valida no objeto e invalida na tela (tabela vazia sem dizer por que).
+      CAL.state.institution = 'IBGE';
+      CAL.renderAll();
+      check('fonte impossivel sob o pais escolhido cai de volta para "todas"',
+            CAL.state.institution === 'Todos', CAL.state.institution);
+      check('e a tabela continua listando as linhas do pais',
+            getEl('table-body').children
+              .filter((c) => c.innerHTML.indexOf('col-update') >= 0).length === soUS.length);
+
+      // ── (2) As asserções amplas, com o recorte aberto de proposito ──────────
+      CAL.state.pais = 'Todos';
+      CAL.renderAll();
+
       const all = getEl('table-body').children.map((c) => c.innerHTML).filter(Boolean);
       const linhas = all.filter((h) => h.indexOf('col-update') >= 0);
       const mes = all.filter((h) => h.indexOf('colspan') >= 0);
 
-      console.log('\nMODE=' + MODE);
       check('renderizou linhas de divulgacao', linhas.length > 100, linhas.length);
+      check('o resumo acompanha o recorte quando ele abre',
+            nDoResumo(getEl('list-resumo').innerHTML) === linhas.length,
+            nDoResumo(getEl('list-resumo').innerHTML) + ' vs ' + linhas.length);
+
+      // A linha ATRASADA nao recua: ela e a unica da pagina que pede acao, e apaga-la
+      // por "ja ter saido" apagaria exatamente essa. Fica aqui, e nao no recorte
+      // padrao, porque so com o calendario inteiro o stub garante uma linha laranja --
+      // um `if (atrasadas.length)` no recorte estreito nunca dispararia, e o mutante
+      // que pinta a atrasada de cinza passaria.
+      const trsAmplo = getEl('table-body').children;
+      const atrasadas = trsAmplo.filter((c) => c.innerHTML.indexOf('upd-btn late') >= 0);
+      if (MODE === 'served') {
+        check('a divulgacao atrasada NAO fica em cinza',
+              atrasadas.length > 0 &&
+              atrasadas.every((c) => (c.className || '').indexOf('done') < 0),
+              atrasadas.length + ' | ' + atrasadas.map((c) => c.className).join('|'));
+      }
       check('cabecalho de mes com colspan=7',
             mes.length > 0 && mes.every((h) => h.indexOf('colspan="7"') >= 0));
       check('exatamente 1 celula col-update por linha',
@@ -290,6 +461,62 @@ function rodar(MODE, HOJE, AGORA) {
       }, 40);
     }, 40);
   });
+}
+
+// ---------------------------------------------------------------------------
+// ORDEM NO MARKUP: a barra de recorte fica DENTRO do card da lista e ACIMA da tabela,
+// e os 3 stat cards da aba de divulgacoes nao existem mais. Pedido do usuario
+// (2026-09-22): "coloque o seletor logo acima da tabela, e melhor, pode retirar esses
+// cards". E um guarda estatico porque o stub de DOM deste harness e string: "esta acima
+// da tabela" e propriedade do HTML entregue, nao do que o render devolve.
+// ---------------------------------------------------------------------------
+function testeOrdemDoMarkup() {
+  let falhas = 0;
+  const check = (rotulo, cond, extra) => {
+    if (cond) console.log('  ok     ' + rotulo);
+    else { console.log('  FALHA  ' + rotulo + (extra !== undefined ? '  -> ' + extra : '')); falhas++; }
+  };
+  console.log('');
+  console.log('ORDEM NO MARKUP - barra acima da tabela, sem stat cards');
+
+  const doc = fs.readFileSync(HTML, 'utf8');
+  const view = doc.slice(doc.indexOf('id="view-releases"'),
+                         doc.indexOf('id="view-dashboards"'));
+
+  const iCard = view.indexOf('class="table-card"');
+  const iBarra = view.indexOf('class="ctrl-bar inline"');
+  const iTabela = view.indexOf('<table class="release-table"');
+  check('a aba tem uma barra de recorte', iBarra >= 0);
+  check('ela vive DENTRO do card da lista', iCard >= 0 && iBarra > iCard, iCard + '/' + iBarra);
+  check('e imediatamente ACIMA da tabela', iBarra < iTabela, iBarra + '/' + iTabela);
+  check('nada de tabela entre a barra e o <table>',
+        view.slice(iBarra, iTabela).indexOf('<table') < 0);
+  check('os 4 seletores estao na barra',
+        ['pais-select', 'fonte-select', 'divulgacao-select', 'mes-select']
+          .every((id) => {
+            const i = view.indexOf('id="' + id + '"');
+            return i > iBarra && i < iTabela;
+          }));
+  check('os 3 stat cards sairam da aba de divulgacoes',
+        view.indexOf('stats-grid') < 0 && view.indexOf('stat-card') < 0,
+        view.indexOf('stats-grid'));
+  // ... e em 2026-09-23 sairam tambem da aba de dashboards, no mesmo pedido de um dia
+  // depois ("pode retirar esses cards, por favor"). Nao ha mais stat card na pagina.
+  const dash = doc.slice(doc.indexOf('id="view-dashboards"'), doc.indexOf('</main>'));
+  check('e sairam tambem da aba de dashboards',
+        dash.indexOf('stats-grid') < 0 && dash.indexOf('stat-card') < 0,
+        dash.indexOf('stats-grid'));
+  check('nenhum stat card sobrou na pagina inteira',
+        doc.indexOf('class="stat-card"') < 0, doc.indexOf('class="stat-card"'));
+  // O que eles contavam sobreviveu numa linha ao lado do titulo, como na outra aba.
+  const iH2 = dash.indexOf('<h2>');
+  const iResumo = dash.indexOf('id="dash-resumo"');
+  check('a contagem ficou, ao lado do titulo',
+        iResumo > iH2 && iResumo < dash.indexOf('id="bulk-dashboards"'),
+        iH2 + '/' + iResumo);
+
+  console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
+  falhasTotais += falhas;
 }
 
 // ---------------------------------------------------------------------------
@@ -502,6 +729,27 @@ async function testeStatusDashboard(MODE) {
     const soUs = getEl('dash-cards').innerHTML;
     check('filtro de area deixa so o dashboard daquela area',
           soUs.indexOf('Inflation (US)') >= 0 && soUs.indexOf('Inflação (BR)') < 0);
+
+    // Os 3 stat cards desta aba sairam em 2026-09-23; a contagem ficou numa linha ao
+    // lado do titulo. Ela conta o RECORTE de area -- um numero que os cards logo abaixo
+    // contradizem e pior do que numero nenhum.
+    const nDoResumo = (h) => parseInt(
+      (h.match(/<strong>(\d+)<\/strong> dashboard/) || [0, '0'])[1], 10);
+    const nCards = (h) => (h.match(/<details class="dash-card"/g) || []).length;
+    check('o resumo conta o recorte de area, nao a lista inteira',
+          nDoResumo(getEl('dash-resumo').innerHTML) === nCards(soUs),
+          nDoResumo(getEl('dash-resumo').innerHTML) + ' vs ' + nCards(soUs));
+    areas[0]._listeners['click']();
+    const todas = getEl('dash-cards').innerHTML;
+    check('e cresce ao voltar para todas as areas',
+          nDoResumo(getEl('dash-resumo').innerHTML) === nCards(todas)
+            && nCards(todas) > nCards(soUs),
+          nDoResumo(getEl('dash-resumo').innerHTML) + ' vs ' + nCards(todas));
+    // ... e o unico numero que pede acao sai marcado, na cor do selo do card.
+    check('o que pede acao vem destacado no resumo',
+          /<span class="acao">\d+<\/span> com dado novo/.test(getEl('dash-resumo').innerHTML),
+          getEl('dash-resumo').innerHTML);
+    areas[iUs]._listeners['click']();
   }
 
   // ── click-drop: um <details> por dashboard ───────────────────────────────
@@ -565,6 +813,32 @@ async function testeStatusDashboard(MODE) {
           lote.indexOf('Crédito') < 0, lote.slice(0, 200));
     check('sem stamp fica fora da fila (nao e atraso)',
           lote.indexOf('Câmbio') < 0, lote.slice(0, 200));
+
+    // O ROTULO na tela nao pode ser a palavra de quem construiu isto. O usuario leu o
+    // selo `sem stamp` e respondeu "eu nao sei o que e stamp" (2026-09-23) -- e ele tem
+    // razao: o registro e mecanismo nosso, nao vocabulario de quem abre a pagina. A
+    // assercao e sobre a aba RENDERIZADA, nao sobre o dicionario de rotulos: um mutante
+    // que reintroduza a palavra em qualquer outro lugar da aba tambem reprova.
+    // Sobre o TEXTO, nao sobre o HTML: `class="stamped"` e nome de classe, que ninguem
+    // le. O que o usuario le e o que sobra depois de tirar as tags.
+    const textoDaAba = cards.replace(/<[^>]*>/g, ' ');
+    check('a aba nao diz "stamp" em lugar nenhum',
+          !/stamp/i.test(textoDaAba),
+          (textoDaAba.match(/.{0,40}stamp.{0,40}/i) || [''])[0]);
+    check('o veredito sem retrato aparece como "nao da para conferir"',
+          cards.indexOf('não dá para conferir') >= 0,
+          cards.slice(cards.indexOf('verdict'), cards.indexOf('verdict') + 120));
+    // ... e um selo cinza sozinho le como defeito da pagina: ele precisa do motivo E da
+    // saida, dentro do <summary>, para ser legivel com o card fechado. O card tem de ser
+    // achado pelo SELO -- pegar o primeiro `verdict-why` da aba acha o de "nunca gerado",
+    // que e outro estado, com outro motivo.
+    const cardSemRetrato = cards.split('<details')
+      .find((c) => c.indexOf('não dá para conferir') >= 0) || '';
+    const iPorque = cardSemRetrato.indexOf('verdict-why');
+    check('e vem com o motivo e a saida, dentro do summary',
+          iPorque >= 0 && /Regerar uma vez/.test(cardSemRetrato.slice(iPorque, iPorque + 320))
+            && cardSemRetrato.indexOf('</summary>') > iPorque,
+          cardSemRetrato.slice(iPorque, iPorque + 200));
     // O tempo anunciado e o do clique: 30s da inflacao BR + 13s de build do US + 110s
     // do passo atrasado dele. Os 90s do painel trimestral, que esta em dia, NAO entram.
     check('o lote anuncia a soma dos tempos, com o recalculo de cada um',
@@ -1013,8 +1287,16 @@ async function testeLoteDivulgacoes() {
     return Promise.reject(new Error('inesperado ' + url));
   };
 
-  new Function(SRC)();
+  new Function(SRC + ';global.__CAL = Object.assign(global.__CAL || {}, '
+              + '{state: state, renderAll: renderAll});')();
   await new Promise((r) => setTimeout(r, 60));
+
+  // O lote age sobre o RECORTE, e o recorte padrao virou um mes. Este cenario e sobre a
+  // regra da fila (um POST por grupo, em serie, falha nao interrompe), entao ele abre o
+  // calendario inteiro de proposito -- a regra do recorte estreito e exercitada no fim.
+  global.__CAL.state.month = 'Tudo';
+  global.__CAL.state.mesEscolhido = true;
+  global.__CAL.renderAll();
 
   const antes = getEl('bulk-releases').innerHTML;
   check('a aba oferece o lote', antes.indexOf('bulk-run-btn') >= 0, antes.slice(0, 140));
@@ -1055,6 +1337,22 @@ async function testeLoteDivulgacoes() {
         pmc.length === 1 && pmc[0].indexOf('upd-ok') >= 0, pmc[0] && pmc[0].slice(0, 160));
   check('e o que falhou continua oferecendo botao',
         depois.indexOf('Atualizar pendentes (1)') >= 0, depois.slice(0, 200));
+
+  // ── o recorte estreito nao pode APAGAR o atraso ──────────────────────────
+  // Com a pagina abrindo num mes so, um grupo atrasado de outro mes sai da fila do lote
+  // (que e a regra certa: o lote age sobre o que esta listado). O que nao pode acontecer
+  // e ele sumir em silencio -- dezembro nao tem nenhuma linha atrasada, e mesmo assim a
+  // barra tem de dizer que existe um atraso fora dali.
+  global.__CAL.state.month = '2026-12';
+  global.__CAL.renderAll();
+  const estreito = getEl('bulk-releases').innerHTML;
+  check('num mes sem atraso o lote nao oferece botao',
+        estreito.indexOf('bulk-run-btn') < 0, estreito.slice(0, 160));
+  check('mas avisa quantos pendentes ficaram fora do recorte',
+        /\+1 pendente\(s\) fora do recorte/.test(estreito), estreito.slice(0, 260));
+  check('e nomeia qual e',
+        estreito.indexOf('Commodities') >= 0 || estreito.indexOf('IC-Br') >= 0,
+        estreito.slice(0, 260));
 
   console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
   falhasTotais += falhas;
@@ -1119,6 +1417,7 @@ async function testeLoteSemVeredito() {
   for (const m of modos) await rodar(m);
   for (const m of modos) await testeStatusDashboard(m);
   if (!process.env.MODE) await testeServidoSemEstado();
+  if (!process.env.MODE) testeOrdemDoMarkup();
   if (!process.env.MODE) await testeHorario();
   if (!process.env.MODE) await testeLoteDashboards(false);
   if (!process.env.MODE) await testeLoteDashboards(true);

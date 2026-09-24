@@ -255,5 +255,213 @@ ok(float(np.abs(r_sa[comum] - r2_sa[comum]).max()) < 1e-12,
    "um mes novo no MESMO ano nao mexe em nenhum valor ja ajustado",
    float(np.abs(r_sa[comum] - r2_sa[comum]).max()))
 
+
+# ── 10. periodo de referencia TRIMESTRAL ─────────────────────────────────────
+print("\n10. Referencia trimestral: a defasagem conta do FIM do trimestre")
+# O grupo do PIB rotula por trimestre (`2026-Q2`). Duas coisas quebram se ele for tratado
+# como mensal, e nenhuma levanta erro: `_ref` devolveria um mes que nao existe no indice
+# trimestral da serie (a linha some), e a defasagem sairia contada do inicio do trimestre
+# (o PIB do 2o tri sai ~3 meses depois de JUNHO, nao de abril).
+_q = CC._ref("2026-Q2")
+ok(_q is not None and str(_q.freqstr).startswith("Q"),
+   "'2026-Q2' vira periodo TRIMESTRAL, nao mensal", str(_q) + " / " + str(_q and _q.freqstr))
+ok(CC._mes_fim(_q) == (2026, 6), "e o mes-ancora dele e junho, o fim do trimestre",
+   str(CC._mes_fim(_q)))
+ok(CC._mes_fim(CC._ref("2026-07")) == (2026, 7),
+   "num periodo mensal a ancora continua sendo o proprio mes")
+
+_gpib = CC.grupos()["ibge_pib_trimestral"]
+_r = CC.regra(_gpib)
+ok(_r is not None, "a regra do grupo do PIB e ajustavel com referencia trimestral")
+ok(_r and _r[0] == 3, "defasagem de 3 meses do fim do trimestre", str(_r and _r[0]))
+_q2, _exata = CC.divulgacao(_gpib, CC._ref("2026-Q2"))
+ok(_exata and _q2.date() == dt.date(2026, 9, 1),
+   "2026-Q2 casa com a entrada exata do calendario (01/09)", str(_q2))
+# E a que o calendario NAO tem sai pela regra, no lugar certo do calendario.
+_q1, _exata1 = CC.divulgacao(_gpib, CC._ref("2025-Q4"))
+ok((not _exata1) and _q1 is not None and _q1.date().month == 3 and _q1.date().year == 2026,
+   "2025-Q4 e estimado em marco de 2026", str(_q1))
+
+# A serie trimestral lida num corte: na reuniao de 10/12/2025 o PIB disponivel era o do
+# 3o trimestre (divulgado em 02/12), e nao o do 4o, que so sai em marco.
+_pib = CC.pib_acum_4t("pib_pm")
+_ref3 = CC._valor_em(_pib, dt.datetime(2025, 12, 10, 18, 30), _gpib)["ref"]
+ok(str(_ref3) == "2025Q3", "em 10/12/2025 o PIB disponivel e o 3T2025", str(_ref3))
+_ref2 = CC._valor_em(_pib, dt.datetime(2025, 11, 5, 18, 30), _gpib)["ref"]
+ok(str(_ref2) == "2025Q2", "e um mes antes ainda era o 2T2025", str(_ref2))
+
+
+# ── 11. duas entradas para o mesmo periodo: vale a mais tarde ────────────────
+print("\n11. Referencia duplicada no calendario: vale a divulgacao MAIS TARDE")
+# Nao e hipotetico: `bcb_credit_note` carimba 2026-06 em 01/07 e de novo em 30/07, e a
+# cadencia do grupo (abril->28/05, junho->30/07, julho->28/08) mostra que a primeira e um
+# rotulo errado do ICS. Pegar a primeira faria o dado de junho aparecer um mes antes de
+# existir -- o anacronismo que o modulo existe para nao cometer.
+_falso = {"entries": [
+    {"date": "2026-07-01", "reference_period": "2026-06", "time": "08:30"},
+    {"date": "2026-07-30", "reference_period": "2026-06", "time": "08:30"},
+    {"date": "2026-08-28", "reference_period": "2026-07", "time": "08:30"},
+    {"date": "2026-09-29", "reference_period": "2026-08", "time": "08:30"},
+]}
+_qd, _ed = CC.divulgacao(_falso, pd.Period("2026-06", freq="M"))
+ok(_ed and _qd.date() == dt.date(2026, 7, 30),
+   "com duas entradas para 2026-06 vale 30/07, nao 01/07", str(_qd))
+# E o ajuste da regra tambem usa uma so por referencia, senao o erro maximo do grupo
+# explode e passa a marcar como ambigua toda celula que ele alimenta.
+_rd = CC.regra(_falso)
+ok(_rd is not None and _rd[2] <= 3,
+   "o erro da regra fica pequeno porque a duplicata nao entra no ajuste",
+   str(_rd and _rd[2]))
+_gcred = CC.grupos()["bcb_credit_note"]
+ok(CC.regra(_gcred)[2] <= 5,
+   "e o grupo real de credito tambem (era 27 dias com a duplicata dentro)",
+   str(CC.regra(_gcred)[2]))
+
+
+# ── 12. a janela de reunioes ────────────────────────────────────────────────
+print("\n12. janela_reunioes(): N passadas + a proxima, cortada em AGORA")
+_agora = dt.datetime(2026, 9, 22, 10, 0)
+_jan = CC.janela_reunioes(_agora, 8)
+ok(len(_jan) == 9, "oito passadas mais a proxima", str(len(_jan)))
+ok([r["futura"] for r in _jan] == [False] * 8 + [True],
+   "so a ultima e futura")
+ok(all(_jan[i]["date"] < _jan[i + 1]["date"] for i in range(len(_jan) - 1)),
+   "em ordem crescente de data")
+ok(all(r["corte"] <= _agora for r in _jan), "nenhum corte esta no futuro")
+ok(_jan[-1]["corte"] == _agora,
+   "o corte da coluna futura e AGORA, nao o fechamento da reuniao", str(_jan[-1]["corte"]))
+ok(_jan[-1]["corte_reuniao"] > _agora,
+   "mas o corte da reuniao fica guardado -- e dele que a agenda depende",
+   str(_jan[-1].get("corte_reuniao")))
+ok(all(r["corte"] == dt.datetime.combine(r["date"], CC.HORA_DECISAO) for r in _jan[:-1]),
+   "as passadas sao cortadas as 18:30 do dia 2")
+# A separacao e pelo CORTE: no proprio dia 2 antes das 18:30 a reuniao ainda e a proxima.
+_antes = CC.janela_reunioes(dt.datetime(2026, 9, 16, 12, 0), 3)
+ok(_antes[-1]["date"] == dt.date(2026, 9, 16) and _antes[-1]["futura"],
+   "no dia da reuniao, antes do comunicado, ela ainda e a proxima",
+   str(_antes[-1]["date"]))
+_depois = CC.janela_reunioes(dt.datetime(2026, 9, 16, 19, 0), 3)
+ok(_depois[-2]["date"] == dt.date(2026, 9, 16) and not _depois[-2]["futura"],
+   "e depois do comunicado ela vira passada e a janela anda sozinha")
+# Rotulo: e o que vai no cabecalho da coluna.
+ok(CC._reuniao_label(dt.date(2026, 1, 28)) == "jan/26", "rotulo curto da coluna",
+   CC._reuniao_label(dt.date(2026, 1, 28)))
+
+
+# ── 13. inflacao implicita: Fisher, nao subtracao ───────────────────────────
+print("\n13. Inflacao implicita e razao, nao diferenca")
+# A subtracao e a aproximacao usual e erra onde os niveis sao altos, que e exatamente a
+# faixa brasileira. A forma errada funciona na faixa em que se costuma olhar e quebra onde
+# ninguem confere -- mesma licao da identidade produto/horas do relatorio de produtividade.
+_n, _r = 14.0, 7.5
+_certo = ((1 + _n / 100) / (1 + _r / 100) - 1) * 100
+_errado = _n - _r
+ok(abs(_certo - 6.0465) < 1e-3, "a 14% e 7,5% a forma correta da 6,05%", "%.4f" % _certo)
+ok(abs(_errado - _certo) > 0.4,
+   "e a subtracao erra mais de 0,4 p.p. -- maior que o movimento tipico de um mes",
+   "%.4f" % (_errado - _certo))
+_bei = CC.implicita("24M")
+ok(len(_bei) > 1000, "a serie de implicita de 2 anos existe", str(len(_bei)))
+_ult = _bei.index.max()
+_nom = CC.curva_br("DIPRE", "24M").loc[_ult]
+_rea = CC.curva_br("NTNBJS", "24M").loc[_ult]
+ok(abs(float(_bei.loc[_ult]) - ((1 + _nom / 100) / (1 + _rea / 100) - 1) * 100) < 1e-9,
+   "e ela e a razao das duas curvas, no ultimo pregao")
+ok(abs(float(_bei.loc[_ult]) - (_nom - _rea)) > 1e-3,
+   "estritamente diferente da subtracao", "%.4f vs %.4f" % (float(_bei.loc[_ult]), _nom - _rea))
+
+
+# ── 14. horizonte relevante: quatro trimestres que TERMINAM seis a frente ───
+print("\n14. Horizonte relevante: 4 trimestres compostos, 6 a frente da pesquisa")
+_hr = CC.focus_ipca_hr()
+ok(len(_hr) > 50, "a serie do horizonte relevante existe", str(len(_hr)))
+_d = CC._focus_tri_ipca()
+_ultd = _hr.index.max()
+_g = _d[_d["date"] == _ultd].set_index("tri")["mediana"]
+_alvo = pd.Period(_ultd, freq="Q") + CC.HR_TRIMESTRES
+_jan4 = [_alvo - k for k in range(3, -1, -1)]
+_esp = (float(np.prod([1 + _g.loc[t] / 100 for t in _jan4])) - 1) * 100
+ok(abs(float(_hr.loc[_ultd]) - _esp) < 1e-9,
+   "bate com a composicao dos quatro trimestres que terminam no alvo",
+   "%.6f vs %.6f" % (float(_hr.loc[_ultd]), _esp))
+ok(str(_alvo - pd.Period(_ultd, freq="Q")) == "<6 * QuarterEnds>" or
+   (_alvo.ordinal - pd.Period(_ultd, freq="Q").ordinal) == 6,
+   "e o alvo esta exatamente seis trimestres a frente da pesquisa",
+   str(_alvo) + " vs " + str(pd.Period(_ultd, freq="Q")))
+# Somar as quatro taxas em vez de compor erra pouco, mas erra -- e e de graca nao errar.
+_soma = float(sum(_g.loc[t] for t in _jan4))
+ok(abs(_soma - _esp) > 1e-4, "somar as quatro taxas nao e o mesmo que compor",
+   "%.6f vs %.6f" % (_soma, _esp))
+# A janela e ROLANTE: seis trimestres a frente SEMPRE, sem o dente de serra do
+# ano-calendario, que encurta de 12 para 4 trimestres ao longo do proprio ano.
+_dif = {(pd.Period(d, freq="Q") + CC.HR_TRIMESTRES).ordinal - pd.Period(d, freq="Q").ordinal
+        for d in _hr.index}
+ok(_dif == {6}, "a distancia ao alvo e a mesma em toda pesquisa", str(_dif))
+
+
+# -- 15. a projecao do BC: uma observacao por REUNIAO -----------------------
+print("\n15. Projecao do BC no horizonte relevante: uma linha por reuniao")
+_pb = CC._proj_bc()
+ok(len(_pb) > 12, "a serie do comunicado existe", str(len(_pb)))
+ok(_pb.index.is_unique, "uma unica projecao por data de comunicado")
+ok(_pb.index.is_monotonic_increasing, "e em ordem crescente")
+# O filtro que define a linha: so o comunicado. O relatorio sai 7 a 28 dias depois da
+# reuniao e e TRIMESTRAL, entao misturar os dois poe no mesmo indice pontos separados
+# por ~45 dias e por ~90 -- e `_sigma` mede a variacao por POSICAO, nao por tempo.
+_esp = CC.q("macro_brasil",
+            "SELECT vintage, date, value FROM pm_copom_projecoes "
+            "WHERE horizonte_relevante=1 AND indice='ipca' "
+            "AND cenario='juros_esperado' AND documento='relatorio' "
+            "AND regime='hr_aproximado'")
+ok(len(_esp) > 50, "e ha mesmo um trecho de relatorio que poderia ter entrado",
+   str(len(_esp)))
+_dias = pd.Series(_pb.index).diff().dt.days.dropna()
+ok(float(_dias.median()) < 60,
+   "o espacamento mediano da serie escolhida e de uma reuniao, nao de um trimestre",
+   "%.0f dias" % _dias.median())
+_mix = pd.concat([_pb["value"].astype(float),
+                  _esp.assign(vintage=pd.to_datetime(_esp["vintage"]))
+                      .set_index("vintage")["value"].astype(float)])
+_mix = _mix[~_mix.index.duplicated(keep="last")].sort_index()
+_dmix = pd.Series(_mix.index).diff().dt.days.dropna()
+ok(float(_dmix.median()) > float(_dias.median()) * 1.5,
+   "com o relatorio dentro o espacamento mediano quase dobra",
+   "%.0f vs %.0f dias" % (_dmix.median(), _dias.median()))
+_s1 = CC._sigma(_pb["value"].astype(float), 1)
+_s2 = CC._sigma(_mix, 1)
+ok(_s1 is not None and _s2 is not None and _s2 > _s1 * 1.5,
+   "e a escala tipica de uma variacao junto com ela -- a cor da linha sairia pela "
+   "metade", "%.4f vs %.4f" % (_s2, _s1))
+
+# O rotulo embaixo do valor e o TRIMESTRE PROJETADO, nao a data do comunicado: o
+# indice diz quando o numero saiu e o rotulo diz sobre o que ele e.
+_alvo = CC.proj_bc_hr_alvo()
+_ult = _pb.index.max()
+ok(len(_alvo) == len(_pb), "um rotulo de alvo por comunicado", str(len(_alvo)))
+_tri = pd.Period(_pb.loc[_ult, "date"], freq="Q")
+ok(_alvo[_ult] == CC._rotulo_ref(_tri), "e ele e o trimestre, no formato da tabela",
+   _alvo[_ult])
+# Duas reunioes seguidas projetam o MESMO trimestre com numeros diferentes -- e por
+# isso que nesta linha o rotulo de referencia nao identifica a observacao, e a
+# equivalencia "trocou de referencia <-> tem dado novo" que vale nas outras e falsa
+# aqui. A aba marca a linha com `ref_alvo` exatamente para nao aplicar aquela regra.
+_rot = [_alvo[i] for i in _pb.index[-8:]]
+ok(len(set(_rot)) < len(_rot), "o alvo repete entre reunioes seguidas", str(_rot))
+
+# `div_hora`: o indice desta serie E a data de publicacao, e dize-lo e o que poe a
+# linha debaixo da mesma fronteira das outras. Sem isso a celula sai sem data de
+# divulgacao e o teste do relatorio deixa de checa-la, em silencio.
+_r = CC._valor_em(_pb["value"].astype(float),
+                  dt.datetime.combine(_ult.date(), CC.HORA_DECISAO), None,
+                  div_hora=CC.HORA_DECISAO)
+ok(_r["divulgacao"] == _ult.strftime("%d/%m/%Y ") + CC.HORA_DECISAO.strftime("%H:%M"),
+   "a leitura no fechamento da reuniao declara o comunicado daquele dia",
+   str(_r["divulgacao"]))
+ok(CC._valor_em(_pb["value"].astype(float),
+                dt.datetime.combine(_ult.date(), CC.HORA_DECISAO), None)["divulgacao"]
+   is None,
+   "e sem `div_hora` nenhuma data e afirmada -- o default nao inventa publicacao")
+
+
 print("\n" + ("%d FALHA(S)" % _falhas if _falhas else "todos os testes passaram"))
 sys.exit(1 if _falhas else 0)

@@ -109,6 +109,7 @@ logging.basicConfig(
 logger = logging.getLogger("update_us")
 
 from domain.db.us.inflation import (
+    expc_inflacao,
     inflc_cpi,
     inflc_cpi_dim,
     inflc_cpi_pesos,
@@ -144,6 +145,11 @@ def _plano(full: bool):
         # inteira vem numa requisicao e ela tambem ignora --full. E a unica pesquisa
         # TRIMESTRAL do schema, e sai num calendario proprio (duas vezes por trimestre).
         ("BLS · Produtividade e custos (MSPC)",     mt_produtividade, {}),
+        # Cleveland Fed: 14 vertices de inflacao esperada, mensais, numa requisicao
+        # por vertice. O passe de rotina reescreve 6 meses porque o modelo revisa o
+        # historico recente quando e reestimado -- ver a docstring do script.
+        ("FRED · Inflacao esperada (Cleveland Fed)", expc_inflacao,
+         {"full": True} if full else {}),
     ]
 
 

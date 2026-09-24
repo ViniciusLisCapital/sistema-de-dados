@@ -73,6 +73,17 @@ check("  content-type json", "application/json" in ctype, ctype)
 code, body, ctype = req("/")
 check("GET / serve o HTML", code == 200 and b"<!DOCTYPE html>" in body, code)
 check("  com a coluna Atualizar", b"col-update" in body)
+
+# DOIS servidores na mesma porta: no Windows o bind do segundo NAO falha (o
+# `allow_reuse_address` do HTTPServer vem ligado), e quem responde e o processo mais
+# antigo -- com a versao antiga do codigo em memoria. Aconteceu de verdade em
+# 2026-09-23: um serve.py das 13:13 e outro das 15:41 escutando juntos, e a aba
+# mostrando vereditos que a linha de comando contradizia. Parecia defeito da pagina.
+from analytics.release_calendar.serve import ja_servindo  # noqa: E402
+
+check("ja_servindo() reconhece um servidor no ar", ja_servindo(PORT) is True)
+check("ja_servindo() nao inventa servidor em porta livre",
+      ja_servindo(_porta_livre()) is False)
 check("  content-type text/html", "text/html" in ctype, ctype)
 
 print("\n2. status")
@@ -166,12 +177,16 @@ for corpo, rotulo in (
     ({}, "sem campo key"),
     ({"key": ["brasil_credit"]}, "key nao-string"),
     ({"key": "analytics.brasil.credit.generate_report"}, "nome de modulo como key"),
-    ({"key": "oraculo"}, "dashboard sem entry point automatico"),
+    # `oraculo` saiu do manifesto em 2026-09-23. Fica aqui como o caso de uma key que ja
+    # existiu: uma copia velha da pagina, ou um link guardado, continua mandando ela.
+    ({"key": "oraculo"}, "key que saiu do manifesto"),
 ):
     code, body, _ = req("/api/gerar", metodo="POST", corpo=corpo)
     check(f"/api/gerar: {rotulo} -> 400", code == 400, code)
-check("  a recusa do oraculo diz o comando manual",
-      b"update_oraculo" in req("/api/gerar", metodo="POST", corpo={"key": "oraculo"})[1])
+# A assercao que existia aqui -- "a recusa do oraculo diz o comando manual" -- cobria o
+# ramo de dashboard SEM entry point automatico, e ele ficou sem usuario quando o Oraculo
+# saiu da lista. Quem guarda esse ramo agora e `tests/test_dashboard_status.py`, que
+# reprova se algum dashboard do manifesto voltar a ficar sem `module`.
 
 print("\n6. POST /api/gerar de verdade (release_calendar — barato e sem escrita no banco)")
 code, body, _ = req("/api/gerar", metodo="POST", corpo={"key": "release_calendar"})

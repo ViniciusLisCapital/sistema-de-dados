@@ -1,14 +1,28 @@
 """
-Condicoes economicas entre duas reunioes do Copom: o que o Comite viu na ultima decisao
-contra o que ja esta na mesa para a proxima.
+Condicoes economicas reuniao a reuniao do Copom: o que o Comite tinha na mesa em cada
+uma das ultimas oito decisoes, e o que ja tem para a proxima.
 
-A pergunta que a aba responde nao e "onde estamos", e "o que MUDOU desde a ultima
-decisao". Entre duas reunioes passam ~45 dias, e nesse intervalo saem 1 ou 2 IPCAs, 1
+A pergunta que a aba responde nao e "onde estamos", e "o que MUDOU de uma reuniao para a
+seguinte". Entre duas reunioes passam ~45 dias, e nesse intervalo saem 1 ou 2 IPCAs, 1
 IPCA-15, 6 Boletins Focus e ~30 pregoes -- e sao esses dados novos, nao o nivel das
 variaveis, que podem mover a decisao seguinte.
 
-Nada e reconstruido para tras: a aba compara SEMPRE a ultima reuniao ja realizada com o
-conjunto de informacao de hoje, entao ela se renova sozinha quando uma reuniao passa.
+Nada e reconstruido para tras: a janela e sempre relativa a AGORA (as N ultimas ja
+decididas mais a proxima), entao ela anda sozinha quando uma reuniao passa.
+
+## A matriz, e o que uma celula significa
+
+Uma linha por variavel, uma coluna por reuniao. A celula e o valor que a variavel tinha
+**no corte daquela reuniao** -- nao o valor do mes da reuniao. Sao coisas diferentes
+sempre que a divulgacao de um mes cai depois da decisao: na reuniao de 05/08/2026 o IPCA
+disponivel era o de JUNHO, porque o de julho so saiu em 13/08.
+
+So recebe COR a celula que trouxe informacao nova desde a coluna anterior. Uma serie
+trimestral repete o ultimo numero nas reunioes em que nao houve divulgacao, e essas
+celulas ficam sem cor de proposito: repetir nao e noticia. E por isso que a janela
+interna tem N+1 reunioes e a exibida tem N -- a coluna mais antiga precisa de uma
+anterior para ter delta, e sem ela a primeira coluna nunca receberia cor, o que seria
+propriedade da janela e nao do dado.
 
 ## A regra de corte, que e o coracao do modulo
 
@@ -76,7 +90,7 @@ import yaml
 from statsmodels.tsa.seasonal import STL
 
 from analytics.brasil.monetary_policy.modelo_painel import (
-    focus_selic_12m_diario,
+    focus_anual,
     q,
     serie,
 )
@@ -91,6 +105,11 @@ HORA_DECISAO = dt.time(18, 30)
 # resultado se a divulgacao cair no proprio dia da reuniao.
 HORA_PADRAO = dt.time(9, 0)
 ANOS_SIGMA = 10
+# Reunioes passadas na matriz; a proxima entra sempre, entao a tabela tem N+1 colunas.
+N_PASSADAS = 8
+# Horizonte relevante em trimestres a frente da reuniao -- Decreto 12.079/2024, o mesmo
+# `hr_6_trimestres` que a aba Projecoes filtra.
+HR_TRIMESTRES = 6
 # Inicio da amostra do ajuste sazonal -- ver `_sa()`. 2000 e o mesmo corte de
 # analytics/brasil/inflation/generate_report.py, ja com o regime de metas rodando.
 INICIO_SA = "2000-01"
@@ -130,13 +149,31 @@ def _quando(entrada: dict, grupo: dict) -> dt.datetime:
 
 
 def _ref(rp) -> pd.Period | None:
-    """'2026-08' -> Period. Qualquer outra coisa ('281a reuniao') -> None."""
+    """'2026-08' -> Period mensal, '2026-Q2' -> Period trimestral.
+
+    A frequencia e INFERIDA em vez de fixada em mes: o grupo do PIB rotula por trimestre
+    (`2026-Q2`) e forcar `freq="M"` ali devolveria o mes de fechamento do trimestre, o
+    que casaria com um indice mensal que nao existe e faria a serie nunca resolver.
+    Qualquer outra coisa ('281a reuniao') -> None, que e o que tira o grupo bcb_copom da
+    conta da regra.
+    """
     if not rp:
         return None
     try:
-        return pd.Period(str(rp), freq="M")
+        return pd.Period(str(rp))
     except Exception:
         return None
+
+
+def _mes_fim(ref: pd.Period) -> tuple[int, int]:
+    """(ano, mes) em que o periodo de referencia TERMINA.
+
+    E a ancora da defasagem, e ela tem de ser o fim e nao o inicio: o PIB do 2o trimestre
+    sai ~3 meses depois de junho, nao de abril. Num periodo mensal o fim e o proprio mes,
+    entao a conta e identica a que havia antes.
+    """
+    t = ref.end_time
+    return int(t.year), int(t.month)
 
 
 def _dia_util(d: dt.date) -> int:
@@ -170,13 +207,23 @@ def regra(grupo: dict) -> tuple[int, int, int] | None:
     igualmente no ajuste e na aplicacao, entao se cancelam enquanto nao cair um feriado
     entre o dia ajustado e o dia real -- e quando cai, ja esta contabilizado no erro.
     """
-    defas, dias, pares = [], [], []
+    # Uma entrada por periodo de REFERENCIA, a mais tarde -- a mesma desempate de
+    # `divulgacao()`. Sem isto o rotulo errado do ICS entra no ajuste: no `bcb_credit_note`
+    # de 2026 ele leva o erro maximo da regra de 2 para 27 dias, e 27 dias marca como
+    # ambigua toda celula de credito da matriz.
+    ultima: dict[pd.Period, dt.date] = {}
     for e in grupo.get("entries", []):
         ref = _ref(e.get("reference_period"))
         if ref is None:
             continue
         d = _data(e["date"])
-        defas.append((d.year * 12 + d.month) - (ref.year * 12 + ref.month))
+        if ref not in ultima or d > ultima[ref]:
+            ultima[ref] = d
+
+    defas, dias, pares = [], [], []
+    for ref, d in sorted(ultima.items()):
+        ry, rm = _mes_fim(ref)
+        defas.append((d.year * 12 + d.month) - (ry * 12 + rm))
         dias.append(_dia_util(d))
         pares.append((ref, d))
     if not defas:
@@ -184,22 +231,33 @@ def regra(grupo: dict) -> tuple[int, int, int] | None:
     md, mdia = int(np.median(defas)), int(round(float(np.median(dias))))
     erro = 0
     for ref, real in pares:
-        m = ref + md
-        erro = max(erro, abs((_data_dia_util(m.year, m.month, mdia) - real).days))
+        ry, rm = _mes_fim(ref)
+        alvo = pd.Timestamp(year=ry, month=rm, day=1) + pd.DateOffset(months=md)
+        erro = max(erro, abs((_data_dia_util(alvo.year, alvo.month, mdia) - real).days))
     return md, mdia, erro
 
 
 def divulgacao(grupo: dict, ref: pd.Period) -> tuple[dt.datetime | None, bool]:
-    """Quando o periodo `ref` foi (ou sera) divulgado. bool = veio do calendario."""
-    for e in grupo.get("entries", []):
-        if _ref(e.get("reference_period")) == ref:
-            return _quando(e, grupo), True
+    """Quando o periodo `ref` foi (ou sera) divulgado. bool = veio do calendario.
+
+    Havendo mais de uma entrada para o mesmo `reference_period`, vale a MAIS TARDE. Isso
+    nao e hipotetico: o grupo `bcb_credit_note` do calendario de 2026 carimba `2026-06` em
+    01/07 e de novo em 30/07, e a cadencia do proprio grupo (abril->28/05, junho->30/07,
+    julho->28/08) mostra que a primeira e um rotulo errado do ICS. Pegar a primeira faria
+    o dado de junho aparecer disponivel um mes antes de existir, que e exatamente o
+    anacronismo que este modulo existe para nao cometer.
+    """
+    candidatas = [_quando(e, grupo) for e in grupo.get("entries", [])
+                  if _ref(e.get("reference_period")) == ref]
+    if candidatas:
+        return max(candidatas), True
     r = regra(grupo)
     if r is None:
         return None, False
     defas, dia, _ = r
-    m = ref + defas
-    return dt.datetime.combine(_data_dia_util(m.year, m.month, dia),
+    ry, rm = _mes_fim(ref)
+    alvo = pd.Timestamp(year=ry, month=rm, day=1) + pd.DateOffset(months=defas)
+    return dt.datetime.combine(_data_dia_util(alvo.year, alvo.month, dia),
                                _hora(None, grupo)), False
 
 
@@ -239,39 +297,93 @@ def reunioes(agora: dt.datetime | None = None) -> tuple[dict | None, dict | None
     return ant, prox
 
 
-def numero_reuniao(data: dt.date) -> int | None:
-    """Numero absoluto da reuniao, de `pm_copom_projecoes` (vintage = dia da decisao).
+_MES_PT = ["jan", "fev", "mar", "abr", "mai", "jun",
+           "jul", "ago", "set", "out", "nov", "dez"]
 
-    So casamento exato: `pm_copom_projecoes` carrega da 206a reuniao em diante e toda
-    reuniao recente publica projecao, entao a ultima ja realizada sempre esta la. Contar
-    reunioes para preencher um buraco seria adivinhar um numero oficial.
+
+def _reuniao_label(d: dt.date) -> str:
+    return "%s/%02d" % (_MES_PT[d.month - 1], d.year % 100)
+
+
+def todas_reunioes() -> list[dict]:
+    """Toda reuniao conhecida, do banco e do calendario, deduplicada pela DATA.
+
+    As duas fontes sao necessarias e nenhuma basta. `pm_copom_reuniao` tem a historia
+    inteira com o passo de Selic decidido, mas so entra depois que o ETL roda -- a 281a
+    (16/09/2026) ja aconteceu e ainda nao esta la. O calendario tem as datas futuras e as
+    do ano corrente, e nenhum passo. A uniao da a janela; o passo fica `None` onde so o
+    calendario alcanca, que e uma coluna sem decisao na tela e nao um zero inventado.
     """
-    d = q("macro_brasil", "SELECT DISTINCT vintage, nro_reuniao FROM pm_copom_projecoes "
-                          "WHERE vintage = '%s'" % data.isoformat())
-    return int(d["nro_reuniao"].iloc[0]) if len(d) else None
+    por_data: dict[dt.date, dict] = {}
+    try:
+        d = q("macro_brasil", "SELECT nro_reuniao, date, variacao_bps, decisao, "
+                              "selic_decidida FROM pm_copom_reuniao ORDER BY date")
+        for r in d.itertuples():
+            data = pd.Timestamp(r.date).date()
+            por_data[data] = {
+                "date": data, "date_start": None,
+                "numero": int(r.nro_reuniao),
+                "bps": None if pd.isna(r.variacao_bps) else int(r.variacao_bps),
+                "decisao": r.decisao,
+                "selic": None if pd.isna(r.selic_decidida) else float(r.selic_decidida),
+            }
+    except Exception:
+        pass
+
+    g = grupos().get("bcb_copom") or {}
+    for e in g.get("entries", []):
+        data = _data(e["date"])
+        r = por_data.setdefault(data, {"date": data, "numero": None, "bps": None,
+                                       "decisao": None, "selic": None})
+        r["date_start"] = _data(e["date_start"]) if e.get("date_start") else None
+        if r.get("numero") is None:
+            # '281a reuniao' -> 281. O rotulo e do calendario e nem toda entrada tem.
+            txt = str(e.get("reference_period") or "")
+            digitos = "".join(c for c in txt if c.isdigit())
+            if digitos:
+                r["numero"] = int(digitos)
+
+    saida = []
+    for data in sorted(por_data):
+        r = dict(por_data[data])
+        r.setdefault("date_start", None)
+        r["corte"] = dt.datetime.combine(data, HORA_DECISAO)
+        r["label"] = _reuniao_label(data)
+        saida.append(r)
+    return saida
 
 
-def rotulo_focus(hoje_focus: pd.Timestamp) -> str | None:
-    """Rotulo da PROXIMA reuniao na convencao do `expc_focus_copom` ('R6/2026').
+def janela_reunioes(agora: dt.datetime | None = None,
+                    n_passadas: int = N_PASSADAS) -> list[dict]:
+    """As `n_passadas` ultimas reunioes ja decididas, mais a proxima.
 
-    Data-driven em vez de contado do calendario: a Focus para de pesquisar uma reuniao no
-    dia em que ela acontece, entao a proxima e a menor (ano, R) cuja serie ainda chega a
-    ultima data de pesquisa. Nao depende de saber quantas reunioes ja houve no ano.
+    A separacao e pelo CORTE e nao pela data, pela mesma razao de `reunioes()`: no dia 1
+    -- e no proprio dia 2 antes das 18:30 -- a decisao ainda nao saiu, e a reuniao em
+    curso e a proxima.
+
+    A coluna da reuniao FUTURA e cortada em `agora`, nao no corte dela: e o conjunto de
+    informacao que ja esta na mesa, e afirmar o corte futuro seria ler dado que ainda nao
+    existe.
     """
-    d = q("macro_brasil", "SELECT reuniao, MAX(date) mx FROM expc_focus_copom "
-                          "WHERE base_calculo=0 GROUP BY reuniao")
-    if d.empty:
-        return None
-    d["mx"] = pd.to_datetime(d["mx"])
-    viva = d[d["mx"] >= hoje_focus]
-    if viva.empty:
-        return None
+    agora = agora or dt.datetime.now()
+    todas = todas_reunioes()
+    passadas = [r for r in todas if r["corte"] <= agora]
+    futuras = [r for r in todas if r["corte"] > agora]
+    janela = passadas[-n_passadas:] if n_passadas > 0 else []
+    for r in janela:
+        r["futura"] = False
+    if futuras:
+        prox = dict(futuras[0])
+        prox["futura"] = True
+        # A leitura e cortada em AGORA -- afirmar o corte futuro seria ler dado que ainda
+        # nao existe. O corte da reuniao continua guardado porque a agenda pergunta outra
+        # coisa: o que ainda VAI sair antes dela.
+        prox["corte_reuniao"] = prox["corte"]
+        prox["corte"] = agora
+        janela = janela + [prox]
+    return janela
 
-    def chave(r):
-        n, ano = r.split("/")
-        return (int(ano), int(n[1:]))
 
-    return sorted(viva["reuniao"], key=chave)[0]
 
 
 # ── series ───────────────────────────────────────────────────────────────────
@@ -321,10 +433,6 @@ def acum12(nome: str) -> pd.Series:
     return (np.exp(np.log1p(_mensal(nome) / 100.0).rolling(12).sum()) - 1.0) * 100.0
 
 
-def mm3m_anual(nome: str) -> pd.Series:
-    sa = _sa(_mensal(nome))
-    return (np.exp(np.log1p(sa / 100.0).rolling(3).sum() * 4.0) - 1.0) * 100.0
-
 
 def nucleos_mm3m() -> pd.Series:
     X = pd.DataFrame({n: _mensal(n) for n in NUCLEOS}).dropna()
@@ -332,47 +440,8 @@ def nucleos_mm3m() -> pd.Series:
     return (np.exp(np.log1p(sa / 100.0).rolling(3).sum() * 4.0) - 1.0) * 100.0
 
 
-def nucleo_ex3_mm3m() -> pd.Series:
-    """EX3 -- o nucleo por exclusao que sobra em bens industriais e servicos subjacentes.
-
-    E o mais proximo de uma medida de inflacao subjacente sensivel ao hiato: sai de fora
-    exatamente o que o Copom nao controla no curto prazo (alimentacao no domicilio e
-    administrados). Entra ao lado da media dos cinco porque a media dilui justamente esse
-    recorte -- EX0, DP, MA e P55 mantem administrados.
-    """
-    return mm3m_anual("ipca_nucleo_ex03")
 
 
-def desocupacao_sa() -> pd.Series:
-    """Taxa de desocupacao da PNAD Continua mensal, dessazonalizada por STL.
-
-    O IBGE nao publica versao dessazonalizada da mensal (so da trimestral movel), entao o
-    ajuste e nosso -- mesma convencao de fatores congelados do resto do modulo. O indice e
-    o mes final do trimestre movel, que e como a propria divulgacao rotula.
-    """
-    return _sa(_mensal("taxa_desocupacao", tabela="mt_pnad", filtro="region='Brasil'"))
-
-
-def caged_saldo_sa() -> pd.Series:
-    """Saldo de emprego formal em mil vagas, dessazonalizado, media de 3 meses.
-
-    `mt_caged` guarda o ESTOQUE de vinculos, nao o fluxo -- e a diferenca mensal dele que
-    reproduz o saldo do Novo CAGED (conferido ao vivo contra `mt_caged_setor`, ver
-    domain/db/CLAUDE.md). A media de 3 meses e o que torna a serie legivel: o saldo de um
-    mes isolado oscila mais que o sinal que ele carrega.
-    """
-    saldo = _mensal("caged_total", tabela="mt_caged").diff().dropna() / 1000.0
-    return _sa(saldo).rolling(3).mean()
-
-
-def ibcbr_3m3m() -> pd.Series:
-    """IBC-Br: media movel de 3 meses contra a anterior, anualizada.
-
-    Usa a serie que o proprio BCB dessazonaliza (`ibcbr_sa`) -- nao ha por que rodar STL
-    em cima de um ajuste oficial. 3m/3m em vez de m/m porque um mes de IBC-Br revisa muito.
-    """
-    ma = _mensal("ibcbr_sa", tabela="atv_ibcbr").rolling(3).mean()
-    return ((ma / ma.shift(3)) ** 4.0 - 1.0) * 100.0
 
 
 def focus_anual_serie(indicador: str, ano: int) -> pd.Series:
@@ -385,33 +454,281 @@ def focus_anual_serie(indicador: str, ano: int) -> pd.Series:
     return d.set_index("date")["mediana"].astype(float).dropna().sort_index()
 
 
-def focus_reuniao_serie(rotulo: str) -> pd.Series:
-    d = q("macro_brasil", "SELECT date, mediana FROM expc_focus_copom WHERE "
-                          "base_calculo=0 AND reuniao='%s' ORDER BY date"
-                          % rotulo.replace("'", "''"))
-    d["date"] = pd.to_datetime(d["date"])
-    return d.set_index("date")["mediana"].astype(float).dropna().sort_index()
 
 
-def focus_ipca_12m_diario() -> pd.Series:
-    d = q("macro_brasil", "SELECT date, mediana FROM expc_focus WHERE indicador='IPCA' "
-                          "AND horizonte='12m' AND suavizada='S' AND base_calculo=0 "
-                          "ORDER BY date")
-    d["date"] = pd.to_datetime(d["date"])
-    return d.set_index("date")["mediana"].astype(float).dropna().sort_index()
+# ── series novas da matriz ───────────────────────────────────────────────────
+def ibcbr_12m() -> pd.Series:
+    """IBC-Br: crescimento acumulado em 12 meses contra os 12 anteriores.
 
-
-def juro_real_ex_ante() -> pd.Series:
-    """i^e - pi^e, diferenca simples, como na eq. (2.1) do boxe.
-
-    Reaproveita `focus_selic_12m_diario()` do modelo_painel de proposito: a leitura de
-    i^e como a Selic esperada NO ponto de 12 meses (e nao a media do caminho) e uma
-    decisao validada contra a Tabela 1 do boxe da neutra, e duas definicoes de juro real
-    no mesmo relatorio seriam bug, nao variacao.
+    Serie NSA de proposito. O acumulado de 12 meses ja e sazonalmente neutro por
+    construcao -- cada mes do calendario entra uma vez no numerador e uma no
+    denominador --, entao aplicar ajuste em cima seria dessazonalizar duas vezes.
+    A 3m/3m anualizada, que a versao anterior desta aba usava, precisava do ajuste;
+    esta nao.
     """
-    i = focus_selic_12m_diario()
-    p = focus_ipca_12m_diario()
-    return (i - p).dropna()
+    ix = _mensal("ibcbr_nsa", tabela="atv_ibcbr")
+    return (ix.rolling(12).sum() / ix.rolling(12).sum().shift(12) - 1.0) * 100.0
+
+
+def pib_acum_4t(categoria: str) -> pd.Series:
+    """Taxa acumulada em 4 trimestres que o PROPRIO IBGE publica (SIDRA 5932).
+
+    Nao e recalculada do indice de volume: a fonte publica a taxa, e a regra deste
+    projeto e que numero publicado e gabarito. Indice TRIMESTRAL -- a serie fica
+    parada entre divulgacoes, e e por isso que a matriz repete o valor nas reunioes
+    sem dado novo em vez de deixar a celula vazia.
+    """
+    d = q("macro_brasil",
+          "SELECT date, value FROM atv_pib_taxas WHERE indicador='acum_4t' "
+          "AND name='%s' ORDER BY date" % categoria.replace("'", "''"))
+    d["date"] = pd.to_datetime(d["date"])
+    s = d.set_index("date")["value"].astype(float).dropna()
+    s.index = pd.PeriodIndex(s.index, freq="Q")
+    return s.sort_index()
+
+
+def credito_real_12m(recurso: str) -> pd.Series:
+    """Saldo de credito, crescimento real em 12 meses -- nominal deflacionado pelo IPCA.
+
+    `recurso` e 'livre' ou 'direcionado'. O deflator e o IPCA acumulado em 12 meses do
+    MESMO mes de referencia, e nao o do mes de divulgacao: as duas series sao indexadas
+    pelo mes a que se referem, e cruzar por mes de divulgacao misturaria dois calendarios
+    para produzir um numero que nao e de nenhum dos dois.
+
+    Consequencia que o consumidor precisa saber: a linha so tem valor nos meses em que as
+    DUAS existem. Como o IPCA sai antes da nota de credito do mes correspondente, quem
+    limita e sempre o credito -- entao o `grupo` desta linha e o da nota de credito, e a
+    data de divulgacao que a matriz usa e a dela.
+    """
+    nom = _mensal("saldo_%s_total" % recurso, tabela="cred_credito_resumo")
+    nom12 = (nom / nom.shift(12) - 1.0) * 100.0
+    ipca12 = acum12("ipca")
+    j = pd.DataFrame({"n": nom12, "p": ipca12}).dropna()
+    return ((1.0 + j["n"] / 100.0) / (1.0 + j["p"] / 100.0) - 1.0) * 100.0
+
+
+def curva_br(curve: str, tenor: str) -> pd.Series:
+    """Um vertice de `br_interest_rate`, por pregao."""
+    d = q("macro_brasil",
+          "SELECT date, value FROM br_interest_rate WHERE curve='%s' AND tenor='%s' "
+          "ORDER BY date" % (curve, tenor))
+    d["date"] = pd.to_datetime(d["date"])
+    return d.set_index("date")["value"].astype(float).dropna().sort_index()
+
+
+def implicita(tenor: str) -> pd.Series:
+    """Inflacao implicita: (1+nominal)/(1+real) - 1, nao a subtracao das duas.
+
+    A diferenca simples e a aproximacao usual e erra onde os niveis sao altos, que e
+    exatamente a faixa brasileira: com DI a 14% e NTN-B a 7,5%, a subtracao da 6,50 e a
+    forma correta da 6,05 -- 0,45 p.p. de diferenca, maior que o movimento tipico de um
+    mes. Mesma licao da identidade produto/horas do relatorio de produtividade: a forma
+    errada funciona na faixa em que se costuma olhar e quebra onde ninguem confere.
+    """
+    nom = curva_br("DIPRE", tenor)
+    real = curva_br("NTNBJS", tenor)
+    j = pd.DataFrame({"n": nom, "r": real}).dropna()
+    return ((1.0 + j["n"] / 100.0) / (1.0 + j["r"] / 100.0) - 1.0) * 100.0
+
+
+def us_juro_real(anos: int) -> pd.Series:
+    """Juro real ex-ante americano: Treasury constant maturity - inflacao esperada.
+
+    O Treasury NAO publica TIPS de 2 anos (medido: `DFII2` nao existe no FRED, a curva
+    comeca em `DFII5`), entao o vertice de 2 anos so existe deflacionando o nominal. Os
+    DOIS vertices usam o mesmo metodo de proposito -- ver a docstring de
+    `domain/db/us/inflation/expc_inflacao.py` para os numeros que decidiram isso.
+
+    A expectativa e MENSAL e a nominal e diaria. O deslocamento de 1 mes e conservador:
+    o Cleveland carimba a estimativa no dia 1 do mes de referencia e a publica ao longo
+    daquele mes, entao ler o valor de setembro so a partir de outubro garante que nunca
+    se usa um numero antes de ele existir.
+    """
+    nom = q("macro_us", "SELECT date, value FROM us_interest_rate "
+                        "WHERE curve='US_TREASURY' AND tenor='%dY' ORDER BY date" % anos)
+    nom["date"] = pd.to_datetime(nom["date"])
+    n = nom.set_index("date")["value"].astype(float).dropna().sort_index()
+
+    exp = q("macro_us", "SELECT date, value FROM expc_inflacao WHERE tenor='%dY' "
+                        "ORDER BY date" % anos)
+    exp["date"] = pd.to_datetime(exp["date"])
+    e = exp.set_index("date")["value"].astype(float).dropna().sort_index()
+    e.index = e.index + pd.DateOffset(months=1)
+
+    # reindex/ffill: a expectativa vale do mes em que passou a ser publicavel ate a
+    # proxima. `n.index` e o calendario de pregao, que e o que decide a data da celula.
+    ea = e.reindex(n.index.union(e.index)).ffill().reindex(n.index)
+    return (n - ea).dropna()
+
+
+def icbr_mm() -> pd.Series:
+    """IC-Br em variacao percentual mensal.
+
+    A versao anterior desta aba levava o IC-Br em NIVEL de indice, o que obrigava a
+    tratar o delta como variacao percentual (`modo='pct'`). Aqui a propria linha ja e a
+    variacao, entao o delta e em p.p. e a serie fala a mesma lingua do resto do bloco.
+    """
+    return _mensal("icbr_geral", tabela="comm_icbr").pct_change() * 100.0
+
+
+def _focus_tri_ipca() -> pd.DataFrame:
+    """IPCA trimestral da Focus: (data da pesquisa, trimestre de referencia, mediana)."""
+    d = q("macro_brasil",
+          "SELECT date, ref_date, mediana FROM expc_focus_periodo "
+          "WHERE periodicidade='trimestral' AND base_calculo=0 AND indicador='IPCA' "
+          "ORDER BY date, ref_date")
+    d["date"] = pd.to_datetime(d["date"])
+    d["tri"] = pd.PeriodIndex(pd.to_datetime(d["ref_date"]), freq="Q")
+    d["mediana"] = d["mediana"].astype(float)
+    return d.dropna(subset=["mediana"])
+
+
+def focus_ipca_hr(trimestres: int = HR_TRIMESTRES) -> pd.Series:
+    """IPCA esperado no HORIZONTE RELEVANTE, acumulado em 4 trimestres.
+
+    Desde a 264a reuniao (Decreto 12.079/2024) o Copom persegue a meta seis trimestres a
+    frente da REUNIAO, e nao mais no ano-calendario. O alvo e portanto a inflacao
+    acumulada nos quatro trimestres que TERMINAM naquele ponto -- nao a taxa do trimestre
+    isolado, que e o que a Focus publica.
+
+    O horizonte e derivado da data da PESQUISA (trimestre dela + 6), nao da reuniao, e
+    isso e o que faz a serie ser uma so em vez de uma por reuniao. As duas coincidem onde
+    importa: a pesquisa que a matriz le numa reuniao cai no mesmo trimestre dela. Em
+    troca, a janela e ROLANTE -- sempre seis trimestres a frente --, sem o dente de serra
+    do horizonte de ano-calendario, que encurta de 12 para 4 trimestres ao longo do ano
+    (a mesma razao pela qual a aba Projecoes filtra `regime='hr_6_trimestres'`).
+
+    Acumula em composicao, nao em soma: sao taxas trimestrais, e somar quatro taxas de
+    ~1% erra ~0,06 p.p. -- pequeno, mas gratuito de evitar.
+    """
+    d = _focus_tri_ipca()
+    out = {}
+    for data, g in d.groupby("date"):
+        alvo = pd.Period(data, freq="Q") + trimestres
+        janela = [alvo - k for k in range(3, -1, -1)]
+        m = g.set_index("tri")["mediana"]
+        if not all(t in m.index for t in janela):
+            continue
+        out[data] = (float(np.prod([1.0 + m.loc[t] / 100.0 for t in janela])) - 1.0) * 100.0
+    return pd.Series(out).sort_index()
+
+
+_PROJ_BC: pd.DataFrame | None = None
+
+
+def _proj_bc() -> pd.DataFrame:
+    """Projecao do BC para o horizonte relevante, UMA linha por reuniao.
+
+    A mesma serie da aba Projecoes, com um filtro a mais: so o `comunicado`
+    (`hr_6_trimestres`), nunca o `relatorio` (`hr_aproximado`). Duas razoes, as duas
+    medidas antes de escolher:
+
+    - **O comunicado sai no fechamento da reuniao; o relatorio sai 7 a 28 dias
+      depois.** A coluna de uma reuniao pergunta o que o Comite publicou NAQUELE
+      dia, e um numero de vintage posterior nao estava la.
+    - **Espacamento.** Ate 2024-06 o horizonte relevante so existia no relatorio,
+      que e trimestral: incluir aquele trecho poe no mesmo indice pontos separados
+      por ~45 dias e por ~90, e o passo de uma coluna para a seguinte deixa de
+      significar a mesma coisa nas duas metades. Medido: mediana de espacamento de
+      84 dias com o trecho antigo dentro contra 45 sem ele, e a escala tipica de uma
+      variacao de uma observacao dobra (0,297 p.p. contra 0,148), o que apagaria
+      pela metade a cor de todo movimento da linha. De 2024-07 em diante o
+      comunicado tem projecao em TODAS as reunioes, entao o que se perde e historia
+      velha e o que se ganha e um indice em que uma posicao e uma reuniao.
+
+    `cenario` e o de referencia -- condicionado ao caminho de juros da Focus --, que
+    e o numero que o comunicado destaca. O detalhe dos outros filtros (documento,
+    regime, cenario) esta na docstring de `_load_projecoes`, em `generate_report.py`.
+    """
+    global _PROJ_BC
+    if _PROJ_BC is None:
+        d = q("macro_brasil",
+              "SELECT vintage, date, value FROM pm_copom_projecoes "
+              "WHERE horizonte_relevante=1 AND indice='ipca' "
+              "AND cenario='juros_esperado' AND documento='comunicado' "
+              "AND regime='hr_6_trimestres' ORDER BY vintage")
+        d["vintage"] = pd.to_datetime(d["vintage"])
+        d["date"] = pd.to_datetime(d["date"])
+        _PROJ_BC = (d.drop_duplicates("vintage", keep="last")
+                     .set_index("vintage").sort_index())
+    return _PROJ_BC
+
+
+def proj_bc_hr() -> pd.Series:
+    """Indexada pela data do COMUNICADO, que e quando o numero passou a existir."""
+    return _proj_bc()["value"].astype(float)
+
+
+def proj_bc_hr_alvo() -> dict:
+    """{data do comunicado: trimestre projetado} -- o rotulo que vai embaixo do valor.
+
+    O indice da serie e quando o numero saiu; o periodo que ele descreve e outro, e
+    e esse que responde "sobre o que e este 3,2". Por isso esta linha e a unica em
+    que o rotulo de referencia NAO identifica a observacao: duas reunioes seguidas
+    projetam o mesmo trimestre com numeros diferentes.
+    """
+    return {i: _rotulo_ref(pd.Period(v, freq="Q"))
+            for i, v in _proj_bc()["date"].items()}
+
+
+def focus_selic_ponto(h: float) -> pd.Series:
+    """Selic esperada interpolada no horizonte `h` ANOS, por data de pesquisa.
+
+    Mesma mecanica de `focus_selic_12m_diario()` do modelo_painel -- inclusive a ancora em
+    h=0 na Selic corrente, que aqui nao e detalhe: a curva anual do Focus comeca no ano
+    corrente, e no fim de setembro isso ja e h=0,29. Sem a ancora, qualquer ponto pedido
+    abaixo disso devolve vazio, e a media de 0,25 a 2,00 anos nao existiria.
+    """
+    d = focus_anual()
+    d = d[d["indicador"] == "Selic"].copy()
+    sel = serie("macro_international", "diferenciais_juros", "selic")
+    sel_m = sel.reindex(pd.date_range(sel.index.min(), "2035-12-01", freq="MS")).ffill()
+    mes = d["date"].values.astype("datetime64[M]").astype("datetime64[ns]")
+    d["i0"] = sel_m.reindex(pd.DatetimeIndex(mes)).values
+    out = {}
+    for data, g in d.groupby("date"):
+        g = g[g["h"] > 0].sort_values("h")
+        if g.empty or not np.isfinite(g["i0"].iloc[0]) or g["h"].max() < h:
+            continue
+        out[data] = float(np.interp(h, np.r_[0.0, g["h"].values],
+                                    np.r_[g["i0"].iloc[0], g["mediana"].values]))
+    return pd.Series(out).sort_index()
+
+
+def juro_real_focus_2a() -> pd.Series:
+    """Juro real de 2 anos implicito na Focus, para ficar ao lado da NTN-B de 2 anos.
+
+    A NTN-B de 24M e uma taxa MEDIA sobre dois anos, entao a contraparte da Focus tem de
+    ser media tambem -- e nao o juro real a termo em h=2, que e o que sairia de repetir a
+    receita de 12 meses da versao anterior desta aba com outro horizonte. As duas leituras sao
+    legitimas e nao sao a mesma: por isso esta linha e media e o cartao de definicao diz.
+
+    Selic media esperada: a curva anual do Focus lida em 0,25/0,50/.../2,00 ano e mediada
+    -- a discretizacao da propria interpolacao, nao uma escolha nova. IPCA acumulado em 2
+    anos: oito trimestres da Focus trimestral, compostos e anualizados. Real por Fisher
+    exato, nao subtracao (ver `implicita()` para a razao).
+    """
+    hs = np.arange(0.25, 2.001, 0.25)
+    sel = pd.DataFrame({h: focus_selic_ponto(h) for h in hs}).dropna().mean(axis=1)
+
+    d = _focus_tri_ipca()
+    ipca = {}
+    for data, g in d.groupby("date"):
+        # Oito trimestres a partir do TRIMESTRE DA PESQUISA, ele incluido: e ate onde o
+        # painel trimestral da Focus alcanca (medido -- a pesquisa de set/2026 publica
+        # 3/2026 a 2/2028) e e a janela honesta de "os proximos dois anos" para quem esta
+        # dentro do trimestre corrente.
+        base = pd.Period(data, freq="Q")
+        janela = [base + k for k in range(0, 8)]
+        m = g.set_index("tri")["mediana"]
+        if not all(t in m.index for t in janela):
+            continue
+        acum = float(np.prod([1.0 + m.loc[t] / 100.0 for t in janela]))
+        ipca[data] = (acum ** 0.5 - 1.0) * 100.0
+    pi = pd.Series(ipca).sort_index()
+
+    j = pd.DataFrame({"i": sel, "p": pi}).dropna()
+    return ((1.0 + j["i"] / 100.0) / (1.0 + j["p"] / 100.0) - 1.0) * 100.0
 
 
 # ── especificacao das variaveis ──────────────────────────────────────────────
@@ -423,122 +740,204 @@ def juro_real_ex_ante() -> pd.Series:
 #          data da pesquisa, e mesmo assim o Boletim tem dia e hora no calendario.
 # `modo`: 'pct' quando a variavel e um NIVEL de preco e o que importa e a variacao
 #          proporcional (cambio). Muda o delta e o sigma, nao o valor exibido.
-SPEC = [
-    dict(key="ipca12", bloco="Inflação corrente", label="IPCA — acum. 12m",
-         unidade="%", sinal=+1, grupo="ibge_ipca", casas=2,
-         fn=lambda ctx: acum12("ipca"),
-         nota="Variação acumulada em 12 meses do IPCA cheio."),
-    dict(key="nucleos", bloco="Inflação corrente",
-         label="Núcleos (média de 5) — mm3m anualizada",
-         unidade="% a.a.", sinal=+1, grupo="ibge_ipca", casas=2,
-         fn=lambda ctx: nucleos_mm3m(),
-         nota="Média simples de EX0, EX3, médias aparadas com suavização, dupla "
-              "ponderação e P55 — os cinco que o BCB acompanha no RPM. "
-              "Dessazonalizada por STL com fatores congelados."),
-    dict(key="ex3", bloco="Inflação corrente", label="Núcleo EX3 — mm3m anualizada",
-         unidade="% a.a.", sinal=+1, grupo="ibge_ipca", casas=2,
-         fn=lambda ctx: nucleo_ex3_mm3m(),
-         nota="Núcleo por exclusão que deixa de fora alimentação no domicílio e "
-              "administrados — o que sobra é bens industriais e serviços subjacentes, "
-              "a parte da cesta que responde ao hiato. Dessazonalizado por STL com "
-              "fatores congelados."),
+def _spec(ctx):
+    a0, a1, a2 = ctx["ano0"], ctx["ano0"] + 1, ctx["ano0"] + 2
+    return [
+        # ── Inflação ─────────────────────────────────────────────────────────
+        dict(key="bc_hr", bloco="Inflação",
+             label="Projeção BC — Horizonte Relevante",
+             unidade="%", sinal=+1, grupo=None, casas=1,
+             fn=proj_bc_hr, ref_map=proj_bc_hr_alvo, div_hora=HORA_DECISAO,
+             nota="A inflação que o próprio Banco Central projeta para o horizonte "
+                  "relevante — os quatro trimestres que terminam seis trimestres à "
+                  "frente —, no cenário condicionado ao caminho de juros da Focus. "
+                  "Sai no comunicado, no fim do segundo dia da reunião, então cada "
+                  "coluna traz o número daquela decisão e o trimestre projetado "
+                  "aparece embaixo. A coluna da próxima reunião repete o último "
+                  "publicado: a projeção seguinte só passa a existir com o "
+                  "comunicado dela."),
+        dict(key="ipca12", bloco="Inflação", label="IPCA Acumulado 12m",
+             unidade="%", sinal=+1, grupo="ibge_ipca", casas=2,
+             fn=lambda: acum12("ipca"),
+             nota="Variação acumulada em 12 meses do IPCA cheio, o índice sobre o qual a "
+                  "meta é definida."),
+        dict(key="nucleos", bloco="Inflação",
+             label="Núcleos (média de 5) — mm3m anualizada",
+             unidade="% a.a.", sinal=+1, grupo="ibge_ipca", casas=2,
+             fn=nucleos_mm3m,
+             nota="Média simples de EX0, EX3, médias aparadas com suavização, dupla "
+                  "ponderação e P55 — os cinco que o Banco Central acompanha no Relatório "
+                  "de Política Monetária. Média de três meses anualizada, sobre a série "
+                  "dessazonalizada por STL com fatores congelados: é a leitura de margem, "
+                  "que responde antes do acumulado em 12 meses."),
+        dict(key="focus_ipca_t", bloco="Inflação", label="E - Inflação Ano (T)",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=lambda: focus_anual_serie("IPCA", a0),
+             nota="Mediana do Boletim Focus para o IPCA do ano-calendário corrente (%d)."
+                  % a0),
+        dict(key="focus_ipca_t1", bloco="Inflação", label="E - Inflação Ano (T+1)",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=lambda: focus_anual_serie("IPCA", a1),
+             nota="Mediana do Focus para %d. Mais perto do horizonte em que a política "
+                  "monetária de hoje ainda age do que o ano corrente." % a1),
+        dict(key="focus_ipca_t2", bloco="Inflação", label="E - Inflação Ano (T+2)",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=lambda: focus_anual_serie("IPCA", a2),
+             nota="Mediana do Focus para %d. É a leitura mais próxima de expectativa "
+                  "ancorada: o que o mercado projeta quando nenhum choque corrente "
+                  "alcança mais o período." % a2),
+        dict(key="focus_ipca_hr", bloco="Inflação",
+             label="E - Inflação Horizonte Relevante",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=focus_ipca_hr,
+             nota="Inflação acumulada nos quatro trimestres que terminam seis trimestres "
+                  "à frente — o horizonte que o Comitê persegue desde o Decreto "
+                  "12.079/2024, e por isso a linha mais comparável à própria projeção do "
+                  "Banco Central. Montada dos trimestres do Focus, compostos; a janela é "
+                  "rolante, então não encurta ao longo do ano como a do ano-calendário."),
+        dict(key="bei2", bloco="Inflação", label="Inflação Implícita 02Y",
+             unidade="%", sinal=+1, grupo=None, casas=2,
+             fn=lambda: implicita("24M"),
+             nota="O que o mercado precifica de inflação para os próximos dois anos: o "
+                  "juro nominal da curva de DI dividido pelo juro real da NTN-B no mesmo "
+                  "vértice. Diferente da Focus, que é pesquisa — aqui alguém tem dinheiro "
+                  "no preço."),
+        dict(key="bei10", bloco="Inflação", label="Inflação Implícita 10Y",
+             unidade="%", sinal=+1, grupo=None, casas=2,
+             fn=lambda: implicita("120M"),
+             nota="Mesma conta no vértice de dez anos. Nesse prazo quase nada do ciclo "
+                  "corrente sobrevive, então o que se lê é o quanto o mercado acredita no "
+                  "regime de metas."),
 
-    dict(key="ibcbr", bloco="Atividade e mercado de trabalho",
-         label="IBC-Br — 3m/3m anualizada (dessaz.)",
-         unidade="% a.a.", sinal=+1, grupo="bcb_ibcbr", casas=2,
-         fn=lambda ctx: ibcbr_3m3m(),
-         nota="Proxy mensal do PIB. Média móvel de 3 meses contra a anterior, "
-              "anualizada, sobre a série que o próprio BCB dessazonaliza. Atividade "
-              "mais forte pressiona o hiato — leitura hawkish."),
-    dict(key="desemprego", bloco="Atividade e mercado de trabalho",
-         label="Taxa de desocupação (dessaz.)",
-         unidade="%", sinal=-1, grupo="ibge_pnad_mensal", casas=2,
-         fn=lambda ctx: desocupacao_sa(),
-         nota="PNAD Contínua mensal, trimestre móvel, dessazonalizada por STL (o IBGE "
-              "só publica ajuste da trimestral). Sinal invertido: desemprego mais alto "
-              "é mais folga no mercado de trabalho, logo argumento para cortar."),
-    dict(key="caged", bloco="Atividade e mercado de trabalho",
-         label="CAGED — saldo formal (dessaz., média 3m)",
-         unidade="mil vagas", sinal=+1, grupo="bcb_caged_sgs_mirror", casas=1,
-         fn=lambda ctx: caged_saldo_sa(),
-         nota="Diferença mensal do estoque de vínculos celetistas do Novo CAGED "
-              "espelhado no SGS, em mil vagas, dessazonalizada por STL e suavizada em "
-              "3 meses. Geração de emprego mais forte é menos folga — leitura hawkish."),
+        # ── Atividade ────────────────────────────────────────────────────────
+        dict(key="ibcbr12", bloco="Atividade", label="IBC-BR (Crescimento 12m)",
+             unidade="%", sinal=+1, grupo="bcb_ibcbr", casas=2,
+             fn=ibcbr_12m,
+             nota="Índice de atividade do Banco Central, proxy mensal do PIB, acumulado "
+                  "em 12 meses contra os 12 anteriores. Atividade mais forte fecha o "
+                  "hiato e pressiona a inflação — leitura hawkish."),
+        dict(key="focus_pib_t", bloco="Atividade", label="E - PIB Ano (T)",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=lambda: focus_anual_serie("PIB Total", a0),
+             nota="Mediana do Focus para o crescimento do PIB em %d. O ano corrente ja "
+                  "esta quase todo determinado quando a decisao e tomada: o que esta "
+                  "linha move e menos a politica de hoje e mais o diagnostico de quanto "
+                  "de folga existe." % a0),
+        dict(key="focus_pib_t1", bloco="Atividade", label="E - PIB Ano (T + 1)",
+             unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
+             fn=lambda: focus_anual_serie("PIB Total", a1),
+             nota="Mediana do Focus para %d — o crescimento que cai dentro do horizonte "
+                  "em que a decisão de hoje ainda faz efeito." % a1),
+        dict(key="pib_4t", bloco="Atividade", label="PIB (Crescimento 4T/4T)",
+             unidade="%", sinal=+1, grupo="ibge_pib_trimestral", casas=2,
+             fn=lambda: pib_acum_4t("pib_pm"),
+             nota="Taxa acumulada em quatro trimestres publicada pelo próprio IBGE. Dado "
+                  "trimestral: entre uma divulgação e a seguinte a linha repete o último "
+                  "número, e as reuniões sem dado novo ficam sem cor."),
+        dict(key="pib_consumo", bloco="Atividade", label="PIB - Consumo (Crescimento 4T/4T)",
+             unidade="%", sinal=+1, grupo="ibge_pib_trimestral", casas=2,
+             fn=lambda: pib_acum_4t("consumo_familias"),
+             nota="Consumo das famílias, acumulado em quatro trimestres. É o componente "
+                  "de demanda mais sensível a crédito e renda, e o que o juro alcança "
+                  "primeiro."),
+        dict(key="pib_fbcf", bloco="Atividade",
+             label="PIB - Investimentos (Crescimento 4T/4T)",
+             unidade="%", sinal=+1, grupo="ibge_pib_trimestral", casas=2,
+             fn=lambda: pib_acum_4t("fbcf"),
+             nota="Formação bruta de capital fixo, acumulada em quatro trimestres. É o "
+                  "componente mais volátil da demanda e o mais sensível ao custo do "
+                  "capital."),
 
-    dict(key="focus_ipca_a0", bloco="Expectativas (Focus)",
-         label=lambda ctx: "IPCA %d (Focus)" % ctx["ano0"],
-         unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_anual_serie("IPCA", ctx["ano0"]),
-         nota="Mediana para o ano-calendário corrente."),
-    dict(key="focus_ipca_a1", bloco="Expectativas (Focus)",
-         label=lambda ctx: "IPCA %d (Focus)" % ctx["ano1"],
-         unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_anual_serie("IPCA", ctx["ano1"]),
-         nota="Ano seguinte — mais próximo do horizonte relevante que o Copom persegue "
-              "do que o ano corrente."),
-    dict(key="focus_ipca_12m", bloco="Expectativas (Focus)",
-         label="IPCA 12m suavizado (Focus)", unidade="%", sinal=+1, grupo=None,
-         grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_ipca_12m_diario(),
-         nota="Horizonte móvel — é o π^e que entra na Curva de Phillips do modelo "
-              "agregado (eq. 1)."),
-    dict(key="focus_pib_a0", bloco="Expectativas (Focus)",
-         label=lambda ctx: "PIB %d (Focus)" % ctx["ano0"],
-         unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_anual_serie("PIB Total", ctx["ano0"]),
-         nota="Crescimento mais forte pressiona o hiato — leitura hawkish."),
-    dict(key="focus_pib_a1", bloco="Expectativas (Focus)",
-         label=lambda ctx: "PIB %d (Focus)" % ctx["ano1"],
-         unidade="%", sinal=+1, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_anual_serie("PIB Total", ctx["ano1"]),
-         nota="Ano seguinte — é o crescimento que cai dentro do horizonte em que a "
-              "política monetária de hoje ainda age."),
-    dict(key="focus_selic_reuniao", bloco="Expectativas (Focus)",
-         label=lambda ctx: "Selic esperada na reunião de %s (Focus)"
-                           % ctx["prox"]["date"].strftime("%d/%m"),
-         unidade="%", sinal=0, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: (focus_reuniao_serie(ctx["rotulo_focus"])
-                         if ctx.get("rotulo_focus") else pd.Series(dtype=float)),
-         nota="A MESMA reunião nas duas colunas: o que o mercado esperava dela na "
-              "decisão passada contra o que espera hoje. Sem cor — é reação do mercado, "
-              "não condição que antecede a decisão."),
-    dict(key="focus_selic_a0", bloco="Expectativas (Focus)",
-         label=lambda ctx: "Selic fim de %d (Focus)" % ctx["ano0"],
-         unidade="%", sinal=0, grupo=None, grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: focus_anual_serie("Selic", ctx["ano0"]),
-         nota="Idem — reação, não condição."),
+        # ── Condições Financeiras ────────────────────────────────────────────
+        dict(key="ptax", bloco="Condições Financeiras", label="PTAX",
+             unidade="R$/US$", sinal=+1, grupo=None, casas=4, modo="pct",
+             fn=lambda: serie("macro_brasil", "cmb_ptax", "ptax_venda"),
+             nota="Fechamento diário do dólar. Depreciação é repasse para preços — "
+                  "leitura hawkish. A variação é percentual e não em centavos: o repasse "
+                  "é proporcional, e 10 centavos a 3,00 não são a mesma notícia que 10 "
+                  "centavos a 6,00."),
+        dict(key="juro_real_2a", bloco="Condições Financeiras",
+             label="Juro Real 02Y - Ex ante", unidade="%", sinal=-1, grupo=None, casas=2,
+             fn=lambda: curva_br("NTNBJS", "24M"),
+             nota="Taxa da NTN-B de dois anos — juro real negociado em mercado, já "
+                  "líquido da inflação que o preço embute. Sinal invertido: juro real "
+                  "mais alto é política já mais apertada, logo argumento para cortar."),
+        dict(key="juro_real_10a", bloco="Condições Financeiras",
+             label="Juro Real 10Y - Ex ante", unidade="%", sinal=-1, grupo=None, casas=2,
+             fn=lambda: curva_br("NTNBJS", "120M"),
+             nota="Mesma taxa no vértice de dez anos. A ponta longa responde menos ao "
+                  "ciclo e mais à percepção de solvência — quando ela sobe com a curta "
+                  "parada, o que mudou não foi a política monetária."),
+        dict(key="juro_real_focus_2a", bloco="Condições Financeiras",
+             label="Juro Real 02Y (Focus)", unidade="%", sinal=-1, grupo=None,
+             grupo_agenda="bcb_focus", casas=2,
+             fn=juro_real_focus_2a,
+             nota="O mesmo juro real de dois anos, mas pela pesquisa em vez do preço: "
+                  "Selic média esperada nos próximos dois anos sobre o IPCA esperado no "
+                  "mesmo prazo. A distância entre esta linha e a NTN-B é o prêmio que o "
+                  "mercado cobra para carregar o risco — não é erro de uma das duas."),
+        dict(key="cred_livre", bloco="Condições Financeiras",
+             label="Credito Livre (%, 12m Real)", unidade="%", sinal=+1,
+             grupo="bcb_credit_note", casas=2,
+             fn=lambda: credito_real_12m("livre"),
+             nota="Saldo de crédito com recursos livres, crescimento em 12 meses "
+                  "descontada a inflação. É a parte da carteira cujo preço o juro básico "
+                  "move — crédito acelerando é estímulo, leitura hawkish."),
+        dict(key="cred_direcionado", bloco="Condições Financeiras",
+             label="Credito Direcionado (%, 12m Real)", unidade="%", sinal=+1,
+             grupo="bcb_credit_note", casas=2,
+             fn=lambda: credito_real_12m("direcionado"),
+             nota="Idem para o crédito direcionado, cuja taxa é fixada por regra e não "
+                  "pelo mercado. Ele acelerando enquanto o livre desacelera é sinal de "
+                  "que parte da carteira não está respondendo à política monetária."),
 
-    dict(key="juro_real", bloco="Condições financeiras",
-         label="Juro real ex-ante (12m)", unidade="%", sinal=-1, grupo=None,
-         grupo_agenda="bcb_focus", casas=2,
-         fn=lambda ctx: juro_real_ex_ante(),
-         nota="Selic esperada no ponto de 12 meses menos IPCA esperado a 12 meses, "
-              "diferença simples (eq. 2.1). Sinal invertido: juro real mais alto é "
-              "política já mais apertada, logo argumento para cortar."),
-    dict(key="ptax", bloco="Condições financeiras", label="Câmbio PTAX (venda)",
-         unidade="R$/US$", sinal=+1, grupo=None, casas=4, modo="pct",
-         fn=lambda ctx: serie("macro_brasil", "cmb_ptax", "ptax_venda"),
-         nota="Fechamento diário. Depreciação é repasse — leitura hawkish. O Δ é "
-              "variação percentual, não em centavos: o repasse cambial é proporcional, "
-              "e 10 centavos a 3,00 não são a mesma notícia que 10 centavos a 6,00."),
-    dict(key="brent", bloco="Condições financeiras", label="Brent (1º futuro)",
-         unidade="US$/bbl", sinal=+1, grupo=None, casas=2,
-         fn=lambda ctx: serie("macro_international", "comm_brent", "brent_usd"),
-         nota="Insumo direto de combustíveis e de administrados."),
-    dict(key="icbr", bloco="Condições financeiras", label="IC-Br (índice, R$)",
-         unidade="índice", sinal=+1, grupo="bcb_icbr", casas=1,
-         fn=lambda ctx: _mensal("icbr_geral", tabela="comm_icbr"),
-         nota="Índice de Commodities Brasil, em reais — é a inflação importada π* do "
-              "modelo agregado (eq. 1.1). Divulgado mensalmente às 14:30."),
-]
+        # ── Condições Externas ───────────────────────────────────────────────
+        dict(key="us_real_2a", bloco="Condições Externas",
+             label="US - Juros Real 02Y - Ex ante", unidade="%", sinal=+1, grupo=None,
+             casas=2, fn=lambda: us_juro_real(2),
+             nota="Treasury de dois anos menos a inflação esperada para o mesmo prazo "
+                  "(modelo do Fed de Cleveland). Juro real americano mais alto encarece o "
+                  "capital para emergentes e pressiona o câmbio — leitura hawkish aqui. O "
+                  "Tesouro americano não emite título indexado de dois anos, então este "
+                  "vértice não tem taxa real negociada em mercado; ambos os vértices "
+                  "desta seção usam o mesmo método para que a comparação entre eles seja "
+                  "de prazo, não de metodologia."),
+        dict(key="us_real_10a", bloco="Condições Externas",
+             label="US - Juros Real 10Y - Ex ante", unidade="%", sinal=+1, grupo=None,
+             casas=2, fn=lambda: us_juro_real(10),
+             nota="Mesma conta no vértice de dez anos. Existe TIPS de dez anos e ele "
+                  "daria outra leitura: contra o título negociado, esta construção erra "
+                  "0,26 p.p. em média e 1,37 p.p. no pior mês (nov/2008, quando a "
+                  "liquidez dos TIPS colapsou). O que se ganha em troca é as duas linhas "
+                  "desta seção dizerem a mesma coisa."),
+        dict(key="icbr", bloco="Condições Externas", label="IC-BR (%, m/m)",
+             unidade="%", sinal=+1, grupo="bcb_icbr", casas=2,
+             fn=icbr_mm,
+             nota="Índice de Commodities Brasil, variação no mês. Em reais — então ele "
+                  "carrega câmbio junto com o preço da commodity, que é exatamente o "
+                  "canal pelo qual entra na inflação daqui."),
+        dict(key="brent", bloco="Condições Externas", label="Brent",
+             unidade="US$/bbl", sinal=+1, grupo=None, casas=2, modo="pct",
+             fn=lambda: serie("macro_international", "comm_brent", "brent_usd"),
+             nota="Primeiro futuro do Brent, fechamento diário. Insumo direto de "
+                  "combustíveis e, por eles, dos preços administrados. Nível de preço: a "
+                  "variação lida é percentual, pela mesma razão do câmbio."),
+    ]
 
 
-# ── montagem ─────────────────────────────────────────────────────────────────
-def _valor_em(s: pd.Series, corte, grupo_cal: dict | None, teto=None) -> dict:
+# ── montagem da matriz ───────────────────────────────────────────────────────
+def _valor_em(s: pd.Series, corte, grupo_cal: dict | None, teto=None,
+              div_hora: dt.time | None = None) -> dict:
     """Leitura da serie `s` no corte, com a divulgacao que a justifica.
 
     `grupo_cal` None -> a serie e indexada pela data em que o dado existiu; corte direto.
     Caso contrario o indice e periodo de REFERENCIA e a data de divulgacao decide.
+
+    `div_hora` so se aplica ao primeiro caso, e diz que aquele indice nao e so a
+    data em que o dado existiu: e a data em que ele foi PUBLICADO, aquela hora. Vale
+    para o comunicado do Copom e nao vale para a Focus, cujo indice e a data de
+    referencia da pesquisa e cujo boletim sai na segunda seguinte -- afirmar
+    publicacao ali seria inventar uma data.
     """
     vazio = {"valor": None, "ref": None, "pos": None, "exata": True,
              "pendente": False, "divulgacao": None}
@@ -551,8 +950,11 @@ def _valor_em(s: pd.Series, corte, grupo_cal: dict | None, teto=None) -> dict:
         if not len(idx):
             return vazio
         ref = idx[-1]
+        quando = (dt.datetime.combine(pd.Timestamp(ref).date(), div_hora)
+                  if div_hora is not None else None)
         return {"valor": float(s.loc[ref]), "ref": ref, "pos": int(s.index.get_loc(ref)),
-                "exata": True, "pendente": False, "divulgacao": None}
+                "exata": True, "pendente": False,
+                "divulgacao": quando.strftime("%d/%m/%Y %H:%M") if quando else None}
 
     ref, exata = ref_divulgado(grupo_cal, corte, s.index)
     if ref is None:
@@ -566,6 +968,12 @@ def _valor_em(s: pd.Series, corte, grupo_cal: dict | None, teto=None) -> dict:
     return {"valor": float(s.loc[ref]), "ref": ref, "pos": int(s.index.get_loc(ref)),
             "exata": exata, "pendente": pendente,
             "divulgacao": quando.strftime("%d/%m/%Y %H:%M") if quando else None}
+
+
+def _por_ano(idx) -> int:
+    """Observacoes por ano do indice -- 12 num PeriodIndex mensal, 4 num trimestral."""
+    f = str(getattr(idx, "freqstr", "") or "")
+    return 4 if f.startswith("Q") else 12
 
 
 def _sigma(s: pd.Series, k: int) -> float | None:
@@ -583,7 +991,7 @@ def _sigma(s: pd.Series, k: int) -> float | None:
         return None
     d = s.diff(k).dropna()
     if isinstance(d.index, pd.PeriodIndex):
-        corte = d.index.max() - 12 * ANOS_SIGMA
+        corte = d.index.max() - _por_ano(d.index) * ANOS_SIGMA
     else:
         corte = d.index.max() - pd.DateOffset(years=ANOS_SIGMA)
     d = d[d.index >= corte]
@@ -596,9 +1004,12 @@ def _sigma(s: pd.Series, k: int) -> float | None:
 
 
 def _rotulo_ref(ref) -> str:
+    """Rotulo curto do periodo de REFERENCIA, o que aparece embaixo do valor."""
     if ref is None:
         return "—"
     if isinstance(ref, pd.Period):
+        if str(ref.freqstr).startswith("Q"):
+            return "%dT%d" % (ref.quarter, ref.year)
         return ref.strftime("%m/%Y")
     return pd.Timestamp(ref).strftime("%d/%m/%Y")
 
@@ -634,199 +1045,173 @@ def agenda(prox: dict, hoje: dt.date, rotulos: dict[str, list[str]]) -> list[dic
     return sorted(saida, key=lambda r: (r["date"], r["hora"]))
 
 
-def montar(agora: dt.datetime | None = None) -> dict:
+def montar(agora: dt.datetime | None = None, n_passadas: int = N_PASSADAS) -> dict:
+    """A matriz: uma linha por variavel, uma coluna por reuniao."""
     agora = agora or dt.datetime.now()
     hoje = agora.date()
-    ant, prox = reunioes(agora)
-    if ant is None or prox is None:
-        return {"erro": "calendario sem reuniao anterior ou proxima para %s -- ver "
-                        "domain/release_calendar/ROLLOVER.md" % hoje}
 
-    corte_hoje = agora
+    # n_passadas + 1: a coluna mais antiga EXIBIDA precisa de uma anterior para ter
+    # delta. Sem ela a primeira coluna nunca receberia cor, o que nao e uma propriedade
+    # do dado -- e so o fim da janela.
+    janela = janela_reunioes(agora, n_passadas + 1)
+    if len(janela) < 2:
+        return {"erro": "calendario/banco sem reunioes suficientes para a janela -- ver "
+                        "domain/release_calendar/ROLLOVER.md"}
+    prox = janela[-1] if janela[-1]["futura"] else None
+    if prox is None:
+        return {"erro": "nenhuma reuniao futura no calendario -- ver "
+                        "domain/release_calendar/ROLLOVER.md"}
+
+    ctx = {"hoje": hoje, "ano0": hoje.year}
     gs = grupos()
-    ctx = {
-        "hoje": hoje, "ant": ant, "prox": prox,
-        "ano0": hoje.year, "ano1": hoje.year + 1,
-        "rotulo_focus": None,
-    }
-    try:
-        ult_focus = pd.Timestamp(q("macro_brasil",
-                                   "SELECT MAX(date) mx FROM expc_focus_copom")["mx"].iloc[0])
-        ctx["rotulo_focus"] = rotulo_focus(ult_focus)
-    except Exception:
-        pass
+    especificacao = _spec(ctx)
 
-    linhas, avisos = [], []
-    for spec in SPEC:
-        label = spec["label"](ctx) if callable(spec["label"]) else spec["label"]
-        linha = {"key": spec["key"], "bloco": spec["bloco"], "label": label,
+    blocos: dict[str, list] = {}
+    ordem_blocos: list[str] = []
+    avisos: list[str] = []
+    rotulos: dict[str, list[str]] = {}
+
+    for spec in especificacao:
+        linha = {"key": spec["key"], "bloco": spec["bloco"], "label": spec["label"],
                  "unidade": spec["unidade"], "sinal": spec["sinal"],
                  "casas": spec["casas"], "nota": spec["nota"],
-                 "grupo": spec["grupo"]}
+                 "grupo": spec["grupo"], "pct": spec.get("modo") == "pct"}
+        if spec["bloco"] not in blocos:
+            blocos[spec["bloco"]] = []
+            ordem_blocos.append(spec["bloco"])
+        blocos[spec["bloco"]].append(linha)
+
+        for g in (spec["grupo"], spec.get("grupo_agenda")):
+            if g:
+                rotulos.setdefault(g, []).append(spec["label"])
+
         try:
-            s = spec["fn"](ctx).dropna()
+            s = spec["fn"]().dropna()
         except Exception as exc:
             linha["erro"] = str(exc)
-            linhas.append(linha)
             avisos.append("%s: %s" % (spec["key"], exc))
             continue
         if s.empty:
             linha["erro"] = "serie vazia"
-            linhas.append(linha)
             continue
-
         s = s[~s.index.duplicated(keep="last")].sort_index()
+
         g = gs.get(spec["grupo"]) if spec["grupo"] else None
         teto = s.index.max() if g is not None else None
-        a = _valor_em(s, ant["corte"], g, teto)
-        h = _valor_em(s, corte_hoje, g, teto)
+        leituras = [_valor_em(s, r["corte"], g, teto, spec.get("div_hora"))
+                    for r in janela]
 
-        # A regra ajustada tem de reproduzir o que ja aconteceu: se ela diz que o ultimo
-        # ponto do banco so sai depois de hoje, ou ela esta errada ou o dado saiu antes do
-        # previsto -- nos dois casos as datas da coluna "na reuniao" ficam suspeitas.
-        if g is not None:
-            quando_ult, exata_ult = divulgacao(g, s.index.max())
-            if quando_ult is not None and not exata_ult and quando_ult > agora:
-                avisos.append("%s: a regra ajustada de %s poe a divulgacao de %s em %s, "
-                              "depois de agora -- dado no banco antes do previsto"
-                              % (spec["key"], spec["grupo"], _rotulo_ref(s.index.max()),
-                                 quando_ult.strftime("%d/%m/%Y")))
+        # `ref_map` troca o rotulo impresso embaixo do valor: onde ele existe, o
+        # indice da serie e a data de PUBLICACAO e o periodo descrito e outro.
+        # Marcar a linha importa porque isso quebra a equivalencia que vale em todas
+        # as outras -- la `novo` e a troca do rotulo de referencia sao a mesma coisa,
+        # e aqui nao sao: duas reunioes seguidas projetam o mesmo trimestre.
+        alvos = spec.get("ref_map")
+        alvos = alvos() if callable(alvos) else alvos
+        if alvos:
+            linha["ref_alvo"] = True
 
-        # Uma data estimada so e perigosa quando cai perto do corte: se a regra erra ate
-        # E dias e a divulgacao estimada esta a mais de E dias da reuniao, a resposta e a
-        # mesma com ou sem o erro. Avisar sempre que a data e estimada seria ruido; avisar
-        # quando o erro PODE virar a celula e informacao.
         erro_fit = regra(g)[2] if (g is not None and regra(g)) else None
         linha["fit_erro_dias"] = erro_fit
-        for col, leitura, corte in (("na reuniao", a, ant["corte"]), ("hoje", h, agora)):
-            if leitura["exata"] or leitura["divulgacao"] is None or not erro_fit:
-                continue
-            quando = dt.datetime.strptime(leitura["divulgacao"], "%d/%m/%Y %H:%M")
-            if abs((quando - corte).days) <= erro_fit:
-                avisos.append("%s (%s): divulgacao estimada em %s, a menos de %d dias do "
-                              "corte %s, e a regra de %s erra ate %d dias -- a celula pode "
-                              "estar no periodo errado"
-                              % (spec["key"], col, leitura["divulgacao"], erro_fit,
-                                 corte.strftime("%d/%m/%Y %H:%M"), spec["grupo"], erro_fit))
 
-        linha.update({
-            "ant": None if a["valor"] is None else round(a["valor"], 6),
-            "hoje": None if h["valor"] is None else round(h["valor"], 6),
-            "ref_ant": _rotulo_ref(a["ref"]), "ref_hoje": _rotulo_ref(h["ref"]),
-            "div_ant": a["divulgacao"], "div_hoje": h["divulgacao"],
-            "exata": bool(a["exata"] and h["exata"]),
-            "pendente": bool(h["pendente"]),
-            "ultimo_banco": _rotulo_ref(s.index.max()),
-        })
-        if a["valor"] is None or h["valor"] is None:
-            linhas.append(linha)
-            continue
+        celulas = []
+        for i in range(1, len(janela)):
+            ant, cur, reuniao = leituras[i - 1], leituras[i], janela[i]
+            cel = {
+                "v": None if cur["valor"] is None else round(cur["valor"], 6),
+                "ref": (alvos or {}).get(cur["ref"]) or _rotulo_ref(cur["ref"]),
+                "div": cur["divulgacao"],
+                "exata": bool(cur["exata"]),
+                "pendente": bool(cur["pendente"]),
+                "novo": False, "z": None, "delta": None, "k": 0,
+            }
+            if cur["valor"] is not None and ant["valor"] is not None:
+                k = cur["pos"] - ant["pos"]
+                cel["k"] = int(k)
+                cel["novo"] = bool(k > 0)
+                if k > 0:
+                    if spec.get("modo") == "pct" and ant["valor"] and bool((s > 0).all()):
+                        delta = (cur["valor"] / ant["valor"] - 1.0) * 100.0
+                        sigma = _sigma(np.log(s) * 100.0, k)
+                    else:
+                        delta = cur["valor"] - ant["valor"]
+                        sigma = _sigma(s, k)
+                    cel["delta"] = round(delta, 6)
+                    cel["sigma"] = None if sigma is None else round(sigma, 6)
+                    if spec["sinal"] and sigma:
+                        cel["z"] = round(float(np.clip(spec["sinal"] * delta / sigma,
+                                                       -3, 3)), 4)
+            # Uma data ESTIMADA so e perigosa quando cai perto do corte: se a regra erra
+            # ate E dias e a divulgacao estimada esta a mais de E dias da reuniao, a
+            # resposta e a mesma com ou sem o erro. Marcar sempre seria ruido; marcar
+            # quando o erro pode virar a celula e informacao.
+            if (not cur["exata"]) and cur["divulgacao"] and erro_fit:
+                quando = dt.datetime.strptime(cur["divulgacao"], "%d/%m/%Y %H:%M")
+                if abs((quando - reuniao["corte"]).days) <= erro_fit:
+                    cel["ambigua"] = True
+                    avisos.append(
+                        "%s (%s): divulgacao estimada em %s, a menos de %d dias do corte "
+                        "%s, e a regra de %s erra ate %d dias -- a celula pode estar no "
+                        "periodo errado"
+                        % (spec["key"], reuniao["label"], cur["divulgacao"], erro_fit,
+                           reuniao["corte"].strftime("%d/%m/%Y %H:%M"), spec["grupo"],
+                           erro_fit))
+            celulas.append(cel)
+        linha["celulas"] = celulas
+        linha["ultimo_banco"] = ((alvos or {}).get(s.index.max())
+                                 or _rotulo_ref(s.index.max()))
 
-        k = h["pos"] - a["pos"]
-        # `pct`: a escala tambem tem de virar log, senao o sigma continua em centavos e o
-        # z ficaria com numerador e denominador em unidades diferentes. 100*dlog e a
-        # variacao percentual para os movimentos desta ordem de grandeza.
-        if spec.get("modo") == "pct" and a["valor"] and bool((s > 0).all()):
-            delta = (h["valor"] / a["valor"] - 1.0) * 100.0
-            sigma = _sigma(np.log(s) * 100.0, k)
-            linha["delta_pct"] = True
-        else:
-            delta = h["valor"] - a["valor"]
-            sigma = _sigma(s, k)
-        linha["novos"] = int(k)
-        linha["delta"] = round(delta, 6)
-        linha["sigma"] = None if sigma is None else round(sigma, 6)
-        if k == 0:
-            linha["z"] = 0.0
-        elif spec["sinal"] == 0 or sigma is None:
-            linha["z"] = None
-        else:
-            linha["z"] = round(float(np.clip(spec["sinal"] * delta / sigma, -3, 3)), 4)
-        linhas.append(linha)
-
-    # As quatro categorias particionam as linhas: uma variavel sem dado novo NAO e
-    # "neutra" (isso seria dizer que ela nao mexeu), e sim mudez -- ela nao foi
-    # perguntada. Contar as duas coisas junto foi bug numa primeira versao.
-    com_dado = [l for l in linhas if l.get("novos", 0) > 0 and l.get("z") is not None]
-    zs = [l["z"] for l in com_dado]
-    resumo = {
-        "hawkish": sum(1 for l in com_dado if l["z"] > 0.05),
-        "dovish": sum(1 for l in com_dado if l["z"] < -0.05),
-        "neutro": sum(1 for l in com_dado if abs(l["z"]) <= 0.05),
-        "sem_leitura": sum(1 for l in linhas
-                           if l.get("novos", 0) > 0 and l.get("z") is None),
-        "sem_dado": sum(1 for l in linhas if l.get("novos") == 0),
-        "saldo": round(float(np.mean(zs)), 3) if zs else None,
-        "n_saldo": len(zs),
-    }
-
-    # Quais grupos do calendario alimentam quais linhas -- e o que a agenda mostra na
-    # coluna "Alimenta", e o que decide o que entra nela.
-    rotulos: dict[str, list[str]] = {}
-    for spec, l in zip(SPEC, linhas):
-        for g in (l.get("grupo"), spec.get("grupo_agenda")):
-            if g:
-                rotulos.setdefault(g, []).append(l["label"])
-    n_ant = numero_reuniao(ant["date"])
     return {
         "hoje": hoje.isoformat(),
-        "ant": {"date": ant["date"].isoformat(),
-                "date_start": ant["date_start"].isoformat() if ant["date_start"] else None,
-                "numero": n_ant,
-                "corte": ant["corte"].strftime("%d/%m/%Y %H:%M")},
-        "prox": {"date": prox["date"].isoformat(),
-                 "date_start": prox["date_start"].isoformat() if prox["date_start"] else None,
-                 "numero": (n_ant + 1) if n_ant else None,
-                 "rotulo": prox["rotulo"],
-                 "rotulo_focus": ctx["rotulo_focus"],
-                 "dias": (prox["date"] - hoje).days},
-        "linhas": linhas,
-        "resumo": resumo,
-        "agenda": agenda(prox, hoje, rotulos),
+        "reunioes": [
+            {"date": r["date"].isoformat(),
+             "date_start": r["date_start"].isoformat() if r["date_start"] else None,
+             "numero": r["numero"], "label": r["label"],
+             "bps": r["bps"], "decisao": r["decisao"], "selic": r["selic"],
+             "futura": r["futura"],
+             "corte": r["corte"].strftime("%d/%m/%Y %H:%M"),
+             "dias": (r["date"] - hoje).days if r["futura"] else None}
+            for r in janela[1:]
+        ],
+        "blocos": [{"nome": b, "linhas": blocos[b]} for b in ordem_blocos],
+        "agenda": agenda({"corte": prox.get("corte_reuniao", prox["corte"])},
+                         hoje, rotulos),
         "avisos": avisos,
         "anos_sigma": ANOS_SIGMA,
+        "n_passadas": n_passadas,
     }
 
 
 if __name__ == "__main__":
-    import json
     d = montar()
     if "erro" in d:
         raise SystemExit(d["erro"])
-    print("%da reuniao (%s)  ->  %da (%s), em %d dias"
-          % (d["ant"]["numero"] or 0, d["ant"]["date"], d["prox"]["numero"] or 0,
-             d["prox"]["date"], d["prox"]["dias"]))
-    print("-" * 108)
-    print("%-46s %10s %10s %9s %7s  %s" % ("variavel", "na reuniao", "hoje", "delta", "z", "referencia"))
-    for l in d["linhas"]:
-        if l.get("erro"):
-            print("%-46s  FALHOU: %s" % (l["label"][:46], l["erro"]))
-            continue
-        f = "%%.%df" % l["casas"]
-        print("%-46s %10s %10s %9s %7s  %s -> %s%s%s" % (
-            l["label"][:46],
-            "—" if l["ant"] is None else f % l["ant"],
-            "—" if l["hoje"] is None else f % l["hoje"],
-            "—" if l.get("delta") is None else
-            ("%+.2f%%" % l["delta"] if l.get("delta_pct") else "%+.2f" % l["delta"]),
-            "—" if l.get("z") is None else "%+.2f" % l["z"],
-            l["ref_ant"], l["ref_hoje"],
-            "" if l["exata"] else " ~", " PENDENTE" if l.get("pendente") else ""))
-    print("-" * 108)
-    r = d["resumo"]
-    print("hawkish %d | dovish %d | neutro %d | sem leitura %d | sem dado novo %d | "
-          "saldo %s (%d variaveis)"
-          % (r["hawkish"], r["dovish"], r["neutro"], r["sem_leitura"], r["sem_dado"],
-             r["saldo"], r["n_saldo"]))
-    print("\nDivulgacao que sustenta cada coluna (~ = data estimada, nao do calendario):")
-    for l in d["linhas"]:
-        if l.get("div_ant") or l.get("div_hoje"):
-            print("  %-46s %s  |  %s%s" % (l["label"][:46], l.get("div_ant") or "—",
-                                           l.get("div_hoje") or "—",
-                                           "" if l["exata"] else "  ~"))
-    print("\nAinda sai antes da reuniao (%d eventos):" % len(d["agenda"]))
-    for a in d["agenda"]:
-        print("  %s %s  %-40s %-9s %s" % (a["date"], a["hora"], a["nome"][:40],
-                                          a["referencia"], " | ".join(a["variaveis"])[:60]))
+    cols = d["reunioes"]
+    larg = 9
+    cab = "%-42s" % "variavel"
+    for r in cols:
+        cab += ("%*s" % (larg, r["label"]))
+    print(cab)
+    print("%-42s" % "" + "".join("%*s" % (larg, ("—" if r["bps"] is None
+                                                 else "%+dbp" % r["bps"]))
+                                 for r in cols))
+    print("-" * len(cab))
+    for b in d["blocos"]:
+        print("\n== %s" % b["nome"])
+        for l in b["linhas"]:
+            if l.get("erro"):
+                print("%-42s  FALHOU: %s" % (l["label"][:42], l["erro"]))
+                continue
+            f = "%%.%df" % l["casas"]
+            linha = "%-42s" % l["label"][:42]
+            for c in l["celulas"]:
+                txt = "—" if c["v"] is None else f % c["v"]
+                if c["novo"] and c["z"] is not None:
+                    txt += "*" if abs(c["z"]) > 0.5 else "."
+                linha += "%*s" % (larg, txt)
+            print(linha)
+    print("\n%d divulgacoes ate a proxima reuniao" % len(d["agenda"]))
     if d["avisos"]:
-        print("\nAVISOS:", *d["avisos"], sep="\n  ")
+        print("%d aviso(s):" % len(d["avisos"]))
+        for a in d["avisos"][:6]:
+            print("  - %s" % a)

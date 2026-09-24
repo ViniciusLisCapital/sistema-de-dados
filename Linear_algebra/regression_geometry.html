@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Álgebra Linear da Regressão</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+:root{
+  --lis-azul:#1F2853; --lis-dourado:#BB9B1D; --lis-verde:#418791; --lis-azul-cl:#02739B;
+  --lis-laranja:#EA523A; --lis-amarelo:#FBC852; --lis-cinza:#BFBFBF;
+  --bg:#F4F5F7; --card-bg:#FFFFFF; --border:rgba(31,40,83,0.1);
+  --text:#1F2853; --text2:#3A4F72; --muted:#7A88A8;
+  --sans:'Barlow',sans-serif; --cond:'Barlow Condensed',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;}
+.wrap{max-width:1560px;margin:0 auto;padding:22px 26px 50px;}
+
+header.page{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:16px;}
+header.page h1{font-family:var(--cond);font-size:30px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;}
+header.page .sub{color:var(--muted);font-size:12.5px;margin-top:3px;}
+header.page .brand{font-family:Georgia,serif;font-size:20px;letter-spacing:.06em;}
+header.page .brand em{font-style:normal;color:var(--lis-dourado);}
+footer{color:var(--muted);font-family:var(--mono);font-size:10px;text-align:center;padding:18px 40px 10px;}
+
+nav.tabs{display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:18px;flex-wrap:wrap;}
+nav.tabs button{font-family:var(--cond);font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;
+  background:none;border:none;border-bottom:3px solid transparent;padding:9px 15px;cursor:pointer;color:var(--muted);margin-bottom:-2px;}
+nav.tabs button.active{color:var(--lis-azul);border-bottom-color:var(--lis-dourado);}
+nav.tabs button:hover:not(.active){color:var(--text2);}
+.panel{display:none;} .panel.active{display:block;}
+
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:15px 18px;margin-bottom:14px;}
+.card>h2{font-family:var(--cond);font-size:17px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.card>.note{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:10px;text-align:justify;hyphens:auto;}
+.card>.note b{color:var(--lis-azul);font-weight:600;}
+.card>.note code,code.k{font-family:var(--mono);font-size:11.5px;background:rgba(31,40,83,.05);padding:1px 4px;border-radius:3px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;}
+.grid-setup{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:start;}
+@media (max-width:1180px){.grid2,.grid-setup{grid-template-columns:1fr;}}
+
+/* ---- entrada de dados: as linhas sao observacoes, as colunas sao os vetores ---- */
+table.dat{border-collapse:collapse;font-size:12px;}
+table.dat th{font-family:var(--cond);font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);
+  padding:3px 7px;text-align:center;font-weight:600;}
+table.dat th.vy{color:var(--lis-azul);} table.dat th.vx1{color:var(--lis-dourado);}
+table.dat th.vx2{color:var(--lis-azul-cl);} table.dat th.vi{color:var(--muted);}
+table.dat td{padding:2px 5px;text-align:center;}
+table.dat td.obs{font-family:var(--cond);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:right;padding-right:9px;}
+table.dat input{font-family:var(--mono);font-size:12.5px;width:66px;padding:4px 6px;text-align:right;
+  border:1px solid var(--border);border-radius:5px;background:#FCFCFD;color:var(--text);}
+table.dat input:focus{outline:none;border-color:var(--lis-dourado);background:#fff;}
+table.dat td.one{font-family:var(--mono);font-size:12.5px;color:var(--muted);width:66px;}
+.col-off input,.col-off,td.one.off{opacity:.3;}
+
+.ctrls{display:flex;flex-direction:column;gap:9px;}
+.ctrl-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.ctrl-row>span.lbl{font-family:var(--cond);font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-right:2px;}
+label.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);cursor:pointer;}
+label.chk.off{opacity:.42;cursor:not-allowed;}
+.rb{font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 12px;border:1px solid rgba(31,40,83,.15);
+  border-radius:20px;background:rgba(31,40,83,.03);color:var(--muted);cursor:pointer;transition:all .15s;}
+.rb:hover{color:var(--lis-azul);border-color:rgba(31,40,83,.32);}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.kpi{background:#FBFBFC;border:1px solid var(--border);border-radius:7px;padding:9px 12px;}
+.kpi .k{font-family:var(--cond);font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
+.kpi .v{font-family:var(--mono);font-size:18px;font-weight:500;margin-top:2px;}
+.kpi .d{font-size:10.5px;color:var(--muted);margin-top:1px;line-height:1.35;}
+.kpi.warn{border-color:rgba(234,82,58,.45);background:rgba(234,82,58,.05);}
+.kpi.warn .v{color:var(--lis-laranja);}
+
+.chart{width:100%;height:430px;}
+.chart.tall{height:500px;}
+.chead{border-bottom:1px solid var(--border);padding-bottom:7px;margin-bottom:8px;}
+.chead .ct{font-family:var(--cond);font-size:15.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.chead .cs{font-size:11.5px;color:var(--text2);margin-top:1px;}
+.chead .cx{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px;}
+.read{font-size:12px;color:var(--text2);margin-top:8px;line-height:1.55;text-align:justify;hyphens:auto;
+  border-left:2px solid var(--lis-dourado);padding-left:9px;}
+
+/* ---- matrizes ---- */
+.algrid{display:flex;flex-wrap:wrap;gap:22px 30px;align-items:flex-start;}
+.alblock{display:flex;align-items:center;gap:9px;}
+.alblock .nm{font-family:var(--mono);font-size:12.5px;color:var(--text2);white-space:nowrap;}
+.matx{display:inline-block;position:relative;padding:3px 11px;}
+.matx::before,.matx::after{content:'';position:absolute;top:0;bottom:0;width:5px;border:1.4px solid var(--text2);}
+.matx::before{left:0;border-right:none;} .matx::after{right:0;border-left:none;}
+.matx table{border-collapse:collapse;}
+.matx td{font-family:var(--mono);font-size:12px;padding:1px 7px;text-align:right;}
+.alnote{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.55;text-align:justify;hyphens:auto;}
+.alnote b{color:var(--text2);}
+
+ul.tips{margin:2px 0 0 17px;font-size:12.5px;color:var(--text2);line-height:1.65;}
+ul.tips li{margin-bottom:5px;}
+ul.tips b{color:var(--lis-azul);}
+.flag{border:1px solid rgba(234,82,58,.4);background:rgba(234,82,58,.06);color:var(--lis-laranja);
+  border-radius:6px;padding:8px 11px;font-size:12px;margin-bottom:10px;}
+.flag.ok{border-color:rgba(65,135,145,.4);background:rgba(65,135,145,.07);color:var(--lis-verde);}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page">
+  <div>
+    <h1>Álgebra Linear da Regressão</h1>
+    <div class="sub">Mínimos quadrados como projeção ortogonal — digite os vetores e veja a geometria mudar</div>
+  </div>
+  <div class="brand">LIS <em>CAPITAL</em></div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="t2">2D — ℝ²</button>
+  <button class="tab-btn" data-tab="t3">3D — ℝ³</button>
+</nav>
+
+<!-- ============================= 2D ============================= -->
+<section id="t2" class="panel active">
+
+  <div class="card">
+    <h2>Duas observações, um espaço de duas dimensões</h2>
+    <p class="note">
+      Cada <b>coluna</b> da tabela é um vetor de ℝ², porque há duas observações. O vetor <b>y</b> é o que
+      se quer explicar; a coluna <b>x₁</b> (e a coluna de 1s, se ligada) gera um subespaço — uma reta pela
+      origem quando há um regressor só. Mínimos quadrados não escolhe coeficientes por tentativa: ele
+      devolve o <b>ponto desse subespaço mais próximo de y</b>, que é a projeção ortogonal ŷ. O resíduo
+      <b>e = y − ŷ</b> é o que sobra, e ele é perpendicular ao subespaço por construção — é essa
+      perpendicularidade, e não uma hipótese estatística, que dá as equações normais.
+    </p>
+    <div class="grid-setup">
+      <table class="dat">
+        <thead><tr><th></th><th class="vy">y</th><th class="vx1">x₁</th><th class="vi" id="h2-int">1</th></tr></thead>
+        <tbody>
+          <tr><td class="obs">obs 1</td>
+              <td><input id="i2-y0" type="number" step="0.5" value="3"></td>
+              <td><input id="i2-a0" type="number" step="0.5" value="1"></td>
+              <td class="one" id="c2-i0">1</td></tr>
+          <tr><td class="obs">obs 2</td>
+              <td><input id="i2-y1" type="number" step="0.5" value="1"></td>
+              <td><input id="i2-a1" type="number" step="0.5" value="3"></td>
+              <td class="one" id="c2-i1">1</td></tr>
+        </tbody>
+      </table>
+      <div class="ctrls">
+        <div class="ctrl-row">
+          <label class="chk"><input type="checkbox" id="k2-int"> incluir intercepto (coluna de 1s)</label>
+          <label class="chk"><input type="checkbox" id="k2-dec"> mostrar decomposição β̂ⱼxⱼ</label>
+        </div>
+        <div class="ctrl-row" id="p2-presets">
+          <span class="lbl">Exemplos</span>
+          <button class="rb" data-p="base">ajuste típico</button>
+          <button class="rb" data-p="orto">y quase ⊥ a x₁</button>
+          <button class="rb" data-p="alin">y quase sobre x₁</button>
+          <button class="rb" data-p="sat">p = n (ajuste exato)</button>
+          <button class="rb" data-p="sing">x₁ = 0 (singular)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="f2" class="hidden"></div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chead"><div class="ct">Espaço das observações — ℝ²</div>
+        <div class="cs" id="h2-sub">—</div><div class="cx" id="h2-src">—</div></div>
+      <div id="g2-obs" class="chart tall"></div>
+      <div class="read" id="r2-obs">—</div>
+    </div>
+    <div class="card">
+      <div class="chead"><div class="ct">Espaço das variáveis — o gráfico de sempre</div>
+        <div class="cs" id="h2-sub2">—</div><div class="cx">Um ponto por observação · a reta é o mesmo ajuste, visto do outro lado</div></div>
+      <div id="g2-var" class="chart"></div>
+      <div class="read" id="r2-var">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Números</h2>
+    <div class="kpis" id="kpi2"></div>
+  </div>
+
+  <div class="card">
+    <h2>A conta, com os seus números</h2>
+    <div class="algrid" id="alg2"></div>
+    <p class="alnote" id="aln2"></p>
+  </div>
+
+  <div class="card">
+    <h2>O que testar aqui</h2>
+    <ul class="tips">
+      <li><b>Gire y mantendo x₁ fixo.</b> ŷ desliza sobre a reta e o resíduo muda de tamanho, mas o ângulo
+        entre eles continua reto. O único caso em que o resíduo some é y já estar sobre a reta.</li>
+      <li><b>Multiplique x₁ por 10.</b> A reta é a mesma, então ŷ, o resíduo e o R² não mudam — só β̂₁ cai
+        por dez. O coeficiente depende da escala do regressor; a projeção não.</li>
+      <li><b>Ligue o intercepto.</b> Com duas colunas e duas observações o subespaço vira o plano inteiro,
+        ŷ = y e o resíduo é zero — não porque o modelo é bom, mas porque não sobraram graus de liberdade.</li>
+      <li><b>Zere x₁.</b> XᵀX perde posto e não há inversa: nenhuma combinação das colunas define um ponto
+        único. É o caso-limite do que a colinearidade faz por aproximação na aba 3D.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================= 3D ============================= -->
+<section id="t3" class="panel">
+
+  <div class="card">
+    <h2>Três observações — a projeção passa a ser sobre um plano</h2>
+    <p class="note">
+      Com três observações cada coluna vive em ℝ³, e é aqui que a figura fica completa. Duas colunas
+      (por exemplo <b>1</b> e <b>x₁</b>, que é a regressão simples com intercepto) geram um <b>plano</b>;
+      ŷ é a sombra de y sobre esse plano e o resíduo é a distância vertical até ele. Ligando <b>x₂</b>
+      entram três colunas, o subespaço vira ℝ³ inteiro e o ajuste fica exato. O caso mais instrutivo é o
+      intermediário: dois regressores <b>quase paralelos</b>. O plano quase não muda e ŷ fica estável,
+      mas os coeficientes que somam até ele disparam em sinais opostos — colinearidade é isso, e ela é
+      um fato geométrico sobre as colunas, não sobre o y.
+    </p>
+    <div class="grid-setup">
+      <table class="dat">
+        <thead><tr><th></th><th class="vy">y</th><th class="vx1">x₁</th><th class="vx2" id="h3-x2">x₂</th><th class="vi" id="h3-int">1</th></tr></thead>
+        <tbody>
+          <tr><td class="obs">obs 1</td>
+              <td><input id="i3-y0" type="number" step="0.5" value="1"></td>
+              <td><input id="i3-a0" type="number" step="0.5" value="1"></td>
+              <td><input id="i3-b0" type="number" step="0.5" value="2"></td>
+              <td class="one" id="c3-i0">1</td></tr>
+          <tr><td class="obs">obs 2</td>
+              <td><input id="i3-y1" type="number" step="0.5" value="3"></td>
+              <td><input id="i3-a1" type="number" step="0.5" value="2"></td>
+              <td><input id="i3-b1" type="number" step="0.5" value="1"></td>
+              <td class="one" id="c3-i1">1</td></tr>
+          <tr><td class="obs">obs 3</td>
+              <td><input id="i3-y2" type="number" step="0.5" value="2"></td>
+              <td><input id="i3-a2" type="number" step="0.5" value="4"></td>
+              <td><input id="i3-b2" type="number" step="0.5" value="1"></td>
+              <td class="one" id="c3-i2">1</td></tr>
+        </tbody>
+      </table>
+      <div class="ctrls">
+        <div class="ctrl-row">
+          <label class="chk"><input type="checkbox" id="k3-int" checked> incluir intercepto</label>
+          <label class="chk"><input type="checkbox" id="k3-x2"> usar x₂</label>
+          <label class="chk"><input type="checkbox" id="k3-dec"> mostrar decomposição β̂ⱼxⱼ</label>
+        </div>
+        <div class="ctrl-row" id="p3-presets">
+          <span class="lbl">Exemplos</span>
+          <button class="rb" data-p="simples">simples c/ intercepto</button>
+          <button class="rb" data-p="dois">dois regressores</button>
+          <button class="rb" data-p="colin">quase colineares</button>
+          <button class="rb" data-p="orto">ortogonais</button>
+          <button class="rb" data-p="sat">p = n (ajuste exato)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="f3" class="hidden"></div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chead"><div class="ct">Espaço das observações — ℝ³</div>
+        <div class="cs" id="h3-sub">—</div><div class="cx" id="h3-src">—</div></div>
+      <div id="g3-obs" class="chart tall"></div>
+      <div class="read" id="r3-obs">—</div>
+    </div>
+    <div class="card">
+      <div class="chead"><div class="ct">Espaço das variáveis</div>
+        <div class="cs" id="h3-sub2">—</div><div class="cx" id="h3-src2">—</div></div>
+      <div id="g3-var" class="chart tall"></div>
+      <div class="read" id="r3-var">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Números</h2>
+    <div class="kpis" id="kpi3"></div>
+  </div>
+
+  <div class="card">
+    <h2>A conta, com os seus números</h2>
+    <div class="algrid" id="alg3"></div>
+    <p class="alnote" id="aln3"></p>
+  </div>
+
+  <div class="card">
+    <h2>O que testar aqui</h2>
+    <ul class="tips">
+      <li><b>Clique em “quase colineares” e depois mexa em um valor de y.</b> Compare quanto β̂ anda e quanto
+        ŷ anda. A projeção é bem determinada; a repartição dela entre x₁ e x₂ não é.</li>
+      <li><b>Na mesma configuração, olhe o ângulo entre x₁ e x₂ e o det(XᵀX).</b> Colinearidade não é uma
+        propriedade de um regressor isolado — é o ângulo entre eles fechando.</li>
+      <li><b>Compare “ortogonais” com “dois regressores”.</b> Com colunas ortogonais, tirar x₂ do modelo não
+        mexe em β̂₁. Fora da ortogonalidade mexe, e é daí que vem o viés de variável omitida.</li>
+      <li><b>Ligue e desligue o intercepto.</b> Com ele, os resíduos somam zero (y − ŷ é ⊥ à coluna de 1s) e
+        o R² centrado passa a fazer sentido; sem ele, essa garantia não existe.</li>
+      <li><b>Ligue x₂ com o intercepto ligado.</b> Três colunas em ℝ³: o ajuste fica exato e o R² vai a 1 sem
+        que nada tenha sido explicado.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Ferramenta de estudo · projeção ortogonal, equações normais e colinearidade · eixos em escala 1:1 para que
+  o ângulo reto apareça reto · role para zoom · arraste para mover (2D) ou girar (3D) · duplo clique reseta
+</footer>
+</div>
+
+<script>
+/* ===================== LINALG_START ===================== */
+function dot(a,b){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+function norm(a){ return Math.sqrt(dot(a,a)); }
+function add(a,b){ return a.map(function(v,i){ return v+b[i]; }); }
+function sub(a,b){ return a.map(function(v,i){ return v-b[i]; }); }
+function scale(a,k){ return a.map(function(v){ return v*k; }); }
+function maxAbs(M){ var m=0; for(var i=0;i<M.length;i++) for(var j=0;j<M[i].length;j++) m=Math.max(m,Math.abs(M[i][j])); return m; }
+
+/* Gauss-Jordan com pivoteamento parcial. A tolerancia e RELATIVA a escala da
+   matriz: uma tolerancia absoluta reprovaria XtX de colunas grandes e aprovaria
+   XtX de colunas minusculas. Devolve null quando o posto e deficiente. */
+function inv(A){
+  var n=A.length, i, j, r, c;
+  var tol = 1e-12 * Math.max(1, maxAbs(A));
+  var M=[]; for(i=0;i<n;i++){ var row=A[i].slice(); for(j=0;j<n;j++) row.push(i===j?1:0); M.push(row); }
+  for(c=0;c<n;c++){
+    var piv=c; for(r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[piv][c])) piv=r;
+    if(Math.abs(M[piv][c])<tol) return null;
+    var t=M[c]; M[c]=M[piv]; M[piv]=t;
+    var d=M[c][c]; for(j=0;j<2*n;j++) M[c][j]/=d;
+    for(r=0;r<n;r++){ if(r===c) continue; var f=M[r][c]; if(f===0) continue;
+      for(j=0;j<2*n;j++) M[r][j]-=f*M[c][j]; }
+  }
+  return M.map(function(rw){ return rw.slice(n); });
+}
+function det(A){
+  var n=A.length;
+  if(n===1) return A[0][0];
+  if(n===2) return A[0][0]*A[1][1]-A[0][1]*A[1][0];
+  if(n===3) return A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])
+                 -A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])
+                 +A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+  var M=A.map(function(r){return r.slice();}), d=1, i, j, r2;
+  for(i=0;i<n;i++){
+    var piv=i; for(r2=i+1;r2<n;r2++) if(Math.abs(M[r2][i])>Math.abs(M[piv][i])) piv=r2;
+    if(Math.abs(M[piv][i])<1e-14) return 0;
+    if(piv!==i){ var tt=M[i]; M[i]=M[piv]; M[piv]=tt; d=-d; }
+    d*=M[i][i];
+    for(r2=i+1;r2<n;r2++){ var f=M[r2][i]/M[i][i]; for(j=i;j<n;j++) M[r2][j]-=f*M[i][j]; }
+  }
+  return d;
+}
+function matvec(A,v){ return A.map(function(r){ return dot(r,v); }); }
+
+/* angulo em graus entre dois vetores; null se algum for nulo */
+function angleDeg(a,b){
+  var na=norm(a), nb=norm(b);
+  if(na<1e-12||nb<1e-12) return null;
+  var c=dot(a,b)/(na*nb);
+  return Math.acos(Math.max(-1,Math.min(1,c)))*180/Math.PI;
+}
+/* Gram-Schmidt: base ortonormal do espaco gerado pelas colunas. O comprimento
+   do resultado e o POSTO efetivo, que e o que distingue "3 colunas" de
+   "3 colunas que geram um plano". */
+function orthoBasis(cols){
+  var B=[], k, i;
+  for(k=0;k<cols.length;k++){
+    var v=cols[k].slice();
+    for(i=0;i<B.length;i++){ var d=dot(v,B[i]); v=sub(v,scale(B[i],d)); }
+    var nv=norm(v);
+    if(nv>1e-9*Math.max(1,norm(cols[k]))) B.push(scale(v,1/nv));
+  }
+  return B;
+}
+
+/* Ajuste de minimos quadrados. Recebe y e a LISTA DE COLUNAS (nao a matriz por
+   linhas), porque tudo o que a geometria usa sao as colunas. */
+function fitModel(y, cols, names){
+  var n=y.length, p=cols.length, i, j, a, b;
+  var X=[]; for(i=0;i<n;i++){ var rr=[]; for(j=0;j<p;j++) rr.push(cols[j][i]); X.push(rr); }
+  var XtX=[]; for(a=0;a<p;a++){ var row=[]; for(b=0;b<p;b++) row.push(dot(cols[a],cols[b])); XtX.push(row); }
+  var Xty=cols.map(function(c){ return dot(c,y); });
+  var dt=det(XtX);
+  var Inv=inv(XtX);
+  var basis=orthoBasis(cols);
+  /* Alguma coluna e constante e nao nula? Calculado ANTES da saida por
+     singularidade: um objeto cujos campos dependem do caminho de retorno faz
+     o consumidor ler undefined onde esperava false. */
+  var hasConst=false;
+  for(j=0;j<p;j++){ var cc=cols[j], same=true;
+    for(i=1;i<n;i++) if(Math.abs(cc[i]-cc[0])>1e-12) same=false;
+    if(same && Math.abs(cc[0])>1e-12) hasConst=true; }
+  var out={n:n,p:p,rank:basis.length,X:X,XtX:XtX,Xty:Xty,det:dt,cols:cols,names:names,y:y,basis:basis,
+           hasConst:hasConst,r2c:null,singular:!Inv};
+  if(!Inv) return out;
+  var beta=matvec(Inv,Xty);
+  var yhat=[]; for(i=0;i<n;i++){ var s=0; for(j=0;j<p;j++) s+=beta[j]*cols[j][i]; yhat.push(s); }
+  var e=sub(y,yhat);
+  var H=[]; for(i=0;i<n;i++){ var hr=[]; for(var k=0;k<n;k++){ var sh=0;
+      for(a=0;a<p;a++) for(b=0;b<p;b++) sh+=X[i][a]*Inv[a][b]*X[k][b]; hr.push(sh); } H.push(hr); }
+  var ny=norm(y), ne=norm(e), nyh=norm(yhat);
+  out.XtXinv=Inv; out.beta=beta; out.yhat=yhat; out.resid=e; out.H=H;
+  out.normY=ny; out.normYhat=nyh; out.normE=ne;
+  out.df=n-p;
+  /* cos^2 do angulo entre y e o espaco das colunas: e o R2 NAO centrado.
+     Indefinido quando y=0, e dizer 0 ali seria inventar. */
+  out.cos2 = ny>1e-12 ? (nyh*nyh)/(ny*ny) : null;
+  out.angle = ny>1e-12 ? Math.acos(Math.max(-1,Math.min(1,nyh/ny)))*180/Math.PI : null;
+  /* R2 centrado so e definido quando a coluna de 1s esta no espaco das colunas;
+     sem intercepto ele pode ate ficar negativo e nao e comparavel. */
+  if(hasConst){
+    var mean=y.reduce(function(s,v){return s+v;},0)/n;
+    var sst=y.reduce(function(s,v){return s+(v-mean)*(v-mean);},0);
+    var ssr=dot(e,e);
+    out.r2c = sst>1e-12 ? 1-ssr/sst : null;
+  }
+  out.orth=cols.map(function(c){ return dot(c,e); });
+  out.maxOrth=Math.max.apply(null,out.orth.map(Math.abs));
+  out.s2 = out.df>0 ? dot(e,e)/out.df : null;
+  return out;
+}
+/* ===================== LINALG_END ===================== */
+
+/* ===================== GEO_START ===================== */
+/* Quadrilatero que representa o plano gerado por uma base ortonormal de 2
+   vetores, com meia-aresta L. Devolve os 4 cantos e os triangulos do mesh. */
+function planeQuad(basis,L1,L2){
+  var u=basis[0], v=basis[1], C=[];
+  if(L2===undefined) L2=L1;
+  var sg=[[-1,-1],[1,-1],[1,1],[-1,1]];
+  for(var i=0;i<4;i++) C.push(add(scale(u,sg[i][0]*L1),scale(v,sg[i][1]*L2)));
+  return {x:C.map(function(c){return c[0];}), y:C.map(function(c){return c[1];}),
+          z:C.map(function(c){return c[2];}), i:[0,0], j:[1,2], k:[2,3]};
+}
+/* Marca de angulo reto no pe da perpendicular: um "L" de lado s, com um braco
+   dentro do subespaco e outro ao longo do residuo. Serve em 2D e em 3D porque
+   so usa combinacao linear de dois vetores unitarios. */
+function rightAngle(foot, inDir, perpDir, s){
+  var a=add(foot,scale(inDir,s));
+  var b=add(a,scale(perpDir,s));
+  var c=add(foot,scale(perpDir,s));
+  return [a,b,c];
+}
+/* Escala das figuras: o maior comprimento em jogo, com folga. */
+function spanOf(vecs){
+  var m=0; for(var i=0;i<vecs.length;i++) m=Math.max(m,norm(vecs[i]));
+  return m<1e-9?1:m;
+}
+/* Maior coordenada absoluta entre os pontos plotados. E ela, e nao a maior
+   NORMA, que dimensiona a janela: um quadrado de lado igual ao comprimento do
+   maior vetor deixa todos eles ocupando um quinto da figura. */
+function maxCoord(pts){
+  var m=0; for(var i=0;i<pts.length;i++) for(var j=0;j<pts[i].length;j++) m=Math.max(m,Math.abs(pts[i][j]));
+  return m<1e-9?1:m;
+}
+/* Janela quadrada que contem os pontos plotados E a origem, com folga.
+   Quadrada porque o eixo Y esta travado em 1:1 com o X (senao o angulo reto
+   nao apareceria reto), e centrada na caixa dos pontos e nao na origem: um
+   quadrado simetrico gasta o quadrante negativo inteiro quando o dado e todo
+   positivo, que foi o que deixou os vetores pequenos na primeira versao. */
+function squareWindow(pts,padFrac){
+  var lo=[0,0], hi=[0,0], i;
+  for(i=0;i<pts.length;i++){
+    lo[0]=Math.min(lo[0],pts[i][0]); hi[0]=Math.max(hi[0],pts[i][0]);
+    lo[1]=Math.min(lo[1],pts[i][1]); hi[1]=Math.max(hi[1],pts[i][1]);
+  }
+  var w=Math.max(hi[0]-lo[0],hi[1]-lo[1]);
+  if(w<1e-9) w=1;
+  var half=w*(1+2*(padFrac===undefined?0.16:padFrac))/2;
+  var cx=(lo[0]+hi[0])/2, cy=(lo[1]+hi[1])/2;
+  return {x:[cx-half,cx+half], y:[cy-half,cy+half], span:2*half, data:w};
+}
+/* Janela CUBICA para a cena 3D. Com arestas iguais nos tres eixos, um cubo
+   entrega escala isotropica -- angulo reto aparece reto -- e, ao contrario do
+   autorange, nao e arrastada por um trace enorme: com dois regressores quase
+   colineares as parcelas beta_j*x_j medem centenas contra um yhat de poucas
+   unidades, e deixar o Plotly enquadrar sozinho colapsa plano, vetores e
+   residuo num ponto. Assim elas saem do cubo, que e a leitura certa. */
+function cubeWindow(pts,padFrac){
+  var lo=[0,0,0], hi=[0,0,0], i, k;
+  for(i=0;i<pts.length;i++) for(k=0;k<3;k++){
+    lo[k]=Math.min(lo[k],pts[i][k]); hi[k]=Math.max(hi[k],pts[i][k]);
+  }
+  var w=Math.max(hi[0]-lo[0],hi[1]-lo[1],hi[2]-lo[2]);
+  if(w<1e-9) w=1;
+  var half=w*(1+2*(padFrac===undefined?0.14:padFrac))/2, R=[];
+  for(k=0;k<3;k++){ var c=(lo[k]+hi[k])/2; R.push([c-half,c+half]); }
+  return {ranges:R, span:2*half, data:w};
+}
+/* Meia-aresta do plano em cada direcao da base: o quanto os pontos plotados
+   realmente se afastam ao longo daquela direcao. */
+function extentAlong(pts,u){
+  var m=0; for(var i=0;i<pts.length;i++) m=Math.max(m,Math.abs(dot(pts[i],u)));
+  return m<1e-9?1:m;
+}
+/* ===================== GEO_END ===================== */
+
+/* Um controle cuja validade depende do dado fica visivel e desabilitado, com o
+   motivo no title -- controle ausente nao responde "cade a decomposicao?".
+   Com uma coluna so, beta1*x1 E o proprio yhat: marcar a caixa nao desenharia
+   nada, e uma caixa marcada que nao faz nada e pior que uma caixa cinza. */
+function syncDecomp(chk,M,st){
+  var podeDecompor = !M.singular && M.p>1;
+  chk.disabled = !podeDecompor;
+  chk.parentNode.className = 'chk' + (podeDecompor?'':' off');
+  chk.parentNode.title = podeDecompor ? ''
+    : (M.singular ? 'Sem β̂ não há decomposição.'
+                  : 'Com uma coluna só, β̂₁x₁ é o próprio ŷ: não há soma para decompor.');
+  if(!podeDecompor){ chk.checked=false; st.dec=false; }
+  return podeDecompor;
+}
+
+var C={azul:'#1F2853',dourado:'#BB9B1D',verde:'#418791',azulcl:'#02739B',
+       laranja:'#EA523A',amarelo:'#FBC852',cinza:'#BFBFBF',muted:'#7A88A8'};
+var CFG={displayModeBar:false,responsive:true,scrollZoom:true};
+
+function f(v,d){ if(v===null||v===undefined||!isFinite(v)) return '—';
+  d=(d===undefined)?3:d; var s=v.toFixed(d);
+  if(s==='-'+(0).toFixed(d)) s=(0).toFixed(d);
+  return s; }
+/* Na prosa, "10.000" de um toFixed(3) le como dez mil em portugues. O numero
+   corrido sai sem zeros de cauda; a grade de KPIs e as matrizes mantem casas
+   fixas, onde o alinhamento vale mais que a ambiguidade. */
+function fc(v,d){
+  if(v===null||v===undefined||!isFinite(v)) return '—';
+  var s=v.toFixed(d===undefined?4:d);
+  if(s.indexOf('.')>=0) s=s.replace(/0+$/,'').replace(/\.$/,'');
+  return s==='-0'?'0':s;
+}
+function vecStr(v,d){ return '(' + v.map(function(t){return f(t,d===undefined?2:d);}).join(', ') + ')'; }
+function el(id){ return document.getElementById(id); }
+
+function matHTML(M,d){
+  var h='<div class="matx"><table>';
+  for(var i=0;i<M.length;i++){ h+='<tr>';
+    for(var j=0;j<M[i].length;j++) h+='<td>'+f(M[i][j],d===undefined?3:d)+'</td>';
+    h+='</tr>'; }
+  return h+'</table></div>';
+}
+function colHTML(v,d){ return matHTML(v.map(function(t){return [t];}),d); }
+function block(name,html){ return '<div class="alblock"><span class="nm">'+name+'</span>'+html+'</div>'; }
+
+function kpi(k,v,d,warn){
+  return '<div class="kpi'+(warn?' warn':'')+'"><div class="k">'+k+'</div><div class="v">'+v+
+         '</div><div class="d">'+(d||'')+'</div></div>';
+}
+
+/* Arrow como anotacao do Plotly: aponta DE (ax,ay) PARA (x,y). */
+function ann2(a,b,color,w){
+  return {x:b[0],y:b[1],ax:a[0],ay:a[1],xref:'x',yref:'y',axref:'x',ayref:'y',
+          showarrow:true,arrowhead:3,arrowsize:1.1,arrowwidth:w||2.6,arrowcolor:color,text:''};
+}
+function lbl2(b,text,color,dir){
+  return {x:b[0],y:b[1],text:'<b>'+text+'</b>',showarrow:false,font:{color:color,size:13,family:'JetBrains Mono'},
+          xshift:13*(dir[0]>=0?1:-1),yshift:13*(dir[1]>=0?1:-1)};
+}
+function seg2(a,b,color,name,dash,w){
+  return {x:[a[0],b[0]],y:[a[1],b[1]],mode:'lines',type:'scatter',name:name,
+          line:{color:color,width:w||3,dash:dash||'solid'},
+          hovertemplate:name+' → (%{x:.3f}, %{y:.3f})<extra></extra>'};
+}
+function seg3(a,b,color,name,dash,w){
+  return {x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],mode:'lines',type:'scatter3d',name:name,
+          line:{color:color,width:w||6,dash:dash||'solid'},
+          hovertemplate:name+' → (%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'};
+}
+function tip3(b,color,name,sym){
+  return {x:[b[0]],y:[b[1]],z:[b[2]],mode:'markers+text',type:'scatter3d',showlegend:false,
+          marker:{size:4.5,color:color,symbol:sym||'circle'},
+          text:['<b>'+name+'</b>'],textposition:'top center',
+          textfont:{color:color,size:12,family:'JetBrains Mono'},
+          hovertemplate:name+' = (%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'};
+}
+function path3(pts,color,name,dash,w){
+  return {x:pts.map(function(p){return p[0];}),y:pts.map(function(p){return p[1];}),
+          z:pts.map(function(p){return p[2];}),mode:'lines',type:'scatter3d',name:name,
+          showlegend:false,hoverinfo:'skip',line:{color:color,width:w||3,dash:dash||'solid'}};
+}
+
+/* Um eixo de coordenada aqui e uma OBSERVACAO, nao uma variavel. Nomear
+   "obs 1" em vez de "x" e metade da leitura desta figura. */
+function axis2(range){
+  return {range:range,zeroline:true,zerolinecolor:'rgba(31,40,83,.32)',zerolinewidth:1.3,
+          gridcolor:'rgba(31,40,83,.07)',showline:false,ticks:'outside',ticklen:3,
+          tickfont:{family:'JetBrains Mono',size:10,color:C.muted},
+          title:{font:{family:'Barlow Condensed',size:12,color:C.muted}}};
+}
+
+/* ========================= estado ========================= */
+var S2={int:false,dec:false};
+var S3={int:true,x2:false,dec:false};
+
+function read2(){
+  return {y:[+el('i2-y0').value||0,+el('i2-y1').value||0],
+          a:[+el('i2-a0').value||0,+el('i2-a1').value||0]};
+}
+function read3(){
+  return {y:[+el('i3-y0').value||0,+el('i3-y1').value||0,+el('i3-y2').value||0],
+          a:[+el('i3-a0').value||0,+el('i3-a1').value||0,+el('i3-a2').value||0],
+          b:[+el('i3-b0').value||0,+el('i3-b1').value||0,+el('i3-b2').value||0]};
+}
+function cols2(d){
+  var cols=[],names=[];
+  if(S2.int){ cols.push([1,1]); names.push('1'); }
+  cols.push(d.a); names.push('x₁');
+  return {cols:cols,names:names};
+}
+function cols3(d){
+  var cols=[],names=[];
+  if(S3.int){ cols.push([1,1,1]); names.push('1'); }
+  cols.push(d.a); names.push('x₁');
+  if(S3.x2){ cols.push(d.b); names.push('x₂'); }
+  return {cols:cols,names:names};
+}
+
+/* ========================= render 2D ========================= */
+function render2(){
+  var d=read2(), cn=cols2(d), M=fitModel(d.y,cn.cols,cn.names);
+  el('h2-int').className='vi'+(S2.int?'':' col-off');
+  el('c2-i0').className='one'+(S2.int?'':' off');
+  el('c2-i1').className='one'+(S2.int?'':' off');
+
+  syncDecomp(el('k2-dec'),M,S2);
+  var pts=[d.y,d.a]; if(S2.int) pts.push([1,1]);
+  if(!M.singular) pts.push(M.yhat);
+  var W=squareWindow(pts), L=W.span;
+  var traces=[], anns=[];
+
+  /* subespaco: reta pela origem quando posto 1; o plano todo quando posto 2 */
+  if(M.rank===1 && M.basis.length===1){
+    var u=M.basis[0];
+    traces.push({x:[-u[0]*L*2,u[0]*L*2],y:[-u[1]*L*2,u[1]*L*2],mode:'lines',type:'scatter',
+      name:'espaço das colunas',line:{color:C.cinza,width:1.6,dash:'dash'},hoverinfo:'skip'});
+  }
+
+  /* colunas */
+  for(var j=0;j<cn.cols.length;j++){
+    var cc=cn.cols[j], colr=(cn.names[j]==='1')?C.muted:C.dourado;
+    traces.push(seg2([0,0],cc,colr,cn.names[j],'solid',2));
+    anns.push(ann2([0,0],cc,colr,2));
+    anns.push(lbl2(cc,cn.names[j],colr,cc));
+  }
+  /* y */
+  traces.push(seg2([0,0],d.y,C.azul,'y','solid',3.2));
+  anns.push(ann2([0,0],d.y,C.azul,3.2));
+  anns.push(lbl2(d.y,'y',C.azul,d.y));
+
+  var reading='';
+  if(!M.singular){
+    traces.push(seg2([0,0],M.yhat,C.verde,'ŷ','solid',3.2));
+    anns.push(ann2([0,0],M.yhat,C.verde,3.2));
+    anns.push(lbl2(M.yhat,'ŷ',C.verde,M.yhat));
+    if(M.normE>1e-9){
+      traces.push(seg2(M.yhat,d.y,C.laranja,'e = y − ŷ','dot',2.6));
+      anns.push(ann2(M.yhat,d.y,C.laranja,2.6));
+      var inDir = M.normYhat>1e-9 ? scale(M.yhat,-1/M.normYhat) : M.basis[0];
+      var pDir  = scale(M.resid,1/M.normE);
+      var ra=rightAngle(M.yhat,inDir,pDir,W.span*0.035);
+      traces.push({x:ra.map(function(p){return p[0];}),y:ra.map(function(p){return p[1];}),
+        mode:'lines',type:'scatter',showlegend:false,hoverinfo:'skip',
+        line:{color:C.laranja,width:1.4}});
+    }
+    if(S2.dec && M.p>1){
+      var acc=[0,0];
+      for(var q=0;q<M.p;q++){
+        var step=scale(cn.cols[q],M.beta[q]), nxt=add(acc,step);
+        traces.push(seg2(acc,nxt,C.azulcl,'β̂'+(q+1)+'·'+cn.names[q],'dashdot',2));
+        acc=nxt;
+      }
+    }
+  }
+
+  /* Os dois eixos recebem a MESMA janela quadrada; com scaleanchor o Plotly
+     alarga o eixo de maior dimensao em pixels para manter 1:1, entao a janela
+     pedida e a do eixo apertado. */
+  var ax=axis2(W.x); ax.title.text='componente da obs 1';
+  var ay=axis2(W.y); ay.title.text='componente da obs 2';
+  ay.scaleanchor='x'; ay.scaleratio=1;
+
+  Plotly.react('g2-obs',traces,{
+    margin:{l:52,r:14,t:8,b:64},paper_bgcolor:'#fff',plot_bgcolor:'#fff',
+    dragmode:'pan',xaxis:ax,yaxis:ay,annotations:anns,
+    showlegend:true,legend:{orientation:'h',y:-0.17,x:0,font:{size:11}},
+    hoverlabel:{font:{family:'JetBrains Mono',size:11}}
+  },CFG);
+
+  /* ---- espaco das variaveis ---- */
+  var vt=[];
+  vt.push({x:d.a,y:d.y,mode:'markers',type:'scatter',name:'observações',
+    marker:{size:10,color:C.azul},hovertemplate:'x₁=%{x:.2f} · y=%{y:.2f}<extra></extra>'});
+  if(!M.singular){
+    var b0=S2.int?M.beta[0]:0, b1=S2.int?M.beta[1]:M.beta[0];
+    var xs=[Math.min(0,Math.min(d.a[0],d.a[1]))-1, Math.max(0,Math.max(d.a[0],d.a[1]))+1];
+    vt.push({x:xs,y:xs.map(function(v){return b0+b1*v;}),mode:'lines',type:'scatter',
+      name:'ŷ = '+(S2.int?'β̂₀ + ':'')+'β̂₁x₁',line:{color:C.verde,width:2.4},hoverinfo:'skip'});
+    for(var r=0;r<2;r++) vt.push({x:[d.a[r],d.a[r]],y:[M.yhat[r],d.y[r]],mode:'lines',type:'scatter',
+      showlegend:r===0,name:'resíduo',line:{color:C.laranja,width:2,dash:'dot'},hoverinfo:'skip'});
+  }
+  Plotly.react('g2-var',vt,{
+    margin:{l:52,r:14,t:8,b:64},paper_bgcolor:'#fff',plot_bgcolor:'#fff',dragmode:'pan',
+    xaxis:Object.assign(axis2(undefined),{title:{text:'x₁',font:{family:'Barlow Condensed',size:12,color:C.muted}}}),
+    yaxis:Object.assign(axis2(undefined),{title:{text:'y',font:{family:'Barlow Condensed',size:12,color:C.muted}}}),
+    showlegend:true,legend:{orientation:'h',y:-0.17,x:0,font:{size:11}}
+  },CFG);
+
+  /* ---- textos derivados ---- */
+  var sub = M.p+' coluna'+(M.p>1?'s':'')+' — '+cn.names.join(', ')+' · n = 2 observações · posto '+M.rank+
+            ' → o espaço das colunas é '+(M.rank===0?'só a origem':(M.rank===1?'uma reta pela origem':'o plano ℝ² inteiro'));
+  el('h2-sub').textContent=sub;
+  el('h2-src').textContent='y = '+vecStr(d.y)+' · x₁ = '+vecStr(d.a)+(S2.int?' · 1 = (1, 1)':'')+
+    ' · eixos em escala 1:1';
+  el('h2-sub2').textContent = S2.int ? 'Reta com intercepto — dois pontos, dois parâmetros'
+                                     : 'Reta forçada pela origem — o intercepto está desligado';
+
+  if(M.singular){
+    reading='As colunas não têm posto cheio, então XᵀX não tem inversa e não existe β̂ único. '+
+            'Geometricamente: o espaço das colunas colapsou, e mais de uma combinação (ou nenhuma) chega ao mesmo ponto.';
+  } else {
+    reading='ŷ = '+vecStr(M.yhat)+' é o ponto do espaço das colunas mais próximo de y. '+
+      'O resíduo mede '+fc(M.normE)+', ou '+(M.normY>1e-12?f(100*M.normE/M.normY,1)+'% do comprimento de y':'—')+
+      '. A maior projeção de e sobre uma coluna é '+f(M.maxOrth,9)+', isto é, zero a menos de arredondamento: '+
+      'é essa ortogonalidade que define ŷ. '+
+      'Pitágoras fecha: ‖y‖² = '+fc(M.normY*M.normY)+' = '+fc(M.normYhat*M.normYhat)+' + '+fc(M.normE*M.normE)+'.';
+  }
+  el('r2-obs').textContent=reading;
+  el('r2-var').textContent = M.singular ? 'Sem ajuste definido.' :
+    ('A mesma reta, vista no espaço das variáveis: os segmentos pontilhados são as mesmas '+
+     'coordenadas do vetor e. Somar os quadrados deles é ‖e‖² = '+fc(M.normE*M.normE)+
+     ', que é exatamente o que os mínimos quadrados minimizam.');
+
+  el('kpi2').innerHTML=kpis(M,cn);
+  el('alg2').innerHTML=algebra(M,cn);
+  el('aln2').innerHTML=algNote(M);
+  flag(el('f2'),M);
+}
+
+/* ========================= render 3D ========================= */
+function render3(){
+  var d=read3(), cn=cols3(d), M=fitModel(d.y,cn.cols,cn.names);
+  el('h3-int').className='vi'+(S3.int?'':' col-off');
+  el('h3-x2').className='vx2'+(S3.x2?'':' col-off');
+  ['i3-b0','i3-b1','i3-b2'].forEach(function(id){ el(id).parentNode.className=S3.x2?'':'col-off'; });
+  ['c3-i0','c3-i1','c3-i2'].forEach(function(id){ el(id).className='one'+(S3.int?'':' off'); });
+
+  syncDecomp(el('k3-dec'),M,S3);
+  var all=[d.y,d.a]; if(S3.x2) all.push(d.b); if(S3.int) all.push([1,1,1]);
+  if(!M.singular) all.push(M.yhat);
+  var L=maxCoord(all), CW=cubeWindow(all);
+  var traces=[];
+
+  /* subespaco */
+  if(M.basis.length===2){
+    var q=planeQuad(M.basis,extentAlong(all,M.basis[0])*1.22,extentAlong(all,M.basis[1])*1.22);
+    traces.push({type:'mesh3d',x:q.x,y:q.y,z:q.z,i:q.i,j:q.j,k:q.k,
+      color:C.verde,opacity:0.17,flatshading:true,hoverinfo:'skip',showlegend:false,name:'espaço das colunas'});
+    var edge=[[q.x[0],q.y[0],q.z[0]],[q.x[1],q.y[1],q.z[1]],[q.x[2],q.y[2],q.z[2]],
+              [q.x[3],q.y[3],q.z[3]],[q.x[0],q.y[0],q.z[0]]];
+    traces.push(path3(edge,C.verde,'plano','solid',2));
+  } else if(M.basis.length===1){
+    var u=M.basis[0];
+    traces.push(path3([scale(u,-extentAlong(all,u)*1.3),scale(u,extentAlong(all,u)*1.3)],C.cinza,'reta','dash',3));
+  }
+
+  for(var j=0;j<cn.cols.length;j++){
+    var cc=cn.cols[j];
+    var colr=(cn.names[j]==='1')?C.muted:(cn.names[j]==='x₁'?C.dourado:C.azulcl);
+    traces.push(seg3([0,0,0],cc,colr,cn.names[j],'solid',5));
+    traces.push(tip3(cc,colr,cn.names[j]));
+  }
+  traces.push(seg3([0,0,0],d.y,C.azul,'y','solid',7));
+  traces.push(tip3(d.y,C.azul,'y'));
+
+  if(!M.singular){
+    traces.push(seg3([0,0,0],M.yhat,C.verde,'ŷ','solid',7));
+    traces.push(tip3(M.yhat,C.verde,'ŷ','diamond'));
+    if(M.normE>1e-9){
+      traces.push(seg3(M.yhat,d.y,C.laranja,'e = y − ŷ','dot',5));
+      var inDir=M.normYhat>1e-9?scale(M.yhat,-1/M.normYhat):M.basis[0];
+      var pDir=scale(M.resid,1/M.normE);
+      traces.push(path3(rightAngle(M.yhat,inDir,pDir,L*0.09),C.laranja,'⊥','solid',2.5));
+    }
+    if(S3.dec && M.p>1){
+      var acc=[0,0,0];
+      for(var q2=0;q2<M.p;q2++){
+        var nxt=add(acc,scale(cn.cols[q2],M.beta[q2]));
+        traces.push(seg3(acc,nxt,C.amarelo,'β̂·'+cn.names[q2],'dashdot',4));
+        acc=nxt;
+      }
+    }
+  }
+
+  Plotly.react('g3-obs',traces,{
+    margin:{l:0,r:0,t:0,b:0},paper_bgcolor:'#fff',
+    scene:{aspectmode:'cube',
+      xaxis:sceneAxis('obs 1',CW.ranges[0]),yaxis:sceneAxis('obs 2',CW.ranges[1]),
+      zaxis:sceneAxis('obs 3',CW.ranges[2]),
+      camera:{eye:{x:1.5,y:1.5,z:1.0}}},
+    showlegend:true,legend:{orientation:'h',y:0,x:0,font:{size:11}},
+    hoverlabel:{font:{family:'JetBrains Mono',size:11}}
+  },CFG);
+
+  /* ---- espaco das variaveis: 2D quando ha um regressor, 3D quando ha dois ---- */
+  var vt=[],vlay;
+  if(S3.x2){
+    vt.push({type:'scatter3d',mode:'markers',x:d.a,y:d.b,z:d.y,name:'observações',
+      marker:{size:5,color:C.azul},hovertemplate:'x₁=%{x:.2f} · x₂=%{y:.2f} · y=%{z:.2f}<extra></extra>'});
+    if(!M.singular){
+      var g=planeGrid(d,M,cn);
+      if(g) vt.push({type:'mesh3d',x:g.x,y:g.y,z:g.z,i:g.i,j:g.j,k:g.k,color:C.verde,
+        opacity:0.22,flatshading:true,hoverinfo:'skip',showlegend:false});
+      for(var r=0;r<3;r++) vt.push({type:'scatter3d',mode:'lines',x:[d.a[r],d.a[r]],y:[d.b[r],d.b[r]],
+        z:[M.yhat[r],d.y[r]],name:'resíduo',showlegend:r===0,
+        line:{color:C.laranja,width:4,dash:'dot'},hoverinfo:'skip'});
+    }
+    vlay={margin:{l:0,r:0,t:0,b:0},paper_bgcolor:'#fff',
+      scene:{aspectmode:'cube',xaxis:sceneAxis('x₁'),yaxis:sceneAxis('x₂'),zaxis:sceneAxis('y'),
+      camera:{eye:{x:1.6,y:1.5,z:0.9}}},
+      showlegend:true,legend:{orientation:'h',y:0,x:0,font:{size:11}}};
+  } else {
+    vt.push({x:d.a,y:d.y,mode:'markers',type:'scatter',name:'observações',
+      marker:{size:10,color:C.azul},hovertemplate:'x₁=%{x:.2f} · y=%{y:.2f}<extra></extra>'});
+    if(!M.singular){
+      var b0=S3.int?M.beta[0]:0, b1=S3.int?M.beta[1]:M.beta[0];
+      var lo=Math.min(0,Math.min.apply(null,d.a))-1, hi=Math.max(0,Math.max.apply(null,d.a))+1;
+      vt.push({x:[lo,hi],y:[lo,hi].map(function(v){return b0+b1*v;}),mode:'lines',type:'scatter',
+        name:'ŷ = '+(S3.int?'β̂₀ + ':'')+'β̂₁x₁',line:{color:C.verde,width:2.4},hoverinfo:'skip'});
+      for(var r2=0;r2<3;r2++) vt.push({x:[d.a[r2],d.a[r2]],y:[M.yhat[r2],d.y[r2]],mode:'lines',
+        type:'scatter',showlegend:r2===0,name:'resíduo',line:{color:C.laranja,width:2,dash:'dot'},hoverinfo:'skip'});
+    }
+    vlay={margin:{l:52,r:14,t:8,b:64},paper_bgcolor:'#fff',plot_bgcolor:'#fff',dragmode:'pan',
+      xaxis:Object.assign(axis2(undefined),{title:{text:'x₁',font:{family:'Barlow Condensed',size:12,color:C.muted}}}),
+      yaxis:Object.assign(axis2(undefined),{title:{text:'y',font:{family:'Barlow Condensed',size:12,color:C.muted}}}),
+      showlegend:true,legend:{orientation:'h',y:-0.17,x:0,font:{size:11}}};
+  }
+  Plotly.react('g3-var',vt,vlay,CFG);
+
+  /* ---- textos derivados ---- */
+  var spanTxt = M.rank===0?'só a origem':(M.rank===1?'uma reta pela origem':
+                (M.rank===2?'um plano pela origem':'o ℝ³ inteiro'));
+  el('h3-sub').textContent=M.p+' coluna'+(M.p>1?'s':'')+' — '+cn.names.join(', ')+
+    ' · n = 3 observações · posto '+M.rank+' → o espaço das colunas é '+spanTxt;
+  el('h3-src').textContent='y = '+vecStr(d.y)+' · x₁ = '+vecStr(d.a)+(S3.x2?' · x₂ = '+vecStr(d.b):'')+
+    (S3.int?' · 1 = (1, 1, 1)':'')+' · eixos em escala 1:1';
+  el('h3-sub2').textContent = S3.x2 ? 'Três pontos e o plano ajustado — o espaço das variáveis tem uma dimensão por regressor'
+                                    : 'Três pontos e a reta ajustada';
+  el('h3-src2').textContent = S3.x2 ? 'Eixos: x₁, x₂ e y · não confundir com a figura ao lado, cujos eixos são observações'
+                                    : 'Um ponto por observação · os segmentos pontilhados são as coordenadas de e';
+
+  var reading;
+  if(M.singular){
+    reading='As colunas não têm posto cheio (posto '+M.rank+' para '+M.p+' colunas): XᵀX é singular e β̂ não é único. '+
+            'Duas colunas exatamente paralelas, ou uma coluna nula, produzem isso.';
+  } else {
+    var extra='';
+    if(M.p>1 && M.df===0) extra=' Com '+M.p+' colunas e 3 observações o espaço das colunas é o ℝ³ inteiro, '+
+      'então ŷ = y por construção: o ajuste exato não é evidência de nada.';
+    if(S3.x2 && M.p>=2){
+      var angx=angleDeg(d.a,d.b);
+      if(angx!==null && Math.min(angx,180-angx)<12) extra+=' O ângulo entre x₁ e x₂ é '+f(Math.min(angx,180-angx),1)+
+        '°: as duas colunas apontam quase para o mesmo lado, e é por isso que β̂ fica grande e instável enquanto ŷ não.';
+    }
+    if(S3.dec && M.p>1){
+      var maiorParcela=0;
+      for(var pj=0;pj<M.p;pj++) maiorParcela=Math.max(maiorParcela,norm(scale(cn.cols[pj],M.beta[pj])));
+      if(maiorParcela>2*M.normYhat) extra+=' Com a decomposição ligada, a maior parcela β̂ⱼxⱼ mede '+
+        fc(maiorParcela,1)+' contra '+fc(M.normYhat,2)+' de ŷ ('+f(maiorParcela/M.normYhat,0)+'×): '+
+        'as setas saem do cubo e voltam, que é a forma geométrica de os coeficientes se cancelarem.';
+    }
+    reading='ŷ = '+vecStr(M.yhat)+'; o resíduo mede '+fc(M.normE)+
+      (M.normY>1e-12?(' ('+f(100*M.normE/M.normY,1)+'% do comprimento de y)'):'')+
+      ' e é ortogonal a todas as colunas — a maior projeção sobre uma delas é '+f(M.maxOrth,9)+'.'+extra;
+  }
+  el('r3-obs').textContent=reading;
+  el('r3-var').textContent = M.singular ? 'Sem ajuste definido.' :
+    ('Os mesmos resíduos, agora como distâncias verticais até '+(S3.x2?'o plano':'a reta')+
+     '. A soma dos quadrados é '+fc(M.normE*M.normE)+', e nenhum outro '+(S3.x2?'plano':'reta')+
+     ' dessa família produz um valor menor.');
+
+  el('kpi3').innerHTML=kpis(M,cn);
+  el('alg3').innerHTML=algebra(M,cn);
+  el('aln3').innerHTML=algNote(M);
+  flag(el('f3'),M);
+}
+
+function sceneAxis(t,range){
+  return {title:{text:t,font:{family:'Barlow Condensed',size:12,color:C.muted}},
+          range:range,
+          gridcolor:'rgba(31,40,83,.12)',zerolinecolor:'rgba(31,40,83,.35)',
+          backgroundcolor:'#FCFCFD',showbackground:true,
+          tickfont:{family:'JetBrains Mono',size:9,color:C.muted}};
+}
+
+/* Plano ajustado no espaco das variaveis: y = b0 + b1*x1 + b2*x2 sobre o
+   retangulo que contem os tres pontos. So existe quando x2 esta em uso. */
+function planeGrid(d,M,cn){
+  if(M.singular) return null;
+  var ix=cn.names.indexOf('x₁'), iz=cn.names.indexOf('x₂');
+  if(ix<0||iz<0) return null;
+  var b0=cn.names.indexOf('1')>=0?M.beta[cn.names.indexOf('1')]:0;
+  var b1=M.beta[ix], b2=M.beta[iz];
+  var x0=Math.min.apply(null,d.a)-0.6, x1=Math.max.apply(null,d.a)+0.6;
+  var z0=Math.min.apply(null,d.b)-0.6, z1=Math.max.apply(null,d.b)+0.6;
+  var X=[x0,x1,x1,x0], Z=[z0,z0,z1,z1];
+  return {x:X,y:Z,z:X.map(function(v,i){return b0+b1*v+b2*Z[i];}),i:[0,0],j:[1,2],k:[2,3]};
+}
+
+/* ========================= paineis compartilhados ========================= */
+function kpis(M,cn){
+  var h='';
+  if(M.singular){
+    h+=kpi('XᵀX','singular','posto '+M.rank+' para '+M.p+' colunas',true);
+    h+=kpi('det(XᵀX)',f(M.det,6),'zero a menos de arredondamento',true);
+    h+=kpi('β̂','não existe','infinitas soluções ou nenhuma',true);
+    return h;
+  }
+  for(var j=0;j<M.p;j++){
+    var vf=M.XtXinv[j][j];
+    h+=kpi('β̂ — '+cn.names[j], f(M.beta[j],4),
+      'fator de variância (XᵀX)⁻¹['+(j+1)+','+(j+1)+'] = '+f(vf,4));
+  }
+  h+=kpi('cos²θ (R² não centrado)', M.cos2===null?'—':f(M.cos2,4),
+    M.angle===null?'y é o vetor nulo':'θ = '+f(M.angle,1)+'° entre y e o espaço das colunas');
+  h+=kpi('R² centrado', M.r2c===null?'n/d':f(M.r2c,4),
+    M.hasConst?'1 − SQR/SQT — só comparável porque há intercepto':'sem intercepto no modelo: não é comparável');
+  h+=kpi('‖e‖', f(M.normE,4), '‖y‖ = '+f(M.normY,4)+' · ‖ŷ‖ = '+f(M.normYhat,4));
+  h+=kpi('graus de liberdade', String(M.df),
+    M.df>0? ('s² = ‖e‖²/(n−p) = '+f(M.s2,4)) : 'n = p: resíduo zero por construção, s² indefinido', M.df===0);
+  h+=kpi('det(XᵀX)', f(M.det,4), M.p>1?'quanto mais perto de zero, pior condicionado':'= ‖x₁‖² quando há uma coluna só');
+  if(M.p>1){
+    var worst=null,wtxt='';
+    for(var a=0;a<M.p;a++) for(var b=a+1;b<M.p;b++){
+      var g=angleDeg(M.cols[a],M.cols[b]);
+      if(g===null) continue;
+      g=Math.min(g,180-g);
+      if(worst===null||g<worst){ worst=g; wtxt=cn.names[a]+' vs '+cn.names[b]; }
+    }
+    h+=kpi('menor ângulo entre colunas', worst===null?'—':f(worst,1)+'°', wtxt+' · 90° = ortogonais',
+      worst!==null&&worst<12);
+  }
+  h+=kpi('máx |xⱼᵀe|', f(M.maxOrth,9), 'a ortogonalidade é exata, não aproximada');
+  return h;
+}
+
+function algebra(M,cn){
+  var h='';
+  h+=block('X =',matHTML(M.X,2));
+  h+=block('XᵀX =',matHTML(M.XtX,3));
+  h+=block('Xᵀy =',colHTML(M.Xty,3));
+  if(M.singular){ h+=block('det = ',f(M.det,6)+' → sem inversa'); return h; }
+  h+=block('(XᵀX)⁻¹ =',matHTML(M.XtXinv,4));
+  h+=block('β̂ = (XᵀX)⁻¹Xᵀy =',colHTML(M.beta,4));
+  h+=block('ŷ = Xβ̂ =',colHTML(M.yhat,4));
+  h+=block('e = y − ŷ =',colHTML(M.resid,4));
+  h+=block('H = X(XᵀX)⁻¹Xᵀ =',matHTML(M.H,3));
+  return h;
+}
+
+function algNote(M){
+  if(M.singular) return 'Sem inversa não há β̂: a conta para exatamente em <code class="k">det(XᵀX) = '+
+    f(M.det,6)+'</code>. O que falha não é o algoritmo, é a pergunta — mais de um vetor de coeficientes '+
+    'produz o mesmo ŷ, então nenhum deles é "o" estimador.';
+  var tr=0; for(var i=0;i<M.n;i++) tr+=M.H[i][i];
+  return 'A matriz <b>H</b> é o projetor: <code class="k">Hy = ŷ</code> para qualquer y, '+
+    '<code class="k">H² = H</code> (projetar de novo não muda nada) e o traço dela é '+f(tr,4)+
+    ', que é exatamente <b>p = '+M.p+'</b> — o número de dimensões que o modelo gasta. '+
+    'As equações normais <code class="k">Xᵀ(y − Xβ̂) = 0</code> são a mesma frase que '+
+    '<b>o resíduo é ortogonal a todas as colunas</b>; aqui a maior violação é '+f(M.maxOrth,9)+'.';
+}
+
+function flag(node,M){
+  if(M.singular){
+    node.className='flag';
+    node.textContent='XᵀX é singular (posto '+M.rank+' para '+M.p+' colunas). As figuras mostram os vetores '+
+      'que você digitou, mas não há projeção única para desenhar.';
+  } else if(M.df===0){
+    node.className='flag ok';
+    node.textContent='n = p: o espaço das colunas é todo o espaço, então ŷ = y e o resíduo é exatamente zero. '+
+      'R² = 1 aqui não diz nada sobre o modelo.';
+  } else node.className='hidden';
+}
+
+/* ========================= eventos ========================= */
+var P2={
+  base:{y:[3,1],a:[1,3],int:false},
+  orto:{y:[3,-2.6],a:[2,2],int:false},
+  alin:{y:[3,2.8],a:[2,2],int:false},
+  sat: {y:[3,1],a:[2,5],int:true},
+  sing:{y:[3,1],a:[0,0],int:false}
+};
+var P3={
+  simples:{y:[1,3,2],a:[1,2,4],b:[2,1,1],int:true, x2:false},
+  dois:   {y:[1,3,2],a:[1,2,4],b:[2,1,1],int:false,x2:true},
+  colin:  {y:[1,3,2],a:[1,2,4],b:[1.01,2.01,4.03],int:false,x2:true},
+  orto:   {y:[1,3,2],a:[1,1,0],b:[1,-1,0],int:false,x2:true},
+  sat:    {y:[1,3,2],a:[1,2,4],b:[2,1,1],int:true, x2:true}
+};
+function apply2(p){
+  el('i2-y0').value=p.y[0]; el('i2-y1').value=p.y[1];
+  el('i2-a0').value=p.a[0]; el('i2-a1').value=p.a[1];
+  S2.int=p.int; el('k2-int').checked=p.int; render2();
+}
+function apply3(p){
+  el('i3-y0').value=p.y[0]; el('i3-y1').value=p.y[1]; el('i3-y2').value=p.y[2];
+  el('i3-a0').value=p.a[0]; el('i3-a1').value=p.a[1]; el('i3-a2').value=p.a[2];
+  el('i3-b0').value=p.b[0]; el('i3-b1').value=p.b[1]; el('i3-b2').value=p.b[2];
+  S3.int=p.int; S3.x2=p.x2; el('k3-int').checked=p.int; el('k3-x2').checked=p.x2; render3();
+}
+
+function wire(){
+  ['i2-y0','i2-y1','i2-a0','i2-a1'].forEach(function(id){ el(id).addEventListener('input',render2); });
+  ['i3-y0','i3-y1','i3-y2','i3-a0','i3-a1','i3-a2','i3-b0','i3-b1','i3-b2']
+    .forEach(function(id){ el(id).addEventListener('input',render3); });
+  el('k2-int').addEventListener('change',function(){ S2.int=this.checked; render2(); });
+  el('k2-dec').addEventListener('change',function(){ S2.dec=this.checked; render2(); });
+  el('k3-int').addEventListener('change',function(){ S3.int=this.checked; render3(); });
+  el('k3-x2').addEventListener('change',function(){ S3.x2=this.checked; render3(); });
+  el('k3-dec').addEventListener('change',function(){ S3.dec=this.checked; render3(); });
+  Array.prototype.slice.call(el('p2-presets').querySelectorAll('.rb')).forEach(function(b){
+    b.addEventListener('click',function(){ apply2(P2[b.getAttribute('data-p')]); });
+  });
+  Array.prototype.slice.call(el('p3-presets').querySelectorAll('.rb')).forEach(function(b){
+    b.addEventListener('click',function(){ apply3(P3[b.getAttribute('data-p')]); });
+  });
+  /* Um div escondido tem largura zero, entao o Plotly desenha com largura zero e
+     nao se corrige sozinho ao aparecer: a aba re-renderiza ao ser ativada. */
+  Array.prototype.slice.call(document.querySelectorAll('.tab-btn')).forEach(function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.slice.call(document.querySelectorAll('.tab-btn')).forEach(function(o){ o.classList.remove('active'); });
+      Array.prototype.slice.call(document.querySelectorAll('.panel')).forEach(function(o){ o.classList.remove('active'); });
+      b.classList.add('active');
+      el(b.getAttribute('data-tab')).classList.add('active');
+      if(b.getAttribute('data-tab')==='t2') render2(); else render3();
+    });
+  });
+}
+
+if(typeof document!=='undefined' && typeof Plotly!=='undefined'){
+  wire(); render2(); render3();
+}
+</script>
+</body>
+</html>

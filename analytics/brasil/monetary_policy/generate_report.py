@@ -3,14 +3,14 @@ Gerador do Panorama de Politica Monetaria em HTML.
 
 Abas de dado, e a fonte de cada uma:
 
-  Motor          modelo agregado rodando NO NAVEGADOR: `_load_motor()` manda o historico
-                 e `_motor_cfg()` manda parametros + condicoes iniciais + defaults dos
-                 condicionantes, e o JS porta `modelo_agregado.simular()`. E a unica aba
-                 em que o usuario move input e ve o modelo responder
-  Condicoes      condicoes_copom.montar(): o conjunto de informacao da ultima reuniao
-                 contra o de hoje, variavel a variavel, mais a agenda ate a proxima. O
+  Condicoes      condicoes_copom.montar(): uma linha por variavel, uma coluna por
+                 reuniao -- as 8 ultimas ja decididas mais a proxima --, com o que o
+                 Comite tinha na mesa em cada uma, mais a agenda ate a proxima. O
                  corte e um DATETIME (o comunicado sai ~18:30 do dia 2) e a data de
-                 divulgacao de cada serie mensal vem do domain/release_calendar/
+                 divulgacao de cada serie mensal vem do domain/release_calendar/.
+                 A primeira linha e a projecao do proprio BC no horizonte relevante,
+                 do comunicado -- a mesma fonte da aba Projecoes, so que lida reuniao
+                 a reuniao
   Projecoes      pm_copom_projecoes x pm_copom_reuniao: a projecao do BC para o horizonte
                  relevante contra o passo de Selic da MESMA reuniao -- o que o Comite projeta
                  contra o que ele faz. Uma linha por reuniao, nao uma grade de calendario
@@ -18,12 +18,11 @@ Abas de dado, e a fonte de cada uma:
                  de validacao contra a Tabela 1 do boxe
 
 As abas Cenarios, Decomposicao, Taxa Neutra e Hiato do Produto foram REMOVIDAS em
-2026-08-25 a pedido do usuario, com os loaders delas. Os artefatos que alimentavam as
-quatro continuam sendo gravados por `modelo_agregado.rodar()` em `data/` -- o motor
-ainda le `modelo_cenario_focus__eq5.csv` (curva de Selic da Focus) e o teste JS confere
-o porte contra os 12 CSVs de cenario.
+2026-08-25 e a aba Modelo BC - Agregado -- o motor portado para JS -- em 2026-09-22, as
+cinco a pedido do usuario, com os loaders delas. Os artefatos continuam sendo gravados
+por `modelo_agregado.rodar()` em `data/`, e o Apendice segue lendo os dele: parametros,
+validacao contra a Tabela 1 do boxe e o IRF.
 
-O que sobrou le os artefatos que `modelo_agregado.rodar()` grava em `data/`.
 Rodar o modelo NAO faz parte da geracao do relatorio de proposito: a estimacao leva
 minutos e depende de MySQL, do IPEADATA e do anexo do RPM, enquanto gerar o HTML tem
 de ser rapido e reproduzivel. Pipeline completo:
@@ -40,8 +39,8 @@ e /*Y_AUTOFIT_JS*/. Output autocontido.
 
 1. Escreva o `_load_<aba>()` aqui devolvendo `{chave: {"dates": [...], "values": [...]}}`
    -- o shape que `ser(grupo, chave)` espera no template. Chaves compostas usam `__`.
-2. Ligue no loop de `run()`. **Cada loader tem o seu try/except**: artefato faltando
-   degrada so a aba dele em vez de derrubar o relatorio (convencao do projeto).
+2. Ligue em `run()` com try/except PROPRIO: artefato faltando degrada so a aba dele em
+   vez de derrubar o relatorio (convencao do projeto).
 3. Preencha o `render<Aba>()` em report.html e apague o `.stub-note` do painel.
 """
 
@@ -202,14 +201,18 @@ def _load_projecoes() -> dict:
     ultimo_ano_meta = max(meta_ano) if meta_ano else None
 
     reun = reun.sort_values("nro_reuniao").reset_index(drop=True)
-    # passo da reuniao SEGUINTE, para o seletor de defasagem da aba
-    reun["bps_prox"] = reun["variacao_bps"].shift(-1)
+    # `nro_prox` e o numero da reuniao SEGUINTE. Ele nao alimenta nada na tela; existe para
+    # o teste poder afirmar que a linha n de fato antecede a n+1 na serie ordenada.
     reun["nro_prox"] = reun["nro_reuniao"].shift(-1)
     por_reuniao = reun.set_index("nro_reuniao")
 
+    # So o cenario de juros esperado desde 2026-09-23, quando o seletor de cenario saiu da
+    # aba: o de juros constantes e o mais proximo de uma funcao de reacao e e justamente o
+    # que o BC parou de publicar -- a serie dele termina em jul/2024. Carregar dado que
+    # nenhum controle le e divida; voltar a carregar e uma palavra nesta tupla.
     cenarios: dict[str, list] = {}
     sem_decisao: list[int] = []
-    for cen in ("juros_esperado", "juros_constante"):
+    for cen in ("juros_esperado",):
         linhas = []
         sub = m[m["cenario"] == cen]
         # comunicado ganha do relatorio na mesma reuniao: sai no dia da decisao
@@ -234,7 +237,6 @@ def _load_projecoes() -> dict:
                 "meta_estendida": int(ultimo_ano_meta is not None and ano > ultimo_ano_meta),
                 "doc": r["documento"],
                 "bps": int(d["variacao_bps"]),
-                "bps_prox": None if pd.isna(d["bps_prox"]) else int(d["bps_prox"]),
                 "nro_prox": None if pd.isna(d["nro_prox"]) else int(d["nro_prox"]),
                 "decisao": d["decisao"],
                 "selic_ant": round(float(d["selic_anterior"]), 2),
@@ -263,218 +265,6 @@ def _load_condicoes() -> dict:
     """
     from analytics.brasil.monetary_policy.condicoes_copom import montar
     return montar()
-
-
-# ── aba Modelo BC - Agregado: motor rodando no NAVEGADOR ─────────────────────
-# Diferenca de natureza para a aba Cenarios: la o Python pre-simula uma grade e o
-# navegador escolhe uma trajetoria pronta; aqui o simulador de `modelo_agregado.simular()`
-# esta PORTADO para JS e roda a cada mudanca de input. O que estes loaders enviam nao e
-# resultado, e o que o motor precisa para produzir resultado: parametros, condicoes
-# iniciais lidas em t0 e os caminhos default de cada condicionante.
-#
-# Toda constante daqui tem de casar com `simular()` -- e o teste que fecha isso e
-# tests/test_monetary_policy_js.js, que roda o motor JS com a configuracao equivalente a
-# `cenarios_padrao()` e exige bater com os CSVs que o Python gravou.
-_MOTOR_N_OPCOES = [8, 12, 16, 20, 24]
-_MOTOR_N = 16
-_MOTOR_FOLGA = 40          # = modelo_agregado.FOLGA
-
-
-def _load_motor() -> dict:
-    """Series historicas que os graficos da aba emendam no inicio do cenario."""
-    P = _csv("modelo_painel_full.csv")
-    S = _csv("modelo_estados.csv")
-    out = {
-        "selic": _ser(P["selic"]),
-        "i_e": _ser(P["i_e"]),
-        "pi_IPCA": _ser(P["pi_IPCA"]),
-        "ipca_4t": _ser(P["pi_IPCA"].rolling(4).sum()),
-        "pi_L": _ser(P["pi_L"]),
-        "pi_A": _ser(P["pi_A"]),
-        "pi_e": _ser(P["pi_e"]),
-        "meta": _ser(P["meta"]),
-        "h": _ser(S["h"]),
-        "s_h": _ser(S["s_h"]),
-        "r_hat": _ser(S["r_hat"]),
-        "rr_IS_total": _ser(S["rr_IS_total"]),
-        "rr_TAY_total": _ser(S["rr_TAY_total"]),
-        # juro real ex-ante como na eq. (2.1): diferenca simples, nao Fisher exato
-        "r_real": _ser(P["i_e"] - P["pi_e"]),
-        # condicionantes: o grafico por input da aba do motor plota o historico de cada um
-        # contra o caminho digitado, entao TODO input do MT_SPEC precisa da serie dele aqui
-        "de": _ser(P["de"]),
-        # O card de inflacao importada e o IC-Br, nao o pi* cru. pi* = (variacao do
-        # IC-Br) - meta/4 por construcao (eq. 1.1: os pesos somam 1), entao somar
-        # meta/4 devolve a variacao do indice, exata, sem puxar `comm_icbr` de novo.
-        # Os subindices agro/metal/energia so existem para recuperar os pesos que o
-        # BC nao publica -- o que o modelo le, e o que o usuario digita, e o agregado.
-        "icbr": _ser(P["pi_star"] + P["meta"] / 4.0),
-        "pi_star": _ser(P["pi_star"]),
-        "rp": _ser(P["rp_hat"]),
-        "Zel": _ser(P["Zel"]),
-        "Yla": _ser(P["Yla"]),
-    }
-    return out
-
-
-def _copom_administrados(P: pd.DataFrame, idx: pd.PeriodIndex, t0: pd.Period) -> dict:
-    """Projecao de precos administrados do PROPRIO Copom, trimestralizada.
-
-    O bloco de administrados do BC nao esta implementado aqui, entao pi^A e premissa --
-    mas premissa nao precisa ser inventada: o comunicado do Copom publica a projecao de
-    administrados por ano-calendario, e `pm_copom_projecoes` ja carrega isso (indice
-    `ipca_administrados`). Vira o atalho "Projecao do Copom" no card de pi^A.
-
-    Conversao ano -> trimestre por DIVISAO SIMPLES, nao raiz quarta, porque e assim que o
-    modelo acumula: `ipca_4t` e a SOMA de quatro trimestres. No primeiro ano projetado os
-    trimestres ja observados sao descontados do total e o residuo e dividido pelos que
-    faltam -- se a projecao e para o ano fechado, o que sobra para o 2o semestre nao e
-    metade dela.
-
-    Devolve {} se a tabela nao estiver disponivel: o atalho some, o resto da aba fica.
-    """
-    df = _read_table("pm_copom_projecoes")
-    a = df[(df["documento"] == "comunicado")
-           & (df["indice"] == "ipca_administrados")
-           & (df["cenario"] == "juros_esperado")
-           & (df["periodo_tipo"] == "ano")].copy()
-    if a.empty:
-        return {}
-    a["vintage"] = pd.to_datetime(a["vintage"])
-    a = a[a["vintage"] == a["vintage"].max()]
-    a["ano"] = pd.to_datetime(a["date"]).dt.year
-    anos = {int(r.ano): float(r.value) for r in a.itertuples()}
-    if not anos:
-        return {}
-
-    obs = P["pi_A"][P["pi_A"].index <= t0].dropna()
-    caminho, resto = [], {}
-    for per in idx:
-        ano = per.year
-        alvo = anos.get(ano)
-        if alvo is None:                      # depois do ultimo ano publicado, segura o ultimo
-            ultimo = anos[max(anos)]
-            caminho.append(ultimo / 4.0)
-            continue
-        if ano not in resto:
-            ja = float(obs[obs.index.year == ano].sum())
-            n_falta = sum(1 for p2 in idx if p2.year == ano)
-            resto[ano] = (alvo - ja) / max(n_falta, 1)
-        caminho.append(resto[ano])
-    return {"caminho": [round(v, 6) for v in caminho],
-            "reuniao": int(a["nro_reuniao"].iloc[0]),
-            "vintage": str(a["vintage"].iloc[0].date()),
-            "anos": {str(k): v for k, v in sorted(anos.items())}}
-
-
-def _copom_hr() -> dict:
-    """O horizonte relevante que o PROPRIO Copom declarou no ultimo comunicado.
-
-    Desde a 264a reuniao o regime e `hr_6_trimestres` (Decreto 12.079/2024): o Copom
-    persegue a meta seis trimestres a frente da REUNIAO, nao mais no ano-calendario. E
-    dai que sai a regra de fallback do JS: `idx` comeca em t0+1, o trimestre corrente,
-    que e onde a reuniao acontece -- entao seis trimestres a frente e `idx[6]`. Mandamos
-    a data PUBLICADA e deixamos o JS preferi-la; se as duas divergirem, o painel esta
-    atrasado em relacao a ultima reuniao, e o marcador segue a reuniao, nao a regra.
-
-    Sem filtro de `regime` tres conceitos de horizonte relevante se misturam na mesma
-    serie (ver a nota em `_load_projecoes()`). Devolve {} se a tabela nao existir: o
-    marcador cai na regra dos 6 trimestres e o resto da aba fica de pe.
-    """
-    df = _read_table("pm_copom_projecoes")
-    # `documento` no filtro nao e opcional: a mesma reuniao tem projecao do comunicado E do RPM,
-    # com numeros que podem diferir, e sem isto a linha escolhida depende da ordem do resultado
-    h = df[(df["documento"] == "comunicado")
-           & (df["horizonte_relevante"] == 1)
-           & (df["cenario"] == "juros_esperado")
-           & (df["indice"] == "ipca")
-           & (df["regime"] == "hr_6_trimestres")]
-    if h.empty:
-        return {}
-    r = h[h["nro_reuniao"] == h["nro_reuniao"].max()].iloc[0]
-    return {"date": str(pd.to_datetime(r["date"]).date()),
-            "reuniao": int(r["nro_reuniao"]),
-            "vintage": str(pd.to_datetime(r["vintage"]).date()),
-            "trimestres": int(r["trimestres_a_frente"]),
-            "ipca": round(float(r["value"]), 4)}
-
-
-def _motor_cfg() -> dict:
-    """Parametros, condicoes iniciais em t0 e defaults dos condicionantes.
-
-    Le tudo EM t0 com a mesma semantica de `modelo_agregado._em()` (valor em t0, ou o
-    ultimo valido ate t0) -- `rp_hat`, por exemplo, ja falta em t0 e cai no trimestre
-    anterior. Divergir disso aqui faria o motor JS partir de um estado diferente do que
-    o Python usa, que e exatamente o que o teste compara.
-    """
-    par = json.loads((_DATA / "modelo_params.json").read_text())
-    P = _csv("modelo_painel_full.csv")
-    S = _csv("modelo_estados.csv")
-    t0 = P[["pi_L", "selic"]].dropna().index.max()
-    nn = max(_MOTOR_N_OPCOES) + _MOTOR_FOLGA
-    idx = pd.period_range(t0 + 1, periods=nn, freq="Q")
-
-    def em(s):
-        if t0 in s.index and pd.notna(s.loc[t0]):
-            return float(s.loc[t0])
-        d = s[s.index <= t0].dropna()
-        return float(d.iloc[-1]) if len(d) else 0.0
-
-    meta = P["meta"].reindex(idx).ffill()
-    meta = meta.fillna(em(P["meta"]))
-
-    # caminho de Selic da Focus: as 16 primeiras vem do cenario que o Python ja simulou
-    # (identico a `caminho_selic_focus`), e depois segue plano -- a propria curva Focus
-    # para em ~4,5 anos e `caminho_selic_focus` tambem prolonga o ultimo ponto dali.
-    foc = list(_csv("modelo_cenario_focus__eq5.csv")["selic"].values)
-    foc = [round(float(v), 6) for v in foc]
-
-    ipca_obs = P["pi_IPCA"][P["pi_IPCA"].index <= t0].dropna()
-    sel_obs = P["selic"][P["selic"].index <= t0].dropna()
-
-    return {
-        "t0": str(t0),
-        "n_opcoes": _MOTOR_N_OPCOES,
-        "n": _MOTOR_N,
-        "folga": _MOTOR_FOLGA,
-        "datas": idx.to_timestamp().strftime("%Y-%m-%d").tolist(),
-        "par": {k: round(float(v), 10) for k, v in par.items() if not k.startswith("_")},
-        "phi": {k: round(float(par[k]), 10) for k in ("f1", "f2", "f3")},
-        "w_ipca": [0.7672, 0.2328],
-        "pi_ext": 2.0,
-        "meta": [round(float(v), 6) for v in meta.values],
-        "ini": {
-            "h": round(em(S["h"]), 8),
-            "s_h": round(em(S["s_h"]), 8),
-            "rr_IS": round(em(P["rr_trend"]) + em(S["rr_IS"]), 8),
-            "rr_TAY": round(em(P["rr_trend"]) + em(S["rr_TAY"]), 8),
-            "r_hat": round(em(S["r_hat"]), 8),
-            "pi_L": round(em(P["pi_L"]), 8),
-            "pi_e": round(em(P["pi_e"]), 8),
-            "de_hat": round(em(P["de_hat"]), 8),
-            "ipca4": [round(float(v), 8) for v in ipca_obs.iloc[-4:].values],
-            "ipca3": [round(float(v), 8) for v in ipca_obs.iloc[-3:].values],
-            "selic": round(float(sel_obs.iloc[-1]), 6),
-            "selic_l1": round(float(sel_obs.iloc[-2]), 6),
-        },
-        "dflt": {
-            "selic_focus": foc,
-            # Duas ancoras diferentes, e a distincao importa: `ini.selic`/`ini.pi_e` sao
-            # lidos EM t0 (t0 = ultimo trimestre com pi_L E selic) porque sao a defasagem
-            # que as equacoes usam; estes dois sao o ULTIMO valor publicado, que ja pode
-            # estar um trimestre a frente -- e a Selic corrente que "Selic constante"
-            # significa, e a leitura mais recente da Focus que "expectativa fixa na Focus"
-            # significa. `cenarios_padrao()` usa exatamente estes.
-            "selic_ult": round(float(P["selic"].dropna().iloc[-1]), 6),
-            "pi_e_focus": round(float(P["pi_e"].dropna().iloc[-1]), 8),
-            "rp": round(em(P["rp_hat"]), 8),
-            "pi_star": 0.0,
-            "Zel": 0.0,
-            "Yla": 0.0,
-        },
-        "copom_adm": _copom_administrados(P, idx, t0),
-        "hr": _copom_hr(),
-    }
 
 
 def _load_info() -> dict:
@@ -519,42 +309,8 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
     print("Carregando dados...")
     data = {"generated_at": datetime.now().strftime("%d/%m/%Y %H:%M")}
 
-    for grupo, loader, label in (
-        ("motor",     _load_motor,     "Modelo BC - Agregado (historico do motor JS)"),
-    ):
-        try:
-            series = loader()
-            data[grupo] = series
-            if series:
-                n = sum(len(v["dates"]) for v in series.values())
-                print(f"  {grupo:10s} {label}: {len(series)} series, {n} obs")
-            else:
-                print(f"  {grupo:10s} {label}: aba ainda nao construida (loader stub)")
-        except Exception as exc:
-            print(f"  {grupo:10s} {label}: FALHOU -- {exc}")
-            data[grupo] = {}
-
-    # Config do motor: nao e serie, entao fica fora do loop -- mesmo tratamento do info.
-    try:
-        data["motor_cfg"] = _motor_cfg()
-        m = data["motor_cfg"]
-        hr = m.get("hr") or {}
-        print(f"  motor_cfg  t0={m['t0']} | folga={m['folga']} | "
-              f"{len(m['par'])} parametros | horizonte ate {max(m['n_opcoes'])}T | "
-              f"HR {hr.get('date', 'regra 6T')}"
-              + (f" ({hr['reuniao']}a reuniao)" if hr else ""))
-        # Divergir aqui e legitimo (painel um trimestre atras da ultima reuniao), mas
-        # troca a fonte do marcador em silencio -- entao avisa.
-        if hr and hr["date"] != m["datas"][6]:
-            print(f"             AVISO  HR publicado ({hr['date']}) != datas[6] "
-                  f"({m['datas'][6]}): painel atrasado ante a {hr['reuniao']}a reuniao; "
-                  "o marcador segue a reuniao, nao a regra")
-    except Exception as exc:
-        print(f"  motor_cfg  FALHOU -- {exc}")
-        data["motor_cfg"] = {}
-
-    # Fora do loop pelo mesmo motivo do condicoes: o payload e tabela de linhas indexada por
-    # REUNIAO, nao {chave: {dates, values}} numa grade de calendario.
+    # O payload desta aba e uma tabela de linhas indexada por REUNIAO, nao
+    # {chave: {dates, values}} numa grade de calendario -- por isso ela nao passa por _ser().
     try:
         data["projecoes"] = _load_projecoes()
         pj = data["projecoes"]
@@ -613,14 +369,26 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
         if c.get("erro"):
             print(f"  condicoes  {c['erro']}")
         else:
-            r = c["resumo"]
-            print(f"  condicoes  {c['ant']['numero']}a ({c['ant']['date']}) -> "
-                  f"{c['prox']['numero']}a ({c['prox']['date']}, em {c['prox']['dias']}d) | "
-                  f"{r['hawkish']} hawkish / {r['dovish']} dovish / {r['neutro']} neutro / "
-                  f"{r['sem_dado']} sem dado novo | saldo {r['saldo']} | "
-                  f"{len(c['agenda'])} divulgacoes ate a reuniao")
-            for a in c.get("avisos", []):
+            cols = c["reunioes"]
+            linhas = [l for b in c["blocos"] for l in b["linhas"]]
+            falhas = [l["key"] for l in linhas if l.get("erro")]
+            celulas = [x for l in linhas for x in (l.get("celulas") or [])]
+            novas = sum(1 for x in celulas if x["novo"])
+            estim = sum(1 for x in celulas if not x["exata"])
+            prox = cols[-1]
+            print(f"  condicoes  {len(linhas)} variaveis x {len(cols)} reunioes "
+                  f"({cols[0]['label']} -> {cols[-1]['label']}) | {novas}/{len(celulas)} "
+                  f"celulas com dado novo, {estim} com data estimada | proxima "
+                  f"{prox['date']} em {prox['dias']}d | {len(c['agenda'])} divulgacoes ate la")
+            if falhas:
+                print(f"             AVISO  {len(falhas)} linha(s) sem serie: "
+                      + ", ".join(falhas))
+            # So os avisos de celula AMBIGUA chegam aqui -- os demais ja viram marca na
+            # tela. Imprimir todos afogaria o log num recorte de 9 reunioes.
+            for a in c.get("avisos", [])[:8]:
                 print(f"             AVISO  {a}")
+            if len(c.get("avisos", [])) > 8:
+                print(f"             ... e mais {len(c['avisos']) - 8} aviso(s)")
     except Exception as exc:
         print(f"  condicoes  FALHOU -- {exc}")
         data["condicoes"] = {}

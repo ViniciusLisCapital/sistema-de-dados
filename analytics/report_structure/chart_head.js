@@ -74,12 +74,16 @@ function _ensureChartFrame(divId, compact) {
     // Um card cujo markup JA traz o cabecalho (porque aquele grafico precisa de algo a
     // mais na linha do titulo, um botao de definicao por exemplo) e reaproveitado em vez
     // de ganhar um segundo: dois cabecalhos no mesmo card e o defeito que isso evita.
-    var pronto = (card.children || []).filter(function(c) {
+    // `children` no browser e um HTMLCollection, que NAO tem os metodos de Array
+    // (NodeList tem `forEach` e tambem nao tem `filter`/`map` -- o subconjunto quebrado
+    // nao e obvio). Passe pelo slice: funciona igual com HTMLCollection e com Array.
+    var pronto = Array.prototype.slice.call(card.children || []).filter(function(c) {
       return c.className && String(c.className).indexOf('chart-head') === 0;
     })[0];
     if (pronto) {
       var pega = function(cls) {
-        return (pronto.children || []).filter(function(c) { return c.className === cls; })[0];
+        return Array.prototype.slice.call(pronto.children || [])
+          .filter(function(c) { return c.className === cls; })[0];
       };
       card._chFrame = {head: pronto, title: pega('chart-title'),
                        sub: pega('chart-sub'), src: pega('chart-src')};

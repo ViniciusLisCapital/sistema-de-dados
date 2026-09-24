@@ -394,3 +394,64 @@ def test_a_policy_do_brasil_nao_aparece_na_tabela_internacional():
     assert "BR" not in paises, paises
     assert "US" not in paises, paises
     assert paises == {"MX", "CL", "CO", "PE", "AR"}, paises
+
+
+# ---------------------------------------------------------------------------
+# O cache nao pode gravar ausencia para o dia corrente
+# ---------------------------------------------------------------------------
+# A B3 solta o arquivo do pregao DEPOIS do fechamento. Pedido antes disso, o
+# endpoint devolve um zip valido e vazio -- que e exatamente o que devolve num
+# feriado estadual, e portanto passa pelo guarda de `sem_sessao`. Cachear esse
+# vazio congela aquele pregao para sempre, porque a janela retroativa de `run()`
+# le o cache e nunca rebusca.
+#
+# Nao e hipotese: medido em 2026-09-23. A tarefa agendada roda as 09:30 e
+# envenenava o proprio dia todo dia, entao a curva ficou parada em 2026-09-14
+# por 6 pregoes -- os seis com ~420 vertices na fonte o tempo todo. Nenhum erro,
+# nenhuma excecao, e o log dizia "pregao sem arquivo na B3", que e a mensagem de
+# uma ausencia legitima. O unico sintoma possivel era a data parar de andar.
+
+
+def _grades_com_cache_falso(tmp_path, data, monkeypatch):
+    """Roda grades() com CACHE isolado e a fonte devolvendo zip vazio."""
+    from connectors import b3_curvas
+
+    monkeypatch.setattr(b3_curvas, "CACHE", str(tmp_path))
+    monkeypatch.setattr(b3_curvas, "_baixar_com_retry",
+                        lambda yymmdd, tentativas=4: (None, True))
+    out = b3_curvas.grades(data)
+    return out, sorted(os.listdir(tmp_path))
+
+
+def test_vazio_do_dia_corrente_nao_vai_para_o_cache(tmp_path, monkeypatch):
+    import pandas as pd
+
+    hoje = pd.Timestamp.today().normalize()
+    out, arquivos = _grades_com_cache_falso(tmp_path, hoje, monkeypatch)
+    assert out is None
+    assert arquivos == [], (
+        "gravou ausencia para o dia corrente: a proxima passagem leria este "
+        f"arquivo e o pregao nunca mais seria rebuscado ({arquivos})")
+
+
+def test_vazio_de_data_futura_tambem_nao_vai(tmp_path, monkeypatch):
+    """A janela retroativa e por dia util, entao um feriado no meio pode fazer
+    `bdate_range` alcancar amanha. Mesma regra, mesmo motivo."""
+    import pandas as pd
+
+    amanha = pd.Timestamp.today().normalize() + pd.Timedelta(days=1)
+    out, arquivos = _grades_com_cache_falso(tmp_path, amanha, monkeypatch)
+    assert out is None
+    assert arquivos == []
+
+
+def test_vazio_de_pregao_passado_CONTINUA_indo_para_o_cache(tmp_path, monkeypatch):
+    """A metade que o guarda nao pode quebrar: os 43 feriados estaduais de SP
+    sao ausencia de verdade, e cachea-los e o que evita 43 requisicoes por
+    passe. 2026-09-07 (Independencia) e um deles."""
+    import pandas as pd
+
+    out, arquivos = _grades_com_cache_falso(
+        tmp_path, pd.Timestamp("2026-09-07"), monkeypatch)
+    assert out is None
+    assert arquivos == ["260907.csv"]

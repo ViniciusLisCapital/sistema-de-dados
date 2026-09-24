@@ -56,6 +56,10 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
                        antes de construir; 6 dessas pastas ainda são só o levantamento)
                        ↳ padrões compartilhados e a regra de corte país/raiz: analytics/CLAUDE.md
                        ↳ acesso por fonte, chaves de API e as 377 séries FRED conferidas: analytics/us/CLAUDE.md
+Linear_algebra/      — Fora do sistema de dados: ferramenta de ESTUDO da geometria da regressão
+                       (`regression_geometry.html`, autocontida, não lê o banco e não está no
+                       manifesto). Mínimos quadrados como projeção ortogonal, em ℝ² e ℝ³, com os
+                       vetores editáveis ↳ Linear_algebra/CLAUDE.md
 jobs/                — Entry points: update_db.py (macro_brasil), update_us.py, update_international.py,
                        update_oraculo.py e atualizar_diario.py (o que a tarefa agendada chama).
                        Os dois .bat de dois cliques moraram na raiz ate 2026-09-10 e vivem aqui:
@@ -95,7 +99,7 @@ Todas declarativas, cada uma respondendo uma pergunta, e é a combinação delas
 |---|---|---|
 | QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 30 grupos de divulgação |
 | QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 86 tabelas |
-| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 129 dependências |
+| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 138 dependências |
 | QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 1 dashboard, 3 passos |
 
 A quarta existe porque **um artefato calculado tem duas datas e só uma era observável**: quando foi
@@ -145,7 +149,7 @@ de mexer, e é lá que se escreve depois.
 | Mercado de trabalho | `reports/brasil/Labor Market.html` | [`analytics/brasil/labor_market/`](analytics/brasil/labor_market/CLAUDE.md) |
 | Política monetária | `reports/brasil/Monetary Policy.html` | [`analytics/brasil/monetary_policy/`](analytics/brasil/monetary_policy/CLAUDE.md) |
 | Expectativas (Focus) | `reports/brasil/Expectations.html` | [`analytics/brasil/expectations/`](analytics/brasil/expectations/CLAUDE.md) |
-| Modelo estrutural | `reports/brasil/Structural Model.html` | [`analytics/brasil/structural_model/`](analytics/brasil/structural_model/CLAUDE.md) — versão simplificada do modelo do BC, estimada equação por equação, com o câmbio do FX Report como equação cambial. Hoje só a aba de dados da curva de Phillips |
+| Modelo estrutural | `reports/brasil/Structural Model.html` | [`analytics/brasil/structural_model/`](analytics/brasil/structural_model/CLAUDE.md) — versão simplificada do modelo do BC, estimada equação por equação, com o câmbio do FX Report como equação cambial. Hoje sete abas: os insumos trimestrais; a curva de Phillips aberta em serviços, alimentação, bens industriais e monitorados — em inflação do trimestre, com um seletor que lê os mesmos números acumulados em 12 meses; a equação de expectativas, que mede a força da âncora da meta, a meia-vida de um desvio e quanto de uma inflação permanente a expectativa incorpora; a curva IS, em que o aperto monetário é a inclinação da curva de juro real da NTN-B (2 anos menos 10) em vez de um juro contra uma taxa de equilíbrio; a regra de juros, com a âncora `RR* + Meta` desenhada ao lado da Selic; o câmbio trimestral, estimado por Ridge sobre o mesmo modelo que serve o FX Report, sem reescrevê-lo; e o simulador, que roda a conta solta — uma equação por vez, hoje só a de juros, com os pesos vindo de uma estimação bayesiana e a faixa saindo do posterior |
 | Inflação US | `reports/us/Inflation.html` | [`analytics/us/inflation/`](analytics/us/inflation/CLAUDE.md) |
 | Mercado de trabalho US | `reports/us/Labor Market.html` | [`analytics/us/labor_market/`](analytics/us/labor_market/CLAUDE.md) |
 | Calendário | `reports/release_calendar.html` | [`analytics/release_calendar/`](analytics/release_calendar/CLAUDE.md) |

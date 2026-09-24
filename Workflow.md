@@ -7,6 +7,9 @@
   *Dashboards relacionados aos dados do Brasil*
   
   ### (I.I.I) Pendências gerais:
+    - i. Dados de inflação do IPA-DI e adjacentes (ver Relatório de Política monetária do BC). O Banco Central (ver RPM 3T/2026) usou os dados para avaliar os impactos pirmarios diretos e indiretos do choque de petróleo sobre a inflação. Na mesma linha, usou um conjunto de dados para avaliar os efeitos de segunda ordem sobre a inflação, como a pesquisa Firmus e acho que no relatório tambem fala sobre dados qualitativos da Confederação da Industria. A ideia é fazer uma mapeamento do que ele usa, se temos API direta/indireta para consumir esses dados. Embora, os dados estejam sendo usados para analisar um processo inflacionario, a pesuqisa pode ser usada em varios dashboards.
+    
+    - ii. Consumo de dados do QPC (Questionario pre COPOM) - quando eu vi esse relatório, ele tinha bastante informações, não sei se conseguimos construir series e coisas do tipo. A ideia é mapear o que tem e ver como podemos consumir.
 
   ### (I.I.II) Dashboard de cambio
     - i. Unir dashboard de cambio do Arthur com o nosso. A ideia é colocar o dashboard dele numa unica aba do nosso, pois existem metricas que já estão sendo acompanhadas por lá que não temos no nosso dash.
@@ -66,9 +69,11 @@
     - i. Já temos um modelo de cambio embutido no "reports\brasil\FX Report.html". Para o sistema macroecnomico geral, a ideia é manter um unico modelo estrutural que, a principio, terá equações para inflação, cambio, juros, hiato, expectativas. Ainda preciso definir coisas nesse processo.
 
 ## (IV. II) Modelo de cambio
-    - i. Conversar com o Sr. Paulo para entender o ponto que ele fez na reunião sobre o passado do modelo, aquilo que o Pina chamou de parte 2 (Parte 1 literatura e dados, Parte 2 indentificação de regimes passado e parte 3 como forecasting). Acredito que a ata fale sobre esse ponto: "team_materials\Atas\Reunião Câmbio - 2026_09_11 08_14 GMT-03_00 - Anotações do Gemini.pdf".
+    
+    - i. Usar o modelo mensal + variaveis diarias para calcular a decomposição da variação do cambio em frequência diaria. A ideia é decompor usando a estimativa mensal (somente para ter uma ideia)
 
-    - ii. Usar o modelo mensal + variaveis diarias para calcular a decomposição da variação do cambio em frequência diaria. A ideia é decompor usando a estimativa mensal (somente para ter uma ideia)
+## (IV.III) Modelo de inflação
+    - i. Melhoramentos das equações de inflação (ver analytics\brasil\structural_model\pendencias_philips_eq.md)
 
 
 

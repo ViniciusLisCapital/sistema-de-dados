@@ -43,6 +43,16 @@ Dos 5.159 dias uteis de 2006-01-02 a 2026-09-02, 43 nao tem arquivo: sao
 feriado estadual de SP (20/11, 25/01, 09/07, 24 e 31/12) -- B3 fechada,
 Tesouro Direto publicando. Mais 2020-05-07, em que a B3 publicou as curvas de
 DI (PRE, DIC) mas nenhuma curva de titulo (010, 076, 095).
+
+## Ausencia que NAO e ausencia: o dia corrente
+
+O arquivo de um pregao sai depois do fechamento. Pedido antes disso, o mesmo
+endpoint devolve um zip valido e vazio -- **identico** ao de um feriado
+estadual, e portanto aceito pelo guarda de `sem_sessao` acima. Por isso
+`grades()` nao cacheia vazio para data >= hoje: cachear congela aquele pregao
+para sempre, ja que a janela retroativa de `run()` le o cache e nunca rebusca.
+Sem essa regra, uma rotina que roda de manha envenena o proprio dia todo dia, e
+a serie para de andar sem erro nenhum (medido em 2026-09-23, 6 pregoes).
 """
 
 from __future__ import annotations
@@ -160,6 +170,16 @@ def grades(data, usar_cache: bool = True) -> pd.DataFrame | None:
     D = parse(txt) if txt else None
     if D is None and not sem_sessao:
         return None                       # falha de rede: nao cacheia
+    # O TERCEIRO caso, que e indistinguivel do segundo no protocolo: a B3 solta
+    # o arquivo DEPOIS do fechamento, entao para o dia corrente ela devolve um
+    # zip valido e vazio -- exatamente o que um feriado estadual devolve.
+    # Cachear isso congela aquele pregao para sempre, porque a janela
+    # retroativa de run() le o cache e nunca rebusca. Medido em 2026-09-23: a
+    # tarefa agendada roda as 09:30, envenenava o proprio dia todo dia, e a
+    # curva ficou parada em 2026-09-14 por 6 pregoes -- os seis com dado real
+    # na fonte o tempo todo, e nenhum erro em lugar nenhum.
+    if D is None and pd.Timestamp(data).normalize() >= pd.Timestamp.today().normalize():
+        return None                       # ainda nao publicado: nao cacheia
     (D if D is not None else pd.DataFrame(columns=["cod", "dc", "du", "taxa"])
      ).to_csv(caminho, index=False)
     return D

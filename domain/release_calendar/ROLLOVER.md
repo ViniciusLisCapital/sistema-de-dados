@@ -149,11 +149,14 @@ Copy-Item domain/release_calendar/calendar_2026.yaml domain/release_calendar/cal
 uv run python -m domain.release_calendar.update_calendar --yaml domain/release_calendar/calendar_2027.yaml --from 2027-01-01 --write
 ```
 
-Then two code edits, both hardcoded to the year and both easy to miss:
+Then one code edit, hardcoded to the year and easy to miss:
 
 - `analytics/release_calendar/generate_report.py:24` — `_YAML_PATH` names the file.
-- `analytics/release_calendar/report.html:116` — the period label reads `Ago–Dez 2026` as literal
-  text. It will silently lie about the wrong year if not updated. Better: compute it from the data.
+
+The second one is **gone since 2026-09-22**: the header's period label used to read `Ago–Dez 2026`
+as literal text in `report.html` and is now computed from the `min`/`max` of the entries
+themselves, so it cannot lie about the year. That is the recommended treatment for any such
+literal — see this folder's sibling `analytics/release_calendar/CLAUDE.md`.
 
 **The trap: emptying `entries:` destroys the blank lines between groups.** Measured on a scratch copy
 — 25 blank lines became 15, exactly one lost per emptied group; comments (27) and all 25 groups

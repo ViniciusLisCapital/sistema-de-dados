@@ -60,4 +60,59 @@ def render_report(template_path, data: dict, output_path, extra_markers: dict | 
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
+    _registrar_procedencia(out)
     return out.resolve()
+
+
+def _registrar_procedencia(out: Path) -> None:
+    """Grava o retrato das fontes deste relatorio, no mesmo passo que o escreveu.
+
+    O QUE E: um registro de com que dado o arquivo foi montado -- "quando gerei o
+    Credito, o banco tinha inadimplencia ate agosto". A data do arquivo diz quando ele
+    foi salvo, nao o que havia dentro; sem o retrato, "este relatorio ficou para tras"
+    nao tem como ser afirmado. Quem compara e `domain.dashboards.status`.
+
+    POR QUE AQUI. Ate 2026-09-23 o retrato era gravado por `status.gerar()`, um passo
+    separado que so acontecia se o relatorio fosse gerado POR AQUELE caminho -- e o
+    comando documentado em 10 dos 13 `CLAUDE.md` de pasta e `generate_report.run()`,
+    que nao passa por la. Resultado medido naquele dia: 8 dos 13 relatorios entregues
+    tinham retrato ausente ou de outra geracao, e a aba de status nao conseguia dizer
+    nada sobre quase metade deles. Um mecanismo que depende de ninguem usar o caminho
+    normal nao fica em dia.
+
+    Esta funcao fecha isso por construcao: todos os 12 relatorios HTML do projeto
+    passam por `render_report()`, entao gerar de qualquer jeito -- `run()` na mao,
+    `status.gerar()`, notebook -- deixa o retrato em dia. Nao ha mais como esquecer.
+
+    TRES CUIDADOS, cada um a origem de um defeito possivel:
+
+    - **Depois de escrever, nunca antes.** O retrato guarda o mtime do arquivo em
+      nanossegundos, e e ele que responde "este retrato e deste arquivo?". Gravado
+      antes do `write_text`, o retrato seria da versao anterior e daria um "em dia" de
+      mentira.
+    - **Falhar aqui nao pode derrubar a geracao.** O retrato consulta o banco; banco
+      fora do ar nao pode virar "sem relatorio". A falha e avisada e o arquivo, que ja
+      esta em disco, fica valendo -- e o veredito passa a ser "nao da para conferir",
+      que e a resposta honesta.
+    - **Arquivo que nao esta no manifesto nao stampa** (o template de comparacao de
+      juros reais, por exemplo). `chave_por_saida()` devolve None e a funcao sai calada:
+      nao ha o que comparar contra um dashboard que ninguem declarou.
+
+    O import e local de proposito: `analytics/` nao passa a exigir que `domain/` esteja
+    importavel so para montar um HTML, e `status.gerar()` importa `generate_report` (que
+    importa este modulo) -- fechar esse ciclo no topo do arquivo seria pedir problema.
+    """
+    try:
+        from domain.dashboards import status
+    except Exception as exc:  # noqa: BLE001 -- ver "nao pode derrubar a geracao"
+        print(f"  [procedencia] nao registrada ({type(exc).__name__}: {exc})")
+        return
+
+    try:
+        key = status.chave_por_saida(out)
+        if key is None:
+            return
+        status.stamp(key)
+    except Exception as exc:  # noqa: BLE001
+        print(f"  [procedencia] {out.name}: nao registrada "
+              f"({type(exc).__name__}: {exc}) -- o relatorio foi salvo mesmo assim")

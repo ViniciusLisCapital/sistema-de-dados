@@ -45,12 +45,62 @@
     }
     .pill:hover { color: var(--text); border-color: rgba(31,40,83,0.3); }
     .pill.active { background: rgba(187,155,29,0.15); border-color: rgba(187,155,29,0.5); color: var(--lis-dourado); font-weight: 600; }
+    /* Variante embutida: a barra passa a ser um strip dentro do .table-card, separada
+       da tabela por uma linha. Sem fundo e sem borda propria -- um cartao dentro de outro
+       cartao le como dois blocos, e ela e parte da tabela, nao um bloco a parte. */
+    .ctrl-bar.inline {
+      background: none; border: none; border-radius: 0;
+      padding: 4px 0 12px; margin-bottom: 2px; gap: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+    /* Dentro do card a barra tem ~1.330 px, nao os 1.440 da pagina, e com o cap de
+       360 px do seletor de Divulgacao os quatro controles quebravam para uma segunda
+       linha. Medido em browser: 82 px de altura com o cap antigo, 44 com este -- o
+       nome comprido continua inteiro na lista aberta, so a caixa fechada e que trunca. */
+    .ctrl-bar.inline .ctrl-select { max-width: 250px; }
+    /* O que os 3 stat cards diziam, numa linha so, ao lado do titulo: contagem do
+       recorte, quanto ja saiu e quantas datas sao estimativa. Retirados a pedido do
+       usuario (2026-09-22) -- as contagens ficaram, as caixas nao. */
+    .list-resumo {
+      font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+      white-space: nowrap;
+    }
+    .list-resumo strong { color: var(--text2); font-weight: 600; }
+    .list-resumo .est { color: var(--lis-dourado); font-weight: 600; }
+    /* Só o número que pede ação sai colorido — na mesma cor do selo do card. */
+    .list-resumo .acao { color: var(--lis-laranja); font-weight: 600; }
+
     .ctrl-select {
       font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 5px 12px;
       border: 1px solid var(--border); border-radius: 20px; background: rgba(31,40,83,0.03); color: var(--text2);
       cursor: pointer; max-width: 360px;
     }
     .ctrl-select:hover { border-color: rgba(31,40,83,0.3); }
+    /* Um seletor que NAO esta no default fica marcado, senao um recorte estreito some
+       de vista: a pagina abre no mes corrente, e sem essa marca "faltam divulgacoes"
+       e indistinguivel de "o mes esta vazio". */
+    .ctrl-select.narrow {
+      background: rgba(187,155,29,0.12); border-color: rgba(187,155,29,0.45);
+      color: var(--lis-dourado); font-weight: 600;
+    }
+    .ctrl-reset {
+      font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 4px 11px; border-radius: 20px; cursor: pointer;
+      border: 1px solid var(--border); background: rgba(31,40,83,0.03); color: var(--text2);
+    }
+    .ctrl-reset:hover { border-color: rgba(31,40,83,0.3); color: var(--text); }
+
+    /* ── Selo de pais ──────────────────────────────────────────────────────────
+       BR / US / INT, um por linha. Derivado no gerador a partir do schema que as
+       tabelas do grupo alimentam (ver generate_report.py), nao escrito a mao aqui. */
+    .pais-badge {
+      font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+      padding: 2px 6px; border-radius: 6px; display: inline-block; margin-right: 5px;
+      white-space: nowrap;
+    }
+    .pais-badge.br  { background: rgba(65,135,145,0.16);  color: var(--lis-verde); }
+    .pais-badge.us  { background: rgba(2,115,155,0.14);   color: var(--lis-azul-cl); }
+    .pais-badge.int { background: rgba(187,155,29,0.18);  color: var(--lis-dourado); }
 
     /* ── Stat cards ── */
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -78,7 +128,39 @@
       font-family: var(--cond); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--lis-dourado); background: rgba(187,155,29,0.06); padding: 8px 10px; border-bottom: none;
     }
-    table.release-table tr:hover:not(.month-header) { background: rgba(31,40,83,0.02); }
+    table.release-table tr:hover:not(.month-header):not(.week-header) { background: rgba(31,40,83,0.02); }
+
+    /* ── Bloco por semana ──────────────────────────────────────────────────────
+       Com um mes selecionado a lista vira um bloco por semana, cada um um
+       clique-expande. A linha de cabecalho e o proprio controle -- <details> nao cabe
+       dentro de <tbody> sem quebrar a tabela, e uma tabela por semana perderia o
+       alinhamento das colunas entre os blocos, que e metade do valor de ler o mes. */
+    table.release-table tr.week-header td {
+      background: rgba(31,40,83,0.035); border-bottom: 1px solid var(--border);
+      padding: 8px 10px; cursor: pointer; user-select: none;
+    }
+    table.release-table tr.week-header:hover td { background: rgba(31,40,83,0.06); }
+    tr.week-header .wk-caret {
+      font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--muted);
+      display: inline-block; width: 14px;
+    }
+    tr.week-header .wk-title {
+      font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text); margin-right: 10px;
+    }
+    tr.week-header .wk-count { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+    tr.week-header .wk-now {
+      font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 8px; margin-left: 10px;
+      background: rgba(187,155,29,0.18); color: var(--lis-dourado);
+    }
+    tr.week-header.past .wk-title { color: var(--muted); }
+
+    /* Divulgacao que ja saiu recua para o fundo. O que NAO recua e a linha atrasada:
+       ela e o unico estado chamativo da pagina, e apaga-la por ja ter saido seria
+       apagar exatamente a que pede acao. */
+    table.release-table tr.done td { opacity: 0.45; }
+    table.release-table tr.done:hover td { opacity: 0.75; }
     td.col-date { font-family: var(--mono); font-weight: 600; color: var(--text); white-space: nowrap; }
     td.col-date .end { color: var(--muted); font-weight: 400; }
     td.col-date .hora { color: var(--lis-verde); font-weight: 500; font-size: 11px; margin-left: 2px; }
@@ -143,6 +225,7 @@
        `.proc-meta`, `.proc-writes`: são listas de campo separadas por `·`, não prosa) e o
        rodapé, que é centralizado de propósito. */
     .dash-note,
+    .verdict-why,
     .proc-note,
     .proc-hint,
     .table-card .card-hint {
@@ -215,6 +298,9 @@
     .dash-meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin-top: 6px; line-height: 1.7; }
     .dash-meta strong { color: var(--text2); font-weight: 600; }
     .dash-note { font-size: 12px; color: var(--text2); margin-top: 8px; line-height: 1.55; }
+    /* Fica no <summary>, junto do selo que ela explica: o motivo de não haver veredito
+       tem de ser legível com o card FECHADO, senão o selo cinza lê como defeito. */
+    .verdict-why { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
     .verdict {
       font-family: var(--mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.06em;
       text-transform: uppercase; padding: 3px 10px; border-radius: 10px; white-space: nowrap;
@@ -304,7 +390,7 @@
     </div>
     <div class="meta">
       Gerado em <strong id="generated-at">—</strong><br>
-      Período: <strong>Ago–Dez 2026</strong>
+      Período: <strong id="period-label">—</strong>
     </div>
   </header>
 
@@ -317,48 +403,38 @@
 
   <main>
    <div class="view" id="view-releases" role="tabpanel" aria-labelledby="tab-releases">
-    <div class="ctrl-bar">
-      <span class="ctrl-label">Instituição</span>
-      <div class="pill-group" id="institution-pills"></div>
-      <div class="ctrl-sep"></div>
-      <span class="ctrl-label">Mês</span>
-      <div class="pill-group" id="month-pills"></div>
-      <div class="ctrl-sep"></div>
-      <span class="ctrl-label">Divulgação</span>
-      <select class="ctrl-select" id="divulgacao-select"></select>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Próxima Divulgação</span>
-        <span class="stat-value" id="stat-next-date">—</span>
-        <span class="stat-sub" id="stat-next-name">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Divulgações no Mês Atual</span>
-        <span class="stat-value" id="stat-month-count">—</span>
-        <span class="stat-sub" id="stat-month-label">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Confirmadas vs. Estimadas</span>
-        <span class="stat-value" id="stat-confirmed-ratio">—</span>
-        <span class="stat-sub">no recorte atual — ver metodologia no rodapé</span>
-      </div>
-    </div>
-
     <div class="recurring-card" id="recurring-card"></div>
 
     <div class="table-card">
       <div class="card-head">
         <h2>Lista de Divulgações</h2>
+        <span class="list-resumo" id="list-resumo"></span>
         <div class="bulk" id="bulk-releases"></div>
       </div>
       <div class="card-hint" id="mode-hint"></div>
+      <div class="card-hint" id="list-hint"></div>
+      <!-- A barra de recorte vive DENTRO do card, encostada na tabela: ela é o controle
+           daquela tabela e de nada mais. Como strip, e não como cartão próprio, para não
+           virar uma caixa dentro de outra. -->
+      <div class="ctrl-bar inline">
+        <label class="ctrl-label" for="pais-select">País</label>
+        <select class="ctrl-select" id="pais-select"></select>
+        <div class="ctrl-sep"></div>
+        <label class="ctrl-label" for="fonte-select">Fonte</label>
+        <select class="ctrl-select" id="fonte-select"></select>
+        <div class="ctrl-sep"></div>
+        <label class="ctrl-label" for="divulgacao-select">Divulgação</label>
+        <select class="ctrl-select" id="divulgacao-select"></select>
+        <div class="ctrl-sep"></div>
+        <label class="ctrl-label" for="mes-select">Mês de divulgação</label>
+        <select class="ctrl-select" id="mes-select"></select>
+        <button class="ctrl-reset" id="ctrl-reset" type="button">Limpar</button>
+      </div>
       <table class="release-table">
         <thead>
           <tr>
             <th>Data</th>
-            <th>Instituição</th>
+            <th>Fonte</th>
             <th>Divulgação</th>
             <th>Período de Referência</th>
             <th>Status</th>
@@ -380,27 +456,14 @@
       <div class="pill-group" id="dash-scope-pills"></div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-label">Dashboards Mapeados</span>
-        <span class="stat-value" id="dash-stat-count">—</span>
-        <span class="stat-sub" id="dash-stat-deps">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Com Dado Novo na Fonte</span>
-        <span class="stat-value" id="dash-stat-stale">—</span>
-        <span class="stat-sub" id="dash-stat-stale-sub">—</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Dependências Fora do MySQL</span>
-        <span class="stat-value" id="dash-stat-out">—</span>
-        <span class="stat-sub">CSV, arquivo de cálculo, configuração ou fonte externa — o botão Atualizar não alcança nenhuma</span>
-      </div>
-    </div>
-
+    <!-- Os 3 stat cards saíram em 2026-09-23, a pedido do usuário — os mesmos três que
+         tinham saído da outra aba no dia anterior. O que eles contavam cabe na linha ao
+         lado do título; e "com dado novo na fonte" já era dito duas vezes, porque o botão
+         de lote ali do lado carrega o mesmo número. -->
     <div class="table-card">
       <div class="card-head">
         <h2>O que cada dashboard consome</h2>
+        <span class="list-resumo" id="dash-resumo"></span>
         <div class="bulk" id="bulk-dashboards"></div>
       </div>
       <div class="card-hint" id="dash-mode-hint"></div>
@@ -441,82 +504,178 @@
       return p[2] + '/' + p[1] + '/' + p[0];
     }
 
-    var state = { institution: 'Todos', month: 'Tudo', divulgacao: 'Todas' };
+    /* ─────────────────────────── O recorte da aba ─────────────────────────────
+       Quatro seletores, todos clique-expande: País, Fonte, Divulgação e Mês de
+       divulgação. Os padrões são "Todos", "Todas", "Todas" e o MÊS CORRENTE — a
+       página abre no mês que está correndo, não no ano inteiro: o ano são ~180
+       linhas e a pergunta de quem abre é o que sai agora.
+
+       O "hoje" desta página não é o relógio de quem lê: é a data em que o HTML foi
+       gerado, trocada pela data do servidor assim que o ping responde. Um arquivo
+       aberto por fora continua honesto sobre de quando ele é, em vez de afirmar um
+       mês corrente que ninguém conferiu. */
+    var state = { pais: 'Todos', institution: 'Todos', divulgacao: 'Todas',
+                  month: 'Tudo', mesEscolhido: false, semanas: {} };
+
+    function hojeRef() {
+      // LIVE só existe depois da declaração lá embaixo; toda chamada daqui acontece
+      // depois dela, na primeira renderização.
+      return (typeof LIVE !== 'undefined' && LIVE.today) || REPORT_DATA.reference_date;
+    }
+    function mesCorrente() { return hojeRef().slice(0, 7); }
+
+    function passaPais(e)   { return state.pais === 'Todos' || e.country === state.pais; }
+    function passaFonte(e)  { return state.institution === 'Todos' || e.institution === state.institution; }
+    function passaDivulg(e) { return state.divulgacao === 'Todas' || e.group === state.divulgacao; }
+    function passaMes(e)    { return state.month === 'Tudo' || e.date.slice(0, 7) === state.month; }
 
     function filteredEntries() {
       return REPORT_DATA.entries.filter(function(e) {
-        if (state.institution !== 'Todos' && e.institution !== state.institution) return false;
-        if (state.month !== 'Tudo' && e.date.slice(0, 7) !== state.month) return false;
-        if (state.divulgacao !== 'Todas' && e.group !== state.divulgacao) return false;
-        return true;
+        return passaPais(e) && passaFonte(e) && passaDivulg(e) && passaMes(e);
       });
     }
 
-    function buildPills(containerId, options, activeKey, onClick) {
-      var el = document.getElementById(containerId);
-      el.innerHTML = '';
-      options.forEach(function(opt) {
-        var btn = document.createElement('button');
-        btn.className = 'pill' + (opt.key === activeKey ? ' active' : '');
-        btn.textContent = opt.label;
-        btn.addEventListener('click', function() { onClick(opt.key); });
-        el.appendChild(btn);
+    /* Cada seletor lista só o que existe sob os ANTERIORES a ele (país → fonte →
+       divulgação → mês). Sem a cascata, "US" com "IBGE" é uma combinação escolhível
+       que devolve lista vazia e a página não diz por quê. */
+    function opcoesFonte() {
+      var vistos = {}, out = [];
+      REPORT_DATA.entries.forEach(function(e) {
+        if (!passaPais(e) || vistos[e.institution]) return;
+        vistos[e.institution] = 1; out.push(e.institution);
       });
+      return out.sort();
     }
+    function opcoesDivulgacao() {
+      var vistos = {}, out = [];
+      REPORT_DATA.entries.forEach(function(e) {
+        if (!passaPais(e) || !passaFonte(e) || vistos[e.group]) return;
+        vistos[e.group] = 1;
+        out.push({ key: e.group, label: e.institution + ' — ' + e.name });
+      });
+      out.sort(function(a, b) { return a.label.localeCompare(b.label); });
+      return out;
+    }
+    function opcoesMes() {
+      var vistos = {}, out = [];
+      REPORT_DATA.entries.forEach(function(e) {
+        if (!passaPais(e) || !passaFonte(e) || !passaDivulg(e)) return;
+        var m = e.date.slice(0, 7);
+        if (vistos[m]) return;
+        vistos[m] = 1; out.push(m);
+      });
+      return out.sort();
+    }
+
+    /* Trocar um seletor grosso deixa o fino apontando para algo que sumiu do recorte
+       — "US" com a fonte em "IBGE". O estado tem de CAIR DE VOLTA explicitamente,
+       senão ele fica válido no objeto e inválido na tela, e a tabela sai vazia sem
+       dizer por quê. */
+    function normalizarRecorte() {
+      if (state.pais !== 'Todos' && (REPORT_DATA.countries || []).indexOf(state.pais) < 0)
+        state.pais = 'Todos';
+      if (state.institution !== 'Todos' && opcoesFonte().indexOf(state.institution) < 0)
+        state.institution = 'Todos';
+      if (state.divulgacao !== 'Todas' && !opcoesDivulgacao().some(function(o) {
+        return o.key === state.divulgacao; })) state.divulgacao = 'Todas';
+      if (state.month !== 'Tudo' && opcoesMes().indexOf(state.month) < 0)
+        state.month = 'Tudo';
+    }
+
+    /* O mês padrão é o corrente, e ele só é aplicado enquanto o usuário não tiver
+       escolhido um. É chamado duas vezes: na carga (contra a data de geração) e
+       quando o ping traz a data do servidor — um HTML gerado no mês passado e aberto
+       pelo servidor hoje abre no mês de hoje, não no da geração. */
+    function aplicarMesPadrao() {
+      if (state.mesEscolhido) return;
+      var m = mesCorrente();
+      state.month = opcoesMes().indexOf(m) >= 0 ? m : 'Tudo';
+    }
+
+    function buildSelect(id, options, valor, chaveTudo, onChange) {
+      var sel = document.getElementById(id);
+      if (!sel) return;
+      sel.innerHTML = '';
+      options.forEach(function(opt) {
+        var o = document.createElement('option');
+        o.value = opt.key;
+        o.textContent = opt.label;
+        sel.appendChild(o);
+      });
+      sel.value = valor;
+      // Um seletor fora do "todos" fica marcado: a página abre num mês só, e sem a
+      // marca "o recorte esconde o resto" é indistinguível de "não há mais nada".
+      sel.className = 'ctrl-select' + (valor === chaveTudo ? '' : ' narrow');
+      if (sel.dataset.wired !== '1') {
+        sel.dataset.wired = '1';
+        sel.addEventListener('change', function() { onChange(sel.value); });
+      }
+    }
+
+    var PAIS_LABEL = { BR: 'BR — Brasil', US: 'US — Estados Unidos',
+                       INT: 'INT — Internacional' };
 
     function renderControls() {
-      var instOptions = [{ key: 'Todos', label: 'Todos' }].concat(
-        REPORT_DATA.institutions.map(function(i) { return { key: i, label: i }; })
-      );
-      buildPills('institution-pills', instOptions, state.institution, function(k) {
-        state.institution = k; renderAll();
-      });
+      normalizarRecorte();
 
-      var months = Array.from(new Set(REPORT_DATA.entries.map(function(e) { return e.date.slice(0, 7); }))).sort();
-      var monthOptions = [{ key: 'Tudo', label: 'Tudo' }].concat(
-        months.map(function(m) { return { key: m, label: monthLabel(m) }; })
-      );
-      buildPills('month-pills', monthOptions, state.month, function(k) {
-        state.month = k; renderAll();
-      });
+      buildSelect('pais-select',
+        [{ key: 'Todos', label: 'Todos' }].concat(
+          (REPORT_DATA.countries || []).map(function(c) {
+            return { key: c, label: PAIS_LABEL[c] || c }; })),
+        state.pais, 'Todos', function(k) { state.pais = k; renderAll(); });
 
-      var groupLabel = {};
-      REPORT_DATA.entries.forEach(function(e) { groupLabel[e.group] = e.institution + ' — ' + e.name; });
-      var groupOrder = Object.keys(groupLabel).sort(function(a, b) { return groupLabel[a].localeCompare(groupLabel[b]); });
-      var sel = document.getElementById('divulgacao-select');
-      if (sel.dataset.built !== '1') {
-        sel.dataset.built = '1';
-        var optAll = document.createElement('option');
-        optAll.value = 'Todas'; optAll.textContent = 'Todas';
-        sel.appendChild(optAll);
-        groupOrder.forEach(function(g) {
-          var opt = document.createElement('option');
-          opt.value = g; opt.textContent = groupLabel[g];
-          sel.appendChild(opt);
+      buildSelect('fonte-select',
+        [{ key: 'Todos', label: 'Todas' }].concat(
+          opcoesFonte().map(function(i) { return { key: i, label: i }; })),
+        state.institution, 'Todos', function(k) { state.institution = k; renderAll(); });
+
+      buildSelect('divulgacao-select',
+        [{ key: 'Todas', label: 'Todas' }].concat(opcoesDivulgacao()),
+        state.divulgacao, 'Todas', function(k) { state.divulgacao = k; renderAll(); });
+
+      var atual = mesCorrente();
+      buildSelect('mes-select',
+        [{ key: 'Tudo', label: 'Todos os meses' }].concat(
+          opcoesMes().map(function(m) {
+            return { key: m, label: monthLabel(m) + (m === atual ? ' — mês atual' : '') }; })),
+        state.month, 'Tudo', function(k) {
+          state.month = k; state.mesEscolhido = true; renderAll();
         });
-        sel.addEventListener('change', function() { state.divulgacao = sel.value; renderAll(); });
+
+      var reset = document.getElementById('ctrl-reset');
+      if (reset && reset.dataset.wired !== '1') {
+        reset.dataset.wired = '1';
+        reset.title = 'Volta ao recorte padrão: todos os países e fontes, no mês atual';
+        reset.addEventListener('click', function() {
+          state.pais = 'Todos'; state.institution = 'Todos'; state.divulgacao = 'Todas';
+          state.mesEscolhido = false; state.semanas = {};
+          aplicarMesPadrao();
+          renderAll();
+        });
       }
-      sel.value = state.divulgacao;
     }
 
-    function renderStats() {
+    /* O que sobrou dos 3 stat cards. Eles saíram a pedido do usuário — "pode retirar
+       esses cards" —, mas as contagens não: quantas divulgações o recorte tem, quantas já
+       saíram e quantas datas ainda são estimativa é o que diz se vale confiar na lista.
+       Uma linha de metadado ao lado do título, em vez de três caixas.
+
+       A "próxima divulgação" não voltou em texto: com a lista abrindo na semana corrente,
+       ela é a primeira linha não-cinza da tela — repeti-la seria dizer duas vezes. */
+    function renderResumo() {
+      var el = document.getElementById('list-resumo');
+      if (!el) return;
       var entries = filteredEntries();
-      var today = REPORT_DATA.reference_date;
-
-      var upcoming = entries.filter(function(e) { return e.date >= today; });
-      var next = upcoming.length ? upcoming[0] : null;
-      document.getElementById('stat-next-date').textContent = next ? fmtDateFull(next.date) : '—';
-      document.getElementById('stat-next-name').textContent = next ? (next.institution + ' — ' + next.name) : 'Nenhuma no recorte atual';
-
-      var curMonth = today.slice(0, 7);
-      var monthEntries = entries.filter(function(e) { return e.date.slice(0, 7) === curMonth; });
-      document.getElementById('stat-month-count').textContent = String(monthEntries.length);
-      document.getElementById('stat-month-label').textContent = monthLabel(curMonth);
-
-      var nConfirmed = entries.filter(function(e) { return e.confirmed; }).length;
-      var nEstimated = entries.length - nConfirmed;
-      var ratioEl = document.getElementById('stat-confirmed-ratio');
-      ratioEl.innerHTML = '<span class="up">' + nConfirmed + '</span> / <span class="dn">' + nEstimated + '</span>';
+      if (!entries.length) { el.innerHTML = ''; return; }
+      var saiu = entries.filter(function(e) { return rowState(e) !== 'future'; }).length;
+      var estimadas = entries.filter(function(e) { return !e.confirmed; }).length;
+      var partes = ['<strong>' + entries.length + '</strong> divulgaç' +
+                    (entries.length === 1 ? 'ão' : 'ões')];
+      if (saiu) partes.push('<strong>' + saiu + '</strong> já ' + (saiu === 1 ? 'saiu' : 'saíram'));
+      partes.push(estimadas
+        ? '<span class="est">' + estimadas + '</span> com data estimada'
+        : 'todas com data confirmada');
+      el.innerHTML = partes.join(' · ');
     }
 
     function renderRecurring() {
@@ -533,18 +692,121 @@
       });
     }
 
-    function renderTable() {
-      var entries = filteredEntries();
-      // O controle de lote acompanha o MESMO recorte da tabela (instituição, mês,
-      // divulgação): agir sobre linha que não está listada seria surpresa. Com os
-      // filtros no default ("Todos"/"Tudo"/"Todas") isso é o calendário inteiro.
-      renderBulkReleases();
-      var tbody = document.getElementById('table-body');
-      tbody.innerHTML = '';
-      if (!entries.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhuma divulgação no recorte selecionado.</td></tr>';
-        return;
-      }
+    /* ─────────────────────────── A lista de divulgações ───────────────────────
+       Duas formas, e a diferença é o recorte: com um mês selecionado a lista vira um
+       bloco POR SEMANA, cada um um clique-expande, aberto por default na semana
+       corrente; com "todos os meses" continua sendo uma lista corrida com cabeçalho
+       de mês, porque 26 blocos de semana não seriam navegação, seriam a mesma rolagem
+       com mais linhas. */
+
+    function paisBadge(e) {
+      var p = e.country || '';
+      if (!p) return '';
+      return '<span class="pais-badge ' + p.toLowerCase() + '" title="' +
+             (PAIS_LABEL[p] || p) + '">' + p + '</span>';
+    }
+
+    function linhaDivulgacao(e) {
+      var st = rowState(e);
+      var tr = document.createElement('tr');
+      // Já saiu → recua para o fundo. O que NÃO recua é a linha atrasada: ela é o
+      // único estado chamativo da página, e apagá-la por já ter saído seria apagar
+      // exatamente a que pede ação.
+      if (st !== 'future' && st !== 'late') tr.className = 'done';
+      var color = institutionColor(e.institution);
+      var dateCell = fmtDateFull(e.date) + (e.date_end ? ' <span class="end">– ' + fmtDateFull(e.date_end) + '</span>' : '')
+        + (e.release_time ? ' <span class="hora">' + e.release_time + '</span>' : '');
+      var statusCell = e.confirmed
+        ? '<span class="status-pill confirmed">Confirmado</span>'
+        : '<span class="status-pill estimated">Estimado</span>';
+      tr.innerHTML =
+        '<td class="col-date">' + dateCell + '</td>' +
+        '<td>' + paisBadge(e) +
+          '<span class="inst-badge" style="background:' + color + '22;color:' + color + '">' + e.institution + '</span></td>' +
+        '<td class="col-name">' + e.name + '</td>' +
+        '<td class="col-ref">' + (e.reference_period || '—') + '</td>' +
+        '<td>' + statusCell + '</td>' +
+        '<td class="col-tables" title="' + e.tables.join(', ') + '">' + e.tables.join(', ') + '</td>' +
+        updateCell(e);
+      return tr;
+    }
+
+    /* Semana de segunda a domingo. As contas são em UTC de propósito: `new Date('2026-09-01')`
+       é lido como UTC e `new Date('2026-09-01T00:00:00')` como hora local — misturar os
+       dois desloca a semana inteira pelo fuso da máquina, e o sintoma seria uma linha
+       de segunda-feira aparecendo no bloco da semana anterior. */
+    function segundaDa(iso) {
+      var d = new Date(iso + 'T00:00:00Z');
+      var dow = d.getUTCDay();                      // 0 = domingo
+      d.setUTCDate(d.getUTCDate() - (dow === 0 ? 6 : dow - 1));
+      return d.toISOString().slice(0, 10);
+    }
+    function maisDias(iso, n) {
+      var d = new Date(iso + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() + n);
+      return d.toISOString().slice(0, 10);
+    }
+    function rotuloSemana(seg) {
+      return 'Semana de ' + fmtDateShort(seg) + ' a ' + fmtDateShort(maisDias(seg, 6));
+    }
+
+    /* Qual semana abre sozinha. A corrente, quando o mês selecionado a contém; num mês
+       futuro, a primeira; num mês já vencido, a última. Um mês inteiro fechado seria uma
+       tela sem nada, que é pior do que abrir a semana errada. */
+    function semanaPadrao(chaves) {
+      var atual = segundaDa(hojeRef());
+      if (chaves.indexOf(atual) >= 0) return atual;
+      for (var i = 0; i < chaves.length; i++) if (chaves[i] > atual) return chaves[i];
+      return chaves.length ? chaves[chaves.length - 1] : null;
+    }
+
+    /* O que o usuário abriu e fechou tem de sobreviver ao re-render (um Atualizar
+       redesenha a tabela inteira). Por isso o default só é aplicado quando NENHUMA
+       semana daquele mês foi tocada: sem essa distinção, fechar a semana corrente a
+       reabriria no clique seguinte. */
+    function inicializarSemanas(chaves) {
+      var tocou = chaves.some(function(c) { return Object.prototype.hasOwnProperty.call(state.semanas, c); });
+      if (tocou) return;
+      var d = semanaPadrao(chaves);
+      if (d) state.semanas[d] = true;
+    }
+
+    function renderPorSemana(entries, tbody) {
+      var porSemana = {}, chaves = [];
+      entries.forEach(function(e) {
+        var k = segundaDa(e.date);
+        if (!porSemana[k]) { porSemana[k] = []; chaves.push(k); }
+        porSemana[k].push(e);
+      });
+      chaves.sort();
+      inicializarSemanas(chaves);
+
+      var hoje = hojeRef();
+      var atual = segundaDa(hoje);
+      chaves.forEach(function(k) {
+        var linhas = porSemana[k];
+        var aberta = !!state.semanas[k];
+        var saiu = linhas.filter(function(e) { return rowState(e) !== 'future'; }).length;
+        var fim = maisDias(k, 6);
+
+        var htr = document.createElement('tr');
+        htr.className = 'week-header' + (fim < hoje ? ' past' : '');
+        htr.innerHTML = '<td colspan="7" data-week="' + k + '">' +
+          '<span class="wk-caret">' + (aberta ? '−' : '+') + '</span>' +
+          '<span class="wk-title">' + rotuloSemana(k) + '</span>' +
+          '<span class="wk-count">' + linhas.length + ' divulgaç' +
+            (linhas.length === 1 ? 'ão' : 'ões') +
+            (saiu ? ' · ' + saiu + ' já ' + (saiu === 1 ? 'saiu' : 'saíram') : '') + '</span>' +
+          (k === atual ? '<span class="wk-now">semana atual</span>' : '') +
+          '</td>';
+        tbody.appendChild(htr);
+
+        if (!aberta) return;
+        linhas.forEach(function(e) { tbody.appendChild(linhaDivulgacao(e)); });
+      });
+    }
+
+    function renderPorMes(entries, tbody) {
       var lastMonth = null;
       entries.forEach(function(e) {
         var ym = e.date.slice(0, 7);
@@ -555,23 +817,38 @@
           mtr.innerHTML = '<td colspan="7">' + monthLabel(ym) + '</td>';
           tbody.appendChild(mtr);
         }
-        var tr = document.createElement('tr');
-        var color = institutionColor(e.institution);
-        var dateCell = fmtDateFull(e.date) + (e.date_end ? ' <span class="end">– ' + fmtDateFull(e.date_end) + '</span>' : '')
-          + (e.release_time ? ' <span class="hora">' + e.release_time + '</span>' : '');
-        var statusCell = e.confirmed
-          ? '<span class="status-pill confirmed">Confirmado</span>'
-          : '<span class="status-pill estimated">Estimado</span>';
-        tr.innerHTML =
-          '<td class="col-date">' + dateCell + '</td>' +
-          '<td><span class="inst-badge" style="background:' + color + '22;color:' + color + '">' + e.institution + '</span></td>' +
-          '<td class="col-name">' + e.name + '</td>' +
-          '<td class="col-ref">' + (e.reference_period || '—') + '</td>' +
-          '<td>' + statusCell + '</td>' +
-          '<td class="col-tables" title="' + e.tables.join(', ') + '">' + e.tables.join(', ') + '</td>' +
-          updateCell(e);
-        tbody.appendChild(tr);
+        tbody.appendChild(linhaDivulgacao(e));
       });
+    }
+
+    /* A dica de leitura da lista. Só aparece no modo semana, porque é só ali que existe
+       um clique a descobrir — no modo "todos os meses" ela seria uma frase sobre um
+       controle que não está na tela. */
+    function renderListHint() {
+      var el = document.getElementById('list-hint');
+      if (!el) return;
+      if (state.month === 'Tudo') { el.innerHTML = ''; return; }
+      el.innerHTML = 'Blocos por semana: clique no cabeçalho para abrir ou fechar. ' +
+        'Em cinza, o que já foi divulgado — menos o que está esperando atualização.';
+    }
+
+    function renderTable() {
+      renderListHint();
+      var entries = filteredEntries();
+      // O controle de lote acompanha o MESMO recorte da tabela (país, fonte, divulgação
+      // e mês): agir sobre linha que não está listada seria surpresa. O que mudou com o
+      // mês corrente virando padrão é que agora o recorte quase nunca é o calendário
+      // inteiro — por isso renderBulkReleases() passou a contar também o que ficou de
+      // fora do recorte, em vez de deixar sumir em silêncio.
+      renderBulkReleases();
+      var tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+      if (!entries.length) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhuma divulgação no recorte selecionado.</td></tr>';
+        return;
+      }
+      if (state.month !== 'Tudo') renderPorSemana(entries, tbody);
+      else renderPorMes(entries, tbody);
     }
 
     /* ─────────────────────────── Coluna "Atualizar" ───────────────────────────
@@ -746,14 +1023,26 @@
        e o veredito intermediário de cada grupo não interessa a ninguém. */
     var BULK = { rodando: false, msg: null };
 
-    function pendentesDivulgacao() {
+    function pendentesDe(lista) {
       var vistos = {}, out = [];
-      filteredEntries().forEach(function(e) {
+      lista.forEach(function(e) {
         if (rowState(e) !== 'late' || vistos[e.group]) return;
         vistos[e.group] = 1;
         out.push({ group: e.group, name: e.institution + ' — ' + e.name });
       });
       return out;
+    }
+
+    function pendentesDivulgacao() { return pendentesDe(filteredEntries()); }
+
+    /* Quantos grupos atrasados ficaram FORA do recorte. Existe porque o recorte padrão
+       deixou de ser o calendário inteiro: com a página abrindo num mês só, um atraso de
+       dois meses atrás sumiria da contagem sem nada na tela dizendo que ele existe — e
+       o lote continua agindo só sobre o que está listado, que é a regra certa. */
+    function pendentesForaDoRecorte() {
+      var dentro = {};
+      pendentesDivulgacao().forEach(function(p) { dentro[p.group] = 1; });
+      return pendentesDe(REPORT_DATA.entries).filter(function(p) { return !dentro[p.group]; });
     }
 
     function renderBulkReleases() {
@@ -775,14 +1064,21 @@
         return;
       }
       var pend = pendentesDivulgacao();
+      var fora = pendentesForaDoRecorte();
+      var aviso = fora.length
+        ? '<span class="upd-msg">+' + fora.length + ' pendente(s) fora do recorte: ' +
+          esc(fora.map(function(p) { return p.name; }).join(' · ')) +
+          ' — troque o mês para alcançá-las</span>'
+        : '';
       if (!pend.length) {
-        el.innerHTML = '<span class="upd-ok">✓ nenhuma divulgação pendente</span>' + msg;
+        el.innerHTML = '<span class="upd-ok">✓ nenhuma divulgação pendente no recorte</span>' +
+          aviso + msg;
         return;
       }
       el.innerHTML = '<button class="upd-btn late" id="bulk-run-btn" title="' +
         esc('Roda o ETL de: ' + pend.map(function(p) { return p.name; }).join(' · ')) +
         '"' + (BULK.rodando ? ' disabled' : '') +
-        '>Atualizar pendentes (' + pend.length + ')</button>' + msg;
+        '>Atualizar pendentes (' + pend.length + ')</button>' + aviso + msg;
     }
 
     function rodarPendentes() {
@@ -826,10 +1122,21 @@
 
     document.getElementById('table-body').addEventListener('click', function(ev) {
       var btn = ev.target.closest ? ev.target.closest('button.upd-btn') : null;
-      if (!btn) return;
-      var slug = btn.dataset.group;
-      if (LIVE.on) runGroup(slug, btn);
-      else copyCommand(slug, btn.closest('td'));
+      if (btn) {
+        var slug = btn.dataset.group;
+        if (LIVE.on) runGroup(slug, btn);
+        else copyCommand(slug, btn.closest('td'));
+        return;
+      }
+      // Cabeçalho de semana: o clique-expande. A chave vive num data-attribute da
+      // célula em vez de num <details>, porque <details> dentro de <tbody> quebra a
+      // tabela — ver o comentário da CSS de .week-header.
+      var cab = ev.target.closest ? ev.target.closest('[data-week]') : null;
+      if (!cab) return;
+      var k = cab.dataset ? cab.dataset.week : cab.getAttribute('data-week');
+      if (!k) return;
+      state.semanas[k] = !state.semanas[k];
+      renderTable();
     });
 
     function initLive() {
@@ -840,8 +1147,11 @@
           LIVE.on = true;
           LIVE.today = p.hoje;
           LIVE.now = p.agora || null;
+          // Só agora existe uma data confiável: um HTML gerado no mês passado e aberto
+          // pelo servidor hoje tem de abrir no mês de hoje, não no da geração.
+          aplicarMesPadrao();
           return refreshStatus().then(function() {
-            renderTable();
+            renderAll();
             // O estado dos dashboards é a consulta mais cara das duas (MAX(date) de
             // ~70 tabelas): vai depois da tabela de divulgações já ter pintado.
             return refreshDashboards();
@@ -852,8 +1162,9 @@
 
     function renderAll() {
       renderControls();
-      renderStats();
       renderTable();
+      // Depois da tabela: o resumo conta o mesmo recorte que ela acabou de desenhar.
+      renderResumo();
     }
 
     /* ─────────────────────────── Aba "Status dashboard" ───────────────────────
@@ -890,10 +1201,36 @@
       return v;
     }
 
+    /* Mesmo selo da aba de divulgações, agora no card: a aba de dashboards já tinha o
+       recorte por área, mas o card fechado não dizia de que país ele é. "raiz" é o que
+       o manifesto chama do que monitora o sistema inteiro, e ali INT é a leitura certa
+       — não é de um país. */
+    var AREA_PAIS = { brasil: 'BR', us: 'US', raiz: 'INT' };
+
+    function paisBadgeArea(area) {
+      var p = AREA_PAIS[area];
+      if (!p) return '';
+      return '<span class="pais-badge ' + p.toLowerCase() + '" title="' +
+             (PAIS_LABEL[p] || p) + '">' + p + '</span>';
+    }
+
     var VERDICT_CLASS = { 'em dia': 'ok', 'desatualizado': 'stale',
                           'sem stamp': 'unknown', 'sem relatorio': 'missing' };
+    /* "stamp" é palavra de quem construiu isto, não de quem lê a página. O selo diz o
+       que o leitor precisa saber — que aqui não há resposta —, e a linha abaixo dele diz
+       por quê e o que fazer. */
     var VERDICT_LABEL = { 'em dia': 'em dia', 'desatualizado': 'dado novo na fonte',
-                          'sem stamp': 'sem stamp', 'sem relatorio': 'nunca gerado' };
+                          'sem stamp': 'não dá para conferir', 'sem relatorio': 'nunca gerado' };
+
+    /* Os dois vereditos que NÃO são uma afirmação sobre o dado precisam dizer por que
+       não são, junto com a saída. Um selo cinza sozinho lê como defeito da página. */
+    var VERDICT_PORQUE = {
+      'sem stamp': 'Não há registro de com que dado este arquivo foi montado, então não ' +
+                   'dá para dizer se ele está em dia. Regerar uma vez resolve, e a partir ' +
+                   'daí o registro passa a ser guardado sozinho.',
+      'sem relatorio': 'O arquivo ainda não existe. Gerar pela primeira vez é uma decisão ' +
+                       'sua — por isso ele fica de fora do botão que regera os pendentes.',
+    };
 
     function depVisivel(d) {
       if (DASH.filtro === 'fora') return d.fora_do_mysql;
@@ -1086,7 +1423,7 @@
       return '<details class="dash-card" data-key="' + esc(r.key) + '"' +
              (DASH.abertos[r.key] ? ' open' : '') + '>' +
         '<summary>' +
-          '<div class="dash-head"><h3>' + esc(r.name) + '</h3>' +
+          '<div class="dash-head">' + paisBadgeArea(r.area) + '<h3>' + esc(r.name) + '</h3>' +
             '<span class="verdict ' + (VERDICT_CLASS[r.veredito] || 'unknown') + '">' +
               esc(VERDICT_LABEL[r.veredito] || r.veredito || '—') + '</span>' +
             '<span class="spacer"></span>' +
@@ -1095,6 +1432,8 @@
           (msg ? '<div class="dash-msg' + (msg.erro ? ' err' : '') + '">' +
                  esc(msg.texto) + '</div>' : '') +
           '<div class="dash-meta">' + meta.join(' · ') + '</div>' +
+          (VERDICT_PORQUE[r.veredito]
+            ? '<div class="verdict-why">' + VERDICT_PORQUE[r.veredito] + '</div>' : '') +
         '</summary>' +
         '<div class="dash-body">' +
           (r.note ? '<div class="dash-note">' + esc(r.note) + '</div>' : '') +
@@ -1120,13 +1459,23 @@
         el.appendChild(b);
       });
 
-      var filtros = [['todas', 'Todas'], ['fora', 'Fora do MySQL'], ['novos', 'Com dado novo']];
+      /* O terceiro campo é o que a pill quer dizer. Ele morava no stat card que saiu em
+         2026-09-23; sem ele, "Fora do MySQL" vira jargão. */
+      var filtros = [
+        ['todas', 'Todas', ''],
+        ['fora', 'Fora do MySQL',
+         'CSV, arquivo de cálculo, configuração ou fonte externa — o botão Atualizar '
+         + 'não alcança nenhuma'],
+        ['novos', 'Com dado novo',
+         'A fonte andou depois de o relatório ter sido gerado'],
+      ];
       var el2 = document.getElementById('dash-scope-pills');
       el2.innerHTML = '';
       filtros.forEach(function(f) {
         var b = document.createElement('button');
         b.className = 'pill' + (DASH.filtro === f[0] ? ' active' : '');
         b.textContent = f[1];
+        if (f[2]) b.title = f[2];
         b.addEventListener('click', function() { DASH.filtro = f[0]; renderDashboards(); });
         el2.appendChild(b);
       });
@@ -1150,6 +1499,34 @@
       }
     }
 
+    /* O que sobrou dos 3 stat cards desta aba, retirados a pedido do usuário em
+       2026-09-23 — os mesmos três da outra aba, um dia depois.
+
+       Conta o RECORTE de área, não a lista inteira: um número que os cards logo abaixo
+       contradizem é pior do que nenhum. E o que era o card do meio ("com dado novo na
+       fonte", mais os nomes) não voltou por inteiro de propósito: o botão de lote ao
+       lado já carrega essa contagem, e os nomes estão nos cards laranja da tela. Aqui
+       fica só o número, em laranja, porque é o único que pede ação. */
+    function renderDashResumo(rows) {
+      var el = document.getElementById('dash-resumo');
+      if (!el) return;
+      if (!rows.length) { el.innerHTML = ''; return; }
+      var conta = {};
+      rows.forEach(function(r) { conta[r.veredito] = (conta[r.veredito] || 0) + 1; });
+      var partes = ['<strong>' + rows.length + '</strong> dashboard' +
+                    (rows.length === 1 ? '' : 's')];
+      if (conta['em dia'])
+        partes.push('<strong>' + conta['em dia'] + '</strong> em dia');
+      if (conta['desatualizado'])
+        partes.push('<span class="acao">' + conta['desatualizado'] + '</span> com dado novo');
+      if (conta['sem stamp'])
+        partes.push('<strong>' + conta['sem stamp'] + '</strong> sem como conferir');
+      if (conta['sem relatorio'])
+        partes.push('<strong>' + conta['sem relatorio'] + '</strong> nunca gerado' +
+                    (conta['sem relatorio'] === 1 ? '' : 's'));
+      el.innerHTML = partes.join(' · ');
+    }
+
     function renderDashboards() {
       renderDashControls();
 
@@ -1157,20 +1534,7 @@
         return DASH.area === 'todas' || r.area === DASH.area;
       });
 
-      var nDeps = 0, nFora = 0, stale = [];
-      rows.forEach(function(r) {
-        nDeps += r.n_deps || 0;
-        nFora += r.n_fora_mysql || 0;
-        if (r.veredito === 'desatualizado') stale.push(r.name);
-      });
-
-      document.getElementById('dash-stat-count').textContent = rows.length;
-      document.getElementById('dash-stat-deps').textContent =
-        nDeps + ' dependências declaradas no total';
-      document.getElementById('dash-stat-stale').textContent = stale.length;
-      document.getElementById('dash-stat-stale-sub').textContent =
-        stale.length ? stale.join(' · ') : 'nenhum com fonte à frente do arquivo gerado';
-      document.getElementById('dash-stat-out').textContent = nFora;
+      renderDashResumo(rows);
 
       document.getElementById('dash-cards').innerHTML = rows.map(cardDashboard).join('');
       wireDashFolds();
@@ -1456,8 +1820,18 @@
     });
 
     document.getElementById('generated-at').textContent = REPORT_DATA.generated_at;
+    /* A janela do calendário é DERIVADA das divulgações que existem, não escrita à mão.
+       Estava fixa em "Ago–Dez 2026" desde a primeira versão e o YAML já tinha o ano
+       inteiro: uma linha que o próprio payload ao lado contradizia, e que ninguém
+       levantaria na virada do ano. */
+    (function() {
+      var ms = REPORT_DATA.entries.map(function(e) { return e.date.slice(0, 7); }).sort();
+      document.getElementById('period-label').textContent =
+        ms.length ? (monthLabel(ms[0]) + ' – ' + monthLabel(ms[ms.length - 1])) : '—';
+    })();
     renderRecurring();
     renderModeHint();
+    aplicarMesPadrao();
     renderAll();
     renderDashboards();
     initLive();

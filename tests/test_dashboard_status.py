@@ -155,6 +155,69 @@ check("artefato mais novo que o HTML e sinalizado sem precisar de stamp",
 check("artefato CSV reporta o ultimo indice",
       linha["deps"][0]["ultimo"] == "2026-08", linha["deps"][0]["ultimo"])
 
+# ---------------------------------------------------------------------------
+# O retrato VELHO nao pode virar acusacao (conserto de 2026-09-23)
+# ---------------------------------------------------------------------------
+# O defeito, medido no card de Credito naquele dia: retrato de 11/09, HTML de 17/09, e a
+# aba acusando o relatorio de nao ter a inadimplencia de setembro que ESTAVA dentro dele.
+# O codigo ja sabia que o retrato nao era daquele arquivo (`output_mtime_ns` diferente) e
+# comparava com ele assim mesmo, porque testava `novos` ANTES da validade do retrato.
+#
+# Arquivos proprios de proposito: o bloco acima deixa `csv_dep` com mtime no futuro e uma
+# assercao presa ao ultimo indice dele, entao mexer naquele par aqui quebraria um teste
+# que nao tem nada a ver com este.
+csv2 = tmp / "dados" / "serie2.csv"
+csv2.write_text("dt,value\n2026-07,1\n", encoding="utf-8")
+saida2 = tmp / "reports" / "Fake3.html"
+saida2.write_text("<html></html>", encoding="utf-8")
+DOC_VELHO = {"dashboards": [{
+    "key": "fake3", "name": "Fake3", "area": "brasil",
+    "output": "reports/Fake3.html", "module": None, "command": "echo",
+    "build_seconds": 1,
+    "deps": [{"kind": "csv", "ref": "dados/serie2.csv", "date_col": "dt",
+              "role": "serie de teste"}],
+}]}
+
+S.stamp("fake3", DOC_VELHO)
+time.sleep(0.05)                       # ver a nota sobre o relogio de arquivo do Windows
+saida2.write_text("<html>gerado na mao</html>", encoding="utf-8")
+csv2.write_text("dt,value\n2026-07,1\n2026-08,2\n", encoding="utf-8")
+linha = S.estado(DOC_VELHO)[0]
+check("fonte andou com o retrato VELHO -> 'sem stamp', nunca 'desatualizado'",
+      linha["veredito"] == "sem stamp", linha["veredito"])
+check("e a dependencia nao sai marcada como nova (a comparacao nao vale)",
+      linha["deps"][0]["novo"] is False and linha["n_novos"] == 0,
+      (linha["deps"][0]["novo"], linha["n_novos"]))
+check("mas o estado da fonte continua visivel na tela",
+      linha["deps"][0]["ultimo"] == "2026-08", linha["deps"][0]["ultimo"])
+
+# Com o retrato de volta ao arquivo certo, a afirmacao volta a ser possivel -- senao o
+# conserto acima teria matado o sinal em vez de conserta-lo.
+S.stamp("fake3", DOC_VELHO)
+check("restampado e nada mudou -> 'em dia'",
+      S.estado(DOC_VELHO)[0]["veredito"] == "em dia")
+csv2.write_text("dt,value\n2026-07,1\n2026-08,2\n2026-09,3\n", encoding="utf-8")
+linha = S.estado(DOC_VELHO)[0]
+check("com retrato valido, a fonte andando volta a dar 'desatualizado'",
+      linha["veredito"] == "desatualizado" and linha["deps"][0]["novo"] is True,
+      linha["veredito"])
+saida2.unlink()
+
+# ---------------------------------------------------------------------------
+# chave_por_saida(): e o que deixa o gerador stampar sem saber a chave
+# ---------------------------------------------------------------------------
+check("acha a chave pelo caminho de saida",
+      S.chave_por_saida(tmp / "reports" / "Fake.html", DOC) == "fake",
+      S.chave_por_saida(tmp / "reports" / "Fake.html", DOC))
+check("arquivo que nao esta no manifesto nao casa com ninguem",
+      S.chave_por_saida(tmp / "reports" / "Outro.html", DOC) is None)
+# O casamento e pelo caminho RESOLVIDO, nao pelo nome: dois relatorios de paises
+# diferentes se chamam Inflation.html, e casar por nome stamparia um no lugar do outro.
+(tmp / "outra_pasta").mkdir(exist_ok=True)
+(tmp / "outra_pasta" / "Fake.html").write_text("<html></html>", encoding="utf-8")
+check("mesmo NOME noutra pasta nao casa",
+      S.chave_por_saida(tmp / "outra_pasta" / "Fake.html", DOC) is None)
+
 saida.unlink()
 check("sem arquivo gerado -> 'sem relatorio'",
       S.estado(DOC)[0]["veredito"] == "sem relatorio")
@@ -223,6 +286,80 @@ res = S.regerar_afetados(["fisc_rtn"], DOC_AF, vereditos=("sem relatorio",))
 check("dashboard sem run() sai como 'manual', com o comando",
       res[0]["acao"] == "manual" and res[0]["command"] == "echo a", res[0])
 
+# ---------------------------------------------------------------------------
+print("\n2c. quem gera o relatorio grava o retrato (conserto de 2026-09-23)")
+# ---------------------------------------------------------------------------
+# O outro lado do mesmo defeito. Ate aqui o retrato so era gravado por `status.gerar()`,
+# um passo separado -- e o comando documentado em 10 dos 13 CLAUDE.md de pasta e o
+# `generate_report.run()` direto, que nao passa por la. Medido em 2026-09-23: 8 dos 13
+# relatorios entregues tinham retrato ausente ou de outra geracao.
+#
+# A correcao poe a gravacao dentro de `render_report()`, por onde TODO relatorio HTML
+# deste projeto passa. Este teste e o que impede a regressao: um refactor do builder que
+# perca a chamada volta a produzir uma aba que nao sabe responder nada.
+from analytics.report_structure.builder import render_report      # noqa: E402
+
+_carregar_orig = S.carregar
+S.carregar = lambda *a, **k: DOC_RENDER                # o builder resolve pelo manifesto
+
+modelo = tmp / "modelo.html"
+modelo.write_text("<html><script>/*REPORT_DATA*/</script></html>", encoding="utf-8")
+saida4 = tmp / "reports" / "Fake4.html"
+DOC_RENDER = {"dashboards": [{
+    "key": "fake4", "name": "Fake4", "area": "brasil",
+    "output": "reports/Fake4.html", "module": None, "command": "echo",
+    "build_seconds": 1,
+    "deps": [{"kind": "csv", "ref": "dados/serie2.csv", "date_col": "dt",
+              "role": "serie de teste"}],
+}]}
+
+csv2.write_text("dt,value\n2026-07,1\n2026-08,2\n", encoding="utf-8")
+check("nao ha retrato antes de gerar", S.ler_stamp("fake4") is None)
+
+render_report(modelo, {"x": 1}, saida4)
+reg = S.ler_stamp("fake4")
+check("render_report() gravou o retrato sozinho, sem passar por gerar()",
+      reg is not None and reg["key"] == "fake4", reg)
+check("o retrato guarda o que a fonte tinha na hora",
+      reg and reg["deps"]["dados/serie2.csv"] == "2026-08", reg)
+# A ordem importa e e invisivel quando errada: gravado ANTES do write_text, o retrato
+# seria da versao anterior do arquivo e daria um "em dia" de mentira na geracao seguinte.
+check("gravou DEPOIS de escrever (o mtime do retrato e o do arquivo entregue)",
+      reg and reg["output_mtime_ns"] == saida4.stat().st_mtime_ns, reg)
+check("e o veredito ja sai 'em dia', sem passo manual nenhum",
+      S.estado(DOC_RENDER)[0]["veredito"] == "em dia",
+      S.estado(DOC_RENDER)[0]["veredito"])
+
+# Gerar de novo com a fonte adiantada tem de reescrever o retrato, nao manter o antigo.
+csv2.write_text("dt,value\n2026-07,1\n2026-08,2\n2026-09,3\n", encoding="utf-8")
+time.sleep(0.05)
+render_report(modelo, {"x": 2}, saida4)
+check("regerar atualiza o retrato junto",
+      S.ler_stamp("fake4")["deps"]["dados/serie2.csv"] == "2026-09"
+      and S.estado(DOC_RENDER)[0]["veredito"] == "em dia")
+
+# Saida que ninguem declarou (o template de comparacao de juros reais, por exemplo) nao
+# stampa e nao levanta -- nao ha dashboard contra o que comparar.
+antes = sorted(p.name for p in S._STAMPS.glob("*.json"))
+fora = tmp / "reports" / "NaoDeclarado.html"
+render_report(modelo, {"x": 3}, fora)
+check("saida fora do manifesto nao quebra a geracao e nao stampa",
+      fora.exists() and sorted(p.name for p in S._STAMPS.glob("*.json")) == antes,
+      sorted(p.name for p in S._STAMPS.glob("*.json")))
+
+# E uma falha ao gravar o retrato NAO pode custar o relatorio: o banco pode estar fora do
+# ar, e o arquivo ja esta em disco. O veredito passa a ser "nao da para conferir", que e a
+# resposta honesta -- perder o HTML nao seria. Tem de ser uma saida DECLARADA, senao a
+# funcao sai antes de chegar no stamp e o teste nao exercita nada.
+_stamp_orig = S.stamp
+S.stamp = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("banco fora do ar"))
+time.sleep(0.05)
+render_report(modelo, {"marcador": "sobreviveu"}, saida4)
+check("retrato que falha nao derruba a geracao",
+      saida4.exists() and "sobreviveu" in saida4.read_text(encoding="utf-8"))
+S.stamp = _stamp_orig
+S.carregar = _carregar_orig
+
 S._RAIZ, S._STAMPS = _RAIZ_ORIG, _STAMPS_ORIG
 
 
@@ -246,6 +383,15 @@ check("so kinds conhecidos", kinds <= {"mysql", "csv", "artifact", "yaml", "live
 sem_modulo = [d["key"] for d in ds
               if d["output"].endswith(".html") and not d.get("module")]
 check("todo relatorio HTML tem module com run()", not sem_modulo, sem_modulo)
+
+# E, desde que o Oraculo saiu da lista (2026-09-23), NENHUM dashboard fica sem module.
+# O ramo que trata disso continua no codigo (`gerar()` levanta, o card oferece so a linha
+# de comando) porque a situacao volta assim que alguem declarar outro artefato sem run();
+# esta assercao e o que impede ele de virar codigo morto sem ninguem notar -- mesma
+# escolha que o ramo de `owner` ja tinha. Se ela reprovar, o ramo ganhou usuario de novo.
+check("nenhum dashboard do manifesto fica sem module (o ramo existe, sem usuario)",
+      not [d["key"] for d in ds if not d.get("module")],
+      [d["key"] for d in ds if not d.get("module")])
 
 todas_saidas = [d["output"] for d in ds]
 check("nenhuma saida repetida entre dashboards",

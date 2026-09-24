@@ -5,8 +5,8 @@ IPCA/IPCA-15 decomposition report: self-contained HTML that reads MySQL (`macro_
 ## Generate the report
 
 ```powershell
-uv run python -m domain.dashboards.status --gerar brasil_inflation   # gera e grava o stamp
 uv run python -c "from analytics.brasil.inflation.generate_report import run; run()"
+uv run python -m domain.dashboards.status --gerar brasil_inflation   # ... e recalcula o que estiver atrás
 # Output: reports/brasil/Inflation.html (self-contained, ~99 MB as of the
 # 2026-07 historical extension back to ago/1999 — up from ~14 MB, since the
 # now much longer decomposition records embedded as inline JSON are the

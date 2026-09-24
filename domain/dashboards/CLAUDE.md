@@ -17,7 +17,9 @@ Sem a terceira, apertar "Atualizar" no calendário deixava o banco em dia e todo
 ## Arquivos
 
 - **`manifest.yaml`** — uma entrada por dashboard: saída, módulo com `run()`, comando, custo
-  medido de geração, e a lista de dependências. Hoje 12 dashboards, 122 dependências.
+  medido de geração, e a lista de dependências. Hoje 12 dashboards, 138 dependências —
+  **todos com `module`**: o Oráculo, o único que não tinha, saiu em 2026-09-23 (ver o
+  comentário no lugar dele no manifesto).
 - **`status.py`** — resolve o estado ao vivo de cada dependência e compara com o *stamp*.
 
 **Os campos `note:` são texto de PRODUTO, não comentário** (2026-09-01, correção do usuário
@@ -58,13 +60,75 @@ da geração, o último dado de cada dependência — aí a comparação vira ex
 agosto, o relatório foi feito com até julho". Sem stamp o veredito é `sem stamp`, nunca um
 `em dia` de mentira.
 
-`gerar(key)` é o ponto de entrada único (roda `run()` + `stamp()`) e é o que o botão de regerar
-chama, via `POST /api/gerar`. Gerar por fora continua funcionando e aparece como `sem stamp` — o campo
-`output_mtime_ns` do stamp detecta o arquivo reescrito depois (nanossegundos, não segundos:
-com resolução de segundo, regerar à mão no mesmo segundo do stamp passava por "em dia").
+**Quem grava é `render_report()`, desde 2026-09-23** — ver a seção seguinte. Antes era só
+`gerar(key)`, e era por isso que quase metade dos relatórios não tinha retrato.
+
+`gerar(key)` continua sendo o ponto de entrada do **botão** (é ele que recalcula o que ficou
+atrás antes de gerar), e só regrava o retrato se o gerador não tiver gravado. O campo
+`output_mtime_ns` é o que diz se o retrato é *daquele* arquivo — nanossegundos, não segundos:
+com resolução de segundo, regerar à mão no mesmo segundo do stamp passava por "em dia".
 
 Dependência de arquivo tem um segundo sinal, `arquivo_mais_novo`, que **não** precisa de stamp:
 um artefato reescrito depois do HTML não está dentro dele, ponto.
+
+## Quem grava o retrato é quem escreve o arquivo (2026-09-23)
+
+Pedido do usuário depois de um diagnóstico: *"o processo de atualização não está funcionando,
+está cheio de furo … vamos arrumar esse processo de atualizar e regenerar o dashboard, assim
+como deixar o stamp correto."* Os furos eram dois, e os dois vinham do mesmo lugar — **o retrato
+era gravado por um passo separado daquele que escreve o arquivo.**
+
+**Furo 1: o caminho documentado não stampava.** Só `gerar()` gravava, e o comando escrito em 10
+dos 13 `CLAUDE.md` de pasta é `generate_report.run()`, que não passa por lá. Medido naquele dia:
+**8 dos 13 relatórios entregues** tinham retrato ausente (2, nunca gerados pelo botão) ou de
+outra geração (6, stampados e depois regerados à mão — Crédito com o HTML 6 dias mais novo que o
+retrato, us/Inflation 6, Inflação 5, Expectativas 2). A aba não conseguia dizer nada sobre quase
+metade da lista. Um mecanismo cuja corretude depende de ninguém usar o caminho normal não fica
+em dia — e a correção não é disciplina, é mudar quem grava.
+
+`render_report()` passou a chamar `_registrar_procedencia()` logo **depois** do `write_text`, e
+`chave_por_saida()` (aqui) resolve o caminho escrito contra o `output` do manifesto. Todos os 12
+relatórios HTML do projeto passam por `render_report()`, então gerar de qualquer jeito deixa o
+retrato em dia. Três cuidados, cada um a origem de um defeito silencioso:
+
+- **Depois de escrever, nunca antes** — gravado antes, o retrato seria da versão anterior do
+  arquivo e produziria um "em dia" de mentira na geração seguinte.
+- **Falhar ali não derruba a geração.** O retrato consulta o banco; banco fora do ar não pode
+  custar o relatório, que já está em disco. A falha é avisada e o veredito vira "não dá para
+  conferir", que é a resposta honesta.
+- **O casamento é pelo caminho RESOLVIDO, não pelo nome.** Brasil e EUA têm um `Inflation.html`
+  cada; casar por nome stamparia um no lugar do outro. E um `output=` fora do manifesto não casa
+  com nada e não stampa — melhor nenhum retrato do que o retrato de outro arquivo.
+
+**Furo 2: o retrato velho virava acusação.** `estado()` testava `novos` **antes** da validade do
+retrato: o código já sabia que aquele retrato não era daquele arquivo (`output_mtime_ns`
+diferente) e comparava com ele assim mesmo. O resultado é pior do que não saber, porque não se
+distingue de um alerta verdadeiro. Medido nos dois cards laranja daquele dia:
+
+| card | acusação | arquivo entregue | veredito |
+|---|---|---|---|
+| Crédito | "falta a inadimplência de set/2026" | a maior data embutida **é 2026-09-01** | **falso** |
+| Expectativas | "o Focus andou para 18/09" | 65 ocorrências de `2026-09-11`, zero de `18/09` | verdadeiro |
+
+Dois avisos idênticos na tela, um certo e um errado — que é exatamente como um painel perde a
+confiança de quem o lê. A marca `stamp_vale` entrou dentro de `novo`, então com retrato inválido
+a comparação simplesmente não é feita; e **`arquivo_mais_novo` continua sendo testado antes da
+falta de retrato**, porque aquele sinal não depende de retrato nenhum e sumiria na reordenação.
+
+Trocar *só* a ordem do bloco de veredito, com a marca no lugar, é **mutante equivalente** —
+verificado, não suposto. Quem carrega o conserto é a marca; a ordem existe para o ramo de
+`arquivo_mais_novo` continuar alcançável.
+
+**O que isso muda na tela, e vale saber antes de estranhar:** a lista passou a ter *mais*
+"não dá para conferir" do que antes (de 5 para 7), porque a confiança falsa saiu. Cada um deles
+some sozinho na primeira vez que aquele relatório for gerado, por qualquer caminho. Para limpar
+tudo de uma vez: `--gerar todos`, que gera os doze **sem recalcular** — é o uso para que ele
+existe.
+
+Coberto pelas seções 2 e 2c de `tests/test_dashboard_status.py` (o retrato velho que não pode
+acusar, o `render_report()` que grava sozinho, a ordem escrita-depois, a falha que não derruba a
+geração e o casamento por caminho), verificado contra **8 mutantes** — um deles registrado como
+equivalente, com o motivo.
 
 ## `procedures` — o que o Regerar recalcula antes de gerar (2026-08-31, estendido em 2026-09-01)
 
@@ -278,6 +342,9 @@ de entrar* — tipicamente um dashboard, às vezes nenhum.
   deles for revisado dentro do mesmo trimestre, o passo não vai perceber. O corretivo é rodar
   `--rodar` à mão; o alternativo seria comparar `MAX(date)` por tabela contra um stamp por passo,
   que é mais preciso e mais máquina.
-- **O Oráculo não tem `module` com `run()`** (o entry point é o script solto
-  `jobs/update_oraculo.py`, que escreve o CSV no nível do módulo). `gerar()` levanta nele de
-  propósito, em vez de fingir sucesso. Fica manual até o job virar função.
+- ~~**O Oráculo não tem `module` com `run()`**~~ — **resolvido tirando-o da lista** (2026-09-23,
+  a pedido do usuário). Era o único sem `module`, então o card dele nunca tinha botão nem
+  veredito: ocupava uma linha da aba para dizer "não dá para conferir" todo dia. O ramo que trata
+  de dashboard sem `module` continua no código, sem usuário, com uma asserção que reprova se
+  alguém voltar a criar um. Se `jobs/update_oraculo.py` virar função com `run()`, aí vale
+  redeclarar a entrada — ela está no git.

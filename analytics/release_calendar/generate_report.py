@@ -30,6 +30,72 @@ def _load_groups() -> list[dict]:
     return doc["groups"]
 
 
+# Pais de uma divulgacao. Nao e um campo do YAML: e derivado das TABELAS que o grupo
+# alimenta, atraves do registry -- `domain/db/brasil/...` -> BR, `us/` -> US,
+# `international/` -> INT. Essa e a divisao que o proprio sistema ja usa (sao os tres
+# jobs: update_db, update_us, update_international), entao ela nao pode divergir do
+# banco sem que o registry mude junto.
+#
+# Consequencia que vale saber ANTES de estranhar: FOMC e COT saem como INT, e nao como
+# US, porque as tabelas que eles escrevem (diferenciais_juros, cmb_cot_fx) sao series
+# entre paises e vivem no schema international. Quem publica e americano; o dado nao e
+# de um pais so.
+_AREA_PAIS = {"brasil": "BR", "us": "US", "international": "INT"}
+
+# Fallback para grupo que nao alimenta tabela nenhuma -- hoje so a Ata do Copom. Sem
+# tabela nao ha de onde derivar, entao a instituicao responde; um nome novo aqui levanta
+# em _paises_dos_grupos() em vez de virar um badge em branco.
+_INSTITUICAO_PAIS = {
+    "IBGE": "BR",
+    "BCB": "BR",
+    "Tesouro Nacional": "BR",
+    "MTE/PDET": "BR",
+    "MDIC": "BR",
+    "US Federal Reserve": "US",
+    "BLS": "US",
+    "BEA": "US",
+    "CFTC": "US",
+}
+
+_ORDEM_PAIS = ["BR", "US", "INT"]
+
+
+def _paises_dos_grupos(groups: list[dict]) -> dict[str, str]:
+    """{slug do grupo: "BR" | "US" | "INT"}.
+
+    Levanta se um grupo nao puder ser classificado, ou se as tabelas dele se
+    espalharem por mais de um schema -- os dois casos sao ambiguidade de verdade, e
+    um badge errado no calendario nao tem sintoma nenhum.
+    """
+    from domain.db.registry import tabelas
+
+    mapa = tabelas()
+    fora: dict[str, str] = {}
+    for g in groups:
+        areas = set()
+        for t in g.get("tables", []):
+            modulo = mapa.get(t)
+            if modulo:
+                areas.add(modulo.split(".")[2])
+        paises = {_AREA_PAIS[a] for a in areas if a in _AREA_PAIS}
+        if len(paises) == 1:
+            fora[g["group"]] = paises.pop()
+            continue
+        if len(paises) > 1:
+            raise ValueError(
+                f"grupo {g['group']!r} alimenta tabelas de mais de um pais "
+                f"({sorted(paises)}) — o calendario nao tem como rotular a linha"
+            )
+        pais = _INSTITUICAO_PAIS.get(g["institution"])
+        if not pais:
+            raise ValueError(
+                f"grupo {g['group']!r} nao alimenta tabela conhecida e a instituicao "
+                f"{g['institution']!r} nao esta em _INSTITUICAO_PAIS — acrescente-a"
+            )
+        fora[g["group"]] = pais
+    return fora
+
+
 def _hora_brasilia(entrada: dict, grupo: dict) -> str | None:
     """`"HH:MM"` de Brasilia para a entrada, ou None se o grupo nao declara horario."""
     from datetime import date as _date
@@ -44,7 +110,7 @@ def _hora_brasilia(entrada: dict, grupo: dict) -> str | None:
     return hora.strftime("%H:%M") if hora else None
 
 
-def _flatten_entries(groups: list[dict]) -> list[dict]:
+def _flatten_entries(groups: list[dict], paises: dict[str, str]) -> list[dict]:
     """One row per dated entry, group/institution metadata denormalized onto it --
     report.html's table and timeline both consume this flat list directly, no
     lookup back into `groups` needed at render time."""
@@ -65,6 +131,7 @@ def _flatten_entries(groups: list[dict]) -> list[dict]:
                 "confirmed": e.get("confirmed", True),
                 "note": e.get("note"),
                 "group": g["group"],
+                "country": paises[g["group"]],
                 "institution": g["institution"],
                 "name": g["name"],
                 "tables": g["tables"],
@@ -116,9 +183,13 @@ def _load_dashboards() -> list[dict]:
 def run(output: str = "reports/release_calendar.html") -> None:
     print("Carregando calendario de divulgacoes...")
     groups = _load_groups()
-    entries = _flatten_entries(groups)
+    paises = _paises_dos_grupos(groups)
+    entries = _flatten_entries(groups, paises)
     recurring = _recurring_groups(groups)
     institutions = sorted({g["institution"] for g in groups})
+    # Ordem fixa (BR, US, INT) e nao alfabetica: o seletor de pais e uma lista de tres
+    # itens, e a ordem em que se pensa neles nao e a do alfabeto.
+    countries = [p for p in _ORDEM_PAIS if p in set(paises.values())]
     dashboards = _load_dashboards()
 
     data = {
@@ -128,9 +199,12 @@ def run(output: str = "reports/release_calendar.html") -> None:
         "entries": entries,
         "recurring": recurring,
         "institutions": institutions,
+        "countries": countries,
         "dashboards": dashboards,
     }
+    por_pais = {p: sum(1 for g in groups if paises[g["group"]] == p) for p in countries}
     print(f"  {len(groups)} grupos, {len(entries)} divulgacoes datadas, {len(recurring)} recorrentes (sem data fixa)")
+    print("  por pais: " + " · ".join(f"{p} {n}" for p, n in por_pais.items()))
     if dashboards:
         atrasados = [d["name"] for d in dashboards if d["veredito"] == "desatualizado"]
         n_deps = sum(d["n_deps"] for d in dashboards)

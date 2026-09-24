@@ -896,6 +896,435 @@ A assertion que segura isso não é o comprimento do array: é **a cauda, mês a
 do modelo (`months.slice(off)` igual a `D.months`, com `off` derivado do próprio rótulo de mês). Um
 `slice(-n)` continua fechando quando a série desliza no tempo, que é o defeito que ele deveria pegar.
 
+## `HTMLCollection` não é `Array`, e o stub do teste era (2026-09-17)
+
+De `analytics/report_structure/chart_head.js`, o asset compartilhado que desenha o cabeçalho de três
+linhas dos seis relatórios que inlinam `/*CHART_HEAD_JS*/`. `_ensureChartFrame()` procurava um
+cabeçalho já presente no markup do card assim:
+
+```js
+var pronto = (card.children || []).filter(function(c) { ... })[0];
+```
+
+`card` é um Element de verdade, então `card.children` é um **`HTMLCollection`**, que pela
+especificação expõe só `length`, o acesso indexado, `item()`, `namedItem()` e o iterador. **Não tem
+`.filter`.** A chamada lançava `TypeError` no **primeiro gráfico de cada página**, e como
+`_ensureChartFrame()` é a primeira coisa que `describeChart()` faz, nenhum cabeçalho era escrito em
+lugar nenhum.
+
+**Medido em Chrome headless** (via CDP, contra os arquivos entregues em `reports/`) — não é leitura
+de especificação:
+
+| relatório | antes | depois |
+|---|---|---|
+| `brasil/Monetary Policy` | `TypeError`, **0** cabeçalhos em 6 cards, 1 gráfico plotado | 0 exceções, **6/6** cabeçalhos, 6 plotados |
+| `brasil/Expectations` | `TypeError`, 1 cabeçalho e o título saía `—` | 0 exceções, **15/15** cabeçalhos |
+| `brasil/Credit` · `Fiscal Policy` · `Inflation` · `us/Inflation` | build **velho**, anterior à varredura — não quebravam ainda | 0 exceções, 11/11 · 19/19 · 14/14 · 3/3 |
+
+O conserto é uma linha em cada uma das duas varreduras da função, e funciona igual com
+`HTMLCollection` e com `Array`:
+
+```js
+var pronto = Array.prototype.slice.call(card.children || []).filter(function(c) { ... })[0];
+```
+
+### A armadilha do build velho: o relatório que ainda não quebrou é o que vai quebrar
+
+O achado que quase passou: quatro dos seis relatórios **não** apresentavam o defeito no browser, e
+não por mérito — os `reports/*.html` deles eram builds de 2026-09-14, gerados de um `chart_head.js`
+que ainda não tinha a varredura. Só `Expectations` e `Monetary Policy` tinham sido regerados depois.
+
+Ou seja: **regerar os seis, que era o passo de verificação, teria injetado o defeito em quatro
+relatórios que funcionavam.** Um asset compartilhado é inlinado no momento da geração, então o
+estoque de arquivos entregues mistura vintages do asset, e "o relatório X está bom" é afirmação
+sobre o arquivo, não sobre o código. Antes de concluir que um defeito de asset compartilhado tem
+alcance parcial, confira **qual versão do asset cada saída carrega** — aqui, um `grep` da linha nos
+`reports/*.html` separou os dois grupos na hora.
+
+### Por que nenhum teste pegava: a diferença estava no INSTRUMENTO
+
+Os 14 harnesses de `tests/test_*_js.js` montam um DOM à mão em que `children` é um `Array`
+JavaScript. `Array` tem `.filter`. Então a única diferença entre o stub e o browser era exatamente
+onde o defeito vivia, e as 40 asserções de `tests/test_chart_head_js.js` passavam verdes contra uma
+página que lançava no carregamento. É o mesmo modo de falha da oitava face da seção de eixos acima
+(*"o harness passava um stub, então capturava o que o gráfico pede e nunca o que a página resolve"*),
+por outro caminho: lá o stub era permissivo demais sobre o **layout**, aqui sobre o **DOM**.
+
+**A asserção que faltava é sobre o stub, não sobre o código.** Duas metades, e as duas são
+necessárias:
+
+- **O stub tem de ser FRACO onde o browser é fraco.** `El.prototype.children` virou uma **vista**
+  sobre um array interno (`_kids`), devolvendo um objeto com `length` + índice + `item()` +
+  iterador e **nenhum** método de `Array`; a mutação continua no `_kids`. §1a afirma isso
+  diretamente (`!Array.isArray`, `typeof c.filter === 'undefined'`, …). Um mutante que devolva o
+  `Array` de volta reprova em **11** asserções.
+- **E um guarda estático, porque o comportamental só alcança o que algum harness executa.** §4
+  varre `analytics/report_structure/*.js` e todo `analytics/**/report.html` procurando método de
+  `Array` em coleção viva do DOM.
+
+**O subconjunto quebrado não é óbvio, e é isso que torna o guarda necessário em vez de pedante:**
+
+| produtor | coleção | tem `forEach`? | tem `filter`/`map`/…? |
+|---|---|---|---|
+| `.children`, `getElementsBy*()` | `HTMLCollection` | **não** | não |
+| `querySelectorAll()`, `.childNodes` | `NodeList` | **sim** | não |
+
+Por isso `document.querySelectorAll('.pill').forEach(...)` — que aparece dezenas de vezes nestes
+relatórios — está **certo**, e `getElementsByClassName('pill').forEach(...)` não estaria.
+
+Três detalhes de implementação do guarda, cada um a origem de um falso resultado:
+
+- **`.children` de um NÓ DE ÁRVORE do payload é um `Array` de verdade**, e há dezenas desses
+  (`node.children`, `raiz.children`, `n.children.sort(...)`). Varrer `.children` nos `report.html`
+  acusaria os oito — todos corretos. Nos relatórios o guarda parte dos **produtores**, que não têm
+  ambiguidade; a varredura de `.children` roda só em `report_structure/`, onde todo `.children` é
+  de um Element.
+- **Um uso já embrulhado em `slice.call`/`Array.from` tem de ser apagado do texto antes da busca**,
+  senão o guarda acusa o próprio conserto — foi o que aconteceu na primeira execução, com 3 falsos
+  positivos, dois deles em `slice.call(panel.querySelectorAll(...)).map(...)` que já estavam certos.
+- **E o embrulho fica a um IDENTIFICADOR de distância do produtor** (`slice.call(` + `panel` +
+  `.querySelectorAll`), então olhar só o caractere imediatamente anterior não basta. A classe que
+  fecha essa lacuna exclui `;`, `,` e parênteses de propósito, para que um `Array.from(a);
+  b.children.filter(` continue sendo acusado — ali o embrulho é de outra expressão.
+
+Verificado contra 5 mutantes: o defeito original (o harness **trava**, `exit=1`, com o mesmo
+`TypeError` do browser), o stub voltando a ser `Array` (11 falhas), `.children.forEach` em
+`y_autofit.js` (arquivo que a seção 1 não executa — é o que prova que o guarda estático não depende
+do comportamental), `querySelectorAll(...).map` sem o `slice` num `report.html`, e
+`getElementsByClassName(...).forEach`. `tests/test_chart_head_js.js` passou de 135 para 175
+asserções.
+
+### O resto da varredura: uma classe, não um caso
+
+`.children.filter`/`.map`/`.forEach`/`.some`, `querySelectorAll(...).map`/`.filter` e
+`getElementsBy*(...)` com qualquer método, em `analytics/report_structure/*.js` e
+`analytics/**/report.html`: **as duas linhas de `chart_head.js` eram as únicas ocorrências reais do
+repositório.** Os outros 8 casos de `.children.<método>` são nós de árvore do payload; os ~60
+`querySelectorAll(...).forEach` são legítimos (`NodeList` tem `forEach`); os 4 `NodeList` guardados
+em variável são percorridos com `for` indexado; e os 2 `querySelectorAll(...).map` já passavam por
+`Array.prototype.slice.call`. O guarda de §4 agora mantém isso verdadeiro sem depender de varredura
+manual.
+
+## Um recorte PADRÃO estreito tem de dizer o que ele esconde (2026-09-22)
+
+De `analytics/release_calendar/report.html`, a pedido do usuário: *"eu quero que ele abra sempre
+no mês atual e uma opção 'clique-expande' para escolher outro"*. A página abria no ano inteiro
+(~224 linhas) e passou a abrir no mês corrente.
+
+Trocar o padrão de "tudo" para "um recorte" é barato de fazer e tem **dois efeitos colaterais que
+não levantam nada**, os dois medidos nesta página:
+
+- **"O recorte esconde o resto" fica indistinguível de "não há mais nada".** O corretivo é marcar
+  o seletor que não está no default — aqui uma classe (`.ctrl-select.narrow`, dourada) em qualquer
+  `<select>` cujo valor não seja a chave "todos", mais um botão que volta ao padrão. Marcar o
+  *controle* e não a lista é o que faz a marca aparecer no lugar onde a correção é feita.
+- **Um controle de lote que "age sobre o que está listado" passa a agir sobre muito menos.** A
+  regra continua certa (agir sobre linha fora da tela é surpresa), mas o que era o calendário
+  inteiro virou um mês, e um atraso de dois meses atrás sai da contagem em silêncio. O corretivo
+  não é alargar o lote: é **contar o que ficou de fora e nomeá-lo**, com o caminho de saída junto
+  — `+1 pendente(s) fora do recorte: BCB — IC-Br — troque o mês para alcançá-las`. Mesmo instinto
+  da pill desabilitada com o motivo no `title`.
+
+E um terceiro, sobre os cards de resumo: **um KPI de "próxima ocorrência" tem de ignorar o recorte
+que o inutiliza.** Com a página num mês só, "próxima divulgação" diria "—" no dia 30 existindo uma
+na semana seguinte; ele passou a honrar os outros três filtros e não o mês. A regra é por card e
+não por página — os outros dois continuavam no recorte inteiro.
+
+**E, horas depois, o usuário mandou tirar os três cards** (*"e melhor, pode retirar esses cards"*),
+o que fecha a lição de um jeito mais útil do que a correção acima: **um estado de recorte que cabe
+numa linha não precisa de três caixas.** O que sobreviveu foi a contagem —
+`34 divulgações · 21 já saíram · 1 com data estimada`, um metadado em mono ao lado do título — e o
+que foi descartado foi o KPI que o recorte já responde: com a lista abrindo na semana corrente, a
+próxima divulgação **é** a primeira linha não-cinza da tela, e repeti-la num card era dizer duas
+vezes. Antes de consertar um KPI contra o recorte novo, vale perguntar se o recorte não o tornou
+supérfluo.
+
+E o que sobra tem de contar **o recorte**, não a base inteira: um número que a tabela ao lado
+contradiz é pior do que nenhum. O mutante que troca `filteredEntries()` por todo o payload não
+levanta nada — só imprime 224 onde a tabela lista 34.
+
+**No dia seguinte o pedido se repetiu na outra aba do mesmo relatório** (*"pode retirar esses
+cards, por favor"*), o que promove isto de episódio a padrão: **quando um card de resumo existe
+ao lado da lista que ele resume, a linha ganha da caixa.** E ali o corte foi mais fundo, porque
+um dos três cards era pura repetição — ele listava os nomes pendentes, que já estavam no botão
+de lote (a contagem) e nos cards coloridos (os nomes). O teste é esse: antes de recriar o número
+em outro formato, procure se a tela já o diz. O que não é repetição — a legenda que explicava o
+que significa "fora do MySQL" — não some junto: vai para o `title` do controle que filtra por
+aquilo, senão a pill vira jargão.
+
+**E a cascata precisa de fallback explícito.** Cada seletor lista só o que existe sob os
+anteriores (país → fonte → divulgação → mês); um valor que deixou de existir — `US` com a fonte em
+`IBGE` — **cai de volta** para "todas". Sem isso o estado fica válido no objeto e inválido na
+tela, e a tabela sai vazia sem dizer por quê. É a mesma regra do fallback de seleção da aba de CPS
+(`.claude/rules/lis-dashboards.md`, "Se a caixa de seleção alimenta o descritor"), num controle
+diferente.
+
+### E o controle fica ENCOSTADO no que ele controla
+
+Mesmo pedido, primeira metade: *"coloque o seletor logo acima da tabela"*. A barra era um cartão
+próprio no topo da aba e os stat cards ficavam entre ela e a tabela — ~250 px entre o controle e o
+que ele controla. Ela desceu para dentro do `.table-card`, como **strip** e não como cartão (cartão
+dentro de cartão lê como dois blocos), separada da tabela por uma linha.
+
+**O detalhe que custa uma segunda linha:** dentro de um card a largura disponível cai pela padding
+dele — aqui de 1.440 para ~1.330 px —, e um `<select>` com `max-width` generoso passa a quebrar a
+barra. Medido em browser: **82 px de altura com o cap de 360 px, 45 px com 250 px**. Quando um
+controle muda de container, remeça a barra; o `max-width` que cabia lá fora não cabe aqui dentro.
+E o truncamento é só da caixa fechada — a lista aberta continua mostrando o nome inteiro.
+
+### Um clique-expande DENTRO de uma tabela é uma linha, não um `<details>`
+
+Segunda metade do mesmo pedido: *"separar os blocos de dados por semana ... com clique-expande por
+semana, com padrão de abrir sempre na semana atual"*. O padrão de clique-expande deste projeto é
+`<details>` (o card da aba de dashboards), e ele **não serve aqui**: `<details>` dentro de
+`<tbody>` quebra a tabela, e uma tabela por bloco perde o alinhamento das colunas entre os
+blocos — que é metade do valor de ler o mês. O bloco virou um `<tr class="week-header">` com
+caret `+`/`−` e a chave num `data-week` da célula, e o listener delegado da tabela passou a
+procurar **dois** seletores (o botão de ação e o cabeçalho).
+
+Quatro coisas, cada uma a origem de um erro sem sintoma:
+
+- **Semana de segunda a domingo, e as contas em UTC.** `new Date('2026-09-01')` é lido como UTC e
+  `new Date('2026-09-01T00:00:00')` como hora local: misturar os dois desloca o bloco inteiro pelo
+  fuso da máquina, e o sintoma é uma linha de segunda aparecendo na semana anterior. A asserção
+  que segura isso é sobre a própria função, em domingo, segunda e sábado — um mutante que troca
+  `getUTCDay`/`setUTCDate` por `getDay`/`setDate` **passa** em quase toda data e erra na segunda.
+- **Qual bloco abre sozinho é uma regra com três ramos**: o corrente quando existe; num recorte
+  futuro, o primeiro; num já vencido, o último. Tudo fechado é uma tela sem nada, pior do que
+  abrir o bloco errado.
+- **O que o usuário abriu sobrevive ao re-render**, e o default só é aplicado quando *nenhum*
+  bloco daquele recorte foi tocado. Sem essa distinção, fechar o bloco que veio aberto o reabre no
+  clique seguinte — mesmo modo de falha do `open` dos cards de dashboard.
+- **"Já saiu" recua para o fundo; o que está ATRASADO não recua.** A linha laranja é a única da
+  página que pede ação, e apagá-la por já ter saído apagaria exatamente essa. As duas metades
+  precisam ser afirmadas: um teste que só exige o cinza passa num mutante que pinta as duas.
+
+### E o selo de país sai do SCHEMA, não de um campo novo
+
+Terceira parte: *"(BR) para dado Brasil, (US) para Estados Unidos, (INT) para dados
+internacionais"*. Em vez de um campo no YAML de calendário, o gerador resolve as tabelas de cada
+grupo pelo `domain/db/registry.py` e lê a área do módulo (`brasil/`/`us/`/`international/`) — a
+mesma divisão dos três jobs de atualização, que portanto não tem como divergir do banco sem o
+registry mudar junto. Um grupo que espalhe tabelas por duas áreas **levanta** em vez de virar um
+badge em branco.
+
+O preço, que vale declarar em vez de esconder: **a resposta certa pela taxonomia do sistema pode
+não ser a que o leitor espera.** FOMC e COT saem como INT porque `diferenciais_juros` e
+`cmb_cot_fx` são séries entre países; quem publica é americano. Derivar continua sendo melhor do
+que escrever à mão — mas a derivação precisa estar escrita no `CLAUDE.md` da pasta, senão ela lê
+como defeito.
+
+## Reusar um padrão é copiar o DESENHO, não a lista de recursos (2026-09-22)
+
+De `analytics/brasil/structural_model/`, aba Simulador, e a pergunta do usuário é a regra:
+*"Por que não usou o padrão do FX para as variáveis de input?"*
+
+O bloco de teste de estresse do `FX Report` tinha sido lido no round anterior, de propósito e a
+pedido dele. O que atravessou foi a **lista de recursos** — caixas editáveis por período, choque
+rápido em rampa, "abrir em partes" para variável composta — e cada um deles estava lá, funcionando.
+O que não atravessou foi a **forma**, que é o que se vê num print e o que faz duas páginas do mesmo
+sistema parecerem o mesmo sistema:
+
+| | o que o FX faz | o que a primeira versão fazia |
+|---|---|---|
+| o cartão | largura cheia, fundo mais claro que a página | idem, mas branco sobre branco |
+| o cabeçalho | nome, **a leitura de hoje** e **a instrução do que se digita ali**, em mono | só nome e último valor |
+| as ações | **link sublinhado** à direita | botões em pill |
+| a escolha exclusiva | par de **pills** | rádios com rótulo de frase |
+| as caixas | **grade** `repeat(auto-fill, minmax(88px, 1fr))` | flex com largura fixa de 66px |
+
+**A linha de instrução é a que não tem como derivar**, e por isso ela é campo do payload e não uma
+string montada do nome e da unidade: *"Digite quanto a inflação esperada fica acima (ou abaixo) da
+meta em cada trimestre, em pontos percentuais"* não sai de `nome + unidade`. Um cartão que mostra
+caixas sem dizer o que vai nelas obriga o leitor a inferir a unidade do valor que já está lá.
+
+**E o estado da caixa é a parte que tem conteúdo, não estilo.** O FX marca `final` o mês já
+publicado e o trava, para uma suposição não sobrescrever dado. Onde o painel pode **partir de
+qualquer ponto da história** — um backtest — a distinção útil é outra: verde para o período com
+dado publicado, dourado para o que passou do último dado e está com o último valor **repetido**. Sem
+o segundo, uma caixa de 2027 tem a mesma cara de uma de 2010 e o leitor lê projeção onde há ausência
+dela. Vale afirmar nas duas pontas: na função que decide a cobertura e na classe impressa — só na
+classe, um mutante que inverta a condição continua imprimindo alguma coisa.
+
+O procedimento que evita a repetição é chato e funciona: **abra os dois lado a lado antes de
+escrever**, em vez de trabalhar da memória do que se leu. A lista de recursos sobrevive à leitura; o
+desenho não.
+
+### E um rótulo de pill não serve de complemento regido
+
+Achado no mesmo print, e é barato de repetir: os rótulos das fontes viviam num mapa só, usado pela
+pill *e* pela prosa. Saía *"Voltar a o que foi observado"* no link e *"A Selic vem de o que foi
+observado"* no aviso. São dois papéis — **nome curto** e **complemento de preposição** — e portanto
+dois mapas. Um só produz português errado nas duas pontas, e nenhum teste de conteúdo pega isso.
+
+### Um controle que ninguém pediu é dívida, e o guarda é sobre a tela
+
+Do mesmo round: a aba trazia os pesos da equação como caixas editáveis, e o usuário cortou —
+*"por algum motivo você entendeu que eu queria simular mudanças nos parâmetros. Não quero, a
+simulação vem dos inputs"*. O que ficou foi a **faixa do posterior**, e o critério que separa as
+duas coisas vale para qualquer painel: **incerteza medida não é controle** — ninguém escolhe nada
+ali, ela é a estimativa passando pela dinâmica.
+
+O guarda contra a recaída tem de olhar a **barra renderizada** (`input[type=number]` com contagem
+zero), não o arquivo entregue: controles que nascem de `innerHTML` não aparecem num grep do fonte,
+então um teste estático passa com a caixa de volta na tela.
+
+## Décima face: a extensão calculada, dos dados errados (2026-09-22)
+
+De `analytics/brasil/structural_model/report.html`, aba Simulador, quando a janela padrão passou a
+abrir **para a frente** do último dado em vez de no meio da história (pedido do usuário: *"Eu quero
+a projeção sempre para frente, não em 2008"*).
+
+As nove faces anteriores são sobre a janela vir de `autorange`, sobre o tipo do eixo, e sobre
+quantos eixos a pergunta precisa. Esta é a regra da casa **aplicada corretamente à série errada**:
+o `Tudo` era calculado dos dados reais, como manda a regra — só que "os dados reais" era a série
+**observada**, e o gráfico também desenha 12 trimestres **projetados** à direita dela. Resultado:
+a projeção inteira desenhada e **fora da tela**, sem erro, sem aviso, e com a régua de tempo
+funcionando exatamente como especificado.
+
+Três coisas, e as duas primeiras valem para qualquer painel que desenhe além do histórico:
+
+- **A extensão é a união do que os traces plotam**, não o array que o payload chama de "as datas".
+  A leitura mais segura é a do §"Quarta face": derive de `gd.data`, não do que o chamador passou.
+- **E ela é refeita quando a ponta direita anda**, não só na primeira pintura. Um horizonte ou um
+  ponto de partida que mudam movem a extensão; deixar a régua na de antes é a mesma janela errada
+  com um clique de atraso.
+- **Uma linha projetada parte do último ponto observado.** Ela começa no valor que a conta produz
+  para o primeiro período, que não é o último observado — então sem a âncora ela flutua solta à
+  direita e o leitor mede o salto com o olho. Prenda o primeiro ponto no observado e deixe a banda
+  de incerteza começar com **largura zero** ali: no período que já aconteceu não há incerteza de
+  parâmetro nenhuma. É âncora de **desenho**, não de cálculo — a recursão não usa aquele ponto como
+  saída, ele é uma das defasagens que a alimentam.
+
+### Uma caixa de input mostra o número EM USO, e a cor diz de onde ele veio
+
+Do mesmo painel, e o usuário viu antes: *"Quando mexo nas premissas os inputs da Selic não se
+mexem. O contrário deveria ser verdadeiro."* As caixas mostravam sempre o caminho carregado do
+**observado** — para uma variável cujo caminho vem de uma equação, isso é o último valor repetido,
+que não é o que a conta usa e não é o que a linha logo acima desenha. Duas séries com a mesma
+aparência, e a que estava na tela era a que não valia.
+
+A regra que resolve os quatro casos de uma vez, sem um `if` por caso: **a caixa mostra o número que
+aquele período vai usar nesta rodada, e a cor diz de onde ele veio** — calculado, publicado,
+repetido, ou digitado. Uma caixa que não se mexe quando a premissa se mexe está mostrando a série
+errada, e nada no painel a contradiz.
+
+**E a trava é por PERÍODO, não por controle.** É a prática do `FC.nowcast` do FX Report, cujo
+motivo está escrito no CSS de lá: *"so a guess never overrides data that's already known"*. Num
+painel cuja janela não se move quando o dado anda, o período que sai passa a cair dentro dela — e
+ele fica travado e verde mesmo no modo em que se digita. Duas consequências: a contagem de
+períodos já publicados vira informação da barra, e cresce sozinha; e **um choque aplicado em lote
+tem de começar no primeiro período editável**, não no primeiro da janela, senão ele vai perdendo os
+primeiros períodos em silêncio conforme o dado avança.
+
+### Uma ferramenta de choque precisa de forma, e a forma precisa de prévia
+
+Ainda do mesmo painel: *"Quero mais opções de choque com choque temporário — impacto de X p.p. e
+decaimento com 0.8, choque constante por h trimestres e decaimento em 0.8."* Uma rampa só não
+cobre o que se quer perguntar. Três formas resolvem o caso geral:
+
+```
+rampa   v · min(1, (i+1)/n)                sobe até o valor e fica
+decai   v · ρ^i                            entra de uma vez e vai passando
+const   v até i < n, depois v · ρ^(i−n+1)  fica n períodos e depois vai passando
+```
+
+A terceira contém a segunda (`n = 1` faz as duas coincidirem). Vale mantê-las separadas na tela —
+a do meio se escreve com dois campos em vez de três — e vale **afirmar a coincidência no teste**,
+que é o que impede as duas de divergirem quando uma for mexida.
+
+**E a prévia do perfil fica ao lado dos campos** (`soma +2,00 · +2,00 · +1,60 · +1,28 …`). Uma
+forma de choque descrita só em prosa é uma forma que o usuário descobre depois de aplicar; a prévia
+custa uma linha e torna três campos legíveis de uma vez.
+
+Corolário para painel com variável composta: **o choque tem de alcançar a parte, não só a soma.**
+Chocar uma primitiva e recompor o agregado pela fórmula é um cenário diferente de chocar o
+agregado — é a razão de existir o "abrir em partes". O caminho inverso não tem resposta: distribuir
+um choque na soma entre duas parcelas exigiria uma regra que não existe, então chocar o agregado
+devolve as partes ao observado e diz isso.
+
+### E a vista que abre é a resposta que a página dá antes de qualquer clique
+
+O que motivou tudo isso não era um defeito: o ponto de partida sempre foi um seletor, e rodar sobre
+a história é um backtest legítimo que usa o mesmo caminho de código. Mas a aba **abria** em 2006, e
+quem abre um simulador quer a projeção. Vale como regra de default: entre duas configurações
+igualmente válidas, a que abre é a que responde a pergunta pela qual a página existe — e a outra
+fica a um seletor de distância.
+
+Corolário do texto: **um título que descreve a vista tem de ser derivado dela**. *"A Selic que a
+conta produz, sem consultar a observada"* é verdade num backtest e não diz nada numa projeção, onde
+não há observada para consultar.
+
+## Um registro PARALELO ao artefato não fica em dia sozinho (2026-09-23)
+
+De `domain/dashboards/` e `analytics/report_structure/builder.py`, a partir de uma frase do
+usuário sobre a aba de status do calendário: *"o processo de atualização não está funcionando,
+está cheio de furo"*. Ele estava certo, e os dois furos são a mesma regra vista de dois lados.
+
+A aba responde "este relatório está olhando para dado velho?". Para isso não basta a data do
+arquivo — ela diz **quando** ele foi escrito, nunca **o que havia dentro** —, então existe um
+registro do que cada fonte tinha no momento da geração. Esse registro era gravado por um passo
+**separado** daquele que escreve o arquivo.
+
+**Furo 1: o caminho documentado não gravava.** Só um comando gravava o registro, e o comando
+escrito em 10 dos 13 `CLAUDE.md` de pasta era o outro. Medido: **8 de 13 relatórios entregues**
+sem registro ou com um de outra geração. A lição é de desenho, não de disciplina — **um
+mecanismo cuja corretude depende de ninguém usar o caminho normal não fica em dia**, e a
+correção não é documentar melhor, é mudar quem grava. Aqui coube em uma linha porque existia um
+ponto de passagem único (`render_report()`, por onde os 12 relatórios passam); quando não existe
+um, criá-lo é o trabalho.
+
+Três cuidados que valem em qualquer versão disso:
+
+- **Grave DEPOIS de escrever.** O registro guarda o mtime do arquivo, e é ele que responde "este
+  registro é deste arquivo?". Gravado antes, descreve a versão anterior e produz um "em dia" de
+  mentira na geração seguinte.
+- **Falhar ao gravar não pode custar o artefato.** O registro consulta o banco; banco fora do ar
+  vira "não dá para conferir", não vira "sem relatório".
+- **Case pelo caminho RESOLVIDO, nunca pelo nome.** Dois relatórios deste projeto se chamam
+  `Inflation.html` (Brasil e EUA) — casar por nome grava o registro de um no outro, sem erro.
+
+**Furo 2, e é o que faz perder a confiança na tela: o registro velho virava acusação.** O
+veredito testava "a fonte andou?" **antes** de testar se o registro era daquele arquivo. O código
+já sabia que não dava para afirmar e afirmava assim mesmo. Medido nos dois alertas laranja do
+dia:
+
+| card | o que a tela acusava | o que o arquivo tinha | |
+|---|---|---|---|
+| Crédito | falta a inadimplência de set/2026 | a maior data embutida **é 2026-09-01** | **falso** |
+| Expectativas | o Focus andou para 18/09 | 65 ocorrências de `2026-09-11`, **zero** de 18/09 | verdadeiro |
+
+Dois avisos com a mesma cor, um certo e um errado, sem nada que os separe. **Um alerta falso
+custa mais do que um alerta ausente**, porque ele não se distingue do verdadeiro e o leitor passa
+a ignorar os dois. A regra: onde a comparação depende de um retrato, **a validade do retrato é
+pré-condição da comparação, não um veredito alternativo** — sem ele a resposta é "não sei", e
+"não sei" é um estado de primeira classe.
+
+Dois corolários medidos:
+
+- **O sinal que NÃO depende do retrato tem de ser testado antes da falta dele**, ou some na
+  reordenação: "este arquivo auxiliar foi reescrito depois do HTML" é verdade sem retrato nenhum.
+- **Trocar só a ordem do bloco de veredito é mutante equivalente**, uma vez que a validade esteja
+  guardada dentro do próprio cálculo de "andou". Vale registrar como equivalente em vez de
+  perseguir uma asserção que não existe — quem carrega o conserto é a guarda, não a ordem.
+
+E o efeito colateral que precisa ser dito antes de alguém estranhar: **a tela ficou com mais
+"não sei" do que antes** (de 5 para 7 de 13), porque o que saiu foi confiança falsa. Cada um some
+na primeira geração daquele relatório.
+
+### E o rótulo do estado não pode ser a palavra de quem construiu
+
+O selo dizia `sem stamp`. O usuário, lendo a explicação do problema, respondeu *"eu não sei o que
+é stamp"* — que é a prova direta da regra de audiência já escrita neste arquivo, agora num rótulo
+de estado em vez de numa nota. Virou **"não dá para conferir"**, com uma linha abaixo dele, dentro
+do `<summary>` (legível com o card fechado), dizendo o porquê **e a saída**: *"Não há registro de
+com que dado este arquivo foi montado … Regerar uma vez resolve"*. Um selo cinza sozinho lê como
+defeito da página.
+
+A asserção que fecha isso é sobre a **aba renderizada**, não sobre o dicionário de rótulos: zero
+ocorrências de "stamp" no `textContent` da aba inteira — confirmado em Chrome headless, 13 cards,
+5 "em dia" e 8 "não dá para conferir", cada um com a sua explicação, zero exceções.
+
 ## Related conventions
 
 Brand colors/typography are a separate concern from this rule — see the `project-lis-brand-colors` memory and each dashboard's own `:root` CSS variables.

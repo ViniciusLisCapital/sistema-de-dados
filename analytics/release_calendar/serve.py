@@ -282,7 +282,39 @@ class Server(ThreadingHTTPServer):
         super().handle_error(request, client_address)
 
 
+def ja_servindo(port: int) -> bool:
+    """Ja existe um servidor DESTE relatorio respondendo nesta porta?
+
+    No Windows, `allow_reuse_address` (ligado por default no `HTTPServer`) deixa um
+    SEGUNDO processo dar bind na mesma porta sem erro nenhum, e quem responde e o mais
+    antigo. Achado em 2026-09-23 doendo de verdade: um `serve.py` das 13:13 e outro das
+    15:41 escutando juntos na 8765, e a pagina mostrava os vereditos do codigo VELHO --
+    parecia defeito do relatorio e era um processo esquecido. Em Linux o segundo bind
+    falharia; aqui nao, entao a checagem tem de ser explicita.
+
+    Um duplo clique no `abrir_calendario.bat` com o servidor ja no ar e exatamente o
+    caminho que produz isso, e nao ha nada na tela que denuncie.
+    """
+    import urllib.request
+    try:
+        with urllib.request.urlopen(
+                f"http://127.0.0.1:{port}/api/ping", timeout=1.5) as r:
+            return json.loads(r.read().decode("utf-8")).get("ok") is True
+    except Exception:
+        return False
+
+
 def run(port: int = 8765, abrir: bool = True) -> None:
+    url_existente = f"http://127.0.0.1:{port}/"
+    if ja_servindo(port):
+        print(f"Ja ha um calendario servido em {url_existente} — nao subi um segundo.")
+        print("  Abrindo o que ja esta no ar.")
+        print("  Se voce mexeu no codigo, aquele processo ainda tem a versao antiga em")
+        print("  memoria: feche a janela dele (Ctrl+C) e rode este comando de novo.")
+        if abrir:
+            webbrowser.open(url_existente)
+        return
+
     _garantir_html()
     srv = Server(("127.0.0.1", port), Handler)
     url = f"http://127.0.0.1:{port}/"

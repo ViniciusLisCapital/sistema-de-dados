@@ -504,14 +504,20 @@ por = S.por_chave(doc)
 mp = por["brasil_monetary_policy"]
 procs = S.procedimentos(mp)
 
-# TODO dashboard com procedimento passa pelas mesmas exigencias -- a lista cresce sem que
-# este teste precise ser reescrito. Em 2026-09-01 sao dois: politica monetaria (3 passos,
-# calculo) e inflacao (1 passo, um FETCH -- o unico insumo dela que nao vem do MySQL).
+# TODO dashboard com procedimento passa pelas mesmas exigencias -- a lista cresce (ou
+# encolhe) sem que este teste precise ser reescrito.
+#
+# A assercao aqui era "mais de um dashboard declara procedimento", escrita em 2026-09-01
+# quando eram dois. Ela REPROVOU a partir de 2026-09-11, quando o passo da inflacao foi
+# removido de proposito: o que ele fazia era buscar no SGS uma copia de uma tabela que o
+# Atualizar ja mantinha em dia. Um passo e divida, nao recurso (ver o CLAUDE.md da raiz),
+# entao exigir que a lista cresca e afirmar o contrario do que o projeto decidiu. O que
+# vale exigir e que a lista nao esteja VAZIA -- senao o laco abaixo nao afirma nada.
 com_proc = [d for d in S.dashboards(doc) if S.procedimentos(d)]
 print("         " + str(len(com_proc)) + " dashboard(s) com procedimento: "
       + ", ".join(d["key"] + "(" + str(len(S.procedimentos(d))) + ")" for d in com_proc))
-check("mais de um dashboard declara procedimento (o piloto deixou de ser piloto)",
-      len(com_proc) >= 2, [d["key"] for d in com_proc])
+check("ha dashboard com procedimento declarado (senao o laco abaixo nao checa nada)",
+      len(com_proc) >= 1, [d["key"] for d in com_proc])
 for d in com_proc:
     refs_f = {x["ref"] for x in d["deps"] if x["kind"] in ("artifact", "csv")}
     for p in S.procedimentos(d):

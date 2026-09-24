@@ -6,7 +6,7 @@ Build-time-only building blocks for the `/*REPORT_DATA*/`-template reports (`exc
 
 | File | Contains | Marker it fills |
 |---|---|---|
-| `builder.py` | `render_report(template_path, data, output_path, extra_markers=None)` — reads the template, JSON-serializes `data`, substitutes markers, writes the output, returns the resolved `Path` | — |
+| `builder.py` | `render_report(template_path, data, output_path, extra_markers=None)` — reads the template, JSON-serializes `data`, substitutes markers, writes the output, **records the report's provenance** (see below), returns the resolved `Path` | — |
 | `theme.css` | The shared LIS brand `:root` palette + universal reset/body rules (`--lis-azul`, `--lis-dourado`, etc. — see `project_lis_brand_colors` memory for the canonical hex values) | `/*THEME_CSS*/` |
 | `y_autofit.js` | `_bindYAutofit()`/`_toComparableX()` — the Plotly rangeselector Y-refit helper described in `.claude/rules/lis-dashboards.md`'s "Plotly setup" section | `/*Y_AUTOFIT_JS*/` |
 | `chart_head.css` / `chart_head.js` | The 3-line header every chart carries inside its own card — `describeChart(divId, traces, bits, unit, opts)`, `_ensureChartFrame()`, `fmtPeriodo()`. Added 2026-09-14, when a repo-wide sweep found five reports with no chart header at all | `/*CHART_HEAD_CSS*/`, `/*CHART_HEAD_JS*/` |
@@ -87,10 +87,58 @@ the source line, read as if it were a period).
 that is how `expectations`'s Boletim chart keeps the definition button on its title while
 every other chart in the file goes through the shared path.
 
+**Read the children through `Array.prototype.slice.call()`, never `card.children.filter()`.**
+Both scans in `_ensureChartFrame()` (the one that finds a ready-made `.chart-head`, and the
+one that picks its three lines out) walk a **live DOM collection**, and a browser's
+`HTMLCollection` has no `Array` methods at all. Calling `.filter()` on it threw `TypeError`
+on the first chart of every page from 2026-09-14 to 2026-09-17, so `describeChart()` never
+wrote a single header — measured in Chrome, not inferred. The fix is `slice.call`, which
+behaves identically on an `HTMLCollection` and on the plain `Array` the test harness used to
+hand it. Full account, including why no test caught it: `.claude/rules/lis-dashboards.md`.
+
 Coverage is enforced by `tests/test_chart_head_js.js`, which executes this file against a
 fake DOM **and sweeps `analytics/**/report.html`** for a report that plots but has no
 header. The sweep exists because the first time this rule was promoted the migration list
 was written from memory and missed five reports — see `.claude/rules/lis-dashboards.md`.
+
+Since 2026-09-17 that harness also guards the *instrument*: its stub returns an
+`HTMLCollection`-shaped object for `children` (indexed + `length`, no `Array` methods), and
+§1a asserts that it does — because while the stub handed back a real `Array`, every
+assertion passed green against a page that threw on load. §4 adds the static half, scanning
+`report_structure/*.js` and every `report.html` for an `Array` method on a live DOM
+collection, with `NodeList` (has `forEach`) and `HTMLCollection` (has nothing) told apart.
+
+## `render_report()` also records the report's provenance (2026-09-23)
+
+After writing the file, `_registrar_procedencia()` records *what data the report was built
+with* — the last observation of each declared dependency at that moment. That record is what
+`domain/dashboards/status.py` compares against later to answer "is this report behind?"; the
+file's own mtime says when it was written, never what was inside it.
+
+**It lives here because this is the one place every HTML report passes through.** Until
+2026-09-23 the record was written by `status.gerar()` — a separate step, taken only if the
+report was generated *that* way, while the command documented in 10 of the 13 folder
+`CLAUDE.md` files is `generate_report.run()`. Measured that day: 8 of 13 delivered reports had
+no record or one from a different generation, so the status tab could not say anything about
+most of the list. Full account, including the second half of the bug (a stale record being
+used to accuse a report of missing data it already had):
+[`domain/dashboards/CLAUDE.md`](../../domain/dashboards/CLAUDE.md).
+
+Three properties worth knowing before touching that function:
+
+- **It runs after `write_text`, never before** — the record stores the written file's
+  `st_mtime_ns`, which is what later answers "is this record about *this* file?".
+- **It never raises.** The record needs the database; a database that is down cannot cost the
+  report, which is already on disk. Failure prints a line and the verdict degrades to "can't
+  tell", which is the honest answer.
+- **An output not declared in the manifest is skipped silently** — `real_rates_comparison.py`,
+  for instance. The match is by *resolved path*, not filename, because Brazil and the US each
+  ship an `Inflation.html`.
+
+The import of `domain.dashboards.status` is local to the function on purpose: `analytics/`
+should not require `domain/` to be importable just to assemble an HTML file, and
+`status.gerar()` imports `generate_report`, which imports this module — closing that loop at
+module level would be asking for a circular import.
 
 ## Why build-time, not a runtime shared module
 

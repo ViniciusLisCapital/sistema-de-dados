@@ -158,22 +158,27 @@ dashboards:
     output: reports/brasil/Monetary Policy.html
     module: analytics.brasil.monetary_policy.generate_report
     command: 'uv run python -c "from analytics.brasil.monetary_policy.generate_report import run; run()"'
-    build_seconds: 23
+    # 23s ate 2026-09-22; caiu para ~19 com a aba do motor, que fazia duas leituras
+    # INTEIRAS de pm_copom_projecoes so para os atalhos dela (administrados e horizonte
+    # relevante) alem da que a aba Projecoes ja faz. Medido tres vezes: 18,1 / 18,5 / 19,7.
+    build_seconds: 19
     note: >
-      Réplica do modelo agregado do Banco Central. Três das quatro abas mostram resultados de um
-      modelo que precisa ser estimado antes de o relatório existir — não são consultas ao banco. É
-      por isso que este dashboard tem cálculos próprios, listados abaixo: o Regerar refaz os que
-      estiverem atrás dos dados e só então monta o HTML, de modo que o modelo que aparece no
-      relatório é sempre o modelo rodado com o dado mais recente. A caixa de previsão da aba
-      "Projeções do Copom" repete essa conferência dentro do próprio arquivo, para quem abre o
-      relatório longe desta página.
+      O que o Copom tinha na mesa na última reunião contra o que já está na mesa para a próxima,
+      o histórico de projeção do Comitê contra a decisão que ele tomou na mesma reunião, e um
+      apêndice com a réplica do modelo agregado do Banco Central. Parte do que aparece aqui não é
+      consulta ao banco: são resultados de um modelo que precisa ser estimado antes de o relatório
+      existir, e é por isso que este dashboard tem cálculos próprios, listados abaixo. O Regerar
+      refaz os que estiverem atrás dos dados e só então monta o HTML, de modo que os números que
+      aparecem no relatório são sempre os do modelo rodado com o dado mais recente. A caixa de
+      previsão da aba "Projeções do Copom" repete essa conferência dentro do próprio arquivo, para
+      quem abre o relatório longe desta página.
     deps:
       # date aqui e o trimestre PROJETADO (vai a 2028), nao quando o dado passou a
       # existir -- por isso a coluna de frescor e a vintage, que e a data da publicacao.
       # Com `date`, a aba anunciaria "ultimo dado 2028-10-01", que nao e leitura de
       # frescor nenhuma.
-      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções"}
-      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções; só a do comunicado alimenta a primeira linha da aba Condições"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções e linha Decisão da aba Condições"}
       - {kind: mysql, ref: macro_brasil.pm_hiato_produto, date_col: vintage, role: "Hiato publicado no RPM, validação do modelo — vintage é a edição do RPM"}
       # `pm_hiato_produto_vintages` e uma dependencia da PREVISAO, nao da validacao:
       # `hiato_vintage()` le o hiato em t0 como o BC publicou na ultima edicao ANTES do
@@ -181,15 +186,24 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.pm_hiato_produto_vintages, date_col: vintage, role: "Hiato por edição do RPM — é o vintage que a previsão da próxima projeção lê"}
       - {kind: mysql, ref: macro_brasil.inflc_meta, role: "Meta de inflação, a régua do desvio — date é o ANO da meta, então o 'último dado' é o último ano com meta publicada"}
       - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA e núcleos, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.mt_pnad, role: "Taxa de desocupação, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Saldo de emprego formal, aba Condições"}
+      # `mt_caged` nao alimenta mais linha da aba Condicoes (a de saldo formal saiu em
+      # 2026-09-22): fica porque o painel trimestral do modelo le a serie como observavel
+      # do bloco de hiato. `mt_pnad` saiu de vez -- so a linha de desocupacao a usava.
+      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Saldo de emprego formal — observável do hiato no painel do modelo"}
       - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_taxas, role: "PIB, consumo e investimento em 4T/4T — as taxas que o próprio IBGE publica, aba Condições"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_resumo, role: "Saldo de crédito livre e direcionado, deflacionado na aba Condições"}
+      - {kind: mysql, ref: macro_brasil.br_interest_rate, role: "Curvas DI e NTN-B — juro real ex-ante e inflação implícita de 2 e 10 anos, aba Condições"}
       - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA da Focus"}
       - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Curva de Selic esperada — entra na eq. (5) e na previsão"}
       - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativa por período; é o delta desta série que prevê a revisão do BC"}
       - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, aba Condições"}
       - {kind: mysql, ref: macro_brasil.comm_icbr, role: "Índice de commodities Brasil, aba Condições"}
       - {kind: mysql, ref: macro_international.comm_brent, role: "Brent, aba Condições"}
+      # Os dois vertices americanos sao nominal MENOS inflacao esperada, e por isso as duas
+      # tabelas entram juntas: uma sozinha nao produz nenhuma das linhas.
+      - {kind: mysql, ref: macro_us.us_interest_rate, role: "Treasury de 2 e 10 anos — a perna nominal do juro real americano, aba Condições"}
+      - {kind: mysql, ref: macro_us.expc_inflacao, role: "Inflação esperada do Fed de Cleveland — a perna que deflaciona o Treasury, aba Condições"}
       - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação — é o que decide o que o Copom tinha na mesa em cada reunião"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_painel_full.csv, role: "Painel trimestral estimado", refresh: uv run python analytics/brasil/monetary_policy/modelo_painel.py}
       # Escalar, sem data interna -- entra por causa do `faltando`: sem ele a estimacao para,
@@ -197,9 +211,8 @@ dashboards:
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_sigma_rr.txt, date_col: null, role: "Escala do choque da taxa neutra, calibrada pelos painéis e lida na estimação"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados.csv, role: "Estados latentes do modelo", refresh: uv run python analytics/brasil/monetary_policy/modelo_agregado.py}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados_est.csv, role: "Estados com parâmetros estimados"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_cenario_focus__eq5.csv, role: "Curva de Selic da Focus que o motor JS carrega"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_neutra_pub.csv, role: "Taxa neutra publicada pelo BC"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_params.json, role: "Parâmetros do motor portado para o navegador"}
+      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_params.json, role: "Coeficientes estimados — as equações do Apêndice são escritas com eles"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_eq5_diag.json, role: "Raio espectral do laço da eq. (5)"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao.csv, role: "Tabela de validação do Apêndice"}
       - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao_irf.json, role: "IRF contra o do BC, Apêndice"}
@@ -286,7 +299,6 @@ dashboards:
           - analytics/brasil/monetary_policy/data/modelo_estados.csv
           - analytics/brasil/monetary_policy/data/modelo_estados_est.csv
           - analytics/brasil/monetary_policy/data/modelo_params.json
-          - analytics/brasil/monetary_policy/data/modelo_cenario_focus__eq5.csv
           - analytics/brasil/monetary_policy/data/modelo_eq5_diag.json
           - analytics/brasil/monetary_policy/data/modelo_validacao.csv
           - analytics/brasil/monetary_policy/data/modelo_validacao_irf.json
@@ -300,8 +312,9 @@ dashboards:
         note: >
           Estima o modelo sobre essa base: os parâmetros das equações, as duas séries que não se
           observam (o hiato do produto e a taxa de juro neutra) e a comparação com os valores que
-          o Banco Central publicou. É o que abastece o simulador de cenários da primeira aba e a
-          tabela de validação do Apêndice.
+          o Banco Central publicou. É o que abastece o Apêndice — as equações escritas com o
+          coeficiente estimado no lugar do símbolo, e a tabela de validação contra o que o BC
+          publicou.
       - id: previsao
         label: "Previsão da próxima projeção do BC + backtest"
         module: analytics.brasil.monetary_policy.antecipa_copom
@@ -338,18 +351,40 @@ dashboards:
     output: reports/brasil/Structural Model.html
     module: analytics.brasil.structural_model.generate_report
     command: 'uv run python -c "from analytics.brasil.structural_model.generate_report import run; run()"'
-    build_seconds: 4
+    build_seconds: 92
     note: >
-      Reúne, em frequência trimestral, as séries que explicam a inflação brasileira: a própria
-      inflação, o que o mercado espera dela, o quanto a economia está aquecida, o câmbio e as
-      commodities em dólar. Por enquanto mostra só os dados — o peso de cada uma na inflação
-      ainda não foi calculado. Fica velho quando abre um trimestre novo em qualquer das fontes.
+      Explica a inflação brasileira de cada trimestre separando o índice em quatro grupos de
+      preço que reagem a forças diferentes: serviços, alimentação, bens industriais e preços
+      administrados. Cada grupo ganha a sua própria conta, com o que o mercado espera de
+      inflação, o quanto a economia está aquecida, o câmbio e as commodities em dólar; no fim os
+      quatro são somados de volta e confrontados com a inflação que de fato ocorreu. Um seletor
+      lê esses mesmos números acumulados em doze meses, que é a unidade em que inflação se
+      discute. Outras quatro abas fecham o circuito: de onde vem a expectativa de inflação que as
+      contas usam, de onde vem o aquecimento da economia, como o Banco Central escolhe a taxa de
+      juros, e o que move o câmbio em cada trimestre. Traz também as séries de entrada, para
+      conferir o que cada uma mede antes de qualquer conta.
+      Fica velho quando abre um trimestre novo em qualquer das fontes. A aba de câmbio é a mais
+      cara de refazer: ela lê a cotação diária desde 1994 e refaz a conta mensal para comparar.
     deps:
-      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "Inflação acumulada em 12 meses, a série que a relação explica"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "Inflação de cada mês, do índice cheio e de cada um dos quatro grupos de preço — encadeada em trimestres"}
+      - {kind: mysql, ref: macro_brasil.inflc_decomposicao, role: "Peso de cada item no índice, mês a mês — é o que permite somar os quatro grupos de volta"}
+      - {kind: mysql, ref: macro_brasil.inflc_dim, date_col: null, role: "A que grupo de preço cada item pertence, na classificação do Banco Central"}
       - {kind: mysql, ref: macro_brasil.expc_focus, role: "Inflação esperada para os 12 meses seguintes, da pesquisa semanal do Banco Central"}
       - {kind: mysql, ref: macro_brasil.pm_hiato_produto, role: "Quanto a economia produz acima ou abaixo do que sustenta sem pressionar preços"}
       - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, de onde sai a variação de cada trimestre"}
-      - {kind: mysql, ref: macro_brasil.comm_icbr_usd, role: "Preço das commodities em dólar, o canal de custo importado"}
+      - {kind: mysql, ref: macro_brasil.comm_icbr_usd, role: "Preço das commodities em dólar — a cesta inteira, e as de origem agrícola e metálica separadas"}
+      - {kind: mysql, ref: macro_brasil.inflc_meta, role: "Meta de inflação do CMN, o alvo contra o qual a expectativa e o juro são medidos — date é o ANO da meta"}
+      - {kind: mysql, ref: macro_brasil.br_interest_rate, role: "Selic e a curva de juro real de NTN-B — o juro que o Banco Central define e o que o mercado cobra para dois e dez anos"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Pesquisa Focus por ano-calendário, de onde sai a expectativa de inflação de horizonte mais longo"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, role: "O que o próprio Copom projetava de inflação em cada reunião, para contrastar com o mercado"}
+      - {kind: mysql, ref: macro_brasil.cmb_risco_pais, role: "Prêmio de risco de crédito do país, o canal mais firme da conta de câmbio", refresh: "planilha exportada à mão da Bloomberg — não automatiza"}
+      - {kind: mysql, ref: macro_international.cmb_dollar_index_em, role: "Força do dólar contra moedas emergentes, canal da conta de câmbio"}
+      - {kind: mysql, ref: macro_international.cmb_equity_us, role: "Bolsa americana, canal da conta de câmbio"}
+      - {kind: mysql, ref: macro_international.diferenciais_juros, role: "Diferença de juros entre Brasil e Estados Unidos, que dividida pela volatilidade vira o prêmio de carrego"}
+      - kind: live
+        ref: FRED:CPIAUCSL
+        role: "Inflação americana, o outro lado do diferencial que a conta de câmbio impõe"
+        note: Buscado no FRED durante a geração; não passa pelo MySQL.
 
   - key: brasil_exchange_rate
     name: "Câmbio"
@@ -469,7 +504,7 @@ dashboards:
     output: reports/us/Inflation.html
     module: analytics.us.inflation.generate_report
     command: 'uv run python -c "from analytics.us.inflation.generate_report import run; run()"'
-    build_seconds: 13
+    build_seconds: 14
     deps:
       - {kind: mysql, ref: macro_us.inflc_cpi, role: "Níveis do CPI-U por item"}
       - {kind: mysql, ref: macro_us.inflc_cpi_dim, date_col: null, role: "As duas árvores do CPI (despesa e Tabela 1)"}
@@ -506,28 +541,15 @@ dashboards:
       - {kind: mysql, ref: macro_us.mt_cps, role: "Manchetes da pesquisa domiciliar: desemprego, participação, duração, U-1 a U-6"}
       - {kind: mysql, ref: macro_us.mt_produtividade, role: "Produtividade do trabalho, remuneração por hora e custo unitário por setor maior — trimestral, a única da página"}
 
-  - key: oraculo
-    name: "Oráculo (Power BI)"
-    area: brasil
-    output: analytics/oraculo/base/Central_base.csv
-    module: null
-    command: uv run python jobs/update_oraculo.py
-    build_seconds: null
-    note: >
-      Não é um relatório HTML: é o CSV que alimenta os dashboards de Power BI. Está nesta lista
-      porque consome o banco como qualquer relatório, e as dez tabelas de que depende aparecem em
-      8 dos 25 grupos de divulgação da outra aba.
-    deps:
-      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA, núcleo e difusão"}
-      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA 12m"}
-      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Emprego formal"}
-      - {kind: mysql, ref: macro_brasil.mt_pnad, role: "Força de trabalho"}
-      - {kind: mysql, ref: macro_brasil.cred_credito_amplo, role: "Crédito ampliado"}
-      - {kind: mysql, ref: macro_brasil.cred_credito_familias, role: "Condições das famílias"}
-      - {kind: mysql, ref: macro_brasil.atv_pib, role: "PIB por setor"}
-      - {kind: mysql, ref: macro_brasil.atv_pms, role: "Serviços"}
-      - {kind: mysql, ref: macro_brasil.atv_pim, role: "Indústria"}
-      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br"}
+  # O Oraculo SAIU desta lista em 2026-09-23, a pedido do usuario ("pode retirar o oraculo
+  # do dashboard"). Ele nao e um relatorio HTML e nao tem `run()` -- o entry point e o
+  # script solto `jobs/update_oraculo.py` --, entao o card dele nunca tinha botao e nunca
+  # tinha veredito: ocupava uma linha da aba para dizer "nao da para conferir" todo dia.
+  #
+  # O que se perde ao tirar: as 10 tabelas que ele lia deixam de ter um leitor declarado,
+  # entao `afetados()` nao o lista mais. Na pratica nao muda nada -- sem `run()` ele ja
+  # saia como "manual" e nenhum botao o alcancava. Para voltar, basta redeclarar a entrada
+  # (esta no git); e se ele um dia ganhar um `run()`, ai vale a pena.
 
   - key: release_calendar
     name: "Calendário de Divulgações"

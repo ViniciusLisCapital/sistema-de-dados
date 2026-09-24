@@ -24,10 +24,14 @@ Uso:
     uv run python -m domain.dashboards.status --gerar brasil_credit
     uv run python -m domain.dashboards.status --live             # inclui FRED
 
-`gerar(key)` e o ponto de entrada unico: roda o run() do modulo e grava o stamp no
-mesmo passo. Gerar um relatorio por fora (chamando o generate_report direto) continua
-funcionando, so deixa o stamp para tras — e isso aparece na aba como "gerado fora do
-fluxo" em vez de virar um veredito errado.
+**Quem grava o stamp e o proprio gerador, desde 2026-09-23**: `render_report()` o escreve
+no mesmo passo em que escreve o HTML, entao gerar de qualquer jeito — `generate_report.run()`
+na mao, `gerar()` daqui, um notebook — deixa o retrato em dia. Antes disso so `gerar()`
+stampava, e como o comando documentado em quase toda pasta e o `run()` direto, 8 dos 13
+relatorios entregues estavam com retrato ausente ou de outra geracao (medido em 2026-09-23).
+
+`gerar(key)` continua sendo o ponto de entrada do BOTAO — ele e quem recalcula o que
+ficou atras antes de gerar — e so regrava o retrato se o gerador nao tiver gravado.
 
 Por que a consulta de MySQL nao reusa `domain.release_calendar.sync.estado_banco()`:
 aquela varre schemas inteiros assumindo a coluna `date` e chaveia por nome de tabela.
@@ -71,6 +75,32 @@ def dashboards(doc: dict | None = None) -> list[dict]:
 
 def por_chave(doc: dict | None = None) -> dict[str, dict]:
     return {d["key"]: d for d in dashboards(doc)}
+
+
+def chave_por_saida(caminho: Path | str, doc: dict | None = None) -> str | None:
+    """Qual dashboard do manifesto e ESTE arquivo — ou None se nenhum.
+
+    Existe para `analytics.report_structure.builder.render_report()` poder gravar o
+    retrato no mesmo passo em que escreve o HTML (ver `stamp()`). O casamento e pelo
+    caminho resolvido, e nao pela chave, justamente porque quem chama nao sabe a chave:
+    um `generate_report.run()` rodado a mao so sabe onde escreveu.
+
+    Resolver os dois lados tambem e o que garante que o retrato descreve o arquivo que
+    acabou de ser escrito: `stamp()` le o mtime de `manifest.output`, entao um gerador
+    chamado com um `output=` diferente do declarado nao casa aqui e nao stampa nada --
+    melhor nenhum retrato do que um retrato de outro arquivo.
+    """
+    try:
+        alvo = Path(caminho).resolve()
+    except OSError:
+        return None
+    for d in dashboards(doc):
+        try:
+            if (_RAIZ / d["output"]).resolve() == alvo:
+                return d["key"]
+        except OSError:
+            continue
+    return None
 
 
 def _col(dep: dict) -> str | None:
@@ -556,6 +586,10 @@ def estado(doc: dict | None = None, live: bool = False,
         mtime = (datetime.fromtimestamp(saida.stat().st_mtime).isoformat(timespec="seconds")
                  if existe else None)
         mtime_ns = saida.stat().st_mtime_ns if existe else None
+        # O retrato so vale para ESTE arquivo. Se ele nao existe, ou foi reescrito depois
+        # de gravado, as datas que ele guarda sao de outra geracao -- e comparar com elas
+        # produz acusacao inventada, nao veredito. Ver o bloco de veredito abaixo.
+        stamp_vale = bool(st and existe and st.get("output_mtime_ns") == mtime_ns)
 
         deps_out = []
         # Indexado por ref porque `estado_procedimentos()` precisa alcancar o estado de
@@ -583,7 +617,11 @@ def estado(doc: dict | None = None, live: bool = False,
                 "onde": _onde(dep),
                 "fora_do_mysql": fora_do_mysql(dep),
                 "stamp": stamped,
-                "novo": bool(stamped and e.get("ultimo") and
+                # `stamp_vale` na frente de tudo: sem ele, um retrato velho marca NOVO
+                # numa dependencia que o arquivo JA tem. Medido em 2026-09-23 no card de
+                # Credito -- retrato de 11/09, HTML de 17/09, acusado de nao ter a
+                # inadimplencia de setembro que estava dentro dele.
+                "novo": bool(stamp_vale and stamped and e.get("ultimo") and
                              str(e["ultimo"]) > str(stamped)),
                 # Sinal que funciona mesmo SEM stamp: um artefato reescrito depois do
                 # HTML nao esta dentro dele, ponto -- nao depende de retrato nenhum.
@@ -601,14 +639,28 @@ def estado(doc: dict | None = None, live: bool = False,
         novos = [e for e in deps_out if e["novo"] or e["arquivo_mais_novo"]]
         faltando = [e for e in deps_out if e.get("erro")]
 
+        # Conserto de 2026-09-23: um retrato velho virava "desatualizado" -- o codigo
+        # sabia que nao dava para afirmar (`output_mtime_ns` diferente) e afirmava assim
+        # mesmo, porque testava `novos` antes da validade do retrato.
+        #
+        # QUEM CARREGA O CONSERTO e o `stamp_vale` dentro de `novo`, la em cima, nao a
+        # ordem daqui: com a marca guardada, `novos` ja sai vazio quando o retrato nao e
+        # deste arquivo. Medido: trocar so a ordem, com a marca no lugar, produz a mesma
+        # funcao em todos os casos -- e um mutante equivalente.
+        #
+        # O ramo que a ordem PRECISA garantir e o de cima: `arquivo_mais_novo` vale sem
+        # retrato nenhum (um artefato reescrito DEPOIS do HTML nao esta dentro dele,
+        # ponto), entao ele tem de ser testado antes da falta de retrato, ou some.
         if not existe:
             veredito = "sem relatorio"
+        elif any(e["arquivo_mais_novo"] for e in deps_out):
+            veredito = "desatualizado"
+        elif not stamp_vale:
+            # Sem retrato, ou com um retrato de outra geracao: da para mostrar o estado
+            # das fontes, nao da para afirmar se o arquivo bate com elas.
+            veredito = "sem stamp"
         elif novos:
             veredito = "desatualizado"
-        elif st is None or (st.get("output_mtime_ns") != mtime_ns):
-            # Stamp ausente, ou gerado por fora (o arquivo mudou depois do stamp):
-            # da para mostrar o estado das fontes, nao da para afirmar que bate.
-            veredito = "sem stamp"
         else:
             veredito = "em dia"
 
@@ -788,7 +840,18 @@ def gerar(key: str, doc: dict | None = None, recalcular: bool = True,
     mod.run(output=d["output"], **kwargs)
     segundos = round(time.time() - inicio, 1)
 
-    registro = stamp(key, doc)
+    # Desde 2026-09-23 quem grava o retrato e o proprio `render_report()`, no mesmo passo
+    # em que escreve o HTML — entao aqui normalmente ja esta feito. Regravar seria pior
+    # que redundante: entre a escrita do arquivo e esta linha o banco pode ter andado, e o
+    # retrato passaria a registrar um dado que o relatorio nao tem. Fica como rede de
+    # seguranca para o gerador que nao passa por `render_report()` (o CSV do Oraculo, se
+    # um dia ganhar `run()`), e para o caso de o `output=` ter caido fora do manifesto.
+    registro = ler_stamp(key)
+    saida = _RAIZ / d["output"]
+    atual = (registro and saida.exists()
+             and registro.get("output_mtime_ns") == saida.stat().st_mtime_ns)
+    if not atual:
+        registro = stamp(key, doc)
     return {"key": key, "ok": True, "segundos": segundos,
             "segundos_total": round(time.time() - t0, 1),
             "gerado_em": registro["gerado_em"], "output": d["output"],
