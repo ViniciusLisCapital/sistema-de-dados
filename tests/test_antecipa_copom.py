@@ -2,8 +2,9 @@
 Testes de `analytics/brasil/monetary_policy/antecipa_copom.py`.
 
 Cada secao nasceu de um erro que custou uma rodada, e nenhum deles levantava excecao --
-todos devolviam numero plausivel e errado. Precisa de MySQL (le as tabelas de projecao, a
-Focus e a PTAX); nao roda o modelo, entao e rapido.
+todos devolviam numero plausivel e errado. Precisa de MySQL (le as tabelas de projecao e a
+Focus). Os insumos do cenario do modelo agregado (r*, curva de Selic, cambio) sairam para
+`tests/test_antecipa_modelo.py` em 2026-09-24, junto com o modelo.
 
     uv run python tests/test_antecipa_copom.py
 """
@@ -13,7 +14,6 @@ from __future__ import annotations
 import json
 import sys
 
-import numpy as np
 import pandas as pd
 
 from analytics.brasil.monetary_policy import antecipa_copom as ac
@@ -31,7 +31,7 @@ def ok(cond, nome, detalhe=""):
 
 
 print("\n1. t0: o ultimo trimestre FECHADO, nao o corrente")
-# O modelo e trimestral e um trimestre so fecha quando sai o IPCA do ultimo mes dele.
+# Um trimestre so fecha quando sai o IPCA do ultimo mes dele.
 # Usar o trimestre da reuniao poria dado que nao existe no conjunto de informacao.
 ok(ac.t0_de(pd.Timestamp("2026-08-05")) == pd.Period("2026Q2", "Q"),
    "reuniao em agosto le ate 2026T2", ac.t0_de(pd.Timestamp("2026-08-05")))
@@ -43,34 +43,6 @@ ok(ac.t0_de(pd.Timestamp("2026-10-16")) == pd.Period("2026Q3", "Q"),
    "16/10 ja tem o 3T fechado", ac.t0_de(pd.Timestamp("2026-10-16")))
 ok(ac.t0_de(pd.Timestamp("2026-10-05")) == pd.Period("2026Q2", "Q"),
    "05/10 ainda nao", ac.t0_de(pd.Timestamp("2026-10-05")))
-
-print("\n2. r* e o valor ANUNCIADO pelo BC, degrau por reuniao")
-# O BC fixa a neutra e avisa quando muda; nossa estimativa (7,81%) e outro objeto e poe
-# 2028T1 0,4 p.p. acima. Confundir os dois foi o que separava 3,45 de 3,07.
-ok(ac.r_neutra(262) == 4.50, "antes de jun/2024: 4,50%", ac.r_neutra(262))
-ok(ac.r_neutra(263) == 4.75, "263a adota 4,75% (RPM jun/2024 p.74)", ac.r_neutra(263))
-ok(ac.r_neutra(266) == 4.75, "segue 4,75% ate a 266a", ac.r_neutra(266))
-ok(ac.r_neutra(267) == 5.00, "267a adota 5,00% (RPM dez/2024 p.59)", ac.r_neutra(267))
-ok(ac.r_neutra(281) == 5.00, "e continua em 5,00% (reafirmado em jun/2026)",
-   ac.r_neutra(281))
-
-print("\n3. Curva de Selic: realizado ate o corte, esperado depois")
-# A Focus DESCARTA da curva as reunioes que ja aconteceram -- em 21/08/2026 o primeiro
-# rotulo e R6/2026, e a 280a (05/08) sumiu. Como t0 fica meses atras, a janela comeca no
-# passado: uma versao anterior segurava um nivel fixo ali e ignorava decisoes ja tomadas.
-t0 = pd.Period("2026Q2", "Q")
-sel = ac.curva_selic(pd.Timestamp("2026-09-16"), t0, 7)
-ok(len(sel) == 7, "devolve um valor por trimestre do horizonte", len(sel))
-ok(np.all(np.isfinite(sel)), "sem NaN")
-# 2026T3 contem a 280a, que cortou para 14,00 em 05/08. A media do trimestre tem de ficar
-# ENTRE o nivel anterior (14,25) e o decidido, nunca fora.
-ok(14.00 <= sel[0] <= 14.25,
-   "2026T3 fica entre o nivel anterior e o decidido na 280a", round(float(sel[0]), 3))
-# e o trimestre e MEDIA, nao fim de trimestre: se fosse fim, daria exatamente 14,00
-ok(abs(sel[0] - 14.00) > 1e-6, "e a agregacao e media, nao fim de trimestre",
-   round(float(sel[0]), 4))
-ok(sel[-1] < sel[0], "a curva da Focus esta em queda no horizonte",
-   (round(float(sel[0]), 2), round(float(sel[-1]), 2)))
 
 print("\n4. Ancora: 'ano civil' e 'trimestre' no T4 sao o MESMO objeto")
 # `date` = 2026-10-01 significa o trimestre 2026T4 OU o ano civil 2026, que a tabela
@@ -91,7 +63,10 @@ if a271:
 
 print("\n5. Toda reuniao da era declarada tem ancora, e ela e de UM intervalo atras")
 hr = ac.reunioes_hr()
-ok(len(hr) == 17, "17 reunioes na era hr_6_trimestres", len(hr))
+# A era cresce uma reuniao a cada ~45 dias, entao a asserção e sobre onde ela COMECA, nao
+# sobre um total escrito a mao -- o "17" daqui reprovou a 281a no dia em que ela entrou.
+ok(len(hr) >= 17 and int(hr["nro_reuniao"].iloc[0]) == 264,
+   "a era hr_6_trimestres comeca na 264a e so cresce", (len(hr), int(hr["nro_reuniao"].iloc[0])))
 saltos, lags, sem = [], [], []
 for _, r in hr.iterrows():
     alv = pd.Period(r["date"], "Q")
@@ -115,9 +90,9 @@ for _, r in hr.iterrows():
 rs = pd.Series(rev)
 ok(abs(rs.abs().mean() - 0.106) < 0.01,
    "|revisao media| ~ 0,106 p.p. (o MAE do ingenuo)", round(rs.abs().mean(), 4))
-ok((rs.abs() <= 0.1001).sum() == 13,
-   "13 das 17 revisoes cabem num tique de arredondamento",
-   int((rs.abs() <= 0.1001).sum()))
+ok((rs.abs() <= 0.1001).mean() > 0.5,
+   "a maioria das revisoes cabe num tique de arredondamento -- por isso o ingenuo e forte",
+   "%d de %d" % (int((rs.abs() <= 0.1001).sum()), len(rs)))
 
 print("\n7. Delta da Focus: o metodo que ganha do ingenuo")
 # O NIVEL da Focus nao serve (4,02 contra 3,2 do BC para 2028T1); o DELTA serve.
@@ -125,21 +100,29 @@ f = ac.focus_4t(pd.Timestamp("2026-08-25"), pd.Period("2028Q1", "Q"))
 ok(f is not None and 2.0 < f < 6.0, "focus_4t devolve um acumulado plausivel", f)
 ok(f is not None and f > 3.5,
    "e ela roda ACIMA da projecao do BC (3,2), por isso so o delta e usavel", f)
+# O acumulado e COMPOSTO, na escala do BC. Refeito aqui das quatro medianas cruas: a soma
+# (a versao ate 2026-09-24) da ~0,06 a menos e passaria por qualquer faixa de plausibilidade.
+_al = pd.Period("2028Q1", "Q")
+_rots = "','".join("%d/%d" % ((_al - k).quarter, (_al - k).year) for k in range(4))
+_m = ac.q("macro_brasil", f"""
+    SELECT mediana FROM expc_focus_periodo
+    WHERE indicador='IPCA' AND periodicidade='trimestral' AND base_calculo=0
+      AND data_referencia IN ('{_rots}')
+      AND date=(SELECT MAX(date) FROM expc_focus_periodo
+                WHERE indicador='IPCA' AND periodicidade='trimestral'
+                  AND base_calculo=0 AND date <= '2026-08-25')""")["mediana"].astype(float)
+_comp = ((1 + _m / 100).prod() - 1) * 100
+ok(len(_m) == 4 and f is not None and abs(f - _comp) < 1e-9,
+   "focus_4t compoe os quatro trimestres, nao soma",
+   (None if f is None else round(f, 4), round(_comp, 4), round(_m.sum(), 4)))
+ok(f is not None and f > _m.sum() + 0.01,
+   "e o composto fica visivelmente acima da soma -- a assercao que separa as duas",
+   (None if f is None else round(f, 4), round(_m.sum(), 4)))
 d = ac.delta_focus(pd.Timestamp("2024-12-11"), pd.Timestamp("2024-11-06"),
                    pd.Period("2026Q2", "Q"))
 ok(d is not None and d > 0.2,
    "entre a 266a e a 267a a Focus subiu >0,2 p.p. -- a revisao real foi +0,4",
    None if d is None else round(d, 3))
-
-print("\n8. Cambio: observado ate o corte, PPC depois")
-de = ac.curva_cambio(pd.Timestamp("2024-12-11"), pd.Period("2024Q3", "Q"), 7)
-ok(len(de) == 7 and np.all(np.isfinite(de)), "um valor por trimestre, sem NaN")
-ok(de[0] > 3.0, "2024T4 carrega a depreciacao observada do real", round(float(de[0]), 3))
-ok(np.allclose(de[1:], de[1]), "e dai em diante e PPC, constante",
-   np.round(de[1:], 4).tolist())
-# 0,25 = (meta 3 - PI_EXT 2)/4, a mesma definicao de de_ppc dentro do simular()
-ok(abs(de[-1] - 0.25) < 1e-9, "e o PPC vale (meta - 2)/4 = 0,25 por trimestre",
-   round(float(de[-1]), 4))
 
 print("\n9. Revisao x expansao de horizonte: os dois casos existem e alternam")
 # A pergunta pratica e se o metodo so funciona quando o alvo JA tem numero publicado pelo
@@ -147,8 +130,10 @@ print("\n9. Revisao x expansao de horizonte: os dois casos existem e alternam")
 # comunicado esta estreando ja tem numero la, e e dali que a ancora vem nas 9 expansoes.
 tipos = [ac.tipo_horizonte(pd.Period(r["date"], "Q"), pd.Timestamp(r["vintage"]), proj)
          for _, r in hr.iterrows()]
-ok(tipos.count("expansao") == 9 and tipos.count("revisao") == 8,
-   "9 expansoes e 8 revisoes nas 17", (tipos.count("expansao"), tipos.count("revisao")))
+ok(tipos.count("expansao") + tipos.count("revisao") == len(tipos) and
+   abs(tipos.count("expansao") - tipos.count("revisao")) <= 1,
+   "so os dois tipos existem, e alternando as contagens diferem de no maximo uma",
+   (tipos.count("expansao"), tipos.count("revisao")))
 ok(all(tipos[i] != tipos[i - 1] for i in range(1, len(tipos))),
    "e elas alternam sem excecao (2 reunioes por trimestre, 1 RPM por trimestre)", tipos)
 docs = [ac._ancora(pd.Period(r["date"], "Q"), pd.Timestamp(r["vintage"]), proj)["documento"]
@@ -161,24 +146,33 @@ ok(all(d == "comunicado" for t, d in zip(tipos, docs) if t == "revisao"),
    [d for t, d in zip(tipos, docs) if t == "revisao"])
 
 print("\n10. Artefatos que a aba le")
-# A aba nao roda o modelo: ela le estes dois arquivos. Se eles sairem de sincronia com o que
-# o modulo calcula, o relatorio mostra numero velho sem lancar excecao nenhuma.
+# A aba nao roda nada: ela le estes dois arquivos. Se eles sairem de sincronia com o que o
+# modulo calcula, o relatorio mostra numero velho sem lancar excecao nenhuma.
 B = pd.read_csv(ac._DATA / "antecipa_backtest.csv")
 P = json.loads((ac._DATA / "antecipa_previsao.json").read_text(encoding="utf-8"))
-ok(len(B) == 17, "o csv tem as 17 reunioes", len(B))
-ok({"tipo", "erro", "erro_ingenuo", "erro_focus", "ancora", "real"} <= set(B.columns),
+ok(len(B) == len(hr), "o csv tem uma linha por reuniao da era declarada", (len(B), len(hr)))
+ok({"tipo", "erro_ingenuo", "erro_focus", "ancora", "real"} <= set(B.columns),
    "e as colunas que a aba usa", sorted(B.columns))
-ok(((B["ancora"] + B["delta_modelo"] - B["real"]) - B["erro"]).abs().max() < 1e-9,
-   "erro do modelo = ancora + delta - publicado")
+# Desde 2026-09-24 o `salvar()` nao roda o modelo agregado: ate entao ele simulava o cenario
+# do BC duas vezes por reuniao e o relatorio descartava o resultado. Se as colunas do modelo
+# voltarem ao artefato de producao, voltou o custo junto.
+ok(not ({"delta_modelo", "erro", "nivel_modelo"} & set(B.columns)) and not P.get("modelo"),
+   "o artefato de producao nao carrega o modelo", sorted(B.columns))
 ok(((B["ancora"] + B["delta_focus"] - B["real"]) - B["erro_focus"]).abs().max() < 1e-9,
-   "idem para a Focus")
-ok(B["erro_focus"].abs().mean() < B["erro_ingenuo"].abs().mean() < B["erro"].abs().mean(),
-   "e a ordem dos MAEs e focus < ingenuo < modelo",
-   (round(B["erro_focus"].abs().mean(), 4), round(B["erro_ingenuo"].abs().mean(), 4),
-    round(B["erro"].abs().mean(), 4)))
+   "erro da Focus = ancora + delta - publicado")
+ok(B["erro_focus"].abs().mean() < B["erro_ingenuo"].abs().mean(),
+   "e o delta da Focus ganha do ingenuo",
+   (round(B["erro_focus"].abs().mean(), 4), round(B["erro_ingenuo"].abs().mean(), 4)))
 ok(P["nro"] == int(hr["nro_reuniao"].iloc[-1]) + 1,
    "o json preve a reuniao seguinte a ultima com horizonte declarado", P["nro"])
-ok(abs(P["previsto_focus"] - (P["ancora"] + P["delta_focus"])) < 1e-9,
+# `previsto_focus` e nulo enquanto a Focus nao tiver o trimestre-alvo numa das duas datas
+# do delta -- estado legitimo, e o de 2026-09-24. Sem esta guarda o teste estourava aqui em
+# vez de reprovar regra nenhuma.
+ok((P["delta_focus"] is None) == (P["previsto_focus"] is None),
+   "sem delta nao ha previsto -- os dois nulos andam juntos",
+   (P["delta_focus"], P["previsto_focus"]))
+ok(P["previsto_focus"] is None or
+   abs(P["previsto_focus"] - (P["ancora"] + P["delta_focus"])) < 1e-9,
    "e o previsto dele fecha com ancora + delta")
 
 print("\n" + (str(falhas) + " FALHA(S)" if falhas else "todos os testes passaram"))

@@ -70,15 +70,18 @@ media de 7 anos limita); na amostra propria de 80 a forma base da **2,62**.
 A tabela continua no modulo e vai para a pagina: a escolha e reversivel trocando uma
 constante, e o que ela custa tem de estar visivel.
 
-## dI: a Focus de 18 meses, e as outras duas ao lado
+## dI: a Focus de 12 meses, e as outras duas ao lado
 
-    dI_focus2a  Focus IPCA de 18 meses - meta 24m     <- a BASE
-    dI_focus    Focus IPCA 12 meses - meta 12m        <- o que o BC usa
+    dI_focus    Focus IPCA 12 meses - meta 12m        <- a BASE, e o que o BC usa
+    dI_focus2a  Focus IPCA de 18 meses - meta 24m
     dI_bcb      projecao do proprio Copom no horizonte relevante - meta 12m
 
-Escolha do usuario em 2026-09-21, depois de as tres serem medidas: *"vamos usar o Focus
-18 meses por enquanto, e deixa anotado nas pendencias para olharmos o de 12 meses
-novamente."* O "por enquanto" esta como pendencia R5.
+Foi a de 18 meses entre 2026-09-21 e 2026-09-24, por escolha do usuario com um "por
+enquanto" anotado como pendencia R5. **Voltou para 12 meses** por decisao dele:
+*"vamos uniformizar a expectativa de inflacao para 12 meses"*. Com isso as tres
+equacoes que falam de expectativa -- (I), (E) e (R) -- passam a falar do MESMO
+horizonte, e a (E), que explica exatamente a Focus de 12 meses, passa a produzir o
+objeto que esta consome. Era a pendencia E6, e ela fecha aqui.
 
 **Um objeto, dois nomes, e os dois estao certos.** O BC publica esta serie como "IPCA 24
 meses a frente": e a inflacao acumulada em DOZE meses terminando daqui a vinte e quatro,
@@ -101,12 +104,28 @@ trimestres:
     projecao do Copom      0,422   2,77   3,25   0,9590   0,5293   0,493
 
 **O ajuste nao separa as tres**: 0,4% de R2 e 4,6% de RMSE entre a melhor e a pior, com
-residuo limpo nas tres. O que separa e o efeito de longo prazo, e ali a de 18 meses fica
-entre as outras duas.
+residuo limpo nas tres. O que separa e o efeito de longo prazo.
 
-A razao para a escolha nao esta nesta tabela, e sim na de baixo: **com a Focus de 18
-meses os TRES parametros caem dentro dos intervalos que o BC publica**, o que nao
-acontece com nenhuma das outras duas.
+A razao da escolha nao e de ajuste, e a de horizonte: **o modelo inteiro fala de
+expectativa de 12 meses**, e uma regra de juros que consumisse outra janela nao poderia
+ser alimentada pela equacao de expectativas deste mesmo modelo. O ajuste, de quebra, nao
+piora -- ele melhora de pouco.
+
+O que a troca custa, medido no posterior bayesiano (`bayes/data/taylor_bayes.json`, 80
+trimestres, 2006T3-2026T2):
+
+    parametro     12 meses (em uso)        18 meses          BC publicado
+    t1            1,336 [1,201; 1,484]     1,434             1,48 [1,41; 1,54]
+    t2           -0,483 [-0,612; -0,351]  -0,570            -0,58 [-0,63; -0,52]
+    efeito lp     1,962 [1,148; 2,726]     2,62              2,03 [1,47; 2,64]
+    R2c / RMSE    0,9567 / 0,537           0,952 / --
+    Q(4) / Q(8)   0,805 / 0,507            0,683 / 0,438
+
+**O efeito de longo prazo melhora e as duas defasagens pioram**, contra os numeros do BC.
+Com 18 meses o efeito de longo prazo encostava no teto do intervalo publicado (2,62
+contra 2,64); com 12 ele fica no meio dele. Em troca, as medianas de `t1` e `t2` saem dos
+intervalos estreitos que o BC publica -- os pontos publicados continuam DENTRO do nosso
+HDI de 90%, que e a comparacao que a amostra sustenta.
 
 ## O que NAO e comparavel com o numero publicado do BC, e o que e
 
@@ -224,10 +243,12 @@ DI = {
     "focus2a": ("pi_e_2a", "meta_24m", "Focus de 18 meses contra a meta"),
     "bcb":     ("pi_bcb",  "meta_12m", "Projeção do próprio Copom contra a meta"),
 }
-# Escolhido pelo usuario em 2026-09-21: *"vamos usar o Focus 18 meses por enquanto"*.
-# O "por enquanto" esta anotado como pendencia -- a de 12 meses e a que o BC usa na
-# equacao (3) dele, e volta a ser olhada.
-DI_BASE = "focus2a"
+# Era "focus2a" (18 meses) entre 2026-09-21 e 2026-09-24, por escolha do usuario com um
+# "por enquanto" anotado como pendencia R5. Voltou para 12 meses por decisao dele:
+# *"vamos uniformizar a expectativa de inflacao para 12 meses"*. Com isso o horizonte
+# passa a ser o MESMO em (I), (E) e (R) -- e a equacao (E), que explica exatamente a
+# Focus de 12 meses, passa a produzir o objeto que esta consome. Era a pendencia E6.
+DI_BASE = "focus"
 
 ROT = {
     "r1":  "Juros do trimestre anterior",
@@ -239,7 +260,7 @@ ROT = {
 
 # Os numeros publicados da equacao (3) do boxe do BC, importados e nao transcritos --
 # duas copias divergiriam. `t3` e efeito de LONGO PRAZO; ver a docstring.
-from analytics.brasil.monetary_policy import modelo_agregado as _mp  # noqa: E402
+from analytics.brasil.structural_model.modelo_agregado import modelo_agregado as _mp  # noqa: E402
 
 BCB = {k: _mp.BCB[k] for k in ("t1", "t2", "t3")}
 BCB_IC = {k: _mp.BCB_IC[k] for k in ("t1", "t2", "t3")}
@@ -392,16 +413,16 @@ def repouso(r: dict) -> dict:
 # As leituras alternativas medidas ao lado. Nenhuma e a especificacao: elas existem para
 # a pagina poder mostrar o que a escolha custou, em vez de a afirmar.
 COMPARAR = {
-    "base":    dict(desc="A conta da página: duas defasagens, Focus de 18 meses",
+    "base":    dict(desc="A conta da página: duas defasagens, " + DI[DI_BASE][2],
+                    lags=2, di=DI_BASE, dummies=True),
+    "foc18":   dict(desc="O desvio medido na " + DI["focus2a"][2],
                     lags=2, di="focus2a", dummies=True),
-    "foc12":   dict(desc="O desvio medido na Focus de 12 meses",
-                    lags=2, di="focus", dummies=True),
     "lag1":    dict(desc="Com uma defasagem só, como o plano pedia",
-                    lags=1, di="focus2a", dummies=True),
+                    lags=1, di=DI_BASE, dummies=True),
     "bcb":     dict(desc="O desvio que o próprio Copom projetava",
                     lags=2, di="bcb", dummies=True),
     "sem_cri": dict(desc="Sem as duas crises marcadas",
-                    lags=2, di="focus2a", dummies=False),
+                    lags=2, di=DI_BASE, dummies=False),
 }
 
 

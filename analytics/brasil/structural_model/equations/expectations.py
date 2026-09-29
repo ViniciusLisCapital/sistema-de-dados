@@ -54,7 +54,7 @@ degrau de janeiro de entrar no desvio que a equacao explica.
 
     (5) pi^e = f1*pi^e(-1) + f2*E_t[pi(t,t+4)] + f3*MA4(pi^IPCA) + (1-f1-f2-f3)*meta
 
-`analytics/brasil/monetary_policy/modelo_agregado.py` replica essa, e as modas
+`analytics/brasil/structural_model/modelo_agregado/modelo_agregado.py` replica essa, e as modas
 publicadas sao f1 0,75 - f2 0,11 - f3 0,021 - meta 0,119. Duas diferencas, as duas
 declaradas na aba:
 

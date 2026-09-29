@@ -1,10 +1,10 @@
 """Entry point do experimento.
 
     # so os benchmarks (nao precisa de torch)
-    uv run python -m analytics.brasil.monetary_policy.teste_lstm.run --sem-lstm
+    uv run python -m analytics.brasil.structural_model.experimentos.teste_lstm.run --sem-lstm
 
     # completo
-    uv run --with torch --with-editable . python -m analytics.brasil.monetary_policy.teste_lstm.run
+    uv run --with torch --with-editable . python -m analytics.brasil.structural_model.experimentos.teste_lstm.run
 
 Grava em `data/`: a tabela de RMSE, as previsoes de cada modelo e um JSON de
 diagnostico. O veredito nao e o RMSE do LSTM - e a diferenca dele contra o

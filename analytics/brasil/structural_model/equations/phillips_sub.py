@@ -80,7 +80,7 @@ E por isso que o residuo de cada uma tem de estar na tela.
 ## O que o modelo do BC faz, e onde esta especificacao difere
 
 Fonte: "Novo modelo desagregado de pequeno porte", RI mar/2021, p.76-77 --
-`referencia/modelo_agregado_bc/modelo_desagregado.pdf`.
+`modelo_agregado/referencia/modelo_agregado_bc/modelo_desagregado.pdf`.
 
 - **O BC subtrai a meta da commodity e a deriva de PPC do cambio.** Aqui as duas entram
   brutas, por decisao explicita.
@@ -270,14 +270,13 @@ def _termos(chave: str, variante: str | None, ancora_im: str | None) -> tuple:
     return restritos, regs, ma1
 
 
-def estimar_uma(d: pd.DataFrame, chave: str, com_saz: bool = True,
-                idx: pd.Index | None = None, variante: str | None = None,
-                ancora_im: str | None = None) -> dict:
-    """Estima UMA das quatro equacoes.
+def matriz(d: pd.DataFrame, chave: str, com_saz: bool = True,
+           idx: pd.Index | None = None, variante: str | None = None,
+           ancora_im: str | None = None) -> dict:
+    """A matriz de regressao de UMA equacao, com a restricao ja imposta.
 
-    A restricao e imposta antes: regride-se `Ik(t) - E(t-1)/4` contra os desvios
-    dos termos restritos, mais os choques e as dummies de trimestre, sem intercepto.
-    O peso da expectativa e o que sobra de um.
+    Separada de `estimar_uma()` para o estimador bayesiano (`bayes/phillips_bayes.py`)
+    ler exatamente a mesma matriz em vez de remonta-la -- duas montagens divergem.
     """
     eq = EQUACOES[chave]
     dep = eq["dep"]
@@ -300,8 +299,25 @@ def estimar_uma(d: pd.DataFrame, chave: str, com_saz: bool = True,
     am = pd.concat([y.rename("__y"), X], axis=1).dropna()
     if idx is not None:
         am = am.loc[am.index.intersection(idx)]
-    yv = am["__y"].to_numpy(float)
-    Xv = am[X.columns].to_numpy(float)
+    return {"am": am, "nomes": nomes, "dep": dep,
+            "y": am["__y"].to_numpy(float), "X": am[X.columns].to_numpy(float),
+            "restritos": restritos, "regs": regs, "ma1": ma1}
+
+
+def estimar_uma(d: pd.DataFrame, chave: str, com_saz: bool = True,
+                idx: pd.Index | None = None, variante: str | None = None,
+                ancora_im: str | None = None) -> dict:
+    """Estima UMA das quatro equacoes.
+
+    A restricao e imposta antes: regride-se `Ik(t) - E(t-1)/4` contra os desvios
+    dos termos restritos, mais os choques e as dummies de trimestre, sem intercepto.
+    O peso da expectativa e o que sobra de um.
+    """
+    eq = EQUACOES[chave]
+    m = matriz(d, chave, com_saz, idx, variante, ancora_im)
+    dep, nomes, am = m["dep"], m["nomes"], m["am"]
+    restritos, regs, ma1 = m["restritos"], m["regs"], m["ma1"]
+    yv, Xv = m["y"], m["X"]
 
     if ma1:
         # Maxima verossimilhanca com residuo MA(1). O erro-padrao deixa de ser HAC: a

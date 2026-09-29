@@ -681,6 +681,55 @@ def status_por_grupo(
     return out
 
 
+def fatos_por_tabela(path: Path | str = _YAML_DEFAULT) -> dict[str, dict]:
+    """{tabela: fatos} para toda tabela citada no calendario — o que a pagina le.
+
+    Desde 2026-09-24 a aba Divulgacoes nao usa mais o veredito de `status_por_grupo()`:
+    ela mostra FATOS e compara com o momento de cada divulgacao, no navegador. Os fatos
+    sao tres coisas independentes, e nenhuma e deduzida do calendario:
+
+        max / coluna / linhas   o que o banco tem agora (`vintage` quando a tabela tem,
+                                porque ali `date` e o periodo projetado)
+        ok_em / mudou_em        quando o ETL buscou pela ultima vez, e quando o dado
+                                mudou pela ultima vez (`domain/db/execucoes.py`)
+        desde                   desde quando uma mudanca seria percebida -- antes do
+                                primeiro registro, "nada mudou" nao e afirmavel
+        tentativa_em / ok / erro  a ultima tentativa, com ou sem sucesso
+
+    `sem_script` marca a tabela que nenhum script sabe alimentar: ela nao entra na conta
+    de "atualizado", porque o botao nunca a alcanca.
+
+    O veredito antigo (`status()` e companhia) continua existindo para a linha de comando.
+    """
+    from domain.db import execucoes
+    from domain.db.registry import tabelas as mapa_registry
+
+    doc = carregar(path)
+    tabs = sorted({t for ts in tabelas_por_grupo(doc).values() for t in ts})
+    banco = execucoes.medir(tabs)
+    regs = execucoes.ler(tabs)
+    mapa = mapa_registry()
+
+    out: dict[str, dict] = {}
+    for t in tabs:
+        b = banco.get(t) or {}
+        r = regs.get(t) or {}
+        out[t] = {
+            "existe": t in banco,
+            "coluna": b.get("coluna"),
+            "max": b.get("max"),
+            "linhas": b.get("linhas"),
+            "sem_script": t not in mapa,
+            "tentativa_em": r.get("tentativa_em"),
+            "ok": r.get("ok"),
+            "erro": r.get("erro"),
+            "ok_em": r.get("ok_em"),
+            "mudou_em": r.get("mudou_em"),
+            "desde": r.get("desde"),
+        }
+    return out
+
+
 def grupos_atrasados(
     path: Path | str = _YAML_DEFAULT,
     as_of: date | None = None,

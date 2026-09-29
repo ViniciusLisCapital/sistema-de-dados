@@ -1,70 +1,94 @@
 """A equacao (H): a curva IS, de onde vem o aquecimento da economia.
 
-    (H) H(t) = h1*H(t-1) + h2*g_rr(t-1) + d08 + d20 + eps
+    (H) H(t) = h1*H(t-1) + h2*gap(t-1) + d08 + d20 + eps
 
-    H     hiato    hiato do produto do BCB, % do produto potencial
-    g_rr  g_rr     inclinacao real 2a-10a (NTN-B), p.p. -- o aperto monetario
-    d08            2008T4-2009T4        d20   2020T1-2020T4
+    H     hiato     hiato do produto do BCB, % do produto potencial
+    gap   gap_juro  Selic - (rr_10a + meta_12m), p.p. -- o aperto monetario
+    d08             2008T4-2009T4        d20   2020T1-2020T4
 
-Sem intercepto. O hiato nao tem nivel proprio de longo prazo: em repouso, com a
-inclinacao em zero, a conta devolve ZERO, e `repouso()` afirma isso numericamente.
-A media medida do hiato na amostra e -0,18 com desvio 1,68 -- perto de zero, e o
-plano da pasta mandava conferir e reportar, entao esta reportado.
+Sem intercepto. O hiato nao tem nivel proprio de longo prazo: em repouso, com o aperto
+em zero, a conta devolve ZERO, e `repouso()` afirma isso numericamente. A media medida
+do hiato na amostra e -0,18 com desvio 1,68 -- perto de zero, e o plano da pasta mandava
+conferir e reportar, entao esta reportado.
 
-## Por que o aperto e uma INCLINACAO, e nao um juro contra um neutro
+## O aperto e a distancia ate a ANCORA da regra de juros
 
-A forma usual poria `r(t) - RR*(t)`. Medido, ela nao sobrevive a nenhuma escolha de
-`RR*` que seja constante ou quase. **Duas amostras, e a diferenca entre elas e so a
-janela** -- a de 81 trimestres e a comum, que e a que `comparar_rr()` roda e a que a
-pagina mostra, porque a curva da B3 comeca em 2006T1; a de 90 e a mais longa que cada
-candidata sozinha permite, e existe aqui para mostrar que o veredito nao e do recorte:
+`rr_10a + meta_12m` e o mesmo juro nominal de equilibrio que a (R) persegue. Medir o
+aperto como `Selic - ancora` e portanto dizer que **os dois blocos do modelo medem
+distancia ate o mesmo ponto**: o Copom move a Selic na direcao da ancora, e o quanto ela
+ficou longe dali e o que esfria ou aquece o produto.
 
-    RR*                            81 tri (comum)    90 tri (cada uma na sua)
-    constante 4,5%                 -0,052  (-1,44)   -0,016  (-0,63)
-    a neutra declarada no RPM      -0,055  (-1,45)   -0,017  (-0,65)
-    mediana das 5 medidas do boxe       --           -0,075  (-1,61)
-    HP com cauda Focus             -0,231  (-4,42)   -0,173  (-3,75)
-    a inclinacao 2a-10a (a daqui)  -0,164  (-2,62)        --
+Ate 2026-09-25 o aperto era a inclinacao real 2a-10a, `rr_2a - rr_10a`, e a docstring
+daqui opunha "uma inclinacao" a "um juro contra um neutro". **A oposicao nao existe**, e
+a algebra e o que mostra:
 
-O HP ajusta MELHOR que a inclinacao, e isso esta na tabela em vez de escondido. O que
-o desqualifica nao e o ajuste, sao duas coisas que a tabela nao mostra: ele e um filtro
-de dois lados, entao para decidir qual era o equilibrio em 2010 ele usa dado de 2012 --
-look-ahead que nao existia na epoca --, e o nivel dele hoje (7,7%) diz que a Selic de
-15% quase nao aperta. A inclinacao nao tem nenhum dos dois.
+    inclinacao   = rr_2a          - rr_10a
+    gap          = (Selic - meta) - rr_10a
 
-O juro real ex-ante cai de 12,2% em 2001T4 a -0,9% em 2020T4 e volta a 8,5%; o hiato
-nao tem essa tendencia. **O que decide a estimativa e o que REMOVE a tendencia, nao o
-nivel escolhido** -- e e por isso que as duas candidatas fixas, que nao removem nada,
-entregam um h2 tres vezes menor e indistinguivel de zero.
+O neutro e o MESMO nos dois. O que muda e a perna da politica: o juro real de 2 anos que
+o mercado precifica, ou a Selic deflacionada pela meta. As duas pernas correlacionam
+**+0,875** e as duas medidas do aperto, **+0,767**.
 
-A inclinacao resolve isso sem precisar de `RR*` nenhum: e a diferenca
-entre dois precos observados no mesmo pregao, mean-reverting por construcao, sem filtro,
-sem pesquisa e sem look-ahead. A ponta de 2 anos carrega o ciclo de politica e a de 10
-carrega a estrutural mais o premio; a diferenca e o aperto.
+## O que a troca custou e comprou, medido
 
-## Por que DEFASADA, e nao contemporanea
+Mesmos 81 trimestres (2006T2-2026T2), so o regressor mudando:
 
-O plano pedia `g_rr(t)`. A defasagem de um trimestre e o pico nas DUAS convencoes de
-trimestralizacao, o que e o que torna a escolha robusta em vez de garimpada:
+    aperto                h1      h2    t(h2)   h2*dp   lp*dp      R2    RMSE   LB(4)
+    inclinacao 2a-10a  0,886  -0,164   -2,62  -0,167  -1,468  0,8678   0,642   0,021
+    gap da ancora      0,877  -0,071   -2,12  -0,185  -1,502  0,8703   0,636   0,070
 
-    defasagem      media        fechamento
-    L0        -0,113 (-1,97)  -0,069 (-1,18)
-    L1        -0,164 (-2,62)  -0,177 (-2,65)
-    L2        -0,122 (-1,90)  -0,137 (-2,19)
+**Os `h2` nao se comparam entre si** -- o gap tem desvio 2,60 e a inclinacao 1,02, entao
+o coeficiente menor nao e efeito menor. Por desvio da propria medida os dois entregam
+quase o mesmo, com o gap 11% mais forte. O que muda de verdade e o **residuo**: a forma
+anterior REPROVAVA Ljung-Box(4) a 5% (p 0,021) e esta passa (p 0,070).
 
-Duas razoes, e as duas apontam para a defasada:
+A defasagem de um trimestre continua sendo o pico (t -2,13 em L1, -2,01 em L0, -1,73 em
+L2) e a convencao de fechamento da Selic fica marginalmente melhor (t -2,23); a media
+fica, por ser a que a (R) do simulador produz.
+
+## A ressalva, e ela e real
+
+As duas nao sao historias rivais -- correlacionam 0,767, e postas no mesmo ajuste
+nenhuma sobrevive (inclinacao t -0,99, gap t -1,23). Mas elas se separam por
+subamostra, e ali a inclinacao ganha: em 2016T3-2026T2 sem a pandemia (n 32) a
+inclinacao da -0,105 (t -2,94) e o gap da -0,006 (t -0,44). A significancia do gap na
+amostra cheia vem sobretudo de 2006-2016. **Isso vai na aba**, nao aqui.
+
+## E o que decidiu: com a inclinacao, a Selic nunca chega ao produto
+
+A inclinacao e feita de dois precos de mercado, entao uma (H) escrita com ela e uma
+equacao ESPECTADORA dentro do simulador -- recebe premissa e nao recebe nada da regra de
+juros. Com o gap, `(R) -> (H)` e elo de verdade, e e ele que, com a curva de Phillips,
+fecha o laço `H -> I -> E -> R -> H` que o plano da pasta preve desde o comeco.
+
+## Por que DEFASADO, e nao contemporaneo
+
+O plano pedia `g(t)`. A defasagem de um trimestre e o pico nas DUAS convencoes de
+trimestralizacao, o que e o que torna a escolha robusta em vez de garimpada. Duas razoes,
+e as duas apontam para a defasada:
 
 - **E a forma do proprio BC.** A eq. (2) do modelo agregado dele e
   `h = b1*h(-1) - b2*r_hat(-1)/4 - b3*rp_hat + ...`, com o juro real DEFASADO.
-- **A contemporanea tem simultaneidade, e ela e visivel no dado.** A correlacao bruta de
-  `g_rr(t)` com o hiato e POSITIVA em todas as candidatas de `RR*` (+0,18 a +0,43), sinal
-  trocado, porque o Copom aperta quando o hiato abre. Defasar quebra isso.
-- **E com a media do trimestre ela nem seria predeterminada.** `g_rr(t)` na convencao de
-  media e a media da curva DENTRO do trimestre que se quer explicar; `g_rr(t-1)` esta
-  inteiro no passado. A defasagem e o que faz a convencao de media ser legitima.
+- **A contemporanea tem simultaneidade, e ela e visivel no dado.** A correlacao bruta do
+  aperto com o hiato e POSITIVA em todas as medidas (+0,18 a +0,43), sinal trocado,
+  porque o Copom aperta quando o hiato abre. Defasar quebra isso.
+- **E com a media do trimestre ele nem seria predeterminado.** `gap(t)` na convencao de
+  media esta dentro do trimestre que se quer explicar; `gap(t-1)` esta inteiro no passado.
 
 A troca esta declarada na aba e a forma contemporanea continua estimada ao lado, em
 `comparar()`, para a diferenca ser visivel em vez de argumentada.
+
+## As outras definicoes de equilibrio continuam medidas, e continuam perdendo
+
+`comparar_rr()` roda `r_ex_ante - RR*` para uma taxa fixa de 4,5%, para a neutra que o
+BC declara e para um filtro HP com cauda Focus, mais as duas medidas acima. As duas
+fixas entregam um `h2` indistinguivel de zero porque nao removem a tendencia do juro
+real ex-ante, que cai de 12,2% em 2001T4 a -0,9% em 2020T4 e volta a 8,5% -- e o hiato
+nao tem essa tendencia. O HP ajusta bem e e desqualificado por duas coisas que a tabela
+nao mostra: ele e filtro de dois lados, entao para dizer qual era o equilibrio em 2010
+usa dado de 2012, e o nivel dele hoje (7,7%) diria que a Selic de 15% quase nao aperta.
+**O gap nao tem nenhum dos dois problemas**: Selic, NTN-B de 10 anos e meta sao tres
+numeros observaveis no proprio trimestre, sem filtro e sem pesquisa.
 
 ## O que NAO entra, e por decisao do usuario
 
@@ -95,6 +119,10 @@ HAC_LAGS = 4
 # A defasagem do aperto, em trimestres. Nomeada porque e uma DECISAO -- ver a docstring.
 LAG_GRR = 1
 
+# A coluna do painel que mede o aperto monetario. `gap_juro` desde 2026-09-25; `g_rr`,
+# a inclinacao real 2a-10a, continua estimada ao lado em `comparar()`.
+COL_APERTO = "gap_juro"
+
 # Janelas de crise, as mesmas do modelo agregado do BC.
 CRISES = {
     "d08": (pd.Period("2008Q4", "Q"), pd.Period("2009Q4", "Q")),
@@ -102,7 +130,7 @@ CRISES = {
 }
 
 # (parametro, coluna) -- a ordem e a da equacao
-TERMOS = [("h1", "hiato_l1"), ("h2", "g_rr_l")]
+TERMOS = [("h1", "hiato_l1"), ("h2", "ap_l")]
 
 ROT = {
     "h1": "Hiato do trimestre anterior",
@@ -112,7 +140,7 @@ ROT = {
 }
 
 
-def montar(df: pd.DataFrame | None = None, col_grr: str = "g_rr",
+def montar(df: pd.DataFrame | None = None, col: str = COL_APERTO,
            lag: int = LAG_GRR) -> pd.DataFrame:
     """Painel -> matriz de regressao da equacao (H).
 
@@ -125,8 +153,8 @@ def montar(df: pd.DataFrame | None = None, col_grr: str = "g_rr",
     d = pd.DataFrame(index=df.index)
     d["hiato"] = df["hiato"]
     d["hiato_l1"] = df["hiato"].shift(1)
-    d["g_rr_l"] = df[col_grr].shift(lag)
-    d["g_rr"] = df[col_grr]
+    d["ap_l"] = df[col].shift(lag)
+    d["ap"] = df[col]
     for k, (a, b) in CRISES.items():
         d[k] = ((d.index >= a) & (d.index <= b)).astype(float)
     return d
@@ -239,16 +267,18 @@ def repouso(r: dict) -> dict:
 # As leituras alternativas medidas ao lado. Nenhuma e a especificacao: elas existem para
 # a pagina poder mostrar o que a escolha custou, em vez de a afirmar.
 COMPARAR = {
-    "base":    dict(desc="A conta da página: inclinação do trimestre anterior",
+    "base":    dict(desc="A conta da página: a Selic contra a âncora, um trimestre atrás",
+                    col="gap_juro", lag=1, dummies=True),
+    "cont":    dict(desc="O mesmo aperto no trimestre corrente, como o plano pedia",
+                    col="gap_juro", lag=0, dummies=True),
+    "lag2":    dict(desc="O aperto de dois trimestres atrás",
+                    col="gap_juro", lag=2, dummies=True),
+    "fim":     dict(desc="Pela Selic do fechamento do trimestre, e não pela média",
+                    col="gap_juro_fim", lag=1, dummies=True),
+    "incl":    dict(desc="A inclinação real 2 anos menos 10 anos no lugar da Selic",
                     col="g_rr", lag=1, dummies=True),
-    "cont":    dict(desc="A inclinação do trimestre corrente, como o plano pedia",
-                    col="g_rr", lag=0, dummies=True),
-    "lag2":    dict(desc="A inclinação de dois trimestres atrás",
-                    col="g_rr", lag=2, dummies=True),
-    "fim":     dict(desc="Pelo fechamento do trimestre, e não pela média",
-                    col="g_rr_fim", lag=1, dummies=True),
     "sem_cri": dict(desc="Sem as duas crises marcadas",
-                    col="g_rr", lag=1, dummies=False),
+                    col="gap_juro", lag=1, dummies=False),
 }
 
 
@@ -264,7 +294,7 @@ def comparar(df: pd.DataFrame | None = None) -> dict:
 
     comum = None
     for k, v in COMPARAR.items():
-        cols = ["hiato", "hiato_l1", "g_rr_l"] + (list(CRISES) if v["dummies"] else [])
+        cols = ["hiato", "hiato_l1", "ap_l"] + (list(CRISES) if v["dummies"] else [])
         ix = montadas[k][cols].dropna().index
         comum = ix if comum is None else comum.intersection(ix)
 
@@ -294,14 +324,14 @@ def _juro_real_ex_ante() -> pd.Series:
 
     E o `r_focus` do modelo agregado do BC, montado das mesmas funcoes -- nao copiado.
     """
-    from analytics.brasil.monetary_policy.modelo_painel import (
+    from analytics.brasil.structural_model.modelo_agregado.modelo_painel import (
         focus_ipca_12m, focus_selic_12m)
     return (focus_selic_12m() - focus_ipca_12m()).dropna()
 
 
 def comparar_rr(df: pd.DataFrame | None = None) -> list[dict]:
     """h2 sob cada definicao de RR*, mais a inclinacao, na mesma amostra comum."""
-    from analytics.brasil.monetary_policy.modelo_painel import cauda_juro_real, hp
+    from analytics.brasil.structural_model.modelo_agregado.modelo_painel import cauda_juro_real, hp
 
     if df is None:
         df = panel.construir()
@@ -319,6 +349,8 @@ def comparar_rr(df: pd.DataFrame | None = None) -> list[dict]:
          r - hp(r, "tend", fim, cauda_juro_real(fim)).reindex(r.index)),
         ("incl", "a inclinação da curva real: o juro de 2 anos menos o de 10",
          df["g_rr"]),
+        ("gap", "a Selic contra o juro nominal de equilíbrio, a mesma âncora da regra "
+                "de juros", df["gap_juro"]),
     ]
 
     # amostra comum: sem ela a linha do filtro, que alcanca mais tras, leria melhor so
@@ -332,10 +364,15 @@ def comparar_rr(df: pd.DataFrame | None = None) -> list[dict]:
     out = []
     for k, desc, g in cands:
         d = montar(df)
-        d["g_rr_l"] = g.shift(LAG_GRR)
+        d["ap_l"] = g.shift(LAG_GRR)
         rr = estimar(d.loc[comum])
-        out.append({"key": k, "desc": desc, "escolhida": k == "incl",
+        # `h2` sozinho nao compara duas medidas de dispersao diferente -- o gap tem
+        # desvio 2,60 e a inclinacao 1,02. Por isso a tabela carrega tambem o efeito
+        # por DESVIO da propria medida, que e o numero que se le lado a lado.
+        sd = float(d.loc[comum, "ap_l"].std())
+        out.append({"key": k, "desc": desc, "escolhida": k == "gap",
                     "h2": float(rr["coef"]["h2"]), "t": float(rr["t"]["h2"]),
+                    "sd": sd, "h2_dp": float(rr["coef"]["h2"] * sd),
                     "r2": rr["r2"], "n": rr["n"]})
     return out
 

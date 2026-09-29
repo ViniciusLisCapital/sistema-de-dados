@@ -76,14 +76,19 @@ antigo (a saída é fechar a janela dele e rodar de novo). Coberto por `tests/te
 Se a aba e o `status.py` discordarem, esta é a primeira coisa a checar:
 `netstat -ano | findstr :8765` — tem de haver **uma** linha `LISTENING`.
 
-Four row states, from the release date plus `sync.py`'s verdict for the group:
+Row states since 2026-09-24 — **facts, not a verdict**; see the section "A aba Divulgações mostra
+FATOS" below. Every released row that feeds a table has the button, in every state:
 
-| State | Shown | When |
+| State | Beside the button | When |
 |---|---|---|
-| future | dimmed `—` | release date (or `date_end`) hasn't passed |
-| late | **orange button** | released, and some table is behind → the only attention-grabbing state |
-| ok | `✓ em dia` | released, data present |
-| unknown | neutral button | released, but no verdict possible (file mode, DB down, or a group with no datable period like Copom/FOMC) |
+| future | dimmed `—`, no button | release date/time hasn't passed |
+| late | **orange** · `não atualizado desde a divulgação · último DD/MM HH:MM` | some table was last fetched BEFORE this release — the only orange state, and the only one the batch takes |
+| ok | `atualizado DD/MM HH:MM · com dado novo` (or `N de M com dado novo`) | all fetched after it, and N changed |
+| semnovo | gold · `atualizado … · sem dado novo desde a divulgação` | all fetched after it, none changed, **and** recording already existed at release time |
+| buscado | `atualizado DD/MM HH:MM` | all fetched after it, but recording started after the release — nothing can be claimed about the data |
+| semregistro | `sem registro de atualização` | some table never had a recorded run |
+| semscript | `nenhum script alimenta estas tabelas` | — |
+| unknown | neutral button, no facts | file mode or DB down |
 | — | `sem tabela` | group feeds no table (`bcb_copom_ata`) — never offers a button |
 
 **Security, and why each piece:** binds `127.0.0.1` only; the POST takes a **group slug and resolves
@@ -479,6 +484,85 @@ atrasada, cinza em ninguém, pendente fora do recorte sumindo, cascata removida,
 `segundaDa` com getters locais, clique que não redesenha, cada um dos dois filtros não filtrando,
 barra de volta para fora do card, resumo contando o calendário inteiro, resumo contando só as
 linhas visíveis, e resumo sumindo).
+
+## O card de dashboard é a tabela de quatro colunas, e só (2026-09-24)
+
+Pedido do usuário, com o card de Política Monetária como contraexemplo (*"tem um monte de
+informação que criou uma verbosidade enorme. O padrão deve ser Onde mora, Dependência, Papel no
+dashboard, Último dado"*). O corpo do card aberto passou a ser só a tabela. Saíram:
+
+- **a nota do dashboard** (`note:` do manifesto) — continua no YAML, não é mais impressa;
+- **o bloco "O que este dashboard prepara por conta própria"** com cada passo de recálculo, o
+  corte, a frequência e os arquivos que grava. Ficou o efeito: o tempo do botão continua somando o
+  que vai ser refeito, e a linha de cima do card diz `N cálculo(s) próprio(s) atrás dos dados — o
+  Regerar refaz` quando há;
+- **as sublinhas de cada dependência** (quem escreve, o passo que refaz, o comando de atualizar, a
+  nota do dep, "só com as abas de modelo") e **a quinta coluna** de sinais. O sinal que sobra é
+  sobre o último dado e mora na célula dele: o erro no lugar da data, `não consultado` para fonte
+  externa não sondada, e `dado novo` com `no relatório: DD/MM` embaixo.
+
+O preço, declarado: o comando das 3 planilhas de atribuição cambial (`extração manual a partir dos
+PDFs`) não aparece mais na tela; o Papel no dashboard e o selo "arquivo" dizem o que elas são. O
+guarda é a forma renderizada, nos dois modos: toda tabela tem exatamente esses quatro cabeçalhos,
+nenhuma linha tem quinta célula, e nada de `proc-box`/`dep-sub`/nota volta ao card.
+
+## A aba Divulgações mostra FATOS, não veredito (2026-09-24)
+
+Pedido do usuário, depois de medir que a verificação errava para os dois lados: *"Não parece que
+está funcionando bem o processo de verificação se a base está atualizada ou não"*. Medido no dia:
+**3 grupos laranja, 1 real** — o Focus e o Copom acusavam porque `expc_focus` também está listada
+no grupo do RPM, e a regra "divulgação − 3 dias" foi aplicada à data de hoje do RPM (esperava coleta
+de 21/09, uma segunda-feira) — e na véspera o Copom estava **verde** sem a 281ª reunião, porque as
+duas tabelas dele voltam `SEM EXPECTATIVA`. **E quando o veredito errava dizendo "em dia", o botão
+sumia**: a célula trocava o botão por `✓ em dia`.
+
+O defeito era de desenho, não de uma regra: o `sync.py` **deduz** que data cada tabela deveria ter,
+cada tabela com data peculiar pede uma exceção, e tabelas em mais de um grupo fazem as exceções se
+chocarem. Consertar os dois casos do dia deixaria o próximo aparecer do mesmo jeito.
+
+O que mudou, e o motivo de cada peça:
+
+- **O botão fica em toda linha que já saiu.** Nenhum estado o esconde. Um veredito errado não pode
+  custar a ação.
+- **Fatos no lugar do veredito**, gravados por quem busca o dado —
+  [`domain/db/execucoes.py`](../../domain/db/execucoes.py), chamado pelos três executores de
+  `jobs/`: `ok_em` (última busca sem erro), `mudou_em` (última em que `(max, linhas)` mudou em
+  relação ao registro anterior), `desde` (primeiro registro) e a última tentativa com o erro. A
+  página compara isso com o **momento desta divulgação** (data + hora), no navegador — nada é
+  deduzido do calendário. `sync.fatos_por_tabela()` junta os fatos com o que o banco tem agora e é
+  o que `/api/status` devolve; `status_por_grupo()` ficou só para a linha de comando.
+- **O "atualizado" da linha é a busca MAIS ANTIGA** entre as tabelas dela: uma tabela buscada hoje
+  não cobre a outra, buscada em janeiro.
+- **"Sem dado novo" só quando é afirmável.** Exige que o registro já existisse na hora da
+  divulgação (`desde ≤ momento`). Sem essa guarda, no primeiro dia toda divulgação que já estava no
+  banco apareceria em dourado — o dado chegou, só que antes de alguém anotar quando. É o estado
+  `buscado`, que diz só a hora.
+- **"Nenhuma pendente" em verde só quando se sabe.** Com algum grupo sem registro no recorte, a
+  barra de lote diz `nenhuma divulgação laranja no recorte · N sem registro de atualização ainda`.
+- **Tabela com `vintage` é lida pelo `vintage`** — as de edição (hiato do RPM, projeções do
+  Copom, fluxo financeiro, desocupação retropolada): o `date` delas é o período projetado e dizia
+  2029 em 2026. A linha aberta escreve "edição mais recente" em vez de "dado mais recente".
+
+**Cada linha virou um clique-abre** (mesmo pedido): fechada, o botão e os fatos; aberta, as tabelas
+que a divulgação alimenta, cada uma com o que o banco tem e quando foi buscada. A coluna "Tabelas
+Alimentadas" saiu da linha fechada — era a que mais a alongava. Mesma mecânica do cabeçalho de
+semana (`data-entry` num `<tr>`, porque `<details>` dentro de `<tbody>` quebra a tabela), e o
+estado aberto sobrevive ao re-render (`state.linhas`).
+
+**O registro começa vazio**, e é por isso que depois desta mudança quase toda linha diz "sem
+registro de atualização": ele nasce na primeira execução de cada tabela pelo executor (botão,
+`update_db.py`, tarefa agendada). Um passe completo registra tudo de uma vez.
+
+Achado ao verificar em browser, e que vale para quem estranhar o hiato: **o RPM de 24/09 saiu em
+PDF às 08:00, mas o anexo estatístico (xlsx) de set/2026 ainda não existia** —
+`AnexoRPM().url_de(2026-09-01)` devolve `None` e o mais recente é jun/2026. Então rodar o grupo
+`bcb_rpm` no dia deixa `pm_hiato_produto` na edição de junho, e isso é a fonte, não o botão.
+
+Coberto por `tests/test_etl_execucoes.py` (registro, sem banco) e por cenários novos em
+`tests/test_release_calendar_js.js` e `tests/test_serve_calendar.py` (o `--run-etl` confere que o
+botão registra). Verificado contra 23 mutantes, e confirmado em Chrome headless contra o servidor:
+zero exceções, sem rolagem horizontal, `Atualizar` no RPM rodou 7 scripts em 39 s e a linha passou
+de "sem registro" a "atualizado 24/09 11:50" sem recarregar.
 
 ## Pending
 

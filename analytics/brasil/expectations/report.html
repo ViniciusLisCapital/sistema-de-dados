@@ -310,7 +310,6 @@
 <nav class="tab-nav">
   <button class="tab-btn active" data-tab="boletim">Boletim</button>
   <button class="tab-btn" data-tab="revisao">Revisão</button>
-  <button class="tab-btn" data-tab="copom">Curva do Copom</button>
   <button class="tab-btn" data-tab="movel">Horizonte Móvel</button>
   <button class="tab-btn" data-tab="trajetoria">Trajetória</button>
   <button class="tab-btn" data-tab="dispersao">Dispersão</button>
@@ -424,63 +423,6 @@
     </section>
   </div>
 
-  <!-- ═══════ ABA — CURVA DO COPOM ═══════
-       expc_focus_copom. A ordem cronológica das reuniões NÃO é alfabética e não é
-       derivável da data da pesquisa: vem de (ano, número) extraídos de "R<n>/<ano>".
-  ══════════════════════════════ -->
-  <div class="tab-panel" id="tab-copom">
-    <section>
-      <h2>Curva de Selic implícita no consenso</h2>
-      <div class="kpi-grid-4">
-        <div class="kpi-card"><div class="kpi-label" id="kpi-cop-prox-l">Próxima reunião</div>
-          <div class="kpi-value" id="kpi-cop-prox-v">—</div><div class="kpi-sub" id="kpi-cop-prox-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label" id="kpi-cop-term-l">Última reunião cotada</div>
-          <div class="kpi-value" id="kpi-cop-term-v">—</div><div class="kpi-sub" id="kpi-cop-term-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Movimento embutido no ciclo</div>
-          <div class="kpi-value" id="kpi-cop-ciclo-v">—</div><div class="kpi-sub" id="kpi-cop-ciclo-s">—</div></div>
-        <div class="kpi-card"><div class="kpi-label">Reuniões cotadas</div>
-          <div class="kpi-value" id="kpi-cop-n-v">—</div><div class="kpi-sub" id="kpi-cop-n-s">—</div></div>
-      </div>
-
-      <div class="ctrl-bar" style="margin-top:14px">
-        <span class="ctrl-label">Base de cálculo</span>
-        <div class="pill-group" id="pg-cop-base"></div>
-        <div class="ctrl-sep"></div>
-        <span class="ctrl-label">Datas de pesquisa</span>
-        <div class="multiselect">
-          <button class="multiselect-btn" id="ms-cop-btn">—</button>
-          <div class="multiselect-panel" id="ms-cop-panel"></div>
-        </div>
-        <div class="ctrl-sep"></div>
-        <div class="dl-toggle" id="dl-cop"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-      <div class="chart-card"><div id="chart-cop-curva" class="chart-div"></div></div>
-      <p class="chart-caption">Eixo X é a sequência de reuniões ordinárias, não o calendário — o
-        Focus não publica a data de cada reunião, só a numeração.</p>
-
-      <h3 style="margin-top:22px">Selic esperada por horizonte, ao longo do tempo</h3>
-      <p class="lead">Cada linha fixa a posição na fila de reuniões (1ª à frente, 2ª, 4ª…) e
-        acompanha o que o consenso esperava dela em cada semana. Quantas reuniões o Focus cota à
-        frente cresceu com o tempo — 1 em 2004, ~12 na década de 2010, 16 desde 2021 — então as
-        linhas longas começam em datas diferentes.</p>
-      <div class="ctrl-bar">
-        <span class="ctrl-label">Horizontes</span>
-        <div class="multiselect">
-          <button class="multiselect-btn" id="ms-coph-btn">—</button>
-          <div class="multiselect-panel" id="ms-coph-panel"></div>
-        </div>
-        <div class="ctrl-sep"></div>
-        <div class="dl-toggle" id="dl-coph"><span class="toggle-icon"></span> Dados no gráfico</div>
-      </div>
-      <div class="chart-card"><div id="chart-cop-hz" class="chart-div"></div></div>
-
-      <h3 style="margin-top:22px">Mapa da curva: horizonte × data de pesquisa</h3>
-      <div class="chart-card"><div id="chart-cop-heat" class="chart-div"></div></div>
-      <p class="chart-caption">Cada coluna é uma curva inteira. Faixas verticais uniformes = curva
-        plana (nada precificado); gradiente forte de baixo para cima = ciclo embutido.</p>
-    </section>
-  </div>
-
   <!-- ═══════ ABA — HORIZONTE MÓVEL ═══════
        expc_focus. "Quanto nos próximos 12/24 meses contados desta data" -- não há período
        de referência nomeado, só a data da pesquisa.
@@ -570,7 +512,7 @@
 
   <!-- ═══════ ABA — DISPERSÃO ═══════
        Desvio-padrão, coeficiente de variação e número de respondentes. min/max só
-       existem nos stores de expc_focus e expc_focus_copom -- ver o Apêndice.
+       existem no store de expc_focus -- ver o Apêndice.
   ═════════════════════════ -->
   <div class="tab-panel" id="tab-dispersao">
     <section>
@@ -611,8 +553,9 @@
   </div>
 
   <!-- ═══════ ABA — BASES ═══════
-       base 0 (janela de 30 dias) vs base 1 (4 dias úteis). Só expc_focus e
-       expc_focus_copom: a expc_focus_periodo carrega apenas a base 0.
+       base 0 (janela de 30 dias) vs base 1 (4 dias úteis). Só expc_focus: a
+       expc_focus_periodo carrega apenas a base 0. A Selic por reunião, que era a outra
+       fonte desta aba, saiu em 2026-09-24 para o relatório de Política Monetária.
   ═════════════════════ -->
   <div class="tab-panel" id="tab-bases">
     <section>
@@ -635,9 +578,6 @@
       </div>
 
       <div class="ctrl-bar" style="margin-top:14px">
-        <span class="ctrl-label">Fonte</span>
-        <div class="pill-group" id="pg-bas-fonte"></div>
-        <div class="ctrl-sep"></div>
         <span class="ctrl-label">Série</span>
         <select class="ind-select" id="sel-bas-ind"></select>
         <div class="ctrl-sep"></div>
@@ -658,13 +598,17 @@
 
       <div class="stub-note">
         <h3>Escopo: só Focus</h3>
-        Este relatório lê <strong>exclusivamente</strong> as três tabelas do Sistema de
-        Expectativas de Mercado — <code>expc_focus</code>, <code>expc_focus_copom</code> e
-        <code>expc_focus_periodo</code>. Não há meta de inflação, não há série realizada e não há
-        projeção do próprio Copom em nenhum gráfico. Tudo o que se vê aqui é o que o
-        <em>mercado</em> esperava, na data em que foi perguntado. Comparações contra a meta,
-        contra o realizado ou contra o cenário do BC vivem nos relatórios de Inflação e de
-        Política Monetária, cada um com a sua própria fonte declarada.
+        Este relatório lê <strong>exclusivamente</strong> duas tabelas do Sistema de
+        Expectativas de Mercado — <code>expc_focus</code> e <code>expc_focus_periodo</code>. Não
+        há meta de inflação, não há série realizada e não há projeção do próprio Copom em nenhum
+        gráfico. Tudo o que se vê aqui é o que o <em>mercado</em> esperava, na data em que foi
+        perguntado. Comparações contra a meta, contra o realizado ou contra o cenário do BC vivem
+        nos relatórios de Inflação e de Política Monetária, cada um com a sua própria fonte
+        declarada.
+        <br><br>
+        A Selic esperada <strong>reunião a reunião</strong> saiu daqui: está no relatório de
+        Política Monetária, aba Expectativas de Juros, ao lado da taxa que a curva DI precifica
+        para cada reunião. As expectativas vão migrando, cada uma, para o relatório do seu tema.
       </div>
 
       <h3 style="margin-top:8px">Cobertura medida no banco</h3>
@@ -705,13 +649,12 @@
             duas janelas de validade — não dois painéis diferentes.
             <br><br>
             <strong>A base 1 não cobre o histórico todo, e isso vem da fonte:</strong> começa em
-            2014-01-02 nos endpoints de inflação e em 2021-03-31 no de Selic, contra 2001-11 e
-            2004-11 da base 0. Uma série de base 1 anterior a essas datas não existe — não é falha
-            de carga.
+            2014-01-02 nos endpoints de inflação, contra 2001-11 da base 0. Uma série de base 1
+            anterior a essa data não existe — não é falha de carga.
             <br><br>
             <code>expc_focus_periodo</code> carrega <strong>só a base 0</strong>, por decisão de
             escopo: dobrar 1,28 milhão de linhas por uma leitura secundária não se paga. Por isso a
-            aba Bases oferece apenas horizonte móvel e Copom.
+            aba Bases oferece apenas o horizonte móvel.
           </div>
         </details>
 
@@ -732,9 +675,9 @@
           </div>
         </details>
 
-        <details class="appendix-item"><summary>O que cada tabela responde (e por que são três)</summary>
+        <details class="appendix-item"><summary>O que cada tabela responde (e por que são duas)</summary>
           <div class="appendix-body">
-            As três formas de chave são as três formas de pergunta que a API realmente tem:
+            As duas formas de chave são duas das três formas de pergunta que a API tem:
             <ul>
               <li><code>expc_focus_periodo</code> — <strong>período de referência fixo</strong>:
                   "quanto EM 2027", "quanto EM março de 2027". Duas datas independentes (quando
@@ -743,9 +686,9 @@
               <li><code>expc_focus</code> — <strong>horizonte móvel</strong>: "quanto nos próximos
                   12 (ou 24) meses contados desta data". Não há período nomeado, então há uma data
                   só. Aba Horizonte Móvel.</li>
-              <li><code>expc_focus_copom</code> — <strong>Selic por reunião do Copom</strong>: ~16
-                  reuniões à frente por data de pesquisa, ou seja a curva de política monetária
-                  implícita no consenso, não um número único. Aba Curva do Copom.</li>
+              <li>A terceira, <strong>Selic por reunião do Copom</strong> (~16 reuniões à frente
+                  por data de pesquisa), é lida no relatório de Política Monetária, aba
+                  Expectativas de Juros.</li>
             </ul>
             A <code>expc_focus</code> guarda horizonte móvel e por construção mistura períodos de
             referência a cada semana — fixar um período nela é impossível. Daí a aba Revisão ler a
@@ -771,7 +714,7 @@
             <strong>Balança comercial se subdivide</strong> em Exportações / Importações / Saldo —
             é o único indicador com detalhe. Todos os outros vêm com detalhe vazio.
             <br><br>
-            <strong>Mínimo e máximo</strong> só estão nos stores de horizonte móvel e Copom. Para
+            <strong>Mínimo e máximo</strong> só estão no store de horizonte móvel. Para
             período de referência guardamos mediana, desvio-padrão e número de respondentes: as
             cinco estatísticas em 268 mil linhas semanais dobrariam o tamanho do arquivo por uma
             leitura secundária.
@@ -781,7 +724,7 @@
         <details class="appendix-item"><summary>O que ficou de fora</summary>
           <div class="appendix-body">
             <strong>Top5.</strong> Os 6 endpoints Top5 (as 5 instituições mais assertivas) não estão
-            carregados no banco. A chave deles é idêntica à das três tabelas mais a dimensão
+            carregados no banco. A chave deles é idêntica à das tabelas da pesquisa mais a dimensão
             <code>tipo_calculo</code>, que já existe com valor <code>'geral'</code> — então
             carregá-los é backfill de dados, não migração de schema, e a leitura "consenso vs. Top5"
             entraria em todas as abas sem mudança de estrutura.
@@ -806,7 +749,7 @@
 
 <footer>
   LIS <span>CAPITAL</span> &nbsp;·&nbsp; Panorama de Expectativas — Focus/BCB &nbsp;·&nbsp;
-  <span id="foot-fonte">expc_focus · expc_focus_copom · expc_focus_periodo</span>
+  <span id="foot-fonte">expc_focus · expc_focus_periodo</span>
 </footer>
 
 <script>
@@ -839,7 +782,6 @@ var NG = GRADE.length;
 var P = D.periodo || {};
 var IDX = D.indice || {};
 var MOV = D.movel || {};
-var COP = D.copom || {};
 var _PLOTLY_CONFIG = {responsive: true, displayModeBar: false, scrollZoom: true};
 
 /*Y_AUTOFIT_JS*/
@@ -857,9 +799,6 @@ var CHART_META = {
   'chart-bol-mov':    {title: 'O Que se Moveu nas Últimas 4 Semanas', source: SRC_FOCUS},
   'chart-rev':        {title: 'Revisão — Como o Consenso sobre um Período se Moveu', source: SRC_FOCUS},
   'chart-rev-ritmo':  {title: 'Ritmo da Revisão — Variação em 4 Semanas', source: SRC_FOCUS},
-  'chart-cop-curva':  {title: 'Curva de Selic Implícita no Consenso', source: SRC_FOCUS},
-  'chart-cop-hz':     {title: 'Selic Esperada por Reunião à Frente', source: SRC_FOCUS},
-  'chart-cop-heat':   {title: 'Mapa da Curva — Horizonte × Data de Pesquisa', source: SRC_FOCUS},
   'chart-mov':        {title: 'Horizonte Móvel — 12 e 24 Meses à Frente', source: SRC_FOCUS},
   'chart-mov-slope':  {title: 'Inclinação do Horizonte Móvel — 24 Meses Menos 12 Meses', source: SRC_FOCUS},
   'chart-tra':        {title: 'Trajetória Esperada — a Curva à Frente', source: SRC_FOCUS},
@@ -1084,7 +1023,7 @@ function mkTsLayout(yTitle, height, traces, extra) {
   }, extra || {});
 }
 // Eixo X que NÃO é data (categoria ou número): sem range default calculado, sem barra
-// de período. Usado pela curva do Copom e pelo eixo "meses até o período".
+// de período. Usado pelo eixo "meses até o período" e pelas barras de revisão.
 function mkCatLayout(yTitle, height, extra) {
   return Object.assign({}, _BASE_LAYOUT, {
     height: height || 520, margin: {l: 58, r: 28, t: 26, b: 66},
@@ -1396,8 +1335,9 @@ var INFO = {
   },
   'Selic|': {
     full: 'Meta da taxa Selic definida pelo Copom',
-    desc: 'A projeção anual é para a meta vigente NO FIM do ano, não para a média do ano. A curva '
-        + 'reunião a reunião, que é o que o mercado realmente negocia, está na aba Curva do Copom.',
+    desc: 'A projeção anual é para a meta vigente NO FIM do ano, não para a média do ano. A '
+        + 'expectativa reunião a reunião está no relatório de Política Monetária, aba Expectativas '
+        + 'de Juros, ao lado da taxa que a curva DI precifica.',
     un: '% a.a., meta ao fim de {ano}',
   },
   'Câmbio|': {
@@ -1995,180 +1935,6 @@ function _revKpis(refs, meta) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ABA — CURVA DO COPOM
-// ═══════════════════════════════════════════════════════════════════════════════
-var _copBase = '0', _copSnaps = ['w0', 'w4', 'w12', 'w52'], _copHzs = ['1', '2', '4', '8'];
-var _copLabels = false, _cophLabels = false;
-
-// "R6/2026" -> {ano, n, ord}. A ordem cronológica NÃO é alfabética: "R10/2027" ordenaria
-// antes de "R2/2027" como string. Não há calendário do Copom no payload, e não precisa
-// haver -- a numeração publicada basta para ordenar.
-function _parseReuniao(r) {
-  var m = /^R(\d+)\/(\d{4})$/.exec(r);
-  if (!m) return null;
-  var n = parseInt(m[1], 10), ano = parseInt(m[2], 10);
-  return {n: n, ano: ano, ord: ano * 100 + n, label: 'R' + n + '/' + String(ano).slice(2)};
-}
-// Ordem do eixo de categorias da curva do Copom: união das reuniões de TODAS as curvas
-// desenhadas, em ordem cronológica. Sem isso o Plotly ordena categoria por ordem de
-// APARIÇÃO -- uma curva antiga cota reuniões que já passaram (R4/26, R5/26), que são
-// categorias novas para o eixo e iam parar no fim, depois de R5/28. Foi bug visual real.
-function _copCategorias(curvas) {
-  var vistos = {}, todas = [];
-  (curvas || []).forEach(function(c) {
-    c.forEach(function(o) {
-      if (vistos[o.label]) return;
-      vistos[o.label] = true;
-      todas.push(o);
-    });
-  });
-  return todas.sort(function(a, b) { return a.ord - b.ord; }).map(function(o) { return o.label; });
-}
-// Reuniões cotadas numa data da grade, já em ordem cronológica.
-function _copCurva(gi, base) {
-  var out = [];
-  Object.keys(COP).forEach(function(k) {
-    var p = k.split('|');
-    if (p[1] !== base) return;
-    var v = blkAt(COP[k], 'm', gi);
-    if (v == null) return;
-    var r = _parseReuniao(p[0]);
-    if (!r) return;
-    out.push({reuniao: p[0], ord: r.ord, label: r.label, valor: v,
-              n: blkAt(COP[k], 'n', gi), s: blkAt(COP[k], 's', gi),
-              lo: blkAt(COP[k], 'lo', gi), hi: blkAt(COP[k], 'hi', gi)});
-  });
-  return out.sort(function(a, b) { return a.ord - b.ord; });
-}
-// Matriz horizonte × grade, montada uma vez por base. hz[k-1][gi] = mediana da k-ésima
-// reunião à frente naquela semana. Quantas reuniões o Focus cota à frente cresceu com o
-// tempo (1 em 2004, 16 desde 2021), então as linhas de horizonte alto só começam depois.
-var _copHzCache = {};
-function _copMatriz(base) {
-  if (_copHzCache[base]) return _copHzCache[base];
-  var K = 20, hz = [], nn = [], ss = [], ll = [], hh = [];
-  for (var k = 0; k < K; k++) {
-    hz.push(new Array(NG).fill(null)); nn.push(new Array(NG).fill(null));
-    ss.push(new Array(NG).fill(null)); ll.push(new Array(NG).fill(null));
-    hh.push(new Array(NG).fill(null));
-  }
-  var ult = new Array(NG).fill(null), cnt = new Array(NG).fill(0);
-  for (var gi = 0; gi < NG; gi++) {
-    var c = _copCurva(gi, base);
-    cnt[gi] = c.length;
-    if (c.length) ult[gi] = c[c.length - 1].valor;
-    for (var j = 0; j < c.length && j < K; j++) {
-      hz[j][gi] = c[j].valor; nn[j][gi] = c[j].n; ss[j][gi] = c[j].s;
-      ll[j][gi] = c[j].lo; hh[j][gi] = c[j].hi;
-    }
-  }
-  _copHzCache[base] = {hz: hz, n: nn, s: ss, lo: ll, hi: hh, ultima: ult, cotadas: cnt, K: K};
-  return _copHzCache[base];
-}
-function renderCopom() {
-  setupPillGroup('pg-cop-base', [{key: '0', label: 'Base 0 (30 dias)'}, {key: '1', label: 'Base 1 (4 dias úteis)'}],
-    '0', function(k) { _copBase = k; _copDesenha(); _copHzDesenha(); _copHeat(); _copKpis(); });
-  setupMultiselect('ms-cop-btn', 'ms-cop-panel',
-    [{header: 'Data de pesquisa', items: SNAPS.filter(function(s) { return s.gi >= 0; }).map(function(s) {
-      return {key: s.key, label: s.label + ' — ' + fmtDataBR(s.data)};
-    })}], _copSnaps, function(sel) { _copSnaps = sel; _copDesenha(); }, 'data(s)');
-  wireDlToggle('dl-cop', function(on) { _copLabels = on; _copDesenha(); });
-
-  var hzItems = [];
-  for (var k = 1; k <= 16; k++) hzItems.push({key: String(k), label: k + 'ª reunião à frente'});
-  hzItems.push({key: 'ult', label: 'Última cotada (terminal)'});
-  setupMultiselect('ms-coph-btn', 'ms-coph-panel', [{header: 'Horizonte', items: hzItems}], _copHzs,
-    function(sel) { _copHzs = sel; _copHzDesenha(); }, 'horizonte(s)');
-  wireDlToggle('dl-coph', function(on) { _cophLabels = on; _copHzDesenha(); });
-  _copHeat();
-  _copKpis();
-}
-function _copDesenha() {
-  var traces = [], curvas = [], primeira = true;
-  SNAPS.forEach(function(s, i) {
-    if (_copSnaps.indexOf(s.key) < 0 || s.gi < 0) return;
-    var c = _copCurva(s.gi, _copBase);
-    if (!c.length) return;
-    curvas.push(c);
-    // Destaque vai para a curva mais RECENTE entre as selecionadas, não para SNAPS[0]:
-    // o usuário pode desmarcar "Hoje", e aí nenhuma linha ficaria sólida.
-    var destaque = primeira;
-    primeira = false;
-    var cr = cor(i);
-    traces.push({
-      type: 'scatter', mode: _copLabels ? 'lines+markers+text' : 'lines+markers',
-      name: s.label + ' (' + fmtDataBR(s.data) + ')',
-      x: c.map(function(o) { return o.label; }), y: c.map(function(o) { return o.valor; }),
-      line: {color: cr, width: destaque ? 3 : 2, dash: destaque ? 'solid' : 'dot'},
-      marker: {size: destaque ? 7 : 5, color: cr},
-      text: _copLabels ? c.map(function(o) { return fmtTrunc(o.valor, 2); }) : undefined,
-      textposition: 'top center',
-      textfont: {family: 'JetBrains Mono,monospace', size: 9, color: cr},
-      customdata: c.map(function(o) { return fmtBR(o.valor, 2) + '% · ' + (o.n || '—') + ' resp.'; }),
-      hovertemplate: '<b>%{x}</b>: %{customdata}<extra>' + s.label + '</extra>',
-    });
-  });
-  _reactPlain('chart-cop-curva', traces, mkCatLayout('Selic esperada (% a.a.)', 520, {
-    xaxis: {type: 'category', categoryorder: 'array', categoryarray: _copCategorias(curvas),
-            gridcolor: '#eee'},
-  }));
-}
-function _copHzDesenha() {
-  var M = _copMatriz(_copBase), traces = [];
-  _copHzs.slice().sort(function(a, b) {
-    if (a === 'ult') return 1;
-    if (b === 'ult') return -1;
-    return parseInt(a, 10) - parseInt(b, 10);
-  }).forEach(function(k, i) {
-    var vals = (k === 'ult') ? M.ultima : M.hz[parseInt(k, 10) - 1];
-    if (!vals) return;
-    var s = {dates: GRADE, values: vals};
-    traces.push(lineTrace(s, k === 'ult' ? 'Última cotada' : k + 'ª à frente', cor(i), _cophLabels, 2, '%'));
-  });
-  _reactPreserveX('chart-cop-hz', traces, mkTsLayout('Selic esperada (% a.a.)', 520, traces));
-}
-function _copHeat() {
-  var M = _copMatriz(_copBase);
-  var z = [], y = [];
-  for (var k = 0; k < 16; k++) { z.push(M.hz[k]); y.push(String(k + 1)); }
-  var trace = {
-    type: 'heatmap', x: GRADE, y: y, z: z,
-    colorscale: [[0, '#418791'], [0.35, '#8FB9A8'], [0.6, '#FBC852'], [0.85, '#BB9B1D'], [1, '#EA523A']],
-    hovertemplate: '%{x}<br>%{y}ª reunião à frente: %{z:.2f}%<extra></extra>',
-    colorbar: {title: {text: '% a.a.', side: 'right', font: {size: 10}}, thickness: 12, len: 0.85},
-    connectgaps: false,
-  };
-  _reactPreserveX('chart-cop-heat', [trace], mkTsLayout('Reunião à frente', 520, [{x: GRADE, y: y}], {
-    hovermode: 'closest',
-    yaxis: {title: {text: 'Reunião à frente', font: {size: 11}}, type: 'category', gridcolor: '#eee'},
-    xaxis: {type: 'date', gridcolor: '#eee', range: [GRADE[Math.max(0, NG - 320)], GRADE[NG - 1]], autorange: false},
-  }));
-}
-function _copKpis() {
-  var M = _copMatriz(_copBase), gi = NG - 1, gi4 = gidxBackWeeks(4);
-  var c = _copCurva(gi, _copBase);
-  if (!c.length) { ['prox', 'term', 'ciclo', 'n'].forEach(function(k) { setKPI('kpi-cop-' + k, '—', '—'); }); return; }
-  var prox = c[0], term = c[c.length - 1];
-  // Δ 4 semanas tem de ser da MESMA reunião, não "do que era a 1ª à frente naquela
-  // época": se houve Copom no meio, a 1ª à frente de 4 semanas atrás é outra reunião, e
-  // a diferença misturaria mudança de expectativa com mudança de horizonte.
-  var prox4 = blkAt(COP[prox.reuniao + '|' + _copBase], 'm', gi4);
-  var term4 = blkAt(COP[term.reuniao + '|' + _copBase], 'm', gi4);
-  setKPILabel('kpi-cop-prox', 'Próxima reunião — ' + prox.reuniao);
-  setKPI('kpi-cop-prox', fmtBR(prox.valor, 2) + '%',
-    (prox4 == null ? '—' : fmtSig(prox.valor - prox4, 2) + ' p.p. em 4 semanas'),
-    clsDelta(prox4 == null ? null : prox.valor - prox4));
-  setKPILabel('kpi-cop-term', 'Última cotada — ' + term.reuniao);
-  setKPI('kpi-cop-term', fmtBR(term.valor, 2) + '%',
-    (term4 == null ? '—' : fmtSig(term.valor - term4, 2) + ' p.p. em 4 semanas'),
-    clsDelta(term4 == null ? null : term.valor - term4));
-  var ciclo = term.valor - prox.valor;
-  setKPI('kpi-cop-ciclo', fmtSig(ciclo, 2) + ' p.p.',
-    'entre ' + prox.reuniao + ' e ' + term.reuniao, clsDelta(ciclo));
-  setKPI('kpi-cop-n', String(c.length), c.length + ' reuniões · ' + (prox.n || '—') + ' respondentes na próxima');
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // ABA — HORIZONTE MÓVEL
 // ═══════════════════════════════════════════════════════════════════════════════
 var _movInds = ['IPCA'], _movHz = '12m', _movSuav = 'S', _movBase = '0', _movLabels = false;
@@ -2333,7 +2099,6 @@ function renderDispersao() {
   setupPillGroup('pg-dis-fonte', [
     {key: 'anual', label: 'Anual'}, {key: 'trimestral', label: 'Trimestral'},
     {key: 'mensal', label: 'Mensal'}, {key: 'movel', label: 'Horizonte móvel'},
-    {key: 'copom', label: 'Copom'},
   ], 'anual', function(k) { _disFonte = k; _disMontaInd(); });
 }
 function _disMontaInd() {
@@ -2346,15 +2111,6 @@ function _disMontaInd() {
       setupSelectSimples('sel-dis-ref', [{key: '12m', label: '12 meses'}, {key: '24m', label: '24 meses'}],
         '12m', function(r) { _disRef = r; _disDesenha(); });
     });
-  } else if (_disFonte === 'copom') {
-    if (selRef) selRef.style.display = '';
-    setupSelect('sel-dis-ind', [{key: 'selic', label: 'Selic por reunião', familia: 'Copom'}], 'selic',
-      function(k) {
-        _disInd = k;
-        var hz = [];
-        for (var i = 1; i <= 16; i++) hz.push({key: String(i), label: i + 'ª à frente'});
-        setupSelectSimples('sel-dis-ref', hz, '1', function(r) { _disRef = r; _disDesenha(); });
-      });
   } else {
     if (selRef) selRef.style.display = '';
     setupSelect('sel-dis-ind', indsDe(_disFonte), 'IPCA|', function(k) {
@@ -2380,18 +2136,11 @@ function setupSelectSimples(selId, options, defaultKey, onChange) {
   sel.onchange = function() { onChange(sel.value); };
   onChange(inicial);
 }
-// Devolve o bloco e o rótulo da série escolhida, seja qual for a fonte. Copom é o único
-// caso em que a "série" não existe como bloco: é a k-ésima reunião à frente, montada da
-// matriz de horizonte.
+// Devolve o bloco e o rótulo da série escolhida, seja qual for a fonte.
 function _disBloco() {
   if (_disFonte === 'movel') {
     return {blk: movBlk(_disInd, _disRef || '12m', 'S', '0'),
             rotulo: _disInd + ' ' + (_disRef || '12m') + ' (suavizada, base 0)', dec: 2, unidade: '%'};
-  }
-  if (_disFonte === 'copom') {
-    var M = _copMatriz('0'), k = parseInt(_disRef || '1', 10) - 1;
-    return {matriz: {m: M.hz[k], s: M.s[k], n: M.n[k], lo: M.lo[k], hi: M.hi[k]},
-            rotulo: 'Selic, ' + (k + 1) + 'ª reunião à frente (base 0)', dec: 2, unidade: '%'};
   }
   var meta = pMeta(_disFonte, _disInd);
   if (!meta) return {};
@@ -2399,12 +2148,11 @@ function _disBloco() {
           dec: meta.dec, unidade: meta.unidade};
 }
 function _disSerie(fonte, stat) {
-  if (fonte.matriz) return {dates: GRADE, values: fonte.matriz[stat] || []};
   return blkSerie(fonte.blk, stat);
 }
 function _disDesenha() {
   var f = _disBloco();
-  if (!f || (!f.blk && !f.matriz)) {
+  if (!f || !f.blk) {
     _reactPreserveX('chart-dis', [], mkTsLayout('—', 520, []));
     _reactPreserveX('chart-dis-n', [], mkTsLayout('Respondentes', 380, []));
     return;
@@ -2440,7 +2188,7 @@ function _disDesenha() {
   var cap = document.getElementById('dis-cap');
   if (cap) {
     cap.textContent = _disMet === 'amp'
-      ? 'Mínimo e máximo existem nas fontes Horizonte móvel e Copom; nas três periodicidades de período de referência o payload guarda só mediana, desvio-padrão e respondentes, e o gráfico fica vazio. Ver o Apêndice.'
+      ? 'Mínimo e máximo existem só na fonte Horizonte móvel; nas três periodicidades de período de referência o payload guarda só mediana, desvio-padrão e respondentes, e o gráfico fica vazio. Ver o Apêndice.'
       : (_disMet === 'cv'
         ? 'Desvio-padrão dividido pelo módulo da mediana: comparável entre séries de nível diferente, mas explode quando a mediana passa perto de zero (resultado primário, conta corrente).'
         : 'Desvio-padrão das respostas individuais na unidade do próprio indicador.');
@@ -2472,48 +2220,33 @@ function _disKpis(f, med, dp, nn) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // ABA — BASES
 // ═══════════════════════════════════════════════════════════════════════════════
-var _basFonte = 'movel', _basInd = null, _basLabels = false;
+// Uma fonte so desde 2026-09-24: a Selic por reuniao, a outra, foi para o relatorio de
+// Politica Monetaria. Um seletor de fonte com uma opcao seria ruido, entao ele saiu junto.
+var _basInd = null, _basLabels = false;
 
 function renderBases() {
   wireDlToggle('dl-bas', function(on) { _basLabels = on; _basDesenha(); });
-  setupPillGroup('pg-bas-fonte', [
-    {key: 'movel', label: 'Horizonte móvel'}, {key: 'copom', label: 'Curva do Copom'},
-  ], 'movel', function(k) { _basFonte = k; _basMontaInd(); });
+  _basMontaInd();
 }
 function _basMontaInd() {
-  if (_basFonte === 'movel') {
-    var opts = [];
-    _movIndicadores().forEach(function(ind) {
-      ['12m', '24m'].forEach(function(hz) {
-        if (movBlk(ind, hz, 'S', '0') && movBlk(ind, hz, 'S', '1')) {
-          opts.push({key: ind + '|' + hz, label: ind + ' — ' + hz, familia: 'Suavizada, base 0 vs 1'});
-        }
-      });
+  var opts = [];
+  _movIndicadores().forEach(function(ind) {
+    ['12m', '24m'].forEach(function(hz) {
+      if (movBlk(ind, hz, 'S', '0') && movBlk(ind, hz, 'S', '1')) {
+        opts.push({key: ind + '|' + hz, label: ind + ' — ' + hz, familia: 'Suavizada, base 0 vs 1'});
+      }
     });
-    setupSelect('sel-bas-ind', opts, 'IPCA|12m', function(k) { _basInd = k; _basDesenha(); });
-  } else {
-    var hz = [];
-    for (var i = 1; i <= 16; i++) hz.push({key: String(i), label: i + 'ª reunião à frente', familia: 'Selic por reunião'});
-    setupSelect('sel-bas-ind', hz, '1', function(k) { _basInd = k; _basDesenha(); });
-  }
+  });
+  setupSelect('sel-bas-ind', opts, 'IPCA|12m', function(k) { _basInd = k; _basDesenha(); });
 }
 function _basSeries() {
-  if (_basFonte === 'movel') {
-    var p = (_basInd || 'IPCA|12m').split('|');
-    return {
-      b0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'm'),
-      b1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'm'),
-      n0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'n'),
-      n1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'n'),
-      rotulo: p[0] + ' ' + p[1] + ' (suavizada)',
-    };
-  }
-  var k = parseInt(_basInd || '1', 10) - 1;
-  var M0 = _copMatriz('0'), M1 = _copMatriz('1');
+  var p = (_basInd || 'IPCA|12m').split('|');
   return {
-    b0: {dates: GRADE, values: M0.hz[k]}, b1: {dates: GRADE, values: M1.hz[k]},
-    n0: {dates: GRADE, values: M0.n[k]}, n1: {dates: GRADE, values: M1.n[k]},
-    rotulo: 'Selic, ' + (k + 1) + 'ª reunião à frente',
+    b0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'm'),
+    b1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'm'),
+    n0: blkSerie(movBlk(p[0], p[1], 'S', '0'), 'n'),
+    n1: blkSerie(movBlk(p[0], p[1], 'S', '1'), 'n'),
+    rotulo: p[0] + ' ' + p[1] + ' (suavizada)',
   };
 }
 function _basDesenha() {
@@ -2522,8 +2255,7 @@ function _basDesenha() {
     lineTrace(S.b0, 'Base 0 — 30 dias', C.azul, _basLabels, 2, '%'),
     lineTrace(S.b1, 'Base 1 — 4 dias úteis', C.laranja, _basLabels, 2, '%'),
   ];
-  var yTitBas = _basFonte === 'copom' ? '% a.a.'
-      : '% em ' + ((_basInd || 'IPCA|12m').split('|')[1] || '12m').replace('m', ' meses');
+  var yTitBas = '% em ' + ((_basInd || 'IPCA|12m').split('|')[1] || '12m').replace('m', ' meses');
   _reactPreserveX('chart-bas', traces, mkTsLayout(yTitBas, 520, traces));
 
   var mapa = {};
@@ -2547,9 +2279,8 @@ function _basDesenha() {
 
   var cap = document.getElementById('bas-cap');
   if (cap) {
-    cap.textContent = S.rotulo + '. ' + (_basFonte === 'copom'
-      ? 'A base 1 da Selic por reunião só começa em 31/03/2021 — antes disso o BCB não publica, não é falha de carga.'
-      : 'A base 1 dos endpoints de inflação só começa em 02/01/2014; a base 0 vai a 07/11/2001.');
+    cap.textContent = S.rotulo + '. A base 1 dos endpoints de inflação só começa em 02/01/2014; ' +
+      'a base 0 vai a 07/11/2001.';
   }
   _basKpis(S, gap);
 }
@@ -2625,7 +2356,7 @@ function _apTabela() {
 // O Plotly precisa de um div visível e com largura não-zero; renderizar uma aba
 // escondida dimensiona o gráfico errado.
 var RENDERERS = {
-  boletim: renderBoletim, revisao: renderRevisao, copom: renderCopom, movel: renderMovel,
+  boletim: renderBoletim, revisao: renderRevisao, movel: renderMovel,
   trajetoria: renderTrajetoria, dispersao: renderDispersao, bases: renderBases,
   appendix: renderAppendix,
 };

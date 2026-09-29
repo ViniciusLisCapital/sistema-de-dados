@@ -107,6 +107,7 @@ dashboards:
     deps:
       - {kind: mysql, ref: macro_brasil.mt_pnad, role: "PNAD mensal (abas Taxas/Ocupação/Rendimento)"}
       - {kind: mysql, ref: macro_brasil.mt_pnad_trimestral, role: "PNAD trimestral, mesmas abas"}
+      - {kind: mysql, ref: macro_brasil.mt_desocupacao_retro, role: "Desocupação do BCB (dessazonalizada, retropolada antes de 2012), ao lado da PNAD na aba Taxas"}
       - {kind: mysql, ref: macro_brasil.mt_caged, role: "CAGED via SGS — estoque, na aba Emprego Formal"}
       - {kind: mysql, ref: macro_brasil.mt_caged_setor, role: "Novo CAGED por setor"}
       - {kind: mysql, ref: macro_brasil.mt_caged_uf, role: "Novo CAGED por UF"}
@@ -146,10 +147,11 @@ dashboards:
     output: reports/brasil/Expectations.html
     module: analytics.brasil.expectations.generate_report
     command: 'uv run python -c "from analytics.brasil.expectations.generate_report import run; run()"'
-    build_seconds: 53
+    build_seconds: 47   # 53 ate 2026-09-24, quando a Selic por reuniao saiu do payload
     deps:
       - {kind: mysql, ref: macro_brasil.expc_focus, role: "Medianas por indicador e data de pesquisa"}
-      - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Curva de Selic por reunião do Copom"}
+      # expc_focus_copom saiu daqui em 2026-09-24 com a aba Curva do Copom: a Selic por
+      # reuniao e lida no relatorio de Politica Monetaria, aba Expectativas de Juros.
       - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativa por período de referência — 1,1 M de linhas, o loader mais pesado do projeto"}
 
   - key: brasil_monetary_policy
@@ -161,64 +163,59 @@ dashboards:
     # 23s ate 2026-09-22; caiu para ~19 com a aba do motor, que fazia duas leituras
     # INTEIRAS de pm_copom_projecoes so para os atalhos dela (administrados e horizonte
     # relevante) alem da que a aba Projecoes ja faz. Medido tres vezes: 18,1 / 18,5 / 19,7.
-    build_seconds: 19
+    # Subiu para 61 em 2026-09-24 com as abas Acompanhamento Condicionais e Expectativas de
+    # Juros; so a ultima custa ~20 s (a leitura da curva DI em ~1.080 pregoes semanais).
+    # 73 medido em 2026-09-25, numa segunda geracao seguida; a primeira do dia levou 111. O
+    # que varia e a aba Condicoes (juro_real_focus_2a, 50-75 s), nao a curva.
+    build_seconds: 73
     note: >
       O que o Copom tinha na mesa na última reunião contra o que já está na mesa para a próxima,
-      o histórico de projeção do Comitê contra a decisão que ele tomou na mesma reunião, e um
-      apêndice com a réplica do modelo agregado do Banco Central. Parte do que aparece aqui não é
-      consulta ao banco: são resultados de um modelo que precisa ser estimado antes de o relatório
-      existir, e é por isso que este dashboard tem cálculos próprios, listados abaixo. O Regerar
-      refaz os que estiverem atrás dos dados e só então monta o HTML, de modo que os números que
-      aparecem no relatório são sempre os do modelo rodado com o dado mais recente. A caixa de
-      previsão da aba "Projeções do Copom" repete essa conferência dentro do próprio arquivo, para
-      quem abre o relatório longe desta página.
+      o histórico de projeção do Comitê contra a decisão que ele tomou na mesma reunião, o caminho
+      de inflação que cada edição do Relatório de Política Monetária projetou, e como
+      a estimativa do Banco Central para o hiato do produto mudou de uma edição do RPM para a
+      seguinte, junto com o caminho da Selic que a pesquisa Focus trazia antes de cada reunião,
+      e o que a pesquisa espera e a curva de juros precifica para cada reunião, lado a lado.
+      Um número não é consulta ao banco: a previsão da próxima projeção do Banco
+      Central, que é calculada antes de o relatório existir. O Regerar refaz essa conta quando
+      ela ficou atrás dos dados.
     deps:
       # date aqui e o trimestre PROJETADO (vai a 2028), nao quando o dado passou a
       # existir -- por isso a coluna de frescor e a vintage, que e a data da publicacao.
       # Com `date`, a aba anunciaria "ultimo dado 2028-10-01", que nao e leitura de
       # frescor nenhuma.
-      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções; só a do comunicado alimenta a primeira linha da aba Condições"}
-      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções e linha Decisão da aba Condições"}
-      - {kind: mysql, ref: macro_brasil.pm_hiato_produto, date_col: vintage, role: "Hiato publicado no RPM, validação do modelo — vintage é a edição do RPM"}
-      # `pm_hiato_produto_vintages` e uma dependencia da PREVISAO, nao da validacao:
-      # `hiato_vintage()` le o hiato em t0 como o BC publicou na ultima edicao ANTES do
-      # corte, e nao a serie corrente da linha de cima.
-      - {kind: mysql, ref: macro_brasil.pm_hiato_produto_vintages, date_col: vintage, role: "Hiato por edição do RPM — é o vintage que a previsão da próxima projeção lê"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_projecoes, date_col: vintage, role: "Projeções do BC (comunicado + RPM), aba Projeções — o horizonte relevante reunião a reunião e o caminho trimestral inteiro de cada edição do RPM; só a do comunicado alimenta a primeira linha da aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.pm_copom_reuniao, role: "Decisão de Selic por reunião, aba Projeções, linha Decisão da aba Acompanhamento Copom e a Selic efetiva da aba Acompanhamento Condicionais"}
       - {kind: mysql, ref: macro_brasil.inflc_meta, role: "Meta de inflação, a régua do desvio — date é o ANO da meta, então o 'último dado' é o último ano com meta publicada"}
-      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA e núcleos, aba Condições"}
-      # `mt_caged` nao alimenta mais linha da aba Condicoes (a de saldo formal saiu em
-      # 2026-09-22): fica porque o painel trimestral do modelo le a serie como observavel
-      # do bloco de hiato. `mt_pnad` saiu de vez -- so a linha de desocupacao a usava.
-      - {kind: mysql, ref: macro_brasil.mt_caged, role: "Saldo de emprego formal — observável do hiato no painel do modelo"}
-      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.atv_pib_taxas, role: "PIB, consumo e investimento em 4T/4T — as taxas que o próprio IBGE publica, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.cred_credito_resumo, role: "Saldo de crédito livre e direcionado, deflacionado na aba Condições"}
-      - {kind: mysql, ref: macro_brasil.br_interest_rate, role: "Curvas DI e NTN-B — juro real ex-ante e inflação implícita de 2 e 10 anos, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.expc_focus, role: "Expectativa de IPCA da Focus"}
-      - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Curva de Selic esperada — entra na eq. (5) e na previsão"}
-      - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativa por período; é o delta desta série que prevê a revisão do BC"}
-      - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, aba Condições"}
-      - {kind: mysql, ref: macro_brasil.comm_icbr, role: "Índice de commodities Brasil, aba Condições"}
-      - {kind: mysql, ref: macro_international.comm_brent, role: "Brent, aba Condições"}
+      # date e o trimestre de REFERENCIA; a edicao que chegou e a vintage.
+      - {kind: mysql, ref: macro_brasil.pm_hiato_produto_vintages, date_col: vintage, role: "Hiato do produto em cada edição do RPM, aba Acompanhamento Condicionais — a data é a da edição"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_copom, role: "Selic esperada pela Focus para cada reunião do Copom — o caminho antes de cada reunião, aba Acompanhamento Condicionais, e a pesquisa semana a semana, aba Expectativas de Juros"}
+      - {kind: mysql, ref: macro_brasil.br_di_grade, role: "Curva DI × pré com todos os vértices que a B3 publica — a taxa que o mercado precifica para depois de cada reunião, aba Expectativas de Juros"}
+      # A data mais distante do calendario, e nao a do ultimo dado: muda quando o BC publica
+      # um ano novo de reunioes (ou remarca uma), que e quando as datas estimadas viram reais.
+      - {kind: mysql, ref: macro_brasil.pm_copom_calendario, role: "Datas das reuniões do Copom que o BC já marcou, inclusive as do ano seguinte — onde cada degrau cai nas abas Acompanhamento Condicionais e Expectativas de Juros"}
+      - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "IPCA e núcleos, aba Acompanhamento Copom; o IPCA, os livres e os administrados realizados ao lado das projeções do RPM, aba Projeções"}
+      - {kind: mysql, ref: macro_brasil.atv_ibcbr, role: "IBC-Br, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.atv_pib_taxas, role: "PIB, consumo e investimento em 4T/4T — as taxas que o próprio IBGE publica, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.cred_credito_resumo, role: "Saldo de crédito livre e direcionado, deflacionado na aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.br_interest_rate, role: "Curvas DI e NTN-B — juro real ex-ante e inflação implícita de 2 e 10 anos, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.expc_focus_periodo, role: "Expectativas da Focus por ano e por trimestre, aba Acompanhamento Copom; é o delta desta série que prevê a revisão do BC"}
+      - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "Câmbio, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_brasil.comm_icbr, role: "Índice de commodities Brasil, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_international.comm_brent, role: "Brent, aba Acompanhamento Copom"}
+      # Lida por `condicoes_copom.focus_selic_ponto()` e nunca declarada ate 2026-09-24: e a
+      # Selic corrente que ancora em h=0 a curva de Selic esperada da Focus.
+      - {kind: mysql, ref: macro_international.diferenciais_juros, role: "Selic corrente — o ponto de partida da Selic esperada e do juro real da Focus, aba Acompanhamento Copom"}
       # Os dois vertices americanos sao nominal MENOS inflacao esperada, e por isso as duas
       # tabelas entram juntas: uma sozinha nao produz nenhuma das linhas.
-      - {kind: mysql, ref: macro_us.us_interest_rate, role: "Treasury de 2 e 10 anos — a perna nominal do juro real americano, aba Condições"}
-      - {kind: mysql, ref: macro_us.expc_inflacao, role: "Inflação esperada do Fed de Cleveland — a perna que deflaciona o Treasury, aba Condições"}
+      - {kind: mysql, ref: macro_us.us_interest_rate, role: "Treasury de 2 e 10 anos — a perna nominal do juro real americano, aba Acompanhamento Copom"}
+      - {kind: mysql, ref: macro_us.expc_inflacao, role: "Inflação esperada do Fed de Cleveland — a perna que deflaciona o Treasury, aba Acompanhamento Copom"}
       - {kind: yaml, ref: domain/release_calendar/calendar_2026.yaml, role: "Datas de divulgação — é o que decide o que o Copom tinha na mesa em cada reunião"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_painel_full.csv, role: "Painel trimestral estimado", refresh: uv run python analytics/brasil/monetary_policy/modelo_painel.py}
-      # Escalar, sem data interna -- entra por causa do `faltando`: sem ele a estimacao para,
-      # e a linha "1 arquivo ainda nao existe" e o unico aviso possivel.
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_sigma_rr.txt, date_col: null, role: "Escala do choque da taxa neutra, calibrada pelos painéis e lida na estimação"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados.csv, role: "Estados latentes do modelo", refresh: uv run python analytics/brasil/monetary_policy/modelo_agregado.py}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_estados_est.csv, role: "Estados com parâmetros estimados"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_neutra_pub.csv, role: "Taxa neutra publicada pelo BC"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_params.json, role: "Coeficientes estimados — as equações do Apêndice são escritas com eles"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_eq5_diag.json, role: "Raio espectral do laço da eq. (5)"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao.csv, role: "Tabela de validação do Apêndice"}
-      - {kind: artifact, ref: analytics/brasil/monetary_policy/data/modelo_validacao_irf.json, role: "IRF contra o do BC, Apêndice"}
       - kind: artifact
         ref: analytics/brasil/monetary_policy/data/antecipa_backtest.csv
-        role: "Backtest dos 3 métodos de previsão, aba Projeções"
+        # Sem date_col o "ultimo dado" era o primeiro campo da ultima linha: o NUMERO da
+        # reuniao (281), que na tela lia como um dado sem sentido.
+        date_col: reuniao
+        role: "Backtest da previsão — o que ela teria dito em cada reunião passada, aba Projeções"
         refresh: 'uv run python -c "from analytics.brasil.monetary_policy.antecipa_copom import salvar; salvar()"'
       - kind: artifact
         ref: analytics/brasil/monetary_policy/data/antecipa_previsao.json
@@ -241,12 +238,13 @@ dashboards:
     # `module` + `call` sao importados, como o `module` + run() do dashboard, entao a
     # pagina manda um id e quem resolve id -> funcao e o nosso lado. Sem shell.
     #
-    # A ORDEM da lista e a ordem de execucao, e `gerar()` reavalia a cada passo -- entao
-    # `painel` ganhar um trimestre novo poe `modelo` atras na mesma rodada, em cascata.
+    # A ORDEM da lista e a ordem de execucao, e `gerar()` reavalia a cada passo -- entao um
+    # passo que le o que outro grava fica atras na mesma rodada, em cascata. Ate 2026-09-24
+    # havia tres aqui (painel -> estimacao do modelo agregado -> previsao); os dois primeiros
+    # sairam com o Apendice, que era o unico lugar do relatorio que ainda lia o modelo.
     #
     # `writes` liga o procedimento aos artefatos (e nao o contrario): `salvar()` grava
-    # dois arquivos e `rodar()` sete, e declarado do lado do dep a mesma rodada apareceria
-    # duas e sete vezes.
+    # dois arquivos, e declarado do lado do dep a mesma rodada apareceria duas vezes.
     #
     # ## O que decide se um passo esta atras
     #
@@ -256,90 +254,34 @@ dashboards:
     # escrito (mtime) e com que dado (o corte). Um `salvar()` rodado hoje contra o Focus
     # de anteontem tem mtime de hoje -- foi o que passou por "em dia" em 2026-08-31.
     #
-    # A granularidade nao e detalhe: e o que da a cada passo a frequencia dele. O painel e
-    # trimestral, entao o corte dele e o ultimo trimestre do CSV e ele so fica atras quando
-    # um trimestre NOVO abre -- uma vez por trimestre, nao todo dia que a Focus anda. A
-    # previsao e diaria, e fica atras assim que a pesquisa anda. Sem isso, a estimacao do
-    # modelo seria refeita a cada boletim, mudando os 22 parametros por nada.
+    # A granularidade nao e detalhe: e o que da a cada passo a frequencia dele. Um passo
+    # trimestral so fica atras quando um trimestre NOVO abre, nao todo dia que a Focus anda;
+    # a previsao e diaria, e fica atras assim que a pesquisa anda.
     procedures:
-      - id: painel
-        label: "Painéis trimestrais"
-        module: analytics.brasil.monetary_policy.modelo_painel
-        call: construir_tudo
-        seconds: 90
-        writes:
-          - analytics/brasil/monetary_policy/data/modelo_painel_full.csv
-          - analytics/brasil/monetary_policy/data/modelo_neutra_pub.csv
-          - analytics/brasil/monetary_policy/data/modelo_sigma_rr.txt
-
-        # O corte do painel é o último trimestre que ele tem, que é o próprio índice do
-        # CSV. Comparado em TRIMESTRE contra as fontes: só fica atrás quando um trimestre
-        # novo abre, não a cada boletim Focus.
-        cut_from: analytics/brasil/monetary_policy/data/modelo_painel_full.csv
-        granularidade: trimestre
-        reads:
-          - macro_brasil.atv_ibcbr
-          - macro_brasil.inflc_agregados
-          - macro_brasil.inflc_meta
-          - macro_brasil.expc_focus
-          - macro_brasil.expc_focus_periodo
-          - macro_brasil.cmb_ptax
-          - macro_brasil.comm_icbr
-          - macro_brasil.mt_caged
-        note: >
-          Monta a base trimestral que o modelo estima — hiato do produto, juro real, inflação,
-          câmbio e commodities numa mesma tabela — e a taxa de juro neutra que o Banco Central
-          publica. É o insumo do passo seguinte: refazer isto muda tudo o que vem depois.
-      - id: modelo
-        label: "Estimação do modelo agregado"
-        module: analytics.brasil.monetary_policy.modelo_agregado
-        call: rodar
-        seconds: 240
-        writes:
-          - analytics/brasil/monetary_policy/data/modelo_estados.csv
-          - analytics/brasil/monetary_policy/data/modelo_estados_est.csv
-          - analytics/brasil/monetary_policy/data/modelo_params.json
-          - analytics/brasil/monetary_policy/data/modelo_eq5_diag.json
-          - analytics/brasil/monetary_policy/data/modelo_validacao.csv
-          - analytics/brasil/monetary_policy/data/modelo_validacao_irf.json
-        # A fonte deste passo é o PAINEL, não o banco — `reads` aceita artefato pelo mesmo
-        # motivo que aceita tabela: o que importa é "o que eu leio andou depois de mim?".
-        # É isso que faz a cascata: painel ganha trimestre -> modelo fica atrás.
-        cut_from: analytics/brasil/monetary_policy/data/modelo_estados.csv
-        granularidade: trimestre
-        reads:
-          - analytics/brasil/monetary_policy/data/modelo_painel_full.csv
-        note: >
-          Estima o modelo sobre essa base: os parâmetros das equações, as duas séries que não se
-          observam (o hiato do produto e a taxa de juro neutra) e a comparação com os valores que
-          o Banco Central publicou. É o que abastece o Apêndice — as equações escritas com o
-          coeficiente estimado no lugar do símbolo, e a tabela de validação contra o que o BC
-          publicou.
       - id: previsao
         label: "Previsão da próxima projeção do BC + backtest"
         module: analytics.brasil.monetary_policy.antecipa_copom
         call: salvar
-        seconds: 55
+        # 55s ate 2026-09-24, quando ainda simulava o modelo agregado duas vezes por
+        # reuniao do backtest; sem ele, 15s medidos.
+        seconds: 15
         writes:
           - analytics/brasil/monetary_policy/data/antecipa_backtest.csv
           - analytics/brasil/monetary_policy/data/antecipa_previsao.json
         cut_from: analytics/brasil/monetary_policy/data/antecipa_previsao.json
-        # Diária: as fontes são a pesquisa Focus e a PTAX, e a previsão fica atrás assim
-        # que uma delas anda. É o passo que roda com mais frequência, e o mais barato.
+        # Diaria: a fonte que anda e a pesquisa Focus, e a previsao fica atras assim que ela
+        # anda. As tres tabelas sao as de `antecipa_copom._FONTES_FRESCOR` -- a curva de Selic
+        # da Focus, a PTAX e o hiato publicado sairam com o modelo, que era quem as lia.
         granularidade: dia
         reads:
           - macro_brasil.expc_focus_periodo
-          - macro_brasil.expc_focus_copom
           - macro_brasil.pm_copom_projecoes
           - macro_brasil.pm_copom_reuniao
-          - macro_brasil.pm_hiato_produto_vintages
-          - macro_brasil.cmb_ptax
         note: >
           Calcula que número o Copom deve publicar para a inflação no horizonte relevante na
-          próxima reunião, e refaz o backtest dos três métodos nas reuniões passadas. É
-          o losango no fim da série e a tabela de erros da aba "Projeções do Copom". Depende da
-          pesquisa Focus, que anda toda semana, então é o cálculo que fica atrás dos dados mais
-          rápido — e o mais barato de refazer.
+          próxima reunião, e refaz o backtest nas reuniões passadas. É o ponto previsto no fim
+          da série e a tabela de erros da aba "Projeções do Copom". Depende da pesquisa Focus,
+          que anda toda semana, então fica atrás dos dados rápido — e é barato de refazer.
 
   # Sem bloco `procedures:` de proposito: o painel trimestral e derivado direto das
   # tabelas abaixo e sai em ~3s na geracao, entao nao ha calculo que o Atualizar nao

@@ -25,8 +25,8 @@ por gosto (ver `referencia/` e o CLAUDE.md da pasta):
      descola ~0,2 p.p. da serie em amostra.
 
 Uso:
-    uv run python analytics/brasil/monetary_policy/modelo_painel.py
-    python -c "from analytics.brasil.monetary_policy.modelo_painel import construir_tudo; construir_tudo()"
+    uv run python analytics/brasil/structural_model/modelo_agregado/modelo_painel.py
+    python -c "from analytics.brasil.structural_model.modelo_agregado.modelo_painel import construir_tudo; construir_tudo()"
 
 A primeira execucao baixa o anexo do RPM (xlsx de ~12 MB, duas edicoes) e a Nuci do
 IPEADATA; tudo fica em cache em data/, entao as seguintes sao rapidas.

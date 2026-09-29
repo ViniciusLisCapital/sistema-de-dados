@@ -64,6 +64,8 @@ da fonte. Duas surpresas que a checagem pegou:
 `pct_desalentados` e desalentados / (forca de trabalho + desalentados), a
 "forca de trabalho potencial" do denominador da publicacao.
 """
+import copy
+
 from analytics.report_structure import tree_helpers as th
 from analytics.brasil.labor_market import transforms as tf
 
@@ -140,6 +142,7 @@ _U_MASSA = ("R$ mi/mês", "massa de rendimento mensal, R$ milhões")
 
 _UNITS = {
     "taxa_desocupacao":                 ("%", "desocupados / força de trabalho, %"),
+    "desocupacao_bcb":                  ("%", "desocupados / força de trabalho, %"),
     "taxa_participacao":                ("%", "força de trabalho / população 14+, %"),
     "taxa_informalidade":               ("%", "ocupados informais / total de ocupados, %"),
     "nivel_ocupacao":                   ("%", "ocupados / população 14+, %"),
@@ -199,6 +202,15 @@ _INFO = {
         "semana de referência. Quem não procurou está fora da força de trabalho e não entra em "
         "nenhum dos dois lados da conta — é por isso que a taxa pode cair sem que ninguém tenha "
         "sido contratado.",
+    ),
+    "desocupacao_bcb": (
+        "Taxa de desocupação — %, MM3M, a.s. (anexo estatístico do Relatório de Política Monetária)",
+        "A série que o Banco Central usa no modelo agregado. De mar/2012 em diante é a mesma PNAD "
+        "da linha de cima, dessazonalizada pelo BC: a média de 12 meses das duas difere em "
+        "centésimos de ponto, então o que as separa mês a mês é a sazonalidade. Antes de 2012 é "
+        "uma estimativa do BC, retropolada segundo Alves e Fasolo (Working Paper 400, 2015). "
+        "Anda a cada Relatório, trimestralmente — por isso costuma terminar um ou dois meses "
+        "antes da PNAD.",
     ),
     "taxa_participacao": (
         "Taxa de participação na força de trabalho, na semana de referência, das pessoas de 14 anos ou mais de idade",
@@ -420,8 +432,13 @@ _CTRLS_MISTA = [_CTRL_FREQ, _ctrl_metrica("Nível", "Var. Y/Y")]        # taxa e
 _TAB_TAXAS = [
     {
         "key": "desocupacao", "label": "Taxa de Desocupação",
-        "tree": [_indicador("taxa_desocupacao", "Taxa de Desocupação", _DIMS_COMPLETAS)],
-        "default_checked": ["taxa_desocupacao"],
+        "tree": [
+            _indicador("taxa_desocupacao", "Taxa de Desocupação", _DIMS_COMPLETAS),
+            # A medida do BCB fica ao lado da do IBGE, marcada de saida: e ela que
+            # cobre 2004-2012 e e ela que o modelo do BC le.
+            _leaf("desocupacao_bcb", "BCB (dessazonalizada)"),
+        ],
+        "default_checked": ["taxa_desocupacao", "desocupacao_bcb"],
         "controls": _CTRLS_TAXA,
         # Cabecalho dentro do card do grafico, para ele se explicar sozinho num
         # print (o h2 do card fica atras da barra de controles e da tabela).
@@ -577,7 +594,7 @@ for _tab in TABS:
 # _SIMPLES. Tudo o mais (niveis em mil pessoas ou R$) varia em % ------------
 
 _RATE_VARS = {
-    "taxa_desocupacao", "taxa_participacao", "taxa_informalidade",
+    "taxa_desocupacao", "desocupacao_bcb", "taxa_participacao", "taxa_informalidade",
     "nivel_ocupacao", "nivel_desocupacao",
     "taxa_subutil_combinada_horas", "taxa_subutil_combinada_potencial", "taxa_subutil_composta",
     "taxa_subocupacao_horas", "pct_desalentados", "pct_contribuintes_previdencia",
@@ -623,7 +640,10 @@ DB_NAMES_TRIMESTRAL = [
 ]
 
 
-def build(mensal: dict, trimestral: dict) -> dict:
+_MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def build(mensal: dict, trimestral: dict, bcb: dict | None = None) -> dict:
     """`mensal`/`trimestral`: {name: {dates, values}} de mt_pnad/mt_pnad_trimestral
     (ver generate_report.py's _load_flat()). Retorna {tabs, series, ref_date,
     rate_keys} -- `tabs` e a lista de 3 abas x 4 tabelas (ver TABS acima), cada
@@ -643,6 +663,21 @@ def build(mensal: dict, trimestral: dict) -> dict:
             continue
         series[name] = tf.variants_pnad_trimestral(s["dates"], s["values"], rate=True)
 
+    # `bcb`: mt_desocupacao_retro, {dates, values, vintage}. A edicao do RPM vira
+    # `src` do no, que o cabecalho do grafico acrescenta a linha da fonte quando
+    # a linha esta plotada -- a tabela cita o IBGE, e so o IBGE, quando so ele
+    # esta na tela. Copia das TABS porque o texto depende do dado.
+    tabs = copy.deepcopy(TABS)
+    if bcb:
+        series["desocupacao_bcb"] = tf.variants_pnad_mensal(bcb["dates"], bcb["values"], rate=True)
+        ano, mes = int(bcb["vintage"][:4]), int(bcb["vintage"][5:7])
+        src = f"BCB, Relatório de Política Monetária de {_MESES[mes - 1]}/{ano} (retropolada antes de 2012)"
+        for tab in tabs:
+            for table in tab["tables"]:
+                for node in table["tree"]:
+                    if node["seriesKey"] == "desocupacao_bcb":
+                        node["src"] = src
+
     ref_date = mensal["taxa_desocupacao"]["dates"][-1]
     rate_keys = [k for k in series if k in _RATE_VARS or any(k.startswith(f"{v}_") for v in _RATE_VARS)]
-    return {"tabs": TABS, "series": series, "ref_date": ref_date, "rate_keys": rate_keys}
+    return {"tabs": tabs, "series": series, "ref_date": ref_date, "rate_keys": rate_keys}

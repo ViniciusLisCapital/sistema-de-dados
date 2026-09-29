@@ -116,7 +116,7 @@ def _priori_bc() -> dict:
     """Priori normal por parametro, lida dos intervalos que o BC publica.
 
     Importa de `taylor.BCB`/`BCB_IC`, que por sua vez importam de
-    `monetary_policy.modelo_agregado` -- nada e transcrito, em nenhum dos dois saltos.
+    `modelo_agregado.modelo_agregado` -- nada e transcrito, em nenhum dos dois saltos.
     """
     out = {}
     for k in ("t1", "t2", "t3"):

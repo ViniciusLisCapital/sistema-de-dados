@@ -127,5 +127,11 @@ mercado. Virou o valor `juros_decrescente` da coluna `cenario`. Só essa ediçã
 - **As projeções de outros índices** (INPC, IPC-Fipe, IGP-DI, IGP-M) que as edições dos anos 2000
   publicam ao lado do IPCA, por ano civil.
 - **O anexo estatístico xlsx** (2021-09 em diante) tem a `Tab 2.2.1` e a `Graf 2.2.9`, esta última com
-  o caminho trimestral e os percentis do leque em coluna própria. É fonte melhor que o PDF para as
-  edições recentes, e não foi usada aqui porque o PDF cobre a série toda com um parser só.
+  o caminho trimestral e os percentis do leque em coluna própria. Não foi usada aqui porque o PDF
+  cobre a série toda com um parser só — e **ela concorda com o PDF**: medido em 2026-09-25 nas 20
+  edições que têm as duas, as 414 células de projeção comuns são iguais, e o anexo tem uma a mais
+  (2026T1 da edição de dez/2022). A conferência é `tests/test_projecao_rpm.py` §3, e é o guarda
+  independente deste parser. Duas coisas do anexo que valem saber: a Tab 2.2.1 teve **dois
+  formatos** (até jun/2024, "Ano | Trim. | RI anterior | RI da edição"; de set/2024, a matriz com
+  livres e administrados e os trimestres já fechados), e a de **mar/2022 traz dois cenários com a
+  Selic da Focus** lado a lado (Cen. A e Cen. B) — o texto do relatório, e portanto a tabela, tem o A.

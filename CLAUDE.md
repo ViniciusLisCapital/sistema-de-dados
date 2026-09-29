@@ -19,8 +19,8 @@ especialistas por área macro existem, fases de investimento planejadas):
 ## Onde está cada coisa
 
 ```
-connectors/          — Clientes de APIs/fontes externas (22 módulos): IBGE, BCB (SGS + Focus/Olinda,
-                       agenda ICS, tabelas especiais, anexo do RPM, comunicados do Copom), FRED, BIS,
+connectors/          — Clientes de APIs/fontes externas (23 módulos): IBGE, BCB (SGS + Focus/Olinda,
+                       agenda ICS, tabelas especiais, anexo do RPM, comunicados do Copom, QPC), FRED, BIS,
                        BLS, BEA, agendas de divulgação BLS/BEA, CFTC, IPEA, B3, Comex Stat/MDIC,
                        Tesouro (RTN/Séries Temporais/EFGG), PDET/MTE, Yahoo Finance, MySQL
                        ↳ assinatura, gotchas e limites de cada um: connectors/CLAUDE.md
@@ -29,7 +29,7 @@ domain/
                        brasil/{ibge,bcb,b3,tesouro,mdic,mte,ipea,bloomberg,investing},
                        international/{bis,cftc,fred,noaa,yfinance}, us/{inflation,labor_market,rates}.
                        Um script por tabela, todos com a mesma interface run()
-    registry.py      — tabela → script, derivado da convenção `_TABLE` (86 tabelas; valida em vez de
+    registry.py      — tabela → script, derivado da convenção `_TABLE` (90 tabelas; valida em vez de
                        envelhecer em silêncio). É o que faz --group/--tables/--continuous funcionarem
                        ↳ tabelas ativas, fonte, range, chave primária e gotchas: domain/db/CLAUDE.md
   dashboards/        — O lado do CONSUMO: manifest.yaml declara de que cada dashboard depende, e
@@ -97,10 +97,10 @@ Todas declarativas, cada uma respondendo uma pergunta, e é a combinação delas
 
 | pergunta | onde | como |
 |---|---|---|
-| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 30 grupos de divulgação |
-| QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 86 tabelas |
-| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 138 dependências |
-| QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 1 dashboard, 3 passos |
+| QUANDO cada dado sai | `domain/release_calendar/calendar_2026.yaml` | 31 grupos de divulgação |
+| QUEM ESCREVE cada tabela | `domain/db/registry.py` | derivado da convenção `_TABLE`, 90 tabelas |
+| QUEM LÊ cada tabela | `domain/dashboards/manifest.yaml` | 12 dashboards, 130 dependências |
+| QUEM RECALCULA cada ARTEFATO | `manifest.yaml`, bloco `procedures:` | 1 dashboard, 1 passo |
 
 A quarta existe porque **um artefato calculado tem duas datas e só uma era observável**: quando foi
 escrito (mtime) e com que conjunto de informação. Dos 12 dashboards só um tem passo a declarar — os
@@ -113,8 +113,9 @@ bloco nenhum.
 não alcança, e o veredito que decide se aquele passo roda é mais uma coisa que pode estar errada —
 naquele caso estava, e o relatório publicou núcleo e difusão de um mês atrás com a tela verde. Antes
 de declarar um passo novo, a pergunta é se aquilo não deveria ser uma tabela: se a resposta for sim,
-o passo certo é não existir. Os três que restam são estimação de modelo, que é cálculo de verdade e
-não tem tabela que o substitua.
+o passo certo é não existir. O que resta é a previsão da próxima projeção do Copom, que é cálculo
+de verdade e não tem tabela que o substitua. Havia outros dois até 2026-09-24 — painel e estimação
+do modelo agregado — e saíram com o Apêndice da Política Monetária, o único lugar que ainda os lia.
 
 O relatório de calendário tem duas abas que dividem o trabalho como a atualização acontece de
 verdade: **Divulgações** atualiza o dado que saiu, **Status dashboard** reconstrói o relatório que o
@@ -149,7 +150,7 @@ de mexer, e é lá que se escreve depois.
 | Mercado de trabalho | `reports/brasil/Labor Market.html` | [`analytics/brasil/labor_market/`](analytics/brasil/labor_market/CLAUDE.md) |
 | Política monetária | `reports/brasil/Monetary Policy.html` | [`analytics/brasil/monetary_policy/`](analytics/brasil/monetary_policy/CLAUDE.md) |
 | Expectativas (Focus) | `reports/brasil/Expectations.html` | [`analytics/brasil/expectations/`](analytics/brasil/expectations/CLAUDE.md) |
-| Modelo estrutural | `reports/brasil/Structural Model.html` | [`analytics/brasil/structural_model/`](analytics/brasil/structural_model/CLAUDE.md) — versão simplificada do modelo do BC, estimada equação por equação, com o câmbio do FX Report como equação cambial. Hoje sete abas: os insumos trimestrais; a curva de Phillips aberta em serviços, alimentação, bens industriais e monitorados — em inflação do trimestre, com um seletor que lê os mesmos números acumulados em 12 meses; a equação de expectativas, que mede a força da âncora da meta, a meia-vida de um desvio e quanto de uma inflação permanente a expectativa incorpora; a curva IS, em que o aperto monetário é a inclinação da curva de juro real da NTN-B (2 anos menos 10) em vez de um juro contra uma taxa de equilíbrio; a regra de juros, com a âncora `RR* + Meta` desenhada ao lado da Selic; o câmbio trimestral, estimado por Ridge sobre o mesmo modelo que serve o FX Report, sem reescrevê-lo; e o simulador, que roda a conta solta — uma equação por vez, hoje só a de juros, com os pesos vindo de uma estimação bayesiana e a faixa saindo do posterior |
+| Modelo estrutural | `reports/brasil/Structural Model.html` | [`analytics/brasil/structural_model/`](analytics/brasil/structural_model/CLAUDE.md) — versão simplificada do modelo do BC, estimada equação por equação, com o câmbio do FX Report como equação cambial. Hoje oito abas: os insumos trimestrais; a curva de Phillips aberta em serviços, alimentação, bens industriais e monitorados — em inflação do trimestre, com um seletor que lê os mesmos números acumulados em 12 meses; a equação de expectativas, que mede a força da âncora da meta, a meia-vida de um desvio e quanto de uma inflação permanente a expectativa incorpora; a curva IS, em que o aperto monetário é a distância entre a Selic e o juro nominal de equilíbrio — o juro real de 10 anos mais a meta, a mesma âncora da regra de juros; a regra de juros, com a âncora `RR* + Meta` desenhada ao lado da Selic; o câmbio trimestral, estimado por Ridge sobre o mesmo modelo que serve o FX Report, sem reescrevê-lo; e o simulador, na aba **Structural Model** — o modelo agregado, que roda a conta solta com as **cinco** equações, hiato → inflação → expectativas → juros → câmbio nessa ordem de solução, as cinco com os pesos vindos de uma estimação bayesiana e a faixa saindo do posterior. Desde 2026-09-28 é um **laço**: o juro chega ao hiato e ao câmbio, os dois chegam à inflação, e a inflação volta para a expectativa e para o juro — as cinco são resolvidas juntas, e o painel imprime o tamanho de cada elo em vez de sugeri-lo; e a aba **Impulso-resposta** (2026-09-28), que choca uma variável — o erro de qualquer das equações, inclusive cada um dos quatro grupos do IPCA, ou o caminho de qualquer exógena — e desenha a resposta das cinco endógenas e dos quatro grupos por 20 trimestres, com a faixa do posterior |
 | Inflação US | `reports/us/Inflation.html` | [`analytics/us/inflation/`](analytics/us/inflation/CLAUDE.md) |
 | Mercado de trabalho US | `reports/us/Labor Market.html` | [`analytics/us/labor_market/`](analytics/us/labor_market/CLAUDE.md) |
 | Calendário | `reports/release_calendar.html` | [`analytics/release_calendar/`](analytics/release_calendar/CLAUDE.md) |

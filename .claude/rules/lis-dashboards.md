@@ -1189,6 +1189,12 @@ Três coisas, e as duas primeiras valem para qualquer painel que desenhe além d
 - **E ela é refeita quando a ponta direita anda**, não só na primeira pintura. Um horizonte ou um
   ponto de partida que mudam movem a extensão; deixar a régua na de antes é a mesma janela errada
   com um clique de atraso.
+- **Toda série DESENHADA que a conta consome atravessa o corte junto com ela.** Num painel que
+  projeta, é fácil estender só o resultado e deixar as premissas paradas no último dado — a conta
+  usa um número naqueles períodos e o gráfico não mostra nenhum. A extensão não é extrapolação: é o
+  caminho que a recursão consome, o mesmo que as caixas de input imprimem. Inventar uma
+  extrapolação só para o desenho cria uma segunda versão da premissa, que pode discordar da conta
+  sem nada avisar.
 - **Uma linha projetada parte do último ponto observado.** Ela começa no valor que a conta produz
   para o primeiro período, que não é o último observado — então sem a âncora ela flutua solta à
   direita e o leitor mede o salto com o olho. Prenda o primeiro ponto no observado e deixe a banda
@@ -1242,6 +1248,340 @@ Chocar uma primitiva e recompor o agregado pela fórmula é um cenário diferent
 agregado — é a razão de existir o "abrir em partes". O caminho inverso não tem resposta: distribuir
 um choque na soma entre duas parcelas exigiria uma regra que não existe, então chocar o agregado
 devolve as partes ao observado e diz isso.
+
+### Um rótulo NOMEIA, e a descrição desce um nível (2026-09-24)
+
+Duas vezes na mesma sessão, com as mesmas palavras: *"você escolheu descrever a série ao invés de um
+termo mais enxuto"* (as variáveis de input) e *"a mesma coisa de descrever ao invés de dar nome"* (as
+formas de choque). `Inflação esperada menos a meta` virou **Desvio da inflação**; `sobe até o valor e
+fica lá` virou **Choque permanente**.
+
+O defeito nasce de uma intenção boa — não obrigar o leitor a saber o que a sigla quer dizer — e o
+corretivo não é escolher entre as duas coisas, é **empilhá-las**: o rótulo nomeia, a descrição desce
+um nível. Cada descrição cortada tem um lugar já existente onde ela cabe inteira: o texto do cartão,
+o `title` da `<option>`, o card de definição. Nenhuma sumiu.
+
+E há um ganho que só aparece na tela estreita: **um rótulo que descreve não tem tamanho previsível.**
+Numa `<option>` fechada, `fica alguns trimestres e depois vai passando` define a largura do seletor;
+`Choque constante + decaimento` não.
+
+Corolário, do mesmo dia: **o mesmo objeto pode ter dois nomes de propósito, e aí a ponte tem de estar
+escrita.** O juro real de equilíbrio mais a meta é *uma variável de input* num painel e *um termo da
+equação* noutro — ali ele se chama "a âncora", porque é assim que a derivação inteira o escreve.
+Renomear a derivação para alinhar um rótulo custa mais do que uma frase dizendo que são o mesmo
+número.
+
+### Um controle sobrevive enquanto for ESCOLHA, e não enquanto for verdade (2026-09-24)
+
+Terceira rodada de corte no mesmo painel, e a que fecha o critério. Já tinham saído os pesos da
+equação (*"a simulação vem dos inputs"*); saíram agora a caixa que desligava a faixa do posterior, a
+caixa que somava o erro da equação, o campo do horizonte e o cartão das duas marcas de crise.
+
+Cada um desses controles era **defensável**: a faixa é uma opção de desenho legítima, o horizonte é
+um parâmetro de verdade, e as dummies de crise entram mesmo na conta. O que nenhum deles era é uma
+**escolha que o leitor faz**. O critério que sobrou, e que vale antes de pôr qualquer controle na
+tela: *alguém vai clicar nisso mais de uma vez, e a página fica diferente porque essa pessoa decidiu
+algo?* Se a resposta for não, aquilo é conteúdo — imprima.
+
+Três mecânicas que o corte exige, cada uma a origem de um defeito silencioso:
+
+- **O que o controle DIZIA tem de sobreviver a ele.** A caixa de marcar se chamava "faixa de 90% dos
+  1000 conjuntos de pesos estimados"; cortada, esse texto virou o nome da faixa na legenda. Um
+  controle que some levando a informação junto é meio corte.
+- **Corte também o que só existia para alimentá-lo.** O erro da equação levou junto o gerador de
+  normal de semente fixa; o horizonte levou o `_simNumInput` e duas classes de CSS; a variável
+  cortada levou o `simCaminhoParte()`. Código que ninguém chama não avisa que ninguém o chama.
+- **E cuidado com o que o controle era a ÚNICA porta de.** As marcas de crise eram declaradas como
+  *partes* de um cartão, e a série delas vivia no dicionário de primitivas. Tirar o cartão as deixaria
+  penduradas, ou — pior — as tiraria da recursão junto, o que produz um resultado **ligeiramente
+  diferente e inteiramente plausível**. A série mudou de dono (foi para dentro da própria equação que
+  a lê) e o teste afirma as duas metades: não há cartão, **e** a conta continua recebendo a série,
+  valendo zero em todo período projetado.
+
+E o guarda contra a recaída continua tendo de olhar a **tela renderizada**, não o arquivo — com uma
+ressalva que custou uma execução: procurar o nome `simFaixa` no HTML entregue casa com `_simFaixa`, a
+função que **calcula** a faixa e deve continuar existindo. O guarda procura o `id="..."` do elemento.
+
+### O nome DENTRO de uma frase é um campo, não uma transformação (2026-09-24)
+
+Terceira vez na mesma página, e por isso vale como regra. O texto de uma ficha montava a lista do
+que a equação consome com `nome.toLowerCase()`, e saiu:
+
+> Consome **risco fiscal (cds de 5 anos)**, **bolsa americana (s&p 500)**, **commodities em dólar
+> (ic-br)** … — explica **a selic**
+
+`.toLowerCase()` **come a sigla que o nome carrega**, e não há como ele não comer: ele não sabe que
+"CDS" é sigla e "Risco" é só a primeira palavra. A primeira ocorrência deste defeito na mesma página
+foi *"Voltar a o que foi observado"*, e o conserto é sempre o mesmo par: **o rótulo e o nome que se
+lê dentro de uma frase são dois campos, declarados lado a lado**, nunca um com transformação. Aqui
+virou `nome_frase` no payload, ao lado de `nome`.
+
+Sintoma para reconhecer: aparece só quando um nome com sigla, nome próprio ou acrônimo entra na
+lista. Um painel cujas variáveis se chamam "Desvio da inflação" e "Juro nominal de equilíbrio"
+atravessa meses com o `.toLowerCase()` e nada denuncia.
+
+### Duas implementações da mesma recursão precisam de um GABARITO no payload (2026-09-24)
+
+De `analytics/brasil/structural_model/`, quando o simulador ganhou a segunda equação. A mesma conta
+existe **escrita duas vezes** — em Python, para o módulo poder medir, e em JS, porque quem mexe nos
+controles é o navegador. Duas implementações da mesma recursão **divergem em silêncio**: um
+desvio-padrão trocado, um `log` esquecido, um sinal invertido continuam produzindo um caminho
+plausível, e num painel de projeção não há nada na tela que possa contradizer.
+
+O guarda é barato e é exato: **o payload leva o ajuste de UM PASSO**, período a período, calculado
+do lado do Python com os pesos da mediana, e o teste exige que a recursão do JS devolva os mesmos
+números rodando `h = 1` a partir de cada período.
+
+Três coisas que fazem ele valer:
+
+- **Um passo, e não o caminho solto.** Ali todas as defasagens vêm do observado, então a comparação
+  é exata em vez de aproximada. No caminho solto as duas divergiriam por acúmulo e a tolerância
+  teria de ser frouxa o bastante para deixar passar o defeito.
+- **O gabarito tem de ser um ajuste de VERDADE.** Uma segunda asserção exige que ele explique a
+  série (aqui, RMSE na ordem do estimado) — sem ela, a paridade passaria comparando duas contas
+  erradas iguais, que é o modo de falha clássico de teste-espelho.
+- **Nenhuma asserção de comportamento o substitui.** O mutante que apaga a padronização
+  (`dz / sd[c]`) **passa em todas as asserções de cenário**, porque na janela padrão os exógenos
+  ficam parados no último valor e a variação deles é zero — o defeito só existe dentro da amostra.
+  Com a paridade ele sai com 5,96e+3 p.p. de diferença.
+
+E o número que a paridade devolve não é zero: é o **arredondamento do payload** (aqui 1,56e-6 com
+seis casas). Vale saber disso antes de escrever a tolerância, senão ela nasce apertada demais.
+
+### A mesma nota em cartões vizinhos deixa de ser lida (2026-09-24)
+
+Mesmo painel. Quatro cartões seguidos, todos canais da mesma equação, receberam palavra por palavra
+a mesma nota — *"A equação não lê o nível: ela lê a variação dele de um trimestre para o outro…"*. A
+regra é verdadeira nos quatro e a repetição é o problema: **quatro parágrafos idênticos em sequência
+não se leem — o olho pula o segundo**, e com ele a informação que a nota existia para dar.
+
+Duas saídas, e a escolha é sobre a quem a regra pertence: se ela vale para **todos** os cartões do
+grupo, sobe para o cabeçalho do grupo e sai dos cartões; se vale para **alguns** — era o caso aqui,
+porque três dos sete cartões entram por outro caminho —, cada cartão diz a consequência **dele**:
+*"Um CDS parado em 300 pontos não desvaloriza nada — o que desvaloriza é ele ir de 120 para 300."*
+Mesma regra, quatro frases diferentes, quatro leituras.
+
+Mesmo instinto do *"não diga duas vezes"* do cabeçalho de gráfico, aplicado na vertical em vez de
+na horizontal.
+
+### Uma premissa DENTRO de outra é uma premissa que pode contradizer a sua peça (2026-09-25)
+
+De `analytics/brasil/structural_model/`, aba Simulador, e o pedido do usuário é a regra:
+*"não haverá mais premissas com subpremissas. Todas serão separadas em exógenas e endógenas."*
+
+O painel tinha três cartões que eram **contas de outros dois** (`expectativa − meta`,
+`juro real + meta`, `inflação daqui − inflação de lá`), com as peças escondidas atrás de um
+"abrir em partes". Funcionava, e o mecanismo tinha razão de ser: estressar o juro real sem mexer
+na meta é um cenário diferente de estressar a soma.
+
+**O que o derruba é o dia em que alguma das peças passa a ser produzida.** Quando a equação de
+expectativas entrou no simulador, um cartão de *desvio da inflação esperada* passaria a deixar
+digitar um número que contradiz a expectativa da própria rodada — exatamente o que a regra da
+caixa (*"ela mostra o número que aquele trimestre vai usar"*) proíbe. A mesma regra já impedia o
+carry de ter cartão: **ele é conta, não premissa**.
+
+A correção não é tirar a conta, é **mudar o dono dela**: a peça vira cartão e a conta passa a ser
+declarada pela EQUAÇÃO que a consome, num campo do payload (`deriva`), com a operação, as peças e
+o nome. Cinco consequências, e cada uma vale além deste painel:
+
+- **A conta fica onde ela é consumida, então ela não existe sem consumidor.** Um cartão composto
+  sobrevive à equação que o justificava; uma declaração dentro da equação some com ela.
+- **O que some junto é o que só existia para alimentar aquilo** — aqui, o dicionário de
+  primitivas inteiro, a segunda superfície de escrita (`SIM.px`), o estado de "aberto em partes",
+  o parâmetro `pai` do choque e quatro regras de CSS. Código que ninguém chama não avisa que
+  ninguém o chama.
+- **A conta passa a ser refeita em DUAS pontas** (o módulo que mede e o navegador que desenha), o
+  que é exatamente a classe de defeito que diverge em silêncio — então o gabarito de um passo
+  deixa de ser opcional para as equações cujas entradas viraram contas. O guarda vai **junto** com
+  a mudança que cria o risco, não depois.
+- **As séries que o gráfico desenhava a partir do cartão composto passam a ser derivadas também**,
+  pela mesma declaração. Gravar uma cópia no payload seria uma cópia a mais para discordar da
+  conta.
+- **E a ficha da equação tem de dizer as duas coisas**: o que ela consome (cartões, onde se mexe)
+  e o que ela forma com isso (contas, que não têm caixa). Dizer só o primeiro deixa o leitor
+  procurando um cartão que deixou de existir.
+
+### Um recorte novo obriga a reler o RÓTULO do recorte velho (2026-09-25)
+
+Mesmo painel, segunda metade do mesmo pedido: as exógenas passaram a se dividir em **doméstica** e
+**externa**, substituindo uma divisão anterior (*gerais* × *específicas por equação*).
+
+A divisão velha contava sobre o **modelo**, de propósito e com razão escrita: fosse sobre o que
+está rodando, a mesma variável trocaria de grupo a cada equação nova. **A divisão nova não pode
+usar o mesmo critério**, e o caso que obriga isso é uma variável que tem equação no modelo e cuja
+equação ainda não roda: ela é premissa que se digita, e pô-la no grupo das que *não* se digitam
+responde errado a pergunta que o bloco existe para responder.
+
+Três coisas:
+
+- **O critério do agrupamento e o rótulo do grupo são a mesma afirmação, e mudam juntos.** O
+  cabeçalho dizia *"alguma equação do modelo as produz"* e passou a dizer *"uma equação deste
+  simulador as produz"*. Trocar a regra e deixar o rótulo é pôr na tela uma frase que o próprio
+  agrupamento nega — e nada levanta.
+- **O fato que saiu do agrupamento não pode sumir.** Ele foi para o selo do cartão (*"endógena no
+  modelo · a equação (I) ainda não está no simulador"*), que já existia para isso. Um recorte que
+  simplifica levando informação junto é meio corte.
+- **Dois campos que sempre concordam merecem um guarda, não uma convenção.** `tipo` e
+  `produtor_no_sim` passaram a dizer a mesma coisa; se discordarem, o cartão só cai no grupo
+  errado — sem exceção, sem sintoma. O construtor levanta.
+
+E o critério de um recorte **novo** precisa resolver o caso ambíguo por escrito, não por exemplo.
+O usuário deu dois (*"Fed Funds é externa, volatilidade do câmbio é doméstica"*) e eles fixam a
+régua: **de quem é a variável, e não onde ela é negociada**. Por ela, o CDS soberano é doméstico e
+o índice de commodities em dólar é externo — a cesta é da pauta de exportação daqui, mas quem
+forma o preço está fora.
+
+### Duas formas da mesma série são duas premissas que podem se contradizer (2026-09-25)
+
+Do mesmo round. Uma equação lia o IPCA **acumulado em 12 meses** e outra a variação **do
+trimestre**. Dar cartão às duas poria no painel duas premissas digitáveis da mesma série, livres
+para discordar sem que nada avisasse.
+
+**Isso se resolve medindo, não escolhendo.** Compor quatro trimestres reproduziu a série publicada
+com erro médio de 0,0024 p.p. e máximo de 0,0056 — o arredondamento da própria fonte, que tem duas
+casas. São a mesma série, então há **um** cartão e a outra forma é conta, com o número publicado
+viajando no payload como gabarito para o teste exigir isso a cada geração.
+
+Se elas não batessem, a resposta seria o contrário: dois cartões **e** a discrepância escrita na
+tela. O que não é opção é dois cartões calados.
+
+Duas armadilhas de unidade, as duas silenciosas:
+
+- **Compor não é somar.** `100·(exp(Σ/100) − 1)` contra `Σ`: medido, 0,005 p.p. contra 0,658 —
+  duas ordens de grandeza. A forma errada funciona na faixa em que se costuma olhar, que é a
+  assinatura desta família de defeito.
+- **E a inversa de uma série em log não é a inversa da série em nível.** Para achar a variação
+  trimestral que dá exatamente `m` em doze meses é `ln(1 + m/100)/4`, não `(1 + m/100)^(1/4) − 1`.
+  As duas diferem 0,004 p.p. por trimestre — pequeno, sistemático, e suficiente para uma asserção
+  de convergência exata falhar na terceira casa.
+
+### O default que vira armadilha no dia em que a lista ganha um item na frente (2026-09-25)
+
+Mesmo painel. Um acessor tinha um default cômodo — *"sem argumento, devolve a primeira equação da
+ordem de solução"* — e o comentário ao lado dizia qual era: a regra de juros.
+
+No dia em que uma equação nova entrou **na frente** da ordem, todas as chamadas sem argumento
+continuaram compilando e passaram a ler outra equação. Não há erro, não há aviso, e o gráfico sai
+plausível.
+
+O corretivo é tornar o argumento obrigatório e **levantar** — e o que torna isso barato é que o
+defeito aparece na hora, no primeiro teste que roda, em vez de num número. A regra geral: **um
+default que aponta para a primeira posição de uma lista ordenada é uma aposta de que a lista não
+cresce por ali.**
+
+### Uma correção herdada vira armadilha quando a FONTE muda de natureza (2026-09-25)
+
+De `analytics/brasil/structural_model/`, equação de câmbio. Um canal dividia o prêmio de juro
+pela **volatilidade realizada** da moeda, e essa volatilidade entrava **defasada um trimestre**,
+com a razão escrita ao lado: a janela de 126 pregões contém inteiro o trimestre que se quer
+explicar. A razão era mais forte do que "endogeneidade" — a vol realizada daquele trimestre **é**
+a dependente por construção, o desvio-padrão exatamente dos retornos cuja soma é a variação que
+a equação explica. Defasar era o único conserto.
+
+Quando a fonte trocou para **volatilidade implícita de opções**, a defasagem foi junto, por
+inércia. E ela passou a estar errada: uma cotação de opção não é uma medição do passado, é um
+**preço** — da mesma classe do CDS e dos outros três canais daquela mesma equação, que já entravam
+contemporâneos. Exigir predeterminação só de um denominador era inconsistência dentro da própria
+especificação.
+
+Três coisas, e a primeira é a regra:
+
+- **Predeterminação é propriedade do OBJETO, não da data.** Quando a fonte de uma variável muda,
+  releia o motivo de cada tratamento que ela carregava — defasagem, filtro, janela, ajuste — e
+  pergunte se o motivo transfere. Um tratamento cuja razão morreu não avisa que morreu: ele
+  continua rodando e produzindo número plausível.
+- **E "prospectiva" não quer dizer "exógena".** Medido: a implícita no fechamento do trimestre
+  ANTERIOR é prospectiva e não informa nada (β +0,413, t 0,68, e a penalidade do Ridge sai do piso
+  da grade, o que derruba a coluna de `t` junto); a do próprio trimestre dá β −1,364 com t −2,78 e
+  R² de 0,8115 para 0,8261. O que a torna informativa é ser o preço do risco no mesmo período, não
+  o fato de olhar para a frente.
+- **Uma série que carrega um período A MAIS é uma afirmação sobre o tempo.** Com a vol defasada, o
+  cartão daquela premissa tinha um trimestre além da grade — a do primeiro trimestre projetado já
+  estava medida, então a caixa nascia travada e verde. Com a fonte contemporânea a cotação daquele
+  trimestre não existe, e manter o período a mais imprimiria como observado um número que ninguém
+  observou. **A asserção que afirmava a exceção tem de ser invertida, não apagada**: de *"a única
+  com trimestre já publicado é a volatilidade"* para *"nenhuma premissa tem trimestre publicado
+  adiante da grade, e a série dela termina onde termina a do canal vizinho"*.
+
+### Um peso POR PONTO não se compara entre duas medidas de dispersão diferente (2026-09-25)
+
+De `analytics/brasil/structural_model/`, curva IS. Uma tabela punha lado a lado o peso do aperto
+monetário sob cinco medidas diferentes do aperto, e a coluna era *peso por ponto*. Duas delas
+davam −0,164 e −0,071 — e a leitura óbvia, "a primeira mede um efeito 2,3 vezes maior", está
+errada: a segunda medida oscila 2,60 e a primeira 1,02. **Por desvio da própria medida os dois
+pesos são −0,167 e −0,185** — quase o mesmo efeito, com a segunda levemente mais forte.
+
+Três coisas:
+
+- **Uma tabela que compara coeficientes de regressores diferentes precisa da coluna por desvio**
+  (ou de outra normalização que cancele a unidade), e a prosa ao lado tem de citar ESSA coluna. É
+  a mesma armadilha da unidade nativa entre frequências do câmbio, por outro caminho: lá o `sd` se
+  cancela na contribuição acumulada, aqui ele não se cancela em lugar nenhum da tabela.
+- **Afirme o fato que a coluna existe para mostrar**, nos dois sentidos: que por ponto os pesos
+  parecem de ordens diferentes, e que por desvio eles quase coincidem — mais a identidade
+  `peso por desvio = peso por ponto × desvio da medida` em cada linha, que é o que impede a coluna
+  de ser calculada sobre uma janela diferente da do peso.
+- **Uma oposição escrita na documentação pode ser falsa pela álgebra**, e vale escrevê-la antes de
+  acreditar nela. A docstring opunha "a inclinação da curva real" a "um juro contra um neutro";
+  escritas lado a lado (`rr_2a − rr_10a` contra `(Selic − meta) − rr_10a`), as duas têm o MESMO
+  neutro e diferem numa perna só. A tabela inteira de "por que não um neutro" estava respondendo
+  uma pergunta que não era a pergunta.
+
+### O gabarito de um passo NÃO alcança o que só entra a partir do segundo passo (2026-09-25)
+
+Complemento da seção "Duas implementações da mesma recursão precisam de um GABARITO no payload",
+achado por mutante na mesma página. A equação nova lê um regressor **defasado**, e esse regressor
+é uma conta (três cartões combinados). Num passo, a defasagem vem **do observado** — então a conta
+que produz o regressor **dentro** da janela projetada nunca roda no gabarito.
+
+O mutante que soma as três peças ignorando o sinal delas **passou pela paridade de um passo
+inteira**, com zero de diferença, e foi pego só por um teste de repouso de 400 trimestres com
+entradas sintéticas (aperto zero → hiato zero; aperto 1 → `h2/(1−h1)`). A regra: **quando a
+equação tem defasagem, a paridade de um passo prova a recursão e a leitura do observado, e não
+prova a conta dentro da janela** — ela precisa de um teste de vários passos com entradas cujo
+resultado se sabe de cabeça. Os outros três mutantes da mesma rodada foram pegos pela paridade, o
+que é exatamente o que torna este fácil de não perceber.
+
+### Quando a corrente vira laço, o laço precisa de gabarito PRÓPRIO (2026-09-28)
+
+De `analytics/brasil/structural_model/`, quando a quinta equação entrou no simulador. Até ali as
+equações formavam uma corrente e cada uma rodava uma vez, na ordem, lendo o que as anteriores
+tinham produzido. A nova lê o que três delas produzem e alimenta duas — uma passada deixaria
+alguém lendo um caminho velho, e o resultado sairia plausível.
+
+Três coisas, e a primeira é a que fez a mudança ser pequena:
+
+- **Gauss-Seidel sobre o CAMINHO reaproveita as funções de cada equação sem tocar nelas.** Cada
+  volta roda as equações na ordem de solução, cada uma lendo o que já saiu nesta volta e, do resto,
+  o da anterior, até nada mudar mais que uma tolerância. O ponto fixo é o mesmo de resolver
+  trimestre a trimestre, e reescrever cinco recursões como funções de um passo seria o risco que a
+  mudança não precisava correr. Converge depressa quando os elos contra a ordem têm ganho pequeno
+  — aqui 0,007, dez voltas —, e esse ganho vale medir antes de escolher o método.
+- **O gabarito de cada equação não alcança a conta que as junta.** Uma volta a menos, uma equação
+  lendo o caminho da volta errada: cada recursão continua batendo com o Python e o sistema
+  diverge. O payload leva o cenário padrão **resolvido do lado do Python** e o teste exige os
+  cinco caminhos iguais, mais o resíduo de ponto fixo de cada equação sobre o resultado — e mais
+  uma asserção de que **uma passada só erra de verdade**, senão o teste não separa laço de
+  corrente.
+- **Uma contagem que a legenda imprime tem de sair do grafo, não da ordem.** Na corrente, "a faixa
+  do câmbio carrega três equações" era uma soma de flags. No laço cada variável recebe a incerteza
+  de todas as equações que a alimentam, direta ou indiretamente, e isso depende de quais estão
+  ligadas: impor a Selic tira a regra de juros da faixa do câmbio e deixa a inflação, que continua
+  chegando. Uma busca em largura sobre "quem lê quem" dá o número; nenhuma regra escrita à mão dá.
+
+### O `%` do JavaScript devolve resto NEGATIVO, e ninguém percebe enquanto o índice é positivo (2026-09-28)
+
+Mesma página. Uma função devolvia o trimestre do ano da posição `i` a partir do último rótulo, e
+existia para rotular trimestres ALÉM da grade — onde `n = tri0 + (i − último)` é sempre positivo.
+A equação nova passou a usá-la DENTRO da grade, para a dummy sazonal, e ali `n` é negativo:
+`(−77) % 4` em JavaScript é **−1**, e todo trimestre antes do último virou o "trimestre 0". A
+sazonal sumiu da conta em silêncio; o Python, cujo `%` é sempre não negativo, estava certo.
+
+Duas regras. **Uma função escrita para um domínio muda de contrato quando ganha um consumidor de
+outro** — releia as premissas dela (aqui, "o índice passa do último"), porque nada no nome avisa.
+E **aritmética modular em JavaScript se escreve `((a % n) + n) % n`**, sempre que o dividendo puder
+ser negativo. Quem pegou foi o gabarito de um passo, que roda DENTRO da amostra: a projeção vive
+além da grade e sairia certa, então nenhum teste de cenário teria visto.
 
 ### E a vista que abre é a resposta que a página dá antes de qualquer clique
 
@@ -1324,6 +1664,34 @@ defeito da página.
 A asserção que fecha isso é sobre a **aba renderizada**, não sobre o dicionário de rótulos: zero
 ocorrências de "stamp" no `textContent` da aba inteira — confirmado em Chrome headless, 13 cards,
 5 "em dia" e 8 "não dá para conferir", cada um com a sua explicação, zero exceções.
+
+## Um veredito deduzido não pode esconder a ação — mostre os fatos (2026-09-24)
+
+Da aba Divulgações do calendário, um dia depois da seção acima e pela mesma família de defeito. A
+página dizia `✓ em dia` ou `Atualizar` por grupo, a partir de uma **dedução**: que data cada tabela
+deveria ter, tirada de regras do calendário. Medido no dia, ela errava para os dois lados ao mesmo
+tempo — 3 grupos laranja e só 1 real, e na véspera o Copom verde sem a reunião que tinha acabado de
+acontecer. E o check verde **substituía o botão**: quando a dedução errava dizendo "em dia", a ação
+sumia junto.
+
+Três regras, na ordem em que custam menos:
+
+- **Um veredito nunca esconde a ação.** Se o botão faz sentido em algum estado, ele fica em todos; o
+  veredito vira no máximo a cor dele. Um estado errado com o botão na tela custa um clique; sem o
+  botão, custa o dado.
+- **Quando a dedução pede uma exceção por caso, troque-a por fatos.** "Foi buscada às 11:50, a
+  divulgação saiu às 08:00" não depende de saber que data a tabela deveria ter — e fato, ao contrário
+  de dedução, não erra por falta de regra. O registro do fato vai no **ponto por onde o trabalho
+  passa** (aqui, os executores de `jobs/`), pela mesma razão da seção acima.
+- **Um fato só vale do momento em que se começou a registrá-lo.** "Buscada depois e nada mudou" é
+  afirmável só se o registro já existia na hora da divulgação; antes disso o dado pode ter chegado
+  sem ninguém anotar. Sem essa guarda, o primeiro dia de um registro novo pinta de aviso tudo o que
+  já estava certo — o mesmo alarme falso que o registro existia para acabar, por outro caminho. E a
+  mesma guarda vale para a frase "nenhuma pendente": com item sem registro no recorte, ela não é
+  verde.
+
+Detalhe em [`analytics/release_calendar/CLAUDE.md`](../../analytics/release_calendar/CLAUDE.md),
+"A aba Divulgações mostra FATOS".
 
 ## Related conventions
 

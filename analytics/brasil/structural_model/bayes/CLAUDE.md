@@ -1,20 +1,112 @@
 # Estimação bayesiana das equações do modelo estrutural
 
 Pasta aberta em **2026-09-22**, por decisão do usuário: *"Estou considerando usar um modelo
-Bayesiano e começamos com o modelo de juros."* Por ora **só a equação (R)**, a regra de juros.
+Bayesiano e começamos com o modelo de juros."* Hoje **cinco equações, as cinco no simulador**:
+(R) regra de juros, (F) câmbio, (E) expectativas, (H) curva IS e (I) curva de Phillips
+desagregada, a última a entrar, em 2026-09-28. A regra, do
+usuário em 2026-09-25: *"no sistema vamos sempre usar o bayes para todas as equações"* — o que roda
+no simulador é sempre o posterior; as abas por equação publicam a estimativa pontual, que fica como
+gabarito.
 
 | arquivo | o que é |
 |---|---|
 | `taylor_bayes.py` | a equação (R) por MCMC (PyMC/NUTS), cinco variantes de priori/parametrização |
-| `data/taylor_bayes.json` | o resumo de cada variante, gravado a cada execução |
-| `data/taylor_draws.json` | **1.000 desenhos afinados da variante base** — é o que o simulador do relatório lê |
+| `fx_bayes.py` | a equação (F), a mesma do Ridge — existe porque Ridge não tem posterior para virar faixa |
+| `expectations_bayes.py` | a equação (E), a mesma do MQ, com a soma-um imposta na forma |
+| `is_bayes.py` | a equação (H), a mesma do MQ, com o aperto medido contra a âncora da regra de juros |
+| `phillips_bayes.py` | a equação (I), as quatro do MQ (serviços, alimentação, industriais, monitorados), mais o que só existe no sistema: efeito do hiato no cheio, repasse, estabilidade das quatro juntas |
+| `data/*_bayes.json` | o resumo de cada variante, gravado a cada execução |
+| `data/*_draws.json` | **1.000 desenhos afinados da variante base** de cada uma — é o que o simulador do relatório lê |
+
+**As quatro seguem o mesmo desenho, e isso é o que as torna verificáveis**: nenhuma remonta a
+matriz de regressão. Cada uma chama a mesma `montar()` do módulo de estimação pontual, corta na
+mesma data, e só troca o estimador — então `conferir()` pode medir a distância entre a mediana do
+posterior e o coeficiente pontual em desvios do próprio posterior, e o `main()` imprime as duas
+colunas lado a lado. Se divergirem, ou a priori está apertando ou a matriz deixou de ser a mesma,
+e as duas hipóteses são visíveis.
+
+| equação | contra | pior distância | R² | RMSE |
+|---|---|---|---|---|
+| (R) | MQ | — (parametrização própria) | 0,957 | 0,537 |
+| (F) | Ridge | 0,042 desvio | **0,8261 contra 0,8261** | **3,448 contra 3,448** |
+| (E) | MQ | 0,061 desvio | **0,7778 contra 0,7778** | **0,5692 contra 0,5692** |
+| (H) | MQ | 0,039 desvio | **0,8702 contra 0,8703** | **0,6361 contra 0,6361** |
+| (I) | MQ | 0,083 desvio (pior das quatro) | serviços 0,6263 · alimentação 0,2935 · industriais 0,5235 · monitorados 0,0694 — iguais ao MQ na 4ª casa | cheio reconstruído **0,6166 contra 0,6159** |
+
+### A (I): quatro posteriores independentes, e o que só existe com as quatro juntas
+
+`phillips_sub.matriz()` foi separada de `estimar_uma()` para o amostrador ler a mesma matriz — a
+refatoração não move nenhum número do MQ. As quatro são estimadas separadamente, como no MQ;
+prioris e verossimilhanças independentes fazem o posterior conjunto ser o produto, então parear o
+desenho `s` das quatro é legítimo, e `phillips_draws.json` grava os desenhos **já pareados**.
+
+Com os pesos do fim da amostra e a **expectativa parada**, o sistema mede: 1 p.p. de hiato por um
+ano soma **0,23 p.p.** ao IPCA de 12 meses (HDI [0,03; 0,44]); uma depreciação de 1% chega **3,3%**
+ao nível do IPCA em um ano e **5,8%** no longo prazo; e o laço alimentação ↔ câmbio dentro do
+trimestre tem ganho **0,013** — resolver os dois juntos em vez de em sequência muda o efeito em
+1,3%. As formas fechadas de longo prazo (com o multiplicador da indexação dos monitorados) batem com
+400 trimestres simulados a 2,3e-10.
+
+**4,0% dos desenhos são explosivos, e todos por um peso da expectativa negativo** — 92% deles em
+bens industriais (inércia + média móvel > 1), 8% em serviços. Ficam no posterior, pela mesma razão
+da (H): tirá-los seria impor estacionariedade como priori. Na amostra desde 2006T2 sobem a 8,3%.
+
+Dois achados que são decisão de especificação, não de estimador, e ficam registrados em vez de
+corrigidos: a indexação dos monitorados ao cheio sai **negativa** (−0,21, 29% da massa acima de
+zero) com R² de 0,07; e o hiato não entra em alimentação (−0,002, metade da massa de cada lado).
+
+### A priori da (H) é autoescalada, como a da (F) — e a razão é a mesma, não a cópia
+
+Os quatro termos vivem em unidades diferentes: `h1` multiplica o próprio hiato, `h2` multiplica
+p.p. de aperto, e as crises são degraus de 0 ou 1. `N(0, sd(y)/sd(x))` por termo, que para `h1`
+dá exatamente `N(0, 1)` porque o regressor é o próprio hiato defasado. A (E) usou uma priori só
+porque lá os dois pesos dividem unidade — copiar a regra de uma para a outra seria copiar a
+conclusão sem a razão. A variante `larga` (×4) move a mediana de `h2` em 0,0001.
+
+### E o repouso por simulação finita reprovava desenho LENTO, não errado
+
+A primeira versão de `repouso_draws()` da (H) iterava 4.000 trimestres e reprovou o posterior
+inteiro: pior desvio de zero **4,37**. Não havia defeito nenhum — havia desenhos com `h1` a um
+fio de 1 (0,99997 guarda 87% de um hiato depois de 4.000 trimestres), que voltam a zero pela
+álgebra e que uma simulação finita não alcança. A correção separa três grupos em vez de
+misturá-los: **explosivos** (`|h1| ≥ 1`, 0,49% — ficam no posterior, porque tirá-los seria impor
+estacionariedade como priori), **lentos** (0,99 < `|h1|` < 1, 0,38% — contados, não afirmados) e o
+resto, onde a afirmação é feita (pior desvio **8,7e-18**). Um teste que não sabe o que ele não é
+capaz de afirmar reprova o que é verdadeiro.
+
+### A priori da (E) é UMA só, e isso é conclusão e não economia
+
+Na (F) ela precisava ser **autoescalada** por canal, porque os betas vivem em escalas muito
+diferentes mesmo depois da padronização. Na (E) os dois regressores estão na mesma unidade (p.p.
+de desvio contra a meta) e os dois coeficientes são **pesos**, cujo intervalo útil é [0, 1]:
+`N(0, 1)` cobre isso várias vezes. A variante `larga` (×4) devolve os mesmos números.
+
+E a priori do BC **não** entra na (E), pela mesma razão que a aba já declara: o `f2` da eq. (5)
+multiplica a previsão do próprio modelo quatro trimestres à frente e o nosso `e2` multiplica a
+inflação realizada. São regressores diferentes — transplantar o número poria a priori no lugar
+errado.
+
+### E a restrição da (E) vale DESENHO A DESENHO
+
+`peso_meta` não é amostrado: ele é `1 − e1 − e2`. A consequência é estrutural e `repouso_draws()`
+a afirma sobre a amostra inteira, não sobre a mediana — com a inflação na meta a conta devolve a
+meta, pior desvio **1,78e-15**. Num simulador isso importa mais do que na estimação: é cada
+desenho que roda.
+
+Duas medições que vêm de graça e valem imprimir: **0,00% da massa do posterior cai fora do
+simplex** (nada na priori obriga), e o repasse de longo prazo `e2/(1−e1)` é propagado desenho a
+desenho em vez de calculado da mediana — a razão das medianas não é a mediana da razão.
 
 ## Quem consome isto, e o que isso obriga
 
-A aba **Simulador** do relatório (`../simulator.py`) roda a regra de juros com estes pesos, e a
-faixa dela sai de rodar a mesma recursão em cada um dos 1.000 desenhos. Duas consequências:
+A aba **Structural Model** do relatório (`../simulator.py`) roda as cinco equações com estes
+pesos, e a faixa sai de resolver o laço inteiro para cada um dos 1.000 desenhos, com o desenho `s`
+de cada equação entrando junto. Desde que a (I) fechou o laço, a faixa de cada variável carrega a
+incerteza de todas as equações que a alimentam — com as cinco ligadas, das cinco. Os posteriores
+foram estimados separadamente, então parear amostras independentes é amostrar do produto — não há
+correlação a preservar; a (I) grava os quatro grupos já pareados entre si. Duas consequências:
 
-- **A geração do relatório NÃO roda MCMC.** Ela lê `data/taylor_draws.json`. Reestimar é um passo
+- **A geração do relatório NÃO roda MCMC.** Ela lê os cinco `data/*_draws.json`. Reestimar é um passo
   próprio e explícito, como os três passos do `monetary_policy` — três minutos de amostrador dentro
   de uma geração que deveria levar segundos seria dívida, não recurso.
 - **Mudar qualquer coisa da estimação obriga a regravar os desenhos.** Trocar priori, horizonte de
@@ -24,8 +116,15 @@ faixa dela sai de rodar a mesma recursão em cada um dos 1.000 desenhos. Duas co
   arquivos, seguida de uma regeração do relatório.
 
 ```powershell
-uv run python -m analytics.brasil.structural_model.bayes.taylor_bayes
+uv run python -m analytics.brasil.structural_model.bayes.taylor_bayes        # ~3 min
+uv run python -m analytics.brasil.structural_model.bayes.fx_bayes            # segundos
+uv run python -m analytics.brasil.structural_model.bayes.expectations_bayes  # segundos
+uv run python -m analytics.brasil.structural_model.bayes.phillips_bayes      # minutos: 3 variantes x 4 equações
 ```
+
+**As três têm de terminar no MESMO trimestre**, e `simulator.construir()` levanta se não
+terminarem: a janela projetada de uma começaria dentro da amostra da outra, e a tela não teria
+como dizer isso.
 
 Roda em ~3 min, sem banco: o painel vem do `data/panel.csv` versionado, para duas execuções darem
 o mesmo número. `dados(df=panel.construir())` usa o painel ao vivo.

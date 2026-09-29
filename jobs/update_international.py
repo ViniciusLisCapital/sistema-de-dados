@@ -35,6 +35,9 @@ _SCRIPTS = [
 ]
 
 
+from domain.db import execucoes  # noqa: E402
+
+
 def main() -> None:
     inicio = datetime.now()
     erros: list[tuple[str, str]] = []
@@ -44,7 +47,8 @@ def main() -> None:
     for label, mod, kwargs in _SCRIPTS:
         try:
             logger.info("%-45s ...", label)
-            mod.run(**kwargs)
+            # registra quando cada tabela foi buscada -- ver domain/db/execucoes.py
+            execucoes.rodar(mod, kwargs)
             logger.info("%-45s OK", label)
         except Exception as exc:
             logger.error("%-45s FALHOU: %s", label, exc)

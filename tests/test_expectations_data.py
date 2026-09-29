@@ -114,7 +114,8 @@ def main():
     q = lambda sql: pd.read_sql(sql, conn)  # noqa: E731
 
     print("\n1. Grade semanal = ultima data de pesquisa de cada semana ISO")
-    # A ancora de cada semana e o MAX(date) entre as tres tabelas naquela semana ISO.
+    # A ancora de cada semana e o MAX(date) entre as duas tabelas lidas naquela semana ISO.
+    # Eram tres ate 2026-09-24, quando expc_focus_copom saiu com a aba Curva do Copom.
     amostra = random.sample(range(len(grade)), 25)
     erros = []
     for i in amostra:
@@ -123,8 +124,6 @@ def main():
         real = q(
             "SELECT MAX(d) m FROM ("
             f"  SELECT MAX(date) d FROM expc_focus WHERE date BETWEEN '{seg}' AND '{dom}'"
-            "  UNION ALL"
-            f"  SELECT MAX(date) d FROM expc_focus_copom WHERE date BETWEEN '{seg}' AND '{dom}'"
             "  UNION ALL"
             f"  SELECT MAX(date) d FROM expc_focus_periodo WHERE date BETWEEN '{seg}' AND '{dom}'"
             ") t"
@@ -179,10 +178,10 @@ def main():
     check_true(f"{total} pontos sorteados batem com o banco", not divergentes,
                "\n          ".join(divergentes[:8]))
 
-    print("\n3. expc_focus e expc_focus_copom: reducao por serie dentro da semana")
-    # Estes dois loaders reduzem por (serie, semana) em pandas, nao por JOIN: a tabela e
-    # pequena e a leitura e serie a serie, entao vale pegar o ultimo ponto QUE AQUELA
-    # SERIE tem na semana. Regra diferente da de cima, de proposito.
+    print("\n3. expc_focus: reducao por serie dentro da semana")
+    # Este loader reduz por (serie, semana) em pandas, nao por JOIN: a tabela e pequena e a
+    # leitura e serie a serie, entao vale pegar o ultimo ponto QUE AQUELA SERIE tem na
+    # semana. Regra diferente da de cima, de proposito.
     divergentes = []
     total = 0
     for chave in random.sample(list(D["movel"]), min(_AMOSTRA_SERIES, len(D["movel"]))):
@@ -207,28 +206,7 @@ def main():
             obtido = float(linha.iloc[0]["mediana"])
             if esperado is None or abs(obtido - esperado) > 5e-5:
                 divergentes.append(f"movel/{chave}@{d}: payload={esperado}, banco={obtido}")
-    for chave in random.sample(list(D["copom"]), min(_AMOSTRA_SERIES, len(D["copom"]))):
-        reuniao, base = chave.split("|")
-        blk = D["copom"][chave]
-        n = len(blk["m"])
-        for gi in random.sample(range(blk["i0"], blk["i0"] + n), min(_AMOSTRA_PONTOS, n)):
-            d = grade[gi]
-            esperado = valor_bloco(blk, "m", gi)
-            seg, dom = semana(d)
-            linha = q(
-                "SELECT mediana FROM expc_focus_copom "
-                f"WHERE date BETWEEN '{seg}' AND '{dom}' AND reuniao='{reuniao}' "
-                f"  AND base_calculo={base} ORDER BY date DESC LIMIT 1"
-            )
-            total += 1
-            if linha.empty:
-                if esperado is not None:
-                    divergentes.append(f"copom/{chave}@{d}: payload={esperado}, banco=sem linha")
-                continue
-            obtido = float(linha.iloc[0]["mediana"])
-            if esperado is None or abs(obtido - esperado) > 5e-5:
-                divergentes.append(f"copom/{chave}@{d}: payload={esperado}, banco={obtido}")
-    check_true(f"{total} pontos sorteados de expc_focus/expc_focus_copom batem", not divergentes,
+    check_true(f"{total} pontos sorteados de expc_focus batem", not divergentes,
                "\n          ".join(divergentes[:8]))
 
     print("\n4. A ultima semana da grade reproduz o Boletim publicado")
@@ -257,8 +235,8 @@ def main():
     check("indicadores anuais no indice", len(D["indice"]["anual"]),
           int(q("SELECT COUNT(*) n FROM (SELECT DISTINCT indicador, detalhe FROM expc_focus_periodo "
                 "WHERE periodicidade='anual') t").iloc[0]["n"]))
-    check("series no store do Copom", len(D["copom"]),
-          int(q("SELECT COUNT(*) n FROM (SELECT DISTINCT reuniao, base_calculo FROM expc_focus_copom) t").iloc[0]["n"]))
+    check_true("a Selic por reuniao saiu do payload (foi para o relatorio de Politica Monetaria)",
+               "copom" not in D)
     check("series no store de horizonte movel", len(D["movel"]),
           int(q("SELECT COUNT(*) n FROM (SELECT DISTINCT indicador, horizonte, suavizada, base_calculo "
                 "FROM expc_focus) t").iloc[0]["n"]))
@@ -271,15 +249,14 @@ def main():
     check_true(f"nenhuma referencia mensal anterior a {corte}",
                all(r >= corte[:7] for r in iso_mensais), min(iso_mensais))
     # base 1 nao existe na expc_focus_periodo -- se aparecer, alguem mudou o loader sem
-    # atualizar a aba Bases, que oferece so movel e Copom.
+    # atualizar a aba Bases, que oferece so o horizonte movel.
     check("expc_focus_periodo segue so com base 0",
           int(q("SELECT COUNT(DISTINCT base_calculo) n FROM expc_focus_periodo").iloc[0]["n"]), 1)
 
     print("\n6. Sanidade dos valores")
     ruins = []
     for store, nome in ((D["periodo"]["anual"], "anual"), (D["periodo"]["mensal"], "mensal"),
-                        (D["periodo"]["trimestral"], "trimestral"), (D["movel"], "movel"),
-                        (D["copom"], "copom")):
+                        (D["periodo"]["trimestral"], "trimestral"), (D["movel"], "movel")):
         for chave, blk in store.items():
             for stat in ("m", "s", "n"):
                 for v in blk.get(stat) or []:
@@ -292,6 +269,31 @@ def main():
     dp_negativo = [k for k, b in D["periodo"]["anual"].items()
                    if any(v is not None and v < 0 for v in (b.get("s") or []))]
     check_true("desvio-padrao nunca negativo", not dp_negativo, "; ".join(dp_negativo[:5]))
+
+    print("\n7. Selic anual x ultima reuniao do ano, no banco")
+    # Era a secao 13b do harness JS, e virou conferencia de banco em 2026-09-24, quando a
+    # Selic por reuniao saiu deste payload. A Selic anual do Boletim e FIM DE PERIODO, entao
+    # tem de bater com a expectativa para a ULTIMA reuniao do Copom daquele ano -- que vem
+    # de outro endpoint, com outro painel. Nao e identidade exata, mas meio ponto de
+    # distancia ja seria sinal de que uma das duas leituras esta errada. So anos com a
+    # oitava reuniao cotada: antes disso a fila para no meio do ano.
+    ult_cop = str(q("SELECT MAX(date) d FROM expc_focus_copom WHERE base_calculo = 0").iloc[0]["d"])
+    cop = q("SELECT reuniao, mediana FROM expc_focus_copom WHERE base_calculo = 0 "
+            f"AND date = '{ult_cop}'")
+    oitava = {int(m.group(2)): float(v) for r, v in zip(cop["reuniao"], cop["mediana"])
+              if (m := re.match(r"R(\d+)/(\d{4})$", str(r))) and int(m.group(1)) == 8}
+    anual = q("SELECT data_referencia, mediana FROM expc_focus_periodo WHERE periodicidade='anual' "
+              f"AND indicador='Selic' AND date = (SELECT MAX(date) FROM expc_focus_periodo "
+              f"WHERE date <= '{ult_cop}' AND indicador='Selic')")
+    fora, conferidos = [], 0
+    for r in anual.itertuples():
+        ano = int(r.data_referencia)
+        if ano in oitava:
+            conferidos += 1
+            if abs(float(r.mediana) - oitava[ano]) > 0.5:
+                fora.append(f"{ano}: anual={float(r.mediana)} vs R8/{ano}={oitava[ano]}")
+    check_true(f"{conferidos} ano(s) com a 8a reuniao cotada: a Selic anual bate com ela",
+               conferidos > 0 and not fora, "; ".join(fora))
     conn.close()
 
     print()

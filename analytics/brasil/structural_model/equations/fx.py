@@ -7,7 +7,8 @@
     dppp   100*dlog(IPCA/CPI) -- o diferencial de inflacao BR-US, com
            coeficiente IMPOSTO em 1 (offset, nao regressor)
     dc     variacao trimestral de cada canal: fiscal (CDS 5a, bps), dxy_em
-           (dolar contra emergentes), carry_vol (carry sobre volatilidade),
+           (dolar contra emergentes), carry_vol (carry sobre a volatilidade
+           IMPLICITA de 3 meses das opcoes de dolar, ambos no trimestre),
            sp500 e icbr_usd (indices -> log-retorno)
     phi    AR(1) na propria variacao do cambio, em unidade nativa
 
@@ -19,18 +20,25 @@ aquele: importa `load_data`, `_standardize_ext`, `walk_forward_lambda` e
 ## Estado, 81 trimestres 2006T2-2026T2 (corte fixado em 2026T2)
 
     termo                        beta(sd)  t(HAC)  acum.pp   nativo
-    risco fiscal (CDS 5a)         +27,03    9,82     -2,1   +0,0906 por bp
-    dolar contra emergentes        +2,354   2,94    +20,2   +0,693  por ponto
-    carry sobre volatilidade       -0,577  -1,35     -0,5   -2,275  por unidade
-    bolsa americana                +1,898   3,34    +39,8   +0,227  por 1%
-    commodities em dolar           -2,054  -3,44    -18,8   -0,275  por 1%
-    cambio do trimestre anterior   -0,087  -1,32     -7,0
-    constante (alpha)              -0,035  -0,08     -2,9   p.p./trimestre
+    risco fiscal (CDS 5a)         +25,04    9,57     -1,9   +0,0839 por bp
+    dolar contra emergentes        +2,290   3,11    +19,7   +0,674  por ponto
+    carry sobre volatilidade       -1,364  -2,78     -1,2   -8,675  por unidade
+    bolsa americana                +1,903   3,64    +39,9   +0,227  por 1%
+    commodities em dolar           -1,724  -2,85    -15,8   -0,231  por 1%
+    cambio do trimestre anterior   -0,031  -0,48     -2,5
+    constante (alpha)              -0,116  -0,30     -9,4   p.p./trimestre
     diferencial de inflacao      imposto=1           +58,0
 
-R2 0,8115 - RMSE 3,59 p.p./tri - lambda 0,0100, o PISO da grade - residuo limpo
-(autocorrelacao -0,02; Ljung-Box Q(4) p 0,822, Q(8) p 0,755). O cambio andou
+R2 0,8261 - RMSE 3,45 p.p./tri - lambda 0,0100, o PISO da grade - residuo limpo
+(autocorrelacao +0,01; Ljung-Box Q(4) p 0,996, Q(8) p 0,812). O cambio andou
 +86,8 p.p. de log na amostra e a soma das contribuicoes devolve +86,8 exatamente.
+
+**O denominador do carry mudou em 2026-09-25**, por decisao do usuario e com a
+medicao ao lado: era a vol REALIZADA de 6 meses defasada um trimestre, passou a
+ser a vol IMPLICITA de 3 meses das opcoes de dolar, no MESMO trimestre. O canal
+saiu de -0,577 (t -1,35) para -1,364 (t -2,78) e o R2 de 0,8115 para 0,8261. O
+argumento esta inteiro em `vol_trimestral`; a forma antiga continua rodavel em
+`comparar()` como `vol_realizada`.
 
 Contra o mensal (n 245, 2006-02..2026-06, R2 0,6532), em unidade NATIVA -- que e
 o numero comparavel entre frequencias, porque o sd se cancela: os SEIS
@@ -42,16 +50,22 @@ do trimestre.
 ## A ressalva que a decomposicao NAO diz sozinha
 
 `sp500` e o unico canal cujo coeficiente tem sinal OPOSTO ao da sua correlacao
-bruta com a dependente: corr -0,435, beta +1,898 (t 3,34). Nao e erro nem
-artefato da frequencia -- o mensal publicado tem o mesmo padrao (-0,428 e +0,764)
--- e o mecanismo esta medido: `sp500` correlaciona -0,574 com o CDS e -0,606 com
-o dolar EM, entao
+bruta com a dependente: corr -0,435, beta +1,903 (t 3,64). Nao e erro nem
+artefato da frequencia -- o mensal publicado tem o mesmo padrao -- e o mecanismo
+esta medido: `sp500` correlaciona -0,574 com o CDS e -0,606 com o dolar EM, entao
 
     sp500 sozinho                 -3,542  (t -4,25)
     + dolar EM                    +0,290
     + fiscal                      +0,529
     + fiscal + dolar EM           +1,364
-    o modelo inteiro              +1,907
+    o modelo inteiro              +1,911
+
+**E o `carry_vol` NAO tem esse problema** -- vale dizer porque o contraste e o que
+separa os dois casos. A correlacao bruta dele e -0,548, do mesmo sinal do
+coeficiente, e o sinal nao vira em nenhum conjunto de controles: -4,648 sozinho,
+-2,578 com o dolar EM, -2,035 com o fiscal, -1,821 com os dois, -1,358 no modelo
+inteiro. O que encolhe e a magnitude, que e o esperado quando tres canais
+precificam o mesmo risk-off.
 
 Sozinha, bolsa subindo vem com real mais forte, porque bolsa subindo E risk-on, e
 risk-on comprime o CDS e enfraquece o dolar contra emergentes. Segurados esses
@@ -61,9 +75,11 @@ quem ler a barra como causa independente le errado. Pendencia F1.
 
 ## O que fica de fora, e esta declarado
 
-Reselecao dos canais (o corte 8->5 foi medido em mensal), janela movel (81
-trimestres nao comportam), e vol implicita de opcoes, que nao tem tabela no
-banco. Tudo em `pendencias_fx_eq.md`, com o que cada um custa medido.
+Reselecao dos canais (o corte 8->5 foi medido em mensal) e janela movel (81
+trimestres nao comportam). E a vol implicita, que agora ESTA na equacao, ainda
+nao esta no banco: ela viaja num CSV versionado em `data/`, entao o botao
+Atualizar nao a alcanca e a ultima data do relatorio depende de alguem repor o
+arquivo. Pendencia F-vol, em `pendencias_fx_eq.md`, com o resto.
 
 **Uma inconsistencia entre equacoes, nao um defeito desta:** aqui o cambio e
 medido pelo FECHAMENTO do trimestre, e a coluna `de` do painel -- o `F(t)` que a
@@ -101,11 +117,18 @@ CANAIS = ["fiscal", "dxy_em", "carry_vol", "sp500", "icbr_usd"]
 # Todo o resto ja e taxa, spread ou diferencial, estacionario em nivel.
 LOG_RET = {"sp500", "icbr_usd"}
 
-# A fonte da volatilidade do `carry_vol`. `realizada_lag` termina no fechamento de
-# t-1, o que torna o denominador PREDETERMINADO -- ver a secao de simultaneidade
-# na docstring de `vol_trimestral`. `implicita` ainda nao tem tabela no banco.
-VOL_SOURCE = "realizada_lag"
-VOL_LAG_Q = 1
+# A fonte da volatilidade do `carry_vol`, e a defasagem dela. Desde 2026-09-25 a
+# fonte e a vol IMPLICITA de opcoes de dolar, no prazo de 3 meses, medida no MESMO
+# trimestre -- ver a docstring de `vol_trimestral` para por que contemporanea aqui e
+# a convencao certa e por que na vol REALIZADA nao era. `realizada_lag` continua
+# disponivel, com a defasagem que ela exige, e e uma das formas de `comparar()`.
+VOL_SOURCE = "implicita"
+VOL_PRAZO = "3M"
+VOL_LAG_Q = 0
+
+# A defasagem que cada fonte exige. Sao propriedades DA FONTE e nao escolhas por
+# rodada: a realizada de t contem a propria dependente, a implicita de t e um preco.
+VOL_LAG_POR_FONTE = {"implicita": 0, "realizada_lag": 1}
 
 # Convencao de trimestralizacao dos NIVEIS, antes de diferenciar.
 COMO = "last"
@@ -117,6 +140,11 @@ OFFSET = "d_ppp"        # a coluna cujo coeficiente e imposto em 1
 
 _DATA = Path(__file__).resolve().parents[1] / "data"
 _CUTOFF = _DATA / "fx_fit_cutoff.json"
+
+# A vol implicita ainda NAO TEM TABELA no banco -- ela viaja num CSV versionado nesta
+# pasta, extraido da automacao Bloomberg do fundo. E divida declarada, nao desenho:
+# enquanto for arquivo, o botao Atualizar nao a alcanca. Pendencia F-vol.
+_VOL_CSV = _DATA / "vol_implicita_usdbrl_3m.csv"
 
 ROT = {
     "d_ppp": "Diferencial de inflação BR-US (imposto em 1)",
@@ -164,50 +192,110 @@ def _para_q(s: pd.Series, como: str = COMO) -> pd.Series:
     return (g.last() if como == "last" else g.mean()).sort_index()
 
 
-def vol_trimestral(lag: int = VOL_LAG_Q) -> pd.Series:
-    """Volatilidade realizada do real, trimestral, DEFASADA `lag` trimestres.
+def _cortar_incompleto(q: pd.Series, diario: pd.Series, folga_dias: int = 7) -> pd.Series:
+    """Tira o trimestre cuja ultima cotacao nao chega perto do fim dele.
 
-    ## Por que defasar, e o que isso corrige
-
-    `_annualized_vol_6m` e uma janela movel de 126 pregoes terminando em t. Em
-    frequencia mensal ela ja cobre ~2 trimestres; em trimestral, o trimestre que
-    se quer EXPLICAR esta inteiro dentro da janela do denominador. A variacao do
-    cambio entra dos dois lados da regressao, e o coeficiente do `carry_vol`
-    passa a medir parte da propria dependente.
-
-    Defasar um trimestre elimina isso por construcao: a vol usada em t termina no
-    ultimo pregao de t-1, entao e conhecida no inicio de t -- predeterminada, no
-    sentido exato do termo. E a correcao padrao e nao custa amostra (a serie
-    comeca em 1994, muito antes do canal que limita a amostra).
-
-    **O que ela NAO resolve**, e fica declarado: vol realizada defasada continua
-    sendo funcao da historia da propria variavel dependente. Para ESTIMAR isso
-    basta, porque predeterminacao e o que a consistencia do MQ exige. Para
-    SIMULAR um cenario fechado ela teria de ser atualizada a partir do caminho
-    simulado -- e o simulador saiu de escopo em 2026-09-22, entao essa metade
-    deixou de ter consumidor. A metade que valia para a ESTIMACAO ja esta
-    resolvida pela defasagem.
-
-    **Vol implicita de opcoes resolveria as duas metades** -- e prospectiva,
-    observavel em t, e nao e funcao de realizacao passada. Nao ha tabela dela no
-    banco (varredura completa em 2026-09); `VOL_SOURCE='implicita'` existe para a
-    troca ser de serie e nao de equacao, e levanta ate a tabela existir.
+    E a mesma regra do `_trimestres_cheios` do lado mensal, na frequencia em que este
+    arquivo chega. Sem ela, um CSV que para em agosto devolve a cotacao de agosto como
+    se fosse o FECHAMENTO do terceiro trimestre -- e, com a vol entrando contemporanea,
+    esse numero iria direto para a caixa de um trimestre que ainda nao acabou, verde e
+    travado. Nada levanta; o trimestre so sai com a vol de dois meses atras.
     """
-    if VOL_SOURCE == "implicita":
-        raise NotImplementedError(
-            "nao ha tabela de volatilidade implicita no banco. O destino recomendado e "
-            "`macro_brasil.cmb_vol_implicita`, pelo caminho do conector Bloomberg que ja "
-            "existe em domain/db/brasil/bloomberg/cmb_risco_pais.py"
-        )
-    if VOL_SOURCE != "realizada_lag":
-        raise ValueError("VOL_SOURCE: 'realizada_lag' ou 'implicita', nao %r" % VOL_SOURCE)
+    ult = diario.groupby(diario.index.to_period("Q")).apply(lambda x: x.index.max())
+    fim = pd.Series({p: p.end_time.normalize() for p in ult.index})
+    cheio = (fim - ult).dt.days <= folga_dias
+    return q[q.index.isin(cheio[cheio].index)]
+
+
+def vol_trimestral(lag: int | None = None, fonte: str | None = None) -> pd.Series:
+    """A volatilidade que divide o carry, trimestral.
+
+    ## O que o denominador quer ser
+
+    O retorno de carregar real e o diferencial de juros MENOS a desvalorizacao, e o
+    risco dessa posicao e a volatilidade ESPERADA da moeda. `carry_vol` e portanto uma
+    quantidade ex-ante -- algo como um Sharpe do carry -- e o denominador dela quer ser
+    um preco prospectivo, nao uma medicao do passado.
+
+    ## Por que a implicita entra CONTEMPORANEA, e a realizada nao podia
+
+    As duas nao sao o mesmo tipo de objeto, e e isso que decide a convencao de tempo:
+
+    - A **realizada** de 126 pregoes terminando em t E a dependente, por construcao:
+      ela e o desvio-padrao exatamente dos retornos diarios cuja soma e o `de(t)`.
+      Dividir por ela e dividir por uma funcao da propria coisa que se explica.
+      Defasar um trimestre era o unico conserto, e foi o que este modulo fez ate
+      2026-09-25.
+    - A **implicita** no fechamento de t e um **preco**, da mesma classe do CDS, do
+      dolar EM, do S&P e do IC-Br -- e os quatro ja entram contemporaneos nesta
+      equacao. A (F) nunca foi preditiva: ela e uma decomposicao do movimento DO
+      trimestre. Exigir predeterminacao so deste denominador era uma inconsistencia
+      dentro da propria especificacao, herdada do conserto que a realizada exigia.
+
+    **E o dado separa as duas leituras.** Mesmos 81 trimestres, so o denominador
+    mudando, beta em desvios e t de HAC:
+
+        denominador                    beta      t       R2    RMSE
+        realizada 6m, defasada        -0,576  -1,35   0,8115   3,59
+        implicita 1M, no trimestre    -1,150  -2,14   0,8214   3,49
+        implicita 2M, no trimestre    -1,279  -2,53   0,8242   3,47
+        implicita 3M, no trimestre    -1,364  -2,78   0,8261   3,45   <- a que ship a
+        implicita 6M, no trimestre    -1,230  -2,51   0,8232   3,48
+        implicita 1Y, no trimestre    -1,278  -2,78   0,8262   3,45
+
+    Na convencao PREDETERMINADA (implicita no fechamento de t-1) nenhum prazo tem
+    sinal nem significancia -- o 3M da +0,413 com t 0,68 -- e o lambda sai do piso da
+    grade, o que derruba a coluna de t junto. Ou seja: o sinal esta no reprecamento
+    contemporaneo, que e exatamente onde o argumento economico diz que ele deve estar.
+    O prazo de 3 meses e o que casa com o trimestre; o 1Y empata no ajuste.
+
+    ## O que isso custa na leitura, e esta declarado
+
+    O coeficiente passa a ser covariacao contemporanea, e nao previsao: ele nao se le
+    como "se a vol subir 1, o real desvaloriza X no trimestre seguinte". Essa e a
+    unica ressalva, e ela ja valia para os outros quatro canais.
+
+    **O que NAO se aplica aqui e a ressalva condicional da pendencia F1**, e vale
+    dizer porque e o contraste que separa os dois casos: o sinal do carry concorda
+    com a correlacao bruta (-0,548) e nao vira em nenhum conjunto de controles --
+    -4,648 sozinho, -1,358 no modelo inteiro. So a magnitude encolhe, que e o
+    esperado quando tres canais precificam o mesmo risk-off. Pela mesma razao o
+    ganho NAO e aditivo: a vol toma parte do que o CDS e as commodities carregavam
+    (fiscal +27,03 para +25,04; IC-Br -2,05 para -1,72).
+
+    ## A fonte
+
+    `USDBRLV3M Curncy`, fechamento diario, 2003-10 em diante. Ela ainda **nao tem
+    tabela no banco**: viaja num CSV versionado em `data/`, extraido da automacao
+    Bloomberg do fundo. Enquanto for arquivo, o botao Atualizar nao a alcanca -- e
+    divida declarada (pendencia F-vol), nao desenho. O corte do ajuste nao depende
+    disso, mas a data mais recente do relatorio sim.
+    """
+    fonte = VOL_SOURCE if fonte is None else fonte
+    if fonte not in VOL_LAG_POR_FONTE:
+        raise ValueError("VOL_SOURCE: %s, nao %r"
+                         % (" ou ".join(repr(k) for k in VOL_LAG_POR_FONTE), fonte))
+    lag = VOL_LAG_POR_FONTE[fonte] if lag is None else lag
+
+    if fonte == "implicita":
+        if not hasattr(vol_trimestral, "_ci"):
+            if not _VOL_CSV.exists():
+                raise FileNotFoundError(
+                    "falta %s -- a vol implicita ainda nao tem tabela no banco e viaja "
+                    "num CSV versionado. Ver a pendencia F-vol." % _VOL_CSV)
+            d = pd.read_csv(_VOL_CSV, parse_dates=["date"]).dropna()
+            ser = d.set_index("date")["vol_implicita_3m"].astype(float).sort_index()
+            vol_trimestral._ci = _cortar_incompleto(_para_q(ser, como="last"), ser)
+        return vol_trimestral._ci.shift(lag)
+
     if not hasattr(vol_trimestral, "_c"):
         vol_trimestral._c = _para_q(_pe._annualized_vol_6m(_pe._load_daily_ptax()),
                                     como="last")
     return vol_trimestral._c.shift(lag)
 
 
-def niveis(lag_vol: int = VOL_LAG_Q) -> pd.DataFrame:
+def niveis(lag_vol: int | None = None,
+           vol_fonte: str | None = None) -> pd.DataFrame:
     """Os niveis trimestrais de que a equacao precisa, no fechamento do trimestre.
 
     `carry_vol` e RECONSTRUIDO aqui em vez de trimestralizado do mensal, porque o
@@ -218,15 +306,15 @@ def niveis(lag_vol: int = VOL_LAG_Q) -> pd.DataFrame:
 
     cols = ["ptax", "ipca_index", "cpi_index", "fiscal", "dxy_em", "sp500", "icbr_usd"]
     out = pd.DataFrame({c: _para_q(m[c]) for c in cols})
-    out["carry_vol"] = _para_q(m["carry"]) / vol_trimestral(lag_vol)
+    out["carry_vol"] = _para_q(m["carry"]) / vol_trimestral(lag_vol, vol_fonte)
     out["carry_vol_contemp"] = _para_q(m["carry_vol"])
     return out.reindex(cheios).sort_index()
 
 
 # ── a matriz de regressao ────────────────────────────────────────────────────
 def montar(canais: list[str] | None = None, ppp: bool = True, ar1: bool = True,
-           lag_vol: int = VOL_LAG_Q, vol_contemp: bool = False,
-           como: str = COMO) -> tuple[pd.DataFrame, dict, list[str]]:
+           lag_vol: int | None = None, vol_contemp: bool = False,
+           como: str = COMO, vol_fonte: str | None = None) -> tuple[pd.DataFrame, dict, list[str]]:
     """Niveis trimestrais -> variacoes -> escala. Devolve (z, stats, regressores).
 
     A escala e `z = x / sd` e **nao centra**. A media de uma coluna em DIFERENCA e
@@ -240,14 +328,15 @@ def montar(canais: list[str] | None = None, ppp: bool = True, ar1: bool = True,
     tarde.
     """ % REF_INI
     canais = CANAIS if canais is None else canais
-    n = niveis(lag_vol)
+    n = niveis(lag_vol, vol_fonte)
     if como != "last":
         m = _mensal()
         cheios = _trimestres_cheios(m.index)
         n2 = pd.DataFrame({c: _para_q(m[c], como=como)
                            for c in ("ptax", "ipca_index", "cpi_index", "fiscal",
                                      "dxy_em", "sp500", "icbr_usd")})
-        n2["carry_vol"] = _para_q(m["carry"], como=como) / vol_trimestral(lag_vol)
+        n2["carry_vol"] = (_para_q(m["carry"], como=como)
+                           / vol_trimestral(lag_vol, vol_fonte))
         n2["carry_vol_contemp"] = _para_q(m["carry_vol"], como=como)
         n = n2.reindex(cheios).sort_index()
 
@@ -417,8 +506,12 @@ def anatomia(z: pd.DataFrame, canal: str = "d_sp500",
 
 # ── comparacoes ──────────────────────────────────────────────────────────────
 FORMAS = {
-    "base": dict(desc="base: fechamento, vol defasada, PPP imposto, AR(1)"),
-    "vol_contemp": dict(desc="vol do carry CONTEMPORÂNEA (a do modelo mensal)",
+    "base": dict(desc="base: fechamento, vol IMPLÍCITA 3M no trimestre, PPP imposto, AR(1)"),
+    "vol_realizada": dict(desc="vol REALIZADA de 6 meses, defasada um trimestre — "
+                               "uma medida do passado no lugar de um preço",
+                          vol_fonte="realizada_lag"),
+    "vol_contemp": dict(desc="vol REALIZADA contemporânea (a do modelo mensal) — a "
+                             "que contém a própria dependente",
                         vol_contemp=True),
     "media": dict(desc="níveis pela MÉDIA do trimestre, não pelo fechamento",
                   como="media"),
@@ -435,7 +528,8 @@ def comparar() -> dict:
         kw = {a: v for a, v in cfg.items() if a != "desc"}
         montados[k] = montar(ppp=kw.get("ppp", True), ar1=kw.get("ar1", True),
                              vol_contemp=kw.get("vol_contemp", False),
-                             como=kw.get("como", COMO))
+                             como=kw.get("como", COMO),
+                             vol_fonte=kw.get("vol_fonte"))
     comum = None
     for z, _, _ in montados.values():
         comum = z.index if comum is None else comum.intersection(z.index)
@@ -532,8 +626,11 @@ def main() -> None:
     print("  outra, e mais lisa -- desvio de %.2f contra %.2f no fechamento."
           % (comp["media"]["sd_y"], comp["base"]["sd_y"]))
     print()
-    print("  o que a defasagem da volatilidade custa, canal a canal (beta em sd):")
-    b, v = comp["base"], comp["vol_contemp"]
+    # Contra a fonte ANTERIOR, nao contra a contemporanea realizada: o que mudou em
+    # 2026-09-25 foi o denominador, e e essa a diferença que se quer ver.
+    print("  o que a troca do denominador move, canal a canal (beta em sd):")
+    print("    (vol implícita 3M no trimestre -> vol realizada 6m defasada)")
+    b, v = comp["base"], comp["vol_realizada"]
     for c in b["reg"]:
         print("    %-36s %+8.4f -> %+8.4f" % (ROT.get(c, c), b["beta"][c], v["beta"][c]))
     print("=" * 78)

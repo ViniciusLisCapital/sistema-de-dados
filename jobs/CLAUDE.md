@@ -13,6 +13,11 @@ contínua).
 | `update_oraculo.py` | recalcula as notas 1–10 do termômetro macro |
 | `atualizar_diario.py` | envelope fino em volta de `update_db.main(["--continuous"])`, só para a tarefa agendada — ver abaixo |
 
+Os três `update_*` rodam cada script por `domain/db/execucoes.rodar()`, que grava quando cada tabela
+foi buscada e se o dado mudou (`logs/etl/`) — é o que a aba Divulgações do calendário mostra ao lado
+de cada botão. Um executor novo que chame `mod.run()` direto deixa de registrar sem erro nenhum;
+`tests/test_etl_execucoes.py` afirma isso para os três.
+
 ## Terminado o ETL, o CLI regera os dashboards afetados
 
 O calendário servido **não** encadeia atualizar dado e reconstruir relatório — são dois botões.

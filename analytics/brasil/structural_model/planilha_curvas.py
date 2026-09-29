@@ -36,7 +36,7 @@ import pandas as pd
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from analytics.brasil.monetary_policy.modelo_painel import para_q, q
+from analytics.brasil.structural_model.modelo_agregado.modelo_painel import para_q, q
 from analytics.brasil.structural_model import panel
 from analytics.brasil.structural_model.equations import taylor as _taylor
 

@@ -3,7 +3,7 @@ Petroleo tipo Brent (USD/barril) — carregado como cenario de choque de
 commodities da replica do modelo agregado de pequeno porte do BCB (isolado do
 IC-Br Energia, que ja embute a variacao cambial). Essa replica foi REMOVIDA em
 2026-08 e esta tabela ficou SEM CONSUMIDOR — ver o aviso de status em
-analytics/brasil/monetary_policy/referencia/MODEL_REPLICATION_PLAN.md.
+analytics/brasil/structural_model/modelo_agregado/referencia/modelo_agregado_bc/MODEL_REPLICATION_PLAN.md.
 
 Serie FRED (diaria):
   brent_usd DCOILBRENTEU — Crude Oil Prices: Brent - Europe

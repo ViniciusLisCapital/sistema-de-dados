@@ -15,10 +15,23 @@ import json
 from pathlib import Path
 
 _HERE = Path(__file__).parent
-THEME_CSS = (_HERE / "theme.css").read_text(encoding="utf-8")
-Y_AUTOFIT_JS = (_HERE / "y_autofit.js").read_text(encoding="utf-8")
-CHART_HEAD_CSS = (_HERE / "chart_head.css").read_text(encoding="utf-8")
-CHART_HEAD_JS = (_HERE / "chart_head.js").read_text(encoding="utf-8")
+
+# Os assets compartilhados sao lidos A CADA geracao, nunca no import. O servidor do
+# calendario (analytics/release_calendar/serve.py) importa este modulo uma vez e roda por
+# horas: com a leitura no topo do modulo, um chart_head.css editado depois de o servidor
+# subir nunca chegava ao relatorio regerado pelo botao -- o report.html (lido por chamada)
+# vinha novo e o CSS compartilhado vinha velho. Foi o que trouxe de volta o vao de 560px
+# do Credito em 2026-09-29. Sao quatro arquivos de poucos KB; ler de novo nao custa nada.
+_ASSETS = {
+    "/*THEME_CSS*/": "theme.css",
+    "/*Y_AUTOFIT_JS*/": "y_autofit.js",
+    "/*CHART_HEAD_CSS*/": "chart_head.css",
+    "/*CHART_HEAD_JS*/": "chart_head.js",
+}
+
+
+def _asset(nome: str) -> str:
+    return (_HERE / nome).read_text(encoding="utf-8")
 
 
 def render_report(template_path, data: dict, output_path, extra_markers: dict | None = None) -> Path:
@@ -42,14 +55,9 @@ def render_report(template_path, data: dict, output_path, extra_markers: dict | 
 
     payload = json.dumps(data, ensure_ascii=False, default=str)
     html = template.replace("/*REPORT_DATA*/", f"const REPORT_DATA = {payload};")
-    if "/*THEME_CSS*/" in html:
-        html = html.replace("/*THEME_CSS*/", THEME_CSS)
-    if "/*Y_AUTOFIT_JS*/" in html:
-        html = html.replace("/*Y_AUTOFIT_JS*/", Y_AUTOFIT_JS)
-    if "/*CHART_HEAD_CSS*/" in html:
-        html = html.replace("/*CHART_HEAD_CSS*/", CHART_HEAD_CSS)
-    if "/*CHART_HEAD_JS*/" in html:
-        html = html.replace("/*CHART_HEAD_JS*/", CHART_HEAD_JS)
+    for marker, nome in _ASSETS.items():
+        if marker in html:
+            html = html.replace(marker, _asset(nome))
     for name, value in (extra_markers or {}).items():
         marker = f"/*{name}*/"
         if marker not in html:

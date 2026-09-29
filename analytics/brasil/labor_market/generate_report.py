@@ -2,7 +2,8 @@
 Gerador do Panorama de Mercado de Trabalho em HTML -- so visualizacao (sem
 metricas derivadas, ver pnad_tab.py/caged_tab.py).
 
-Le mt_pnad + mt_pnad_trimestral (IBGE/PNAD, abas Taxas/Ocupacao/Rendimento) e
+Le mt_pnad + mt_pnad_trimestral (IBGE/PNAD, abas Taxas/Ocupacao/Rendimento),
+mt_desocupacao_retro (a taxa de desocupacao do BCB, ao lado da do IBGE) e
 mt_caged_setor/_uf/_salario + mt_caged (MTE/BCB, aba Emprego Formal) de
 macro_brasil, injeta no template report.html, gerando um arquivo HTML
 autocontido. Mesmo padrao /*REPORT_DATA*/ de analytics/brasil/fiscal_policy/ e
@@ -78,11 +79,39 @@ def _load_caged_cut(table: str) -> dict:
     return out
 
 
+def _load_desocupacao_bcb() -> dict:
+    """mt_desocupacao_retro: serie unica, sem coluna `name`, uma edicao do RPM
+    por vez (`vintage`). A edicao vai junto porque e ela que a linha da fonte
+    do grafico cita -- a serie do BCB so anda quando sai um RPM novo, entao
+    costuma terminar um ou dois meses antes da PNAD."""
+    req = MySQLDataRequester(_DATABASE, "mt_desocupacao_retro")
+    req.connect()
+    df = req.request_data()
+    req.close_connection()
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.sort_values("date")
+    vintages = pd.to_datetime(df["vintage"]).dt.strftime("%Y-%m-%d").unique().tolist()
+    if len(vintages) != 1:
+        raise RuntimeError(f"mt_desocupacao_retro deveria ter uma edicao so, tem {vintages}")
+    return {
+        "dates":   df["date"].dt.strftime("%Y-%m-%d").tolist(),
+        "values":  [round(float(v), 4) for v in pd.to_numeric(df["value"])],
+        "vintage": vintages[0],
+    }
+
+
 def _load_pnad_tab_data() -> dict:
     """Abas Taxas/Ocupacao/Rendimento -- ver analytics/brasil/labor_market/pnad_tab.py."""
     mensal = _load_flat("mt_pnad")
     trimestral = _load_flat("mt_pnad_trimestral")
-    return pnad_tab.build(mensal, trimestral)
+    # A serie do BCB e uma linha a mais numa tabela, nao a aba: se ela faltar, a
+    # aba sai sem ela em vez de sair vazia.
+    try:
+        bcb = _load_desocupacao_bcb()
+    except Exception as exc:
+        print(f"  mt_desocupacao_retro: FALHOU -- {exc} (a tabela de desocupacao sai sem a linha do BCB)")
+        bcb = None
+    return pnad_tab.build(mensal, trimestral, bcb=bcb)
 
 
 def _load_caged_tab_data() -> dict:

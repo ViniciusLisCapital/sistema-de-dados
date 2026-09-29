@@ -1,11 +1,17 @@
 """
 Gerador do Panorama de Expectativas (Focus) em HTML.
 
-Le APENAS as tres tabelas do Focus de macro_brasil -- expc_focus,
-expc_focus_copom e expc_focus_periodo -- e nada mais. Escopo "so Focus" e
-decisao explicita do usuario (2026-08-24): sem meta de inflacao, sem realizado,
-sem projecao do Copom. O que o relatorio mostra e o que o MERCADO espera, e
-qualquer linha de referencia externa teria de vir com a sua propria fonte.
+Le APENAS duas tabelas do Focus de macro_brasil -- expc_focus e
+expc_focus_periodo -- e nada mais. Escopo "so Focus" e decisao explicita do
+usuario (2026-08-24): sem meta de inflacao, sem realizado, sem projecao do
+Copom. O que o relatorio mostra e o que o MERCADO espera, e qualquer linha de
+referencia externa teria de vir com a sua propria fonte.
+
+A terceira, expc_focus_copom (Selic por reuniao), saiu em 2026-09-24 com a aba
+Curva do Copom: foi para a aba Expectativas de Juros do relatorio de Politica
+Monetaria, ao lado da curva DI. E o primeiro passo de um plano do usuario -- as
+expectativas migram cada uma para o dashboard do seu tema, e este relatorio
+esvazia com o tempo.
 
 Abas, e de qual tabela cada uma vive:
 
@@ -14,23 +20,21 @@ Abas, e de qual tabela cada uma vive:
                ano de referencia
   Revisao      expc_focus_periodo (3 periodicidades) -- fixa o periodo previsto e
                varre as datas de pesquisa. E a leitura que so esta tabela permite
-  Copom        expc_focus_copom -- curva de Selic por reuniao, evolucao por
-               horizonte e mapa de calor
   Horizonte    expc_focus -- IPCA/IGP-M e componentes a 12m e 24m, com os toggles
                de suavizada e base de calculo
   Trajetoria   expc_focus_periodo -- a curva a frente inteira numa data de
                pesquisa (25 meses / 8 trimestres / 5+ anos), com datas anteriores
                sobrepostas
-  Dispersao    as tres -- desvio-padrao, coeficiente de variacao, respondentes
-  Bases        expc_focus + expc_focus_copom -- base 0 (30 dias) vs base 1 (4 dias
-               uteis). expc_focus_periodo NAO entra: so a base 0 esta carregada la
+  Dispersao    as duas -- desvio-padrao, coeficiente de variacao, respondentes
+  Bases        expc_focus -- base 0 (30 dias) vs base 1 (4 dias uteis).
+               expc_focus_periodo NAO entra: so a base 0 esta carregada la
   Apendice     cobertura medida no proprio banco + as 4 reformulacoes da pesquisa
 
 ## Grade semanal
 
 Tudo que e serie temporal e reduzido a UMA observacao por semana ISO (a ultima
 data de pesquisa da semana), e os tres stores compartilham uma unica grade
-global de datas -- `meta.grade`. Cada serie e gravada como {i0, m, s, n} onde
+global de datas -- `meta.grade`, montada das DUAS tabelas. Cada serie e gravada como {i0, m, s, n} onde
 `i0` e o indice da primeira semana na grade e os arrays sao contiguos a partir
 dali. Duas razoes: 1,28 M de linhas nao cabem num arquivo enviavel por email, e
 o Focus e publicado semanalmente de qualquer forma (a pesquisa e diaria, o
@@ -38,8 +42,7 @@ Boletim e de segunda com dado ate sexta). O custo e que "ha 4 semanas" no
 relatorio significa "4 pontos da grade atras" -- praticamente sempre 28 dias,
 mas um feriado pode fazer 35.
 
-`minimo`/`maximo` so entram nos stores de `expc_focus` e `expc_focus_copom`
-(tabelas pequenas). Para o `periodo` guardamos mediana, desvio-padrao e numero
+`minimo`/`maximo` so entram no store de `expc_focus` (tabela pequena). Para o `periodo` guardamos mediana, desvio-padrao e numero
 de respondentes -- as cinco estatisticas em 268 mil linhas semanais dobrariam o
 arquivo por uma leitura secundaria.
 
@@ -62,6 +65,9 @@ from connectors.mysql import MySQLDataRequester
 _HERE = Path(__file__).parent
 _TEMPLATE = _HERE / "report.html"
 _DATABASE = "macro_brasil"
+# As tabelas que o relatorio le. Era tres ate 2026-09-24, quando expc_focus_copom saiu com
+# a aba Curva do Copom para o relatorio de Politica Monetaria.
+_TABELAS = ("expc_focus", "expc_focus_periodo")
 
 # Corte do store mensal. O endpoint mensal cota 25 meses a frente desde 2000, mas
 # a historia de revisao de um mes de 2003 nao tem leitor -- o valor da tabela
@@ -128,10 +134,9 @@ def _semana(s: pd.Series) -> pd.Series:
 
 def _monta_grade(conn) -> tuple[list[str], dict[str, int]]:
     """Grade global: uma data-ancora por semana ISO, a ULTIMA data de pesquisa
-    daquela semana entre as tres tabelas. Devolve (lista ISO, semana -> indice)."""
+    daquela semana entre as tabelas lidas. Devolve (lista ISO, semana -> indice)."""
     datas = pd.concat([
-        pd.read_sql(f"SELECT DISTINCT date FROM {t}", conn)
-        for t in ("expc_focus", "expc_focus_copom", "expc_focus_periodo")
+        pd.read_sql(f"SELECT DISTINCT date FROM {t}", conn) for t in _TABELAS
     ])
     datas["date"] = pd.to_datetime(datas["date"])
     datas = datas.drop_duplicates().sort_values("date")
@@ -254,35 +259,6 @@ def _load_movel(conn, wk_idx: dict[str, int]) -> dict:
     return store
 
 
-def _load_copom(conn, wk_idx: dict[str, int]) -> dict:
-    """expc_focus_copom -> {reuniao|base: bloco}.
-
-    A ORDEM cronologica das reunioes nao e alfabetica nem derivavel da data da
-    pesquisa; o front-end reordena por (ano, numero) extraidos de "R<n>/<ano>".
-    Nada aqui presume calendario do Copom -- so a numeracao publicada.
-    """
-    df = pd.read_sql(
-        "SELECT date, reuniao, base_calculo, mediana, desvio_padrao, minimo, "
-        "       maximo, numero_respondentes FROM expc_focus_copom",
-        conn,
-    )
-    df["date"] = pd.to_datetime(df["date"])
-    df["wk"] = _semana(df["date"])
-    df = df.sort_values("date").groupby(
-        ["reuniao", "base_calculo", "wk"], as_index=False
-    ).tail(1)
-    df["serie"] = df["reuniao"] + "|" + df["base_calculo"].astype(str)
-    store = _comprime(
-        df, ["serie"],
-        {"m": "mediana", "s": "desvio_padrao", "lo": "minimo", "hi": "maximo",
-         "n": "numero_respondentes"},
-        wk_idx,
-    )
-    print(f"  copom          {len(store):5d} series, "
-          f"{sum(len(b['m']) for b in store.values()):7d} pontos semanais")
-    return store
-
-
 def _load_cobertura(conn) -> list[dict]:
     """Tabela do Apendice: primeira/ultima data e volume de cada serie, medidos
     no banco na hora da geracao -- nao copiados de documentacao, que envelhece."""
@@ -305,22 +281,13 @@ def _load_cobertura(conn) -> list[dict]:
             "tabela": "expc_focus", "recorte": r.horizonte, "serie": r.indicador,
             "d0": str(r.d0), "d1": str(r.d1), "n": int(r.n), "nref": None,
         })
-    cop = pd.read_sql(
-        "SELECT base_calculo, MIN(date) d0, MAX(date) d1, COUNT(*) n, "
-        "       COUNT(DISTINCT reuniao) nref FROM expc_focus_copom GROUP BY 1", conn)
-    for r in cop.itertuples():
-        linhas.append({
-            "tabela": "expc_focus_copom", "recorte": f"base {r.base_calculo}",
-            "serie": "Selic por reunião", "d0": str(r.d0), "d1": str(r.d1),
-            "n": int(r.n), "nref": int(r.nref),
-        })
     return linhas
 
 
 def _load_meta(conn, grade: list[str]) -> dict:
     """Cabecalho: ultima data de pesquisa de cada tabela e volume total."""
     m = {}
-    for t in ("expc_focus", "expc_focus_copom", "expc_focus_periodo"):
+    for t in _TABELAS:
         r = pd.read_sql(f"SELECT MAX(date) d, COUNT(*) n FROM {t}", conn).iloc[0]
         m[t] = {"ultima": str(r.d), "linhas": int(r.n)}
     m["grade"] = grade
@@ -344,12 +311,11 @@ def run(output: str = "reports/brasil/Expectations.html") -> None:
             print(f"  periodo        FALHOU -- {exc}")
             data["periodo"], data["indice"] = {}, {}
 
-        for grupo, loader in (("movel", _load_movel), ("copom", _load_copom)):
-            try:
-                data[grupo] = loader(conn, wk_idx)
-            except Exception as exc:
-                print(f"  {grupo:14s} FALHOU -- {exc}")
-                data[grupo] = {}
+        try:
+            data["movel"] = _load_movel(conn, wk_idx)
+        except Exception as exc:
+            print(f"  movel          FALHOU -- {exc}")
+            data["movel"] = {}
 
         try:
             data["cobertura"] = _load_cobertura(conn)

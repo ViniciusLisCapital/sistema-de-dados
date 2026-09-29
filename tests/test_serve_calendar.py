@@ -92,20 +92,31 @@ d = json.loads(body)
 check("GET /api/status = 200", code == 200, code)
 check("  ok=True (banco acessivel)", d.get("ok") is True, d.get("erro"))
 if d.get("ok"):
-    g = d["grupos"]
-    # Contado do proprio YAML, nao fixado: um numero literal aqui vira falha de
-    # teste toda vez que um grupo entra no calendario (aconteceu ao adicionar
-    # bls_cpi e bea_pce, que passaram os grupos de 25 para 27). O que o teste tem
-    # a dizer e que o /api/status cobre TODOS os grupos, nao quantos existem.
+    # FATOS por tabela desde 2026-09-24, nao veredito por grupo: quando cada tabela foi
+    # buscada, se o dado mudou, e o que o banco tem agora. Contado do proprio YAML --
+    # um numero literal aqui vira falha toda vez que um grupo entra no calendario.
+    f = d["tabelas"]
     from domain.release_calendar.sync import carregar, tabelas_por_grupo
-    esperados = set(tabelas_por_grupo(carregar()))
-    check("  um estado por grupo do calendario",
-          set(g) == esperados, sorted(esperados ^ set(g)))
-    check("  todo grupo tem estado valido",
-          all(v["estado"] in ("atrasado", "ok", "indefinido", "vazio") for v in g.values()))
-    check("  grupo sem tabelas -> vazio", g["bcb_copom_ata"]["estado"] == "vazio",
-          g["bcb_copom_ata"])
-    print(f"         estados: {sorted({v['estado'] for v in g.values()})}")
+    esperadas = {t for ts in tabelas_por_grupo(carregar()).values() for t in ts}
+    check("  um registro por tabela citada no calendario",
+          set(f) == esperadas, sorted(esperadas ^ set(f)))
+    campos = {"existe", "coluna", "max", "linhas", "sem_script", "tentativa_em", "ok",
+              "erro", "ok_em", "mudou_em", "desde"}
+    check("  toda tabela traz os mesmos campos",
+          all(set(v) == campos for v in f.values()),
+          [k for k, v in f.items() if set(v) != campos][:5])
+    check("  toda tabela do calendario existe no banco",
+          all(v["existe"] for v in f.values()), [k for k, v in f.items() if not v["existe"]])
+    # Uma tabela com `vintage` guarda EDICOES: o `date` dela e o periodo projetado.
+    # Ler `date` ali daria 2029 nas projecoes do Copom, em 2026.
+    check("  tabela com vintage e lida pelo vintage",
+          f["pm_copom_projecoes"]["coluna"] == "vintage" and
+          f["pm_hiato_produto"]["coluna"] == "vintage",
+          (f["pm_copom_projecoes"]["coluna"], f["pm_hiato_produto"]["coluna"]))
+    check("  e a de serie comum, pelo date",
+          f["atv_pmc"]["coluna"] == "date" and bool(f["atv_pmc"]["max"]), f["atv_pmc"])
+    check("  nenhum veredito deduzido no payload",
+          "grupos" not in d and all("veredito" not in v for v in f.values()))
 
 print("\n3. dashboards (aba Status dashboard)")
 code, body, _ = req("/api/dashboards")
@@ -204,6 +215,8 @@ check("  regerar deixa o dashboard em dia",
 
 if RUN_ETL:
     print("\n7. POST /api/run de verdade (bcb_icbr — 2 scripts SGS rapidos)")
+    from datetime import datetime
+    inicio_run = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     code, body, _ = req("/api/run", metodo="POST", corpo={"group": "bcb_icbr"})
     d = json.loads(body)
     check("POST /api/run = 200", code == 200, code)
@@ -211,8 +224,15 @@ if RUN_ETL:
     check("  2 scripts OK", d.get("n_ok") == 2, d.get("n_ok"))
     check("  0 erros", d.get("n_erro") == 0, d.get("n_erro"))
     check("  nenhuma tabela sem script", d.get("sem_script") == [], d.get("sem_script"))
-    check("  devolve o status novo do grupo",
-          (d.get("status") or {}).get("estado") == "ok", d.get("status"))
+    # O botao passa por update_db.executar_tabelas() -> execucoes.rodar(), entao a
+    # execucao tem de aparecer registrada no /api/status seguinte -- e o que prova que
+    # o registro esta no caminho do botao, e nao so no da linha de comando.
+    code2, body2, _ = req("/api/status")
+    f2 = json.loads(body2).get("tabelas") or {}
+    for tb in ("comm_icbr", "comm_icbr_usd"):
+        r = f2.get(tb) or {}
+        check(f"  {tb}: a execucao ficou registrada",
+              r.get("ok") is True and (r.get("ok_em") or "") >= inicio_run, r)
     check("  lista as tabelas alimentadas",
           sorted(d.get("tabelas") or []) == ["comm_icbr", "comm_icbr_usd"], d.get("tabelas"))
 else:

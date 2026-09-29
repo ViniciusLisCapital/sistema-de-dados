@@ -193,8 +193,16 @@ def _load_fluxo_tab_data() -> dict:
     """4a tabela da aba Impulso: fluxo financeiro e impulso de credito no conceito do
     BCB (`cred_fluxo_financeiro`, anexo estatistico do RPM). Sem PIB, sem IPCA e sem
     `_clip_from(_TAB_MIN_DATE)`: a fonte ja publica em % do PIB acumulado em 12 meses e
-    comeca em 2015-01, dentro da janela."""
-    return impulso_tab.build_fluxo(_load_flat(impulso_tab.FLUXO_TABLE))
+    comeca em 2015-01, dentro da janela.
+
+    Le tambem o registro de execucao do ETL da propria tabela e de uma irma do mesmo anexo:
+    e o que deixa o grafico dizer que o BCB parou de publicar o fluxo sem deduzir isso do
+    banco -- ver `impulso_tab.aviso_fluxo()`."""
+    from domain.db import execucoes
+    regs = execucoes.ler([impulso_tab.FLUXO_TABLE, impulso_tab.FLUXO_TABELA_EDICAO])
+    return impulso_tab.build_fluxo(_load_flat(impulso_tab.FLUXO_TABLE),
+                                   regs.get(impulso_tab.FLUXO_TABLE),
+                                   regs.get(impulso_tab.FLUXO_TABELA_EDICAO))
 
 
 def _load_ptc_tab_data() -> dict:

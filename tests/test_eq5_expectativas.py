@@ -6,7 +6,7 @@ Roda com:
 
 Segue o padrao do tests/test_sync_calendar.py: script executavel com asserts, nao
 pytest (o projeto nao tem pytest configurado). Nao toca no banco -- le os paineis e os
-parametros ja gravados em `analytics/brasil/monetary_policy/data/`.
+parametros ja gravados em `analytics/brasil/structural_model/modelo_agregado/data/`.
 
 O harness JS cobre o payload e as abas; nao alcanca o ponto fixo em si, que e a parte
 com risco algoritmico de verdade: a expectativa de inflacao no cenario depende da
@@ -30,8 +30,8 @@ import sys
 import numpy as np
 import pandas as pd
 
-from analytics.brasil.monetary_policy import modelo_agregado as M
-from analytics.brasil.monetary_policy import modelo_painel as MP
+from analytics.brasil.structural_model.modelo_agregado import modelo_agregado as M
+from analytics.brasil.structural_model.modelo_agregado import modelo_painel as MP
 
 falhas = 0
 

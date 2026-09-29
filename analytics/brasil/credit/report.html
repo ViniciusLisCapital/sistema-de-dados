@@ -10,6 +10,12 @@
     /*THEME_CSS*/
 
     /*CHART_HEAD_CSS*/
+    /* Aviso de série interrompida no cabeçalho do gráfico: discreto de propósito -- mesma
+       fonte e corpo da linha de fonte, com um filete dourado para não ler como nota comum. */
+    .chart-head .chart-aviso {
+      font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px;
+      padding-left: 6px; border-left: 2px solid var(--lis-dourado); line-height: 1.4;
+    }
 
     /* ── Header ── */
     header {
@@ -143,6 +149,10 @@
     /* ── Chart cards ── */
     .chart-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px 4px 0; }
     .chart-card > div { width: 100%; height: 560px; }
+    /* Regua de tempo no pe do card, abaixo do eixo X. E um <div> filho direto do card,
+       entao precisa sair dos 560px acima -- mesma armadilha do .chart-head. */
+    .chart-card > .chart-foot { height: auto; padding: 2px 10px 12px; }
+    .chart-foot .pill-group { justify-content: center; gap: 8px; }
 
     /* Legenda das faixas de ciclo do Copom (aba Impulso). E um <p>, nao um <div>, de
        proposito: `.chart-card > div` acima carimba 560px de altura em todo div filho
@@ -580,8 +590,9 @@
         SGS e não aparece em toda edição: ele veio em <em>boxe</em>, duas vezes desde que o anexo
         estatístico existe (set/2021 e mar/2025), e a nota de rodapé do primeiro diz que "não há
         intenção de calcular essas séries de forma recorrente ou sistemática". O que <strong>é</strong>
-        recorrente é o gráfico do fluxo, no capítulo de conjuntura de toda edição — é dele que esta
-        tabela vive, e o impulso é calculado aqui a partir dele.
+        recorrente é o gráfico do fluxo, no capítulo de conjuntura das edições — é dele que esta
+        tabela vive, e o impulso é calculado aqui a partir dele. Quando uma edição sai sem o
+        gráfico, a série para na última que o publicou, e o gráfico abaixo diz isso.
         <br><br>
         <strong>São três séries e só três.</strong> Total, PJ e PF, que é o que o gráfico recorrente
         publica. O boxe de mar/2025 traz as mesmas três desde jan/2015 e entra por isso — pelo trecho
@@ -1595,51 +1606,108 @@ function mkStackedBarLayout(yTitle, height) {
 // xaxis.rangeselector -- that component only recognizes step/stepmode/count, has no
 // way to bake an explicit [from,to] per button, and breaks in a real browser --
 // see .claude/rules/lis-dashboards.md's "Quick-range buttons" section) ──────────
+// So entram as datas em que a serie TEM valor. As series de uma mesma aba dividem a grade
+// de datas do payload, e um ponto com y nulo continua tendo x: contar esse x abria o
+// porte e a atividade em 2012 com dado so a partir de 2014, e o Impulso por recurso em
+// 2000 com dado a partir de 2002 -- anos de faixa de ciclo sem nada por cima ("quarta
+// face" em .claude/rules/lis-dashboards.md).
 function _unionDates() {
   var specs = Array.prototype.slice.call(arguments);
   var set = {};
-  specs.forEach(function(s) { (s.dates || []).forEach(function(d) { set[d] = true; }); });
+  specs.forEach(function(s) {
+    var vals = s.values || [];
+    (s.dates || []).forEach(function(d, i) {
+      var v = vals[i];
+      if (v != null && !(typeof v === 'number' && isNaN(v))) set[d] = true;
+    });
+  });
   return Object.keys(set).sort();
 }
+// A janela que o grafico ABRE e a do "Tudo" sao a mesma conta, feita sobre os dados, e
+// nao o autorange do Plotly -- que mede o array x inteiro (nulos inclusive) e ainda soma
+// uma folga proporcional ao historico. Folga de meio passo nas duas pontas: barra e
+// centrada na data, e uma janela que termina exatamente no ultimo mes corta a ultima
+// barra ao meio.
+function _xExtent(dates) {
+  if (!dates.length) return null;
+  var ms = function(d) { return Date.parse(String(d).slice(0, 10) + 'T00:00:00Z'); };
+  var n = dates.length;
+  var passoLo = n > 1 ? ms(dates[1]) - ms(dates[0]) : 15 * 864e5 * 2;
+  var passoHi = n > 1 ? ms(dates[n - 1]) - ms(dates[n - 2]) : 15 * 864e5 * 2;
+  var iso = function(t) { return new Date(t).toISOString().slice(0, 10); };
+  return {lo: iso(ms(dates[0]) - passoLo / 2), hi: iso(ms(dates[n - 1]) + passoHi / 2),
+          hiMs: ms(dates[n - 1])};
+}
+function _applyXExtent(layout, dates) {
+  var ext = _xExtent(dates);
+  if (ext) { layout.xaxis.range = [ext.lo, ext.hi]; layout.xaxis.autorange = false; }
+  return layout;
+}
 function _quickRangeOptions(dates) {
-  if (!dates.length) return [];
-  var hiISO = dates[dates.length - 1], loISO = dates[0];
-  var hiMs = Date.parse(hiISO);
+  var ext = _xExtent(dates);
+  if (!ext) return [];
   function backISO(years) {
-    var d = new Date(hiMs);
+    var d = new Date(ext.hiMs);
     d.setUTCFullYear(d.getUTCFullYear() - years);
     return d.toISOString().slice(0, 10);
   }
   return [
-    {label: '1a',   from: backISO(1),  to: hiISO},
-    {label: '3a',   from: backISO(3),  to: hiISO},
-    {label: '5a',   from: backISO(5),  to: hiISO},
-    {label: '10a',  from: backISO(10), to: hiISO},
-    {label: 'Tudo', from: loISO,       to: hiISO},
+    {label: '1a',   from: backISO(1),  to: ext.hi},
+    {label: '3a',   from: backISO(3),  to: ext.hi},
+    {label: '5a',   from: backISO(5),  to: ext.hi},
+    {label: '10a',  from: backISO(10), to: ext.hi},
+    {label: 'Tudo', from: ext.lo,      to: ext.hi},
   ];
 }
+// A regua fica ABAIXO do grafico, dentro do mesmo card, junto do eixo X que ela controla
+// (regra de .claude/rules/lis-dashboards.md, "The buttons go BELOW the chart"). Ate
+// 2026-09-29 ela era um cartao proprio ACIMA do card. A referencia fica guardada no div do
+// grafico, e nao e procurada por seletor: o re-render so reescreve os botoes.
+//
+// A pill ativa diz qual janela esta na tela: "Tudo" na primeira pintura (que e a janela
+// que _applyXExtent aplicou), a clicada depois. Um arrasto ou zoom do usuario muda a janela
+// sem passar por pill nenhuma, e ai nenhuma fica acesa -- deixar a ultima acesa afirmaria
+// uma janela que nao e mais a da tela.
 function _ensureQuickRange(divId, dates) {
   if (!dates.length) return;
   var chartEl = document.getElementById(divId);
   if (!chartEl) return;
   var card = chartEl.closest('.chart-card');
-  if (!card || !card.parentNode) return;
-  var bar = card.previousElementSibling;
-  var isOurs = bar && bar.classList && bar.classList.contains('quick-range-bar') && bar.dataset.for === divId;
-  if (!isOurs) {
+  if (!card) return;
+  var bar = chartEl._rangeBar;
+  if (!bar) {
     bar = document.createElement('div');
-    bar.className = 'ctrl-bar quick-range-bar';
-    bar.dataset.for = divId;
+    bar.className = 'chart-foot quick-range-bar';
     bar.innerHTML = '<div class="pill-group"></div>';
-    card.parentNode.insertBefore(bar, card);
+    card.appendChild(bar);
+    chartEl._rangeBar = bar;
+    if (typeof chartEl.on === 'function') {
+      chartEl.on('plotly_relayout', function(ev) {
+        var mexeuX = Object.keys(ev || {}).some(function(k) { return k.indexOf('xaxis.') === 0; });
+        if (!mexeuX) return;
+        if (chartEl._rangeByPill) { chartEl._rangeByPill = false; return; }
+        _marcaPill(bar, null);
+      });
+    }
   }
   var group = bar.querySelector('.pill-group');
   group.innerHTML = '';
-  _quickRangeOptions(dates).forEach(function(opt) {
+  var opts = _quickRangeOptions(dates);
+  opts.forEach(function(opt, i) {
     var btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'pill'; btn.textContent = opt.label;
-    btn.addEventListener('click', function() { Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]}); });
+    if (i === opts.length - 1) btn.classList.add('active');
+    btn.addEventListener('click', function() {
+      chartEl._rangeByPill = true;
+      _marcaPill(bar, btn);
+      Plotly.relayout(divId, {'xaxis.range': [opt.from, opt.to]});
+    });
     group.appendChild(btn);
+  });
+}
+function _marcaPill(bar, ativa) {
+  Array.prototype.slice.call(bar.querySelectorAll('.pill')).forEach(function(b) {
+    if (b === ativa) b.classList.add('active'); else b.classList.remove('active');
   });
 }
 
@@ -1661,6 +1729,7 @@ function renderLineChart(divId, specs, yTitle, height, comCiclos, desc) {
   var dates = _unionDates.apply(null, specs);
   var layout = mkTimeseriesLayout(yTitle, height);
   if (comCiclos) layout.shapes = _ciclosShapes(dates);
+  _applyXExtent(layout, dates);
   Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, dates);
@@ -1674,9 +1743,10 @@ function renderStackedBarChart(divId, specs, yTitle, height, desc) {
       hovertemplate: '<b>' + s.label + '</b><br>%{x}<br>%{y:,.2f}<extra></extra>',
     };
   });
-  Plotly.react(divId, traces, mkStackedBarLayout(yTitle, height), _PLOTLY_CONFIG);
+  var dates = _unionDates.apply(null, specs);
+  Plotly.react(divId, traces, _applyXExtent(mkStackedBarLayout(yTitle, height), dates), _PLOTLY_CONFIG);
   _bindYAutofit(divId);
-  _ensureQuickRange(divId, _unionDates.apply(null, specs));
+  _ensureQuickRange(divId, dates);
   _descChart(divId, traces, yTitle, desc);
 }
 
@@ -1752,6 +1822,7 @@ function renderImpulseChart(divId, bars, lineSpec, yTitle, withMarkers, unit, de
   var dates = _unionDates.apply(null, bars.concat(lineSpec ? [lineSpec] : []));
   var layout = Object.assign(mkTimeseriesLayout(yTitle),
                              {barmode: 'relative', bargap: 0.15, shapes: _ciclosShapes(dates)});
+  _applyXExtent(layout, dates);
   Plotly.react(divId, traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit(divId);
   _ensureQuickRange(divId, dates);
@@ -2798,6 +2869,22 @@ var IMP_FLUXO_TAB = makeImpulseTab({
   defaultExpanded: ['fluxo_total'],
 });
 
+// Aviso de serie interrompida: uma linha discreta DENTRO do cabecalho do grafico, logo
+// abaixo da fonte, para ir junto num print. O texto vem pronto do Python
+// (impulso_tab.aviso_fluxo), que so o escreve com o registro do ETL provando que uma
+// edicao mais nova do RPM foi lida e saiu sem o grafico -- aqui nada e deduzido.
+// _ensureChartFrame e idempotente: funciona antes ou depois do primeiro render.
+(function() {
+  var aviso = D.fluxo && D.fluxo.aviso;
+  if (!aviso) return;
+  var frame = _ensureChartFrame('chart-imp-fluxo');
+  if (!frame || !frame.head) return;
+  var p = document.createElement('div');
+  p.className = 'chart-aviso';
+  p.textContent = aviso;
+  frame.head.appendChild(p);
+})();
+
 // ── Taxa & Spread — nao usa makeHierTab(): sem metrica/base (taxa e spread ja sao
 // percentuais, sem STL/deflacao/% PIB, ver D.taxa.taxa_media/spread's series brutas),
 // so um seletor de qual arvore mostrar (Taxa Media | Spread) mais uma sobreposicao
@@ -3179,9 +3266,10 @@ function renderPtcChart() {
   // Eixo deixado em autoscale de proposito: a escala teorica e -2..+2, mas o observado
   // nunca passa de |1,57| -- fixar em +-2 achataria toda a serie contra o zero.
   var uPtc = 'média das respostas dos bancos, escala de −2 (muito mais restritivo) a +2';
-  Plotly.react('chart-ptc', traces, mkTimeseriesLayout(uPtc), _PLOTLY_CONFIG);
+  var datesPtc = _unionDates.apply(null, specs);
+  Plotly.react('chart-ptc', traces, _applyXExtent(mkTimeseriesLayout(uPtc), datesPtc), _PLOTLY_CONFIG);
   _bindYAutofit('chart-ptc');
-  _ensureQuickRange('chart-ptc', _unionDates.apply(null, specs));
+  _ensureQuickRange('chart-ptc', datesPtc);
   _descChart('chart-ptc', traces, uPtc, {freq: 'tri', bits: _pillsAtivas(['ptc-horizonte-group'])});
 }
 
@@ -3412,9 +3500,11 @@ function renderPtcDesvioChart() {
   var uDesvio = 'Desvio (observado \u2212 esperado), pontos da escala';
   var layout = Object.assign(mkTimeseriesLayout(uDesvio),
                              {shapes: shapes, annotations: annotations});
+  var datesDesvio = _unionDates.apply(null, specs);
+  _applyXExtent(layout, datesDesvio);
   Plotly.react('chart-ptc-desvio', traces, layout, _PLOTLY_CONFIG);
   _bindYAutofit('chart-ptc-desvio');
-  _ensureQuickRange('chart-ptc-desvio', _unionDates.apply(null, specs));
+  _ensureQuickRange('chart-ptc-desvio', datesDesvio);
   _descChart('chart-ptc-desvio', traces, uDesvio, {freq: 'tri'});
 }
 

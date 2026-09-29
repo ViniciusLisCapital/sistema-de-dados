@@ -2,7 +2,8 @@
 
 Estado do módulo [`equations/fx.py`](equations/fx.py), no padrão das outras quatro equações desta
 pasta: o que está decidido, o que está aberto, o que já foi medido e não volta, e o que ainda não
-foi feito. Números medidos em 2026-09-22.
+foi feito. Números medidos em 2026-09-22 e **revistos em 2026-09-25**, quando o denominador
+do `carry_vol` passou a ser a volatilidade implícita de 3 meses das opções de dólar.
 
 ```
 (F) de(t) = dppp(t) + α + φ·de(t−1) + Σ β_c·z(Δc(t)) + ε
@@ -18,17 +19,17 @@ Estimada por Ridge, com λ escolhido por validação cruzada walk-forward (`min_
 
 | termo | β (em sd) | t (HAC 4) | contribuição acumulada | unidade nativa |
 |---|---|---|---|---|
-| risco fiscal (CDS de 5 anos) | +27,03 | **9,82** | −2,1 p.p. | +0,0906 por bp |
-| dólar contra emergentes | +2,354 | 2,94 | +20,2 p.p. | +0,693 por ponto |
-| carry sobre volatilidade | −0,577 | −1,35 | −0,5 p.p. | −2,275 por unidade |
-| bolsa americana | +1,898 | 3,34 | **+39,8 p.p.** | +0,227 por 1% |
-| commodities em dólar | −2,054 | −3,44 | −18,8 p.p. | −0,275 por 1% |
-| câmbio do trimestre anterior | −0,087 | −1,32 | −7,0 p.p. | −0,087 |
-| constante (α) | −0,035 | −0,08 | −2,9 p.p. | p.p./trimestre |
+| risco fiscal (CDS de 5 anos) | +25,04 | **9,57** | −1,9 p.p. | +0,0839 por bp |
+| dólar contra emergentes | +2,290 | 3,11 | +19,7 p.p. | +0,674 por ponto |
+| carry sobre volatilidade | −1,364 | **−2,78** | −1,2 p.p. | −8,675 por unidade |
+| bolsa americana | +1,903 | 3,64 | **+39,9 p.p.** | +0,227 por 1% |
+| commodities em dólar | −1,724 | −2,85 | −15,8 p.p. | −0,231 por 1% |
+| câmbio do trimestre anterior | −0,031 | −0,48 | −2,5 p.p. | −0,031 |
+| constante (α) | −0,116 | −0,30 | −9,4 p.p. | p.p./trimestre |
 | diferencial de inflação | *imposto em 1* | — | **+58,0 p.p.** | |
 
-R² **0,8115** · RMSE 3,59 p.p./trimestre · λ 0,0100 (o piso da grade) · **resíduo limpo**:
-autocorrelação de primeira ordem −0,02, Ljung-Box Q(4) p 0,822 e Q(8) p 0,755. O câmbio andou
+R² **0,8261** · RMSE 3,45 p.p./trimestre · λ 0,0100 (o piso da grade) · **resíduo limpo**:
+autocorrelação de primeira ordem +0,01, Ljung-Box Q(4) p 0,996 e Q(8) p 0,812. O câmbio andou
 +86,8 p.p. de log na amostra (2,38×) e a soma das contribuições devolve +86,8 exatamente.
 
 **Contra o modelo mensal que serve o FX Report** (n 245, 2006-02→2026-06, λ 0,0100, R² 0,6532), em
@@ -36,13 +37,17 @@ unidade nativa — é o número que se compara entre frequências, porque o `sd`
 
 | canal | trimestral | mensal | unidade |
 |---|---|---|---|
-| risco fiscal | +0,0906 | +0,0652 | p.p. de câmbio por bp de CDS |
-| dólar contra emergentes | +0,693 | +1,027 | por ponto do índice |
-| carry sobre volatilidade | −2,275 | −4,483 | por unidade de vol |
+| risco fiscal | +0,0839 | +0,0652 | p.p. de câmbio por bp de CDS |
+| dólar contra emergentes | +0,674 | +1,027 | por ponto do índice |
+| carry sobre volatilidade | −8,675 | −4,483 | por unidade de vol |
 | bolsa americana | +0,227 | +0,173 | por 1% de log-retorno |
-| commodities em dólar | −0,275 | −0,171 | por 1% de log-retorno |
-| AR(1) | −0,087 | −0,130 | p.p. |
-| α | −0,035 | −0,043 | p.p. por período |
+| commodities em dólar | −0,231 | −0,171 | por 1% de log-retorno |
+| AR(1) | −0,031 | −0,130 | p.p. |
+| α | −0,116 | −0,043 | p.p. por período |
+
+O `carry_vol` é o único cuja unidade nativa **não** é comparável entre as duas linhas: o
+trimestral divide por vol implícita de 3 meses e o mensal por vol realizada de 6 meses
+contemporânea. São denominadores diferentes, então a razão dos dois números não diz nada.
 
 **Os seis coeficientes têm o mesmo sinal nas duas frequências**, e o α é indistinguível de zero nas
 duas — que é o que o offset de PPP existe para produzir. O R² sobe de 0,65 para 0,81 ao passar para
@@ -60,9 +65,15 @@ a reseleção fora de escopo. Ver **F3**.
 manda, e é o que mantém a coerência com o modelo mensal, que também lê fechamento de mês. Custa uma
 divergência com o painel desta pasta, que é o item **F2**.
 
-**A volatilidade do `carry_vol` é defasada um trimestre.** A janela de 126 pregões terminando em *t*
-contém inteiro o trimestre que se quer explicar, então a variação do câmbio entraria dos dois lados
-da regressão. Defasada, o denominador é predeterminado. Ver §2 para o que isso custa, medido.
+**A volatilidade do `carry_vol` é a IMPLÍCITA de 3 meses, medida no próprio trimestre** — decisão do
+usuário em 2026-09-25, com a medição ao lado. O retorno do carry é o diferencial **menos** a
+desvalorização e o risco dele é a oscilação *esperada*, então o denominador quer ser um preço
+prospectivo. Implícita e realizada não são o mesmo tipo de objeto, e é isso que decide a convenção
+de tempo: a realizada de 126 pregões terminando em *t* **é** a dependente por construção (o desvio
+dos retornos cuja soma é o `de(t)`), e defasar era o único conserto; a implícita no fechamento de
+*t* é uma cotação, da mesma classe do CDS e dos outros três canais, que já entravam
+contemporâneos. Exigir predeterminação só deste denominador era inconsistência herdada do conserto
+anterior. A forma antiga continua rodável em `comparar()` como `vol_realizada`.
 
 **O diferencial de inflação entra como offset com coeficiente 1**, não como regressor estimado. A
 informação sobre esse coeficiente vive em baixa frequência — no mensal, regredir a variação de *h*
@@ -158,19 +169,25 @@ política mais volatilidade, cujos *loaders* já existem. **Ele saiu fraco, não
 com t −1,35, o único dos cinco que não é distinguível de zero, e contribuição acumulada de −0,5 p.p.
 Ver F9.
 
-### F4 — Volatilidade implícita de opções · *insumo ausente, caminho pronto; metade do argumento caiu em 2026-09-22*
+### F4 — Volatilidade implícita de opções · *na equação desde 2026-09-25; a TABELA continua faltando*
 
-A vol defasada resolve a simultaneidade da **estimação**, e não resolvia a da **simulação**: vol
-realizada continua sendo função da história da própria dependente, então num cenário fechado ela teria
-de ser atualizada a partir do caminho simulado ou declarada como premissa na tela. **Com o simulador
-fora de escopo, essa metade deixou de ter consumidor** — e a metade que sobra, a da estimação, já
-está resolvida pela defasagem.
+A série entrou: `USDBRLV3M Curncy`, fechamento diário, 2003-10 em diante — e como o modelo roda
+desde 2006T2 ela **não custa observação nenhuma**, o que era a única objeção levantada contra a
+troca. Os 81 trimestres são os mesmos.
 
-O que mantém o item vivo é conceitual e não é um defeito em aberto: o prêmio de carrego é uma razão
-entre juro e **risco à frente**, e vol implícita é esse objeto — prospectiva, observável em *t*, e
-não função de realização passada. **Não há tabela dela no banco.** `VOL_SOURCE='implicita'` já existe no módulo e
-levanta com a mensagem do destino recomendado (`macro_brasil.cmb_vol_implicita`, pelo caminho do
-conector Bloomberg que já existe), para a troca ser de série e não de equação.
+**O que sobra é dívida de encanamento, e ela é real.** A série viaja num CSV versionado
+(`data/vol_implicita_usdbrl_3m.csv`, extraído da automação Bloomberg do fundo, hoje parando em
+2026-08-04), e não numa tabela. Enquanto for arquivo: o botão *Atualizar* não a alcança, a data
+mais recente do relatório depende de alguém repor o arquivo à mão, e o `status.py` não tem
+dependência que possa declarar. É exatamente o caso que a regra da raiz chama de *insumo fora do
+banco é dívida, não recurso*.
+
+**O destino, decidido e adiado pelo usuário em 2026-09-25** (*"criamos a tabela depois"*):
+`macro_brasil.cmb_vol_implicita`, pelo caminho do conector Bloomberg que já existe em
+[`domain/db/brasil/bloomberg/cmb_risco_pais.py`](../../../domain/db/brasil/bloomberg/cmb_risco_pais.py).
+Quando existir: um loader novo em `vol_trimestral`, a dependência declarada no
+`manifest.yaml`, e o CSV sai. Os sete prazos (1W a 1Y) estão no arquivo de origem e valem ser
+carregados juntos — a escolha do 3M é do modelo, não da tabela.
 
 ### F5 — Ridge não tem erro-padrão, e os `t` da tabela são de MQ · *limitação declarada, hoje inofensiva*
 
@@ -191,12 +208,19 @@ regime. Em trimestral a mesma ideia pediria 20-24 trimestres de janela sobre 81 
 lugar é a tabela de formas de `comparar()`. Se a aba precisar de leitura de regime, o caminho mais
 honesto é a janela móvel do **mensal**, que tem amostra para isso.
 
-### F9 — O `carry_vol` é o canal mais fraco · *medido, não resolvido*
+### F9 — O `carry_vol` era o canal mais fraco · *RESOLVIDO em 2026-09-25, e era o denominador*
 
-β −0,577, t −1,35, correlação bruta com o câmbio de apenas −0,086, contribuição acumulada de −0,5
-p.p. em 81 trimestres. É o único dos cinco que não passa. Duas leituras possíveis e não separadas: o
-canal de juro simplesmente não move o câmbio nesta frequência, ou a construção (carry dividido por
-vol) mistura duas coisas que deveriam entrar separadas — que é a alternativa já nomeada em F3.
+Com a vol realizada defasada: β −0,577, t −1,35, correlação bruta −0,086, contribuição −0,5 p.p.
+Era o único dos cinco que não passava, e o item nomeava duas leituras possíveis e não separadas —
+*o juro não move o câmbio nesta frequência* contra *a construção do canal está errada*.
+
+**Era a segunda, e a terceira que ninguém tinha escrito: o denominador.** Trocando só ele, o canal
+vai a β −1,364 (t −2,78), correlação bruta −0,548 e contribuição −1,2 p.p., com **99,7%** da massa
+do posterior abaixo de zero contra 85% antes. E o sinal é estável em todos os conjuntos de
+controle — −4,648 sozinho, −1,358 no modelo inteiro —, então ele **não** tem o problema de F1.
+
+A alternativa de F3 (separar carry e vol em dois regressores) continua medida e continua perdendo:
+na convenção predeterminada dá R² 0,8184 com nenhum dos dois significante e λ fora do piso.
 
 ---
 

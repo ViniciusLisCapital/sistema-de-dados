@@ -553,6 +553,51 @@ const recTab = linhasDaTabela(doc.getElementById('imp-recurso-table-body'));
 ok(recTab.length >= 3 && recTab[0].label === 'Total Geral',
    'tabela (a) continua abrindo em Total Geral', recTab.map((l) => l.label).join('|'));
 
+// ==============================================================================
+secao('10. Aviso de serie interrompida -- dentro do cabecalho, e so quando o payload manda');
+// Desde 2026-09-29: o RPM de set/2026 saiu sem o grafico do fluxo. O texto vem pronto do
+// Python (impulso_tab.aviso_fluxo, testado em tests/test_cred_fluxo_financeiro.py); aqui
+// o que se afirma e onde ele aparece e que ele NAO aparece quando o payload diz null --
+// um aviso fixo no template continuaria na tela no dia em que o BCB voltasse a publicar.
+function avisosDe(documento) {
+  const card = documento.getElementById(DIV)._closest;
+  const head = (card.children || []).find((c) => String(c.className).indexOf('chart-head') === 0);
+  if (!head) return { head: null, avisos: [] };
+  return { head, avisos: head.children.filter((c) => c.className === 'chart-aviso') };
+}
+function rodarCom(avisoJson) {
+  const src = SRC.replace(/"aviso": (?:null|"(?:[^"\\]|\\.)*")/, '"aviso": ' + avisoJson);
+  const d2 = makeDom();
+  const antes = global.document;
+  global.document = d2;
+  global.Plotly = makePlotly(d2, []);
+  // O grafico so e desenhado quando a aba abre, e o aviso e inserido no carregamento --
+  // renderizar depois exercita a ordem em que o cabecalho ja existe antes do plot.
+  try { new Function(src + ';RENDERERS.impulso();')(); } finally { global.document = antes; global.Plotly = makePlotly(doc, chamadas); }
+  return avisosDe(d2);
+}
+ok(/"aviso": (?:null|")/.test(SRC), 'o payload carrega a chave aviso (null ou texto)');
+(function () {
+  const real = avisosDe(doc);
+  if (F.aviso) {
+    ok(real.avisos.length === 1 && real.avisos[0].textContent === F.aviso,
+       'payload atual tem aviso: ele esta no cabecalho do grafico, uma vez', F.aviso);
+  } else {
+    ok(real.avisos.length === 0, 'payload atual sem aviso: nenhum na tela');
+  }
+  const com = rodarCom(JSON.stringify('Série interrompida em abr/2026: teste.'));
+  ok(com.head !== null && (com.head.children.find((c) => c.className === 'chart-title') || {}).textContent,
+     'com aviso: o render seguinte reaproveita o mesmo cabecalho e escreve o titulo');
+  ok(com.avisos.length === 1 && com.avisos[0].textContent === 'Série interrompida em abr/2026: teste.',
+     'com aviso no payload: uma linha .chart-aviso no cabecalho', com.avisos.length);
+  const kids = com.head ? com.head.children.map((c) => c.className) : [];
+  ok(kids.indexOf('chart-aviso') > kids.indexOf('chart-src') && kids.indexOf('chart-src') >= 0,
+     'o aviso vem DEPOIS da linha de fonte (vai junto num print do grafico)', kids.join(','));
+  const sem = rodarCom('null');
+  ok(sem.head !== null && sem.avisos.length === 0, 'com aviso null: cabecalho desenhado e sem aviso',
+     sem.avisos.length);
+})();
+
 // -- Resultado -----------------------------------------------------------------
 console.log('\n' + asserts + ' assercoes -- '
             + (falhas === 0 ? 'TODOS OS TESTES PASSARAM' : falhas + ' FALHA(S)'));

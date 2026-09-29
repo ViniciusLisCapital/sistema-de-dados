@@ -60,9 +60,29 @@
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(540px, 1fr)); gap: 14px; }
 .chart-card { position: relative; background: var(--card-bg); border: 1px solid var(--border);
               border-radius: 12px; padding: 4px 6px 8px; }
-.chart-plot { width: 100%; height: 640px; }
+.chart-plot { width: 100%; height: 490px; }
 .card-tools { position: absolute; top: 12px; right: 14px; z-index: 5;
               display: flex; align-items: center; gap: 8px; }
+/* Clique-expande do grafico, SO na aba do simulador -- e com a mesma afordancia dos
+   grupos do bloco 2: caret na frente do titulo e a linha inteira do cabecalho clicavel.
+   O caret vem de `::before` e nao de um elemento, porque `describeChart()` reescreve o
+   `textContent` do titulo a cada render e apagaria qualquer no posto ali dentro. */
+#tab-sim .chart-card > .chart-head { position: relative; padding-left: 20px;
+                                     cursor: pointer; }
+#tab-sim .chart-card > .chart-head::before { content: '−'; position: absolute; left: 0;
+                                     top: 0; font-family: var(--mono); font-size: 14px;
+                                     color: var(--lis-dourado); }
+#tab-sim .chart-card.recolhido > .chart-head::before { content: '+'; }
+#tab-sim .chart-card > .chart-head:hover .chart-title { color: var(--lis-azul-cl); }
+/* Recolhido some com o plot, o resumo e a regua -- e o cabecalho FICA, para o cartao
+   recolhido continuar dizendo o que ele e. */
+#tab-sim .chart-card.recolhido .chart-plot,
+#tab-sim .chart-card.recolhido .stats-mini,
+#tab-sim .chart-card.recolhido .range-pills { display: none; }
+#tab-sim .chart-card.recolhido .chart-head { margin-bottom: 0; }
+/* E `start` so aqui: no default do grid os cartoes de uma linha esticam ate a altura do
+   mais alto, entao um recolhido ficaria com a altura do vizinho aberto, so que branco. */
+#tab-sim .grid { align-items: start; }
 
 .dl-toggle { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.05em; padding: 5px 11px;
              border-radius: 8px; cursor: pointer; border: 1px solid rgba(2,115,155,0.4);
@@ -213,12 +233,6 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
 .sim-lab { font-family: var(--cond); font-size: 11.5px; font-weight: 600;
            letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
 .sim-un { font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
-.sim-num, .sim-sel { font-family: var(--mono); font-size: 11.5px; color: var(--text);
-           background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-           padding: 3px 6px; }
-.sim-num { width: 78px; }
-.sim-chk { font-size: 11.5px; color: var(--text2); display: inline-flex;
-           align-items: center; gap: 5px; cursor: pointer; }
 .sim-der { font-family: var(--mono); font-size: 10.5px; color: var(--muted);
            margin-left: auto; }
 .sim-bloco { display: flex; gap: 14px; align-items: flex-start; margin: 22px 0 12px; }
@@ -238,6 +252,31 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
 .sim-grupo-sub { font-family: var(--sans); font-size: 11.5px; font-weight: 400;
                  letter-spacing: 0; text-transform: none; color: var(--muted);
                  margin-left: 8px; }
+/* Clique-expande por grupo. O caret e desenhado a mao porque o marcador nativo do
+   <summary> nao aceita cor nem tamanho, e some no Safari. */
+.sim-fold { margin: 0; }
+.sim-fold > summary { list-style: none; cursor: pointer; display: flex;
+                      align-items: baseline; gap: 8px; }
+.sim-fold > summary::-webkit-details-marker { display: none; }
+.sim-fold > summary::before { content: '+'; font-family: var(--mono); font-size: 13px;
+                              color: var(--lis-dourado); width: 11px; }
+.sim-fold[open] > summary::before { content: '−'; }
+.sim-fold > summary:hover .sim-grupo-nome { color: var(--lis-azul-cl); }
+.sim-grupo-nome { font-family: var(--cond); font-size: 15px; font-weight: 600;
+                  letter-spacing: 0.06em; text-transform: uppercase; color: var(--text2); }
+.sim-fold > summary { margin: 16px 0 9px; }
+/* O guarda-chuva "Exogenas", que nao e clique-expande: ele so nomeia os dois grupos
+   de baixo, e escondê-lo esconderia dois niveis de uma vez. */
+.sim-grupo-mae { font-family: var(--cond); font-size: 15px; font-weight: 700;
+                 letter-spacing: 0.06em; text-transform: uppercase; color: var(--text);
+                 margin: 22px 0 2px; border-top: 1px solid var(--border);
+                 padding-top: 14px; }
+.sim-fold.sim-fold-filho > summary { margin-left: 14px; }
+.sim-fold.sim-fold-filho > div, .sim-fold.sim-fold-filho > .sim-vazio {
+                 margin-left: 14px; }
+.sim-vazio { font-size: 11.5px; color: var(--muted); line-height: 1.5;
+             background: rgba(31,40,83,0.03); border: 1px dashed var(--border);
+             border-radius: 10px; padding: 10px 14px; }
 /* o cartao de uma variavel de input */
 .sim-cards { display: flex; flex-direction: column; gap: 12px; }
 .sim-card { background: rgba(31,40,83,0.03); border: 1px solid var(--border);
@@ -315,14 +354,9 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
                   color: #fff; background: var(--lis-azul-cl); border: none;
                   border-radius: 6px; padding: 5px 12px; cursor: pointer; }
 .sim-chq-aplica:hover { background: #025E82; }
-.sim-partes { margin-top: 12px; padding: 12px; border-radius: 8px;
-              background: rgba(2,115,155,0.04); border: 1px dashed rgba(2,115,155,0.25);
-              display: flex; flex-direction: column; gap: 10px; }
-.sim-parte { background: var(--card-bg); border: 1px solid var(--border);
-             border-radius: 8px; padding: 10px 14px; }
-.sim-parte-hdr { font-size: 12.5px; color: var(--text); }
-.sim-parte-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5;
-                  margin-top: 3px; text-align: justify; hyphens: auto; }
+/* `.sim-partes`, `.sim-parte`, `.sim-parte-hdr` e `.sim-parte-desc` sairam em
+   2026-09-25, com o "abrir em partes": nao ha mais premissa com subpremissa, entao
+   nao ha mais parte a desenhar. CSS que ninguem usa nao avisa que ninguem o usa. */
 .sim-graf { margin-top: 12px; }
 .sim-aviso { background: rgba(234,82,58,0.08); border: 1px solid rgba(234,82,58,0.35);
              border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
@@ -353,7 +387,8 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
     <button class="tab-btn" data-tab="tab-is" type="button">Hiato</button>
     <button class="tab-btn" data-tab="tab-tay" type="button">Juros</button>
     <button class="tab-btn" data-tab="tab-fx" type="button">Câmbio</button>
-    <button class="tab-btn" data-tab="tab-sim" type="button">Simulador</button>
+    <button class="tab-btn" data-tab="tab-sim" type="button">Structural Model</button>
+    <button class="tab-btn" data-tab="tab-irf" type="button">Impulso-resposta</button>
   </div>
 
   <!-- ═══════════ ABA — DADOS ═══════════ -->
@@ -682,11 +717,11 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
         <b>o aquecimento que já havia</b>, que demora a passar, e <b>o quanto a política
         monetária estava apertada no trimestre anterior</b>. Mais duas marcas para a
         crise de 2008 e para a pandemia, que são quedas que nenhuma política explica.</p>
-        <p class="prose">O aperto monetário aqui <b>não</b> é o juro comparado a uma taxa
-        de equilíbrio — é a <b>inclinação da curva de juro real</b>, a diferença entre o
-        que o mercado cobra para dois anos e para dez. A razão está no bloco de método, e
-        ela é medida: toda tentativa de usar uma taxa de equilíbrio esbarra em não haver
-        acordo sobre qual é ela, e as candidatas fixas simplesmente não funcionam.</p>
+        <p class="prose">O aperto monetário aqui é <b>a distância entre a Selic e o juro
+        nominal de equilíbrio</b> — o juro real de dez anos mais a meta, que é a mesma
+        âncora que a regra de juros persegue. As duas contas medem distância até o mesmo
+        lugar, e é por essa distância que a Selic chega ao produto. O bloco de método
+        compara esta medida com as outras que foram testadas.</p>
         <p class="prose" id="isFicha"></p>
       </div>
 
@@ -725,11 +760,11 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
 
       <details class="fold" id="isFold">
         <summary>Como o aperto é medido, o erro da conta, e a comparação com o Banco Central
-          <span class="fold-hint">Por que a inclinação da curva e não um juro de
-          equilíbrio, quanto sobra de erro, e os mesmos pesos na conta do Banco Central</span>
+          <span class="fold-hint">Por que a Selic contra a âncora da regra de juros,
+          quanto sobra de erro, e os mesmos pesos na conta do Banco Central</span>
         </summary>
         <div class="fold-body">
-          <h3>Por que a inclinação da curva, e não um juro contra um neutro</h3>
+          <h3>Por que a Selic contra a âncora da regra de juros</h3>
           <p class="prose">A forma usual compararia o juro real com uma <b>taxa de
           equilíbrio</b> — o juro que nem estimula nem segura a economia. O problema é
           que essa taxa não é observável, e as estimativas discordam muito: o Banco
@@ -740,7 +775,14 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
           de 12,2% em 2001 para −0,9% no fundo de 2020 e voltou a 8,5%, enquanto o hiato
           não tem tendência nenhuma. Então o que decide a conta é <b>o que remove essa
           tendência</b>, e não o nível que se escolhe — com uma taxa de equilíbrio fixa o
-          peso do aperto vira praticamente zero. A tabela mede isso.</p>
+          peso do aperto vira praticamente zero. Aqui o equilíbrio é o <b>juro real de dez
+          anos</b>, um preço que o mercado refaz todo dia e que carrega a tendência junto;
+          somado à meta, ele é a âncora da regra de juros.</p>
+          <p class="prose">A tabela mede cada alternativa, e a última coluna é a que se lê
+          lado a lado: o peso <b>por ponto</b> não se compara entre duas medidas que
+          oscilam com amplitudes diferentes — uma que se move quatro pontos e outra que se
+          move um dariam o mesmo efeito com pesos quatro vezes diferentes. Por desvio da
+          própria medida, sim.</p>
           <table class="data-table coef-table" id="tblIsRR"></table>
           <p class="prose" id="isRRNota"></p>
 
@@ -762,7 +804,9 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
           <h3>Contra a conta do Banco Central</h3>
           <p class="prose">O Banco Central publica uma equação de hiato com a mesma
           estrutura, e o modelo dele está replicado neste sistema. A tabela põe os dois
-          lado a lado — com a ressalva que importa marcada na própria linha.</p>
+          lado a lado, com o peso do aperto do Banco Central já convertido para a unidade
+          do nosso — ele o publica sobre um quarto do juro, e a linha mostra o efeito de
+          um ponto.</p>
           <table class="data-table coef-table" id="tblIsBc"></table>
           <p class="prose" id="isBcNota"></p>
         </div>
@@ -990,7 +1034,7 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
     </div>
   </div>
 
-  <!-- ═══════════ ABA — SIMULADOR ═══════════ -->
+  <!-- ═══════════ ABA — STRUCTURAL MODEL (o simulador, as cinco equacoes juntas) ═══════════ -->
   <div class="tab-panel" id="tab-sim">
 
     <div class="no-data" id="simSemDados" style="display:none">
@@ -1005,25 +1049,55 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
         <div class="sim-bloco-num">1</div>
         <div>
           <h2>As equações</h2>
-          <p class="prose">Uma por conta do modelo, com o que ela produz desenhado contra
-          o que de fato aconteceu. Aqui só os dois primeiros trimestres vêm do dado
-          observado; dali em diante a conta se alimenta do que ela mesma produziu — que é
-          o único modo de perguntar "e se a inflação esperada ficasse dois pontos acima
-          da meta?", porque aí não existe dado nenhum para consultar. Os pesos são os
-          estimados e não se mexem nesta tela: a equação, a notação e a estimação de cada
-          conta ficam na aba dela.</p>
         </div>
       </div>
 
-      <div class="sim-eq-card">
+      <!-- Um cartao por equacao, na ordem de solucao dentro do trimestre. O texto de
+           cada um e preenchido por JS a partir do payload; o que esta aqui e a casca.
+           Uma equacao nova precisa do seu cartao aqui, e o teste reprova se faltar. -->
+      <div class="sim-eq-card" id="simEqCard-H">
         <div class="sim-eq-hdr">
-          <div class="sim-eq-titulo" id="simEqTitulo"></div>
-          <div class="sim-eq-sub" id="simEqSub"></div>
+          <div class="sim-eq-titulo" id="simEqTitulo-H"></div>
+          <div class="sim-eq-sub" id="simEqSub-H"></div>
         </div>
+        <div class="sim-aviso" id="simAviso-H" style="display:none"></div>
+        <div class="grid" id="simGrid-H"></div>
+      </div>
 
-        <div class="sim-bar" id="simOpcoes"></div>
-        <div class="sim-aviso" id="simAviso" style="display:none"></div>
-        <div class="grid" id="simGrid"></div>
+      <div class="sim-eq-card" id="simEqCard-I">
+        <div class="sim-eq-hdr">
+          <div class="sim-eq-titulo" id="simEqTitulo-I"></div>
+          <div class="sim-eq-sub" id="simEqSub-I"></div>
+        </div>
+        <div class="sim-aviso" id="simAviso-I" style="display:none"></div>
+        <div class="grid" id="simGrid-I"></div>
+      </div>
+
+      <div class="sim-eq-card" id="simEqCard-E">
+        <div class="sim-eq-hdr">
+          <div class="sim-eq-titulo" id="simEqTitulo-E"></div>
+          <div class="sim-eq-sub" id="simEqSub-E"></div>
+        </div>
+        <div class="sim-aviso" id="simAviso-E" style="display:none"></div>
+        <div class="grid" id="simGrid-E"></div>
+      </div>
+
+      <div class="sim-eq-card" id="simEqCard-R">
+        <div class="sim-eq-hdr">
+          <div class="sim-eq-titulo" id="simEqTitulo-R"></div>
+          <div class="sim-eq-sub" id="simEqSub-R"></div>
+        </div>
+        <div class="sim-aviso" id="simAviso-R" style="display:none"></div>
+        <div class="grid" id="simGrid-R"></div>
+      </div>
+
+      <div class="sim-eq-card" id="simEqCard-F">
+        <div class="sim-eq-hdr">
+          <div class="sim-eq-titulo" id="simEqTitulo-F"></div>
+          <div class="sim-eq-sub" id="simEqSub-F"></div>
+        </div>
+        <div class="sim-aviso" id="simAviso-F" style="display:none"></div>
+        <div class="grid" id="simGrid-F"></div>
       </div>
 
       <!-- ── BLOCO 2 ───────────────────────────────────────────────────────── -->
@@ -1031,12 +1105,25 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
         <div class="sim-bloco-num">2</div>
         <div>
           <h2>Os inputs do modelo</h2>
-          <p class="prose">Uma variável por cartão, com o caminho que ela vai seguir nos
-          trimestres simulados. A divisão entre <b>endógena</b> e <b>exógena</b> é uma
-          propriedade do modelo e não da variável: endógena é a que alguma equação
-          <i>deste simulador</i> produz. Como as equações entram uma de cada vez, uma
-          variável pode estar hoje de um lado e amanhã do outro — e o cartão diz quando
-          esse é o caso, em vez de deixar deduzir.</p>
+          <p class="prose">Uma variável por cartão, e cada cartão é uma premissa
+          completa: não há premissa dentro de premissa. A divisão entre
+          <b>endógena</b> e <b>exógena</b> é uma propriedade do modelo e não da
+          variável: endógena é a que alguma equação <i>deste simulador</i> produz. Como
+          as equações entram uma de cada vez, uma variável pode estar hoje de um lado e
+          amanhã do outro — e o cartão diz quando esse é o caso, em vez de deixar
+          deduzir. As exógenas se dividem em <b>domésticas</b> e <b>externas</b> pelo
+          critério de quem decide aquele número: a volatilidade implícita do dólar é
+          doméstica porque é o preço do risco de um ativo brasileiro, e as commodities
+          em dólar são
+          externas porque quem forma o preço está fora, ainda que a cesta seja a da
+          pauta de exportação daqui.</p>
+          <p class="prose">Algumas contas que as equações fazem <i>não</i> são cartão,
+          de propósito — o desvio da inflação esperada contra a meta, o juro nominal de
+          equilíbrio, o diferencial de inflação entre Brasil e Estados Unidos, o carry
+          sobre a volatilidade, a variação do câmbio médio do trimestre. Todas elas se calculam a partir de cartões que estão
+          aqui, e dar cartão a uma delas deixaria digitar um número que contradiz as
+          próprias peças. Cada equação diz, na ficha dela, o que ela consome e o que ela
+          forma com isso.</p>
           <p class="prose">Cada cartão escolhe de onde vem o caminho daquela variável, e
           são três opções. <b>Endógeno</b>: sai da equação deste simulador que a produz —
           só existe para quem tem uma. <b>Exógeno</b>: você impõe o caminho, trimestre a
@@ -1045,15 +1132,46 @@ table.leg-table td.math { font-size: 14px; padding-top: 7px; padding-bottom: 7px
           repetido para a frente — não é projeção de ninguém, é a ausência dela, e é por
           isso que as caixas mudam de cor: <b>verde</b> onde o trimestre já saiu,
           <b>dourado</b> onde o valor está sendo repetido. As duas só ficam editáveis em
-          Exógeno. As variáveis que são conta de outras duas podem ser abertas em partes,
-          e estressar uma parte sem mexer na outra é um cenário diferente de estressar a
-          soma.</p>
+          Exógeno.</p>
         </div>
       </div>
 
       <div class="sim-bar" id="simJanela"></div>
       <div id="simInputs"></div>
 
+    </div>
+  </div>
+
+  <!-- ═══════════ ABA — IMPULSO-RESPOSTA (um choque, e o caminho dele pelas cinco) ═══════════ -->
+  <div class="tab-panel" id="tab-irf">
+
+    <div class="no-data" id="irfSemDados" style="display:none">
+      Esta versão do relatório foi gerada sem o impulso-resposta. As outras abas
+      continuam válidas.
+    </div>
+
+    <div id="irfConteudo" style="display:none">
+      <p class="prose" id="irfIntro"></p>
+
+      <div class="sim-bar" id="irfBar"></div>
+      <div class="sim-aviso" id="irfAviso" style="display:none"></div>
+
+      <div class="vista-bar">
+        <span class="vista-lbl">Inflação</span>
+        <button class="vista-pill active" id="irfPillTri" type="button">Do trimestre</button>
+        <button class="vista-pill" id="irfPill12" type="button">Em 12 meses</button>
+      </div>
+
+      <div class="grid" id="irfGrid"></div>
+
+      <div class="sim-bloco">
+        <div class="sim-bloco-num">+</div>
+        <div>
+          <h2>Os quatro grupos do IPCA</h2>
+          <p class="prose" id="irfGruposNota"></p>
+        </div>
+      </div>
+      <div class="grid" id="irfGridGrupos"></div>
     </div>
   </div>
 
@@ -1149,9 +1267,17 @@ function showInfo(btn, label, info) {
   pop.style.left = left + 'px';
   pop.style.top = top + 'px';
 }
-function attachInfo(hostEl, key, label) {
-  var info = D.info[key];
-  if (!info || (!info.full && !info.desc)) return;
+/* `eixoFn`, quando passado, devolve a unidade da leitura EM USO: num cartao com duas
+   leituras a unidade fixa do insumo mentiria na metade delas. */
+function attachInfo(hostEl, key, label, eixoFn) {
+  var base = D.info[key];
+  if (!base || (!base.full && !base.desc)) return;
+  var info = base;
+  if (eixoFn) {
+    info = {};
+    Object.keys(base).forEach(function (c) { info[c] = base[c]; });
+    Object.defineProperty(info, 'eixo', { get: eixoFn, enumerable: true });
+  }
   var b = document.createElement('button');
   b.type = 'button';
   b.className = 'info-btn';
@@ -1194,7 +1320,7 @@ function mkLayout(extra) {
                   font: { family: 'Barlow', size: 12, color: '#fff' } },
     showlegend: false,
     margin: { l: 52, r: 18, t: 8, b: 34 },
-    height: 640,
+    height: 490,
     shapes: [],
     annotations: [],
     xaxis: {
@@ -1285,7 +1411,7 @@ var CHART_META = {
                  source: 'Banco Central, anexo do Relatório de Política Monetária' },
   'ch-real':   { title: 'Juro real de mercado: 2 anos e 10 anos',
                  source: 'B3, curva de NTN-B do arquivo de pregão' },
-  'ch-grr':    { title: 'Aperto monetário: a inclinação da curva real',
+  'ch-grr':    { title: 'Aperto monetário: as duas formas de medir',
                  source: 'B3, curva de NTN-B do arquivo de pregão' },
   'ch-eqis':   { title: 'O hiato do produto e a conta',
                  source: 'Banco Central (anexo do RPM) e B3' },
@@ -1311,8 +1437,17 @@ var CHART_META = {
                     source: 'Banco Central (pesquisa Focus e Relatório de Política Monetária)' },
   'ch-metas':  { title: 'Meta de inflação nos dois horizontes',
                  source: 'Conselho Monetário Nacional, via Banco Central' },
-  'ch-sim':    { title: 'A Selic que a conta projeta',
+  'ch-simexp': { title: 'Expectativas',
+                 source: 'Banco Central (pesquisa Focus), IBGE (IPCA) e CMN (meta)' },
+  'ch-sim':    { title: 'Taylor Rule',
                  source: 'Banco Central (Selic, pesquisa Focus e meta do CMN) e B3 (NTN-B)' },
+  'ch-simis':  { title: 'Hiato do produto',
+                 source: 'Banco Central (hiato do produto e Selic), B3 (NTN-B) e CMN (meta)' },
+  'ch-simipca': { title: 'Inflação (IPCA)',
+                  source: 'IBGE (IPCA e pesos), Banco Central (hiato, Focus, PTAX e IC-Br) '
+                          + 'e CMN (meta)' },
+  'ch-simfx':  { title: 'Câmbio',
+                 source: 'Banco Central (PTAX e IC-Br), IBGE, BLS, Bloomberg e Yahoo Finance' },
   'ch-eqtay':  { title: 'A Selic, a conta, e onde ela pararia',
                  source: 'Banco Central (Selic, Focus e meta do CMN) e B3' },
   'ch-eqtay-dec': { title: 'De onde vem a distância entre a Selic e a âncora',
@@ -1329,8 +1464,12 @@ var CHART_META = {
 // separados, a distancia entre eles, que e o ponto, some. As duas cestas de commodity
 // dividem outro pela mesma razao. Hiato, cambio e expectativa tem unidade propria.
 var CHARTS = [
+  // o unico cartao com duas leituras: as mesmas taxas, do trimestre ou encadeadas em
+  // 12 meses. O titulo muda junto, porque o clique muda o que o grafico afirma.
   { div: 'ch-grupos', keys: ['pi_q', 'pi_is_q', 'pi_ia_q', 'pi_ii_q', 'pi_im_q'],
-    eixo: 'variação do trimestre, %', zero: true, fill: false, fixo: 'pi_q' },
+    eixo: 'variação do trimestre, %', zero: true, fill: false, fixo: 'pi_q',
+    doze: { titulo: 'Inflação em 12 meses, cheio e por grupo de preço',
+            eixo: 'variação em 12 meses, %' } },
   { div: 'ch-exp',    keys: ['pi_e'],
     eixo: 'IPCA esperado para os 12 meses seguintes, % ao ano', zero: false, fill: true },
   { div: 'ch-hiato',  keys: ['hiato'],
@@ -1339,10 +1478,13 @@ var CHARTS = [
   // nelas e a distancia entre as duas, que lidas em cartoes separados some
   { div: 'ch-real',   keys: ['rr_2a', 'rr_10a'],
     eixo: 'taxa real de mercado, % ao ano', zero: false, fill: false },
-  // a inclinacao ganha cartao proprio porque a unidade e outra (p.p., nao % ao ano) e
-  // porque a pergunta e outra: nao onde estao as pontas, e sim quanto aperta
-  { div: 'ch-grr',    keys: ['g_rr'],
-    eixo: 'juro real de 2 anos − de 10 anos, p.p.', zero: true, fill: true },
+  // o aperto ganha cartao proprio porque a unidade e outra (p.p., nao % ao ano) e
+  // porque a pergunta e outra: nao onde estao as pontas, e sim quanto aperta. As DUAS
+  // medidas dividem o grafico desde 2026-09-25: mesmo neutro (o juro real de 10 anos),
+  // mesma unidade, e o que interessa e o quanto andam juntas -- a curva IS usa a
+  // primeira, e usou a segunda ate ali. Sem preenchimento, porque sao duas linhas.
+  { div: 'ch-grr',    keys: ['gap_juro', 'g_rr'],
+    eixo: 'aperto monetário, p.p. acima do neutro', zero: true, fill: false },
   { div: 'ch-cambio', keys: ['de'],
     eixo: 'variação da taxa média do trimestre, %', zero: true, fill: true },
   { div: 'ch-comm',   keys: ['pi_agr_usd', 'pi_met_usd'],
@@ -1360,6 +1502,28 @@ var CHARTS = [
 ];
 
 var LABELS_ON = {};   // por div: o botao "Dados no gráfico" esta ligado?
+
+/* A leitura de cada cartao que tem duas: 'tri' (o default, que e o que as contas usam)
+   ou 'doze'. Os valores de 12 meses vem PRONTOS do payload (`D.doze.s12`), encadeados
+   pela mesma funcao da aba da curva de Phillips -- nenhuma conta aqui. */
+var VISTA_DADOS = {};
+function _doze(cfg) { return !!cfg.doze && VISTA_DADOS[cfg.div] === 'doze'; }
+function _valsDados(cfg, k) { return _doze(cfg) ? D.doze.s12[k] : D.s[k]; }
+function _eixoDados(cfg) { return _doze(cfg) ? cfg.doze.eixo : cfg.eixo; }
+function _tituloDados(cfg) {
+  return _doze(cfg) ? cfg.doze.titulo : CHART_META[cfg.div].title;
+}
+/* As datas da regua. Na leitura de 12 meses as tres primeiras janelas nao existem, e o
+   "Tudo" calculado da grade inteira abriria o grafico com tres trimestres vazios. */
+function _xDados(cfg) {
+  if (!_doze(cfg)) return D.x;
+  var i0 = D.x.length;
+  cfg.keys.forEach(function (k) {
+    var v = D.doze.s12[k];
+    for (var i = 0; i < v.length; i++) { if (v[i] != null) { i0 = Math.min(i0, i); break; } }
+  });
+  return D.x.slice(i0);
+}
 
 function _step(n) { return n > 60 ? 5 : n > 30 ? 3 : 1; }
 
@@ -1382,7 +1546,7 @@ function _traces(cfg) {
   var uma = cfg.keys.length === 1;
 
   return cats.map(function (c) {
-    var vals = D.s[c.base];
+    var vals = _valsDados(cfg, c.base);
     var nome = D.info[c.base].nome;
     var tr = {
       type: 'scatter',
@@ -1413,8 +1577,8 @@ function _shapesAberto() {
             fillcolor: 'rgba(31,40,83,0.055)', line: { width: 0 }, layer: 'below' }];
 }
 
-function _statsHtml(key) {
-  var vals = D.s[key], rot = D.rot;
+function _statsHtml(vals) {
+  var rot = D.rot;
   var iUlt = -1, iMax = -1, iMin = -1;
   for (var i = 0; i < vals.length; i++) {
     if (vals[i] == null) continue;
@@ -1437,7 +1601,9 @@ function montarCartao(cfg) {
 
   var tools = document.createElement('div');
   tools.className = 'card-tools';
-  cfg.keys.forEach(function (k) { attachInfo(tools, k, D.info[k].nome); });
+  cfg.keys.forEach(function (k) {
+    attachInfo(tools, k, D.info[k].nome, function () { return _eixoDados(cfg); });
+  });
   var dl = document.createElement('div');
   dl.className = 'dl-toggle';
   dl.innerHTML = '<span class="toggle-icon"></span> Dados no gráfico';
@@ -1471,7 +1637,35 @@ function montarCartao(cfg) {
 
   var stats = document.createElement('div');
   stats.className = 'stats-mini';
-  stats.innerHTML = _statsHtml(cfg.keys[0]);
+  stats.id = 'st-' + cfg.div;
+  stats.innerHTML = _statsHtml(_valsDados(cfg, cfg.keys[0]));
+
+  // o seletor de leitura fica DENTRO do cartao, colado no grafico que ele muda
+  if (cfg.doze) {
+    var bar = document.createElement('div');
+    bar.className = 'vista-bar';
+    bar.id = 'vb-' + cfg.div;
+    var lbl = document.createElement('span');
+    lbl.className = 'vista-lbl';
+    lbl.textContent = 'Ver como';
+    bar.appendChild(lbl);
+    var botoes = [];
+    [['tri', 'Do trimestre'], ['doze', 'Em 12 meses']].forEach(function (op) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'vista-pill' + (op[0] === 'tri' ? ' active' : '');
+      b.textContent = op[1];
+      b.addEventListener('click', function () {
+        if ((VISTA_DADOS[cfg.div] || 'tri') === op[0]) return;
+        VISTA_DADOS[cfg.div] = op[0];
+        botoes.forEach(function (p) { p[1].classList.toggle('active', p[0] === op[0]); });
+        desenhar(cfg, true);
+      });
+      botoes.push([op[0], b]);
+      bar.appendChild(b);
+    });
+    card.appendChild(bar);
+  }
   card.appendChild(stats);
 
   var plot = document.createElement('div');
@@ -1487,19 +1681,26 @@ function montarCartao(cfg) {
   return card;
 }
 
-function desenhar(cfg) {
+function desenhar(cfg, jaExiste) {
   var traces = _traces(cfg);
-  var yextra = { title: cfg.eixo, ticksuffix: '%' };
+  var eixo = _eixoDados(cfg);
+  var yextra = { title: eixo, ticksuffix: '%' };
   if (cfg.zero) { yextra.zeroline = true; yextra.zerolinecolor = 'rgba(31,40,83,0.25)'; yextra.zerolinewidth = 1; }
 
-  Plotly.newPlot(cfg.div, traces, mkLayout({ yaxis: yextra, shapes: _shapesAberto() }), PLOTLY_CONFIG);
-  _bindYAutofit(cfg.div);
-  describeChart(cfg.div, traces, [], cfg.eixo, { freq: 'tri' });
+  var layout = mkLayout({ yaxis: yextra, shapes: _shapesAberto() });
+  if (jaExiste) Plotly.react(cfg.div, traces, layout, PLOTLY_CONFIG);
+  else { Plotly.newPlot(cfg.div, traces, layout, PLOTLY_CONFIG); _bindYAutofit(cfg.div); }
+  describeChart(cfg.div, traces, [], eixo, { freq: 'tri', titulo: _tituloDados(cfg) });
+  if (jaExiste) {
+    document.getElementById('st-' + cfg.div).innerHTML = _statsHtml(_valsDados(cfg, cfg.keys[0]));
+  }
 
   // A janela da PRIMEIRA pintura tambem e calculada, nao `autorange` -- e a unica
-  // vista que ninguem pede clicando, e por isso a que costuma passar despercebida.
-  var opts = renderQuickRangeButtons(document.getElementById('rp-' + cfg.div), cfg.div, D.x,
-                                     quickRangeOptions(D.x).length - 1);
+  // vista que ninguem pede clicando, e por isso a que costuma passar despercebida. E e
+  // refeita quando a leitura troca: a de 12 meses comeca tres trimestres depois.
+  var xs = _xDados(cfg);
+  var opts = renderQuickRangeButtons(document.getElementById('rp-' + cfg.div), cfg.div, xs,
+                                     quickRangeOptions(xs).length - 1);
   var tudo = opts[opts.length - 1];
   if (tudo) Plotly.relayout(cfg.div, { 'xaxis.range': [tudo.from, tudo.to] });
 }
@@ -1518,9 +1719,10 @@ function montarTabela() {
   }
   document.getElementById('tblPainel').innerHTML = h + '</tbody>';
 
-  var nota = 'Do trimestre mais recente para o mais antigo. Todos os valores em por cento: '
-    + 'as duas primeiras colunas são acumulados de doze meses, o hiato é um nível e as duas '
-    + 'últimas são a variação dentro do próprio trimestre.';
+  var nota = 'Do trimestre mais recente para o mais antigo, e sempre na leitura que as '
+    + 'contas usam: as taxas de inflação, o câmbio e as commodities são a variação dentro '
+    + 'do próprio trimestre; as expectativas, os juros e as metas são taxas ao ano; o hiato '
+    + 'é um nível. A unidade de cada coluna está no cartão de definição do gráfico dela.';
   if (D.meta.aberto) {
     nota += ' A linha de ' + D.meta.aberto.rot + ' está marcada porque o trimestre ainda não '
       + 'fechou — ela existe para não esconder o dado mais recente, mas não entra em conta nenhuma.';
@@ -2753,8 +2955,8 @@ function desenharIs(cfg, jaExiste) {
 var MATH_VAR_H = {
   h1: _sv('<i>h</i><sub>t−1</sub>', 'o hiato do produto no trimestre anterior'),
   h2: _sv('<i>g</i><sub>t−1</sub>',
-          'o aperto monetário no trimestre anterior — a inclinação da curva de juro '
-          + 'real, o de 2 anos menos o de 10 anos, em p.p.'),
+          'o aperto monetário no trimestre anterior — a Selic menos o juro nominal de '
+          + 'equilíbrio (o juro real de 10 anos mais a meta), em p.p.'),
   d08: _sv('<i>d</i><sup>08</sup><sub>t</sub>',
            'marca os trimestres de 2008T4 a 2009T4, a crise financeira'),
   d20: _sv('<i>d</i><sup>20</sup><sub>t</sub>',
@@ -2830,9 +3032,9 @@ function renderIsFicha() {
     '<b>Como está ajustada hoje:</b> ' + S.n + ' trimestres, de ' + S.ini + ' a '
     + S.fim + '. A conta erra ' + fmt(S.rmse, 2) + ' ponto percentual num trimestre '
     + 'típico e explica ' + fmt(100 * S.r2, 1) + '% do movimento do hiato. A amostra '
-    + 'começa em ' + S.ini + ' e não antes porque é de onde vem a curva de juro real '
-    + 'usada para medir o aperto — ela é lida do arquivo de pregão da B3, que publica '
-    + 'essa curva desde 2006. '
+    + 'começa em ' + S.ini + ' e não antes porque o juro de equilíbrio do aperto é o '
+    + 'juro real de dez anos, lido da curva de NTN-B do arquivo de pregão da B3, que '
+    + 'publica essa curva desde 2006. '
     + (S.lb_p4 < 0.05
         ? 'O erro dela ainda tem padrão: erros de trimestres vizinhos se parecem, o que '
           + 'é sinal de que falta alguma coisa na conta. O tamanho disso está no bloco '
@@ -2892,7 +3094,7 @@ function renderIsCoef() {
   document.getElementById('isCoefNota').textContent =
     '† As duas últimas linhas não são leitura econômica — elas marcam a crise de 2008 e '
     + 'a pandemia, e existem para que dois episódios que nenhuma política monetária '
-    + 'explica não definam a inclinação do resto da amostra. Tirá-las muda o peso do '
+    + 'explica não definam o peso do resto da amostra. Tirá-las muda o peso do '
     + 'aperto, e a tabela de formas testadas mostra em quanto. A última coluna é o que '
     + 'sobra no fim de uma pressão que venha para ficar, e por isso só existe para o '
     + 'que empurra: a defasagem do próprio hiato é o que produz esse acúmulo, não algo '
@@ -2901,8 +3103,9 @@ function renderIsCoef() {
 
 function renderIsRR() {
   var S = D['is'];
-  var h = '<thead><tr><th>Se o aperto fosse o juro real menos…</th>'
-        + '<th>Peso do aperto</th><th>t</th><th>Leitura</th></tr></thead><tbody>';
+  var h = '<thead><tr><th>Como o aperto é medido</th>'
+        + '<th>Peso por ponto</th><th>t</th><th>Leitura</th>'
+        + '<th>Peso por desvio da medida</th></tr></thead><tbody>';
   S.rr.forEach(function (r) {
     h += '<tr' + (r.escolhida ? ' class="sobra"' : '') + '><td>' + r.desc
        + (r.escolhida ? ' ‡' : '') + '</td>'
@@ -2910,18 +3113,30 @@ function renderIsRR() {
        + '<td>' + fmt(r.t, 2) + '</td>'
        + '<td class="' + (Math.abs(r.t) >= 2 ? 'sig' : 'insig') + '">'
        + (Math.abs(r.t) >= 2 ? 'mede alguma coisa' : 'indistinguível de zero')
-       + '</td></tr>';
+       + '</td>'
+       + '<td>' + (r.h2_dp == null ? '—' : fmt(r.h2_dp, 3)) + '</td></tr>';
   });
   document.getElementById('tblIsRR').innerHTML = h + '</tbody>';
 
+  // As duas medidas que dividem o neutro (o juro real de dez anos), lidas pela
+  // chave e nao pela posicao: a tabela e do payload e uma linha nova nao pode deslocar
+  // o que a frase afirma.
+  var gap = S.rr.filter(function (r) { return r.key === 'gap'; })[0];
+  var inc = S.rr.filter(function (r) { return r.key === 'incl'; })[0];
   document.getElementById('isRRNota').textContent =
     '‡ A forma que a página usa. As duas primeiras linhas são taxas de equilíbrio '
     + 'praticamente fixas, e nelas o peso do aperto desaba para perto de zero — não '
     + 'porque a política não funcione, e sim porque um número fixo não remove a '
     + 'tendência que o juro real tem e o hiato não tem. O filtro estatístico funciona, '
     + 'mas ele usa dado posterior a cada trimestre para decidir qual era o equilíbrio '
-    + 'naquele trimestre, o que não se sabia na época; a inclinação da curva não tem '
-    + 'esse problema, porque é a diferença entre dois preços do mesmo dia.';
+    + 'naquele trimestre, o que não se sabia na época. As duas últimas usam o MESMO '
+    + 'equilíbrio, o juro real de dez anos, e diferem só em como a postura da política '
+    + 'é lida: o juro real de dois anos do mercado, ou a Selic descontada da meta. '
+    + (gap && inc
+        ? 'Por ponto, os pesos parecem muito diferentes (' + fmt(inc.h2, 3) + ' contra '
+          + fmt(gap.h2, 3) + '); por desvio da própria medida, que é o que se compara, '
+          + 'eles são ' + fmt(inc.h2_dp, 3) + ' e ' + fmt(gap.h2_dp, 3) + '.'
+        : '');
 }
 
 function renderIsComp() {
@@ -2949,7 +3164,14 @@ function renderIsComp() {
     + ', que é o efeito de medir a política junto com o que ela explica; e sem as duas '
     + 'crises marcadas ele cai para ' + fmt(sem.h2, 3) + ' com t de ' + fmt(sem.t, 2)
     + ', o que mostra que 2008 e 2020 precisam estar marcadas para não dominarem o '
-    + 'resto da amostra.';
+    + 'resto da amostra.'
+    + (function () {
+        var inc = S.comparar.filter(function (r) { return r.key === 'incl'; })[0];
+        if (!inc) return '';
+        return ' E trocar a Selic pela inclinação da curva de juro real dá peso '
+          + fmt(inc.h2, 3) + ' (t ' + fmt(inc.t, 2) + ') com erro típico de '
+          + fmt(inc.rmse, 3) + ', contra ' + fmt(base.rmse, 3) + ' da forma em uso.';
+      })();
 }
 
 function renderIsAcf() {
@@ -2996,19 +3218,22 @@ function renderIsBc() {
   });
   document.getElementById('tblIsBc').innerHTML = h + '</tbody>';
 
-  var h1 = nosso.h1, b1 = S.bc.b1;
+  var h1 = nosso.h1, b1 = S.bc.b1, h2 = nosso.h2, b2 = S.bc.b2;
   var dentro = h1 >= b1.ic[0] && h1 <= b1.ic[1];
+  var dentro2 = h2 >= b2.ic[0] && h2 <= b2.ic[1];
   document.getElementById('isBcNota').textContent =
     'O peso do hiato anterior mede a mesma coisa nos dois e sai parecido: '
     + fmt(b1.v, 3) + ' lá contra ' + fmt(h1, 3) + ' aqui, '
-    + (dentro ? 'dentro' : 'fora') + ' da margem publicada. A linha marcada como não '
-    + 'comparável é a do aperto: no modelo do Banco Central ele é o juro real esperado '
-    + 'menos a taxa de equilíbrio que o filtro dele estima, dividido por quatro, e o '
-    + 'efeito que isso produz é ' + fmt(S.bc.b2.efeito, 3) + ' por ponto. O nosso é a '
-    + 'inclinação da curva de juro real. Os dois medem aperto, nenhum dos dois está na '
-    + 'unidade do outro, e por isso a comparação que vale é de sinal e ordem de '
-    + 'grandeza, não de número. O terceiro termo, condições financeiras, não existe '
-    + 'nesta conta.';
+    + (dentro ? 'dentro' : 'fora') + ' da margem publicada. O aperto também mede a '
+    + 'mesma coisa nos dois — um juro real contra um juro de equilíbrio, em pontos '
+    + 'percentuais —, e o efeito de um ponto é ' + fmt(b2.v, 3) + ' no do Banco Central '
+    + 'contra ' + fmt(h2, 3) + ' aqui, ' + (dentro2 ? 'dentro' : 'fora')
+    + ' da margem dele. O Banco Central publica esse peso sobre um quarto do juro, e a '
+    + 'linha já está convertida para o efeito por ponto, que é a unidade do nosso. O '
+    + 'que difere é como cada perna é lida: lá, o juro real esperado da pesquisa Focus '
+    + 'contra o equilíbrio que o filtro do modelo estima; aqui, a Selic descontada da '
+    + 'meta contra o juro real de dez anos negociado. O terceiro termo, condições '
+    + 'financeiras, não existe nesta conta.';
 }
 
 function pintarIs() {
@@ -3394,19 +3619,20 @@ function renderTayComp() {
 
   var base = S.comparar.filter(function (c) { return c.escolhida; })[0];
   var lag1 = S.comparar.filter(function (c) { return c.key === 'lag1'; })[0];
-  var f12 = S.comparar.filter(function (c) { return c.key === 'foc12'; })[0];
+  var f18 = S.comparar.filter(function (c) { return c.key === 'foc18'; })[0];
   var txt = '‡ A forma em uso. ';
   if (lag1) {
     txt += 'Com uma defasagem só, a resposta de longo prazo vai a ' + fmt(lag1.efeito_lp, 2)
          + ' e o erro passa a ter padrão (p ' + fmt(lag1.lb_p4, 3) + ') — é o teste que '
          + 'decidiu usar duas. ';
   }
-  if (f12) {
-    txt += 'Com a expectativa de doze meses no lugar da de dezoito, a conta ajusta um '
-         + 'pouco melhor (erro ' + fmt(f12.rmse, 3) + ' contra ' + fmt(base.rmse, 3)
-         + ') e a resposta de longo prazo cai para ' + fmt(f12.efeito_lp, 2) + '. As '
-         + 'duas leituras seguem sendo olhadas; a de dezoito meses ficou por ser a que '
-         + 'põe os três pesos comparáveis dentro das margens que o Banco Central publica.';
+  if (f18) {
+    txt += 'Com a expectativa de dezoito meses no lugar da de doze, o erro passa a '
+         + fmt(f18.rmse, 3) + ' contra ' + fmt(base.rmse, 3) + ' e a resposta de longo '
+         + 'prazo sobe para ' + fmt(f18.efeito_lp, 2) + '. A de doze meses é a que está '
+         + 'em uso, e a razão não é de ajuste: é o horizonte em que a equação de '
+         + 'expectativas deste mesmo modelo fala, então é o único que permite uma '
+         + 'alimentar a outra — e é também o que o Banco Central usa na regra dele.';
   }
   document.getElementById('tayCompNota').textContent = txt;
 }
@@ -3608,7 +3834,8 @@ var MATH_VAR_F = {
                 'a variação do dólar contra uma cesta de moedas emergentes'),
   d_carry_vol: _sv('<i>z</i>(Δ<i>cv</i><sub>t</sub>)',
                    'a variação do prêmio de juro entre Brasil e Estados Unidos dividido '
-                   + 'pela volatilidade do real — o retorno do carrego por unidade de risco'),
+                   + 'pela volatilidade implícita de 3 meses das opções de dólar — o retorno '
+                   + 'do carrego por unidade de risco esperado'),
   d_sp500: _sv('<i>z</i>(Δ<i>spx</i><sub>t</sub>)',
                'a variação da bolsa americana, em log'),
   d_icbr_usd: _sv('<i>z</i>(Δ<i>com</i><sub>t</sub>)',
@@ -3841,10 +4068,12 @@ function renderFxComp() {
     '‡ A forma em uso. † O erro da linha da média não é comparável com os das outras: '
     + 'ali a coisa explicada é outra série, mais lisa por construção — o desvio dela é '
     + (med ? fmt(med.sd_y, 2) : '—') + ' contra ' + fmt(base.sd_y, 2)
-    + ' na medida pelo fechamento. A volatilidade que divide o prêmio de juro entra '
-    + 'defasada um trimestre: a janela que termina no próprio trimestre contém o '
-    + 'movimento do câmbio que se quer explicar, então ela apareceria dos dois lados da '
-    + 'conta. Defasada, ela já é conhecida quando o trimestre começa.';
+    + ' na medida pelo fechamento. A volatilidade que divide o prêmio de juro é a que o '
+    + 'mercado de opções cobra para os três meses seguintes, lida no fechamento do '
+    + 'trimestre — uma cotação, como o risco fiscal. As duas linhas com volatilidade '
+    + 'realizada mostram o que isso muda: ali o denominador é uma medida do passado, e a '
+    + 'que termina no próprio trimestre contém o movimento do câmbio que se quer '
+    + 'explicar.';
 }
 
 function renderFxMensal() {
@@ -3942,6 +4171,45 @@ function initFx() {
 
 
 // ── Abas ──────────────────────────────────────────────────────────────────────
+// ── clique-expande por grafico ───────────────────────────────────────────────
+// Pedido do usuario em 2026-09-24. O estado vive por ID DO PLOT e nao no DOM: varios
+// cartoes deste relatorio sao remontados quando o seletor da aba troca, e uma classe no
+// elemento morreria com ele.
+var GRAF_DOBRADO = {};
+
+function _dobraGrafico(card, plot, dobrar) {
+  GRAF_DOBRADO[plot.id] = !!dobrar;
+  card.classList.toggle('recolhido', !!dobrar);
+  if (card._chFrame && card._chFrame.head) {
+    card._chFrame.head.title = dobrar ? 'Mostrar o gráfico' : 'Recolher o gráfico';
+  }
+  // Um grafico que esteve escondido volta com a largura errada: dentro de um elemento
+  // com `display: none` a caixa mede zero, e o Plotly guarda a medida da ultima pintura.
+  if (!dobrar && typeof Plotly !== 'undefined' && Plotly.Plots && Plotly.Plots.resize
+      && plot.data) {
+    Plotly.Plots.resize(plot);
+  }
+}
+
+// SO os cartoes da aba do simulador: e nela que estamos trabalhando, e as outras seis
+// nao pediram nada. Os graficos pequenos dentro dos cartoes de input ja tem o proprio
+// clique-expande ("Ver o gráfico da série"), entao nao entram aqui.
+function ligarDobraGraficos() {
+  Array.prototype.forEach.call(
+    document.querySelectorAll('#tab-sim .chart-card'), function (card) {
+      var plot = card.querySelector('.chart-plot');
+      var head = card.querySelector('.chart-head');
+      if (!plot || !plot.id || !head) return;
+      if (!card._dobraLigada) {
+        card._dobraLigada = true;
+        head.addEventListener('click', function () {
+          _dobraGrafico(card, plot, !card.classList.contains('recolhido'));
+        });
+      }
+      _dobraGrafico(card, plot, !!GRAF_DOBRADO[plot.id]);
+    });
+}
+
 function activateTab(id) {
   Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) {
     b.classList.toggle('active', b.getAttribute('data-tab') === id);
@@ -3954,7 +4222,9 @@ function activateTab(id) {
   if (id === 'tab-is') pintarIs();
   if (id === 'tab-tay') pintarTay();
   if (id === 'tab-fx') pintarFx();
-  if (id === 'tab-sim') pintarSim();
+  // Depois de pintar: o cartao do grafico do simulador so existe quando a aba abre.
+  if (id === 'tab-sim') { pintarSim(); ligarDobraGraficos(); }
+  if (id === 'tab-irf') pintarIrf();
 }
 Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b) {
   b.addEventListener('click', function () { activateTab(b.getAttribute('data-tab')); });
@@ -3983,25 +4253,268 @@ Array.prototype.forEach.call(document.querySelectorAll('.tab-btn'), function (b)
 // A diferenca para a aba de Juros: la a conta recebe a Selic OBSERVADA dos trimestres
 // anteriores e o erro nunca se acumula. Aqui so as duas primeiras defasagens vem do
 // dado, e dali em diante a conta come o que ela mesma produziu.
+var EIXO_SIMEXP = 'IPCA esperado para 12 meses, % ao ano';
 var EIXO_SIM = 'Selic, % ao ano';
+var EIXO_SIMFX = 'reais por dólar, no fechamento do trimestre';
+// A MESMA string do eixo da aba Hiato: o hiato do simulador e o hiato da conta sao o
+// mesmo objeto, e dois rotulos escritos a mao divergem.
+var EIXO_SIMIS = EIXO_IS;
+var EIXO_SIMIPCA = 'IPCA acumulado em 12 meses, %';
 
 var SIM = {
   i0: null,        // posicao do primeiro trimestre simulado
-  h: null,         // horizonte, em trimestres (teto em D.sim.h_max)
+  h: null,         // horizonte, em trimestres: fixo em D.sim.h_padrao
   coef: null,      // os pesos da equacao (R); comecam na mediana do posterior
-  faixa: true,     // desenhar a faixa do posterior
-  choque: false,   // somar tambem o erro da equacao
   fonte: {},       // chave da variavel -> 'equacao' | 'observado' | 'digitado'
-  cx: {},          // chave da variavel -> as 8 caixas do agregado
-  px: {},          // chave da PRIMITIVA -> as 8 caixas dela
-  aberto: {},      // quais cartoes estao com as partes abertas
+  cx: {},          // chave da variavel -> as caixas dela
+  grupoAberto: {}, // quais grupos do bloco 2 estao abertos (default: todos)
   grafAberto: {},  // quais cartoes estao com o historico aberto
   chqAberto: {},   // quais cartoes estao com o painel de choque aberto
   chq: {},         // chave -> {v, n} do choque rapido daquele cartao
   _ultimo: null,
   _desenhado: false,
-  _fimEixo: null,  // ate onde a regua de tempo foi construida
+  _fimEixo: {},    // por grafico: ate onde a regua de tempo foi construida
 };
+
+// O que cada equacao tem de particular e nao da para derivar do payload: a ressalva
+// que so vale para ela. O resto da ficha e derivado, porque uma prosa escrita a mao
+// por equacao comeca a mentir na terceira.
+var SIM_EQ_EXTRA = {
+  E: function () {
+    var eq = simEq('E'), md = eq.mediana;
+    var peso = 1 - md.e1 - md.e2;
+    // A restricao e o que da o comportamento de repouso, e ela vale DESENHO A DESENHO
+    // porque o peso da meta nao e amostrado: ele e o que sobra de 1. Os tres numeros
+    // sao lidos do posterior, entao a frase nao tem como contradizer a tabela da aba.
+    var t = 'Os três pesos — inércia <b>' + fmt(md.e1) + '</b>, inflação <b>'
+      + fmt(md.e2) + '</b> e meta <b>' + fmt(peso) + '</b> — <b>somam 1 por '
+      + 'construção</b>, e o da meta não é estimado: ele é o que sobra. A consequência '
+      + 'é o que faz esta conta valer num simulador: com a inflação na meta, a '
+      + 'expectativa volta para a meta, quaisquer que sejam os pesos. O que se mede é a '
+      + 'velocidade — meia-vida de <b>' + fmt(eq.meia_vida.mediana, 0)
+      + ' trimestres</b> para metade de um desvio.';
+    var e = SIM._ultimo && SIM._ultimo.exp;
+    if (e && e.sens != null) {
+      t += ' <b>E o que move esta projeção:</b> neste cenário, 1 p.p. a mais de '
+        + 'inflação em cada trimestre leva a expectativa ' + fmt(e.sens)
+        + ' p.p. acima no fim do horizonte — '
+        + (SIM.fonte.infl_br === 'equacao'
+           ? 'e a inflação aqui vem da curva de Phillips, então esta expectativa já '
+             + 'responde ao hiato e ao câmbio da rodada.'
+           : 'mexa na inflação do Brasil, no bloco 2, e a linha se move.');
+    }
+    return t;
+  },
+  R: function () {
+    var t = 'A conta também traz as duas marcas de crise (2008 e a pandemia), que não '
+      + 'são input: elas entram com o peso estimado e valem zero em todo trimestre '
+      + 'projetado.';
+    var elo = SIM._ultimo && SIM._ultimo.eloE;
+    if (elo != null) {
+      // O elo (E) -> (R), medido no cenario da tela em vez de afirmado. Sem ele a
+      // pagina teria duas equacoes encadeadas e nenhum numero dizendo o tamanho do elo.
+      t += ' <b>E a expectativa aqui vem da equação acima</b>, não do observado: neste '
+        + 'cenário isso vale ' + fmt(elo) + ' p.p. de Selic no fim do horizonte.';
+    }
+    return t;
+  },
+  H: function () {
+  var eq = simEq('H'), md = eq.mediana;
+  // O sinal decide o verbo: "tira" so e verdade com h2 negativo, e a frase nao pode
+  // afirmar o que o posterior nao diz.
+  var t = 'O aperto é <b>a distância entre a Selic e o juro nominal de equilíbrio</b> — '
+    + 'a mesma âncora que a regra de juros persegue —, e ele chega ao produto com <b>'
+    + eq.lag + ' trimestre' + (eq.lag > 1 ? 's' : '') + ' de atraso</b>. Cada ponto de '
+    + 'aperto ' + (md.h2 < 0 ? 'tira ' : 'soma ') + '<b>' + fmt(Math.abs(md.h2), 3)
+    + '</b> ponto do hiato no trimestre seguinte, e ' + fmt(100 * eq.h2_negativo, 1)
+    + '% das versões dos pesos concordam que o aperto esfria o produto; um hiato leva <b>'
+    + fmt(eq.meia_vida.mediana, 0) + ' trimestres</b> para andar metade do caminho de '
+    + 'volta a zero. As duas marcas de crise entram com o peso estimado e valem zero em '
+    + 'todo trimestre projetado.';
+  var r = SIM._ultimo && SIM._ultimo.is;
+  // As duas frases dizem a DIRECAO por extenso, com o numero em modulo. "Leva o hiato a
+  // -0,44" se lia como o nivel a que ele chega, e nao como o quanto ele se move.
+  if (r && r.sens != null) {
+    t += ' <b>E o que move esta projeção:</b> neste cenário, 1 p.p. de Selic a mais em '
+      + 'todo o horizonte deixa o hiato ' + fmt(Math.abs(r.sens)) + ' p.p. '
+      + (r.sens < 0 ? 'mais baixo' : 'mais alto') + ' no fim.';
+  }
+  if (r && r.eloR != null) {
+    t += ' A Selic aqui vem da regra de juros, e não do observado: com ela o hiato '
+      + 'termina ' + fmt(Math.abs(r.eloR)) + ' p.p. '
+      + (r.eloR > 0 ? 'mais alto' : 'mais baixo') + ' do que com a Selic segurada no '
+      + 'último valor publicado.';
+  }
+  return t + (SIM.fonte.infl_br === 'equacao'
+    ? ' A curva de Phillips lê este hiato no mesmo trimestre: é por ele que o juro chega '
+      + 'aos preços, e os preços voltam para a expectativa e para a Selic.'
+    : ' Com a curva de Phillips desligada, nenhuma equação lê este hiato nesta rodada — '
+      + 'ele não chega aos preços.');
+  },
+  I: function () {
+    var eq = simEq('I'), md = eq.mediana, ps = eq.post || {};
+    var t = 'São <b>quatro equações por dentro</b>, uma por grupo do IPCA — serviços, '
+      + 'alimentação, bens industriais e monitorados —, e o cartão recebe a soma delas '
+      + 'com o peso de cada grupo no índice. Em cada uma a inércia e a expectativa dividem '
+      + 'um peso que soma 1, então sem choque a inflação de cada grupo volta para a '
+      + 'expectativa. O hiato pesa sobretudo em serviços (<b>' + fmt(md['IS.is2'], 3)
+      + '</b> por ponto, no mesmo trimestre), e o câmbio entra pela variação do câmbio '
+      + 'médio: em alimentação no mesmo trimestre e em bens industriais no seguinte.';
+    if (ps.repasse_4t != null) {
+      t += ' Com a expectativa parada, uma depreciação de 10% põe o nível do IPCA <b>'
+        + fmt(10 * ps.repasse_4t) + '%</b> mais alto em um ano.';
+    }
+    var r = SIM._ultimo && SIM._ultimo.infl;
+    // Direcao por extenso e numero em modulo, como na (H): "leva a inflacao a +0,4" se
+    // leria como o nivel a que ela chega.
+    function dir(x) { return fmt(Math.abs(x)) + ' p.p. ' + (x > 0 ? 'mais alto' : 'mais baixo'); }
+    if (r && r.sens != null) {
+      t += ' <b>E o que move esta projeção:</b> neste cenário, 1 p.p. de hiato a mais em '
+        + 'todo o horizonte deixa o IPCA de 12 meses ' + dir(r.sens) + ' no fim.';
+    }
+    // "O IPCA ... mais alto": o sujeito e masculino nas tres frases, de proposito --
+    // "a inflacao termina 0,46 p.p. mais baixo" erraria a concordancia.
+    if (r && r.eloH != null) {
+      t += ' O hiato aqui vem da curva IS: com ele o IPCA de 12 meses termina '
+        + dir(r.eloH) + ' do que com o hiato segurado no último valor publicado.';
+    }
+    if (r && r.eloF != null) {
+      t += ' E o câmbio vem da equação do câmbio: com ele o IPCA termina ' + dir(r.eloF)
+        + ' do que com o câmbio parado no último fechamento.';
+    }
+    if (r && r.partes && r.partes.length >= 4) {
+      var ult = r.partes.slice(-4), ordem = eq.ordem_grupos;
+      t += ' No fim do horizonte, em doze meses: ' + _simLista(ordem.map(function (g) {
+        var fat = ult.reduce(function (a, p) { return a * (1 + p.grupos[g] / 100); }, 1);
+        return eq.grupos[g].nome_frase + ' <b>' + fmt(100 * (fat - 1)) + '%</b>';
+      })) + '.';
+    }
+    if (ps.frac_explosivos != null) {
+      t += ' ' + fmt(100 * ps.frac_explosivos, 1) + '% das versões dos pesos são '
+        + 'explosivas — quase sempre porque a inércia de bens industriais passa de 1 — e '
+        + 'ficam na faixa: tirá-las seria impor uma estabilidade que o dado não pediu.';
+    }
+    return t + ' <b>Com esta equação o modelo deixa de ser uma corrente e vira um laço</b>: '
+      + 'a inflação volta para a expectativa, a expectativa para a Selic, a Selic para o '
+      + 'hiato e o câmbio, e os dois para a inflação. As cinco são resolvidas juntas, até '
+      + 'nenhuma mudar mais.';
+  },
+  F: function () {
+    // Qual canal e o mais fraco e uma AFIRMACAO sobre numeros impressos na aba ao
+    // lado, entao ela e derivada da contribuicao acumulada e nao escrita aqui. Ate
+    // 2026-09-25 a frase era fixa; ela sobreviveu a troca do denominador por pouco
+    // (|t| 2,78 contra 2,85 do vizinho), que e justamente quando este tipo de frase
+    // passa a mentir sem que nada levante.
+    var _cs = (D.fx && D.fx.coef ? D.fx.coef : []).filter(function (c) {
+      return c.key !== 'de_l1';
+    });
+    var _cv = _cs.filter(function (c) { return c.key === 'd_carry_vol'; })[0];
+    var _fraco = _cv && _cs.every(function (c) {
+      return Math.abs(c.acum) >= Math.abs(_cv.acum);
+    });
+    var t = 'O diferencial de inflação entra com peso <b>imposto em 1</b>, e não '
+      + 'estimado. E a Selic chega aqui por um caminho só — o carry sobre a '
+      + 'volatilidade implícita —, que respondeu por ' + fmt(_cv ? _cv.acum : 0, 1)
+      + ' p.p. do que o câmbio andou na amostra'
+      + (_fraco ? ', a menor contribuição dos cinco canais' : '');
+    var sens = SIM._ultimo && SIM._ultimo.fx ? SIM._ultimo.fx.sens : null;
+    t += (sens == null) ? '. '
+      : ': neste cenário, <b>2 p.p. de Selic a mais em todo o horizonte movem o '
+        + 'câmbio ' + fmt(sens) + '%</b>. ';
+    t += 'O canal lê a <i>variação</i> do carry, então um juro mais alto que depois '
+      + 'volta ao que era não deixa efeito nenhum no nível. ';
+    // O QUE MOVE este cenário, derivado dele. Sem esta frase o leitor olha doze
+    // caixas paradas e uma linha subindo e não tem como saber o que as liga -- e a
+    // resposta é forte o bastante para mudar a leitura: com os canais parados nas
+    // premissas, a projeção é quase inteiramente o diferencial de inflação, com peso
+    // imposto em 1. Era a pergunta que o usuário teve de fazer em 2026-09-24.
+    var f = SIM._ultimo && SIM._ultimo.fx;
+    if (f && f.acum && f.total) {
+      var ppp = f.acum[simEq('F').offset] || 0;
+      t += '<b>E o que move a projeção que está na tela:</b> ela acumula '
+        + fmt(100 * (Math.exp(f.total / 100) - 1)) + '% em ' + SIM.h
+        + ' trimestres, e ' + Math.round(100 * ppp / f.total) + '% disso é o '
+        + 'diferencial de inflação — ' + _simPppNota()
+        + '. É uma taxa, então ele empurra todo trimestre em que a inflação daqui fica '
+        + 'acima da de lá. Os outros '
+        + f.parados + ' canais estão parados <i>em nível</i> nas premissas, e um '
+        + 'canal parado contribui <b>exatamente zero</b>, porque a equação lê a '
+        + 'variação dele. Mexa num deles no bloco 2 e ele passa a aparecer aqui.';
+    }
+    return t;
+  },
+};
+var SIM_EQ_ONDE = { E: 'aba Expectativas', R: 'aba Juros', H: 'aba Hiato',
+                    I: 'aba Curva de Phillips', F: 'aba Câmbio' };
+
+// O nome da equacao como sujeito de uma frase, com artigo -- e nao `nome` com um `A`
+// na frente, que daria "A Câmbio". Terceiro par de mapas da mesma classe nesta pagina.
+var SIM_EQ_ARTIGO_NOME = {
+  E: 'A equação de expectativas',
+  R: 'A regra de juros',
+  H: 'A curva IS',
+  I: 'A curva de Phillips',
+  F: 'A equação do câmbio',
+};
+// O que se perde ao desligar cada uma. E propriedade DA EQUACAO, porque depende de
+// quem le o que ela produz -- e isso muda a cada equacao nova. Com o laco fechado, toda
+// equacao desligada continua lida por alguem: nenhuma delas "apenas desenha" mais.
+var SIM_EQ_DESLIGADA = {
+  E: 'A regra de juros continua lendo a expectativa, pela distância até a meta, e a '
+     + 'curva de Phillips também, como o ponto para onde a inflação converge — então a '
+     + 'Selic, a inflação, o hiato e o câmbio respondem ao caminho que você impôs.',
+  R: 'A curva IS e a equação do câmbio continuam lendo a Selic — a primeira pela '
+     + 'distância até o juro de equilíbrio, a segunda pelo carry —, então o hiato e o '
+     + 'câmbio, e por eles a inflação, respondem ao caminho que você impôs.',
+  H: 'A curva de Phillips continua lendo o hiato, no mesmo trimestre, então a inflação — '
+     + 'e por ela a expectativa, a Selic e o câmbio — responde ao caminho que você impôs.',
+  I: 'A equação de expectativas e a do câmbio continuam lendo a inflação — a primeira '
+     + 'pelo IPCA de 12 meses, a segunda pelo diferencial contra a americana —, então '
+     + 'elas respondem ao caminho que você impôs. O laço fica aberto: o hiato e o câmbio '
+     + 'deixam de voltar para os preços.',
+  F: 'A curva de Phillips continua lendo o câmbio — alimentação no mesmo trimestre e '
+     + 'bens industriais no seguinte —, então a inflação responde ao caminho que você '
+     + 'impôs.',
+};
+
+// "explica a Selic" contra "explica o câmbio": o artigo e propriedade do nome e nao da
+// equacao, entao ele mora ao lado do nome em vez de ser escolhido na frase.
+var SIM_ARTIGO = { selic: 'a ', de: 'a ', pi_e: 'a ', hiato: 'o ', infl_br: 'a ' };
+// O nome como ele se LE dentro de uma frase, declarado ao lado do rótulo em vez de
+// derivado dele: `'Risco fiscal (CDS de 5 anos)'.toLowerCase()` devolve
+// "risco fiscal (cds de 5 anos)", e "Selic" vira "selic". Mesmo par de mapas de
+// `SIM_FONTE_ROT` e `SIM_FONTE_DE` -- um NOME e um complemento regido são dois campos.
+// Uma lista que se LE: virgula entre os itens e "e" antes do ultimo. Um `join(', ')`
+// devolve "a, b" onde o portugues quer "a e b" -- e com tres itens a diferenca deixa
+// de ser estetica.
+function _simLista(xs) {
+  if (xs.length <= 1) return xs.join('');
+  return xs.slice(0, -1).join(', ') + ' e ' + xs[xs.length - 1];
+}
+// As pecas de uma conta, lidas em portugues. Numa `lin` o sinal de CADA peca vem do
+// peso declarado -- "Selic menos juro real menos meta" -- e nao de um operador so.
+function _simDerivPecas(d) {
+  // Uma variacao de nivel tem UMA peca, e o que se diz dela e a conta, nao a peca -- o
+  // nome da conta ja diz de que cartao ela e.
+  if (d.op === 'dlog') return 'de um trimestre para o outro';
+  if (d.op === 'dlog_medio') return 'a média de duas variações seguidas do câmbio de '
+                                    + 'fechamento';
+  if (d.op === 'lin') {
+    return d.de.map(function (c, j) {
+      var neg = d.coef[j] < 0;
+      return (j === 0 ? (neg ? 'menos ' : '') : (neg ? 'menos ' : 'mais '))
+        + _simNomeFrase(c);
+    }).join(' ');
+  }
+  return d.de.map(_simNomeFrase).join(d.op === '+' ? ' mais ' : ' menos ');
+}
+function _simNomeFrase(k) {
+  var v = simVar(k);
+  return v.nome_frase || v.nome;
+}
+function _simArtigo(k) {
+  return (SIM_ARTIGO[k] || '') + _simNomeFrase(k);
+}
 
 var SIM_COR = { obs: '#1F2853', anc: '#7A88A8', sim: '#BB9B1D',
                 band: 'rgba(187,155,29,0.20)' };
@@ -4029,22 +4542,31 @@ var SIM_FONTE_AJUDA = {
   digitado: 'O caminho é imposto por você, trimestre a trimestre',
 };
 
-function simEq() { return D.sim.eq[D.sim.eq_ordem[0]]; }
+// `simEq` EXIGE a chave desde 2026-09-25. Ate a (E) entrar, `simEq()` devolvia a
+// primeira da ordem de solucao, que era a regra de juros -- comodidade que virou
+// armadilha no minuto em que a (E) passou a ser a primeira: as chamadas sem chave
+// continuaram compilando e passaram a ler a equacao errada, em silencio.
+function simEq(k) {
+  var e = D.sim.eq[k];
+  if (!e) throw new Error('equacao desconhecida: ' + k);
+  return e;
+}
+function simTemEq(k) { return !!(D.sim.eq && D.sim.eq[k]); }
 function simVar(k) { return D.sim.var[k]; }
-function simPrim(k) { return D.sim.prim[k]; }
-// Uma variavel sem serie agregada propria (a de crise) NAO tem caixa de agregado: ela
-// e so o conjunto das partes, e a conta le cada parte direto.
-function simTemAgregado(v) { return v.obs != null; }
 
 // ── a grade de trimestres ────────────────────────────────────────────────────
 // A janela padrao comeca DEPOIS do ultimo dado, entao a maioria dos indices que estas
 // funcoes recebem nao existe na serie. O rotulo sai da CONTAGEM de trimestres e nao de
 // uma data: somar 3 meses a uma data de inicio de trimestre erra na virada do ano.
+// Vale DENTRO da grade tambem, e e ali que ela e usada pela (I): o trimestre do ano
+// decide a dummy sazonal de cada passo. O `%` do JavaScript devolve resto NEGATIVO para
+// dividendo negativo -- `(-77) % 4` e -1 --, entao o resto e normalizado; sem isso todo
+// trimestre antes do ultimo rotulo virava o "trimestre 0" e a sazonal sumia em silencio.
 function _simPassoTri(i) {
   var R = D.sim.rot, ult = R[R.length - 1];
   var ano0 = parseInt(ult.slice(0, 4), 10), tri0 = parseInt(ult.slice(5), 10);
   var n = tri0 + (i - (R.length - 1));
-  return { ano: ano0 + Math.floor((n - 1) / 4), tri: ((n - 1) % 4) + 1 };
+  return { ano: ano0 + Math.floor((n - 1) / 4), tri: ((((n - 1) % 4) + 4) % 4) + 1 };
 }
 function _simRotIdx(i) {
   if (i < D.sim.rot.length) return D.sim.rot[i];
@@ -4064,18 +4586,38 @@ function _simGrade(i0, h) {
 
 
 // ── o caminho observado de uma serie, segurando o ultimo valor ───────────────
-function _simObsSerie(serie, i0, h) {
+// A media dos ultimos `k` valores publicados.
+function _simMediaFinal(serie, k) {
+  var vals = serie.filter(function (v) { return v != null; });
+  if (!vals.length) return null;
+  vals = vals.slice(-Math.max(1, k));
+  return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+}
+
+// A regra de SEGURAR e declarada pela variavel, e nao uma so para o painel inteiro.
+// Default: segure o ultimo valor publicado -- certo para NIVEL, porque o CDS de hoje e
+// a melhor leitura do CDS de amanha. Numa TAXA DE FLUXO nao e: o diferencial de
+// inflacao de um trimestre tem desvio-padrao maior que a propria media, e ele carrega
+// quase toda a projecao do cambio. Ali a regra e a media de `k` trimestres.
+//
+// **A media so vale DEPOIS do ultimo dado.** Um buraco no meio da serie continua
+// segurando o ultimo valor conhecido: ali o que falta e uma observacao, nao o futuro.
+function _simObsSerie(serie, i0, h, segura) {
+  var ultimo = -1;
+  for (var j = 0; j < serie.length; j++) if (serie[j] != null) ultimo = j;
+  var media = (segura && segura.modo === 'media' && ultimo >= 0)
+    ? _simMediaFinal(serie, segura.k) : null;
   var out = [], ult = 0;
   for (var i = 0; i <= i0 + h - 1; i++) {
     if (i < serie.length && serie[i] != null) ult = serie[i];
-    if (i >= i0) out.push(ult);
+    var val = (media != null && i > ultimo) ? media : ult;
+    if (i >= i0) out.push(val);
   }
   return out;
 }
+function _simSegura(key) { return simVar(key).segura || null; }
 function simObs(key, i0, h) {
-  var v = D.sim.var[key];
-  var serie = (v && v.obs != null) ? v.obs : simPrim(key).obs;
-  return _simObsSerie(serie, i0, h);
+  return _simObsSerie(simVar(key).obs, i0, h, _simSegura(key));
 }
 
 // ── caixas ───────────────────────────────────────────────────────────────────
@@ -4087,22 +4629,7 @@ function simObs(key, i0, h) {
 function simRecarregarCaixas() {
   var i0 = SIM.i0, h = D.sim.h_max;
   D.sim.var_ordem.forEach(function (k) {
-    var v = simVar(k);
-    if (SIM.fonte[k] !== 'digitado') {
-      if (simTemAgregado(v)) SIM.cx[k] = simObs(k, i0, h);
-      (v.partes || []).forEach(function (p) { SIM.px[p] = simObs(p, i0, h); });
-    }
-  });
-}
-
-// O agregado de um composto e recalculado das partes -- e o caminho que faz editar
-// `rr*` sem mexer na meta mover a ancora.
-function simAgregarDePartes(k) {
-  var v = simVar(k);
-  if (!v.op || !v.partes) return;
-  var a = SIM.px[v.partes[0]], b = SIM.px[v.partes[1]];
-  SIM.cx[k] = a.map(function (x, i) {
-    return v.op === '-' ? x - b[i] : x + b[i];
+    if (SIM.fonte[k] !== 'digitado') SIM.cx[k] = simObs(k, i0, h);
   });
 }
 
@@ -4112,64 +4639,494 @@ function simCaminho(key) {
   if (SIM.fonte[key] === 'digitado') return SIM.cx[key].slice(0, h);
   return simObs(key, SIM.i0, h);
 }
-function simCaminhoParte(pai, parte) {
-  if (SIM.fonte[pai] === 'digitado') return SIM.px[parte].slice(0, SIM.h);
-  return simObs(parte, SIM.i0, SIM.h);
-}
+// O caminho de tudo o que ALGUMA equacao consome, resolvido uma vez so. Derivado do
+// `consome` de cada equacao e nao escrito a mao: uma equacao nova que leia uma variavel
+// nova passa a ter o caminho dela aqui sem ninguem lembrar de vir aqui.
 function simEntradas() {
-  var eq = simEq(), ent = { di: simCaminho('di'), ancora: simCaminho('ancora') };
-  eq.dummies.forEach(function (c) { ent[c] = simCaminhoParte('crise', c); });
+  var ent = {};
+  D.sim.eq_ordem.forEach(function (ek) {
+    var eq = simEq(ek);
+    eq.consome.forEach(function (c) {
+      if (!(c in ent)) ent[c] = simCaminho(c);
+    });
+    // As marcas de crise nao sao input -- elas vem da propria equacao, e sao 0 em todo
+    // trimestre projetado. Tiveram cartao ate 2026-09-24.
+    (eq.dummies || []).forEach(function (c) {
+      ent[c] = _simObsSerie(eq.dummy_obs[c], SIM.i0, SIM.h);
+    });
+  });
   return ent;
 }
 
-// ── a recursao, a MESMA de `simulator._sim` ──────────────────────────────────
+// ── as CONTAS que cada equacao faz com o que consome ─────────────────────────
+// Ate 2026-09-24 tres delas eram cartoes compostos (`di`, `ancora`, `ppp`), com as
+// pecas escondidas atras de "abrir em partes". O usuario cortou o mecanismo em
+// 2026-09-25 -- *"nao havera mais premissas com subpremissas"* -- e a conta mudou de
+// dono: quem a declara agora e a EQUACAO que a consome, no campo `deriva`.
+//
+// Isto e o espelho de `simulator.derivadas()`, e as duas sao a mesma conta escrita
+// duas vezes -- por isso toda equacao leva gabarito de um passo no payload.
+function _simAcumLog(serie, i, k) {
+  if (i - k + 1 < 0) return null;
+  var soma = 0;
+  for (var j = i - k + 1; j <= i; j++) {
+    if (serie[j] == null) return null;
+    soma += serie[j];
+  }
+  // Composicao exata, e nao a soma das variacoes: `100*(exp(soma/100) - 1)`. Medido
+  // contra o IPCA de 12 meses publicado, o erro e 0,0024 p.p. em media e 0,0056 no
+  // maximo -- o arredondamento da propria serie do SGS. E por isso que ha UM cartao de
+  // IPCA e nao dois: dois seriam duas premissas digitaveis da mesma serie.
+  return 100 * (Math.exp(soma / 100) - 1);
+}
+
+function _simDerivadas(ek, ent, i0, h) {
+  var eq = simEq(ek), spec = eq.deriva || {}, out = {};
+  Object.keys(spec).forEach(function (nome) {
+    var sp = spec[nome], de = sp.de, j;
+    if (sp.op === '-' || sp.op === '+') {
+      var a = ent[de[0]], b = ent[de[1]];
+      out[nome] = a.map(function (x, i) {
+        return sp.op === '-' ? x - b[i] : x + b[i];
+      });
+      return;
+    }
+    if (sp.op === 'lin') {
+      // Combinacao linear com os pesos declarados. Existe porque o aperto da (H) tem
+      // TRES pecas -- Selic, juro real de 10 anos e meta -- e o `-`/`+` tem duas.
+      out[nome] = [];
+      for (j = 0; j < h; j++) {
+        var tot = 0;
+        for (var q = 0; q < de.length; q++) tot += sp.coef[q] * ent[de[q]][j];
+        out[nome].push(tot);
+      }
+      return;
+    }
+    if (sp.op === 'acum_log') {
+      // As defasagens anteriores a janela vem do OBSERVADO; dali em diante, do caminho
+      // desta rodada. `pre_insumo` sao os trimestres anteriores ao inicio da grade --
+      // sem eles o acumulado nao fecha os quatro no comeco da historia.
+      var pre = (eq.pre_insumo || {})[de[0]] || [];
+      var serie = pre.concat(eq.obs_insumo[de[0]].slice(0, i0))
+                     .concat(ent[de[0]].slice(0, h));
+      var base = pre.length + i0, kk = sp.k || 4;
+      out[nome] = [];
+      for (j = 0; j < h; j++) out[nome].push(_simAcumLog(serie, base + j, kk));
+      return;
+    }
+    if (_SIM_DLOG[sp.op]) {
+      // A variacao de um NIVEL. `dlog` e `100*ln(x_t/x_{t-1})`; `dlog_medio` e a
+      // variacao do cambio MEDIO do trimestre, feita de dois fechamentos:
+      // `50*ln(P_t/P_{t-2})`. Os niveis anteriores a janela vem do observado do cartao.
+      var pf = _SIM_DLOG[sp.op];
+      var sN = simVar(de[0]).obs.slice(0, i0).concat(ent[de[0]].slice(0, h));
+      out[nome] = [];
+      for (j = 0; j < h; j++) {
+        var a0 = sN[i0 + j], b0 = sN[i0 + j - pf[0]];
+        out[nome].push((i0 + j - pf[0] < 0 || a0 == null || b0 == null) ? null
+                       : pf[1] * Math.log(a0 / b0));
+      }
+      return;
+    }
+    throw new Error('operacao derivada desconhecida: ' + sp.op);
+  });
+  return out;
+}
+// [quantos trimestres atras, fator] de cada variacao de nivel -- espelho de
+// `simulator._DLOG`.
+var _SIM_DLOG = { dlog: [1, 100], dlog_medio: [2, 50] };
+
+// A mesma conta sobre a GRADE OBSERVADA inteira, para as linhas do grafico. Derivada
+// e nao gravada no payload: uma segunda copia da serie e uma copia a mais para
+// discordar da conta que a equacao faz.
+function _simDerivObs(ek, nome) {
+  var eq = simEq(ek), sp = (eq.deriva || {})[nome];
+  if (!sp) return null;
+  var n = D.sim.x.length, de = sp.de, out = [], i;
+  if (sp.op === '-' || sp.op === '+') {
+    var A = simVar(de[0]).obs, B = simVar(de[1]).obs;
+    for (i = 0; i < n; i++) {
+      out.push((A[i] == null || B[i] == null) ? null
+               : (sp.op === '-' ? A[i] - B[i] : A[i] + B[i]));
+    }
+    return out;
+  }
+  if (sp.op === 'lin' || _SIM_DLOG[sp.op]) {
+    for (i = 0; i < n; i++) out.push(_simDerivObsEm(ek, nome, i));
+    return out;
+  }
+  var pre = (eq.pre_insumo || {})[de[0]] || [];
+  var serie = pre.concat(eq.obs_insumo[de[0]]);
+  for (i = 0; i < n; i++) out.push(_simAcumLog(serie, pre.length + i, sp.k || 4));
+  return out;
+}
+
+// Uma conta sobre o OBSERVADO de UM trimestre da grade. E de onde sai o valor das
+// defasagens ANTERIORES a janela: o primeiro trimestre projetado da (H) le o aperto de
+// um trimestre que ja aconteceu, e o da (I) le o cambio e os metais do trimestre
+// anterior. Espelho de `simulator._deriv_obs_em`.
+function _simDerivObsEm(ek, nome, i) {
+  var sp = simEq(ek).deriva[nome];
+  function ob(c, j) {
+    var o = simVar(c).obs;
+    return (j >= 0 && j < o.length) ? o[j] : null;
+  }
+  if (sp.op === 'lin') {
+    var tot = 0;
+    for (var j = 0; j < sp.de.length; j++) {
+      var v = ob(sp.de[j], i);
+      if (v == null) return null;
+      tot += sp.coef[j] * v;
+    }
+    return tot;
+  }
+  if (_SIM_DLOG[sp.op]) {
+    var pf = _SIM_DLOG[sp.op], a = ob(sp.de[0], i), b = ob(sp.de[0], i - pf[0]);
+    return (a == null || b == null) ? null : pf[1] * Math.log(a / b);
+  }
+  throw new Error('a operacao ' + sp.op + ' nao tem leitura pontual');
+}
+
+// ── a recursao da (E), a MESMA de `simulator._sim_exp` ───────────────────────
+// Ela e a PRIMEIRA na ordem de solucao: produz a expectativa que a (R) le no desvio
+// contra a meta, e a Selic que sai dali chega ao cambio pelo carry.
+// `eps`, em todas as cinco, e um choque no RESIDUO da equacao, na unidade dela -- o que
+// a aba Impulso-resposta usa. Ele entra antes de o valor virar defasagem, entao a propria
+// dinamica o propaga. E o mesmo `eps` de `simulator._roda()`.
+function _simCaminhoPiE(coef, i0, h, ent, partes, eps) {
+  var eq = simEq('E');
+  var der = _simDerivadas('E', ent, i0, h);
+  // O peso da meta e `1 - e1 - e2`, e NAO o desenho gravado com esse nome: mediana nao
+  // e linear, entao as tres medianas nao somam 1 e a conta deixaria de devolver a meta
+  // em repouso por alguns milesimos. Refazer a subtracao mantem a restricao valendo
+  // com qualquer conjunto de pesos.
+  var peso = 1 - coef.e1 - coef.e2;
+  var ant = eq.y[i0 - 1], out = [];
+  for (var k = 0; k < h; k++) {
+    var pI = coef.e1 * ant, pA = coef.e2 * der.i12[k], pM = peso * ent[eq.meta][k];
+    if (partes) partes.push({ inercia: pI, i12: pA, meta: pM, i12_nivel: der.i12[k] });
+    ant = pI + pA + pM + (eps ? eps[k] : 0);
+    out.push(ant);
+  }
+  return out;
+}
+
+// ── a recursao da (R), a MESMA de `simulator._sim` ───────────────────────────
+// `ent.pi_e` tem de ser o caminho JA RESOLVIDO da expectativa desta rodada -- o que a
+// (E) produziu, quando ela esta ligada. Resolver isso e trabalho de quem chama, como
+// e com a Selic dentro da (F).
 function _simCaminhoSelic(coef, i0, h, ent, eps) {
-  var eq = simEq();
+  var eq = simEq('R');
+  var der = _simDerivadas('R', ent, i0, h);
   var y1 = eq.y[i0 - 1], y2 = eq.y[i0 - 2];
   var peso = 1 - coef.t1 - coef.t2, out = [];
   for (var k = 0; k < h; k++) {
-    var v = coef.t1 * y1 + coef.t2 * y2 + peso * coef.t3 * ent.di[k];
+    var v = coef.t1 * y1 + coef.t2 * y2 + peso * coef.t3 * der.di[k];
     for (var j = 0; j < eq.dummies.length; j++) {
       var c = eq.dummies[j];
       if (ent[c][k]) v += (coef[c] || 0) * ent[c][k];
     }
     if (eps) v += eps[k];
     y2 = y1; y1 = v;
-    out.push(v + ent.ancora[k]);
+    out.push(v + der.ancora[k]);
   }
   return out;
 }
 
-// Normal padrao com semente fixa: a faixa de choque tem de dar o MESMO desenho a cada
-// render, senao ela treme a cada clique em qualquer outro controle e parece que o
-// resultado mudou.
-function _simRng(semente) {
-  var s = semente >>> 0;
-  return function () {
-    s = (s * 1664525 + 1013904223) >>> 0;
-    var u1 = (s + 1) / 4294967297;
-    s = (s * 1664525 + 1013904223) >>> 0;
-    var u2 = (s + 1) / 4294967297;
-    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-  };
+// ── a recursao da (H), a MESMA de `simulator._sim_is` ────────────────────────
+// `ent.selic` tem de ser o caminho JA RESOLVIDO da Selic desta rodada -- o que a (R)
+// produziu, quando ligada. O aperto chega com `lag` trimestres de atraso, entao o
+// primeiro trimestre projetado le o aperto de um trimestre que ja aconteceu, feito dos
+// cartoes observados pela mesma conta. As marcas de crise entram e valem zero adiante.
+function _simCaminhoHiato(coef, i0, h, ent, eps) {
+  var eq = simEq('H');
+  var der = _simDerivadas('H', ent, i0, h);
+  var lag = eq.lag || 1, gap = [], j;
+  for (j = 0; j < lag; j++) gap.push(_simDerivObsEm('H', 'gap', i0 - lag + j));
+  gap = gap.concat(der.gap);
+  var ant = eq.y[i0 - 1], out = [];
+  for (var k = 0; k < h; k++) {
+    var v = coef.h1 * ant + coef.h2 * gap[k];
+    for (j = 0; j < eq.dummies.length; j++) {
+      var c = eq.dummies[j];
+      if (ent[c][k]) v += (coef[c] || 0) * ent[c][k];
+    }
+    if (eps) v += eps[k];
+    out.push(v);
+    ant = v;
+  }
+  return out;
 }
 
-function _simFaixa(i0, h, ent) {
-  var eq = simEq(), dr = eq.draws, n = eq.n_draws, cols = [];
-  for (var k = 0; k < h; k++) cols.push(new Array(n));
-  var rng = _simRng(20260922);
-  for (var s = 0; s < n; s++) {
-    var coef = { t1: dr.t1[s], t2: dr.t2[s], t3: dr.t3[s] };
-    eq.dummies.forEach(function (c) { coef[c] = dr[c] ? dr[c][s] : 0; });
-    var eps = null;
-    if (SIM.choque) {
-      eps = [];
-      for (var k2 = 0; k2 < h; k2++) eps.push(rng() * dr.sigma[s]);
-    }
-    var cam = _simCaminhoSelic(coef, i0, h, ent, eps);
-    for (var k3 = 0; k3 < h; k3++) cols[k3][s] = cam[k3];
+// ── a recursao da (I), a MESMA de `simulator._sim_infl` ──────────────────────
+// Quatro recursoes por dentro, uma por grupo do IPCA, e UM caminho por fora: o cheio,
+// soma dos quatro com o peso de cada um. Em cada grupo a inercia e os termos restritos
+// dividem com a expectativa um peso que soma 1, e o da expectativa e o que sobra --
+// refeito aqui, e nao lido do desenho, pela mesma razao da (E).
+//
+// O trimestre do ano decide a dummy sazonal, e ele sai da CONTAGEM (`_simPassoTri`),
+// que e a mesma conta do Python.
+function _simSaz(q, j) { return (q === j ? 1 : 0) - (q === 4 ? 1 : 0); }
+
+// Os pesos dos grupos no trimestre `i`: os publicados, se houver; se nao, os do ultimo
+// trimestre publicado.
+function _simPesosEm(i) {
+  var eq = simEq('I'), po = eq.pesos_obs, out = {}, todos = true;
+  eq.ordem_grupos.forEach(function (g) {
+    var v = (i >= 0 && i < po[g].length) ? po[g][i] : null;
+    if (v == null) todos = false;
+    out[g] = v;
+  });
+  return todos ? out : eq.pesos_fim;
+}
+
+function _simCaminhoInfl(coef, i0, h, ent, partes, eps) {
+  var eq = simEq('I');
+  if (i0 < eq.i0_min) {
+    throw new Error('a curva de Phillips precisa de ' + eq.i0_min
+                    + ' trimestres observados antes da partida');
   }
-  var lo = [], hi = [], a = (1 - eq.hdi_prob) / 2, b = 1 - a;
+  var der = _simDerivadas('I', ent, i0, h);
+  var ordem = eq.ordem_grupos, G = eq.grupos, hist = {};
+  ordem.forEach(function (g) { hist[g] = eq.obs_grupo[g].slice(0, i0); });
+  // O cheio em variacao SIMPLES, que e a unidade das quatro equacoes; o cartao guarda
+  // `100*dlog`, e as duas formas sao a mesma serie.
+  var cheio = simVar('infl_br').obs.slice(0, i0).map(function (v) {
+    return v == null ? null : 100 * (Math.exp(v / 100) - 1);
+  });
+  var pie = simVar('pi_e').obs;
+  function defas(nome, k) {
+    return k >= 1 ? der[nome][k - 1] : _simDerivObsEm('I', nome, i0 - 1);
+  }
+  var out = [];
+  for (var k = 0; k < h; k++) {
+    var q = _simPassoTri(i0 + k).tri;
+    var e4 = (k >= 1 ? ent.pi_e[k - 1] : pie[i0 - 1]) / 4;
+    var fonte = { hiato: ent.hiato[k], de_med: der.de_med[k],
+                  de_med_l1: defas('de_med', k), agr: der.agr[k], met: der.met[k],
+                  met_l1: defas('met', k) };
+    var w = _simPesosEm(i0 + k), grp = {}, tot = 0;
+    for (var a = 0; a < ordem.length; a++) {
+      var gk = ordem[a], sp = G[gk], pre = gk + '.', hg = hist[gk], n = hg.length;
+      var val = coef[pre + sp.inercia] * hg[n - 1];
+      var peso = 1 - coef[pre + sp.inercia];
+      for (var b = 0; b < sp.restritos.length; b++) {
+        var rt = sp.restritos[b];
+        var x = rt[1] === 'mm4' ? (hg[n - 4] + hg[n - 3] + hg[n - 2] + hg[n - 1]) / 4
+                                : cheio[cheio.length - 1];
+        val += coef[pre + rt[0]] * x;
+        peso -= coef[pre + rt[0]];
+      }
+      val += peso * e4;
+      for (b = 0; b < sp.regs.length; b++) {
+        val += coef[pre + sp.regs[b][0]] * fonte[sp.regs[b][1]];
+      }
+      for (b = 0; b < sp.saz.length; b++) val += coef[pre + sp.saz[b]] * _simSaz(q, b + 1);
+      if (eps && eps[gk]) val += eps[gk][k];
+      grp[gk] = val;
+      tot += w[gk] * val;
+    }
+    for (a = 0; a < ordem.length; a++) hist[ordem[a]].push(grp[ordem[a]]);
+    cheio.push(tot);
+    out.push(100 * Math.log1p(tot / 100));
+    if (partes) partes.push({ grupos: grp, cheio: tot, pesos: w });
+  }
+  return out;
+}
+
+// O IPCA de 12 meses de um caminho trimestral, composto com os trimestres observados
+// antes da janela -- a mesma conta da (E), `100*(exp(soma/100) - 1)`.
+function _simI12(i0, h, cam) {
+  var eq = simEq('I'), pre = (eq.pre_insumo || {}).infl_br || [];
+  var serie = pre.concat(eq.obs_insumo.infl_br.slice(0, i0)).concat(cam.slice(0, h));
+  var base = pre.length + i0, out = [];
+  for (var j = 0; j < h; j++) out.push(_simAcumLog(serie, base + j, 4));
+  return out;
+}
+
+// ── a recursao da (F), a MESMA de `simulator._sim_fx` ────────────────────────
+// `selic` e o caminho que a (R) acabou de produzir: e por ele, e so por ele, que as
+// duas equacoes se ligam. O canal e `(Selic − Fed Funds) ÷ volatilidade`, e o que
+// entra na conta e a VARIACAO dele de um trimestre para o outro -- por isso a ancora
+// do trimestre anterior vem do observado, e sem ela a primeira variacao seria o
+// proprio nivel.
+function _simCaminhoDe(coef, i0, h, ent, selic, acum, eps) {
+  var eq = simEq('F');
+  var der = _simDerivadas('F', ent, i0, h);
+  var logret = {};
+  eq.log_ret.forEach(function (c) { logret[c] = true; });
+  var prev = {};
+  eq.canais.forEach(function (c) { prev[c] = eq.nivel[c][i0 - 1]; });
+  var deAnt = eq.y[i0 - 1], out = [];
+  for (var k = 0; k < h; k++) {
+    var v = der[eq.offset][k] + coef.alpha + coef.phi * deAnt;
+    if (acum) {
+      acum[eq.offset] = (acum[eq.offset] || 0) + der[eq.offset][k];
+      acum.alpha = (acum.alpha || 0) + coef.alpha;
+      acum.ar = (acum.ar || 0) + coef.phi * deAnt;
+    }
+    for (var j = 0; j < eq.canais.length; j++) {
+      var c = eq.canais[j];
+      var cur = (c === eq.carry.canal)
+        ? (selic[k] - ent[eq.carry.menos][k]) / ent[eq.carry.sobre][k]
+        : ent[c][k];
+      var dz = logret[c] ? 100 * (Math.log(cur) - Math.log(prev[c])) : cur - prev[c];
+      var parte = coef['b_' + c] * (dz / eq.sd[c]);
+      v += parte;
+      if (acum) acum[c] = (acum[c] || 0) + parte;
+      prev[c] = cur;
+    }
+    if (eps) v += eps[k];
+    deAnt = v;
+    out.push(v);
+  }
+  return out;
+}
+
+// O caminho inverso: um caminho de NIVEL digitado (ou observado) virando a variacao
+// que a equacao e a AR consomem. Ancorado no mesmo ultimo fechamento observado, entao
+// `_simVarDeNivel(_simNivelCambio(x))` devolve `x` -- as duas sao a mesma bijecao, e e
+// isso que permite o cartao falar em reais enquanto a conta fala em por cento.
+function _simVarDeNivel(i0, niveis) {
+  var eq = simEq('F'), ant = eq.ptax[i0 - 1], out = [];
+  for (var k = 0; k < niveis.length; k++) {
+    out.push(100 * Math.log(niveis[k] / ant));
+    ant = niveis[k];
+  }
+  return out;
+}
+
+// A sequencia de variacoes virando nivel, a partir do ultimo fechamento observado.
+// E a inversa exata de `de = 100*dlog(ptax)`, a forma em que a equacao foi estimada --
+// o grafico desenha isto porque um cenario cambial se le em reais por dolar, e as
+// caixas mostram aquilo porque e o que a equacao produz.
+function _simNivelCambio(i0, de) {
+  var eq = simEq('F'), v = eq.ptax[i0 - 1], out = [];
+  for (var k = 0; k < de.length; k++) { v = v * Math.exp(de[k] / 100); out.push(v); }
+  return out;
+}
+
+// Uma copia rasa de `ent` com UMA entrada trocada. E o que as sensibilidades da ficha
+// usam: a mesma equacao, o mesmo cenario, uma entrada so mexida.
+function _simEntCom(ent, chave, cam) {
+  var out = {}, ks = Object.keys(ent);
+  for (var i = 0; i < ks.length; i++) out[ks[i]] = ent[ks[i]];
+  out[chave] = cam;
+  return out;
+}
+
+// ── o laco: as cinco resolvidas juntas ───────────────────────────────────────
+// Ate 2026-09-28 o simulador era uma corrente, e cada equacao rodava uma vez so, lendo
+// o que as anteriores tinham acabado de produzir. A curva de Phillips fecha o laco: ela
+// le o hiato, a expectativa e o cambio, e a inflacao que ela produz volta para a
+// expectativa e para o cambio. Uma passada so deixaria alguem lendo um caminho velho.
+//
+// A conta e a de `simulator.resolver()`: cada volta roda as equacoes LIGADAS na ordem de
+// solucao, cada uma lendo o que ja saiu nesta volta e, do resto, o da volta anterior,
+// ate nenhum caminho mudar mais que a tolerancia. O resultado e o ponto fixo das cinco
+// juntas -- o mesmo de resolver trimestre a trimestre -- e o payload traz o do cenario
+// padrao, resolvido do lado do Python, como gabarito.
+var SIM_TOL_LACO = 1e-10;
+// A faixa resolve mil vezes: ali a tolerancia pode ser a do que a tela imprime, com tres
+// ordens de folga.
+var SIM_TOL_FAIXA = 1e-7;
+var SIM_MAX_VOLTAS = 100;
+
+// O caminho que a equacao `ek` produz, na unidade do CARTAO que ela explica. So a (F)
+// converte: ela produz a variacao do cambio, e o cartao dela mostra o nivel.
+function _simRoda(ek, coef, i0, h, ent, eps) {
+  if (ek === 'E') return _simCaminhoPiE(coef, i0, h, ent, null, eps);
+  if (ek === 'R') return _simCaminhoSelic(coef, i0, h, ent, eps);
+  if (ek === 'H') return _simCaminhoHiato(coef, i0, h, ent, eps);
+  if (ek === 'I') return _simCaminhoInfl(coef, i0, h, ent, null, eps);
+  if (ek === 'F') {
+    return _simNivelCambio(i0, _simCaminhoDe(coef, i0, h, ent, ent.selic, null, eps));
+  }
+  throw new Error('equacao desconhecida: ' + ek);
+}
+
+// Uma equacao roda quando a variavel que ela explica esta em Endogeno.
+function _simLiga() {
+  var l = {};
+  D.sim.eq_ordem.forEach(function (ek) {
+    l[ek] = SIM.fonte[simEq(ek).explica] === 'equacao';
+  });
+  return l;
+}
+
+// `choque`, opcional, leva por equacao um choque no residuo dela (ver `_simRoda`).
+function _simResolver(coefs, i0, h, entBase, liga, tol, choque) {
+  var ent = {}, ks = Object.keys(entBase), j, dif = Infinity;
+  for (j = 0; j < ks.length; j++) ent[ks[j]] = entBase[ks[j]].slice();
+  tol = tol || SIM_TOL_LACO;
+  for (var volta = 1; volta <= SIM_MAX_VOLTAS; volta++) {
+    dif = 0;
+    for (var a = 0; a < D.sim.eq_ordem.length; a++) {
+      var ek = D.sim.eq_ordem[a];
+      if (!liga[ek]) continue;
+      var v = simEq(ek).explica, velho = ent[v];
+      var novo = _simRoda(ek, coefs[ek], i0, h, ent, choque ? choque[ek] : null);
+      for (j = 0; j < novo.length; j++) {
+        var d0 = Math.abs(novo[j] - velho[j]);
+        // NaN nunca e menor que a tolerancia: um caminho quebrado vira erro, e nao uma
+        // tela que desenha nada sem dizer por que.
+        if (!(d0 <= dif)) dif = (d0 === d0) ? d0 : Infinity;
+      }
+      ent[v] = novo;
+    }
+    if (dif < tol) return { ent: ent, voltas: volta };
+  }
+  throw new Error('as equacoes nao convergiram em ' + SIM_MAX_VOLTAS
+                  + ' voltas (ultima diferenca ' + dif + ')');
+}
+
+// Os pesos do desenho `s` de uma equacao.
+function _simCoefDesenho(ek, s) {
+  var e = simEq(ek), c = {};
+  e.pars.forEach(function (pk) { c[pk] = e.draws[pk][s]; });
+  return c;
+}
+
+// O que cada equacao LE -- os cartoes que consome, mais a Selic do carry, que na (F) e
+// peca de uma conta e nao cartao consumido.
+function _simLeituras(ek) {
+  var e = simEq(ek), out = e.consome.slice();
+  if (e.carry) out.push(e.carry.juro);
+  return out;
+}
+
+// Quantas equacoes LIGADAS tem incerteza chegando ao que `ek` produz: ela e todas as que
+// a alimentam, direta ou indiretamente -- inclusive pelo laco. Contado no grafo de quem
+// le quem, e nao escrito: com a (I) ligada, cada variavel recebe a incerteza das cinco;
+// com a Selic imposta, o hiato recebe so a da (H).
+function _simNEq(ek, liga) {
+  var prod = {}, vis = {}, fila = [ek];
+  D.sim.eq_ordem.forEach(function (k) { if (liga[k]) prod[simEq(k).explica] = k; });
+  vis[ek] = true;
+  while (fila.length) {
+    _simLeituras(fila.shift()).forEach(function (v) {
+      var p = prod[v];
+      if (p && !vis[p]) { vis[p] = true; fila.push(p); }
+    });
+  }
+  return Object.keys(vis).length;
+}
+
+// O nome da faixa na legenda. Ele era a frase da caixa de marcar que foi cortada em
+// 2026-09-24 -- um controle que some tem de deixar a informacao dele para tras.
+//
+// A CONTAGEM e derivada e nao escrita: com a (E) entrando, "das duas equacoes" passou
+// a mentir na faixa do cambio, que propaga tres. Uma frase com numero escrito a mao ao
+// lado de uma faixa calculada e a quinta ocorrencia do mesmo defeito nesta pagina.
+var _SIM_NUM_EXT = { 2: 'duas', 3: 'três', 4: 'quatro', 5: 'cinco' };
+function _simRotFaixa(eq, nEq) {
+  return 'Faixa de ' + Math.round(eq.hdi_prob * 100) + '% dos ' + eq.n_draws
+    + ' conjuntos de pesos estimados'
+    + (nEq > 1 ? ', das ' + (_SIM_NUM_EXT[nEq] || String(nEq)) + ' equações' : '');
+}
+
+function _simQuantis(cols, prob) {
+  var lo = [], hi = [], a = (1 - prob) / 2, b = 1 - a;
   cols.forEach(function (col) {
     col.sort(function (p, q) { return p - q; });
     lo.push(col[Math.floor(a * (col.length - 1))]);
@@ -4178,42 +5135,113 @@ function _simFaixa(i0, h, ent) {
   return { lo: lo, hi: hi };
 }
 
+// As faixas, TODAS de uma vez: o desenho `s` de cada equacao ligada entra junto no
+// sistema, e o laco e resolvido para ele. Os posteriores foram estimados separadamente,
+// entao sao independentes, e parear amostras independentes e amostrar do produto -- nao
+// ha correlacao a preservar. Cada variavel sai com a incerteza de quem a alimenta, e so
+// dela, porque uma equacao que nao a alimenta nao a toca.
+//
+// `usar` restringe quais equacoes trocam de desenho (as outras ficam na mediana). Serve
+// para medir quanto da faixa vem de onde, e o default e todas as ligadas.
+//
+// O cambio sai em NIVEL, que e o que o cartao e o grafico mostram; a inflacao sai
+// tambem em doze meses, que e como o grafico dela se le. O quantil vem depois da
+// transformacao, calculado sobre o caminho ja transformado de cada desenho.
+function _simFaixasSistema(i0, h, entBase, liga, usar) {
+  var vars = [], n = null, prob = null, k, s;
+  D.sim.eq_ordem.forEach(function (ek) {
+    if (!liga[ek]) return;
+    var e = simEq(ek);
+    n = n == null ? e.n_draws : Math.min(n, e.n_draws);
+    prob = e.hdi_prob;
+    vars.push(e.explica);
+  });
+  var out = { naoConvergiu: 0 };
+  if (!vars.length) return out;
+  var cols = {};
+  vars.concat(liga.I ? ['i12'] : []).forEach(function (v) {
+    cols[v] = [];
+    for (k = 0; k < h; k++) cols[v].push([]);
+  });
+  for (s = 0; s < n; s++) {
+    var cs = {};
+    D.sim.eq_ordem.forEach(function (ek) {
+      cs[ek] = (liga[ek] && (!usar || usar[ek])) ? _simCoefDesenho(ek, s) : SIM.coef[ek];
+    });
+    var sol;
+    try {
+      sol = _simResolver(cs, i0, h, entBase, liga, SIM_TOL_FAIXA).ent;
+    } catch (err) {
+      // Contado e nao engolido: o teste exige zero, e a tela nao desenha uma faixa
+      // feita de menos desenhos do que diz.
+      out.naoConvergiu += 1;
+      continue;
+    }
+    vars.forEach(function (v) { for (k = 0; k < h; k++) cols[v][k].push(sol[v][k]); });
+    if (liga.I) {
+      var c12 = _simI12(i0, h, sol.infl_br);
+      for (k = 0; k < h; k++) cols.i12[k].push(c12[k]);
+    }
+  }
+  Object.keys(cols).forEach(function (v) { out[v] = _simQuantis(cols[v], prob); });
+  return out;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // BLOCO 1 — as equacoes
 // ═══════════════════════════════════════════════════════════════════════════════
-function _simNumInput(id, val, passo, extra) {
-  return '<input type="number" class="sim-num" id="' + id + '" value="' + val
-    + '" step="' + passo + '"' + (extra || '') + '>';
+// O bloco 1 NAO tem barra de controle -- decisao do usuario em 2026-09-24, que cortou
+// a ultima que restava ("o desenho": a faixa e o erro da equacao). A faixa continua
+// desenhada e nao se desliga: ela e a incerteza MEDIDA dos pesos passando pela
+// dinamica, e quem a le nao escolhe nada. O erro da equacao saiu junto, porque so
+// existia como aquela caixa de marcar. Os pesos, a equacao e a estimacao: aba Juros.
+
+// Quatro passos da caixa: grande o bastante para o efeito aparecer no grafico, pequeno
+// o bastante para nao ser absurdo em nenhuma das unidades da pagina. Uma primitiva sem
+// `passo` declarado cai no 1 de antes.
+// A premissa que carrega quase toda a projecao e a leitura de UM trimestre, e um
+// trimestre de inflacao relativa e barulhento. A frase compara o valor segurado com a
+// media recente do proprio dado, porque sem isso o leitor nao tem como saber se aquele
+// numero e tipico -- e a diferenca entre os dois vale varios pontos de cambio em tres
+// anos. Derivada da serie observada, nao escrita a mao.
+// Com a curva de Phillips ligada, so a metade americana e segurada: a brasileira e o que
+// a equacao produz, e dizer que o diferencial esta "segurado" mentiria sobre a metade
+// que se mexe.
+function _simPppNota() {
+  // O diferencial deixou de ter cartao em 2026-09-25: ele e conta da (F), feita das
+  // duas inflacoes. A nota continua falando dele porque e ele que entra na equacao --
+  // e a serie sai das duas metades, pela mesma formula que a conta usa.
+  if (SIM.fonte.infl_br === 'equacao') {
+    var segU = _simSegura('infl_us');
+    var us = simVar('infl_us').obs.filter(function (x) { return x != null; });
+    var ku = Math.min((segU && segU.k) || 1, us.length);
+    return 'com a inflação daqui vindo da curva de Phillips e a americana segurada '
+      + (segU && segU.modo === 'media'
+         ? 'na média dos últimos ' + ku + ' trimestres (' + fmt(_simMediaFinal(us, ku))
+           + '% por trimestre)'
+         : 'na última leitura (' + fmt(us[us.length - 1]) + '% por trimestre)');
+  }
+  var seg = _simSegura('infl_br');
+  var d = _simDerivObs('F', 'ppp');
+  var obs = d.filter(function (x) { return x != null; });
+  var ult = obs[obs.length - 1];
+  if (!seg || seg.modo !== 'media') {
+    return 'segurado na última leitura publicada (' + fmt(ult) + ' p.p. por trimestre)';
+  }
+  var k = Math.min(seg.k, obs.length);
+  return 'segurado na média dos últimos ' + k + ' trimestres ('
+    + fmt(_simMediaFinal(obs, k))
+    + ' p.p. por trimestre; a última leitura isolada foi ' + fmt(ult)
+    + ', e um trimestre sozinho é ruído)';
 }
 
-// Os pesos NAO sao controle. A simulacao vem dos INPUTS -- decisao do usuario em
-// 2026-09-22: *"por algum motivo voce entendeu que eu queria simular mudancas nos
-// parametros. Nao quero, a simulacao vem dos inputs"*. O que fica aqui e a faixa, que e
-// a incerteza MEDIDA dos pesos e nao um peso que alguem escolheu, e o erro da equacao.
-// Os valores estimados sao impressos so para leitura; quem os estima e a aba de Juros.
-function renderSimOpcoes() {
-  var eq = simEq(), md = eq.mediana;
-  document.getElementById('simOpcoes').innerHTML =
-    '<div class="sim-row">'
-    + '<span class="sim-lab">O desenho</span>'
-    + '<label class="sim-chk"><input type="checkbox" id="simFaixa"'
-    + (SIM.faixa ? ' checked' : '') + '> faixa de '
-    + Math.round(eq.hdi_prob * 100) + '% dos ' + eq.n_draws
-    + ' conjuntos de pesos estimados</label>'
-    + '<label class="sim-chk"><input type="checkbox" id="simChoque"'
-    + (SIM.choque ? ' checked' : '') + (SIM.faixa ? '' : ' disabled')
-    + '> somar também o erro da equação</label>'
-    + '<span class="sim-der">pesos fixos no estimado · '
-    + eq.lags.map(function (c, j) {
-        return (j + 1) + 'ª defasagem ' + fmt(md[c], 3);
-      }).join(' · ')
-    + ' · longo prazo ' + fmt(md[eq.mult], 2) + '</span>'
-    + '</div>';
+function _simChqPadrao(v) {
+  return Math.round((v && v.passo ? v.passo : 0.25) * 4 * 100) / 100;
 }
 
-function _simCoefPadrao() {
-  var eq = simEq(), c = {};
-  eq.pars.forEach(function (k) { c[k] = eq.mediana[k]; });
+function _simCoefPadrao(k) {
+  var eq = simEq(k), c = {};
+  eq.pars.forEach(function (pk) { c[pk] = eq.mediana[pk]; });
   return c;
 }
 
@@ -4221,14 +5249,17 @@ function _simCoefPadrao() {
 // a linha projetada flutua solta a direita do grafico, e o leitor tem de medir com o
 // olho a distancia entre o fim da observada e o comeco da conta. Ele e so desenho -- a
 // recursao nao o usa como saida, ele e uma das duas defasagens que a alimentam.
-function _simAncoraDesenho(r) {
-  var V = simVar('selic'), i = SIM.i0 - 1;
-  if (i < 0 || i >= V.obs.length || V.obs[i] == null) return null;
-  return { x: _simXIdx(i), rot: _simRotIdx(i), y: V.obs[i] };
+function _simAncoraSerie(serie, i0) {
+  var i = i0 - 1;
+  if (!serie || i < 0 || i >= serie.length || serie[i] == null) return null;
+  return { x: _simXIdx(i), rot: _simRotIdx(i), y: serie[i] };
+}
+function _simAncoraDesenho(r, chave) {
+  return _simAncoraSerie(simVar(chave || 'selic').obs, SIM.i0);
 }
 
 function _tracesSim(r) {
-  var eq = simEq(), tr = [], V = simVar('selic');
+  var eq = simEq('R'), tr = [], V = simVar('selic');
   var anc = _simAncoraDesenho(r);
   function comAncora(xs, ys, y0) {
     return anc ? { x: [anc.x].concat(xs), y: [y0].concat(ys) } : { x: xs, y: ys };
@@ -4240,14 +5271,40 @@ function _tracesSim(r) {
     hovertemplate: '<b>%{customdata[0]}</b><br>Selic observada: '
                    + '%{customdata[1]}<extra></extra>',
   });
+  // O juro nominal de equilibrio deixou de ser cartao em 2026-09-25: ele e a CONTA que
+  // a equacao faz com o juro real de dez anos e a meta. A serie desenhada sai da mesma
+  // formula, pelo `deriva` da propria equacao -- uma copia gravada no payload seria uma
+  // copia a mais para discordar da conta.
+  var ancObs = _simDerivObs('R', 'ancora');
   tr.push({
-    x: D.sim.x, y: simVar('ancora').obs, type: 'scatter', mode: 'lines',
-    name: 'Âncora (juro real de equilíbrio + meta)',
+    x: D.sim.x, y: ancObs, type: 'scatter', mode: 'lines',
+    name: 'Juro nominal de equilíbrio',
     line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' }, connectgaps: false,
-    customdata: simVar('ancora').obs.map(function (v, i) {
-      return [D.sim.rot[i], fmt(v) + '%'];
+    customdata: ancObs.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
     }),
-    hovertemplate: '<b>%{customdata[0]}</b><br>âncora: %{customdata[1]}<extra></extra>',
+    hovertemplate: '<b>%{customdata[0]}</b><br>juro nominal de equilíbrio: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  // Ele tambem e desenhado, entao tambem segue para a frente -- decisao do usuario em
+  // 2026-09-24. O trecho projetado NAO e uma extrapolacao inventada para o desenho: e
+  // exatamente `r.ent.ancora`, o caminho que a recursao consome, que e o ultimo valor
+  // repetido, o que foi digitado, ou o choque aplicado. Mesma regra das caixas -- a
+  // linha mostra o numero EM USO. Sem legenda propria: e a mesma linha continuando, e
+  // a faixa cinza da projecao ja diz onde o dado acaba.
+  var ancAnc = _simAncoraSerie(ancObs, SIM.i0);
+  var ancX = ancAnc ? [ancAnc.x].concat(r.g.x) : r.g.x;
+  var ancY = ancAnc ? [ancAnc.y].concat(r.anc) : r.anc.slice();
+  var ancRot = ancAnc ? [ancAnc.rot].concat(r.g.rot) : r.g.rot;
+  tr.push({
+    x: ancX, y: ancY, type: 'scatter', mode: 'lines', showlegend: false,
+    line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' },
+    customdata: ancY.map(function (v, i) {
+      return [ancRot[i], fmt(v) + '%',
+              (ancAnc && i === 0) ? '' : ' (premissa)'];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>juro nominal de equilíbrio'
+                   + '%{customdata[2]}: %{customdata[1]}<extra></extra>',
   });
   if (r.faixa) {
     // A faixa tambem parte do ponto observado, e la ela tem largura ZERO -- no
@@ -4257,8 +5314,7 @@ function _tracesSim(r) {
     tr.push({ x: hi.x, y: hi.y, type: 'scatter', mode: 'lines',
               showlegend: false, line: { width: 0 }, hoverinfo: 'skip' });
     tr.push({ x: lo.x, y: lo.y, type: 'scatter', mode: 'lines',
-              name: 'Faixa de ' + Math.round(eq.hdi_prob * 100) + '%'
-                    + (SIM.choque ? ' (parâmetro e erro)' : ' (parâmetro)'),
+              name: _simRotFaixa(eq, r.nEqR),
               line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band,
               hoverinfo: 'skip' });
   }
@@ -4284,6 +5340,368 @@ function _tracesSim(r) {
   return tr;
 }
 
+// O grafico da (F) desenha o NIVEL, e nao a variacao que a equacao produz. Um cenario
+// cambial se le em reais por dolar; a variacao e o que a conta devolve e e o que as
+// caixas do cartao mostram. As duas sao o mesmo caminho -- ver `_simNivelCambio`.
+function _tracesSimFx(r) {
+  var eq = simEq('F'), tr = [], f = r.fx;
+  var anc = (SIM.i0 - 1 >= 0 && eq.ptax[SIM.i0 - 1] != null)
+    ? { x: _simXIdx(SIM.i0 - 1), rot: _simRotIdx(SIM.i0 - 1), y: eq.ptax[SIM.i0 - 1] }
+    : null;
+  function comAncora(ys, y0) {
+    return anc ? { x: [anc.x].concat(r.g.x), y: [y0].concat(ys) }
+               : { x: r.g.x, y: ys };
+  }
+  tr.push({
+    x: D.sim.x, y: eq.ptax, type: 'scatter', mode: 'lines',
+    name: 'Câmbio observado', line: { color: SIM_COR.obs, width: 2 },
+    connectgaps: false,
+    customdata: eq.ptax.map(function (v, i) {
+      return [D.sim.rot[i], v == null ? '—' : 'R$ ' + fmt(v)];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>câmbio observado: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  if (f.faixa) {
+    var hi = comAncora(f.faixa.hi, anc && anc.y);
+    var lo = comAncora(f.faixa.lo, anc && anc.y);
+    tr.push({ x: hi.x, y: hi.y, type: 'scatter', mode: 'lines',
+              showlegend: false, line: { width: 0 }, hoverinfo: 'skip' });
+    tr.push({ x: lo.x, y: lo.y, type: 'scatter', mode: 'lines',
+              name: _simRotFaixa(eq, f.nEq),
+              line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band,
+              hoverinfo: 'skip' });
+  }
+  var cam = comAncora(f.nivel, anc && anc.y);
+  var rot = anc ? [anc.rot].concat(r.g.rot) : r.g.rot;
+  var vr = anc ? [null].concat(f.cam) : f.cam.slice();
+  var st = _step(cam.x.length);
+  tr.push({
+    x: cam.x, y: cam.y, type: 'scatter',
+    mode: LABELS_ON['ch-simfx'] ? 'lines+markers+text' : 'lines+markers',
+    name: f.nomeCam,
+    line: { color: SIM_COR.sim, width: 2.4 },
+    marker: { size: 5, color: SIM_COR.sim },
+    text: cam.y.map(function (v, i) { return i % st === 0 ? fmtLabel(v) : ''; }),
+    textposition: 'top center',
+    textfont: { family: 'JetBrains Mono', size: 9, color: SIM_COR.sim },
+    customdata: cam.y.map(function (v, i) {
+      return [rot[i], 'R$ ' + fmt(v),
+              (anc && i === 0) ? ' (observado, de onde parte)'
+                               : ' · ' + (vr[i] >= 0 ? '+' : '') + fmt(vr[i]) + '% no trimestre'];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>' + f.nomeCam
+                   + ': %{customdata[1]}%{customdata[2]}<extra></extra>',
+  });
+  return tr;
+}
+
+// A regua de tempo dos graficos do simulador: a extensao e a UNIAO do observado com a
+// grade simulada, senao os 12 trimestres projetados saem desenhados e fora da tela. E
+// ela e refeita quando a ponta direita anda, nao so na primeira pintura. Era codigo
+// repetido nos dois graficos; com o terceiro entrando, virou funcao.
+function _simRegua(div, r, jaExiste) {
+  var ultObs = D.sim.x[D.sim.x.length - 1];
+  var todo = D.sim.x.concat(r.g.x.filter(function (d) { return d > ultObs; }));
+  var fim = todo[todo.length - 1];
+  if (jaExiste && fim === SIM._fimEixo[div]) return;
+  SIM._fimEixo[div] = fim;
+  var opts = renderQuickRangeButtons(document.getElementById('rp-' + div), div, todo,
+                                     quickRangeOptions(todo).length - 1);
+  var tudo = opts[opts.length - 1];
+  if (tudo) Plotly.relayout(div, { 'xaxis.range': [tudo.from, tudo.to] });
+}
+
+// O grafico da (E): a expectativa observada, a que a conta produz e a meta, que e para
+// onde ela converge quando nada a empurra. A meta entra porque sem ela o leitor nao
+// tem como ver se a expectativa esta ancorada -- e a distancia ate ela que a regra de
+// juros consome.
+function _tracesSimExp(r) {
+  var eq = simEq('E'), tr = [], e = r.exp;
+  var anc = _simAncoraSerie(eq.y, SIM.i0);
+  function comAncora(ys, y0) {
+    return anc ? { x: [anc.x].concat(r.g.x), y: [y0].concat(ys) }
+               : { x: r.g.x, y: ys };
+  }
+  tr.push({
+    x: D.sim.x, y: eq.y, type: 'scatter', mode: 'lines',
+    name: 'Expectativa observada (Focus)',
+    line: { color: SIM_COR.obs, width: 2 }, connectgaps: false,
+    customdata: eq.y.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>expectativa observada: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  // A meta atravessa o corte junto, pela mesma regra da ancora no grafico da (R): ela
+  // e premissa que a conta consome nos trimestres projetados, e uma linha que parasse
+  // no ultimo dado esconderia justamente para onde a conta esta convergindo.
+  var ancMeta = _simAncoraSerie(eq.meta_obs, SIM.i0);
+  var mX = ancMeta ? [ancMeta.x].concat(r.g.x) : r.g.x;
+  var mY = ancMeta ? [ancMeta.y].concat(r.ent[eq.meta]) : r.ent[eq.meta].slice();
+  var mRot = ancMeta ? [ancMeta.rot].concat(r.g.rot) : r.g.rot;
+  tr.push({
+    x: D.sim.x, y: eq.meta_obs, type: 'scatter', mode: 'lines', name: 'Meta',
+    line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' }, connectgaps: false,
+    customdata: eq.meta_obs.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>meta: %{customdata[1]}<extra></extra>',
+  });
+  tr.push({
+    x: mX, y: mY, type: 'scatter', mode: 'lines', showlegend: false,
+    line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' },
+    customdata: mY.map(function (v, i) {
+      return [mRot[i], fmt(v) + '%', (ancMeta && i === 0) ? '' : ' (premissa)'];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>meta%{customdata[2]}: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  if (e.faixa) {
+    var hi = comAncora(e.faixa.hi, anc && anc.y);
+    var lo = comAncora(e.faixa.lo, anc && anc.y);
+    tr.push({ x: hi.x, y: hi.y, type: 'scatter', mode: 'lines',
+              showlegend: false, line: { width: 0 }, hoverinfo: 'skip' });
+    tr.push({ x: lo.x, y: lo.y, type: 'scatter', mode: 'lines',
+              name: _simRotFaixa(eq, e.nEq),
+              line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band,
+              hoverinfo: 'skip' });
+  }
+  var cam = comAncora(e.cam, anc && anc.y);
+  var rot = anc ? [anc.rot].concat(r.g.rot) : r.g.rot;
+  var st = _step(cam.x.length);
+  tr.push({
+    x: cam.x, y: cam.y, type: 'scatter',
+    mode: LABELS_ON['ch-simexp'] ? 'lines+markers+text' : 'lines+markers',
+    name: e.nomeCam,
+    line: { color: SIM_COR.sim, width: 2.4 },
+    marker: { size: 5, color: SIM_COR.sim },
+    text: cam.y.map(function (v, i) { return i % st === 0 ? fmtLabel(v) : ''; }),
+    textposition: 'top center',
+    textfont: { family: 'JetBrains Mono', size: 9, color: SIM_COR.sim },
+    customdata: cam.y.map(function (v, i) {
+      return [rot[i], fmt(v) + '%',
+              (anc && i === 0) ? ' (observado, de onde parte)' : ''];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>' + e.nomeCam
+                   + ': %{customdata[1]}%{customdata[2]}<extra></extra>',
+  });
+  return tr;
+}
+
+function desenharSimExp(jaExiste) {
+  var r = SIM._ultimo;
+  CHART_META['ch-simexp'].title = r.exp.titulo;
+  var traces = _tracesSimExp(r);
+  var layout = mkLayout({
+    yaxis: { title: EIXO_SIMEXP, ticksuffix: '%' },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0, y: -0.16,
+              font: { family: 'Barlow', size: 10, color: '#7A88A8' } },
+    margin: { l: 52, r: 18, t: 8, b: 58 },
+    shapes: [{ type: 'rect', xref: 'x', yref: 'paper', layer: 'below',
+               x0: r.g.x[0], x1: r.g.x[r.g.x.length - 1], y0: 0, y1: 1,
+               fillcolor: 'rgba(187,155,29,0.07)', line: { width: 0 } }],
+  });
+  if (jaExiste) Plotly.react('ch-simexp', traces, layout, PLOTLY_CONFIG);
+  else Plotly.newPlot('ch-simexp', traces, layout, PLOTLY_CONFIG);
+  describeChart('ch-simexp', traces, [], EIXO_SIMEXP, { freq: 'tri' });
+  if (!jaExiste) _bindYAutofit('ch-simexp');
+  _simRegua('ch-simexp', r, jaExiste);
+}
+
+function _tracesSimIs(r) {
+  var eq = simEq('H'), tr = [], e = r.is;
+  var anc = _simAncoraSerie(eq.y, SIM.i0);
+  function comAncora(ys, y0) {
+    return anc ? { x: [anc.x].concat(r.g.x), y: [y0].concat(ys) }
+               : { x: r.g.x, y: ys };
+  }
+  tr.push({
+    x: D.sim.x, y: eq.y, type: 'scatter', mode: 'lines',
+    name: 'Hiato publicado (Banco Central)',
+    line: { color: SIM_COR.obs, width: 2 }, connectgaps: false,
+    customdata: eq.y.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>hiato publicado: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  if (e.faixa) {
+    var hi = comAncora(e.faixa.hi, anc && anc.y);
+    var lo = comAncora(e.faixa.lo, anc && anc.y);
+    tr.push({ x: hi.x, y: hi.y, type: 'scatter', mode: 'lines',
+              showlegend: false, line: { width: 0 }, hoverinfo: 'skip' });
+    tr.push({ x: lo.x, y: lo.y, type: 'scatter', mode: 'lines',
+              name: _simRotFaixa(eq, e.nEq),
+              line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band,
+              hoverinfo: 'skip' });
+  }
+  var cam = comAncora(e.cam, anc && anc.y);
+  var rot = anc ? [anc.rot].concat(r.g.rot) : r.g.rot;
+  var st = _step(cam.x.length);
+  tr.push({
+    x: cam.x, y: cam.y, type: 'scatter',
+    mode: LABELS_ON['ch-simis'] ? 'lines+markers+text' : 'lines+markers',
+    name: e.nomeCam,
+    line: { color: SIM_COR.sim, width: 2.4 },
+    marker: { size: 5, color: SIM_COR.sim },
+    text: cam.y.map(function (v, i) { return i % st === 0 ? fmtLabel(v) : ''; }),
+    textposition: 'top center',
+    textfont: { family: 'JetBrains Mono', size: 9, color: SIM_COR.sim },
+    customdata: cam.y.map(function (v, i) {
+      return [rot[i], fmt(v) + '%',
+              (anc && i === 0) ? ' (observado, de onde parte)' : ''];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>' + e.nomeCam
+                   + ': %{customdata[1]}%{customdata[2]}<extra></extra>',
+  });
+  return tr;
+}
+
+function desenharSimIs(jaExiste) {
+  var r = SIM._ultimo;
+  CHART_META['ch-simis'].title = r.is.titulo;
+  var traces = _tracesSimIs(r);
+  var layout = mkLayout({
+    // O zero e o repouso do hiato -- a conta nao tem termo constante --, entao ele e
+    // a referencia do grafico, como a meta e a do grafico das expectativas.
+    yaxis: { title: EIXO_SIMIS, ticksuffix: '%',
+             zeroline: true, zerolinecolor: 'rgba(31,40,83,0.25)', zerolinewidth: 1 },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0, y: -0.16,
+              font: { family: 'Barlow', size: 10, color: '#7A88A8' } },
+    margin: { l: 52, r: 18, t: 8, b: 58 },
+    shapes: [{ type: 'rect', xref: 'x', yref: 'paper', layer: 'below',
+               x0: r.g.x[0], x1: r.g.x[r.g.x.length - 1], y0: 0, y1: 1,
+               fillcolor: 'rgba(187,155,29,0.07)', line: { width: 0 } }],
+  });
+  if (jaExiste) Plotly.react('ch-simis', traces, layout, PLOTLY_CONFIG);
+  else Plotly.newPlot('ch-simis', traces, layout, PLOTLY_CONFIG);
+  describeChart('ch-simis', traces, [], EIXO_SIMIS, { freq: 'tri' });
+  if (!jaExiste) _bindYAutofit('ch-simis');
+  _simRegua('ch-simis', r, jaExiste);
+}
+
+// O grafico da (I): o IPCA de DOZE MESES, e nao o do trimestre que a equacao produz.
+// Inflacao se le em doze meses, e o trimestral tem a sazonalidade inteira -- um serrote
+// que esconde para onde a inflacao esta indo. A conversao e a composicao exata dos
+// quatro trimestres, a mesma que a (E) le, e o hover traz o trimestral ao lado.
+// A meta entra como na (E): e para onde a inflacao converge quando nada a empurra.
+function _tracesSimIpca(r) {
+  var eq = simEq('I'), tr = [], e = r.infl, M = simVar('meta_12m');
+  var anc = _simAncoraSerie(eq.i12_obs, SIM.i0);
+  function comAncora(ys, y0) {
+    return anc ? { x: [anc.x].concat(r.g.x), y: [y0].concat(ys) }
+               : { x: r.g.x, y: ys };
+  }
+  tr.push({
+    x: D.sim.x, y: eq.i12_obs, type: 'scatter', mode: 'lines',
+    name: 'IPCA observado, 12 meses',
+    line: { color: SIM_COR.obs, width: 2 }, connectgaps: false,
+    customdata: eq.i12_obs.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>IPCA em 12 meses: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  var ancMeta = _simAncoraSerie(M.obs, SIM.i0);
+  var mX = ancMeta ? [ancMeta.x].concat(r.g.x) : r.g.x;
+  var mY = ancMeta ? [ancMeta.y].concat(r.ent.meta_12m) : r.ent.meta_12m.slice();
+  var mRot = ancMeta ? [ancMeta.rot].concat(r.g.rot) : r.g.rot;
+  tr.push({
+    x: D.sim.x, y: M.obs, type: 'scatter', mode: 'lines', name: 'Meta',
+    line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' }, connectgaps: false,
+    customdata: M.obs.map(function (v, i) {
+      return [D.sim.rot[i], (v == null ? '—' : fmt(v) + '%')];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>meta: %{customdata[1]}<extra></extra>',
+  });
+  tr.push({
+    x: mX, y: mY, type: 'scatter', mode: 'lines', showlegend: false,
+    line: { color: SIM_COR.anc, width: 1.4, dash: 'dot' },
+    customdata: mY.map(function (v, i) {
+      return [mRot[i], fmt(v) + '%', (ancMeta && i === 0) ? '' : ' (premissa)'];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>meta%{customdata[2]}: '
+                   + '%{customdata[1]}<extra></extra>',
+  });
+  if (e.faixa) {
+    var hi = comAncora(e.faixa.hi, anc && anc.y);
+    var lo = comAncora(e.faixa.lo, anc && anc.y);
+    tr.push({ x: hi.x, y: hi.y, type: 'scatter', mode: 'lines',
+              showlegend: false, line: { width: 0 }, hoverinfo: 'skip' });
+    tr.push({ x: lo.x, y: lo.y, type: 'scatter', mode: 'lines',
+              name: _simRotFaixa(eq, e.nEq),
+              line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band,
+              hoverinfo: 'skip' });
+  }
+  var cam = comAncora(e.i12, anc && anc.y);
+  var rot = anc ? [anc.rot].concat(r.g.rot) : r.g.rot;
+  var tri = anc ? [null].concat(e.cam) : e.cam.slice();
+  var st = _step(cam.x.length);
+  tr.push({
+    x: cam.x, y: cam.y, type: 'scatter',
+    mode: LABELS_ON['ch-simipca'] ? 'lines+markers+text' : 'lines+markers',
+    name: e.nomeCam + ', 12 meses',
+    line: { color: SIM_COR.sim, width: 2.4 },
+    marker: { size: 5, color: SIM_COR.sim },
+    text: cam.y.map(function (v, i) { return i % st === 0 ? fmtLabel(v) : ''; }),
+    textposition: 'top center',
+    textfont: { family: 'JetBrains Mono', size: 9, color: SIM_COR.sim },
+    customdata: cam.y.map(function (v, i) {
+      return [rot[i], fmt(v) + '%',
+              (anc && i === 0) ? ' (observado, de onde parte)'
+                               : ' · ' + fmt(tri[i]) + '% no trimestre'];
+    }),
+    hovertemplate: '<b>%{customdata[0]}</b><br>' + e.nomeCam
+                   + ', 12 meses: %{customdata[1]}%{customdata[2]}<extra></extra>',
+  });
+  return tr;
+}
+
+function desenharSimIpca(jaExiste) {
+  var r = SIM._ultimo;
+  CHART_META['ch-simipca'].title = r.infl.titulo;
+  var traces = _tracesSimIpca(r);
+  var layout = mkLayout({
+    yaxis: { title: EIXO_SIMIPCA, ticksuffix: '%' },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0, y: -0.16,
+              font: { family: 'Barlow', size: 10, color: '#7A88A8' } },
+    margin: { l: 52, r: 18, t: 8, b: 58 },
+    shapes: [{ type: 'rect', xref: 'x', yref: 'paper', layer: 'below',
+               x0: r.g.x[0], x1: r.g.x[r.g.x.length - 1], y0: 0, y1: 1,
+               fillcolor: 'rgba(187,155,29,0.07)', line: { width: 0 } }],
+  });
+  if (jaExiste) Plotly.react('ch-simipca', traces, layout, PLOTLY_CONFIG);
+  else Plotly.newPlot('ch-simipca', traces, layout, PLOTLY_CONFIG);
+  describeChart('ch-simipca', traces, [], EIXO_SIMIPCA, { freq: 'tri' });
+  if (!jaExiste) _bindYAutofit('ch-simipca');
+  _simRegua('ch-simipca', r, jaExiste);
+}
+
+function desenharSimFx(jaExiste) {
+  var r = SIM._ultimo;
+  CHART_META['ch-simfx'].title = r.fx.titulo;
+  var traces = _tracesSimFx(r);
+  var layout = mkLayout({
+    yaxis: { title: EIXO_SIMFX, tickprefix: 'R$ ' },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0, y: -0.16,
+              font: { family: 'Barlow', size: 10, color: '#7A88A8' } },
+    margin: { l: 62, r: 18, t: 8, b: 58 },
+    shapes: [{ type: 'rect', xref: 'x', yref: 'paper', layer: 'below',
+               x0: r.g.x[0], x1: r.g.x[r.g.x.length - 1], y0: 0, y1: 1,
+               fillcolor: 'rgba(187,155,29,0.07)', line: { width: 0 } }],
+  });
+  if (jaExiste) Plotly.react('ch-simfx', traces, layout, PLOTLY_CONFIG);
+  else Plotly.newPlot('ch-simfx', traces, layout, PLOTLY_CONFIG);
+  describeChart('ch-simfx', traces, [], EIXO_SIMFX, { freq: 'tri' });
+  if (!jaExiste) _bindYAutofit('ch-simfx');
+  _simRegua('ch-simfx', r, jaExiste);
+}
+
 function desenharSim(jaExiste) {
   var r = SIM._ultimo;
   CHART_META['ch-sim'].title = r.titulo;
@@ -4305,39 +5723,25 @@ function desenharSim(jaExiste) {
   else Plotly.newPlot('ch-sim', traces, layout, PLOTLY_CONFIG);
   describeChart('ch-sim', traces, [], EIXO_SIM, { freq: 'tri' });
   if (!jaExiste) _bindYAutofit('ch-sim');
-  // A regua sai da extensao REALMENTE plotada, e aqui ela passa do ultimo dado: com a
-  // janela padrao a frente, um "Tudo" tirado so de `D.sim.x` deixaria os 12 trimestres
-  // projetados fora da tela -- o grafico desenhado e invisivel. Por isso ela e refeita
-  // quando a ponta direita anda, e nao so na primeira pintura.
-  var ultObs = D.sim.x[D.sim.x.length - 1];
-  var todo = D.sim.x.concat(r.g.x.filter(function (d) { return d > ultObs; }));
-  var fim = todo[todo.length - 1];
-  if (!jaExiste || fim !== SIM._fimEixo) {
-    SIM._fimEixo = fim;
-    var opts = renderQuickRangeButtons(document.getElementById('rp-ch-sim'), 'ch-sim',
-                                       todo, quickRangeOptions(todo).length - 1);
-    var tudo = opts[opts.length - 1];
-    if (tudo) Plotly.relayout('ch-sim', { 'xaxis.range': [tudo.from, tudo.to] });
-  }
+  _simRegua('ch-sim', r, jaExiste);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BLOCO 2 — os inputs
 // ═══════════════════════════════════════════════════════════════════════════════
-// A janela nao se escolhe: ela comeca no trimestre seguinte ao fim da janela estimada e
-// vai por `SIM.h`. O que a barra faz e DIZER qual e, e quantos trimestres dela ja tem
-// dado publicado -- que e o numero que cresce sozinho conforme o dado sai.
+// Nem a janela nem o horizonte se escolhem: a projecao comeca no trimestre seguinte ao
+// fim da janela estimada e vai por `D.sim.h_padrao` trimestres -- decisao do usuario em
+// 2026-09-24, *"deixe sempre 12T"*. A barra DIZ qual e a janela e quantos trimestres
+// dela ja tem dado publicado -- que e o numero que cresce sozinho conforme o dado sai.
 function renderSimJanela() {
-  var g = _simGrade(SIM.i0, SIM.h), eq = simEq();
+  var g = _simGrade(SIM.i0, SIM.h), eq = simEq('R');
   var cob = _simCobertura('selic', SIM.i0, SIM.h);
   var nPub = cob.filter(Boolean).length;
   document.getElementById('simJanela').innerHTML =
     '<div class="sim-row">'
     + '<span class="sim-lab">A projeção</span>'
-    + '<span class="sim-un">' + g.rot[0] + ' a ' + g.rot[g.rot.length - 1] + '</span>'
-    + '<span class="sim-lab">Por</span>'
-    + _simNumInput('simH', SIM.h, 1, ' min="1" max="' + D.sim.h_max + '"')
-    + '<span class="sim-un">trimestres (máximo ' + D.sim.h_max + ')</span>'
+    + '<span class="sim-un">' + g.rot[0] + ' a ' + g.rot[g.rot.length - 1]
+    + ' · ' + SIM.h + ' trimestres</span>'
     + '<span class="sim-der">começa onde a estimação parou, em ' + eq.est_fim
     + (nPub
        ? ' · ' + nPub + (nPub === 1 ? ' trimestre já publicado, travado'
@@ -4346,14 +5750,20 @@ function renderSimJanela() {
     + '</span></div>';
 }
 
+// O SELO fala desta rodada; o GRUPO em que o cartao esta fala do modelo. Os dois podem
+// discordar de proposito: uma variavel que o modelo produz com uma equacao que ainda
+// nao entrou no simulador e endogena pelo modelo e premissa aqui. Foi o caso da
+// expectativa e depois da inflacao; desde 2026-09-28 as cinco estao dentro, e o ramo
+// `futura` fica para a proxima equacao. Ramificar pelo `tipo` faria o selo prometer uma
+// equacao que nao esta rodando.
 function _simSelo(v) {
-  if (v.tipo === 'endogena') {
+  if (v.produzida_por && v.produtor_no_sim) {
     return '<span class="sim-selo endo">endógena · vem da equação ('
       + v.produzida_por + ')</span>';
   }
-  if (v.produzida_por && !v.produtor_no_sim) {
-    return '<span class="sim-selo futura">exógena hoje · endógena quando a equação ('
-      + v.produzida_por + ') entrar</span>';
+  if (v.produzida_por) {
+    return '<span class="sim-selo futura">endógena no modelo · a equação ('
+      + v.produzida_por + ') ainda não está no simulador</span>';
   }
   return '<span class="sim-selo exo">exógena</span>';
 }
@@ -4363,8 +5773,7 @@ function _simSelo(v) {
 // -- a mesma distincao que o estado `final` das caixas do FX Report carrega, e que
 // sem ela deixa uma caixa de 2027 com a mesma cara de uma de 2010.
 function _simCobertura(key, i0, h) {
-  var v = D.sim.var[key];
-  var serie = (v && v.obs != null) ? v.obs : simPrim(key).obs;
+  var serie = simVar(key).obs;
   var ultimo = -1, out = [];
   for (var i = 0; i < serie.length; i++) { if (serie[i] != null) ultimo = i; }
   for (var k = 0; k < h; k++) out.push(i0 + k <= ultimo);
@@ -4378,7 +5787,24 @@ function _simCobertura(key, i0, h) {
 // E a trava e por TRIMESTRE, nao por cartao, que e a pratica do FX Report: um trimestre
 // ja publicado nunca e editavel, em fonte nenhuma, porque um palpite nao sobrescreve
 // dado que ja se conhece. Conforme o dado sai, a caixa vira verde sozinha.
-function _simCaixas(escopo, chave, vals, passo, digitavel, rot, cob, daEq) {
+// `extra` e uma segunda leitura do MESMO numero, uma por caixa, acrescentada ao
+// `title`. Existe por causa do cartao do cambio, que mostra o nivel e cuja equacao
+// trabalha na variacao: o que o cartao deixou de imprimir tem de continuar alcançável,
+// senao a troca de unidade custa uma informacao em vez de so trocar a unidade.
+// O que a caixa dourada diz depende da regra de segurar daquela variavel: repetir o
+// ultimo valor e segurar a media de k trimestres sao afirmacoes diferentes, e a mesma
+// frase nas duas mentiria numa.
+function _simTitSeg(seg) {
+  return seg && seg.modo === 'media'
+    ? 'Passou do último dado publicado: é a média dos últimos ' + seg.k
+      + ' trimestres publicados, segurada para a frente. Numa taxa a leitura de um '
+      + 'trimestre é ruído — não é projeção de ninguém, é o que se sabe sem projetar'
+    : 'Passou do último dado publicado: é o último valor conhecido, repetido. Não é '
+      + 'projeção de ninguém — é a ausência dela';
+}
+
+function _simCaixas(escopo, chave, vals, passo, digitavel, rot, cob, daEq, extra,
+                    seg) {
   return '<div class="sim-caixas">' + vals.slice(0, SIM.h).map(function (v, k) {
     var est = daEq ? ' eqp' : cob[k] ? ' obs' : (digitavel ? '' : ' seg');
     var edita = digitavel && !daEq && !cob[k];
@@ -4387,8 +5813,14 @@ function _simCaixas(escopo, chave, vals, passo, digitavel, rot, cob, daEq) {
       ? ' title="A equação produz este número — é o que a linha do gráfico desenha"'
       : cob[k]
       ? ' title="Já publicado — o número é o dado, e não se sobrescreve dado com palpite"'
-      : (digitavel ? ''
-         : ' title="Passou do último dado publicado: é o último valor conhecido, repetido. Não é projeção de ninguém — é a ausência dela"');
+      : (digitavel ? '' : ' title="' + _simTitSeg(seg) + '"');
+    if (extra && extra[k]) {
+      // `tit` ja vem com as aspas fechadas, ou vazio. Montar por `replace` nas duas
+      // pontas produzia ` title=+0,64% ...` no caso vazio -- HTML quebrado e sem erro.
+      tit = tit
+        ? tit.slice(0, -1) + ' · ' + extra[k] + '"'
+        : ' title="' + extra[k] + '"';
+    }
     return '<div class="sim-caixa">'
       + '<div class="sim-caixa-rot' + est + '">' + rot[k] + marca + '</div>'
       + '<input type="number" class="sim-caixa-in' + est + '" data-escopo="' + escopo
@@ -4402,9 +5834,12 @@ function _simCaixas(escopo, chave, vals, passo, digitavel, rot, cob, daEq) {
 // e as duas existem separadas porque foram pedidas separadas e porque a segunda se
 // escreve com dois campos em vez de tres.
 var SIM_CHQ_TIPOS = [
-  { k: 'rampa', rot: 'sobe até o valor e fica lá' },
-  { k: 'decai', rot: 'entra de uma vez e vai passando' },
-  { k: 'const', rot: 'fica alguns trimestres e depois vai passando' },
+  { k: 'rampa', rot: 'Choque permanente',
+    desc: 'Sobe até o valor ao longo dos trimestres que você disser e fica lá' },
+  { k: 'decai', rot: 'Choque com decaimento',
+    desc: 'Entra de uma vez no valor cheio e vai passando, na proporção que você disser' },
+  { k: 'const', rot: 'Choque constante + decaimento',
+    desc: 'Fica no valor cheio pelos trimestres que você disser e só então vai passando' },
 ];
 
 // O acrescimo trimestre a trimestre. `n` conta trimestres e `rho` e o que sobra de um
@@ -4425,7 +5860,7 @@ function _simCampoChq(k, campo, val, extra) {
     + '" data-chqk="' + k + '" value="' + val + '"' + extra + '>';
 }
 
-function _simChoquePainel(k, unidade, passo, pai) {
+function _simChoquePainel(k, unidade, passo) {
   var c = SIM.chq[k], tipo = c.tipo || 'rampa';
   var forma = '';
   if (tipo === 'rampa') {
@@ -4449,17 +5884,19 @@ function _simChoquePainel(k, unidade, passo, pai) {
   return '<div class="sim-choque">'
     + '<div class="sim-chq-campo"><span>Choque de</span>'
     + _simCampoChq(k, 'v', c.v, ' step="' + passo + '"')
-    + '<span>' + unidade + ', que</span></div>'
+    // Sem o "que" que havia aqui: ele regia a frase que o seletor trazia ("...que sobe
+    // até o valor e fica lá"). Com um NOME no lugar da frase, o regente fica pendurado.
+    + '<span>' + unidade + ' ·</span></div>'
     + '<div class="sim-chq-campo"><select class="sim-chq-sel" data-chq="tipo" '
     + 'data-chqk="' + k + '">'
     + SIM_CHQ_TIPOS.map(function (t) {
-        return '<option value="' + t.k + '"' + (t.k === tipo ? ' selected' : '') + '>'
-          + t.rot + '</option>';
+        return '<option value="' + t.k + '"' + (t.k === tipo ? ' selected' : '')
+          + ' title="' + t.desc + '">' + t.rot + '</option>';
       }).join('')
     + '</select></div>'
     + forma
-    + '<button type="button" class="sim-chq-aplica" data-aplica="' + k + '"'
-    + (pai ? ' data-pai="' + pai + '"' : '') + '>Aplicar</button>'
+    + '<button type="button" class="sim-chq-aplica" data-aplica="' + k + '">'
+    + 'Aplicar</button>'
     + '<span class="sim-chq-pre">soma ' + pre
     + (SIM.h > 8 ? ' …' : '') + '</span></div>';
 }
@@ -4471,8 +5908,7 @@ function _simChoquePainel(k, unidade, passo, pai) {
 function _simCardVar(k, g) {
   var v = simVar(k), fonte = SIM.fonte[k], digit = fonte === 'digitado';
   var r = SIM._ultimo;
-  var temAg = simTemAgregado(v);
-  var cob = _simCobertura(temAg ? k : v.partes[0], SIM.i0, SIM.h);
+  var cob = _simCobertura(k, SIM.i0, SIM.h);
 
   var modo = '<div class="sim-modo">' + v.fontes.map(function (f) {
     return '<div class="sim-modo-btn' + (f === fonte ? ' on' : '') + '" data-fonte="'
@@ -4484,52 +5920,30 @@ function _simCardVar(k, g) {
     + 'desta variável é ' + SIM_FONTE_ROT[v.fonte_padrao] + '">Voltar ao padrão</span>'
     + '<span class="sim-link" data-choque="' + k + '">'
     + (SIM.chqAberto[k] ? 'Fechar o choque' : 'Aplicar choque…') + '</span>';
-  if (v.partes && v.partes.length) {
-    links += '<span class="sim-link" data-partes="' + k + '">'
-      + (SIM.aberto[k]
-         ? (v.op ? 'Fechar as partes' : 'Fechar as janelas')
-         : (v.op ? 'Abrir em partes (' + v.formula.replace(/_/g, ' ') + ')'
-                 : 'Abrir as duas janelas'))
-      + '</span>';
-  }
-  if (temAg) {
-    links += '<span class="sim-link" data-graf="' + k + '">'
-      + (SIM.grafAberto[k] ? 'Esconder o gráfico' : 'Ver o gráfico da série')
-      + '</span>';
-  }
+  links += '<span class="sim-link" data-graf="' + k + '">'
+    + (SIM.grafAberto[k] ? 'Esconder o gráfico' : 'Ver o gráfico da série')
+    + '</span>';
 
-  var agora = temAg
-    ? 'Hoje em ' + fmt(_simUltimoObs(v.obs), 2) + ' ' + v.unidade
-      + ' (' + _simRotUltimo(v.obs) + ')'
-    : 'Sem série própria — cada janela é uma linha aqui embaixo';
+  var agora = 'Hoje em ' + fmt(_simUltimoObs(v.obs), 2) + ' ' + v.unidade
+    + ' (' + _simRotUltimo(v.obs) + ')';
 
   // Em Endogeno o que vale e o caminho que a equacao produziu, e nao as caixas
   // carregadas do observado: sao numeros diferentes, e mostrar o segundo faria a caixa
   // contradizer a linha desenhada logo acima.
   var daEq = fonte === 'equacao' && r && r.produzido && r.produzido[k];
-  var corpo = '';
-  if (temAg) {
-    corpo += _simCaixas('var', k, daEq || SIM.cx[k], v.passo, digit, g.rot, cob, !!daEq);
+  // A variacao implicita de cada trimestre, para o cartao do cambio. Ela vem do
+  // caminho JA RESOLVIDO desta rodada -- e nao recalculada aqui --, que e o que
+  // impede o rotulo de discordar da linha desenhada logo acima.
+  var extra = null;
+  if (v.em_nivel_de_variacao && r && r.fx && r.fx.cam) {
+    extra = r.fx.cam.map(function (d) {
+      return (d >= 0 ? '+' : '') + fmt(d) + v.unidade_eq;
+    });
   }
   // `digit` diz se a FONTE permite digitar; a trava por trimestre publicado e decidida
   // dentro de `_simCaixas`, contra `cob`.
-  if (v.partes && v.partes.length && SIM.aberto[k]) {
-    corpo += '<div class="sim-partes">' + v.partes.map(function (p) {
-      var pr = simPrim(p), pc = _simCobertura(p, SIM.i0, SIM.h);
-      return '<div class="sim-parte">'
-        + '<div class="sim-parte-hdr"><b>' + pr.nome + '</b> <span class="sim-un">'
-        + pr.unidade + ' · ' + pr.fonte_dado + '</span>'
-        + '<span class="sim-acoes" style="margin-left:10px">'
-        + '<span class="sim-link" data-choque="' + p + '">'
-        + (SIM.chqAberto[p] ? 'Fechar o choque' : 'Aplicar choque…') + '</span></span>'
-        + '</div>'
-        + '<div class="sim-parte-desc">' + pr.desc + '</div>'
-        + _simCaixas('prim', p, SIM.px[p], v.passo, digit, g.rot, pc, false)
-        + (SIM.chqAberto[p]
-           ? _simChoquePainel(p, pr.unidade, v.passo, k) : '')
-        + '</div>';
-    }).join('') + '</div>';
-  }
+  var corpo = _simCaixas('var', k, daEq || SIM.cx[k], v.passo, digit, g.rot, cob,
+                         !!daEq, extra, _simSegura(k));
 
   return '<div class="sim-card" id="simcard-' + k + '">'
     + '<div class="sim-card-hdr">'
@@ -4539,8 +5953,8 @@ function _simCardVar(k, g) {
     + '<div class="sim-acoes">' + modo + links + '</div></div>'
     + '<div class="sim-card-desc">' + v.desc + '</div>'
     + corpo
-    + (SIM.chqAberto[k] ? _simChoquePainel(k, v.unidade, v.passo, null) : '')
-    + (temAg && SIM.grafAberto[k]
+    + (SIM.chqAberto[k] ? _simChoquePainel(k, v.unidade, v.passo) : '')
+    + (SIM.grafAberto[k]
        ? '<div class="sim-graf"><div id="simh-' + k + '"></div></div>' : '')
     + '<div class="sim-card-nota">' + _mdNegrito(v.nota) + '</div>'
     + '</div>';
@@ -4550,9 +5964,15 @@ function _simUltimoObs(serie) {
   for (var i = serie.length - 1; i >= 0; i--) { if (serie[i] != null) return serie[i]; }
   return 0;
 }
+// `_simRotIdx` e nao `D.sim.rot[i]`: uma serie PODE ir alem da grade de rotulos, e `rot[i]`
+// ali devolve `undefined`, impresso na tela como "Hoje em 10,63 % ao ano (undefined)".
+// O caso vivo era a volatilidade, que vinha defasada um trimestre e portanto conhecia o
+// trimestre seguinte ao ultimo dado; ele sumiu em 2026-09-25, quando ela passou a ser a
+// implicita do proprio trimestre. O indexador FICA -- ele e o certo de qualquer forma, e
+// a alternativa so volta a quebrar quando alguma serie ganhar um periodo a mais de novo.
 function _simRotUltimo(serie) {
   for (var i = serie.length - 1; i >= 0; i--) {
-    if (serie[i] != null) return D.sim.rot[i];
+    if (serie[i] != null) return _simRotIdx(i);
   }
   return D.sim.rot[0];
 }
@@ -4561,18 +5981,76 @@ function _mdNegrito(t) {
   return (t || '').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
 }
 
-function renderSimInputs(g) {
-  var endo = [], exo = [];
+// A organizacao do bloco 2, pedida pelo usuario em 2026-09-25: *"Vamos separar as
+// premissas em Endógenas e Exógenas ... As exógenas vamos separar somente em Doméstica
+// e Externa."* Substituiu a divisao anterior (gerais contra especificas por equacao),
+// que dizia quantas equacoes leem cada variavel -- informacao que continua na tela,
+// no selo e no texto de cada cartao, e que deixou de organizar a lista.
+//
+// Duas perguntas, nessa ordem: alguma equacao do MODELO a produz? entao endogena. Nao
+// produz? entao ela e exogena, e o recorte e de onde ela vem. `tipo` e `regiao` sao os
+// dois campos do payload, e `regiao` so existe em quem e exogena.
+function _simGrupos() {
+  var endo = [], reg = {}, ordemReg = [];
   D.sim.var_ordem.forEach(function (k) {
-    (simVar(k).tipo === 'endogena' ? endo : exo).push(_simCardVar(k, g));
+    var v = simVar(k);
+    if (v.tipo === 'endogena') { endo.push(k); return; }
+    var g = v.regiao;
+    if (!reg[g]) { reg[g] = []; ordemReg.push(g); }
+    reg[g].push(k);
   });
-  document.getElementById('simInputs').innerHTML =
-    '<h3 class="sim-grupo">Endógenas <span class="sim-grupo-sub">alguma equação do '
-    + 'simulador as produz — cabem as três fontes: Endógeno, Exógeno ou '
-    + 'Observado</span></h3><div class="sim-cards">' + endo.join('') + '</div>'
-    + '<h3 class="sim-grupo">Exógenas <span class="sim-grupo-sub">nenhuma equação do '
-    + 'simulador as produz — só cabem Exógeno e Observado</span></h3>'
-    + '<div class="sim-cards">' + exo.join('') + '</div>';
+  return { endo: endo, reg: reg, ordemReg: ordemReg };
+}
+
+function _simNomeEq(k) {
+  var n = (D.sim.eq_nomes || {})[k];
+  return n ? '(' + k + ') ' + n : 'sem equação declarada';
+}
+
+// O estado aberto tem de sobreviver ao re-render: `renderSimInputs` reescreve o
+// innerHTML inteiro a cada clique em qualquer controle do bloco, e sem guardar quem
+// esta aberto o grupo que o usuario abriu fecha sozinho no meio da operacao.
+function _simFold(id, nome, sub, filho, corpo, vazio) {
+  var ab = SIM.grupoAberto[id] !== false;
+  return '<details class="sim-fold' + (filho ? ' sim-fold-filho' : '') + '"'
+    + ' data-grupo="' + id + '"' + (ab ? ' open' : '') + '>'
+    + '<summary><span class="sim-grupo-nome">' + nome + '</span>'
+    + '<span class="sim-grupo-sub">' + sub + '</span></summary>'
+    + (corpo ? '<div class="sim-cards">' + corpo + '</div>'
+             : '<div class="sim-vazio">' + vazio + '</div>')
+    + '</details>';
+}
+
+function renderSimInputs(g) {
+  var G = _simGrupos();
+  function cards(ks) {
+    return ks.map(function (k) { return _simCardVar(k, g); }).join('');
+  }
+  // O corte e sobre ESTE SIMULADOR e nao sobre o modelo, e o rotulo diz isso. A
+  // inflacao do trimestre foi o caso que obrigou a distincao ate 2026-09-28: a curva de
+  // Phillips a produzia no modelo e nao estava aqui, entao ela era premissa que se
+  // digita. A pergunta que o bloco responde e "eu digito isto ou nao?".
+  var h = _simFold('endo', 'Endógenas',
+    'uma equação deste simulador as produz', false, cards(G.endo),
+    'Nenhuma — nenhuma equação deste simulador produz variável do bloco.');
+  h += '<div class="sim-grupo-mae">Exógenas <span class="sim-grupo-sub">o simulador '
+    + 'não as produz: o caminho delas é sempre imposto ou observado</span></div>';
+  // Os rotulos dos dois recortes vem do payload (`D.sim.regioes`), e nao escritos
+  // aqui: o criterio que separa domestica de externa vive ao lado da classificacao,
+  // senao os dois divergem.
+  G.ordemReg.forEach(function (rg) {
+    var meta = (D.sim.regioes || {})[rg] || { nome: rg, sub: '' };
+    h += _simFold('reg-' + rg, meta.nome, meta.sub, true, cards(G.reg[rg]), '');
+  });
+  var cont = document.getElementById('simInputs');
+  cont.innerHTML = h;
+  // O evento `toggle` do <details> NAO borbulha, entao delegar no container nao
+  // funciona: e um listener por grupo, religado a cada render.
+  cont.querySelectorAll('details.sim-fold').forEach(function (d) {
+    d.addEventListener('toggle', function () {
+      SIM.grupoAberto[d.getAttribute('data-grupo')] = d.open;
+    });
+  });
 }
 
 // O choque soma sobre o caminho que JA ESTA na tela, entao aplicar duas vezes soma duas
@@ -4589,64 +6067,23 @@ function _simSomaChoque(arr, c, cob) {
   for (var i = ini; i < arr.length; i++) arr[i] = arr[i] + perfil[i - ini];
 }
 
-function simAplicarChoque(k, pai) {
+// Todo cartao tem serie propria desde 2026-09-25 -- nao ha mais parte nem agregado --,
+// entao o choque soma no caminho daquele cartao e nada mais precisa ser recomposto. O
+// que era "chocar a parte" virou chocar o cartao dela, que agora existe.
+function simAplicarChoque(k) {
   var c = SIM.chq[k];
   if (!c || isNaN(c.v)) return;
-  if (pai) {
-    // Numa PARTE: soma na primitiva e recompoe o agregado pela formula, que e o que faz
-    // estressar o juro real sem mexer na meta ser um cenario diferente de estressar a
-    // soma. A fonte que passa para digitado e a do PAI -- e ele que a conta le.
-    _simSomaChoque(SIM.px[k], c, _simCobertura(k, SIM.i0, D.sim.h_max));
-    simAgregarDePartes(pai);
-    SIM.fonte[pai] = 'digitado';
-    SIM.aberto[pai] = true;
-  } else {
-    var v = simVar(k);
-    if (simTemAgregado(v)) {
-      _simSomaChoque(SIM.cx[k], c, _simCobertura(k, SIM.i0, D.sim.h_max));
-      // Num composto o agregado passa a discordar das partes. Distribuir o choque entre
-      // elas exigiria uma regra que nao existe (metade em cada? tudo no juro real?), e
-      // inventar seria pior do que dizer que o agregado mandou -- para estressar uma
-      // parte so, existe o choque da propria parte.
-      (v.partes || []).forEach(function (p) {
-        SIM.px[p] = simObs(p, SIM.i0, D.sim.h_max);
-      });
-    } else {
-      (v.partes || []).forEach(function (p) {
-        _simSomaChoque(SIM.px[p], c, _simCobertura(p, SIM.i0, D.sim.h_max));
-      });
-    }
-    SIM.fonte[k] = 'digitado';
-  }
+  _simSomaChoque(SIM.cx[k], c, _simCobertura(k, SIM.i0, D.sim.h_max));
+  SIM.fonte[k] = 'digitado';
   renderSim();
 }
 
-// ── a ligacao, UMA vez, delegada nos tres containers ─────────────────────────
+// ── a ligacao, UMA vez, delegada no container dos inputs ─────────────────────
 // Os controles nascem de `innerHTML`, entao um listener por elemento teria de ser
-// religado a cada render -- e religar deixa os antigos presos aos nos que sairam. Os
-// tres containers existem no markup, entao a delegacao neles e ligada uma vez so.
+// religado a cada render -- e religar deixa os antigos presos aos nos que sairam. O
+// container existe no markup, entao a delegacao nele e ligada uma vez so. Os outros
+// dois blocos nao tem controle nenhum: um so imprime, o outro so diz qual e a janela.
 function ligarSim() {
-  var op = document.getElementById('simOpcoes');
-  op.addEventListener('change', function (ev) {
-    var t = ev.target, id = t && t.id;
-    if (id === 'simFaixa') {
-      SIM.faixa = !!t.checked;
-      if (!SIM.faixa) SIM.choque = false;
-      renderSim();
-    } else if (id === 'simChoque') {
-      SIM.choque = !!t.checked;
-      renderSim();
-    }
-  });
-
-  var jan = document.getElementById('simJanela');
-  jan.addEventListener('change', function (ev) {
-    if (ev.target && ev.target.id === 'simH') {
-      SIM.h = Math.max(1, Math.min(D.sim.h_max, parseInt(ev.target.value, 10) || 1));
-      renderSim();
-    }
-  });
-
   var inp = document.getElementById('simInputs');
   inp.addEventListener('change', function (ev) {
     var t = ev.target;
@@ -4672,14 +6109,7 @@ function ligarSim() {
     var val = parseFloat(t.value);
     if (isNaN(val)) return;
     var i = parseInt(t.getAttribute('data-k'), 10);
-    if (t.getAttribute('data-escopo') === 'prim') {
-      SIM.px[chave][i] = val;
-      D.sim.var_ordem.forEach(function (pv) {
-        if ((simVar(pv).partes || []).indexOf(chave) >= 0) simAgregarDePartes(pv);
-      });
-    } else {
-      SIM.cx[chave][i] = val;
-    }
+    SIM.cx[chave][i] = val;
     renderSim();
   });
   inp.addEventListener('click', function (ev) {
@@ -4697,9 +6127,7 @@ function ligarSim() {
       renderSim();
       return;
     }
-    if ((k = t.getAttribute('data-partes'))) {
-      SIM.aberto[k] = !SIM.aberto[k];
-    } else if ((k = t.getAttribute('data-graf'))) {
+    if ((k = t.getAttribute('data-graf'))) {
       SIM.grafAberto[k] = !SIM.grafAberto[k];
     } else if ((k = t.getAttribute('data-reset'))) {
       SIM.fonte[k] = simVar(k).fonte_padrao;
@@ -4707,7 +6135,7 @@ function ligarSim() {
     } else if ((k = t.getAttribute('data-choque'))) {
       SIM.chqAberto[k] = !SIM.chqAberto[k];
     } else if ((k = t.getAttribute('data-aplica'))) {
-      simAplicarChoque(k, t.getAttribute('data-pai'));
+      simAplicarChoque(k);
       return;
     } else {
       return;
@@ -4718,7 +6146,7 @@ function ligarSim() {
 
 function renderSimGrafs(g) {
   D.sim.var_ordem.forEach(function (k) {
-    if (!SIM.grafAberto[k] || !simTemAgregado(simVar(k))) return;
+    if (!SIM.grafAberto[k]) return;
     var v = simVar(k), cam = simCaminho(k);
     Plotly.newPlot('simh-' + k, [
       { type: 'scatter', mode: 'lines', name: 'Observado', x: D.sim.x, y: v.obs,
@@ -4739,49 +6167,187 @@ function renderSimGrafs(g) {
 // o laco
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderSim() {
+  // Fixo em `h_padrao`; o teto continua guardado porque o resto do bloco dimensiona
+  // caixa, grade e faixa por `SIM.h` e nao ha onde checar isso depois.
   SIM.h = Math.max(1, Math.min(D.sim.h_max, SIM.h));
   var g = _simGrade(SIM.i0, SIM.h);
-  var ent = simEntradas();
+  // O caminho IMPOSTO ou OBSERVADO de tudo o que alguma equacao le. Para quem esta em
+  // Endogeno ele e so o ponto de partida das voltas; o resolvido substitui.
+  var base = simEntradas();
+  var liga = _simLiga();
+  var sol = _simResolver(SIM.coef, SIM.i0, SIM.h, base, liga);
+  var ent = sol.ent;
+  var fx = _simFaixasSistema(SIM.i0, SIM.h, base, liga);
+  var r = { g: g, ent: ent, base: base, liga: liga, voltas: sol.voltas, produzido: {},
+            naoConvergiu: fx.naoConvergiu };
+  // As sensibilidades e os elos que as fichas imprimem sao PARCIAIS: a equacao roda de
+  // novo sobre o cenario ja resolvido, com UMA entrada mexida e o resto parado. Com o
+  // laco fechado o efeito total de mexer num cartao e outro numero -- esse e o grafico.
 
-  var fonteSelic = SIM.fonte.selic, cam, nomeCam, titulo;
-  if (fonteSelic === 'equacao') {
-    cam = _simCaminhoSelic(SIM.coef, SIM.i0, SIM.h, ent, null);
-    nomeCam = 'Selic que a equação produz';
-    titulo = 'A Selic que a conta projeta para os próximos ' + SIM.h + ' trimestres';
-  } else if (fonteSelic === 'observado') {
-    cam = simObs('selic', SIM.i0, SIM.h);
+  // ── (H) ───────────────────────────────────────────────────────────────────
+  if (simTemEq('H')) {
+    var fonteH = SIM.fonte.hiato, camH = ent.hiato, nomeH, titH;
+    if (fonteH === 'equacao') { nomeH = 'Hiato que a equação produz'; titH = 'Hiato do produto'; }
+    else if (fonteH === 'observado') {
+      nomeH = 'Hiato imposto (o observado)';
+      titH = 'O hiato imposto, com a equação desligada';
+    } else {
+      nomeH = 'Hiato imposto (digitado)';
+      titH = 'O hiato imposto, com a equação desligada';
+    }
+    r.is = { cam: camH, nomeCam: nomeH, titulo: titH, fonte: fonteH,
+             nEq: liga.H ? _simNEq('H', liga) : 0,
+             faixa: liga.H ? fx.hiato : null };
+    if (liga.H) {
+      r.produzido.hiato = camH;
+      // Quanto 1 p.p. de Selic a mais em todo o horizonte move o hiato no fim.
+      var entS = _simEntCom(ent, 'selic', ent.selic.map(function (v) { return v + 1; }));
+      var camS = _simCaminhoHiato(SIM.coef.H, SIM.i0, SIM.h, entS);
+      r.is.sens = camS[camS.length - 1] - camH[camH.length - 1];
+      if (liga.R) {
+        // O elo (R) -> (H): o hiato com a Selic que a regra produz contra a Selic
+        // segurada no observado.
+        var entSO = _simEntCom(ent, 'selic', simObs('selic', SIM.i0, SIM.h));
+        var camSO = _simCaminhoHiato(SIM.coef.H, SIM.i0, SIM.h, entSO);
+        r.is.eloR = camH[camH.length - 1] - camSO[camSO.length - 1];
+      }
+    }
+  }
+
+  // ── (I) ───────────────────────────────────────────────────────────────────
+  if (simTemEq('I')) {
+    var fonteI = SIM.fonte.infl_br, camI = ent.infl_br, nomeI, titI, partesI = [];
+    if (fonteI === 'equacao') {
+      _simCaminhoInfl(SIM.coef.I, SIM.i0, SIM.h, ent, partesI);
+      nomeI = 'Inflação que a equação produz';
+      titI = 'Inflação (IPCA)';
+    } else if (fonteI === 'observado') {
+      nomeI = 'Inflação imposta (o observado)';
+      titI = 'A inflação imposta, com a equação desligada';
+    } else {
+      nomeI = 'Inflação imposta (digitada)';
+      titI = 'A inflação imposta, com a equação desligada';
+    }
+    var i12 = _simI12(SIM.i0, SIM.h, camI);
+    r.infl = { cam: camI, i12: i12, nomeCam: nomeI, titulo: titI, fonte: fonteI,
+               partes: partesI, nEq: liga.I ? _simNEq('I', liga) : 0,
+               faixa: liga.I ? fx.i12 : null };
+    if (liga.I) {
+      r.produzido.infl_br = camI;
+      var fimI = function (cam) { var a = _simI12(SIM.i0, SIM.h, cam); return a[a.length - 1]; };
+      var entHi = _simEntCom(ent, 'hiato', ent.hiato.map(function (v) { return v + 1; }));
+      r.infl.sens = fimI(_simCaminhoInfl(SIM.coef.I, SIM.i0, SIM.h, entHi)) - i12[i12.length - 1];
+      if (liga.H) {
+        var entHO = _simEntCom(ent, 'hiato', simObs('hiato', SIM.i0, SIM.h));
+        r.infl.eloH = i12[i12.length - 1]
+          - fimI(_simCaminhoInfl(SIM.coef.I, SIM.i0, SIM.h, entHO));
+      }
+      if (liga.F) {
+        var entFO = _simEntCom(ent, 'de', simObs('de', SIM.i0, SIM.h));
+        r.infl.eloF = i12[i12.length - 1]
+          - fimI(_simCaminhoInfl(SIM.coef.I, SIM.i0, SIM.h, entFO));
+      }
+    }
+  }
+
+  // ── (E) ───────────────────────────────────────────────────────────────────
+  var fonteE = SIM.fonte.pi_e, camE = ent.pi_e, nomeE, titE, partesE = [];
+  if (fonteE === 'equacao') {
+    _simCaminhoPiE(SIM.coef.E, SIM.i0, SIM.h, ent, partesE);
+    nomeE = 'Expectativa que a equação produz';
+    titE = 'Expectativas';
+  } else if (fonteE === 'observado') {
+    nomeE = 'Expectativa imposta (o observado)';
+    titE = 'A expectativa imposta, com a equação desligada';
+  } else {
+    nomeE = 'Expectativa imposta (digitada)';
+    titE = 'A expectativa imposta, com a equação desligada';
+  }
+  r.exp = { cam: camE, nomeCam: nomeE, titulo: titE, fonte: fonteE, partes: partesE,
+            nEq: liga.E ? _simNEq('E', liga) : 0,
+            faixa: liga.E ? fx.pi_e : null };
+  if (liga.E) {
+    r.produzido.pi_e = camE;
+    // Quanto 1 p.p. a mais de inflacao POR TRIMESTRE move a expectativa no fim.
+    var entI = _simEntCom(ent, 'infl_br', ent.infl_br.map(function (v) { return v + 1; }));
+    var camI1 = _simCaminhoPiE(SIM.coef.E, SIM.i0, SIM.h, entI);
+    r.exp.sens = camI1[camI1.length - 1] - camE[camE.length - 1];
+  }
+
+  // ── (R) ───────────────────────────────────────────────────────────────────
+  var fonteSelic = SIM.fonte.selic, cam = ent.selic, nomeCam, titulo;
+  if (fonteSelic === 'equacao') { nomeCam = 'Selic que a equação produz'; titulo = 'Taylor Rule'; }
+  else if (fonteSelic === 'observado') {
     nomeCam = 'Selic imposta (o observado)';
     titulo = 'A Selic imposta, com a equação desligada';
   } else {
-    cam = SIM.cx.selic.slice(0, SIM.h);
     nomeCam = 'Selic imposta (digitada)';
     titulo = 'A Selic imposta, com a equação desligada';
   }
-  var faixa = (SIM.faixa && fonteSelic === 'equacao')
-    ? _simFaixa(SIM.i0, SIM.h, ent) : null;
-
-  var r = { g: g, ent: ent, cam: cam, faixa: faixa,
-            nomeCam: nomeCam, titulo: titulo,
-            // o caminho que cada equacao DO SIMULADOR produziu nesta rodada; hoje uma
-            produzido: fonteSelic === 'equacao' ? { selic: cam } : {} };
-  SIM._ultimo = r;
-
-  renderSimOpcoes();
-  // Impor a Selic DESLIGA a regra, e isso tem de estar escrito na tela: o grafico
-  // continua desenhando uma linha, so que a linha deixou de ser produzida pela conta.
-  var aviso = document.getElementById('simAviso');
-  if (fonteSelic !== 'equacao') {
-    aviso.style.display = '';
-    aviso.innerHTML = '<b>A regra de juros está desligada.</b> A Selic vem '
-      + SIM_FONTE_DE[fonteSelic] + ', então o gráfico desenha o que foi imposto e não '
-      + 'o que a conta produziria. Com uma equação só no simulador nada consome a Selic '
-      + '— isso passa a mudar alguma coisa quando entrar uma equação que a leia.';
-  } else {
-    aviso.style.display = 'none';
+  // As duas CONTAS da (R), resolvidas uma vez: o desvio que ela multiplica e a ancora
+  // que ela soma. A ancora e desenhada, entao ela precisa existir fora da recursao.
+  var derR = _simDerivadas('R', ent, SIM.i0, SIM.h);
+  r.cam = cam; r.nomeCam = nomeCam; r.titulo = titulo;
+  r.faixa = liga.R ? fx.selic : null;
+  r.anc = derR.ancora; r.di = derR.di;
+  r.nEqR = liga.R ? _simNEq('R', liga) : 0;
+  r.duasFaixasR = r.nEqR > 1;
+  if (liga.R) {
+    r.produzido.selic = cam;
+    if (liga.E) {
+      // O elo (E) -> (R): a Selic do fim com a expectativa da equacao contra a
+      // segurada no observado.
+      var entPO = _simEntCom(ent, 'pi_e', simObs('pi_e', SIM.i0, SIM.h));
+      var camPO = _simCaminhoSelic(SIM.coef.R, SIM.i0, SIM.h, entPO);
+      r.eloE = cam[cam.length - 1] - camPO[camPO.length - 1];
+    }
   }
 
+  // ── (F) ───────────────────────────────────────────────────────────────────
+  // O cartao do cambio trabalha em NIVEL e a equacao em variacao. O laco resolve em
+  // nivel, porque e o que o cartao guarda; a variacao sai daqui, num lugar so.
+  if (simTemEq('F')) {
+    var fonteDe = SIM.fonte.de, nivelDe = ent.de, camDe, nomeDe, tituloDe, acumF = null;
+    if (fonteDe === 'equacao') {
+      camDe = _simCaminhoDe(SIM.coef.F, SIM.i0, SIM.h, ent, ent.selic, (acumF = {}));
+      nomeDe = 'Câmbio que a equação produz';
+      tituloDe = 'Câmbio';
+    } else {
+      camDe = _simVarDeNivel(SIM.i0, nivelDe);
+      nomeDe = fonteDe === 'observado' ? 'Câmbio imposto (o observado)'
+                                       : 'Câmbio imposto (digitado)';
+      tituloDe = 'O câmbio imposto, com a equação desligada';
+    }
+    var nEqF = liga.F ? _simNEq('F', liga) : 0;
+    r.fx = { cam: camDe, nivel: nivelDe, nomeCam: nomeDe, titulo: tituloDe,
+             fonte: fonteDe, nEq: nEqF, duasFaixas: nEqF > 1,
+             faixa: liga.F ? fx.de : null };
+    if (liga.F) {
+      r.produzido.de = nivelDe;
+      // A sensibilidade do NIVEL a 2 p.p. de Selic, medida neste cenario.
+      var alt = _simCaminhoDe(SIM.coef.F, SIM.i0, SIM.h, ent,
+                              ent.selic.map(function (v) { return v + 2; }));
+      var n2 = _simNivelCambio(SIM.i0, alt);
+      r.fx.sens = 100 * (n2[n2.length - 1] / nivelDe[nivelDe.length - 1] - 1);
+      r.fx.acum = acumF;
+      r.fx.total = camDe.reduce(function (a, b) { return a + b; }, 0);
+      r.fx.parados = simEq('F').canais.filter(function (c) {
+        return c !== simEq('F').carry.canal && Math.abs(acumF[c] || 0) < 0.005;
+      }).length;
+    }
+  }
+  SIM._ultimo = r;
+
+  renderSimAvisos(r);
+  // Depois do laco, porque a ficha imprime numeros que o laco acabou de medir. So
+  // escreve texto em `<div>` estaticos -- nao ha estado de DOM a perder.
+  renderSimFicha();
   if (document.getElementById('ch-sim')) {
+    if (r.is && document.getElementById('ch-simis')) desenharSimIs(!!SIM._desenhado);
+    if (r.infl && document.getElementById('ch-simipca')) desenharSimIpca(!!SIM._desenhado);
+    if (r.exp && document.getElementById('ch-simexp')) desenharSimExp(!!SIM._desenhado);
     desenharSim(!!SIM._desenhado);
+    if (r.fx && document.getElementById('ch-simfx')) desenharSimFx(!!SIM._desenhado);
     SIM._desenhado = true;
   }
   renderSimJanela();
@@ -4789,30 +6355,88 @@ function renderSim() {
   renderSimGrafs(g);
 }
 
+// Impor a variavel que uma equacao explica DESLIGA aquela equacao, e isso tem de estar
+// escrito no cartao dela: o grafico continua desenhando uma linha, so que a linha
+// deixou de ser produzida pela conta. Um aviso por equacao, dentro do cartao dela.
+function renderSimAvisos(r) {
+  D.sim.eq_ordem.forEach(function (ek) {
+    var el = document.getElementById('simAviso-' + ek);
+    if (!el) return;
+    var eq = simEq(ek), f = SIM.fonte[eq.explica];
+    if (f === 'equacao') { el.style.display = 'none'; return; }
+    el.style.display = '';
+    var quem = SIM_EQ_ARTIGO_NOME[ek] || ('A equação (' + ek + ')');
+    var consequencia = SIM_EQ_DESLIGADA[ek] || '';
+    el.innerHTML = '<b>' + quem + ' está desligada.</b> ' + simVar(eq.explica).nome
+      + ' vem ' + SIM_FONTE_DE[f] + ', então o gráfico desenha o que foi imposto e não '
+      + 'o que a conta produziria. ' + consequencia;
+  });
+}
+
 function renderSimFicha() {
-  var eq = simEq(), a = eq.amostra;
-  document.getElementById('simEqTitulo').textContent =
-    '(' + eq.key + ') ' + eq.nome + ' — explica a ' + eq.explica;
-  document.getElementById('simEqSub').innerHTML =
-    'Consome ' + eq.consome.map(function (c) {
-      return '<b>' + simVar(c).nome.toLowerCase() + '</b>';
-    }).join(', ') + '. Cada uma dessas tem um cartão no bloco 2, onde se escolhe o '
-    + 'caminho dela. Os pesos vêm de uma estimação bayesiana da mesma equação, em '
-    + a.n + ' trimestres de ' + a.ini + ' a ' + a.fim + ', e o simulador guarda '
-    + eq.n_draws + ' versões deles — cada uma um conjunto completo e coerente. A faixa '
-    + 'sai de rodar a conta em todas elas: ela não é uma margem colada por fora, é a '
-    + 'incerteza dos pesos passando pela própria dinâmica, e por isso cresce com o '
-    + 'horizonte. A equação escrita, os pesos e a estimação estão na aba Juros.';
+  D.sim.eq_ordem.forEach(function (ek) {
+    var eq = simEq(ek), a = eq.amostra;
+    var t = document.getElementById('simEqTitulo-' + ek);
+    var sub = document.getElementById('simEqSub-' + ek);
+    if (!t || !sub) return;
+    t.textContent = '(' + eq.key + ') ' + eq.nome + ' — explica '
+      + _simArtigo(eq.explica);
+    // O que ela consome sao CARTOES; o que ela forma com eles sao contas. Dizer so o
+    // primeiro deixaria o leitor procurando um cartao de "desvio da inflação" que
+    // deixou de existir em 2026-09-25, e dizer so o segundo esconderia onde se mexe.
+    var der = Object.keys(eq.deriva || {});
+    sub.innerHTML = 'Consome '
+      + eq.consome.map(function (c) {
+          return '<b>' + _simNomeFrase(c) + '</b>';
+        }).join(', ')
+      + '. Cada uma dessas tem um cartão no bloco 2, onde se escolhe o caminho dela. '
+      + (der.length
+         ? 'Com elas a conta forma ' + _simLista(der.map(function (n) {
+             var d = eq.deriva[n];
+             // O nome DENTRO da frase e campo do payload, nunca `nome.toLowerCase()`:
+             // ele come a sigla (`IPCA` virava `ipca`). E as pecas saem pelo
+             // `nome_frase` DELAS, nao pela chave do payload -- `infl_br` nao e nome.
+             return '<b>' + (d.nome_frase || d.nome) + '</b> ('
+               + _simDerivPecas(d) + ')';
+           }))
+           + (der.length > 1 ? ' — que não são cartões, são contas: um cartão '
+                             : ' — que não é cartão, é conta: um cartão ')
+           + 'deixaria digitar um número que contradiz as próprias peças. '
+         : '')
+      + (SIM_EQ_EXTRA[ek]
+          ? (typeof SIM_EQ_EXTRA[ek] === 'function'
+             ? SIM_EQ_EXTRA[ek]() : SIM_EQ_EXTRA[ek]) + ' '
+          : '')
+      // Os arquivos de desenhos gravam o trimestre no formato do pandas (`2006Q2`); a
+      // pagina inteira escreve `2006T2`.
+      + 'Os pesos vêm de uma estimação bayesiana da mesma equação, em ' + a.n
+      + ' trimestres de ' + String(a.ini).replace('Q', 'T') + ' a '
+      + String(a.fim).replace('Q', 'T') + ', e o simulador guarda '
+      + eq.n_draws + ' versões deles — cada uma um conjunto completo e coerente. A '
+      + 'faixa sai de rodar a conta em todas elas: ela não é uma margem colada por '
+      + 'fora, é a incerteza dos pesos passando pela própria dinâmica, e por isso '
+      + 'cresce com o horizonte. A equação escrita, os pesos e a estimação estão na '
+      + (SIM_EQ_ONDE[ek] || 'aba daquela equação') + '.';
+  });
 }
 
 // ── pintura ──────────────────────────────────────────────────────────────────
 var _simPintado = false;
 
+// Um grafico por equacao, dentro do cartao daquela equacao. Os cartoes ja existem
+// quando isto roda porque `renderSimFicha()` os monta no `initSim`.
+var SIM_EQ_DIV = { E: 'ch-simexp', R: 'ch-sim', H: 'ch-simis', I: 'ch-simipca',
+                   F: 'ch-simfx' };
+
 function pintarSim() {
   if (_simPintado || !D.sim) return;
   _simPintado = true;
-  document.getElementById('simGrid').appendChild(
-    montarCartaoExp({ div: 'ch-sim', desenhar: function () { renderSim(); } }));
+  D.sim.eq_ordem.forEach(function (ek) {
+    var grid = document.getElementById('simGrid-' + ek), div = SIM_EQ_DIV[ek];
+    if (!grid || !div) return;
+    grid.appendChild(montarCartaoExp({ div: div,
+                                       desenhar: function () { renderSim(); } }));
+  });
   renderSim();
 }
 
@@ -4822,24 +6446,543 @@ function initSim() {
     return;
   }
   document.getElementById('simConteudo').style.display = '';
-  var eq = simEq();
-  SIM.coef = _simCoefPadrao();
+  // Um conjunto de pesos por equacao, todos na mediana do posterior dela.
+  SIM.coef = {};
+  D.sim.eq_ordem.forEach(function (ek) { SIM.coef[ek] = _simCoefPadrao(ek); });
   // Fixa, e declarada no payload: o trimestre seguinte ao fim da janela estimada.
   SIM.i0 = D.sim.i0;
   SIM.h = Math.min(D.sim.h_padrao, D.sim.h_max);
   D.sim.var_ordem.forEach(function (k) {
     SIM.fonte[k] = simVar(k).fonte_padrao;
-    SIM.chq[k] = { tipo: 'rampa', v: 1, n: 4, rho: 0.8 };
-  });
-  // As primitivas tambem levam choque proprio -- e a unica forma de estressar uma parte
-  // sem mexer na outra. As chaves nao colidem com as das variaveis.
-  Object.keys(D.sim.prim).forEach(function (pk) {
-    SIM.chq[pk] = { tipo: 'rampa', v: 1, n: 4, rho: 0.8 };
+    // O valor padrao do choque escala com o PASSO da variavel. Um `1` fixo servia
+    // enquanto todo cartao estava em pontos percentuais; com CDS em pontos-base e
+    // cambio em reais ele passou a significar coisas de ordens de grandeza
+    // diferentes -- +1 bp num canal e +1 real no outro, que e 19% de desvalorizacao.
+    SIM.chq[k] = { tipo: 'rampa', v: _simChqPadrao(simVar(k)), n: 4, rho: 0.8 };
   });
   simRecarregarCaixas();
   renderSimFicha();
   ligarSim();
   renderSim();
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABA — IMPULSO-RESPOSTA
+// ═══════════════════════════════════════════════════════════════════════════════
+// Um choque numa variavel, e o que ele faz com as endogenas. A resposta e a DIFERENCA
+// entre duas solucoes do mesmo sistema com os mesmos pesos: a do cenario que a aba
+// Structural Model abre e a mesma com o choque. O modelo nao e linear em tudo (cambio em
+// log, carry em razao, IPCA de 12 meses composto), entao a resposta e medida contra esse
+// cenario, e nao tirada de uma forma fechada.
+//
+// Onde o choque entra, decisao do usuario em 2026-09-28: numa ENDOGENA, no residuo da
+// equacao dela, e a propria dinamica o propaga; numa EXOGENA, no caminho que o cenario
+// segura -- em % do nivel nos indices. A conta e a de `irf.py`, e o payload traz cinco
+// choques resolvidos la como gabarito.
+var IRF = {
+  alvo: null,      // a chave do alvo escolhido
+  chq: {},         // por alvo: {tipo, v, n, rho}
+  vista: 'tri',    // a inflacao do trimestre ou em 12 meses
+  ent: null,       // as entradas do cenario padrao, h = D.irf.h
+  baseMed: null,   // o cenario padrao resolvido com os pesos da mediana
+  baseDraws: null, // e com cada conjunto de pesos -- nao muda quando o choque muda
+  coefMed: null,
+  _ult: null,
+  _pintado: false,
+};
+
+var IRF_DIV = { hiato: 'ch-irf-hiato', infl: 'ch-irf-infl', pi_e: 'ch-irf-pie',
+                selic: 'ch-irf-selic', de: 'ch-irf-de' };
+function _irfDivGrupo(g) { return 'ch-irf-g-' + g; }
+
+function irfAlvo(k) {
+  for (var i = 0; i < D.irf.alvos.length; i++) {
+    if (D.irf.alvos[i].key === k) return D.irf.alvos[i];
+  }
+  throw new Error('alvo desconhecido: ' + k);
+}
+
+// As entradas do cenario padrao -- o espelho de `simulator.entradas()`: o caminho
+// observado (segurado) de tudo o que alguma equacao consome, mais as marcas de crise,
+// que valem zero adiante. Para as endogenas e so o ponto de partida das voltas.
+function _irfEntradas(i0, h) {
+  var ent = {};
+  D.sim.eq_ordem.forEach(function (ek) {
+    var eq = simEq(ek);
+    eq.consome.forEach(function (c) {
+      if (!(c in ent)) ent[c] = _simObsSerie(simVar(c).obs, i0, h, _simSegura(c));
+    });
+    (eq.dummies || []).forEach(function (c) {
+      ent[c] = _simObsSerie(eq.dummy_obs[c], i0, h);
+    });
+  });
+  return ent;
+}
+
+function _irfLiga() {
+  var l = {};
+  D.sim.eq_ordem.forEach(function (ek) { l[ek] = true; });
+  return l;
+}
+
+// O sistema resolvido, com o IPCA e os quatro grupos em variacao SIMPLES. Os grupos nao
+// sao cartao, entao o laco nao os devolve: a (I) roda uma vez mais sobre o sistema ja
+// resolvido, com o mesmo choque -- e isso nao muda nada, o sistema e o ponto fixo dela.
+function _irfEstado(coefs, i0, h, ent, choque, tol) {
+  var sol = _simResolver(coefs, i0, h, ent, _irfLiga(), tol, choque).ent;
+  var partes = [];
+  _simCaminhoInfl(coefs.I, i0, h, sol, partes, choque ? choque.I : null);
+  var gr = {};
+  simEq('I').ordem_grupos.forEach(function (g) {
+    gr[g] = partes.map(function (p) { return p.grupos[g]; });
+  });
+  return { hiato: sol.hiato, pi_e: sol.pi_e, selic: sol.selic, ptax: sol.de,
+           infl: partes.map(function (p) { return p.cheio; }), grupos: gr, sol: sol };
+}
+
+// Doze meses compostos de quatro trimestres em variacao simples, com os trimestres
+// observados antes da janela.
+function _irfDoze(hist, cam, i0) {
+  var serie = hist.slice(0, i0).concat(cam), out = [];
+  for (var j = 0; j < cam.length; j++) {
+    var acc = 1;
+    for (var t = i0 + j - 3; t <= i0 + j; t++) acc *= 1 + serie[t] / 100;
+    out.push(100 * (acc - 1));
+  }
+  return out;
+}
+function _irfHistCheio(i0) {
+  return simVar('infl_br').obs.slice(0, i0).map(function (v) {
+    return v == null ? null : 100 * (Math.exp(v / 100) - 1);
+  });
+}
+
+// O choque, na forma que o laco consome: um residuo por equacao (um por grupo na (I)),
+// ou um caminho de exogena trocado.
+function _irfAplicar(alvo, c, h, ent) {
+  var prof = _simPerfilChoque(c, h), choque = null, ent2 = ent;
+  if (alvo.tipo === 'residuo') {
+    choque = {};
+    if (alvo.grupo) { choque[alvo.eq] = {}; choque[alvo.eq][alvo.grupo] = prof; }
+    else choque[alvo.eq] = prof;
+  } else {
+    ent2 = _simEntCom(ent, alvo.var, ent[alvo.var].map(function (x, i) {
+      return alvo.modo === 'pct' ? x * (1 + prof[i] / 100) : x + prof[i];
+    }));
+  }
+  return { choque: choque, ent: ent2, perfil: prof };
+}
+
+function _irfDif(a, b) { return a.map(function (x, i) { return x - b[i]; }); }
+
+// A resposta: o estado com o choque menos o estado sem ele. O cambio em % do NIVEL, que
+// e a leitura de um choque cambial; o resto na unidade de cada variavel.
+function _irfResposta(base, cho, i0) {
+  var eqi = simEq('I'), hc = _irfHistCheio(i0), out = {};
+  ['hiato', 'pi_e', 'selic', 'infl'].forEach(function (k) { out[k] = _irfDif(cho[k], base[k]); });
+  out.infl12 = _irfDif(_irfDoze(hc, cho.infl, i0), _irfDoze(hc, base.infl, i0));
+  out.de = cho.ptax.map(function (x, i) { return 100 * (x / base.ptax[i] - 1); });
+  out.grupos = {}; out.grupos12 = {};
+  eqi.ordem_grupos.forEach(function (g) {
+    var hg = eqi.obs_grupo[g];
+    out.grupos[g] = _irfDif(cho.grupos[g], base.grupos[g]);
+    out.grupos12[g] = _irfDif(_irfDoze(hg, cho.grupos[g], i0), _irfDoze(hg, base.grupos[g], i0));
+  });
+  return out;
+}
+
+// A resposta com um conjunto de pesos -- e o que o teste confere contra o gabarito.
+function irfResposta(coefs, alvo, c, i0, h, base) {
+  var ent = _irfEntradas(i0, h);
+  base = base || _irfEstado(coefs, i0, h, ent, null);
+  var a = _irfAplicar(alvo, c, h, ent);
+  return _irfResposta(base, _irfEstado(coefs, i0, h, a.ent, a.choque), i0);
+}
+
+// As series que a tela desenha, achatadas: a mesma chave serve a mediana e a faixa.
+function _irfSeries(r) {
+  var out = { hiato: r.hiato, infl: r.infl, infl12: r.infl12, pi_e: r.pi_e,
+              selic: r.selic, de: r.de };
+  Object.keys(r.grupos).forEach(function (g) {
+    out['g:' + g] = r.grupos[g];
+    out['g12:' + g] = r.grupos12[g];
+  });
+  return out;
+}
+
+function _irfPrepararBase() {
+  if (IRF.baseDraws) return;
+  var i0 = D.sim.i0, h = D.irf.h, n = null, prob = null;
+  IRF.ent = _irfEntradas(i0, h);
+  IRF.coefMed = {};
+  D.sim.eq_ordem.forEach(function (ek) {
+    IRF.coefMed[ek] = _simCoefPadrao(ek);
+    var e = simEq(ek);
+    n = n == null ? e.n_draws : Math.min(n, e.n_draws);
+    prob = e.hdi_prob;
+  });
+  IRF.n = n; IRF.prob = prob;
+  IRF.baseMed = _irfEstado(IRF.coefMed, i0, h, IRF.ent, null);
+  IRF.baseDraws = [];
+  for (var s = 0; s < n; s++) {
+    var cs = {};
+    D.sim.eq_ordem.forEach(function (ek) { cs[ek] = _simCoefDesenho(ek, s); });
+    try {
+      IRF.baseDraws.push({ cs: cs, st: _irfEstado(cs, i0, h, IRF.ent, null, SIM_TOL_FAIXA) });
+    } catch (err) {
+      IRF.baseDraws.push(null);
+    }
+  }
+}
+
+// A mediana (a resposta com os pesos da mediana) e a faixa (o quantil, trimestre a
+// trimestre, das respostas de cada conjunto de pesos -- com o cenario padrao resolvido
+// com o MESMO conjunto, senao a faixa mediria a distancia entre dois cenarios de pesos
+// diferentes, e nao o choque).
+function irfCalcular() {
+  _irfPrepararBase();
+  var i0 = D.sim.i0, h = D.irf.h, alvo = irfAlvo(IRF.alvo), c = IRF.chq[IRF.alvo];
+  // As voltas do choque partem do sistema JA RESOLVIDO sem ele, com os mesmos pesos: o
+  // ponto fixo e o mesmo de partir do cenario observado, e chega-se a ele em menos voltas.
+  // As exogenas nao mudam na solucao, entao aplicar o choque sobre ela e o mesmo que
+  // aplicar sobre as entradas.
+  var a = _irfAplicar(alvo, c, h, IRF.baseMed.sol);
+  var med = _irfSeries(_irfResposta(IRF.baseMed,
+                                    _irfEstado(IRF.coefMed, i0, h, a.ent, a.choque), i0));
+  var cols = {}, naoConvergiu = 0, k;
+  Object.keys(med).forEach(function (nm) {
+    cols[nm] = [];
+    for (k = 0; k < h; k++) cols[nm].push([]);
+  });
+  IRF.baseDraws.forEach(function (b) {
+    if (!b) { naoConvergiu += 1; return; }
+    var r, ab = _irfAplicar(alvo, c, h, b.st.sol);
+    try {
+      r = _irfSeries(_irfResposta(b.st, _irfEstado(b.cs, i0, h, ab.ent, ab.choque,
+                                                   SIM_TOL_FAIXA), i0));
+    } catch (err) { naoConvergiu += 1; return; }
+    Object.keys(r).forEach(function (nm) {
+      for (k = 0; k < h; k++) cols[nm][k].push(r[nm][k]);
+    });
+  });
+  var faixa = {};
+  Object.keys(cols).forEach(function (nm) { faixa[nm] = _simQuantis(cols[nm], IRF.prob); });
+  IRF._ult = { med: med, faixa: faixa, perfil: a.perfil, naoConvergiu: naoConvergiu,
+               alvo: alvo, c: c };
+  return IRF._ult;
+}
+
+// ── os textos ────────────────────────────────────────────────────────────────
+function _irfForma(c) {
+  var n = Math.max(1, c.n || 1), rho = (c.rho == null || isNaN(c.rho)) ? 0.8 : c.rho;
+  if (c.tipo === 'decai') {
+    return rho === 0 ? 'só no primeiro trimestre'
+                     : 'com decaimento, sobrando ' + fmt(rho) + ' a cada trimestre';
+  }
+  if (c.tipo === 'const') {
+    return 'por ' + n + ' trimestre' + (n > 1 ? 's' : '') + ', depois sobrando '
+      + fmt(rho) + ' a cada trimestre';
+  }
+  return n === 1 ? 'permanente' : 'permanente, alcançado em ' + n + ' trimestres';
+}
+function _irfDescChoque(alvo, c) {
+  return 'choque em ' + alvo.nome_frase + ': ' + (c.v >= 0 ? '+' : '−')
+    + fmt(Math.abs(c.v)) + ' ' + alvo.unidade
+    + (alvo.tipo === 'residuo' ? ' no erro da equação' : '') + ', ' + _irfForma(c);
+}
+
+// Quanto um erro PERMANENTE vale no longo prazo, pela persistencia da propria equacao,
+// antes de as outras reagirem. Sai dos pesos da mediana, nao escrito.
+function _irfMultLP(alvo) {
+  var md = simEq(alvo.eq).mediana, p;
+  if (alvo.eq === 'R') p = md.t1 + md.t2;
+  else if (alvo.eq === 'H') p = md.h1;
+  else if (alvo.eq === 'E') p = md.e1;
+  else if (alvo.eq === 'I') {
+    var g = simEq('I').grupos[alvo.grupo], pre = alvo.grupo + '.';
+    p = md[pre + g.inercia];
+    g.restritos.forEach(function (rt) { if (rt[1] === 'mm4') p += md[pre + rt[0]]; });
+  } else return null;
+  return { p: p, mult: 1 / (1 - p) };
+}
+
+function _irfAviso(alvo, c) {
+  if (alvo.tipo !== 'residuo' || c.tipo !== 'rampa') return '';
+  if (alvo.eq === 'F') {
+    return 'Um choque permanente no erro da equação do câmbio é uma desvalorização de '
+      + fmt(Math.abs(c.v)) + '% <b>todo trimestre, para sempre</b>: a equação explica a '
+      + 'variação do câmbio, e um erro que não sai é uma variação que não para. Para um '
+      + 'salto único no nível, use o choque com decaimento sobrando 0.';
+  }
+  var m = _irfMultLP(alvo);
+  return 'Um choque permanente no erro da equação não desloca ' + alvo.nome_frase
+    + ' pelo tamanho dele: a persistência da própria equação (<b>' + fmt(m.p) + '</b>) '
+    + 'acumula o erro, e no longo prazo ele vale cerca de <b>' + fmt(m.mult, 1)
+    + ' vezes</b> o choque, antes de as outras equações reagirem. Para um deslocamento que '
+    + 'passa, use o choque com decaimento.';
+}
+
+// ── a barra de controle ──────────────────────────────────────────────────────
+function _irfCampo(campo, val, extra) {
+  return '<input type="number" class="sim-chq-in" data-irf="' + campo + '" value="'
+    + val + '"' + extra + '>';
+}
+
+function renderIrfBar() {
+  var alvo = irfAlvo(IRF.alvo), c = IRF.chq[IRF.alvo], h = D.irf.h;
+  var grupos = [
+    { rot: 'Com equação — o choque entra no erro dela',
+      itens: D.irf.alvos.filter(function (a) { return a.tipo === 'residuo'; }) },
+  ];
+  Object.keys(D.sim.regioes).forEach(function (rg) {
+    grupos.push({ rot: 'Sem equação — ' + D.sim.regioes[rg].nome.toLowerCase(),
+                  itens: D.irf.alvos.filter(function (a) {
+                    return a.tipo === 'caminho' && a.regiao === rg; }) });
+  });
+  var sel = '<select class="sim-chq-sel" data-irf="alvo">' + grupos.map(function (g) {
+    return '<optgroup label="' + g.rot + '">' + g.itens.map(function (a) {
+      return '<option value="' + a.key + '"' + (a.key === IRF.alvo ? ' selected' : '') + '>'
+        + a.nome + (a.eq_nome && a.grupo ? ' (' + a.eq_nome + ')' : '') + '</option>';
+    }).join('') + '</optgroup>';
+  }).join('') + '</select>';
+
+  var forma = '';
+  if (c.tipo === 'rampa') {
+    forma = '<div class="sim-chq-campo"><span>ao longo de</span>'
+      + _irfCampo('n', c.n, ' min="1" max="' + h + '" step="1"')
+      + '<span>trimestres</span></div>';
+  } else if (c.tipo === 'decai') {
+    forma = '<div class="sim-chq-campo"><span>sobrando</span>'
+      + _irfCampo('rho', c.rho, ' min="0" max="1" step="0.05"')
+      + '<span>dele a cada trimestre</span></div>';
+  } else {
+    forma = '<div class="sim-chq-campo"><span>por</span>'
+      + _irfCampo('n', c.n, ' min="1" max="' + h + '" step="1"')
+      + '<span>trimestres, e depois sobrando</span>'
+      + _irfCampo('rho', c.rho, ' min="0" max="1" step="0.05"')
+      + '<span>a cada trimestre</span></div>';
+  }
+  var pre = _simPerfilChoque(c, h).slice(0, 8).map(function (x) {
+    return (x >= 0 ? '+' : '−') + fmt(Math.abs(x), 2);
+  }).join(' · ');
+  var onde = alvo.tipo === 'residuo'
+    ? 'no erro da equação (' + alvo.eq_nome.toLowerCase() + ')'
+    : (alvo.modo === 'pct' ? 'no caminho, em % do nível' : 'no caminho');
+  document.getElementById('irfBar').innerHTML =
+    '<div class="sim-row"><span class="sim-lab">Choque em</span>' + sel
+    + '<span class="sim-un">' + onde + '</span></div>'
+    + '<div class="sim-choque">'
+    + '<div class="sim-chq-campo"><span>Choque de</span>'
+    + _irfCampo('v', c.v, ' step="any"') + '<span>' + alvo.unidade + ' ·</span></div>'
+    + '<div class="sim-chq-campo"><select class="sim-chq-sel" data-irf="tipo">'
+    + SIM_CHQ_TIPOS.map(function (t) {
+        return '<option value="' + t.k + '"' + (t.k === c.tipo ? ' selected' : '')
+          + ' title="' + t.desc + '">' + t.rot + '</option>';
+      }).join('')
+    + '</select></div>'
+    + forma
+    + '<span class="sim-chq-pre">soma ' + pre + (h > 8 ? ' …' : '') + '</span></div>';
+}
+
+function ligarIrf() {
+  document.getElementById('irfBar').addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (!t || !t.getAttribute) return;
+    var campo = t.getAttribute('data-irf');
+    if (!campo) return;
+    if (campo === 'alvo') {
+      IRF.alvo = t.value;
+    } else {
+      var c = IRF.chq[IRF.alvo];
+      if (campo === 'tipo') c.tipo = t.value;
+      else {
+        var v = parseFloat(String(t.value).replace(',', '.'));
+        if (isNaN(v)) return;
+        if (campo === 'n') v = Math.max(1, Math.min(D.irf.h, Math.round(v)));
+        if (campo === 'rho') v = Math.max(0, Math.min(1, v));
+        c[campo] = v;
+      }
+    }
+    renderIrf();
+  });
+  [['irfPillTri', 'tri'], ['irfPill12', 'doze']].forEach(function (op) {
+    document.getElementById(op[0]).addEventListener('click', function () {
+      if (IRF.vista === op[1]) return;
+      IRF.vista = op[1];
+      document.getElementById('irfPillTri').classList.toggle('active', op[1] === 'tri');
+      document.getElementById('irfPill12').classList.toggle('active', op[1] === 'doze');
+      desenharIrf(true);
+    });
+  });
+}
+
+// ── os graficos ──────────────────────────────────────────────────────────────
+function _irfCartao(div) {
+  var card = document.createElement('div');
+  card.className = 'chart-card';
+  var head = document.createElement('div');
+  head.className = 'chart-head';
+  var partes = {};
+  ['chart-title', 'chart-sub', 'chart-src'].forEach(function (cl) {
+    var d = document.createElement('div'); d.className = cl; head.appendChild(d);
+    partes[cl] = d;
+  });
+  card.appendChild(head);
+  card._chFrame = { head: head, title: partes['chart-title'],
+                    sub: partes['chart-sub'], src: partes['chart-src'] };
+  var plot = document.createElement('div');
+  plot.id = div;
+  plot.className = 'chart-plot';
+  card.appendChild(plot);
+  return card;
+}
+
+// Os graficos, na ordem de solucao; o de inflacao e os dos grupos leem a vista.
+function _irfCfgs() {
+  var doze = IRF.vista === 'doze', out = [];
+  var un = {};
+  D.irf.resp.forEach(function (r) { un[r.key] = r; });
+  var uInfl = doze ? 'p.p. de inflação em 12 meses' : 'p.p. de inflação no trimestre';
+  out.push({ div: IRF_DIV.hiato, serie: 'hiato', titulo: un.hiato.nome,
+             eixo: 'p.p. do produto potencial' });
+  out.push({ div: IRF_DIV.infl, serie: doze ? 'infl12' : 'infl',
+             titulo: 'IPCA ' + (doze ? 'em 12 meses' : 'do trimestre'), eixo: uInfl });
+  out.push({ div: IRF_DIV.pi_e, serie: 'pi_e', titulo: un.pi_e.nome,
+             eixo: 'p.p. de inflação esperada' });
+  out.push({ div: IRF_DIV.selic, serie: 'selic', titulo: un.selic.nome, eixo: 'p.p. de Selic' });
+  out.push({ div: IRF_DIV.de, serie: 'de', titulo: un.de.nome + ' (reais por dólar)',
+             eixo: '% do nível do câmbio' });
+  D.irf.grupos.forEach(function (g) {
+    out.push({ div: _irfDivGrupo(g.key), serie: (doze ? 'g12:' : 'g:') + g.key,
+               titulo: g.nome + ' — inflação ' + (doze ? 'em 12 meses' : 'do trimestre'),
+               eixo: uInfl, grupo: true });
+  });
+  return out;
+}
+
+function _irfPico(ys) {
+  var j = 0;
+  for (var i = 1; i < ys.length; i++) if (Math.abs(ys[i]) > Math.abs(ys[j])) j = i;
+  return j;
+}
+
+function _irfTraces(cfg, r) {
+  var h = D.irf.h, xs = [], rot = [];
+  for (var k = 0; k < h; k++) { xs.push(k + 1); rot.push(_simRotIdx(D.sim.i0 + k)); }
+  var med = r.med[cfg.serie], f = r.faixa[cfg.serie], nEq = D.sim.eq_ordem.length;
+  var eqRef = simEq(D.sim.eq_ordem[0]);
+  return [
+    { x: xs, y: f.hi, type: 'scatter', mode: 'lines', showlegend: false,
+      line: { width: 0 }, hoverinfo: 'skip' },
+    { x: xs, y: f.lo, type: 'scatter', mode: 'lines', name: _simRotFaixa(eqRef, nEq),
+      line: { width: 0 }, fill: 'tonexty', fillcolor: SIM_COR.band, hoverinfo: 'skip' },
+    { x: xs, y: med, type: 'scatter', mode: 'lines+markers',
+      name: 'Resposta com os pesos da mediana',
+      line: { color: SIM_COR.sim, width: 2.4 }, marker: { size: 5, color: SIM_COR.sim },
+      customdata: med.map(function (v, i) {
+        return [String(i + 1), rot[i], (v >= 0 ? '+' : '−') + fmt(Math.abs(v), 3),
+                fmt(f.lo[i], 2), fmt(f.hi[i], 2)];
+      }),
+      hovertemplate: '<b>trimestre %{customdata[0]} (%{customdata[1]})</b><br>'
+        + 'resposta: %{customdata[2]}<br>faixa: %{customdata[3]} a %{customdata[4]}'
+        + '<extra></extra>' },
+  ];
+}
+
+function _irfDesenharUm(cfg, r, jaExiste) {
+  var h = D.irf.h, traces = _irfTraces(cfg, r);
+  var layout = mkLayout({
+    // O eixo X conta trimestres depois do choque, e nao e tempo: `type` explicito, senao
+    // a fabrica le os inteiros como milissegundos (a oitava face das armadilhas de eixo).
+    xaxis: { type: 'linear', tickformat: '', dtick: 2, range: [0.5, h + 0.5],
+             title: 'trimestres depois do choque' },
+    yaxis: { title: cfg.eixo, zeroline: true, zerolinecolor: 'rgba(31,40,83,0.35)',
+             zerolinewidth: 1 },
+    showlegend: true,
+    legend: { orientation: 'h', x: 0, y: -0.2,
+              font: { family: 'Barlow', size: 10, color: '#7A88A8' } },
+    margin: { l: 56, r: 18, t: 8, b: 72 },
+  });
+  if (jaExiste) Plotly.react(cfg.div, traces, layout, PLOTLY_CONFIG);
+  else Plotly.newPlot(cfg.div, traces, layout, PLOTLY_CONFIG);
+  var med = r.med[cfg.serie], j = _irfPico(med);
+  var pico = Math.abs(med[j]) < 5e-4 ? 'sem resposta visível'
+    : 'pico ' + (med[j] >= 0 ? '+' : '−') + fmt(Math.abs(med[j])) + ' no trimestre '
+      + (j + 1) + ', ' + (med[h - 1] >= 0 ? '+' : '−') + fmt(Math.abs(med[h - 1]))
+      + ' no ' + h + 'º';
+  describeChart(cfg.div, traces, [_irfDescChoque(r.alvo, r.c), pico], cfg.eixo,
+                { titulo: cfg.titulo,
+                  periodo: _simRotIdx(D.sim.i0) + ' a ' + _simRotIdx(D.sim.i0 + h - 1) });
+}
+
+function desenharIrf(jaExiste) {
+  var r = IRF._ult;
+  _irfCfgs().forEach(function (cfg) { _irfDesenharUm(cfg, r, jaExiste); });
+}
+
+function renderIrf() {
+  renderIrfBar();
+  var r = irfCalcular(), av = _irfAviso(r.alvo, r.c);
+  if (r.naoConvergiu) {
+    av += (av ? ' ' : '') + '<b>' + r.naoConvergiu + '</b> dos ' + IRF.n
+      + ' conjuntos de pesos não convergiram e ficaram fora da faixa.';
+  }
+  var el = document.getElementById('irfAviso');
+  el.innerHTML = av;
+  el.style.display = av ? '' : 'none';
+  desenharIrf(IRF._desenhado);
+  IRF._desenhado = true;
+}
+
+function pintarIrf() {
+  if (IRF._pintado || !D.irf) return;
+  IRF._pintado = true;
+  var g1 = document.getElementById('irfGrid'), g2 = document.getElementById('irfGridGrupos');
+  _irfCfgs().forEach(function (cfg) { (cfg.grupo ? g2 : g1).appendChild(_irfCartao(cfg.div)); });
+  renderIrf();
+}
+
+function initIrf() {
+  if (!D.irf || !D.sim) {
+    document.getElementById('irfSemDados').style.display = '';
+    return;
+  }
+  document.getElementById('irfConteudo').style.display = '';
+  D.irf.alvos.forEach(function (a) {
+    IRF.chq[a.key] = a.tipo === 'residuo'
+      ? { tipo: 'decai', v: a.v, n: 4, rho: 0.5 }
+      : { tipo: 'rampa', v: a.v, n: 1, rho: 0.8 };
+  });
+  var pd = D.irf.padrao;
+  IRF.alvo = pd.alvo;
+  IRF.chq[pd.alvo] = { tipo: pd.tipo, v: pd.v, n: pd.n, rho: pd.rho };
+  _irfCfgs().forEach(function (cfg) {
+    CHART_META[cfg.div] = { title: cfg.titulo,
+                            source: 'modelo estrutural, as cinco equações resolvidas juntas' };
+  });
+  var h = D.irf.h, eqRef = simEq(D.sim.eq_ordem[0]);
+  document.getElementById('irfIntro').innerHTML =
+    'Um choque numa variável, e o caminho dele pelas cinco equações. Cada gráfico mostra a '
+    + '<b>diferença</b> entre o cenário da aba Structural Model com o choque e o mesmo cenário '
+    + 'sem ele, trimestre a trimestre, por ' + h + ' trimestres a partir de '
+    + _simRotIdx(D.sim.i0) + '. Numa variável que tem equação — o hiato, os quatro grupos do '
+    + 'IPCA, a expectativa, a Selic e o câmbio — o choque entra no <b>erro</b> da equação: no '
+    + 'primeiro trimestre ela se move pelo tamanho dele, e dali em diante a dinâmica dela e a '
+    + 'das outras decidem o resto. Numa variável sem equação, o choque soma ao caminho que o '
+    + 'cenário segura; nos índices (bolsa, dólar contra emergentes, commodities) ele é em % do '
+    + 'nível. A faixa é a de ' + Math.round(eqRef.hdi_prob * 100) + '% das respostas dos '
+    + eqRef.n_draws + ' conjuntos de pesos estimados, cada um medido contra o cenário padrão '
+    + 'resolvido com os mesmos pesos.';
+  var md = simEq('I').pesos_fim;
+  document.getElementById('irfGruposNota').innerHTML =
+    'O IPCA do gráfico acima é a soma destes quatro com o peso de cada um no índice ('
+    + D.irf.grupos.map(function (g) {
+        return g.nome.toLowerCase() + ' ' + fmt(100 * md[g.key], 1) + '%';
+      }).join(', ')
+    + '). Um choque em um grupo chega aos outros três pela expectativa, pelo câmbio e, nos '
+    + 'monitorados, pela indexação ao IPCA do trimestre anterior.';
+  ligarIrf();
 }
 
 
@@ -4853,6 +6996,16 @@ function init() {
     'A série mais curta é o hiato do produto, que começa em ' + _inicioDe('hiato')
     + ' — é ela que define de quando em diante as contas podem ser feitas. As demais vão até '
     + D.meta.ini + '.';
+  var dz = D.doze;
+  if (dz && dz.n) {
+    var f4 = function (v) { return v.toFixed(4).replace('.', ','); };
+    document.getElementById('introNota').textContent +=
+      ' O gráfico da inflação também se lê em 12 meses, no seletor dentro dele: são os mesmos '
+      + 'trimestres encadeados de quatro em quatro. No IPCA cheio isso reproduz o acumulado de '
+      + '12 meses publicado pelo IBGE com erro médio de ' + f4(dz.erro_medio)
+      + ' ponto percentual e máximo de ' + f4(dz.erro_max) + ', em ' + dz.n
+      + ' trimestres — o arredondamento da própria série publicada.';
+  }
 
   if (D.meta.aberto) {
     var f = document.getElementById('flagAberto');
@@ -4864,7 +7017,7 @@ function init() {
 
   var grid = document.getElementById('chartGrid');
   CHARTS.forEach(function (cfg) { grid.appendChild(montarCartao(cfg)); });
-  CHARTS.forEach(desenhar);
+  CHARTS.forEach(function (cfg) { desenhar(cfg); });   // nao forEach(desenhar): o indice viraria `jaExiste`
   montarTabela();
   initSub();
   initExp();
@@ -4872,6 +7025,7 @@ function init() {
   initTay();
   initFx();
   initSim();
+  initIrf();
 }
 
 function _inicioDe(key) {

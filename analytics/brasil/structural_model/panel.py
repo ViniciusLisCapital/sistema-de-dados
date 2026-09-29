@@ -25,12 +25,20 @@ do TRIMESTRE -- nao acumulada em doze meses e nao anualizada:
     meta_12m     Meta  meta do CMN no horizonte de 12 meses, % ao ano -- eq. (E)
     ipca_12m     I12   IPCA acumulado em 12 meses publicado (SGS 13522), % ao ano
 
-    (H) H(t) = h1*H(t-1) + h2*g_rr(t-1) + d08 + d20 + eps
+    (H) H(t) = h1*H(t-1) + h2*gap_juro(t-1) + d08 + d20 + eps
 
     rr_2a        taxa real de mercado de 2 anos (NTN-B 24M), % ao ano
     rr_10a       taxa real de mercado de 10 anos (NTN-B 120M), % ao ano
-    g_rr         inclinacao real 2a-10a = rr_2a - rr_10a, p.p. -- o aperto monetario
+    gap_juro     Selic - (rr_10a + meta_12m), p.p. -- o aperto monetario
+    gap_juro_fim o mesmo pelo FECHAMENTO da Selic, coluna paralela
+    g_rr         inclinacao real 2a-10a = rr_2a - rr_10a, p.p. -- a leitura ANTERIOR
+                 do aperto, mantida porque `is_curve.comparar()` a estima ao lado
     g_rr_fim     a mesma inclinacao pelo FECHAMENTO do trimestre, coluna paralela
+
+    As duas medidas do aperto tem o MESMO neutro, `rr_10a`, e diferem so em como a
+    postura e medida: `gap_juro` usa a Selic deflacionada pela meta e `g_rr` usa o juro
+    real de 2 anos do mercado. A diferenca entre elas e exatamente
+    `(Selic - meta) - rr_2a`, e as duas pernas correlacionam +0,875.
 
     (E) E(t) = e1*E(t-1) + e2*I12(t) + (1-e1-e2)*Meta(t) + eps
 
@@ -89,7 +97,7 @@ ja sao trimestrais e nao mudam.
 ## O que NAO e reescrito aqui
 
 `q`, `serie`, `para_q` e `focus_ipca_12m` sao importados de
-`analytics.brasil.monetary_policy.modelo_painel`, nao copiados. Sao funcoes ja
+`analytics.brasil.structural_model.modelo_agregado.modelo_painel`, nao copiados. Sao funcoes ja
 validadas contra numero publicado pelo BC, e duas copias divergem no primeiro
 ajuste que so uma delas receber.
 
@@ -126,7 +134,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from analytics.brasil.monetary_policy.modelo_painel import (
+from analytics.brasil.structural_model.modelo_agregado.modelo_painel import (
     focus_anual,
     focus_ipca_12m,
     para_q,
@@ -169,6 +177,7 @@ COLS = {
     "rr_2a":       ("Taxa real de mercado de 2 anos", "% ao ano"),
     "rr_10a":      ("Taxa real de mercado de 10 anos", "% ao ano"),
     "g_rr":        ("Inclinacao real 2 anos menos 10 anos", "p.p."),
+    "gap_juro":    ("Selic menos o juro nominal de equilibrio", "p.p."),
     "selic":       ("Selic, media do trimestre", "% ao ano"),
     "pi_e_2a":     ("Expectativa de IPCA para 2 anos a frente", "% ao ano"),
     "meta_24m":    ("Meta de inflacao no horizonte de 24 meses", "% ao ano"),
@@ -537,6 +546,14 @@ def construir() -> pd.DataFrame:
     df = df[df.index >= INICIO].sort_index()
     df["meta_12m"], _ = metas(df.index)
     df["meta_24m"] = metas_24m(df.index)
+
+    # O aperto monetario da (H), montado AQUI e nao dentro da equacao, porque o
+    # simulador refaz a mesma conta do lado do navegador: com a identidade em dois
+    # lugares ela podia divergir, e um hiato ligeiramente diferente e inteiramente
+    # plausivel. E a MESMA ancora que a regra de juros persegue -- `rr_10a + meta` --,
+    # entao os dois blocos do modelo passam a medir distancia ate o mesmo ponto.
+    df["gap_juro"] = df["selic"] - (df["rr_10a"] + df["meta_12m"])
+    df["gap_juro_fim"] = df["selic_fim"] - (df["rr_10a"] + df["meta_12m"])
     # a ponta so existe onde ALGUMA coluna tem dado -- um trimestre inteiramente
     # vazio no fim e so o calendario andando, nao observacao
     df = df.loc[: df.dropna(how="all").index.max()]

@@ -575,8 +575,18 @@ def estado(doc: dict | None = None, live: bool = False,
              if chaves is None or d["key"] in chaves]
 
     todas = [dep for d in alvos for dep in d["deps"]]
-    refs_sql = {dep["ref"]: _col(dep) for dep in todas if dep["kind"] == "mysql"}
-    sql = estado_mysql(refs_sql) if refs_sql else {}
+    # Indexado por (ref, coluna), nao so por ref: a mesma tabela pode ser lida por dois
+    # dashboards por colunas diferentes. `pm_copom_projecoes` e `vintage` na Politica
+    # Monetaria (a data da publicacao) e `date` no Modelo Estrutural (o periodo projetado,
+    # que vai a 2029). Indexado so por ref, o ultimo a entrar no dict vencia: o card da
+    # Politica Monetaria mostrava 2029-01-01 e acusava "dado novo" contra o proprio
+    # retrato, que `stamp()` grava por dashboard e portanto pela coluna certa (2026-09-24).
+    pares = {(dep["ref"], _col(dep)) for dep in todas if dep["kind"] == "mysql"}
+    sql: dict[tuple[str, str | None], dict] = {}
+    for col in {c for _, c in pares}:
+        refs = {r: c for r, c in pares if c == col}
+        for r, e in estado_mysql(refs).items():
+            sql[(r, col)] = e
 
     linhas = []
     for d in alvos:
@@ -598,7 +608,7 @@ def estado(doc: dict | None = None, live: bool = False,
         proc_de = proc_por_dep(d)
         for dep in d["deps"]:
             if dep["kind"] == "mysql":
-                e = dict(sql[dep["ref"]])
+                e = dict(sql[(dep["ref"], _col(dep))])
             elif dep["kind"] == "live":
                 e = (estado_live(dep["ref"]) if live else
                      {"ultimo": None, "existe": True, "erro": None, "nao_checado": True})

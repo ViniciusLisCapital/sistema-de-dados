@@ -286,6 +286,7 @@
             <tbody>
               <tr><td><strong>mt_pnad</strong></td><td>IBGE · Mensal (trimestre móvel)</td><td>71 séries nacionais, sem quebra — todas usadas em alguma das 12 tabelas de PNAD ("Total"/linhas sem filhos).</td></tr>
               <tr><td><strong>mt_pnad_trimestral</strong></td><td>IBGE · Trimestral (cheia, não móvel)</td><td>~111 séries curadas (de ~340 disponíveis) — só os indicadores-headline (desocupação, participação, informalidade, subutilização) por Sexo/Idade/Instrução/Cor ou Raça.</td></tr>
+              <tr><td><strong>mt_desocupacao_retro</strong></td><td>BCB · anexo do Relatório de Política Monetária, trimestral; série mensal desde 2004</td><td>A taxa de desocupação que o Banco Central usa no modelo agregado, na tabela de Desocupação ao lado da PNAD: média de 3 meses, dessazonalizada pelo BC e, antes de mar/2012, retropolada (Alves e Fasolo, 2015). É a única série dessazonalizada da página, e o ajuste é do BC, não daqui.</td></tr>
               <tr><td><strong>mt_caged_setor</strong></td><td>MTE/PDET · Mensal, desde 2020-01</td><td>Saldo/admissões/desligamentos por seção CNAE 2.0 (22 seções), do microdado do FTP.</td></tr>
               <tr><td><strong>mt_caged_uf</strong></td><td>MTE/PDET · Mensal, desde 2020-01</td><td>Idem, por UF (27 + "não identificado"). Subtotais por região são somas calculadas aqui, não publicadas.</td></tr>
               <tr><td><strong>mt_caged_salario</strong></td><td>MTE/PDET · Mensal, desde 2020-01</td><td>Idem, por faixa de salário de contratação em múltiplos do salário mínimo <em>vigente na competência</em> (10 faixas + não identificado).</td></tr>
@@ -409,7 +410,8 @@
           tem denominador <strong>ocupados</strong> (não força de trabalho), e o <em>nível da
           ocupação/desocupação</em> tem denominador <strong>população de 14 anos ou mais</strong> — é por
           isso que "nível da desocupação" e "taxa de desocupação" são números diferentes.</p>
-          <p>Sem ajuste sazonal (STL) em nenhuma variante nesta versão — ao contrário de
+          <p>Sem ajuste sazonal (STL) calculado aqui em nenhuma variante — a única linha dessazonalizada
+          é a desocupação do BCB, que já chega assim da fonte — ao contrário de
           <code>analytics/brasil/fiscal_policy/</code> e <code>analytics/brasil/credit/</code>. A <code>mt_pnad</code>
           já é trimestre móvel, o que suaviza parte da sazonalidade mensal por construção; a trimestral
           (<code>mt_pnad_trimestral</code>) não é dessazonalizada aqui.</p>
@@ -436,7 +438,7 @@
 </main>
 
 <footer>
-  Fontes: <span>IBGE (PNAD Contínua)</span> · <span>MTE/PDET (Novo CAGED)</span> · <span>BCB/SGS</span>
+  Fontes: <span>IBGE (PNAD Contínua)</span> · <span>MTE/PDET (Novo CAGED)</span> · <span>BCB/SGS</span> · <span>BCB (Relatório de Política Monetária)</span>
   &nbsp;|&nbsp; LIS Capital — Uso interno
 </footer>
 
@@ -1007,11 +1009,19 @@ function makeSimpleHierTab(opts) {
     var f = trimestral ? fmtQuarter : fmtMonthLong;
     var periodo = ext ? f(ext[0]) + ' a ' + f(ext[1]) : '';
 
+    // Uma linha de outra fonte (a desocupação do BCB, ao lado da PNAD) traz a
+    // sua em `node.src`, e ela entra só quando a linha está plotada.
+    var fonte = opts.chartSource || '';
+    specs.forEach(function(sp) {
+      var extra = sp.node && sp.node.src;
+      if (extra && fonte.indexOf(extra) < 0) fonte += (fonte ? '; ' : 'Fonte: ') + extra;
+    });
+
     el.innerHTML =
       '<h3>' + opts.chartTitle + '</h3>' +
       '<div class="chart-sub">' + bits.join(' · ') + '</div>' +
-      '<div class="chart-src">' + (opts.chartSource || '') +
-        (periodo ? (opts.chartSource ? ' · ' : '') + periodo : '') + '</div>';
+      '<div class="chart-src">' + fonte +
+        (periodo ? (fonte ? ' · ' : '') + periodo : '') + '</div>';
   }
   function renderChart() {
     var specs = chartSpecs();

@@ -5,22 +5,28 @@ Tudo o que falta na equação (H) do modelo estrutural. **O que está no ar vive
 medido e **não** entrou.
 
 ```
-(H) H(t) = h1·H(t-1) + h2·g_rr(t-1) + d08 + d20 + ε
+(H) H(t) = h1·H(t-1) + h2·gap(t-1) + d08 + d20 + ε
 
-    g_rr = juro real de mercado de 2 anos − o de 10 anos (NTN-B), p.p.
+    gap = Selic − (juro real de 10 anos + meta), p.p. — a âncora da regra de juros
 ```
 
-Estado em 2026-09-21 — 81 trimestres, 2006T2→2026T2:
+Estado em 2026-09-25 — 81 trimestres, 2006T2→2026T2:
 
 | parâmetro | peso | margem | t (HAC 4) | t (MQ) |
 |---|---|---|---|---|
-| hiato do trimestre anterior | 0,8864 | ± 0,0738 | 12,01 | 17,95 |
-| aperto do trimestre anterior | −0,1639 | ± 0,0626 | −2,62 | −2,10 |
-| crise de 2008-2009 | −0,4376 | ± 0,4091 | −1,07 | −1,47 |
-| pandemia de 2020 | −1,1447 | ± 0,7727 | −1,48 | −2,89 |
+| hiato do trimestre anterior | 0,8766 | ± 0,0700 | 12,52 | 18,37 |
+| aperto do trimestre anterior | −0,0713 | ± 0,0336 | −2,12 | −2,44 |
+| crise de 2008-2009 | −0,4807 | ± 0,4319 | −1,11 | −1,63 |
+| pandemia de 2020 | −1,0760 | ± 0,7618 | −1,41 | −2,82 |
 
-R² 0,868 · RMSE 0,642 · erro médio 0,412 · meia-vida de um hiato **6 trimestres** · efeito de
-longo prazo **−1,443** · **Ljung-Box Q(4) p 0,021 (rejeita) e Q(8) p 0,097 (não rejeita)**.
+R² 0,870 · RMSE 0,636 · meia-vida de um hiato **6 trimestres** · efeito de longo prazo **−0,578**
+· **Ljung-Box Q(4) p 0,070 e Q(8) p 0,261 — nenhum rejeita**.
+
+Por MCMC (`bayes/is_bayes.py`), que é o que o simulador roda: mediana de `h2` −0,0709, HDI 90%
+[−0,1205; −0,0230], **99,1%** da massa abaixo de zero; R² e RMSE idênticos aos do MQ; R-hat 1,0000,
+zero divergências, pior distância ao MQ 0,04 desvio do posterior. **0,49% da massa tem `|h1| ≥ 1`**
+(explosiva) — fica no posterior, porque tirá-la seria impor estacionariedade como priori, e em 12
+trimestres o desenho mais explosivo dos mil gravados (`h1` 1,0053) leva um hiato de 1 p.p. a 1,065.
 
 Convenção deste arquivo: **H#** pendência. Cada item diz se está bloqueado por dado, por decisão
 ou por trabalho.
@@ -29,14 +35,27 @@ ou por trabalho.
 
 ## 0. Duas decisões do usuário que fecham perguntas
 
-**A medida de aperto é a inclinação da curva real**, decidida em 2026-09-21 depois de a
-alternativa ser medida item a item (ver §2). Não é uma escolha de conveniência: é a única
-candidata que não exige estimar uma taxa de juro de equilíbrio, objeto sobre o qual as fontes
-discordam em 2,7 p.p. hoje.
+**A medida de aperto é a Selic contra a âncora da regra de juros**, decidida em 2026-09-25 com a
+medição ao lado (*"quero rodar a equação do hiato substituindo o gap com a inclinação pelo gap com
+a Selic − (real NTN-B + meta), como na nossa equação de Selic"*). Até ali era a inclinação real
+2a−10a, decidida em 2026-09-21. **As duas têm o mesmo neutro** — o juro real de 10 anos — e diferem
+só na perna da política: o juro real de 2 anos do mercado, ou a Selic descontada da meta. A
+diferença entre elas é exatamente `(Selic − meta) − rr_2a`, e as duas pernas correlacionam +0,875.
 
-**O hiato em tempo real fica de fora**, também por decisão explícita do usuário no mesmo dia:
-*"use a última série, não vou lidar com o problema de vintage agora."* É o item H1 abaixo, e é a
-pendência de maior consequência da lista.
+| aperto, 81 trimestres | h2 | t | **h2 × desvio** | R² | RMSE | LB(4) |
+|---|---|---|---|---|---|---|
+| inclinação 2a−10a | −0,164 | −2,62 | −0,167 | 0,8678 | 0,642 | **0,021** |
+| Selic contra a âncora | −0,071 | −2,12 | **−0,185** | 0,8703 | 0,636 | **0,070** |
+
+Os `h2` não se comparam — o gap oscila 2,60 e a inclinação 1,02 —, e por desvio da própria medida
+os dois quase coincidem. O que decidiu não foi ajuste: **com a inclinação a Selic nunca chega ao
+produto**, e uma (H) assim seria espectadora dentro do simulador. Com o gap, `(R) → (H)` é elo. De
+brinde, o resíduo deixou de reprovar Ljung-Box, e o efeito de um ponto (−0,071) passou a ser
+comparável com o do BC — e cai **dentro** da margem que ele publica (−0,165 a −0,053).
+
+**O hiato em tempo real fica de fora**, por decisão explícita do usuário em 2026-09-21: *"use a
+última série, não vou lidar com o problema de vintage agora."* É o item H1 abaixo, e continua sendo
+a pendência de maior consequência da lista.
 
 ---
 
@@ -58,24 +77,23 @@ espaço para isso não é pequeno.
 registra isso. O trabalho é montar a série real-time (cada trimestre com a leitura da edição mais
 próxima posterior a ele) e reestimar ao lado.
 
-### H2 — O resíduo ainda tem padrão em quatro trimestres · *não bloqueado*
+### H2 — A autocorrelação de um trimestre continua lá · *rebaixado em 2026-09-25*
 
-Q(4) p 0,021 rejeita; Q(8) p 0,097 não. A autocorrelação do erro é **0,33** em um trimestre e cai
-para 0,03 em dois — o padrão está concentrado na primeira defasagem, o que aponta para termo
-faltando e não para sazonalidade.
-
-Isso está declarado em quatro lugares da aba (ficha, cartão de erro, tabela e nota), com asserção
-exigindo que os quatro digam o que o teste mede, nos dois sentidos. Parte do padrão vem de H1: um
-hiato suavizado pela fonte produz erro suavizado.
+Com a inclinação, Q(4) p 0,021 **rejeitava**. Com o gap, **p 0,070 e Q(8) p 0,261 — nenhum
+rejeita**, e a aba passou a dizer "nada sobrando" nos quatro lugares em que fala do erro (a
+asserção que exige os quatro concordando é a mesma, e o fio que exigia "ainda tem padrão" inverteu
+junto). Mas a autocorrelação de primeira ordem é **0,30** — o padrão ficou menor, não sumiu, e o
+teste passa por pouco. Parte dele vem de H1: um hiato suavizado pela fonte produz erro suavizado.
 
 ### H3 — As duas dummies de crise não são individualmente firmes · *medido, e é uma tensão real*
 
-`d08` tem t −1,07 e `d20` tem t −1,48 sob HAC(4). Pelo t individual, nenhuma das duas sobreviveria.
-**Mas tirá-las derruba o aperto**: `h2` vai de −0,175 para −0,113 e o t de −2,75 para −1,22, com o
-RMSE subindo de 0,645 para 0,687 (amostra comum, na tabela da página).
+`d08` tem t −1,11 e `d20` tem t −1,41 sob HAC(4). Pelo t individual, nenhuma das duas sobreviveria.
+**Mas tirá-las enfraquece o aperto**: `h2` vai de −0,0745 para −0,0589 e o t de −2,13 para −1,93,
+com o RMSE subindo de 0,639 para 0,680 (amostra comum, na tabela da página). Com a inclinação o
+efeito era maior — o t caía a −1,22 —, então o gap depende menos das duas marcas.
 
 A leitura honesta é que elas não são estimativas do tamanho da crise — são o que impede dois
-episódios que nenhuma política monetária explica de definirem a inclinação do resto. O HAC(4) é
+episódios que nenhuma política monetária explica de definirem o peso do resto. O HAC(4) é
 severo com elas justamente porque são poucos trimestres consecutivos. **Decisão em aberto:** manter
 como está (a escolha atual, e a do plano), ou substituir por uma dummy só de 2020, que é a que
 carrega quase todo o efeito — os quatro maiores resíduos da amostra são os quatro trimestres de
@@ -83,8 +101,8 @@ carrega quase todo o efeito — os quatro maiores resíduos da amostra são os q
 
 ### H4 — O `h1` fica acima do intervalo que o BC publica · *medido, e provavelmente é H1*
 
-O BC publica `b1 = 0,85` com IC 90% de [0,70; 0,95] — o nosso 0,886 está dentro. Mas o `t(MQ)` de
-17,95 contra o `t(HAC)` de 12,01 mostra o quanto o erro correlacionado pesa aqui, e a suspeita é
+O BC publica `b1 = 0,85` com IC 90% de [0,70; 0,95] — o nosso 0,877 está dentro. Mas o `t(MQ)` de
+18,37 contra o `t(HAC)` de 12,52 mostra o quanto o erro correlacionado pesa aqui, e a suspeita é
 que a persistência esteja inflada pela suavização da fonte (H1). Reestimar com o hiato real-time é
 o que separa as duas hipóteses.
 
@@ -96,7 +114,25 @@ A eq. (2) do BC tem `−b3·rp_hat`, o prêmio de risco ciclicamente ajustado, c
 e é importável**. Não entrou porque o plano da pasta não o pede.
 
 Vale notar o que isso significa para a comparação: parte do que o nosso `h2` mede pode ser condição
-financeira, já que a inclinação da curva real e o prêmio de risco andam juntos em crise.
+financeira, já que o aperto e o prêmio de risco andam juntos em crise.
+
+### H10 — O gap perde força na década recente · *medido, e é a ressalva da troca*
+
+As duas medidas do aperto não são histórias rivais — correlacionam 0,767, e postas no mesmo ajuste
+nenhuma sobrevive (inclinação t −0,99, gap t −1,23). Mas elas **se separam por subamostra**, e ali
+a inclinação ganha:
+
+| subamostra | inclinação | gap |
+|---|---|---|
+| 2006T2–2016T2 | −0,153 (t −1,03) | **−0,200 (t −2,28)** |
+| 2016T3–2026T2, sem a pandemia (n 32) | **−0,105 (t −2,94)** | −0,006 (t −0,44) |
+
+A significância do gap na amostra cheia vem sobretudo de 2006–2016. Não há diagnóstico ainda do
+porquê. Duas hipóteses a testar: (a) a Selic de 2017–2021 ficou muito abaixo da âncora por muito
+tempo (o gap mínimo é −5,10 em 2020T4) sem que o hiato respondesse na proporção, o que seria o piso
+de juro efetivo e não falha da medida; (b) o juro real de 10 anos carrega prêmio de maturidade que
+variou no período (§2), o que desloca o neutro do gap e não o da inclinação, que tem o mesmo prêmio
+nas duas pontas. **A aba não diz isso ainda** — está aqui para não se perder.
 
 ---
 
@@ -110,11 +146,15 @@ Não são pendências: são medições que fecham perguntas que voltariam sozinh
   −0,016 e −0,017, t −0,63 e −0,65. **A causa é medida:** o juro real ex-ante cai de 12,2% em
   2001T4 a −0,9% em 2020T4 e volta a 8,5%, e o hiato não tem essa tendência — um nível fixo não
   remove nada.
-- **A mediana das 5 medidas do boxe do BC** (`monetary_policy/data/modelo_neutra_pub.csv`): −0,075,
+- **A mediana das 5 medidas do boxe do BC** (`modelo_agregado/data/modelo_neutra_pub.csv`): −0,075,
   t −1,61. E ela **para em 2024T2**, porque o boxe é de jun/2024 — não serve para o período
   corrente sem ser estendida.
-- **O filtro HP com cauda Focus ajusta MELHOR que a inclinação** e mesmo assim não foi escolhido:
-  −0,231 (t −4,42) contra −0,164 (t −2,62), na mesma janela. Isso está na tabela da página em vez
+- **A inclinação real 2a−10a** foi a medida até 2026-09-25 e continua medida ao lado, na tabela
+  de candidatas e na de formas. Ela empata com o gap por desvio da medida e o supera na década
+  recente (H10), e perdeu o lugar por uma razão de estrutura: ela é feita de dois preços de mercado,
+  então a Selic do simulador não passaria por ela.
+- **O filtro HP com cauda Focus ajusta MELHOR que a inclinação e que o gap** e mesmo assim não foi
+  escolhido: −0,231 (t −4,42) contra −0,164 (t −2,62) e −0,071 (t −2,12), na mesma janela. Isso está na tabela da página em vez
   de escondido. As duas razões para não usá-lo: é um filtro de **dois lados**, então para decidir
   qual era o equilíbrio em 2010 ele usa dado de 2012 — look-ahead que não existia na época —, e o
   nível dele hoje é **7,7%**, o que diz que a Selic de 15% quase não aperta. *Se um dia o
@@ -162,13 +202,14 @@ independentes no mesmo lugar.
 
 ## 3. O que ainda não foi feito
 
-### H6 — A página não diz qual é a taxa estrutural em nível · *trabalho pequeno, decisão tomada*
+### H6 — O neutro do aperto carrega o prêmio de maturidade · *ganhou peso em 2026-09-25*
 
-A aba explica por que não usa uma taxa de equilíbrio, mas não diz **onde ela está**. O número medido
-acima (7,56 − 1,1 ≈ 6,45%, confirmado pela Focus de 4 anos em 6,42%) é uma leitura útil e
-verificável, e ele contrasta com os 5,0% que o BC declara usar — uma diferença de 1,4 p.p. que
-muda a leitura de quão apertada a política está. Entra como frase derivada do payload, não escrita
-à mão.
+Desde que o aperto virou `Selic − meta − juro real de 10 anos`, **o juro de 10 anos É o neutro da
+conta** — não mais só uma leitura de contexto. E ele carrega o prêmio de maturidade medido acima
+(0,9–1,1 p.p.), então o gap subestima o aperto nesse tanto, em nível. Como a equação não tem termo
+constante, nível importa: descontar o prêmio muda o gap médio e, portanto, o repouso do hiato. É
+também uma das duas hipóteses de H10. O que falta é medir o gap com o neutro descontado (7,56 − 1,1
+≈ 6,45% hoje, confirmado pela Focus de 4 anos em 6,42%) e pôr a frase na aba, derivada do payload.
 
 ### H7 — O hiato mundial · *previsto no modelo do BC, excluído por ele mesmo*
 
@@ -186,16 +227,11 @@ os três saem juntos.
 ### H9 — Estimar a neutra, em vez de contornar · *intenção do usuário, 2026-09-22*
 
 O registro completo está em **R12** de
-[`pendencias_taylor_eq.md`](pendencias_taylor_eq.md), porque lá a neutra é um termo explícito da
-equação. O que muda **aqui** se ele for resolvido é maior do que parece: a inclinação 2a−10a foi
-escolhida contra uma tabela de candidatas a `RR*` que ou **não se movem** (constante, a neutra
-declarada no RPM — `h2` indistinguível de zero) ou **têm look-ahead** (o HP com cauda, que ajusta
-melhor e foi rejeitado por isso). Uma neutra estimada, que se mova e não olhe para o futuro, é uma
-categoria que **ainda não foi testada** — a §2 acima não a cobre.
-
-Se ela existir e funcionar, `g_rr` volta a poder ser `r − RR*`, que é a forma da própria eq. (2) do
-BC, e a §2 passa a ser história em vez de justificativa. Enquanto não existir, a inclinação
-continua sendo a única candidata medida que entrega `h2` firme sem look-ahead.
+[`pendencias_taylor_eq.md`](pendencias_taylor_eq.md). **Desde 2026-09-25 H9 e R12 são literalmente
+o mesmo item**: as duas equações medem distância até a MESMA âncora (`juro real de 10 anos + meta`),
+então uma neutra estimada substituiria o juro de 10 anos nas duas de uma vez, e trocá-la numa só
+desfaria a coerência que motivou a troca. A tabela de candidatas da §2 continua não cobrindo uma
+neutra estimada que se mova e não olhe para o futuro.
 
 Vale notar que **o BC usa duas neutras diferentes**, uma na IS e outra na Taylor (`rr_IS` e
 `rr_TAY`, correlação 0,994, diferença média 0,12 p.p.) — então "estimar a neutra" é, no modelo dele,
@@ -207,7 +243,8 @@ estimar duas.
 
 1. **H1 é a pendência-raiz.** Ela é a única que pode mover `h1` e `h2` de verdade, e H2 e H4
    provavelmente são consequência dela.
-2. **H6 é barato e melhora a leitura da página agora**, sem tocar na estimação.
+2. **H10 e H6 andam juntos**: medir o gap com o neutro descontado do prêmio responde uma das duas
+   hipóteses da fraqueza recente e põe o nível do neutro na aba.
 3. **H3 depende de uma decisão**, não de trabalho.
 4. **H5 entra se e quando o plano quiser o termo de condições financeiras** — o insumo já existe.
 5. **H8 é pequeno e sai junto com P16 e E7.**

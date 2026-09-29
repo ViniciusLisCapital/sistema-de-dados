@@ -179,9 +179,14 @@ const document = {
  'fxFlipCard', 'fxFlipTitulo', 'fxFlipTexto', 'tblFxFlip', 'fxFlipNota', 'fxFold',
  'tblFxComp', 'fxCompNota', 'tblFxMensal', 'fxMensalNota', 'tblFxAcf',
  'fxAcfNota',
- 'simSemDados', 'simConteudo', 'simEqTitulo', 'simEqSub',
- 'simOpcoes', 'simAviso', 'simGrid',
- 'simJanela', 'simInputs'].forEach((id) => {
+ 'simSemDados', 'simConteudo',
+ // Um cartao por equacao, sufixado pela chave dela. A lista sai do proprio markup
+ // logo abaixo, e nao escrita aqui, para uma equacao nova nao passar em silencio.
+ ...[...CRU.matchAll(/id="simGrid-(\w+)"/g)].flatMap((m) => [
+   'simEqTitulo-' + m[1], 'simEqSub-' + m[1], 'simAviso-' + m[1], 'simGrid-' + m[1]]),
+ 'simJanela', 'simInputs',
+ 'irfSemDados', 'irfConteudo', 'irfIntro', 'irfBar', 'irfAviso', 'irfPillTri', 'irfPill12',
+ 'irfGrid', 'irfGruposNota', 'irfGridGrupos'].forEach((id) => {
   if (!CRU.includes('id="' + id + '"')) {
     console.error('id declarado no teste mas ausente do HTML: ' + id); process.exit(1);
   }
@@ -259,7 +264,7 @@ const ESPERADO = {
   'ch-hiato': ['hiato'],
   // as duas pontas da curva real num cartao, a inclinacao noutro: unidades diferentes
   'ch-real': ['rr_2a', 'rr_10a'],
-  'ch-grr': ['g_rr'],
+  'ch-grr': ['gap_juro', 'g_rr'],
   'ch-cambio': ['de'],
   'ch-comm': ['pi_agr_usd', 'pi_met_usd'],
   // os insumos da regra de juros. A Selic sozinha (escala propria), as duas
@@ -372,6 +377,120 @@ Object.keys(UNID).forEach((div) => {
   ok(!/jan\/|fev\/|mar\/|abr\/|mai\/|jun\/|jul\/|ago\/|set\/|out\/|nov\/|dez\//.test(src),
      div + ': nao rotula o trimestre com nome de mes', src);
 });
+
+// ── §6b ───────────────────────────────────────────────────────────────────────
+secao('6b. As taxas de inflacao da aba de dados tambem se leem em 12 meses');
+{
+  const DV = 'ch-grupos';
+  const KS = ESPERADO[DV];
+  const dz = D.doze;
+  ok(!!dz && KS.every((k) => Array.isArray(dz.s12[k]) && dz.s12[k].length === D.x.length),
+     'o payload traz a leitura de 12 meses das cinco taxas, na grade do painel');
+  // refeita AQUI, dos trimestres, e nao comparada com o retorno de uma funcao da pagina
+  const enc = (v, i) => {
+    if (i < 3) return null;
+    let f = 1;
+    for (let j = i - 3; j <= i; j++) { if (v[j] == null) return null; f *= 1 + v[j] / 100; }
+    return (f - 1) * 100;
+  };
+  let pior = 0, n = 0;
+  KS.forEach((k) => D.s[k].forEach((_, i) => {
+    const a = enc(D.s[k], i), b = dz.s12[k][i];
+    if ((a == null) !== (b == null)) { pior = Infinity; return; }
+    if (a != null) { pior = Math.max(pior, Math.abs(a - b)); n++; }
+  }));
+  ok(pior < 2e-3 && n > 400, 'cada ponto e o encadeamento dos quatro trimestres, nao a soma',
+     n + ' pontos, pior ' + pior.toExponential(2));
+  let pr = 0, nr = 0;
+  dz.s12.pi_q.forEach((v, i) => {
+    if (v != null && dz.ref12[i] != null) { pr = Math.max(pr, Math.abs(v - dz.ref12[i])); nr++; }
+  });
+  ok(pr < 0.01 && nr > 80, 'o IPCA cheio encadeado reproduz o de 12 meses PUBLICADO',
+     nr + ' trimestres, pior ' + pr.toFixed(4));
+  ok(Math.abs(pr - dz.erro_max) < 1e-3 && nr === dz.n,
+     'e o erro que a pagina imprime e o medido', dz.erro_max + ' contra ' + pr.toFixed(4));
+  const nota = document.getElementById('introNota').textContent;
+  ok(nota.indexOf(dz.erro_max.toFixed(4).replace('.', ',')) >= 0 && nota.indexOf('12 meses') >= 0,
+     'a introducao da aba diz que a leitura existe, e o erro contra o publicado', nota);
+
+  const card = document.getElementById(DV).parentNode;
+  const bar = document.getElementById('vb-' + DV);
+  ok(!!bar && bar.parentNode === card, 'o seletor fica DENTRO do cartao do grafico');
+  const pills = bar ? bar.children.filter((c) => c._cls().includes('vista-pill')) : [];
+  ok(pills.length === 2 && pills[0].textContent === 'Do trimestre'
+     && pills[1].textContent === 'Em 12 meses', 'duas leituras: do trimestre e em 12 meses',
+     pills.map((p) => p.textContent).join(','));
+  ok(pills.length === 2 && pills[0]._cls().includes('active') && !pills[1]._cls().includes('active'),
+     'nasce na leitura do trimestre, que e a que as contas usam');
+  const iHead = card.children.indexOf(card._chFrame.head);
+  const iBar = card.children.indexOf(bar), iPlot = card.children.indexOf(document.getElementById(DV));
+  ok(iHead < iBar && iBar < iPlot, 'entre o cabecalho e o grafico', iHead + ' ' + iBar + ' ' + iPlot);
+  // so este cartao tem a segunda leitura: cambio e commodities seguem sem seletor
+  ok(!document.getElementById('vb-ch-cambio') && !document.getElementById('vb-ch-comm'),
+     'nenhum outro cartao ganhou o seletor');
+
+  const TIT_TRI = card._chFrame.title.textContent;
+  const infoBtn = card.children[0].children[0];
+  const unidade = () => {
+    ctx._pinned = null;
+    infoBtn.dispatch('mouseenter');
+    const m = /Unidade: ([^<]*)/.exec(ctx._pop ? ctx._pop.innerHTML : '');
+    return m ? m[1] : null;
+  };
+  ok(unidade() === 'variação do trimestre, %', 'o cartao de definicao diz a unidade do trimestre',
+     String(unidade()));
+
+  if (pills.length === 2) {
+    const antes = RELAYOUTS.length;
+    pills[1].dispatch('click');
+    const e = PLOT[DV];
+    ok(e.traces.length === KS.length && e.traces.every((t, j) => t.y === dz.s12[KS[j]]),
+       'em 12 meses as cinco linhas passam a ser as encadeadas');
+    ok(e.layout.yaxis.title === 'variação em 12 meses, %', 'e o eixo diz isso',
+       String(e.layout.yaxis.title));
+    ok(card._chFrame.sub.textContent.indexOf('variação em 12 meses, %') >= 0,
+       'o subtitulo imprime a mesma unidade do eixo', card._chFrame.sub.textContent);
+    ok(card._chFrame.title.textContent === 'Inflação em 12 meses, cheio e por grupo de preço',
+       'o titulo muda junto: o clique muda o que o grafico afirma', card._chFrame.title.textContent);
+    ok(unidade() === 'variação em 12 meses, %', 'e o cartao de definicao tambem', String(unidade()));
+    ok(pills[1]._cls().includes('active') && !pills[0]._cls().includes('active'),
+       'a pill ativa acompanha o clique');
+    let iu = -1;
+    dz.s12.pi_q.forEach((v, i) => { if (v != null) iu = i; });
+    const st = document.getElementById('st-' + DV).innerHTML;
+    ok(st.indexOf(ctx.fmt(dz.s12.pi_q[iu])) >= 0 && st.indexOf(D.rot[iu]) >= 0,
+       'o ultimo/maxima/minima passa a ler a serie de 12 meses', D.rot[iu] + ' ' + dz.s12.pi_q[iu]);
+    // a regua e refeita: a primeira janela de 12 meses fecha tres trimestres depois
+    const r = RELAYOUTS.slice(antes).filter((x) => x.div === DV && x.upd['xaxis.range']);
+    let i0 = D.x.length;
+    KS.forEach((k) => { const j = dz.s12[k].findIndex((v) => v != null); if (j >= 0) i0 = Math.min(i0, j); });
+    ok(r.length >= 1 && Math.abs(Date.parse(r[r.length - 1].upd['xaxis.range'][0])
+                                 - (Date.parse(D.x[i0]) - passo)) <= 864e5,
+       'o "Tudo" de 12 meses comeca na primeira janela, nao na grade', r.length ? r[r.length - 1].upd['xaxis.range'][0] : '-');
+    const ativos = document.getElementById('rp-' + DV).children.filter((b) => b._cls().includes('active'));
+    ok(ativos.length === 1 && ativos[0].textContent === 'Tudo', 'e a regua volta ao "Tudo"');
+    ok(PLOT['ch-cambio'].traces[0].y === D.s.de, 'os outros graficos nao mudam');
+
+    // clicar na leitura ja ativa nao redesenha
+    const nPlot = RELAYOUTS.length;
+    pills[1].dispatch('click');
+    ok(RELAYOUTS.length === nPlot, 'clicar na leitura ja ativa nao faz nada');
+
+    pills[0].dispatch('click');
+    const e2 = PLOT[DV];
+    ok(e2.traces.every((t, j) => t.y === D.s[KS[j]]) && e2.layout.yaxis.title === 'variação do trimestre, %'
+       && card._chFrame.title.textContent === TIT_TRI && unidade() === 'variação do trimestre, %',
+       'e volta: series, eixo, titulo e unidade do trimestre');
+  }
+  // o ajuste de Y e ligado UMA vez por grafico: nem nenhuma (a primeira pintura tratada
+  // como redesenho), nem uma a mais a cada troca de leitura
+  Object.keys(ESPERADO).forEach((div) => {
+    const n = (document.getElementById(div)._lis.plotly_relayout || []).length;
+    ok(n === 1, div + ': o ajuste de Y ligado uma vez, mesmo depois das trocas', String(n));
+  });
+  ctx._pinned = null;
+  if (ctx.hideInfo) ctx.hideInfo();
+}
 
 // ── §7 — CIEDE2000 ────────────────────────────────────────────────────────────
 secao('7. Series do mesmo grafico sao distinguiveis (dE2000 >= 20)');
@@ -537,6 +656,10 @@ const derivados = {
   fxCompNota: _prosa('fxCompNota'),
   fxMensalNota: _prosa('fxMensalNota'),
   fxAcfNota: _prosa('fxAcfNota'),
+  // A TABELA de formas da (F) tambem e texto que o leitor le, e a descricao de cada
+  // forma vem do payload. Ela ficou de fora da varredura ate 2026-09-25, quando uma
+  // delas entrou carregando data de decisao nossa.
+  tblFxComp: _prosa('tblFxComp'),
 };
 ok(noHtml.length >= 3, 'achou os blocos de prosa no HTML', String(noHtml.length));
 ok(fixos.length >= 2, 'ha prosa escrita a mao', String(fixos.length));
@@ -544,6 +667,14 @@ ok(noHtml.length - fixos.length >= 1, 'ha prosa preenchida no render');
 
 const junta = fixos.concat(Object.keys(derivados).map((k) => derivados[k])).join(' \n ');
 PROIBIDO.forEach((t) => ok(junta.indexOf(t) < 0, 'a prosa nao usa "' + t + '"'));
+// Data de decisao NOSSA, em qualquer forma. "Desde 2026" pegava uma redacao so; uma
+// data ISO solta e sempre nossa -- o leitor nao tem o que fazer com ela, e ela so
+// levanta "e antes disso?". Datas de DADO na pagina sao trimestres (2026T2), entao
+// esta classe nao tem falso positivo aqui.
+const isoData = junta.match(/20\d\d-\d\d-\d\d/g) || [];
+ok(isoData.length === 0,
+   'a prosa nao carrega data de decisao nossa em forma ISO',
+   isoData.join(', ') || '(nenhuma)');
 fixos.forEach((b, i) =>
   ok(b.replace(/\s+/g, ' ').trim().length > 80, 'bloco fixo ' + (i + 1) + ' tem conteudo'));
 Object.keys(derivados).forEach((k) =>
@@ -581,8 +712,8 @@ ok(!!S, 'o payload traz a estimacao por grupo');
 ok(CRU.indexOf('data-tab="tab-modelo"') >= 0, 'a aba existe no markup');
 ok(CRU.indexOf('data-tab="tab-estim"') < 0, 'a aba da equacao agregada NAO existe mais');
 // a lista exata, e nao so a contagem: uma aba que suma ou troque de id reprova
-ok(TABS.join(',') === 'tab-dados,tab-modelo,tab-exp,tab-is,tab-tay,tab-fx,tab-sim',
-   'as sete abas, nesta ordem', TABS.join(','));
+ok(TABS.join(',') === 'tab-dados,tab-modelo,tab-exp,tab-is,tab-tay,tab-fx,tab-sim,tab-irf',
+   'as oito abas, nesta ordem', TABS.join(','));
 ok(!PLOT['ch-cheio'], 'os graficos da aba NAO sao pintados enquanto ela esta fechada');
 
 ctx.activateTab('tab-modelo');
@@ -1709,30 +1840,60 @@ if (H) {
     ok(dentro > 0, 'e nao-zero dentro delas', String(dentro));
   }
 
-  // ── a tabela de RR*: e o registro do POR QUE a inclinacao foi escolhida
-  ok(Array.isArray(H.rr) && H.rr.length >= 4,
-     'a tabela de taxas de equilibrio tem as candidatas medidas',
+  // ── a tabela das medidas do aperto: e o registro do POR QUE da escolha. Desde
+  //    2026-09-25 a escolhida e a Selic contra a ancora da regra de juros, e a
+  //    inclinacao da curva real -- a anterior -- continua na tabela.
+  ok(Array.isArray(H.rr) && H.rr.length >= 5,
+     'a tabela tem as candidatas medidas, a inclinacao anterior e o gap',
      String((H.rr || []).length));
   ok(H.rr.filter((r) => r.escolhida).length === 1,
      'exatamente uma linha e marcada como a escolhida');
-  ok(H.rr.filter((r) => r.escolhida)[0].key === 'incl',
-     'e ela e a inclinacao da curva real');
+  ok(H.rr.filter((r) => r.escolhida)[0].key === 'gap',
+     'e ela e a Selic contra a ancora da regra de juros');
   {
     const n0 = H.rr[0].n;
     ok(H.rr.every((r) => r.n === n0),
        'todas medidas na MESMA janela, senao a tabela nao compara nada',
        H.rr.map((r) => r.n).join(','));
     const fixas = H.rr.filter((r) => r.key === 'const' || r.key === 'bc');
-    const nossa = H.rr.filter((r) => r.key === 'incl')[0];
+    const nossa = H.rr.filter((r) => r.key === 'gap')[0];
+    const inc = H.rr.filter((r) => r.key === 'incl')[0];
     ok(fixas.length === 2, 'as duas taxas fixas estao na tabela');
     ok(fixas.every((r) => Math.abs(r.t) < 2),
-       'e nelas o aperto e indistinguivel de zero -- que e o motivo da escolha',
+       'e nelas o aperto e indistinguivel de zero -- que e o motivo de nao usa-las',
        fixas.map((r) => _f(r.t, 2)).join(' / '));
-    ok(Math.abs(nossa.t) >= 2, 'enquanto a inclinacao mede alguma coisa',
+    ok(Math.abs(nossa.t) >= 2, 'enquanto a Selic contra a ancora mede alguma coisa',
        _f(nossa.t, 2));
+    ok(!!inc && Math.abs(inc.t) >= 2, 'e a inclinacao, que continua na tabela, tambem',
+       inc ? _f(inc.t, 2) : '-');
     ok(Math.abs(nossa.h2 - cApt.b) < 1e-5,
        'e a linha escolhida traz o MESMO peso que a conta da pagina',
        nossa.h2 + ' vs ' + cApt.b);
+
+    // O PESO POR PONTO NAO SE COMPARA entre medidas de dispersao diferente -- o gap
+    // oscila 2,6x o que a inclinacao oscila. A coluna por desvio existe por isso, e as
+    // duas asserções abaixo afirmam o fato que ela mostra: por ponto os pesos parecem
+    // de ordens diferentes, por desvio eles quase coincidem.
+    H.rr.forEach((r) => {
+      ok(Math.abs(r.h2_dp - r.h2 * r.sd) < 1e-5,
+         r.key + ': o peso por desvio e o peso por ponto vezes o desvio da medida',
+         _f(r.h2_dp, 4) + ' vs ' + _f(r.h2 * r.sd, 4));
+    });
+    const razaoPonto = inc.h2 / nossa.h2, razaoDp = inc.h2_dp / nossa.h2_dp;
+    ok(razaoPonto > 2,
+       'por ponto, os dois pesos parecem de ordens diferentes',
+       _f(razaoPonto, 2) + 'x');
+    ok(Math.abs(razaoDp - 1) < 0.25,
+       'e por desvio da propria medida eles quase coincidem -- o que a tabela existe '
+       + 'para mostrar', _f(razaoDp, 2) + 'x');
+    const tr = document.getElementById('tblIsRR').innerHTML;
+    ok(tr.indexOf('Peso por desvio da medida') >= 0 && tr.indexOf(_f(nossa.h2_dp, 3)) >= 0,
+       'a coluna por desvio esta na tela, com o numero do payload');
+    const nr = document.getElementById('isRRNota').textContent;
+    ok(nr.indexOf(_f(inc.h2_dp, 3)) >= 0 && nr.indexOf(_f(nossa.h2_dp, 3)) >= 0,
+       'e a nota cita os dois pesos por desvio, derivados');
+    ok(nr.indexOf('inclinação da curva não tem esse problema') < 0,
+       'a frase que defendia a inclinacao como a escolhida saiu da nota');
   }
 
   // ── a tabela de formas testadas
@@ -1745,6 +1906,11 @@ if (H) {
     const cont = H.comparar.filter((r) => r.key === 'cont')[0];
     const sem = H.comparar.filter((r) => r.key === 'sem_cri')[0];
     ok(!!cont && !!sem, 'a contemporanea e a sem-crises estao medidas');
+    const incC = H.comparar.filter((r) => r.key === 'incl')[0];
+    ok(!!incC, 'e a inclinacao da curva real, no lugar da Selic, tambem');
+    ok((document.getElementById('isCompNota').textContent || '')
+         .indexOf(_f(incC.h2, 3)) >= 0,
+       'a nota da tabela cita o peso da inclinacao, derivado');
     ok(Math.abs(base.h2) > Math.abs(cont.h2),
        'a defasada mede MAIS aperto que a contemporanea -- o motivo da defasagem',
        base.h2 + ' vs ' + cont.h2);
@@ -1771,8 +1937,12 @@ if (H) {
        'a ficha de abertura diz a mesma coisa');
     ok((stats.indexOf('ainda sobra padrão no erro') >= 0) === sobra,
        'e o cartao de erro tipico tambem');
-    ok(sobra, 'nesta forma o erro AINDA TEM padrao -- se isso mudar, a prosa acima '
-       + 'tem de mudar junto (Ljung-Box p ' + _f(H.lb_p4, 4) + ')');
+    // Desde 2026-09-25 o erro NAO tem mais padrao: foi o que a troca da inclinacao
+    // pela Selic contra a ancora comprou (Ljung-Box de 0,021 para 0,070). O fio
+    // inverteu junto -- se voltar a acusar padrao, a prosa acima muda sozinha, e este
+    // teste avisa que o motivo da troca deixou de valer.
+    ok(!sobra, 'nesta forma o erro NAO tem mais padrao -- se isso mudar, o argumento da '
+       + 'troca de medida enfraquece (Ljung-Box p ' + _f(H.lb_p4, 4) + ')');
   }
 
   // ── a media do hiato: o plano mandava CONFERIR e REPORTAR, e a pagina reporta
@@ -1824,17 +1994,31 @@ if (H) {
        'e o valor volta a entrar somando depois');
   }
 
-  // ── a comparacao com o BC: a linha do aperto TEM de estar marcada como outro objeto
+  // ── a comparacao com o BC: desde 2026-09-25 o aperto E comparavel -- os dois sao
+  //    juro real contra um juro de equilibrio, em p.p. -- e a linha do BC mostra o
+  //    EFEITO por ponto (-b2/4), que e a unidade do nosso h2
   {
     ok(H.bc.b1.comparavel === true, 'o peso do hiato anterior e comparavel com o do BC');
-    ok(H.bc.b2.comparavel === false,
-       'e o do aperto NAO e: la o regressor e outro');
+    ok(H.bc.b2.comparavel === true,
+       'e o do aperto tambem: os dois medem juro real contra um equilibrio');
+    ok(Math.abs(H.bc.b2.v - (-H.bc.b2.b2_publicado / 4)) < 1e-9,
+       'a linha do BC e o efeito por ponto, -b2/4, e nao o b2 publicado',
+       _f(H.bc.b2.v, 4) + ' vs b2 ' + _f(H.bc.b2.b2_publicado, 3));
+    ok(H.bc.b2.ic[0] < H.bc.b2.ic[1],
+       'e a margem foi convertida junto, com as pontas na ordem certa',
+       _f(H.bc.b2.ic[0], 4) + ' a ' + _f(H.bc.b2.ic[1], 4));
     const nb = document.getElementById('isBcNota').textContent;
-    ok(nb.indexOf('não') >= 0 && nb.indexOf('unidade do outro') >= 0,
-       'e a nota explica por que a comparacao nao vale naquela linha');
-    ok(nb.indexOf(_f(H.bc.b2.efeito, 3)) >= 0,
-       'imprimindo o efeito que o coeficiente do BC produz, que e o comparavel',
-       _f(H.bc.b2.efeito, 3));
+    const dentro2 = cApt.b >= H.bc.b2.ic[0] && cApt.b <= H.bc.b2.ic[1];
+    ok(nb.indexOf(_f(H.bc.b2.v, 3)) >= 0 && nb.indexOf(_f(cApt.b, 3)) >= 0,
+       'a nota imprime os dois efeitos, o do BC e o nosso');
+    ok(nb.indexOf(dentro2 ? 'dentro da margem dele' : 'fora da margem dele') >= 0,
+       'e diz se o nosso cai dentro da margem do BC -- o que o numero diz');
+    ok(nb.indexOf('unidade do outro') < 0,
+       'a frase de que nao eram comparaveis saiu');
+    // Fio: hoje o nosso efeito cai DENTRO da margem publicada pelo BC. A prosa acima
+    // se ajusta sozinha se isso mudar; este teste existe para alguem olhar.
+    ok(dentro2, 'o efeito do aperto cai dentro da margem do BC -- se sair, olhe',
+       _f(cApt.b, 4) + ' em [' + _f(H.bc.b2.ic[0], 4) + ', ' + _f(H.bc.b2.ic[1], 4) + ']');
   }
 
   // ── a notacao sai do payload, e cada simbolo tem definicao
@@ -2151,7 +2335,10 @@ secao('8. Simulador: taxonomia, caminhos e recursao');
 if (!D.sim) {
   ok(false, 'o payload traz o simulador');
 } else {
-  const EQ = D.sim.eq[D.sim.eq_ordem[0]];
+  // `D.sim.eq_ordem[0]` era a (R) ate 2026-09-25 e passou a ser a (E): ler a equacao
+  // pela POSICAO na ordem de solucao era uma comodidade que virou armadilha silenciosa
+  // no minuto em que a ordem ganhou um elemento na frente.
+  const EQ = D.sim.eq.R, EQE = D.sim.eq.E;
   const SIM = ctx.SIM;
 
   // ── 8a. o payload ──
@@ -2163,18 +2350,141 @@ if (!D.sim) {
   ok(EQ.n_draws_total > EQ.n_draws, 'os desenhos sao um afinamento do posterior',
      EQ.n_draws + ' de ' + EQ.n_draws_total);
 
+  // ── 8a2. as crises entram na conta, mas nao sao input ──
+  // Cortadas do bloco 2 em 2026-09-24 (*"pretendo usa-las mais como ajuste do que
+  // variaveis exogenas"*). O risco do corte e silencioso: tirar o cartao e tirar os
+  // pesos da recursao junto, e o caminho continua saindo plausivel.
+  ok(D.sim.var_ordem.indexOf('crise') < 0 && !D.sim.var.crise,
+     'nao ha cartao de crise no bloco de inputs', D.sim.var_ordem.join(','));
+  ok(!D.sim.prim,
+     'e nao ha mais dicionario de primitivas: todo cartao tem serie propria');
+  ok(EQ.dummies.length === 2 && EQ.dummies.join(',') === 'd08,d20',
+     'mas a equacao continua com as duas marcas', EQ.dummies.join(','));
+  EQ.dummies.forEach((c) => {
+    ok(Array.isArray(EQ.dummy_obs[c]) && EQ.dummy_obs[c].length === EQ.y.length,
+       c + ': a serie viaja na equacao, com uma posicao por trimestre da amostra');
+    ok(EQ.dummy_obs[c].some((x) => x === 1), c + ': e ela marca a janela dela');
+    ok(EQ.pars.indexOf(c) >= 0 && typeof EQ.mediana[c] === 'number',
+       c + ': com o peso estimado no payload', String(EQ.mediana[c]));
+  });
+  // E o que a recursao recebe na janela projetada e zero -- se o cartao tivesse sido
+  // cortado junto com a serie, `ent[c]` viria indefinido e a soma sairia NaN.
+  const entCr = ctx.simEntradas();
+  EQ.dummies.forEach((c) => {
+    ok(Array.isArray(entCr[c]) && entCr[c].every((x) => x === 0),
+       c + ': vale zero em todo trimestre projetado', String(entCr[c] && entCr[c][0]));
+  });
+
   // ── 8b. endogena/exogena e propriedade do MODELO, e o payload separa os dois fatos ──
-  const VSel = D.sim.var.selic, VDi = D.sim.var.di, VAnc = D.sim.var.ancora;
+  const VSel = D.sim.var.selic, VPie = D.sim.var.pi_e, VMeta = D.sim.var.meta_12m;
   ok(VSel.tipo === 'endogena' && VSel.produzida_por === 'R' && VSel.produtor_no_sim,
      'a Selic e endogena: a equacao que a produz esta no simulador');
-  ok(VDi.tipo === 'exogena' && VDi.produzida_por === 'E' && !VDi.produtor_no_sim,
-     'o desvio da inflacao e exogena HOJE e traz qual equacao o produzira',
-     VDi.produzida_por + ' / produtor_no_sim=' + VDi.produtor_no_sim);
-  ok(VAnc.tipo === 'exogena' && VAnc.produzida_por === null,
-     'a ancora e exogena e NENHUMA equacao do modelo a produz');
-  ok(/12 meses/.test(VDi.nota) && /18/.test(VDi.nota),
-     'a nota do desvio declara o desencaixe de horizonte com a equacao (E)',
-     VDi.nota.slice(0, 80));
+  ok(VPie.tipo === 'endogena' && VPie.produzida_por === 'E' && VPie.produtor_no_sim,
+     'e a expectativa tambem, desde que a (E) entrou',
+     VPie.produzida_por + ' / produtor_no_sim=' + VPie.produtor_no_sim);
+  // "Endogena" e propriedade do MODELO e nao do simulador. A inflacao do trimestre foi
+  // o caso vivo disso ate 2026-09-28: a curva de Phillips a produzia e nao estava aqui.
+  // Com ela dentro, as cinco variaveis que o modelo produz sao endogenas NESTA rodada.
+  const VInf = D.sim.var.infl_br;
+  ok(VInf.produzida_por === 'I' && VInf.produtor_no_sim === true
+     && VInf.tipo === 'endogena',
+     'a inflacao do Brasil e endogena: a curva de Phillips a produz, aqui dentro',
+     VInf.produzida_por + ' / produtor_no_sim=' + VInf.produtor_no_sim);
+  ok(D.sim.var_ordem.every((k) => !D.sim.var[k].produzida_por
+                                  || D.sim.var[k].produtor_no_sim),
+     'e nenhuma variavel tem equacao no modelo fora do simulador -- as cinco rodam');
+  ok(VMeta.tipo === 'exogena' && VMeta.produzida_por === null,
+     'a meta e exogena e NENHUMA equacao do modelo a produz -- ela e decisao do CMN');
+
+  // ── 8b2. nao ha mais premissa com subpremissa ──
+  // Pedido do usuario em 2026-09-25: *"nao havera mais premissas com subpremissas.
+  // Todas serao separadas em exogenas e endogenas."* O que era peca virou cartao, e a
+  // conta mudou de dono -- ela passou a ser declarada pela EQUACAO que a consome.
+  ok(!D.sim.prim, 'o dicionario de primitivas saiu do payload');
+  ok(D.sim.var_ordem.every((k) => !D.sim.var[k].partes && !D.sim.var[k].formula),
+     'e nenhum cartao declara partes ou formula',
+     D.sim.var_ordem.filter((k) => D.sim.var[k].partes).join(',') || '(nenhum)');
+  ['di', 'ancora', 'ppp', 'crise'].forEach((k) => {
+    ok(!D.sim.var[k], 'o cartao composto `' + k + '` deixou de existir');
+  });
+  ['pi_e', 'meta_12m', 'rr_10a', 'infl_br', 'infl_us'].forEach((k) => {
+    ok(!!D.sim.var[k] && D.sim.var_ordem.indexOf(k) >= 0,
+       'e `' + k + '`, que era peca, virou cartao proprio');
+  });
+  // As contas continuam existindo -- so mudaram de dono. Quem as declara e a equacao.
+  ok(EQ.deriva.di.de.join(',') === 'pi_e,meta_12m' && EQ.deriva.di.op === '-',
+     'o desvio da inflacao e conta da (R): expectativa menos meta',
+     EQ.deriva.di.de.join(' ' + EQ.deriva.di.op + ' '));
+  ok(EQ.deriva.ancora.de.join(',') === 'rr_10a,meta_12m'
+     && EQ.deriva.ancora.op === '+',
+     'e o juro nominal de equilibrio tambem: juro real de dez anos mais a meta');
+  ok(D.sim.eq.F.deriva.ppp.de.join(',') === 'infl_br,infl_us',
+     'o diferencial de inflacao e conta da (F): a inflacao daqui menos a de la');
+  ok(EQE.deriva.i12.op === 'acum_log' && EQE.deriva.i12.k === 4
+     && EQE.deriva.i12.de.join(',') === 'infl_br',
+     'e o IPCA de 12 meses e conta da (E): quatro trimestres compostos',
+     EQE.deriva.i12.op + ', k = ' + EQE.deriva.i12.k);
+  // Toda peca de uma conta derivada tem de ter cartao -- uma chave errada nao levanta
+  // nada, so faz a conta sair indefinida e o caminho inteiro virar NaN.
+  D.sim.eq_ordem.forEach((ek) => {
+    const dv = D.sim.eq[ek].deriva || {};
+    Object.keys(dv).forEach((n) => {
+      dv[n].de.forEach((p) => {
+        ok(!!D.sim.var[p],
+           '(' + ek + ') ' + n + ': a peca ' + p + ' tem cartao no bloco 2');
+      });
+    });
+  });
+  // E o que a equacao CONSOME sao cartoes, nunca uma conta derivada: um cartao de
+  // `di` deixaria digitar um desvio que contradiz a expectativa da propria rodada.
+  D.sim.eq_ordem.forEach((ek) => {
+    const e = D.sim.eq[ek];
+    e.consome.forEach((c) => {
+      ok(!!D.sim.var[c], '(' + ek + ') consome ' + c + ', e ele tem cartao');
+      ok(!(e.deriva || {})[c],
+         '(' + ek + ') e ' + c + ' nao e ao mesmo tempo conta derivada');
+    });
+  });
+
+  // ── 8b3. as exogenas se dividem em DOMESTICA e EXTERNA ──
+  // Mesmo pedido. `tipo` responde "alguma equacao a produz?" e `regiao` so existe em
+  // quem responde nao -- um `regiao` numa endogena seria um grupo que nao se desenha.
+  // `tipo` e sobre ESTE simulador, e por isso ele e sempre igual a `produtor_no_sim`.
+  // Os dois discordando nao levantaria nada: o cartao so cairia no grupo errado, e o
+  // grupo e o que responde "eu digito isto ou nao?".
+  D.sim.var_ordem.forEach((k) => {
+    const v = D.sim.var[k];
+    ok((v.tipo === 'endogena') === !!v.produtor_no_sim,
+       k + ': `tipo` e `produtor_no_sim` dizem a mesma coisa',
+       v.tipo + ' / ' + v.produtor_no_sim);
+  });
+  const REG = ['domestica', 'externa'];
+  D.sim.var_ordem.forEach((k) => {
+    const v = D.sim.var[k];
+    if (v.tipo === 'endogena') {
+      ok(v.regiao === undefined, k + ': endogena nao declara regiao');
+    } else {
+      ok(REG.indexOf(v.regiao) >= 0,
+         k + ': exogena declara domestica ou externa', String(v.regiao));
+    }
+  });
+  REG.forEach((rg) => {
+    const n = D.sim.var_ordem.filter((k) => D.sim.var[k].regiao === rg).length;
+    ok(n > 0, 'o recorte ' + rg + ' nao esta vazio -- ele separa de fato', String(n));
+    ok(!!(D.sim.regioes || {})[rg] && D.sim.regioes[rg].nome,
+       'e ele tem rotulo no payload, nao escrito no relatorio',
+       (D.sim.regioes[rg] || {}).nome);
+  });
+  // Os dois exemplos que o usuario deu ao definir o criterio, e os dois que ele nao
+  // deu e sao os ambiguos: o CDS e risco do Brasil, o IC-Br e preco formado fora.
+  ok(D.sim.var.ffr.regiao === 'externa', 'o Fed Funds e externo');
+  ok(D.sim.var.vol.regiao === 'domestica',
+     'e a volatilidade do real e domestica: e o preco de um ativo brasileiro');
+  ok(D.sim.var.fiscal.regiao === 'domestica',
+     'o CDS soberano e domestico -- e risco de credito do Brasil');
+  ok(D.sim.var.icbr_usd.regiao === 'externa',
+     'e as commodities em dolar sao externas: a cesta e daqui, o preco nao');
+
   // Uma variavel endogena tem de poder ser estressada; uma exogena nao pode oferecer
   // "a equacao", porque nao ha equacao que a produza.
   ok(VSel.fontes.indexOf('equacao') >= 0 && VSel.fontes.indexOf('digitado') >= 0,
@@ -2185,13 +2495,6 @@ if (!D.sim) {
        D.sim.var[k].fontes.join(','));
     ok(D.sim.var[k].fontes.indexOf('digitado') >= 0,
        k + ': exogena pode ser estressada');
-  });
-  // Toda parte declarada tem de existir no dicionario de primitivas -- uma chave
-  // errada nao levanta nada, so faz o cartao abrir vazio.
-  D.sim.var_ordem.forEach((k) => {
-    (D.sim.var[k].partes || []).forEach((p) => {
-      ok(!!D.sim.prim[p], k + ': a parte ' + p + ' existe no payload');
-    });
   });
 
   // ── 8c. a aba pinta quando aberta, e abre PROJETANDO ──
@@ -2206,9 +2509,15 @@ if (!D.sim) {
      'o payload declara a partida como o trimestre seguinte ao fim da estimacao',
      'i0 = ' + D.sim.i0 + ', estimou ate ' + EQ.est_fim + ' (indice ' + EQ.est_i1 + ')');
   ok(SIM.i0 === D.sim.i0, 'e a tela abre exatamente nela', String(SIM.i0));
-  ok(!document.getElementById('simJanela').innerHTML.match(/<select/),
-     'nao ha seletor de partida: a janela e uma so');
-  ok(SIM.h === 12, 'e projeta 12 trimestres', String(SIM.h));
+  const barraJan = document.getElementById('simJanela').innerHTML;
+  ok(!/<select/.test(barraJan), 'nao ha seletor de partida: a janela e uma so');
+  // E o horizonte tambem deixou de ser escolha -- pedido do usuario em 2026-09-24,
+  // *"deixe sempre 12T"*. A barra DIZ o tamanho, nao pergunta.
+  ok(!/<input/.test(barraJan),
+     'e nao ha caixa de horizonte: a barra da janela nao tem controle nenhum');
+  ok(/12 trimestres/.test(barraJan), 'a barra imprime o tamanho da projecao');
+  ok(SIM.h === D.sim.h_padrao && SIM.h === 12, 'e projeta 12 trimestres',
+     String(SIM.h));
   ok(ctx._simRotIdx(D.sim.x.length) !== D.sim.rot[D.sim.rot.length - 1],
      'o primeiro trimestre projetado e o seguinte ao ultimo observado',
      D.sim.rot[D.sim.rot.length - 1] + ' -> ' + ctx._simRotIdx(D.sim.x.length));
@@ -2223,19 +2532,44 @@ if (!D.sim) {
   ok(PLOT['ch-sim'].layout.xaxis.range[1] >= gProj.x[gProj.x.length - 1],
      'a janela do eixo alcanca o ultimo trimestre projetado',
      PLOT['ch-sim'].layout.xaxis.range[1] + ' contra ' + gProj.x[gProj.x.length - 1]);
-  // Na janela padrao NENHUMA caixa e de trimestre publicado: todas seguram o ultimo
+  // Na janela padrao NENHUMA caixa e de trimestre publicado: elas seguram o ultimo
   // valor conhecido, e e isso que a cor dourada diz.
+  //
+  // Ate 2026-09-25 havia uma excecao, a volatilidade, porque a serie dela vinha
+  // defasada um trimestre e a do primeiro trimestre projetado ja estava medida. Com
+  // a vol IMPLICITA entrando no proprio trimestre isso deixou de valer: a cotacao de
+  // um trimestre que ainda nao aconteceu nao existe. A asserção virou do contrario
+  // e ficou mais forte -- um trimestre a mais aqui seria um numero que ninguem
+  // observou, impresso em verde e travado, que e a pior forma de estar errado.
   const htmlProj = document.getElementById('simInputs').innerHTML;
-  ok(!/sim-caixa-in obs/.test(htmlProj) && /sim-caixa-in seg/.test(htmlProj),
-     'projetando, toda caixa sai em dourado -- nao ha trimestre publicado ali');
+  ok(/sim-caixa-in seg/.test(htmlProj),
+     'projetando, as caixas saem em dourado -- nao ha trimestre publicado ali');
+  const verdes = D.sim.var_ordem.filter((k) =>
+    ctx._simCobertura(k, SIM.i0, SIM.h).some(Boolean));
+  ok(verdes.length === 0,
+     'e NENHUMA premissa tem trimestre publicado adiante da grade',
+     verdes.join(',') || '(nenhuma)');
+  // E a mesma afirmacao pelo lado da serie: a da volatilidade termina onde terminam
+  // as outras premissas da (F), em vez de um trimestre depois.
+  const _fim = (k) => {
+    const o = D.sim.var[k].obs;
+    let i = o.length - 1;
+    while (i >= 0 && (o[i] === null || o[i] === undefined)) i -= 1;
+    return i;
+  };
+  ok(_fim('vol') === _fim('fiscal'),
+     'a serie da volatilidade termina no mesmo trimestre que a do risco fiscal',
+     _fim('vol') + ' contra ' + _fim('fiscal'));
+  ok(D.sim.var.vol.obs.length === D.sim.var.fiscal.obs.length,
+     'e ela nao carrega mais um trimestre alem da grade',
+     D.sim.var.vol.obs.length + ' contra ' + D.sim.var.fiscal.obs.length);
 
   const g0 = { i0: SIM.i0, h: SIM.h, coef: JSON.parse(JSON.stringify(SIM.coef)),
-               fonte: JSON.parse(JSON.stringify(SIM.fonte)), faixa: SIM.faixa };
+               fonte: JSON.parse(JSON.stringify(SIM.fonte)) };
   function restaura() {
     SIM.i0 = g0.i0; SIM.h = g0.h;
     SIM.coef = JSON.parse(JSON.stringify(g0.coef));
     SIM.fonte = JSON.parse(JSON.stringify(g0.fonte));
-    SIM.faixa = g0.faixa; SIM.choque = false;
     ctx.simRecarregarCaixas();
     ctx.renderSim();
   }
@@ -2246,12 +2580,20 @@ if (!D.sim) {
   // codigo que o navegador roda.
   SIM.i0 = D.sim.rot.length - 1;
   SIM.h = 8;
-  SIM.faixa = false;
-  SIM.fonte.di = 'digitado';
-  SIM.fonte.ancora = 'digitado';
-  SIM.cx.di = new Array(8).fill(0);
-  SIM.cx.ancora = new Array(8).fill(9);
+  // O desvio e a ancora deixaram de ser cartao: para pedir "inflacao esperada na meta
+  // e ancora em 9" agora se impoem as TRES pecas. A conta continua a mesma.
+  SIM.fonte.pi_e = 'digitado';
+  SIM.fonte.meta_12m = 'digitado';
+  SIM.fonte.rr_10a = 'digitado';
+  SIM.cx.pi_e = new Array(D.sim.h_max).fill(3);
+  SIM.cx.meta_12m = new Array(D.sim.h_max).fill(3);
+  SIM.cx.rr_10a = new Array(D.sim.h_max).fill(6);
   ctx.renderSim();
+  ok(SIM._ultimo.di.every((v) => Math.abs(v) < 1e-12),
+     'com a expectativa na meta, o desvio que a equacao multiplica e zero',
+     SIM._ultimo.di[0].toFixed(9));
+  ok(SIM._ultimo.anc.every((v) => Math.abs(v - 9) < 1e-12),
+     'e a ancora que ela soma e 9 -- as duas contas saem das tres pecas');
   // 8 trimestres nao bastam para convergir de verdade (meia-vida 3,6), entao a
   // afirmacao e de DIRECAO: cada passo anda para a ancora e o ultimo esta perto.
   let cam = SIM._ultimo.cam;
@@ -2260,23 +2602,72 @@ if (!D.sim) {
      cam[0].toFixed(3) + ' -> ' + cam[cam.length - 1].toFixed(3));
   // Com horizonte longo a conta converge exatamente -- rodada aqui pela funcao, sem
   // passar pelo teto de 8 da tela, que e limite de INTERFACE e nao da conta.
-  const entLonga = { di: new Array(200).fill(0), ancora: new Array(200).fill(9) };
+  const entLonga = { pi_e: new Array(200).fill(3),
+                     meta_12m: new Array(200).fill(3),
+                     rr_10a: new Array(200).fill(6) };
   EQ.dummies.forEach((c) => { entLonga[c] = new Array(200).fill(0); });
-  const longo = ctx._simCaminhoSelic(SIM.coef, SIM.i0, 200, entLonga, null);
+  const longo = ctx._simCaminhoSelic(SIM.coef.R, SIM.i0, 200, entLonga);
   ok(Math.abs(longo[longo.length - 1] - 9) < 1e-6,
      'no longo prazo ela converge exatamente para a ancora',
      longo[longo.length - 1].toFixed(8));
-  entLonga.di = new Array(200).fill(1);
-  const lp = ctx._simCaminhoSelic(SIM.coef, SIM.i0, 200, entLonga, null);
-  ok(Math.abs((lp[lp.length - 1] - 9) - SIM.coef.t3) < 1e-6,
+  entLonga.pi_e = new Array(200).fill(4);
+  const lp = ctx._simCaminhoSelic(SIM.coef.R, SIM.i0, 200, entLonga);
+  ok(Math.abs((lp[lp.length - 1] - 9) - SIM.coef.R.t3) < 1e-6,
      'um desvio permanente de 1 p.p. leva a Selic a subir t3 no longo prazo',
-     (lp[lp.length - 1] - 9).toFixed(6) + ' contra t3 = ' + SIM.coef.t3.toFixed(6));
+     (lp[lp.length - 1] - 9).toFixed(6) + ' contra t3 = ' + SIM.coef.R.t3.toFixed(6));
+
+  // ── 8e0. o juro nominal de equilibrio tambem segue para a frente ──
+  // Pedido do usuario em 2026-09-24: *"o juro nominal tambem faz parte do grafico,
+  // sendo assim, pode extrapola-lo para frente tambem"*. O que torna isso honesto e a
+  // linha projetada ser EXATAMENTE o caminho que a recursao consome -- nao uma
+  // extrapolacao propria do desenho, que poderia discordar da conta sem nada avisar.
+  restaura();
+  const trAnc = ctx._tracesSim(SIM._ultimo).filter(
+    (t) => t.line && t.line.dash === 'dot');
+  ok(trAnc.length === 2,
+     'sao duas linhas pontilhadas: o observado e o trecho projetado',
+     String(trAnc.length));
+  const projAnc = trAnc[1];
+  ok(projAnc.showlegend === false,
+     'a projetada nao ganha legenda propria -- e a mesma linha continuando');
+  ok(projAnc.y.length === SIM.h + 1,
+     'ela cobre os 12 trimestres mais o ponto de onde parte', String(projAnc.y.length));
+  // A serie observada da ancora deixou de estar no payload em 2026-09-25: ela e a
+  // conta que a equacao faz com o juro real de dez anos e a meta. O teste refaz a
+  // MESMA conta, pela mesma declaracao -- uma copia gravada seria uma copia a mais.
+  const ancSerie = ctx._simDerivObs('R', 'ancora');
+  ok(Math.abs(projAnc.y[0] - ancSerie[SIM.i0 - 1]) < 1e-9,
+     'e parte do ultimo valor observado, para nao flutuar solta a direita',
+     projAnc.y[0].toFixed(3));
+  ok(Math.abs(ancSerie[SIM.i0 - 1]
+       - (D.sim.var.rr_10a.obs[SIM.i0 - 1] + D.sim.var.meta_12m.obs[SIM.i0 - 1]))
+       < 1e-9,
+     'e essa conta e mesmo juro real de dez anos mais a meta');
+  ok(projAnc.y.slice(1).every((v, i) => Math.abs(v - SIM._ultimo.anc[i]) < 1e-9),
+     'o trecho projetado E o caminho que a conta consome, trimestre a trimestre');
+  // E por isso ele acompanha a premissa: digitar outro caminho move a linha. Com a
+  // ancora virando conta, digita-se a PECA -- o resultado na tela e o mesmo.
+  SIM.fonte.rr_10a = 'digitado';
+  SIM.fonte.meta_12m = 'digitado';
+  SIM.cx.rr_10a = new Array(D.sim.h_max).fill(4.25);
+  SIM.cx.meta_12m = new Array(D.sim.h_max).fill(3);
+  ctx.renderSim();
+  const projDig = ctx._tracesSim(SIM._ultimo)
+    .filter((t) => t.line && t.line.dash === 'dot')[1];
+  ok(projDig.y.slice(1).every((v) => Math.abs(v - 7.25) < 1e-9),
+     'com a premissa digitada a linha desenha o que foi digitado',
+     projDig.y[1].toFixed(3));
+  ok(Math.abs(projDig.y[0] - projAnc.y[0]) < 1e-9,
+     'e o ponto de partida continua sendo o observado, que ninguem digita');
 
   // ── 8e. a faixa ──
-  SIM.faixa = true;
+  // Ela nao e mais opcao: a caixa de marcar saiu em 2026-09-24 e a faixa passou a ser
+  // conteudo. Incerteza MEDIDA nao e controle -- quem le nao escolhe nada ali.
   ctx.renderSim();
+  ok(SIM.faixa === undefined && SIM.choque === undefined,
+     'a faixa e o erro da equacao deixaram de ser estado: nao ha o que desligar');
   const fx = SIM._ultimo.faixa;
-  ok(!!fx, 'com a faixa ligada o resultado traz lo/hi');
+  ok(!!fx, 'com a equacao rodando o resultado traz lo/hi, sempre');
   ok(fx.lo.length === SIM.h && fx.hi.length === SIM.h,
      'a faixa tem um par por trimestre simulado');
   ok(fx.lo.every((v, i) => v <= fx.hi[i]), 'a borda de baixo nunca passa a de cima');
@@ -2284,40 +2675,69 @@ if (!D.sim) {
      'a faixa ALARGA com o horizonte -- e incerteza propagada pela dinamica',
      (fx.hi[0] - fx.lo[0]).toFixed(3) + ' -> '
        + (fx.hi[SIM.h - 1] - fx.lo[SIM.h - 1]).toFixed(3));
-  const semChoque = fx.hi[SIM.h - 1] - fx.lo[SIM.h - 1];
-  SIM.choque = true;
+  // Ela e determinista: dois renders seguidos dao o MESMO desenho, senao ela tremeria
+  // a cada clique em qualquer outro controle e pareceria que o resultado mudou.
+  const larg = fx.hi[SIM.h - 1] - fx.lo[SIM.h - 1];
   ctx.renderSim();
-  const comChoque = SIM._ultimo.faixa.hi[SIM.h - 1] - SIM._ultimo.faixa.lo[SIM.h - 1];
-  ok(comChoque > semChoque, 'somar o erro da equacao alarga a faixa',
-     semChoque.toFixed(3) + ' -> ' + comChoque.toFixed(3));
-  ctx.renderSim();
-  ok(Math.abs(comChoque
+  ok(Math.abs(larg
        - (SIM._ultimo.faixa.hi[SIM.h - 1] - SIM._ultimo.faixa.lo[SIM.h - 1])) < 1e-12,
-     'a faixa de choque nao treme entre dois renders -- a semente e fixa');
-  SIM.choque = false;
+     'e nao treme entre dois renders');
 
   // ── 8f. fonte por variavel ──
   restaura();
   const base = SIM._ultimo.cam[SIM._ultimo.cam.length - 1];
-  SIM.fonte.di = 'digitado';
-  SIM.cx.di = SIM.cx.di.map((v) => v + 1);
+  SIM.fonte.pi_e = 'digitado';
+  SIM.cx.pi_e = SIM.cx.pi_e.map((v) => v + 1);
   ctx.renderSim();
   const comDi = SIM._ultimo.cam[SIM._ultimo.cam.length - 1];
   ok(comDi > base, 'estressar so a inflacao esperada sobe a Selic simulada',
      base.toFixed(3) + ' -> ' + comDi.toFixed(3));
 
-  // O composto: mexer numa PARTE move o agregado, e so nele.
+  // Uma PECA move a conta de que ela faz parte, e so ela. Era o teste do "abrir em
+  // partes"; com cada peca virando cartao, a propriedade e a mesma e a mecanica some.
   restaura();
-  const ancAntes = SIM.cx.ancora.slice(0, 3).join(',');
-  SIM.fonte.ancora = 'digitado';
-  SIM.px.rr_10a = SIM.px.rr_10a.map((v) => v + 2);
-  ctx.simAgregarDePartes('ancora');
+  const ancAntes = SIM._ultimo.anc[0], diAntes0 = SIM._ultimo.di[0];
+  SIM.fonte.rr_10a = 'digitado';
+  SIM.cx.rr_10a = SIM.cx.rr_10a.map((v) => v + 2);
   ctx.renderSim();
-  ok(Math.abs(SIM.cx.ancora[0] - (parseFloat(ancAntes.split(',')[0]) + 2)) < 1e-9,
-     'somar 2 ao juro real de equilibrio soma 2 a ancora',
-     ancAntes.split(',')[0] + ' -> ' + SIM.cx.ancora[0].toFixed(3));
-  ok(Math.abs(SIM._ultimo.ent.di[0] - ctx.simObs('di', SIM.i0, 1)[0]) < 1e-9,
-     'e nao mexe no desvio da inflacao, que tem a propria fonte');
+  ok(Math.abs(SIM._ultimo.anc[0] - (ancAntes + 2)) < 1e-9,
+     'somar 2 ao juro real de dez anos soma 2 a ancora',
+     ancAntes.toFixed(3) + ' -> ' + SIM._ultimo.anc[0].toFixed(3));
+  // Com o laco fechado o juro real move a expectativa -- Selic, cambio, alimentacao,
+  // IPCA, Focus --, entao o desvio pode andar. O que a conta garante e que ele anda SO
+  // pelo que a expectativa andou: o juro real nao e peca dele.
+  const peAntes0 = diAntes0 + D.sim.var.meta_12m.obs[D.sim.var.meta_12m.obs.length - 1];
+  ok(Math.abs((SIM._ultimo.di[0] - diAntes0)
+              - (SIM._ultimo.ent.pi_e[0] - peAntes0)) < 1e-9,
+     'e o desvio da inflacao so se move pelo que a expectativa se moveu -- o juro real '
+     + 'nao e peca da conta dele',
+     'desvio ' + (SIM._ultimo.di[0] - diAntes0).toExponential(2));
+  // A meta e a peca que MAIS de uma equacao le, e mexer nela move tudo de uma vez.
+  // Com a (E) ligada ela entra por dois caminhos de sinais opostos, e e por isso que
+  // o efeito liquido nao e obvio -- a ficha do cartao diz isso ao leitor.
+  restaura();
+  const anc2 = SIM._ultimo.anc[0], di2 = SIM._ultimo.di[0];
+  SIM.fonte.meta_12m = 'digitado';
+  SIM.cx.meta_12m = SIM.cx.meta_12m.map((v) => v + 1);
+  ctx.renderSim();
+  ok(Math.abs(SIM._ultimo.anc[0] - (anc2 + 1)) < 1e-9,
+     'subir a meta em 1 sobe a ancora em 1, exatamente',
+     anc2.toFixed(3) + ' -> ' + SIM._ultimo.anc[0].toFixed(3));
+  const quedaDi = di2 - SIM._ultimo.di[0];
+  ok(quedaDi > 0 && quedaDi < 1,
+     'e reduz o desvio em MENOS de 1: a expectativa segue a meta em parte, porque a '
+     + '(E) tambem le a meta -- com ela desligada a queda seria de 1 exato',
+     'caiu ' + quedaDi.toFixed(4) + ' p.p.');
+  // Com a (E) desligada a conta vira aritmetica pura, e o teste afirma isso para
+  // separar o efeito da equacao do efeito da subtracao.
+  SIM.fonte.pi_e = 'observado';
+  ctx.renderSim();
+  const diSemE = SIM._ultimo.di[0];
+  SIM.cx.meta_12m = SIM.cx.meta_12m.map((v) => v + 1);
+  ctx.renderSim();
+  ok(Math.abs((diSemE - SIM._ultimo.di[0]) - 1) < 1e-9,
+     'com a expectativa imposta, subir a meta em 1 reduz o desvio em 1 exato',
+     (diSemE - SIM._ultimo.di[0]).toFixed(9));
 
   // A Selic imposta desliga a equacao.
   restaura();
@@ -2328,13 +2748,19 @@ if (!D.sim) {
   ok(SIM._ultimo.cam.every((v, i) => Math.abs(v - ctx.simObs('selic', SIM.i0, SIM.h)[i])
        < 1e-9),
      'e o caminho desenhado e exatamente o observado');
-  ok(document.getElementById('simAviso').style.display === ''
-     && /desligada/.test(document.getElementById('simAviso').innerHTML),
+  ok(document.getElementById('simAviso-R').style.display === ''
+     && /desligada/.test(document.getElementById('simAviso-R').innerHTML),
      'a faixa de aviso diz que a regra de juros esta desligada');
+  ok(/carry/.test(document.getElementById('simAviso-R').innerHTML),
+     'e diz que o cambio continua lendo a Selic imposta -- a (F) esta no simulador');
 
   // ── 8g. a corrida solta contra o observado ──
   restaura();
-  SIM.i0 = EQ.est_i0;
+  // De onde as CINCO conseguem partir: a (I) precisa de quatro trimestres observados
+  // antes, para a media movel de servicos e industriais.
+  ok(D.sim.i0_min >= 4, 'o payload declara de onde a conta solta pode partir',
+     String(D.sim.i0_min));
+  SIM.i0 = Math.max(EQ.est_i0, D.sim.i0_min);
   SIM.h = D.sim.h_max;
   ctx.renderSim();
   const solta = SIM._ultimo;
@@ -2352,22 +2778,39 @@ if (!D.sim) {
   ok(SIM.h === D.sim.h_max, 'o horizonte e limitado ao teto declarado no payload',
      String(SIM.h));
 
-  // ── 8i. os PESOS nao sao controle: a simulacao vem dos inputs ──
-  // Pedido direto do usuario em 2026-09-22. O guarda e sobre a barra RENDERIZADA e
-  // nao sobre o markup: a versao anterior montava as tres caixas de peso por
-  // `innerHTML`, entao um grep no arquivo entregue nao acharia nada.
+  // ── 8i. o bloco 1 nao tem controle NENHUM ──
+  // Duas rodadas de corte: os pesos sairam em 2026-09-22 (*"a simulacao vem dos
+  // inputs"*) e a barra de desenho em 2026-09-24. O guarda e sobre a tela
+  // RENDERIZADA e nao sobre o markup -- os controles nasciam de `innerHTML`, entao
+  // um grep no arquivo entregue nao acharia nada.
   restaura();
-  const barra = document.getElementById('simOpcoes').innerHTML;
-  ok(!/type="number"/.test(barra),
-     'a barra do bloco 1 nao tem caixa de numero -- nenhum peso se digita ali');
-  ok(!/simT1|simT2|simT3|simReset/.test(barra),
-     'e nao sobrou nenhum controle de peso da versao anterior');
-  ok(/pesos fixos no estimado/.test(barra),
-     'a barra diz que os pesos estao fixos no estimado');
-  ok(/simFaixa/.test(barra) && /simChoque/.test(barra),
-     'o que resta sao as duas opcoes de DESENHO: a faixa e o erro da equacao');
-  ok(document.getElementById('simAviso').style.display === 'none',
-     'com a equacao ligada nao ha aviso');
+  ok(!CRU.includes('id="simOpcoes"'),
+     'a barra de opcoes do bloco 1 saiu do markup');
+  // Pelo ID, e nao pelo nome: `_simFaixa` e a funcao que CALCULA a faixa e continua
+  // existindo -- o que tem de sumir e o elemento que a desligava.
+  ['simOpcoes', 'simFaixa', 'simChoque', 'simH', 'simI0', 'simT1', 'simT2', 'simT3',
+   'simReset'].forEach((id) => {
+    ok(!CRU.includes('id="' + id + '"'), 'nao ha elemento #' + id + ' no entregue');
+  });
+  ok(!/class="sim-chk"|class="sim-num"/.test(CRU),
+     'e nem as classes dos controles cortados');
+  // O bloco 1 e o que o cartao da equacao imprime: titulo, subtitulo, aviso e os
+  // graficos. Nenhum deles pode trazer um campo para digitar.
+  const bloco1 = D.sim.eq_ordem.map((k) =>
+    document.getElementById('simEqSub-' + k).innerHTML
+    + document.getElementById('simAviso-' + k).innerHTML
+    + document.getElementById('simGrid-' + k).innerHTML).join('');
+  ok(!/<input|<select/.test(bloco1),
+     'o bloco 1 nao tem nenhum controle: ele so imprime');
+  ok(/aba Juros/.test(document.getElementById('simEqSub-R').innerHTML),
+     'e manda para a aba Juros quem quiser os pesos e a equacao');
+  ok(/aba Câmbio/.test(document.getElementById('simEqSub-F').innerHTML),
+     'e para a aba Cambio quem quiser os da equacao do cambio');
+  ok(/aba Expectativas/.test(document.getElementById('simEqSub-E').innerHTML),
+     'e para a aba Expectativas quem quiser os da terceira');
+  ok(D.sim.eq_ordem.every((k) =>
+       document.getElementById('simAviso-' + k).style.display === 'none'),
+     'com as equacoes ligadas nao ha aviso nenhum');
 
   // ── 8j. o cartao de input, no desenho do FX Report ──
   // A cobertura e afirmada na FUNCAO e na TELA. So na tela nao bastaria: as duas
@@ -2402,11 +2845,11 @@ if (!D.sim) {
   // A trava e por TRIMESTRE e nao por cartao, que e a pratica do FX Report: em Exogeno
   // destravam as caixas SEM dado publicado, e as publicadas continuam travadas -- um
   // palpite nao sobrescreve dado que ja se conhece.
-  SIM.fonte.ancora = 'digitado';
+  SIM.fonte.rr_10a = 'digitado';
   ctx.renderSim();
   const hDig = document.getElementById('simInputs').innerHTML;
-  const caixasAnc = hDig.match(/<input[^>]*data-chave="ancora"[^>]*>/g) || [];
-  const cobAnc = ctx._simCobertura('ancora', SIM.i0, SIM.h);
+  const caixasAnc = hDig.match(/<input[^>]*data-chave="rr_10a"[^>]*>/g) || [];
+  const cobAnc = ctx._simCobertura('rr_10a', SIM.i0, SIM.h);
   ok(caixasAnc.length === SIM.h, 'ha uma caixa por trimestre da janela',
      caixasAnc.length + ' para h = ' + SIM.h);
   ok(cobAnc.some(Boolean) && cobAnc.some((c) => !c),
@@ -2450,43 +2893,65 @@ if (!D.sim) {
   ok(Math.abs(cPad[1] - 0.8) < 1e-12, 'sem rho declarado o padrao e 0,8',
      cPad[1].toFixed(3));
 
-  // O choque numa PARTE move o agregado pela formula e nao toca na irma.
+  // As tres formas NOMEIAM em vez de descrever -- pedido do usuario em 2026-09-24. A
+  // descricao desceu para o `title` da opcao, que e onde a frase inteira cabe sem
+  // alargar a caixa fechada do seletor; as duas pontas sao afirmadas porque cortar a
+  // frase sem lhe dar outro lugar seria meio corte.
+  ok(ctx.SIM_CHQ_TIPOS.map((t) => t.rot).join(' | ')
+     === 'Choque permanente | Choque com decaimento | Choque constante + decaimento',
+     'as tres formas de choque sao nomes, nao descricoes',
+     ctx.SIM_CHQ_TIPOS.map((t) => t.rot).join(' | '));
+  ok(ctx.SIM_CHQ_TIPOS.every((t) => t.desc && t.desc.length > 30),
+     'e cada uma leva a descricao consigo, para o title da opcao');
+  SIM.chqAberto.pi_e = true;
+  ctx.renderSim();
+  const painel = document.getElementById('simInputs').innerHTML;
+  ctx.SIM_CHQ_TIPOS.forEach((t) => {
+    ok(painel.indexOf('title="' + t.desc + '">' + t.rot + '</option>') >= 0,
+       t.k + ': a opcao imprime o nome e carrega a descricao no title');
+  });
+  ok(!/, que<\/span>/.test(painel),
+     'e a frase do painel nao rege mais o rotulo -- o "que" saiu com a descricao');
+  SIM.chqAberto.pi_e = false;
+
+  // O choque numa PECA move a conta de que ela participa e nao toca na irma. Com cada
+  // peca virando cartao, o choque deixou de ter um parametro `pai` -- ele soma no
+  // caminho daquele cartao e nada precisa ser recomposto.
   restaura();
-  SIM.fonte.ancora = 'digitado';
-  const rrAntes = SIM.px.rr_10a.slice(0, 3);
-  const metaAntes = SIM.px.meta_12m.slice(0, 3);
-  const ancAntes2 = SIM.cx.ancora.slice(0, 3);
+  const rrAntes = SIM.cx.rr_10a.slice(0, 3);
+  const metaAntes = SIM.cx.meta_12m.slice(0, 3);
+  const ancAntes2 = SIM._ultimo.anc[0];
   SIM.chq.rr_10a = { tipo: 'const', v: 1.5, n: 12, rho: 0.8 };
-  ctx.simAplicarChoque('rr_10a', 'ancora');
-  ok(Math.abs(SIM.px.rr_10a[0] - (rrAntes[0] + 1.5)) < 1e-9,
-     'o choque entra na primitiva escolhida',
-     rrAntes[0].toFixed(3) + ' -> ' + SIM.px.rr_10a[0].toFixed(3));
-  ok(SIM.px.meta_12m.slice(0, 3).every((v, i) => Math.abs(v - metaAntes[i]) < 1e-12),
-     'e NAO toca na outra parte -- e isso que faz o cenario ser diferente');
-  ok(Math.abs(SIM.cx.ancora[0] - (ancAntes2[0] + 1.5)) < 1e-9,
-     'o agregado e recomposto pela formula, nao chutado',
-     ancAntes2[0].toFixed(3) + ' -> ' + SIM.cx.ancora[0].toFixed(3));
-  ok(SIM.aberto.ancora === true,
-     'e o cartao abre nas partes, para o usuario ver onde o choque entrou');
+  ctx.simAplicarChoque('rr_10a');
+  ok(Math.abs(SIM.cx.rr_10a[0] - (rrAntes[0] + 1.5)) < 1e-9,
+     'o choque entra no cartao escolhido',
+     rrAntes[0].toFixed(3) + ' -> ' + SIM.cx.rr_10a[0].toFixed(3));
+  ok(SIM.cx.meta_12m.slice(0, 3).every((v, i) => Math.abs(v - metaAntes[i]) < 1e-12),
+     'e NAO toca na outra peca -- e isso que faz o cenario ser diferente');
+  ok(Math.abs(SIM._ultimo.anc[0] - (ancAntes2 + 1.5)) < 1e-9,
+     'a ancora e recomposta pela formula da equacao, nao chutada',
+     ancAntes2.toFixed(3) + ' -> ' + SIM._ultimo.anc[0].toFixed(3));
+  ok(SIM.fonte.rr_10a === 'digitado',
+     'e a fonte do cartao chocado passa para Exogeno, senao o choque nao valeria');
   restaura();
 
   // O choque pula trimestre ja publicado: X "no primeiro trimestre" quer dizer o
   // primeiro que da para editar, senao ele se perde conforme o dado avanca.
   SIM.i0 = D.sim.rot.length - 2;
   SIM.h = 8;
-  SIM.fonte.di = 'digitado';
+  SIM.fonte.pi_e = 'digitado';
   ctx.renderSim();
-  const cobDi = ctx._simCobertura('di', SIM.i0, D.sim.h_max);
+  const cobDi = ctx._simCobertura('pi_e', SIM.i0, D.sim.h_max);
   const nPub = cobDi.filter(Boolean).length;
   ok(nPub > 0, 'este cenario tem trimestre publicado na janela', String(nPub));
-  const diAntes = SIM.cx.di.slice();
-  SIM.chq.di = { tipo: 'const', v: 1, n: 99, rho: 1 };
-  ctx.simAplicarChoque('di', null);
-  ok(SIM.cx.di.slice(0, nPub).every((v, i) => Math.abs(v - diAntes[i]) < 1e-12),
+  const diAntes = SIM.cx.pi_e.slice();
+  SIM.chq.pi_e = { tipo: 'const', v: 1, n: 99, rho: 1 };
+  ctx.simAplicarChoque('pi_e');
+  ok(SIM.cx.pi_e.slice(0, nPub).every((v, i) => Math.abs(v - diAntes[i]) < 1e-12),
      'o trimestre ja publicado nao recebe choque nenhum');
-  ok(Math.abs(SIM.cx.di[nPub] - (diAntes[nPub] + 1)) < 1e-9,
+  ok(Math.abs(SIM.cx.pi_e[nPub] - (diAntes[nPub] + 1)) < 1e-9,
      'e o choque comeca inteiro no primeiro trimestre editavel',
-     diAntes[nPub].toFixed(3) + ' -> ' + SIM.cx.di[nPub].toFixed(3));
+     diAntes[nPub].toFixed(3) + ' -> ' + SIM.cx.pi_e[nPub].toFixed(3));
   restaura();
 
   // ── 8k. a equacao NAO fica no simulador ──
@@ -2494,7 +2959,7 @@ if (!D.sim) {
   // Juros continua com ela, e e para la que o subtitulo do bloco 1 aponta.
   ok(document.getElementById('tayMathSimb').innerHTML.indexOf('∑') >= 0,
      'a equacao de juros continua escrita na aba dela');
-  ok(/aba Juros/.test(document.getElementById('simEqSub').innerHTML),
+  ok(/aba Juros/.test(document.getElementById('simEqSub-R').innerHTML),
      'e o bloco 1 do simulador manda o leitor para la');
 
   // ── 8l. o grafico, no contrato da casa ──
@@ -2513,6 +2978,1383 @@ if (!D.sim) {
   ok(Array.isArray(PLOT['ch-sim'].layout.shapes),
      'ch-sim: as formas sao passadas SEMPRE, para o react nao herdar as do desenho '
      + 'anterior');
+
+  // ── 8m. a SEGUNDA equacao: o cambio ──
+  // Pedido do usuario em 2026-09-24: *"rode os sistema com as duas equacoes: Taylor e
+  // Cambio"*. O que este bloco guarda nao e "a (F) existe" -- e que ela esta LIGADA na
+  // (R), porque o unico elo entre as duas e um canal fraco e uma ligacao que se
+  // desfaz em silencio produz uma tela plausivel e errada.
+  secao('8m. O cambio, a segunda equacao do simulador');
+  restaura();
+  ctx.renderSim();
+
+  ok(D.sim.eq_ordem.join(',') === 'H,I,E,R,F',
+     'ha cinco equacoes, e a ORDEM e de solucao dentro do trimestre: a (H) le a Selic '
+     + 'do trimestre anterior, a (I) le o hiato, a (E) a inflacao, a (R) a expectativa '
+     + 'e a (F) a Selic e a inflacao',
+     D.sim.eq_ordem.join(' -> '));
+  // Todo item de `eq_ordem` tem de ter cartao no markup. E o que substitui gerar os
+  // cartoes em JS: a terceira equacao nao entra em silencio.
+  ok(D.sim.eq_ordem.every((k) => CRU.includes('id="simGrid-' + k + '"')),
+     'e cada uma tem o seu cartao no markup -- nenhuma equacao sem lugar na tela');
+
+  const EQF = D.sim.eq.F;
+  ok(EQF.explica === 'de' && D.sim.var.de.produzida_por === 'F'
+     && D.sim.var.de.produtor_no_sim === true,
+     'a (F) explica a variacao do cambio, e ela consta como endogena NESTA rodada');
+  ok(EQF.consome.indexOf('carry_vol') < 0
+     && EQF.consome.indexOf('ffr') >= 0 && EQF.consome.indexOf('vol') >= 0,
+     'o carry nao e input: quem tem cartao sao as pecas dele (Fed Funds e vol)',
+     EQF.consome.join(','));
+  ok(EQF.canais.indexOf('carry_vol') >= 0 && EQF.carry.juro === 'selic',
+     'mas ele E canal da equacao, e o juro dele e a Selic do simulador');
+  ok(EQF.consome.every((c) => !!D.sim.var[c]),
+     'e tudo o que ela consome tem cartao no bloco 2');
+
+  // O elo, medido: 2 p.p. de Selic a mais tem de MOVER o cambio, e para baixo.
+  const entF = ctx.simEntradas();
+  const selBase = ctx._simCaminhoSelic(SIM.coef.R, SIM.i0, SIM.h, entF);
+  const deBase = ctx._simCaminhoDe(SIM.coef.F, SIM.i0, SIM.h, entF, selBase);
+  const deAlta = ctx._simCaminhoDe(SIM.coef.F, SIM.i0, SIM.h, entF,
+                                   selBase.map((v) => v + 2));
+  const somaB = deBase.reduce((a, b) => a + b, 0);
+  const somaA = deAlta.reduce((a, b) => a + b, 0);
+  ok(Math.abs(somaA - somaB) > 1e-6,
+     'a Selic CHEGA ao cambio: subi-la 2 p.p. muda o caminho do cambio',
+     (somaA - somaB).toFixed(4) + ' p.p. no acumulado');
+  ok(somaA < somaB,
+     'e na direcao certa: juro mais alto, real mais forte',
+     somaA.toFixed(3) + ' contra ' + somaB.toFixed(3));
+  // E a contrapartida da especificacao em DIFERENCA, que precisa estar afirmada
+  // porque ela e contraintuitiva: um juro que sobe e depois volta nao deixa efeito.
+  const selDeg = selBase.slice();
+  selDeg[0] += 2;
+  const deDeg = ctx._simCaminhoDe(SIM.coef.F, SIM.i0, SIM.h, entF, selDeg);
+  ok(Math.abs(deDeg.reduce((a, b) => a + b, 0) - somaB) < 1e-9,
+     'mas um juro que sobe SO num trimestre e volta nao deixa efeito no nivel: '
+     + 'o canal le a variacao do carry, nao o nivel dele');
+  ok(deDeg[0] < deBase[0],
+     'e ainda assim ele move o trimestre em que aconteceu',
+     deDeg[0].toFixed(3) + ' contra ' + deBase[0].toFixed(3));
+
+  // A ancora do primeiro trimestre: sem o nivel do trimestre anterior, a primeira
+  // variacao de um canal seria o PROPRIO nivel -- num CDS de 125 pontos, um choque
+  // de 125 pontos-base saido do nada.
+  ok(EQF.canais.every((c) => EQF.nivel[c] && EQF.nivel[c][SIM.i0 - 1] != null),
+     'todo canal traz o nivel do trimestre anterior a janela, que e a ancora dele');
+  ok(Math.abs(deBase[0]) < 20,
+     'e por isso a primeira variacao e de tamanho de variacao, nao de nivel',
+     deBase[0].toFixed(3) + ' %');
+
+  // O nivel e a inversa exata da variacao -- as duas sao o MESMO caminho, e e por
+  // isso que o grafico pode desenhar uma e as caixas a outra.
+  const niv = ctx._simNivelCambio(SIM.i0, deBase);
+  const p0 = EQF.ptax[SIM.i0 - 1];
+  ok(Math.abs(niv[0] - p0 * Math.exp(deBase[0] / 100)) < 1e-9,
+     'o nivel parte do ultimo fechamento observado');
+  ok(Math.abs(100 * Math.log(niv[niv.length - 1] / p0) - somaB) < 1e-6,
+     'e o acumulado do nivel devolve a soma das variacoes, exatamente');
+
+  // A faixa: ela existe, ela cresce, e ela CONTEM a mediana.
+  ok(SIM._ultimo.fx && SIM._ultimo.fx.faixa,
+     'a faixa do cambio existe com a equacao ligada');
+  const fFx = SIM._ultimo.fx.faixa;
+  ok(fFx.hi.every((v, i) => v >= SIM._ultimo.fx.nivel[i] - 1e-6)
+     && fFx.lo.every((v, i) => v <= SIM._ultimo.fx.nivel[i] + 1e-6),
+     'e ela contem o caminho da mediana em todo trimestre');
+  ok((fFx.hi[fFx.hi.length - 1] - fFx.lo[fFx.lo.length - 1])
+       > (fFx.hi[0] - fFx.lo[0]),
+     'e cresce com o horizonte -- e incerteza passando pela dinamica, nao margem',
+     (fFx.hi[0] - fFx.lo[0]).toFixed(3) + ' -> '
+       + (fFx.hi[fFx.hi.length - 1] - fFx.lo[fFx.lo.length - 1]).toFixed(3));
+  ok(SIM._ultimo.fx.duasFaixas === true && SIM._ultimo.fx.nEq === 5,
+     'com as CINCO ligadas a faixa do cambio carrega a incerteza das cinco -- o laco '
+     + 'leva a de cada uma a todas', String(SIM._ultimo.fx.nEq));
+  // E a legenda CONTA, em vez de repetir um numero escrito a mao: "das duas equacoes"
+  // passou a mentir no dia em que a terceira entrou.
+  const nomeFx = ctx._tracesSimFx(SIM._ultimo)
+    .map((t) => t.name || '').filter((n2) => /^Faixa de/.test(n2))[0];
+  ok(/das cinco equações/.test(nomeFx), 'e a legenda diz de quantas ela e', nomeFx);
+
+  // Impor a Selic tira a (R) de dentro da faixa do cambio -- mas a inflacao continua
+  // chegando da curva de Phillips, e com ela a (H) e a (E): quatro.
+  SIM.fonte.selic = 'digitado';
+  SIM.cx.selic = ctx.simObs('selic', SIM.i0, D.sim.h_max).map((v) => v);
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.faixa && SIM._ultimo.fx.nEq === 4,
+     'com a Selic imposta a faixa do cambio perde a (R) e fica com quatro',
+     String(SIM._ultimo.fx.nEq));
+  // E impondo tambem a inflacao, o que sobra e so a (F): nada mais a alimenta.
+  SIM.fonte.infl_br = 'digitado';
+  SIM.cx.infl_br = ctx.simObs('infl_br', SIM.i0, D.sim.h_max).map((v) => v);
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.faixa && SIM._ultimo.fx.duasFaixas === false
+     && SIM._ultimo.fx.nEq === 1,
+     'com a Selic e a inflacao impostas a faixa do cambio fica, e passa a ser so a da (F)');
+  ok(!/equações/.test(ctx._tracesSimFx(SIM._ultimo)
+       .map((t) => t.name || '').filter((n2) => /^Faixa de/.test(n2))[0]),
+     'e a legenda para de citar mais de uma');
+
+  // Impor o cambio desliga a (F), e o aviso do cartao DELA tem de dizer isso.
+  restaura();
+  SIM.fonte.de = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.faixa === null,
+     'com o cambio imposto nao ha faixa: nao ha equacao rodando');
+  ok(document.getElementById('simAviso-F').style.display === ''
+     && /desligada/.test(document.getElementById('simAviso-F').innerHTML),
+     'e o aviso aparece no cartao da (F), nao no da (R)');
+  ok(document.getElementById('simAviso-R').style.display === 'none',
+     'o cartao da (R) segue sem aviso: a equacao dela continua ligada');
+
+  // ── as DUAS PONTAS da mesma recursao ──
+  // `simulator._sim_fx` (Python) e `_simCaminhoDe` (JS) sao a mesma conta escrita duas
+  // vezes. Duas implementacoes divergem em silencio -- um `sd` trocado, um log
+  // esquecido, um sinal invertido continuam produzindo um caminho plausivel --, entao
+  // o payload traz o ajuste de UM PASSO calculado do lado do Python e o teste exige
+  // que o JS devolva os mesmos numeros. Um passo porque ali todas as defasagens vem
+  // do observado, o que torna a comparacao exata em vez de aproximada.
+  restaura();
+  const canaisF = EQF.canais.filter((c) => c !== EQF.carry.canal);
+  let nPar = 0, piorPar = 0;
+  EQF.ajuste.forEach((alvo, i) => {
+    if (alvo == null || i < 1) return;
+    const e1 = { infl_br: ctx.simObs('infl_br', i, 1),
+                 infl_us: ctx.simObs('infl_us', i, 1),
+                 ffr: ctx.simObs('ffr', i, 1), vol: ctx.simObs('vol', i, 1) };
+    canaisF.forEach((c) => { e1[c] = ctx.simObs(c, i, 1); });
+    const got = ctx._simCaminhoDe(SIM.coef.F, i, 1, e1, ctx.simObs('selic', i, 1))[0];
+    piorPar = Math.max(piorPar, Math.abs(got - alvo));
+    nPar += 1;
+  });
+  ok(nPar > 60, 'ha trimestres bastantes para comparar as duas pontas', String(nPar));
+  ok(piorPar < 1e-5,
+     'e o JS reproduz o ajuste que o Python calculou, trimestre a trimestre',
+     'pior diferenca ' + piorPar.toExponential(2) + ' p.p.');
+  // E o gabarito tem de ser um ajuste de VERDADE, senao a asserção acima passaria
+  // comparando duas contas erradas iguais.
+  const errF = EQF.ajuste
+    .map((v, i) => (v == null || EQF.y[i] == null) ? null : v - EQF.y[i])
+    .filter((v) => v != null);
+  const rmseF = Math.sqrt(errF.reduce((a2, b2) => a2 + b2 * b2, 0) / errF.length);
+  ok(rmseF > 0.5 && rmseF < 6,
+     'e esse ajuste explica o cambio de verdade -- o erro esta na ordem do estimado',
+     'RMSE ' + rmseF.toFixed(3) + ' p.p./tri');
+
+  // ── 8n. o cartao do cambio fala em NIVEL, a equacao em variacao ──
+  // Pedido do usuario em 2026-09-24: *"conseguimos trabalhar com ela no simulador (nos
+  // boxes) em nivel?"*. A conversao e uma bijecao ancorada no ultimo fechamento
+  // observado, entao nada se perde -- mas duas unidades para a mesma serie e
+  // exatamente o tipo de coisa que passa a divergir sem nada avisar.
+  secao('8n. O cambio: caixa em nivel, equacao em variacao');
+  restaura();
+  ctx.renderSim();
+
+  const VDE = D.sim.var.de;
+  ok(/reais/.test(VDE.unidade) && VDE.em_nivel_de_variacao === true
+     && VDE.unidade_eq === '% no trimestre',
+     'o cartao declara as DUAS unidades: a da caixa e a da equacao',
+     VDE.unidade + ' / ' + VDE.unidade_eq);
+  ok(VDE.obs.every((v, i) => v === EQF.ptax[i]),
+     'e a serie observada do cartao e o NIVEL, a mesma que o grafico desenha');
+
+  // A bijecao, nos dois sentidos, sobre o caminho que esta na tela.
+  const voltou = ctx._simVarDeNivel(SIM.i0, SIM._ultimo.fx.nivel);
+  ok(voltou.every((v, i) => Math.abs(v - SIM._ultimo.fx.cam[i]) < 1e-9),
+     'nivel -> variacao desfaz variacao -> nivel, exatamente',
+     'pior ' + Math.max(...voltou.map((v, i) =>
+       Math.abs(v - SIM._ultimo.fx.cam[i]))).toExponential(2));
+
+  // Em Endogeno a caixa mostra o que a equacao produziu, no MESMO numero do grafico.
+  ok(SIM._ultimo.produzido.de
+     && SIM._ultimo.produzido.de.every((v, i) =>
+          Math.abs(v - SIM._ultimo.fx.nivel[i]) < 1e-12),
+     'em Endogeno a caixa mostra o nivel que a equacao produziu, nao a variacao');
+  const htmlDe = document.getElementById('simInputs').innerHTML;
+  ok(/no trimestre"/.test(htmlDe),
+     'e o hover da caixa continua trazendo a variacao -- ela nao sumiu com a troca');
+
+  // Digitar em NIVEL move a conta: o caminho digitado vira variacao e volta igual.
+  restaura();
+  SIM.fonte.de = 'digitado';
+  const base0 = ctx.simObs('de', SIM.i0, D.sim.h_max);
+  SIM.cx.de = base0.map((v, i) => v + 0.5 * (i + 1) / base0.length);
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.nivel.every((v, i) => Math.abs(v - SIM.cx.de[i]) < 1e-12),
+     'digitando em nivel, o grafico desenha exatamente o que foi digitado');
+  const impl = ctx._simVarDeNivel(SIM.i0, SIM.cx.de.slice(0, SIM.h));
+  ok(SIM._ultimo.fx.cam.every((v, i) => Math.abs(v - impl[i]) < 1e-9),
+     'e a variacao que a conta consome e a implicita naquele caminho');
+  ok(SIM._ultimo.fx.faixa === null,
+     'e a equacao fica desligada, como em qualquer variavel imposta');
+
+  // "Observado" em nivel quer dizer cambio PARADO depois do ultimo dado -- e nao o
+  // nivel derivando na taxa do ultimo trimestre, que e o que segurar a VARIACAO daria.
+  restaura();
+  SIM.fonte.de = 'observado';
+  ctx.renderSim();
+  const nObs = SIM._ultimo.fx.nivel;
+  ok(nObs.every((v) => Math.abs(v - nObs[nObs.length - 1]) < 1e-9),
+     'em Observado, passado o ultimo dado o cambio fica PARADO no ultimo fechamento',
+     nObs[0].toFixed(4) + ' .. ' + nObs[nObs.length - 1].toFixed(4));
+  ok(SIM._ultimo.fx.cam.every((v) => Math.abs(v) < 1e-9),
+     'o que em variacao quer dizer zero -- e nao a taxa do ultimo trimestre repetida');
+
+  // O passo e o choque padrao acompanham a unidade: `1` fixo virava +1 real.
+  restaura();
+  ok(VDE.passo <= 0.1, 'o passo da caixa e de nivel de cambio, nao de ponto percentual',
+     String(VDE.passo));
+  ok(SIM.chq.de.v <= 0.5 && SIM.chq.de.v > 0,
+     'e o choque padrao escala com ele em vez de ser +1 real (19% de uma vez)',
+     String(SIM.chq.de.v));
+  ok(SIM.chq.fiscal.v >= 10,
+     'a mesma regra faz o choque do CDS nascer em dezenas de pontos-base, nao em 1',
+     String(SIM.chq.fiscal.v));
+
+  restaura();
+  ctx.renderSim();
+
+  // ── 8o. o que MOVE a projecao, e por que os canais parados nao movem ──
+  // O usuario perguntou de onde vinha a desvalorizacao com todas as caixas paradas
+  // (2026-09-24). A resposta e forte o bastante para estar na tela: a equacao le a
+  // VARIACAO de cada canal, entao canal parado contribui exatamente zero, e o que
+  // sobra e o diferencial de inflacao com peso imposto em 1.
+  secao('8o. De onde vem a projecao do cambio');
+  restaura();
+  ctx.renderSim();
+  const ac = SIM._ultimo.fx.acum;
+  ok(!!ac, 'a rodada recolhe a contribuicao de cada termo');
+  const somaAc = Object.keys(ac).reduce((t, k2) => t + ac[k2], 0);
+  ok(Math.abs(somaAc - SIM._ultimo.fx.total) < 1e-9,
+     'e as partes somam EXATAMENTE o caminho -- e a mesma recursao, nao uma segunda',
+     somaAc.toFixed(6) + ' contra ' + SIM._ultimo.fx.total.toFixed(6));
+
+  const naoCarry = EQF.canais.filter((c) => c !== EQF.carry.canal);
+  ok(naoCarry.every((c) => Math.abs(ac[c]) < 1e-9),
+     'com as premissas paradas, os canais de mercado contribuem exatamente zero',
+     naoCarry.map((c) => c + ' ' + ac[c].toFixed(6)).join(' · '));
+  ok(Math.abs(ac.carry_vol) > 1e-6,
+     'e o carry NAO -- ele se mexe porque a Selic se mexe',
+     ac.carry_vol.toFixed(4) + ' p.p.');
+  // Com a curva de Phillips ligada o diferencial deixa de ser premissa parada: a inflacao
+  // daqui vem da equacao, e a parte dele no caminho e um numero do cenario, que a ficha
+  // imprime (hoje 55%). A afirmacao de que ele e QUASE TUDO vale onde ela sempre valeu:
+  // com as duas inflacoes seguradas.
+  const fracCom = ac[EQF.offset] / SIM._ultimo.fx.total;
+  ok(fracCom > 0.2 && fracCom < 1,
+     'com a (I) ligada o diferencial continua sendo a maior parte, sem ser tudo',
+     Math.round(100 * fracCom) + '%');
+  SIM.fonte.infl_br = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.acum[EQF.offset] / SIM._ultimo.fx.total > 0.8,
+     'e com a inflacao segurada a projecao e quase toda o diferencial, com peso imposto '
+     + 'em 1', Math.round(100 * SIM._ultimo.fx.acum[EQF.offset] / SIM._ultimo.fx.total) + '%');
+  restaura();
+  ctx.renderSim();
+  ok(SIM._ultimo.fx.parados === naoCarry.length,
+     'e a tela conta quantos canais estao parados, em vez de o leitor descobrir',
+     String(SIM._ultimo.fx.parados));
+
+  // Mexer num canal parado o faz aparecer -- que e o que a frase da ficha promete.
+  SIM.fonte.fiscal = 'digitado';
+  SIM.cx.fiscal = ctx.simObs('fiscal', SIM.i0, D.sim.h_max).map((v, i) => v + 20 * (i + 1));
+  ctx.renderSim();
+  ok(Math.abs(SIM._ultimo.fx.acum.fiscal) > 0.1,
+     'mexer no CDS o tira do zero, como a ficha diz que acontece',
+     SIM._ultimo.fx.acum.fiscal.toFixed(3) + ' p.p.');
+  ok(SIM._ultimo.fx.acum.fiscal > 0,
+     'e na direcao certa: risco maior, real mais fraco');
+  ok(SIM._ultimo.fx.parados === naoCarry.length - 1,
+     'e a contagem de parados cai junto', String(SIM._ultimo.fx.parados));
+
+  // A ficha imprime esses numeros, e e por ali que o leitor os alcanca.
+  const fichaF = document.getElementById('simEqSub-F').innerHTML;
+  ok(/diferencial de inflação/.test(fichaF) && /exatamente zero/.test(fichaF),
+     'e a ficha da equacao diz as duas coisas na tela');
+  ok(/\d+% disso/.test(fichaF),
+     'com o numero derivado do cenario, nao escrito a mao');
+
+  restaura();
+  ctx.renderSim();
+
+  // ── 8p. segurar a MEDIA, e so onde a variavel e taxa de fluxo ──
+  // Pedido do usuario em 2026-09-24: *"pode colocar a media dos ultimos 4
+  // trimestres"*. A regra da casa (segure o ultimo valor) continua valendo em todo
+  // cartao de NIVEL; a excecao e declarada por variavel. Um `segura` que vazasse para
+  // um cartao de nivel produziria um CDS projetado na media de quatro trimestres --
+  // plausivel, errado, e sem sintoma.
+  secao('8p. Segurar a media: so nas taxas de fluxo');
+  restaura();
+  ctx.renderSim();
+
+  // Com o `ppp` deixando de ser cartao, as taxas de fluxo do painel sao duas -- e as
+  // duas continuam sendo as unicas que seguram media.
+  const FLUXO = ['infl_br', 'infl_us'];
+  FLUXO.forEach((k2) => {
+    const alvo = D.sim.var[k2];
+    ok(alvo && alvo.segura && alvo.segura.modo === 'media' && alvo.segura.k === 4,
+       k2 + ': segura a media de 4 trimestres, porque e taxa de fluxo',
+       JSON.stringify(alvo && alvo.segura));
+  });
+  const nivelSemMedia = D.sim.var_ordem
+    .filter((k2) => FLUXO.indexOf(k2) < 0 && D.sim.var[k2].segura);
+  ok(nivelSemMedia.length === 0,
+     'e NENHUM cartao de nivel segura media -- ali o ultimo valor e a leitura certa',
+     nivelSemMedia.join(',') || '(nenhum)');
+
+  // A media morde: ela tem de diferir do ultimo valor, senao a asserção nao separa
+  // nada. Medido, a leitura isolada e ~2,5x a media de quatro.
+  const serPpp = ctx._simDerivObs('F', 'ppp');
+  const obsPpp = serPpp.filter((v) => v != null);
+  const ultPpp = obsPpp[obsPpp.length - 1];
+  const medPpp = ctx._simMediaFinal(obsPpp, 4);
+  ok(Math.abs(ultPpp - medPpp) > 0.1,
+     'a media difere da ultima leitura -- a regra esta decidindo alguma coisa',
+     'ultimo ' + ultPpp.toFixed(4) + ' contra media ' + medPpp.toFixed(4));
+  // O caminho que a (F) consome sai das DUAS metades seguradas, cada uma na media
+  // dela. E o que a asserção seguinte mede: a media e linear, entao segurar as duas e
+  // subtrair devolve a media da diferenca. Era o teste do "abrir em partes"; com as
+  // partes virando cartao, a propriedade continua e a mecanica some.
+  const entPpp = ctx.simEntradas();
+  const camPpp = ctx._simDerivadas('F', entPpp, SIM.i0, SIM.h).ppp;
+  // A tolerancia e 1e-5 e nao zero: as series sao arredondadas a seis casas no
+  // payload, cada uma por si. O que se afirma e a linearidade, nao o arredondamento.
+  ok(camPpp.every((v) => Math.abs(v - medPpp) < 1e-5),
+     'todo trimestre projetado usa a media das duas metades, nao a ultima leitura',
+     camPpp[0].toFixed(6) + ' contra ' + medPpp.toFixed(6));
+
+  // Dentro do dado nada muda: a media so vale DEPOIS do ultimo publicado.
+  const dentro = ctx.simObs('infl_br', 1, 8);
+  ok(dentro.every((v, i) => Math.abs(v - D.sim.var.infl_br.obs[1 + i]) < 1e-12),
+     'dentro da amostra a serie continua sendo o dado, e nao a media');
+
+  // O que a caixa dourada DIZ tem de acompanhar a regra, senao ela mente numa das duas.
+  const htmlSeg = document.getElementById('simInputs').innerHTML;
+  ok(/média dos últimos 4 trimestres publicados/.test(htmlSeg),
+     'a caixa da taxa de fluxo diz que o numero e a media');
+  ok(/último valor conhecido, repetido/.test(htmlSeg),
+     'e a caixa de nivel continua dizendo que e o ultimo valor repetido');
+  const subF = document.getElementById('simEqSub-F').innerHTML;
+  ok(/segurada na média dos últimos/.test(subF) && !/segurad[oa] em a/.test(subF),
+     'e a ficha usa o complemento regido certo, nao "segurado em a media"');
+  ok(/vindo da curva de Phillips/.test(subF),
+     'e diz que a inflacao daqui nao esta segurada: ela vem da curva de Phillips');
+
+  restaura();
+  ctx.renderSim();
+
+  // ── 8q. a TERCEIRA equacao: as expectativas ──
+  // Pedido do usuario em 2026-09-25: *"Vamos introduzir a equacao de expectativas"*.
+  // Ela e a primeira da ordem de solucao, e o que este bloco guarda nao e "a (E)
+  // existe" -- e que ela esta LIGADA na (R), porque uma corrente que se desfaz em
+  // silencio produz uma tela plausivel e errada.
+  secao('8q. As expectativas, a terceira equacao do simulador');
+  restaura();
+  ctx.renderSim();
+
+  ok(EQE.explica === 'pi_e' && D.sim.var.pi_e.produtor_no_sim === true,
+     'a (E) explica a expectativa, e ela consta como endogena NESTA rodada');
+  ok(EQE.consome.join(',') === 'infl_br,meta_12m',
+     'ela consome a inflacao do trimestre e a meta -- e so isso tem cartao',
+     EQE.consome.join(','));
+  ok(EQE.consome.indexOf('i12') < 0 && !D.sim.var.i12,
+     'o IPCA de 12 meses NAO e cartao: ele e conta, composta de quatro trimestres');
+
+  // A restricao, conferida no caminho SIMULADO: com a inflacao na meta a expectativa
+  // volta para a meta e fica ali. E a propriedade que justifica a soma-um, e num
+  // simulador ela vale por conjunto de pesos, nao so na mediana.
+  // O cartao de inflacao esta em 100*dlog e NAO em variacao simples: para que o
+  // acumulado de doze meses de exatamente a meta, cada trimestre tem de ser
+  // `ln(1 + meta/100)/4` e nao `(1+meta/100)^(1/4) - 1`. As duas diferem 0,004 p.p.
+  // por trimestre, o que a conta amplifica para 0,006 p.p. na expectativa de repouso
+  // -- pequeno, sistematico, e exatamente o tipo de troca que passa despercebida.
+  const META_T = 3.5, INF_T = 100 * Math.log(1 + META_T / 100) / 4;
+  const entE = { infl_br: new Array(400).fill(INF_T),
+                 meta_12m: new Array(400).fill(META_T) };
+  const camLongo = ctx._simCaminhoPiE(SIM.coef.E, SIM.i0, 400, entE);
+  ok(Math.abs(camLongo[camLongo.length - 1] - META_T) < 1e-6,
+     'com a inflacao na meta a expectativa converge EXATAMENTE para a meta',
+     camLongo[camLongo.length - 1].toFixed(8) + ' contra ' + META_T);
+  // E ela vale desenho a desenho, porque o peso da meta nao e amostrado: ele e
+  // `1 - e1 - e2`. Usar o desenho gravado de `peso_meta` pareceria equivalente e nao e.
+  let piorRep = 0;
+  for (let sdr = 0; sdr < EQE.n_draws; sdr += 97) {
+    const cD = { e1: EQE.draws.e1[sdr], e2: EQE.draws.e2[sdr] };
+    const cc = ctx._simCaminhoPiE(cD, SIM.i0, 400, entE);
+    piorRep = Math.max(piorRep, Math.abs(cc[cc.length - 1] - META_T));
+  }
+  ok(piorRep < 1e-6,
+     'e isso vale em TODO desenho do posterior, nao so na mediana',
+     'pior desvio ' + piorRep.toExponential(2) + ' p.p.');
+  ok(EQE.draws.peso_meta.every((v, i) =>
+       Math.abs(v - (1 - EQE.draws.e1[i] - EQE.draws.e2[i])) < 1e-4),
+     'o peso da meta gravado bate com `1 - e1 - e2` em todo desenho');
+
+  // Uma inflacao permanentemente acima da meta e incorporada em parte, e o quanto e o
+  // repasse de longo prazo que a aba publica.
+  const ACIMA = 1.0;
+  const infAlta = 100 * Math.log(1 + (META_T + ACIMA) / 100) / 4;
+  const entE2 = { infl_br: new Array(400).fill(infAlta),
+                  meta_12m: new Array(400).fill(META_T) };
+  const camAlto = ctx._simCaminhoPiE(SIM.coef.E, SIM.i0, 400, entE2);
+  const repasse = (camAlto[camAlto.length - 1] - META_T) / ACIMA;
+  ok(Math.abs(repasse - D.exp.repasse) < 0.02,
+     'e uma inflacao permanente 1 p.p. acima e incorporada no repasse que a aba mede',
+     repasse.toFixed(4) + ' contra ' + D.exp.repasse.toFixed(4));
+  ok(repasse > 0.05 && repasse < 0.95,
+     'nem ancora perfeita (0) nem expectativa puramente adaptativa (1)',
+     repasse.toFixed(3));
+
+  // O IPCA de 12 meses e COMPOSTO, e nao a soma das quatro variacoes. A diferenca e
+  // pequena e sistematica, entao trocar uma pela outra passa despercebido -- e e por
+  // isso que ela e afirmada.
+  const q4 = [1.0, 1.2, 0.8, 1.1];
+  const comp = ctx._simAcumLog(q4, 3, 4);
+  ok(Math.abs(comp - 100 * (Math.exp(4.1 / 100) - 1)) < 1e-12,
+     'a composicao e exp(soma dos logs), nao a soma das variacoes',
+     comp.toFixed(6) + ' contra soma simples 4,100000');
+  // E ela reproduz o IPCA de 12 meses que o painel publica -- o gabarito que impede
+  // o painel de precisar de um segundo cartao de IPCA.
+  let nI12 = 0, piorI12 = 0;
+  EQE.i12_obs.forEach((v, i) => {
+    const pub = EQE.i12_pub[i];
+    if (v == null || pub == null) return;
+    piorI12 = Math.max(piorI12, Math.abs(v - pub));
+    nI12 += 1;
+  });
+  ok(nI12 > 60, 'ha trimestres bastantes para conferir a composicao', String(nI12));
+  ok(piorI12 < 0.02,
+     'e o composto bate com o IPCA de 12 meses PUBLICADO -- e por isso que o painel '
+     + 'tem UM cartao de IPCA e nao dois',
+     'pior diferenca ' + piorI12.toFixed(4) + ' p.p. em ' + nI12 + ' trimestres');
+  // E a forma errada tem de errar de VERDADE, senao a asserção acima nao separa nada:
+  // somar as quatro variacoes em vez de compor erra uma ordem de grandeza a mais.
+  let piorSoma = 0;
+  EQE.i12_obs.forEach((v, i) => {
+    const pub = EQE.i12_pub[i];
+    if (v == null || pub == null || i < 3) return;
+    const soma = EQE.obs_insumo.infl_br.slice(i - 3, i + 1)
+      .reduce((a, b) => (a == null || b == null) ? null : a + b, 0);
+    if (soma == null) return;
+    piorSoma = Math.max(piorSoma, Math.abs(soma - pub));
+  });
+  ok(piorSoma > 10 * piorI12,
+     'somar as quatro variacoes em vez de compor erra muito mais',
+     piorSoma.toFixed(4) + ' contra ' + piorI12.toFixed(4) + ' p.p.');
+
+  // O elo (E) -> (R): mexer na expectativa tem de mover a Selic, e para cima.
+  restaura();
+  const selBaseE = SIM._ultimo.cam[SIM.h - 1];
+  ok(SIM._ultimo.eloE != null,
+     'a rodada mede o elo entre a (E) e a (R) em vez de afirma-lo',
+     String(SIM._ultimo.eloE));
+  SIM.fonte.infl_br = 'digitado';
+  SIM.cx.infl_br = ctx.simObs('infl_br', SIM.i0, D.sim.h_max).map((v) => v + 1);
+  ctx.renderSim();
+  ok(SIM._ultimo.exp.cam[SIM.h - 1] > SIM._ultimo.exp.cam[0],
+     'mais inflacao em cada trimestre empurra a expectativa para cima ao longo do '
+     + 'horizonte');
+  ok(SIM._ultimo.cam[SIM.h - 1] > selBaseE,
+     'e a Selic sobe junto -- a corrente (E) -> (R) esta ligada',
+     selBaseE.toFixed(3) + ' -> ' + SIM._ultimo.cam[SIM.h - 1].toFixed(3));
+  // E o cambio se mexe por tras disso, pelo carry: a corrente tem tres elos.
+  restaura();
+  const nivBaseE = SIM._ultimo.fx.nivel[SIM.h - 1];
+  SIM.fonte.infl_br = 'digitado';
+  SIM.cx.infl_br = ctx.simObs('infl_br', SIM.i0, D.sim.h_max).map((v) => v + 1);
+  ctx.renderSim();
+  ok(Math.abs(SIM._ultimo.fx.nivel[SIM.h - 1] - nivBaseE) > 1e-6,
+     'e o cambio muda junto: (E) -> (R) -> (F) fecha a corrente',
+     nivBaseE.toFixed(4) + ' -> ' + SIM._ultimo.fx.nivel[SIM.h - 1].toFixed(4));
+  restaura();
+
+  // Impor a expectativa desliga a (E), e o aviso tem de aparecer no cartao DELA.
+  SIM.fonte.pi_e = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.exp.faixa === null,
+     'com a expectativa imposta nao ha faixa: nao ha equacao rodando');
+  ok(document.getElementById('simAviso-E').style.display === ''
+     && /desligada/.test(document.getElementById('simAviso-E').innerHTML),
+     'e o aviso aparece no cartao da (E)');
+  ok(/distância até a meta/.test(document.getElementById('simAviso-E').innerHTML),
+     'dizendo que a regra de juros continua lendo a expectativa imposta');
+  ok(document.getElementById('simAviso-R').style.display === 'none'
+     && document.getElementById('simAviso-F').style.display === 'none',
+     'e os cartoes das outras duas seguem sem aviso');
+  restaura();
+
+  // A faixa da (R) passa a carregar a incerteza das DUAS quando a (E) esta ligada.
+  ctx.renderSim();
+  ok(SIM._ultimo.duasFaixasR === true,
+     'com a (E) ligada a faixa da Selic carrega a incerteza das duas equacoes');
+  // **A comparacao tem de ser com o MESMO caminho central.** Comparar com a rodada em
+  // que a expectativa e imposta compara duas coisas ao mesmo tempo -- e medido, la a
+  // faixa sai MAIS LARGA (1,77 contra 1,37), porque segurar a Focus no ultimo valor
+  // mantem um desvio grande e constante, e e o desvio que a incerteza de `t3`
+  // multiplica. O que isola a propagacao e trocar so os desenhos, com o caminho da
+  // mediana fixo dos dois lados.
+  // Pelo sistema: as mesmas mil rodadas do laco, trocando os desenhos SO da (R) contra
+  // trocando os da (R) e da (E). O caminho da mediana e o mesmo nos dois lados.
+  const entB = ctx.simEntradas(), ligaB = ctx._simLiga();
+  const fSo = ctx._simFaixasSistema(SIM.i0, SIM.h, entB, ligaB, { R: true }).selic;
+  const fCom = ctx._simFaixasSistema(SIM.i0, SIM.h, entB, ligaB, { R: true, E: true }).selic;
+  const lSo = fSo.hi[SIM.h - 1] - fSo.lo[SIM.h - 1];
+  const lCom = fCom.hi[SIM.h - 1] - fCom.lo[SIM.h - 1];
+  ok(lCom > lSo,
+     'no mesmo cenario, propagar os desenhos da (E) ALARGA a faixa da Selic',
+     lSo.toFixed(4) + ' -> ' + lCom.toFixed(4));
+  // Trimestre a trimestre ela nao CONTEM a outra, e isso e amostragem e nao defeito:
+  // sao 1000 desenhos de cada lado, e onde a contribuicao da (E) ainda e pequena o
+  // ruido do quantil inverte a ordem. O que se afirma e a largura, com a folga do
+  // proprio ruido medida em vez de escolhida.
+  let piorEstreita = 0;
+  for (let i = 0; i < SIM.h; i++) {
+    piorEstreita = Math.max(piorEstreita,
+      (fSo.hi[i] - fSo.lo[i]) - (fCom.hi[i] - fCom.lo[i]));
+  }
+  ok(piorEstreita < 0.02,
+     'e em nenhum trimestre ela fica mais estreita alem do ruido do quantil',
+     'pior ' + piorEstreita.toFixed(4) + ' p.p. contra uma largura de '
+       + lCom.toFixed(3));
+  SIM.fonte.pi_e = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.duasFaixasR === false,
+     'com a expectativa imposta ela volta a ser so a da (R)');
+  restaura();
+
+  // ── as DUAS PONTAS da recursao da (E) ──
+  // Mesma razao do gabarito da (F): a conta esta escrita duas vezes, e duas
+  // implementacoes divergem em silencio. Aqui o risco e maior, porque a composicao de
+  // quatro trimestres e nova e um `k` trocado continua produzindo caminho plausivel.
+  let nParE = 0, piorParE = 0;
+  EQE.ajuste.forEach((alvo, i) => {
+    if (alvo == null || i < 1) return;
+    const e1 = { infl_br: ctx.simObs('infl_br', i, 1),
+                 meta_12m: ctx.simObs('meta_12m', i, 1) };
+    const got = ctx._simCaminhoPiE(EQE.mediana, i, 1, e1)[0];
+    piorParE = Math.max(piorParE, Math.abs(got - alvo));
+    nParE += 1;
+  });
+  ok(nParE > 60, 'ha trimestres bastantes para comparar as duas pontas da (E)',
+     String(nParE));
+  ok(piorParE < 1e-5,
+     'e o JS reproduz o ajuste que o Python calculou, trimestre a trimestre',
+     'pior diferenca ' + piorParE.toExponential(2) + ' p.p.');
+  const errE = EQE.ajuste
+    .map((v, i) => (v == null || EQE.y[i] == null) ? null : v - EQE.y[i])
+    .filter((v) => v != null);
+  const rmseE = Math.sqrt(errE.reduce((a2, b2) => a2 + b2 * b2, 0) / errE.length);
+  ok(rmseE > 0.1 && rmseE < 2,
+     'e esse ajuste explica a expectativa de verdade -- na ordem do estimado',
+     'RMSE ' + rmseE.toFixed(3) + ' p.p.');
+
+  // ── e as duas pontas da (R), que ganharam gabarito com as contas derivadas ──
+  // A (R) nao tinha gabarito ate 2026-09-25: o desvio e a ancora chegavam prontos no
+  // payload. Com as duas virando CONTA refeita nas duas pontas, elas passaram a ser
+  // exatamente o tipo de coisa que diverge em silencio.
+  let nParR = 0, piorParR = 0;
+  EQ.ajuste.forEach((alvo, i) => {
+    if (alvo == null || i < 2) return;
+    const e1 = { pi_e: ctx.simObs('pi_e', i, 1),
+                 meta_12m: ctx.simObs('meta_12m', i, 1),
+                 rr_10a: ctx.simObs('rr_10a', i, 1) };
+    EQ.dummies.forEach((c) => { e1[c] = [EQ.dummy_obs[c][i] || 0]; });
+    const got = ctx._simCaminhoSelic(EQ.mediana, i, 1, e1)[0];
+    piorParR = Math.max(piorParR, Math.abs(got - alvo));
+    nParR += 1;
+  });
+  ok(nParR > 60, 'ha trimestres bastantes para comparar as duas pontas da (R)',
+     String(nParR));
+  ok(piorParR < 1e-5,
+     'e o JS reproduz o ajuste da (R) que o Python calculou',
+     'pior diferenca ' + piorParR.toExponential(2) + ' p.p.');
+  const errR = EQ.ajuste
+    .map((v, i) => (v == null || EQ.selic_obs[i] == null) ? null : v - EQ.selic_obs[i])
+    .filter((v) => v != null);
+  const rmseR = Math.sqrt(errR.reduce((a2, b2) => a2 + b2 * b2, 0) / errR.length);
+  ok(rmseR > 0.1 && rmseR < 2,
+     'e o ajuste da (R) explica a Selic de verdade', 'RMSE ' + rmseR.toFixed(3));
+
+  // ── o grafico da (E), no contrato da casa ──
+  restaura();
+  ctx.renderSim();
+  ok(!!PLOT['ch-simexp'], 'o grafico da (E) e pintado');
+  const ytE = PLOT['ch-simexp'].layout.yaxis.title;
+  ok((ytE || '').length > 6 && /12 meses/.test(ytE),
+     'o eixo nomeia a unidade e o horizonte', ytE);
+  const frE = document.getElementById('ch-simexp').parentNode._chFrame;
+  ok(frE.title.textContent.length > 4, 'ch-simexp: tem titulo');
+  ok(frE.sub.textContent.length > 8, 'ch-simexp: tem subtitulo derivado');
+  ok(frE.src.textContent.indexOf('Fonte:') === 0, 'ch-simexp: e linha de fonte');
+  ok(Array.isArray(PLOT['ch-simexp'].layout.shapes),
+     'ch-simexp: as formas sao passadas SEMPRE');
+  const kidsE = Array.prototype.slice.call(
+    document.getElementById('ch-simexp').parentNode.children);
+  let iBarE = -1;
+  kidsE.forEach((c, j) => { if (c._cls().includes('range-pills')) iBarE = j; });
+  ok(iBarE > kidsE.indexOf(document.getElementById('ch-simexp')),
+     'ch-simexp: a regua de tempo vem depois do grafico');
+  const rEx = RELAYOUTS.filter((x) => x.div === 'ch-simexp' && x.upd['xaxis.range']);
+  ok(rEx.length > 0, 'e ele recebeu uma janela calculada, nao autorange');
+  // A meta atravessa o corte junto com a expectativa, pela mesma regra da ancora no
+  // grafico da (R): ela e premissa que a conta consome nos trimestres projetados.
+  const trMeta = ctx._tracesSimExp(SIM._ultimo).filter(
+    (t) => t.line && t.line.dash === 'dot');
+  ok(trMeta.length === 2, 'sao duas linhas pontilhadas: a meta observada e a projetada',
+     String(trMeta.length));
+  ok(trMeta[1].showlegend === false,
+     'e a projetada nao ganha legenda propria -- e a mesma linha continuando');
+  const metaProj = trMeta[1].y.slice(1);
+  ok(metaProj.every((v, i) => Math.abs(v - SIM._ultimo.ent.meta_12m[i]) < 1e-12),
+     'e ela e EXATAMENTE o caminho que a recursao consome, nao uma extrapolacao',
+     metaProj.length + ' trimestres conferidos');
+
+  // O grafico do cambio, no contrato da casa.
+  restaura();
+  ctx.renderSim();
+  const ytF = PLOT['ch-simfx'].layout.yaxis.title;
+  ok((ytF || '').length > 6 && /real|dólar|dolar/i.test(ytF),
+     'o eixo do cambio nomeia a unidade, e ela e o NIVEL', ytF);
+  const frF = document.getElementById('ch-simfx').parentNode._chFrame;
+  ok(frF.title.textContent.length > 4, 'ch-simfx: tem titulo');
+  ok(frF.sub.textContent.length > 8, 'ch-simfx: tem subtitulo derivado');
+  ok(frF.src.textContent.indexOf('Fonte:') === 0, 'ch-simfx: e linha de fonte');
+  ok(Array.isArray(PLOT['ch-simfx'].layout.shapes),
+     'ch-simfx: as formas sao passadas SEMPRE');
+  const kidsF = Array.prototype.slice.call(
+    document.getElementById('ch-simfx').parentNode.children);
+  let iBarF = -1;
+  kidsF.forEach((c, j) => { if (c._cls().includes('range-pills')) iBarF = j; });
+  ok(iBarF > kidsF.indexOf(document.getElementById('ch-simfx')),
+     'ch-simfx: a regua de tempo vem depois do grafico');
+  // A regua e refeita so quando a ponta direita anda, entao aqui ela ja foi aplicada
+  // antes -- o que se afirma e a ULTIMA janela que o grafico recebeu, e nao o estado
+  // do layout, que nao guarda o que veio por `relayout`.
+  const rFx = RELAYOUTS.filter((x) => x.div === 'ch-simfx' && x.upd['xaxis.range']);
+  ok(rFx.length > 0, 'o grafico do cambio recebeu uma janela calculada, nao autorange');
+  ok(rFx[rFx.length - 1].upd['xaxis.range'][1]
+       >= SIM._ultimo.g.x[SIM._ultimo.g.x.length - 1],
+     'e ela alcanca o ultimo trimestre projetado',
+     rFx[rFx.length - 1].upd['xaxis.range'][1] + ' contra '
+       + SIM._ultimo.g.x[SIM._ultimo.g.x.length - 1]);
+
+  // ════ 8r. O hiato, a quarta equacao do simulador ════════════════════════════
+  // A (H) le a Selic que a (R) produz, com um trimestre de atraso, e e por ela que o
+  // juro chega ao produto. O aperto e CONTA de tres cartoes -- a mesma ancora que a (R)
+  // persegue --, e a conta e refeita nas duas pontas: daqui o gabarito de um passo e a
+  // exigencia de que a conta dos cartoes devolva a coluna que a estimacao usou.
+  secao('8r. O hiato, a quarta equacao do simulador');
+  restaura();
+  ctx.renderSim();
+  const EQH = D.sim.eq.H;
+  ok(!!EQH && EQH.explica === 'hiato' && D.sim.var.hiato.produtor_no_sim === true,
+     'a (H) explica o hiato, e ele consta como endogena NESTA rodada');
+  ok(EQH.consome.join(',') === 'selic,rr_10a,meta_12m',
+     'ela consome a Selic, o juro real de 10 anos e a meta -- e so isso tem cartao',
+     EQH.consome.join(','));
+  const gd = EQH.deriva && EQH.deriva.gap;
+  ok(!!gd && gd.op === 'lin' && gd.de.join(',') === 'selic,rr_10a,meta_12m'
+       && gd.coef.join(',') === '1,-1,-1',
+     'o aperto e CONTA: a Selic menos o juro real de 10 anos menos a meta',
+     gd ? gd.op + ' ' + gd.coef.join(',') : '-');
+  ok(!D.sim.var.gap, 'e ele nao e cartao -- um cartao deixaria digitar um aperto que '
+     + 'contradiz a Selic da rodada');
+  ok(['selic', 'rr_10a', 'meta_12m'].every((k) =>
+       D.sim.var[k].consumida_por.indexOf('H') >= 0),
+     'os tres cartoes que ela le dizem que ela os le');
+  ok(D.sim.var.hiato.consumida_por.join(',') === 'H,I',
+     'e o hiato e lido pela propria (H), defasado, e pela curva de Phillips, no mesmo '
+     + 'trimestre', D.sim.var.hiato.consumida_por.join(','));
+  ok(EQH.lag === 1, 'o aperto chega com um trimestre de atraso, e isso esta no payload',
+     String(EQH.lag));
+
+  // A conta feita dos CARTOES devolve a coluna do painel que a estimacao usou, na
+  // grade inteira. E o que prova que `deriva` e a identidade do painel sao a mesma
+  // coisa -- mesmo papel do `i12_pub` da (E).
+  {
+    const gObs = ctx._simDerivObs('H', 'gap');
+    let nG = 0, piorG = 0;
+    gObs.forEach((v, i) => {
+      if (v == null || EQH.gap_pub[i] == null) return;
+      piorG = Math.max(piorG, Math.abs(v - EQH.gap_pub[i]));
+      nG += 1;
+    });
+    ok(nG > 60, 'ha trimestres bastantes para conferir a conta do aperto', String(nG));
+    // 1e-5 e o arredondamento do payload (seis casas em quatro series), nao folga
+    ok(piorG < 1e-5,
+       'a conta dos cartoes devolve a coluna do painel que a estimacao usou',
+       'pior ' + piorG.toExponential(2));
+    ok(ctx._simDerivObsEm('H', 'gap', 5) === gObs[5],
+       'e a leitura de um trimestre so e a mesma conta que a da grade');
+  }
+
+  // O gabarito de um passo: as duas recursoes -- Python e navegador -- tem de dar o
+  // mesmo numero rodando h = 1 a partir de cada trimestre. O Python le o aperto da
+  // coluna do painel; o JS o refaz dos cartoes. Um passo bater prova as duas coisas.
+  {
+    let nParH = 0, piorParH = 0;
+    EQH.ajuste.forEach((alvo, i) => {
+      if (alvo == null || i < 1) return;
+      const e1 = { selic: ctx.simObs('selic', i, 1),
+                   rr_10a: ctx.simObs('rr_10a', i, 1),
+                   meta_12m: ctx.simObs('meta_12m', i, 1) };
+      EQH.dummies.forEach((c) => { e1[c] = [EQH.dummy_obs[c][i] || 0]; });
+      const got = ctx._simCaminhoHiato(EQH.mediana, i, 1, e1)[0];
+      piorParH = Math.max(piorParH, Math.abs(got - alvo));
+      nParH += 1;
+    });
+    ok(nParH > 60, 'ha trimestres bastantes para comparar as duas pontas da (H)',
+       String(nParH));
+    ok(piorParH < 1e-5, 'e o JS reproduz o ajuste da (H) que o Python calculou',
+       'pior diferenca ' + piorParH.toExponential(2) + ' p.p.');
+    const errH = EQH.ajuste
+      .map((v, i) => (v == null || EQH.y[i] == null) ? null : v - EQH.y[i])
+      .filter((v) => v != null);
+    const rmseH = Math.sqrt(errH.reduce((a2, b2) => a2 + b2 * b2, 0) / errH.length);
+    ok(rmseH > 0.3 && rmseH < 1.5,
+       'e esse ajuste explica o hiato de verdade -- na ordem do estimado',
+       'RMSE ' + rmseH.toFixed(3) + ' p.p.');
+  }
+
+  // Sem termo constante: com o aperto em zero e sem crise, o hiato volta a ZERO; com um
+  // aperto permanente de 1 p.p., ele para em h2/(1-h1). As duas coisas no caminho
+  // SIMULADO, e nao so na algebra.
+  {
+    const ZH = 400;
+    const fill = (v) => new Array(ZH).fill(v);
+    const entZ = { selic: fill(10), rr_10a: fill(7), meta_12m: fill(3) };
+    EQH.dummies.forEach((c) => { entZ[c] = fill(0); });
+    const zc = ctx._simCaminhoHiato(EQH.mediana, SIM.i0, ZH, entZ);
+    ok(Math.abs(zc[ZH - 1]) < 1e-6,
+       'com o aperto em zero o hiato volta a zero -- a conta nao tem termo constante',
+       zc[ZH - 1].toExponential(2));
+    const entU = { selic: fill(11), rr_10a: fill(7), meta_12m: fill(3) };
+    EQH.dummies.forEach((c) => { entU[c] = fill(0); });
+    const uc = ctx._simCaminhoHiato(EQH.mediana, SIM.i0, ZH, entU);
+    const lp = EQH.mediana.h2 / (1 - EQH.mediana.h1);
+    ok(Math.abs(uc[ZH - 1] - lp) < 1e-6,
+       'e com 1 p.p. de aperto para sempre ele para em h2/(1-h1)',
+       uc[ZH - 1].toFixed(6) + ' contra ' + lp.toFixed(6));
+  }
+
+  // O ELO (R) -> (H), na recursao: a (H) le a Selic que a (R) produziu NESTA rodada, e
+  // mais Selic da menos hiato -- com um trimestre de atraso.
+  {
+    const U = SIM._ultimo;
+    ok(U.ent.selic === U.cam,
+       'a (H) le a Selic que a (R) produziu nesta rodada, e nao a observada');
+    const base = ctx._simCaminhoHiato(SIM.coef.H, SIM.i0, SIM.h, U.ent);
+    // 1e-9 e nao zero: o caminho desenhado e o do laco resolvido, que para quando nada
+    // muda mais que 1e-10 -- refaze-lo sobre o resultado devolve o mesmo ate ali.
+    ok(base.every((v, i) => Math.abs(v - U.is.cam[i]) < 1e-9),
+       'e o caminho desenhado e exatamente essa recursao, sobre o laco resolvido');
+    const alto = ctx._simCaminhoHiato(SIM.coef.H, SIM.i0, SIM.h,
+      ctx._simEntCom(U.ent, 'selic', U.ent.selic.map((v) => v + 2)));
+    ok(alto[alto.length - 1] < base[base.length - 1],
+       'mais Selic, hiato menor no fim -- o juro chega ao produto',
+       base[base.length - 1].toFixed(3) + ' -> ' + alto[alto.length - 1].toFixed(3));
+    ok(Math.abs(alto[0] - base[0]) < 1e-12,
+       'e o primeiro trimestre nao se mexe: o aperto chega com um trimestre de atraso');
+    ok(U.is.sens != null && U.is.sens < 0,
+       'a sensibilidade que a ficha imprime e medida, e tem o sinal do aperto',
+       String(U.is.sens));
+    ok(U.is.eloR != null, 'e o elo (R) -> (H) tambem e medido, no cenario da tela',
+       String(U.is.eloR));
+  }
+
+  // A faixa: com as cinco ligadas, o laco leva a incerteza de todas ao hiato -- a Selic
+  // que ele le vem da expectativa, que vem da inflacao, que vem do proprio hiato.
+  {
+    const U = SIM._ultimo;
+    ok(U.is.nEq === 5, 'a faixa do hiato carrega a incerteza das cinco equacoes',
+       String(U.is.nEq));
+    ok(!!U.is.faixa && U.is.faixa.lo.every((v, i) => v <= U.is.faixa.hi[i]),
+       'e ela existe, com a ponta de baixo abaixo da de cima');
+    const trH = PLOT['ch-simis'].traces;
+    ok(trH.some((t) => /cinco equações/.test(t.name || '')),
+       'a legenda da faixa diz de quantas equacoes ela carrega incerteza');
+  }
+
+  // Com a Selic imposta, so a (H) propaga; com o hiato imposto, nao ha faixa e o
+  // cartao da equacao diz que ela esta desligada.
+  SIM.fonte.selic = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.is.nEq === 1,
+     'com a Selic imposta, a faixa do hiato carrega so a (H)',
+     String(SIM._ultimo.is.nEq));
+  restaura();
+  SIM.fonte.hiato = 'observado';
+  ctx.renderSim();
+  ok(SIM._ultimo.is.faixa === null, 'com o hiato imposto, nao ha faixa nenhuma');
+  {
+    const av = document.getElementById('simAviso-H');
+    ok(av.style.display !== 'none' && /curva IS está desligada/.test(av.innerHTML),
+       'e o cartao da (H) diz que ela esta desligada', av.innerHTML.slice(0, 80));
+  }
+  restaura();
+  ctx.renderSim();
+
+  // A ficha: a conta escrita com o sinal de CADA peca, e os numeros medidos.
+  {
+    const fH = document.getElementById('simEqSub-H').innerHTML;
+    ok(fH.indexOf('Selic menos juro real de 10 anos menos meta de inflação') >= 0,
+       'a ficha escreve a conta com o sinal de cada peca', fH.slice(0, 160));
+    ok(fH.indexOf(ctx.fmt(Math.abs(EQH.mediana.h2), 3)) >= 0,
+       'e imprime o peso do aperto da mediana do posterior');
+    // Em modulo, com a direcao por extenso: "leva o hiato a -0,44" se lia como nivel.
+    const uIs = SIM._ultimo.is;
+    ok(fH.indexOf(ctx.fmt(Math.abs(uIs.sens)) + ' p.p. '
+                  + (uIs.sens < 0 ? 'mais baixo' : 'mais alto')) >= 0,
+       'e a sensibilidade, com a direcao dita por extenso');
+    ok(fH.indexOf(ctx.fmt(Math.abs(uIs.eloR)) + ' p.p. '
+                  + (uIs.eloR > 0 ? 'mais alto' : 'mais baixo')) >= 0,
+       'e o elo (R) -> (H), tambem com a direcao');
+    ok(fH.indexOf('leva o hiato a') < 0,
+       'a redacao que se lia como nivel saiu');
+    const tH = document.getElementById('simEqTitulo-H').textContent;
+    ok(/\(H\)/.test(tH) && /o hiato do produto/.test(tH),
+       'o titulo diz de que equacao ele e e o que ela explica', tH);
+  }
+
+  // O grafico do hiato, no contrato da casa.
+  {
+    const ytH = PLOT['ch-simis'].layout.yaxis.title;
+    ok(ytH === ctx.EIXO_IS, 'o eixo do hiato e a MESMA string da aba Hiato', ytH);
+    ok(PLOT['ch-simis'].layout.yaxis.zeroline === true,
+       'e o zero -- o repouso do hiato -- e a referencia do grafico');
+    const frH = document.getElementById('ch-simis').parentNode._chFrame;
+    ok(frH.title.textContent.length > 4, 'ch-simis: tem titulo');
+    ok(frH.sub.textContent.length > 8, 'ch-simis: tem subtitulo derivado');
+    ok(frH.src.textContent.indexOf('Fonte:') === 0, 'ch-simis: e linha de fonte');
+    ok(Array.isArray(PLOT['ch-simis'].layout.shapes),
+       'ch-simis: as formas sao passadas SEMPRE');
+    const kidsH = Array.prototype.slice.call(
+      document.getElementById('ch-simis').parentNode.children);
+    let iBarH = -1;
+    kidsH.forEach((c, j) => { if (c._cls().includes('range-pills')) iBarH = j; });
+    ok(iBarH > kidsH.indexOf(document.getElementById('ch-simis')),
+       'ch-simis: a regua de tempo vem depois do grafico');
+    const rIs = RELAYOUTS.filter((x) => x.div === 'ch-simis' && x.upd['xaxis.range']);
+    ok(rIs.length > 0, 'o grafico do hiato recebeu uma janela calculada, nao autorange');
+  }
+
+  // ════ 8s. A curva de Phillips, a quinta equacao, e o laco ═════════════════════
+  // Pedido do usuario em 2026-09-28: *"you can enter this in the simulator"*. A (I) le o
+  // hiato, a expectativa e o cambio, e o que ela produz volta para a (E) e para a (F):
+  // o simulador deixa de ser uma corrente. Tres coisas precisam de gabarito proprio --
+  // cada grupo (um passo, contra as colunas do painel), a conta dentro da janela (varios
+  // passos, contra a forma fechada) e o laco (o cenario padrao, contra o Python).
+  secao('8s. A curva de Phillips, a quinta equacao, e o laco');
+  restaura();
+  ctx.renderSim();
+  const EQI = D.sim.eq.I;
+  ok(!!EQI && EQI.explica === 'infl_br' && EQI.key === 'I',
+     'a (I) esta no simulador e explica a inflacao do trimestre');
+  ok(EQI.consome.join(',') === 'hiato,pi_e,de,icbr_agr_usd,icbr_met_usd',
+     'ela consome o hiato, a expectativa, o cambio e as duas cestas de commodity',
+     EQI.consome.join(','));
+  ok(['icbr_agr_usd', 'icbr_met_usd'].every((k) => D.sim.var[k]
+       && D.sim.var[k].regiao === 'externa' && D.sim.var[k].tipo === 'exogena'
+       && D.sim.var[k].consumida_por.join(',') === 'I'),
+     'as duas cestas sao cartoes externos, lidos so pela (I)');
+  ok(D.sim.var.infl_br.consumida_por.join(',') === 'I,E,F',
+     'e a inflacao e lida pela propria (I), defasada, pela (E) e pela (F)',
+     D.sim.var.infl_br.consumida_por.join(','));
+  ok(D.sim.var.pi_e.consumida_por.indexOf('I') >= 0,
+     'a expectativa diz que a (I) a le -- como a ancora do trimestre seguinte');
+
+  // As contas: o cambio MEDIO e as duas commodities, nenhuma com cartao.
+  ok(EQI.deriva.de_med.op === 'dlog_medio' && EQI.deriva.de_med.de.join(',') === 'de',
+     'o cambio que ela le e conta: a variacao do cambio MEDIO, feita de dois fechamentos');
+  ok(EQI.deriva.agr.op === 'dlog' && EQI.deriva.met.op === 'dlog',
+     'e as commodities tambem: a variacao do nivel de um trimestre para o outro');
+  ok(!D.sim.var.de_med && !D.sim.var.agr && !D.sim.var.met,
+     'e nenhuma delas e cartao');
+  {
+    const dm = ctx._simDerivObs('I', 'de_med'), P = D.sim.var.de.obs;
+    let pior = 0, n = 0;
+    for (let i = 2; i < P.length; i++) {
+      if (dm[i] == null) continue;
+      const a = 100 * Math.log(P[i] / P[i - 1]), b = 100 * Math.log(P[i - 1] / P[i - 2]);
+      pior = Math.max(pior, Math.abs(dm[i] - 0.5 * (a + b)));
+      n += 1;
+    }
+    ok(n > 60 && pior < 1e-12,
+       'o cambio medio e exatamente a media de duas variacoes de fechamento seguidas',
+       n + ' trimestres, pior ' + pior.toExponential(2));
+  }
+
+  // Todo peso estimado tem lugar na recursao -- conferido no Python ao montar, e aqui do
+  // lado que o usa: cada termo de cada grupo tem um peso no payload.
+  {
+    let faltam = [];
+    EQI.ordem_grupos.forEach((g) => {
+      const sp = EQI.grupos[g];
+      [sp.inercia].concat(sp.restritos.map((x) => x[0]), sp.regs.map((x) => x[0]), sp.saz)
+        .forEach((q) => { if (typeof EQI.mediana[g + '.' + q] !== 'number') faltam.push(g + '.' + q); });
+    });
+    ok(faltam.length === 0, 'todo termo dos quatro grupos tem peso no payload',
+       faltam.join(',') || '(nenhum faltando)');
+    ok(EQI.pars.every((q) => EQI.draws[q] && EQI.draws[q].length === EQI.n_draws),
+       'e os desenhos vieram completos, pareados entre os grupos', String(EQI.n_draws));
+    const somaP = EQI.ordem_grupos.reduce((a, g) => a + EQI.pesos_fim[g], 0);
+    ok(Math.abs(somaP - 1) < 1e-9, 'os pesos do fim somam 1', somaP.toFixed(12));
+  }
+
+  // O gabarito de um passo, grupo a grupo e no cheio. O Python le as colunas do painel
+  // (media movel, cheio defasado, variacao das commodities); o JS as refaz dos cartoes.
+  {
+    const V = D.sim.var;
+    const pior = { cheio: 0 };
+    EQI.ordem_grupos.forEach((g) => { pior[g] = 0; });
+    let n = 0;
+    EQI.ajuste.cheio.forEach((alvo, i) => {
+      if (alvo == null) return;
+      const e1 = { hiato: [V.hiato.obs[i]], pi_e: [V.pi_e.obs[i]], de: [V.de.obs[i]],
+                   icbr_agr_usd: [V.icbr_agr_usd.obs[i]],
+                   icbr_met_usd: [V.icbr_met_usd.obs[i]] };
+      const partes = [];
+      const got = ctx._simCaminhoInfl(EQI.mediana, i, 1, e1, partes)[0];
+      pior.cheio = Math.max(pior.cheio, Math.abs(got - alvo));
+      EQI.ordem_grupos.forEach((g) => {
+        pior[g] = Math.max(pior[g], Math.abs(partes[0].grupos[g] - EQI.ajuste[g][i]));
+      });
+      n += 1;
+    });
+    ok(n > 60, 'ha trimestres bastantes para comparar as duas pontas da (I)', String(n));
+    Object.keys(pior).forEach((k) => {
+      ok(pior[k] < 1e-5,
+         '(' + k + ') o JS reproduz o ajuste de um passo que o Python fez do painel',
+         'pior diferenca ' + pior[k].toExponential(2));
+    });
+    const err = EQI.ajuste.cheio
+      .map((v, i) => (v == null || EQI.y[i] == null) ? null : v - EQI.y[i])
+      .filter((v) => v != null);
+    const rmse = Math.sqrt(err.reduce((a, b) => a + b * b, 0) / err.length);
+    ok(rmse > 0.3 && rmse < 1.2,
+       'e esse ajuste explica o IPCA do trimestre de verdade -- na ordem do estimado',
+       'RMSE ' + rmse.toFixed(3) + ' p.p.');
+    ok(ctx._simPassoTri(3).tri === parseInt(D.sim.rot[3].slice(5), 10)
+       && ctx._simPassoTri(D.sim.rot.length + 5).tri >= 1,
+       'o trimestre do ano que decide a sazonal sai da contagem, dentro e fora da grade');
+  }
+
+  // A conta DENTRO da janela, que o gabarito de um passo nao alcanca: la toda defasagem
+  // vem do observado. Tres propriedades em 400 trimestres, cada uma com a forma fechada.
+  {
+    const ZH = 400, EXP = 4.0, fill = (v) => new Array(ZH).fill(v);
+    const V = D.sim.var, i0 = SIM.i0;
+    const entR = { hiato: fill(0), pi_e: fill(EXP), de: fill(V.de.obs[i0 - 1]),
+                   icbr_agr_usd: fill(V.icbr_agr_usd.obs[i0 - 1]),
+                   icbr_met_usd: fill(V.icbr_met_usd.obs[i0 - 1]) };
+    const md = EQI.mediana, w = EQI.pesos_fim;
+    const base = [];
+    ctx._simCaminhoInfl(md, i0, ZH, entR, base);
+    const media4 = (ps, f) => ps.slice(-4).reduce((a, p) => a + f(p), 0) / 4;
+    // 1. sem choque, a media do ano de cada grupo converge para a expectativa: a
+    // restricao soma 1 e as quatro sazonais somam zero
+    EQI.ordem_grupos.forEach((g) => {
+      const m = media4(base, (p) => p.grupos[g]);
+      ok(Math.abs(m - EXP / 4) < 1e-6,
+         g + ': sem choque, a media do ano converge para a expectativa do trimestre',
+         m.toFixed(8) + ' contra ' + (EXP / 4).toFixed(8));
+    });
+    const mc = media4(base, (p) => p.cheio);
+    ok(Math.abs(mc - EXP / 4) < 1e-6, 'e o cheio tambem', mc.toFixed(8));
+    // 2. um hiato de 1 p.p. para sempre soma ao cheio a forma fechada, com a indexacao
+    // dos monitorados devolvendo parte dele ao proprio cheio
+    const pe = (g) => { const sp = EQI.grupos[g];
+      return 1 - md[g + '.' + sp.inercia]
+        - sp.restritos.reduce((a, rt) => a + md[g + '.' + rt[0]], 0); };
+    const b = (g, fonte) => { const r = EQI.grupos[g].regs.filter((x) => x[1] === fonte)[0];
+      return r ? md[g + '.' + r[0]] : 0; };
+    const im1 = md['IM.im1'], im2 = md['IM.im2'];
+    const mult = (1 - im1) / (1 - im1 - im2 * w.IM);
+    const comH = [];
+    ctx._simCaminhoInfl(md, i0, ZH, Object.assign({}, entR, { hiato: fill(1) }), comH);
+    const lpH = mult * ['IS', 'IA', 'II'].reduce((a, g) => a + w[g] * b(g, 'hiato') / pe(g), 0);
+    const efH = media4(comH, (p) => p.cheio) - mc;
+    ok(Math.abs(efH - lpH) < 1e-6,
+       'um hiato de 1 p.p. para sempre soma ao cheio exatamente a forma fechada',
+       efH.toFixed(6) + ' contra ' + lpH.toFixed(6));
+    // 3. uma depreciacao de 1%, uma vez so, chega ao nivel do IPCA na forma fechada --
+    // o que prova o cambio medio DENTRO da janela: a metade do trimestre do choque e a
+    // metade do seguinte, e a defasagem de bens industriais sobre as duas
+    const comF = [];
+    ctx._simCaminhoInfl(md, i0, ZH, Object.assign({}, entR, {
+      de: entR.de.map((v) => v * Math.exp(0.01)) }), comF);
+    let acum = 0;
+    for (let k = 0; k < ZH; k++) acum += comF[k].cheio - base[k].cheio;
+    const lpF = mult * (w.IA * b('IA', 'de_med') / pe('IA')
+                        + w.II * b('II', 'de_med_l1') / pe('II'));
+    ok(Math.abs(acum - lpF) < 1e-6,
+       'e uma depreciacao de 1% chega ao nivel do IPCA exatamente na forma fechada',
+       acum.toFixed(6) + '% contra ' + lpF.toFixed(6) + '%');
+    ok(comF[0].cheio > base[0].cheio && Math.abs(comF[0].grupos.II - base[0].grupos.II) < 1e-12,
+       'e no trimestre do choque so a alimentacao se mexe -- industriais vem depois');
+  }
+
+  // O LACO. O cenario padrao resolvido no Python viaja no payload; o navegador tem de
+  // resolver o mesmo, porque as duas pontas da conta que junta as cinco sao escritas duas
+  // vezes, e nenhum gabarito de equacao alcanca essa conta.
+  {
+    const sp = D.sim.sistema_padrao;
+    ok(!!sp && sp.voltas >= 2 && sp.voltas < 40,
+       'o payload traz o cenario padrao resolvido do lado do Python, em poucas voltas',
+       String(sp && sp.voltas));
+    restaura();
+    ctx.renderSim();
+    const U = SIM._ultimo;
+    let pior = 0;
+    D.sim.eq_ordem.forEach((ek) => {
+      const v = D.sim.eq[ek].explica;
+      sp.caminho[v].forEach((x, i) => { pior = Math.max(pior, Math.abs(x - U.ent[v][i])); });
+    });
+    ok(pior < 1e-7, 'e o navegador resolve o MESMO laco: os cinco caminhos batem com o Python',
+       'pior ' + pior.toExponential(2));
+    ok(Math.abs(U.voltas - sp.voltas) <= 1, 'nas mesmas voltas, a menos de uma',
+       U.voltas + ' contra ' + sp.voltas);
+    D.sim.eq_ordem.forEach((ek) => {
+      const v = D.sim.eq[ek].explica;
+      const novo = ctx._simRoda(ek, SIM.coef[ek], SIM.i0, SIM.h, U.ent);
+      const d = Math.max.apply(null, novo.map((x, i) => Math.abs(x - U.ent[v][i])));
+      ok(d < 1e-9, '(' + ek + ') rodada sobre o laco resolvido, devolve o proprio caminho',
+         d.toExponential(2));
+    });
+    // Uma passada so -- a corrente de antes -- deixaria alguem lendo um caminho velho.
+    const uma = {};
+    Object.keys(U.base).forEach((k) => { uma[k] = U.base[k].slice(); });
+    D.sim.eq_ordem.forEach((ek) => {
+      uma[D.sim.eq[ek].explica] = ctx._simRoda(ek, SIM.coef[ek], SIM.i0, SIM.h, uma);
+    });
+    const difUma = Math.max.apply(null, D.sim.eq_ordem.map((ek) => {
+      const v = D.sim.eq[ek].explica;
+      return Math.max.apply(null, uma[v].map((x, i) => Math.abs(x - U.ent[v][i])));
+    }));
+    ok(difUma > 1e-3, 'e uma passada so NAO bastaria: ela erra o resolvido de verdade',
+       difUma.toFixed(4));
+    ok(U.naoConvergiu === 0, 'todos os desenhos da faixa convergiram',
+       String(U.naoConvergiu));
+    ok(D.sim.eq_ordem.every((ek) => {
+      const e = D.sim.eq[ek];
+      const n = { E: U.exp, R: { nEq: U.nEqR }, H: U.is, I: U.infl, F: U.fx }[ek].nEq;
+      return n === 5;
+    }), 'com as cinco ligadas, toda faixa carrega a incerteza das cinco');
+  }
+
+  // Os elos que ENTRAM na (I), e o que sai dela. Cada um medido contra a mesma rodada com
+  // aquela variavel parada, e com o sinal que a equacao diz.
+  {
+    const fim12 = () => SIM._ultimo.infl.i12[SIM.h - 1];
+    restaura();
+    SIM.fonte.hiato = 'observado';
+    ctx.renderSim();
+    const hObs = fim12();
+    SIM.fonte.hiato = 'digitado';
+    SIM.cx.hiato = ctx.simObs('hiato', SIM.i0, D.sim.h_max).map((v) => v + 1);
+    ctx.renderSim();
+    ok(fim12() > hObs, 'mais hiato, mais inflacao: o produto chega aos precos',
+       hObs.toFixed(3) + ' -> ' + fim12().toFixed(3));
+    restaura();
+    SIM.fonte.de = 'observado';
+    ctx.renderSim();
+    const dObs = fim12();
+    SIM.fonte.de = 'digitado';
+    SIM.cx.de = ctx.simObs('de', SIM.i0, D.sim.h_max).map((v) => v * 1.1);
+    ctx.renderSim();
+    ok(fim12() > dObs, 'e um real 10% mais fraco, mais inflacao: o cambio chega aos precos',
+       dObs.toFixed(3) + ' -> ' + fim12().toFixed(3));
+    // e o que sai da (I) volta: desligar a curva de Phillips muda a Selic
+    restaura();
+    ctx.renderSim();
+    const selCom = SIM._ultimo.cam[SIM.h - 1], expCom = SIM._ultimo.exp.cam[SIM.h - 1];
+    SIM.fonte.infl_br = 'observado';
+    ctx.renderSim();
+    ok(Math.abs(SIM._ultimo.cam[SIM.h - 1] - selCom) > 1e-3
+       && Math.abs(SIM._ultimo.exp.cam[SIM.h - 1] - expCom) > 1e-3,
+       'e a inflacao volta: com a curva de Phillips desligada a expectativa e a Selic mudam',
+       'Selic ' + selCom.toFixed(3) + ' -> ' + SIM._ultimo.cam[SIM.h - 1].toFixed(3));
+    ok(SIM._ultimo.infl.faixa === null && SIM._ultimo.exp.nEq === 1,
+       'e o laco abre: sem a (I), a faixa da expectativa volta a ser so a dela',
+       String(SIM._ultimo.exp.nEq));
+    const av = document.getElementById('simAviso-I');
+    ok(av.style.display !== 'none' && /curva de Phillips está desligada/.test(av.innerHTML)
+       && /laço fica aberto/.test(av.innerHTML),
+       'e o cartao da (I) diz que ela esta desligada e que o laco abriu',
+       av.innerHTML.slice(0, 90));
+    restaura();
+  }
+
+  // A ficha e o cartao.
+  {
+    restaura();
+    ctx.renderSim();
+    const U = SIM._ultimo;
+    const tI = document.getElementById('simEqTitulo-I').textContent;
+    ok(/\(I\)/.test(tI) && /a inflação do Brasil no trimestre/.test(tI),
+       'o titulo diz de que equacao ele e e o que ela explica', tI);
+    const fI = document.getElementById('simEqSub-I').innerHTML;
+    ok(/quatro equações por dentro/.test(fI), 'a ficha diz que sao quatro grupos por dentro');
+    ok(fI.indexOf(ctx.fmt(EQI.mediana['IS.is2'], 3)) >= 0,
+       'e imprime o peso do hiato em servicos, da mediana');
+    ok(fI.indexOf(ctx.fmt(Math.abs(U.infl.sens)) + ' p.p. '
+                  + (U.infl.sens > 0 ? 'mais alto' : 'mais baixo')) >= 0,
+       'e a sensibilidade ao hiato, com a direcao por extenso', String(U.infl.sens));
+    ok(U.infl.eloH != null && U.infl.eloF != null
+       && fI.indexOf(ctx.fmt(Math.abs(U.infl.eloF))) >= 0,
+       'e os dois elos que entram nela, medidos no cenario');
+    ok(/serviços <b>/.test(fI) && /monitorados <b>/.test(fI),
+       'e o fim do horizonte em doze meses, grupo a grupo, pelo nome que se le numa frase');
+    ok(/vira um laço/.test(fI), 'e diz que o modelo deixou de ser uma corrente');
+    ok(/variação do câmbio médio do trimestre/.test(fI),
+       'e nomeia a conta do cambio que ela faz, em vez de fingir que le o cartao');
+    const htmlI = document.getElementById('simInputs').innerHTML;
+    const caixasI = htmlI.match(/<input[^>]*data-chave="infl_br"[^>]*>/g) || [];
+    ok(caixasI.length === SIM.h && caixasI.every((c) => /sim-caixa-in eqp/.test(c)),
+       'em Endogeno as caixas da inflacao mostram o que a equacao produz, em azul');
+    ok(/vem da equação \(I\)/.test(htmlI),
+       'e o selo do cartao diz que ela vem da (I), nesta rodada');
+  }
+
+  // O grafico da (I), no contrato da casa: em DOZE MESES, com a meta ao lado.
+  {
+    restaura();
+    ctx.renderSim();
+    const U = SIM._ultimo;
+    ok(!!PLOT['ch-simipca'], 'o grafico da (I) e pintado');
+    ok(PLOT['ch-simipca'].layout.yaxis.title === ctx.EIXO_SIMIPCA
+       && /12 meses/.test(ctx.EIXO_SIMIPCA),
+       'o eixo diz que e o IPCA de doze meses', ctx.EIXO_SIMIPCA);
+    const trI = PLOT['ch-simipca'].traces;
+    const simT = trI.filter((t) => /equação produz, 12 meses/.test(t.name || ''))[0];
+    const i12 = ctx._simI12(SIM.i0, SIM.h, U.ent.infl_br);
+    ok(!!simT && simT.y.slice(1).every((v, i) => Math.abs(v - i12[i]) < 1e-9),
+       'a linha simulada e o caminho do laco composto em doze meses, trimestre a trimestre');
+    ok(simT && Math.abs(simT.y[0] - EQI.i12_obs[SIM.i0 - 1]) < 1e-9,
+       'e parte do ultimo IPCA de 12 meses observado');
+    ok(trI.some((t) => /cinco equações/.test(t.name || '')),
+       'a faixa diz que carrega as cinco');
+    const f = U.infl.faixa;
+    ok(f.lo.every((v, i) => v <= f.hi[i])
+       && (f.hi[SIM.h - 1] - f.lo[SIM.h - 1]) > (f.hi[0] - f.lo[0]),
+       'e ela alarga com o horizonte');
+    ok(trI.filter((t) => t.line && t.line.dash === 'dot').length === 2,
+       'a meta e desenhada, observada e projetada');
+    const frI = document.getElementById('ch-simipca').parentNode._chFrame;
+    ok(frI.title.textContent.length > 4, 'ch-simipca: tem titulo');
+    ok(frI.sub.textContent.length > 8, 'ch-simipca: tem subtitulo derivado');
+    ok(frI.src.textContent.indexOf('Fonte:') === 0, 'ch-simipca: e linha de fonte');
+    ok(Array.isArray(PLOT['ch-simipca'].layout.shapes),
+       'ch-simipca: as formas sao passadas SEMPRE');
+    const kidsI = Array.prototype.slice.call(
+      document.getElementById('ch-simipca').parentNode.children);
+    let iBarI = -1;
+    kidsI.forEach((c, j) => { if (c._cls().includes('range-pills')) iBarI = j; });
+    ok(iBarI > kidsI.indexOf(document.getElementById('ch-simipca')),
+       'ch-simipca: a regua de tempo vem depois do grafico');
+    const rI = RELAYOUTS.filter((x) => x.div === 'ch-simipca' && x.upd['xaxis.range']);
+    ok(rI.length > 0, 'o grafico da (I) recebeu uma janela calculada, nao autorange');
+  }
+
+  // A aba se chama Structural Model: ela e o modelo agregado, as cinco juntas.
+  ok(/data-tab="tab-sim"[^>]*>Structural Model</.test(CRU),
+     'a aba do simulador se chama Structural Model');
+  ok(!/data-tab="tab-sim"[^>]*>Simulador</.test(CRU), 'e o nome antigo saiu da barra');
+}
+
+// ── §30 ───────────────────────────────────────────────────────────────────────
+// A aba Impulso-resposta. Cada asserção existe por um defeito que sai plausível:
+//  - o residuo novo e codigo novo nas cinco recursoes do JS, e nenhum gabarito de um
+//    passo nem o `sistema_padrao` o alcancam -- dai o gabarito proprio, do Python;
+//  - a faixa medida contra o cenario da MEDIANA (e nao o do mesmo desenho) mediria a
+//    distancia entre dois cenarios de pesos, e nao o choque;
+//  - um eixo de trimestres sem `type` explicito vira milissegundos.
+secao('30. Impulso-resposta: um choque, e o caminho dele pelas cinco');
+if (!D.irf) {
+  ok(false, 'o payload traz o bloco do impulso-resposta');
+} else {
+  const IR = D.irf, i0 = D.sim.i0, h = IR.h;
+  ok(h === 20, 'o horizonte e de 20 trimestres, decisao do usuario', String(h));
+  const res = IR.alvos.filter((a) => a.tipo === 'residuo').map((a) => a.key);
+  ok(res.join(',') === 'res:H,res:IS,res:IA,res:II,res:IM,res:E,res:R,res:F',
+     'os alvos com equacao: um residuo por equacao, quatro na (I), na ordem de solucao',
+     res.join(','));
+  const exo = D.sim.var_ordem.filter((k) => D.sim.var[k].tipo !== 'endogena');
+  const cam = IR.alvos.filter((a) => a.tipo === 'caminho').map((a) => a.key);
+  ok(exo.join(',') === cam.join(','), 'e TODA exogena pode receber o choque', cam.join(','));
+  ok(IR.alvos.filter((a) => a.modo === 'pct').map((a) => a.var).sort().join(',')
+       === 'dxy_em,icbr_agr_usd,icbr_met_usd,icbr_usd,sp500',
+     'nos indices o choque e em % do nivel, e so neles');
+
+  // Os mesmos pesos da mediana nas duas pontas.
+  const cm = {};
+  D.sim.eq_ordem.forEach((ek) => { cm[ek] = ctx._simCoefPadrao(ek); });
+  const base = ctx._irfEstado(cm, i0, h, ctx._irfEntradas(i0, h), null);
+
+  // O gabarito: cinco choques resolvidos no Python, cada tipo de alvo e cada forma.
+  let pior = 0, onde = '';
+  IR.gabarito.forEach((g) => {
+    const r = ctx.irfResposta(cm, ctx.irfAlvo(g.alvo), g.choque, i0, h, base);
+    const cmp = (a, b, nm) => a.forEach((x, k) => {
+      const d = Math.abs(x - b[k]);
+      if (!(d <= pior)) { pior = d; onde = g.alvo + ' ' + nm + '[' + k + ']'; }
+    });
+    ['hiato', 'infl', 'infl12', 'pi_e', 'selic', 'de'].forEach((nm) => cmp(r[nm], g.resp[nm], nm));
+    Object.keys(g.resp.grupos).forEach((q) => {
+      cmp(r.grupos[q], g.resp.grupos[q], q);
+      cmp(r.grupos12[q], g.resp.grupos12[q], q + '12');
+    });
+  });
+  ok(IR.gabarito.length === 5 && pior < 1e-6,
+     'as respostas do JS batem com as do Python nos cinco choques do gabarito',
+     'pior ' + pior.toExponential(2) + ' em ' + onde);
+  ok(IR.gabarito.some((g) => Math.max(...g.resp.selic.map(Math.abs)) > 0.1),
+     'e o gabarito nao e de respostas nulas');
+
+  // Choque zero, resposta zero -- em todo alvo.
+  let piorZ = 0;
+  IR.alvos.forEach((a) => {
+    const r = ctx.irfResposta(cm, a, { tipo: 'decai', v: 0, n: 1, rho: 0.5 }, i0, h, base);
+    ['hiato', 'infl', 'pi_e', 'selic', 'de'].forEach((nm) => r[nm].forEach((x) => {
+      piorZ = Math.max(piorZ, Math.abs(x));
+    }));
+  });
+  ok(piorZ < 1e-8, 'um choque de tamanho zero nao move nada, em nenhum alvo',
+     piorZ.toExponential(2));
+
+  // No impacto, um choque no residuo move a variavel pelo tamanho dele -- a menos do
+  // que o proprio trimestre devolve pelo laco, que e pequeno.
+  const rR = ctx.irfResposta(cm, ctx.irfAlvo('res:R'), { tipo: 'decai', v: 1, rho: 0 }, i0, h, base);
+  ok(Math.abs(rR.selic[0] - 1) < 0.05, 'um residuo de 1 p.p. na regra move a Selic ~1 p.p. no impacto',
+     ctx.fmt(rR.selic[0], 4));
+  ok(rR.selic[1] > 0.5, 'e a suavizacao da regra o carrega para o trimestre seguinte',
+     ctx.fmt(rR.selic[1], 4));
+  ok(Math.abs(rR.hiato[0]) < 1e-9 && rR.hiato[1] < 0,
+     'o hiato nao se move no impacto -- a (H) le a Selic de um trimestre antes -- e cai depois',
+     ctx.fmt(rR.hiato[0], 6) + ' / ' + ctx.fmt(rR.hiato[1], 4));
+  const rA = ctx.irfResposta(cm, ctx.irfAlvo('res:IA'), { tipo: 'decai', v: 1, rho: 0 }, i0, h, base);
+  ok(Math.abs(rA.grupos.IA[0] - 1) < 0.02,
+     'um residuo de 1 p.p. em alimentacao move alimentacao ~1 p.p. no impacto',
+     ctx.fmt(rA.grupos.IA[0], 4));
+  {
+    const w = ctx._simPesosEm(i0);
+    const soma = Object.keys(rA.grupos).reduce((s, g) => s + w[g] * rA.grupos[g][0], 0);
+    ok(Math.abs(soma - rA.infl[0]) < 1e-9,
+       'e a resposta do IPCA e a soma ponderada da dos quatro grupos',
+       ctx.fmt(soma, 6) + ' contra ' + ctx.fmt(rA.infl[0], 6));
+  }
+  ok(rA.grupos.IA[1] > 0 && rA.grupos.IA[1] < rA.grupos.IA[0],
+     'e a inercia de alimentacao carrega parte dele para o trimestre seguinte');
+
+  // Um residuo permanente acumula pela persistencia da propria equacao: sem as outras
+  // equacoes (todas desligadas menos a da Selic), a forma fechada e 1/(1 - t1 - t2).
+  {
+    const eqR = D.sim.eq.R, md = eqR.mediana, N = 400;
+    const ent = ctx._irfEntradas(i0, N), lig = {};
+    D.sim.eq_ordem.forEach((ek) => { lig[ek] = ek === 'R'; });
+    const perm = ctx._simPerfilChoque({ tipo: 'rampa', v: 1, n: 1 }, N);
+    const a = ctx._simResolver(cm, i0, N, ent, lig).ent.selic;
+    const b = ctx._simResolver(cm, i0, N, ent, lig, null, { R: perm }).ent.selic;
+    const lp = 1 / (1 - md.t1 - md.t2);
+    ok(Math.abs((b[N - 1] - a[N - 1]) - lp) < 1e-6,
+       'um residuo permanente na regra, sozinha, vale 1/(1 - t1 - t2) no longo prazo',
+       ctx.fmt(b[N - 1] - a[N - 1], 4) + ' contra ' + ctx.fmt(lp, 4));
+  }
+
+  // Exogena: o choque troca o caminho, e em % do nivel nos indices.
+  {
+    const ent = ctx._irfEntradas(i0, h);
+    const s = ctx._irfAplicar(ctx.irfAlvo('sp500'), { tipo: 'rampa', v: -10, n: 1 }, h, ent);
+    ok(s.choque === null && s.ent.sp500.every((x, k) => Math.abs(x - 0.9 * ent.sp500[k]) < 1e-9),
+       'um choque de -10% no S&P e o caminho segurado vezes 0,9, sem residuo nenhum');
+    const f = ctx._irfAplicar(ctx.irfAlvo('ffr'), { tipo: 'rampa', v: 1, n: 1 }, h, ent);
+    ok(f.ent.ffr.every((x, k) => Math.abs(x - ent.ffr[k] - 1) < 1e-12) && ent.ffr !== f.ent.ffr,
+       'num juro o choque soma, e o caminho do cenario padrao fica intacto');
+  }
+
+  // A tela.
+  ok(/data-tab="tab-irf"[^>]*>Impulso-resposta</.test(CRU), 'a aba existe e se chama Impulso-resposta');
+  ok(!PLOT['ch-irf-selic'], 'os graficos nao sao pintados enquanto a aba esta fechada');
+  const t0 = Date.now();
+  ctx.activateTab('tab-irf');
+  const ms = Date.now() - t0;
+  console.log('        (pintura com a faixa: ' + ms + ' ms)');
+  const divs = ['ch-irf-hiato', 'ch-irf-infl', 'ch-irf-pie', 'ch-irf-selic', 'ch-irf-de',
+                'ch-irf-g-IS', 'ch-irf-g-IA', 'ch-irf-g-II', 'ch-irf-g-IM'];
+  ok(divs.every((d) => PLOT[d]), 'os nove graficos plotam: as cinco endogenas e os quatro grupos',
+     divs.filter((d) => !PLOT[d]).join(','));
+  ok(ctx.IRF._ult.naoConvergiu === 0, 'todos os conjuntos de pesos convergem no choque padrao',
+     String(ctx.IRF._ult.naoConvergiu));
+  divs.forEach((d) => {
+    const P = PLOT[d];
+    if (!P) return;
+    const xa = P.layout.xaxis;
+    ok(xa.type === 'linear' && xa.range[0] === 0.5 && xa.range[1] === h + 0.5,
+       d + ': eixo de trimestres linear, com janela calculada', xa.type + ' ' + xa.range);
+    const fr = document.getElementById(d).parentNode._chFrame;
+    ok(fr && fr.title.textContent.length > 3 && fr.src.textContent.indexOf('Fonte:') === 0
+         && fr.src.textContent.indexOf(D.sim.rot.length ? ctx._simRotIdx(i0) : '') > 0,
+       d + ': cabecalho de tres linhas, com a janela do choque');
+    ok(fr.sub.textContent.indexOf(P.layout.yaxis.title) >= 0
+         && fr.sub.textContent.indexOf('choque em') >= 0,
+       d + ': o subtitulo diz o choque e a MESMA unidade do eixo', fr.sub.textContent);
+    const med = P.traces[2].y, lo = P.traces[1].y, hi = P.traces[0].y;
+    ok(med.length === h && lo.every((x, k) => x <= hi[k] + 1e-12),
+       d + ': mediana e faixa com ' + h + ' trimestres, a faixa bem ordenada');
+  });
+  ok(PLOT['ch-irf-selic'].traces[2].y.every((x, k) =>
+       Math.abs(x - ctx.IRF._ult.med.selic[k]) < 1e-12),
+     'o grafico da Selic desenha a resposta calculada');
+  ok(ctx.IRF.alvo === IR.padrao.alvo && ctx.IRF.chq[IR.padrao.alvo].rho === IR.padrao.rho,
+     'a aba abre no choque padrao do payload');
+
+  // A faixa e medida contra o cenario do MESMO desenho: com o choque zero ela fecha em zero.
+  {
+    ctx.IRF.chq[ctx.IRF.alvo].v = 0;
+    const r0 = ctx.irfCalcular();
+    const larg = Math.max(...Object.keys(r0.faixa).map((nm) =>
+      Math.max(...r0.faixa[nm].hi.map((x, k) => Math.abs(x) + Math.abs(r0.faixa[nm].lo[k])))));
+    ok(larg < 1e-6, 'com choque zero a faixa inteira e zero -- base e choque com os mesmos pesos',
+       larg.toExponential(2));
+    ctx.IRF.chq[ctx.IRF.alvo].v = IR.padrao.v;
+    ctx.renderIrf();
+  }
+
+  // O seletor de inflacao troca os graficos de inflacao, e so eles.
+  const selAntes = PLOT['ch-irf-selic'].traces[2].y.slice();
+  document.getElementById('irfPill12').dispatch('click');
+  ok(PLOT['ch-irf-infl'].traces[2].y.every((x, k) => Math.abs(x - ctx.IRF._ult.med.infl12[k]) < 1e-12)
+       && /12 meses/.test(document.getElementById('ch-irf-infl').parentNode._chFrame.title.textContent),
+     'em 12 meses o grafico do IPCA desenha o acumulado, e o titulo diz');
+  ok(PLOT['ch-irf-g-IS'].traces[2].y.every((x, k) =>
+       Math.abs(x - ctx.IRF._ult.med['g12:IS'][k]) < 1e-12),
+     'e os quatro grupos tambem');
+  ok(PLOT['ch-irf-selic'].traces[2].y.every((x, k) => x === selAntes[k]),
+     'e a Selic nao muda');
+  document.getElementById('irfPillTri').dispatch('click');
+
+  // Trocar o alvo pela barra recalcula, e o subtitulo passa a nomear o novo.
+  const bar = document.getElementById('irfBar');
+  bar.dispatch('change', { target: { getAttribute: () => 'alvo', value: 'ffr' } });
+  ok(ctx.IRF.alvo === 'ffr' && ctx.IRF._ult.alvo.key === 'ffr', 'trocar o alvo recalcula');
+  ok(document.getElementById('ch-irf-de').parentNode._chFrame.sub.textContent
+       .indexOf(D.sim.var.ffr.nome_frase) >= 0,
+     'e o subtitulo passa a nomear o choque novo');
+  ok(ctx.IRF._ult.med.de[h - 1] > 0,
+     'Fed Funds mais alto desvaloriza o real (o carry encolhe)', ctx.fmt(ctx.IRF._ult.med.de[h - 1], 3));
+
+  // O aviso do residuo permanente: so onde ele vale, com o numero derivado.
+  bar.dispatch('change', { target: { getAttribute: () => 'alvo', value: 'res:R' } });
+  bar.dispatch('change', { target: { getAttribute: () => 'tipo', value: 'rampa' } });
+  const av = document.getElementById('irfAviso');
+  const mR = 1 / (1 - D.sim.eq.R.mediana.t1 - D.sim.eq.R.mediana.t2);
+  ok(av.style.display !== 'none' && av.innerHTML.indexOf(ctx.fmt(mR, 1) + ' vezes') >= 0,
+     'um residuo permanente na regra avisa quanto ele acumula, derivado dos pesos', av.innerHTML);
+  bar.dispatch('change', { target: { getAttribute: () => 'tipo', value: 'decai' } });
+  ok(av.style.display === 'none', 'e o aviso some com o decaimento');
+  bar.dispatch('change', { target: { getAttribute: () => 'rho', value: '1,5' } });
+  ok(ctx.IRF.chq['res:R'].rho === 1, 'a sobra e limitada a 1, e a virgula e lida');
+  bar.dispatch('change', { target: { getAttribute: () => 'rho', value: String(IR.padrao.rho) } });
 }
 
 // ── Fim ───────────────────────────────────────────────────────────────────────

@@ -82,6 +82,77 @@ Object.defineProperty(El.prototype, 'innerHTML', {
 const ESTADOS_OK = ['bcb_ptc', 'bcb_credit_note', 'bcb_icbr', 'bcb_focus', 'bcb_fiscal_statistics',
                     'bcb_external_sector_note', 'bcb_ibcbr', 'bcb_ptc', 'bcb_rpm', 'cftc_cot'];
 
+// O payload embutido, para o stub saber que tabelas cada grupo alimenta.
+const RD = (function () {
+  const m = SRC.match(/const REPORT_DATA = (.*);\s*\n/);
+  if (!m) { console.error('REPORT_DATA nao encontrado no <script>'); process.exit(1); }
+  return JSON.parse(m[1]);
+})();
+
+/* Fatos por tabela no shape de domain/release_calendar/sync.py::fatos_por_tabela().
+   Desde 2026-09-24 o /api/status devolve FATOS (quando cada tabela foi buscada, se o
+   dado mudou) e a pagina os compara com o momento de cada divulgacao -- nao ha mais
+   veredito por grupo. `estados` diz, por GRUPO, o que as tabelas dele devem produzir:
+
+     ok        buscadas no fim de HOJE, com dado novo    -> 'atualizado ... com dado novo'
+     late      buscadas pela ultima vez em janeiro        -> laranja
+     semnovo   buscadas no fim de HOJE, dado parado desde janeiro
+     parcial   so a PRIMEIRA tabela do grupo mudou        -> '1 de N com dado novo'
+     falhou    ultima tentativa falhou, ultima busca boa em janeiro
+     inicio    buscadas no fim de HOJE pela PRIMEIRA vez (`desde` = hoje): nao se
+               sabe se o dado chegou antes, entao nao pode dizer "sem dado novo"
+     misto     a PRIMEIRA tabela buscada no fim de HOJE, as outras em janeiro
+     semscript nenhum script alimenta as tabelas
+     {objeto}  os campos dados sao aplicados como estao, em toda tabela do grupo
+
+   Tabela com `vintage` no banco (as de edicao) vem com coluna 'vintage'.
+
+   Todo estado com registro, menos `inicio`, registra desde janeiro.
+
+   Grupo fora da lista fica sem registro nenhum. */
+function fatosStub(estados, HOJE) {
+  const fim = HOJE + 'T23:59:00', jan = '2026-01-01T00:00:00';
+  const porGrupo = {};
+  RD.entries.forEach((e) => { porGrupo[e.group] = e.tables || []; });
+  const out = {};
+  Object.keys(porGrupo).forEach((g) => porGrupo[g].forEach((tb) => {
+    out[tb] = out[tb] || { existe: true, coluna: VINTAGE.has(tb) ? 'vintage' : 'date',
+                           max: '2026-08-01', linhas: 10,
+                           sem_script: false, tentativa_em: null, ok: null, erro: null,
+                           ok_em: null, mudou_em: null, desde: null };
+  }));
+  Object.keys(estados).forEach((g) => (porGrupo[g] || []).forEach((tb, i) => {
+    const s = estados[g], f = out[tb];
+    if (s === 'ok') Object.assign(f, { ok: true, tentativa_em: fim, ok_em: fim, mudou_em: fim, desde: jan });
+    else if (s === 'late') Object.assign(f, { ok: true, tentativa_em: jan, ok_em: jan, mudou_em: jan, desde: jan });
+    else if (s === 'semnovo') Object.assign(f, { ok: true, tentativa_em: fim, ok_em: fim, mudou_em: jan, desde: jan });
+    else if (s === 'parcial') Object.assign(f, { ok: true, tentativa_em: fim, ok_em: fim,
+                                                 mudou_em: i === 0 ? fim : jan, desde: jan });
+    else if (s === 'falhou') Object.assign(f, { ok: false, tentativa_em: fim, ok_em: jan, mudou_em: jan,
+                                                desde: jan, erro: 'HTTPError: 503' });
+    else if (s === 'inicio') Object.assign(f, { ok: true, tentativa_em: fim, ok_em: fim, mudou_em: null,
+                                                desde: fim });
+    else if (s === 'misto') Object.assign(f, { ok: true, tentativa_em: i === 0 ? fim : jan,
+                                               ok_em: i === 0 ? fim : jan, mudou_em: jan, desde: jan });
+    else if (s === 'semscript') f.sem_script = true;
+    else if (s && typeof s === 'object') Object.assign(f, s);
+  }));
+  return out;
+}
+const VINTAGE = new Set(['pm_hiato_produto', 'pm_hiato_produto_vintages', 'pm_copom_projecoes',
+                         'cred_fluxo_financeiro', 'mt_desocupacao_retro']);
+
+// Os estados do cenario principal. Um grupo por estado, e todos com linha passada em
+// 2026-08-17 -- senao a asserção correspondente nao teria o que olhar.
+const ESTADOS_RODAR = (() => {
+  const g = {};
+  ESTADOS_OK.forEach((k) => { g[k] = 'ok'; });
+  Object.assign(g, { ibge_pmc: 'late', bls_jolts: 'semnovo', bls_cpi: 'parcial',
+                     bls_prod: 'falhou', ibge_pnad_trimestral: 'semscript',
+                     bls_empsit: 'inicio', bea_pce: 'misto' });
+  return g;          // bcb_copom, bea_pce...: sem registro
+})();
+
 // Payload de /api/dashboards. Mesmo shape de domain/dashboards/status.py::estado() --
 // se aquele mudar de forma, este stub e que denuncia.
 const DASHBOARDS_STUB = [
@@ -213,11 +284,8 @@ function rodar(MODE, HOJE, AGORA) {
       return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, modo: 'servido', hoje: HOJE, agora: AGORA }) });
     }
     if (url === '/api/status') {
-      const grupos = { ibge_pmc: { estado: 'atrasado', tabelas: [] },
-                       bcb_copom_ata: { estado: 'vazio', tabelas: [] },
-                       bcb_copom: { estado: 'indefinido', tabelas: [] } };
-      ESTADOS_OK.forEach((g) => { grupos[g] = { estado: 'ok', tabelas: [] }; });
-      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, hoje: HOJE, agora: AGORA, grupos }) });
+      const tabelas = fatosStub(ESTADOS_RODAR, HOJE);
+      return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, hoje: HOJE, agora: AGORA, tabelas }) });
     }
     if (url === '/api/run') {
       return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, n_ok: 1, n_erro: 0, sem_script: [] }) });
@@ -326,8 +394,12 @@ function rodar(MODE, HOJE, AGORA) {
       // O que ja saiu recua; o que esta ATRASADO nao recua, porque e a unica linha da
       // pagina que pede acao. Os dois lados precisam ser afirmados: so o primeiro
       // passaria num mutante que apaga a linha laranja junto.
-      const jaSaiu = padrao.filter((c) => c.innerHTML.indexOf('upd-ok') >= 0 ||
-                                          c.innerHTML.indexOf('sem tabela') >= 0);
+      // "Ja saiu" deixou de ter marca propria (o check verde saiu em 2026-09-24, e o
+      // botao ficou em todo estado), entao e definido pelo que NAO e: nem futura, nem
+      // laranja. Vale nos dois modos -- no de arquivo toda linha passada e neutra.
+      const jaSaiu = padrao.filter((c) => c.innerHTML.indexOf('col-update') >= 0 &&
+                                          c.innerHTML.indexOf('upd-none">—') < 0 &&
+                                          c.innerHTML.indexOf('upd-btn late') < 0);
       const futuras0 = padrao.filter((c) => c.innerHTML.indexOf('upd-none">\u2014') >= 0);
       check('divulgacao que ja saiu fica em cinza',
             jaSaiu.length > 0 &&
@@ -404,18 +476,25 @@ function rodar(MODE, HOJE, AGORA) {
               atrasadas.every((c) => (c.className || '').indexOf('done') < 0),
               atrasadas.length + ' | ' + atrasadas.map((c) => c.className).join('|'));
       }
-      check('cabecalho de mes com colspan=7',
-            mes.length > 0 && mes.every((h) => h.indexOf('colspan="7"') >= 0));
+      // 6 colunas desde que a de tabelas saiu da linha fechada (2026-09-24)
+      check('cabecalho de mes com colspan=6',
+            mes.length > 0 && mes.every((h) => h.indexOf('colspan="6"') >= 0));
+      check('a linha fechada nao lista as tabelas',
+            linhas.every((h) => h.indexOf('col-tables') < 0));
       check('exatamente 1 celula col-update por linha',
             linhas.every((h) => (h.match(/col-update/g) || []).length === 1));
 
       const futuras = linhas.filter((h) => h.indexOf('upd-none">—') >= 0);
       const botoes = linhas.filter((h) => h.indexOf('upd-btn') >= 0);
-      const checks = linhas.filter((h) => h.indexOf('upd-ok') >= 0);
       const semTab = linhas.filter((h) => h.indexOf('sem tabela') >= 0);
-      check('toda linha classificada em exatamente um estado',
-            futuras.length + botoes.length + checks.length + semTab.length === linhas.length,
-            `${futuras.length}+${botoes.length}+${checks.length}+${semTab.length} != ${linhas.length}`);
+      // O pedido de 2026-09-24: o botao nunca some por causa de um veredito. Toda linha
+      // que ja saiu e alimenta alguma tabela tem botao -- entao as tres classes cobrem
+      // tudo, e nenhuma quarta ("em dia, sem botao") existe mais.
+      check('toda linha e futura, sem tabela ou tem botao -- nada mais',
+            futuras.length + botoes.length + semTab.length === linhas.length,
+            `${futuras.length}+${botoes.length}+${semTab.length} != ${linhas.length}`);
+      check('nenhuma linha troca o botao por um check',
+            linhas.every((h) => h.indexOf('em dia') < 0));
       check('divulgacao futura nao oferece botao', futuras.length > 0 && botoes.length < linhas.length);
 
       const ata = linhas.filter((h) => h.indexOf('Copom') >= 0 && h.indexOf('Ata') >= 0);
@@ -424,11 +503,75 @@ function rodar(MODE, HOJE, AGORA) {
 
       const pmc = linhas.filter((h) => h.indexOf('13/08/2026') >= 0 && h.indexOf('Comércio') >= 0);
 
+      // ── cada linha e um clique-abre com as tabelas que ela alimenta ─────────
+      const trPmc = getEl('table-body').children.filter(
+        (c) => c.innerHTML.indexOf('13/08/2026') >= 0 && c.innerHTML.indexOf('Comércio') >= 0);
+      check('a linha carrega a chave do clique-abre',
+            trPmc.length === 1 && trPmc[0].dataset.entry === 'ibge_pmc|2026-08-13' &&
+            (trPmc[0].className || '').indexOf('entry-row') >= 0,
+            trPmc[0] && (trPmc[0].className + ' | ' + trPmc[0].dataset.entry));
+      check('e vem fechada, com o caret de abrir',
+            trPmc.length === 1 && trPmc[0].innerHTML.indexOf('row-caret">+') >= 0);
+      const linhaAlvo = { dataset: { entry: 'ibge_pmc|2026-08-13' } };
+      cliqueSeletivo(getEl('table-body'),
+                     { 'button.upd-btn': null, '[data-week]': null, '[data-entry]': linhaAlvo });
+      const kids = getEl('table-body').children;
+      const iPmc = kids.findIndex((c) => c.dataset && c.dataset.entry === 'ibge_pmc|2026-08-13');
+      const det = kids[iPmc + 1];
+      check('clicar abre a lista LOGO ABAIXO da linha',
+            iPmc >= 0 && det && (det.className || '') === 'entry-detail', det && det.className);
+      check('a lista nomeia a tabela que a divulgacao alimenta',
+            det && det.innerHTML.indexOf('det-tab">atv_pmc') >= 0, det && det.innerHTML.slice(0, 200));
+      check('a linha aberta nao recua para o cinza, e o caret vira fechar',
+            (kids[iPmc].className || '').indexOf('done') < 0 &&
+            (kids[iPmc].className || '').indexOf('open') >= 0 &&
+            kids[iPmc].innerHTML.indexOf('row-caret">−') >= 0, kids[iPmc].className);
+      check('so a linha clicada abre',
+            kids.filter((c) => (c.className || '') === 'entry-detail').length === 1);
+      if (MODE === 'file') {
+        check('sem servidor a lista diz por que nao ha fatos',
+              det && det.innerHTML.indexOf('det-hint') >= 0 &&
+              det.innerHTML.indexOf('det-fato') < 0, det && det.innerHTML.slice(0, 260));
+      } else {
+        check('servido, cada tabela diz o que o banco tem e quando foi buscada',
+              det && det.innerHTML.indexOf('dado mais recente 01/08/2026') >= 0 &&
+              det.innerHTML.indexOf('buscada 01/01 00:00, antes de sair') >= 0,
+              det && det.innerHTML.slice(0, 300));
+      }
+      if (MODE === 'served') {
+        // Numa tabela com `vintage` o "mais recente" e a EDICAO: o `date` dela e o
+        // periodo projetado, e diria 2029 em 2026.
+        const rpm = { dataset: { entry: 'bcb_rpm|2026-06-25' } };
+        cliqueSeletivo(getEl('table-body'), { 'button.upd-btn': null, '[data-week]': null, '[data-entry]': rpm });
+        const k2 = getEl('table-body').children;
+        const iR = k2.findIndex((c) => c.dataset && c.dataset.entry === 'bcb_rpm|2026-06-25');
+        const detR = iR >= 0 ? k2[iR + 1] : null;
+        const itemHiato = detR ? (detR.innerHTML.match(/det-tab">pm_hiato_produto<\/span>(.*?)<\/li>/) || [])[1] : null;
+        check('a tabela de edicao diz "edicao mais recente", nao "dado mais recente"',
+              !!itemHiato && itemHiato.indexOf('edição mais recente') >= 0 &&
+              itemHiato.indexOf('dado mais recente') < 0, itemHiato);
+        cliqueSeletivo(getEl('table-body'), { 'button.upd-btn': null, '[data-week]': null, '[data-entry]': rpm });
+      }
+      // O clique no BOTAO nao abre nem fecha a linha: o listener sai antes. So no modo
+      // arquivo, onde o clique copia o comando -- no servido ele postaria um /api/run e
+      // mudaria a contagem que a asserção do fim deste cenario faz.
+      if (MODE === 'file') {
+        cliqueSeletivo(getEl('table-body'),
+                       { 'button.upd-btn': Object.assign(new El('button'), { dataset: { group: 'ibge_pmc' } }),
+                         '[data-week]': null, '[data-entry]': { dataset: { entry: 'ibge_pmc|2026-08-13' } } });
+        check('clicar no botao nao fecha nem abre a linha',
+              getEl('table-body').children.filter((c) => (c.className || '') === 'entry-detail').length === 1);
+      }
+      cliqueSeletivo(getEl('table-body'),
+                     { 'button.upd-btn': null, '[data-week]': null, '[data-entry]': linhaAlvo });
+      check('clicar de novo fecha',
+            getEl('table-body').children.filter((c) => (c.className || '') === 'entry-detail').length === 0);
+
       if (MODE === 'file') {
         check('so pingou, nao pediu status', calls.some((c) => c.url === '/api/ping') &&
               !calls.some((c) => c.url === '/api/status'));
         check('botao rotulado "Copiar cmd"', botoes.every((h) => h.indexOf('Copiar cmd') >= 0));
-        check('nenhum check verde sem servidor', checks.length === 0);
+        check('nenhum fato sem servidor', linhas.every((h) => h.indexOf('upd-fato') < 0));
         check('nenhum botao laranja sem servidor', !botoes.some((h) => h.indexOf('upd-btn late') >= 0));
         check('hint anuncia modo arquivo', getEl('mode-hint').innerHTML.indexOf('modo arquivo') >= 0);
         console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
@@ -438,10 +581,56 @@ function rodar(MODE, HOJE, AGORA) {
 
       check('pediu /api/status', calls.some((c) => c.url === '/api/status'));
       check('botao rotulado "Atualizar"', botoes.every((h) => h.indexOf('Atualizar') >= 0));
-      check('grupo atrasado -> botao laranja',
+      check('saiu depois da ultima busca -> botao laranja',
             pmc.length === 1 && pmc[0].indexOf('upd-btn late') >= 0, pmc[0]);
-      check('grupo em dia -> check verde e nenhum botao',
-            checks.length > 0 && checks.every((h) => h.indexOf('upd-btn') < 0));
+      check('  e o fato diz que nao foi atualizado desde entao, e quando foi o ultimo',
+            pmc.length === 1 && pmc[0].indexOf('upd-fato late">não atualizado desde a divulgação · último 01/01 00:00') >= 0,
+            pmc[0] && pmc[0].slice(-400));
+
+      // Um estado por grupo (ver ESTADOS_RODAR). O que importa em cada um: o fato certo
+      // na linha E o botao continuando la.
+      const doGrupo = (g) => linhas.filter((h) => h.indexOf('data-group="' + g + '"') >= 0 &&
+                                                   h.indexOf('upd-none">—') < 0);
+      const temTodos = (g, frag, cls) => {
+        const ls = doGrupo(g);
+        return ls.length > 0 && ls.every((h) => h.indexOf(frag) >= 0 &&
+                                                h.indexOf('upd-btn ' + cls) >= 0);
+      };
+      check('buscado depois e com dado novo -> "atualizado ... com dado novo", botao neutro',
+            temTodos('bcb_focus', 'upd-fato">atualizado 17/08 23:59 · com dado novo', 'neutral'),
+            doGrupo('bcb_focus')[0] && doGrupo('bcb_focus')[0].slice(-300));
+      check('so parte das tabelas mudou -> diz quantas',
+            temTodos('bls_cpi', '1 de 2 com dado novo', 'neutral'),
+            doGrupo('bls_cpi')[0] && doGrupo('bls_cpi')[0].slice(-300));
+      check('buscado depois e NADA mudou -> aviso dourado, nao laranja',
+            temTodos('bls_jolts', 'upd-fato warn">atualizado 17/08 23:59 · sem dado novo desde a divulgação', 'neutral'),
+            doGrupo('bls_jolts')[0] && doGrupo('bls_jolts')[0].slice(-300));
+      check('ultima tentativa falhou -> laranja E o nome da tabela que falhou',
+            temTodos('bls_prod', 'última tentativa falhou: mt_produtividade', 'late'),
+            doGrupo('bls_prod')[0] && doGrupo('bls_prod')[0].slice(-300));
+      // O primeiro dia de registro: buscado agora, e o dado do release ja estava no banco
+      // -- chegou antes de existir quem anotasse. "Sem dado novo" ali seria falso.
+      check('primeiro registro depois da divulgacao -> so "atualizado", sem afirmar nada do dado',
+            temTodos('bls_empsit', 'upd-fato">atualizado 17/08 23:59</span>', 'neutral') &&
+            doGrupo('bls_empsit').every((h) => h.indexOf('sem dado novo') < 0),
+            doGrupo('bls_empsit')[0] && doGrupo('bls_empsit')[0].slice(-300));
+      // A linha diz "atualizado" a partir da busca MAIS ANTIGA entre as tabelas dela:
+      // uma tabela buscada hoje nao cobre a outra, buscada em janeiro.
+      check('uma tabela buscada depois nao cobre a outra, buscada antes -> laranja',
+            temTodos('bea_pce', 'último 01/01 00:00', 'late'),
+            doGrupo('bea_pce')[0] && doGrupo('bea_pce')[0].slice(-300));
+      check('sem registro -> diz isso, sem laranja',
+            temTodos('bcb_copom', 'sem registro de atualização', 'neutral'),
+            doGrupo('bcb_copom')[0] && doGrupo('bcb_copom')[0].slice(-300));
+      check('sem script -> diz isso, sem laranja',
+            temTodos('ibge_pnad_trimestral', 'nenhum script alimenta estas tabelas', 'neutral'),
+            doGrupo('ibge_pnad_trimestral')[0] && doGrupo('ibge_pnad_trimestral')[0].slice(-300));
+      // o "atualizado" e contra o momento DESTA divulgacao: uma linha de agosto com a
+      // tabela buscada em janeiro e laranja mesmo com a de maio do mesmo grupo tambem
+      // sendo -- as duas sairam depois de janeiro.
+      check('toda linha passada de um grupo buscado em janeiro e laranja',
+            doGrupo('ibge_pmc').length >= 1 &&
+            doGrupo('ibge_pmc').every((h) => h.indexOf('upd-btn late') >= 0));
       check('hint anuncia servido', getEl('mode-hint').innerHTML.indexOf('servido') >= 0);
 
       // dispara o clique delegado de verdade
@@ -547,7 +736,7 @@ async function testeHorario() {
       if (url === '/api/status')
         return Promise.resolve({ ok: true, json: () => Promise.resolve(
           { ok: true, hoje: '2026-08-20', agora,
-            grupos: { bcb_ptc: { estado: 'atrasado', tabelas: [] } } }) });
+            tabelas: fatosStub({ bcb_ptc: 'late' }, '2026-08-20') }) });
       if (url === '/api/dashboards')
         return Promise.resolve({ ok: true, json: () => Promise.resolve(
           { ok: true, agora, dashboards: DASHBOARDS_STUB }) });
@@ -564,6 +753,37 @@ async function testeHorario() {
     check(`${agora}: ${esperaBotao ? 'botao' : 'sem botao'}`, temBotao === esperaBotao,
           `temBotao=${temBotao}`);
     if (agora === '09:00') check('  a hora aparece na coluna de data', mostraHora, linha[0].slice(0, 120));
+  }
+
+  // O momento da divulgacao inclui a HORA: uma busca as 09:00 do dia de uma divulgacao
+  // das 14:30 foi feita antes de o dado existir, e a linha tem de continuar laranja.
+  {
+    const els = {};
+    const getEl = (id) => (els[id] = els[id] || new El('div'));
+    global.document = mkDoc(getEl);
+    global.window = { isSecureContext: false };
+    global.navigator = {};
+    const manha = { ok: true, tentativa_em: '2026-08-20T09:00:00', ok_em: '2026-08-20T09:00:00',
+                    mudou_em: '2026-08-20T09:00:00', desde: '2026-01-01T00:00:00' };
+    global.fetch = (url) => {
+      if (url === '/api/ping')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, modo: 'servido', hoje: '2026-08-20', agora: '16:00' }) });
+      if (url === '/api/status')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, hoje: '2026-08-20', agora: '16:00',
+            tabelas: fatosStub({ bcb_ptc: manha }, '2026-08-20') }) });
+      if (url === '/api/dashboards')
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { ok: true, agora: '16:00', dashboards: DASHBOARDS_STUB }) });
+      return Promise.reject(new Error('inesperado ' + url));
+    };
+    new Function(SRC)();
+    await new Promise((r) => setTimeout(r, 40));
+    const linha = getEl('table-body').children.map((c) => c.innerHTML)
+      .filter((h) => h && h.indexOf('20/08/2026') >= 0 && h.indexOf('PTC') >= 0);
+    check('buscada as 09:00 do dia de uma divulgacao das 14:30 -> ainda laranja',
+          linha.length === 1 && linha[0].indexOf('upd-btn late') >= 0, linha[0] && linha[0].slice(-300));
   }
   console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
   falhasTotais += falhas;
@@ -652,33 +872,27 @@ async function testeStatusDashboard(MODE) {
   check('renderizou cards de dashboard', cards.indexOf('dash-card') >= 0);
   check('mostra o caminho do arquivo gerado', cards.indexOf('reports/') >= 0);
 
-  // ── a prosa do card e para quem NUNCA viu o dashboard ─────────────────────
-  // Pedido explicito do usuario (2026-09-01), sobre um print: as notas tinham virado
-  // transcricao da nossa conversa -- decisoes ("Desde 2026-08-31"), nomes de funcao e
-  // de arquivo do repositorio, e medicoes nossas ("Segundos nao medidos"). O texto tem
-  // de explicar o que esta acontecendo ALI. O teste roda contra o payload REAL, entao
-  // ele cobre o que esta escrito no manifest.yaml, nao so o que o template monta.
-  // So no MODE=file: la os cards vem do payload REAL embutido, entao a asserção cobre o
-  // que esta escrito no manifest.yaml. No MODE=served as notas sao stubs curtos.
-  if (MODE === 'file') {
-    const PROSA = (cards.match(
-      /<div class="(?:dash-note|proc-note|proc-hint)">([\s\S]*?)<\/div>/g) || [])
-      .map((b) => b.replace(/<[^>]*>/g, ''));
-    check('cada card com nota rende um bloco de prosa', PROSA.length >= 5, PROSA.length);
-    const JARGAO = ['generate_report', 'manifest.yaml', 'procedures', 'granularidade',
-                    'mtime', 'artefato', 'ETL', 'serve.py', 'run(', 'MySQL', 'YAML',
-                    'Desde 2026', 'não medidos', 'corte de informação'];
-    const vazamentos = [];
-    PROSA.forEach((t) => JARGAO.forEach((j) => {
-      if (t.indexOf(j) >= 0) vazamentos.push(j + ' -> ' + t.slice(0, 60));
-    }));
-    check('a prosa nao carrega jargao do repositorio nem data de decisao',
-          vazamentos.length === 0, vazamentos.join(' | '));
-    // ... e nao e vazia de conteudo: cada nota tem de dizer algo sobre o dashboard.
-    check('cada bloco de prosa tem pelo menos uma frase de verdade',
-          PROSA.every((t) => t.trim().length > 60),
-          JSON.stringify(PROSA.map((t) => t.length)));
-  }
+  // ── o card e a tabela de quatro colunas, e so ────────────────────────────
+  // Pedido do usuario (2026-09-24), sobre o card de Politica Monetaria: "O padrao deve
+  // ser Onde mora, Dependencia, Papel no dashboard, Ultimo dado". Sairam a nota do
+  // dashboard, o bloco dos passos de recalculo, as sublinhas de cada dependencia e a
+  // quinta coluna de sinais. Roda nos dois modos: no MODE=file o payload e o real, entao
+  // cobre o que o manifest.yaml tem hoje (as notas continuam la, so nao sao impressas).
+  const CABECALHOS = (cards.match(/<thead>[\s\S]*?<\/thead>/g) || [])
+    .map((h) => (h.match(/<th>([^<]*)<\/th>/g) || []).map((t) => t.replace(/<\/?th>/g, '')));
+  check('toda tabela de dependencias tem exatamente as quatro colunas',
+        CABECALHOS.length >= 2 && CABECALHOS.every((c) =>
+          c.join('|') === 'Onde mora|Dependência|Papel no dashboard|Último dado'),
+        JSON.stringify(CABECALHOS[0]));
+  check('nenhuma linha tem quinta celula',
+        (cards.match(/<tr>(?:(?!<\/tr>)[\s\S])*<\/tr>/g) || [])
+          .filter((tr) => tr.indexOf('<td') >= 0)
+          .every((tr) => (tr.match(/<td/g) || []).length === 4));
+  check('o card nao imprime mais a nota, os passos nem as sublinhas',
+        cards.indexOf('proc-box') < 0 && cards.indexOf('dep-sub') < 0 &&
+        cards.indexOf('class="dash-note"') < 0 &&
+        cards.indexOf('O que este dashboard prepara por conta própria') < 0 &&
+        cards.indexOf('refeito pelo Regerar') < 0 && cards.indexOf('atualizar: <code>') < 0);
 
   check('toda dependencia declara onde mora',
         (cards.match(/src-badge/g) || []).length >= 2,
@@ -704,8 +918,9 @@ async function testeStatusDashboard(MODE) {
           cards.indexOf('no relatório:') >= 0);
     check('veredito desatualizado vira pill stale', cards.indexOf('verdict stale') >= 0);
     check('veredito em dia vira pill ok', cards.indexOf('verdict ok') >= 0);
-    check('CSV fora do MySQL mostra como atualizar',
-          cards.indexOf('fetch_bcb.py') >= 0);
+    // O comando de atualizar saiu com as sublinhas: o Papel no dashboard basta.
+    check('CSV fora do MySQL nao imprime comando',
+          cards.indexOf('fetch_bcb.py') < 0);
     check('card resume dependencias e custo de regerar',
           cards.indexOf('~30s para regerar') >= 0 && cards.indexOf('fora do MySQL') >= 0);
 
@@ -889,64 +1104,23 @@ async function testeStatusDashboard(MODE) {
           (posGerar.match(/dep-flag new/g) || []).length === 0,
           (posGerar.match(/dep-flag new/g) || []).length);
 
-    // ── bloco de procedimentos: LEITURA, sem botao proprio ────────────────
+    // ── passos de recalculo: sem bloco, so o efeito ───────────────────────
     // Sao dois botoes no sistema e so dois (pedido do usuario, 2026-08-31): Atualizar
-    // para a base, Regerar para o dashboard. Um terceiro botao por procedimento existiu
-    // por horas e deixou o processo confuso -- se voltar, cai aqui.
-    check('o bloco de procedimentos nao tem botao proprio',
+    // para a base, Regerar para o dashboard. O bloco que descrevia cada passo saiu em
+    // 2026-09-24; o que ficou e o que muda para quem clica -- o tempo do botao e o aviso
+    // de que ha calculo atras dos dados.
+    check('nao ha botao de procedimento',
           posGerar.indexOf('proc-btn') < 0 && posGerar.indexOf('>Rodar<') < 0);
-    check('card renderiza o bloco de procedimentos', posGerar.indexOf('proc-box') >= 0);
-    // O cabecalho e a nota do bloco sao para quem nunca viu o dashboard: dizem o que
-    // aqueles itens SAO, nao o que combinamos sobre eles.
-    check('o cabecalho do bloco nomeia o que o bloco contem',
-          posGerar.indexOf('O que este dashboard prepara por conta própria') >= 0);
-    check('o bloco explica por que um numero velho cabe num arquivo novo',
-          posGerar.indexOf('proc-hint') >= 0 &&
-          posGerar.indexOf('preparados pelo próprio dashboard') >= 0 &&
-          posGerar.indexOf('fica velho mesmo que o arquivo seja novo') >= 0);
-    // Um passo pode ser CALCULO (o modelo) ou BUSCA (o fetch do IPCA no BCB), e o texto
-    // do bloco vale para os dois: chamar tudo de "cálculo" mentiria no card da inflacao.
-    check('o bloco nao chama todo passo de calculo',
-          posGerar.indexOf('resultados de cálculo') < 0 &&
-          posGerar.indexOf('refazendo o cálculo') < 0);
-    check('procedimento aparece com o rotulo declarado',
-          posGerar.indexOf('Previsão + backtest') >= 0 &&
-          posGerar.indexOf('Painéis trimestrais') >= 0);
-    check('procedimento diz onde o resultado fica',
-          posGerar.indexOf('guarda o resultado em 1 arquivo: previsao.json') >= 0);
-    check('procedimento atrasado diz que vai ser refeito, com corte e fonte',
-          posGerar.indexOf('atrás dos dados: usou o que havia até') >= 0 &&
-          posGerar.indexOf('2026-08-25') >= 0 && posGerar.indexOf('2026-08-28') >= 0 &&
-          posGerar.indexOf('3 dias depois') >= 0 &&
-          posGerar.indexOf('o Regerar refaz') >= 0);
-    check('linha do procedimento atrasado ganha a classe late',
-          posGerar.indexOf('proc-row late') >= 0);
-    // A granularidade e o que da a cada passo a frequencia dele -- e o que impede a
-    // estimacao trimestral de ser refeita a cada boletim diario.
-    // ... e mostra a CONSEQUENCIA dela (de quanto em quanto tempo fica velho), nao a
-    // palavra "granularidade", que nao diz nada a quem abre a pagina.
-    check('cada passo mostra de quanto em quanto tempo fica velho',
-          posGerar.indexOf('fica velho quando abre um trimestre novo') >= 0 &&
-          posGerar.indexOf('fica velho quando o dado anda, dia a dia') >= 0);
+    check('o passo atrasado vira aviso na linha de cima do card',
+          posGerar.indexOf('1</strong> cálculo próprio atrás dos dados — o Regerar refaz') >= 0);
     check('a palavra "granularidade" nao aparece na pagina renderizada',
           posGerar.indexOf('granularidade') < 0);
-    check('o passo trimestral em dia NAO e marcado para refazer',
-          posGerar.indexOf('em dia: usou os dados até') >= 0);
     // O tempo anunciado tem de ser o do CLIQUE: geracao + o que vai ser recalculado.
     // 13s de build + 110s da previsao = 123s; os 90s do painel NAO entram.
     check('o tempo do botao soma a geracao e so o recalculo atrasado',
           posGerar.indexOf('~123s para regerar') >= 0 &&
           posGerar.indexOf('13s + 110s de rec') >= 0,
           posGerar.indexOf('para regerar') >= 0 ? 'sem os 123s' : 'sem a frase');
-    check('o cabecalho do bloco soma os segundos do recalculo',
-          posGerar.indexOf('+110s') >= 0);
-    // A dependencia aponta para o Regerar, nao para um comando a copiar.
-    check('dep com procedimento diz que o Regerar cuida dela',
-          posGerar.indexOf('refeito pelo Regerar') >= 0 &&
-          posGerar.indexOf('from x import salvar') < 0);
-    // ... e onde NAO ha procedimento, o texto continua sendo a resposta honesta.
-    check('dep sem procedimento mantem o comando em texto',
-          posGerar.indexOf('fetch_bcb.py') >= 0);
 
     // ── Regerar num dashboard COM metrica atrasada ────────────────────────
     const btnUS = new El('button');
@@ -969,30 +1143,20 @@ async function testeStatusDashboard(MODE) {
     check('o passo em dia nao entra na mensagem',
           posUS.indexOf('Painéis trimestrais (') < 0);
     check('depois do Regerar nada fica atrasado',
-          posUS.indexOf('proc-row late') < 0);
-    check('e o corte do passo refeito alcancou a fonte',
-          posUS.indexOf('em dia: usou os dados até <strong>2026-08-28') >= 0);
+          posUS.indexOf('cálculo próprio atrás') < 0);
   } else {
-    // Modo arquivo: o payload embutido e o real, e o piloto de `procedures` esta nele.
-    check('payload embutido traz o bloco de procedimentos do piloto',
-          cards.indexOf('proc-box') >= 0);
+    // Modo arquivo: o payload embutido e o real.
     check('no modo arquivo tambem nao ha botao de procedimento',
           cards.indexOf('proc-btn') < 0);
-    check('e o bloco diz o que aqueles itens sao',
-          cards.indexOf('O que este dashboard prepara por conta própria') >= 0);
     // A inflacao teve um passo entre 2026-09-01 e 2026-09-11, e ele era um FETCH: buscava no
     // SGS uma copia de `inflc_agregados`, tabela que o update_db.py ja mantinha. Foi apagado
-    // junto com o CSV, e a asserção agora cobra o INVERSO -- que aquele relatorio nao tenha
-    // passo nenhum. Um passo que volte a existir ali e um insumo que o botao Atualizar deixou
-    // de alcancar, que foi exatamente o defeito.
+    // junto com o CSV, e a asserção cobra o INVERSO -- que aquele relatorio nao tenha passo
+    // nenhum. Um passo que volte a existir ali e um insumo que o botao Atualizar deixou de
+    // alcancar, que foi exatamente o defeito.
+    const inflBR = (global.__CAL ? global.__CAL.DASH.rows : [])
+      .filter((r) => r.key === 'brasil_inflation')[0];
     check('a inflacao nao tem passo: todo insumo dela vem do banco',
-          cards.indexOf('Séries agregadas do IPCA (Banco Central)') < 0);
-    // E o bloco de passos que sobra e de estimacao de modelo, com granularidade trimestral --
-    // calculo de verdade, que nenhuma tabela substitui.
-    check('o payload real traz os passos do modelo de politica monetaria',
-          cards.indexOf('Painéis trimestrais') >= 0);
-    check('e eles sao trimestrais, nao mensais',
-          cards.indexOf('fica velho quando abre um trimestre novo') >= 0);
+          !global.__CAL || (inflBR && !(inflBR.procedimentos || []).length));
 
     // ── lote no modo arquivo: copia um comando por dashboard pendente ───────
     // O retrato embutido carrega veredito, entao aqui a fila E conhecida (ao contrario
@@ -1249,12 +1413,12 @@ async function testeLoteDivulgacoes() {
 
   // ESTADOS_OK primeiro, atrasados DEPOIS: `bcb_icbr` esta na lista de "ok" e aqui
   // precisa estar atrasado, senao a ordem o sobrescreve.
-  const grupos = () => {
+  const fatos = () => {
     const g = {};
-    ESTADOS_OK.forEach((k) => { g[k] = { estado: 'ok', tabelas: [] }; });
-    g.ibge_pmc = { estado: rodados > 0 ? 'ok' : 'atrasado', tabelas: [] };
-    g.bcb_icbr = { estado: 'atrasado', tabelas: [] };   // 4 divulgacoes passadas
-    return g;
+    ESTADOS_OK.forEach((k) => { g[k] = 'ok'; });
+    g.ibge_pmc = rodados > 0 ? 'ok' : 'late';
+    g.bcb_icbr = 'late';   // 4 divulgacoes passadas
+    return fatosStub(g, '2026-08-17');
   };
 
   global.document = mkDoc(getEl);
@@ -1266,7 +1430,7 @@ async function testeLoteDivulgacoes() {
         { ok: true, modo: 'servido', hoje: '2026-08-17', agora: '23:59' }) });
     if (url === '/api/status')
       return Promise.resolve({ ok: true, json: () => Promise.resolve(
-        { ok: true, hoje: '2026-08-17', agora: '23:59', grupos: grupos() }) });
+        { ok: true, hoje: '2026-08-17', agora: '23:59', tabelas: fatos() }) });
     if (url === '/api/dashboards')
       return Promise.resolve({ ok: true, json: () => Promise.resolve(
         { ok: true, agora: '23:59', dashboards: [] }) });
@@ -1334,7 +1498,8 @@ async function testeLoteDivulgacoes() {
   const linhas = getEl('table-body').children.map((c) => c.innerHTML).filter(Boolean);
   const pmc = linhas.filter((h) => h.indexOf('13/08/2026') >= 0 && h.indexOf('Comércio') >= 0);
   check('a tabela reflete o grupo que rodou, sem recarregar',
-        pmc.length === 1 && pmc[0].indexOf('upd-ok') >= 0, pmc[0] && pmc[0].slice(0, 160));
+        pmc.length === 1 && pmc[0].indexOf('upd-fato">atualizado') >= 0 &&
+        pmc[0].indexOf('upd-btn late') < 0, pmc[0] && pmc[0].slice(-300));
   check('e o que falhou continua oferecendo botao',
         depois.indexOf('Atualizar pendentes (1)') >= 0, depois.slice(0, 200));
 
@@ -1353,6 +1518,23 @@ async function testeLoteDivulgacoes() {
   check('e nomeia qual e',
         estreito.indexOf('Commodities') >= 0 || estreito.indexOf('IC-Br') >= 0,
         estreito.slice(0, 260));
+  check('num mes so de futuras, "nenhuma pendente" e verdade e sai verde',
+        estreito.indexOf('✓ nenhuma divulgação pendente') >= 0, estreito.slice(0, 200));
+
+  // ── "nenhuma pendente" so quando se sabe ────────────────────────────────
+  // No IBGE deste cenario nada esta laranja (a PMC ja rodou), mas a PNAD trimestral
+  // nunca teve execucao registrada. O check verde ali afirmaria o que ninguem sabe.
+  global.__CAL.state.month = 'Tudo';
+  global.__CAL.state.institution = 'IBGE';
+  global.__CAL.renderAll();
+  const ibge = getEl('bulk-releases').innerHTML;
+  check('com grupo sem registro no recorte, NAO diz "nenhuma pendente" em verde',
+        ibge.indexOf('✓') < 0 && ibge.indexOf('bulk-run-btn') < 0, ibge.slice(0, 200));
+  // 1, e nao 2: a PMC tambem ja saiu no recorte, mas ela TEM registro -- a conta e so
+  // de quem nao tem.
+  check('e diz quantos estao sem registro -- so os sem registro',
+        ibge.indexOf('nenhuma divulgação laranja no recorte · 1 sem registro de atualização ainda') >= 0,
+        ibge.slice(0, 200));
 
   console.log(falhas ? `  -> ${falhas} falha(s)` : '  -> ok');
   falhasTotais += falhas;

@@ -89,7 +89,7 @@ import pandas as pd
 import yaml
 from statsmodels.tsa.seasonal import STL
 
-from analytics.brasil.monetary_policy.modelo_painel import (
+from analytics.brasil.monetary_policy.dados import (
     focus_anual,
     q,
     serie,
@@ -308,11 +308,17 @@ def _reuniao_label(d: dt.date) -> str:
 def todas_reunioes() -> list[dict]:
     """Toda reuniao conhecida, do banco e do calendario, deduplicada pela DATA.
 
-    As duas fontes sao necessarias e nenhuma basta. `pm_copom_reuniao` tem a historia
-    inteira com o passo de Selic decidido, mas so entra depois que o ETL roda -- a 281a
-    (16/09/2026) ja aconteceu e ainda nao esta la. O calendario tem as datas futuras e as
-    do ano corrente, e nenhum passo. A uniao da a janela; o passo fica `None` onde so o
+    As fontes sao necessarias e nenhuma basta. `pm_copom_reuniao` tem a historia inteira
+    com o passo de Selic decidido, mas so entra depois que o ETL roda -- a 281a
+    (16/09/2026) ja tinha acontecido e ainda nao estava la. O calendario do sistema tem as
+    datas do ano corrente e o numero da reuniao, e nenhum passo. `pm_copom_calendario` tem
+    o que o BC ja marcou ALEM do ano corrente (as oito de 2027 desde meados de 2026), que o
+    calendario de um ano nao recebe. A uniao da a janela; o passo fica `None` onde so um
     calendario alcanca, que e uma coluna sem decisao na tela e nao um zero inventado.
+
+    Uma reuniao remarcada que so uma das fontes registrou apareceria duas vezes -- e o ano
+    passaria a ter nove, o que `condicionais.posicoes()` recusa em vez de deslocar as
+    posicoes em silencio.
     """
     por_data: dict[dt.date, dict] = {}
     try:
@@ -327,6 +333,16 @@ def todas_reunioes() -> list[dict]:
                 "decisao": r.decisao,
                 "selic": None if pd.isna(r.selic_decidida) else float(r.selic_decidida),
             }
+    except Exception:
+        pass
+    try:
+        d = q("macro_brasil", "SELECT date, date_start FROM pm_copom_calendario ORDER BY date")
+        for r in d.itertuples():
+            data = pd.Timestamp(r.date).date()
+            x = por_data.setdefault(data, {"date": data, "numero": None, "bps": None,
+                                           "decisao": None, "selic": None})
+            if x.get("date_start") is None and pd.notna(r.date_start):
+                x["date_start"] = pd.Timestamp(r.date_start).date()
     except Exception:
         pass
 
@@ -561,14 +577,21 @@ def us_juro_real(anos: int) -> pd.Series:
     return (n - ea).dropna()
 
 
-def icbr_mm() -> pd.Series:
-    """IC-Br em variacao percentual mensal.
+def icbr_aa() -> pd.Series:
+    """IC-Br em variacao percentual contra o mesmo mes do ano anterior.
 
-    A versao anterior desta aba levava o IC-Br em NIVEL de indice, o que obrigava a
-    tratar o delta como variacao percentual (`modo='pct'`). Aqui a propria linha ja e a
-    variacao, entao o delta e em p.p. e a serie fala a mesma lingua do resto do bloco.
+    Era a variacao MENSAL ate 2026-09-24, e o usuario pediu a anual. A mensal do IC-Br e
+    ruidosa demais para ler numa matriz de reunioes -- em 2026 ela foi de -2,2% a +3,6% em
+    tres meses seguidos --, e o que chega a inflacao daqui e o movimento acumulado, nao o do
+    mes. Continua sendo a propria linha que ja e variacao, entao o delta entre reunioes e em
+    p.p. e a serie fala a mesma lingua do IPCA 12m e do IBC-Br 12m do mesmo painel.
+
+    O `asfreq` antes do `shift(12)` e o que faz o deslocamento ser de DOZE MESES e nao de
+    doze linhas: hoje a serie nao tem buraco (344 meses em 344), mas um mes faltando
+    passaria a comparar com treze meses antes sem levantar nada.
     """
-    return _mensal("icbr_geral", tabela="comm_icbr").pct_change() * 100.0
+    s = _mensal("icbr_geral", tabela="comm_icbr").asfreq("M")
+    return ((s / s.shift(12) - 1.0) * 100.0).dropna()
 
 
 def _focus_tri_ipca() -> pd.DataFrame:
@@ -910,12 +933,12 @@ def _spec(ctx):
                   "0,26 p.p. em média e 1,37 p.p. no pior mês (nov/2008, quando a "
                   "liquidez dos TIPS colapsou). O que se ganha em troca é as duas linhas "
                   "desta seção dizerem a mesma coisa."),
-        dict(key="icbr", bloco="Condições Externas", label="IC-BR (%, m/m)",
+        dict(key="icbr", bloco="Condições Externas", label="IC-BR (%, Y/Y)",
              unidade="%", sinal=+1, grupo="bcb_icbr", casas=2,
-             fn=icbr_mm,
-             nota="Índice de Commodities Brasil, variação no mês. Em reais — então ele "
-                  "carrega câmbio junto com o preço da commodity, que é exatamente o "
-                  "canal pelo qual entra na inflação daqui."),
+             fn=icbr_aa,
+             nota="Índice de Commodities Brasil, variação contra o mesmo mês do ano "
+                  "anterior. Em reais — então ele carrega câmbio junto com o preço da "
+                  "commodity, que é exatamente o canal pelo qual entra na inflação daqui."),
         dict(key="brent", bloco="Condições Externas", label="Brent",
              unidade="US$/bbl", sinal=+1, grupo=None, casas=2, modo="pct",
              fn=lambda: serie("macro_international", "comm_brent", "brent_usd"),

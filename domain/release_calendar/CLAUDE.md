@@ -68,11 +68,19 @@ Five verdicts: `OK`, `ATRASADO`, `SEM EXPECTATIVA` (covered by a group, but no p
 with a datable period — the report says which of the three causes), `SEM CALENDARIO`,
 `SEM DIVULGACAO`.
 
-Three consumers read the computation instead of reimplementing it: `status_por_grupo()` (one verdict per
-calendar group — worst verdict among its tables — which drives the update button in
-[`analytics/release_calendar/`](../../analytics/release_calendar/CLAUDE.md)), `grupos_atrasados()`
-(`{grupo: [tabelas]}`, for a future `--due` mode), and `continuas()` (the daily set, for
-`jobs/update_db.py --continuous`).
+Consumers read the computation instead of reimplementing it: `status_por_grupo()` (one verdict per
+calendar group — worst verdict among its tables; **since 2026-09-24 only the CLI uses it**),
+`grupos_atrasados()` (`{grupo: [tabelas]}`, for a future `--due` mode), and `continuas()` (the daily
+set, for `jobs/update_db.py --continuous`).
+
+**The update button no longer reads a verdict from here.** `fatos_por_tabela()` returns FACTS per
+table — what the database holds now (`vintage` where the table has one) plus when the ETL last
+fetched it and whether the data changed, from `domain/db/execucoes.py` — and the page compares them
+with each release's own moment. The deduction above erred both ways on the same day (Copom green
+without the 281st meeting; Focus orange because `expc_focus` sits in the RPM group and the
+`release_minus_days: 3` override was applied to the RPM's date), and a wrong "em dia" hid the button.
+Why and how: [`analytics/release_calendar/CLAUDE.md`](../../analytics/release_calendar/CLAUDE.md),
+"A aba Divulgações mostra FATOS".
 
 ### Three YAML blocks it reads (all top-level, additive)
 

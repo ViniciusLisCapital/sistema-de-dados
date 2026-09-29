@@ -61,6 +61,24 @@ os trabalhos/trabalho principal), Rendimento por Posição na Ocupação (11 fla
 Atividade (10 flat leaves), Massa de Rendimento (4 flat leaves) — all mt_pnad-only, no
 `mt_pnad_trimestral` counterpart in this round (see Pending).
 
+### A desocupação do BCB, na mesma tabela (2026-09-29)
+
+A tabela Taxa de Desocupação tem uma segunda raiz, `desocupacao_bcb` — `mt_desocupacao_retro`, a
+série do anexo do RPM que o modelo agregado do BC usa —, marcada de saída junto com a da PNAD. Ela é
+**dessazonalizada pelo BC** (a única linha dessazonalizada da página, e o ajuste não é daqui) e
+retropolada antes de mar/2012, o que leva o gráfico a jul/2004. Três coisas:
+
+- **É a mesma PNAD depois de 2012, com a mesma data.** Medido: y/y das duas com correlação 0,9992 na
+  defasagem 0 (0,988 com um mês de deslocamento); médias de 12 meses a menos de 0,04 p.p. O que as
+  separa mês a mês é só a sazonalidade — dito no card de definição.
+- **A fonte do gráfico é por linha.** O nó leva `src` (montado em `build()` com a edição do RPM, que
+  é dado), e `renderChartHead()` a acrescenta à linha da fonte só quando a série está plotada.
+- **Ela termina antes da PNAD** — anda a cada Relatório, trimestralmente. A célula do mês que falta
+  sai `—`, e a edição citada na fonte explica o porquê.
+
+Por que não há gráfico de vintages como o do hiato: a docstring de
+`domain/db/brasil/bcb/mt_desocupacao_retro.py`, "Por que NAO ha painel de vintages".
+
 ## Emprego Formal (CAGED/MTE) — 1 tab, 5 tables
 
 Added 2026-08 after an explicit evaluation of "how does MTE/CAGED fit the current dashboard — new tab

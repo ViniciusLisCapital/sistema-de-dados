@@ -53,6 +53,16 @@ no_release:
     # dia anterior -- run() reescreve os ultimos 10 dias uteis por upsert, o que
     # fecha esse atraso no passe seguinte sem exigir horario especial.
     - br_interest_rate
+    # A mesma curva DI x pre, com TODOS os vertices que a B3 publica em vez dos 9
+    # redondos -- e o que separa uma reuniao do Copom da seguinte. Mesmo arquivo e
+    # mesmo cache de br_interest_rate, mesma janela de 10 dias uteis. 2026-09-24.
+    - br_di_grade
+    # O calendario oficial das reunioes do Copom, do feed "Reunioes do Copom" do BCB.
+    # Nao e serie de mercado, mas cumpre o criterio desta lista (run() busca da fonte
+    # sozinho) e nao tem divulgacao a apontar: o BC publica o ano seguinte quando quer,
+    # e este arquivo, que e de um ano, nao recebe as datas de 2027 (grupo bcb_copom
+    # acima). Rodar todo dia e o que faz 2028 entrar sozinho quando sair. 2026-09-25.
+    - pm_copom_calendario
     # Curva do Treasury (11 vertices) + meta do Fed, do FRED. Diaria, sem
     # divulgacao discreta a apontar. Entrou em 2026-09-03 junto com a curva
     # brasileira; a meta do Fed vigora todo dia corrido, a curva so em dia util.
@@ -195,6 +205,12 @@ expectation_overrides:
       Idem. Apesar de a tabela ser sobre reunioes do Copom, ela e alimentada pela
       pesquisa Focus semanal, NAO pela reuniao em si -- a expectativa de frescor
       segue o calendario do Focus (semanal), nao o do Copom (a cada 45 dias).
+  expc_qpc:
+    release_minus_days: 0
+    why: >
+      O grupo bcb_qpc nao tem periodo de referencia (reference_period e o numero da
+      reuniao, nao uma data), e a coluna `date` da tabela e a data de PUBLICACAO lida
+      da capa da planilha -- entao a expectativa e a propria data da divulgacao.
   inflc_meta:
     expect: none
     why: >
@@ -509,6 +525,26 @@ groups:
       - {date: "2026-09-22", time: "08:00", reference_period: "281ª reunião", confirmed: true}
       - {date: "2026-11-10", time: "08:00", reference_period: "282ª reunião", confirmed: true}
       - {date: "2026-12-15", time: "08:00", reference_period: "283ª reunião", confirmed: true}
+
+  - group: bcb_qpc
+    institution: BCB
+    name: "Questionário Pré-Copom — resultados"
+    tables: [expc_qpc]
+    cadence: "8x/year (day after each Ata)"
+    note: >
+      Aggregated quantitative results of the pre-Copom questionnaire, one xlsx per
+      meeting (connectors/bcb_qpc.py). Published the day AFTER the Ata: the date on
+      the cover of every 2026 file is Ata + 1 (05-06, 06-24, 08-12, 09-23), and
+      decision + 7 in every edition since 2021 except the 246th, whose cover is a copy
+      of the 247th's. No ICS list found for it, so the two future dates are that rule
+      applied to the confirmed Ata dates -- not read from any BCB source.
+    entries:
+      - {date: "2026-05-06", reference_period: "278ª reunião", confirmed: true}
+      - {date: "2026-06-24", reference_period: "279ª reunião", confirmed: true}
+      - {date: "2026-08-12", reference_period: "280ª reunião", confirmed: true}
+      - {date: "2026-09-23", reference_period: "281ª reunião", confirmed: true}
+      - {date: "2026-11-11", reference_period: "282ª reunião", confirmed: false, note: "Ata (11-10) + 1 day, by rule."}
+      - {date: "2026-12-16", reference_period: "283ª reunião", confirmed: false, note: "Ata (12-15) + 1 day, by rule."}
 
   - group: bcb_rpm
     institution: BCB

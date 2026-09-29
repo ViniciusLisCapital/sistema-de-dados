@@ -140,6 +140,15 @@ should not require `domain/` to be importable just to assemble an HTML file, and
 `status.gerar()` imports `generate_report`, which imports this module — closing that loop at
 module level would be asking for a circular import.
 
+## The shared assets are read on every call, not at import (2026-09-29)
+
+`theme.css`, `y_autofit.js` and `chart_head.{css,js}` used to be module-level constants. The
+calendar server (`analytics/release_calendar/serve.py`) imports this module once and runs for
+hours, so its Regerar button kept inlining the CSS **from when the server started**: the
+`report.html` template (read per call) came out new and the shared CSS came out old. That is how the
+560px header gap in Credit came back after being fixed. The same holds for any **Python** edit
+(`generate_report.py`, `*_tab.py`): the server keeps the imported version until it is restarted.
+
 ## Why build-time, not a runtime shared module
 
 A runtime-shared JS/CSS file (e.g. all three reports `<link>`/`<script src>`-ing a common asset) was considered and rejected: these reports are deliberately single self-contained files, sent by email/Dropbox with no server and no relative-path dependencies. `render_report()` inlines the shared pieces at generation time instead, so the dedup lives in the source tree, not in what gets shipped.

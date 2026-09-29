@@ -10,6 +10,11 @@
 
    Ver .claude/rules/lis-dashboards.md, "Every chart carries its own header". */
 .chart-head { padding: 14px 18px 2px; }
+/* O cabeçalho entra como <div> filho direto do card, e mais de um relatório dá altura
+   fixa ao div do gráfico com `.chart-card > div { height: … }`. Sem esta linha o
+   cabeçalho herda os 560px e abre um vão em branco do tamanho do gráfico entre o título
+   e o plot (foi o que aconteceu no de crédito). Especificidade 0,2,0 vence o 0,1,1. */
+.chart-card > .chart-head { height: auto; }
 .chart-head .chart-title {
   font-family: var(--cond); font-size: 17px; font-weight: 600; letter-spacing: 0.02em;
   color: var(--text); line-height: 1.2;

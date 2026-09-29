@@ -138,12 +138,16 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if rota == "/api/status":
+            # FATOS por tabela, nao veredito por grupo (2026-09-24): quando o ETL de cada
+            # tabela buscou pela ultima vez, se o dado mudou, e o que o banco tem agora. A
+            # pagina compara isso com o momento de cada divulgacao -- ver
+            # domain/release_calendar/sync.py::fatos_por_tabela.
             try:
-                from domain.release_calendar.sync import status_por_grupo
+                from domain.release_calendar.sync import fatos_por_tabela
                 agora = datetime.now()
                 self._json(200, {"ok": True, "hoje": agora.date().isoformat(),
                                  "agora": agora.strftime("%H:%M"),
-                                 "grupos": status_por_grupo()})
+                                 "tabelas": fatos_por_tabela()})
             except Exception as exc:
                 # banco fora do ar nao deve derrubar a pagina: ela cai no modo sem
                 # veredito (botao neutro em toda linha passada) em vez de quebrar
@@ -198,13 +202,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(500, {"erro": f"{type(exc).__name__}: {exc}"})
             return
 
-        # devolve tambem o estado novo do grupo, para o botao virar check sem F5
-        try:
-            from domain.release_calendar.sync import status_por_grupo
-            resultado["status"] = status_por_grupo().get(slug)
-        except Exception as exc:
-            resultado["status"] = None
-            resultado["status_erro"] = str(exc)
+        # Sem o estado novo aqui: a pagina rele /api/status depois de cada run (e o lote,
+        # uma vez so no fim), e repetir a consulta nesta resposta a pagaria duas vezes.
 
         resultado["ok"] = resultado["n_erro"] == 0 and not resultado["sem_script"]
         self._json(200, resultado)

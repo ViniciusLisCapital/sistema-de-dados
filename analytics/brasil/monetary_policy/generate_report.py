@@ -13,22 +13,30 @@ Abas de dado, e a fonte de cada uma:
                  a reuniao
   Projecoes      pm_copom_projecoes x pm_copom_reuniao: a projecao do BC para o horizonte
                  relevante contra o passo de Selic da MESMA reuniao -- o que o Comite projeta
-                 contra o que ele faz. Uma linha por reuniao, nao uma grade de calendario
-  Apendice       descricao do modelo (equacoes com os coeficientes estimados) + a tabela
-                 de validacao contra a Tabela 1 do boxe
+                 contra o que ele faz. Uma linha por reuniao, nao uma grade de calendario.
+                 Mais, de projecao_rpm.py, o caminho trimestral inteiro de cada edicao do RPM
+                 e o IPCA realizado ao lado (2026-09-25)
+  Condicionais   condicionais.py: os condicionantes da projecao do Copom edicao a edicao --
+                 o hiato como cada RPM o publicou (pm_hiato_produto_vintages) e o caminho da
+                 Selic que a Focus trazia antes de cada reuniao (expc_focus_copom). Nome da
+                 aba provisorio (2026-09-24)
+  Expectativas   expectativas_juros.py: o caminho da Selic que a Focus espera e o que a curva
+  de Juros       DI precifica, reuniao a reuniao, semana a semana (expc_focus_copom e
+                 br_di_grade). Veio da aba Curva do Copom do relatorio de Expectativas, que
+                 saiu de la no mesmo dia (2026-09-24)
 
 As abas Cenarios, Decomposicao, Taxa Neutra e Hiato do Produto foram REMOVIDAS em
-2026-08-25 e a aba Modelo BC - Agregado -- o motor portado para JS -- em 2026-09-22, as
-cinco a pedido do usuario, com os loaders delas. Os artefatos continuam sendo gravados
-por `modelo_agregado.rodar()` em `data/`, e o Apendice segue lendo os dele: parametros,
-validacao contra a Tabela 1 do boxe e o IRF.
+2026-08-25, a aba Modelo BC - Agregado -- o motor portado para JS -- em 2026-09-22 e o
+Apendice, que descrevia o modelo agregado, em 2026-09-24: as seis a pedido do usuario,
+com os loaders delas. Nada deste relatorio le mais os artefatos `modelo_*` de `data/`;
+`modelo_agregado.py` e `modelo_painel.py` continuam no diretorio porque a aba Condicoes e
+o Modelo Estrutural importam funcoes deles, e `antecipa_copom.backtest(modelo=True)`
+ainda refaz a comparacao que justificou trocar o modelo pelo delta da Focus.
 
-Rodar o modelo NAO faz parte da geracao do relatorio de proposito: a estimacao leva
-minutos e depende de MySQL, do IPEADATA e do anexo do RPM, enquanto gerar o HTML tem
-de ser rapido e reproduzivel. Pipeline completo:
+O unico calculo proprio e a previsao da proxima projecao do BC, gravada por
+`antecipa_copom.salvar()` e LIDA aqui (o botao Regerar refaz quando esta atras dos dados):
 
-    uv run python analytics/brasil/monetary_policy/modelo_painel.py     # paineis
-    uv run python analytics/brasil/monetary_policy/modelo_agregado.py   # estima + grava
+    uv run python -c "from analytics.brasil.monetary_policy.antecipa_copom import salvar; salvar()"
     uv run python analytics/brasil/monetary_policy/generate_report.py   # HTML
 
 Mesmo padrao /*REPORT_DATA*/ dos demais relatorios, via
@@ -72,15 +80,6 @@ def _ser(s: pd.Series) -> dict:
             "values": [None if pd.isna(v) else round(float(v), 4) for v in s.values]}
 
 
-def _csv(nome: str) -> pd.DataFrame:
-    df = pd.read_csv(_DATA / nome, index_col=0)
-    try:
-        df.index = pd.PeriodIndex(df.index, freq="Q")
-    except Exception:
-        pass
-    return df
-
-
 def _read_table(table: str) -> pd.DataFrame:
     req = MySQLDataRequester(_DATABASE, table)
     req.connect()
@@ -91,17 +90,6 @@ def _read_table(table: str) -> pd.DataFrame:
     if "value" in df.columns:
         df["value"] = pd.to_numeric(df["value"])
     return df
-
-
-def _raio_eq5() -> float | None:
-    """Raio espectral do laco da eq. (5) no cenario default, lido do proprio cenario.
-
-    Nao roda o modelo: `cenarios_padrao()` grava o raio junto com o cenario endogeno.
-    """
-    p = _DATA / "modelo_eq5_diag.json"
-    if not p.exists():
-        return None
-    return json.loads(p.read_text()).get("raio")
 
 
 # ── loaders por aba ─────────────────────────────────────────────────────────
@@ -130,14 +118,27 @@ def _load_antecipa(meta_ano: dict, ultimo_ano_meta) -> dict:
         prev["frescor"] = frescor(prev.get("corte_usado"))
     except Exception as exc:                                     # noqa: BLE001
         prev["frescor"] = {"erro": f"{type(exc).__name__}: {exc}"}
+    # Os campos do modelo agregado (`delta_modelo`, `nivel_modelo`, `rr`, `h0`...) so existem
+    # num JSON gravado com `salvar(modelo=True)`, que e pesquisa e nao producao. A aba nao le
+    # nenhum deles, entao nao entram no payload em nenhum dos dois casos.
+    for k in ("delta_modelo", "previsto", "previsto_publicado", "nivel_modelo", "rr",
+              "h0", "h0_vintage", "piA_4t", "selic_fim", "t0", "parametros",
+              "cambio_condicionado", "modelo"):
+        prev.pop(k, None)
     ano = int(str(prev["periodo"])[:4])
     mt = meta_ano.get(ano, meta_ano.get(ultimo_ano_meta))
     prev["meta"] = round(mt, 4) if mt is not None else None
     prev["meta_estendida"] = int(ultimo_ano_meta is not None and ano > ultimo_ano_meta)
+    # O modelo saiu da aba em 2026-09-24, a pedido do usuario: sobrou o delta da Focus, e o
+    # que o modelo produzia (`delta_modelo`, `previsto`, `erro`, `nivel_modelo`, `rr`, `t0`)
+    # nao alimenta mais nada na tela. `erro_ingenuo` saiu junto por outro motivo: ele e
+    # exatamente `-revisao`, coluna que fica -- carregar as duas era carregar a mesma coisa
+    # duas vezes. O CSV segue com todas; quem le e este recorte.
+    # `anc_doc` e `anc_dias` nao sao lidos pela tela: existem para o teste poder afirmar que
+    # a expansao ancora sempre no relatorio e a revisao no comunicado anterior.
     bt = pd.read_csv(csv)
     cols = ["nro", "reuniao", "alvo", "tipo", "ancora", "anc_doc", "anc_dias", "real",
-            "revisao", "delta_modelo", "previsto", "erro", "erro_ingenuo", "delta_focus",
-            "erro_focus", "nivel_modelo", "rr", "t0"]
+            "revisao", "delta_focus", "erro_focus"]
     bt = bt[[c for c in cols if c in bt.columns]]
     return {"previsao": prev,
             "backtest": json.loads(bt.to_json(orient="records"))}
@@ -249,6 +250,35 @@ def _load_projecoes() -> dict:
            "sem_decisao": sorted(set(sem_decisao)),
            "ultimo_ano_meta": ultimo_ano_meta}
     out.update(_load_antecipa(meta_ano, ultimo_ano_meta))
+    # O caminho trimestral inteiro de cada edicao do RPM, para as duas secoes de baixo da aba.
+    # try proprio: se falhar, as duas somem e o resto da aba continua de pe.
+    try:
+        from analytics.brasil.monetary_policy import projecao_rpm
+        out["caminhos"] = projecao_rpm.montar()
+    except Exception as exc:                                      # noqa: BLE001
+        print(f"  projecoes  caminhos do RPM FALHOU -- {type(exc).__name__}: {exc}")
+    return out
+
+
+def _load_condicionais() -> dict:
+    """Aba Acompanhamento Condicionais -> `condicionais.hiato()` e `condicionais.selic()`.
+
+    O hiato e uma entrada por edicao do RPM; o caminho da Selic, uma por reuniao do Copom,
+    mais o da pesquisa mais recente e a Selic efetiva. As escolhas que decidem cada um (so a
+    estimativa central do hiato; a pesquisa da sexta-feira anterior a decisao; a data estimada
+    de uma reuniao que o BC ainda nao marcou) estao no docstring do modulo. Nada e calculado
+    aqui nem la: leitura em tempo real e revisoes saem no JS, dos mesmos arrays
+    que os graficos desenham, para os dois nao poderem divergir.
+
+    Cada condicionante no seu try/except: um que falhe degrada so o grafico dele.
+    """
+    from analytics.brasil.monetary_policy import condicionais as cn
+    out = {}
+    for chave, fn in (("hiato", cn.hiato), ("selic", cn.selic)):
+        try:
+            out[chave] = fn()
+        except Exception as exc:                                  # noqa: BLE001
+            print(f"  condicionais  {chave} FALHOU -- {type(exc).__name__}: {exc}")
     return out
 
 
@@ -265,43 +295,6 @@ def _load_condicoes() -> dict:
     """
     from analytics.brasil.monetary_policy.condicoes_copom import montar
     return montar()
-
-
-def _load_info() -> dict:
-    """Metadados nao-serie: validacao dos parametros, do IRF e os numeros de cabecalho."""
-    par = json.loads((_DATA / "modelo_params.json").read_text())
-    val = pd.read_csv(_DATA / "modelo_validacao.csv")
-    virf = json.loads((_DATA / "modelo_validacao_irf.json").read_text())
-    S = _csv("modelo_estados.csv")
-    P = _csv("modelo_painel_full.csv")
-
-    hp = _read_table("pm_hiato_produto")
-    hp["per"] = pd.PeriodIndex(hp["date"] + pd.DateOffset(months=2), freq="Q")
-    cen = hp[hp["variavel"] == "central"].set_index("per")["value"]
-    Se = _csv("modelo_estados_est.csv")
-    j = pd.DataFrame({"a": Se["h"], "b": cen}).dropna()
-
-    ult = S["h"].dropna().index.max()
-    return {
-        "params": {k: round(v, 6) for k, v in par.items() if not k.startswith("_")},
-        "logL": round(par["_logL"], 3), "logL_bcb": round(par["_logL_bcb"], 3),
-        "sigma_rr": round(par["_sigma_rr"], 4),
-        "validacao": json.loads(val.to_json(orient="records")),
-        "n_dentro": int(val["dentro"].sum()), "n_total": int(len(val)),
-        "irf": {k: (round(v, 4) if isinstance(v, float) else v) for k, v in virf.items()},
-        "eq5": dict(par.get("_eq5") or {},
-                    raio=_raio_eq5(), phi_bcb=dict(f1=0.75, f2=0.11, f3=0.021)),
-        "hiato_corr": round(float(j["a"].corr(j["b"])), 4),
-        "hiato_n": int(len(j)),
-        "ultimo_tri": str(ult),
-        "selic_hoje": round(float(P["selic"].dropna().iloc[-1]), 2),
-        "h_hoje": round(float(S["h"].dropna().iloc[-1]), 2),
-        "r_is_hoje": round(float(S["rr_IS_total"].dropna().iloc[-1]), 2),
-        "r_tay_hoje": round(float(S["rr_TAY_total"].dropna().iloc[-1]), 2),
-        "r_hat_hoje": round(float(S["r_hat"].dropna().iloc[-1]), 2),
-        "neutra_pub_ult": round(float(_csv("modelo_neutra_pub.csv").median(axis=1).dropna().iloc[-1]), 2),
-        "neutra_pub_tri": str(_csv("modelo_neutra_pub.csv").median(axis=1).dropna().index.max()),
-    }
 
 
 # ── entry point ──────────────────────────────────────────────────────────────
@@ -327,6 +320,15 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
         if pj["sem_decisao"]:
             print(f"             AVISO  {len(pj['sem_decisao'])} reuniao(oes) com projecao e sem "
                   f"linha em pm_copom_reuniao: {pj['sem_decisao']}")
+        cm = pj.get("caminhos") or {}
+        if cm.get("edicoes"):
+            E = cm["edicoes"]
+            print(f"  projecoes  caminhos do RPM: {len(E)} edicoes ({E[0]['vintage'][:7]} -> "
+                  f"{E[-1]['vintage'][:7]}), "
+                  + ", ".join(f"{i} em {sum(1 for e in E if i in e['series'])}"
+                              for i in cm["indices"])
+                  + (f" | sem o cenario de juros esperado: {', '.join(cm['sem_cenario'])}"
+                     if cm.get("sem_cenario") else ""))
         est = sum(x["meta_estendida"] for x in pj["cenarios"]["juros_esperado"])
         if est:
             print(f"             {est} reunioes projetam periodo depois de "
@@ -340,9 +342,9 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
                         if r.get("erro_focus") is not None]
                 mae = sum(errs) / len(errs) if errs else None
             print(f"  previsao   {pv['nro']}a ({pv['data_reuniao']}), horizonte {pv['alvo']}, "
-                  f"{pv['tipo']}: ancora {pv['ancora']:.1f} -> focus "
-                  f"{pv['previsto_focus_publicado']} / modelo {pv['previsto_publicado']}"
-                  + (f" | MAE focus {mae:.3f} em {len(pj['backtest'])} reunioes"
+                  f"{pv['tipo']}: ancora {pv['ancora']:.1f} -> "
+                  f"{pv['previsto_focus_publicado']}"
+                  + (f" | MAE {mae:.3f} em {len(pj['backtest'])} reunioes"
                      if mae is not None else ""))
             # O aviso que importa nao e "o corte e anterior a reuniao" (isso e normal e
             # so vai deixar de ser no dia dela), e "o corte e anterior ao que o banco JA
@@ -394,13 +396,40 @@ def run(output: str = "reports/brasil/Monetary Policy.html") -> None:
         data["condicoes"] = {}
 
     try:
-        data["info"] = _load_info()
-        i = data["info"]
-        print(f"  info       {i['n_dentro']}/{i['n_total']} parametros no IC 90% do BC | "
-              f"corr do hiato {i['hiato_corr']} | r* {i['r_is_hoje']}%")
+        data["condicionais"] = _load_condicionais()
+        ed = (data["condicionais"].get("hiato") or {}).get("edicoes") or []
+        if ed:
+            nb = sum(1 for e in ed if e["regime"] == "banda")
+            print(f"  condicionais  hiato: {len(ed)} edicoes ({ed[0]['vintage'][:7]} -> "
+                  f"{ed[-1]['vintage'][:7]}), {nb} com um modelo e banda, "
+                  f"{len(ed) - nb} com conjunto de modelos")
+        sl = data["condicionais"].get("selic") or {}
+        cs = sl.get("caminhos") or []
+        if cs:
+            hj = sl.get("hoje")
+            print(f"  condicionais  selic: {len(cs)} caminhos ({cs[0]['reuniao']} -> "
+                  f"{cs[-1]['reuniao']})"
+                  + (f" + o de hoje, Focus de {hj['pesquisa']} para a {hj['nro']}a"
+                     + (" (provisorio)" if hj.get("provisorio") else "") if hj else ""))
+            if sl.get("sem_pesquisa"):
+                print(f"             AVISO  {len(sl['sem_pesquisa'])} reuniao(oes) sem pesquisa "
+                      f"Focus na semana do corte: {sl['sem_pesquisa']}")
     except Exception as exc:
-        print(f"  info       FALHOU -- {exc}")
-        data["info"] = {}
+        print(f"  condicionais  FALHOU -- {exc}")
+        data["condicionais"] = {}
+
+    try:
+        from analytics.brasil.monetary_policy import expectativas_juros as ej
+        data["expectativas"] = ej.montar()
+        ex = data["expectativas"]
+        for nome in ("focus", "di"):
+            s = ex.get(nome)
+            if s:
+                print(f"  expectativas  {nome:5s} {len(s['datas'])} semanas "
+                      f"({s['datas'][0]} -> {s['datas'][-1]}), {len(s['por_reuniao'])} reunioes")
+    except Exception as exc:
+        print(f"  expectativas  FALHOU -- {exc}")
+        data["expectativas"] = {}
 
     out = render_report(_TEMPLATE, data, output)
     print(f"Relatorio salvo: {out}")

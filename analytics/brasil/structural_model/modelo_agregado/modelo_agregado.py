@@ -63,7 +63,7 @@ so_demanda -> "Expectativa IPCA e cambio fixos"; +eq5 -> "Cambio fixo";
 +eq5+uip -> modelo cheio. Ver `irf()` e `validar_irf()`.
 
 Uso:
-    from analytics.brasil.monetary_policy import modelo_agregado as M
+    from analytics.brasil.structural_model.modelo_agregado import modelo_agregado as M
     res = M.rodar()          # estima, extende os estados, decompoe, valida; grava data/
 """
 from __future__ import annotations
@@ -78,7 +78,7 @@ from scipy.optimize import minimize
 from scipy.stats import beta as beta_dist
 from statsmodels.tsa.statespace.mlemodel import MLEModel
 
-from analytics.brasil.monetary_policy import modelo_painel as MP
+from analytics.brasil.structural_model.modelo_agregado import modelo_painel as MP
 
 warnings.filterwarnings("ignore")
 

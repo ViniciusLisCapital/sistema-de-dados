@@ -9,6 +9,11 @@ industriais, monitorados) em inflação do trimestre, 91 trimestres (2003T4→20
 trimestre soma-zero, média móvel de 4 trimestres em (IS) e (II), erros-padrão HAC(4). Reconstrução
 do cheio RMSE 0,616 contra um piso de 0,025.
 
+**Desde 2026-09-28** a (I) tem versão bayesiana (`bayes/phillips_bayes.py`, igual ao MQ a 0,083
+desvio do posterior no pior termo) e **roda no simulador**, fechando o laço do modelo. Três itens
+abaixo mudaram de peso com isso: **P3** (a indexação negativa passou a entrar numa conta que se
+projeta), e os novos **P17** e **P18**.
+
 Convenção deste arquivo: **P#** pendência, **T#** teste. Cada item diz se está bloqueado por dado,
 por decisão ou por trabalho. A exceção é o **§5**, que é material de referência — o gabarito do BC
 para preços administrados — e cuja pendência é o **P15** lá dentro.
@@ -74,6 +79,12 @@ a página já mostra — o registro de que foi testada é parte da entrega.
 **Critério de aceite:** `im2` positivo *e* peso da expectativa em [0, 1]. Se o sinal continuar
 negativo com a parte livre, a hipótese mecânica está errada e o problema é outro — e isso é um achado
 que vai para a página, não um motivo para esconder a equação.
+
+**Ganhou urgência em 2026-09-28.** O posterior confirma o MQ — `im2` mediana −0,21, HDI
+[−0,84; 0,39], 29% da massa acima de zero — e, com a (I) no simulador, o termo entra numa conta
+que se projeta: ele devolve parte de qualquer choque ao próprio cheio com o sinal trocado
+(multiplicador da indexação 0,93 em vez de acima de 1). Entrou como estimado, porque trocar a
+especificação é decisão do usuário.
 
 ### P4 — Dummies de crise (d08, d20) · *previstas no plano, nunca implementadas*
 
@@ -216,16 +227,35 @@ histórico numa unidade anual, não projeta sob cenário.
 (E) expectativas, (H) IS, (R) Taylor e (F) câmbio estão estimadas, cada uma com a sua aba e a sua
 lista de pendências. O que falta do plano da pasta é o Apêndice.
 
-### ~~P13 — Simulador~~ · *retirado do plano em 2026-09-22*
+### P13 — Simulador · *RESOLVIDO em 2026-09-28*
 
-Propagaria `H → I → E → R → F` com toggle Endógeno/Manual por equação. Decisão do usuário não
-construí-lo. Consequência para as outras listas: **F2** e **E6** existiam por causa dele e ficaram
-sem gatilho, e **F4** perdeu metade do argumento.
+Retirado em 2026-09-22 e retomado no mesmo dia, uma equação por vez; a (I) foi a última a entrar.
+Propaga `H → I → E → R → F`, resolvendo o laço, com Endógeno / Exógeno / Observado por variável.
+Ver o décimo round no `CLAUDE.md`.
 
-### P14 — Vol implícita de opções do câmbio · *bloqueado no usuário*
+### P14 — Vol implícita de opções do câmbio · *RESOLVIDO em 2026-09-25, pela metade*
 
-Até chegar, `VOL_SOURCE=realizada_lag`. Destino recomendado: tabela `macro_brasil.cmb_vol_implicita`
-pelo conector Bloomberg que já existe — **não** CSV exportado à mão.
+A (F) usa a implícita de 3 meses desde o oitavo round, lida de um CSV versionado. A tabela
+`macro_brasil.cmb_vol_implicita` continua pendente — ver **F4** em
+[`pendencias_fx_eq.md`](pendencias_fx_eq.md).
+
+### P17 — O câmbio que a (I) lê no simulador é uma PONTE · *decisão do usuário*
+
+A (I) foi estimada com a variação do câmbio **médio** do trimestre; o simulador só tem o de
+**fechamento**, que é o que a (F) produz. A ponte é `50·ln(P_t/P_{t−2})` — a média de duas variações
+de fechamento seguidas, o câmbio andando em linha reta dentro do trimestre. Medido: correlaciona
+0,91 com o médio de verdade, e o erro de alimentação vai de 1,927 a 1,949 p.p. (industriais 0,614 →
+0,608).
+
+A alternativa que tira a ponte é **reestimar (IA) e (II) com a própria ponte** como regressor —
+aí a equação e o simulador leem a mesma série e o custo sai do resíduo, não da tradução. É troca de
+especificação; fica aqui até o usuário decidir.
+
+### P18 — O hiato não entra em alimentação · *decisão do usuário*
+
+`ia4` −0,002 no MQ (t −0,01) e no posterior (metade da massa de cada lado). No simulador ele não
+move nada; fica porque tirar um termo é decisão de especificação. Se sair, a (IA) fica com inércia,
+commodity agrícola e câmbio, que é a forma do BC.
 
 ### P16 — Margem e teste para o peso da expectativa · *adiado por escolha, em 2026-09-21*
 
@@ -427,7 +457,7 @@ não deveria ser esperado estável.
 
 O que isso habilita, em ordem:
 
-1. **π^A deixa de ser premissa no simulador da RÉPLICA** — o de `monetary_policy/modelo_agregado.py`,
+1. **π^A deixa de ser premissa no simulador da RÉPLICA** — o de `modelo_agregado/modelo_agregado.py`,
    que é outro objeto e continua existindo; o simulador desta pasta saiu de escopo em 2026-09-22.
    Hoje `modelo_agregado.py` roda com `π^A = meta/4`, e é
    isso que separa o nosso IRF da primeira linha do C2 Boxe3 Graf 4B. Com o bloco, o choque de câmbio

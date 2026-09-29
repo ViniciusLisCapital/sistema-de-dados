@@ -16,7 +16,7 @@ A planilha e continua -- historico e projecao na MESMA aba `Modelo` -- para que 
 defasagens sejam simples referencias de linha e o usuario possa auditar celula a
 celula. As linhas de projecao leem os condicionantes da aba `Cenario`.
 
-    uv run python -c "from analytics.brasil.monetary_policy.phillips_excel import run; run()"
+    uv run python -c "from analytics.brasil.structural_model.experimentos.phillips_excel import run; run()"
 """
 
 from __future__ import annotations

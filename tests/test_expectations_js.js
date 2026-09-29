@@ -18,8 +18,9 @@
 //       tempo sem nenhum erro aparecer;
 //   (b) "ha 4 semanas" anda por DATA, nao por contagem de pontos da grade -- e a diferenca
 //       aparece justamente nas semanas de feriado, que sao as que ninguem testa a mao;
-//   (c) a ordem cronologica das reunioes do Copom nao e alfabetica ("R10/2027" ordenaria
-//       antes de "R2/2027") e nao ha calendario do Copom no payload.
+//   (c) a aba Curva do Copom SAIU em 2026-09-24, para a aba Expectativas de Juros do
+//       relatorio de Politica Monetaria (tests/test_monetary_policy_js.js, secao 36) -- a
+//       secao 5 daqui cobra que ela nao sobrou em lugar nenhum, nem de payload nem de aba.
 //
 // O que ele NAO substitui: confirmacao visual num browser real.
 
@@ -159,7 +160,7 @@ Object.defineProperty(El.prototype, 'innerHTML', {
   },
 });
 
-const ABAS = ['boletim', 'revisao', 'copom', 'movel', 'trajetoria', 'dispersao', 'bases', 'appendix'];
+const ABAS = ['boletim', 'revisao', 'movel', 'trajetoria', 'dispersao', 'bases', 'appendix'];
 function makeDom() {
   const els = {};
   const tabBtns = ABAS.map((t) => { const b = new El('button'); b.dataset.tab = t; return b; });
@@ -241,9 +242,9 @@ const EXPORTS = ['D', 'GRADE', 'NG', 'SNAPS', 'RENDERERS', 'activateTab',
                  'gidxOnOrBefore', 'gidxBackWeeks', 'snapGi', 'blkSerie', 'blkAt', 'pBlk', 'pMeta',
                  'movBlk', 'indsDe', 'difSemanas', '_quickRangeOptions', '_defaultXRange',
                  '_traceAllDates', 'mkTsLayout', 'mkCatLayout', '_reactPreserveX', '_reactPlain',
-                 '_resetChartAxis', '_PLOTLY_CONFIG', '_parseReuniao', '_copCurva', '_copMatriz',
+                 '_resetChartAxis', '_PLOTLY_CONFIG',
                  '_bolLinha', '_bolToggle', '_bolSerie', '_bolTabela', 'INFO', 'unidadeDe', '_primeiraSemana',
-                 'attachInfo', 'infoHtml', 'hideInfo', '_traFoto', '_mesesAte', '_movIndicadores', '_disBloco', '_copCategorias', 'vigenteOuFuturo', '_fimPeriodo',
+                 'attachInfo', 'infoHtml', 'hideInfo', '_traFoto', '_mesesAte', '_movIndicadores', '_disBloco', 'vigenteOuFuturo', '_fimPeriodo',
                  'ordemCronologica'];
 let R;
 try {
@@ -258,14 +259,14 @@ console.log('\n1. Carga, abas e payload');
 ok(!!R, 'script executa sem excecao');
 ok(duplicados.length === 0, 'nenhum id duplicado no HTML gerado', duplicados.join(', '));
 ok(Object.keys(R.RENDERERS).sort().join(',') === ABAS.slice().sort().join(','),
-   'RENDERERS tem as 8 abas', JSON.stringify(Object.keys(R.RENDERERS)));
+   'RENDERERS tem as 7 abas', JSON.stringify(Object.keys(R.RENDERERS)));
 ok(doc._tabPanels[0].classList.contains('active'), 'aba inicial (boletim) ativa no load');
 ok(doc._els['generated-at'].textContent !== '', 'generated_at escrito no header');
 ok(doc._els['hdr-ultima'].textContent === R.fmtDataBR(R.GRADE[R.NG - 1]),
    'header mostra a ultima data da grade', doc._els['hdr-ultima'].textContent);
-// Escopo: so as tres tabelas do Focus. Qualquer grupo novo em D e sinal de que alguem
-// trouxe fonte de fora sem atualizar o Apendice.
-ok(Object.keys(R.D).sort().join(',') === 'cobertura,copom,generated_at,indice,meta,movel,periodo',
+// Escopo: so as duas tabelas do Focus que ficaram. Qualquer grupo novo em D e sinal de que
+// alguem trouxe fonte de fora sem atualizar o Apendice.
+ok(Object.keys(R.D).sort().join(',') === 'cobertura,generated_at,indice,meta,movel,periodo',
    'payload tem so os grupos do Focus (nada de meta/realizado)', Object.keys(R.D).sort().join(','));
 ok(R.NG > 1000 && R.GRADE[0] < R.GRADE[R.NG - 1], 'grade semanal ordenada e longa', R.NG + ' semanas');
 
@@ -319,37 +320,17 @@ const ultDif = dif.values[dif.values.length - 1];
 ok(ultDif === 4 || ultDif === 5, 'variacao de 4 semanas numa serie linear e ~4', String(ultDif));
 ok(dif.values[0] === null, 'primeiro ponto nao tem par 4 semanas atras -> null');
 
-console.log('\n5. Copom: ordem cronologica das reunioes');
-ok(R._parseReuniao('R6/2026').ord < R._parseReuniao('R1/2027').ord,
-   'R6/2026 vem antes de R1/2027 (ano manda)');
-// "R10/2027" nao existe hoje, mas ordenar por string quebraria se a numeracao passasse de 9.
-ok(R._parseReuniao('R2/2027').ord < R._parseReuniao('R10/2027').ord,
-   'R2/2027 vem antes de R10/2027 (numerico, nao alfabetico)');
-ok(R._parseReuniao('R6/2026').label === 'R6/26', 'rotulo curto para o eixo', R._parseReuniao('R6/2026').label);
-ok(R._parseReuniao('lixo') === null, 'string invalida nao vira reuniao');
-const curva = R._copCurva(R.NG - 1, '0');
-ok(curva.length >= 8, 'curva de hoje tem pelo menos 8 reunioes cotadas', String(curva.length));
-let ordenada = true;
-for (let i = 1; i < curva.length; i++) if (curva[i].ord <= curva[i - 1].ord) ordenada = false;
-ok(ordenada, 'curva devolvida em ordem cronologica estrita');
-ok(curva.every((c) => c.valor > 0 && c.valor < 60), 'Selic esperada em faixa plausivel',
-   JSON.stringify([curva[0].valor, curva[curva.length - 1].valor]));
-const M0 = R._copMatriz('0');
-ok(M0.hz.length === 20 && M0.hz[0].length === R.NG, 'matriz horizonte x grade no tamanho certo');
-ok(M0.hz[0][R.NG - 1] === curva[0].valor, '1a linha da matriz = 1a reuniao da curva');
-ok(M0.ultima[R.NG - 1] === curva[curva.length - 1].valor, 'linha "ultima cotada" = fim da curva');
-ok(M0.cotadas[R.NG - 1] === curva.length, 'contagem de reunioes cotadas bate');
-// A aba Dispersao oferece a metrica "amplitude" para a fonte Copom; ela le lo/hi da
-// matriz, entao a matriz tem de carregar as duas -- ja faltaram.
-ok(M0.lo[0][R.NG - 1] != null && M0.hi[0][R.NG - 1] != null
-   && M0.hi[0][R.NG - 1] >= M0.lo[0][R.NG - 1],
-   'matriz do Copom carrega minimo e maximo (max >= min)',
-   JSON.stringify([M0.lo[0][R.NG - 1], M0.hi[0][R.NG - 1]]));
-// A base 1 da Selic so comeca em 2021-03-31 -- e propriedade da fonte, nao falha de carga.
-const M1 = R._copMatriz('1');
-let primeiraB1 = null;
-for (let i = 0; i < R.NG; i++) if (M1.hz[0][i] != null) { primeiraB1 = R.GRADE[i]; break; }
-ok(primeiraB1 >= '2021-03-01', 'base 1 do Copom nao inventa historico antes de 2021-03', String(primeiraB1));
+console.log('\n5. A Curva do Copom saiu inteira (2026-09-24)');
+// Foi para a aba Expectativas de Juros do relatorio de Politica Monetaria. Apagar a aba sem
+// apagar o resto deixaria o payload carregando 90 mil linhas que ninguem le, e as abas
+// Dispersao e Bases oferecendo uma fonte que desenha vazio.
+const RAW = fs.readFileSync(HTML, 'utf8');
+ok(!('copom' in R.RENDERERS) && RAW.indexOf('data-tab="copom"') < 0 && RAW.indexOf('id="tab-copom"') < 0,
+   'nem aba, nem botao, nem renderizador');
+ok(!('copom' in R.D), 'nem grupo no payload');
+ok(!/key: 'copom'/.test(SRC), 'nem fonte Copom nas abas Dispersao e Bases');
+ok(RAW.indexOf('id="pg-bas-fonte"') < 0, 'e a aba Bases, com uma fonte so, perdeu o seletor de fonte');
+ok(RAW.indexOf('Expectativas de Juros') > 0, 'e o Apendice diz para onde ela foi');
 
 console.log('\n6. Boletim: linha da tabela = mediana + variacoes');
 const linhaIpca = R._bolLinha({ key: 'IPCA|', label: 'IPCA', familia: 'Inflação', meta: R.pMeta('anual', 'IPCA|') });
@@ -405,30 +386,7 @@ for (let i = 0; i + 13 < refsMensais.length && !discorda; i++) {
 ok(discorda, 'sort() de string DIVERGE da ordem cronologica no store mensal');
 
 console.log('\n7c. Correcoes da revisao de 2026-08-24');
-// (1) Eixo da curva do Copom. Uma curva antiga cota reunioes que ja passaram; como sao
-// categorias novas para o eixo, o Plotly as jogava para o FIM, depois de R5/28. O
-// categoryarray tem de ser a uniao ordenada por (ano, numero).
-const curvaHoje = R._copCurva(R.NG - 1, '0');
-const curva12 = R._copCurva(R.gidxBackWeeks(12), '0');
-const cats = R._copCategorias([curvaHoje, curva12]);
-ok(cats.length >= curvaHoje.length, 'categoryarray cobre as duas curvas', String(cats.length));
-const todas = {};
-curvaHoje.concat(curva12).forEach((o) => { todas[o.label] = o.ord; });
-let catsOrdenado = true;
-for (let i = 1; i < cats.length; i++) if (todas[cats[i]] <= todas[cats[i - 1]]) catsOrdenado = false;
-ok(catsOrdenado, 'categoryarray em ordem cronologica estrita', cats.join(' '));
-ok(Object.keys(todas).length === cats.length, 'sem categoria repetida no eixo');
-// A prova do bug: alguma reuniao da curva antiga tem de vir ANTES da primeira de hoje.
-const soAntigas = curva12.filter((o) => !curvaHoje.some((h) => h.label === o.label));
-if (soAntigas.length) {
-  ok(cats.indexOf(soAntigas[0].label) < cats.indexOf(curvaHoje[0].label),
-     'reuniao que so a curva antiga cota fica a ESQUERDA (era o bug: ia para o fim)',
-     soAntigas[0].label + ' em ' + cats.indexOf(soAntigas[0].label)
-       + ' vs ' + curvaHoje[0].label + ' em ' + cats.indexOf(curvaHoje[0].label));
-} else {
-  ok(false, 'esperava reunioes so na curva de 12 semanas atras para exercitar o caso');
-}
-
+// (1), o eixo de categorias da curva do Copom, saiu com a aba em 2026-09-24.
 // (2) Periodo "vigente ou futuro" pelo FIM, nao pelo comeco. Em agosto de 2026 o ano
 // corrente TEM de contar -- comparar pelo ref_date (01/01) o excluia desde fevereiro.
 ok(R.vigenteOuFuturo('anual', '2026-01-01', '2026-08-21') === true,
@@ -504,8 +462,6 @@ ABAS.forEach((aba) => {
 });
 ok(doc._els['tbl-boletim'].innerHTML.indexOf('fam-row') > 0, 'tabela do Boletim agrupa por familia');
 ok(doc._els['bol-lead'].innerHTML.indexOf('indicadores cotam') > 0, 'lead do Boletim preenchido');
-ok(doc._els['kpi-cop-prox-v'].textContent !== '—', 'KPI da proxima reuniao preenchido',
-   doc._els['kpi-cop-prox-v'].textContent);
 ok(doc._els['kpi-mov-12-v'].textContent.indexOf('%') > 0, 'KPI do IPCA 12m preenchido',
    doc._els['kpi-mov-12-v'].textContent);
 ok(doc._els['kpi-bas-gap-v'].textContent.indexOf('p.p.') > 0, 'KPI do gap entre bases preenchido',
@@ -519,15 +475,7 @@ ok(doc._els['kpi-rev-hoje-l'].textContent === 'Mediana para ' + anoHoje,
    'KPI da Revisao abre no ano corrente, nao no mais distante',
    doc._els['kpi-rev-hoje-l'].textContent);
 
-// (4) Δ 4 semanas do Copom compara a MESMA reuniao. Recalcula do payload e confere o texto.
-const cHoje = R._copCurva(R.NG - 1, '0');
-const gi4 = R.gidxBackWeeks(4);
-const mesmaProx = R.blkAt(R.D.copom[cHoje[0].reuniao + '|0'], 'm', gi4);
-ok(mesmaProx != null, 'a proxima reuniao ja era cotada 4 semanas atras', String(mesmaProx));
-const espProx = R.fmtSig(cHoje[0].valor - mesmaProx, 2) + ' p.p. em 4 semanas';
-ok(doc._els['kpi-cop-prox-s'].textContent === espProx,
-   'sub do KPI da proxima reuniao usa a mesma reuniao, nao o 1o horizonte de entao',
-   doc._els['kpi-cop-prox-s'].textContent + '  esperado: ' + espProx);
+// (4), o KPI da proxima reuniao do Copom, saiu com a aba em 2026-09-24.
 
 // (5) O titulo do eixo Y do horizonte movel segue o horizonte escolhido -- clicando na
 // pill de verdade, nao inspecionando a definicao dela.
@@ -743,28 +691,8 @@ chart.emit('plotly_relayout', { 'xaxis.range': ['2024-06-01', '2025-03-01'], 'ya
 ok(chamadas.filter((c) => c.tipo === 'relayout' && c.upd['yaxis.range']).length === 0,
    'X e Y juntos (drag/scroll) -> autofit sai da frente');
 
-console.log('\n13b. Identidade entre tabelas: Selic anual x ultima reuniao do ano');
-// A Selic anual da expc_focus_periodo e FIM DE PERIODO, entao tem de bater com a
-// expectativa para a ULTIMA reuniao do Copom daquele ano -- que vem de outro endpoint,
-// com outro painel. Nao e identidade exata (paineis e arredondamentos diferentes), mas
-// meio ponto de distancia ja seria sinal de que uma das duas leituras esta errada.
-// So vale para anos com o calendario inteiro cotado: em 2028 o Focus ainda para na R5.
-const cur = R._copCurva(R.NG - 1, '0');
-const porAno = {};
-cur.forEach((c) => { const a = R._parseReuniao(c.reuniao).ano; porAno[a] = c; });
-let conferidos = 0, fora = [];
-Object.keys(porAno).forEach((ano) => {
-  if (R._parseReuniao(porAno[ano].reuniao).n < 8) return;   // ano incompleto na fila
-  const anual = R.blkAt(R.pBlk('anual', 'Selic|', ano), 'm', R.NG - 1);
-  if (anual == null) return;
-  conferidos++;
-  if (Math.abs(anual - porAno[ano].valor) > 0.5) {
-    fora.push(ano + ': anual=' + anual + ' vs ' + porAno[ano].reuniao + '=' + porAno[ano].valor);
-  }
-});
-ok(conferidos > 0 && fora.length === 0,
-   conferidos + ' ano(s) com calendario completo: Selic anual bate com a ultima reuniao',
-   fora.join('; '));
+// 13b (Selic anual x ultima reuniao do ano) virou conferencia de banco em
+// tests/test_expectations_data.py quando a Selic por reuniao saiu do payload (2026-09-24).
 
 console.log('\n14. Cobertura e consistencia do payload');
 const cob = R.D.cobertura || [];
@@ -772,8 +700,8 @@ ok(cob.length > 40, 'tabela de cobertura tem uma linha por serie', String(cob.le
 ok(cob.every((r) => r.d0 <= r.d1), 'primeira data nunca depois da ultima');
 const tabelas = {};
 cob.forEach((r) => { tabelas[r.tabela] = true; });
-ok(Object.keys(tabelas).sort().join(',') === 'expc_focus,expc_focus_copom,expc_focus_periodo',
-   'cobertura cobre as tres tabelas', Object.keys(tabelas).join(','));
+ok(Object.keys(tabelas).sort().join(',') === 'expc_focus,expc_focus_periodo',
+   'cobertura cobre as duas tabelas', Object.keys(tabelas).join(','));
 // Componentes do IPCA so existem depois da reformulacao de 2021-09-14.
 const comp = cob.filter((r) => r.serie === 'IPCA Serviços' && r.tabela === 'expc_focus_periodo');
 ok(comp.length && comp.every((r) => r.d0 >= '2021-09-01'),

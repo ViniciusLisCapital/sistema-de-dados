@@ -93,6 +93,36 @@ recorrente, rode `run(vintage="AAAA-MM")` numa edicao mais antiga ANTES da
 corrente; hoje isso vale so para 2026-03 (+3 meses), porque as anteriores publicam
 em R$.
 
+## Quando a edicao NAO publica o grafico (desde 2026-09)
+
+A edicao 2026-09 saiu sem ele: nenhuma das 163 abas do anexo e nenhuma pagina do PDF
+menciona "fluxo financeiro". Nao foi renomeacao -- a secao de credito foi reorganizada
+(inadimplencia subiu para o comeco, entrou saldo/PIB, o grafico de debentures virou
+"financiamentos corporativos nao bancarios") e o fluxo saiu junto. A serie para na
+ultima edicao que o publicou (2026-06, dado ate 2026-04).
+
+`parse()` distingue os dois casos em vez de presumir um, porque pedem respostas opostas:
+
+    nenhum titulo de fluxo financeiro do credito  -> GraficoAusente: o BCB tirou o
+                                                     grafico, nao ha padrao a corrigir
+    ha um, mas nao casa _PADRAO_RECORRENTE         -> RuntimeError com os titulos
+                                                     achados: era em R$ (antes de
+                                                     2026-03) ou renomeacao
+
+Na rotina (`run()` sem `vintage`) a ausencia NAO e erro: o script volta edicao por
+edicao ate a mais recente que publica o grafico e recarrega essa, com um AVISO que diz
+ate onde a serie foi. A renomeacao continua levantando -- e ela que pede mudar o padrao.
+
+**Recarregar, e nao pular.** Pular a edicao corrente e gravar so o boxe parece
+equivalente e corrompe a tabela: o boxe cobre ate 2025-01, e escrito sozinho ele
+sobrescreve 2018-2025 com o vintage de 2025-03, porque a ordem de escrita conta com a
+edicao corrente vindo depois. Recarregar a ultima edicao valida reescreve os mesmos
+valores (o registro de execucao le "nada mudou", que e o fato) e mantem a tabela
+reconstituivel do zero por um comando. Custa um download a mais por passe.
+
+Com `vintage` explicito a ausencia levanta: quem pediu uma edicao especifica quer
+aquela, e nao outra no lugar.
+
 ## Variaveis
 
     fluxo_total   Total (PJ + PF)
@@ -101,7 +131,8 @@ em R$.
 
 ## Historico
 
-2015-01 -> mes de referencia da edicao corrente. O comeco e o do boxe; sem ele a
+2015-01 -> mes de referencia da ultima edicao que publica o grafico (2026-04, pela
+edicao 2026-06; ver acima). O comeco e o do boxe; sem ele a
 serie comecaria em 2018-01, primeira edicao a publicar o grafico recorrente em %
 do PIB.
 
@@ -132,7 +163,7 @@ import re
 
 import pandas as pd
 
-from connectors.bcb_rpm import AnexoRPM, normalizar
+from connectors.bcb_rpm import AnexoRPM, normalizar, trimestres_desde
 from connectors.mysql import insert_data_into_database
 
 _DATABASE = "macro_brasil"
@@ -144,6 +175,16 @@ _TABLE = "cred_fluxo_financeiro"
 # (ver docstring), e o grafico irmao de debentures quebra a sequencia contigua
 # ("...fluxo financeiro DE DEBENTURES acumulado em 12 meses"), entao nao casa.
 _PADRAO_RECORRENTE = r"fluxo financeiro acumulado em 12 meses"
+
+# Qualquer grafico de fluxo financeiro do CREDITO, em qualquer unidade ou titulo. So serve
+# para separar "o BCB tirou o grafico" de "o BCB renomeou" quando o padrao acima falha. O de
+# debentures (mercado de capitais) fica de fora pelo lookahead: uma edicao que so traga ele
+# nao publica a serie desta tabela.
+_PADRAO_QUALQUER = r"fluxo financeiro(?! de debentures)"
+
+# Primeira edicao com o grafico em % do PIB: a rotina nao volta alem dela ao procurar a
+# ultima edicao que publica o grafico (antes disso ele sai em R$ -- ver docstring).
+_PRIMEIRA_EM_PIB = dt.date(2026, 3, 1)
 
 # Rotulo publicado na linha de cabecalho -> sufixo do nome da serie.
 _COLUNAS = {"pessoas juridicas": "pj", "pessoas fisicas": "pf", "total": "total"}
@@ -227,16 +268,44 @@ def _long(series: dict, vintage: dt.date) -> pd.DataFrame:
     return pd.DataFrame(linhas)
 
 
+class GraficoAusente(RuntimeError):
+    """A edicao nao publica NENHUM grafico de fluxo financeiro do credito -- o BCB tirou o
+    grafico do relatorio, nao o renomeou. Ver "Quando a edicao NAO publica o grafico"."""
+
+
+def _titulo(ws) -> str:
+    """A linha do cabecalho que traz o titulo publicado ("Grafico 1.2.30 - ..."), para as
+    mensagens de erro; cai no nome da aba se nenhuma comecar por grafico/tabela."""
+    linhas = AnexoRPM.cabecalho(ws)
+    return next((l for l in linhas if normalizar(l).startswith(("grafico", "tabela"))),
+                ws.title)
+
+
 def parse(anexo: AnexoRPM, vintage: dt.date) -> dict:
-    """{'fluxo_pj'|'fluxo_pf'|'fluxo_total': Series} do grafico recorrente da edicao."""
+    """{'fluxo_pj'|'fluxo_pf'|'fluxo_total': Series} do grafico recorrente da edicao.
+
+    Raises:
+        GraficoAusente: a edicao nao tem grafico de fluxo financeiro do credito nenhum.
+        RuntimeError: tem, mas com outro titulo -- era em R$ ou renomeacao.
+    """
     wb = anexo.abrir(vintage)
     abas = _abas_com(wb, _PADRAO_RECORRENTE)
     if not abas:
+        parecidas = _abas_com(wb, _PADRAO_QUALQUER)
+        if not parecidas:
+            raise GraficoAusente(
+                f"edicao {vintage:%Y-%m}: o anexo ({len(wb.worksheets)} abas) nao publica "
+                f"grafico de fluxo financeiro do credito -- nenhum titulo casa "
+                f"/{_PADRAO_QUALQUER}/. O BCB tirou o grafico do relatorio; nao ha padrao "
+                f"a corrigir."
+            )
+        titulos = [f"'{ws.title}': {_titulo(ws)}" for ws in parecidas]
+        era = (f"a edicao e anterior a {_PRIMEIRA_EM_PIB:%Y-%m}, quando o grafico ainda saia "
+               f"em R$ deflacionados, que nao encadeia" if vintage < _PRIMEIRA_EM_PIB else
+               f"o BCB renomeou o grafico e _PADRAO_RECORRENTE precisa mudar")
         raise RuntimeError(
-            f"edicao {vintage:%Y-%m}: nenhuma aba com titulo casando "
-            f"/{_PADRAO_RECORRENTE}/. Esse grafico so sai em % do PIB desde a edicao "
-            f"2026-03 (antes era em R$ deflacionados, que nao encadeia) -- se a edicao "
-            f"e posterior a essa, o BCB renomeou o grafico e o padrao precisa mudar."
+            f"edicao {vintage:%Y-%m}: ha grafico de fluxo financeiro, mas nenhum casa "
+            f"/{_PADRAO_RECORRENTE}/ -- {era}. Achados: {titulos}."
         )
     rotulos, dados = _bloco(abas[0])
 
@@ -317,13 +386,43 @@ def _checar_aditividade(series: dict, rotulo: str, tol: float = 1e-6) -> None:
         )
 
 
+def _mais_recente_com_grafico(anexo: AnexoRPM) -> tuple[dt.date, dict, list[dt.date]]:
+    """(edicao, series, edicoes puladas): a edicao mais recente que publica o grafico.
+
+    Volta trimestre a trimestre a partir da mais recente publicada, pulando so as que
+    levantam GraficoAusente. Uma renomeacao levanta na hora, sem voltar -- recarregar uma
+    edicao antiga esconderia justamente o caso em que o padrao tem de mudar. Nao passa de
+    _PRIMEIRA_EM_PIB: antes dela o grafico sai em R$.
+    """
+    mais_recente = anexo.vintage_mais_recente()
+    if mais_recente is None:
+        raise RuntimeError(
+            "nenhuma edicao do anexo estatistico do RPM respondeu -- "
+            "conferir connectors/bcb_rpm.py (o BCB pode ter mudado a URL)."
+        )
+    puladas = []
+    for v in reversed(trimestres_desde(_PRIMEIRA_EM_PIB, mais_recente)):
+        if not anexo.url_de(v):
+            continue  # trimestre sem edicao publicada
+        try:
+            return v, parse(anexo, v), puladas
+        except GraficoAusente:
+            puladas.append(v)
+    raise RuntimeError(
+        f"nenhuma edicao de {_PRIMEIRA_EM_PIB:%Y-%m} a {mais_recente:%Y-%m} publica o "
+        f"grafico de fluxo financeiro em % do PIB (puladas: "
+        f"{[f'{p:%Y-%m}' for p in puladas]})."
+    )
+
+
 def run(vintage: str | dt.date | None = None, *, com_boxe: bool = True) -> None:
     """Atualiza macro_brasil.cred_fluxo_financeiro com o grafico de fluxo financeiro da
     edicao do RPM.
 
     Args:
-        vintage: edicao a ler, "AAAA-MM" ou date. None (default) descobre a mais
-                 recente publicada -- o comportamento de rotina. Passar uma edicao
+        vintage: edicao a ler, "AAAA-MM" ou date. None (default) le a mais recente
+                 que publica o grafico -- o comportamento de rotina, que avisa em vez
+                 de levantar quando a ultima edicao saiu sem ele. Passar uma edicao
                  antiga faz BACKFILL: a carga e upsert, entao rodar a antiga antes da
                  corrente estende o historico para tras sem sobrescrever a ponta (ver
                  "Janela movel" na docstring). So funciona de 2026-03 em diante; antes
@@ -335,20 +434,27 @@ def run(vintage: str | dt.date | None = None, *, com_boxe: bool = True) -> None:
     """
     anexo = AnexoRPM()
 
+    # A edicao corrente e lida ANTES do boxe: se ela falhar, nada foi baixado a toa e
+    # nada e gravado -- em particular, o boxe nunca vai sozinho para o banco (ver
+    # "Recarregar, e nao pular" na docstring).
     if vintage is None:
-        alvo = anexo.vintage_mais_recente()
-        if alvo is None:
-            raise RuntimeError(
-                "nenhuma edicao do anexo estatistico do RPM respondeu -- "
-                "conferir connectors/bcb_rpm.py (o BCB pode ter mudado a URL)."
-            )
+        alvo, series, puladas = _mais_recente_com_grafico(anexo)
     else:
         alvo = vintage if isinstance(vintage, dt.date) else pd.Timestamp(vintage).date().replace(day=1)
+        series, puladas = parse(anexo, alvo), []
+    _checar_aditividade(series, f"edicao {alvo:%Y-%m}")
+    df = _long(series, alvo)
+
+    if puladas:
+        print(f"{_TABLE}: AVISO -- a edicao {', '.join(f'{p:%Y-%m}' for p in puladas)} "
+              f"nao publica o grafico de fluxo financeiro (o BCB o tirou do relatorio). "
+              f"Recarregando a ultima que publica, {alvo:%Y-%m}: a serie fica parada em "
+              f"{df['date'].max():%Y-%m} ate uma edicao nova trazer o grafico de volta.")
 
     quadros = []
 
-    # Boxe primeiro: onde as duas fontes cobrem o mesmo mes, a edicao corrente vence
-    # (o insert faz a ultima escrita ganhar). Seguro porque as duas publicam o MESMO
+    # Boxe primeiro na ESCRITA: onde as duas fontes cobrem o mesmo mes, a edicao corrente
+    # vence (o insert faz a ultima escrita ganhar). Seguro porque as duas publicam o MESMO
     # conjunto de 3 series -- ver "Escopo" na docstring.
     if com_boxe:
         boxe = parse_boxe(anexo)
@@ -358,9 +464,6 @@ def run(vintage: str | dt.date | None = None, *, com_boxe: bool = True) -> None:
               f"{df_boxe['date'].min()} -> {df_boxe['date'].max()}, series={sorted(boxe)}.")
         quadros.append(df_boxe)
 
-    series = parse(anexo, alvo)
-    _checar_aditividade(series, f"edicao {alvo:%Y-%m}")
-    df = _long(series, alvo)
     print(f"{_TABLE}: edicao {alvo:%Y-%m}, {len(df)} linhas, "
           f"{df['date'].min()} -> {df['date'].max()}, series={sorted(series)}.")
     quadros.append(df)

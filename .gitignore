@@ -55,9 +55,9 @@ Thumbs.db
 desktop.ini
 
 # Pesos/checkpoints do teste LSTM (binarios grandes; os CSV de previsao ficam versionados)
-analytics/brasil/monetary_policy/teste_lstm/data/*.pt
-analytics/brasil/monetary_policy/teste_lstm/data/*.pth
-analytics/brasil/monetary_policy/teste_lstm/data/checkpoints/
+analytics/brasil/structural_model/experimentos/teste_lstm/data/*.pt
+analytics/brasil/structural_model/experimentos/teste_lstm/data/*.pth
+analytics/brasil/structural_model/experimentos/teste_lstm/data/checkpoints/
 
 # Cache do TaxaSwap da B3 (~5.100 CSV por pregao, reproduzivel da fonte)
 domain/db/brasil/b3/cache/

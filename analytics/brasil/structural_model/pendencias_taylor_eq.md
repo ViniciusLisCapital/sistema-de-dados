@@ -190,7 +190,28 @@ Fica registrado porque **(E) e (H) rejeitam na forma escolhida** e esta não —
 ressalva. O que não vale dizer é que ela seja a única: as quatro contas por grupo de preço da curva
 de Phillips também passam (p 0,341, 0,211, 0,202 e 0,471).
 
-### R5 — Voltar a olhar a Focus de 12 meses · *decisão provisória tomada: 18 meses*
+### R5 — ~~Voltar a olhar a Focus de 12 meses~~ · **RESOLVIDA em 2026-09-24: 12 meses**
+
+*"Vamos uniformizar a expectativa de inflação para 12 meses."* O `DI_BASE` é `focus`, o MCMC foi
+rodado de novo e o simulador lê os desenhos novos. **A razão não é de ajuste** — as três leituras
+sempre empataram nisso — e sim de horizonte: as três equações que falam de expectativa, (I), (E) e
+(R), passam a falar da mesma, e só assim a (E) pode alimentar a (R). Isso fecha junto a **E6**.
+
+O que a troca moveu, medido no posterior (80 trimestres, 2006T3→2026T2):
+
+| | 12 meses (em uso) | 18 meses (antes) | BC publicado |
+|---|---|---|---|
+| `t1` | 1,336 [1,201; 1,484] | 1,434 | 1,48 [1,41; 1,54] |
+| `t2` | −0,483 [−0,612; −0,351] | −0,570 | −0,58 [−0,63; −0,52] |
+| efeito de longo prazo | **1,962 [1,148; 2,726]** | 2,62 | 2,03 [1,47; 2,64] |
+| R² cent. / RMSE | 0,9567 / 0,537 | 0,952 / — | — |
+| Ljung-Box Q(4) / Q(8) | 0,805 / 0,507 | 0,683 / 0,438 | — |
+
+**O efeito de longo prazo melhora e as duas defasagens pioram.** Com 18 meses ele encostava no teto
+do intervalo publicado (2,62 contra 2,64), que era a ressalva de R8; com 12 ele cai no meio dele. Em
+troca, as medianas de `t1` e `t2` saem dos intervalos estreitos do BC — **os pontos publicados
+continuam dentro do nosso HDI de 90%**, que é a comparação que 80 trimestres sustentam. O texto
+abaixo é o registro de como a decisão anterior foi tomada, e fica.
 
 O usuário escolheu o horizonte de 18 meses **por enquanto** e pediu que a de 12 ficasse anotada para
 ser reexaminada. Este é o item.
@@ -425,21 +446,25 @@ registro do que teria de acontecer para substituí-las.
 **O BC não tem uma neutra, tem duas.** São dois estados latentes no mesmo filtro de Kalman —
 `rr_IS` e `rr_TAY` —, cada um entrando na sua equação, compartilhando a tendência comum `rr_trend`
 e diferindo pelo desvio próprio. Medido na réplica desta casa
-(`monetary_policy/data/modelo_estados.csv`, 99 trimestres): correlação **0,994**, diferença média
+(`modelo_agregado/data/modelo_estados.csv`, 99 trimestres): correlação **0,994**, diferença média
 **0,12 p.p.**, e hoje **7,81% na IS contra 8,28% na Taylor**. São próximas, não iguais. E nenhuma
 das duas é a que o BC **anuncia** nas projeções (4,50% → 4,75% em jun/2024 → 5,00% em dez/2024),
 que fica **2,8 p.p. abaixo** do que o filtro dele estima — a neutra declarada e a neutra do modelo
 são objetos diferentes, e essa diferença sozinha muda a leitura de quão apertada está a política.
 
-**Aqui não há nenhuma das duas, e por dois contornos diferentes:**
+**Aqui não há nenhuma das duas, e desde 2026-09-25 há um contorno só, dividido pelas duas
+equações:**
 
 | | o que faz as vezes de neutra | o que isso custa |
 |---|---|---|
-| (R) Taylor | NTN-B de 10 anos crua, em nível | R2: correlaciona +0,80 com o próprio aperto |
-| (H) IS | nada — o aperto é a inclinação 2a−10a | não há leitura de nível; ver H6 |
+| (R) Taylor | NTN-B de 10 anos crua, em nível, mais a meta | R2: correlaciona +0,80 com o próprio aperto |
+| (H) IS | **a mesma** — o aperto é a Selic contra `rr_10a + meta` | o prêmio de maturidade entra no neutro; ver H6 e H10 |
 
-Os dois foram escolhidos equação a equação, medindo, e cada um tem a sua justificativa registrada.
-O que nenhum dos dois tem é uma estimativa de equilíbrio que se sustente sozinha.
+Até 2026-09-25 a (H) usava a inclinação 2a−10a e não tinha neutro nenhum. A troca pôs as duas
+equações medindo distância até **a mesma âncora** — o que é uma escolha coerente e é também um
+acoplamento: **uma neutra estimada teria de entrar nas duas de uma vez**, e trocá-la numa só
+desfaria a coerência que motivou a troca. O modelo do BC faz o contrário (duas neutras, 0,994 de
+correlação), e isso fica registrado como a diferença que é.
 
 **Três caminhos, e eles não custam o mesmo:**
 
@@ -454,9 +479,9 @@ O que nenhum dos dois tem é uma estimativa de equilíbrio que se sustente sozin
    exatamente o que o plano da pasta declarou **fora de escopo** (*"sem estimação conjunta por
    filtro de Kalman"*). Reabrir isso é decisão de plano, não de implementação.
 
-**O que se destrava se isso for feito:** R2, R3 e R9 nesta equação, e a tabela inteira da §2 de
-[`pendencias_is_eq.md`](pendencias_is_eq.md) — ver **H9** lá, que é o mesmo item visto do outro
-lado. Nada disso bloqueia a forma atual.
+**O que se destrava se isso for feito:** R2, R3 e R9 nesta equação, e H6, H9 e H10 de
+[`pendencias_is_eq.md`](pendencias_is_eq.md) — **H9 e R12 são literalmente o mesmo item** desde
+que as duas equações dividem o neutro. Nada disso bloqueia a forma atual.
 
 ### R10 — Sem vintage, e é a única das quatro assim · *registro, não pendência*
 

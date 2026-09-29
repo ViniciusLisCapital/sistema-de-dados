@@ -42,6 +42,7 @@ Endpoints Focus disponiveis:
 from __future__ import annotations
 
 import logging
+import time
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Sequence
@@ -236,10 +237,31 @@ class BCB:
                 url    = f"{_SGS_BASE}.{code}/dados"
                 params = {"formato": "json", **base_params}
 
-            resp = self._session.get(url, params=params, timeout=self.timeout)
-            resp.raise_for_status()
+            # O SGS as vezes responde 200 com corpo que nao e JSON (vazio ou pagina de
+            # erro). O Retry da sessao so olha o status, entao isso passava direto como
+            # "Expecting value: line 1 column 1" -- 1 a 4 vezes por dia nos logs de
+            # 2026-09. Um novo pedido quase sempre volta certo: tente mais 3 vezes.
+            for tentativa in range(4):
+                resp = self._session.get(url, params=params, timeout=self.timeout)
+                # 404 com "Value(s) not found" e a resposta do SGS para uma janela SEM
+                # dado -- nao e falha, e os loaders em chunks anuais (cmb_ptax,
+                # cmb_reservas_bc, cmb_cambio_contratado) dependem disso para pular os
+                # anos antes do inicio de uma serie.
+                if resp.status_code == 404 and "not found" in resp.text.lower():
+                    logger.info("SGS %s (%s): sem dado no intervalo", name, code)
+                    return pd.DataFrame(columns=["date", "name", "value"])
+                resp.raise_for_status()
+                try:
+                    dados = resp.json()
+                    break
+                except ValueError:
+                    if tentativa == 3:
+                        raise ValueError(
+                            f"SGS {code}: resposta nao e JSON apos 4 tentativas "
+                            f"(inicio do corpo: {resp.text[:80]!r})")
+                    time.sleep(2 * (tentativa + 1))
 
-            df = pd.DataFrame(resp.json())
+            df = pd.DataFrame(dados)
             df["name"]  = name
             df["date"]  = pd.to_datetime(df["data"], format="%d/%m/%Y")
             df["value"] = pd.to_numeric(df["valor"], errors="coerce")
@@ -247,6 +269,7 @@ class BCB:
 
         frames: list[pd.DataFrame] = []
         failures: list[str] = []
+        last_exc: Exception | None = None
 
         workers = min(_SGS_MAX_WORKERS, len(series))
         with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -260,13 +283,24 @@ class BCB:
                     frames.append(fut.result())
                     logger.debug("SGS OK: %s", name)
                 except Exception as exc:
+                    last_exc = exc
                     failures.append(name)
                     logger.error("SGS falha em '%s': %s", name, exc)
 
         if failures:
             logger.warning("SGS: %d serie(s) nao obtidas: %s", len(failures), failures)
 
-        return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+        # Nenhuma serie obtida: levanta com a causa. Devolver um DataFrame vazio (sem as
+        # colunas) fazia o ETL quebrar uma linha depois com um KeyError que nao dizia
+        # nada -- "['date', 'controle', 'value'] not in index" em 2026-09-29 era, na
+        # verdade, o SGS fora do ar para as tres series de uma metrica.
+        if not frames and series:
+            raise RuntimeError(
+                f"SGS: nenhuma das {len(series)} serie(s) obtida ({', '.join(failures)}); "
+                f"ultimo erro: {last_exc}")
+
+        return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(
+            columns=["date", "name", "value"])
 
     def _focus_get(self, endpoint: str, **params) -> dict:
         """Monta URL Focus com $-params literais e executa GET."""

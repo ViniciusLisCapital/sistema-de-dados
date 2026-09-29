@@ -32,6 +32,29 @@ dessazonalizado. E nivel: nao anualizar, nao acumular, nao voltar a suavizar.
 2004-04 -> o mes de referencia da edicao (mensal). Nada antes de 2004-04 -- e
 onde o proprio BCB comeca o grafico.
 
+## Por que NAO ha painel de vintages (medido em 2026-09-29)
+
+O hiato tem `pm_hiato_produto_vintages` porque cada edicao reescreve o passado
+recente e isso e informacao (12 de 86 trimestres ja trocaram de sinal). Aqui a
+mesma medicao, nas 16 edicoes com esta serie (2022-09 -> 2026-09), deu revisao
+pequena e tecnica:
+
+  - ultimos 12 meses de cada edicao: revisao absoluta media 0,03 p.p. por
+    passagem, maxima 0,19; media com sinal ~0 (sem vies).
+  - primeira edicao em que o mes aparece contra a atual: media absoluta
+    0,08 p.p., maxima 0,35 (ago/2022). O hiato revisa na casa de 1 p.p.
+  - as passagens grandes tem causa mecanica e nao de conjuntura: 2023-06 ->
+    2023-09 desloca o trecho retropolado inteiro em ~-0,16 p.p. (reestimacao da
+    retropolacao, deslocamento uniforme), e 2025-06 -> 2025-09 muda os fatores
+    sazonais (revisao com padrao por mes do ano, jan -0,15 / ago +0,12, soma ~0).
+
+Do trecho pos-2012 nao ha como sair leitura do BC: e a PNAD dessazonalizada
+(y/y contra `mt_pnad.taxa_desocupacao` com correlacao 0,9992 na defasagem 0;
+medias de 12 meses a menos de 0,04 p.p.). Por isso a tabela segue com uma
+edicao so. As edicoes 2021-09 a 2022-06 e 2023-03 publicam OUTRA serie -- a
+desocupacao "mensalizada", mes unico, "%, a.s." sem MM3M, comecando em 2012 ou
+depois -- e a guarda de unidade abaixo as recusa; nao sao vintages desta.
+
 ## Banco
 
 macro_brasil.mt_desocupacao_retro -- PRIMARY KEY (date). ~265 linhas.

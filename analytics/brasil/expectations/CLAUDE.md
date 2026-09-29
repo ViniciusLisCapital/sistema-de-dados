@@ -1,10 +1,17 @@
 # analytics/brasil/expectations/ — Panorama de Expectativas (Focus)
 
-Relatório HTML autocontido sobre o **Sistema de Expectativas de Mercado do BCB**, e só ele. Lê as
-três tabelas `expc_focus`, `expc_focus_copom` e `expc_focus_periodo` de `macro_brasil` — sem meta de
-inflação, sem série realizada, sem projeção do Copom. Escopo "só Focus" é decisão explícita do
-usuário (2026-08-24); comparação contra meta/realizado vive nos relatórios de Inflação e Política
-Monetária, cada um com a sua fonte declarada.
+Relatório HTML autocontido sobre o **Sistema de Expectativas de Mercado do BCB**, e só ele. Lê
+`expc_focus` e `expc_focus_periodo` de `macro_brasil` — sem meta de inflação, sem série realizada,
+sem projeção do Copom. Escopo "só Focus" é decisão explícita do usuário (2026-08-24); comparação
+contra meta/realizado vive nos relatórios de Inflação e Política Monetária, cada um com a sua fonte
+declarada.
+
+**Este relatório esvazia com o tempo, e é o plano** (usuário, 2026-09-24: *"a minha ideia com o
+dash de expectations é esvaziá-lo com o tempo e as expectativas irem migrando para os seus dash
+tema"*). A primeira a sair foi a **Selic por reunião** (`expc_focus_copom`): a aba Curva do Copom
+virou a aba Expectativas de Juros do relatório de Política Monetária, ao lado da curva DI, e as
+fontes Copom das abas Dispersão e Bases saíram junto. Ficaram as abas genéricas, que servem todo
+indicador — elas saem quando o último indicador que lhes resta tiver ido para o relatório do tema.
 
 ```powershell
 uv run python analytics/brasil/expectations/generate_report.py   # -> reports/brasil/Expectations.html
@@ -22,11 +29,10 @@ Editar `report.html`, nunca o gerado.
 |---|---|---|
 | Boletim | `expc_focus_periodo` (anual) | mediana de hoje × 1/4/12/52 semanas, por indicador e ano de referência. **Clicar na linha plota a série dela**; o botão `i` abre a definição do indicador. + barra de maiores revisões |
 | Revisão | `expc_focus_periodo` (3 periodicidades) | fixa o período previsto e varre as datas de pesquisa. Eixo X alternável: data da pesquisa ou **meses até o período** (sobrepõe anos diferentes na mesma escala) |
-| Curva do Copom | `expc_focus_copom` | curva por reunião em várias datas, Selic esperada por horizonte ao longo do tempo, e mapa de calor horizonte × semana |
 | Horizonte Móvel | `expc_focus` | IPCA/IGP-M e componentes a 12m/24m, toggles suavizada e base, + inclinação 24m−12m |
 | Trajetória | `expc_focus_periodo` | a curva à frente inteira numa semana (X = período previsto), com fotografias antigas sobrepostas + deslocamento |
-| Dispersão | as três | desvio-padrão, coef. de variação, amplitude (só onde há min/max), tamanho do painel |
-| Bases | `expc_focus` + `expc_focus_copom` | base 0 (30 dias) × base 1 (4 dias úteis) e o gap entre elas |
+| Dispersão | as duas | desvio-padrão, coef. de variação, amplitude (só onde há min/max), tamanho do painel |
+| Bases | `expc_focus` | base 0 (30 dias) × base 1 (4 dias úteis) e o gap entre elas — uma fonte só, então sem seletor de fonte |
 | Apêndice | cobertura medida no banco | as 4 reformulações, definição das bases, grade semanal, o que ficou de fora |
 
 ## Grade semanal e compressão do payload
@@ -43,10 +49,10 @@ Duas regras de redução **diferentes de propósito**, e a diferença importa se
   todo indicador de uma mesma semana vem da **mesma data de pesquisa** — é o que torna a tabela do
   Boletim uma leitura transversal honesta. Custo: uma série que não reportou naquela data específica
   perde a semana em vez de herdar o ponto anterior da semana.
-- **`expc_focus` e `expc_focus_copom`** reduzem por `(série, semana)` em pandas — último ponto que
-  *aquela série* tem na semana. As tabelas são pequenas e a leitura é série a série.
+- **`expc_focus`** reduz por `(série, semana)` em pandas — último ponto que *aquela série* tem na
+  semana. A tabela é pequena e a leitura é série a série.
 
-`minimo`/`maximo` só entram nos stores de `expc_focus` e `expc_focus_copom`. Para o `periodo` vão só
+`minimo`/`maximo` só entram no store de `expc_focus`. Para o `periodo` vão só
 mediana, desvio-padrão e respondentes: as cinco estatísticas em 268 mil linhas dobrariam o arquivo
 por uma leitura secundária. É por isso que a métrica "Amplitude" da aba Dispersão fica indisponível
 nas três periodicidades.
@@ -95,23 +101,14 @@ Duas coisas foram **medidas** contra o banco para o card não afirmar o que não
   preços), **2021-09-13/14** (sai Produção industrial e o PIB setorial *trimestral*, entram os 5
   componentes do IPCA, desocupação e os componentes de demanda) e 2026-01-29. Quase todo componente
   começa em set/2021 por causa disso — não é falha de carga.
-- **A base 1 não cobre o histórico todo**: começa em 2014-01 nos endpoints de inflação e 2021-03 no
-  de Selic. `expc_focus_periodo` só tem base 0 (decisão de escopo — dobraria 1,28 M de linhas).
-- **A ordem das reuniões do Copom não é alfabética** e não é derivável da data da pesquisa. O
-  `_parseReuniao()` do template extrai `(ano, número)` de `"R<n>/<ano>"`; não há calendário do Copom
-  no payload, e o eixo X da curva é a sequência de reuniões, não o calendário.
-- **Eixo de categoria com mais de uma curva precisa de `categoryarray` explícito.** O Plotly ordena
-  categoria por **ordem de aparição** entre os traces. Uma curva de 12 semanas atrás cota reuniões
-  que já passaram (R4/26, R5/26): como são categorias novas para o eixo, iam parar depois de R5/28,
-  no canto direito. `_copCategorias()` monta a união ordenada por `ord` e o layout passa
-  `categoryorder: 'array'`. Foi bug visual real (2026-08-24) — qualquer gráfico de categoria novo
-  aqui tem de fazer o mesmo.
+- **A base 1 não cobre o histórico todo**: começa em 2014-01 nos endpoints de inflação.
+  `expc_focus_periodo` só tem base 0 (decisão de escopo — dobraria 1,28 M de linhas).
+- **Eixo de categoria com mais de uma série precisa de `categoryarray` explícito.** O Plotly ordena
+  categoria por **ordem de aparição** entre os traces. Foi bug visual real (2026-08-24) na curva do
+  Copom, que saiu daqui; vale para qualquer gráfico de categoria novo.
 - **"Período vigente" se mede pelo FIM, não pelo começo.** Filtrar `ref_date >= hoje` tira o ano
   corrente do seletor a partir de fevereiro — em agosto de 2026 a aba Revisão abria em 2027.
   `vigenteOuFuturo()` compara o fim do período (+12/+3/+1 mês conforme a periodicidade).
-- **Δ de horizonte tem de comparar a mesma reunião.** No KPI do Copom, "a 1ª reunião à frente de 4
-  semanas atrás" pode ser outra reunião (houve Copom no meio); a comparação é por `reuniao`, não por
-  posição na fila.
 - **Câmbio é fim de período**, não média (medido contra a PTAX realizada, 9 de 10 anos).
 - **A unidade `%` cobre variação e nível** — IPCA e Selic na mesma coluna. Quem separa é a família.
 - Indicador novo na fonte cai em `"Outros"` no mapa `_FAMILIAS` do gerador; o teste JS falha se isso
@@ -136,9 +133,8 @@ estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own h
 ## Pending
 
 - **Confirmação visual num browser real** — o ambiente não tem browser, e a primeira rodada de
-  revisão no browser (2026-08-24) já pagou: o eixo desordenado da curva do Copom só aparece com duas
-  curvas na tela. Falta olhar: (a) o mapa de calor da aba Copom, único gráfico não-linha do
-  relatório; (b) a tabela do Boletim com scroll horizontal e cabeçalho fixo, agora com linha
+  revisão no browser (2026-08-24) já pagou: o eixo desordenado da curva do Copom só aparecia com duas
+  curvas na tela. Falta olhar: (b) a tabela do Boletim com scroll horizontal e cabeçalho fixo, agora com linha
   clicável e botão `i` — em especial se o card de definição se posiciona bem numa linha do fim da
   tabela (ele vira para cima quando não cabe embaixo) e dentro do scroll horizontal; (c) o eixo
   invertido ("meses até o período") da aba Revisão.

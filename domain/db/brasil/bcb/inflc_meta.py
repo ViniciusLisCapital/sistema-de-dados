@@ -2,7 +2,7 @@
 Meta para a inflacao (CMN). Carregada para a replica do modelo agregado de
 pequeno porte do BCB (regra de Taylor e PPC), removida em 2026-08, mas segue
 com consumidor: analytics/brasil/exchange_rate/models/ppp_equilibrium.py e
-analytics/brasil/monetary_policy/phillips_excel.py.
+analytics/brasil/structural_model/experimentos/phillips_excel.py.
 
 Serie SGS (anual):
   meta_inflacao 13521 — Meta para a inflacao

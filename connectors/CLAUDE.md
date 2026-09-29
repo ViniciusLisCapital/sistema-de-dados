@@ -90,6 +90,13 @@ df = bcb.get_focus(
   componentes de demanda do PIB e Câmbio/IPCA trimestrais); 2026-01-29 encerra Top5 IGP-M e Top5 IPCA
   Administrados. Medir antes de assumir que uma série cobre o histórico inteiro.
 - Paralelismo: `ThreadPoolExecutor` para múltiplas séries SGS simultâneas.
+- **O SGS às vezes responde com corpo que não é JSON** (página HTML), de 1 a 4 vezes por dia nos
+  logs de 2026-09, e o `Retry` da sessão só olha o status. `fetch_one` tenta mais 3 vezes (2/4/6 s).
+  **404 com "Value(s) not found" = janela sem dado**, devolvido como frame vazio com colunas, e não
+  como falha — os loaders em chunks anuais dependem disso. **Se nenhuma série do pedido vier,
+  `get_sgs`/`get_sgs_ultimos` levantam** com a causa, em vez de devolver um `DataFrame()` sem
+  colunas: foi isso que virou `KeyError: ['date', 'controle', 'value'] not in index` no
+  `cred_credito_controle_capital` em 2026-09-29.
 
 ### `connectors/bcb_agenda.py` — Agenda de divulgações do BCB (feeds ICS)
 
@@ -276,7 +283,30 @@ valor diferente em cada edição. Nenhuma outra fonte do projeto diz o que o BCB
   exige o "acumulado em 12 meses" justamente para levantar em vez de carregar R$ como se fosse %); e
   **emendar duas fontes do anexo só é seguro se as duas publicarem o MESMO conjunto de séries** —
   onde o boxe publica um nível a mais que o gráfico recorrente, a edição nova sobrepõe o pai e não o
-  filho, e a hierarquia deixa de fechar.
+  filho, e a hierarquia deixa de fechar. E uma terceira, de 2026-09: **um gráfico recorrente pode
+  simplesmente sair do relatório** (o fluxo financeiro sumiu da edição 2026-09 junto com uma
+  reorganização da seção de crédito). "Nenhuma aba casa o padrão" tem duas causas com respostas
+  opostas — renomeação pede mudar o padrão, retirada não tem padrão a corrigir —, então o script de
+  domínio deve testar um padrão frouxo antes de concluir qual das duas é.
+
+### `connectors/bcb_qpc.py` — resultados do Questionário Pré-Copom (xlsx por reunião)
+
+```python
+from connectors.bcb_qpc import QPC
+qpc = QPC()
+url = qpc.localizar(281, date(2026, 9, 16))   # numero e data da DECISAO (calendario_reunioes)
+wb = qpc.abrir(url)                           # openpyxl, data_only
+qpc.publicado_em(wb)                          # date(2026, 9, 23), lida da aba Capa
+```
+
+- Um arquivo por edição em `conteudo/relinvest/PrCopom/AAAA_MM_CopomNNN_QPC_SumarioQuantitativo.xlsx`,
+  desde a 238ª (mai/2021). Sem listagem: a página é SPA e nenhuma rota `api/servico/sitebcb/*`
+  responde por ela (testado `qpc`, `questionarioprecopom`, `prcopom`).
+- **O `AAAA_MM` não é confiável** (a 249ª, decidida em set/2022, saiu como `2022_06`), então
+  `localizar()` tenta o mês da reunião e o seguinte e depois varre os 36 meses do ano anterior ao
+  seguinte. Existência por GET de 2 bytes, a mesma escolha do `bcb_rpm.py`.
+- A 239ª não responde em mês nenhum de 2020-2022. A capa da 246ª traz a data da 247ª — quem corrige
+  é o ETL (`domain/db/brasil/bcb/expc_qpc.py`), não o connector.
 
 ### `connectors/fred.py` — API FRED (Federal Reserve)
 

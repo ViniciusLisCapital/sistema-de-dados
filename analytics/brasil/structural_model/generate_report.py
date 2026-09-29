@@ -20,8 +20,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from analytics.brasil.monetary_policy import modelo_agregado as _mp_agregado
-from analytics.brasil.structural_model import panel, simulator
+from analytics.brasil.structural_model.modelo_agregado import modelo_agregado as _mp_agregado
+from analytics.brasil.structural_model import irf, panel, simulator
 from analytics.brasil.structural_model.equations import (
     expectations,
     fx,
@@ -150,15 +150,23 @@ INFO = {
         eixo="taxa real de mercado, % ao ano",
         fonte="B3, curva de NTN-B do arquivo de pregão",
     ),
+    "gap_juro": dict(
+        nome="Selic contra a âncora",
+        full="Selic menos o juro nominal de equilíbrio (juro real de 10 anos mais a meta)",
+        desc="A medida de aperto que a curva IS usa. Positivo é política apertada: a "
+             "Selic acima do ponto onde ela pararia se a inflação estivesse na meta. É a "
+             "mesma âncora que a regra de juros persegue, então as duas contas medem "
+             "distância até o mesmo lugar — e é por ela que a Selic chega ao produto.",
+        eixo="Selic − (juro real de 10 anos + meta), p.p.",
+        fonte="Banco Central (Selic), B3 (NTN-B) e CMN (meta)",
+    ),
     "g_rr": dict(
-        nome="Aperto monetário",
+        nome="Inclinação da curva real",
         full="Inclinação da curva real: juro real de 2 anos menos o de 10 anos",
-        desc="A medida de aperto que a curva IS usa. Positivo é política apertada: o juro "
-             "de dois anos acima do de dez significa que o Banco Central está segurando a "
-             "economia agora e o mercado espera que solte depois. Ela é a diferença entre "
-             "dois preços observados no mesmo dia, então não depende de nenhuma estimativa "
-             "de qual seria o juro de equilíbrio — que é justamente a conta que ninguém "
-             "sabe fazer sem discordar.",
+        desc="A outra forma de medir o aperto, e a que a curva IS usou antes: o juro "
+             "real de dois anos no lugar da Selic deflacionada pela meta, contra o mesmo "
+             "juro de dez. As duas andam juntas — a diferença entre elas é só como a "
+             "postura da política é lida — e ela fica no gráfico para isso ser visto.",
         eixo="juro real de 2 anos − de 10 anos, p.p.",
         fonte="B3, curva de NTN-B do arquivo de pregão",
     ),
@@ -229,9 +237,36 @@ INFO.update({
 })
 
 _ORDEM = ["pi_q", "pi_is_q", "pi_ia_q", "pi_ii_q", "pi_im_q",
-          "pi_e", "hiato", "rr_2a", "rr_10a", "g_rr",
+          "pi_e", "hiato", "rr_2a", "rr_10a", "gap_juro", "g_rr",
           "de", "pi_agr_usd", "pi_met_usd",
           "selic", "meta_12m", "pi_e_2a", "meta_24m", "pi_bcb"]
+
+# As taxas de inflacao da aba de dados, que ela deixa ler tambem em 12 meses. So elas:
+# cambio e commodities tambem sao variacoes do trimestre, mas o que se le delas e o
+# choque de cada trimestre, e nao ha numero publicado de 12 meses para conferir.
+_INFL_12 = ["pi_q", "pi_is_q", "pi_ia_q", "pi_ii_q", "pi_im_q"]
+
+
+def _doze_dados(df: pd.DataFrame) -> dict:
+    """As taxas da aba de dados encadeadas em 12 meses, e o gabarito do IPCA cheio.
+
+    A mesma `acum12` da aba da curva de Phillips, importada e nao reescrita. As tres
+    primeiras janelas nao existem, e um trimestre que falte apaga as quatro janelas
+    que o contem -- o trimestre em aberto, portanto, nao ganha leitura de 12 meses.
+    O gabarito e o IPCA de 12 meses PUBLICADO: encadear quatro trimestres nossos tem
+    de reproduzi-lo, e o erro vai para a pagina em vez de ficar no teste.
+    """
+    s12 = {c: phillips_sub.acum12(df[c]) for c in _INFL_12}
+    ref = df["ipca_12m"]
+    e = (s12["pi_q"] - ref).dropna().abs()
+    return {
+        "s12": {c: _ser(v) for c, v in s12.items()},
+        "ref12": _ser(ref),
+        "n": int(len(e)),
+        "erro_medio": round(float(e.mean()), 4),
+        "erro_max": round(float(e.max()), 4),
+    }
+
 
 # Rotulo e definicao de cada grupo na aba do modelo. Reaproveita o texto do insumo
 # correspondente, para os dois nao divergirem.
@@ -454,6 +489,14 @@ def construir() -> dict:
         print("AVISO: simulador nao montado (%s: %s)" % (type(exc).__name__, exc))
         sim = None
 
+    # O impulso-resposta roda sobre o simulador montado: sem ele nao ha sistema a chocar.
+    # O que vai no payload sao os alvos e o gabarito; a conta roda no navegador.
+    try:
+        irf_blk = irf.construir(sim) if sim else None
+    except Exception as exc:  # noqa: BLE001
+        print("AVISO: impulso-resposta nao montado (%s: %s)" % (type(exc).__name__, exc))
+        irf_blk = None
+
     return {
         "meta": {
             "gerado": dt.datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -469,12 +512,14 @@ def construir() -> dict:
         "s": {c: _ser(df[c]) for c in _ORDEM},
         "info": {c: INFO[c] for c in _ORDEM},
         "ordem": _ORDEM,
+        "doze": _doze_dados(df),
         "sub": sub,
         "exp": exp,
         "is": eqis,
         "tay": tay,
         "fx": cam,
         "sim": sim,
+        "irf": irf_blk,
     }
 
 
@@ -558,7 +603,7 @@ def _load_exp(df: pd.DataFrame) -> dict:
 
 
 # As modas publicadas da eq. (2) do BC (C2 Boxe3 Tab 1, RI jun/2024), copiadas de
-# `monetary_policy.modelo_agregado.BCB`/`BCB_IC` -- importadas de la e nao redigitadas,
+# `modelo_agregado.modelo_agregado.BCB`/`BCB_IC` -- importadas de la e nao redigitadas,
 # para as duas paginas nao divergirem.
 #
 # A eq. (2) do BC e  h = b1*h(-1) - b2*r_hat(-1)/4 - b3*rp_hat + b4*h_mundo + s^h,
@@ -572,9 +617,13 @@ _BCB_IC = _mp_agregado.BCB_IC
 BC_EQ2 = {
     "b1": dict(rot="Hiato do trimestre anterior", v=_BCB["b1"], ic=_BCB_IC["b1"],
                nosso="h1", comparavel=True),
-    "b2": dict(rot="Juro real contra o neutro do filtro, do trimestre anterior",
-               v=_BCB["b2"], ic=_BCB_IC["b2"], nosso="h2", comparavel=False,
-               efeito=-_BCB["b2"] / 4.0),
+    "b2": dict(rot="Efeito de 1 p.p. de juro real acima do neutro, do trimestre anterior",
+               v=-_BCB["b2"] / 4.0,
+               ic=(-_BCB_IC["b2"][1] / 4.0, -_BCB_IC["b2"][0] / 4.0),
+               nosso="h2", comparavel=True, efeito=-_BCB["b2"] / 4.0,
+               # o que o BC publica e b2 sobre r_hat/4; a linha mostra o EFEITO por
+               # ponto, que e a unidade do nosso h2. Guardado para a nota poder dizer.
+               b2_publicado=_BCB["b2"], ic_publicado=_BCB_IC["b2"]),
     "b3": dict(rot="Condições financeiras (prêmio de risco)", v=_BCB["b3"],
                ic=_BCB_IC["b3"], nosso=None, comparavel=True),
 }
@@ -615,7 +664,7 @@ def _load_is(df: pd.DataFrame) -> dict:
     # crises. E identidade -- as parcelas mais o residuo somam o hiato observado.
     contrib = {
         "inercia": _ser(r["coef"]["h1"] * dd["hiato_l1"]),
-        "aperto": _ser(r["coef"]["h2"] * dd["g_rr_l"]),
+        "aperto": _ser(r["coef"]["h2"] * dd["ap_l"]),
         "crise": _ser(sum(r["coef"][k] * dd[k] for k in r["dummies"])),
     }
 
@@ -637,7 +686,7 @@ def _load_is(df: pd.DataFrame) -> dict:
         "hac_lags": r["hac_lags"], "estimador": r["estimador"],
         "lag_grr": r["lag_grr"],
         "obs": _ser(r["obs"]), "fit": _ser(r["fit"]), "resid": _ser(r["resid"]),
-        "grr": _ser(dd["g_rr_l"]),
+        "aperto_serie": _ser(dd["ap_l"]),
         "coef": _coef_is(r),
         "persistencia": round(r["persistencia"], 6),
         "estavel": bool(r["estavel"]),
@@ -654,6 +703,7 @@ def _load_is(df: pd.DataFrame) -> dict:
         "comparar": comp,
         "rr": [{"key": r["key"], "desc": r["desc"], "escolhida": bool(r["escolhida"]),
                 "h2": round(r["h2"], 6), "t": round(r["t"], 2),
+                "sd": round(r["sd"], 4), "h2_dp": round(r["h2_dp"], 6),
                 "r2": round(r["r2"], 4), "n": int(r["n"])}
                for r in is_curve.comparar_rr(df)],
         "repouso": {"volta_a_zero": bool(rep["volta_a_zero"]),
@@ -942,8 +992,9 @@ def run(output: str = _SAIDA) -> None:
             v = sm["var"][k]
             prod = v["produzida_por"]
             quem = ("(%s)%s" % (prod, "" if v["produtor_no_sim"] else ", FORA do sim"))                if prod else "-"
-            print("      %-8s %-9s produzida por %-16s partes: %s"
-                  % (k, v["tipo"], quem, ", ".join(v["partes"] or []) or "-"))
+            print("      %-8s %-9s %-10s produzida por %-16s lida por: %s"
+                  % (k, v["tipo"], v.get("regiao") or "-", quem,
+                     ", ".join(v["consumida_por"])))
 
 
 if __name__ == "__main__":

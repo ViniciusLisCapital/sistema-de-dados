@@ -536,33 +536,30 @@ for d in com_proc:
               bruto is not None and S._para_gran(bruto, gran) is not None,
               "leu " + repr(bruto))
 
-check("politica monetaria declara os 3 procedimentos, na ordem de execucao",
-      [p["id"] for p in procs] == ["painel", "modelo", "previsao"],
+# Eram tres ate 2026-09-24 (painel -> estimacao do modelo agregado -> previsao). Os dois
+# primeiros sairam com o Apendice, o unico lugar do relatorio que ainda lia o modelo -- e
+# um passo e divida, nao recurso, entao o que se exige e que nao voltem sem motivo.
+check("politica monetaria declara so a previsao",
+      [p["id"] for p in procs] == ["previsao"],
       [p["id"] for p in procs])
 
 refs_art = {d["ref"] for d in mp["deps"] if d["kind"] == "artifact"}
 todos_writes = [r for p in procs for r in p["writes"]]
 check("todo `writes` e dep artifact declarada",
       set(todos_writes) <= refs_art, sorted(set(todos_writes) - refs_art))
-# O sigma de r* e escrito pelo painel e LIDO pela estimacao: fora do `writes` ele
-# desaparece da aba, e a unica pista de que falta e a estimacao estourando.
-check("o painel declara o sigma de r* entre o que grava",
-      any(r.endswith("modelo_sigma_rr.txt") for r in todos_writes), todos_writes)
+# Nenhum artefato do modelo agregado sobrou como dependencia: o relatorio nao le mais nenhum.
+check("nenhum artefato modelo_* sobrou nas dependencias",
+      not [r for r in refs_art if "/modelo_" in r], sorted(refs_art))
 check("nenhum artefato e gravado por dois procedimentos",
       len(todos_writes) == len(set(todos_writes)),
       [r for r in set(todos_writes) if todos_writes.count(r) > 1])
 # Todo passo tem de ter corte, senao nunca entra no Regerar.
-check("os 3 passos declaram cut_from e reads",
+check("todo passo declara cut_from e reads",
       all(p.get("cut_from") and p.get("reads") for p in procs),
       [(p["id"], bool(p.get("cut_from")), len(p.get("reads") or [])) for p in procs])
-check("painel e modelo sao trimestrais, previsao e diaria",
-      [p.get("granularidade") for p in procs] == ["trimestre", "trimestre", "dia"],
+check("a previsao e diaria",
+      [p.get("granularidade") for p in procs] == ["dia"],
       [p.get("granularidade") for p in procs])
-# A cascata do real: `modelo` le o painel que `painel` grava.
-modelo = next(p for p in procs if p["id"] == "modelo")
-painel = next(p for p in procs if p["id"] == "painel")
-check("o modelo le o artefato que o painel grava (a cascata declarada)",
-      set(modelo["reads"]) <= set(painel["writes"]), modelo["reads"])
 
 prev = next(p for p in procs if p["id"] == "previsao")
 dep_cut = [d for d in mp["deps"] if d["ref"] == prev["cut_from"]][0]
@@ -676,8 +673,18 @@ except ImportError as exc:
 
 try:
     linha = S.estado(doc, chaves=["brasil_monetary_policy"])[0]
-    check("estado() do real traz os 3 procedimentos",
-          linha["n_proc"] == 3, linha["n_proc"])
+    check("estado() do real traz o procedimento da previsao",
+          linha["n_proc"] == 1, linha["n_proc"])
+    # A mesma tabela lida por dois dashboards por colunas diferentes: `pm_copom_projecoes` e
+    # `vintage` aqui e `date` no Modelo Estrutural. Com a consulta em lote indexada so por
+    # ref, o estado de TODOS os dashboards juntos -- que e o que a aba mostra -- trazia o
+    # `date` (2029) para este card e o acusava de dado novo contra o proprio retrato.
+    _junto = next(x for x in S.estado(doc) if x["key"] == "brasil_monetary_policy")
+    _pj = lambda l: next(d["ultimo"] for d in l["deps"]  # noqa: E731
+                         if d["ref"] == "macro_brasil.pm_copom_projecoes")
+    check("pm_copom_projecoes sai pela vintage mesmo com todos os dashboards juntos",
+          _pj(_junto) == _pj(linha) and not str(_pj(_junto)).startswith("2029"),
+          (_pj(_junto), _pj(linha)))
     for pr in linha["procedimentos"]:
         check(f"  {pr['id']}: veredito de corte definido",
               pr["atrasado"] in (True, False), pr["atrasado"])

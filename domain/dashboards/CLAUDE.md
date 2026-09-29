@@ -17,19 +17,26 @@ Sem a terceira, apertar "Atualizar" no calendário deixava o banco em dia e todo
 ## Arquivos
 
 - **`manifest.yaml`** — uma entrada por dashboard: saída, módulo com `run()`, comando, custo
-  medido de geração, e a lista de dependências. Hoje 12 dashboards, 138 dependências —
+  medido de geração, e a lista de dependências. Hoje 12 dashboards, 125 dependências —
   **todos com `module`**: o Oráculo, o único que não tinha, saiu em 2026-09-23 (ver o
   comentário no lugar dele no manifesto).
 - **`status.py`** — resolve o estado ao vivo de cada dependência e compara com o *stamp*.
 
 **Os campos `note:` são texto de PRODUTO, não comentário** (2026-09-01, correção do usuário
-sobre um print: *"você está transferindo nossa conversa daqui para o dash"*). Eles são
-renderizados no card da aba Status dashboard, para alguém que nunca viu aquele dashboard — então
-não levam nome de função/arquivo do repositório, nome de tabela, data de decisão nossa ("desde
-2026-08-31") nem pendência nossa ("segundos não medidos"). O que é decisão, medição e "por que"
-vai em **comentário YAML** (`#`), que não sai no relatório, ou neste arquivo. Um guarda em
-`tests/test_release_calendar_js.js` roda contra o payload real e reprova a lista de termos —
-o teste falha aqui, no manifesto, não no template.
+sobre um print: *"você está transferindo nossa conversa daqui para o dash"*): escritos para alguém
+que nunca viu aquele dashboard, sem nome de função/arquivo do repositório, nome de tabela, data de
+decisão nossa nem pendência nossa. O que é decisão, medição e "por que" vai em **comentário YAML**
+(`#`) ou neste arquivo. **Desde 2026-09-24 o card não os imprime** — ele virou só a tabela de
+quatro colunas (onde mora, dependência, papel, último dado), a pedido do usuário —, então quem os
+lê hoje é quem abre o manifesto. O `role:` de cada dependência continua na tela e segue a mesma
+regra.
+
+**Uma tabela pode ser lida por dois dashboards por colunas diferentes**, e o estado em lote de
+`estado()` é indexado por `(ref, coluna)` por isso (2026-09-24). `pm_copom_projecoes` é `vintage`
+na Política Monetária e `date` no Modelo Estrutural; indexado só por ref, o último a entrar vencia,
+o card da Política Monetária mostrava 2029-01-01 e acusava "dado novo" contra o próprio retrato —
+que `stamp()` grava por dashboard, pela coluna certa. Só aparecia com todos os dashboards juntos,
+que é justamente o que a aba mostra; `estado(chaves=[um])` dava o número certo.
 
 ## Por que declarado à mão
 
@@ -227,9 +234,13 @@ HTML com as fontes dele, isto compara um *insumo* com as fontes. Se virasse `des
 veredito não se apagaria com uma regeração e `regerar_afetados()` viveria em laço. Sai como
 `n_proc_atrasados`, sinal próprio, e o recálculo entra uma vez, por dentro do `gerar()`.
 
-Declarado em **`brasil_monetary_policy`** (`painel`, `modelo`, `previsao`) e em
-**`brasil_inflation`** (o fetch do CSV do IPCA). `rodar_procedimento()` + `--rodar KEY:PROC`
-continuam existindo para rodar um passo isolado sem gerar, mas não há botão para isso.
+Declarado só em **`brasil_monetary_policy`**, e só um passo: `previsao`. O fetch do CSV do IPCA
+da inflação saiu em 2026-09-11; `painel` e `modelo` (a estimação do modelo agregado) saíram em
+2026-09-24 com o Apêndice da Política Monetária, que era o único leitor deles — e o `salvar()` da
+previsão deixou de rodar o modelo, que ele simulava duas vezes por reunião para um número que o
+relatório descartava (55 s → 15 s). A cascata entre passos continua suportada e testada com
+procedimentos sintéticos. `rodar_procedimento()` + `--rodar KEY:PROC` continuam existindo para rodar
+um passo isolado sem gerar, mas não há botão para isso.
 
 ## `afetados()` / `regerar_afetados()` — fechar o circuito dado → métrica
 
@@ -331,17 +342,10 @@ de entrar* — tipicamente um dashboard, às vezes nenhum.
 - **`procedures` só existe em `brasil_monetary_policy`.** Candidato direto: o `fetch_bcb.py` do
   relatório de inflação (hoje com `refresh:` em texto). Os artefatos de extração manual de PDF não
   automatizam, e ali o texto continua sendo a resposta honesta.
-- **O Regerar ficou síncrono e mais longo** — com a previsão atrasada são ~80s, e na virada de
-  trimestre ~6 min com o botão em "recalculando...". Mesma saída dos outros dois se incomodar:
-  job id + polling.
-- **`seconds` de `painel` e `modelo` não foram medidos** (90 e 240 são estimativa; o de `previsao`,
-  55, foi medido em 2026-08-31). O número aparece no tempo que o botão anuncia, então a estimativa
-  errada é visível. `gerar()` devolve o tempo real e ninguém o grava de volta — mesma pendência do
-  `build_seconds`.
-- **A `granularidade` de `painel`/`modelo` é uma aposta declarada, não medida**: se algum insumo
-  deles for revisado dentro do mesmo trimestre, o passo não vai perceber. O corretivo é rodar
-  `--rodar` à mão; o alternativo seria comparar `MAX(date)` por tabela contra um stamp por passo,
-  que é mais preciso e mais máquina.
+- **O Regerar é síncrono** — com a previsão atrasada são ~35 s (19 de geração + 15 de
+  recálculo). Até 2026-09-24, com os passos do modelo, a virada de trimestre custava ~6 min.
+- **`gerar()` devolve o tempo real de cada passo e ninguém o grava de volta** — mesma pendência do
+  `build_seconds`; o `seconds` da previsão (15) foi medido à mão em 2026-09-24.
 - ~~**O Oráculo não tem `module` com `run()`**~~ — **resolvido tirando-o da lista** (2026-09-23,
   a pedido do usuário). Era o único sem `module`, então o card dele nunca tinha botão nem
   veredito: ocupava uma linha da aba para dizer "não dá para conferir" todo dia. O ramo que trata

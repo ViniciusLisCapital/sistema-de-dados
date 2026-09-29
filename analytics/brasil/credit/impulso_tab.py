@@ -64,6 +64,8 @@ mensal cruza zero em nov/2021 (+0,08), o mes que o post cita como de neutralidad
 As diferencas residuais em 2020 (total +4,29 vs. +4,4 publicado) sao revisoes do BCB
 no saldo e no PIB desde a publicacao do post, nao divergencia de metodo.
 """
+from datetime import date
+
 from analytics.brasil.credit import transforms as tf
 from analytics.report_structure import tree_helpers as th
 
@@ -359,10 +361,57 @@ def _fluxo_variants(dates: list[str], values: list) -> dict:
     return {"fluxo": par(values), "impulso": par(compute_impulso_bcb(dates, values))}
 
 
-def build_fluxo(raw: dict) -> dict:
+# Tabela que prova que uma edicao do RPM mais nova que a do fluxo ja foi LIDA pelo sistema:
+# sai do mesmo anexo, no mesmo grupo de divulgacao, e grava `vintage` = edicao.
+FLUXO_TABELA_EDICAO = "pm_hiato_produto"
+
+_MESES_PT = ["jan", "fev", "mar", "abr", "mai", "jun",
+             "jul", "ago", "set", "out", "nov", "dez"]
+
+
+def _mes_pt(iso: str) -> str:
+    d = date.fromisoformat(str(iso)[:10])
+    return f"{_MESES_PT[d.month - 1]}/{d.year}"
+
+
+def aviso_fluxo(reg_fluxo: dict | None, reg_edicao: dict | None,
+                ref_date: str | None) -> str | None:
+    """A linha discreta do grafico quando o BCB parou de publicar o fluxo, ou None.
+
+    Afirma "o RPM saiu sem este grafico", entao so a escreve com os FATOS do registro de
+    execucao do ETL (domain/db/execucoes.py) na mao, nunca por deducao do banco:
+
+      1. uma edicao mais nova que a do fluxo ja esta no sistema (`reg_edicao.max`);
+      2. o script do fluxo rodou SEM ERRO depois que ela entrou (`ok_em` >= o momento em
+         que a outra tabela mudou) -- e o loader so termina sem erro com a edicao atrasada
+         pelo caminho da AUSENCIA do grafico. Se o grafico tivesse sido renomeado, a
+         ultima tentativa teria falhado, e ai a resposta honesta e nao dizer nada;
+      3. a ultima tentativa deu certo (`ok`).
+
+    Falta de registro (outra maquina, log apagado) = sem aviso: "nao sei" nao vira alerta.
+    """
+    if not reg_fluxo or not reg_edicao or not ref_date:
+        return None
+    ed_fluxo, ed_nova = reg_fluxo.get("max"), reg_edicao.get("max")
+    entrou = reg_edicao.get("mudou_em") or reg_edicao.get("desde")
+    if not (reg_fluxo.get("ok") and reg_fluxo.get("ok_em") and ed_fluxo and ed_nova
+            and entrou and str(ed_nova) > str(ed_fluxo)
+            and str(reg_fluxo["ok_em"]) >= str(entrou)):
+        return None
+    primeira = _shift_months(str(ed_fluxo)[:10], -3)  # a edicao seguinte a do fluxo
+    if primeira >= str(ed_nova)[:10]:
+        sem = f"a edição de {_mes_pt(ed_nova)} saiu sem ele"
+    else:
+        sem = f"as edições de {_mes_pt(primeira)} a {_mes_pt(ed_nova)} saíram sem ele"
+    return (f"Série interrompida em {_mes_pt(ref_date)}: o último RPM a publicar este "
+            f"gráfico foi o de {_mes_pt(ed_fluxo)}, e {sem}.")
+
+
+def build_fluxo(raw: dict, reg_fluxo: dict | None = None,
+                reg_edicao: dict | None = None) -> dict:
     """`raw`: {name: {"dates", "values"}} lido cru de `cred_fluxo_financeiro` (ja em %
     do PIB acumulado em 12 meses). Sem PIB e sem IPCA: a fonte publica na unidade
-    final."""
+    final. `reg_*`: registros de execucao do ETL, so para `aviso_fluxo()`."""
     series = {k: _fluxo_variants(s["dates"], s["values"])
               for k, s in raw.items() if k in FLUXO_KEYS}
 
@@ -370,4 +419,5 @@ def build_fluxo(raw: dict) -> dict:
     ref_date = anchor["dates"][-1] if anchor["dates"] else None
 
     return {"tree": FLUXO_TREE, "anchor": FLUXO_ANCHOR,
-            "series": series, "ref_date": ref_date}
+            "series": series, "ref_date": ref_date,
+            "aviso": aviso_fluxo(reg_fluxo, reg_edicao, ref_date)}

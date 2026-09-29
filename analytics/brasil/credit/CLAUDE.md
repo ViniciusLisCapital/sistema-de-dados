@@ -221,8 +221,27 @@ Five things worth not re-deriving:
   re-deriving a splice rule (*one edition per month*), not just loading more columns.
 - **The impulse itself is not a published series.** It came in a *boxe*, twice in the 20 editions with
   an annex (set/2021 and mar/2025), and footnote 1 of the first says there is "no intention of
-  calculating these series recurrently or systematically". The flow is what recurs; the impulse is
+  calculating these series recurrently or systematically". The flow is what recurred; the impulse is
   derived here.
+- **The flow stopped recurring with the set/2026 edition.** That RPM came out without the chart —
+  not renamed: no annex tab and no PDF page mentions "fluxo financeiro", the credit section was
+  reorganized around it. The loader now reloads the last edition that publishes it (jun/2026, data to
+  **abr/2026**) with a warning instead of failing, so this table is frozen there until an edition
+  brings the chart back. See "Quando a edicao NAO publica o grafico" in the loader's docstring.
+  **The chart says so itself** (2026-09-29, user request: *"um aviso discreto no gráfico"*): one mono
+  line with a gold rule under the source line, `Série interrompida em abr/2026: o último RPM a publicar
+  este gráfico foi o de jun/2026, e a edição de set/2026 saiu sem ele.` It is built by
+  `impulso_tab.aviso_fluxo()` from the **ETL execution registry** (`domain/db/execucoes.py`), not from
+  the database, because "the BCB published an edition without it" is only provable there: a newer
+  edition was read (`pm_hiato_produto`, same annex, same release group) **and** the fluxo loader ran
+  without error after it — which it only does on the absence path. A rename leaves the last attempt
+  failed, and then the chart says nothing; no registry (another machine) says nothing too.
+  `pm_hiato_produto` is read only as a **witness** that a newer edition exists, never as data — so it
+  is deliberately **not** in the manifest (user decision, 2026-09-29): the report does not depend on
+  the output gap. The cost is that a warning is refreshed on the next regen that happens for any other
+  reason (the monthly credit tables), not the day an edition arrives. The line disappears by itself on
+  the first generation after an edition brings the chart back. Covered by `tests/test_cred_fluxo_financeiro.py` §4 (the rule)
+  and `tests/test_credit_fluxo_js.js` §10 (where it renders, and that `null` renders nothing).
 - **The two sources chain, measured.** Same definition, same unit, 85 overlapping months
   (jan/2018–jan/2025) differing only by vintage revision: PJ 0,038 p.p. mean / 0,095 max, PF 0,059 /
   0,196, Total 0,090 / 0,241. No level correction is applied. Since the current edition wins on overlap,
@@ -454,9 +473,9 @@ modalities, coverage gaps, the % PIB/unit conventions, the Saldo de Maior Risco 
   2026-06) while the four GDP series already held 2026-07, so monthly GDP is a month **ahead** of the
   activity index. If Impulso ever looks a month behind again, check `atv_pib_mensal`'s `MAX(date)`
   before anything else.
-- No browser has been used to visually confirm any interaction in this report — same standing sandbox
-  limitation as every report in this project. Verification so far is a Node harness (stub
-  `document`/`Plotly`, not jsdom) run against the real generated `<script>` and real DB output.
+- Load and first paint of all 11 charts confirmed in Chrome headless (2026-09-29: zero exceptions,
+  header 76px, window matching the data). Clicks on table/pills/zoom are still only covered by the
+  Node harnesses (stub `document`/`Plotly`), not by a browser.
 
 ## Cabecalho de cada grafico (2026-09-14)
 
@@ -475,7 +494,31 @@ repeti-la seria dizer duas vezes.
 Coberto por `tests/test_chart_head_js.js`; o porque e o levantamento de quem faltava
 estao em `.claude/rules/lis-dashboards.md`, secao "Every chart carries its own header".
 
+**E a migracao entregou um vao de 560px em todo grafico** (achado em Chrome headless,
+2026-09-29). O cabecalho entra como `<div>` filho direto do card, e a regra
+`.chart-card > div { height: 560px }` deste arquivo o pegava: 11 graficos com o titulo
+em cima e o plot 560px abaixo. Nenhum harness via, porque stub nao resolve CSS. O conserto
+foi no compartilhado (`.chart-card > .chart-head { height: auto }` em `chart_head.css`),
+que cobre qualquer relatorio com a mesma regra de altura.
+
+**Janela inicial calculada, nao autorange** (mesmo dia). `_unionDates()` passou a contar so
+datas com valor e `_applyXExtent()` fixa a primeira pintura (e o "Tudo") a meio passo dos
+dados. Antes, os nulos da grade compartilhada abriam o Impulso por recurso em 2000 (dado de
+2002) e porte/atividade em 2012 (dado de 2014), e a PTC ficava com um ano de folga do
+autorange em cada ponta. Coberto por `tests/test_credit_ciclos_js.js` §7b.
+
+**Regua de tempo abaixo do grafico** (mesmo dia, a pedido do usuario). `_ensureQuickRange()`
+passou a pendurar a regua no pe do card (`.chart-foot`, fora dos 560px), em vez de um cartao
+proprio acima dele. A pill acesa diz a janela na tela: "Tudo" na primeira pintura, a clicada
+depois, e nenhuma depois de arrasto/zoom. Confirmado em Chrome headless nos 11 graficos.
+
 ## Pending
+
+- **Impulso table (d) is frozen at abr/2026** (2026-09-29): the set/2026 RPM dropped the flow chart.
+  Check the dez/2026 edition — the loader prints `AVISO` on every pass while it is absent and picks the
+  chart up by itself if it returns under the same title; the chart already carries a discreet
+  "série interrompida" line meanwhile. If the chart never returns, decide whether table (d) stays as
+  history or leaves the tab.
 
 - Open `reports/brasil/Credit.html` in an actual browser and confirm table/expand/checkbox/toggle/chart
   interactions across all 6 data tabs, plus pan/zoom/quick-range behavior on every chart.

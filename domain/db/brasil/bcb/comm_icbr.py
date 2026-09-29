@@ -4,7 +4,7 @@ IC-Br (Indice de Commodities - Brasil) e seus sub-indices setoriais.
 Carregado como insumo da replica do modelo agregado de pequeno porte do BCB
 (curva de Phillips de precos livres). Essa replica foi REMOVIDA em 2026-08 e
 esta tabela ficou SEM CONSUMIDOR — ver o aviso de status em
-analytics/brasil/monetary_policy/referencia/MODEL_REPLICATION_PLAN.md. Nao confundir com
+analytics/brasil/structural_model/modelo_agregado/referencia/modelo_agregado_bc/MODEL_REPLICATION_PLAN.md. Nao confundir com
 comm_icbr_usd (SGS 29042), a versao em dolar, essa sim usada por ppp_equilibrium.py
 e phillips_excel.py. Manter ou dropar e decisao pendente do modelo novo.
 

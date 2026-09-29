@@ -215,7 +215,7 @@ def selic_esperada_12m(selic_exp_anual: pd.DataFrame) -> pd.Series:
     """i^e: a Selic esperada NO PONTO 12 meses a frente, nao a media do caminho.
 
     A distincao e do proprio BC e esta medida em
-    `analytics/brasil/monetary_policy/CLAUDE.md`: contra a Tabela 1 do boxe da
+    `analytics/brasil/structural_model/modelo_agregado/CLAUDE.md`: contra a Tabela 1 do boxe da
     neutra, o ponto erra +0,14 e a media do caminho +0,82.
 
     A Focus anual publica a Selic de FIM DE ANO. Doze meses a frente do mes `m`

@@ -296,10 +296,18 @@ function shapesDe(div) {
 // grafico de porte puxaria o eixo 12 anos para tras. Este e o mesmo calculo que
 // _ciclosShapes faz, refeito de forma independente: se as duas versoes discordarem, uma
 // das duas esta errada.
-function esperadas(traces) {
+// So conta o x de ponto COM valor: as series dividem a grade do payload e um y nulo
+// continua tendo x -- contar esse x abria porte e atividade em 2012 com dado so de 2014.
+function xsComValor(traces) {
   const xs = [];
-  (traces || []).forEach((t) => (t.x || []).forEach((v) => xs.push(v)));
-  xs.sort();
+  (traces || []).forEach((t) => (t.x || []).forEach((v, i) => {
+    const y = (t.y || [])[i];
+    if (y != null && !(typeof y === 'number' && isNaN(y))) xs.push(v);
+  }));
+  return xs.sort();
+}
+function esperadas(traces) {
+  const xs = xsComValor(traces);
   const lo = xs[0];
   const hi = new Date(Date.parse(xs[xs.length - 1] + 'T00:00:00Z') + 15 * 864e5).toISOString().slice(0, 10);
   return ciclos.filter((c) => c.ate > lo && c.de < hi)
@@ -408,9 +416,7 @@ console.log('');
 console.log('7. Nenhuma faixa escapa da janela plotada');
 COM_FAIXA.forEach((div) => {
   const c = ultimoReact(div);
-  const xs = [];
-  (c.traces || []).forEach((t) => (t.x || []).forEach((v) => xs.push(v)));
-  xs.sort();
+  const xs = xsComValor(c.traces);
   const lo = xs[0], hi = xs[xs.length - 1];
   const sh = shapesDe(div);
   ok(sh.every((s) => s.x0 >= lo), div + ': nenhuma faixa comeca antes do 1o ponto plotado',
@@ -419,6 +425,25 @@ COM_FAIXA.forEach((div) => {
   const limite = new Date(Date.parse(hi + 'T00:00:00Z') + 16 * 864e5).toISOString().slice(0, 10);
   ok(sh.every((s) => s.x1 <= limite), div + ': nenhuma faixa passa meia barra do ultimo ponto',
      'ultimo ponto ' + hi + ', ultima faixa ' + (sh[sh.length - 1] || {}).x1);
+});
+
+console.log('');
+console.log('7b. A janela que o grafico ABRE e a dos dados, nao o autorange');
+// Autorange mede o array x inteiro, nulos inclusive: no Impulso isso abria dois anos de
+// faixa colorida sem nada por cima. A janela pedida tem de ficar a meio passo (<= 46 dias,
+// trimestral) do primeiro e do ultimo ponto COM valor, nas duas pontas.
+const TODOS = COM_FAIXA.concat(SEM_FAIXA);
+TODOS.forEach((div) => {
+  const c = ultimoReact(div);
+  const xa = (c && c.layout && c.layout.xaxis) || {};
+  const xs = xsComValor(c && c.traces);
+  const r = xa.range;
+  const dias = (a, b) => (Date.parse(String(a).slice(0, 10)) - Date.parse(String(b).slice(0, 10))) / 864e5;
+  ok(Array.isArray(r) && xa.autorange === false && xs.length
+     && dias(xs[0], r[0]) >= 0 && dias(xs[0], r[0]) <= 46
+     && dias(r[1], xs[xs.length - 1]) >= 0 && dias(r[1], xs[xs.length - 1]) <= 46,
+     div + ': a 1a pintura abre a meio passo dos dados, nas duas pontas',
+     (r ? r.join(' a ') : 'sem range') + '  dados ' + xs[0] + ' a ' + xs[xs.length - 1]);
 });
 
 console.log('');

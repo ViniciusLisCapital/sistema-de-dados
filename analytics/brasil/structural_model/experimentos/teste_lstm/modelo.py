@@ -4,7 +4,7 @@ Nao importa `torch` no topo de proposito. O resto da pasta (painel, benchmarks,
 avaliacao) roda no venv do projeto sem dependencia de deep learning; so este
 modulo precisa dela, e ela e efemera enquanto o experimento nao provar nada:
 
-    uv run --with torch --with-editable . python -m analytics.brasil.monetary_policy.teste_lstm.run
+    uv run --with torch --with-editable . python -m analytics.brasil.structural_model.experimentos.teste_lstm.run
 
 ESCALA DO PROBLEMA, medida e nao estimada: ~180 janelas de treino no primeiro
 fold contra ~6.000 parametros. E o mesmo regime do paper do HNN (257 obs, 2M

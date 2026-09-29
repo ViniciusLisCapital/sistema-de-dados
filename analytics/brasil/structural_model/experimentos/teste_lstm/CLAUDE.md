@@ -6,13 +6,13 @@ os benchmarks? Se não bater, esta pasta é apagada. Enquanto for teste, o `torc
 
 ```powershell
 # só os benchmarks (roda no venv do projeto, sem torch)
-uv run python -m analytics.brasil.monetary_policy.teste_lstm.run --sem-lstm
+uv run python -m analytics.brasil.structural_model.experimentos.teste_lstm.run --sem-lstm
 
 # completo — torch efêmero por cima do venv do projeto, sem tocar no pyproject.toml
-uv run --with torch python -m analytics.brasil.monetary_policy.teste_lstm.run
+uv run --with torch python -m analytics.brasil.structural_model.experimentos.teste_lstm.run
 
 # quanto o vazamento do HP bilateral embelezaria (número NÃO reportável)
-uv run python -m analytics.brasil.monetary_policy.teste_lstm.run --sem-lstm --hiato-vazado
+uv run python -m analytics.brasil.structural_model.experimentos.teste_lstm.run --sem-lstm --hiato-vazado
 ```
 
 | módulo | o que faz |

@@ -68,7 +68,7 @@ from domain.db.brasil.bcb import (
     cred_modalidade_livre_pf, cred_modalidade_direcionado_pj, cred_modalidade_direcionado_pf,
     cred_credito_porte, cred_credito_atividade_economica, cred_credito_tipo_cliente,
     cred_credito_controle_capital, cred_ptc, cred_fluxo_financeiro, inflc_agregados,
-    expc_focus, expc_focus_copom, expc_focus_periodo,
+    expc_focus, expc_focus_copom, expc_focus_periodo, expc_qpc,
     cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
     pm_hiato_produto, pm_hiato_produto_vintages, pm_copom_reuniao,
@@ -163,7 +163,8 @@ _SCRIPTS = [
     # Mesma fonte, outro grafico do mesmo anexo: fluxo financeiro do credito
     # (concessoes - pagamentos), de onde sai o impulso de credito no conceito do
     # BCB. Baixa DUAS edicoes -- a corrente e a de 2025-03, que traz o trecho
-    # anterior a 2018 e a quebra Livre/Direcionado que so saiu naquele boxe.
+    # anterior a 2018 -- e TRES quando a corrente sai sem o grafico (a 2026-09 saiu):
+    # ai recarrega a ultima que o publica, com AVISO em vez de erro.
     ("BCB  · Fluxo Financeiro (RPM)",   cred_fluxo_financeiro, {}),
     ("BCB  · Hiato do Produto / vintages", pm_hiato_produto_vintages, {}),
     # Terceiro grafico do mesmo anexo: taxa de desocupacao retropolada (Alves e
@@ -175,6 +176,10 @@ _SCRIPTS = [
     # segundos. Entra aqui e a irma `pm_copom_projecoes` nao porque esta le so API, enquanto
     # aquela sincroniza 109 PDFs do RPM e 233 comunicados e segue sendo rodada a mao.
     ("BCB  · Copom / decisao de Selic", pm_copom_reuniao,      {}),
+    # Questionario Pre-Copom: a listagem de atas (1 request) e, por edicao nova, ~2 GETs
+    # de 2 bytes para achar o arquivo mais o xlsx (~280 KB). A rotina reescreve a ultima
+    # edicao do banco e busca as seguintes -- fora da semana da ata, so a republicacao.
+    ("BCB  · Questionario Pre-Copom",   expc_qpc,              {}),
     ("IPEA · Termos de Troca (Funcex)", cmb_termos_troca,      {}),
     ("MDIC · Comex Stat (por pais)",    cmb_comex_pais,        {}),
     ("MDIC · Comex Stat (fator agreg.)", cmb_comex_fator_agregado, {}),
@@ -200,12 +205,20 @@ _SCRIPTS = [
 
 
 def _executar(plano: list[tuple[str, ModuleType, dict]]) -> list[dict]:
-    """Roda um plano de (label, modulo, kwargs). Um erro nao interrompe os demais."""
+    """Roda um plano de (label, modulo, kwargs). Um erro nao interrompe os demais.
+
+    Cada script passa por `execucoes.rodar()`, que grava quando cada tabela foi buscada
+    e se o dado mudou -- e o que a aba Divulgacoes do calendario le. Todo caminho de
+    execucao deste job passa por aqui (passe completo, --group, --tables, --continuous,
+    a tarefa agendada e o botao da pagina), entao nenhum deles deixa de registrar.
+    """
+    from domain.db import execucoes
+
     resultados: list[dict] = []
     for label, mod, kwargs in plano:
         try:
             logger.info("%-40s ...", label)
-            mod.run(**kwargs)
+            execucoes.rodar(mod, kwargs)
             logger.info("%-40s OK", label)
             resultados.append({"label": label, "modulo": mod.__name__, "ok": True,
                                "erro": None})
