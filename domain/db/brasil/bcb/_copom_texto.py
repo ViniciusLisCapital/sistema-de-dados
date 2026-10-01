@@ -4,7 +4,7 @@ Modulo compartilhado, no padrao de `_rpm_hiato.py`/`_focus_core.py`: nao tem `ru
 no banco. Duas responsabilidades:
 
 1. **`sincronizar()`** — baixa os comunicados via `connectors/bcb_copom.py` e grava um `.md` por
-   reuniao em `repository/monetary_policy/raw_md/central_bank_comunication/`. O `.md` e a trilha de
+   reuniao em `repository/monetary_policy/raw_md/central_bank/comunicados/`. O `.md` e a trilha de
    auditoria: e dele que o parsing le, nao da API, para a carga do banco ser reproduzivel offline.
 
 2. **`parse()`** — extrai do texto as projecoes de inflacao do Copom e os condicionantes do cenario.
@@ -47,14 +47,17 @@ from pathlib import Path
 from connectors import bcb_copom
 
 _RAIZ = Path(__file__).resolve().parents[4]
-DIRETORIO_MD = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "central_bank_comunication"
+_BRUTO = _RAIZ / "repository" / "monetary_policy"
+DIRETORIO_MD = _BRUTO / "raw_md" / "central_bank" / "comunicados"
 # Copia de leitura no vault, que e a unica camada que os agentes leem. O texto da API ja e limpo
 # (HTML convertido em markdown, sem cabecalho de pagina nem disclaimer), entao clean_md == raw_md.
 DIRETORIO_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "comunicados"
 
 # Atas: bibliografia do agente de politica monetaria, nao alimentam tabela nenhuma. O PDF (quando ha)
-# fica em raw_pdf como trilha; o texto, em raw_md ao lado dos comunicados; a copia limpa, no vault.
-DIRETORIO_ATAS_PDF = _RAIZ / "repository" / "monetary_policy" / "raw_pdf" / "central_bank_comunication"
+# fica em raw_pdf como trilha; o texto, em raw_md; a copia limpa, no vault. Mesma arvore do vault
+# (central_bank/{comunicados,atas,rpm}) nas tres camadas.
+DIRETORIO_ATAS_PDF = _BRUTO / "raw_pdf" / "central_bank" / "atas"
+DIRETORIO_ATAS_MD = _BRUTO / "raw_md" / "central_bank" / "atas"
 DIRETORIO_ATAS_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "atas"
 _MIN_TEXTO_ATA = 2000  # abaixo disso o textoAta da API e considerado vazio e o PDF e extraido
 
@@ -203,11 +206,11 @@ def sincronizar_atas(
     Returns:
         {'api': [...], 'pdf': [...], 'existentes': [...], 'vazios': [...], 'erros': {nro: msg}}
     """
-    for d in (DIRETORIO_MD, DIRETORIO_ATAS_PDF, DIRETORIO_ATAS_VAULT):
+    for d in (DIRETORIO_ATAS_MD, DIRETORIO_ATAS_PDF, DIRETORIO_ATAS_VAULT):
         d.mkdir(parents=True, exist_ok=True)
     if fim is None:
         fim = bcb_copom.ultima_reuniao()
-    ja = {int(p.name.split("_")[1]) for p in DIRETORIO_MD.glob("copom_*_ata_*.md")}
+    ja = {int(p.name.split("_")[1]) for p in DIRETORIO_ATAS_MD.glob("copom_*_ata_*.md")}
     r = {"api": [], "pdf": [], "existentes": [], "vazios": [], "erros": {}}
 
     for nro in range(inicio, fim + 1):
@@ -238,7 +241,7 @@ def sincronizar_atas(
             if verbose:
                 print(f"  ata {nro}: ERRO {e}")
             continue
-        (DIRETORIO_MD / f"{a.nome_base()}.md").write_text(bruto, encoding="utf-8")
+        (DIRETORIO_ATAS_MD / f"{a.nome_base()}.md").write_text(bruto, encoding="utf-8")
         (DIRETORIO_ATAS_VAULT / f"{a.nome_base()}.md").write_text(limpo, encoding="utf-8")
         if verbose:
             print(f"  ata {nro} {a.data_referencia} ({'API' if nro in r['api'] else 'PDF'})")

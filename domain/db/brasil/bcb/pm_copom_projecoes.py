@@ -6,7 +6,7 @@ BANCO CENTRAL projeta no seu cenario de referencia -- a variavel que o Copom diz
 quando decide a Selic, e a unica forma de medir o gap entre a projecao oficial e a meta.
 
 Fonte: API de comunicados do BCB (`connectors/bcb_copom.py`). O texto de cada reuniao e gravado em
-`repository/monetary_policy/raw_md/central_bank_comunication/` antes do parsing, e o parsing le de la
+`repository/monetary_policy/raw_md/central_bank/comunicados/` antes do parsing, e o parsing le de la
 -- a carga e reproduzivel offline e o `.md` fica como trilha de auditoria do que o BCB publicou.
 
 Parsing e levantamento dos regimes de comunicacao: `_copom_texto.py` nesta pasta.
@@ -183,7 +183,7 @@ def run(sincronizar: bool = True, inicio: int | None = None, fim: int | None = N
 
     Args:
         sincronizar: baixa os comunicados novos antes de parsear (default). `False` usa so o que ja
-                     esta em `repository/monetary_policy/raw_md/central_bank_comunication/`, sem rede.
+                     esta em `repository/monetary_policy/raw_md/central_bank/comunicados/`, sem rede.
         inicio/fim:  recorte de reunioes, para reprocessar uma faixa. None = tudo o que ha em disco
                      (e, com `sincronizar=True`, tudo o que a API tem: da 48a a mais recente).
     """

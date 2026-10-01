@@ -770,9 +770,9 @@ O texto das duas publicações de política monetária virou dado estruturado **
 é ETL. As duas alimentam a mesma tabela, `pm_copom_projecoes`, separadas pela coluna `documento`:
 
 - **comunicado**: `connectors/bcb_copom.py` → `_copom_texto.py`. 233 reuniões versionadas em
-  `raw_md/central_bank_comunication/`; carga da 206ª (2017-04) em diante, **396 linhas**.
+  `raw_md/central_bank/comunicados/`; carga da 206ª (2017-04) em diante, **396 linhas**.
 - **relatório** (RPM, chamado RI até 2024-12): `connectors/bcb_rpm.py` → `_rpm_projecoes.py`.
-  **109 edições** de 1999-06 a 2026-06 em `raw_md/relatorio_politica_monetaria/`; **1.967 linhas**
+  **109 edições** de 1999-06 a 2026-06 em `raw_md/central_bank/rpm_paginas_projecao/`; **1.967 linhas**
   de 108 delas.
 
 O relatório não é redundante: o comunicado publica 2 ou 3 períodos escolhidos, o relatório publica o

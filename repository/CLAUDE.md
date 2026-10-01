@@ -23,10 +23,11 @@ repository/
                                   (clean_md/ for these lives in obsidian/<área>/clean_md/)
     exchange_rate/              — 28 PDF, 16 raw_md; 12 PDFs still await extraction
     monetary_policy/            — raw_pdf/theorical_literature/ (36 papers, 1 extracted),
-                                  central_bank_comunication/ (234 comunicados + 261 atas as
-                                  raw_md, 82 ata PDFs), relatorio_politica_monetaria/ (110 RPM PDFs;
-                                  raw_md holds only the projection pages the ETL parses) and
-                                  raw_md/relatorio_politica_monetaria_integral/ (full text, last 3 years).
+                                  and central_bank/, the same tree as the vault's
+                                  clean_md/central_bank/: raw_pdf/central_bank/{atas (82),
+                                  rpm (110, 1999-06 on)} and raw_md/central_bank/{comunicados (234),
+                                  atas (261), rpm (full text, last 3 years), rpm_paginas_projecao
+                                  (110, only the projection pages the ETL parses)}.
                                   Written by the Copom ETL, not by ingestion/
     trader/                     — 26 PDF (Trading Global Macro Markets), none extracted, scope undecided
     fiscal_policy/, inflation/  — 1 PDF each, extracted

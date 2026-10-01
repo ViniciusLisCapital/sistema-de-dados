@@ -8,7 +8,7 @@ torna a leitura de horizonte relevante uma serie continua desde 1999 -- os comun
 
 Fonte: `connectors.bcb_rpm.edicoes()` (109 edicoes, 1999-06 a 2026-06, sem buraco) + o PDF de cada
 uma. O texto das paginas de projecao fica em `repository/monetary_policy/raw_md/
-relatorio_politica_monetaria/` antes do parsing, e o parsing le de la -- carga reproduzivel offline e
+central_bank/rpm_paginas_projecao/` antes do parsing, e o parsing le de la -- carga reproduzivel offline e
 trilha de auditoria, mesmo padrao dos comunicados.
 
 Levantamento da fonte, com os formatos por era: `relatorio_politica_monetaria.md` nesta pasta.
@@ -47,13 +47,14 @@ from dataclasses import dataclass, field
 from connectors import bcb_rpm
 
 _RAIZ = pathlib.Path(__file__).resolve().parents[4]
-DIRETORIO_PDF = _RAIZ / "repository" / "monetary_policy" / "raw_pdf" / "relatorio_politica_monetaria"
-DIRETORIO_MD = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "relatorio_politica_monetaria"
+_BRUTO = _RAIZ / "repository" / "monetary_policy"
+DIRETORIO_PDF = _BRUTO / "raw_pdf" / "central_bank" / "rpm"
+DIRETORIO_MD = _BRUTO / "raw_md" / "central_bank" / "rpm_paginas_projecao"
 
 # Texto INTEGRAL do relatorio, como bibliografia do agente de politica monetaria (nao alimenta
 # tabela). Pasta irma, e nao a de cima: la ficam so as paginas de projecao que o parser le, e um
 # arquivo inteiro com o mesmo nome passaria a ser parseado. A copia limpa vai para o vault.
-DIRETORIO_MD_INTEGRAL = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "relatorio_politica_monetaria_integral"
+DIRETORIO_MD_INTEGRAL = _BRUTO / "raw_md" / "central_bank" / "rpm"
 DIRETORIO_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "rpm"
 INTEGRAL_DESDE = "202312"  # decisao de 2026-09-30: os ultimos 3 anos; o historico fica pendente
 

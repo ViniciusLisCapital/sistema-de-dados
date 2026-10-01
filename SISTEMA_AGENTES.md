@@ -71,8 +71,20 @@
     - ii. Inflação é TWA (I.III.ix, xi). Quando o agente de inflação existir, vira endógeno dele e o agente de política monetária passa a receber a posição dele.
 
 ## (III.III) Interação e relatório
-    - i. Definir o formato do memo de cada agente.
-    - ii. Definir o fluxo: memos → rodada cruzada (cada agente lê as saídas endereçadas a ele) → relatório.
+    - i. Definir o formato do memo de cada agente. Decidido 2026-10-01:
+        - Três blocos: tese, argumentação, premissas. Mais as saídas e pedidos aos outros agentes e o placar dos horizontes vencidos. Modelo: `obsidian/ciclos/_modelo_memo.md`.
+        - Tese por variável: medida central, faixa do cenário base com probabilidade, e worst-case e best-case como as caudas abaixo e acima da faixa, cada uma com probabilidade (soma 100%). Ex.: PIB 2027, central 1,2%; 50% entre 1,0 e 1,4; 40% abaixo de 1,0; 10% acima de 1,4.
+        - A direção de worst e best é de cada variável: inflação mais alta é worst, crescimento menor é worst. No câmbio, por ora, depreciação é worst.
+        - Assimetria: Pbc − Pwc, de −1 a +1; zero é simétrico e o sinal diz para que lado a distribuição pende (no exemplo, 0,10 − 0,40 = −0,30). Substituiu Pbc/Pwc, que não existe com Pwc = 0 e tem escala torta.
+        - Riscos não são seção própria: entram na argumentação, justificando a probabilidade de cada cauda.
+        - Horizontes: curto, médio e longo prazo, definidos para cada agente (2026-10-01, substitui o horizonte padrão mensal). Ex.: câmbio no próximo mês, em 6 meses e em 1 ano; atividade com o PIB do próximo trimestre, do próximo ano e dos próximos 2–3 anos; política monetária com a próxima reunião, o fechamento do ano, a taxa em 1 ano e nos próximos 2–3 anos.
+        - Placar: para cada horizonte que venceu desde o último ciclo, o agente diz em que faixa a variável caiu.
+        - Memo e relatório em português; termos técnicos consagrados em inglês são permitidos (forward guidance, carry etc.).
+    - ii. Fluxo e registro da interação:
+        - Fluxo (esboço do usuário, 2026-10-01): A lê dados, ferramentas, outros e o memo de B, e escreve tese, argumentação e premissas no memo A; B lê o memo A, dados, ferramentas e outros, e escreve o memo B, que volta para A. Depois, o relatório.
+        - Registro (decidido 2026-10-01): uma pasta por ciclo, `obsidian/ciclos/<data>/`, com um memo por agente, o log do ciclo e o relatório. O memo não é versionado por rodada: o log registra quem leu o quê, cada mudança de premissa ou probabilidade (antes → depois, motivo, o que a provocou) e as divergências que ficaram abertas. Modelo: `obsidian/ciclos/_modelo_log.md`.
+        - Ordem: câmbio → política monetária, duas voltas por ciclo. Revisar quando entrar um agente novo (ver IV.iii).
+        - Ciclo = um processo de atualização do cenário, disparado por informação nova (quantitativa ou qualitativa). Sem informação nova, o cenário não muda. Um único dado novo basta para rodar um ciclo, embora na prática o usuário prefira juntar mais dados antes.
     - iii. Checagem de todo número do relatório contra a fonte antes de publicar.
     - iv. Relatório final em markdown enquanto calibramos; PDF depois.
     - v. Primeiro teste completo com câmbio + política monetária.
@@ -81,6 +93,7 @@
 # (IV) Decisões pendentes
     - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir)
+    - iii. Ordem dos agentes e número de voltas por ciclo: reabrir sempre que entrar um agente novo. Hoje: câmbio → política monetária, duas voltas.
 
 
 # (V) Dados por agente

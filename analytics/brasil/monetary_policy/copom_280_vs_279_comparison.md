@@ -1,6 +1,6 @@
 # Comparação da Decisão do Copom — Reunião #280 (2026-08-05) vs. #279 (2026-06-17)
 
-Fontes: [copom_280_comunicado_2026-08-05.md](../../../repository/monetary_policy/raw_pdf/central_bank_comunication/copom_280_comunicado_2026-08-05.md), [copom_279_comunicado_2026-06-17.md](../../../repository/monetary_policy/raw_pdf/central_bank_comunication/copom_279_comunicado_2026-06-17.md)
+Fontes: [copom_280_comunicado_2026-08-05.md](../../../repository/monetary_policy/raw_md/central_bank/comunicados/copom_280_comunicado_2026-08-05.md), [copom_279_comunicado_2026-06-17.md](../../../repository/monetary_policy/raw_md/central_bank/comunicados/copom_279_comunicado_2026-06-17.md)
 
 **Decisão:** corte de 25bp na Selic, de 14,25% para **14,00% a.a.** — o 4º corte consecutivo de 25bp no ciclo de flexibilização (15,00% → 14,75% → 14,50% → 14,25% → 14,00%, reuniões #276→#280). Mesmo ritmo da reunião anterior.
 
