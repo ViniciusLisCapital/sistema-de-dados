@@ -11,7 +11,7 @@ topic:
      no paraphrasing risk, no truncation risk, since no LLM call or token
      budget is involved)
   3. Writes the raw text to   repository/<topic>/raw_md/<name>.md
-     Writes the clean text to repository/<topic>/clean_md/<name>.md
+     Writes the clean text to obsidian/<topic>/clean_md/<name>.md
      Moves the PDF itself to  repository/<topic>/raw_pdf/<name>.pdf
 
 The drop-zone folder (repository/ingestion/land_space/<topic>/) ends up empty
@@ -42,6 +42,7 @@ SCRIPTS = Path(__file__).resolve().parent   # repository/ingestion/scripts/
 INGESTION = SCRIPTS.parent                  # repository/ingestion/
 REPOSITORY = INGESTION.parent                # repository/
 ROOT = REPOSITORY.parent                     # project root
+OBSIDIAN = ROOT / "obsidian"                 # clean_md lives in the vault, the only layer agents read
 LAND_SPACE = INGESTION / "land_space"        # repository/ingestion/land_space/
 
 
@@ -61,7 +62,7 @@ def ingest_one(pdf_path: Path, topic: str, overwrite: bool = False) -> None:
     name = pdf_path.stem
 
     raw_dir = REPOSITORY / topic / "raw_md"
-    clean_dir = REPOSITORY / topic / "clean_md"
+    clean_dir = OBSIDIAN / topic / "clean_md"
     pdf_dir = REPOSITORY / topic / "raw_pdf"
     for d in (raw_dir, clean_dir, pdf_dir):
         d.mkdir(parents=True, exist_ok=True)
@@ -122,7 +123,7 @@ def run(only: str | None = None, overwrite: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ingest PDFs sitting in repository/ingestion/land_space/<topic>/ into repository/<topic>/{raw_pdf,raw_md,clean_md}/.")
+    parser = argparse.ArgumentParser(description="Ingest PDFs sitting in repository/ingestion/land_space/<topic>/ into repository/<topic>/{raw_pdf,raw_md}/ + obsidian/<topic>/clean_md/.")
     parser.add_argument("topic", nargs="?", default=None, help="Process only this topic folder (default: every topic folder with PDFs waiting)")
     parser.add_argument("--overwrite", action="store_true", help="Reprocess clean_md even if it already exists (raw_md/raw_pdf are always legacy-preserved, never silently overwritten)")
     args = parser.parse_args()

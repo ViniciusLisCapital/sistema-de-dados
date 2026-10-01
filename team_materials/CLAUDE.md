@@ -19,8 +19,8 @@ Os três saíram para o `repository/agent_mapping/`, a pedido do usuário:
 
 | saiu de `team_materials/` | foi para | o que aconteceu |
 |---|---|---|
-| `bibliography.md` | `agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` | movido inteiro |
-| `conceptual_map.md` | fundido em `agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` | **apagado depois de fundir** — saiu daqui como arquivo próprio e, no mesmo dia, foi para dentro do mapa de ~140 conceitos: organizado pelos mesmos 9 clusters, era um segundo mapa conceitual com outro nome, e a convenção é **um por área** |
+| `bibliography.md` | `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` | movido inteiro |
+| `conceptual_map.md` | fundido em `obsidian/exchange_rate/exchange_rate_conceptual_map.md` | **apagado depois de fundir** — saiu daqui como arquivo próprio e, no mesmo dia, foi para dentro do mapa de ~140 conceitos: organizado pelos mesmos 9 clusters, era um segundo mapa conceitual com outro nome, e a convenção é **um por área** |
 | `data_inventory.md` | fundido em `agent_mapping/recommended_data/exchange_rate_data_inventory.md` | **apagado depois de fundir** — era subconjunto estrito do upstream (as mesmas 8 categorias, na mesma ordem, sem as colunas de status), então só o racional *Why it matters* por categoria era novo |
 
 O que **ficou**, e por quê: os dois exploradores HTML (interativos, feitos para navegar), os 7 PDFs
@@ -67,4 +67,5 @@ ser de área nenhuma pertence ao primeiro nível; só não é assunto deste repo
 - **83 dos 85 MB da pasta não estão no git** — todo binário (`.mp4`, `.pdf`, `.excalidraw`) está no
   `.gitignore`, então existe só no Dropbox, e os dois vídeos de câmbio são 83 MB disso. Não é
   defeito, mas significa que um clone limpo não tem o material de apresentação.
-- **`kinea_fx_mental_models.pdf` é órfão** — ver o item em [`PENDENCIAS.md`](../PENDENCIAS.md).
+- **Os PDFs de `FX_mental_models/`** são a versão para leitura de `obsidian/exchange_rate/mental_models/*.md`
+  (Verde, Kinea, Kapitalo) — reexportar quando a fonte mudar.

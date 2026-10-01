@@ -38,7 +38,7 @@ def main() -> None:
     datas = {n: dt.date.fromisoformat(d) for n, d in calendario_reunioes().items() if n >= 238}
     qpc = QPC()
     wb = {}
-    for n in (238, 240, 246, 255, 281):
+    for n in (238, 240, 246, 255, 279, 281):
         url = qpc.localizar(n, datas[n])
         assert url, f"edicao {n} nao localizada"
         wb[n] = qpc.abrir(url)
@@ -65,6 +65,11 @@ def main() -> None:
     assert refs == [("R255", dt.date(2023, 6, 1)), ("R256", dt.date(2023, 8, 1)),
                     ("R257", dt.date(2023, 9, 1))], refs
 
+    # 279a: a tabela de evolucao da mesma aba confirma a serie das 10 edicoes
+    r = rows[279]
+    assert [_v(r, bloco=b, referencia=h, estatistica="mediana") for b, h in
+            (("juro_real_neutro", "curto_prazo"), ("juro_real_neutro", "5a"), ("nairu", "2a"))] == [6.4, 5.5, 7.4]
+
     # 281a: os prints
     r = rows[281]
     assert [_v(r, bloco="hiato", referencia=q, estatistica="mediana")
@@ -79,6 +84,15 @@ def main() -> None:
     nucleos = [x for x in r if x["bloco"] == "ipca_curto_prazo" and x["variavel"] == "media_nucleos"]
     assert {x["estatistica"] for x in nucleos} == {"p25", "mediana", "p75", "n_respostas"}
     assert len({x["referencia"] for x in nucleos}) == 4
+
+    # juro real neutro, PIB potencial e Nairu: tres blocos da mesma aba
+    r = rows[240]
+    assert _v(r, bloco="juro_real_neutro", referencia="curto_prazo", estatistica="mediana") == 3
+    assert _v(r, bloco="pib_potencial", referencia="2a", estatistica="mediana") == 2
+    assert not any(x["bloco"] == "nairu" for x in r), "Nairu so existe desde a 271a"
+    assert not any(x["bloco"] in ("juro_real_neutro", "pib_potencial") for x in rows[238] + rows[281])
+    assert all(x["variavel"] == x["bloco"] and x["ref_date"] is None
+               for x in r if x["bloco"] in ("juro_real_neutro", "pib_potencial"))
 
     print("todos os asserts passaram")
 

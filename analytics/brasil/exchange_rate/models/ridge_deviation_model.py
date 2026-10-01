@@ -1278,7 +1278,12 @@ def forecast_error_bands_w72(channels: list[str] | None = None, window: int = 72
     # rather than hand-written, so a future channel change can't forget to
     # bump it and ship a band belonging to a model the page no longer runs.
     channels_tag = channels if channels is not None else _CHANNELS_5
+    # The vol source is part of the model too: carry_vol changed denominator
+    # (realized 6m -> implied 3M, 2026-09-30) with the channel NAME unchanged,
+    # so without this suffix the old band would be reused for the new spec.
     spec_tag = "ppp_offset_b1|" + ",".join(sorted(channels_tag))
+    if "carry_vol" in channels_tag:
+        spec_tag += "|vol=implied_3m"
 
     channels = _CHANNELS_5 if channels is None else channels
     df = load_data()

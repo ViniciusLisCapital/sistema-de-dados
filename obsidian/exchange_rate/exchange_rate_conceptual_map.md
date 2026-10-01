@@ -1,53 +1,217 @@
-# Exchange Rate Policy — Conceptual Map
+# Exchange Rate — Conceptual Map
 
-**Purpose:** map the concepts covered by the exchange-rate bibliography in `repository/exchange_rate/`, so we can (i) see what's already in the knowledge base and where it's thin, (ii) give the board an overview of the base, and (iii) see **which data each argument can actually be checked against** — read the other way, which theory a given tracked series is evidence *for*.
+**What this file is.** This is the exchange-rate agent's contract with the rest of the system. It says
+what moves the BRL (Part 1), what this agent tells the others matters TO IT (Part 2, outputs), and
+what the others told this agent matters TO THEM (Part 3, inputs). Part 4 is the index of concepts
+read out of the literature. The agent reads Parts 1–3 on every run and uses Part 4, the concept
+pages, the syntheses and `clean_md/` to go deeper.
 
-**Two layers, one map, and the citation tells you which.** A bullet citing a source slug (`*(mundell_1963)*`) is a concept read out of the literature; a bullet citing an inventory section (`*(data_inventory §6)*`) is a link to a series LIS tracks. The second layer arrived on 2026-09-10, when `exchange_rate_data_literature_integration.md` was folded in here — the project keeps **one conceptual map per area**, and a second file organized by the same 9 clusters was a second map by any other name. Nothing was dropped in the fold: every `[[slug]]` it defined still exists below, under the cluster it belonged to.
+**How the parts connect to the rest of the vault.** `[[concept]]` links go to `concepts/` or to a
+concept named in Part 4. "Mental models" cite section numbers of the files in `mental_models/`, which
+are frameworks, not current opinions: a view dated 2024 is a way of reasoning, never a fact about
+today. "Data" names MySQL tables. A table named here exists in the database, but that does not mean
+the agent reads it: see the data rule below.
 
-**How to read this file:** `[[concept_slug]]` marks a recurring concept (Obsidian-style wikilink — not yet split into separate files, just a consistent name to `grep`/search on). `#tag` marks a theme cluster. Each concept line ends with the source(s) it comes from, in parentheses.
+**Outputs and inputs.** An output of agent A to agent B is what A tells B is important for A, coming
+from B. An input of A from B is what B told A is important for B, coming from A. So this agent's
+outputs to monetary policy (Part 2) are the monetary-policy agent's inputs from FX, and the
+monetary-policy agent's outputs to FX are this agent's inputs (Part 3). An input gives emphasis and
+tells the agent what to flag; it never limits the FX analysis.
 
-Each cluster then closes with a **Data that backs this cluster** block: which series LIS actually tracks for those arguments, and where a data gap and a literature gap turn out to be the same gap. The `§` numbers in those bullets are sections of `../recommended_data/exchange_rate_data_inventory.md`. Two clusters have a note instead of a block, and in both cases the absence is the finding — see `#policy_transmission` and `#pass_through_and_inflation`.
+**Two layers.** What is written here is the **fixed** layer: what matters every cycle. On top of it,
+each cycle has a **dynamic** layer, set by the theses and arguments of that cycle's report: an agent
+whose thesis hinges on something asks for it explicitly in its memo. The dynamic layer lives in the
+memos, not in this file. Every output here must appear as an input in the other agent's map and vice
+versa; until the monetary-policy map exists, both tables are **drafts**.
 
-**Status:** 28 of 28 sources processed. The original 18-source first pass is complete; sources 19-23 (added 2026-07) close the "thin theoretical spine" gap in `#currency_crisis_dynamics`; sources 24-26 (added 2026-07) close the OCA-theory gap (`#currency_regimes`) and deepen `#capital_controls` with the IMF's own institutional-view doctrine; sources 27-28 (added 2026-07) close the formal UIP-failure-econometrics gap (Fama, 1984) and the political-economy-of-exchange-rates gap (Frieden, 1991) — see [[exchange_rate_bibliography_gaps]] for the full gap-tracking companion file. See [[Coverage notes]] below for synthesis.
+**Data rule (decided 2026-09-30, types 2026-10-01).** Three types of data. *Endogenous*: this
+area's own data, which this agent is responsible for analysing. *Exogenous*: data with no agent,
+open to every agent (the CDS). *TWA* (temporarily without agent): data from an area with no agent
+yet (inflation, fiscal, expectations, the global data until an external agent exists), treated as
+exogenous until that agent exists. Another agent's endogenous data may be read, but this agent draws
+no conclusion about it: the Selic path, the Copom's stance and the credibility reading come from the
+monetary-policy agent (Part 2). How exogenous and TWA data are analysed is still to be defined,
+through the interaction between agents, since several may use the same series. The
+table-by-table list is in `SISTEMA_AGENTES.md`, section (V.I), with why each table matters to this agent.
 
----
-
-## Sources processed
-
-| # | Source | Type | Author/Year | Language | Theme clusters |
-|---|---|---|---|---|---|
-| 1 | `capital_flow_fx_market (CFA L1, 2025).pdf` | CFA curriculum reading | Barker, McNelis & Nickelsburg, 2025 | EN | #market_microstructure #exchange_rate_determination #currency_regimes #balance_of_payments #capital_controls |
-| 2 | `capital_mobility_exchange_rates_regimes (Mundell, 1963).pdf` | Academic paper (journal article, Canadian J. of Economics, 12pp) | R. A. Mundell, 1963 | EN | #currency_regimes #policy_transmission #balance_of_payments |
-| 3 | `depreciation_pass_through (Goldfajn, 2000).pdf` | Academic working paper (PUC-Rio Texto para Discussão No. 423, 46pp, 71-country panel) | Goldfajn & Werlang, 2000 | EN | #pass_through_and_inflation #exchange_rate_determination #brazil_specific_transmission |
-| 4 | `depreciation_pass_through (Belaisch, 2003).pdf` | IMF Working Paper (WP/03/141, 20pp, Brazil VAR study) | Agnes Belaisch, 2003 | EN | #pass_through_and_inflation #brazil_specific_transmission |
-| 5 | `equilibrium_exchange_brazil (Paiva, 2006).pdf` | IMF Working Paper (WP/06/221, 23pp, BEER econometric model) | Claudio Paiva, 2006 | EN | #applied_valuation_tools #balance_of_payments #exchange_rate_determination |
-| 6 | `exchange_rate_calculation (CFA L1, 2025).pdf` | CFA curriculum reading | CFA Institute, 2025 | EN | #market_microstructure #exchange_rate_determination |
-| 7 | `exchange_rate_foreign_exchange_market (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 14, 32pp) | Krugman, Obstfeld & Melitz, 2023 | EN | #exchange_rate_determination #market_microstructure |
-| 8 | `exchange_rate_understanding_equilibrium (CFA L2, 2025).pdf` | CFA curriculum reading (78pp — the densest, most synthesizing source so far) | CFA Institute, 2025 | EN | #exchange_rate_determination #policy_transmission #balance_of_payments #capital_controls #currency_crisis_dynamics |
-| 9 | `expectations_and_exchange_rate_dynamics (Dornbusch, 1976).pdf` | Academic paper (Journal of Political Economy, 16pp — foundational/classic) | Rudiger Dornbusch, 1976 | EN | #exchange_rate_determination #policy_transmission |
-| 10 | `fixed_exchange_rate_intervention (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 18, 36pp) | Krugman, Obstfeld & Melitz, 2023 | EN | #currency_regimes #policy_transmission #currency_crisis_dynamics #capital_controls |
-| 11 | `gsdeer_manual_guide (Goldman, 2023).pdf` | Practitioner research note (Goldman Sachs Global Markets Analyst, 17pp, May 2023 — filename year corrected 2026-08, was previously misnamed 2025) | Bhushan & Cahill, Goldman Sachs, 2023 | EN | #applied_valuation_tools #exchange_rate_determination |
-| 12 | `money_interest_rate_exchange_rates (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 15, 32pp) | Krugman, Obstfeld & Melitz, 2023 | EN | #exchange_rate_determination #pass_through_and_inflation |
-| 13 | `national_income_balance_payments (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 13, 28pp) | Krugman, Obstfeld & Melitz, 2023 | EN | #balance_of_payments |
-| 14 | `output_exchange_rates_sr (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 17, 53pp — the DD-AA model) | Krugman, Obstfeld & Melitz, 2023 | EN | #policy_transmission #pass_through_and_inflation |
-| 15 | `padrao_transmissao_cambial (Cortapasso, 2023).pdf` | Academic paper (Nova Economia journal, 30pp, VAR study, Brazil 2002-2021) | Araújo, Caldarelli & Cortapasso, 2023 | PT | #pass_through_and_inflation #brazil_specific_transmission #policy_transmission |
-| 16 | `posicao_de_cambio (BCB, 2020).pdf` | Central bank technical note (BCB Estudo Especial nº 87/2020, 6pp) | Banco Central do Brasil, 2020 | PT | #market_microstructure #currency_regimes #brazil_specific_transmission |
-| 17 | `price_levels_exchange_rate_lr (Krugman, 2023).pdf` | Textbook chapter (Krugman & Obstfeld, *International Economics*, Ch. 16, 38pp) | Krugman, Obstfeld & Melitz, 2023 | EN | #exchange_rate_determination #applied_valuation_tools |
-| 18 | `primer_gsdeer_gsfeer (Goldman, 2025).pdf` | Practitioner research note (Goldman Sachs "FX in Focus," 11pp, dated 3 Nov 2025) | Alves & Jenkins, Goldman Sachs, 2025 | EN | #applied_valuation_tools #exchange_rate_determination #brazil_specific_transmission |
-| 19 | `balance_of_payment_crisis (Krugman, 1979).pdf` | Academic paper (Journal of Money, Credit and Banking, Vol. 11 No. 3, Aug. 1979, 15pp — the founding first-generation crisis model) | Paul Krugman, 1979 | EN | #currency_crisis_dynamics |
-| 20 | `collapsing_exchange_rate_regimes (Flood, 1983).pdf` | Academic paper (Journal of International Economics 17, 1984, 13pp — working-paper version dated 1983; standard linear companion to Krugman 1979) | Robert P. Flood & Peter M. Garber, 1983/84 | EN | #currency_crisis_dynamics |
-| 21 | `rational_self_fulfilling_bpc (Obstfeld, 1984).pdf` | NBER Working Paper No. 1486, Nov. 1984, 23pp — working-paper precursor to Obstfeld's canonical 1986 AER second-generation model | Maurice Obstfeld, 1984 | EN | #currency_crisis_dynamics |
-| 22 | `bs_transfer_problem_financial_crises (Krugman, 2000).pdf` | Academic paper (IMF Staff Papers, Vol. 45, Special Issue, 1999/2000, 13pp + two discussants' comments — Krugman's own "third-generation" crisis model, written in direct response to the 1997-98 Asian crisis) | Paul Krugman, 1999/2000 | EN | #currency_crisis_dynamics #balance_of_payments |
-| 23 | `financial_crises_emerging_markets (Chang, 1998).pdf` | Federal Reserve Bank of Atlanta Working Paper 98-10, July 1998, 47pp — the other major "third-generation" model, explicitly discussed and contrasted with Krugman (2000) above; also circulated as NBER WP 6606 | Roberto Chang & Andrés Velasco, 1998 | EN | #currency_crisis_dynamics |
-| 24 | `theory_optimum_currency_areas (Mundell, 1961).pdf` | Academic paper (American Economic Review, 1961, 11pp — the foundational OCA paper, distinct from and earlier than Mundell's 1963 capital-mobility paper already in the base) | Robert A. Mundell, 1961 | EN | #currency_regimes |
-| 25 | `capital_inflow (IMF, 2010).pdf` | IMF Staff Position Note SPN/10/04, Feb. 2010, 22pp — influential empirical/pragmatic precursor to the IMF's 2012 institutional view | Ostry, Ghosh, Habermeier, Chamon, Qureshi & Reinhardt, 2010 | EN | #capital_controls |
-| 26 | `the_liberalization_management_capital_flows (IMF, 2012).pdf` | IMF Board Paper, Nov. 2012, 43pp — the canonical "institutional view," the IMF's official standing doctrine on capital flow liberalization and management | IMF Staff (Arora, Habermeier, Ostry, Weeks-Brown et al.), 2012 | EN | #capital_controls |
-| 27 | `forward_spot_exchange (Fama, 1984).pdf` | Academic paper (Journal of Monetary Economics 14, 1984, 19pp — the original "wrong-signed beta" UIP-failure econometrics, the single most-cited empirical fact in the forward-premium-puzzle literature) | Eugene F. Fama, 1984 | EN | #exchange_rate_determination |
-| 28 | `invested_interest (Frieden, 1991).pdf` | Academic paper (International Organization, Vol. 45 No. 4, Autumn 1991, 27pp — the canonical political-economy-of-exchange-rates paper) | Jeffry A. Frieden, 1991 | EN | #policy_transmission #currency_regimes |
+Curation material (sources processed, processing status, coverage notes) lives in
+`repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md`, not here.
 
 ---
 
-## Concepts by theme
+## Part 1 — Causal skeleton: what moves the BRL
+
+**Two horizons, never mixed in one sentence.** The *marginal* question is what moved the BRL this
+month and whether that move is noise or signal. The *level* question is where the BRL sits relative
+to its fundamentals. Channels 1.1–1.7 answer the first one and channel 1.8 answers the second. The
+literature says fair-value gaps take roughly 3–5 years to close ([[gsdeer_horizon_dynamics]],
+[[ppp_deviation_half_life]]), so a valuation argument is not a monthly call.
+
+**Global vs. idiosyncratic, first.** Before attributing a move to a domestic cause, compare the BRL
+with its peers and with the dollar index. A move shared with the LatAm peers and the DXY-EM is
+global; the residual is Brazil. Mental models: Verde §5.5 ("Brasil como passageiro"), Kapitalo §1.5.
+Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (DXY),
+`cmb_dollar_index_em`.
+
+### 1.1 Rate differential and carry
+
+- **Mechanism.** A higher domestic rate attracts carry and supports the BRL. UIP says the gain should
+  be offset by expected depreciation, but empirically it is not (Fama's wrong-signed beta). Carry pays
+  on average and crashes in risk-off episodes, with negative skew.
+- **Read:** [[uip]], [[carry_trade]], [[fisher_effect_uip_ppp_paradox_resolution]] (Part 4).
+- **Mental models:** Verde §3.1–3.4, Kinea §2.1–2.6 and §1.9 ("carry quebra sem credibilidade"),
+  Kapitalo §3.1 and §9.2, GS §6.1–6.2.
+- **Data:** `diferenciais_juros` (nominal and ex-post real, Selic vs. Fed Funds), `cmb_real_rates`
+  (ex-post real rates for the peers). The ex-ante differential, which is what UIP is actually about,
+  is not a stored series; it can be built from `br_interest_rate` and `us_interest_rate`.
+- **Trap.** The same rate hike can appreciate or depreciate the currency, depending on whether it is
+  read as credibility or as validation of a higher inflation path. See Part 2 (S2): this judgement
+  comes from the monetary-policy agent.
+
+### 1.2 Risk premium: fiscal, political, institutional
+
+- **Mechanism.** Fiscal credibility is the anchor of the risk premium. When it erodes, the premium
+  rises and can override carry. In the extreme (fiscal dominance), a higher rate weakens the currency
+  instead of strengthening it.
+- **Read:** [[risk_premium]], [[fiscal_dominance]] (in `obsidian/fiscal_policy/concepts/`).
+- **Mental models:** Verde §1.1–1.11 and §6.1–6.3, Kinea §1.1–1.9, Kapitalo §6.1–6.7, GS §7.2.
+- **Data:** `cmb_risco_pais` (5-year CDS, Bloomberg).
+
+### 1.3 Global dollar, Fed and risk appetite
+
+- **Mechanism.** The US rate is "the most important price in the world" for EM currencies. The dollar
+  cycle follows the Fed, US growth relative to the rest of the world, and risk appetite; the BRL is a
+  high-beta currency in risk-off.
+- **Mental models:** Verde §4.1–4.11 and §5.4, Kinea §4.1–4.9 and §2.6, Kapitalo §3.1–3.6, GS §3.
+- **Data:** `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_equity_us` (S&P 500), `us_interest_rate`.
+
+### 1.4 Terms of trade and commodities
+
+- **Mechanism.** Better terms of trade raise the trade surplus and support the BRL. Volume matters,
+  not only price (Kinea §3.1). Brazil is a net oil exporter, which changes the sign of an oil shock
+  relative to EM importers.
+- **Read:** [[balance_of_payments_approach]].
+- **Mental models:** Verde §2.1–2.4, Kinea §3.1–3.4, Kapitalo §2.3, GS §1.7.
+- **Data:** `cmb_termos_troca` (Funcex), `comm_icbr_usd` (IC-Br in USD), `comm_brent`.
+
+### 1.5 Balance of payments and flows
+
+- **Mechanism.** The current account and the composition of the financial account set the structural
+  supply of dollars. Not every inflow is equal: foreign-currency debt is the most fragile and FDI the
+  most stable ([[pecking_order_of_capital_inflows_riskiness]], Part 4). Registered FX flow is the
+  short-run version of the same channel.
+- **Read:** [[balance_of_payments_approach]], [[mundell_fleming_policy_mix]].
+- **Mental models:** Verde §5.1, §5.7 and §8.2, Kinea §3.6, Kapitalo §2.5.
+- **Data:** `cmb_balanco_pagmt`, `cmb_fluxo_cambial`, `cmb_cambio_contratado`, and the trade detail
+  in `cmb_comex_*`.
+
+### 1.6 Positioning
+
+- **Mechanism.** Extreme speculative positioning is a contrarian signal. An unwind amplifies a move
+  that fundamentals started.
+- **Mental models:** Verde §5.3, Kapitalo §6.4 and §6.8, Kinea §8.2.
+- **Data:** `cmb_cot_fx` (CFTC, BRL futures).
+
+### 1.7 The central bank in the FX market
+
+- **Mechanism.** Spot auctions change reserves for good; repo lines and FX swaps provide temporary
+  liquidity or hedge without touching reserves ([[bcb_fx_intervention_toolkit]], Part 4). A widening
+  cupom cambial spread signals onshore dollar scarcity ([[cupom_cambial_spread]]). Reserves are the
+  buffer that crisis models deplete.
+- **Read:** [[currency_crisis_indicators]], [[currency_regimes]].
+- **Mental models:** Verde §7.2, GS §7.2.
+- **Data:** `cmb_reservas_bc` (reserves, gold, swap stock, interventions).
+
+### 1.8 Structural level: valuation
+
+- **Mechanism.** In the long run the real exchange rate converges to a level set by productivity,
+  terms of trade and the real rate differential (BEER, GSDEER/GSFEER). Useful for "how far can it go",
+  not for "where next month".
+- **Read:** [[ppp_balassa_samuelson]], [[overshooting]].
+- **Mental models:** Kapitalo §2.1–2.5, GS §1.1–1.2.
+- **Data:** `cmb_reer` (BIS REER), `cmb_ptax` with the IPCA and US CPI for a relative-PPP path.
+
+### 1.9 Tail: regime stress and crisis
+
+- **Mechanism.** First-generation models (reserve depletion under an inconsistent policy), second
+  generation (self-fulfilling runs) and third generation (balance sheets, bank runs). Brazil floats,
+  so the relevant question is disorderly depreciation, not a peg breaking.
+- **Read:** [[currency_crisis_indicators]].
+- **Mental models:** Verde §8.3–8.5 (historical analogues), Kinea §6.6.
+- **Data:** `cmb_reservas_bc`, `cmb_risco_pais`, `cmb_balanco_pagmt`.
+
+### Data the agent does not see yet
+
+The agent's snapshot today (`analytics/brasil/exchange_rate/agent_data.py`) covers PTAX, the rate
+differentials, REER, CFTC positioning, FX flow, balance of payments, terms of trade and the central
+bank's reserves, swaps and interventions. **It does not carry** the CDS (1.2), the dollar indices,
+the S&P 500 or the LatAm peers (1.3 and the global-vs-idiosyncratic test), or the commodity indices
+(1.4). Closing that gap is part of the agent rebuild.
+
+---
+
+## Part 2 — Outputs: what this agent tells the others matters to it
+
+### 2.1 To monetary policy — DRAFT (fixed layer)
+
+What the FX agent needs from the monetary-policy agent, every cycle.
+
+| # | What the FX agent needs | Why it matters to FX | Used in |
+|---|---|---|---|
+| S1 | **Expected path of the Selic and the balance of risks**, as the monetary-policy agent reads it (not only the Focus median) | The forward carry, which is what supports the BRL, is the differential ahead, not today's | 1.1 |
+| S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link ([[fisher_effect_uip_ppp_paradox_resolution]]) | 1.1, 1.2 |
+| S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 1.7, Part 3 |
+| S4 | **Reaction function to a depreciation.** Would the Copom respond, and with which instrument? | A credible response caps the depreciation; its absence removes the cap | 1.1, 1.9 |
+
+### 2.2 To other areas — not defined yet
+
+Fiscal policy (the risk-premium drivers of 1.2) and external (the Fed and the global dollar of 1.3)
+are the two that matter most to this area. They are written when those agents exist.
+
+---
+
+## Part 3 — Inputs: what the others told this agent matters to them
+
+### 3.1 From monetary policy — DRAFT (fixed layer)
+
+What the monetary-policy agent needs from the FX agent, every cycle. Written as the monetary-policy
+agent would state it. What the Copom cares about in the exchange rate is its effect on inflation and
+expectations, not its level for its own sake. Evidence that the Copom watches this: the comunicado of
+the 281st meeting (2026-09-16) lists "uma taxa de câmbio persistentemente mais depreciada" among the
+upside risks to inflation, and the RPM of 2026-09 builds its reference scenario on "a trajetória da
+taxa de câmbio compatível com a PPC".
+
+| # | What the monetary-policy agent needs | Why it matters to it | Flag when |
+|---|---|---|---|
+| E1 | **Is the move persistent or transitory?** A judgement, with the reason, separating a level shift from noise | Pass-through depends on persistence; a transitory spike is looked through | A move that the FX agent classifies as persistent, in either direction |
+| E2 | **Global or idiosyncratic?** The split from Part 1 | An idiosyncratic depreciation usually comes with a higher risk premium, which also hits inflation expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move |
+| E3 | **Pass-through channel.** Which prices a depreciation reaches, and how fast | Wholesale prices pass through almost fully in a year, consumer prices far less and administered prices barely ([[distribution_chain_pass_through]]); the Copom projects free and administered prices separately | Always, as context for E1 |
+| E4 | **Where the BRL is relative to the Copom's conditioning assumption** | The reference scenario assumes a PPP-compatible path; a gap between the market and that path is a risk to the projection | The gap widens in a direction that the Copom lists as a risk |
+| E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral rate and weakens transmission ([[fiscal_dominance]]) | CDS and BRL move together against peers |
+| E6 | **How much carry is supporting the BRL** | The exchange rate is one channel through which the Selic reaches inflation; if carry stops working, that channel weakens (Kapitalo §3.2 treats FX as a financial-conditions component equivalent to rates) | Carry and the BRL decouple |
+| E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention | Tells whether the central bank is using FX instruments rather than the rate | Intervention or a cupom cambial spike |
+
+Pass-through (E1, E3) sits between this area and inflation. Until the inflation agent exists, the FX
+agent reports it; when that agent exists, this row is renegotiated between the two maps.
+
+### 3.2 From other areas — not defined yet
+
+Inflation, fiscal policy, economic activity, credit, labour market and external. Each is written when
+that agent's map is built, by that agent.
+
+---
+
+## Part 4 — Concept index from the literature
+
+The concepts read out of the 28 sources of the exchange-rate bibliography, by theme cluster. Each
+bullet ends with the source it comes from; each cluster closes with the data that backs it. This part
+did not change when the map became a contract.
+
+**Two layers, one map, and the citation tells you which.** A bullet citing a source slug (`*(mundell_1963)*`) is a concept read out of the literature; a bullet citing an inventory section (`*(data_inventory §6)*`) is a link to a series LIS tracks.
+
+**How to read this part:** `[[concept_slug]]` marks a recurring concept (Obsidian-style wikilink — not yet split into separate files, just a consistent name to `grep`/search on). `#tag` marks a theme cluster. Each concept line ends with the source(s) it comes from, in parentheses.
+
+Each cluster then closes with a **Data that backs this cluster** block: which series LIS actually tracks for those arguments, and where a data gap and a literature gap turn out to be the same gap. The `§` numbers in those bullets are sections of `repository/agent_mapping/recommended_data/exchange_rate_data_inventory.md`. Two clusters have a note instead of a block, and in both cases the absence is the finding — see `#policy_transmission` and `#pass_through_and_inflation`.
 
 ### #market_microstructure — FX market structure & quoting
 
@@ -211,7 +375,7 @@ Each cluster then closes with a **Data that backs this cluster** block: which se
 - **[[price_puzzle_cost_channel]]** — a documented VAR anomaly directly relevant to interpreting any Brazilian (or other EM) monetary-transmission impulse-response study: a Selic (policy rate) hike sometimes shows up as *raising* inflation in the near term rather than lowering it — the "price puzzle." One explanation is a **cost channel** of monetary policy: higher interest rates raise firms' financing costs *directly and quickly* (a supply-side cost shock), while the demand-dampening effect of tighter policy takes longer to show up — so in the short window before demand cools, costs rise faster than demand falls, and measured inflation ticks up. Distinct from, and additional to, the exchange-rate transmission channel that is this map's main pass-through focus — a caution against reading any single-lag VAR coefficient on the policy rate as "the" effect of monetary policy on prices. *(padrao_transmissao_cambial)*
 - **[[brazil_juros_altos_cambio_apreciado_regime]]** ("high rates, appreciated currency" regime, 2002–2011) — the specific historical Brazilian policy combination this paper documents and critiques: under inflation targeting, Selic stayed structurally high without a proportional decline in the country-risk premium, creating persistent arbitrage room ([[carry_trade]]-like capital inflows) that appreciated the real and, per [[asymmetric_pass_through_fx_trend]] above, made the exchange-rate channel of disinflation unusually *effective* during this window — cheaper imports, cheaper administered prices (energy, telecom, health plans, which reset via the IGP-M index that is itself dollar-sensitive). The authors' critique (echoing Serrano, 2010, and Bresser-Pereira, 2007, both cited): this created a policy architecture **structurally dependent on the exchange rate channel** for inflation control, with real costs — a stronger currency discourages higher-value-added domestic industry and raises import penetration, eroding competitiveness — that standard IT-framework accounting doesn't price in. Directly extends the case-study set already in this map (source 1's Malaysia capital controls, source 10's Swiss franc defense, source 8's Iceland crisis) with a "successful-looking policy that has under-priced costs" example rather than an outright crisis. *(padrao_transmissao_cambial)*
 
-**No data block here, for a documented reason.** This cluster is deliberately excluded from `../recommended_bibliography/exchange_rate_bibliography.md` pending the ownership decision with the inflation agent's own bibliography, so the data-side join was never built for it — even though IPCA and the Focus expectations it would draw on are tracked (`../recommended_data/exchange_rate_data_inventory.md` §9). Whichever agent ends up owning pass-through inherits both halves of this hole.
+**No data block here, for a documented reason.** This cluster is deliberately excluded from `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` pending the ownership decision with the inflation agent's own bibliography, so the data-side join was never built for it — even though IPCA and the Focus expectations it would draw on are tracked (`repository/agent_mapping/recommended_data/exchange_rate_data_inventory.md` §9). Whichever agent ends up owning pass-through inherits both halves of this hole.
 
 ### #capital_controls — restrictions on capital flows
 
@@ -296,56 +460,10 @@ Each cluster then closes with a **Data that backs this cluster** block: which se
 
 ### #practitioner_mental_models — the practitioner layer (data links only)
 
-**Why this cluster looks different from the eight above.** It is the 9th cluster of `../recommended_bibliography/exchange_rate_bibliography.md` and sits outside this map's academic taxonomy on purpose: its sources are internally-authored syntheses of how specific macro funds reason about BRL/USD, extracted from their own letters rather than from published literature, so their *concepts* are not mapped here. What is mapped is the data each mental model runs on — which is the useful half for the analysis agent, and the reason the cluster is not simply omitted.
+**Why this cluster looks different from the eight above.** It is the 9th cluster of `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` and sits outside this map's academic taxonomy on purpose: its sources are internally-authored syntheses of how specific macro funds reason about BRL/USD, extracted from their own letters rather than from published literature, so their *concepts* are not mapped here. What is mapped is the data each mental model runs on — which is the useful half for the analysis agent, and the reason the cluster is not simply omitted.
 
 **Data that backs this cluster:**
 
 - **[[verde_carry_data_link]]** — carry/rate differential data underlies Verde's §3.1/§3.2/§3.4 models (carry as BRL support, the real rate as a valuation anchor, the cupom cambial as a tracked carry instrument). *(data_inventory §2)*
 - **[[verde_terms_of_trade_data_link]]** — terms of trade underlies Verde's §2.1/§2.2 structural-vs-cyclical-surplus framework. *(data_inventory §3)*
 - **[[verde_positioning_data_link]]** — speculative positioning underlies Verde's §5.3 positioning-as-contrarian-signal model. *(data_inventory §8)*
-
----
-
-## Coverage notes
-
-28 of 28 sources processed. ~140 distinct concepts across 9 theme clusters. This section addresses the map's two founding purposes: (i) where the knowledge base is strong vs. thin, for deciding what to add next; (ii) a compact overview for presenting the base to the board.
-
-### Where the base is strong (multiple independent sources converge)
-
-- **Interest-rate/exchange-rate parity conditions** (UIP, CIP, real interest parity, international Fisher effect) — covered from five independent angles (CFA L1/L2, Krugman Ch. 14/16, Dornbusch, and now Fama's 1984 original econometric source) that consistently cross-reference and refine each other. This is the single best-supported cluster in the base, and now includes the actual academic origin of the "wrong-signed beta"/forward-premium-puzzle result the other sources describe narratively.
-- **Exchange-rate pass-through, with a genuine Brazil specialization** — five sources (Goldfajn 2000, Belaisch 2003, Krugman Ch. 17's Marshall-Lerner/J-curve, Cortapasso et al. 2023, and the BCB note) build a coherent, empirically-grounded, Brazil-specific picture: aggregate pass-through → distribution-chain detail → formal elasticity conditions → state-dependent/asymmetric refinement → market-plumbing detail. This is arguably the base's most distinctive strength relative to a generic textbook treatment, and directly serves LIS's Brazil macro mandate.
-- **Fixed-rate mechanics and currency crises** — now the base's *deepest* cluster after the 2026-07 addition of five academic crisis-model papers (sources 19-23). The operational "how a peg is actually defended, and how it breaks" story (Mundell 1963 → Krugman Ch. 18 → CFA L2's warning-sign checklist → four case studies: Malaysia, Iceland, Switzerland, Brazil 2002-2011) is now backed by the full academic theoretical spine it previously lacked: the original first-generation model and its linear/stochastic companion (Krugman 1979; Flood & Garber 1983/84), the original second-generation self-fulfilling model (Obstfeld 1984), and both major competing third-generation models (Krugman's balance-sheet/transfer-problem model, 2000; Chang & Velasco's open-economy bank-run model, 1998) — including their own direct debate with each other over which mechanism actually drove the 1997-98 Asian crisis. Includes a strong-currency defense (Switzerland), a non-crisis cautionary tale (Brazil), and now a first-hand methodological self-critique (Garber's "generational taxonomy is a name swindle" comment) — a genuinely well-rounded, non-one-note treatment of the topic.
-- **Equilibrium/fair-value estimation (BEER/GSDEER/GSFEER)** — the two major methodological families (academic BEER, practitioner GSDEER, and now GSFEER) are all present with enough detail to compare their assumptions, failure modes, and current live signals for BRL specifically.
-- **Capital controls as a policy tool** — no longer a single-source cluster after the 2026-07 addition of both the empirical precursor (Ostry et al., 2010) and the IMF's own official institutional doctrine (2012 Board paper). Together with the case-study material already in `#currency_crisis_dynamics`/`#balance_of_payments`, the base now covers the full arc: when controls are justified (four-condition test), how effective they actually are (composition vs. volume effects, the 2008-09 natural experiment), the CFM/MPM terminology distinction, liberalization sequencing, and the multilateral-spillover case against unilateral overuse.
-- **Currency regime choice, from first principles** — Mundell's 1961 OCA paper (added 2026-07) now sits alongside his 1963 capital-mobility paper, giving the base both halves of Mundell's own regime-choice framework: *which* geographic unit should share a currency (1961) and *what a shared/fixed currency costs in terms of monetary independence* (1963) — directly relevant to any EMU-style or dollarization-adjacent regime analysis.
-- **Political economy of exchange rate policy** — no longer a narrative-only gap after the addition of Frieden (1991), the canonical sectoral-interests paper. The base now has a genuine theoretical answer to "who wins and loses, domestically, from a given exchange-rate regime or level" — directly deepening the previously narrative-only Cortapasso et al. discussion of Brazilian political-currency dynamics.
-
-### Where the base is thin (single source, or gaps entirely)
-
-- **Gaps not represented in the base at all** (see [[exchange_rate_bibliography_gaps]] for concrete candidate sources and priority order):
-  - **FX options and volatility** — forwards, swaps, and futures are covered; option pricing, implied vol surfaces, and risk-reversal/skew as an FX positioning indicator are not.
-  - **China/RMB, or any large non-Brazil EM case study** — the EM material in this base is almost entirely Brazil-specific; there's no equivalent depth for, say, RMB internationalization/managed float mechanics, or the "original sin" (EM local-currency debt market) literature.
-  - **Brazil-specific capital controls empirics** (Chamon & Garcia's 2016 IOF-tax study) — the base now has the general institutional-view framework but not a dedicated empirical test on Brazil's own 2008-2012 episode; a natural next addition given the base's Brazil mandate.
-  - **The other two classic OCA papers** (McKinnon 1963, Kenen 1969) — Mundell's OCA paper is now in the base, but the trio that forms the standard OCA canon isn't complete.
-
-### Which data backs which cluster (folded in 2026-09-10)
-
-Reading the map from the data side instead of the literature side gives three findings the cluster-by-cluster bullets don't show on their own:
-
-- **Two data categories carry most of the base.** Carry/rate differential (§2) and reserves/intervention (§6) each connect to four clusters — determination, valuation, crisis dynamics or regimes, and the practitioner layer. They are cited from the most distinct theoretical angles, so a defect in either propagates furthest.
-- **One cluster connects to nothing:** `#policy_transmission` (see the note in its own section). Eight of nine clusters have at least one series behind them; the ninth is the base's most political-economy-flavoured, and nothing in the pipeline measures it.
-- **A single series usually needs more than one lens.** Terms of trade (§3) and positioning (§8) each feed three clusters spanning both the academic literature and the Verde practitioner layer — a reminder that reading either through one theory at a time is a choice, not a default.
-
-And two gaps turn out to be **the same gap seen from two sides**, which is the argument for keeping the two layers in one file: FX options have neither a series (§8) nor a source (Garman-Kohlhagen), and non-Brazil EM depth has neither the REER peers (§7) nor the literature (Eichengreen & Hausmann). Closing one half of either would leave the other half still open.
-
-### One-paragraph overview (for board use)
-
-The exchange-rate bibliography covers the full standard arc of international-finance theory — from FX market mechanics and quoting conventions, through the interest-rate-parity/PPP family that links currencies to interest rates and inflation (now including the original UIP-failure econometrics, Fama 1984), to the two workhorse short-run models (Mundell-Fleming policy transmission and Dornbusch overshooting) and their long-run monetary counterparts — and grounds all of it in practitioner tools actually used to value currencies today (BEER, GSDEER, GSFEER) plus a now-comprehensive, multi-generational treatment of how currency crises build and break, spanning the field's original academic models (Krugman 1979, Flood & Garber, Obstfeld 1984) through both competing third-generation accounts of the Asian crisis (Krugman 2000, Chang & Velasco 1998). It also now covers currency-regime choice from first principles (Mundell's OCA theory), capital-flow management as an official policy doctrine (the IMF's institutional view and its empirical precursor), and the political economy of exchange-rate policy (Frieden's sectoral-interests framework). Its standout strengths are a genuinely deep, Brazil-specific thread on exchange-rate pass-through and BCB market operations, and an equally deep academic-theory-plus-case-study treatment of currency crisis dynamics and capital account policy. Its main remaining gaps are FX options/volatility and comparative EM depth beyond Brazil.
-
----
-
-## Status: 28 sources processed, five gap sections closed, data layer folded in
-
-All 28 PDFs in `repository/exchange_rate/` have been processed as of 2026-07. The original 18-source pass covered market microstructure through applied valuation. Four subsequent 2026-07 batches added: five academic currency-crisis-model papers closing the "thin theoretical spine" gap (sources 19-23, [[exchange_rate_bibliography_gaps]] Section 1); Mundell's 1961 OCA paper (source 24, Section 3, partially closed) and the 2010/2012 IMF capital-controls papers (sources 25-26, Section 2, closed); and Fama's 1984 UIP-failure econometrics (source 27, Section 5, closed) and Frieden's 1991 political-economy paper (source 28, Section 7, closed). This map can be extended further by adding new sources to that folder and appending their concepts following the pattern established above (source added to the table, concepts added to the relevant `#theme_cluster` with a source citation, cross-links to existing `[[concepts]]` where genuine connections exist). Remaining gap items in [[exchange_rate_bibliography_gaps]] (Section 3's OCA companions, Section 4 FX options, Section 6 non-Brazil EM depth, and the Brazil-specific capital-controls nice-to-have) are still open.
-
-**Data layer folded in on 2026-09-10**, from what had been a separate `exchange_rate_data_literature_integration.md` (itself the ex-`team_materials/` `conceptual_map.md`): 8 of the 9 clusters gained a *Data that backs this cluster* block, `#policy_transmission` gained the explicit no-link finding, `#pass_through_and_inflation` the reason it has no block, and `#practitioner_mental_models` a section of its own carrying only data links. The area now has **one** conceptual map, which is the convention. Still not done, and the honest boundary of this pass: the join is at **cluster** level — individual `[[concepts]]` are not linked to individual series, which is a larger effort.

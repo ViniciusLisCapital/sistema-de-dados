@@ -14,6 +14,10 @@ macroeconômicas (Brasil, EUA). Alimenta dashboards Power BI e materiais de aná
 especialistas por área macro existem, fases de investimento planejadas):
 [`team_materials/structure_materials/macro-project-context.md`](team_materials/structure_materials/macro-project-context.md).
 
+📄 **Sistema de agentes-analistas — regras decididas e o que falta fazer:** [`SISTEMA_AGENTES.md`](SISTEMA_AGENTES.md).
+Decisão sobre o sistema vai para lá, em lista simples; não para os `CLAUDE.md` de pasta.
+`Workflow.md` é do usuário: agente/IA não acrescenta nem retira itens dele.
+
 ---
 
 ## Onde está cada coisa
@@ -69,11 +73,14 @@ jobs/                — Entry points: update_db.py (macro_brasil), update_us.py
 reports/             — Outputs gerados, não versionados, autocontidos e enviáveis. Espelha o país >
                        área de analytics/ (reports/brasil/, reports/us/) — sem isso o Inflation.html
                        do Brasil colidiria com o dos EUA. Nomes em Title Case com espaço
-repository/          — Base de conhecimento curada: fontes brutas por área, os mapas derivados delas
-                       (bibliografia, inventário de dados, mapa conceitual) em agent_mapping/, e o
-                       pipeline de ingestão de PDFs (`repository/ingestion/`) ↳ repository/CLAUDE.md
-obsidian/            — Vault de conhecimento macro por área, para leitura humana. Deliberadamente
-                       paralelo ao repository/, por instrução explícita do usuário ↳ obsidian/CLAUDE.md
+repository/          — O BRUTO: PDFs e extração intocada por área (raw_pdf/, raw_md/), as cartas das
+                       gestoras (mental_model/), o acompanhamento de aquisição (agent_mapping/: candidatos,
+                       lacunas, bibliografia consolidada, inventário de dados) e o pipeline de ingestão. Nenhum agente lê daqui
+                       ↳ repository/CLAUDE.md
+obsidian/            — A ÚNICA camada que os agentes-analistas leem (desde 2026-09-30): por área,
+                       clean_md/, synthesis/, concepts/, mental_models/ (área × gestora), o mapa
+                       conceitual. A ingestão escreve o clean_md direto
+                       aqui ↳ obsidian/CLAUDE.md
 team_materials/      — Só o que é MOSTRADO: PDFs, painéis HTML interativos, vídeos, diagramas e as
                        introduções narrativas. Lista, inventário e mapa vivem no repository/, qualquer
                        que seja a voz em que foram escritos — foi por essa regra que as 3 .md de base

@@ -197,6 +197,8 @@ Usage:
 
 from decimal import Decimal
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -447,11 +449,49 @@ def _annualized_vol_6m(daily: pd.Series) -> pd.Series:
     return vol.resample("MS").last()
 
 
+# USD/BRL 3-month at-the-money implied volatility, daily, from the fund's
+# Bloomberg automation. It has NO table in the database yet -- it travels as a
+# versioned CSV owned by the structural model (the same file its FX equation
+# reads), which is declared debt, not design: the Atualizar button cannot reach
+# it. Pending F-vol in PENDENCIAS.md (destination macro_brasil.cmb_vol_implicita).
+_IMPLIED_VOL_CSV = (Path(__file__).resolve().parents[2] / "structural_model" / "data"
+                    / "vol_implicita_usdbrl_3m.csv")
+
+
+def _load_implied_vol_3m() -> pd.Series:
+    """Month-end USD/BRL 3M implied vol, % a.a., on the month-start index the
+    rest of this module uses. Only COMPLETE months: a month whose last quote
+    is more than 5 days before month-end is dropped rather than carried as
+    that month's close -- the file stops mid-month whenever the export is
+    refreshed (2026-08-04 at the time of writing), and a partial month read
+    as final would lock a scenario box on a value the month did not close at."""
+    d = pd.read_csv(_IMPLIED_VOL_CSV, parse_dates=["date"]).dropna()
+    s = d.set_index("date")["vol_implicita_3m"].astype(float).sort_index()
+    last_obs = s.groupby(s.index.to_period("M")).apply(lambda x: x.index.max())
+    complete = np.array([(p.to_timestamp("M") - dt).days <= 5 for p, dt in last_obs.items()])
+    m = s.resample("MS").last()
+    return m[complete].rename("fx_vol")
+
+
 def _load_carry_vol_metrics(carry_m: pd.Series) -> pd.DataFrame:
-    """carry_vol(t) = carry(t) / BRL's own trailing-6m annualized realized
-    vol (from daily PTAX) -- a carry-to-volatility ("Sharpe-style") measure
-    of Brazil's rate advantage per unit of FX risk taken, rather than the
-    raw rate differential alone.
+    """carry_vol(t) = carry(t) / USD/BRL 3-month IMPLIED vol at the close of
+    month t -- a carry-to-volatility ("Sharpe-style") measure of Brazil's
+    rate advantage per unit of the FX risk the options market prices, rather
+    than the raw rate differential alone.
+
+    The denominator was the BRL's trailing-6m REALIZED vol until 2026-09-30,
+    swapped at the user's request after measuring both (same sample
+    2006-02..2026-06, same spec otherwise). The realized window contains the
+    month being explained, so ~52% of the channel's monthly variance was that
+    month's own volatility; implied vol is a price, the same class as the CDS
+    and the other channels, all contemporaneous. Walk-forward MSE 6.952 ->
+    6.308 (-9.3%), R2 0.653 -> 0.689, drop-one of the channel +2.0% ->
+    +12.4%, conditional Theil U vs random walk 0.593/0.580/0.583/0.600 ->
+    0.564/0.570/0.570/0.584 at 3/6/9/12m, sign held in all 174 rolling
+    windows. Lagging either vol one month kills the channel (drop-one
+    negative, sign flipping across windows) -- the structural model's
+    quarterly equation found the same. `carry_vol_realized` stays in the
+    frame so the old spec remains measurable.
 
     relative_carry_vol(t) = carry_vol(t) - mean(peer_carry_vol(t)) for
     MX/CL/CO/PE, each peer's own carry_vol built identically (peer policy
@@ -463,7 +503,8 @@ def _load_carry_vol_metrics(carry_m: pd.Series) -> pd.DataFrame:
     just the level of the rate differential) explains the deviation, and
     whether that's a bilateral BR-US or a regional-peer-relative story."""
     brl_vol_m = _annualized_vol_6m(_load_daily_ptax())
-    carry_vol = (carry_m / brl_vol_m).rename("carry_vol")
+    carry_vol_realized = (carry_m / brl_vol_m).rename("carry_vol_realized")
+    carry_vol = (carry_m / _load_implied_vol_3m()).rename("carry_vol")
 
     rates_m = _load_policy_rates_monthly()
     fed_funds_m = _monthly_series("macro_international", "diferenciais_juros", "fed_funds", "fed_funds")
@@ -476,8 +517,10 @@ def _load_carry_vol_metrics(carry_m: pd.Series) -> pd.DataFrame:
         peer_carry_vols.append(peer_carry / peer_vol)
     peer_carry_vol_avg = pd.concat(peer_carry_vols, axis=1).mean(axis=1)
 
-    relative_carry_vol = (carry_vol - peer_carry_vol_avg).rename("relative_carry_vol")
-    return pd.concat([carry_vol, relative_carry_vol], axis=1)
+    # Peers have no implied-vol series, so the regional comparison stays
+    # realized-vs-realized. It is not in the shipped spec.
+    relative_carry_vol = (carry_vol_realized - peer_carry_vol_avg).rename("relative_carry_vol")
+    return pd.concat([carry_vol, carry_vol_realized, relative_carry_vol], axis=1)
 
 
 def _load_bop_pct_gdp() -> pd.DataFrame:
@@ -642,7 +685,7 @@ def load_primitive_series(primitives: list[str] | None = None) -> dict[str, pd.S
     primitives=None returns all six this module knows how to build:
         selic        -- BR policy rate (BCB SGS 432, via diferenciais_juros)
         fed_funds    -- US policy rate (FRED FEDFUNDS, via diferenciais_juros)
-        fx_vol       -- BRL trailing-6m annualized realized vol (daily PTAX)
+        fx_vol       -- USD/BRL 3M implied vol, month-end (_load_implied_vol_3m)
         br_real_10y  -- BR real 10Y yield, NTNBJS@120M (macro_brasil.br_interest_rate)
         us_real_10y  -- US real 10Y yield, DFII10 (FRED)
         br_real_2y   -- BR real 2Y yield, NTNBJS@24M (macro_brasil.br_interest_rate)
@@ -651,7 +694,7 @@ def load_primitive_series(primitives: list[str] | None = None) -> dict[str, pd.S
     per _load_breakeven()'s own docstring."""
     selic_m = _monthly_series("macro_international", "diferenciais_juros", "selic", "selic")
     fed_funds_m = _monthly_series("macro_international", "diferenciais_juros", "fed_funds", "fed_funds")
-    fx_vol_m = _annualized_vol_6m(_load_daily_ptax()).rename("fx_vol")
+    fx_vol_m = _load_implied_vol_3m()
 
     curves = _load_interest_rate_curves()
     ntnbjs_120 = curves[(curves["curve"] == "NTNBJS") & (curves["tenor"] == "120M")].set_index("date")["value"].sort_index()

@@ -8,11 +8,11 @@ Cada um nasceu de um defeito concreto encontrado ao construir o relatorio:
    port divergir do original, todo cenario do PDF passa a ser ficcao sem que
    nada levante erro -- entao o teste roda o **JS de verdade**, extraido do
    proprio arquivo entregue, e compara caminho contra caminho.
-2. **O salto fantasma.** No JS, uma caixa nao editada volta ao valor do corte
-   do ajuste (jun/2026) em vez de seguir o ultimo dado conhecido. Como os tres
-   primeiros meses vem preenchidos com o realizado, isso produz um degrau
-   artificial de ~3,7% em out/2026, igual nos tres cenarios. Medido antes da
-   correcao; o teste exige que o caminho neutro nao tenha esse degrau.
+2. **O salto fantasma.** No JS, uma caixa nao editada voltava ao valor do
+   corte do ajuste (jun/2026) em vez de seguir o ultimo dado conhecido, o que
+   produzia um degrau artificial no primeiro mes livre, igual em todo
+   cenario. Corrigido na pagina em 2026-09-30; o teste exige que nem o default
+   da pagina nem o caminho neutro do PDF tenham esse degrau.
 3. **As probabilidades.** Tres numeros escritos a mao que precisam somar 100.
 4. **O PDF contra o dashboard.** Os dois leem as mesmas funcoes, entao um
    numero que divirja e sinal de que o PDF montou a conta de outro jeito.
@@ -136,11 +136,22 @@ const currentMonth = FC.nowcast && FC.nowcast.current_month;
 
 // --- verbatim de report.html (bloco de default das caixas) ---
 const TREND_SEEDED_RG = ['delta_ppp'], TREND_LOOKBACK_RG = 12;
-const levels = {}, resolvedFlags = {};
+const levels = {}, resolvedFlags = {}, boxAnchorRg = {};
+const futureMonthsForBoxes = months;
+function seedAnchorRg(values, nc) {
+  let value = values[values.length - 1], idx = -1;
+  if (nc) futureMonthsForBoxes.forEach((m, h) => {
+    const j = nc.months.indexOf(m);
+    if (j >= 0) { value = nc.values[j]; idx = h; }
+  });
+  return { value, idx };
+}
+function seedValueRg(anchor, drift, h) {
+  return drift === 0 ? anchor.value : anchor.value * Math.exp(drift * (h - anchor.idx) / 100);
+}
 CH.forEach(key => {
   const rawKey = key.replace(/^delta_/, '');
   const hist = FC.channel_history[rawKey];
-  const lastVal = hist.values[hist.values.length - 1];
   const nc = FC.nowcast && FC.nowcast.channels[rawKey];
   resolvedFlags[key] = months.map(m => {
     if (!nc || !nc.months.includes(m)) return false;
@@ -151,9 +162,10 @@ CH.forEach(key => {
     const v = hist.values, k = Math.min(TREND_LOOKBACK_RG, v.length - 1);
     if (k > 0) drift = 100 * Math.log(v[v.length - 1] / v[v.length - 1 - k]) / k;
   }
+  boxAnchorRg[key] = seedAnchorRg(hist.values, nc);
   levels[key] = months.map((m, h) => {
     if (resolvedFlags[key][h]) return nc.values[nc.months.indexOf(m)];
-    return drift === 0 ? lastVal : lastVal * Math.exp(drift * (h + 1) / 100);
+    return seedValueRg(boxAnchorRg[key], drift, h);
   });
 });
 function channelDeltas(key) {
@@ -214,20 +226,24 @@ def test_port_do_simulador_reproduz_o_js(payload):
 # ---------------------------------------------------------------------------
 # 2. O salto fantasma
 # ---------------------------------------------------------------------------
-def test_o_degrau_artificial_existe_no_default_do_js(payload):
-    """Guarda do defeito: sem ancorar no realizado, out/2026 pula sozinho.
+def test_o_default_do_js_nao_tem_mais_o_degrau(payload):
+    """Desde 2026-09-30 a caixa nao editada segura o ULTIMO REALIZADO, no JS.
 
-    Se algum dia o JS deixar de ter esse comportamento, este teste falha e
-    avisa que a correcao de `build_paths()` virou desnecessaria -- em vez de
-    ela ficar la para sempre corrigindo algo que nao existe mais.
+    O caminho que a pagina produz sem edicao (o que `verify_against_dashboard`
+    reproduz) nao pode dar um salto no primeiro mes livre. E o mutante que
+    este teste pega e o defeito original: a semente de volta no valor do corte.
     """
     from analytics.brasil.exchange_rate.models import fx_forecast_sim as sim
 
-    _, levels, flags = sim.default_levels(payload, sim.HORIZON_JS, anchor_last_real=False)
-    path, _, _ = sim.simulate(payload, levels, sim.HORIZON_JS)
+    _, levels, flags = sim.default_levels(payload, sim.HORIZON_JS, anchor_last_real=True)
+    path, dpath, _ = sim.simulate(payload, levels, sim.HORIZON_JS)
+    _, old, _ = sim.default_levels(payload, sim.HORIZON_JS, anchor_last_real=False)
+    _, dold, _ = sim.simulate(payload, old, sim.HORIZON_JS)
     n_real = max(sum(1 for f in col if f == "real") for col in flags.values())
-    degrau = 100.0 * (path[n_real] / path[n_real - 1] - 1.0)
-    assert degrau > 2.0, "o degrau do default do JS sumiu (%.2f%%)" % degrau
+    # o salto que o default antigo criava tem de ser grande o bastante para o teste separar
+    assert abs(dold[n_real] - dpath[n_real]) > 0.5, "o default antigo e o novo nao se distinguem"
+    js_path, _ = sim.verify_against_dashboard(payload)
+    assert all(abs(a - b) < 1e-12 for a, b in zip(js_path, path)), "a pagina nao ancora no realizado"
 
 
 def test_caminho_neutro_nao_importa_o_degrau(payload):
@@ -426,7 +442,7 @@ def _main():
 
     casos = [
         ("port do simulador reproduz o JS", test_port_do_simulador_reproduz_o_js, True),
-        ("o degrau artificial existe no default do JS", test_o_degrau_artificial_existe_no_default_do_js, True),
+        ("o default do JS nao tem mais o degrau", test_o_default_do_js_nao_tem_mais_o_degrau, True),
         ("caminho neutro nao importa o degrau", test_caminho_neutro_nao_importa_o_degrau, True),
         ("projecao parte do cambio observado", test_projecao_parte_do_cambio_observado, True),
         ("residuo do modelo e reportavel", test_residuo_do_modelo_e_reportavel, True),

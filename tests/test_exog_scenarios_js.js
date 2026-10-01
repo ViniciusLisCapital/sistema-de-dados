@@ -480,7 +480,9 @@ if (!API) { console.log('\nnao executou, abortando'); process.exit(1); }
 sec('7a. o que foi renderizado');
 const html = scenHost.innerHTML;
 ok(html.length > 2000, 'o host recebeu HTML', String(html.length));
-const folds = (html.match(/<details class="scen-ch"/g) || []).length;
+// "scen-ch" or "scen-ch scen-ch-pending": the second marks a channel with no episodes yet,
+// which the client copy hides with CSS (generate_report.run(client=True)).
+const folds = (html.match(/<details class="scen-ch(?: scen-ch-pending)?"/g) || []).length;
 ok(folds === SCEN.order.length,
    'um click-drop por variavel exogena, ' + SCEN.order.length + ' no total -- foi o pedido explicito',
    String(folds));

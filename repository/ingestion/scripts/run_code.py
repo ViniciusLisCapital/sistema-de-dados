@@ -5,7 +5,7 @@ Reads *_raw.md files from a given source folder and applies the
 deterministic code-only cleaner (clean_code.py, no AI calls), preserving
 topic subfolder structure in the output — a staging area for inspecting
 clean_code.py's output before it's actually published into
-repository/<topic>/clean_md/ via publish.py or run.py.
+obsidian/<topic>/clean_md/ via publish.py or run.py.
 
 This is a lower-level inspection tool, not part of the normal one-command
 flow — for ingesting a brand-new PDF, use run.py instead.

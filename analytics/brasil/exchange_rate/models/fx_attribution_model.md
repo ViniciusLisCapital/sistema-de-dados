@@ -978,12 +978,38 @@ publishes N per period producing buckets of 2 and 0.
   fails for a different reason: the legal disclaimer is re-extracted at every
   page break, splitting sentences that span one, so verify against `clean_md/`.
 
+### Incremental round, 2026-09-30: +2 documents, 0 claims
+
+Before sending the FX Report to a client. What had been published since the
+2026-09-08 refresh: **Kapitalo's August letter** (`kapitalo_k10_082026`, from
+`kapitalo.com.br/carta-do-gestor/k10` -- the page lists every K10 letter as a
+direct PDF link, which is the discovery step for this manager). Unlike the older ones, this PDF does carry a `CreationDate` (2026-09-11); `date` was kept on the last-day-of-month placeholder so the column stays one convention and **one Kinea
+Insights** (`kinea_insights_16092026`, an equity-valuation deep-dive). Kinea's
+September main letter and Verde's September report were not out yet (Verde's
+index `158094.json` stops at 2026-08).
+
+Neither yields a claim, and the Kapitalo one is worth the reasons:
+
+- "Se o próximo governo endereçar a situação fiscal ... câmbio mais
+  depreciado" -- conditional and forward-looking (the same bar as Dez/2022 and
+  Dez/2025), and it describes a policy mix, not a cause of a realized move.
+- "salvo uma crise de confiança que gere uma depreciação cambial
+  significativa" -- conditional, and FX appears as the cause of a monetary
+  outcome (rule 1).
+- "Estamos comprados ... no real brasileiro" -- positioning with no stated
+  reason (rule 5).
+
+Both documents are registered in `documents.csv`, so Ago/2026 (Kapitalo) and
+Set/2026 (Kinea) read as months *with a document and no FX claim*, not as
+missing months. Set/2026 for Kinea will gain the main letter when it is
+published.
+
 ## Files
 
 - `fx_attribution_data/<manager>/documents.csv` — registry of that manager's
   source documents (date, month, source, filename) — the authoritative list
   for `n_documents`, independent of whether a document yielded any claims.
-  Kinea's currently has 128 rows (Verde 200, Kapitalo 85). For Kinea the
+  Kinea's currently has 129 rows (Verde 200, Kapitalo 86). For Kinea the
   `month` of a main letter is the month it COVERS, not the one it is
   published in (migrated 2026-09-08, see the refresh section above);
   `kinea_insights` rows are keyed on publication, which for those is the

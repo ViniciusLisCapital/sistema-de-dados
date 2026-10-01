@@ -48,6 +48,15 @@ from connectors import bcb_copom
 
 _RAIZ = Path(__file__).resolve().parents[4]
 DIRETORIO_MD = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "central_bank_comunication"
+# Copia de leitura no vault, que e a unica camada que os agentes leem. O texto da API ja e limpo
+# (HTML convertido em markdown, sem cabecalho de pagina nem disclaimer), entao clean_md == raw_md.
+DIRETORIO_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "comunicados"
+
+# Atas: bibliografia do agente de politica monetaria, nao alimentam tabela nenhuma. O PDF (quando ha)
+# fica em raw_pdf como trilha; o texto, em raw_md ao lado dos comunicados; a copia limpa, no vault.
+DIRETORIO_ATAS_PDF = _RAIZ / "repository" / "monetary_policy" / "raw_pdf" / "central_bank_comunication"
+DIRETORIO_ATAS_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "atas"
+_MIN_TEXTO_ATA = 2000  # abaixo disso o textoAta da API e considerado vazio e o PDF e extraido
 
 ORDINAL_PROSA = {"primeiro": 1, "segundo": 2, "terceiro": 3, "quarto": 4}
 _MESES = {
@@ -125,11 +134,119 @@ def sincronizar(
         if verbose:
             print(f"  {nro} {c.data_referencia} -> {arq.name}")
 
+    if destino == DIRETORIO_MD:
+        r["vault"] = espelhar_vault()
+
     if verbose:
         print(
             f"sincronizar: {len(r['novos'])} baixados, {len(r['existentes'])} ja em disco, "
             f"{len(r['vazios'])} sem conteudo na API, {len(r['erros'])} erros."
         )
+    return r
+
+
+def espelhar_vault(origem: Path = DIRETORIO_MD, destino: Path = DIRETORIO_VAULT) -> int:
+    """Deixa o vault com exatamente os mesmos comunicados que `raw_md/`. Devolve quantos gravou."""
+    destino.mkdir(parents=True, exist_ok=True)
+    fontes = {p.name: p for p in origem.glob("copom_*_comunicado_*.md")}
+    for velho in destino.glob("copom_*_comunicado_*.md"):
+        if velho.name not in fontes:
+            velho.unlink()  # data de referencia corrigida pelo BCB: o raw_md ja trocou de nome
+    gravados = 0
+    for nome, f in fontes.items():
+        alvo = destino / nome
+        texto = f.read_bytes()
+        if not alvo.exists() or alvo.read_bytes() != texto:
+            alvo.write_bytes(texto)
+            gravados += 1
+    return gravados
+
+
+def _texto_pdf(caminho: Path) -> tuple[str, str]:
+    """(bruto, limpo) de um PDF de ata. Limpo = sem as linhas que se repetem em metade das paginas
+    ou mais (cabecalho/rodape) e sem as linhas que sao so numero de pagina. Nada e reescrito."""
+    import pdfplumber
+    from collections import Counter
+
+    try:
+        with pdfplumber.open(caminho) as pdf:
+            paginas = [(p.extract_text() or "").strip() for p in pdf.pages]
+    except Exception:  # noqa: BLE001 -- 3 atas (217, 219, 220) tem estrutura que o pdfminer rejeita
+        import fitz
+
+        with fitz.open(caminho) as pdf:
+            paginas = [p.get_text().strip() for p in pdf]
+    paginas = [p for p in paginas if p]
+    bruto = "\n\n".join(paginas)
+    contagem = Counter(l.strip() for p in paginas for l in set(p.splitlines()) if l.strip())
+    repetidas = {l for l, n in contagem.items() if len(paginas) >= 4 and n >= len(paginas) / 2}
+    limpas = []
+    for p in paginas:
+        linhas = [l for l in p.splitlines()
+                  if l.strip() not in repetidas and not re.fullmatch(r"\s*\d{1,3}\s*", l)]
+        limpas.append("\n".join(linhas).strip())
+    return bruto, "\n\n".join(l for l in limpas if l)
+
+
+def sincronizar_atas(
+    inicio: int = bcb_copom.PRIMEIRA_ATA,
+    fim: int | None = None,
+    sobrescrever: bool = False,
+    verbose: bool = True,
+) -> dict:
+    """Baixa as atas do Copom e grava raw_md (repository) + clean_md (vault), uma por reuniao.
+
+    Prefere o texto em HTML da API (limpo na origem, clean_md == raw_md). Quando a API so tem o PDF,
+    extrai com pdfplumber (ata e coluna unica) e limpa cabecalho/rodape em `_texto_pdf()`. O PDF,
+    quando existe, e guardado em raw_pdf. Nao rebaixa o que ja esta em disco.
+
+    Returns:
+        {'api': [...], 'pdf': [...], 'existentes': [...], 'vazios': [...], 'erros': {nro: msg}}
+    """
+    for d in (DIRETORIO_MD, DIRETORIO_ATAS_PDF, DIRETORIO_ATAS_VAULT):
+        d.mkdir(parents=True, exist_ok=True)
+    if fim is None:
+        fim = bcb_copom.ultima_reuniao()
+    ja = {int(p.name.split("_")[1]) for p in DIRETORIO_MD.glob("copom_*_ata_*.md")}
+    r = {"api": [], "pdf": [], "existentes": [], "vazios": [], "erros": {}}
+
+    for nro in range(inicio, fim + 1):
+        if nro in ja and not sobrescrever:
+            r["existentes"].append(nro)
+            continue
+        try:
+            a = bcb_copom.ata(nro)
+            if a is None:
+                r["vazios"].append(nro)
+                continue
+            pdf = DIRETORIO_ATAS_PDF / f"{a.nome_base()}.pdf"
+            if a.url_pdf and not pdf.exists():
+                bcb_copom.baixar(a.url_pdf, pdf)
+            corpo = bcb_copom.ata_html_para_markdown(a.html)
+            if len(corpo) >= _MIN_TEXTO_ATA:
+                bruto = limpo = a.cabecalho("API") + corpo + "\n"
+                r["api"].append(nro)
+            elif pdf.exists():
+                tb, tl = _texto_pdf(pdf)
+                bruto, limpo = a.cabecalho("PDF") + tb + "\n", a.cabecalho("PDF") + tl + "\n"
+                r["pdf"].append(nro)
+            else:
+                r["vazios"].append(nro)
+                continue
+        except Exception as e:
+            r["erros"][nro] = str(e)
+            if verbose:
+                print(f"  ata {nro}: ERRO {e}")
+            continue
+        (DIRETORIO_MD / f"{a.nome_base()}.md").write_text(bruto, encoding="utf-8")
+        (DIRETORIO_ATAS_VAULT / f"{a.nome_base()}.md").write_text(limpo, encoding="utf-8")
+        if verbose:
+            print(f"  ata {nro} {a.data_referencia} ({'API' if nro in r['api'] else 'PDF'})")
+
+    if verbose:
+        print(f"sincronizar_atas: {len(r['api'])} pela API, {len(r['pdf'])} pelo PDF, "
+              f"{len(r['existentes'])} ja em disco, {len(r['vazios'])} vazias, "
+              f"{len(r['erros'])} erros.")
     return r
 
 

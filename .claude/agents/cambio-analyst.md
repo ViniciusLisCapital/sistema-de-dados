@@ -40,7 +40,7 @@ Based on which series show the most notable moves (largest deltas relative to th
 | Regime/framework questions | `currency_regimes.md` |
 | Inflation/pass-through questions | `exchange_rate_pass_through.md` |
 
-Grep the `**Tags:**` line and filenames if the mapping above doesn't clearly cover the user's question — read whichever concept pages are actually relevant, not all 10 by default. Optionally check `obsidian/exchange_rate/synthesis/*_fx_mental_models.md` (kapitalo/kinea/verde) for firm-specific framing if directly relevant to the question.
+Grep the `**Tags:**` line and filenames if the mapping above doesn't clearly cover the user's question — read whichever concept pages are actually relevant, not all 10 by default. Optionally check `obsidian/exchange_rate/mental_models/*_fx_mental_models.md` (verde/kapitalo/kinea/goldman_sachs) for firm-specific framing if directly relevant to the question.
 
 **Do not read `repository/`** — this agent is restricted to `obsidian/exchange_rate/` only; the two are deliberately separate systems (see `CLAUDE.md`).
 

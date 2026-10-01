@@ -20,12 +20,12 @@ o ultimo valor **do ajuste** (jun/2026), nao o ultimo dado disponivel.
 
 Duas armadilhas do original, ambas silenciosas, tratadas aqui:
 
-1. **O salto fantasma.** No JS, uma caixa nao editada volta ao valor de
-   jun/2026 em vez de seguir o ultimo dado conhecido. Como os tres primeiros
-   meses vem preenchidos com o realizado (o `nowcast`), a quarta caixa produz
-   um degrau artificial -- medido, +3,7% de depreciacao em out/2026, igual em
-   qualquer cenario. `build_paths()` ancora as caixas livres no ultimo valor
-   realizado justamente para nao importar esse degrau.
+1. **O salto fantasma.** No JS, uma caixa nao editada voltava ao valor de
+   jun/2026 em vez de seguir o ultimo dado conhecido, o que produzia um degrau
+   artificial no primeiro mes livre, igual em qualquer cenario. Corrigido na
+   pagina em 2026-09-30 (`seedAnchorRg()` em report.html): a caixa livre segura
+   o ultimo realizado, que e o que `anchor_last_real=True` sempre fez aqui. O
+   ramo `False` fica so para medir o defeito antigo.
 2. **O horizonte.** O modelo ancora em jun/2026 e anda 12 meses, terminando em
    jun/2027. Para doze meses a contar do ultimo dado (set/2026) sao precisos 15
    passos: os tres primeiros consomem o realizado e os doze seguintes sao o
@@ -85,10 +85,9 @@ def ppp_drift(payload):
 def default_levels(payload, horizon=HORIZON_JS, anchor_last_real=False):
     """As caixas como a pagina as monta.
 
-    `anchor_last_real=False` reproduz o JS ao pe da letra, degrau incluido --
-    e o que a verificacao contra o dashboard exige. `True` ancora cada canal no
-    ultimo valor realizado (o `nowcast`, quando existe), que e o ponto de
-    partida honesto para um cenario.
+    `anchor_last_real=True` ancora cada canal no ultimo valor realizado (o
+    `nowcast`, quando existe) -- e o que a pagina faz desde 2026-09-30.
+    `False` reproduz o JS antigo, degrau incluido, e so serve para medi-lo.
     """
     fc = payload["forecast"]
     months = future_months(fc["channel_history"]["fiscal"]["months"][-1], horizon)
@@ -262,7 +261,7 @@ def verify_against_dashboard(payload, expected=None, tol=1e-3):
     Se isto nao bater, o port esta errado e nenhum cenario vale. E a checagem
     que a secao de verificacao do plano exige antes de qualquer cenario.
     """
-    _, levels, _ = default_levels(payload, HORIZON_JS, anchor_last_real=False)
+    _, levels, _ = default_levels(payload, HORIZON_JS, anchor_last_real=True)
     path, _, _ = simulate(payload, levels, HORIZON_JS)
     if expected is None:
         return path, None

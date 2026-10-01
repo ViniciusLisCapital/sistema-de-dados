@@ -29,13 +29,15 @@ resposta se refere -- o mes, o trimestre, o ano ou o mes da reuniao-alvo. Quem q
 a historia da revisao fixa `referencia` e varre `nro_reuniao`.
 
 `referencia` e texto no formato de cada bloco: `R282` (reuniao-alvo), `2026`,
-`2026-09`, `2026T3`, ou '' quando a pergunta nao tem periodo (ambiente externo e
-situacao fiscal perguntam sobre a mudanca DESDE O ULTIMO COPOM). `categoria` e ''
+`2026-09`, `2026T3`, um horizonte (`curto_prazo` | `2a` | `5a`, em juro_real_neutro,
+pib_potencial e nairu -- ai `ref_date` e nulo), ou '' quando a pergunta nao tem periodo
+(ambiente externo e situacao fiscal perguntam sobre a mudanca DESDE O ULTIMO COPOM). `categoria` e ''
 quando nao se aplica, porque coluna de PK nao aceita NULL.
 
 Unidades por bloco: copom_decisao em pontos-base (a faixa, em `categoria`) e numero
 de respostas; ipca_curto_prazo em % a.m.; pib_trimestral e ipca_4t em %; hiato em %
-do PIB potencial; fracao de 0 a 1.
+do PIB potencial; juro_real_neutro em % a.a.; pib_potencial em % de crescimento ao ano;
+nairu em % da forca de trabalho; fracao de 0 a 1.
 
 ## Carga
 
@@ -81,16 +83,16 @@ _DDL = """
 CREATE TABLE IF NOT EXISTS expc_qpc (
     nro_reuniao SMALLINT     NOT NULL COMMENT 'Edicao: a reuniao do Copom que o questionario antecede',
     date        DATE         NOT NULL COMMENT 'Dia em que o BCB publicou o resultado (capa da planilha), o dia seguinte a ata',
-    bloco       VARCHAR(32)  NOT NULL COMMENT 'copom_decisao | vies_ipca | vies_pib | ambiente_externo | situacao_fiscal | ipca_curto_prazo | pib_trimestral | hiato | ipca_horizonte_relevante',
-    variavel    VARCHAR(32)  NOT NULL COMMENT 'copom_decisao: fara | deveria. vies_*: ipca | pib. ipca_curto_prazo: ipca | servicos_subjacentes | media_nucleos. pib_trimestral: yoy | qoq_sa. hiato: hiato. ipca_horizonte_relevante: ipca_4t | prob_desvio. Demais: o proprio bloco',
-    referencia  VARCHAR(16)  NOT NULL COMMENT 'Periodo a que a resposta se refere: R<n> (reuniao-alvo), AAAA, AAAA-MM, AAAATn, ou vazio quando a pergunta e sobre a mudanca desde o ultimo Copom',
+    bloco       VARCHAR(32)  NOT NULL COMMENT 'copom_decisao | vies_ipca | vies_pib | ambiente_externo | situacao_fiscal | ipca_curto_prazo | pib_trimestral | hiato | ipca_horizonte_relevante | juro_real_neutro | pib_potencial | nairu',
+    variavel    VARCHAR(32)  NOT NULL COMMENT 'copom_decisao: fara | deveria. vies_*: ipca | pib. ipca_curto_prazo: ipca | servicos_subjacentes | media_nucleos. pib_trimestral: yoy | qoq_sa. hiato: hiato. ipca_horizonte_relevante: ipca_4t | prob_desvio. Demais (inclusive juro_real_neutro, pib_potencial, nairu): o proprio bloco',
+    referencia  VARCHAR(16)  NOT NULL COMMENT 'Periodo a que a resposta se refere: R<n> (reuniao-alvo), AAAA, AAAA-MM, AAAATn, horizonte (curto_prazo | 2a | 5a) em juro_real_neutro/pib_potencial/nairu, ou vazio quando a pergunta e sobre a mudanca desde o ultimo Copom',
     categoria   VARCHAR(40)  NOT NULL COMMENT 'Faixa em p.b. (copom_decisao), opcao de resposta (vies, ambiente, fiscal) ou faixa de desvio (prob_desvio: abaixo_0_5pp | entre_0_5pp | acima_0_5pp, em relacao a PROPRIA projecao); vazio quando nao se aplica',
     estatistica VARCHAR(16)  NOT NULL COMMENT 'respostas (contagem) | fracao (0 a 1) | p25 | mediana | p75 | media | n_respostas',
     valor       DOUBLE       NOT NULL,
-    ref_date    DATE         NULL     COMMENT '1o dia do periodo de referencia (mes da reuniao-alvo em copom_decisao); nulo sem periodo',
+    ref_date    DATE         NULL     COMMENT '1o dia do periodo de referencia (mes da reuniao-alvo em copom_decisao); nulo sem periodo e nos horizontes',
     PRIMARY KEY (nro_reuniao, bloco, variavel, referencia, categoria, estatistica),
     KEY idx_revisao (bloco, variavel, referencia, nro_reuniao)
-) COMMENT='Questionario Pre-Copom do BCB, resultados quantitativos agregados publicados desde a 238a reuniao (mai/2021): o que o mercado acha que o Copom fara e deveria fazer, vieses de risco, ambiente externo e fiscal, IPCA de curto prazo, PIB trimestral, hiato. Expectativa de mercado, nao estimativa do BC.'
+) COMMENT='Questionario Pre-Copom do BCB, resultados quantitativos agregados publicados desde a 238a reuniao (mai/2021): o que o mercado acha que o Copom fara e deveria fazer, vieses de risco, ambiente externo e fiscal, IPCA de curto prazo, PIB trimestral, hiato, juro real neutro, PIB potencial e Nairu. Expectativa de mercado, nao estimativa do BC.'
 """
 
 

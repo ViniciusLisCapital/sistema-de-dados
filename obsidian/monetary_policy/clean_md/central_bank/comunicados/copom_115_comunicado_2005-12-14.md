@@ -1,0 +1,9 @@
+Fonte: Banco Central do Brasil — API oficial de comunicados do Copom
+(https://www.bcb.gov.br/api/servico/sitebcb/copom/comunicados_detalhes?nro_reuniao=115)
+Reunião: 115ª reunião do Copom
+Data de referência: 2005-12-14
+Título: Nota à Imprensa - 115ª. Reunião
+
+---
+
+Dando prosseguimento ao processo de flexibilização da política monetária iniciado na reunião de setembro de 2005, o COPOM decidiu reduzir a taxa Selic para 18% ao ano, sem viés, por 6 votos a favor e 2 votos pela redução da taxa Selic em 0,75 p.p.

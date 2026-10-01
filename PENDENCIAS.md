@@ -94,4 +94,3 @@ desenvolvimento não tem.
   ppp_equilibrium), `cmb_dollar_index`/`cmb_dollar_index_em`/`cmb_equity_us`
   (ppp_equilibrium) e `cmb_real_rates` (real_rates_comparison.py) todas têm consumidor vivo — o que
   a remoção da réplica quebrou foi menos do que se registrou na época.
-- **Kinea PDF órfão**: `team_materials/exchange_rate/agent_materials/kinea_fx_mental_models.pdf` existe mas não há `.md` de origem em lugar nenhum, e `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` ainda marca Kinea como "pendente" no cluster 9 — investigar se é um artefato de teste esquecido ou uma síntese real nunca finalizada (fonte bruta: `repository/mental_model/kinea_insights/`).

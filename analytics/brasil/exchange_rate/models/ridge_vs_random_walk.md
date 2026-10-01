@@ -267,3 +267,44 @@ record.
   level error to cumulative h-month log return, plus the two benchmarks and the
   Clark-West/bootstrap machinery described under Design. Everything needed to rebuild
   it is in this note; the script itself was not committed.
+
+## The volatility denominator: realized vs. implied (2026-09-30)
+
+Asked directly by the user after the technical guide flagged that `carry_vol` was mostly a
+volatility channel: re-run the regression with the USD/BRL **3-month implied vol** the fund
+already exports from Bloomberg (`analytics/brasil/structural_model/data/vol_implicita_usdbrl_3m.csv`,
+2003-10 to 2026-08-04, the same file the structural model's FX equation reads), test it, and only
+then ship it.
+
+Why it was worth testing: the realized denominator is a 126-trading-day window that **contains
+the month being explained**. On the shipped sample the change in realized vol explained 52% of
+the monthly variance of `delta_carry_vol` (the rate gap 5%), and correlated +0.36 with `delta_fx`.
+Part of what the channel "explained" was the month's own turbulence.
+
+Same sample (2006-02..2026-06, n=245), same spec otherwise (`_CHANNELS_5` + AR(1) + PPP offset at
+1), same harness as the table above (rolling 72m, λ re-picked per fold, 162 origins because the
+folds now stop at the fit cutoff). The harness reproduced the realized row of this note's main
+table to within 0.001 of U, which is what makes the other rows comparable.
+
+| denominator | WF MSE | R² | drop-one | t (OLS, indicative) | U 3m | U 6m | U 9m | U 12m | sign held (174 windows) |
+|---|---|---|---|---|---|---|---|---|---|
+| realized 126d, same month (previous spec) | 6.952 | 0.653 | +2.0% | −2.46 | 0.593 | 0.580 | 0.583 | 0.600 | 174 |
+| **implied 3M, same month (shipped)** | **6.308** | **0.689** | **+12.4%** | **−5.82** | **0.564** | **0.570** | **0.570** | **0.584** | **174** |
+| realized 126d, lagged 1m | 7.243 | 0.645 | −2.1% | −0.43 | 0.595 | 0.586 | 0.580 | 0.595 | 142 |
+| implied 3M, lagged 1m | 7.279 | 0.646 | −2.6% | +0.95 | 0.601 | 0.597 | 0.598 | 0.622 | 57 |
+
+Three readings:
+
+- **Implied beats realized on every measure**, in sample and out: walk-forward MSE −9.3%, the
+  channel's drop-one contribution six times larger, and a lower conditional U at all four
+  horizons. The rolling coefficient stays negative in every window (−2.34 to −0.74 per σ).
+- **Lagging kills the channel for either source**, the same finding as the structural model's
+  quarterly equation (`analytics/brasil/structural_model/CLAUDE.md`, "Oitavo round"). A
+  predetermined vol is not informative; what makes implied vol useful is being the price of FX
+  risk at the same close, the same class as the CDS and the other drivers.
+- **The gain is not free of simultaneity, and the doc says so.** Implied vol is still
+  contemporaneous with the move (corr of `delta_carry_vol` with `|delta_fx|` −0.39). What changed
+  is that it is a market price observed at the close, not a statistic computed from the returns
+  being explained.
+
+The ablation and the subperiod table above were **not** re-run on the implied-vol spec.

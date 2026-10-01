@@ -18,6 +18,9 @@ Uso:
     uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run(include_models=False)"
 """
 
+import html
+import re
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -27,6 +30,14 @@ from analytics.report_structure.builder import render_report
 from connectors.mysql import MySQLDataRequester
 
 _TEMPLATE = Path(__file__).parent / "report.html"
+
+# Copia para envio externo: o mesmo relatorio sem os blocos marcados
+# <!--WIP:nome--> ... <!--/WIP:nome--> no report.html, que sao partes ainda nao
+# trabalhadas e que continuam na versao interna. Pasta propria para o arquivo
+# manter o nome "FX Report.html".
+_CLIENT_OUTPUT = "reports/brasil/cliente/FX Report.html"
+_AUDIENCE_RE = re.compile(r"<!--AUDIENCE-->.*?<!--/AUDIENCE-->", re.S)
+_WIP_RE = re.compile(r"<!--WIP:([\w-]+)-->.*?<!--/WIP:\1-->", re.S)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -780,7 +791,71 @@ def _load_models() -> dict:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def run(output: str = "reports/brasil/FX Report.html", include_models: bool = True) -> None:
+_SEG_RE = re.compile(r"(<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>)", re.S | re.I)
+
+
+def strip_source_comments(page: str) -> tuple[str, int]:
+    """Tira da cópia de envio os comentários de desenvolvimento que o "exibir código-fonte" mostraria.
+
+    Conservador de propósito, porque aqui um erro quebra a página: comentário HTML fora de
+    script/style, comentário de bloco em CSS e, em JS, só o comentário que ocupa a linha inteira
+    (`//` ou `/* ... */` começando na linha). Comentário no fim de uma linha de código fica: separá-lo
+    de uma URL ou de um `//` dentro de string exige um parser de JS.
+    """
+    n = 0
+
+    def js(block):
+        nonlocal n
+        out, in_block = [], False
+        for line in block.split("\n"):
+            st = line.strip()
+            if in_block:
+                n += 1
+                if "*/" in st:
+                    in_block = False
+                continue
+            if st.startswith("//"):
+                n += 1
+                continue
+            if st.startswith("/*"):
+                n += 1
+                if "*/" not in st:
+                    in_block = True
+                continue
+            out.append(line)
+        return "\n".join(out)
+
+    parts = _SEG_RE.split(page)
+    for i, part in enumerate(parts):
+        low = part[:7].lower()
+        if low.startswith("<script"):
+            head_end = part.index(">") + 1
+            if "src=" in part[:head_end]:
+                continue
+            parts[i] = part[:head_end] + js(part[head_end:-len("</script>")]) + "</script>"
+        elif low.startswith("<style"):
+            new, k = re.subn(r"/\*.*?\*/", "", part, flags=re.S)
+            n += k
+            parts[i] = new
+        else:
+            new, k = re.subn(r"<!--.*?-->", "", part, flags=re.S)
+            n += k
+            parts[i] = new
+    return "".join(parts), n
+
+
+def client_notice(recipient: str, date: str | None = None) -> str:
+    """Aviso de confidencialidade da cópia de envio, o mesmo no dashboard e no guia de leitura.
+
+    O destinatário é argumento, nunca constante no código: cada envio tem o seu.
+    """
+    date = date or datetime.now().strftime("%d/%m/%Y")
+    return ("Apresentação exclusiva e confidencial, elaborada por “LIS CAPITAL LTDA” "
+            f"e destinada a “{recipient}” em {date}.")
+
+
+def run(output: str = "reports/brasil/FX Report.html", include_models: bool = True,
+        client: bool = False, recipient: str | None = None, notice_date: str | None = None) -> None:
     """Gera o relatório HTML de fundamentos cambiais.
 
     Lê tabelas de macro_brasil e macro_international, injeta os dados no
@@ -790,7 +865,14 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
         output: caminho de saída. Default "reports/brasil/FX Report.html".
         include_models: se False, pula as três abas de modelo (nada de FRED
             nem de fits) e elas saem com a mensagem "sem dados embutidos".
+        client: se True, grava TAMBÉM a cópia de envio em `_CLIENT_OUTPUT`,
+            com os mesmos dados, sem os blocos <!--WIP:...--> do template e
+            com o aviso de confidencialidade no topo e no rodapé.
+        recipient: destinatário da cópia de envio; obrigatório com client=True.
+        notice_date: data do aviso (dd/mm/aaaa); default, hoje.
     """
+    if client and not recipient:
+        raise ValueError("client=True exige recipient= (o destinatário vai no aviso de confidencialidade)")
     print("Carregando dados de macro_brasil / macro_international...")
     report_data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -817,3 +899,28 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
     models = _load_models() if include_models else _empty_models()
     out = render_report(_TEMPLATE, report_data, output, extra_markers=models)
     print(f"Relatório salvo: {out}")
+
+    if client:
+        template = _TEMPLATE.read_text(encoding="utf-8")
+        stripped, n = _WIP_RE.subn("", template)
+        if n == 0:
+            raise RuntimeError("client=True, mas report.html não tem bloco <!--WIP:...-->")
+        notice = html.escape(client_notice(recipient, notice_date), quote=False)
+        for marker, repl in (("<!--CLIENT_NOTICE-->", f'<div class="client-notice">{notice}</div>'),
+                             # the FX Model's not-yet-measured scenario channels stay internal
+                             ("<!--CLIENT_STYLE-->", "<style>.scen-ch-pending { display: none; }</style>")):
+            if marker not in stripped:
+                raise RuntimeError(f"report.html perdeu o marcador {marker}")
+            stripped = stripped.replace(marker, repl)
+        stripped, k = _AUDIENCE_RE.subn(notice, stripped)
+        if k != 1:
+            raise RuntimeError("report.html deveria ter exatamente um bloco <!--AUDIENCE-->")
+        with tempfile.TemporaryDirectory() as tmp:
+            tpl = Path(tmp) / "report.html"
+            tpl.write_text(stripped, encoding="utf-8")
+            out_c = render_report(tpl, report_data, _CLIENT_OUTPUT, extra_markers=models)
+        page = Path(out_c).read_text(encoding="utf-8")
+        page, n_com = strip_source_comments(page)
+        Path(out_c).write_text(page, encoding="utf-8")
+        print(f"Cópia de envio salva ({n} bloco(s) WIP removido(s), {n_com} comentário(s) de código "
+              f"retirado(s)): {out_c}")

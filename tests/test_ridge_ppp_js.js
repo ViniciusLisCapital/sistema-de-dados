@@ -159,7 +159,10 @@ const B = D.forecast_error_bands;
 // reaproveitado e a banda entregue descreveria um modelo que a pagina nao roda.
 ok(B && String(B.spec).startsWith('ppp_offset_b1|'),
    'o cache da banda declara a spec com PPP', B ? String(B.spec) : 'ausente');
-ok(B && String(B.spec) === 'ppp_offset_b1|' + canais.join(','),
+// Desde 2026-09-30 a fonte da vol do carry_vol faz parte da spec: o NOME do
+// canal nao mudou quando o denominador passou de realizada a implicita.
+ok(B && String(B.spec) === 'ppp_offset_b1|' + canais.join(',')
+       + (canais.includes('carry_vol') ? '|vol=implied_3m' : ''),
    'e o conjunto de canais da banda e o MESMO que o ajuste entregue usa',
    B ? String(B.spec) + '  vs  ' + canais.join(',') : 'ausente');
 ok(B && B.std_error_pct[0] < B.std_error_pct[B.std_error_pct.length - 1],
@@ -304,9 +307,13 @@ sec('11. a caixa do PPP na previsao nao assume inflacao igual a dos EUA');
 // forte, e enviesaria toda previsao intocada.
 ok(/const TREND_SEEDED_RG = \['delta_ppp'\]/.test(src),
    'o PPP e semeado por TENDENCIA, nao plano');
-ok(/boxSeedRg\[key\] = drift;/.test(src) && /levels\[key\] = futureMonthsForBoxes\.map\(\(m, h\) => \{[\s\S]{0,220}drift === 0 \? lastVal : lastVal \* Math\.exp\(drift \* \(h \+ 1\) \/ 100\)/.test(src),
-   'as 12 caixas iniciais seguem a deriva recente');
-ok(/const drift = boxSeedRg\[key\] \|\| 0;[\s\S]{0,260}Math\.exp\(drift \* \(h \+ 1\) \/ 100\)/.test(src),
+// 2026-09-30: a semente parte do ULTIMO REALIZADO (seedAnchorRg), nao do corte,
+// e a deriva conta os passos a partir dali (h - anchor.idx).
+ok(/boxSeedRg\[key\] = drift;/.test(src)
+   && /levels\[key\] = futureMonthsForBoxes\.map\(\(m, h\) => \{[\s\S]{0,220}seedValueRg\(boxAnchorRg\[key\], drift, h\)/.test(src)
+   && /anchor\.value \* Math\.exp\(drift \* \(h - anchor\.idx\) \/ 100\)/.test(src),
+   'as 12 caixas iniciais seguem a deriva recente, a partir do ultimo realizado');
+ok(/const drift = boxSeedRg\[key\] \|\| 0;[\s\S]{0,260}seedValueRg\(boxAnchorRg\[key\], drift, h\)/.test(src),
    'e o botao "Reset shocks" devolve a MESMA semente, nao um indice congelado');
 // a deriva semeada tem de ser positiva e da ordem do diferencial recente
 const v = hist.values, k = Math.min(12, v.length - 1);
@@ -428,7 +435,7 @@ ok(/somaArrRg\(currentArr\('baseline'\), currentArr\(TREND_EXTRA_RG\)\)/.test(sr
    'e o valor plotado e a SOMA das duas series');
 ok(/id="ridgeDecompFoot"/.test(src), 'o grafico tem rodape');
 ok(/<b>Trend<\/b> is drawn as one bar/.test(src) &&
-   /inflation gap/.test(src) && /constant drift/.test(src) && /momentum term/.test(src),
+   /inflation gap/.test(src) && /constant drift/.test(src) && /last-month term/.test(src),
    'e o rodape diz de que a barra e composta');
 ok(/compound rather than add/.test(src),
    'avisando que as partes compoem, nao somam -- sao percentuais');
@@ -563,7 +570,9 @@ chaves.forEach(c => {
   ok(perto(h.min, Math.min.apply(null, vivos), 1e-3)
      && perto(h.max, Math.max.apply(null, vivos), 1e-3),
      c + ': min/max declarados batem com a serie');
-  ok(h.span === null || perto(h.span, Math.round(100 * h.max / h.min) / 100, 1e-2),
+  // relativo: com min pequeno (carry/vol implicita, 0,087) o arredondamento a 4
+  // casas de min/max move a razao na segunda decimal; o span em si sai com 2 casas
+  ok(h.span === null || Math.abs(h.span - h.max / h.min) <= 0.005 + 1e-3 * h.span,
      c + ': span e max/min, medido', String(h.span));
   // `log` DERIVADO da amplitude. Um mutante que ligue log num canal de 1,6x so
   // e pego por isto.

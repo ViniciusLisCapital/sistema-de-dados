@@ -1,6 +1,6 @@
 """
 repository/ingestion/scripts/publish.py — Publish an existing *_raw.md (raw
-extraction, not yet a PDF) into repository/<topic>/raw_md/ and clean_md/,
+extraction, not yet a PDF) into repository/<topic>/raw_md/ and obsidian/<topic>/clean_md/,
 without re-extracting.
 
 Lower-level tool for a *_raw.md file that already exists by some other means
@@ -16,7 +16,7 @@ input folder — pass a *_raw.md file or a folder to scan recursively.
      repository/<topic>/raw_md/_legacy_ai_rewrite/<name>.md first, so nothing
      already there is silently lost.
   2. Runs the deterministic, non-AI cleaner (clean_code.py) over the raw text
-     and writes the result to repository/<topic>/clean_md/<name>.md. This is a
+     and writes the result to obsidian/<topic>/clean_md/<name>.md. This is a
      pure regex pass — no paraphrasing, no truncation risk, since no LLM call
      or token budget is involved.
 
@@ -38,6 +38,7 @@ SCRIPTS = Path(__file__).resolve().parent   # repository/ingestion/scripts/
 INGESTION = SCRIPTS.parent                  # repository/ingestion/
 REPOSITORY = INGESTION.parent                # repository/
 ROOT = REPOSITORY.parent                     # project root
+OBSIDIAN = ROOT / "obsidian"                 # clean_md lives in the vault, the only layer agents read
 
 
 def _base_name(raw_path: Path) -> str:
@@ -52,13 +53,13 @@ def _base_name(raw_path: Path) -> str:
 def publish_one(raw_path: Path, topic: str, overwrite: bool = False) -> tuple[Path, Path]:
     """
     Publish a single ingestion/work/<topic>/<name>_raw.md into
-    repository/<topic>/raw_md/ and repository/<topic>/clean_md/.
+    repository/<topic>/raw_md/ and obsidian/<topic>/clean_md/.
 
     Returns (raw_dest, clean_dest).
     """
     name = _base_name(raw_path)
     raw_dir = REPOSITORY / topic / "raw_md"
-    clean_dir = REPOSITORY / topic / "clean_md"
+    clean_dir = OBSIDIAN / topic / "clean_md"
     raw_dir.mkdir(parents=True, exist_ok=True)
     clean_dir.mkdir(parents=True, exist_ok=True)
 
@@ -125,7 +126,7 @@ def run(source: Path, overwrite: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Publish an existing *_raw.md extraction into repository/<topic>/raw_md/ and clean_md/.")
+    parser = argparse.ArgumentParser(description="Publish an existing *_raw.md extraction into repository/<topic>/raw_md/ and obsidian/<topic>/clean_md/.")
     parser.add_argument("source", help="A single *_raw.md file (topic = its parent folder name), or a folder of <topic>/*_raw.md to scan recursively")
     parser.add_argument("--overwrite", action="store_true", help="Re-publish clean_md even if it already exists (raw_md is always legacy-preserved, never overwritten)")
     args = parser.parse_args()

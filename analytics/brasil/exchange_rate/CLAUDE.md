@@ -17,6 +17,43 @@ uv run python -c "from analytics.brasil.exchange_rate.generate_report import run
 uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run(include_models=False)"
 ```
 
+**Cópia de envio a cliente** (2026-09-30): `run(client=True, recipient="<nome>")` grava, além do
+arquivo de sempre, `reports/brasil/cliente/FX Report.html` — mesmos dados, mesma geração, com três
+diferenças montadas a partir de marcadores do `report.html`:
+
+- sem os blocos `<!--WIP:nome-->…<!--/WIP:nome-->`: o seletor de canais candidatos da aba
+  Equilíbrio PPP (`channel-explorer`, ainda não trabalhado; o JS dele sai cedo sem `#channelSelect`)
+  e as `nota-interna` — frases da tela que citavam caminho de arquivo, tabela do banco ou pendência
+  (o rodapé de fontes da aba PPP, que ainda dizia investing.com, era uma delas);
+- `<!--CLIENT_NOTICE-->` vira uma faixa abaixo do cabeçalho com o aviso de confidencialidade
+  (`client_notice()`: *"Apresentação exclusiva e confidencial, elaborada por “LIS CAPITAL LTDA” e
+  destinada a “<nome>” em <data>."*), e o `<!--AUDIENCE-->` do rodapé troca "Uso interno" pelo mesmo
+  aviso;
+- `<!--CLIENT_STYLE-->` (no `<head>`) esconde os canais do FX Model ainda sem episódios medidos
+  (`.scen-ch-pending`);
+- `strip_source_comments()` tira os comentários de desenvolvimento que o "exibir código-fonte"
+  mostraria (HTML, CSS e as linhas inteiras de comentário JS; o comentário no fim de uma linha de
+  código fica, porque separá-lo de uma URL exige parser). Depois dele, os dois `<script>` passam no
+  `node --check` e a página abre no Chrome sem exceção — confira as duas coisas se mexer na função;
+- `client=True` sem destinatário, sem bloco WIP ou sem os marcadores levanta.
+
+Revisão de texto para envio (2026-09-30): as notas da tela, os cartões `i` e a metodologia do FX
+Model foram relidos inteiros no HTML de envio. Saíram contagens de auditoria que envelheciam
+("379 meses", "307 meses"), a decomposição da tendência que ainda citava a amostra de 2008
+(192%/78%/64%, agora calculada do `contrib_monthly` na página), referências a gráficos que não
+existem mais, jargão ("bucket", "vintage", "tabela do banco") e a narrativa de versões anteriores
+("An earlier version", "Before this term existed"). A régua que ficou: **texto da tela descreve o
+que está na tela**, não como se chegou a ele.
+
+O destinatário é argumento e nunca constante no código. **Guia de leitura para o cliente:**
+`manual/generate_manual_pdf.py run('<nome>')` → `reports/brasil/cliente/FX Report - Guia de
+leitura.pdf`: seis abas escritas ali, com capturas do HTML de envio tiradas por Chrome headless
+(`manual/capture_screens.js`, precisa de rede), e a aba FX Model como segunda parte, composta com o
+`build_story()` de `models/generate_model_guide_pdf.py` e conferida contra
+`team_materials/exchange_rate/ridge_model_explained.pdf` página a página. A conferência acusa
+diferença quando o payload do modelo muda entre as duas gerações (o nowcast diário anda) — regerar
+o guia técnico resolve.
+
 Updating the DB first is optional — only needed for fresher data. `generate_report.py` alone re-renders against whatever is already in MySQL (plus a live FRED CPI fetch, for the model tabs).
 
 ## Report architecture
@@ -564,6 +601,28 @@ coincidência da amostra que começava em 2008.
 n=222 com R² 0,6665 e α +0,045 (t=+0,25), contra os 0,6614 e +0,199 (t=+1,12) registrados antes
 — a troca do CDS mudou os valores do canal `fiscal` também no período em comum, então aquela
 safra não é recuperável daqui. Ler a diferença como efeito de tamanho de amostra seria errado.
+
+### Remedido de novo em 2026-09-30, e a afirmação de horizonte longo mudou
+
+Na spec entregue (carry sobre vol implícita, amostra 2006-02..2026-06, β reproduzidos a 2e-4), com
+Newey-West de `h` defasagens:
+
+- **mês a mês**: a diferença de inflação é **0,8%** da variância do câmbio; o β livre nas 174 janelas
+  de 72 meses vai de **−0,65 a +2,14** e sai negativo em **45%** delas (eram −0,76 a +0,87 e 60%);
+- **horizonte longo, só na amostra do ajuste**: β = 1,91 / 3,32 / 2,50 / 1,96 / 1,92 / **0,66** em
+  h = 1/12/24/36/60/120. O de 12 meses **rejeita 1** (t = 2,41) e o de 10 anos **não se distingue de
+  0** (t = 0,63, 126 observações sobrepostas, ~uma década independente);
+- **horizonte longo, história inteira desde 1994-07**: β = 1,14 / 1,29 / 1,51 / 2,38 / 1,50 em
+  h = 12..120, **nenhum diferente de 1** (t entre 0,24 e 1,40) e diferente de 0 com folga só em 60
+  meses (t 2,42; os demais entre 1,34 e 1,97).
+
+A decisão (β fixo em 1) continua de pé, mas pelo motivo mais fraco e honesto: é o valor da teoria e
+os dados **não o rejeitam**. A frase *"diferente de zero em todos os horizontes e de um em nenhum"*
+deixou de valer, e o guia do cliente (`generate_model_guide_pdf.py`) foi reescrito com os números
+novos e a afirmação feita sobre 1994+. O `report.html` foi alinhado em 2026-09-30: dizia *"firmly
+present"*, que só vale em 60 meses, e passou a dizer *"in the full history since 1994 … the estimate
+is positive and statistically indistinguishable from one-for-one"* — com o recorte explícito, porque
+na amostra do ajuste o de 12 meses rejeita 1.
 
 Cinco coisas de implementação que valem para qualquer termo fixo futuro:
 
@@ -1325,7 +1384,7 @@ What's actually still here:
 
 - **`ppp_equilibrium.py`** — the shared data-loading and PPP-equilibrium core every surviving model tab sits on top of. `load_data()` builds the relative-PPP equilibrium candidate (headline IPCA index ÷ headline CPI index, anchored to actual PTAX at a selectable base month, sample 1994-07→today) from BR IPCA/PTAX (MySQL) + US CPI (live FRED fetch, not cached), and also fetches the full set of candidate explanatory channels the Ridge model draws on — carry (`diferenciais_juros`), terms-of-trade (`cmb_termos_troca`), breakeven inflation expectations and the CMN de-anchoring gap (`interest_rate` + `inflc_meta`), fiscal risk/CDS (`cmb_risco_pais`), DXY and the EM dollar index, nominal and real 10Y-2Y curve steepening (`interest_rate`), the BR-US real yield differential, S&P 500, the USD-denominated commodity index, and LatAm-peer-relative carry/carry-vol variants (`cmb_policy_rates`/`cmb_fx_latam`) — sourced entirely across `macro_brasil`/`macro_international` since 2026-09-03, when `interest_rate` was migrated in from CentralManagement's external `base_mercado` schema. `build_payload()` shapes all of this for the Equilíbrio PPP tab's charts; `compute_equilibrium()`/`compute_deviation()` are the equilibrium/deviation math reused by every model that needs it. Its `render()` (which used to fill the standalone dashboard's markers) is gone — `generate_report.py` owns rendering now, and `run()` here is diagnostics-only (per-channel coverage + latest deviation, no file written).
 - **`fx_attribution_model.py`** (+ `fx_attribution_model.md`, `generate_fx_attribution_pdf.py`, `fx_attribution_data/`) — turns qualitative FX commentary from asset-manager monthly letters into a numeric monthly time series across 9 fixed causal categories (`fiscal_br`, `monetary_br`, `politics_br`, `global_usd`, `commodities`, `risk_sentiment`, `china_em`, `trade_policy`, `capital_flows` — full taxonomy/extraction rules in `fx_attribution_model.md`). Sign convention: +1 = strongly BRL-appreciation-supportive, −1 = strongly depreciation-driving, scored on the claim's effect on BRL, never on the claim's own subject. Manual-extraction pilot, not an automated pipeline: each manager's `documents.csv`/`claims.csv`/`monthly.csv`/`fx_attribution.xlsx` under `fx_attribution_data/<manager>/` is hand-extracted from source letters (currently `kinea/`, `verde_asset/`, `kapitalo/`); the module itself only covers claims → monthly matrix → Excel export (`export_excel()`) and → dashboard payload (`build_manager_payload()`/`build_dashboard_payload()`). Framework is manager-agnostic by design — onboarding a new manager means hand-extracting its own `fx_attribution_data/<manager>/` folder, no code changes.
-- **`ridge_deviation_model.py`** (+ `generate_layman_model_doc.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. **Relative PPP re-entered the spec in 2026-09-01 with its coefficient pinned at 1** (see the section above) — it is an *offset*, not a regressor, and never appears in `delta_cols`. **The channel set was cut from eight to five the same day** (`_CHANNELS_5`): fiscal (CDS), the EM dollar index, a carry-to-volatility metric, S&P 500 and the USD commodity index. Out went DXY, real curve steepening and the BR-US real yield differential. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_layman_model_doc.py` generates `reports/brasil/ridge_model_explained.pdf`, a plain-English (no jargon, no equations) companion documenting the shipped channel spec, aimed at a non-technical internal audience. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
+- **`ridge_deviation_model.py`** (+ `generate_model_guide_pdf.py`) — the shipped model: the exchange rate's own log return, `delta_fx(t) = 100·diff(log(ptax(t)))`, regressed on each channel's own contemporaneous z-scored delta plus an AR(1) term on `delta_fx` itself, fit via Ridge (L2-penalized, `sklearn.linear_model.Ridge`) rather than OLS/Bayesian — a point estimate, no posterior/HDI. **Relative PPP re-entered the spec in 2026-09-01 with its coefficient pinned at 1** (see the section above) — it is an *offset*, not a regressor, and never appears in `delta_cols`. **The channel set was cut from eight to five the same day** (`_CHANNELS_5`): fiscal (CDS), the EM dollar index, a carry-to-volatility metric, S&P 500 and the USD commodity index. Out went DXY, real curve steepening and the BR-US real yield differential. Lambda is chosen by walk-forward temporal cross-validation (`walk_forward_lambda()` — expanding window, one-step-ahead OOS scoring, never fit on the point being scored); coefficients are also re-estimated on a rolling 72-month window (`rolling_fit()`, window size chosen via a training-window × forecast-horizon grid search, see `referencia/equilibrium_model/ridge_window_horizon_grid.md`) so the Ridge tab can show whether a channel's relationship is stable over time. Several variant specs were tested and mostly rejected by walk-forward OOS validation before landing on this shape — a per-channel 6-lag structure (overfit OOS, removed), a level-on-level regression (spurious/non-stationary result, rejected), and a persistent carry-in-level variant (kept as exploratory-only, not wired into the report). The Ridge tab also has a 12-month forecast/stress-test tool: per-channel editable level boxes (with a level/%-change-m/m display toggle) that chain into deltas the same way the fitting sample does, using the most recent rolling window's own coefficients, with a widening standard-error band built from a cached walk-forward re-simulation (`forecast_error_bands_w72()`, cached to `ridge_results/forecast_error_bands_w72.json` since it's expensive to (re)compute) — plus a decomposition/level-bridge chart with rebasable start/end dates and a toggle to use the last rolling window's own coefficients instead of the whole-sample fit. `generate_model_guide_pdf.py` (ex-`generate_layman_model_doc.py`, rewritten 2026-09-30 at user request) generates `team_materials/exchange_rate/ridge_model_explained.pdf`, the **technical** guide: spec, drivers and rationale, rolling parameters, scenario production — written in **Portuguese** and **meant for clients** (6 pages, cut from 11 the same day from the user's PDF comments). Client-facing means: no history of earlier specs, no file/storage provenance, no repo paths or function names, no limitations section; the rolling charts are pointed to in the dashboard's Fit diagnostics instead of reproduced. It frames the model as a scenario producer (conditional mapping drivers -> FX), per `ridge_vs_random_walk.md`. Every fitted-model number is computed from the `RIDGE_DATA` embedded in `reports/brasil/FX Report.html` (regenerate the report first); validation-study numbers are transcribed and dated, and must be re-run if the spec changes. **2026-08-04 fix**: the three helpers `ridge_deviation_model.py` used to import from the now-deleted `bayesian_deviation_model.py` (`_REFERENCE_START`, `_standardize_ext`, `build_deltas_contemporaneous`) are now inlined directly in this module, and `render_dashboard()` no longer delegates to the now-deleted `state_space_model.render_dashboard()` — since the 2026-08 merge it's just an alias for `generate_report.run()`.
 
 - **`ridge_vs_random_walk.md`** — text only, nothing executes. The 2026-09-10 horse race between the
   shipped Ridge spec and a random walk at h=3/6/9/12, out of sample (rolling 72m, λ re-picked inside
@@ -1560,6 +1619,35 @@ preço **e** por volume (US$ 14,4 → 24,6 bi, +71%, com o volume indo de 4,168 
 
 Desde 2026-09-10 elas são **nota de rodapé** e não caixa vermelha — ver a seção do corpo de evidência
 acima para o porquê.
+
+## O denominador do carry virou vol implícita, e as caixas seguram o último realizado (2026-09-30)
+
+Três mudanças no FX Model, pedidas pelo usuário depois do guia técnico
+(`team_materials/exchange_rate/ridge_model_explained.pdf`):
+
+- **`carry_vol` = carry ÷ vol implícita 3M do USD/BRL no fechamento do mês**, não mais a vol
+  realizada de 126 pregões. A janela realizada contém o mês que a equação explica (52% da
+  variância do canal era a própria volatilidade do mês). Testado antes de entrar: MSE
+  walk-forward 6,952 → 6,308, R² 0,653 → 0,689, drop-one do canal +2,0% → +12,4%, U condicional
+  0,593/0,580/0,583/0,600 → 0,564/0,570/0,570/0,584; defasar qualquer das duas mata o canal. Tabela
+  completa em `models/ridge_vs_random_walk.md`. A série é o **CSV** do modelo estrutural
+  (`structural_model/data/vol_implicita_usdbrl_3m.csv`), declarado no manifesto — continua sem
+  tabela no banco (pendência F-vol), e só meses completos entram (o arquivo para em 04/08).
+  `carry_vol_realized` segue no frame para a especificação antiga continuar medível; o
+  `relative_carry_vol` continua realizado contra realizado (os pares não têm implícita). O corte
+  do ajuste **não** andou (jun/2026) — mudou a especificação, não a amostra. A tag do cache da
+  banda ganhou `|vol=implied_3m`, porque o nome do canal não mudou.
+- **Caixa não editada segura o ÚLTIMO REALIZADO** (`seedAnchorRg()`/`seedValueRg()`), no seed, no
+  "Reset shocks", no "reset to flat" por canal, no fallback de caixa vazia, nas primitivas e no
+  quick-shock (que agora rampa a partir da âncora). Antes voltava ao valor do corte e criava um
+  salto artificial no primeiro mês livre (+1,16 p.p. em out/2026). `fx_forecast_sim.py` e
+  `tests/test_fx_outlook.py` foram alinhados: o default da página agora é o `anchor_last_real=True`.
+- **O caminho dos meses realizados parte do nível que o modelo explica, de propósito.** O usuário:
+  é a leitura do que o modelo pinado diz com os drivers reais, antes de decidir reestimar. Não
+  rebasear no spot.
+
+E um rótulo corrigido: o termo AR(1) aparecia como "momentum", mas φ é negativo em todas as
+janelas (reversão parcial); virou "last-month term".
 
 ## Pending / next steps
 

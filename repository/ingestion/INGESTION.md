@@ -1,6 +1,6 @@
 # Ingestion Pipeline
 
-Converts PDF research documents into clean, analysis-ready `.md` files for `repository/<topic>/raw_md/` and `repository/<topic>/clean_md/`. Lives inside `repository/` (moved here 2026-08, was a top-level `ingestion/` folder before) so the whole raw-PDF → raw_md → clean_md flow is self-contained in one place.
+Converts PDF research documents into clean, analysis-ready `.md` files for `repository/<topic>/raw_md/` and `obsidian/<topic>/clean_md/` (the vault, the only layer agents read). Lives inside `repository/` (moved here 2026-08, was a top-level `ingestion/` folder before) so the whole raw-PDF → raw_md → clean_md flow is self-contained in one place.
 
 ---
 
@@ -17,7 +17,7 @@ That's it. For that PDF, `run.py`:
 ```
 repository/ingestion/land_space/<topic>/some_paper.pdf
  └─ [extract]      raw text extraction (pdfplumber, no AI)     → repository/<topic>/raw_md/some_paper.md
- └─ [clean_code]   deterministic regex cleaner (no AI)         → repository/<topic>/clean_md/some_paper.md
+ └─ [clean_code]   deterministic regex cleaner (no AI)         → obsidian/<topic>/clean_md/some_paper.md
  └─ [move]         the PDF itself                              → repository/<topic>/raw_pdf/some_paper.pdf
 ```
 
@@ -59,7 +59,7 @@ Just create the folder — no registration needed:
 mkdir repository/ingestion/land_space/labor_market
 ```
 
-Drop PDFs into it and run `run.py` — `repository/labor_market/{raw_pdf,raw_md,clean_md}/` are created automatically.
+Drop PDFs into it and run `run.py` — `repository/labor_market/{raw_pdf,raw_md}/` and `obsidian/labor_market/clean_md/` are created automatically.
 
 ---
 
@@ -89,7 +89,7 @@ repository/
       extract.py                 ← Step 1: raw extraction (pdfplumber, no AI)
       clean_code.py               ← Step 2, recommended: deterministic regex cleaner (no AI)
       clean.py                    ← Step 2, NOT recommended: AI cleaner — see the warning above
-      run.py                       ← THE entry point: drop-zone PDF -> raw_pdf + raw_md + clean_md, one command
+      run.py                       ← THE entry point: drop-zone PDF -> raw_pdf + raw_md (repository) + clean_md (obsidian), one command
       publish.py                   ← lower-level tool: publish an existing *_raw.md file/folder into
                                       raw_md/+clean_md/ without re-extracting — takes an explicit path,
                                       no default folder; most ingestion should just use run.py instead
@@ -103,7 +103,9 @@ repository/<topic>/
   raw_pdf/                     ← source PDFs land here once ingested
   raw_md/                      ← FINAL raw output (verbatim, extraction artifacts only)
     _legacy_ai_rewrite/         ← old clean.py-produced files preserved (not deleted) when real raw_md replaced them
-  clean_md/                    ← FINAL clean output (raw minus true garbage, no rewriting)
+
+obsidian/<topic>/
+  clean_md/                    ← FINAL clean output (raw minus true garbage, no rewriting) — in the vault since 2026-09-30
 ```
 
 **2026-08 history**: this used to be a top-level `ingestion/` folder with an `inbox/<topic>/` drop zone (separate from `repository/`) and a multi-step manual workflow (`extract.py` → `ingestion/work/` → `publish.py` → `repository/`). It was consolidated into `repository/ingestion/` and flattened to a single `run.py` command, so the whole pipeline — drop zone, scripts, and final destination — lives in one place. `inbox/<topic>/` was renamed directly to `<topic>/` (dropping the extra nesting level), and its topic names were also fixed to match `repository/`'s exactly (previously used its own names like `exchange_rate_policy`, which caused a real misfiling — `em_food_inflation.pdf`, an inflation paper, had been sitting under `inbox/monetary_policy/`).

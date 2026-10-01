@@ -4,83 +4,76 @@
 
 ## Purpose
 
-Curated knowledge base feeding LIS's macro analysis agents: raw source PDFs organized by topic area, plus the "maps" derived from them (conceptual maps, bibliography candidate/gap lists, data inventories). Each area follows the reusable process in [`BIBLIOGRAPHY_METHODOLOGY.md`](BIBLIOGRAPHY_METHODOLOGY.md).
+The raw material behind the knowledge base, plus the acquisition planning. **No agent reads this
+tree** (decided 2026-09-30): everything an analyst agent consumes lives in
+[`obsidian/`](../obsidian/CLAUDE.md), including `clean_md/` and the conceptual maps, which used to
+live here. The ingestion pipeline reads from here and
+writes the clean text into the vault.
 
-**Does not use and does not reconcile with** the `obsidian/` vault's own concept/synthesis pages — deliberately parallel systems, per explicit user instruction. That said, as of 2026-08 `obsidian/<topic>/raw_md/`-equivalent files (full untouched extractions, previously living in `obsidian/<topic>/raw/`) were consolidated here, into `repository/<topic>/raw_md/` — see [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md). So the two trees no longer overlap on raw extractions, even though their curated/synthesis layers stay independent.
-
-**Does now interact with `ingestion/`** (updated 2026-08, reversing the earlier "deliberately parallel, no interaction" note) — the ingestion pipeline was moved to live inside this tree, at `repository/ingestion/`, the same day this was written; later the same day, split into a `land_space/` drop zone and a `scripts/` folder for the pipeline code (see below). Drop a PDF into `repository/ingestion/land_space/<topic>/` and run `repository/ingestion/scripts/run.py`: it populates this tree's `raw_pdf/`/`raw_md/`/`clean_md/` tiers in one command. See [`repository/ingestion/INGESTION.md`](ingestion/INGESTION.md) for the full pipeline and why its AI-based cleaner (`clean.py`) was found unreliable and replaced with a deterministic one (`clean_code.py`).
+Each area follows the reusable process in [`BIBLIOGRAPHY_METHODOLOGY.md`](BIBLIOGRAPHY_METHODOLOGY.md).
+The pipeline is documented in [`ingestion/INGESTION.md`](ingestion/INGESTION.md), including why its
+AI-based cleaner was found unreliable and replaced with a deterministic one (`clean_code.py`).
 
 ## Structure
 
 ```
 repository/
   BIBLIOGRAPHY_METHODOLOGY.md   — reusable process, not the output of any single topic
-  exchange_rate/                — raw_pdf/ (28), raw_md/ (16, genuine pdfplumber extractions via
-                                  repository/ingestion/), clean_md/ (16, via clean_code.py) — complete;
-                                  12 raw_pdf sources still await extraction
-  monetary_policy/               — raw_pdf/theorical_literature/ (36 academic papers, incl. the
-                                  ex-ingestion-inbox BIS file), raw_pdf/central_bank_comunication/ (1,
-                                  Copom decision comunicado #279/2026-06-17 — sourced from BCB's
-                                  comunicados API as raw text, not an actual PDF file, since BCB doesn't
-                                  publish a standalone PDF for the comunicado, only for the longer ata),
-                                  raw_md/ (1), clean_md/ (1) — most candidates acquired, map not built
-                                  yet; 35 raw_pdf sources still await extraction
-  trader/                        — raw_pdf/ (26, Trading Global Macro Markets), raw_md/, clean_md/ — scope undecided
-  economic_activity/             — raw_pdf/, raw_md/, clean_md/, all empty — future pillar
-  fiscal_policy/                 — raw_pdf/ (1, ex-ingestion-inbox), raw_md/ (1), clean_md/ (1) — future pillar
-  inflation/                     — raw_pdf/ (1, ex-ingestion-inbox), raw_md/ (1), clean_md/ (1) — future pillar
-  labor_market/                  — raw_pdf/, raw_md/, clean_md/, all empty — future pillar
-  ingestion/                     — the PDF ingestion pipeline itself (moved here 2026-08, was a
-                                  top-level ingestion/ folder before) — land_space/ (drop-zone
-                                  topic folders) + scripts/ (extract.py/clean_code.py/run.py/etc.),
-                                  see repository/ingestion/INGESTION.md
-  agent_mapping/
-    conceptual_maps/            — <topic>_conceptual_map.md, ONE PER AREA and no second map beside it
-                                  (only exchange_rate exists so far). Each cluster carries two layers:
-                                  concepts read out of the literature, cited by source slug, and a
-                                  "Data that backs this cluster" block citing the data inventory's
-                                  section numbers — folded in 2026-09-10 from what had been a separate
-                                  integration file
-    recommended_bibliography/   — two kinds of file, and the distinction is the point:
-                                  <topic>_bibliography_candidates.md / _gaps.md track ACQUISITION (what
-                                  to source, with priority and suggested filename), while
-                                  exchange_rate_bibliography.md is the consolidated LIST of all 36
-                                  sources with a synthesis of each, acquired or not
-    recommended_data/           — <topic>_data_inventory.md
+  <área>/raw_pdf/, raw_md/      — acquired PDFs and their untouched pdfplumber extraction
+                                  (clean_md/ for these lives in obsidian/<área>/clean_md/)
+    exchange_rate/              — 28 PDF, 16 raw_md; 12 PDFs still await extraction
+    monetary_policy/            — raw_pdf/theorical_literature/ (36 papers, 1 extracted),
+                                  central_bank_comunication/ (234 comunicados + 261 atas as
+                                  raw_md, 82 ata PDFs), relatorio_politica_monetaria/ (110 RPM PDFs;
+                                  raw_md holds only the projection pages the ETL parses) and
+                                  raw_md/relatorio_politica_monetaria_integral/ (full text, last 3 years).
+                                  Written by the Copom ETL, not by ingestion/
+    trader/                     — 26 PDF (Trading Global Macro Markets), none extracted, scope undecided
+    fiscal_policy/, inflation/  — 1 PDF each, extracted
+    economic_activity/, labor_market/ — empty, future pillars
+  mental_model/<gestora>/       — asset-manager letters: raw_pdf/ + raw_md/ + clean_md/. The letters
+                                  are cross-area raw material, so their clean_md stays HERE; the
+                                  syntheses built from them live in obsidian/<área>/mental_models/.
+                                  kapitalo (83), verde_asset (200), kinea (60), kinea_insights (64),
+                                  goldman_sachs (~80), spx_capital (7)
+  ingestion/                    — land_space/<área>/ (drop zone) + scripts/ (run.py and friends)
+  agent_mapping/                — acquisition planning, not agent knowledge:
+    recommended_bibliography/   — <área>_bibliography_candidates.md / _gaps.md (what to source,
+                                  with priority and suggested filename) and <área>_bibliography.md
+                                  (the consolidated list: what exists and whether it was ingested)
+    recommended_data/           — <área>_data_inventory.md
     data_tracker.xlsx
-  mental_model/                 — 291 files, raw sources (asset manager letters): kapitalo/ (83 PDF,
-                                  raw_md/ + clean_md/ both complete and cross-validated across all
-                                  three format eras — see CURATION_SCOPE.md), kinea/ (60 .md), kinea_insights/ (64 .md),
-                                  spx_capital/ (7 PDF),
-                                  verde_asset/ (raw_pdf/ growing — 1999-2026 pulled so far; see
-                                  verde_asset/DOWNLOAD_PROCESS.md for the URL pattern/download process)
 ```
 
-**`consolidated/` moved out in 2026-07 and its base `.md` files came back in 2026-09-10.** The round trip is worth knowing because it is the rule that settles where a file goes: `team_materials/` holds only what is *shown* — slides, PDFs, the two interactive explorers, the narrative introductions — and every list, inventory and map lives here, whatever its voice. So the three base documents that had been sitting in `team_materials/` are now in `agent_mapping/`: the consolidated bibliography as `agent_mapping/recommended_bibliography/exchange_rate_bibliography.md`, the data × literature join folded into `agent_mapping/conceptual_maps/exchange_rate_conceptual_map.md` (it had arrived as its own file and was merged the same day, once the one-map-per-area rule was stated — it was organized by the same 9 clusters, so it was a second map by another name), and the data inventory merged into `agent_mapping/recommended_data/exchange_rate_data_inventory.md` (a strict subset of it, minus the status columns — only its per-category *Why it matters* rationale was new). See [`team_materials/CLAUDE.md`](../team_materials/CLAUDE.md) for the split from the other side, and `obsidian/CLAUDE.md` for the third branch, which stays deliberately parallel to both.
-
-**`raw_pdf/`/`raw_md/`/`clean_md/` convention applied 2026-08** to every direct child of `repository/` except `agent_mapping/` — `exchange_rate`, `monetary_policy`, `trader`, `economic_activity`, `fiscal_policy`, `inflation`, `labor_market` — mirroring the per-source structure already used inside `mental_model/` (e.g. `mental_model/kapitalo/`). This was a pure file move (PDFs relocated into each topic's new `raw_pdf/`); no PDF→raw_md extraction or raw_md→clean_md curation has been done yet for `trader`, `economic_activity`, or `labor_market`.
-
-**`raw_md/` initially backfilled from `obsidian/` the same day, then found to be corrupted, then genuinely fixed, then the whole ingestion pipeline moved inside this tree and reorganized — all same day (2026-08).** `exchange_rate` (16 files), `monetary_policy` (1), `fiscal_policy` (1), `inflation` (1) initially had their `raw_md/` populated from full-text notes sitting in `obsidian/<topic>/raw/` (see [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md) for the vault-side three-tier `concepts/sources/synthesis` rationale). **A full audit against each source PDF then found all 14 non-Krugman files in that batch had actually been produced by an AI rewriting pass at some earlier point** (not a raw extraction at all) — symptoms ranged from voice paraphrasing to, in several cases, whole sections silently missing (Conclusions, Results, References, worked examples). Root cause and fix: see [`repository/ingestion/INGESTION.md`](ingestion/INGESTION.md)'s "AI cleaning pass is unreliable" section. Fix applied: genuine `pdfplumber` raw extractions already existed, untouched, in the pipeline's `work/<topic>/*_raw.md` (left over from an earlier ingestion run) — these were published into `raw_md/`, and a deterministic regex cleaner (`clean_code.py`, enhanced the same day with a generic running-header detector and a References-block-cut fix) now populates `clean_md/` for the first time for these 19 files. **The previous AI-rewritten files were not deleted** — each was moved to `repository/<topic>/raw_md/_legacy_ai_rewrite/<name>.md` before being replaced. The whole ingestion pipeline (previously a top-level `ingestion/` folder, separate from `repository/`) was then moved to `repository/ingestion/` and simplified to a single-command workflow, per explicit request — the 3 source PDFs that had been sitting in the old `ingestion/inbox/{fiscal_policy,inflation,monetary_policy}/` (never copied into `repository/`) were moved into their proper `repository/<topic>/raw_pdf/` as part of that move, closing that gap. **Later the same day**, the drop zone and the pipeline code (which had briefly been siblings directly under `repository/ingestion/`) were split apart per explicit request: topic drop-zone folders moved into `repository/ingestion/land_space/<topic>/`, and every script into `repository/ingestion/scripts/` — see `INGESTION.md` for the layout.
+**`_legacy_ai_rewrite/`** folders inside some `raw_md/` hold the old AI-rewritten extractions, kept
+but unused. See `INGESTION.md` for why they were replaced.
 
 ## Status by topic
 
-**Exchange rate — complete.** 28/28 sources processed into `exchange_rate_conceptual_map.md`, 9 theme clusters. 2 real gaps remain: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth (Eichengreen & Hausmann 1999) — see `exchange_rate_bibliography_gaps.md`. One source sitting in `monetary_policy/` (Tambakis & Tarashev 2012) also touches exchange rate — decide which map processes it.
+**Exchange rate — complete.** 28 sources processed into
+[`obsidian/exchange_rate/exchange_rate_conceptual_map.md`](../obsidian/exchange_rate/exchange_rate_conceptual_map.md),
+9 clusters. 2 real gaps: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth
+(Eichengreen & Hausmann 1999) — see `exchange_rate_bibliography_gaps.md`.
 
-**Monetary policy — in progress.** Nearly all 30 candidates already acquired in `monetary_policy/` (the candidates file itself still says "nothing acquired yet" — stale). Missing: the Cukierman (1992) book, specific chapters, and COPOM §8 primary materials (scope open). **No conceptual map built yet** — that's the real next step.
+**Monetary policy — acquired, not processed.** 36 papers in `raw_pdf/theorical_literature/`, 1
+extracted, no conceptual map. Missing: the Cukierman (1992) book and specific chapters. Decide
+where to process Tambakis & Tarashev (2012), which also touches exchange rate.
 
-**Trader — scope undecided.** 15 chapters of *Trading Global Macro Markets* (Willer & Saunders, 2024) already in the standard naming convention, no `conceptual_map`/`bibliography_candidates`/`data_inventory` yet. Decide: full fourth topical pillar, or a different use (feeding a trading strategy/agent directly, no formal conceptual map)? Don't start chapter-by-chapter processing until decided.
+**Trader — scope undecided.** Decide whether it is a topical pillar or feeds a trading
+strategy/agent directly before processing chapters.
 
-**economic_activity / fiscal_policy / inflation / labor_market — placeholders.** Empty; candidates already listed in `agent_mapping/recommended_bibliography/`; nothing acquired yet.
+**economic_activity / fiscal_policy / inflation / labor_market — placeholders.** Candidates listed in
+`agent_mapping/recommended_bibliography/`.
 
-**Workflow for adding sources:** see "Standard workflow per topic" in [`BIBLIOGRAPHY_METHODOLOGY.md`](BIBLIOGRAPHY_METHODOLOGY.md) — one PDF at a time, never in parallel (user's preferred workflow).
+**Workflow for adding sources:** drop the PDF in `ingestion/land_space/<área>/`, run
+`ingestion/scripts/run.py` — one PDF at a time, never in parallel (user's preferred workflow).
 
 ## Pending
 
-- **Revisit `clean_md`'s definition (flagged 2026-08, not decided)**: current rule, enforced by `clean_code.py`, is strict — raw text minus true garbage only, zero rewriting/restructuring/condensation (this strictness was adopted *because* the earlier AI cleaner's restructuring silently corrupted content — see `INGESTION.md`'s "AI cleaning pass is unreliable" finding). User is now reconsidering: `clean_md` could instead mean an *organized* version of the raw text — reformatted into a cleaner, more readable structure (paragraph breaks, headers, etc. restoring what PDF extraction mangles) — while still preserving all content, i.e. organizing, not condensing or truncating. This is a real design question (how do you guarantee "reorganize but never drop/paraphrase content" without reintroducing the same failure mode?) that needs to be thought through before touching `clean_code.py`'s behavior. Same question applies to `obsidian/`'s `sources/` tier, which mirrors this definition — see [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md).
-- **Ingestion process — extend to the rest of the corpus**: the 2026-08 fix (see above) only covered the 19 files that already had a genuine raw extraction sitting around. Still not run through `repository/ingestion/scripts/run.py`: 12 more `exchange_rate/raw_pdf/` sources, 35 more `monetary_policy/raw_pdf/` sources, and all of `trader/`. Same one-PDF-at-a-time workflow as `BIBLIOGRAPHY_METHODOLOGY.md`, just via `repository/ingestion/` instead of manual extraction — drop the PDF in `repository/ingestion/land_space/<topic>/`, run `scripts/run.py`.
-- **`_legacy_ai_rewrite/` folders — decide final disposition**: `exchange_rate` (16), `fiscal_policy`/`inflation`/`monetary_policy` (1 each) now hold the old AI-rewritten files, kept but unused. No action needed unless/until `clean.py`'s bugs are fixed and it's worth comparing outputs.
-- **Equation/symbol garbling in `raw_md`** (e.g. `expectations_and_exchange_rate_dynamics (Dornbusch, 1976)`): Greek letters/subscripts in numbered equations get mangled by `pdfplumber` on this era of scanned PDF — inherent to the raw extraction, not something either cleaner fixes. Would need a different (e.g. vision-based) extraction method if equation fidelity matters for a given source.
-- **Exchange rate — 2 real gaps**: FX options/volatility (Garman & Kohlhagen 1983), non-Brazil EM depth (Eichengreen & Hausmann 1999). See `exchange_rate_bibliography_gaps.md`.
-- **Monetary policy — build the conceptual map**: candidates acquired, still need to process them into `monetary_policy_conceptual_map.md` (doesn't exist yet), one at a time. Still need to acquire Cukierman (1992) and COPOM §8 materials. Decide where to process Tambakis & Tarashev (2012).
-- **Trader — decide scope**: see above.
-- **`mental_model/kapitalo/` — curation complete (2026-07-31)**: all 83 letters (Jul/2019–Mai/2026) have both `raw_md/` (permanent audit trail) and `clean_md/` (curated per `CURATION_SCOPE.md`, same purpose as the Verde Asset corpus — feeds FX/macro mental-model synthesis), all cross-validated against each letter's own performance-attribution table. Three PDF template eras identified and handled: era 1 "Carta K10" (Jul/2019–Aug/2023, single-column), era 2 "CARTA DO GESTOR" (Sep/2023–Fev/2025, two-column narrative — needed column-aware re-extraction, now fixed), era 3 (Mar/2025–present, same two-column narrative plus a further layout tweak: split section headers, relocated VaR footnote, wrapped table-row label — handled in `curate.py` via additive regex fallbacks). No further action needed unless a new letter arrives in a yet-unseen format.
+- **Revisit `clean_md`'s definition** (flagged 2026-08, not decided) — see the same item in
+  [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md).
+- **Extend ingestion to the rest of the corpus**: 12 `exchange_rate`, 35 `monetary_policy` papers and
+  all of `trader/`.
+- **Equation/symbol garbling in `raw_md`** (e.g. Dornbusch 1976): inherent to pdfplumber on scanned
+  PDFs of that era; would need a vision-based extraction if equation fidelity matters.
+- **Monetary policy — build the conceptual map**, one source at a time.

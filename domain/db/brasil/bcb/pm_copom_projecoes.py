@@ -199,6 +199,12 @@ def run(sincronizar: bool = True, inicio: int | None = None, fim: int | None = N
         )
         if r["erros"]:
             print(f"  erros: {r['erros']}")
+        # As atas nao alimentam esta tabela: sao bibliografia do agente de politica monetaria, e
+        # entram aqui para o mesmo botao de Atualizar que busca o comunicado trazer a ata. Ela sai
+        # ~6 dias depois da reuniao, entao a de uma reuniao recente chega na rodada seguinte.
+        ra = ct.sincronizar_atas(verbose=False)
+        print(f"{_TABLE}: atas -- {len(ra['api']) + len(ra['pdf'])} novas, "
+              f"{len(ra['existentes'])} ja em disco, {len(ra['erros'])} erros.")
 
     piso = inicio if inicio is not None else ct.PRIMEIRA_REUNIAO_CARGA
     comunicados = []
@@ -240,6 +246,9 @@ def run(sincronizar: bool = True, inicio: int | None = None, fim: int | None = N
               f"{len(r['erros'])} erros.")
         if r["erros"]:
             print(f"  erros: {r['erros']}")
+        ri = rp.ingerir_integral(verbose=False)  # texto integral para o vault (bibliografia)
+        print(f"{_TABLE}: relatorios -- {len(ri['extraidos'])} integrais novos no vault, "
+              f"{len(ri['erros'])} erros.")
 
     edicoes = rp.carregar()
     dfr = montar_relatorios(edicoes)

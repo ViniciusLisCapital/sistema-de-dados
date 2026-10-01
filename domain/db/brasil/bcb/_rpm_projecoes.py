@@ -50,6 +50,13 @@ _RAIZ = pathlib.Path(__file__).resolve().parents[4]
 DIRETORIO_PDF = _RAIZ / "repository" / "monetary_policy" / "raw_pdf" / "relatorio_politica_monetaria"
 DIRETORIO_MD = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "relatorio_politica_monetaria"
 
+# Texto INTEGRAL do relatorio, como bibliografia do agente de politica monetaria (nao alimenta
+# tabela). Pasta irma, e nao a de cima: la ficam so as paginas de projecao que o parser le, e um
+# arquivo inteiro com o mesmo nome passaria a ser parseado. A copia limpa vai para o vault.
+DIRETORIO_MD_INTEGRAL = _RAIZ / "repository" / "monetary_policy" / "raw_md" / "relatorio_politica_monetaria_integral"
+DIRETORIO_VAULT = _RAIZ / "obsidian" / "monetary_policy" / "clean_md" / "central_bank" / "rpm"
+INTEGRAL_DESDE = "202312"  # decisao de 2026-09-30: os ultimos 3 anos; o historico fica pendente
+
 # Palavras que marcam uma pagina como candidata a conter tabela de projecao.
 _CHAVE_PAGINA = re.compile(
     r"proje[cç][õo]es de infla[cç][ãa]o|previs[ãa]o d[ae] infla[cç][ãa]o|leque de infla[cç][ãa]o"
@@ -193,6 +200,122 @@ def sincronizar(*, sobrescrever: bool = False, verbose: bool = True) -> dict:
                 print(f"  {ed.ano_mes}: {md.stat().st_size / 1000:.0f} kB", flush=True)
         except Exception as err:  # noqa: BLE001
             r["erros"].append((ed.ano_mes, str(err)))
+    return r
+
+
+def _clean_code():
+    """O limpador deterministico da ingestao (`repository/ingestion/scripts/clean_code.py`).
+
+    Carregado pelo caminho porque `repository/` nao e pacote Python. E o mesmo limpador dos papers,
+    para o texto do BC ter a mesma definicao de clean_md que o resto do vault.
+    """
+    import importlib.util
+
+    caminho = _RAIZ / "repository" / "ingestion" / "scripts" / "clean_code.py"
+    spec = importlib.util.spec_from_file_location("_clean_code_ingestao", caminho)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _calha(palavras: list[dict], largura: float, minimo: float = 6.0) -> float | None:
+    """Centro da faixa vertical vazia mais larga no terco central, ou None se nao ha faixa >= minimo."""
+    ocupado = bytearray(int(largura) + 2)
+    for w in palavras:
+        for x in range(max(0, int(w["x0"])), min(int(largura) + 1, int(w["x1"]) + 1)):
+            ocupado[x] = 1
+    melhor, inicio, corrida = (0, 0), 0, 0
+    for x in range(int(largura * 0.3), int(largura * 0.7)):
+        if ocupado[x]:
+            corrida = 0
+            continue
+        if corrida == 0:
+            inicio = x
+        corrida += 1
+        if corrida > melhor[0]:
+            melhor = (corrida, inicio)
+    if melhor[0] < minimo:
+        return None
+    return melhor[1] + melhor[0] / 2
+
+
+def _texto_integral_pagina(pg) -> str:
+    """Texto de uma pagina na ordem de leitura, para o texto integral.
+
+    `_texto_por_coluna` corta sempre no MEIO da pagina e foi calibrado para as paginas de projecao;
+    num relatorio de coluna unica (os de 2025-2026) ele corta as palavras ao meio. Aqui a divisao so
+    acontece se houver uma CALHA de verdade (faixa vazia de pelo menos 6 pt no terco central), e no
+    lugar dela. Um titulo de largura inteira no topo apaga a calha, entao a segunda tentativa ignora
+    os 20% de cima: o topo sai inteiro e o resto por coluna.
+    """
+    palavras = pg.extract_words()
+    if not palavras:
+        return ""
+    x0, topo, x1, base = pg.bbox
+
+    def _colunas(y0: float) -> str | None:
+        corpo = [w for w in palavras if w["top"] >= y0]
+        meio = _calha(corpo, x1)
+        if meio is None:
+            return None
+        esq = sum(1 for w in corpo if w["x1"] <= meio)
+        if min(esq, len(corpo) - esq) < 0.2 * len(corpo):
+            return None
+        partes = [pg.crop((x0, y0, meio, base)).extract_text() or "",
+                  pg.crop((meio, y0, x1, base)).extract_text() or ""]
+        return "\n".join(p for p in partes if p.strip())
+
+    inteiro = _colunas(topo)
+    if inteiro is not None:
+        return inteiro
+    corte = topo + 0.2 * (base - topo)
+    resto = _colunas(corte)
+    if resto is not None:
+        cabeca = pg.crop((x0, topo, x1, corte)).extract_text() or ""
+        return "\n".join(p for p in (cabeca, resto) if p.strip())
+    return pg.extract_text() or ""
+
+
+def ingerir_integral(desde: str = INTEGRAL_DESDE, *, sobrescrever: bool = False,
+                     verbose: bool = True) -> dict:
+    """Extrai o relatorio INTEIRO das edicoes a partir de `desde` ('AAAAMM'): raw_md + clean_md.
+
+    Cada pagina sai por coluna quando tem calha e inteira quando nao tem (`_texto_integral_pagina`)
+    -- a ordem de leitura de uma pagina de 2 colunas extraida inteira intercala as colunas linha a
+    linha. Le os PDFs que `sincronizar()` ja baixou; nao vai a rede.
+    """
+    import pdfplumber
+
+    DIRETORIO_MD_INTEGRAL.mkdir(parents=True, exist_ok=True)
+    DIRETORIO_VAULT.mkdir(parents=True, exist_ok=True)
+    limpar = _clean_code().clean
+    r = {"extraidos": [], "existentes": [], "erros": []}
+    for pdf in sorted(DIRETORIO_PDF.glob("rpm_*.pdf")):
+        ano_mes = pdf.stem.split("_")[1]
+        if ano_mes < desde:
+            continue
+        raw, vault = DIRETORIO_MD_INTEGRAL / f"{pdf.stem}.md", DIRETORIO_VAULT / f"{pdf.stem}.md"
+        if raw.exists() and vault.exists() and not sobrescrever:
+            r["existentes"].append(ano_mes)
+            continue
+        try:
+            paginas = []
+            with pdfplumber.open(pdf) as doc:
+                for pg in doc.pages:
+                    texto = _texto_integral_pagina(pg)
+                    if texto.strip():
+                        paginas.append(texto.strip())
+            publicado = pdf.stem.split("_")[2]
+            cab = (f"# RPM {ano_mes}\nPublicado em: {publicado}\n"
+                   f"Fonte: Banco Central do Brasil — Relatório de Política Monetária (PDF)\n\n---\n\n")
+            corpo = "\n\n".join(paginas)
+            raw.write_text(cab + corpo + "\n", encoding="utf-8")
+            vault.write_text(cab + limpar(corpo) + "\n", encoding="utf-8")
+            r["extraidos"].append(ano_mes)
+            if verbose:
+                print(f"  RPM {ano_mes}: {len(paginas)} paginas, {len(corpo) / 1000:.0f} kB", flush=True)
+        except Exception as err:  # noqa: BLE001
+            r["erros"].append((ano_mes, str(err)))
     return r
 
 

@@ -28,7 +28,7 @@ Requires ANTHROPIC_API_KEY in .env
 FILES: list[tuple[str, str]] = [
     (
         r"repository\exchange_rate\raw_md\depreciation_pass_through (Goldfajn, 2000).md",
-        r"repository\exchange_rate\clean_md\depreciation_pass_through (Goldfajn, 2000).md",
+        r"obsidian\exchange_rate\clean_md\depreciation_pass_through (Goldfajn, 2000).md",
     ),
 ]
 

@@ -22,6 +22,13 @@ vem na linha 2. Por isso `classificar()` le o texto das tres primeiras linhas.
     hiato                      percentis      hiato do produto, 2-3 trimestres
     ipca_horizonte_relevante   percentis      IPCA 4 tri no horizonte relevante + probabilidade de
                                               desvio em relacao a PROPRIA projecao (so desde a 281a)
+    juro_real_neutro           percentis      juro real neutro, curto prazo / 2 anos / 5 anos
+    pib_potencial              percentis      crescimento do PIB potencial, mesmos horizontes
+    nairu                      percentis      desemprego que nao acelera a inflacao (desde a 271a)
+
+Os tres ultimos saem da MESMA aba, semestral (jun e dez desde a 251a; antes, 240a e 243a),
+e por isso `classificar()` devolve para ela o tipo de aba `estruturais`, nao um bloco: e
+`_estruturais()` que reparte as linhas nos tres blocos pelo subtitulo de cada tabela.
 
 Fora de proposito: projecoes anuais (3a, 4a, 5a/b, 6a), bandeira, credito, perguntas
 pontuais (El Nino, ICMS, Oriente Medio) e o "em que trimestre fecha o hiato" (sai em 2022).
@@ -102,6 +109,9 @@ def classificar(ws) -> str | None:
     t =" ".join(str(c) for r in _linhas(ws)[:3] for c in r if isinstance(c, str)).lower()
     if "copom fará" in t:
         return "copom_decisao"
+    if "juros real neutra" in t:
+        # 243a: "sua estimativa ... mudou desde o QPC de agosto?" -- pergunta de uma vez so
+        return None if "mudou" in t else "estruturais"
     if "horizonte relevante" in t:
         return "ipca_horizonte_relevante"
     if "viés" in t:
@@ -353,7 +363,44 @@ def _ipca_curto_prazo(linhas, n, bloco) -> list[dict]:
     return _percentis(linhas, n, bloco)
 
 
+_ESTRUTURAIS = [("taxa de juros real neutra", "juro_real_neutro"),
+                ("taxa de crescimento do pib potencial", "pib_potencial"),
+                ("nairu", "nairu")]
+_HORIZONTE = {"curto prazo": "curto_prazo", "2 anos": "2a", "5 anos": "5a"}
+
+
+def _estruturais(linhas, n, _tipo) -> list[dict]:
+    """Juro real neutro, PIB potencial e Nairu: tres blocos numa aba so.
+
+    O horizonte nao e um periodo do calendario, entao `referencia` e o rotulo dele
+    (curto_prazo | 2a | 5a) e `ref_date` fica nulo. As tabelas de "Evolucao" da mesma
+    aba nao tem linha de estatistica e nao sao lidas -- cada edicao ja esta no arquivo dela.
+    """
+    out = []
+    for sub, hdr, stats in _grupos_percentis(linhas):
+        s = sub.lower()
+        bloco = next((b for k, b in _ESTRUTURAIS if s.startswith(k)), None)
+        if bloco is None:
+            raise ValueError(f"estruturais: subtitulo nao reconhecido {sub!r}")
+        if any(len(v) != len(hdr) for v in stats.values()):
+            raise ValueError(f"{bloco}: {len(hdr)} colunas e valores desalinhados")
+        for j, col in enumerate(hdr):
+            ref = _HORIZONTE.get(str(col).lower())
+            if ref is None:
+                raise ValueError(f"{bloco}: horizonte nao reconhecido {col!r}")
+            for st, vals in stats.items():
+                if _num(vals[j]):
+                    out.append(_linha(n, bloco, bloco, ref, "", st, vals[j], None))
+            p25, med, p75 = (stats[k][j] for k in ("p25", "mediana", "p75"))
+            if not p25 - 1e-9 <= med <= p75 + 1e-9:
+                raise ValueError(f"{bloco} {ref}: percentis fora de ordem {p25}/{med}/{p75}")
+    if not any(r["bloco"] == "juro_real_neutro" for r in out):
+        raise ValueError("estruturais: aba sem a tabela do juro real neutro")
+    return out
+
+
 _PARSERS = {
+    "estruturais": _estruturais,
     "vies_ipca": _categorico, "vies_pib": _categorico,
     "ambiente_externo": _categorico, "situacao_fiscal": _categorico,
     "ipca_curto_prazo": _ipca_curto_prazo,
@@ -362,7 +409,7 @@ _PARSERS = {
 
 
 def parse(wb: openpyxl.Workbook, n: int, data_reuniao: dt.date) -> list[dict]:
-    """Todas as linhas dos blocos lidos numa edicao. Levanta se um bloco aparecer duas vezes."""
+    """Todas as linhas dos blocos lidos numa edicao. Levanta se um tipo de aba aparecer duas vezes."""
     vistos: dict[str, str] = {}
     out: list[dict] = []
     for ws in wb.worksheets:

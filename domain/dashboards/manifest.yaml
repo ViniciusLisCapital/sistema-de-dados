@@ -421,6 +421,12 @@ dashboards:
           se refaz sozinho quando ela muda — foi o que aconteceu quando o CDS trocou de fonte e
           a amostra passou a começar dois anos antes.
       - kind: csv
+        ref: analytics/brasil/structural_model/data/vol_implicita_usdbrl_3m.csv
+        date_col: date
+        scope: modelos
+        role: "Volatilidade implícita de 3 meses do dólar, denominador do canal carry/volatilidade do FX Model"
+        refresh: exportação manual da automação Bloomberg do fundo — ainda sem tabela no banco (pendência F-vol)
+      - kind: csv
         ref: analytics/brasil/exchange_rate/models/fx_attribution_data/verde_asset/claims.csv
 
         date_col: date

@@ -17,9 +17,12 @@ comeca por volta de 2016 e a Tabela 1 em HTML so a partir da 265a (2024-09-18).
 
 ## Atas
 
-As atas NAO saem por este endpoint. Sao PDF, listados em
-`api/servico/sitebcb/atascopom/ultimas?quantidade=N&filtro=`, com o caminho do arquivo no
-campo `Url`. Nao implementado aqui.
+As atas saem pelo endpoint irmao, `copom/atas_detalhes?nro_reuniao=N` (achado 2026-09-30, mesmo
+formato): `textoAta` em HTML e `urlPdfAta`. O HTML cobre as atas antigas e as recentes; da 200a
+(2016-07) em diante ha tambem o PDF, e num trecho do meio so ha o PDF (`textoAta` vazio). `ata()`
+devolve os dois e quem sincroniza decide (`domain/db/brasil/bcb/_copom_texto.sincronizar_atas`). O
+HTML das atas antigas e exportacao do Word, um `<div>` por paragrafo, diferente do dos comunicados:
+por isso `ata_html_para_markdown()`.
 
 ## Gotchas
 
@@ -118,6 +121,73 @@ def calendario_reunioes(*, quantidade: int = 500, timeout: int = 60) -> dict[int
             continue
         out[int(m.group(1))] = (item.get("DataReferencia") or "")[:10]
     return dict(sorted(out.items()))
+
+
+ATAS_URL = "https://www.bcb.gov.br/api/servico/sitebcb/copom/atas_detalhes"
+PRIMEIRA_ATA = 21  # medido: a listagem de atas comeca na 21a (1998-01-28)
+
+
+@dataclass
+class Ata:
+    nro_reuniao: int
+    data_referencia: str  # 'YYYY-MM-DD'
+    data_publicacao: str
+    titulo: str
+    html: str
+    url_pdf: str | None
+
+    @property
+    def url(self) -> str:
+        return f"{ATAS_URL}?nro_reuniao={self.nro_reuniao}"
+
+    def nome_base(self) -> str:
+        return f"copom_{self.nro_reuniao}_ata_{self.data_referencia}"
+
+    def cabecalho(self, origem: str) -> str:
+        """Cabecalho de procedencia. `origem` e 'API' (texto em HTML) ou 'PDF' (extraido)."""
+        return (
+            f"Fonte: Banco Central do Brasil — ata do Copom ({origem})\n"
+            f"({self.url_pdf if origem == 'PDF' else self.url})\n"
+            f"Reunião: {self.nro_reuniao}ª reunião do Copom\n"
+            f"Data de referência: {self.data_referencia}\n"
+            f"Data de publicação: {self.data_publicacao}\n"
+            f"\n---\n\n"
+        )
+
+
+def ata(nro_reuniao: int) -> Ata | None:
+    """Uma ata. None quando a reuniao nao existe no endpoint."""
+    d = _get(f"{ATAS_URL}?nro_reuniao={nro_reuniao}")
+    c = d.get("conteudo") or []
+    if not c:
+        return None
+    c = c[0]
+    return Ata(
+        nro_reuniao=int(c["nroReuniao"]),
+        data_referencia=(c.get("dataReferencia") or "")[:10],
+        data_publicacao=(c.get("dataPublicacao") or "")[:10],
+        titulo=_limpa_texto(c.get("titulo") or ""),
+        html=c.get("textoAta") or "",
+        url_pdf=c.get("urlPdfAta") or None,
+    )
+
+
+def baixar(url: str, destino, tentativas: int = 3, timeout: int = 60) -> None:
+    """Baixa um arquivo binario (o PDF da ata) para `destino`."""
+    erro: Exception | None = None
+    for k in range(tentativas):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": _UA})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                dados = r.read()
+            with open(destino, "wb") as f:
+                f.write(dados)
+            return
+        except Exception as e:
+            erro = e
+            if k < tentativas - 1:
+                time.sleep(2 * (k + 1))
+    raise RuntimeError(f"falhou em {tentativas} tentativas: {url} ({erro})")
 
 
 def comunicado(nro_reuniao: int) -> Comunicado | None:
@@ -237,4 +307,47 @@ def html_para_markdown(texto_html: str) -> str:
         if t:
             blocos.append(t)
 
+    return "\n\n".join(blocos)
+
+
+_BLOCO_ATA = re.compile(r"</?(?:p|div|h[1-6]|li|tr|table|thead|tbody|ul|ol|body|hr)\b[^>]*>", re.I)
+
+
+def ata_html_para_markdown(texto_html: str) -> str:
+    """Converte o `textoAta` em markdown, nas tres formas que o BCB usou.
+
+    1998-2003: `<p>` com as secoes em `<b>`; 2004-2016: um `<div>` por paragrafo (exportacao do
+    Word); recentes: `<p class="paragrafo">` numerado, `<h3>` por secao e tabelas. Em vez de casar
+    pares de tags (os `<div>` antigos se aninham), toda tag de bloco vira quebra de paragrafo e o
+    resto passa pelo mesmo `_inline()` dos comunicados. As tabelas saem antes, inteiras.
+    """
+    if not texto_html:
+        return ""
+    tabelas: list[str] = []
+
+    def _guarda(m: re.Match) -> str:
+        tabelas.append(_tabela_para_markdown(m.group(1)))
+        return f"\n\n@@TABELA{len(tabelas) - 1}@@\n\n"
+
+    t = re.sub(r"<(?:style|script)\b.*?</(?:style|script)>", "", texto_html, flags=re.I | re.S)
+    t = re.sub(r"<table\b[^>]*>(.*?)</table>", _guarda, t, flags=re.I | re.S)
+    t = re.sub(r"<h[1-6]\b[^>]*>(.*?)</h[1-6]>", lambda m: f"\n\n@@H@@{m.group(1)}\n\n", t,
+               flags=re.I | re.S)
+    t = _BLOCO_ATA.sub("\n\n", t)
+
+    blocos: list[str] = []
+    for bruto in re.split(r"\n\s*\n", t):
+        bruto = bruto.strip()
+        if not bruto:
+            continue
+        m = re.fullmatch(r"@@TABELA(\d+)@@", bruto)
+        if m:
+            if tabelas[int(m.group(1))]:
+                blocos.append(tabelas[int(m.group(1))])
+            continue
+        titulo = bruto.startswith("@@H@@")
+        linha = _inline(bruto.replace("@@H@@", "").replace("\n", " "))
+        if not linha or linha in {"*", "**", "***"}:
+            continue
+        blocos.append(f"### {linha.strip('*').strip()}" if titulo else linha)
     return "\n\n".join(blocos)
