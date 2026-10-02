@@ -54,10 +54,11 @@ today.
 
 ### The conceptual map is a contract, not an inventory
 
-Four parts: (1) **causal skeleton** — what moves the area's variable, each channel with the concepts,
-mental-model sections and tables behind it; (2) **outputs** — what this agent tells each other agent
-matters TO IT, coming from that agent; (3) **inputs** — what the other agents told it matters TO THEM,
-coming from it; (4) **concept index** from the literature. An input gives emphasis, never a limit.
+Five parts: (1) **central questions** — what every memo answers, the floor and not the ceiling;
+(2) **causal skeleton** — what moves the area's variable, each channel with the concepts,
+mental-model sections and tables behind it; (3) **outputs** — what this agent tells each other agent
+matters TO IT, coming from that agent; (4) **inputs** — what the other agents told it matters TO THEM,
+coming from it; (5) **concept index** from the literature. An input gives emphasis, never a limit.
 Every output must appear as the other agent's input and vice versa. The map holds the **fixed** layer;
 the **dynamic** layer (what a given cycle's thesis needs) lives in the memos.
 Curation (sources processed, coverage, status) lives in the area's

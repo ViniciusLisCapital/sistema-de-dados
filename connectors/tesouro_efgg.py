@@ -62,10 +62,19 @@ class EFGG:
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
 
+        # Casa o title normalizado: na publicacao de 2026-Q2 (out/2026) o Tesouro
+        # trocou "_" por "-" nos nomes dos anexos, sem mudar mais nada na pagina.
+        def _norm(s: str) -> str:
+            return s.strip().lower().replace("-", "_")
+
         urls = {}
         for key, filename in _ANNEX_FILENAMES.items():
-            link = soup.find("a", title=filename)
-            if link is None or not link.get("href"):
+            link = soup.find(
+                lambda tag: tag.name == "a"
+                and tag.get("href")
+                and _norm(tag.get("title") or "") == _norm(filename)
+            )
+            if link is None:
                 raise RuntimeError(
                     f"Anexo '{filename}' nao encontrado na pagina da EFGG "
                     f"({_PAGE_URL}) -- layout pode ter mudado."

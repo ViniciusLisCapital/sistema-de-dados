@@ -703,7 +703,10 @@ em `analytics/brasil/fiscal_policy/CLAUDE.md`, tinha concluido "so PDF" e estava
   `..._governos_estaduais.xlsx`, `..._governos_municipais.xlsx`,
   `..._investimento_governo_geral.xlsx`) tem um `id` numerico
   (`thot-arquivos.tesouro.gov.br/publicacao-anexo/{id}`) que muda a cada trimestre -- resolvido a cada
-  chamada via parse do `<a title="...">` na pagina fixa, nunca hardcoded.
+  chamada via parse do `<a title="...">` na pagina fixa, nunca hardcoded. O `title` e comparado
+  **normalizado** (minusculo, `-` → `_`): na publicacao de 2026-Q2 (out/2026) o Tesouro trocou
+  `demonstrativos_governo_central_...` por `demonstrativos-governo-central-...` e nada mais mudou —
+  o casamento exato quebrou com o dado ja publicado, o que lia como "ainda nao saiu".
 - Sem autenticacao.
 - Metodologia GFSM 2014 do FMI, harmonizada com o SNA 2008/IBGE — e a mesma fonte que o paper do IEG
   (Impulso Estrutural do Gasto, Resende & Pires 2024) usa. Ver

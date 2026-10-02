@@ -16,7 +16,7 @@ Dados até: <data de corte> · Horizontes: os definidos para este agente (curto,
 
 ## 2. Argumentação
 
-- **O que mudou.** O marginal (o movimento do período e se é ruído ou sinal) separado do nível (onde a variável está contra os fundamentos). Nunca na mesma frase.
+- **As perguntas centrais.** A resposta a cada pergunta central do mapa conceitual da área (no câmbio, Q1–Q4). É o mínimo, não o máximo: insights novos e alertas entram aqui também.
 - **Por que a central e a faixa base.** O mecanismo, com os canais do mapa conceitual.
 - **Por que a probabilidade de cada cauda.** Os riscos que justificam a assimetria: o que levaria a variável para o worst-case e para o best-case, e por que um é mais provável que o outro.
 

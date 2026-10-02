@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema de Agentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lis-azul:    #1F2853;
+  --lis-dourado: #BB9B1D;
+  --lis-verde:   #418791;
+  --lis-azul-cl: #02739B;
+  --lis-laranja: #EA523A;
+  --lis-amarelo: #FBC852;
+  --lis-cinza:   #BFBFBF;
+  --bg:          #F4F5F7;
+  --card-bg:     #FFFFFF;
+  --border:      rgba(31,40,83,0.1);
+  --text:        #1F2853;
+  --text2:       #3A4F72;
+  --muted:       #7A88A8;
+  --sans:        'Barlow', sans-serif;
+  --cond:        'Barlow Condensed', sans-serif;
+  --mono:        'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.top { background: var(--lis-azul); color: #fff; }
+.top-in { max-width: 1480px; margin: 0 auto; padding: 18px 20px 16px; }
+.brand { font: 600 11px var(--cond); letter-spacing: .18em; color: var(--lis-dourado); }
+.top h1 { font: 700 26px var(--cond); letter-spacing: .01em; margin-top: 2px; }
+.top .meta { font: 400 11.5px var(--mono); color: rgba(255,255,255,.72); margin-top: 4px; }
+.page { max-width: 1480px; margin: 0 auto; padding: 16px 20px 60px; }
+@media (max-width: 640px) { .page, .top-in { padding-left: 16px; padding-right: 16px; } }
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-bottom: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 12px var(--sans); color: var(--text2); margin-left: auto; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 22px; height: 12px; border-radius: 3px; display: inline-block; }
+.sw.existe { background: #fff; border: 1.5px solid var(--lis-azul); }
+.sw.parcial { background: #FFFCF0; border: 2px solid var(--lis-dourado); }
+.sw.planejado { background: #F7F8FA; border: 1.5px dashed #9AA3B8; }
+.sw.memo { height: 0; border-top: 2px solid var(--lis-dourado); border-radius: 0; }
+.sw.fora { height: 0; border-top: 1.5px dashed #9AA3B8; border-radius: 0; }
+
+.avisos { background: #FDECE8; border: 1px solid #F2B8AC; color: #8A2C1C; border-radius: 8px;
+  padding: 10px 14px; margin-bottom: 14px; font-size: 13px; }
+.avisos li { margin-left: 18px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.card + .card { margin-top: 16px; }
+.card h2 { font: 700 15px var(--sans); color: var(--text); margin-bottom: 4px; }
+.card h3 { font: 600 13px var(--sans); color: var(--text); margin: 14px 0 6px; }
+.card .lead { font-size: 13px; color: var(--text2); text-align: justify; hyphens: auto; }
+.card p + p { margin-top: 8px; }
+figure { margin: 0; }
+figure svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+figcaption { font-size: 12.5px; color: var(--text2); margin-top: 8px; text-align: justify; hyphens: auto; }
+.fig-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+
+.badge { display: inline-block; font: 600 10.5px var(--sans); border-radius: 999px; padding: 1px 8px; vertical-align: middle; }
+.badge.existe { background: #E6E9F2; color: var(--lis-azul); }
+.badge.parcial { background: #FBF3D4; color: #7A6311; }
+.badge.planejado { background: #EEF0F4; color: var(--muted); }
+code, .mono { font-family: var(--mono); font-size: 11.5px; }
+code { background: #EEF0F5; border-radius: 3px; padding: 0 4px; color: var(--lis-azul); }
+
+/* nós e setas do diagrama: o SVG fica inline, então estas regras alcançam o desenho */
+.node { cursor: default; }
+.node rect { fill: #fff; stroke: var(--lis-azul); stroke-width: 1.4; }
+.node.st-parcial rect { fill: #FFFCF0; stroke: var(--lis-dourado); stroke-width: 2; }
+.node.st-planejado rect { fill: #F7F8FA; stroke: #9AA3B8; stroke-dasharray: 5 4; }
+.n-title { font: 600 13.5px var(--sans); fill: var(--text); }
+.n-sub { font: 400 11.5px var(--sans); fill: var(--text2); }
+.node.st-planejado .n-title, .node.st-planejado .n-sub { fill: var(--muted); }
+.edge { fill: none; stroke: #3A4F72; stroke-width: 1.3; }
+.edge.memo { stroke: var(--lis-dourado); stroke-width: 2; }
+.edge.dashed { stroke: #9AA3B8; stroke-dasharray: 4 4; }
+.edge.cross { stroke: #A9B2C3; stroke-width: 1; }
+.e-label { font: 500 11px var(--sans); fill: var(--text2); paint-order: stroke; stroke: #fff;
+  stroke-width: 4px; stroke-linejoin: round; }
+.e-label.memo { fill: #7A6311; font-weight: 600; }
+.zone rect { fill: rgba(31,40,83,.025); stroke: rgba(31,40,83,.2); stroke-dasharray: 2 3; }
+.zone text { font: 700 10.5px var(--cond); letter-spacing: .08em; text-transform: uppercase; fill: var(--muted); }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+table.t th { text-align: left; font: 600 11px var(--sans); color: var(--muted); text-transform: uppercase;
+  letter-spacing: .04em; border-bottom: 1px solid var(--border); padding: 5px 8px 5px 0; }
+table.t td { border-bottom: 1px solid var(--border); padding: 6px 8px 6px 0; vertical-align: top; color: var(--text2); }
+table.t td.id { font: 600 12px var(--mono); color: var(--lis-azul); white-space: nowrap; }
+table.t td.num { text-align: right; font-family: var(--mono); }
+table.t th.num { text-align: right; }
+.tw { overflow-x: auto; }
+
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <div class="brand">LIS CAPITAL · MACRO</div>
+  <h1>Sistema de agentes-analistas</h1>
+  <div class="meta" id="meta"></div>
+</div></div>
+
+<div class="page">
+  <div id="avisos"></div>
+  <div class="bar">
+    <div class="legend">
+      <span><i class="sw existe"></i>existe</span>
+      <span><i class="sw parcial"></i>em construção</span>
+      <span><i class="sw planejado"></i>planejado</span>
+      <span><i class="sw fora"></i>fora por ora</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <figure>
+      <div class="fig-head"><h2>Do dado e do documento ao relatório</h2></div>
+      <svg id="svg-geral" role="img" aria-label="O ETL grava os dados no MySQL e a ingestão grava o conhecimento no vault; dados e conhecimento constroem as ferramentas, e os agentes recebem os três; os agentes leem os dois, trocam memos dentro do ciclo e o ciclo produz o relatório."></svg>
+      <figcaption>À esquerda, os processos de entrada: o ETL consome o dado das fontes e a ingestão traz a informação qualitativa. No meio, o que o agente recebe, em três blocos: dados (o MySQL), conhecimento (o vault) e ferramentas, construídas a partir dos outros dois: o FX Model a partir de dados, o FX attributor a partir das cartas das gestoras. Na zona dos agentes, um ciclo: na rodada 1 cada agente escreve o seu memo; o modelo estrutural consolida os memos em P1; na rodada 2 cada agente lê os memos de todos e o P1 e escreve de novo; o modelo consolida em P2; e cada agente escreve o memo final, de onde sai o cenário final (PF*). O escrivão lê os memos finais e o PF* e redige o relatório, garantindo a lógica e a coesão dos argumentos; quando uma explicação não está clara, ele cobra o agente. O modelo estrutural não é ferramenta: é a saída comum da análise. "Agente n" representa os agentes que ainda vão entrar. Como o agente recebe os dados quantitativos ainda está em aberto, e as ferramentas ficam fora por ora. O <code>repository/</code> guarda o bruto e nenhum agente lê dele.</figcaption>
+    </figure>
+  </div>
+  <div class="card">
+    <h2>Regras que o desenho carrega</h2>
+    <ul class="lead" style="margin-left:18px">
+      <li><code>obsidian/</code> é a única camada de conhecimento que os agentes leem; o <code>repository/</code> é o bruto e a trilha de auditoria.</li>
+      <li>Todo dado tem um tipo para cada agente: endógeno (da área dele), endógeno de outro agente (consulta sem concluir), TWA (área ainda sem agente) ou exógeno (sem agente).</li>
+      <li>As ferramentas (FX Model, FX attributor) ficam fora dos agentes nesta fase: primeiro o processo analítico e o fluxo de informação. O modelo estrutural não é ferramenta: é a saída comum dos agentes.</li>
+      <li>Sem informação nova o cenário não muda; um único dado novo basta para rodar um ciclo.</li>
+      <li>Todo número do relatório é checado contra a fonte antes de publicar.</li>
+    </ul>
+    <h3>O que o vault tem hoje, por área</h3>
+    <div class="tw"><table class="t" id="tbl-vault"></table></div>
+  </div>
+</div>
+
+<script>
+const REPORT_DATA = {"gerado_em": "02/10/2026 15:11", "registry": {"total": 90, "por_area": {"brasil": 66, "international": 11, "us": 13}}, "n_connectors": 23, "vault": {"economic_activity": {"clean_md": 0, "synthesis": 0, "concepts": 0, "mental_models": 0, "mapa": false}, "exchange_rate": {"clean_md": 16, "synthesis": 17, "concepts": 10, "mental_models": 4, "mapa": true}, "fiscal_policy": {"clean_md": 1, "synthesis": 1, "concepts": 1, "mental_models": 0, "mapa": false}, "inflation": {"clean_md": 1, "synthesis": 1, "concepts": 1, "mental_models": 0, "mapa": false}, "labor_market": {"clean_md": 0, "synthesis": 0, "concepts": 0, "mental_models": 0, "mapa": false}, "monetary_policy": {"clean_md": 508, "synthesis": 1, "concepts": 0, "mental_models": 0, "mapa": false}}, "avisos": []};
+const D = REPORT_DATA;
+const R = D.registry || {};
+const V = D.vault || {};
+const NS = 'http://www.w3.org/2000/svg';
+const ST_LABEL = { existe: 'existe', parcial: 'em construção', planejado: 'planejado' };
+const AREA_NOME = { exchange_rate: 'Câmbio', monetary_policy: 'Política monetária', inflation: 'Inflação',
+  fiscal_policy: 'Fiscal', economic_activity: 'Atividade', labor_market: 'Mercado de trabalho' };
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function badge(st) { return `<span class="badge ${st}">${ST_LABEL[st] || st}</span>`; }
+
+// visão geral, zona dos agentes: o desenho do usuário de 2026-10-02.
+// Em cada rodada todos os agentes escrevem o seu memo; todos leem os memos de todos
+// (as linhas cruzadas) e o P da rodada, que é o modelo estrutural consolidando os memos.
+// Depois da rodada 2, P2 e o memo final de cada agente; o cenário final é o PF*.
+function rodadasGeral() {
+  const ags = [
+    { k: 'c', nome: 'Câmbio', st: 'parcial' },
+    { k: 'p', nome: 'Pol. monetária', st: 'planejado' },
+    { k: 'n', nome: 'Agente n', st: 'planejado' },
+  ];
+  const cols = [
+    { r: 1, x: 640, rot: 'Rodada 1', memo: 'memo 1' },
+    { r: 2, x: 822, rot: 'Rodada 2', memo: 'memo 2' },
+    { r: 3, x: 1004, rot: 'Memo final', memo: 'memo final' },
+  ];
+  const Y = [281, 346, 411], mh = 52, mw = 96;
+  const zonas = cols.map(c => ({ id: 'zr' + c.r, x: c.x, y: 245, w: 110, h: 230, label: c.rot }));
+  const nos = [
+    { id: 'g_mod', x: 640, y: 120, w: 474, h: 44, st: 'parcial', lines: ['Modelo estrutural'] },
+    { id: 'g_p1', x: 752, y: 188, w: 68, h: 44, st: 'planejado', lines: ['P1', 'consolida'] },
+    { id: 'g_p2', x: 934, y: 188, w: 68, h: 44, st: 'planejado', lines: ['P2', 'consolida'] },
+    { id: 'g_pf', x: 1020, y: 505, w: 94, h: 56, st: 'planejado', lines: ['PF*', 'cenário final'] },
+    { id: 'g_escr', x: 790, y: 505, w: 150, h: 56, st: 'planejado', lines: ['Escrivão', 'redige o relatório'] },
+  ];
+  cols.forEach(c => ags.forEach((a, i) => nos.push({ id: `m${c.r}${a.k}`, x: c.x + 7, y: Y[i], w: mw, h: mh, st: a.st, lines: [a.nome, c.memo] })));
+  const arestas = [
+    { from: 'zr1', fs: 't', to: 'g_mod', ts: 'b', label: 'memos' },
+    { from: 'zr2', fs: 't', fa: 0.7, to: 'g_mod', ts: 'b', ta: (822 + 0.7 * 110 - 640) / 474, label: 'memos' },
+    { from: 'g_mod', fs: 'b', to: 'g_p1', ts: 't', label: 'output' },
+    { from: 'g_mod', fs: 'b', to: 'g_p2', ts: 't', label: 'output' },
+    { from: 'g_p1', fs: 'r', to: 'zr2', ts: 't', ta: 0.25, label: '' },
+    { from: 'g_p2', fs: 'r', to: 'zr3', ts: 't', ta: 0.25, label: '' },
+    { from: 'zr3', fs: 'b', to: 'g_pf', ts: 't', label: '' },
+    { from: 'g_pf', fs: 'l', to: 'g_escr', ts: 'r', label: 'MF + PF*' },
+    { pts: [[936, 505], [936, 466], [1004, 466]], cls: 'dashed', label: 'cobra clareza', lpos: [930, 494, 'end'] },
+  ];
+  // todos leem os memos de todos: cada memo de uma rodada vai a cada agente da seguinte
+  [[1, 2], [2, 3]].forEach(([de, para]) => ags.forEach((a, i) => ags.forEach((b, j) => {
+    const x0 = cols[de - 1].x + 7 + mw, x1 = cols[para - 1].x + 7;
+    arestas.push({ pts: [[x0, Y[i] + mh / 2], [x1, Y[j] + mh / 2]], cls: 'cross' });
+  })));
+  return { zonas, nos, arestas };
+}
+const FERRAMENTAS = [
+  { id: 'g_fxm', nome: 'FX Model', sub: 'Ridge do câmbio', base: 'dados',
+    texto: 'Modelo do câmbio por regressão Ridge, regularizada e em janela móvel, sobre os canais do câmbio: devolve quanto de cada movimento cada canal explica.',
+    onde: 'analytics/brasil/exchange_rate/ (aba FX Model)', agente: 'fora por ora (I.II.iv)' },
+  { id: 'g_attr', nome: 'FX attributor', sub: 'cartas das gestoras', base: 'informação qualitativa',
+    texto: 'Processa o que as cartas mensais das gestoras (Kinea, Verde, Kapitalo) dizem do câmbio e responde se elas veem o real se apreciando ou se depreciando, com que grau e por qual das nove causas (fiscal, monetária, política, dólar global, commodities, risco, China/EM, comércio, fluxo). O agente usa a resposta sem reler as cartas. A extração é feita à mão.',
+    onde: 'analytics/brasil/exchange_rate/models/fx_attribution_model.py', agente: 'a definir (IV.v)' },
+];
+
+/* ------------------------------------------------------------------ desenho */
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const isH = s => s === 'l' || s === 'r';
+function anc(n, side, t) {
+  if (side === 'l') return [n.x, n.y + n.h * t];
+  if (side === 'r') return [n.x + n.w, n.y + n.h * t];
+  if (side === 't') return [n.x + n.w * t, n.y];
+  return [n.x + n.w * t, n.y + n.h];
+}
+function route(a, sa, b, sb, mid) {
+  if (isH(sa) && isH(sb)) {
+    if (Math.abs(a[1] - b[1]) < 0.5) return [a, b];
+    const mx = mid != null ? mid : (a[0] + b[0]) / 2;
+    return [a, [mx, a[1]], [mx, b[1]], b];
+  }
+  if (!isH(sa) && !isH(sb)) {
+    if (Math.abs(a[0] - b[0]) < 0.5) return [a, b];
+    const my = mid != null ? mid : (a[1] + b[1]) / 2;
+    return [a, [a[0], my], [b[0], my], b];
+  }
+  if (isH(sa)) return [a, [b[0], a[1]], b];
+  return [a, [a[0], b[1]], b];
+}
+function drawEdge(edges, labels, e, idx, sid) {
+  let pts = e.pts;
+  if (!pts) {
+    const A = idx[e.from], B = idx[e.to];
+    if (!A || !B) { console.warn('aresta sem nó', e); return; }
+    let ta = e.fa, tb = e.ta;
+    // quando as duas caixas se sobrepõem no eixo da seta, ela sai reta, no meio da sobreposição
+    if (ta == null && tb == null) {
+      if (isH(e.fs) && isH(e.ts)) {
+        const lo = Math.max(A.y, B.y), hi = Math.min(A.y + A.h, B.y + B.h);
+        if (hi - lo > 8) { const y = (lo + hi) / 2; ta = (y - A.y) / A.h; tb = (y - B.y) / B.h; }
+      } else if (!isH(e.fs) && !isH(e.ts)) {
+        const lo = Math.max(A.x, B.x), hi = Math.min(A.x + A.w, B.x + B.w);
+        if (hi - lo > 8) { const x = (lo + hi) / 2; ta = (x - A.x) / A.w; tb = (x - B.x) / B.w; }
+      }
+    }
+    pts = route(anc(A, e.fs, ta == null ? 0.5 : ta), e.fs, anc(B, e.ts, tb == null ? 0.5 : tb), e.ts, e.mid);
+  }
+  const mk = e.cls === 'memo' ? 'm' : (e.cls === 'dashed' || e.cls === 'cross') ? 'd' : 'n';
+  const pa = { d: 'M' + pts.map(p => p.join(',')).join(' L'), class: 'edge ' + (e.cls || ''), 'marker-end': `url(#${sid}-a${mk})` };
+  if (e.both) pa['marker-start'] = `url(#${sid}-a${mk})`;
+  el('path', pa, edges);
+  if (!e.label) return;
+  let x, y, anchor = 'middle';
+  if (e.lpos) { [x, y, anchor] = [e.lpos[0], e.lpos[1], e.lpos[2] || 'middle']; }
+  else {
+    let best = 0, bi = 0;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const L = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]);
+      if (L > best) { best = L; bi = i; }
+    }
+    const p = pts[bi], q = pts[bi + 1];
+    if (Math.abs(p[1] - q[1]) < 0.5) { x = (p[0] + q[0]) / 2; y = p[1] + (e.lbelow ? 14 : -6); }
+    else { x = p[0] + (e.lleft ? -7 : 7); y = (p[1] + q[1]) / 2 + 4; anchor = e.lleft ? 'end' : 'start'; }
+  }
+  const t = el('text', { x, y, 'text-anchor': anchor, class: 'e-label ' + (e.cls === 'memo' ? 'memo' : '') }, labels);
+  t.textContent = e.label;
+}
+function fitText(t, max, fs) {
+  let size = fs;
+  while (t.getComputedTextLength() > max && size > 8.5) { size -= 0.5; t.style.fontSize = size + 'px'; }
+}
+function drawNode(layer, n, view) {
+  const g = el('g', { class: `node st-${n.st}`, 'data-id': n.id, 'aria-label': n.lines.filter(Boolean).join(', ') }, layer);
+  el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 7 }, g);
+  const k = n.lines.length, lh = 15;
+  const y0 = n.y + n.h / 2 - ((k - 1) * lh) / 2 + 4;
+  n.lines.forEach((l, i) => {
+    if (!l) return;
+    const t = el('text', { x: n.x + n.w / 2, y: y0 + i * lh + (i ? 1 : 0), 'text-anchor': 'middle', class: i === 0 ? 'n-title' : 'n-sub' }, g);
+    t.textContent = l;
+    fitText(t, n.w - 14, i === 0 ? 13.5 : 11.5);
+  });
+}
+function desenhar(view) {
+  const spec = SPECS[view]();
+  const sid = 'svg-' + view;
+  const svg = document.getElementById(sid);
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  svg.setAttribute('viewBox', `0 0 ${spec.W} ${spec.H}`);
+  const defs = el('defs', {}, svg);
+  [['n', '#3A4F72'], ['m', '#BB9B1D'], ['d', '#9AA3B8']].forEach(([k, c]) => {
+    const m = el('marker', { id: `${sid}-a${k}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0,0 L10,5 L0,10 z', fill: c }, m);
+  });
+  const idx = {};
+  (spec.zones || []).forEach(z => {
+    if (z.id) idx[z.id] = z;
+    const g = el('g', { class: 'zone' }, svg);
+    el('rect', { x: z.x, y: z.y, width: z.w, height: z.h, rx: 10 }, g);
+    const ls = [].concat(z.label);
+    ls.forEach((l, i) => {
+      const y = z.labelMid ? z.y + z.h / 2 - ((ls.length - 1) * 13) / 2 + 4 + i * 13 : z.y + 17 + i * 13;
+      el('text', { x: z.x + 12, y }, g).textContent = l;
+    });
+  });
+  spec.nodes.forEach(n => { idx[n.id] = n; });
+  const edges = el('g', {}, svg), nodes = el('g', {}, svg), labels = el('g', {}, svg);
+  spec.nodes.forEach(n => drawNode(nodes, n, view));
+  spec.edges.forEach(e => drawEdge(edges, labels, e, idx, sid));
+}
+
+/* ------------------------------------------------------------------ a vista */
+const SPECS = {
+  geral() {
+    const rod = rodadasGeral();
+    const P = 25, w = 220;
+    const filas = Math.ceil(FERRAMENTAS.length / 2), topo = 339 - (filas * 56 + (filas - 1) * 10) / 2;
+    const fer = FERRAMENTAS.map((f, i) => ({ id: f.id, x: 300 + (i % 2) * 135, y: topo + Math.floor(i / 2) * 66, w: 125, h: 56, st: 'existe', lines: [f.nome, f.sub] }));
+    return {
+      W: 1160, H: 770,
+      zones: [
+        { x: 10, y: 10, w: 250, h: 640, label: 'Processos de entrada' },
+        { id: 'z_dados', x: 290, y: 100, w: 280, h: 120, label: 'Dados' },
+        { id: 'z_ferr', x: 290, y: 254, w: 280, h: 170, label: 'Ferramentas' },
+        { id: 'z_conh', x: 290, y: 458, w: 280, h: 130, label: 'Conhecimento' },
+        { id: 'z_ag', x: 630, y: 100, w: 520, h: 488, label: 'Agentes num ciclo · obsidian/ciclos/<data>/' },
+        ...rod.zonas,
+      ],
+      nodes: [
+        { id: 'g_fapi', x: P, y: 40, w, h: 64, st: 'existe', lines: ['Fontes de dados', `APIs e arquivos · ${D.n_connectors} connectors`] },
+        { id: 'g_etl', x: P, y: 135, w, h: 64, st: 'existe', lines: ['ETL · consumo de dado', 'domain/db · jobs/ diário'] },
+        { id: 'g_fpdf', x: P, y: 400, w, h: 64, st: 'existe', lines: ['Documentos', 'papers · cartas · BC'] },
+        { id: 'g_ingest', x: P, y: 498, w, h: 64, st: 'existe', lines: ['Ingestão', 'extrai e limpa o PDF'] },
+        { id: 'g_repo', x: P, y: 590, w, h: 56, st: 'existe', lines: ['repository/', 'o bruto · nenhum agente lê'] },
+        { id: 'g_mysql', x: 300, y: 135, w: 260, h: 64, st: 'existe', lines: ['MySQL', `${R.total || '—'} tabelas · ex.: CAGED, 12 meses`] },
+        ...fer,
+        { id: 'g_obs', x: 300, y: 493, w: 260, h: 74, st: 'existe', lines: ['obsidian/', 'clean_md · sínteses · conceitos', 'modelos mentais · mapa'] },
+        ...rod.nos,
+        { id: 'g_user', x: P, y: 690, w, h: 64, st: 'existe', lines: ['Usuário', 'junta informação nova'] },
+        { id: 'g_rel', x: 1015, y: 690, w: 135, h: 64, st: 'planejado', lines: ['Relatório macro', 'markdown'] },
+      ],
+      edges: [
+        { from: 'g_fapi', fs: 'b', to: 'g_etl', ts: 't', label: 'busca' },
+        { from: 'g_etl', fs: 'r', to: 'g_mysql', ts: 'l', label: 'grava' },
+        { from: 'g_fpdf', fs: 'b', to: 'g_ingest', ts: 't', label: 'PDF' },
+        { from: 'g_ingest', fs: 'r', to: 'g_obs', ts: 'l', label: 'texto limpo' },
+        { from: 'g_ingest', fs: 'b', to: 'g_repo', ts: 't', label: 'o bruto' },
+        { from: 'z_dados', fs: 'b', to: 'z_ferr', ts: 't', label: 'constroem' },
+        { from: 'z_conh', fs: 't', to: 'z_ferr', ts: 'b', label: 'constroem' },
+        { from: 'g_mysql', fs: 'r', to: 'z_ag', ts: 'l', label: 'a definir' },
+        { from: 'z_ferr', fs: 'r', to: 'z_ag', ts: 'l', label: 'fora por ora', cls: 'dashed' },
+        { from: 'g_obs', fs: 'r', to: 'z_ag', ts: 'l', label: 'lê' },
+        ...rod.arestas,
+        { from: 'g_user', fs: 'r', to: 'z_ag', ts: 'b', ta: 0.1, label: 'informação nova dispara o ciclo' },
+        { from: 'g_escr', fs: 'b', to: 'g_rel', ts: 't', label: 'relatório final' },
+      ],
+    };
+  },
+};
+
+function tabelaVault() {
+  const ordem = ['exchange_rate', 'monetary_policy', 'inflation', 'fiscal_policy', 'economic_activity', 'labor_market'];
+  const areas = ordem.filter(a => V[a]).concat(Object.keys(V).filter(a => !ordem.includes(a)));
+  let h = '<thead><tr><th>Área</th><th class="num">clean_md</th><th class="num">synthesis</th><th class="num">concepts</th><th class="num">mental_models</th><th>Mapa</th></tr></thead><tbody>';
+  areas.forEach(a => {
+    const v = V[a];
+    h += `<tr><td>${esc(AREA_NOME[a] || a)}</td><td class="num">${v.clean_md}</td><td class="num">${v.synthesis}</td><td class="num">${v.concepts}</td><td class="num">${v.mental_models}</td><td>${v.mapa ? badge('existe') : badge('planejado')}</td></tr>`;
+  });
+  document.getElementById('tbl-vault').innerHTML = h + '</tbody>';
+}
+document.getElementById('meta').textContent =
+  `gerado em ${D.gerado_em} · lê o registry, os connectors e o vault`;
+if ((D.avisos || []).length) {
+  document.getElementById('avisos').innerHTML = '<div class="avisos"><strong>O diagrama pode estar desatualizado:</strong><ul>' +
+    D.avisos.map(a => `<li>${md(a)}</li>`).join('') + '</ul></div>';
+}
+tabelaVault();
+desenhar('geral');
+</script>
+</body>
+</html>

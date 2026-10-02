@@ -13,7 +13,8 @@
     - i. Câmbio e política monetária primeiro. Testar bem os dois antes de acrescentar outro.
     - ii. Depois, um a um: inflação, fiscal, atividade, crédito, mercado de trabalho, externo.
     - iii. Os agentes rodam no Claude Code, sob demanda, nesta fase.
-    - iv. O modelo quantitativo (Modelo Estrutural, FX Model) fica fora dos agentes por enquanto. Primeiro, azeitar o processo analítico e o fluxo de informação.
+    - iv. O modelo quantitativo (Modelo Estrutural, FX Model) fica fora dos agentes por enquanto. Primeiro, azeitar o processo analítico e o fluxo de informação. Quando o Modelo Estrutural entrar, entra como saída dos agentes, não como ferramenta (I.III.xv).
+    - v. Agente escrivão (2026-10-02): organiza o relatório final a partir dos memos finais (MF) e do cenário final (PF*). O objetivo é um relatório em ótimo português, de clareza e objetividade excepcionais. Garante a validade lógica e a coesão dos argumentos dos memos, e pode cobrar de um agente mais clareza numa explicação. Detalhes a definir (IV.vii).
 
 ## (I.III) Regras decididas
     - i. Base de conhecimento: `repository/` guarda o bruto (raw_pdf, raw_md, cartas das gestoras, acompanhamento de aquisição). `obsidian/` é a única camada que os agentes leem.
@@ -21,17 +22,22 @@
     - iii. Modelos mentais por área × gestora (ex.: `verde_fx_mental_models.md`). São arcabouço, não opinião atual.
     - iv. A bibliografia consolidada é acompanhamento do que foi ingerido: fica no `repository/`.
     - v. Documentos do BC (comunicados, atas, RPM) são bibliografia do agente de política monetária, em `clean_md/central_bank/`.
-    - vi. Mapa conceitual = contrato da área: (1) esqueleto causal, (2) saídas, (3) entradas, (4) índice de conceitos.
+    - vi. Mapa conceitual = contrato da área: (1) perguntas centrais, (2) esqueleto causal, (3) saídas, (4) entradas, (5) índice de conceitos.
+        - Perguntas centrais (2026-10-02): o que o agente responde em todo memo. São o mínimo, não o máximo: o agente não fica limitado a elas, e insights novos e alertas também entram. No câmbio: (a) quais as condições subjacentes do mercado de câmbio brasileiro; (b) como estão os fundamentos macroeconômicos para o câmbio; (c) o que explica a dinâmica recente do câmbio (o que é "recente" se define depois); (d) qual o cenário prospectivo para o câmbio, via modelo estrutural.
+        - Global × idiossincrático entra na explicação do modelo (FX Model ou Estrutural), dentro da pergunta (c). A discussão marginal × nível fica de fora por ora.
     - vii. Saída de A para B = o que é importante PARA A vindo de B. Entrada de A vinda de B = o que B disse que é importante para B vindo de A. Dá ênfase, não limita a análise.
     - viii. Entradas e saídas têm uma camada fixa (no mapa) e uma dinâmica (nos memos, conforme as teses do ciclo).
     - ix. Três tipos de dado (decidido 2026-10-01):
         - Endógeno: dado da área do próprio agente; ele é o responsável por analisá-lo.
         - Exógeno: dado sem agente, que todos os agentes podem consumir. Ex.: o CDS.
+            - Intenção do usuário (2026-10-02): distribuir cada exógena a um ou dois agentes, que terão a palavra para discuti-la. Ex.: o CDS reflete risco fiscal e risk-off global, então os agentes fiscal e externo discutem o CDS.
         - TWA (temporarily without agent): dado de uma área que ainda não tem agente. Funciona como exógeno até o agente existir, quando vira endógeno dele. Ex.: inflação, fiscal, atividade, crédito, mercado de trabalho, expectativas (Focus, QPC) e o dado global, até existir o agente Externo.
     - x. Endógeno de outro agente: qualquer agente consulta, mas não tira conclusão sobre ele; a posição vem do agente responsável. Ex.: o agente de câmbio não conclui sobre o caminho da Selic sem a leitura do agente de política monetária.
     - xi. Exógeno e TWA: a forma de análise ainda será definida, a partir da interação entre os agentes. O mesmo dado pode ser consumido por mais de um agente, então é preciso uma visão consolidada sobre ele (ver IV.ii). Até lá, o agente usa o dado declarando no memo as premissas que assumiu. (provisório, 2026-10-01)
     - xii. Expectativas não são da política monetária: são TWA, e pode haver um agente de expectativas no futuro.
     - xiii. Dados por agente: ver (V).
+    - xiv. Ferramenta = um processamento específico e pré-definido de dados ou de informação qualitativa que gera um output que o agente usa direto, sem processar o bruto ele mesmo. Ex.: o FX attributor processa as cartas das gestoras sobre o câmbio e responde se elas veem o câmbio subindo ou caindo, e com que grau. (decidido 2026-10-02)
+    - xv. O Modelo Estrutural não é ferramenta: é o filtro de saída da análise. Na discussão das variáveis e dos cenários, o cenário dos agentes também é expresso por meio do modelo estrutural. É output dos agentes, não input para eles. (decidido 2026-10-02)
 
 
 # (II) Base de conhecimento
@@ -63,7 +69,7 @@
 ## (III.I) Agente de câmbio
     - i. Reconstruir o agente a partir do mapa conceitual.
     - ii. Corrigir a contradição sobre a PTAX nas instruções atuais.
-    - iii. Ajustar o snapshot de dados à lista (V.I): acrescentar o que falta (CDS, índices de dólar, S&P, pares latinos, commodities).
+    - iii. Dar ao agente acesso aos dados da lista (V.I). A forma está em aberto (IV.iv); o snapshot atual (`agent_data.py`) cobre só parte da lista.
     - iv. Saída em memo estruturado: tese, premissas com dado, signposts, riscos, saídas para os outros agentes.
 
 ## (III.II) Agente de política monetária
@@ -81,9 +87,12 @@
         - Placar: para cada horizonte que venceu desde o último ciclo, o agente diz em que faixa a variável caiu.
         - Memo e relatório em português; termos técnicos consagrados em inglês são permitidos (forward guidance, carry etc.).
     - ii. Fluxo e registro da interação:
-        - Fluxo (esboço do usuário, 2026-10-01): A lê dados, ferramentas, outros e o memo de B, e escreve tese, argumentação e premissas no memo A; B lê o memo A, dados, ferramentas e outros, e escreve o memo B, que volta para A. Depois, o relatório.
-        - Registro (decidido 2026-10-01): uma pasta por ciclo, `obsidian/ciclos/<data>/`, com um memo por agente, o log do ciclo e o relatório. O memo não é versionado por rodada: o log registra quem leu o quê, cada mudança de premissa ou probabilidade (antes → depois, motivo, o que a provocou) e as divergências que ficaram abertas. Modelo: `obsidian/ciclos/_modelo_log.md`.
-        - Ordem: câmbio → política monetária, duas voltas por ciclo. Revisar quando entrar um agente novo (ver IV.iii).
+        - Fluxo (desenho do usuário, 2026-10-02; substitui o esboço de 2026-10-01, em que um agente escrevia depois do outro):
+            - Rodada 1: cada agente escreve o seu memo. O Modelo Estrutural consolida os memos da rodada em P1.
+            - Rodada 2: cada agente lê os memos de todos e o P1 e escreve de novo. O modelo consolida em P2.
+            - Memo final (MF): cada agente lê os memos de todos e o P2 e escreve o MF. Dos MF sai o cenário final (PF*), que vai para o relatório.
+        - Registro (decidido 2026-10-01, revisto 2026-10-02): uma pasta por ciclo, `obsidian/ciclos/<data>/`. Os memos de cada rodada e as consolidações (P1, P2) ficam vivos durante o ciclo; quando o ciclo acaba, ficam o memo final (MF) de cada agente e o log, além do relatório. O log registra o processo interno: quem leu o quê, cada mudança de premissa ou probabilidade entre rodadas (antes → depois, motivo, o que a provocou) e as divergências que ficaram abertas. Modelo: `obsidian/ciclos/_modelo_log.md`.
+        - Ordem: dentro de uma rodada todos os agentes escrevem, sem ordem entre eles (2026-10-02, substitui câmbio → política monetária). Hoje: duas rodadas e o memo final. Revisar quando entrar um agente novo (ver IV.iii).
         - Ciclo = um processo de atualização do cenário, disparado por informação nova (quantitativa ou qualitativa). Sem informação nova, o cenário não muda. Um único dado novo basta para rodar um ciclo, embora na prática o usuário prefira juntar mais dados antes.
     - iii. Checagem de todo número do relatório contra a fonte antes de publicar.
     - iv. Relatório final em markdown enquanto calibramos; PDF depois.
@@ -92,8 +101,12 @@
 
 # (IV) Decisões pendentes
     - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
-    - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir)
-    - iii. Ordem dos agentes e número de voltas por ciclo: reabrir sempre que entrar um agente novo. Hoje: câmbio → política monetária, duas voltas.
+    - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
+    - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o memo final.
+    - iv. Como o agente analisa os dados quantitativos: o que recebe, em que forma (resumo pronto, consulta ao banco, funções de cálculo) e como chega a uma leitura deles. O agente recebe um conjunto de dados qualitativos e quantitativos; a parte quantitativa está a definir. (anotado 2026-10-02, a definir)
+    - v. Ferramentas (I.III.xiv): quais são (hoje candidatas: FX attributor e FX Model; dashboards não são ferramenta) e quando e como entram nos agentes. Por ora fora (I.II.iv).
+    - vi. Como os memos viram P1, P2 e PF* no Modelo Estrutural (I.III.xv): com quais variáveis, quem faz a conta e o que acontece quando o modelo e os agentes divergem. (anotado 2026-10-02, a definir)
+    - vii. Agente escrivão (I.II.v): como e quando cobra clareza de um agente (e se isso reabre o memo final), o que pode mudar no texto dos agentes e o que não pode, e a estrutura do relatório. (anotado 2026-10-02, a definir)
 
 
 # (V) Dados por agente
@@ -104,29 +117,29 @@
 ### i. Endógeno
     - `cmb_ptax`: PTAX de venda diária do BCB (desde jul/1994) e volume do interbancário. É a variável que o agente explica; o volume diz se o movimento veio com mercado fundo ou raso.
 
-    - `cmb_fluxo_cambial`: entradas, saídas e saldo mensal do fluxo cambial, total e pelos setores comercial e financeiro. É a leitura de curto prazo da oferta de dólares: diz se o real andou a favor ou contra o fluxo (canais 1.5 e 1.6).
+    - `cmb_fluxo_cambial`: entradas, saídas e saldo mensal do fluxo cambial, total e pelos setores comercial e financeiro. É a leitura de curto prazo da oferta de dólares: diz se o real andou a favor ou contra o fluxo (canais 2.5 e 2.6).
 
     - `cmb_cambio_contratado`: câmbio contratado diário desde set/2008, separado em exportação, importação e financeiro. É o fluxo em alta frequência, para ler o movimento dentro do mês antes do dado mensal.
 
-    - `cmb_balanco_pagmt`: balanço de pagamentos mensal (BPM6), com conta corrente e conta financeira abertas. Dá a oferta estrutural de dólares e a qualidade do financiamento do déficit: investimento direto é estável, carteira é volátil (canal 1.5).
+    - `cmb_balanco_pagmt`: balanço de pagamentos mensal (BPM6), com conta corrente e conta financeira abertas. Dá a oferta estrutural de dólares e a qualidade do financiamento do déficit: investimento direto é estável, carteira é volátil (canal 2.5).
 
     - `cmb_comex_fator_agregado`: balança comercial do MDIC por fator agregado (básicos, semimanufaturados, manufaturados). Mostra que tipo de produto gera o saldo e, portanto, a que preço ele está exposto; não fecha linha a linha com o balanço de pagamentos.
 
     - `cmb_comex_pais`: balança comercial por parceiro (China, EUA, Argentina, Alemanha). Mostra por onde um choque de demanda externa chega ao saldo e ao real.
 
-    - `cmb_comex_produto`: exportação e importação de petróleo, soja, minério de ferro, carnes e café. Separa preço de volume no saldo e liga o real a cada commodity (canal 1.4).
+    - `cmb_comex_produto`: exportação e importação de petróleo, soja, minério de ferro, carnes e café. Separa preço de volume no saldo e liga o real a cada commodity (canal 2.4).
 
-    - `cmb_reservas_bc`: reservas internacionais e intervenções do BCB (swaps, leilões à vista e de linha). Mede o colchão contra crise (canal 1.9) e o que o BC está fazendo no mercado (canal 1.7).
+    - `cmb_reservas_bc`: reservas internacionais e intervenções do BCB (swaps, leilões à vista e de linha). Mede o colchão contra crise (canal 2.9) e o que o BC está fazendo no mercado (canal 2.7).
 
-    - `cmb_cot_fx`: posição em futuros de BRL, MXN, CLP e COP na CFTC, semanal, por tipo de participante. Posição especulativa extrema é sinal contrário e amplifica o movimento quando é desmontada (canal 1.6).
+    - `cmb_cot_fx`: posição em futuros de BRL, MXN, CLP e COP na CFTC, semanal, por tipo de participante. Posição especulativa extrema é sinal contrário e amplifica o movimento quando é desmontada (canal 2.6).
 
-    - `cmb_reer`: câmbio efetivo real e nominal do BIS para BR, MX, CL e CO. É a medida de nível: quão caro ou barato o real está contra os parceiros, já corrigido por inflação (canal 1.8).
+    - `cmb_reer`: câmbio efetivo real e nominal do BIS para BR, MX, CL e CO. É a medida de nível: quão caro ou barato o real está contra os parceiros, já corrigido por inflação (canal 2.8).
 
-    - `cmb_termos_troca`: termos de troca da Funcex, mensal desde 1978. Termos de troca melhores aumentam o saldo comercial e sustentam o real (canal 1.4).
+    - `cmb_termos_troca`: termos de troca da Funcex, mensal desde 1978. Termos de troca melhores aumentam o saldo comercial e sustentam o real (canal 2.4).
 
     - `cmb_fx_latam`: MXN, CLP, COP e PEN contra o dólar, diário. É o grupo de comparação que separa o movimento global, compartilhado com os pares, do que é só do real.
 
-    - `diferenciais_juros`: Selic menos Fed Funds, nominal e real ex-post, mensal. O carry é leitura do câmbio (canal 1.1); o caminho da Selic por trás dele vem do agente de política monetária (S1).
+    - `diferenciais_juros`: Selic menos Fed Funds, nominal e real ex-post, mensal. O carry é leitura do câmbio (canal 2.1); o caminho da Selic por trás dele vem do agente de política monetária (S1).
 
 ### ii. Endógeno de política monetária (consulta; a posição vem pelas saídas S1–S4 do mapa de câmbio)
     - `pm_copom_calendario`: datas das reuniões do Copom. São os eventos que concentram a volatilidade do carry e da curva.
@@ -151,11 +164,11 @@
     - `expc_focus_periodo` (IPCA): mediana da Focus para o IPCA no fim de cada ano. É a inflação doméstica esperada que entra na paridade de poder de compra prospectiva, ao lado da meta.
 
 ### iv. TWA — externo
-    - `cmb_dollar_index`: DXY, dólar contra moedas desenvolvidas, diário. Separa o ciclo global do dólar do que é do real (canal 1.3).
+    - `cmb_dollar_index`: DXY, dólar contra moedas desenvolvidas, diário. Separa o ciclo global do dólar do que é do real (canal 2.3).
 
     - `cmb_dollar_index_em`: dólar contra moedas emergentes (FRED), diário desde 2006. Comparação mais próxima do real que o DXY, porque tira o efeito do euro e do iene.
 
-    - `cmb_equity_us`: S&P 500, diário. Proxy do apetite a risco global, que move o real junto com os outros emergentes (canal 1.2).
+    - `cmb_equity_us`: S&P 500, diário. Proxy do apetite a risco global, que move o real junto com os outros emergentes (canal 2.2).
 
     - `us_interest_rate`: curva do Treasury e meta do Fed. É a perna externa do carry e o motor do ciclo global do dólar.
 
@@ -163,21 +176,21 @@
 
     - `cmb_real_rates`: juro real ex-post de BR, MX, CL, CO e PE. Compara o carry real do Brasil com o dos pares.
 
-    - `comm_brent`: Brent em dólar, diário. O Brasil exporta petróleo, então o preço entra nos termos de troca e no saldo (canal 1.4).
+    - `comm_brent`: Brent em dólar, diário. O Brasil exporta petróleo, então o preço entra nos termos de troca e no saldo (canal 2.4).
 
     - `comm_icbr_usd`: IC-Br em dólar. Preço das commodities relevantes para o Brasil sem a variação cambial embutida: o insumo certo para explicar o real.
 
 ### v. TWA — doméstico
     - `inflc_agregados`: IPCA e seus componentes. Entra na inflação relativa da paridade de poder de compra e no câmbio real; o agente usa o número sem opinar sobre a inflação.
 
-    - `fisc_nfsp`: resultado primário e nominal do setor público em % do PIB, 12 meses. Esforço fiscal fraco eleva o prêmio de risco do real (canal 1.2).
+    - `fisc_nfsp`: resultado primário e nominal do setor público em % do PIB, 12 meses. Esforço fiscal fraco eleva o prêmio de risco do real (canal 2.2).
 
-    - `fisc_divida`: dívida bruta e líquida em % do PIB. A trajetória da dívida é o fundamento do prêmio de risco (canal 1.2).
+    - `fisc_divida`: dívida bruta e líquida em % do PIB. A trajetória da dívida é o fundamento do prêmio de risco (canal 2.2).
 
     - `atv_pib_usd`: PIB mensal em dólar. É o denominador do balanço de pagamentos em % do PIB.
 
 ### vi. Exógeno
-    - `cmb_risco_pais`: CDS de 5 anos do Brasil. É o preço do risco soberano, par do real no canal de prêmio de risco (1.2); a carga é por export manual da Bloomberg, então conferir a data do último dado antes de usar.
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. É o preço do risco soberano, par do real no canal de prêmio de risco (2.2); a carga é por export manual da Bloomberg, então conferir a data do último dado antes de usar.
 
 ## (V.II) Agente de política monetária
 

@@ -25,10 +25,12 @@
 
 
   ### (I.I.III) Dashboard de Expectativas
-    -
  
   ### (I.I.IV) Dashboard de Credito
     -  
+
+  ### (I.I.V)  Dashboard de atividade Economica
+  - i. Colocar tabela de dados no gráfico (Produção industrial), para melhor o acompanhamento mensal
 
   ## (I.B) Dashboards US
   
@@ -37,6 +39,7 @@
     - ii. Aumentar tamanho dos gráficos
 
   ### Dashboard de Mercado de trabalho
+    - As linhas dos graficos estão muito fracas, sem vida
 
 
 

@@ -53,6 +53,8 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
   release_calendar/  — Relatório HTML do calendário + serve.py, o modo servido em que os botões rodam
                        o ETL e regeram dashboards. Na raiz porque monitora o sistema inteiro
   oraculo/           — Termômetro macro: notas 1–10 por variável (Brasil e EUA) → Power BI
+  agent_system/      — Diagrama do sistema de agentes (entradas, dados/ferramentas/conhecimento,
+                       ciclo de rodadas) → team_materials/structure_materials/Sistema de Agentes.html
   brasil/ · us/      — Um diretório por área, cada um = generate_report.py + report.html (+ um módulo
                        por aba) + o seu próprio CLAUDE.md. Ver a tabela de relatórios abaixo.
                        A área que teve levantamento de fontes guarda o `fontes_dados.md` dela aqui

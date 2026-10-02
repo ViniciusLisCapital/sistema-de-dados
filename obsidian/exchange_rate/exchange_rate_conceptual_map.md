@@ -1,21 +1,21 @@
 # Exchange Rate — Conceptual Map
 
 **What this file is.** This is the exchange-rate agent's contract with the rest of the system. It says
-what moves the BRL (Part 1), what this agent tells the others matters TO IT (Part 2, outputs), and
-what the others told this agent matters TO THEM (Part 3, inputs). Part 4 is the index of concepts
-read out of the literature. The agent reads Parts 1–3 on every run and uses Part 4, the concept
-pages, the syntheses and `clean_md/` to go deeper.
+what every memo must answer (Part 1, central questions), what moves the BRL (Part 2), what this
+agent tells the others matters TO IT (Part 3, outputs), and what the others told this agent matters
+TO THEM (Part 4, inputs). Part 5 is the index of concepts read out of the literature. The agent reads
+Parts 1–4 on every run and uses Part 5, the concept pages, the syntheses and `clean_md/` to go deeper.
 
 **How the parts connect to the rest of the vault.** `[[concept]]` links go to `concepts/` or to a
-concept named in Part 4. "Mental models" cite section numbers of the files in `mental_models/`, which
+concept named in Part 5. "Mental models" cite section numbers of the files in `mental_models/`, which
 are frameworks, not current opinions: a view dated 2024 is a way of reasoning, never a fact about
 today. "Data" names MySQL tables. A table named here exists in the database, but that does not mean
 the agent reads it: see the data rule below.
 
 **Outputs and inputs.** An output of agent A to agent B is what A tells B is important for A, coming
 from B. An input of A from B is what B told A is important for B, coming from A. So this agent's
-outputs to monetary policy (Part 2) are the monetary-policy agent's inputs from FX, and the
-monetary-policy agent's outputs to FX are this agent's inputs (Part 3). An input gives emphasis and
+outputs to monetary policy (Part 3) are the monetary-policy agent's inputs from FX, and the
+monetary-policy agent's outputs to FX are this agent's inputs (Part 4). An input gives emphasis and
 tells the agent what to flag; it never limits the FX analysis.
 
 **Two layers.** What is written here is the **fixed** layer: what matters every cycle. On top of it,
@@ -30,7 +30,7 @@ open to every agent (the CDS). *TWA* (temporarily without agent): data from an a
 yet (inflation, fiscal, expectations, the global data until an external agent exists), treated as
 exogenous until that agent exists. Another agent's endogenous data may be read, but this agent draws
 no conclusion about it: the Selic path, the Copom's stance and the credibility reading come from the
-monetary-policy agent (Part 2). How exogenous and TWA data are analysed is still to be defined,
+monetary-policy agent (Part 3). How exogenous and TWA data are analysed is still to be defined,
 through the interaction between agents, since several may use the same series. The
 table-by-table list is in `SISTEMA_AGENTES.md`, section (V.I), with why each table matters to this agent.
 
@@ -39,36 +39,43 @@ Curation material (sources processed, processing status, coverage notes) lives i
 
 ---
 
-## Part 1 — Causal skeleton: what moves the BRL
+## Part 1 — Central questions: what every memo answers
 
-**Two horizons, never mixed in one sentence.** The *marginal* question is what moved the BRL this
-month and whether that move is noise or signal. The *level* question is where the BRL sits relative
-to its fundamentals. Channels 1.1–1.7 answer the first one and channel 1.8 answers the second. The
-literature says fair-value gaps take roughly 3–5 years to close ([[gsdeer_horizon_dynamics]],
-[[ppp_deviation_half_life]]), so a valuation argument is not a monthly call.
+Decided 2026-10-02. Every FX memo answers these four questions. They are the **floor, not the
+ceiling**: the agent is expected to go beyond them — new insights, alerts, anything the data or the
+other agents' memos raise — and nothing here limits what it may say. The questions are kept in
+Portuguese, the language the memo is written in.
 
-**Global vs. idiosyncratic, first.** Before attributing a move to a domestic cause, compare the BRL
-with its peers and with the dollar index. A move shared with the LatAm peers and the DXY-EM is
-global; the residual is Brazil. Mental models: Verde §5.5 ("Brasil como passageiro"), Kapitalo §1.5.
-Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (DXY),
-`cmb_dollar_index_em`.
+| # | Question | What the answer covers | Where to look |
+|---|---|---|---|
+| Q1 | Quais as condições subjacentes do mercado de câmbio brasileiro? | How the market is working: liquidity, flows, positioning, onshore dollar scarcity, the central bank's presence | 2.5, 2.6, 2.7 |
+| Q2 | Como estão os fundamentos macroeconômicos para o câmbio? | Carry, risk premium, terms of trade, external accounts and valuation | 2.1, 2.2, 2.4, 2.5, 2.8 |
+| Q3 | O que explica a dinâmica recente do câmbio? | What moved the BRL and through which channel, including whether the move is global or idiosyncratic. That split is part of the model's explanation (FX Model or Structural Model), read against the LatAm peers and the dollar indices | 2.1–2.7 · data `cmb_fx_latam`, `cmb_dollar_index`, `cmb_dollar_index_em` · mental models Verde §5.5 ("Brasil como passageiro"), Kapitalo §1.5 |
+| Q4 | Qual o cenário prospectivo para o câmbio? | The memo's thesis: central value, base range and tails for each horizon (1 month, 6 months, 1 year), expressed through the Structural Model | memo §1 · 2.9 for the tail |
 
-### 1.1 Rate differential and carry
+- What "recente" means in Q3 is still to be defined.
+- The marginal-versus-level distinction is deliberately left out for now (user decision, 2026-10-02).
+
+---
+
+## Part 2 — Causal skeleton: what moves the BRL
+
+### 2.1 Rate differential and carry
 
 - **Mechanism.** A higher domestic rate attracts carry and supports the BRL. UIP says the gain should
   be offset by expected depreciation, but empirically it is not (Fama's wrong-signed beta). Carry pays
   on average and crashes in risk-off episodes, with negative skew.
-- **Read:** [[uip]], [[carry_trade]], [[fisher_effect_uip_ppp_paradox_resolution]] (Part 4).
+- **Read:** [[uip]], [[carry_trade]], [[fisher_effect_uip_ppp_paradox_resolution]] (Part 5).
 - **Mental models:** Verde §3.1–3.4, Kinea §2.1–2.6 and §1.9 ("carry quebra sem credibilidade"),
   Kapitalo §3.1 and §9.2, GS §6.1–6.2.
 - **Data:** `diferenciais_juros` (nominal and ex-post real, Selic vs. Fed Funds), `cmb_real_rates`
   (ex-post real rates for the peers). The ex-ante differential, which is what UIP is actually about,
   is not a stored series; it can be built from `br_interest_rate` and `us_interest_rate`.
 - **Trap.** The same rate hike can appreciate or depreciate the currency, depending on whether it is
-  read as credibility or as validation of a higher inflation path. See Part 2 (S2): this judgement
+  read as credibility or as validation of a higher inflation path. See Part 3 (S2): this judgement
   comes from the monetary-policy agent.
 
-### 1.2 Risk premium: fiscal, political, institutional
+### 2.2 Risk premium: fiscal, political, institutional
 
 - **Mechanism.** Fiscal credibility is the anchor of the risk premium. When it erodes, the premium
   rises and can override carry. In the extreme (fiscal dominance), a higher rate weakens the currency
@@ -77,7 +84,7 @@ Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (D
 - **Mental models:** Verde §1.1–1.11 and §6.1–6.3, Kinea §1.1–1.9, Kapitalo §6.1–6.7, GS §7.2.
 - **Data:** `cmb_risco_pais` (5-year CDS, Bloomberg).
 
-### 1.3 Global dollar, Fed and risk appetite
+### 2.3 Global dollar, Fed and risk appetite
 
 - **Mechanism.** The US rate is "the most important price in the world" for EM currencies. The dollar
   cycle follows the Fed, US growth relative to the rest of the world, and risk appetite; the BRL is a
@@ -85,7 +92,7 @@ Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (D
 - **Mental models:** Verde §4.1–4.11 and §5.4, Kinea §4.1–4.9 and §2.6, Kapitalo §3.1–3.6, GS §3.
 - **Data:** `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_equity_us` (S&P 500), `us_interest_rate`.
 
-### 1.4 Terms of trade and commodities
+### 2.4 Terms of trade and commodities
 
 - **Mechanism.** Better terms of trade raise the trade surplus and support the BRL. Volume matters,
   not only price (Kinea §3.1). Brazil is a net oil exporter, which changes the sign of an oil shock
@@ -94,35 +101,35 @@ Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (D
 - **Mental models:** Verde §2.1–2.4, Kinea §3.1–3.4, Kapitalo §2.3, GS §1.7.
 - **Data:** `cmb_termos_troca` (Funcex), `comm_icbr_usd` (IC-Br in USD), `comm_brent`.
 
-### 1.5 Balance of payments and flows
+### 2.5 Balance of payments and flows
 
 - **Mechanism.** The current account and the composition of the financial account set the structural
   supply of dollars. Not every inflow is equal: foreign-currency debt is the most fragile and FDI the
-  most stable ([[pecking_order_of_capital_inflows_riskiness]], Part 4). Registered FX flow is the
+  most stable ([[pecking_order_of_capital_inflows_riskiness]], Part 5). Registered FX flow is the
   short-run version of the same channel.
 - **Read:** [[balance_of_payments_approach]], [[mundell_fleming_policy_mix]].
 - **Mental models:** Verde §5.1, §5.7 and §8.2, Kinea §3.6, Kapitalo §2.5.
 - **Data:** `cmb_balanco_pagmt`, `cmb_fluxo_cambial`, `cmb_cambio_contratado`, and the trade detail
   in `cmb_comex_*`.
 
-### 1.6 Positioning
+### 2.6 Positioning
 
 - **Mechanism.** Extreme speculative positioning is a contrarian signal. An unwind amplifies a move
   that fundamentals started.
 - **Mental models:** Verde §5.3, Kapitalo §6.4 and §6.8, Kinea §8.2.
 - **Data:** `cmb_cot_fx` (CFTC, BRL futures).
 
-### 1.7 The central bank in the FX market
+### 2.7 The central bank in the FX market
 
 - **Mechanism.** Spot auctions change reserves for good; repo lines and FX swaps provide temporary
-  liquidity or hedge without touching reserves ([[bcb_fx_intervention_toolkit]], Part 4). A widening
+  liquidity or hedge without touching reserves ([[bcb_fx_intervention_toolkit]], Part 5). A widening
   cupom cambial spread signals onshore dollar scarcity ([[cupom_cambial_spread]]). Reserves are the
   buffer that crisis models deplete.
 - **Read:** [[currency_crisis_indicators]], [[currency_regimes]].
 - **Mental models:** Verde §7.2, GS §7.2.
 - **Data:** `cmb_reservas_bc` (reserves, gold, swap stock, interventions).
 
-### 1.8 Structural level: valuation
+### 2.8 Structural level: valuation
 
 - **Mechanism.** In the long run the real exchange rate converges to a level set by productivity,
   terms of trade and the real rate differential (BEER, GSDEER/GSFEER). Useful for "how far can it go",
@@ -131,7 +138,7 @@ Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (D
 - **Mental models:** Kapitalo §2.1–2.5, GS §1.1–1.2.
 - **Data:** `cmb_reer` (BIS REER), `cmb_ptax` with the IPCA and US CPI for a relative-PPP path.
 
-### 1.9 Tail: regime stress and crisis
+### 2.9 Tail: regime stress and crisis
 
 - **Mechanism.** First-generation models (reserve depletion under an inconsistent policy), second
   generation (self-fulfilling runs) and third generation (balance sheets, bank runs). Brazil floats,
@@ -144,13 +151,13 @@ Data: `macro_international.cmb_fx_latam` (MX, CL, CO, PE), `cmb_dollar_index` (D
 
 The agent's snapshot today (`analytics/brasil/exchange_rate/agent_data.py`) covers PTAX, the rate
 differentials, REER, CFTC positioning, FX flow, balance of payments, terms of trade and the central
-bank's reserves, swaps and interventions. **It does not carry** the CDS (1.2), the dollar indices,
-the S&P 500 or the LatAm peers (1.3 and the global-vs-idiosyncratic test), or the commodity indices
-(1.4). Closing that gap is part of the agent rebuild.
+bank's reserves, swaps and interventions. **It does not carry** the CDS (2.2), the dollar indices,
+the S&P 500 or the LatAm peers (2.3 and the global-vs-idiosyncratic test), or the commodity indices
+(2.4). Closing that gap is part of the agent rebuild.
 
 ---
 
-## Part 2 — Outputs: what this agent tells the others matters to it
+## Part 3 — Outputs: what this agent tells the others matters to it
 
 ### 2.1 To monetary policy — DRAFT (fixed layer)
 
@@ -158,19 +165,19 @@ What the FX agent needs from the monetary-policy agent, every cycle.
 
 | # | What the FX agent needs | Why it matters to FX | Used in |
 |---|---|---|---|
-| S1 | **Expected path of the Selic and the balance of risks**, as the monetary-policy agent reads it (not only the Focus median) | The forward carry, which is what supports the BRL, is the differential ahead, not today's | 1.1 |
-| S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link ([[fisher_effect_uip_ppp_paradox_resolution]]) | 1.1, 1.2 |
-| S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 1.7, Part 3 |
-| S4 | **Reaction function to a depreciation.** Would the Copom respond, and with which instrument? | A credible response caps the depreciation; its absence removes the cap | 1.1, 1.9 |
+| S1 | **Expected path of the Selic and the balance of risks**, as the monetary-policy agent reads it (not only the Focus median) | The forward carry, which is what supports the BRL, is the differential ahead, not today's | 2.1 |
+| S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link ([[fisher_effect_uip_ppp_paradox_resolution]]) | 2.1, 2.2 |
+| S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 2.7, Part 4 |
+| S4 | **Reaction function to a depreciation.** Would the Copom respond, and with which instrument? | A credible response caps the depreciation; its absence removes the cap | 2.1, 2.9 |
 
 ### 2.2 To other areas — not defined yet
 
-Fiscal policy (the risk-premium drivers of 1.2) and external (the Fed and the global dollar of 1.3)
+Fiscal policy (the risk-premium drivers of 2.2) and external (the Fed and the global dollar of 2.3)
 are the two that matter most to this area. They are written when those agents exist.
 
 ---
 
-## Part 3 — Inputs: what the others told this agent matters to them
+## Part 4 — Inputs: what the others told this agent matters to them
 
 ### 3.1 From monetary policy — DRAFT (fixed layer)
 
@@ -184,7 +191,7 @@ taxa de câmbio compatível com a PPC".
 | # | What the monetary-policy agent needs | Why it matters to it | Flag when |
 |---|---|---|---|
 | E1 | **Is the move persistent or transitory?** A judgement, with the reason, separating a level shift from noise | Pass-through depends on persistence; a transitory spike is looked through | A move that the FX agent classifies as persistent, in either direction |
-| E2 | **Global or idiosyncratic?** The split from Part 1 | An idiosyncratic depreciation usually comes with a higher risk premium, which also hits inflation expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move |
+| E2 | **Global or idiosyncratic?** The split from Q3 (Part 1) | An idiosyncratic depreciation usually comes with a higher risk premium, which also hits inflation expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move |
 | E3 | **Pass-through channel.** Which prices a depreciation reaches, and how fast | Wholesale prices pass through almost fully in a year, consumer prices far less and administered prices barely ([[distribution_chain_pass_through]]); the Copom projects free and administered prices separately | Always, as context for E1 |
 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** | The reference scenario assumes a PPP-compatible path; a gap between the market and that path is a risk to the projection | The gap widens in a direction that the Copom lists as a risk |
 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral rate and weakens transmission ([[fiscal_dominance]]) | CDS and BRL move together against peers |
@@ -201,7 +208,7 @@ that agent's map is built, by that agent.
 
 ---
 
-## Part 4 — Concept index from the literature
+## Part 5 — Concept index from the literature
 
 The concepts read out of the 28 sources of the exchange-rate bibliography, by theme cluster. Each
 bullet ends with the source it comes from; each cluster closes with the data that backs it. This part
