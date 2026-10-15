@@ -306,9 +306,8 @@ def _load_cambio_contratado() -> dict:
     de 307 meses e NUNCA troca de sinal, enquanto um saldo de fluxo cambial oscila
     em torno de zero (o dado real troca de sinal em 107 dos 216 meses em comum).
     A correlação entre os dois é 0,05 e as magnitudes diferem ~60x. Os códigos SGS
-    24352/24363/24364/24369/24370/24371 que aquele script usa não são o que o
-    docstring dele afirma — e ele próprio já registrava a dúvida ("confirmar
-    unidade na BCB SGS"). Ver analytics/brasil/exchange_rate/CLAUDE.md.
+    24352/24363/24364/24369/24370/24371 que aquele script usava eram NUCI, IBC-Br e
+    PNADC; a tabela foi aposentada em 2026-10-07. Ver domain/db/CLAUDE.md.
 
     Aqui as identidades fecham EXATAMENTE (resíduo 0,000 em 4.501 dias):
         saldo_total     = saldo_comercial + saldo_financeiro
@@ -383,36 +382,6 @@ def _load_interbancario() -> dict:
         }
     except Exception as exc:
         print(f"  Aviso: erro em cmb_ptax (volume interbancário) — {exc}")
-        return {}
-
-
-def _load_fluxo() -> dict:
-    """ATENÇÃO — esta tabela NÃO contém fluxo cambial; ver _load_cambio_contratado().
-
-    Mantida porque `agent_data.get_fx_snapshot()` ainda a consome, e retirá-la de lá
-    é decisão de quem cuida do agente `cambio-analyst`. O relatório parou de usá-la
-    em 2026-08-27. A tabela e o script `domain/db/brasil/bcb/cmb_fluxo_cambial.py`
-    precisam de uma decisão: corrigir os códigos SGS ou dropar.
-    """
-    try:
-        wide = _pivot("macro_brasil", "cmb_fluxo_cambial")
-        if wide is None:
-            return {}
-        wide = wide / 1000.0  # USD MM -> USD Bi
-        if "comercial_entrada" in wide.columns and "comercial_saida" in wide.columns:
-            wide["comercial_saldo"] = wide["comercial_entrada"] - wide["comercial_saida"]
-        return {
-            "dates":             _dates(wide.index),
-            "total_saldo":       _col(wide, "total_saldo"),
-            "total_entrada":     _col(wide, "total_entrada"),
-            "total_saida":       _col(wide, "total_saida"),
-            "comercial_saldo":   _col(wide, "comercial_saldo"),
-            "comercial_entrada": _col(wide, "comercial_entrada"),
-            "comercial_saida":   _col(wide, "comercial_saida"),
-            "financeiro_saldo":  _col(wide, "financeiro_saldo"),
-        }
-    except Exception as exc:
-        print(f"  Aviso: erro em cmb_fluxo_cambial — {exc}")
         return {}
 
 
@@ -879,13 +848,13 @@ def run(output: str = "reports/brasil/FX Report.html", include_models: bool = Tr
         "ptax":            _load_ptax(),
         # `diferenciais` saiu do payload em 2026-09-01, com a secao Diferenciais de
         # Juros (pedido do usuario) -- eram 39 KB para tres graficos que nao existem
-        # mais. `_load_diferenciais()` FICA: agent_data.py o importa para montar o
-        # snapshot do subagente cambio-analyst, que nao passa por este payload.
+        # mais. `_load_diferenciais()` FICA: generate_fx_outlook_pdf.py o chama para
+        # a secao de diferenciais do FX Outlook.
         "reer":            _load_reer(),
         "cot_fx":          _load_cot_fx(),
         "bcb_positioning": _load_bcb_positioning(),
         # `fluxo` (cmb_fluxo_cambial) saiu do payload em 2026-08-27 — não é fluxo
-        # cambial, ver o docstring de _load_fluxo(). A aba passou a ler
+        # cambial, ver "A aba Fluxo Cambial lia a tabela errada" no CLAUDE.md. A aba passou a ler
         # cmb_cambio_contratado, que é a fonte que o BCB publica para isso.
         "cambio_contratado": _load_cambio_contratado(),
         "interbancario":     _load_interbancario(),

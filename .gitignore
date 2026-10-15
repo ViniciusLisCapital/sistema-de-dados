@@ -64,3 +64,6 @@ domain/db/brasil/b3/cache/
 
 # Logs da tarefa agendada (jobs/atualizar_diario.bat, um por dia, poda em 30 dias)
 logs/
+
+# Dados brutos (A) de cada ciclo dos agentes: grandes e reextraiveis; o F(A) e versionado
+obsidian/ciclos/*/dados/A/

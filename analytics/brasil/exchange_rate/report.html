@@ -1084,8 +1084,8 @@ table.scen-table tr.scen-kind-hd td {
   <!-- ══ b) Fluxo Cambial ══ -->
   <!-- Reconstruída em 2026-08-27 sobre `cmb_cambio_contratado`. A aba lia
        `cmb_fluxo_cambial`, cujo "saldo total" vai de 81,0 a 82,9 em 307 meses e
-       nunca troca de sinal — não é fluxo cambial. Ver o docstring de
-       _load_fluxo() em generate_report.py e o CLAUDE.md da pasta. -->
+       nunca troca de sinal — não é fluxo cambial. Ver o CLAUDE.md da pasta,
+       "A aba Fluxo Cambial lia a tabela errada". -->
   <div class="tab-panel" id="tab-flow">
 
     <section id="sec-flow-contratado">
@@ -3349,8 +3349,8 @@ makeTreeChartTab({
 // Indicadores Econômicos Selecionados do BCB). A aba lia `cmb_fluxo_cambial`, que
 // NÃO contém fluxo cambial: o "saldo total" de lá vai de 81,0 a 82,9 ao longo de
 // 307 meses e nunca troca de sinal, contra 107 trocas de sinal em 216 meses no dado
-// real — correlação 0,05 entre os dois. Ver o docstring de _load_fluxo() em
-// generate_report.py.
+// real — correlação 0,05 entre os dois. Ver o CLAUDE.md da pasta, "A aba Fluxo
+// Cambial lia a tabela errada".
 //
 // A fonte nova é diária e vem somada em meses pelo Python, com o mês em curso
 // descartado — por isso a agregação aqui parte de série mensal, igual à do BP, e a

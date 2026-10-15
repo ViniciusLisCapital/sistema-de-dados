@@ -145,7 +145,9 @@ max_age_days:
   # fonte foi consultada ao vivo: SGS 13961 terminava em 14/08 e o DTWEXEMEGS tambem
   # (last_updated 2026-08-17), ou seja, nao havia dado novo para buscar.
   cmb_dollar_index_em: 12     # H.10 do Fed, toda segunda, cobrindo ate a sexta anterior
-  cmb_fx_latam: 5             # lag medido 0d
+  # BIS WS_XRU desde 2026-10-07 (era Yahoo, lag 0d). Mesmo lote do BIS que a POLICY de
+  # inter_interest_rate: medido 8d no MAX(date) da tabela (MX/CL; PE 12d, CO 14d).
+  cmb_fx_latam: 12            # lag medido 8d -- BIS republica em lote
   cmb_equity_us: 5            # lag medido 0d
   comm_brent: 8               # lag medido 1d
   # O lag do BIS (8d medido, 12 de folga, o maior de todas as fontes) migrou para
@@ -324,12 +326,13 @@ groups:
   - group: ibge_ipca
     institution: IBGE
     name: "IPCA"
-    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
+    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item, inflc_indice_geral]
     cadence: monthly
     release_time: "09:00"
     note: >
       BCB SGS mirrors this release (feeding inflc_agregados) within about a day;
-      IBGE is the original source and the authoritative date.
+      IBGE is the original source and the authoritative date. inflc_indice_geral
+      reads the headline straight from IBGE, so it lands the same morning.
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
     entries:
       - {date: "2026-09-11", reference_period: "2026-08", confirmed: true}
@@ -340,7 +343,7 @@ groups:
   - group: ibge_ipca15
     institution: IBGE
     name: "IPCA-15"
-    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item]
+    tables: [inflc_agregados, inflc_decomposicao, inflc_decomposicao_item, inflc_indice_geral]
     cadence: monthly
     release_time: "09:00"
     source_url: https://www.ibge.gov.br/calendario/conjunturais.html
@@ -671,7 +674,7 @@ groups:
   - group: bcb_external_sector_note
     institution: BCB
     name: "Estatísticas do Setor Externo – Nota para a Imprensa"
-    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_cambio_contratado,
+    tables: [cmb_reservas_bc, cmb_balanco_pagmt, cmb_termos_troca, cmb_cambio_contratado,
              atv_pib_usd, atv_pib_mensal]
     cadence: monthly
     note: >

@@ -130,6 +130,7 @@ dashboards:
       - {kind: mysql, ref: macro_brasil.inflc_dim, date_col: null, role: "Dimensão de subitem: grupo, subgrupo e os vetores de núcleo da NT-57"}
       - {kind: mysql, ref: macro_brasil.inflc_decomposicao_item, role: "Nível de item, para Médias Aparadas e Dupla Ponderação"}
       - {kind: mysql, ref: macro_brasil.inflc_agregados, role: "Agregados do IPCA que o Banco Central publica: headline, componentes, núcleos oficiais e difusão"}
+      - {kind: mysql, ref: macro_brasil.inflc_indice_geral, role: "Número-índice e variações do índice geral como o IBGE publica — o 12 meses e o acumulado exatos, no mesmo dia da divulgação"}
 
     # Sem `procedures:`, e isso e a correcao de 2026-09-11. Ate aqui os agregados do BCB vinham de
     # `data/ipca_bcb_series.csv`, que o proprio relatorio buscava no SGS por um passo declarado
@@ -342,7 +343,6 @@ dashboards:
     deps:
       - {kind: mysql, ref: macro_brasil.cmb_ptax, role: "PTAX e volume interbancário"}
       - {kind: mysql, ref: macro_brasil.cmb_reservas_bc, role: "Reservas e posicionamento do BC"}
-      - {kind: mysql, ref: macro_brasil.cmb_fluxo_cambial, role: "Fluxo cambial"}
       - {kind: mysql, ref: macro_brasil.cmb_balanco_pagmt, role: "Balanço de pagamentos"}
       - {kind: mysql, ref: macro_brasil.cmb_comex_pais, role: "Comex Stat por país"}
       - {kind: mysql, ref: macro_brasil.cmb_comex_fator_agregado, role: "Comex Stat por fator agregado"}

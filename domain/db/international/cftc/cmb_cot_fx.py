@@ -1,7 +1,7 @@
 """
 Posicionamento especulativo em futuros de moedas — CFTC TFF (Traders in Financial Futures).
 
-Moedas: BRL, MXN (bem cobertos); CLP, COP (esparsos — pode nao aparecer todos os anos)
+Moedas: BRL e MXN. CLP e COP nao aparecem no arquivo TFF (nao ha futuro de CME para elas)
 
 Series armazenadas (campo 'name') -- desde 2026-09-01 as CINCO categorias de
 participante do TFF, e nao so os fundos alavancados:

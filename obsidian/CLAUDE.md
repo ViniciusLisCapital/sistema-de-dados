@@ -54,17 +54,24 @@ today.
 
 ### The conceptual map is a contract, not an inventory
 
-Five parts: (1) **central questions** — what every memo answers, the floor and not the ceiling;
+Five parts: (1) **central questions** — what every report answers, the floor and not the ceiling;
 (2) **causal skeleton** — what moves the area's variable, each channel with the concepts,
 mental-model sections and tables behind it; (3) **outputs** — what this agent tells each other agent
 matters TO IT, coming from that agent; (4) **inputs** — what the other agents told it matters TO THEM,
 coming from it; (5) **concept index** from the literature. An input gives emphasis, never a limit.
 Every output must appear as the other agent's input and vice versa. The map holds the **fixed** layer;
-the **dynamic** layer (what a given cycle's thesis needs) lives in the memos.
+the **dynamic** layer (what a given cycle's thesis needs) lives in the reports.
 Curation (sources processed, coverage, status) lives in the area's
 `repository/agent_mapping/recommended_bibliography/<área>_bibliography.md`. Only
 `exchange_rate` has the new format so far (2026-09-30); its monetary-policy rows are drafts until
 that map exists.
+
+**Two folders are not areas:** `ciclos/` (report and log templates, one folder per cycle: `dados/`
+with A, the F(A) of each agent and the G scripts; `<agente>_r1.md`, `_r2.md`, `_rf.md`; `P1.md`,
+`P2.md`, `PF.md`; `log.md`; `relatorio.md` — when the cycle ends only the `_rf.md`, the log, the
+relatório and `dados/` stay) and
+`escrivao/` (the writer agent's style manual, `manual_do_escrivao.md` — the condensation of the
+clear-writing literature it applies to the final report and demands from the analyst agents).
 
 ### Reading path for an agent
 

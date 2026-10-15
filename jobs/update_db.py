@@ -58,7 +58,7 @@ logger = logging.getLogger("update_db")
 from domain.db.brasil.ibge import (
     atv_pib, atv_pib_valores_correntes, atv_pib_taxas, atv_renda_poupanca, atv_pim, atv_pim_uso,
     atv_pmc, atv_pms, mt_pnad, mt_pnad_trimestral, inflc_decomposicao,
-    inflc_decomposicao_item, inflc_dim,
+    inflc_decomposicao_item, inflc_dim, inflc_indice_geral,
 )
 
 # BCB
@@ -69,7 +69,7 @@ from domain.db.brasil.bcb import (
     cred_credito_porte, cred_credito_atividade_economica, cred_credito_tipo_cliente,
     cred_credito_controle_capital, cred_ptc, cred_fluxo_financeiro, inflc_agregados,
     expc_focus, expc_focus_copom, expc_focus_periodo, expc_qpc,
-    cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_ptax,
+    cmb_cambio_contratado, cmb_reservas_bc, cmb_balanco_pagmt, cmb_ptax,
     fisc_divida, fisc_nfsp, fisc_dlsp_fatores,
     pm_hiato_produto, pm_hiato_produto_vintages, pm_copom_reuniao,
     mt_desocupacao_retro,
@@ -117,6 +117,7 @@ _SCRIPTS = [
     # entre um clique e outro. Custa ~2s: 1224 registros por indice.
     ("IBGE · IPCA Decomposicao Item",  inflc_decomposicao_item, {}),
     ("IBGE · IPCA Dimensao",           inflc_dim,             {}),
+    ("IBGE · IPCA Indice Geral",       inflc_indice_geral,    {}),
     # BCB
     ("BCB  · IBC-Br",                  atv_ibcbr,             {}),
     ("BCB  · PIB Mensal (USD)",        atv_pib_usd,           {}),
@@ -145,7 +146,6 @@ _SCRIPTS = [
     ("BCB  · Focus / Periodo de Ref.",  expc_focus_periodo,    {}),
     ("BCB  · Reservas Internacionais", cmb_reservas_bc,       {}),
     ("BCB  · Balanco de Pagamentos",   cmb_balanco_pagmt,     {}),
-    ("BCB  · Fluxo Cambial",           cmb_fluxo_cambial,     {}),
     ("BCB  · Cambio Contratado",       cmb_cambio_contratado, {}),
     ("BCB  · PTAX + Volume Interbanc.", cmb_ptax,              {}),
     ("BCB  · Divida Publica",           fisc_divida,           {}),

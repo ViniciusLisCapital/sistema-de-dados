@@ -55,7 +55,7 @@ exatamente 12 meses no y/y, com a forma de um evento econômico.
 
 Achado assim em 2026-08-28 (`mt_caged`, buraco de 12 meses num print do relatório de mercado de
 trabalho: −1.357.851 vínculos revisados de 1992-01 a 2024-05, 389 dos 414 meses no vintage velho).
-A varredura das 26 tabelas achou o mesmo defeito, menor, em outras 7 — `atv_ibcbr`,
+A varredura das 26 tabelas (25 desde 2026-10-07) achou o mesmo defeito, menor, em outras 7 — `atv_ibcbr`,
 `atv_pib_mensal`, `atv_pib_usd`, `cmb_fluxo_cambial`, `cred_credito_amplo`, `cred_credito_resumo`,
 `fisc_divida`, mais uma revisão recente em `cmb_reservas_bc`. Todas recarregadas com
 `run(start="all")`; as ~630 séries hoje batem com o SGS em todos os meses.
@@ -67,14 +67,39 @@ a cada divulgação) desloca todos os meses um pouco e não produz salto: medido
 única que apareceu a olho.
 
 ```powershell
-uv run python tests/test_sgs_vintage.py                      # as 26, ~3 min
+uv run python tests/test_sgs_vintage.py                      # as 25, ~3 min
 uv run python tests/test_sgs_vintage.py --tabelas mt_caged   # uma
 ```
 
 O teste casa série gravada com série oficial **pelos valores**, não pelo mapeamento nome→código do
 script — de propósito: lendo o mapeamento, um script que aponta para o código errado passaria
-(há um caso vivo, `cmb_fluxo_cambial`, que guarda IBC-Br com nomes de fluxo cambial). Rode depois de
+(houve um caso, `cmb_fluxo_cambial`, aposentada em 2026-10-07 — ver abaixo). Rode depois de
 qualquer carga histórica e sempre que uma variação anual mudar de patamar sem notícia que a explique.
+
+## `cmb_fluxo_cambial` aposentada (2026-10-07)
+
+A tabela nunca guardou fluxo cambial. Os seis códigos do script, conferidos pelo nome no webservice
+do SGS (`FachadaWSSGS.getUltimoValorXML`, que devolve `NOME`/`UNIDADE`/`PERIODICIDADE`):
+
+| código | nome na coluna | o que o SGS diz que é |
+|---|---|---|
+| 24352 | `total_saldo` | Utilização da capacidade instalada, ind. de transformação (FGV), % |
+| 24363 | `comercial_saida` | IBC-Br, índice |
+| 24364 | `comercial_entrada` | IBC-Br com ajuste sazonal, índice |
+| 24369 | `financeiro_saldo` | Taxa de desocupação — PNADC, % |
+| 24370 | `total_entrada` | Pessoas em idade de trabalhar — PNADC, mil |
+| 24371 | `total_saida` | Empregados no setor privado e público — PNADC, mil |
+
+(A versão anterior deste arquivo dizia "IBC-Br" para os seis; eram dois.) E não existe um "fluxo
+cambial" do BCB separado do câmbio contratado: a nota semanal que a imprensa chama de fluxo cambial é
+a **Tabela 13 — Movimento de câmbio contratado** dos Indicadores Econômicos Selecionados, SGS
+13961–13970, que é exatamente o que `cmb_cambio_contratado` carrega. Com o ok do usuário: `DROP
+TABLE`, script removido, e a tabela saiu do `update_db.py`, do manifesto, do grupo
+`bcb_external_sector_note` do calendário e do `tests/test_sgs_vintage.py`. O conteúdo final ficou num
+CSV de backup fora do repositório; o histórico do script está no git.
+
+O que fica de lição é o que o teste de vintage já dizia: o **nome** que um script dá a um código SGS
+não é evidência. Confira o código pelo `NOME` no webservice antes de gravar.
 
 ## Schema criterion: domain/geography, not raw-vs-computed
 
@@ -183,6 +208,7 @@ Renaming a table never touches its columns/data — only `RENAME TABLE` plus upd
 | `inflc_agregados` | BCB SGS (33 series — IPCA/IPCA-15 + cores) | 1980 → today | `brasil/bcb/inflc_agregados.py` |
 | `inflc_decomposicao` | IBGE, one aggregate per weighting-structure vintage — see `analytics/brasil/inflation/CLAUDE.md` (subitem: monthly var/weights/contribution) | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao.py` |
 | `inflc_decomposicao_item` | Same as above, one hierarchy level coarser (item, 4-digit, not subitem/7-digit) — feeds MA/MS/DP núcleos only, see `analytics/brasil/inflation/CLAUDE.md` | IPCA 1999-08 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_decomposicao_item.py` |
+| `inflc_indice_geral` | IBGE/SIDRA 1737 (IPCA) e 3065 (IPCA-15) — o índice geral como o IBGE publica: número-índice, variação mensal, no ano e em 12 meses. Existe porque o SGS (`inflc_agregados`) espelha a divulgação com até um dia de atraso e porque só o número-índice dá o acumulado exato de uma janela qualquer: a razão de índices bate o 12 meses publicado em 368/369 meses desde 1995 (a exceção é a troca de estrutura de 2012) | IPCA 1979-12 / IPCA-15 2000-05 → today | `brasil/ibge/inflc_indice_geral.py` |
 | `inflc_dim` | Subitem → **two independent classification axes**. BCB analytical: Group/Subgroup/Item + tradable/non-tradable (`comercializavel`, added 2026-08) + core-inflation flags, all from BCB's official NT-57 vector. IBGE expenditure: `ibge_grupo`/`ibge_subgrupo`/`ibge_item` (added 2026-08) — the parentage is the 7-digit code's own 1/2/4-digit prefix, only the names come from SIDRA. Neither derives from the other (see `analytics/brasil/inflation/CLAUDE.md`) | — (no date) | `brasil/ibge/inflc_dim.py` |
 | `expc_focus` | BCB Focus/Olinda, **horizonte móvel** — IPCA + 5 componentes (Livres/Administrados/Serviços/Bens industrializados/Alimentação no domicílio) a 12m e 24m, mais IGP-M a 12m. Cada série em 4 variantes: `suavizada` S/N × `base_calculo` 0/1 — ver docstring do script | IPCA/IGP-M 12m 2001-11 (não suavizado) / 2001-12 (suavizado); IPCA 24m 2021-03; componentes 2021-09 → today | `brasil/bcb/expc_focus.py` |
 | `expc_focus_copom` | BCB Focus/Olinda, **Selic esperada por reunião do Copom** — ~16 reuniões à frente por data de pesquisa, ou seja a curva de política monetária implícita no consenso. `base_calculo` 0 e 1. Substituiu as 5.458 linhas de `indicador='Selic'`/`horizonte='eop'` que a `expc_focus` colapsava (uma por data, sem coluna `reuniao`; a sobrevivente era a reunião mais distante, de painel mais fino) — apagadas em 2026-08, nenhum consumidor as lia | 2004-11 → today | `brasil/bcb/expc_focus_copom.py` |
@@ -230,7 +256,7 @@ consumed. The rest:
 | `cmb_real_rates` | BIS WS_CBPOL + WS_LONG_CPI — taxa real ex-post (policy rate − CPI YoY), mensal, BR/MX/CL/CO/PE (sem AR). **Recalcula o Brasil pela fonte/método do BIS** para comparabilidade cross-country homogênea — não substitui o `real_br_ex_post` de `diferenciais_juros`, que usa Selic meta + IPCA oficiais | Cada país começa no início da **própria** série de policy rate do BIS (o fator limitante; o CPI do BIS é bem mais longo): BR 1994-07, CO 1995-04, CL 1997-02, MX 1998-11, PE 2003-09 | `international/bis/cmb_real_rates.py` |
 | `cmb_dollar_index` | Yahoo Finance `DX-Y.NYB` (ICE US Dollar Index, DXY), diário. Preferido ao FRED `DTWEXBGS`, que só cobre a partir de 2006 | 1971-01-04 → today | `international/yfinance/cmb_dollar_index.py` |
 | `cmb_dollar_index_em` | FRED `DTWEXEMEGS` — dólar contra moedas de emergentes, diário | 2006-01-02 → today | `international/fred/cmb_dollar_index_em.py` |
-| `cmb_fx_latam` | Yahoo Finance `MXN=X`/`CLP=X`/`COP=X`/`PEN=X` — moeda local por USD, mesma convenção do PTAX (maior = moeda local mais fraca), diário. Sem AR (mesma exclusão de `cmb_policy_rates`). Insumo de volatilidade do métrico `relative_carry_vol` em `ppp_equilibrium.py` — o papel que `cmb_ptax` cumpre do lado brasileiro | ver script | `international/yfinance/cmb_fx_latam.py` |
+| `cmb_fx_latam` | **BIS WS_XRU diário** (desde 2026-10-07; era Yahoo `MXN=X`/`CLP=X`/`COP=X`/`PEN=X`) — a taxa oficial de cada banco central, moeda local por USD, mesma convenção do PTAX (maior = moeda local mais fraca), só dias de semana (a TRM colombiana sai também no fim de semana e derrubaria a vol). Sem AR. Insumo de volatilidade do métrico `relative_carry_vol` em `ppp_equilibrium.py` — o papel que `cmb_ptax` cumpre do lado brasileiro. **Por que trocou:** o Yahoo tinha o PEN alternando entre duas cotações em dias seguidos no histórico inteiro (vol de 63d do sol a 28% a.a.; 4,4% no BIS) e ticks errados (CLP 5,00 em 2016-12-22, COP 33,4 em 2016-02-18, PEN 3,70 em 2018-06-20). Dias com movimento >1,5% que desfaz no dia seguinte, 2004+: Yahoo 40/221/234/618 (MX/CL/CO/PE) contra BIS 44/10/13/0 — os do MX no BIS são eventos reais. Diferença mediana nos dias comuns 0,3–0,4% (horário do fixing). **Custo:** o BIS republica em lote, então o último ponto fica 1–2 semanas atrás (`max_age_days` 12, o mesmo de `inter_interest_rate`). Banxico/BCCh pedem credencial e seriam quatro connectors | 2000-01-03 → ~1–2 semanas atrás (o BIS tem MX desde 1954, CO 1967, CL 1982, PE 1990; o corte é do `run()`) | `international/bis/cmb_fx_latam.py` |
 | `cmb_equity_us` | Yahoo Finance `^GSPC` (S&P 500, fechamento diário) — canal "competição por capital" do modelo cambial. Preferido ao FRED `SP500`, que é janela rolante de ~10 anos. Testado antes de ser ingerido: `delta_sp500` melhorou o MSE out-of-sample do `ridge_deviation_model` em ~4%, coeficiente positivo e estável nas 163 janelas; VIX e o real de 10a dos EUA foram testados junto e **não** melhoraram — não ingeridos | 1990 → today | `international/yfinance/cmb_equity_us.py` |
 | `comm_brent` | FRED `DCOILBRENTEU` (Brent, USD/barril, diário) — era o cenário de choque de commodities da réplica do modelo do BCB, isolado do IC-Br Energia (que embute câmbio). **Sem consumidor** desde a remoção da réplica em 2026-08 | ver script | `international/fred/comm_brent.py` |
 | `clima_oni` | NOAA CPC, texto estático (`oni.ascii.txt`, sem connector dedicado) — Oceanic Niño Index. Só as 4 estações móveis alinhadas ao calendário trimestral (JFM/AMJ/JAS/OND) das 12 que a NOAA publica, para casar com Q1-Q4 sem ambiguidade. Era insumo climático da Curva de Phillips da réplica; **sem consumidor** desde 2026-08 | ver script | `international/noaa/clima_oni.py` |

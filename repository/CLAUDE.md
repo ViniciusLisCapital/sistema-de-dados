@@ -22,7 +22,7 @@ repository/
   <área>/raw_pdf/, raw_md/      — acquired PDFs and their untouched pdfplumber extraction
                                   (clean_md/ for these lives in obsidian/<área>/clean_md/)
     exchange_rate/              — 28 PDF, 16 raw_md; 12 PDFs still await extraction
-    monetary_policy/            — raw_pdf/theorical_literature/ (36 papers, 1 extracted),
+    monetary_policy/            — raw_pdf/theorical_literature/ (46 PDFs, 1 extracted),
                                   and central_bank/, the same tree as the vault's
                                   clean_md/central_bank/: raw_pdf/central_bank/{atas (82),
                                   rpm (110, 1999-06 on)} and raw_md/central_bank/{comunicados (234),
@@ -56,9 +56,13 @@ but unused. See `INGESTION.md` for why they were replaced.
 9 clusters. 2 real gaps: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth
 (Eichengreen & Hausmann 1999) — see `exchange_rate_bibliography_gaps.md`.
 
-**Monetary policy — acquired, not processed.** 36 papers in `raw_pdf/theorical_literature/`, 1
-extracted, no conceptual map. Missing: the Cukierman (1992) book and specific chapters. Decide
-where to process Tambakis & Tarashev (2012), which also touches exchange rate.
+**Monetary policy — mostly acquired, not processed.** 46 PDFs in `raw_pdf/theorical_literature/`
+(40 sources; Galí 2015 is 7 chapter files), 1 extracted, no conceptual map. The list is
+`monetary_policy_bibliography.md` (55 sources, 12 clusters); what is still missing — 15 sources,
+two of them high priority and blocked only by the IMF refusing scripted downloads — and the
+extraction quirks to fix before ingesting (two Caesar-shifted CGG files, two scans, letter spacing)
+are in `monetary_policy_bibliography_candidates.md`. Decide where to process Tambakis & Tarashev
+(2012), which also touches exchange rate.
 
 **Trader — scope undecided.** Decide whether it is a topical pillar or feeds a trading
 strategy/agent directly before processing chapters.
@@ -73,7 +77,7 @@ strategy/agent directly before processing chapters.
 
 - **Revisit `clean_md`'s definition** (flagged 2026-08, not decided) — see the same item in
   [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md).
-- **Extend ingestion to the rest of the corpus**: 12 `exchange_rate`, 35 `monetary_policy` papers and
+- **Extend ingestion to the rest of the corpus**: 12 `exchange_rate`, 45 `monetary_policy` PDFs and
   all of `trader/`.
 - **Equation/symbol garbling in `raw_md`** (e.g. Dornbusch 1976): inherent to pdfplumber on scanned
   PDFs of that era; would need a vision-based extraction if equation fidelity matters.

@@ -7,7 +7,7 @@ Self-contained HTML report on Brazilian FX fundamentals (`reports/brasil/FX Repo
 ## Generating the report
 
 ```powershell
-uv run python jobs/update_db.py             # refreshes macro_brasil (cmb_reservas_bc, cmb_cambio_contratado, cmb_ptax, cmb_balanco_pagmt, cmb_fluxo_cambial, cmb_termos_troca, cmb_comex_*, atv_pib_usd)
+uv run python jobs/update_db.py             # refreshes macro_brasil (cmb_reservas_bc, cmb_cambio_contratado, cmb_ptax, cmb_balanco_pagmt, cmb_termos_troca, cmb_comex_*, atv_pib_usd)
 uv run python jobs/update_international.py  # refreshes macro_international (cmb_reer, cmb_cot_fx, diferenciais_juros)
 uv run python -c "from analytics.brasil.exchange_rate.generate_report import run; run()"
 # → reports/brasil/FX Report.html (~1.9 MB)
@@ -157,11 +157,10 @@ usuário.
 último pregão faz descartar um mês que estava completo, o que erra para menos — o lado
 seguro.
 
-**Fica pendente, e é decisão de fora deste relatório:** `agent_data.get_fx_snapshot()`
-ainda alimenta o subagente `cambio-analyst` com `_load_fluxo()`, ou seja, com a série
-errada; e a tabela `cmb_fluxo_cambial` + o script de ETL dela precisam ser corrigidos
-(achar os códigos SGS certos) ou dropados. `_load_fluxo()` continua no arquivo só por
-causa desse consumidor, com o achado documentado no próprio docstring.
+**Resolvido em 2026-10-07.** Os seis códigos eram NUCI, IBC-Br e PNADC (tabela em
+`domain/db/CLAUDE.md`), e o BCB não publica fluxo cambial fora do câmbio contratado — a
+tabela foi dropada com o ok do usuário. `agent_data.py`, que era o último consumidor, saiu
+junto (o `cambio-analyst` lê o F(A) desde 2026-10-07), e com ele `_load_fluxo()`.
 
 ### Cabeçalho de gráfico (2026-08-27, terceira rodada)
 
@@ -435,8 +434,8 @@ e um quarto gráfico em Valuation; os 5 são pegos.
 
 Duas decisões de limpeza que ficaram registradas no código, porque o padrão delas é o reutilizável:
 **`_load_diferenciais()` fica no `generate_report.py`** mesmo sem consumidor no payload — quem o
-importa é `agent_data.py`, para o snapshot do subagente `cambio-analyst`, que não passa por esse
-caminho; e **o `.chart-grid-2` fica no CSS** apesar de a seção removida ter sido a única a usá-lo.
+chama é `generate_fx_outlook_pdf.py`, para a seção de diferenciais do FX Outlook, que não passa por
+esse caminho; e **o `.chart-grid-2` fica no CSS** apesar de a seção removida ter sido a única a usá-lo.
 É utilitário de layout, não markup de um gráfico, e o `closest()` do `_ensureRangeBar` existe
 justamente para sobreviver a um embrulho desses — tirar os dois juntos é o que faz a régua quebrar
 quando alguém recriar uma grade de dois. Os dois casos estão comentados no ponto de uso.
@@ -1290,14 +1289,13 @@ fiscal de volta a +49, o cliente subtraindo `stat.mean`, a prosa da aba perdendo
 | Report tab | Loader (`generate_report.py`) | Schema | Table(s) |
 |---|---|---|---|
 | Valuation | `_load_ptax` | `macro_brasil` | `cmb_ptax` |
-| ~~Valuation~~ | `_load_diferenciais` | `macro_international` | `diferenciais_juros` — **fora do relatório desde 2026-09-01** (a seção Diferenciais de Juros saiu); a função fica porque `agent_data.py` a importa, e a tabela segue alimentando o canal de carry da aba Ridge via `ppp_equilibrium` |
+| ~~Valuation~~ | `_load_diferenciais` | `macro_international` | `diferenciais_juros` — **fora do relatório desde 2026-09-01** (a seção Diferenciais de Juros saiu); a função fica porque o FX Outlook (`generate_fx_outlook_pdf.py`) a chama, e a tabela segue alimentando o canal de carry da aba Ridge via `ppp_equilibrium` |
 | Valuation | `_load_reer` | `macro_international` | `cmb_reer` |
 | Valuation | `_load_termos` | `macro_brasil` | `cmb_termos_troca` |
 | Posicionamento: BCB e mercado | `_load_cot_fx` | `macro_international` | `cmb_cot_fx` (20 séries por moeda desde 2026-09-01: as 5 categorias do TFF × long/short/spread/net, + `open_interest`) |
 | Posicionamento: BCB e mercado | `_load_bcb_positioning` | `macro_brasil` | `cmb_reservas_bc` (4 recortes: `reserves`/`swap` diretos, `reservas_arvore` mensal 2001+, `intervencoes` diária→mensal) |
 | Fluxo Cambial | `_load_cambio_contratado` | `macro_brasil` | `cmb_cambio_contratado` (diária→mensal) |
 | Fluxo Cambial — volume interbancário | `_load_interbancario` | `macro_brasil` | `cmb_ptax` (diária→mensal) |
-| ~~Fluxo Cambial~~ | `_load_fluxo` | `macro_brasil` | ~~`cmb_fluxo_cambial`~~ — **não é fluxo cambial**, fora do relatório desde 2026-08-27 (ver acima); só `agent_data.py` ainda consome |
 | BOP | `_load_bop` | `macro_brasil` | `cmb_balanco_pagmt` (+ `atv_pib_usd` for the "% of GDP" toggle) |
 | Comex Stat — by partner country | `_load_comex_pais` | `macro_brasil` | `cmb_comex_pais` (saldo + export/import) |
 | Comex Stat — by aggregate factor | `_load_comex_fator_agregado` | `macro_brasil` | `cmb_comex_fator_agregado` (saldo + export/import) |
@@ -1307,13 +1305,11 @@ Note: interbank FX volume (`fx_interbank_vol_t1`/`t2`) lives in `cmb_ptax` but i
 
 The three model tabs don't go through `_load_*()` at all: they source through `models/ppp_equilibrium.load_data()` (a much wider set — `cmb_ptax`, IPCA, `cmb_risco_pais`, `cmb_dollar_index*`, `cmb_fx_latam`, `inflc_meta`, `br_interest_rate` e `inter_interest_rate` (as duas pela curva `POLICY`, desde que a `cmb_policy_rates` saiu em 2026-09-03), plus a live FRED CPI fetch) and the hand-extracted CSVs under `models/fx_attribution_data/`. See `models/` below.
 
-`agent_data.py` (`get_fx_snapshot()`, consumed by the `cambio-analyst` subagent) reuses these same `_load_*()` functions and reduces each series to latest value + 1m/3m/12m deltas + a `stale` flag (per-group expected-gap thresholds hardcoded in `_EXPECTED_GAP_DAYS`).
-
 ## Current data-quality gotchas
 
 - **`cmb_ptax.ptax_venda` starts 1994-07-01, not 1984** — SGS 1 technically goes back to 1984-11-28, but everything before 1994-07-01 is denominated in extinct pre-Real currencies (Cruzeiro Real and, further back, Cruzeiro/Cruzado/Cruzado Novo), confirmed directly in the data by the 1994-06-30 (2750.00) → 1994-07-01 (1.00) break at exactly the Real's fixed launch parity. Pre-Real rows were deleted from the DB 2026-07-22 (not economically comparable without a conversion factor this project doesn't carry); `cmb_ptax.py`'s `_START_YEAR`/chunking was updated so a future `run(start="all")` backfill won't reintroduce them.
 - **Financial Account sign flip is deliberate** (`_load_bop()` only — never touches the DB): `idp_exterior`, `portfolio_ativos`, `outros_inv_ativos`, `acoes_ativos`, `fundos_ativos`, `titulos_ativos_cp`, `titulos_ativos_lp`, `derivativos`, `ativos_reserva`, and `conta_financeira` are negated so the whole report reads "negative = USD outflow, positive = inflow" consistently, matching how Current Account already reads. Liabilities-side series (`investimento_direto_liquido`, `portfolio_passivos`, etc.) already publish in that convention and are left untouched. If you touch this function, re-derive the sign from a real month rather than assuming Assets/Liabilities are symmetric.
-- **Units are not uniform:** `cmb_balanco_pagmt`, `cmb_reservas_bc`, `cmb_fluxo_cambial` store USD MM (divided by 1000 for display). `cmb_comex_pais`/`cmb_comex_fator_agregado`/`cmb_comex_produto` store raw USD (divided by 1e9).
+- **Units are not uniform:** `cmb_balanco_pagmt`, `cmb_reservas_bc`, `cmb_cambio_contratado` store USD MM (divided by 1000 for display). `cmb_comex_pais`/`cmb_comex_fator_agregado`/`cmb_comex_produto` store raw USD (divided by 1e9).
 - **Comex Stat breakdowns ≠ BPM6:** the by-country/by-factor/by-product tables use general-trade methodology (SISCOMEX), not BPM6 — their totals will not reconcile line-for-line with `cmb_balanco_pagmt.mercadorias_gerais`. Treat them as complementary cuts, not a decomposition of it.
 - **Some "missing" months in Comex/product series are real zeros, not gaps** (e.g. `demais_import` in the Fator Agregado breakdown, `minerio_ferro_import`/`petroleo_export` in the product breakdown — confirmed as months with zero transactions, not pipeline failures). `generate_report.py` `fillna(0)`s these deliberately; do the same for any new derived series built on top.
 - **`lucros_reinvestidos` (BCB SGS 22815) has no data 1999–2010** (confirmed 404 from the BCB API, not a pipeline bug) — already `fillna(0)`'d before summing into `lucros_dividendos`.
@@ -1341,6 +1337,27 @@ passo ficaria atrasado para sempre. É o laço que essa camada evita em toda par
 O que mudou no código: `forecast_error_bands_w72()` passou a gravar `data_max` no JSON, o mês do
 painel a que ela chegou. Caches escritos antes disso só têm mtime — declarar `json_date: data_max`
 no dep passa a valer depois do primeiro recálculo, e por isso o dep hoje não declara.
+
+## O câmbio dos pares trocou de fonte, e `relative_carry_vol` mudou de nível (2026-10-07)
+
+`macro_international.cmb_fx_latam` passou do Yahoo para o BIS (motivo e medição em
+`domain/db/CLAUDE.md`). Aqui ela entra só pela vol de 6 meses dos pares em
+`ppp_equilibrium._load_carry_vol_metrics()`, e o efeito medido, antes × depois na mesma amostra:
+
+| | antes (Yahoo) | depois (BIS) |
+|---|---|---|
+| vol 6m média 2007+ — MX / CL / CO / PE | 11,7 / **63,3** / **153,1** / **26,9** | 12,2 / 10,7 / 11,5 / 4,6 |
+| `relative_carry_vol`, média (276 meses) | 0,546 | 0,379 |
+| correlação antes × depois | | 0,886 (maior diferença 1,02, em abr/2012) |
+
+As médias de CL e CO no Yahoo eram os ticks errados dentro da janela de 126 dias, não volatilidade.
+
+**O FX Model não muda:** o modelo publicado usa `_CHANNELS_5`, que tem `carry_vol` (só o real) e não
+`relative_carry_vol`; `carry_vol` saiu idêntico (diferença 0,0). O que muda é o painel *Relative
+Carry / Vol (vs. LatAm)* da aba Equilíbrio PPP, na próxima geração, e qualquer exploração com a lista
+de 8 canais (`_CHANNELS`). Nada foi reestimado. `tests/fx_forecast_lab/` lê os níveis de fim de mês de
+MX/CL/CO: diferença mediana 0,3–0,4% (horário do fixing), máxima 5,3% nos meses dos ticks errados, e
+46 meses a mais no começo (o BIS cobre 2000–2003, o Yahoo não).
 
 ## Reference material (`referencia/`)
 

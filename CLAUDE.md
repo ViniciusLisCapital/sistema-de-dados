@@ -15,6 +15,7 @@ especialistas por área macro existem, fases de investimento planejadas):
 [`team_materials/structure_materials/macro-project-context.md`](team_materials/structure_materials/macro-project-context.md).
 
 📄 **Sistema de agentes-analistas — regras decididas e o que falta fazer:** [`SISTEMA_AGENTES.md`](SISTEMA_AGENTES.md).
+Princípios gerais de todo agente (aplicados sem perguntar nos agentes novos): [`PRINCIPIOS_AGENTES.md`](PRINCIPIOS_AGENTES.md).
 Decisão sobre o sistema vai para lá, em lista simples; não para os `CLAUDE.md` de pasta.
 `Workflow.md` é do usuário: agente/IA não acrescenta nem retira itens dele.
 
@@ -55,6 +56,7 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
   oraculo/           — Termômetro macro: notas 1–10 por variável (Brasil e EUA) → Power BI
   agent_system/      — Diagrama do sistema de agentes (entradas, dados/ferramentas/conhecimento,
                        ciclo de rodadas) → team_materials/structure_materials/Sistema de Agentes.html
+                       — e o gerador do F(A) de cada ciclo, em dados/
   brasil/ · us/      — Um diretório por área, cada um = generate_report.py + report.html (+ um módulo
                        por aba) + o seu próprio CLAUDE.md. Ver a tabela de relatórios abaixo.
                        A área que teve levantamento de fontes guarda o `fontes_dados.md` dela aqui

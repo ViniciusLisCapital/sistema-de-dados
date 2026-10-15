@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Confere as 26 tabelas carregadas do SGS contra a API do BCB, serie a serie.
+Confere as 25 tabelas carregadas do SGS contra a API do BCB, serie a serie.
 
 Roda com:
     uv run python tests/test_sgs_vintage.py            # relatorio completo
     uv run python tests/test_sgs_vintage.py --tabelas mt_caged,fisc_divida
     uv run pytest tests/test_sgs_vintage.py   # se o pytest estiver instalado
 
-Precisa de rede e do MySQL (`.env`). ~3 min para as 26 tabelas / ~630 series.
+Precisa de rede e do MySQL (`.env`). ~3 min para as 25 tabelas / ~630 series.
 
 --------------------------------------------------------------------------------
 POR QUE ESTE TESTE EXISTE
@@ -25,7 +25,8 @@ confere numa serie de 34 anos -- mas um degrau permanente de nivel vira um vale
 de exatamente 12 meses na variacao anual, que tem a forma de um evento economico.
 
 A varredura que se seguiu achou o mesmo defeito, menor, em outras 7 tabelas
-(`atv_ibcbr`, `atv_pib_mensal`, `atv_pib_usd`, `cmb_fluxo_cambial`,
+(`atv_ibcbr`, `atv_pib_mensal`, `atv_pib_usd`, `cmb_fluxo_cambial` -- aposentada em
+2026-10-07, ver abaixo --,
 `cred_credito_amplo`, `cred_credito_resumo`, `fisc_divida`) -- ali sao as revisoes
 de rotina, sobretudo das series **dessazonalizadas**, que o BCB reestima sobre o
 historico inteiro a cada divulgacao. Todas recarregadas com `run(start="all")`.
@@ -34,8 +35,9 @@ historico inteiro a cada divulgacao. Todas recarregadas com `run(start="all")`.
 COMO ELE CASA SERIE GRAVADA COM SERIE OFICIAL
 --------------------------------------------------------------------------------
 NAO pelo mapeamento nome->codigo de cada script. Se lesse o mapeamento, um script
-que aponta para o codigo errado passaria no teste (e ha um caso vivo disso:
-`cmb_fluxo_cambial` guarda IBC-Br com nomes de fluxo cambial). Em vez disso, casa
+que aponta para o codigo errado passaria no teste (e houve um caso disso:
+`cmb_fluxo_cambial` guardava NUCI, IBC-Br e PNADC com nomes de fluxo cambial, ate ser
+aposentada em 2026-10-07). Em vez disso, casa
 pelos **valores**: dos ultimos 6 meses COMUNS as duas series, que estao dentro da
 janela de qualquer `n_meses` e portanto sao necessariamente iguais quando a serie
 e a mesma. So depois compara o historico inteiro.
@@ -86,7 +88,7 @@ from connectors.bcb import BCB
 from connectors.mysql import MySQLDataRequester
 
 TABELAS = """atv_ibcbr atv_pib_mensal atv_pib_usd cmb_balanco_pagmt cmb_cambio_contratado
-cmb_fluxo_cambial cmb_reservas_bc comm_icbr comm_icbr_usd cred_credito_amplo
+cmb_reservas_bc comm_icbr comm_icbr_usd cred_credito_amplo
 cred_credito_atividade_economica cred_credito_controle_capital cred_credito_familias
 cred_credito_porte cred_credito_resumo cred_credito_tipo_cliente cred_inadimplencia_pj
 cred_modalidade_direcionado_pf cred_modalidade_direcionado_pj cred_modalidade_livre_pf

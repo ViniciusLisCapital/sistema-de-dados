@@ -208,5 +208,3 @@ has been deleted (no callers left).
   if the published rate itself is wanted; the computed ratio is labelled as computed, not official.
 - `analytics/brasil/exchange_rate/report.html`'s BOP heatmap likely needs the same click-listener backport (see
   Gotchas) — only touch if/when that report comes up specifically.
-- No `agent_data.py`-style snapshot function yet (unlike `exchange_rate/`'s `get_fx_snapshot()`) — add if
-  a future subagent needs quick latest-value/delta access instead of the full report payload.

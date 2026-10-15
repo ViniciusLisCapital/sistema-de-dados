@@ -67,8 +67,7 @@ Conta Financeira:
   23060 Erros e omissoes                                       -> erros_omissoes
 
 Series derivadas (calculadas em analytics/brasil/exchange_rate/generate_report.py a partir
-das series brutas acima, NAO armazenadas no banco — mesmo padrao ja usado
-para `comercial_saldo` em cmb_fluxo_cambial):
+das series brutas acima, NAO armazenadas no banco):
   demais_servicos                  = servicos - viagens - transportes - aluguel_equipamentos
   juros                            = juros_intercompanhia + juros_carteira_externo + juros_carteira_domestico + juros_outros_investimentos + renda_reservas
   lucros_dividendos                = lucros_remetidos + lucros_reinvestidos + lucros_dividendos_carteira

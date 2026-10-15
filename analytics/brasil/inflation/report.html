@@ -666,6 +666,7 @@
 
     <section id="nuc-sec-nuc-saar">
       <h2 id="nuc-h2-nuc-saar">Núcleos — 3M SAAR, % a.a. (dessazonalizado)</h2>
+      <p class="glossario-intro" id="nuc-emenda-note" style="display:none;"></p>
       <p class="glossario-intro" id="nuc15-note" style="display:none;">
         Para o IPCA-15, o BCB não publica nenhum núcleo — todas as séries abaixo são
         calculadas internamente. EX-0, EX-01, EX-02, EX-03 e EX-FE usam o vetor
@@ -1035,6 +1036,37 @@ function getFiltered() {
   var s = startDate, e = endDate;
   return currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; });
 }
+// ── Índice geral como o IBGE publica (inflc_indice_geral) ────────────────────
+// Número-índice e variações do headline, direto do SIDRA: chega na manhã da
+// divulgação (o SGS espelha com até um dia de atraso) e é o único insumo que dá
+// o acumulado EXATO de uma janela qualquer -- I_fim / I_(início-1) - 1. Somar a
+// contribuição dos ~380 subitens carrega o arredondamento de cada um e fica
+// ~0,02 p.p. abaixo em 12 meses (4,56 contra 4,58 publicado em set/2026).
+function indiceGeral() {
+  var g = D.indice_geral || {};
+  return g[currentIndex === 'ipca15' ? 'IPCA15' : 'IPCA'] || null;
+}
+function indiceGeralValor(campo, dt) {
+  var g = indiceGeral();
+  if (!g) return null;
+  var i = g.dates.indexOf(dt);
+  return i >= 0 ? g[campo][i] : null;
+}
+// Acumulado de [s, e] pela razão de números-índice; null se faltar uma ponta.
+function acumuladoOficial(s, e) {
+  var ini = indiceGeralValor('numero_indice', monthsBack(2, s));
+  var fim = indiceGeralValor('numero_indice', e);
+  if (ini == null || fim == null || ini <= 0) return null;
+  return (fim / ini - 1) * 100;
+}
+// Série do headline na métrica da árvore ('var' ou 'yoy'), ou null.
+function indiceGeralSerie(metric) {
+  var g = indiceGeral();
+  if (!g) return null;
+  var campo = metric === 'var' ? 'var_mensal' : metric === 'yoy' ? 'var_12m' : null;
+  return campo ? {dates: g.dates, values: g[campo]} : null;
+}
+
 function computeIpca(rows) {
   var byMonth = {};
   for (var i = 0; i < rows.length; i++) {
@@ -1054,8 +1086,11 @@ function renderAll() {
   renderScatterMomentum();
 }
 
-// Three-tier preference for the trailing-12-months figure ending at `anchor`,
-// from most to least precise:
+// Preference for the trailing-12-months figure ending at `anchor`, from most
+// to least precise. Tier 0, since 2026-10: the 12m variation IBGE itself
+// publishes (inflc_indice_geral), for IPCA and IPCA-15 alike. It lands the
+// morning of the release, while the tiers below only reach the new month once
+// SGS mirrors it -- on release day the KPI used to fall to tier 3.
 // 1) Officially published accumulated-12m series (BCB SGS 13522, IPCA only)
 //    — computed by BCB from the full-precision index, exact by construction.
 // 2) Chain BCB's own official monthly print (SGS 433/7478 — the same number
@@ -1069,10 +1104,11 @@ function renderAll() {
 //    with real drift: IBGE publishes each SUBITEM's var_mensal already
 //    rounded to 2 decimals before we recombine ~380 of them, and that
 //    doesn't perfectly reconstruct the headline print (measured 0.001-0.005pp
-//    off per month), which compounds to ~0.02pp over a 12-month chain. There
-//    is no more-precise published input to fix this with — it's an IBGE
-//    publication-precision limit, not a bug in our aggregation.
+//    off per month), which compounds to ~0.02pp over a 12-month chain. The
+//    precise input is IBGE's own número-índice -- that is tier 0 above.
 function computeIpca12m(anchor) {
+  var ibge = indiceGeralValor('var_12m', anchor);
+  if (ibge != null) return ibge;
   var official = currentIndex === 'ipca' ? bcbValue('IPCA_12m', anchor) : null;
   if (official != null) return official;
   var monthlyName = currentIndex === 'ipca15' ? 'IPCA15' : 'IPCA';
@@ -1103,6 +1139,8 @@ function renderKPIs() {
   var total;
   if (s === monthsBack(12, e)) {
     total = ipca12m;
+  } else if ((total = acumuladoOficial(s, e)) != null) {
+    // razão de números-índice: exata para qualquer janela
   } else {
     var rangeRows = currentAll().filter(function(r) { return r.dt >= s && r.dt <= e; });
     total = computeIpca(rangeRows);
@@ -1402,7 +1440,20 @@ function treeSeriesDe(T, node, metric) {
     if (metric === 'yoy')   return nucleoSeriesValues(node.serie, computeYoY);
     return nucleoSeriesValues(node.serie, function(k) { return D.bcb[k] || {dates: [], values: []}; });
   }
-  return _seriesFromAgg(T.agg[node.key], metric);
+  // A raiz é o índice publicado: variação mensal e 12M vêm do IBGE, não da
+  // soma dos subitens, que erra a 2ª casa (out/2025: 4,69 contra 4,68).
+  // Mesma grade de meses da árvore; mês sem número do IBGE fica com a soma.
+  var serie = _seriesFromAgg(T.agg[node.key], metric);
+  var oficial = node.key === 'root' ? indiceGeralSerie(metric) : null;
+  if (oficial) {
+    var pos = {};
+    oficial.dates.forEach(function(d, i) { pos[d] = i; });
+    serie = {dates: serie.dates, values: serie.dates.map(function(d, i) {
+      var v = pos[d] != null ? oficial.values[pos[d]] : null;
+      return v != null ? v : serie.values[i];
+    })};
+  }
+  return serie;
 }
 
 function fmtTreeValue(v, metric) {
@@ -2233,11 +2284,34 @@ var CHART_META = {
 };
 
 
+// Meses do IPCA que o Banco Central ainda não publicou e que a página completa
+// por conta própria (D.bcb_emendados, montado no gerador). O texto diz qual mês
+// e de onde veio o número, para ninguém ler como dado do BC.
+function notaEmenda() {
+  var em = D.bcb_emendados || {};
+  var meses = {};
+  Object.keys(em).forEach(function(k) {
+    if (/_nucleo_/.test(k)) em[k].forEach(function(m) { meses[m] = true; });
+  });
+  var lista = Object.keys(meses).sort().map(formatMonthLabel);
+  if (!lista.length) return '';
+  return 'Núcleos de ' + lista.join(', ') + ': o IBGE já divulgou o IPCA, mas o Banco Central ' +
+    'ainda não publicou os núcleos. Até lá, esse mês é calculado aqui a partir dos subitens do ' +
+    'IBGE, pela metodologia da NT-57 — desde 2020 a diferença para o número do BC foi de no ' +
+    'máximo 0,006 p.p. ao mês. Ele é substituído pelo oficial na próxima atualização dos dados.';
+}
+
 // ── Núcleos tab renders ───────────────────────────────────────────────────────
 function renderNucleosTab() {
   var is15 = currentIndex === 'ipca15';
   var note = document.getElementById('nuc15-note');
   if (note) note.style.display = is15 ? '' : 'none';
+  var emenda = document.getElementById('nuc-emenda-note');
+  if (emenda) {
+    var txt = is15 ? '' : notaEmenda();
+    emenda.textContent = txt;
+    emenda.style.display = txt ? '' : 'none';
+  }
 
   var h2Saar = document.getElementById('nuc-h2-comp-saar');
   var h2Yoy  = document.getElementById('nuc-h2-comp-yoy');

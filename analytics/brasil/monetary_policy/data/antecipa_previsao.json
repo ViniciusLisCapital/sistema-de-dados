@@ -4,13 +4,13 @@
   "alvo": "2028Q2",
   "periodo": "2028-04-01",
   "tipo": "expansao",
-  "delta_focus": -0.0023,
-  "previsto_focus": 3.0977,
+  "delta_focus": -0.042,
+  "previsto_focus": 3.058,
   "previsto_focus_publicado": 3.1,
-  "corte_usado": "2026-09-28",
+  "corte_usado": "2026-10-08",
   "ancora": 3.1,
   "ancora_doc": "relatorio",
   "ancora_vintage": "2026-09-24",
-  "ancora_dias": 4,
+  "ancora_dias": 14,
   "t0": "2026Q2"
 }

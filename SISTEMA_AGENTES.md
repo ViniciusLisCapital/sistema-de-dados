@@ -1,4 +1,4 @@
-**Sobre este arquivo:** organização do sistema de agentes-analistas. Mantido pelo Claude a pedido do usuário: marca o que foi feito e acrescenta o que a conversa decidir. Uma decisão só entra aqui depois que o usuário a tomou. Detalhe técnico vai para o `CLAUDE.md` da pasta, não para cá.
+**Sobre este arquivo:** organização do sistema de agentes-analistas. Mantido pelo Claude a pedido do usuário: marca o que foi feito e acrescenta o que a conversa decidir. Uma decisão só entra aqui depois que o usuário a tomou. Detalhe técnico vai para o `CLAUDE.md` da pasta, não para cá. Os princípios gerais, que valem para todo agente, ficam no `PRINCIPIOS_AGENTES.md`.
 
 
 # (I) O sistema
@@ -14,7 +14,8 @@
     - ii. Depois, um a um: inflação, fiscal, atividade, crédito, mercado de trabalho, externo.
     - iii. Os agentes rodam no Claude Code, sob demanda, nesta fase.
     - iv. O modelo quantitativo (Modelo Estrutural, FX Model) fica fora dos agentes por enquanto. Primeiro, azeitar o processo analítico e o fluxo de informação. Quando o Modelo Estrutural entrar, entra como saída dos agentes, não como ferramenta (I.III.xv).
-    - v. Agente escrivão (2026-10-02): organiza o relatório final a partir dos memos finais (MF) e do cenário final (PF*). O objetivo é um relatório em ótimo português, de clareza e objetividade excepcionais. Garante a validade lógica e a coesão dos argumentos dos memos, e pode cobrar de um agente mais clareza numa explicação. Detalhes a definir (IV.vii).
+    - v. Agente escrivão (2026-10-02): organiza o relatório final a partir dos reports finais (RF) e do cenário final (PF*). O objetivo é um relatório em ótimo português, de clareza e objetividade excepcionais. Garante a validade lógica e a coesão dos argumentos dos reports, e pode cobrar de um agente mais clareza numa explicação. Regras em IV.vii. Manual de escrita: `obsidian/escrivao/manual_do_escrivao.md` (feito 2026-10-07).
+    - vi. Agente administrador (intenção do usuário, 2026-10-02): administra o sistema e cuida da manutenção dele. Primeira tarefa prevista: decidir quais funções G criadas pelos agentes são promovidas ao F (IV.iv). Detalhes a definir (IV.viii).
 
 ## (I.III) Regras decididas
     - i. Base de conhecimento: `repository/` guarda o bruto (raw_pdf, raw_md, cartas das gestoras, acompanhamento de aquisição). `obsidian/` é a única camada que os agentes leem.
@@ -23,17 +24,17 @@
     - iv. A bibliografia consolidada é acompanhamento do que foi ingerido: fica no `repository/`.
     - v. Documentos do BC (comunicados, atas, RPM) são bibliografia do agente de política monetária, em `clean_md/central_bank/`.
     - vi. Mapa conceitual = contrato da área: (1) perguntas centrais, (2) esqueleto causal, (3) saídas, (4) entradas, (5) índice de conceitos.
-        - Perguntas centrais (2026-10-02): o que o agente responde em todo memo. São o mínimo, não o máximo: o agente não fica limitado a elas, e insights novos e alertas também entram. No câmbio: (a) quais as condições subjacentes do mercado de câmbio brasileiro; (b) como estão os fundamentos macroeconômicos para o câmbio; (c) o que explica a dinâmica recente do câmbio (o que é "recente" se define depois); (d) qual o cenário prospectivo para o câmbio, via modelo estrutural.
+        - Perguntas centrais (2026-10-02): o que o agente responde em todo report. São o mínimo, não o máximo: o agente não fica limitado a elas, e insights novos e alertas também entram. No câmbio: (a) quais as condições subjacentes do mercado de câmbio brasileiro; (b) como estão os fundamentos macroeconômicos para o câmbio; (c) o que explica a dinâmica recente do câmbio ("recente" é decisão do agente: como referência, 1 a 3 meses, considerando também o que aconteceu desde o último ciclo, sobretudo se faz mais de um mês, sem ficar restrito a isso; 2026-10-07); (d) qual o cenário prospectivo para o câmbio, via modelo estrutural.
         - Global × idiossincrático entra na explicação do modelo (FX Model ou Estrutural), dentro da pergunta (c). A discussão marginal × nível fica de fora por ora.
     - vii. Saída de A para B = o que é importante PARA A vindo de B. Entrada de A vinda de B = o que B disse que é importante para B vindo de A. Dá ênfase, não limita a análise.
-    - viii. Entradas e saídas têm uma camada fixa (no mapa) e uma dinâmica (nos memos, conforme as teses do ciclo).
+    - viii. Entradas e saídas têm uma camada fixa (no mapa) e uma dinâmica (nos reports, conforme as teses do ciclo).
     - ix. Três tipos de dado (decidido 2026-10-01):
         - Endógeno: dado da área do próprio agente; ele é o responsável por analisá-lo.
         - Exógeno: dado sem agente, que todos os agentes podem consumir. Ex.: o CDS.
             - Intenção do usuário (2026-10-02): distribuir cada exógena a um ou dois agentes, que terão a palavra para discuti-la. Ex.: o CDS reflete risco fiscal e risk-off global, então os agentes fiscal e externo discutem o CDS.
         - TWA (temporarily without agent): dado de uma área que ainda não tem agente. Funciona como exógeno até o agente existir, quando vira endógeno dele. Ex.: inflação, fiscal, atividade, crédito, mercado de trabalho, expectativas (Focus, QPC) e o dado global, até existir o agente Externo.
     - x. Endógeno de outro agente: qualquer agente consulta, mas não tira conclusão sobre ele; a posição vem do agente responsável. Ex.: o agente de câmbio não conclui sobre o caminho da Selic sem a leitura do agente de política monetária.
-    - xi. Exógeno e TWA: a forma de análise ainda será definida, a partir da interação entre os agentes. O mesmo dado pode ser consumido por mais de um agente, então é preciso uma visão consolidada sobre ele (ver IV.ii). Até lá, o agente usa o dado declarando no memo as premissas que assumiu. (provisório, 2026-10-01)
+    - xi. Exógeno e TWA: a forma de análise ainda será definida, a partir da interação entre os agentes. O mesmo dado pode ser consumido por mais de um agente, então é preciso uma visão consolidada sobre ele (ver IV.ii). Até lá, o agente usa o dado declarando no report as premissas que assumiu. (provisório, 2026-10-01)
     - xii. Expectativas não são da política monetária: são TWA, e pode haver um agente de expectativas no futuro.
     - xiii. Dados por agente: ver (V).
     - xiv. Ferramenta = um processamento específico e pré-definido de dados ou de informação qualitativa que gera um output que o agente usa direto, sem processar o bruto ele mesmo. Ex.: o FX attributor processa as cartas das gestoras sobre o câmbio e responde se elas veem o câmbio subindo ou caindo, e com que grau. (decidido 2026-10-02)
@@ -57,7 +58,7 @@
     - ii. Atas do Copom, todas, no vault, atualizadas junto com o ETL. (feito 2026-09-30, 261 atas, 1998–2026)
     - iii. RPM integral dos últimos 3 anos no vault. (feito 2026-09-30, 12 relatórios, dez/2023–set/2026)
     - iv. RPM integral do histórico. (pendente)
-    - v. Ingerir os 35 papers de `raw_pdf/theorical_literature/`.
+    - v. Ingerir os 45 PDFs de `raw_pdf/theorical_literature/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07). Lista e o que falta: `repository/agent_mapping/recommended_bibliography/monetary_policy_bibliography.md`.
     - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio.
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir)
@@ -67,32 +68,38 @@
 # (III) Agentes
 
 ## (III.I) Agente de câmbio
-    - i. Reconstruir o agente a partir do mapa conceitual.
-    - ii. Corrigir a contradição sobre a PTAX nas instruções atuais.
-    - iii. Dar ao agente acesso aos dados da lista (V.I). A forma está em aberto (IV.iv); o snapshot atual (`agent_data.py`) cobre só parte da lista.
-    - iv. Saída em memo estruturado: tese, premissas com dado, signposts, riscos, saídas para os outros agentes.
+    - i. Reconstruir o agente a partir do mapa conceitual. (feito 2026-10-07: `.claude/agents/cambio-analyst.md`)
+    - ii. Corrigir a contradição sobre a PTAX nas instruções atuais. (feito 2026-10-07: a PTAX está no F(A))
+    - iii. Dar ao agente acesso aos dados da lista (V.I). A forma é F(A) mais as funções G do agente (IV.iv). Feito o F(A) (2026-10-07): `uv run python -m analytics.agent_system.dados cambio` grava A e o F(A) em `obsidian/ciclos/<data>/dados/`. O agente lê o F(A) desde a reconstrução (item i).
+    - iv. Saída em report estruturado: tese, premissas com dado, signposts, riscos, saídas para os outros agentes. (feito 2026-10-07: modelo `_modelo_report.md`)
+    - v. Buscar um índice de commodities diário para complementar o Brent. (anotado 2026-10-07, ver depois)
+    - vi. Teste solo da rodada 1 (só o câmbio), para avaliar o report e calibrar o F. (feito 2026-10-07: `obsidian/ciclos/2026-10-07/`; os comentários do usuário estão em IV.iv, IV.vii e IV.ix)
+    - vii. Dados que o primeiro teste mostrou faltar (anotado 2026-10-15; o usuário decide depois, primeiro testa o formato do agente): fora da lista, o cupom cambial, a volatilidade implícita do real (é a que o Modelo Estrutural usa) e dado político e eleitoral; na base, o CDS parado em 08/09 e os termos de troca da Funcex em jul/2026.
 
 ## (III.II) Agente de política monetária
     - i. Construir o agente a partir do mapa conceitual de política monetária.
     - ii. Inflação é TWA (I.III.ix, xi). Quando o agente de inflação existir, vira endógeno dele e o agente de política monetária passa a receber a posição dele.
 
 ## (III.III) Interação e relatório
-    - i. Definir o formato do memo de cada agente. Decidido 2026-10-01:
-        - Três blocos: tese, argumentação, premissas. Mais as saídas e pedidos aos outros agentes e o placar dos horizontes vencidos. Modelo: `obsidian/ciclos/_modelo_memo.md`.
+    - i. Definir o formato do report de cada agente. Decidido 2026-10-01:
+        - Três blocos: tese, argumentação, premissas. Mais as saídas e pedidos aos outros agentes e o placar dos horizontes vencidos. Modelo: `obsidian/ciclos/_modelo_report.md`.
         - Tese por variável: medida central, faixa do cenário base com probabilidade, e worst-case e best-case como as caudas abaixo e acima da faixa, cada uma com probabilidade (soma 100%). Ex.: PIB 2027, central 1,2%; 50% entre 1,0 e 1,4; 40% abaixo de 1,0; 10% acima de 1,4.
         - A direção de worst e best é de cada variável: inflação mais alta é worst, crescimento menor é worst. No câmbio, por ora, depreciação é worst.
         - Assimetria: Pbc − Pwc, de −1 a +1; zero é simétrico e o sinal diz para que lado a distribuição pende (no exemplo, 0,10 − 0,40 = −0,30). Substituiu Pbc/Pwc, que não existe com Pwc = 0 e tem escala torta.
         - Riscos não são seção própria: entram na argumentação, justificando a probabilidade de cada cauda.
-        - Horizontes: curto, médio e longo prazo, definidos para cada agente (2026-10-01, substitui o horizonte padrão mensal). Ex.: câmbio no próximo mês, em 6 meses e em 1 ano; atividade com o PIB do próximo trimestre, do próximo ano e dos próximos 2–3 anos; política monetária com a próxima reunião, o fechamento do ano, a taxa em 1 ano e nos próximos 2–3 anos.
-        - Placar: para cada horizonte que venceu desde o último ciclo, o agente diz em que faixa a variável caiu.
-        - Memo e relatório em português; termos técnicos consagrados em inglês são permitidos (forward guidance, carry etc.).
+        - Central (2026-10-15): a do Modelo Estrutural no cenário base; a distribuição em torno dela é do agente (IV.ix).
+        - Horizontes (2026-10-15, substitui curto, médio e longo prazo por agente): os trimestres do Modelo Estrutural, seis a partir do trimestre em curso (no ciclo de 07/10/2026, do 4T26 ao 1T28). A variável é medida no fechamento do trimestre (no câmbio, a PTAX do último dia útil), que é o que se compara com o dado de hoje.
+            - A tese vira um caminho por trimestre. O dado que vai saindo é conferido contra a faixa de cada trimestre: um movimento que cai fora da faixa base mostra uma cauda se materializando naquele trimestre. Um movimento não mapeado é informação nova e dispara um ciclo.
+            - Exceções são possíveis. Ex.: política monetária, cuja taxa no fim do trimestre sai das reuniões do Copom e do FOMC dentro dele.
+        - Placar: para cada trimestre que fechou desde o último ciclo, o agente diz em que faixa a variável caiu.
+        - Report e relatório em português; termos técnicos consagrados em inglês são permitidos (forward guidance, carry etc.).
     - ii. Fluxo e registro da interação:
         - Fluxo (desenho do usuário, 2026-10-02; substitui o esboço de 2026-10-01, em que um agente escrevia depois do outro):
-            - Rodada 1: cada agente escreve o seu memo. O Modelo Estrutural consolida os memos da rodada em P1.
-            - Rodada 2: cada agente lê os memos de todos e o P1 e escreve de novo. O modelo consolida em P2.
-            - Memo final (MF): cada agente lê os memos de todos e o P2 e escreve o MF. Dos MF sai o cenário final (PF*), que vai para o relatório.
-        - Registro (decidido 2026-10-01, revisto 2026-10-02): uma pasta por ciclo, `obsidian/ciclos/<data>/`. Os memos de cada rodada e as consolidações (P1, P2) ficam vivos durante o ciclo; quando o ciclo acaba, ficam o memo final (MF) de cada agente e o log, além do relatório. O log registra o processo interno: quem leu o quê, cada mudança de premissa ou probabilidade entre rodadas (antes → depois, motivo, o que a provocou) e as divergências que ficaram abertas. Modelo: `obsidian/ciclos/_modelo_log.md`.
-        - Ordem: dentro de uma rodada todos os agentes escrevem, sem ordem entre eles (2026-10-02, substitui câmbio → política monetária). Hoje: duas rodadas e o memo final. Revisar quando entrar um agente novo (ver IV.iii).
+            - Rodada 1: cada agente escreve o seu report. O Modelo Estrutural consolida os reports da rodada em P1.
+            - Rodada 2: cada agente lê os reports de todos e o P1 e escreve de novo. O modelo consolida em P2.
+            - Report final (RF): cada agente lê os reports de todos e o P2 e escreve o RF. Dos RF sai o cenário final (PF*), que vai para o relatório.
+        - Registro (decidido 2026-10-01, revisto 2026-10-02): uma pasta por ciclo, `obsidian/ciclos/<data>/`. Os reports de cada rodada e as consolidações (P1, P2) ficam vivos durante o ciclo; quando o ciclo acaba, ficam o report final (RF) de cada agente e o log, além do relatório. O log registra o processo interno: quem leu o quê, cada mudança de premissa ou probabilidade entre rodadas (antes → depois, motivo, o que a provocou) e as divergências que ficaram abertas. Modelo: `obsidian/ciclos/_modelo_log.md`.
+        - Ordem: dentro de uma rodada todos os agentes escrevem, sem ordem entre eles (2026-10-02, substitui câmbio → política monetária). Hoje: duas rodadas e o report final. Revisar quando entrar um agente novo (ver IV.iii).
         - Ciclo = um processo de atualização do cenário, disparado por informação nova (quantitativa ou qualitativa). Sem informação nova, o cenário não muda. Um único dado novo basta para rodar um ciclo, embora na prática o usuário prefira juntar mais dados antes.
     - iii. Checagem de todo número do relatório contra a fonte antes de publicar.
     - iv. Relatório final em markdown enquanto calibramos; PDF depois.
@@ -102,11 +109,59 @@
 # (IV) Decisões pendentes
     - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
-    - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o memo final.
-    - iv. Como o agente analisa os dados quantitativos: o que recebe, em que forma (resumo pronto, consulta ao banco, funções de cálculo) e como chega a uma leitura deles. O agente recebe um conjunto de dados qualitativos e quantitativos; a parte quantitativa está a definir. (anotado 2026-10-02, a definir)
+    - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o report final.
+    - iv. Como o agente analisa os dados quantitativos. (decidido 2026-10-02)
+        - Decidido (2026-10-02, reescrito 2026-10-07): o dado bruto A passa por F, as transformações fixas, iguais em todo ciclo. O agente lê F(A), não A. Quando precisa de uma conta que o F não faz, escreve uma função G e usa G(A). Não há catálogo de funções à parte (2026-10-07).
+        - As métricas do F (o tratamento de cada tabela) não são definidas pelo usuário: ficam no sistema, sob supervisão do próprio agente e do agente administrador. O usuário avalia pela qualidade do report e ajusta as métricas a partir daí. (2026-10-07)
+        - Profundidade (2026-10-02, provisório até a distribuição das exógenas, IV.ii): endógenas com leitura completa (nível, variações, posição no histórico, pares); TWA e exógenas com leitura enxuta (último valor e variação).
+        - Retrato fixo por ciclo: F(A) é gerado uma vez, no início do ciclo, e as duas rodadas e o report final leem o mesmo F(A). Dado que chega no meio do ciclo espera o próximo.
+        - Sem exploração livre do banco. O G segue quatro regras: só lê, nunca escreve no banco; lê o mesmo A do ciclo; o código fica salvo com o ciclo; o G e o resultado entram no log. O report e o relatório final não citam o G; o rastro fica só no log.
+        - Todo tratamento do dado passa por um G: variação, média, soma, diferença, forward, qualquer conta, por menor que seja. O dado usado como está na base ("a PTAX era 4,9698 em 06/10") não precisa de G, porque já é rastreável na própria base. (2026-10-07)
+        - No fim do ciclo, o G fica só como registro ou é promovido ao F. Quem decide: o agente administrador (I.II.vi), quando existir.
     - v. Ferramentas (I.III.xiv): quais são (hoje candidatas: FX attributor e FX Model; dashboards não são ferramenta) e quando e como entram nos agentes. Por ora fora (I.II.iv).
-    - vi. Como os memos viram P1, P2 e PF* no Modelo Estrutural (I.III.xv): com quais variáveis, quem faz a conta e o que acontece quando o modelo e os agentes divergem. (anotado 2026-10-02, a definir)
-    - vii. Agente escrivão (I.II.v): como e quando cobra clareza de um agente (e se isso reabre o memo final), o que pode mudar no texto dos agentes e o que não pode, e a estrutura do relatório. (anotado 2026-10-02, a definir)
+    - vi. Como os reports viram P1, P2 e PF* no Modelo Estrutural (I.III.xv): com quais variáveis, quem faz a conta e o que acontece quando o modelo e os agentes divergem. (anotado 2026-10-02, a definir)
+        - Decidido (2026-10-15, adianta a parte que o câmbio precisa): como a central vem do modelo (IV.ix), o agente roda o simulador do Modelo Estrutural por um G, com os caminhos das exógenas de cada cenário e, no tempero (i), o multiplicador do coeficiente. Sem reestimar: os coeficientes são os de hoje. As exógenas que a área não usa ficam no padrão do simulador (último valor repetido) até terem dono (IV.ii).
+        - A fazer antes do próximo teste: a função fixa que esse G chama (recebe caminhos e multiplicadores, devolve as endógenas por trimestre e a faixa do posterior). Consolidação de P1, P2 e PF* segue a definir.
+    - vii. Agente escrivão (I.II.v):
+        - Decidido (2026-10-07): a forma é do escrivão, o conteúdo é do agente. O escrivão reordena, corta, reescreve e padroniza; não muda número, faixa, probabilidade ou premissa, não acrescenta argumento nem dado e não resolve divergência escolhendo um lado. Se precisa de algo que o report não diz, cobra o agente. (manual, 1.1)
+        - Decidido (2026-10-07): a cobrança reabre o report final só no trecho cobrado.
+        - Decidido (2026-10-07, do primeiro teste), para o relatório final. Os reports intermediários seguem como estão, porque outros agentes os reprocessam:
+            - sem nome de tabela (já estava no manual, 1.2);
+            - comentário sobre o próprio processo ("o F não traz dado eleitoral", "a decomposição pelo modelo não está disponível") vai para nota de rodapé;
+            - número arredondado ao que a afirmação precisa ("~60 mil contratos", não 59.481); o report guarda o valor exato e o escrivão questiona o arredondamento;
+            - percentil ganha nota de rodapé na primeira aparição, dizendo o que "maior" significa, e nota própria quando o sentido for menos óbvio;
+            - arcabouço de gestora ou conceito pouco conhecido ganha nota de rodapé que o explica de forma simples, com exemplo quando ajuda;
+            - muitos números que se comparam vão em tabela.
+        - Decidido (2026-10-15): o arredondamento e as notas explicativas vêm do agente. O agente arredonda no report final (a tabela e a data bastam para conferir o valor exato na fonte) e escreve as notas no próprio report. O escrivão leva as notas para o rodapé e pode pedir mais explicação, ou o arredondamento de um número que o agente deixou passar.
+        - Decidido (2026-10-15, do primeiro teste), em todo report: cada dado da argumentação tem um de três papéis, e o papel decide onde ele fica:
+            - sustenta: no parágrafo, ligado à afirmação por uma palavra que diga a relação ("o que mostra", "porque");
+            - contraria ou enfraquece: no mesmo parágrafo, logo depois, com "mas" ou "apesar de" e o que teria de acontecer para mudar a conclusão. Não vai para apêndice, senão o argumento só mostra os dados a favor;
+            - sem sinal neste ciclo: no bloco "Olhado, sem sinal", no fim da seção 2, uma linha por dado (dado · valor · por que não diz nada agora · o que o faria dizer algo). Mostra o que o agente olhou e descartou, para o usuário poder cobrar o descarte.
+            - Afirmação com partes (ex.: "mercado fino" e "demanda fora do mercado à vista") é escrita em partes, e cada dado diz a qual delas responde.
+            - Dado sem ligação com uma afirmação é defeito: ou o agente escreve a ligação, ou o dado vai para o bloco "Olhado, sem sinal". Exemplo do teste: o estoque de swaps citado como nível (−US$ 91,6 bi) não diz nada sobre o mês; a variação diria, a favor ou contra a tese.
+        - Estrutura do relatório: a definir mais tarde.
+        - Formato (intenção do usuário, 2026-10-15, a resolver depois): relatório final em HTML, numa aba de Report de um dashboard, para poder se ligar a ferramentas interativas de acompanhamento do cenário (ex.: a matriz de premissas, IV.ix). A aba teria um botão que gera o PDF.
+    - viii. Agente administrador (I.II.vi): o que mais administra além da promoção de G ao F, com que critério promove e quem decide até ele existir. (anotado 2026-10-02, a definir)
+    - ix. Formato das premissas e dos signposts (anotado 2026-10-15, do primeiro teste, a definir):
+        - O formato da tabela de premissas ainda não convence o usuário.
+        - Signpost como patamar ("PTAX acima de 5,15 por 3 sessões") diz pouco. Melhor descrever uma dinâmica, e talvez um conjunto de signposts lido junto (ex.: prêmio de risco subindo e real se depreciando nas sessões antes do 2º turno).
+        - Ideia do usuário (2026-10-15): premissas numa matriz atualizável, cada uma com seu limiar e uma cor que muda conforme o dado se aproxima dele (ex.: limiar de 13% com o dado em 12,63%; a cor vai ao vermelho conforme a taxa sobe para 13%, porque indica depreciação).
+        - Para depois: alarme de signpost enviado por e-mail.
+        - Decidido (2026-10-15): o que pode ser expresso pelas variáveis do Modelo Estrutural, é; o agente complementa a estimativa quantitativa com um ajuste qualitativo. Toda premissa se materializa num de dois blocos:
+            - canais do modelo quantitativo: entradas do modelo (ex.: o CDS para o risco fiscal). A premissa é o caminho da entrada por trimestre, no cenário base e em cada cauda. Um evento (ex.: o 2º turno) não tem lugar próprio: é o motivo de um caminho, e pode mover mais de uma entrada;
+            - canais qualitativos: o que o modelo não tem (ex.: balanço de pagamentos, posicionamento). Cada um é acompanhado por um indicador (ex.: a posição especulativa no COT) e entra como desvio da variável projetada pelo modelo, com direção, tamanho e duração.
+        - Decidido (2026-10-15): cada cauda da tese diz o que leva até ela, nos canais (ex.: "acima de 5,20 se o 2º turno reverter o resultado e o CDS for a 150").
+        - Decidido (2026-10-15, revisão no mesmo dia; substitui os "dois blocos" acima, porque o teste v2 os misturou): as premissas se fazem em duas etapas.
+            - Etapa 1, modelo. O agente escreve o caminho por trimestre de cada exógena do modelo que a área usa, no cenário base e em cada cauda, uma exógena por linha. O evento (2º turno, plano fiscal) é o motivo do cenário, não premissa. O modelo resolve as endógenas (hiato, inflação, expectativas, Selic, câmbio); o agente não as fixa. **A central da tese é a do modelo no cenário base, sem ajuste.**
+            - Etapa 2, tempero qualitativo. O agente forma a distribuição em torno da central (limites das caudas e probabilidades), com dois tipos de justificativa:
+                - (i) efeito de um input mais forte ou mais fraco que o estimado, escrito como multiplicador do coeficiente num cenário (ex.: na reversão, o modelo dá 5% de depreciação; por X1…Xn o efeito do CDS no câmbio é × 1,5). Quanto mais para a cauda da distribuição do coeficiente (o posterior do modelo), melhor tem de ser a justificativa; fora do intervalo de 90%, o agente afirma que o histórico subestima o canal, e diz por quê.
+                - (ii) fator que não se expressa nas variáveis do modelo (ex.: desalavancagem de hedge funds, acompanhada pela posição no COT), com indicador, direção, tamanho e duração.
+            - Canal que está no modelo só entra pelo tipo (i), nunca pelo (ii). É o que impede a contagem dupla (na v2, o estresse de regime somava +5% sobre o CDS a 150).
+            - O caminho do input e a força do efeito ficam separados: "o CDS vai a 150 na reversão" é etapa 1; "cada ponto de CDS pesa mais que o estimado" é etapa 2 (i).
+            - Quando o agente acha que o próprio cenário base deveria desviar do modelo, a central não se move: o tempero entra como assimetria (Pbc − Pwc). Assim o placar separa o erro do modelo do valor do tempero.
+            - Vale para todo agente (na política monetária, (i) seria a regra de juros reagindo à inflação mais forte do que o estimado).
+            - O que isso corrige na v2: a central justificada por forças qualitativas que as fichas diziam não usar (posicionamento, dezembro); caudas que somavam input e desvio na mesma frase; fichas que agrupavam vários inputs; Selic e IPCA fixados pelo câmbio, sendo endógenas do modelo; dado de evidência na linha "Hoje".
+        - Formato no `_modelo_report.md` (2026-10-15): seção 3 em três partes: etapa 1 (cenários com a história de cada um, tabela de caminhos das exógenas, saída do modelo), etapa 2 (uma ficha por tempero) e a ponte até a tese. O alerta tem forma fixa (indicador · tipo · limiar · janela), para a matriz conseguir ler.
 
 
 # (V) Dados por agente
@@ -116,8 +171,6 @@
 
 ### i. Endógeno
     - `cmb_ptax`: PTAX de venda diária do BCB (desde jul/1994) e volume do interbancário. É a variável que o agente explica; o volume diz se o movimento veio com mercado fundo ou raso.
-
-    - `cmb_fluxo_cambial`: entradas, saídas e saldo mensal do fluxo cambial, total e pelos setores comercial e financeiro. É a leitura de curto prazo da oferta de dólares: diz se o real andou a favor ou contra o fluxo (canais 2.5 e 2.6).
 
     - `cmb_cambio_contratado`: câmbio contratado diário desde set/2008, separado em exportação, importação e financeiro. É o fluxo em alta frequência, para ler o movimento dentro do mês antes do dado mensal.
 
@@ -131,7 +184,7 @@
 
     - `cmb_reservas_bc`: reservas internacionais e intervenções do BCB (swaps, leilões à vista e de linha). Mede o colchão contra crise (canal 2.9) e o que o BC está fazendo no mercado (canal 2.7).
 
-    - `cmb_cot_fx`: posição em futuros de BRL, MXN, CLP e COP na CFTC, semanal, por tipo de participante. Posição especulativa extrema é sinal contrário e amplifica o movimento quando é desmontada (canal 2.6).
+    - `cmb_cot_fx`: posição em futuros de BRL e MXN na CFTC (CLP e COP não têm contrato no relatório), semanal, por tipo de participante. Posição especulativa extrema é sinal contrário e amplifica o movimento quando é desmontada (canal 2.6).
 
     - `cmb_reer`: câmbio efetivo real e nominal do BIS para BR, MX, CL e CO. É a medida de nível: quão caro ou barato o real está contra os parceiros, já corrigido por inflação (canal 2.8).
 
@@ -148,9 +201,7 @@
 
     - `pm_copom_projecoes`: projeções de inflação do Copom, de referência e alternativas. Mostram quanto da inflação projetada o Copom atribui ao câmbio e sustentam a leitura da função de reação (S4); o câmbio de partida do cenário está no texto do comunicado, no vault.
 
-    - `br_interest_rate`: curva de juros da B3 (DI, NTN-F, NTN-B), diária. Dá o carry em cada prazo e o prêmio da curva, que anda junto com o real em estresse; a leitura da curva vem do agente de política monetária.
-
-    - `br_di_grade`: curva DI com todos os vértices da B3. Dá a Selic implícita reunião a reunião, ou seja, o carry futuro precificado (S1).
+    - `br_di_grade`: curva DI com todos os vértices da B3. Dá a Selic implícita reunião a reunião, ou seja, o carry futuro precificado (S1), e o nível da curva. É a única curva doméstica que o câmbio recebe (2026-10-07).
 
     - `inflc_meta`: meta de inflação do CMN. É a inflação doméstica de longo prazo que entra na paridade de poder de compra prospectiva.
 
@@ -170,9 +221,7 @@
 
     - `cmb_equity_us`: S&P 500, diário. Proxy do apetite a risco global, que move o real junto com os outros emergentes (canal 2.2).
 
-    - `us_interest_rate`: curva do Treasury e meta do Fed. É a perna externa do carry e o motor do ciclo global do dólar.
-
-    - `inter_interest_rate`: taxa de política de MX, CL, CO, PE e AR (BIS). Mostra o carry dos concorrentes: se os pares cortam e o Brasil não, o real ganha atratividade relativa.
+    - `us_interest_rate`: só o Fed Funds e os Treasuries de 2 e 10 anos (2026-10-07). É a perna externa do carry; o de 10 anos move o ciclo global do dólar.
 
     - `cmb_real_rates`: juro real ex-post de BR, MX, CL, CO e PE. Compara o carry real do Brasil com o dos pares.
 
@@ -220,9 +269,7 @@
 
     - `cmb_reservas_bc`: reservas e intervenções. Mostra se o BC está usando instrumento cambial em vez do juro (E7).
 
-    - `cmb_fluxo_cambial`: fluxo cambial mensal. Pressão de liquidez que pode levar à intervenção (E7) e fundamento para a persistência do movimento (E1).
-
-    - `cmb_cambio_contratado`: fluxo cambial diário. Mesma leitura do fluxo mensal, em tempo de reunião.
+    - `cmb_cambio_contratado`: fluxo cambial diário, somado no mês. Pressão de liquidez que pode levar à intervenção (E7) e fundamento para a persistência do movimento (E1).
 
     - `cmb_balanco_pagmt`: balanço de pagamentos. Déficit externo mal financiado aumenta a vulnerabilidade e o prêmio de risco (E5).
 

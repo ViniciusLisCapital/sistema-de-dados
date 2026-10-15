@@ -20,6 +20,12 @@ Key structure (WS_LONG_CPI): FREQ.REF_AREA.UNIT_MEASURE
   REF_AREA:     ISO2 country code, e.g. BR, MX, CL, CO, PE
   UNIT_MEASURE: 771 (YoY % change) | 628 (index, 2010=100)
 
+Key structure (WS_XRU): FREQ.REF_AREA.CURRENCY.COLLECTION
+  FREQ:       D (daily) | M | Q | A
+  REF_AREA:   ISO2 country code
+  CURRENCY:   ISO currency code, e.g. MXN, PEN (rate = units of it per USD)
+  COLLECTION: A (average of the period -- for FREQ=D, the day's rate) | E (end of period)
+
 Multiple values in one dimension use '+', e.g. "R+N" or "BR+MX".
 """
 
@@ -37,6 +43,7 @@ logger = logging.getLogger(__name__)
 _BASE = "https://stats.bis.org/api/v1/data/WS_EER"
 _BASE_CBPOL = "https://stats.bis.org/api/v1/data/WS_CBPOL"
 _BASE_LONG_CPI = "https://stats.bis.org/api/v1/data/WS_LONG_CPI"
+_BASE_XRU = "https://stats.bis.org/api/v1/data/WS_XRU"
 
 _CPI_UNIT_CODE = {"yoy": "771", "index": "628"}
 
@@ -179,6 +186,57 @@ class BIS:
         resp.raise_for_status()
 
         return self._parse_cpi(resp.text)
+
+    def get_fx_usd(
+        self,
+        currencies: dict[str, str],
+        start: str | None = None,
+    ) -> pd.DataFrame:
+        """
+        Fetch DAILY bilateral exchange rates against the USD from BIS (WS_XRU).
+
+        Args:
+            currencies: {ISO2 country code: ISO currency code}, e.g. {"MX": "MXN", "PE": "PEN"}
+            start:      "YYYY-MM-DD" to filter from that date, or None for full history
+
+        Returns:
+            Tidy DataFrame with columns:
+                date         Timestamp
+                country_code str
+                value        float64  (local currency per USD)
+
+        Every calendar day the source publishes comes back as is -- Colombia's TRM
+        is published for weekends and holidays too. Filtering to trading days is
+        the caller's decision.
+        """
+        # BIS WS_XRU key order: FREQ.REF_AREA.CURRENCY.COLLECTION
+        # (COLLECTION A = "average of observations through period", which for
+        # FREQ=D is the day's rate itself)
+        key = f"D.{'+'.join(currencies)}.{'+'.join(currencies.values())}.A"
+        url = f"{_BASE_XRU}/{key}/all"
+
+        params: dict = {"format": "csv"}
+        if start:
+            params["startPeriod"] = start
+
+        logger.debug("BIS XRU GET %s  params=%s", url, params)
+        resp = self._session.get(url, params=params, timeout=120.0)
+        resp.raise_for_status()
+
+        clean_lines = [ln for ln in resp.text.splitlines() if not ln.startswith("#")]
+        raw = pd.read_csv(io.StringIO("\n".join(clean_lines)), low_memory=False)
+        raw.columns = [c.strip().upper() for c in raw.columns]
+
+        # the "+" key is a cross product (MX x PEN, ...): keep only the pairs asked for
+        pedido = [currencies.get(str(a).strip()) == str(c).strip()
+                  for a, c in zip(raw["REF_AREA"], raw["CURRENCY"])]
+        df = raw[pedido].copy()
+        df["value"] = pd.to_numeric(df["OBS_VALUE"], errors="coerce")
+        df["date"] = pd.to_datetime(df["TIME_PERIOD"].str.strip(), format="%Y-%m-%d")
+        df["country_code"] = df["REF_AREA"].str.strip()
+        return (df[["date", "country_code", "value"]]
+                .dropna(subset=["value"])          # OBS_STATUS M = no observation that day
+                .reset_index(drop=True))
 
     def _parse_cpi(self, text: str) -> pd.DataFrame:
         clean_lines = [ln for ln in text.splitlines() if not ln.startswith("#")]

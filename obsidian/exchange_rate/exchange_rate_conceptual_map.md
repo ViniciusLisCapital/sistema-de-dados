@@ -1,7 +1,7 @@
 # Exchange Rate — Conceptual Map
 
 **What this file is.** This is the exchange-rate agent's contract with the rest of the system. It says
-what every memo must answer (Part 1, central questions), what moves the BRL (Part 2), what this
+what every report must answer (Part 1, central questions), what moves the BRL (Part 2), what this
 agent tells the others matters TO IT (Part 3, outputs), and what the others told this agent matters
 TO THEM (Part 4, inputs). Part 5 is the index of concepts read out of the literature. The agent reads
 Parts 1–4 on every run and uses Part 5, the concept pages, the syntheses and `clean_md/` to go deeper.
@@ -20,8 +20,8 @@ tells the agent what to flag; it never limits the FX analysis.
 
 **Two layers.** What is written here is the **fixed** layer: what matters every cycle. On top of it,
 each cycle has a **dynamic** layer, set by the theses and arguments of that cycle's report: an agent
-whose thesis hinges on something asks for it explicitly in its memo. The dynamic layer lives in the
-memos, not in this file. Every output here must appear as an input in the other agent's map and vice
+whose thesis hinges on something asks for it explicitly in its report. The dynamic layer lives in the
+reports, not in this file. Every output here must appear as an input in the other agent's map and vice
 versa; until the monetary-policy map exists, both tables are **drafts**.
 
 **Data rule (decided 2026-09-30, types 2026-10-01).** Three types of data. *Endogenous*: this
@@ -39,21 +39,21 @@ Curation material (sources processed, processing status, coverage notes) lives i
 
 ---
 
-## Part 1 — Central questions: what every memo answers
+## Part 1 — Central questions: what every report answers
 
-Decided 2026-10-02. Every FX memo answers these four questions. They are the **floor, not the
+Decided 2026-10-02. Every FX report answers these four questions. They are the **floor, not the
 ceiling**: the agent is expected to go beyond them — new insights, alerts, anything the data or the
-other agents' memos raise — and nothing here limits what it may say. The questions are kept in
-Portuguese, the language the memo is written in.
+other agents' reports raise — and nothing here limits what it may say. The questions are kept in
+Portuguese, the language the report is written in.
 
 | # | Question | What the answer covers | Where to look |
 |---|---|---|---|
 | Q1 | Quais as condições subjacentes do mercado de câmbio brasileiro? | How the market is working: liquidity, flows, positioning, onshore dollar scarcity, the central bank's presence | 2.5, 2.6, 2.7 |
 | Q2 | Como estão os fundamentos macroeconômicos para o câmbio? | Carry, risk premium, terms of trade, external accounts and valuation | 2.1, 2.2, 2.4, 2.5, 2.8 |
 | Q3 | O que explica a dinâmica recente do câmbio? | What moved the BRL and through which channel, including whether the move is global or idiosyncratic. That split is part of the model's explanation (FX Model or Structural Model), read against the LatAm peers and the dollar indices | 2.1–2.7 · data `cmb_fx_latam`, `cmb_dollar_index`, `cmb_dollar_index_em` · mental models Verde §5.5 ("Brasil como passageiro"), Kapitalo §1.5 |
-| Q4 | Qual o cenário prospectivo para o câmbio? | The memo's thesis: central value, base range and tails for each horizon (1 month, 6 months, 1 year), expressed through the Structural Model | memo §1 · 2.9 for the tail |
+| Q4 | Qual o cenário prospectivo para o câmbio? | The report's thesis: central value, base range and tails for each of the six quarters of the Structural Model (PTAX at the close of the quarter), the central from the model's base scenario, the distribution around it from the agent's qualitative tempero | report §1 · 2.9 for the tail |
 
-- What "recente" means in Q3 is still to be defined.
+- "Recente" in Q3 is the agent's call (user, 2026-10-07): as a reference, 1 to 3 months, also considering what happened since the last cycle's report, especially if that was more than a month ago, without being restricted to it.
 - The marginal-versus-level distinction is deliberately left out for now (user decision, 2026-10-02).
 
 ---
@@ -70,7 +70,7 @@ Portuguese, the language the memo is written in.
   Kapitalo §3.1 and §9.2, GS §6.1–6.2.
 - **Data:** `diferenciais_juros` (nominal and ex-post real, Selic vs. Fed Funds), `cmb_real_rates`
   (ex-post real rates for the peers). The ex-ante differential, which is what UIP is actually about,
-  is not a stored series; it can be built from `br_interest_rate` and `us_interest_rate`.
+  is not a stored series; it can be built from `br_di_grade` and `us_interest_rate`.
 - **Trap.** The same rate hike can appreciate or depreciate the currency, depending on whether it is
   read as credibility or as validation of a higher inflation path. See Part 3 (S2): this judgement
   comes from the monetary-policy agent.
@@ -109,7 +109,7 @@ Portuguese, the language the memo is written in.
   short-run version of the same channel.
 - **Read:** [[balance_of_payments_approach]], [[mundell_fleming_policy_mix]].
 - **Mental models:** Verde §5.1, §5.7 and §8.2, Kinea §3.6, Kapitalo §2.5.
-- **Data:** `cmb_balanco_pagmt`, `cmb_fluxo_cambial`, `cmb_cambio_contratado`, and the trade detail
+- **Data:** `cmb_balanco_pagmt`, `cmb_cambio_contratado` (the FX flow), and the trade detail
   in `cmb_comex_*`.
 
 ### 2.6 Positioning
@@ -147,13 +147,11 @@ Portuguese, the language the memo is written in.
 - **Mental models:** Verde §8.3–8.5 (historical analogues), Kinea §6.6.
 - **Data:** `cmb_reservas_bc`, `cmb_risco_pais`, `cmb_balanco_pagmt`.
 
-### Data the agent does not see yet
+### Where the agent reads the data
 
-The agent's snapshot today (`analytics/brasil/exchange_rate/agent_data.py`) covers PTAX, the rate
-differentials, REER, CFTC positioning, FX flow, balance of payments, terms of trade and the central
-bank's reserves, swaps and interventions. **It does not carry** the CDS (2.2), the dollar indices,
-the S&P 500 or the LatAm peers (2.3 and the global-vs-idiosyncratic test), or the commodity indices
-(2.4). Closing that gap is part of the agent rebuild.
+Since 2026-10-07 the agent reads every table of the list through the cycle's F(A),
+`obsidian/ciclos/<date>/dados/F_cambio.md`, fixed for the whole cycle. The gap the old snapshot had
+(CDS, dollar indices, S&P 500, LatAm peers, commodity indices) is closed.
 
 ---
 

@@ -212,8 +212,14 @@ _BCB_RENAME = {
 _BCB_INICIO = "2000-01"
 
 
-def _load_bcb() -> dict:
+def _load_bcb(cauda: pd.DataFrame | None = None) -> tuple[dict, dict]:
     """Agregados BCB/SGS: le inflc_agregados e deriva as versoes dessazonalizadas.
+
+    `cauda` (name/dt/value, ver `_cauda_ipca()`) estende cada serie com os meses
+    que o IBGE ja divulgou e o SGS ainda nao espelhou -- so DEPOIS do ultimo mes
+    oficial, nunca dentro da historia. Entra antes do STL, para a `_ma3_sa` andar
+    junto. Devolve tambem {serie: [meses emendados]}, que a pagina usa para dizer
+    que aquele mes ainda nao e o numero do BCB.
 
     Ate 2026-09 isto lia `data/ipca_bcb_series.csv`, uma copia que o proprio
     relatorio buscava no SGS e que nenhuma atualizacao da base alcancava -- foi
@@ -243,10 +249,109 @@ def _load_bcb() -> dict:
             .reset_index(drop=True))
     df["value"] = df["value"].astype(float)
 
+    emendados: dict = {}
+    if cauda is not None and not cauda.empty:
+        ultimo = df.groupby("name")["dt"].max()
+        nova = cauda[cauda["dt"] > cauda["name"].map(ultimo).fillna("9999-99")].dropna(subset=["value"])
+        if not nova.empty:
+            df = pd.concat([df, nova[["name", "dt", "value"]]]).sort_values(["name", "dt"]).reset_index(drop=True)
+            emendados = {n: sorted(g["dt"].tolist()) for n, g in nova.groupby("name")}
+
     sa = _apply_stl_ma3(df)
     if not sa.empty:
         df = pd.concat([df, sa]).sort_values(["name", "dt"]).reset_index(drop=True)
-    return _series_dict(df)
+    return _series_dict(df), emendados
+
+
+def _load_indice_geral() -> pd.DataFrame:
+    """inflc_indice_geral: o indice geral do IPCA e do IPCA-15 como o IBGE publica
+    (numero-indice, variacao mensal, no ano e em 12 meses), direto do SIDRA.
+
+    Chega na manha da divulgacao, ao contrario do SGS, e e o unico insumo que da
+    o acumulado exato de uma janela qualquer -- ver o docstring do ETL.
+    """
+    req = MySQLDataRequester(_DATABASE, "inflc_indice_geral")
+    req.connect()
+    df = req.request_data()
+    req.close_connection()
+    df["dt"] = pd.to_datetime(df["date"]).dt.strftime("%Y-%m")
+    for col in ["numero_indice", "var_mensal", "var_ano", "var_12m"]:
+        df[col] = pd.to_numeric(df[col])
+    return df.sort_values(["indice", "dt"]).reset_index(drop=True)
+
+
+def _indice_geral_payload(ig: pd.DataFrame) -> dict:
+    out = {}
+    for indice, g in ig.groupby("indice"):
+        g = g[g["dt"] >= "1999-01"]
+        out[indice] = {"dates": g["dt"].tolist()}
+        for col in ["numero_indice", "var_mensal", "var_12m"]:
+            out[indice][col] = [None if pd.isna(v) else float(v) for v in g[col]]
+    return out
+
+
+# Serie do BCB -> recorte de inflc_dim que a reproduz a partir dos subitens.
+# Mesma conta dos nucleos do IPCA-15 (_weighted_avg_by_group), agora para o IPCA
+# cheio, onde a serie oficial existe e serve de gabarito. Medido contra o BCB de
+# jan/2020 a ago/2026 (80 meses): erro maximo de 0,006 p.p. em todas, e 86-100%
+# dos meses identicos na 2a casa -- o resto e o arredondamento por subitem do IBGE.
+_CAUDA_RECORTES = {
+    "IPCA_nucleo_EX0":              ("nucleo_ex0", 1),
+    "IPCA_nucleo_EX01":             ("nucleo_ex01", 1),
+    "IPCA_nucleo_EX02":             ("nucleo_ex02", 1),
+    "IPCA_nucleo_EX03":             ("nucleo_ex03", 1),
+    "IPCA_nucleo_EX03_servicos":    ("nucleo_ex03_servicos", 1),
+    "IPCA_nucleo_EX03_industriais": ("nucleo_ex03_industriais", 1),
+    "IPCA_nucleo_EXFE":             ("nucleo_exfe", 1),
+    "IPCA_livres":                  ("grupo", "Livres"),
+    "IPCA_administrado":            ("grupo", "Monitorados"),
+    "IPCA_alimentacao":             ("subgrupo", "Alimentos"),
+    "IPCA_servicos":                ("subgrupo", "Serviços"),
+    "IPCA_industriais":             ("subgrupo", "Bens Industriais"),
+    "IPCA_comercializaveis":        ("comercializavel", "Comercializável"),
+    "IPCA_nao_comercializaveis":    ("comercializavel", "Não Comercializável"),
+}
+
+
+def _cauda_ipca(decomposicao: pd.DataFrame, item: pd.DataFrame, ig: pd.DataFrame) -> pd.DataFrame:
+    """As series do IPCA cheio que o BCB publica, no mes que o SGS ainda nao tem.
+
+    Por que: no dia do IPCA o IBGE ja publicou os subitens (inflc_decomposicao
+    anda) e o SGS ainda nao espelhou -- o nucleo do BCB chega horas ou um dia
+    depois. Sem isto, a pagina mostrava o mes novo na arvore e "—" em todos os
+    nucleos. Mesmo arranjo do `_splice_headline_15()`: o oficial tem prioridade
+    em todo mes que cobre, isto so preenche a ponta, e some na proxima carga do
+    inflc_agregados.
+
+    O headline e o 12 meses NAO sao reconstruidos: vem do proprio IBGE
+    (inflc_indice_geral), que e o numero publicado. A reconstrucao por subitem
+    fica 0,02 p.p. abaixo no 12 meses -- foi esse o 4,56 contra 4,58 de set/2026.
+
+    P55, MA, MS, DP e difusao vem das mesmas funcoes do IPCA-15, cada uma ja
+    validada contra a serie oficial do IPCA cheio (ver os docstrings delas).
+    """
+    sub = decomposicao[decomposicao["indice"] == "IPCA"].copy()
+    if sub.empty:
+        return pd.DataFrame(columns=["name", "dt", "value"])
+    sub["dt"] = sub["date"].dt.strftime("%Y-%m")
+    frames = [_weighted_avg_by_group(
+        sub, {name: sub[col] == val for name, (col, val) in _CAUDA_RECORTES.items()})]
+
+    headline = _compute_headline(decomposicao, "IPCA")
+    for name, df in [
+        ("IPCA_nucleo_P55", _compute_p55(decomposicao, "IPCA")),
+        ("IPCA_nucleo_medias_aparadas_sem_suavizacao", _compute_ma(item, "IPCA")),
+        ("IPCA_nucleo_medias_aparadas", _compute_ms(item, "IPCA")),
+        ("IPCA_nucleo_DP", _compute_dp(decomposicao, item, "IPCA", headline)),
+        ("IPCA_indice_difusao", _compute_difusao(decomposicao, "IPCA")),
+    ]:
+        if not df.empty:
+            frames.append(df.assign(name=name)[["name", "dt", "value"]])
+
+    oficial = ig[ig["indice"] == "IPCA"]
+    frames.append(pd.DataFrame({"name": "IPCA", "dt": oficial["dt"], "value": oficial["var_mensal"]}))
+    frames.append(pd.DataFrame({"name": "IPCA_12m", "dt": oficial["dt"], "value": oficial["var_12m"]}))
+    return pd.concat(frames, ignore_index=True)
 
 
 def _seasonal_cutoff(dts: "pd.Series") -> str:
@@ -721,7 +826,13 @@ def run(output: str = "reports/brasil/Inflation.html") -> None:
           f"{len(_f)} faixas ({', '.join(f'Q{x[chr(113)]}={x[chr(110)]}' for x in _f)}), "
           f"janela {data['inercia']['janela']['inicio']}→{data['inercia']['janela']['fim']}")
 
-    data["bcb"] = _load_bcb()
+    indice_geral = _load_indice_geral()
+    data["indice_geral"] = _indice_geral_payload(indice_geral)
+    data["bcb"], data["bcb_emendados"] = _load_bcb(_cauda_ipca(decomposicao, item, indice_geral))
+    if data["bcb_emendados"]:
+        meses = sorted({m for v in data["bcb_emendados"].values() for m in v})
+        print(f"  BCB ainda sem {', '.join(meses)}: {len(data['bcb_emendados'])} séries do IPCA "
+              f"completadas com o IBGE (headline e 12m) e com o cálculo por subitem (núcleos)")
 
     series15 = _compute_ipca15_nucleos(decomposicao)
     grupos15 = _compute_ipca15_grupos(decomposicao)

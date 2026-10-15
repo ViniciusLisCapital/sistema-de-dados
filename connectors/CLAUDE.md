@@ -602,7 +602,7 @@ nas duas pontas do ano).
 
 ### `connectors/bis.py` — BIS Statistics API v1
 
-Sem autenticação. Três datasets SDMX-CSV expostos:
+Sem autenticação. Quatro datasets SDMX-CSV expostos:
 
 ```python
 from connectors.bis import BIS
@@ -620,6 +620,10 @@ df = bis.get_policy_rates(countries=["BR", "MX", "CL", "CO", "PE", "AR"], freq="
 # WS_LONG_CPI — Consumer Prices (série longa)
 df = bis.get_cpi(countries=["BR", "MX", "CL", "CO", "PE"], unit="yoy")
 # colunas: date (month-start), country_code, value (% a.a., YoY)
+
+# WS_XRU — câmbio bilateral contra o USD, diário (FREQ=D, COLLECTION=A)
+df = bis.get_fx_usd({"MX": "MXN", "CL": "CLP", "CO": "COP", "PE": "PEN"}, start="2000-01-01")
+# colunas: date, country_code, value (moeda local por USD)
 ```
 
 **Detalhes técnicos:**
@@ -637,6 +641,14 @@ df = bis.get_cpi(countries=["BR", "MX", "CL", "CO", "PE"], unit="yoy")
 - `WS_LONG_CPI` é live/atualizado mensalmente (cobre até o mês corrente, checado em 2026-08) — ao
   contrário do CPI de MX/CL/CO exposto no FRED (fonte OECD, descontinuado lá em 2023-2024) e de PE
   (sem série mensal alguma no FRED). Preferir `WS_LONG_CPI` a FRED para CPI desses 4 países.
+- `WS_XRU` (o nome do dataset diário é esse mesmo, com `FREQ=D` na chave — não existe `WS_XRU_D`,
+  que devolve 404) é a taxa **oficial** de cada banco central republicada pelo BIS: uma cotação por
+  dia, sem os ticks errados do Yahoo (medido em 2026-10-07, ver `cmb_fx_latam` em
+  `domain/db/CLAUDE.md`). Duas coisas a saber: devolve **todo dia corrido que a fonte publica** — a
+  TRM da Colômbia sai sábado e domingo —, então quem calcula volatilidade filtra os dias úteis; e o
+  BIS republica **em lote**, com o último ponto 1–2 semanas atrás de hoje (8 a 14 dias medidos,
+  conforme o país). A chave `+` é produto cartesiano (MX × PEN …); `get_fx_usd()` guarda só os pares
+  pedidos.
 - Retry: 4 tentativas, backoff 1s, respeita `Retry-After` (429/5xx).
 
 ### `connectors/yfinance.py` — Yahoo Finance (via pacote `yfinance`)

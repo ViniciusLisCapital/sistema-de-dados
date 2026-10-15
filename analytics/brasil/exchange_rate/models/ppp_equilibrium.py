@@ -59,8 +59,9 @@ the dashboard first, decide on the regression afterward):
           FX risk. relative_carry_vol = carry_vol - mean(peer_carry_vol) for
           MX/CL/CO/PE, each peer's own carry_vol built the identical way
           (peer policy rate - Fed Funds, over that peer's own trailing-6m
-          vol vs USD from the new macro_international.cmb_fx_latam, Yahoo
-          Finance MXN=X/CLP=X/COP=X/PEN=X). Both added 2026-07-28, same
+          vol vs USD from macro_international.cmb_fx_latam -- BIS WS_XRU,
+          the central banks' official daily rates, since 2026-10-07; Yahoo
+          Finance before that). Both added 2026-07-28, same
           equal-weight peer-average convention as relative_carry.
   dxy_em  macro_international.cmb_dollar_index_em.dxy_em (FRED DTWEXEMEGS,
           "Nominal Broad EM U.S. Dollar Index" — the Fed's own trade-weighted
@@ -430,7 +431,7 @@ def _load_daily_ptax() -> pd.Series:
 
 def _load_daily_peer_fx() -> pd.DataFrame:
     """Wide daily LatAm peer FX rates vs USD (macro_international.cmb_fx_latam,
-    Yahoo Finance MXN=X/CLP=X/COP=X/PEN=X), one column per country_code."""
+    BIS WS_XRU daily, weekdays only), one column per country_code."""
     fx = _read_table("macro_international", "cmb_fx_latam")
     fx["date"] = pd.to_datetime(fx["date"])
     fx["value"] = fx["value"].astype(float)

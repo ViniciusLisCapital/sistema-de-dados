@@ -454,16 +454,13 @@ converted by hand, is in the release-time section above.
   cambial* weekly (the "Nota Cambial", Wednesdays), and that release appears on **none** of BCB's 29
   calendar lists — verified live: the only relevant list, `Estatísticas do setor externo`, returns
   monthly events only (2026-07-28, 2026-08-27) for Jul–Sep 2026. So the calendar, which is built from
-  those feeds for every BCB group, has no way to know the weekly note exists. Consequences, all three
-  distinct:
+  those feeds for every BCB group, has no way to know the weekly note exists. Two consequences:
   1. There is no calendar row for the weekly release, and can't be until someone enters the dates by
      hand or scrapes the note's own page. `update_calendar.py` cannot help — there is no feed.
-  2. `cmb_fluxo_cambial` holds the **monthly** SGS aggregation (24352/24370/24371/…), not the weekly
-     detail. Checked live: SGS's own latest for those series is 2026-07-01, exactly what the DB has —
-     that table is *not* stale, it simply isn't the weekly product.
-  3. The weekly detail (CEP/CBE sub-items) is **not ingested at all**. The script's own docstring
-     already flagged this: the SGS codes for that granularity "não foram identificados com certeza na
-     fase de pesquisa". Still open.
+  2. The weekly note **is** Tabela 13 ("Movimento de câmbio contratado", SGS 13961–13970), the same
+     product `cmb_cambio_contratado` already loads daily — so the weekly *data* is ingested; only the
+     release *date* has no calendar row. (`cmb_fluxo_cambial`, which this item used to describe, held
+     NUCI/IBC-Br/PNADC under FX-flow names and was dropped 2026-10-07 — see `domain/db/CLAUDE.md`.)
 - **International — still missing.** `cmb_reer` / `cmb_real_rates` (**BIS** — cadence not verified, do not assume the "3rd week of the month" figure that circulated in an earlier draft; it was an unchecked assumption, never confirmed) and `clima_oni` (**NOAA CPC** — monthly, but the "2nd Thursday" rule is likewise unverified). Both were left OUT of the YAML rather than guessed. `cmb_cot_fx` (CFTC) and `diferenciais_juros`' Fed side (FOMC) **are now in** — both read off the issuing body's own published calendar.
 - **Daily market series need no calendar entries**: `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_fx_latam`, `comm_brent` are continuous market/daily data with no discrete release event. Deliberately not modelled as dated entries.
 - **LatAm CPI dates** (INEGI/INE/DANE/INEI — feed `cmb_real_rates`) not researched.
