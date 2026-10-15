@@ -65,7 +65,7 @@ Duas etapas, nesta ordem. A etapa 1 dá a central; a etapa 2 dá a distribuiçã
 
 Um caminho que não seja óbvio pela história do cenário ganha uma linha de motivo abaixo da tabela.
 
-**Acompanhamento das exógenas.**
+**Acompanhamento das exógenas.** *Suspenso desde 2026-10-15, junto com as linhas de Alerta das fichas: vai para o dashboard de Report (SISTEMA_AGENTES.md IV.ix).*
 
 | Exógena | Tipo · status | Alerta | Checkpoints |
 |---|---|---|---|

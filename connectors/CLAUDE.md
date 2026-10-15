@@ -26,6 +26,9 @@ df = ibge.get(
 - Frequência inferida do cabeçalho `D2N` (`"Mês"`, `"Trimestre"`, `"Trimestre Móvel"`, `"Semestre"`, `"Ano"`).
 - `"trimestral móvel"` (PNAD) é mapeado para formato `YYYYMM` igual ao mensal.
 - Retry: 6 tentativas, backoff 1s, respeita `Retry-After`.
+- Certificado verificado pelo SO (`truststore`), não pelo certifi: desde a renovação de 2026-10-06 o
+  servidor manda só o certificado folha, e o certifi recusa com `CERTIFICATE_VERIFY_FAILED`. Mesmo
+  conserto do `comexstat_bulk.py`.
 
 ### `connectors/bcb.py` — APIs SGS e Focus do BCB
 

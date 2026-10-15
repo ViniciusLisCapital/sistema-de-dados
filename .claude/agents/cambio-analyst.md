@@ -125,8 +125,13 @@ Never read `repository/`.
     grouped. For FX: CDS 5 anos (fiscal), volatilidade implícita do real, dólar contra emergentes,
     S&P 500, IC-Br em dólar, Fed Funds, CPI dos EUA. Never set an endogenous variable (Selic, IPCA,
     hiato, expectativas, PTAX): the model solves them. Run the model through a G that calls the
-    simulator (`SISTEMA_AGENTES.md` IV.vi) and report its output per scenario. Until that function
-    exists, say so and leave the model output and the central blank; never estimate them yourself.
+    simulator (`SISTEMA_AGENTES.md` IV.vi) and report its output per scenario; never estimate it
+    yourself. The G imports `analytics.agent_system.modelo`: `sim = modelo.carregar("<ciclo>")`,
+    `print(modelo.listar(sim))` for the input keys and coefficients, then one
+    `modelo.rodar(sim, caminhos={...}, mult={...})` per scenario and `print(modelo.texto(res))`.
+    Paths are levels in the simulator's units, by quarter ("4T26"); an input you do not set stays
+    at the simulator's default. The band it prints is the 90% posterior of the weights only, not a forecast interval: it does
+    not include the equations' error. The distribution is yours (step 2).
   - **Step 2, the tempero.** What you add to the model to shape the distribution, one card each:
     - (i) an input's effect stronger or weaker than estimated, as a multiplier of its coefficient in a
       scenario, placed against the coefficient's 90% posterior interval. The further into the tail of
@@ -137,8 +142,9 @@ Never read `repository/`.
       size, duration.
     - A channel that is in the model enters only through (i). Regime stress on the risk premium is a
       stronger CDS effect (i), not a deviation added on top of the CDS path.
-  - Every alert has the fixed form `indicador · tipo · limiar · janela`, the type being patamar,
-    variação or conjunto.
+  - **No alerts for now** (decided 2026-10-15): leave out the "Acompanhamento das exógenas" table and
+    the Alerta lines of the cards. Following the exogenous inputs moves to the Report dashboard.
+    When alerts come back, they have the fixed form `indicador · tipo · limiar · janela`.
 - **Section 4:**
   - Answer E1–E7 one line each. When the map's alert condition for an item happened, mark it
     **em destaque**, with the reason and the argument. Never write "gatilho".

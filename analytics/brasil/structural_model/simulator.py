@@ -133,16 +133,19 @@ exogenas"*. Ligar uma no futuro era simular "um choque do tamanho daquela crise"
 e uma pergunta legitima e nao e a que esta tela responde -- o choque em qualquer
 tamanho ja se aplica pelos cartoes que sobraram.
 
-**E a janela e FIXA: os `H_PADRAO` trimestres seguintes ao fim da janela estimada.**
-Nao ha "comecar em" -- decisao do usuario em 2026-09-22, *"sempre projeta para frente da
-janela estimada"*. Estimando ate 2026T2, a projecao e 2026T3..2029T2.
+**E a janela parte do ultimo trimestre COM DADO, nao do fim da estimacao.** Nao ha
+"comecar em" -- decisao do usuario em 2026-09-22, *"sempre projeta para frente da janela
+estimada"* --, e desde 2026-10-15 o ponto de partida e o trimestre seguinte ao ultimo
+trimestre completo da grade: *"se ja temos o dado de fechamento do 3T/2026, nao faz
+sentido projetar isso"*. Estimando ate 2026T2 com o 2026T3 fechado, a projecao e
+2026T4..2029T3, com os pesos de 2026T2: o dado anda, a estimacao nao.
 
-O que isso compra e a **pratica do FX Report**: a janela nao se mexe quando o dado anda,
-entao o trimestre que sai passa a cair DENTRO dela. Um periodo da janela que ja tem dado
-publicado aparece travado e verde -- o `final` do `FC.nowcast` de la, cuja razao esta
-escrita no CSS daquele arquivo: *"so a guess never overrides data that's already known"*.
-A tela se atualiza sozinha conforme o dado sai, sem reestimar e sem ninguem mexer num
-seletor; reestimar move o corte e a janela anda junto.
+Ate 2026-10-15 a partida era o fim da estimacao, e um trimestre fechado depois dele caia
+DENTRO da janela, travado e verde -- a pratica do `FC.nowcast` do FX Report, *"so a guess
+never overrides data that's already known"*. Na pratica a grade nunca tinha esse
+trimestre: a (R) lia a janela estimada do dado, e nao dos desenhos, entao o primeiro
+trimestre fechado depois da estimacao fazia o construtor levantar. A trava continua na
+pagina e vale para uma premissa que tenha dado alem do ultimo trimestre completo.
 
 **O preco, declarado:** nao da mais para rodar a conta sobre a historia pela tela. A
 funcao continua aceitando qualquer `i0` -- e como `main()` e o teste a chamam -- mas a
@@ -356,6 +359,7 @@ def _insumos_fx(df: pd.DataFrame, am_idx) -> dict:
         "infl_br": 100 * np.log(n["ipca_index"]).diff(),
         "infl_us": 100 * np.log(n["cpi_index"]).diff(),
         "carry_vol": (df["selic"] - ffr) / vol,
+        "selic": df["selic"],
     }
 
 
@@ -1416,6 +1420,15 @@ def _eq_cambio(ins: dict, am_idx, des: dict) -> dict:
     for c in canais:
         s = ins["carry_vol"] if c == "carry_vol" else ins["niveis"][c]
         nivel[c] = _ser(s.reindex(am_idx))
+    # O ultimo trimestre da grade e a defasagem do primeiro projetado. A vol implicita
+    # vem de uma planilha e pode nao ter o fechamento dele; ai o carry daquele trimestre
+    # usa a ultima vol conhecida, que e o mesmo valor que o cartao segura para a frente.
+    # So a PONTA: um buraco no meio mudaria o ajuste estimado.
+    if "carry_vol" in nivel and nivel["carry_vol"][-1] is None:
+        u = am_idx[-1]
+        vol = ins["vol"].reindex(am_idx).ffill().loc[u]
+        nivel["carry_vol"][-1] = round(float((ins["selic"].loc[u] - ins["ffr"].loc[u])
+                                             / vol), 6)
 
     return {
         "key": "F",
@@ -1494,7 +1507,13 @@ def construir(df: pd.DataFrame | None = None) -> dict:
     # as duas anteriores ao inicio da amostra de estimacao, que sao as condicoes
     # iniciais de qualquer partida naquele ponto.
     am = d[d["y"].notna()]
+    # A janela ESTIMADA sai dos desenhos, como nas outras quatro equacoes, e nao do dado:
+    # com um trimestre fechado depois da estimacao, o dado anda e os pesos nao. Lida do
+    # dado, ela andava sozinha, a (R) passava a dizer que foi estimada ate um trimestre
+    # que as outras nao viram, e o construtor levantava no primeiro trimestre publicado.
+    g = des["gerado_de"]
     est = d[["y", "r1", "r1b", "r2", "d08", "d20"]].dropna()
+    est = est.loc[pd.Period(g["ini"], "Q"):pd.Period(g["fim"], "Q")]
 
     ins = _insumos_fx(df, am.index)
     ins_i = _insumos_inflacao(df)
@@ -1528,9 +1547,10 @@ def construir(df: pd.DataFrame | None = None) -> dict:
 
     p = {
         "h_padrao": H_PADRAO, "h_max": H_MAX,
-        # O ponto de partida NAO e escolha de quem le: e o trimestre seguinte ao fim da
-        # janela estimada, e so ele. Ver o bloco "Horizonte" no topo deste arquivo.
-        "i0": int(am.index.get_loc(est.index[-1])) + 1,
+        # O ponto de partida NAO e escolha de quem le: e o trimestre seguinte ao ULTIMO
+        # TRIMESTRE COM DADO da grade, e so ele. Ver o bloco "Horizonte" no topo deste
+        # arquivo.
+        "i0": len(am.index),
         # A primeira posicao da grade de onde as CINCO conseguem partir juntas -- a tela
         # so parte de `i0`, mas `main()` e o teste rodam a conta solta sobre a historia,
         # e ali a (I) e a que mais precisa de passado: quatro trimestres.

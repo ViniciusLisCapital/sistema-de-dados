@@ -170,6 +170,16 @@ check("  ignora entrada futura (24/08)",
 check("  e NAO usa o trimestre do outro grupo",
       exp_o["tab_semanal"]["esperado"] > date(2026, 4, 1), True)
 
+# Divulgacao empurrada para TERCA por feriado (Focus de 13/10/2026, segunda 12/10 e
+# Aparecida): terca - 3d e sabado, e a coleta fechou na sexta 09/10. Sem recuar o fim de
+# semana, a tabela com a sexta aparecia atrasada.
+DOC_TER = {"expectation_overrides": {"tab_semanal": {"release_minus_days": 3, "why": "x"}},
+           "groups": [{"group": "g_semanal", "institution": "BCB", "tables": ["tab_semanal"],
+                       "entries": [{"date": "2026-10-05"}, {"date": "2026-10-13"}]}]}
+exp_t, _ = expectativas(DOC_TER, date(2026, 10, 15))
+check("release_minus_days numa terca recua para a sexta",
+      exp_t["tab_semanal"]["esperado"], date(2026, 10, 9))
+
 
 # ---------------------------------------------------------------------------
 # 5. max_age_days — conteudo diario cobrado contra HOJE, nao contra periodo

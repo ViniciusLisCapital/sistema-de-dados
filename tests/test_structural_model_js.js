@@ -661,6 +661,9 @@ const derivados = {
   // delas entrou carregando data de decisao nossa.
   tblFxComp: _prosa('tblFxComp'),
 };
+// Sem trimestre em aberto (as primeiras semanas de um trimestre) o aviso nao existe, e
+// exigir texto nele reprovaria a pagina por causa do calendario.
+if (!D.meta.aberto) delete derivados.flagAberto;
 ok(noHtml.length >= 3, 'achou os blocos de prosa no HTML', String(noHtml.length));
 ok(fixos.length >= 2, 'ha prosa escrita a mao', String(fixos.length));
 ok(noHtml.length - fixos.length >= 1, 'ha prosa preenchida no render');
@@ -2502,12 +2505,16 @@ if (!D.sim) {
   ctx.activateTab('tab-sim');
   ok(!!PLOT['ch-sim'], 'ao abrir a aba o grafico e pintado');
 
-  // A janela nao se escolhe: ela comeca no trimestre SEGUINTE ao fim da janela
-  // estimada, e so ali -- pedido do usuario em 2026-09-22, *"sempre projeta para
-  // frente da janela estimada"*. Antes a aba abria em 2006T3, refazendo 2008.
-  ok(D.sim.i0 === EQ.est_i1 + 1,
-     'o payload declara a partida como o trimestre seguinte ao fim da estimacao',
-     'i0 = ' + D.sim.i0 + ', estimou ate ' + EQ.est_fim + ' (indice ' + EQ.est_i1 + ')');
+  // A janela nao se escolhe: ela comeca no trimestre SEGUINTE ao ultimo trimestre com
+  // dado da grade, e so ali -- pedidos do usuario em 2026-09-22 (*"sempre projeta para
+  // frente"*) e 2026-10-15 (trimestre que ja fechou nao se projeta). Antes a partida era
+  // o fim da estimacao, o que projetaria um trimestre ja publicado.
+  ok(D.sim.i0 === D.sim.rot.length && D.sim.i0 > EQ.est_i1,
+     'o payload declara a partida como o trimestre seguinte ao ultimo com dado',
+     'i0 = ' + D.sim.i0 + ', grade ate ' + D.sim.rot[D.sim.rot.length - 1]);
+  ok(document.getElementById('simJanela').innerHTML.indexOf(D.sim.rot[D.sim.i0 - 1]) >= 0
+     && document.getElementById('simJanela').innerHTML.indexOf(EQ.est_fim) >= 0,
+     'e a barra diz as duas datas: de onde parte e ate onde os pesos foram estimados');
   ok(SIM.i0 === D.sim.i0, 'e a tela abre exatamente nela', String(SIM.i0));
   const barraJan = document.getElementById('simJanela').innerHTML;
   ok(!/<select/.test(barraJan), 'nao ha seletor de partida: a janela e uma so');

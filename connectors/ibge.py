@@ -26,11 +26,13 @@ from __future__ import annotations
 
 import logging
 import re
+import ssl
 from dataclasses import dataclass
 from typing import Iterable, Mapping, Sequence, Union
 
 import pandas as pd
 import requests
+import truststore
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -208,6 +210,20 @@ class IBGE:
 # Session com retry e UA
 # ---------------------------------------------------------------------------
 
+class _TruststoreAdapter(HTTPAdapter):
+    """Verifica o certificado pelo SO (truststore), e nao pelo bundle do certifi.
+
+    Desde a renovacao de 2026-10-06 o servicodados.ibge.gov.br manda so o certificado
+    folha, sem o intermediario (Sectigo DV R36). O certifi nao busca a cadeia e recusa
+    com CERTIFICATE_VERIFY_FAILED; o Windows a completa, como o curl. Mesmo conserto do
+    `comexstat_bulk.py`.
+    """
+
+    def init_poolmanager(self, *args, **kwargs):
+        kwargs["ssl_context"] = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        return super().init_poolmanager(*args, **kwargs)
+
+
 def _build_session() -> requests.Session:
     s = requests.Session()
     s.headers["User-Agent"] = "lis-capital-ibge-connector/1.0"
@@ -218,7 +234,7 @@ def _build_session() -> requests.Session:
         allowed_methods=frozenset(["GET"]),
         respect_retry_after_header=True,
     )
-    s.mount("https://", HTTPAdapter(max_retries=retry))
+    s.mount("https://", _TruststoreAdapter(max_retries=retry))
     return s
 
 

@@ -29,6 +29,17 @@ node tests/test_structural_model_browser.js                                   # 
 gravados por [`bayes/`](bayes/CLAUDE.md). Reestimar é um passo próprio e explícito; o caminho
 inteiro está lá.
 
+**A projeção parte do último trimestre COM DADO, não do fim da estimação** (decisão do usuário,
+2026-10-15: *"se já temos o dado de fechamento do 3T/2026, não faz sentido projetar isso"*).
+`p["i0"]` é o trimestre seguinte ao último completo da grade; os pesos seguem os da estimação, e a
+barra da aba diz as duas datas. Duas coisas que vieram junto: a (R) lia a janela estimada do dado e
+não dos desenhos, e com isso o primeiro trimestre fechado depois da estimação fazia `construir()`
+levantar ("estimadas até trimestres diferentes") — agora lê dos desenhos, como as outras quatro; e
+a vol implícita vem de planilha e pode não ter o último trimestre — o carry dele usa a última vol
+conhecida, e o teste JS "a série da volatilidade termina no mesmo trimestre que a do risco fiscal"
+reprova até a planilha ser atualizada. O agente de câmbio roda esta mesma conta por
+`analytics/agent_system/modelo.py`.
+
 | Módulo | O que faz |
 |---|---|
 | `panel.py` | Painel trimestral dos insumos. `construir()` monta do banco, `salvar()` grava `data/panel.csv`. Importa `q`/`serie`/`para_q`/`focus_ipca_12m` de `modelo_agregado/modelo_painel.py` — não copia. `ipca_12m_publicado()` é **gabarito** da leitura de 12 meses e o termo de inflação de (E); `metas()` monta a meta do horizonte de 12 meses e devolve o último ano que o CMN de fato publicou; `ntnb_real()` lê a curva real da B3 nos vértices de 2 e 10 anos, de onde sai o aperto de (H) |

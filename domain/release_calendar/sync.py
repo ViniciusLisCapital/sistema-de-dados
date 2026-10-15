@@ -423,8 +423,14 @@ def expectativas(
             n = int(regra["release_minus_days"])
             if tabela in ultima_div:
                 quando, grupo, inst = ultima_div[tabela]
+                esperado = quando - timedelta(days=n)
+                # A coleta fecha num dia util. Divulgacao empurrada para terca por
+                # feriado (Focus de 13/10/2026) dava sabado, e a tabela, com a sexta,
+                # aparecia atrasada sem estar.
+                while esperado.weekday() >= 5:
+                    esperado -= timedelta(days=1)
                 out[tabela] = {
-                    "esperado": quando - timedelta(days=n),
+                    "esperado": esperado,
                     "grupo": grupo,
                     "institution": inst,
                     "divulgado_em": quando,

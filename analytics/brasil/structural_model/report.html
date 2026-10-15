@@ -5730,9 +5730,10 @@ function desenharSim(jaExiste) {
 // BLOCO 2 — os inputs
 // ═══════════════════════════════════════════════════════════════════════════════
 // Nem a janela nem o horizonte se escolhem: a projecao comeca no trimestre seguinte ao
-// fim da janela estimada e vai por `D.sim.h_padrao` trimestres -- decisao do usuario em
-// 2026-09-24, *"deixe sempre 12T"*. A barra DIZ qual e a janela e quantos trimestres
-// dela ja tem dado publicado -- que e o numero que cresce sozinho conforme o dado sai.
+// ULTIMO TRIMESTRE COM DADO e vai por `D.sim.h_padrao` trimestres -- decisoes do usuario
+// em 2026-09-24 (*"deixe sempre 12T"*) e 2026-10-15 (trimestre que ja tem dado nao se
+// projeta). Os pesos continuam os da estimacao, que pode ter parado antes: a barra diz
+// os dois, porque sao duas datas e o leitor precisa das duas.
 function renderSimJanela() {
   var g = _simGrade(SIM.i0, SIM.h), eq = simEq('R');
   var cob = _simCobertura('selic', SIM.i0, SIM.h);
@@ -5742,7 +5743,8 @@ function renderSimJanela() {
     + '<span class="sim-lab">A projeção</span>'
     + '<span class="sim-un">' + g.rot[0] + ' a ' + g.rot[g.rot.length - 1]
     + ' · ' + SIM.h + ' trimestres</span>'
-    + '<span class="sim-der">começa onde a estimação parou, em ' + eq.est_fim
+    + '<span class="sim-der">parte do último trimestre com dado, '
+    + D.sim.rot[SIM.i0 - 1] + ', com os pesos estimados até ' + eq.est_fim
     + (nPub
        ? ' · ' + nPub + (nPub === 1 ? ' trimestre já publicado, travado'
                                     : ' trimestres já publicados, travados')
@@ -6449,7 +6451,7 @@ function initSim() {
   // Um conjunto de pesos por equacao, todos na mediana do posterior dela.
   SIM.coef = {};
   D.sim.eq_ordem.forEach(function (ek) { SIM.coef[ek] = _simCoefPadrao(ek); });
-  // Fixa, e declarada no payload: o trimestre seguinte ao fim da janela estimada.
+  // Fixa, e declarada no payload: o trimestre seguinte ao ultimo trimestre com dado.
   SIM.i0 = D.sim.i0;
   SIM.h = Math.min(D.sim.h_padrao, D.sim.h_max);
   D.sim.var_ordem.forEach(function (k) {

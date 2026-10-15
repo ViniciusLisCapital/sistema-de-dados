@@ -55,3 +55,34 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
   do PEN da `cmb_fx_latam` saiu em 2026-10-07, quando a tabela trocou o Yahoo pelo BIS).
 
 O diagrama lê a lista pelo mesmo `motor.ler_lista()`.
+
+## modelo.py — o Modelo Estrutural para os G (SISTEMA_AGENTES.md IV.vi)
+
+```
+uv run python -m analytics.agent_system.modelo --ciclo AAAA-MM-DD [--refazer]
+```
+
+A função fixa que o G do agente chama para rodar o simulador do Modelo Estrutural, sem
+reestimar: `carregar(ciclo)`, `listar(sim)`, `rodar(sim, caminhos, mult)`, `texto(res)`. Uso e
+regras na docstring do módulo.
+
+- **Retrato por ciclo:** `dados/A/modelo_estrutural.json` (fora do git, ~0,6 MB), o payload de
+  `simulator.construir()` com os pesos de hoje. O `dados` o grava junto com o A; o comando acima
+  serve para um ciclo que já tem A. Monta do banco na hora em que roda (~40 s), então é para o
+  início do ciclo, como o A.
+- **A conta é `simulator.resolver()`**, não uma cópia. `carregar()` levanta se o retrato não
+  reproduzir o `sistema_padrao` do payload.
+- **Faixa:** a de `_simFaixasSistema` da página (desenho s de cada equação junto, quantis de
+  caudas iguais a 90%), só incerteza dos pesos. Conferida contra o JS no mesmo payload em
+  2026-10-15: 3e-9 no pior quantil. O teste não pega uma troca de `ceil` por `floor` no quantil
+  (mutante verificado); só essa paridade pegaria.
+- **Multiplicador:** `"<equação>.<coeficiente>"`, aplicado à mediana e a cada desenho. As
+  restrições continuam valendo (na (E) o peso da meta é `1 − e1 − e2`, na (R) `1 − t1 − t2`),
+  então multiplicar uma inércia move o peso que sobra. `sigma` e as marcas de crise não aceitam.
+- **A partida é o último trimestre com dado** (decisão do usuário, 2026-10-15: trimestre que
+  já fechou não se projeta). Os 12 trimestres seguintes saem projetados; o último com dado sai
+  como "observado". Exógena sem o dado dele fica no último valor e aparece como segurada (hoje
+  a vol implícita, que vem de planilha). Retrato gravado antes dessa regra levanta.
+
+Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
+banco; ~1 min).

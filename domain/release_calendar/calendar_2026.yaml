@@ -213,6 +213,13 @@ expectation_overrides:
       O grupo bcb_qpc nao tem periodo de referencia (reference_period e o numero da
       reuniao, nao uma data), e a coluna `date` da tabela e a data de PUBLICACAO lida
       da capa da planilha -- entao a expectativa e a propria data da divulgacao.
+  cred_fluxo_financeiro:
+    expect: none
+    why: >
+      O grafico de fluxo financeiro do credito saiu do RPM na edicao de set/2026 (nao foi
+      renomeado: nenhuma aba do anexo nem pagina do PDF o traz). Sem edicao que o publique,
+      a expectativa trimestral do bcb_rpm acusaria a tabela como atrasada para sempre.
+      Se ele voltar numa edicao futura, tire este override. Ver analytics/brasil/credit/CLAUDE.md.
   inflc_meta:
     expect: none
     why: >

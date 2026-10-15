@@ -75,6 +75,7 @@
     - v. Buscar um índice de commodities diário para complementar o Brent. (anotado 2026-10-07, ver depois)
     - vi. Teste solo da rodada 1 (só o câmbio), para avaliar o report e calibrar o F. (feito 2026-10-07: `obsidian/ciclos/2026-10-07/`; os comentários do usuário estão em IV.iv, IV.vii e IV.ix)
     - vii. Dados que o primeiro teste mostrou faltar (anotado 2026-10-15; o usuário decide depois, primeiro testa o formato do agente): fora da lista, o cupom cambial, a volatilidade implícita do real (é a que o Modelo Estrutural usa) e dado político e eleitoral; na base, o CDS parado em 08/09 e os termos de troca da Funcex em jul/2026.
+        - Decidido (2026-10-15): dado eleitoral não entra enquanto o sistema está em teste. A volatilidade implícita não temos; o agente a trata como premissa declarada. O CDS parado em 08/09 se resolveu (a base tem 14/10).
 
 ## (III.II) Agente de política monetária
     - i. Construir o agente a partir do mapa conceitual de política monetária.
@@ -121,7 +122,7 @@
     - v. Ferramentas (I.III.xiv): quais são (hoje candidatas: FX attributor e FX Model; dashboards não são ferramenta) e quando e como entram nos agentes. Por ora fora (I.II.iv).
     - vi. Como os reports viram P1, P2 e PF* no Modelo Estrutural (I.III.xv): com quais variáveis, quem faz a conta e o que acontece quando o modelo e os agentes divergem. (anotado 2026-10-02, a definir)
         - Decidido (2026-10-15, adianta a parte que o câmbio precisa): como a central vem do modelo (IV.ix), o agente roda o simulador do Modelo Estrutural por um G, com os caminhos das exógenas de cada cenário e, no tempero (i), o multiplicador do coeficiente. Sem reestimar: os coeficientes são os de hoje. As exógenas que a área não usa ficam no padrão do simulador (último valor repetido) até terem dono (IV.ii).
-        - A fazer antes do próximo teste: a função fixa que esse G chama (recebe caminhos e multiplicadores, devolve as endógenas por trimestre e a faixa do posterior). Consolidação de P1, P2 e PF* segue a definir.
+        - A função fixa que esse G chama (feito 2026-10-15: `analytics/agent_system/modelo.py`): recebe os caminhos das exógenas e os multiplicadores, devolve as endógenas por trimestre e a faixa do posterior. O retrato do simulador é gravado uma vez por ciclo, junto com o A. Consolidação de P1, P2 e PF* segue a definir.
     - vii. Agente escrivão (I.II.v):
         - Decidido (2026-10-07): a forma é do escrivão, o conteúdo é do agente. O escrivão reordena, corta, reescreve e padroniza; não muda número, faixa, probabilidade ou premissa, não acrescenta argumento nem dado e não resolve divergência escolhendo um lado. Se precisa de algo que o report não diz, cobra o agente. (manual, 1.1)
         - Decidido (2026-10-07): a cobrança reabre o report final só no trecho cobrado.
@@ -141,12 +142,14 @@
             - Dado sem ligação com uma afirmação é defeito: ou o agente escreve a ligação, ou o dado vai para o bloco "Olhado, sem sinal". Exemplo do teste: o estoque de swaps citado como nível (−US$ 91,6 bi) não diz nada sobre o mês; a variação diria, a favor ou contra a tese.
         - Estrutura do relatório: a definir mais tarde.
         - Formato (intenção do usuário, 2026-10-15, a resolver depois): relatório final em HTML, numa aba de Report de um dashboard, para poder se ligar a ferramentas interativas de acompanhamento do cenário (ex.: a matriz de premissas, IV.ix). A aba teria um botão que gera o PDF.
+        - Decidido (2026-10-15): o dashboard de Report é o mesmo do Modelo Estrutural, porque o modelo só funciona dentro da discussão dos agentes. O dash ganha nome novo e as abas são reorganizadas depois, pelo usuário. O acompanhamento das exógenas (IV.ix) mora nele.
     - viii. Agente administrador (I.II.vi): o que mais administra além da promoção de G ao F, com que critério promove e quem decide até ele existir. (anotado 2026-10-02, a definir)
     - ix. Formato das premissas e dos signposts (anotado 2026-10-15, do primeiro teste, a definir):
         - O formato da tabela de premissas ainda não convence o usuário.
         - Signpost como patamar ("PTAX acima de 5,15 por 3 sessões") diz pouco. Melhor descrever uma dinâmica, e talvez um conjunto de signposts lido junto (ex.: prêmio de risco subindo e real se depreciando nas sessões antes do 2º turno).
         - Ideia do usuário (2026-10-15): premissas numa matriz atualizável, cada uma com seu limiar e uma cor que muda conforme o dado se aproxima dele (ex.: limiar de 13% com o dado em 12,63%; a cor vai ao vermelho conforme a taxa sobe para 13%, porque indica depreciação).
         - Para depois: alarme de signpost enviado por e-mail.
+        - Decidido (2026-10-15): por enquanto, sem alertas. O agente não escreve a linha de alerta nas fichas nem na tabela de acompanhamento; o acompanhamento das exógenas vai para o dashboard de Report (IV.vii).
         - Decidido (2026-10-15): o que pode ser expresso pelas variáveis do Modelo Estrutural, é; o agente complementa a estimativa quantitativa com um ajuste qualitativo. Toda premissa se materializa num de dois blocos:
             - canais do modelo quantitativo: entradas do modelo (ex.: o CDS para o risco fiscal). A premissa é o caminho da entrada por trimestre, no cenário base e em cada cauda. Um evento (ex.: o 2º turno) não tem lugar próprio: é o motivo de um caminho, e pode mover mais de uma entrada;
             - canais qualitativos: o que o modelo não tem (ex.: balanço de pagamentos, posicionamento). Cada um é acompanhado por um indicador (ex.: a posição especulativa no COT) e entra como desvio da variável projetada pelo modelo, com direção, tamanho e duração.

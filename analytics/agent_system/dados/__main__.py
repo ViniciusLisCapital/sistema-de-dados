@@ -32,6 +32,9 @@ def gerar(agente: str, ciclo: dt.date, refazer: bool = False):
         sys.exit(f"{saida} já existe: o F(A) é fixo no ciclo. Use --refazer para refazer.")
     anterior = motor.ciclo_anterior(agente, ciclo)
     motor.extrair(mod.TABELAS, pasta / "A", motor.pd.Timestamp(ciclo), refazer=refazer)
+    # O retrato do Modelo Estrutural, que os G rodam (IV.vi): um por ciclo, como o A.
+    from analytics.agent_system import modelo
+    print(f"  modelo  {modelo.retratar(ciclo.isoformat(), refazer)}")
     (pasta / "G").mkdir(exist_ok=True)
     texto = motor.montar_f(agente, ciclo, grupos, mod.TABELAS, getattr(mod, "COMBINADAS", []),
                            pasta / "A", anterior, getattr(mod, "PIB", None))

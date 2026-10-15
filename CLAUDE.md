@@ -56,7 +56,8 @@ analytics/           — Projetos que consomem o banco. Layout país > área des
   oraculo/           — Termômetro macro: notas 1–10 por variável (Brasil e EUA) → Power BI
   agent_system/      — Diagrama do sistema de agentes (entradas, dados/ferramentas/conhecimento,
                        ciclo de rodadas) → team_materials/structure_materials/Sistema de Agentes.html
-                       — e o gerador do F(A) de cada ciclo, em dados/
+                       — e o gerador do F(A) de cada ciclo, em dados/, e o modelo.py, que roda o
+                       simulador do Modelo Estrutural para os G dos agentes
   brasil/ · us/      — Um diretório por área, cada um = generate_report.py + report.html (+ um módulo
                        por aba) + o seu próprio CLAUDE.md. Ver a tabela de relatórios abaixo.
                        A área que teve levantamento de fontes guarda o `fontes_dados.md` dela aqui
