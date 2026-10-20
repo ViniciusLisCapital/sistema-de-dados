@@ -33,6 +33,7 @@ Keywords 66
 4.5. Discriminating between the benchmark identification schemes 114
 4.5.1. The Coleman, Gilles and Labadie identification scheme 114
 Handbook of Macroeconomics, Volume 1, Edited by J.B. Taylor and M. Woodford
+65
 
 66 L.J. Christiano et aL
 4.5.2. The Bernanke-Mihov critique 115
@@ -150,6 +151,7 @@ assumption, it is nevertheless controversial. 2 This is why authors like Bernank
 are consistent with the assumption that contemporaneous output and the price level do not respond to a
 monetary policy shock.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 69
 Sims (1986), Sims and Zha (1998) and Leeper et al. (1996) adopt an alternative
 approach. No doubt there are some advantages to abandoning the recursiveness
 assumption. But there is also a substantial cost: a broader set of economic relations
@@ -190,6 +192,7 @@ agreement that monetary policy shocks account for only a very modest percentage
 of the volatility of aggregate output; they account for even less of the movements in
 3 For an early example of this approach see Gali (1992).
 
+70 L.J. Christiano et al.
 the aggregate price level.4 The literature has gone beyond this to provide a richer,
 more detailed picture of the economy's response to a monetary policy shock (see
 Section 4.6). But even this small list of findings has proven to be useful in evaluating
@@ -232,6 +235,7 @@ varying the subsample over which the analysis is conducted. Fourth, we consider
 4 These latter two findings say nothing about the impact of the systematic component of monetary
 policy on aggregate output and the price level. The literature that we review is silent on this point.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 71
 some critiques of the benchmark identification schemes. Fifth, we consider the
 implications of the benchmark identification schemes for the volatility of various
 economic aggregates.
@@ -271,6 +275,7 @@ shock to monetary policy.
 What is the economic interpretation of these policy shocks? We offer three
 interpretations. The first is that e reflects exogenous shocks to the preferences of
 
+72 L.J. Christiano et al.
 the monetary authority, perhaps due to stochastic shifts in the relative weight given
 to unemployment and inflation. These shifts could reflect shocks to the preferences of
 the members of the Federal Open Market Committee (FOMC), or to the weights by
@@ -309,6 +314,7 @@ variation in monetary policy actions.
 This example can be used to illustrate how one's interpretation of the error term
 can affect the plausibility of alternative assumptions used to identify eZ. Recall the
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 73
 recursiveness assumption, according to which e 7 is orthogonal to the elements of g2t.
 Under what circumstances would this assumption be correct under the measurement
 error interpretation of eT?
@@ -447,6 +453,7 @@ identification must be established on a case by case basis. Sometimes, as in our
 discussion of Bernanke and Mihov (1995), this can be done analytically. More typically,
 one is limited to building confidence in global identification by conducting an ad hoc
 numerical search through the parameter space to determine if there are other elements
+in Qv n Qr n Qs.
 The difficulty of establishing global identification in the literature we survey
 stands in contrast to the situation in the traditional simultaneous equations context.
 9 Here we define a particular rank condition and establish that the rank and order conditions are
@@ -513,6 +520,7 @@ I
 0.8694 -0.4941
 It is easy to verify that WAo satisfies the zero and sign restrictions on A0 .
 
+78 L.J. Christiano et al.
 It is easy to show that every element in Qv n Qr n Qs generates the same dynamic
 response function to the first shock in the system. To see this, note from Equation (3.5)
 that the first column of Ao 1 is what characterizes the response of all the variables to
@@ -592,6 +600,7 @@ normalization of always selecting the lower triangular Ao matrix identified in (
 the dynamic response of the variables in Zt are invariant to the ordering of variables
 in J(lt and X2t.
 
+80 L.J. Christiano et al.
 To prove (i)-(iii) it is useful to establish a preliminary result. We begin by defining
 some notation. Let the ((kl + 1)k2 + kl) × k 2 matrix r summarize the zero restrictions
 on A0 in Equation (4.1). So, Qr is the set of A0 matrices consistent with the
@@ -631,6 +640,7 @@ added in the inner products defining orthonorrnality, and so does not alter the 
 products. Hence a matrix obtained from the identity matrix by arbitrarily rearranging the order of its
 rows is orthonormal.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 81
 We now prove result (ii). Consider any two matrices, Ao, ~4o E Qv N Qr. By
 Equation (4.3) there exists a W satisfying Equation (4.2), with the property -40 = WAo,
 so that
@@ -753,6 +763,7 @@ Eichenbaum (1992), Christiano et al. (1996a, 1997a), Eichenbaum and Evans (1995)
 Bernanke and Blinder (1992), Bernanke and Mihov (1995), and Gertler and Gilchfist (1994).
 2o See for example the specifications in Sims and Zha (1998) and Leeper et al. (1996).
 
+84 L.J Christiano et al.
 Notice that under our assumptions, Yt, Pt and PCOMt do not change in the impact
 period of either an FF or an NBR policy shock. Christiano et al. (1997b) present a
 dynamic stochastic general equilibrium model which is consistent with the notion that
@@ -794,6 +805,7 @@ trough. 22 A similar pattern is observed for the movements in the federal funds 
 To some extent this reflects the effects of averaging since there was a 210 basis point FF policy shock
 in 1973Q3.
 
+Ch. 2: Monetary Policy Shocks." What Have we Learned and to What End? 85
 2.0
 1.5
 1.0
@@ -802,6 +814,7 @@ x ~ k I
 "E
 0.o3
 0.0
+n I I I II / ~ I\ /
 i'V7
 -0.5 I i I
 !,
@@ -810,6 +823,7 @@ II i I
 NBR model --
 - 1.0
 Fed Funds model ....
+- 1.5 7 I I I I I
 6 4 81
 Three-month centered, equal-weighted moving average
 Fig. 1. Contractionary benchmark policy shocks in units of federal funds rate. The dotted line depicts
@@ -829,10 +843,13 @@ shock initially only rearranges the composition of total reserves between nonbor
 and borrowed reserves. Strongin argues that, after controlling for movements in certain
 variables that are in the Fed's information set, a policy shock should be measured as the
 
+86 L.J Christiano et al.
 Fed Funds Model with M1 NBR Model with M1 NBR/TR Model with M1
 0~ MP Shock => Y MP Shock => Y MP Shock => Y
+~ \ - _ _-
 6
 MP Shock => Price MP Shock => Price MP Shock => Price
+. . . . . . . . "~2--
 0
 MP Shock => Pcom MP Shock => Pcom MP Shock => Pcorn
 iiil
@@ -843,6 +860,8 @@ MP Shock => FF MP Shock -> FF MP Shock => FF
 MP Shock => NBR MP Shock => NBR MP Shock => NBR
 os0
 so / / /
+o"~ / ~ ~ ~ ~ ' -i t/
+o 3 9 12 1~
 MP Shock => TR MP Shock => TR MP Shock =>TR
 ;~l .- ......... ]
 00 +"
@@ -857,6 +876,7 @@ impulse response functions from a third policy shock measure which we refer to a
 shock. The solid lines in the figure report the point estimates of the different dynamic response functions.
 Dashed lines denote a 95% confidence interval for the dynamic response functions.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 87
 innovation to the ratio of nonborrowed to total reserves. We capture this specification
 by measuring St as NBR and assuming that g2t includes the current value of TR. With
 this specification, a shock to e[ does not induce a contemporaneous change in TR.
@@ -902,6 +922,7 @@ for different procedures for accommodating this bias.
 total and nonborrowed reserves. Historically, nonborrowed reserves are roughly 95% of total reserves.
 Since 1986, that ratio has moved up, being above 98% most of the time.
 
+88 L.J. Christiano et al.
 Before going on, it is of interest to relate these statistics to the interest elasticity of
 the demand for NBR and M1. Following Lucas (1988, 1994), suppose the demand for
 either of these two assets has the following form:
@@ -983,6 +1004,7 @@ by the growth rate of M2 and by the tog of M1. The resulting policy shock measur
 between anNBR / TR shock and anFF shock is 0.65. Finally, the correlation between anNBR/TR shock
 and an NBR shock is 0.82.
 
+90 L.J. Christiano et al.
 Monthly Fed Funds Modet with M1 Mpnthly NBR Model with M1 Monthly NBR/TR Model with M1
 MP Shock => EM MP Shock => EM MP Shock => EM
 :::;J ............
@@ -996,8 +1018,10 @@ i!ii7 '--'~'J
 MP Shock => FF MP Shock => FF MP Shock => FF
 o,
 MP Shock => NBR MP Shock => NBR MP Shock => NBR
+::.71, . . . . . . . . . .....
 MP Shock => TR MP Shock => TR MP Shock => TR
 ::7_ i. f- ...... 1 !~! s- .......
+ooo ~ i oo l" ~ /
 MP Shock => M1 MP Shock => M1 MP Shock => M1
 Monthly Fed Funds Model with M2 Monthly NBR Model with M2 Monthly NBR/TR Model with M2
 MP Shock => M2 MP Shock -> M2 MP Shock => M2
@@ -1006,6 +1030,7 @@ quarterly data.
 have a correlation coefficient of only 0.85. This reflects in part that in several episodes
 the two shock measures give substantially different impressions about the state of
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 91
 monetary policy. For example in 1993Q4, the M1 based shock measure implies a
 20 basis point contractionary shock. The M2 growth rate based shock measure implies
 an 80 basis point contractionary shock. These types of disagreements notwithstanding,
@@ -1044,6 +1069,7 @@ contractionary monetary policy shock. The shock measure which they use is relate
 FF policy shock measure in the sense that both are based on innovations to the Federal Funds rate and
 both impose a version of the recursiveness assumption.
 
+92 L.J Christiano et al.
 and nonfinancial corporate profits immediately fall while manufacturing inventories
 immediately rise. 29
 Fisher (1997) examines how different components of aggregate investment respond
@@ -1086,6 +1112,7 @@ NBR, FF policy shocks or with Romer and Romer (1989) shocks.
 3o Gert|er and Gilchrist (1994) use various monetary policy shock measures, including one that is related
 to the benchmark FF policy shock as well as the onset of Romer and Romer (1989) episodes.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 93
 fall more sharply than economy-wide measures. Within manufacturing, real wages
 fall more sharply in durable goods industries than in nondurable good industries.
 Christiano et al. (1997a) argue that these results cast doubt on models of the monetary
@@ -1127,6 +1154,7 @@ and small firms) versus large borrowers. Using a variant of the benchmark FF pol
 31 The two exceptions are nondarable goods and transportation and utilities. For these industries they
 cannot reject the hypothesis that profits are unaffected by contractionary policy shock.
 
+94 L.J Christiano et al.
 shock, they find that consumer and real estate loans fall after a contractionary policy
 shock but commercial and industrial loans do not Gertler and Gilchrist (1993). In
 addition, loans to small manufacturing firms decline relative to large manufacturing
@@ -1167,6 +1195,7 @@ variants of the benchmark FF and NBR/TR policy shock measures in which some
 32 Christiano et al. (1996a) and Gertler and Gilchrist (1994) discuss possible ways to account for this
 response pattern.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 95
 foreign variables appear in the Fed's reaction ftmction. A maintained assumption of
 their analysis is that the Fed does not respond contemporaneously to movements in the
 foreign interest rate or the exchange rate. Eichenbaum and Evans use their policy shock
@@ -1209,6 +1238,7 @@ a short term Canadian interest rate. Kim and Roubini (1995) assume that the reac
 on US exchange rates using close variants of the FF benchmark policy shock. They too fred that a
 contractionary policy shock leads to an appreciation of the US exchange rate.
 
+96 L.J Christiano et al.
 function of foreign central bankers includes contemporaneous values of the money
 supply, the exchange rate and the world price of oil (but not the federal fund rate).
 Clarida and Gertler (1997) assume that the Bundesbank's reaction function includes
@@ -1250,6 +1280,7 @@ on real exchange rates.
 contractionary foreign monetary policy shock induces a persistent, significant deviation from uncovered
 interest parity in favor of foreign investments.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 97
 4.4.1. Excluding current output and prices from f2t
 The estimated one-step-ahead forecast errors in Yt and FFt are positively correlated
 (.38), while those in Yt and NBRt are negatively correlated (-.22). Any identification
@@ -1291,6 +1322,7 @@ the federal funds rate and in commodity prices. An example is the oil price shoc
 commodity prices in f2t as leading indicators of inflation in the Fed's feedback rule
 sometimes imply that contractionary monetary policy shocks lead to a sustained rise in
 
+98 L.J. Christiano et al.
 Fed Funds Model, Y after MP Fed Funds Model, P after MP NBR Model, Y after MP NBR Model, P after MP
 MP Shock => Y MP Shock => Y o~ MP Shock =~ Y MP Shock =>Y
 o1 \
@@ -1322,6 +1354,8 @@ Z / .....
 °"I \ // +" \/ //
 .-°. .... _ ....
 MP Shock => M1 MP Shock => ml MP Shock => M1 MP Shock => ml
+"® j // "~t //
+i . . . . . 0~/ X/J
 0 , + + ,= ,.
 Fig. 4. Results when the answer is assumed to be the response of real GDP to policy. Columns 1
 and 3 report the estimated impulse response functions of various economic aggregates to policy shock
@@ -1331,6 +1365,7 @@ response functions to policy shock measures computed under the same identificati
 those underlying the FF and NBR policy shocks except that Pt is excluded from ~2t . As can be seen,
 the benchmark results are virtually unaffected by this perturbation.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 99
 the price level. 39 Eichenbaum (1992) viewed this implication as sufficiently anomalous
 relative to standard theory to justify referring to it as "the price puzzle". 4o Sims (1992)
 conjectured that prices appeared to rise after certain measures of a contractionary
@@ -1375,6 +1410,7 @@ results were 96.4%, 97.2%, and 98.0%, respectively. Thus, at each horizon, the p
 at the 5% significance level. For the FF model underlying the second column, the results are 95.6%,
 94.6%, and 89.8%, so that there is a marginally significant price puzzle over the first year. Regardless
 
+100 L.J. Christiano et al.
 Fed Funds, MP first: No Pcom Fed Funds,: No Pcom Fed Funds: Pcom after MP Fed Funds with M1
 MP Shock => P MP Shock -> P MP Shock => P MP Shock => P
 0.70 0.70 I 0.70 [ 0.70
@@ -1382,10 +1418,12 @@ MP Shock => P MP Shock -> P MP Shock => P MP Shock => P
 0.35
 0.35 / 0,35 ' 0.35
 oo0
+0.00 , ~ - 0.00 ~ / ~
 \x
 \\ ~°°°l
 -0.35 x 0.35 -0.35 \
 -0.70 , -0.70 0.70 ~
+4 7 10 13 1 4 7 10 13 1 4 7 10 13 1 4 7 10 13
 quarters quarters quarters quarters
 NBR. MP first: No Pcom NBR: NO Pcom NBR: Pcom after MP NBR with M1
 MP Shock => P MP Shock => P MP Shock => P MP Shock => P
@@ -1393,6 +1431,8 @@ MP Shock => P MP Shock => P MP Shock => P MP Shock => P
 0.35 0.35 0.35
 $ 0.00
 0.35 -0.35 -0.35 \~\~\~
+-0.70 -0,70 . . . . .4. i . . . . . . rv -0.70 , . . . . . . . . . . . . . .
+1 4 7 10 13 1 4 7 10 13 1 7 10 13 1 4 7 10 13
 quarters quarters quarters quarters
 Fig. 5. The impulse response of Pt to eight different contractionary monetary policy shock measures.
 The top and bottom rows display the effects of shocks to systems in which S t is measured by FF t and
@@ -1412,6 +1452,7 @@ innovations to monetary aggregates like the base (M0), M 1 and M2. Indeed this w
 of the horizon, the price puzzle was not significant at even the 10% significance level for the other
 specifications in Figure 5.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 101
 the standard practice in the early literature on the output and interest rate effects of an
 unanticipated shock to monetary policy. 42 This practice can be thought of as setting St
 equal to a monetary aggregate like M0, M1 or M2 and using a particular specification
@@ -1455,10 +1496,12 @@ recent work in this tradition see King (1991) and Cochrane (1994).
 decline in the inflation rate is about .25 percent which occurs after 3 periods. The inflation rate returns
 to its preshock level after two years.
 
+102 L.J. Christiano et al.
 Money Model: MO first Money Model Money Model: M1 first
 M0 Shock => Y MO Shock => Y M1 Shock => Y
 /
 /--' ./
+o 3 e • ,2 ,~
 MO Shock => Price M0 Shock => Price MI ShOCk => Price
 ]]
 .--'" o,
@@ -1472,6 +1515,7 @@ ijI -
 M0 Shock => FF MO Shock => FF M1 Shock => FF
 /
 /
+\ \\l'~. l " / ~ \ ~- I "~, / ~ I
 o 3 e ~ I= ,5
 M0 Shock => NBR M0 Shock => NBR M1 Shock => NBR
 . ~ . . 1= ,i
@@ -1482,11 +1526,13 @@ jl i i
 i /
 Fig. 6. Estimated response fimctions corresponding to six policy measures.
 
+Ch. 2: Monetary Policy Shocks." What Have we Learned and to What End? 103
 Money Model Money Model: M2 first Money Model
 M1 Shock => Y M2 Shock => Y M2 Shock => Y
 /,/ . //
 M1 Shock => Price M2 Shock => Price M2 Shock => Price
 / f f
+, 3 t , ,~ is 0 ~ e • 12 is
 M1 Shock => PCOM M2 Shock => PCOM M2 Shock => PCOM
 o° \, .I
 0 ~ 4 t 12 IS o a i • I= ,s
@@ -1496,10 +1542,14 @@ M1 Shock => FF M2 Shock => FF M2 Shock => FF
 M1 Shock => NBR M2 Shock => NBR M2 Shock => NBR
 o® //
 ~"=t 1 ....
+I~ 1 \ ~ - - ~
+o ~ ~ 9 12 .
 M1 Shock => M1 M2 Shock => M2 M2 Shock => M2
 °I
+\ ~ / j /
 ~=
 
+104 L.J. Christiano et al.
 column 3, output falls for over two quarters after a contractionary policy shock. The
 fact that output eventually rises seems difficult to reconcile with limited participation
 or sticky wage/price models. This is also true for the results displayed in column 4.
@@ -1541,6 +1591,7 @@ since late 1988. 44 He recognizes that a component of the unanticipated move in 
 44 See Brunner (1994), Carlson et al. (1995), and Krueger and Kuttner (1996) for further discussion
 and analysis of the federal funds futures market.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 105
 federal funds rate reflects the Federal Reserve's endogenous response to the economy.
 To deal with this problem, he measures the exogenous shock to monetary policy as the
 part of the unanticipated component of the federal funds rate which is orthogonal to a
@@ -1602,7 +1653,9 @@ RUDE EPS
 E89 -1 89 startdate, 6 lags
 0.75 4~
 / FIUDE EPS .... ]
+0.50 ~L__ -- _ _ _ _ J
 0,25 ~ /~
+-0.25 1 ~ : ~
 -050 '" V
 -0.75 J
 I
@@ -1646,12 +1699,15 @@ o~ o~
 J
 ~o.~, mo.~ . . . . ,., ~o,th,
 MP Shock => MI MP Shock => M1 MP Shock => M1 MP Shock =, M1
+i q ~ r !
+2 tl ~ ~g 3~
 monks
 Fig. 8. The dynamic response functions to an FM policy shock, together with 95% confidence intervals,
 are displayed in column 1. There are two obvious features to these results. First, the policy shock itself
 is very small (a little over 10 basis points). Second, with the exception ofFF t -FM~ 4, the response of
 the other variables is not significantly different from zero at all lags.
 
+108 L.J. Christiano et al.
 the notion that inference is sensitive to incorporating federal funds market data into the
 analysis. This conclusion may very well reflect the limited data available for making
 the comparison.
@@ -1693,6 +1749,7 @@ each artificial time series we estimated a six lag, benchmark FF VAR model using
 the period corresponding to the Rudebusch sample period. The 95% confidence intervals are based on
 the impulse response functions corresponding to the VARs estimated from the artificial data.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 109
 fourth row of column 3) lies well below the 95% confidence interval. So, we reject
 the null hypothesis that there was no change at all in the data generating mechanism
 in the Rudebusch sample. 51 Next, we modified the null hypothesis to accommodate
@@ -1739,12 +1796,14 @@ interpretation. He modifies our bootstrap procedures to accommodate ARCH behavio
 full sample estimated VAR with policy shocks drawn only from the relevant subsample. All other shocks
 are drawn randomly from the full sample of fitted shocks.
 
+110 L.J Christiano et al.
 Fed Funds Model 65:01 to 94:12 Fed Funds Model 65:01 to 79:09 Fed Funds Model 79:10 to 94:12 Fed Funds Model 84:02 to 94:12
 MP Shock => EM MP Shock => EM MP Shock => EM MP Shock => EM
 ii ..............................J...
 MP Shock => Price MP Shock => Price MP Shock => Price
 MP Shock => Pcom MP Shock => Pcom MP Shock => Pcom MP Shock => Pcom
 ::2:t .....................
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 MP Shock => FF MP Shock => FF MP Shock => FF
 e\ /\ ~\
 =L," ........................................r.
@@ -1753,6 +1812,7 @@ MP Shock => NBR MP Shock => NBR MP Shock=> NBR MP Shock => NBR
 MP Shock => TR MP Shock => TR MP Shock => TR MP Shock => TR
 iil
 ::J .......... 1
+I g 17 25 . . . . . . . . 5 ~ ~1
 MP Shock => M1 MP Shock => M1 MP Shock => M1 MP Shock => M1
 2', " ~
 .....: TT ?.:.::,:.:2L~
@@ -1760,6 +1820,7 @@ MP Shock => M1 MP Shock => M1 MP Shock => M1 MP Shock => M1
 Fig. 9. Response functions to monthly benchmark FF policy shocks, estimated over four subsamples:
 the bencl~mark sample, and the periods 1965:1-1979:9, 1979:10-1994:12, and 1984:2-1994:12.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 111
 employment, P, PCOM, and M1 almost always lie within the confidence intervals. For
 the third and fourth sample periods there is no evidence against the modified subsample
 stability hypothesis. There is some marginal evidence against the hypothesis in the first
@@ -1804,9 +1865,11 @@ version of the bootstrap methodology used to compute confidence intervals in Fig
 Panel B is the exact analog of Panel A, except that the results are based on the NBR
 policy shocks.
 
+112 L.J. Christiano et al.
 NBR Model 85:01 to 94:12 NBR Model 85:01 to 79:09 NBR Model 79:10 to 94:12 NBR Model 84:02 to 94:12
 MP Shock => EM MP Shock => EM MP Shock => EM MP Shock => EM
 ii!!
+. . . . ~5 ~ 41
 MP Shock => Price MP Shock -> Price MP Shock => Price
 MP Shock => Pcom MP Shock >Pcom MP Shock -> Pcom MP Shock -> Poem
 11,t1 ~__~ ~
@@ -1814,10 +1877,12 @@ MP Shock => Pcom MP Shock >Pcom MP Shock -> Pcom MP Shock -> Poem
 MP Shock >FF MP Shock => FF MP Shock-> FF MP Shock => gg
 MP Shock => NBR MP Shock -> NBR MP Shook => NBR MP Shock -> NBR
 MP Shock => TR MP Shock => TR MP Shock => TR
+2~ ............................................ ~ 23 ............................. i J
 MP Shock => M1 MP Shock => M1 MP Shock => M1 MP Shock => M1
 ..... L ~ i
 Fig. 10. Results for the benchmark NBR policy shocks.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 113
 Table 1
 The liquidity effect, sample period sensitivity
 Subsample FF/NBR FF/M 1
@@ -1858,6 +1923,7 @@ early 1980s than in the periods before or after. Second, we cannot reject the vi
 the response of economic variables to a shock of given magnitude is stable over the
 different subsamples considered.
 
+114 L.J Christiano et al.
 We conclude this section by noting that other papers have also examined the
 subsample stability question. See, for example Balke and Emery (1994), Bernanke and
 Mihov (1995) and Strongin (1995). These papers focus on a slightly different question
@@ -1895,6 +1961,7 @@ Market Committee. They argue, via two examples that a contractionary NBR shock
 may correspond to other types of shocks.
 55 The discussion presented here summarizes the analysis in Christiano (1996).
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 115
 In their first example, they argue that a negative NBR shock may actually correspond
 to a positive shock to the demand for money. The argument goes as follows. Suppose
 that there was a shock to either the demand for TR, M1 or M2 that drove up the
@@ -1937,6 +2004,7 @@ different identification schemes. Bernanke and Mihov (BM) propose an alternative
 proach. Under the assumption that the policy function is of the form of Equation (2.1),
 they develop a particular test of the null hypothesis that e7 is a monetary policy shock
 
+116 L.J Christiano et al.
 against the alternative that Ei~ ' is confounded by nonmonetary policy shocks to the
 market for federal funds.
 To implement their test, Bernanke and Mihov develop a model of the federal funds
@@ -2008,6 +2076,7 @@ subject to conditions (4.10)-(4.12). When the latter restrictions are not bindin
 solution to this maximization problem is V = S. s7
 57 BM use a slightly different estimation strategy. See the appendix in BM.
 
+118 L.J Christiano et al.
 Denote the model's eight structural parameters by
 ~p = [ a, [3, 7, cpd , o b, ad2 , 0-2, 0-21. (4.14)
 Let ~0r denote a value of ~0 which implies a B that satisfies condition (4.12). The
@@ -2048,6 +2117,7 @@ The free parameters in ~p are recovered from V as follows:
 _ ~/- 1 0-2 _ V322 V31 (4.21)
 C /~ q- a' V33, Of = -- V3~,
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 119
 1
 -;= gll _ a2C2 0- s 2 ,
 y = 1 -- V 21-k
@@ -2090,6 +2160,7 @@ maintained hypothesis, y = 0, rather than as evidence against the NBR, FF or NBR
 identification schemes. A rejection would be strong evidence against one of these
 identification schemes only to the extent that one had overwhelmingly sharp priors
 
+120 L.J Christiano et al.
 that y really is zero. In fact, there are no compelling reasons to believe that y is zero.
 Just the opposite is true. Standard dynamic models of the market for reserves suggest
 that y is not zero.
@@ -2175,6 +2246,7 @@ variables.
 borrowing for this purpose.
 6o The small differences between the two sets of results reflect different estimation methods.
 
+L.J Christiano et aL
 122
 Table 2a
 Estimation results for money market models
@@ -2188,6 +2260,7 @@ fi 0.03 (cid:127) 0.012 0.012 0.012 0.012 0.012
 (0.00269) (0.00129) (0.00151) (0.00106) (0.00091) (0.00107)
 y 0 0.481 0.279 0 -0.103 -0.073
 (0.03229) (0.05599) (0.04849) (0.05864)
+0 d 0 0 0 1 1 1
 crd 0.011 0.020 0.022 0.009 0.009 0.013
 (0.00065) (0.00333) (0.00387) (0.00033) (0.00023) (0.00058)
 ~s 0.013 0.013 0.018 0.004 0.004 0.008
@@ -2211,6 +2284,7 @@ rejected the benchmark NBR model is unwarranted.
 61 We use a likelihood ratio statistic which, under the null hypothesis, has a chi-square distribution with
 1 degree of freedom.
 
+Ch. 2: Monetary Policy Shocks." What Have we Learned and to What End? 123
 Table 2b
 Estimation results, restricted and unrestricted models
 NBR/TR model
@@ -2246,6 +2320,7 @@ effects of a monetary policy shock? A related question is: How have monetary pol
 62 BM actually argue that this model is most suitable for the pre-1979 period. Here too, their point
 estimate of a is negative and significantly different from zero.
 
+124 L.J Christiano et al.
 shocks contributed to the volatility of various economic aggregates? The answer
 to this question is of interest for two reasons. First, it sheds light on the issue of
 whether policy shocks have been an important independent source of impulses to the
@@ -2296,6 +2371,7 @@ o)
 0
 09 ,-2
 
+L.J. Christiano et al.
 126
 Z t¢3
 m ~ ~
@@ -2311,6 +2387,7 @@ v
 &
 ¢q
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 127
 Next we consider the results obtained for policy shock measures based on M0,
 M1, and M2. The VAR's underlying these results correspond to the ones underlying
 the results reported in columns 2, 4 and 6 in Figure 6. In each case, St is equated
@@ -2351,6 +2428,7 @@ economic variables within the quarter are determined in a block recursive way: f
 the variables associated with goods markets (prices, employment, output, etc.) are
 determined; second, the Fed sets its policy instrument (i.e., NBR in the case of the
 
+128 L.J Christiano et al.
 benchmark NBR system, and FF in the case of the benchmark FF system); and third,
 the remaining variables in the money market are determined.
 To help compare the recursiveness assumption with alternative identifying assump-
@@ -2389,6 +2467,7 @@ materials (Pcm) and a monetary aggregate (M). In addition, the Fed is assumed to
 see a list of lagged variables to be specified below. Note that unlike the benchmark
 systems, £2t does not contain the contemporaneous values of the aggregate price level
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 129
 and output. As Sims and Zha (1998) point out, this is at best only a reasonable working
 hypothesis. 64 The reaction function in the SZ model can be summarized as follows:
 Rt = const. + aiMt + a2Pcmt +.fs(Zt-1 .... , Zt-q) + a~~ , (5.1)
@@ -2428,6 +2507,7 @@ can rationalize the lagged terms in the money demand equation if there is a seri
 to the marginal product of money in their model economy. Ireland (1997) and Kim (1998) rationalize
 similar relationships with Y replaced by consumption.
 
+130 L.J Christiano et al.
 policy shock has a contemporaneous impact on the variables in Xt via its impact on
 Pcmt.
 To see this, first let
@@ -2507,6 +2587,7 @@ Q is orthonormal and R is upper triangular. Then, form the orthonormal matrix W 
 with W = Qt. The matrix WAo satisfies (i) and (ii) with the additional restriction on Equation (5.3) that
 the lower fight 5 × 5 matrix in A0 W is upper triangular. This establishes the result sought.
 
+132 L.J Christiano et al.
 To answer these questions, we employ a version of the SZ model in which Mt
 corresponds to M2 growth and Rt corresponds to the 3 month Treasury Bill Rate. 67
 The four-lag VAR model was estimated using data over the period 1965Q3-1995Q2.68
@@ -2549,18 +2630,25 @@ earnings of private nonagricultural production workers are divided by the GDP de
 derived from the Citibase data set.
 69 These were computed using the procedure described in Sims and Zha (1995).
 
+Ch. 2: Monetary Policy Shocks." What Have we Learned and to What End? 133
 Sims_Zha, Quarterly ~Sim,s-Zh~a Mon thly
 MP Shock => GDP MP Shock => GDP
 0.40 I
+o.oo| I ~ . ~ ~ ooo
+-0.40 / -- -- ~ ~ R -ors
+o 80 . o . . .3 . 6 9 -0,32 1 8 15 22 29
 quarters months
 MP Shock => GDP Price Deflator MP Shock => PCE Price Deflator
 0.1B 0.18
 -0.18
+-0.36 ~ . . .
 -0.54 o 3 quarters 6 9 1 8 month 1 s 5 22
 MP Shock => FF MP Shock => FF
 0.80
 /\\
 0.30
+o.o0 ~.~ ~ . . . . . ~ 8. o.oo
+-0.40 o 3 6 9 -0.3O ... 1 .. . 8 15 22 2g
 quarters months
 MP Shock => Growth in M2 MP Shock => Growth in M2
 O,OB
@@ -2569,8 +2657,11 @@ O,OB
 -O.4 0 3 6 0 1 8 15 23 29
 quarters months
 MP Shock => Crude Materials Prices MP Shock => Crude Materials Prices
+0.25 0.5 / ~ - - ~ - - ~
 0.oo . . . . . . o.o --~-'
 -o.2s /
+-0.50 ~ ~ ~ ~ -- ~ ~ ~ -1 .o
+-0.75 0 3 6 9 -1,5 1 8 15 22 29
 quarters months
 MP Shock=> Intermediate Materials Prices MP Shock => Intermediate Materials Prices
 03
@@ -2588,6 +2679,7 @@ o 3 6 9 1 8 15 22 29
 quaders months
 Fig. 11.
 
+134 L.J. Christiano et al.
 relative to a monetary policy shock. 70 The response to a monetary policy shock of
 the variables that these analyses have in common is very similar. This is consistent
 with our finding that the absence of predeterminedness of good market variables in
@@ -2628,6 +2720,7 @@ set of variables. In practice, however, they set the coefficients on these varia
 their estimated systems have the property that the goods market variables are predetermined relative to
 the monetary policy shock.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 135
 raw data received by the primary data collection agency and that o t reflects classical
 reporting and transmission errors that are uncorrelated with the true variable, xt, at all
 leads and lags. In addition, we suppose that the reporting errors are discovered in one
@@ -2663,6 +2756,7 @@ et al. (1984), and Mankiw and Shapiro (1986).
 72 See Sargent (1989), for a discussion of how to econometrically unscramble parameters like this in
 the presence of measurement error.
 
+136 L.J. Christiano et al.
 a structural interpretation to the coefficients in f Suppose a0 and a are positive. An
 analyst might be tempted to interpret the resulting positive value of/3o as reflecting
 a desire to minimize instrument instability. In this example, such an interpretation
@@ -2700,6 +2794,7 @@ exogenous monetary policy shocks and their effects on the economy. The central
 73 Claridae t al. (1997, 1998) estimate the parameters of forward lookingp olicy rules, so that in principle
 they can uncover interpretable parameters like a.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 137
 problem there lies with the identification of the exogenous monetary policy shock
 itself. As we discussed above, there are many reasons why shocks measured in this way
 may not be exogenous. These include all the reasons that policy rules, like (2.1), might
@@ -2742,6 +2837,7 @@ is not required formally to specify a Fed feedback rule. But there is no free lu
 comparison.
 76 In a later paper, Romer and Romer (1994) also add a date around this time.
 
+138 L.J Christiano et al.
 2.0 I
 I
 1.5
@@ -2759,6 +2855,7 @@ NBR model - -
 -1.0
 Fed Funds model ....
 -F
+-1.5 , ,,, ~ -|, f , 1 t f -
 67 74 81 88
 Three-month centered, equal-weighted moving average
 Fig. 12. Contractionary benchmark policy shocks in units of federal funds rate; three-month centered,
@@ -2779,6 +2876,7 @@ and NBR shocks. According to Figure 12, with one exception each Romer and
 Romer episode is followed, within one or two quarters, by a contracfionary FF
 and NBR policy contraction. The exception is October 1979, which is not followed
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 139
 by a contractionary NBR policy shock. 77 At the same time, we identify several
 contractionary policy shocks which are not associated with a Romer and Romer
 episode.
@@ -2819,6 +2917,7 @@ a delay, PCOM falls, and all the monetary aggregates (NBR, M1 and M2) fall. It
 is interesting that the initial impacts of a Romer and Romer episode on employment
 77 We cannot estimate benchmark shocks for 1966:2 because of data limitations.
 
+140 L.J Christiano et al.
 Monthly Fed Funds Model with M1 Monthly Romer Model with M1 Monthly Boschen & Mills Model with M1
 MP Shock => EM MP Shock => EM MP Shock => EM
 MP Shock => Price MP Policy Shock => Price MP Shock -> Price
@@ -2831,15 +2930,18 @@ MP Shock => FF MP Policy Shock => FP MP Shock => FF
 io !
 MP Shock => NBR MP Policy Shock -> NBR MP Shock -> NBR
 \rv~J
+°° ~x / . . . . . ------ -
 MP Shock => TFI MP Policy Shock -> TR MP Shock => TR
 0~ °0~ ~ .....
 .0~ 0,
 MP Shock => M1 MP Pollcy Shock => M1 MP Shock > M1
 0 i,
+2° , - - ~ ....
 ~° a ~
 :°°2
 Monthly Fed Funds Model with M2 Monthly Romer Model with M2 MontNy Boschen & Mills Model with M2
 o= MP Shock => M2 MP Policy Shock > M2 MP Shock -> M2
+N\ -- --\ / j
 0,
 Not Applicable Not Applicable MP Shock=> Bo Mi Index
 0~0
@@ -2847,6 +2949,7 @@ Fig. 13. The monthly data based estimates of the dynamic response of various agg
 and Romer shock and an innovation in the Boschen and Mills index. To facilitate comparisons, colunm 1
 reproduces the dynamic response functions associated with our monthly benchmark FF policy shocks.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 141
 and the price level are quite small. Unlike the identification schemes underlying the
 benchmark shock measures, this is not imposed by the Romer and Romer procedure.
 There are some differences between the estimated effects of the two shock measures.
@@ -2887,9 +2990,11 @@ this section.
 two reasons. First, we include more variables in our analysis than do Romer and Romer. Second, we
 compute standard errors using a different method than they do.
 
+142 L.J Christiano et al.
 Fed Funds Model with M1 Romer Model with M1 Boschen & Mills Model with M1
 MP Shock => Y o~ MP Shock => Y MP Shock => Y
 o-o! ~k% 'E~LF---- ---~ ~2-~ -
+"1 xX./ . . - - _ -- I
 MP Shock => Price MP Policy Shock => Price MP Shock => Price
 ,~1 ...................... ?-- °0N ~-.
 MP Shock => Pcom MP Policy Shock => Pcom MP Shock => Pcom
@@ -2898,6 +3003,7 @@ MP Shock => FF MP Policy Shock => PP MP Shock => FF
 MP Shock => NBR MP Policy Shock => NBR MP Shock => NBR
 iil
 ........
+:S 7 y o 2~_r ,,
 MP Shock => TR MP Policy Shock => TR MP Shock => TR
 MP Shock => M1 MP Policy Shock => M1 MP Shock => M1
 Fed Funds Model with M2 Romer Model with M2 Boschen & Mills Model with M2
@@ -2913,6 +3019,7 @@ i
 Fig. 14. The quarterly data based estimates of the dynamic response of various aggregates to a Romer
 and Romer shock and an innovation in the Boschen and Mills index.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 143
 8. Conclusion
 In this chapter we have reviewed the recent literature that grapples with the question:
 What happens after a shock to monetary policy? This question is of interest because it
@@ -2956,6 +3063,7 @@ actually implement a particular monetary policy rule, the growth rate of money m
 (if only implicitly) respond to current and past exogenous shocks in an appropriate
 way. This is true even when the systematic component of policy is thought of as a
 
+144 L.J. Christiano et al.
 relationship between endogenous variables, like the interest rate, output and inflation.
 The literature on monetary policy shocks provides an estimate of the way the growth
 rate of money actually does respond to a particular shock - a monetary policy shock.
@@ -2999,6 +3107,7 @@ particular feature: the contemporaneous effect of a monetary policy shock is sma
 effects are much larger. In contrast, the dynamic response function of the growth rate of M2 to current
 and past policy shocks is well approximated by an AR(1) process.
 
+Ch. 2: Monetary Policy Shocks: What Have we Learned and to What End? 145
 case for the usefulness of the monetary policy shock literature on the motivation we
 have pursued: the desire to build structural economic models that can be used to think
 about systematic changes in policy institutions and rules.

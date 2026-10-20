@@ -1,3 +1,4 @@
+13
 CHAPTER
 National Income Accounting
 and the Balance of Payments
@@ -130,6 +131,7 @@ or recipient of foreign gifts. This possibility, along with some others, also co
 GNP with national income. We describe later in this chapter how the definitions of national income and the
 current account must be changed in such cases.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 353
 FIGURE 13-1
 Billions
 U.S. GNP and Its
@@ -181,6 +183,7 @@ and compositors who provide the labor inputs necessary for the book’s producti
 Second, there are the publishing company’s shareholders, who receive dividends for
 having financed acquisition of the capital used in production. Finally, there are the
 
+354 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 suppliers of paper and ink, who provide the intermediate materials used in producing
 the book.
 The paper and ink purchased by the publishing house to produce the book are not
@@ -228,6 +231,7 @@ macroeconomic analysis. Unilateral transfers are alternatively referred to as se
 distinguish them from primary income payments consisting of cross-border wage and investment income. We
 will see this terminology later when we study balance of payments accounting.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 355
 Gross Domestic Product
 Most countries other than the United States have long reported gross domestic product
 (GDP) rather than GNP as their primary measure of national economic activity. In
@@ -274,6 +278,7 @@ The part of output used by private firms to produce future output is called inve
 Investment spending may be viewed as the portion of GNP used to increase the nation’s
 stock of capital. Steel and bricks used to build a factory are part of investment spending,
 
+356 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 as are services provided by a technician who helps build business computers. Firms’ pur-
 chases of inventories are also counted in investment spending because carrying inven-
 tories is just another way for firms to transfer output from current use to future use.
@@ -321,6 +326,7 @@ must be subtracted from total domestic spending, C + I + G, to find the portion 
 domestic spending that generates domestic national income. Imports from abroad add
 to foreign countries’ GNPs but do not add directly to domestic GNP.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 357
 Similarly, the goods and services sold to foreigners make up a country’s exports.
 Exports, denoted by EX, are the amount foreign residents’ purchases add to the
 national income of the domestic economy.
@@ -363,6 +369,7 @@ output) purchases + Exports - Imports
 a55 bushels of wheat + (0.5 bushel per gallon) * (40 gallons of milk).
 b0.5 bushel per gallon * 40 gallons of milk.
 
+358 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 When a country’s imports exceed its exports, we say the country has a current account
 deficit. A country has a current account surplus when its exports exceed its imports.3
 The GNP identity, equation (13-1), shows one reason why the current account is
@@ -413,6 +420,7 @@ chapter’s concluding Case Study.
 economics. Using this terminology, we can describe the current account surplus as the difference between
 income and absorption, Y - A.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 359
 As an example, consider again the imaginary economy of Agraria described in
 Table 13-1. The total value of its consumption, investment, and government purchases,
 at 110 bushels of wheat, is greater than its output of 100 bushels. This inequality would
@@ -449,6 +457,7 @@ A string of current account deficits starting in the early 1980s reduced America
 21st century, the country had accumulated a substantial net foreign debt.
 Source: U.S. Department of Commerce, Bureau of Economic Analysis.
 
+360 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Saving and the Current Account
 Simple as it is, the GNP identity has many illuminating implications. To explain the
 most important of these implications, we define the concept of national saving, that is,
@@ -496,6 +505,7 @@ and government investment (for example, investment by publicly owned enterprises
 as part of national saving. Often, however, government investment figures include purchases of military
 equipment.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 361
 Private and Government Saving
 So far our discussion of saving has not stressed the distinction between saving deci-
 sions made by the private sector and saving decisions made by the government. Unlike
@@ -539,6 +549,7 @@ the sum of global current accounts was negative, positive.
 local governments considered as a single unit.
 9In a closed economy, the current account is always zero, so equation (13-2) is simply Sp = I + (G - T).
 
+362 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Given the inevitable errors in collecting detailed 1980s and 1990s. Better measurement of interna-
 international payments data from many national tional investment income could be responsible for
 agencies with differing accuracy and coverage, a shrinking negative world current account. But
@@ -570,11 +581,13 @@ The Global Current Account Discrepancy since 1980
 Once big and negative, implying missing current account credits, the world’s current account
 balance has become big and positive, implying missing current account debits.
 Source: International Monetary Fund, World Economic Outlook database, October 2019.
+10See “Economics Focus: Exports to Mars,” The Economist, November 12, 2011, at http://www.economist
 .com/node/21538100.
 0891 2891 4891 6891 8891 0991 2991 4991 6991 8991 0002 2002 4002 6002 8002 0102 2102 4102 6102 8102 9102
 Percent of
 world output
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 363
 The Balance of Payments Accounts
 In addition to national income accounts, government economists and statisticians also
 keep balance of payments accounts, a detailed record of the composition of the current
@@ -624,6 +637,7 @@ full transition to the new system in June 2014. For an update, see Jeffrey R. Bo
 Howell, and Erin M. Whitaker, “Comprehensive Restructuring and Annual Revision of the U.S. International
 Transactions Accounts,” Survey of Current Business (July 2014), pp. 1–24.
 
+364 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 For the most part, they result from nonmarket activities or represent the acqui-
 sition or disposal of nonproduced, nonfinancial, and possibly intangible assets
 (such as copyrights and trademarks). For example, if the U.S. government forgives
@@ -667,6 +681,7 @@ Credit Debit
 Meal purchase (Current account, U.S. service import) $200
 Sale of claim on First Card (Financial account, U.S. asset sale) $200
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 365
 3. Imagine next that your Uncle Sid from Los Angeles buys a newly issued share
 of stock in the U.K. oil giant British Petroleum (BP). He places his order
 with his U.S. stockbroker, Go-for-Broke, Inc., paying $95 with funds from his
@@ -705,6 +720,7 @@ the capital account balance automatically equals the financial account balance:
 Current account balance + capital account balance
 = Financial account balance (13-3)
 
+366 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In examples 1, 2, and 4 previously, current or capital account entries have offsetting
 counterparts in the financial account, while in example 3, two financial account entries
 offset each other. Double-entry bookkeeping tells us that a country’s total receipts from
@@ -755,6 +771,7 @@ of unilateral transfers was $141.98 billion - $281.69 billion = -$139.71 billion
 The table shows a 2019 current account balance of $3,805.94 billion -
 $4,286.16 billion = -$480.22 billion, a deficit. The negative sign means that current
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 367
 TABLE 13-2 U.S. Balance of Payments Accounts for 2019 (billions of dollars)
 Current Account
 (1) Exports and current transfer receipts 3,805.94
@@ -801,6 +818,7 @@ foreign residents about $6 billion in net capital transfers. The net balance of
 implied by the current account, we find that the United States’ need to cover its excess
 payments to foreigners is increased very slightly, from $480.22 billion to $486.46 billion.
 
+368 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Because an excess of national spending over income must be covered by net borrowing
 from foreigners, this negative current plus capital account balance must be matched
 by an equal negative balance of net financial flows, representing the net liabilities the
@@ -850,6 +868,7 @@ We come out with net financial flows of -$395.54 rather than the -$486.46 billio
 that we would have expected as a result of adding up the current and capital account
 balances. According to our data on trade and financial flows, the United States incurred
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 369
 $90.92 billion less in foreign debt than it actually needed to fund its current plus capital
 account deficit—because $486.46 billion (measured required borrowing) less $395.54
 billion (measured actual borrowing) equals $90.92 billion. If every balance of pay-
@@ -896,6 +915,7 @@ Was there a sudden upsurge in Ireland’s available notably in fields such as hi
 supplies of factories, land, and labor? In fact, no to relocate their intellectual property (IP) assets
 massive increase in factors of production had to subsidiaries in Ireland (and other low-tax
 
+370 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 30
 25
 20
@@ -934,6 +954,7 @@ multinational profit shifting, which distorts the to be seen if they can be over
 9991 0002 1002 2002 3002 4002 5002 6002 7002 8002 9002 0102 1102 2102 3102 4102 5102 6102 7102 8102 9102 0202
 GDP growth, percent per year
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 371
 Official Reserve Transactions
 Although there are many types of financial account transactions, one type is important
 enough to merit separate discussion. This type of transaction is the purchase or sale of
@@ -984,6 +1005,7 @@ The level of net central bank financial flows is called the official settlements
 13 To test your understanding, see if you can explain why the same sequence of actions causes a $20,000
 improvement in Japan’s current account and a $20,000 increase in its net financial flows.
 
+372 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 (in less formal usage) the balance of payments. This balance is the sum of the current account
 and capital account balances, less the nonreserve portion of the financial account balance,
 and it indicates the role of central banks’ official reserve transactions in offsetting the cur-
@@ -1031,6 +1053,7 @@ corporations were valued at their historical, that is, original, purchase prices
 Now the BEA uses two different methods to place current values on foreign direct
 investments: the current cost method, which values direct investments at the cost
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 373
 of buying them today, and the market value method, which is meant to measure
 the price at which the investments could be sold. These methods can lead to dif-
 ferent valuations because the cost of replacing a particular direct investment and
@@ -1081,6 +1104,7 @@ than reserves, net (line 6 less
 line 38)
 4 U.S. assets 25,233.8 3,919.0 (3) (3) (3) (3) (3) 29,152.8
 
+374 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Change in position in 2019
 Attributable to:
 Other changes in position
@@ -1142,6 +1166,8 @@ lines 39, 42, and 57)
 than reserves, gross negative
 fair value (line 51)
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 375
+Change in position in 2019
 Attributable to:
 Other changes in position
 Changes in
@@ -1201,6 +1227,7 @@ elsewhere.
 Note: Details may not add to totals because of rounding.
 Source: U.S. Bureau of Economic Analysis, June 30, 2020.
 
+376 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 2.0
 1.8
 1.6
@@ -1240,6 +1267,7 @@ exchange rate changes would sharply reduce foreigners’ demand for domestic
 currency assets, thus decreasing or eliminating any wealth benefit from depreciating
 the home currency.
 
+CHAPTER 13 ■ National Income Accounting and the Balance of Payments 377
 SUMMARY
 ■■ International macroeconomics is concerned with the full employment of scarce eco-
 nomic resources and price level stability throughout the world economy. Because

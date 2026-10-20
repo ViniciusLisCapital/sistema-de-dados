@@ -3,6 +3,7 @@ EXCHANGE RATES AND FINANCIAL FRAGILITY
 Barry Eichengreen
 Ricardo Hausmann
 Working Paper 7418
+http://www.nber.org/papers/w7418
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -39,6 +40,7 @@ through the Berkeley Project on International Financial Architecture.
 architecture (G22 1998a, b, c), which were the official community’s definitive word on the subject circa
 1998.
 3 Drage and Mann (1999) and Frankel (1999) are representative of many examples that could be cited.
+1
 
 In a sense, this shift reflects a maturation of the debate — a recognition that exchange-rate
 policy and the other items on the architects’ agenda are connected. The exchange rate has an
@@ -60,6 +62,7 @@ exchange-rate system. Pegged exchange rates are a form of implicit guarantee and
 moral hazard. They promote unhedged foreign-currency borrowing and, since they are least credible at
 long horizons, skew financial flows toward the short end. These unhedged, short-term, foreign-
 currency-denominated liabilities are a time bomb waiting to explode. By implication, more flexible
+2
 
 exchange rates are desirable to limit short-term capital inflows and buttress the stability of the financial
 system.
@@ -80,6 +83,7 @@ It follows that both fixed and flexible exchange rates are problematic. If the g
 the currency to depreciate, the currency mismatch will cause bankruptcies. If instead it defends the peg
 by selling reserves and hiking interest rates, it will precipitate defaults on short-term domestic debts.
 The solution, rather than a more flexible exchange rate, is no exchange rate -- dollarization or its euro
+3
 
 equivalent.4 Once the dollar is adopted for all domestic payments, currency mismatches dissolve, since
 income streams are now denominated in the same unit as liabilities. Maturity mismatches are attenuated
@@ -101,6 +105,7 @@ are volatile, where the contractual, legal and judicial infrastructure is least 
 5 Assuming no subsequent desire to return to the market and/or no reputational effects. To be sure,
 these are not inconsequential assumptions. They are adopted here for expository convenience only.
 We discuss the implications of relaxing them in what follows.
+4
 
 If this is the problem, then the solution lies in policies to improve the financial infrastructure.
 Examples include steps to strengthen property rights and titles, to provide for rapid attachment of
@@ -122,6 +127,7 @@ nature of crises in emerging markets?
 Following this, we consider three case studies with the potential to shed further light on the
 competing interpretations. Finally, we explore the implications of our theories for the future of monetary
 policy and the international financial architecture.
+5
 
 2. The Moral Hazard Hypothesis
 Moral hazard is a problem in financial systems with the following characteristics:
@@ -141,6 +147,7 @@ If banks are well managed and regulated, the expansion of their balance sheets w
 by their capital, not by the availability of funds. But when regulation is lax and the moral hazard
 associated with the financial safety net is present, banks may expand their balance sheets excessively by
 borrowing abroad. When international markets are flush, banks will have access regardless of their
+6
 
 capitalization and the quality of their management. This leads to the notorious lending-boom problem,
 when banks use foreign funding to compete for domestic market share and the quality of bank assets
@@ -162,6 +169,7 @@ this logic, the international community has been pressing for the removal of bla
 6 Central bank inspections of financial institutions actually fell from 23 to 10 per cent over the four years
 leading up to the crisis, allowing the share of problem loans in bank portfolios to rise fivefold. See also
 Bisat, Johnston and Sundararajan (1999).
+7
 
 exploring ways of “bailing in” the private sector. The Basle Committee of Banking Supervisors has
 proposed revisions to the 1988 Capital Accord to make short-term bank-to-bank lending more
@@ -188,6 +196,7 @@ presence of moral hazard in the credit market but no distortion in the market fo
 side is not modeled. Assuming that the rest of the world is willing to supply currency hedges is
 equivalent to assuming that a country is able to borrow abroad in its own currency. Below we
 challenge the realism of this assumption.
+8
 
 The Asian crisis is frequently taken as illustrating these points. Table 1 summarizes the
 incentives for unhedged borrowing as portrayed by the World Bank. The table purports to show how
@@ -208,6 +217,7 @@ International Banking Facility.
 10 BIS data rely on reports from major OECD banks, while IFS makes use of reports from non-OECD
 countries that are borrowing funds. Both suggest that about 30 per cent of this lending was
 denominated in yen, while most of the remainder was denominated in dollars. BIS (1998), p.123.
+9
 
 World Bank, “exchange rate stability in...countries that had pegged currencies to the dollar or to
 baskets of currencies with a high dollar weight” (World Bank 1999, p.61).11
@@ -233,6 +243,7 @@ rate risk. With a flexible exchange rate, and frequent movements in both directi
 households learn from their daily experience to take account of exchange rate risk. But when many
 years of nominal stability...are followed by a large, discrete shift, the danger that private agents will be
 caught unprepared is much greater” (BIS 1999, p.124).
+10
 
 banking system. And observers disagree about how long dollarization that respects this caveat will take
 to achieve.
@@ -252,6 +263,7 @@ maturity mismatch (because long-term investments are financed with short-term lo
 Original sin seems to capture a fact about the world. What causes it is an open question. One
 hypothesis is that a history of inflation and depreciation renders investors reluctant to invest in domestic-
 currency assets and to invest long term. In fact, however, original sin appears to apply as well to more
+11
 
 than a few emerging markets that do not have a recent history of high inflation. Essentially all non-
 OECD countries have virtually no external debt denominated in their own currency.
@@ -273,6 +285,7 @@ maturity mismatches, a banking crisis can result. Under these circumstances the 
 be subject to self-fulfilling runs: if people think that other people are about take their money out because
 they fear that the interest-rate defense will bring down the banking system, they will want to be first
 through the door, requiring the authorities to raise rates to defend the currency and producing the very
+12
 
 result investors most feared.12 This is the basis for the now-prevalent view that pegged exchange rates
 and open international capital markets are an accident waiting to happen in all but the most financially-
@@ -294,6 +307,7 @@ interest-rate volatility will complicate the development of a long-term bond mar
 12 A problem modeled formally, in its variants, by Chang and Velasco (1999).
 13 Note that this dynamic can take place under floating as well as a discrete devaluation, as happened in
 Indonesia at the time of its final collapse.
+13
 
 have unstable prices.14 Exchange-rate and interest-rate volatility will lead investors to demand a higher
 return on domestic-currency deposits, jacking up the level of interest rates.15 Moreover, letting the
@@ -317,6 +331,7 @@ Mexico’s floating regime (Hausmann et al. 1999). Frankel (1999) also finds tha
 rates are more sensitive to the U.S. federal funds rate in floating rate than fixed-rate countries.
 16This mechanism would explain why Latin America remains highly dollarized even after a decade of
 low inflation.
+14
 
 ways. Interest rates in emerging markets go up instead of down in recessions, even more sharply under
 floating than under the typical fixed-rate regime.
@@ -337,6 +352,7 @@ North, easing the financial burden of aging.
 4. The Commitment Problem Hypothesis
 Financial markets are contract-intensive because of the time-inconsistency problem intrinsic to
 intertemporal trade. Borrowers in general lack incentives to repay and need to be able to commit. If
+15
 
 they are unable to do so, creditors will view lending as risky and charge accordingly. But higher interest
 rates exacerbate the incentives for non-payment and make the pool of available projects riskier through
@@ -358,6 +374,7 @@ What about equity? If the institutions of corporate governance are weak, equity 
 have reason to fear that management will siphon off profits. They will be willing to invest only at price-
 earning ratios that make it unattractive to go public. Equity markets will be shallow not because firms
 17 See inter alia Greenwald, Stiglitz and Weiss (1984).
+16
 
 are unprofitable but because shareholders do not know to whom the profits will accrue. Lenders will
 then want to keep corporations on a short leash by providing only short-term credit.
@@ -380,6 +397,7 @@ burden sharing.
 18 Cooper and Sachs (1984) provide an early theoretical statement. Fernandez-Arias and Lombardo
 (1998) present an up-to-date model in which sovereign risk leads to over-borrowing, followed by a
 crisis.
+17
 
 The implications for exchange-rate policy are less obvious. Where the financial infrastructure is
 least developed, the markets may most need a lender of last resort, and the lender of last resort may
@@ -400,6 +418,7 @@ capital stock. At present, the capital/labor ratio in the United States is some 
 Latin America. At a rate of two per cent per year, convergence would take centuries, not even
 considering the fact that labor-force growth is faster in Latin America.
 19 A point made famous by our discussant; see Feldstein and Horioka (1980).
+18
 
 That flows are small poses the greatest difficulty for the moral-hazard view, which predicts that
 flows should be large. That investors face artificially low risks implies that they should be willing to
@@ -421,6 +440,7 @@ equilibrium, by the weakness of the institutional framework for contract enforce
 At the same time, however, financial flows were artificially stimulated relative to what they would have
 been otherwise by the “moral hazard play” (the perception on the part of international investors that the
 country was too big to fail geo-politically and would be the recipient of an international bailout). This
+19
 
 indicates that the moral-hazard reform agenda may help to limit irresponsible lending but without
 necessarily addressing the other underlying problems.
@@ -442,6 +462,7 @@ almost 56 per cent goes through non-banks. One could object that developed count
 developed banking systems, but in fact it is securities markets, not banking systems, that are especially
 late to develop, given their relatively demanding information and regulatory requirements (Levine 1997).
 This bias goes in the wrong direction to rescue the moral-hazard hypothesis.
+20
 
 roughly comparable across all regions, uncomfortably for the moral-hazard view.21
 While bank-to-bank lending was massive in East Asia, so was foreign lending to corporates,
@@ -463,6 +484,7 @@ encourage the borrower to adhere to the terms of the loan agreement and reveal i
 banks do not represent the same proportion of external debt in different countries.
 22 Although Mexico and its tesobonos can be invoked as a counterexample. That said, the growing
 volume of foreign equity investment raises doubts about the relevance of this example for the future.
+21
 
 compliance. Yet the extent of short-term debt in emerging markets is surprisingly small. An improving
 contractual environment in, inter alia, Latin America is one possible explanation for why we do not
@@ -485,6 +507,7 @@ stock of short-term debt accumulated by crisis countries, reflecting the fact th
 insurance implied by a policy of pegging the currency is most credible over short horizons. The single
 most robust leading indicator of currency and financial crises is the share of short-term debt in a
 country’s external liabilities and the portion of that debt which flows through the banking system in
+22
 
 particular (Frankel and Rose 1997, Rodrik and Velasco 1999). This has led to recommendations that
 countries adopt Chilean style holding-period taxes and analogous measures to limit their dependence on
@@ -511,6 +534,7 @@ made financial markets less volatile. In fact, long-term markets have shown incr
 2): yields on Latin American dollar-denominated bonds have been ten times more volatile than
 equivalent US bonds in the 1990s. This implies that something more than just short-term bias caused
 by moral hazard is at work.
+23
 
 flows, even if it occurs for reasons quite independent of the situation in a particular emerging market,
 can precipitate serious financial problems, due either to maturity mismatches, if the exchange rate is
@@ -530,6 +554,7 @@ exposures argue that these mismatches emerged out of “expectations that relati
 rates would be maintained indefinitely.”24 They advocate greater exchange rate flexibility as a way of
 giving banks and firms stronger incentives to hedge their positions.
 24 The quote is from Johnston, Darbar and Echeverria (1999), p.290.
+24
 
 In the original-sin interpretation, the problem is not that the private sector lacks incentives to
 hedge but that it lacks the capacity. If foreign investors are willing to lend only in their own currencies,
@@ -551,6 +576,7 @@ currency-denominated liabilities for assets denominated in foreign currency, but
 banks and firms, since foreigners are unwilling to buy those liabilities by assumption. They can pass
 their exposures around like a hot potato, but they cannot eliminate them. There is an argument that the
 redistribution of foreign exposures domestically can be stabilizing, either because it distributes them
+25
 
 more evenly (avoiding unmanageable concentrations in a few corporate hands) or because it reallocates
 them from banks and firms less able to manage them to other domestic entities in a stronger position to
@@ -572,6 +598,7 @@ from Asia of unhedged exposures encouraged by “expectations that relatively st
 downside. Derivatives are among the hardest instruments to regulate. While they can be used to hedge
 risks, they also permit to place highly speculative bets hidden off balance sheet. The development of
 options markets may be particularly dangerous in countries with weak banking supervision.
+26
 
 would be maintained indefinitely.”26 Analysts seem convinced that more volatility would have
 encouraged more hedging over the relevant range. On the other hand there is the fact of relatively deep
@@ -591,6 +618,7 @@ regression of savings on investment ranges from 0.15 to 0.30 depending on the sa
 number of observations, in contrast to 0.9 or more in Feldstein and Horioka (1980), indicative of a
 26 The quote is from Johnston, Darbar and Echeverria (1999), p.290.
 27 This uses the Jones and Obstfeld (1999) data set.
+27
 
 higher level of capital transfer under the gold standard. Net outflows ranged as high as 9 per cent of
 GDP on an annual average basis for Britain and reached somewhat lower peaks in France and
@@ -612,6 +640,7 @@ British Empire. They imported the British legal system. They imported British au
 standards, typically in the person of the expatriate British chartered accountant. They were dependent
 on the British market for their exports, which, together with their political ties to the mother country,
 rendered debt default virtually unthinkable. They possessed a relatively strong financial infrastructure, in
+28
 
 other words, and a commitment technology that lent credibility to the promise to repay. These facts,
 and not the internationalization of currencies per se, may explain their extraordinary capital-market
@@ -632,6 +661,7 @@ The gold premium skyrocketed. Argentina was then mired in recession until the se
 decade. Railroad construction ground to a halt as capital market access was curtailed. Argentina’s
 28 Readers interested in more detail might consult Marichal (1989).
 29 See Peters (1934) and Schwartz (1989) for two accounts.
+29
 
 access to European capital markets was not restored for a decade, until the gold standard was
 reinstituted in 1899 and full debt service payments were resumed in 1901.
@@ -654,6 +684,7 @@ the Panama Canal, although it remained in place subsequently.
 31 For a brief period in 1941 the Panamanian President (Arnulfo Arias Madrid) created a central bank,
 which emitted one, five, ten and twenty balboa notes, but when Arias was deposed later that year, the
 notes were invalidated and withdrawn from circulation.
+30
 
 second fastest rate of growth in Latin America after Chile and the second lowest GDP volatility behind
 Colombia (Figure 3). Capital inflows are large and smoothly finance payments imbalances. Panama’s
@@ -676,6 +707,7 @@ mortgage market did not coincide with dollarization but post-dated it by 60 year
 on long-term dollar bonds and find large and statistically significant responses for six other Latin
 American countries but not for Panama, where the short-term interest rate is essentially determined by
 Libor.
+31
 
 Panamanian banking sector only began following the adoption of Law No. 18 of 1959, which enhanced
 secrecy and opened the way for numbered bank accounts. Cabinet Decree No. 238 of 1970 then
@@ -696,6 +728,7 @@ conventional wisdom, find it difficult to float. Australia is an important count
 crisis showed the effectiveness of Australia’s flexible exchange rate regime. The country, which started
 floating in 1983, spent more than a decade struggling with its new system. Ofttimes, monetary policy
 had to be used to support the exchange rate, leading in the early 1990s to a procyclical response to
+32
 
 shocks that produced a major recession. But credibility was established in time to be put to use during
 the Asian crisis.33
@@ -718,6 +751,7 @@ denominated bonds in international markets, but non-Australian global firms issu
 U.S. treasuries until the early 1990s, when both inflation and interest rates started to converge to U.S.
 levels. Until then, it involved setting monetary policy with the exchange rate in mind.
 34 But by only 10 percent in trade weighted terms.
+33
 
 part of a balanced funding strategy. Much of that debt is swapped with Australian firms in order to
 further reduce Australia’s foreign currency exposure.
@@ -740,6 +774,7 @@ system. There, the active countercyclical use of monetary policy is necessarily 
 Australian experience thus underscores the importance of original sin. But how did Australia
 achieve redemption? One answer is that the country developed its market for long-term debt before it
 liberalized its financial markets and before it started to float in 1983. The bond market became
+34
 
 attractive to foreign investors only after a liquid domestic market had first been developed. Moreover,
 Australia started to float not in the context of a currency crisis but in the context of an appreciation.
@@ -762,6 +797,7 @@ provide lender-of-last resort services.35 But by eliminating the currency and ma
 print money, of course, but instead on the capacity of the public sector to supply or borrow real
 resources in times of crisis. If this cannot be done in other ways, the ability of the central bank to use
 fiat money to backstop the financial system must be relied upon. However, since this tends to signal an
+35
 
 are a particular threat to financial stability, it diminishes the need for either function of monetary policy.
 By increasing the willingness of foreigners to lend, especially in periods when lending is needed most,
@@ -784,6 +820,7 @@ The problem, the advocates of dollarization object, is that emerging markets can
 wait. The cost of postponing growth and stability is very large. These are sorely needed now, not
 acceleration of inflation, there is the risk that it can generate an attack on the currency (Chang and
 Velasco 1999). Argentina in 1982, Venezuela in 1994 and Ecuador in 1999 are cases in point.
+36
 
 tomorrow or the day after. Indeed, becoming like Australia may be even trickier and take even longer
 than this. Australia developed its long-term domestic market before it liberalized its financial system
@@ -803,6 +840,7 @@ trade, El Nino, the Russian crisis, the Brazilian contraction and devaluation, e
 were able to survive a very large decline in capital inflows and a sharp drop in economic activity. It
 may therefore be that further strengthening domestic systems to cope with the consequences of original
 sin is a less efficient response than dollarization.
+37
 
 Table 1 Macroeconomic conditions related to unhedged foreign currency borrowing
 in East Asia, January 1991-June 1997
@@ -824,6 +862,7 @@ Interest rate spread in percentage points.
 b. Relative to the US dollar (in percent); a minus sign indicates depreciation.
 c. Standard deviation of percentage deviation of exchange rate (US$) from regression on a time trend.
 Source: World Bank (1999).
+43
 
 Table 2 Foreign exposure of banks and finance companies
 (percent)
@@ -836,6 +875,7 @@ Argentina 33.7 10.1 9.5 313 197 158
 Brazil 20.6 10.0 17.3 207 177 282
 Mexico 55.3 66.8 44.7 901 750 498
 Source: IMF International Financial Statistics.
+44
 
 Table 3 Corporate Debt Composition, Selected Asian Economies, 1996
 (percent)
@@ -848,6 +888,7 @@ Philippines 19.7 21.3 25.5 33.5
 Taipei, China 22.3 19.2 23.9 34.6
 Thailand 29.6 12.3 32.0 26.1
 Source: Asian Development Bank (1999).
+45
 
 Table 4 Structure of the debt owed to BIS reporting banks 1998
 (as percentage of total debt owed to BIS reporting banks)
@@ -876,6 +917,7 @@ Philippines 45.05% 12.61% 42.31% 56.39%
 Thailand 26.09% 4.29% 69.60% 59.26%
 Hong Kong 53.70% 0.72% 45.01% 75.23%
 Source: BIS Consolidated International Banking Statistics.
+46
 
 Table 5 Structure of debt: short-term and debt from banks 1998
 Short-term debt Debt to BIS reporting
@@ -899,6 +941,7 @@ Czech Republic 49.1% 74.9%
 Poland 10.6% 26.3%
 Source: World Bank (Global Development Finance), Bank for International Settlements Data (Consolidated International Banking
 Statistics), Joint BIS-IMF-OECD-World Bank statistics on external debt.
+47
 
 Figure 1
 Savings and investment rates (expressed as ratios
@@ -918,6 +961,7 @@ UK
 0.05
 0.05 0.1 0.15 0.2 0.25
 S / GDP
+48
 
 Figure 2. Average CPI Inflation in Panama and Other Latin
 American Countries, 1990-1998
@@ -938,6 +982,8 @@ Chile
 Bolivia
 El Salvador
 Panamá
+0 10 20 30 40 50 60 70 80
+49
 
 Figure 3. GDP Growth in Panama and Other Latin
 American and Caribbean Countries, 1990-1998
@@ -969,7 +1015,9 @@ Bahamas
 Barbados
 Haiti
 -4% -3% -2% -1% 0% 1% 2% 3% 4% 5% 6%
+50
 
+2200
 2000
 1800
 1600
@@ -1012,21 +1060,60 @@ Colombia
 Peru
 Argentina
 0% 10% 20% 30% 40% 50% 60%
+52
 
 Figure 6
 Australian Exchange Rates and Interest Rates, 1997-1999
+6
+5.8
+5.6
+5.4
+5.2
+5
+4.8
+4.6
+4.4
+4.2
+4
+53
 etar
 tseretni
 7991/10/10 7991/10/30 7991/10/50 7991/10/70 7991/10/90 7991/10/11 8991/10/10 8991/10/30 8991/10/50 8991/10/70 8991/10/90 8991/10/11 9991/10/10 9991/10/30 9991/10/50 9991/10/70 9991/10/90
+1.8
+1.7
+1.6
+1.5
+1.4
+1.3
+1.2
 etar
 egnahcxe
 ausr auser
 
 Figure 7
 Mexican Exchange Rates and Interest Rates, 1997-1999
+55
+50
+45
+40
+35
+30
+25
+20
+15
+54
 etar
 knabretni
 7991/20/10 7991/20/30 7991/20/50 7991/20/70 7991/20/90 7991/20/11 8991/20/10 8991/20/30 8991/20/50 8991/20/70 8991/20/90 8991/20/11 9991/20/10 9991/20/30 9991/20/50 9991/20/70
+11
+10.5
+10
+9.5
+9
+8.5
+8
+7.5
+7
 etar
 egnahcxe
 mexr mexer

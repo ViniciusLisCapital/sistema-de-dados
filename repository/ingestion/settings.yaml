@@ -241,5 +241,49 @@ files:
     mode: ocr
     reason: "typescript scan carrying an old OCR text layer that silently drops math symbols: p.17 (checked against the image) the layer prints Eq. (9) as 'log = 1(i + ') + log C.' and loses 'E~_t', 'T*' and the '(8)' reference; plumber/pymupdf agree with each other and plumber flags reversed_text on p.11. Our OCR (2026-10-20) keeps 'E, ... 7(i* + x7) + log C.' and 'T*' (55 asterisks vs 31 in the text layer), reads the prose equally well (common-word share 0.265 both, one-letter share 0.077 vs 0.084) but adds its own misreads ('(g)' for (8), 'l' for 1, '7' for eta). Equations remain approximate in both; no data tables, charts are figures"
 
-topics_on_hold:
-  trader: scope undecided — a topical pillar or input to a trading strategy/agent (repository/CLAUDE.md)
+  "china_only_em_that_counts_ch3 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (72 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "emfx_fixed_income_opportunities_ch1 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (48 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "future_big_data_machine_learning_ch11 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (40 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "global_macro_rules_ch2 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (108 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "how_to_trade_em_credit_ch9 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (128 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "how_to_trade_em_rates_cycle_ch6 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (180 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a table page and the last page checked against the image/text (2026-10-20)"
+
+  "how_to_trade_em_rates_event_guide_ch8 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (40 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
+
+  "how_to_trade_emfx_ch4 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (128 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
+
+  "how_to_trade_emfx_event_guide_ch5 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (88 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
+
+  "portfolio_construction_ch10 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (52 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
+
+  "real_rates_simply_superior_ch7 (Willer, Chandran & Lam, 2020).pdf":
+    mode: pymupdf
+    reason: "Wiley typesetting: plumber prints '(cid:2)' and a 'Trim Size ... Page N' line on every page (44 unmapped glyphs in the chapter), pymupdf 0 and no such line; no other flag. Page 1, a figure/body page and the last page checked against the image/text (2026-10-20)"
+
+# trader: released 2026-10-20 (the literature of a new trader agent).
+topics_on_hold: {}

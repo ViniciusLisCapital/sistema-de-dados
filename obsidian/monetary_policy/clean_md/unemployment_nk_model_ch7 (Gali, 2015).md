@@ -34,6 +34,7 @@ of those models developed at policy institutions, see Christoffel, Coenen, and W
 (2008), Edge, Kiley, and Laforte (2007), and Erceg, Guerrieri, and Gust (2006), among
 others.
 
+200
 CHAPTER 7
 The resulting framework has been used in both positive and normative
 applications, with and without the assumption of wage rigidities.3
@@ -119,6 +120,7 @@ member is specialized in. The second index, s ∈[0, 1], determines
 the disutility from work. The latter is given by χsϕ if he is employed
 and zero otherwise, where χ > 0 and ϕ > 0 are exogenous parameters.
 
+202
 CHAPTER 7
 As in Merz (1995) and much of the subsequent literature, full risk sharing
 within the household is assumed. Given the separability of preferences,
@@ -193,6 +195,7 @@ labor, Bt represents purchases of a nominally riskless one-period discount
 separable preferences but different levels of consumption for employed and un-employed
 household members.
 
+UNEMPLOYMENT AND MONETARY POLICY
 203
 bond paying one monetary unit, Qt is the price of that bond, and Dt
 is a lump-sum component of income (which may include, among other
@@ -227,6 +230,7 @@ Ct
 Zt
 	  Pt
 Pt+1
+	
 
 (3)
 As in the model of chapter 6, the wage for each type of la-
@@ -256,6 +260,7 @@ t+1} −λw
 t
 (4)
 
+204
 CHAPTER 7
 where πw
 t ≡wt −wt−1 is wage inﬂation, µw
@@ -320,6 +325,7 @@ symmetric steady state wt ≃
 0 lt( j)dj . Equation (6)
 can be thought of as an aggregate labor supply or participation equation.
 
+UNEMPLOYMENT AND MONETARY POLICY
 205
 Figure 7.1. The Wage Markup and the Unemployment Rate.
 Following Galí (2011a, 2011b), the unemployment rate ut is deﬁned
@@ -342,6 +348,7 @@ labor market diagram. The ﬁgure emphasizes the idea that employment is
 6 Note that 1 −Nt
 Lt = 1 −exp{−ut} ≃ut for unemployment rates near zero.
 
+206
 CHAPTER 7
 demand determined, with labor demand given by the inverse production
 function (in logs)
@@ -388,6 +395,7 @@ will ﬂuctuate in response to variations in the desired markup, whereas
 one associated with changes in the natural rate (driven by changes in
 the desired wage markup), and a second one linked to deviations of
 
+UNEMPLOYMENT AND MONETARY POLICY
 207
 wage markups from their desired levels resulting from nominal wage
 rigidities.7
@@ -442,6 +450,7 @@ t
 model allowing for variations in the desired wage markup in Galí , Smets, and Wouters
 (2012).
 
+208
 CHAPTER 7
 to which one must add an equation relating the unemployment gap
 
@@ -460,6 +469,7 @@ nt)
 σ +
 ϕ
 1 −α
+	
 
 yt
 (16)
@@ -506,14 +516,74 @@ where κw ≡λw
 . Thus the extension described here introduces a new variable
 (ut) and an extra equation (16).
 
+UNEMPLOYMENT AND MONETARY POLICY
+209
 Unemployment rate
 Employment
 Labor force
 Real wage
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+4
+2
+8
+10
+6
+12
+14
+16
+–0.4
+–0.3
+–0.1
+0
+–0.2
+0.1
+–0.5
+–0.6
+0.1
+0.2
+0.4
+0.5
+0.3
+0.6
+0
+–0.1
+0
+4
+2
+8
+10
+6
+12
+14
+16
 –0.015
 –0.01
 –0.005
+0
 –0.02
+–0.2
+0
+0.2
+0.4
+–0.4
 Figure 7.2. Response of Labor Market Variables to a Monetary Policy Shock.
 accumulation, indexation, etc.).9 Its advantage, on the other hand, lies in
 its simplicity and transparency.
@@ -535,6 +605,7 @@ ployment rate, ut, the labor force, lt, and the real wage wt −pt to an
 9 See Galí, Smets, and Wouters (2012) for an analysis of the sources of unemployment
 ﬂuctuations in an estimated medium-scale version of the present model.
 
+210
 CHAPTER 7
 exogenous monetary policy shock, under the assumption that the central
 bank follows a conventional Taylor rule of the form
@@ -580,6 +651,7 @@ force to a monetary shock, in a way consistent with the evidence.
 11 In particular, shocks to the discount rate would have an identical effect on labor market
 variables.
 
+UNEMPLOYMENT AND MONETARY POLICY
 211
 TABLE 7.1
 Wage Rigidities and Unemployment Fluctuations
@@ -657,6 +729,7 @@ nominal wage rigidities and persistence of monetary (or other demand
 United States and 0.92 in the euro area. See Galí (2011b) for these and other labor market
 statistics.
 
+212
 CHAPTER 7
 shocks) can potentially generate unemployment ﬂuctuations with prop-
 erties comparable to those observed in actual economies.
@@ -668,6 +741,7 @@ for convenience:
 
 σ + ϕ + α
 1 −α
+	
 
 yt + κpζ1,t + κwζ2,t = 0
 (18)
@@ -701,14 +775,95 @@ tivity improvement than the Taylor rule, with output increasing more,
 and employment remaining largely unchanged (as opposed to declining,
 14 See Galí (2011b) for details.
 
+UNEMPLOYMENT AND MONETARY POLICY
+213
 Output
+0
+4
+2
 Taylor rule
 optimal
+8
+10
+6
+12
+14
+16
 Unemployment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+0
+1
 Employment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+–0.5
+0
+–1
 Labor force
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+0.1
+–0.1
+0.2
+–0.2
 Real wage
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.2
+0.1
+0
+0.4
+0.3
 Price inflation
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+–0.5
+–1
+0
+1
+0.5
+–0.5
+0
 Figure 7.3. Optimal Policy vs. Taylor Rule: Technology Shocks.
 as implied by the Taylor rule) under the optimal policy. Note also that
 the response of those variables is very close to the efﬁcient one, which
@@ -729,18 +884,98 @@ Figure 7.4 displays the corresponding responses to a one percent
 increase in the exogenous demand shifter, zt, under the optimal policy
 and the Taylor rule. As discussed above, output, inﬂation, and all
 
+214
 CHAPTER 7
 Output
+0
+4
+2
 Taylor rule
 optimal
+8
+10
+6
+12
+14
+16
 Unemployment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+0
+–0.5
+1
 Employment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+1.5
+0.5
+0
+–0.5
+1
 Labor force
+0
+4
+2
+8
+10
+6
+12
+14
+16
 –0.05
+0
+–0.1
+0.05
 –0.15
 Real wage
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.01
+0
 –0.01
+0.03
+0.02
 Price inflation
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.06
+0.02
+0
+0.04
+0.5
+–0.5
+–1.5
+–1
+0
 Figure 7.4. Optimal Policy vs. Taylor Rule: Demand Shocks.
 labor market variables are fully insulated from the shock under the
 optimal policy. Only the nominal and real interest rates (not shown)
@@ -760,15 +995,96 @@ t −0.5
 ut
 (22)
 
+UNEMPLOYMENT AND MONETARY POLICY
+215
 Output
+0
+4
+2
 Taylor
 simple
 optimal
+8
+10
+6
+12
+14
+16
+0.5
+0
+1
 Unemployment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+0
+–0.5
+1
 Employment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+–0.5
+–1
+0
 Labor force
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+0.1
+–0.1
+0.2
+–0.2
 Real wage
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.2
+0.1
+0
+0.4
+0.3
 Price inflation
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+–0.5
+–1
+0
 Figure 7.5. Optimal Policy vs. Simple Rule: Technology Shocks.
 Galí (2011b) argues that such a rule provides a good account of the
 Fed’s interest rate decisions during the 1987 to 2008 period, before
@@ -787,19 +1103,99 @@ holds when demand shocks are the source of ﬂuctuations, as illustrated in
 ﬁgure 7.6, which displays the responses to a positive demand shock under
 the three rules.
 
+216
 CHAPTER 7
 Output
+0
+4
+2
 Taylor
 simple
 optimal
+8
+10
+6
+12
+14
+16
 Unemployment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.5
+0
+–0.5
+1
 Employment
+0
+4
+2
+8
+10
+6
+12
+14
+16
+1.5
+0.5
+0
+–0.5
+1
 Labor force
+0
+4
+2
+8
+10
+6
+12
+14
+16
 –0.05
+0
+–0.1
+0.05
 –0.15
 Real wage
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.01
+0
 –0.01
+0.03
+0.02
 Price inflation
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.06
+0.02
+0
+0.04
+0.5
+–0.5
+–1.5
+–1
+0
 Figure 7.6. Optimal Policy vs. Simple Rule: Demand Shocks.
 7.4 NOTES ON THE LITERATURE
 The general approach to introducing unemployment in a macro model
@@ -820,6 +1216,7 @@ are usually studied in the context of real models; see, e.g., Pissarides
 (2000)). Walsh (2003, 2005) and Trigari (2009), which were among
 the earliest contributions to that literature, analyzed the impact of
 
+UNEMPLOYMENT AND MONETARY POLICY
 217
 embedding labor market frictions into the basic New Keynesian model
 with sticky prices but ﬂexible wages, with a focus on the size and
@@ -898,6 +1295,7 @@ characterize the implied equilibrium processes for unemploy-
 ment and price inﬂation. Describe its main differences relative
 to the optimal policy under discretion.
 
+UNEMPLOYMENT AND MONETARY POLICY
 221
 7.2. Wage inﬂation dynamics with wage markup and labor supply
 shocks
@@ -940,6 +1338,7 @@ where υ
 [0, 1]. Full risk sharing of consumption among
 household members is assumed.
 
+222
 CHAPTER 7
 a. Show that the household’s period utility, deﬁned as the integral
 over its members’ utilities, is given by:

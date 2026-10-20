@@ -1,3 +1,4 @@
+18
 CHAPTER
 Fixed Exchange Rates and
 Foreign Exchange Intervention
@@ -100,6 +101,7 @@ sheet’s liabilities side.
 2The International Monetary Fund (IMF), an international agency that we will discuss in Chapter 19,
 publishes a useful classification of its member countries’ exchange rate arrangements. Arrangements as of
 end-April 2018 can be found in its publication, Annual Report on Exchange Arrangements and Exchange
+Restrictions 2018, available at https://www.elibrary-areaer.imf.org/Documents/YearlyReport/ARE-
 AER_2018.pdf. (The IMF calls these “de facto” exchange rate arrangements because they reflect what coun-
 tries actually do, not what they say they do.) As of April 2018, 66 countries, including most major industrial
 countries and the 19 countries that then used the euro, had “floating” or “freely floating” currencies. (The
@@ -121,6 +123,7 @@ on national money supplies. (In the terminology introduced in the coming pages, 
 other than central banks are automatically sterilized.) To simplify our discussion, we continue to assume,
 when the assumption is not misleading, that central banks alone carry out foreign exchange intervention.
 
+546 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 A balance sheet for the central bank of the imaginary country of Pecunia is shown here.
 Central Bank Balance Sheet
 Assets Liabilities
@@ -169,6 +172,7 @@ on its assets, and this interest flow would raise the bank’s net worth if rein
 tend to be small enough empirically that they can usually be ignored for purposes of macroeconomic analysis.
 However, see end-of-chapter problem 19.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 547
 its liabilities. Similarly, asset sales by the central bank involve either the withdrawal of
 currency from circulation or the reduction of private banks’ claims on the central bank,
 and thus a fall in central bank liabilities to the private sector.
@@ -215,6 +219,7 @@ Domestic assets $1,500 Currency in circulation $1,900
 The Economics of Money, Banking and Financial Markets, 12th edition, Chapter 14 (New York: Pearson,
 2018).
 
+548 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 After the sale, assets still equal liabilities, but both have declined by $100, equal to
 the amount of currency the Bank of Pecunia has taken out of circulation through its
 intervention in the foreign exchange market. The change in the central bank’s balance
@@ -259,6 +264,7 @@ In our discussion of balance of payments accounting in Chapter 13, we defined a 
 try’s balance of payments (or official settlements balance) as net purchases of foreign
 assets by the home central bank less net purchases of domestic assets by foreign central
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 549
 TABLE 18-1 Effects of a $100 Foreign Exchange Intervention: Summary
 Effect on Effect on Central
 Domestic Central Domestic Money Bank’s Domestic Effect on Central
@@ -305,6 +311,7 @@ through foreign exchange intervention.
 To hold the exchange rate constant, a central bank must always be willing to trade
 currencies at the fixed exchange rate with the private actors in the foreign exchange
 
+550 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 market. For example, to fix the yen/dollar rate at ¥120 per dollar, the Bank of Japan
 must be willing to buy yen with its dollar reserves, and in any amount the market
 desires, at a rate of ¥120 per dollar. The bank must also be willing to buy any amount
@@ -352,6 +359,7 @@ depreciation rate of the domestic currency (as usual) for the foreign exchange m
 We examine this type of situation later in this chapter, but for now we assume that no one expects the central
 bank to alter the exchange rate.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 551
 maintained with R = R*. Let’s look at an example to see how this process works. Sup-
 pose the central bank has been fixing E at the level E0 and asset markets initially are
 in equilibrium. Suddenly output rises. A necessary condition for holding the exchange
@@ -402,6 +410,7 @@ would be at point 3. Because the domestic interest rate is above R* at point 3, 
 rency would have to appreciate to bring the foreign exchange market to equilibrium
 at point 3′.
 
+552 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 18-1
 Exchange
 Asset Market Equilibrium
@@ -446,6 +455,7 @@ rate, we can now analyze the effects of various macroeconomic policies. In this 
 we consider three possible policies: monetary policy, fiscal policy, and an abrupt change
 in the exchange rate’s fixed level, E0.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 553
 The stabilization policies we studied in Chapter 17 have surprisingly different effects
 when the central bank fixes the exchange rate rather than allowing the foreign exchange
 market to determine it. By fixing the exchange rate, the central bank gives up its ability
@@ -496,6 +506,7 @@ output unchanged at Y1.
 AA1
 Y1 Y2 Output, Y
 
+554 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 to its original level, so that the asset market schedule is again AA1, is the exchange rate
 no longer under pressure. The attempt to increase the money supply under a fixed
 exchange rate thus leaves the economy at its initial equilibrium (point 1). Under a fixed
@@ -546,6 +557,7 @@ teract the policy’s positive direct effect on aggregate demand. To prevent thi
 ciation, a central bank that is fixing the exchange rate is forced to expand the money
 supply through foreign exchange purchases. The additional expansionary effect of this
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 555
 FIGURE 18-3
 Exchange
 Fiscal Expansion under
@@ -589,6 +601,7 @@ involves the passive voice (as in “the currency was devalued”). Put another 
 reflects a deliberate government decision, while depreciation (appreciation) is an outcome of government
 actions and market forces acting together.
 
+556 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 18-4
 Exchange
 Effect of a Currency
@@ -635,6 +648,7 @@ of the money supply is therefore necessary to make point 2 a position of money m
 a point on the new AA schedule. Central bank purchases of foreign assets are therefore a necessary part of
 the economy’s shift to its new fixed exchange rate equilibrium.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 557
 dynamic process, we discuss the economy’s adjustment to fiscal expansion and
 devaluation in turn.
 If the economy is initially at full employment, fiscal expansion raises output, and
@@ -682,6 +696,7 @@ expected to remain there indefinitely. M1 is the money supply consistent with th
 9To see this, observe that the long-run equilibrium real exchange rate, EP*/P, must in either case satisfy the
 same equation, Yf = D(EP*/P, Yf - T, I, G), where Yf, as in Chapter 17, is the full-employment output level.
 
+558 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 18-5
 Exchange
 Capital Flight,
@@ -730,6 +745,7 @@ that clears the foreign exchange market (point 2). The expectation of a future d
 tion causes a balance of payments crisis marked by a sharp fall in reserves and a rise in
 the home interest rate above the world interest rate. Similarly, an expected revaluation
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 559
 causes an abrupt rise in foreign reserves together with a fall in the home interest rate below
 the world rate.
 The reserve loss accompanying a devaluation scare is often labeled capital flight.
@@ -779,6 +795,7 @@ be changed.
 nomics courses), capital flight reduces output by shrinking the money supply and raising the real interest
 rate. This possibly contractionary effect of capital flight is another reason why policy makers hope to avoid it.
 
+560 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 For the rest of this chapter, we continue to assume that no exchange rate changes
 are expected by the market when exchange rates are fixed. But we draw on the preced-
 ing analysis repeatedly in later chapters when we discuss various countries’ unhappy
@@ -823,7 +840,9 @@ fectiveness of monetary policy under a fixed exchange rate implies that steriliz
 a self-defeating policy.
 11In the United States, the Federal Reserve Bank of New York carries out intervention for the Federal Reserve
 System, routinely sterilizing the interventions. See Federal Reserve Bank of New York, “Fedpoint: U.S. For-
+eign Exchange Intervention,” http://www.newyorkfed.org/aboutthefed/fedpoint/fed44.html.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 561
 The key feature of our model that leads to these results is the assumption that the
 foreign exchange market is in equilibrium only when the expected returns on domestic
 and foreign currency bonds are the same.12 This assumption is often called perfect asset
@@ -867,6 +886,7 @@ this, the SNB had to buy all the euros the market wished to sell it at a rate of
 illiquid time deposits or government bonds, are perfect substitutes in portfolios. We will generally use the
 single term “bonds” to refer to all these assets.
 
+562 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Swiss francs/euro Billions of Swiss francs
 1.7 700
 Foreign reserves
@@ -896,6 +916,7 @@ own money, which it has the power to print without limit? The main potential
 brake is that by buying reserves and allowing the money supply to increase, the
 central bank sparks excessive inflation. But this did not happen. In part because
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 563
 of the neighboring euro zone’s dismal economic growth, Switzerland remained in
 deflation long after it stepped in to limit the Swiss franc’s appreciation.
 The exchange rate floor was kept in place through the end of 2014, while
@@ -943,6 +964,7 @@ supply also do not affect the exchange rate. Under imperfect asset substitutabil
 however, both risk and return matter, so central bank actions that alter the riskiness
 of domestic currency assets can move the exchange rate even when the money supply
 
+564 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 does not change. To understand how sterilized intervention can alter the riskiness of
 domestic currency assets, however, we must modify our model of equilibrium in the
 foreign exchange market.
@@ -987,6 +1009,7 @@ r = r(B - A). (18-3)
 The risk premium on domestic bonds therefore rises when B – A rises. This relation
 between the risk premium and the central bank’s domestic asset holdings allows the
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 565
 bank to affect the exchange rate through sterilized foreign exchange intervention. It
 also implies that official operations in domestic and foreign assets may differ in their
 asset market impacts.13
@@ -1031,6 +1054,7 @@ Real domestic
 money holdings
 13The stock of central bank domestic assets is often called central bank domestic credit.
 
+566 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 to depend on the exchange rate.) Equilibrium in the foreign exchange market is at
 point 1′, which corresponds to a domestic government debt of B and central bank
 domestic asset holdings of A1. At that point, the domestic interest rate equals the risk-
@@ -1080,6 +1104,7 @@ Monetary Fund Working Paper WP/15/159, July 2015. The greater effectiveness of i
 the advanced economies stems from frictions (including administrative controls) in international financial
 transactions as well as thinner markets for foreign exchange.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 567
 signaling effect of foreign exchange intervention, in turn, can alter the market’s view of
 future monetary or fiscal policies and cause an immediate exchange rate change even
 when bonds denominated in different currencies are perfect substitutes.
@@ -1128,6 +1153,7 @@ and Richard T. Baillie, Owen F. Humpage, and William P. Osterberg, “Interventi
 Perspective,” Journal of International Financial Markets, Institutions, and Money 10 (December 2000), pp.
 407–421.
 
+568 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 The Mechanics of a Reserve Currency Standard
 As a leading illustration of the workings of a reserve currency system, consider the
 system based on the U.S. dollar set up at the end of World War II. Under that sys-
@@ -1176,6 +1202,7 @@ it has fixed exchange rates. We saw earlier in this chapter that when a country 
 18The rules of the postwar system actually allowed currencies’ dollar values to move as much as 1 percent
 above or below the “official” values. This meant cross rates could fluctuate by as much as 4 percent.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 569
 intervene to hold an exchange rate constant, any attempt to expand its money sup-
 ply is bound to be frustrated by losses of international reserves. But because the
 reserve center is the one country in the system that can enjoy fixed exchange rates
@@ -1222,6 +1249,7 @@ system keeps exchange rates fixed under a gold standard as well.19
 19In practice, the costs of shipping gold and insuring it in transit determined narrow “gold points” within
 which currency exchange rates could fluctuate.
 
+570 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Symmetric Monetary Adjustment under a Gold Standard
 Because of the inherent symmetry of a gold standard, no country in the system occupies
 a privileged position by being relieved of the commitment to intervene. By considering
@@ -1271,6 +1299,7 @@ bank balance sheet, circulating gold coins are considered to make up a component
 is not a central bank liability. Either form of gold export would thus result in a fall in the domestic money
 supply and an increase in foreign money supplies.
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 571
 of all goods and services, including gold. A gold standard therefore places automatic
 limits on the extent to which central banks can cause increases in national price lev-
 els through expansionary monetary policies. These limits can make the real values of
@@ -1320,6 +1349,7 @@ sion (New York: W. W. Norton & Company, 1963). For a dissenting view on the gold
 A. Mundell, “International Monetary Reform: The Optimal Mix in Big Countries,” in James Tobin, ed.,
 Macroeconomics, Prices and Quantities (Washington, D.C.: Brookings Institution, 1983), pp. 285–293.
 
+572 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In a bimetallic system, a country’s mint will coin specified amounts of gold or silver
 into the national currency unit (typically for a fee). In the United States before the
 Civil War, for example, 371.25 grains of silver (a grain being 1/480th of an ounce) or
@@ -1364,6 +1394,7 @@ have prized international reserves because they can be traded to foreigners for 
 and services even in circumstances, such as financial crises and wars, when the value
 of domestic assets may come into doubt. Gold played the role of international reserve
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 573
 asset par excellence under the gold standard—and while the U.S. dollar remains the
 main reserve asset today, economists debate how long that unique American privilege
 can last. Because central banks and governments may alter their policies to affect
@@ -1412,6 +1443,7 @@ affect global economic conditions. End-of-chapter problem 18 asks you to think a
 24An early influential study was by H. Robert Heller, “Optimal International Reserves,” Economic Journal
 76 (June 1966), pp. 296–311.
 
+574 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 on the domestic bonds and instead earns the interest on the reserve currency, for
 example, on dollars. If markets harbor any fears that the domestic currency could be
 devalued, then domestic bonds will offer a higher interest rate than foreign reserves,
@@ -1450,6 +1482,7 @@ Developing countries
 All countries
 Industrial countries
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 575
 the 1960s. For developing countries, the growth rate of reserves has been high
 on average over the past four decades (the sharp upsurge in the mid-2000s is to
 some degree a reflection of huge reserve purchases by China). Reserve growth,
@@ -1496,6 +1529,7 @@ versus Mercantilist Views, Theory and Evidence,” Open Economies Review 18 (Apr
 and Maurice Obstfeld, Jay C. Shambaugh, and Alan M. Taylor, “Financial Stability, the Trilemma, and
 International Reserves,” American Economic Journal: Macroeconomics 2 (April 2010), pp. 57–94.
 
+576 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 80
 70
 60
@@ -1509,6 +1543,7 @@ FIGURE 18-9
 Currency Composition of Global Reserve Holdings
 While the euro’s role as a reserve currency increased during the first decade of its existence, it has taken a hit
 since the euro crisis. The dollar remains the overwhelming favorite.
+Source: International Monetary Fund, Currency Composition of Foreign Exchange Reserves (COFER), at http://www.imf.org/external/
 np/sta/cofer/eng/index.htm. These data cover only the countries that report reserve composition to the IMF.
 Upon its introduction in 1999, some economists speculated that the euro would
 overtake the dollar as the main international reserve currency. Given the recent appar-
@@ -1531,6 +1566,7 @@ Dollar
 Euro
 Yen Pound sterling
 
+CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 577
 because the central bank’s liabilities, which rise or fall when its assets rise or fall,
 are the base of the domestic money supply process. The central bank can negate
 the money supply effect of intervention through sterilization. With no steriliza-
@@ -1582,6 +1618,7 @@ all other countries are unable to influence their output or foreign output throu
 monetary policy. This policy asymmetry reflects the fact that the reserve center bears
 none of the burden of financing its balance of payments.
 
+578 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 ■■ A gold standard, in which all countries fix their currencies’ prices in terms of gold,
 avoids the asymmetry inherent in a reserve currency standard and places con-
 straints on the growth of countries’ money supplies. (A related arrangement was the

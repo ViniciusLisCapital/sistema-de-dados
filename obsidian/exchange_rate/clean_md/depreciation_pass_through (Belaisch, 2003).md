@@ -25,6 +25,7 @@ in other Latin American countries. Indeed the passthrough is more comparable wit
 G-7 countries-although in Brazil the effect on prices appears to be faster. 
 JEL Classification Numbers:E31, E37, F31, 054 
 Keywords: pass-through, exchange rate, inflation, inflation targeting, V AR, Brazil 
+Author's E-Mail Address:abelaisch@imf.org
 
 - 2-
 Contents 

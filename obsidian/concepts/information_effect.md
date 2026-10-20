@@ -28,6 +28,8 @@ The effect of a central bank announcement on private-sector beliefs about **non-
 |---|---|
 | [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]] | Wrong-sign responses of Blue Chip unemployment and inflation forecasts to FOMC surprises, read as Delphic content |
 | [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] | Names and estimates the Fed information effect: expected output growth rises after a tightening; a NK model where ψ of the shock moves beliefs about the natural rate, estimated at about 2/3 |
+| [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] | Offered as a possible explanation for why stocks react little to path-factor surprises while long yields react strongly: statements may raise investors' outlook for output and inflation (after Romer & Romer 2000) |
+| [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] | Central bank information shocks identified by the positive co-movement of rate and stock surprises (34% of FOMC and 46% of ECB surprises): they raise rates persistently and also raise prices, activity, growth and inflation expectations and ease financial conditions; in the model they match news of an asset-valuation shock |
 
 ## BRL / application to the current analysis
 
@@ -40,3 +42,5 @@ The sources linked here say nothing about Brazil yet.
 - [[nk_phillips_curve]] — ignoring the information effect biases the estimated slope down (more rigidity)
 - [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]] — Delphic content in FOMC statement surprises
 - [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] — the defining paper for the term and its structural estimate
+- [[monetary_policy/synthesis/policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005)]] — path-factor surprises and the possibility that FOMC statements reveal the Fed's view of the outlook
+- [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — VAR identification of information shocks with sign restrictions, US and euro area, and their macroeconomic effects

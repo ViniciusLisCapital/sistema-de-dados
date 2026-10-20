@@ -2,6 +2,7 @@ NBER WORKING PAPER SERIES
 OPTIMAL MONETARY POLICY INERTIA
 Michael Woodford
 Working Paper 7261
+http://www.nber.org/papers/w7261
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -39,7 +40,9 @@ Department of Economics
 Princeton University
 Princeton, NJ 08544
 and NBER
+woodford@princeton.edu
 
+1
 Central Bank Inertia and Optimal Policy
 Many students of central bank behavior have commented on the fact that the level of nominal
 interest rates in the recent past appears to be an important determinant of where the central
@@ -74,6 +77,7 @@ rt = θrt−1 + (1 −θ)¯rt
 achieve through its daily interventions. The actual (spot) funds rate may vary considerably from this level
 during the day, though such deviations from the Fed’s operating target are largely eliminated by the next
 day. See Rudebusch (1995).
+2
 
 where the coeﬃcient θ measures the degree of inertia in the central bank’s response. Sack
 (1998b) estimates a reaction function of the form given by (1.1) – (1.2), using quarterly
@@ -108,6 +112,7 @@ in terms of an operating target for the funds rate. The target rate series is ob
 of the Federal Reserve Bank of New York Trading Desk. This series refers to the variable denoted rt in (1.2),
 not to the unobserved variable ¯rt.
 6Sack (1998a) shows that similar conclusions hold for a sample that is extended through 1997.
+3
 
 the inappropriateness of current policy.
 The fact that further interest rate changes are
@@ -144,6 +149,7 @@ Guthrie and Wright (1998).
 in terms of an optimal delegation problem. What we mean to argue here is that such a goal has no place
 in a true social objective function, so that a reason for the central bank to care about it must be sought
 elsewhere.
+4
 
 rates always imply distortions, as resources are wasted on unnecessary eﬀorts to economize
 on cash balances. Friedman (1969) stresses that this is a reason to prefer a regime with low
@@ -176,6 +182,7 @@ the sense of eliminating predictable interest-rate variation. But “smoothing�
 something very diﬀerent from the sort of inertial behavior discussed here, which implies predictable interest-
 rate changes. In particular, Mankiw’s argument provides no reason why past interest rates, or other past
 states, should matter for the determination of the optimal current level of interest rates.
+5
 
 to serial correlation in the underlying disturbances to which the central bank responds, and
 not to any inertia in the central bank’s own response to those disturbances.11
@@ -208,6 +215,7 @@ output and inﬂation, as in the results of Fair and Howrey (1996). In the model
 lagged interest rates are excluded, to make clear that the explanation of inertia oﬀered here is of a diﬀerent
 kind. Note that delayed eﬀects of monetary policy disturbances can be explained without relying upon any
 such eﬀects (Rotemberg and Woodford, 1997).
+6
 
 private sector expects monetary policy to be conducted in the future. It follows from this
 that a more desirable outcome may be achieved if it can be arranged for private sector
@@ -237,6 +245,7 @@ adjustment of the central bank’s instrument in response to current observation
 the optimal commitment involve any reference to monetary targets; it may quite naturally
 be formulated as a feedback rule for a nominal interest-rate operating target, as the analysis
 below illustrates.
+7
 
 Another reason that the failure of the dynamic-programming principle in the case of the
 optimal control of forward-looking systems is not more widely appreciated is probably the
@@ -266,6 +275,7 @@ the optimal response of policy to random shocks, even if one has adjusted the ce
 objective so as to make discretion compatible with an optimal steady state in the absence
 12Here I have in mind the common practice of considering only the Markov-perfect solution of such a
 model. See further discussion in sections 3.2 and 4.1 below.
+8
 
 of shocks. Here, too, an optimal commitment on the part of the central bank can often lead
 to a better outcome than is attained through optimization under discretion.13
@@ -296,6 +306,7 @@ later period – a period that has been characterized by greater success at in�
 lization, and, many would argue, an increase in the credibility of the Fed’s commitment to
 13Clarida et al. (1999) also discuss this point in the context of a similar model.
 14This explanation is also endorsed by Rudebusch (1995).
+9
 
 a consistent anti-inﬂationary policy. Indeed, some commentators have proposed that U.S.
 monetary policy has been so successful at inﬂation stabilization in the 1990s, despite rel-
@@ -328,6 +339,7 @@ optimal policy to be inertial is quite diﬀerent. In particular, I shall assume
 to the central bank’s optimization problem, under which optimal policy is certainty-equivalent. This means
 that a predictable increase over time in the precision of the central bank’s estimate of the current state
 should not be a reason for forecastable changes in its desired instrument setting.
+10
 
 The analysis below oﬀers a formal analysis of the beneﬁts of inertial behavior in the
 context of a simple, and now rather standard, forward-looking macro model, with clear
@@ -358,7 +370,9 @@ the private sector.
 It is shown that such a rule must involve dependence of the current
 operating target upon the level of interest rates in the recent past, as is characteristic of
 estimated central bank reaction functions.
+11
 
+2
 The Problem of Optimal Monetary Policy
 In order to illustrate more concretely the themes of the preceding discussion, it is useful to
 introduce a simple optimizing model of inﬂation and output determination under alterna-
@@ -389,6 +403,7 @@ in the case of zero inﬂation and steady output growth.16
 These two equations, together
 16Thus all three variables denote percentage deviations from the values of the variables in a steady state
 with zero inﬂation and output growth at the constant trend rate.
+12
 
 with an interest-rate rule such as (1.1) – (1.2) representing monetary policy, determine the
 equilibrium evolution of the three endogenous variables πt, yt, and rt. The two exogenous
@@ -421,6 +436,7 @@ substitution) depends upon real as opposed to nominal interest rates, as a resul
 inﬂation expectations enter the IS equation. Second, current aggregate demand depends
 not simply upon current expected short-term real rates of return, but also upon expected
 future aggregate demand, since (2.1) indicates the incentives for intertemporal substitution
+13
 
 of demand created by real interest rate expectations (Kerr and King, 1994). Alternatively,
 (2.1) can be integrated forward to yield
@@ -455,6 +471,7 @@ at a rate πt that satisﬁes
 where ct represents (percentage deviations in) the average level of real marginal cost of supply,
 the coeﬃcient 0 < β < 1 represents the factor with which suppliers discount future real
 income17, and the coeﬃcient ω > 0 depends upon the average frequency of price changes and
+14
 
 the elasticity of demand faced by suppliers of individual goods. Prices are more nearly ﬂexible
 the higher is ω, as a high ω indicates a low tolerance for discrepancies between one’s current
@@ -488,6 +505,7 @@ an instrumental-variables technique, and reach similar conclusions. When they ge
 of the model, as in Woodford (1996).
 18The case of β = 0, but ω ﬁnite, would correspond to a model in which prices are set proportional to a
 weighted average of current and past unit labor costs, with no forward-looking terms.
+15
 
 the model to allow for a mixture of forward-looking and backward-looking price-setters, they
 estimate a larger fraction of the population to obey the forward-looking pricing equation,
@@ -524,6 +542,7 @@ The exogenous disturbance rn
 t corresponds to Wicksell’s “natural rate of interest”, the
 interest rate (determined by purely real factors) that would represent the equilibrium real rate
 of return under ﬂexible prices, and that corresponds to the nominal interest rate consistent
+16
 
 with an equilibrium with constant prices.19 In our simple model, disturbances to the natural
 rate represent a useful summary statistic for all non-monetary disturbances that matter for
@@ -562,6 +581,7 @@ sign of r∗depends upon whether it is desirable to stabilize nominal interest r
 a value greater or less than the level associated with a steady-state equilibrium with zero
 19See Blinder (1998, chap. 2) for a recent discussion of the usefulness of this concept in the theory of
 central banking.
+17
 
 inﬂation. Insofar as the interest-rate term represents the distortions emphasized by Friedman
 (1969), one would expect r∗to be a small negative quantity (since a zero nominal interest rate
@@ -595,6 +615,7 @@ policy, as shown in the next section.
 22It would aﬀect the conclusion reached about the steady-state rate of inﬂation that should be implicit
 in the optimal policy rule, for obvious reasons, but it would have no eﬀect upon our conclusions about the
 desirable responses to shocks, or the desirable type of feedback from endogenous variables to interest rates.
+18
 
 Finally, it should be noted that the presence of an (xt −x∗)2 term in (2.9) assumes that
 the random ﬂuctuations in the natural rate of output (shifts in the aggregate supply curve)
@@ -626,6 +647,7 @@ to these approximate structural equations and in the exact equilibrium is of ord
 term in (2.2) that is not netted out in their deﬁnition of the “output gap” that policymakers are assumed
 to wish to stabilize.
 24See Woodford (1999b) for details of the derivation.
+19
 
 or smaller.25 The welfare measure (2.8) with period loss function
 ˜Lt = π2
@@ -663,6 +685,7 @@ computed without a higher-order approximation to our model structural equations.
 28The ﬁrst-order conditions obtained in section 3.1 below diﬀer from the exact ones by terms that are
 only of order O(||ξ||2). This depends upon the fact that the steady-state values of the Lagrange multipliers
 associated with the constraints imposed by the structural equations are only of order O(||ξ||).
+20
 
 rate variability implied by the zero bound on nominal rates. We shall emphasize the latter
 interpretation here.
@@ -738,6 +761,7 @@ a speciﬁc quantitative speciﬁcation. The theoretical derivation implies, for
 by their estimated VAR using U.S. data.
 30There is also a constant term involved in completing the square, that has no eﬀect upon our ranking of
 alternative policies.
+21
 
 the discount factor in (2.8) should be the same as the coeﬃcient on expected inﬂation in
 the structural equation (2.2), as both are equal to the discount factor of the representative
@@ -768,6 +792,7 @@ output gap, and nominal interest rates to respond to exogenous ﬂuctuations in 
 rate.
 Formally, our problem is to choose stochastic processes πt, xt, and rt — specifying each
 of these variables as a function of a random state It that includes not only the complete
+22
 
 history of the exogenous disturbances (rn
 t , rn
@@ -812,6 +837,7 @@ resulting ﬁrst-order conditions; the same result is often instead achieved by 
 to equal one-half of (2.9). Note also that conditional expectations are dropped from the way in which the
 constraints are written inside the square brackets, because the expectation E0 at the front of the entire
 expression makes them redundant.
+23
 
 An optimal plan then must satisfy the ﬁrst-order conditions
 πt −(βσ)−1φ1t−1 + φ2t −φ2t−1 = 0,
@@ -844,6 +870,7 @@ values into (3.2) – (3.4), we see that this requires that the optimal plan inv
 an unbounded solution. Our Taylor series methods imply that the solution to the linear-quadratic problem
 taken up here should approximate the solution to the exact nonlinear welfare maximization problem only in
 the case that solution involves ﬂuctuations in the state variables that are uniformly small.
+24
 
 x∗, rt = r∗at all times. But substitution of these values into (2.6) and (2.7) shows that this
 cannot represent an equilibrium, unless x∗= 0, and rn
@@ -879,6 +906,7 @@ arguments for the desirability of low interest-rate volatility are crucial to th
 desirability of an inertial, non-time-consistent policy. But similar conclusions could be reached even when
 λr = 0, if we assume some other reason for the ﬁrst-best level of welfare not to be attainable, such as the
 “cost-push shocks” assumed in Clarida et al. (1999).
+25
 
 to the constraints (2.6) and (2.7), so as to minimize Lt, given the exogenous state rn
 t , and
@@ -918,6 +946,7 @@ inﬂation rate higher than the one that would minimize the steady-state value o
 loss L.
 In determining the equilibrium responses to shocks, it is convenient to work in terms of
 deviations from steady-state values. Thus we deﬁne ˆπt ≡πt −πtc, and so on. The hatted
+26
 
 variables satisfy the same set of diﬀerence equations as before, except that we may now
 drop the constant terms from equations (3.7) – (3.8). If we substitute out the Lagrange
@@ -955,6 +984,7 @@ rn
 t+1 = ρrn
 t + ϵt+1,
 (3.15)
+27
 
 in which case the state vector st consists simply of rn
 t itself.
@@ -993,6 +1023,7 @@ consistent sense, the conventional view described in the introduction is correct
 policy does not involve any inertia in nominal interest rates other than what results from
 the persistence of the underlying economic conditions in response to which interest rates are
 properly adjusted.
+28
 
 If one assumes a non-Markovian natural rate process, so that there are additional states
 in the vector st besides the current natural rate itself, that are relevant for forecasting the
@@ -1035,6 +1066,7 @@ not necessarily require explicit response to forecasts by the central bank; it c
 expectations equilibrium response, owing to forward-looking behavior on the part of the private sector, even
 if the central bank’s policy rule responds only to current endogenous variables. See the discussion in the
 next section.
+29
 
 the constraints imposed by the requirements for a rational expectations equilibrium. That
 optimal plan is instead described by the ﬁrst-order conditions (3.2) – (3.4) derived earlier.
@@ -1068,6 +1100,7 @@ feasible non-inertial plans correspond to coeﬃcients ys, fy that satisfy
 However, there the nature of optimal feedback to the instrument from endogenous variables is considered,
 whereas we defer this question to section 4.2 below. Furthermore, there the choice of the optimal “simple”
 rule is allowed to depend upon the state of the economy in the initial period.
+30
 
 rs = πs,
 (3.21)
@@ -1110,6 +1143,7 @@ the variability of inﬂation under this policy. Also, under our deﬁnition, un
 plan is certainty-equivalent, just like the fully optimal plan and the time-consistent optimizing plan. That
 is, the optimal steady-state values ys are the same as for a certainty problem, while the optimal response
 coeﬃcients fy are independent of the variance of the disturbance process.
+31
 
 with xs then given by (3.20). We observe that in the case that λr and/or r∗are small enough,
 the steady-state inﬂation rate satisﬁes
@@ -1146,6 +1180,7 @@ inﬂation rate that is independent of x∗.
 inﬂation bias in this sense, both because positive steady-state inﬂation raises the steady-state output gap in
 this model, unlike that of Barro and Gordon, and because we allow for the possibility that r∗> 0, which
 also implies advantages to a positive average inﬂation rate.
+32
 
 3.4
 Interest-Rate Inertia under the Optimal Plan
@@ -1198,6 +1233,7 @@ derivatives of the constraints with respect to the endogenous variables, contrib
 order O(||ξ||2) to the ﬁrst-order conditions. Hence equations (3.2) – (3.4) represent a ﬁrst-order Taylor series
 approximation to the exact conditions, and their solution represents a similar log-linear approximation to
 the exact optimal plan.
+33
 
 rate in order to allow the nominal interest rate to be nearer its optimal level (say, to reduce
 the transactions costs associated with economizing on money holdings), and not because of
@@ -1231,6 +1267,7 @@ in the four endogenous variables ˆπt, ˆxt, ˆφ1t, and ˆφ2t. The system can
 43In the case that λr = 0, the optimal inﬂation rate is eventually zero in all states, as is argued by King
 and Wolman (1998). But that is not true here, if we allow a concern for reduction of the variability of
 interest rates.
+34
 
 form as
 "
@@ -1287,6 +1324,7 @@ in this case, we assume that they are satisﬁed.
 44Here we neglect to discuss certain non-generic cases that can occur only for special parameter values.
 45For example, they are satisﬁed by the “calibrated” parameter values used for the numerical computations
 below.
+35
 
 In this case, the unique bounded solution can be written in the form
 zt = Gφt−1 −
@@ -1332,6 +1370,7 @@ diﬀerence is the presence of the φt−1 terms as well in the case of the opti
 imply that the endogenous variables at date t – and in particular, the central bank’s setting
 46It is easily seen from (3.4) that p′ must equal −(λrσ)−1 times the ﬁrst row of the matrix N. In fact, q′
 is the same multiple of the ﬁrst row of C.
+36
 
 of the interest rate at that date – should not depend solely upon current and forecasted future
 values of the natural rate of interest. They should also depend upon the predetermined state
@@ -1373,6 +1412,7 @@ R(L) ≡−(λrσ)−1[n′
 2 −N22n′
 1)L].
 (3.33)
+37
 
 This should be compared with the simple result (3.13) in the case of the time-consistent
 plan.
@@ -1403,6 +1443,7 @@ are unchanged.47
 47This does not necessarily make sense, if the coeﬃcients in the loss function (2.9) are intended to represent
 an approximation to true social welfare, as suggested above, since in that case there is a theoretical relation
 between λx and the various preference and technology parameters that also determine κ. But even in that
+38
 
 In this limiting case, the κφ2t term in (3.3) can be neglected, so that it becomes possible
 to solve for the variables xt, rt, and φ1t using only equations (2.7), (3.3), and (3.4).48 This
@@ -1450,6 +1491,7 @@ solve for πt, as we set this variable equal to zero. We no longer obtain a ﬁr
 to (3.2) by diﬀerentiating the Lagrangian with respect to πt, because it is not possible to vary inﬂation.
 Likewise, we no longer obtain a Lagrange multiplier φ2t corresponding to constraint (2.6), as this constraint
 is already guaranteed to be satisﬁed once we have set πt equal to zero at all times.
+39
 
 Since equation (3.29) now involves only ˆφ1t, it is possible to use (3.4) to substitute ˆrt for ˆφ1t,
 and thus directly obtain an equation for the optimal interest-rate dynamics,
@@ -1495,6 +1537,7 @@ a result, an innovation in the natural rate is followed by a series of interest 
 the same direction, as in the characterizations of actual central-bank behavior by Rudebusch
 and Goodhart.
 49This representation is possible because (3.34) implies that λx(λrσ2)−1 is equal to (1 −µ1)(µ2 −1).
+40
 
 While this partial-adjustment representation is only exactly correct in an unrealistic
 limiting case, it provides considerable insight into the optimal interest-rate responses in
@@ -1533,6 +1576,7 @@ is roughly the same size as its mean.
 Hence it is frequently negative, meaning that in a zero-inﬂation
 environment the zero bound on nominal interest rates would prevent short rates from perfectly tracking the
 natural rate of interest.
+41
 
 a single parameter ρ. The value of most interest here is unclear, since in reality there are
 probably diﬀerent types of disturbances, with diﬀering degrees of persistence.52 We shall
@@ -1568,6 +1612,7 @@ the value .224 reported by Rotemberg and Woodford. A slightly lower value of ρ,
 54To be precise, this measures the marginal increase in E[˜L] that is possible per unit marginal increase
 in V [r], the variability measure deﬁned below in (3.38). The unconditional expectation that is taken of the
 loss measure is the same as that discussed below for the statistic E[W] reported in Table 2.
+42
 
 minimizes the expected discounted sum of (2.10), our quadratic approximation to the utility
 of the representative household, subject to the constraint implied by the zero bound on
@@ -1605,6 +1650,7 @@ increase would be smaller than the increase in the natural rate, in order to red
 rate variability at the price of some increase in inﬂation and output gap variability. The
 55Note that an adverse supply shock lowers output, but increases the output gap, as sticky prices prevent
 output from falling as much as it would in the case of fully ﬂexible prices.
+43
 
 impulse response under an optimal policy is instead given by the solid line. Nominal interest
 rates rise immediately, but by only a fraction of the increase in the natural rate (about 24
@@ -1634,6 +1680,7 @@ shock through an interest-rate increase that is expected to be no more persisten
 shock.
 56Here the inﬂation rate and nominal interest rate are reported as annualized percentage rates; thus the
 responses plotted are actually for 4ˆπt and 4ˆrt.
+44
 
 To further clarify the advantages of interest-rate inertia, Figure 2 also plots the impulse
 responses associated with the optimal non-inertial policy, assuming the same parameter
@@ -1670,6 +1717,7 @@ measure that is independent of the economy’s initial state. Except for the dis
 57The assumed variance of the shocks ϵt is chosen so as to imply a standard deviation for the natural
 rate of interest of the size indicated in Table 1. This is irrelevant, of course, for the comparisons of relative
 variances between the two regimes, or comparison of the relative size of expected losses E[W].
+45
 
 corresponds to the unconditional variance of zt, and in the case of non-inertial plans, it is
 equal to the unconditional variance even though β < 1. In the case of the optimal plan, the
@@ -1702,6 +1750,7 @@ output gap is more than a third larger as well, although, since the variability 
 has only a small weight in our assumed loss function, the optimal policy is not primarily
 chosen with a view to stabilization of the output gap.) Hence the loss measure E[W] is 60
 percent higher under the time-consistent or non-inertial policy.
+46
 
 Figures 3 and 4 present the corresponding impulse response functions in the case of a
 natural rate process that exhibits positive serial correlation, speciﬁcally, our baseline case
@@ -1731,6 +1780,7 @@ is that the responses of the interest-rate gap, inﬂation, and the output gap a
 in amplitude by a factor of about two-thirds. The result is substantially less variability of
 inﬂation and the output gap, but even more variability of interest rates, achieving a small,
 but rather modest, reduction in E[W]. The optimal plan is still signiﬁcantly better in terms
+47
 
 of both inﬂation variability and interest-rate variability (though output gap variability, which
 matters relatively little for welfare under our parameter values, is slightly higher), and the
@@ -1761,6 +1811,7 @@ way results in an equilibrium in which the central bank must accept very high (n
 accuracy of our linear-quadratic approximations. Still, the qualitative conclusion is surely correct; for if
 there were a solution with low inﬂation and interest-rate volatility, then our approximate methods would
 accurately describe it.
+48
 
 interest rates, as a result of the persistent high inﬂation.
 Interestingly, in the case of a shock as persistent as this, the optimal plan does not involve
@@ -1790,6 +1841,7 @@ implemented by an inertial feedback rule that requires no feedback at all from t
 shock, and this may be another important advantage of inertial policy.
 Visual inspection of the optimal impulse responses in Figures 1, 3 and 5 suggests that
 “partial adjustment” of the nominal adjustment toward a level determined by the current
+49
 
 natural rate of interest, just as in the limiting case analyzed above, gives a reasonable
 approximate account of optimal interest-rate dynamics. The reason for this is not hard to
@@ -1822,6 +1874,7 @@ Advantages of a Central Bank Preference for Smooth-
 ing
 We turn now to the question of how the optimal responses to shocks, derived in the previous
 section, are to be brought about in practice. There are various ways in which this question
+50
 
 of implementation might be approached. Perhaps the most straightforward is the design of a
 policy rule to which the central bank may commit itself; this approach is treated in the next
@@ -1855,6 +1908,7 @@ arranging for the central banker to pursue an objective other than social welfar
 state-contingent payments to the central banker serve to modify the bank’s objective function in the desired
 direction. Here we shall speak of choosing the central bank’s objective, without specifying how this is to
 be done. It might be through a contract, through screening of the personalities of central bankers before
+51
 
 that a central bank with a price level target, rather than an inﬂation target, may better
 serve to stabilize inﬂation in response to shocks, owing to the bias resulting from discretion
@@ -1887,6 +1941,7 @@ The time-consistent optimizing plan associated with such a loss function can be 
 appointment, or by teaching central bankers that the pursuit of certain objectives rather than others is in
 the general good.
 62Kiley (1998) addresses the same issue in the context of a model closely related to the one used here.
+52
 
 using familiar methods, expounded for example in Soderlind (1998). The problem is more
 complicated than the one considered earlier, because the presence of a term involving the
@@ -1939,6 +1994,7 @@ Discretionary optimization by the central bank at date t is then deﬁned by the
 tion problem on the right-hand side of (4.2). The solution to this problem, for any given
 63Multiplication of the central bank’s loss function by a factor 1/2 here eliminates a factor of 2 from
 subsequent expressions such as (4.6), and is purely a normalization of the value function.
+53
 
 current state (rt−1; rn
 t ), deﬁnes a set of functions r(rt−1; rn
@@ -1987,6 +2043,7 @@ t ,
 allows us to solve for xt and πt as linear functions of rt and rn
 t . (Let the coeﬃcients on
 rt in the solutions for xt and πt be denoted Xr and Πr respectively. These coeﬃcients are
+54
 
 themselves linear combinations of the coeﬃcients xr and Πr introduced in (4.4) – (4.5).)
 Requiring the solution functions deﬁned in (4.3) – (4.5) to satisfy these linear restrictions
@@ -2023,6 +2080,7 @@ We shall as usual be interested solely in the case of a stationary equilibrium, 
 t are bounded. (As before, this
 64The restrictions are nonlinear because the coeﬃcients Xr and so on are themselves functions of the
 coeﬃcients xr and so on.
+55
 
 is the case in which our linear-quadratic approximations are justiﬁable in terms of a Taylor
 series approximation to the exact conditions associated with private-sector optimization, in
@@ -2055,6 +2113,7 @@ condition will be satisﬁed as long as these terms together outweigh the negati
 equilibrium outcomes from date t + 1 onward, are much weaker than the conditions that would be required
 for convexity of its objective if it viewed itself as being able to commit itself at date t to any state-contingent
 plan from that date onward that was consistent with the structural equations (2.6) – (2.7).
+56
 
 We turn now to the question of what loss function the central bank should be assigned to
 minimize, if it is assumed that a time-consistent plan of this sort will be pursued. As above,
@@ -2085,6 +2144,7 @@ A suﬃcient condition for this (though not necessary) would be to choose ˆx∗
 as in the proposal of Blinder (1998, chap. 2), the average inﬂation bias is eliminated by
 66Because the present speciﬁcation already has more degrees of freedom than are needed, we have not
 bothered to consider a target inﬂation rate diﬀerent from zero in (4.1).
+57
 
 choosing a central banker whose goal is to stabilize output around the natural rate (i.e., for
 whom ˆx∗= 0), even though the true social welfare function is one with x∗> 0.67
@@ -2118,6 +2178,7 @@ inﬂation bias could be completely eliminated by setting ˆλx = 0. However, th
 equilibrium responses to shocks, and such distortion of the weight put on output gap stabilization may have
 undesirable consequences for that reason. Indeed, Rogoﬀargues that it is not desirable to adjust ˆλx to the
 point that the inﬂation bias is fully eliminated, exactly because of this tension.
+58
 
 that the optimal interest-rate dynamics have a representation of the form (3.32), where Q(L)
 is of second order and R(L) is of ﬁrst order; thus they generally do not take a form as simple
@@ -2160,6 +2221,7 @@ simplify to
 (xr −σ−1)ˆλxxn + ˆλrrn + (1 + β(1 −rr −ρ))λ∆rn = 0.
 These two equations depend only upon the ratios of the weights in the policy objective, ˆλr/ˆλx
 and λ∆/ˆλx, rather than upon the absolute size of the three weights. (This is because inﬂation
+59
 
 variations are negligible under any policy regime, so the relative weight on inﬂation variability
 no longer matters.) Hence we may, without loss of generality, suppose that ˆλx = λx, the
@@ -2193,6 +2255,7 @@ still be possible to support the optimal plan as an equilibrium outcome under di
 a central-bank objective more complex than (4.1) were considered. We do not pursue this
 here, but instead note that even with an objective in the simpler class (4.1), it is possible
 to achieve quite a good approximation to the optimal pattern of responses to shocks, in the
+60
 
 case of plausible parameter values. We demonstrate this through numerical analysis of the
 model, assuming the same “calibrated” parameter values as earlier.
@@ -2227,6 +2290,7 @@ all ˆλr > −1. This identiﬁes the boundary of the white region in Figures 8
 70It is interesting to note that for values of ˆλr below a critical value, approximately -0.02, the unique
 stationary equilibrium no longer corresponds to the “minimum state variable solution”, i.e., the solution in
 which lagged interest rates are irrelevant.
+61
 
 Only for even larger negative values do we actually have multiple time-consistent equilibria.
 The same turns out to be true for λ∆> 0 as well, at least in the case of the moderate
@@ -2257,6 +2321,7 @@ coeﬃcient, at least in the region where both are positive, though the response
 Figure 10 presents the corresponding contour plot for the true social loss measure E[W].
 Four sets of policy weights are marked on this ﬁgure (as on the others). The X indicates the
 weights in the true social loss function; but charging a discretionary central bank to minimize
+62
 
 this objective does not lead to the best equilibrium, even under this criterion. (These weights,
 and properties of the resulting time-consistent equilibrium, are described in the ﬁrst line of
@@ -2288,6 +2353,7 @@ equals the weight in the true social loss function, λx, given in Table 1. In fa
 of values ˆλx ̸= λx allows us to do no better, either in the case of loss functions with no
 smoothing objective, or in the case of the fully unconstrained family. For the policy on the
 second line of Table 3 already implements the optimal non-inertial plan, and the policy on the
+63
 
 fourth line already implements the optimal plan of the form given by equations (4.3) – (4.5).
 This is not because ˆλx = λx is a uniquely optimal value in either case, but rather because
@@ -2320,6 +2386,7 @@ Figure 11 plots the value of E[W] in the time-consistent equilibrium, as a funct
 policy weights ˜λπ and ˜λ∆, in the case that ˜λr = 0. As in the earlier ﬁgures, the X marks the
 weights in the true social loss function (corresponding to the ﬁrst line in Table 3). The star
 without a circle again indicates the best attainable policy in this plane, under the constraint
+64
 
 that ˜λπ = 1/λx, the weight in the true social loss function. The star is at a point of tangency
 between an E[W] isoquant and a vertical line at ˜λπ = 1/λx, and corresponds to the policy
@@ -2351,6 +2418,7 @@ function. Under the constraint that ˜λr ≥0, however, the best attainable poi
 corresponding to ˜λπ = ˜λr = 0.
 72The equilibrium achieved in this way is also very similar in other respects, such as the other statistics
 for the optimal plan reported in Table 2.
+65
 
 that the central bank commits itself to systematically conduct policy in this particular way,
 and that the commitment is understood by and credible to the private sector. We shall
@@ -2381,6 +2449,7 @@ the optimal equilibrium may require less information for implementation by the c
 Relation (3.32), if proposed as a policy rule, would require the central bank to determine at
 each point in time the current value of the natural rate of interest. But as we shall see, it is
 possible for the central bank to adopt a feedback rule that involves no explicit dependence
+66
 
 upon the natural rate, and so does not even require the central bank to know the value
 of that variable, and yet results in the desired rational expectations equilibrium variation
@@ -2411,6 +2480,7 @@ particular rational expectations IS-LM model used by Sargent and Wallace. Rather
 73See, e.g., Bernanke and Woodford (1997), Rotemberg and Woodford (1998), Clarida et al. (1998a),
 Schmitt-Groh´e and Uribe (1999), Christiano and Gust (1999), and Woodford (1999a) for recent examples of
 analyses of monetary policy rules that emphasize this issue.
+67
 
 result applies only to interest-rate rules that specify each period’s nominal interest rate as a
 function solely of exogenous states. However, this particular result applies to our structural
@@ -2453,6 +2523,7 @@ in this case. Speciﬁcally, for {zt} any bounded stochastic process satisfying 
 bounded solution is given by
 z′
 t = zt + vψt,
+68
 
 where v is the right eigenvector of ˆA associated with the eigenvalue λ1, and the stochastic
 process ψt evolves according to
@@ -2485,6 +2556,7 @@ may break down in the case of ﬂuctuations that are too large.
 in addition to the interest rate itself, we consider only rules involving feedback from these variables here.
 Consideration of the eﬀects of feedback from other variables would require that we adjoin to our model
 additional equations for determination of those variables.
+69
 
 requirement that the policy rule support the optimal plan as the unique bounded rational
 expectations equilibrium, the set of policies that satisfy this requirement will be large, since
@@ -2514,6 +2586,7 @@ available. For simplicity, we also again assume a ﬁrst-order autoregressive pr
 the natural rate of interest. Our complete set of structural equations then consists of (2.6)
 – (2.7), (3.15), and (5.3).
 This system (setting aside the equation for the exogenous dynamics of the natural rate)
+70
 
 can be written in matrix form as
 "
@@ -2570,6 +2643,7 @@ characterized in section 5.1, and θ.
 As one eigenvalue of ˆA satisﬁes 0 < λ1 < 1, there are too many
 eigenvalues inside the unit circle for determinacy. By continuity, the same is true for all coeﬃcients φ in a
 neighborhood of zero.
+71
 
 chosen so as to achieve the optimal pattern of responses to shocks among those that can be
 described by partial-adjustment dynamics of this form. But we have seen earlier, in sections
@@ -2604,6 +2678,7 @@ rules (5.3), the central bank can implement the rule without having to observe t
 exogenous disturbances rn
 t and yn
 t if and only if φx = φn = 0. (We assume here that the
+72
 
 bank can observe inﬂation and output, but that it cannot observe the current value of the
 output gap without also being able to observe the current natural rate of output.) This
@@ -2642,6 +2717,7 @@ coeﬃcient is likely to be greater than one on its own, so that the determinacy
 easily satisﬁed.
 Thus we again conclude that intrinsic inertia in interest rates is justiﬁed, here measured
 by the positive coeﬃcient θ in the feedback rule (5.8). In fact, we ﬁnd not only that a
+73
 
 positive θ is called for, but one greater than rr. Thus the degree of intrinsic inertia that
 should be incorporated into a feedback rule of this kind is even greater than the degree of
@@ -2675,6 +2751,7 @@ perfectly inferred from observations of inﬂation, so there is no need to use e
 the past to infer the current value. In the more realistic case, in which observations of current conditions do
 not suﬃce to fully reveal the state of the economy, the argument suggested above can be a further reason
 for an optimal interest-rate feedback rule to be inertial, as shown by Aoki (1998).
+74
 
 given that the desired equilibrium involves πr, xr < 0.) Thus the conclusion that a desirable
 feedback rule involves θ > rr does not depend upon the exclusive use of inﬂation itself as an
@@ -2704,6 +2781,7 @@ value of φπ, the variability of both target variables is minimized by choosing
 a rule with θ > 0 results in less volatile short-term interest rates in equilibrium; in fact, for
 79The same condition applies in the more complicated model of Rotemberg and Woodford (1998). See the
 corresponding ﬁgures in that paper.
+75
 
 given φπ > 0, the variability of the nominal interest rate is minimized by choosing θ as large
 as possible. Minimization of our overall loss criterion E[W] involves a compromise between
@@ -2737,6 +2815,7 @@ lag polynomial A(L) in the feedback rule (5.10 and that of the lag polynomial Q(
 80See Giannoni (1999) for further discussion of how the optimal simple rule depends upon model parame-
 ters, and for an analysis of “robust” optimal policy taking account of parameter uncertainty. Giannoni ﬁnds
 that in the case of parameter uncertainty the robust-optimal simple rule involves an even larger value of θ.
+76
 
 (3.32) describing how interest rates evolve in response to shocks, in the stationary rational
 expectations equilibrium associated with such a policy rule. In particular, a “super-inertial”
@@ -2780,6 +2859,7 @@ a second-order polynomial A(L) and a ﬁrst-order polynomial B(L). It is further
 81Obviously, for any polynomials A(L) and B(L) with this property, the polynomials ˜A(L) ≡C(L)A(L)
 and ˜B(L) ≡C(L)B(L) will also have the property, where C(L) is any lag polynomial whatsoever. But the
 latter, higher-order polynomials represent simply a more complex description of an equivalent policy rule.
+77
 
 that there is a unique such relation with polynomials of this order; speciﬁcally, it is the
 unique such relation in which neither A(L) nor B(L) is of order greater than two. This
@@ -2831,6 +2911,7 @@ What does the form of this optimal interest-rate feedback rule indicate about th
 ability of interest-rate inertia of the kind indicated by the empirical studies summarized in
 the introduction? Our characterization here of the optimal form of the lag polynomial A(L)
 in (5.10) is arguably more relevant for that question than our previous characterization of
+78
 
 the optimal form of the lag polynomial Q(L) in (3.32), since a number of the studies referred
 to seek to estimate an explicit interest-rate feedback rule intended to represent systematic
@@ -2860,6 +2941,7 @@ types of innovations each period to the state vector st that describes current i
 about the future evolution of the IS and AS disturbances. (The two orthogonal shocks are
 identiﬁed in the U.S. data with two diﬀerent orthogonal innovations from a tri-variate VAR.)
 An optimal plan involves interest-rate responses to each of these kinds of news, and as a
+79
 
 result feedback from the current inﬂation rate alone, along with lagged variables, does not
 allow a suﬃciently ﬂexible class of responses to include one that achieves the exact optimal
@@ -2888,6 +2970,7 @@ further explosive growth of interest rates in subsequent quarters, because inﬂ
 indeed undershoots its long-run level, after its initial small increase. Given this undershoot-
 ing, the policy rule (5.10) allows the nominal interest rate to converge back to its normal
 level after a few quarters. The inﬂation reduction occurs, in equilibrium, because if demand
+80
 
 did not decline enough, and price increases were not moderated enough, to achieve this, the
 private sector would have to expect steep interest-rate increases a few quarters in the future,
@@ -2917,6 +3000,7 @@ the levels of inﬂation and interest rates may have become. The desirable prope
 rule in the model considered here, by contrast, depend only upon a commitment to apply the
 rule in the case of ﬂuctuations in inﬂation and interest rates over bounded intervals, the range
 over which these variables ﬂuctuate in the stationary rational expectations equilibrium. One
+81
 
 could modify the rule outside these intervals (for example, specifying that interest rates will
 never fall below a certain ﬂoor, or rise above a certain ceiling, no matter what the history
@@ -2948,6 +3032,7 @@ poor indicator of the underlying pressures that monetary policy should respond t
 82See Hansen and Sargent (1999) for an analysis of this question in the case of one particular description
 of the possible speciﬁcation error.
 83The problem is related to the problem discussed in Bernanke and Woodford (1997), that arises when
+82
 
 inﬂation increases by only a small amount in response to such a shock, the optimal feedback
 rule must respond to observed inﬂation variations with an extremely large coeﬃcient. And,
@@ -2979,6 +3064,7 @@ should large stabilize forecastable inﬂation.
 84Orphanides (1997) documents the degree of error contained in real-time estimates of the current rate of
 inﬂation available to the Federal Open Market Committee in its deliberations.
 85See Aoki (1998) for a treatment of related issues in a forward-looking model similar to that used here.
+83
 
 Fed reaction functions like that of Sack (1998b) seems unlikely to be greater than can be
 justiﬁed as part of an optimal policy commitment. Indeed, it is possible that a more detailed
@@ -2986,6 +3072,7 @@ analysis would still conclude, like the simple treatment above, that current U.S
 not even inertial enough. Our ﬁnding that even a “super-inertial” autoregressive polynomial
 may be optimal shows how wrong it is to assume that evidence of inertial behavior provides
 prima facie evidence of incompetence.
+84
 
 Table 1: “Calibrated” parameter values.
 Structural parameters
@@ -3069,6 +3156,7 @@ Optimal
 4.74
 6.77
 2.228
+91
 
 Table 3: Time-Consistent Equilibria with Alternative Policy Weights.
 Policy Weights
@@ -3137,50 +3225,297 @@ E[W]
 11.95
 2.649
 1.281
+92
 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
 Natural, Optimal, and Optimal Non−inertial Interest Rate [ρ = 0]
 Figure 1
 rn(t)
 r(t) 
 rs(t)
 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.1
 −0.05
+0
+0.05
+0.1
 Inflation: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0]
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.5
+0
+0.5
+1
 Output Gap: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0]
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+0
+0.2
+0.4
+0.6
+0.8
+1
 Interest Rate: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0]
 Figure 2
 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
 Natural, Optimal, and Optimal Non−inertial Interest Rate [ρ = 0.35]
 Figure 3
 rn(t)
 r(t) 
 rs(t)
 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.1
 −0.05
+0
+0.05
+0.1
+0.15
 Inflation: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.35]
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+−0.5
+0
+0.5
+1
 Output Gap: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.35]
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+0
+0.2
+0.4
+0.6
+0.8
+1
 Interest Rate: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.35]
 Figure 4
 
+0
+5
+10
+15
+20
+25
+30
+35
+40
+−0.1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
 Natural, Optimal, and Optimal Non−inertial Interest Rate [ρ = 0.9]
 Figure 5
 rn(t)
 r(t) 
 rs(t)
 
+0
+5
+10
+15
+20
+25
+30
+35
+40
+−0.2
 −0.15
+−0.1
 −0.05
+0
+0.05
 Inflation: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.9]
+0
+5
+10
+15
+20
+25
+30
+35
+40
+−0.5
+0
+0.5
+1
+1.5
 Output Gap: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.9]
+0
+5
+10
+15
+20
+25
+30
+35
+40
+0
+0.2
+0.4
+0.6
+0.8
+1
 Interest Rate: Optimal (−) and Optimal Non−inertial (−.) [ρ = 0.9]
 Figure 6
 
+−10
+−8
+−6
+−4
+−2
+0
+2
+4
+6
+8
+10
+−3
+−2
+−1
+0
+1
+2
+3
 λr
 ^
 rr
 Figure 7
 
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
 Mult. sol.
+0.5
+0.45
+0.4
+0.3
+0.2
+0.1
+0.05
 X
 rr
 λr
@@ -3188,7 +3523,34 @@ rr
 λ∆
 Figure 8
 
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
 Mult. sol.
+1
+0.5
+0.35
+0.25
+0.2
+0.15
+0.1
 X
 rn
 λr
@@ -3196,7 +3558,38 @@ rn
 λ∆
 Figure 9
 
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
 Mult. sol.
+1.12
+1.2
+1.5
+2
+3
+5
+10
+5
+3
+2
+1.5
 X
 E[W]
 λr
@@ -3204,6 +3597,32 @@ E[W]
 λ∆
 Figure 10
 
+0
+5
+10
+15
+20
+25
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+1.29
+1.3
+1.32
+1.34
+1.35
+1.5
+2
+3.2
+1.35
 X
 E[W]
 λπ
@@ -3212,6 +3631,39 @@ E[W]
 ~
 Figure 11
 
+−25
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+0
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+4
+3
+2
+1.5
+1.25
+1.1
+1.25
+1.5
+2
+3
+4
 X
 Mult. sol.
 E[W]
@@ -3221,7 +3673,30 @@ E[W]
 ~
 Figure 12
 
+0
+10
+20
+30
+40
+50
+60
+−2
+0
+2
+4
+6
+8
+10
+12
+14
+16
+0.5
+0.3
+0.2
+0.1
+0.05
 0.025
+0.01
 0.005
 θ
 Indet.
@@ -3230,6 +3705,33 @@ Figure 13
 φπ
 V[π]
 
+0
+10
+20
+30
+40
+50
+60
+−2
+0
+2
+4
+6
+8
+10
+12
+14
+16
+50
+25
+20
+15
+10
+7
+4
+1
+2
+0.5
 θ
 Indet.
 Instab.
@@ -3237,6 +3739,33 @@ Figure 14
 φπ
 V[x]
 
+0
+10
+20
+30
+40
+50
+60
+−2
+0
+2
+4
+6
+8
+10
+12
+14
+16
+0.01
+0.01
+0.1
+0.5
+1
+2.5
+5
+10
+50
+25
 θ
 Indet.
 Instab.
@@ -3244,7 +3773,37 @@ Figure 15
 φπ
 V[r]
 
+0
+10
+20
+30
+40
+50
+60
+−2
+0
+2
+4
+6
+8
+10
+12
+14
+16
+2
+1.5
+1.3
+1.2
+1.15
+1.1
 1.097
+1.15
+1.2
+1.3
+1.5
+2
+5
+10
 Instab.
 Instab.
 θ

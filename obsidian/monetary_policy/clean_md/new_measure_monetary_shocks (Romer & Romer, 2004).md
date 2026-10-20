@@ -36,6 +36,7 @@ dicator of monetary actions in studies of the
 effects of monetary policy, moves a great deal
 * Department of Economics, University of California,
 Berkeley, CA 94720, and National Bureau of Economic
+Research (e-mail: cromer@econ.berkeley.edu; dromer@
 econ.berkeley.edu). We are grateful to Normand Bernard
 for providing data and Federal Reserve records, to Marjorie
 Flavin, Jeffrey Fuhrer, Charles Jones, Janet Yellen, and the
@@ -284,6 +285,7 @@ sures, we can see if using a consistent measure of policy
 intentions and controlling for anticipatory actions affects the
 estimates of the impact of monetary policy.
 
+1058 THE AMERICAN ECONOMIC REVIEW
 September 1979 and for the entire period since
 the mid-1980’s. Therefore, the change in the
 intended funds rate is the single indicator that
@@ -492,6 +494,7 @@ metry is recorded as a change of 1/8 of a point
 in the intended direction. In the early Burns era,
 when larger movements were common, strong
 
+1060 THE AMERICAN ECONOMIC REVIEW
 asymmetry may get a value of 1/4 point or
 more. We then adjust this preliminary estimate
 of the expected change in the intended funds
@@ -526,6 +529,7 @@ A meeting-by-meeting description of our ap-
 plication of these general procedures for deduc-
 ing Federal Reserve intentions is given in an
 unpublished Appendix available on the AER
+Web site (http://www.aeaweb.org/aer/contents/).
 Table Al at the end of the paper shows the
 resulting series on the FOMC’s intended funds
 rate before the forecast and the change in the
@@ -637,6 +641,7 @@ from the staff’s “chart show” given at the FOMC meetings
 at which the “Monetary Policy Report to Congress” is
 discussed (typically the February and July meetings). The
 chart shows are available on the Board of Governors Web
+site (http://www.federalreserve.gov). The information is
 available starting with the meeting for July 1979. We use
 the forecast of real GDP growth and inflation for the fourth
 quarter of the previous year to the fourth quarter of the current
@@ -694,6 +699,7 @@ ahead, respectively.’ The forecast for the
 7 The horizons are relative to the date of the forecast
 corresponding to meeting m. That is, if the meeting is in
 
+1062 THE AMERICAN ECONOMIC REVIEW
 previous quarter is often actual data rather than
 a forecast. We include it because lagged condi-
 tions could obviously play a substantial role in
@@ -900,6 +906,7 @@ which the corresponding FOMC meeting oc-
 curred. If there are two meetings in a month, we
 sum the shocks. If there are no meetings in a
 
+1064 THE AMERICAN ECONOMIC REVIEW
 SEPTEMBER 2004
 TABLE 2—NEW MEASURE OF MONETARY POLICY SHOCKS
 (Percentage points)
@@ -1059,6 +1066,7 @@ there is not a sharp distinction between shocks coming from
 the Federal Reserve’s beliefs and ones stemming from its
 tastes.
 
+1066 THE AMERICAN ECONOMIC REVIEW
 A fourth source is politics. For example, it
 has been argued that Arthur Burns pursued un-
 usually expansionary policy at the beginning of
@@ -1268,6 +1276,7 @@ sums of the monthly changes. Note that the scale is different
 in the two panels of Figure 1. The new monetary shocks
 series shows smaller movements than the actual funds rate.
 
+1068 THE AMERICAN ECONOMIC REVIEW
 early 1974, while the actual funds rate falls
 slightly in the first quarter of 1974 and rises
 moderately in the second. The movements in
@@ -1475,6 +1484,7 @@ deviation across the different draws of the estimated re-
 sponses at month h. The standard errors used in constructing
 the figures are based on 500 draws.
 
+1070 THE AMERICAN ECONOMIC REVIEW
 SEPTEMBER 2004
 TABLE 3—THE IMPACT OF MONETARY POLICY SHOCKS ON INDUSTRIAL PRODUCTION
 Monetary policy shock
@@ -1556,6 +1566,7 @@ that we identify.
 5.0 |
 -6.0 |
 STO TT
+0 3 6 9 12 iS 18 21 24 27 30 33 36 39 42 45 44
 Month
 FIGURE 2. THE EFFECT OF MONETARY POLICY ON OUTPUT
 variable is troubling. Closer inspection of the
@@ -1647,6 +1658,7 @@ effect is close to zero through month 10, and is
 less than a third as large as with our measure
 through month 17. The effect reaches -2.4
 
+1072 THE AMERICAN ECONOMIC REVIEW
 Months after Shock
 b. Using the Intermediate Broader Measures
 Change in the Intended Funds Rate
@@ -1728,6 +1740,7 @@ than using the actual funds rate is robust to considering the
 alternative path for the funds rate.
 ?°The PPI data are not seasonally adjusted. They
 are from the Bureau of Labor Statistics Web site
+(http://wwwbls.gov), series WPUSOP3000.
 
 Our approach parallels the one we use to
 examine the impact of policy on output. The
@@ -1896,6 +1909,7 @@ reported.
 -5.0 4
 -6.0
 -7.0 Seer 7
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 4§
 TTT TTT TT
 FIGURE 4. THE EFFECT OF MONETARY POLICY ON THE
 PRICE LEVEL
@@ -1929,11 +1943,13 @@ sults using the PPI for finished goods. The top
 panel of Figure 6 shows the estimated cumu-
 ?2 The CPI data are from the Bureau of Labor Statistics
 Web site, series CUUROOOOSAOL2. The PCE data are from
+the Bureau of Economic Analysis Web site (http://www.
 bea.gov), series PIPCEG B. Because the PCE price index is
 only available in seasonally adjusted form, in the regression
 using this series we omit the seasonal dummies.
 ROMER AND ROMER: A NEW MEASURE OF MONETARY SHOCKS 1075
 CPI Excluding Shelter
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 49
 Monith- ofic
 FIGURE 5. THE EFFECT OF MONETARY POLICY USING
 ALTERNATIVE MEASURES OF THE PRICE LEVEL
@@ -1973,6 +1989,7 @@ considering the alternative path of the funds rate discussed
 in footnote 19 does not eliminate the fundamental difference
 between the two sets of estimates.
 
+1076 THE AMERICAN ECONOMIC REVIEW
 a. Using the
 3.0
 2.0
@@ -1984,11 +2001,14 @@ a. Using the
 -4.0
 -5.0 4
 -6.0
+-7.0 Tt Tr ee —— : !
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 49
 Months after Shock
 b. Using the Intermediate Broader Measures
 Change in the Intended Funds Rate
 Change in the Actual Funds
 Rate Controlling for Forecasts
+0 3 6 9 12 I5 18 21 24 27 30 33 36 39 42 45 49
 FIGURE 6. THE EFFECT OF BROADER MEASURES OF
 MONETARY POLICY ON THE PRICE LEVEL
 effects of using our two intermediate broader
@@ -2065,6 +2085,7 @@ and its estimated impact on prices stronger
 new measure is positively correlated with
 supply shocks. This would suggest that our
 
+a. Using the
 2.0
 1.0 4
 -1.0 4
@@ -2074,6 +2095,7 @@ supply shocks. This would suggest that our
 5.04 Without Commodity Prices
 -6.0 4
 “70 et
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 4§
 Months after Shock
 TIT
 b. Using the Change in the Actual Federal Funds Rate
@@ -2087,6 +2109,7 @@ b. Using the Change in the Actual Federal Funds Rate
 -5.0 4
 -6.0 4
 7.0 T
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 44
 Month afio bo
 Tt
 FIGURE 7. THE EFFECT OF MONETARY POLICY ON OUTPUT
@@ -2124,6 +2147,7 @@ a. Using the
 -6.0 4
 Without Commodity Prices
 iF) ee
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 44
 Months after Shock
 b. Using the Change in the Actual Federal Funds Rate
 3.0
@@ -2138,6 +2162,7 @@ Without Commodity Prices
 -5.0 4
 ~6.0 4
 DQ TTT TT
+0 3 6 9 12 15 38 21 24 27 30 33 36 39 42 45 44
 FIGURE 8. THE EFFECT OF MONETARY POLICY ON THE
 PRICE LEVEL WITH AND WITHOUT COMMODITY PRICES
 important additional information about supply
@@ -2163,6 +2188,7 @@ policy in fact falls moderately when we control
 for commodity prices. It is -0.2 percent rather
 than -0.5 percent after 24 months, and -4.4
 
+1078 THE AMERICAN ECONOMIC REVIEW
 percent rather than -5.9 percent after 48. This
 is the opposite of what one would expect if our
 measure were contaminated by responses to
@@ -2320,6 +2346,7 @@ considered here involves a less persistent
 ROMER AND ROMER: A NEW MEASURE OF MONETARY SHOCKS 1079
 oints
 Percentage
+: 0 3 6 9 12 I5 18 21 24 27 30 33 36 39 42 45 4§
 Months after Shock
 b. Effect on Output
 2.0
@@ -2330,6 +2357,7 @@ BS -2.0
 3.0
 -4.0
 -5.0 bearer T T T
+0 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 4%
 Months after Shock
 c. Effect on the Price Level
 FIGURE 9. THE EFFECT OF MONETARY POLICY IN A VAR
@@ -2354,6 +2382,7 @@ stantial part of the interest rate movement is
 undone quickly. Also, output returns essen-
 tially all the way to its initial level here, as
 
+1080 THE AMERICAN ECONOMIC REVIEW
 opposed to two-thirds of the way in the earlier
 results.
 The response of prices implied by the VAR is
@@ -2670,6 +2699,7 @@ Review, September 1992, 82(4), pp. 901-21. Boivin, Jean. “The Fed’s Conduct 
 Monetary Policy.” Quarterly Journal of Eco- Unpublished manuscript, Columbia Univer-
 nomics, August 1998, 113(3), pp. 869-902. sity, October 2001.
 
+1084
 > Christiano, Lawrence J.; Eichenbaum, Martin
 and Evans, Charles. “The Effects of Monetary
 Policy Shocks: Evidence from the Flow of

@@ -5,14 +5,20 @@ reflective of views at the Federal Reserve Bank of New York or the Federal
 Reserve System. Any errors or omissions are the responsibility of the authors. 
 Federal Reserve Bank of New York 
 Staff Reports 
-
+ 
+ 
 Pricing the Term Structure  
 with Linear Regressions 
-
+ 
 Tobias Adrian 
 Richard K. Crump 
 Emanuel Moench 
-
+ 
+ 
+ 
+ 
+ 
+ 
 Staff Report No. 340 
 August 2008 
 Revised April 2013
@@ -22,9 +28,20 @@ Tobias Adrian, Richard K. Crump, and Emanuel Moench
 Federal Reserve Bank of New York Staff Reports, no. 340 
 August 2008; revised April 2013 
 JEL classification: G10, G12 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 Abstract 
-
+ 
 We show how to price the time series and cross-section of the term structure of interest rates 
 using a three-step linear regression approach. Our method allows computationally fast estimation 
 of term structure models with a large number of pricing factors. We present specification tests 
@@ -33,11 +50,24 @@ model outperforms the Cochrane and Piazzesi (2008) four-factor specification in 
 exercises but generates similar in-sample term premium dynamics. Our regression approach can 
 also incorporate unspanned factors and allows estimation of term structure models without 
 observing a zero-coupon yield curve. 
-
+ 
 Key words: term structure of interest rates, Fama-MacBeth regressions, dynamic asset pricing 
 estimation, empirical finance 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 _________________ 
+Adrian, Crump, Moench: Federal Reserve Bank of New York (e-mail: tobias.adrian@ny.frb.org, 
+richard.crump@ny.frb.org, emanuel.moench@ny.frb.org). The authors thank Greg Duffee, 
 Darrell Duffie, Arturo Estrella, Eric Ghysels, Paul Glasserman, Scott Joslin, Don Kim, Monika 
 Piazzesi, Joshua Rosenberg, Ken Singleton, Jonathan Wright, Hao Wu, and seminar participants 
 at the Federal Reserve Bank of New York, the Stanford Institute for Theoretical Economics 
@@ -75,6 +105,7 @@ adjust for the generated regressor uncertainty. We also discuss the advantages o
 method with respect to the recently suggested approaches by Joslin, Singleton and Zhu
 (2011) and Hamilton and Wu (2012). In particular, we point out that the assumption of
 serially uncorrelated yield pricing errors underlying these likelihood-based methods imply
+1
 
 excess return predictability not captured by the pricing factors. In contrast, because our
 approach is based on return regressions, we do not need to make assumptions about serial
@@ -104,6 +135,7 @@ bonds with longer maturities. In both of these exercises, the ﬁve-factor model
 the four-factor speciﬁcation. Hence, we choose the ﬁve-factor model to be our preferred
 speciﬁcation.
 Our procedure can potentially be applied to any set of ﬁxed income securities. In this
+2
 
 paper, we use our approach to estimate an aﬃne term structure model from returns on
 maturity-sorted portfolios of coupon-bearing Treasury securities. The availability of a zero
@@ -129,6 +161,7 @@ three-step estimator, and we show how to obtain model-implied yields from the es
 parameters. We further discuss the relation between our approach and other estimation
 methods in the literature. In Section 3, we present our main empirical ﬁndings. Section
 4 discusses extensions and robustness checks. Section 5 concludes.
+3
 
 2.
 The model
@@ -166,6 +199,7 @@ t+1
 i
 .
 (3)
+4
 
 We assume that the pricing kernel Mt+1 is exponentially aﬃne:
 Mt+1 = exp
@@ -260,6 +294,7 @@ t+1
 i
 .
 (10)
+5
 
 We can decompose the unexpected excess return into a component that is correlated with
 vt+1 and another component that is conditionally orthogonal. Then we ﬁnd
@@ -334,6 +369,7 @@ vec
 · · · vec
  β(N)β(N)′′ is
 an N × K2 matrix, V is a K × T matrix, and E is an N × T matrix.
+6
 
 2.2
 Estimation
@@ -386,6 +422,7 @@ bλ0 =
 (16)
 1For a regression-based approach using a linear pricing kernel speciﬁcation, see Adrian, Crump and
 Moench (2012).
+7
 
 and
 bλ1 =
@@ -476,6 +513,7 @@ as on the variance of the VAR innovations of the pricing factors, but not on β 
 This implies that we could conduct inference about whether a given pricing factor is a
 signiﬁcant explanatory variable for bond returns without estimating the full set of model
 parameters.
+8
 
 2.4
 Aﬃne yields
@@ -545,6 +583,7 @@ A0
 0, B′
 0 = 0,
 (27)
+9
 
 and
 β(n)′
@@ -601,6 +640,7 @@ equals the time t expectation
 of average future short rates over the next n periods. These risk-neutral yields are of
 independent economic interest, as the term premium can be calculated as the diﬀerence
 between the risk neutral yield and model-implied ﬁtted yield.
+10
 
 2.5
 Discussion of related literature
@@ -631,6 +671,7 @@ pricing factors and the model parameters can be split into two subsets. The ﬁr
 summarizes the parameters governing the evolution of the pricing factors under the
 historical measure.
 JSZ show that for this subset, the ML estimator coincides with
+11
 
 the OLS estimator of a VAR(1) of the pricing factors. Hence, they suggest a two step
 estimation approach. In the ﬁrst step, they estimate the parameters of the VAR(1) via
@@ -660,6 +701,7 @@ which greatly alleviates such concerns.
 Hamilton and Wu (2012) have recently proposed another multi-step estimation method
 for aﬃne models which combines OLS regressions with numerical optimization. While
 their method does not require a particular normalization of the model, it is also based
+12
 
 on the assumption that exactly K linear combinations of yields are observed and priced
 without error while the remaining yields are observed with error. Based on this assumption,
@@ -688,6 +730,7 @@ that the ﬁrst ﬁve principal components of Treasury yields are needed to expl
 returns. We, therefore, choose a K = 5 factor speciﬁcation as our baseline example and
 discuss its properties and implications in Subsection 3.3. We also estimate a model with
 K = 4 factors in the style of Cochrane and Piazzesi (2008), which employs the ﬁrst three
+13
 
 principal components of Treasury yields and a return forecasting factor as pricing factors.
 This model is presented in Subsection 3.4. We compare the two model speciﬁcations in
@@ -714,7 +757,9 @@ returns for n = 6, 18, 24, . . . , 60, 84, and 120 month zero coupon bonds direc
 (6), giving a cross section of N = 12 maturities.
 Our third speciﬁcation uses factors extracted from the constant maturity yields from
 the Federal Reserve Board’s H.15 release and excess returns of Fama maturity-sorted bond
+2We thank the authors for making these data available for download, on the website http://www.
 federalreserve.gov/Pubs/feds/2006/200628/feds200628.xls
+14
 
 portfolios and the Fama one-month risk-free rate, available from the Center for Research
 in Security Prices (CRSP). The Fama bond portfolios are sorted into six-month maturity
@@ -754,6 +799,7 @@ allows for direct tests of the number of pricing factors. Whether the pricing fa
 return variation is important for the identiﬁcation of the price of risk parameters. This
 is easy to see in the three-step regression approach. Recall from Eq. (16) and Eq. (17)
 that the market price of risk parameters are obtained via regressions onto the matrix of
+15
 
 factor risk exposures. Identiﬁcation of prices of risk thus requires that the stacked factor
 loadings β′ are of full column rank.3
@@ -790,6 +836,7 @@ and Bliss yields of n = 3, 12, 24, ..., 60 months with GSW yields of maturities 
 n = 120 months. Panel C uses principal components extracted from the Federal Reserve
 3See Kleibergen (2009) and Burnside (2012) for a related discussion in the context of static Fama and
 MacBeth equity pricing models.
+16
 
 H.15 release, selecting maturities n = 6, 12, 24, 36, 60, 84, and 120 months.4 Finally, the
 Panel D extracts factors from the CRSP constant maturity Treasury yield database using
@@ -818,6 +865,7 @@ In contrast, adding factors to the regression-based approach comes at no computa
 cost.
 4Joslin, Singleton and Zhu (2011) also use H.15 yields but ﬁrst extract the implied zero coupon yield
 curve. Our estimation procedure does not require this additional step.
+17
 
 Table 2 reports the time series properties of the yield pricing errors implied by the
 ﬁve-factor speciﬁcation of the model. We set µ = 0 because principal components are
@@ -870,6 +918,7 @@ n−1 ˆΣ ˆBn−1 + ˆσ2
 the risk premium investors demand for holding a bond with n months to maturity for
 one month. The charts show that risk premiums in the ﬁve-factor speciﬁcation exhibit
 substantial time variation.
+18
 
 We now investigate the role of each of the factors in pricing the various components of
 interest rate risk in the ﬁve-factor model. To that end, Table 3 reports the estimated
@@ -903,6 +952,7 @@ Treasury bond by about 6%.
 We can conveniently summarize the pricing implications of the model by testing the
 null hypothesis that the diﬀerent rows of Λ (which combines λ0 and λ1) are equal to zero.
 Given the asymptotic distribution of the estimator derived in Subsection 2.3, a Wald test
+19
 
 can be used to that eﬀect. In particular, let λ′
 i· be the ith row of Λ. Then, under the null
@@ -940,6 +990,7 @@ by the exposure to the third principal component of Treasury yields, carries a s
 price of risk. The level factor, the curvature factor itself, as well as the fourth principal
 component of yields all signiﬁcantly aﬀect the price of curvature risk over time. The
 coeﬃcient of the price of curvature risk on the level factor is negative, indicating that
+20
 
 expected excess returns on a portfolio that is long in short-term and long-term government
 bonds and short in intermediate maturities tend to be increasing in the level of rates.
@@ -978,6 +1029,7 @@ j=1
 λ2
 jt.
 (36)
+21
 
 Doing so, we ﬁnd that risk prices of all ﬁve factors contribute to the time variation of the
 pricing kernel (see the upper left chart in Fig. 3). However, given that the exposure of
@@ -1003,6 +1055,7 @@ for all maturities for the ﬁrst three factors. While they diﬀer slightly for
 β are plotted in gray. The tight intervals indicate that these elements are estimated very
 precisely. To summarize, the ﬁve-factor speciﬁcation of our aﬃne term structure model
 appears to be able to replicate the dynamics of Treasury yields and returns very well.
+22
 
 3.4
 Four-factor speciﬁcation
@@ -1030,6 +1083,7 @@ rxt+1 = γ0 + ΓFt + ηt+1.
 The average R2 across these individual predictive return regressions is 7.5%. Following
 Cochrane and Piazzesi (2008), we deﬁne the CP factor xt to be the ﬁrst principal component
 of the ﬁtted values ˆΓFt, standardized to zero mean and unit variance. The ﬁrst principal
+23
 
 component explains 94.65% of the cross-sectional variance of all ﬁtted one-month excess
 returns. We estimate the model by augmenting this factor with the ﬁrst three principal
@@ -1060,6 +1114,7 @@ observed and ﬁtted excess returns as well as the predicted excess returns. The
 excess returns display signiﬁcant time variation, comparable to the dynamics observed in
 the ﬁve-factor model.
 Table 5 shows that the CP factor is a signiﬁcant determinant of the prices of risk
+24
 
 of all pricing factors except for slope. In fact, for level risk, the CP factor is the only
 signiﬁcant pricing factor, driving out the signiﬁcance of the slope factor that had been
@@ -1088,6 +1143,7 @@ That being said, the predictability in excess returns is clearly dominated by th
 factor within the four-factor speciﬁcation. As can be seen in the lower right panel of
 Fig. 6, the CP factor predicts positive excess returns across the yield curve in a manner
 increasing in maturity. This closely matches the pattern shown by Cochrane and Piazzesi
+25
 
 (2008) for one-year excess returns.
 Given these ﬁndings and the results from the ﬁve-factor model, it is instructive to
@@ -1116,6 +1172,7 @@ variation of level risk that contributes to time varying expected excess returns
 ten-year Treasury bond. This time variation, in turn, is largely but not exclusively driven
 by movements in the CP factor, as highlighted in the lower right panel of Fig. 6.
 To summarize, the results in this subsection have shown that strong support exists for
+26
 
 the importance of a Cochrane and Piazzesi-type return forecasting factor in explaining
 Treasury return dynamics. However, the tight parametric restrictions that CP impose on
@@ -1145,6 +1202,7 @@ window and compare their average short-rate predictions up to ﬁve years ahead 
 the realized data.
 For comparison, we also include the average forecast error from a
 simple random walk of the one-month T-bill. In the upper-right panel of Fig. 7, we
+27
 
 display the root mean square prediction error of average short rates at forecast horizons
 from one month through ﬁve years. The chart shows that the ﬁve-factor model and the
@@ -1176,6 +1234,7 @@ As a robustness check, the lower-right panel of Fig.
 displays the in-sample ﬁt when each model is estimated using returns on bonds with
 maturities up to 20 years. In this case, the ﬁve-factor model is very close to the observed
 yields, whereas the four-factor model exhibits more pronounced deviations.
+28
 
 In sum, the results presented in this subsection suggest that relative to the four-factor
 model with three principal components of yields and the CP factor, the ﬁve-factor model
@@ -1207,6 +1266,7 @@ loadings An and Bn, which, along with the pricing factors X, allow us to impute 
 coupon yields for bonds of any maturity.
 The upper panels of Fig.
 8 plot the two-year and ﬁve-year maturities implied by
+29
 
 the model against the corresponding Fama and Bliss discount bond yields, displaying
 a visually close ﬁt.
@@ -1236,6 +1296,7 @@ surprising as large diﬀerences exist in duration between the diﬀerent securi
 portfolio and, hence, the interest rate sensitivity of that portfolio can vary considerably
 over time. Consequently, we use the maturity-sorted portfolios up to ten years and drop
 the Fama portfolio with maturities above ten years in the estimation.
+30
 
 4.
 Extensions
@@ -1263,6 +1324,7 @@ the factors into spanned factors Xs
 t with nonzero risk exposures and unspanned factors
 Xu
 t , which have zero risk exposures. The factors continue to follow a joint VAR process
+31
 
 under the historical measure
 
@@ -1368,6 +1430,7 @@ T + csXs
 −+ β′
 sXs + E,
 (43)
+32
 
 where as is an N × 1 vector and β′
 s and cs are N × Ks matrices. We see from Eq. (40)
@@ -1468,6 +1531,7 @@ and ˆΦu.
 We can see from Eq. (47) and Eq. (48) above that the estimator of market prices
 of risk in the unspanned factor case is a linear combination of estimated parameters
 governing the historical and risk-neutral dynamics of pricing factors. We show that the
+33
 
 two estimators have the joint limiting distribution
 √
@@ -1536,6 +1600,7 @@ variation in slope risk. Nonetheless, we can reject only that the ﬁrst row of 
 to zero at a 10% level. This is at odds with the implications of the ﬁve- and four-factor
 models which show substantial amounts of time variation in level risk that are largely due
 to movements in higher order principal components or the CP factor, respectively. This
+34
 
 suggests that the speciﬁcation proposed by Joslin, Priebsch and Singleton (2012), which
 uses the ﬁrst three principal components of yields and two macroeconomic variables as
@@ -1580,6 +1645,7 @@ s.t.
 Hθ = 0,
 (50)
 where WT is a p × p positive deﬁnite weighting matrix. Because the restrictions on θ are
+35
 
 linear, the solution to this optimization problem is
 ˆθmd = ˆθ −W −1
@@ -1652,6 +1718,7 @@ discount factor. Duﬀee (2010) argues that ﬁve-factor aﬃne models of the te
 can give rise to excessively high maximal Sharpe ratios due to overﬁtting. However, we
 do not ﬁnd unreasonable maximal Sharpe ratios in our four- and ﬁve-factor speciﬁcations,
 as can be seen in Fig. 9. For the ﬁve-factor speciﬁcation, the peak in the maximal Sharpe
+36
 
 ratio is 2.30, with a sample average maximal Sharpe ratio below one.
 As Eq. (54) shows, the maximal Sharpe ratio implied by an aﬃne term structure
@@ -1684,6 +1751,7 @@ Consistent with our ﬁnding that the prices of risk of these two factors are st
 indistinguishable from zero in the full ﬁve-factor model, this speciﬁcation produces a very
 similar time series of the maximal Sharpe ratio as in the upper left panel of Fig. 9.
 We also show the Sharpe ratio of the four-factor CP speciﬁcation in the upper right
+37
 
 panel of Fig. 9. While it is comparable in magnitude to that of the ﬁve-factor model,
 the time series patterns of the two Sharpe ratios do at times diﬀer substantially. For
@@ -1716,6 +1784,7 @@ our pricing factors.5
 adjustment to the daily factors.
 We apply the monthly principal components weights to the sample
 average of the monthly yields and then substract this vector from the daily factors obtained as described
+38
 
 We continue to compute log excess holding period returns at the monthly frequency
 and obtain estimates of the parameters of the model as outlined in Subsections 2.2 and
@@ -1747,6 +1816,7 @@ component extraction.
 This potentially gives rise to an inconsistency between actual
 and model-implied principal components. However, this inconsistency is negligible.
 before.
+39
 
 Let X be the K × T matrix of principal components of yields y. We can write
 X = PyMι.
@@ -1798,6 +1868,7 @@ We
 resample all three sets of residuals using the same random time indexation to obtain
 an artiﬁcial sample of pricing factors and log excess holding period returns. Based on
 these, we reestimate the model parameters using the three-step regression approach and
+40
 
 compute recursive pricing parameters Bn from Eq.
 (26).
@@ -1830,6 +1901,7 @@ Second, we show that the ﬁve-factor model gives rise to similar risk
 premiums and pricing kernel dynamics as a speciﬁcation with three principal components
 and the Cochrane and Piazzesi (2008) forecasting factor. In both speciﬁcations, we ﬁnd
 that practically all of the time variation in risk premiums is associated with level risk.
+41
 
 However, the dynamics of the risk premium are mainly explained by the second and ﬁfth
 principal component in the ﬁve-factor model and by the CP factor in the four-factor
@@ -1854,6 +1926,7 @@ the estimation methods are vastly diﬀerent. We furthermore present estimation 
 at the daily frequency, which are readily computed due to the ease of our estimation
 method. We leave it to future work to adapt the model to further applications, such as
 the estimation of inﬂation risk premiums, or to credit risk models.
+42
 
 Appendix
 A.1. Asymptotic variance: no unspanned factors
@@ -2014,6 +2087,7 @@ T
 Υ−1
 zz + op (1) .
 (69)
+43
 
 This follows because
 
@@ -2255,6 +2329,7 @@ T
 ϱ′
 1 + op (1) .
 (86)
+44
 
 T2,2 does not require any further simpliﬁcation.
 Finally, consider T3.
@@ -2494,6 +2569,7 @@ zz ⊗IK
 zz ⊗IK
 ′
 (102)
+45
 
 and otherwise
 VΛ,T ,1 = asyvarT →∞(T1,2,µ) =
@@ -2670,6 +2746,7 @@ xx ⊗IK
 ,
 (117)
 where [(Υzz ⊗Σ)]2 is the K (K + 1)×K2 sub-matrix formed by extracting the last K2 columns from the
+46
 
 matrix (Υzz ⊗Σ). Next, we have that
 CΛ,σ2 = asycovT →∞
@@ -2888,6 +2965,7 @@ T s
 TΨ⋆
 ss,
 (130)
+47
 
 T s
 1,2 = −
@@ -3170,6 +3248,7 @@ j=1 VΨ⋆ss,T ,j +CΨ⋆ss,T ,1 +
 ′ +CΨ⋆ss,T ,3 +
  CΨ⋆ss,,T ,3
 ′ . (148)
+48
 
 Let us partition Vs
 fβ conformably
@@ -3421,6 +3500,7 @@ xx ⊗Σ
 
 should be used for the analogous result to Eq.
 (166).
+49
 
 Table 1 Identiﬁcation Tests
 This table reports the results of the identiﬁcation tests described in Subsection 3.2. rkk−1 is the Anderson (1951)
@@ -3566,6 +3646,7 @@ K = 5
 (0.000)
 (0.001)
 (0.000)
+52
 
 Table 2 Five-factor model: ﬁt diagnostics
 This table summarizes the time series properties of the pricing errors implied by the ﬁve-factor speciﬁcation. The
@@ -3770,6 +3851,7 @@ PC5
 (-6.287)
 (0.000)
 (0.000)
+53
 
 Table 4 Four-factor model: ﬁt diagnostics
 This table summarizes the time series properties of the pricing errors implied by the four factor speciﬁcation. The
@@ -3947,6 +4029,7 @@ CP
 (-4.872)
 (0.000)
 (0.000)
+54
 
 Table 6 Macro factor model: market prices of risk
 This table summarizes the estimates of the market price of risk parameters λ0 and λ1 for the unspanned macro
@@ -4018,47 +4101,178 @@ PC3
 (-0.797)
 (0.126)
 (0.076)
+55
 
+1990
+1995
+2000
+2005
+2010
+−2
+0
+2
+4
+6
+8
+10
 Percent
 Yield fitting and term premium estimates of maturity n = 24 months
-
+ 
+ 
 Observed
 Fitted
 Term premium
+1990
+1995
+2000
+2005
+2010
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
 Percent
 Yield fitting and term premium estimates of maturity n = 120 months
-
+ 
+ 
 Observed
 Fitted
 Term premium
+1990
+1995
+2000
+2005
+2010
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
 Observed and model−implied one−month holding return for n = 24 months
+1990
+1995
+2000
+2005
+2010
+−150
+−100
+−50
+0
+50
+100
+150
 Observed and model−implied one−month holding return for n = 120 months
 Fig. 1 Five-factor model: observed and model-implied time series
 This ﬁgure provides plots of the yields and excess one-month holding returns for the two-year and ten-year maturities
 as observed and implied by the ﬁve factor speciﬁcation. The observed yields and returns are plotted by solid lines, and
 dashed lines correspond to model-implied yields and returns. Dash-dotted lines show model-implied term premiums in the
 upper two charts and expected excess holding period returns in the lower two charts.
+56
 
+0
+20
+40
+60
+80
+100
+120
+4.2
+4.4
+4.6
+4.8
+5
+5.2
+5.4
+5.6
+5.8
+6
 Cross sectional fit, average observed and model−implied yields
 Maturity (in months)
 Percent
-
+ 
+ 
 Observed
 Fitted
+0
+20
+40
+60
+80
+100
+120
+1.7
+1.8
+1.9
+2
+2.1
+2.2
+2.3
+2.4
+2.5
 Unconditional standard deviation of observed and model−implied yields
+Maturity (in months)
 Percent
-
+ 
+ 
 Observed
 Fitted
+0
+20
+40
+60
+80
+100
+120
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
 Yield loadings, model−implied factor loadings
-
+Maturity (in months)
+ 
+ 
 PC1
 PC2
 PC3
 PC4
 PC5
+0
+20
+40
+60
+80
+100
+120
+−0.5
+−0.4
+−0.3
+−0.2
+−0.1
+0
+0.1
+0.2
+0.3
+0.4
 Expected excess return loadings, model−implied return factor loadings
-
+Maturity (in months)
+ 
+ 
 PC1
 PC2
 PC3
@@ -4075,16 +4289,43 @@ return loadings B′
 nλ1. These coeﬃcients can be interpreted as the response of the expected one-month excess holding return
 on an n-month bond to a contemporaneous shock to the respective factor. PC1, . . . , PC5 denote the ﬁrst through ﬁfth
 principal components of Treasury yields.
+57
 
+1990
+1995
+2000
+2005
+2010
+0
+1
+2
+3
+4
+5
+6
 Decomposition of pricing kernel variance, five−factor model
-
+ 
+ 
 PC1
 PC2
 PC3
 PC4
 PC5
+1990
+1995
+2000
+2005
+2010
+0
+1
+2
+3
+4
+5
+6
 Decomposition of pricing kernel variance, four−factor model
-
+ 
+ 
 PC1
 PC2
 PC3
@@ -4105,7 +4346,8 @@ CP
 0.025
 0.03
 Decomposition of expected ten−year excess returns, five−factor model
-
+ 
+ 
 λ1
 λ2
 λ3
@@ -4124,7 +4366,8 @@ Decomposition of expected ten−year excess returns, five−factor model
 0.03
 0.04
 Decomposition of expected ten−year excess returns, four−factor model
-
+ 
+ 
 λ1
 λ2
 λ3
@@ -4136,31 +4379,98 @@ tλt into its K
 components. The lower panels decompose expected excess returns, β′ΛZt = (βi1Λ1 + · · · + βiKΛk) Zt, where βij is the
 jth element of βi and Λk denotes the kth row of Λ. PC1, . . . , PC5 denote the ﬁrst through ﬁfth principal components of
 Treasury yields. CP denotes the Cochrane and Piazzesi (2008) return forecasting factor.
+58
 
+0
+20
+40
+60
+80
+100
+120
 −0.18
 −0.16
 −0.14
 −0.12
+−0.1
 −0.08
 −0.06
 −0.04
 −0.02
+0
  β versus B for Factor 1
 Maturity (in months)
+0
+20
+40
+60
+80
+100
+120
 −0.05
 −0.04
 −0.03
 −0.02
 −0.01
+0
+0.01
  β versus B for Factor 2
 Maturity (in months)
+0
+20
+40
+60
+80
+100
+120
+−8
+−6
+−4
+−2
+0
+2
+4
 x 10
+−3
  β versus B for Factor 3
 Maturity (in months)
+0
+20
+40
+60
+80
+100
+120
+−3
+−2.5
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
 x 10
+−3
  β versus B for Factor 4
 Maturity (in months)
+0
+20
+40
+60
+80
+100
+120
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
 x 10
+−3
  β versus B for Factor 5
 Maturity (in months)
 Fig. 4 Regression Coeﬃcients β(n) versus recursive pricing parameters Bn
@@ -4168,19 +4478,79 @@ This ﬁgure provides plots of the coeﬃcients ˆβ(n) from the regression Eq. 
 on the state variable innovations versus the recursive pricing parameters Bn used to generate ﬁtted yields given in Eq.
 (26) for the ﬁve factor speciﬁcation. The diamonds represent the former, and the solid lines correspond to the latter. The
 conﬁdence intervals for ˆβ(n) are plotted as shaded bands.
+59
 
+1990
+1995
+2000
+2005
+2010
+−2
+0
+2
+4
+6
+8
+10
 Percent
-
+Yield fitting and term premium estimates of maturity n = 24 months
+ 
+ 
 Observed
 Fitted
 Term premium
+1990
+1995
+2000
+2005
+2010
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
 Percent
-
+Yield fitting and term premium estimates of maturity n = 120 months
+ 
+ 
 Observed
 Fitted
 Term premium
+1990
+1995
+2000
+2005
+2010
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
 Percent
 Observed and model−implied one−month holding return, n = 24 months
+1990
+1995
+2000
+2005
+2010
+−150
+−100
+−50
+0
+50
+100
+150
 Percent
 Observed and model−implied one−month holding return, n = 120 months
 Fig. 5 Four-factor model: observed and model-implied time series
@@ -4188,25 +4558,98 @@ This ﬁgure provides plots of the yields and excess one-month holding returns f
 coupon maturities as observed and implied by the four-factor speciﬁcation. The observed yields and returns are plotted by
 solid lines, and dashed lines correspond to model-implied yields and returns. Dash-dotted lines show model-implied term
 premiums in the upper two charts and expected excess holding period returns in the lower two charts.
+60
 
+0
+20
+40
+60
+80
+100
+120
+4.2
+4.4
+4.6
+4.8
+5
+5.2
+5.4
+5.6
+5.8
+6
 Cross sectional fit, average observed and model−implied yields
+Maturity (in months)
 Percent
-
+ 
+ 
 Observed
 Fitted
+0
+20
+40
+60
+80
+100
+120
+1.7
+1.8
+1.9
+2
+2.1
+2.2
+2.3
+2.4
+2.5
 Unconditional standard deviation of observed and model−implied yields
+Maturity (in months)
 Percent
-
+ 
+ 
 Observed
 Fitted
+0
+20
+40
+60
+80
+100
+120
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
 Yield loadings, model−implied factor loadings
-
+Maturity (in months)
+ 
+ 
 PC1
 PC2
 PC3
 CP
+0
+20
+40
+60
+80
+100
+120
+−0.1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
 Expected excess return loadings, model−implied return factor loadings
-
+Maturity (in months)
+ 
+ 
 PC1
 PC2
 PC3
@@ -4222,27 +4665,103 @@ nλ1. These coeﬃcients can be interpreted as the response of the expected one-
 holding return on an n-month bond to a contemporaneous shock to the respective factor. PC1, . . . , PC5 denote the ﬁrst
 through ﬁfth principal components of Treasury yields. CP denotes the Cochrane and Piazzesi (2008) return forecasting
 factor.
+61
 
+1990
+1995
+2000
+2005
+2010
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+4.5
 Time
 Ten−year term premium comparison
-
+ 
+ 
 Five factors
 Four factors
 PC4, PC5 unspanned
 CP unspanned
+5
+10
+15
+20
+25
+30
+35
+40
+45
+50
+55
+60
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
 Horizon (months)
 Root mean square average short rate forecast error
-
+ 
+ 
+Five factors
+Four factors
 PC4, PC5 unspanned
 CP unspanned
 Random walk
+0
+50
+100
+150
+200
+250
+4
+4.5
+5
+5.5
+6
+6.5
+7
+Maturity (in months)
 Out−of−sample cross−sectional fit, fitted and model−implied yields for n=1−240 months
-
+ 
+ 
+Five factors
+Four factors
 PC4, PC5 unspanned
 CP unspanned
 Observed
+0
+50
+100
+150
+200
+250
+4
+4.5
+5
+5.5
+6
+6.5
+Maturity (in months)
 In−sample cross−sectional fit, fitted and model−implied yields for n=1−240 months
-
+ 
+ 
+Five factors
+Four factors
 PC4, PC5 unspanned
 CP unspanned
 Observed
@@ -4256,13 +4775,69 @@ short rate. The lower left panel shows the average yields implied by the four mo
 models have been estimated using only maturities up to ten years. The lower right chart shows the average yields implied
 by the four models when maturities up to 20 years have been used in the estimation. PC1, . . . , PC5 denote the ﬁrst through
 ﬁfth principal components of Treasury yields. CP denotes the Cochrane and Piazzesi (2008) return forecasting factor.
+62
 
+1990
+1995
+2000
+2005
+2010
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
 Annualized percent
 Two−year fitted versus two−Year Fama−Bliss
+1990
+1995
+2000
+2005
+2010
+1
+2
+3
+4
+5
+6
+7
+8
+9
 Annualized percent
 Five−year fitted versus five−Year Fama−Bliss
+1990
+1995
+2000
+2005
+2010
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
 Percent
 Observed and model−implied one−month holding return, n = 24 months
+1990
+1995
+2000
+2005
+2010
+−60
+−40
+−20
+0
+20
+40
+60
 Percent
 Observed and model−implied one−month holding return, n = 60 months
 Fig. 8 Fama maturity-sorted portfolio model: observed and model-implied time series
@@ -4274,10 +4849,59 @@ panels plot the observed excess returns on Fama maturity-sorted Treasury portfol
 ﬁtted returns (dashed lines).
 The dash-dotted lines show model-implied term premiums in the upper two charts and
 expected excess holding period returns in the lower two charts.
+63
 
+1990
+1995
+2000
+2005
+2010
+0
+0.5
+1
+1.5
+2
+2.5
+3
 Five−factor model, model−implied maximal Sharpe ratio
+1990
+1995
+2000
+2005
+2010
+0
+0.5
+1
+1.5
+2
+2.5
+3
 Four−factor model, model−implied maximal Sharpe ratio
+1990
+1995
+2000
+2005
+2010
+0
+0.5
+1
+1.5
+2
+2.5
+3
 Five−factor model, PC4 and PC5 unspanned, model−implied maximal Sharpe ratio
+1990
+1995
+2000
+2005
+2010
+0
+0.5
+1
+1.5
+2
+2.5
+3
 Unspanned macro factor model, model−implied maximal Sharpe ratio
 Fig. 9 Model-implied maximal Sharpe ratios
 This ﬁgure provides plots of the time series of the Sharpe ratio diagnostic
@@ -4289,13 +4913,23 @@ ratio for the four factor speciﬁcation. The lower left panel plots the Sharpe 
 components as factors but with the fourth and ﬁfth principal components estimated as unspanned factors. The lower right
 panel plots the Sharpe ratio for the unspanned macro factor speciﬁcation. PC1, . . . , PC5 denote the ﬁrst through ﬁfth
 principal components of Treasury yields. CP denotes the Cochrane and Piazzesi (2008) return forecasting factor.
+64
 
 January 2009
 January 2010
 January 2011
 January 2012
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
 Observed and model−implied daily yield for n = 24 Months
-
+ 
+ 
 Actual yield
 Fitted yield
 January 2009
@@ -4309,7 +4943,10 @@ January 2012
 2.5
 3
 Observed and model−implied daily yield for n = 60 Months
-
+ 
+ 
+Actual yield
+Fitted yield
 January 2009
 January 2010
 January 2011
@@ -4322,9 +4959,28 @@ January 2012
 4
 4.5
 Observed and model−implied daily yield for n = 120 Months
-
+ 
+ 
+Actual yield
+Fitted yield
+1997
+2000
+2002
+2005
+2007
+2010
+−3
+−2
+−1
+0
+1
+2
+3
+4
+5
 Standardized ten−year treasury term premium and MOVE Index
-
+ 
+ 
 Term premium
 MOVE Index
 Fig. 10 Five-factor model: observed and model-implied daily yields
@@ -4333,13 +4989,88 @@ This ﬁgure provides plots of daily yields for the two-, ﬁve- and ten-year ma
 daily factors. Solid lines plot observed yields, and dashed lines plot yields as implied by the model. The lower right panel
 compares the standardized ﬁve-factor model-implied ten-year term premium to the standardized one-month Merrill lynch
 Option Volatility Estimate (MOVE) index.
+65
 
+1990
+1995
+2000
+2005
+2010
+−2.5
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
 First factor, PC1: bootstrapped confidence interval
+1990
+1995
+2000
+2005
+2010
+−2.5
+−2
+−1.5
+−1
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
 Second factor, PC2: bootstrapped confidence interval
+1990
+1995
+2000
+2005
+2010
+−3
+−2
+−1
+0
+1
+2
+3
+4
+5
 Second factor, PC3: bootstrapped confidence interval
+1990
+1995
+2000
+2005
+2010
+−4
+−3
+−2
+−1
+0
+1
+2
+3
+4
+5
 Second factor, PC4: bootstrapped confidence interval
+1990
+1995
+2000
+2005
+2010
+−6
+−4
+−2
+0
+2
+4
+6
 Second factor, PC5: bootstrapped confidence interval
 Fig. 11 Consistency of Observed Factors
 This ﬁgure provides plots of bootstrapped 95% conﬁdence intervals around the yield principal components. Principal
 components from the ﬁtted yields are constructed according to the bootstrap procedure in Subsection 4.5. PC1, . . . , PC5
 denote the ﬁrst through ﬁfth principal components of Treasury yields.
+66

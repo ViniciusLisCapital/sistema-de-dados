@@ -2,6 +2,7 @@ Optimal Contracts for Central Bankers
 Carl E. Walsh
 The American Economic Review, Volume 85, Issue 1 (Mar., 1995), 150-167.
 Your use of the JSTOR database indicates your acceptance of JSTOR’s Terms and Conditions of Use. A copy of
+JSTOR’s Terms and Conditions of Use is available at http://www.jstor.org/about/terms.html, by contacting JSTOR
 at jstor-info @umich.edu, or by calling JSTOR at (888)388-3574, (734)998-9101 or (FAX) (734)998-9113. No part
 of a JSTOR transmission may be copied, downloaded, stored, further transmitted, transferred, distributed, altered, or
 otherwise used, in any form or by any means, except: (1) one stored electronic and one paper copy of any article
@@ -11,8 +12,11 @@ Each copy of any part of a JSTOR transmission must contain the same copyright no
 printed page of such transmission.
 The American Economic Review is published by American Economic Association. Please contact the publisher for
 further permissions regarding the use of this work. Publisher contact information may be obtained at
+http://www.jstor.org/journals/aea.html.
 The American Economic Review
 JSTOR and the JSTOR logo are trademarks of JSTOR, and are Registered in the U.S. Patent and Trademark Office.
+For more information on JSTOR contact jstor-info@umich.edu.
+http://www.jstor.org/
 Mon Feb 7 13:51:27 2000
 
 Optimal Contracts for Central Bankers
@@ -408,6 +412,7 @@ mal contract.
 Optimal contracts are derived when the
 central bank has private information on a
 
+154 THE AMERICAN ECONOMIC REVIEW
 forecast of an aggregate supply shock, when
 the government can only observe a broad
 monetary aggregate that reflects both
@@ -611,6 +616,7 @@ not directly relevant at this stage, when the objective is
 to determine the optimal incentives with which the
 central banker should be faced.
 
+156 THE AMERICAN ECONOMIC REVIEW
 banker’s preferences are separable in social
 loss and income and the banker is risk-
 neutral. The central bank sets m to max-
@@ -683,6 +689,7 @@ The first-order condition for the central
 banker’s problem can be solved for m@®(@),
 the optimal discretionary policy:'!
 (7) m8)
+_ ak 1 at sa
 - = +() 20 t/dm)
 a2
 + 650
@@ -806,6 +813,7 @@ private information about a shock to money demand,
 as opposed to the aggregate supply considered here.
 The same issues, however, arise in either case.
 
+158 THE AMERICAN ECONOMIC REVIEW
 monetary-policy model studied by Barro and
 Gordon (1983), Rogoff (1985), and others,
 the inflationary bias of policy is a constant,
@@ -989,6 +997,7 @@ That is, stabilizing the rate of inflation in the face
 of aggregate supply shocks is suboptimal when prefer-
 ences are given by (1), as is well known.
 
+160 THE AMERICAN ECONOMIC REVIEW
 the sole objective of the central bank.!® Price
 stability is also the only macroeconomic goal
 proposed for the new European Central
@@ -1189,6 +1198,7 @@ banker maximizes T—V—C(e) for T=t+V.
 alternative utility level is normalized to 0 so that the
 participation constraint takes the form E(t — C(e)) > 0.
 
+162 THE AMERICAN ECONOMIC REVIEW
 now a function of a-—e. Substituting m(6)
 into the definition of V, the first-order con-
 dition for the optimal level of effort can be
@@ -1376,6 +1386,7 @@ gate supply shocks. No such trade-off is
 faced with the transfer function in (24) even
 though it closely resembles an inflation-
 
+164 THE AMERICAN ECONOMIC REVIEW
 targeting rule. The difference is due to the
 fact that in the present framework, and
 unlike the framework utilized by Rogoff
@@ -1559,6 +1570,7 @@ undertake effort e(a,a*), such a deviation cannot be
 detected by the government (see Laffont and Tirole,
 1986).
 
+166 THE AMERICAN ECONOMIC REVIEW
 (A9)
 MARCH 1995
 B'(a*) — K'(a*)y?(s(a)(a—e)’~ s(a*)[a* — e(a*)]’)o2

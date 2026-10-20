@@ -4,6 +4,7 @@ THE INFORMATION EFFECT
 Emi Nakamura
 Jón Steinsson
 Working Paper 19260
+http://www.nber.org/papers/w19260
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -49,6 +50,7 @@ Columbia Business School
 3022 Broadway, Uris Hall 820
 New York, NY 10027
 and NBER
+enakamura@columbia.edu
 Jón Steinsson
 Department of Economics
 Columbia University
@@ -56,7 +58,9 @@ Columbia University
 420 West 118th Street
 New York, NY 10027
 and NBER
+jsteinsson@columbia.edu
 
+1
 Introduction
 A central question in macroeconomics is how monetary policy affects the economy. The key empir-
 ical challenge in answering this question is that most changes in interest rates happen for a reason.
@@ -89,6 +93,7 @@ about 5 basis points). This “power problem” precludes us from directly estim
 future output. Intuitively, output several quarters in the future is inﬂuenced by a myriad of other
 shocks, rendering the signal-to-noise ratio in such regressions too small to yield reliable inference.
 We can, however, measure the response of variables that respond contemporaneously such as
+1
 
 ﬁnancial variables and survey expectations. Since the late 1990’s it has been possible to observe the
 response of real interest rates via the Treasury Inﬂation Protected Securities (TIPS) market. This is
@@ -123,6 +128,7 @@ tary shocks, a tightening of policy should lead to a fall in output growth. Our 
 regarding output growth expectations is therefore the opposite direction from what one would ex-
 pect from the conventional interpretation of monetary shocks.
 A natural interpretation of this evidence is that FOMC announcements lead the private sector to
+2
 
 update its beliefs not only about the future path of monetary policy, but also about other economic
 fundamentals. For example, when the Fed Chair announces that the economy is strong enough
@@ -157,6 +163,7 @@ optimistic about the future, this will raise current consumption and investment 
 dynamic linkages. Depending on the strength of the Fed information effect, our evidence, therefore,
 suggests either that the Fed has a great deal of power over the economy through traditional channels
 or that the Fed has a great deal of power over the economy through non-traditional information
+3
 
 channels (or some combination of the two).
 To assess the extent of Fed information and the nature of Fed power over the economy, we
@@ -192,6 +199,7 @@ inition, they are not based on private information. In other words, there is an 
 1Revealing information about natural rates, even bad news, is likely to be welfare improving as long as the Fed can
 vary interest rates to track the natural rate. At the zero lower bound, the Fed however looses its ability to track the natural
 rate. Withholding bad news may then be optimal.
+4
 
 validity problem whenever researchers use monetary shocks to try to infer the effects of systematic
 monetary policy. We use a structural model to solve this external validity problem.
@@ -226,6 +234,7 @@ The identifying assumptions are stronger when we analyze the effects of our mone
 survey expectations from the Blue Chip data. In that analysis the dependent variable is a monthly
 change and the identifying assumption is that the monetary shock is orthogonal to confounders
 over the whole month. Similar (stronger) assumptions are required when high frequency monetary
+5
 
 shocks are used as external instruments in a VAR—as in Gertler and Karadi (2015)—since the out-
 come variables are changes over several months. Additionally, predictability is difﬁcult to establish
@@ -262,7 +271,9 @@ Section 7 concludes.
 2In earlier work, Beechey and Wright (2009) analyze the effect of unexpected movements in the federal funds rate at
 the time of FOMC announcements on nominal and real 5-year and 10-year yields and the ﬁve-to-ten year forward over
 the period February 2004 to June 2008. Their results are similar to ours for the 5-year and 10-year yields.
+6
 
+2
 Data
 To construct our measure of monetary shocks, we use tick-by-tick data on federal funds futures
 and eurodollar futures from the CME Group (owner of the Chicago Board of Trade and Chicago
@@ -274,6 +285,7 @@ over the same 30-minute windows around FOMC announcements that Refet Gurkaynak g
 shared with us.
 We obtain the dates and times of FOMC meetings up to 2004 from the appendix to Gurkaynak,
 Sack, and Swanson (2005). We obtain the dates of the remaining FOMC meetings from the Federal
+Reserve Board website at http://www.federalreserve.gov/monetarypolicy/fomccale
 ndars.htm. For the latter period, we veriﬁed the exact times of the FOMC announcements using
 the ﬁrst news article about the FOMC announcement on Bloomberg. We cross-referenced these dates
 and times with data we obtained from Refet Gurkaynak and in a few cases used the time stamp
@@ -281,10 +293,12 @@ from his database.
 To measure the effects of our monetary shocks on interest rates, we use several daily interest
 rate series. To measure movements in Treasuries at horizons of 1 year or more, we use daily data on
 zero-coupon nominal Treasury yields and instantaneous forward rates constructed by Gurkaynak,
+Sack, and Swanson (2007). These data are available on the Fed’s website at http://www.federa
 lreserve.gov/pubs/feds/2006/200628/200628abs.html. We also use the yields on 3M
 and 6M Treasury bills. We retrieve these from the Federal Reserve Board’s H.15 data release.
 To measure movements in real interest rates, we use zero-coupon yields and instantaneous for-
 ward rates constructed by Gurkaynak, Sack, and Wright (2010) using data from the TIPS market.
+These data are available on the Fed’s website at http://www.federalreserve.gov/pubs/
 feds/2008/200805/200805abs.html. TIPS are “inﬂation protected” because the coupon and
 principal payments are multiplied by the ratio of the reference CPI on the date of maturity to the
 reference CPI on the date of issue.3 The reference CPI for a given month is a moving average of
@@ -292,6 +306,7 @@ the CPI two and three months prior to that month, to allow for the fact that the
 Statistics publishes these data with a lag.
 TIPS were ﬁrst issued in 1997 and were initially sold at maturities of 5, 10 and 30 years, but only
 3This holds unless cumulative inﬂation is negative, in which case no adjustment is made for the principle payment.
+7
 
 the 10-year bonds have been issued systematically throughout the sample period. Other maturities
 have been issued more sporadically. While liquidity in the TIPS market was initially poor, TIPS
@@ -307,6 +322,7 @@ To measure expectations, we use data on expectations of future nominal interest 
 and output growth from the Blue Chip Economic Indicators. Blue Chip carries out a survey during the
 ﬁrst few days of every month soliciting forecasts of these variables for up to the next 8 quarters. We
 use the mean forecast for each variable. We also use data on Greenbook forecasts from the Philadel-
+phia Fed. These data are hosted and maintained on the dataset, https://www.philadelphiafe
 d.org/research-and-data/real-time-center/greenbook-data/philadelphia-data-
 set. We use the real GDP growth variable from this dataset.
 To assess the role of risk premia, we use a daily decomposition of nominal and real interest
@@ -324,6 +340,7 @@ estimate
 (1)
 where ∆st is the change in an outcome variable of interest (e.g., the yield on a ﬁve year zero-coupon
 Treasury bond), ∆it is a measure of the monetary policy news revealed in the FOMC announcement,
+8
 
 ϵt is an error term, and α and γ are parameters. The parameter of interest is γ, which measures the
 effect of the FOMC announcement on ∆st relative to its effect on the policy indicator ∆it.
@@ -358,6 +375,7 @@ news shock is arbitrary. For convenience, we rescale it such that its effect on 
 Treasury yield is equal to one. Appendix A provides details about the construction of the policy
 4Speciﬁcally, we calculate the monetary shock using a 30-minute window from 10 minutes before the FOMC an-
 nouncement to 20 minutes after it.
+9
 
 news shock.5
 3.1
@@ -396,6 +414,7 @@ and Crowe (2013).
 market expects to prevail in 2 years time.
 8Our ﬁnding that long-term inﬂation expectations decline in response to contractionary monetary policy shock is
 consistent with Beechey, Johannsen, and Levin (2011) and G¨urkaynak, Levin, and Swanson (2010).
+10
 
 Table 1: Response of Interest Rates and Inﬂation to the Policy News Shock
 Nominal 
@@ -474,6 +493,7 @@ announcements. The sample period is all regularly scheduled FOMC meetings from 1
 forwards, the sample starts in January 2004. The sample size for the 2Y and 3Y yields and forwards
 is 74. The sample size for all other regressions is 106. In all regressions, the policy news shock is
 computed from these same 106 observations. Robust standard errors are in parentheses.
+11
 
 estimates for instantaneous forward rates. The effect of the shock on the 2-year real forward rate is
 99 basis points. It falls monotonically at longer horizons to 88 basis points at 3 years, 47 basis points
@@ -508,6 +528,7 @@ Figure 1 presents a binned scatter plot of the relationship between the policy n
 5-year real yield (the average expected response of the short-term real interest rates over the next 5
 9The sample period for 2- and 3-year yields and forwards is somewhat shorter (it starts in 2004) because of data
 limitations (see section 2 for details).
+12
 
 Figure 1: Binned Scatter Plot for 5-Year Real-Yield Regression
 ‐0.20
@@ -543,6 +564,7 @@ cially when the policy indicator is based on interest rates several quarters or 
 structure—as has recently become common to capture the effects of forward guidance—the as-
 sumption that no other shocks affect this indicator over one or two days is a strong assumption.
 Interest rates at these maturities ﬂuctuate substantially on non-FOMC days, suggesting that other
+13
 
 shocks than FOMC announcements affect these interest rates on FOMC days. There is no way of
 knowing whether these other shocks are monetary shocks or non-monetary shocks.
@@ -579,6 +601,7 @@ that the difference in the variance of the policy indicator between the sample o
 trol” sample is close to zero. In this case, the conventional bootstrap approach to constructing conﬁdence intervals will
 yield inaccurate results. Appendix C describes the method we use to construct conﬁdence intervals in detail. We thank
 Sophocles Mavroeidis for suggesting this approach to us.
+14
 
 Table 2: Allowing for Background Noise in Interest Rates
 Nominal 
@@ -692,6 +715,7 @@ window. The Rigobon estimator is ﬁltering this background noise out. The fact 
 intervals for the Rigobon estimator are so wide in the 1-day window case implies that there is very
 little signal left in this case. The OLS estimator, in contrast, uses all the variation in interest rates
 (both the true signal from the announcement and the background noise). Clearly, this approach
+15
 
 massively overstates the true statistical precision of the effect arising from the FOMC announcement
 when a 1-day window is used.
@@ -729,6 +753,7 @@ shocks is uncorrelated with the risk premia implied by the afﬁne term structur
 Hanson and Stein’s monetary shocks are associated with substantial movements in risk premia. The difference could also
 arise from the fact that Hanson and Stein focus on a 2-day change in long-term real forwards; which could yield different
 results if the response of long-term bonds to monetary shocks is inertial.
+16
 
 announcements that we focus on.12
 In Appendix D, we present three sets of results that indicate that risk premium effects are not
@@ -767,6 +792,7 @@ t −Πt, where Rx
 t is the x-year inﬂation swap rate and Πt is the reference inﬂation over that
 period. If agents were risk neutral, therefore, Rt would be expected inﬂation over the x year period. See Fleckenstein,
 Longstaff, and Lustig (2014) for an analysis of the differences between break-even inﬂation from TIPS and inﬂation swaps.
+17
 
 Table 3: Response of Expected Output Growth Over the Next Year
 1995-2014
@@ -818,6 +844,7 @@ update its beliefs not only about the future path of monetary policy, but also a
 whether they occurred before or after the survey response.
 15Campbell et al. (2012) present similar evidence regarding the effect of surprise monetary shocks on Blue Chip
 expectations about unemployment.
+18
 
 Figure 2: Binned Scatter Plot for Expected Output Growth Regression
 ‐0.25
@@ -855,6 +882,7 @@ perspective that affects the views of private agents. This is the view Romer and
 these data. It also collects anecdotal information on current economic conditions from reports submitted by bank direc-
 tors and through interviews with business contacts, economists, and market experts. This information is subsequently
 published in reports commonly known as the Beige Book.
+19
 
 for in their classic paper on Federal Reserve information.17
 The idea that the Fed can inﬂuence private sector beliefs through its analysis of public data is
@@ -890,6 +918,7 @@ economy. It may therefore also be able to formulate a view about the economy tha
 words, information can ﬂow both ways with neither the Fed nor the private sector having a clear advantage.
 18The Greenbook forecast is an internal forecast produced by the staff of the Board of Governors and presented at each
 FOMC meeting. Greenbook forecasts are made public with a ﬁve year lag.
+20
 
 in response to FOMC announcements mostly reﬂect changes in private sector expectations about
 the natural rate of interest. If this is the case, the fact that we ﬁnd that our shocks have little effect
@@ -923,6 +952,7 @@ the Fed like to convey?
 We model FOMC announcements as affecting private sector beliefs about the path of the “natu-
 ral rate of interest,” the real interest rate that would prevail absent pricing frictions. This is a natural
 19This idea is explained in more detail below and in Appendix E.
+21
 
 choice since tracking the natural rate is optimal in the model we consider absent information effects.
 If the Fed’s goal is to track the natural rate of interest, it seems natural that announcements by the
@@ -959,6 +989,7 @@ elasticity of substitution.
 We assume that the monetary authority sets interest rates according to the following simple rule:
 ˆıt −Etˆπt+1 = ¯rt + φπˆπt,
 (5)
+22
 
 with ¯rt following an AR(2) process
 ¯rt = (ρ1 + ρ2)¯rt−1 −ρ1ρ2¯rt−2 + ϵt,
@@ -1000,6 +1031,7 @@ information. We abstract from this.
 allow us to account for the effects of FOMC announcements on the entire path of future interest rate expectations—i.e.,
 the role of forward guidance. This is a distinguishing feature versus previous work. Ellingsen and Soderstrom (2001)
 present a model in which the signaling effect derives from announcements about the current interest rate.
+23
 
 5.2
 Estimation Method
@@ -1037,6 +1069,7 @@ to interest rate movements in the far future (Carlstrom, Fuerst, and Paustian, 2
 the magnitude of the shock in our simulations is arbitrary, we make sure to rescale all responses from the model in such a
 way that the 3Y real forward rate is perfectly matched. We use the methods and computer code described in Sims (2001)
 to calculate the equilibrium of our model.
+24
 
 to re-sample the data with replacement, estimate the empirical moments on the re-sampled data,
 and then estimate the structural parameters as described above using a loss function based on the
@@ -1073,6 +1106,7 @@ along the following dimensions: The number of observations for the yields and fo
 as in the original dataset (since the sample period for the 2Y and 3Y yields and forwards starts in 2004). The number of
 Blue Chip observations that do not report 4- to 7-quarters ahead expected GDP growth are the same as in the original
 dataset, since Blue Chip only asks forecasters to forecast the current and next calendar year.
+25
 
 Table 4: Estimates of Structural Parameters
 
@@ -1169,19 +1203,56 @@ Quarters
 Real Interest Rate
 Nominal Interest Rate
 Inflation
+26
 
 Figure 4: Responses of Expected Output Growth and Output Gap to a Contractionary Shock
 ‐0.8
 ‐0.6
 ‐0.4
 ‐0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+0
+4
+8
+12
+16
+20
+24
+28
+32
+36
+40
 Quarters
 Output Growth
 Output Gap
 Figure 5: Decomposition of Real Rate in Interest Rate Gap and Natural Interest Rate
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0
+4
+8
+12
+16
+20
+24
+28
+32
+36
+40
 Quarters
 Natural Interest Rate
 Real Interest Rate
+27
 
 literature that has estimated Phillips curves and, using a common data set, run a huge number of a
 priori reasonable speciﬁcations which span different choices made in this literature. They ﬁnd that
@@ -1216,6 +1287,7 @@ in the natural rate of interest are needed to match the movements in expected gr
 in the data. This would suggest that a lower value of the IES would yield a larger value of the infor-
 mation effect. However, in our model with substantial habit formation the IES and the information
 parameters also affect the shape of the response of output growth. These effects imply that similar
+28
 
 Figure 6: Response of Actual and Natural Expected Output
 ‐1.0
@@ -1257,6 +1329,7 @@ future? Isn’t monetary policy neutral in the long run? Shouldn’t a monetary 
 output? Here it is crucial to recognize that the information the Fed reveals about economic funda-
 mentals is in large part (perhaps mostly) information that the private sector would have learned
 about eventually through other channels in the absence of the Fed’s announcement. This intro-
+29
 
 duces an important subtlety into the assessment of the effect of monetary policy that has, to our
 knowledge, not been discussed in the existing literature. To correctly assess the causal effect of mon-
@@ -1291,6 +1364,7 @@ Figure 8 plots this measure of the causal effect of monetary shocks on output. T
 decomposes it into two components: the effect on the output gap (which falls) and the effect on the
 natural rate of output (which rises). The effect on the output gap is the the conventional channel
 of monetary policy: an interest rate increase relative to the natural rate of interest leads to a drop
+30
 
 Figure 7: Response of Actual and Counterfactual Expected Output
 0.0
@@ -1334,12 +1408,29 @@ The ﬁndings discussed above have important policy implications. The fact that 
 effect of surprise Fed tightenings stimulates output implies that the Fed is “ﬁghting against itself”
 when it surprises markets. Figure 8 shows that for our estimated parameters the overall effect of the
 two channels is for an interest rate increase to raise output—the opposite from the conventional view
+31
 
 Figure 8: Causal Effect of Monetary Shocks on Expected Output
 ‐0.8
 ‐0.6
 ‐0.4
 ‐0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+0
+4
+8
+12
+16
+20
+24
+28
+32
+36
+40
 Quarters
 Output
 Natural Output
@@ -1349,9 +1440,24 @@ Figure 9: Expected Output Growth with and without the Information Effect
 ‐1.5
 ‐1.0
 ‐0.5
+0.0
+0.5
+1.0
+0
+4
+8
+12
+16
+20
+24
+28
+32
+36
+40
 Quarters
 No information effect
 With information effect
+32
 
 of how monetary policy works.26 If the Fed would like to stimulate economic activity, a surprise
 policy easing may be counter-productive because the increase in pessimism that it causes itself pulls
@@ -1389,6 +1495,7 @@ shocks and changes in interest rates that come about due to the systematic compo
 use, it does not matter why interest rates change (except for the information effect). In other words, the comparative static
 of a given change in interest rates on other variables is the same irrespective of the reason for the interest rate change
 (except for the information effect).
+33
 
 Table 5: Response of Stock Prices
 Stock Prices
@@ -1428,6 +1535,7 @@ applied microeconomics.
 to surprise movements in the federal funds rate.
 30For simplicity, we model stocks as an unlevered claim to the consumption stream in the economy as is common in
 the asset pricing literature.
+34
 
 fall by 6.8% in response to the FOMC announcement. In contrast, if monetary policy is assumed
 not to convey information about future exogenous fundamentals, stock prices fall by 11%. The re-
@@ -1449,6 +1557,7 @@ sector interprets part of an unexpected increase in the interest rate as informa
 rate. We estimate the model and ﬁnd strong evidence for both channels: the conventional monetary
 policy channel and the information effect. One implication of our analysis is that the information
 content of a monetary shock matters in determining its causal effects.
+35
 
 A
 Construction of the Policy News Shock
@@ -1497,10 +1606,12 @@ structing this variable as with the variable described above. Let m1 denote the 
 in the month in which the next scheduled FOMC meeting occurs and let d1 denote the day of the
 meeting. The next scheduled FOMC meeting may occur in the next month or as late as 3 months
 31Fed funds futures have been traded since 1988. The effective federal funds rate is the rate that is quoted by the Fed-
+eral Reserve Bank of New York on every business day. See the Chicago Board of Trade Reference guide http://www.
 jamesgoulding.com/Research_II/FedFundsFutures/FedFunds(FuturesReferenceGuide).pdf for a de-
 tailed description of federal funds futures contracts. On a trading day in March (say), the April federal funds futures
 contract is labeled as 2nd expiration nearby and also as 1st beginning nearby, in reference to the month over which ¯r is
 computed.
+36
 
 after the current meeting. Let fn
 t−∆t denote the price of the federal funds rate futures contract for the
@@ -1544,7 +1655,9 @@ we only consider trades on the trading day in question and until noon the next d
 price change to zero (i.e., we interpret no trading as no price change).
 32Eurodollar futures began trading in the early 1980’s.
 See the CME Group eurodollar futures ref-
+erence guide http://www.cmegroup.com/trading/interest-rates/files/eurodollar-futures-refere
 nce-guide.pdf for more details about how eurodollar futures are deﬁned.
+37
 
 B
 Rigobon’s Heteroskedasticity-Based Estimator
@@ -1604,6 +1717,7 @@ Notice that
 γ2
 
 .
+38
 
 Thus,
 γ = ∆Ω12
@@ -1642,9 +1756,11 @@ the treatment and control samples.
 treatment sample and the control sample in the denominator. If the distribution of this difference has signiﬁcant mass in
 the vicinity of zero, the sampling distribution of the estimator will have signiﬁcant mass at large positive and negative
 values.
+39
 
 Panel A: 1-Day Window 
-
+ 
+ 
 Panel B: 30-Minute Window 
 -0.0010
 -0.0005
@@ -1687,6 +1803,7 @@ Figure C.1: Scatter of Joint Distribution of Dcov and Dvar for 2-Year Nominal Fo
 Notes: Each point in the ﬁgure is a draw from our bootstrap. Dvar denotes the difference in variance of our policy news
 shock between the treatment and control sample. Dcov denotes the difference in the covariance of our policy news
 shocks and the 2-year nominal forward rate between the treatment and the control sample.
+40
 
 -0.008
 -0.006
@@ -1730,6 +1847,7 @@ case, the weak-IV robust conﬁdence intervals coincide closely with the standar
 bootstrap conﬁdence interval reported in Table A.3. However, this weak-IV robust procedure is
 very important for the Rigobon estimator when the policy news shock is measured over a 1-day
 window.
+41
 
 D
 Risk Premia or Expected Future Short Rates
@@ -1765,6 +1883,7 @@ rates.
 advance; while in the ﬁrst quarter they are asked about their beliefs for almost the next full 2-years. Blue Chip also asks
 for longer-term inﬂation forecasts, but only twice a year (March and October) implying that there are too few observations
 to obtain meaningful estimates.
+42
 
 Table D.1: Effects of Monetary Shocks on Survey Expectations
 Nominal
@@ -1843,6 +1962,7 @@ large effects on future short-term nominal and real rates and small effects on e
 35What we refer to as the risk premia here is the difference between raw interest rate changes and changes in model-
 implied risk neutral interest rates. Abrahams et al. (2015) further decompose this difference into a term premium, a
 liquidity premium, and a model error term.
+43
 
 Table D.2: Response of Expected Future Short Rates and Risk Premia
 Nominal 
@@ -1935,6 +2055,7 @@ period from July 2008 through June 2009. For 2Y and 3Y yields and real forwards,
 2004. The sample size for the 2Y and 3Y yields and forwards is 74. The sample size for all other regressions is
 106—the same observations from which the policy news shock is constructed. Robust standard errors are in
 parentheses.
+44
 
 (even smaller than in our baseline results).
 It is important to stress that the Abrahams et al. (2015) model by no means rules out the potential
@@ -1969,6 +2090,7 @@ models share the implication that changes in real interest rates affect output. 
 effects of monetary shocks that dissipate over time.
 37In all cases, the policy news shock is measured over a 30-minute event window. We only vary the length of the event
 window for the dependent variables.
+45
 
 Table D.3: Mean Reversion
 2-Year
@@ -2092,6 +2214,7 @@ only convey information about the future path of policy and don’t change priva
 about other fundamentals of the economy—this evidence identiﬁes key parameters governing the
 rigidity of prices. We can illustrate this very simply using the textbook New Keynesian model.
 Consider a setting in which the behavior of households and ﬁrms can be described by the fol-
+46
 
 lowing Euler equation and Phillips curve:
 ˆxt = Etˆxt+1 −σ(ˆıt −Etˆπt+1 −ˆrn
@@ -2145,6 +2268,7 @@ j=0
 βjEtˆrℓ
 t+j.
 (16)
+47
 
 Recall that in section 3 we estimate the response of inﬂation and real interest rates to a monetary
 shock. These are exactly the two responses that appear in equation (16). Equation (16) therefore
@@ -2183,6 +2307,7 @@ private sector is learning about the preferences of the policymakers, or because
 learning about the policymaker’s model of the world, or because the private sector is learning about
 the policymaker’s views on the state of the economy. Crucially, however, the announcement by the
 policymaker cannot lead the private sector to update its own views about the state of the economy
+48
 
 or the model of the world. If it does, the monetary shocks contains an additional “information
 effect.”
@@ -2233,6 +2358,7 @@ Expected Output Growth Regressions
 The regressions in Tables 3 and A.5 are of the form
 ∆st,t−1 = α + γ∆it−1 + ϵt
 (20)
+49
 
 with the policy news shock as the independent variable. In Table 3, the dependent variable is
 ∆st,t−1 = gyt,q(t)+1 + gyt,q(t)+2 + gyt,q(t)+3
@@ -2275,6 +2401,7 @@ is higher than the corresponding Blue Chip forecast.
 Greenbook (now, the Tealbook) since 1965. Conveniently, both the Greenbook and Blue Chip datasets make forecasts
 of the same variable: annualized real GDP growth. The Greenbook forecasts are ﬁnalized one week before each FOMC
 meeting.
+50
 
 Table G.1: Is Fed Information Reﬂected in Greenbook Forecasts?
 Horizon (q): 
@@ -2382,6 +2509,7 @@ This change in statistically signiﬁcant for the nowcast (q = 0) and for one of
 casts (q = 5) but not statistically signiﬁcant for the other horizons. Since positive monetary shocks
 tend to be associated with the Greenbook forecast being above the Blue Chip, the fact that the esti-
 mates are negative in this regression indicates that, indeed, our policy news shocks are associated
+51
 
 with a narrowing in the discrepancy between Fed and private sector views on the economy.
 H
@@ -2429,6 +2557,7 @@ Z 1
 0
 Ξt(z)dz −Tt,
 (27)
+52
 
 where Pt is a price index that gives the minimum price of a unit of the consumption good Ct, Bt+1(x)
 is a random variable that denotes the state contingent payoff of the portfolio of ﬁnancial securities
@@ -2481,6 +2610,7 @@ pt(z)1−θdz
 39The stochastic discount factor Mt,t+1 is a random variable over states in period t + 1. For each such state it equals
 the price of the Arrow-Debreu asset that pays off in that state divided by the conditional probability of that state. See
 Cochrane (2005) for a detailed discussion.
+53
 
 H.2
 Firms
@@ -2531,6 +2661,7 @@ P∞
 k=0 αkMt,t+kyt+k(z)St+j(z).
 (36)
 Intuitively, the ﬁrm sets its price equal to a constant markup over a weighted average of current
+54
 
 and expected future marginal cost.
 H.3
@@ -2572,6 +2703,7 @@ A linear approximation of labor supply—equation (29)—in period t + j for ind
 last able to change its prices in period t is
 ˆwt,t+j(x) = η−1ˆℓt,t+j(x) + σ−1ˆct+j + ˆξℓ,t+j −ˆξc,t+j,
 (40)
+55
 
 where ˆξℓ,t+j = (Vℓξ/Vℓ)(ξt −1). The parameter η = Vℓ/(VℓℓL) is the Frisch elasticity of labor supply.
 A linear approximation of the production function—equation (32)—in period t + j for industry
@@ -2611,6 +2743,7 @@ then
 t = (ω + 1)ˆat −ˆξℓ,t + ˆξc,t,
 (45)
 where we use the fact that output in all industries is the same under ﬂexible prices and ˆyt = ˆct and
+56
 
 denote the rate of output under ﬂexible prices as yn
 t . We will refer to yn
@@ -2688,6 +2821,7 @@ which implies
 ˆπt = βEtˆπt+1 + κζ(ˆyt −ˆyn
 t ).
 (50)
+57
 
 Finally, we rewrite the household’s Euler equation—equation (38) in terms of the output gap:
 ˆyt −ˆyn
@@ -2742,6 +2876,7 @@ Firm Price Setting with Inﬂation Inertia
 In the simple model presented above, we assume that prices are either reoptimized (with probability
 1 −α), or remain ﬁxed (with probability α). As is well-known, this formulation yields a Phillips
 curve that implies that inﬂation reacts rapidly to news about future economic developments. Our
+58
 
 empirical evidence suggests that inﬂation responds very gradually to news about future economic
 conditions. To be able to match this aspect of our evidence, we now follow Christiano, Eichenbaum,
@@ -2790,6 +2925,7 @@ series approximation of equation (37) around this steady state is
 (60)
 where ˆλ = (Λt −Λ)/Λ.
 A linear approximation of labor supply—equation (55)—in period t + j for industry x that was
+59
 
 last able to change its prices in period t is
 ˆwt,t+j(x) = η−1ˆℓt,t+j(x) −ˆλt+j.
@@ -2842,6 +2978,7 @@ price version of equation (66) is
 t+j −ˆλn
 t+j = (ω + 1)ˆat+j.
 (67)
+60
 
 Combining equations (66) and (67) yields
 ˆst,t+j(x) = −ωθˆpt(x) + ωθ
@@ -2939,6 +3076,7 @@ Quasi-differencing this equation yields
 which implies
 ∆ˆπt = βEt∆ˆπt+1 + κˆζ(ωˆxt+j −ˆλxt+j).
 (72)
+61
 
 Finally, we rewrite the household’s Euler equation—equation (60) in terms of the marginal util-
 ity gap:
@@ -2995,8 +3133,10 @@ for the response of private sector beliefs about productivity (the exogenous sho
 is driving variation in the natural rate of output and the natural rate of interest) by using equation
 (67). In the counterfactual, we assume that agents believe productivity is a random walk and then
 feed in a shock process for productivity that makes productivity follow the same path as in the
+62
 
 actual case of the monetary shock.
+63
 
 Table A.1: Response of Interest Rates to Monetary Shocks for Different Sample Periods
 Nominal 
@@ -3182,6 +3322,7 @@ Baseline Sample
 Pre-Crisis (2000-2007)
 Full Sample
 Baseline w/ Unsched.
+64
 
 Table A.2: Response to a Fed Funds Rate Shock
 Nominal 
@@ -3260,6 +3401,7 @@ the time of FOMC announcements. The sample period is all regularly scheduled mee
 real forwards, the sample starts in January 2004. The sample size for the 2Y and 3Y yields and
 forwards is 74. The sample size for all other regressions is 106. In all regressions, the policy news
 shock is computed from these same 106 observations. Robust standard errors are in parentheses.
+65
 
 Table A.3: Responses to Policy News Shock Using Rigobon Estimator
 Nominal 
@@ -3340,6 +3482,7 @@ Tuesdays and Wednesdays that are not FOMC meeting days over the same period of t
 and control samples, we drop July 2008 through June 2009 and 9/11/2001-9/21/2001. For 2Y forwards, the
 sample starts in January 2004. Standard errors are calculated using a non-parametric bootstrap with 5000
 iterations. 
+66
 
 Table A.4: Breakeven Inﬂation versus Inﬂation Swaps
 Breakeven
@@ -3372,6 +3515,7 @@ shock over a 30 minute window around the time of FOMC announcements, where the p
 shocks are constructed on the 2000-2014 sample used in Table 1. The sample is all regularly
 scheduled FOMC meeting day from 1/1/2005 to 11/14/2012, except that we drop July 2008 through
 June 2009. Robust standard errors are in parentheses.
+67
 
 Table A.5: Response of Expected Output Growth
 Exp. Output Growth in Current Qr
@@ -3409,3 +3553,4 @@ The sample period is all regularly scheduled FOMC meetings between January 1995 
 except that we drop July 2008 through June 2009 and the aforementioned first-week meetings. The
 policy news shock is constructed on the same sample period. Sample sizes are 120 for the first five
 rows, then 75, 45, and 13. Robust standard errors are in parentheses.
+68

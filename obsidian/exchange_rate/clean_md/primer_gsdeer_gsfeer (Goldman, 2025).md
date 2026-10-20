@@ -3,11 +3,13 @@ Economics Research
 FX IN FOCUS
 A Primer on our GSDEER and GSFEER Models
 n GSDEER and GSFEER are our two formal FX valuation models, rooted in separate Teresa Alves
-academic theories of exchange rate fair value. In this FX in Focus, we provide a
++44(20)7051-7566 |
+academic theories of exchange rate fair value. In this FX in Focus, we provide a teresa.alves@gs.com
 Goldman Sachs International
 refresher on the methodological background behind these two models, highlight
 Stuart Jenkins
-their different use cases and current signals, and update our analysis on their
+their different use cases and current signals, and update our analysis on their +44(20)7051-4700 |
+stuart.jenkins@gs.com
 historical performance. Goldman Sachs International
 n We find that there remains strong evidence supporting a weighted-average
 approach across the two models when applying our fair value signals to 1-year
@@ -34,6 +36,7 @@ rely specifically on our GSDEER model because, as we outline here, it outperform
 GSFEER over longer horizons.
 Two Roads to Fair — The Tortoise and the Hare
 Our GSDEER model is essentially an augmented purchasing power parity (PPP)
+www.gs.com/research/hedge.html.
 
 model. It postulates that real exchange rates tend to mean-revert over time, but that
 differences in productivity and terms of trade will influence that underlying mean. The
@@ -105,6 +108,7 @@ Total
 Lower EUR/CHF
 -20 fair value -20 0 0
 -30 -30 -10 -10
+14 15 16 17 18 19 20 21 22 23 24 25 14 15 16 17 18 19 20 21 22 23 24 25
 Source: Goldman Sachs Global Investment Research Source: Goldman Sachs Global Investment Research
 Our GSFEER model is more cyclical than GSDEER: instead of modelling the empirical
 relationship between real exchange rates and long-run drivers such as productivity and

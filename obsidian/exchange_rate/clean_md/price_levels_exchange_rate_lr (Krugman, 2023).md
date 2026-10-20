@@ -1,3 +1,4 @@
+16
 CHAPTER
 Price Levels and the Exchange
 Rate in the Long Run
@@ -137,6 +138,7 @@ price, which says that E = Pi Pi for any commodity i. There is a difference betw
 PPP and the law of one price, however: The law of one price applies to individual
 > >
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 455
 commodities (such as commodity i), while PPP applies to the general price level, which
 is a composite of the prices of all the commodities that enter into the reference basket.
 If the law of one price holds true for every commodity, of course, PPP must hold auto-
@@ -197,6 +199,7 @@ But if p US,t and p E,t are small, the term -p E,t (p US,t - p E,t ) (1 + p E,t 
 implying a very good approximation to (16-2).
 >
 
+456 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In practice, national governments do not take pains to compute the price level indexes
 they publish using an internationally standardized basket of commodities. Absolute
 PPP makes no sense, however, unless the two baskets whose prices are compared in
@@ -245,6 +248,7 @@ P = Ms L(R , Y ), (16-3)
 US US + US
 >
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 457
 while in Europe,
 P = Ms L(R , Y ). (16-4)
 E E : E
@@ -304,6 +308,7 @@ To understand these predictions, remember that the monetary approach, like any
 long-run theory, essentially assumes price levels adjust as quickly as exchange rates
 2To simplify the notation, we assume identical money demand functions for the United States and Europe.
 
+458 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 do—that is, right away. For example, a rise in real U.S. output raises the transactions
 demand for real U.S. money balances. According to the monetary approach, the
 U.S. price level drops immediately to bring about a market-clearing increase in the
@@ -355,6 +360,7 @@ R = R + (Ee - E ) E .
 + : + : + : + :
 > > > >
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 459
 [Recall equation (14-2) in the section on “Equilibrium in the Foreign Exchange
 Market.”] Now let’s ask how this parity condition, which must hold in the long run as
 well as in the short run, fits with the other parity condition we are assuming in our long-
@@ -404,6 +410,7 @@ by 5 percentage points per year from their initial level. These changes would le
 real rate of return on dollar assets, measured in terms of U.S. goods and services,
 unchanged. The Fisher effect is therefore another example of the general idea that in
 
+460 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 the long run, purely monetary developments should have no effect on an economy’s
 relative prices.3
 The Fisher effect is behind the seemingly paradoxical monetary approach prediction
@@ -466,6 +473,7 @@ dollar depreciation. As investors respond by moving into foreign deposits, which
 incidentally, gave an early account of the interest parity condition on which we based our theory of foreign
 exchange market equilibrium.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 461
 (a) U.S. money (b) Dollar interest
 supply, M rate, R
 US $
@@ -504,6 +512,7 @@ E
 the euro at rate p before t 0 and at rate p + ∆p afterward, depreciates at rate p - p E until t 0 and at rate
 p + ∆p - p E thereafter.
 
+462 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 dropping immediately in response to the money supply reduction. In that sticky-price
 case, an interest rate rise is associated with lower expected inflation and a long-run
 currency appreciation, so the currency appreciates immediately. In our monetary
@@ -552,6 +561,7 @@ pp. 2450–2486; Mario J. Crucini and Anthony Landry, “Accounting for Real Exc
 Micro-Data,” Working Paper 17812, National Bureau of Economic Research, February 2012; and the paper
 by Goldberg and Knetter in Further Readings.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 463
 Figure 16-2 illustrates relative PPP’s weakness by plotting both the yen/dollar
 exchange rate, E , and the ratio of the Japanese and U.S. price levels, P P , through
 y + J US
@@ -598,6 +608,7 @@ Figure 16-2, base years for the U.S. and Japanese price indexes were chosen so t
 equal the 1980 exchange rate, but this imposed equality does not mean that absolute PPP held in 1980.
 Although Figure 16-2 uses CPIs, other price indexes lead to similar pictures.
 
+464 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Studies of other currencies largely confirm the results in Figure 16-2. Relative PPP
 has not held up well.8 As you will learn later in this book, between the end of World
 War II in 1945 and the early 1970s, exchange rates were fixed within narrow, interna-
@@ -647,6 +658,7 @@ International Finance 56 (International Finance Section, Department of Economics
 September 1985); and Hans Genberg, “Purchasing Power Parity under Fixed and Flexible Exchange Rates,”
 Journal of International Economics 8 (May 1978), pp. 247–276.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 465
 example, in the presence of trade impediments, a dollar need not go as far in London
 as in Chicago—and it doesn’t, as anyone who has ever been to London has found out.
 As you will recall from the theory of international trade, transport costs may be
@@ -699,6 +711,7 @@ Real-Financial Linkages among Open Economies (Cambridge, MA: MIT Press, 1987); a
 and Ariel Burstein, “Pricing-to-Market, Trade Costs, and International Relative Prices,” American Economic
 Review 98 (December 2008), pp. 1998–2031.
 
+466 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In 2016, for example, a Volkswagen Polo cost $4,000 more in Ireland than in Austria
 despite those countries’ shared currency (the euro) and despite the European Union’s
 efforts over many years to remove intra-European trade barriers (see Chapter 21). Such
@@ -747,6 +760,7 @@ the prices of traded and non-traded commodi- ing it in a common currency.
 ties. While the prices of traded products can be Many major international agencies, such as the
 globally determined by the law of one price, the World Bank, International Monetary Fund, the
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 467
 World Health Organization, the United Nations when the PPP between two countries is the same,
 Educational, Scientific and Cultural Organization irrespective of whether it is calculated directly or
 (UNESCO) and the United Nations Development through another country. Country invariance
@@ -806,6 +820,7 @@ every pair of economies. On the other hand, mul- United Nations Development Prog
 tilateral PPPs are calculated on the basis of tran- uses this data to calculate the human develop-
 sitivity and country invariance. Transitivity occurs ment index and formulate gender empowerment
 
+468 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 4.5
 5.5
 53.7
@@ -815,6 +830,7 @@ sitivity and country invariance. Transitivity occurs ment index and formulate ge
 0
 PPP-Based and Exchange Rate-Based GDP Regional Shares (World = 100),
 ICP 2011
+Source: ICP, http://icp.worldbank.org/.
 measures, the World Health Organization com- largely because services such as health and housing
 pares health inequality across countries, and the would have greater error components.
 UNESCO assesses per capita expenditure on edu- While PPPs represent the overall price level of an
@@ -838,8 +854,10 @@ PPPs based on prices of services are not as pre-
 cise for those based on prices of services. This is
 overvaluation of currencies.11
 11See “Purchasing Power Parities and the Real Size of World Economies: A Comprehensive Report of the 2011
+International Comparison Program,” the World Bank Group, ICP 2011, http://siteresources. worldbank.org/
 ICPEXT/Resources/ICP-2011-report.pdf; and Mario Cruz, James Foster, Bryce Quillin, and Philip Schellekens,
 “Ending Extreme Poverty and Sharing Prosperity: Progress and Policies,” Development Economics, World Bank
+Group, October 2015, http://pubdocs.worldbank. org/en/109701443800596288/PRN03Oct2015TwinGoals.pdf.
 PDG
 dlrow
 egatnecreP
@@ -861,6 +879,7 @@ Caribbean Independent States
 Latin America Asia and the Pacific
 Eurostat–OECD Africa
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 469
 Change in the relative prices of basket components, however, can cause relative PPP
 to fail tests that are based on official price indexes. For example, a rise in the relative
 price of fish would raise the dollar price of a Japanese government reference commod-
@@ -900,6 +919,7 @@ ferent goods within a single country. See Engel, “Real Exchange Rates and Rela
 Investigation,” Journal of Monetary Economics 32 (August 1993), pp. 35–50. Also see Gopinath, Gourinchas,
 Hsieh, and Li, op. cit. (footnote 6).
 
+470 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Recent research suggests that short-run deviations from PPP such as those due to
 volatile exchange rates die away over time, with only half the effect of a temporary
 departure from PPP remaining after four years.13 Even when these temporary PPP
@@ -944,6 +964,7 @@ Economics and Statistics 46 (May 1964), pp. 145–154. The Balassa-Samuelson the
 by some observations of Ricardo. See Jacob Viner, Studies in the Theory of International Trade (New York:
 Harper & Brothers, 1937), p. 315.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 471
 Price level relative to United States (U.S. = 100)
 180
 160
@@ -977,6 +998,7 @@ Studies in International Finance 52 (International Finance Section, Department o
 University, November 1983); and Jagdish N. Bhagwati, “Why Are Services Cheaper in the Poor Countries?”
 Economic Journal 94 (June 1984), pp. 279–286.
 
+472 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 labor relative to capital. Because rich countries have higher capital-labor ratios,
 the marginal productivity of labor is greater in rich countries than in poor coun-
 tries, and the former will therefore have a higher wage level than the latter.16
@@ -1017,6 +1039,7 @@ will continue to use the shorter term, exchange rate, to refer to nominal exchan
 16This argument assumes that factor endowment differences between rich and poor countries are sufficiently
 great that factor-price equalization cannot hold.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 473
 Real exchange rates are defined in terms of nominal exchange rates and price levels.
 Before we can give a more precise definition of real exchange rates, however, we need
 to clarify the price level measure we will be using. Let P , as usual, be the price level
@@ -1084,6 +1107,7 @@ tion means the dollar’s purchasing power over European goods and services fall
 10 percent relative to its purchasing power over U.S. goods and services.
 17Nontradables are one important factor behind the relative preference for home products.
 
+474 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Alternatively, even though many of the items entering national price levels are
 nontraded, it is useful to think of the real exchange rate q as the relative price of
 + :
@@ -1146,6 +1170,7 @@ same as a real appreciation of the euro against the dollar (that is, a rise in t
 within the United States relative to its purchasing power within Europe or a fall in the relative price of
 American products in terms of European products).
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 475
 STICKY PRICES AND THE LAW OF ONE PRICE:
 EVIDENCE FROM SCANDINAVIAN DUTY-FREE SHOPS
 S
@@ -1195,6 +1220,7 @@ the purchase of the goods. Asplund and Friberg suggest that for such small purch
 costs of calculating relative prices (in addition to the credit-card exchange fees) might have been a sufficient
 deterrent to transacting in a relatively unfamiliar currency.
 
+476 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Surprisingly, Birka Line did not completely discriminate among different consumers based
 eliminate law of one price deviations when it on their different locations, but Birka was able
 changed catalog prices. Instead, Birka Line to discriminate based on different nationality
@@ -1260,6 +1286,7 @@ to relative world demand for and supply of two products that could be produced i
 In contrast, the RD and RS curves in this chapter refer to the relative world demand for and supply of one
 country’s overall output (its GDP) relative to another’s.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 477
 FIGURE 16-4
 Real exchange
 Determination rate, q
@@ -1307,6 +1334,7 @@ E = q * (P P ). (16-7)
 + : + : US E
 > > >
 
+478 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Formally speaking, the only difference between (16-7) and equation (16-1), on which
 we based our exposition of the monetary approach to the exchange rate, is that (16-7)
 accounts for possible deviations from PPP by adding the real exchange rate as an
@@ -1366,6 +1394,7 @@ price of U.S. output. Given that long-run national price levels are unchanged, h
 >
 ever, (16-7) tells us that a long-run nominal appreciation of the dollar against the
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 479
 euro (a fall in E ) must also occur. This prediction highlights the important fact
 + :
 that even though exchange rates are nominal prices, they respond to nonmonetary
@@ -1422,6 +1451,7 @@ Output market
 States Ambiguous
 4. Output supply increase in Europe Ambiguous
 
+480 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 about the current account, for example, can have a big impact on the exchange rate.
 The long-run exchange rate model of this section will provide the anchor for market
 expectations, that is, the framework market participants use to forecast future exchange
@@ -1478,6 +1508,7 @@ inflation difference between the United States and Europe. For example, if U.S. 
 tion will be 5 percent per year forever and European inflation will be zero forever, the
 long-run interest difference between dollar and euro deposits need not be the 5 percent
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 481
 that PPP (when combined with interest parity) would suggest. If, in addition, everyone
 knows that output demand and supply trends will make the dollar depreciate against
 the euro in real terms at a rate of 1 percent per year, the international interest spread
@@ -1525,6 +1556,7 @@ Chapter 14 showed) nominal return differences equal real return differences for 
 context of the demand for money, the nominal interest rate is the real rate of return you sacrifice by holding
 interest-barren currency.
 
+482 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Expected real interest rates are the same in different countries when relative PPP is
 expected to hold [in which case (16-10) implies that re = re ]. More generally, however,
 US E
@@ -1573,6 +1605,7 @@ In addition, different definitions of price levels in different countries bedevi
 worldwide real interest rate. Relative PPP must hold in that analysis, however, because there is only one
 consumption good in each period.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 483
 to test PPP using the price indices governments publish. For some products, includ-
 ing many services, international transport costs are so steep that these products
 become nontradable.
@@ -1619,6 +1652,7 @@ spend more of their income on nontraded products and less on tradables.
 b. Foreign residents shift their demand away from their own goods and toward
 the home country’s exports.
 
+484 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 4. The Eurozone was created in 1999 with countries including Austria, Belgium,
 France, Germany, and Ireland. New participant countries have joined since—Slo-
 venia (2007), Cyprus (2008), Malta (2008), Slovakia (2009), Estonia (2011), Latvia
@@ -1637,6 +1671,7 @@ real exchange rate (REER) of the Japanese Yen against several foreign currencies
 105.7 105.2 87.1 81.5 76.6 93 NER
 101.3 100.0 79.7 75.1 70.3 83.6 REER
 Base 100 in 2010.
+Source: http://www.bis.org/statistics/tables_i.pdf
 Since December 2012, Japan has a new Prime Minister, Shinzō Abe, who has
 introduced a new economic policy (“the Abenomics”) advocating, besides struc-
 tural reforms, an aggressive monetary easing to foster the economic growth that
@@ -1666,6 +1701,7 @@ expansions of domestic spending. Where should the demand expansion cause
 a greater real currency appreciation, in the tariff-using country or in the quota-
 using country?
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 485
 11. Explain how the nominal euro/RMB exchange rate would be affected (all else
 equal) by permanent changes in the expected rate of real appreciation of the RMB
 against the euro.
@@ -1708,10 +1744,13 @@ the effect on the euro’s real exchange rate with a rise in the European terms 
 (the relative price of European exports in terms of European imports)?
 20. The Economist magazine has observed that the price of Big Macs is systematically
 positively related to a country’s income level, just as is the general price level. If you
+go to The Economist’s Big Mac standard website, at http://www.economist.com/
 content/big-mac-index, you will find the data on under/overvaluation for June 2020
 (as well as for previous years’ surveys). Go to the World Bank’s World Development
+Indicators website, http://data.worldbank.org/indicator/NY.GDP.PCAP.PP.CD,
 and find the most recent data on GNI (Gross National Income) per capita, PPP,
 
+486 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 for all countries. Use these data, together with The Economist data on Big Mac
 dollar prices, to make a graph of income per capita (horizontal axis) versus dollar
 Big Mac price (vertical axis). What do you find?
@@ -1765,6 +1804,7 @@ equilibrium exchange rate model similar to the long-run model of this chapter.
 Alan M. Taylor and Mark P. Taylor. “The Purchasing Power Parity Debate.” Journal of Economic
 Perspectives 18 (Fall 2004), pp. 135–158. Surveys recent research on PPP.
 
+16
 APPENDIX TO CHAPTER
 The Fisher Effect, the Interest Rate, and the Exchange
 Rate under the Flexible-Price Monetary Approach
@@ -1831,6 +1871,7 @@ upper-right quadrant’s diagram. The upper-right quadrant contains our usual po
 of equilibrium in the foreign exchange market.
 487
 
+488 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Dollar/euro
 exchange rate, E
 $/:
@@ -1889,6 +1930,7 @@ point 2′. The dollar depreciates despite a rise in R because heightened expect
 +
 against the euro cause an outward shift of the locus measuring the expected dollar return on euro deposits.
 
+CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 489
 There you can see the dollar’s depreciation against the euro is associated with a move
 in the foreign exchange market’s equilibrium from point 1′ to point 2′. The picture
 shows why the dollar depreciates, despite the rise in R . The reason is an outward shift

@@ -18,33 +18,36 @@ a wide variety of purposes and understanding the relationships between the marke
 factors affecting spot and forward rates is crucial. These interactions are reinforced 
 by the calculations in the second lesson.
 LEARNING MODULE OVERVIEW 
-
+	
 ■
 An exchange rate between two currencies that are not 
 expressly quoted on the market is known as a cross-rate and 
 can be calculated using conventional currency quotes.
-
+	
 ■
 Three conventional currency market quotes can be used with one 
 inversion to calculate a cross-rate.
-
+	
 ■
 Discrepancies in exchange rates can create arbitrage opportunities but 
 they are rare due to market efficiencies.
-
+	
 ■
 The premium of a forward exchange rate over a spot rate is quoted in 
 terms of forward points, which are also called swap points.
-
+	
 ■
 Forward rates are directly proportional to currency spot rates, the 
 interest rate differential, and the maturity of the forward contract.
 1
+L E A R N I N G  M O D U L E
 8
 © CFA Institute. For candidate use only. Not for distribution.
 
 Learning Module 8	
-
+Exchange Rate Calculations
+254
+	
 ■
 As a result of the interrelationship among these four variables, any 
 variable can be calculated by using the other three as inputs.
@@ -115,6 +118,7 @@ spot exchange rates of 1.3020 for dollar–Canada (CAD/USD) and 111.94 for dolla
 (JPY/USD). The dollar–Canada rate of 1.3020 inverts to 0.7680; multiplying this value 
 by the dollar–yen quote of 111.94 gives the following Canada–yen quote:
 2
+© CFA Institute. For candidate use only. Not for distribution.
 
 Cross-Rate Calculations
 255
@@ -179,7 +183,10 @@ _ 
 EUR ​ × ​ CHF 
 _ 
 USD ​  =  1.1701 × 0.9900  =  1.1584​
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 8	
+Exchange Rate Calculations
 256
 2.	 The spot GBP/EUR cross-rate is closest to: 
 A.	 0.8920.
@@ -244,6 +251,7 @@ the price currency or the base currency. In this case, it is easier to use the
 Swiss franc as the price currency. CHF/USD is expected to decline from 
 0.9900 to 0.9866, so the Swiss franc is expected to be stronger (i.e., it should 
 appreciate against the US dollar). CHF/EUR is currently 1.1584 (see the 
+© CFA Institute. For candidate use only. Not for distribution.
 
 Cross-Rate Calculations
 257
@@ -289,7 +297,10 @@ euro against the US dollar. The USD/GBP rate declines –0.4 percent (=
 the US dollar. Inverting the CHF/USD rate to a USD/CHF convention shows 
 that the base currency Swiss franc appreciates by +0.35 percent against the 
 US dollar (= [1.0136/1.0101] – 1).
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 8	
+Exchange Rate Calculations
 258
 FORWARD RATE CALCULATIONS
 explain the arbitrage relationship between spot and forward 
@@ -336,6 +347,7 @@ sists of simultaneous spot and forward transactions. In our example, a trader wo
 have faced a spot rate and forward points in the euro–dollar (USD/EUR) currency 
 pair similar to those in Exhibit 1,
 3
+© CFA Institute. For candidate use only. Not for distribution.
 
 Forward Rate Calculations
 259
@@ -375,7 +387,7 @@ Occasionally, one will see the forward rate or forward points represented as a p
 of the spot rate rather than as an absolute number of points. Continuing the previous 
 example, the three-month forward rate for USD/EUR can be represented as follows:
 	​ 1.15885 + 0.00809 
-
+ 
 ______________ 
 1.15885 
 ​ − 1  =  ​(​ 1.16694 
@@ -398,7 +410,10 @@ investments. Consider the case of an investor with funds to invest. For simplici
 will assume that one unit of the investor’s domestic currency will be invested for one 
 period. One alternative is to invest for one period at the domestic risk-free rate (rd); 
 at the end of the period, the amount of funds held is equal to (1 + rd). An alternative 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 8	
+Exchange Rate Calculations
 260
 investment is to convert this one unit of domestic currency to foreign currency using 
 the spot rate of Sf/d (number of units of foreign currency per one unit of domestic 
@@ -454,7 +469,9 @@ rate is 5.00 percent. The 12-month forward rate (Ff/d) must then be equal to:
 	​1.6535​(​ 1.0500 
 _ 
 1.0350 ​)​  =  1.6775​.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Forward Rate Calculations
 261
 Suppose instead that, with the spot exchange rate and interest rates unchanged, you 
 were given a quote on the 12-month forward rate (Ff/d) of 1.6900. Because this mis-
@@ -520,7 +537,10 @@ More important, historical data show that forward rates are poor predictors of
 future spot rates. Although various econometric studies suggest that forward rates may 
 be unbiased predictors of future spot rates (i.e., they do not systematically over- or 
 under-estimate future spot rates), this is not particularly useful information because 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 8	
+Exchange Rate Calculations
 262
 the margin of error for these forecasts is so large. As mentioned in the Introduction, 
 the FX market is far too complex and dynamic to be captured by a single variable, 
@@ -574,9 +594,9 @@ _ 
 1 + 0.0300​[​ 30 
 _ 
 360 ​]​ 
-
+ 
 ____________ 
-
+ 
 1 + 0.0200​[​ 30 
 _ 
 360 ​]​ ​)​  =  1.6569​.
@@ -589,9 +609,9 @@ _ 
 1 + ​r​ d​ τ ​)​τ  =  1.6555​
 (
 ​ 0.0300 − 0.0200 
-
+ 
 ____________ 
-
+ 
 1 + 0.0200​[​ 30 
 _ 
 360 ​]​ ​
@@ -599,7 +619,9 @@ _ 
 ​[​ 30 
 _ 
 360 ​]​  =  0.0014​.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Forward Rate Calculations
 263
 As should be clear from this expression, the absolute number of swap points will be 
 closely related to the term of the forward contract (i.e., approximately proportional to τ 
@@ -608,9 +630,9 @@ and setting the term of the forward contract to 180 days, we obtain the followin
 	​F​ f/d​ − ​S​ f/d​  =  1.6555​
 (
 ​ 0.0300 − 0.0200 
-
+ 
 ____________ 
-
+ 
 1 + 0.0200​[​ 180 
 _ 
 360 ​]​ ​
@@ -632,9 +654,9 @@ points (rounding to four decimal places), as follows:
 	​F​ f/d​ − ​S​ f/d​  =  1.6555​
 (
 ​ 0.0400 − 0.0200 
-
+ 
 ____________ 
-
+ 
 1 + 0.0200​[​ 30 
 _ 
 360 ​]​ ​
@@ -668,7 +690,10 @@ buy euros). The forward rate would be equal to: 0.8752 + (–1.4/10,000) =
 forward discount shown is that: 
 A.	 the euro is expected to depreciate over the next 30 days.
 B.	 one-month UK interest rates are higher than those in the Eurozone.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 8	
+Exchange Rate Calculations
 264
 C.	 one-month Eurozone interest rates are higher than those in the United 
 Kingdom.
@@ -711,7 +736,9 @@ B.	 –3.8.
 C.	 –2.8.
 Solution:
 C is correct, because the forward rate is calculated as:
+© CFA Institute. For candidate use only. Not for distribution.
 
+Forward Rate Calculations
 265
 	​F​ ​ GBP 
 _ 
@@ -721,18 +748,18 @@ EUR ​​(​ 
 1 + ​r​ GBP​[​ Actual 
 _ 
 360  ​]​ 
-
+ 
 ____________ 
-
+ 
 1 + ​r​ EUR​[​ Actual 
 _ 
 360  ​]​ ​)​  =  0.8489​(​ 
 1 + 0.01325​[​ 270 
 _ 
 360 ​]​ 
-
+ 
 _____________ 
-
+ 
 1 + 0.01370​[​ 270 
 _ 
 360 ​]​ ​)​  =  0.84862​.
@@ -746,9 +773,9 @@ _ 
 EUR ​​  =  0.8489​
 (
 ​ 0.01325 − 0.01370 
-
+ 
 ______________ 
-
+ 
 1 + 0.01370​[​ 270 
 _ 
 360 ​]​ ​
@@ -758,3 +785,4 @@ _ 
 360 ​]​  =  − 0.00028​.
 The calculation of –3.8 points omits the day count (270/360), and –22.8 
 points gets the scaling wrong.
+© CFA Institute. For candidate use only. Not for distribution.

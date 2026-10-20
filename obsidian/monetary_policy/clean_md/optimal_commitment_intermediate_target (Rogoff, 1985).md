@@ -3,14 +3,18 @@ Author(s): Kenneth Rogoff
 Reviewed work(s):
 Source: The Quarterly Journal of Economics, Vol. 100, No. 4 (Nov., 1985), pp. 1169-1189
 Published by: Oxford University Press
+Stable URL: http://www.jstor.org/stable/1885679 .
 Accessed: 23/09/2012 18:18
 Your use of the JSTOR archive indicates your acceptance of the Terms & Conditions of Use, available at .
+http://www.jstor.org/page/info/about/policies/terms.jsp
 .
 JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of
 content in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms
+of scholarship. For more information about JSTOR, please contact support@jstor.org.
 .
 Oxford University Press is collaborating with JSTOR to digitize, preserve and extend access to The Quarterly
 Journal of Economics.
+http://www.jstor.org
 
 THE OPTIMAL DEGREE OF COMMITMENT TO AN
 INTERMEDIATE MONETARY TARGET*
@@ -214,6 +218,7 @@ ment and inflation from their optimal (socially desired) levels:5
 to be modified substantially if the central bank had a multiperiod objective func-
 tion, the main points would still obtain.
 
+1174 QUARTERLYJ OURNAL OF ECONOMICS
 (10) A, = (n, - t')2 + X(TIrt-
 where Irt Pt - Pt- 1, r is the socially desired trend inflation rate,
 and X is the relative weight society places on inflation stabili-
@@ -295,6 +300,7 @@ with (8.1) may be found using the macro model of equations (7)-(9), together wit
 the assumption of saddlepath stability. (For macroeconomic justification of the
 saddlepath assumption in monetary models, see Obstfeld and Rogoff [1983].)
 
+1176 QUARTERLY JOURNAL OF ECONOMICS
 (14) It =( - n)2+xHA+FA
 where HA (A - X)2 and
 fA Et_1{Lzt/r + (p:4 - Et-1(p:))kx]2 + XAp: - Et-1(pt )]21
@@ -334,6 +340,7 @@ effects of aggregate supply shocks.
 Obviously, a first-best solution to the stagflation problem de-
 scribed above would be to remove the labor market distortion. If
 
+THE OPTIMAL DEGREE OF COMMITMENT 1177
 this cannot be achieved at low social cost, a second-best solution
 would be to design a permanent constitutional reform that ab-
 solutely ruled out systematic inflation, and yet left the central
@@ -374,6 +381,7 @@ is obvious):
 (17) I= (n - h')2 + (X +E ) Or _*)2, X + E>.
 9. See Barro and Gordon [1983b], for example.
 
+1178 QUARTERLYJ OURNAL OF ECONOMICS
 When E is strictly greater than zero, then this agent places a
 greater relative weight on inflation stabilization than society does.
 The algorithm for deriving the time-consistent equilibrium
@@ -410,6 +418,7 @@ for E ' 0. dA'/8l must change from negative to positive at some
 E , one can prove that Emmn is the unique positive real root of WA1/dE= 0, and
 therefore that A, is concave in e.
 
+THE OPTIMAL DEGREE OF COMMITMENT 1179
 sufficiently large value of u, since as E approaches positive infinity,
 WarF'/c onverges to zero at rate _2, whereas aH'1/Thco nverges to
 zero at rate E-3. Therefore, um'in <x
@@ -453,6 +462,7 @@ head of the central bank might have for holding down inflation
 ities' preferences are unknown, se[ei1 B98a5c kus and Driffill's interpretation of
 Kreps and Wilson's [1982] analysis.
 
+1180 QUARTERLY JOURNAL OF ECONOMICS
 is that he can thereby improve his standing in the financial com-
 munity, and thus earn greater remuneration upon returning to
 the private sector.
@@ -493,6 +503,7 @@ from its targets. An implicit penalty would be if the central bank's
 powers and independence are affected by how well it succeeds in
 hitting its stated targets. (Of course, if the central bank is already
 
+THE OPTIMAL DEGREE OF COMMITMENT 1181
 controlled by inflation-conscious forces, measures to reduce its
 independence could raise the time-consistent inflation rate.)
 A. Inflation-Rate (Price Level) Targeting
@@ -532,6 +543,7 @@ get is nominal GNP so that its objective function is given by
 since Pt-i is known at the time the central bank commits itself to achieving a
 target for pt - pt- i.
 
+1182 QUARTERLY JOURNAL OF ECONOMICS
 (24) G = (n - h , )2 + X (7 - fT)2
 + T(Yt + Pt - Y -Pt- - 2
 where G stands for "nominal GNP targeting regime," and the
@@ -568,6 +580,7 @@ monetary policy always imply the same response to aggregate
 rem in Section IV. A simpler proof makes use of the fact that NA is minimized at
 p =D, and that FA is strictly increasing in JpA
 
+THE OPTIMAL DEGREE OF COMMITMENT 1183
 demand disturbances; in both cases the central bank tries to sta-
 bilize the price level. The response to supply shocks is in general
 different. However, if wages are indexed to unanticipated move-
@@ -608,6 +621,7 @@ but would raise the time-consistent inflation rate for any level of
 L = 0, then rigid nominal GNP targeting is equivalent to employment tar-
 geting.
 
+1184 QUARTERLYJ OURNAL OF ECONOMICS
 quite similar to the problem with medium-term nominal GNP
 targeting discussed earlier.
 Equation (29) can be rewritten with Pt as the central bank's
@@ -646,6 +660,7 @@ author on request.
 peg the nominal interest rate if it also announces at least one point on a mutually
 consistent money supply path; otherwise the price level is indeterminate.
 
+THE OPTIMAL DEGREE OF COMMITMENT 1185
 we argue that this method of intermediate monetary targeting is
 counterproductive.
 Consider the objective function,
@@ -682,6 +697,7 @@ succeeds in at least temporarily lowering the inflation rate re-
 gardless of how long the targeting regime is expected to last. This
 is no longer true when the nominal interest rate is used as a
 
+1186 QUARTERLY JOURNAL OF ECONOMICS
 target.18 (It should be clear that a misguided attempt to target a
 low real interest rate will produce similar problems.)
 The nominal interest rate would not appear to be a suitable
@@ -726,6 +742,7 @@ when AAi/aTi S strictly concave in T. Using Descartes' Law of Signs, one can der
 the sufficient condition 1I(a - (X2) > X. Similarly, dAM/dI is definitely concave in
 p. if [4~+ (XIS)]/(c- t at2) > X.
 
+THE OPTIMAL DEGREE OF COMMITMENT 1187
 VII. CONCLUSIONS
 It can be entirely rational for society to structure its central
 bank in such a way that the monetary authorities have an ob-
@@ -768,6 +785,7 @@ model also highlights strategic problems that can arise in setting
 targets at a non-inflationary level. If the central bank sets its
 nominal GNP target consistent with the socially optimal rate of
 
+1188 QUARTERLY JOURNAL OF ECONOMICS
 employment, rather than the lower natural rate (perhaps because
 of political constraints), then nominal GNP targeting will have an
 inflationary bias. Money supply targeting presents similar prob-
@@ -801,6 +819,7 @@ ing (the common term (h - n)2 is omitted):
 21 See Barro and Gordon [1983b], Backus and Driffill [1985], or Canzoneri
 [1985].
 
+THE OPTIMAL DEGREE OF COMMITMENT 1189
 (A4) AMI C=C L(-[1) + (X + X)J2 2i
 + [- + x1[oT + ()1 2,
 whereJ-(t - 1)/(1 -

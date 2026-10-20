@@ -38,6 +38,7 @@ obsidian/
 | monetary_policy | papers (ingestion under way) + central_bank/ | 14 of 44 (2026-10-19) | 0 | no |
 | fiscal_policy | 1 | 1 | 0 | no |
 | inflation | 1 | 1 | 0 | no |
+| trader (new agent's literature, 2026-10-20) | 26 | 0 | — | no |
 | labor_market, economic_activity | empty | | | |
 
 `concepts/`: 24 pages (2026-10-19). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
@@ -61,15 +62,22 @@ file: read the clean_md in full → write the synthesis (template in the agent f
 the `/add` and `/sync-vault` commands, deleted 2026-10-19) → patch the concept pages it links (a row in the appearances table and a Connections
 bullet, never a rewrite) or create the missing ones → `vault.py check` → `tracker.py`. Every number
 in a note must be in the clean_md text, and damaged text is reported under "Limitations and
-caveats", not reconstructed. The agent never edits a conceptual map: it lists proposed additions in
-its report. Not swept: `monetary_policy/clean_md/central_bank/` (500+ Copom documents, needs its own
+caveats", not reconstructed; the Source line alone may take title, author and date from the
+tracker row when the clean_md has no title page (`vault.py biblio`). Numbers on concept pages are
+checked too (`vault.py concept`): each against the clean_md of the notes the page links.
+
+**A synthesis is about the material, not about the area's questions** (decided 2026-10-20): it
+condenses what the source says, unfiltered by what an analyst agent has to answer, so a change in
+those questions never forces a re-synthesis and nothing is dropped for not being asked. Synthesis
+and the conceptual map are independent: the vault agent neither reads the maps nor the tracker's
+clusters and notes, and proposes no map additions. Not swept: `monetary_policy/clean_md/central_bank/` (500+ Copom documents, needs its own
 design, II.III.ix) and topics on hold.
 
 **The 19 older notes predate the check and fail it** (measured 2026-10-19): 4 lack the template
 sections (Mundell, Dornbusch, the two GSDEER notes), and 12 carry numbers the clean_md does not
 contain — journal volumes and page ranges, sample sizes, coefficients from tables the extraction
-lost (Goldfajn & Werlang 2000: five coefficients). The agent does not rewrite them; that is a
-decision for the user.
+lost (Goldfajn & Werlang 2000: five coefficients). Decided 2026-10-20: the user re-runs their
+sources through ingestion first; check them again after that.
 
 **The map keeps the area prefix** because Obsidian resolves `[[wikilinks]]` by
 note name across the whole vault; six files named `conceptual_map.md` would be ambiguous. Same
@@ -85,7 +93,8 @@ the ingestion pipeline; the code is in `domain/db/brasil/bcb/_copom_texto.py` an
 `repository/mental_model/<gestora>/` (raw_pdf/raw_md/clean_md). Each area's agent reads only its
 own area's file for each manager, so divergence between managers stays visible side by side. They
 are frameworks, not current opinions: a view dated 2024 is a way of reasoning, never a fact about
-today.
+today. Built by the mental-model agent (`/mental <manager> <area>`, `.claude/agents/mental-model.md`),
+from letters ingested by `/ingest mental_model/<manager>`; process in `repository/mental_model/MENTAL_MODELS.md`.
 
 ### The conceptual map is a contract, not an inventory
 
@@ -114,10 +123,12 @@ map → concept → synthesis (is the condensation enough?) → clean_md (full t
 
 ## Pending
 
-- **`clean_md/` definition** (flagged 2026-08, not decided): today it is raw text minus true garbage,
-  zero rewriting. The open question is whether it should become an *organized* version (paragraphs,
-  headers restored) that still preserves all content — without reintroducing the AI-rewrite failure
-  documented in [`repository/ingestion/INGESTION.md`](../repository/ingestion/INGESTION.md).
+- **Two concept pages fail `vault.py concept`** (2026-10-20), both predating the check, not changed:
+  `exchange_rate_pass_through` (the cross-country coefficients 0.69, 0.91, 0.61, −15.3 come from
+  Goldfajn & Werlang 2000 tables the extraction lost — should clear with the re-ingestion above) and
+  `currency_regimes` (Bretton Woods 1944, ERM 1979: history no linked source states).
+- **Copom documents (`clean_md/central_bank/`)**: how to synthesize them is an important open
+  discussion, deferred by the user 2026-10-20 (SISTEMA_AGENTES.md II.III.ix).
 - **Fleming 1962** has a synthesis but no `clean_md` — its scan is garbled and blocked in ingestion.
 - **RPM full text before Dec/2023** is pending (the 12 most recent are in the vault).
 - **`labor_market` / `economic_activity`** are empty pillars.

@@ -17,7 +17,9 @@ Keywords: Monetary Policy; Global Financial Cycle; International spillovers; Ide
 tion with External Instruments
 JEL Classification: E44, E52, F33, F42
 ∗Monetary Analysis, Bank of England, Threadneedle Street, London EC2R 8AH, UK.
+E: silvia.miranda-agrippino@bankofengland.co.uk W: www.silviamirandaagrippino.com
 †Department of Economics, London Business School, Regent’s Park, London NW1 4SA, UK.
+E: hrey@london.edu W: www.helenerey.eu
 A former version of this paper was circulated under the title “World Asset Markets and the Global Financial Cy-
 cle”. We are very grateful to the Editor Veronica Guerrieri and to four anonymous referees for helpful suggestions
 that greatly helped improve the paper. We also thank our discussants John Campbell, Marcel Fratzscher and Refet
@@ -28,6 +30,7 @@ and its International Repercussions”, the ASSA meetings, the New York Fed, CRE
 Po, LBS, Harvard and Princeton for comments. Rey thanks the ERC for financial support (ERC grant 695722). The
 views expressed in this paper are those of the authors and do not represent those of the Bank of England or any of its
 Committees.
+1
 
 1 Introduction
 Observers of balance of payment statistics and international investment positions all
@@ -59,6 +62,7 @@ termediaries that plays a key role, and loose monetary policy relaxes leverage c
 explore empirically the international transmission of monetary policy that occurs through
 financial intermediation and global asset prices, an area that has been largely neglected
 1See e.g. Lane and Milesi-Ferretti, 2007 and, for a recent survey, Gourinchas and Rey (2014).
+2
 
 by the literature.2
 Using a dynamic factor model, we first document the existence of a unique global
@@ -94,6 +98,7 @@ sions.
 and Stein (2017) the synergies between some of those roles.
 4For more detailed discussions see Miranda-Agrippino (2016) and Miranda-Agrippino and Ricco
 (2018).
+3
 
 with a powerful transmission channel of US monetary policy across borders, via financial
 conditions. The contraction of domestic credit and international liquidity that follows
@@ -132,6 +137,7 @@ see Rogers, Scotti and Wright (2018).
 tification schemes to study the transmission of monetary policy shocks, it is therefore unclear whether
 their results survive a more robust identification of monetary policy shocks. The problem of omitted
 variables is also an important issue in small scale VARs (see Caldara and Herbst, 2019).
+4
 
 banks to give evidence of their risk-taking behavior (Section 4.2). Section 5 concludes.
 Details on data and procedures, and additional results are in Appendices at the end of
@@ -166,6 +172,7 @@ et al., 2000, among others) where each price series is modelled as the sum of a 
 asset-specific component. All price series are taken at monthly frequency using end of month figures.
 11We formally test for the numbers of factors in our large panel of asset prices and find that the data
 support one common global factor. Results are reported in Table B.2 in the Appendix.
+5
 
 Figure 1: global factor in risky asset prices
 Global Common Factor
@@ -197,6 +204,7 @@ the increasing path. Starting from the beginning of 2003 the index increases aga
 the beginning of the third quarter of 2007. At that point, with the collapse of the
 12This implies that positive and negative values displayed in the chart do not convey any specific
 information per se. Rather, it is the overall shape and the turning points that are of interest.
+6
 
 Figure 2: global factor and volatility indices
 60
@@ -229,6 +237,7 @@ of our factor with the VIX, the VSTOXX, the VFTSE and the VNKY, which represent
 the markets included in our sample. These indices capture both the price and quantity
 of risk, and hence reflect both expectations about future volatility, and risk aversion.
 Because of our chosen normalization, we expect our factor to correlate negatively with
+7
 
 Figure 3: global factor decomposition
 500
@@ -273,6 +282,7 @@ t t t t
 GRV AR is the realized variance of the global MSCI Index. The construction of our proxy for aggregate
 t
 risk aversion is modelled along the lines of e.g. Bekaert et al. (2013), that estimate variance risk premia
+8
 
 Figure 4: aggregate capital flows
 70
@@ -306,6 +316,7 @@ In more complex models than the one reported in Section 4, the common component
 of asset prices is not only a function of realized variances and of risk aversion but also
 as the difference between a measure of the implied variance (the squared VIX) and an estimated physical
 expected variance, which is primarily a function of realized volatilities.
+9
 
 of discount rates and of expected cash-flow growth. We explore this more general case
 in detail in Appendix E and show that this alternative specification delivers an index of
@@ -340,6 +351,7 @@ developed in the literature, and show our results carry through regardless of th
 dollars are by and large the only ones able to attract a worldwide investors base. For a model where low
 funding costs lower aggregate effective risk aversion and increase leverage see Coimbra and Rey (2017).
 18Technical details on priors and estimation of the Bayesian VAR are reported in Appendix C.
+10
 
 likely to invalidate the identification of the structural shocks.19
 We start by looking at how US monetary policy affects domestic real and financial
@@ -372,6 +384,7 @@ used in this paper is able to correctly recover the shocks and reproduce respons
 ones. Intuitively, the large degree of comovement among macroeconomic variables makes it possible for
 VARs of such size to effectively summarize the information contained in large VARs typically counting
 over hundred variables.
+11
 
 Gu¨rkaynak et al. (2005) and Gertler and Karadi (2015). Specifically, we use 30-minutes
 price revisions (or surprises) around FOMC announcements in the fourth federal funds
@@ -406,6 +419,7 @@ Steinsson (2018), and the signalling channel of monetary policy in Melosi (2017)
 to the Delphic component of forward guidance announcements in Campbell, Evans, Fisher and Justiniano
 (2012).
 21All VARs are monthly and estimated with 12 lags over the sample 1980-201. Details on the compo-
+12
 
 Table 1: Tests for Instruments Relevance
 Domestic VAR (1) F-stat 90% posterior ci reliability 90% posterior ci
@@ -439,6 +453,7 @@ nal instrument implies that we capture standard monetary policy shocks that affe
 sition of each VAR are reported in Table 2 in the next subsection.
 22Another paper using high frequency external instruments for the identification of US monetary policy
 shocks and their effects on financial markets is Ha (2016).
+13
 
 Table 2: Variables in VARs
 Variable Name Source Model
@@ -501,6 +516,7 @@ sets of IRFs are reported in Appendix D. The variables that we include in our ba
 VARs are listed in Table 2, together with the composition of all the VARs we estimate
 for the results collected in the reminder of the section. Details on the construction of the
 23In the appendix we report IRFs from a VAR also estimated from 1990:01 for comparison.
+14
 
 data are reported in the Appendix that also collects robustness tests. We report median
 IRFs together with 68% and 90% posterior coverage bands.
@@ -533,6 +549,7 @@ we will explore how monetary policy shocks spill over across borders through the
 on global financial conditions.
 24We use the 30-year conventional mortgage spread calculated in excess of the 10-year government
 bond rate. We take this variable from Gertler and Karadi (2015).
+15
 
 Figure 5: responses of domestic business & financial cycle
 Industrial Production Capacity Utilization Unemployment Rate
@@ -546,6 +563,7 @@ p
 % -2 -1 0
 -1.5
 -3 -0.2
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Housing Starts CPI All PCE Deflator
 0.5
 10
@@ -557,9 +575,11 @@ p
 % -1
 -10 -1
 -1.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 1Y Treasury Rate Term Spread 10Y-1Y BIS Real EER
 1 0.4 5
 0.2 4
+s t 0.5 0 3
 n
 i o -0.2 2
 p
@@ -567,6 +587,7 @@ p
 %
 -0.6 0
 -0.5 -0.8 -1
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GZ Excess Bond Premium Mortgage Spread House Price Index
 0.8
 0
@@ -579,6 +600,7 @@ p 0.2
 0
 -0.2 -4
 -0.2
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 S&P 500
 0
 s
@@ -589,6 +611,7 @@ p
 % -10 FF4
 NARRATIVE
 -15
+0 4 8 12 16 20 24
 horizon
 Note: Closed economy responses to a contractionary US monetary policy shock that induces a 1%
 increase in the policy rate. [blue solid lines and grey areas] IV is the surprise in FF4 contracts,
@@ -596,6 +619,7 @@ increase in the policy rate. [blue solid lines and grey areas] IV is the surpris
 of the narrative series of Romer and Romer (2004), 68% & 90% posterior coverage bands.
 Global Financial Cycle: World Aggregates We start by analyzing the responses
 of global asset markets, as summarized by the global factor in risky asset prices, and the
+16
 
 implied degree of aggregate risk aversion estimated in Section 2.25 Second, we move on to
 study the responses of global domestic credit and international capital flows. Our global
@@ -632,6 +656,7 @@ data used in the paper are made available in the Supporting Material accompanyin
 computed using alternative monthly variables (private sector liquidity instead of IMF-IFS domestic
 credit, and cross-border flows instead of BIS inflows, both distributed by CrossBorder Capital Ltd.) are
 equivalent to those discussed below and available upon request.
+17
 
 Figure 6: Responses of Global Asset Prices & Risk Aversion
 BIS Real EER Global Factor Global Risk Aversion
@@ -641,6 +666,7 @@ BIS Real EER Global Factor Global Risk Aversion
 10
 60
 0
+s t 5 -10 40
 n
 i o -20
 p
@@ -650,6 +676,7 @@ p
 -60
 -70 -20
 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
@@ -674,6 +701,7 @@ credit through their effects on growth.29 Following a US monetary policy contrac
 component of the world production index of Baumeister and Hamilton (2019) that is orthogonal to the
 US cycle, calculated as the cyclical component of US IP. Baumeister and Hamilton (2019) use a measure
 of global real activity that is constructed as a weighted average of the IP indices of the OECD countries
+18
 
 Figure 7: Responses of Global Credit & Capital Flows
 Global Real Economic Activity Ex US Global Domestic Credit Global Inflows All Sectors
@@ -685,6 +713,7 @@ Global Real Economic Activity Ex US Global Domestic Credit Global Inflows All Se
 1.5 0 0
 s 1 -2 -2
 t
+n i o 0.5 -4 -4
 p 0
 -6
 % -6
@@ -696,6 +725,7 @@ p 0
 -10
 -2 -12
 -12
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Global Credit Ex US Global Inflows Banks Global Inflows Non-Banks
 0 0
@@ -721,6 +751,7 @@ p -12
 -16
 -20 -18
 -18
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
@@ -737,6 +768,7 @@ several percentage points and thus economically significant.
 + 6 Emerging Market Economies, as an extension of a series originally maintained and distributed by
 the OECD. Additional details and responses of alternative measures of global growth/global real activity
 are reported in Figure E.1 in the Appendix.
+19
 
 Figure 8: Responses of Leverage of Global Banks
 Leverage US Brokers & Dealers Leverage EU Global Banks Leverage US Banks Leverage EU Banks
@@ -752,12 +784,14 @@ s 2
 t -10
 n
 i -3
+o p -15 0 1
 % -20 0 -4
 -5
 -25 -1 -5
 -30 -10 -2
 -6
 -35 -3
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months months
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
@@ -780,6 +814,7 @@ whole banking sector is also less precisely estimated, and there is some variati
 specifications.
 30Adrian and Shin (2010) present evidence on the procyclicality of leverage in the domestic US context.
 In Section 4.2 we extend these results to an international sample of banks.
+20
 
 Figure 9: Responses of Global Credit & Capital Flows: Floaters
 Global Real Economic Activity Ex US Floaters Domestic Credit Floaters Inflows All Sectors
@@ -796,6 +831,7 @@ p 0
 -15
 -2
 -15
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
@@ -817,7 +853,9 @@ of domestic credit and capital inflows, using the same definitions as before. Fu
 31Independently floating countries in our sample are Australia, Austria, Belgium, Brazil, Canada,
 Chile, Cyprus, Czech Republic, Finland, France, Germany, Greece, Hungary, Iceland, Ireland, Italy,
 Japan, Luxembourg, Malta, Mexico, Netherlands, New Zealand, Norway, Poland, Portugal, Slove-
+nia, South Africa, Spain, Sweden, Turkey, and the United Kingdom. Source https://www.imf.org/
 external/np/mfd/er/2008/eng/0408.htm.
+21
 
 responses are collected in Figures D.4 and D.5 in the Appendix.
 Figure 9 shows the responses of credit and capital inflows for the subset of floaters.
@@ -850,6 +888,7 @@ very significantly and on impact in both cases. Finally, the responses of the po
 32For periods preceding the introduction of the Euro, we use the German Mark as the relevant European
 benchmark currency and convert it using the fixed exchange rate with the Euro chosen at the time of
 introduction of the common currency.
+22
 
 Figure 10: Cross-Border Financial Conditions & Monetary Policy
 FTSE All Share GBP to 1 USD UK Corporate Spread UK Policy Rate
@@ -872,6 +911,7 @@ p 0
 -4 -0.6
 -15 -1
 -6 -0.8
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 DAX Stock Market EUR to 1 USD GER Corporate Spread EA Policy Rate
 15 6 0.8 0.2
 10 4
@@ -879,6 +919,7 @@ DAX Stock Market EUR to 1 USD GER Corporate Spread EA Policy Rate
 2
 5
 s 0 0.4 -0.2
+t n i o 0 -2 0.2 -0.4
 p
 %
 -5 -4
@@ -888,6 +929,7 @@ p
 -0.2
 -15 -10 -1
 -12 -0.4
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months months
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
@@ -900,6 +942,7 @@ in the two cases, and implies an endogenous monetary easing of about 30bps. This
 implies that the tightening of financial conditions in the UK and the Euro Area cannot
 be ascribed to a domestic monetary policy tightening, and is instead a consequence of
 the US monetary policy spillover.
+23
 
 4 Interpretation of the Results
 4.1 A Simple Model with Heterogeneous Investors
@@ -935,6 +978,7 @@ implicit bailout guarantee, either because they are universal banks, and are the
 guarantee scheme, or because they are too systemic to fail. Whatever the microfoundations, the crisis
 has provided ample evidence that global banks have taken on large amounts of risk and that this risk
 was not priced by creditors.
+24
 
 a positive degree of risk aversion that limits their desire to leverage.36
 Global Banks
@@ -982,6 +1026,7 @@ see Adrian and Shin (2014).
 38It is possible to solve out for the Lagrange multiplier using the binding VaR constraint (see Zigrand
 et al., 2010). We find λ = [E (R )(cid:48) [Var (R )]−1 E (R )]−1/2.
 t t t+1 t t+1 t t+1
+25
 
 sion equal to σ. They have access to the same set of traded assets as global banks. We
 call xI the vector of portfolio weights of the asset managers in tradable risky assets. Asset
@@ -1027,6 +1072,7 @@ the market. If all the wealth were in the hands of asset managers, for example, 
 risk aversion would be equal to σ. Using Eq. (3) as a guiding framework, in Section 2
 we extracted the global factor in world risky asset prices by writing each price series as
 the sum of a global, a regional and an asset specific component. We then used Eq. (3) to
+26
 
 extract our empirical proxy for aggregate risk aversion Γ .39 One possible interpretation
 t
@@ -1062,6 +1108,7 @@ general aggregate degree of risk aversion and check that all our results go thro
 institutions in 20 countries from 2000 to 2010. We identify a subset of 21 large banks who have been
 classified as Globally Systemically Important Banks (GSIBs). A complete list of institutions included in
 our set is in Table A.4.
+27
 
 Figure 11: Correlation between banks’ returns and loading on the
 global factor
@@ -1133,6 +1180,7 @@ pre and post crisis periods. Results confirm a positive association between high
 t
 high returns in the pre crisis sample. Panels (a) and (c) show that, relative to the larger
 population, GSIBs tend to have both higher average betas, and larger returns. This
+28
 
 suggests that global banks were systematically loading more on world risk in the run-up
 to the financial crisis, and that their behaviour was delivering larger average returns,
@@ -1163,6 +1211,7 @@ rate regimes do not matter, as Klein and Shambaugh (2013) and Obstfeld (2015) ri
 point out.41 This international transmission mechanism of monetary policy is a priori
 41For interesting models of the challenges of the trilemma in standard neo-Keynesian models, see Farhi
 and Werning, 2012, 2013.
+29
 
 consistent with models where financial market imperfections play an important role, e.g.
 via Value-at-Risk constraints, and where heterogeneous financial intermediaries price as-
@@ -1171,6 +1220,7 @@ be able to generate a Global Financial Cycle whose features would match the empi
 regularities uncovered in this paper.42
 42For a more detailed discussion of the theoretical challenges when modelling international monetary
 policy transmission channels, see Bernanke (2017) Rey (2016) and Coimbra and Rey (2017) .
+30
 
 A Credit and Banking Data – For Online Publication
 A.1 Domestic and Cross-Border Credit
@@ -1212,6 +1262,7 @@ Deposit Money Banks Survey. Raw data are quarterly and expressed in national cur
 we convert them in Billion USD equivalents using end of period exchange rates again
 available within the IFS. Whenever there exists a discontinuity between data available
 under the old and new classifications we interpolate the missing observations. Global
+37
 
 Table A.1: List of Countries Included
 North Latin Central and Western Emerging Asia Africa and
@@ -1250,6 +1301,7 @@ Sector in all currencies, all instruments, declared by all BIS reporting countri
 counterparty location being the individual countries in Table A.1. We then construct
 Claims to the Banking Sector as the difference between the two categories available.
 Original data are available at quarterly frequency in Million USD. Global Inflows are
+38
 
 finally calculated as the cross-sectional sum of the national variables. Global domestic
 credit and global cross-border capital inflows are plotted in Figure A.1.
@@ -1290,6 +1342,7 @@ The aggregate Leverage Ratios (defined as Total Assets over Equity) for the Glob
 Systemic Important Banks in the Euro-Area and United-Kingdom used in the BVAR are
 constructed as weighted averages of individual banks data. Balance sheet Total Assets
 (DWTA) and Shareholders’ Equity (DWSE) are from the Thomson Reuter Worldscope
+39
 
 Table A.2: European G-SIBs.
 name isin gics industry country ea lev uk lev
@@ -1327,16 +1380,19 @@ subsidiaries, real estate assets, net property, plant and equipment, and other a
 scriptive statistics for bank level data and a complete list of the institutions included in
 the sample are provided in Tables A.3 and A.4 respectively. Although the data source is
 different, the calculation follows Kalemli-Ozcan et al. (2012).
+40
 
 Table A.3: Bank Data Summary Statistics.
 (a)
 All (155) GSIBs (25) CommB (123)
+A E L A E L A E L
 min 0.3 0.0 1.113 60.9 2.7 6.353 0.4 0.0 4.887
 max 3880.6 219.8 327.2 3880.6 219.8 163.5 3880.6 219.8 327.2
 mean 251.7 12.9 18.73 1121.2 53.4 24.59 258.4 13.5 19.86
 median 54.8 3.9 15.92 1108.3 39.1 22.76 55.0 3.6 17
 (b)
 CapM (18) T&MF (5) Other Fin’l(9)
+A E L A E L A E L
 min 0.3 0.2 1.113 1.9 0.1 2.989 5.5 0.6 2.242
 max 3595.1 76.9 136.2 61.2 5.7 19.5 310.0 42.8 65.13
 mean 364.5 15.4 16.06 21.7 2.5 9.933 63.1 6.7 13.65
@@ -1367,6 +1423,7 @@ FR0000131104 BNP PARIBAS EU France Commercial Banks •
 DE0008001009 DEUTSCHE POSTBANK EU Germany Commercial Banks
 DE0005140008 DEUTSCHE BANK EU Germany Capital Markets •
 continues on next page –
+41
 
 Table A.4 – continued from previous page
 ISIN Code Bank Name Geo Code Country GICS Industry G-SIB
@@ -1424,7 +1481,11 @@ US1785661059 CITY NATIONAL AM United States Commercial Banks
 US2003401070 COMERICA AM United States Commercial Banks
 US2005251036 COMMERCE BCSH. AM United States Commercial Banks
 US2298991090 CULLEN FO.BANKERS AM United States Commercial Banks
+continues on next page –
+42
 
+Table A.4 – continued from previous page
+ISIN Code Bank Name Geo Code Country GICS Industry G-SIB
 US2692464017 E*TRADE FINANCIAL AM United States Capital Markets
 US27579R1041 EAST WEST BANCORP AM United States Commercial Banks
 US3167731005 FIFTH THIRD BANCORP AM United States Commercial Banks
@@ -1479,7 +1540,11 @@ JP3107600003 AKITA BANK AS Japan Commercial Banks
 JP3108600002 ACOM AS Japan Diversified Fin’l
 JP3152400002 BANK OF IWATE AS Japan Commercial Banks
 JP3175200009 OITA BANK AS Japan Commercial Banks
+continues on next page –
+43
 
+Table A.4 – continued from previous page
+ISIN Code Bank Name Geo Code Country GICS Industry G-SIB
 JP3194600007 BANK OF OKINAWA AS Japan Commercial Banks
 JP3200450009 ORIX AS Japan Diversified Fin’l
 JP3207800008 KAGOSHIMA BANK AS Japan Commercial Banks
@@ -1515,6 +1580,7 @@ ographical location and country of reference. The last column highlights the sub
 which have been classified as Global Systemically Important Banks (G-SIBs) previously known as
 G-SIFIs (Systemically Important Financial Institutions); the classification has been adopted by the
 Financial Stability Board starting from November 2011 and lastly updated in November 2013.
+44
 
 Figure A.3: Quarterly asset growth over quarterly leverage growth
 across different global financial institutions
@@ -1551,6 +1617,7 @@ Note: he red line in each subplot is the 45 degree line. Clockwise, from top lef
 between balance sheet size and leverage for GISBs, commercial banks, institutions operating in capital
 markets and other financial institutions. The classification matches GICS industry codes for each entry
 in the sample. Source: Datastream, authors calculations.
+45
 
 B Dynamic Factor Model for World Risky Asset Prices
 – For Online Publication
@@ -1601,6 +1668,7 @@ p that belong to the (geographical or sector-specific) market m, and of a series
 t
 factor.
 Such hierarchical structure is imposed via zero restrictions on some of the elements in
+46
 
 Λ. In particular, we assume the common component to be partitioned into a global and
 several regional factors. To this aim, let the variables in y be such that it is possible to
@@ -1635,6 +1703,7 @@ t 
 
 t
 .
+   . 
 Λ 0 · · · 0 Λ  
 B,g B,B fB
 t
@@ -1670,6 +1739,7 @@ t t t t s=2 s t s=2 s t
 is a consistent estimate of F up to a scale and an initial condition F .
 t 0
 45While estimating the Dynamic Factor Model using Maximum Likelihood does not constrain us to
+47
 
 Table B.1: Composition of asset price panels
 North America Latin America Europe Asia Pacific Australia Cmdy Corporate Total
@@ -1705,6 +1775,7 @@ the IC criteria reach their minimum when one factor is used, and the overall pic
 confirmed by the the p-values for the Onatski test.
 work with a fully balanced panel, we want to ensure that none of the categories included in the set is
 overrepresented at any point in time.
+48
 
 Table B.2: Number of Global Factors.
 r % Covariance % Spectral IC 1 IC 2 IC 3 Onatski
@@ -1743,6 +1814,7 @@ t t
 macroeconomic priors (Litterman, 1986; Kadiyala and Karlsson, 1997; Sims and Zha,
 1998; Doan et al., 1983; Sims, 1993); in particular, we use a Normal-Inverse Wishart
 prior for the VAR coefficients. The Normal-Inverse Wishart prior takes the following
+49
 
 form:
 Σ ∼ W−1(Ψ, ν) (C.2)
@@ -1775,6 +1847,7 @@ square of the lag (i2), and to the relative variance of the variables.
 λ is the hyperparameter that governs the overall tightness of the priors. We follow
 Giannone et al. (2015) and treat the λ as an additional model parameter which we
 estimate in the spirit of hierarchical modelling.
+50
 
 D Other Charts – For Online Publication
 Figure D.1: Global VAR (1) - World Aggregates
@@ -1782,6 +1855,7 @@ Industrial Production PCE Deflator 1Y Treasury Rate
 0
 1
 2 -0.5
+s t n 0 -1 0.5
 i 0
 o p
 %
@@ -1791,6 +1865,7 @@ o p
 -2
 -1
 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 BIS Real EER Global Factor Global Risk Aversion
 10 20 80
 60
@@ -1804,6 +1879,7 @@ p 20
 -60
 -20
 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Real Economic Activity Ex US Global Domestic Credit Global Inflows All Sectors
 3
 2
@@ -1811,19 +1887,23 @@ Global Real Economic Activity Ex US Global Domestic Credit Global Inflows All Se
 s
 t 1
 n
+i o p 0 -5 -5
 % -1
 -10
 -10
 -2
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GZ Credit Spread Leverage US Brokers & Dealers Leverage EU Global Banks
 1 15
 0 10
 0.5
 s
+t n i 0 -10 5
 o 0
 p -0.5 -20
 % -5
 -1 -30 -10
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage US Banks Leverage EU Banks
 0
 4
@@ -1837,21 +1917,25 @@ p 0 -4
 -5
 -2
 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24
 horizon horizon
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
 using a high-frequency external instrument.
+51
 
 Figure D.2: Global VAR (1) - World Aggregates, 1990-2010
 Industrial Production PCE Deflator 1Y Treasury Rate
 1 1
 2
 0.5 0.5
+s t n 0 0 0
 i
 o p -2 -0.5 -0.5
 % -1
 -4 -1
 -1.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 BIS Real EER Global Factor Global Risk Aversion
 40
 5 80
@@ -1859,8 +1943,10 @@ BIS Real EER Global Factor Global Risk Aversion
 60
 s t 0
 n 0 40
+i o p -20 20
 % -5 -40 0
 -60 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Real Economic Activity Ex US Global Domestic Credit Global Inflows All Sectors
 4 10
 3
@@ -1873,6 +1959,7 @@ p 0 0 0
 %
 -1
 -2 -5 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GZ Credit Spread Leverage US Brokers & Dealers Leverage EU Global Banks
 20 10
 1
@@ -1884,6 +1971,7 @@ o p -20 -10
 -0.5
 % -15
 -1 -40 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage US Banks Leverage EU Banks
 4 3
 2
@@ -1895,23 +1983,30 @@ p -1
 % -2
 -2
 -4 -3
+0 4 8 12 16 20 24 0 4 8 12 16 20 24
 horizon horizon
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+52
 
 Figure D.3: Global VAR (1b) - World Aggregates
+Industrial Production PCE Deflator 1Y Treasury Rate
 0 1
 2
 -0.5 0.5
 0 0
+s t n -2 -1 -0.5
 i o -1.5 -1
 p -4
 % -2 -1.5
 -6 -2
 -8 -2.5 -2.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 BIS Real EER Global Factor Global Risk Aversion
 10
 20 80
+s t 5 0 60
 n i -20 40
 o
 p -40 20
@@ -1920,6 +2015,7 @@ p -40 20
 -60 0
 -80 -20
 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Real Economic Activity Ex US Total Nonrevolving Credit Global Credit Ex US
 1 2 0
 0
@@ -1931,6 +2027,7 @@ p
 % -2 -6 -10
 -3 -8
 -4 -10 -15
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Inflows Banks Global Inflows Non-Banks Leverage US Brokers & Dealers
 0 0
 0
@@ -1942,11 +2039,13 @@ i o -10 -10 -20
 p
 % -30
 -15 -15 -40
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage EU Global Banks Leverage US Banks Leverage EU Banks
 1
 5 2
 0
 0 0
+s t n -5 -2 -1
 i o -2
 p
 %
@@ -1954,28 +2053,36 @@ p
 -3
 -15 -6 -4
 -20 -8
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+53
 
 Figure D.4: Global VAR (2) - FX Floaters Aggregates
+Industrial Production PCE Deflator 1Y Treasury Rate
 0
 4 1.5
 -0.5
 2 1
+s t n i o p % -2 0 -1. - - 5 2 1 -0 0 . . 5 5 0
 -4 -2.5
 -1
 -6 -3
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 BIS Real EER Global Factor Global Risk Aversion
 40
 10 80
 20
 60
 s
+t n 5 0 40
 i
 o p -20 20
 % 0 -40 0
 -60 -20
 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Real Economic Activity Ex US Floaters Domestic Credit Floaters Inflows All Sectors
 3 5 5
 2 0 0
@@ -1987,16 +2094,19 @@ o p 0 -10
 -15
 -2 -15
 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GZ Credit Spread Leverage US Brokers & Dealers Leverage EU Global Banks
 1 10
 15
 0.5 0 10
 s
+t n 0 -10 5
 i
 o p -0.5 -20 0
 % -1 -30 -5
 -10
 -1.5 -40 -15
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage US Banks Leverage EU Banks
 6
 0
@@ -2007,28 +2117,37 @@ i
 o p 0 -4
 %
 -2 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24
 horizon horizon
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+54
 
 Figure D.5: Global VAR (2b) - FX Floaters Aggregates
+Industrial Production PCE Deflator 1Y Treasury Rate
 0 1
 0
 0.5
 s -2 -0.5 0
 t
 n -0.5
+i o p -4 -1 -1
 % -6 -1.5
 -2
 -8 -1.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 BIS Real EER Global Factor Global Risk Aversion
 6 20 100
 4 0 80
+s t 2 -20 60
 n
+i o 0 -40 40
 p
 % -2 -60 20
 -4 -80 0
 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Real Economic Activity Ex US Total Nonrevolving Credit Floaters Domestic Credit
 2
 2
@@ -2036,67 +2155,85 @@ Global Real Economic Activity Ex US Total Nonrevolving Credit Floaters Domestic 
 1
 s 0
 t
+n i o 0 -2 0
 p
 -1
 % -4 -5
 -2
 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Floaters Inflows Banks Floaters Inflows Non-Banks Leverage US Brokers & Dealers
 0
 0 0
 -2
 s t -4 -10
 n
+i o -5 -6 -20
 p -8
 % -10 -30
 -10
 -12 -40
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage EU Global Banks Leverage US Banks Leverage EU Banks
 2
 0 0
+s t -5 0 -1
 n
+i o -10 -2 -2
 p
 % -15 -4 -3
 -20 -6 -4
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+55
 
 Figure D.6: EA-Focus VAR - Euro Area Aggregates
+Industrial Production PCE Deflator 1Y Treasury Rate
 1
 0
 0
 0.5
 s
+t n i -2 -0.5 0
 o
 p -0.5
 -1
 % -4
 -1
 -1.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Factor Global Risk Aversion Global Real Economic Activity Ex US
 80 2
 0
 s 60
+t n i -20 40 1
 o
 p -40 20 0
 %
 -60 0
 -1
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 EA Domestic Credit EA Inflows Banks EA Inflows Non-Banks
 5 0 0
 s -5
 t -5
+n i o 0 -10
 p -10
 % -5 -15
 -15 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GER Corporate Spread EA Policy Rate DAX Stock Market
 0
 10
 s 0.5 -0.5
 t n 0
 i
+o p 0 -1 -10
 %
 -0.5 -1.5 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 EUR to 1 USD Leverage US Brokers & Dealers Leverage EU Global Banks
 10
 5 5
@@ -2106,6 +2243,7 @@ i 0
 o p -10 -5
 % -5
 -20 -10
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Leverage US Banks Leverage EU Banks
 0
 1
@@ -2117,9 +2255,12 @@ p -2 -4
 %
 -3
 -6
+0 4 8 12 16 20 24 0 4 8 12 16 20 24
 horizon horizon
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+56
 
 Figure D.7: Global VAR (1c) - World Aggregates, Focus on Responses
 of EA and UK Financial Conditions and Monetary Policy
@@ -2128,9 +2269,11 @@ Industrial Production PCE Deflator 1Y Treasury Rate
 0.2
 s 0 0 0.5
 t
+n i o p -2 - - 0 0 . . 4 2 0
 % -0.6 -0.5
 -4
 -0.8
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Factor Global Real Economic Activity Ex US Global Domestic Credit
 8
 2
@@ -2143,25 +2286,30 @@ o p -40 0.5 2
 -60
 -0.5
 -2
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 Global Inflows All Sectors GZ Credit Spread UK Policy Rate
 10 1 1
 s 0.5
+t n i 5 0.5 0
 o
 p
 0 -0.5
 % 0
 -1
 -0.5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 FTSE All Share GBP to 1 USD UK Corporate Spread
 10 1
 5
 s 5 0.5
 t 0
 n
+i o -5 0 0
 p
 -10
 % -0.5
 -15 -5
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 EA Policy Rate DAX Stock Market EUR to 1 USD
 10 5
 0
@@ -2172,6 +2320,7 @@ o -0.5
 p -5
 % -10
 -1 -10
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 GER Corporate Spread
 0.8
 0.6
@@ -2184,9 +2333,12 @@ p
 %
 -0.2
 -0.4
+0 4 8 12 16 20 24
 horizon
 Note: Responses to a US contractionary monetary policy shock that induces a 1% increase in the policy
 interest rate. Median IRFs with posterior coverage bands at 68% and 90% levels. The shock is identified
+using a high-frequency external instrument.
+57
 
 E Robustness: Global Growth and Global Risk Aver-
 sion – For Online Publication
@@ -2200,12 +2352,15 @@ is only available from 1990:01.
 The measures reported in the figure are:
 • World industrial production measured as the weighted average of the IP of OECD
 countries + 6 EMEs (originally distributed by the OECD, updated in Baumeister
+and Hamilton, 2019) available at https://sites.google.com/site/cjsbaumeister/
 research;
 • Global real activity as measured in Kilian (2009) updated and corrected in Kilian
+(2019) and available at https://sites.google.com/site/lkilian2019/research/
 data-sets;
 • World industrial production as weighted average of IP indices of both AEs and
 EMEs, measured by the CPB Netherlands Bureau for Economic Policy Analysis
 and distributed in their World Trade Monitor publication, available at https://
+www.cpb.nl/en/worldtrademonitor;
 • IP for the EA, fixed composition. The variable is NSA at source (ECB data series
 ID: STS.M.I8.W.PROD.NS0020.3.000), we have seasonally adjusted it prior to its
 inclusion in the VAR;
@@ -2217,6 +2372,7 @@ Results indicate that global production seems to contract following a US monetar
 tightening mostly as a result of the US slowdown. While the two global IP measures
 decline significantly, the component that is orthogonal to the US cycle (last panel) is not
 affected in a significant way. Kilian’s measure that is based on nominal shipping costs
+58
 
 Figure E.1: Alternative Measures of Global Growth
 OECD + 6 IP (Baumeister & Hamilton) Index of Global Real Activity (Kilian) World Production (CPB-NBEPA)
@@ -2234,6 +2390,7 @@ p -1
 -20
 -6
 -3 -30
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 EA Industrial Production UK Industrial Production Global Real Economic Activity Ex US
 2 2 3
 1 2.5
@@ -2242,12 +2399,14 @@ EA Industrial Production UK Industrial Production Global Real Economic Activity 
 1.5
 s -1 0 1
 t -2
+n i o -3 -1 0.5
 p 0
 % -4 -2 -0.5
 -5 -1
 -6 -3 -1.5
 -7 -2
 -4
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Note: Responses of alternative measures of global growth to a US contractionary monetary policy shock
 that induces a 1% increase in the policy interest rate. Median IRFs with posterior coverage bands at
@@ -2267,6 +2426,7 @@ risk-free discount rates, and changes in risk aversion (see e.g. Zhou, 2018).46
 nomic uncertainty. Instead, we allow for time-varying risk aversion as in Bekaert et al. (2013); Bekaert
 and Hoerova (2014). We rationalize the time variation using a model where fluctuations in risk aversion
 reflect the time-varying importance of different financial intermediaries in international markets (see
+59
 
 Our benchmark risk aversion proxy ignores fluctuations in contemporaneous discount
 rates and future expected GDP growth, in line with the simple model of Section 4.47 It
@@ -2307,6 +2467,7 @@ The measures reported in the figure are:
 rates and GDP growth forecasts in the 4 countries listed;
 Section 4).
 47We note that our BVAR controls for past discount rates and past GDP growth.
+60
 
 Figure E.2: global factor decomposition (including controls)
 500
@@ -2333,15 +2494,19 @@ projection of the global factor onto the realized variance. Solid line: baseline
 Dashed line: includes controls for discount rates and expected growth. Shaded grey areas highlight
 NBER recession times. Source: Global Financial Data and authors calculations.
 • The risk aversion index for the US market constructed in Bekaert et al. (2019)
+available at https://www.nancyxu.net/risk-aversion-index;
 • The risk aversion index for the US market constructed in Bekaert et al. (2013) as
 a variance risk premium along the lines of our benchmark aggregate risk aversion
+proxy, available at http://mariehoerova.net/RA_UC_series.xls;
 • A measure of risk appetite distributed by CrossBorder Capital Ltd and calculated
 as the difference between the Equity Exposure Index (based on the balance sheet
 exposure of all investors (by type) in the asset class) and the Bond Exposure Index
 (equivalent of the equity exposure index for bonds);
+• The CBOE VIX Index (http://www.cboe.com/products/vix-index-volatility/
 vix-options-and-futures/vix-index/vix-historical-data).
 The chart confirms that a US monetary contraction triggers an increase in risk aversion
 (decline in risk appetite), regardless of the specific measure that is used.
+61
 
 Figure E.3: Alternative Measures of Risk Aversion
 Benchmark Risk Aversion Proxy Benckmark RAP + Controls RA Index (Bekaert Engstrom & Xu)
@@ -2359,12 +2524,14 @@ p 20 0
 0 -10
 -20
 -20 -20
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 RA Index (Bekaert Hoerova & Lo Duca) Risk Appetite (CrossBorder Capital Ltd) CBOE VIX Index
 40 40 15
 30
 20 10
 s 20
 t
+n i o 10 0 5
 p
 % 0 -20
 0
@@ -2372,9 +2539,11 @@ p
 -40
 -20 -5
 -60
+0 4 8 12 16 20 24 0 4 8 12 16 20 24 0 4 8 12 16 20 24
 months months months
 Note: Responses of alternative measures of risk aversion to a US contractionary monetary policy shock
 that induces a 1% increase in the policy interest rate. Median IRFs with posterior coverage bands at
 68% and 90% levels. The shock is identified using a high-frequency external instrument. Combines IRFs
 estimated from different VARs all estimated over the sample 1990-2010: with the exception of the global
 growth variable the composition is identical to that of Figure D.1.
+62

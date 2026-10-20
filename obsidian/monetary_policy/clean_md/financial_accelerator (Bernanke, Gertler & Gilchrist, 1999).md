@@ -34,6 +34,7 @@ A.3. Aggregate risk 1385
 and C.M Starr Center for financial support.
 ** Each author is also affiliated with the National Bmeau of Economic Research.
 Handbook of Macroeconomics, Volume 1, Edited by J..B. laylor and M. WoodJb~d
+1341
 
 1342 B.S. Bernanke et al.
 Appendix B. Household, retail and government sectors 1387
@@ -105,6 +106,7 @@ the context of standard dynamic macroeconomic models, we show in this chapter
 that credit-market frictions may significantly amplify both real and nominal shocks
 to the economy. This extra amplification is a step toward resolving the puzzle of how
 
+1344 B.S. Bernanke et al.
 relatively small shocks (modest changes in real interest rates induced by monetary
 policy, for example, or the small average changes in firm costs induced by even
 a relatively large movement in oil prices) can nevertheless have large real effects.
@@ -193,6 +195,7 @@ modeling devices familiar from New Keynesian research, which allows us to study
 the effects of monetary policy in an economy with credit-market frictions. In addition,
 we allow for decision lags in investment, which enables the model to generate both
 
+1346 B.S. Bernanke et al.
 hump-shaped output dynamics and a lead-lag relationship between asset prices and
 investment, as is consistent with the data. Finally, we allow for heterogeneity among
 firms to capture the real-world fact that borrowers have differential access to capital
@@ -277,6 +280,7 @@ gains) accumulated from previous capital investment and income from supplying la
 labor market). As stressed in the literature, entrepreneurs' net worth plays a critical role
 in the dynamics of the model. Net worth matters because a borrower's financial position
 
+1348 B.S. Bernanke et al.
 is a key determinant of his cost of external finance. Higher levels of net worth allow
 for increased self-financing (equivalently, collateralized external finance), mitigating
 the agency problems associated with external finance and reducing the external finance
@@ -317,6 +321,7 @@ differential access to credit.
 So long as borrowers have finite horizons, net worth influences the terms of borrowing, even ai~er
 allowing for nmlti-period contracts. See, for example, Gertter (1992).
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1349
 3. The demand for capital and the role of net worth
 We now study the capital investment decision at the firm level, taking as given the
 price of capital goods and the expected return to capital. In the subsequent section we
@@ -358,6 +363,7 @@ we discuss below.
 To motivate a nontrivial role for financial structure, we follow a number of previous
 papers in assuming a "costly state verification" (CSV) problem of the type first
 
+1350 B.S. Bernanke et al.
 analyzed by Townsend (1979), in which lenders must pay a fixed "auditing cost"
 in order to observe an individual borrower's realized return (the borrower observes
 the return for free). As Townsend showed, this assumption allows us to motivate
@@ -439,6 +445,7 @@ that the expected payoff is concave in this range.
 8 Note also that since we are restricting attention to non-rationing equilibria, the lender's expected return
 is always increasing in COJ.
 
+1352 B.S. Bernanke et al.
 3.2. Contract terms when there is aggregate risk
 With aggregate uncertainty present, NJ will in general depend on the ex post realization
 of R)+~. Our assumption that the entrepreneur is risk-neutral leads to a simple contract
@@ -478,6 +485,7 @@ bad aggregate news, then the new loan rate is higher than would be otherwise. To
 risk-sharing arrangement implied by the model, therefore, all that is necessary is that some component
 of the financing have a shorter maturity than that of the project.
 
+Ch. 21." The Financial Accelerator in a Quantitative Business Cycle Framework 1353
 Given the state-contingent debt form of the optimal contract, the expected return to
 the entrepreneur may be expressed as
 {fi )
@@ -519,12 +527,15 @@ st. Everything else equal, a rise in the expected discounted return to capital r
 the expected default probability. As a consequence, the entrepreneur carl take on more
 l J In the costly enforcememm odel of Kiyotakia nd Moore (1997), ~p(.) - 1, implying Q,K,. t - Ni+ j .
 
+1354 B.S. Bernanke et al.
 Demandf 0 ~ , i . ,,///,, .,.'"
 E
 .2
 o
 c~
 c5
+--f l I i ~ - - T - -
+6 7 8 9 10 11 12
 CapitalS tock
 Fig. 1. Effect of an increase in net worth.
 debt and expand the size of his firm. He is constrained from raising the size of the firm
@@ -552,6 +563,7 @@ costs associated with the higher ratio of debt to net worth. While the supply of
 funds curve is -upward sloping, owing to constant returns to scale, the demand for
 capital is horizontal at an expected return 2 percentage points above the risk free rate.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1355
 Point E, where the firm's marginal cost of funds equals the expected return to capital
 yields the optimal choice of the capital stock K = 9.2. For this contract, the leverage
 ratio is 50%.
@@ -625,6 +637,7 @@ goods are then sold at the price Qt. Since the capital-producing technology assu
 scale, these capital-producing firms earn zero profits in equilibrium. Equation (4.3) is derived from the
 first-order condition for investment for one of these firms.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1357
 goods. Then the Cobb-Douglas production technology implies that the rent paid to a
 unit of capital in t + 1 (for production of wholesale goods) is 13
 1 aYl+l
@@ -696,6 +709,7 @@ U k =- R) -Et j{R~} be the unexpected shift in the gross return to capital, and 
 14 Note that entrepreneurs do not have to work only on their own projects (such an assumiption would
 violate aggregate returns to scale, given that individual projccts can be of different sizes).
 
+Ch. 21." The Financial Accelerator in a Quantitative Business Cycle Framework 1359
 U/p =-- fo' o)Q~_~Kt dF( co) - Et .i { ~' ~oQt 1Kt dF(~o)} be the unexpected shift in the
 conditional (on the aggregate state) default costs. We can express Vt as
 V, = U~k(1-ttU/P)Qt 1Kt+E, l{V~}. (4.9)
@@ -729,6 +743,7 @@ entrepreneurial labor is fixed at unity, yields a difference equation for Nt+l:
 Equation (4.13) and the supply curve tbr investment funds, Equation (4.5), are the
 two basic ingredients of the financial accelerator. The latter equation describes how
 
+1360 B.S. Bernanke et al.
 movements in net worth influence the cost of capital. The former characterizes the
 endogenous variation in net worth.
 Thus far we have determined wholesale output, investment and the evolution of
@@ -769,6 +784,7 @@ staggered long-term nominal price setting. Because the probability of changing p
 is independent of history, the aggregation problem is greatly simplified. One extra
 ~5 In particular, household atility is given by £ {~;~ 0 3~ ln(C~, k) + _~l n(Mt.JP, .-/~) + ~ In{ 1 l,+i,) }.
 
+Ch. 21." The Financial Accelerator in a Quantitative Business Cycle Framework 1361
 twist, following Bernanke and Woodford (1997), is that firms setting prices at t are
 assumed to do so prior to the realization of any aggregate uncertainty at time t.
 Let lower case variables denote percent deviations from the steady state, and let
@@ -782,6 +798,7 @@ four blocks of equations: (1) aggregate demand; (2) aggregate supply; (3) evolut
 of the state variables; and (4) monetary policy rule and shock processes. Appendix B
 provides details.
 (1) Aggregate demand
+C 1 G C e
 y~ = 7c, + ~it + ~gt + --c~'yt +" + q~, (4.14)
 ct = -rt+L + Et {ct+l }, (4.15)
 c~ = nt,l + "" +0~:~, (4.16)
@@ -797,6 +814,7 @@ kt+l = 6it + (1 - 6)k, (4.23)
 yRK t,
 (4.24)
 
+1362 B.X Bernanke et al.
 (4) Monetary Policy Rule and Shock Processes
 r,1 7 I- pr tt~ 1 + gac~ I + el", (4.25)
 & = pggt-i + ~, (4.26)
@@ -876,6 +894,7 @@ entrepreneur would buy an infinite amount of capital, and if E{R~+1 } < R~+l, he
 E{Rt+ I } -R~ 1, he is indifferenta bout the scale of operation of his firm.
 i~ Given logarithmic preferences,t he marginal utility of consumption is simply -%.
 
+1364 B.S. Bernanke et al.
 a traditional expectations-augmented Phillips curve is that it involves expected future
 inflation as opposed to expected current inflation. This alteration reflects the forward-
 looking nature of price setting 19
@@ -986,6 +1005,7 @@ Pit (Y1L) p-1 Pzt (l_a)(Y2t)P I
 p~=a\ r, j ' Py \ r, j
 are the relative (wholesale) prices of goods produced in sectors t and 2 respectively.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1367
 As we discuss in the next section, it is easy to parametrize the model so that firms in
 each sector face differential costs of credit. Further, as we illustrate below, the financial
 accelerator can still be quite potent, even if only a portion of firms face significant
@@ -1068,6 +1088,7 @@ c5
 c5
 Log(GDP)
 . . . . "'",-'-"'",'-'~ , , "-,'-", Log(GDP,Defator )
+0 t 2 3 4 5 6 7 8 9 10 12 14 16
 Quarters
 \ ,,., .... ....~.-.~
 /
@@ -1075,6 +1096,7 @@ Quarters
 / Prime Rate - Tbill
 .... CP Rate - Tbill
 \\// Funds Rate
+0 1 2 3 4 5 6 7 8 9 10 12 14 16
 Quarters
 Fig. 2. Impulse response to a funds rate shock.
 opinion about how the economy responds to this kind of shock 26. Figure 2 summarizes
@@ -1095,6 +1117,7 @@ between the prime lending rate and the six-month T-bill rate.
 26 See, for example, Ctmstiano, Eichenbaum and Evans (t996), Bernanke m~d Gertler (1995), Bernal~e
 and Mihov (1998), and Leeper, Sims and Zha (1996).
 
+1370 B.X Bernanke et al.
 Figure 2 illustrates the impulse responses of several variables to a negative
 innovation in the federal funds rate. As is typically found in the literature, output
 declines after about two quarters, and the price level declines after about six quarters.
@@ -1137,6 +1160,7 @@ response of the commercial-papers pread. Since commercial paper issuers are high
 result is consistent with our model's implication that lower-quality borrowers experience larger spread
 movements in response to business cycle shocks.
 
+Ch. 21." The Financial Accelerator in a Quantitative Business Cycle Framework 1371
 \
 e'~ . \ \ - - - ' - W i t h -- o u t W ith Fina F n in c a ia n l c A ia c lA ce c l c e e r l a e t r o a r t or
 ""\ \.\.N. .X ~
@@ -1144,13 +1168,18 @@ e'~ . \ \ - - - ' - W i t h -- o u t W ith Fina F n in c a ia n l c A ia c lA ce
 ,:5
 c,l
 O ....
+, , , , , , , , ,
+0 1 2 3 4 5 6 7 8 9 10 12 0 1 2 3 4 5 6 7 8 9 10 12
 Output investment
 o
 ci •
 g g
 o, o,
 o
+//'/i.i./ / /'/ ". . / ' ~ " ~ , ~ . ~ . ...............
+. "--7 "-, W Wi i t t h h , o F u in t a F n in c a ia n l c A ia c l c A e c le ce ra le to ra r t o, r -'~._ W Wi i t t h h o F u i t n a F n in c a ia n l c i A a c l c A e c le c r e a l t e o r r a tor
 o,
+0 fl 2 3 4 5 6 7 8 9 10 12 0 1 2 3 4 5 6 7 8 9 10 12
 Nominal Interest Rate Premium
 Fig. 3. Monetary shock -- no investment delay. All panels: time horizon in quarters.
 It is worth emphasizing that this experiment generates substantial output persistence
@@ -1171,6 +1200,7 @@ problem can be fixed by allowing for investment delays.
 the high degree of intertemporal substitution embedded in the household savings decision, It may also
 reflect unreasonably short investment delays.
 
+1372 B.S. Bernanke et al.
 -- WithF inA. cCelerator , ~ W~hti Fin A. ccelerator -- WithF inA ccelerator
 ~\.~. .. WithoFuitn A. cc~eleralor
 ~D
@@ -1179,6 +1209,8 @@ d
 (:5
 d
 (:5 ......
+, , , , , , ,
+0 2 4 6 8 10 12 0 2 4 6 8 10 12 0 2 4 6 8 10 12
 Technology Shock Demand Shock Wealth Shock
 Fig. 4. Output response alternative shocks. All panels: time horizon in quarters.
 5.2.2. Shock to technology, demand, and wealth
@@ -1210,6 +1242,7 @@ This case is an interesting one, as it is reminiscent of(and motivated by) Fishe
 "debt-deflation" argument, that redistributions between creditors and debtors arising
 from unanticipated price changes can have important real effects. Indeed, Fisher argued
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1373
 that this kind of mechanism accounted for the depth and protractedness of the Great
 Depression 29. The same kind of reasoning, further, helps explain why the recent spate
 of currency crises have had devastating real effects. To the extent loans from abroad
@@ -1250,17 +1283,21 @@ heterogeneous firms. The top left panel shows the response of output (the solid 
 29 Bernanke and Gertler (1989, 1990) argue that the tinancial accelerator mechanism provides a tormal
 rationale for Fisher's debt-deflation theory of the Great Depression.
 
+1374 B.S. Bernanke et al.
 /~ ~ wWtthI o Fui~~ ncia/i(A a~c~elcc ret~° r aot r
 -- WithF inanciaAl ccelerator
 .... WithoutF inanciaAl ccelerator
 ./" "\.
+0 1 2 3 4 5 6 7 8 9 1 0 12 0 1 2 3 4 5 6 7 8 9 10 12
 Output Investment
 o
 ci '
 o
 // With FinanciaAl ccelerator ~ r
 .... WithoutF inanciaAl ccelerator
+. . . . . , . . . . .
 -r'---r
+0 1 2 3 4 5 6 7 8 9 10 12 0 1 2 3 4 5 6 7 8 9 10 12
 Nominal Interest Rate Premium
 Fig. 5. Monetary shock one period investment delay, All panels: time horizon in quarters.
 relative to the baseline case with the financial accelerator shut off (the hatched line).
@@ -1283,6 +1320,7 @@ constrained firms is consistent with evidence reported by Gertler and Gilchrist 
 Kashyap, Lamont and Stein (1994), Oliner and Rudebusch (1994), Morgan ( 1998), and
 
 Sector2
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1375
 . (cid:127) .
 c~
 ---: glLFur, ~,n'~"n'c,~%eo%%,cr
@@ -1291,10 +1329,12 @@ co
 c5
 to
 ,:5
+'/ ' \ ' \ . . .
 c5
 oq
 c5
 I
+0 1 2 3 4 5 6 7 8 9 1 0 12 0 1 2 3 4 5 6 7 8 9 1 0 12
 Aggregate Output sectoral Output
 co -I
 - - Sector 2
@@ -1305,6 +1345,7 @@ tD
 o, / j J
 -- Premium
 --- Nora.I nt _
+-r- , • , ---r- . . . . . t-
 O 1 2 3 4 5 6 7 8 9 10 12 01 2 3 4 5 6 7 8 9 10 12
 Premium and Nominal Interest Rate Sectoral Investment
 Fig. 6. Monetary shock multisectorm odel with investment delays. All panels: time horizon in quarters.
@@ -1325,6 +1366,7 @@ The theoretical and empirical literatures on credit-market imperfections are imm
 Until recently, the great bulk of this research has been partial equilibrium in nature,
 e.g., theoretical analyses of equilibria in credit markets with asymmetric information
 
+1376 B.S. Bernanke et al.
 and agency costs, or empirical studies of the effects of credit-market imperfections on
 various types of spending, including consumption, housing, business investment, and
 inventory investlnent. Some leading recent examples of the latter category are cited
@@ -1367,6 +1409,7 @@ Cooley and Quadrini (1997).
 31 Williamson (1987) also incorporates the costly state verification assanaption into a modified real
 business cycle naodel.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1377
 premium on external finance. A borrower with less resources of his own to invest, in
 contrast, faces a high bankruptcy risk and a high external finance premium.
 In the Bernanke-Gertler model, shocks to the economy are amplified and propagated
@@ -1411,6 +1454,7 @@ but also (and often, more dramatically) to changes in the valuation of the real 
 financial assets that they hold. Indeed, changes in asset values are taken by Fisher
 (1933) and other classical writers on the subject to be the principal means by which
 
+1378 B.S. Bernanke et al.
 financial forces propagate an economic decline. This element was added to the formal
 literature by Kiyotaki and Moore (1997), who develop a dynamic equilibrium model in
 which endogenous fluctuations in the market prices of an asset (land, in their example)
@@ -1455,6 +1499,7 @@ interdependency that arises from credit chains, where firms are simultaneously l
 These authors show that small shocks can induce a kind of domino effect, due to the chain, that leads
 to big effects on the economy.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1379
 An interesting finding of their research is that the model with credit-market frictions
 generates a hump-shaped output response, consistent with most empirical findings. Our
 model presented above has many features in comrnon with that of Carlstrom and Fuerst
@@ -1559,12 +1604,14 @@ The assumptions made above imply:
 F(bS)-pG(~)>0 for NC(0, oo)
 and
 lim F(N) -pG(N) = 0, lim F(cd) - #G(bS) = l - ~.
+~ 0 75 .---* oc
 We therefore assume that Rk(1 - #) < R, otherwise the firm could obtain unbounded
 profits under monitoring that occurs with probability one s6.
 36 The bound on F(~5) can be easily seen 17oii1 the Ihct that both F(N) = E(~@~ < W)Pr(w < (~).-~
 NPr(co ~> N) and 1 F(N) = (E(~o!(o >~ ~) -N)Pr(~o/> N) are positive. The limits on F(~5) -/~G(~)
 can be seen by recognizing that G(?5) = E(co~o < ~)Pr(m < N) so that lim~o~ G(N) = E(~o) = 1.
 
+1382 B.S. Bernanke et al.
 Let h(N) = (f(~o)/(1 -F(N)), the hazard rate. We assume that Nh(N) is increasing
 in N 37. There are two immediate implications from this assumption regarding the shape
 of the net payoff to the lender. First, differentiating F(N) - #G(N), there exists an ~*
@@ -1641,6 +1688,7 @@ Thus, for s < s*, these conditions guarantee a one-to-one mapping between the op
 cutoff N and the premium on external fhnds s. By inverting Equation (A.1) we may
 39 Obviously, 65 = 0 cannot be a solution if s > 1.
 
+1384 B.X Bernanke et al.
 express this relationship as N = ~(s), where N~(s) > 0 for s E (1,s*). Equation (A.1)
 thus establishes the monotonically increasing relationship between default probabilities
 and the premium on external funds.
@@ -1676,6 +1724,7 @@ Since the expected excess return is strictly positive for all k, the lender is w
 to lend out an arbitrary large amount, and both the borrower and lender can obtain
 unbounded profits. Again, such actions would drive down the rate of return on capital
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1385
 in equilibrium, ensuring s < s* and guaranteeing an interior solution for the cutoff
 ~ (o, ~*).
 A.2. The log-normal distribution
@@ -1740,6 +1789,7 @@ problem that is approximately correct and note that in our parametrized model ag
 have to be implausibly large before such distortions to the contract could be considered numerically
 relevant.
 
+Ch. 21: The Financial Accelerator in a Quantitative Business Cycle Framework 1387
 we obtain
 = ~'(~)k ~,
 implying that dk/ds simplifies to the expression
@@ -1773,6 +1823,7 @@ Equation (B.2). Solving the household's problem yields standard first-order cond
 for consumption/saving, labor supply, and money holdings:
 1 E f 1
 
+1388 B.S. Bernanke et al.
 W, 1 e 1 (B.4)
 * Ct = b 1 -~'
 Mt ~Ct (R;+I~I)-I
@@ -1805,6 +1856,7 @@ Y=Ct+C+L+Gt+/J ~odF(co)R~Q~, K~, (B.8)
 where C is enta'epreneurial consumption and # fo~)'o)dF(co)RfQ 1I£t reflects aggre=
 gate monitoring costs.
 
+Ch. 21." The Financial Accelerator in a Quantitative Business Cycle Framework 1389
 Given the index (B.6) that aggregates individual retail goods into final goods, the
 demand curve facing each retailer is given by
 (P,(z) yi (B9)
@@ -1816,6 +1868,7 @@ in a given period only with probability 1 - 0, following Calvo (1983). Let P den
 the price set by retailers who are able to change prices at t, and let Yt*(z) denote the
 demand given this price. Retailer z chooses his price to maximize expected discounted
 profits, given by
+o~ r p. pw -
 /a t_ ~t+k *
 /~=o Ol'Et-I l,t,/, Pt+k Yt+lc(z)~ , (B.10)
 where the discount rate A,/, = fiCJ(Ct~/,) is the household (i.e., shareholder)
@@ -1843,6 +1896,7 @@ Pt
 The government adjusts the mix of financing between money creation and lnmp-sum
 taxes to support the interest rate rule given by Equation (4.25).
 
+1390 B.S. Bernanke et al.
 This, in conjunction with the characterization in Section 5 of the entrepreneurial
 sector and the monetary policy rule and shock processes, completes the description of
 the model.

@@ -27,6 +27,7 @@ A model of staggered price setting in which each firm may change its price only 
 |---|---|
 | [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]] | Origin: constant hazard of price change, aggregation by the law of large numbers, predetermined price level, and the resulting "higher-order inverse Phillips Curve" in a utility-maximizing model |
 | [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] | Discrete-time version as the pricing block of the basic NK model: reset probability 1−θ, forward-looking reset price, NKPC slope decreasing in θ |
+| [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] | The Calvo device applied to wages as well as prices: each labor type's wage is reset with probability 1 − θw, giving a wage inflation equation analogous to the price one |
 
 ## BRL / application to the current analysis
 
@@ -38,3 +39,4 @@ The sources linked here say nothing about Brazil yet.
 - [[taylor_principle]] — with Calvo pricing the price level is predetermined, yet an interest-rate peg still leaves a continuum of equilibria (Calvo 1983)
 - [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]] — the original paper
 - [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] — the discrete-time version in the textbook NK model
+- [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] — Calvo wage setting alongside Calvo price setting

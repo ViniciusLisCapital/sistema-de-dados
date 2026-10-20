@@ -47,7 +47,8 @@ def test_cut_stops_at_mixed_case_discussion():
 
 
 def test_cut_stops_at_section_starters():
-    for stop in ["Appendix A: Data", "Online Appendix", "APPENDIX", "Tables", "General Discussion"]:
+    for stop in ["Appendix A: Data", "Online Appendix", "APPENDIX", "Tables", "General Discussion",
+                 "Comment"]:   # the bare heading, discussant on the next line (Krugman 2000)
         spans = clean_code.block_cut_spans(["References", "Doe, A. (2001), Title.", stop, PROSE])
         assert spans == [(0, 2, stop)], (stop, spans)
 
@@ -94,45 +95,45 @@ def test_cleaner_keeps_body_lines_it_used_to_delete():
     assert "© 2006 International Monetary Fund" not in clean_code.clean(PROSE + "\n© 2006 International Monetary Fund\n" + PROSE)
 
 
-def test_page_number_only_at_a_page_edge():
-    # A bare number inside a page is a table cell (pymupdf prints one per line); at the edge
-    # of a page (next to the blank line extract.py puts between pages) it is a page number.
-    text = PROSE + "\n12\n\n" + PROSE + "\nYear\n1984\n0.496\n" + PROSE
-    out = clean_code.clean(text).split("\n")
-    assert "12" not in out and "1984" in out
-
-
-def test_table_rows_are_not_a_running_header():
-    rows = [f"FF{i} 17.930 [6.675 22.673] 0.496 [0.434 0.540]" for i in range(4)]
-    out = clean_code.clean("\n".join([PROSE] + rows + [PROSE]))
-    assert all(r in out for r in rows)
-    note = "Note: Responses to a US contractionary monetary policy shock"
-    out = clean_code.clean("\n".join([PROSE, PROSE, note, PROSE, note, PROSE, note, PROSE, PROSE]))
-    assert out.count(note) == 3   # repeated inside a page: content (a row label, a note)
+def test_cleaner_does_not_judge_a_line_by_its_shape():
+    # Since 2026-10-20 only References blocks, the disclosure tail and known boilerplate text
+    # go. Each line below was deleted by a shape rule, and each was content somewhere.
+    kept = [
+        "http://www.bmf.com.br/). Therefore, the domestic interest rate is computed through the",  # Garcia & Valpassos 1998
+        "Public Sector Net Debt (1+2+3) 28.5 29.9 34.4 34.5",       # a totals row read as a phone number
+        "Source: International Monetary Fund, COFER, at http://www.imf.org/external/",  # Krugman 2023
+        "in particular in lower-income countries, with food accounting for 28% of the CPI marialudovica.ambrosino@gs.com",
+        "I 23% 42 -15 6 10 57", "FF 65 30 19 17 19",
+        "12",                                                       # a page number: noise, not loss
+    ]
+    out = clean_code.clean("\n".join(sum(([PROSE, k] for k in kept), []) + [PROSE]))
+    for k in kept:
+        assert k in out.split("\n"), k
+    # A table printed one cell per line (pymupdf): the short cells were dropped as axis ticks
+    # and the long ones kept, so the survivors sat under the wrong row (Minella & Souza-Sobrinho
+    # 2013, Table 2). Every cell stays, in order.
+    table = ["Net Exports/GDP", "1.07", "0.87", "1.02", "0.87", "0.79", "0.55", "-0.24", "0.26",
+             "Inflation Rate", "1.07", "0.94", "1.02", "0.94", "0.36", "0.48", "0.12", "0.40"]
+    assert clean_code.clean("\n".join([PROSE, ""] + table + ["", PROSE])).split("\n")[2:-2] == table
+    # A running head repeated on every page stays on every page.
     page = "\n".join([PROSE, PROSE, "Running Head Of The Paper"])
-    out = clean_code.clean("\n\n".join([page] * 4))
-    assert out.count("Running Head Of The Paper") == 1   # at a page edge: a running head, first copy kept
-    assert "Source: Authors' calculations." in clean_code.clean(PROSE + "\nSource: Authors' calculations.\n" + PROSE)
+    assert clean_code.clean("\n\n".join([page] * 4)).count("Running Head Of The Paper") == 4
     spans = clean_code.block_cut_spans(["References", "Doe, A. (2001).", "A Credit and Banking Data – For Online Publication", PROSE])
     assert spans == [(0, 2, "A Credit and Banking Data – For Online Publication")]
 
 
-def test_contact_on_a_body_line_drops_only_the_contact():
-    # A two-column cover puts the author sidebar at the end of a body line (Goldman 2026).
-    body = "in particular in lower-income countries, with food accounting for 28% of the CPI"
-    out = clean_code.clean("\n".join([PROSE, body + " marialudovica.ambrosino@gs.com", PROSE]))
-    assert body in out and "@gs.com" not in out
-    phone = "basket for EM economies, but it also exhibits higher volatility, with three major"
-    assert phone in clean_code.clean("\n".join([PROSE, phone + " +44(20)7051-6069 |", PROSE]))
-    for junk in ["Teresa Alves +44(20)7051-4700 |", "For the exclusive use of PEDRO.LINZMEYER@LISCAPITAL.COM.BR",
-                 "Research Department, Central Bank of Brazil. E-mail: someone@bcb.gov.br"]:
-        assert clean_code.clean("\n".join([PROSE, junk, PROSE])) == "\n".join([PROSE, PROSE])
-
-
-def test_labelled_table_row_is_not_chart_debris():
-    for row in ["I 23% 42 -15 6 10 57", "1M 8 12 2 3 1 5 0", "FF 65 30 19 17 19"]:
-        assert row in clean_code.clean("\n".join([PROSE, row, PROSE]))
-    assert "S e l i c" not in clean_code.clean("\n".join([PROSE, "S e l i c", PROSE]))
+def test_known_boilerplate_is_removed():
+    for junk in ["For the exclusive use of PEDRO.LINZMEYER@LISCAPITAL.COM.BR",
+                 "This content downloaded from 143.107.252.97 on Mon, 19 Oct 2026 12:00:00 UTC",
+                 "All use subject to https://about.jstor.org/terms",
+                 "M14_KRUG9719_12_GE_C14.indd 381 16/11/2021 16:16",
+                 "3 November 2025 2",
+                 "Investors should consider this report as only a single factor in making their investment decision."]:
+        assert clean_code.clean("\n".join([PROSE, junk, PROSE])) == "\n".join([PROSE, PROSE]), junk
+    # ...but a body line that merely mentions a date and a number is not a footer.
+    assert "3 November 2025 the Copom kept" in clean_code.clean(PROSE + "\n3 November 2025 the Copom kept\n" + PROSE)
+    text = "\n".join([PROSE, "Disclosure Appendix", "Reg AC text.", "More legal text."])
+    assert clean_code.clean(text) == PROSE
 
 
 def test_footnote_inside_references_survives_the_cut():
@@ -149,20 +150,11 @@ def test_footnote_inside_references_survives_the_cut():
     assert title not in clean_code.clean("\n".join([PROSE] + refs + [title]))   # a cited title, not a footnote
 
 
-def test_running_head_with_page_number_kept_once():
-    pages = [f"{PROSE}\n{PROSE}\n{n} PART THREE ■ Exchange Rates and Open-Economy Macroeconomics" for n in (380, 382, 384, 386)]
-    out = clean_code.clean("\n\n".join(pages))
-    assert out.count("PART THREE") == 1
+def test_layout_stamps_go_and_table_rows_stay():
     stamps = [f"{PROSE}\n{PROSE}\nM14_KRUG9719_12_GE_C14.indd {n} 16/11/2021 16:16" for n in (381, 382, 383, 384)]
     assert ".indd" not in clean_code.clean("\n\n".join(stamps))
     rows = [f"{PROSE}\n{PROSE}\nAdj. R-Squared 0.{n}2 0.01 0.06" for n in range(4)]
-    assert clean_code.clean("\n\n".join(rows)).count("Adj. R-Squared") == 4   # rows sharing a shape are not copies
-
-
-def test_chart_block_keeps_its_caption():
-    block = ["Figure 4: Responses of Expected Output Growth", "0.2", "0.3", "-0.5", "0.1", "1", "2"]
-    out = clean_code.clean("\n".join([PROSE, ""] + block + ["", PROSE]))
-    assert "Figure 4: Responses of Expected Output Growth" in out and "\n0.3\n" not in out
+    assert clean_code.clean("\n\n".join(rows)).count("Adj. R-Squared") == 4
 
 
 def test_ocr_references_heading():
@@ -278,7 +270,7 @@ def test_settings_require_a_reason():
 
 def test_settings_file_is_valid():
     s = settings.load()
-    assert s["files"] and "trader" in s["topics_on_hold"], "repository/ingestion/settings.yaml should load"
+    assert s["files"] and isinstance(s["topics_on_hold"], dict), "repository/ingestion/settings.yaml should load"
 
 
 def test_sweep_states():
@@ -289,8 +281,8 @@ def test_sweep_states():
     for name, entry in settings.load()["files"].items():
         if entry.get("status") and name in states:
             assert states[name] != "pending", name
-    trader = [r for r in run.scan("trader")]
-    assert all(r["state"] in ("on_hold", "ingested") for r in trader)
+    for topic in settings.load()["topics_on_hold"]:   # a held topic is never swept as pending
+        assert all(r["state"] in ("on_hold", "ingested") for r in run.scan(topic)), topic
 
 
 def test_tracker_matching():

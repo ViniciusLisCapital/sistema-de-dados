@@ -14,13 +14,28 @@ Drehmann, Daniel Rees, Andreas Schrimpf, Frank Smets, Christian Upper and Philip
 comments, to Elena Munteanu for excellent analysis and research assistance, and to Nicola Faessler for 
 administrative support. 
 The editors of the BIS Bulletin series are Gaston Gelos and Frank Smets. 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+This publication is available on the BIS website (www.bis.org). 
+ 
+ 
 © Bank for International Settlements 2026. All rights reserved. Brief excerpts may be reproduced or 
 translated provided the source is stated. 
-
+ 
+ 
+ 
+ 
 ISSN: 2708-0420 (online) 
 ISBN: 978-92-9259-952-2 (online)
 
+BIS Bulletin 
+1
+ 
 Monetary policy transmission to exchange rates: the role of 
 currency carry trades 
 Key takeaways 
@@ -53,7 +68,8 @@ The contrasting reactions of the Swiss franc to comparable monetary policy surpr
 significant role of carry traders. The exchange rate response varied significantly around four select Swiss 
 National Bank (SNB) policy announcements (Graph 1.A), despite their having been selected precisely 
 because of the similar size of their impact on domestic interest rates (Graph 1.B). The franc appreciated 
-
+ 
+1  
 Carry trade is a risky bet on the violation of uncovered interest rate parity, which links exchange rates to interest rates, predicting 
 that exchange rate moves will offset any excess returns from borrowing in low rate currencies to invest in high rate ones. 
 2  
@@ -61,10 +77,17 @@ See Gürkaynak et al (2021) for analysis of exchange rate responses to monetary 
 Falconio (2022) and Hutchison and Sushko (2013) for the role of carry trades in the pass-through of monetary policy and macro 
 news to exchange rates. 
 Ryan Banerjee
+ryan.banerjee@bis.org
 Lena Boneva 
+Lena.Boneva@snb.ch 
 Gabor Pinter
+Gabor.Pinter@bis.org
 Vladyslav Sushko
+Vladyslav.Sushko@bis.org
 
+2 
+BIS Bulletin
+ 
 sharply around two announcements, in June 2010 and June 2022 (purple and red lines), but barely moved 
 around two others, in March 2015 and March 2020 (blue and yellow lines).3  
 Exchange rate response to monetary policy announcements and leveraged 
@@ -80,7 +103,7 @@ monetary policy announcements3
 9:10 = 100
 bp 
 ‘000 contracts
-
+ 
 a  The SNB monetary policy announcement. 
 1  CHF/USD exchange rate around SNB monetary policy decisions.    2  Intraday change from the level at 9:10 in average short-term SARON
 futures contracts on 16 June 2022 or CHF LIBOR futures contracts on 17 June 2010, 19 March 2015 or 19 March 2020.    3  Net positions in
@@ -102,7 +125,8 @@ Measuring carry trade activity
 Carry trade activity can be gauged with speculative positioning in currency futures. Specifically, net 
 positioning of non-commercial traders (ie those without an underlying hedging need, a proxy for 
 speculators) in currency futures on the Chicago Mercantile Exchange (CME) is a reliable indicator of carry 
-
+ 
+3  
 Other circumstances besides leveraged positioning could also have contributed to the difference in exchange rate responses. 
 For example, in June 2010, the SNB indicated a reduced willingness to prevent excessive appreciation of the Swiss franc. March 
 2015 marked the first monetary policy assessment following the discontinuation of the minimum exchange rate policy, while 
@@ -140,7 +164,11 @@ a
 −40
 −20
 0
+20
 
+BIS Bulletin 
+3
+ 
 trade activity. This is even though futures account for only a small part of the overall activity, which mainly 
 takes place in over-the-counter spot and forwards markets (see eg Galati et al (2007)).4  
 Periods of large net short positions of speculative traders on the Swiss franc and Japanese yen are 
@@ -168,7 +196,8 @@ using local projections:6
 10
 𝑙𝑙=1
 𝑋𝑋𝑡𝑡−𝑙𝑙+ 𝜀𝜀𝑡𝑡+ℎ 
-
+ 
+4  
 Traders are classified as non-commercial if they do not reveal a foreign exchange exposure to hedge and therefore presumably 
 trade to make a profit. CFTC staff may reclassify the trader if they possess additional information about the trader. 
 5  
@@ -183,18 +212,37 @@ short on both the Swiss franc and Japanese yen1
 B. Speculators turn increasingly net short on the Swiss 
 franc and Japanese yen when carry-to-risk ratios rise 
 ‘000 contracts
-
+ 
 1  Net positions in currency futures of non-commercial traders; weekly data.    2  Carry-to-risk ratios computed by dividing the currency 
 forward-implied interest rate differential with the US dollar by foreign exchange option-implied volatility; one-month horizon; monthly
 frequency. 
 Sources: Bloomberg; Commodities and Futures Trading Commission (CFTC); authors’ calculations. 
+2009
+2014
+2019
+2024
+−100
+−50
+0
+50
 Swiss franc
  Japanese yen 
+20
+40
+60
+80
+−60
+−30
+0
+30
 Swiss franc
 Japanese yen
 Carry-to-risk ratio (bp)
 Contracts (thousands)
 
+4 
+BIS Bulletin
+ 
 where 𝑦𝑦𝑡𝑡+ℎ−𝑦𝑦𝑡𝑡−1 is the cumulative percentage change in the exchange rate from the day before the 
 monetary policy announcement, t – 1, to day t + h. 𝑀𝑀𝑀𝑀𝑐𝑐,𝑡𝑡 denotes monetary news captured by the first 
 principal component of changes in interest rate futures measured in a tight window around the central 
@@ -243,7 +291,10 @@ The results confirm significant unwinding of short futures on days when monetary
 occurred during carry trade periods. In both carry trade funding currencies, net speculative short positions 
 are (at least partly) unwound following monetary policy shocks (Graph 4.A). By contrast, when speculative 
 leverage is low, no such unwinding is observed. 
-
+ 
+ 
+ 
+7  
 SNB monetary policy shocks are identified following the methodology of Gürkaynak et al (2005), while Bank of Japan shocks 
 were computed by Kubota and Shintani (2022). 
 8  
@@ -252,6 +303,10 @@ Related evidence on liquidity-state-dependent transmission along the yield curve
 In the online appendix we show that this result is robust to classifying carry trade periods according to carry-to-risk ratios (ie 
 based on interest rate differentials and currency volatility).
 
+BIS Bulletin 
+5
+ 
+ 
 Tightening shocks drive carry trade deleveraging in these currencies. Following a contractionary policy 
 shock, net speculative short positions in CHF futures shrink by over 60% of all open interest (ie relative to 
 the total outstanding open CHF futures contracts) (Graph 4.B). In the yen, the point estimate for 
@@ -262,7 +317,7 @@ In per cent
 A. Exchange rate response to monetary policy shocks 
 depends on speculative positioning…2 
 B. ...and is driven by policy tightening3 
-
+ 
 1  Effect of a 25 basis point monetary policy shock on CHF/USD and JPY/USD.    2  Short futures positions are defined as high when net non-
 commercial shorts exceed the sample median.    3  Separate effect of a 25 basis point monetary policy easing versus tightening shock on 
 CHF/USD and JPY/USD. 
@@ -274,7 +329,7 @@ policy shocks depends on speculative positioning…
 B ...and is driven by policy tightening4  
 % open interest
 % open interest
-
+ 
 1  Effect of a 25 basis point monetary policy shock on speculative positions in currency futures.    2  Short futures positions are defined as high 
 when net non-commercial shorts exceed the sample median.    3  Direction of change in net positions of non-commercial traders in currency 
 futures on the Chicago Mercantile Exchange (CME).    4   Separate effect of a 25 basis point monetary policy easing versus tightening shock
@@ -311,6 +366,9 @@ Tightening
 70
 JPY
 
+6 
+BIS Bulletin
+ 
 underscores the pivotal role of carry trade activity and subsequent quantity adjustments to the leveraged 
 positions in shaping the state-dependent reaction of the exchange rate to monetary policy.10 
 Policy implications 
@@ -325,6 +383,7 @@ a channel through which non-bank financial intermediation adds uncertainty to mo
 transmission (Banerjee et al (2025)). Specifically, the currency trading strategies of hedge funds and other 
 leveraged investors can play a key role in shaping the exchange rate response to monetary policy and 
 therefore warrant careful monitoring.  
+10  
 The online appendix shows that this result also extends to the unwinding of short CHF and JPY positions in over-the-counter 
 forwards, which is a broader market; however, available data do not allow us to distinguish speculation from hedging.  
 11  

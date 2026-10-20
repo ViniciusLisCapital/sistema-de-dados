@@ -9,6 +9,11 @@ ISSN 1518-3548
 CGC 00.038.166/0001-05
 Working Paper Series Brasília n. 101 Mar 2006 P. 1-32
 
+Working Paper Series
+Edited by Research Department (Depep) – E-mail: workingpaper@bcb.gov.br
+Editor: Benjamin Miranda Tabak – E-mail: benjamin.tabak@bcb.gov.br
+Editorial Assistent: Jane Sofia Moita – E-mail: jane.sofia@bcb.gov.br
+Head of Research Department:Carlos Hamilton Vasconcelos Araújo – E-mail: carlos.araujo@bcb.gov.br
 The Banco Central do Brasil Working Papers are all evaluated in double blind referee process.
 Reproduction is permitted only if source is stated as follows: Working Paper n. 101.
 Authorized by Afonso Sant'Anna Bevilaqua, Deputy Governor of Economic Policy
@@ -20,6 +25,7 @@ Caixa Postal 8.670
 70074-900 Brasília – DF – Brazil
 Phones: (5561) 3414-3710 and 3414-3567
 Fax: (5561) 3414-3626
+E-mail: editor@bcb.gov.br
 The views expressed in this work are those of the authors and do not necessarily reflect those of the Banco Central or
 its members.
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced.
@@ -34,6 +40,9 @@ Edifício-Sede – 2º subsolo
 Phones: (5561) 3414 (....) 2401, 2402, 2403, 2404, 2405, 2406
 DDG: 0800 992345
 Fax: (5561) 3321-9453
+Internet: http://www.bcb.gov.br
+E-mails: cap.secre@bcb.gov.br
+dinfo.secre@bcb.gov.br
 
 Comparing Equilibrium Real Interest Rates: Different Approaches
 *
@@ -61,6 +70,8 @@ Borges Santos for their work as research assistants. The views expressed are tho
 necessarily those of the Central Bank of Brazil.
 ** Research Department, Banco Central do Brasil.
 *** Research Department, Banco Central do Brasil, and Economics Department, Universidade de São Paulo.
+Correspondent author: marcio.nakane@bcb.gov.br
+3
 
 1 - Introduction
 After taming inflation with the launching of the Real plan in 1994, Brazil is still in the process
@@ -108,6 +119,7 @@ The next section aims at measuring and at comparing equilibrium interest rates u
 series filter and the potential output growth. In the third section, IS equations for 17 countries
 1 Expression created by Eighengreen and Hausmann to define the incapacity of issuance of long-term debt in the
 issuer currency.
+4
 
 are first estimated, and equilibrium real interest rates are subsequently inferred from the
 estimates. The marginal product of capital is the source of the explanation for real interest
@@ -165,6 +177,7 @@ India 1.44 1.51 -5.18 0.67 8.87 -2.75 2.10 4.65 1.67 --
 Poland 8.25 ND ND ND ND ND ND -7.87(91-) 5.50 7.44
 Russia 0.16 ND ND ND ND ND ND ND 23.80 3.30
 Source: International Finance Statistics -IMF
+5
 
 2 - The natural rate of interest in Emerging Countries: concepts and measures
 Wicksell described the natural rate of interest in at least three dimensions:
@@ -202,6 +215,7 @@ From 1992 to 1999, potential output growth for South Korea is similar to the HP 
 interest rate for 1995-1999 period. The same feature can be observed for Philippines, Chile
 and Czech Republic. Potential output growth measures for Colombia and Mexico match
 equilibrium real interest rates in the most recent period.
+6
 
 Figure 1 Actual and Filtered Real Interest Rates
 .5 .30 .16
@@ -215,6 +229,7 @@ Figure 1 Actual and Filtered Real Interest Rates
 .10 .00
 -.2
 -.3 .05 -.04
+95 96 97 98 99 00 01 02 03 04 96 97 98 99 00 01 02 03 04 93 94 95 96 97 98 99 00 01 02 03 04
 LREALINT__ARG LREALINTHP_ARG_ LREALINT__BRA LREALINT9504_BRA_ LREALINT__CHI LREALINTHP_CHI_
 .16 .25 .20
 .12 .20 .16
@@ -225,6 +240,7 @@ LREALINT__ARG LREALINTHP_ARG_ LREALINT__BRA LREALINT9504_BRA_ LREALINT__CHI LREA
 .05
 .00 .00 .04
 -.04 -.05 .00
+96 97 98 99 00 01 02 03 04 95 96 97 98 99 00 01 02 03 04 95 96 97 98 99 00 01 02 03
 LREALINT__COL LREALINTHP_COL_ LREALINT__CRO LREALINTHP_CRO_ LREALINT__CZE LREALINTHP_CZE
 .3 .1 .10
 .2 .08
@@ -238,6 +254,7 @@ LREALINT__COL LREALINTHP_COL_ LREALINT__CRO LREALINTHP_CRO_ LREALINT__CZE LREALI
 -.4 -.3 .00
 -.5
 -.6 -.4 -.02
+94 95 96 97 98 99 00 01 02 03 94 95 96 97 98 99 00 01 02 03 94 95 96 97 98 99 00 01 02
 LREALINT__ECU LREALINTHP_ECU_ LREALINT__EST LREALINTHP_EST_ LREALINT__HUN LREALINTHP_HUN_
 .3 .14 .12
 .12
@@ -250,6 +267,7 @@ LREALINT__ECU LREALINTHP_ECU_ LREALINT__EST LREALINTHP_EST_ LREALINT__HUN LREALI
 -.1 -.04
 .00
 -.2 -.02 -.08
+94 95 96 97 98 99 00 01 02 03 92 93 94 95 96 97 98 99 00 01 02 03 93 94 95 96 97 98 99 00 01 02 03
 LREALINT__IND LREALINTHP_IND LREALINT__KOR LREALINTHP_KOR_ LREALINT__LAT LREALINTHP_LAT
 .2 .6 .35
 .5
@@ -261,6 +279,7 @@ LREALINT__IND LREALINTHP_IND LREALINT__KOR LREALINTHP_KOR_ LREALINT__LAT LREALIN
 -.2 .15
 .0
 -.3 -.1 .10
+94 95 96 97 98 99 00 01 02 03 93 94 95 96 97 98 99 00 01 02 03 93 94 95 96 97 98 99 00 01 02 03
 LREALINT__LIT LREALINTHP_LIT_ LREALINT__MEX LREALINTHP_MEX_ LREALINT__PER LREALINTHP_PER_
 .14 .12 .8
 .12 .10 .6
@@ -277,7 +296,9 @@ LREALINT__LIT LREALINTHP_LIT_ LREALINT__MEX LREALINTHP_MEX_ LREALINT__PER LREALI
 .02
 .00 .00 -.2
 -.02 -.02 -.4
+92 93 94 95 96 97 98 99 00 01 02 03 92 93 94 95 96 97 98 99 00 01 02 03 92 93 94 95 96 97 98 99 00 01 02 03
 LREALINT__PHI LREALINTHP_PHI_ LREALINT__THA LREALINTHP_THA LREALINT__TUR LREALINTHP_TUR
+7
 
 Table 2
 Equilibrium Real Interest Rate
@@ -333,6 +354,7 @@ Latvia 5.40 2.70 7.90
 Lithuania 3.20 1.99 4.14
 Turkey 2.94 4.30 3.95
 * Including Indonesia and Argentina
+8
 
 3 - Results from IS equations
 Another possibility to obtain equilibrium real interest rate measures is to compute the interest
@@ -345,6 +367,7 @@ where g is the output gap and x represents a set of other explanatory variables.
 The IS equations were estimated for the 17 countries in our sample. The estimated equation
 is:
 g =γ + γg + γ(i -π ) + γ(Exp ) + γ(logcap ) + γD1 + γD2 + γD3 + η (1)
+t 0 1 t-1 2 t-1 t-1 3 t-1 4 t-1 5 t 6 t 7 t t
 where g is the output gap, i is the nominal money rate, π is the accumulated 12 months
 inflation, exp is the log of exports and, logcap is the log of capital inflow to the country, and
 D1, D2 e D3 are seasonal dummies.
@@ -369,6 +392,7 @@ average real interest rate from the IS equation, 3.43%, is close to the average 
 HP filter and also comparable to the potential output growth. Results for South Korea are
 similar with almost all of the estimates being in the range between 6 and 8%. The results for
 Thailand are around 2% in the 3 cases.
+9
 
 Table 4
 Real Interest Coefficient in the IS Curve
@@ -405,6 +429,7 @@ taking into account any wedge created by inefficiencies.
 The gross marginal product of capital comes from Ferreira, Pessôa and Veloso (2005). The
 starting point for the calculation is a Cobb-Douglas production function of the form
 Y = K α (A L H )1−α
+it it it it it
 where Y is the output of country i at time t, K is physical capital, H is human capital per
 it
 worker, L is raw labor and A is labor-augmenting productivity and α is the capital share in
@@ -415,6 +440,7 @@ it
 κ
 it
 where κ is the capital-output ratio.
+10
 
 In order to calculate the capital-output ratio, Ferreira, Pessôa and Veloso (2004) use data on
 output per worker and investment rates obtained from the Penn-World Tables, version 6.1 for
@@ -457,6 +483,7 @@ where θ is part of the argument of a function g describing the share of the out
 productive sector that is extracted by the unproductive sector; this function has (θyR) as its
 argument where yR is the ratio of output of the unproductive sector to the output of the
 productive sector. The term θ has the interpretation of describing the quality of the
+11
 
 institutional set. A high (low) θ represents a bad (good) institutional background. lR is the
 ratio of workers employed in the rent-seeking sector to workers employed in the productive
@@ -497,6 +524,7 @@ capital per worker.
 [0.063], Uganda [0.883], Kenya [0.151], Zambia [0.084], Senegal [0.2411], Nicaragua [0.082], India [0.171],
 Honduras [0.108], Bangladesh [0.138], Pakistan [0.170], Philippines [0.113], Indonesia [0.097], Ecuador
 [0.070], Guatemala [0.192], Turkey [0.123], and Brazil [0.101].
+12
 
 Figure 3
 Net Marginal Product of Capital (%)
@@ -547,6 +575,7 @@ Ecuador 13.41% 6.98% 3 2,524 1 0,903
 Mexico 16.01% 9.99% 6 1,450 2 4,588
 Peru 12.39% 7.98% 3 2,583 1 0,095
 Venezuela 13.36% 6.95% 5 3,146 1 7,754
+13
 
 5 - Real Interest Rates, Fiscal Debt and Risk Premium.
 Favero and Giavazzi (2002) argued that interest rates are high in Brasil due to the level of
@@ -583,6 +612,7 @@ Peru -73.22%
 Europe
 Czech -68.57% 46.45% 1995:1 - 1998:4
 Turkey 93.03%
+14
 
 Table 7
 Filtered Real Interest Rate and Debt-GDP Ratio:
@@ -629,6 +659,7 @@ Turkey 36 15.55 2.10E-05
 In a SUR estimation of a panel of 12 countries from 1995 to 2003, we found a non-expected
 negative and significant coefficient for the first difference of the debt/GDP ratio, when real
 interest rates were the dependent variable, as shown in Table 9. After controlling not only for
+15
 
 debt but also for reserves and exchange rate level, the fixed effects are significant for almost
 all countries and the point estimate coefficient for Brazil is consistent with other estimations
@@ -666,6 +697,7 @@ takes into account not only the path of the debt/GDP ratio but also other consid
 debt sustainability. A similar panel with the first difference of the Embi spreads replacing
 debt/GDP ratio found a positive and significant relationship, as we would expect (Table 10).
 The fixed effect term is lower than before but it is still the second highest in the sample.
+16
 
 Table 10
 Dependent Variable: Log Real Interest Rate
@@ -745,6 +777,7 @@ Privado). For Chile, BCP is the fixed-rate bond. One-year ahead inflation expect
 come from the Banco Central de Chile survey with market experts. For Colombia, SinteticoTF is the fixed-rate
 bond. One-year ahead inflation expectations (consumer price index IPC), from the Banco de la Republica de
 Colombia survey with market experts.
+18
 
 MEXICO: real interest rate (%a.a.)
 - November/01 to May/05
@@ -767,6 +800,7 @@ CHILE:real interest rate (%a.a.)
 -1.50%
 Nov-01 Jun-02 Jan-03 Jul-03 Feb-04 Aug-04 Mar-05
 ex ante ex post
+19
 
 COLOMBIA: real interest rate (%a.a.)
 -November/03 to July/04
@@ -802,6 +836,7 @@ IPCA.For Mexico, CETES is the fixed-rate bond while UDIBONUS is the inflation-in
 BCP is the fixed-rate bond and BCU is the indexed bond. For Colombia, Sintético TF is the fixed-rate bond and
 Sintético UVR is the indexed bond. Inflation expectations for the four countries are the same used for extracting
 the inflation risk in the prior exercise.
+20
 
 Figure 6 - Spread and Inflation Expectation
 BRAZIL
@@ -881,3 +916,4 @@ explained.
 The last section sheds some light on the effect of inflation risk on real interest rates in Brazil.
 For 2002, ex-ante interest rates was twice higher than ex-post rates, meaning that inflation
 risk may have a role in explaining the level of ex-ante real interest rates in Brazil.
+23

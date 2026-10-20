@@ -157,6 +157,7 @@ the potential policy options available to central banks when the zero bound is b
 see, for example, Blinder (2000), Bernanke (2002), Clouse et al. (2004), and Bernanke
 and Reinhart (2004).
 
+2
 Although there have been quite a few theoretical analyses of alternative monetary
 policy strategies at the zero bound, the systematic empirical evidence on the potential
 efficacy of alternative policies is scant in the literature. Knowing whether the proposed
@@ -183,6 +184,7 @@ determination of the optimal inflation rate. Simulation evidence on the link bet
 and the optimal inflation rate is provided by Coenen, Orphanides, and Wieland (2004) and Adam and Billi
 (2004).
 
+3
 Whether hitting the ZLB presents a minor annoyance or a major risk for monetary
 policy depends on the effectiveness of the policy alternatives available when prices are
 declining. Following Bernanke and Reinhart (2004), we group these policy alternatives
@@ -206,6 +208,7 @@ easing” in Japan or changes in the relative supplies of Treasury securities du
 recent “buyback episode” in the United States—have economically significant effects on
 interest rates.
 
+4
 Our results provide some grounds for optimism about the likely efficacy of
 nonstandard policies. In particular, we confirm a potentially important role for central
 bank communications to shape public expectations of future policy actions, the first type
@@ -230,6 +233,7 @@ surpluses in the late 1990s, the massive foreign official purchases of U.S. Trea
 securities over the past two years, and the apparent expectation among market
 participants in 2003 that the Federal Reserve was likely to embark on targeted bond
 
+5
 purchases. The event-study evidence is supplemented by the use of our estimated term
 structure model, which provides a benchmark against which to compare the actual
 behavior of Treasury yields during the above three episodes. Our evidence generally
@@ -254,6 +258,7 @@ Japan, many consider the manner to which it has been employed to have been relat
 restrained and limited. Moreover, other forces have no doubt been at work at the same
 time, making it difficult to parse out the effects of quantitative easing on the economy.
 
+6
 Nevertheless, our estimated term-structure model for Japan does suggest that yields in
 Japan were noticeably lower during the quantitative easing period than would have been
 predicted by the model, a bit of evidence for the effectiveness of this policy. A similar
@@ -276,6 +281,7 @@ more than a few generations of economists seemed to be a relic of the Depression
 traces to a remarkable achievement by central banks in the major industrial economies.
 Among those countries, consumer price inflation has fallen to around 2 percent, about
 
+7
 one-third the pace of twenty years ago.2 For instance, as shown in figure 1, the median
 inflation rate among 27 countries labeled “advanced” in the International Monetary
 Fund’s World Economic Outlook database has moved down steadily since 1980.3 This
@@ -328,6 +334,7 @@ Maximum
 Median
 Minimum
 
+8
 alternative non-standard policies and describes existing empirical evidence bearing on
 these debates.
 Bernanke and Reinhart (2004) discuss three alternative, though potentially
@@ -351,6 +358,7 @@ the possibility that real interest rates are too high for the health of the econ
 A more subtle reason that the level of the policy rate does not fully describe the
 stance of monetary policy is that a given policy rate may coexist with widely varying
 
+9
 configurations of asset prices and yields, and hence with varying degrees of policy
 stimulus broadly considered. In the United States, at least, the short-term policy rate has
 little direct effect on private-sector borrowing and investment decisions. Rather, those
@@ -375,6 +383,7 @@ the expected future path of the policy rate as well as (or even more than) its c
 central bankers must be continuously aware of how their actions shape the public’s policy
 expectations. The crucial role of expectations in the making of monetary policy, in
 
+10
 normal times as well as when the policy rate is near the zero bound, has recently been
 stressed in important papers by Eggertsson and Woodford (2003a,b). Indeed, in the
 context of their theoretical model, Eggertsson and Woodford (henceforth EW) obtain the
@@ -398,6 +407,7 @@ would likely find it particularly difficult to describe the details of its react
 unusual circumstances, such as those associated with the policy rate being constrained by
 the zero bound.
 
+11
 Given that the ability to commit to precisely specified rules is limited, central
 bankers have found it useful in practice to supplement their actions with talk,
 communicating regularly with the public about the outlook for the economy and for
@@ -422,6 +432,7 @@ discussed below, might be considered an example of an unconditional commitment, 
 that the pegging operation was open-ended and did not specify an exit strategy. More
 usually, central bank commitments about future policies are explicitly conditional.
 
+12
 An important recent example of a conditional commitment is the zero-interest-
 rate-policy (ZIRP) of the Bank of Japan (BOJ). The BOJ’s policy rate, the call rate, was
 reduced to a level “as low as possible”—to zero, for all practical purposes—in February
@@ -446,6 +457,7 @@ possibility of deflation from the latter part of 2002 through much of 2003. Subs
 in late 2003 and early 2004, though the deflation risk had receded, the slow pace of job
 creation exacerbated concerns about the recovery’s sustainability. Although the Federal
 
+13
 Reserve’s policy rate remained at least 100 basis points above zero throughout this
 period, policymakers became more specific in communicating their outlook for policy in
 the attempt to shape expectations. For example, the August 2003 statement of the
@@ -468,7 +480,9 @@ of the FOMC to influence expectations of future policy in the desired direction 
 longer horizons. In the next section, we extend the work of Kohn and Sack to provide
 additional evidence on the effects of FOMC statements on policy expectations and asset
 prices.
+5 The full text of the FOMC’s statement can be found at www.federalreserve.gov/fomc
 
+14
 More work has been done on the effects of the BOJ’s zero-interest-rate-policy,
 primarily by researchers at the Bank of Japan and affiliated research institutions. The
 majority of this research suggests that the ZIRP has been successful at affecting policy
@@ -494,6 +508,7 @@ of an adequate benchmark for the term structure. That is, most existing studies 
 6 However, Okina and Shiratsuka also argue that the ZIRP did not help the economy much, “since [the]
 transmission channel linking the financial and non-financial sectors has remained blocked.”
 
+15
 effectively answer the question of what yields would have been in absence of the ZIRP.
 Hence, we really do not know (for example) whether the exceedingly low level of longer-
 term government bond yields in Japan during recent years primarily reflects expectations
@@ -518,6 +533,7 @@ the nominal exchange rate. Switching the policy instrument from the short-term i
 rate to the exchange rate does not eliminate the constraints imposed by the zero bound;
 some paths for the nominal exchange rate cannot be engineered by the central bank
 
+16
 because the values of the short-term nominal interest rate implied by interest-rate parity
 would violate the ZLB. Nevertheless, we agree with Svensson that commitments by the
 central bank to future policies may be more credible when expressed in terms of a
@@ -542,6 +558,7 @@ however, is difficult to judge, and we have nothing to add to this controversy. 
 large industrial countries have traditionally emphasized interest rates and money growth
 as policy instruments, we focus on these variables in the remainder of the paper. That
 
+17
 said, we believe that empirical study of the use of the exchange rate as a policy indicator
 when the ZLB is binding would be highly worthwhile.
 Increasing the size of the central bank’s balance sheet (quantitative easing)
@@ -564,6 +581,7 @@ reported in Baba et al, 2004)). However, as has been frequently noted, growth in
 reserves and base money in Japan have not resulted in comparable growth in broader
 monetary aggregates. In large part, this limited effect has been the result of the poor
 
+18
 condition of banks’ and borrowers’ balance sheets, which makes profitable lending
 difficult and induces banks to hold large quantities of idle balances.
 Whether quantitative easing can be effective in relieving deflationary pressures,
@@ -587,6 +605,7 @@ historically, money growth and inflation have tended to be strongly associated. 
 follows, according to this argument, that money creation will raise prices independent of
 its effects on the term structure.
 
+19
 Basing policy recommendations on reduced-form evidence of this sort is
 problematic, however. As the Lucas critique warns us, historical relationships are prone
 to break down in novel circumstances. In particular, there is no reason to expect the
@@ -611,6 +630,7 @@ general equilibrium model that includes financial-market frictions.
 So long as technology has not made it possible to pay a grocery bill with a stock
 certificate or the deed to a home, it is difficult to dispute the premise that, as a general
 
+20
 matter, money and non-money assets are imperfect substitutes. However, in the special
 situation of a binding ZLB, large additional injections of liquidity may satiate the public’s
 demand for money, implying that, on the margin, extra cash provides no transactions
@@ -635,6 +655,7 @@ welfare effects of the fiscal channel and find that these effects are potentiall
 substantial. These authors also note, however, that the fiscal effect of quantitative easing
 will be attenuated or absent if the public expects today’s monetary injections to be
 
+21
 withdrawn in the future.7 Broadly, if the public expects quantitative easing to be reversed
 at the first sign that deflation has ended, they will likewise expect that their money-
 financed tax cuts will be replaced by future tax increases as money is withdrawn, an
@@ -660,6 +681,7 @@ cautious and conventional policies of the past. An historical episode that may i
 7 Their point is closely related to Krugman’s (1998) important analysis, which emphasized the crucial role
 of central bank credibility in most non-conventional monetary policies.
 
+22
 this channel at work (although the policymaker in question was the executive rather than
 the central bank) was the period following Franklin Roosevelt’s inauguration as U.S.
 president in 1933. During 1933 and 1934, the extreme deflation seen earlier in the
@@ -684,6 +706,7 @@ that the economic situation had fundamentally changed. If one accepts the Temin-
 imports. But, in an economy that was by this time largely closed, the direct effects of devaluation seem
 unlikely to have been large enough to account for the sharp turnaround.
 
+23
 Wigmore hypothesis, then it appears that the signal afforded by Roosevelt’s exchange-
 rate and monetary policies were central to the conquest of deflation in 1933-34.9
 Outside of the suggestive evidence from the interwar period just discussed, there
@@ -709,6 +732,7 @@ government securities—thereby inhibiting any effect that might work through im
 9 Meltzer (1999) has also drawn on the experience of the first half of the twentieth century, including
 episodes in 1920-21, 1937-38, and 1947-48, to argue for the potential benefits of quantitative easing.
 
+24
 substitutability. Even more important, there has been a notable absence of cooperation
 between the monetary and fiscal authorities (indeed, the BOJ has expressed repeated
 concerns that monetary ease might facilitate fiscal indiscipline), and the communication
@@ -732,6 +756,7 @@ asset would depend exclusively on its state- and date-contingent payoffs. Howeve
 world with transactions costs and in which financial markets are incomplete in important
 ways, the Fed’s action might be able to influence term, risk, and liquidity premiums—and
 
+25
 thus overall yields.10 The feasibility of this approach is, of course, closely related to the
 issue
 of whether types of assets are imperfect substitutes, as discussed earlier.
@@ -756,6 +781,7 @@ composition, ultimately the policy might also involve quantitative easing. A “
 10 In carrying out such a policy, the Fed would need to coordinate with the Treasury, to ensure that
 Treasury debt issuance policies did not offset the Fed’s actions.
 
+26
 pegging policy would require the central bank to sell other securities equal in amount to
 its purchases of the targeted security.)
 As with quantitative easing, whether policies based on manipulating the
@@ -782,6 +808,7 @@ sizable changes in the composition of the public’s asset holding would have on
 However, we should note that evidence of imperfect substitution among broad asset classes has been
 provided in a number of studies, including Roley (1987) and Friedman and Kuttner (1998).
 
+27
 in order to facilitate the financing of war or postwar reconstruction. In the United States,
 the Federal Reserve maintained ceilings on Treasury yields at seven maturities between
 1942 and the 1951 Accord, among them caps of 3/8 percent on ninety-day Treasury bill
@@ -806,6 +833,7 @@ long-term yields either below or not far above the Fed’s ceiling. After the wa
 elimination of wartime controls, however, inflation rose quite sharply. Yet the long-term
 peg remained intact. Eichengreen and Garber (1991) argue that the public was confident
 
+28
 that the Fed would reverse the postwar inflation and hence remained content to hold low-
 yielding bonds. Likewise, Toma (1992) notes that there is no logical inconsistency in
 promising a monetary policy that is easy in the short run but anti-inflationary in the long
@@ -830,6 +858,7 @@ underlying Operation Twist were the use of Federal Reserve open-market operation
 Treasury debt management operations to shorten the average maturity of government
 debt held by the public; and some easing of the rate restrictions on deposits imposed by
 
+29
 Regulation Q. Operation Twist is widely viewed today as having been a failure, largely
 due to the classic work by Modigliani and Sutch (1966, 1967).12 Empirical estimates of
 the “habitat model” of interest-rate determination by these authors led them to conclude
@@ -854,6 +883,7 @@ a modern, financially sophisticated economy.
 Tobin asserts that Treasury debt management undercut any effects that might have followed from the
 relatively small change in the composition of the Federal Reserve’s balance sheet (Tobin, 1974, pp. 32-33).
 
+30
 The previous section classified non-standard monetary policies under three
 headings: (1) using communications to shape policy expectations, (2) increasing the size
 of the central bank’s balance sheet beyond what is needed to bring short-term rates to
@@ -878,6 +908,7 @@ statements do in fact have a substantial impact on the markets’ expectations o
 policy, both directly and indirectly, suggesting that the Committee does have some scope
 to use communications policies to influence yields and prices of longer-term assets. To
 
+31
 assess further the magnitude of these effects, we next estimate a “macro-finance” model
 of the term structure of Treasury yields, which links the term structure to macroeconomic
 conditions and to indicators of monetary policy. Comparison of this benchmark model of
@@ -902,6 +933,7 @@ influenced bond yields, suggesting that targeted purchases of bonds at the zero 
 could be effective at lowering the yields on longer-dated securities. However, the
 duration and magnitude of these effects remains somewhat unclear from our analysis.
 
+32
 Do FOMC statements influence policy expectations?
 Has the Federal Reserve’s policymaking body, the Federal Open Market
 Committee, historically exerted any influence on investors’ expectations about the future
@@ -923,11 +955,13 @@ to release statements to note changes in its target for the federal funds rate b
 to remain silent following meetings with no policy changes. Since May 1999, however,
 the Committee has released a statement after every policy meeting.
 13 Speeches and testimony by members of the Board of Governors, as well as FOMC statements, minutes,
+and transcripts, are available on the Federal Reserve’s public website, www.federalreserve.gov.
 14 Some testimony, notably the Chairman’s semi-annual report to Congress, might also be interpreted as
 reflecting the collective views of the Committee. Speeches by the Chairman are not technically official
 communications but, because of the Chairman’s influence on policy decisions, are watched carefully by
 market participants.
 
+33
 The FOMC statements have evolved considerably. In their most recent form, they
 provide a brief description of the current state of the economy and, in some cases, some
 hints about the near-term outlook for policy. They also contain a formulaic description of
@@ -953,6 +987,7 @@ indicators of the private sector’s monetary policy expectations during the per
 15 It has been said that a mark of great literature is that readers can find meanings in the text that the author
 did not consciously intend. On this criterion, FOMC statements certainly qualify as great literature.
 
+34
 surrounding FOMC decisions—including both decisions taken at scheduled FOMC
 meetings and decisions taken between regular meetings—since July 1991.16 The first of
 the three indicators is a now-standard measure of the surprise component of current
@@ -980,6 +1015,7 @@ detailed listing of the timing of decisions.
 17 We measure the five-year yield as a zero-coupon yield, which in turn is derived from a smoothed yield-
 curve series maintained at the Federal Reserve Board.
 
+35
 on expectations arising from the Committee’s statement. The prior literature has mostly
 considered the effects on asset prices and yields of the current policy surprise only
 (Kuttner, 2001; Bernanke and Kuttner, forthcoming). If the “one-factor” view of the
@@ -1006,6 +1042,7 @@ some from theirs in some respects. In particular, GSS use four futures contracts
 expectations out to a year; we use only one contract to measure year-ahead expectations but use a longer-
 term yield as well. In addition, we use different methods than GSS to identify the underlying factors.
 
+36
 rates in the period surrounding FOMC decisions, and they should be unrelated to aspects
 of the FOMC decision (such as the statement) other than the change in the policy rate.
 The loadings of the three market indicators of policy expectations on the three
@@ -1047,6 +1084,7 @@ Five-year yield 2.7 6.5 3.5
 Note: Standard deviations are measured in basis points. The sample period for Table 1b is April
 1998 through the present, for comparability with results presented later on for Japan.
 
+37
 ahead futures rate in the hour around policy decisions is explained by current policy
 surprises (the first factor), with the other four-fifths of the variance being captured by the
 second factor. This result confirms a primary conclusion of Gürkaynak, Sack, and
@@ -1072,6 +1110,7 @@ up with dates of policy statements.
 20 Gurkaynak, Sack, and Swanson (2004) also address this issue and conclude that the second factor is
 indeed related to FOMC statements.
 
+38
 To investigate more formally the link between FOMC statements and the three
 factors, we follow an approach similar to that employed by Kohn and Sack (2003). As
 described in the previous section, Kohn and Sack showed that, for given values of the
@@ -1097,6 +1136,7 @@ variable (STATEMENT SURPRISE) that equals one on dates on which the issued
 21
 Also, unlike Kohn and Sack (2003), who use daily data, we continue to use intraday data.
 
+39
 statement included important information about the state of the economy or the path of
 monetary policy that was not expected by a substantial portion of market participants.
 Obviously, assigning values to STATEMENT SURPRISE involves some
@@ -1121,6 +1161,7 @@ Reserve Bank of New York that asks primary dealers about their expectations for 
 market’s reaction was different from their ex ante assessment of the likely response, suggesting that the
 “retrospective bias” may not have been severe.
 
+40
 statement.23 We took all occasions when the policy bias or the balance of risks differed
 from the median survey response as surprises. Using these materials, we identified 31 of
 the 56 statements in our sample period as involving some non-negligible surprise. The
@@ -1200,6 +1241,7 @@ Path Surprise -- -34.2
 Adj. R-Squared 0.04 0.04 0.26 0.30 0.07 0.07
 t-statistics are given in parentheses. Coefficients significant at the 5 percent level are highlighted in bold.
 
+41
 economically important; the regression implies that, on average, the variance of the
 second factor during the one-hour window surrounding the release of the statement is
 about 196 basis points when the statement is surprising but only about 42 basis points
@@ -1224,6 +1266,7 @@ statements that describe past economic developments). From the Committee’s poi
 view, the effects on market expectations of statements bearing on the future course of
 policy should also be of particular interest, since this is the type of statement that theory
 
+42
 suggests should be most useful when the policy rate is near the zero bound. To examine
 whether statements that provide new information about the likely future path of monetary
 policy are particularly influential, we used the sources noted above to identify nine
@@ -1249,6 +1292,7 @@ meeting. These statements, because they are so explicitly focused on the policy 
 24 The “policy bias” that was part of the statement for the brief period from May 1999 to December 1999
 was usually interpreted as pertaining to a much shorter time frame, such as the inter-meeting period.
 
+43
 may provide the best natural experiments for assessing what could be accomplished at the
 zero bound.
 As can be seen in columns 2, 4, and 6 of table 2, the PATH SURPRISE dummy
@@ -1273,6 +1317,7 @@ information in a dummy variable, SIGNED STATEMENT, assigned the value of +1 for
 surprise “hawkish” statements (those that implied a higher future path of the federal
 funds rate than expected), -1 for surprise “dovish” statements, and 0 for all other
 
+44
 observations, including those with non-surprising statements or no statements at all. We
 then regressed the levels of each of the three factors on the signed dummy variable. We
 also tried regressing the levels of the factors on the signed values of statements
@@ -1328,6 +1373,7 @@ Surprise
 Adj. R-Squared -0.03 -0.03 0.47 0.26 -0.02 -0.01
 t-statistics in parentheses. Coefficients significant at the 5 percent level are in bold.
 
+45
 may affect the formation of policy expectations by influencing how those expectations
 respond to various sorts of incoming data. In particular, to the extent that FOMC policy
 commitments are conditional, that is, tied to specific economic developments, policy
@@ -1353,6 +1399,7 @@ employment. Figure 2 confirms this hypothesis. The figure shows the responsivene
 25 A second important example, not pursued here for reasons of space, is the responsiveness of the market
 to data on core inflation.
 
+46
 over a 30-minute window, of the ten-year Treasury yield to surprises in monthly payrolls,
 where the surprise is defined as the reported payroll number less the median survey
 expectation as provided by Money Market Services. The sample is divided into the
@@ -1377,6 +1424,7 @@ futures. These measures are market-based estimates of the expected volatility of
 three-month interest rate over two horizons: four months and one year. As can be seen
 in the figure, the short-horizon volatility measure fell to historic lows during the second
 
+47
 half of 2003. The same result does not hold at the longer horizon. These data provide a
 bit of evidence that the FOMC’s communications in the second half of 2003 reduced the
 volatility of (“anchored”) near-term policy expectations. As we have seen that policy
@@ -1523,6 +1571,7 @@ The figure shows the width of a 90% confidence interval for the federal funds ra
 horizon shown. These measures are derived from the implied volatility of the three-month
 Eurodollar rate from options on Eurodollar futures.
 
+48
 To develop a baseline model of the Treasury yield curve, we estimate an affine
 term structure model.26 The affine term structure model imposes a no-arbitrage condition
 that links yields at every maturity of the term structure, thereby increasing the efficiency
@@ -1548,6 +1597,7 @@ became available) to the present, and four lags of each variable are included in
 encompasses earlier models due to Vasicek (1977), Cox, Ingersoll, and Ross (1985), and Longstaff and
 Schwartz (1992), among others. Bolder (2001) provides a useful introduction to these models.
 
+49
 As already noted, to measure the influence of these observed indicators on the
 Treasury yield curve, we construct a no-arbitrage term structure model in which the five
 economic and monetary indicators are treated as factors. In general, long-term Treasury
@@ -1592,6 +1642,7 @@ is the asset’s gross return in t+1 and
 27 Thus the first five rows of the matrix Φ includes the VAR estimates, and the rest of the matrix contains
 zeros and ones at the appropriate locations.
 
+50
 1 t
 m
 +
@@ -1618,6 +1669,7 @@ Following the approach of Ang and Piazzesi (2003) and Ang, Piazzesi, and Wei
 1
 exp
 2
+t t t t t t
 m y λλ λε
 + +
 ⎛ ⎞
@@ -1648,6 +1700,7 @@ t
 are lags of the five factors.)
 These assumptions imply that only 30 parameters must be estimated in this block of the
 
+51
 model, a manageable number, while still allowing the model the flexibility needed to
 provide a good empirical fit of the term structure data.
 Manipulation of equations (1)-(3) shows that the zero-coupon yields can be
@@ -1678,6 +1731,7 @@ determined by the following recursive formulas:
 ′
 + =
 + n n n n n
+B B B A A
 (7)
 1 1 1
 ) ( δ λ − Σ − Φ =
@@ -1711,6 +1765,7 @@ equation (5). We estimate the prices of risk by minimizing the sum of squared pr
 errors for zero-coupon Treasury yields at maturities of six months and one, two, three,
 four, five, seven, and ten years. Our data are zero-coupon Treasury yields, based on the
 
+52
 Fisher-Nychka-Zervos (1995) yield curve for the period 1982 to 1987 and on the zero-
 coupon yield curve constructed at the Board of Governors for the period since 1987.
 Our model contributes to the growing literature including macroeconomic
@@ -1896,6 +1951,7 @@ Actual
 Predicted
 Risk Neutral
 
+53
 derived by setting the prices of risk equal to zero—that is, they are the rates that investors
 would demand if they were risk neutral. The difference between these lines and the
 predicted yields, then, are estimated risk premiums. Figure 4 shows that estimated risk
@@ -1920,6 +1976,7 @@ the fit of the estimated model, particularly at shorter horizons (table 4). For 
 doing so raises the standard deviation of the prediction error for the two-year Treasury
 yield from 74 basis points to 98 basis points.
 
+54
 [Table 4 about here]
 One is tempted to combine the result of the event study (that FOMC statements
 have a substantial influence on year-ahead policy expectations) with the result from the
@@ -1961,6 +2018,7 @@ Shocks
 7 years 81.0 92.2
 10 years 78.7 87.0
 
+55
 expectations. That said, it seems clear that not all of the VAR innovation represents
 unmeasured communications effects; certainly, some part of the VAR innovations to the
 Eurodollar futures rate surely reflects responses of policy expectations to developments
@@ -2004,10 +2062,12 @@ Change in Treasury yields, percentage points
 -0.10
 -0.05
 0.00
+0 2 4 6 8 10
 Maturity
 The cumulative shift in Treasury yields predicted by the futures rate shocks from the VAR realized from
 August 2003 to December 2003.
 
+56
 curve movements around FOMC decisions cannot be adequately described by the
 unexpected component of policy decisions, but are instead influenced to a greater extent
 by a second factor which appears to be associated with surprises in the policy statements.
@@ -2031,6 +2091,7 @@ budget surpluses; (2) the investment in Treasury securities of foreign-exchange-
 intervention proceeds by Asian official institutions; and (3) the conviction on the part of
 some financial-market participants in the summer of 2003 that the Federal Reserve might
 
+57
 resort to targeted purchases of long-term Treasury securities in order to combat incipient
 deflation.
 We look at each episode through two prisms. First, we first consider the
@@ -2056,6 +2117,7 @@ retain investors’ interest.
 31 Reinhart and Sack (2000) review the economic consequences of such an outcome. Auerbach and Gale
 (2000) provided a real-time reminder of the fickleness of far-ahead fiscal forecasts.
 
+58
 Two events stand out as marking a significant shift in investors’ view of the
 prospects for issuance—the midquarter refunding announcements of February 2000 and
 November 2001. At the 2000 refunding, the undersecretary for domestic finance, Gary
@@ -2079,6 +2141,7 @@ information about the discontinuation of bond issuance (February 2000 and Novemb
 the market outlook for net issuance of government debt. Rather, the news bore
 exclusively on the pattern of security sales. Even so, as shown in table 6, the Treasury
 
+59
 yield curve rotated down dramatically in both cases when investors learnt that the
 managers of the government debt would shy away from longer-maturity securities.
 [Table 6 about here]
@@ -2127,6 +2190,7 @@ Percent
 6.5
 7
 7.5
+0 5 10 15 20 25 30
 February 14, 2000
 January 12, 2000
 The yields on all outstanding Treasury notes and bonds, excluding callable issues.
@@ -2202,6 +2266,7 @@ n
 Bond
 Paydown
 
+60
 are “scalable” in a predictable manner, so these results give little quantitative information
 to policymakers contemplating targeted asset purchases. Finally, as we discussed earlier,
 movements in Treasury yields arising from targeted purchases need not pass through to
@@ -2226,33 +2291,117 @@ of 2004 in an effort to counter or slow the yen’s appreciation against the dol
 intervention purchases totaled $177 billion in 2003 and $138 billion in the first quarter of
 
 Figure 8. Swap spreads during the paydown of Treasury bonds
+Basis points
+0
+20
+40
+60
+80
+100
+120
+140
+160
+180
+1
 /
+2
 /
+1
+9
+9
+7
+7
 /
+2
 /
+1
+9
+9
+7
+1
 /
+2
 /
+1
+9
+9
+8
+7
 /
+2
 /
+1
+9
+9
+8
+1
 /
+2
 /
+1
+9
+9
+9
+7
 /
+2
 /
+1
+9
+9
+9
+1
 /
+2
 /
+2
+0
+0
+0
+7
 /
+2
 /
+2
+0
+0
+0
+1
 /
+2
 /
+2
+0
+0
+1
+7
 /
+2
 /
+2
+0
+0
+1
+1
 /
+2
 /
+2
+0
+0
+2
+7
 /
+2
 /
+2
+0
+0
+2
 30-year
 2-year
 
+61
 2004. The Japanese Ministry of Finance (MOF) holds the proceeds of intervention
 activities as either bank deposits or Treasury securities, and its deposit holdings generally
 are re-invested in Treasuries over time. The Japanese interventions in the five quarters
@@ -2277,6 +2426,7 @@ the estimated coefficients are highly statistically significant. Treasury bill y
 react to interventions, perhaps because they are pinned down by the current and near-term
 expected path of the federal funds rate.
 
+62
 [Table 7 about here]
 While these results are suggestive of an important role for relative asset supplies
 in the determination of yields, they suffer from potential problems of joint endogeneity.
@@ -2339,6 +2489,7 @@ excludes days on which there was the release of an employment report, GDP, ISM,
 retail sales, or consumer confidence.
 
 Figure 9. Prediction Errors from the No-arbitrage VAR Model
+Basis points
 Five-year Treasury Yield
 -250
 -150
@@ -2480,6 +2631,7 @@ MoF Purchases
 Deflation
 Scare
 
+63
 with the economy remaining weak, inflation low and apparently falling, and the federal
 funds rate quite low, FOMC members began to talk about the risks of deflation in the
 United States and the possible responses of monetary policy if the federal funds rate were
@@ -2504,6 +2656,7 @@ testimony in July (20 basis points).
 Of course, the FOMC never undertook targeted purchases of Treasury securities,
 but in an efficient market even the (incorrect) anticipation of such an event should affect
 
+64
 yields. Figure 9 above shows a sharp downward spike in the model errors in May and
 June 2003, which is reversed in July. These findings, taken at face value, suggest that the
 perceived possibility of Treasury purchases had an impact on the order of 50 basis points
@@ -2608,6 +2761,7 @@ Table lists changes in the on-the-run Treasury yields that were strongly associa
 listed for 5/6/03 and 6/25/03 are two-day changes, since the market continued to respond the day after the FOMC
 meeting.
 
+65
 month.) Without this commitment, according to our model, the yield on that security
 would be expected to be 5.67 percent in a year, imply that the put option has a 58 percent
 chance of ending up in the money. (The yield is given by
@@ -2620,7 +2774,9 @@ X b a y .) The
 strike price of the option will be ) * 9 exp( cap K − = , where in our example .055 cap = .
 The price of the put option is
 (8)
+1 2 3 12 9 9 12
 ... ( exp( ))
+t t t t t t
 put E m m m m K a b X +
 + + + + +
 ⎡ ⎤ = − − −
@@ -2639,6 +2795,7 @@ case, those investors holding a 10-year Treasury security receive the put option
 holder of (say) a 10-year high-grade corporate bond does not. Hence one would not
 expect the value of the put option to be fully reflected in the price of the corporate bond.
 
+66
 Japan: A Modern Industrial Economy at the Zero Bound
 So far, we have made use of a variety of “natural experiments” from recent U.S.
 experience to try to gauge the potential effectiveness of policy tools at or near the zero
@@ -2662,6 +2819,7 @@ objective is to analyze how monetary policy expectations at different horizons (
 measured in financial markets) respond to central bank statements. Because the Bank of
 Japan (BOJ) in recent years has used its statements not only to try to shape expectations
 
+67
 but also to provide information regarding its programs of quantitative easing and targeted
 asset purchases, in principle the event study should cast light on the effectiveness of all
 three types of nonstandard policy options available to an economy at or near the zero
@@ -2686,6 +2844,7 @@ the scope for factors other than policy actions or announcements to influence th
 financial variables. The extra noise will reduce the efficiency of our estimates but should
 not bias the results.
 
+68
 As in the event study for the United States, we employ three market-based
 measures of policy expectations at various horizons. The first variable is intended to
 capture the unexpected component of changes in the policy interest rate, the (overnight)
@@ -2715,6 +2874,7 @@ rate from 1½ to 4½ months ahead.
 The Euroyen futures contracts trade on the Chicago Mercantile Exchange. Data for the zero-coupon
 five-year JGB yield was taken from Bloomberg.
 
+69
 changes in the current policy setting. Finally, the third factor equals the change in the
 five-year zero-coupon JGB yield not explained by the first two factors.
 The links between these factors and the policy indicators, shown in table 9a, are
@@ -2754,6 +2914,7 @@ Five-year yield 1.1 1.9 3.5
 Note: Standard deviations are measured in basis points
 The sample period is April 1998 through the present.
 
+70
 Overall, it appears that the scope for the Bank of Japan to “use” the second factor, or its
 willingness to do, was less than in the case of the Federal Reserve over the same period.34
 As in the U.S. event study, we are interested in examining the relationship
@@ -2779,6 +2940,7 @@ Kohn and Sack (2003), the use of the squared factors as dependent variables allo
 34 An institutional explanation for the smaller second factor in Japan is the BOJ’s practice of releasing
 policy statements only in conjunction with policy actions, rather than after every scheduled meeting.
 
+71
 determine whether statements were associated with large changes in policy expectations
 (large realizations of the factors), without requiring us to specify the “direction” of the
 statements.
@@ -2832,6 +2994,7 @@ Statement Surprise
 Adj. R-Squared 0.12 0.01 0.06
 t-statistics are given in parentheses. Coefficients in bold are significant at the 5 percent level.
 
+72
 Third, in Japan, unlike the U.S., the size of the third factor is linked to the
 issuance of surprising statements by the central bank. However, this finding is largely the
 product of a single observation, the February 12, 1999 statement announcing the
@@ -2856,6 +3019,7 @@ Again, the problems arising from a small sample are apparent, as the number of
 statements in each category is relatively small. We identified only two statements as
 potential “path surprises”: the introductions of the ZIRP in February 1999 and of
 
+73
 quantitative easing in March 2001. These, of course, represented major shifts in policy
 strategy, and thus their effects may differ from the policy path surprises identified in the
 U.S. event study. Five BOJ statements announced changes in the target for JGB
@@ -2881,6 +3045,7 @@ this possibility, we included a fourth candidate factor in this event study, def
 35 We also tried regressing the squared values of the factors on the various dummies; this exercise did not
 add much information to that already reported in Table 11.
 
+74
 portion of the change in the Nikkei 500 stock index during the event window that is
 orthogonal to the other three factors. That is, the fourth factor reflects the impact of the
 BOJ’s action and statement on Japanese equity values (an important alternative class of
@@ -2907,6 +3072,7 @@ Reserve.
 first three factors, that is, almost all of the change in stock prices is explained by the fourth factor, unrelated
 to interest rates.
 
+75
 The level of the third factor (which, recall, corresponds to the fluctuation in the
 yield on JGBs during the event window that is not explained by current or year-ahead
 policy expectations) appears to be linked with certain types of statements. As the column
@@ -2978,6 +3144,7 @@ CAB Surprise
 Adj. R-Squared 0.17 0.16 0.01 0.03 0.06 0.13 0.02 0.10
 t-statistics are in parentheses. Coefficients in bold are significant at the 5 percent level.
 
+76
 appears to provide a positive impetus to the stock market, with both current and future
 interest-rate expectations held constant.
 Overall, two general conclusions emerge from the BOJ event study. First, there is
@@ -3003,6 +3170,7 @@ monthly data over the sample period June 1982 to May 2004.37
 proxy, constructed by regressing the futures rate on the 5-year JGB yield and the call rate for the sample
 period June 1989 – May 1999, then using fitted values of the Euroyen futures rate as the proxy.
 
+77
 With the estimated VAR in hand, we then fit the no-arbitrage term structure
 model using data from the JGB market. The data on JGB yields are month-average zero-
 coupon yields at maturities of six months and one, two, three, five, seven, and ten years,
@@ -3026,12 +3194,15 @@ months:
 [ ] 24
 1 2 3 24
 ...
+t t t t t t
+P E m m m m
 + + + +
 = .
 We computed the bond price defined by (9) by performing 10,000 simulations of the
 model over the subsequent 24 months, determining the path of the pricing kernel in each
 iteration, and then taking the average of the product of the pricing kernel over all
 
+78
 simulations. This exercise can be performed both ignoring the zero bound and imposing
 the zero bound.
 If we perform the simulations without imposing the zero bound, the predicted
@@ -3061,6 +3232,7 @@ VAR and the relationship between risk prices and economic variables may change i
 the zero bound, so that their dynamics are not well captured by the VAR with policy shocks. A similar
 criticism applies to other work on the effects of the zero bound, such as that of Bomfim [date].
 
+79
 importantly, the predicted yield curves (considering the zero bound) tend to lie above the
 actual yield curves. In other words, the VAR term structure model has difficulty
 explaining the low levels of JGB yields during this period.
@@ -3085,6 +3257,7 @@ these two policies. By contrast, the yield curves predicted by the model did not
 down much, in large part because the scope for a fall in JGB yields was limited by the
 zero bound. As we have noted earlier, assessing the effects of the ZIRP and especially
 
+80
 the QEP are in general difficult because of the problems of controlling for other factors
 influencing yields over the periods of these policies. It is intriguing, at least, that when
 we control (at least roughly) for macroeconomic conditions and the current stance of
@@ -3245,16 +3418,46 @@ r
 7
 Actual
 Predicted
+Risk Neutral
 
 Figure 11. JGB Yield Curve around Bank of Japan Policy Announcements
 December 1998
+0
+0.5
+1
+1.5
+2
+2.5
+0 2 4 6 8 10
 Actual
 Predicted w/o Zero Bound
 Predicted w/ Zero Bound
 May 1999
+0
+0.5
+1
+1.5
+2
+2.5
+0 2 4 6 8 10
 November 2000
+0
+0.5
+1
+1.5
+2
+2.5
+0 2 4 6 8 10
 June 2001
+0
+0.5
+1
+1.5
+2
+2.5
+0 2 4 6 8 10
 
+81
 been expected in recent years, holding open the possibility that the ZIRP and quantitative
 easing policies have had beneficial effects.
 Despite our evidence that alternative policy measures have some effect, we
@@ -3276,3 +3479,5 @@ reduce long-term rates and provide some impetus to the economy, even if the shor
 rate is close to zero. However, for credibility to be maintained, the central bank’s
 commitments must be consistent with the public’s understanding of the policymakers’
 objectives and outlook for the economy.
+
+82

@@ -31,7 +31,10 @@ and do not necessarily reﬂect those of the individuals listed above, the Feder
 Reserve Board, or any other individual within the Federal Reserve System. Au-
 thor contact: Refet S. G¨urkaynak, Division of Monetary Aﬀairs, Federal Reserve
 Board and Department of Economics, Bilkent University, 06800 Ankara, Turkey
+(e-mail: refet@bilkent.edu.tr).
+55
 
+56
 International Journal of Central Banking
 May 2005
 The Federal Reserve’s announcement following its January 28,
@@ -74,6 +77,7 @@ lowing morning that “investors interpreted the omission of ‘considerable per
 as a signal that the Fed is closer to raising interest rates than many thought”
 (Ip 2004).
 
+Do Actions Speak Louder Than Words?
 57
 improve the single-factor analysis of the eﬀects of monetary policy
 on asset prices performed by earlier authors, such as Cook and Hahn
@@ -115,6 +119,8 @@ the fact that FOMC statements have such signiﬁcant eﬀects on
 long-term yields suggests that the FOMC may be able to credibly
 commit to future plans for the federal funds rate. Thus, even when
 
+58
+International Journal of Central Banking
 May 2005
 faced with a low or zero nominal funds rate, our results indicate that
 the FOMC may be able to eﬀectively communicate to the markets
@@ -130,6 +136,7 @@ shows that this additional factor is closely associated with FOMC
 statements, and estimates the response of asset prices to this addi-
 tional factor. Section 3 concludes. The appendix provides technical
 details regarding our factor test and the estimation of the unobserved
+factors, and a data appendix (only available online at www.ijcb.org)
 provides a complete listing of our monetary policy announcement
 dates, times, and federal funds rate and statement surprise measures
 extending back to 1990.
@@ -155,6 +162,7 @@ strained by the zero nominal bound so long as it can credibly commit to future
 policy actions. Bernanke, Reinhart, and Sack (2004) investigate the potential
 eﬀectiveness of monetary policy at the zero nominal bound empirically.
 
+Do Actions Speak Louder Than Words?
 59
 brackets the monetary policy announcement, and εt is a stochastic
 error term that captures the eﬀects of other factors that inﬂuence
@@ -200,6 +208,8 @@ rule are the heteroskedasticity-based identiﬁcation procedure used by Rigobon
 and Sack [2003, 2004] and the high-frequency identiﬁcation procedure used by
 Cochrane and Piazzesi [2002] and Faust, Swanson, and Wright [2004a].)
 
+60
+International Journal of Central Banking
 May 2005
 Soderstrom (2003) perform variations on this analysis, and Bernanke
 and Kuttner (forthcoming) apply the method to measure the eﬀects
@@ -240,6 +250,7 @@ and FOMC decisions in 1994 were released at varying times throughout the day.
 We obtained all of these dates and times from the oﬃce of the secretary of the
 Federal Reserve Board.
 
+Do Actions Speak Louder Than Words?
 61
 communicated to ﬁnancial markets through the size and type of open
 market operation. Thus, prior to 1994, the date and time of a mone-
@@ -282,6 +293,8 @@ Credit Markets column of The Wall Street Journal regarded as a clear signal of
 the Federal Reserve’s intentions, as reported by Kuttner (2003). This is more of
 an issue prior to 1990 than for our sample period in this paper.
 
+62
+International Journal of Central Banking
 May 2005
 no eﬀect on asset prices, a hypothesis that is conﬁrmed by Kuttner
 (2001). Thus, using the raw changes in the federal funds rate target as
@@ -323,6 +336,7 @@ icy move (see panel b). The FOMC reduced its target for the federal
 funds rate from 4 percent to 3.75 percent that morning, but given
 that this date precedes 1994, the FOMC did not issue a press release
 
+Do Actions Speak Louder Than Words?
 63
 Figure 1. Intraday Trading in Federal Funds Futures
 Contracts
@@ -435,6 +449,8 @@ rate to move quickly to the new target rate.8
 8The federal funds futures contract rate falls to 3.85 percent after the an-
 nouncement rather than the new funds rate target of 3.75 percent because nine
 
+64
+International Journal of Central Banking
 May 2005
 3. September 4, 1992, witnessed the release of a very weak em-
 ployment report at 8:30 a.m. (see panel c). In response to that report,
@@ -477,6 +493,8 @@ funds futures trading is often sparse early in our sample period, but becomes
 signiﬁcantly more dense around the times of macroeconomic data releases and
 monetary policy announcements.
 
+Do Actions Speak Louder Than Words?
+65
 similar to the daily measure: the average absolute diﬀerence between
 the daily and two intraday surprise measures is only about 2 bp, and
 the diﬀerence is 0 bp on many days. There are a few days, however,
@@ -489,16 +507,50 @@ ple of September 4, 1992, discussed previously. Figure 2 makes this
 point graphically: as can be seen in the top panel, the tight window
 Figure 2. Measures of Surprises in the Federal Funds Rate
 Target
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Tight Window vs. Daily
 Tight surprise
 Daily surprise
+ 0.0
+-0.1
+-0.5
+-0.4
+-0.3
+-0.2
+ 0.1
+ 0.2
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Tight Window vs. Wide Window
 Tight surprise
 Wide surprise
 Note: Hollow circles denote days of employment report releases.
 
+66
+International Journal of Central Banking
 May 2005
 and daily window surprises are in very close agreement on all but a
 handful of dates, almost all of which correspond to days on which the
@@ -539,6 +591,7 @@ accounted for a large portion of trading volume in Treasury securities over our
 sample. For equity prices, we obtained ﬁve-minute intraday quotes on the S&P
 500 index back to the mid-1980s, which are available from a variety of sources.
 
+Do Actions Speak Louder Than Words?
 67
 Table 1. Response of Asset Prices to Changes in the Federal Funds Rate
 Tight Window
@@ -684,6 +737,8 @@ December 2004 for S&P 500). Target factor and path factor are deﬁned in the ma
 consistent standard errors reported in parentheses. ∗, ∗∗, and ∗∗∗denote signiﬁcance at 10 percent, 5 percent,
 and 1 percent, respectively. See text for details.
 
+68
+International Journal of Central Banking
 May 2005
 a 1 percent fall in the S&P 500, and these estimates are highly sig-
 niﬁcant. The estimated coeﬃcients do not diﬀer greatly across the
@@ -725,37 +780,131 @@ sions and the daily regression become much smaller at horizons of
 Treasury yield regressions and graphs contain eighteen fewer observations (and
 only ﬁve employment report dates instead of eight).
 
+Do Actions Speak Louder Than Words?
+69
 Figure 3. Response of S&P 500 to Monetary Policy
 Surprises
+-2
+ 0
+ 2
+ 4
+ 6
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Tight Window
 Policy surprise
 Percent change in S&P 500
+-2
+ 0
+ 2
+ 4
+ 6
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Wide Window
 Policy surprise
 Percent change in S&P 500
 Percent change in S&P 500
+-2
+ 0
+ 2
+ 4
+ 6
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Daily
 Policy surprise
+Note: Hollow circles denote days of employment report releases.
 
+70
+International Journal of Central Banking
 May 2005
 Figure 4. Response of Three-Month Treasury Yield to
 Monetary Policy Surprises
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Tight Window
 Policy surprise
 Change in Treasury yield
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Wide Window
 Policy surprise
 Change in Treasury yield
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Daily
 Policy surprise
 Change in Treasury yield
+Note: Hollow circles denote days of employment report releases.
 
+Do Actions Speak Louder Than Words?
 71
 two years or more, but this observation is somewhat misleading, as a
 single outlier, January 3, 2001, pulls the daily estimate toward the in-
@@ -798,21 +947,71 @@ notes, which gives us the forward rate from ﬁve to ten years ahead, but not fo
 ﬁner subintervals. The ﬁve-year-ahead ﬁve-year rate may not capture movements
 in far-ahead forward rates as well as the nine-year-ahead one-year rate.
 
+72
+International Journal of Central Banking
 May 2005
 Figure 5. Response of Ten-Year Treasury Yield to
 Monetary Policy Surprises
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Tight Window
 Policy surprise
 Change in Treasury yield
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Wide Window
 Policy surprise
 Change in Treasury yield
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
+ 0.3
+-0.5
+-0.4
+-0.3
+-0.2
+-0.1
+ 0.0
+ 0.1
+ 0.2
 Percentage points
 Daily
 Policy surprise
+Change in Treasury yield
+Note: Hollow circles denote days of employment report releases.
 
+Do Actions Speak Louder Than Words?
 73
 2.
 The Eﬀects of FOMC Statements on Asset Prices
@@ -854,6 +1053,8 @@ information about the future path of interest rates, policymakers’ objectives 
 preferences, and perhaps the future paths of output and inﬂation, if the FOMC
 possesses private information about these latter two variables.
 
+74
+International Journal of Central Banking
 May 2005
 be tested against the alternative that X is described by k > k0
 factors by measuring the minimum distance between Cov(X) and
@@ -896,6 +1097,7 @@ appendix for details. Avoiding overlap is desirable because very similar assets 
 tend to covary strongly, producing an additional factor even if that variation is
 orthogonal to all of the other assets in X.
 
+Do Actions Speak Louder Than Words?
 75
 Table 2. Tests of Number of Factors Characterizing Monetary Policy Announcements
 Treasury Yields and Stock Prices
@@ -953,6 +1155,8 @@ yields comprise three-month, six-month, two-year, ﬁve-year, and ten-year yield
 rates comprise one- and three-month-ahead federal funds futures rates (with scale adjustment for timing of FOMC
 meetings within the month) and two-, three-, and four-quarter-ahead eurodollar futures rates.
 
+76
+International Journal of Central Banking
 May 2005
 2.2
 Estimation of the Two Factors
@@ -995,6 +1199,7 @@ that F1 and F2 look very much like “level” and “slope” factors from that
 ture, although our sample diﬀers from that literature in that we focus exclusively
 on the brief intervals around monetary policy announcements.
 
+Do Actions Speak Louder Than Words?
 77
 Z2, which are still orthogonal and explain the matrix X to exactly
 the same extent that F1 and F2 did, but for which the second factor
@@ -1037,6 +1242,8 @@ to white noise rather than to Z1. In this respect, Z1 is a better measure of the
 important component of funds rate surprises than is the standard measure based
 on the current-month futures rate.
 
+78
+International Journal of Central Banking
 May 2005
 as the surprise change in the funds rate target, we normalize its scale
 so that a change of .01 in Z1 corresponds to a surprise of 1 bp in
@@ -1076,6 +1283,7 @@ small.
 19These scale normalizations are performed for the July 1991–December 2004
 sample, the period for which we have data on U.S. Treasury yields.
 
+Do Actions Speak Louder Than Words?
 79
 Figure 6. Monetary Policy Surprises as Two Factors
 -50
@@ -1140,6 +1348,8 @@ and dummy variable indicating presence of an FOMC statement.
 Heteroskedasticity-consistent standard errors reported in parenthe-
 ses. ∗∗∗denotes signiﬁcance at 1 percent level.
 
+80
+International Journal of Central Banking
 May 2005
 reject the hypothesis that FOMC statements and the path factor are
 unrelated.20
@@ -1182,6 +1392,7 @@ be due to the release of other important news in the same thirty-minute window
 as the monetary policy announcements. We found no such confounding news
 releases.
 
+Do Actions Speak Louder Than Words?
 81
 Table 4. Ten Largest Observations of the Path Factor
 Z1
@@ -1255,6 +1466,8 @@ First intermeeting move since 1994 and statement pointing to “unsettled condi-
 tions in ﬁnancial markets... restraining aggregate demand” increases expectations
 of further easings
 
+82
+International Journal of Central Banking
 May 2005
 of this ﬁnding is that changes in the federal funds rate target it-
 self are immediately and clearly observable to all ﬁnancial market
@@ -1296,6 +1509,7 @@ were based on 1,000 repetitions; in each repetition, we sampled 138 new observa-
 tions from the data with replacement, took the two largest principal components
 from the synthetic futures data, rotated and normalized them, and regressed the
 
+Do Actions Speak Louder Than Words?
 83
 Table 5. Response of Asset Prices to Target and Path Factors
 One Factor
@@ -1412,6 +1626,8 @@ S&P 500). Target factor and path factor are deﬁned in the main text. Heteroske
 reported in parentheses. ∗, ∗∗, and ∗∗∗denote signiﬁcance at 10 percent, 5 percent, and 1 percent, respectively. See text
 for details.
 
+84
+International Journal of Central Banking
 May 2005
 As we would expect from the close correspondence between our
 target factor and the funds rate target surprises in section 1 (and
@@ -1453,6 +1669,7 @@ MP Surprise on the path factor in table 5 is not exactly zero because it is repo
 for the July 1991–December 2004 sample, for comparability to the Treasury yield
 responses.
 
+Do Actions Speak Louder Than Words?
 85
 in recent years when target funds rate changes have often been well-
 anticipated.
@@ -1494,6 +1711,8 @@ the future path of output or inﬂation. However, as in all of the previous lite
 those authors did not consider changes in what we call the path factor, which
 our results suggest could be more informative about these variables.
 
+86
+International Journal of Central Banking
 May 2005
 the minutes release on that date many of the features of an FOMC
 statement: for example (and in contrast to speeches or testimony by
@@ -1534,6 +1753,7 @@ statements likely exert their eﬀects on ﬁnancial markets through
 their inﬂuence on ﬁnancial market expectations of future policy ac-
 tions. Viewed in this light, our results do not indicate that policy
 
+Do Actions Speak Louder Than Words?
 87
 actions are secondary so much as that their inﬂuence comes earlier—
 when investors build in expectations of those actions in response to
@@ -1571,6 +1791,8 @@ noise disturbances. We wish to test the hypothesis that X was gen-
 erated by k0 factors against the alternative that X was generated
 by k > k0 factors. We do this by computing the distance between
 
+88
+International Journal of Central Banking
 May 2005
 the covariance matrix of the data, X, and the set of all covariance
 matrices corresponding to factor models (A1) with k0 factors.
@@ -1610,6 +1832,7 @@ price of the second, third, and fourth eurodollar futures contracts,
 which have 1.5, 2.5, and 3.5 quarters to expiration on average (eu-
 rodollar futures have expiration dates that lie about two weeks before
 
+Do Actions Speak Louder Than Words?
 89
 the end of each quarter).27 The ﬁrst two columns of X are essen-
 tially the changes in the current-month and three-month-ahead fed-
@@ -1658,6 +1881,8 @@ a very large scale factor in (A5), which could unduly magnify changes in bid-ask
 spreads or other factors, since federal funds futures are only priced to the nearest
 half basis point.
 
+90
+International Journal of Central Banking
 May 2005
 premium ρ in this narrow window of time is small in comparison
 to the change in expectations itself. Piazzesi and Swanson (2004)
@@ -1707,6 +1932,7 @@ of the federal funds rate with the smallest average term premium; Piazzesi and
 Swanson (2004) estimate to what extent risk premia in these markets vary over
 time; and Kuttner (2001) discusses the construction and some uses of mp1.
 
+Do Actions Speak Louder Than Words?
 91
 where
 U =

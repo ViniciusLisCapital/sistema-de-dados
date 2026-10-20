@@ -104,8 +104,8 @@ class TempVault:
         vault.OBSIDIAN, vault.CONCEPTS = self.saved
         self.tmp.cleanup()
 
-    def check(self):
-        return vault.check("mp", NAME)
+    def check(self, meta=None):
+        return vault.check("mp", NAME, meta=meta or {})     # {}: never the real workbook
 
 
 # ── numbers ──────────────────────────────────────────────────────────────────
@@ -178,6 +178,52 @@ def test_check_failures():
         assert any("does not link back" in p for p in r["problems"]), r["problems"]
     with TempVault(note=None) as v:
         assert not v.check()["ok"]
+
+
+def test_source_line_may_take_the_tracker_biblio():
+    """A book chapter's clean_md has no title page: the Source line may cite the tracker row
+    (2nd ed., 2015), and only the Source line."""
+    src = NOTE.replace("Carnegie-Rochester Conference Series", "Monetary Policy (2nd ed.), 2015")
+    meta = {"Name": "Monetary Policy (2nd ed.)", "Date": "2015"}
+    with TempVault(note=src) as v:
+        assert not v.check()["ok"]                          # 2015 is not in the clean_md
+        assert v.check(meta)["ok"], v.check(meta)["problems"]
+    body = NOTE.replace("Written in 1993", "Written in 2015")
+    with TempVault(note=body) as v:
+        assert not v.check(meta)["ok"], "the biblio only counts on the Source line"
+
+
+def test_concept_numbers():
+    """A linked line is checked against the clean_md of the notes it links; an unlinked line
+    against every source of the page; a mental model stands for its own section numbers."""
+    page = f"""# Taylor rule
+
+## Definition
+
+A weight of 0.5 on the gap, 2 percent target. Taylor (1993) and Doe (2000).
+
+| [[mp/synthesis/{NAME}\\|Taylor 1993]] | correlation .73 |
+| [[mp/synthesis/other_paper (Doe, 2000)]] | coefficient 0.42 |
+
+- [[verde_mp_mental_models]] — 3.2–3.4: carry as support
+"""
+    with TempVault(concept=page) as v:
+        (v.root / "mp/synthesis/other_paper (Doe, 2000).md").write_text("x", encoding="utf-8")
+        (v.root / "mp/clean_md/other_paper (Doe, 2000).md").write_text("a coefficient of 0.42", encoding="utf-8")
+        (v.root / "mp/mental_models").mkdir()
+        (v.root / "mp/mental_models/verde_mp_mental_models.md").write_text("### 3.2\n### 3.4", encoding="utf-8")
+        assert vault.check_concept("taylor_rule")["ok"], vault.check_concept("taylor_rule")["problems"]
+        for old, new in ((".73", "0.74"), ("0.42", "0.5"), ("0.5 on", "0.6 on"), ("3.4", "3.5")):
+            (v.root / "concepts/taylor_rule.md").write_text(page.replace(old, new, 1), encoding="utf-8")
+            assert not vault.check_concept("taylor_rule")["ok"], (old, new)
+        # 0.5 is in Taylor's clean_md, not in Doe's: a line linking only Doe fails on it
+        (v.root / "concepts/taylor_rule.md").write_text(page.replace("coefficient 0.42", "coefficient 0.5"), encoding="utf-8")
+        assert not vault.check_concept("taylor_rule")["ok"]
+        # the note's own check sees the patch it added (the row linking it), not the rest
+        (v.root / "concepts/taylor_rule.md").write_text(page.replace("correlation .73", "correlation 0.74"), encoding="utf-8")
+        assert any("number in concepts/taylor_rule.md" in p for p in v.check()["problems"])
+        (v.root / "concepts/taylor_rule.md").write_text(page.replace("coefficient 0.42", "coefficient 0.99"), encoding="utf-8")
+        assert v.check()["ok"], v.check()["problems"]
 
 
 def test_list_states():

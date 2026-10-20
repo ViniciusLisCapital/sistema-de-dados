@@ -1,4 +1,5 @@
 W o r k i n g PaPe r S e r i eS
+no 8 9 8 / M ay 2 0 0 8
 Central Bank
 CoMMuniCation and
 Monetary PoliCy
@@ -8,6 +9,8 @@ by Alan S. Blinder, Michael Ehrmann,
 Marcel Fratzscher, Jakob De Haan
 and David-Jan Jansen
 
+W O R K I N G P A P E R S E R I E S
+N O 8 9 8 / M AY 2 0 0 8
 CENTRAL BANK COMMUNICATION
 AND MONETARY POLICY
 A SURVEY OF THEORY AND
@@ -18,13 +21,20 @@ and David-Jan Jansen 5
 In 2008 all ECB
 This paper can be downloaded without charge from
 publications
+feature a motif http://www.ecb.europa.eu or from the Social Science Research Network
 taken from the
+10 banknote. electronic library at http://ssrn.com/abstract_id=1120764
 1 This paper is forthcoming in the Journal of Economic Literature. The authors are grateful to Sylvester Eijffinger, Gabriel Fagan, Andreas Fischer,
 Otmar Issing, Frederic Mishkin, Glenn Rudebusch, Pierre Siklos, Eric Swanson, Charles Wyplosz, and the editor and two anonymous
 referees of this Journal for valuable comments on earlier drafts. Views expressed in this article do not necessarily coincide with
 those of the European Central Bank, de Nederlandsche Bank, or the Eurosystem.
+2 Princeton University - Department of Economics, Princeton, NJ 08544-1021, USA; e-mail: blinder@princeton.edu
+3 European Central Bank, Kaiserstrasse 29, 60311 Frankfurt am Main, Germany; e-mail: michael.ehrmann@ecb.int
+and marcel.fratzscher@ecb.int
 4 University of Groningen - Department of Economics, Postbus 72, 9700 AB Groningen, NL; e-mail:
+jakob.de.haan@rug.nl
 5 De Nederlandsche Bank - Economics and Research Division, P.O. Box 98, 1000 AB
+Amsterdam, NL; e-mail: d.jansen@dnb.nl
 
 © European Central Bank, 2008
 Address
@@ -34,8 +44,11 @@ Postal address
 Postfach 16 03 19
 60066 Frankfurt am Main, Germany
 Telephone
++49 69 1344 0
 Website
+http://www.ecb.europa.eu
 Fax
++49 69 1344 6000
 All rights reserved.
 Any reproduction, publication and
 reprint in the form of a different
@@ -49,11 +62,13 @@ necessarily refl ect those of the European
 Central Bank.
 The statement of purpose for the ECB
 Working Paper Series is available
+from the ECB website, http://www.ecb.
 europa.eu/pub/scientifi c/wps/date/html/
 index.en.html
 ISSN 1561-0810 (print)
 ISSN 1725-2806 (online)
 
+CO N T E N T S
 Abstract 4
 Non-technical summary 5
 1 A Revolution in Thinking and Practice 7
@@ -133,6 +148,7 @@ about the role of financial market development and sophistication in incorporati
 messages generally find that markets move in the “right” direction—that is, what used to be
 called “announcement effects” help the central bank rather than hinder it. But there has been
 ECB
+Working Paper Series No 898 5
 May 2008
 
 relatively little such research to date, such that more evidence is required to ensure robustness of
@@ -166,6 +182,7 @@ eventually feed into the actual evolution of inflation, e.g. through correspondi
 and savings, investment and consumption decisions, and thus determine whether a central bank
 is able to achieve its policy objectives.
 ECB
+6 Working Paper Series No 898
 May 2008
 
 1. A Revolution in Thinking and Practice
@@ -205,6 +222,7 @@ and in central banking circles. It is no exaggeration to call this a revolution 
 1 For example, the basic idea was stated in Marvin Goodfriend (1991). We thank Michael Woodford for this
 reference.
 ECB
+Working Paper Series No 898 7
 May 2008
 
 These new ideas have made a mark on central bank practice as well. At the Federal
@@ -242,6 +260,7 @@ These real-world developments have spawned a huge new scholarly literature on
 central bank communication—almost all of it written in this decade. While this new
 literature includes some theoretical contributions, most of it is empirical; and this survey
 ECB
+8 Working Paper Series No 898
 May 2008
 
 reflects that weighting. Studies of how central bank communications create news focus on
@@ -280,6 +299,7 @@ bank communication that have been written in the last several years, mostly focu
 2 However, in the Bernanke case, the Fed was going to raise rates further. So disabusing markets of the false notion
 that the tightening cycle was finished probably did manage expectations in a constructive way.
 ECB
+Working Paper Series No 898 9
 May 2008
 
 experience of advanced economies. We take stock of what we now know about how central
@@ -321,6 +341,7 @@ t
 weaknesses of the expectations theory of the term structure are well known. We use it here only for illustrative
 purposes.
 ECB
+10 Working Paper Series No 898
 May 2008
 
 “signals”).4 Imagine that r in (1) is the short rate and R is the long rate. Then aggregate
@@ -328,6 +349,7 @@ demand depends on r, R, expected inflation ((cid:83)e ), and a host of other fac
 t
 be listed explicitly:
 (2) y = D(r -(cid:83)e , R -(cid:83)e , …) + (cid:304) ,
+t t t t t 2t
 The aggregate supply relation could (but need not) be something like the New
 Keynesian Phillips curve:
 (3) (cid:652) = (cid:533)E((cid:652) ) + (cid:534)(y – y* ) + (cid:304) ,
@@ -336,6 +358,7 @@ where (cid:652) is inflation and y and y* are, respectively, actual and potentia
 t t t
 model could be closed by appending a central bank reaction function (e.g., a “Taylor rule”):
 (4) r = G(y - y* , (cid:652) , (cid:652)* , … ) + (cid:304) .
+t t t t t 4t
 where (cid:652)* denotes the central bank’s inflation target.
 Now imagine that the economic environment is stationary (that is, equations (1)-(3)
 do not change over time), that the central bank is credibly committed to an unchanging
@@ -363,6 +386,7 @@ complex financial sector and/or more complex interactions between the real and f
 necessary for current purposes.
 5 See Blinder and Ricardo Reis (2005), especially pages 15-24.
 ECB
+Working Paper Series No 898 11
 May 2008
 
 virtually inevitable that the central bank will know more about its own thinking than the
@@ -401,6 +425,7 @@ and prices over the past two decades, on occasion spotting trends and developmen
 6 For example, King (2005, p. 12) suggests that, under inflation targeting, a good heuristic would be “expect
 inflation to be equal to target.”
 ECB
+12 Working Paper Series No 898
 May 2008
 
 they were evident to market participants. In a well-known paper, Christina Romer and
@@ -441,6 +466,7 @@ r
 8 We focus on interest rate expectations for simplicity. Expectations of inflation or even of output may be equally
 important.
 ECB
+Working Paper Series No 898 13
 May 2008
 
 (cid:120) the direct effects of central bank signals on expected future short rates: H in
@@ -482,6 +508,7 @@ volatility (Ehrmann and Fratzscher 2008).
 The theoretical literature has not generated clear conclusions regarding the optimal
 level of transparency (Petra Geraats 2002, Carin van der Cruijsen and Sylvester Eijffinger
 ECB
+14 Working Paper Series No 898
 May 2008
 
 2007). The models differ with respect to both which aspects of central bank transparency
@@ -522,6 +549,7 @@ does not know
 Jensen (2002).
 12
 ECB
+Working Paper Series No 898 15
 May 2008
 
 banks, and on the other hand, it serves as a coordination device for the beliefs of financial
@@ -557,6 +585,7 @@ to announce its decisions immediately in 1984 as follows:
 One danger in immediate release of the directive is that certain assumptions might
 be made that we are committed to certain operations that are, in fact, dependent on
 ECB
+16 Working Paper Series No 898
 May 2008
 
 future events, and these interpretations and expectations would tend to diminish our
@@ -595,6 +624,7 @@ critique of the Federal Reserve’s secrecy—written by a Fed employee.
 13 Among the many sources that could be cited, see Richard Clarida, Jordi Gali, and Mark Gertler (1999) or
 Woodford (2003).
 ECB
+Working Paper Series No 898 17
 May 2008
 
 3. Central bank communication in practice
@@ -633,6 +663,7 @@ Table A2.
 15 Even formulating an objective function may be a daunting task for a central bank. Some of the difficulties in
 doing so are described by Mishkin (2004) and Cukierman (2008).
 ECB
+18 Working Paper Series No 898
 May 2008
 
 learn about the “rule” both by watching what the central bank does and listening to what it
@@ -669,6 +700,7 @@ whose Monetary Policy Committee (MPC) members are individually accountable, and
 therefore need to have their votes recorded and scrutinized. Interestingly, dissents on the
 British MPC are much more frequent than they are on the FOMC, where decisions are
 ECB
+Working Paper Series No 898 19
 May 2008
 
 typically unanimous and dissent connotes fundamental disagreement.16 Instead of releasing
@@ -706,6 +738,7 @@ Hungary).
 and Nathan Sheets (2005), and Laurence H. Meyer (1998).
 17 See, e.g., Orphanides (2001).
 ECB
+20 Working Paper Series No 898
 May 2008
 
 The path of future policy rates
@@ -742,6 +775,7 @@ current information—and therefore subject to change. For example, the Riksbank
 (2008).
 19 The case in favor is made by Svensson (2006b) and Woodford (2005).
 ECB
+Working Paper Series No 898 21
 May 2008
 
 stresses the conditionality of its projected repo rate path by repeating the mantra: “It is a
@@ -779,6 +813,7 @@ only after a five-year lag.
 22 The central banks of the Czech Republic, Japan, New Zealand, Norway, Poland, Sweden, and Switzerland also
 hold regular press conferences.
 ECB
+22 Working Paper Series No 898
 May 2008
 
 there are four main differences. First, while providing background information on the
@@ -816,6 +851,7 @@ consensus that doing so leads to superior policy (Blinder, 2004, Chapter 2). But
 Willem Buiter (1999) and Issing (1999). One important argument in favor of publishing minutes is that they provide
 some information about the internal deliberations.
 ECB
+Working Paper Series No 898 23
 May 2008
 
 come in a wide variety of shapes and sizes. Blinder (2004) distinguishes among three types
@@ -854,6 +890,7 @@ t
 practices raises an obvious question: Are there better and worse ways of communicating?
 24 The FOMC is clearly becoming more genuinely collegial under Ben Bernanke.
 ECB
+24 Working Paper Series No 898
 May 2008
 
 This is clearly an empirical question—and a large one. The rest of this survey will suggest
@@ -894,6 +931,7 @@ As we have noted, central bank communications differ in many ways and are
 sometimes difficult to measure. So we focus first on relatively well-defined, high-frequency
 signals, such as announcements and speeches. It has become standard practice to identify
 ECB
+Working Paper Series No 898 25
 May 2008
 
 regular pre-scheduled communications (such as announcements of policy decisions) from
@@ -931,6 +969,7 @@ market participants. While this is an important first finding, it leaves several
 Their approach says nothing about whether the policymaker intended to move asset prices
 in the way they did. It also does not tell us whether the rise in volatility reflects an increase
 ECB
+26 Working Paper Series No 898
 May 2008
 
 in market uncertainty or a decrease in uncertainty that is outweighed by the immediate
@@ -970,6 +1009,7 @@ indicates a very tight policy stance, while 2 indicates a very loose policy stan
 their indicator is based on FOMC minutes. But it is a more informative measure of monetary policy, since it
 differentiates according to size as well as direction.
 ECB
+Working Paper Series No 898 27
 May 2008
 
 researchers are interested in testing market responses to communication, it may make sense
@@ -1006,6 +1046,7 @@ future short rates more accurate. Is it true?
 Presumably, central banks are most concerned with long-term predictability, which
 comes when the public develops a genuine understanding of the way the central bank thinks
 ECB
+28 Working Paper Series No 898
 May 2008
 
 and operates. This is what King (2000) meant by saying provocatively that a central bank
@@ -1043,6 +1084,7 @@ suggests that greater transparency also helped make policy implementation more e
 26 However, as more central banks begin to announce projected interest-rate paths, it will become possible to study
 the extent to which these forecasts are incorporated in yield curves.
 ECB
+Working Paper Series No 898 29
 May 2008
 
 Other types of central bank communication should also enhance predictability.
@@ -1080,6 +1122,7 @@ Another type of forward-looking information has been the subject of far more
 scholarly attention: the qualitative guidance provided by the Federal Reserve’s (and other
 central banks’) policy “bias” or “balance of risks.” As we will see in the next subsection,
 ECB
+30 Working Paper Series No 898
 May 2008
 
 these statements strongly affect financial markets. Surprisingly, however, their predictive
@@ -1113,6 +1156,7 @@ day. By contrast, when the bias was not released (dashed line), interest rates a
 later. Interestingly, T-bill rates started anticipating the Fed’s next rate move on the day of
 Chairman Greenspan’s testimony before the US Senate (day 11 in the chart).
 ECB
+Working Paper Series No 898 31
 May 2008
 
 Chart 1: Adjustment of market interest rates under alternative disclosure regimes: March
@@ -1125,6 +1169,7 @@ Chart 1: Adjustment of market interest rates under alternative disclosure regime
 5.45 5.2
 5.35 5.1
 5.25 5
+-4 -2 0 2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 2 4
 Federal funds target Jan/Feb 2000 Feb/Mar 1997
 Source: Ehrmann and Fratzscher (2007d). Note: Three-month money market rates for the 1997 tightening episode are shown on
 the right-hand scale whereas those for the 2000 episode are depicted on the left-hand scale. Both tightening days are scaled so as
@@ -1148,6 +1193,7 @@ The evidence obtained from various event studies demonstrates that central bank 
 can move financial markets substantially. An early contribution to this literature is Graeme
 Guthrie and Julian Wright (2000), who, without distinguishing among different types of
 ECB
+32 Working Paper Series No 898
 May 2008
 
 communication, provide compelling evidence that communication by the RBNZ has sizable
@@ -1188,6 +1234,7 @@ frequency data, the effects of other news gets mixed up with the communication e
 and Kohler (2004) and Jaghit Chadha and Charles Nolan (2001) also fail to identify effects of the Inflation Report
 on financial markets.
 ECB
+Working Paper Series No 898 33
 May 2008
 
 and speeches by central bank committee members for the Federal Reserve, the Bank of
@@ -1231,6 +1278,7 @@ Overall, the results from several countries are qualitatively consistent, even t
 heterogeneity in both communication practices and monetary policy strategies makes direct
 comparisons difficult. Central bank statements and speeches do get the attention of financial
 ECB
+34 Working Paper Series No 898
 May 2008
 
 market participants, which finds its way into market prices. The quantitative magnitudes
@@ -1269,6 +1317,7 @@ policy decisions in the minutes of policy meetings. For these to have meaningful
 28 For the US, this effect also incorporates any effects of the Congressional testimony that coincides with publication
 of the report, which might explain the relatively large effect that they find.
 ECB
+Working Paper Series No 898 35
 May 2008
 
 content for financial markets, however, they must be released before the subsequent
@@ -1302,6 +1351,7 @@ does contain news that is quickly incorporated into asset prices.
 30 For some empirical evidence, see Michel Beine, Gust Janssen, and Christelle Lecourt (2006), Fratzscher (2006),
 Jansen and De Haan (2007), Dominguez and Freyan Panthaki (2007), and Siklos and Bohl (forthcoming).
 ECB
+36 Working Paper Series No 898
 May 2008
 
 4.5 Uncertainty in central bank communication
@@ -1340,6 +1390,7 @@ institution like the ECB, it is particularly important that it sends clear and c
 wider public. … Speaking with one voice – or at least speaking ‘one language’ – is of particular importance for
 transparency and clarity in the case of the Eurosystem.”
 ECB
+Working Paper Series No 898 37
 May 2008
 
 There is also evidence that the voting records of the Bank of England’s MPC
@@ -1376,6 +1427,7 @@ international and national newspapers in the euro area. They find that the press
 take its cues from both prior market expectations and the inflationary environment. The tone
 of the reporting is generally more critical when a policy decision takes markets by surprise.
 ECB
+38 Working Paper Series No 898
 May 2008
 
 The decisions are also discussed less favorably if the most recent euro area inflation figures
@@ -1410,6 +1462,7 @@ insist that they are not inflation targeters, but share in the characteristic pr
 Kuttner 2004). Third, results seem to depend crucially on the choice of control group, which
 varies widely across studies.
 ECB
+Working Paper Series No 898 39
 May 2008
 
 Last, and certainly not least, there is a potentially serious endogeneity problem. Just
@@ -1447,6 +1500,7 @@ surprise component of macroeconomic releases. The second column indicates that m
 expectations of inflation over 10 years are also affected significantly. Gürkaynak et al. find
 similar results for the United Kingdom prior to the Bank of England’s independence, as
 ECB
+40 Working Paper Series No 898
 May 2008
 
 shown by the first set of results in Table 4. However, since the BoE became an independent,
@@ -1493,6 +1547,7 @@ Source: Gürkaynak et al. (2006). The coefficients denote the response of, respe
 compensation (based on the different reactions between the nominal and real one-year forward rate from nine to ten years ahead)
 to standardized macroeconomic surprises. ***/** indicate significance at the 99%/95% level.
 ECB
+Working Paper Series No 898 41
 May 2008
 
 These studies all suggest notable effects of inflation targeting on inflation
@@ -1526,6 +1581,7 @@ cross-sectional comparisons yield more ambiguous results; the choice of the cont
 is apparently crucial. So communication of an explicit inflation target is surely not the only
 way to anchor expectations.
 ECB
+42 Working Paper Series No 898
 May 2008
 
 5.2 Inflation and its dynamics
@@ -1562,6 +1618,7 @@ They also find that non-targeting countries have succeeded in achieving and main
 low inflation, but their control group consists of only two cases: the US and the European
 Economic and Monetary Union.
 ECB
+Working Paper Series No 898 43
 May 2008
 
 What is to be made of these disparate results? Mishkin and Schmidt-Hebbel (2007)
@@ -1602,6 +1659,7 @@ may reflect a kind of selectivity bias: They seem to accrue primarily to countri
 succeed in stabilizing inflation. There appears to be no systematic difference in the
 economic performance of low-inflation countries with and without explicit inflation targets.
 ECB
+44 Working Paper Series No 898
 May 2008
 
 Accordingly, we conclude that inflation targeting is one way, but certainly not the
@@ -1638,6 +1696,7 @@ more and better central bank communication contributed to this improvement by
 “reducing noise.” We are tempted to call this issue “closed” but, of course,
 future research can always overturn a previous conclusion.
 ECB
+Working Paper Series No 898 45
 May 2008
 
 (cid:120) That said, the predictability of monetary policy appears to be degraded
@@ -1674,6 +1733,7 @@ start of the decade, which was almost nothing. But there is a lot more to learn.
 the publication of projected paths for the central bank’s policy rate appears to be the “new
 frontier” in central bank communication. But it has been practiced in so few countries for so
 ECB
+46 Working Paper Series No 898
 May 2008
 
 few years that we have little empirical knowledge of its effects as yet. As more data
@@ -1694,4 +1754,5 @@ challenges to researchers—not least because financial market prices will be le
 But the issues are at least as important. In the end, it is the general public that gives central
 banks their democratic legitimacy, and hence their independence.
 ECB
+Working Paper Series No 898 47
 May 2008

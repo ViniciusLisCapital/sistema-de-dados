@@ -79,6 +79,10 @@ Three information sets:
 | [[kinea_fx_mental_models]] | Explicit definition used verbatim by the manager (1.3); "good vs. bad equilibrium" framework (1.4); Dec/2024–Jan/2025 case of carry failing without credibility (1.9) |
 | [[kapitalo_fx_mental_models]] | 6.6–6.7: 2024 fiscal-anchor credibility crisis and its pass-through to inflation; fiscal dominance and underpriced risk premia in 2025 |
 | [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]] | Primary source of the Blanchard mechanism: model of rate → default risk → depreciation, estimated on Brazil 1999–2004; a 100 bp Selic rise implies a 258 bp depreciation at 2002-type debt and risk aversion |
+| [[monetary_policy/synthesis/inflation_targeting_em (Mishkin, 2000)]] | Absence of outright fiscal dominance as a key prerequisite for inflation targeting in emerging markets; whether Brazil can solve its fiscal problems as the main doubt about its 1999 regime |
+| [[monetary_policy/synthesis/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012)]] | Distinguishes Type I (monetary financing) from Type II (crowding out in local-currency debt markets) fiscal dominance; for Brazil the first is judged no longer relevant and gross public debt is not a robust driver of real rates, while the fiscal balance is |
+| [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] | Default risk as the channel from monetary to fiscal dominance with dollar-linked debt: the EMBI's sensitivity to global risk rises non-linearly as the primary surplus falls short of the debt-stabilizing level; with a fixed surplus a Selic rise feeds a vicious circle, with a responsive surplus inflation targeting works (Brazil 1999–2003) |
+| [[monetary_policy/synthesis/credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005)]] | Reviews the "bad equilibrium" explanation of Brazil's high rates as internally consistent but empirically unestablished, and proposes jurisdictional uncertainty instead; its model keeps default risk exogenous, unlike Blanchard |
 
 ---
 
@@ -105,3 +109,7 @@ Itaú's assessment: Brazil in an intermediate regime, moving toward fiscal domin
 - [[kinea_fx_mental_models]] — explicit definition (1.3), good-vs-bad-equilibrium framework (1.4), and the Dec/2024–Jan/2025 empirical lesson that no nominal rate level anchors the currency without fiscal credibility (1.9)
 - [[kapitalo_fx_mental_models]] — 6.6–6.7: 2024 fiscal-anchor credibility crisis with pass-through to inflation, and 2025 fiscal dominance with underpriced risk premia
 - [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]] — the original model and estimates: under high debt, a high dollar share and high risk aversion, a rate rise depreciates the Real and inflation targeting becomes perverse
+- [[monetary_policy/synthesis/inflation_targeting_em (Mishkin, 2000)]] — fiscal dominance as the reason an inflation-targeting regime breaks down: deficits end in monetization or a large devaluation
+- [[monetary_policy/synthesis/high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012)]] — fiscal dominance as an explanation of Brazil's high real rates, weighed against public saving in a cross-country panel
+- [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] — why the fiscal rule decides whether a global shock leaves inflation targeting effective or sets off a debt–spread–depreciation spiral; Brazil 2002 as a short stay in the bad equilibrium
+- [[monetary_policy/synthesis/credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005)]] — an institutional alternative to fiscal dominance as the explanation of Brazil's high interest rates

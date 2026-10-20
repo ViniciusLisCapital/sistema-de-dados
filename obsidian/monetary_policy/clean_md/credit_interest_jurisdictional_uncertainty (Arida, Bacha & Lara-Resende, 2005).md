@@ -1,3 +1,4 @@
+8
 Credit, Interest, and 
 Jurisdictional Uncertainty: 
 Conjectures on the Case of 
@@ -32,6 +33,7 @@ credit market. The concept of jurisdictional uncertainty is distinguished
 from related risk concepts in section 8.4. The negative consequences of 
 jurisdictional uncertainty for private savings and
 
+266 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
 Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 267 
@@ -110,6 +112,8 @@ relevance,  however,  has  not  yet  been  established.  Moreover  interest rate
 smoothing    considerations  may  render    it  unattractive   in     practice.   A
 central bank  concerned  with  the  credibility  and  the  coherence  of   pol-
 
+268 
+P. Arida, E. L. Bacha, and A. Lara-Resende 
 Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 269 
 local long-term interest rate structure and the high short-term real interest 
@@ -179,30 +183,34 @@ denomination   of  the   contract,      long-term   credit  is  on1y   available
 the  jurisdiction  is  foreign.  It  is  the jurisdiction--the  uncertainties  associ-
 Table 8.1 
 Credit contracts in Brazil 
-
+ 
 Short term 
-
+ 
+ 
 Long term 
-
+ 
+ 
 Brazil 
 Offshore 
-
+ 
 Brazil 
 Offshore 
 Reais 
 Yes 
 Yes 
-
+ 
 No 
 No 
 Dollars 
 Yes a 
 Yes 
-
+ 
 No a 
 Yes 
 a Restrictions apply to private debtors.
 
+270 
+P. Arida, E. L. Bacha, and A. Lara-Resende 
 issuance of domestic debt with dollar indexation clauses but these 
 restrictions do not apply to the Treasury. There are short-term contracts 
 denominated in reais in both jurisdictions but  not  long-term  contracts. 
@@ -269,7 +277,7 @@ loss  of  value  of  long-term  financial  contracts, as a result of  the  mani-
 pulation  of  indexation,  changes  of  monetary  standard,  freezing  of 
 Tabela 8.2 
 Contract enforcement according to the Brazilian elite 
-
+ 
 Executive 
 Legislative 
 Judiciary 
@@ -382,6 +390,8 @@ to investors to hold short-term Brazilian government debt on-shore.
 To clarify our concept of  jurisdictional  uncertainty,  it  is  useful  to  spell 
 out  its characteristics  to  distinguish  these  from   related  concepts in  the
 
+274 
+P. Arida, E. L. Bacha, and A. Lara-Resende 
 Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 275 
 domestic monetary policy in a context of fixed exchange rates. We consider 
@@ -447,7 +457,7 @@ comfortable to lend to him for a long period, jurisdictional uncertainty will
 make his credit illiquid. If the original creditor needs 
 Consequent1y jurisdictional uncertainty distorts capital formation in three 
 different ways: 
-
+ 
 . Small and medium size firms, for which the cost of credit verification is 
 high, do not have access to long-term finance. Consequent1y their 
 investments are restricted by their profits. 
@@ -455,6 +465,7 @@ investments are restricted by their profits.
 with the risky consequences of currency mismatch. 
 . Cash-rich firms, small or large, tend to overinvest in their own businesses.
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 277 
 276 
 P, Arida, E. L. Bacha, and A. Lara-Resende 
@@ -523,9 +534,9 @@ are low and there exists a long-term credit market in domestic currency,
 certainly domestically, and also abroad 
 Table 8.3 
 Jurisdiction and currency convertibility 
-
+ 
 Jurisdiction 
-
+ 
 Currency 
 convertibility 
 Strong 
@@ -547,6 +558,7 @@ High short-term interest rates
 No long-term domestic credit 
 market
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 279 
 278 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -625,6 +637,7 @@ This section considers successively the allocation and growth distorting
 consequences of convertibility restrictions, artificial lengthening of public 
 debt maturities, compulsory saving funds, and "incomeless" taxes.
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 281 
 280 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -705,6 +718,8 @@ funds (FIFs),  enjoying   daily   liquidity,  if   not   automatic   drawing
 rights,  regardless  of  the  maturity  of  the  underlying debt instrument. 
 Thus  90  percent  of  the  federal  domestic  debt  can  be
 
+283 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 282 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
 said to have its maturity artificially lengthened through the intervention of the 
@@ -781,6 +796,7 @@ The quantitative importance of such compulsory saving mechanisms can
 be visualized in Brazil's 2002 consolidated national accounts (IBGE 2004).
 Gross national savings this year were R$249 billion. Social
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 285 
 284 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -857,6 +873,7 @@ value-added tax on consumption, to replace the existing state-level
 valued-added taxes on production, made any attempt at rational reform of 
 the tax system unviable.
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 287 
 286 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -1014,6 +1031,7 @@ E e
 ⎣
 ⎦
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 289 
 288 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -1082,6 +1100,7 @@ With the help of this simple model, it is possible to discuss the effects of a
 comprehensive program aimed at reducing the jurisdictional uncertainty in 
 terms of an inflation-targeting regime.
 
+Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 291 
 290 
 P. Arida, E. L. Bacha, and A. Lara-Resende 
@@ -1167,6 +1186,7 @@ Kiyotaki, N., and J. Moore. 2001. Evil is the root of all money. Claredon Lectur
 November 26. Discussion Paper 110. Edinburgh School of Economics. 
 Lamounier, B., and A. de Souza. 2002. As elites brasileiras e o desenvolvimento nacional: 
 fatores de consenso e dissenso. São Paulo: Instituto de Estudos Econômicos, Sociais e 
+Políticos de São Paulo. Available at: www.augurium.com.br/termometro.php.
 Chapter 8: Credit, Interest, and Jurisdictional Uncertainty 
 Jeanne, O. 2002. Why do emerging economies borrow in foreign currency. Prepared for 
 the Inter-American Development Bank Conference on Currency and Maturity Mismatch-

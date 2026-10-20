@@ -25,12 +25,18 @@ citation below). Some working papers may develop into other forms of publication
 Suggested citation:
 Eichengreen, B., and M. Kawai. 2014. Issues for Renminbi Internationalization: An Overview.
 ADBI Working Paper 454. Tokyo: Asian Development Bank Institute. Available:
+http://www.adbi.org/working-
 paper/2014/01/20/6112.issues.renminbi.internationalization.overview/
 Please contact the authors for information about this paper.
+Email: eichengr@berkeley.edu; mkawai@adbi.org
 Asian Development Bank Institute
 Kasumigaseki Building 8F
 3-2-5 Kasumigaseki, Chiyoda-ku
 Tokyo 100-6008, Japan
+Tel: +81-3-3593-5500
+Fax: +81-3-3593-5571
+URL: www.adbi.org
+E-mail: info@adbi.org
 
 ADBI Working Paper 454 Eichengreen and Kawai
 Abstract
@@ -54,6 +60,7 @@ political regime—to make the RMB a truly international reserve currency. Final
 explores the implications of RMB internationalization for the international monetary system.
 JEL Classification: F31, F32, F33, F41
 
+ADBI Working Paper 454 Eichengreen and Kawai
 Contents
 1. Introduction ................................................................................................................ 3
 2. The State of Play ....................................................................................................... 4
@@ -76,6 +83,7 @@ and Special Drawing Rights .....................................................
 6. Conclusion ............................................................................................................... 18
 References ......................................................................................................................... 20
 
+ADBI Working Paper 454 Eichengreen and Kawai
 1. INTRODUCTION
 Internationalization of the renminbi (RMB) is one of the more contentious and widely debated
 aspects of economic reform in the People’s Republic of China (PRC). Wider use of the RMB
@@ -126,7 +134,9 @@ against prioritizing currency internationalization and capital account liberaliz
 domestic financial development and reform. They worry that allowing capital account
 liberalization to get too far out ahead of domestic financial reform might raise the risk of just
 such a crisis.
+3
 
+ADBI Working Paper 454 Eichengreen and Kawai
 These are among the issues we seek to address in this paper. This overview is first
 concerned with establishing the facts. Most fundamentally, what is happening in terms of
 RMB internationalization? How, where, and why is the currency being adopted as an
@@ -176,7 +186,9 @@ strategy of gradualism in seeking to internationalize the RMB. In the first stag
 encouraged cross-border use of the currency for trade settlement. As firms exporting to the
 PRC have acquired RMB receipts, they were allowed to maintain those receipts in the form
 of RMB bank deposits in Hong Kong, China and, subsequently, other offshore financial
+4
 
+ADBI Working Paper 454 Eichengreen and Kawai
 centers. The banks and firms acquiring those balances were then permitted to use them for
 a gradually widening range of investments in the PRC. Meanwhile, the People’s Bank of
 China negotiated bilateral currency swap lines with foreign central banks to provide them
@@ -212,6 +224,7 @@ $ billion %
 40 4
 20 2
 0 0
+Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2 Q3 Q4 Q1 Q2
 2010 2010 2010 2010 2011 2011 2011 2011 2012 2012 2012 2012 2013 2013
 Volume of Cross-Border RMB Trade Settlement (left axis)
 Share of the PRC's RMB Trade Settlement in the PRC's Total Foreign Trade (right axis)
@@ -227,7 +240,9 @@ More recently, however, the ratio has narrowed. From 1:1.7 in 2011, it fell to 1
 half of 2013 (People’s Bank of China 2013). This trend is in line with the turnaround in
 expectations of a RMB appreciation since the latter part of 2011. Such consistent expansion
 in the utilization of RMB in trade settlement, despite diminished expectations of RMB
+5
 
+ADBI Working Paper 454 Eichengreen and Kawai
 appreciation in recent years, suggests that RMB internationalization is now being driven by
 fundamental changes rather than just by speculative motives.
 Together with the expansion in RMB trade settlement, RMB deposits in Hong Kong, China
@@ -273,7 +288,9 @@ creation of the Renminbi FDI scheme in October of the same year. Ever since data
 made available in early 2012, RMB-denominated and -settled FDI has accounted for about a
 third of the PRC’s total FDI flows (Figure 3).
 Figure 3: Renminbi-Denominated and -Settled Foreign Direct Investment
+6
 
+ADBI Working Paper 454 Eichengreen and Kawai
 $ billion %
 30 60
 55
@@ -317,7 +334,9 @@ in 2011, and to $7.1 billion in 2012. Issuance in the first 11 months of 2013 st
 billion (Figure 4), continuing the earlier upward trend. Major issuers of RMB bonds are
 financial institutions (Figure 4A), and a large portion of these issuances are made by firms
 from mainland PRC; Hong Kong, China; and the rest of the world (Figure 4B).
+7
 
+ADBI Working Paper 454 Eichengreen and Kawai
 Figure 4: Renminbi Bond Issuance in Hong Kong, China
 A. Renminbi Bond Issuance by Industry
 $ billion
@@ -362,7 +381,9 @@ December 2008 bilateral swap arrangement with the People’s Bank of China was f
 CNY180 billion, with a maturity of 3 years. Prior to its expiration in 2011, the PRC and the
 Republic of Korea then renewed the arrangement, doubling the amount of the swap to
 CNY360 billion. Where the Republic of Korea led, a variety of other PRC trading partners
+8
 
+ADBI Working Paper 454 Eichengreen and Kawai
 have followed. As of the end of October 2013, the PRC had signed fully 23 bilateral RMB-
 denominated swap arrangements with other economies (Table 1).1
 Table 1: Renminbi-Denominated Bilateral Currency Swap Agreements by the People’s
@@ -414,7 +435,9 @@ This number does not include the bilateral currency swap arrangements that the P
 Republic of Korea, Malaysia, the Philippines, and Thailand) of the ASEAN+3 countries between 2001 and 2006 under the
 Chiang Mai Initiative bilateral currency swap agreements. Three of the six (with Japan, Malaysia, and the Philippines) were
 denominated in RMB and the other three in US dollars.
+9
 
+ADBI Working Paper 454 Eichengreen and Kawai
 3. CAPITAL ACCOUNT LIBERALIZATION AND CURRENCY
 INTERNATIONALIZATION
 That successful internationalization of the RMB will require further liberalization of the PRC’s
@@ -462,7 +485,9 @@ conventional wisdom that short-term capital movements create greater risks than 
 foreign investments (Kawai 2007).
 2
 See Prasad and Rajan (2008) for issues of capital account liberalization.
+10
 
+ADBI Working Paper 454 Eichengreen and Kawai
 This strategy in turn, however, raises as many questions as it answers. Will it be possible to
 limit short-term flows as policy makers liberalize current account transactions and long-term
 capital flows, or will market participants be able to use “leads and lags” in trade invoicing and
@@ -514,7 +539,9 @@ PRC has a long-standing policy of controlling bank deposit interest rates, thoug
 rates have been liberalized. The more avenues PRC savers face for transferring funds
 internationally due to high rates of return abroad, the more domestic disintermediation will
 result. This implies that the banks will have to be put on a true commercial footing—it will no
+11
 
+ADBI Working Paper 454 Eichengreen and Kawai
 longer be possible to rely on them for policy lending—insofar as they are no longer the
 recipients of subsidized funding.
 This shift also implies that the country will have to move toward a more market-determined
@@ -564,7 +591,9 @@ This shift in relative prices could also come about through relatively high infl
 known economic and social costs.
 4
 See Lardy and Borst (2013) for issues of the PRC’s rebalancing.
+12
 
+ADBI Working Paper 454 Eichengreen and Kawai
 4. RENMINBI INTERNATIONALIZATION IN HISTORICAL
 PERSPECTIVE
 One way of gauging the scope for RMB internationalization is by comparing the PRC with
@@ -611,7 +640,10 @@ absolute or relative level of economic development. The answer is not self-evide
 5
 Here we draw on Eichengreen (2011).
 6
+This according to the Maddison database, see http://www.ggdc.net/maddison/maddison-project/data.htm.
+13
 
+ADBI Working Paper 454 Eichengreen and Kawai
 As for financial development, the ratio of bank deposits to GDP was 33% in the US in 1913;
 stock market capitalization as a share of GDP was 100%. In the PRC, stock market
 capitalization is on the order of 50% of GDP, while bank deposits are well in excess of 100%
@@ -662,7 +694,9 @@ to retreat from the global—including Asian—markets. Their declining global a
 presence had a negative impact on yen internationalization as cross-border bank loans,
 international bond issuance, and international trade denominated in yen progressively
 declined over time.
+14
 
+ADBI Working Paper 454 Eichengreen and Kawai
 Third, use of the Japanese yen in invoicing Japan’s trade was limited for structural reasons,
 as explained by Kawai (1996). Japan depended on the US as its major export market, and
 the US dollar was the dominant invoicing currency there. Japan’s neighbors also utilized the
@@ -714,7 +748,9 @@ permit successful currency internationalization. Can the PRC leadership grant in
 to its central bank and financial regulators, commercialize or even privatize the state-owned
 commercial banks, deregulate interest rates, and leave it at that? Or do these limited
 measures lead to a slippery slope in which (i) state-owned enterprises no longer enjoy
+15
 
+ADBI Working Paper 454 Eichengreen and Kawai
 privileged access to finance, eventually face hard budget constraints and ultimately are
 privatized; (ii) prices must be decontrolled more generally; and (iii) the state’s presence in
 the economy is systematically reduced?
@@ -764,7 +800,9 @@ Of course, the same arguments suggesting that two currencies can share the inter
 stage at a point in time also admit the possibility of more than two international reserve
 currencies. This suggests that PRC policy makers, when seeking to promote use of the RMB
 in trade settlements and international investment, should be cognizant of the possibility of
+16
 
+ADBI Working Paper 454 Eichengreen and Kawai
 competition not just from the US dollar but from other sources, whether additional advanced
 countries or other emerging markets.
 5.1 Implications for the International Monetary Fund and Special
@@ -813,7 +851,9 @@ stability of such a system, this history suggests, hinges on the stability of th
 issuing countries.
 Even if foreign exchange speculators have a tendency to follow trends, central bank reserve
 managers behave differently. They tend to act as contrarians, buying currencies when they
+17
 
+ADBI Working Paper 454 Eichengreen and Kawai
 depreciate and their share in the portfolio declines—thus acting like stabilizing speculators
 (Truman and Wong 2006). The euro crisis might seem to constitute a counterexample. As
 the crisis deepened and the euro depreciated in 2012, the world’s central banks actively
@@ -862,6 +902,11 @@ This according to the IMF’s Currency Composition of Official Foreign Exchange 
 March 2013).
 8
 For a more extended discussion of these points, see Gourinchas and Jeanne (2012).
+18
 
+ADBI Working Paper 454 Eichengreen and Kawai
 RMB are obvious candidates. Thus, the future of globalization may well turn on the success
 of the PRC’s efforts to internationalize the RMB.
+19
+
+ADBI Working Paper 454 Eichengreen and Kawai

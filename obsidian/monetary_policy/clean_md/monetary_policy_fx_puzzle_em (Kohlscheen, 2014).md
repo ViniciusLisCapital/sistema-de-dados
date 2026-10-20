@@ -3,6 +3,10 @@ CGC 00.038.166/0001-05
 Working Paper Series Brasília n. 259 Nov. 2011 p. 1-32
 
 Working Paper Series
+Edited by Research Department (Depep) – E-mail: workingpaper@bcb.gov.br
+Editor: Benjamin Miranda Tabak – E-mail: benjamin.tabak@bcb.gov.br
+Editorial Assistant: Jane Sofia Moita – E-mail: jane.sofia@bcb.gov.br
+Head of Research Department: Adriana Soares Sales – E-mail: adriana.sales@bcb.gov.br
 The Banco Central do Brasil Working Papers are all evaluated in double blind referee process.
 Reproduction is permitted only if source is stated as follows: Working Paper n. 259.
 Authorized by Carlos Hamilton Vasconcelos Araújo, Deputy Governor for Economic Policy.
@@ -12,6 +16,9 @@ Secre/Comun/Cogiv
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 1º andar
 Caixa Postal 8.670
 70074-900 Brasília – DF – Brazil
+Phones: +55 (61) 3414-3710 and 3414-3565
+Fax: +55 (61) 3414-3626
+E-mail: editor@bcb.gov.br
 The views expressed in this work are those of the authors and do not necessarily reflect those of the Banco Central or
 its members.
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced.
@@ -23,6 +30,8 @@ Banco Central do Brasil
 Secre/Surel/Diate
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 2º subsolo
 70074-900 Brasília – DF – Brazil
+Fax: +55 (61) 3414-2553
+Internet: <http://www.bcb.gov.br/?english>
 
 The impact of monetary policy on the exchange rate: puzzling
 evidence from three emerging economies*
@@ -52,6 +61,7 @@ Keywords: exchange rate; monetary policy; event study;
 JEL Classification: E40, E50, F31, F41
 * I thank Adriana Soares Sales, Anton Korinek, Paul de Grauwe and Wagner Piazza Gaglianone for
 useful comments.
+** Research Department, Central Bank of Brazil. E-mail: emanuel.kohlscheen@bcb.gov.br
 
 "If the relationship between interest rates and exchange rate movements were
 predictable, the effectiveness of the exchange rate transmission channel would be
@@ -457,6 +467,7 @@ egnahC
 4-
 6-
 Brazil: Full Sample (N=79)
+-3 -2 -1 0 1
 Change in Selic rate
 etar
 DSU/PXM
@@ -503,7 +514,9 @@ egnahC
 0
 2-
 Chile: Full Sample (N=58)
+-3 -2 -1 0 1
 Change in TPM
+18
 
 Figure 2 - The Effects of Exchange Market Intervention
 etar
@@ -572,6 +585,7 @@ egnahC
 1
 0
 1-
+0 .1 .2 .3 .4 .5
 Change in 90 days swap rate
 etar
 DSU/PLC
@@ -581,6 +595,7 @@ egnahC
 1
 0
 1-
+0 .1 .2 .3 .4 .5
 Change in 90 days swap rate
 etar
 DSU/PLC
@@ -590,7 +605,9 @@ egnahC
 1
 0
 1-
+0 .1 .2 .3 .4 .5
 Change in 90 days swap rate
+19
 
 Table 1
 The Impact of Monetary Policy on the Exchange Rate
@@ -647,6 +664,7 @@ Durbin score (chi 2) 7.961** 7.184** 5.235* 5.871*
 Wu-Hausman (F) 3.138† 4.707* 2.252 3.619†
 Note: Robust standard errors. †, * and ** denote statistical significance at the 10%, 5% and 1%
 confidence levels, respectively.
+20
 
 Table 2
 BCB Monetary Policy Meetings
@@ -692,6 +710,7 @@ Meeting Exogeneity class Intervention Event ∆DI90 (b.p.) ∆e (BRL/USD)
 19/04/2006 A 1 2 0.440
 31/05/2006 A 0 -16 -1.269
 (continues on next page)
+21
 
 Table 2 (continuation)
 BCB Monetary Policy Meetings
@@ -737,6 +756,7 @@ Meeting Exogeneity class Intervention Event DI90 (b.p.) e (BRL/USD)
 19/01/2011 A 1 -2 0.006
 02/03/2011 C 1 GDP statistics released -1 -0.391
 20/04/2011 A 1 -2 -0.013
+22
 
 Table 3
 Banxico Monetary Policy Meetings
@@ -791,6 +811,7 @@ Meeting Exogeneity class Intervention Event ∆TIIE28 (b.p.) ∆e (MXP/USD)
 25/08/2006 A 1 -1 0.282
 22/09/2006 A 1 0 0.840
 27/10/2006 A 1 0 -0.205
+23
 
 Table 3 (continuation)
 Banxico Monetary Policy Meetings
@@ -846,6 +867,7 @@ Meeting Exogeneity class Intervention Event ∆TIIE28 (b.p.) ∆e (MXP/USD)
 04/03/2011 A 0 -1 -0.253
 15/04/2011 A 0 -3 -0.501
 27/05/2011 A 0 1 -0.599
+24
 
 Table 4
 BCCh Monetary Policy Meetings
@@ -910,6 +932,7 @@ Meeting Exogeneity class Intervention Event ∆swap90 (b.p.) ∆e (CLP/USD)
 17/03/2011 C 1 GDP statistics released 45 -1.059
 12/04/2011 A 1 9 -0.359
 12/05/2011 A 1 23 0.259
+25
 
 Table 5
 The Impact of Monetary Policy on the Exchange Rate - By Classes of Exogeneity
@@ -963,6 +986,7 @@ RMSE 0.764 0.766 0.589 0.544 0.595 0.539
 F / chi2 49.33** 46.22** 76.83** 108.09** 70.86** 99.85**
 Note: Robust standard errors are reported. †, * and ** denote statistical significance at the 10%, 5% and 1% confidence levels,
 respectively.
+26
 
 Table 6
 The Impact of Monetary Policy on the Effective Exchange Rate (basket of 4 currencies)
@@ -1015,6 +1039,8 @@ R2 0.471 0.524 0.286 0.358 0.293 0.372
 RMSE 0.805 0.791 0.662 0.601 0.665 0.595
 F / chi2 45.05** 49.47** 47.40** 59.98** 43.86** 59.46**
 Note: Robust standard errors are reported. †, * and ** denote statistical significance at the 10%, 5% and 1% confidence levels,
+respectively.
+27
 
 Table A1
 The Impact of Monetary Policy on the Exchange Rate (CDS)
@@ -1071,6 +1097,7 @@ RMSE 0.763 0.737 0.754 0.730
 F / chi2 59.59** 60.11** 56.88** 57.53**
 Note: Robust standard errors. †, * and ** denote statistical significance at the 10%, 5% and 1%
 confidence levels, respectively.
+28
 
 Table A2
 The Impact of Monetary Policy on the Exchange Rate - By Classes of Exogeneity (CDS)
@@ -1121,12 +1148,16 @@ R2 0.436 0.486 0.316 0.362 0.321 0.359
 RMSE 0.763 0.754 0.590 0.580 0.599 0.551
 F / chi2 59.59** 56.88** 113.82** 5.62** 114.24** 92.14**
 Note: Robust standard errors are reported. †, * and ** denote statistical significance at the 10%, 5% and 1% confidence levels,
+respectively.
+29
 
 Banco Central do Brasil
 Trabalhos para Discussão
 Os Trabalhos para Discussão do Banco Central do Brasil estão disponíveis para download no website
+http://www.bcb.gov.br/?TRABDISCLISTA
 Working Paper Series
 The Working Paper Series of the Central Bank of Brazil are available for download at
+http://www.bcb.gov.br/?WORKINGPAPERS
 221 Financial Instability and Credit Constraint: evidence from the cost of Nov/2010
 bank financing
 Bruno S. Martins
@@ -1157,6 +1188,7 @@ Imperfections
 P. R. Agénor, K. Alper and L. Pereira da Silva
 232 Modeling Default Probabilities: the case of Brazil Jan/2011
 Benjamin M. Tabak, Daniel O. Cajueiro and A. Luduvice
+30
 
 233 Emerging Floaters: pass-throughs and (some) new commodity Jan/2011
 currencies
@@ -1201,6 +1233,7 @@ Benjamim M. Tabak, Daniel O. Cajueiro and Alexandre B. Sollaci
 land
 Helder Ferreira de Mendonça, Délio José Cordeiro Galvão and Renato Falci
 Villela Loures
+31
 
 249 Directed clustering coefficient as a measure of systemic risk in complex Aug/2011
 banking networks
@@ -1230,3 +1263,4 @@ Clodoaldo Aparecido Annibal e Sérgio Mikio Koyama
 258 Bancos Oficiais e Crédito Direcionado – O que diferencia o mercado de Nov/2011
 crédito brasileiro?
 Eduardo Luis Lundberg
+32

@@ -315,6 +315,7 @@ is perfectly conceivable that the relative sizes of money-demand and
 credit-demand shocks will revert once again to what they were earlier.
 Rather, the message of this paper is that a more symmetric treatment of money
 and credit is feasible and appears warranted.
+10
 
 FOOTNOTES
 *Princeton University. We are grateful to the NSF for supporting this
@@ -341,6 +342,7 @@ ambiguities that do not arise in IS/LM. Virtually all of these are of the
 following type: some comparative-statics derivative is the sum of several
 terms, one of which has the "wrong" sign. Every such case can be resolved by
 invoking one of the following three plausible assumptions:
+11
 
 1. The income elasticities of the demand functions for money and
 loans are not too different.
@@ -364,3 +366,4 @@ vector-autoregression and looked at correlations between VAR residuals.
 and twice lagged logs of real government purchases, real exports, bank
 reserves, and a supply shock variable which is a weighted average of the
 relative prices of energy and agricultural products.
+12

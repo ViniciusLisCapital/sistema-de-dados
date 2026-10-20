@@ -29,7 +29,9 @@ rates have stayed comfortably above zero, and therefore central banks
 have no longer found themselves "pushing on a string." Also, the 
 experience of the 1930s itself has been reinterpreted, most notably by 
 1. Hicks (1937). 
+137
 
+138 
 Brookings Papers on Economic Activity, 2:1998 
 Milton Friedman and Anna Schwartz.2 Emphasizing broad aggregates 
 rather than interest rates or the monetary base, Friedman and Schwartz 
@@ -111,6 +113,8 @@ My theoretical analysis also appears to refute two widely held be-
 liefs. First, international capital flows, which allow a country to export 
 savings to the rest of the world, are not a surefire guarantee against a
 
+140 
+Brookings Papers on Economic Activity, 2:1998 
 liquidity trap; because goods markets remain far from perfectly inte- 
 grated, the required real interest rate in terms of domestic consumption 
 can be negative even if capital is perfectly mobile and there are positive- 
@@ -147,6 +151,7 @@ stance. Popular discussion of the current situation has a strong tendency
 to plunge too quickly into the specifics, to cite one or another structural 
 issue as the problem, missing the central point that whatever the details
 
+Paul R. Krugman 
 141 
 of its history, Japan is now in a liquidity trap, so that the generic issues 
 surrounding such traps apply. 
@@ -192,6 +197,8 @@ rather than in prices. However, this has nothing to do with the puzzle of a situ
 which increases in outside money can raise neither output nor prices, and indeed seem 
 powerless to prevent deflationary pressures.
 
+142 
+Brookings Papers on Economic Activity, 2:1998 
 the real problem is that Japan's banks are troubled, and hence that the 
 Bank of Japan cannot increase monetary aggregates; but outside money 
 is supposed to raise prices regardless of the details of the transmission 
@@ -232,6 +239,7 @@ noticed that to say that monetary expansion is ineffective at raising output is 
 to saying that it is ineffective at fighting deflation, and that this conflicts with the almost 
 universally held belief in the near neutrality of money.
 
+Paul R. Krugman 
 143 
 hoc to be worthy of serious consideration. Some of us do not share that 
 view and continue to regard Hicks's construction as a very useful heu- 
@@ -275,6 +283,8 @@ central bank is able to engage in open market operations during the
 beginning of period capital market, by buying or selling bonds. Second, 
 at the end of the period the government can collect or distribute lump
 
+144 
+Brookings Papers on Economic Activity, 2:1998 
 sum taxes and transfers. The government must obey its own intertem- 
 poral budget constraint, which takes into account the seignorage that 
 results from money creation. 
@@ -315,6 +325,7 @@ indifferent. But the marginal utility of consumption in period one, given
 the assumed utility function, is c-P; the marginal utility in period two 
 is D(c*)-P. It follows that one must have
 
+Paul R. Krugman 
 145 
 Figure 1. Relationships between Prices and the Interest Rate 
 Interest rate 
@@ -347,6 +358,8 @@ the interest rate and the price level. It is also immediately apparent that
 an increase in the first period money supply will shift MM to the right, 
 leading to a higher price level and a lower nominal (but not real) interest
 
+146 
+Brookings Papers on Economic Activity, 2:1998 
 rate. While this is surely the normal case, however, there is also another 
 possibility. 
 The Liquidity Trap in a Flexible Price Economy 
@@ -385,6 +398,7 @@ and also (if it does succeed in raising the price level) the expected rate
 of inflation, Pt/P. 
 One knows that in this full-employment model the
 
+Paul R. Krugman 
 147 
 economy will have the same real interest rate whatever the central bank 
 does. Since the nominal interest rate cannot become negative, however, 
@@ -426,6 +440,8 @@ now in order to provide inflation later. That is, if the current money
 supply is so large compared with the future supply that the nominal rate 
 is zero, but the real rate needs to be negative, P falls below P*; the
 
+148 
+Brookings Papers on Economic Activity, 2:1998 
 public then expects the price level to rise, which provides the necessary 
 negative real interest rate. And to repeat, this fall in the price level 
 occurs regardless of the current money supply, because any excess 
@@ -467,6 +483,7 @@ short to medium run, this paradox disappears. In this case, a committment to pri
 stability, measured either by a predetermined target level or by inflation from the current 
 level, will still imply a liquidity trap when the full-employment real rate is negative.
 
+Paul R. Krugman 
 149 
 Figure 2. Relationships between Output and the Interest Rate 
 Interest rate 
@@ -495,6 +512,8 @@ operation, however large, can get the economy to full employment. In
 short, the economy is in a classic Hicksian liquidity trap. 
 Under what conditions will such a liquidity trap occur? One possi-
 
+150 
+Brookings Papers on Economic Activity, 2:1998 
 bility is that P is high compared with P*; that is, people expect defla- 
 tion, so that even a zero nominal rate is a high real rate. The other 
 possibility, however, is that even if prices are expected to be stable, yf 
@@ -535,6 +554,7 @@ even if the rate of return on physical capital is as high as 5 or 6 percent.
 A further answer is that the rate of return on investment depends not 
 only on the ratio of capital's marginal product to its price, but also on
 
+Paul R. Krugman 
 151 
 the expected rate of change of that price. An economy in which Tobin's 
 q is expected to decline could offer investors a negative real rate of 
@@ -575,6 +595,8 @@ International Mobility of Goods and Capital
 Many writers on Japan have assumed that one solution to the apparent 
 excess of saving over investment, even at a zero interest rate, is simply
 
+152 
+Brookings Papers on Economic Activity, 2:1998 
 to invest the excess savings abroad. In a recent influential study, An- 
 drew Smithers suggests that over the long term, Japan should run capital 
 account deficits (and hence current account surpluses) of no less than 
@@ -615,6 +637,7 @@ But should one believe this story? While the open economy IS-LM
 model may be a highly useful heuristic device for thinking about short- 
 6. Smithers (1998).
 
+Paul R. Krugman 
 153 
 and medium-run macroeconomic issues, many economists doubt that it 
 is really trustworthy, especially in considering such fundamental ques- 
@@ -656,6 +679,8 @@ consumption of nontradables must equal production, the real interest
 rate in terms of nontraded goods will have to adjust to the path of 
 production. As a result, it is entirely possible that the market-clearing
 
+154 
+Brookings Papers on Economic Activity, 2:1998 
 real interest rate in terms of nontraded goods will be negative, even 
 with perfect capital mobility; and if the traded share in the consumption 
 basket is small enough, the overall domestic real rate may be negative 
@@ -695,6 +720,7 @@ Attempts to make sense of the origins and persistence of the Great
 Depression in the United States hinge crucially on how one interprets 
 the radical divergence between the growth of monetary base and that
 
+Paul R. Krugman 
 155 
 Figure 3. U.S. Monetary Trends, 1929-39 
 Index, 1929= 100 
@@ -744,6 +770,8 @@ other view, associated with Ben Bernanke and Russell Cooper and Dean
 Corbae, among others, is that the dramatic decline in the money mul- 
 7. See Friedman and Schwartz (1963).
 
+156 
+Brookings Papers on Economic Activity, 2:1998 
 tiplier was the signature of a major episode of financial disintermedia- 
 tion; and that this disintermediation, which may be thought of more 
 nearly as a supply-side than a demand-side phenomenon, was the cause 
@@ -784,6 +812,7 @@ necessary cash from their bank accounts.
 9. See Temin (1976). 
 10. Diamond and Dybvig (1983).
 
+Paul R. Krugman 
 157 
 The determination of the real interest rate is somewhat more complex 
 in this setup, because while the representative agent assumption may 
@@ -825,6 +854,8 @@ aggregate slightly, but only because the public holds more currency;
 for deposits; and (3) reduce bank credit even more, because banks will 
 add to reserves.
 
+158 
+Brookings Papers on Economic Activity, 2:1998 
 The implications of this thought experiment should be obvious. If an 
 economy is truly in a liquidity trap, failure of broad monetary aggre- 
 gates to expand is not a sign of insufficiently expansionary monetary 
@@ -863,6 +894,7 @@ believes in Ricardian equivalence, this discussion is irrelevant, unless one bel
 a permanent tax cut will constrain future government purchases of goods and services. 
 A second, less obvious, point is that under liquidity trap conditions the multiplier on
 
+Paul R. Krugman 
 159 
 policy would surely have some impact. Two questions about that impact 
 follow, one qualitative and one quantitative. 
@@ -910,6 +942,8 @@ a massive military buildup was already under way). One's assessment of whether t
 economy had largely recovered from the Great Depression prior to the onset of massive 
 wartime spending partly depends on the choice of denominators. By 1940, real GDP
 
+160 
+Brookings Papers on Economic Activity, 2:1998 
 of that expansion was a sharp decline in real interest rates, which she 
 attributes to monetary policy (although most of the decline in her esti- 
 mate of the real interest rate is actually due to changes in the inflation 
@@ -951,6 +985,7 @@ prices-was the result of a rise in inflation expectations, which reduced real in
 when nominal rates were already at the floor. Without this expected inflation, the expansion 
 of monetary base that Romer emphasizes would have been ineffectual.
 
+Paul R. Krugman 
 161 
 only temporary monetary expansions are ineffectual. If a monetary 
 expansion is perceived to be permanent, it will raise prices (in a full- 
@@ -994,6 +1029,7 @@ should deflate at the rate of time preference, the proper interpretation
 thor's worldwide web site, "Japan's Trap," in May 1998. 
 15. Friedman (1969).
 
+162 
 Brookings Papers on Economic Activity, 2. 1998 
 of this logic is that the economy should deflate at the market-clearing 
 real rate of interest. For a liquidity trap economy, where that market- 
@@ -1033,6 +1069,7 @@ mates are correct, they suggest that in a large economy with fairly small
 16. Mundell (1963); Fleming (1962). 
 17. Frankel (1988).
 
+Paul R. Krugman 
 163 
 Table 1. Second Year Effects on the U.S. Exchange Rate and Current Account after 
 a Monetary Expansion to Raise Real GNP by 1 Percent 
@@ -1103,6 +1140,8 @@ pursue a Reagan-style expansion, in which the exchange rate appreciates substant
 However, given that Japan is having great difficulty achieving any type of recovery, 
 advocating a currency appreciation seems rather strange.
 
+164 
+Brookings Papers on Economic Activity, 2:1998 
 Table 2. Beggar Thy Neighbor Coefficients 
 7 
 p 
@@ -1155,6 +1194,7 @@ the Japanese economy is not much more than 0.2, the implication is
 that an inflationary policy that raised Japanese output by as much as 5 
 percent relative to baseline would require an expansion of the current
 
+Paul R. Krugman 
 165 
 Table 3. Depreciation Coefficients 
 7 
@@ -1209,6 +1249,8 @@ suppose (an observation that actually applies to open economy macro-
 economics in general), I would highlight two conclusions in particular. 
 19. Smithers (1998).
 
+166 
+Brookings Papers on Economic Activity, 2:1998 
 First, one must be careful about making inferences from divergences 
 between the growth of monetary base and of broad monetary aggre- 
 gates. The failure of aggregates to grow need not indicate dereliction 
@@ -1245,6 +1287,8 @@ about 3.7 percent annually over the period. If one had projected that
 growth rate forward, one would have overpredicted 1998 output by 
 about 14 percent.
 
+Paul R. Krugman 
+167 
 Table 4. Economic Performance in Japan, 1981-97 
 Percent 
 Real GDP 
@@ -1255,11 +1299,101 @@ growth
 Inflation 
 rate 
 interest rate 
+1981 
+3.2 
+4.1 
+2.2 
 ... 
+1982 
+3.1 
+1.8 
+2.4 
 ... 
+1983 
+2.3 
+1.8 
+2.7 
 ... 
+1984 
+3.9 
+2.6 
+2.7 
+6.5 
+1985 
+4.4 
+2.1 
+2.6 
+6.6 
+1986 
+2.9 
+1.8 
+2.8 
+5.1 
+1987 
+4.2 
+0.1 
+2.8 
+4.2 
+1988 
+6.2 
+0.7 
+2.5 
+4.5 
+1989 
+4.8 
+2.0 
+2.3 
+5.4 
+1990 
+5.1 
+2.3 
+2.1 
+7.7 
+1991 
+3.8 
+2.7 
+2.1 
+7.2 
+1992 
+1.0 
+1.7 
+2.2 
+4.3 
 1981-92 average 
+3.7 
+2.0 
+2.5 
+5.7 
+1993 
+0.3 
+0.6 
+2.5 
+2.9 
+1994 
+0.6 
+0.2 
+2.9 
+2.3 
+1995 
+1.5 
+-0.6 
+3.1 
+1.2 
+1996 
+3.9 
+-0.5 
+3.4 
+0.6 
+1997 
+0.9 
+0.6 
+3.4 
+0.6 
 1993-97 average 
+1.4 
+0.1 
+2.4 
+1.5 
 Source: Initerniationial 
 Financial Statistics, 1998. 
 The second feature is the low interest rates of recent years; Japanese 
@@ -1280,6 +1414,8 @@ For the United States, the output gap is usually estimated by com-
 bining an estimate of the natural rate of unemployment with an estimate 
 of the Okun's Law coefficient between changes in unemployment and
 
+168 
+Brookings Papers on Economic Activity, 2:1998 
 Figure 4. Okun's Law for Japan, 1982-91 
 Change in unemployment 
 0.3 - 
@@ -1325,6 +1461,7 @@ of these estimates, notably those of the International Monetary Fund,
 are based on the Hodrick-Prescott filter, which minimizes a weighted 
 sum of squared deviations of actual from potential output and squared
 
+Paul R. Krugman 
 169 
 Figure 5. U.S. Gross Domestic Product, 1919-39 
 In GDP 
@@ -1362,6 +1499,8 @@ Prescott filter to the United States in the interwar period, as shown in
 figure 5. For this figure, the smoothing parameter X is set at 25; but a 
 20. See Giorno and others (1995) for a description.
 
+170 
+Brookings Papers on Economic Activity, 2:1998 
 Figure 6. Output Gap for Japan, 1982-97 
 Percent 
 3 
@@ -1393,6 +1532,7 @@ the OECD's current method with the potential growth estimates that
 appear in the most recent OECD Economic Outlook. As recently as 
 21. The OECD methodology is described in Giorno and others (1995).
 
+Paul R. Krugman 
 171 
 Figure 7. OECD Estimates of Japanese Potential Growth, 1987-97 
 Percent 
@@ -1429,6 +1569,8 @@ Saving and Investment
 A liquidity trap occurs when desired saving exceeds desired invest- 
 ment at full employment, even at a zero short-term interest rate. As
 
+172 
+Brookings Papers on Economic Activity, 2:1998 
 Table 5. Private Consumption as a Share of GDP, Japan and the United States, 
 1991-97 
 Percent 
@@ -1485,6 +1627,7 @@ Another approach is to ask what the impact of such a monetary-fiscal
 switch would be in a variety of standard econometric models, such as 
 those considered in table 1. Table 6 reports estimates of the impact of
 
+Paul R. Krugman 
 173 
 Table 6. Effect on U.S. Short-Term Interest Rates of a Fiscal-Monetary Switch 
 Equivalent to a 1 Percent Decline in the Consumption Ratio 
@@ -1540,6 +1683,8 @@ spective potential growth.
 As noted above, there is considerable uncertainty about the actual 
 rate of Japanese potential growth in the 1990s. Nonetheless, it is likely
 
+174 
+Brookings Papers on Economic Activity, 2:1998 
 that there has been a slowdown in the rate of increase in total factor 
 productivity, even cyclically adjusted. It is certain, however, that Ja- 
 pan's long-run growth must slow, even at full employment, because of 
@@ -1579,6 +1724,7 @@ This may seem an odd question to ask. Disruption of financial inter-
 22. OECD Economic Outlook, December 1997, p. A23. 
 23. Organisation for Economic Co-operation and Development (1997, p. 113).
 
+Paul R. Krugman 
 175 
 Table 7. Japanese Financial Data, 1994-97 
 Index, 1994 = 100 
@@ -1635,6 +1781,8 @@ centered financial crisis: the kind of crisis that has afflicted its emerging-
 economy neighbors. 
 In the absence of a bank run, however, how would one expect a bank
 
+176 
+Brookings Papers on Economic Activity, 2:1998 
 of questionable solvency to behave? Would it restrict credit? The text- 
 book answer is just the opposite: as long as an insolvent or near insol- 
 vent bank is able to hold on to deposits thanks to government guarantee, 
@@ -1673,6 +1821,7 @@ the emerging economies of Asia; see McKinnon and Pill (1997); Krugman (1998);
 Corsetti, Pesenti, and Roubini (1998). 
 25. Cargill, Hutchinson, and Ito (1997, p. 121).
 
+Paul R. Krugman 
 177 
 A review of press reports also makes the reasons for the emergence 
 of credit constraints in late 1997 quite clear. The immediate forcing 
@@ -1713,6 +1862,7 @@ be offset with a looser monetary policy. Japan's problem is that because
 it is in a liquidity trap, the normal disconnect between microeconomic 
 and macroeconomic policy no longer applies.
 
+178 
 Brookings Papers otn Economic Activity, 2:1998 
 Policy Options and Their Consequences 
 Given all that I have said, it is useful to review Japan's policy options 
@@ -1756,6 +1906,7 @@ this paper's scope.
 government bond rates are now less than 0.7 percent, suggesting that investors expect 
 the country to be in or near a liquidity trap for at least a decade.
 
+Paul R. Krugman 
 179 
 This surely does not, however, mean that fiscal policy should be 
 ignored as part of the policy mix. On the general Brainard principle- 
@@ -1799,6 +1950,8 @@ become the Matt Drudge of the Asian crisis), proposals that Japan adopt
 an inflation target as an answer to its liquidity trap have become the 
 subject of widespread, if not always well-informed, discussion. The
 
+180 
+Brookings Papers on Economic Activity, 2:1998 
 logic of such an approach is laid out in the first part of this paper. In 
 Japan's case, there would be three main issues: implementation, the 
 appropriate target, and the likely effects. 
@@ -1839,6 +1992,7 @@ liquidity trap looks like a fairly long-term problem; also, investment
 and exchange rates are generally believed to be driven by long-term 
 interest rates. Therefore Japan probably requires a sustained period-
 
+Paul R. Krugman 
 181 
 Table 8. Reduction in U.S. Long-Term Interest Rates That Would Expand Real GNP 
 by 1 Percent 
@@ -1892,6 +2046,8 @@ raise nominal interest rates if the economy seems to be overheating-
 as long as the inflation target is met), how about 4 percent inflation for 
 fifteen years?
 
+182 
+Brookings Papers on Economic Activity, 2:1998 
 This target should not really be taken seriously. Rather, it should 
 serve mainly to stimulate serious research. And there is probably time 
 for such research, since it will take some time before the idea of man- 
@@ -1930,6 +2086,7 @@ dations. My claim is that strange as they may seem, these conclusions
 are the best guide available for dealing with Japan's malaise. 
 Nor is Japan, important as it is, the sole issue. Nobody thought that
 
+Paul R. Krugman 
 183 
 a liquidity trap could happen in Japan; now that it has, one should 
 wonder whether it could happen elsewhere. Germany and France cur- 
@@ -1966,6 +2123,8 @@ beginning, which must be repaid at the end. The government may,
 however, inject additional money into the economy via open market 
 operations, as described below.
 
+184 
+Brookings Papers on Economic Activity, 2:1998 
 Within each period, consumers must pay in cash before they receive 
 income from selling their own endowments. As in the basic model in 
 the text, they are able to trade cash for bonds at the beginning of the 
@@ -2016,6 +2175,7 @@ aTry,
 Assume, provisionally, that the nominal interest rate is positive. Then 
 the behavior of consumers and banks is straightforward. Consumers
 
+Paul R. Krugman 
 185 
 will borrow, establishing bank accounts equal to Pc, the amount they 
 will spend if they are type one; they will hold no cash. Banks, however, 
@@ -2052,6 +2212,8 @@ Consequences of Monetary Expansion
 IN THE TEXT, I introduce a simple traded-nontraded good model to 
 discuss the possibility of a liquidity trap despite the possibility of capital
 
+186 
+Brookings Papers on Economic Activity, 2:1998 
 movement. In that model a monetary expansion-current 
 money in a 
 positive interest environment or expected future money in a liquidity 
@@ -2111,6 +2273,7 @@ T)(1 P)CT( - P) - C( 1T)(
 - p)- 
 aCTaCN
 
+Paul R. Krugman 
 187 
 Finally, 
 a2U 
@@ -2184,7 +2347,9 @@ increase output and will, in any case, lead to an equiproportionate
 increase in prices. However, when interest rates are already "too low," 
 so that the economy is in a liquidity trap, monetary policy is powerless 
 to influence output or prices (in the IS-LM paradigm, the LM curve is 
+188
 
+Paul R. Krugman 
 189 
 horizontal). It is for this reason that the traditional way out of a liquidity 
 trap has been to rely on fiscal policy (an IS shift). 
@@ -2226,6 +2391,8 @@ be responsible and maintain price stability, will it be more or less
 difficult to convince us that they will steadfastly pursue an inflationary 
 policy? I would venture that such a promise would be difficult to sell,
 
+190 
+Brookings Papers on Economic Activity, 2:1998 
 just as any promise to hold to one policy is unconvincing, because of 
 time inconsistency. 
 For the sake of argument, assume that a central bank in a liquidity 
@@ -2266,6 +2433,7 @@ not much change the original
 analysis. I expect that Krugman's main conclusion from this exercise, 
 that liquidity traps can exist in modern economies, is correct. I do,
 
+Paul R. Krugman 
 191 
 however, take issue with some of the simplifying assumptions that he 
 makes to illustrate his point. 
@@ -2306,6 +2474,8 @@ Virtually free capital mobility is one of the features that distinguishes
 modern economies from the world that Keynes and Hicks knew. Can 
 negative real interest rates coexist with capital mobility? Or in other
 
+192 
+Brookings Papers on Economic Activity, 2:1998 
 words, if capital is free to move across national boundaries, under what 
 circumstances (if any) can the domestic real interest rate differ from 
 the world rate? In order to analyze this question, Krugman modifies his 
@@ -2347,6 +2517,7 @@ in this sector so that competitive forces can drive down future prices. I
 do not know to how much of the economy such a scenario applies; it 
 may not be very much.
 
+Paul R. Krugman 
 193 
 If the model's analysis of interest rates that differ from world rates 
 is not meant to apply to investment, it must therefore apply to con- 
@@ -2388,6 +2559,8 @@ associated with Japan, where the traditional budgetary austerity is com-
 monly thought to leave ample scope for stimulatory fiscal policy if 
 desired. Certainly that is the position of the United States in recent
 
+194 
+Brookings Papers on Economic Activity, 2:1998 
 years, as advanced in part by Lawrence Summers, a onetime MIT 
 professor. The theoretical limitations of models of Ricardian equiva- 
 lence are well-enough known that it is hardly worth cataloguing them 
@@ -2426,6 +2599,7 @@ less the Bank of Japan (BOJ) resigns itself to sustained inflation, the
 zero bound on nominal interest rates will present serious problems? Has 
 the BOJ so thoroughly convinced the public of its anti-inflation credi-
 
+Paul R. Krugman 
 195 
 bility that it has lost the power to rekindle inflation now that Japan 
 needs it? 
@@ -2466,6 +2640,8 @@ suggestion. But if the full-employment equilibrium (medium-term) real
 2. Fuhrer and Madigan (1997); Wolman (forthcoming); Orphanides and Wieland 
 (1998).
 
+196 
+Brookings Papers on Economic Activity, 2:1998 
 interest rate is indeed negative, then, as Krugman elegantly demon- 
 strates, inflation is eventually going to express itself in some form, no 
 matter what the BOJ does. For example, Krugman's first model illus- 
@@ -2505,6 +2681,7 @@ suggested by historical norms.
 Whether or not real interest rates need to be negative for fifteen years 
 or just for two or three years, it is hard to argue with the view that the
 
+Paul R. Krugman 
 197 
 time has come for Japan to risk some inflation. No one should seriously 
 believe that the BOJ would face any significant technical problems in 
@@ -2547,6 +2724,8 @@ to cleaning up its banks, what Japan needs most is real fiscal stimulus
 (as opposed to phony accounting). Krugman rightly notes that modern 
 models of how government spending affects output do not necessarily
 
+198 
+Brookings Papers on Economic Activity, 2:1998 
 yield a significant multiplier effect, even in the presence of Keynesian 
 price rigidities-a 
 result which does not in fact depend on whether one 
@@ -2591,6 +2770,7 @@ equilibrium real rate. See Obstfeld and Rogoff (1995).
 4. See Obstfeld and Rogoff (1996). 
 5. Eichengreen and Sachs (1985).
 
+Paul R. Krugman 
 199 
 lateral Japanese monetary expansion would almost certainly be a good 
 thing. But on top of a big monetary stimulus from Japan, it would be 
@@ -2632,6 +2812,8 @@ man overstated the difference between his notion of the liquidity trap
 and the original Keynesian liquidity trap; Friedman himself saw the 
 6. See Woodford (1998).
 
+200 
+Brookings Papers on Economic Activity, 2:1998 
 original liquidity trap as hinging just as much on intertemporal issues 
 as Krugman's modern version. The Keynesian trap reflected individu- 
 als' preference for holding money rather than long-term bonds, because 
@@ -2671,6 +2853,7 @@ take for the Bank of Japan to convince people that it would not even-
 tually deflate, given its strong perceived commitment to price stability. 
 In sum, he found it questionable whether either consumption or invest-
 
+Paul R. Krugman 
 201 
 ment spending would rise if Japan followed the paper's prescription. 
 He feared that the only mechanism that might work with Krugman's 
@@ -2712,6 +2895,8 @@ Gordon did not see why Krugman dismissed fiscal policy on the basis
 of Ricardian equivalence. He thought that the proper policy was a fiscal 
 expansion financed by money creation. Since the government would
 
+202 
+Brookings Papers on Economic Activity, 2:1998 
 not be issuing any debt, Ricardian equivalence would not apply. Gordon 
 believed that the U.S. evidence clearly showed that fiscal expansion 
 resulting from preparation for war was critical to ending the Depression. 
@@ -2751,6 +2936,7 @@ is widely perceived as having too much influence under the current
 regime, giving it more support would be unpopular. He also noted that 
 the Japanese Ministry of Finance believes strongly that it is irrespon-
 
+Paul R. Krugman 
 203 
 sible to have large budget deficits, and noted that this view was rein- 
 forced by some interpretations of the recent U -S. experience, according 
@@ -2778,3 +2964,6 @@ supervision. He noted that there are important constraints, however,
 and that the weight Japanese authorities placed on sticking to the Basle 
 capital requirements might explain why one observed signs of a credit 
 crunch.
+
+204 
+Brookings Papers on Economic Activity, 2:1998

@@ -28,6 +28,13 @@ Derived from staggered (Calvo) price setting: each period only a fraction 1−θ
 | [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]] | Continuous-time precursor: the rate of change of inflation falls with excess demand (a "higher-order" inverse Phillips curve), while in equilibrium inflation and excess demand move together in a policy-dependent way |
 | [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] | Slope estimated "very flat" from high-frequency responses of real rates and break-even inflation; ignoring the information effect makes it flatter still |
 | [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] | The forward-looking curve (6) in the calibrated model used to compare the pre- and post-1979 rules; a supply shock gives persistent inflation only under an accommodating rule |
+| [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] | Rewritten in the welfare-relevant output gap with a cost-push shock, (2); appendix 5.2 derives the shock from exogenous price- and wage-markup variations |
+| [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] | Price and wage inflation equations in the output gap and the real wage gap, (18) and (20); a weighted average of the two (composite inflation) obeys an NKPC in the output gap, (36) |
+| [[monetary_policy/synthesis/unemployment_nk_model_ch7 (Gali, 2015)]] | The New Keynesian Wage Phillips Curve (11): wage inflation depends on expected wage inflation and the unemployment gap, forward-looking and derived from first principles, unlike Phillips's original curve |
+| [[monetary_policy/synthesis/open_economy_monetary_policy_ch8 (Gali, 2015)]] | Open-economy NKPC in domestic inflation (37), with slope depending on openness and the trade elasticity; equal to the closed-economy slope when σ = η = 1 |
+| [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] | Small open economy NKPC in domestic inflation (40): same form as the closed economy, slope κα depending on openness and the trade elasticity, flatter with more openness if ση > 1 |
+| [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] | Hybrid NKPC (8) estimated by impulse-response matching: Calvo parameter 0.94 and indexation 0.91 under standard high-frequency identification, 0.88 and 0.00 once information shocks are purged — moderate rather than high nominal rigidity |
+| [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | Brazil 1999: hybrid estimates gave at least 60% weight to expected inflation, rejected by BCB staff as implying too much credibility and "almost no inertia"; an average of backward and forward curves was used instead |
 
 ## BRL / application to the current analysis
 
@@ -43,3 +50,10 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/staggered_prices (Calvo, 1983)]] — the staggered-pricing device the NKPC is derived from, and its own continuous-time inflation equation
 - [[monetary_policy/synthesis/information_effect_hf_identification (Nakamura & Steinsson, 2018)]] — backward-looking (indexed) Phillips curve whose estimated slope depends on how much of a policy surprise is read as information
 - [[monetary_policy/synthesis/monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000)]] — the Phillips curve block of the model in which estimated rules are evaluated for determinacy and volatility
+- [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] — the NKPC with a cost-push shock as the constraint of the optimal policy problem
+- [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] — price and wage Phillips curves with sticky wages, and the composite-inflation NKPC
+- [[monetary_policy/synthesis/unemployment_nk_model_ch7 (Gali, 2015)]] — the wage Phillips curve in the unemployment gap
+- [[monetary_policy/synthesis/open_economy_monetary_policy_ch8 (Gali, 2015)]] — the small open economy NKPC in domestic inflation
+- [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] — the canonical small open economy NKPC in domestic inflation and the output gap
+- [[monetary_policy/synthesis/information_shocks_policy_surprises (Jarocinski & Karadi, 2020)]] — Phillips curve parameters depend on purging information from policy shocks
+- [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — why a central bank may discount the forward-looking weight its own estimates give right after a regime change

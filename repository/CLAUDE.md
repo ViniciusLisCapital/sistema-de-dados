@@ -30,7 +30,9 @@ repository/
                                   atas (261), rpm (full text, last 3 years), rpm_paginas_projecao
                                   (110, only the projection pages the ETL parses)}.
                                   Written by the Copom ETL, not by ingestion/
-    trader/                     — 26 PDF (Trading Global Macro Markets), none extracted, scope undecided
+    trader/                     — 26 PDF, all ingested 2026-10-20: chapters of two Willer et al.
+                                  books (Trading Global Macro Markets, 2024; Trading Fixed Income
+                                  and FX in Emerging Markets, 2020), literature of a new trader agent
     fiscal_policy/, inflation/  — 1 PDF each, extracted
     economic_activity/, labor_market/ — empty, future pillars
   mental_model/<gestora>/       — asset-manager letters: raw_pdf/ + raw_md/ + clean_md/. The letters
@@ -73,8 +75,12 @@ is the rows marked No. The extraction quirks (two Caesar-shifted CGG files, lett
 handled by `ingestion/settings.yaml`; the two scans are not. Decide where to file Tambakis &
 Tarashev (2012), which also touches exchange rate.
 
-**Trader — scope undecided.** Decide whether it is a topical pillar or feeds a trading
-strategy/agent directly before processing chapters.
+**Trader — ingested, for a new agent.** Decided 2026-10-20: the literature of a new trader agent,
+not a topical pillar (`SISTEMA_AGENTES.md` I.II.vii). All 26 chapters ingested the same day; the
+2020 book's chapters use `pymupdf` (plumber leaves 40-180 cid glyphs each), the 2024 book's the
+default (pymupdf splits the drop cap). Known loss: rotated chart labels read backwards in the 2024
+chapters, body text intact. The Qual - Trader tab is curated (8 clusters by asset class), Notes has
+the scope. Next: `/vault trader`.
 
 **economic_activity / fiscal_policy / inflation / labor_market — placeholders.** Candidates listed in
 their Qual tabs of `agent_mapping/data_tracker.xlsx`.
@@ -93,9 +99,8 @@ the status lands in `agent_mapping/data_tracker.xlsx`.
 
 - **Revisit `clean_md`'s definition** (flagged 2026-08, not decided) — see the same item in
   [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md).
-- **Extend ingestion to `trader/`** (on hold, scope undecided). `exchange_rate` and
-  `monetary_policy` are fully ingested since 2026-10-20; the sources still to acquire are marked
-  "Acquisition deferred" in the tracker's Comments.
+- **`/vault trader`** (synthesis and concepts) and the design of the trader agent; the base is one
+  author team, worth widening (tracker Notes).
 - **Low priority — two file names list only one author** (breaks the naming rule, not the tracker
   match): `depreciation_pass_through (Goldfajn, 2000)` is Goldfajn & Werlang, and
   `padrao_transmissao_cambial (Cortapasso, 2023)` is Araújo, Caldarelli & Cortapasso. Renaming

@@ -12,6 +12,7 @@ Federal Reserve Bank of Atlanta
 Suggested Citation: Chang, Roberto; Velasco, Andres (1998) : Financial crises in emerging markets: a
 canonical model, Working Paper, No. 98-10, Federal Reserve Bank of Atlanta, Atlanta, GA
 This Version is available at:
+https://hdl.handle.net/10419/100746
 Standard-Nutzungsbedingungen: Terms of use:
 Die Dokumente auf EconStor diirfen zu eigenen wissenschaftlichen Documents in EconStor may be saved and copied for your personal
 Zwecken und zum Privatgebrauch gespeichert und kopiert werden. and scholarly purposes.
@@ -49,6 +50,7 @@ Street, 7” floor, New York, New York 10003, 212/998-8958, velasco @fasecon.eco
 Questions regarding subscriptions to the Federal Reserve Bank of Atlanta working paper series should be addressed to the
 Public Affairs Department, Federal Reserve Bank of Atlanta, 104 Marietta Street, NW, Atlanta, Georgia 30303-2713,
 404/521-8020. The full text of this paper may be downloaded (in PDF format) from the Atlanta Fed’s World-Wide Web
+site at http://www. frbatlanta.org/publica/work_papers/.
 
 Financial Crises in Emerging Markets:
 A Canonical Model
@@ -272,6 +274,7 @@ in periods 0 and 1, respectively, and let k be the amount invested in the domest
 6The Revelation Principle applied to the bank’s problem is that the Bayesian Nash equilibria of any game
 that the depositors may play can be replicated by the truthful equilibria of a game in which each depositor
 is asked to report her types. See [27] for an excellent introduction to the Revelation Principle.
+8
 
 asset. The bank maximizes 2.1 subject to:
 k<d+e 2.3
@@ -327,6 +330,7 @@ where 6 = ran is a coefficient in the unit interval. If the coefficient of relat
 oe +(1—
 aversion is exactly 1 (the case of log utility) we have 6 = X. In that case per capita con-
 sumption is y = Rw and x = w, and each set of consumers receives the technological return
+10
 
 corresponding to their period of consumption; patient consumers consume more because in-
 vestments kept until period 2 are more productive. If ¢ > 1 we have # > A, so that patient
@@ -353,6 +357,7 @@ We shall impose two additional assumptions on the problem. First, the bank must 
 a sequential service constraint which requires, loosely speaking, that the commercial bank
 attend to the requests of depositors on a first come-first served basis. The existence of
 sequential service constraints can be justified by more primitive features of the environment,
+11
 
 as suggested by Wallace (1988).
 Second, for our benchmark case we will assume that the bank is committed to repay any
@@ -384,6 +389,7 @@ while still having enough period 2 revenue to pay back loans totalling f.
 who have measure zero. Given this, the equilibrium definition must ensure that depositors assume that
 their impact on aggregate outcomes is negligible. In such case the appropriate equilibrium concept is that
 of Schmeidler (1973).
+12
 
 demand deposits may implement the social optimum. This is because this game has an
 honest equilibrium in which each agent withdrawal decision corresponds to her true type:
@@ -412,6 +418,7 @@ cannot be equilibrium bank runs. Hence, a bank run equilibrium exists if and onl
 bank is illiquid, in the sense of 2.14.
 Expression 2.14 is a condition on the solution of the social planning problem; one can
 describe equivalent conditions on the fundamental parameters of the economy under the
+13
 
 assumption that u(.) is CRRA. Using 2.11, 2.12 and the definition of @, it turns out that
 2.14 is equivalent to
@@ -443,6 +450,7 @@ planning problem can be taken as an approximation to the “true” problem, alt
 of a sunspot must be small. A third alternative is to postulate that the form of the contract between the
 bank and depositors, i.e. demand deposits, is exogenously given; under this assumption, the probability of
 a run is arbitrary.
+14
 
 of the economy must also be “fragile.”
 Our next task is to employ this framework to study several issues related to crises in
@@ -470,6 +478,7 @@ creditors, who can panic. In fact, certain kinds of behavior by foreign lenders 
 the fragility of domestic banks even further.
 To see the role of ongoing lending in our results so far, recall that constraint 2.5 on the
 social planning problem specifically allowed it to borrow in period 1 (up to the credit ceiling
+15
 
 minus period 0 borrowing, f —d) to finance the withdrawals of impatient agents. In addition,
 we assumed that these additional period 1 loans would be extended even in the event that a
@@ -495,6 +504,7 @@ R-r\-~
 gt at = ( a) b>0 (3.4)
 Hence, the run condition 3.3 is more stringent than 3.1, so the bank is more vulnerable to
 runs if foreign creditors fail to engage in ongoing lending in the event of a run. The intuition
+16
 
 is, clearly, that the inability to borrow bas planned reduces the liquid resources that the
 bank has access to in the event of a run."
@@ -526,6 +536,7 @@ while run condition 3.3 in the case of no defensive lending boils down to
 1 or 1-6
 \~R >r ( 5 ) (3.6)
 Since R > r, 3.5 is more stringent always.
+17
 
 Foreign lenders may not be willing to disburse the full f at first, especially if a portion is to
 be used for consumption, not investment. Moreover, the borrowing rate at which the bank
@@ -554,6 +565,7 @@ episode foreign bondholders have balked at purchasing new short term bonds when 
 ones matured at a time of crisis.!”
 !2For a discussion of the Mexican experience in this regard, see Sachs, Tornell and Velasco (1996a) and
 Calvo and Mendoza (1996). For Asia, see Corsetti, Pesenti and Roubini (1998).
+18
 
 With no roll-over the bank has no external debt to repay in period 2, and hence it can
 liquidate the full long term investment in case of need:
@@ -580,6 +592,7 @@ formally and in more detail below.
 l4\oreover, in this case even the old loan may not be repaid. If 3.8 holds, then in the event of a run
 there isn’t enough cash to go around. Even if foreign creditors are senior, a small enough r may ensure that
 rk <d, so that they will get less than the contract initially entitled them to.
+19
 
 may cause a self-fulfilling run by both depositors and creditors; the resulting bank collapse
 need not have happened had the creditors behaved differently.!>!®
@@ -616,6 +629,7 @@ ISAs we argued earlier, in practice there may be a wedge between the cost of bor
 the interest rate the bank earns on its reserves held abroad. In such a case the bank would face a well
 defined tradeoff between the cost of holding more reserves (up to a quantity b) and the benefits of reducing
 vulnerability.
+20
 
 There is a basic sense in which financial vulnerability is a function of the size of the credit
 limit f, and hence of the size of the total inflows. Consider the case of a run on short-term
@@ -640,6 +654,7 @@ the maturity of capital inflows was a helpful predictor of vulnerability to the 
 while the size of those inflows was not. Notice also that if capital controls lengthen average
 maturity but do not affect loan volumes, as Valdés-Prieto and Soto (1996) and Cardenas
 and Barrera (1997) find they do, then such policies are effective in reducing vulnerability.
+21
 
 4. Financial liberalization and fragility
 Both casual observation of recent crises and formal econometric work suggest the existence
@@ -668,6 +683,7 @@ One kind of common liberalization is a lowering of reserve requirements on comme
 Mexico, for instance, lowered required reserves on peso sight deposits all the way to zero in
 19See Velasco (1987 and 1992), Dornbusch, Goldfajn and Valdés (1995), Sachs, Tornell and Velasco (1996)
 and Sachs and Radelet (1998).
+22
 
 the first half of the 1990s. The rationale is that such a reduction enhances the efficiency
 of financial intermediation. This section shows that conjecture is correct, but that lower
@@ -692,6 +708,7 @@ under narrow banking is R — (1 — 4), which is larger than R, the price of x 
 banking is not imposed. Intuitively, this occurs because, under narrow banking, an increase
 of x of, say, dx, requires increasing b by more than Adz, the difference being an increase in
 required reserves.
+23
 
 The solution is summarized by
 (1—A)y* = (1-4) Rw
@@ -720,6 +737,7 @@ maximize the expected utility of the representative depositor. An alternative in
 is that the bank is a perfect competitor in a banking market into which there are no barriers
 20More precisely, y* is greater than, equal to, or less than 7 if o is less than, equal to, or greater than 1
 respectively.
+24
 
 to entry. Free entry would ensure that equilibrium profits were zero, and in order to attract
 customers and not be undercut by competitors banks would have to offer depositors contracts
@@ -742,6 +760,7 @@ The first order conditions of this problem, whose solution is denoted by hats, a
 R-1-— p+ Rpg =0 (4.7)
 —A (1+ pai) + WgAul (@) = 0 (4.8)
 (1—A) (1+ p2) + (L— A) ul (G) = (4.9)
+25
 
 where j41, fe and p3 are the multipliers associated with inequality constraints 2.4, 2.5 and
 4.6.
@@ -770,6 +789,7 @@ Because the monopoly bank has positive profits in period 2, the L.H.S. is less t
 Hence, condition 4.11 may not hold even if a > 1.
 In contrast, the condition for a run to be possible in the competitive case is exactly
 21Of course, liquidation will be zero in equilibrium, just as for the competitive bank.
+26
 
 the same as 4.11, except that tildes replace hats and that the L.H.S. is equal to one: the
 competitive banks earns no profit in either period, and the L.H.S. of 4.11 is simply the period
@@ -796,6 +816,7 @@ thy that this is consistent with recent evidence provided by Demirguc-Kent and D
 22 A caveat is that the value of autarchy is also a function of these parameters, so one is not free to change
 them freely in a comparative statics fashion. The proper statement is that the monopolistic bank is less
 fragile than the competitive bank, holding constant R, r and o.
+27
 
 5. Asset prices, booms and busts
 In many recent episodes, a financial crisis was preceded by sharp increases in the prices
@@ -825,6 +846,7 @@ produces an exogenously given quantity 7 > 0 of consumption in that period. We w
 of 7 as being low, so that it will be efficient for rentiers to sell the land.
 To ensure that an alternative use of the land will be efficient, we assume that the usage
 of land enhances the return on the long term asset. The simplest way to impose this is to
+28
 
 assume that if the commercial bank buys a units of land in period zero, the rate of return
 on the illiquid asset is R = R(a), where R(.) is an increasing function satisfying R(0) > 1,
@@ -851,6 +873,7 @@ The interpretation is straightforward. Consider the optimal choice of land. By p
 an additional unit of land in period 0, the bank obtains R’(a)k units of consumption in period
 2. Alternatively, it can invest po in the long term asset and obtain po R(a) in period 2. At the
 optimum, the bank must be indifferent between these two options: this is the first equality
+29
 
 in 5.4. The second equality follows from the fact that 5.3 and the credit ceiling must bind
 at the optimum. The other conditions have the usual interpretations. 5.5 equates the slope
@@ -880,6 +903,7 @@ where [* denotes, as usual, the maximum liquidation of capital consistent with r
 all external debt; clearly 5.8 may hold if r and m7 are small enough. To see why 5.8 is the
 relevant condition, recall that if a run occurs the bank must pay TT to depositors in period
 1. It can meet these obligations by borrowing up to its credit limit, by liquidating the long
+30
 
 —~
 term asset (and obtaining r /* ) and by selling the land. But once the long term asset is
@@ -936,6 +960,7 @@ deposits; in contrast with previous cases, now the withdrawal options offered to
 are stochastic and depend on p,. In other words, demand deposits now require each depositor
 to surrender her endowment and her opportunities for investment and borrowing to the bank,
 in exchange for the right to withdraw 7, units of consumption in period 1 or y, units in period
+32
 
 If d is positive which, as we saw earlier, will be the case if the credit ceiling is sufficiently
 high— a large realization of p is a “bad” shock: it increases the interest burden on outstanding
@@ -968,6 +993,7 @@ rate, and it does not bind if p is higher. Whether (i) or (ii) obtains depends o
 tent with the model: while the consumption of patient types is random, they consume more than impatient
 ones.
 ?6Hence I+ is defined by R(k — I+) = psd + bg
+33
 
 ps. Since k is predetermined as of period 0, 17 must fall and therefore z, must increase with
 the interest rate p,; the intuition, clearly, is that a larger p implies a higher foreign debt
@@ -998,6 +1024,7 @@ decreasing, but only for sufficiently large values of p.
 variable that coordinated agents’ expectations accross feasible equilibria, then the probability of a run would
 no longer be zero, and this would have to be taken into account from the beginning in solving the bank’s
 optimal problem.
+34
 
 The resulting distortion can produce a crisis if one additionally assumes (as does Krug-
 man) that there is an exogenous limit on the cumulative financial cost of government support
@@ -1027,6 +1054,7 @@ crazy policies are far from salutary. On the contrary, they cause inefficient li
 investment and excessively large drops in asset prices.
 As in the last section, suppose that the world interest rate on loans between periods 0
 and 1 is stochastic and can take values p,, s = 1,...,S. In addition, assume now that the
+39
 
 government subsidizes the rate of return on the long term investment. Let the rate of the
 subsidy be denoted by 7. We assume that the subsidy is paid in period 2; hence the bank is
@@ -1056,6 +1084,7 @@ of a bank run. This is the case even if the government is committed to helping t
 case of trouble.
 To see this, assume (analogously to what Krugman 1998 assumes) that in case of a bank
 run the government transfers the liquidation value of its investment to the bank. Then a
+36
 
 bank run is possible in state s if and only if
 where [+ is given by 6.9.
@@ -1081,6 +1110,7 @@ have been greatly exaggerated. Clearly, it is not difficult to find examples of 
 cies that induce overinvestment in any given country. But while there are losses associated
 2°Notice also that the policy could make d negative in circumstances (that is, for levels of e and f ) where,
 without the policy, it could have been zero or negative.
+37
 
 with overinvestment, they may pale in comparison with the cost of actual crises.°*°
 8. Going from bank to currency crises
@@ -1109,6 +1139,7 @@ that the cumulative cost of financing it is bounded above— which seem hardly n
 postulate a sufficiently crazy policy to rationalize a bad outcome, such specific assumptions demand a strong
 justification. Moreover, the empirical plausibility and importance of crazy policies in actual crises remain to
 be established.
+38
 
 exchange rate will be one peso for each dollar in both periods.
 The commercial bank now solves the same problem as in section 2 above, except that
@@ -1138,6 +1169,7 @@ is because we have specified a rule for monetary policy that prevents the Centra
 extending credit to the bank. Of course, the advantage of this system is that the demand
 for dollars by importers (and indirectly, by depositors) at no point exceeds the availability of
 dollars at the Central Bank. The one-to-one parity between the peso and the dollar survives
+39
 
 regardless of whether the bank crashes or not.
 The situation is reminiscent to that in Argentina in 1995, where a sudden wave of deposit
@@ -1166,6 +1198,7 @@ liquidates the asset as needed to sell dollars to agents who have claimed impati
 the maximum liquidation consistent with the repayment of the external debt.
 In period 1, the commercial bank meets withdrawals by borrowing b on it remaining credit
 31For details on the whole experience see Caprio, Dooley, Leipziger and Walsh (1996).
+40
 
 line abroad, and then drawing on the emergency credit from the Central Bank. Because the
 emergency credit is unlimited, the bank does not close.
@@ -1229,6 +1262,7 @@ inefficiency is particularly acute because to be effective the Central Bank must
 productive liquid asset. For a detailed discussion of these issues, see Chang and Velasco (1998a).
 35This famous phrase is attributed to Mexican President Lépez Portillo in describing his commitment to
 defend the peso in 1982; he devalued a few weeks later.
+42
 
 sion is that flexible exchange rates, coupled with a Central Bank that acts as a lender of last
 resort, can reduce financial fragility in a way fixed exchange rates cannot.
@@ -1257,6 +1291,7 @@ liquidity crunch been avoided. This observation is helpful in designing policies
 to the crisis -for instance, in dealing with troubled banks. The proper policy prescription
 clearly depends on one’s assessment of the crisis. If the problem is primarily one of moral
 hazard and overlending (as Krugman 1998 has claimed for Asia) or of outright fraud (as
+43
 
 Akerlof and Romer 1996 argued for the U.S. S&L crisis), then banks are insolvent and they
 should be either closed or forced to recapitalize. But if the problem is one of illiquidity
@@ -1286,11 +1321,13 @@ that can help overcome a financial system’s international illiquidity. Funds f
 prevent unnecessary credit crunches and avoid costly liquidation of investment can increase
 welfare.
 The usual (and valid) objection is moral hazard. But this need not be a rationale for
+44
 
 policy paralysis. Fire insurance and bank deposit guarantees also risk inducing moral hazard,
 but the risk can be minimized by proper contract design and appropriate monitoring. No one
 advocates banning fire insurance simply because it leads some home-owners to be careless
 with their fireplaces. The same should be true of an international lender of last resort.
+45
 
 10. Appendix
 Here we show that condition 2.14 is also necessary for bank runs to occur in the basic model.
@@ -1303,3 +1340,4 @@ Now, it is easy to check that the bank will be able to pay y to the (1 — ) rep
 depositors if R(k — [) —~d-b>9% (1 — A). This inequality will hold, from the definition of
 y and the last equation for I, if r (5) > (1— A)z#. But the latter is equivalent to the
 failure of 2.14 to hold. The proof is complete.
+46

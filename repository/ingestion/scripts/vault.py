@@ -4,7 +4,8 @@ equivalent of qc.py check. Reads the vault, writes nothing.
 
     uv run python repository/ingestion/scripts/vault.py --list [topic]
     uv run python repository/ingestion/scripts/vault.py check <topic> "<name>"
-    uv run python repository/ingestion/scripts/vault.py context <topic> "<name>"   # tracker row + cluster notes
+    uv run python repository/ingestion/scripts/vault.py concept [<slug> ...]    # concept pages (all if none)
+    uv run python repository/ingestion/scripts/vault.py biblio <topic> "<name>"  # the tracker's bibliographic fields
 
 The step after ingestion (SISTEMA_AGENTES.md II.I.v):
 
@@ -21,11 +22,18 @@ The step after ingestion (SISTEMA_AGENTES.md II.I.v):
 check: one synthesis note against its clean_md and the vault. Fails (exit 1) on
   - a template section or header field missing;
   - "Source file" not a link to obsidian/<topic>/clean_md/<name>.md;
-  - a number not found in the clean_md text (see _numbers for what is compared);
+  - a number not found in the clean_md text (see _numbers for what is compared); on the
+    **Source:** line a number may also come from the tracker row's bibliographic fields (biblio);
   - a [[wikilink]] that resolves to no file (unless marked "(proposed)" right after it), or to
     two files with the same name (a synthesis note and its clean_md share a name, so links to
     either are written with the path from the vault root: [[<topic>/synthesis/<name>]]);
-  - a concept the note links whose page does not link back to the note.
+  - a concept the note links whose page does not link back to the note;
+  - a number on a concept page's line that links the note (the patch) not in the note's clean_md.
+
+concept: a concept page's numbers against the sources it links. A line that links synthesis
+  notes is checked against their clean_md; a line that links none (Definition, Formal statement)
+  against the clean_md of every note the page links. A mental model linked on the line stands for
+  itself (its section numbers), and so does a note with no clean_md (Fleming 1962).
 A pass is necessary, not sufficient: a small integer that appears anywhere in the text passes
 whatever it means in the note. The judgment stays with the agent and the user.
 """
@@ -145,12 +153,12 @@ def source_numbers(text: str) -> set[str]:
     return out
 
 
-def _numbers(note: str, name: str) -> list[tuple[int, str, str]]:
+def _numbers(note: str, name: str, years: set[str] = frozenset()) -> list[tuple[int, str, str]]:
     """Numbers of the note to look for in the clean_md: (line, number, line text).
     Not compared: the frontmatter, the H1 title, wikilink targets (file names carry years),
     list and heading numbering (1., 2.), the year in the source's own file name, and the year
     of a source linked on the same line ("Itaú (2025) restates it" next to its link)."""
-    own_years = set(YEAR_IN_STEM.findall(name))
+    own_years = set(YEAR_IN_STEM.findall(name)) | set(years)
     out = []
     in_front = False
     for n, line in enumerate(note.splitlines(), 1):
@@ -178,7 +186,9 @@ def _numbers(note: str, name: str) -> list[tuple[int, str, str]]:
 
 # ── check ────────────────────────────────────────────────────────────────────
 
-def check(topic: str, name: str) -> dict:
+def check(topic: str, name: str, meta: dict | None = None) -> dict:
+    """meta: the tracker's bibliographic fields for the file (biblio); read from the workbook
+    when not given."""
     name = name[:-3] if name.endswith(".md") else name
     note_p = OBSIDIAN / topic / "synthesis" / f"{name}.md"
     clean_p = OBSIDIAN / topic / "clean_md" / f"{name}.md"
@@ -211,11 +221,14 @@ def check(topic: str, name: str) -> dict:
     # numbers
     if clean_p.exists():
         have = source_numbers(clean_p.read_text(encoding="utf-8"))
+        if meta is None:
+            meta = biblio(topic, name)
+        have_biblio = have | source_numbers(" ".join(str(v) for v in meta.values()))
         res["numbers_checked"] = 0
         res["numbers_not_in_source"] = []
         for n, tok, line in _numbers(note, name):
             res["numbers_checked"] += 1
-            if not (_forms(tok) & have):
+            if not (_forms(tok) & (have_biblio if line.startswith("**Source:**") else have)):
                 res["numbers_not_in_source"].append(f"line {n}: {tok}  | {line[:110]}")
         prob += [f"number not in the clean_md, {x}" for x in res["numbers_not_in_source"]]
 
@@ -246,23 +259,82 @@ def check(topic: str, name: str) -> dict:
         back = [resolve(t, idx)[1] for _, t, _ in links(p.read_text(encoding="utf-8"))]
         if not any(b is not None and b.resolve() == note_p.resolve() for b in back):
             prob.append(f"concepts/{p.name} does not link back to [[{topic}/synthesis/{name}]]")
+        for x in concept_numbers(p, idx, only=note_p):
+            prob.append(f"number in concepts/{p.name} not in the clean_md, {x}")
     prob[:] = list(dict.fromkeys(prob))
     res["ok"] = not prob
     return res
 
 
-# ── context from the tracker (for an area with no conceptual map yet) ───────
+# ── concept pages ──────────────────────────────────────────────────────────────
 
-def context(topic: str, name: str) -> dict:
-    """The file's row in the area's "Qual" tab (Name, Cluster, Why, Comments) and the Notes tab
-    rows for its cluster, plus the area's "what the agent has to answer" row. Read-only."""
-    import openpyxl
-    from tracker import TAB, TRACKER
-    wb = openpyxl.load_workbook(TRACKER, read_only=True)
-    tab = TAB.get(topic, f"Qual - {topic.replace('_', ' ').title()}")
-    out: dict = {"tab": tab, "row": None, "notes": []}
-    if tab not in wb.sheetnames:
+def _source_of(note_p: Path) -> Path:
+    """Where the numbers of a file a concept page links come from: a synthesis note's clean_md,
+    or the file itself — a mental model (its section numbers, "3.2–3.4") or a note with no
+    clean_md (Fleming 1962, written before ingestion)."""
+    clean = note_p.parent.parent / "clean_md" / note_p.name
+    return clean if note_p.parent.name == "synthesis" and clean.exists() else note_p
+
+
+def concept_numbers(page: Path, idx: dict[str, list[Path]], only: Path | None = None) -> list[str]:
+    """Numbers of a concept page not found in the sources it links: 'line n: number | text'.
+    only: check just the lines that link that synthesis note (the patch a vault run adds)."""
+    text = page.read_text(encoding="utf-8")
+    per_line: dict[int, list[Path]] = {}
+    for n, target, _ in links(text):
+        _, p = resolve(target, idx)
+        if p is not None and p.parent.name in ("synthesis", "mental_models"):
+            per_line.setdefault(n, []).append(p.resolve())
+    notes = {p for ps in per_line.values() for p in ps}
+    cache: dict[Path, set[str]] = {}
+
+    def have(ps) -> set[str]:
+        out: set[str] = set()
+        for p in ps:
+            if p not in cache:
+                cache[p] = source_numbers(_source_of(p).read_text(encoding="utf-8"))
+            out |= cache[p]
         return out
+
+    years = {y for p in notes for y in YEAR_IN_STEM.findall(p.stem)}
+    bad = []
+    for n, tok, line in _numbers(text, "", years):
+        linked = per_line.get(n, [])
+        if only is not None and only.resolve() not in linked:
+            continue
+        if not (_forms(tok) & have(linked or notes)):
+            bad.append(f"line {n}: {tok}  | {line[:110]}")
+    return bad
+
+
+def check_concept(slug: str) -> dict:
+    p = CONCEPTS / f"{slug.removesuffix('.md')}.md"
+    if not p.exists():
+        return {"slug": slug, "ok": False, "problems": [f"no concept page: concepts/{p.name}"]}
+    bad = concept_numbers(p, index())
+    return {"slug": p.stem, "ok": not bad, "problems": [f"number not in the linked sources, {x}" for x in bad]}
+
+
+# ── bibliographic fields from the tracker ────────────────────────────────────
+
+BIBLIO = ("Name", "Autor/Company", "Date", "Type")
+
+
+def biblio(topic: str, name: str) -> dict:
+    """The file's bibliographic fields in the area's Qual tab: title, author, date, type. The
+    Source line may take them when the clean_md lacks them (a book chapter with no title page).
+    Nothing else of the tracker reaches the vault agent: a synthesis is about the material, not
+    about the questions an area wants answered (decided 2026-10-20). {} when the workbook or
+    the row is missing. Read-only."""
+    try:
+        import openpyxl
+        from tracker import TAB, TRACKER
+        wb = openpyxl.load_workbook(TRACKER, read_only=True)
+    except Exception:
+        return {}
+    tab = TAB.get(topic, f"Qual - {topic.replace('_', ' ').title()}")
+    if tab not in wb.sheetnames:
+        return {}
     head = None
     for r in wb[tab].iter_rows(values_only=True):
         if head is None:
@@ -270,18 +342,8 @@ def context(topic: str, name: str) -> dict:
             continue
         files = str(r[head.index("File")] or "").splitlines() if "File" in head else []
         if name in (f.strip() for f in files):
-            out["row"] = {k: r[head.index(k)] for k in ("Name", "Autor/Company", "Date", "Cluster", "Why", "Comments")
-                          if k in head and r[head.index(k)] not in (None, "")}
-            break
-    area = tab.replace("Qual - ", "")
-    cluster = (out["row"] or {}).get("Cluster")
-    if "Notes" in wb.sheetnames:
-        for r in wb["Notes"].iter_rows(min_row=2, values_only=True):
-            if r[0] != area:
-                continue
-            if (cluster and r[2] == cluster) or (r[2] == "(whole area)" and "answer" in str(r[3] or "").lower()):
-                out["notes"].append({"cluster": r[2], "covers": r[3], "notes": r[4]})
-    return out
+            return {k: r[head.index(k)] for k in BIBLIO if k in head and r[head.index(k)] not in (None, "")}
+    return {}
 
 
 # ── command line ─────────────────────────────────────────────────────────────
@@ -309,7 +371,9 @@ def main() -> None:
     c = sub.add_parser("check", help="check one synthesis note")
     c.add_argument("topic")
     c.add_argument("name", help="file name without .md (the same for the clean_md and the note)")
-    x = sub.add_parser("context", help="the file's tracker row and its cluster's notes (read-only)")
+    k = sub.add_parser("concept", help="check concept pages' numbers against the sources they link")
+    k.add_argument("slugs", nargs="*", help="concept slugs; none = every page")
+    x = sub.add_parser("biblio", help="the tracker's bibliographic fields for one file (read-only)")
     x.add_argument("topic")
     x.add_argument("name")
     a = ap.parse_args()
@@ -323,8 +387,17 @@ def main() -> None:
         print(json.dumps({k: v for k, v in res.items() if k != "problems"}, ensure_ascii=False, indent=1))
         print("\n" + ("PASS" if res["ok"] else "FAIL\n" + "\n".join(f"- {p}" for p in res["problems"])))
         sys.exit(0 if res["ok"] else 1)
-    if a.cmd == "context":
-        print(json.dumps(context(a.topic, a.name[:-3] if a.name.endswith(".md") else a.name),
+    if a.cmd == "concept":
+        slugs = a.slugs or sorted(p.stem for p in CONCEPTS.glob("*.md"))
+        failed = 0
+        for slug in slugs:
+            r = check_concept(slug)
+            failed += not r["ok"]
+            print(f"{'PASS' if r['ok'] else 'FAIL'}  {r['slug']}" + "".join(f"\n   - {x}" for x in r["problems"]))
+        print(f"\n{len(slugs) - failed}/{len(slugs)} pass")
+        sys.exit(1 if failed else 0)
+    if a.cmd == "biblio":
+        print(json.dumps(biblio(a.topic, a.name[:-3] if a.name.endswith(".md") else a.name),
                          ensure_ascii=False, indent=1, default=str))
         return
     ap.print_help()

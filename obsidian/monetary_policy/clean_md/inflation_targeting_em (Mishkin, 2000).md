@@ -3,6 +3,7 @@ INFLATION TARGETING IN
 EMERGING MARKET COUNTRIES
 Frederic S. Mishkin
 Working Paper 7618
+http://www.nber.org/papers/w7618
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -30,6 +31,7 @@ Uris Hall 619
 Columbia University
 New York, NY 10027
 and NBER
+fsm3@columbia.edu
 
 The unhappy experience of Latin American and East Asian countries with pegged
 exchange rate regimes who subsequently found themselves in deep financial crises in the 1990s
@@ -52,6 +54,7 @@ subordinated; 3) an information inclusive strategy in which many variables, and 
 aggregates or the exchange rate, are used for deciding the setting of policy instruments; 4)
 increased transparency of the monetary policy strategy through communication with the public and
 the markets about the plans, objectives, and decisions of the monetary authorities; and 5) increased
+1
 
 accountability of the central bank for attaining its inflation objectives. The list should clarify one
 crucial point about inflation targeting: it entails much more than a public announcement of
@@ -75,6 +78,7 @@ central bank, inflation targeting also has the potential to reduce the likelihoo
 bank will fall into the time-inconsistency trap. Moreover, since the source of time-
 inconsistency is often found in (covert or open) political pressures on the central bank to
 undertake overly expansionary monetary policy, inflation targeting has the advantage of
+2
 
 focusing the political debate on what a central bank can do in the long-run -- i.e., control
 inflation -- rather than what it cannot do -- raise output growth, lower unemployment, increase
@@ -99,6 +103,7 @@ Mishkin and Adam Posen (1999), inflation-targeting central banks have frequent
 communications with the government, and their officials take every opportunity to make public
 speeches on their monetary policy strategy. Inflation targeting central banks have taken public
 outreach a step further: they publish Inflation Report-type documents (originated by the Bank
+3
 
 of England) to clearly present their views about the past and future performance of inflation and
 monetary policy.
@@ -122,6 +127,7 @@ an especially serious one for emerging market countries. The sixth and seventh d
 that inflation targeting cannot prevent fiscal dominance, and that the exchange rate flexibility
 required by inflation targeting might cause financial instability, are also very relevant in the
 emerging market country context.
+4
 
 In contrast to exchange rates and monetary aggregates, the inflation rate cannot be easily
 controlled by the central bank; furthermore, inflation outcomes that incorporate the effects of
@@ -146,6 +152,7 @@ inflation targeting regime to break down: the fiscal deficits will eventually ha
 monetized or the public debt eroded by a large devaluation, and high inflation will follow.
 Absence of outright fiscal dominance is therefore a key prerequisite for inflation targeting, and
 the setting up of institutions that help keep fiscal policy in check are crucial to the success of
+5
 
 the strategy (Masson et al., 1997) Similarly, a sound financial system is another prerequisite
 for successful inflation targeting because when financial systems blow up, there is typically a
@@ -170,6 +177,7 @@ unless there are stringent prudential regulations on, and strict supervision of,
 institutions that ensure that the system is capable of withstanding exchange rate shocks.
 IV.
 Lessons from Recent Experience
+6
 
 The earliest example of an emerging market country adopting inflation targeting is Chile,
 which in 1990, with the inflation rate in excess of 20%, first started to announce an inflation
@@ -193,6 +201,7 @@ bank experienced success in both meeting the inflation objectives and lowering i
 begin to emphasize that the inflation objectives should be interpreted as hard targets for which the
 central bank would be accountable (Felipe Morande and Klaus Schmidt-Hebbel, 1997). Second,
 Chile’s central bank pursued a very gradualist approach to lowering its inflation objectives,
+7
 
 starting with targets of over 20% for 1991 and lowering them slowly to 3.5% by the end of the
 decade. Third, because of the difficulty of controlling inflation at inflation rates which were still
@@ -217,6 +226,7 @@ strategy for gradual disinflation in emerging market countries, even when initia
 the order of 20%. It is important to emphasize that the success of inflation targeting cannot be
 solely attributed to the actions of the Chilean central bank: supportive policies such as absence
 of large fiscal deficits and rigorous regulation and supervision of the financial sector have been
+8
 
 crucial to its success.3 Another important element of Chile’s strategy has been a gradual
 hardening of the targets over time. However, the experience in Chile of the last two years, as
@@ -240,6 +250,7 @@ below 10% despite a substantial exchange-rate depreciation, there are still seri
 whether it will be ultimately successful because it is by no means clear whether Brazil can solve
 its deep-rooted fiscal problems.
 As noted, a critical issue for inflation targeting in emerging market countries is the role
+9
 
 of the exchange rate. Emerging market countries, including those engaging in inflation
 targeting, have rightfully been reluctant to adopt an attitude of “benign neglect” of exchange
@@ -255,6 +266,7 @@ market countries to adopt a transparent policy of smoothing short-run exchange-r
 fluctuations that helps mitigate potentially destabilizing effects of abrupt exchange rate changes
 while making it clear to the public that they will allow exchange rates to reach their market-
 determined level over longer horizons.
+10
 
 Endnotes
 * Alfred Lerner Professor of Banking and Financial Institutions, Graduate School of Business,
@@ -273,3 +285,4 @@ important factor behind the relative stability of the Chilean economy and the su
 monetary policy, but rigorous prudential supervision was probably more important. For a
 recent overview of the debate surrounding Chile’s capital controls, see Sebastian Edwards,
 1999.
+12

@@ -38,6 +38,7 @@ Ct(i)1−1
 1 The resulting inﬂation dynamics can also be derived under the assumption of quadratic
 costs of price adjustment. See, e.g., Rotemberg (1982).
 
+THE BASIC NEW KEYNESIAN MODEL
 53
 with Ct(i) denoting the quantity of good i consumed by the household
 in period t. A continuum of goods represented by the interval [0, 1] is
@@ -80,6 +81,7 @@ for all i ∈[0, 1], where Pt ≡
  1
 0 Pt(i)1−ϵdi
 
+1
 1−ϵ is an aggregate price
 index. Furthermore, and conditional on such optimal behavior
  1
@@ -91,6 +93,7 @@ into the budget constraint yields
 PtCt + QtBt ≤Bt−1 + WtNt + Dt
 2 See section 5 of chapter 2 for a discussion.
 
+54
 CHAPTER 3
 which is formally identical to the constraint facing households in
 the single good economy analyzed in chapter 2. Hence, the optimal
@@ -154,6 +157,7 @@ mt −pt = yt −ηit
 (4)
 where mt denotes (log) nominal money holdings.
 
+THE BASIC NEW KEYNESIAN MODEL
 55
 3.2 FIRMS
 Assume a continuum of ﬁrms indexed by i ∈[0, 1]. Each ﬁrm produces a
@@ -206,6 +210,7 @@ aggregate price index around that steady state yields
 t −pt−1)
 (8)
 
+56
 CHAPTER 3
 or, equivalently, after rearranging terms:
 pt = θpt−1 + (1 −θ)p∗
@@ -270,6 +275,7 @@ t+k|t
 = 0
 (10)
 
+THE BASIC NEW KEYNESIAN MODEL
 57
 where 
 t+k|t ≡C′
@@ -324,6 +330,7 @@ Market clearing in the goods market requires that the quantity produced
 of each good matches the quantity demanded. In the stylized model
 analyzed here consumption is the only source of demand for goods.
 
+58
 CHAPTER 3
 Thus, in equilibrium,
 Yt(i) = Ct(i)
@@ -370,6 +377,7 @@ Nt =
 0
 Nt(i)di
 
+THE BASIC NEW KEYNESIAN MODEL
 59
 Using (5)
 Nt =
@@ -377,13 +385,15 @@ Nt =
 0
 Yt(i)
 At
-
+	
+1
 1−α
 di
 =
  Yt
 At
-
+	
+1
 1−α  1
 0
  Pt(i)
@@ -422,6 +432,7 @@ price in period t.
 
 t+k|t = Wt+k/MP Nt+k|t.
 
+60
 CHAPTER 3
 Letting ψt ≡
  1
@@ -479,6 +490,7 @@ Finally, combining (8) and (16) yields the inﬂation equation
 πt = βEt{πt+1} −λµt
 (17)
 
+THE BASIC NEW KEYNESIAN MODEL
 61
 where
 λ ≡(1 −θ)(1 −βθ)
@@ -520,6 +532,7 @@ real marginal cost as mct = ψt −pt and noting that mct = −µt we can write 
 πt = βEt{πt+1} + λ
 mct
 
+62
 CHAPTER 3
 of price setting, the average price markup can be expressed as
 µt = pt −ψt
@@ -529,11 +542,11 @@ of price setting, the average price markup can be expressed as
 
 σ + ϕ + α
 1 −α
-
+	
 yt +
 1 + ϕ
 1 −α
-
+	
 at + log(1 −α)
 (18)
 where derivation of the second and third equalities make use of the
@@ -548,12 +561,12 @@ prices, and evaluating (18) at the ﬂexible price equilibrium yields:
 
 σ + ϕ + α
 1 −α
-
+	
 yn
 t +
 1 + ϕ
 1 −α
-
+	
 at + log(1 −α)
 (19)
 thus implying
@@ -578,7 +591,7 @@ Subtracting (19) from (18) yields
 
 σ + ϕ + α
 1 −α
-
+	
 (yt −yn
 t )
 (21)
@@ -587,6 +600,7 @@ from its ﬂexible price counterpart. Following convention, the latter
 deviation is referred to as the output gap, and denoted by yt ≡yt −yn
 t .
 
+THE BASIC NEW KEYNESIAN MODEL
 63
 By combining (21) with (17) one can obtain an equation relating
 inﬂation to its one period ahead forecast and the output gap
@@ -641,6 +655,7 @@ gap given a path for the (exogenous) natural rate and the actual real
 rate, with the latter being a function of the nominal rate and (expected)
 inﬂation.
 
+64
 CHAPTER 3
 In order to close the model, those two equations must be supplemented
 with one or more equations determining how the nominal interest rate it
@@ -685,6 +700,7 @@ t is the (annualized) federal funds rate, πt is year-on-year inﬂation, and y�
 t is trend
 (log) GDP, ﬁtted by means of an estimated linear function of time. Note that the Taylor
 
+THE BASIC NEW KEYNESIAN MODEL
 65
 Note that (26) can be rewritten in terms of the output gap as follows:
 it = ρ + φππt + φyyt + φyyn
@@ -743,6 +759,7 @@ state real interest rate.
 6 See, e.g., Blanchard and Kahn (1980).
 7 See Bullard and Mitra (2002) for a proof.
 
+66
 CHAPTER 3
 process, with autoregressive coefﬁcient ρu ∈[0, 1) (this assumption is
 relaxed below, when the different shocks are analyzed separately). The
@@ -782,6 +799,7 @@ exogenous increase in the nominal rate.
 The response of the nominal interest rate combines both the direct
 effect of vt and the variation induced by lower output and inﬂation. It is
 
+THE BASIC NEW KEYNESIAN MODEL
 67
 given by
 it = rt + Et{πt+1} = [σ(1 −ρv)(1 −βρv) −ρvκ]vvt
@@ -821,6 +839,7 @@ velocity on the 3 month Treasury Bill rate (quarterly rate, per unit), using qua
 over the period 1960:1–1988:1. The focus is on that period because it is characterized by a
 highly stable relationship between velocity and the nominal rate, as implied by the model.
 
+68
 CHAPTER 3
 an average price duration of four quarters, a value consistent with much
 of the empirical evidence.9 As to the interest rate rule coefﬁcients, it is
@@ -866,6 +885,8 @@ Overall, the dynamic responses to a monetary policy shock shown in
 using inﬂation and interest rate data expressed in annual rates. Conversion to quarterly
 rates requires that the output gap coefﬁcient be divided by 4.
 
+THE BASIC NEW KEYNESIAN MODEL
+69
 Output gap
 Inflation
 Output
@@ -876,8 +897,96 @@ Nominal rate
 Real rate
 Money supply
 v
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–2
+–1.5
+–1
+0
+–0.5
+–0.2
 –0.15
+–0.1
+0
 –0.05
+0
+0.1
+0.2
+0.4
+0.3
+–0.8
+–0.6
+–0.4
+0
+–0.2
+0
+0.1
+0.2
+0.4
+0.3
+0
+0.2
+0.4
+0.8
+0.6
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–0.4
+–0.3
+–0.2
+–0.1
+0
 Figure 3.1. Dynamic Responses to a Monetary Policy Shock: Interest Rate Rule.
 using structural vector autoregressive (VAR) methods, as described in
 chapter 1. Nevertheless, and as emphasized in Christiano, Eichenbaum,
@@ -885,6 +994,7 @@ and Evans (2005), among others, matching some of the quantitative
 features of the empirical impulse responses requires that the basic New
 Keynesian model be enriched in a variety of dimensions.
 
+70
 CHAPTER 3
 Output gap
 Inflation
@@ -896,8 +1006,96 @@ Nominal rate
 Real rate
 Money supply
 z
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–2
+–1.5
+–1
+0
+–0.5
+–0.2
 –0.15
+–0.1
+0
 –0.05
+–0.8
+–0.6
+–0.4
+0
+–0.2
+–0.2
+0
+0.2
+0.6
+0.4
+–0.8
+–0.6
+–0.4
+0
+–0.2
+–0.8
+–0.6
+–0.4
+0
+–0.2
+–0.4
+–0.3
+–0.2
+–0.1
+0
+–0.4
+–0.3
+–0.2
+–0.1
+0
 Figure 3.2. Dynamic Responses to a Discount Rate Shock: Interest Rate Rule.
 3.4.1.2 THE EFFECTS OF A DISCOUNT RATE SHOCK
 Figure 3.2 displays the dynamic responses of different macro variables to
@@ -906,6 +1104,7 @@ the monetary policy shock, the corresponding autoregressive coefﬁcient
 is set to ρz = 0.5. The size of the initial shock εz
 t is normalized to −0.5
 
+THE BASIC NEW KEYNESIAN MODEL
 71
 percentage points, so that ∂rn
 t
@@ -951,6 +1150,7 @@ Next, the effects of exogenous changes in at are considered. Given (27)
 and the analysis of its solution above, it follows that
 yt = −ψya(φy + σ(1 −ρa))(1 −βρa)aat
 
+72
 CHAPTER 3
 and
 πt = −ψya(φy + σ(1 −ρa))κaat
@@ -970,7 +1170,7 @@ nt =
 
 1
 1 −α
-
+	
 (yt −at)
 =
 (1 −σ)κ(φπ −ρa)
@@ -1000,6 +1200,8 @@ Rabanal (2004) provide a survey of that empirical evidence.
 of output corresponds to that of technology, at. Note that the response of output falls short
 of the technology response.
 
+THE BASIC NEW KEYNESIAN MODEL
+73
 Output gap
 Inflation
 Output
@@ -1010,14 +1212,96 @@ Nominal rate
 Real rate
 Money supply
 a
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–0.8
+–0.6
+–0.4
+0
+–0.2
+–0.2
 –0.15
+–0.1
+0
 –0.05
+–1.5
+–1
+0
+–0.5
+–3
+–2
+0
+–1
+–1.5
+–1
+0
+–0.5
+0
+0.5
+1.5
+1
+0
+5
+10
+15
+–4
+–2
+2
+0
+–0.4
+–0.3
+–0.2
+0
+–0.1
+–0.4
+–0.3
+–0.2
+0
+–0.1
+0.2
+0.8
+0.6
 Figure 3.3. Dynamic Responses to a Technology Shock: Interest Rate Rule.
 experiences a large and persistent decline. Thus, technology shocks
 generate a negative comovement between output and employment, which
 contrasts with the large and positive unconditional correlation between
 the cyclical components of output and employment (or work hours)
 
+74
 CHAPTER 3
 observed in the data, but is consistent with the negative estimates of that
 correlation conditional on technology shocks.13
@@ -1059,6 +1343,7 @@ through the identity
 (33)
 13 See Galí (1999).
 
+THE BASIC NEW KEYNESIAN MODEL
 75
 Hence, the equilibrium dynamics for real balances, output gap, and
 inﬂation are described by equations (32) and (33) together with the
@@ -1161,6 +1446,7 @@ t = 0, for all t).15 In doing so, it is assumed that ρm = 0.5,
 calibrations of the model’s parameter values.
 15 See, e.g., Blanchard and Kahn (1980) for a description of a solution method.
 
+76
 CHAPTER 3
 Output gap
 Inflation
@@ -1172,6 +1458,93 @@ Nominal rate
 Real rate
 Money supply
 dm
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+1
+3
+2
+–0.4
+–0.3
+–0.2
+0
+–0.1
+0
+0.05
+0.1
+0.2
+0.15
+0
+0.1
+0.2
+0.4
+0.3
+0
+0.1
+0.2
+0.4
+0.3
+0
+0.1
+0.2
+0.4
+0.3
+0.1
+0.2
+0.3
+0.5
+0.4
+0
+0.2
+0.4
+0.8
+0.6
+0.2
+0.3
+0.5
+0.4
+0
+0.5
+1.5
+1
 Figure 3.4. Dynamic Responses to a Monetary Policy Shock: Money Supply
 Rule.
 a value roughly consistent with the ﬁrst-order autocorrelation of money
@@ -1182,6 +1555,7 @@ of a positive realization of εm
 t
 of size 0.25. That impulse corresponds
 
+THE BASIC NEW KEYNESIAN MODEL
 77
 to a one percent increase, on impact, in the annualized rate of money
 growth. The sluggish adjustment of prices implies that real balances rise
@@ -1234,6 +1608,7 @@ exogenous money growth rule, implying the absence of a response in the
 money supply to the shock, that is, mt = 0 for all t.
 16 See Galí (2003) for a detailed analysis.
 
+78
 CHAPTER 3
 Output gap
 Inflation
@@ -1245,10 +1620,96 @@ Nominal rate
 Real rate
 Money supply
 z
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–0.3
+–0.2
+–0.1
+0
+0
+0.1
+–0.3
+–0.2
+–0.1
+0
+0.1
+–3
+–2
+–1
+1
+0
 –0.08
 –0.06
 –0.04
+0
 –0.02
+–0.8
+–0.6
+–0.4
+0
+–0.2
+–1
+–0.5
+0
+1
+0.5
+–0.4
+–0.3
+–0.2
+0
+–0.1
+–0.4
+–0.3
+–0.2
+0
+–0.1
+–0.4
+–0.2
+0
+0.2
+0.4
+–0.3
+–0.2
+–0.1
+0.1
 Figure 3.5. Dynamic Responses to a Discount Rate Shock: Money Supply Rule
 Note that the dynamic effects on output and employment are, at ﬁrst
 sight, qualitatively similar to those derived under an interest rate rule.
@@ -1257,6 +1718,7 @@ monetary targeting the price level returns to its original value, which
 requires that inﬂation eventually turns positive after its initial decline, as
 shown in ﬁgure 3.5. It follows that output (as well as employment and the
 
+THE BASIC NEW KEYNESIAN MODEL
 79
 real wage, as a result) must also overshoot its initial level, which in turn
 requires that the real rate eventually stays below its natural counterpart
@@ -1269,24 +1731,24 @@ constants) as
 it =
 1
 η
-
+	
 (pt −mt−1) +
 1
 η
-
+	
 yt + vt
 =
 1
 η
-
+	
 (pt−1 −mt−1) +
 1
 η
-
+	
 πt +
 1
 η
-
+	
 yt + vt
 where vt ≡−(1/η)mt. Note that the previous rule is of the same
 form as (26), with the additional term involving (pt−1 −mt−1) appended.
@@ -1316,6 +1778,7 @@ with its decline (in response to the negative response of inﬂation and the
 output gap) under the interest rate rule. Because the natural real rate
 also declines in response to the positive technology shock (in order to
 
+80
 CHAPTER 3
 support the transitory increase in output and consumption), the response
 of interest rates generated under the exogenous money regime becomes
@@ -1358,6 +1821,8 @@ and analyzed an early version of a monetary model with quadratic costs
 of price adjustment and compared its second-moment predictions with
 those of the French and U.S. economies.
 
+THE BASIC NEW KEYNESIAN MODEL
+81
 Output gap
 Inflation
 Output
@@ -1368,6 +1833,91 @@ Nominal rate
 Real rate
 Money supply
 a
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–6
+–4
+–2
+2
+0
+–1.5
+–1
+–0.5
+0.5
+0
+–1
+–0.5
+0.5
+0
+–1
+–0.5
+0.5
+0
+–0.5
+0
+1
+0.5
+0
+0.5
+1.5
+1
+–0.6
+–0.5
+–0.4
+–0.2
+–0.3
+–1
+–0.5
+0
+1
+0.5
+–15
+–10
+–5
+5
+0
+0.2
+0.4
+0.8
+0.6
 Figure 3.6. Dynamic Responses to a Technology Shock: Money Supply Rule.
 The New Keynesian Phillips curve derived in the main text is based
 on a log-linearization of the optimal price setting condition and the law
@@ -1376,6 +1926,7 @@ state. Ascari (2004), Ascari and Ropele (2009), and Cogley and Sbordone
 (2008) analyze the consequences for inﬂation dynamics of a steady state
 with nonzero inﬂation.
 
+82
 CHAPTER 3
 Two main alternatives to the Calvo random price duration model
 can be found in the literature. The ﬁrst one is given by staggered
@@ -1421,6 +1972,7 @@ and Basu, Fernald, and Kimball (2004), among others. Recent evidence
 as well as alternative interpretations are surveyed in Galí and Rabanal
 (2004).
 
+THE BASIC NEW KEYNESIAN MODEL
 83
 APPENDIX
 3.1 OPTIMAL ALLOCATION OF CONSUMPTION EXPENDITURES
@@ -1472,6 +2024,7 @@ Pt
 	−ϵ
 Ct
 
+84
 CHAPTER 3
 3.2 AGGREGATE PRICE LEVEL DYNAMICS
 Let S(t) ⊂[0, 1] represent the set of ﬁrms not reoptimizing their posted
@@ -1487,7 +2040,7 @@ t )1−ϵ
 1
 1−ϵ
 =
-
+ 
 θ(Pt−1)1−ϵ + (1 −θ)(P∗
 t )1−ϵ!
 1
@@ -1529,6 +2082,7 @@ conditional on the price having been last reset in period t. Note that
 the second term on the right-hand side of (37) is independent of P∗
 t since
 
+THE BASIC NEW KEYNESIAN MODEL
 85
 it involves states of nature for which the price has been reset at least once
 after period t.
@@ -1552,6 +2106,7 @@ Pt
 pt(i)2
 Note that from the deﬁnition of Pt, 1 =
  1
+0
 
 Pt(i)
 Pt
@@ -1607,6 +2162,7 @@ di = 1 + 1
 	 1
  vari{pt(i)}
 
+86
 CHAPTER 3
 where  ≡
 1−α
@@ -1642,6 +2198,7 @@ the duration of the price of an individual good being f (t) =
 a. Show that the implied instantaneous probability of a price
 change is constant over time and given by φ.
 
+THE BASIC NEW KEYNESIAN MODEL
 89
 b. What is the mean duration of a price? What is the median
 duration? What is the relationship between the two?
@@ -1692,6 +2249,7 @@ ct = −1
 where ct is consumption, it is the nominal rate, and πt+1 ≡
 pt+1 −pt is the rate of inﬂation between t and t + 1 (Note: as in
 
+90
 CHAPTER 3
 the text, lowercase letters denote the logs of the original variable.)
 The household’s log-linearized labor supply is given by
@@ -1728,6 +2286,7 @@ together with an expression for the natural rate rn
 t as a function
 of gt.
 
+THE BASIC NEW KEYNESIAN MODEL
 91
 d. Determine the economy’s response to an exogenous increase in
 gt when the central bank follows an interest rate rule given by
@@ -1792,10 +2351,12 @@ Pt
  1
 0 Pt(i)1−ϵdi
 
+1
 1−ϵ , derive a log-linear expression for the evo-
 lution of inﬂation πt as a function of the newly set price p∗
 t .
 
+92
 CHAPTER 3
 b. Derive the ﬁrst-order condition for the ﬁrm’s problem that
 determines the optimal price P∗
@@ -1861,6 +2422,7 @@ t(·) is the nominal marginal cost and M ≡
 ϵ
 ϵ−1.
 
+THE BASIC NEW KEYNESIAN MODEL
 93
 b. Derive the following log-linearized optimal price-setting rule
 (around a zero inﬂation steady state)
@@ -1889,6 +2451,7 @@ c. Recalling the expression for the aggregate price index Pt ≡
  1
 0 Pt(i)1−ϵ di
 
+1
 1−ϵ , show that around a zero inﬂation steady
 state the (log) price level will satisfy
 pt =
@@ -1921,6 +2484,7 @@ f. Discuss the inﬂuence of δ on the persistence of the effects
 of a monetary shock, and provide some intuition for that
 result.
 
+94
 CHAPTER 3
 3.6. The Mankiw-Reis model: Inﬂation dynamics under predeter-
 mined prices
@@ -1949,6 +2513,7 @@ a. Let Pt ≡
  1
 0 Pt(i)1−εdi
 
+1
 1−ε denote the aggregate price index.
 Show that, up to a ﬁrst-order approximation,
 pt = (1 −θ)
@@ -1967,6 +2532,7 @@ k=0
 
 Pt,t+k −Wt+k
 √At+k
+	
 
 Derive the ﬁrst-order condition associated with that problem,
 and show that it implies the following approximate log-linear
@@ -1987,6 +2553,7 @@ mct = yt
 for all t, where yt ≡yt −yn
 t .
 
+THE BASIC NEW KEYNESIAN MODEL
 95
 d. Using (38) and (39), show how one can derive the following
 equation for inﬂation
@@ -2035,6 +2602,7 @@ The implied equilibrium conditions take the form
 πt = βEt{πt+1} + κyt
 (42)
 
+96
 CHAPTER 3
 where yt ≡yt −yn
 t is the output gap, yt is (log) output, yn
@@ -2095,6 +2663,7 @@ proof).
 Consider the following modiﬁcation to the basic New Keynesian
 model developed in the text: a fraction ω ∈[0, 1] of ﬁrms set
 
+THE BASIC NEW KEYNESIAN MODEL
 97
 prices according to the following backward-looking rule:
 pb

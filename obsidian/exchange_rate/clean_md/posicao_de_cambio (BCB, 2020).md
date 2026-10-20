@@ -26,6 +26,7 @@ normal, mas não esperada, de extinção da operação de câmbio;
 das intervenções à vista do BCB; não são afetadas pela contratação e, portanto, não variam na mesma data em que muda a posição de câmbio
 das instituições autorizadas a operar em câmbio. Leilões de linha com recompra (operações conjugadas) também reduzem e elevam o estoque de
 reservas.
+1
 
 • Baixa: reclassificação contábil por parte da instituição financeira, de forma unilateral, excluindo
 a operação de sua posição de câmbio. Via de regra, uma baixa deve-se ao inadimplemento das
@@ -69,6 +70,7 @@ apenas dois dias úteis antes da liquidação.
 4 O hedge cambial é uma forma de proteção para variações da taxa de câmbio, mediante utilização de contratos derivativos, a fim de minimizar
 potenciais perdas financeiras em operações com moeda estrangeira. Os custos advindos dos contratos derivativos devem ser também considerados
 para o gerenciamento da posição de câmbio.
+2
 
 inverso. Constitui-se “estoque” de moeda estrangeira, contra “desencaixe” de moeda nacional. Em ambos os
 tipos de posição, no entanto, caso as operações tenham sido celebradas prevendo uma liquidação futura, o
@@ -110,6 +112,7 @@ Saldo cambial mensal Posição de câmbio Saldo cambial acum. 12 meses
 5 Leilões conjugados – operações de venda conjugada com recompra e compra conjugada com revenda – não impactam a posição global do
 sistema, como regra geral, pois o par de operações de compra e venda mantém a posição anterior. Na modalidade pós-fixada, por haver pequena
 diferença no valor em moeda estrangeira entre as operações de compra e de venda, há um impacto residual.
+3
 
 Condicionantes da posição de câmbio
 A diferença positiva entre a receita com aplicação dos reais e o custo da posição vendida é um potencial
@@ -154,6 +157,7 @@ saldo comercial, o saldo financeiro também contribuiu para que se atingisse o n
 de então, houve um relativo equilíbrio nos saldos cambiais, com o saldo comercial positivo compensando o
 6 O saldo cambial considera as operações contratadas, mas os ingressos no país e as remessas ao exterior ocorrem efetivamente na liquidação do
 contrato de câmbio.
+4
 
 saldo financeiro negativo até o ano de 2018. Em 2019, com a redução do saldo comercial e intensificação do
 saldo negativo do fluxo financeiro, o saldo cambial resultante foi negativo de forma significativa.
@@ -193,6 +197,7 @@ que o metal é cotado em moeda estrangeira.
 7 Excetuam-se as operações de “conversão de câmbio sacado por câmbio manual”, ou vice-versa, com instituição financeira do exterior, em que
 a liquidação se dá pela transferência física de papel moeda ou cheque de viagem, que não afetam a disponibilidade de moeda estrangeira, apenas
 alteram o saldo escritural para saldo físico, ou vice-versa.
+5
 
 Leilões diretos do BCB8
 Entre 21/8/2019 e 20/12/2019, o BCB atuou diretamente no mercado de câmbio, mediante leilões de venda
@@ -229,3 +234,4 @@ o fluxo cambial, além do limite regulamentar existente para a exposição cambi
 que considera o conjunto de ativos, passivos e derivativos em moeda estrangeira da instituição.
 8 Nesta seção não estão sendo considerados os registros de leilões de linha do BCB (operações conjugadas).
 9 Concomitantemente com as vendas diretas, houve recompra de swaps cambiais no valor US$33,38 bilhões.
+6

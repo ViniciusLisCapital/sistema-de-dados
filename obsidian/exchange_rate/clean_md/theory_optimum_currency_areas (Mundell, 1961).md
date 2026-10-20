@@ -71,6 +71,7 @@ tionary pressure in A.4 To the extent that prices are allowed to rise in A
 3More exactly, the rates at which central banks can expand monetary liabilities depend
 on income elasticities of demand and output elasticities of supply.
 4For present purposes, inflation is defined as a rise in the prices of home-produced goods.
+©International Monetary Fund. Not for Redistribution
 
 Robert A. Mundell • 19
 the change in the terms of trade will relieve B of some of the burden of
@@ -116,6 +117,7 @@ instructive examples of balance-of-payments problems between different regions o
 United States can be found in [2, Ch. 14]. For purposes of this paper regions are defined
 as areas within which there is factor mobility, but between which there is factor
 immobility.
+©International Monetary Fund. Not for Redistribution
 
 20 • A THEORY OF OPTIMUM CURRENCY AREAS (1961)
 area, but with the domain of the currency area. The optimum currency
@@ -159,7 +161,9 @@ currencies connected by fixed exchange rates.
 III. Regional Currency Areas and Flexible Exchange Rates
 The preceding example does not destroy the argument for flexible ex-
 change rates, but it might severely impair the relevance of the argument
+©International Monetary Fund. Not for Redistribution
 
+Robert A. Mundell • 21
 if it is applied to national currencies. The logic of the argument can in
 fact be rescued if national currencies are abandoned in favor of regional
 currencies.
@@ -201,7 +205,9 @@ IV. A Practical Application
 The theory of international trade was developed on the Ricardian as-
 sumption that factors of production are mobile internally but immobile
 internationally. Williams, Ohlin, Iversen, and others, however, protested
+©International Monetary Fund. Not for Redistribution
 
+22 • A THEORY OF OPTIMUM CURRENCY AREAS (1961)
 that this assumption was invalid and showed how its relaxation would
 affect the real theory of trade. I have tried to show that its relaxation has
 important consequences also for the monetary theory of trade and espe-
@@ -243,7 +249,9 @@ that the necessary factor mobility does not exist, while Scitovsky argues
 that labor mobility must be improved and that the creation of a common
 7These statements, of course, cannot do full justice to the arguments of Meade and
 Scitovsky.
+©International Monetary Fund. Not for Redistribution
 
+Robert A. Mundell • 23
 currency would itself stimulate capital mobility. In other words neither
 writer disputes that the optimum currency area is the region—defined in
 terms of internal factor mobility and external factor immobility—but
@@ -285,7 +293,9 @@ that these costs tend to increase with the number of currencies. Any given
 money qua numeraire or unit of account fulfills this function less ade-
 quately if the prices of foreign goods are expressed in terms of foreign
 currency and must then be translated into domestic currency prices.
+©International Monetary Fund. Not for Redistribution
 
+24 • A THEORY OF OPTIMUM CURRENCY AREAS (1961)
 Similarly, money in its role of medium of exchange is less useful if there
 are many currencies; although the costs of currency conversion are al-
 ways present, they loom exceptionally large under inconvertibility or
@@ -327,7 +337,9 @@ rates can work effectively and efficiently in the modern world economy.
 For this to be possible it must be demonstrated that: (1) an international
 price system based on flexible exchange rates is dynamically stable after
 taking speculative demands into account; (2) the exchange rate changes
+©International Monetary Fund. Not for Redistribution
 
+Robert A. Mundell • 25
 necessary to eliminate normal disturbances to dynamic equilibrium are
 not so large as to cause violent and reversible shifts between export- and
 import-competing industries (this is not ruled out by stability); (3) the
@@ -372,6 +384,7 @@ sions support the hypothesis of this paper that the fixed-exchange-rate system i
 within areas where factors are mobile and the flexible-exchange-rate system is better for
 areas between which factors are immobile. The argument of my other paper imposes an
 additional argument against increasing the number of currencies.
+©International Monetary Fund. Not for Redistribution
 
 26 A THEORY OF OPTIMUM CURRENCY AREAS (1961)
 Canada provides the only modern example where an advanced coun-

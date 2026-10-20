@@ -24,6 +24,7 @@ obscured when the analysis is based on the ex post revised data.
 Keywords: Monetary policy rules, federal funds rate, Taylor rule, real-time data.
 JEL Classi(cid:12)cation System: E52, E58
 Correspondence: Division of Monetary A(cid:11)airs, Board of Governors of the Federal Reserve System,
+Washington, D.C. 20551. Tel.: (202) 452-2654, email: aorphanides@frb.gov
 (cid:3)
 I would like to thank Helen Douvogiannis and Rebecca Zarutskie for their superb assistance with
 the organization of the data during the summer of 1997 and Kendrew Witt for valuable research
@@ -69,6 +70,7 @@ by Lowe, 1997. Clarida, Gali and Gertler, 1997b, provide an extensive survey.
 Throughout, I refer to the informational problem as one associated with data \revisions" but this should
 be interpreted to include rede(cid:12)nitions and rebenchmarks although, strictly speaking, these pose slightly
 di(cid:11)erent problems in some respects.
+1
 
 when the investigation concentrates on how policymakers react or how they ought to react
 to current information for setting policy. But this is exactly the purpose of the study of
@@ -101,6 +103,7 @@ appear best in the absence of informational problems could be dominated by alter
 once the informational problem is properly treated. For instance, if a rule speci(cid:12)es that
 3
 This problem was pointed out by McCallum (1993a,b)
+2
 
 the federal funds rate react to the previous quarter’s output, proper evaluation of the rule
 ought to account for the fact that the estimate of the previous quarter’s output available
@@ -130,6 +133,7 @@ di(cid:11)er widely from those obtained with the revised published data employed
 decomposition of the revision of the rule quarter-by-quarter reveals substantial variation
 in the rule recommendations even one year after the quarter to which the original policy
 setting would apply. Revisions regarding both ingredients in the rule, in(cid:13)ation and output,
+3
 
 contribute to this variance.
 Examination of linear policy reaction functions based on the real-time data uncovers
@@ -158,6 +162,7 @@ The policy rules I examine specify that the Federal Reserve set the federal fund
 linear function of in(cid:13)ation and the output gap. Letting (cid:25) denote in(cid:13)ation and, y the output
 gap, these rules take the simple form:
 R = a0 + a(cid:25)(cid:25) + ayy
+4
 
 where R is the recommended level for the federal funds rate.
 The properties of such rules were (cid:12)rst examined in some detail as part of the policy
@@ -209,6 +214,7 @@ This was motivated by the \stated dual objective of many central banks to achiev
 in real activity while avoiding in(cid:13)ation," (Bryant, Hooper and Mann, 1993, p. 225). Although the baseline
 rule set equal weights, (cid:18), for the response of the rule to in(cid:13)ation and the output gap, rules with unequal
 weights were also examined.
+5
 
 gap by (cid:12)tting a log-linear trend through real GDP. He set the response coe(cid:14)cient, (cid:18), to
 one half and assumed that both the in(cid:13)ation target and equilibrium real rate equaled two
@@ -242,6 +248,7 @@ ily in normative research concerning policy regime evaluation. Although comparat
 Levin [1996], Orphanides et al [1997], Williams [1997]), the resulting interest rate variability is also consid-
 erably greater and implies that the non-negativity constraint on nominal interest rates may become binding
 for realistic in(cid:13)ation targets. Orphanides and Wieland (1997), provide an evaluation of this issue.
+6
 
 around business cycle turning points when the information might be of greatest value.
 6
@@ -273,6 +280,7 @@ the updated value regarding Xt becomes available. For the purposes of this study
 6
 Kuttner(1992) discusses the extent of this problem and its policy implications for the United States.
 St-Amant and van Norden (1997) report similar di(cid:14)culties for Canada.
+7
 
 the information available in the Federal Reserve sta(cid:11)’s macroeconomic forecasts to obtain
 within quarter forecasts for nominal and real output. These forecasts are presented in a
@@ -312,6 +320,7 @@ equally spaced apart observations corresponding to the beginning or end of a qua
 Using the beginning of the quarter would not allow the policy maker to react to that quarter’s data at
 all. Using the end would allow for more of the contemporaneous information to in(cid:13)uence the rule but would
 make setting the average federal funds rate for the quarter at the recommended level virtually impossible.
+8
 
 the information in the February Greenbook.
 10
@@ -359,6 +368,7 @@ The superscript T is used to di(cid:11)erentiate between the output gap and resu
 Taylor’s assumptions regarding potential output and the alternative measure discussed later on.
 12
 Using this data provides a match to the policy rule presented in (cid:12)gure 2 of Taylor (1994).
+9
 
 GDP is the measure of output; and the de(cid:13)ator uses 1982 rather than 1987 prices. Second,
 for each quarter, the data re(cid:13)ect unrevised, contemporaneous forecasts of the output gap
@@ -410,6 +420,7 @@ were also updated and made available on request over this period. Kuttner (1994)
 of Q
 (cid:3)
 with alternative concepts.
+10
 
 where ytj93:1 and ytj94:4 are constructed using the Q
 (cid:3)
@@ -455,6 +466,7 @@ be computed ex post and would not have been known in real-time. To avoid the res
 complications, I concentrate on comparing the ex post and real-time versions of the rule using only the Q
 (cid:3)
 concept of potential. As shown below, an additional bias is present when the real-time data are employed.
+11
 
 based on 1994 data, ytj94:4, is (cid:0):23, a di(cid:11)erence of one percentage point. The di(cid:11)erences
 in volatility are due to the greater volatility of both the real time in(cid:13)ation and output gap
@@ -484,6 +496,7 @@ early phases of the current expansion starting in 1992. This departure has been 
 the fact the Fed responded to the so-called \(cid:12)nancial headwinds" facing the economy at the
 time by holding the federal funds rate below where it would have been held in the absence
 of such special factors. Since such considerations are absent from the rule, such a departure
+12
 
 from the rule could be termed, in retrospect, to have been quite appropriate. Yet, looking
 at the rule based on the real-time data appears to contradict the premise of this argument.
@@ -513,6 +526,7 @@ in the underlying in(cid:13)ation and output gap estimates.
 16
 It may be worthwhile noting in this context that the end of the recession, in March 1991, was not
 o(cid:14)cially recognized by the NBER until December 1992. Throughout 1992, some ambiguity lingered on.
+13
 
 Tables 3 and 4 present some statistics associated with these revisions. Table 3 shows
 the quarter-by-quarter revisions in the output gap and in(cid:13)ation while table 4 presents the
@@ -555,6 +569,7 @@ Q
 , the
 variability of revisions of in(cid:13)ation over four quarters, (cid:25), is smaller than that of revisions of
 the output gap.
+14
 
 The cumulative impact of these revisions to the rule’s prescription, shown in table 4,
 is substantial. The di(cid:11)erence between the recommendation of the rule obtained in the
@@ -583,6 +598,7 @@ obtained with the ex post revised data to those obtained with the real-time data
 least permit an evaluation of whether estimates obtained with the revised data do great
 violence to the nature of the estimated policy rule.
 To examine this issue I estimate the policy reaction function above using the alternative
+15
 
 vintages of data. Also, recognizing that the Fed appears to have been smoothing interest
 rates over this period, I embed the reaction function above as a notional target in a partial
@@ -615,6 +631,7 @@ real-time data is nowhere near one and could well equal zero. This result would 
 Yet, this speci(cid:12)cation retains the assumption that the policy response to in(cid:13)ation and output can
 adequately be captured with a linear function, contrary to perhaps equally plausible alternatives such as the
 non-linear rules described in Orphanides and Wilcox (1996).
+16
 
 one were prepared to take this policy reaction function seriously|that monetary policy
 over the estimation period might have led to an unstable in(cid:13)ation process.
@@ -651,6 +668,7 @@ for stability in model economies with monetary policy rules of this type.
 Most recently, Clarida, Gali and Gertler (1997a), investigate forward looking reaction functions such as
 the ones examined here. Clarida and Gertler (1997), (cid:12)nd such rules useful for describing German monetary
 policy as well.
+17
 
 tional assumption that expectations are formed rationally is imposed), the added noise in
 the data may render distinguishing among backward, contemporaneous and forward looking
@@ -687,6 +705,7 @@ policy is formulated in terms of recent economic outcomes, such backward looking
 better description of policy. However, since a monetary aggregate could be a superior intermediate target
 in that case, it might also prove a better policy indicator than the lagged output and in(cid:13)ation measures
 examined here.
+18
 
 presents estimates based on the (cid:12)nal data using IV estimation. When IV is employed, I use
 four lags each of the federal funds rate, in(cid:13)ation and the output gap as instruments, the
@@ -717,6 +736,7 @@ among the alternative forward horizons.
 In table 9, I present IV estimates based on the ex post revised data as of 1994, us-
 22
 For the backward looking policy reaction function (column 1), least squares estimates are always shown.
+19
 
 ing the Q
 (cid:3)
@@ -753,6 +773,7 @@ Only IV estimates are shown as least squares are clearly inappropriate for the f
 cations in this case.
 24
 This result is possible because both in(cid:13)ation and the output gap are positively serially correlated.
+20
 
 advocated policy rules. This paper examines the magnitude of this informational problem.
 The evidence suggests that it is substantial.
@@ -782,6 +803,7 @@ revisions might be immune to these problems. For instance, the rate of unemploym
 and CPI in(cid:13)ation are available on a monthly basis, within a few weeks of the end of the
 relevant month, and are not revised, save for relatively minor changes involving updating
 of seasonal factors. Even reliance on these variables, however, would not be truly free
+21
 
 from the uncertainties due to data revisions. With regard to the unemployment rate, for
 instance, the relevant measure for policy would likely be its level relative to the natural
@@ -815,6 +837,7 @@ ing the informational problem, e.g. (cid:25)t = (cid:25)tjt + e
 t , yt = ytjt + e
 y
 t : This paper demonstrates
+22
 
 that the errors in such auxiliary equations, e
 (cid:25)
@@ -828,6 +851,7 @@ of such di(cid:11)erences would allow for more meaningful comparisons among alte
 To the extent simple policy rules o(cid:11)er the promise to provide a useful baseline for
 improving policy decisions, a step towards clari(cid:12)cation of their potential would be a welcome
 step in the right direction.
+23
 
 Table 1
 Summary Statistics: 1987:1-1992:4
@@ -865,6 +889,7 @@ in quarter t + i. The statistics shown for each variable are: MEAN, the mean; SD
 standard deviation; MA, the mean of the absolute value; MAD, the mean of the absolute
 value of the variable minus its mean; and MIN and MAX, the minimum and maximum
 values.
+27
 
 Table 2
 Descriptive Statistics of Taylor’s Rule: 1987:1-1992:4
@@ -911,6 +936,7 @@ tj94:4
 (cid:0)
 Rtj94:4 0:47 0:06 0:47 0:05 0:35 0:53
 Notes: R is Taylor’s rule, constructed as explained in the text. See also notes to Table 1.
+28
 
 Table 3
 Summary Statistics for Revisions in
@@ -1029,6 +1055,7 @@ the corresponding revisions of in(cid:13)ation from the previous quarter, (cid:2
 Q
 t , in percent annual
 rate. See also notes to Table 1.
+29
 
 Table 4
 Summary Statistics for Revisions
@@ -1097,6 +1124,7 @@ tj94:4
 (cid:0)
 (cid:25)tj94:4 0:00 0:00 0:00 0:00 0:00 0:00
 Notes: See notes to Tables 1 and 2.
+30
 
 Table 5
 Taylor-Type Estimated Rules with Alternative Data
@@ -1134,6 +1162,7 @@ ft = (cid:26)ft(cid:0)1 + (1
 The columns correspond to alternative vintages of data, as shown. In the top panel (cid:26) is
 restricted to zero. The standard errors shown under the parameter estimates are based on
 the Newey-West heteroskedastity and serial correlation robust estimator.
+31
 
 Table 6
 Taylor-Type Estimated Rules with Alternative Data
@@ -1171,12 +1200,14 @@ ft = (cid:26)ft(cid:0)1 + (1
 The columns correspond to alternative vintages of data, as shown. In the top panel (cid:26) is
 restricted to zero. The standard errors shown under the parameter estimates are based on
 the Newey-West heteroskedastity and serial correlation robust estimator.
+32
 
 Table 7
 Forward Looking Rules Estimated with Real-Time Data
 LS Estimation
 Horizon Relative to Decision Period (in Quarters)
 (cid:0)
+1 0 1 2 3 4
 a0 6:38 4:89 4:51 3:95 1:82 0:84
 1:12 1:06 1:33 1:48 1:14 0:64
 a(cid:25) 0:37 0:79 0:89 1:03 1:57 1:83
@@ -1208,12 +1239,14 @@ ft = (cid:26)ft (cid:0)1 + (1
 The columns correspond to di(cid:11)erent values for i. In the top panel (cid:26) is restricted to zero.
 The standard errors shown under the parameter estimates are based on the Newey-West
 heteroskedastity and serial correlation robust estimator.
+33
 
 Table 8
 Forward Looking Rules Estimated with Real-Time data
 IV Estimation
 Horizon Relative to Decision Period (in Quarters)
 (cid:0)
+1 0 1 2 3 4
 a0 6:38 4:77 4:60 3:86
 (cid:0)
 1:94
@@ -1248,12 +1281,15 @@ ft = (cid:26)ft (cid:0)1 + (1
 (cid:26))(ao + a(cid:25)(cid:25)t+i + ayyt+i)
 The columns correspond to di(cid:11)erent values for i. In the top panel (cid:26) is restricted to zero.
 The standard errors shown under the parameter estimates are based on the Newey-West
+heteroskedastity and serial correlation robust estimator.
+34
 
 Table 9
 Forward Looking Rules Estimated with 1994:4 Data
 IV Estimation
 Horizon Relative to Decision Period (in Quarters)
 (cid:0)
+1 0 1 2 3 4
 a0 4:36 1:13
 (cid:0)
 0:74
@@ -1302,6 +1338,8 @@ ft = (cid:26)ft (cid:0)1 + (1
 (cid:26))(ao + a(cid:25)(cid:25)t+i + ayyt+i)
 The columns correspond to di(cid:11)erent values for i. In the top panel (cid:26) is restricted to zero.
 The standard errors shown under the parameter estimates are based on the Newey-West
+heteroskedastity and serial correlation robust estimator.
+35
 
 Figure 1
 Taylor’s Rule
@@ -1335,6 +1373,7 @@ Federal Funds Rate
 Rule with 1993:1 Data
 Rule with 1994:4 Data
 Based on Q*
+36
 
 Figure 2
 Taylor’s Rule Based on Real-Time and Revised Data
@@ -1360,6 +1399,7 @@ dotted line shows the ex-post recommendations using data as of 1994:4. Both rule
 based on the Q
 (cid:3)
 concept of potential output.
+37
 
 Figure 3
 Underlying Real-Time and Revised Data
@@ -1390,6 +1430,7 @@ Percent
 Real time data
 Data as of 1994:4
 Output Gap
+38
 
 Figure 4
 Real-Time Rule and Revisions Within a Year
@@ -1411,15 +1452,35 @@ Rule with real time data
 Note: For each quarter, the envelope around the rule indicates the range of recommendations
 for the federal funds rate that would obtain using data as of that quarter and as of each of
 the subsequent four quarters.
+39
 
 Figure 5
 Decomposition of Within-Year Revisions
+-0.5
+0.0
+0.5
+1.0
+1.5
+2.0
 1987 1988 1989 1990 1991 1992
 Range of Rule Recommendation Revisions
 Percent
+-1
+0
+1
+2
+3
 1987 1988 1989 1990 1991 1992
 Range of Output Gap Revisions
 Percent
+-0.4
+-0.2
+0.0
+0.2
+0.4
+0.6
+0.8
 1987 1988 1989 1990 1991 1992
 Range of Inflation Revisions
 Percent
+40

@@ -32,6 +32,7 @@ describe objectives of central bank or government intervention and
 capital controls and describe the effectiveness of intervention and 
 capital controls
 describe warning signs of a currency crisis
+L E A R N I N G  M O D U L E
 1
 © CFA Institute. For candidate use only. Not for distribution.
 
@@ -56,34 +57,34 @@ balances, capital flows, and monetary and fiscal policy.
 Although these fundamentals-based models usually perform poorly in predicting 
 future exchange rates in the short run, they are crucial for understanding long-term 
 currency value. Thus, we proceed as follows:
-
+	
 ■
 We review the basic concepts of the foreign exchange market covered in 
 the CFA Program Level I curriculum and expand this previous coverage to 
 incorporate more material on bid–offer spreads.
-
+	
 ■
 We then begin to examine determinants of exchange rates, starting with 
 longer-term interrelationships among exchange rates, interest rates, and 
 inflation rates embodied in the international parity conditions. These parity 
 conditions form the key building blocks for many long-run exchange rate 
 models.
-
+	
 ■
 We also examine the foreign exchange (FX) carry trade, a trading strategy 
 that exploits deviations from uncovered interest rate parity and discuss the 
 relationship between a country’s exchange rate and its balance of payments.
-
+	
 ■
 We then examine how monetary and fiscal policies can indirectly affect 
 exchange rates by influencing the various factors described in our exchange 
 rate model.
-
+	
 ■
 The subsequent section focuses on direct public sector actions in foreign 
 exchange markets, both through capital controls and by foreign exchange 
 market intervention (buying and selling currencies for policy purposes).
-
+	
 ■
 The last section examines historical episodes of currency crisis and some 
 leading indicators that may signal the increased likelihood of a crisis. 
@@ -93,6 +94,7 @@ currency quotation and describe the factors that affect the bid–offer
 spread 
 1
 2
+© CFA Institute. For candidate use only. Not for distribution.
 
 Foreign Exchange Market Concepts
 5
@@ -144,7 +146,10 @@ participants.
 option (but not the obligation) to deal at either the bid (to sell the base cur-
 rency) or the offer (to buy the base currency) quoted by the dealer. If the party 
 chooses to trade at the quoted prices, the party is said to have either “hit the 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 6
 bid” or “paid the offer.” If the base currency is being sold, the party is said 
 to have hit the bid. If the base currency is being bought, the party is said to 
@@ -185,14 +190,14 @@ earning a profit of one pip.
 The size of the bid–offer spread quoted to dealers’ clients in the FX market can 
 vary widely across exchange rates and is not constant over time, even for a single 
 exchange rate. The size of this spread depends primarily on three factors:
-
+	
 ■
 the bid–offer spread in the interbank foreign exchange market for the two 
 currencies involved,
-
+	
 ■
 the size of the transaction, and
-
+	
 ■
 the relationship between the dealer and the client.
 We examine each factor in turn.
@@ -203,6 +208,7 @@ rency pairs than for others. Liquidity in the major currency pairs—for
 example, USD/EUR, JPY/USD, and USD/GBP—can be quite high. These 
 markets are almost always deep, with multiple bids and offers from market 
 participants around the world. In other currency pairs, particularly some of 
+© CFA Institute. For candidate use only. Not for distribution.
 
 Foreign Exchange Market Concepts
 7
@@ -281,7 +287,10 @@ business is only one business service among many that a dealer provides to that 
 For example, the dealer firm might also transact in bond and/or equity securities with 
 the same client. In a competitive business environment, in order to win the client’s 
 business for these other services, the dealer might provide a tighter (i.e., smaller) 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 8
 bid–offer spot exchange rate quote. The dealer might also give tighter bid–offer quotes 
 in order to win repeat FX business. A client’s credit risk can also be a factor. A client 
@@ -330,6 +339,7 @@ the arbitrageur will buy currency C from a dealer if it is undervalued (relative
 cross rate) and sell currency A. If currency C is overvalued by a dealer (relative to the 
 cross rate), it will be sold and currency A will be bought.
 3
+© CFA Institute. For candidate use only. Not for distribution.
 
 Arbitrage Constraints on Spot Exchange Rate Quotes
 9
@@ -414,7 +424,10 @@ _ 
 GBP ​)​(​ USD 
 _ 
 EUR ​)​.​
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 10
 Instead, because the USD is in the numerator in both currency pairs, we will have to 
 invert one of the pairs to derive the GBP/EUR cross rate.
@@ -465,14 +478,14 @@ EUR ​)​ offer​  =  0.81288 × 1.1651  =  0.9471.​
 Note that the implied bid rate is less than the implied offer rate, as it must be to 
 prevent arbitrage.
 We conclude this section on arbitrage constraints with some simple observations:
-
+	
 ■
 The arbitrage constraint on implied cross rates is similar to that for spot 
 rates (posted bid rates cannot be higher than the market’s offer; posted offer 
 rates cannot be lower than the market’s bid). The only difference is that 
 this second arbitrage constraint is applied across currency pairs instead of 
 involving a single currency pair.
-
+	
 ■
 In reality, any violations of these arbitrage constraints will quickly disap-
 pear. Both human traders and automatic trading algorithms are constantly 
@@ -482,12 +495,13 @@ at which Dealer 2 is selling it, the arbitrageur will buy the currency from
 Dealer 2 and resell it to Dealer 1. As a result of buying and selling pressures, 
 Dealer 2 will raise his offer prices and Dealer 1 will reduce her bid prices to 
 the point where arbitrage profits are no longer available.
-
+	
 ■
 Market participants do not need to calculate cross rates manually because 
 electronic dealing machines (which are essentially just specialized comput-
 ers) will automatically calculate cross bid–offer rates given any two underly-
 ing bid–offer rates.
+© CFA Institute. For candidate use only. Not for distribution.
 
 Arbitrage Constraints on Spot Exchange Rate Quotes
 11
@@ -559,7 +573,10 @@ Bid:
 Offer:
 79.86 = 105.41 × 0.75763.
 ​
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 12
 3.	 If a dealer quoted a bid–offer rate of 79.81/79.83 in JPY/CAD, then a trian-
 gular arbitrage would involve buying:
@@ -611,6 +628,7 @@ and London are both in their most liquid trading periods at the same time
 than CAD/USD) and occurs outside of normal dealing hours in all three 
 major centers (London, North America, and Asia); the transaction is also for 
 a large amount.
+© CFA Institute. For candidate use only. Not for distribution.
 
 Forward Markets
 13
@@ -661,7 +679,10 @@ this foreign currency amount at the foreign risk-free interest rate (1 + if); an
 maturity, convert the foreign currency investment proceeds back into the domestic 
 currency using the forward rate (1/Ff/d).
 4
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 14
 For simplicity, we assumed a one-year horizon in the preceding example. However, 
 the argument holds for any investment horizon. The risk-free assets used in this arbi-
@@ -732,6 +753,7 @@ _ 
 1 + ​i​ B​[​ Actual 
 _ 
 360  ​]​ ​)​.​
+© CFA Institute. For candidate use only. Not for distribution.
 
 Forward Markets
 15
@@ -776,7 +798,7 @@ information from the table gives us
 _ 
 360 ​]​ 
 ____________ 
-
+ 
 1 + 0.0147​[​ 270 
 _ 
 360 ​]​ ​)​(0.0041 − 0.0147)​  =  − 0.0071.​
@@ -787,7 +809,10 @@ in the spot quote. Thus, the forward rate quote is typically shown as the bid–
 the spot rate and the number of forward points at each maturity, as shown in Exhibit 
 1 (“Maturity” is defined in terms of the time between spot settlement—usually T + 
 2—and the settlement of the forward contract).
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 16
 Exhibit 1: Sample Spot and Forward Quotes (Bid–Offer)
 Maturity
@@ -804,17 +829,17 @@ Forward Points
 12 months
 −94.3/−91.8
 Note the following:
-
+	
 ■
 As always, the offer in the bid–offer quote is larger than the bid. In this 
 example, the forward points are negative (i.e., the forward rate for the EUR 
 is at a discount to the spot rate) but the bid is a smaller number (−5.6 versus 
 −5.1 at the one-month maturity).
-
+	
 ■
 The absolute number of forward points is a function of the term of the for-
 ward contract: A longer contract term results in a larger number of points.
-
+	
 ■
 Because this is an OTC market, a client is not restricted to dealing only at 
 the dates/maturities shown. Dealers typically quote standard forward dates, 
@@ -822,7 +847,7 @@ but forward deals can be arranged for any forward date the client requires.
 The forward points for these non-standard (referred to as “broken”) forward 
 dates will typically be interpolated on the basis of the points shown for the 
 standard settlement dates.
-
+	
 ■
 The quoted points are already scaled to each maturity—they are not 
 annualized—so there is no need to adjust them.
@@ -843,6 +868,7 @@ THE MARK-TO-MARKET VALUE OF A FORWARD
 CONTRACT
 calculate the mark-to-market value of a forward contract 
 5
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Mark-to-Market Value of a Forward Contract
 17
@@ -894,15 +920,18 @@ settlement day cash flow by the three-month discount rate. Because this amount i
 AUD, we use the three-month AUD discount rate. Suppose that three-month AUD 
 MRR is 2.40% (annualized). The present value of this future AUD cash flow is then
 	​ AUD 240,000 
-
+ 
 ____________ 
-
+ 
 1 + 0.024​(​ 90 
 _ 
 360 ​)​ ​  =  AUD 238,569.​
 This result is the mark-to-market value of the original long GBP 10 million 
 six-month forward when it is closed out three months prior to settlement.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 18
 To summarize, the process for marking to market a forward position is relatively 
 straightforward:
@@ -931,13 +960,13 @@ the client and the dealer. For forward bid–offer spreads, we can also add a fo
 factor: the term of the forward contract. Generally, the longer the term of the forward 
 contract, the wider the bid–offer spread. This relationship holds because as the term 
 of the contract increases,
-
+	
 ■
 liquidity in the forward market tends to decline,
-
+	
 ■
 the exposure to counterparty credit risk increases, and
-
+	
 ■
 the interest rate risk of the contract increases (forward rates are based on 
 interest rate differentials, and a longer duration means greater price sensitiv-
@@ -964,6 +993,7 @@ Five months
 Six months
 −56.5/−54.0
 ​
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Mark-to-Market Value of a Forward Contract
 19
@@ -1018,7 +1048,10 @@ forward points. This scenario leads to an all-in three-month forward rate
 of 0.7830 − 0.0010 = 0.7820. On the settlement day, Laurier Bay will receive 
 USD 7,900,000 (NZD 10,000,000 × 0.7900 USD/NZD) from the original for-
 ward contract and pay out USD 7,820,000 (NZD 10,000,000 × 0.7820 USD/
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 20
 NZD) based on the offsetting forward contract. The result is a net cash flow 
 on the settlement day of 10,000,000 × (0.7900 − 0.7820) = +USD 80,000.
@@ -1028,9 +1061,9 @@ months. To calculate the mark-to-market value of the original forward po-
 sition, we need to calculate the present value of this USD cash inflow using 
 the three-month USD discount rate (we use USD MRR for this purpose):
 	​  USD 80, 000 
-
+ 
 ____________ 
-
+ 
 1 + 0.0031​(​ 90 
 _ 
 360 ​)​ ​  =  + USD 79, 938.​
@@ -1070,12 +1103,13 @@ NZD dropped from 0.7900 to 0.78129). This NZD cash outflow occurs in
 three months’ time, and we must calculate its present value using the three-
 month NZD MRR:
 	​ − NZD 141, 117 
-
+ 
 ____________ 
-
+ 
 1 + 0.0331​(​ 90 
 _ 
 360 ​)​ ​  =  − NZD 139, 959.​
+© CFA Institute. For candidate use only. Not for distribution.
 
 International Parity Conditions
 21
@@ -1128,7 +1162,10 @@ simple formula, model, or approach that will allow market participants to precis
 forecast exchange rates. Models that work well in one period may fail in others. Models 
 that work for one set of exchange rates may fail to work for others.
 6
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 22
 Nonetheless, market participants must have a market view to guide their decisions, 
 even if this view requires significant revision as new information becomes available. 
@@ -1173,6 +1210,7 @@ either in a domestic money market instrument or in a fully currency-hedged forei
 money market instrument—exactly the same holding period return. If one strategy 
 gave a higher holding period return than the other, then an investor could short-sell 
 7
+© CFA Institute. For candidate use only. Not for distribution.
 
 Covered and Uncovered Interest Rate Parity and Forward Rate Parity
 23
@@ -1226,7 +1264,10 @@ currency declines in value, thereby reducing the all-in return from the domestic
 rency perspective of our investor. This all-in return depends on future movements in 
 the Sf/d rate, which cannot be known until the end of the period. This return can be 
 approximated by ​≅  ​i​ f​ −   % Δ ​S​ f/d​.​
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 24
 Note that this approximate formula holds because the product (i × %ΔS) is small 
 compared with the interest rate (i) and the percentage change in the exchange rate 
@@ -1281,7 +1322,9 @@ uncovered interest rate parity held at all times, investors would have no incent
 shift capital from one currency to another because expected returns on otherwise 
 identical money market investments would be equal across markets and risk-neutral 
 investors would be indifferent among them.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Covered and Uncovered Interest Rate Parity and Forward Rate Parity
 25
 Most studies have found that over short- and medium-term periods, the rate 
 of depreciation of the high-yield currency is less than what would be implied by 
@@ -1344,7 +1387,10 @@ _ 
 ​S​ f/d​ 
 ​  =  %Δ ​S​ f/d​ 
 e  ​  =  ​i​ f​ − ​i​ d​.​
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 26
 Thus, the forward premium (discount) on a currency, expressed in percentage 
 terms, equals the expected percentage appreciation (depreciation) of the domestic 
@@ -1397,7 +1443,9 @@ Solution
 B is correct. The expected depreciation of the Australian dollar (decline in 
 the JPY/AUD rate) is equal to the interest rate differential between Australia 
 and Japan (3% − 1%).
+© CFA Institute. For candidate use only. Not for distribution.
 
+Covered and Uncovered Interest Rate Parity and Forward Rate Parity
 27
 2.	 The best explanation of why this prediction may not be very accurate is that:
 A.	 covered interest rate parity does hold in this case.
@@ -1445,7 +1493,10 @@ Solution
 C is correct. A fully hedged JPY investment would provide the same return 
 as the AUD investment: 3%. This represents covered interest rate parity, an 
 arbitrage condition.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 28
 6.	 The fixed-income manager collects the following information and uses it, 
 along with the international parity conditions, to estimate investment re-
@@ -1499,6 +1550,7 @@ Solution
 B is correct. Given uncovered interest rate parity, the expected change in a 
 spot exchange rate is equal to the interest rate differential. At the one-year 
 term, there is no difference between USD MRR and JPY MRR.
+© CFA Institute. For candidate use only. Not for distribution.
 
 Purchasing Power Parity
 29
@@ -1548,7 +1600,10 @@ service across countries, but if transaction costs are significant and/or not al
 and services are tradable, then goods arbitrage will be incomplete. Hence, sizable and 
 persistent departures from absolute PPP are likely.
 8
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 30
 However, if it is assumed that transaction costs and other trade impediments are 
 constant over time, it might be possible to show that changes in exchange rates and 
@@ -1566,7 +1621,7 @@ order to maintain the relative competitiveness of the two regions: The currency 
 high-inflation country should depreciate relative to the currency of the low-inflation 
 country. If the Sf/d exchange rate remained unchanged, the higher foreign inflation rate 
 would erode the competitiveness of foreign companies relative to domestic companies.
-
+ 
 Conversion from Absolute Levels to a Rate of Change
 We will occasionally need to convert from a relationship expressed in levels of 
 the relevant variables to a relationship among rates of change. If X = (Y × Z), then
@@ -1597,6 +1652,7 @@ domestic and foreign inflation rates over the same period.
 Studies have found that while over shorter horizons nominal exchange rate move-
 ments may appear random, over longer time horizons nominal exchange rates tend to 
 gravitate toward their long-run PPP equilibrium values.
+© CFA Institute. For candidate use only. Not for distribution.
 
 Purchasing Power Parity
 31
@@ -1701,7 +1757,10 @@ when differences in inflation rates between countries are large. Note that the B
 Real-USD exchange rate changes rapidly in the period 1980-1993, mirroring the very 
 large differences in relative inflation between hyperinflationary Brazil and low infla-
 tion rate United States. It also indicates that the majority countries did not have large 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 32
 inflation differentials with the United States, and so 1-year changes in exchange rates 
 cluster near the origin. This mirrors the upper left panel in Exhibit 2 above, which 
@@ -1761,6 +1820,7 @@ According to what economists call the Fisher effect, one can break down the
 nominal interest rate (i) in a given country into two parts: (1) the real interest rate 
 (r) in that particular country and (2) the expected inflation rate (πe) in that country:
 9
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Fisher Effect, Real Interest Rate Parity, and International Parity Conditions
 33
@@ -1772,7 +1832,7 @@ and expected inflation rates:
 	​
 ​i​ d​  =  ​r​ d​ + ​π​ d​ e​.
 ​ 
-
+ 
 ​i​ f​  =  ​r​ f​ + ​π​ f​ e​. ​
 Let’s take a closer look at the macroeconomic forces that drive the trend in nominal 
 yield spreads. Subtracting the top equation from the bottom equation shows that 
@@ -1813,7 +1873,10 @@ some authors refer to uncovered interest rate parity as the “international Fis
 We reserve this term for the relationship between nominal interest rate differentials 
 and expected inflation differentials because the original (domestic) Fisher effect is a 
 relationship between interest rates and expected inflation.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 34
 The international Fisher effect and, by extension, real interest rate parity assume 
 that currency risk is the same throughout the world. However, not all currencies carry 
@@ -1858,6 +1921,7 @@ nal yields would be explained by the difference in inflation rates (3% − 1%).
 which of the following would not be true if PPP holds in the long run?
 A.	 An exchange rate’s equilibrium path should be determined by the 
 long-term trend in domestic price levels relative to foreign price levels.
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Fisher Effect, Real Interest Rate Parity, and International Parity Conditions
 35
@@ -1906,7 +1970,10 @@ tion rate—and also assuming that real interest rates are broadly the same
 across all markets (real interest rate parity), then the nominal yield spread 
 between domestic and foreign markets will equal the domestic–foreign 
 expected inflation differential, which is the international Fisher effect.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 36
 6.	 If ex ante PPP and the international Fisher effect hold, then expected infla-
 tion differentials should equal both the expected change in the exchange 
@@ -1915,13 +1982,13 @@ the expected change in the exchange rate equals the nominal interest rate
 differential, which is uncovered interest rate parity.
 In sum, if all the key international parity conditions held at all times, then the 
 expected percentage change in the spot exchange rate would equal
-
+	
 ■
 the forward premium or discount (expressed in percentage terms),
-
+	
 ■
 the nominal yield spread between countries, and
-
+	
 ■
 the difference between expected national inflation rates.
 In other words, if all these parity conditions held, it would be impossible for a global 
@@ -1956,6 +2023,7 @@ interest rate parity is not required.
 hold?
 A.	 Ex ante PPP
 B.	 Absolute PPP
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Carry Trade
 37
@@ -2001,7 +2069,10 @@ as the FX carry trade, which involves taking long positions in high-yield curren
 and short positions in low-yield currencies. The latter are often referred to as “funding 
 currencies.” As a simplified example of the carry trade, assume a trader can borrow 
 10
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 38
 Canadian dollars at 1% and earn 9% on an investment in Brazilian reals for one year. 
 To execute the trade to earn 8% from the interest rate differential, the trader will do 
@@ -2053,6 +2124,7 @@ the loss. The “flight to quality” during turbulent times and the leverage in
 the carry trade further compound the losses. The upshot is that during periods of low 
 volatility, carry trades tend to generate positive returns, but they are prone to significant 
 crash risk in turbulent times.
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Carry Trade
 39
@@ -2098,7 +2170,10 @@ Solution
 A is correct. Carry trades are leveraged trades (borrow in the funding cur-
 rency, invest in the high-yield currency), and leverage increases the volatility 
 in the investor’s return on equity.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 40
 4.	 A Tokyo-based asset manager enters into a carry trade position based on 
 borrowing in yen and investing in one-year Australian MRR.
@@ -2156,6 +2231,7 @@ There have been many attempts to find a better framework for determining a curre
 cy’s short- or long-run equilibrium value. In this section, we examine the influence 
 of trade and capital flows.
 11
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Impact of Balance of Payments Flows
 41
@@ -2187,22 +2263,22 @@ lenders) often see their currencies appreciate over time.
 However, investment/financing decisions are usually the dominant factor in deter-
 mining exchange rate movements, at least in the short to intermediate term. There 
 are four main reasons for this:
-
+	
 ■
 Prices of real goods and services tend to adjust much more slowly than 
 exchange rates and other asset prices.
-
+	
 ■
 Production of real goods and services takes time, and demand decisions 
 are subject to substantial inertia. In contrast, liquid financial markets allow 
 virtually instantaneous redirection of financial flows.
-
+	
 ■
 Current spending/production decisions reflect only purchases/sales of 
 current production, while investment/financing decisions reflect not only 
 the financing of current expenditures but also the reallocation of existing 
 portfolios.
-
+	
 ■
 Expected exchange rate movements can induce very large short-term capital 
 flows. This tends to make the actual exchange rate very sensitive to the cur-
@@ -2213,16 +2289,19 @@ Current Account Imbalances and the Determination of
 Exchange Rates
 Current account trends influence the path of exchange rates over time through several 
 mechanisms:
-
+	
 ■
 The flow supply/demand channel
-
+	
 ■
 The portfolio balance channel
-
+	
 ■
 The debt sustainability channel
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 42
 We briefly discuss each of these mechanisms next.
 The Flow Supply/Demand Channel
@@ -2245,13 +2324,13 @@ pluses and deficits should eventually help eliminate—in the medium to long run
 source of the initial imbalances.
 The amount by which exchange rates must adjust to restore current accounts to 
 balanced positions depends on a number of factors:
-
+	
 ■
 The initial gap between imports and exports
-
+	
 ■
 The response of import and export prices to changes in the exchange rate
-
+	
 ■
 The response of import and export demand to changes in import and export 
 prices
@@ -2280,6 +2359,7 @@ is the so-called portfolio balance channel. Current account imbalances shift fin
 wealth from deficit nations to surplus nations. Countries with trade deficits will finance 
 their trade with increased borrowing. This behavior may lead to shifts in global asset 
 preferences, which in turn could influence the path of exchange rates. For example, 
+© CFA Institute. For candidate use only. Not for distribution.
 
 The Impact of Balance of Payments Flows
 43
@@ -2333,7 +2413,12 @@ In each of those downward cycles, the dollar’s slide was driven in large part 
 concerns over outsized US current account deficits coupled with relatively low 
 nominal and/or real short-term US interest rates, which made it difficult to 
 attract sufficient foreign capital to the United States to finance those deficits.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
+44
+ 
 EXCHANGE RATE ADJUSTMENT IN SURPLUS NATIONS: JAPAN AND CHINA
 Japan and, for a number of years, China represent examples of countries with 
 large current account surpluses and illustrate the pressure that those surpluses 
@@ -2376,6 +2461,7 @@ example of capital controls is the Brazilian government 2016 tax on foreign exch
 transactions to control capital flows and raise government revenue. In general, gov-
 ernment control of the exchange rate will not be completely effective because even if 
 12
+© CFA Institute. For candidate use only. Not for distribution.
 
 Capital Flows
 45
@@ -2431,7 +2517,10 @@ to being highly negative, depending on market conditions. For instance, between 
 and 1995, the US dollar fell while the US equity market was strong and the Japanese 
 yen soared while Japanese stocks were weak. In contrast, between 1995 and early 
 2000, the US dollar soared in tandem with a rising US equity market while the yen 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 46
 weakened in tandem with a decline in the Japanese equity market. Such instability in 
 the correlation between exchange rates and equity markets makes it difficult to form 
@@ -2479,6 +2568,7 @@ demanded by investors to hold the EM currency.
 deficit with the EM country. To isolate the influence of this chronic im-
 balance on exchange rates, she focuses only on the bilateral relationship 
 between the EM and DM countries and makes the simplifying assumption 
+© CFA Institute. For candidate use only. Not for distribution.
 
 Capital Flows
 47
@@ -2528,7 +2618,10 @@ ment and consumption, the EM government would not be likely to encour-
 age these activities through lower taxes. Nor would the EM country be likely 
 to encourage further currency appreciation by intervening in the market to 
 buy its own currency.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 48
 6.	 If government actions were ineffective and the EM country’s bubble eventu-
 ally burst, this would most likely be reflected in an increase in:
@@ -2570,6 +2663,7 @@ In this model, expansionary monetary policy affects growth, in part, by reducing
 interest rates and thereby increasing investment and consumption spending. Given 
 flexible exchange rates and expansionary monetary policy, downward pressure on 
 13
+© CFA Institute. For candidate use only. Not for distribution.
 
 Monetary and Fiscal Policies
 49
@@ -2629,7 +2723,10 @@ Source: Rosenberg (1996, p. 132).
 When capital mobility is low, the effects of monetary and fiscal policy on exchange 
 rates will operate primarily through trade flows rather than capital flows. The com-
 bination of expansionary monetary and fiscal policy will be bearish for a currency. 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 50
 Earlier we said that expansionary fiscal policy will increase imports and hence the 
 trade deficit, creating downward pressure on the currency. Layering on an expansive 
@@ -2680,7 +2777,9 @@ inflation rate play no role. Monetary models of exchange rate determination gene
 take the opposite perspective: Output is fixed and monetary policy affects exchange 
 rates primarily through the price level and the rate of inflation. In this section, we briefly 
 describe two variations of the monetary approach to exchange rate determination.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Monetary and Fiscal Policies
 51
 The monetary approach asserts that an X percent rise in the domestic money 
 supply will produce an X percent rise in the domestic price level. Assuming that pur-
@@ -2707,7 +2806,7 @@ domestic interest rates will precipitate a capital outflow, which in the short r
 cause the domestic currency to depreciate below its new long-run equilibrium level. 
 In the long run, once domestic nominal interest rates rise, the currency will appreciate 
 and move into line with the path predicted by the conventional monetary approach.
-
+ 
 Monetary Policy and Exchange Rates: The Historical 
 Evidence
 Historically, changes in monetary policy have had a profound impact on exchange 
@@ -2728,7 +2827,11 @@ In the early 1980s, exchange rate crises in Argentina, Brazil, Chile, and Mexico
 were all preceded by sharp accelerations in domestic credit expansions. In 2012, 
 Venezuela began a period of triple-digit inflation, followed by a massive currency 
 depreciation and an economic crisis.
+ 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 52
 EXAMPLE 9
 Monetary Policy and Exchange Rates
@@ -2774,7 +2877,9 @@ Solution
 C is correct. The looser monetary policy will lead to exchange rate deprecia-
 tion. To counter this effect and maintain the currency peg, the central bank 
 will have to intervene in the FX market, buying the country’s own currency. 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Monetary and Fiscal Policies
 53
 A is incorrect because tighter fiscal policy is associated with lower interest 
 rates and is therefore likely to increase rather than mitigate the downward 
@@ -2822,7 +2927,10 @@ closely examine how exchange rates change over the long term.
 In the portfolio balance approach, global investors are assumed to hold a diver-
 sified portfolio of domestic and foreign assets, including bonds. The desired allocation 
 is assumed to vary in response to changes in expected return and risk considerations. 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 54
 In this framework, a growing government budget deficit leads to a steady increase 
 in the supply of domestic bonds outstanding. These bonds will be willingly held only 
@@ -2874,7 +2982,9 @@ Fiscal Policy and Exchange Rates
 Monique Kwan is continuing her analysis of the foreign exchange rate outlook 
 for selected countries. She examines a DM country that has a high degree of 
 capital mobility and a floating-rate currency regime. Kwan notices that although 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Monetary and Fiscal Policies
 55
 the current outstanding volume of government debt is low, as a percentage of 
 GDP, it is rising sharply as a result of expansionary fiscal policy. Moreover, 
@@ -2923,7 +3033,10 @@ risk. Assuming that the central bank will not accommodate (monetize) the
 rising government debt, the most likely fiscal response is an eventual move 
 toward fiscal consolidation—reducing the public deficit and debt levels that 
 were causing the debt metrics to deteriorate. This policy adjustment would 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 56
 involve issuing fewer government bonds. All else equal, bond yields would 
 decrease, leading to a weaker domestic currency over the longer term.
@@ -2953,22 +3066,22 @@ a combination of “pull” and “push” factors. Pull factors represent a fav
 developments that encourage foreign capital inflows. These factors may stem from 
 both the public and private sectors. Examples of better economic management by a 
 government include
-
+	
 ■
 a decrease in inflation and inflation volatility,
-
+	
 ■
 more-flexible exchange rate regimes,
-
+	
 ■
 improved fiscal positions,
-
+	
 ■
 privatization of state-owned entities,
-
+	
 ■
 liberalization of financial markets, and
-
+	
 ■
 lifting of foreign exchange regulations and controls.
 Ideally, these changes will facilitate strong economic growth in the private sector, 
@@ -2982,6 +3095,7 @@ the investor base in industrial countries. For example, the pursuit of low inter
 policies in industrial countries since the 2008 financial crisis has encouraged global 
 investors to seek higher returns abroad.
 14
+© CFA Institute. For candidate use only. Not for distribution.
 
 Exchange Rate Management: Intervention and Controls
 57
@@ -3039,7 +3153,10 @@ surges in capital inflows. It was generally felt that such controls tended to ge
 distortions in global trade and finance and that, in all likelihood, market participants 
 would eventually find ways to circumvent the controls. Furthermore, many thought 
 that capital controls imposed by one country could deflect capital flows to other 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 58
 countries, which could complicate monetary and exchange rate policies in those 
 economies. Despite such concerns, the IMF has said that the benefits associated 
@@ -3089,6 +3206,7 @@ the economy contracts, asset values plummet, and the currency sharply depreciate
 History is filled with examples of currencies that have come under heavy selling pres-
 sure within short windows of time. For example, between August 2008 and February 
 15
+© CFA Institute. For candidate use only. Not for distribution.
 
 Warning Signs of a Currency Crisis
 59
@@ -3146,7 +3264,10 @@ ditions were identified in one or more studies (Babecký, Havránek, Matějů, R
 Šmídková, and Vašíček 2013 and 2014; Daniels and VanHoose 2018):
 1.	 Prior to a currency crisis, the capital markets have been liberalized to allow 
 the free flow of capital.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 60
 2.	 There are large inflows of foreign capital (relative to GDP) in the period 
 leading up to a crisis, with short-term funding denominated in a foreign 
@@ -3198,7 +3319,9 @@ internet-based deposit accounts to foreign investors. These accounts offered
 attractive interest rates and were denominated in foreign currencies. In partic-
 ular, many of the depositors were British, Dutch, and other European citizens 
 who held deposit accounts denominated in pounds and euros.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Warning Signs of a Currency Crisis
 61
 With government guarantees on their deposit accounts, the banking industry 
 grew rapidly. The largest bank, Kaupthing, experienced asset growth of 30 times 
@@ -3242,14 +3365,17 @@ the spring of 2009, unemployment was 9%. The country subsequently required
 a bailout from the IMF and its neighbors of USD 4.6 billion.
 Source: Federal Reserve Bank of St. Louis database; Bekaert and Hodrick 2018; Matsangou 2015; 
 Daniels and VanHoose 2017.
-
+ 
 EXAMPLE 11
 Currency Crises
 Monique Kwan now turns her attention to the likelihood of crises in various 
 emerging market currencies. She discusses this matter with a research associ-
 ate, who tells her that the historical record of currency crises shows that most 
 of these episodes were not very well anticipated by investors (in terms of their 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 62
 positioning), by the bond markets (in terms of yield spreads between countries), 
 or by major credit rating agencies and economists (in terms of the sovereign 
@@ -3293,7 +3419,9 @@ typically decreases the likelihood of a currency crisis.
 4.	 Kwan’s early warning system would most likely be better if it:
 A.	 had a strong record of predicting actual crises, even if it generates a lot 
 of false signals.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Warning Signs of a Currency Crisis
 63
 B.	 included a wide variety of economic indicators, including those for 
 which data are available only with a significant lag.
@@ -3320,85 +3448,90 @@ We have described how changes in monetary policy, fiscal policy, current account
 trends, and capital flows affect exchange rate trends, as well as what role government 
 intervention and capital controls can play in counteracting potentially undesirable 
 exchange rate movements. We have made the following key points:
-
+	
 ■
 Spot exchange rates apply to trades for the next settlement date (usually T 
 + 2) for a given currency pair. Forward exchange rates apply to trades to be 
 settled at any longer maturity.
-
+	
 ■
 Market makers quote bid and offer prices (in terms of the price currency) at 
 which they will buy or sell the base currency.
-
+	
 ●
 The offer price is always higher than the bid price.
-
+	
 ●
 The counterparty that asks for a two-sided price quote has the option 
 (but not the obligation) to deal at either the bid or offer price quoted.
-
+	
 ●
 The bid–offer spread depends on (1) the currency pair involved, (2) the 
 time of day, (3) market volatility, (4) the transaction size, and (5) the rela-
 tionship between the dealer and the client. Spreads are tightest in highly 
 liquid currency pairs, when the key market centers are open, and when 
 market volatility is relatively low.
-
+	
 ■
 Absence of arbitrage requires the following:
-
+	
 ●
 The bid (offer) shown by a dealer in the interbank market cannot be 
 higher (lower) than the current interbank offer (bid) price.
-
+	
 ●
 The cross-rate bids (offers) posted by a dealer must be lower (higher) 
 than the implied cross-rate offers (bids) available in the interbank mar-
 ket. If they are not, then a triangular arbitrage opportunity arises.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
+64
+	
 ■
 Forward exchange rates are quoted in terms of points to be added to the 
 spot exchange rate. If the points are positive (negative), the base currency 
 is trading at a forward premium (discount). The points are proportional to 
 the interest rate differential and approximately proportional to the time to 
 maturity.
-
+	
 ■
 International parity conditions show us how expected inflation, interest rate 
 differentials, forward exchange rates, and expected future spot exchange 
 rates are linked. In an ideal world,
-
+	
 ●
 relative expected inflation rates should determine relative nominal inter-
 est rates,
-
+	
 ●
 relative interest rates should determine forward exchange rates, and
-
+	
 ●
 forward exchange rates should correctly anticipate the path of the future 
 spot exchange rate.
-
+	
 ■
 International parity conditions tell us that countries with high (low) 
 expected inflation rates should see their currencies depreciate (appreciate) 
 over time, that high-yield currencies should depreciate relative to low-yield 
 currencies over time, and that forward exchange rates should function as 
 unbiased predictors of future spot exchange rates.
-
+	
 ■
 With the exception of covered interest rate parity, which is enforced by arbi-
 trage, the key international parity conditions rarely hold in either the short 
 or medium term. However, the parity conditions tend to hold over relatively 
 long horizons.
-
+	
 ■
 According to the theory of covered interest rate parity, a 
 foreign-currency-denominated money market investment that is com-
 pletely hedged against exchange rate risk in the forward market should yield 
 exactly the same return as an otherwise identical domestic money market 
 investment.
-
+	
 ■
 According to the theory of uncovered interest rate parity, the expected 
 change in a domestic currency’s value should be fully reflected 
@@ -3406,56 +3539,60 @@ in domestic–foreign interest rate spreads. Hence, an unhedged
 foreign-currency-denominated money market investment is expected to 
 yield the same return as an otherwise identical domestic money market 
 investment.
-
+	
 ■
 According to the ex ante purchasing power parity condition, expected 
 changes in exchange rates should equal the difference in expected national 
 inflation rates.
-
+	
 ■
 If both ex ante purchasing power parity and uncovered interest rate parity 
 held, real interest rates across all markets would be the same. This result is 
 real interest rate parity.
-
+	
 ■
 The international Fisher effect says that the nominal interest rate differential 
 between two currencies equals the difference between the expected inflation 
 rates. The international Fisher effect assumes that risk premiums are the 
 same throughout the world.
-
+	
 ■
 If both covered and uncovered interest rate parity held, then forward rate 
 parity would hold and the market would set the forward exchange rate equal 
 to the expected spot exchange rate: The forward exchange rate would serve 
 as an unbiased predictor of the future spot exchange rate.
-
+	
 ■
 Most studies have found that high-yield currencies do not depreciate and 
 low-yield currencies do not appreciate as much as yield spreads would sug-
 gest over short to medium periods, thus violating the theory of uncovered 
 interest rate parity.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Warning Signs of a Currency Crisis
+65
+	
 ■
 Carry trades overweight high-yield currencies at the expense of low-yield 
 currencies. Historically, carry trades have generated attractive returns in 
 benign market conditions but tend to perform poorly (i.e., are subject to 
 crash risk) when market conditions are highly volatile.
-
+	
 ■
 According to a balance of payments approach, countries that run persistent 
 current account deficits will generally see their currencies weaken over time. 
 Similarly, countries that run persistent current account surpluses will tend 
 to see their currencies appreciate over time.
-
+	
 ■
 Large current account imbalances can persist for long periods of time before 
 they trigger an adjustment in exchange rates.
-
+	
 ■
 Greater financial integration of the world’s capital markets and greater free-
 dom of capital to flow across national borders have increased the impor-
 tance of global capital flows in determining exchange rates.
-
+	
 ■
 Countries that institute relatively tight monetary policies, introduce struc-
 tural economic reforms, and lower budget deficits will often see their cur-
@@ -3463,7 +3600,7 @@ rencies strengthen over time as capital flows respond positively to relatively
 high nominal interest rates, lower inflation expectations, a lower risk pre-
 mium, and an upward revision in the market’s assessment of what exchange 
 rate level constitutes long-run fair value.
-
+	
 ■
 Monetary policy affects the exchange rate through a variety of channels. In 
 the Mundell–Fleming model, it does so primarily through the interest rate 
@@ -3471,17 +3608,17 @@ sensitivity of capital flows, strengthening the currency when monetary pol-
 icy is tightened and weakening it when monetary policy is eased. The more 
 sensitive capital flows are to the change in interest rates, the greater the 
 exchange rate’s responsiveness to the change in monetary policy.
-
+	
 ■
 In the monetary model of exchange rate determination, monetary policy is 
 deemed to have a direct impact on the actual and expected path of inflation, 
 which, via purchasing power parity, translates into a corresponding impact 
 on the exchange rate.
-
+	
 ■
 Countries that pursue overly easy monetary policies will see their currencies 
 depreciate over time.
-
+	
 ■
 In the Mundell–Fleming model, an expansionary fiscal policy typically 
 results in a rise in domestic interest rates and an increase in economic 
@@ -3491,12 +3628,12 @@ should contribute to a deterioration of the trade balance, which is negative
 for the domestic currency. The more mobile capital flows are, the greater the 
 likelihood that the induced inflow of capital will dominate the deterioration 
 in trade.
-
+	
 ■
 Under conditions of high capital mobility, countries that simultaneously 
 pursue expansionary fiscal policies and relatively tight monetary policies 
 should see their currencies strengthen over time.
-
+	
 ■
 The portfolio balance model of exchange rate determination asserts that 
 increases in government debt resulting from a rising budget deficit will be 
@@ -3505,17 +3642,22 @@ higher expected return. The higher expected return could come from (1)
 higher interest rates and/or a higher risk premium, (2) depreciation of the 
 currency to a level sufficient to generate anticipation of gains from subse-
 quent currency appreciation, or (3) some combination of the two.
-
+	
 ■
 Surges in capital inflows can fuel boom-like conditions, asset price bubbles, 
 and currency overvaluation.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
+66
+	
 ■
 Many consider capital controls to be a legitimate part of a policymaker’s 
 toolkit. The IMF believes that capital controls may be needed to prevent 
 exchange rates from overshooting, asset price bubbles from forming, and 
 future financial conditions from deteriorating.
-
+	
 ■
 The evidence indicates that government policies have had a significant 
 impact on the course of exchange rates. Relative to developed countries, 
@@ -3523,7 +3665,7 @@ emerging markets may have greater success in managing their exchange
 rates because of their large foreign exchange reserve holdings, which appear 
 sizable relative to the limited turnover of FX transactions in many emerging 
 markets.
-
+	
 ■
 Although each currency crisis is distinct in some respects, the following 
 factors were identified in one or more studies:
@@ -3567,6 +3709,7 @@ Swedish krona
 AUD
 Australian dollar
 16
+© CFA Institute. For candidate use only. Not for distribution.
 
 Appendix
 67
@@ -3574,7 +3717,10 @@ KRW
 Korean won
 NZD
 New Zealand dollar
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 68
 PRACTICE PROBLEMS
 The following information relates to questions 
@@ -3631,7 +3777,10 @@ EUR/CAD
 0.6567
 EUR
 2.20%
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 70
 Finally, Mehmet asks Smith to assist with a trade involving a US multinational 
 customer operating in Europe and Japan. The customer is a very cost-conscious 
@@ -3674,6 +3823,7 @@ C.	 pair of currencies involved.
 5.	 If Smith’s statement on parity conditions is correct, future spot exchange rates are 
 most likely to be forecast by:
 A.	 current spot rates.
+© CFA Institute. For candidate use only. Not for distribution.
 
 Practice Problems
 71
@@ -3731,7 +3881,10 @@ In three months, the firm will receive EUR 5,000,000 from another customer. Six
 months ago, the firm sold EUR 5,000,000 against the GBP using a nine-month 
 forward contract at an all-in price of GBP/EUR 0.9526. To mark the position to 
 market, Underwood collects the GBP/EUR forward rates in Exhibit 2.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 72
 Exhibit 2: GBP/EUR Forward Rates
 Maturity
@@ -3779,7 +3932,9 @@ open
 action of MXN 27,000,000 would be closest to:
 A.	 GBP 0.
 B.	 GBP 5,400.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Practice Problems
 73
 C.	 GBP 10,800.
 9.	 Based on Exhibits 1, 2, and 3, the mark-to-market gain for Goldsworthy’s forward 
@@ -3815,7 +3970,10 @@ but would like a practitioner’s perspective, and he has arranged an interview
 with currency trader Hannah McFadden. During the interview, Wagener asks 
 McFadden,
 Could you explain what drives exchange rates? I’m curious as to why our New 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 74
 Zealand dollar was affected by the European debt crisis in 2011 and what other 
 factors impact it.
@@ -3870,7 +4028,9 @@ Upon her return, Wagener and McFadden review the questions. McFadden
 notes that capital flows can have a significant impact on exchange rates and have 
 contributed to currency crises in both EM and DM countries. She explains that 
 central banks, such as the Reserve Bank of New Zealand, use FX market inter-
+© CFA Institute. For candidate use only. Not for distribution.
 
+Practice Problems
 75
 vention as a tool to manage exchange rates. McFadden states,
 Statement 4: “Some studies have found that EM central banks tend to be more 
@@ -3909,7 +4069,10 @@ B.	 decrease in risk premiums.
 C.	 increase in government debt.
 19.	The factor that McFadden is most likely referring to in Statement 4 is:
 A.	 FX reserve levels.
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 76
 B.	 domestic demand.
 C.	 the level of capital flows.
@@ -3917,6 +4080,7 @@ C.	 the level of capital flows.
 A.	 Prediction 1
 B.	 Prediction 2
 C.	 Prediction 3
+© CFA Institute. For candidate use only. Not for distribution.
 
 Solutions
 77
@@ -3941,20 +4105,25 @@ following:
 _ 
 360 ​]​ 
 ____________ 
-
+ 
 1 + 0.0543​[​ 360 
 _ 
 360 ​]​ ​)​(0.0752 − 0.0543)​.
 ​ 
-
+ 
+ 
+ 
+ 
 ​F​ f/d​ − ​S​ f/d​  =  79.5093​(​ 
 1 
 _ 
 1.0543 ​)​(0.0752 − 0.0543)​.
 ​ 
-
+ 
+ 
+ 
 ​F​ f/d​ − ​S​ f/d​  =  1.576.
-
+ 
 ​
 2.	 B is correct. The dealer is posting a bid rate to buy BRL at a price that is too high. 
 This overpricing is determined by calculating the interbank implied cross rate for 
@@ -3982,7 +4151,10 @@ today’s EUR/USD rate is the product of these two numbers: 1.3200 × 0.6506 =
 0.8588. The projected rate one year later is 1.3151 × 0.6567 = 0.8636. Accordingly, 
 measured in dollars, the investment return for the unhedged EUR MRR deposit 
 is equal to
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 78
 	(1.3200 × 0.6506) × (1 + 0.022) × [1/(1.3151 × 0.6567)] – 1 
 = 0.8588 × (1.022)(1/0.8636) – 1 = 1.01632 – 1 
@@ -4008,9 +4180,9 @@ future spot exchange rate.
 buying the base currency—in this case, GBP—she must pay the offer price of JPY 
 129.69 per GBP.
 	​ JPY 225,000,000 
-
+ 
 ____________ 
-
+ 
 129.69 JPY/GBP ​  =  GBP 1,734,906.​
 7.	 A is correct. Posted quotes are typically for transactions in 1 million units of the 
 base currency. Larger transactions may be harder for the dealer to sell in the in-
@@ -4035,9 +4207,11 @@ bid​ × ​(​ USD 
 _ 
 GBP ​)​ 
 bid​​ 
-
+ 
+ 
+ 
 = 20.140 × 1.2301  =  24.7742.
-
+ 
 ​
 The offer from Dealer A is
 	​​(​ MXN 
@@ -4050,9 +4224,11 @@ offer​ × ​(​ USD 
 _ 
 GBP ​)​ 
 offer​​ 
-
+ 
+ 
+ 
 = 20.160 × 1.2305  =  24.8069.
-
+ 
 ​
 To compare with Dealer B’s quote, she must take the inverse of MXN/GBP, so she 
 has an offer to sell MXN at a rate of 1/24.7742 = GBP 0.0404 and a bid to pur-
@@ -4062,6 +4238,7 @@ ly from Dealer A (GBP 0.0404 from Dealer A, versus GBP 0.0406 from Dealer B),
 she cannot resell them to Dealer B for a higher price than GBP 0.0403. There is 
 no profit from triangular arbitrage.
 9.	 A is correct. Marking her nine-month contract to market six months later 
+© CFA Institute. For candidate use only. Not for distribution.
 
 Solutions
 79
@@ -4073,9 +4250,9 @@ the settlement date will equal EUR 5,000,000 × (0.9526 – 0.9486) GBP/EUR =
 GBP 20,000. This cash flow will occur in three months, so we discount at the 
 three-month GBP MRR of 58 bps:
 	​  GBP 20,000 
-
+ 
 ____________ 
-
+ 
 1 + 0.0058​(​ 90 
 _ 
 360 ​)​ ​  =  GBP 19,971.04.​
@@ -4105,14 +4282,15 @@ _ 
 _ 
 360  ​]​ ​)​
 ​ 
-
+ 
+ 
 = 1.2303​(​ 
 1 + 0.0033​[​ 90 
 _ 
 360 ​]​ 
-
+ 
 ____________ 
-
+ 
 1 + 0.0058​[​ 90 
 _ 
 360 ​]​ ​)​  =  1.2295.
@@ -4143,7 +4321,10 @@ be able to estimate the future spot exchange rate.
 14.	C is correct. The carry trade strategy is dependent on the fact that uncovered in-
 terest rate parity does not hold in the short or medium term. If uncovered inter-
 est rate parity held, it would mean that investors would receive identical returns 
+© CFA Institute. For candidate use only. Not for distribution.
 
+Learning Module 1	
+Currency Exchange Rates: Understanding Equilibrium Value
 80
 from either an unhedged foreign currency investment or a domestic currency 
 investment because the appreciation/depreciation of the exchange rate would 
@@ -4190,3 +4371,4 @@ reserves as a kind of insurance to defend their currencies, as needed.
 tend to decline precipitously, not increase, as a currency crisis approaches. Broad 
 money growth tends to rise in the period leading up to a currency crisis, and the 
 exchange rate is substantially higher than its mean level during tranquil periods.
+© CFA Institute. For candidate use only. Not for distribution.

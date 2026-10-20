@@ -2,17 +2,21 @@ Inside the Black Box: The Credit Channel of Monetary Policy Transmission
 Ben S. Bernanke; Mark Gertler
 The Journal of Economic Perspectives, Vol. 9, No. 4. (Autumn, 1995), pp. 27-48.
 Stable URL:
+http://links.jstor.org/sici?sici=0895-3309%28199523%299%3A4%3C27%3AITBBTC%3E2.0.CO%3B2-Y
 The Journal of Economic Perspectives is currently published by American Economic Association.
 Your use of the JSTOR archive indicates your acceptance of JSTOR's Terms and Conditions of Use, available at
+http://www.jstor.org/about/terms.html. JSTOR's Terms and Conditions of Use provides, in part, that unless you have obtained
 prior permission, you may not download an entire issue of a journal or multiple copies of articles, and you may use content in
 the JSTOR archive only for your personal, non-commercial use.
 Please contact the publisher regarding any further use of this work. Publisher contact information may be obtained at
+http://www.jstor.org/journals/aea.html.
 Each copy of any part of a JSTOR transmission must contain the same copyright notice that appears on the screen or printed
 page of such transmission.
 The JSTOR Archive is a trusted digital repository providing for long-term preservation and access to leading academic
 journals and scholarly literature from around the world. The Archive is supported by libraries, scholarly societies, publishers,
 and foundations. It is an initiative of JSTOR, a not-for-profit organization with a mission to help the scholarly community take
-advantage of advances in technology. For more information regarding JSTOR, please contact .
+advantage of advances in technology. For more information regarding JSTOR, please contact support@jstor.org.
+http://www.jstor.org
 Wed Mar 5 15:20:16 2008
 
 Journal of Economic Perspectives-Volume 9, Number 4--Fall 1995-Pages 27-48
@@ -47,6 +51,7 @@ In a frictionless market, the usual Jorgensonian formula for the neoclassical co
 expected price changes, is (r d)pk,where ris the required real return to lenders (which could include
 a premium for systematic risk), d is the depreciation rate and pkis the price of a new capital good.
 Ben S. Bernanke is Class of 1926 Professor of Economics and Public Affairs, Princeton
+University, Princeton, New Jersey (e-mail: bernanke@wws.@nceton.edu). Mark Gertler
 is Professor of Economics, New York University, New York, New York (gertlm@
 fasecon. econ.nyu.edu).
 
@@ -138,6 +143,7 @@ durable~)c lose behind.
 (among others) Bernanke (1993a), Kashyap and Stein (1994), Hubbard (1994) and Bernanke, Gertler
 and Gilchrist (forthcoming).
 
+30 Journal of Economic Perspectives
 Fact 4: Fixed business investment eventually declines in response to a monetary
 tightening, but its fall lags behind those of housing and consumer durables and,
 indeed, behind much of the decline in production and interest rates.
@@ -211,6 +217,7 @@ the index of commodity prices; see also Sims and Zha (1993). Inclusion of this v
 measures of output and the general price level, has become conventional in the recent VAR-based
 literature on monetary policy.
 
+32 Journal of Economic Perspectives
 Figure 2
 Responses of Final Demand and Inventories to a Monetary Policy Shock
 To allow us to look at the economy's response to a monetary shock in closer
@@ -236,6 +243,7 @@ We continue to order the funds rate last, which has the effect of assuming that 
 poraneous economic information, but that innovations in monetary policy do not feed back to the rest
 of the economy until the next month (Bernanke and Blinder, 1992; Bernanke and Mihov, 1995).
 
+Ben S. Bernanke and Mark Gertler 33
 Figure 3
 Responses of Spending Components to a Monetary Policy Shock
 - - -
@@ -265,6 +273,7 @@ traditionally thought to be the most interest-sensitive part of aggregate demand
 displays large responses to monetary policy shocks.
 But there are some important puzzles. First among these is the magnitude of
 
+34 Journal of Economic Perspectives
 the policy effect. We and many other researchers have found that the real economy
 is powerfully affected by monetary policy innovations that induce relatively small
 movements in open-market interest rates. But as we discussed earlier, empirical
@@ -353,6 +362,7 @@ and cash flow variables to firms' decisions concerning fixed investment, invento
 and other factor demands, and to household purchases of durables and housing. Ber-
 nanke, Gertler and Gilchrist (forthcoming) offer a discussion and references.
 
+36 Journal of Economic Perspectives
 The balance sheet channel of monetary policy arises because shifts in Fed
 policy affect not only market interest rates per se but also the financial positions of
 borrowers, both directly and indirectly.
@@ -398,6 +408,7 @@ they do not have access to the same investment and spending opportunities as do 
 'I Actually, the coverage ratio is more usually defined as the inverse of the way we define it. However,
 we believe that our definition makes for a more intuitive discussion and graphical presentation.
 
+Ben S. Bernanke and Mark Gertler 37
 Figure 4
 The Funds Rate and the Coverage Ratio
 -
@@ -427,6 +438,7 @@ l2 Additional evidence that short-term borrowing rises subsequent to a monetary 
 by Gertler and Gilchrist (1993, 1994), Friedman and Kuttner (1993) and Christiano, Eichenbaum and
 Evans (1994a).
 
+38 Journal of Economic Perspectives
 comparable. The figure shows the dynamic responses of the interest payments,
 profits, gross income and employee compensation of nonfinancial corporate busi-
 ness to a positive innovation of one standard deviation in the funds rate (a tight-
@@ -474,12 +486,15 @@ flow effects on inventory investment during the 1981-82 recession were stronger 
 for large firms, these effects were also present for large firms.
 '"he relative decline in loans to small firms is not offset by large firms supplying increased trade credit
 
+Ben S. Bernanke and Mark Gertler 39
 Figure 5
 Responses of Corporate Cash Flows to a Monetary Policy Shock
 .
 -0.006 - Interest \ \ ', s* ., ,, ,, I. .., ,, , - , .. _ '. " .. ,, _ ,, .. ,. .. -0 .. ,,, 2 _ * ,<s. - ' - ,
+\ - - * C
 ,, .. .* Employee Comp.
 -0.008
+0 4 8 12 16
 Quarters
 (1994) have shown that analogous differences occur between size classes in the
 response of fixed investment to a monetary policy shock.
@@ -504,6 +519,7 @@ ket) rather than size.
 to small firms (Gertler and Gilchrist, 1993).In any case, the terms of trade credit are typically so unfa-
 vorable as to make it a poor alternative to bank loans and other forms of short-term credit.
 
+40 Journal of Economic Perspectives
 A second point concerns the macroeconomic significance of the Gertler
 and Gilchrist findings. It is true that "small" firms (defined by Gertler and
 Gilchrist to be firms with assets under $250 million in 1991 dollars) are not
@@ -595,6 +611,7 @@ The behavior of interest-rate spread and terms of lending shown in Figure
 money periods, when open-market interest rates rise, the prime rate rises by
 even more (that is, the prime rate-safe rate spread opens up), and credit terms
 
+42 Journal of Economic Perspectives
 become more onerous.'"D interest rates increase by significantly more than
 the T-bill rate during a monetary tightening (so that the CD spread and funds-
 rate spread are highly correlated), consistent with our claim that the demand
@@ -667,6 +684,7 @@ the theory has no particular implications about the relative forecasting power o
 real economy. This scenario may be relevant to the Great Depression, for example, but is not relevant
 under "normal" conditions.
 
+44 Journal of Economic Perspectives
 credit aggregates. Indeed, as discussed further by Bernanke (1993b), even the
 extreme finding that credit aggregates have no marginal predictive power for real
 variables, once measures of the stance of monetary policy are accounted for, is not
@@ -709,6 +727,7 @@ market interest rates in the 1960s and 1970s sometimes led deposits to flee bank
 "
 Notwithstanding the fact that, in a previous life, Bernanke has performed similar exercises. Mea culpa.
 
+Ben S. Bernanke and Mark Gertler 45
 thus disrupting the flow of mortgage credit. A number of formal econometric stud-
 ies have shown that including proxies for the impact of disintermediation improves
 the fit of equations explaining residential investment during the Regulation Q pe-
@@ -753,9 +772,11 @@ As we have pointed out, the conventional analysis of monetary transmission
 has a number of shortcomings. However, introducing the credit channel potentially
 helps resolve these puzzles.
 
+46 Journal of Economic Perspectives
 Figure 7
 The Mortgage Burden and the Funds Rate
 0.00
+65 68 71 74 77 80 83 86 89 92 95
 Year
 First, while monetary policy clearly has a strong impact on durable goods
 spending, most research has had difficulty identifying significant cost-of-capital ef-

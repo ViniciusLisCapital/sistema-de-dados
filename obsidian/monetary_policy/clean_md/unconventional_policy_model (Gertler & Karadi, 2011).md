@@ -14,7 +14,9 @@ crisis. We show numerically how central bank credit policy might help
 moderate the simulated crisis. We then compute the optimal degree
 of central bank credit intervention in this scenario and also compute
 the welfare gains.
+1
 
+1
 Introduction
 Over most of the post-war the Federal Reserve has conducted monetary pol-
 icy by manipulating the Federal Funds rate in order to aﬀect market interest
@@ -53,6 +55,7 @@ and Smets and Wouters (2007.) The baseline versions of these models, how-
 ever, assume frictionless ﬁnancial markets. They are thus unable to capture
 ﬁnancial market disruptions that could motivate the kind of central bank
 interventions in loan markets that are currently in play. Similarly, models
+2
 
 which do incorporate ﬁnancial market frictions, such as Bernanke, Gertler
 and Gilchrist (1999) or Christiano, Motto and Rostagno (2005), have not yet
@@ -93,6 +96,7 @@ the central bank to act as intermediary by borrowing funds from savers and
 then lending them to investors. Unlike, private intermediaries, the central
 bank does not face constraints on its leverage ratio. (There is no agency
 problem between the central bank and its creditors because it can commit
+3
 
 to always honoring its debt.) Thus, in a period of ﬁnancial distress that has
 disrupted private intermediation, the central bank can intervene to support
@@ -133,7 +137,9 @@ the eﬃciency costs are quite modest, the gains may be quite signiﬁcant. As
 we discuss in the concluding remarks in section 5, this ﬁnding suggests a way
 to think about the central bank’s choice between direct credit interventions
 versus alternatives such as equity injections to private intermediaries.
+4
 
+2
 The Baseline Model
 The core framework is the monetary DSGE model with nominal rigidities de-
 veloped by CEE and SW. To this we add ﬁnancial intermediaries that trans-
@@ -170,6 +176,7 @@ intermediaries that its bankers manage. The deposits it holds, however, are
 in intermediaries that is does not own. Finally, within the family there is
 perfect consumption insurance. As we make clear in the next section, this
 simple form of heterogeneity within the family allows us to introduce ﬁnan-
+5
 
 cial intermediation in a meaningful way within an otherwise representative
 agent framework.
@@ -217,6 +224,7 @@ Ct = WtLt + Πt + Tt + RtBt −Bt+1
 (2)
 Note that Πt is net the transfer the household gives to its members that enter
 banking at t.
+6
 
 Let (t denote the marginal utility of consumption. Then the household’s
 ﬁrst order conditions for labor supply and consumption/saving are standard:
@@ -257,6 +265,7 @@ Rkt+1QtSjt −Rt+1Bjt
 =
 (Rkt+1 −Rt+1)QtSjt + Rt+1Njt
 (7)
+7
 
 Any growth in equity above the riskless return depends on the premium
 Rkt+1 −Rt+1 the banker earns on his assets, as well as his total quantity of
@@ -301,6 +310,7 @@ Accordingly for lenders to be willing to supply funds to the banker, the
 following incentive constraint must be satisﬁed:
 Vjt ≥λQtSjt
 (9)
+8
 
 The left side is what the banker would lose by diverting a fraction of assets.
 The right side is the gain from doing so.
@@ -345,6 +355,7 @@ refer to as the (private) leverage ratio.. Holding constant Njt, expanding
 Sjt raises the bankers’ incentive to divert funds. The constraint (13) limits
 the intermediaries leverage ratio to the point where the banker’s incentive
 to cheat is exactly balanced by the cost. In this respect the agency problem
+9
 
 leads to an endogenous capital constraint on intermediary’s ability to acquire
 assets.
@@ -378,6 +389,7 @@ is the sum of the net worth of existing banker/intermediaries, Net, and the
 net worth of entering (or "new") bankers, Nnt.
 Nt = Net + Nnt
 (16)
+10
 
 Since the fraction θ of bankers at t −1 survive until t, Net is given by
 Net = θ[(Rkt −Rt)φt + Rt]Nt−1
@@ -414,6 +426,7 @@ QtSt = QtSpt + QtSgt
 To conduct credit policy, the central bank issues government debt to
 households that pays the riskless rate Rt+1 and then lends the funds to non-
 ﬁnancial ﬁrms at the market lending rate Rkt+1. We suppose that government
+11
 
 intermediation involves eﬃciency costs: In particular, the central bank credit
 involves an eﬃciency cost of τ per unit supplied. This deadweight loss could
@@ -452,6 +465,7 @@ It issues amount of government bonds Bgt, equal to ψtQtSt to funds this
 activity. It’s net earnings from intermediation in any period t thus equal
 (Rkt+1−Rt+1)Bgt. These net earnings provide a source of government revenue
 and must be accounted for in the budget constraint, as we discuss later.
+12
 
 Since privately intermediated funds are constrained by intermediary net
 worth, we can rewrite equation (19) to obtain
@@ -493,6 +507,7 @@ We assume that there are no frictions in the process of non-ﬁnancial
 information about the ﬁrm and has no problem enforcing payoﬀs. This con-
 trasts with the process of the intermediary obtaining funding from house-
 holds. Thus, within our model, only intermediaries face capital constraints
+13
 
 on obtaining funds. These constraints, however, aﬀect the supply of funds
 available to non-ﬁnancial ﬁrms and hence the required rate of return on cap-
@@ -537,6 +552,7 @@ Pmt+1αYt+1
 Lt+1
 = Wt+1
 (25)
+14
 
 2.5
 Capital Producing Firms
@@ -599,6 +615,7 @@ Retail Firms
 Final output Yt is a CES composite of a continuum of mass unity of diﬀeren-
 tiated retail ﬁrms, that use intermediate output as the sole input. The ﬁnal
 output composite is given by
+15
 
 Yt = [
 Z 1
@@ -670,6 +687,7 @@ t )
 1
 1−ε]1−ε
 (34)
+16
 
 2.7
 Resource Constraint and Government Policy:
@@ -710,7 +728,9 @@ Rk −R is the steady state premium. In addition, the feedback parameter
 exceeds unity. According to this rule, the central bank expands credit as the
 spread increase relative to its steady state value.
 This completes the description of the model.
+17
 
+3
 Model Analysis
 3.1
 Calibration
@@ -748,6 +768,7 @@ average horizon of bankers of a decade. We base the steady state target for
 the spread on the pre-2007 spreads between mortgage rates and government
 bonds and between BAA corporate vs. government bonds. The choice of the
 leverage ratio is a rough guess of a reasonable economy-wide mortgage. For
+18
 
 the mortgage sector, which was about one third of total assets in 2007, this
 ratio was between twenty and thirty to one. It was obviously much smaller
@@ -786,6 +807,7 @@ enhanced ampliﬁcation is due to he fact that, everything else equal, the
 monetary policy shock has a relatively large eﬀect on investment and asset
 prices. The latter triggers the ﬁnancial accelerator mechanism.
 To illustrate how at the core of the ampliﬁcation mechanism in the ﬁrst
+19
 
 two experiments is procyclical variation in intermediary balance sheets, we
 consider a redistribution of wealth from intermediaries to households.
@@ -828,6 +850,7 @@ recovery is the delayed movement of intermediary capital back to trend. It is
 mirrored in persistently above trend movement in the spread. Note that over
 this period the intermediary sector is eﬀectively deleveraging: It is building
 up equity relative to assets. Thus the model captures formally the informal
+20
 
 notion of how the need for ﬁnancial institutions to deleverage can slow the
 recovery of the economy.
@@ -867,6 +890,7 @@ Following Faia and Monacelli (2007), we begin by writing the household
 utility function in recursive form:
 Ωt = U(Ct, Lt) + βEtΩt+1
 (39)
+21
 
 We then take a second order approximation of this function about the steady
 state. We next take a second order approximation of the whole model about
@@ -906,6 +930,7 @@ labor taxes are in the range of thirty to thirty ﬁve percent. Assuming the
 price markup is in the neighborhood of ﬁfteen to twenty percent, then a
 steady state distortion up to ﬁfty percent is reasonable. Accordingly, we
 consider two alternatives to our baseline: one involving a thirty-three percent
+22
 
 markup and the other a ﬁfty percent markup. As the ﬁgure illustrates, the
 gains to the optimal credit policy increase substantially, increasing to over
@@ -943,9 +968,11 @@ Finally, we consider a one time crisis and evaluated the policy response.
 In subsequent work we plan to model to the phenomenon as an infrequently
 occurring rare disaster in spirit of Barro (2009) and others. In this literature
 the disaster is taking as a purely exogenous event. Within our framework we
+23
 
 can evaluate the gains from various policy responses, using the same tools as
 applied in this literature to compute welfare.
+24
 
 Table 1: Parameter Values for Baseline Model
 Households
@@ -1009,6 +1036,7 @@ G
 Y
 0.200
 Steady state proportion of government expenditures
+27
 
 Figure 1: Responses to Technology (a) , Monetary (m) and Wealth (w) Shocks
 0
@@ -1020,30 +1048,89 @@ Figure 1: Responses to Technology (a) , Monetary (m) and Wealth (w) Shocks
 0
 Y
 a
-
+ 
+ 
+0
+20
+40
+−0.1
 −0.05
+0
+0.05
 I
+0
+20
+40
+−1
+0
+1
+2
 x 10
+−3
 Rk−R
+0
+20
+40
+−10
+−5
+0
+5
 x 10
+−3
 Y
 m
+0
+20
+40
 −0.06
 −0.04
 −0.02
+0
+0.02
 I
+0
+20
+40
+−5
+0
+5
+10
+15
 x 10
+−4
 Rk−R
+0
+20
+40
+−4
+−2
+0
+2
 x 10
+−3
 Y
 N
+0
+20
+40
 −0.02
 −0.01
+0
+0.01
 I
+0
+20
+40
+−5
+0
+5
+10
 x 10
+−4
 Rk−R
 FA
 SDGE
+1
 
 Figure 2: Responses to a Capital Quality Shock
 0
@@ -1053,27 +1140,91 @@ Figure 2: Responses to a Capital Quality Shock
 −0.02
 0
 s
-
+ 
+ 
+0
+20
+40
+−5
+0
 5 x 10
+−3
 R
+0
+20
+40
 −0.02
+0
+0.02
 Rk−R
+0
+20
+40
+−0.1
+0
+0.1
 Y
+0
+20
+40
 −0.04
 −0.02
+0
 C
+0
+20
+40
+−0.5
+0
+0.5
 I
+0
+20
+40
+−0.2
+−0.1
+0
 K
+0
+20
+40
 −0.05
+0
+0.05
 L
+0
+20
+40
+−0.2
+0
+0.2
 Q
+0
+20
+40
+−1
+−0.5
+0
 N
+0
+20
+40
+−2
+0
 2 x 10
+−3
 π
+0
+20
+40
+−5
+0
 5 x 10
+−3
 i
 FA
 SDGE
+2
 
 Figure 3: Responses to a Capital Quality Shock with Credit Policy
 0
@@ -1083,29 +1234,102 @@ Figure 3: Responses to a Capital Quality Shock with Credit Policy
 −0.02
 0
 s
-
+ 
+ 
+0
+20
+40
+−5
+0
+5
 x 10
+−3
 R
+0
+20
+40
 −0.02
+0
+0.02
 Rk−R
+0
+20
+40
+−0.1
+0
+0.1
 Y
+0
+20
+40
 −0.04
 −0.02
+0
 C
+0
+20
+40
+−0.5
+0
+0.5
 I
+0
+20
+40
+−0.2
+−0.1
+0
 K
+0
+20
+40
 −0.05
+0
+0.05
 L
+0
+20
+40
+−0.2
+0
+0.2
 Q
+0
+20
+40
+−1
+−0.5
+0
 N
+0
+20
+40
+−2
+0
+2
 x 10
+−3
 π
+0
+20
+40
+−5
+0
+5
 x 10
+−3
 i
+0
+20
+40
+0
+0.2
+0.4
 ψ
 CP
 CP ν=500
 CP ν=0
+3
 
 Figure 4: One year consumption equivalent welfare gains from optimal credit policy as a
 function of eﬃciency costs tau and steady state markup
@@ -1127,10 +1351,12 @@ function of eﬃciency costs tau and steady state markup
 0.16
 τ
 Ω
-
+ 
+ 
 CP X=15%
 CP X=33%
 CP X=50%
+4
 
 Figure 5: One year consumption equivalent welfare gains from optimal credit policy as a
 function of eﬃciency costs tau and steady state markup with high labor supply elasticity
@@ -1153,10 +1379,12 @@ function of eﬃciency costs tau and steady state markup with high labor supply 
 0.18
 τ
 Ω
-
+ 
+ 
 CP X=15%
 CP X=33%
 CP X=50%
+5
 
 Figure 6: Credit vs. premium policy
 0
@@ -1166,24 +1394,91 @@ Figure 6: Credit vs. premium policy
 −0.02
 0
 s
-
+ 
+ 
+0
+20
+40
+−5
+0
+5
 x 10
+−3
 R
+0
+20
+40
 −0.02
+0
+0.02
 Rk−R
+0
+20
+40
+−0.1
+0
+0.1
 Y
+0
+20
+40
 −0.04
 −0.02
+0
 C
+0
+20
+40
+−0.5
+0
+0.5
 I
+0
+20
+40
+−0.2
+−0.1
+0
 K
+0
+20
+40
 −0.05
+0
+0.05
 L
+0
+20
+40
+−0.2
+0
+0.2
 Q
+0
+20
+40
+−1
+−0.5
+0
 N
+0
+20
+40
+−2
+0
+2
 x 10
+−3
 π
+0
+20
+40
+−5
+0
+5
 x 10
+−3
 i
 Premium policy
 Credit policy
+6

@@ -2,6 +2,7 @@ Capital controls in Brazil: Effective?
 Marcos Chamon a,*, Márcio Garcia b,**
 a Research Department, International Monetary Fund, 700 19th Street, NW, HQ1-9-612-C, Washington, DC 20431, USA
 b Department of Economics, PUC-Rio, Rio de Janeiro, Brazil
+A R T I C L E
 I N F O
 Article history:
 Available online 8 September 2015
@@ -16,6 +17,7 @@ Capital ﬂows
 Macroprudential policies
 Exchange rate
 Brazil
+A B S T R A C T
 A large theoretical literature emerged in recent years analyzing the
 positive and normative effects of capital controls, begging for em-
 pirical studies to validate it. No emerging market experimented as
@@ -43,12 +45,17 @@ for International Development at Harvard University, the REAP-INSPER conference,
 search Conference, and two anonymous referees for comments. Diego Barrot, Julia Bevilaqua, Hyeon Ji Lee, Felipe Lima, Guilherme
 Lima, Guido Maia, Rafael Fonseca and Lucas Maynard provided excellent research assistance. Márcio Garcia thanks CNPq and
 FAPERJ (Brazil) for ﬁnancial support. Any errors are our own.
+* Corresponding author. Tel.: +12026235867.
+E-mail addresses: mchamon@imf.org (M. Chamon).
 ** Corresponding author.
+E-mail address: mgarcia@econ.puc-rio.br (M. Garcia).
+http://dx.doi.org/10.1016/j.jimonﬁn.2015.08.008
 0261-5606/© 2015 Marcos Chamon. Published by Elsevier Ltd. All rights reserved.
 Journal of International Money and Finance 61 (2016) 163–187
 Contents lists available at ScienceDirect
 Journal of International Money
 and Finance
+journal homepage: www.elsevier.com/locate/jimf
 
 1. Introduction
 Emerging markets have experienced a strong recovery in capital inﬂows in the aftermath of the
@@ -157,6 +164,7 @@ Chilean or Colombian capital controls, which took the form of unremunerated rese
 4 It is also diﬃcult to recover an intuition for the results, since as pointed out in their paper, the country weights on the
 synthetic cohort have no economic signiﬁcance or otherwise interpretable meaning.
 165
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 the capital controls in Brazil took the form of a tax on the exchange rate transaction when capital ﬁrst
 entered Brazil. This tax was a particular stance of the IOF tax, which taxes most ﬁnancial transac-
@@ -211,6 +219,7 @@ Goldfajn (1998) also measure the effectiveness of those taxes.
 Bank’s Gross FX Position announced on January 6, 2011, which only became effective on April 4, 2011. In contrast, the tight-
 ening of that URR announced on July 8, 2011 became effective on the following business day.
 166
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 to the Brazilian Central Bank for reals in order to offset the position (which causes the same pressure
 on the exchange rate as if the foreigners had come directly). It is diﬃcult to gauge how much such
@@ -325,6 +334,7 @@ day (the only exceptions were the January 6, 2011 URR on Banks’ Gross FX Posit
 and the tax on the notional amount of derivatives which was announced on July 26, 2011 and became effective on September
 16 of that year).
 167
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 long-term without paying the tax and then converting the loan to a shorter maturity. Foreign
 investors could use derivatives to leverage their currency exposure, with the inﬂow tax only being
@@ -375,6 +385,7 @@ the additional funds in ﬁxed income markets. The gains from this strategy seem
 e.g. with the ﬁrm using offshore derivatives to fund their domestic carry trade). Furthermore, as a local ﬁrm, it has to pay income
 tax on the returns on ﬁnancial investments.
 168
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 offshore products that mimic the Brazilian interest rate, e.g., a total return swap or a cross currency
 swap. These ﬁnancial institutions use their operations in Brazil to hedge the offshore operations with
@@ -444,6 +455,7 @@ Fig. 1. Gross Capital Inﬂows to Brazil. Notes: Data from the Central Bank of B
 in the capital and ﬁnancial account. First vertical line indicates the month where the 2 percent tax on portfolio inﬂows was
 imposed. Second vertical line indicates the month where the tax on ﬁxed income ﬂows was raised to 4 then to 6 percent.
 169
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 we already have an expressive increase in imports while the exports are not growing as they should.”9 There-
 fore, we will focus on the exchange rate as the main metric for effectiveness.
@@ -503,8 +515,12 @@ percent. Brazilian banks were borrowing abroad short-term to provide dollar liqu
 The tax on short-term loans temporarily disrupted that ﬂow. But with the resulting large onshore dollar
 rates, banks switched to long-term borrowing abroad to restore liquidity in the local market. Indeed,
 after that spike, the onshore dollar rate gradually declines towards more normal levels (which, while
+9 Translated from http://www.bbc.co.uk/portuguese/noticias/2009/10/091021_mantega_cambio_dt.shtml.
+10 http://www.bmfbovespa.com.br/en-us/intros/intro-about-us.aspx?idioma=en-us.
 170
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
+0
 1
 2
 3
@@ -592,6 +608,7 @@ Loans
 (<2 year)
 Fig. 2. Evolution of the 90- and 360-Day Cupom Cambial (Onshore Dollar Rate). Source: Bloomberg.
 171
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 non-negligible, are nowhere near the 6 percent tax rate on ﬁxed income ﬂows). This is consistent with
 the view that controls tend to become more porous over time (in this particular case, the high onshore
@@ -654,6 +671,7 @@ Tax on Debt
 up to 2 Years 
 Fig. 3. External Debt Flows by Original Maturity. Source: Central Bank of Brazil.
 172
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 with maturity below ﬁve years. Flows remain concentrated in the longer-term maturities even after
 the incidence of the tax is restricted to maturities above 2 years.
@@ -701,10 +719,12 @@ local markets, and some investors may have feared tighter restrictions were bein
 equity ﬂows.13 Econometric analysis (available in Appendix S1) shows that, as expected, the tax on
 12 In September 2010, Petrobras conducted the largest share sale in history, when US$72.8 billion worth of shares in the company
 were sold. Upon the sale, Petrobras immediately became the fourth-largest company in the world measured by market capi-
+talization (http://en.wikipedia.org/wiki/Petroleo_Brasileiro_SA).
 13 Forbes et al. (2012), analyzing the Brazilian experience with capital controls from the point of view of foreign investors,
 conclude that an increase in Brazil’s tax on foreign investment in bonds caused investors to signiﬁcantly decrease their port-
 folio allocations to Brazil in both bonds and equities.
 173
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 -1.5
 -1
@@ -795,6 +815,7 @@ Loans
 (<2 year)
 Fig. 4. Evolution of the Premium for Petrobras and Vale ADRs. Source: Bloomberg.
 174
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 DR issuance is the measure with the most robust impact, increasing the premium for Petrobras by
 about 0.5 percent, and the premium for Vale by 0.6–0.9 percent depending on the horizon consid-
@@ -939,6 +960,7 @@ ment of the measure (after the close of market on the previous day). All measure
 after their announcement, except for a restriction on bank’s gross FX positions and the tax on the no-
 tional amount of derivatives. For that reason, we also include a dummy for the day in which the tax
 175
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 0.0
 0.5
@@ -1042,6 +1064,7 @@ Effect.
 Fig. 5. Evolution of the Real-Dollar bilateral exchange (LHS) rate and FX Interventions (RHS). Notes: Green dots correspond to interventions where the central bank purchases dollars,
 and red dots to interventions where the central bank sells dollars (magnitudes in the right-hand-side axis). Source: Central Bank of Brazil.
 176
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 on the notional amount of derivatives took effect.14 Additional explanatory variables include the change
 in the spread between the one-month CDI (Brazil’s interbank rate) and the one-month LIBOR, the change
@@ -1274,6 +1297,7 @@ long-term effects should immediately be incorporated into the exchange rate (a f
 ness (since it was not as disruptive on implementation as the tax on derivatives). If we include that dummy, it is not signiﬁcant
 in any of the speciﬁcations considered.
 177
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 price).15,16 Finally, please note that endogeneity problems would bias our estimates toward zero (non-
 signiﬁcance of the capital controls), similarly to the studies about the effectiveness of sterilized
@@ -1330,6 +1354,7 @@ prices (e.g. value of the dollar vis-à-vis other currencies and commodity price
 in this regression we cannot forecast the exchange rate with precision (since we cannot forecast the values of these other ex-
 change rates/asset prices).
 178
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 Table 2
 Regression results for the change in the log of the exchange rate.
@@ -1653,6 +1678,7 @@ reported at the bottom of the table for a common dummy corresponds to an alterna
 restrictions are captured by a single dummy that takes the value of 1 on 13 observations. *, **, and *** denote statistical signiﬁcance
 at the 10, 5 and 1 percent level, respectively.
 179
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 they further segment the domestic and foreign ﬁnancial markets, strengthening portfolio effects). But
 lack of an effect is consistent with the fact that the real steadily appreciated despite frequent and sizable
@@ -1707,6 +1733,7 @@ counterpart abroad.
 21 Similarly, an F-test rejects the null hypothesis that the coeﬃcients on the 13 dummies are zero, but fails to reject the hy-
 pothesis that the coeﬃcients on the ﬁrst 9 dummies are zero.
 180
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 Table 4 is analogous to Table 3, but reports the results for the change in the exchange rate from
 t −2 to t + 2 with dummies that take the value of one at t. This speciﬁcation provides one extra trading
@@ -1904,6 +1931,7 @@ time window includes a capital control/restriction are dropped from the estimati
 (unless that results in dropping one of the dummy variables). Intervention variables computed over corresponding two-day
 periods. Standard errors are in brackets. *, **, and *** denote statistical signiﬁcance at the 10, 5 and 1 percent level, respectively.
 181
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 Since our methodology is similar to an event study analysis, we were encouraged by a referee, to
 whom we thank, to implement such exercises for robustness. We estimate the regression in column
@@ -2103,6 +2131,7 @@ close on previous day). Coeﬃcient on dummy corresponds to change in the exchan
 uted to measure at time t. Standard errors in brackets. *, **, and *** denote statistical signiﬁcance at the 10, 5 and 1 percent
 level, respectively.
 182
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 cancellation of DRs followed by the URR on the gross FX position. Both had point estimates implying
 a cumulative depreciation of around 5 percent.
@@ -2116,27 +2145,94 @@ To summarize, the results above do suggest that on average the controls had some
 preciating the real. But the effect seems to be driven mainly by the last three measures adopted. It is
 diﬃcult to disentangle whether those measures were particularly effective, or whether it was the ac-
 cumulation of those measures with the previous ones that made them particularly effective (for example,
+-5
+0
+5
+10
+-10
+-5
+0
+5
+10
 t
 2% Tax Port. Flows
+-2 0
+2
+4
+6
+-10
+-5
+0
+5
+10
 t
 Tax ADR
+-5
+0
+5
+10
+-10
+0
+10
+20
 t
 4,6% Tax Port. Debt
+-5
+0
+5
+10
+-10
+-5
+0
+5
+10
+15
 t
 ADR; URR Gross FX Position
 -10 -5
+0
+5
+-10
+0
+10
+20
 t
 Tax ST Ext. Borrowing, 1, 2Y
+-10
+-5
+0
+5
+-10
+0
+10
+20
 t
 URR Gross FX Pos.; Derivatives
+-5 0
 5 10 15
+-10
+0
+10
+20
 t
 Surprise Rate Cut; Impl. Derivatives
+-5
+0
+5
+10
+-10
+-5
+0
+5
+10
+15
 t
 Tax ST Ext Borrowing, 3, 5Y
 Fig. 6. Cumulative Changes in the Exchange Rate Around Capital Control/Restriction Dates. Notes: Effects based on the regres-
 sion (1) in Table 4, using a sample that includes observations up to 20 days prior to the ﬁrst event. Dashed lines correspond to
 ±2 Standard Deviations. Cumulative changes start at 0 for both before and after period.
+183
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 if they succeeded in closing the remaining avenues with which to bypass the controls).22 The change
 in monetary policy stance at the end of August 2011 has probably interacted with the capital con-
@@ -2191,6 +2287,7 @@ exchange rate movements (which would make it easier to ﬁnd a statistically sig
 of behavior seems farfetched and is at odds with the oﬃcial statements that capital control measures would be pursued until
 appreciation was reverted, as eventually happened.
 184
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 1.4
 1.6
@@ -2282,6 +2379,7 @@ dollar currency index and VIX. Orange line is based on a regression sample up to
 a regression up to the announcement of the tax on the notional amount of derivatives (07/26/2011); Green line on a regression up to the end of our sample (when the restrictions begin
 to be eased on 03/15/2012).
 185
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 had a more limited impact in the absence of taxes on portfolio inﬂows. And the effect of measures
 may have been boosted in an environment with a lower policy rate.23
@@ -2334,6 +2432,7 @@ hensive. One should also bear in mind that the Brazilian real is not a convertib
 restrictions, but do not ﬁnd evidence of a signiﬁcant break.
 24 Even with the controls, the private credit to GDP ratio rose from 44 to 54% from end-2009 to end-2012.
 186
+M. Chamon, M. Garcia / Journal of International Money and Finance 61 (2016) 163–187
 
 contribute to the effectiveness of capital controls.25 These characteristics may also explain why the
 estimated effect is much stronger than the results typically found in the capital control literature. While

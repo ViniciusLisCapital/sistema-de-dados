@@ -16,6 +16,7 @@
     - iv. O modelo quantitativo (Modelo Estrutural, FX Model) fica fora dos agentes por enquanto. Primeiro, azeitar o processo analítico e o fluxo de informação. Quando o Modelo Estrutural entrar, entra como saída dos agentes, não como ferramenta (I.III.xv).
     - v. Agente escrivão (2026-10-02): organiza o relatório final a partir dos reports finais (RF) e do cenário final (PF*). O objetivo é um relatório em ótimo português, de clareza e objetividade excepcionais. Garante a validade lógica e a coesão dos argumentos dos reports, e pode cobrar de um agente mais clareza numa explicação. Regras em IV.vii. Manual de escrita: `obsidian/escrivao/manual_do_escrivao.md` (feito 2026-10-07).
     - vi. Agente administrador (intenção do usuário, 2026-10-02): administra o sistema e cuida da manutenção dele. Primeira tarefa prevista: decidir quais funções G criadas pelos agentes são promovidas ao F (IV.iv). Detalhes a definir (IV.viii).
+    - vii. Agente trader (decidido 2026-10-20): a literatura de trading (`repository/trader/`, 26 capítulos de dois livros de Willer et al.) é a bibliografia de um agente novo, e não de um pilar temático. Ingerida em `obsidian/trader/clean_md/` no mesmo dia; papel e desenho do agente a definir.
 
 ## (I.III) Regras decididas
     - i. Base de conhecimento: `repository/` guarda o bruto (raw_pdf, raw_md, cartas das gestoras, acompanhamento de aquisição). `obsidian/` é a única camada que os agentes leem.
@@ -46,7 +47,7 @@
 ## (II.I) Organização
     - i. Separar bruto (repository) e o que o agente lê (obsidian). (feito 2026-09-30)
     - ii. Ingestão grava o clean_md direto no vault. (feito 2026-09-30)
-    - iii. Definir o que é `clean_md`: texto bruto sem lixo, ou versão reorganizada sem perda de conteúdo. (pendente, sem decisão)
+    - iii. O `clean_md` é o `raw_md` menos três coisas: a lista de referências, o apêndice de disclosures de relatório de banco e linhas de boilerplate conhecido (aviso do JSTOR, marca d'água, carimbo de diagramação). Nenhuma regra julga a linha pelo formato: número de página, cabeçalho corrido, número de eixo de gráfico, URL e contato ficam. As regras de formato eram 2,1% do que se removia e todas as perdas silenciosas de conteúdo achadas em três auditorias (células de tabela, frases com URL, linha de total de tabela). A releitura dos 123 arquivos devolveu 15.521 linhas. (decidido 2026-10-20)
     - iv. A ingestão é um processo mecânico do sistema, não tarefa de agente de área. (decidido 2026-10-19)
         - O PDF vai direto para `repository/<área>/raw_pdf/`, e não sai mais de lá. O usuário põe o PDF lá; o Claude também, quando busca literatura na web. (revisto no mesmo dia: substitui a caixa de entrada única)
         - `/ingest` (todas as áreas) ou `/ingest <área>` chama o agente de ingestão. Ele varre o `raw_pdf/` atrás do PDF sem `raw_md` (o pendente), extrai com as ferramentas determinísticas, confere o resultado contra as páginas do PDF e grava `repository/<área>/raw_md/` e `obsidian/<área>/clean_md/`.
@@ -58,9 +59,18 @@
         - A nota de síntese tem o nome do `clean_md`. As 19 notas antigas foram renomeadas no mesmo dia e os links ajustados. Fleming 1962 fica como está, porque não tem `clean_md`.
         - Uma pasta só de conceitos para todas as áreas: `obsidian/concepts/`. Página existente só recebe patch: a linha na tabela e o link.
         - Todo número da síntese tem de estar no `clean_md`; o `vault.py check` confere. Texto danificado vai para as limitações, não é reconstruído.
-        - O mapa conceitual é contrato: o agente não o edita, só propõe acréscimos no report.
-        - Fora do agente, a decidir: os documentos do Copom em `clean_md/central_bank/` (precisam de desenho próprio, ver II.III.ix); e as 19 notas antigas, que não passam no check (4 sem as seções do modelo, 12 com número que não está no `clean_md`).
+        - A literatura é lida pelo raciocínio, não pelos números: mecanismo, premissas, quando vale e quando falha. O resultado entra como teste do argumento (o sinal, o canal que domina, a robustez), e um número só onde ele decide o argumento, sempre com a amostra, o país e o período. Tabela não é transcrita. A estimativa de um paper nunca vira valor atual: o dado atual vem do banco. Vale para as notas de síntese e para as páginas de conceito (`vault.md`). As notas já escritas seguem o modelo anterior. (decidido 2026-10-20)
+        - A síntese é sobre o material, não sobre as perguntas da área: resume o que a fonte diz, sem filtro pelo que o agente-analista precisa responder. Se as perguntas mudarem, nada precisa ser ressintetizado, e nada se perde por não ter sido perguntado. Síntese e mapa conceitual são processos independentes: o agente do vault não lê o mapa nem os clusters e notas do tracker, e não propõe acréscimos ao mapa. (decidido 2026-10-20)
+        - A linha Source pode tirar título, autor e data do tracker quando o `clean_md` não tem página de rosto (capítulo de livro). Só essa linha. (decidido 2026-10-20)
+        - Os números das páginas de conceito também são conferidos (`vault.py concept`), contra o `clean_md` das notas que a página linka. (feito 2026-10-20)
+        - Fora do agente: os documentos do Copom em `clean_md/central_bank/` (precisam de desenho próprio, ver II.III.ix); e as 19 notas antigas, que não passam no check (4 sem as seções do modelo, 12 com número que não está no `clean_md`). O usuário vai repassar esse material pela ingestão; conferir de novo depois. (decidido 2026-10-20)
     - vi. As listas de literatura e de dados vivem só no `repository/agent_mapping/data_tracker.xlsx`, sem .md, salvo o muito necessário (decidido 2026-10-19). A justificativa de cada fonte ou série fica em Comments; a de cada cluster ou seção (escopo, lacunas, ordem de aquisição), na aba Notes. Os .md de `recommended_bibliography/` e `recommended_data/` foram apagados (estão no histórico do git).
+    - vii. Um agente de modelos mentais lê as cartas das gestoras e faz crescer o documento de cada gestora × área. (construído 2026-10-20: `.claude/agents/mental-model.md`, opus; processo em `repository/mental_model/MENTAL_MODELS.md`)
+        - `/mental <gestora> <área>`. Algumas cartas por rodada, em ordem de data, cada uma lida inteira; o `ledger/` guarda quais cartas cada documento já leu.
+        - A extração das cartas é da ingestão (`/ingest mental_model/<gestora>`), não do agente de modelos mentais. (decidido 2026-10-20)
+        - Reempacotar, nunca excluir: a entrada que as cartas novas acrescentam é reescrita como um texto coerente que incorpora a nuance, sem perder nada do que tinha (citações, aplicações datadas, números, links). Só as entradas que a rodada toca; a numeração das entradas não muda. O `mental.py check` confere contra a versão anterior. (decidido 2026-10-20)
+        - O sentido é conferido por um segundo agente, independente (`mental-model-reviewer`): o escritor lista as afirmações do texto antigo e as novas, e o revisor, sem ver o raciocínio do escritor, julga cada uma contra o texto antigo, o novo e as cartas. A rodada só é registrada se nada foi perdido, distorcido ou inventado, ou se o usuário aceitar. Os vereditos ficam no `ledger/<documento>.log.md`. (decidido 2026-10-20)
+        - Citação literal e número da carta; o `mental.py check` confere as duas coisas.
 
 ## (II.II) Câmbio
     - i. Mapa conceitual no formato novo. (feito 2026-09-30, aguardando revisão do usuário)
@@ -76,7 +86,7 @@
     - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio.
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir)
-    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir)
+    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault.)
 
 
 # (III) Agentes

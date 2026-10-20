@@ -2,22 +2,26 @@ FEDERAL RESERVE BANK OF SAN FRANCISCO
 WORKING PAPER SERIES 
 Measuring the Natural Rate of Interest:  
 International Trends and Determinants 
-
+ 
 Kathryn Holston and Thomas Laubach  
 Board of Governors of the Federal Reserve System 
-
+ 
 John C. Williams  
 Federal Reserve Bank of San Francisco 
-
+ 
+ 
+ 
 December 2016 
-
+ 
 Working Paper 2016-11 
-
+http://www.frbsf.org/economic-research/publications/working-papers/wp2016-11.pdf 
+ 
 Suggested citation:  
 Holston, Kathryn, Thomas Laubach, John C. Williams. 2016. “Measuring the Natural Rate of 
 Interest: International Trends and Determinants.” Federal Reserve Bank of San Francisco 
+Working Paper 2016-11. http://www.frbsf.org/economic-research/publications/working-
 papers/wp2016-11.pdf 
-
+ 
 The views in this paper are solely the responsibility of the authors and should not be interpreted as 
 reflecting the views of the Federal Reserve Bank of San Francisco or the Board of Governors of 
 the Federal Reserve System.
@@ -53,7 +57,11 @@ representatives from the European Central Bank for making available the Area-Wid
 the Bank of England for sharing results from their DSGE model. The views expressed herein are those of
 the authors and do not necessarily reﬂect those of the Board of Governors, or anyone else in the Federal
 Reserve System.
+Holston: Board of Governors of the Federal Reserve System, Kathryn.A.Holston@frb.gov.
+Laubach: Board of Governors of the Federal Reserve System, Thomas.Laubach@frb.gov.
+Williams: Federal Reserve Bank of San Francisco, John.C.Williams@sf.frb.org.
 
+1
 Introduction
 Since Knut Wicksell introduced in 1898 the idea of the natural rate of interest– which we
 deﬁne to be the real short-term interest rate consistent with output equaling its natural rate
@@ -86,6 +94,7 @@ model applies the Kalman ﬁlter to data on real GDP, inﬂation, and the short-
 rate to extract highly persistent components of the natural rate of output, its trend growth
 1For earlier studies on the natural rate of interest in the Euro Area, see Giammariou and Valla (2003),
 and M´esonnier and Renne (2007).
+1
 
 rate, and the natural rate of interest.
 Our approach contrasts with other research that has focused on short-term ﬂuctuations
@@ -121,6 +130,7 @@ decline in the estimated natural rate across all of these countries highlights t
 of global factors in determining the natural rate.
 The paper is organized as follows. The second section lays out the theoretical model and
 its empirical counterpart. The third section reports the estimation results. The fourth sec-
+2
 
 tion analyzes the movements in the natural rates of interest over time and the comovement
 across economies. The ﬁnal section concludes.
@@ -158,6 +168,7 @@ models is that we allow for shocks that have transitory eﬀects on the output g
 do not measure as part of the natural rate, so as to focus on the low-frequency determinants of that rate.
 By contrast, the natural rate concept estimated in DSGE models is deﬁned as the rate that achieves price
 stability period-by-period.
+3
 
 where σ denotes the intertemporal elasticity of substitution in consumption, gc is the growth
 rate of per capita consumption, and θ is the rate of time preference. This steady-state
@@ -195,6 +206,7 @@ t to zero period-by-period completely stabilizes these two
 variables. Second, in contrast to a closed economy, the variable rn
 t depends not only on
 expected domestic output growth but in general also on expected world output growth.
+4
 
 While we will depart in the following from the ﬁrst property, the dependence of the natural
 rate of interest on global as well as domestic conditions is central to our analysis.
@@ -243,6 +255,7 @@ where gt is the trend growth rate of the natural rate of output and zt captures 
 3The open-economy version of the New Keynesian Phillips curve (2) describes a relationship for home-
 goods inﬂation πH,t. In the absence of data for such a concept, we use measures of consumer price inﬂation
 described in the Appendix.
+5
 
 determinants of r∗.
 Note that we assume a one-for-one relationship between the trend
@@ -283,6 +296,7 @@ natural rate of interest (or alternatively the component z unrelated to trend gr
 data and speciﬁcs of model variables are described in the Appendix.
 The time series and survey evidence suggests that real GDP growth, labor productivity
 4See Hamilton et al. (2015) and Laubach and Williams (2016) for further discussion.
+6
 
 growth, and real interest rates are subject to highly persistent changes masked by volatile
 transitory shocks. Maximum likelihood estimates of the standard deviations of the innova-
@@ -326,6 +340,7 @@ data starting four quarters prior to our estimation sample and take the values o
 for the three quarters prior to the sample start. For lags of g, we use the ﬁrst diﬀerence of the HP trend.
 The component z is initialized at 0. We compute the covariance matrix of these states from the gradients
 of the likelihood function.
+7
 
 (1986) Monte Carlo procedure that accounts for both ﬁlter and parameter uncertainty.7
 3
@@ -368,6 +383,7 @@ a time-varying trend growth and a constant natural rate of interest to construct
 t , gt}. For each pair of simulated series we compute the exponential Wald statistic for an intercept shift
 in the ﬁrst diﬀerence of y∗
 t .
+8
 
 time” estimates, in that only current and past observations are used in estimating the state.
 (Because the full sample is used in estimating the model parameters, the analogy, however,
@@ -403,6 +419,7 @@ reﬂected in the number of draws during the computation of the standard errors 
 because they violate the constraints ar ≤−0.0025 and by ≥0.025. While only about 2 percent of draws are
 rejected for the US, about 15 percent are rejected for the UK, 20 percent for the Euro Area, and 25 percent
 are rejected for Canada.
+9
 
 even if these variables were assumed to be constant, as well as the uncertainty associated
 with time-variation in these variables. The imprecision is particularly pronounced in the
@@ -438,6 +455,7 @@ growth in the Euro Area fell by a relatively modest amount during the global ﬁ
 10The following sources are used for recession dating in the ﬁgures United States: National Bureau of
 Economic Research; Canada and the United Kingdom: Economic Cycle Research Institute; Euro Area:
 CEPR Euro Area Business Cycle Dating Committee.
+10
 
 but has been on a steady downward trajectory following the onset of the Euro crisis.
 The estimated declines in trend GDP growth over the past decade are broadly consistent
@@ -471,6 +489,7 @@ quarter century: First, a moderate secular decline over 1990-2007, and second, a
 stantial decline since 2007. These are seen in the lower panels of Figures 1–4 and in Table
 3, which reports the annual averages of the natural rate estimates for the three years 1990,
 2007, and 2016. In 1990, the estimates range between about 2-1/2 and 3-1/2. In each
+11
 
 case, the estimates are lower in 2007, on the eve of the global ﬁnancial crisis, ranging from
 roughly 2 to 2-1/2 percent. In Canada and the Euro Area, this initial decline is more than
@@ -505,6 +524,7 @@ the natural rate of interest to alternative speciﬁcations. Despite substantial
 model speciﬁcation and methodology, this research consistently ﬁnds strong evidence of a
 sizable decline in the natural rate of interest over the past 25 years, with estimates reaching
 historically low levels in recent years.
+12
 
 Our natural rate estimates for the United States have been shown to be robust to alter-
 native speciﬁcations for the inﬂation process and expected inﬂation (Laubach and Williams;
@@ -538,6 +558,7 @@ in the United Kingdom following the global ﬁnancial crisis. Their DSGE model�
 for the natural rate over the next ﬁve years is 1.6 percent in 2016, close to our estimate
 of 1.5 percent. Constˆancio (2016) reports estimates of the natural rate in the Euro Area
 based on M´esonnier and Renne’s (2007) version of the Laubach-Williams (2003) model, a
+13
 
 Bayesian VAR, and a DSGE model. All three models display large declines in the estimated
 natural rate, reaching levels near or below zero at the end of the sample, consistent with
@@ -570,6 +591,7 @@ four natural rates series based on a standard Johansen test. The estimated coint
 vector is reported in the middle portion of Table 4. Based on lag tests, a VECM model with
 eight lags is estimated and the key results are reported in the table. The VECM estimates
 suggest that natural rates comove over time, but are also subject to idiosyncratic inﬂuences.
+14
 
 To summarize the interdependence in natural rates, Figure 5 shows variance decompositions
 for each natural rate process in terms of shocks to the four natural rates, using a Cholesky
@@ -603,6 +625,7 @@ We also ﬁnd evidence of comovement in the estimates of trend output growth acr
 four economies. Table 5 reports the results of augmented Dickey-Fuller and cointegration
 tests for the model estimates of trend GDP growth, as well as results from a VECM with
 a single cointegrating vector and one with three cointegrating vectors imposed. The results
+15
 
 from both of the estimated VECM models for trend growth rates indicate the presence of
 interdependence across countries. The resulting patterns in variance decompositions are
@@ -635,6 +658,7 @@ economy’s features may yield more precise estimates and insights into the robu
 results to alternative approaches.
 Finally, as discussed in Laubach and Williams (2016), very low natural rate of inter-
 est, if sustained into the future, have profound implications for monetary policy (see also
+16
 
 Blanchard, Dell’Ariccia, and Mauro, 2010; Summers 2014). All else equal, a lower average
 real interest rate in turn implies that episodes of monetary policy being constrained at the
@@ -644,7 +668,9 @@ this is not a problem unique to the United States, but has broader consequences 
 For example, as discussed in Eggertsson et al. (2015), in an environment of a very low
 natural rate of interest, the eﬀects of the lower bound on interest rates are ampliﬁed and
 international spillovers and the beneﬁts from international policy coordination may increase.
+17
 
+6
 Table 1: Parameter Estimates
 Parameter
 United States
@@ -754,33 +780,97 @@ y∗
 2.561
 0.992
 Notes: t statistics are in parentheses; σg is expressed at an annual rate.
+23
 
 Table 2: Trend Growth Estimates
 Change
+1990
+2007
 2016†
 1990-2007
 2007-2016
 United States
 HLW g estimates
+3.3
+2.8
+1.5
+−0.6
+−1.3
 Consensus Forecasts
+2.4
+2.9
+2.2
+0.5
+−0.7
 IMF World Economic Outlook
+2.6
+3.1
+1.8
+0.5
+−1.3
 Blue Chip Financial Forecasts
+2.5
+2.9
+2.2
+0.4
+−0.7
 Canada
 HLW g estimates
+3.5
+2.5
+1.5
+−1.0
+−1.0
 Consensus Forecasts
+2.8
+2.5
+1.9
+−0.4
+−0.6
 IMF World Economic Outlook
+3.2
+2.7
+2.0
+−0.5
+−0.7
 Euro Area
 HLW g estimates
+2.7
+2.1
+1.1
+−0.6
+−1.0
 Consensus Forecasts
 n/a
+2.0
+1.3
 n/a
+−0.7
 IMF World Economic Outlook
 n/a
+2.0
+1.5
 n/a
+−0.6
 United Kingdom
 HLW g estimates
+2.8
+2.7
+1.9
+−0.1
+−0.8
 Consensus Forecasts
+2.5
+2.5
+2.1
+0.0
+−0.5
 IMF World Economic Outlook
+2.5
+2.7
+2.0
+0.2
+−0.7
 Notes: Consensus Forecasts data are the mean of panellists’ trend estimates of expected GDP growth in the
 6 to 10 years following. IMF estimates are the 5-year ahead forecast for real GDP growth. Blue Chip
 estimates are the mean long-years ahead forecast for real GDP. For each of these three forecasts, numbers
@@ -788,6 +878,7 @@ are the average of the Spring and Fall publications for each year. HLW estimates
 Numbers may not sum due to rounding.
 Sources: Consensus Economics Inc, London; IMF World Economic Outlook; Blue Chip Financial Forecasts.
 †2016 estimates are averages of the ﬁrst three quarters.
+24
 
 Table 3: Natural Rate Estimates
 Change
@@ -862,6 +953,7 @@ index. Zero coupon yields are estimated for Canadian real return bonds. UK yield
 monthly average yields from the zero coupon real yield curve published by the Bank of England. Numbers
 may not sum due to rounding.
 †2016 estimates are averages of the ﬁrst three quarters.
+25
 
 Table 4: Cointegration: Natural Rate Estimates
 United States
@@ -979,8 +1071,10 @@ Granger lag test (p-value)
 0.88
 < 0.01
 (8 lags)
+26
 
 Table 5: Cointegration: Trend Growth Estimates
+United States
 Canada
 Euro Area
 United Kingdom
@@ -1093,110 +1187,409 @@ Granger lag test (p-value)
 < 0.01
 < 0.01
 (8 lags)
+27
 
 Figure 1: Estimation Results for the US
 Output Gap and Real Rate Gap
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−8
+−4
+ 0
+ 4
+ 8
 Output Gap
 Real Rate Gap
 r* and Trend Growth
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+0
+1
+2
+3
+4
+5
+6
 r*
 Trend Growth (g)
+28
 
 Figure 2: Estimation Results for Canada
+Output Gap and Real Rate Gap
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−10
+ −5
+  0
+  5
+ 10
 Output Gap
 Real Rate Gap
 r* and Trend Growth
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+0
+1
+2
+3
+4
+5
+6
+7
 r*
+Trend Growth (g)
+29
 
 Figure 3: Estimation Results for the Euro Area
+Output Gap and Real Rate Gap
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−8
+−4
+ 0
+ 4
+ 8
 Output Gap
 Real Rate Gap
 r* and Trend Growth
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−1
+ 0
+ 1
+ 2
+ 3
+ 4
 r*
+Trend Growth (g)
+30
 
 Figure 4: Estimation Results for the UK
+Output Gap and Real Rate Gap
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−15
+−10
+ −5
+  0
+  5
+ 10
+ 15
+−3
+−2
+−1
+ 0
+ 1
+ 2
+ 3
 Output Gap
 Real Rate Gap
 Real Rate Gap
 Output Gap
 r* and Trend Growth
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+0
+1
+2
+3
+4
+5
 r*
+Trend Growth (g)
+31
 
 Figure 5: Variance Decompositions of Natural Rate Estimates:
 VECM with One Cointegrating Vector
 Canada
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US r*
 Euro Area r*
 UK r*
 Canada r*
 Euro Area
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 UK
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
+32
 
 Figure 6: Variance Decompositions of Natural Rate Estimates:
 VECM with Three Cointegrating Vectors
 Canada
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US r*
 Euro Area r*
 UK r*
 Canada r*
 Euro Area
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 UK
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
+33
 
 Figure 7: Variance Decompositions of Trend Growth Estimates:
 VECM with One Cointegrating Vector
 Canada
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US r*
 Euro Area r*
 UK r*
 Canada r*
 Euro Area
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 UK
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
+34
 
 Figure 8: Variance Decompositions of Trend Growth Estimates:
 VECM with Three Cointegrating Vectors
 Canada
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US r*
 Euro Area r*
 UK r*
 Canada r*
 Euro Area
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 UK
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
 US
+ 0
+10
+20
+30
 40  0
+ 20
+ 40
+ 60
+ 80
+100
 Period
+35
 
 Appendix: Data
 For each economy, we require data for real GDP, inﬂation, and the short-term nominal
@@ -1230,9 +1623,29 @@ is HICP excluding energy; prior to 1988 we use overall HICP. The short-term inte
 is the three-month rate. We update the three series through 2016 using data from the ECB.
 11A detailed description of our data and programs, as well as replication materials, is available on the
 Federal Reserve Bank of San Francisco’s website.
+36
 
 Figure 9: Comparison of Data across Economies
 Inflation
+−5
+ 0
+ 5
+10
+15
+20
+25
+30
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
 Canada
 Euro Area
 UK
@@ -1240,7 +1653,39 @@ US
 Log of Real GDP, HP Cycle Component
 −0.10
 −0.05
+ 0.00
+ 0.05
+ 0.10
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
 Nominal Short−Term Interest Rate
+ 0
+ 5
+10
+15
+20
+25
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+37
 
 Appendix: Comparison to Laubach and Williams (2003)
 In this appendix, we compare the estimates for the United States reported in this paper
@@ -1264,6 +1709,7 @@ quarters to generate a forecast of four-quarter-ahead inﬂation, in this paper 
 is driven in part by data constraints; for the Euro Area, the estimation sample could not
 start prior to 1983q1 if the former method were used. In Figure 11, we compare the two
 measures of inﬂation expectations and ﬁnd that they are close for the US.
+38
 
 Table 6: Comparison of HLW and LW (2003) Parameter Estimates
 Parameter
@@ -1360,18 +1806,72 @@ y∗
 2.925
 4.23
 Notes: t statistics are in parentheses; σg is expressed at an annual rate.
+39
 
 Figure 10: Comparison of HLW and LW (2003) Estimates
+Output Gap and Real Rate Gap
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+−10
+ −5
+  0
+  5
+ 10
 HLW Output Gap
 HLW Real Rate Gap
 LW (2003) Output Gap
 LW (2003) Real Rate Gap
 r* and Trend Growth
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+0
+2
+4
+6
+8
 HLW r*
 HLW Trend Growth (g)
 LW (2003) r*
 LW (2003) Trend Growth (g)
+40
 
 Figure 11: Comparison of HLW and LW (2003) Measures of Inﬂation Expectations
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2005
+2010
+2015
+ 0
+ 2
+ 4
+ 6
+ 8
+10
+12
 HLW
 LW (2003)
+41

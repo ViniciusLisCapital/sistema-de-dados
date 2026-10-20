@@ -3,6 +3,7 @@ DILEMMA NOT TRILEMMA:
 THE GLOBAL FINANCIAL CYCLE AND MONETARY POLICY INDEPENDENCE
 Hélène Rey
 Working Paper 21162
+http://www.nber.org/papers/w21162
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -54,6 +55,7 @@ Regents Park
 London NW1 4SA
 UNITED KINGDOM
 and NBER
+hrey@london.edu
 
 Introduction
 If one looks at the evolution of financial integration over the past half‐century in the world economy,
@@ -85,6 +87,7 @@ leverage of the financial sector in many parts of the international financial sy
 financial cycle can be related to monetary conditions in the centre country and to changes in risk
 aversion and uncertainty (Bekaert et al. (2012), Miranda Agrippino and Rey (2012), Bruno and Shin
 (2013b)).
+2
 
 But even if capital flows, especially credit flows, are largely driven by a global factor, they might still
 bring important benefits to the world economy. A brief review of the empirical evidence and the
@@ -116,6 +119,7 @@ preponderance of the green colour in the heatmap, most types of capital inflows 
 correlated with one another and across regions. There is a very strong commonality in liability flows
 1 Technically we use “other investment” which contains bank loans and trade credit.
 2 For a precise list of the countries included, see Appendix A.
+3
 
 across the world. The only exception tends to be FDI inflows in all regions of the world with portfolio
 equity flows into Asia and some credit flows into Africa and into Asia. There are in particular strong
@@ -149,6 +153,7 @@ spikes. More recently, Forbes and Warnock (2012) and Bruno and Shin (2013a) emph
 in capital flows associated with the lowering of the VIX.
 3 The VIX is the Chicago Board Options Exchange Market Volatility Index. It is a measure of the implied volatility
 of S&P 500 index options.
+4
 
 Figure 2 plots capital inflows disaggregated by asset types (FDI, portfolio equity, portfolio debt and
 credit) as a proportion of the world GDP for the period 1990Q1‐2012Q4 and it reports the VIX
@@ -184,6 +189,7 @@ similar pattern emerges (see Table 1 (b)). The VIX is significantly negatively a
 fluctuations in capital inflows, except for FDI inflows. The results are similar with outflows, both for
 the unconditional and for the conditional correlations for the US and Western Europe; they are
 weaker for the other geographical areas. In contrast, and in agreement with our previous results,
+5
 
 the same pattern of correlations does not hold for net flows. I do not report these results due to
 space constraints.
@@ -217,6 +223,7 @@ Correlations Central
 North Latin Eastern Western Emerging
 credit / VIX
 America America Europe Europe Asia Asia Africa
+6
 
 Domestic credit
 ‐0.26 ‐0.14 ‐0.14 ‐0.11 ‐0.01 ‐0.30 0.01
@@ -248,6 +255,7 @@ follow the global financial cycle. One might think that prices of equities aroun
 corporate bonds and of commodities reflect to a large extent continent specific, sector specific,
 country specific and company specific factors. But, as shown by Miranda‐Agrippino and Rey (2012)
 using a large cross section of 858 risky asset prices distributed on the five continents, an important
+7
 
 part of the variance of risky returns (25%) is explained by one single global factor4. This result is
 remarkable given the size and the heterogeneity of the set. Irrespective of the geographical location
@@ -281,6 +289,7 @@ Figure 3: Global factor and VIX. Source: Miranda‐Agrippino and Rey (2012).
 4 For a similar conclusion based on a dynamic factor analysis in the context of sovereign credit risk, see
 Longstaff et al. (2011)
 5 See Miranda‐Agrippino and Rey (2012) for details.
+8
 
 To sum up, we have now established in flow data (across most types of flows and regions, but with
 some exceptions) and in price data (across a sectorally and geographically wide cross‐section of risky
@@ -297,6 +306,7 @@ dimension, I study in more details the factors affecting the cross sectional sen
 variables to the global financial cycles. More precisely, I focus here on the possibility that larger
 volumes and different types of capital flows matter for the sensitivity of national markets to the
 global factor.
+9
 
 I investigate whether cross‐sectionally, the sensitivities of country specific variables to the global
 factor (cid:1848)(cid:1835)(cid:1850) (logged) can be related to different types and intensities of capital flows into each
@@ -345,6 +355,7 @@ N 3042 3267 3073 2924 2971 2631 2770
 Fixed effect estimator, standard errors adjusted for clustering on country, t‐stat in parentheses. All
 specifications include the control variables and a linear time trend. Each column corresponds to a
 different specification of the flow in the interacted term.
+10
 
 Panel (a) shows that stock prices are significantly negatively related to the global factor (the VIX) and
 to its growth rate. Credit flows into and out of country i tend to be associated with a higher
@@ -375,6 +386,7 @@ raising large quantities of funds in dollars and transferring them to overseas m
 6
 It would of course be interesting to establish a causal link between cross‐border credit flows and sensitivity to the cycle.
 But for this we would need instrumental variables.
+11
 
 global banks were not only intermediating savings back in the US market but were also serving
 Asian, Latin American, African and Middle Eastern markets. I will therefore treat the leverage of
@@ -410,6 +422,7 @@ GDP deflator (GDPDEF), global credit (logged)(CREDIT) , global credit inflows (I
 disentangling effects on market effective risk aversion and volatility. Bruno and Shin (2013b) present a similarly
 inspired and independently developed analysis but they focus on the dynamic relation with the dollar
 exchange rate and the overshooting puzzle.
+12
 
 banks leverage (defined as the median of EU bank leverage) (EULEV), Fed Funds target rate (FFR) and
 VIX (logged). 8
@@ -440,6 +453,7 @@ about 5 quarters and until 11 quarters. (Figure4a)
 (ix) An increase in EU banks leverage is associated with a fall in the VIX after about 8
 quarters. (Figure 5)
 8 See Appendix B for the precise definitions of the variables.
+13
 
 The VAR results are therefore consistent with the following interpretation. When the Federal Funds
 rate goes down, the VIX falls (after about 5 quarters), European banks’ leverage rises, as do gross
@@ -463,6 +477,7 @@ Figure 4a: 25 bp increase to the effective federal funds rate.
 This interpretation accords well with the micro studies of Jimenez, Ongena, Peydro and Saurina (2012) on European data
 who finds that banks grants more loans to riskier firms in a low interest rate environment and of Dell’Ariccia, Laeven and
 Suarez (2013) who have similar findings using US data.
+14
 
 Figure 4b: Responses to a 1% increase in the VIX.
 B) Robustness
@@ -481,6 +496,7 @@ checks, in particular with respect to the measurement of monetary policy shocks 
 results on the pre‐crisis sample and the whole sample. Their findings are compatible with my results
 showing an increase in the VIX following a tightening in the FFR and a loosening of monetary policy
 after a VIX increase (see Figure 4a,b).
+15
 
 Bruno and Shin (2013b) runs a 4 variable recursive VAR with FFR, log VIX, leverage and the real
 effective dollar exchange rate on quarterly data for the period 1995‐2007. For monetary policy
@@ -511,6 +527,7 @@ about 4% of the variance of the VIX (in the 7 variable VAR on the whole 1990‐2
 and Shin (2013b) US broker‐dealer leverage instead of the EU bank leverage variable.
 Although there is some variance in the estimates depending on the number of variables and the
 exact specification of the VAR, these are economically significant, possibly large effects.
+16
 
 V) Taking stock: monetary conditions, capital flows and the global
 financial cycle
@@ -543,6 +560,7 @@ Our VAR analysis suggests that one important determinant of the global financial
 policy in the centre country, which affects leverage of global banks, credit flows and credit growth in
 the international financial system. This channel invalidates the “trilemma”, which postulates that in
 10 See for example Kalemni‐Ozcan et al. (2012).
+17
 
 a world of free capital mobility, independent monetary policies are feasible if and only if exchange
 rates are floating. Instead, while it is certainly true that countries with fixed exchange rates cannot
@@ -571,6 +589,7 @@ efficiency and risk sharing together, in the context of a general equilibrium ne
 model. The welfare gains are small, even in such a world where the interaction between the
 precautionary savings motives and allocative efficiency effects is modeled explicitly – so the
 two main channels of gains from integration can express themselves‐ . We find they are on the
+18
 
 order of a few tenths of a percent of permanent consumption for realistic calibrations.
 B) Empirical evidence from panel data and event studies
@@ -602,6 +621,7 @@ are no benefits to international financial integration, only that they have been
 elusive so far given the scale of financial globalization the world has undergone. In that light, it
 would be useful to identify more precisely the channels for which capital flows may be
 beneficial. One possibility is to look more closely at potential effects on total factor productivity
+19
 
 of certain types of flows. The existing literature on this topic has to deal with hard identification
 issues and is also not very conclusive ( for a discussion see Obstfeld 2009, p. 89). Another
@@ -634,6 +654,7 @@ condition which has been identified repeatedly as one of the best predictors of 
 (2012).
 12 Gourinchas et al. (2010) show how to endogenize such asymmetric portfolios when the centre country of the
 international monetary system is more risk neutral than the rest of the world.
+20
 
 analyses suggest monetary conditions are transmitted from the main financial centre to the rest of
 the world through gross credit flows and leverage, irrespective of the exchange rate regime. This
@@ -666,6 +687,7 @@ implemented exclusively in a subset of low income countries, which have very spe
 14 Gourinchas and Rey (2007) estimated that about a third of the adjustment of the United States towards its
 long run budget constraint came from valuation effects while the rest came from net exports (i.e. current
 account and net flows).
+21
 
 Temporary controls, especially on credit flows and portfolio debt when the cycle is in a boom phase
 could be used. This option has been tested in various contexts: the Chilean encaje (1991‐ 1998); the
@@ -700,6 +722,7 @@ are at present not internalized. Central bankers of systemically important count
 attention to their collective policy stance and its implications for the rest of the world. One practical
 way of implementing this, proposed in Eichengreen et al. (2012) would be for “a small group of
 systemically significant central banks to meet regularly under the auspices of the Committee on the
+22
 
 Global Financial System of the BIS. This group would discuss and assess the implications of their
 policies for global liquidity, leverage, and exposures, and the appropriateness of their joint money
@@ -733,6 +756,7 @@ Beyond the tools, one of the big practical issues is to determine the timing of 
 should one activate circuit breakers to cut the positive feedback loops described in Part IV?
 It is important, not to wait too long; not to wait, for example, for the quasi‐certainty that there is a
 bubble in asset prices or real estate to intervene.
+23
 
 One option is to devise automatic rules based on the credit to GDP ratio and act as soon as a certain
 threshold is crossed (Borio et al. (2011)). This has the advantage of being robust to lobbying of
@@ -767,6 +791,7 @@ subsidies are instrumental to creating the initial bubble or the beginning of a 
 By all means, the first thing to do is to remove these distortions. It is also important to remember that excessive borrowing
 by a country means that someone else is lending excessively: macroprudential policies apply to lenders just as well as they
 apply to borrowers.
+24
 
 At the heart of the transmission mechanism described in this paper is the ability of financial
 intermediaries, whether banks or shadow banks to leverage up quickly to very high levels when
@@ -800,6 +825,7 @@ goes with lack of transparency and heterogeneous implementation.
 Marston (1985) and Bryant and Portes (1987)). The G7 summits of 1986 (Tokyo) and 1987 (Venice) emphasized
 multilateral surveillance. To this day, however neither the economic analysis nor the policy pronouncements
 have had any observable effect on actual monetary policies.
+25
 
 complex and policy action will most likely remain biased towards national priorities. A transparent
 forum in which the collective monetary policy stance of the systemically important central banks is
@@ -832,6 +858,7 @@ Spain
 Sweden
 Switzerland
 UK
+31
 
 Data on Capital flows:
 Source of flow data: quarterly gross capital inflows and outflows from the International Monetary
@@ -849,6 +876,7 @@ Manual of IMF – Reconciliation for quarters 2005 Q1‐2008 Q4 for which there 
 Construction of Net Flows only when data on Inflows and Outflows are available
 World GDP Growth (Quarterly): International Monetary Fund’s International Financial Statistics
 (accessed through IMF website in March 2013).
+32
 
 Appendix B
 Global Factor: common factor extracted from a collection of 858 asset price series spread over Asia
@@ -885,6 +913,7 @@ Exchange Rates: in national currency per US Dollar; end of period; International
 Nominal Effective Exchange Rate: Broad Effective Exchange Rate Indices, BIS
 US GDP: Real Gross Domestic Product (Billions of Chained 2005 Dollars); Bureau of Economic
 Analysis
+33
 
 US INFLATION: Gross Domestic Product: Implicit Price Deflator (Index 2005=100); Bureau of
 Economic Analysis
@@ -896,6 +925,7 @@ France, Germany, Greece, Hong Kong , Hungary, Iceland, Indonesia, Ireland, Italy
 Latvia, Lithuania, Luxembourg, Malaysia, Malta, Mexico, Netherlands, New Zealand, Norway, Poland,
 Portugal, Romania, Russia, Serbia, Slovakia, Slovenia, South Africa, Spain, Sweden, Switzerland,
 Thailand, Turkey, United Kingdom, United States.
+34
 
 Appendix C
 Table 2
@@ -942,6 +972,7 @@ R2 0.07 0.064 0.068 0.066 0.063 0.058 0.076
 N 2335 2490 2358 2263 2303 2044 2166
 Fixed effect estimator, standard errors adjusted for clustering on country, t‐stat in parentheses. All
 specifications include the control variables and a linear trend.
+35
 
 Appendix D:
 Figures 1a,b,c: heatmaps of correlations of gross inflows, gross outflows and net flows
@@ -949,99 +980,485 @@ Figure 2: plots capital inflows disaggregated by asset types (FDI, portfolio equ
 and credit) as a proportion of the world GDP for the period 1990Q1‐2012Q4 and it reports the VIX
 (inverted scale) on the same graph.
 Figure 5: Complete set of Impulse response functions of the VAR.
+36
 
 Credit
 Africa
+0.11
+0.06
+0.01
+0.15
+0.01
 ‐0.20
+0.12
+0.40
+0.30
+0.35
+0.33
+0.24
+0.37
+0.18
+0.32
+0.11
+0.00
+0.13
+0.03
+0.34
 ‐0.02
+0.24
+0.30
+0.40
+0.36
+0.30
+0.31
+1.00
 Credit
 Asia
+0.08
 ‐0.03
+0.02
 ‐0.01
+0.00
 ‐0.40
 ‐0.12
+0.23
+0.23
+0.32
+0.24
+0.31
+0.23
+0.25
+0.32
+0.18
+0.17
 ‐0.01
+0.13
+0.37
+0.08
+0.43
+0.35
+0.23
+0.52
+0.37
+1.00
 Credit
 Em.
 As
+0.25
+0.54
+0.39
+0.21
+0.10
+0.16
+0.05
+0.22
+0.16
+0.30
+0.29
+0.38
+0.24
+0.00
+0.40
+0.31
+0.33
+0.15
+0.56
+0.51
+0.27
+0.24
+0.45
+0.48
+0.28
+1.00
 Credit
 W.
 EU
+0.19
 ‐0.03
+0.24
+0.31
+0.19
 ‐0.16
+0.26
+0.27
+0.08
+0.20
+0.30
+0.19
+0.13
+0.15
+0.45
+0.20
+0.25
+0.33
+0.26
+0.45
+0.16
+0.63
+0.30
+0.34
+1.00
 Credit
 CE.
 EU
+0.42
+0.25
+0.27
+0.28
+0.32
+0.15
+0.21
+0.54
+0.38
+0.72
+0.55
+0.47
+0.36
+0.28
+0.54
+0.14
+0.13
+0.56
+0.25
+0.48
+0.12
+0.17
+0.55
+1.00
 Credit
 LatAm
+0.41
+0.34
+0.21
+0.26
+0.12
+0.04
+0.22
+0.38
+0.35
+0.42
+0.27
+0.48
+0.35
+0.24
+0.35
+0.25
+0.41
+0.30
+0.29
+0.46
+0.28
+0.22
+1.00
 Credit
 N.
 Am.
+0.29
 ‐0.02
+0.21
+0.38
+0.15
 ‐0.01
+0.32
+0.20
+0.02
+0.19
+0.20
+0.12
+0.09
+0.04
+0.37
+0.14
+0.23
+0.25
+0.23
+0.25
+0.03
+1.00
 Debt
 Africa
+0.26
+0.27
+0.39
+0.18
+0.07
+0.14
+0.09
+0.12
+0.21
+0.10
+0.01
+0.41
+0.21
+0.07
+0.21
+0.46
+0.61
+0.15
+0.44
+0.32
+1.00
 Debt
 Asia
+0.16
+0.18
+0.24
+0.22
+0.16
 ‐0.04
+0.16
+0.35
+0.31
+0.30
+0.30
+0.45
+0.26
+0.14
+0.45
+0.27
+0.42
+0.19
+0.39
+1.00
 Debt
 Em.
 As
+0.40
+0.58
+0.65
+0.35
+0.20
+0.23
+0.20
+0.13
+0.24
+0.25
+0.37
+0.35
+0.15
+0.02
+0.32
+0.38
+0.53
+0.14
+1.00
 Debt
 W.
 EU
+0.49
+0.05
+0.33
+0.50
+0.23
+0.27
+0.47
+0.29
+0.10
+0.44
+0.27
+0.25
+0.02
+0.10
+0.58
 ‐0.13
+0.28
+1.00
 Debt
 CE.
 EU
+0.37
+0.42
+0.50
+0.43
+0.13
+0.17
+0.19
+0.14
+0.35
+0.14
+0.12
+0.47
+0.21
+0.04
+0.37
+0.52
+1.00
 Debt
 LatAm
+0.20
+0.40
+0.33
+0.16
+0.13
+0.00
 ‐0.05
+0.16
+0.35
+0.13
+0.05
+0.31
+0.26
+0.06
+0.10
+1.00
 Debt
 N.
 Am
+0.42
+0.17
+0.32
+0.51
+0.29
+0.21
+0.31
+0.40
+0.39
+0.55
+0.51
+0.48
+0.37
+0.08
+1.00
 FDI
 Africa
+0.33
+0.01
+0.10
+0.18
+0.03
 ‐0.16
 ‐0.19
+0.31
+0.36
+0.35
+0.35
+0.34
+0.27
+1.00
 FDI
 Asia
+0.36
+0.16
+0.03
+0.29
+0.30
 ‐0.17
+0.05
+0.60
+0.70
+0.57
+0.51
+0.69
+1.00
 FDI
 Em.
 As
+0.47
+0.24
+0.16
+0.34
+0.36
 ‐0.04
+0.04
+0.65
+0.77
+0.69
+0.64
+1.00
 FDI
 W.
 EU
+0.57
+0.21
+0.19
+0.38
+0.35
+0.01
+0.16
+0.61
+0.59
+0.75
+1.00
 FDI
 CE.
 EU
+0.46
+0.11
+0.08
+0.18
+0.23
 ‐0.12
+0.09
+0.61
+0.65
+1.00
 FDI
 LatAm
+0.41
+0.10
+0.08
+0.29
+0.32
 ‐0.07
+0.04
+0.68
+1.00
 FDI
 N.
 Am
+0.54
+0.06
+0.07
+0.45
+0.52
 ‐0.07
+0.22
+1.00
 Equity
 Africa
+0.41
+0.22
+0.26
+0.55
+0.34
+0.26
+1.00
 Equity
 Asia
+0.24
+0.31
+0.28
+0.40
+0.31
+1.00
 EquityEm.
 As
+0.37
+0.24
+0.28
+0.47
+1.00
 Equity
 W.
 EU
+0.63
+0.35
+0.50
+1.00
 Equity
 CE.
 EU
+0.52
+0.49
+1.00
 Equity
 LatAm
+0.39
+1.00
 Equity
 N.
 Am
+1.00
 Flows
 N.
 Am.LatAmCE.
@@ -1101,6 +1518,10 @@ CreditCredi
 
 Credit
 Africa
+0.22
+0.06
+0.21
+0.28
 ‐0.22
 ‐0.16
 ‐0.16
@@ -1111,139 +1532,467 @@ Africa
 ‐0.14
 ‐0.13
 ‐0.07
+0.18
+0.29
 ‐0.14
+0.12
 ‐0.15
 ‐0.12
 ‐0.17
+0.17
+0.03
 ‐0.23
+0.20
+0.07
 ‐0.08
+1.00
 Credit
 Asia
+0.32
+0.07
+0.22
+0.03
 ‐0.07
+0.18
 ‐0.16
+0.24
+0.17
+0.16
+0.18
+0.28
 ‐0.05
+0.25
+0.17
 ‐0.10
 ‐0.19
+0.17
+0.28
+0.08
+0.29
+0.33
+0.28
+0.11
+0.49
+0.09
+1.00
 Credit
 Em.
 As
+0.36
+0.41
+0.55
+0.44
+0.41
+0.38
+0.01
+0.43
+0.16
+0.35
+0.47
+0.35
+0.26
+0.16
+0.43
+0.34
+0.26
+0.45
+0.47
+0.24
+0.18
+0.15
+0.15
+0.24
+0.33
+1.00
 Credit
 W.
 EU
+0.42
+0.16
+0.43
+0.25
 ‐0.19
+0.20
 ‐0.25
+0.39
+0.11
+0.19
+0.33
+0.12
 ‐0.09
+0.34
+0.28
+0.21
 ‐0.17
+0.53
+0.20
+0.25
+0.21
+0.61
+0.27
+0.22
+1.00
 Credit
 CE.
 EU
 ‐0.01
+0.02
+0.10
 ‐0.11
+0.35
+0.33
+0.25
+0.47
+0.52
+0.61
+0.59
+0.45
+0.49
 ‐0.05
 ‐0.16
 ‐0.15
+0.20
+0.20
+0.13
+0.13
+0.17
+0.05
+0.10
+1.00
 Credit
 LatAm
+0.17
 ‐0.25
+0.09
 ‐0.20
+0.09
+0.27
+0.05
+0.42
+0.30
+0.22
+0.35
+0.51
+0.49
 ‐0.05
 ‐0.08
+0.14
+0.00
 ‐0.19
+0.04
+0.21
+0.53
+0.03
+1.00
 Credit
 N.
 Am.
+0.25
+0.15
+0.27
+0.32
 ‐0.24
+0.14
 ‐0.17
+0.14
 ‐0.05
+0.10
+0.20
 ‐0.03
 ‐0.18
+0.18
+0.35
+0.02
 ‐0.12
+0.40
 ‐0.07
+0.14
 ‐0.01
+1.00
 Debt
 Africa
+0.18
 ‐0.10
+0.12
+0.04
+0.27
+0.33
+0.40
+0.51
+0.27
+0.33
+0.46
+0.59
+0.31
+0.07
 ‐0.04
+0.03
 ‐0.12
 ‐0.03
+0.29
+0.19
+1.00
 Debt
 Asia
+0.25
+0.27
+0.20
+0.19
+0.06
+0.20
 ‐0.02
+0.35
+0.12
+0.14
+0.23
+0.38
+0.13
+0.22
+0.20
+0.01
+0.03
+0.27
+0.10
+1.00
 Debt
 Em.
 As
+0.30
+0.52
+0.46
+0.45
+0.39
+0.20
 ‐0.07
+0.38
+0.12
+0.36
+0.33
+0.37
+0.10
+0.34
+0.30
+0.31
+0.06
+0.36
+1.00
 Debt
 W.
 EU
+0.46
+0.56
+0.61
+0.56
+0.02
+0.23
 ‐0.14
+0.35
 ‐0.01
+0.25
+0.29
+0.05
 ‐0.20
+0.28
+0.59
+0.37
+0.25
+1.00
 Debt
 CE.
 EU
 ‐0.11
+0.20
+0.11
+0.04
+0.32
+0.24
 ‐0.08
+0.22
+0.40
+0.36
+0.38
+0.14
+0.23
 ‐0.11
+0.02
+0.30
+1.00
 Debt
 LatAm
+0.17
+0.21
+0.43
+0.41
+0.08
+0.09
 ‐0.12
+0.25
+0.15
+0.04
+0.19
+0.08
+0.12
+0.07
+0.30
+1.00
 Debt
 N.
 Am
+0.37
+0.50
+0.51
+0.52
+0.21
+0.25
 ‐0.20
+0.21
 ‐0.18
+0.06
+0.04
+0.02
 ‐0.14
+0.44
+1.00
 FDI
 Africa
+0.06
+0.29
+0.16
+0.20
 ‐0.04
 ‐0.06
 ‐0.48
+0.17
 ‐0.02
+0.15
+0.04
+0.10
 ‐0.16
+1.00
 FDI
 Asia
 ‐0.12
 ‐0.09
 ‐0.02
 ‐0.18
+0.45
+0.37
+0.30
+0.49
+0.60
+0.57
+0.58
+0.68
+1.00
 FDI
 Em.
 As
+0.09
+0.09
+0.18
 ‐0.02
+0.44
+0.35
+0.18
+0.66
+0.54
+0.68
+0.64
+1.00
 FDI
 W.
 EU
+0.26
+0.26
+0.40
+0.23
+0.53
+0.66
+0.26
+0.66
+0.62
+0.77
+1.00
 FDI
 CE.
 EU
+0.03
+0.21
+0.18
 ‐0.04
+0.42
+0.44
+0.11
+0.65
+0.63
+1.00
 FDI
 LatAm
 ‐0.04
+0.07
+0.12
 ‐0.07
+0.27
+0.30
+0.16
+0.55
+1.00
 FDI
 N.
 Am
+0.19
+0.34
+0.45
+0.20
+0.40
+0.47
+0.20
+1.00
 Equity
 Africa
+0.02
 ‐0.09
 ‐0.04
+0.06
+0.23
+0.20
+1.00
 Equity
 Asia
+0.26
+0.23
+0.38
+0.20
+0.63
+1.00
 EquityEm.
 As
+0.05
+0.34
+0.28
+0.15
+1.00
 Equity
 W.
 EU
+0.58
+0.61
+0.72
+1.00
 Equity
 CE.
 EU
+0.53
+0.63
+1.00
 Equity
 LatAm
+0.25
+1.00
 Equity
 N.
 Am
+1.00
 Flows
 N.
 Am.LatAmCE.
@@ -1298,6 +2047,8 @@ Debt
 Credit
 Credit
 Credit
+CreditCredit
+CreditCredi
 
 Credit
 Africa
@@ -1830,7 +2581,10 @@ Debt
 Credit
 Credit
 Credit
+CreditCredit
+CreditCredi
 
+0
 20
 Debt FDI
 40 60

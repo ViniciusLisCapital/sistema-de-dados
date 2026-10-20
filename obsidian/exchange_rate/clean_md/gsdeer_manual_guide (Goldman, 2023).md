@@ -2,11 +2,13 @@
 Global Markets Analyst
 GSDEER—A User’s Manual
 n There have been large swings in our GSDEER fair value estimates over the last Sid Bhushan
-three years. The surge in energy prices has boosted Terms of Trade for
++44(20)7552-3779 |
+three years. The surge in energy prices has boosted Terms of Trade for sid.bhushan@gs.com
 Goldman Sachs International
 commodity exporters, and in turn raised those currencies’ ‘fair value’. And while
 Michael Cahill
-the surge in inflation has been more common across countries, differentials
+the surge in inflation has been more common across countries, differentials +44(20)7552-8314 |
+michael.e.cahill@gs.com
 across countries and sectors may also accumulate in coming quarters as central Goldman Sachs International
 banks face different trade-offs.
 n Fair value is an equilibrium concept, so some analysis is required before
@@ -34,6 +36,7 @@ that we should not expect too much of a valuation-driven boost for these
 currencies. Finally, it is advisable to discount the stronger NOK fair value
 because this is driven by the terms of trade component, which is a poor
 forecaster of medium-term FX moves for this cross.
+www.gs.com/research/hedge.html.
 
 Goldman Sachs Global Markets Analyst
 GSDEER—A User’s Manual
@@ -57,6 +60,7 @@ well, there can occasionally be large and persistent mis-valuations (Exhibit 2).
 short-run, broad global macro variables and country-specific news will be more
 important for FX and dominate the signal from equilibrium fair value concepts.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 2: There Can Occasionally Be Large and Persistent Deviations from Fair Value
 Source: Bloomberg, Goldman Sachs Global Investment Research
 To empirically assess at what horizon the GSDEER becomes most useful, we extend
@@ -71,6 +75,7 @@ to a random walk and R-squared (a measure of ‘goodness of fit’) for GSDEER a
 horizon out to ten years. In line with the discussion above, it is roughly three years
 1 We start this exercise in 1986 (after the Plaza accord) for all countries. See appendix for further details.
 
+Goldman Sachs Global Markets Analyst
 before fair-value-based FX forecasts outperform forecasting using a random walk. The
 relative performance of GSDEER improves rapidly over a five-year horizon, and
 substantially outperforms both a random walk and FX forwards (Exhibit 4). The model’s
@@ -88,6 +93,7 @@ gap to zero, or the convergence of spot to future fair value. Logically, converg
 the valuation gap (red line) is slightly quicker and there is somewhat less of an overshoot
 but the difference is minimal.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 5: It Takes Roughly Five Years for Spot to Converge to Fair Value
 Source: Goldman Sachs Global Investment Research
 Digging into the overshoot further, Exhibit 6 plots the convergence coefficients across
@@ -106,6 +112,7 @@ Coefficient Convergence of Spot to GSDEER Fair Value Coefficient
 0.5 0.5
 0.0 0.0
 -0.5 -0.5
+1 2 3 4 5 6 7 8 9 10
 Years Ahead
 Note: Whiskers show maximum and minimum.
 Source: Goldman Sachs Global Investment Research
@@ -113,6 +120,7 @@ Reassuringly, these results are broadly consistent with our longstanding “rule
 for long-term FX forecasts, which was derived using a slightly different technique.
 Consistent with the academic literature on the topic, we have found that real exchange
 
+Goldman Sachs Global Markets Analyst
 rates tend to mean revert over time, with a prevailing consensus of a half-life of roughly
 three-to-five years. As a result, we generally assume a 20% convergence rate in our
 long-run forecasts.
@@ -142,6 +150,7 @@ RMSE
 0.1 SEK
 NOK
 0
+-20 -10 0 10 20 30 40 50
 Improvement in RMSE Relative to Random Walk
 Source: Goldman Sachs Global Investment Research
 Exhibit 8 documents the convergence path for each cross individually. Conceptually, fair
@@ -151,6 +160,7 @@ JPY perform rather well, with GBP converging towards fair value particularly qui
 AUD and CAD are more prone to overshooting, while the Scandi currencies converge
 very slowly.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 8: GSDEER Converges Fastest for Sterling
 Convergence to GSDEER Fair Value
 Coefficient Convergence by Quarter Coefficient Currency Quarter Where 100% Convergence Reached Currency
@@ -169,6 +179,7 @@ SEK SEK
 0.0 0.0 CHF CHF
 NOK NOK
 -0.5 -0.5
+0 4 8 12 16 20 24 28 32 36 40 0 4 8 12 16 20 24 28 32 36 40
 Forecasting Quarter Forecasting Quarter
 Note: We plot NOK as 40 quarters in right panel because it never converges fully.
 Source: Goldman Sachs Global Investment Research
@@ -192,6 +203,7 @@ Cross that scores highly on not diverging
 Source: Goldman Sachs Global Investment Research
 To assess the extent to which a currency sticks closely to fair value, without necessarily
 
+Goldman Sachs Global Markets Analyst
 converging, we construct a probit model for each cross where the probability of further
 divergence is based on the level of current mis-valuation. Exhibit 10 presents our results
 for the case of a 10% valuation gap. Our results suggest that GBP, CHF, and JPY
@@ -222,6 +234,7 @@ and JPY have the best of both worlds. Finally, the traditional GSDEER model does
 work well for Scandi FX, although our recent work suggests that other inflation
 measures could work better for these currencies.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 11: AUD Can Meaningfully Diverge From Fair Value, but Converges and Overshoots Relatively Quickly; Large Mis-Valuations in CHF
 Are Rare, but Can Be Relatively Persistent
 AUD/USD AUD Percent USD/CHF CHF Percent
@@ -259,6 +272,7 @@ For example, GSDEER’s regression-based approach may be ill-equipped to account
 country’s trade relationships or productivity potential, or heavily managed currencies that do not converge
 towards ‘fair’ with market forces.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 12: GSDEER Is Similar to a PPP Model for JPY and CHF but Terms of Trade Drive Fair Value Estimates for Commodity Currencies
 Contributions to Change in GSDEER Fair Value Relative to 2000 Q1
 Percentage points USD/JPY Percentage points Percentage points USD/CHF Percentage points
@@ -307,6 +321,7 @@ GSDEER works best for EUR, GBP, and CAD (Exhibit 13, left), which is logical bec
 these countries have the strongest linkages with the US, and so are where the law of
 one price is most applicable.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 13: The Inflation Component of GSDEER Is Useful for Countries with Relatively Close Linkages to the US, While the Terms of Trade
 Component Is Useful for Most Commodity Exporters
 Improvement in Component Specific GSDEER RMSE Relative to Random Walk
@@ -329,6 +344,7 @@ seems surprising given its large amount of oil and gas exports. However, Norway�
 unique fiscal mechanism (by which the government invests excess revenues
 internationally) blunts the impact of commodity prices on the currency.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 14: Although Terms of Trade Underperforms in Norway Because of Its Unique Fiscal Mechanism
 Source: Goldman Sachs Global Investment Research
 Navigate the Next Turns
@@ -341,6 +357,7 @@ we estimate that AUD is roughly 40% undervalued against USD. And our earlier res
 four years (and then overshoots). In light of this, our own longer-term forecasts imply
 over 20% AUD appreciation against USD.
 
+Goldman Sachs Global Markets Analyst
 Exhibit 15: The Stronger Fair Value Estimate for AUD and Weaker Estimates for EUR and GBP Should Be
 Taken Seriously
 Percentage Contribution to Change in Fair Value Between 2019Q4 and 2023Q2 Percentage
@@ -372,6 +389,7 @@ still expect it to be significantly undervalued by GSDEER at that horizon.
 Sid Bhushan
 Michael Cahill
 
+Goldman Sachs Global Markets Analyst
 Appendix: Explaining how we assess the performance of the GSDEER
 model
 We assess the forecasting performance of our GSDEER models using an out-of-sample
@@ -406,3 +424,5 @@ data after Jan 1995
 Source: Goldman Sachs Global Investment Research
 3 Both methods still have an advantage over true ‘real time’ data because the input data—productivity,
 inflation, and terms of trade—get revised over time. This is outside the scope of this report.
+
+Goldman Sachs Global Markets Analyst

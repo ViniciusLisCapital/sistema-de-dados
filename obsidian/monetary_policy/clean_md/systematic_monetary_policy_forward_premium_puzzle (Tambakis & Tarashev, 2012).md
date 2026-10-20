@@ -16,6 +16,7 @@ the Bank for International Settlements, and from time to time by other economist
 published by the Bank. The papers are on subjects of topical interest and are technical in
 character. The views expressed in them are those of their authors and not necessarily the
 views of the BIS.
+This publication is available on the BIS website (www.bis.org).
 © Bank for International Settlements 2012. All rights reserved. Brief excerpts may be
 reproduced or translated provided the source is stated.
 ISSN 1020-0959 (print)
@@ -43,6 +44,7 @@ JEL classification codes: E52, E58, F33
 the Singapore Economic Review Conference 2011, the Bank for International Settlements (BIS),
 Copenhagen Business School and Birkbeck College, University of London. The views expressed
 in this paper are our own, not necessarily those of the BIS.
++E-mail address for correspondence: dnt22@cam.ac.uk.
 
 1 Introduction
 The currency-risk premium has long eluded the profession. In a classic paper,
@@ -346,6 +348,7 @@ s
 +
 ft
 |
+10
 
 where aj + a2 = a, 8, + By = B, and Uyi4i + Uotg1 = Uti. Tables 1.1 and
 1.2 report OLS estimates of the coefficients in these equations. The value of
@@ -375,6 +378,7 @@ is zero, E(q) = 0. In addition, <, and n, are i.i.d. zero-mean variables with
 and endogenous variables. This tightens the exposition and is without loss of generality in our
 context, as we focus on the slope coefficient in the Fama (1984) regression, which depends only
 on second moments.
+11
 
 time-invariant variances V (e) and V (7), respectively, and Cov (€1, m4;) = 0 for
 Ej
@@ -410,6 +414,7 @@ the interest differential, V (i).
 observed output variability in different country groups.
 10 4 positive Cov (q, i+) would be consistent with a finding of Clarida, Gali and Gertler (1998)
 that real exchange rate depreciations tend to induce central banks to tighten monetary policy.
+12
 
 4.2 Dynamics in the economy
 To specify the evolution of inflation and the output gap over time, we start with a
@@ -439,6 +444,7 @@ M+
 This assumption allows us to work with the parsimonious dynamic IS specification in equation
 (16). For the implications of modeling incomplete pass-through see Corsetti, Dedola and Leduc
 (2008) and Monacelli (2005).
+13
 
 4.3. Monetary policy rules
 We study six monetary policy rules, which the central bank implements by set-
@@ -467,6 +473,7 @@ Finally, a central bank that has adopted a forward-looking rule sets the policy
 rate in response to expected (domestic or CPI) inflation and expected output gap
 deviations from their (zero) targets:
 = 9, Bm +e. Eriy (20)
+14
 
 where y, > 1, v, > 0.”
 Henceforth, we suppress the rule-dependent superscripts of 7, 7? and x; wher-
@@ -502,6 +509,7 @@ well-behaved but respond only to domestic shocks, lead to 67"4 = Va Ra)
 would not change if we allowed for such shocks, provided they are independent of all other
 variables in the model.
 13The statements in this subsection are substantiated in Appendix A.
+15
 
 Cov(ExnP, iP 4 Cov( Eime41,if 7) _ Cov( Ein? if 4
 ) FWd _ )
@@ -530,6 +538,7 @@ Cov (a, it”) > 0, equation (11) implies:
 Va) <0 (22)
 pit _
 '4The statements in this subsection are substantiated in Appendix B.
+16
 
 5.3. Policy rules responding to CPI inflation
 The CPI-based policy rules in equations (18) and (20) imply that the equilibrium
@@ -562,6 +571,7 @@ in our sample (Table 2).'° We complement these with consensus values for the
 Benigno (2004) and Engel (2000) that the real exchange rates of advanced economies exhibit
 extremely high persistence. Second, the average value of our \/V (7) estimates is comparable
 to that of Mendoza (1995) for G-7 countries: 4.7%. Third, in order to estimate the parameters
+17
 
 structural parameters b, « and co (Table 3). Then, we conduct sensitivity analy-
 sis to determine which parameter values can change substantially the benchmark
@@ -593,6 +603,7 @@ response functions with respect to NIR and RER shocks. These impulse response fu
 which we do not report here to conserve space, are available upon request.
 18 Mathematical derivations in support of statements we make regarding the sensitivity analysis
 under the IT, TR and FW rules are in Appendices B-D.
+18
 
 6.2  CPI-based Taylor rule (TR)
 Under the parameter values in Table 3, the Taylor rule implies a slope coefficient
@@ -627,6 +638,7 @@ ness, a. If a = 0, the economy is closed and RER shocks are inconsequential. In
 this case, G > 0 which simply confirms that TR is a well-behaved policy rule,
 as discussed at the end of Section 4.1. In turn, if a > 0, equation (15) implies
 that a positive shock to q@ raises the current inflation rate, 7;, which induces an
+19
 
 upward revision of the policy rate, i7”, by the definition of TR in equation (18).
 This generates Cov (q,i:) > 0. And, if a increases from low positive levels, the
@@ -661,6 +673,7 @@ tive, implying that 67" moves into positive territory as 4 — 1. As jy decrease
 from 1, the implied regression slope 37” not only turns negative but increases
 monotonically in absolute value. To see why, recall that the policy rate co-moves
 positively with the RER: Cov (i7*, a) > 0. All else equal, mean reversion in q
+20
 
 (i.e. ys < 1) translates Cov (i7”, a) > 0 into Cov (i7", E,Ads1) < 0. And the
 stronger is this mean reversion, i.e. the lower is ju, the larger is the absolute value
@@ -694,6 +707,7 @@ and the implication of expression (24) that Cov (Ei7141,q@) < 0. By continuity,
 Cov (if W, a) remains negative for a sufficiently small oc.
 The combination of an intermediate o and a highly persistent but stationary
 RER — i.e. a high ps < 1 — delivers 6” <0. We explain why this is the case in
+21
 
 four steps.
 1. Starting with o = 0, equation (24) and policy rule (20) lead to a policy rate
@@ -726,6 +740,7 @@ regressing the short-term nominal exchange rate change on the corresponding
 horizon. Concretely, if , = 0.95 at a one-quarter horizon, then it would be equal to 0.952° = 0.36
 at a five-year horizon. As implied by Figure 1B, such a value of would lead to BFW s 0,
 consistent with findings in Chinn and Meredith (2004, 2005).
+22
 
 interest differential? Our main empirical contribution is to provide evidence of
 the relevance of this question. Concretely, we show that a change in the monetary
@@ -755,6 +770,7 @@ and whether such estimates can support profitable investment strategies are open
 questions that could lead to natural extensions of the work of Bacchetta and van
 Wincoop (2007, 2010) on arbitrage opportunities in foreign exchange markets. We
 leave them to future research.
+23
 
 Appendix A
 In this appendix we show that the T’Rd and F'Wd policy rules non-negative re-
@@ -785,6 +801,7 @@ j= “0 >0 (A.4)
 Then, we note that the sign of 6’" is equal to that of Cov (iz, M41). And since
 m, is a linear function of 7? and q, and i; is independent of q, it follows that
 Cov (it, M41) = Cov (ir, 72). Finally, since the sign of Cov (i:,72.,) is that of
+24
 
 6, which is positive, we obtain 67" > 0.
 A.2: Domestic-inflation forward-looking rules
@@ -808,9 +825,11 @@ wy = ~7 (Aq + b(1 — 1) a) (B.1)
 Ekin. = 1 “ a ( wi H) tt
 In turn, noting that expected domestic inflation now equals
 EA a
+25
 
 we use the IS equation (16) to derive the policy rate as a function of exogenous
 variables:
+IT n a a 2 a
 = 1 b(1 + 2 — ——
 4 " (a lt) Ko (1 — a) ( (1 — p) »)) dt ro(1—a)" 1
 (B.3)
@@ -835,6 +854,7 @@ the linear mapping from the exogenous variables (r” and q) to the inflation ra
 and the output gap under TR. To employ the method of undetermined coefficients,
 we start with the guess
 m=O re +O gt Og > Ets = O" pre + (uc" + 0") a (C.1)
+26
 
 which implies, via equations (9)-(10) and (15), that
 r= Or + Og + Og > Eatin = 0 pr) + (ul +O) a (C.2)
@@ -867,10 +887,12 @@ ip" = (0,57 + 6,6") rf + (On + 26°) H+ (Oe + O26") Gt (C.4)
 Then, by equations (16), (C.1) and (C.2), we obtain an alternative expression for
 the policy rate:
 E,A
+jr Rew _ t et 7 Er? rn
 E,Ax a
 = —— +8, (res — Aa) +r}
 a 1—
 = o '[-(= pore +( —(L— 1) 6") @-FGa] (C5)
+7 n | T | Qn a
 HO" + Ure + (uc™ + 8") ae + =— (= 2) ae
 Note that the functional form of this expression is the same under both the TR
 rule and the FW rule (considered in Appendix D). That said, the values of some
@@ -879,6 +901,7 @@ policy rule. These parameters depend on the policy response coefficients, which
 change from ¢, and ¢, under TR to vy, and y, under FW. The same comment
 applies to all expressions in Appendices C and D that incorporate 6", ¢" or 6”.
 Matching coefficients in (C.4) and (C.5):
+27
 
 e 7; terms:
 a” = 0, p+ —e (+, | ey) (C.6)
@@ -911,6 +934,7 @@ grR —
 Since 6” > 0 and 6” > 0, the last expression reveals directly that 67" > 0
 for small enough v. In addition, it can be shown that there exists yu” > 0
 such that 87" < 0 for 4 € (0, ").
+28
 
 Appendix D: Forward-looking policy rules (FW)
 In determining the coefficient vector {57,¢", 07, 6", ¢", 0°} under the FW rule, we
@@ -941,11 +965,13 @@ for small enough v. In addition, equations (23), (D.3) and (D.4) imply that
 Cov (qt, Extr41) > 0 if and only if tn — at > 0. Since the left-hand side of the
 latter inequality increases strictly in ju, there is a unique threshold ju! such that
 d(') /d (Ko) < 0 and Cov (q, Extiy1) > 0 for pw € (p!, 1).
+29
 
 Table 1: Fama regression”?
 inflation targetin
 before inflation targeting fl Jan"
 (or whole sample)
+a B R a 8 OR
 Australia (AUD) 0.005 -0.67*** 0.01
 (0.007) (0.58)
 1984:Q1-2008:Q3
@@ -977,10 +1003,12 @@ periods. Because of shorter data series, no break is allowed for in the case of 
 * ORK
 currencies. Superscripts *, ** and *** denote a slope coefficient that is different from 1 at the
 90%, 95% and 99% confidence level, respectively.
+34
 
 Table 1.1: Dependent variable: CPI inflation?!
 before inflation targeting inflation targeting
 (or whole sample)
+a 8 RF | &@ f& FP
 Australia (AUD) -0.003 0.73 0.01
 (0.005) (0.50)
 1984:Q1-2008:Q3
@@ -1007,10 +1035,12 @@ change rates with the US dollar (sources: Bloomberg and BIS). CPI inflation is e
 nominal exchange rates and the corresponding real exchange rates, as implied by equation (5).
 Newey-West robust standard errors are in parentheses. Sample periods, in italics, are the same
 as in Table 1.
+39
 
 Table 1.2: Dependent variable: real exchange rate depreciation””
 before inflation targeting inflation targeting
 (or whole sample)
+ao By R as By R
 Australia (AUD) 0.008  -1.40*** 0.05
 (0.006) (0.52)
 1984:Q1-2008:Q3
@@ -1037,6 +1067,7 @@ exchange rates with the US dollar (sources: Bloomberg and BIS). Newey-West robus
 errors are in parentheses. Sample periods, in italics, are the same as in Table 1. Superscripts **
 and *** denote a slope coefficient that is different from 1 at the 95% and 99% confidence level,
 respectively.
+36
 
 Table 2: Country characteristics”?
 a if Vin) p P(e) |o= oH
@@ -1066,6 +1097,7 @@ rates with the US dollar (7 and V (7)) and the natural real interest rates (p an
 on equations (9) and (10). In each case, the underlying samples comprise quarterly data from
 1984:Q1 to 2008:Q3. The natural real interest rate is estimated with three-month treasury rates
 and the three-month ex-post inflation rates implied by GDP deflators.
+37
 
 Table 4: Model-implied slope coefficients
 Strict CPI TR FW
@@ -1075,6 +1107,7 @@ Cov (Exti41, tt) 0 0.09 bp 0.02 bp
 V (iz) 61881 bp | 856bp | 0.05 bp
 B= Corba Derersts) -0.00 -0.07 -2.09
 V(it)
+38
 
 model-implied B
 Figure 1A:
@@ -1105,6 +1138,8 @@ ty Analysis
 , Or wy
 
 ae model-implied B
+model-implied B
+AR © OF YM BK OD O&
 0.4
 0.6
 0.8

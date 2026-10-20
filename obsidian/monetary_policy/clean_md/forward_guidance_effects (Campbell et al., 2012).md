@@ -1,10 +1,14 @@
-jeffrey r. campbell	
+1
+	jeffrey r. campbell	
 charles l. evans
-
+	
 Federal Reserve Bank of Chicago	
+Federal Reserve Bank of Chicago
 	 jonas d. m. fisher	
 alejandro justiniano
-
+	
+Federal Reserve Bank of Chicago	
+Federal Reserve Bank of Chicago
 Macroeconomic Effects 
 of Federal Reserve Forward Guidance
 ABSTRACT    A large output gap accompanied by stable inflation close to its 
@@ -35,6 +39,8 @@ each of its meetings. In December 2008 it said, “The Committee anticipates
 that weak economic conditions are likely to warrant exceptionally low 
 Brookings Papers on Economic Activity, Spring 2012
 
+2	
+Brookings Papers on Economic Activity, Spring 2012
 levels of the federal funds rate for some time.” In March 2009, when the 
 first round of large-scale purchases of Treasury securities was announced, 
 “an extended period” replaced “some time” in the formal statement. The 
@@ -115,6 +121,8 @@ Prescott (1977).
 5.  Christina D. Romer, “Dear Ben: It’s Time for Your Volcker Moment,” The New York 
 Times, October 29, 2011.
 
+4	
+Brookings Papers on Economic Activity, Spring 2012
 conditional economic thresholds for exiting the ZLB as proposed by Evans 
 (2011). The main challenge facing the FOMC in implementing any of these 
 policies is convincing the public that it will follow through on the promised 
@@ -155,6 +163,7 @@ FOMC actions that influence asset prices are merely means toward the
 end of fulfilling the Federal Reserve’s dual mandate of maximum sus-
 tainable employment and price stability. To evaluate the contributions of
 
+campbell, evans, fisher, and justiniano	
 5
 FOMC statements toward this ultimate goal, we examine how revisions to 
 the Blue Chip consensus forecasts of the unemployment rate and consumer 
@@ -194,6 +203,8 @@ it is observationally equivalent to one. Second, the FOMC telegraphs
 process incoming data. It does not have to involve proprietary access to data or information 
 held only by the FOMC about its future policy intentions.
 
+6	
+Brookings Papers on Economic Activity, Spring 2012
 40 percent of its deviations from the interest rate rule exactly 1 quarter 
 in advance and another 40 percent 2 or more quarters in advance. Third, 
 the identified forward guidance residuals have much stronger effects on 
@@ -235,6 +246,7 @@ ing to suppose that the FOMC can fine-tune its statements to achieve any desired
 impact. However, one must acknowledge frictions in the communication process that make 
 market responses to FOMC statements unpredictable to the FOMC itself.
 
+campbell, evans, fisher, and justiniano	
 7
 literature and is very similar to models used at central banks around the 
 world.8 Importantly for our purposes, it embodies the basic mechanisms 
@@ -274,6 +286,8 @@ would expect forecast revisions to match the equilibrium response to an
 8.  The FOMC’s minutes for the June 2011 meeting describe a discussion of DSGE 
 models within the Federal Reserve System at that meeting.
 
+8	
+Brookings Papers on Economic Activity, Spring 2012
 unanticipated monetary policy shock. Instead, however, we find that the sta-
 tistically significant responses all have the sign opposite to that predicted by 
 the standard New Keynesian model: unanticipated increases in the path fac-
@@ -315,6 +329,7 @@ that it can be patient in removing its policy accommodation,” and that of May 
 fears rose thereafter, the December 2005 statement included the words “further policy firm-
 ing may be needed.”
 
+campbell, evans, fisher, and justiniano	
 9
 When measuring the market impact of FOMC statements, one must 
 confront the possibility that their content is more confirming of macro­
@@ -358,6 +373,8 @@ mittee believes it can be patient in removing its policy accommodation.” This 
 language was interpreted by markets as indicating that the FOMC would begin tightening 
 policy sooner than previously expected.
 
+10	
+Brookings Papers on Economic Activity, Spring 2012
 our results are sensitive to including the observation for September 2001, 
 so we omit it from this and all subsequent analysis in this section (as do 
 GSS in their online appendix). The first two columns of table 1 report the 
@@ -426,6 +443,7 @@ a. Expected interest rates are measured using daily federal funds futures prices
 prices as described in the text. Numbers do not sum to 100 because the two factors do not explain all the 
 variation in the expected rate changes.
 
+campbell, evans, fisher, and justiniano	
 11
 of their table 5). Table 2 reports analogous regressions for the path and 
 target factors as we identify them for the two samples. (We normalize the 
@@ -539,6 +557,7 @@ a. Each row in each panel reports coefficients from a regression of daily change
 Robust standard errors are in parentheses. Asterisks indicate statistical significance at the *10 percent, **5 percent, and ***1 percent level.
 b. Both samples include only bonds with 20 or more years to maturity.
 
+campbell, evans, fisher, and justiniano	
 13
 For each month we calculate the revisions to the forecasts of unem-
 ployment and CPI inflation for the current and next 3 quarters. Virtually 
@@ -581,6 +600,7 @@ consensus forecasts for GDP growth and finds none. Similarly, we find no evidenc
 Blue Chip forecasts of inflation and unemployment are seriously deficient.
 
 Table 3.  Regressions Estimating Private Forecast Responses to Target and Path Factors, 1990–2007 and 1994–2007a
+February 1990–June 2007 sample
 February 1994–June 2007 sample
 Forecast
 Target factor
@@ -683,6 +703,7 @@ Source: Authors’ regressions.
 a. Each row in each panel reports coefficients from a regression of changes in monthly forecasts of either the unemployment rate or CPI inflation on the two factors. Both 
 samples exclude September 2001. Robust standard errors are in parentheses. Asterisks indicate statistical significance at the *10 percent, **5 percent, and ***1 percent level.
 
+campbell, evans, fisher, and justiniano	
 15
 situation, but we hesitate to apply it directly to the present when the ZLB 
 has robbed the FOMC of its principal policy tool. Research on monetary 
@@ -724,6 +745,8 @@ economic news.
 designed to promote the smooth functioning of credit markets because they did not concern 
 the traditional focus of countercyclical monetary policy.
 
+16	
+Brookings Papers on Economic Activity, Spring 2012
 Table 4.  Forward Guidance in Official FOMC Statements,  
 August 2007–December 2011a
 Date of statement
@@ -806,6 +829,7 @@ November 25, 2008b
 $500 billion of MBSs] are expected to take place 
 over several quarters.”
 
+campbell, evans, fisher, and justiniano	
 17
 Table 4.  Forward Guidance in Official FOMC Statements,  
 August 2007–December 2011a (Continued)
@@ -968,12 +992,14 @@ Same as previous
 December 13, 2011
 0–0.25
 Same as previous
+Source: Board of Governors of the Federal Reserve System website at www.federalreserve.gov/news 
 events/press/monetary/2012monetary.htm.
 a. The November 28, 2008, press release was issued by the Board of Governors of the Federal Reserve 
 System. All other statements were issued by the FOMC. GSE = government-sponsored enterprise; MBS = 
 mortgage-backed security.
 b. Statement was issued between regularly scheduled FOMC meetings.
 
+campbell, evans, fisher, and justiniano	
 19
 these from our analysis, since it is difficult to find an objective criterion 
 for including any given instance.16
@@ -1015,6 +1041,8 @@ of Treasury securities, respectively. With the exception of the December 1, 2008
 our compilation includes every QE1 and QE2 date employed in Krishnamurthy and Vissing-
 Jorgensen’s (2011) event study.
 
+20	
+Brookings Papers on Economic Activity, Spring 2012
 main effect on corporate bonds and [mortgage-backed securities] in QE2 
 appears to have been through a signaling channel, whereby financial markets 
 interpreted QE as signaling lower federal funds rates going forward.” 
@@ -1053,6 +1081,7 @@ Source: Haver Analytics/Federal Reserve H.15 and authors’ calculations based o
    Exchange data. 
 Figure 1.  Path Factor and Changes in 10-Year Treasury Yields on FOMC Statement Dates
 
+campbell, evans, fisher, and justiniano	
 21
 resemble those from before the crisis. Both factors have a large positive 
 influence on the 2- and 5-year yields, and the path factor substantially influ-
@@ -1135,7 +1164,10 @@ Source: Authors’ regressions.
 a. Each row in each panel reports coefficients from a regression of daily changes in yields of the indicated 
 asset on the two factors. Robust standard errors are in parentheses. Asterisks indicate statistical significance 
 at the *10 percent, **5 percent, and ***1 percent level.
+b. Both samples include only bonds with 20 or more years to maturity.
 
+22	
+Brookings Papers on Economic Activity, Spring 2012
 Table 7 reports estimates for the forecast innovation regressions using 
 the postcrisis data. The estimated standard errors greatly exceed those 
 from the analogous regressions estimated with precrisis data (table 3), 
@@ -1211,6 +1243,7 @@ Source: Authors’ regressions.
 a. Each row in each panel reports coefficients from a regression of changes in monthly forecasts of either 
 the unemployment rate or CPI inflation on the two factors. Robust standard errors are in parentheses.
 
+campbell, evans, fisher, and justiniano	
 23
 practice of summarizing monetary policy with a parsimonious rule for setting 
 the policy rate. By applying such a rule both to actual policy decisions and 
@@ -1252,6 +1285,8 @@ cal responses to varying economic fundamentals as measured by infla-
 tion and the unemployment gap. Nevertheless, regressions analogous 
 to those in table 3 indicate that the same anticipated deviations from
 
+24	
+Brookings Papers on Economic Activity, Spring 2012
 this rule affect unemployment and inflation forecasts with the “wrong” 
 sign, just as do the statement date–based GSS shocks. We interpret these 
 results as arising from the FOMC adjusting policy quickly when revisions 
@@ -1333,6 +1368,7 @@ ity.17 Although nt is uncorrelated over time, its elements may be correlated
 17.  The reason is that a time-series variable at time t always can be decomposed into the 
 sum of its expected value based on information available at t - 1 and an orthogonal innovation.
 
+campbell, evans, fisher, and justiniano	
 25
 with each other. Allowing for this correlation admits the possibility that the 
 FOMC provides information on multiple future quarters’ monetary policy 
@@ -1365,7 +1401,7 @@ because the time taken for its tabulation delays its release.
 To measure nt-M,M, suppose that the public expects the FOMC to follow 
 equation 1 on average. Then, taking expectations given information at the 
 start of period t - M + 1 yields
-
+
 r
 r
 r
@@ -1424,6 +1460,8 @@ the interest rate rule’s expected value. To recover the other errors, we take
 18.  This conforms to the timing convention used for the Blue Chip macroeconomic 
 expectations data.
 
+26	
+Brookings Papers on Economic Activity, Spring 2012
 expectations of equation 1 at two adjacent dates and difference the results. 
 For 0 ≤ j < M we obtain
 ( )
@@ -1505,7 +1543,8 @@ j
 π
 φ
 π 
-
+
+
 1 −
 (
 )
@@ -1558,10 +1597,12 @@ data contain observations for the period 1989Q2 through 2011Q4.
 Our implementation of the interest rate rule employs averages of the 
 expected unemployment gap and expected inflation over the previous, cur-
 
+campbell, evans, fisher, and justiniano	
 27
 rent, and next quarters as perceived at the beginning of the next quarter. 
 That is:
-
+
+
 u
 u
 t
@@ -1618,12 +1659,15 @@ tion requires lags, we begin our sample with the forecasts of interest rates
 that prevailed in 1996Q1.19 These prices give us the interest rates that our 
 procedure requires when M equals 4: rt
 0, rt
+1, . . . , rt
 5. The other observations 
 required to calculate nt are u~
 t
+0, . . . , u~
 t
 3 and p~
 t
+0, . . . , p~
 t
 3. We can calculate 
 these with the backcast, nowcast, and four quarterly forecasts in the Blue 
@@ -1641,6 +1685,8 @@ for delivery in 1995Q4 (averaged across that quarter’s months) rose from 6.7 p
 changes in expected future interest rates were common in the early 1990s but occurred much 
 less frequently in our sample period.
 
+28	
+Brookings Papers on Economic Activity, Spring 2012
 method of moments (GMM) implementation of an instrumental variables 
 strategy. From the Blue Chip data we can calculate ût
 M and pt
@@ -1699,6 +1745,7 @@ sured values of ût
 4 and pt
 4 in Zt.
 
+campbell, evans, fisher, and justiniano	
 29
 so we end our estimation sample with 2007Q2. The estimated interest 
 rate rule is
@@ -1760,7 +1807,7 @@ tu
 .
 .
 .
-
+
 .
 .
 ,
@@ -1809,6 +1856,8 @@ monetary policy variance in the quarter before its realization and another
 izations are independent over time. Therefore, the five shocks contributing to the interest rate 
 rule’s intercept in a given quarter are mutually independent.
 
+30	
+Brookings Papers on Economic Activity, Spring 2012
 Figure 2 gives a visual perspective on this decomposition. It plots the 
 composite residual for the interest rate rule Σ
 4
@@ -1856,6 +1905,7 @@ a. Shading indicates the 2001 recession.
 Figure 2.  The Interest Rate Rule’s Residual and Its Forward Guidance Component, 
 1996–2007a
 
+campbell, evans, fisher, and justiniano	
 31
 ν
 ν
@@ -1951,6 +2001,8 @@ nt,0 through nt,4, respectively—show that the factor accounts for about
 15 percent of the variance of nt,0, about 10 percent of the variance of nt,1, 
 nt,2, and nt,3, and about 60 percent of the variance of nt,4. That is, the factor
 
+32	
+Brookings Papers on Economic Activity, Spring 2012
 accounts for most of 4-quarter-ahead forward guidance but leaves most 
 forward guidance issued at shorter horizons unexplained.
 Figure 3 plots the direct interest rate effects (that is, omitting any pos-
@@ -1990,6 +2042,7 @@ Quarters after initial impulse
 Source: Authors’ calculations.
 Figure 3.  Direct Effects of Monetary Policy Shocks on the Interest Rate
 
+campbell, evans, fisher, and justiniano	
 33
 exactly offset this promised accelerated stimulus. Its minimum of -21 bp 
 occurred in the wake of the 2001 recession, in 2002Q2. In that quarter the 
@@ -2034,6 +2087,8 @@ Basis points
 a. Shading indicates the 2001 recession.   
 Figure 4.  Estimated Policy Acceleration Factor, 1996–2007
 
+34	
+Brookings Papers on Economic Activity, Spring 2012
 coefficients, their standard errors, and the regressions’ R2s. We express all 
 of the variables in bp, so the coefficients can be read as the response in 
 basis points to a 1-bp change in the right-hand-side variable.
@@ -2072,7 +2127,7 @@ Treasuries
 0.70*
 0.89*
 0.77
-
+   
 (4.47)
 (0.37)
 (0.22)
@@ -2087,7 +2142,7 @@ Treasuries
 1.43***
 1.25**
 0.78
-
+   
 (4.31)
 (0.36)
 (0.21)
@@ -2102,7 +2157,7 @@ Treasuries
 1.41***
 1.29***
 0.70
-
+   
 (4.44)
 (0.37)
 (0.22)
@@ -2146,7 +2201,9 @@ nt,j are forward guidance shocks indicating the change in monetary policy announ
 ter j. The regression coefficients can be interpreted as the response (in basis points) of the indicated asset 
 price to a 1-basis-point change in the indicated nt,j. Standard errors are in parentheses. Asterisks indicate 
 statistical significance at the *10 percent, **5 percent, and ***1 percent level.
+b. Both samples include only bonds with 20 or more years to maturity.
 
+campbell, evans, fisher, and justiniano	
 35
 We find one aspect of the results in table 8 puzzling: the forward guid-
 ance shocks have much larger estimated effects on bond yields than does 
@@ -2313,6 +2370,8 @@ b. Each forecast revision is expressed as the forecast value for the period t + 
 t + j - n minus the same forecast value made at time t + j - n - 1, where t + j is the subscript and n and 
 n + 1 are the superscripts.
 
+36	
+Brookings Papers on Economic Activity, Spring 2012
 term should be irrelevant. It is indeed so for three of the four unemploy-
 ment forecast revisions, but the Blue Chip forecasters consistently made a 
 small (but statistically significant) 7-bp error in their final unemployment 
@@ -2386,7 +2445,7 @@ t
 .
 ,
 η 
-
+
 u
 u
 v
@@ -2412,6 +2471,7 @@ of the interest rate rule’s expected intercept, and through this will influ-
 ence the estimated n’s. Under this interpretation of the results in table 9, 
 the FOMC’s actions are history dependent. The estimated interest rate rule
 
+campbell, evans, fisher, and justiniano	
 37
 states the typical policy stance given economic conditions forecasted 4 
 quarters in advance, but the FOMC would respond more aggressively to 
@@ -2451,6 +2511,8 @@ tor with lagged information as instruments. This leads us to believe that the cr
 restrictions of structural models will be essential for identification and estimation of the real 
 effects of forward guidance.
 
+38	
+Brookings Papers on Economic Activity, Spring 2012
 of this kind places the FOMC’s mandated price stability goal at risk. We 
 consider these by forecasting the path of the economy under the present 
 forward guidance and subjecting that forecast to two upside risks: higher 
@@ -2490,6 +2552,7 @@ resembles many other medium-scale empirical New Keynesian models.23 A
 single representative household owns all firms and supplies the economy’s 
 23.  The model is described in more detail in Brave and others (2012).
 
+campbell, evans, fisher, and justiniano	
 39
 labor. Final goods are produced with differentiated intermediate goods, 
 which themselves are produced with capital and differentiated labor. The 
@@ -2549,6 +2612,8 @@ scale New Keynesian models. The model includes a financial accelerator as in Gil
 Ortiz, and Zakrajšek (2011), but this ends up being unimportant for the results.
 26.  In future work we intend to consider the case where r2 ≠ 0.
 
+40	
+Brookings Papers on Economic Activity, Spring 2012
 We define the output gap as
 ( )
 ˆ
@@ -2642,6 +2707,7 @@ rate more than it does future rates, whereas the forward guidance and the
 inflation anchor shocks move expected future federal funds rates more than 
 they do the current rate. This difference is a key source of identification.
 
+campbell, evans, fisher, and justiniano	
 41
 Both the inflation anchor and the forward guidance shocks influence infla-
 tion, with the effects of the latter arising through the Phillips curve. We 
@@ -2683,6 +2749,8 @@ worth shock plays a negligible role in fluctuations, but the spread shock is a m
 of fluctuations. The model propagates the spread shock essentially as it does a shock to the 
 marginal efficiency of investment identified using spread data.
 
+42	
+Brookings Papers on Economic Activity, Spring 2012
 are of small importance in accounting for the data are shocks that do not 
 affect agents’ decisions: idiosyncratic shocks to the various price measures 
 used in estimation, and measurement error in the two financial variables 
@@ -2723,6 +2791,7 @@ inflation is identified with the common factor.
 30.  The remaining components of aggregate expenditures—government spending, net 
 exports, and private inventory accumulation—are modeled as the government shock.
 
+campbell, evans, fisher, and justiniano	
 43
 yield corporate and mortgage-backed bond spreads over 10-year Treasuries 
 and an asset-backed bond spread over 5-year Treasuries, where the weights 
@@ -2764,6 +2833,8 @@ We calibrate three parameters for the period 2007Q3–2011Q4: the per-
 sistence of the discount shock, the variance of the inflation anchor shock, 
 and the coefficient on the output gap in the policy rule. To capture the idea
 
+44	
+Brookings Papers on Economic Activity, Spring 2012
 that deleveraging by households and firms following the financial crisis 
 is unusually slow, we raise the persistence of the discount shock from its 
 estimated value in the precrisis sample.31 Consequently, the model sees dis-
@@ -2805,6 +2876,7 @@ factor shocks have been fed into the model to generate a conditional forecast be
 2008Q3, the forecasted path of the federal funds rate at each date would be below zero for at 
 least one period at short horizons.
 
+campbell, evans, fisher, and justiniano	
 45
 Figure 5 displays the baseline forecast along with forecasts corresponding 
 to two alternative scenarios described below. The horizontal line in each plot 
@@ -2871,6 +2943,8 @@ Average, 1989Q2–2007Q2
 Higher expected inflation
 Figure 5.  Baseline and Alternative Projections
 
+46	
+Brookings Papers on Economic Activity, Spring 2012
 Figure 6 shows the baseline forecast in inflation-unemployment space.34 
 The horizontal bar represents the FOMC’s policy objective of 2 percent 
 annual inflation, as described in the FOMC document “Longer-Run Goals 
@@ -2904,6 +2978,7 @@ Unemployment rate (percent)
 Source: Projections of the authors’ model described in the text.
 Figure 6.  Inflation and Unemployment in the Baseline Forecast
 
+campbell, evans, fisher, and justiniano	
 47
 federal funds rate has risen above the ZLB. The bright-line thresholds of 
 7 percent unemployment and 3 percent inflation are also shown.
@@ -2946,6 +3021,8 @@ expectations, the unanticipated event is an unusually large and persistent
 innovation to the inflation anchor. We assume a single innovation to the 
 inflation anchor that generates an immediate increase in long-run inflation
 
+48	
+Brookings Papers on Economic Activity, Spring 2012
 expectations of 1 percentage point.35 In the rapid deleveraging scenario, 
 we assume that the persistence of the discount rate shock drops from its 
 calibrated level of 0.95 to its precrisis level of 0.75 but do not consider any 
@@ -2986,6 +3063,7 @@ vation as estimated in the precrisis sample. The resulting forecast, condi-
 inflation over the next 40 quarters is actually hump shaped, and therefore higher in later 
 quarters.
 
+campbell, evans, fisher, and justiniano	
 49
 tioning on exceptionally low rates through at least the next 10 quarters, 
 does generate a boom in GDP growth. However, because of the strong real 
@@ -3023,6 +3101,8 @@ Core PCE inflation (percent per year)
 Policy objective
 Figure 7.  Inflation and Unemployment in the Forecast with Shorter Deleveraging
 
+50	
+Brookings Papers on Economic Activity, Spring 2012
 of the model’s policy rule and invariance of price setting behavior to infla-
 tion expectations. If attempted use of Odyssean forward guidance weakens 
 credibility or changes price setting behavior, this kind of policy experiment 
@@ -3053,8 +3133,10 @@ Baseline
 Unemployment rate (percent)
 Source: Projections of the authors’ model described in the text.
 Core PCE inflation (percent per year)
+Policy objective
 Figure 8.  Inflation and Unemployment in the Forecast with Higher Expected Inflation
 
+campbell, evans, fisher, and justiniano	
 51
 interest rate rule. These communications have not been limited to a single 
 “tight-versus-loose” dimension. The FOMC successfully informed markets 
@@ -3097,6 +3179,8 @@ consequences of an unforeseen economic recovery. With an exogenous rise
 in inflation expectations occurring in 2012Q1, the economy comes close 
 to (but does not cross) the unemployment threshold at the start of 2014
 
+52	
+Brookings Papers on Economic Activity, Spring 2012
 and comes nowhere near the inflation threshold. We conclude from these 
 experiments that the risks of Odyssean forward guidance to the Federal 
 Reserve’s price stability mandate can be managed with such conditional 
@@ -3111,6 +3195,7 @@ The views expressed here are those of the authors and do not necessarily
 represent those of the Federal Reserve Bank of Chicago, the Federal Reserve 
 System, or its Board of Governors.
 
+campbell, evans, fisher, and justiniano	
 53
 Comments and Discussion
 Comment By
@@ -3142,6 +3227,8 @@ the case for more of the same today (the 7/3 proposal).
 As every student of Homer’s classics is aware, however, there is more 
 than one possible meaning for the term “Odyssean policy.” In Homer’s
 
+56	
+Brookings Papers on Economic Activity, Spring 2012
 Odyssey, Odysseus did indeed use a commitment device to prevent himself 
 from falling prey to the song of the Sirens (the meaning the authors intend 
 in referring to “Odyssean” forward guidance), but in the Iliad he also was 
@@ -3224,6 +3311,8 @@ must be regarded as Odyssean, they argue, because they are not only useful
 for revealing unknown facts about the economy; they predict future policy 
 actions, conditional on the state of the economy.
 
+58	
+Brookings Papers on Economic Activity, Spring 2012
 Is this argument correct? No. It ignores two very plausible alterna-
 tive possibilities: first, that forward guidance provides information to the 
 market about the Federal Reserve’s objectives, and second, that forward 
@@ -3265,6 +3354,7 @@ them, although they never acknowledge this publicly. Thus, both because
 of changes in the ideological makeup of the FOMC and because of politi-
 cal pressures that its members may feel, the cost weights that the members
 
+commentS and discussion	
 59
 attach to short-term increases in unemployment and inflation are neither 
 known nor immutable. Those weights likely change over time as the result 
@@ -3307,6 +3397,8 @@ the natural rate of unemployment is. It may be 5 percent or it may be
 7 percent. Because the natural rate is not a matter of knowledge, much 
 less a matter of common knowledge, uncertainty can arise among market
 
+60	
+Brookings Papers on Economic Activity, Spring 2012
 participants over what FOMC members believe it to be. Forward guidance, 
 therefore, provides information to the market about the Federal Reserve’s 
 beliefs about the natural rate, and the markets’ reactions to forward guid-
@@ -3348,6 +3440,7 @@ the risk-reward ratio for further expansionary monetary policy is very
 poor. The time has come for the Federal Reserve to end its quantitative 
 easing policies, and to begin to phase in a gradual, preannounced increase
 
+commentS and discussion	
 61
 in reserve requirements. Such an increase, if designed properly, would 
 have no discernible immediate effect on economic activity but would be a 
@@ -3390,6 +3483,8 @@ long-term interest rates.
 The experience of the 1930s shows that loan supply can jump very 
 quickly following a severe banking crisis. From 1933 to 1939, total lending
 
+62	
+Brookings Papers on Economic Activity, Spring 2012
 by Federal Reserve member banks was essentially flat. From December 
 1939 to December 1941, loans rose by roughly 20 percent. It is not farfetched 
 to argue that a similar surge in bank lending could occur today.
@@ -3430,6 +3525,7 @@ deposits, but the elasticity of demand for excess reserves is unknown, and
 Street Journal, March 12, 2012; Charles W. Calomiris and Ellis Tallman, “In Monetary 
 Targeting, Two Tails Are Better Than One,” Bloomberg Businessweek, November 18, 2010.
 
+commentS and discussion	
 63
 during a spike in bank loan supply the rise in interest payments to banks 
 needed to entice them to avoid a surge in lending might require a very 
@@ -3473,6 +3569,8 @@ Shadow Financial Regulatory Committee. 2010. “Stress Testing the Fed.” State
 ment no. 302. University of Pennsylvania (December 13). fic.wharton.upenn.
 edu/fic/Policy%20page/Statement%20No.%20302.pdf.
 
+64	
+Brookings Papers on Economic Activity, Spring 2012
 Comment By
 MICHAEL WOODFORD1    This paper by Jeffrey Campbell, Charles 
 Evans, Jonas Fisher, and Alejandro Justiniano addresses a very topical 
@@ -3513,6 +3611,7 @@ ment constitutes the news that changes their beliefs; but it can test the null
 1.  Thanks are due to Kyle Jurado for research assistance and to the National Science 
 Foundation for supporting my research on this issue under grant number SES-0820438.
 
+commentS and discussion	
 65
 hypotheses that FOMC announcements do not change the expectations of 
 market participants at all (that speech is irrelevant) or that the only news 
@@ -3555,6 +3654,8 @@ the basis of the new funds rate target itself. These changes in expectations
 about future policy, furthermore, affected behavior, at least in asset mar-
 kets, for Gürkaynak and coauthors (2005) also find that their path factor
 
+66	
+Brookings Papers on Economic Activity, Spring 2012
 is correlated with changes in Treasury yields over the same time window. 
 The present authors confirm this and also find highly significant effects on 
 corporate bond yields.
@@ -3596,6 +3697,7 @@ month to month in Blue Chip Economic Indicators forecasts of unemploy-
 ment and consumer price inflation. The authors find that positive values 
 of both the target factor and the path factor are associated with downward
 
+commentS and discussion	
 67
 revisions of unemployment forecasts, and upward revisions of inflation 
 forecasts, in the next month’s Blue Chip survey after the FOMC statement 
@@ -3638,6 +3740,8 @@ bonds. They conclude that “it seems possible for the FOMC to influence
 longer-term interest rates that are outside of its direct control by communi-
 cating its intention to lower the short-term policy rate persistently.”
 
+68	
+Brookings Papers on Economic Activity, Spring 2012
 The authors appear to believe that identifying movements in forecasts 
 of Taylor rule residuals, rather than simply forecasts of the future federal 
 funds rate, solves the problem of distinguishing forward guidance from 
@@ -3681,6 +3785,7 @@ variation in this residual would surely be an overestimate of the actual
 degree of forecastable departure from the typical reaction function (that 
 is, from equation 4 with no stochastic terms). And significant variation
 
+commentS and discussion	
 69
 in this residual need not imply the existence of true forward guidance 
 shocks at all.
@@ -3723,6 +3828,8 @@ given; it is thus always possible to interpret the FOMC’s announcements
 about future policy as simply reflecting changes in the FOMC’s view of 
 likely future economic conditions, and hence the path of the funds rate
 
+70	
+Brookings Papers on Economic Activity, Spring 2012
 that can be expected under the committee’s normal reaction function. For 
 example, when the FOMC announced on January 25, 2012, that “the Com-
 mittee . . . currently anticipates that economic conditions . . . are likely to 
@@ -3755,6 +3862,7 @@ ing “the policy recommendations of Eggertsson and Woodford (2003),” I
 should point out that Eggertsson and Woodford (2003) do not argue for 
 the desirability of a commitment to keep the policy rate at zero for a fixed 
 period. Rather, we argue for the desirability of a commitment to conduct 
+2.  The New York Times, January 25, 2012 (www.nytimes.com/2012/01/26/business/ 
 economy/ fed-to-maintain-rates-near-zero-through-late-2014.html?pagewanted=all). 
 The Federal Reserve itself took some pains to deny that it was attempting to provide 
 Odyssean forward guidance through its statement. Chairman Ben Bernanke was quoted in 
@@ -3762,6 +3870,7 @@ the Times article as saying during the press conference following the release of
 “I wouldn’t overstate the Fed’s ability to massively change expectations through its state-
 ments,” although, he offered, “it’s important for us to say what we think.”
 
+commentS and discussion	
 71
 policy in a different way than a discretionary central banker would wish 
 to ex post, and we show that (in our New Keynesian model) the optimal 
@@ -3804,6 +3913,8 @@ The only obvious way to avoid this pitfall is to accompany any discus-
 sion of the forward path of interest rates with an explanation of the con-
 siderations behind it—in particular, of the policy commitments that the
 
+72	
+Brookings Papers on Economic Activity, Spring 2012
 anticipated forward path reflects. Discussion of the forward path of interest 
 rates implied by a central bank’s policy commitments may well be use-
 ful; in many New Keynesian models, anticipations of this forward path 
@@ -3845,6 +3956,7 @@ any reason to delay immediately returning to the low-inflation steady state
 as soon as this is consistent with the zero lower bound on interest rates 
 (that is, as soon as the natural rate of interest returns to positive territory);
 
+commentS and discussion	
 73
 it would not imply any commitment to keep the policy rate low for longer 
 than would a strict inflation target or a purely contemporaneous Taylor rule. 
@@ -3884,6 +3996,8 @@ Amsterdam: Elsevier.
 3.  Christina D. Romer, “Dear Ben: It’s Time for Your Volcker Moment,” The New York 
 Times, October 29, 2011.
 
+74	
+Brookings Papers on Economic Activity, Spring 2012
 GENERAL DISCUSSION    David Romer saw the paper’s distinction 
 between types of central bank statements—between those that provide 
 information about the central bank’s outlook, and those that indicate a depar-
@@ -3925,6 +4039,7 @@ engage in monetary contraction any time it wants by paying higher inter-
 est on reserves. Indeed, Chairman Bernanke has made it clear that he is 
 prepared to do just that.
 
+commentS and discussion	
 75
 Hall also commented on what he saw as a surprising resurgence of inter-
 est in nominal GDP targeting, perhaps due primarily to Christina Romer’s 
@@ -3967,6 +4082,8 @@ rule, whose prescriptions for the federal funds rate often differed across a
 range of 150 basis points—at a time when the incremental change in the 
 rate under discussion was usually 25 basis points.
 
+76	
+Brookings Papers on Economic Activity, Spring 2012
 Blinder also expressed skepticism about the Chicago Federal Reserve 
 Bank’s macroeconomic model. That model, like others in the class of mod-
 els to which it belongs, uses the rational expectations hypothesis of the term 
@@ -4008,6 +4125,7 @@ the reason the Federal Reserve kept interest rates so low during that period
 is that it had committed itself, or saw that it was perceived as having 
 committed itself, to that policy, so that it became a matter of maintaining
 
+commentS and discussion	
 77
 credibility. An interesting question, then, was whether, looking back, that 
 episode should be seen as a success.
@@ -4050,6 +4168,8 @@ Taylor rules, and other influences. Swanson argued further that the Federal
 Reserve’s recent forward guidance surely did have at least some commit-
 ment aspect. In particular, there seemed to be widespread agreement, in the
 
+78	
+Brookings Papers on Economic Activity, Spring 2012
 press and elsewhere, that the Fed would now find it more difficult to raise 
 interest rates than if it had never issued the guidance. To the extent that this 
 was true, it was exactly the Eggertsson-Woodford story. This was also the 
@@ -4090,6 +4210,7 @@ some important differences of opinion, all of them had had positive things
 to say about nominal GDP targeting, at least at some level. That observers 
 from both sides of the political spectrum could agree that there was some-
 
+commentS and discussion	
 79
 thing to be said for such a policy made him hopeful that it might serve as a 
 basis for some sort of convergence in the future.
@@ -4131,6 +4252,8 @@ bank can articulate its favored policies in a way that strengthens that
 consensus, thus allowing it to move further along the continuum toward 
 optimal commitment.
 
+80	
+Brookings Papers on Economic Activity, Spring 2012
 Responding to the discussion, Charles Evans acknowledged that the 
 paper’s analysis of Delphic versus Odyssean statements was not intended 
 as a pure decomposition, but rather was an attempt to get at an impor-

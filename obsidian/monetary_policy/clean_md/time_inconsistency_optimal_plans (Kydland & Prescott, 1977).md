@@ -2,17 +2,21 @@ Rules Rather than Discretion: The Inconsistency of Optimal Plans
 Finn E. Kydland; Edward C. Prescott
 The Journal of Political Economy, Vol. 85, No. 3. (Jun., 1977), pp. 473-492.
 Stable URL:
+http://links.jstor.org/sici?sici=0022-3808%28197706%2985%3A3%3C473%3ARRTDTI%3E2.0.CO%3B2-A
 The Journal of Political Economy is currently published by The University of Chicago Press.
 Your use of the JSTOR archive indicates your acceptance of JSTOR's Terms and Conditions of Use, available at
+http://www.jstor.org/about/terms.html. JSTOR's Terms and Conditions of Use provides, in part, that unless you have obtained
 prior permission, you may not download an entire issue of a journal or multiple copies of articles, and you may use content in
 the JSTOR archive only for your personal, non-commercial use.
 Please contact the publisher regarding any further use of this work. Publisher contact information may be obtained at
+http://www.jstor.org/journals/ucpress.html.
 Each copy of any part of a JSTOR transmission must contain the same copyright notice that appears on the screen or printed
 page of such transmission.
 The JSTOR Archive is a trusted digital repository providing for long-term preservation and access to leading academic
 journals and scholarly literature from around the world. The Archive is supported by libraries, scholarly societies, publishers,
 and foundations. It is an initiative of JSTOR, a not-for-profit organization with a mission to help the scholarly community take
-advantage of advances in technology. For more information regarding JSTOR, please contact .
+advantage of advances in technology. For more information regarding JSTOR, please contact support@jstor.org.
+http://www.jstor.org
 Mon Oct 1 19:25:29 2007
 
 Rules Rather than Discretion:
@@ -162,6 +166,7 @@ determined, and in general the consistent policy
 can be determined once future policy rules are known. With such a
 procedure, the policy decision at each stage is optimal, given the rules
 
+477
 RULES RATHER THAK DISCRETIOX
 for future policy election.^ But as the simple example illustrated, this
 procedure is suboptimal.
@@ -248,6 +253,7 @@ the rational-expectations hypothesis is tested and accepted. He also
 explains why many other tests that rejected the hypothesis are invalid.
 He does not, however, comment on the Hirsch and Love11 (1969) test
 
+RULES RATHER THAN DISCRETION
 FIG.1. -Consistent and optimal equilibrium
 which used direct measures of expectations and found that forecast
 errors were systematically related to lagged sales, so we will do so. Re-
@@ -314,6 +320,7 @@ decisions of agents in the current period will have the form
 nf).
 xt = dc(yf,TC,;
 
+RULES RATHER THAN DISCRETION 481
 Again, it is important to note that expectations of future policy affect
 current decisions. For example: the effect of an increase in the invest-
 ment tax credit will depend upon the expected future levels of the
@@ -482,6 +489,7 @@ variables. However, the model could be modified to permit random fluctuations in
 price of capital. For estimation purposes, one would then, instead of using the investment
 tax credit, use the price ofcapital which is affected by the tax credit in a predictable way.
 
+RULES RATHER THAN DISCRETION 485
 aggregate demand relation9 Only these parameters and the parameters
 of the objective function were subject to variation. Space constraints
 preclude more than a brief summary of the results.1°
@@ -568,6 +576,7 @@ stabilization effects did, for some distributed lag expenditure schedules,
 contribute to economic instability and even make a stable economy
 unstable.
 
+RULES RATHER THAN DISCRETION 487
 The structures considered are far from a tested theory of economic
 fluctuations, something which is needed before policy evaluation is
 undertaken. The implication of this analysis is that, until we have such

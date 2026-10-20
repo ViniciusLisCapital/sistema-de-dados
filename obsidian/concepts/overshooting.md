@@ -87,3 +87,4 @@ Verde's framework of "ruído vs. sinal" (section 1.6 in [[verde_fx_mental_models
 - [[carry_trade]] — the carry window (gradual depreciation after overshooting appreciation) is when carry is collected
 - [[fiscal_dominance]] — fiscal-dominance overshooting (rate hike → depreciation via ρ) is directionally opposite to Dornbusch monetary overshooting (rate hike → appreciation)
 - [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — Blanchard (2004) anti-Dornbusch mechanism: rate hike causes depreciation not appreciation when fiscal risk premium dominates
+- [[monetary_policy/synthesis/open_economy_monetary_policy_ch8 (Gali, 2015)]] — overshooting in a New Keynesian small open economy with Calvo pricing: after a monetary tightening the exchange rate overshoots its long-run appreciation if and only if the shock is not too persistent, the same condition under which the nominal rate rises

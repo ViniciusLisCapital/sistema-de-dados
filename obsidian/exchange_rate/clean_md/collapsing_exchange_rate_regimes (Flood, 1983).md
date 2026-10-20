@@ -285,6 +285,7 @@ negative realizations of domestic credit growth were permitted. To avoid this di
 assume only positive growth. For a log-linear model of money demand, negative realizations of
 AD(t) would be permitted.
 
+R.P. Flood and P.M. Garber, Collapsing exchange-rate regimes 9
 7c(t)=Pr[ap//F+D(t+ 1)/P-S>O].
 (27)
 Since from (20) and (23), D(t + 1) = D(t) + p- l/A + u(t + I), we write (27) as:
@@ -354,6 +355,7 @@ perfect substitutes and that the foreign interest is exogenous would produce a c
 unity. However, in addition. a domestic credit expansion will raise the domestic interest rate
 through its ehct on the Torward premium, thus lowering domestic money demand.
 
+R.P. Flood and P.M. Garber, Collapsing exchange-rate regimes 11
 Forward
 Premium
 t
@@ -378,6 +380,7 @@ disturbance may so change the environment that maintenance of the fixed
 “Blanco and Garber (1982) extend a log-linear version of our model to study the problem of
 recurrent devaluation.
 
+12 R.P. Flood and P.M. Garber, Collapsing exchange-rate regimes
 exchange regime is not possible. Such a viewpoint has an attraction since it
 associates a large event - the collapse of an exchange system - with a large
 cause. Since the disturbance is unpredictable and its origin is outside the
@@ -416,5 +419,6 @@ which implies:
 B = exp [X(t)]. WI
 The p.d.f. we seek is then:
 
+R.P. Flood and P.M. Garber, Collapsing exchange-rate regimes 13
 which is the p.d.f. recorded in the text, eq. (32). If K(t) ~0, then exp [X(t)] is
 replaced with exp [LO] = 1.

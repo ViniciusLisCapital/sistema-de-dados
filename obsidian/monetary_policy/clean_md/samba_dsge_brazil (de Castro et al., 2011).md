@@ -18,7 +18,10 @@ Apr.
 p. 1-138
 
 Working Paper Series
+Edited by Research Department (Depep) — E-mail: workingpaper@bcb.gov.br
 Editor: Benjamin Miranda Tabak — E-mail: benjamin.tabak @bcb.gov.br
+Editorial Assistant: Jane Sofia Moita — E-mail: jane.sofia@bcb.gov.br
+Head of Research Department: Adriana Soares Sales — E-mail: adriana.sales@bcb.gov.br
 The Banco Central do Brasil Working Papers are all evaluated in double blind referee process.
 Reproduction is permitted only if source is stated as follows: Working Paper n. 239.
 Authorized by Carlos Hamilton Vasconcelos Aratijo, Deputy Governor for Economic Policy.
@@ -28,6 +31,9 @@ Secre/Surel/Cogiv
 SBS — Quadra 3 — Bloco B — Edificio-Sede — 1° andar
 Caixa Postal 8.670
 70074-900 Brasilia — DF — Brazil
+Phones: +55 (61) 3414-3710 and 3414-3565
+Fax: +55 (61) 3414-3626
+E-mail: editor@bcb.gov.br
 The views expressed in this work are those of the authors and do not necessarily reflect those of the Banco Central or
 its members.
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced.
@@ -39,6 +45,8 @@ Banco Central do Brasil
 Secre/Surel/Diate
 SBS — Quadra 3 — Bloco B — Edificio-Sede — 2° subsolo
 70074-900 Brasilia — DF — Brazil
+Fax: +55 (61) 3414-2553
+Internet: http://www.bcb.gov.br/?english
 
 SAMBA: Stochastic Analytical Model
 with a Bayesian Approach
@@ -265,6 +273,7 @@ capital, 6 is the depreciation rate of capital, 9(.) is a convex adjustment cost
 investment-specific technology shock. The function S(.) satisfies S(Z7) = S’(Z7) = 0 and
 S"(Z4) = 0; > 0, where Z% is the steady-state growth rate of the technology process Z;,
 which we define in more details below.
+10
 
 We assume the following functional form for the instantaneous utility function, augmented
 by external habit persistence:
@@ -297,6 +306,7 @@ which generates a negative relationship.
 The value in domestic currency of bonds issued abroad is given by S;Bj,,,. The effective
 return on these bonds depends on a external premium over the riskless international interest
 rate (hereafter, country risk premium), denoted by S?°. For simplicity, we assume that
+11
 
 households do not internalize the fact that their demand for foreign bonds may shift the
 country risk premium.
@@ -328,6 +338,7 @@ regardless of their labor income. Otherwise, we would have to keep track of the 
 from agent heterogeneity. To simplify the model even further, we assume that physical and financial wealth
 is equally distributed across optimizing households at the beginning of time and that dividends received from
 firms in each period are also equally distributed across optimizing households.
+12
 
 Kyn
 Rei
@@ -371,12 +382,14 @@ and plug it into the UIP condition in order to obtain a convenient expression fo
 exchange rate in terms of the real interest rate differential (UIP in real terms):
 E A =F A 11
 t ( me. t+1 t Q; me t+1 ]> ( )
+13
 
 where H@” = P@ /P©,. We assume that 52° depends only on aggregate variables describing
 t t t-1 t
 both domestic and external fundamentals as follows:
 SP = 5 {exp [—yp (Br, — BY) + yy (Vi —V)]} Ze, (12)
 where y%, and yj, are positive parameters, Bj, is net foreign assets-to-GDP ratio, V;* de-
+. . . . . * oe .
 scribes foreign investors’ risk aversion, and Z?" is a shock that captures movements in the
 country risk premium associated with domestic exogenous factors, such as political uncer-
 tainty and others. The variables S?", B*’and V are the corresponding steady-state values.
@@ -401,10 +414,13 @@ N= (/ (Nix) & ») ; (14)
 0
 where e!” > 1, Vt, is a time-varying elasticity of substitution that may shift the wage markup.
 t
+14
 
 The optimization problem of the employment agency is given by:
 Ww
 “
+1 ev -1 Wai 1
+n eW ° n °
 max ¢ W; | (Nj) @ - | WiNG AG ?
 N3j,t 0 0
 where W,” is the aggregate nominal wage rate.
@@ -434,6 +450,7 @@ ri" = (11; ,) " (277, 11e,) ", (18)
 where wy € [0,1] is an indexation parameter, HW” = W?/W,, is the gross inflation rate of
 nominal wages, and 77 = Z;/Z,_, is the stochastic and time-varying gross growth rate of
 technology (proxy for labor productivity growth). Since nominal wages embody productivity
+15
 
 growth, this indexation rule ensures that in steady state all nominal wages grow at the rate
 Z“1II°. The rule considers the fact that workers try to keep the purchasing power of their
@@ -470,6 +487,7 @@ wee = [are yh + ewe ym?
 (20)
 Thus, equilibrium conditions for optimizing households can be described by equations
 (4), (7), (8), (9), (11), (18), (19), and (20), plus the law of motion of capital (2).
+16
 
 2.1.2. Rule-of-Thumb Households
 Rule-of-thumb households just consume their disposable labor income as follows:
@@ -495,6 +513,7 @@ imported input, which is sold to the sectoral intermediate good producers.
 In the second stage, there is a continuum of intermediate good producers indexed by
 j € [0,1] in each sector — private consumption goods, government consumption goods,
 investment goods, and exports — that operate constant returns-to-scale technologies that
+17
 
 transform the imported input and the bundle of capital and labor into sectoral differentiated
 goods. Lastly, in the third stage, sectoral assemblers combine the differentiated goods into
@@ -523,6 +542,7 @@ Sectoral goods assemblers choose the optimal amounts of each variety and break e
 equilibrium. The problem solved by the assembler in sector H is given by:
 1
 max preys - i Pay ja} , WHY © H,
+18
 
 subject to equation (22), where P/ is the aggregate price of home good H, and Pi is the
 price of intermediate variety j. The assumption of pricing to market means that P and
@@ -551,6 +571,7 @@ log (Z?) = Pp log (2721) + EP, (26)
 where ¢? is the innovation. The growth rate of the stochastic trend is defined as 77 =
 Z:/Zi-1, Which follows:
 log(Z/’) = (1 — pz) 27 + pz log (2/24) + 7, (27)
+19
 
 where Z% is the long-run growth rate of technology, in gross terms, and ¢7 is the innovation.
 The domestic input producer takes all prices as given and chooses the optimal amounts
@@ -570,6 +591,7 @@ Wr = (1—a) PP—*=. 29
 (= (1-0) PP (29)
 Substituting (28) and (29) into the technology constraint (25) yields the following expression
 for the unit cost associated with the choice of domestic inputs:
+1 of Y wr\l® 4
 PP =(—=R*” t , 30
 ‘ (Lai) (24 Zp (30)
 2.2.3. Importers
@@ -579,6 +601,7 @@ world. Each importing firm buys a distinct variety which is then sold in a monop
 competitive market to an assembler of imported goods. The assembler transforms the differ-
 entiated inputs into a homogenous good, which is finally sold to domestic intermediate good
 producers. Similar to the sectoral assemblers described above, the assembler of imported
+20
 
 goods also bundles the differentiated varieties through a Dixit-Stiglitz aggregator:
 &M
@@ -612,6 +635,7 @@ YH = (Ma) (i, e™, (35)
 where w™ € [0,1] is an indexation parameter, I, is the CPI inflation target in gross terms,
 and HT, is the gross inflation rate of imported goods, defined as I! = P“/P™,. In the
 long run, the imported goods inflation (in local currency) converges to the inflation target.
+21
 
 The value of profits accrued to importing firm 7 is given by:
 Pit Mj — (SeP0") Miu
@@ -641,6 +665,7 @@ index:
 1
 PM = |e (TH PM) + (= Ou) (PMY (37)
 Therefore, conditions (34)-(37) determine the behavior of the price of imported goods.
+22
 
 2.2.4 Sectoral Intermediate Producers
 The decisions of inputs and prices made by intermediated good producers can be broken
@@ -648,6 +673,7 @@ down into two problems.
 Input Choices In the second production stage, there is a continuum of intermediate good
 producers indexed by j € [0,1] in each sector. These firms combine domestic and imported
 inputs through the following CES production function:
+1 ey -1 1 €H-1 | ey—-1
 Yui = |(wn) (Ying) © + - en) (A -Ty (ri) Mia] en)
 jit
 where as before H = C,I,G,X, Myi is the imported input, I't/ (rit) is an adjustment
@@ -667,6 +693,7 @@ respond quickly to shifts in the demand for the home good. In other words, impor
 more slowly to price movements induced by changes in the exchange rate or external prices
 than to domestic demand fluctuations. This feature is consistent with the empirical evidence
 for Brazil.
+23
 
 Each sectoral intermediate good producer takes as given the input prices and chooses the
 combination of inputs that minimizes its total cost
@@ -699,6 +726,7 @@ MO} = |wn (PP) + (L- wn) ( <a | ; (41)
 3Using the estimated model, we observe that, in the case of a shock to the country risk premium, the
 reduction in imports is around 30% higher (in the first two years) when compared to a model with 1747 = 0
 (keeping all other parameters constant).
+24
 
 which is simply a weighted average of the costs of domestic and imported inputs. Note that
 the share of imports varies across sectors. In particular, we assume that the production
@@ -726,11 +754,13 @@ subject to the demand constraint (23) and indexation rule (42), where the nomina
 cost M Cpe is given by equation (41) and
 i a w = l—w :
 tt+ Hint (17.1) H (Il.+4) H i >I]
+25
 
 is the indexation factor accumulated between t and t + 7.
 The first-order condition with respect to the optimal price P//” = P#, along the sym-
 metric equilibrium, is given by:
 1—eP .
+. i Vi me «\-eP
 i; Ss" (O73) Netsi ( pi ) (Pr ) mee PY (Ga — 1) = (44)
 __P
 ES (948) Mets pH (P; ) mee MCy; Vieni:
@@ -753,6 +783,7 @@ Pai Pia. WEF, (46)
 where the indexation factor is a weighted average of past overall CPI inflation and the
 inflation target:
 rF = (me.,)°* (hr, (47)
+26
 
 with weight wy € [0,1]. To be more consistent with actual informal price indexation schemes,
 the rule includes the inflation of the (overall) CPI instead of that of freely-set prices.
@@ -783,6 +814,7 @@ We now turn to the fraction @,4 of consumption good producers. A firm indexed by
 j € [0,74] is not free to choose its own price and must follow an exogenous pricing policy.
 Their prices are regulated or administered by the government. They include the prices of oil
 by-products, public utilities (electricity, water, telephone), bus fares, medications etc., and
+27
 
 account for about a third of the overall CPI.4 Their prices are either set by the government or
 follow contracts settled with government agencies. Administered prices are less sensitive to
@@ -817,6 +849,7 @@ permanent distortion in relative prices.
 SIGP is comprised of the Broad Producer Price Index (60%), Consumer Price Index (30%), and Civil
 Construction Cost Index (10%).
 yA=7Y4
+28
 
 = —co\l4xa , ; ; ;
 where Y4 = (i ) is a constant ensuring that in steady state Y4 is equal to the steady-
@@ -877,11 +910,13 @@ jt G0
 subject to the demand constraint (23) and indexation rule (54), where
 +X { 1, i=0
 aan Thai (pa) (IIz,,)°* 21,
+30
 
 and the nominal marginal cost is given by equation (41).
 Along the symmetric equilibrium, Ps» = P*", so that the first-order condition with
 respect to P* is given by:
 l-e .
+~ a Te a “ee «\—e? .
 B,5> (0x3) sen ( a) (PX) SPX VS (Ba 1) = (56)
 __P
 ~ i Visi a X*\ eK thi X,ny7X
@@ -928,6 +963,7 @@ given by explicit targets for inflation and for the public sector primary surplu
 The goal of the monetary authority is to stabilize CPI inflation around the inflation target,
 using as instrument the nominal interest rate, according to the following forward-looking
 Taylor-type rule:
+32
 
 where yp € (0,1) is an interest-rate smoothing parameter, yy, > 1, yy > 0, Z} captures
 monetary policy shocks, II¢,,, = [[j_, 0¢,, = P&,/P© is the four-quarter inflation rate,
@@ -958,6 +994,7 @@ full price/wage flexibility and no markup distortions (model-consistent output g
 the computation of the flexible price/wage equilibrium, seems to be preferred by the data, at least when
 estimating DSGE closed economy models for the US (Del Negro et al. (2007)), and is closer to the usual
 definition of output gap used by policymakers.
+33
 
 (or even reduce) the public sector net debt-to-GDP ratio. So the primary surplus is an
 intermediate target.
@@ -987,6 +1024,7 @@ not found robust results in the estimation. Note that, in the case of the counte
 in the end of 2008 and 2009 to respond to the global crisis, the primary surplus target was reduced.
 °Valli and Carvalho (2010) also model fiscal policy in Brazil using a rule based on the primary surplus.
 !0Remember that B;, is a pre-determined variable in period t, i.e., decided in t — 1.
+34
 
 BY is its long-run value, and eS is a shock to the primary surplus target. Technically, this
 equation also guarantees that the government debt-to-GDP ratio is stationary.
@@ -1011,6 +1049,7 @@ in the model the presence of distortionary taxes rates on several margins (consu
 labor income, capital income, profits, etc.). However, since our focus is on the business cycle
 effects of government spending and not on the effects of different tax structures, we decided
 to have a simpler formulation for aggregate taxes.
+35
 
 Using equations (65) and (67), the primary surplus-to-GDP ratio can be written as
 T, — (PPG) / (Pry), which can be rearranged to express the behavior of government con-
@@ -1041,6 +1080,7 @@ set by the monetary authority raises the government debt, which by equation (64)
 the primary surplus target, and consequently by equations (63) and (69) leads to a reduction
 in government consumption. Therefore, the model allows for direct effects of monetary policy
 on fiscal policy.
+36
 
 2.4 Rest of the World
 We do not model the rest-of-the-world economy, but instead assume that foreign variables
@@ -1066,6 +1106,7 @@ first-order approximations around the steady state. We adopt the convention of e
 unweighted variables with a hat, X;.
 In the intermediate goods sectors, the unweighted aggregation over all firms 7 in each
 sector H = C,I,G,X is given by y,7 = in Yt dj. Using equation (23), we can find the
+37
 
 relationship between weighted and unweighted output sectors:
 —d,
@@ -1100,6 +1141,7 @@ N= |wrr+(1- @rr) ta Nt, (75)
 Wt
 where JN; is total labor based on the standard Dixit-Stiglitz aggregator (16), N;, is the
 1
+$ —€ : i : :
 unweighted total labor, and W/ = (ts / (WwW?) e ti) is the unweighted wage.
 Lastly, we assume that each type of household provides the same amount of overhead labor,
 N jdj = wrrN and Sieo Nj4dj = (1 _ Drr) N.
@@ -1107,6 +1149,7 @@ so that in equilibrium J; RT
 The aggregation of homogenous goods or assets is straightforward. Aggregate consump-
 tion is the weighted average of the per capita consumption in each group:
 Cy = wrrCf" + (1— wer) CP, (76)
+38
 
 where C? and Cf" are given by equations (9) and (21), respectively.
 Since we assume that rule-of-thumbers’ wage rate is equal to the average wage rate of
@@ -1140,6 +1183,7 @@ Note that (Q,0 ) / (Q,017 ) = S,/S,-1. Therefore, the evolution of net foreign a
 to-GDP depends on the trade balance, income account (interest on loans and bonds) and
 "accounting terms", given by GDP growth and the difference between GDP deflator inflation
 and nominal exchange rate change.
+39
 
 2.7 Market Clearing and GDP
 We start by the market clearing conditions in the final goods sectors. In equilibrium, the
@@ -1186,6 +1230,7 @@ the volumes of the aggregate demand variables and not directly on changes in the
 prices of the corresponding goods. This means that, in the model, changes in the real GDP
 are computed at constant weights.
 This is equivalent to say that the level of the GDP deflator is given by:
+; , s ox . pM —eyq ~ 5M
 ry = crey (reve cniyt(sesy™ [sie (Fa) |
 t
 : os : jipyH
@@ -1226,6 +1271,7 @@ parameters. Technically, it also helps shaping the likelihood function, which is
 important for the estimation of large DSGE models. In the case of Brazil, the estimation
 of such models by classical full information methods (e.g., maximum likelihood and GMM)
 ‘See, for instance, Canova (2007).
+42
 
 is even more difficult because the data sample span is very short. In practice, the Bayesian
 approach is a bridge between calibration and classical estimation. Calibration methods do
@@ -1254,6 +1300,7 @@ ratio, S.
 e Foreign variables: world imports, Y,;*; relative price of imports, Q/"; world (US) in-
 flation, IIf; foreign investors’ risk aversion, V,*; and world (US) nominal interest rate,
 Re.
+43
 
 We have chosen this set of observables taking into account data availability, their relevance
 for policymarkers’ decisions, and their role in explaining the variables of higher interest.
@@ -1282,6 +1329,7 @@ used for the inflation rates, we demean the domestic interest rate, R;, using th
 for the period 2005Q1-2010Q2.
 We add measurement errors in the equations for GDP growth and CPI inflation. In the
 estimated linear model, CPI inflation is assumed to be a fixed weighted average between free
+44
 
 and administered prices, and the weights of GDP aggregate components are assumed to be
 constant as well. The measurement errors capture the effect of changes of the actual weights
@@ -1310,6 +1358,7 @@ shocks, plus the shock to inventory investment:
 !2Since this term is already in first difference (weighted by its contribution to the GDP growth), we add a
 measurement equation for it, and the estimated deviation from the steady state enters the model equation
 (C.41). Since it is a residual, we model it as an AR(1) process.
+45
 
 e 17 shocks are associated with domestic variables: domestic risk premium shock, ¢?;
 investment adjustment cost shock, ¢/; household preference shock, <@; import adjust-
@@ -1319,6 +1368,7 @@ technology shock, ¢?; permanent technology shock, <7; UIP shock, ee ; country r
 premium shock, ¢?”, government consumption shock, ¢°; tax rate shock, ¢7; primary
 surplus target shock, eS; monetary policy shock, ¢*.
 e Five shocks are associated with foreign variables: foreign inflation shock, cl! ; foreign
+* * : : M*
 interest rate shock, e’; world demand shock, ¢}"; imports relative price shock, ee ;
 foreign investors’ risk aversion shock, ¢Y°; world imports demand shock , ¢/"".
 In the linear version of the model, we have added a shock to the UIP equation with the
@@ -1336,6 +1386,7 @@ The shares of aggregate demand components in GDP (sc, sc, sr, $x, 5m) are based
 on sample average calculated from the National Accounts. We match the tax rate 7 with
 ‘3-The domestic risk premium is also an unobservable in the UIP equation, but it is subject to cross-equation
 restrictions coming from the equilibrium conditions for consumption and investment.
+46
 
 the sample mean of the government tax revenues-to-GDP ratio. The share of rule-of thumb
 households’ consumption in total consumption, @c, is set to 0.40.4
@@ -1395,6 +1446,7 @@ motion of both debts. These scale or adjustment factors of external and domestic
 denoted by AF% and AF, respectively. We calibrate their values taking into account the
 debt maturity and the share of debt that is indexed to the interest rate.
 1©See equations (B.30), (B.31), (C.35) and (C.36).
+48
 
 The steady-state gross inflation target, I], matches the annual inflation rate of 4.5%, in
 accordance with the target since 2005. The gross nominal interest rate, R, also matches the
@@ -1422,6 +1474,7 @@ shows the shapes of the priors of the structural parameters and the correspondin
 distributions.
 Four preference parameters were estimated. The prior of the inverse of intertemporal
 elasticity of substitution, 0, is normal with mean equals to 1.3, consistent with the evidence
+49
 
 that this parameter is equal to or larger than 1.0. The habit persistence parameter, &, has a
 beta distribution with a 0.85 mean, based on international evidence on the observed response
@@ -1454,6 +1507,7 @@ data, all price changes are considered (optimal changes and indexation-based cha
 mapping to the value of parameter @ is not adequate. Furthermore, the parameter is somehow model
 dependent. For instance, a model with firm-specific capital generates different values for this parameter.
 '8See, for instance, Druant et al. (2009).
+50
 
 we assume prior beta distributions with mean of 0.75 for the Calvo parameter Oy, implying
 optimal wage adjustment every three quarters. For the wage indexation parameter, we use a
@@ -1480,6 +1534,7 @@ using diffuse priors. We use beta distributions for the autoregressive coefficie
 that in the inventory investment equation, with mean 0.5 and standard deviation 0.25. The
 priors for the standard deviations of the 24 innovations are inverse gamma with mean equal
 to 1.0. We also use diffuse priors for the standard deviations of the two measurement errors.
+51
 
 3.4 Estimation Results
 We used the Dynare program for estimation (Stéphane et al. (2011)). Posterior distributions
@@ -1509,6 +1564,7 @@ to 0.81. On the other hand, the posterior mean of the indexation parameter for t
 !9We ran two blocks, with one million draws each. The resulting acceptance rates were 0.2366 and
 0.2310. We disregarded the first 50% of the draws. The multivariate diagnosis indicates that the estimation
 converged.
+52
 
 was lower than the prior mean (0.33 against 0.65). Note that its complement, 0.67, does
 not mean that prices are not indexed, but they are so to the inflation target instead of the
@@ -1537,6 +1593,7 @@ reproduced by the model. We also compare the sample moments with the model-impli
 single-equation estimation of the Taylor rule for Brazil, without including an output gap term. Their point
 estimates for the interest-rate smoothing component and for the coefficient on expected inflation are 0.62
 and 1.57, respectively.
+53
 
 moments, and calculate the variance error decomposition. Finally, we show forecasting
 exercises.
@@ -1564,6 +1621,7 @@ per foreign currency). As a consequence, exports decline as expenditure-switchin
 push away the international demand from domestic goods towards foreign produced goods.
 Since we assume pricing-to-market and price rigidity, the reduction in exports is not pro-
 nounced though. In the case of imports, however, there are two transmission channels acting
+54
 
 in opposite directions. Due to the domestic currency appreciation, import prices fall, putting
 an upward pressure on imports. On the other hand, the fall in output pushes imports down.
@@ -1593,6 +1651,7 @@ observed persistence of the overall CPI inflation in Brazil.
 In terms of timing, most variables are nearly back to the steady state in two years. The
 21Similar result is found by Minella and Souza-Sobrinho (2009), who estimated a semi-structural model
 for Brazil, using similar sample period.
+55
 
 largest drop in the four-quarter CPI inflation occurs in the fourth quarter, and is around 0.25
 p-p. Note that, since the monetary authority reacts to its own shock through the Taylor rule,
@@ -1621,6 +1680,7 @@ more quickly, amplifying the contraction in aggregate demand.
 In spite of the boost in private consumption, the reduction in investment, exports and
 government consumption, together with the increase in imports, prevails, resulting in a
 hump-shaped fall in output. In turn, the contraction in economic activity and the wage rise
+56
 
 push labor demand down, which also displays a hump-shaped path. The fall in employment
 lowers the consumption of rule-of-thumb households, and aggregate private consumption
@@ -1649,6 +1709,7 @@ in the other sectors. Thus the model implies that investment booms are accompani
 higher imports and deterioration of the trade balance. This result is line with the evidence for
 Brazil that large part of fluctuations in imports are associated with investment fluctuations.
 As the shock dies out and monetary contraction becomes more effective, output gap
+57
 
 returns to zero and inflation goes back to target. However, the reduction of net foreign assets
 due to the trade deficit leads to a relatively persistent depreciation of the real exchange rate,
@@ -1677,6 +1738,7 @@ inflation are even more persistent. The four-quarter CPI inflation peaks in the 
 The pass-through of the exchange rate to CPI inflation is around 7% in the first year and
 14% in two years (calculated as the ratio of total CPI increase to the rise in the exchange
 2For this effect in the Brazilian economy, see da Silva Filho (2007).
+58
 
 rate in the first period).
 In summary, positive innovations to the exchange rate are associated with higher inflation
@@ -1705,6 +1767,7 @@ how many units of output an increase of one unit in the government consumption g
 Taking into account the total increase in output and government consumption in the first
 year, the multiplier is 1.1. On impact, the multiplier on private consumption is 0.5. Note,
 3See, for instance, Galf et al. (2007).
+59
 
 however, that the monetary authority reacted in a counter-cyclical way, reducing the value
 of the multiplier. The latter would be higher if monetary policy was rather accommodative.
@@ -1731,6 +1794,7 @@ interest rate, which appreciates the domestic currency and boosts imports even f
 In the long run, inflation goes back to the target, but the levels of all variables containing
 a real unit root remain permanently higher, in the new balanced-growth path.
 24For a comparison of the fiscal multiplier accross different structural models, see Coenen et al. (2010).
+60
 
 4.2 Moment Conditions and Variance Error Decomposition
 We simulate the model to generate second order moments, and compare them to those from
@@ -1759,6 +1823,7 @@ policy shocks were not important for the forecast errors. Note that we are refer
 role played by the shock and not to the systematic component of the rule.
 In the case of CPI inflation, the forecast error variance is dominated by price shocks,
 although their importance diminishes at longer horizons. Shocks to price markup, adminis-
+61
 
 tered prices and wage markup account for 76% of the forecast error variance over one-quarter
 horizon. In the eight-quarter horizon, they respond for 47%. At longer horizons, the shocks
@@ -1787,6 +1852,7 @@ words, in each forecasting cycle, we reestimate the non-observables. Furthermore
 estimation, we remove the average from the series based on the values up to that data point,
 and add this average when making the forecast. Thus, we do not use the averages over the
 5Tf we consider periods without any overlap, it is only five data points in the case of four-quarter horizon.
+62
 
 whole sample. Moreover, we conduct only unconditional forecasting. This means that, even
 for foreign variables, their forecasted trajectories are given by the AR(1) processes built in
@@ -1815,6 +1881,7 @@ methods.
 Finally, we conduct two exercises in order to have a better sense of SAMBA projections.
 We present the projections in two specific dates: 2004Q4, when most of the effects of the
 2002-2003 confidence crisis had faded away, and 2008Q4, when GDP had plummeted as a
+63
 
 result of the global crisis. Figure 10 shows the forecasts and corresponding actual values for
 four-quarter CPI inflation, year-on-year GDP growth, and Selic rate level (% per year). The
@@ -1842,6 +1909,7 @@ model are well behaved and consistent with available evidence. Therefore, we bel
 model can be used as a tool for assessing the impact of different shocks and scenarios for ex-
 ogenous or even endogenous variables. We should stress the role played by structural models
 in attaching economic interpretation, in a rigorous way, to economic developments, scenario
+64
 
 analysis and forecasting. In contrast with purely statistical models, structural models like
 SAMBA can be successfully used as a story-telling device in the policymaking process.
@@ -1876,6 +1944,7 @@ from the economy-wide versions of (8) and (2):
 RSP ox Resp ox
 E, ( USE (22, Ast) =F, (Se FES (zZ,.) At) | (A)
 t+1 t t+1
+70
 
 AQE = BE, (24,) ° Mua [RA + QB, (1 — 9)], (A.5)
 1-Ss Bil s! ZEA Zi
@@ -1954,6 +2023,7 @@ P
 t,t+0
 P
 P
+o Q 4 a a *\ ~€Fr t
 (04) Zhe Mei (i (Q; ) mee MCE YE aaa
 t,t+i
 ll
@@ -1977,6 +2047,7 @@ Uf = [ora (TQHL) E+ (= a) (HF QR) EYE, A.30
 The price setting in the export goods sector is described by conditions (56)-(57):
 P
 oo * x \ &xytivt
+. ~ 4 4 yk -&, i * Le,
 Be Q 1 (0x18) ZeakeMass | px (QP) Qui Qe (CxriABY)
 i=0 aa
 <P
@@ -1990,11 +2061,13 @@ Ti* = mn. (A.33)
 Finally, the stationary version of the world demand for Brazilian exports comes from
 (60):
 —eE
+~ wT" Q; * xm
 X, = et Yi", A.34
 where
 
 2 Xia/Ye
 ret ag (gary aie ADE tint) ( (gary ate AE oa)
+Xi /Y ey Xi /Yey
 A.3 Government
 Monetary policy is described by equations (61) and (62):
 (Tm: Fi 1\ 70 IR
@@ -2013,6 +2086,7 @@ A.4 Resource Constraints and Identities
 The description of the domestic economy is completed using conditions (81), (83), (85), (80),
 (79), (78), (86), (87), and GDP deflator definition:
 
+t X* X, QM a t MV,
 vxp = OE (2) QQ
 Ty =. (A.53)
 A.5 Rest of the World
@@ -2022,6 +2096,7 @@ nQ™ =nQ™ + pow (InQM, —nQ™’) +22", A.55
 MO" = °° + py. (HS, — 0%") + A.56
 Vi =V* 4+ py (ViiL-V*) Fer, A.57
 Ri = RY + pp» (Ri, — RB’) + ef. A.58
+76
 
 B Appendix B Steady State
 In this section we derive the deterministic steady state of the stationary model. First, we
@@ -2050,6 +2125,7 @@ Next, we substitute (B.1) and (B.2) into the marginal cost for consumption goods
 and calculate the relative price of the domestic input:
 1 Py l-ec 1— “eo 7
 where QM = [1+ tc (R*S® -1)] Q™.
+77
 
 Now that we know Q”, and taking into account the fact that MC° = Q”, we calculate
 the relative price of government consumption goods using (A.21):
@@ -2080,6 +2156,7 @@ Based on equation (A.14), we are able to express the (stationarized) real wage i
 Euler equation (A.5):
 of the domestic input price and the rental rate of capital:
 W=W* =(1-a)(Q”)™ a)" . (B.12)
+78
 
 Finally, the UIP condition (A.4) pins down the country risk premium as a function of
 the real interest rate differential:
@@ -2106,6 +2183,7 @@ C = wrrC™ + (1 -— wer) C?, B.16
 G=(T-S") Qa B.17
 7=R(1-42), B.18
 M = M°+M' + M%, B.19
+79
 
 Ww 7 _
 G° = (“aes ) i (1-s) , B.20
@@ -2116,6 +2194,7 @@ N=N+(1 a) eo B.23
 W
 YP=VP+VP+GH+Y¥, B.24
 Y? = (2 oye H=C,1,X B.25
+H — WH MCH ’ —,4,44, .
 ~ Qu oH
 M" = (1—az) (247) Y", H=C,1,X. B.26
 Once these sixteen variables are simultaneously determined, we are able to compute
@@ -2135,6 +2214,7 @@ that we are normalizing the objects SPC’ /P© and SP™” /P°. Notice that t
 is the numéraire, that the nominal exchange rate does not appear explicitly in the equilibrium conditions and
 that the prices PC’ and P™" are determined abroad and thus are taken as given by the small open economy.
 Therefore, our normalizations go through without loss of generality.
+80
 
 Based on the above steady-state conditions, we present below the resulting relations,
 which enter in the log-linear model.”” We also calibrate the steady-state values for R*, S?°,
@@ -2171,6 +2251,7 @@ cP] 1
 more, we do not use the derived relations sg = T—S” and s; = [27 — (1—4)] asp/ [(27)” e'-a- 6)
 because of the measurement errors involved. For instance, in the data, S” is defined for the whole nonfinancial
 public sector (including state-owned companies), whereas sq is resctrict to government consumption.
+81
 
 and those of spc, 8p,1, Sp,g and sp,x by
 SD.H = WH p SH» (B.31)
@@ -2180,6 +2261,7 @@ In the linear version of the model, the parameters sp,7 and sp appear in the equ
 of market clear condition of domestic inputs (C.35), sy,” in the equation of market clear
 condition of imported inputs (C.36) and in the law of motion of external loans (C.37), and
 oP is used in the equation of the marginal cost of producing consumption goods (C.15).
+82
 
 C Appendix C The Log-Linear Model
 In this section we log-linearize the BGP equilibrium conditions around the deterministic
@@ -2229,6 +2311,7 @@ Investment (A.6):
 Law of motion of capital (A.7):
 1-6 1—0\.
 Country risk premium (A.8):
+BY * LY kok B*
 Ss = Ppt pyy + % -
 Domestic risk premium (A.9):
 Sp = PBsi_y t:
@@ -2317,6 +2400,7 @@ Ent
 Gh = Gait me ~ Ty. (C.19)
 Phillips curve for the price of consumption goods (A.24)-(A.26):
 nh — uF = dp (mer — a ) + BE, (mh — vit) + 2, (C.20)
+86
 
 where
 vy = wat, + (lL—wa) tr,
@@ -2504,6 +2588,7 @@ where we set pp = 0.
 e Fiscal policy (government consumption):
 4 = patter, (C.61)
 where we set pg = 0.
+92
 
 Table 1. Description of the data series used in the estimation
 Description Source® Treatment?
@@ -2541,6 +2626,7 @@ adjusted mean (sample from 2005 onwards); pd: percentage deviation from the mean
 © Due to a methodology change in the employment and wage series in 2002, two time series were
 combined: the current one, which started in March 2002, and the one that was discontinued that time. We
 applied the growth rate of the discontinued series to obtain values for 1999Q3-2002Q1.
+93
 
 Table 2. Calibrated parameters
 Symbol | Description Value
@@ -2573,6 +2659,7 @@ Shares of Imports that are Externally Financed
 Lo Consumption goods sector 0.5
 ly nvestment goods sector 0.5
 ux Export goods sector 0.5
+94
 
 Table 2. Calibrated parameters (cont.)
 Symbol | Description Value
@@ -2589,6 +2676,7 @@ R Domestic nominal interest rate (quarterly gross rate) 1.0314
 II* World inflation (quarterly gross rate) 1.0064
 R* World nominal interest rate (quarterly gross rate) 1.0074
 SB Country risk premium (quarterly gross rate) 1.014
+95
 
 Table 3. Estimated parameters
 Description Prior Distribution Posterior Distribution
@@ -2621,8 +2709,10 @@ WM mport price indexation Beta 0.65 0.2 0.65 0.35 0.97
 Wy nvestment price indexation Beta 0.65 0.2 0.55 0.22 0.90
 Wx Export price indexation Beta 0.65 0.2 0.35 0.08 0.60
 Ww Wage indexation Beta 0.65 0.15 0.49 0.31 0.69
+96
 
 Table 3. Estimated parameters (cont.)
+Description Prior Distribution Posterior Distribution
 Distribution | Mean | SD | Mean | Conf. Interval
 Administered Price Rule Parameters
 vi Exchange rate coefficient Beta 0.05 0.03 0.05 0.01 0.09
@@ -2658,8 +2748,10 @@ Pagom* Import relative price Beta 0.5 0.25 0.88 0.80 0.97
 Py Foreign investors’s risk aversion Beta 0.5 0.25 0.79 0.60 1.0
 Pu World import demand Beta 0.5 0.25 0.13 0.00 0.25
 Prest Inventory changes ormal 0.0 0.2 0.38 0.18 0.58
+97
 
 Table 3. Estimated parameters (cont.)
+Description Prior Distribution Posterior Distribution
 Distribution | Mean | SD | Mean | Conf. Interval
 Exogenous Shocks
 EB Domestic risk premium shock Inv-gamma_ 1.0 inf 0.57 0.29 0.85
@@ -2689,6 +2781,7 @@ ETest nventories changes shock Inv-gamma_ 1.0 inf 0.69 0.57 0.81
 Measurement Errors
 ee GDP growth Inv-gamma 0.25 inf 0.08 0.06 0.11
 ENG CPI Inflation Inv-gamma_ (0.25 inf 0.12 0.10 0.14
+98
 
 Table 4. Moment conditions
 Variable Standard Deviation
@@ -2719,6 +2812,7 @@ Qi Relative price of imports 4.3027 3.8927
 Il; World inflation - US (% per quarter) 0.8361 0.8612
 Vi Foreign investors’ risk aversion - VIX 9.0339 10.5997
 R; World nominal interest rate - Fed Funds (% per quarter) | 0.5180 0.4284
+99
 
 Table 5. Forecast Error Variance Decomposition
 Real GDP Growth CPI Inflation
@@ -2747,6 +2841,7 @@ Import price in USD shock 0.17 0.13 O10 0.18 0.038 0.13 0.26 0.34
 Foreign interest rate shock 0.00 0.00 0.03 0.07 0.06 0.20 0.34 0.36
 World income shock 6.83 5.36 4.05 3.70 0.11 0.03 O11 0.63
 Foreign investor risk aversion shock | 0.00 0.01 0.02 0.02 0.02 0.07 0.10 0.09
+100
 
 Figure 1. Data series (after transformation)
 GDP
@@ -2793,6 +2888,7 @@ of
 -6 +
 2010
 2005
+2000
 
 Figure 1: Data series (after transformation) - cont.
 CPI Inflation Administered Price Inflation
@@ -2814,12 +2910,14 @@ OPN fee Ob A
 Public Sector Primary Surplus Public Sector Primary Surplus Target
 (% of GDP) (% of GDP)
 2000 2005 2010 2000 2005 2010
+102
 
 Figure 1: Data series (after transformation) - cont.
 Real Effective Exchange Rate Country Risk Premium
 (% deviation) (p.p.)
 40} | | 3] |
 20} ral
+0 wee Je NN ee 0 re
 -20 ' -1 |
 2000 2005 2000 2005
 World Imports
@@ -2837,6 +2935,7 @@ ns
 2+
 -4 tL, 4
 2000 2005 2010
+103
 
 Figure 2. Priors and posteriors of the parameters
 ~ *
@@ -2856,6 +2955,7 @@ os I Cc
 40 0.5
 20 oF
 0 0 0 ae
+0 0.4 0.2 2 4 1 2 3
 €x €Me yl
 F
 0.6
@@ -2864,23 +2964,44 @@ F
 0.5
 1
 0.2
+0 0 n 0 :
+0 2 1 3 5 10
 a ot ue
 2 0.4 0.6
 0.4
 1 0.2
 0.2
 0 OO 0 0
+0 5 10 5 10 5 10
+104
 
+10
 Figure 2. Priors and posteriors of the parameters (continued)
+105
 Op 9¢ Oy
+6
+4
+2
+0
 0.4 0.6 0.8 1 0 0.5 0.2 0.4 06 0.8 1
 Ox oy Ow
+6
+4
+2
+0
 0.4 0.6 0.8 1 0 0.5 1 0.4 0.6 0.8 1
 OP WG Yu
+2
+0
 0 0.5 1 0 0.5 1 0 0.5 1
 wx wy wy
+3
+2
+1
+0
 0 0.5 1 0 0.5 1 0 0.5 1
 
+15
 10
 Figure 2. Priors and posteriors of the parameters (continued)
 10
@@ -2907,24 +3028,30 @@ wane ; ;
 2
 0 ) :
 0.3 04 05 06 0.7 0.2 0.4 0.6 0 0.4 0.2
+106
 
 Figure 3. Impulse Responses to a Monetary Policy Shock
 Real GDP Private Consumption Government Consumption
 0 0.5 0
 -0.2 0 ——— -0.5
 -0.4 -0.5 -1
+0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP)
 0.1 0.5 0.1
 -0.1 -0.5 -0.1
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation
 0.5 0.5 0 ee
+0 a O- a -0.2
 -0.5 -0.5 -0.4
+0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized)
 0.2 0 2
 ~ 1
 0 PSST Tr -0.5 \
 @) KK — —
 -0.2 -1 -1
+0 4 8 12 0 4 8 12 0 4 8 12
 107
 Investment
 0.5
@@ -2945,6 +3072,7 @@ Real Exchange Rate
 0 4 8 12
 Mon. Policy Shock (annualized)
 \
+12
 
 Figure 4. Impulse Responses to a Wage Markup Shock
 Real GDP
@@ -2957,22 +3085,28 @@ Real Wage
 0 4 8 12
 Private Consumption Government Consumption Investment
 1 1 0
+0 | No. 7 2
 -0.5 -2 -3
+0 4 8 12 0 4 8 12 0 4 8 12
 Imports Net exports (% of GDP) Real Exchange Rate
 2 0.2 0.5
 {
 a, en
 0 ee —
 -1 -0.2 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 2 1 1
 0----- >= 0-—----- = ORF --- 7-H
 -1 -0.5 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12
 Employment Nom. Interest Rate (annualized) Wage Markup Shock
 0.5 1 2
 o-“L---- 27s 0.5 o-_ ae 1}
 -0.5 o.-----— 0
 -1 -0.5 “|
+0 4 8 12 0 4 8 12 0 4 8 12
+108
 
 Figure 5. Impulse Responses to an Investment Shock
 Real GDP
@@ -3043,6 +3177,7 @@ st
 Investment Shock
 12
 A
+12
 
 1.5
 0.5
@@ -3174,23 +3309,28 @@ a
 0 4 8 12
 Government Consumption Shock
 A
+12
 
 Figure 8. Impulse Responses to a Permanent Technology Shock
 Real GDP Private Consumption
 1.5 2
 0.5 o-~-------
 0 = — -1
+0 4 8 12 0 4 8 12
 Exports Imports
 1.5 4
 0.5 O-7-------
 0 = — 2
+0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation
 0.5 0.5
 -0.5 -0.5
+0 4 8 12 0 4 8 12
 Real Wage Employment
 2 0.5
 0 -0.5
 “1 -1
+0 4 8 12 0 4 8 12
 112
 3
 2
@@ -3206,6 +3346,7 @@ Net exports (% of GDP)
 0 4 8 12
 4-Q Adm Inflation
 0.5
+0 a ——_—_ — —
 -0.5
 0 4 8 12
 Nom. Interest Rate (annualized)
@@ -3232,6 +3373,7 @@ Real Exchange Rate
 Permanent Technolog y Shock
 2
 A
+12
 
 Figure 9. Root Mean Squared Errors of Forecasts
 (a) CPI Inflation (four quarter) (b) Real GDP Growth (year-on-year)
@@ -3248,6 +3390,7 @@ BVAR
 0.6
 0.4
 0.2
+113
 
 Figure 10. Mean Forecast and Forecast Intervals for Two Episodes
 (a) Forecast with data up to 2004Q4
@@ -3256,6 +3399,7 @@ Selic rate (%p-y.)
 ‘ ' 4
 ----- pee------4e----- eb -ee
 Hi '
+114
 
 Table A.1 - Forecast Error Variance Decomposition - 1 quarter ahead
 . Free Admin.
@@ -3288,6 +3432,7 @@ World income shock 2.35 1.43 0.00 20.50 4.39 4.4 0.02 0.14 0.00 0.18
 Foreign risk aversion shock 0.00 0.00 0.04 0.00 0.09 0.00 0.01 0.03 0.00 0.05
 
 Table A.2 - Forecast Error Variance Decomposition - 4 quarters ahead
+. Free Admin.
 Private Governm. Real . . Interest
 Shock Investm. Exports Imports Employm. Price Price
 Consump. Consump. Wage . . Rate
@@ -3317,6 +3462,7 @@ Foreign interest rate shock 0.07 0.00 0.72 0.10 1.19 0.01 0.10 0.22 0.04 0.41
 World income shock 2.37 1.14 0.05 21.57 7.91 4.11 0.43 0.05 0.00 0.07
 Foreign risk aversion shock 0.00 0.00 0.13 0.02 0.28 0.02 0.02 0.08 0.02 0.12
 
+117
 Table A.3 - Forecast Error Variance Decomposition - 8 quarters ahead
 Shock
 Private
@@ -3357,28 +3503,167 @@ Import price in USD shock
 Foreign interest rate shock
 World income shock
 Foreign risk aversion shock
+9.11
 15.35
+0.02
 32.43
+6.04
+0.84
+1.19
+4.84
+3.62
+1.15
+0.49
+9.36
+2.77
+6.64
+0.58
+0.69
+0.12
+1.04
+0.09
+0.5
+0.19
+2.9
+0.0
+0.73
+2.82
+0.01
+1.64
 11.12
 11.94
+2.58
+3.11
+2.65
+0.55
+3.32
+0.70
+1.60
+9.56
+0.05
 40.09
+5.43
+0.30
+0.02
+0.50
+0.01
+1.28
+0.00
+0.04
+1.91
+0.27
+3.49
 10.22
+0.13
 13.61
+9.11
+0.10
+0.07
+1.62
 41.67
+0.48
 12.82
+0.05
+1.00
+0.38
+0.10
+0.10
+1.20
+1.06
+0.41
+0.16
+0.15
+0.07
+0.05
+0.02
+0.61
+0.00
+0.01
+3.21
 36.36
+0.00
 27.93
 11.92
+0.00
+0.49
+0.03
+0.04
+0.00
+0.01
+0.11
+0.00
+0.24
 18.71
+0.03
+0.05
+0.57
+0.47
+1.85
+1.34
+0.12
+1.69
 14.32
+3.73
+0.12
+0.55
 55.06
+0.17
+2.32
+0.07
+0.13
+0.02
+0.12
+0.28
+3.82
+1.50
 11.44
+0.26
+3.05
 11.54
+0.05
+8.18
 13.34
+2.89
+6.31
 16.26
 10.86
+0.43
+0.59
+0.21
+2.51
 13.98
+0.04
+4.88
+0.63
+0.52
+0.01
+0.07
+0.01
+3.61
+0.02
+8.09
+0.87
+0.04
+0.36
+4.31
+0.00
+0.06
+0.31
+0.42
+2.13
+0.45
+7.71
+0.09
 72.44
+0.33
+0.02
+0.00
+0.12
+0.07
+0.41
+0.18
+1.55
+0.02
 0.89 64.06 2.45
 18.97 6.47 38.61
 0.20 0.10 0.21
@@ -3403,6 +3688,7 @@ Foreign risk aversion shock
 0.12 0.05 0.04
 0.10 0.05 0.1
 
+118
 Table A.4 - Forecast Error Variance Decomposition - Asymptotic
 Shock
 Private
@@ -3447,35 +3733,235 @@ Foreign interest rate shock
 World income shock
 Foreign risk aversion shock
 16.03
+8.52
+0.02
 18.17
+9.16
+0.46
+0.74
+3.82
+3.12
+0.63
+2.07
 16.09
+1.59
+5.89
+0.52
+0.55
+0.07
+2.28
+0.28
+0.94
+0.24
+8.76
+0.02
+8.80
+3.82
+0.01
+1.42
 11.09
+9.05
+2.24
+2.32
+1.84
+2.30
+2.63
+5.45
+3.81
+7.95
+0.19
 28.01
+5.14
+1.9
+0.03
+0.54
+0.08
+1.34
+0.0
+0.59
+2.27
+0.21
+2.54
+9.48
+0.10
+8.20
+7.30
+0.77
+0.06
+1.71
 50.03
+0.62
+9.09
+0.12
+0.72
+0.31
+0.16
+0.17
+1.28
+1.09
+3.02
+0.14
+0.69
+0.14
+0.07
+0.03
+1.56
+0.01
+0.38
+6.28
 27.01
+0.05
 22.39
 25.89
+0.00
+0.50
+0.10
+0.04
+0.01
+0.07
+0.20
+0.04
+0.45
 14.04
+0.05
+0.10
+0.47
+0.30
+1.11
+0.82
+0.07
+1.31
 11.40
+3.25
+0.09
+1.22
 56.18
+0.11
+1.30
+0.09
+0.08
+0.02
+0.07
+0.35
+2.99
+1.22
 17.28
+0.17
+7.18
+9.93
+0.05
+7.18
 13.80
+2.48
+5.54
 14.07
+9.42
+0.54
+0.84
+1.96
+2.29
 14.58
+0.18
+4.16
+0.58
+0.77
+0.05
+0.23
+0.05
+4.10
+0.02
 16.25
+0.92
+0.03
+0.75
+7.27
+0.00
+0.18
+1.32
+1.38
+1.22
+1.77
 14.29
+0.11
 42.90
+0.33
+0.09
+0.00
+1.79
+0.25
+0.82
+0.21
+8.09
+0.02
+2.29
 17.93
+0.18
+1.69
 18.85
+0.09
+0.71
+3.37
+0.37
 10.94
+0.34
 12.26
+2.25
 26.03
+0.07
+0.28
+0.13
+0.73
+0.03
+0.35
+0.36
+0.63
+0.09
 56.37
+8.07
+0.09
+0.73
+8.45
+0.04
+0.32
+1.07
+0.12
+2.37
+0.21
+6.31
+0.98
 10.98
+0.05
+0.11
+0.06
+2.90
+0.02
+0.18
+0.18
+0.33
+0.05
+2.72
 39.19
+0.17
+2.25
 10.86
+0.17
+1.37
+1.34
+0.50
+0.03
+0.66
 17.70
+7.10
 11.93
+0.10
+0.61
+0.25
+1.44
+0.04
+0.36
+0.47
+0.63
+0.09
 
 -0.2
 -0.4
@@ -3487,61 +3973,77 @@ Real GDP Private Consumption
 Ne oy
 -0.5
 “1
+4 8 12 0 4 8 12
 Exports Imports
 es 0.5
 0 | <a
 -0.5
+4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation
 0.5
 7\__ »(-An l=
 -0.5
+4 8 12 0 4 8 12
 Real Wage Employment
 0 -
 NEO
 VS—osoooooe
 -0.5
 “1
+4 8 12 0 4 8 12
 119
 Government Consumption Investment
 0.4 0.5
 0.2 EP_ 0--=s-s- -
 0 — ~  -0.5
+0 4 8 12 0 4 8 12
 Net exports (% of GDP) Real Exchange Rate
 0.04 0
 0.02 > -0.5
 ve eee
 o- -- == = -
 -0.02 -1.5
+0 4 8 12 0 4 8 12
 4-Q Adm Inflation 4-Q Import Goods Inflation
 4 0.5
 2
 — 0 ee — —<—
 0 —
 -2 -0.5
+0 4 8 12 0 4 8 12
 Nom. Interest Rate (annualized) Adm Price Shock
 0.4 1.5
 1
 0.2
 0.5
 0 — * 0
+0 4 8 12 0 4 8 12
 
 Figure A2. Impulse Responses to a Domestic Risk Premium Shock
+Real GDP Private Consumption Government Consumption
 1 1
+| 0 fe 0 a
+| -1 aa -1 —
 -2 -2
+0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP)
 2 0.5
 a 0p tsa
+a 0 ES — ee — —
 -2
 -4 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation
 2 2
 ON °F SS
 - SN -
 -4 -4
+0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized)
 2 0
 -2 -4
 -4 6
+0 4 8 12 0 4 8 12 0 4 8 12
 120
 Investment
 5
@@ -3567,22 +4069,27 @@ Domestic Risk Premium Shock
 8 12
 
 Figure A3. Impulse Responses to a Country Risk Premium Shock
+Real GDP Private Consumption
 0.5
 ee
 -0.5
+4 8 12 0 4 8 12
 Exports Imports
 2
 ie -2
 -4
+4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation
 1
 0.5
 ———_ 0 La
 -0.5
+4 8 12 0 4 8 12
 Real Wage Employment
 0.5
 en
 -0.5
+4 8 12 0 4 8 12
 121
 Government Consumption
 0.5
@@ -3628,6 +4135,7 @@ Country Risk Premium Shock
 1.5
 1
 0.5
+12
 
 Figure A4. Impulse Responses to a Household Preference Shock
 Real GDP
@@ -3655,47 +4163,59 @@ Private Consumption Government Consumption Investment
 0.2 0.2 0.2
 0 [f 0 |Z 0.1 fo~
 -0.2 -0.2 0 — *
+0 4 8 12 0 4 8 12 0 4 8 12
 Imports Net exports (% of GDP) Real Exchange Rate
 0.2 0.04 0.05
 0.02
 0- -ses > a OF -— >So >
 @) — _ —
 -0.2 -0.02 -0.05
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 0.1 0.02 0.05
 @) fe eee ee
 O- = - p=  —
 0.02 ee
 -0.1 -0.04 -0.05
+0 4 8 12 0 4 8 12 0 4 8 12
 Employment Nom. Interest Rate (annualized) Household Preference Shock
 0.2 0 2
 -0.02
 0O--Z 1
 VA -0.04 \
 -0.2 -0.06 0
+0 4 8 12 0 4 8 12 0 4 8 12
+122
 
 Figure A5. Impulse Responses to a Transitory Technology Shock
+Real GDP Private Consumption Government Consumption
 2 1 2
 1 1
 F22 \ Fe PZ
 0-— ------ o-f-----—™—
 5 “1 “|
+0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP)
 1 1 0.2
 0O+---s > ee
 0.5 i
 y .
+0 — — -2 -0.2
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation
 0 0 0
 0.5 ee 0.5 \
 -0.5
 5 “1
 -1.5 -1.5 -1
+0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized)
 1 1 0
 0- - ZF eo
 0.5 -0.5
 aan -1
+0 — —  -2 -1
+0 4 8 12 0 4 8 12 0 4 8 12
 123
 Investment
 3
@@ -3720,6 +4240,7 @@ Transitory Technolog y Shock
 1.5
 1
 0.5
+0
 0
 
 Figure A6. Impulse Responses to an Import Demand Shock
@@ -3778,17 +4299,23 @@ Private Consumption Government Consumption Investment
 0.05 0.1 0.05
 0 | Qo 0 In OK- = - —
 -0.05 -0.1 -0.05
+0 4 8 12 0 4 8 12 0 4 8 12
 Imports Net exports (% of GDP) Real Exchange Rate
 0.1 0.05 0------7-
 Vine. 0 LS 0.05 a
 0 — ~ -0.05 -0.1
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 0.02 0.01 0.1
+o-—-— _—__ 0 | FS 0 —
 -0.02 -0.01 -0.1
+0 4 8 12 0 4 8 12 0 4 8 12
 Employment Nom. Interest Rate (annualized) Exports Demand Shock
 0.1 0.02 2
 0 KO 0 [Sa {
 -0.1 -0.02 0 \
+0 4 8 12 0 4 8 12 0 4 8 12
+125
 
 Figure A8. Impulse Responses to a Price Markup Shock
 Real GDP Private Consumption Government Consumption Investment
@@ -3797,22 +4324,27 @@ Real GDP Private Consumption Government Consumption Investment
 0- - == == Of - == O- ye -----
 , a 4
 -0.5 -1 -2
+4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP) Real Exchange Rate
 0.5 0.1 0.5
 0 [ = oO aS.
 (a — o---= = 0
 0.5 J a=
 -1 -0.1 -0.5
+4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 2 1 1
 1 “A 0.5 Awe 0.5 AY
 @) ae @) ——<— — — @) SS S| @) Se
 -1 -0.5 -0.5
+4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized) Price Markup Shock
 0.5 0.5 2
 LL 0 | =
 -0.5 \
 -1 -0.5 0'-—
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
+126
 
 Figure A9. Impulse Responses to an Export Price Markup Shock
 Real GDP
@@ -3822,23 +4354,27 @@ Government Consumption
 _ ee —™”
 0S OF => - 7-H: 0.2 ~~
 -0.1 -0.1 0- — *
+0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP)
 0 - 0.5 0.2
 0O-=------ Op — ee
 |
 -1.5 -0.5 -0.2
+0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation
 0.05 0.05 0.02
 0 fee ees
 tl — i ———S
 No 0.02
 -0.05 -0.05 -0.04
+0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized)
 0.1 0.1 0 j
 OrN - 7S _
 0.05 -0.05
 lS -0.1
 0- — *~ -0.2 -0.1
+0 4 8 12 0 4 8 12 0 4 8 12
 127
 Investment
 0.4
@@ -3857,6 +4393,7 @@ a
 0 4 8 12
 Export Price Markup Shock
 2
+12
 
 Figure A10: Impulse Responses to a Tax Rate Shock
 Real GDP
@@ -3864,12 +4401,14 @@ Private Consumption
 0 4 8 12
 4 8
 -0.5
+0 4 8 12 0 4 8
 Real Wage Employment
 4
 2
 + a — — SS 0.5
 —..~___ @) _-_ TS Tre SS
 -2
+0 4 8 12 0 4 8
 12
 128
 Government Consumption
@@ -3912,25 +4451,31 @@ Tax Rate Shock
 4 8 12
 
 Figure All. Impulse Responses to a Primary Surplus Target Shock
+Real GDP Private Consumption Government Consumption Investment
 2
 { /o™~
 @) —
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP) Real Exchange Rate
 0.5 0.5 0.1 0.5
 @) ty --
 0 L=_ OorK-—-— _ 0 — —_——
 -0.5
 -0.5 -1 -0.1 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 0.5 0.5 0.5 0.5
 0 a 0 ae 0 [MS 0 > =
 -0.5 -0.5 -0.5 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized) Fiscal Target Shock
 0.1 1 0.5 2
 Ce O---s == OF ----~s >= 1
 O--- = i ee Se
 -1 -0.5 o----= =
 -0.1 -2 4 “1
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
+129
 
 Figure A12: Impulse Responses to an Inflation Target Shock
 130
@@ -3980,24 +4525,29 @@ Inflation Target Shock
 0 4 8 12
 
 Figure A13. Impulse Responses to a Foreign Inflation Shock
+Real GDP Private Consumption
 1 1
 0.5
 4N 0.5
 @) I ———
 -0.5 0 — _
+0 4 8 12 0 4 8 12
 Exports Imports
 5 6
 A
 0
 2
 5 0 — —
+0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation
 0.5 0.5
 -0.5 -0.5
+0 4 8 12 0 4 8 12
 Real Wage Employment
 1 1
 0.5
 0 — — -0.5
+0 4 8 12 0 4 8 12
 131
 0.5
 0 4 8 12
@@ -4023,47 +4573,63 @@ Real Exchange Rate
 4-Q Import Goods Inflation
 0 4 8 12
 Foreign Inflation Shock
+10
 
 Figure A1l4. Impulse Responses to an Import Relative Price Shock
+Real GDP Private Consumption Government Consumption Investment
 0 0 0 0
 VI 0.5} -2
 -0.5 -1
 “1 -4
 -1 -1.5 -2 -6
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP) Real Exchange Rate
 1 0 1 2
 @) ee — — =——j—— —
 => 5 (e) HH —_—__—__— — —
 4
 -1 -10 -2 -2
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation
 1 1 1
 0.5 0.5
 V owe -—---- == OhK—= - - -
 0 -0.5 -0.5 5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized) Import Price in USD Shock
 0 0.5 1 15
 0.5 NL 0+} -s==--- 08
 4 0.5 P= 0 = 5 Sa
 -1.5 -1 -0.5 0 — —
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
+132
 
 Figure A15. Impulse Responses to a Foreign Interest Rate Shock
+Real GDP Private Consumption Government Consumption Investment
 0 0.5 0
+Pa Se ee 2 NO
+~ NL 05 be |
 -0.5 -4
 1 | -6
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP) Real Exchange Rate
 5 1 20
 OF - --- sae 10
 i 5 A ~~ 9+ --—- >=
 -10 0. —— -10
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 1 1 10
+NS ee | 0 jee ia ae 0 SN Ee | 0 Le
 -0.5 -0.5 -5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized) International Interest Rate Shock
 0.5 1.5 1.5
 0 Se
 0.5 Vg 0.5
 -0.5 o-—— — 0 — =
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
+133
 
 0.4
 0.2
@@ -4106,30 +4672,38 @@ World Income Shock
 ~~
 12
 » |
+0
 
 Figure A17. Impulse Responses to Foreign Investors’ Risk Aversion Shock
+Real GDP Private Consumption Government Consumption Investment
 0.02 0.1 0.05 0.5
 1 = Saar
 0-—== = > > = 0-——Ss TT 0-—Sa TTT:
 -0.02
 -0.04 -0.1 -0.05 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Exports Imports Net exports (% of GDP) Real Exchange Rate
 0.2 0.5 0.05 1
 0.5
+— _ _ Ln SS
 Orr ---T- Oe Oe —___
 0 — ———
 -0.2 -0.5 -0.05 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 4-Q CPI Inflation 4-Q Free Inflation 4-Q Adm Inflation 4-Q Import Goods Inflation
 0.04 0.04 0.04 0.5
 0.02 0.02 0.02
 eee 0-~----- =: 0 ee
 -0.02 -0.02 -0.02 -0.5
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
 Real Wage Employment Nom. Interest Rate (annualized) Foreign Investor Risk Aversion Shock
 0.1 0.02 0.05 1.5
 a _ 1
 -_ 0 0------ =>
 0.5
 -0.1 -0.02 -0.05 0
+0 4 8 12 0 4 8 12 0 4 8 12 0 4 8 12
+135
 
 Banco Central do Brasil
 Trabalhos para Discussao
@@ -4144,8 +4718,10 @@ Os Trabalhos para Discussdo do Banco Central do Brasil estado disponiveis para d
 210
 211
 212
+http://www.bcb. gov.br/? TRABDISCLISTA
 Working Paper Series
 The Working Paper Series of the Central Bank of Brazil are available for download at
+http://www.bcb.gov.br/? WORKINGPAPERS
 Hiato do Produto e PIB no Brasil: uma Andlise de Dados em
 Tempo Real
 Rafael Tiecher Cusinato, André Minella e Sabino da Silva Porto Junior
@@ -4189,6 +4765,7 @@ May/2010
 Aug/2010
 Sep/2010
 
+213
 214
 215
 216
@@ -4267,6 +4844,7 @@ Nov/2010
 Dec/2010
 Dec/2010
 
+230
 231
 232
 233

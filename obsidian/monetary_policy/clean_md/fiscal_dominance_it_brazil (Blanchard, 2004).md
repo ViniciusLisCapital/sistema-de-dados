@@ -3,6 +3,7 @@ FISCAL DOMINANCE AND INFLATION TARGETING:
 LESSONS FROM BRAZIL
 Olivier Blanchard
 Working Paper 10389
+http://www.nber.org/papers/w10389
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -44,6 +45,7 @@ E52-373
 MIT
 Cambridge, MA 02139
 and NBER
+blanchar@mit.edu
 
 Brazil
 3
@@ -382,6 +384,7 @@ If it has inﬁnite support, then the shape of ψ is as shown by the locus AA”
 For any level of debt, there is a positive probability of default, however
 small. Thus, even for p = 0, ψ is positive. As p increases, so does D′, and
 
+1
 1
 p
 p, Ψ
@@ -727,6 +730,23 @@ We can now turn to the estimation of the two relations between the exchange rate
 and the probability of default.
 
 Figure 5. Spread and estimated probability of default
+1995
+1996
+1997
+1998
+1999
+2000
+2001
+2002
+2003
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
 SPREAD
 PROBA
 
@@ -764,6 +784,24 @@ is a function of the real exchange rate. Thus, the nominal speciﬁcation is, st
 
 Figure 6. Real exchange rate and risk premium
 1999:1 to 2004:1
+1999
+2000
+2001
+2002
+2003
+0.96
+1.12
+1.28
+1.44
+1.60
+1.76
+1.92
+1
+2
+3
+4
+5
+6
 REALERATE
 PTHETA
 
@@ -900,9 +938,39 @@ as functions of coefficient on E[e(+6)]
 Coefficient and 2-sd band
 coefficient on expected exchange rate
 coefficient on (p*theta)
+0.80
+0.85
+0.90
+0.95
+1.00
+-3.6
+-1.8
+0.0
+1.8
+3.6
+5.4
+7.2
+9.0
+10.8
+12.6
 Coefficient and 2-sd band
 coefficient on expected exchange rate
 coefficient on (r-r*)
+0.80
+0.85
+0.90
+0.95
+1.00
+-0.2
+-0.1
+0.0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
 
 Brazil
 25
@@ -973,6 +1041,29 @@ The proportion of dollar debt, net of swap positions, has decreased from 37% in 
 
 Figure 8. Debt to GDP ratio and p of default
 1999:1 to 2003:5
+1999
+2000
+2001
+2002
+2003
+46.8
+48.6
+50.4
+52.2
+54.0
+55.8
+57.6
+59.4
+61.2
+63.0
+2.4
+3.6
+4.8
+6.0
+7.2
+8.4
+9.6
+10.8
 
 Brazil
 27
@@ -1265,9 +1356,13 @@ explored in this paper, the eﬀect of higher real rates on ﬁscal dynamics, ma
 Figure 9. Forecast inflation, and real interest rate
 2002:1 to 2004:1
 J
+F M A M J
 J
+A S O N D
 J
+F M A M J
 J
+A S O N D
 J
 2002
 2003

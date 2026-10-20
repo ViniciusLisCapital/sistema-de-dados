@@ -1,0 +1,49 @@
+# What the mental-model agent reads and where each document starts.
+# Read by repository/ingestion/scripts/mental.py; the process is in repository/mental_model/MENTAL_MODELS.md.
+#
+# A document is one manager x one area: obsidian/<area>/mental_models/<manager>_<code>_mental_models.md.
+# Which letters each document has already read is in ledger/<document>.tsv, written by `mental.py done`.
+
+areas:                     # obsidian/<area>/ -> the code in the document's file name
+  exchange_rate: fx
+  monetary_policy: mp
+  fiscal_policy: fiscal
+  inflation: inflation
+  economic_activity: activity
+  labor_market: labor
+
+managers:                  # corpora: folders under repository/mental_model/ with one .md per letter, written by
+                           # /ingest mental_model/<folder> (Kinea: fetch_kinea.py). date: regex on the file name,
+                           # groups y, m and (optional) d. It is also the naming rule /ingest applies to the PDFs
+  verde:
+    name: Verde
+    corpora:
+      - path: verde_asset/clean_md
+        date: 'Verde-REL-(?P<y>\d{4})_(?P<m>\d{2})'
+  kapitalo:
+    name: Kapitalo
+    corpora:
+      - path: kapitalo/clean_md
+        date: 'kapitalo_k10_(?P<m>\d{2})(?P<y>\d{4})'
+  kinea:
+    name: Kinea
+    corpora:
+      - path: kinea                  # "Carta do Gestor", fetched as markdown by fetch_kinea.py
+        date: 'kinea_(?P<d>\d{2})(?P<m>\d{2})(?P<y>\d{4})'
+      - path: kinea_insights         # thematic essays
+        date: 'kinea_insights_(?P<d>\d{2})(?P<m>\d{2})(?P<y>\d{4})'
+  goldman_sachs:
+    name: Goldman Sachs
+    corpora:
+      - path: goldman_sachs/clean_md     # PDF names carry the title: /ingest renames them, date from page 1
+        date: '^gs_global_fx_(?:trader|outlook)_(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})$'
+  spx:
+    name: SPX
+    corpora:
+      - path: spx_capital/clean_md       # 7 PDFs, not ingested yet
+        date: 'spxcapital_(?P<m>\d{2})(?P<y>\d{4})'
+
+documents:                 # per-document settings. start: letters dated before it are out of range
+  verde_fx_mental_models: {start: 2020-01}
+  kapitalo_fx_mental_models: {start: 2019-07}
+  kinea_fx_mental_models: {start: 2021-05}

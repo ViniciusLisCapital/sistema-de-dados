@@ -33,18 +33,24 @@ certain markets. Our analysis suggests that high exposure to the global factor
 may amplify food inflation risks in EMs vs. DMs, with Ethiopia, Pakistan, Senegal, 
 Malaysia, Ghana and Morocco screening among the more exposed countries.
 Ludovica Ambrosino 
++44(20)7051-9222 | 
+marialudovica.ambrosino@gs.com 
 Goldman Sachs International 
 Andrew Matheny 
++44(20)7051-6069 | 
+andrew.matheny@gs.com 
 Goldman Sachs International
 23 June 2026 | 9:57AM BST
-
+ 
+www.gs.com/research/hedge.html. 
 Economics Research
 EM MACRO THEMES 
 EM Food Inflation: Upside Pressures Globally, But Heterogeneous Local 
 Exposure
 
 EM Food Inflation: Upside Pressures Globally, But Heterogeneous Local Exposure 
-
+ 
+ 
 Food price shocks have historically been frequent and large across emerging markets 
 (EMs), more so than in developed markets (DMs). These shocks tend to be driven by a 
 combination of rising energy costs and restrictive trade policies (2007-2008 food 
@@ -95,7 +101,7 @@ EM Macro Themes
 
 winter months). The impact of local weather shocks on prices may, thus, in these 
 instances be more short-lived than that of global shocks. 
-
+ 
 To separate these layers cleanly, we estimate a Principal Component Analysis (PCA) 
 factor model on a panel of food inflation rates across roughly 125 developed and 
 emerging economies1. We first isolate a single common series from the full panel – the 
@@ -121,7 +127,7 @@ Belize, Canada, Costa Rica, Dominican Republic, El Salvador, Guatemala, Honduras
 Panama, Trinidad & Tobago, United States. In Western Europe: Austria, Belgium, Cyprus, Denmark, Finland, 
 France, Germany, Greece, Iceland, Ireland, Italy, Luxembourg, Netherlands, Norway, Portugal, Slovak Republic, 
 Slovenia, Spain, Sweden, Switzerland, United Kingdom.
-
+ 
 Exhibit 1: Net Food Exporters Are Roughly Evenly Distributed Between EMs and DMs 
 -6
 -4
@@ -207,7 +213,8 @@ Egypt
 Nepal
 Food Net Exports, % of GDP
 Food Net Exports, % of GDP
-
+ 
+ 
 Source: Haver Analytics, World Bank, Goldman Sachs Global Investment Research
 23 June 2026
   3
@@ -260,14 +267,44 @@ vulnerable to localized weather shocks and livestock diseases. Third, EM currenc
 typically more volatile against the USD, and since many key food inputs (fertilizers, 
 diesel, grains) are sourced internationally and USD-invoiced, exchange-rate 
 pass-through amplifies imported food inflation. 
-
+ 
 Exhibit 2: Historically Food Inflation in EM Has Been More Volatile Than in DM, But It Has 
 Converged In The Last Decade 
+-5
+0
+5
+10
+15
+20
+25
+-5
+0
+5
+10
+15
+20
+25
+83
+86
+89
+92
+95
+98
+01
+04
+07
+10
+13
+16
+19
+22
+25
 EM  Median Food Inflation
 DM Median Food Inflation
 % yoy
 % yoy
-
+ 
+ 
 Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   5
@@ -289,13 +326,30 @@ episode, realized food CPI inflation across both DM and EM economies spiked by
 considerably more than the FAO index would have predicted, reflecting in part the 
 global nature of the inflation shock at the time that extended to demand-side drivers as 
 well as to supply factors outside of commodity prices. 
-
+ 
 Exhibit 3: At Low Levels of GDP per Capita, The Share Of Food in the CPI Basket is Very High 
+0.0
+10.0
+20.0
+30.0
+40.0
+50.0
+60.0
+0
+20
+40
+60
+80
+100
+120
+140
 EM
 DM
 Food & Non-Alcoh. Beverages CPI Weight, % 
 GDP Per Capita, '000 USD
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   6
 Goldman Sachs
@@ -322,16 +376,48 @@ Notably, the FAO index is not a sufficient measure to fully decompose global foo
 the FAO index captures farm-gate and wholesale commodity prices, diesel feeds into food CPI further 
 downstream through transport, logistics and retail margins, while fertilizer hits with a much longer lag because it 
 affects planting decisions and next-season yields.
-
+ 
 Exhibit 4: Lagged FAO Food Index Movements Lead Global Food Inflation, but 
 Underpredicted the 2022 Surge Relative to Prior Shocks 
+0
+2
+4
+6
+8
+10
+12
+14
+-40
+-20
+0
+20
+40
+60
+80
+100
+120
+00
+02
+04
+06
+08
+10
+12
+14
+16
+18
+20
+22
+24
+26
 FAO Food Commodity Prices (LHS, % yoy)
 Global  Food Inflation Median (RHS, %yoy)
 Food Inflation increased more than 
 implied by soft commodity prices
 Prior food inflation episodes accounted for 
 by soft commodity prices
-
+ 
+ 
 Source: Haver Analytics, UN FAOSTAT, Goldman Sachs Global Investment Research
 23 June 2026
   7
@@ -351,8 +437,31 @@ Russia-Ukraine war shock4.
 We exclude 13 countries from the panel: Argentina, Venezuela, Lebanon, Iran, Uruguay, Zambia, Suriname, 
 Tunisia, Uzbekistan, Myanmar, Somalia, Papua New Guinea and Seychelles. These countires have either 
 experienced severe and persistent hyperinflation, or have discontinuous CPI series, with very limited coverage.
-
+ 
 Exhibit 5: Diesel and Fertilizers Also Lead Food Inflation 
+-100
+-50
+0
+50
+100
+150
+200
+250
+0.0
+5.0
+10.0
+15.0
+20.0
+00
+03
+06
+09
+12
+15
+18
+21
+24
+27
 Global Food Inflation Median (RHS, %yoy)
 Diesel (LHS, %yoy)
 Fertilizer (LHS, %yoy)
@@ -361,7 +470,8 @@ food inflation...
 ..and they 
 already started 
 increasing 
-
+ 
+ 
 Source: Haver, Goldman Sachs Global Investment Research
 23 June 2026
   8
@@ -384,13 +494,47 @@ somewhat larger contribution from regional factors.
 In Asia and Latin America, global and regional forces have roughly equal importance, yet 
 the local component remains most informative as it is driven by both weather-relevant 
 events and country-specific patterns. 
-
+ 
 Exhibit 6: Our Global Food Factor Tracks Aggregate Global Food Inflation Well  
+0
+2
+4
+6
+8
+10
+12
+14
+16
+0
+2
+4
+6
+8
+10
+12
+14
+16
+00
+02
+04
+06
+08
+10
+12
+14
+16
+18
+20
+22
+24
+26
 Global Food Factor
 Median Global Food Inflation
 %yoy
 %yoy
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   9
 Goldman Sachs
@@ -418,7 +562,7 @@ higher share of processed food in their consumption basket. This partially skews
 results towards DMs appearing more exposed to the global factor. Indeed, beyond their 
 deeper integration into the global value chain, the prices of processed and packaged 
 goods embed labour costs and retail margins that are more synchronised across the DM 
-
+ 
 Exhibit 7: DMs and CEE are More Globally Synchronised, While Asia, Africa, Middle East and 
 Latin America Are More Idiosyncratic 
 '(&#)&$%
@@ -456,10 +600,13 @@ Latin America Are More Idiosyncratic
 $#!
 $!
 &#*%!#+
+
 
 &#(
 $ '
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   10
 Goldman Sachs
@@ -467,7 +614,7 @@ EM Macro Themes
 
 business cycle — so part of that synchronisation may itself be picked up by the global 
 factor. 
-
+ 
 We Expect Global Food Inflation Pressure to Build Up in 2026H2 
 Having extracted the global factor, we then regress it on a small set of observable global 
 price processes – the FAO soft commodities index, fertilizer and diesel prices, and the 
@@ -481,7 +628,7 @@ vegetable oil and dairy quotations to retail food CPI. Fertilizer prices matter,
 a longer, three-quarter lag, as fertilizer feeds into food prices indirectly through the next 
 planting cycle. Finally, diesel also exerts inflationary pressure on the global factor, but 
 with a lower contribution and with a longer lag. 
-
+ 
 Exhibit 8: Country-Specific Drivers of Food Inflation Are More Nuanced and Varied 
 
 
@@ -531,6 +678,10 @@ $
 
 
 
+
+
+
+
 
 
 
@@ -604,9 +755,9 @@ $
 
 
 
-
+
 
-
+
 
 
 
@@ -638,6 +789,9 @@ $
 
 
 
+
+
+
 !
 
 !
@@ -656,6 +810,10 @@ $
 
 
 
+
+
+
+
 
 
 
@@ -677,6 +835,10 @@ $
 
 
 
+
+
+
+
 
 
 
@@ -685,6 +847,10 @@ $
 
 
 
+
+
+
+
 
 
 
@@ -712,7 +878,9 @@ $
 
 )+-21%/
 2'%/
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   11
 Goldman Sachs
@@ -730,9 +898,30 @@ factor and where food makes up a significant proportion of the consumer basket
 likely to experience the most pronounced pass-through to domestic inflation. By 
 contrast, our analysis suggests lower risk for countries that exhibit a lower sensitivity to 
 global factors. 
-
+ 
 Exhibit 9: We Expect the Consequences of the Iran War To Increase Global Food Inflationary 
 Pressure 
+-10
+-5
+0
+5
+10
+15
+-10
+-5
+0
+5
+10
+15
+01
+04
+07
+10
+13
+16
+19
+22
+25
 FAO Soft Commodity Prices
 Fertilizer
 Diesel
@@ -743,7 +932,9 @@ Fitted Values
 pp deviation from the mean 
 pp deviation from the mean 
 Projection
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   12
 Goldman Sachs
@@ -759,7 +950,7 @@ the long-term average, typically bringing warmer conditions and reduced precipit
 America) that weigh directly on agricultural production. Climate experts are warning of 
 El Niño weather patterns later this year, which would likely translate into adverse 
 growing conditions and imply supply-side risks extending into 2027. 
-
+ 
 Exhibit 10: We Expect Economies With Higher Food Inflation Variance Correlated to the 
 Global Factor to Be the Most Exposed to Inflationary Pressure 
 Denmark
@@ -848,7 +1039,9 @@ DM
 % of Variance Explained By Global Factor
 Food CPI Weight, parts of 100 
 Higher Variance Explained By Global Factor and Higher Food Weight In CPI Basket 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   13
 Goldman Sachs
@@ -873,11 +1066,11 @@ episodes. Against this backdrop, the risk to food inflation in these vulnerable 
 is firmly skewed to the upside, with the potential for sharp, localized price spikes should 
 a strong El Niño materialize and compound existing supply pressures. 
 Ludovica Ambrosino and Andrew Matheny
-
+ 
 Exhibit 11: In Aggregate There Is Little Correlation 
 Between El Niño And Higher EM Food Inflation... 
 Shaded areas represent El Niño years 
-
+ 
 Exhibit 12: ... However, Countries in Southern Africa And 
 South Asia Appear To Have Been More Exposed 
 Historically 
@@ -920,6 +1113,7 @@ temperature
 
 
 
+	
 
 
 
@@ -954,9 +1148,9 @@ temperature
 
 
 
-
+ 
 
-
+ 
 
 
 
@@ -968,12 +1162,18 @@ temperature
  
 !!
 !!
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   14
 Goldman Sachs
 EM Macro Themes
 
+5
 Medel (2017) for Chile, Garcia, Medeiros, Vasconcelos (2017) for Brazil use similar approaches to understand 
 Box 1: PCA-Based Decomposition of Food Inflation 
 We decompose quarterly year-on-year food CPI inflation across a broad cross-section of countries 
@@ -986,12 +1186,12 @@ The input is food CPI levels for around 125 countries. A small list of countries
 hyper-inflationary series is excluded ex ante. 
 We extract the global component by applying PCA to a balanced panel food inflation, from 2000-Q1 
 onwards. We then regress each country’s food inflation on a constant and the global component Gt.: 
-
+ 
 The residuals ui, t are by construction orthogonal to Gt and capture inflation variation that the global 
 component does not explain. We then group countries by region r and apply PCA on the within-region 
 residual panel to extract a regional component (Exhibit 13). 
 Given Gt  and the relevant R i,t  for country i’s region, we run a final two-regressor OLS per country: 
-
+ 
 The country-specific loadings ßi
 G and ßi
 R measure the sensitivity of country i‘s food inflation to the global 
@@ -1002,7 +1202,7 @@ with no natural unit: they are simply principal-component scores, normalised to 
 (or unit-relative) variance. To restore an inflation interpretation, we project the factors back onto 
 observable inflation aggregates using a simple OLS regression. Specifically, to get the final global and 
 regional factors, we estimate:  
-
+ 
 where the dependent variable is either is the cross-country mean of food inflation at the global level or 
 regional level. The respective fitted values represent the global and regional factors in inflation equivalent 
 terms. 
@@ -1012,7 +1212,7 @@ Goldman Sachs
 EM Macro Themes
 
 inflation dynamics.
-
+ 
 Exhibit 13: Regional Factors 
 Year-over-year, % 
 
@@ -1045,13 +1245,15 @@ Year-over-year, %
 
 	
 	
-
+	
 
 
+	
 
 
+	
 
-
+	
 
 	
 
@@ -1113,13 +1315,15 @@ Year-over-year, %
 
 	
 	
-
+	
 
 
+	
 
 
+	
 
-
+	
 
 	
 
@@ -1158,6 +1362,9 @@ Year-over-year, %
 
 	
 	
+	
+
+	
 
 
 
@@ -1196,6 +1403,9 @@ Year-over-year, %
 
 	
 	
+	
+
+	
 
 
 
@@ -1252,13 +1462,15 @@ Year-over-year, %
 
 	
 	
-
+	
 
 
+	
 
 
+	
 
-
+	
 
 	
 
@@ -1309,13 +1521,15 @@ Year-over-year, %
 
 	
 	
-
+	
 
 
+	
 
 
+	
 
-
+	
 
 	
 
@@ -1361,6 +1575,11 @@ Year-over-year, %
 
 	
 	
+	
+	
+	
+
+	
 
 	
 	
@@ -1383,7 +1602,9 @@ Year-over-year, %
  $#! #
 !( $#"
 #
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   16
 Goldman Sachs
@@ -1393,32 +1614,40 @@ Box 2: Explaining the Global Factor
 Having extracted, in a first stage, a single common factor Gt from the cross-section of country-level food 
 CPI inflation, we then investigate what observable global price processes account for the movement in this 
 latent common factor: 
-
+ 
 These four variables span the principal transmission channels emphasized in the agricultural-economics 
 literature: (i) world soft-commodity prices (FAO), (ii) input costs through energy-intensive fertilizer 
 (Urea/DAP), (iii) transport and processing costs (diesel), and (iv) the Dollar-invoicing channel (USD), which 
 mechanically affects local-currency import prices of food and fuel. 
-
+ 
 The lag is chosen by AIC and BIC criteria, recognizing that pass-through from world prices to a 
 cross-country common factor in CPI food inflation is neither instantaneous nor uniform across channels – 
 fertilizers, in particular, are typically pre-bought one to two seasons ahead. 
 The coefficient on each driver should be interpreted as the elasticity of the common component of food 
 inflation (an unobserved factor, not a single country’s CPI) with respect to a one-percent YoY change in 
 that driver, holding the others fixed at their respective optimal lags (Exhibit 14).
-
+ 
 Exhibit 14: FAO and USD NEER Strongly Influence the 
 Global Factor, Followed by Fertilizer and Diesel 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   17
 Goldman Sachs
 EM Macro Themes
 
 Appendix: Country Summaries  
-
+ 
+ 
+ 
+ 
+ 
 Exhibit 15: Australia: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 16: Austria: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -1500,10 +1729,18 @@ $"#!%
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 17: Bahrain: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 18: Belgium: Food Inflation Decomposition 
+Year-over-year, % 
 	
 
 	
@@ -1594,15 +1831,22 @@ Exhibit 18: Belgium: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   18
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 19: Brazil: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 20: Canada: Food Inflation Decomposition 
+Year-over-year, % 
 	
 
 	
@@ -1612,7 +1856,8 @@ $
 $	
 
 
-
+	
+	
 
 
 	
@@ -1689,10 +1934,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 21: Chile: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 22: China: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -1784,15 +2037,22 @@ Exhibit 22: China: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   19
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 23: Colombia: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 24: Czechia: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -1803,7 +2063,8 @@ Exhibit 24: Czechia: Food Inflation Decomposition
 "	
 
 
-
+	
+	
 
 
 	
@@ -1852,7 +2113,8 @@ $
 $	
 
 
-
+	
+	
 
 
 	
@@ -1874,6 +2136,7 @@ $
 
 
 
+
  !
 
 
@@ -1887,10 +2150,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 25: Denmark: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 26: Ecuador: Food Inflation Decomposition 
+Year-over-year, % 
 	
 
 	
@@ -1931,6 +2202,7 @@ $
 
 
 
+
 !"
 
 
@@ -1991,15 +2263,22 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   20
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 27: Egypt: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 28: Ethiopia: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2087,10 +2366,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 29: Finland: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 30: France: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2163,6 +2450,7 @@ $
 
 
 
+
 !"
 
 
@@ -2175,15 +2463,22 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   21
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 31: Germany: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 32: Ghana: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2271,10 +2566,18 @@ $
 !
 
 !!!
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 33: Hungary: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 34: Iceland: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2308,6 +2611,7 @@ Exhibit 34: Iceland: Food Inflation Decomposition
 
 
 
+
 !"
 
 
@@ -2332,7 +2636,8 @@ Exhibit 34: Iceland: Food Inflation Decomposition
 !	
 
 
-
+	
+	
 
 
 	
@@ -2366,15 +2671,22 @@ Exhibit 34: Iceland: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   22
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 35: India: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 36: Indonesia: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -2470,10 +2782,18 @@ Exhibit 36: Indonesia: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 37: Ireland: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 38: Israel: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2559,15 +2879,22 @@ Exhibit 38: Israel: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   23
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 39: Italy: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 40: Japan: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -2601,6 +2928,7 @@ $
 
 
 
+
  !
 
 
@@ -2652,10 +2980,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 41: Kazakhstan: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 42: Kenya: Food Inflation Decomposition 
+Year-over-year, % 
 	
 
 	
@@ -2663,7 +2999,8 @@ Exhibit 42: Kenya: Food Inflation Decomposition
 	
 
 
-
+	
+	
 
 
 	
@@ -2701,7 +3038,8 @@ Exhibit 42: Kenya: Food Inflation Decomposition
 	
 
 
-
+	
+	
 
 
 	
@@ -2738,15 +3076,22 @@ Exhibit 42: Kenya: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   24
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 43: Korea: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 44: Kuwait: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -2824,10 +3169,18 @@ Exhibit 44: Kuwait: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 45: Malaysia: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 46: Mexico: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -2901,15 +3254,22 @@ Exhibit 46: Mexico: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   25
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 47: Netherlands: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 48: New Zealand: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -2983,7 +3343,7 @@ Exhibit 48: New Zealand: Food Inflation Decomposition
  
 ! "
 #
-
+ 
  
 
 
@@ -2993,10 +3353,18 @@ Exhibit 48: New Zealand: Food Inflation Decomposition
  
 
    
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 49: Nigeria: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 50: Norway: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3029,6 +3397,7 @@ $
 
 
 
+
 !"
 
 
@@ -3083,15 +3452,22 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   26
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 51: Oman: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 52: Pakistan: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3173,10 +3549,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 53: Peru: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 54: Philippines: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -3217,6 +3601,7 @@ Exhibit 54: Philippines: Food Inflation Decomposition
 
 
 
+
 !"
 
 
@@ -3280,15 +3665,22 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   27
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 55: Poland: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 56: Portugal: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3375,10 +3767,18 @@ Exhibit 56: Portugal: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 57: Qatar: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 58: Romania: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 %
@@ -3461,15 +3861,22 @@ Exhibit 58: Romania: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   28
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 59: Russia: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 60: Saudi Arabia: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -3482,7 +3889,8 @@ Exhibit 60: Saudi Arabia: Food Inflation Decomposition
 "	
 
 
-
+	
+	
 
 
 	
@@ -3564,10 +3972,18 @@ Exhibit 60: Saudi Arabia: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 61: South Africa: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 62: Spain: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3600,6 +4016,7 @@ Exhibit 62: Spain: Food Inflation Decomposition
 
 
 
+
 !"
 
 
@@ -3654,6 +4071,7 @@ Exhibit 62: Spain: Food Inflation Decomposition
 
 
 
+
  !
 
 
@@ -3667,15 +4085,22 @@ Exhibit 62: Spain: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   29
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 63: Sweden: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 64: Thailand: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3761,10 +4186,18 @@ $
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 65: Turkiye: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 66: Ukraine: Food Inflation Decomposition 
+Year-over-year, % 
 
 	
 
@@ -3844,14 +4277,20 @@ Exhibit 66: Ukraine: Food Inflation Decomposition
  
 
    
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   30
 Goldman Sachs
 EM Macro Themes
 
 Exhibit 67: United Kingdom: Food Inflation Decomposition 
-
+Year-over-year, % 
+ 
 Exhibit 68: United States of America: Food Inflation 
 Decomposition 
 Year-over-year, % 
@@ -3941,8 +4380,15 @@ Year-over-year, %
 !
 
 !!!
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
+ 
 Exhibit 69: Vietnam: Food Inflation Decomposition 
+Year-over-year, % 
 
 
 
@@ -3976,6 +4422,7 @@ Exhibit 69: Vietnam: Food Inflation Decomposition
 
 
 
+
  !
 
 
@@ -3989,7 +4436,9 @@ Exhibit 69: Vietnam: Food Inflation Decomposition
 
 
 
-
+ 
+ 
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 23 June 2026
   31
 Goldman Sachs

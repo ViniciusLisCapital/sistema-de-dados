@@ -25,12 +25,14 @@ Orphanides (2002), suggesting that the best response to neutral rate uncertainty
 ensure policy remains highly sensitive to inflation and output variations.
 JEL Classification Numbers: E1; E4; E5
 Keywords: Natural rate of interest; small monetary model; inflation targeting regime.
+Author’s E-Mail Address: rperrelli@imf.org; sroache@imf.org
 1 We would like to express our special thanks to Andrew Berg and Miguel Savastano for their insightful
 comments and strong support to pursue this research. Vikram Haksar offered superb guidance in the early days
 of this project. Marcos Chamon, Olivier Basdevant, Mercedes Garcia-Escribano, and Tommaso Mancini
 Griffoli, along with seminar participants at the Brazilian National Treasury, Brazilian Central Bank, and the
 IMF, added tremendous value to the discussion in this paper. The usual disclaimers apply.
 
+3
 Contents Page
 I. Introduction ................................................................................................................... 4
 II. Stylized Facts About Neutral Rates in Emerging Markets ........................................... 5
@@ -63,6 +65,7 @@ Figures
 11. Scenario 3: Actual Real Interest Rate Gaps Under Different Policy Rules ............... 26
 References ............................................................................................................................... 29
 
+4
 I. INTRODUCTION
 Knut Wicksell (1898) was probably the first economist to try and define the neutral real
 interest rate (henceforth the “neutral rate”). His interpretation was that “[it] is a certain rate of
@@ -103,6 +106,7 @@ This is a topic that has attracted scant attention in the literature, with much 
 previously turned to uncertainty regarding potential output (e.g. Erhmann and Smets, 2003)
 2 For a few emerging markets, the paucity of data requires the use of actual (instead of expected) inflation.
 
+5
 or the natural rate of unemployment. We recognise that neutral rates and potential output
 growth are linked, but we find that the policy prescriptions are very different when facing
 uncertainty of either variety.
@@ -142,6 +146,7 @@ Assuming less than perfect global financial integration, trend real rates in EMs
 determined, in part, by domestic factors, including saving and investment demand, as well as
 the level of the “world neutral rate” which reflects common factors like “excess” global
 
+6
 savings and unconventional monetary policies in the US and Europe.3 To disentangle these
 effects, we carried out a principal components decomposition of actual (i.e., unfiltered) de-
 meaned real short-term interest rates for the countries in our sample and find that two factors
@@ -189,6 +194,7 @@ world neutral real interest rate.
 4 Perrelli, Roache, and Góes (2014) discuss the impact of the tapering tantrum on the slope of the yield curves
 of emerging market economies.
 
+7
 appearing to have been more important recently. However, these mechanical approaches can
 only bring us so far in helping us understand how and why neutral rates may have changed
 and what, as a consequence, might be the implications for monetary policy. In the next
@@ -231,6 +237,7 @@ presented in Giammarioli Valla (2004). Basdevant, Björksten, and Karagedikli’
 insightful approach combines the slope of the yield curve with a state space framework to
 estimate New Zealand’s neutral interest rate. Bernhardsen and Gerdrup (2007) discusses the
 
+8
 estimation of short- and long-run equilibrium interest rates on the determination of the
 Norwegian neutral rate.5
 For Brazil, Miranda and Muinhos (2003) and Muinhos and Nakane (2006) provide early
@@ -264,6 +271,7 @@ by β, subject to a budget constraint where financial assets B grow as a functio
 income (Y), consumption (C), and the real return on assets (1+r):
 5 Applications to Latin American countries include Fuentes and Gredig (2008) and Magud and Tsounta (2012).
 
+9
 (2)
 In the steady state, for all t such that the first order condition can be rewritten simply
 as
@@ -291,6 +299,7 @@ range of 1 to 2. This exercise then suggests a neutral rate in a wide percent ra
 averaged across parameters yields a NRIR of about 7¼ percent for the period 2005-2008 and
 5¾ percent for the 2010–13 years (Text Tables).
 
+10
 Brazil: NRIR from consumption model, 2005-2008 Brazil: NRIR from consumption model, 2010-2013
 \gamma \gamma
 \beta 1.0 1.5 2.0 Avg \beta 1.0 1.5 2.0 Avg
@@ -325,6 +334,7 @@ average of 5 percent—very close to the empirical findings discussed next (Text
 this model delivers a NRIR of approximately 7¼ percent—similar to the case we presented earlier. Therefore,
 the trend rate experienced by Brazil in 2005-2008 (8¾ percent) cannot be fully explained by habit persistence.
 
+11
 Brazil: NRIR from consumption with habit, 2005-2008 Brazil: NRIR from consumption with habit, 2010-2013
 \gamma \gamma
 \beta 1.0 1.5 2.0 Avg \beta 1.0 1.5 2.0 Avg
@@ -363,6 +373,7 @@ Standard filters are useful for disentangling the real interest rate cycle from 
 We apply a range of filters—including the Hodrick-Prescott, Ravn-Uhlig, and Christiano-
 Fitzgerald time-varying filters—to the ex-post real interest rates in a sample of 24 emerging
 
+12
 markets. Table 2 presents the average from these filters for each country, and contrasts the
 rates across different sub-periods.
 A simple average of the neutral real interest rates for this sample suggests a drop of more
@@ -402,6 +413,7 @@ Uruguay n.a. -0.5 0.3 n.a.
 Simple EM Average 2.9 1.4 0.7 -211
 Sources: Haver and authors’ calculations
 
+13
 Figure 3. Brazil: Filter-based Real Policy Rate and Real Interest Gap, 2003–13
 (In percent; gap equals actual minus trend real rate; negative gap implies monetary easing)
 5 16
@@ -424,6 +436,11 @@ Ravn-Uhlig trend of Selic deflated by expected inflation (right axis) 14
 -4
 Turning point
 -5 0
+2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 0 0 1 1 2 2 3 3 4 4
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1
+c- n - c- n - c- n - c- n - c- n - c- n - c- n - c- n - c- n - c- n - c- n - c- n - c-
+e u e u e u e u e u e u e u e u e u e u e u e u e
+D J D J D J D J D J D J D J D J D J D J D J D J D
 Sources: BCB Focus Survey, Thomson Datastream, Haver, and authors’ calculations
 There are two main drawbacks to estimating neutral rates using statistical filters. Most filters
 are unable to reliably disentangle permanent (or very persistent) and temporary fluctuations.
@@ -444,6 +461,7 @@ and between cyclically-equivalent end-points, the average term premium can be co
 neutral with respect to the business cycle.7
 7 For further discussion, see for example Basdevant et al, 2004.
 
+14
 Yields on Brazil’s long-term 10-year local currency sovereign bonds and short-term 3-month
 interest rates (extracted from swap contracts) have trended lower during most of the sample
 period. We estimate the average term premium in Brazil during 2006–13, i.e. the difference
@@ -468,6 +486,8 @@ Slope (term premium, left axis)
 ST yield (DI swap 3-month, right axis)
 LT yield (DI swap 10-year, right axis)
 -200 4
+6 6 6 6 7 7 7 7 8 8 8 8 9 9 9 9 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 ra
 M
 - n
@@ -561,6 +581,7 @@ central bank’s Focus survey) and the path priced in futures contracts.
 could, in principle, reflect market expectations about future monetary policy decisions—for instance, when
 futures contracts on interest rate swaps “price in” hikes on policy rates throughout the medium term.
 
+15
 C. State Space Models
 The state space framework is well-suited to estimating neutral rates since they explicitly take
 account of the existence of latent variables. In the most simple application, it is assumed that
@@ -599,6 +620,7 @@ Long-term rate 1.421 0.779 0.490
 Sources: BCB, Thomson Datastream, Haver, and authors’ calculations
 1/ Standard errors in parenthesis: * significant at 10 percent; ** significant at 5 percent; and *** significant at 1 percent.
 
+16
 Figure 5. Brazil: Neutral Real Interest Rate based on State Space Model, 2006–13
 (In percent)
 14 14
@@ -609,6 +631,8 @@ NRIR from state space model
 6 6
 4 4
 2 2
+6 6 6 6 7 7 7 7 8 8 8 8 9 9 9 9 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 ra
 M
 - n
@@ -708,6 +732,7 @@ the center of the Brazilian Central Bank’s (BCB) inflation target band;
 Inflation surprise: Difference between the one-year ahead expected inflation (from the BCB
 Focus survey) and the actual inflation outcome;
 
+17
 Sovereign risk: 5-year credit default swap (CDS) spreads;
 Public indebtedness: Ratio of net public debt to GDP;
 Financial deepening: Domestic credit to the private sector as a percent of GDP;
@@ -733,6 +758,7 @@ approach, the long-run equilibrium real interest rate in Brazil was running betw
 wide confidence interval around these figures.
 9 This asymmetry has also been highlighted in Roache (2014).
 
+18
 Figure 6. Brazil: Determinants of Long-Run Equilibrium Real Interest Rate, 2005–13
 (Contributions to the equilibrium real interest rate, in percentage points, excluding the intercept)
 12 12
@@ -760,7 +786,9 @@ Inflation gap Inflation surprise
 -2 -2
 -3 -3
 -4 -4
+Sources: BCB, Thomson Datastream, Haver, and authors’ calculations
 
+19
 Table 4. Brazil: Determinants of Long-Run Equilibrium Real Interest Rate, 2003–13
 Table: Brazil: Fundamentals-based Cointegrating Regressions, 2003-2013 1/
 Dependent variable: Real policy rate deflated by 12-month ahead expected inflation 2/ 3/
@@ -808,6 +836,7 @@ Desenvolvimento Econômico e Social, BNDES)—in the gap equation:
 (10)
 δ(
 
+20
 where:
  is the Brazilian output gap (actual minus potential output);
  is the world’s output gap (actual minus potential output);
@@ -843,6 +872,7 @@ equilibrium rate was lower than the long-run equilibrium rate until late 2013.
 10 In order to do it, we rewrite the IS model such that the short-run equilibrium real interest rate equals the long-
 run equilibrium real interest rate plus the sum of all other gap variables at each point in time.
 
+21
 Figure 8. Brazil: Short- and Long-Run Equilibrium Real Interest Rates, 2005–13
 (In percent)
 16 16
@@ -870,6 +900,7 @@ of the monetary policy, expediting or delaying the convergence of short-run rate
 it happened in the segment of car loans in Brazil recently. For a deeper examination of Brazil’s experience with
 MaPs, see Pereira da Silva and Harris (2012), and Tovar, Garcia-Escribano, and Vera-Martin (2012).
 
+22
 VI. INSIGHTS FROM A SMALL MONETARY MODEL
 In this section we use a small rational expectations model to better understand the policy
 implications of a changing neutral rate. The aim is to identify how monetary policy settings
@@ -905,11 +936,13 @@ t t ld t1 lag t1 t1 r t1 t1 z t1 t1 t
   4  1 4   y  y*   z  z   (12)
 t ld t1 ld t1 ygap t1 t1 z t t1 t
 z  ze  1  r  rUS   z (13a)
+t t1 4 t t t t
 ze  z  1  z (13b)
 t1 z t1 z t1
 i  i   1  r** 4   4 *    y  y*  i (14)
 t lag t1 lag  t t  t4 t4 ygap t t  t
 
+23
 Where:
 y ≡ log output in period t
 t
@@ -970,6 +1003,7 @@ In the second scenario, we assume that policymaker beliefs are lagging. Specific
 assume that policymakers believe the neutral rate is following the same downward trajectory
 as the true neutral rate, but with a two year lag. This seems a reasonable assumption.
 
+24
 Policymakers will often change their beliefs about important structural variables such as the
 neutral rate and subsequent policy settings only slowly over time (see for example Sack and
 Wieland, 2000). At the same time, the neutral rate itself is likely to change only gradually,
@@ -1000,6 +1034,7 @@ Policymaker estimate r**
 Difference r**-r*
 -1.00 -1.00 Actual r* -1.00
 -2.00 -2.00 Policymaker estimate r** -2.00
+-1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15
 Years before/ after start of NIR decline Years before/ after start of NIR decline Years before/ after start of NIR decline
 Source: Authors’ calculations
 To implement the two scenarios in which policymakers hold mistaken beliefs, we need to
@@ -1016,6 +1051,7 @@ inflation target. This means the policy rule (14) becomes:
 i  i   1  r** 4   4 *    y  y*  i (15)
 t lag t1 lag  t t  t t4 ygap t t  t
 
+25
 The results of these simulations are shown in Figure 10. In the first scenario, where
 r** = r*, a small negative output gap emerges and inflation falls slightly below the target
 mid-point. This outcome is due to policy inertia causing the policy interest rate to move
@@ -1050,6 +1086,7 @@ Scenario 1: Output Gap Scenario 2: Output Gap Scenario 3: Output Gap
 -0.30 -0.30 -0.30
 -0.40 -0.40 -0.40
 -0.50 -0.50 -0.50
+-1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15
 Years before/ after start of NIR decline Years before/ after start of NIR decline Years before/ after start of NIR decline
 Scenario 1: Inflation Scenario 2: Inflation Scenario 3: Inflation
 (percent) (percent) (percent)
@@ -1062,9 +1099,11 @@ Scenario 1: Inflation Scenario 2: Inflation Scenario 3: Inflation
 4.20 4.20 4.20
 4.00 4.00 4.00
 3.80 3.80 3.80
+-1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15 -1 1 3 5 7 9 11 13 15
 Years before/ after start of NIR decline Years before/ after start of NIR decline Years before/ after start of NIR decline
 Source: Authors’ calculations.1/
 
+26
 The striking aspect of these results is that the adverse outcomes are modest given the size of
 the mistake (measured as r** - r*). In scenarios two and three, the output gap peaks at about
 -0.5 and 0.5 percentage points, respectively. Similarly, inflation diverges from the target by
@@ -1103,11 +1142,13 @@ Figure 11. Sc(epneracerniot) 3: Actual Real Interest Rate Gaps Under Different P
 -1.00
 -1.50
 -2.00
+-1 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 Years before/ after start of NIR decline
 Source: Authors’ calculations.
 1/ Policy rule 1 assigns coefficients γ =0, γ =3 and γ =3. Policy rule 2 assigns coefficients γ =0, γ =0.01 and γ =0.01.
 lag π ygap lag π ygap
 
+27
 This analysis clearly highlights the inherent risks for policymakers when the neutral rate
 appears to be shifting significantly. The most important risk is that policymakers attach a
 higher weight to anchoring current policy settings on the basis of their estimate of the neutral
@@ -1124,6 +1165,7 @@ uncertainty about r* increases during its transition to a new steady state, poli
 maintain their current rule or even increase their activism and respond more forcefully to
 output and inflation gaps, thereby reinforcing the self-correcting mechanism.
 
+28
 VII. CONCLUDING REMARKS
 A battery of empirical and semi-structural techniques suggest that neutral rates in emerging
 markets have declined over the past decade. In Brazil, where real interest rates have
@@ -1157,3 +1199,5 @@ Taylor and Williams (2010) in that the best response to neutral rate uncertainty
 policy remains highly sensitive to inflation and output variations. The main risk in updating
 assumptions about the neutral rate is that policy becomes less activist and more focused on
 “targeting the neutral rate,” which would amplify the costs of mistakes.
+
+29

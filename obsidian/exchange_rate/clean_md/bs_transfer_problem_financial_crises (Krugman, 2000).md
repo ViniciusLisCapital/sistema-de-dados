@@ -7,6 +7,7 @@ D�partment Q/
 Economics,
 Cambridge, MA 02139
 Abstract
+krugman@mit.edu
 In a world of high capital mobility. the threat of speculative a.tack becomes a centr.:ll issue of
 macroeconomic pOlicy.
 While
@@ -114,6 +115,7 @@ tion that the UK gov
 ern
 ment would under pressure choose domestic
 
+©International Monetary Fund. Not for Redistribution
 32 KRUGMAN
 employment over exchange stability.
 ln the major crisis countries of Asia, however, neither of these stories seems to have much
@@ -183,6 +185,7 @@ currency depreciation in order to protect against this balance-sheet effect, and
 this strategy may simply replace one destructive feedback loop with another. A final section
 offers some tentative policy conclusions.
 
+©International Monetary Fund. Not for Redistribution
 BALANCE SHEETS
 1.
 Recent Crises: Stylized Facts and Models
@@ -232,6 +235,7 @@ the same role.
 There is no question that both of these views capture some aspects of what happened to
 Asia. On one side, "crony capitalism" was certainly a reality: the excesses of Thai financial
 
+©International Monetary Fund. Not for Redistribution
 34 KRUGMAN
 companies, of members of the Suharto family, of megalomaniac chaebol are undeniable. On
 the other side, bank runs played an important role in the unfolding of the crisis, particularly
@@ -301,6 +305,7 @@ capture.
 events in small economies like Thailand or Russia have led more or less directly
 to crises
 
+©International Monetary Fund. Not for Redistribution
 BAL.ANC£ SHEETS 35
 in economies thousands of miles distant, with few direct trade or financial links.
 From my point of view the p
@@ -356,6 +361,7 @@ a reversal of capital ftows either via real depreciation or via recession, turns
 the
 heart of the story.
 
+©International Monetary Fund. Not for Redistribution
 36 KRUGMAN
 (iii) Balance sheet problems: Fin
 a
@@ -446,6 +452,8 @@ I consider an open economy that produces a single good each period using capital
 for simplicity the production function is assumed Cobb-Douglas:
 y, = G(K,, L,) = K� L]-• (I)
 
+©International Monetary Fund. Not for Redistribution
+BALANCE SHEETS 37
 Capital is created through investment; I will assume, again for simplicity, that capital
 lasts only one period, so that this period's capital is equal to last period's investment. (This
 assumption also puts to one side Diamond-Dybvig-type concerns over maturity mismatch).
@@ -498,6 +506,7 @@ ever, I simply assume the existence of the constraint and take A as a given.
 This constraint need not be binding; although entrepreneurs are assumed to save all of
 their income, they may choose not to borrow up to the limit. In particular, they will not
 
+©International Monetary Fund. Not for Redistribution
 38 KRUGMAN
 borrow beyond the point at which the real return on domestic investment equals that on
 foreign investment. One way to determine this limit is to compare the foreign real interest
@@ -545,6 +554,8 @@ as a whole, because the volume of capital inflow affects the terms of trade and 
 valuation of foreign-currency-denominated debt. We can therefore immediately see the
 outlines of a story about financial crisis: a decline in capital inflows can adversely affect
 
+©International Monetary Fund. Not for Redistribution
+BALANCE SHEETS 39
 the balance sheets of domestic entrepreneurs, reducing their ability to borrow and hence
 further reducing capital inflows. But we need to be a bit more precise.
 Imagine a game in which lenders decide, in random order, how much credit to offer to
@@ -572,6 +583,7 @@ A.)(l - JL)F
 - = ------
 dl X
 (10)
+If d I 11 d
 I is less than 1, the behavior of this model is relatively uninteresting: an economy
 with a high rate of return on investment may find that adjustment in its capital stock is delayed
 by financing constraints, but there wi.U be nothing resembling an Asian-style financial crisis.
@@ -603,6 +615,7 @@ lenders' poor opinion.
 And we therefore now have our extremely stylized version of the Asian financial crisis:
 something-it does not matter what--caused lenders to become suddenly pessimistic, and
 
+©International Monetary Fund. Not for Redistribution
 40
 Figur� I.
 Actual investment
@@ -655,6 +668,8 @@ answer is that only after 1990 did these economies begin extensive borrowing den
 in foreign currencies, borrowing that placed them at risk of financial collapse if the real
 exchange rate depreciated.
 
+©International Monetary Fund. Not for Redistribution
+BALANCE SHEETS
 4. The Dilemma of Stabili zation
 41
 Although standard models of cun·ency crisis have not to date taken account of the problems
@@ -707,6 +722,7 @@ question of what to do once the crisis has occurred: how does one rebuild the ec
 Prophylactic measures: In the aftermath of the Asian crisis, a broad consensus has emerged
 among responsible people that countries need to take much greater care with their banking
 
+©International Monetary Fund. Not for Redistribution
 42 KRUGMAN
 systems-that they need "transparency," better capital standards, more careful regulation
 of risk-taking, an end to cronyism, etc. Underlying such recommendations is the belief
@@ -753,6 +769,8 @@ credit line would never actually have to be used, since its very existence would
 crisis from ever getting under way (but one has to be credibly willing to use it in order not
 to have to).
 
+©International Monetary Fund. Not for Redistribution
+BALANCE SHEETS 43
 Another possibility is to rule out the possibility of a downward financial spiral by being
 ready to impose a cUJfew on capital flight. Again, there is substantial sympathy even among
 respectable opinion for standstill agreements on foreign-currency debt; but this may well
@@ -806,6 +824,99 @@ hjgh, cntrcprc.ncurs may be unable to borrow even w ith a fa\·orable exchange r
 unfavorable rate will not C<'kuse financi
 al
 collapse. I neglect these cases for the $3.kC of the m.'lin story.
+Comment
+BY PElloR GARBER
+As usual, there is much with which I can agree in Paul's paper.
+First, and most imponantly, the balance sheet problems of the corporatcs in Asia are
+currently at the hean of the problem, and this has been widely known since tlte Korean and
+Indonesian collapses. Resolving the banks through capital injections, removal of bad loans
+from the books, and rationalization will not solve the credit problem. Even after being
+wriucn off, bad loans remain as claims against the borrowers. so they will not auract funher
+credit-especially not from a soundly-run banking system. Eventually, new creditworthy
+borrowers will appear, of course, but because the bulk of corporate activity is in entities
+with impaired credit, recovery will take a long time.
+Second, and as usual, thinking along the lines of the Diamond-Dybvig bank-run model
+does not take us very far and, indeed. misleads us about the basic causes of banking
+problems. The historical ratio of banks that failed because they were run, to banks that
+were run because they had failed, is near zero. Yet, every time we face a banking crisis
+the Diamond-Dybvig model is invoked. Rarely has the disconnect between our esthetic
+preference for modeling elegance and our need to understand real events been so stark.
+Automatically applying the concept at the country level has generated an equally unreal
+view. Let us remember that the chaebols were going bankrupt in Korea. and the finance
+companies were going bankrupt in Thailand, before the auacks on their currencies.
+Third. the Asia crisis has provided one case for multiple equilibria. Malaysia has a two­
+state leader. In the branch of
+events
+where capital kept ftowing in and stayed in, he would
+always be congenial to foreign capital. This equilibrium would be self-generated if capital
+stayed in. In the branch of events where capital ftowed out, he would impose controls. This
+equilibrium would be self-generated if fot·eign investors started to pull out. Thus, we score a
+point for the Dell as-Stockman version of the multiple equilibrium model. Indeed, if Paurs
+prescription to impose capital controls as a response to an attack is ever taken s eriously as
+a policy, we are immediately in a multiple-equilibrium world.
+Fourth, it is nccc.ssary to get the Asian entrepreneurs started again. including with foreign
+ownership. I would say especially with foreign ownership. Indeed, this policy prescription
+has been at the hean of the U.S. Treasury's policy toward the crisis, which has recognized
+from the outset the need to restructure massively local corporates with foreign money. 11tis
+is what is behind the Treasury's push to force tlte restructuring of the chaebols in Korea,
+which have valuable industrial properties. Korea is an especially imponant case that shows
+that rescuing the banks is not enough-and is in fact counterproductive. 11te banks' only
+outlet for lending is to the very chaebols that should be restructured, but that are the lowest
+credit risks becaus e of likely bailouts.
+
+©International Monetary Fund. Not for Redistribution
+46 GARBER
+There are several places where I think Paul has pulled rabbits out of hats, however.
+First, he has bought into the Generation 1, 2, 3, . . . , n characterization of speculative at­
+tacks. The use of this characterization is a prime example of what many of us fondly call
+a name swindle. Generation 1 and 2 models are really twins that were born almost simul­
+taneously. Generation 3 is still non-existent, a Madison Avenue concept like Generation
+X
+or the Pepsi Generation. Pulling out a new generation of models for each new crisis
+speaks more about the sociology of academic economics than it does about the usefulness
+of previously existing models.
+Indeed, Paul and others have characterized the 1980's style speculative attack models in a
+most strangely narrow way-they claim that in these models crises are driven by domestic
+credit creation. This was true of the earliest versions of the model, which were streamlined
+to the maximum extent in order to make the initial intellectual sale. But it ignores the
+development and empirical implementation of the model throughout the 1980s, in which
+anything that enters the money demand function or money supply process can contribute
+to triggeting a ctisis-real exchange rate movements, money demand disturbances (both
+domestic and from abroad), real income movements, foreign interest rates or real income
+movements, and changes in the processes that generate the future realizations of these
+variables. In the single equilibrium models, the constellation of these forcing variables is
+exogenous to the exchange rate-i.e., they cause and are not caused by the movements in the
+exchange rate-although they may be simultaneously determined among themselves. fn
+the multiple equilibrium models, they are endogenous to the exchange rate or exchange rate
+regime-i.e., they
+are
+co-determined with the exchange rate. Endogeneity vs. exogeneity of
+other relevant variables to the exchange rate is what distinguishes multiple (Generation 2)
+from single (Generation 1) equilibrium models of crisis, not a narrow vs. a broad list of
+forcing variables.
+Second, Paul rejects the moral hazard view of the crisis that he and many others have
+earlier postulated. This moral hazard view is congenial to the classical crisis model's view
+of crises-the governments had ongoing quasi-deficits because of their implicit guarantees
+of the banks that would eventually become visible and could not be financed because they
+were backed by trash projects.
+He rejects this view because all forms of foreign investment in Asian markets were
+underway-e.g., direct foreign purchases of equity and real estate. Unlike loans to local
+banks, these were not guaranteed, so moral hazard could not have been a factor for them.
+Also, he argues-citing the World Bank's The Road
+10
+Recovery (1998)-that the bulk of
+the bad loans that materialized resulted from the unforeseen severity of the downturn, and
+not from ex ante bad lending.
+Here the rush to the new model has made Paul and the World Bank excessively glib. (The
+World Bank has its own axe to grind.) It is well-known that local government guarantees
+(backed in part by implicit IMF guarantees) were only one side of the moral hazard problem.
+There was moral hazard emanating from lender country guarantees as well. The dead banks
+walking of Japan and also those of Korea were major lenders directly to corporates in other
+Asian countries and indirectly through the securities markets. That they took losses on these
+activities that were not covered by local guarantees does not undermine the moral hazard
+story-they were covered by the Japanese taxpayers' willingness forever to be sheared.
+
+©International Monetary Fund. Not for Redistribution
 COMMENT 47
 Nobody expected a crisis of this magnitude because the bad news was obscured both by
 official interference with information flows-even extending to direct censorship and the
@@ -875,6 +986,7 @@ the
 October !997 Asian crisis hit,
 the Korean banks needed cash and pulled funds out of Brazil and Russia. Brazilians also
 
+©International Monetary Fund. Not for Redistribution
 48 GARBER
 love risk. They had large leveraged positions in BraziHan Bradies and large positions in
 Russian paper. The October 1997 Asia crisis led to a general widening of emerging market
@@ -886,6 +998,7 @@ that
 "globalization" is more than a cliche -it
 means the intimate cross-connection of financial markets, if it means anything at all.
 
+©International Monetary Fund. Not for Redistribution
 Comment
 BY OLIVIER JEANNE
 This paper is significant for at least two reasons. First, it is the statement of a conversion.
@@ -925,6 +1038,7 @@ argument between "fundamentalist" and "self-fulfilling" crisis stories" in favor
 I am less confident that contagion will condemn the remaining skeptics to silence. More
 likely, the reluctant skeptics will resist the evidence by staying on Krugman's (1996) line,
 
+©International Monetary Fund. Not for Redistribution
 50 JEANNE
 namely that contagion may be the result of something other than multiple equilibria.3 First,
 apparent contagion could reflect learning about common hidden fundamentals. A problem
@@ -973,6 +1087,7 @@ channel. It is important to note that this channel does not involve the maturity
 the dollar denominated debt. What constrains domestic entrepreneurs, in other words, is
 not that they have to repay a large short-term dollar denominated debt, but the increase in
 
+©International Monetary Fund. Not for Redistribution
 COMMENT
 Domestic Currency /
 Real
@@ -1030,6 +1145,7 @@ that the financial disruption induced by the crisis reduces not only the investm
 A
 ow, but
 
+©International Monetary Fund. Not for Redistribution
 52
 Table I.
 Evalu3tion of the main
@@ -1136,6 +1252,7 @@ gman
 s debt appreciation mechanism, hence, is likely
 tO be much more potent in practice if a large share of the dollar-denominated debt is short
 
+©International Monetary Fund. Not for Redistribution
 COMMENT
 Table
 2.
@@ -1295,4 +1412,5 @@ on-going can give rise to attacks through self-fulfilling types of mechanisms. I
 view it is really the plausibility of those mechanisms that is central in judging the relevance
 of a model, rather than the number of equilibria.
 
+©International Monetary Fund. Not for Redistribution
 !'his pa;;e imemional�v le_li h/ank

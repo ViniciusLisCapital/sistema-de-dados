@@ -4,6 +4,7 @@ LESSONS FROM BRAZIL
 Carlo A. Favero
 Francesco Giavazzi
 Working Paper 10390
+http://www.nber.org/papers/w10390
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -33,12 +34,14 @@ IGIER
 Universita' L.Bocconi
 5, via Salasco
 20136 - Milano ITALY
+carlo.favero@unibocconi.it
 Francesco Giavazzi
 IGIER
 Universita' L.Bocconi
 5, via Salasco
 20136 - Milano ITALY
 and NBER
+francesco.giavazzi@unibocconi.it
 
 Inﬂation targeting and debt: lessons from Brazil ∗
 Carlo A. Favero and Francesco Giavazzi †
@@ -78,6 +81,7 @@ England for its hospitality while this paper was written.
 1The EMBI index is computed by J. P. Morgan.
 2For a persepctive on economic developments in Brazil during 1999-2003, the period studied
 in this paper, see Pastore and Pinotti (2004).
+1
 
 Table 1
 Composition of the Brazilian public debt (percent of total), December 2002
@@ -128,6 +132,7 @@ emerging market spreads are international factors, there are diﬀerent views as
 factors might be. Kamin and von Kleist (1999) and Eichengreen and Mody (2000) report a
 negative relationship between the level of long term U.S. interest rates and spreads. Arora
 and Cerisola (2001) ﬁnd that the stance and predictability of U.S. monetary policy are also
+2
 
 The experience of Brazil supports Calvo’s observation. The Brazilian Embi
 spread is indeed correlated with the U.S. corporate spread, but this correlation
@@ -173,6 +178,7 @@ signiﬁcant in determining capital market conditions in emerging markets. Herre
 spreads and allow for diﬀerent long and short run eﬀects: their results strengthen the evidence
 on the importance of international factors.
 4Sims (2003) argues that ﬁscal policy may render an inﬂation trageting regime ineﬀective.
+3
 
 and Wallace (1981) were among the ﬁrst to point out that a reduction in the
 growth rate of money can result in higher, rather than lower inﬂation if the
@@ -221,7 +227,9 @@ of the price level does not introduce ﬁscal eﬀects beyond those suggested by
 Wallace.
 8Extensions of the ﬁscal theory to allow for the presence of credit risk are studied in Uribe
 (2003).
+4
 
+2
 Fiscal fundamentals and Brazilian risk
 Since 1999, Brazilian public debt, as a fraction of gdp, has steadily increased—in
 part because the primary surplus, though rising, has never been suﬃcient to
@@ -270,6 +278,7 @@ Smooth Transition Autoregressive) model discussed for instance in Tong (1983). T
 speciﬁcation is more ﬂexible than a simple interaction term: in our case, for instance, since it
 allows for the response of term premia to international factors to vary depending on the level
 of the debt ratio relative to an estimated threshold.
+5
 
 xt is the primary budget surplus, and x∗
 t is the level of the primary surplus
@@ -345,6 +354,7 @@ $-denominated bonds.
 t assuming that the nominal growth rate of the
 economy and the average nominal cost of debt service, remain costant over time.
 14See Kfoury and Lago Alves (2003).
+6
 
 Table 2
 Explaining Brazil’s Embi spread
@@ -423,6 +433,7 @@ The monetary policy rule
 The best way to describe Brazilian monetary policy since the adoption of a ﬂoat-
 ing exchange rate regime, in February 1999, is through a simple monetary policy
 rule where the Selic rate responds to one-year ahead inﬂation expectations:
+7
 
 Selict = ρSelict−1 + (1 −ρ) (βo + β1 (Etπt,t+12 −π∗
 t)) + 2,t
@@ -508,6 +519,7 @@ t+260
 −0.011
 (0.034)
 0.21
+8
 
 contract, happens when one of the two parties stops paying: if this happens, the
 other side will do the same, with no loss of principal. There is a loss, but this is
@@ -573,6 +585,7 @@ t
 ¢¶
 17We assume that the policy rate is a safe asset: the period-return of such an asset thus
 coincides with its yield to maturity.
+9
 
 where the parameters are those estimated in (2) and h can extend up to 12
 months, the longest horizon over which we observe 12-month ahead inﬂation
@@ -644,6 +657,7 @@ over the life of these swaps. The Brazilian central bank collects, as for inﬂa
 expectations, a daily survey of one-year ahead exchange rate expectations: using
 such surveys, and 12—month U.S. and Brazilian swaps, we are able to measure
 the exchange rate risk premium.
+10
 
 3.4
 Term premia and the Embi spread
@@ -673,8 +687,14 @@ Table 4
 Correlation between default risk, term premia and exchange rate risk premia
 Sample: 1999:2 - 2003:1
 E m b i
+e .r . r.p . 1 2 -m
 T P 3 -m
 T P 6 -m
+T P 1 2 -m
+C D S 3 -m
+C D S 6 -m
+C D S 1 2 -m
+C D S 3 6 -m
 Embi
 1
 0.84
@@ -733,7 +753,9 @@ CDS 36-m
 expectation of a settlement in which the entity which has defaulted will pay a fraction of the
 bond’s face value. CDS are priced on the basis of conventional post-default trading prices,
 based on past experience.
+11
 
+4
 Inﬂation targeting, country risk and ﬁscal pol-
 icy
 The analysis carried out so far helps us understand the way in which domes-
@@ -777,6 +799,7 @@ from π∗. This motivates (7)
 model ﬁnds a (negative) eﬀect of real 12-month swap rates, but the signiﬁcance of this variable
 is rather weak. This does not mean that one is allowed to assume the eﬀect away, but the
 evidence does not suggest a very strong impact, at least in the short run.
+12
 
 Assume, to save notation, βo = δ1 = 3,t = i∗
 t = π∗= 0, and substitute (5)
@@ -815,6 +838,7 @@ a reduced form solution such as (9): we have thus estimated (9) using the
 Embi spread as an explanatory variable and allowing for an error term reﬂecting
 20Following the terminology used by Woodford (1994), the two rules can be labeled Ricar-
 dian and Non Ricardian, respectively.
+13
 
 deviations from UIRP other than the risk premium.21 Using lagged variables
 as instruments we obtain the following estimates:
@@ -883,6 +907,7 @@ it = −αξt, that is monetary policy responds directly to the exchange rate ri
 increase in,ξt leads to lower domestic interest rates. Then Etst+1 −st = −[(1 −α) /α] it: in
 other words, the reason for the negative correlation is the deviation from UIRP (ξt), coupled
 with a monetary policy rule that responds to ξt.
+14
 
 the debt ratio, a further increase in x∗
 t, and so on. The economy settles along
@@ -940,6 +965,7 @@ but the evidence does not suggest a very strong impact, at least in the short ru
 growth equation we estimate is nt = γ1 + γ2nt−1 + ut.
 25We keep the target constant at 0.085 throughout 2003; in 2004 we allow it to fall gradually,
 reaching 0.05 in December.
+15
 
 The results of the dynamic simulations under the two ﬁscal rules are shown
 in Figure 4.
@@ -985,29 +1011,88 @@ speciﬁcation.
 from the same initial conditions. This exercise, however, is not very informative, since it is
 the non linearity of the model (which impulse responses fail to capture) that is responsible for
 the sharp diﬀerence in results between the Ricardian and non Ricardian case.
+16
 
 the Lula government in January 2003, was enough to bring the economy back to
 normal conditions, and rapidly reduce the Embi spread, stabilize the exchange
 rate and, through these two variables, inﬂation expectations, inﬂation and the
 dynamics of the public debt.
+6
 Figure 1
 The Embi Spread (left scale, percentage points) and the spread between BAA
 corporate
 and the US government bonds (right scale, percentage points)
+4
+8
+12
+16
+20
+24
+28
+1.5
+2.0
+2.5
+3.0
+3.5
+4.0
+4.5
+2000
+2001
+2002
+2003
 Coeﬃcients of recursive regressions of the Embi spread on the U.S. corporate
 bond spread
+2.0
+2.4
+2.8
+3.2
+3.6
+4.0
 01:01
 01:07
 02:01
 02:07
 03:01
 03:07
+19
 
 Figure 2
 Brazil’s net public debt, per cent of GDP
+48
+50
+52
+54
+56
+58
+60
+62
+2000
+2001
+2002
+2003
 Figure 3
 Elasticity of the Embi spread with respect to the U.S. corporate bond spread,
 as a function of (x −x∗)
+.0
+.1
+.2
+.3
+.4
+.5
+.6
+.7
+.8
+.9
+-3
+-2
+-1
+0
+1
+2
+3
+4
+5
+20
 
 Figure 4
 Targeting Inﬂation with an Exogenous Primary Budget Surplus and a
@@ -1114,3 +1199,4 @@ N E T D E B T  (N R )
 0 5 :0 7
 D E F IC IT  (R )
 D E F IC IT  (N R )
+21

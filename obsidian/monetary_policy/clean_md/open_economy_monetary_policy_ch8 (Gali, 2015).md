@@ -36,6 +36,7 @@ possible and prices are not readjusted continuously, an assumption must
 be made regarding the currency in which the prices of exported goods
 are set (“local currency pricing,” i.e., prices are set in the currency of the
 
+224
 CHAPTER 8
 importing economy versus “producer currency pricing,” i.e., prices are
 set in the currency of the producer’s country). Other dimensions of open
@@ -137,6 +138,7 @@ Ct =
 1
 (1 −υ)(1−υ)υυ CH,t1−υCF,tυ
 
+226
 CHAPTER 8
 Maximization of (1) is subject to a sequence of budget constraints of
 the form
@@ -188,6 +190,7 @@ where Pt ≡
 
 (1 −υ)(PH,t)1−η + υ(PF,t)1−η
 
+1
 1−η is the consumer price
 index (CPI).2 Note that under the assumption of η = 1 or, alternatively,
 when the price indexes for domestic and foreign goods are equal (as in
@@ -199,6 +202,7 @@ that total consumption expenditures by domestic households can be
 Pt = (PH,t)1−υ(PF,t)υ
 .
 
+POLICY IN THE OPEN ECONOMY
 227
 conveniently expressed as PH,tCH,t + PF,tCF,t = PtCt. Thus, the period
 budget constraint simpliﬁes to
@@ -271,6 +275,7 @@ nature being realized in t+1 (conditional on the state of nature at t). Ct+1,
 Zt+1, and Pt+1 on the right side should be interpreted as representing
 the values taken by those variables at t + 1 conditional on the state of
 
+228
 CHAPTER 8
 nature in which the Arrow security generates a payoff. Thus, the left
 side captures the utility loss resulting from the purchase of an Arrow
@@ -327,6 +332,7 @@ price can be written as Et
 can be deﬁned as Qt,t+1 ≡Vt,t+1
 ξt,t+1 .
 
+POLICY IN THE OPEN ECONOMY
 229
 8.1.1.1 DOMESTIC INFLATION, CPI INFLATION, THE REAL EXCHANGE RATE,
 AND THE TERMS OF TRADE: SOME IDENTITIES
@@ -367,6 +373,7 @@ and domestic price level.
 4 It is useful to note, for future reference, that the approximation (12) holds exactly
 when η = 1.
 
+230
 CHAPTER 8
 The assumed law of one price, combined with the deﬁnition of the
 terms of trade, implies
@@ -419,6 +426,7 @@ Et+1
 = Qt,t+1
 (15)
 
+POLICY IN THE OPEN ECONOMY
 231
 Combining (9) and (15), together with the deﬁnition of the real
 exchange rate and the law of one price, yields
@@ -471,6 +479,7 @@ of the uncovered interest parity condition
 Et{Qt,t+1[exp{it} −exp{i∗
 t }(Et+1/Et)]} = 0
 
+232
 CHAPTER 8
 Log-linearizing around a perfect foresight steady state yields the
 familiar uncovered interest parity condition:
@@ -517,6 +526,7 @@ constant mean, as long as the terms of trade are stationary in ﬁrst difference
 be the case if, say, the technology parameter had a different average rate of growth relative
 to the rest of the world.
 
+POLICY IN THE OPEN ECONOMY
 233
 where at ≡log At is a technology shifter common to all domestic ﬁrms
 following the AR(1) process at = ρaat−1 + εa
@@ -564,6 +574,7 @@ of openness on the substitutability between domestic and foreign goods.
 t (used in chapter 3), because in this
 chapter letters with an asterisk refer to world economy variables.
 
+234
 CHAPTER 8
 8.1.3 Exports
 The demand for exports of good i ∈[0, 1] is assumed to be given by
@@ -621,6 +632,7 @@ for all i ∈[0, 1] and all t.
 7 See Galí and Monacelli (2005) for a more careful derivation, under the assumption
 that the world is made up of a continuum of small economies like the one analyzed here.
 
+POLICY IN THE OPEN ECONOMY
 235
 Plugging (23) into the deﬁnition of aggregate domestic output Yt ≡
 	 1
@@ -688,6 +700,7 @@ t+1} + συυ(ϖ −1)Et{
 y∗
 t+1} + (1 −v)(1 −ρz)zt (30)
 
+236
 CHAPTER 8
 is the natural interest rate, with yn
 t denoting the natural level of output,
@@ -752,6 +765,7 @@ PH,t
 1−α
 di
 
+POLICY IN THE OPEN ECONOMY
 237
 As shown in chapter 3, however, variations in dt ≡log
 	 1
@@ -815,6 +829,7 @@ where κ ≡λ
 
 , as in the closed economy model of chapter 3.
 
+238
 CHAPTER 8
 Next it is shown how a version of the New Keynesian Phillips
 curve linking domestic inﬂation and the output gap can be derived.
@@ -881,6 +896,7 @@ the slope coefﬁcient is given by λ
 ≡κ, as in the basic closed
 8 Note that z = 0 when υ = 0.
 
+POLICY IN THE OPEN ECONOMY
 239
 economy model of chapter 3. More generally, the degree of openness,
 υ, and the substitutability between domestic and foreign goods, η, affect
@@ -923,6 +939,7 @@ where ρv ∈[0, 1).
 Combining (29), (37), and (39), the equilibrium dynamics for the
 output gap and domestic inﬂation can be represented by means of the
 
+240
 CHAPTER 8
 system of difference equations
 
@@ -988,6 +1005,7 @@ monetary policy shock.9
 shock to world output also leads to a variation in the natural output level, thus breaking
 the identity between output and the output gap.
 
+POLICY IN THE OPEN ECONOMY
 241
 8.3.1 The Effects of a Monetary Policy Shock
 Neither the natural rate of interest nor the natural level of output are
@@ -1037,6 +1055,7 @@ shock can then be uncovered
 st = συ yt
 = −συ(1 −βρv)vvt
 
+242
 CHAPTER 8
 while the change in the nominal exchange rate is given in turn by
 
@@ -1079,6 +1098,8 @@ of domestic inﬂation. In the long run, the responses of the CPI, the
 domestic price level, and the nominal exchange rate converge to the same
 negative values, though their trajectories during the adjustment are rather
 
+POLICY IN THE OPEN ECONOMY
+243
 Output gap
 Employment
 Domestic inflation
@@ -1089,13 +1110,82 @@ Terms of trade
 Nominal exchange rate
 Nominal rate
 Real rate
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+0
+5
+10
+15
+–0.4
+–0.2
+0
+–0.4
+–0.2
+0
+–0.2
+–0.1
+0
+–0.2
 –0.15
+0
+0.5
+1
+0
+0.2
+0.4
+–0.4
+–0.2
+0
+–0.4
+–0.2
+0
+–1
+0
+1
+–0.4
+–0.2
+0
 Figure 8.1. Dynamic Responses to a Monetary Policy Shock.
 different. Note also that the analysis above implies that for the special
 case considered here the size and pattern of the responses of output and
 domestic inﬂation to the monetary policy shocks do not differ from those
 in the closed economy.
 
+244
 CHAPTER 8
 8.4 OPTIMAL MONETARY POLICY: A SPECIAL CASE
 This section derives and characterizes the optimal monetary policy for the
@@ -1139,6 +1229,7 @@ However, as shown below, for the special parameter conﬁguration
 10 See also the discussion in Benigno and Benigno (2003) in the context of a two-country
 model.
 
+POLICY IN THE OPEN ECONOMY
 245
 Zt = 1, for all t), there is a constant employment subsidy that exactly
 offsets the combined effects of market power and the terms of trade
@@ -1184,6 +1275,7 @@ using a second-order approximation to the equilibrium conditions. Faia and Monac
 (2008) solve for the Ramsey policy using the original nonlinear equilibrium conditions as
 constraints of the policy problem.
 
+246
 CHAPTER 8
 8.4.1 The Efﬁcient Allocation and Its Decentralization
 Let us ﬁrst characterize the optimal allocation from the viewpoint of
@@ -1232,6 +1324,7 @@ t Sυt
 t
 where the third equality holds in the special case considered here.
 
+POLICY IN THE OPEN ECONOMY
 247
 Hence, by setting τ such that (1 −τ)(1 −υ)M = 1, the optimality
 of the ﬂexible price equilibrium allocation is guaranteed. Note that the
@@ -1277,6 +1370,7 @@ it = rn
 t + φππH,t
 (42)
 
+248
 CHAPTER 8
 where φπ > 1. In equilibrium, the term φππH,t vanishes (because πH,t = 0
 for all t), implying that it = rn
@@ -1330,6 +1424,7 @@ t
 + p∗
 t )
 
+POLICY IN THE OPEN ECONOMY
 249
 Thus, it is seen that under the DIT regime, the CPI level will also vary
 with the (natural) terms of trade and will inherit its statistical properties.
@@ -1388,6 +1483,7 @@ variable here. Below, (44) is used to assess the welfare implications of
 alternative monetary policy rules and to rank those rules on welfare
 grounds.
 
+250
 CHAPTER 8
 8.5 SIMPLE MONETARY POLICY RULES FOR
 THE SMALL OPEN ECONOMY
@@ -1425,6 +1521,7 @@ calibrated version of the small open economy model developed above.13
 13 See Galí and Monacelli (2005) for a similar analysis (though with a slightly different
 calibration).
 
+POLICY IN THE OPEN ECONOMY
 251
 TABLE 8.1
 Properties of Simple Policy Rules
@@ -1505,6 +1602,7 @@ effect on the domestic economy.
 15 Statistics are reported for the nominal depreciation rate, as opposed to the level, given
 the unit root in the nominal exchange rate.
 
+252
 CHAPTER 8
 peg. That feature is a consequence of the inability of prices (which are
 sticky) to compensate for the constancy of the nominal exchange rate.16
@@ -1545,6 +1643,7 @@ tion of staggered price setting in Kollmann (2001) and Chari, Kehoe,
 16 See Monacelli (2004) for a detailed analysis of the implications of ﬁxed exchange rates.
 17 See Lane (1999) for an excellent survey of that literature.
 
+POLICY IN THE OPEN ECONOMY
 253
 and McGrattan (2002).18 The assumption of staggered price setting
 (and staggered wage setting in Kollmann’s case) induces much richer
@@ -1589,6 +1688,7 @@ Taylor, i.e., with deterministic price durations.
 19 Ball (1999) and Svensson (2000) carry out an analysis similar in spirit, but in the
 context of nonoptimizing models.
 
+254
 CHAPTER 8
 Several papers have examined the consequences on optimal monetary
 policy of departures from the benchmark assumptions of the Galí-
@@ -1632,6 +1732,7 @@ Finally, Galí and Gertler (2009) contains a number of contributions
 that use related frameworks to understand different aspects of the
 international dimension of monetary policy.
 
+POLICY IN THE OPEN ECONOMY
 255
 APPENDIX
 8.1 A SECOND-ORDER APPROXIMATION TO WELFARE LOSSES IN THE
@@ -1700,6 +1801,7 @@ t=0
 t
 
 
+256
 CHAPTER 8
 The ﬁnal step consists in rewriting the terms involving the price
 dispersion variable as a function of inﬂation. In order to do so, make
@@ -1765,6 +1867,7 @@ pt + ct = pH,t + yt
 where ct denotes consumption, yt is output, pH,t is the domestic
 price level, and pt is the CPI (all in logs). Assuming a constant
 
+POLICY IN THE OPEN ECONOMY
 259
 price level in the rest of the world (p∗
 t = 0),
@@ -1816,6 +1919,7 @@ output gap yt are described by the equations
 (it −Et{πH,t+1} −rn
 t )
 
+260
 CHAPTER 8
 and where rn
 t is given by

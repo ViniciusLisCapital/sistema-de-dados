@@ -28,6 +28,10 @@ Short-term nominal interest rates cannot be driven below zero (more generally, b
 |---|---|
 | [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]] | The constraint that makes FOMC forward guidance the main tool; the DSGE sees the ZLB binding from 2008Q4 to 2011Q4 and simulates threshold-based guidance |
 | [[monetary_policy/synthesis/zero_bound_optimal_policy (Eggertsson & Woodford, 2003)]] | When the bound binds and how costly it is; irrelevance of open-market operations; optimal history-dependent commitment implemented by a gap-adjusted price-level target; Japan |
+| [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] | Optimal policy after an unexpected fall of the natural rate from 1 percent to −1 percent for 6 quarters: under discretion large falls in the output gap and inflation; under commitment the rate stays at zero two periods longer and losses are much smaller |
+| [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] | The trap rederived in an intertemporal cash-in-advance model: a negative full-employment real rate plus a zero nominal rate; ineffectiveness of money as a credibility problem in reverse; escape by credibly committing to a higher future price level; Japan in the 1990s |
+| [[monetary_policy/synthesis/zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004)]] | Empirical assessment of three levers at the bound (shaping rate expectations, quantitative easing, balance-sheet composition) for the US and Japan; some grounds for optimism, but effects too uncertain to rely on, so keep an inflation buffer and ease preemptively |
+| [[monetary_policy/synthesis/natural_rate_international (Holston, Laubach & Williams, 2017)]] | A persistently lower natural rate in all four advanced economies makes episodes at the effective lower bound more frequent and longer, and raises the gains from international coordination |
 
 ## BRL / application to the current analysis
 
@@ -41,3 +45,7 @@ The sources linked here say nothing about Brazil yet.
 - [[inflation_targeting]] — strict inflation targets are forward-looking and fail at the bound; the optimal target is history-dependent
 - [[monetary_policy/synthesis/forward_guidance_effects (Campbell et al., 2012)]] — forward guidance at the ZLB, 2008–2012
 - [[monetary_policy/synthesis/zero_bound_optimal_policy (Eggertsson & Woodford, 2003)]] — the theory of optimal policy at the bound
+- [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] — the bound in the textbook NK model, discretion vs. commitment after a negative natural-rate shock
+- [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] — the modern revival of the liquidity trap: why base expansion fails unless expected to persist, and managed inflation as the way out
+- [[monetary_policy/synthesis/zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004)]] — evidence on what nonstandard policies can do at the bound, and why avoidance remains the preferred strategy
+- [[monetary_policy/synthesis/natural_rate_international (Holston, Laubach & Williams, 2017)]] — why a falling natural rate makes the bound a recurring rather than exceptional constraint

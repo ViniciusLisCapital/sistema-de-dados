@@ -33,6 +33,7 @@ This section lays out a model of an economy in which nominal wages, as
 well as prices, are sticky. Following Erceg, Henderson, and Levin (2000),
 wage stickiness is introduced in a way analogous to price stickiness, as
 
+164
 CHAPTER 6
 modeled in chapter 3. In particular, a continuum of differentiated labor
 services is assumed, all of which are used by each ﬁrm. Each period only
@@ -117,7 +118,7 @@ pEt
 
 P∗
 t Yt+k|t −Ct+k(Yt+k|t)
-
+	
 subject to the sequence of demand constraints
 Yt+k|t =
  P∗
@@ -148,6 +149,7 @@ t ≡µp
 t −µp is the deviations of the av-
 erage (log) price markup from its ﬂexible price counterpart, and
 
+166
 CHAPTER 6
 λp ≡(1−θp)(1−βθp)
 θp
@@ -179,6 +181,7 @@ Wt( j)Nt( j)di + Dt
 for t = 0, 1, 2 . . ., where Nt( j) is employment (or work hours) of type-
 j labor (with Wt( j) the corresponding wage), Ct ≡
 
+ 1
 0 Ct(i)1−1
 ϵp di
 
@@ -188,6 +191,7 @@ is the consumption index, and the remaining variables are deﬁned as
 in chapter 3. In contrast with the model in that chapter, however,
 here each household takes as given labor income
 
+ 1
 0 Wt( j)Nt( j)dj, since,
 individually, it has no inﬂuence on wages (set by unions) or employment
 (determined by ﬁrms). Thus, the only decisions made by households
@@ -210,6 +214,7 @@ Pt+1
 
 (8)
 
+STICKY WAGES AND PRICES
 167
 The period utility is assumed to be given by:
 U(Ct, {Nt( j)}; Zt) =
@@ -241,6 +246,7 @@ for σ ̸= 1
 
 log Ct −
 
+ 1
 0
 Nt( j)1+ϕ
 1 + ϕ
@@ -301,6 +307,7 @@ t+k|t
 Zt+k
 (10)
 
+168
 CHAPTER 6
 subject to the sequence of labor demand schedules
 Nt+k|t =
@@ -382,6 +389,7 @@ mrst+k|t + pt+k
 (12)
 where µw ≡log Mw and mrst+k|t ≡σct+k + ϕnt+k|t.
 
+STICKY WAGES AND PRICES
 169
 The intuition behind wage setting rule (12) is straightforward. First,
 w∗
@@ -394,6 +402,10 @@ average real wage accordingly.
 Letting mrst+k ≡σct+k + ϕnt+k deﬁne the economy’s average marginal
 rate of substitution, where nt+k ≡log
 
+ 1
+0
+
+ 1
 0 Nt(i, j)djdi denotes (log)
 aggegrate employment. Then, and up to a ﬁrst order approximation:
 mrst+k|t = mrst+k + ϕ(nt+k|t −nt+k)
@@ -424,7 +436,7 @@ t+1} + (1 −βθw)
 wt −(1 + ϵwϕ)−1
 µw
 t
-
+	
 (13)
 where 
 µw
@@ -456,6 +468,7 @@ t
 wt −wt−1 denote
 wage inﬂation yields, after some manipulation, the baseline wage
 
+170
 CHAPTER 6
 inﬂation equation
 πw
@@ -484,6 +497,7 @@ As in the basic New Keynesian model of chapter 3, goods market clearing
 requires Yt(i) = Ct(i) for all t and i ∈[0, 1]. This in turn implies Yt = Ct
 for all t, where Yt ≡
 
+ 1
 0 Yt(i)1−1
 ϵp di
 
@@ -512,6 +526,7 @@ w,t
 0
 Nt(i)di
 
+STICKY WAGES AND PRICES
 171
 = 
 w,t
@@ -538,12 +553,14 @@ At
 where 
 w,t ≡
 
+ 1
 0
  Wt( j)
 Wt
 	−ϵwdj and 
 p,t ≡
 
+ 1
 0
  Pt(i)
 Pt
@@ -557,6 +574,7 @@ dw,t ≡(1
 −
 α) log
 
+ 1
 0
  Wt( j)
 Wt
@@ -567,6 +585,7 @@ dp,t ≡(1
 α) log
 ×
 
+ 1
 0
  Pt(i)
 Pt
@@ -608,6 +627,7 @@ where ψwa ≡1−αψya
 1+ϕ
 σ(1−α)+ϕ+α (as derived in chapter 3).
 
+172
 CHAPTER 6
 First, the average price markup is related to the output and real wage
 gaps. Using the fact that µp
@@ -652,7 +672,7 @@ where κw ≡λw
 σ +
 ϕ
 1−α
-
+	
 .
 In addition, there is an identity relating the changes in the wage gap to
 price inﬂation, wage inﬂation, and the natural wage
@@ -668,6 +688,7 @@ IS equation familiar from earlier chapters, and which can be derived
 by combining the goods market clearing condition yt = ct with the
 Euler equation (9). The resulting expression is rewritten in terms of the
 
+STICKY WAGES AND PRICES
 173
 output gap as
 yt = −1
@@ -773,6 +794,7 @@ t = πw
 t = 0
 for all t. This is the case even under the assumption that the intercept of
 
+174
 CHAPTER 6
 the interest rate rule adjusts one-for-one to variations in the natural rate
 of interest (vt = 
@@ -832,6 +854,7 @@ more than one-for-one in response to variations in any arbitrary weighted
 1 See Blanchard and Kahn (1980).
 2 See Flaschel, Franke and Proaño (2008) and Blasselle and Poissonier (2013) for a proof.
 
+STICKY WAGES AND PRICES
 175
 0.5
 Determinacy
@@ -861,14 +884,79 @@ this point by displaying the responses of the output gap, price inﬂation,
 wage inﬂation, and real wages to a monetary policy shock. Both
 the policy intervention (a persistent increase in the interest rate rule
 
+176
 CHAPTER 6
 Output gap
 Price inflation
 Wage inflation
 Real wage
+0
+4
+2
 flexible wages
 baseline
 flexible prices
+8
+10
+6
+12
+14
+16
+–0.2
+–0.1
+0
+0.1
+–0.3
+–0.4
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+4
+2
+8
+10
+6
+12
+14
+16
+–0.3
+–0.2
+0
+0.1
+–0.1
+0.2
+–0.4
+–0.5
+–6
+–4
+0
+2
+–2
+4
+–8
+–10
+0
+4
+2
+8
+10
+6
+12
+14
+16
+–1
+–0.5
+0
+0.5
+–1.5
+–2
 Figure 6.2. Dynamic Responses to a Monetary Policy Shock.
 shifter vt) and the model’s calibration are identical to the analogous
 experiment described in chapter 3. In particular, a simple policy rule
@@ -889,6 +977,7 @@ in the exogenous component of the interest rate rule. That change would
 lead, in the absence of an endogenous component in the interest rate
 3 See, e.g., Barattieri, Basu, and Gottschalk (2014).
 
+STICKY WAGES AND PRICES
 177
 rule, to an impact increase of one percentage point in the (annualized)
 nominal interest rate. In addition, we set ϵw = 4.5, a value that is justiﬁed
@@ -931,6 +1020,7 @@ in line with the predictions of the model with both sticky prices and
 wages.4
 4 See, e.g., Christiano, Eichenbaum, and Evans (2005).
 
+178
 CHAPTER 6
 6.3 MONETARY POLICY DESIGN WITH STICKY WAGES AND PRICES
 This section explores some of the normative implications of the coex-
@@ -946,6 +1036,7 @@ social planner problems of the form
 max U(Ct, {Nt( j)}; Zt)
 where Ct ≡
 
+ 1
 0 Ct(i)1−1
 ϵp di
 
@@ -978,6 +1069,7 @@ Pt = Mp
 (1 −τ)Wt
 MPNt
 
+STICKY WAGES AND PRICES
 179
 where τ is an employment subsidy, funded through lump sum taxes.
 Note that by setting τ = 1 −
@@ -1011,7 +1103,7 @@ t )2 + ϵw(1 −α)
 λw
 (πw
 t )2
-
+
 + t.i.p.
 (28)
 where t.i.p. collects various terms that are independent of policy. Thus,
@@ -1019,6 +1111,7 @@ by ignoring the latter terms, the average period welfare loss can be
 written as a linear combination of the variances of the output gap, price
 inﬂation, and wage inﬂation given by
 L =1
+2
 
 
 σ + ϕ + α
@@ -1031,7 +1124,7 @@ t ) + ϵw(1 −α)
 λw
 var(πw
 t )
-
+
 (29)
 Note that the relative weight of each of the variances is a function
 of the underlying parameter values. The weights associated with output
@@ -1052,6 +1145,7 @@ losses that characterizes an allocation where yt = π p
 t = πw
 t = 0 for all
 
+180
 CHAPTER 6
 t is not attainable. The optimal policy will thus have to strike a balance
 in stabilizing the three abovementioned variables.
@@ -1076,7 +1170,7 @@ where κp ≡λp
 
 σ + ϕ+α
 1−α
-
+	
 . Accordingly, and as shown in chapter 3, there
 is no longer a tradeoff between stabilization of price inﬂation and
 stabilization of the output gap with the optimal policy requiring that
@@ -1098,7 +1192,7 @@ where κw ≡λw
 
 σ + ϕ+α
 1−α
-
+	
 . In that case, the optimal policy will attain the
 zero lower bound for the welfare losses by fully stabilizing the output
 gap and wage inﬂation, i.e., πw
@@ -1109,6 +1203,7 @@ inﬂation targeting policy) will be suboptimal. The same is true for a strict
 wage inﬂation targeting policy, with the exception of an economy with
 fully ﬂexible prices.
 
+STICKY WAGES AND PRICES
 181
 6.4 OPTIMAL MONETARY POLICY
 Next, the optimal monetary policy is characterized in the economy in
@@ -1169,15 +1264,74 @@ xt = 0 for all t.5 Since neither the natural level of output nor the natural
 5 In the case ω−1 ̸= 0 the optimal policy implies some transitional dynamics (needed to
 bring back the real wage to its steady state level), with xt = 0 holding only asymptotically.
 
+182
 CHAPTER 6
 Output gap
 Price inflation
 Wage inflation
 Real wage
+0
+4
+2
 flexible wages
 baseline
 flexible prices
+8
+10
+6
+12
+14
+16
+0
+0.05
+0.1
 –0.05
+–0.1
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0
+4
+2
+8
+10
+6
+12
+14
+16
+–2
+–1
+0
+1
+–3
+–4
+1
+2
+3
+4
+0
+–1
+0
+4
+2
+8
+10
+6
+12
+14
+16
+0.4
+0.6
+0.8
+1
+0.2
+0
 Figure 6.3. Dynamic Responses to a Technology Shock under the Optimal
 Monetary Policy.
 wage is affected by demand shocks, that outcome is associated with a
@@ -1200,6 +1354,7 @@ optimal policy, for the three parameter calibrations considered earlier.
 Note that, as shown in chapter 4, with sticky prices but ﬂexible wages
 (lines with diamonds) the optimal policy implies full stabilization of the
 
+STICKY WAGES AND PRICES
 183
 price level and thus no effect on price inﬂation. Because that policy
 replicates the ﬂexible price/ﬂexible wage equilibrium allocation, the
@@ -1248,6 +1403,7 @@ deﬁnitions of κw and κp, that κ =
 
 .
 
+184
 CHAPTER 6
 for t = 1, 2, 3, . . . as well as
 π0 = −1
@@ -1293,6 +1449,7 @@ A nice feature of the optimal policy in the particular case analyzed
 above is that its implementation by the monetary authority does not
 rely on the output gap being observable: It sufﬁces that the monetary
 
+STICKY WAGES AND PRICES
 185
 authority keeps track of the composite inﬂation measure, and responds
 (aggressively) to any deviation from zero of that measure. This is thus an
@@ -1334,6 +1491,7 @@ composite) inﬂation targeting rules.
 The top panel of table 6.1 reports the main ﬁndings of that exercise
 when variations in the technology shifter at are the only source of
 
+186
 CHAPTER 6
 TABLE 6.1
 Evaluation of Simple Rules
@@ -1440,6 +1598,7 @@ on its strict targeting counterpart. Both wage and composite inﬂation
 targeting, in their ﬂexible form, perform worse than their strict targeting
 counterparts.
 
+STICKY WAGES AND PRICES
 187
 The bottom panel of table 6.1 reports the corresponding results
 conditional on demand shocks. Speciﬁcally, zt is assumed to follow
@@ -1482,6 +1641,7 @@ which much of this chapter builds. The focus of their paper was, like
 this chapter, on the derivation of the implications for monetary policy.
 A similar focus, including a discussion of the special case in which
 
+188
 CHAPTER 6
 targeting a weighted average of wage and price inﬂation is optimal, can
 be found in Woodford (2003, chap. 6) and Giannoni and Woodford
@@ -1546,6 +1706,7 @@ Ut −U ≃UcC
 
 (1 + zt)
 yt + 1 −σ
+2
 
 y2
 t
@@ -1554,14 +1715,17 @@ t
 
 (1 + zt)
  1
+0
 
 nt( j)dj + 1 + ϕ
 2
  1
+0
 
 nt( j)2dj
 
 
+STICKY WAGES AND PRICES
 189
 where σ ≡−Ucc
 Uc C and ϕ ≡Unn
@@ -1571,6 +1735,7 @@ ct =
 yt was made.
 Deﬁne aggregate employment as Nt ≡
 
+ 1
 0 Nt( j)dj , or, in terms of log
 deviations from steady state and up to a second-order approximation
 
@@ -1579,14 +1744,17 @@ nt + 1
 n2
 t ≃
  1
+0
 
 nt( j)dj + 1
 2
  1
+0
 
 nt( j)2dj
 Note also that
  1
+0
 
 nt( j)2dj =
  1
@@ -1600,10 +1768,12 @@ n2
 t −2
 ntϵw
  1
+0
 
 wt( j)dj + ϵ2
 w
  1
+0
 
 wt( j)2dj
 ≃
@@ -1616,6 +1786,7 @@ nt = −ϵw
 wt( j) has been
 made and the fact that
 
+ 1
 0 
 wt( j)dj = (ϵw−1)
 2
@@ -1637,6 +1808,7 @@ Ut −U ≃UcC
 
 (1 + zt)
 yt + 1 −σ
+2
 
 y2
 t
@@ -1645,6 +1817,7 @@ t
 
 (1 + zt)
 nt + 1 + ϕ
+2
 
 n2
 t + ϵ2
@@ -1673,6 +1846,7 @@ w,t
 0
 Nt(i)di
 
+190
 CHAPTER 6
 = 
 w,t
@@ -1699,10 +1873,16 @@ At
 where 
 w,t ≡
 
+ 1
+0
+
 Wt( j)
 Wt
 −ϵw dj and 
 p,t ≡
+
+ 1
+0
 
 Pt(i)
 Pt
@@ -1718,6 +1898,7 @@ dw,t ≡(1
 −
 α) log
 
+ 1
 0
  Wt( j)
 Wt
@@ -1728,6 +1909,7 @@ dp,t ≡(1
 α)
 × log
 
+ 1
 0
  Pt(i)
 Pt
@@ -1755,6 +1937,7 @@ Ut −U ≃UcC
 
 (1 + zt)
 yt + 1 −σ
+2
 
 y2
 t
@@ -1785,6 +1968,7 @@ Ut −U
 UcC
 = (1 + zt)
 yt + 1 −σ
+2
 
 y2
 t
@@ -1802,6 +1986,7 @@ yt −at)2
 
 + t.i.p.
 
+STICKY WAGES AND PRICES
 191
 Under the “small distortion” assumption (so that the product of 
 with a second-order term is taken to be negligible) and ignoring t.i.p.
@@ -1810,6 +1995,7 @@ Ut −U
 UcC
 dj = 
 yt −1
+2
 
 ϵp
 
@@ -1822,6 +2008,7 @@ yt −at)2
 
 = 
 yt −1
+2
 
 ϵp
 
@@ -1842,9 +2029,11 @@ ytat
 
 = 
 yt −1
+2
 
 ϵp
 
+ vari{pt(i)} + ϒ var j{wt( j)}
 +
 
 σ + ϕ + α
@@ -1859,9 +2048,11 @@ t )
 
 = 
 yt −1
+2
 
 ϵp
 
+ vari{pt(i)} + ϒ var j{wt( j)}
 +
 
 σ + ϕ + α
@@ -1903,6 +2094,7 @@ yt −1
 2
 ϵp
 
+ vari{pt(i)} + ϒ var j{wt( j)}
 +
 
 σ + ϕ + α
@@ -1914,6 +2106,7 @@ ye
 t )2
 
 
+192
 CHAPTER 6
 Using
 lemma
@@ -2077,6 +2270,7 @@ A∗
 B∗
 0 ≡[0, 0, ψwa, 0, 0, 0, 0]′
 
+STICKY WAGES AND PRICES
 193
 EXERCISES
 6.1. Optimal Monetary Policy in a Sticky Wage Economy
@@ -2113,6 +2307,7 @@ wt = 1
 t + w∗
 t−1)
 
+STICKY WAGES AND PRICES
 195
 Show that inﬂation evolves according to
 πt = Et{πt+1} + ϕnt + ut
@@ -2145,6 +2340,7 @@ inﬂation rate.
 a. Derive the equilibrium behavior of employment, output, and
 the real interest rate under the assumption of ﬂexible wages
 
+196
 CHAPTER 6
 and prices. Can one determine the corresponding equilibrium
 values for the nominal rate and inﬂation? Explain.
@@ -2182,6 +2378,7 @@ a. Nominal wages are fully ﬂexible and determined competitively.
 b. Nominal wages are set in advance, so that the labor market
 clears in expectation (i.e., Et−1{nt} = 0).
 
+STICKY WAGES AND PRICES
 197
 c. Nominal wages are set in advance by a union, so that in
 expectation only currently employed workers are employed
@@ -2237,6 +2434,7 @@ rigidities (δ > 0) generates a tradeoff between stabilization of
 inﬂation and stabilization of the welfare-relevant employment
 gap.
 
+198
 CHAPTER 6
 f. Suppose that the monetary authority has a loss function
 given by
@@ -2248,7 +2446,7 @@ t=0
 αy(yt −y∗
 t )2 + π2
 t
-
+	
 Solve for the equilibrium process for inﬂation and output under
 the optimal monetary policy under discretion (time-consistent
 solution), under the assumption of an i.i.d. technology process

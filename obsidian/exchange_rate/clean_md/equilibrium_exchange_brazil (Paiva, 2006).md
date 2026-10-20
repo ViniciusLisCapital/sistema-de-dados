@@ -22,10 +22,12 @@ show that most of this appreciation was an equilibrium response to improved econ
 fundamentals.
 JEL Classification Numbers: F14, F31, F32
 Keywords: Equilibrium exchange rate, real exchange rate, current account
+Author’s E-Mail Address: cpaiva@imf.org
 1 The author would like to thank Enrica Detragiache, Gabriela Inchauste, Ales Bulir, Emine Boz, Marcello Estevao,
 Martin Cerisola, Roberto Guimaraes, and Professor Michael Wickens for valuable comments and discussions on
 the subject.
 
+2
 Contents Page
 I. Introduction ............................................................................................................................3
 II. The External Adjustment ......................................................................................................4
@@ -53,6 +55,7 @@ Figures
 11. Relative Unit Labor Costs, Brazil and Main Partners, 1994–2005....................................10
 12. Actual and Equilibrium Real Effective Exchange Rate, 1970–2005.................................16
 
+3
 I. INTRODUCTION
 The Brazilian real (BRL) appreciated by approximately 40 percent in real effective terms
 between January 2003 and December 2005, reaching its strongest valuation since the
@@ -90,6 +93,7 @@ over 2003–05 can be explained by the favorable evolution of some key economic
 fundamentals, the paper provides empirical estimates of a behavioral equilibrium exchange
 rate (BEER) model for Brazil making use of a methodology applied, among others, by
 
+4
 MacDonald and Clark (1998) for the United States, Japan, and Germany and by Maeso-
 Fernandez, Osbat, and Schnatz (2001) for the euro. In short, the BEER methodology consists
 of (1) econometrically estimating a vector error-correction model for the real effective
@@ -129,6 +133,7 @@ depreciation of the BRL, with the twelve-month growth of export volumes rising s
 from the second half of 1999 and remaining in positive territory for the remainder of the
 sample period (Figure 4). This growth rate has been highly volatile nonetheless. The initial
 
+5
 expansion that followed the floating of the exchange rate started losing momentum at the end
 of 2000 with the emergence of capacity constraints in manufacturing, and subsequently
 decelerated further due to a domestic electricity shortage and the aggravation of the
@@ -170,6 +175,7 @@ Source: Brazilian Institute of Applied Economics
 quarter average growth of import volumes in Brazil’s main trading partners according to IMF, World Economic
 Outlook data.
 
+6
 Figure 4. Brazil: 12-month Growth of Export Volumes and Export Prices, 1994–2006
 30.0
 Export Volumes Export Prices
@@ -213,6 +219,7 @@ compiled by the Brazil’s National Confederation of Industries (CNI). Although 
 not show a significant increase in investment rates, it does show an increase in the share of machinery and
 equipment in total investment expenditure.
 
+7
 Figure 6. Brazil: Installed Capacity in Manufacturing, (index number), 1994–2005
 210
 190
@@ -247,6 +254,7 @@ Figure 7. Brazil: Saving, Investment, and the Current Account (% of GDP), 1994�
 Gross capital formation Gross national savings Current account balance
 Source: IMF, World Economic Outlook.
 
+8
 Figure 8. Brazil: National, Private, and Public Saving (% of GDP), 1994–2005
 30
 Gross private savings Gross public savings Gross national savings
@@ -284,6 +292,7 @@ Figure 9. Brazil: Debt Indicators, 1995–2006
 Public Debt (% of GDP) External Debt (% of GDP) Short-Term External Debt (% of Reserves; right axis)
 Source: Brazilian Institute of Applied Economics; IMF, World Economic Outlook.
 
+9
 Figure 10. Brazil EMBI and Overall EMBI, 2002:1–2006:5
 2700
 2400
@@ -321,6 +330,7 @@ their relative importance in explaining the recent strengthening of the BRL.
 4 The increase in Brazil’s unit labor costs in 2005 was associated with both an increase in average real wages
 and a decline in average productivity in the manufacturing sector.
 
+10
 Figure 11. Relative Unit Labor Costs, Brazil and Main Partners, 1994–2005
 140
 Partners' ULC Brazil's ULC RULC
@@ -355,6 +365,7 @@ Fernandez, Osbat, and Schnatz (2001) use a similar methodology and set of fundam
 5 More details on the BEER and other methodologies to estimate equilibrium exchange rates can be found in
 MacDonald and Stein (1999), Isard and Faruqee (1998), and Williamson (1994).
 
+11
 model the REER of the euro area during 1975–98. Other recent work applying BEER
 principles include Egert (2005), Komarek and Melecky (2005), and Zalduendo (2006).
 A. The Variables: Motivation and Definition
@@ -393,6 +404,7 @@ NTT series in our sample has shown a strong, upward trend during the sample peri
 percent in the same period. The NTT calculated for Brazil therefore seems to be broadly reflecting productivity
 trends and the country’s productivity “catching up” process as hypothesized by the model.
 
+12
 terms of trade (the ratio of export to import prices) divided by a similar, trade-weighted
 measure for Brazil’s main trading partners.
 • Real interest rate differentials (RINTDIFF) are also expected to have a direct effect on
@@ -431,6 +443,7 @@ composition of aggregate demand. Nonetheless, these effects are accounted for by
 position and the relative price of tradables to nontradables, leaving the risk factor as the plausible effect
 captured by this variable.
 
+13
 from the Brazilian Institute of Applied Economics (IPEA); data on Brazil’s NFA were taken
 from Lane and Milesi-Ferretti (2006).
 Augmented Dickey-Fuller Unit Root Tests were performed on the series involved in the
@@ -468,8 +481,10 @@ i =1
 11 MacDonald and Clark (1998) and Maeso-Fernandez, Osbat, and Schnatz (2001) have also reported finding
 “border line” test statistics for some measures of interest rate differentials but treating the series as I(1).
 
+14
 where
 Y ’ = [REER , NTT , TOT , RINTDIFF , NFA , RELDEBT ]
+t t t t t t t
 Ψ is a (6 x 6) matrix of coefficients
 Φ is a (6 x k) matrix of short-run coefficients
 δ is a (6 x 1) vector of constants and
@@ -510,6 +525,7 @@ viewed with caution as they may reflect distortions in the measurement of some o
 estimation caused by the very high inflation observed in the period as well as the stabilization strategies and
 currency reforms implemented.
 
+15
 increase confidence in the model. As argued by Campos and Ericsson (1999), a short sample
 size can be compensated by a large variance per observation of the regressors to yield
 efficient coefficient estimates.
@@ -554,6 +570,7 @@ equilibrium are corrected relatively fast.13 Cointegration tests based on trace 
 13 This speed of adjustment is broadly in line with that estimated by MacDonald and Clark (1998) for the US
 dollar and by Maeso-Fernandez, Osbat, and Schnatz (2001) for the euro.
 
+16
 adjusted for the small sample size and allowing for the existence of intercepts in the potential
 cointegrating equations suggested the existence of a single cointegrating relation among the
 variables in both model specifications.14 Adjusted maximum eigenvalue statistics reinforced
@@ -614,6 +631,7 @@ estimating the VEC system imposing two cointegrating relations with the second v
 only the rintdiff variable. The constraints were accepted and the first cointegrating vector yielded coefficient
 estimates that are very similar to the ones obtained under the hypothesis of a single cointegrating vector.
 
+17
 fundamentals imply in a BEER appreciation of about 23 percent during the same period.
 Although point estimates indicate that the BEER was below the actual REER in 2005, they
 still fall within reasonable confidence intervals for the estimation, thus supporting the
@@ -659,6 +677,7 @@ with about 60 percent of the estimated movement in the BEER in the period. The
 improvement in Brazil’s terms of trade relative to its partners (TOT) combined with the
 estimated high elasticity of the exchange rate to this variable to generate about 40 percent of
 
+18
 the estimated BEER appreciation. Moving to the other extreme, the only downward pressure
 exerted on the equilibrium exchange rate stemmed from the increase in the relative ratio of
 tradable to nontradable prices, which may be associated to a decline in Brazil’s relative
@@ -699,6 +718,7 @@ stabilization program but subsequently was forced to float under heavy speculati
 and capital outflows. First, the depreciation that followed the collapse of the exchange rate
 peg in 1999 brought the REER very close to its estimated equilibrium level (Figure 12).
 
+19
 Moreover, the estimates also indicate that the equilibrium rate had been driven lower by the
 fast-rising domestic public debt to GDP ratio and the deteriorating net foreign assets position,
 thus placing the BRL under pressure. Although touted at the time as evidence that foreign
@@ -737,3 +757,5 @@ with a lower risk according to the underlying model and estimated coefficients. 
 because the models’ point estimates for the equilibrium real exchange rate index fall within
 reasonable confidence intervals, the econometric exercise also supports the conclusion that
 the BRL was broadly aligned with fundamentals in 2005.
+
+20

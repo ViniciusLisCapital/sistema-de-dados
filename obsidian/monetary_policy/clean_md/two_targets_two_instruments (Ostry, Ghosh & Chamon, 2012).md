@@ -1,8 +1,10 @@
+I M F S T A F F D I S C U S S I O N N O T E
 February 29, 2012
 SDN/12/01
 Two Targets, Two Instruments: Monetary and
 Exchange Rate Policies in Emerging Market Economies
 Jonathan D. Ostry, Atish R. Ghosh, and Marcos Chamon
+I N T E R N A T I O N A L M O N E T A R Y F U N D
 
 INTERNATIONAL MONETARY FUND
 Research Department
@@ -18,11 +20,13 @@ management. Staff Discussion Notes are pu blished to elicit comments and to furt
 debate.
 JEL Classification Numbers: F31; F32; F33
 Keywords: Monetary Policy, Foreign Exchange Intervention
+Authors’ E-mail Addresses: jostry@imf.org, aghosh@imf.org, mchamon@imf.org
 1 We thank Jose de Gregorio, Michel Juillard, Scott Roger, and Mark Stone for useful comments and inputs,
 and Christopher Gibson and Hyeon Ji Lee for excellent research assistance. We are particularly grateful to
 Christopher Crowe and Mauro Roca for their work in the preliminary stages of this project, and to Olivier
 Blanchard for his guidance throughout this project.
 
+2
 Contents Page
 Executive Summary ...................................................................................................................3
 I. Introduction .......................................................................................................................4
@@ -44,6 +48,7 @@ Box
 1. A Simple Dynamic Model of an Emerging Market Economy .......................................15
 Online Appendix
 
+3
 Executive Summary
 This note examines the case for using two policy instruments—the policy interest rate and
 sterilized foreign exchange market intervention—in emerging market countries aiming to
@@ -88,6 +93,7 @@ compare to cooperative solutions. Our tentative conclusion is that an IT regime 
 with FX intervention instruments likely dominates from a global welfare perspective either
 unilateral discretion or a narrow IT regime in which the intervention instrument is foresworn.
 
+4
 I. INTRODUCTION
 It is often claimed that inflation targeting (IT), to be successful, needs to include a high
 degree of exchange rate flexibility, with the policy rate geared to stabilizing inflation and the
@@ -131,6 +137,7 @@ argument is predicated on the central bank having two independent instruments. W
 evidence is mixed, it is at least suggestive of the central bank’s scope for influencing the path
 of the exchange rate. We then turn to a stylized model to examine how the central bank
 
+5
 would wish to deploy its two instruments in response to shocks under IT with or without
 sterilized FX intervention (the Online Appendix considers discretionary monetary policies
 with or without intervention). Key results from the model are that intervention should only
@@ -175,6 +182,7 @@ including because the precise equilibrium value may be difficult to determine, t
 to limit large and abrupt movements in either direction. In other words, there may be a
 “comfort zone” beyond which the authorities would not want to see the exchange rate move.
 
+6
 If policymakers do care about the exchange rate, can they do better than the strict IT-cum-
 floating-exchange-rate regime implies? The answer is yes. Indeed, in this very simple
 example, there is a clear policy assignment rule: the interest rate should be used to meet the
@@ -218,6 +226,7 @@ very effective or the inflows are highly persistent. Moreover, there are tradeof
 rules (inflation targeting) and discretion when policy credibility is fragile. In section V, we
 enrich the discussion to take account of such factors, and show that, while they slightly
 
+7
 modify our conclusions above (for instance, the simple policy assignment rule no longer
 holds), they do not fundamentally overturn them. But first we establish that EME central
 banks typically do care about the exchange rate, and that sterilized intervention is a plausible
@@ -260,6 +269,7 @@ which models sterilized interventions as an additional instrument alongside the 
 and affecting the economy through portfolio balance sheet effects in the financial sector).
 To see what EME central banks do in practice, Table 1 reports reduced-form Taylor rules for
 
+8
 a sample of EME IT central banks.2 The explanatory variables include: the lagged dependent
 variable, since policy rates are adjusted slowly; the difference between expected inflation
 over the next four quarters (from Consensus Forecast) and the inflation target; and the lagged
@@ -306,6 +316,7 @@ goes in the opposite direction: a higher interest rate will appreciate the real 
 regression coefficient. The finding of a negative regression coefficient is therefore despite this simultaneity bias,
 and the true response of the policy interest rate to the exchange rate is larger (more negative) than estimated.
 
+9
 When we estimate the regression country-by-country, the coefficient estimates are similar to
 those presented in Table 1, though the fewer observations mean that some of the coefficients
 (especially on REER) are statistically insignificant.
@@ -347,6 +358,7 @@ India, Kazakhstan, Malaysia, Russia, Sri Lanka, and Uruguay. Specifically, we ca
   / (  )
 Reserves Reserves REER
 
+10
 Table 2 reports the result of a regression of change in international reserves on the log
 deviation of the REER from the level implied by a rolling HP filter. The first column reports
 the results for our sample of inflation targeters. The point estimate suggests a 10 percent
@@ -387,6 +399,7 @@ foreign exchange intervention to an exchange rate appreciation is larger (more p
 instead of this measure of deviation from trend. The point estimate for the IT sample declines from 0.38 to 0.35,
 while that for the non-IT sample declines from 1.41 to 1.07.
 
+11
 central bank would not have two policy instruments and our argument breaks down. What
 then is the evidence that sterilized intervention (i.e., purchases and sales of foreign exchange
 that leave the central bank’s interest rate unchanged) has an effect on the exchange rate?
@@ -428,6 +441,7 @@ across studies makes comparisons difficult, on the whole, evidence that such int
 8 BIS Paper no. 24 (2005) has a series of background papers and contributed papers from different central banks
 from a conference of Deputy Governors hosted by the BIS on foreign exchange market intervention.
 
+12
 affect the level of the exchange rate tends to be weaker than evidence that it can affect
 exchange rate volatility, but for both, most studies find at least some impact (Table 3).
 The effectiveness of sterilized intervention is also likely to depend upon the circumstances.
@@ -468,6 +482,7 @@ Abenoja (2003) Philippines Mixed Yes (mixed)
 Sangmanee (2003) Thailand No
 Adler and Tovar (2011) Mainly Latin America Yes
 
+13
 V. INFLATION TARGETING AND FOREIGN EXCHANGE INTERVENTION
 Given its objectives of maintaining low inflation and avoiding large movements in the
 exchange rate away from medium-run equilibrium, what is the best policy regime for an
@@ -509,6 +524,7 @@ or its rate of change. Though conceptually distinct, it makes little qualitative
 either case the central bank seeks to limit the movement of the exchange rate. The reported simulations assume
 the targeting of the level of the real exchange rate around the value implied by medium-run fundamentals.
 
+14
 We begin by considering the impact of a positive aggregate demand shock, equivalent to one
 percentage point of output, that occurs in period 1 and dies out gradually (see Figure 1). In
 the face of such a shock, the monetary authorities would naturally react by raising the policy
@@ -552,6 +568,7 @@ policies, the central bank reduces the policy rate more aggressively, but interv
 with a larger output gap but less real exchange rate appreciation. In each case, the level of foreign reserves
 returns to its baseline value (normalized at zero), so neither shock calls for one-way sustained intervention.
 
+15
 Box 1. A Simple Dynamic Model of an Emerging Market Economy
 To simulate policy responses, we adopt a dynamic version of the simple EME macro-
 economic model laid out in the Online Appendix. All variables are expressed in logs, except
@@ -559,6 +576,7 @@ for ca, which is defined as the current account balance as a ratio to the foreig
 position, k; all parameters (Greek letters) are positive. Capital flows are specified as a partial
 adjustment process, converging to a finite stock for a given expected return differential:
 k   (r  r   E e )  k
+t r t t t t1 k t1
 Where e is the real exchange rate (an increase is an appreciation), r and r* are the domestic and
 foreign real interest rates. In a world without frictions, the capital stock should adjust instantaneously,
 arbitraging away any expected return differential. But we assume uncovered interest rate parity (UIP)
@@ -567,17 +585,21 @@ presence of an interest rate differential, the forward premium puzzle).
 The foreign real interest rate follows an AR(1) process: r*  r* 
 t r t1 t
 The current account is given by: ca   e  y
+t e t y t
 The balance of payments (BOP) equation is given by: ca  k R (where =R/k).
 t t t
 The Phillips curve for domestic inflation is given by:   E  y ,
 t t t1 t
 Aggregate demand (the IS curve) depends on the real exchange rate and the real interest rate:
+y  r e  u ,
+t r t e t t
 where the shock is an AR(1) process with parameter  . The central bank’s objective
 u
 function depends on the output gap, inflation, the deviation of the real exchange rate from its
 multilaterally-consistent level (normalized to zero), and the deviation of reserves from their
 optimal steady-state level (say based on country-insurance metrics):
 min EPDV (( y  ye)2  a2  be 2  cR 2)
+t t t t t
 r,R
 where ye is the public’s estimate of the central bank’s inflationary bias. We calibrate the
 t
@@ -591,6 +613,7 @@ Finally, in the discretionary policy regimes, the public sector’s estimate of 
 is calibrated so as to generate inflationary expectations equal to 0.9 times the previous
 period’s inflation rate, and set equal to zero in the IT regimes.
 
+16
 Figure 1. Policy Response to a Demand Shock 1/
 Policy Interest Rate Reserves
 (percent per year) (percent deviation from steady-state)
@@ -605,6 +628,7 @@ Policy Interest Rate Reserves
 0.4 0.5
 0.2 0.25
 0 0
+0 5 10 0 5 10
 t t
 Inflation Real Exchange Rate 2/
 (percent per year) (percent deviation from steady-state)
@@ -638,6 +662,7 @@ IT (no FX intervention)
 1/ The shock is based on a 2.5 percentage point increase in domestic demand.
 2/ An increase in the exchange rate is an appreciation of the domestic currency.
 
+17
 Figure 2. Policy Response to a Capital Inflow Shock1/
 Policy Interest Rate Reserves
 (percent per year) (percent deviation from steady-state)
@@ -648,6 +673,7 @@ Policy Interest Rate Reserves
 -1.5 1
 -2.0 0
 -2.5 -1
+0 t 5 10 0 t 5 10
 Inflation Real Exchange Rate 2/
 (percent per year) (percent deviation from steady-state)
 0.5 8
@@ -682,6 +708,7 @@ IT (no FX intervention)
 1/ The capital inflow shock is based on a 5 percentage point decline in the world interest rate.
 2/ An increase in the exchange rate is an appreciation of the domestic currency.
 
+18
 of capital inflows (which depends on ). As capital flows become more sensitive to the
 r*
 return differential, sterilized intervention becomes more difficult (a given quantity of
@@ -737,6 +764,7 @@ capital inflow shocks), investors would become more responsive to the return dif
 11 For example, the expected return (inclusive of the interest rate differential and expected depreciation) over
 periods 1–10 averages 2.1 percent under IT with FX intervention, and 1.8 percent under IT without intervention.
 
+19
 increase in  ), rendering sterilized intervention less effective.12 To reduce this tendency,
 r
 some uncertainty in the central bank’s intervention policy—when, how much, and at what
@@ -788,6 +816,7 @@ deviation of 2.5 percent, the resulting distribution of expected returns would h
 1.4 percent. While this should discourage inflows, its adverse effect on welfare would be equivalent to the
 impact of capital inflows resulting from a further 125 basis point decrease in the world interest rate.
 
+20
 tolerate a larger exchange rate depreciation when it does not intervene. Again, inflation
 targeting keeps the output gap at zero and inflation at its targeted level.
 The logic of the simulations is thus symmetric to the case of capital inflows. Yet there is one
@@ -832,6 +861,7 @@ to other countries, then there would be no need for coordination of policies in 
 realistically, however, policy actions in one EME might deflect (some component of) the
 flow to another recipient. And even if this is not the case in fact, when choosing its monetary
 
+21
 and exchange rate policy response, each EME might believe that it will be able to deflect the
 capital flow toward another country.
 Indeed, as can be shown in a simplified multicountry version of the model above (Online
@@ -874,6 +904,7 @@ exchange-rate objectives. In fact, to foreswear the use of the second instrument
 potentially wild swings in currencies (including those due to volatile capital flows) might
 actually serve to undercut rather than boost credibility since at some point a commitment to
 
+22
 non-intervention in the FX market would itself not be plausible if the exchange rate strayed
 too far from the level consistent with fundamentals and the preservation of macro stability.
 When the central bank is seeking to entrench its commitment to low inflation in the eyes of
@@ -900,3 +931,5 @@ of exchange rates closer to their multilaterally-consistent levels. This is a po
 important side benefit of the two-instrument IT framework relative to the unconstrained Nash
 equilibrium—not least because the informational requirements to implement discretionary
 but coordinated policies in real time would be formidable.
+
+23

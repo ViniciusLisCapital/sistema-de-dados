@@ -2,7 +2,7 @@
 
 ## Sobre este documento
 
-Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD e dinâmica global do dólar) extraídos das cartas mensais da Verde Asset Management entre janeiro de 2020 e maio de 2026 (73 cartas, 507 instâncias de modelos mentais identificadas).
+Este é um documento de referência sobre os **modelos mentais de análise cambial** (BRL/USD e dinâmica global do dólar) extraídos das cartas mensais da Verde Asset Management entre janeiro de 2020 e agosto de 2026 (76 cartas, 507 instâncias de modelos mentais identificadas na construção original até maio de 2026; as cartas de junho a agosto de 2026 foram incorporadas depois, por repack das entradas existentes).
 
 O objetivo é servir como base de conhecimento estruturada para um analista macro (ou agente de IA) que precise raciocinar sobre os drivers do Real e do dólar global usando o arcabouço analítico da Verde. Cada modelo é apresentado com: **o que é**, **variáveis-chave a monitorar**, **como a Verde aplicou na prática** (com datas e contexto concreto) e **citações relevantes** das cartas.
 
@@ -391,22 +391,25 @@ Este é o cluster mais recorrente em toda a série. A tese central da Verde sobr
 
 ## 4.4 Excepcionalismo Americano como Driver do Ciclo do Dólar
 
-**O que é:** Conceito de regime: quando a economia US demonstra resiliência superior ao resto do mundo, capital flui de volta para ativos em dólar e o dólar fortalece. Regime dominante em 2023-2024, deu lugar à "diversificação para fora do dólar" em 2025/início de 2026, e voltou em mai/2026. Drivers: resiliência econômica US, repricing do Fed em direção a altas, força do ecossistema de IA/semicondutores. A identificação da transição de regime é a tarefa analítica central.
+**O que é:** Conceito de regime: quando a economia US demonstra resiliência superior ao resto do mundo, capital flui de volta para ativos em dólar e o dólar fortalece. Regime dominante em 2023-2024, deu lugar à "diversificação para fora do dólar" em 2025/início de 2026, voltou em mai/2026 e foi reforçado em jun/2026. Drivers: resiliência econômica US, repricing do Fed em direção a altas, força do ecossistema de IA/semicondutores. A identificação da transição de regime é a tarefa analítica central.
 
 **Variáveis-chave:**
 - Resiliência da economia US
-- Expectativas de juros do Fed (altas vs. cortes)
+- Expectativas de juros do Fed (altas vs. cortes), inclusive as movidas pela comunicação do chairman
 - Força do ecossistema de IA/semicondutores
 - Direção dos fluxos de capital (para dentro vs. para fora dos EUA)
 - Performance relativa equities US vs. resto do mundo
 
 **Como a Verde aplicou:**
 - **Mar/2021:** Vanguarda US no ciclo de vacinação/estímulo "já em grande medida precificada" na alta dos juros e na força do mercado acionário — temperou a convicção em mais força do dólar.
-- **Mai/2026:** Reemergência do Excepcionalismo Americano (IA + repricing do Fed) trouxe fortalecimento do dólar como "principal consequência macro"; razão direta para zerar BRL.
 - **Abr/2026:** Boom de IA/semicondutores (S&P +10,4%, Nasdaq +15,6%) reabriu a discussão do excepcionalismo, reduzindo a atratividade relativa do Brasil.
+- **Mai/2026:** Reemergência do Excepcionalismo Americano (IA + repricing do Fed) trouxe fortalecimento do dólar como "principal consequência macro"; razão direta para zerar BRL.
+- **Jun/2026:** Os primeiros sinais do novo chairman Kevin Warsh levaram o mercado a precificar altas de juros, com queda dos prêmios de risco de inflação, e reforçaram "de modo substancial" o tema nos mercados de moedas; a dinâmica pesou nas posições de juro real americano e de metais (9.7).
 
-**Citação:**
+**Citações:**
 > "A continuidade desse movimento trouxe de volta 'Excepcionalismo Americano' como tema macro... e temos visto algum fortalecimento do Dólar como principal consequência macro dessa lógica." (mai/2026)
+
+> "Para o chairman Warsh, os primeiros sinais levaram o mercado a precificar altas de juros nos próximos meses, com queda dos prêmios de risco de inflação, e impactaram os mercados de moedas, reforçando de modo substancial o tema do Excepcionalismo americano, que temos comentado em cartas recentes." (jun/2026)
 
 ## 4.5 Regime de Diversificação do Dólar / "Debasement"
 
@@ -447,17 +450,31 @@ Este é o cluster mais recorrente em toda a série. A tese central da Verde sobr
 
 ## 4.7 Repricing das Expectativas do Fed como Driver do USD (Curto Prazo)
 
-**O que é:** O repricing da trajetória do Fed (especialmente a parte curta da curva, Treasury 2y) é input direto para a direção do USD. Surpresa de inflação para cima → repricing hawkish → fortalecimento do dólar contra G10 e EM. A magnitude do repricing em um único mês (ex.: Fed Funds projetado para fim-2024 subindo 89bps em fevereiro) mede o quanto a narrativa mudou.
+**O que é:** O repricing da trajetória do Fed (especialmente a parte curta da curva, Treasury 2y) é input direto para a direção do USD. Surpresa de inflação para cima → repricing hawkish → fortalecimento do dólar contra G10 e EM. A magnitude do repricing em um único mês (ex.: Fed Funds projetado para fim-2024 subindo 89bps em fevereiro) mede o quanto a narrativa mudou. Na troca de comando do banco central, a Verde parte de uma regra própria: "em todo início de um novo banqueiro central há um processo volátil de construção de um filtro adaptativo", em que o mercado busca separar ruído de sinal; e, nessa fase, ela própria busca separar o ruído do sinal "a partir de uma posição de humildade epistêmica".
 
 **Variáveis-chave:**
 - Treasury 2y, Fed Funds futuros/OIS
 - CPI/PCE US
 - Magnitude do repricing mensal (bps)
-- Prêmio de cortes embutido na curva
+- Prêmio de cortes (ou de altas) embutido na curva
+- Comunicação do chairman, votação e dissensos, tom da entrevista pós-reunião (sobretudo com chairman novo)
+- Dados de emprego US entre reuniões
 
 **Como a Verde aplicou:**
 - **Fev/2023:** Fed Funds fim-2024 subiu 89bps no mês (3,12% → 4,01%) — "melhor exemplo" da mudança de narrativa; dólar fortaleceu contra G10.
 - **Fev/2024:** Surpresa do CPI levou o Treasury 2y de 4,22% ao pico de 4,72%; outras curvas (Europa, UK) com movimentos parecidos. Mas avaliou que o mercado já havia "retirado boa parte do prêmio de cortes".
+- **Jun/2026:** Início do mandato de Kevin Warsh como "o grande evento macro do último mês"; a carta lê a estreia como fase de construção do filtro adaptativo do mercado. Os primeiros sinais levaram o mercado a precificar altas de juros nos meses seguintes, com queda dos prêmios de risco de inflação, e "impactaram os mercados de moedas, reforçando de modo substancial o tema do Excepcionalismo americano" (4.4).
+- **Jul/2026:** Na reunião de 29 de julho o mercado chegou dividido entre os que não viam espaço para altas e os que liam nos sinais de Warsh uma busca por mais credibilidade; a divisão apareceu na renda fixa, que embutiu "quase duas altas e meia de juros", e no fortalecimento do dólar. Warsh não subiu os juros, apesar de três dissensos na votação, e soou menos duro na entrevista; o mercado retirou boa parte do prêmio e o dólar enfraqueceu nos dias seguintes, ajudado por dados mais fracos de emprego. Leitura: "É apenas a segunda reunião dessa nova liderança do banco central americano, e até aqui ele conseguiu surpreender todos os lados."
+- **Ago/2026:** Os sinais de Warsh "na direção (ou não) de taxas de juros mais altas" listados entre as quatro forças do cenário global; as perspectivas de alta de juros "foram impactadas por dados benignos de inflação até que Warsh falou no simpósio de Jackson Hole com um tom mais duro".
+
+**Citações:**
+> "Sabemos que em todo início de um novo banqueiro central há um processo volátil de construção de um filtro adaptativo, onde o mercado buscar separar aquilo que é ruído do que é sinal." (jun/2026)
+
+> "Essa divisão pôde ser vista tanto na renda fixa (que embutiu quase duas altas e meia de juros nos preços até a reunião) quanto no fortalecimento do Dólar." (jul/2026)
+
+> "O mercado retirou boa parte do prêmio que havia colocado e vimos uma dinâmica de Dólar mais fraco nos dias seguintes, ajudada por dados mais fracos de emprego." (jul/2026)
+
+> "Continuamos a buscar separar o ruído do sinal, mas temos de fazê-lo a partir de uma posição de humildade epistêmica." (jul/2026)
 
 ## 4.8 Aperto de Condições Financeiras como Mecanismo Auto-Limitante / Lei de Stein
 
@@ -509,17 +526,25 @@ Este é o cluster mais recorrente em toda a série. A tese central da Verde sobr
 
 ## 4.11 Déficit Fiscal US e Oferta de Treasuries como Driver Dólar/Juros
 
-**O que é:** A expansão estrutural dos déficits US aumenta a oferta de Treasuries, o que (na ausência de demanda compensatória) eleva os juros longos e fortalece o dólar. Bancos centrais globais não acumulam reservas (compram Treasuries) quando o dólar se valoriza — pelo contrário, vendem para defender suas moedas, reforçando a força do USD num feedback loop. Curva invertida torna a compra de Treasuries longas um trade de carry negativo, reduzindo a demanda por duration e por carry EM.
+**O que é:** A expansão estrutural dos déficits US aumenta a oferta de Treasuries, o que (na ausência de demanda compensatória) eleva os juros longos e fortalece o dólar. Bancos centrais globais não acumulam reservas (compram Treasuries) quando o dólar se valoriza — pelo contrário, vendem para defender suas moedas, reforçando a força do USD num feedback loop. Curva invertida torna a compra de Treasuries longas um trade de carry negativo, reduzindo a demanda por duration e por carry EM. A pressão sobre a parte longa não vem só do Tesouro: a emissão de títulos por empresas privadas para financiar capex de IA soma-se ao déficit e à necessidade de financiamento, e a pressão, "seja fiscal, seja de demanda por capital", é comum à maior parte dos mercados desenvolvidos, onde há "baixíssimo apetite político por redução do populismo fiscal". Para a Verde, a trajetória fiscal de longo prazo de boa parte das economias desenvolvidas deve continuar pressionando as taxas longas por mais tempo, e a solução de médio e longo prazo é ou mais inflação ou repressão financeira.
 
 **Variáveis-chave:**
 - Déficit fiscal US, estoque de Treasuries (US$5tri em 2007 → US$25tri em 2023)
-- Pace de emissão
+- Pace de emissão; emissão privada de títulos para financiar capex de IA
 - Balanço oferta/demanda de duration
 - Inclinação 2s10s
 - Holdings de Treasuries por BCs de EM
+- Intervenção do Tesouro na parte longa da curva
+- Trajetória fiscal de longo prazo das economias desenvolvidas
 
 **Como a Verde aplicou:**
 - **Set/2023:** Explosão de oferta de Treasuries + recuo de compradores tradicionais (incluindo BCs estrangeiros) como razão estrutural da alta dos juros longos — headwind persistente para moedas EM.
+- **Ago/2026:** A pressão "seja fiscal, seja de demanda por capital" nas taxas longas da maior parte dos desenvolvidos listada entre as quatro forças do cenário global. O secretário do Tesouro Scott Bessent anunciou em meados de agosto uma intervenção para controlar as taxas na parte longa da curva americana; a Verde avaliou que, como boa parte das intervenções governamentais em mercados líquidos, essa tende a não ter sucesso, dado o tamanho do déficit, a necessidade de financiamento e as emissões privadas para capex de IA. O mercado reagiu enfraquecendo o dólar e beneficiando outras moedas, ouro e prata — mês de ganhos no ouro e na prata do fundo. No mesmo mês, em parágrafo sobre a trajetória fiscal dos desenvolvidos, sem ligar explicitamente à intervenção, a carta diz que a solução é mais inflação ou repressão financeira e acrescenta: "Podemos estar vendo o primeiro sinal, mesmo que tênue, dessa última opção."
+
+**Citações:**
+> "Os mercados reagiram a essa intervenção enfraquecendo o Dólar e beneficiando outras moedas (e commodities como ouro e prata)." (ago/2026)
+
+> "A solução a médio e longo prazo é ou maior inflação (geralmente impopular) ou repressão financeira. Podemos estar vendo o primeiro sinal, mesmo que tênue, dessa última opção." (ago/2026)
 
 ---
 
@@ -855,12 +880,25 @@ Este é o cluster mais recorrente em toda a série. A tese central da Verde sobr
 
 ## 9.7 Ouro e Cripto como Ativos Monetários no Book de Moedas
 
-**O que é:** A Verde classifica ouro (e cripto) dentro do book de moedas, tratando-os como alternativas monetárias ao dólar (hedge contra debasement, supressão de juro real, excesso fiscal), não como commodities. Long ouro é mantido ao lado de short USD como expressões da mesma tese. Aceleração exponencial em metais (prata, platina, paládio) é monitorada como possível sinal de euforia especulativa / mudança de padrão de risco.
+**O que é:** A Verde classifica ouro (e cripto) dentro do book de moedas, tratando-os como alternativas monetárias ao dólar (hedge contra debasement, supressão de juro real, excesso fiscal), não como commodities. Long ouro é mantido ao lado de short USD como expressões da mesma tese. Aceleração exponencial em metais (prata, platina, paládio) é monitorada como possível sinal de euforia especulativa / mudança de padrão de risco. A prata é mantida ao lado do ouro no book de moedas ("Em moedas continuamos alocados em ouro e prata", jun/2026), e o racional se estende à repressão financeira: num mundo em que a trajetória fiscal dos desenvolvidos se resolve ou com mais inflação ou com repressão financeira (4.11), ouro e prata são, para a Verde, "ativos importantes na construção de portfólio para esse mundo".
+
+**Variáveis-chave:**
+- Direção do dólar e do repricing do Fed
+- Intervenções nos juros longos / sinais de repressão financeira
+- Trajetória fiscal dos desenvolvidos
 
 **Como a Verde aplicou:**
 - **Mar/2023 (SVB):** Long ouro como hedge risk-off ao lado de long USD/BRL.
 - **Abr/2025 / Mai-Dez/2025 / 2026:** Ouro como expressão central da tese de debasement; "termômetro mais claro". Aumentou cripto em jul/2025.
 - **Dez/2025:** Movimento exponencial em prata (+26,4% no mês), platina e paládio como "sinal de mudança de padrão de risco e euforia especulativa".
+- **Jun/2026:** "Em moedas continuamos alocados em ouro e prata"; as perdas do mês vieram em parte dos metais preciosos, atribuídas aos primeiros sinais de Warsh (precificação de altas, Excepcionalismo Americano reforçado).
+- **Jul/2026:** Novas perdas em metais preciosos; alocação em ouro e prata mantida.
+- **Ago/2026:** Ganhos em ouro e prata depois que a intervenção de Bessent na parte longa enfraqueceu o dólar (4.11); a carta conclui que a solução fiscal dos desenvolvidos passa por inflação ou repressão financeira e que ouro e prata são "ativos importantes" nesse cenário.
+
+**Citações:**
+> "Em moedas continuamos alocados em ouro e prata." (jun/2026)
+
+> "Ouro e prata são ativos importantes na construção de portfólio para esse mundo." (ago/2026)
 
 ---
 

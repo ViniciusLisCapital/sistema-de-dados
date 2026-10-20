@@ -171,6 +171,7 @@ sition of the late 1920s, at least much closer to that position than to the
 position of 1945. There are of course many differences between then
 and now, less in the potency attributed to monetary policy than in the
 
+FRIEDMAN: MONETARY POLICY 5
 roles assigned to it and the criteria by which the profession believes
 monetary policy should be guided. Then, the chief roles assigned mone-
 tary policy were to promote price stability and to preserve the gold
@@ -303,6 +304,7 @@ change of the quantity demandede xcludinge ffects on demandf rom monetaryp olicy
 However, empiricallyd emandi s highly stable, if we excludet he effect of monetaryp olicy,
 so it is generallys ufficientt o look at supply alone.
 
+8 THE AMERICANE CONOMICR EVIEW
 only by inflation. It can mnaket he market rate higher than the natural
 rate only by deflation. We have added only one wrinkle to Wicksell-
 the Irving Fisher distinction between the nominal and the real rate of
@@ -398,6 +400,7 @@ precisely, anticipated real wages-and it all falls into place. That is why stude
 empirical Phillips Curves have found that it helps to include the rate of change of the
 price level as an independent variable.
 
+10 THE AMERICANE CONOMICR EVIEW
 balances higher than people desire, it will tend initially to lower interest
 rates and in this and other ways to stimulate spending. Income and
 spending will start to rise.
@@ -488,6 +491,7 @@ Monetary policy cannot peg these real magnitudes at predetermined
 levels. But monetary policy can and does have important effects on
 these real magnitudes. The one is in no way inconsistent with the other.
 
+12 THE AMERICAN ECONOMIC REVIEW
 My own studies of monetary history have made me extremely sym-
 pathetic to the oft-quoted, much reviled, and as widely misunderstood,
 comment by John Stuart Mill. "There cannot . .. ," he wrote, "be in-
@@ -532,6 +536,7 @@ then, in early 1966, stepping on the brake too hard, then, at the end of
 ciable inflation.
 Even if the proposition that monetary policy can prevent money it-
 
+FRIEDMAN:M ONETARYP OLICY 13
 self from being a major source of economic disturbance were a wholly
 negative proposition, it would be none the less important for that. As it
 happens, however, it is not a wholly negative proposition. The mone-
@@ -576,6 +581,7 @@ In today's world, if monetary policy is to provide a stable back-
 ground for the economy it must do so by deliberately employing its
 powers to that end. I shall come later to how it can do so.
 
+14 THE AMERICAN ECONOMIC REVIEW
 Finally, monetary policy can contribute to offsetting major distur-
 bances in the economic system arising fromio ther sources. If there is an
 independent secular exhilaration-as the postwar expansion was de-
@@ -619,6 +625,7 @@ self by magnitudes that it can control, not by ones that it cannot con-
 trol. If, as the authority has often done, it takes interest rates or the
 current unemployment percentage as the immediate criterion of policy,
 
+FRIEDMAN: MONETARY POLICY 15
 it will be like a space vehicle that has taken a fix on the wrong star. No
 matter how sensitive and sophisticated its guiding apparatus, the space
 vehicle will go astray. And so will the monetary authority. Of the var-
@@ -663,6 +670,7 @@ thority avoid sharp swings in policy. In the past, monetary authorities
 have on occasion moved in the wrong direction-as in the episode of
 the Great Contraction that I have stressed. More frequently, they have
 
+16 THE AMERICANE CONOMICR EVIEW
 moved in the right direction, albeit often too late, but have erred by
 moving too far. Too late and too much has been the general practice.
 For example, in early 1966, it was the right policy for the Federal Re-
@@ -708,6 +716,7 @@ that a still lower rate of growth, something like 2 per cent for the broader def
 might be better yet in order to eliminate or reduce the difference between private and
 total costs of adding to real balances.
 
+FRIEDMAN:M ONETARYP OLICY 17
 By setting itself a steady course and keeping to it, the monetary au-
 thority could make a major contribution to promoting economic stabil-
 ity. By making that course one of steady but moderate growth in the

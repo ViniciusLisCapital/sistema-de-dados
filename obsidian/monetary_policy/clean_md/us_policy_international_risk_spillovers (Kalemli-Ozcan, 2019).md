@@ -2,6 +2,7 @@ NBER WORKING PAPER SERIES
 U.S. MONETARY POLICY AND INTERNATIONAL RISK SPILLOVERS
 Ṣebnem Kalemli-Özcan
 Working Paper 26297
+http://www.nber.org/papers/w26297
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -42,6 +43,7 @@ Tydings Hall 4118D
 College Park, MD 20742-7211
 and CEPR
 and also NBER
+kalemli@econ.umd.edu
 
 I. Introduction
 A central issue in international macroeconomics regards the transmission of seemingly unrelated
@@ -74,6 +76,7 @@ realized policy differentials are much higher and much more dispersed for EMEs t
 1Speech by Jerome H. Powell on Monetary Policy in the Post-Crisis Era, at “Bretton Woods: 75 Years Later-
 Thinking about the Next 75,” conference, Banque de France and the French Ministry for the Economy and Finance,
 Paris, France, July 16, 2019.
+1
 
 Chart 1: Monetary Policy Divergence
 Percentage Point Percentage Point
@@ -109,6 +112,7 @@ exchange rate regimes when the center country’s monetary policy changes is at 
 and/or short-term nominal rates to measure monetary policy divergence. A similar picture emerges, when I plot 3-
 month government bond rate differentials and 10th-90th percentile range for policy rate differentials. These additional
 charts can be found in the Appendix.
+2
 
 In practice, other countries’ interest rates move in response to the U.S. rate change. I find that in
 response to an exogenous increase in the U.S. policy rate, AEs interest rates rise, but less than one
@@ -140,6 +144,7 @@ in dealing with policy spillovers as domestic banks borrow cheaply when U.S. rat
 are low. These banks then pass their cheap funding costs through, which become cheap borrowing
 costs for firms and households. When U.S. rates and global risk aversion rise, the reverse happens
 and capital flows out, which has a direct effect on economy-wide local credit spreads by forcing
+3
 
 banks to provide less credit. I refer to this phenomenon as international risk spillovers.
 Can exchange rate flexibility help EMEs in their stabilization mandates? I argue that the
@@ -176,6 +181,7 @@ in emerging markets as argued by Burstein and Gopinath (2014).
 5Expenditure switching might be dampened under dominant currency pricing. Gopinath (2016)’s Jackson Hole
 paper argues that expenditure switching effects work mostly via imports if trade is invoiced in a dominant currency.
 See also Gopinath et al. (2019) for international evidence and a model of dominant currency pricing.
+4
 
 in the U.S. is no exception, as it has contributed to volatility in emerging markets most notably
 Turkey and Argentina, during the summer of 2018. Policymakers argue that capital flows lead to
@@ -208,6 +214,7 @@ exchange rates are not free to pick up the changes in risk premia. I show that f
 6See Akinci and Queralto (2019) for a model of spillovers with UIP deviations and balance sheet effects that
 implies much bigger welfare gains under the policy of floating exchange rates.
 7See Kalemli-Ozcan and Varela (2019).
+5
 
 are much more insulated from U.S. monetary policy driven risk shocks than EMEs with managed
 floats in a world of international risk spillovers.
@@ -236,6 +243,7 @@ a reverse sign) are mainly driven by the actions of foreign investors (Bluedorn 
 Avdjiev et al. (2019)). These capital inflows can be positive or negative during any given quarter,
 as foreign investors can increase or reduce their financial exposures to a given country. Since I am
 interested in the behavior of international investors, the behavior of domestic residents—capital
+6
 
 outflows—is not relevant for my purposes.8
 I obtain gross capital inflows from the International Monetary Fund’s (IMF) Balance of Pay-
@@ -271,10 +279,12 @@ outflows.
 have missing policy rate data, which is why this chart has fewer observations than 55 emerging markets and 14
 advanced countries. Country-quarter observations with hard pegs are dropped as in Chart 1.
 11See also Eichengreen and Portes (1987), Reinhart and Reinhart (2009), and Reinhart and Rogoff (2009).
+7
 
 Chart 2: Monetary Policy Divergence and Capital Flows
 Flows Rate Differential Flows Rate Differential Flows Rate Differential
 (Percent) (Percentage Point) (Percent) (Percentage Point) (Percent) (Percentage Point)
+35 15 35 30 35 4
 30 30 30
 25 25 25
 10 20 2
@@ -312,6 +322,7 @@ et al. (2013), Miranda-Agrippino and Rey (2019), and Bruno and Shin (2015).14
 expectation of 30-day volatility, and is constructed using the volatilities implied by a wide range of S&P 500 index
 options.
 14See also Borio and Zhu (2012) who underline the importance of risk perceptions and risk tolerance on the
+8
 
 Chart 3: Monetary Policy Divergence and Sovereign Flows
 Flows Rate Differential Flows Rate Differential
@@ -344,6 +355,7 @@ between the VIX and capital inflows during a longer sample period and arguing th
 capital flows and the VIX is a crisis effect. See, for example, Cerutti et al. (2019) who argues that the correlation
 between the VIX and capital flows is not very strong outside crisis. See also Avdjiev et al. (2017) on a similar
 emphasis on compositional changes with regards to banking flows.
+9
 
 Chart 4: Risk Sentiments and Capital Flows
 Flows Flows
@@ -385,6 +397,7 @@ I also control for country fundamentals using the differences in country GDP gro
 culated as the quarterly change in a country’s log GDP, minus U.S. GDP growth. It is important to
 16This index is from the Emerging Market Bond Index Global that tracks total returns for traded external debt
 instruments in EMEs, and is an expanded version of the JPMorgan EMBI. I use country-specific Z spread.
+10
 
 condition on country fundamentals, since the heterogeneous response of EMEs to changes in global
 shocks is often interpreted as being due to differences in fundamentals. The standard argument is
@@ -433,6 +446,7 @@ Table 1 shows that the average relation between policy divergence and capital fl
 in EMEs and zero in AEs during the period 1996–2018, as shown in columns (1) and (4) respectively.
 These results support the correlations that were presented in Chart 2. The reason for the weak
 17See Caballero and Simsek (2019) for a model for the sensitivity of capital flows to risk perceptions.
+11
 
 average correlation is the changing nature of investors’ risk perceptions over time. To show this, I
 include the proxies for risk sentiments one by one. For changes in global risk aversion, the VIX is
@@ -465,6 +479,7 @@ respond with a lag. Lagging all independent variables one quarter and adding inf
 18The results for EMEs using the 3-month government bond rate differential are similar so they are not reported.
 19The EMBI index is available for less countries. Results from the regressions in columns (1) and (2) using the
 smaller sample of the EMBI index yields identical results and hence not reported.
+12
 
 as an additional control variable produces very similar results.
 These results can easily be understood in the context of a standard omitted variable bias problem
@@ -497,6 +512,7 @@ case, to shed more light on this issue, I examine the effects of exogenous shock
 policy in the next section.
 20Sign of omitted variable bias= β × cov (Risk, (ip − ip )).
 2 c,t US,t
+13
 
 Chart 5: Monetary Policy Divergence and Risk Sentiments
 Rate Differential Rate Differential
@@ -543,6 +559,7 @@ Monetary policy divergence can occur either because the center country changes i
 or other countries change their monetary policies, which can be also an endogenous response to the
 changes in the center country policy. I will rely on the recent developments in the closed economy
 monetary policy transmission literature to measure exogenous changes in U.S. monetary policy.
+14
 
 There is an extensive closed economy literature on monetary policy transmission. The conven-
 tional models imply that domestic credit costs should respond to monetary policy actions and this
@@ -575,6 +592,7 @@ base their actions on these expectations.
 22The surprises also include shocks to forward guidance since instrument set includes fed funds futures for contracts
 that expire at a subsequent date in the future. These surprises reflect beliefs on FOMC dates about the future path
 of short-term rates.
+15
 
 (i − i ) = α + β ˆi + βwW + (cid:15) , h = 0, 1, 2, 3...
 c,t+h US,t+h c h US,t h c,t+h
@@ -618,8 +636,10 @@ of monetary policy responses of countries outside the center, and these controls
 However, this does not mean that these regressions control for the current and future policy responses. Thus, the
 responses of government bond rate differentials are affected by all changes in financial conditions that include policy
 reactions of countries, and these changes are induced by the unexpected U.S. monetary policy shocks.
+16
 
 Chart 6: Responses of 12-month Government Bond Rate Differentials I
+Percentage Point Percentage Point
 4
 0
 3
@@ -628,6 +648,7 @@ Chart 6: Responses of 12-month Government Bond Rate Differentials I
 −2
 0
 −1 −3
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 3−month Treasury Rate Shock US 3−month Treasury Rate Shock
 (a) Emerging Market Economies (b) Advanced Economies
@@ -649,6 +670,7 @@ Percentage Point Percentage Point
 0
 −2
 −1 −2.5
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 1−year Treasury Rate Shock US 1−year Treasury Rate Shock
 (a) Emerging Market Economies (b) Advance Economies
@@ -658,6 +680,7 @@ standard errors) are shown by the shaded areas. The U.S. policy is proxied by 12
 and is instrumented by Gertler-Karadi shock FF4 (estimated from surprises in 3-month Fed fund futures).
 The domestic monetary policy response of country c is controlled. The first-stage effective F-statistic of
 Olea and Pflueger (2013) is 170.1 for EMEs and 92 for AEs.
+17
 
 In Chart 8, I add the proxies for global and local risk perceptions. Adding the VIX, although
 dampen the effects, did not render the impulse responses insignificant, whereas adding the EMBI
@@ -673,6 +696,7 @@ Percentage Point Percentage Point
 0
 −1
 −1 −2
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 3−month Treasury Rate Shock US 1−year Treasury Rate Shock
 (a) Emerging Market Economies (b) Emerging Market Economies
@@ -692,6 +716,7 @@ The study of monetary policy and related spillovers in open economies is a vast 
 started with the seminal work of Obstfeld and Rogoff (1995).24 Most of the literature assumes
 24See also Corsetti and Pesenti (2001), Gali and Monacelli (2005), Farhi and Werning (2014), and Corsetti et al.
 (2018).
+18
 
 frictionless domestic and international markets and no role for risk. The closed economy macro
 literature on monetary policy transmission, meanwhile mainly works with models of financial fric-
@@ -720,6 +745,7 @@ interest rates (R)— the standard monetary transmission channel—and a negativ
 25A full-fledged dynamic stochastic general equilibrium (DSGE) model with micro foundations, incorporating
 all channels, including domestic credit spreads, balance sheet effects with foreign currency denominated debt and
 expenditure switching, can be found in Akinci and Queralto (2019).
+19
 
 nominal exchange rate (S).26 This negative relation is captured by parameter, f, and represents
 balance sheet effects. If domestic currency depreciates vis-a-vis the U.S. dollar and if this creates
@@ -750,6 +776,7 @@ the strong relation between country risk and exchange rates in the data.
 I assume that the effect of the global financial cycle (GFC) works through two mechanisms.
 26An increase in S means a depreciation of the domestic currency vis-a-vis the U.S. dollar.
 27See Engel (2014) for a survey of this literature.
+20
 
 First, in equation (3) given below, λ is directly affected by the global risk premium through U.S.
 monetary policy. di Giovanni et al. (2018) show that UIP deviations in Turkey, here given by λ,
@@ -784,6 +811,7 @@ and achieving financial stability simultaneously. His argument is based on the f
 affected from GFC and hence the effect of monetary policy on the long-term rates will be limited. The short rate
 disconnect assumed here is a stronger condition that says due to GFC there is a disconnect between policy rates and
 short rates.
+21
 
 a collateral premium drives a wedge between the policy rate and short-term rates. Thus, in their
 model, monetary policy does not affect directly the decisions of private agents. Here, I will not
@@ -819,6 +847,7 @@ sign the derivatives, I ignore this division.
 31If γ is endogenized as γ = γ(R ), then this will deliver theoretical implications on the optimal exchange rate
 p
 regime.
+22
 
 sheet effects is bigger than the effect of exchange rate fluctuations on net exports via expenditure-
 switching, then it is easy to see that a contractionary U.S. monetary policy is also contractionary
@@ -855,6 +884,7 @@ c,t c c,t c,t
 32If the estimation is done for the level of the exchange rate as implied by the model, this will be the case. If the
 estimation is done for the change in the exchange rate as typically done in the empirical UIP literature then the d
 parameter is estimated to be less than 0.5.
+23
 
 where ip = R based on the notation of the framework above, so that ip is the monetary policy
 c,t p c,t
@@ -891,6 +921,7 @@ I proxy global risk sentiments using the VIX and local risk perceptions using th
 34See di Giovanni et al. (2018) who showed that domestic banks in Turkey pass through low funding costs in the
 international markets during episodes of abundant global liquidity to firms as low lending rates.
 35In AEs, the null of β = 1 is also rejected for 3-month deposits.
+24
 
 before. The aim here is to test whether the degree of monetary policy pass-through can be explained
 by risk premia in EMEs. If the proxies for risk sentiments are omitted, then they create a wedge.
@@ -930,6 +961,7 @@ rates on quarterly log changes in policy rates. The interpretation of the coeffi
 the qualitative results are the same. The coefficient on each type of short-term rate is around 0.4 in EMEs and 0.9
 in AEs in a regression of first-differences. Once risk premia are added, the coefficients go up to be around 0.88 for
 EMEs. Including time fixed effects in levels regressions does not change the estimated coefficients.
+25
 
 that, on average, countries loosen the monetary policy when investors’ risk perceptions are high
 (risk-off shocks) and tighten it when risk perceptions are low (risk-on shocks).
@@ -962,6 +994,7 @@ banks in intermediating capital flows and transmitting shocks.
 40Corporates’ direct external borrowing might involve much higher spreads and be less related to domestic monetary
 policy. For most EMEs, this type of borrowing is in general limited to large corporations who can access international
 bond markets.
+26
 
 Table 4 shows the results. Capital inflows have a direct effect on lending spreads, defined as the
 log difference between short-term loan rates and 3-month government bond rates. With an increase
@@ -996,6 +1029,7 @@ regression in column (2) on predicted inflows is −0.029 and for AEs the coeffi
 (2019) that show the effect of the U.S. monetary policy and GFC on global asset prices, cross-border flows and global
 banks leverage. Some of this work also look at the effects on other countries GDP. A comprehensive overview of all
 possible spillover channels can be found in Ammer et al. (2016).
+27
 
 Table 4: Capital Flows and Bank Lending Spreads
 Dependent Variable: ic,t(Loan)−ic,t(3m Government Bond)
@@ -1042,6 +1076,7 @@ Correlation: 96q1−18q4 = 0.494, 96q1−08q2 = 0.470, 08q3−18q4 = 0.744 Corre
 (a) Emerging Market Economies (b) Advanced Economies
 Notes: Average lending rate (on loans with maturity less than or equal to 12-months) differentials are in
 logs.
+28
 
 V. Risk Premia and Interest Rate-Exchange Rate Disconnect
 In this section, I investigate the response of exchange rates to monetary policy divergence. As
@@ -1076,6 +1111,7 @@ shows that it moves with changes in the VIX.43
 differentials also look similar. As cited above, di Giovanni et al. (2018) show that UIP deviations move with global
 risk sentiments in Turkey and Kalemli-Ozcan and Varela (2019) generalize this fact to more countries. Chart 10
 shows the same fact for the country-quarter observations used in this paper. See also Cormun and Leo (2019) who
+29
 
 Chart 10: Risk Sentiments and UIP Deviations
 UIP Deviation Log(VIX) UIP Deviation Log(VIX)
@@ -1117,6 +1153,7 @@ tions, while in the latter interest rate differentials play a key role.
 These results are consistent with a story where country risk might lead to UIP deviations in
 find that movements in global risk premia account for bulk of the deviations from UIP, especially in EMEs with large
 net foreign liabilities.
+30
 
 Chart 11: Sources of UIP Deviations
 UIP Deviation UIP Deviation
@@ -1153,6 +1190,7 @@ not only hurts the domestic economy but also has an impact on country risk premi
 outflows from the U.S. during the global financial crisis period. One interpretation of their results is that, since
 during this period interest rates were at the zero lower bound in advanced economies, the exchange rate part of the
 UIP condition might be picking up the fluctuations in risk premia proxied by capital flows.
+31
 
 tighter financial conditions, increasing the effects of international risk spillovers.45 Next, I will
 investigate the response of exchange rates in domestic economy to monetary policy divergence to
@@ -1187,6 +1225,7 @@ exchange rate in both set of countries. These regressions control for time fixed
 stationarity in the level of exchange rate. These fixed effects also control for the average affect of the VIX and what
 is picked up by capital flows is the country-specific response to global risk together with country-specific risk. Results
 are also robust to including linear and quadratic time trends.
+32
 
 coefficient on interest rate differentials (d in the model) is above 1, then a contractionary policy
 in the U.S. is also contractionary in EMEs, due to international risk spillovers. I estimate this
@@ -1226,6 +1265,7 @@ the following local projections in a similar way to projections of Section II.B:
 exercise is picking up the average effect. See Cormun and Leo (2019) for a structural model and related evidence that
 shows that accounting for the role of global risk premia correctly identifies the effects of domestic monetary policy
 on exchange rate fluctuations.
+33
 
 λ = α + β ˆi + βwW + (cid:15) , h = 0, 1, 2, 3...
 c,t+h c h US,t h c,t+h
@@ -1259,8 +1299,10 @@ How large are the effects? There is an existing debate on the relationship betwe
 rate and global risk aversion in terms of how much of the variation in the VIX can be explained by
 the shocks to U.S. policy. Rey (2013) and Miranda-Agrippino and Rey (2019) find that shocks to
 48As in chart 8, these effects disappear once global and country-specific risk perceptions are accounted for.
+34
 
 Chart 12: Responses of UIP Deviations
+Percentage Point Percentage Point
 4
 4
 2 2
@@ -1269,6 +1311,7 @@ Chart 12: Responses of UIP Deviations
 −2
 −2
 −4
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 1−year Treasury Rate Shock US 1−year Treasury Rate Shock
 (a) Emerging Market Economies (b) Advanced Economies
@@ -1293,6 +1336,7 @@ on domestic currency in EMEs after three quarters as a result of an increase in 
 shown in Chart 12 that plots UIP deviations.
 In section VII below, I show that there are also large real effects of international risk spillovers
 on GDP growth.
+35
 
 VI. B) Euro Area Monetary Policy
 In the analysis so far, I have defined monetary policy divergence via-a-vis the U.S. Is U.S monetary
@@ -1321,6 +1365,7 @@ VI. D) Long-Term Bond Rate Differentials
 The literature that studies the effect of unconventional monetary policies in the aftermath of the
 2008 crisis, focuses on long-term assets. This literature finds that both nominal and real long-
 term rates respond to unconventional monetary policy due to changes in term premia. This is
+36
 
 the case both domestically in the U.S. and internationally. And the explanation for these findings
 center on yield-oriented investors searching for better yields in the U.S. and internationally. As
@@ -1347,6 +1392,7 @@ interest rates, where policy rate changes themselves are also correlated with ri
 How aggressively should policymakers respond to changes in global financial conditions in this
 context? This is a difficult question, because as I discuss below, being too aggressive may prove to
 be counterproductive.
+37
 
 VII. A) Managed Floats vs. Free Floats
 Consider the case of exchange rate policy when the U.S. tightens monetary policy. If the domestic
@@ -1383,8 +1429,10 @@ to +/- 2%; 3 means a crawling band that is wider than +/-2%; 4, 5, and 6 mean fr
 For the entire analysis, I drop country-quarter observations with hard pegs (classification 1). In this section, I group
 country-quarter observations from classifications 2, 3 into “managed float,” and I group country-quarter observations
 from classifications 4, 5, 6, into “free float”.
+38
 
 Chart 13: Risk Sentiments and Policy Divergence: Managed Floats vs. Free Floats
+Rate Differential Rate Differential
 Log(VIX) Log(VIX)
 (Percentage Point) (Percentage Point)
 8
@@ -1418,6 +1466,7 @@ the effect on free floats is barely significant.51 Once I separate the countries
 the effects are even starker as shown in Appendix Table 13. I argue that the driving force for these
 51Note that I do not have enough observations to run a local projection given the rich lag structure needed by
 these projections. However, these growth regressions use one quarter lagged VIX.
+39
 
 Chart 14: Responses of Exchange Rates
 Percent Percent
@@ -1430,6 +1479,7 @@ Percent Percent
 0
 0
 −5 −5
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 1−year Treasury Rate Shock US 1−year Treasury Rate Shock
 (a) Emerging Market Economies (b) Advanced Economies
@@ -1443,6 +1493,7 @@ Percent Percent
 0
 0
 −5 −5
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 1−year Treasury Rate Shock US 1−year Treasury Rate Shock
 (c) Emerging Market Economies (d) Advanced Economies
@@ -1458,6 +1509,7 @@ increase in the VIX the q-on-q growth rate goes down by 0.2 percent in managed f
 effect on pure floats is negligible. For a “Lehman-like” increase of 133 percent in the VIX, q-on-q
 growth goes down by 0.8 percent, again in managed floats. In the case of EMEs with free floats,
 the effects are completely insignificant as shown in Appendix Table 13.
+40
 
 Table 6: Growth Regression by Exchange Rate Regime
 Dependent Variable: GDP Growth
@@ -1496,6 +1548,7 @@ and this is problematic given that these countries currencies float internationa
 53Obstfeld et al. (2018) find that intermediate regimes and pure floats behave similarly when faced with risk shocks.
 I find stark differences between managed floats and free floats in terms of these countries’ GDP growth rates in the
 face of risk shocks.
+41
 
 In a similar way to my paper, the literature above argues that domestic monetary policy might
 be limited in its ability to counteract the effect of external financial shocks in open economies.
@@ -1527,6 +1580,7 @@ the world.54 The empirical literature also showed that in the presence of domest
 54See Krugman (1999) and Cespedes et al. (2004), who show theoretically how depreciation of home currency can
 reduce domestic activity through home balance sheet effects. Bruno and Shin (2015), Gabaix and Maggiori (2015),
 Miranda-Agrippino and Rey (2019), and Jiang et al. (2019) develop models that center on balance sheet currency
+42
 
 currency mismatches, there can be real effects such as a persistent decline in investment and output
 during large depreciation events (Aguiar (2005), Kalemli-Ozcan et al. (2016)). Contractionary
@@ -1563,6 +1617,7 @@ UIP deviations, there is more foreign currency borrowing using credit registry d
 57See also Itskhoki and Mukhin (2019) for a model of segmented financial markets, where UIP deviations are
 endogenous to domestic monetary policy. If the domestic monetary authority tries to limit nominal exchange rate
 volatility, it affects equilibrium risk premia.
+43
 
 effects on the real economy. As a result, “fear of floating” strategies could amplify real volatility.
 To shed more light on this issue, I use BIS Global Liquidity Indicators (GLI) data covering 42
@@ -1594,6 +1649,7 @@ a powerful force in countries with low levels of foreign currency debt. To do a 
 effect of exchange rate fluctuations and risk premia on domestic leverage, I run the following panel
 58The data is reported in Kalemli-Ozcan et al. (2018), who show that firms’ leverage are tied to exchange rate
 changes in countries with high levels of foreign currency debt.
+44
 
 Chart 15: Corporate Leverage: The Role of Foreign Currency Debt
 Liabilities/Assets Liabilities/Assets
@@ -1635,6 +1691,7 @@ FC Share of Loans Log(VIX) Log(EMBI) Loans/GDP LC Loans/GDP FC Loans/GDP
 Notes: Taken from di Giovanni et al. (2018). “FC Share of Loans” denote the share of foreign currency
 loans in total loans in the economy. “LC loans” means local currency loans. All loans are normalized by
 GDP in the second chart.
+45
 
 regression with firm and country fixed effects using firm-level data from 42 countries at the annual
 level:
@@ -1672,6 +1729,7 @@ change rate decreases leverage by 2%, whereas a 1 standard deviation increase in
 leverage by 1.3% in countries with high levels of foreign currency denominated debt. The same
 increase in the VIX decreases leverage by 0.6% in countries with low levels of foreign currency debt
 and exchange rate changes have no effect on leverage in these countries. A “Lehman- like” increase
+46
 
 in the VIX of 133 percent, decreases leverage by 5.3% in countries with high levels of foreign cur-
 rency denominated debt and 2.6% in countries with low levels of foreign currency denominated
@@ -1702,6 +1760,7 @@ case where there are no UIP deviations. As a result, trying to manage the exchan
 not only be counterproductive due to its effect on tighter financial conditions, but it can also
 make the balance sheet effects worse by increasing the extent of foreign currency denominated
 debt in the economy. In the data used in this paper, the share of foreign currency debt in total
+47
 
 corporate sector debt in countries who manages their exchange rate often is 14.3%, whereas the
 same number in countries with free floating regimes is 1.9%. In addition, as cited above, there
@@ -1734,6 +1793,7 @@ but also to reduce the sensitivity of capital flows to U.S. monetary policy. The
 59Asian EMEs that experienced high growth and ran current account surpluses at the same time before the 2008
 crisis reflect the fact that capital outflows from high growth Asian EMEs were driven by sovereign flows, while these
 countries imported private capital on net as shown by Alfaro et al. (2014) and Gourinchas and Jeanne (2013).
+48
 
 EMEs get the most out of capital flows in terms of sustainable growth, tilting capital flows towards
 longer maturity debt, and foreign direct investments. Finally, strong institutions will also provide
@@ -1761,6 +1821,7 @@ are increasingly confronted with the need to better understand and respond to fl
 to shifts in risk sentiments, which can lead to disruptive financial conditions. As a consequence,
 international risk spillovers present a serious challenge going forward for monetary policy making
 across the world.
+49
 
 Appendix
 A) Additional Charts on Monetary Policy Divergence
@@ -1787,8 +1848,10 @@ Percentage Point Percentage Point
 p90−p10 Mean Median p90−p10 Mean Median
 (c) EMEs: Policy Differential (d) AEs: Policy Differential
 Notes: The rate differentials are in logs.
+57
 
 Chart 18: Monetary Policy Divergence vis-a-vis the Rest of the World
+Percentage Point Percentage Point
 40 40
 30 30
 20 20
@@ -1811,8 +1874,10 @@ Max−Min Mean Median Max−Min Mean Median
 (c) EMEs: Policy Differential (d) AEs: Policy Differential
 Notes: The rate differentials are in logs vis-a-vis the rest of the world (ROW) defined as all the countries
 in the sample except the country that the differential is calculated for.
+58
 
 Chart 19: Monetary Policy Divergence: Unrestricted Scale and Small Sample
+Percentage Point Percentage Point
 100
 15
 80
@@ -1839,8 +1904,10 @@ Max−Min Mean Median Max−Min Mean Median
 Notes: The rate differentials are in logs. The top panel does not restrict the y-axis scale. The second
 sample plots the differentials for the small sample that is used in most of the regressions due to data
 availability on other regressors.
+59
 
 Chart 20: Monetary Policy Divergence: Real Rates
+Percentage Point Percentage Point
 40 40
 30 30
 20
@@ -1878,6 +1945,7 @@ Policy Rate Differential Log(VIX) Policy Rate Differential Log(VIX)
 Correlation: 96q1−18q4 = 0.159 Correlation: 96q1−18q4 = −0.266
 (a) EMEs (b) AEs
 Notes: The policy rate differentials are calculated vis-a-vis the ECB refinancing rate and in logs.
+60
 
 B) Descriptive Statistics
 Table 8: Country List
@@ -1904,6 +1972,7 @@ Pakistan
 Tanzania
 Notes: Countries with quarterly capital flows data with a †. Hard peg country-quarter observations are not included
 in the analysis.
+61
 
 Table 9: Summary Statistics: 1996q1—2018q4
 Emerging Market Economies Advanced Economies
@@ -1934,6 +2003,7 @@ log(EMBI) 5.52 5.62 0.96 8.75 -0.91 2053 n/a n/a n/a n/a n/a 0
 Notes: Interest rates, GDP growth (log difference) and flows to GDP ratios are in percentage, and interest rate
 differentials, lending spread, UIP deviation, expected change in log(exchange rate), GDP differentials and inflation
 differentials are in percentage point. Exchange rate, VIX, and EMBI are in logs.
+62
 
 Table 10: Country List by Foreign Currency Debt Share (FX Debt)
 Mean and standard deviation of the share of FX debt in the total debt of the non-financial sector
@@ -1976,6 +2046,7 @@ United States
 31 Countries
 Notes: The “High FX Debt” countries are those whose FX debt shares in total
 debt are over the 75th percentile of the distribution on average.
+63
 
 C) Additional Results
 Table 11: The Role of Total Capital Flows
@@ -2023,6 +2094,7 @@ Country FE yes yes yes yes
 Notes: ***, **, and * indicate significance at the 1%, 5%, and 10% levels,
 respectively. Robust standard errors are in parentheses. All variables are
 defined as before.
+64
 
 Table 13: Growth Regression by Exchange Rate Regime
 Dependent Variable: GDP Growth
@@ -2049,6 +2121,7 @@ Percentage Point Percentage Point
 .5
 0
 −1
+0 2 4 6 8 10 0 2 4 6 8 10
 Horizon (Quarter) Horizon (Quarter)
 US 3−month Treasury Rate Shock US 3−month Treasury Rate Shock
 (a) Emerging Market Economies (b) Advanced Economies
@@ -2058,8 +2131,10 @@ standard errors) are shown in the shaded areas. The U.S. policy (3-month treasur
 by Gertler-Karadi shock FF4 (estimated from surprises in 3-month Fed fund futures). The domestic
 monetary policy response of country c is controlled. The first-stage effective F-statistic of Olea and
 Pflueger (2013) is 145.8 for EMEs and 134.3 for AEs.
+65
 
 Chart 23: Policy Divergence and Risk Sentiments: Exchange Rate Regimes, EMEs and AEs
+Rate Differential Rate Differential
 Log(VIX) Log(VIX)
 (Percentage Point) (Percentage Point)
 15 3
@@ -2095,6 +2170,7 @@ Correlation: 96q1−18q4 = 0.161, 96q1−08q2 = −0.163, 08q3−18q4 = −0.017
 Notes: The top panel replicates Chart 5, panels (c) and (d) using the original sample of the analysis that
 excludes hard pegs. The bottom panel uses country-quarter observations only on free floats (Ilzetzki et al.
 (2017) coarse classification is 4, 5, and 6).
+66
 
 D) Data Sources
 In this section, I describe the process of data construction.
@@ -2125,12 +2201,14 @@ Capital Flows: I obtain capital flows from IMF IFS. Capital debt flows by sector
 sovereigns, and corporates) are obtained directly from Avdjiev et al. (2019). Capital inflows are
 available at quarterly frequency.
 Aggregate Leverage: I obtain domestic leverage of the corporate sector for my countries by
+67
 
 aggregating firm-level leverage data for each country from Orbis database. Domestic leverage is
 defined as financial debt to assets ratio. External leverage comes from Avdjiev et al. (2019) and
 defined as external liabilities to external assets ratio.
 Firm Leverage: I obtain firm level balance sheets from ORBIS database for 42 countries and
 calculated firm level leverage using this data.
+Exchange Rate Regime Classification: These are from https://www.carmenreinhart.com/data.
 Classification code ranges from 1 (hard pegs) to 6 (free floats). The main sample drops countries
 with hard pegs (classification code is 1).
 U.S. Monetary Policy Shock: I obtain monetary policy shocks from Gertler and Karadi
@@ -2149,3 +2227,4 @@ ratios. Inflation is obtained as quarter-on-quarter log differentials of consume
 load Chicago Board Options Exchange volatility index (VIX) from Federal Reserve Economic Data
 (FRED). I obtain country-specific sovereign spreads (Z-spread) for emerging countries from J.P.
 Morgan Emerging Market Bond Index Global (EMBI Global).
+68

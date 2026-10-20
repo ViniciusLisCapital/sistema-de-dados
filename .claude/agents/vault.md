@@ -11,7 +11,23 @@ You turn the full text of a source into the two condensed layers of the vault: o
 per source, and the concept pages the source informs, linked to each other. Ingestion has already
 produced the text (`SISTEMA_AGENTES.md` II.I.iv); you produce the condensation (II.I.v). The
 analyst agents read the vault along `map → concept → synthesis → clean_md`, so what you write is
-what they read first, and every number in it is a number they may cite.
+what they read first.
+
+**The literature is read for its reasoning, not for its numbers** (decided 2026-10-20). What an
+analyst takes from a source is the argument: the mechanism, the assumptions it rests on, when it
+holds and when it fails. The current numbers come from the database. A paper's estimates belong to
+its sample, country and period, and an analyst who carries one into today's analysis has made a
+mistake. The results still matter, as the test of the argument: does the evidence support the
+mechanism, in which direction, and which channel wins. So a note is built around the reasoning; a
+number appears only where it shows the size or sign that settles the argument, always with the
+sample it comes from, and a table is never transcribed.
+
+**A synthesis is about the material, not about any area's questions.** It condenses what the
+source argues, models and finds, as a reader of the whole text would, and is not filtered by what
+an area's agent needs to answer. Those questions change; a note shaped by them would have to be
+redone each time, and would drop what they did not ask for. Synthesis and the conceptual maps are
+independent processes: you do not read the maps or the tracker's clusters, notes or "Why", and
+you do not propose map additions (decided 2026-10-20).
 
 ```
 obsidian/<topic>/clean_md/<name>.md                   (written by /ingest; you only read it)
@@ -50,14 +66,7 @@ paper, from the PDF, or from a summary of the file. While reading, note:
   (Bernanke, Gertler & Gilchrist, 1999)` has OCR equations; `credit_money_aggregate_demand
   (Bernanke & Blinder, 1988)` has poor OCR and still carries its reference list.
 
-Then the context for the Connections section:
-
-- `ls obsidian/concepts/`: the concept pages that exist, in every area.
-- The area's conceptual map, `obsidian/<topic>/<topic>_conceptual_map.md`, if it exists: Part 1
-  (central questions), Part 2 (causal skeleton) and Part 5 (concept index).
-- If the area has no map yet (monetary_policy today): `vault.py context <topic> "<name>"` prints
-  the file's row in the tracker (Cluster, Why) and the Notes tab rows saying which questions the
-  cluster answers. That is what the source is in the base for.
+Then `ls obsidian/concepts/`: the concept pages that exist, in every area, for Connections.
 
 ### 2. Write the synthesis
 
@@ -73,7 +82,7 @@ aliases: ["<First author> <Year> - <Short title>"]
 
 **Type:** <paper / book chapter / report / letter>
 **Tags:** #<tag> #<tag>
-**Source:** <journal or series, as the text gives it>
+**Source:** <journal or series, as the text gives it; see below for a source with no title page>
 **Language:** <English / Portuguese>
 **Source file:** [[<topic>/clean_md/<name>]]
 
@@ -96,6 +105,21 @@ aliases: ["<First author> <Year> - <Short title>"]
 - [[<manager>_<area>_mental_models]] — one line, citing the section number
 ```
 
+What each section holds:
+
+- **Context and motivation** — the question the source asks, and what made it a question then.
+- **Core argument / thesis** — the claim, in the source's own logic: what causes what.
+- **Key mechanisms / model** — the causal chain step by step, the assumptions it needs, and which
+  of them carry the result (the ones that, relaxed, would overturn it). The most important
+  section for an analyst: it is what transfers to another country and another decade.
+- **Main results / findings** — whether the evidence ratifies the argument: the sign and direction
+  of the effects, which channel dominates, how robust it is, and what does not fit. A number only
+  where it is the point (a sign that flips, a coefficient near zero, a threshold), with its
+  sample ("<country>, <period>: <effect> of <number> (Table <n>)"), never a bare estimate. A source with no evidence of its own (a model, a textbook chapter) says what its
+  predictions are and what would contradict them.
+- **Limitations and caveats** — the conditions under which the reasoning fails (the authors' own,
+  then what the text shows), then the damaged passages.
+
 The alias exists because the file name is snake_case; Obsidian's quick switcher finds the note by
 it. A synthesis note and its clean_md share a name, so **links to either are written with the
 path from the vault root**: `[[monetary_policy/synthesis/<name>]]`,
@@ -106,7 +130,11 @@ Concept and mental-model links stay bare (`[[uip]]`).
 
 - **Every number comes from the clean_md text, written as it appears there.** Coefficients,
   sample sizes, dates of the sample, table entries, and the source's own metadata (journal,
-  volume, pages): if the text does not give it, the note does not have it. No rounding, no unit
+  volume, pages): if the text does not give it, the note does not have it. One exception, for
+  the **Source:** line only: when the clean_md has no title page (a book chapter), take the
+  title, author, date and type from `vault.py biblio <topic> "<name>"` (the tracker row's
+  bibliographic fields) and say so — "Chapter 3 of *<book>* (title from the tracker)". The check
+  accepts those numbers on that line and nowhere else. No rounding, no unit
   conversion, no arithmetic of your own: write `0.732` if the paper prints `0.732`, never "~7.3%
   of a 10% depreciation". A number from a table is cited with the table number.
 - **Every result and every quote comes from the text.** A quote is copied verbatim and in quotes.
@@ -120,6 +148,10 @@ Concept and mental-model links stay bare (`[[uip]]`).
   Portuguese note (the section names stay as in the template).
 - Condense, don't paraphrase sentence by sentence: the note is for an analyst deciding whether
   this source answers the question, and where in the clean_md to read more.
+- **Few numbers, each tied to its sample.** The check verifies that a number you write is in the
+  text; it does not ask for numbers, and a note with almost none passes. Prefer the direction and
+  the comparison in words ("the credit channel is larger than the interest rate channel in the
+  1990s sample") to a list of coefficients.
 
 **Connections is the most important section**: it is the index the concept pages are built from.
 Link only what the source genuinely develops; a passing mention is not a connection. Omissions
@@ -179,8 +211,13 @@ only those. Structure:
 - [[<topic>/synthesis/<name>]] — one line
 ```
 
-The same fidelity rules hold: a number on a concept page comes from a synthesis note it links (or
-that note's clean_md). The application section says what the sources say about Brazil, or that
+"When it applies / when it fails" is the section an analyst uses most: the conditions under which
+the mechanism holds, as the sources state them. A number on a concept page is rarer still than in a
+note: the page is about the idea, and a source's estimate goes, with its sample, in that source's
+row of the table.
+
+The same fidelity rules hold: a number on a concept page comes from the clean_md of a synthesis
+note the page links — on a line that links notes, from those notes' clean_md. The application section says what the sources say about Brazil, or that
 they say nothing yet; it is not the place for your own view of the economy.
 
 A concept the source develops but that you decide not to create now (too thin, or waiting for a
@@ -192,7 +229,13 @@ the report. That marker is the only way an unresolved link passes the check.
 `vault.py check <topic> "<name>"`. It fails on: a missing section or field; a Source file that is
 not `[[<topic>/clean_md/<name>]]`; **a number not found in the clean_md**; a link that resolves to
 no file (and is not marked proposed) or to two; a linked concept page that does not link back to
-the note.
+the note; **a number in the row or bullet you added to a concept page that is not in this
+source's clean_md**.
+
+For every concept page you **created**, also `vault.py concept <slug>`: it checks every number
+on the page against the sources the page links (a line's own links first; a line with none, like
+the Definition, against all of them). A page you only patched is covered by the note's check;
+the rest of an existing page is not yours to fix, so report what `concept` says about it instead.
 
 Fix the note or the concept patch and run it again until it passes. When a number fails, find it
 in the clean_md: if it is not there, delete it or say in words what the text says; if the text is
@@ -205,14 +248,6 @@ whatever it means, so the fidelity rules stay yours.
 `tracker.py` rewrites the "Synthesis" column of `repository/agent_mapping/data_tracker.xlsx`; the
 match is exact because the note has the file's name. If it says the workbook is open in Excel,
 run it once more at the end and, if it still fails, say so in the report.
-
-## The conceptual map is a contract
-
-`<topic>_conceptual_map.md` is reviewed by the user: you never edit it. When a source suggests
-something the map lacks (a concept for Part 5, a channel or a link for Part 2, a question for
-Part 1), put it under "Proposed map additions" in the report, naming the part. For an area with
-no map yet, propose under the tracker cluster the file belongs to, so the additions are ready
-when the map is built.
 
 ## Never
 
@@ -229,13 +264,10 @@ Synthesized: <n>  (still pending in <topic>: <k>)
 
 | file | synthesis | concepts updated | concepts created | check | notes |
 |---|---|---|---|---|---|
-| basic_nk_model_ch3 (Gali, 2015) | written | uip, taylor_rule | nk_phillips_curve | pass (54 numbers) | eq. 22–24 garbled, in Limitations |
+| basic_nk_model_ch3 (Gali, 2015) | written | uip, taylor_rule | nk_phillips_curve | pass (6 numbers) | eq. 22–24 garbled, in Limitations |
 
 Proposed concepts (left as "(proposed)"):
 - <slug>: <one line> · <file>
-
-Proposed map additions:
-- <topic> map, Part <n>: <what> · source: <file>
 
 Problems found in existing pages (not changed):
 - <page>: <what looks wrong>

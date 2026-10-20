@@ -53,6 +53,7 @@ Agreement. Members‘ rights and obligations under other international agreement
 also remain unaffected.
 2 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Approved By Prepared by a staff team coordinated by Vivek Arora (SPR), Karl
 Olivier Blanchard, Habermeier (MCM), Jonathan D. Ostry (RES), and Rhoda Weeks-Brown
 Sean Hagan, (LEG) and comprising: Katharine Christopherson, Kyung Kwak, Nadia
@@ -85,7 +86,9 @@ FIGURES
 4. Gross Capital Inflows and Global Liquidity ____________________________________________________ 23
 5. Net Flows to Advanced Economies and Reserve Accumulation in Emerging Markets _________ 24
 6. Global Financial and Economic Stress Indicators ______________________________________________ 27
+INTERNATIONAL MONETARY FUND 3
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 ANNEXES
 1. G20 Coherent Conclusions for the Management of Capital Flows Drawing on
 Country Experiences __________________________________________________________________________ 37
@@ -93,7 +96,9 @@ Country Experiences ____________________________________________________________
 3. Implications of the Fund‘s Proposed Institutional View for Members‘ Other International
 Obligations ____________________________________________________________________________________ 42
 References _______________________________________________________________________________________ 43
+4 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Glossary
 AEs Advanced Economies
 BPM6 Sixth edition of the Fund‘s Balance of Payments and International Investment
@@ -111,7 +116,9 @@ IMS International Monetary System
 ISD Integrated Surveillance Decision
 MPMs Macro-Prudential Measures
 OECD Organisation for Economic Co-operation and Development
+INTERNATIONAL MONETARY FUND 5
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 I. INTRODUCTION
 1. Cross-border capital flows are an increasingly important aspect of the global economy.
 Closer global integration in recent decades has comprised growing trade as well as capital flow
@@ -154,7 +161,9 @@ These Fund policy papers addressed: the role of the Fund (November 2010), managi
 and outflows (April 2012), multilateral aspects (November 2011), and capital flow liberalization (April 2012). Analytical
 background for these papers includes Dell‘Ariccia et al., 2008, Ghosh et al., 2012, Habermeier et al., 2011, and Ostry et
 al., 2010, 2011, 2012a, and 2012b.
+6 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 experience with capital flows. In coming months, the staff would prepare a guidance note on the
 liberalization and management of capital flows on the basis of the proposed institutional view.
 4. The proposed institutional view on capital flows is informed by discussions among
@@ -200,7 +209,9 @@ See, for example, Chowla, 2011, and Gallagher et al., 2012.
 9
 Subramanian, 2012 develops this view as part of an argument for codifying an international regime for capital
 account transactions.
+INTERNATIONAL MONETARY FUND 7
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 among G20 members and not the whole Fund membership, and are general conclusions rather than
 a detailed proposal for developing an operational approach to managing capital flows, they do cover
 areas of major policy concern that apply across countries and provide a useful reference point for
@@ -242,7 +253,9 @@ Such agreements are discussed in IMF, 2010a.
 The Code is the only legally binding instrument that focuses comprehensively and exclusively on international
 capital movements. It stipulates progressive, non-discriminatory liberalization of capital movements and the right of
 establishment. See OECD, 2011 for details.
+8 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Box 1. Capital Flows: Trends and Composition
 Capital flows have grown significantly over the last two decades in both size and volatility. Gross
 capital flows have occurred predominantly among AEs, although net capital flows have been significant
@@ -300,7 +313,9 @@ Source: IFS
 1/ ―Emerging economies‖ are defined here as all emerging market and developing countries (WEO group 200) but
 excluding countries eligible for concessional financing from the Fund (WEO group 30).
 2/ IMF, 2011a and Ostry et al., 2012.
+INTERNATIONAL MONETARY FUND 9
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 II. CAPITAL FLOW LIBERALIZATION
 11. “Capital flow liberalization” in this paper refers to the removal of measures that are
 designed to limit capital flows (that is, CFMs).12 The concept includes the underlying capital
@@ -345,7 +360,9 @@ Levine, 2005 presents empirical evidence of the relationship between financial d
 uncertain empirical relationship between liberalization and growth is that financial development is a concomitant of
 growth, and a growing financial sector in an economy open to trade cannot long be insulated from cross-border
 financial flows.
+10 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 technology and management practices, particularly through foreign direct investment (FDI). Capital
 flow liberalization can have indirect or ―collateral‖ benefits for intermediate objectives, such as
 financial sector development, macroeconomic policy discipline, trade, and economic efficiency.17 At
@@ -390,7 +407,9 @@ and growth in empirical studies could, however, stem from incorrect hypothesis s
 recognition of the indirect collateral benefits of financial openness on growth, such as through greater
 macroeconomic discipline and financial development (Kose et al., 2009), and lags in the effects of capital flow
 liberalization on growth.
+INTERNATIONAL MONETARY FUND 11
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 growth in some cases; in China, for example, large inward FDI flows over several decades have
 contributed to capital, technology, and managerial expertise. In any event, building on their
 progress with respect to reforms (such as financial sector reform) that support liberalization, several
@@ -432,7 +451,9 @@ Detragiache, 1998, Kaminsky and Reinhart, 1999, Kose et al., 2009, Dell‘Arrici
 and Ulatov, 2010.
 22
 See Henry, 2007, and Ishii et al., 2002 for a more general discussion.
+12 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 18. Against this background, there is no presumption that full liberalization is an
 appropriate goal for all countries at all times. The degree of liberalization appropriate for a
 country at a given time depends on its specific circumstances, notably its financial and institutional
@@ -480,7 +501,9 @@ development, and external buffers in emerging economies, and World Bank and IFC 
 institutional development.
 27
 See IMF, 2012b, paragraph 19.
+INTERNATIONAL MONETARY FUND 13
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 B. The Integrated Approach to Capital Flow Liberalization
 21. In order to harness the benefits of liberalization while managing the risks, a systematic
 process and pace of liberalization is needed that is also consistent with each country’s
@@ -679,7 +702,9 @@ vulnerabilities, institutional and market development, design and effectiveness 
 financial and nonfinancial sectors to deal with large and volatile capital flows and manage the risks related to
 international capital flows and exchange rate flexibility, and authorities‘ capacity to efficiently administer and enforce
 controls.
+14 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 It is important continually to strengthen financial markets to bolster their ability to deal with capital
 flows, improve prudential regulations and supervision to ensure adequate risk management, and
 assess the role that existing CFMs play in the financial system and the potential effects of relaxing
@@ -726,7 +751,9 @@ outflows because investors remained confident of the authorities‘ general comm
 Vastrup, 2009, and Jonung, 2010.
 34
 See IMF, 2012a for further discussion of country cases.
+INTERNATIONAL MONETARY FUND 15
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 III. MANAGING CAPITAL FLOWS
 25. A range of policies is needed to reap the benefits of more open capital flows while
 managing the risks. Strengthening and deepening financial markets, and improving countries‘
@@ -768,7 +795,9 @@ See IMF, 2010b and 2011c.
 Developing local bond markets in turn requires the development of a benchmark yield curve, and reforms would
 also be useful to introduce or strengthen third-party credit monitoring (such as bond insurance and credit bureaus),
 hedging tools for investors, and effective systems for new debt offerings.
+16 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 More generally deeper capital markets would also increase the absorptive capacity of capital-
 recipient countries when faced with inflow surges, reducing the volatility caused by such surges.39
 28. Surges of inflows can pose problems for policymakers.40 Surges can lead to financial and
@@ -811,7 +840,9 @@ trends. A precise definition is not warranted here but, for example, Ghosh et al
 where net capital inflows to a country exceed the 30th percentile of the historical trend in the country as well as in a
 cross-country sample. In IMF, 2011d, a surge is identified a period when net inflows exceed the historical trend by
 one standard deviation and are larger than 1½ percent of GDP.
+INTERNATIONAL MONETARY FUND 17
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 goods markets and to help prevent destabilizing one-way bets for future appreciation. If capital
 inflows are likely to be sustained over the medium term, currency appreciation is needed to keep
 the exchange rate in line with evolving fundamentals.
@@ -853,7 +884,9 @@ Habermeier et al., 2011 survey the effectiveness of CFMs.
 44
 Brockmeijer et al., 2011 provide a discussion of such policies, and Nier et al., 2011 discuss some of the institutional
 considerations in determining country-specific policy choices.
+18 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Figure 3. Managing Capital Inflow Surges
 32. In several circumstances, however, the use of CFMs is not recommended. In particular:
  CFMs should not substitute for macroeconomic policies that are needed for warranted
@@ -874,7 +907,9 @@ reduce external vulnerabilities in the financial system, but they were insuffici
 See IMF, 2012b Box 2. This principle also applies to conventional policies to deal with inflows, such as foreign
 exchange market intervention. Ostry et al., 2012b, discuss the ―equivalence‖ between CFMs and foreign exchange
 intervention policies.
+INTERNATIONAL MONETARY FUND 19
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 adjustment or significantly influence capital flows, in part owing to insufficient exchange rate
 adjustment.46 In addition, the efficacy of measures has sometimes eroded over time owing to
 incentives for circumvention that can persist despite efforts to close loopholes.47
@@ -920,7 +955,9 @@ Fund‘s approach with respect to payments and transfers for current internation
 paragraph 53, and IMF, 2012a, paragraph 27 for an elaboration of these points. In addition, the focus on residency
 (rather than, for example, citizenship) is particularly appropriate given the Fund‘s mandate to promote the effective
 (continued)
+20 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 34. When capital inflow surges contribute to both macroeconomic and systemic financial
 sector risks, the policy approach would draw on both the proposed institutional view on
 capital flows and the policy toolkit for MPMs.51 In such circumstances, a particular measure that
@@ -965,7 +1002,9 @@ In Brazil, for example, the IOF tax rate on inflows was adjusted after the inflo
 other hand, the measures that were introduced in response to the surge in 2010 were kept in place on macro-
 prudential grounds even after inflows abated. There is some evidence that countercyclical macro-prudential policies
 can help to lower the risks of macroeconomic and financial instability (N‘Diaye, 2009).
+INTERNATIONAL MONETARY FUND 21
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 36. In general, policy options for managing inflow surges depend upon country-specific
 factors, which determine what options are feasible and effective. For example, larger economies
 with more developed financial markets may find that foreign exchange intervention or
@@ -1005,7 +1044,9 @@ prolonged global slump, played a role in pushing net capital flows to emerging e
 IMF, 2011a and 2012b, and BIS, 2008.
 55
 Chen et al., 2012.
+22 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Figure 4. Gross Capital Inflows and Global Liquidity
 3500 110
 3000
@@ -1053,7 +1094,9 @@ derivatives markets, expanding the regulatory perimeter to shadow banks, improvi
 effectiveness of supervision and functioning of supervisory colleges, and strengthening adherence to international
 standards by members of global standard setting bodies like the Basel Committee on Banking Supervision and
 Financial Stability Board (FSB).
+INTERNATIONAL MONETARY FUND 23
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Figure 5. Net Flows to Advanced Economies and
 Reserve Accumulation in Emerging Markets
 (in billions USD)
@@ -1090,7 +1133,9 @@ Financial Stability Board, 2012.
 IMF, 2012c.
 61
 IMF, 2011a.
+24 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 B. Outflows
 42. Capital outflows that are large, sustained, or sudden can pose significant policy
 challenges. Some capital outflows are a natural consequence of openness, as foreign investors
@@ -1132,7 +1177,9 @@ Magud et al., 2011.
 See IMF, 2012a.
 65
 See IMF, 2012a.
+INTERNATIONAL MONETARY FUND 25
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 46. Introducing outflow CFMs should always be part of a broader policy package that also
 includes macroeconomic, financial sector, and structural adjustment to address the
 fundamental causes of the crisis. They should not be used as a substitute for policy adjustment. In
@@ -1176,7 +1223,9 @@ weighted average of country-level quarterly real GDP growth over a 30-year perio
 IMF, 2012a, Table 1, provides details on the measures taken and its background paper discusses the experiences of
 Iceland, Russia and Ukraine. Among the countries implementing broad based measures, only Iceland‘s controls
 appear to have been effective.
+26 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Figure 6. Global Financial and Economic Stress Indicators
 6 60
 Global financial crisis
@@ -1223,7 +1272,9 @@ under the Articles, and would therefore be subject to the Fund‘s jurisdiction 
 While originally a blanket prohibition, Iceland‘s ban on the conversion and transfer of domestic currency assets no
 longer applies to assets that were acquired post-November 2009, financed with foreign currency that was exchanged
 into domestic currency in the onshore market, and registered as new investment with the Central Bank.
+INTERNATIONAL MONETARY FUND 27
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 50. The effectiveness of outflow CFMs is likely to be greater if they are part of a broad
 policy framework and supported by a sound institutional and regulatory system.71 Outflow
 CFMs appear more likely to be effective if they accompany sound macroeconomic policies, are well
@@ -1268,7 +1319,9 @@ CEE countries that received macro-financial support programs from the IMF and EU
 2.0,‖ in 2012 seeks to encourage home-host authority cooperation, avoid disorderly deleveraging, resolve potential
 cross-border financial stability issues, and take policy actions (mainly in the supervisory area) that are in the best
 interest of both home and host countries. See De Haas et al., 2012 and Vienna Initiative, 2012.
+28 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 54. The design and implementation of new MPM frameworks in member countries will
 also be important in managing the multilateral aspects of capital flows. A macroprudential
 perspective would help authorities better assess and address cross border risks, including systemic
@@ -1308,7 +1361,9 @@ initiative among ASEAN+3 economies.
 Article VIII, Section 2(a) is in turn grounded in the purposes of the Fund, one of which is ―to assist in the
 establishment of a multilateral system of payments in respect of current transactions between members and in the
 elimination of foreign exchange restrictions which hamper the growth of world trade.‖
+INTERNATIONAL MONETARY FUND 29
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 trade in goods and services that existed when the Fund was established and, conversely, the
 negative perception of capital flows that prevailed at that time, based on the belief that speculative
 capital movements had contributed to the instability of the prewar system and needed to be
@@ -1354,7 +1409,9 @@ See Decision No. 15203-(12/72), 07/18/12 and IMF, 2012d.
 IMF, 2012d, paragraphs 18 and 22.
 81
 IMF, 2012d, paragraphs 9-11.
+30 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 members have an obligation to consult with the Fund with respect to these spillovers, multilateral
 surveillance imposes no substantive obligations with respect to those policies that cause such
 spillovers – including policies regarding capital flows. However, recognizing the potential impact of
@@ -1393,7 +1450,9 @@ making an assessment in these circumstances, the Fund would take into account th
 institutional view.
 82
 IEO, 2005.
+INTERNATIONAL MONETARY FUND 31
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
  Multilateral Surveillance. Under the ISD, if spillovers from a member‘s policies are considered
 to significantly influence the effective operation of the international monetary system, for example
 by undermining global economic and financial stability, these policies would also be required to be
@@ -1438,7 +1497,9 @@ performance criterion under Fund arrangements that call for the avoidance of new
 CFMs giving rise to multiple currency practices (MCPs) would similarly be subject to the Fund‘s policies on
 approval of MCPs, except for MCPs relating solely to capital transactions which would not be subject to Fund
 approval as the Fund has declined to assert jurisdiction over these measures.
+32 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 63. Progress in ongoing data initiatives will support the Fund’s bilateral and multilateral
 surveillance activities. Progress in addressing data gaps is partly being addressed through existing
 data initiatives, such as the joint IMF-Financial Stability Board (FSB) work requested by the G-20 on
@@ -1483,7 +1544,9 @@ See IMF, 2010a, paragraph 33.
 91
 This policy space is created under the so-called ―safeguard clauses‖ in these agreements. Others have also argued
 along these lines (Gallagher et al., 2012). The issue was also raised in IMF, 2010a.
+INTERNATIONAL MONETARY FUND 33
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 which both inflows and outflows CFMs may be imposed within the scope of their agreements.
 Similarly—and depending on the stages of development of the relevant signatories—the sequenced
 approach to liberalization under the integrated approach could be taken into account to guide the
@@ -1517,7 +1580,9 @@ give rise to a violation of the signatory‘s obligations; conversely, under the
 from imposing exchange restrictions that are not consistent with the Fund‘s Articles.
 93
 See IMF, 2010a.
+34 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Box 3. Institutional View on Liberalization and Management of Capital Flows: Key Elements
 This box summarizes the main elements of the proposed institutional view on capital flow liberalization and
 management. The institutional view will remain flexible and evolve over time to incorporate new country
@@ -1562,7 +1627,9 @@ monetary, fiscal, and exchange rate management, as well as by sound financial su
 regulation and strong institutions.
  CFMs should not be used to substitute for or avoid warranted macroeconomic adjustment. In
 certain circumstances, introducing CFMs can be useful for supporting macroeconomic policy
+INTERNATIONAL MONETARY FUND 35
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 adjustment and safeguarding financial system stability. CFMs should seek to avoid discrimination
 based on residency, and the least discriminatory measure that is effective should be preferred.
  In practice, policy advice on CFMs in response to managing capital inflow surges or disruptive
@@ -1605,7 +1672,9 @@ when a crisis is considered to be imminent. CFMs are more effective when they ar
 part of a broad policy package that includes sound macroeconomic policies as well as financial
 regulation. They should be temporary, being lifted once crisis conditions abate, and may need to
 be adjusted on an ongoing basis in order to remain effective.
+36 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 ANNEX I. G20 Coherent Conclusions for the Management of
 Capital Flows Drawing on Country Experiences1
 November 3-4, 2011
@@ -1642,7 +1711,9 @@ Source G20 Cannes Summit: declarations and reports.
 Based on this nomenclature, if a measure is not designed to influence capital flows it would not fall under the capital
 flow management umbrella. These non-capital flow management measures do not discriminate by residency or by
 currency. Relevant examples are prudential measures to ensure the resilience of financial institutions.
+INTERNATIONAL MONETARY FUND 37
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 4. Capital flow management measures should not be used to avoid or unduly delay necessary
 adjustments in the economy. In particular, we will move towards more market-determined exchange
 rate systems, enhancing exchange rate flexibility to reflect underlying economic fundamentals and
@@ -1679,7 +1750,9 @@ should take the potential impact of such spillovers into account when weighing d
 options consistent with national macroeconomic frameworks. These policies should be the object of
 regular, credible and even-handed multilateral surveillance to assess both their individual impact and
 aggregate spillover effects.
+38 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 10. The macroeconomic policies of reserve currency issuers can have a central impact on global
 liquidity and, therefore, on capital flows. Those countries bear a special responsibility in keeping a
 sound and sustainable macroeconomic policy with a view to avoid excessive imbalances and sharp
@@ -1692,7 +1765,9 @@ sufficiently met. An important long-term goal for G20 countries should be to put
 and internationally, through enhanced cooperation, the conditions that allow members to reap the
 benefits from free capital movements, while preventing and managing risks that could undermine
 financial stability and sustainable growth, and avoiding financial protectionism
+INTERNATIONAL MONETARY FUND 39
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 ANNEX II. Capital Flow Management Measures: Terminology
 1. For the purposes of the institutional view, the term capital flow management measures
 (CFMs) is used to refer to measures that are designed to limit capital flows.1 CFMs comprise:
@@ -1731,7 +1806,9 @@ The term capital controls is used interchangeably with the term restrictions.
 The OECD framework does, however, include coverage of ―‖equivalent‖ measures, which could bring within the
 OECD‘s ambit measures that do not expressly differentiate on the basis of residency, but nonetheless have effects
 equivalent to residency-based limits.
+40 INTERNATIONAL MONETARY FUND
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 Selected Capital Flow Management Measures1
 Measures designed to limit inflows
 Brazil 2009 - Introduction of a 2 percent tax on portfolio equity and debt inflows.
@@ -1753,7 +1830,9 @@ transaction to foreign currency.
 Thailand 1997 - Imposition of limits on forward transactions and introduction of export surrender requirements.
 1This table provides illustrative examples of adopted measures that are assessed to be CFMs. It is not comprehensive and does not assess appropriateness or
 effectiveness.
+INTERNATIONAL MONETARY FUND 41
 
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS
 ANNEX III. Implications of the Fund’s Proposed Institutional
 View for Members’ Other International Obligations
 1. Capital flows are already the subject of many other international agreements. In
@@ -1784,3 +1863,6 @@ controls on inflows.
 These provisions generally mandate that residents of the agreement‘s other counterparties should be allowed to carry
 out transactions in the territory of a signatory under terms that are no less favorable than those applying to that
 signatory‘s own residents.
+42 INTERNATIONAL MONETARY FUND
+
+THE LIBERALIZATION AND MANAGEMENT OF CAPITAL FLOWS

@@ -4,6 +4,7 @@ VOLATILITY IN A SMALL OPEN ECONOMY
 Jordi Galí
 Tommaso Monacelli
 Working Paper 8905
+http://www.nber.org/papers/w8905
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -41,7 +42,9 @@ Universitat Pompeu Fabra
 Ramon Trias Fargas 25
 08005 Barcelona, Spain
 and NBER
+jordi.gali@econ.upf.es
 
+1
 Introduction
 Much recent work in macroeconomics has involved the development and evaluation
 of monetary models that bring imperfect competition and nominal rigidities into the
@@ -89,6 +92,7 @@ version of the present paper there have been several contributions to the litera
 policy regimes in open economies, including Schmitt-Grohé and Uribe (2000), Benigno and Benigno
 (2000), McCallum and Nelson (2000), Corsetti and Pesenti (2001), Parrado and Velasco (2002), and
 Clarida, Galí, and Gertler (2001), among others.
+1
 
 setting structure and the assumption of complete Þnancial markets, give rise to a
 highly tractable framework and to simple and intuitive log-linearized equilibrium
@@ -137,6 +141,7 @@ In section 2 we lay out
 the basic model.
 Section 3 derives the equilibrium in log-linearized form and its
 5See, e.g., Clarida, Galí, and Gertler (1999) and Woodford (2000), among others.
+2
 
 canonical representation in terms of output gap and inßation. Section 4 analyzes the
 macroeconomic implications of alternative monetary policy regimes, such as domestic
@@ -213,6 +218,7 @@ of domestic currency. Qt,t+1 is the stochastic discount factor for nominal payo�
 assume that households have access to a complete set of contingent claims, traded
 internationally. Notice that money does not appear in either the budget constraint
 or the utility function: throughout we specify monetary policy in terms of an interest
+3
 
 rate rule; hence, we do not need to introduce money explicitly in the model.6
 The optimal allocation of any given expenditure within each category of goods
@@ -305,6 +311,7 @@ F,t , while the consumption index is given by Ct =
 (1−α)(1−α)αα C1−α
 H,t Cα
 F,t
+4
 
 where R−1
 t
@@ -351,6 +358,7 @@ of openness α. Our treatment of the rest of the world as an (approximately) clo
 8Formally, this can be done by deriving the optimality conditions for the world consumer under
 preferences analogous to (2) with a weight α∗on goods produced in the small economy. Once the
 equilibrium conditions are derived and log-linearized, we focus on the limiting case, α∗→0.
+5
 
 economy (with goods produced in the small open economy (SOE) representing a
 negligible fraction of the world’s consumption basket) implies that the foreign price
@@ -428,6 +436,7 @@ t +
 st
 (16)
 9See Appendix 1 for a detailed discussion.
+6
 
 We thus see that the assumption of complete markets at the international level leads
 to a simple relationship linking consumption at home and abroad and the terms of
@@ -484,6 +493,7 @@ production function
 Yt(i) = At Nt(i)
 10A similar relationship holds in many international RBC models. See, e.g., Backus and Smith
 (1993).
+7
 
 where at ≡log At follows an AR(1) process at = ρa at−1 + εt. Hence, the (nominal)
 marginal cost will be common across Þrms and given by
@@ -553,6 +563,7 @@ counterpart) is a forward-looking one. The reason is simple: Þrms that are adju
 prices in any given period recognize that the price they set will remain eﬀective for
 a (random) number of periods.
 As a result they set the price as a markup over
+8
 
 a weighted average of expected future marginal costs, instead of looking at current
 marginal cost only. Notice that in the ßexible price limit (i.e., as θ →0), we recover
@@ -636,6 +647,7 @@ with an analogous expression for the rest of the world), and the third equality 
 use of (15) and the condition α∗
 ϑ = α required for a zero trade balance in the steady
 state (see appendix 1).
+9
 
 Plugging (23) into the deÞnition of aggregate output Yt ≡
 hR 1
@@ -706,6 +718,7 @@ PH,t Ct
 denote net exports in terms of domestic output, ex-
 pressed as a fraction of steady state output Y . In the particular case of σ = η = 1, it
 follows from (15) and (24) that PH,tYt = PtCt for all t, thus implying a balanced trade
+10
 
 at all times. More generally, a Þrst-order approximation yields nxt ' yt −ct −α st
 which combined with (25) and (27) implies
@@ -778,6 +791,7 @@ role is discussed below.
 economy found in Appendix 2 (as well as in numerous papers in the literature), with suitable change
 of notation. See, e.g., Galí and Gertler (1999) or Sbordone (1999) for an empirical assessment of
 the implied inßation dynamics.
+11
 
 3.2.2
 Marginal Cost and Inßation Dynamics in the Small Open Economy
@@ -836,6 +850,7 @@ alternative policy rules in much of the recent literature. Let’s deÞne the ou
 eyt as the deviation of (log) output yt, from its natural level yt, where the latter is in
 turn deÞned as the equilibrium level of output in the absence of nominal rigidities
 (and conditional on output in the rest of the world). Formally,
+12
 
 eyt ≡yt −yt
 An analogous deÞnition holds for the world output gap, i.e. ey∗
@@ -899,6 +914,7 @@ where Ωα ≡ωα(v−µ)
 σ+ϕωα .
 It also follows from (35) that the real marginal cost and the output gap will be
 related according to:
+13
 
 c
 mct =
@@ -955,6 +971,7 @@ Simple Monetary Policy Rules for the Small Open
 Economy
 In the present section we analyze the macroeconomic implications of three alternative
 monetary policy regimes for the small open economy: a policy that aims at fully
+14
 
 stabilizing domestic inßation (domestic inßation targeting, or DIT, for short), a policy
 that stabilizes CPI inßation (CPI inßation targeting, CIT for short) and a policy that
@@ -1009,6 +1026,7 @@ rate under ßexible prices will be proportional to
 (44)
 12The stationarity of the terms of trade is, in turn, an implication of the stationarity of the
 productivity diﬀerential coupled with our assumption of complete asset markets.
+15
 
 where σa and σa∗denote the standard deviation of domestic and world productivity,
 and ρa,a∗their correlation. Hence, we see that the required volatility of the nominal
@@ -1070,6 +1088,7 @@ where γc ≡1 + β + λ
 . Under the simplifying assumption that ρa = ρ∗
 a this
 equation has a unique stationary representation given by
+16
 
 pH,t = ξc pH,t−1 −ζc (at −a∗
 t)
@@ -1133,6 +1152,7 @@ where γe ≡1 + β + λ
 case is given by:
 pH,t = ξe pH,t−1 −ζe (at −a∗
 t)
+17
 
 where ξe ≡
 1
@@ -1189,6 +1209,7 @@ supply elasticity of 1
 that ε, the elasticity of substitution between diﬀerentiated goods, is 6. Parameter
 13These results are, for the sake of brevity of exposition, not displayed here but are available upon
 request from the authors.
+18
 
 θ is set equal to 0.75, a value consistent with an average period of one year between
 price adjustments. We assume β = 0.99, which implies a riskless annual return of
@@ -1239,6 +1260,7 @@ It is, in fact, the behavior of current and expected future interest rate diﬀe
 that matters for the current nominal exchange rate, as can be easily seen by solving the uncovered
 interest parity condition forward.
 15We develop our results on welfare later. Notice, however, that the cost of dampening exchange
+19
 
 Finally the same Þgure displays the corresponding impulse responses under an
 exchange rate peg. Notice that the responses of output gap and inßation are quali-
@@ -1286,6 +1308,7 @@ price inertia, and therefore the more desirable to pursue a policy of CIT relati
 16The standard deviation of the real exchange rate relative to that of output reported in Backus
 et al. (1985) is 1.91 for the U.S., 2.0 for Canada, 1.76 for Germany, and 1.95 for the U.K..
 17See Monacelli (1999) for a detailed analysis of the implications of Þxed exchange rates.
+20
 
 each panel we maintain our benchmark calibration σ = η = 1 (with the exception
 of Figure 2 where η can vary) and compare the implied volatility under the three
@@ -1332,6 +1355,7 @@ rate is independent of θ, as implied by equation (42). An analogous invariance 
 for the real exchange rate (or any other variable). Intuitively, the constraints on price
 adjustment are not binding under that regime, since all Þrms manage to maintain
 18See Hau (2000) for an empirical assessment of this point, in the context of a diﬀerent model.
+21
 
 their desired markup at all times, at unchanged prices. Equilibrium allocations and
 relative prices are thus independent of the degree of price stickiness.
@@ -1396,6 +1420,7 @@ t = 0 at t = 0.
 Notice that the equilibrium level of world output associated with that optimal
 policy corresponds to its natural level, as derived in (36). Given (38), we can easily
 derive an expression for the interest rate that supports the optimal allocation in the
+22
 
 world economy:19
 r∗
@@ -1454,6 +1479,7 @@ be associated with an interest rate that depends on exogenous variables only. No
 such a term will be zero in equilibrium. See, e.g., Woodford (2000), for a detailed discussion.
 20This distinguishes our analysis from Goodfriend and King (2001) who assume that the price of
 domestic goods is determined in the world market.
+23
 
 =
 (1 −τ)
@@ -1521,6 +1547,7 @@ found in the literature, the implied welfare losses are quantitatively small for
 policy regimes. This is particularly true in the two-shock scenario, which implies a
 lower volatility of both the nominal and real exchange rate relative to the scenarios
 with one shock only.
+24
 
 Consider next the eﬀect of lowering, respectively, the steady-state markup to 1.1,
 by setting ε = 11 (which implies a larger penalization of inßation variability in the loss
@@ -1566,6 +1593,7 @@ correlation of shocks under alternative monetary regimes. Notice that, for all t
 rules considered, the deviation from DIT converges to zero as the shock correlation
 approaches unity. For both CIT policies and the exchange rate peg the cost of limiting
 the ßexibility of relative prices is inversely related to the correlation of shocks. In the
+25
 
 limit, as the correlation with world shocks becomes perfect, the cost of mimicking the
 interest rate decision made by the (optimizing) world monetary authority vanishes.
@@ -1612,6 +1640,7 @@ Our framework lends itself to several extensions. First, it is important to em-
 phasize that domestic price stability (along with fully ßexible exchange rates) stands
 out as the welfare maximizing policy in the particular case of log-utility and unitary
 elasticity of substitution between domestic and foreign goods that we analyze here.
+26
 
 The derivation of a more general welfare function for the small open economy would
 allow a more thorough analysis and quantitative evaluation of the optimal monetary
@@ -1640,6 +1669,7 @@ and Corsetti and Pesenti (2001b)). It would be interesting to explore some of th
 implications (e.g., for the nature of the optimal monetary policy problem and the
 relative performance of alternative policy regimes) in the context of the simple small
 open economy with staggered price-setting proposed here.
+27
 
 Appendix 1: The Steady State
 Next we characterize the perfect foresight, zero inßation steady state of our small
@@ -1702,6 +1732,7 @@ One can view the small open economy setup used in the present paper as corre-
 sponding to the limiting case of α∗→0 and ϑ →0 , though with a well deÞned ratio
 α∗
 ϑ = α ∈(0, 1).
+28
 
 Appendix 2: Optimal Price Setting in the Calvo
 Model
@@ -1806,6 +1837,7 @@ mct ≡mct −mc is the (log) deviation of real marginal cost from its steady
 state value mc = −log
 ε
 ε−1 ≡−µ.
+29
 
 Notice, that we can rewrite the previous expression in more compact form as:
 pH,t −pH,t−1 = βθ Et{pH,t+1 −pH,t} + πH,t + (1 −βθ) c
@@ -1842,6 +1874,7 @@ where λ ≡(1−θ)(1−βθ)
 , and which corresponds to (33) in the text.
 The inßation equation for the world economy can be derived in an analogous
 manner.
+30
 
 Appendix 3: Derivation of the Welfare Loss Func-
 tion for the Special Case
@@ -1912,6 +1945,7 @@ exp [(1 −ε) bpH,t(i)]
 1 + (1 −ε) bpH,t(i) + (1 −ε)2
 2
 bpH,t(i)2 + o(kak3)
+31
 
 Furthermore, from the deÞnition of PH,t, we have 1 = R 1
 0
@@ -1994,6 +2028,7 @@ t
 i
 + t.i.p. + o(kak3)
 which is equation (52) in the text.
+32
 
 Table 1
       Macroeconomic Volatility under Alternative Monetary Policy Regimes
@@ -2086,7 +2121,7 @@ Table 2
                Contribution to Welfare Loss
 =1.2, $=3
          benchmark
-
+                       
 CIT
 PEG
                       shocks
@@ -2119,7 +2154,7 @@ Total
 -0.017
 =1.1, $=3
         low steady-state markup
-
+                       
 CIT
 PEG
                       shocks
@@ -2152,7 +2187,7 @@ Total
 -0.030
 =1.2, $=10
        low elasticity of labor supply
-
+                       
 CIT
 PEG
                       shocks
@@ -2185,7 +2220,7 @@ Total
 -0.030
 =1.1, $=10
        low markup and elasticity of labor supply
-
+                       
 CIT
 PEG
                       shocks

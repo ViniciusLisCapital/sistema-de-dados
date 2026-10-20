@@ -304,6 +304,7 @@ To analyze the collapse of a fixed exchange rate in a model
 analogous to the foregoing resource model, imagine a monetary economy in
 S observe that for t > T*, the competitive price P, is below P, because
 the former price rises only at rate t once the collapse has taken place.
+10
 
 which the demand for domestic (high-powered) money takes the form
 M
@@ -345,9 +346,11 @@ t
 The strong assumption (7) implies that official reserves will be
 declining through time while the exchange rate remains fixed; this
 ever-shrinking reserve stock is analogous to the declining resource
+12
 
 stock in the Hotelling-Salant-Henderson model. As long as the exchange
 rate is fixed at E, expected depreciation is zero and nominal money
+— — —_ i* e e —
 demand is, by (4), constant at M = EAe ™” Thus M=C + Ef = 0, so if
 Wp is the share of reserves in M,
 (1 — We)
@@ -374,6 +377,7 @@ immediate attack. Similarly, if foreign-exchange speculators expect
 an attack to cause a devaluation with certainty, they strike immediately
 and reap the gains. If the price changes occur only after a transitional
 period of floating, then an attack may not take place right away.
+13
 
 zero, the authorities institute an indefinite float of the currency.
 In the present context the analog of the resource shadow price is
@@ -396,6 +400,7 @@ This drop in reserves is the result of a sudden attack in which market
 Othis solution is based on the normalization A = l.
 tne vertical scales in panels (b) and (c) are not intended to be the
 same.
+14
 
 (a) Log of exchange rate
 log Et
@@ -434,6 +439,7 @@ the stochastic model predicts that as reserves decline, the nominal
 interest rate rises as the probability increases that an unexpectedly
 l2Goldberg (1991) has added additional stochastic elements to produce a
 richer account.
+15
 
 large domestic-credit shock pushes reserves to zero and knocks out the
 exchange-rate peg. On the date the collapse occurs, the home currency
@@ -457,6 +463,7 @@ occur because individual ministries fail to internalize the overall
 public-sector constraint. Stein and Streb (1993) propose an
 asymmetric-information model in which governments may rationally run
 down foreign reserves so as to push inflation into the future, thus
+16
 
 FIGURE 3
 Swedish 1-year interbank interest rate
@@ -488,6 +495,7 @@ Monthly data, 1992 (billion kronor)
 -120
 -140
 JAN MAR MAY JUL SEP NOV
+FEB APR JUN AUG OCT DEC
 
 risking a crisis later. These papers yield important insights into the
 genesis of crises in countries where fiscal profligacy is the sole
@@ -515,6 +523,7 @@ Riksbank’s Quarterly Review, 1993:4, table 28; they do not appear on the
 bank’s balance sheet. Note that an official forward sale of foreign
 currency effectively reduces the net supply of domestic-currency bonds
 in private hands while increasing that of foreign-currency bonds; there
+17
 
 were trendless (or slightly increasing) through early June, dropping
 only slightly by early August. There was virtually no net central-bank
@@ -540,6 +549,7 @@ are no monetary-base effects. The forward sale thus is equivalent to a
 sterilized spot sale of foreign reserves. Forward positions can be
 rolled over upon maturity through a swap of domestic for foreign
 currency.
+18
 
 A troubled domestic banking system, unable to tolerate high interest
 rates, was straining the public finances. Finally, the krona had
@@ -564,6 +574,7 @@ first shock: it signaled that the costs of abandoning an ECU peg, not
 only for Sweden, but for de jure Exchange Rate Mechanism members, might
 turn out lower than previously reckoned. To counter these impressions
 and restore stabilizing expectations France, on June 3, announced a
+19
 
 September 20 referendum on the Maastricht Treaty. But this tactic
 soon backfired as French public opinion shifted against Maastricht.
@@ -589,6 +600,7 @@ figure 4). ~ But these losses were a symptom, and not the cause, of the
 Hérngren and Lindberg recount that the Riksbank sold over 160 billion
 kronor in six days. The kronor magnitudes in figure 4 have not been
 revalued to reflect the currency’s depreciation starting on November 19.
+20
 
 krona peg’s political and economic unsustainability.!©
 What explains the Swedish government’s surrender? Economic pain has
@@ -618,6 +630,7 @@ reserves for the Riksbank in the foreign exchange market. The resulting
 “domestic” liability on the Riksbank’s balance sheet thus reflected a
 foreign liability of the Swedish government. Arguably, Sweden’s foreign
 reserves were below zero at the end of November 1992.
+21
 
 sectors are acutely vulnerable to high ex post real rates of interest.
 Governments therefore will balance the costs of such defenses against
@@ -641,6 +654,7 @@ Pound Oct. 1990-Oct. 1992 1.67 9.56
 sterling
 Source: DRI data
 If. governments determine the extent of their resistance through a
+22
 
 cost-benefit analysis, however, self-fulfilling crises become likely in
 situations where economic distress already places the government under
@@ -664,6 +678,7 @@ foreign reserves can be freely borrowed in the world capital market,
 subject only to the government’s consolidated intertemporal budget
 constraint. Neither model assumes additional reserve constraints, nor
 assigns to reserve levels per se a special role in generating
+23
 
 balance-of-payments crises.
 3.1. The Role of Nominal Interest Rates
@@ -692,6 +707,7 @@ Formal models of government behavior incorporating these factors were
 introduced by Lucas and Stokey (1983), Persson and Svensson (1994), and
 Persson, Persson, and Svensson (1987). Milesi-Ferretti (1993) explores
 political motivations for debt management in a monetary model.
+24
 
 (called the "lira") but also participates in the market for a foreign
 currency (the “mark"). The government enters period 1 with obligations
@@ -715,6 +731,7 @@ Public-sector “cash-flow" constraints!” reveal how the government’s
 maturity and currency exposure change its vulnerability to market
 developments. Denote by i, new lira obligations due in period 2 that
 19the terminology comes from Persson and Svensson (1984).
+25
 
 are incurred by the government in period 1. The period 1 constraint is
 EGf,)
@@ -739,6 +756,7 @@ available in period 1 because the exchange rate must remain fixed until
 period 2.
 21 . . :
 In (11) below, it would be more appropriate to take private-sector
+26
 
 (11) i, + oP» — ESS, + of 2) + Eg, = E,ty + M, - M
 Under the assumptions of capital mobility and uncovered
@@ -762,6 +780,7 @@ income as the tax base, but this would only introduce inessential
 complications. Notice, however, that since y excludes interest payments
 on government debt held by the domestic public, a tax rate tT on y in
 excess of 1 is not excluded.
+27
 
 equation (14) is adopted to simplify the algebraic analysis. -~ Note the
 unrealistic assumption that the public holds money in period 2 even
@@ -783,6 +802,7 @@ taxes. The simple quadratic specification in (15) is chosen for
 22,44: tas :
 Adding a traditional interest-rate response of money demand would only
 raise the likelihood of the multiple equilibria shown below.
+28
 
 simplicity only. There is nothing in (15) to capture the notion that a
 realignment per se, even if small, can cause the government permanently
@@ -806,6 +826,7 @@ plus conventional taxes must suffice to repay the government’s net debt
 and pay for current spending. (Of course, if, + 0% + ky is the total
 inflation-tax base.)
 In period 2 the government chooses e€ and t to minimize (15) subject
+29
 
 to (17). Importantly, all variables in (17) other than € and Tt are
 predetermined when the government makes its choices in period 2. In
@@ -830,6 +851,7 @@ Ie
 Equation (19) states that at an optimum, the marginal cost of extra
 depreciation per lira raised equals the marginal cost per lira of higher
 conventional taxes. Using (19) to eliminate t from (17) gives © as
+30
 
 Depreciation rate, ¢
 0.8
@@ -872,6 +894,7 @@ given. Its role, which clarifies the factors that lend a positive slope
 to the reaction function, is explored later.
 The second upward-sloping schedule in figure 5, the interest parity
 curve, shows the expected rate of depreciation e« consistent with the
+31
 
 lira interest rate i prevailing in period 1. Equations (12) and (16)
 show the equation for this schedule is
@@ -895,8 +918,10 @@ to ensure that the bond market coordinates on the relatively low lira
 interest rate. The government faces a dynamic inconsistency problem:
 much as it would like to, it cannot credibly promise not to validate
 231 is obtained by setting y = 1, d =1.0, d =0.2, f =0, f. =
+01 02 oO 1 02
 = = = i* =
 0, fe 0, g, = 8, 0.35, and i 0.05.
+32
 
 expectations if the bond market settles on the high-inflation
 equilibrium’s interest rate.
@@ -926,6 +951,7 @@ the realignment cost. Particularly if we ignore the possibility of
 strategic debt management (taken up below), it is entirely possible that
 a realignment cost has the potential to improve economic welfare by
 preventing excessive currency depreciation.
+33
 
 FIGURE 6
 Government ex post loss
@@ -936,6 +962,7 @@ Government ex post loss
 10
 Loss under discretion
 0 0.5 1 1.5 2 2.5 3
+Nominal interest rate, i
 
 below that under a fixed rate, and the relative disadvantage of
 maintaining a fixed rate rises with i. Once the excess loss of a fixed
@@ -960,6 +987,7 @@ to emerge where none existed before.
 Equations (18) and (20) show that the lira interest rate i enters
 the government’s period 2 reaction function only via AP the new debt
 incurred in period 1; this new debt would in turn be absent (see (18))
+34
 
 if the condition
 (22) (4, + 8, - of, * Ta qe =
@@ -985,6 +1013,7 @@ intersection at which i = +o and © = 1: the government’s nominal
 commitments then are infinite and the only way to meet them is to
 eradicate their real value entirely through a confiscatory inflation. I
 don’t consider this intersection at infinity to be an equilibrium.
+35
 
 interest-inelastic money demand in equation (14) means that period 1
 expectations do not influence international reserves--a highly
@@ -1013,6 +1042,7 @@ domestic-currency government debt.
 27 . .
 In essence, the government is issuing consumption-indexed debt in this
 case.
+36
 
 that most of it must effectively be refinanced each period. Some
 observers would judge such borrowing to be infeasible. Yet if the debt
@@ -1036,6 +1066,7 @@ model applies equally to other situations, such as Britain’s in the
 1950s and 1960s, when authorities sought to avoid the “twin disasters of
 8 rhe broken reaction function comes from keeping all the settings of
 figure 5 except that for fo which is lowered from 0 to -0.25.
+37
 
 Depreciation rate, €
 0.8
@@ -1049,6 +1080,7 @@ Interest parity curve
 FIGURE 7
 1.5
 2.5 3
+Nominal interest rate, i
 
 internal and external collapse of the value of the pound sterling"~” in
 the face of a large and increasing public debt.
@@ -1071,6 +1103,7 @@ to zero. Domestic output y given by
 (23) y= ale, - w) -u,
 2%coodhart (1973, p. 513).
 30 For a more detailed discussion of a similar model, see Obstfeld (1991).
+38
 
 where w is the money wage and u is a mean-zero, serially independent
 shock dependent on foreign interest rates, private and government demand
@@ -1095,6 +1128,7 @@ s=t
 where 8, O < 8 < 1, is the government’s discount factor. (Later a fixed
 I assume capital mobility and perfect asset substitution, so
 realignment is the only form monetary policy can take.
+39
 
 cost of realignment will be introduced.) The loss function (25)
 penalizes deviations of inflation rates from a target of zero. It also
@@ -1116,6 +1150,7 @@ minimize fo given the nominal wages agreed in period t - 1. (There is no
 intertemporal dimension to the government’s exchange-rate decision,
 32 Serial dependence in the employment shock u works like predictable
 time variation in y*.
+40
 
 which does not affect the policy problem to be faced in later periods).->
 Minimization of (26) over e (for given w) requires that
@@ -1139,6 +1174,7 @@ expectations are assumed to be history-independent.
 If the government could precommit its exchange-rate reaction function,
 it would choose the function cA - A i= Au that is, it would forswear
 accommodating wage shocks as well as any attempts to offset predictable
+41
 
 willingness to accommodate.
 Of course, workers and firms understand the strategy in (27) and
@@ -1163,6 +1199,7 @@ exploit the potential short-run Phillips trade off due to the
 predetermination of nominal wages. A fixed exchange rate would eliminate
 this inflation bias, but it would also prevent the government from
 real distortions through currency depreciation. See Obstfeld (1991).
+42
 
 responding to unpredictable output shocks. Whether a fixed rate is
 advisable in light of this trade off is an empirical question.
@@ -1189,10 +1226,12 @@ If the government realigns instead, it sets the exchange rate by (27)
 and incurs the fixed cost c, so its loss is
 Ro} _ #2
 eo 5 AN oa +uty )" +c.
+43
 
 Clearly a realignment will occur whenever
 R 2
 FH es lytan +u + y*)" —-c> 0,
+t t 2 t t
 £
 that is, when
 (31) =Mar, + uy + y*)? > c¢.
@@ -1210,6 +1249,7 @@ for imposing a realignment cost c. In practice, however, a beneficial
 escape clause may be hard to implement. The reason for this difficulty,
 3 There is no point in setting it at a different level because any new
 rate is fully incorporated into date t + 1 money wages.
+44
 
 as (31) shows, is that the trigger points u and u at which the escape
 option is exercised depend on prior expectations of depreciation ™ and
@@ -1234,6 +1274,7 @@ devaluation threshold u, and (2) calculation of the actual threshold
 given market expectations.
 When market participants believe on date t — 1 that the date t
 exchange rate will be changed if u > u, they expect the date t
+45
 
 depreciation rate to be
 (32) a= Prob(u, < u}*O + Prob(u, > u)* Efe, — elu, > u),
@@ -1255,6 +1296,7 @@ Thus, (33) implies that
 which reduces to
 = sg) =n (Hc Bd [fe ru H—u
 (34) m= at) = a[ val x=] + (yt/a)] + [i - af male
+46
 
 The government takes the expectations in (34) as given and
 minimizes its loss. Equation (31) implies that the largest shock
@@ -1280,6 +1322,7 @@ rather accommodative government. With distributions for u more
 complicated than the uniform, however, multiple equilibria (sometimes
 more than two of them) can arise under much less accommodative
 governments. See Obstfeld (1991).
+47
 
 FIGURE 8
 0.04
@@ -1322,6 +1365,7 @@ to be exercised at u = -0.03 and above, the monetary authority has a
 substantial incentive to devalue, not revalue, even when u = -0.03.
 (Apply (34) and (35).) Thus, there was no loss of generality in assuming
 from the outset that revaluations never occur.
+48
 
 trigger devaluations. If such shocks are persistent (contrary to the
 assumption made above), higher interest rates and reserve losses will
@@ -1346,6 +1390,7 @@ Black Tuesday or Black Thursday? To explain this timing (if indeed there
 3?Drazen and Masson (1993) present some empirical evidence supporting
 this mechanism as a component in determining the credibility of EMS
 exchange-rate commitments.
+49
 
 is an explanation), one must postulate a model in which the market’s
 response to a series of informative signals ultimately precipitates a
@@ -1366,3 +1411,4 @@ multiplicity problem. Absent such institutions, however, and given
 official objectives, the danger always exists that expectations produce
 equilibria in which the authorities prefer to abandon their prior
 exchange rate targets.
+50

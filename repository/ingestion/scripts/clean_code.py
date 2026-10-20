@@ -1,20 +1,15 @@
 """
 repository/ingestion/scripts/clean_code.py — Code-only cleaning (no AI).
 
-Applies deterministic regex rules to raw PDF-extracted .md files.
-Works in two passes:
-  1. Tail-cut: once a known boilerplate section heading is found, discard to EOF.
-  2. Line-level: remove individual lines (emails, phones, URLs, watermarks,
-     known disclaimer phrases, chart garbage clusters).
+clean_md is raw_md minus three things, and nothing else:
+  1. the References/Bibliography blocks (block_cut_spans), each reported by qc.py check;
+  2. a bank report's disclosure back-matter, from its heading to EOF (_TAIL_TRIGGERS);
+  3. lines whose text is fixed publisher or bank boilerplate (_is_boilerplate): JSTOR notices,
+     watermarks, layout stamps, known disclaimer sentences, known running heads.
 
-Block-level removal is intentionally avoided because banks often embed
-one-line disclaimers in the same paragraph block as content (no blank line
-separator), which would cause an entire block-level match to erase content.
-
-Limitations vs AI pipeline:
-  - Continuation lines of multi-line disclaimers may partially survive.
-  - Chart garbage (axis labels, table numbers) may partially survive.
-  - Analyst contact info interleaved mid-sentence with content is hard to isolate.
+No rule judges a line by its shape. Page numbers, running heads not listed by name, chart axis
+numbers, URLs and contact lines stay: the shape rules that removed them also removed content
+(see "Known boilerplate lines" below). When in doubt, the cleaner keeps the line.
 """
 
 import re
@@ -81,6 +76,9 @@ _NEXT_SECTION_RE = re.compile(
         ([IVX]{1,5}\.\s*)?(Online\s+|Data\s+|Technical\s+|Mathematical\s+)?Appendi(x|ces)(\s|:|$) |
         Comments?\s+and\s+Discussion\b |
         Comment\s+By\b |
+        # The heading alone, the discussant on the next line: "Comment" / "BY PETER GARBER" in
+        # Krugman (2000, IMF Staff Papers); the cut ran on and deleted the comment's first page.
+        Comments?\s*$ |
         General\s+Discussion\b |
         Tables?\s*$ |
         Figures?\s*$ |
@@ -191,10 +189,21 @@ def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
         spans.append((start, len(lines), "EOF"))
     return spans
 
-# ── Line-level removal ────────────────────────────────────────────────────────
+# ── Known boilerplate lines ──────────────────────────────────────────────────
+# Since 2026-10-20 the cleaner removes only whole blocks (the References list above, the bank
+# disclosure tail) and lines whose TEXT is fixed publisher or bank boilerplate. It no longer
+# guesses from a line's shape: the shape rules (chart debris, axis numbers, page numbers,
+# repeated lines, any line carrying a URL, e-mail or phone number) were 2.1% of the removal and
+# every silent content loss found in three audits (2026-10-19, -20 twice): table cells
+# ("0.83" dropped as an axis tick while "-0.24" stayed, so the surviving cells sat under the
+# wrong row: Minella & Souza-Sobrinho 2013 Table 2, 717 of Rey 2013's 1,218 appendix cells),
+# sentences that held a URL (Garcia & Valpassos 1998: "Therefore, the domestic interest rate is
+# computed through the"), a table's totals row taken for a phone number ("(1+2+3) 28.5 29.9"),
+# equations, footnotes, "Source:" lines. The knowledge base is read for its reasoning, and a
+# page number or a running head left in the text costs a reader nothing; a lost sentence or a
+# table whose cells moved costs the one reading that goes back to the source.
+
 # Known inline disclaimer sentence starters (first line of multi-line disclaimers).
-# Continuation lines may survive — accepted trade-off vs. block-level removal,
-# which risks erasing content when disclaimers are embedded without blank lines.
 _INLINE_DISCLAIMER_RE = re.compile(
     r"""^(
         Investors\s+should\s+consider\s+this\s+report\s+as\s+only\s+a\s+single\s+factor |
@@ -208,12 +217,6 @@ _INLINE_DISCLAIMER_RE = re.compile(
         For\s+inquiries,\s+suggestions,\s+complaints |
         We,\s+\w+.*?\bhereby\s+certify\b |
         Unless\s+otherwise\s+stated,\s+the\s+individuals\s+listed\s+on\s+the\s+cover |
-        Macro\s+Research\s+[–\-]\s+Itaú |
-        Fernando\s+M\.\s+Goncalves |
-        Julia\s+Gottlieb |
-        Pedro\s+Schneider |
-        Thales\s+Guimarães |
-        Mario\s+Mesquita |
         # Continuation lines of known multi-line disclaimers
         certification\s+and\s+other\s+important\s+disclosures,\s+see\s+the\s+Disclosure |
         do\s+business\s+with\s+companies\s+covered\s+in\s+this\s+research\s+report |
@@ -222,20 +225,17 @@ _INLINE_DISCLAIMER_RE = re.compile(
     re.IGNORECASE | re.VERBOSE,
 )
 
-_EMAIL_RE   = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
-_PHONE_RE   = re.compile(r"(\+\d[\d\s\(\)\-\.]{6,}\d|0800[\s\-]\d{3}[\s\-]\d{4})")
-_URL_RE     = re.compile(r"(https?://|www\.)\S+")
-_PAGE_NUM_RE = re.compile(r"^\s*\d{1,4}\s*$")
+_MONTHS = r"(January|February|March|April|May|June|July|August|September|October|November|December)"
 # "3 November 2025 2" — Goldman date+page footer
-_DATE_PAGE_RE = re.compile(r"^\d{1,2}\s+\w+\s+\d{4}\s+\d{1,3}$")
-# Goldman reversed watermark "PEDRO.LINZMEYER@LISCAPITAL.COM.BR" backwards
+_DATE_PAGE_RE = re.compile(rf"^\d{{1,2}}\s+{_MONTHS}\s+\d{{4}}\s+\d{{1,3}}$", re.IGNORECASE)
+# Goldman's "For the exclusive use of <e-mail>" watermark, and the same mark printed backwards
+_EXCLUSIVE_USE_RE = re.compile(r"^For\s+the\s+exclusive\s+use\s+of\s+\S+@\S+$", re.IGNORECASE)
 _WATERMARK_RE = re.compile(r"^RB\.MOC\.", re.IGNORECASE)
+_REVERSED_WORDS = frozenset({"fo", "esu", "evisulcxe", "eht", "rof"})
 # MD5-like hash token
 _HASH_RE = re.compile(r"^[a-f0-9]{32}$")
-# "Source: ..." attribution lines
-_SOURCE_RE = re.compile(r"^Source:\s*", re.IGNORECASE)
-# Copyright symbols / lines. Not a bare "(": "(1995), Ireland (1996a), ..." is a body line
-# that starts with a citation year, and 150 of them were deleted across the corpus (2026-10-19).
+# Copyright lines. Not a bare "(": "(1995), Ireland (1996a), ..." is a body line that starts
+# with a citation year.
 _COPYRIGHT_RE = re.compile(r"^(©|\(c\)|Copyright\b)\s*\d{4}\b", re.IGNORECASE)
 # JSTOR download notices (appear on every page, embedded in content blocks)
 _JSTOR_DOWNLOAD_RE = re.compile(r"^This\s+content\s+downloaded\s+from\s+\d+\.\d+", re.IGNORECASE)
@@ -245,7 +245,8 @@ _JOURNAL_ATTR_RE = re.compile(r"^\[Journal\s+of\s+Political\s+Economy", re.IGNOR
 # Textbook layout-software export stamps, e.g. "M17_KRUG9719_12_GE_C17.indd 542 17/11/2021 16:14"
 _INDD_STAMP_RE = re.compile(r"\.indd\s+\d+.*\d{1,2}:\d{2}", re.IGNORECASE)
 
-# Running headers — also matches JSTOR-style "Ii62 JOURNAL OF POLITICAL ECONOMY" prefixes
+# Running heads known by name. Used by block_cut_spans() so a head inside a reference list does
+# not end the cut, and removed as boilerplate: each is a fixed title, not a guess.
 _RUNNING_HEADER_RE = re.compile(
     r"^(\w+\s+)?(Goldman\s+Sachs\s+FX\s+in\s+Focus|"
     r"Goldman\s+Sachs\s+Global\s+Investment\s+Research|"
@@ -256,98 +257,16 @@ _RUNNING_HEADER_RE = re.compile(
     re.IGNORECASE,
 )
 
-# Marks of an equation: operators, brackets, Greek letters, math symbols, unmapped glyphs.
-_MATH_RE = re.compile(r"[=+<>()\[\]{}^ˆͰ-Ͽ∀-⋿]|\(cid:")
-
-# Reversed text fragments from Goldman's "For the exclusive use of" watermark
-_REVERSED_WORDS = frozenset({"fo", "esu", "evisulcxe", "eht", "rof"})
+_BOILERPLATE = (_INLINE_DISCLAIMER_RE, _DATE_PAGE_RE, _EXCLUSIVE_USE_RE, _WATERMARK_RE, _HASH_RE,
+                _COPYRIGHT_RE, _JSTOR_DOWNLOAD_RE, _JSTOR_TNC_RE, _JOURNAL_ATTR_RE, _RUNNING_HEADER_RE)
 
 
-_TABLE_NUM_RE = re.compile(r"^[\-−–(]?[\d.,]+[%)*]*$")
-
-
-def _is_chart_garbage(line: str) -> bool:
-    """
-    Detect space-fragmented single-char sequences from pdfplumber chart extraction.
-    E.g.: 'S e l i c', '2 0 2 1 2 0 2 2', '6 .0 5 .0 4 .0'
-    Heuristic: ≥5 tokens, ≥70% of them are 1-2 chars long.
-    """
-    stripped = line.strip()
-    if len(stripped) < 5:
+def _is_boilerplate(line: str) -> bool:
+    s = line.strip()
+    if not s:
         return False
-    # An equation has the same short tokens ("πt = κxt + υt", "r = p + .5y + .5(p - 2) + 2"),
-    # and this rule deleted Taylor's rule from Taylor (1993) among ~870 lines (2026-10-19).
-    if _MATH_RE.search(stripped):
-        return False
-    tokens = stripped.split()
-    if len(tokens) < 5:
-        return False
-    # ...and a table row, a label and its numbers: "I 23% 42 -15 6 10 57" (Paiva 2006, Table 3),
-    # "1M 8 12 2 3 1 5 0" (Belaisch 2003), "FF 65 30 19 17 19" (Christiano et al. 1999).
-    if re.search(r"[A-Za-z]", tokens[0]) and all(_TABLE_NUM_RE.match(t) for t in tokens[1:]):
-        return False
-    # ...and prose with short words: "1 to t. In the equilibrium we" (Gertler & Karadi 2011).
-    if any(sum(ch.isalpha() for ch in t) >= 4 for t in tokens):
-        return False
-    short = sum(1 for t in tokens if len(t) <= 2)
-    return short / len(tokens) >= 0.70
-
-
-def _line_should_remove(line: str) -> bool:
-    stripped = line.strip()
-    if not stripped:
-        return False
-    # _PAGE_NUM_RE is checked in clean(), which knows whether the line sits at a page edge.
-    if _DATE_PAGE_RE.match(stripped):
-        return True
-    if _WATERMARK_RE.match(stripped):
-        return True
-    if _HASH_RE.match(stripped):
-        return True
-    # "Source:" lines are kept since 2026-10-19: under a paper's chart or table they say where
-    # the data come from ("Source: Authors' calculations."), which is content.
-    if _COPYRIGHT_RE.match(stripped):
-        return True
-    if _JSTOR_DOWNLOAD_RE.match(stripped):
-        return True
-    if _JSTOR_TNC_RE.match(stripped):
-        return True
-    if _JOURNAL_ATTR_RE.match(stripped):
-        return True
-    if _RUNNING_HEADER_RE.match(stripped):
-        return True
-    if _INLINE_DISCLAIMER_RE.match(stripped):
-        return True
-    if stripped.lower() in _REVERSED_WORDS:
-        return True
-    if _EMAIL_RE.search(stripped):
-        return True
-    if _PHONE_RE.search(stripped):
-        return True
-    if _URL_RE.search(stripped):
-        return True
-    if _INDD_STAMP_RE.search(stripped):
-        return True
-    if _is_chart_garbage(stripped):
-        return True
-    return False
-
-
-def _prose_without_contact(line: str) -> str | None:
-    """A line carrying an e-mail or phone number AND prose: the prose, with the contact cut out.
-
-    pdfplumber reads a two-column bank cover across both columns, so an author-sidebar contact
-    lands at the end of a body line: "... with food accounting for 28% of the CPI
-    maria.ambrosino@gs.com". Dropping the whole line deleted that sentence (Goldman 2026, the
-    only place the 28% appears). A sidebar line ("Teresa Alves +44(20)7051-4700 |") and the
-    "For the exclusive use of <e-mail>" watermark have names and few lowercase words, so prose
-    is told apart by 8+ lowercase words (measured 2026-10-20: body lines 10-13, sidebars 0-4).
-    """
-    if not (_EMAIL_RE.search(line) or _PHONE_RE.search(line)):
-        return None
-    rest = re.sub(r"\s+", " ", _PHONE_RE.sub(" ", _EMAIL_RE.sub(" ", line))).strip(" |")
-    lower = sum(1 for w in rest.split() if re.fullmatch(r"[a-z][a-z'’\-]*[,.;:]?", w))
-    return rest if lower >= 8 else None
+    return (any(r.match(s) for r in _BOILERPLATE) or bool(_INDD_STAMP_RE.search(s))
+            or s.lower() in _REVERSED_WORDS)
 
 
 def _strip_digits(s: str) -> str:
@@ -362,17 +281,10 @@ def _detect_running_headers(
     max_len: int = 120,
 ) -> set[str]:
     """
-    Generic running-header/footer detector: finds short lines that recur many
-    times across the document, tolerating a varying leading/trailing page
-    number (e.g. "478 Canadian Journal of Economics and Political Science" and
-    "Capital Mobility and Stabilization Policy 479" both normalize to the same
-    digit-stripped key). Complements the hand-tuned _RUNNING_HEADER_RE, which
-    only catches exact, already-known titles.
-
-    Returns the set of original (stripped) line strings to remove. A generic
-    heuristic like this can misfire on short repeated content that isn't a
-    header (e.g. a subsection label reused verbatim) — accepted trade-off,
-    same spirit as this module's existing block-level heuristics.
+    Short lines that recur across the document, tolerating a varying leading/trailing page
+    number ("478 Canadian Journal of Economics..." and "... Policy 479" share a key). Used by
+    block_cut_spans() only, so that a running head inside a reference list does not end the
+    cut; since 2026-10-20 nothing is removed for being repeated.
     """
     counts: Counter = Counter()
     originals: dict[str, set[str]] = {}
@@ -384,127 +296,42 @@ def _detect_running_headers(
         if not (min_len <= len(norm) <= max_len):
             continue
         # A running head is words. Rows of a numeric table share their digit-stripped shape
-        # ("FF4 17.930 [6.675 22.673]" → "FF . [. .]") and were all deleted as one header.
+        # ("FF4 17.930 [6.675 22.673]" → "FF . [. .]").
         if sum(ch.isalpha() for ch in norm) < 6:
             continue
         counts[norm] += 1
         originals.setdefault(norm, set()).add(stripped)
 
-    to_remove: set[str] = set()
+    found: set[str] = set()
     for norm, count in counts.items():
         if count >= min_occurrences:
-            to_remove.update(originals[norm])
-    return to_remove
-
-
-def _is_axis_fragment(line: str) -> bool:
-    s = line.strip()
-    return _is_chart_garbage(s) or (len(s) <= 4 and s.replace(".", "").replace(",", "").replace("%", "")
-                                    .replace("-", "").replace("–", "").replace("−", "").strip().replace(" ", "").isdigit())
-
-
-def _block_is_garbage(lines: list[str]) -> bool:
-    """
-    Detect chart-artifact blocks: short blocks where most lines are numeric/
-    single-char fragments from garbled chart axis labels.
-    """
-    if len(lines) < 4:
-        return False
-    return sum(1 for ln in lines if _is_axis_fragment(ln)) / len(lines) >= 0.6
+            found.update(originals[norm])
+    return found
 
 
 def clean(text: str) -> str:
-    """Apply all code-based rules. Returns cleaned text."""
+    """The raw text minus three things: the References/Bibliography blocks (block_cut_spans),
+    everything from a bank's disclosure heading to EOF (_TAIL_TRIGGERS), and lines of known
+    boilerplate (_is_boilerplate). Every other line is kept as extracted."""
     lines = text.splitlines()
-    running_headers = _detect_running_headers(lines)
     cut = {i for a, b, _ in block_cut_spans(lines) for i in range(a, b)}
-
-    # Pass 1: line-by-line — tail trigger + individual line removal.
-    # Tail trigger is checked per-line (not per-block first-line) because bank
-    # reports often put the trigger heading on line 2 of a block with no blank
-    # line separator (e.g. "Goldman Sachs FX in Focus\nDisclosure Appendix").
-    def at_page_edge(i: int) -> bool:
-        # Pages are joined with a blank line (extract.py), so a page's first or last line
-        # touches one. A bare number elsewhere is a table cell or an equation term, not a page
-        # number: pymupdf prints one table cell per line, and every "0" and "1984" was deleted.
-        return i == 0 or i == len(lines) - 1 or not lines[i - 1].strip() or not lines[i + 1].strip()
-
-    def near_page_edge(i: int) -> bool:
-        # A running head can sit one line in, next to its page number ("88" / "CHAPTER 3").
-        return any(at_page_edge(j) for j in range(max(0, i - 1), min(len(lines), i + 2)))
-
-    pass1: list[str] = []
-    seen_headers: set[str] = set()
+    out: list[str] = []
     for i, line in enumerate(lines):
         stripped = line.strip()
+        # Per line, not per block: a bank report can put the heading on line 2 of a block with
+        # no blank line before it ("Goldman Sachs FX in Focus\nDisclosure Appendix").
         if stripped and _TAIL_TRIGGERS.match(stripped):
-            break  # discard everything from here to EOF
-        if i in cut:
-            continue  # inside a References/Bibliography block (heading included)
-        if not stripped:
-            pass1.append("")
-        elif stripped in running_headers and near_page_edge(i):
-            # A running head sits at the top or bottom of a page. A repeated line inside a
-            # page is content (a table's row label, "Adj. R-Squared" under every table) and
-            # is kept. At the edge, keep the first copy anyway: a figure note repeated under
-            # every chart page is content too, and one stray running head costs less.
-            # "First copy" ignores a page number at either end: keyed by the line itself, a head
-            # carrying its page number was new on every page and all ~30 copies stayed (Krugman
-            # 2023: "384 PART THREE ■ Exchange Rates..."). Only the end numbers: keyed by the
-            # whole digit-stripped shape, as the detector counts, table rows that share a shape
-            # ("Adj. R-Squared 0.12 0.01 0.06", "Number of firms 185,147 ...") and captions
-            # ("Table 13: Pass-through ...") went as copies of each other (measured 2026-10-20).
-            # And a line the line rules drop (the .indd stamp) is not kept even once.
-            key = re.sub(r"^\d{1,4}\s+|\s+\d{1,4}$", "", stripped)
-            if key not in seen_headers:
-                seen_headers.add(key)
-                if not _line_should_remove(line):
-                    pass1.append(line)
-        elif _PAGE_NUM_RE.match(stripped) and at_page_edge(i):
+            break
+        if i in cut or _is_boilerplate(stripped):
             continue
-        elif (prose := _prose_without_contact(stripped)) is not None:
-            # The remainder still goes through the other line rules (a disclaimer stays out).
-            if not _line_should_remove(prose):
-                pass1.append(prose)
-        elif not _line_should_remove(line):
-            pass1.append(line)
-
-    # Pass 2: garbage-cluster removal over the filtered lines.
-    # Collect consecutive non-blank lines into blocks; drop blocks where ≥60%
-    # of lines are chart-artifact garbage (space-fragmented single chars).
-    pass2: list[str] = []
-    block_buf: list[str] = []
-
-    def _flush(buf: list[str]) -> None:
-        if _block_is_garbage(buf):
-            # Drop the axis fragments only, never the whole block: pymupdf returns a page as
-            # one block, so a chart page took its caption and the prose around it along
-            # (826 lines of Jarocinski & Karadi 2020 in a trial, 2026-10-19).
-            pass2.extend(ln for ln in buf if not _is_axis_fragment(ln))
-        else:
-            pass2.extend(buf)
-
-    for line in pass1:
-        if line.strip() == "":
-            if block_buf:
-                _flush(block_buf)
-                block_buf = []
-            pass2.append("")
-        else:
-            block_buf.append(line)
-    if block_buf:
-        _flush(block_buf)
-
-    # Collapse 3+ consecutive blank lines into 2
-    output = "\n".join(pass2)
-    output = re.sub(r"\n{3,}", "\n\n", output)
+        out.append(line)
+    output = re.sub(r"\n{3,}", "\n\n", "\n".join(out))
     return output.strip()
 
 
 def clean_file(source: str | Path, output_dir: str | Path | None = None) -> Path:
     """
-    Clean a single raw .md file with code-only rules.
-    Strips '_raw' suffix from output filename (same convention as AI pipeline).
+    Clean a single raw .md file. Strips a '_raw' suffix from the output file name.
     Returns path to output file.
     """
     source = Path(source)

@@ -16,6 +16,7 @@ Março
 p. 3-91
 
 Working Paper Series 
+Edited by the Research Department (Depep) – E-mail: workingpaper@bcb.gov.br 
 Editor: Rodrigo Barbone Gonzalez
 Co-editor: Eurilton Alves Araujo Jr
 Head of the Research Department: André Minella 
@@ -32,6 +33,8 @@ Deati/Diate
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 2º subsolo 
 70074-900 Brasília – DF – Brazil 
 Toll Free: 0800 9792345 
+Fax: +55 (61) 3414-2553 
+Internet: http//www.bcb.gov.br/?CONTACTUS
 
 Non-technical Summary
 This paper describes extensions to the structure of the SAMBA model1. These additional
@@ -60,6 +63,7 @@ designed to analyze unemployment ﬂuctuations in small-open economies.
 1This model belongs to the class of Dynamic Stochastic General Equilibrium (DSGE) models and was developed
 by staﬀmembers at the Research Department of the Banco Central do Brasil. Indeed, SAMBA is an acronym
 for “Stochastic Analytical Model with a Bayesian Approach” and refers to the famous Brazilian music genre.
+3
 
 Sum´ario N˜ao T´ecnico
 O artigo descreve extens˜oes feitas `a estrutura do modelo SAMBA2. Essas mudan¸cas incluem
@@ -93,6 +97,7 @@ pequenas economias abertas.
 pesquisadores do Departamento de Estudos e Pesquisas do Banco Central do Brasil. O acrˆonimo SAMBA se
 refere, em inglˆes, ao termo “Stochastic Analytical Model with a Bayesian Approach”, al´em de ser uma alus˜ao a
 um importante gˆenero musical brasileiro.
+4
 
 Brazilian Macroeconomic Dynamics Redux: Shocks,
 Frictions, and Unemployment in SAMBA Model
@@ -117,8 +122,11 @@ JEL Codes: E24, E32, E52
 Keywords: DSGE models; Small Open Economies; Monetary Policy; Unemployment
 ‡The authors would like to thank Carla Tito Fernandes for her support and suggestions on early versions of
 this paper. Corresponding Address: Banco Central do Brasil, Research Department. Setor Banc´ario Sul (SBS),
+Quadra 3, Bloco B, Edif´ıcio-Sede, Bras´ılia-DF 70074-900, Brazil. Email: angelo.fasolo@bcb.gov.br. Dedicated to
 the memory of our dear colleague Leonardo Sousa Gomes Marinho.
+5
 
+1
 Introduction
 In recent years, many central banks have put continuing eﬀort on developing and improving
 applied dynamic stochastic general equilibrium (DSGE) models as a tool for policy analysis
@@ -161,6 +169,7 @@ structure like the traditional HP ﬁlter with the exogenous process of the DSGE
 the evolution of non-stationary productivity.
 1SAMBA is an acronym for “Stochastic Analytical Model with a Bayesian Approach” and refers to the famous
 Brazilian music genre.
+6
 
 With respect to estimation, the increased complexity of the model and the number of parame-
 ters to estimate, combined with the inclusion of more observed variables, required a new strategy
@@ -197,6 +206,7 @@ of aggregate demand corresponds to a speciﬁc sector in the economy. Monetary a
 are described as linear rules connecting a given policy instrument to the variables it responds
 to. Finally, the rest of the world corresponds to an identiﬁed structural VAR model, combining
 important foreign variables.
+7
 
 2.1
 Households
@@ -285,6 +295,7 @@ t represent bonds issued in t −1 and maturing in t, and Kt are capital holding
 Thus, variables Bt+1, B∗
 t+1 and Kt+1 are decided in t.
 The model contains two diﬀerent measures of risk premium, associated, respectively, with
+8
 
 domestic and foreign issued bonds: SB
 t and SB∗
@@ -402,6 +413,7 @@ t Xt
 t and QX
 t are the relative prices of GDP deﬂator
 and exports with respect to the CPI, and Yt and Xt are real GDP and exports.
+9
 
 ensure that employment and the labor force ﬂuctuate procyclically as shocks disturb the economy.
 The limit on the size of the wealth eﬀect on labor supply approximates the behavior of the utility
@@ -525,6 +537,7 @@ t (i), the participation condition is:
 GHH preferences are often used in models characterizing small open
 economies, like Schmitt-Groh´e and Uribe (2003)[39], as they stress the interaction between capital accumulation
 and foreign bonds in the household’s savings decision.
+10
 
 Uc(CO
 t )(1 −τ N
@@ -630,6 +643,7 @@ t
 N RT
 t
 For each type of household, in equilibrium, we have the following aggregation:
+11
 
 C
 O
@@ -668,7 +682,7 @@ t
 for all RT agents in the interval [0, ϖRT ]:
 N O
 t (i) =
-
+ 
 W O,n
 t
 (i)
@@ -682,7 +696,7 @@ t ,
 N RT
 t
 (i) =
-
+ 
 W RT,n
 t
 (i)
@@ -735,6 +749,7 @@ be interpreted as the mean labor for a given type of household deﬁned by the a
 asset markets.
 Because agencies within the two classes of households produce the same amount of labor,
 these means collapse to these two values. The Leontief technology indicates that the types of
+12
 
 labor are complementary in ﬁxed proportions to produce the aggregate labor used as input in
 the ﬁrst stage of production. The speciﬁcation of a third employment agency is a necessary
@@ -838,6 +853,7 @@ t
 t , we write the indexation rule and wage inﬂation for a representative
 optimizing household as functions of the aggregate wage W n
 t . Notation is simpliﬁed by writing
+13
 
 W O,n
 t
@@ -961,6 +977,7 @@ t
 t CM,i
 t
 subject to the
+14
 
 CES aggregator constraint. Hence, the ﬁrst order conditions are:
 CD,i
@@ -1047,6 +1064,7 @@ Finally, in the third stage, sectoral assemblers transform the diﬀerentiated g
 sectoral homogeneous goods. The ﬁrst three sectoral goods are non-tradable goods aimed at the
 domestic market, corresponding to private consumption, government consumption and invest-
 ment. The last good is a tradable commodity that is exported to the rest of the world.
+15
 
 2.2.1
 First Stage: Domestic Input Producers
@@ -1148,6 +1166,7 @@ The domestic input producer takes input prices as given and chooses capital and 
 5See the FRBNY DSGE Model Documentation, version 1002 (December, 2021)[1] and Coenen et al. (2018)[20].
 The model in Coenen et al. (2018)[20] follows closely the solution in Edge, Laubach and Williams (2007)[26],
 assuming that agents follow a Kalman Filter process of learning about the evolution of productivity in the model.
+16
 
 to minimize total input costs, subject to the technology constraint (11):
 min
@@ -1240,10 +1259,11 @@ j,t is the local-currency price charged by importing
 t
 is the local-currency aggregate import price. The choice problem of the import
 goods assembler, subject to equation (16), yields the following demand for the jth imported
+17
 
 commodity and the following import price index:
 Mj,t =
-
+ 
 P M
 j,t
 P M
@@ -1307,7 +1327,7 @@ i=0
 (θMβ)i Λt,t+i
 
 
-
+ 
 ΥM
 t,t+iP M
 j,t
@@ -1316,7 +1336,7 @@ t+i
 !1−ϵM
 P M
 t+i −
-
+ 
 ΥM
 t,t+iP M
 j,t
@@ -1367,6 +1387,7 @@ According to this expression, the ﬁrm sets its optimal price as the ratio of t
 discounted sum of marginal cost to their expected discounted sum of marginal revenues. In the
 absence of nominal rigidity, the optimal price is the usual markup over the marginal cost, with
 the markup being ϵM/(ϵM −1). From expression (18), the following equation characterizes the
+18
 
 imported good price index:
 P M
@@ -1472,7 +1493,7 @@ H,j,t)
 " 
 1 −ΓM
 H
-
+ 
 M H
 j,t
 M H
@@ -1495,13 +1516,14 @@ j,t/M H
 t−1, ϖH ∈[0, 1] is
 the weight of the domestic input in the production, and ϵH > 0 is the elasticity of substitution
 between the two inputs. The following functional form for the adjustment cost satisﬁes in the
+19
 
 steady state ΓM′
 H,t = ΓM
 H = 0:
 ΓM
 H
-
+ 
 M H
 j,t
 M H
@@ -1509,7 +1531,8 @@ t−1
 !
 = ϑM
 H
-
+2
+ 
  ZM
 H,t
 −
@@ -1604,7 +1627,7 @@ j,t
 (26)
 M H
 j,t =
-
+ 
 1 −ϖH
 1 −ΓM
 H,t
@@ -1635,7 +1658,7 @@ t
  P D
 t
 1−ϵH + (1 −ϖH)
-
+ 
 P M
 H,t
 1 −ΓM
@@ -1654,6 +1677,7 @@ t , that is, MCG,n
 t
 = P D
 t .
+20
 
 2.2.4
 Second Stage: Domestic Consumption Sector
@@ -1707,7 +1731,7 @@ j,t+i,
 subject to the demand faced by the ﬁrm, given by:
 Y F
 j,t+i =
-
+ 
 ΥF
 t,t+iP F
 j,t
@@ -1765,6 +1789,7 @@ P CD
 t+i Y CD
 t+i
 (31)
+21
 
 We deﬁne the freely-set price index as follows:
 P F
@@ -1782,7 +1807,7 @@ CD dj
 1−ϵP
 CD
 =
-
+ 
 θF
  ΥF
 t P F
@@ -1920,6 +1945,7 @@ A and υ2
 A are positive weights
 and Qt denotes the real exchange rate. The term ZA
 t is a stochastic exogenous process capturing
+22
 
 shifts in these prices that are not explicitly modeled.
 The overall administered price index is deﬁned as follows:
@@ -2084,6 +2110,7 @@ QCD
 t−1
 ΠC
 t
+23
 
 2.2.5
 Second Stage: Government Consumption and Investment Sectors
@@ -2134,7 +2161,7 @@ j,t+i,
 subject to the respective demand constraint:
 Y H
 j,t+i =
-
+ 
 ΥH
 t,t+iP H
 j,t
@@ -2195,7 +2222,7 @@ in sector H = {G, I}:
 P H
 t
 =
-
+ 
 θH
  ΥH
 t P H
@@ -2228,6 +2255,7 @@ t
 t , where P C
 t
 is the consumer price index (CPI) deﬁned in the
+24
 
 household problem.
 QH
@@ -2321,11 +2349,12 @@ j,t+i
 6Appendix A shows the recursive formulation of the Phillips curve for sectors G and I used in the model.
 7Commodity-price inﬂation is expressed here as a gap with respect to its mean. Thus, the indexation mecha-
 nism must be normalized by foreign inﬂation, as described in equation (47).
+25
 
 subject to the demand constraint:
 Y X
 j,t+i =
-
+ 
 ΥX
 t,t+iP X
 j,t
@@ -2385,7 +2414,7 @@ is:
 P X
 t
 =
-
+ 
 θX
  ΥX
 t P X
@@ -2486,6 +2515,7 @@ H
 H −1
 (53)
 8Appendix A shows the recursive formulation of the Phillips curve for export prices used in the model.
+26
 
 where H = {CD, I, G, X} denotes the four corresponding sectors (private consumption, invest-
 ment, government consumption, and exports), Y H
@@ -2526,7 +2556,7 @@ j,t
 engenders the following demand for the jth variety:
 Y H
 j,t =
-
+ 
 P H
 j,t
 P H
@@ -2567,7 +2597,7 @@ t−1
 C
 t Rnat
 t
-
+ 
 EtΠC
 t+1
 EtΠ
@@ -2613,6 +2643,7 @@ by Rss = ΠC
 ss
 β ZZ
 ss.
+27
 
 The structure of the equation describing the inﬂation target has a few distinctive features.
 First, we assume the inﬂation target follows a very persistent process that evolves according to
@@ -2741,6 +2772,7 @@ t
 . Finally, the last equation speciﬁes a smoothed version for the primary
 surplus (Sy
 t ).
+28
 
 2.4
 Demand for Brazilian Exports and Rest of the World
@@ -2759,7 +2791,7 @@ t
 and imported inputs from Brazil. The following expression summarizes this technology:
 Y ∗
 t =
-
+ 
 (ϖ∗)
 1
 ϵ∗h
@@ -2855,6 +2887,7 @@ An additional auxiliary equation links changes in import prices, denominated in 
 with changes in commodity prices. The VAR, combined with the auxiliary equation for import
 prices, allows for not only an improvement in terms of policy analysis, but also provides a simple
 approach to include commodity prices in the model without a complete structural description
+29
 
 of a commodity sector in the economy. The estimation of the VAR is made apart from the
 structural model for Brazil, using a Gibbs-sampler with sign restrictions and two lags. From
@@ -2929,6 +2962,7 @@ in sector H = {CD, I, X} equals the total demand for imports by all ﬁrms j ope
 H.
 Aggregating across all sectors, the market clearing condition for domestic and imported
 10See, for instance, Canova (2005)[15] with a discussion and an application of such procedure for VAR models.
+30
 
 inputs is:
 Y D
@@ -2949,7 +2983,7 @@ t
 Total sectoral inputs result from the aggregation of equations (26) and (27):
 Y D
 H,t = ϖH
-
+ 
 P D
 t
 MCH,n
@@ -2961,7 +2995,7 @@ t
 M H
 t
 =
-
+ 
 1 −ϖH
 1 −ΓM
 H,t
@@ -2996,7 +3030,8 @@ Y H
 j,tdj = Y H
 t
 Z 1
-
+0
+ 
 P H
 j,t
 P H
@@ -3057,7 +3092,8 @@ t
 Z
 s∈RT
 Z 1
-
+0
+ 
 W RT,n
 t
 (i)
@@ -3069,7 +3105,8 @@ t
 Z
 s∈O
 Z 1
-
+0
+ 
 W O,n
 t
 (i)
@@ -3083,7 +3120,8 @@ t
 + (1 −ϖRT )N O
 t
 Z 1
-
+0
+ 
 W O,n
 t
 (i)
@@ -3097,6 +3135,7 @@ Nt
 ϖRT + (1 −ϖRT )vO
 t
 
+31
 
 Again, after deﬁning vO
 t =
@@ -3197,6 +3236,7 @@ ssXt −QssQM∗
 ss MtvM
 t
 (75)
+32
 
 where Qss = SssP ∗
 ss/P C
@@ -3320,6 +3360,7 @@ t ). Finally, the labor-leisure choice described by the intratemporal Euler
 condition is aﬀected by a labor supply shock (ZL
 t ). Again, these shocks follow an AR(1) process.
 The model also includes ad hoc cost-push shocks associated with New Keynesian Phillips
+33
 
 curves. We do not impose time-varying elasticities of substitution for Dixit-Stiglitz aggregators
 as the source of markup shocks in order to preserve the recursive formulation derived from the
@@ -3384,6 +3425,7 @@ t
 conditions, which is essential to carry out welfare evaluations with the model.
 12Subsection 3.3 also discusses a few motives for this simpliﬁcation considering the estimation process.
 13Subsection 3.3 discusses a simpliﬁcation imposed in the structure of these shocks for estimation purposes.
+34
 
 trend for consumption (CS
 t ) as follows:
@@ -3432,6 +3474,7 @@ state inﬂation – annual inﬂation of 4.5%, consistent with the most frequen
 a larger number of observed variables describing the international economy, but reduces the number of observed
 domestic variables, as the new model includes a detailed structural block describing the foreign economy, but
 simpliﬁes the ﬁnancial sector described in “Ramses II”.
+35
 
 target in the sample. Data on inﬂation expectations, from the survey conducted by the Banco
 Central do Brasil, is included to provide model discipline in terms of short-term responses of
@@ -3473,6 +3516,7 @@ Combining all the details described above, there is a total of 30 observed varia
 information from the formal labor market.
 17In Castro et al. (2011, 2015)[17][18], the relative price of imports is detrended using a linear trend. The
 sample covers the period between 1999Q3 and 2010Q2.
+36
 
 to the model. In order to improve the model’s ﬁt to the data and reduce the estimated volatility
 of structural shocks, measurement errors were included in equations describing a few observed
@@ -3527,6 +3571,7 @@ Exports
 Imports
 18Other approaches try to make inference about joint trend in data. For Brazil, Costa (2016)[23] provides an
 uniﬁed framework using Brazilian data, but does not include exports and imports in his model.
+37
 
 A second reason to use the output gap as an observable in the model is the lack of data on
 productivity for the Brazilian economy available in real time. It has become common practice,
@@ -3609,6 +3654,7 @@ includes long term growth expectations for the Euro Area as a proxy for producti
 nation of GDP per capita growth and the output gap as observed variables in the model provides an inference
 about the growth rate of per capita non-stationary productivity, adjusted by measurement errors included in the
 output gap equation described in (76).
+38
 
 autoregressive parameter of the cyclical component of productivity. Also, the combination of
 parameters in the cyclical component of output, yt, combined with a proper choice of prior
@@ -3694,6 +3740,7 @@ the posterior distribution and the estimated output gap. Notice that the conﬁd
 the potential output and the output gap are quite small.
 Figure 2: Log per capita output trend and gap – Median and conﬁdence sets (68% and 95%)
 Additional exercises based on recursive estimation of the output gap, available upon request,
+39
 
 shows that the volatility of the output gap at the end of the sample used for estimation is
 signiﬁcantly smaller than the one observed when using the HP ﬁlter. This is a very important
@@ -3743,6 +3790,7 @@ G = ϵP
 X = ϵM
 Also related to the price setting process, it is assumed that price-setting in sectors supplying
 goods for domestic economy faces the same exogenous markup shifts. This assumption avoids an
+40
 
 excessive number of ad-hoc cost-push shocks aﬀecting the model, especially considering that only
 one of the sectoral prices is observed during estimation. Therefore, ZP
@@ -3785,6 +3833,7 @@ enues on total taxation. This number is available in Azevedo and Fasolo (2015)[1
 share of monitored prices on the CPI, weightA, is not the same as parameter ϖA, which is the
 21For this paper, likelihood computation of the draws was performed with signiﬁcant gains on a GPU, while
 the model solution was distributed across the diﬀerent CPU cores available.
+41
 
 share of monitored ﬁrms on the domestic production of the consumption good. Parameter ϖA
 is computed given the share of monitored prices on the CPI, weightA, and the share of domestic
@@ -3903,6 +3952,7 @@ compute statistics like the labor share in the production function, the governme
 ratio or the foreign debt-to-output ratio – the “great ratios” of the economy. The procedure here
 is to impose a distribution around these moments, with ﬂat priors on the structural parameters,
 allowing for the structural parameters to match these moments. In the case of the estimation of
+42
 
 SAMBA, a prior is imposed for the labor share of the economy and the nominal trade balance-
 to-output ratio. For the ﬁrst prior, note that the production function in equation (11) is now
@@ -3945,6 +3995,7 @@ while the volatility of the cyclical and temporary components are tied in a sing
 volatility of the cyclical component and the ratio between the cyclical and temporary volatility. The volatility
 of imports’ adjustment shocks was constrained in order to avoid an exaggerated role of this shock in historical
 decompositions.
+43
 
 monetary policy shocks of the semi-structural models used for forecasting purposes and published
 in the Inﬂation Report23 are used as a benchmark to set priors for the impact of monetary policy
@@ -4123,6 +4174,7 @@ December-2021 Inﬂation Report box “Revision of the small-scale aggregate mod
 24We refer to “marginal priors” as the marginal densities of the prior distribution of individual parameters in
 the absence of “system priors”. It is not the same as the priors eﬀectively used in the model, as the presence of
 “system priors” breaks the usual independence assumed for prior distributions across parameters
+44
 
 Table 4 (continued from previous page)
 Param.
@@ -4625,7 +4677,9 @@ B(0.50, 0.25)
 0.569
 0.892
 (Continued on next page)
+45
 
+Table 4 (continued from previous page)
 Param.
 Description
 Prior
@@ -4706,6 +4760,7 @@ target shock. It is a stark contrast to Castro et al. (2011, 2015)[17][18], wher
 coeﬃcient above 0.5. Thus, compared to the original model, it is expected that the match of
 persistence observed in data becomes more based on the endogenous dynamic of the model, and
 not on exogenous disturbances.
+46
 
 One critical feature for the dynamics of the model exposed by the estimation procedure is re-
 lated to the evolution of investment prices. The SMC procedure captured a bi-modal distribution
@@ -4778,6 +4833,7 @@ rule. While the marginal prior suggests a large variance for the distribution of
 is applied again, but without the computation of the likelihood. Thus, the SMC integrates the set of independent
 marginal priors for each parameter with the “system priors” imposed on large ratios, exogenous processes and
 IRFs of monetary policy.
+47
 
 describing interest rate inertia (γr), the use of “system priors” provides a signiﬁcant support
 for high interest rate inertia in the model. “System priors” also provide more weight to higher
@@ -4793,22 +4849,138 @@ marginal prior, both in terms of the mode and the dispersion. Thus, the use of �
 helped shaping the posterior distribution of endogenous parameters of the model in terms of CPI
 pricing and monetary policy.
 Figure 4: Estimation: Marginal Priors, “System Priors” and Posterior Distribution
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
 Histograms
+0.1
+0.2
+0.3
+0.4
+0.5
+1
+2
+3
+4
+5
+6
+0
+500
+1000
+1500
+2000
+0.5
+1
+1.5
 Prior Density
+0.5
+1
+1.5
+2
+0
+500
+1000
+1500
+2000
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+3000
 Histograms
+1
+2
+3
+4
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+2000
+1
+2
+3
+4
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+500
+1000
+1500
+2000
 Histograms
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+500
+1000
+1500
+2000
+2
+4
+6
 Prior Density
+0.2
+0.3
+0.4
+0.5
+0
+500
+1000
+1500
+2000
 Posterior
 System Prior
 Marginal Prior
 The ﬁgure shows the marginal prior density and the simulated posterior distribution and “system prior” distri-
 bution of selected parameters.
+4
 Moments, IRFs and Shock Decomposition
 This section presents the main properties of the model in terms of relevant moments, impulse
 response functions, and shock decompositions, given the estimated parameters from the previous
 section. It is worth noting that the use of Sequential Monte Carlo methods, as described before,
 provides a signiﬁcant improvement in the assessment of uncertainty with respect to results. As it
+48
 
 will become clear ahead, SMC methods helped highlighting how the irregularities of the posterior
 distribution translated in higher uncertainty with respect to some characteristics of the model.
@@ -4988,6 +5160,7 @@ Consistent with the underestimation of the volatility of CPI inﬂation, nominal
 inﬂation expectations also have lower volatility in the model compared to data, but a very good
 match in terms of autocorrelation.
 The model does a good job matching second moments of GDP and its components. Notably,
+49
 
 it does a very good job approximating the negative autocorrelation of exports and government
 spending growth. It should be noted that the model representation of these observed variables
@@ -5030,6 +5203,7 @@ obtained (0.005) in the previous version of the ECB model27.
 26Preliminary tests using the same Calvo parameter estimated for freely-set prices in monitored prices resulted
 in autocorrelation for participation rate closer to the observed in data.
 27Obviously, other structural changes in the model might also have aﬀected the estimate of this parameter,
+50
 
 Figure 5: IRF: Monetary Policy Shock
 The ﬁgure shows the median impulse response functions (black line), the 95% credible intervals (CI, shaded area)
@@ -5048,6 +5222,7 @@ inﬂation are in line with the literature.
 compared to NAWN I.
 28Histograms for both VAR and DSGE models for the period after 1990 showed very little variance around
 zero, making diﬃcult any comparison.
+51
 
 Figure 6: Histogram: Slope of Phillips Curve – Freely-Set Price Firms
 The key to understand this apparent disconnection is the impact of monetary policy shock
@@ -5073,8 +5248,10 @@ consumption reduces in the short run, while exports grow almost in the same prop
 are quite sensitive to the shock, with a strong fall over one year, almost four times the size of the
 change in exports. Unemployment shows a small reduction over the ﬁrst year after the shock.
 Compared to Castro et al. (2011, 2015)[17][18], the eﬀects of real exchange rate shocks as
+52
 
 Figure 7: IRF: Real Exchange Rate Shock
+The ﬁgure shows the median impulse response functions (black line), the 95% credible intervals (CI, shaded area)
 for the DSGE model.
 discussed here are more muted, both in terms of prices and economic activity. The same shock
 would result in an increase in CPI around 7bps over 12 months. The response of output is muted
@@ -5090,6 +5267,7 @@ showed that government-driven credit had an important role in countervailing the
 crunch in Brazil during the ﬁnancial crisis and that government credit concessions continued
 to expand after the economy recovered. This behavior has the potential to reduce the eﬀect
 29See, for instance, Carvalho, Castro and Costa (2014)[16], among others.
+53
 
 of monetary policy shocks on economic activity in recent years because interest rates on ear-
 marked loans are lower than market interest rates, which tend to closely follow the policy rate.
@@ -5131,6 +5309,7 @@ depreciation, but the expectations of further nominal interest rates increase ge
 depreciation on impact in the model with the VAR. According to Azad and Serletis (2019)[9],
 this pattern of exchange rate change after a foreign monetary policy shock is common to other
 emerging economies with inﬂation targeting regimes. The exchange rate depreciation combined
+54
 
 with a negative output gap in the rest of the world generates a tension for domestic monetary
 policy: on the one hand, the pass-through of the exchange rate tends to increase inﬂation; on the
@@ -5150,6 +5329,7 @@ suggests the second-order eﬀects are relevant to characterize a signiﬁcant t
 monetary policy shocks to the Brazilian economy.
 The second example, in ﬁgure 9, shows the IRF of an increase in world’s demand, represented
 by an exogenous shock that increases the world’s output gap by 100bps. In the model with the
+55
 
 structural VAR, the increase in demand is followed by an increase in foreign interest rates.
 The response of foreign interest rates creates a new tension for domestic variables, as the real
@@ -5168,6 +5348,7 @@ sign of responses, especially for domestic economic activity. This is a conseque
 tension generated from the real exchange rate depreciation in the model with the structural
 VAR. Without the exchange rate depreciation, domestic interest rates do not show a signiﬁcant
 increase, allowing for the business cycle of the domestic economy closely follow the rest of the
+56
 
 world, with increases in GDP and consumption and a fall in unemployment rate.
 4.4
@@ -5237,6 +5418,7 @@ forces the model to give a signiﬁcant weight to the shock in order to match da
 Beyond the recovery after the Great Financial Crisis, between 2010 and 2012, the disaggrega-
 tion of demand shocks in the second panel also captures other periods where exogenous stimuli
 increased household consumption. In 2014, several government policies tried to stimulate credit
+57
 
 Figure 10: Shock Decomposition: Annual GDP – Deviation from Steady State
 2002Q1
@@ -5297,6 +5479,7 @@ the contractionary stance after a signiﬁcant change in economic policy in 2015
 between March and September 2008, while acknowledging that “a severe ﬁnancial crisis in the USA and, to
 a minor extent, in Europe, must be added to this adverse scenario”, according to the September 2008 MPC
 meeting’s minutes.
+58
 
 2016 political crisis. Labor market shocks pressure inﬂation in both periods when unemployment
 is high, at the beginning and at the very end of the sample, after 2014 (see ﬁgure 12), suggesting
@@ -5360,6 +5543,7 @@ before the 2002 elections. The lower panel also shows the increase in administer
 in 2015Q1, combined with an unexpected real exchange rate devaluation, consistent with the
 change in economic policy during that period. Markups of administered price remained negative
 between 2012 and 2014, quickly increasing at the beginning of 2015. Another episode worth
+59
 
 noting is the sequence of positive shocks in food prices that reduced freely-set prices between
 2017 and 2018.
@@ -5419,6 +5603,7 @@ low productivity beeing observed after 2016. Foreign shocks and monetary policy 
 small contribution in the decomposition. From the lower panel, of ﬁgure 12, it is worth noting
 that the labor supply shocks are dominated by the wage markup shocks among the labor market
 shocks. The relative stability of labor supply in the sample supports the small role of labor
+60
 
 supply shocks, especially compared to the high variance of unemployment rate.
 The shock decomposition of unemployment shows the importance of the Gal´ı, Smets and
@@ -5458,6 +5643,7 @@ data moments in a complex theoretical environment. From a practical perspective,
 also allowed for a better use of technological resources, like GPU computing, as it improved the
 possibilities of parallel implementations optimizing the estimation procedure.
 The model presented here is continually developed, with several possible improvements for
+61
 
 policy analysis. With respect to estimation, it is still a challenge to incorporate information
 related to the Covid-19 pandemic crisis. The usual linear-Gaussian framework for likelihood
@@ -5510,7 +5696,7 @@ t ) ˜WtNt
 5. Marginal Utility of Consumption for Optimizing Households
 ˜Λt = ZC
 t
-
+ 
 ˜CO
 t −κ
 ˜CO
@@ -5521,7 +5707,7 @@ t
 6. The Euler Equation for Optimizing Households
 ZC
 t
-
+ 
 ˜CO
 t −κ
 ˜CO
@@ -5534,7 +5720,7 @@ t+i
  ZZ
 t+1
 −σ
-
+ 
 ˜CO
 t+1 −κ
 ˜CO
@@ -5580,7 +5766,9 @@ RK
 t+1 + QK
 t+1(1 −δ)
 
+66
 
+1
 =
 QK
 t
@@ -5588,7 +5776,8 @@ QI
 t
 
 1 −ϑI
-
+2
+ 
 ZZ
 t ˜It
 ZI
@@ -5597,7 +5786,7 @@ t ˜It−1
 ss
 !2
 −ϑI
-
+ 
 ZZ
 t ˜It
 ZI
@@ -5620,7 +5809,7 @@ Et
 t+1
 −σ ˜Λt+1QK
 t+1ϑI
-
+ 
 ZZ
 t+1 ˜It+1
 ZI
@@ -5643,7 +5832,8 @@ t
 +
 
 1 −ϑI
-
+2
+ 
 ZZ
 t ˜It
 ZI
@@ -5748,7 +5938,7 @@ t−3
 ˜Wt =
 
 θW
-
+ 
 ΥW
 t
 ˜Wt−1
@@ -5766,11 +5956,12 @@ t
 1
 1−ϵW
 13. Wage Inﬂation
+67
 
 ΠW
 t
 =
-
+ 
 ˜Wt
 ˜Wt−1
 !
@@ -5786,7 +5977,7 @@ t
 ˜Wt
 !−ϵW
 + θW
-
+ 
 ΥW
 t
 ˜Wt−1
@@ -5836,7 +6027,7 @@ t
 t
  ϵD−1
 ϵD
-
+ 
 ZZ
 t ˜Y D
 t
@@ -5851,7 +6042,7 @@ t
 t
  ϵD−1
 ϵD
-
+ 
 ˜Y D
 t
 Nt −N
@@ -5868,7 +6059,7 @@ t
 α
 1−ϵD
 + (1 −α)
-
+ 
 ˜Wt
 1 −α
 !1−ϵD
@@ -5879,6 +6070,7 @@ t
 ZD
 t
 Firms - Importers
+68
 
 19. Non-Linear Phillips Curve
 SM 1
@@ -5977,7 +6169,7 @@ t
 vM
 t
 = (1 −θM)
-
+ 
 QM ⋆
 t
 QM
@@ -5998,6 +6190,7 @@ MtvM
 t
 Firms - Sectoral Intermediate Producers: Investment Good
 24. Real Marginal Cost
+69
 
 MCI
 t =
@@ -6006,7 +6199,7 @@ t =
  QD
 t
 1−ϵI + (1 −ϖI)
-
+ 
 QM
 I,t
 1 −ΓM
@@ -6031,7 +6224,7 @@ t
 ˜
 M I
 t =
-
+ 
 1 −ϖI
 1 −ΓM
 I,t
@@ -6071,7 +6264,8 @@ I,t )
 ΓM
 I,t = ϑM
 I
-
+2
+ 
  ZM
 I,t
 −
@@ -6091,7 +6285,7 @@ ss
 ΓM†
 I,t = ϑM
 I
-
+ 
  ZM
 I,t
 −
@@ -6191,6 +6385,7 @@ t
 t = ΠI
 t−1
 31. Sectoral Price Index
+70
 
 QI
 t =
@@ -6226,7 +6421,7 @@ t
 33. Price Dispersion
 vI
 t = (1 −θI)
-
+ 
 QI⋆
 t
 QI
@@ -6329,6 +6524,7 @@ t−1
 ΠC
 t
 39. Sectoral Index
+71
 
 QG
 t =
@@ -6355,7 +6551,7 @@ G
 40. Price Dispersion
 vG
 t = (1 −θG)
-
+ 
 QG⋆
 t
 QG
@@ -6381,7 +6577,7 @@ t
  QD
 t
 1−ϵCD + (1 −ϖCD)
-
+ 
 QM
 CD,t
 1 −ΓM
@@ -6409,7 +6605,7 @@ t
 M CD
 t
 =
-
+ 
 1 −ϖCD
 1 −ΓM
 CD,t
@@ -6528,6 +6724,7 @@ SF 1
 t+1
 
 
+72
 
 SF 2
 t = (QCD
@@ -6712,6 +6909,7 @@ A)
 ZA
 t
 53. Inﬂation for goods with administered prices
+73
 
 ΠA
 t = QA
@@ -6750,7 +6948,7 @@ t
 56. Price Dispersion
 vF
 t = (1 −θF )
-
+ 
 QF ⋆
 t
 QF
@@ -6768,7 +6966,7 @@ vF
 t−1
 vA
 t = (1 −θA)
-
+ 
 QA⋆
 t
 QA
@@ -6813,7 +7011,7 @@ t
  QD
 t
 1−ϵX + (1 −ϖX)
-
+ 
 QM
 X,t
 1 −ΓM
@@ -6839,7 +7037,7 @@ t
 M X
 t
 =
-
+ 
 1 −ϖX
 1 −ΓM
 X,t
@@ -6876,11 +7074,13 @@ t
 61. Adjustment Cost for Imports (ΓM
 X,t) and its ﬁrst derivative (ΓM†
 X,t)
+74
 
 ΓM
 X,t = ϑM
 X
-
+2
+ 
  ZM
 X,t
 −
@@ -6900,7 +7100,7 @@ ss
 ΓM†
 X,t = ϑM
 X
-
+ 
  ZM
 X,t
 −
@@ -7038,7 +7238,7 @@ t
 66. Price Dispersion
 vX
 t = (1 −θX)
-
+ 
 QX⋆
 t
 QX
@@ -7077,6 +7277,7 @@ t
 ) and its ﬁrst derivative (ΓM∗†
 t
 ) concerning foreign
+75
 
 production
 ΓM ∗
@@ -7129,7 +7330,7 @@ t−1
 C
 t Rnat
 t
-
+ 
 EtΠC
 t+1
 EtΠ
@@ -7228,6 +7429,7 @@ t
 = TtQY
 t eYt
 77. Lump-Sum Taxation
+76
 
 T Lump
 t
@@ -7346,7 +7548,7 @@ R∗
 t SB∗
 t
 =
-
+ 
 ˜Yt−1
 ΠY
 t ZZ
@@ -7364,6 +7566,7 @@ t
 + NXy
 t −L∗y
 t
+77
 
 85. Nominal GDP Identity
 QY
@@ -7449,6 +7652,7 @@ t , ZW
 t and ZP ∗
 t
 follow an ARMA(1,1) process.
+78
 
 B
 Steady State
@@ -7601,6 +7805,7 @@ ss = Π∗
 ss
 7. Calibrated GDP shares and sectoral import shares
 Based on the sample used for estimation, we compute the following ratios:
+79
 
 sC,
 sI,
@@ -7732,6 +7937,7 @@ X
 ϵP
 X −1MCX
 ss
+80
 
 QG
 ss =
@@ -7794,7 +8000,7 @@ ss
 ˜
 M I
 ss = (1 −ϖI)
-
+ 
 QM
 Iss
 MCIss
@@ -7804,7 +8010,7 @@ ss
 ˜
 M X
 ss = (1 −ϖX)
-
+ 
 QM
 Xss
 MCX
@@ -7843,6 +8049,7 @@ MCIss
 −ϵI
 ˜Y I
 ss
+81
 
 ˜Y D
 Gss = ˜Y G
@@ -7918,7 +8125,7 @@ ss
 αaux =
 
 
-
+ 
 QD
 ss ˜Y D
 ss
@@ -7971,6 +8178,7 @@ ss
 ⋆
 ss = ˜Wss and b
 Nss = Nss
+82
 
 19. Variables expressed as GDP ratios
 Tss = Sy
@@ -8054,7 +8262,7 @@ ss =
 ss
 (1 −ϖRT )
 ˜Λss =
-
+ 
 ˜CO
 ss −κ
 ˜CO
@@ -8078,6 +8286,7 @@ eCS
 t ˜Λss
 ZC
 ss
+83
 
 ψ = (1 −τ N
 ss) ˜Wss
@@ -8220,6 +8429,7 @@ ss
 h
 θF β (ZZ
 ss)1−σi
+84
 
 SA1
 ss =
@@ -8266,6 +8476,7 @@ ss
 h
 θXβ (ZZ
 ss)1−σi
+85
 
 C
 Data Treatment
@@ -8289,7 +8500,7 @@ Yt
 Yt−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8316,7 +8527,7 @@ Ct
 Ct−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8342,7 +8553,7 @@ It
 It−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8368,7 +8579,7 @@ Gt
 Gt−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8397,7 +8608,7 @@ Xt
 Xt−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8425,7 +8636,7 @@ Mt
 Mt−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
@@ -8475,14 +8686,14 @@ Wt
 Wt−1
 
 + log
-
+ 
 ZZ
 t
 ZZ
 ss
 !
 + log
-
+ 
 ΠC
 t
 ΠC
@@ -8571,6 +8782,8 @@ Inflation target
 (IT)
 CMN
 L-G
+(Continued on next page)
+86
 
 Table 6 (continued from previous page)
 Variable
@@ -8758,54 +8971,949 @@ Note: In column “Model representation”, “m.e.” is the representation for
 or real variables combining raw data with a deflator); “L” is the natural logarithm of an index or rate; “G” is the gap with respect to
 steady state value; “D” is the first difference of an index; “OHP” is the one-sided HP Filter; “HP” is the two-sided HP Filter; “S” is seasonal
 adjustment based on ARIMA X-12 procedure.
+87
 
 D
 Priors and Histogram of Posterior Distribution
 Figure 13: Prior and Posterior Distribution – 1
+5
+10
+15
+0.35
+0.4
+0.45
+0.5
+0
+1000
+2000
 Posterior Histogram
+0.2
+0.4
+0.6
+0.8
+1
+1
+2
+3
+0
+1000
+2000
+20
+40
+60
+80
+0.01
+0.02
+0.03
+0.04
+0
+1000
+20
+40
+60
+80
+100
+120
 Prior Density
+0.01
+0.02
+0.03
+0
+1000
+2
+4
+6
+0.4
+0.5
+0.6
+0.7
+0.8
+0
+1000
+2000
 Posterior Histogram
+0.2
+0.4
+2
+4
+6
+0
+1000
+2000
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
 Prior Density
+1
+2
+3
+0
+1000
+2000
+20
+40
 0.02 0.04 0.06 0.08 0.1 0.12 0.14
+0
+1000
 Posterior Histogram
+200
+400
+2
+4
+6
+8
+10-3
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
+1
+2
+3
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
 Prior Density
+1
+2
+3
+4
+0
+1000
+0.1
+0.2
+0.3
+10
+12
+14
+16
+0
+1000
+2000
 Posterior Histogram
+0.1
+0.2
+20
+25
+30
+0
+1000
+2000
+0.05
+0.1
+0.15
+20
+25
+30
+0
+1000
+2000
+0.5
+1
+1.5
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
 Posterior Histogram
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
+0.5
+1
+1.5
+2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.5
+1
+1.5
+2
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+1000
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
 Posterior Histogram
+2
+4
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+2
+4
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.5
+1
+1.5
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.5
+1
+1.5
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
 Posterior Histogram
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.1
+0.2
+0.3
+0.4
+0.5
+2
+4
+6
+0
+1000
+2000
+0.5
+1
+1.5
 Prior Density
+0.5
+1
+1.5
+2
+0
+1000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0.6
+0
+1000
 Posterior Histogram
+0.5
+1
+1.5
+2
+0.5
+1
+1.5
+0
+1000
+2000
+20
+40
+0.02
+0.04
+0.06
+0.08
+0
+1000
+2000
+0.02
+0.04
+0.06
+0.08
+0.1
 Prior Density
+10
+20
+30
+0
+1000
+2000
+2
+4
+6
+0.2
+0.4
+0.6
+0
+1000
+2000
 Posterior Histogram
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0.6
+0
+1000
+2
+4
+6
 Prior Density
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
+0.2
+0.4
+0.6
+0.8
+0
+1000
 Posterior Histogram
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
 Prior Density
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
 Posterior Histogram
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
 Prior Density
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
 Posterior Histogram
+2
+4
+6
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
 Prior Density
+0.2
+0.4
+0.6
+0
+1000
+88
 
 Figure 14: Prior and Posterior Distribution – 2
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0.6
+0
+1000
 Posterior Histogram
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2
+4
+6
 Prior Density
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+2000
 Posterior Histogram
+5
+10
+15
+20
+0.85
+0.9
+0.95
+0
+1000
+2000
+2
+4
+6
+0.2
+0.3
+0.4
+0.5
+0
+1000
+1.4
+1.6
+1.8
+0
+1000
+2000
+0.5
+1
+1.5
+0
+500
+1000
+1500
 Posterior Histogram
+0.5
+1
+1.5
+0
+500
+1000
+1500
+0.5
+0.6
+0.7
+0.8
+0
+1000
+2000
+0.8
+1
+1.2
+0
+1000
+2000
+3
+4
+5
+6
+0
+1000
+2000
 Posterior Histogram
+2
+2.5
+3
+0
+1000
+2000
+0.2
+0.25
+0.3
+0
+1000
+2000
+0.5
+1
+1.5
+0
+1000
+2000
+12
+14
+16
+18
+20
+22
+0
+500
+1000
+1500
 Posterior Histogram
+40
+60
+80
+0
+500
+1000
+1500
+1.5
+2
+2.5
+0
+1000
+2000
+40
+60
+80
+100
+120
+140
+0
+500
+1000
+2.5
+3
+3.5
+4
+0
+1000
 Posterior Histogram
+4
+6
+8
+10
+0
+2000
+0.5
+1
+1.5
+2
+0
+1000
+4
+5
+6
+7
+0
+1000
+30
+40
+50
+60
+70
+0
+500
+1000
 Posterior Histogram
+2
+4
+6
+0.5
+1
+1.5
+2
+0
+1000
+0.5
+1
+1.5
+2
+0.5
+1
+1.5
+2
+0
+1000
+2000
+0.2
+0.4
+0.6
 Prior Density
+5
+10
+15
+0
+1000
+2000
+0.1
+0.2
+0.3
+2
+4
+6
+8
+10
+0
+1000
+2000
 Posterior Histogram
+0.5
+1
+1.5
+2
+2.5
+1
+2
+3
+4
+5
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+0.2
+0.4
+0.6
+0.8
+1
+1.2
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
 Posterior Histogram
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+0.2
+0.4
+0.6
+0.8
+1
+1.2
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
 Posterior Histogram
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+1500
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+500
+1000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
 Posterior Histogram
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+2000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+0.2
+0.4
+0.6
+0.8
+0
+1000
+0.2
+0.4
+0.6
+0.8
+1
+1.2
 Prior Density
+0.2
+0.4
+0.6
+0.8
+0
+1000
+89
 
 E
 Computational details
@@ -8838,8 +9946,10 @@ the procedure executed by each core:
 Algorithm 1 Log-likelihood evaluation
 procedure LogLikelihood(P)
 ▷P is a d particles block
+for i ←1 to d do
 D(i) ←ComputeDecisionRules(P(i))
 end for
+for t ←1 to T do
 Loglikelihood(t) ←ComputeLogLikelihoodGPU(D, t)
 end for
 end procedure
@@ -8847,6 +9957,7 @@ In Algorithm 1, LogLikelihood has T log-likelihood evaluations for each particle
 31The last chunk may have size less than s.
 32All code is written using MATLAB Parallel Computing ToolboxTMavailable for MATLAB R
 ⃝.
+90
 
 over t gives the log-likelihood for each particle. The ﬁnal result is obtained combining the outputs
 of each core.
@@ -8872,3 +9983,4 @@ CPU 10 cores
 8,000
 GPU
 14.9x
+91

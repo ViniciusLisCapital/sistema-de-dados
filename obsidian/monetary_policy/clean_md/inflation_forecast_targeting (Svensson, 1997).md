@@ -56,6 +56,7 @@ and Tabellini (1993), but be relatively easier to implement. Since a low in‡at
 not distort the relative output/in‡ation variability, ‘in‡ation-target conservative’ goals (that is,
 1 See the papers in Leiderman and Svensson (1995) and Haldane (1995), as well as Ammer and Freeman (1995)
 and McCallum (1995), for discussion of and details on in‡ation targeting.
+1
 
 with a lower in‡ation target) for the central bank may lead to better equilibria than Rogo¤’s
 (1985) ‘weight conservative’ goals for the central bank (that is, with a higher weight on in‡ation
@@ -95,6 +96,7 @@ in‡ation.
 In practice, we use a forecasting horizon of two years.”
 See also Bowen (1995, p. 57): “The most
 appropriate guide to monetary policy [under in‡ation targeting] is the best obtainable forecast of the probability
+2
 
 this explicit simpli…es both implementation and monitoring of monetary policy. The central
 bank’s in‡ation forecast is indeed an ideal intermediate target: it is by de…nition the current
@@ -136,6 +138,7 @@ has shown, however, that targeting other forecasters’ forecasts is problematic
 their forecasting procedure the central bank’s feedback rule from their forecasts. Instability, multiple equilibria,
 or even non-existence of equilibria may result. These problems are avoided if the central bank targets its own
 structural forecast.
+3
 
 the in‡ation forecast is indeed an ideal intermediate target. Section 5 discusses the relation
 of in‡ation targeting to money targeting. Section 6 examines the role of output stabilization.
@@ -180,6 +183,7 @@ ern ‘principal-agent’ approach to central banking (for instance in the work 
 the ‘traditional’ approach (for instance in McCallum (1995) and Romer and Romer (1996b)); see Tabellini (1995)
 for discussion of these approaches. Therefore the model here does not include any source of discretionary in‡ation
 bias, although this can easily be added without a¤ecting the results.
+4
 
 The repo rate a¤ects output with a one-year lag, and hence in‡ation with a two-year lag, the
 control lag in the model. That the instrument a¤ects in‡ation with a longer lag than it a¤ects
@@ -227,6 +231,7 @@ the presumption is that the model would break down.
 8 Since the central bank does not have perfect control over in‡ation it is not meaningful to minimize the realized
 squared deviations, only the expected squared deviations (conditional upon the information available when the
 repo rate is set).
+5
 
 Since the repo rate a¤ects in‡ation with a two-year lag, it is practical to express ¼t+2 in
 terms of year t variables and t + 1 and t + 2 disturbances:
@@ -277,6 +282,7 @@ one-to-two-year forecast, I shall for simplicity call it the two-year forecast. 
 confused with the forecast of the average in‡ation rate between year t and year t + 2.) Thus,
 9 The two-year lag makes the result especially easy to represent. Svensson (1996b) discusses the case with a
 general distributed lag.
+6
 
 the two-year in‡ation forecast can be considered an explicit intermediate target.10 11
 It follows that the in‡ation targeting loss function (2.5) can be replaced by an intermediate
@@ -347,6 +353,7 @@ EtL(¼t+2)
 dit
 it . Brunner and Meltzer do not consider explicit lags in the
 transmission mechanism, nor do they consider explicit in‡ation targeting.
+7
 
 repo rate it¡¼t is increasing in the excess of current in‡ation over the in‡ation target, in current
 output, and in the current exogenous variable. The instrument depends on current in‡ation,
@@ -389,6 +396,7 @@ yt+1
 ®1
 °xt ¡ 1
 ®1
+²t ¡ ´t ¡ ®2
 ®1
 µt + ´t+1:
 (2.17)
@@ -396,6 +404,7 @@ To generalize from this example, in‡ation targeting implies a simple rule for 
 tation. The central bank’s in‡ation forecast for the horizon corresponding to the control lag (2
 12 See Broadbent (1996) for an insightful discussion of Taylor rules in relation to in‡ation targeting. See also
 the comment Svensson (1996a) on Taylor (1996a).
+8
 
 years in the example) becomes an intermediate target, and the instrument should hence be set
 so as to make the in‡ation forecast equal to the in‡ation target. Thus, if the in‡ation forecast is
@@ -428,6 +437,7 @@ described by (2.4) and (2.5), it will behave according to the optimal reaction f
 with or without monitoring by outsiders. Let me now consider a simple modi…cation of the
 setup which results in a need for outside monitoring.
 Consider the in‡ation target ¼¤ in (2.5) as the ‘o¢cial’ explicit in‡ation target, assigned
+9
 
 to the central bank by society. Suppose, however, that the central bank has its own implicit
 in‡ation target that may deviate from the one assigned by society. More speci…cally, assume
@@ -500,9 +510,11 @@ yt+1
 ®1
 °xt ¡ 1
 ®1
+²t ¡ ´t ¡ ®2
 ®1
 µt + ´t+1:
 (3.8)
+10
 
 Thus, if the central bank’s implicit in‡ation target deviates from the explicit one by zt in year
 t, the central bank will choose the repo rate so as to set its two-year in‡ation forecast above the
@@ -549,6 +561,7 @@ hence
 :
 13 Cf. Cukierman and Meltzer (1986) and Faust and Svensson (1996) for analysis of situations when the central
 bank preferences cannot be perfectly inferred but instead are estimated by the public with a Kalman …lter.
+11
 
 By intensive criticism, that is, a large ', the public can enforce that the central bank’s in‡ation
 forecast is close to the explicit in‡ation target.14
@@ -590,6 +603,7 @@ See Persson and Tabellini (1993) and Walsh (1995a) for examples of incentive sch
 induce the central bank to reveal the truth.
 16 See Goodfriend (1986) for a classic discussion of secrecy and central banking, and see King (1994) and
 Haldane (1996) for the role of transparency in UK in‡ation targeting.
+12
 
 for governments to create an independent body, separate from the central bank, that monitors
 monetary policy. This may be a possibility that has received insu¢cient attention in discussions
@@ -626,6 +640,7 @@ advantage is not data availability itself but rather that its sta¤ is better at
 which is consistent with the fact that Federal Reserve Board commits far more resources to forecasting than even
 the largest commercial forecasters. Whether the relative commitment of resources to forecasting is the same in
 other countries is an open question.
+13
 
 directly observed on the futures interest rate market (with due account of possible risk premia).18
 Thus, the central bank can compare its repo rate plan to the forward rate curve for systematic
@@ -659,6 +674,7 @@ control by the central bank than the goal, easier to observe by both the central
 public than the goal, and transparent so that central bank communication with the public and
 18 See for instance Svensson (1994), Söderlind and Svensson (1996) and various issues of Bank of England’s
 In‡ation Report for discussion and interpretation of yield curves for monetary policy purposes.
+14
 
 public understanding and prediction of monetary policy is facilitated (cf. Brunner and Meltzer
 (1967), Friedman (1990) and McCallum (1990)).
@@ -694,6 +710,7 @@ relevant to predicting in‡ation.
 The transparency of in‡ation forecast targeting is also likely to focus and motivate the work
 inside the central bank. It is likely to provide strong incentives to improve the central bank’s
 understanding and structural models of the economy, especially if the central bank chooses or is
+15
 
 required to make its model, analysis and forecast public. It helps to clarify for what the central
 bank can, and cannot, be accountable.
@@ -727,6 +744,7 @@ First-di¤erence (5.1), which gives
 ¹t+1 = ¼t+1 + yt+1 ¡ yt ¡ ·it + ·it¡1 + ºt+1 ¡ ºt;
 (5.2)
 19 See Friedman (1990, 1995) for a more general discussion of money growth targeting.
+16
 
 where ¹t+1 = mt+1 ¡ mt denotes (the) money growth (rate).
 Since the repo rate a¤ects money growth with a one-year lag, rewrite ¹t+1 in terms of year
@@ -799,6 +817,7 @@ and g3 = f3
 f5
 :
 (5.9)
+17
 
 It follows that we can interpret ¹¤
 t+1jt as a conditional one-year money growth target that
@@ -852,6 +871,7 @@ of in‡ation. Due to the persistence of both output and the exogenous variable,
 persistent deviations of both realized in‡ation and conditional in‡ation expectations from the
 in‡ation target. The equilibrium will be ine¢cient, since the intertemporal loss (2.5) will be
 higher.
+18
 
 Thus, although the sophisticated conditional money growth targeting (5.10) can achieve the
 same equilibrium as the optimal reaction function (2.13), it is less direct and less transparent. Its
@@ -888,6 +908,7 @@ the in‡ation target. This might be interpreted as a somewhat nontransparent at
 money growth target (5.8).
 21 See Persson and Tabellini (1996) for a comparision of in‡ation targeting, money growth targeting and
 exchange rate targeting for ‘ins’ and ‘outs’ of the EMU.
+19
 
 6 Output stabilization
 The above results are very straightforward when in‡ation targeting is interpreted as implying
@@ -942,6 +963,7 @@ in‡ation (or the price level) and output. See, Svensson (1996b) for further co
 and nominal GDP targeting.
 23 See Svensson (1996b) for discussion of the role of exogenous variables in in‡ation targeting with output
 stabilization.
+20
 
 In appendix B, it is shown that the …rst-order condition for minimizing (6.2) over the repo
 rate can be written
@@ -1013,6 +1035,7 @@ a gradual adjustment of the two-year in‡ation forecast towards the long-run in
 reduces output ‡uctuations. The higher the weight on output stabilization, the slower the ad-
 justment of the in‡ation forecast towards the long-run in‡ation target (the larger the coe¢cient
 c, see appendix B).
+21
 
 Since the one-year output forecast and the two-year in‡ation forecast ful…ll
 yt+1jt
@@ -1071,6 +1094,7 @@ from the in‡ation target in order to reduce the necessary instrument change, c
 discussion.
 Stevens and Debelle (1995) conduct very interesting simulations on an empirical model of the Australian
 economy, similar to the model (2.1) - (2.3) with a loss function like (6.1) where interest rate smoothing is added.
+22
 
 ¼¤ +c
 ³
@@ -1106,6 +1130,7 @@ the in‡ation target, due to uncertainty about, and imperfect control of, futur
 25 Since the optimal policy with positive weight on output stabilization is thus a steady leaning towards the
 long-run in‡ation target, it is very di¤erent from the so-called opportunistic approach to disin‡ation discussed in
 Orphanides and Wilcox (1996) and Rudebusch (1996).
+23
 
 indicates an anticipated ‘unavoidable’ variability of in‡ation. The bandwidth is proportional to
 the unconditional standard deviation of the sum of control and forecast errors, but not deviations
@@ -1140,6 +1165,7 @@ can then be chosen so as to achieve the optimal trade-o¤ between type I and typ
 Governor is …red (because of unanticipated and unobservable disturbances) even though he/she
 has chosen the (ex ante) appropriate policy, or the Governor is retained even though he/she has
 chosen an (ex ante) inappropriate policy).
+24
 
 If the central bank’s in‡ation forecast can be observed and veri…ed, it is better to make
 sanctions conditional upon a band for the in‡ation forecast rather than realized in‡ation, since
@@ -1172,6 +1198,7 @@ advances in the theory of monetary policy, I consider a commitment to a target r
 advantageous arrangement than a commitment to an instrument rule. A target rule focuses on
 26 Although Goodhart (1994) questions whether the monetary base is under su¢cient control of the central
 bank to qualify as an instrument.
+25
 
 the essential, that is, to achieve the goal, and allows more ‡exibility in …nding the corresponding
 reaction function. More speci…cally, with new information about structural relationships, such as
@@ -1204,6 +1231,7 @@ The public can monitor and evaluate in‡ation targeting by observing and scruti
 monetary authority’s in‡ation forecast, in the favorable situation when the monetary authority
 reveals the details of its forecast. The public can also use in‡ation forecasts of other forecasters’
 forecasts for this purpose, especially if the monetary authority keeps its forecast secret to some
+26
 
 extent. A healthy competition is likely to arise between the monetary authority and outside
 professional or academic forecasters with regard to the quality of the analysis and forecasts.
@@ -1237,6 +1265,7 @@ of the economy and its control of in‡ation, especially if the monetary authori
 obliged to reveal its model and analysis in detail to the public.27
 Generally I …nd it unlikely that monetary authorities have much private information, relative
 27 See Svensson (1996b) for a discussion of in‡ation targeting under model uncertainty.
+27
 
 to sophisticated outside observers, about the state of the economy and the behavior of the
 economy, but that their private information mostly concerns their own implicit goals and their
@@ -1292,6 +1321,7 @@ X
 ±¿¡t (¼¿ ¡ ¼¤)2 ;
 28 See Romer and Romer (1996a) for an example of the former, and Persson and Tabellini (1993) and Walsh
 (1995a) for examples of the latter.
+28
 
 which is
 Et
@@ -1354,6 +1384,7 @@ where the coe¢cients k0 and k remain to be determined. The …rst-order conditi
 ³
 ¼t+1jt ¡ ¼¤´
 = 0;
+29
 
 where I have used (B.3). This can be written
 ¼t+1jt ¡ ¼¤ = ¡
@@ -1408,6 +1439,7 @@ k = 1 +
 1k:
 The right-hand side is equal to unity for k = 0 and increases towards 1 + ¸
 ®2
+1 for k ! 1. We
 realize that there is a unique positive solution which ful…lls k ¸ 1. It can be solved analytically:
 k2 ¡
 µ
@@ -1496,6 +1528,7 @@ t
 C
 A ¸ 1:
 (B.6)
+30
 
 B.2 Two-year control lag for in‡ation
 After these preliminaries, consider the problem
@@ -1589,6 +1622,7 @@ yt
 yt;
 where I have used
 ¼t+2jt = ¼t + ®1(1 + ¯1)yt ¡ ®1¯2 (it ¡ ¼t) ;
+31
 
 and where k will obey (B.6).
 Since by (6.4) we have
@@ -1619,6 +1653,7 @@ z = k
 2
 2
 4 1
+¸ ¡ 1 ¡ ±
 ±®2
 1
 +
@@ -1740,3 +1775,4 @@ r³
 > 0:
 It follows that c increases monotonically from zero towards one when ¸ goes from zero to
 in…nity.
+32

@@ -75,6 +75,7 @@ way to make the interest rate more responsive in the very short term. Such
 generalizations are an important task for future research.
 However, these modifications would make the policy rule more complex
 and more difficult to understand. Even with many such modifications, it
+196
 
 is difficult to see how such algebraic policy rules could be sufficiently en-
 compassing. For example, interpreting whether a rise in the price level is
@@ -117,6 +118,7 @@ much like that advocated in recent research. This policy rule also describes
 recent Fed policy surprisingly accurately. I also discuss two case studies-
 German unification and the 1990 oil-price shock-that had bearing on the
 operation of monetary policy in recent years.
+197
 
 1. Semantic issues
 There is considerable agreement among economists that a policy rule need
@@ -159,6 +161,7 @@ As argued above, the term “policy rule” need not necessarily mean either
 a fixed setting for the policy instruments or a mechanical formula. Saying
 so, however, does not change common usage. Among most policymakers, the
 term “policy rule” connotes either a fixed setting for the policy instruments
+198
 
 or a simplistic mechanical procedure. An alternative terminology would help
 focus attenion on the concept of a policy rule as defined here. For example,
@@ -200,6 +203,7 @@ design of fiscal policy rules is an important element of macroeconomic policy
 analysis despite problems with discretionary fiscal policy. Automatic stabi-
 lizers remain an important part of macroeconomic policy and help mitigate
 recessions. However, automatic stabilizers are affected by goals that go well
+199
 
 beyond macroeconomic policy. For example, changes in the progressivity
 of the tax system affect the responsiveness of the automatic stabilizers to
@@ -243,6 +247,7 @@ from more theoretical research, but the approach does seem appropriate for
 estimating the long-term effects of different policy regimes.
 The approach uses an empirically estimated distribution of shocks. The-
 oretical studies are useful for highlighting key parameters that affect the
+200
 
 answers. For example, in a standard nonrational expectations model, a fixed
 exchange-rate system will work better if country-specific shocks to the liq-
@@ -286,6 +291,7 @@ In addition to finding that it is preferable for the central banks to set
 interest rates based on economic conditions in their own country (paying
 little attention to exchange rates), the results show that placing a positive
 weight on both the price level and real output in the interest-rate rule is
+201
 
 preferable in most countries. Placing some weight on real output works
 better than a simple price rule, but it is not clear whether the weight on
@@ -324,6 +330,7 @@ fits the actual policy performance during the last few years remarkably well.
 Figure 1 shows the actual path for the federal funds rate and the path implied
 by the example policy rule during the 1987-1992 period. There is a significant
 deviation in 1987 when the Fed reacted to the crash in the stock market by
+202
 
 easing interest rates. In this sense the Fed policy has been conducted as
 if the Fed had been following a policy rule much like the one called for by
@@ -363,6 +370,7 @@ that the budget deficit should be balanced at full employment. Analogous
 to a change in the response coefficient would be a recognition that an in-
 crease in the response of the automatic stabilizers to economic conditions
 would be desirable. The latter might entail a change in the unemployment
+203
 
 Percent
 10-r
@@ -370,18 +378,21 @@ Percent
 2%. , , / , ) , , , , , . . ( r
 1087 1988 108Q lQS0 1991 1092
 Figure 1. Federal funds rate and example policy rule.
+204
 
 of
 Billions
 la87 dollars
 i+2 percent growth trend
 Figure 2. Rsrl GDP and 2.2 percent growth trend.
+205
 
 Percent
 5.Oa
 2.0, , , . , ( . , ( ( , ?
 1987 la88 lQ8Q lOQ0 1991 1962
 PIlure 3. Inflation during previous 4 quarters (GDP deIIator).
+206
 
 compensation system that determines at what unemployment rate long-term
 unemployment benefits are automatically paid.
@@ -425,6 +436,7 @@ commitments without significant losses.
 In my view there are many other examples of policy issues that can be
 usefully interpreted as transitions from one policy rule to another. In prac-
 tice, however, there is little distinction between such transition issues and
+207
 
 what appears to be pure discretion. To highlight the distinction, I examined
 two transition problems more explicitly in Taylor (1993): (1) the transition
@@ -505,6 +517,7 @@ to state targets for inflation. If money velocity were stable, then, given an
 estimate of potential output growth, money targets would imply a target
 for the price level; given velocity and a real output target, the target price
 level would obviously fall out algebraically from the money supply target.
+209
 
 Even though the 1980s have shown that money velocity is not stable in the
 short run, the long-run stability of the velocity of some monetary measures
@@ -547,6 +560,7 @@ put in place to estimate the economic impacts. Task forces were assembled
 and many models-both traditional and forward-looking-were simulated to
 obtain estimates. The Council of Economic Advisers published a consensus
 estimate that a one-year temporary increase in oil prices of 50 percent could
+210
 
 temporarily raise the overall price level (GDP deflator) by about 1 percent
 and with a longer lag, cause real output to fall by about the same amount.
@@ -590,6 +604,7 @@ mitigate the impact of the oil-price shock on the economy. Some international
 policy officials raised the possibility of over-riding the automatic stabilizers-
 offsetting them by increasing taxes or reducing expenditures elsewhere-but
 others raised strong opposition to such over-rides. Surprisingly, therefore,
+211
 
 there was less consensus about continuing to keep “systematic” fiscal policies
 in place than there was about monetary policy.
@@ -632,6 +647,7 @@ would increase the demand for capital in Germany and lead to an increase
 in the government budget deficit in Germany. Greater investment demand
 would be expected to raise real interest rates in Germany later in 1990 and
 in 1991, and with forward-looking expectations raise long-term interest rates
+212
 
 immediately. In fact, the anticipated increase in demand for investment and
 reduction in national saving occurred in 1990 as the unification took place.
@@ -662,3 +678,4 @@ transition, and the operation of policy rules, and actually using specific rules
 or their general features in policy decisions are some of the ideas considered.
 Two case studies and a hypothetical policy rule illustrated how the ideas
 could work in practice.
+213

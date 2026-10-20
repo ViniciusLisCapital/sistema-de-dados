@@ -36,6 +36,7 @@ Finally, section 2.5 analyzes a version of the model with money in the
 utility function, and discusses the extent to which the conclusions drawn
 from the earlier analysis need to be modiﬁed under that assumption.
 
+18
 CHAPTER 2
 2.1 HOUSEHOLDS
 The economy is assumed to be inhabited by a large number of identical
@@ -86,6 +87,7 @@ employed, assuming a “large” household and ignoring integer constraints. In 
 follows I use the term “employment” interchangeably as “number of individuals employed”
 or “number of work hours employed.”
 
+A CLASSICAL MONETARY MODEL
 19
 take as given the price of goods and bonds, as well as the wage and
 dividends.
@@ -141,6 +143,7 @@ Uc,tdCt + Un,tdNt = 0
 markets, as the constraint that guarantees that debt can be repaid at any point in time by
 selling claims to future income.
 
+20
 CHAPTER 2
 for any pair (dCt, dNt) satisfying
 PtdCt = WtdNt
@@ -183,14 +186,14 @@ t
 −N1+ϕ
 t
 1+ϕ
-
+	
 Zt
 for σ ̸= 1
 
 log Ct −N1+ϕ
 t
 1+ϕ
-
+	
 Zt
 for σ = 1
 where σ
@@ -200,6 +203,7 @@ the utility of consumption and the disutility of labor. The analysis is
 debt, guarantee that (6) is always satisﬁed in equilibrium, since Bt = 0 for all t. That
 observation allows us to ignore that condition in much of what follows.
 
+A CLASSICAL MONETARY MODEL
 21
 considerably simpliﬁed by two properties of the above utility function:
 (i) separability, that is, Ucn,t = 0, and (ii) the implied constancy of the
@@ -233,6 +237,7 @@ Ct
  Zt+1
 Zt
 
+ 
  Pt
 Pt+1
 
@@ -257,6 +262,7 @@ ct = Et{ct+1} −1
 σ (1 −ρz)zt
 (10)
 
+22
 CHAPTER 2
 where it ≡−log Qt, ρ ≡−log β and πt+1 ≡pt+1 −pt is the rate of
 inﬂation between t and t + 1 (having deﬁned pt ≡log Pt ). Notice that it
@@ -294,6 +300,7 @@ rate is deﬁned here as it ≡log It. Thus, it is a monotonic functions of the 
 and approximately equal to the latter for values close to zero.
 5 Note that ρ ≡−log β ≃β−1 −1, which is the usual deﬁnition of the discount rate.
 
+A CLASSICAL MONETARY MODEL
 23
 Maximization of (13) subject to (12) yields the optimality condition
 Wt
@@ -344,6 +351,7 @@ yt+1}
 = ρ + (1 −ρz)zt −σ(1 −ρa)ψyaat
 (20)
 
+24
 CHAPTER 2
 Finally, the equilibrium real wage, ωt ≡wt −pt, is given by
 ωt = at −αnt + log(1 −α)
@@ -387,6 +395,7 @@ Throughout use is made of the Fisherian equation
 it = Et{πt+1} + rt
 (22)
 
+A CLASSICAL MONETARY MODEL
 25
 which implies that the nominal rate adjusts one-for-one with expected
 inﬂation, given a real interest rate that is determined exclusively by real
@@ -425,6 +434,7 @@ the implicit long-run inﬂation target) associated with the rule above.
 6 Note that in the particular case of the rule (23) considered here, the “usual” policy
 consists in keeping the interest rate constant at level i.
 
+26
 CHAPTER 2
 Using (22), write
 Et{πt+1} = it −rt
@@ -459,6 +469,7 @@ where φπ ≥0 is a coefﬁcient determining the strength of the endogenous
 response of monetary policy and {vt} is an exogenous monetary policy
 shifter, as deﬁned above.
 
+A CLASSICAL MONETARY MODEL
 27
 Combining the previous rule with the Fisherian equation (22) yields
 φπ πt = Et{πt+1} + rt −vt
@@ -523,6 +534,7 @@ t = −
 1
 φπ−ρv ), and no effect on output or any other real variable.
 
+28
 CHAPTER 2
 On the other hand, if φπ < 1, the forward solution (25) does not
 converge. Instead, the stationary solution to (24) takes the form
@@ -565,6 +577,7 @@ t is a “pure sunspot,”
 i.e., a martingale-difference process orthogonal to all fundamental shocks. Thus, the
 response of inﬂation (and, as result, of any nominal variable) to any shock is indeterminate.
 
+A CLASSICAL MONETARY MODEL
 29
 interest rate in (22), the following difference equation for the price level
 can be derived
@@ -575,6 +588,7 @@ pt =
 
 Et{pt+1} +
 
+1
 1 + η
 
 mt + ut
@@ -652,6 +666,7 @@ Et{
 mt+1} + ut
 which can be solved forward to yield (29).
 
+30
 CHAPTER 2
 For concreteness, consider the case in which money growth follows an
 AR(1) process
@@ -698,6 +713,7 @@ stabilizing prices in the face of the same shocks.
 The previous result, which is clearly extreme and empirically unap-
 pealing, can be overcome once versions of the classical monetary model
 
+A CLASSICAL MONETARY MODEL
 31
 are considered in which a motive to keep part of households’ wealth in
 the form of monetary assets is introduced explicitly. Section 2.5 discusses
@@ -739,6 +755,7 @@ utility function.
 9 Readers not interested in this extension may skip this section and proceed to section
 2.6 without any loss of continuity.
 
+32
 CHAPTER 2
 The introduction of money in the utility function requires modifying
 the representative household’s problem in two ways. First, preferences
@@ -802,6 +819,7 @@ where Um,t ≡
 ∂Ut
 ∂(Mt/Pt) > 0.
 
+A CLASSICAL MONETARY MODEL
 33
 Again, in order to derive that optimality condition a simple variational
 argument can be used. Suppose that a household following an optimal
@@ -858,6 +876,7 @@ that the equilibrium values for output, employment, the real rate, and
 the real wage can be determined by following the same steps as in the
 previous section, without any reference to monetary policy.
 
+34
 CHAPTER 2
 The introduction of money in the utility function allows a money
 demand equation to be derived from the household’s optimal behavior.
@@ -913,6 +932,7 @@ t
 t
 1 + ϕ
 
+A CLASSICAL MONETARY MODEL
 35
 where Xt is a composite index of consumption and real balances
 deﬁned by
@@ -988,6 +1008,7 @@ Pt
 ϑ
 1 −ϑ
 
+ 1
 ν
 (39)
 Notice that in the particular case in which the intertemporal and
@@ -998,6 +1019,7 @@ derived for that case and discussed in section 2.5.1.
 In the general case, however, both the labor supply equation (37) and
 the Euler equation (38) depend on the level of real balances through
 
+36
 CHAPTER 2
 variable Xt. The level of real balances depends, in turn, on the nominal
 interest rate, as implied by (39).10 Those features imply that monetary
@@ -1049,6 +1071,7 @@ respect to consumption, independently of the values of ν and σ.
 11 This is largely for notational simplicity. It is straightforward to extend the analysis to
 a neighborhood of a nonzero inﬂation steady state.
 
+A CLASSICAL MONETARY MODEL
 37
 χ =
 km(1−β)
@@ -1101,6 +1124,7 @@ level of output it is useful to get a sense of the magnitude of the interest
 rate multiplier ψyi. With that purpose, and in a way consistent with the
 baseline calibration that will be introduced in chapter 3, the settings
 
+38
 CHAPTER 2
 σ = 1, ϕ = 5, and α = 1/4 are chosen and taken to be “empirically
 plausible.” Using the deﬁnition of ϖ, and the fact that ν = 1
@@ -1146,6 +1170,7 @@ the extent that the policy tightening is associated with a persistent decline
 in money supply growth, as found in the data.
 12 This is the approach followed in Woodford (2003, chap. 2).
 
+A CLASSICAL MONETARY MODEL
 39
 First, note that the corresponding log-linear approximation to (38) is
 given by
@@ -1204,6 +1229,7 @@ cally in response to an exogenous shift in monetary policy, to the extent
 that the latter has an effect on output (i.e., if ϖ ̸= 0). The reason is
 that the resulting change in employment is a consequence of a shift in
 
+40
 CHAPTER 2
 the labor supply schedule, moving along a stable labor demand. That
 prediction is also in conﬂict with the empirical evidence in Christiano,
@@ -1248,6 +1274,7 @@ Um,t = 0
 Condition (49) requires that the marginal rate of substitution between
 employment and consumption be equated to the marginal product of
 
+A CLASSICAL MONETARY MODEL
 41
 labor. Condition (50) equates the marginal utility of real balances to the
 “social” marginal cost of producing real balances, which is implicitly
@@ -1290,6 +1317,7 @@ interest rate rule of the form it = ρ + π + φπ(πt −π), with φπ ≥0, t
 locally unique equilibrium is given by φπ > 1 (see exercise 6 below). Note that the rule
 analyzed in the text corresponds to the particular case π = −ρ and φπ = 0.
 
+42
 CHAPTER 2
 Even though that indeterminacy should not have any welfare con-
 sequences (because consumption, employment, and real balances are
@@ -1325,6 +1353,7 @@ of return by alternative assets that have identical risk characteristics:
 they assume that real balances either (i) generate (indirect) utility to
 households or (ii) provide some “transaction services” which render
 
+A CLASSICAL MONETARY MODEL
 43
 them necessary—or, at least, useful—when purchasing goods.14 The ﬁrst
 approach can often be viewed as a reduced form of the second (exercises
@@ -1369,6 +1398,7 @@ money as a store of value, i.e., as a way of transferring resources intertempora
 absence of other services or dividends associated with money, the latter can be viewed as a
 pure bubble under this approach. See, e.g., Samuelson (1958).
 
+44
 CHAPTER 2
 The analysis of the form of the optimal monetary policy in a classical
 economy goes back to Friedman (1969), where a case is made for a policy
@@ -1418,6 +1448,7 @@ the log-linearized Euler equation
 ct = Et{ct+1} −1
 σ (it −Et{πt+1} −ρ −(1 −ρx)xt)
 
+A CLASSICAL MONETARY MODEL
 45
 EXERCISES
 2.1. Optimality conditions under nonseparable leisure
@@ -1458,6 +1489,7 @@ i. Consider the interest rate rule
 it = ρ + π∗+ φp(pt −p∗
 t )
 
+A CLASSICAL MONETARY MODEL
 47
 where φp > 0 and p∗
 t = p∗
@@ -1500,6 +1532,7 @@ t = ρ + φππt
 b. Rule #2: Moving average inﬂation targeting
 it = ρ + φππt
 
+48
 CHAPTER 2
 where
 πt = (1 −δ)
@@ -1552,6 +1585,7 @@ Pt , Nt) subject to the sequence of budget con-
 straints
 PtCt + Mt + QtBt ≤Mt−1 + Bt−1 + WtNt + Dt
 
+A CLASSICAL MONETARY MODEL
 49
 Assume a period utility given by
 U
@@ -1612,6 +1646,7 @@ tions (43), (47), and the simple interest rate rule
 it = ρ + φππt
 Show that the equilibrium is locally unique if and only if φπ > 1.
 
+50
 CHAPTER 2
 2.7. A shopping time model
 Assume that the transactions technology is such that consuming
@@ -1638,7 +1673,7 @@ V(Ct, Lt) = log Ct + χ log Lt and S
 
 Ct, Mt
 Pt
-
+	
 = Avt + B/vt −
 2
 √
@@ -1667,6 +1702,7 @@ Assume that the utility of the representative household is given by
 V(C1t, C2t, Nt)
 (54)
 
+A CLASSICAL MONETARY MODEL
 51
 where C1t denotes consumption of a “cash good” (i.e., a good
 that requires cash in order to be purchased), C2t is consumption

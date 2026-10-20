@@ -25,6 +25,10 @@ If the price level is stable, no firm adjusts its price even when it can, so the
 |---|---|
 | [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]] | Names it: with an efficient natural allocation, optimal policy sets inflation and the output gap to zero at all times, and price stability delivers efficient output |
 | [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] | Shows what breaks it: the tradeoff "emerges only if cost push inflation is present" (Result 1), which is why optimal inflation targeting is gradual |
+| [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] | Treats the case where it fails: a time-varying gap between natural and efficient output enters the NKPC as a cost-push shock, and optimal policy under discretion and commitment trades inflation against the output gap |
+| [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] | Fails in general with sticky wages and prices (zero price and wage inflation fix the real wage), but obtains for composite inflation in a special parameter case and under demand shocks |
+| [[monetary_policy/synthesis/open_economy_monetary_policy_ch8 (Gali, 2015)]] | Open-economy version: with σ = η = 1, no preference shocks and a suitable subsidy, stabilizing domestic inflation closes the output gap, so strict domestic inflation targeting is optimal |
+| [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] | The original small open economy result: with σ = η = 1 and an employment subsidy offsetting market power and the terms-of-trade incentive, domestic inflation targeting replicates the efficient allocation; CPI targeting and a peg lose welfare |
 
 ## BRL / application to the current analysis
 
@@ -37,3 +41,7 @@ The sources linked here say nothing about Brazil yet.
 - [[inflation_targeting]] — under the coincidence strict targeting is optimal; without it, targeting is gradual
 - [[monetary_policy/synthesis/monetary_policy_design_nk_ch4 (Gali, 2015)]] — statement and intuition in the basic NK model
 - [[monetary_policy/synthesis/science_of_monetary_policy (Clarida, Gali & Gertler, 1999)]] — the cost-push shock as the source of the policy tradeoff
+- [[monetary_policy/synthesis/discretion_vs_commitment_ch5 (Gali, 2015)]] — the chapter's starting point: without the coincidence the central bank faces a tradeoff, solved under discretion and commitment
+- [[monetary_policy/synthesis/sticky_wages_prices_ch6 (Gali, 2015)]] — where the coincidence survives with sticky wages: composite inflation, and demand shocks
+- [[monetary_policy/synthesis/open_economy_monetary_policy_ch8 (Gali, 2015)]] — the open-economy divine coincidence and the conditions it rests on
+- [[monetary_policy/synthesis/nk_small_open_economy (Gali & Monacelli, 2005)]] — domestic inflation targeting as the optimal policy of a small open economy in the special case, and the welfare cost of CPI targeting and a peg

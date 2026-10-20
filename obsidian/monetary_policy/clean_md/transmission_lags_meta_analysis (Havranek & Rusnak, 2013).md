@@ -27,9 +27,13 @@ tral Banking for comments on previous versions of the manuscript. Tomas
 Havranek acknowledges support from the Czech Science Foundation (grant
 #P402/12/G097). Marek Rusnak acknowledges support from the Grant Agency
 of Charles University (grant #267011). An online appendix with data, R
+and Stata code, and a list of excluded studies is available at http://meta-
 analysis.cz/lags/index.html. The views expressed here are ours and not necessar-
 ily those of the Czech National Bank. Corresponding author: Tomas Havranek,
+tomas.havranek@cnb.cz or tomas.havranek@ies-prague.org.
+39
 
+40
 International Journal of Central Banking
 December 2013
 1.
@@ -114,6 +118,8 @@ transmission lags. Our results suggest that researchers who use
 monthly data instead of quarterly data report systematically faster
 transmission.
 
+42
+International Journal of Central Banking
 December 2013
 The remainder of the paper is structured as follows. Section 2
 presents descriptive evidence concerning the diﬀerences in transmis-
@@ -155,6 +161,7 @@ corresponding number of months passed since the monetary con-
 traction as the transmission lag. In contrast, the right-hand panel
 shows a strictly decreasing impulse response: prices neither stabilize
 
+Transmission Lags of Monetary Policy
 43
 Table 1. List of Primary Studies
 Andries (2008)
@@ -229,6 +236,8 @@ horizon). In this case the response of the price level becomes the
 strongest in the last reported horizon, so we label the last horizon
 as the transmission lag.
 
+44
+International Journal of Central Banking
 December 2013
 Figure 1. Stylized Impulse Responses
 −2
@@ -287,6 +296,7 @@ the average reaches 49.1 months for transmission lags taken from
 strictly decreasing impulse responses and 18.2 months for hump-
 shaped impulse responses. In other words, the decrease in prices
 
+Transmission Lags of Monetary Policy
 45
 Figure 2. Kernel Density of the Estimated
 Transmission Lags
@@ -345,6 +355,8 @@ age, after two years and three quarters. Our data also suggest that
 the average magnitude of the maximum decrease in prices following
 a 1-percentage-point increase in the policy rate is 0.9 percent (for a
 
+46
+International Journal of Central Banking
 December 2013
 Table 3. Transmission Lags Diﬀer across Countries
 Economy
@@ -395,6 +407,7 @@ lic, for example, has been considered a developed economy by the World Bank
 since 2006. We include the country in the second group because pre-2006 time
 series constitute the bulk of the data used by studies in our sample.
 
+Transmission Lags of Monetary Policy
 47
 Italy: the corresponding transmission lag reaches 26.6 months. The
 slowest transmission is found for Japan and France, with a trans-
@@ -434,6 +447,8 @@ these variables are Penn World Tables, the World Bank’s World
 Development Indicators, and the International Monetary Fund’s
 International Financial Statistics; the central bank independence
 
+48
+International Journal of Central Banking
 December 2013
 index is extracted from Arnone et al. (2009). We also include vari-
 ables that control for data, methodology, and publication charac-
@@ -502,6 +517,7 @@ The average year of the data used
 7.779
 (continued)
 
+Transmission Lags of Monetary Policy
 49
 Table 4. (Continued)
 Variable
@@ -595,7 +611,10 @@ Sign Restrictions
 employed.
 0.152
 0.359
+(continued)
 
+50
+International Journal of Central Banking
 December 2013
 Table 4. (Continued)
 Variable
@@ -663,6 +682,7 @@ Doppelhofer, and Miller 2004; Durlauf, Kourtellos, and Tan 2008;
 Feldkircher and Zeugner 2009; Eicher, Papageorgiou, and Raftery
 2011). Recently, BMA has been used to address other questions as
 
+Transmission Lags of Monetary Policy
 51
 well (see Moral-Benito 2011 for a survey). The idea of BMA is to
 go through all possible combinations of regressors and weight them
@@ -705,6 +725,8 @@ bottom of the ﬁgure do not matter much.
 The color (shading in the print version of this paper) of the
 cell corresponding to each variable included in a model represents
 
+52
+International Journal of Central Banking
 December 2013
 Figure 3. Bayesian Model Averaging, Model Inclusion
 Notes: Response variable: transmission lag (the number of months to the maximum decrease in prices taken from the impulse
@@ -714,6 +736,7 @@ variable is included and the estimated sign is negative. No color = the variable
 axis measures cumulative posterior model probabilities. Only the 5,000 models with the highest posterior model probabilities
 are shown.
 
+Transmission Lags of Monetary Policy
 53
 the estimated sign of the regression parameter. Blue (darker in
 grayscale) denotes a positive sign, and red (lighter in grayscale)
@@ -754,6 +777,8 @@ we deﬁne an ideal study with “best-practice” methodology and max-
 imum publication characteristics (for example, the impact factor and
 the number of citations). Then we plug the chosen values of the
 
+54
+International Journal of Central Banking
 December 2013
 Table 5. Why Do Transmission Lags Vary?
 Posterior
@@ -893,7 +918,9 @@ Sign Restrictions
 0.954
 2.232
 0.0177
+(continued)
 
+Transmission Lags of Monetary Policy
 55
 Table 5. (Continued)
 Posterior
@@ -975,6 +1002,8 @@ Restrictions; FAVAR and SVAR are set to zero), more citations of
 the study (Study Citations), and a higher impact factor (Impact).
 All other variables are set to their sample means.
 
+56
+International Journal of Central Banking
 December 2013
 The average transmission lag implied by our deﬁnition of the
 ideal study is 29.2 months, which is less than the simple average
@@ -1014,6 +1043,7 @@ exhibit shorter transmission lags than some post-transition countries
 result. First, compared with table 3, now we only have approximately
 half the number of observations, and for some countries we are even
 
+Transmission Lags of Monetary Policy
 57
 Table 6. Transmission Lags Diﬀer across Countries
 (hump-shaped impulse responses)
@@ -1064,6 +1094,8 @@ diﬀerences in transmission lags.
 In our baseline model from the previous section we combine
 data from hump-shaped and strictly decreasing impulse response
 
+58
+International Journal of Central Banking
 December 2013
 Table 7. Transmission Lags Diﬀer across Countries
 (responses not showing the price puzzle)
@@ -1114,6 +1146,7 @@ method variables seem to be important. The use of other measures
 than GDP, the output gap, or industrial production as a proxy for
 economic activity is associated with slower reported transmission.
 
+Transmission Lags of Monetary Policy
 59
 Figure 4. Bayesian Model Averaging, Model Inclusion (hump-shaped impulse responses)
 Notes: Response variable: transmission lag (the number of months to the maximum decrease in prices taken from the impulse
@@ -1123,6 +1156,8 @@ the variable is included and the estimated sign is positive. Red color (lighter 
 estimated sign is negative. No color = the variable is not included in the model. The horizontal axis measures cumulative
 posterior model probabilities. Only the 5,000 models with the highest posterior model probabilities are shown.
 
+60
+International Journal of Central Banking
 December 2013
 The choice to represent prices by the GDP deﬂator instead of the
 consumer price index on average translates into longer transmis-
@@ -1163,6 +1198,7 @@ variables. The variable Strictly Decreasing, which was crucial for
 the baseline BMA estimation, is omitted from the present analysis
 because it deﬁnes the censoring process.
 
+Transmission Lags of Monetary Policy
 61
 Table 8. Censored Regression, Speciﬁc Model
 Response Variable: Transmission Lag
@@ -1223,6 +1259,8 @@ variables, together with central bank independence and trade open-
 ness. According to this speciﬁcation, monetary transmission is faster
 in countries that are more open to international trade and that have
 
+62
+International Journal of Central Banking
 December 2013
 Figure 5. Bayesian Model Averaging, Model Inclusion (time to –0.1 percent
 decrease in prices)
@@ -1233,6 +1271,7 @@ the variable is included and the estimated sign is negative. No color = the vari
 axis measures cumulative posterior model probabilities. Only the 5,000 models with the highest posterior model probabilities
 are shown.
 
+Transmission Lags of Monetary Policy
 63
 a more independent central bank; these results may point at the
 importance of the exchange rate and expectation channels of mon-
@@ -1274,6 +1313,8 @@ may slow down as the ﬁnancial system of emerging countries
 develops, since ﬁnancial innovations allow banks to protect better
 against surprise shocks in monetary policy.
 
+64
+International Journal of Central Banking
 December 2013
 Appendix 1. Diagnostics of Bayesian Model Averaging
 Table 9. Summary of BMA Estimation (baseline model)
@@ -1340,6 +1381,7 @@ Index of Models
 PMP (MCMC)
 PMP (Exact)
 
+Transmission Lags of Monetary Policy
 65
 Table 10. Summary of BMA Estimation (hump-shaped
 impulse responses)
@@ -1403,7 +1445,11 @@ Prior
 Posterior Model Probabilities
 (Corr: 0.9997)
 Index of Models
+PMP (MCMC)
+PMP (Exact)
 
+66
+International Journal of Central Banking
 December 2013
 Table 11. Summary of BMA Estimation (time to
 −0.1 percent decrease in prices)
@@ -1468,7 +1514,10 @@ Prior
 Posterior Model Probabilities
 (Corr: 0.9999)
 Index of Models
+PMP (MCMC)
+PMP (Exact)
 
+Transmission Lags of Monetary Policy
 67
 Appendix 2. Results of Censored Regression
 Table 12. Censored Regression, General Model
@@ -1553,7 +1602,10 @@ SVAR
 Sign Restrictions
 −3.270
 (5.163)
+(continued)
 
+68
+International Journal of Central Banking
 December 2013
 Table 12. (Continued)
 Response Variable: Transmission Lag

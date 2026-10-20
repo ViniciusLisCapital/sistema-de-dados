@@ -1,6 +1,7 @@
 BIS Working Papers
 No 480 
-
+ 
+ 
 Trilemmas and trade-
 offs: living with financial 
 globalisation 
@@ -8,7 +9,11 @@ by Maurice Obstfeld, comments by Otmar Issing and
 Takatoshi Ito 
 Monetary and Economic Department 
 January 2015 
-
+ 
+ 
+ 
+ 
+ 
 JEL classification: F33, F36, F42, F65 
 Keywords: Policy trilemma, financial stability, financial 
 globalisation, international policy transmission
@@ -18,16 +23,32 @@ Department of the Bank for International Settlements, and from time to time by
 other economists, and are published by the Bank. The papers are on subjects of 
 topical interest and are technical in character. The views expressed in them are 
 those of their authors and not necessarily the views of the BIS. 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+This publication is available on the BIS website (www.bis.org). 
+ 
+ 
 © Bank for International Settlements 2015. All rights reserved. Brief excerpts may be 
 reproduced or translated provided the source is stated. 
-
+ 
+ 
+ 
+ 
 ISSN 1020-0959 (print) 
 ISSN 1682-7678 (online)
 
 WP479 Understanding the role of debt in the financial system 
 i
-
+ 
+ 
 Foreword 
 The 13th BIS Annual Conference took place in Lucerne, Switzerland on 27 June 
 2014. The event brought together a distinguished group of central bank governors, 
@@ -40,7 +61,8 @@ and remarks by Stephen King (HSBC) and Masaaki Shirakawa (Aoyama Gakuin
 University).
 
 WP480 Trilemmas and trade-offs: living with financial globalisation 
-
+1
+ 
 Trilemmas and trade-offs: living with financial 
 globalisation 
 Maurice Obstfeld1 
@@ -62,10 +84,13 @@ for financial policy, international financial integration and financial stabilit
 Keywords: Policy trilemma, financial stability, financial globalisation, international 
 policy transmission 
 JEL classification: F33, F36, F42, F65 
-
+ 
+ 
+ 
+1  
 University of California (UC), Berkeley; National Bureau of Economic Research (NBER); and Centre 
 for Economic Policy Research (CEPR). 28 June 2014. 
-
+ 
 Paper commissioned for the Asian Monetary Policy Forum, Singapore (May 2014). I thank Sandile 
 Hlatshwayo for long-suffering research assistance and comments, and the Risk Research Center at 
 UC Berkeley for financial support. Claudio Borio, Menzie Chinn, Pierre-Olivier Gourinchas, Jonathan 
@@ -75,6 +100,9 @@ discussants at the 13th BIS Annual Conference (June 2014), Otmar Issing and Taka
 as participants. Gong Cheng, Menzie Chinn, Michael Klein, Gian Maria Milesi-Ferretti and Jay 
 Shambaugh graciously provided data. All errors are mine.
 
+2 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 1. Introduction 
 This paper evaluates the capacity of emerging market economies (EMEs) to 
 moderate the domestic impact of global financial and monetary forces through 
@@ -118,9 +146,13 @@ long-term interest rates. The results leave no doubt that countries that do not 
 their exchange rates exercise considerable monetary autonomy at the short end of 
 the term structure, but long-term interest rates are more highly correlated across 
 countries irrespective of the exchange rate regime.  
-
+ 
+2  
 See Schoenmaker (2013) for a broad survey.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+3
+ 
 In the penultimate section, I describe the relationship between policy trilemmas 
 and trade-offs in open economies. I present my argument that the fundamental 
 problem for open EMEs is not ineffective monetary policy per se. The problem is a 
@@ -152,7 +184,8 @@ effect is probably bigger when intervention occurs and causes an increase in the
 domestic money supply and domestic bank credit.5  
 Capital inflow surges can cause a variety of dislocations – not the least of which 
 is to create a range of vulnerabilities to subsequent capital flow reversals. After the 
-
+ 
+3  
 In a closely related spirit, Filardo et al (2014) propose a “three pillar” policy strategy for emerging 
 economies – one that navigates among price stability, financial stability and exchange rate goals. 
 4  
@@ -171,6 +204,9 @@ al (2014). The theoretical perspective I sketch later in this paper suggests, ho
 nuanced understanding would come from studying the impacts of gross inflows, as analysed by 
 some of the references listed in the previous footnote.
 
+4 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 GFC, industrial countries, their recoveries slowed by the effects of private and public 
 debt overhang, relied on continuing monetary stimulus in the forms of ultra-low 
 policy 
@@ -224,9 +260,13 @@ exchange rates, a number of policy failures set the stage for the EME crises of 
 late 1990s.  
 More recently, the position of EMEs has evolved considerably. As noted above, 
 international financial flows have increased in scale, particularly in gross terms, 
-
+ 
+6  
 See Gourinchas and Obstfeld (2012).
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+5
+ 
 driven in significant part by international banking flows. At the same time, domestic 
 financial systems have expanded and deepened. While for EMEs these changes are 
 not as extreme as for the advanced countries, they are still highly significant and 
@@ -266,7 +306,8 @@ investment (FDI)). In this respect, international financial integration promotes
 international risk-sharing and can therefore be a stabilising factor. Figures 3 and 4 
 illustrate the recent dramatic shift of external liabilities towards equity (see also Lane 
 and Shambaugh (2010) and Prasad (2012)).10 Currency depreciation automatically 
-
+ 
+7  
 Locational banking data such as these (based on the residence principle) may well understate 
 banking exposure, as the head offices of domestic affiliates are likely to divert funding in a crisis. 
 See Cetorelli and Goldberg (2011). Lane and McQuade (2014) document a link between net cross-
@@ -280,6 +321,9 @@ In general, the picture in emerging Europe (where some countries are in the euro
 mixed and not as favourable to foreign equity finance. The data in the figures of course reflect 
 stock market price fluctuations, but the trends are still clear. Broadly speaking, if one starts in 1970,
 
+6 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 devalues this portion of external liabilities; but even the remaining external and 
 domestic debt is increasingly denominated in domestic currency (Lane and 
 Shambaugh (2010), Miyajima et al (2012), Turner (2012)). The growth of domestic 
@@ -317,7 +361,7 @@ in the United States, EMEs showed their habitual reluctance to let exchange rate
 bear the full adjustment burden. Indeed, some of the very structural changes cited 
 as enhancements for EME stability could have downsides. Domestic bond markets, if 
 dominated by foreign asset managers and lacking big domestic players such as 
-
+ 
 the data describe a J shape. Prior to gaining access to private lending markets in the 1970s, 
 developing countries relied primarily on FDI for private foreign financing. Access to debt finance 
 allowed a fall in the FDI share. Only much later did portfolio equity inflows become important. The 
@@ -333,6 +377,9 @@ see Dominguez et al (2012).
 12  
 Figure 5 uses the Chinn and Ito (2006) measure of capital account openness.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+7
+ 
 pension funds and insurance companies, could be quite volatile, with long-term 
 bond returns tightly linked to those in advanced country markets (Shin (2013)).13 
 Moreover, if foreign holders of EME currency bonds hedge the currency risk with 
@@ -368,7 +415,8 @@ proposition that countries can control their inflation rates over the long term 
 widely accepted, and observed inflation convergence is regarded as a country- or 
 currency union-specific phenomenon reflecting synchronised improvements in 
 economic literacy and economic governance.14 
-
+ 
+13  
 Managers of highly diversified funds might have little incentive to focus on particular countries’ 
 economic fundamentals, as argued by Calvo and Mendoza (2000). 
 14  
@@ -380,6 +428,9 @@ hands of any single central bank. There is little theoretical or empirical suppo
 aggregates as proxy variables for global liquidity conditions. An example of the empirical critiques 
 is Wallace (1984).
 
+8 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 The degree of national control over short- to medium-term macro 
 developments (including but not restricted to price level dynamics) is more 
 controversial. When countries’ financial markets are linked, even imperfectly, 
@@ -421,13 +472,17 @@ the form:
 ݅௧= ݅௧
 ௎ௌ+ ܧ௧݁௧ାଵ−݁௧+ ߩ௧.  
 (1) 
-
+ 
+15  
 For recent assessments of the concept of global liquidity, see Borio et al (2011), Committee on the 
 Global Financial System (2011), Gourinchas (2012) and Landau (2014).  
 16  
 For complementary discussions, see Caruana (2012), He and McCauley (2013) and McCauley et al 
 (2014).
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+9
+ 
 Above, the risk premium ρ might reflect the covariance between the 
 depreciation rate of the domestic currency and a stochastic discount factor for 
 domestic currency payments. Now, changes in the US interest rate need not feed 
@@ -482,6 +537,9 @@ average of current and future expected short rates:
 మܧ௧݅௧ାଵ+ ߬௧. 
 (2)
 
+10 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 Here, ߬௧ is a term premium that might reflect the covariance between future 
 interest rates and a stochastic discount factor for domestic currency payments. 
 Because of the interest parity relationship, ߬௧ is obviously closely related to the 
@@ -510,11 +568,11 @@ abroad.17 In this way, US unconventional easing may be spread abroad.
 Empirically, long-term interest rates tend to be more highly correlated across 
 countries than short-term rates, which is consistent with results in the next section. 
 Goodhart and Turner (2014) summarise a widely held view of the evidence: 
-
+ 
 Long-term interest rates are more correlated across countries than short-term 
 rates. A central bank operating under a flexible exchange rate regime can set its 
 policy rate independently of the Fed funds rate. 
-
+ 
 But it has much less power over the long-term rate in its own currency because 
 yields in all bond markets integrated into the financial system tend to rise 
 whenever US yields jump. Bond yields in countries with weaker macroeconomic 
@@ -532,7 +590,8 @@ US long-term rates appear to be subject to global influences, as evidenced by
 several empirical studies. Also related is the anecdotal evidence of the “Greenspan 
 conundrum”: the relative constancy of long-term rates in the face of rising policy 
 rates in the mid-2000s.19 
-
+ 
+17  
 Neely (2013) carries out an econometric study. 
 18  
 See also Bernanke (2013) and Sheets and Sockin (2013). 
@@ -540,6 +599,9 @@ See also Bernanke (2013) and Sheets and Sockin (2013).
 Another possibly relevant factor is that uncovered interest parity seems to hold more closely for 
 long-term nominal interest rates than for short-term rates; see Chinn and Quayyum (2012).
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+11
+ 
 The apparently high cross-country correlation in term premia could reflect 
 factors that drive global financial cycles – for example, changes in risk appetite – so I 
 turn the discussion to the impact of international financial developments.20 
@@ -580,7 +642,8 @@ higher private inflow is matched by a higher private outflow. Partial-equilibriu
 models of banking inflows such as in Bruno and Shin (2013) do not capture this 
 consequence.22 However, the resulting expansion of gross liabilities and assets is 
 quite likely to worsen the balance of financial stability risks, increasing the challenge 
-
+ 
+20  
 Consistent with the financial cycle view is the evidence of Gonzáles-Rozada and Levy Yeyati (2008) 
 that emerging market bond spreads (on foreign currency debt) respond strongly to proxies for US 
 risk appetite and liquidity. 
@@ -589,6 +652,9 @@ For some evidence on the role of interest rates in US bank behaviour, see Dell�
 22  
 The development of general-equilibrium models should therefore be a research priority.
 
+12 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 for macroprudential policy. Challenges for macroeconomic policy could also be 
 accentuated. Goldberg (2013) presents some evidence that a substantial foreign 
 banking presence can reduce monetary independence, as measured by interest rate 
@@ -628,7 +694,8 @@ for covered interest arbitrage (as in Ivashina et al (2012)) will only raise the
 covered dollar borrowing.24 However, there are channels through which the interest 
 rate on dollar loans and the loans’ availability can directly affect credit flows in 
 economies outside the United States. 
-
+ 
+23  
 Spreads are for local currency yields computed relative to a Korean government bond of the same 
 tenor. 
 24  
@@ -636,6 +703,9 @@ Munro and Wooldridge (2012) argue, however, that domestic borrowers may overcome
 financial frictions by borrowing in foreign currency and swapping the proceeds into domestic 
 currency.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+13
+ 
 Domestic residents who hedge foreign currency borrowing will still effectively 
 face the domestic interest rate if covered interest parity holds. However, some may 
 engage in unhedged carry trades, either because they are financially 
@@ -678,6 +748,9 @@ Because some interest rate independence is a necessary condition for an effectiv
 monetary policy aimed at domestic goals, a central empirical issue is the correlation 
 between domestic and foreign interest rates, and its relation to the exchange rate
 
+14 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 regime. This section presents some evidence, adding to the findings of previous 
 studies by analysing long-term nominal rates of interest.25  
 A first test, which is based on approaches in Shambaugh (2004), Obstfeld et al 
@@ -717,7 +790,8 @@ have different “natural” base rates – the US dollar for Mexico, the euro f
 and the South African rand for Botswana, for example. Accounting for this 
 heterogeneity allows one to control for common time effects in the panel version of 
 (4), and thereby attempt to capture unobserved global shocks. 
-
+ 
+25  
 This section builds on earlier work by Frankel et al (2004), Shambaugh (2004), Obstfeld et al (2005) 
 and Klein and Shambaugh (2013). The general conclusion of these studies (which the evidence in 
 this section supports) is that there is some scope for short-run interest rate independence when 
@@ -728,6 +802,9 @@ that US policy rates strongly influence the policy rates of the other major indu
 do so primarily by shifting the arguments in those countries’ Taylor rules rather than forcing 
 deviations from Taylor rules.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+15
+ 
 Several researchers have argued that the Chicago Board Options Exchange’s 
 equity option volatility index (VIX) is a useful summary statistic for the state of the 
 financial cycle, lower values being associated with a greater tolerance for risk-taking 
@@ -782,12 +859,16 @@ induce higher interest rates everywhere. The results in Table 1 provide a very c
 first pass that accounts for neither exchange rate regime nor level of development. 
 Nonetheless, the findings display several regularities that prove robust to more 
 nuanced cuts at the data.  
-
+ 
+26  
 Data coverage is detailed in an appendix. Even where longer data series are available, I generally 
 estimate over the period starting around 1990 so as to capture the regularities that apply during 
 the recent period of high and growing financial globalisation. See Klein and Shambaugh (2013) for 
 an analysis of longer time series.
 
+16 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 Columns 1–4 report regressions of short-term nominal interest rate changes 
 (SR) on the short rate change in a base country, whereas columns 5–8 do the same 
 for long-term nominal interest rates (LR). Also included (in the X variables that enter 
@@ -831,12 +912,16 @@ interest rate independence than in the SR case.
 Table 2 breaks out the role of exchange rate pegs by adding specification (5) to 
 specification (4), thereby interacting the interest rate response with the peg 
 indicator.28 For the SR case in the first four columns, positive correlations with the 
-
+ 
+27  
 To save space, I do not report coefficients on these auxiliary variables. 
 28  
 I adapt to quarterly data (see the appendix) the de facto currency regime coding method from Klein 
 and Shambaugh (2013), who themselves look at a finer gradation of regimes than just peg or non-
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+17
+ 
 base currency interest rate change are almost entirely due to being pegged. Adding 
 time effects lowers the estimated SR peg effect somewhat, but leaves it potentially 
 large. Adding the VIX change has little impact compared with column 2. Perhaps 
@@ -882,10 +967,13 @@ interpreted cautiously. To the extent that long-term rate co-movement among
 advanced countries represents forces of arbitrage, it could capture a weakening of 
 the potency of domestic monetary policies and a channel for monetary spillovers 
 from abroad. A final finding in Tables 3 and 4 is the importance of the VIX change for 
-
+ 
 peg; see the discussion in the next section. I thank Michael Klein and Jay Shambaugh for providing 
 the files underlying their paper.
 
+18 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 movements in long-term interest rates, given base rate changes, for both country 
 groups, but especially for non-advanced economies.  
 The apparently higher short-term rate independence for developing/emerging 
@@ -935,6 +1023,9 @@ medium-run scope for interest rate independence. As before, however, the
 possibility of unobserved global shocks to interest rates bedevils the interpretation 
 of these results.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+19
+ 
 5. Trilemmas and trade-offs 
 In line with previous research, the results of the preceding section indicate 
 considerable scope for countries that do not peg their exchange rates to vary short-
@@ -946,7 +1037,7 @@ rates to key domestic macro variables is more tenuous.
 Rey (2013) summarises earlier studies and new evidence of her own suggesting 
 that foreign financial shocks besides interest rates spill across national borders, even 
 when exchange rates are flexible. She concludes that: 
-
+ 
 [M]onetary conditions are transmitted from the main financial centers to the 
 rest of the world through gross credit flows and leverage, irrespective of the 
 exchange rate regime. […] Fluctuating exchange rates cannot insulate 
@@ -977,13 +1068,17 @@ countries that manage exchange rates flexibly (or let them float) do not provide
 one-way bet for speculators – they seem to be less susceptible to various types of 
 crisis, including growth collapses of the type seen recently in some euro area 
 countries.30 
-
+ 
+29  
 Aizenman et al (2010) report a similar finding, and also trace over time different country groups’ 
 approaches to navigating the monetary trilemma. 
 30  
 See Ghosh et al (2014). Rose’s (2014) discussion points to the recent durability of flexible exchange 
 rate/inflation targeting regimes.
 
+20 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 Thus, it strikes me as not really fruitful to ask whether the exchange rate regime 
 materially influences the scope for monetary policy independence. Of course it 
 does. It is unquestionably true, as Rey (2013) asserts, that “monetary conditions are 
@@ -1026,7 +1121,7 @@ distribution is generally far from neutral. Neither in theory nor in practice is
 generally a “divine coincidence” for the exchange rate. 
 Speaking from the central banker’s perspective, Fischer (2010) summarises 
 eloquently: 
-
+ 
 Not infrequently we hear central bankers say something like: “We have only 
 one instrument – money growth (or the interest rate) – and so we can have only 
 one target, inflation.” This view may be based on the targets and instruments 
@@ -1034,6 +1129,10 @@ approach of Tinbergen, of over 50 years ago, the general result of which was
 that you need as many instruments as targets. That view is correct if you have 
 to hit the target exactly.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+21
+ 
+ 
 But it is not correct if the problem is set up as is typical in microeconomics, 
 where the goal is to maximize a utility function subject to constraints, in a 
 situation where for whatever reason it is not possible to hit all the targets 
@@ -1079,9 +1178,13 @@ weakened because of openness, trade-offs will become harsher still. Even so,
 independent monetary policy will still be possible, and more so the less tightly the 
 exchange rate is managed. For example, if a bigger interest rate change is needed 
 to bring about a given demand response in an open economy, this may worsen the 
-
+ 
+31  
 For a recent contribution, see Kolasa and Lombardo (2014).
 
+22 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 macroprudential problem by increasing the fragility of banks and encouraging gross 
 financial inflows. 
 The proposition that the efficacy of financial stability policies is weakened in the 
@@ -1121,7 +1224,8 @@ does not mean their lives will be easy, however. Because of the financial trilem
 the impact of monetary policy on financial stability will inevitably play a bigger role 
 in their decisions. In the face of a less favourable trade-off between financial and 
 macro stability, they may well be forced farther from both. 
-
+ 
+32  
 Ostry et al (2012) assess the effects of macroprudential and capital control policies for a sample of 
 51 EMEs over 1995–2008. While finding that these policies can favourably influence aggregate 
 indicators of financial fragility, they note the difficulty of using macroprudential policy effectively 
@@ -1133,6 +1237,9 @@ Some countries are also taking unilateral action. For example, the Federal Reser
 required foreign banking organisations with sufficiently large US assets to set up US intermediate 
 holding companies for their US subsidiaries. These holding companies will be subject to US regulation.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+23
+ 
 6. Conclusion 
 Smaller economies face downsides in living with globalisation. There is an inherent 
 tension between lowering trade barriers – an approach that offers a range of gains 
@@ -1183,6 +1290,9 @@ monetary policy more, not less, effective. Thus, policies to further discourage 
 finance, including the very high debt levels of globally active banks, have 
 considerable potential to raise national welfare.
 
+24 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 Data appendix 
 Short-term interest rates: Three-month, local currency, short-term interest rates 
 come from the Global Financial Data database. Three-month treasury bill rates are 
@@ -1216,11 +1326,17 @@ included in the Klein-Shambaugh sample, has the US as a base country.
 CBOE Volatility Index (VIX): Quarterly average of end-month data, from Global 
 Financial Data.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+25
+ 
 Data coverage for the dynamic interest rate equations is detailed by country in 
 Tables 5 and 6. Coverage for the pooled/panel regressions (Tables 1–4) is as follows:  
-
+ 
+ 
+ 
+ 
 Table 1 
-
+ 
 Advanced 
 Base country 
 LR pooled/panel 
@@ -1336,8 +1452,12 @@ Germany
 Q3 1989 – Q4 2013 
 Q3 1989 – Q4 2013
 
+26 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
+ 
 Table 2 
-
+ 
 Non-Advanced 
 Base country 
 LR pooled/panel 
@@ -1513,9 +1633,15 @@ US
 Q2 2012 – Q4 2013 
 Q2 1998 – Q4 2013
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+27
+ 
+ 
+ 
 Cross-border credit as a fraction of domestic credit, by region 
 Figure 1 
-
+ 
+ 
 Source: BIS global liquidity indicators. 
 0
 5
@@ -1560,16 +1686,59 @@ Latin America
 Emerging Europe
 Cross-border/domestic credit ratio (per cent)
 
+28 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
+ 
+ 
 Gross external liabilities relative to GDP, by region 
 Figure 2 
-
+ 
+ 
 Source: Updated data from Lane and Milesi-Ferretti (2007), by courtesy of Gian Maria Milesi-Ferretti.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+29
+ 
+ 
+ 
 External equity liabilities relative to total external liabilities, by country: western 
 hemisphere 
 Figure 3 
-
+ 
+ 
 Source: Updated data from Lane and Milesi-Ferretti (2007). 
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+1970
+1972
+1974
+1976
+1978
+1980
+1982
+1984
+1986
+1988
+1990
+1992
+1994
+1996
+1998
+2000
+2002
+2004
+2006
+2008
+2010
+2012
 Brazil
 Chile
 Colombia
@@ -1578,10 +1747,47 @@ Peru
 United States
 Fraction
 
+30 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
+ 
+ 
 External equity liabilities relative to total external liabilities, by country: Asia 
 Figure 4 
-
+ 
+ 
 Source: Updated data from Lane and Milesi-Ferretti (2007). 
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+1970
+1972
+1974
+1976
+1978
+1980
+1982
+1984
+1986
+1988
+1990
+1992
+1994
+1996
+1998
+2000
+2002
+2004
+2006
+2008
+2010
+2012
 India
 Indonesia
 Korea
@@ -1590,26 +1796,48 @@ Philippines
 Thailand
 Fraction
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+31
+ 
+ 
+ 
 Financial openness and international reserves of advanced and 
 developing/emerging countries, by year 
 Figure 5 
-
+ 
+ 
 Source: Bussière et al (2014), by courtesy of Menzie Chinn, based on the updated Chinn and Ito (2006) index.
 
+32 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
+ 
+ 
 Korea, corporate bond spreads versus US federal funds target rate 
 Figure 6 
-
+ 
+ 
 Source: Asian Development Bank, Asian Bonds Online.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+33
+ 
+ 
 Offshore US dollar bank credit and offshore US dollar debt 
 In billions of US dollars 
 Figure 7 
-
+ 
+ 
 Source: BIS global liquidity indicators.
 
+34 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+ 
+ 
 Pooled and panel regressions of nominal interest rate changes on base currency changes 
 Table 3 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -1618,7 +1846,7 @@ Table 3
 (6) 
 (7) 
 (8) 
-
+ 
 US-base SR 
 Multi-base 
 SR 
@@ -1641,42 +1869,93 @@ percentage
 change 
 US-base SR change 
 0.0605 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.158) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 Multi-base SR change 
-
+ 
 0.201 
 0.0121 
 0.241 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.172) 
 (0.228) 
 (0.177) 
-
+ 
+ 
+ 
+ 
 US-base LR change 
-
+ 
+ 
+ 
+ 
 0.354*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0597) 
-
+ 
+ 
+ 
 Multi-base LR change 
-
+ 
+ 
+ 
+ 
+ 
 0.552*** 
 0.433*** 
 0.636*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0670) 
 (0.136) 
 (0.0616) 
 VIX percentage change 
-
+ 
+ 
+ 
 0.00252* 
-
+ 
+ 
+ 
 0.00298*** 
-
+ 
+ 
+ 
+ 
 (0.00131) 
-
+ 
+ 
+ 
 (0.000668) 
 Constant 
 –0.00170** 
@@ -1687,7 +1966,7 @@ Constant
 –0.000626*** 
 –0.00113** 
 –0.000636*** 
-
+ 
 (0.000755) 
 (0.000760) 
 (0.000724) 
@@ -1737,9 +2016,12 @@ enter
 Clustered standard errors in brackets (at country level). 
 1* p < 0.10, ** p < 0.05, *** p < 0.01.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+35 
+ 
 Exchange rate pegging versus non-pegging 
 Table 4 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -1748,7 +2030,9 @@ Table 4
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
+Multi-base 
 SR 
 Multi-base 
 SR with time 
@@ -1767,67 +2051,167 @@ Multi-base
 LR with VIX 
 percentage 
 change 
+US-base SR change 
 0.0261 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.178) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 Peg * US-base SR change 
 0.122 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.256) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Multi-base SR change 
+ 
 –0.0256 
 –0.0948 
 0.0290 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.312) 
 (0.394) 
 (0.322) 
-
+ 
+ 
+ 
+ 
 Peg * multi-base SR change 
-
+ 
 0.375 
 0.278 
 0.362 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.310) 
 (0.298) 
 (0.311) 
-
+ 
+ 
+ 
+ 
+US-base LR change 
+ 
+ 
+ 
+ 
 0.348*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0638) 
-
+ 
+ 
+ 
 Peg * US-base LR change 
-
+ 
+ 
+ 
+ 
 0.0189 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.158) 
-
+ 
+ 
+ 
+Multi-base LR change 
+ 
+ 
+ 
+ 
+ 
 0.495*** 
 0.430*** 
 0.583*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0976) 
 (0.157) 
 (0.0870) 
 Peg * multi-base LR change 
-
+ 
+ 
+ 
+ 
+ 
 0.0964 
 0.00816 
 0.0890 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.111) 
 (0.101) 
 (0.107) 
 VIX percent change 
-
+ 
+ 
+ 
 0.00301* 
-
+ 
+ 
+ 
 0.00297*** 
-
+ 
+ 
+ 
+ 
 (0.00158) 
-
+ 
+ 
+ 
 (0.000672) 
 Constant 
 –0.00181** 
@@ -1838,7 +2222,7 @@ Constant
 –0.000629*** 
 –0.00112** 
 –0.000643*** 
-
+ 
 (0.000767) 
 (0.000760) 
 (0.00138) 
@@ -1855,10 +2239,14 @@ N
 3071 
 3071 
 3071 
+3071
 
+36 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
 Exchange rate pegging versus non-pegging 
 Table 4 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -1867,7 +2255,9 @@ Table 4
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
+Multi-base 
 SR 
 Multi-base 
 SR with time 
@@ -1926,11 +2316,15 @@ zero
 0.661292639 
 0.265738535 
 0.569184142 
+Clustered standard errors in brackets (at country level). 
 * p < 0.10, ** p < 0.05, *** p < 0.01.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+37 
+ 
 Developing/emerging economy subsample 
 Table 5 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -1939,7 +2333,8 @@ Table 5
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
 Multi-base SR 
 Multi-base SR 
 with time 
@@ -1957,64 +2352,167 @@ Multi-base LR
 with VIX 
 percentage 
 change 
+US-base SR change 
 –0.313 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.412) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Peg * US-base SR change 
 0.377 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.430) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Multi-base SR change 
+ 
 –0.407 
 –0.260 
 –0.337 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.515) 
 (0.560) 
 (0.550) 
-
+ 
+ 
+ 
+ 
 Peg * Multi-base SR change 
-
+ 
 0.480 
 0.300 
 0.449 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.500) 
 (0.542) 
 (0.513) 
-
+ 
+ 
+ 
+ 
+US-base LR change 
+ 
+ 
+ 
+ 
 0.0590 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.132) 
-
+ 
+ 
+ 
+Peg * US-base LR change 
+ 
+ 
+ 
+ 
 0.211 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.188) 
-
+ 
+ 
+ 
+Multi-base LR change 
+ 
+ 
+ 
+ 
+ 
 0.194 
 0.622 
 0.332*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.125) 
 (0.490) 
 (0.113) 
 Peg * Multi-base LR change 
-
+ 
+ 
+ 
+ 
+ 
 0.0995 
 0.0390 
 0.0729 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.163) 
 (0.186) 
 (0.159) 
 VIX percentage change 
-
+ 
+ 
+ 
 0.00344 
-
+ 
+ 
+ 
 0.00375** 
-
+ 
+ 
+ 
+ 
 (0.00276) 
-
+ 
+ 
+ 
 (0.00141) 
 Constant 
 –0.00230 
@@ -2025,7 +2523,7 @@ Constant
 –0.000971*** 
 –0.00122 
 –0.000992*** 
-
+ 
 (0.00153) 
 (0.00144) 
 (0.00126) 
@@ -2042,10 +2540,14 @@ N
 1286 
 1286 
 1286 
+1286
 
+38 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
 Developing/emerging economy subsample 
 Table 5 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -2054,7 +2556,9 @@ Table 5
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
+Multi-base SR 
 Multi-base SR 
 with time 
 effects 
@@ -2111,11 +2615,15 @@ applicable) sum to zero
 0.77502473 
 0.310767234 
 0.744519193 
+Clustered standard errors in brackets (at country level). 
 * p < 0.10, ** p < 0.05, *** p < 0.01.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+39 
+ 
 Advanced economy subsample 
 Table 6 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -2124,7 +2632,9 @@ Table 6
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
+Multi-base 
 SR 
 Multi-base 
 SR with time 
@@ -2143,64 +2653,176 @@ Multi-base
 LR with VIX 
 percentage 
 change 
+US-base SR change 
 0.260*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0415) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Peg * US-base SR change 
 0.671*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0936) 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Multi-base SR change 
+ 
 0.518*** 
 0.306* 
 0.546*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.133) 
 (0.152) 
 (0.129) 
-
+ 
+ 
+ 
+ 
 Peg * Multi-base SR change 
-
+ 
 0.223 
 0.129 
 0.225 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.153) 
 (0.165) 
 (0.153) 
-
+ 
+ 
+ 
+ 
+US-base LR change 
+ 
+ 
+ 
+ 
 0.484*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0502) 
-
+ 
+ 
+ 
+Peg * US-base LR change 
+ 
+ 
+ 
+ 
 0.454*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 (0.0558) 
-
+ 
+ 
+ 
+Multi-base LR change 
+ 
+ 
+ 
+ 
+ 
 0.753*** 
 0.582*** 
 0.798*** 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.107) 
 (0.147) 
 (0.104) 
 Peg * Multi-base LR change 
-
+ 
+ 
+ 
+ 
+ 
 0.0590 
 –0.0317 
 0.0639 
-
+ 
+ 
+ 
+ 
+ 
+ 
 (0.124) 
 (0.0992) 
 (0.120) 
 VIX percent change 
-
+ 
+ 
+ 
 0.00197* 
-
+ 
+ 
+ 
 0.00199*** 
-
+ 
+ 
+ 
+ 
 (0.00107) 
-
+ 
+ 
+ 
 (0.000475) 
 Constant 
 –0.00109*** 
@@ -2211,7 +2833,7 @@ Constant
 –0.000394*** 
 –0.00111** 
 –0.000397*** 
-
+ 
 (0.000158) 
 (0.000117) 
 (0.000145) 
@@ -2228,10 +2850,14 @@ N
 1785 
 1785 
 1785 
+1785
 
+40 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
 Advanced economy subsample 
 Table 6 
-
+ 
 (1) 
 (2) 
 (3) 
@@ -2240,7 +2866,9 @@ Table 6
 (6) 
 (7) 
 (8) 
-
+ 
+US-base SR 
+Multi-base 
 SR 
 Multi-base 
 SR with time 
@@ -2299,11 +2927,16 @@ zero
 0.09259661 
 0.063848163 
 0.204935031 
+Clustered standard errors in brackets (at country level). 
 * p < 0.10, ** p < 0.05, *** p < 0.01.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+41 
+ 
 Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
 Number. of 
 obser-
@@ -2344,9 +2977,22 @@ cant at 1
 Half-life 
 (in 
 months) 
-
+ 
 Advanced 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 
 Australia 
 May 1989– 
 Jun 2012 
@@ -2571,9 +3217,15 @@ Jan 2014
 0 
 35.77
 
+42 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
+Number. of 
 obser-
 vations 
 (based on 
@@ -2709,10 +3361,23 @@ Jan 2014
 1 
 0 
 23.70 
-
+ 
 Developing/
 emerging 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 
 Albania 
 Sep 1994– 
 Oct 2013 
@@ -2811,9 +3476,15 @@ Jan 2008
 0 
 6.74
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+43 
+ 
+Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
+Number. of 
 obser-
 vations 
 (based on 
@@ -3078,9 +3749,15 @@ Feb 2014
 1 
 8.41
 
+44 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
+Number. of 
 obser-
 vations 
 (based on 
@@ -3345,9 +4022,15 @@ Feb 2014
 1 
 9.95
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+45 
+ 
+Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
+Number. of 
 obser-
 vations 
 (based on 
@@ -3597,9 +4280,15 @@ Feb 2014
 0 
 6.97
 
+46 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Short-term interest rate dynamic equations with the US dollar as the base currency 
 Table 7 
-
+ 
+ 
 Coverage 
+Number. of 
 obser-
 vations 
 (based on 
@@ -3686,12 +4375,13 @@ Feb 2014
 1 
 1 
 11.41 
-
+ 
 Averages
-
+ 
+ 
 
 
-
+ 
 PSS F 
 statisti-
 cally 
@@ -3703,7 +4393,8 @@ statisti-
 cally 
 signifi-
 cant at 
-
+1 
+ 
 PSS T 
 statisti-
 cally 
@@ -3717,29 +4408,34 @@ cant at 1
 Half-life 
 (in 
 months) 
-
+ 
+ 
+ 
 Advanced 
 0.97 
 (0.42) 
 –0.05 
 (0.01) 
-
+ 
 75% 
 50% 
-
+ 
 75% 
 25% 
 25.44 
-
+ 
+ 
+ 
+Developing/
 Emerging 
 1.43 
 (1.39) 
 –0.09 
 (0.03) 
-
+ 
 60% 
 54% 
-
+ 
 60% 
 38% 
 13.12 
@@ -3750,9 +4446,13 @@ Significant at 0: Indicates whether we can reject no levels relationship at the 
 Significant at 1: Indicates whether we can reject no levels relationship at the 5% level if we assume the data are non-stationary. 
 Half-life: The half-life of a shock (in months) based on the adjustment speed.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+47 
+ 
 Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -3790,9 +4490,22 @@ cant at 1
 Half-life 
 (in 
 months) 
-
+ 
 Advanced 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 
 Australia 
 May 
 1989– Jun 
@@ -3945,8 +4658,13 @@ May
 1 
 7.1
 
+48 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -4153,8 +4871,13 @@ May
 0 
 30.6
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+49 
+ 
+Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -4244,9 +4967,23 @@ May
 1 
 1 
 9.8 
-
+ 
+Developing/
 emerging 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+1 
 Brazil 
 Jan 2000–
 Dec 2006 
@@ -4364,8 +5101,13 @@ Dec
 0 
 7.7
 
+50 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -4587,8 +5329,13 @@ Feb 2014
 0 
 10.3
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+51 
+ 
+Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -4794,8 +5541,13 @@ Feb 2014
 0 
 13.23
 
+52 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+ 
+Long-term interest rate dynamic equations with the US dollar as the base currency 
 Table 8 
-
+ 
+ 
 Coverage 
 Number of 
 obser-
@@ -4833,12 +5585,13 @@ cant at 1
 Half-life 
 (in 
 months) 
-
+ 
 Averages 
-
+ 
+ 
 
 
-
+ 
 PSS F 
 statisti-
 cally 
@@ -4849,7 +5602,7 @@ statisti-
 cally 
 signifi-
 cant at 1 
-
+ 
 PSS T 
 statisti-
 cally 
@@ -4863,30 +5616,34 @@ cant at 1
 Half–life 
 (in 
 months) 
-
+ 
+ 
+ 
 Advanced 
 1.00 
 (0.39) 
 –0.06 
 (0.02) 
-
+ 
 59% 
 45% 
-
+ 
 59% 
 45% 
 17.54 
-
+ 
+ 
+ 
 Developing
 /emerging 
 0.89 
 (1.07) 
 –0.06 
 (0.03) 
-
+ 
 36% 
 21% 
-
+ 
 36% 
 14% 
 14.64 
@@ -4897,6 +5654,9 @@ Significant at 0: Indicates whether we can reject no levels relationship at the 
 Significant at 1: Indicates whether we can reject no levels relationship at the 5% level if we assume the data are non-stationary. 
 Half-life: The half-life of a shock (in months) based on the adjustment speed.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+53
+ 
 Comment by Otmar Issing35 
 This paper is rich on insights into the complexity of the global financial system. The 
 well known monetary trilemma has its counterpart in the form of a newer and lesser 
@@ -4939,13 +5699,20 @@ economy. Coordination of rules for macroprudential policies is indispensable to
 avoid regulatory arbitrage. 
 Maurice Obstfeld’s paper gives deep insights into the complexity of the financial 
 system and the importance of various transmission mechanisms. It implicitly reveals 
-
+ 
+35  
 President, Centre for Financial Studies at the Goethe University, Frankfurt.
 
+60 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 the need for a robust framework for the orientation of capital flows, and for the 
 guidance of national policies, as well as the size of the challenge involved in 
 designing one. This message is important not only for EMEs but also for ICs.
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+61
+ 
 Comments by Takatoshi Ito36 
 This paper shows that adopting the floating exchange rate regime helps solve the 
 traditional monetary policy trilemma (the “impossible trinity”). However, its power is 
@@ -4961,13 +5728,13 @@ easing and spillovers to emerging market economies; Second, global liquidity and
 synchronous credit cycles; and third, the taper tantrum and credit reversal.  
 Let us recall the old trilemma which is sometimes called the impossible trinity.  
 Monetary trilemma (impossible trinity) 
-
+ 
 Providing examples for each case where one of the conditions must be 
 sacrificed are China, Thailand (after 1998), and Hong Kong SAR. If a country tries to 
 achieve all of the objectives, as Thailand did in 1994–96, then it will end up in a 
 crisis. Now, let us try to understand the new financial trilemma.  
 Financial trilemma (Obstfeld) 
-
+ 
 The trilemma means that any attempt to meet all three objectives may end up 
 in a crisis, just like the old trilemma. It is not immediately clear to me how we can 
 think of an example that satisfies only two of the three conditions; and what would 
@@ -4976,7 +5743,8 @@ as follows: if a country maintains a national financial policy, which may not be
 consistent with the international one, and its financial markets are fully integrated 
 with the rest of the world, then financial stability cannot achieved. Which country 
 fits into this category, I wonder. Case B seems to be straightforward. Countries such 
-
+ 
+36  
 Professor, National Graduate Institute for Policy Studies; Project Professor, University of Tokyo; and 
 NBER. 
 autonomous monetary policy
@@ -5012,6 +5780,9 @@ no
 yes
 yes
 
+62 
+WP480 Trilemmas and trade-offs: living with financial globalisation
+ 
 as China, Thailand and other emerging market economies in Asia maintain capital 
 controls so that the domestic financial markets are not fully integrated with the 
 global financial market. This allows the country to maintain control over domestic 
@@ -5062,6 +5833,9 @@ managed float. They piled up foreign reserves between 2000 and 2007 in what was
 called a “self-protection” strategy. When the Asian emerging market economies 
 experienced capital outflows in 2008–09, the exchange rate was allowed to
 
+WP480 Trilemmas and trade-offs: living with financial globalisation 
+63
+ 
 depreciate and foreign reserves were used to moderate the decline. Except in the 
 case of Korea for a brief period in 2009, the use of foreign reserves was enough to 
 keep capital outflows under control. Foreign reserves started to increase again in 

@@ -1,8 +1,10 @@
+I M F S T A F F P O S I T I O N N O T E
 February 19, 2010
 SPN/10/04
 Capital Inflows: The Role of Controls
 Jonathan D. Ostry, Atish R. Ghosh, Karl Habermeier,
 Marcos Chamon, Mahvash S. Qureshi, and Dennis B.S. Reinhardt
+I N T E R N A T I O N A L M O N E T A R Y F U N D
 
 INTERNATIONAL MONETARY FUND
 Research Department
@@ -14,7 +16,12 @@ DISCLAIMER: The views expressed herein are those of the author(s) and should
 not be attributed to the IMF, its Executive Board, or its management.
 JEL Classification Numbers: F21, F32
 Keywords: capital inflows, capital controls, financial crisis
+Authors’ E-mail Addresses: jostry@imf.org, aghosh@imf.org,
+khabermeier@imf.org, mchamon@imf.org,
+mqureshi@imf.org, and
+dennis.reinhardt@graduateinstitute.ch
 
+3
 Contents Page
 I. Introduction and Overview .......................................................................................................... 4
 II. Responding to Capital Inflows ................................................................................................... 6
@@ -29,6 +36,7 @@ Table
 1. Selected Cases of Control Measures on Capital Inflows ...........................................................16
 Appendix 1. Inflows, Fragilities, and Controls—Some Empirics ................................................ 18
 
+4
 I. INTRODUCTION AND OVERVIEW 1
 With the global economy beginning to emerge from the financial crisis, capital is flowing back to
 emerging market economies (EMEs). These flows, and capital mobility more generally, allow
@@ -69,6 +77,7 @@ members generally may exercise such controls as are necessary to regulate intern
 VI, Section 3). However, the general right of members to regulate international capital movements is qualified by
 members’ obligations subject to IMF surveillance under Article IV.
 
+5
 This paper reviews the arguments on the appropriate management of inflow surges and focuses
 in particular on the conditions under which controls may be justified. A key conclusion is that, if
 the economy is operating near potential, if the level of reserves is adequate, if the exchange rate
@@ -109,6 +118,7 @@ controls at the individual country level.
 foreign banking groups, particularly those from western Europe for capital, necessitated efforts (culminating in the
 Initiative for Coordination of European Banks) to induce parent banks to maintain exposures to their subsidiaries.
 
+6
 The remainder of this paper is organized as follows. Section II explains the rationale for capital
 controls as part of the package of policies to cope with surges in capital inflows. Section III
 examines the empirical evidence from past studies, and from the current crisis, on the
@@ -148,6 +158,9 @@ policy responses to capital inflows and positive balance of payments pressures. 
 including major bouts of carry trade flows associated with higher equilibrium real interest rates and
 Balassa-Samuelson effects in the transition economies—see Lipschitz and others (2005, 2006)
 
+7
+
+8
  …and sterilization. If there are inflation concerns, the resulting increase in the money
 supply can be sterilized through open-market operations or, more generally, a
 corresponding decrease in domestic credit.5 There are, however, limits to sterilization.6
@@ -187,6 +200,7 @@ political temptation to avoid making necessary fiscal adjustments and to rely in
 versus administrative controls. Countries tend to use the types of controls they are most familiar with from past
 practice—the obvious advantage being easier implementation for both the authorities and the banking sector.
 
+9
 controls lose their effectiveness over time, and thus need to be continually strengthened,
 leading to increasing distortions.
 Financial Fragility
@@ -224,6 +238,7 @@ lengthening the maturity of liabilities.
 10 Such a policy will be less effective if foreign investors circumvent the restrictions, for example, by writing
 currency swap contracts.
 
+10
 Other Considerations
 Even if an analysis along the lines sketched above points to the adoption of capital controls,
 several other factors need to be considered:
@@ -262,6 +277,7 @@ imbalances. By contrast, adoption of controls by countries with undervalued curr
 11 To the extent that capital inflows to EMEs are driven by the policy environment in advanced economies, they too
 need to take account of the multilateral implications of their policies.
 
+11
 likely to redirect flows to countries less able to absorb them, thus adding to systemic pressures
 and running the clear risk of a bandwagon response in the form of generalized financial
 protectionism.
@@ -301,6 +317,7 @@ persistent than flows that contribute to overshooting. For an analysis of the cy
 capital flows, see Country Insurance: The Role of Domestic Policies (IMF Occasional Paper 254, 2007), pp. 8–9,
 which argues that banking flows are much more prone to reversal than other types of inflows (portfolio and FDI).
 
+12
 rate, altering the maturity composition of inflows to reduce financial fragility, and providing
 additional monetary policy independence.
 Although individual country studies often find little or no impact of capital controls on the
@@ -344,6 +361,7 @@ Chile, Colombia, Malaysia, and Thailand) in the 1990s to limit short-term inflow
 Cardoso and Goldfajn (1998), Cardenas and Barrera (1997), and Goh (2005) find that controls can lengthen the
 (continued)
 
+13
 capital inflows is useful for reducing financial fragility. The recent global financial crisis
 provides a natural experiment in this regard, with differences in how EMEs have fared possibly
 shedding light on whether certain types of capital inflows pose greater risk of financial fragility,
@@ -385,6 +403,7 @@ where controlling interest is usually taken to be an ownership stake of at least
 report a similar result, namely, that drops in output during crisis episodes are significantly lower if capital controls
 existed before the crisis.
 
+14
 Box 1. Country Experiences with Controls on Short-Term Capital Inflows
 Recourse to capital controls to counter surges in capital inflows has been pervasive in emerging markets. Controls are often
 imposed to maintain monetary control while reducing pressures on the exchange rate and to address prudential concerns in the
@@ -445,6 +464,7 @@ measures in terms of limiting inflows, changing their composition, and achieving
 critically on countries’ implementation capacity. In general, the controls’ impact is short lived as markets adjust to them. A
 strong enforcement capacity as, for example, in Chile, is therefore needed to identify loopholes and prevent circumvention.
 
+15
 on debt flows that are significantly associated with avoiding crises. Although further study is
 needed, these controls are not associated with lower average growth in the precrisis period as
 well.
@@ -482,6 +502,7 @@ maintained. Moreover, this note also emphasizes that any use of capital controls
 internalize to the extent possible the systemic dangers that could result from widespread adoption
 of controls by a large number of countries.
 
+16
 Table 1. Selected Cases of Control Measures on Capital Inflows
 Country Year Controls Did controls on inflows:
 Study Reduce the volume Alter the Reduce real exchange
@@ -514,6 +535,7 @@ positions of banks (500 percent of capital).
 Croatia 2004–08 - Introduced prudential marginal reserve Jankov (2009) Yes
 requirements on bank foreign financing.
 
+17
 Table 1. Selected Cases of Control Measures on Capital Inflows (concluded)
 Country Year Controls Did controls on inflows:
 Study Reduce the volume of Alter the Reduce real exchange
@@ -549,6 +571,7 @@ Schindler (2009)
 Sources: Magud, Reinhart, and Rogoff (2007), and IMF staff.
 Note: A blank entry refers to the cases where the study in question did not analyze the particular relationship. (ST) refers to cases where only short-term effects were detected.
 
+18
 APPENDIX 1. INFLOWS, FRAGILITIES, AND CONTROLS—SOME EMPIRICS
 This appendix looks at some simple empirics on how EMEs have fared in the current global
 financial crisis to infer (1) whether certain types of capital inflows pose greater risk of financial
@@ -586,6 +609,7 @@ dependent variable (for example, using the average real growth rate in 2008–09
 21 Note that foreign direct investment includes loans between a parent and subsidiary, as long as the parent has a
 controlling interest, where controlling interest is usually taken to be an ownership stake of at least 10 percent.
 
+19
 efforts at limiting flows of debt liabilities and debt flows recorded as financial FDI can
 supplement prudential regulations aimed at curtailing domestic credit booms and unhedged
 foreign exchange lending.
@@ -626,6 +650,7 @@ determinants (income convergence, investment, human capital, terms-of-trade shoc
 balance, population growth) also yields insignificant coefficients on capital controls; usual econometric caveats
 apply.
 
+20
 To summarize, capital controls on certain types of inflows might usefully complement prudential
 regulations to limit financial fragility and can be part of the toolkit. In particular, by helping fuel
 credit booms, especially in foreign currency, debt liabilities, including debt recorded as financial
@@ -666,6 +691,7 @@ Non-Financial sectors based on Reinhardt (2009) estimates.
 3/ Average annual real growth rate in trading partners over 2008-09 weighted by average export to GDP ratio in 2003-07 (in percent).
 4/ Average annual percentage change in terms of trade over 2008-09.
 
+21
 Table A2. Foreign Liabilities and Banking System FX-Credit and Credit Booms 1/
 Dependent variable
 FX Credit (% of GDP 2007) 1/ Change in Credit/GDP 2/
@@ -682,6 +708,7 @@ and 10 percent levels, respectively.
 1/ FX-denominated banking system credit (in % of GDP).
 2/ Change in banking system credit/GDP over 2003-07.
 
+22
 Table A3. Capital Controls and Growth Crisis 1/
 [1] [2] [3] [4]
 Controls on 2/
@@ -711,11 +738,15 @@ year covered in the database is 2005).
 export to GDP ratio in 2003-07 (in percent).
 4/ Average annual percentage change in terms of trade over 2008-09.
 
+23
 Figure A1. Foreign Liabilities and Growth Decline (in percentage points)
 Sources: IMF World Economic Outlook database, Lane and Milesi-Ferretti (2007) updated database, Reinhardt
 (2009) and staff calculations.
 Note: *Growth decline defined as average growth rates in 2008–09 relative to 2003–07.
 
+24
 Figure A2. Foreign Liabilities and Banking System
 Source: IMF World Economic Outlook database, Lane and Milesi-Ferretti (2007) updated database, Reinhardt (2009),
 IMF Country Desk data, Reinhardt (2009), and IMF staff calculations.
+
+25

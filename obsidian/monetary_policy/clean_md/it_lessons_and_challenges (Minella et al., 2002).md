@@ -7,49 +7,65 @@ and Marcelo Kfoury Muinhos
 
 ISSN 1518-3548 
 CGC 00.038.166/0001-05 
-
+ 
+Working Paper Series 
+ 
 Brasília 
-
+ 
 n. 53 
-
+ 
 Nov 
-
+ 
+2002 
+ 
 P. 1-47
 
+Working Paper Series 
+ 
 Edited by: 
-
+ 
 Research Department (Depep) 
-
+(E-mail: workingpaper@bcb.gov.br) 
+ 
+ 
 Reproduction permitted only if source is stated as follows: Working Paper Series n. 53 
-
+ 
 Authorized by Ilan Goldfajn (Deputy Governor for Economic Policy). 
-
+ 
+ 
 General Control of Subscription: 
-
+ 
 Banco Central do Brasil 
 Demap/Disud/Subip 
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 2º subsolo 
 70074-900 Brasília – DF – Brazil 
 Phone: (5561) 414-1392 
 Fax: (5561) 414-3165 
-
+ 
+ 
+ 
 The views expressed in this work are those of the authors and do not reflect those of the Banco Central or its members. 
-
+ 
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced. 
-
+ 
+ 
+ 
 As opiniões expressas neste trabalho são exclusivamente do(s) autor(es) e não refletem a visão do Banco Central do Brasil. 
-
+ 
 Ainda que este artigo represente trabalho preliminar, citação da fonte é requerida mesmo quando reproduzido parcialmente. 
-
+ 
+ 
+ 
+ 
 Banco Central do Brasil Information Bureau 
-
+ 
 Address: 
 Secre/Surel/Diate 
-
+ 
 SBS – Quadra 3 – Bloco B 
-
+ 
 Edifício-Sede – 2º subsolo 
-
+ 
 70074-900 Brasília – DF – Brazil 
 Phones: 
 (5561) 414 (....)   2401, 2402, 2403, 2404, 2405, 2406 
@@ -58,15 +74,24 @@ DDG:
 Fax: 
 (5561) 321-9453 
 Internet: 
+http://www.bcb.gov.br 
 E-mails: 
+cap.secre@bcb.gov.br 
+ 
+ dinfo.secre@bcb.gov.br
 
+3
+ 
 Inflation Targeting in Brazil: Lessons and Challenges* 
-
+ 
 André Minella** 
 Paulo Springer de Freitas** 
 Ilan Goldfajn*** 
 Marcelo Kfoury Muinhos** 
-
+ 
+ 
+ 
+ 
 Abstract 
 This paper assesses the first three years of the inflation targeting regime 
 adopted in July 1999 in Brazil. The inflation targeting framework has shown 
@@ -84,16 +109,20 @@ quantifies the sources of inflation, and examine some issues involved in the
 institutional design of inflation targeting. 
 Keywords: inflation targeting, Brazil, monetary policy 
 JEL Classification: E31, E52, E58 
-
+                                                 
 * We thank the participants in the Autumn 2002 Central Bank Economists' Meeting at the Bank for 
 International Settlements (BIS) and in a seminar at the Central Bank of Brazil for their comments, 
 Richard Clarida for comments in a workshop, and Thaís P. Ferreira for her contributions. We are also 
 grateful to Luis A. Pelicioni and Marcileide A. da Silva for assistance with data. The views expressed are 
 those of the authors and not necessarily those of the Central Bank of Brazil. 
+** Research Department, Central Bank of Brazil. E-mail addresses: andre.minella@bcb.gov.br, 
+paulo.freitas@bcb.gov.br, and marcelo.kfoury@bcb.gov.br 
 *** Deputy Governor for Economic Policy, Central Bank of Brazil, and Pontifical Catholic University of 
+Rio de Janeiro (PUC-RJ). E-mail address: ilan.goldfajn@bcb.gov.br
 
+4
 1. Introduction 
-
+ 
 This paper assesses the inflation targeting regime adopted in July 1999 in Brazil, 
 examining the challenges faced in its first three years. The inflation targeting 
 mechanism has shown to be highly important for the macroeconomic stabilization. In 
@@ -105,7 +134,7 @@ volatility. Moreover, we describe the methodology used to deal with inflationary
 shocks, and examine some issues involved in the institutional design of inflation 
 targeting, such as the use of core inflation measures, escape clauses, tolerance intervals, 
 establishment of targets, and target horizon. 
-
+ 
 We show that the inflation expectations of the private sector have not been 
 departing significantly from the targets in the face of inflationary shocks. Other 
 evidence also supports the view that the established inflation targets have worked as an 
@@ -116,7 +145,7 @@ monetary policy is conducted on a forward-looking basis. We also find some evide
 of change in inflation rate dynamics, basically the reduction in the degree of persistence 
 in inflation. The volatility of output and inflation has also decreased in the inflation 
 targeting period. 
-
+ 
 We also stress the significant inflationary pressures stemming from the change 
 in relative prices in the economy ("administered or monitored" versus "market" prices) 
 and from the exchange rate volatility in the last years. We estimate the pass-through 
@@ -129,12 +158,13 @@ inflation.
 Section 2 presents an overview of the first three years of inflation targeting. 
 Section 3 assesses the different challenges for the inflation targeting regime. Section 4
 
+5
 presents the methodology used to deal with shocks, and Section 5 examines some issues 
 involved in the institutional design of inflation targeting. A final section concludes the 
 paper. 
-
+ 
 2. Overview of the first three years of inflation targeting 
-
+ 
 The current inflation targeting regime was adopted in mid-1999, after the 
 floating of the currency in January of the same year. In the first two years, inflation rates 
 were kept on target, having absorbed the initial impact of the exchange rate depreciation 
@@ -150,10 +180,39 @@ targets for 1999-2004, and actual inflation for 1999-2001. Up to 2002, the toler
 intervals were 2 percentage points above and below the central target, and as of 2003 
 the intervals were enlarged to 2.5 percentage points. The inflation rate was 8.9% and 
 6.0% for targets of 8% and 6% for 1999 and 2000, respectively. 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 Figure 1
 Inflation Targets (upper limit, central target, and lower limit) and Inflation Rate (% p.a.) 
+8.94 
+5.97 
+7.67
+0 
+2 
+4 
+6 
+8 
+10 
+12 
+1999 
+2000 
+2001
+2002
+2003
+2004
 
+6
 However, in 2001 and 2002, several external and domestic shocks hit the 
 Brazilian economy with significant impact on inflation. The inflation rate reached 7.7% 
 in 2001, 1.7 p.p. above the upper limit of the inflation target,1 and is expected to be 
@@ -165,7 +224,7 @@ average exchange rate had increased by 39.6% (a depreciation of domestic currenc
 rate level since 1998. In 2002, the shocks included increased risk aversion in capital 
 markets, and uncertainties related to Brazil's future macroeconomic policies under the 
 upcoming government, leading to a new wave of depreciation. 
-
+ 
 The change in relative prices in the economy affected the inflation rate 
 significantly as well. The administered by contract or monitored prices – administered 
 prices, for short – rose well above the other prices – market prices, for short. The 
@@ -173,8 +232,9 @@ administered prices are defined as the ones little affected by domestic demand a
 supply conditions or that are in someway regulated by some public agency. The group 
 was defined by the Monetary Policy Committee (Copom) in July 2001, and includes oil 
 by-products, fixed telephone, residential electricity, and public transportation. Its weight 
-
+                                                 
 1 The reasons for the non-fulfillment of the target in 2001 were explained in an open letter from the 
+Governor of the Central Bank of Brazil to the Minister of Finance, available at www.bcb.gov.br. 
 Figure 2 
 Exchange Rate Level (R$/US$) - 1998:01- 2002:08 (Monthly Average)
 1.00
@@ -212,10 +272,11 @@ Mar-02
 May-02
 Jul-02
 
+7
 in the IPCA was 30.8% in June 2002. Furthermore, the energy crisis, from 2001 to the 
 beginning of 2002, and the deregulation of oil by-product markets also led to 
 inflationary pressures. 
-
+ 
 Figure 3 shows the exchange rate depreciation, the increase in administered and 
 market prices, and inflation rate for 2001 and 2002 (up to August). The administered 
 prices rose 10.4% in 2001 and 7.6% in January-August 2002, whereas market prices 
@@ -230,7 +291,7 @@ inner part of the charts are the percentage point contributions for the inflatio
 in the outer part, the corresponding proportion. In 2001, 38% of the inflation rate can be 
 explained by the exchange rate depreciation, whereas for January-August 2002 the 
 contribution of the exchange rate reaches 48%. 
-
+                                                 
 2 For an overview of the structural model, see Bogdanski et al. (2000). Using the aggregate supply curve, 
 which relates the current inflation of market prices to the expected and past headline inflation, output gap, 
 and exchange rate change, we estimate the contributions of the exchange rate pass-through and of the 
@@ -262,6 +323,9 @@ Market Prices Inflation
 2001
 2002 (up to August)
 
+8
+ 
+ 
 In 2001 and 2002, the Central Bank acted preemptively, aiming at minimizing 
 the potential inflationary effects of the different shocks, mainly the exchange rate 
 Figure 4
@@ -308,6 +372,7 @@ Through and Inertia
 2.3
 0.8
 
+9
 depreciation and the increase in administered prices. The main guideline of monetary 
 policy was to limit the propagation of the shocks to the other prices in the economy. 
 Figure 6 presents the path of the basic interest rate – the Selic rate – controlled by the 
@@ -322,7 +387,7 @@ intensity and magnitude of the shocks that hit the Brazilian economy in 2001 and
 the cost in terms of output losses of a policy aimed at offsetting completely these shocks 
 and keeping inflation within the tolerance intervals would have been significantly 
 higher. 
-
+ 
 We can also verify that there has been a gain in terms of variability of the 
 inflation rate, output, and interest rate. Table 1 reports the average, standard error and 
 coefficient of variation (ratio of standard error to average). It compares the first three 
@@ -361,6 +426,7 @@ Mar-02
 May-02
 Jul-02
 
+10
 stabilization. The inflation rate is measured by IPCA, output by seasonally adjusted 
 GDP, and the (nominal) interest rate by the Selic rate. We use quarterly data. In the case 
 of GDP, we use the annualized quarter over quarter growth rates. The variability of 
@@ -373,15 +439,20 @@ compare to the whole period before inflation targeting. In the case of the 1996:
 1999:02 period, the smaller average of the inflation rate is to a large extent a 
 consequence of the pegged exchange rate regime, which turned out to be unsustainable 
 in the medium run. 
-
+ 
+ 
+ 
+ 
 3. Challenges in inflation targeting  
-
+ 
+ 
 We stress three important challenges in the first three years of inflation targeting 
 in Brazil: construction of credibility, change in relative prices, and exchange rate 
 volatility. 
-
+  
 3.1. Constructing credibility 
-
+ 
+ 
 Inflation targeting is, to a large extent, a credibility issue. The Central Bank 
 should act and communicate in a way to convince the market that inflation will be under 
 control. This section shows the estimates of different specifications for Central Bank 
@@ -448,6 +519,7 @@ Period
 Inflation Rate
 GDP Growth
 
+11
 controlling inflation expectations. We show that the Central Bank has been reacting 
 strongly to deviations of expected inflation from the target, and that, despite the failure 
 to achieve the target in 2001, inflation expectations remain under control. Furthermore, 
@@ -456,13 +528,13 @@ the Central Bank of Brazil has gained credibility in the conduct of monetary pol
 credibility, however, is still under construction as it takes time to achieve it. Besides, the 
 absence of central bank independence in the legal framework is an obstacle to achieve 
 higher levels of credibility. 
-
+ 
 3.1.1. The reaction function of the Central Bank 
-
+ 
 We estimate a reaction function of the Central Bank of Brazil that relates the 
 interest rate to expected inflation and to the output gap, allowing also for some interest 
 rate smoothing: 
-
+ 
 ))
 (
 )(
@@ -505,14 +577,15 @@ i
 α
 α
 , 
-
+ 
+ 
 (1) 
 where it is interest rate, yt is the output gap, Etπt+j is inflation expectations and π*
 t+j is 
 the inflation target, both referring to some period in the future, as will be explained 
 below.3 The sample consists of monthly data between July 1999, when the regime was 
 formally introduced,4 and June 2002. 
-
+  
 We use two different definitions of interest rate. The first one is the base rate 
 (Selic rate) decided by Copom in their meetings. The second definition is the interest 
 rate gap, defined as the difference between the Selic rate and its trend, estimated by a 
@@ -520,7 +593,7 @@ HP-filter.5 The motivation to use the gap is to have some idea of how the Centra
 deviates the interest rate from equilibrium when faced by an increase in inflation 
 expectations. This is particularly important for Brazil because, when inflation targeting 
 was introduced, real interest rates were considerably high.6 Therefore, a convergence to 
-
+                                                 
 3 Clarida, Galí, and Gertler (1998, 2000) estimate forward-looking reaction functions for France, 
 Germany, Italy, Japan, the United Kingdom and the United States. Instead of using central bank or survey 
 expectations, they employ a Generalized Method of Moments (GMM) estimation. It is basically a 
@@ -532,16 +605,17 @@ months after the introduction of the Real) and June 2002.
 6 During the pegged exchange rate regime, which ended in January 1999, the Selic rate needed to be at 
 high levels in order to prevent a large outflow of reserves. In the first months following the flotation of
 
+12
 steady-state equilibrium would require a downward trend for interest rates. As 
 Bogdansky et al. (2001) discuss, in the first two years of the inflation targeting regime, 
 several shocks hit the Brazilian economy and, in many cases, the Copom decision was 
 to leave interest rate constant. This would be equivalent to an increase in interest rate if 
 we consider that the equilibrium interest rate was falling.  
-
+ 
 Monthly industrial production (seasonally adjusted), as measured by IBGE, is 
 the proxy for output. The output gap was obtained by the difference between the actual 
 and the HP-filtered series.7 
-
+ 
 We use two sources for inflation expectations. The first is the inflation forecasts 
 of the Central Bank of Brazil presented in the quarterly Inflation Report. The advantage 
 of this source is that Copom should take interest rate decisions based on its own 
@@ -554,13 +628,13 @@ source is obtained by a daily survey that the Central Bank conducts among financ
 institutions and consulting firms.8 The survey asks what firms expect for year-end 
 inflation in the current and in the following years.9 This expectation, however, is made 
 jointly with an expectation for the interest rate (not necessarily constant). 
-
+ 
 The Brazilian inflation targeting regime sets year-end inflation targets for the 
 current and the following two years. Since it is necessary to have a single measurement 
 of inflation deviation from the target, it was necessary to create a new variable, 
 weighting the expected deviations from target in different years. The variable chosen 
 was 
-
+ 
 )
 (
 12
@@ -597,17 +671,21 @@ D
 π
 π
 , 
-
+ 
+ 
+ 
 (2) 
-
+                                                                                                                                               
 the real, the Selic rate needed to be kept at high levels to prevent an inflation-exchange rate depreciation 
 spiral.  
 7 Estimations using output growth and the output gap obtained by extraction of a linear trend were also 
 performed. The results were similar and are not reported in this paper.  
+8 This survey is available on the Central Bank of Brazil website (www.bcb.gov.br).  In this estimation, we 
 use the inflation expectations collected on the eve of Copom meetings, avoiding possible endogeneity 
 problems. 
 9 In November 2001 the survey started collecting expectations for the following 12 months as well.
 
+13
 where Dt is the measure of expected deviation of inflation from the target, j indexes the 
 month, and t indexes the year. Therefore, Dt is a weighted average of current year and 
 following year expected deviation of inflation from the target, where the weights are 
@@ -617,7 +695,7 @@ existence of target for such period. Given the shorter lags in the transmission
 mechanism of monetary policy estimated for the Brazilian economy and the higher 
 uncertainty associated with the forecasts, it is reasonable to assume that Copom 
 concentrates on current- and following-year forecasts to take interest rate decisions. 
-
+ 
 Table 2 and 3 report the estimations using the Selic interest rate and the gap of 
 the Selic interest rate as dependent variable, respectively. Each table presents the 
 estimations with inflation forecasts of the Central Bank  (sample 1999:06-2002:06) and 
@@ -629,14 +707,14 @@ not statistically significant when using market expectations or presents the wro
 when using inflation expectations presented in the Inflation Reports. We have also 
 tested for the inclusion of exchange rate change in the reaction function, but this 
 variable is not statistically significant. 
-
+ 
 Most importantly, the coefficient on inflation expectation is greater than one and 
 significantly different from zero. Employing the Inflation Report's expectations, the 
 coefficient is 1.8413 and 4.25 using the Selic rate and the gap of Selic, respectively. 
 Therefore, we can conclude that the Central Bank has been reacting strongly to expected 
 inflation. It conducts monetary policy on a forward-looking basis, and responds to 
 inflationary pressures. 
-
+                                                 
 10 It is not necessary to have a single measure of inflation deviation. If there were enough data, it would 
 be possible to use expected inflation for the current and the following years (and possibly more years 
 ahead) in the reaction function. But it would then be necessary to introduce dummy variables for the 
@@ -698,13 +776,20 @@ i
 . 
 13 In this case, the p-value is 0.13, but we have to consider the small size of the sample.
 
+14
+ 
+ 
+  
+ 
 It is interesting to note that such coefficients are around 1.4-1.8 when the 
 dependent variable is the Selic rate,14 and above 3.6 when the dependent variable is the 
 gap of the Selic rate. This result supports the view that, given a downward trend for 
 interest rates, Copom decisions of leaving the interest rate constant may be interpreted 
 as a tightening of monetary policy. Moreover, in the case of the gap of Selic rate, the 
 coefficients are significantly different from one in all specifications. 
-
+ 
+ 
+                                                 
 14 Favero and Giavazzi (2002) also estimated a similar reaction function using market expectations, and 
 obtained similar results (coefficient equal to 1.78). Silva and Portugal (2002) used a different 
 specification, and obtained different results. 
@@ -781,8 +866,32 @@ With Market Inflation
 Expectations
 Coefficients and standard errors
 
+15
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 3.1.2. Inflation expectations and the role of the targets  
-
+ 
 A naive analysis of the inflation targeting regime in Brazil might say that this 
 regime has not been successful in controlling inflation. As Figure 7 shows, since mid-
 2001, 12-month inflation has been above the upper limit of the tolerance interval.15 
@@ -791,7 +900,7 @@ performance of the Central Bank. The evolution of inflation expectations, and th
 of the target should be more relevant variables for assessing the credibility of the 
 Central Bank. Furthermore, it is necessary to take into account the shocks that hit the 
 economy. 
-
+                                                 
 15 There are established targets only for year-end inflation. Therefore it was necessary to impute a target 
 to the other months of the year, which was done by linear interpolation.  
 Constant
@@ -867,6 +976,11 @@ Coefficients and standard errors
 Estimation of Reaction Function of Central Bank
 Dependent Variable: Gap of Selic Interest Rate (Monthly Average)
 
+16
+ 
+ 
+ 
+ 
 Since the introduction of the inflation targeting regime in Brazil, the economy 
 has been hit by inflationary shocks, notably by supply and cost-push shocks. As of 
 2001, shocks such as the energy crisis, the readjustments of administered prices and the 
@@ -876,7 +990,7 @@ January 2002, the conduct of monetary policy has been based on accommodating the
 first-round effects of supply and cost-push shocks. This means monetary policy will 
 allow relative price movements to affect inflation, but will neutralize the second-round 
 effects.  
-
+ 
 As long as the market understands the objectives of the Central Bank, and its 
 conduct is credible, inflation expectations should be contained and, except for 
 unforeseen new inflationary shocks, inflation should gravitate around the target. Two 
@@ -922,11 +1036,12 @@ Upper limit
 Lower Limit
 12-Month Inflation Rate
 
+17
 expectations is that the conduct of monetary policy should be consistent with the main 
 guidelines expressed by Copom. In this sense, the reaction function estimated in the 
 previous subsection shows that the Central Bank has been acting consistently with the 
 inflation targeting framework.  
-
+ 
 Figure 8 suggests that the two conditions stated above have been met. It shows 
 the 12-month ahead inflation that is expected by the market, the 12-month ahead target, 
 and actual 12-month accumulated inflation. We estimate the 12-month ahead expected 
@@ -996,6 +1111,8 @@ Lower Limit
 Inflation Expectations
 Previous 12-Month Inflation
 
+18
+ 
 Other evidence to suggest the gains in credibility of the Central Bank is to 
 evaluate the role of the target in forming expectations. We have run ordinary least 
 squares (OLS) regressions of 12-month ahead market inflation expectations on its own 
@@ -1006,7 +1123,7 @@ coefficients are statistically significant and have the expected sign. The posit
 coefficient on the interest rate may be explained by the reaction of interest rates to 
 inflationary pressures. When the Central Bank (and the market) foresees higher 
 inflation, the rate of interest is increased. Most importantly, the expected inflation reacts 
-
+ 
 I
 II
 III
@@ -1085,20 +1202,22 @@ Table 4
 Estimation of Reaction Function of Inflation Expectations
 Dependent Variable: Market Inflation Rate Expectations (Adjusted)
 
+19
 significantly to the inflation targets (coefficient equal to 0.96). Since this result could be 
 a consequence of some correlation between targets and past inflation, we also include 
 the actual 12-month inflation rate in the regression (specifications III and IV). This 
 variable is not statistically significant. Therefore, there are indications that the 
 expectations are forward looking, and the inflation targets play an important role. 
-
+ 
+ 
 In summary, although the actual inflation rate has been above the upper limit of 
 the tolerance interval in 2001 and 2002, the inflation targeting regime has been 
 successful in anchoring expectations. This is a consequence of the gains of credibility 
 that the Central Bank has achieved since the implementation of the inflation targeting 
 regime. 
-
+ 
 3.1.3. Change in the inflation dynamics 
-
+ 
 As the inflation targeting regime is supposed to affect the formation of inflation 
 expectations, we can consider the possibility that the backward-looking component in 
 price adjustment has become less important. The share of backward-looking firms could 
@@ -1116,7 +1235,7 @@ for inflation and do not include the exchange rate change. From the estimated
 coefficients on the dummy variables, we can conclude that there is a statistically 
 significant change in the constant and in the coefficient on lagged inflation in the 
 inflation targeting period.  The autoregressive  coefficient  falls  from  0.74 to 0.15.  The  
-
+                                                 
 16 It is important to stress that the Central Bank structural model used for inflation forecasting employs 
 quarterly data, and has a different specification, for example, it includes a forward-looking term for 
 inflation, and a term for the output gap instead of the unemployment rate. 
@@ -1124,9 +1243,12 @@ inflation, and a term for the output gap instead of the unemployment rate.
 results are qualitatively similar if we use the raw data or the unemployment rate estimated according to 
 the criterion of thirty days.
 
+20
+  
+ 
 coefficient on lagged unemployment is negative. In all three specifications, there is no 
 statistically significant change in the coefficient on lagged unemployment.18 However, 
-
+                                                 
 18 The estimations reported in Table 5 were conducted without including the terms corresponding to the 
 inflation targeting dummies interacting with the unemployment rate and exchange rate change. 
 First 
@@ -1214,6 +1336,7 @@ Table 5
 Estimation of Aggregate Supply Curve
 Dependent Variable: Monthly Inflation Rate
 
+21
 since the residuals present serial autocorrelation, we use a second specification that adds 
 another lag for inflation rate. The change in the coefficient of the first lag of the 
 inflation rate is still significant: from 0.81 to 0.23. The sum of the two lags before and 
@@ -1239,7 +1362,8 @@ inflation inertia, the total effect over a year in the inflation reduction is 2.
 points and 1.1 percentage points for the whole sample and for the inflation targeting 
 period, respectively. As before, this result is explained by the different degrees of 
 inflation persistence. 
-
+ 
+                                                 
 19 Note that, although the constant in the regression is higher in the inflation targeting period, the 
 unconditional expected inflation (up to a constant referring to the natural unemployment rate) is equal to 
 2.9 and 1.3 for the periods before and after the adoption of inflation targeting using the first specification; 
@@ -1251,8 +1375,9 @@ markedly above market expectations, because of the off-cropping season and a sig
 administered prices. Including this dummy in the three specifications has no major effect on the estimated 
 coefficients.
 
+22
 3.2. Change in relative prices 
-
+ 
 Monetary policy has been facing a significant change in relative prices in the 
 economy that has markedly affected the inflation rate. Since mid-1995, administered 
 prices have increased systematically above market prices.21 Figure 9 shows the ratio of 
@@ -1261,17 +1386,19 @@ three years of inflation targeting (comparing June 2002 to June 1999). The weigh
 this group in the IPCA grew from a 17% average (from January 1991 to July 1999) to 
 28% in August 1999 as a result of a new household budget survey. It reached 30.8% in 
 June 2002 because its changes were greater than those of market prices. 
-
+ 
+ 
+ 
 The dynamics of administered prices differ from those of market prices in three 
 aspects: 
-
+ 
 a) dependence on international prices in the case of oil by-products; 
-
+ 
 b) a greater pass-through from exchange rate. There are three basic links: i) the 
 price of oil by-products depends on oil prices denominated in domestic currency; ii) 
 electricity rates are partly linked to exchange rate variations; and iii) the price 
 adjustments settled in the contracts that govern electricity and telephone rates are partly 
-
+                                                 
 21 For more details on the behavior of administered prices, see Figueiredo (2002). 
 Figure 9
 Ratio of Administered Prices to Market Prices - 1992:01-2002:06 (Jan/1992=1)
@@ -1302,9 +1429,10 @@ jan/01
 jul/01
 jan/02
 
+23
 indexed to the General Price Index (IGP), which is more affected by the exchange rate 
 than the consumer price indexes; 
-
+ 
 c) stronger backward-looking behavior. Electricity and telephone rates are 
 generally adjusted annually, and the contractual clauses usually estipulate that 
 adjustments should be based on a weighted average of the past change of IGP and of the 
@@ -1322,7 +1450,7 @@ inflationary shock is more persistent. Second, since the inflation targets for B
 decreasing, it is important that the price adjustments converge to the targets to reduce or 
 avoid output costs. In the presence of stronger backward-looking behavior, however, the 
 adjustment is slower, implying a greater output gap reduction to meet the targets. 
-
+ 
 Moreover, the telephone, electricity and oil by-products sectors faced some 
 major structural reforms that had some initial implications for the inflation rate. Fixed 
 telephone rates saw two spikes in 1996 and 1997 because the line acquisition fee 
@@ -1331,12 +1459,14 @@ increased. The oil by-products sector underwent deregulation at the beginning of
 with the end of control on prices and of subsidies to cooking gas (whose prices rose 
 about 18% in January 2002). In the case of electricity, the rationing between 2001 and 
 2002 led to a rise in the electricity rates. 
-
+ 
 Figure 10 shows the path of the price levels of gasoline, cooking gas, telephone 
 use, electricity, urban bus, and the headline IPCA level from December 1998 through 
 June 2002. It is clear that these prices have exerted significant pressure on the inflation 
 rate.
 
+24
+ 
 The effect of the inflation rate on relative prices is broadly known. In this paper, 
 we stress the effect of change in relative prices on the inflation rate. As a measure of the 
 dispersion of relative prices we use the standard deviation of the monthly change of the 
@@ -1347,7 +1477,8 @@ criteria, respectively) for a sample from 1994:12 to 2002:06. We can reject the 
 hypothesis that relative prices do not Granger cause the inflation rate. Therefore, change 
 in relative prices conveys information about future inflation. We can also reject the null 
 hypothesis that inflation rate does not Granger cause relative prices. 
-
+ 
+                                                 
 22 We can reject that they are integrated of order one. 
 Figure 10
 Level of Prices - IPCA and Selected Items - 1998:12-2002:06 (Dec./1998=1)
@@ -1410,8 +1541,9 @@ Sample: 1994:12 - 2002:06
 1 lag
 3 lags
 
+25
 3.3. Exchange rate volatility 
-
+ 
 Dealing with exchange rate volatility has been one of the main challenges faced 
 by inflation targeting regimes in emerging market economies. Compared to 
 industrialized economies, emerging markets seem to be more sensitive to the effects of 
@@ -1437,15 +1569,16 @@ reasons: (i) facilitating adjustment to sudden reductions in capital inflows; (i
 accumulating reserves; (iii) reducing excessive exchange rate volatility (associated with 
 lower liquidity in foreign exchange markets); and (iv) raising the supply of exchange 
 rate insurance. 
-
+ 
 Given the problems associated with exchange rate volatility and the pros of 
 intervention, the Central Bank of Brazil, like other emerging markets economies, 
 including some that also adopt inflation targeting, has actually been implementing a 
 dirty-floating exchange rate policy.23 Such interventions are made as transparent as 
 possible in order to avoid the concern expressed by Mishkin (2000) that intervention 
-
+                                                 
 23 Calvo and Reinhart (2000) discuss the limited empirical evidence of truly free-floating countries.
 
+26
 may hinder the credibility of monetary policy as the public may realize that stabilizing 
 the exchange rate takes precedence over promoting price stability as a policy objective. 
 In Brazil, the volatility of the exchange rate has been considerable. From 
@@ -1464,7 +1597,7 @@ done by Haussmann, Panizza and Stein (2001). They estimated the pass-through
 accumulated in 12 months for more than 40 countries and found a value below 5% for 
 G-7 countries, and, at the other extreme, figures above 50% for countries like Mexico, 
 Paraguay and Poland.  
-
+ 
 We can also use a VAR estimation with monthly data to assess the pass-through 
 and the importance of exchange rate shocks to inflation rate variability. We use two 
 specifications. Both include output, spread of EMBI+ (Emerging Markets Bond Index 
@@ -1477,11 +1610,12 @@ interest rate is the Selic overnight rate, the basic interest rate in the econom
 by the Central Bank. In the first specification, we use administered and market prices as 
 variables, whereas in the second we use the consumer price index IPCA instead. We 
 estimate the model in levels, that is, using I(1) and I(0) regressors instead of using the 
-
+                                                 
 24 See Goldfajn and Werlang (2000) for the reasons for the low pass-through in the Brazilian January 
 1999 devaluation episode. 
 25 We use EMBI from Sept./1994 through Dec./1998, and EMBI+ thereafter.
 
+27
 error correction representation.26 The estimation is consistent and captures possible 
 existing cointegration relationships (Sims, Stock, and Watson, 1990; Watson, 1994). 
 The variables used are the log-levels of output, administered prices, market prices, 
@@ -1496,7 +1630,7 @@ whole period of the Real Plan, from September 1994 through June 2002.27 The seco
 sample starts with the implementation of the inflation targeting regime (July 1999) in 
 order to try to capture some specificities of the recent period. However, since the sample 
 is very short, the estimation does not generate statistically significant results.  
-
+ 
 Figure 11 shows the impulse responses to a one standard deviation of exchange 
 rate shock, using the whole sample. It presents the point estimates and the two-standard-
 error bands, which were estimated using a Monte Carlo experiment with 1000 draws. 
@@ -1512,7 +1646,7 @@ maximum in the eighth month. The values of the pass-through are presented in Tab
 We estimate the pass-through as the ratio of the price increase in a 12-month horizon to 
 the value of the exchange rate shock. If we consider the value of the exchange rate 
 shock in the first month, the pass-through is 19.7% for the administered prices, and 
-
+                                                 
 26 According to augmented Dickey-Fuller unit root tests, we can accept the presence of a unit root for the 
 log-levels of IPCA, administered prices, market prices, exchange rate, interest rate, and for the level of 
 EMBI+ spread. We reject the presence of a unit root for the monthly change of those variables, and for 
@@ -1522,33 +1656,144 @@ previous high inflation period. In this case, the start of the sample is adjuste
 lags used. 
 28 We have used four lags for both specifications.
 
+28
 7.8% for the market prices. Considering the value of the exchange rate shock in the 
 second month, the pass-through is 12.1% and 4.8%, respectively. The pass-through for 
 the administered prices is 2.5 higher than that for market prices. Figure 12 shows the 
 responses in the case of the specification that includes the IPCA instead of administered 
 and market prices.29 The pass-through to the IPCA was estimated at 14.1% and 8.4%, 
 considering the first and second month shock, respectively. 
-
+ 
+ 
 Figure 11. Impulse Responses of Administered Prices (ADMP), Market Prices (FREEP) 
 and Exhange Rate (ER) to an Exchange Rate Shock 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 Figure 12. Impulse Responses of Price Level (IPCA) and Exchange Rate to an 
 Exchange Rate Shock 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 We also consider a variance decomposition analysis, which gives the percentage 
 of the forecast error variance of a variable that can be attributed to a shock to a specific 
 variable. The influence of exchange rate shocks on administered prices is greater than 
 on market prices. Considering a 12-month horizon, shocks to the exchange rate explain 
 24.9% of the forecast error variance of administered prices, and 16.3% of that of market 
 prices. Using the specification with the IPCA, the value is 23.0%. 
-
+                                                 
 29 The response of the price level stabilizes if we consider a 24-month horizon. 
+-0.2
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+1.2
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
 Response of ADMP to ER
+-.1
+.0
+.1
+.2
+.3
+.4
+.5
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
 Response of FREEP to ER
+-3
+-2
+-1
+0
+1
+2
+3
+4
+5
+6
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
 Response of ER to ER
+-.1
+.0
+.1
+.2
+.3
+.4
+.5
+.6
+.7
+2
+4
+6
+8
+10
+12
 Response of IPCA to ER
+-1
+0
+1
+2
+3
+4
+5
+6
+2
+4
+6
+8
+10
+12
 Response of ER to ER
 
+29
+ 
+ 
+ 
+ 
 Since the inflation targeting regime may have represented a structural change in 
 the relationships, and the exchange rate regime is different from most of the previous 
 period, we estimate a VAR model for the first three years of inflation targeting 
@@ -1566,7 +1811,7 @@ In terms of variance decomposition, exchange rate shocks explain 23.4% and
 40.2% of the forecast error variance of administered and market prices, respectively, in 
 a 12-month horizon (the first value is almost statistically significant, and the second is 
 significant). Therefore, in this estimation, the contribution of exchange rate shocks was 
-
+                                                 
 30 We have used two lags in both specifications. With the IPCA and three lags, however, the values are 
 smaller for the pass-through: 9.6% and 4.8%. 
 Administered 
@@ -1611,16 +1856,18 @@ Pass-Through Considering Different Specifications:
 Sample
 Ratio of Price Change (12-month horizon) to an Exchange Rate Shock
 
+30
 greater for market prices than for the administered. For the case of the IPCA, the 
 exchange rate shocks explain 32.8% of the forecast error variance of prices. 
 Therefore, exchange rate volatility is an important source of inflation variability. 
 The design of the inflation targeting framework has to take into account this issue to 
 avoid that a possible non-fulfillment of inflation targets as a result of exchange rate 
 volatility decreasing the credibility of the central bank. 
-
+ 
+ 
 4. Methodology for calculating inflation inertia and the effects of the shock to 
 administered prices 
-
+ 
 The interest rate should react to inflationary shocks. However, monetary 
 policymakers have to consider several issues concerning the shocks: their nature 
 (demand or supply shocks), degree of persistence (temporary or permanent), size and 
@@ -1642,9 +1889,10 @@ Central Bank to quantify the first-order inflationary impact of administered pri
 inflation have become particularly important, since it helps to implement monetary 
 policy in a flexible manner and without losing sight of the larger objective of achieving 
 the inflation targets set by the National Monetary Council.  
-
+                                                 
 31 See Clarida, Galí, and Gertler (1999).
 
+31
 The first-order inflationary impact of the shock to administered items is defined 
 as the variation in administered prices exceeding the target for the inflation rate, 
 weighted by the share of administered prices in the IPCA and excluding the effects of 
@@ -1662,15 +1910,15 @@ via inertia, of previous-year inflation on current-year inflation, and the infla
 impact brought about by the shock to administered prices.32 In this summary, it is 
 assumed that the inertial effects and the pass-through from exchange rate to prices are 
 the same for all goods in the economy.  
-
+ 
 4.1. Calculating the primary effect of the shock to administered prices 
-
+ 
 The first-order inflationary impact or primary effect of readjustments in 
 administered prices is calculated by the difference between administered price inflation 
 and the inflation target for the year (weighted by the influence of administered prices on 
 the IPCA), excluding the effects of inflation inertia and of the exchange rate variation 
 on administered prices: 
-
+ 
 (
 )
 ),
@@ -1689,22 +1937,27 @@ adm
 ω
 π
 π
-
+ 
+ 
+ 
+ 
+ 
 (3) 
-
+ 
 where ShA = first-order inflationary impact of administered  prices; 
 πadm = administered  price inflation; 
 π* = target for the inflation; 
 ωadm = weight of administered  prices in the IPCA; 
-
+                                                 
 32 See Freitas, Minella, and Riella (2002) for a more detailed description of the methodology.
 
+32
 IA = effect of the inertia in the previous year on the evolution of administered 
 prices; 
 CaA  = effect of the exchange rate variation on the evolution of administered 
 prices. 
 The following subsection shows the calculation of the IA and CaA components.  
-
+ 
 4.1.1. Calculating the effect of inflation inertia and exchange rate pass-through on 
 administered prices  
 The model adopted by the Central Bank of Brazil assumes that the inflation in a 
@@ -1714,7 +1967,7 @@ year results from the inflation registered in the last quarter of the previous y
 calculation is based on the inflation that exceeded the target. The inertia inherited from 
 the last quarter of the previous year impacts the inflation in each quarter of the current 
 year according to the following formula: 
-
+ 
 group
 j
 inertia
@@ -1749,9 +2002,12 @@ t
 −
 =
 ,  
-
+ 
+ 
+ 
 (4) 
-
+ 
+ 
 where
 ty
 jI ,  = effect of the inflation inertia in the previous year (yt-1) on the inflation of 
@@ -1780,7 +2036,7 @@ coefficient is raised to the jth power;
 ωgroup = weight of the group (market or administered prices) in the IPCA. 
 The total impact of previous-year inflation on current-year inflation via inertia is 
 obtained by adding the effects estimated for each quarter: 
-
+ 
 ,1
 )
 1(
@@ -1799,15 +2055,22 @@ j
 y
 I
 I
-
+  
+ 
+ 
+ 
+ 
+ 
+ 
 (5)
 
+33
 where Π represents the productory symbol. In this paper, we assume, for simplicity, that 
 I = IA, that is, the inertia estimated for administered prices is the same as that for market 
 prices. 
 The formula below shows how to measure the influence of exchange rate 
 variation on the primary impact of the shock to administered prices:  
-
+ 
 ω
 α *
 *
@@ -1825,9 +2088,13 @@ CaC
 −
 =
 ,  
-
+ 
+ 
+ 
+ 
+ 
 (6) 
-
+ 
 where  CaCt  = effect of the exchange rate variation on the price adjustment of utility C 
 in month t; 
 (et-1 – et-k)  =  exchange rate variation accumulated from t-k to t. The value of k 
@@ -1840,9 +2107,10 @@ rule;
 α =  pass-through of the exchange rate variation to prices; 
 ω  = weight of the specific good in the IPCA. In this paper, it corresponds to 
 administered prices as a whole. 
-
+ 
 4.2. An example 
-
+ 
+ 
 Table 8 shows a hypothetical example of how the primary effect of the shock to 
 administered prices and the inertia inherited from the previous year could be useful in a 
 monetary policy decision. This example was built assuming that the target for inflation 
@@ -1851,12 +2119,13 @@ According to this example, inflation is expected to be 1 percentage point above
 the target for that year. Cookbook recipe would suggest that Copom raise interest rate33. 
 However,  Copom should adjust the target, adding the impact of inertia to be tolerated 
 in that year (line c) and the primary effect of the shock to administered prices (line h). 
-
+                                                 
 33 Even if the projected deviation from the target were caused only by demand shocks, the optimal 
 response of the Central Bank would not necessarily be to raise interest rates. It would depend on the 
 effectiveness of monetary policy in reducing inflation in that year, the inflation forecasts for the following 
 years, the expected duration of the shock, etc.
 
+34
 Observe that Copom interprets as a shock not the whole increase in administered prices, 
 but only the increase that is not explained by inertia and the exchange rate change. 
 The target adjusted by the above-mentioned effects rises to 4.9%, which is close 
@@ -1871,7 +2140,7 @@ it can communicate with the market, and the stronger the output loss involved if
 inflation is brought back to target. In this sense, the bands should be considered mainly 
 as checkpoints, with the Central Bank explaining clearly the reasons for the non-
 fulfillment of the targets. 
-
+ 
 Item
 %
 (a) Target for year t
@@ -1899,8 +2168,10 @@ Shock to Admnistered Prices
 4.9
 Table 8
 
+35
 5. Institutional design of inflation targeting 
-
+ 
+ 
 The inflation targeting framework has to be designed in such way that the 
 conduct of monetary policy is oriented consistently towards the fulfillment of the 
 targets, but at the same time takes into account the limits for achieving this. The 
@@ -1910,7 +2181,7 @@ relates to the models used by central banks: model misspecification, uncertainty
 concerning the estimated coefficients, possible structural breaks, existence of variables 
 that are difficult to model, etc. The second is the presence of unexpected shocks in the 
 economy. The third is the presence of lags in the effects of monetary policy. 
-
+ 
 We stress four issues involved in the institutional design of inflation targeting: i) 
 the choice of price index (core versus headline inflation), ii) the inclusion or not of 
 escape clauses, iii) the size of the tolerance intervals (bands), and iv) the horizon and 
@@ -1918,9 +2189,10 @@ criteria used for the targets.34 Besides these issues, it is important to note t
 in the Brazilian institutional framework represented by the absence of central bank 
 independence. Central bank independence has been implemented in several countries, 
 and is an important element for consolidating a policy oriented towards price stability. 
-
+ 
 5.1. “To core or not to core” 
-
+ 
+ 
 The use of some measure of core inflation has been justified on the grounds that 
 a measure of inflation that is less sensitive to temporary price movements and more 
 reflective of the long-term trend is necessary. Monetary policy should not target a 
@@ -1932,10 +2204,11 @@ are the exclusion method, and the trimmed mean method. The first usually exclude
 some items such as food, oil by-products, and other energy prices because these prices 
 present high seasonality and are often subject to supply shocks. The symmetric trimmed 
 mean core excludes the items presenting the higher and the lowest change in the period. 
-
+                                                 
 34 For different international experiences in terms of these four items, see Ferreira and Petrassi (2002), 
 and Mishkin and Schmidt-Hebbel (2002).
 
+36
 The items are ordered according to their change. The items excluded are those whose 
 accumulated weight from the top of the list reaches some threshold, say 20% or 30%, 
 and those following the same criterion from the bottom of the list.35 
@@ -1962,11 +2235,11 @@ Furthermore, in the Brazilian case, on some occasions during the 1970s and
 in order to reduce the official inflation rate, or even changed the official index. As a 
 result, the agents in Brazil tend to be reluctant to accept an index that excludes some 
 items because it reminds them of these changes in the past.  
-
+ 
 The adoption of a trimmed mean core in turn would imply a great loss in terms 
 of communicability. The basket that comprises the index is not known a priori: it 
 depends on the evolution of prices. Furthermore, the choice of the threshold is not 
-
+                                                 
 35 The sample of the variations of the inflation rate components is ordered {x1, ... , xn} with their 
 respective 
 weights 
@@ -2023,6 +2296,7 @@ I
 components to be considered in the computation of the trimmed mean with α%, and Wi is the 
 accumulated weight up to i-th component (Figueiredo, 2001).
 
+37
 trivial, and is necessary to smooth some prices whose adjustments take place only from 
 time to time.36 The Central Bank of Brazil uses a 20% symmetric trimmed mean core 
 that includes the smoothing of eight items.37 Figure 13 presents the monthly headline 
@@ -2036,7 +2310,8 @@ headline inflation, that is, core inflation conveys information about future inf
 (beyond that contained in past inflation), and inflation rate does not Granger cause core 
 inflation. Therefore, core inflation can be used as a useful source of information about 
 future inflation. 
-
+ 
+                                                 
 36 The discontinuous adjustments tend to be larger than the average. Therefore, in the absence of 
 smoothing, these items would be systematically excluded. 
 37 See Figueiredo (2001) for an evaluation of different core measures for Brazil. 
@@ -2081,15 +2356,18 @@ Jul-02
 Inflation Rate
 Core Inflation
 
+38
+ 
+ 
 5.2. Escape clauses 
-
+ 
 Since the inflation rate is subject to several factors that are beyond the control of 
 monetary policy, the success of the conduct of monetary policy should not be judged 
 exclusively in terms of the fulfillment or not of the inflation targets. Under some 
 circumstances, such as significant supply shocks, the central bank cannot avoid the 
 inflationary impact of the shock because of the presence of lags in the effects of 
 monetary policy or should not avoid it because of the associated output costs.  
-
+ 
 In the case of escape clauses included in the inflation targeting framework, the 
 circumstances under which the central bank can justify the non-fulfillment of the targets 
 are set in advance. The inflation target design in New Zealand, South Africa, the Czech 
@@ -2104,7 +2382,7 @@ prices that affect headline inflation by more than 1-1.5 percentage points, and 
 changes in the exchange rate not related to domestic monetary policy. In Switzerland, 
 escape clauses refer to change in the exchange rate and the prices of some items such as 
 oil and imported goods. 
-
+ 
 There is clearly a trade-off in the adoption of escape clauses in the framework. 
 Their inclusion allows a better assessment of the conduct of the central bank, and may 
 F-statistic
@@ -2128,24 +2406,26 @@ Sample: 1996:01 - 2002:06
 1 lag
 2 lags
 
+39
 avoid excessive responses from monetary policy that could otherwise occur. However, 
 their adoption may signal that the monetary authority will be lenient towards some 
 inflationary pressures, and their excessive use can affect the credibility of the regime. 
-
+ 
 In the Brazilian case, since the regime is still relatively new, and its credibility is 
 still under construction, the adoption of escape clauses could negatively affect its 
 credibility. Furthermore, the tolerance intervals should be enough to accommodate most 
 of the shocks that the economy is subject to. 
-
+ 
 5.3. Tolerance intervals (bands) 
-
+ 
+ 
 The limits of the forecasting models, the possibility of unexpected shocks hitting 
 the economy, and the presence of lags in the effects of monetary policy justify either the 
 use of tolerance intervals for the point targets or the use of range targets in the absence 
 of point targets in most of the inflation targeting countries. The size of the bands varies 
 across countries: going from 1 percentage point in Australia and Israel to 3 percentage 
 points in South Africa, 3.5 in Iceland, and 4 in Brazil for 2002 and 5 for 2003 and 2004. 
-
+ 
 The size of the bands should be large enough to allow the inflation rate to be 
 within them in most circumstances, but at the same time they are not supposed to be too 
 large to avoid a lenient conduct of monetary policy. The size of the bands has to be 
@@ -2162,10 +2442,11 @@ the estimations that model inflation have to start after June 1994. Moreover, wi
 three years of inflation targeting, possible structural breaks in the relationships are not 
 easily found. Second, the Brazilian economy has been hit by frequent and large shocks. 
 Most of them are related to its position as an emerging market economy – high volatility 
-
+                                                 
 39 Since there is a transition period of learning, possible structural changes with the new regime can be 
 found more easily with a larger sample.
 
+40
 of country risk premium and of the exchange rate – and to some structural 
 transformations that led to a change in relative prices. The volatility of the inflation rate 
 and exchange rate in Brazil is still one of the highest in inflation targeting economies.  
@@ -2178,9 +2459,10 @@ tolerance interval in 2001 was not enough to accommodate the shocks. Taking into
 account these factors affecting the band size, the National Monetary Council (CMN) has 
 enlarged the tolerance intervals from 2 percentage points to 2.5 percentage points above 
 and below the central targets for 2003 and 2004. 
-
+ 
 5.4. Establishment of targets and target horizon 
-
+ 
+ 
 The inflation targets have to be set taking into account both the long-term goal 
 of price stability and the conditions for their achievement. If the actual or expected 
 inflation rate is above the long-term goal, the targets have to be set in such way that the 
@@ -2191,7 +2473,7 @@ The length of the target horizon has also implications for the magnitude of the
 response of monetary policy to shocks. The longer the target horizon, the smaller the 
 effects of current shocks in expected inflation for the target horizon. As a consequence, 
 monetary policy tends to respond less to shocks. 
-
+ 
 The targets in Brazil are set in June by the CMN for the end of the calendar year 
 two years ahead. The initial targets were established taking into account the domestic 
 currency depreciation of the beginning of 1999, and aiming at reducing the inflation rate 
@@ -2202,12 +2484,14 @@ pursuit of targets that are perceived in advance as having low probability of be
 achievable would reduce the credibility of the Central Bank. Taking into account this 
 balance of risks, the CMN decided in June 2002 to revise upwards the target for 2003
 
+41
 from 3.25% to 4%, and set the target at 3.75% for 2004. We consider that private agents 
 in general have positively appraised the revision. Insisting on an unrealistic target would 
 have negatively affected the credibility of monetary policy. 
-
+ 
 6. Conclusions 
-
+ 
+ 
 The inflation targeting regime in Brazil is relatively new, but has shown to be 
 important in achieving low inflation rate levels even in a context of large shocks. The 
 presence of a central bank committed to achieving preannounced inflation targets has 
@@ -2217,7 +2501,7 @@ transparency that has marked the conduct of the monetary policy – including th
 of the minutes of Copom meetings seven days after the event and of the quarterly 
 Inflation Report – have helped develop of the awareness of the importance of the price 
 stability commitment. 
-
+ 
 In this period, the regime has faced many challenges, including the construction 
 of credibility – still under way – the change in relative prices, and the exchange rate 
 volatility. Dealing with them has required a large effort of the Central Bank, which itself 
@@ -2233,3 +2517,5 @@ conduct of monetary policy.
 Several issues comprise the institutional design of the inflation targeting 
 framework. The conclusions pointed to the maintenance of headline inflation as the 
 target and to the enlargement of the tolerance intervals (adopted for 2003 and 2004).
+
+42

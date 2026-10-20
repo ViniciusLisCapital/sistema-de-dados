@@ -19,7 +19,9 @@ reduced to only 1 percent, and signs of recovery remain exceedingly frag-
 ile. This has led many to wonder if this country might not also soon ﬁnd
 itself in a situation where interest rate policy is no longer available as a
 139
+G A U T I  B .  E G G E R T S S O N
 International Monetary Fund
+M I C H A E L  W O O D F O R D
 Princeton University
 We would like to thank Tamim Bayoumi, Ben Bernanke, Robin Brooks, Michael
 Dotsey, Benjamin Friedman, Stefan Gerlach, Mark Gertler, Marvin Goodfriend, Kenneth
@@ -29,11 +31,33 @@ the National Science Foundation for research support through a grant to the Nati
 Bureau of Economic Research. The views expressed in this paper are those of the authors
 and do not necessarily represent those of the International Monetary Fund or IMF policy.
 
+140
 Brookings Papers on Economic Activity, 1:2003
 Figure 1. Japan: Call Rate on Overnight Loans and Ratio of Monetary Base to GDP,
 1990–2002
 Source: Nomura database, Bank of Japan.
+1
+2
+3
+4
+5
+6
+7
+8
 Call rate
+1.0
+1.2
+1.4
+1.6
+1.8
+2.0
+2.2
+1992
+1994
+1996
+1998
+2000
+2002
 Monetary base-to-GDP ratio
 Index, 1992 = 1.0
 Percent a year
@@ -199,6 +223,7 @@ emphasizes the fact that increased expectations of inﬂation can lower the
 real interest rate implied by a zero nominal interest rate. This might sug-
 gest, however, that the central bank can affect the economy only insofar
 144
+Brookings Papers on Economic Activity, 1:2003
 6. Krugman (1998).
 
 as it affects expectations regarding a variable that it cannot inﬂuence
@@ -610,6 +635,7 @@ T
 T
 T
 T
+E u Y M P
 D P
 →∞
 [
@@ -646,6 +672,7 @@ T
 T
 T
 T t
+E u Y M P
 Y
 u Y M P
 M P
@@ -705,6 +732,7 @@ t
 +
 1
 150
+Brookings Papers on Economic Activity, 1:2003
 
 hold hits its intertemporal budget constraint.) The conditions in expres-
 sions 2 through 6 also suffice to imply that the representative household
@@ -730,6 +758,8 @@ which optimizing households are willing to supply each type of labor, on
 the other, we can show that nominal proﬁts (sales revenue in excess of
 labor costs) in period t of the supplier of good i are given by the function
 Π p i
+p P Y M P
+p i Y p i P
 f
 Y p P
 A
@@ -1298,6 +1328,7 @@ t
 ⋅
 q F
 Gauti B. Eggertsson and Michael Woodford
+155
 
 that is of type j, then the ﬂow government budget constraint takes the
 form 
@@ -1415,6 +1446,7 @@ in the wage demand function that is used in deriving the proﬁt function
 , ˜ ,
 –
 Π p i
+p P Y P P
 t
 t
 j
@@ -1539,6 +1571,8 @@ u C m C
  
 = [
 ]
+Gauti B. Eggertsson and Michael Woodford
+157
 
 Π.22 Using these substitutions, we can write each of the equilibrium rela-
 tions in expressions 2, 5, 6, 7, and 14 in a way that no longer makes refer-
@@ -1813,6 +1847,7 @@ t
 +
 +
 158
+Brookings Papers on Economic Activity, 1:2003
 22. See Woodford (forthcoming, chapter 3).
 
 all of the requirements for a rational expectations equilibrium, and the
@@ -2093,6 +2128,8 @@ ters is the private sector’s anticipation of the future path of short-term
 rates, because this determines equilibrium long-term interest rates as well
 as equilibrium exchange rates and other asset prices—all of which are
 quite relevant for many current spending decisions, and hence for optimal
+Gauti B. Eggertsson and Michael Woodford
+165
 
 pricing behavior as well. How short-term rates are managed matters
 because of the signals that such management gives about how the private
@@ -2268,6 +2305,7 @@ t
 m
 ≥
 168
+Brookings Papers on Economic Activity, 1:2003
 35. Woodford (forthcoming).
 
 The terms ut and rn
@@ -2311,6 +2349,8 @@ given by expression 4.
 Deﬂation under Forward-Looking Policy
 We begin by considering the degree to which the zero bound impedes
 the achievement of the central bank’s stabilization objectives in the case
+Gauti B. Eggertsson and Michael Woodford
+169
 
 that the bank pursues a strict inﬂation target. We interpret this as a com-
 mitment to adjust the nominal interest rate so that
@@ -2368,6 +2408,7 @@ ture. We prefer to bias our assumptions in the direction of only a modest effect
 rates on the timing of expenditure, so as not to exaggerate the size of the output contraction
 that is predicted to result from an inability to lower interest rates when the zero bound
 
+Gauti B. Eggertsson and Michael Woodford
 171
 Figure 2. State-Contingent Responses of Inﬂation and the Output Gap to a Shock to
 the Natural Rate of Interest under Strict Inﬂation Targetinga
@@ -2782,6 +2823,7 @@ Output gap
 Price level
 Index, quarter -1 =100
 Percent of GDP
+Percent a year
 Quarters after shock to natural rate of interest
 
 ﬁnally, the expectation of higher future income should stimulate current
@@ -2823,6 +2865,7 @@ through 14), but where it is not known until quarter 15 that the natural rate
 will return to its normal level in that quarter. Under the optimal policy
 the nominal interest rate is kept at zero for five more quarters (t = 15
 178
+Brookings Papers on Economic Activity, 1:2003
 
 through 19), whereas it immediately returns to its long-run steady-state
 level in quarter 15 under the forward-looking policy. The consequence of
@@ -2857,10 +2900,30 @@ Percent a year
 Optimal
 π* = 0
 
+0
+1
+2
+3
+4
+5
 Interest rate
 Optimal
 π* = 0
 Percent a year
+–10
+–8
+–6
+–4
+–2
+0
+0
+5
+10
+10
+5
+0
+15
+20
 Output gap
 Inflation
 Percent a year
@@ -3044,6 +3107,7 @@ Source: Authors’ calculations.
 Gap-adjusted index, quarter –1 = 100
 Target (pt*)
 Actual path (pt)
+Quarters after shock to natural rate of interest
 ~
 
 of the dynamics speciﬁed by equation 33. This hastens the date at which
@@ -3125,6 +3189,8 @@ that the central bank’s commitment to a policy rule can become credible
 over time only through repeated demonstrations of its commitment to act
 in accordance with it. In that case the part of the rule that involves the
 adjustment of the target in response to target shortfalls when the zero
+Gauti B. Eggertsson and Michael Woodford
+185
 
 bound binds might not come to be well understood by the private sector
 for a very long time, because the occasions when the zero bound binds
@@ -3181,6 +3247,7 @@ t
 λ
 κ
 186
+Brookings Papers on Economic Activity, 1:2003
 
 Figure 7. Responses of Inﬂation and the Output Gap under the Optimal Targeting
 Rule and under the Simple Rulea
@@ -3206,7 +3273,11 @@ Inflation
 Output gap
 Percent of GDP
 Percent a year
+Gauti B. Eggertsson and Michael Woodford
+187
 
+188
+Brookings Papers on Economic Activity, 1:2003
 Figure 8. Responses of the Nominal Interest Rate and Prices under the Optimal
 Targeting Rule and under the Simple Rule
 Source: Authors’ calculations.
@@ -3396,6 +3467,8 @@ Percent of GDP
 Percent a year
 Price level
 Output gap
+Quarters after shock to natural rate of interest
+5
 
 central bank undershoots its target for p˜ t (as both prices and output
 decline), even though the nominal interest rate is at zero. Thus, optimal
@@ -3432,6 +3505,8 @@ the binding zero bound, the central bank could never do anything about it.
 In the model presented in the ﬁrst part of the paper, a self-fulﬁlling,
 permanent deﬂation is indeed consistent with both the Euler equation
 (equation 2) for aggregate expenditure, the money-demand relation
+Gauti B. Eggertsson and Michael Woodford
+193
 
 (expression 3), and the pricing relations (equations 7 through 9). Suppose
 that, from some date τ onward, all disturbances t = 0 with certainty,
@@ -3520,6 +3595,7 @@ t
 θ
 θ
 194
+Brookings Papers on Economic Activity, 1:2003
 50. Benhabib, Schmitt-Grohé, and Uribe (2001).
 
 expect the optimal price-level process characterized earlier, that will
@@ -3633,6 +3709,7 @@ T
 c
 T
 c
+E u Y M P
 M P
 u Y m Y
 m Y
@@ -3691,6 +3768,7 @@ T
 T
 T
 T
+E u Y M P
 M P
 →∞
 [
@@ -3712,6 +3790,7 @@ E Q B
 →∞
 =
 196
+Brookings Papers on Economic Activity, 1:2003
 
 Thus a commitment of this kind can exclude the possibility of a self-
 fulﬁlling deﬂation of the sort described above as a rational expectations
@@ -3751,6 +3830,8 @@ and the output gap. Furthermore, the degree of monetary base expansion
 during a liquidity trap called for by the rule in equation 37 is quite mod-
 est. The monetary base will be raised gradually, if the zero bound contin-
 ues to bind, as the price-level target is ratcheted up to steadily higher
+Gauti B. Eggertsson and Michael Woodford
+197
 
 levels. But our calibrated example above indicates that this would typi-
 cally involve only a very modest increase in the monetary base, even if
@@ -3788,6 +3869,7 @@ helping to steer expectations is beyond the scope of this paper, and in any
 event the question is one that has as much to do with psychology and
 effective communication as with economic analysis. Nonetheless, we
 198
+Brookings Papers on Economic Activity, 1:2003
 
 offer a few remarks here about the kinds of policies that might contribute
 to the creation of desirable expectations.
@@ -4110,6 +4192,7 @@ mean that the central bank should imagine that, if it uses sufﬁcient guile,
 it can lead the private sector to believe whatever the central bank wishes it
 to believe, no matter what it actually does. Instead we have assumed that
 206
+Brookings Papers on Economic Activity, 1:2003
 67. Tinsley (1999).
 
 there is no point in the central bank trying to get the private sector to
@@ -4143,9 +4226,12 @@ its thinking on the matter and act consistently with the principles that it
 wishes the private sector to understand. Simply conducting policy in
 accordance with a rule may not sufﬁce to bring about an optimal, or
 nearly optimal, equilibrium, but it is the place to start.
+A P P E N D I X  A
 The Numerical Solution Method
 Here we illustrate a solution method for the optimal commitment
 solution discussed in the ﬁrst section of the text. This same method can
+Gauti B. Eggertsson and Michael Woodford
+207
 
 also be applied, with appropriate modiﬁcation of each of the steps, to ﬁnd-
 ing the solution in the case where the central bank commits to a constant
@@ -4236,6 +4322,7 @@ P
 
 
 208
+Brookings Papers on Economic Activity, 1:2003
 
 If there are two eigenvalues of the matrix M outside the unit circle, this
 system has a unique bounded solution of the form
@@ -4305,7 +4392,7 @@ j
 k
 j
 
-
+	
 P
 Z
 A
@@ -4440,6 +4527,8 @@ P
 t
 t
 = 
+Gauti B. Eggertsson and Michael Woodford
+209
 
 The Solution for t < 
 The solution satisﬁes the following equations:
@@ -4493,7 +4582,7 @@ t
 =
 +
 
-
+	
 ˜
 ˜
 ˜
@@ -4762,6 +4851,7 @@ t
 Λ
 Θ
 210
+Brookings Papers on Economic Activity, 1:2003
 
 S–1= AS–1
 	S–1 = MS–1
@@ -4798,6 +4888,8 @@ new initial guess for {kτ}S–1
 repeated until the solution converges. For this paper we wrote a routine in
 MATLAB that applies this method. The solution converged, and we veri-
 ﬁed that the result satisﬁed all the necessary conditions.
+Gauti B. Eggertsson and Michael Woodford
+211
 
 Comments and 
 Discussion
@@ -4866,6 +4958,8 @@ effect to work, the increase in the supply of real money balances due to
 the past fall in prices has to outweigh the increase in the demand for real
 money balances due to any expected future fall in prices. Or, as Tobin put
 it, inﬂationary expectations have to be nonextrapolative.
+Gauti B. Eggertsson and Michael Woodford
+213
 
 Like an unwanted ghost out of some well-forgotten past, the issue of
 nonextrapolative inﬂation expectations has now returned to haunt the
@@ -4902,6 +4996,7 @@ said, I have two substantive reservations about what the authors have
 done in this paper, and ﬁve concerns about what they have not done. I will
 begin with the lacunae.
 214
+Brookings Papers on Economic Activity, 1:2003
 2. Krugman (1998).
 
 First, a true price-level target means that the central bank is committed
@@ -4941,6 +5036,8 @@ ing especially the sentence that reads, “The above proposition [that is, the
 irrelevance proposition] implies that neither the extent to which quantita-
 tive easing is employed when the zero bound binds, nor the nature of the
 assets that the central bank may purchase through open-market operations,
+Gauti B. Eggertsson and Michael Woodford
+215
 
 has any effect on whether a deﬂationary price-level path will represent a
 rational expectations equilibrium.”
@@ -4981,6 +5078,7 @@ long-term bonds), the Federal Reserve’s earnings go back to the Treasury,
 which then lowers their taxes, so that they (the investors) end up unaf-
 fected. This is not the place to renew the empirical debate over the efﬁ-
 216
+Brookings Papers on Economic Activity, 1:2003
 
 cacy of debt management policy, but two points are worth noting. One is
 that, as is well known, our ability to judge the effectiveness of Operation
@@ -5061,6 +5159,7 @@ virtually the entirety of the analysis. Eggertsson and Woodford are clear: if
 the central bank takes actions that do not affect expectations, those actions
 simply do not matter. (Again, I would add “in their model.”) 
 218
+Brookings Papers on Economic Activity, 1:2003
 
 The reverse of this proposition (which, of course, does not necessarily
 follow from the proposition itself) is that the central bank need not ever
@@ -5099,6 +5198,8 @@ sion of monetary policy today as well, is worrisome nonetheless.
 Mark Gertler: The topic of this paper is important and highly relevant to
 current events. As one would expect from these authors, it also contains
 some interesting and innovative theoretical contributions. The paper picks
+Gauti B. Eggertsson and Michael Woodford
+219
 
 up two themes from Paul Krugman’s earlier work on this subject. The ﬁrst
 is that a central bank may be able to lift an economy out of a liquidity trap
@@ -5140,6 +5241,7 @@ around the deterministic steady state, it is possible to collapse the model
 into the following simple system, consisting of an IS curve and a Phillips
 curve, speciﬁed by 
 220
+Brookings Papers on Economic Activity, 1:2003
 
 The IS curve relates the output gap positively to the gap between the
 natural real interest rate and the current real market rate and to the
@@ -5263,6 +5365,8 @@ t
 +
 σ
 π
+Gauti B. Eggertsson and Michael Woodford
+221
 
 Beliefs about future policy translate into expectations about the future
 path of the real interest rate gap. In turn, these expectations affect the cur-
@@ -5486,6 +5590,7 @@ t
 π
 π
 224
+Brookings Papers on Economic Activity, 1:2003
 3. Galí and Gertler (1999). The hybrid variation is given by πt = κxt + γ fEtπt+1 + γ bπt–1.
 
 as on expected future inﬂation, it will no longer be optimal to simply tar-
@@ -5526,6 +5631,8 @@ For example, suppose we modify the authors’ framework to allow for
 government consumption as well as private consumption. Then let gt be
 the logarithm of government consumption and let at be the logarithm of
 technology. Then it is straightforward to show that the natural rate of
+Gauti B. Eggertsson and Michael Woodford
+225
 
 interest is (approximately) the following implicit function of the expected
 growth rate of technology and the expected growth rate of government
@@ -5641,6 +5748,8 @@ changes in the cost of capital, consumption through wealth effects in the
 stock market, and the balance of payments through changes in the
 exchange rate, and other examples could be cited. Duesenberry noted
 that a recent study by the Federal Reserve Bank of New York arrived at a
+Gauti B. Eggertsson and Michael Woodford
+227
 
 wide range of estimates of the magnitude of these effects, and that the
 authors were themselves pessimistic about the precision of monetary
@@ -5680,6 +5789,7 @@ and hence to deﬂation following an inﬂation, makes inﬂation less likely,
 but it might be quite difﬁcult to make this costly commitment credible.
 Sims suggested that an asymmetric commitment might be more appropri-
 228
+Brookings Papers on Economic Activity, 1:2003
 
 ate. Although, historically, liquidity traps have involved deﬂation, the
 rates of deﬂation experienced were very low. As a consequence, the
@@ -5688,3 +5798,5 @@ in order to reach the price-level target is not high. On the other hand, we
 have seen episodes of very rapid and large inﬂation, and Sims thought it
 would not be possible to credibly commit to returning prices to their ini-
 tial level after such an episode.
+Gauti B. Eggertsson and Michael Woodford
+229

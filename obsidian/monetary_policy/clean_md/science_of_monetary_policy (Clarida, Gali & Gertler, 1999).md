@@ -52,6 +52,7 @@ policy that are reasonably general in applicability.
 In this respect there is a
 policy rule may have important e
 ects on real activity.
+2
 
 science of monetary policy, as Alan Blinder suggests in the quote above. We
 provide support for this contention in the pages that follow.
@@ -81,6 +82,7 @@ interest rate should adjust to the current state of the economy.
 For an analysis of mone-
 tary policy rules in these kinds of models - know as limited participation frameworks - see
 Christiano and Gust (1999).
+3
 
 An important complication is that private sector behavior depends on the ex-
 pected course of monetary policy, as well as on current policy. The credibility
@@ -110,6 +112,7 @@ Section 4 turns to the case with commitment.
 Much of the literature has
 emphasized that an ine!ciently high steady state in ation rate may arise in the
 5For a recent survey of the credibility literature, see Persson and Tabellini (1997).
+4
 
 absence of commitment, if the central bank's target for real output exceeds the
 market clearing level.6 The gain from commitment then is to eliminate this in-
@@ -140,6 +143,7 @@ making. These include: imperfect information and lags, model uncertainty and
 non-smooth preferences over in ation and output. A number of pragmatic issues
 6The potential in ationary bias under discretion was originally emphasized by Kydland and
 Prescott (1977) and Barro and Gordon (1983).
+5
 
 emerge, such as: whether and how to make use of intermediate targets, the choice
 of a monetary policy instrument, and why central banks appear to smooth interest
@@ -167,6 +171,7 @@ centered around simple rules because of the need for robustness. A policy rule i
 robust if it produces desirable results in a variety of competing macroeconomic
 frameworks. This is tantamount to having the rule satisfy the criteria for good
 policy management that sections 2 through 6 establish. Further, U.S. monetary
+6
 
 policy may be judged according to this same metric. In particular, the evidence
 suggests that U.S. monetary policy in the fteen years or so prior to Paul Volcker
@@ -188,6 +193,7 @@ mitment - what the literature refers to as the cases of rules versus discretion
 2.1. A Simple Macroeconomic Framework
 Our baseline framework is a dynamic general equilibrium model with money and
 temporary nominal price rigidities. In recent years this paradigm has become
+7
 
 widely used for theoretical analysis of monetary policy.7 It has much of the em-
 pirical appeal of the traditional IS/LM model, yet is grounded in dynamic gen-
@@ -221,6 +227,7 @@ references therein.
 8See, for example, Yun (1996), Kimball (1995), King and Wolman (1995), Woodford (1996),
 and Bernanke, Gertler and Gilchrist (1998) for step-by-step derivations.
 9By stochastic component, we mean the deviation from a deterministic long run trend.
+8
 
 and potential output is an important variable in the model. It is thus convenient
 to dene the output gap "y:
@@ -245,6 +252,7 @@ mean and variances g/
 z and g/
 , respectively.
 Equation (2.1) is obtained by log-linearizing the consumption euler equation
+9
 
 that arises from the household's optimal saving decision, after imposing the equi-
 librium condition that consumption equals output minus government spending.10
@@ -276,6 +284,7 @@ to derive the demand for output as
 xt = '[it  Et
 t+1] + Etxt+1 + gt
 where gt = Etfzt+1  et+1g.
+10
 
 "y $ +y
 "
@@ -311,6 +320,7 @@ probability t that it may adjust.12 This probability, further, is independent
 kind of Phillips curve relation.
 12The Calvo formulation has become quite common in the literature.
 Work by Yun (1996),
+11
 
 the time that has elapsed since the last time the rm changed price. Accordingly,
 the average time over which a price is xed is
@@ -346,6 +356,7 @@ King and Wolman (1995), Woodford (1996) and others has initiated the revival.
 erence is that the explicit derivation restricts the coe!cient  on the output
 gap. In particular,  is decreasing in , which measures the degree of price rigidity. Thus, the
 longer prices are xed on average, the less sensitive is in ation to movements in the output gap.
+12
 
 fect expected marginal costs.14 We allow for the cost push shock to enable the
 model to generate variation in in ation that arises independently of movement in
@@ -388,6 +399,7 @@ discussions, further, focus on whether to adjust that target, and by how much. I
 the view that the Funds rate is the policy instrument is widely held by both practioners of mon-
 etary policy and academic researchers (see, e.g., Goodfriend (1991), Taylor (1993) and Walsh
 (1998).
+13
 
 equilibrium condition (i.e., an LM curve).16 In section 5, we discuss the implica-
 tions of using instead a narrow monetary aggregate as the policy instrument.
@@ -416,6 +428,7 @@ supply simply determines the value of the money supply that meets this criteria.
 17Some prominent examples include the recently renovated large scale model used by the
 Federal Reserve Board, the FRB-US model (see Brayton, Levin, Tyron and Williams, 1997),
 and the medium scale models of Taylor (1979, 1993b) and Fuhrer and Moore (1995a, 1995b).
+14
 
 1=  
 / +yf
@@ -454,6 +467,7 @@ in ation rate. The loss function thus penalizes deviations from this trend.
 20Underlying this kind of cost is the observation that contracts are typically written in nominal
 terms and, for reasons that are di!cult to explain, not perfectly indexed to the price level. On
 this issue, see the discussion in Shiller (1997) and the associated comment by Hall (1997).
+15
 
 kets, then the utility of a hypothetical representative agent might not provide an
 accurate barometer of cyclical  uctuations in welfare.
@@ -482,6 +496,7 @@ What should be the target rate of in ation is perhaps an even more ephemeral
 question, as is the issue of what should be the relative weight assigned to output
 and in ation losses. In the U.S., policy-makers argue that price stability should
 21See, for example, Williams (1997) and references therein.
+16
 
 be the ultimate goal. But they dene price stability as the in ation rate at which
 in ation is no longer a public concern. In practice, it is argued that an in ation
@@ -509,6 +524,7 @@ policy rules.
 pean Central Bank. On the other hand, Feldstein (1997) argues that the tax distortions that
 arise because corporate and personal income taxes are not indexed to in ation justify moving
 from three percent to zero in ation.
+17
 
 2.3. The Policy Problem and Discretion versus Rules
 The policy problem is to choose a time path for the instrument y to engineer time
@@ -538,6 +554,7 @@ to push output above potential output above gives rise to the credibility proble
 as we make clear in section 4, gains from commitment potentially emerge whenever private
 sector behavior depends on beliefs about future, even if central bank objectives over output are
 perfectly aligned.
+18
 
 of credibility-enhancing commitment may be desirable. Answering this question
 boils down to comparing optimal policy under discretion versus rules (using the
@@ -566,6 +583,7 @@ Second, (it should almost go without saying that) the models we use are
 nowhere near the point where it is possible to obtain a tightly specied policy rule
 that could be recommended for practical use with great condence. Nonetheless,
 it is useful to work through the cases of discretion and rules in order to develop a
+19
 
 set of normative guidelines for policy behavior. As Taylor (1993a) argues, common
 sense application of these guidelines may improve the performance of monetary
@@ -594,6 +612,7 @@ what the benchmark case of discretion yields.
 Under discretion, each period the central bank chooses the triplet f"y` Wy` yg,
 consisting of the two target variables and the policy instrument, to maximize the
 objective (2.7) subject to the aggregate supply curve (2.2) and the IS curve, (2.1).
+20
 
 It is convenient to divide problem into two stages: First, the central bank chooses
 "y and Wy to maximize the objective (2.7), given the in ation equation (2.2).24
@@ -612,6 +631,7 @@ y k W/
 y l k 5y
 (3.1)
 subject to
+Wy $ _ "y k py
 (3.2)
 24Since all the qualitative results we derive stem mainly from the rst stage problen, what
 is critical is the nature of the short run Phillips curve. For our baseline analysis, we use the
@@ -632,6 +652,7 @@ business  uctuations.
 26In section 6, we solve for the optimum under discretion for the case where an endogenous
 state variable is present. Within the Markov perfect equilibrium, the central bank takes private
 sector beliefs as a given function of the endogenous state.
+21
 
 taking as given 5y and py, where 5y   
 /+yfP"
@@ -662,9 +683,11 @@ sector expectations are rational:
 Wy $ h[ y
 (3.5)
 where
+22
 
 [ $
 
+_/ k hB  n1
 
 The optimal feedback policy for the interest rate is then found by simply inserting
 the desired value of "y in the IS curve (2.1 ):
@@ -672,6 +695,7 @@ the desired value of "y in the IS curve (2.1 ):
 & zy
 (3.6)
 where
+W $  k B  1
 _
 1&h
 7 
@@ -686,6 +710,7 @@ This result was originally emphasized by Taylor (1979) and is an important
 guiding principle in many applied studies of monetary policy that have followed.27
 27For some recent examples, see Williams (1997), Fuhrer (1997a) and Orphanides, Small,
 Wilcox and Wieland (1997). An exception, however, is Jovanovic and Ueda (1997) who demon-
+23
 
 A useful way to illustrate the trade-o
  implied by the model is to construct the
@@ -705,6 +730,7 @@ g" $ g
 _ %
 gW $ c
 (3.7)
+As h ! 1 D
 g" $ c%
 gW $
 g
@@ -723,6 +749,7 @@ drive in ation, however, it is only possible to reduce in ation in the near term
 strate that in an environment of incomplete contracting, increased dispersion of prices may
 reduce output. Stabilizing prices in this environment then raises output.
 28Equations (3.4) and (3.5) dene the frontier for the baseline model.
+24
 
 contracting demand. This consideration leads to the next result:
 Result 2: The optimal policy incorporates in ation targeting in the sense that
@@ -755,6 +782,7 @@ erent from Svensson (1997a), who denes
 in ation targeting in terms of the weights on the objective function, i.e., he denes the case
 with  = 0 as corresponding to strict in aiton targeting and  > 0 as corresponding to  exible
 in aton targeting.
+25
 
 is optimal to minimize in ation variance if h $ c` even with cost push in ation
 present.
@@ -783,6 +811,7 @@ egy. Federal Reserve policy tended to accommodate rather than ght increases in
 expected in ation. Nominal rates adjusted, but not su!ciently to raise real rates.
 The persistent high in ation during this era may have been the end product of
 the failure to raise real rates under these circumstances. Since 1979, however, the
+26
 
 Federal Reserve appears to have adopted the kind of implicit in ation targeting
 strategy that equation (3.6) suggests. Over this period, the Fed has systematically
@@ -819,6 +848,7 @@ set movements in gt:
 recent literature (e.g., Aiyagari and Braun, 1997, Carlstrom and Fuerst, 1995, Ireland, 1996a
 and Rotemberg and Woodford, 1997). This view was also stressed in much earlier literature.
 See Friedman and Kuttner (1996) for a review.
+27
 
 no apparent accompanying in ation.32 Based on the view that the rise in output
 may mainly re ect productivity movements, the Federal Reserve has resisted large
@@ -846,6 +876,7 @@ Tabellini (1997).
 34While the in ationary bias result is best known example, there may also be other costs of
 discretion. Svennson (1997c), for example, argues also that discretion may lead to too much
 in ation variability and too little output variability.
+28
 
 wage and price setting today may depend upon beliefs about where prices are
 headed in the future, which in turn depends on the course of monetary policy.
@@ -881,6 +912,7 @@ cost to in ation, as Rogo
  (1985) originally emphasized. But it is not always possible to obtain
 the optimum under commitment. The point we emphasize is that with in ationary bias absent,
 it is possible to replicate the solution under commitment (for a restricted family of policy rules)
+29
 
 think, the credibility literature may have some broad practical insights to o
 er.
@@ -922,8 +954,10 @@ between in ation and output. Under reasonable parameter values this tradeo
  is small and
 its presence merely serves to complicate the algebra. See Goodfriend and King (1997) for a
 discussion.
+30
 
 W#
+y $ Wy k h
 _ #
 (4.4)
 where "y and Wy are the equilibrium values of the target variables for the baseline
@@ -953,6 +987,7 @@ no longer is tempted to expand output. Because there is no long run trade-o
 between in ation and output (i.e., "y converges to zero in the long run, regardless
 of the level of in ation), long run equilibrium in ation is forced systematically
 above target.
+31
 
 The analysis has both important positive and normative implications. On the
 positive side, the theory provides an explanation for why in ation may remain
@@ -981,6 +1016,7 @@ that is obtained under discretion when # 7 c
 One can see plainly from equation (4.4) that letting someone with preferences
 given by h* 	 h run the central bank will reduce the in ationary bias.38 The
 38See Svensson (1997) and Walsh (1998) for a description of how incentive contracts for central
+32
 
 Rogo
  solution, however, is not a panacea. We know from the earlier analysis
@@ -1010,6 +1046,7 @@ based on his own experience on the Federal Reserve Board, that there was no
 constituency in favor of pursuing output gains above the natural rate. In formal
 bankers may reduce the in ation bias. Also, Faust and Svensson (1998) for a recent discussion
 of reputational mechanisms.
+33
 
 terms, he maintains that those who run U.S. monetary policy act as if they were
 instructed to set # $ c, which eliminates the in ationary bias.
@@ -1038,6 +1075,7 @@ To illustrate the gains from commitment in a simple way, we rst restrict
 the form of the policy rule to the general form that arises in equilibrium under
 discretion, and solve for the optimum within this class of rules. We then show that,
 39This section is based on Galð and Gertler (1999).
+34
 
 with commitment, another rule within this class dominates the optimum under
 discretion.
@@ -1067,6 +1105,7 @@ y` is also a linear function of the cost push shock:
 40The policy rule only depends on ut because the central bank can adjust it to o
 set any
 impact of movements in gt on aggregate demand. See equation (4.16).
+35
 
 WP
 y
@@ -1129,6 +1168,7 @@ in in ation per unit of output loss, relative to the case of discretion.
 To nd the optimal value of ,, note rst that since "P
 yk and WP
 yk are each a
+36
 
 constant multiple of the cost push shock yk, it is possible to express the objective
 function as a multiple of period y loss:
@@ -1161,6 +1201,7 @@ hP WP
 y
 (4.12)
 where
+hP  hB  n1
  	 h
 (4.13)
 Since hP 	 h` relative to the case of discretion, commitment to the rule implies
@@ -1177,6 +1218,7 @@ the e
 ective cost of reducing in ation, in turn, induces the more aggressive pol-
 icy response to in ation, as comparing equation (4.12) with equation (3.3) makes
 clear.
+37
 
 The equilibrium solutions for "P
 y and WP
@@ -1191,6 +1233,7 @@ y $ hP[P y
 with
 [P $
 
+_/ k hPB  n1
 
 It is interesting to observe that the solution under commitment in this case
 perfectly resembles the solution obtained under discretion that arises when h is
@@ -1212,6 +1255,7 @@ the class of rules that we permitted the central bank to choose in the case with
 Yet we found that with commitment it is optimal to choose a di
 erent parametrization of the
 rule than arises in the optimum under discretion.
+38
 
 that it will be tough in the future, but at the same time, not have to contract
 demand much today. As the future comes to pass, the central bank has the incen-
@@ -1240,6 +1284,7 @@ short run trade-o
 arises even if the central bank does not prefer to have output above potential (i.e.,
 even when # $ c). The solution under commitment in this case perfectly resem-
 bles the solution that would obtain for a central bank with discretion that assigned
+39
 
 to in ation a higher cost than the true social cost.
 One additional interesting feature of this case with commitment involves the
@@ -1251,8 +1296,10 @@ W +yWyk k 
 (4.16)
 with
 P
+W   k B  1
 _
 1&hP
+7  k B  1
 _
 1&h
  W
@@ -1270,6 +1317,7 @@ the future.
 43We thank Chris Sims and Albert Marcet for calling to our attention that the globally optimal
 rule under commitment would likely not fall within the restricted family of rules considered in
 the previous sub-section.
+40
 
 The rst stage problem remains to choose a state-contingent sequence for "yk
 and Wyk to maximize the objective (2.7) given that the aggregate supply curve
@@ -1295,6 +1343,7 @@ It is straightforward to show that the rst order conditions yield the following
 optimality conditions
 "yk  "yk0 $ _
 h Wyk`
+for  $ ` /` 
 ` 
 (4.18)
 and
@@ -1305,6 +1354,7 @@ Recall that under discretion the optimal policy has the central bank adjust
 the level of the output gap in response to in ation. The optimal policy under
 44See also King and Wolman, who analyze the optimal monetary policy under commitment
 in a version of Taylor's (1980) staggered contracts model.
+41
 
 commitment requires instead adjusting the change in the output gap in response
 to in ation.
@@ -1342,6 +1392,7 @@ because his objective function includes a target for the nominal interest rate (
 for the output gap and in ation), whereas in our framework the tradeo
  arises due to the cost
 push shock.
+42
 
 the immediate e
 ect of dampening current in ation (given the dependency of Wy
@@ -1375,7 +1426,9 @@ adjusts to ensure that this is not the case. In particular, the optimal response
 push shock is to contract xt su!ciently to push 
 t below target. xt then adjusts back up to
 target over time. The appendix provides the details.
+43
 
+y $ B  _
 h&
  +yWyk k 
 & zy
@@ -1402,6 +1455,7 @@ optimum under commitment, since in each instance the implied interest rate rule 
 coe!cient greater than one. To the extent that such coe!cient is not too large, implementation
 of such a rule will result in a unique equilibrium (see the discussion in section 7 and also in
 Clarida, Gali and Gertler (1998)).
+44
 
 5. Practical Complications
 In this section we consider a number of important practical issues that complicate
@@ -1428,6 +1482,7 @@ exists between these variables. With imperfect information, rules for targets ca
 be expressed only in terms of the respective forecasts, as opposed to the ex-post
 values. An alternative is to use an intermediate target that is directly observable,
 such as a broad monetary aggregate.
+45
 
 Second, imperfect information makes the policy instrument choice non-trivial.
 With perfect information, for example, it does not matter whether the central
@@ -1459,6 +1514,7 @@ t+1] + Et1xt+1 + gt
 
 t = xt + Et1
 t+1 + ut
+46
 
 +f"y j iyg $ _
 h +fWy j iyg
@@ -1475,12 +1531,14 @@ target variables under imperfect information, "R
 y and WR
 y ` are given by
 "R
+y $ "y k B
 _
 _/ k h
 by k bzy
  $ bzy
 (5.2)
 WR
+y $ B k _/
 h 
 Wy k _bzy $ by k _bzy
 (5.3)
@@ -1502,6 +1560,7 @@ set the in ationary impact of the cost push shock, which works to
 t =
 
 2+ut:
+47
 
 reduce the volatility of the output. There is, however, an unambiguous reduction
 in welfare.53
@@ -1539,6 +1598,7 @@ document the slow response of GDP to a policy shock, and the even slower respons
 Bernanke and Gertler (1995) show that, while the overall response of output is sluggish, certain
 components of spending do respond quickly, such as housing and consumer durables. Inventories
 adjust to reconcile the gap between spending and output.
+48
 
 to circumvent this problem, according to Svensson, by focusing instead on the
 in ation forecast. The forecast is immediately available. It thus provides a quick
@@ -1569,6 +1629,7 @@ indeterminacy under this kind of policy rule. We discuss this issue in section 7
 to take hold in the U.S. See also Estrella and Mishkin (1996). On the other hand, Feldstein and
 Stock (1997) argue that, with periodic adjustment, a broad monetary aggregate can still be a
 useful intermediate target.
+49
 
 Gertler (1997), Bernanke and Mihov (1997b)).
 For similar reasons, policies that target other kinds of simple indicators, such
@@ -1594,6 +1655,7 @@ of bank reserves, i.e., the quantity of high-powered money available for meeting
 bank reserve requirements. The issue that arises is whether, from an operational
 57See Bernanke and Mihov (1997a) for a discussion of Federal Reserve operating procedures
 and how they have changed over time.
+50
 
 standpoint, policy should prescribe paths (or rules) for bank reserves or for interest
 rates.
@@ -1626,6 +1688,7 @@ where y is the rate that would arise under interest rate targeting and by is t
 tion of the money demand function from rst principles, assuming that utility is separable in
 consumption and real money balances and that consumption is the only type of good (see, e.g.,
 Woodford, 1996).
+51
 
 unexpected movement in money demand.
 The key point is that money demand shocks can induce volatile behavior
@@ -1652,6 +1715,7 @@ instrument, interest rates will naturally move in an o
 setting direction in response to unobserved
 demand shocks (see Result 4). In practice, the high variablity of money demand shocks seems
 to dominate the instrument choice, however.
+52
 
 5.2. Policy Conservatism: Model Uncertainty vs. Exploitation of For-
 ward Looking Behavior
@@ -1673,6 +1737,8 @@ The tendency of the Federal Reserve to adjust rates cautiously is generally
 referred to as interest rate smoothing. To be precise, as a number of authors
 have shown, a monetary policy rule of the following form captures the last twenty
 or so years of data fairly well:
+y $ B  1
+ ah k n Wy k  "yl k 1 y0 k -y
 (5.6)
 where h is a constant interpretable as the steady state nominal interest rate61 and
 60An alternative is to penalize large changes in the nominal interest rate by including the
@@ -1680,6 +1746,7 @@ squared deviations of the change in the interest rate (i.e, (it  it1)2) in the
 Rudebusch and Svensson (1998).
 61Recall that 
 t represents deviations of in ation from its average (target) level.
+53
 
 where 1 2 Bc` l is a parameter that re ects the degree of lagged dependence in
 the interest rate.62 Interest rate smoothing is present in distinct respects. First,
@@ -1708,6 +1775,7 @@ have allowed some progress to be made with relatively simple frameworks.63
 62See Rudebusch (1995), for example, for a discussion of the persistence in short term interest
 rates.
 63Wieland (1997) analyzes policy in a framework where the central bank has to learn the
+54
 
 It is possible to illustrate how model uncertainty could in principle introduce
 at least some degree of policy caution. Suppose the values of several parameters in
@@ -1726,7 +1794,7 @@ policy then becomes:
 +f"y j iyg $
 _
 h k _/g/
-
+ 
 +fWy j iyg k Bh k _/
  g/
 -
@@ -1743,6 +1811,7 @@ learn about potential GDP.)
 meters. It may be more plausible to argue that the policy-maker in fact has little idea what
 the true ditribution looks like. See Onatski and Stock (1999) who analyze the policy problem
 in this kind of environment using robust control methods.
+55
 
 Comparing equations (5.1) and (5.7) reveals how parameter uncertainty re-
 duces policy activism. Under certainty equivalence, a rise in in ation above target
@@ -1779,6 +1848,7 @@ ected when there is active learning about the economy.
 Some results suggest that learning should induce active adjustments of the policy instrument to
 facilitate estimating the true model. See the discussion in Wieland (1997), for example. Also,
 it is possible to construct examples, where parameter uncertainty leads to increased activism.
+56
 
 Rotemberg and Woodford (1997) o
 er a novel explanation for the lagged de-
@@ -1820,6 +1890,7 @@ example that, in reaction to a rise in in ation above target at time t, the cent
 bank raises y above its steady state value. Under the di
 erence rule the increase
 See, for example, Sargent (1998).
+57
 
 in the interest rate has a persistent e
 ect on the path of the expected short rate,
@@ -1851,6 +1922,7 @@ preclude explosive behavior.
 68The idea that central bank should pursue a partial adjustment rule to exploit the dependence
 of demand on future policy is reminiscent of the globally optimal policy under commiment (see
 section 4.22). Indeed, Woodford (1998) makes this connection formally.
+58
 
 bell, (1995)).
 Disagreement by policy-makers is another explanation for slow
@@ -1875,12 +1947,14 @@ of the policy objective function. In particular, suppose that policy-makers care
 quite a lot about small departures of output from target, at least relative to small
 departures of in ation. An example of an objective function that capture this
 phenomenon is given by
+59
 
 1=  
 / +yf
 "
 X
 $c
+n Bh j "y j kW/
 yk
 g
 (5.9)
@@ -1915,6 +1989,7 @@ tors are present in in ation. This is true because only with cost push in ation
 present does a trade-o
  between output and in ation emerge (see Result 1). In-
 deed, OSWW show that opportunistic policy rules are equivalent to conventional
+60
 
 gradualist rules in the presence of demand shocks, but di
 er when there are supply
@@ -1940,10 +2015,12 @@ Consider the following generalizations of the IS and aggregate supply curves:
 69For an alternative description of the opportunistic approach, see Bomn and Rudebusch
 (1997). These authors emphasize the ratcheting down of in ation and, in particular, explore
 the role of imperfect credibility.
+61
 
 "y $ & ay  +yWykl k t "y0 k B  t
  +y"yk k zy
 (6.1)
+Wy $ _ "y k  Wy0 k B  
 n+yWyk k y
 (6.2)
 Equation (6.1) incorporates the lagged output gap in the IS curve.
@@ -1976,6 +2053,7 @@ to adaptive expectations (e.g., suppose Et1
 t = 
 t1:) Indeed, this is the traditional approach
 (see the discussion in Blanchard, 1997). The issue then becomes motivating the assumption of
+62
 
 appealing to costs of changing the rate of in ation.72 This assumption, though,
 is clearly unattractive. In the spirit of robustness, however, it is important to
@@ -2026,6 +2104,7 @@ takes as given. In the rational expectations equilibrium 
  and u equal the true fundamental
 parameters in the reduced for in ation, a
  and au:
+63
 
 Wy $ =W Wy0 k = y
 (6.5)
@@ -2063,6 +2142,7 @@ of undetermined coe!cients to solve for a
  and au. The equation for a
  is a cubic. The solution
 is the unique value between zero and unity, which corresponds to the unique stable root.
+64
 
 Combining (6.3) with (6.1) yields the implied optimal interest rate rule:
 y $ W +yWyk k ""y0 k 
@@ -2092,6 +2172,7 @@ the trade-o
 frontier for the three benchmark values of  In addition, since c  =W 	 ` the
 optimal policy calls for gradual adjustment of in ation to target (Result 2). With
  7 c, further, extreme in ation targeting is only optimal if h $ c, as equation
+65
 
 (6.3) and Figure 2 suggest.
 From the interest rate rule given by equation (6.6) it is apparent that the
@@ -2130,6 +2211,7 @@ and the aggregate supply curve is given by
 t =  xt1 + ! 
 t1 + (1  !)Et
 t+1 + ut.
+66
 
 where the parameter =)
 W measures the serial dependence in in ation for this case.
@@ -2149,6 +2231,7 @@ W +yWyk k " "y
 (6.9)
 with
 )
+W $  k BW  
 n
 =)
 W
@@ -2161,6 +2244,7 @@ though, it adjusts to the current output gap, as opposed to one from the previou
 period.
 We conclude this section with brief discussion of the gains from commitment.
 It is possible to show that, as in the baseline model, the policy rule under commit-
+67
 
 ment resembles the rule under discretion that would obtain if the policy-maker
 assigned a higher relative cost to in ation (lower value of h) than the true social
@@ -2187,11 +2271,14 @@ a feedback policy of the following form:
 policy circles due to the implied interest rate volatility (see Result 9). McCallum (1997) argues,
 however, that the concern about interest rate volatility is not well understood, a point with
 which we agree.
+68
 
 T
+y $ h k W BWy  W
  k " "y
 (7.1)
 with
+h $ l k W
 W 7 `
 " 7 c
 where T
@@ -2212,6 +2299,7 @@ demand shocks and accommodation of shocks to potential GDP that do not a
 ect
 78The in ation rate Taylor uses is actually the rate over the previous year (as opposed to the
 previous quarter.)
+69
 
 the output gap (see Result 4).
 On the positive side, Taylor showed that with certain parameter values, the
@@ -2238,9 +2326,11 @@ Because of the Federal Reserve's tendency to smooth interest rate adjustments
 (see the discussion in section 5), a static relation like equation (7.2) cannot capture
 the serial correlation present in the data. We thus allow for the possibility of
 partial adjustment to the target rate, according to:
+y $ 1 y0 k B  1
  T
 y
 (7.3)
+70
 
 where 1 is a parameter that measures the degree of interest rate smoothing.
 We estimate di
@@ -2281,6 +2371,7 @@ Gertler (1997) for details. The specic numbers reported here are based on a ver
 policy reaction function that has the Funds rate respond to expected in ation a year ahead and
 the current output gap (reported in Table 2 of that paper). The results, however, are robust to
 reasonable variations in the horizons for the gap variables.
+71
 
 that monetary policy over this period was accommodating increases in expected
 in ation, in clear violation of the guidelines suggested by Results 2 and 3. For
@@ -2310,6 +2401,7 @@ rate for the second half of the sample, for which it was estimated. For the pre-
 coe!cent x re ects the in uence of the output gap on the interest rate that is independent of
 its predictive power for in ation.
 81Huizinga and Mishkin (1986) present formal evidence of a structural break at this time.
+72
 
 Volcker period, matters are di
 erent. The target (generated by the estimated
@@ -2338,6 +2430,7 @@ Of these proposed policies, in ation targeting has received by far the most atte
 erence between rates pre-1979 and the target vaules under
 a post-1979 rule could be accounted for a secular change in the real rate.
 83See Clarida, Gali and Gertler (1998).
+73
 
 tion (see Bernanke and Mishkin (1997), for a recent survey). Indeed a number of
 central banks, most notably the Bank of England, have recently adopted formal
@@ -2366,6 +2459,7 @@ ective
 weight on in ation in the policy choice.
 Price level targeting is another type of simple rule that has been discussed in
 the literature. This policy, which may be thought of as a more extreme version
+74
 
 of in ation targeting, has not received much support among policy-makers and
 applied economists. There are several problems: First, if the price level overshoots
@@ -2392,6 +2486,7 @@ upon the underlying structural parameters of the model. Under nominal GDP
 targeting, the central bank adjusts the interest rate to the sum of in ation and
 real GDP growth. It thus arbitrarily applies an equal weight to each component of
 nominal GDP. High nominal GDP growth, further, could occur when the economy
+75
 
 is recovering from a recession and is still well below full capacity. A rule that calls
 for raising interest rates in response to above target nominal GDP growth in these
@@ -2422,6 +2517,7 @@ environment.
 uniqueness under an interest rule, even in an environment with  exible prices. What is critical
 is whether the interest on the debt is nanced by taxes or money creation. See, for example,
 Woodford (1994), Sims, (1994), and Leeper (1991).
+76
 
 in practice.
 On the other hand, there is potentially a problem of real indeterminacy in the
@@ -2454,6 +2550,7 @@ o
  the equilibrium path threats
 induce uniqueness in game theory. Because the threat is su!cient to preclude indeterminate
 behavior, further, it may never have to be implemented in practice.
+77
 
 approach to meeting an in ation target may be desirable.
 8. Concluding Remarks
@@ -2480,6 +2577,7 @@ policy.
 to closed economy models. Extensions to open economy frameworks are likely to
 provide new insights on the desirability of alternative monetary policy rules, and
 raise a number of issues of great interest, including: the choice of exchange rate
+78
 
 regime, the potential benets from monetary policy coordination, the optimal
 response to shocks originating abroad, and consumer price index versus domestic
@@ -2510,6 +2608,7 @@ why central banks smooth interest rate adjustments. As we discussed in section
 paths for the interest rate that are much more volatile than what is observed in
 reality. The possibility thus arises that existing models may fail to adequately
 characterize the constraints that policy-makers face in practice. We suggested in
+79
 
 section 5 that some form of model uncertainty might be able to account for this
 phenomenon. Another alternative, is that central banks may be exploiting the
@@ -2538,12 +2637,14 @@ however, there may be a period of transition where the private sector learns abo
 88An exception is Brayton, Levin Tyron and Williams (1997) who present simulations of policy
 regime chnages under di
 erent assumptions about the behavior of private sector expectations.
+80
 
 the regime change. This kind of scenario may be highly relevant to a central bank
 that has accommodated in ation for a sustained period of time but is intent on
 embarking on a disin ation. Modeling private sector learning is a challenging but
 nonetheless important task. Sargent (1999) provides a promising start in this
 direction. More work along these lines would be highly desirable.
+81
 
 Appendix: The General Solution Under Commitment
 At time y`the central bank commits to a state contingent sequence for "yk and
@@ -2575,6 +2676,7 @@ The rst order necessary conditions yield:
 h "yk  _
 /yk $ c`
 8  c
+82
 
 Wyk k 
 /yk  
@@ -2608,6 +2710,7 @@ hBkn
 k_/ . The stationary solution to this di
 erence equation is given
 by:
+"y $ ? "y0 
 _?
 hB  ?n1
  y
@@ -2619,11 +2722,15 @@ where ? 
 2 Bc` 
 ` implying the process for "y is stable. Substituting
 the solution for "y in the aggregate supply curve then yields a solution for Wy.
+Wy $ ? Wy0 k
 ?
 B  ?n1
  By  y0
 
+83
+
 Since Wy $ Oy  Oy0, the solution implies a stationary process for the price level :
+Oy $ ? Oy0 k
 ?
 B  ?n1
  y
@@ -2637,12 +2744,66 @@ h Oyk
 8  
 Thus, for example, the central bank contracts demand when the price level
 rises above trend: hence, the trend-reverting behavior of the price level.
+84
 
 Fig 1: Efficient Policy Frontier for the 
 Baseline Model
+0
+1
+2
+3
+4
+5
+6
+7
+8
+0.0
+10.4
+13.9
+15.7
+16.7
+17.4
+18.0
+18.3
+18.6
+18.9
+19.1
+19.2
+19.4
+19.5
+19.6
+19.7
+19.8
 sd(inflation)
 sd(output gap)
 Fig 2: aπ for different values of φ
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+0.01
+0.31
+0.61
+0.91
+1.21
+1.51
+1.81
+2.11
+2.41
+2.71
+3.01
+3.31
+3.61
+3.91
+4.21
+4.51
+4.81
 a
 aπ
 φ=.99
@@ -2651,25 +2812,165 @@ aπ
 
 Fig 3: Efficient Policy Frontier for 
 Different Values of φ
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+0
+1
+2
+3
+4
+5
 sd(inflation)
 sd(output gap)
 φ 
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+3.5
+0
+1
+2
+3
+4
+5
 sd(inflation)
 sd(output gap)
 φ 
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+0
+1
+2
+3
+4
+5
 sd(inflation)
 sd(output gap)
 φ 
 
 Fig 4: The Federal Funds Rate and the Inflation Rate
+0
+2
+4
+6
+8
+10
+12
+14
+16
+18
+59.1
+60.3
+62.1
+63.3
+65.1
+66.3
+68.1
+69.3
+71.1
+72.3
+74.1
+75.3
+77.1
+78.3
+80.1
+81.3
+83.1
+84.3
+86.1
+87.3
+89.1
+90.3
+92.1
+93.3
+95.1
+96.3
 INFLATION
 F.F RATE
 
 Fig 5: Target Based On Estimated Post-October '79 Rule 
 vs. Actual Funds Rate
+0
+5
+10
+15
+20
+25
+65.1
+66.2
+67.3
+68.4
+70.1
+71.2
+72.3
+73.4
+75.1
+76.2
+77.3
+78.4
+80.1
+81.2
+82.3
+83.4
+85.1
+86.2
+87.3
+88.4
+90.1
+91.2
+92.3
+93.4
+95.1
+96.2
 F.F RATE
 TARGET(FWD)
 Fig 6: Targets from Forward vs. Backward Looking Rules
+0
+5
+10
+15
+20
+25
+79.4
+80.3
+81.2
+82.1
+82.4
+83.3
+84.2
+85.1
+85.4
+86.3
+87.2
+88.1
+88.4
+89.3
+90.2
+91.1
+91.4
+92.3
+93.2
+94.1
+94.4
+95.3
+96.2
+97.1
 F.F RATE
 TARGET(BCKWD)
 TARGET(FWD)

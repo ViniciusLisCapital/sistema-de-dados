@@ -4,7 +4,9 @@ THE POLITICAL ECONOMY OF INTERNATIONAL
 MONETARY RELATIONS
 J. Lawrence Broz1 and Jeffry A. Frieden2
 1Department of Politics, New York University, New York, New York 10003;
+e-mail: lawrence.broz@nyu.edu
 2Department of Government, Harvard University, Cambridge, Massachusetts 02138;
+e-mail: jfrieden@harvard.edu
 Key Words
 exchange rates, currency policy, monetary policy, international capital
 mobility, monetary regimes
@@ -33,7 +35,9 @@ rency values under the Bretton Woods system lulled most scholars into inattentio
 (exceptions include Cooper 1968, Kindleberger 1970, Strange 1971, Cohen 1977,
 Odell 1982, and Gowa 1983).
 1094-2939/01/0623-0317$14.00
+317
 
+318
 BROZ ■FRIEDEN
 The collapse of Bretton Woods increased the interest of political scientists in the
 issue, and in the 1980s, international monetary affairs took so prominent a place in
@@ -123,6 +127,8 @@ national currencies are tied to each other at a publicly announced (often legall
 established) parity. Some ﬁxed-rate systems involve a common link to a com-
 modity such as gold or silver; others use a peg to a national currency such as
 
+320
+BROZ ■FRIEDEN
 the US dollar. The other ideal-typical monetary regime is is a free-ﬂoating sys-
 tem, in which national currency values vary according to market conditions and
 national macroeconomic policies. There are many potential gradations between
@@ -168,6 +174,7 @@ relations is powerfully affected by the decisions of the major trading and inves
 ing nations. By the same token, international monetary relations interact with
 other economic policies. Currency misalignments have often led to protectionist
 
+INTERNATIONAL MONETARY RELATIONS
 321
 pressures and even trade wars, just as the evolution of trade relations affects ex-
 change rate policy choices. Policies toward international ﬁnancial and investment
@@ -211,6 +218,8 @@ the mechanism, level decisions fall along a second continuum that runs from a mo
 depreciated to a more appreciated currency. Although regime and level decisions
 are interconnected, we treat them separately for heuristic purposes. We attempt
 
+322
+BROZ ■FRIEDEN
 to delineate the domestic political economy factors that inﬂuence governments’
 choices along the two continuums.
 Like other areas of economic policy, exchange rate decisions involve tradeoffs
@@ -254,6 +263,7 @@ run an independent monetary policy. The “impossible trinity” principle expla
 that where capital is internationally mobile, a ﬁxed rate and monetary indepen-
 dence are not simultaneously attainable (Mundell 1962, 1963). The principle says
 
+INTERNATIONAL MONETARY RELATIONS
 323
 that a country must give up one of three goals: exchange rate stability, monetary
 independence, or ﬁnancial market integration. When capital is mobile interna-
@@ -299,6 +309,8 @@ Historically, a national commitment to a gold standard was the most important
 1Intermediate regimes may allow countries to pursue both objectives to some degree
 (Edwards & Savastano 1999).
 
+324
+BROZ ■FRIEDEN
 such external anchor. More recently, many countries have pegged to the currency
 of a large, low-inﬂation country (Mishkin 1999).
 Although pegging is not the only way to commit policy to low inﬂation—central
@@ -344,6 +356,7 @@ the stabilization policy.
 A related advantage of ﬂoating is that it allows the exchange rate to be used as
 a policy tool. This ﬂexibility is valuable when real appreciation, caused by inertial
 
+INTERNATIONAL MONETARY RELATIONS
 325
 inﬂation or rapid capital inﬂows, harms international competitiveness and threat-
 ens to generate a balance-of-payments crisis—a common syndrome in developing
@@ -388,6 +401,8 @@ protection and the conditions under which they are most inﬂuential (Milner 199
 Currency regime choice, like the choice between free trade and protection, has
 domestic distributional consequences.
 
+326
+BROZ ■FRIEDEN
 We begin by examining the strengths and weaknesses of pressure group or
 “demand-side” approaches to regime choice, which take the distributional conse-
 quences of exchange rate regime choice as part of the explanation of its causes.
@@ -433,6 +448,7 @@ have less pass-through than producers of standardized goods, in which compe-
 tition is based primarily on price (Goldberg & Knetter 1997). This implies that
 producers of internationally traded specialized products will be more concerned
 
+INTERNATIONAL MONETARY RELATIONS
 327
 to reduce currency volatility than producers of standardized manufactured goods
 or commodities, and thus more likely to favor ﬁxed exchange rates.
@@ -478,6 +494,8 @@ alternative strategy is to take the distributional arguments to the individual l
 2In a backward-looking crawling peg, the nominal exchange rate is adjusted mechanically
 according to past inﬂation differentials.
 
+328
+BROZ ■FRIEDEN
 of analysis and make use of available public opinion data on regime preferences
 and voting behavior (Scheve 1999). Scheve ﬁnds that asset ownership and high
 skill endowments are positively related to individuals’ expressed level of sup-
@@ -522,6 +540,7 @@ governments had more need for the credibility that a commitment to gold could
 bring. However, left-wing governments devalued more frequently, conditioned on
 a downturn in the business cycle (Simmons 1994). This effect is also evident in
 
+INTERNATIONAL MONETARY RELATIONS
 329
 contemporary Europe; leftist parties supported stable exchange rates in the mid-
 1980s (Garrett 1995, Oatley 1997). More generally, the partisan composition of
@@ -567,6 +586,8 @@ When election timing is predetermined, governing parties are loath to surrender
 monetarypolicyﬂexibilitybypegging,since monetarypolicycanbeavaluabletool
 for winning elections. In contrast, when election timing is endogenous, there is less
 
+330
+BROZ ■FRIEDEN
 need to maintain monetary ﬂexibility for electoral purposes; hence pegging is more
 likely (Bernhard & Leblang 1999). These arguments and the supporting evidence
 suggest that the structure of democratic institutions shapes the regime preferences
@@ -613,6 +634,7 @@ and CBI are complementary commitment mechanisms (Simmons 1994, Maxﬁeld
 Although there is no consensus on the role of politics in exchange rate regime
 choices, it is recognized that considerations of aggregate social welfare provide
 
+INTERNATIONAL MONETARY RELATIONS
 331
 a partial explanation at best. Regime decisions involve tradeoffs with domestic
 distributional and electoral implications; thus, selecting an exchange rate regime
@@ -657,6 +679,8 @@ Despite this ambiguity, it is clear that the level of the exchange rate always h
 distributive consequences domestically, implying a role for interest group poli-
 tics. Exporting and import-competing industries lose and domestically oriented
 
+332
+BROZ ■FRIEDEN
 (nontradables) industries gain from currency appreciation (Frieden 1991). Do-
 mestic consumers also gain as the domestic currency price of imported goods
 falls, lowering the cost of living. Currency depreciations have the opposite effects,
@@ -702,6 +726,7 @@ tries lobbied hard for policies to depreciate the dollar (Destler & Henning 1989
 Frankel 1994). The rarity of such cases is partially understandable in collective ac-
 tion terms, as lobbying for depreciation is a public good for the entire traded goods
 
+INTERNATIONAL MONETARY RELATIONS
 333
 sector. By asymmetric, we mean that lobbying from the “winners” of real appreci-
 ation (nontradables, consumers) does not usually arise to counteract pressure from
@@ -746,6 +771,8 @@ Whateverthenatureofinterestgroupandpartisanpoliticalpressuresonthelevel
 of the exchange rate, elections and voting are likely to be of recurrent importance.
 A voluminous literature on “economic voting” provides robust support for the
 
+334
+BROZ ■FRIEDEN
 proposition that good macroeconomic conditions keep politicians in ofﬁce whereas
 bad times cast them out (Lewis-Beck & Stegmaier 2000). The real exchange rate
 affects broad aggregates such as purchasing power, growth rates, and the price
@@ -791,6 +818,7 @@ and the competitiveness of their economies (Henning 1994).
 Therealexchangeratehasinternationalaswellasdomesticdistributionalconse-
 quences and thus plays an important role in international economic policy making.
 
+INTERNATIONAL MONETARY RELATIONS
 335
 Increasing the competitiveness of the domestically produced goods sector by de-
 preciating the currency necessarily means reducing the competitiveness of foreign
@@ -833,6 +861,8 @@ cussed above, especially in the principal members of the system. The second are
 can policy maker, who angrily told European complainers, “You worry about your exchange
 rates, we’ll worry about ours!”
 
+336
+BROZ ■FRIEDEN
 global economic factors that may affect global monetary relations, such as trends
 in the international economy (growth, stagnation, crisis) and the state of interna-
 tional trade and payments. Third are purposive relations among states, including
@@ -877,6 +907,7 @@ standard Britain to the nineteenth-century international economy and owed its
 eventual global reach to the gradual accession of other major industrial nations
 to the British-led system. The same kind of growth characterized the process of
 
+INTERNATIONAL MONETARY RELATIONS
 337
 European monetary integration, in which the Deutsche mark zone of Germany,
 Benelux, and Austria gradually attracted more and more European members. It
@@ -921,6 +952,8 @@ reducing its purchasing power. However, it is not difﬁcult to imagine that gov
 concerned about the competitiveness of their tradables producers, in the context of which a
 unilateral devaluation can be tantamount to cheating.
 
+338
+BROZ ■FRIEDEN
 cost is that the government cannot use the exchange rate to affect the domestic
 economy; it must, so to speak, adjust the economy to ﬁt the exchange rate. The
 most common source of international conﬂict in this regard has to do with the
@@ -965,6 +998,7 @@ son for the collapse of the Bretton Woods system was that American policy makers
 simply were much less concerned about the effects of exchange rate volatility than
 5For the view that cooperation was not central to the gold standard, see Gallarotti (1995).
 
+INTERNATIONAL MONETARY RELATIONS
 339
 Europeans were. A second factor is linkage to other policies. The existence of
 cooperative ventures outside the monetary realm can stimulate currency coopera-
@@ -1011,6 +1045,8 @@ guably only Germany and France), the highly institutionalized EU environment,
 and the complex network of policy linkages between EMU and other European
 initiatives.
 
+340
+BROZ ■FRIEDEN
 CONCLUSIONS
 Until recently, scholarly analysis of the political economy of national exchange rate
 policies and of international monetary relations lagged far behind their political
@@ -1042,3 +1078,4 @@ fruitful.
 ACKNOWLEDGMENTS
 TheauthorsacknowledgethehelpfulcommentsofMarcBusch,BenjaminJCohen,
 Randall Henning, Lisa Martin, and Andrew Rose.
+Visit the Annual Reviews home page at www.AnnualReviews.org

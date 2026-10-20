@@ -1,4 +1,5 @@
 181
+181
 ISSN 1518-3548
 Monetary Channels in Brazil through the
 Lens of a Semi-Structural Model
@@ -15,35 +16,59 @@ Apr.
 2009 
 p. 1-57
 
+Working Paper Series 
+ 
+ 
+ 
+ 
+Edited by Research Department (Depep) – E-mail: workingpaper@bcb.gov.br 
+ 
+Editor: Benjamin Miranda Tabak – E-mail: benjamin.tabak@bcb.gov.br 
+Editorial Assistent: Jane Sofia Moita – E-mail: jane.sofia@bcb.gov.br 
+Head of Research Department: Carlos Hamilton Vasconcelos Araújo – E-mail: carlos.araujo@bcb.gov.br  
+ 
 The Banco Central do Brasil Working Papers are all evaluated in double blind referee process. 
-
+  
 Reproduction is permitted only if source is stated as follows: Working Paper n. 181. 
-
+ 
 Authorized by Mário Mesquita, Deputy Governor for Economic Policy. 
-
+ 
+ 
+ 
 General Control of Publications 
-
+ 
 Banco Central do Brasil 
 Secre/Surel/Dimep 
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 1º andar 
 Caixa Postal 8.670 
 70074-900 Brasília – DF – Brazil 
-
+Phones: +55 (61) 3414-3710 and 3414-3567 
+Fax: +55 (61) 3414-3626 
+E-mail: editor@bcb.gov.br 
+ 
+ 
+ 
 The views expressed in this work are those of the authors and do not necessarily reflect those of the Banco Central or  
 its members. 
-
+ 
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced. 
-
+ 
+ 
 As opiniões expressas neste trabalho são exclusivamente do(s) autor(es) e não refletem, necessariamente, a visão do Banco 
 Central do Brasil. 
-
+ 
 Ainda que este artigo represente trabalho preliminar, citação da fonte é requerida mesmo quando reproduzido parcialmente. 
-
+ 
+ 
+ 
 Consumer Complaints and Public Enquiries Center 
-
+ 
+Banco Central do Brasil 
 Secre/Surel/Diate 
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 2º subsolo 
 70074-900 Brasília – DF – Brazil 
+Fax: +55 (61) 3414-2553 
+Internet: http//www.bcb.gov.br/?english
 
 Monetary Channels in Brazil through the Lens of a
 Semi-Structural Model
@@ -66,7 +91,11 @@ JEL Classi…cation: E17, E52, C51.
 *We are grateful to Adriana S. Sales for her participation in early stages of the project. We also thank Carlos Hamilton
 Araújo, Mário Mesquita, and the participants of 2008 Cemla meetings in Lima and Mexico City for their comments and
 suggestions.
+**Research Department, Central Bank of Brazil. E-mail: andre.minella@bcb.gov.br
+***Research Department, Central Bank of Brazil. E-mail: nelson.souza@bcb.gov.br (corresponding author)
+3
 
+1
 Introduction
 This paper investigates the monetary policy channels in Brazil using a semi-structural model
 for the in‡ation targeting period. In‡ation targeting was implemented in 1999, right after
@@ -95,6 +124,7 @@ We believe it fairly represents key features of the Brazilian economy, allowing 
 the monetary policy channels in a meaningful way. Second, we apply ALS’methodology to
 1The end of high in‡ation in 1994 represented another major change in the monetary channels, besides
 rendering monetary policy more e¤ective (see Lopes (1997)).
+4
 
 decompose the channels implied by the model.
 The estimated model allows us to identify three main operating channels.
@@ -124,6 +154,7 @@ at all considered horizons (up to three years). This result is in line with the 
 exchange rate for the in‡ation dynamics in Brazil.
 In the exercise considering the expectation channel, the household interest rate channel
 is still the most important transmission mechanism for output. However, we found that
+5
 
 the expectation channel may account for the largest part in the transmission of monetary
 policy to in‡ation. This …nding is consistent with the importance attributed to in‡ation
@@ -156,6 +187,7 @@ policies. These channels include not only the traditional interest rate channel,
 Although we lose information from previous periods, the structural breaks in 1994 and 1999 are large enough
 to justify a smaller sample. Furthermore, we are concerned about the transmission mechanisms during the
 in‡ation targeting period.
+6
 
 by Taylor (1995), but also the credit channel (Bernanke and Gertler (1995)), the exchange
 rate channel in the case of open economies (Obstfeld and Rogo¤ (1995)), and even asset price
@@ -184,6 +216,7 @@ American standards3.
 For each interest rate ri, we estimate the following pass-through regression, which is a
 3Afanasie¤ et al. (2002) investigate the determinants of high bank interest spreads in Brazil, and Souza-
 Sobrinho (2008) analyzes the welfare implications of such high spreads.
+7
 
 linear error correction model relating the ith interest rate to the policy rate r:
 rit = 
@@ -234,6 +267,7 @@ run (except for the …rm average lending rate). However, deposit rates seem to 
 though with a shorter sample period and estimating regressions in levels instead of using an
 error correction model. Notice also that the point estimate (absolute value) of 
 0 is larger
+8
 
 for corporate rates than for household rates, hence the former tend to adjust faster than the
 latter. Furthermore, since the point estimate of 
@@ -264,6 +298,7 @@ Ideally, we should study transmission mechanisms using an economic model with so
 theoretical foundations, such as the new generation of dynamic stochastic general equilib-
 4For the e¤ects of monetary policy shocks in Brazil using a VAR approach, see Céspedes et al. (2008),
 Minella (2003), and Sales and Tannuri-Pianto (2007).
+9
 
 rium (DSGE) models, in development or already in use by several central banks5. The micro-
 foundations of DSGE models impose a clear set of restrictions on the data. More speci…cally,
@@ -293,6 +328,7 @@ in the variables because we want to have an exact channel decomposition.
 (NEMO), England (BEQM), Euro Area (NAWM), Chile (MAS), Peru (MEGA-D), Colombia (PATACON),
 and Portugal (PESSOA). We could not compare our results with those of SAMBA because the latter is still
 an ongoing research.
+10
 
 3.1
 Estimation
@@ -322,6 +358,7 @@ a weighted average of the total import volumes of European Union, United States,
 Argentina and Japan— Brazil’s top-…ve trade partners— and are obtained from the IFS and
 national statistics institutes. We take the natural log of all series, except for net exports,
 Ravi and net external debt. In the case of in‡ation and interest rates, we use log of the gross
+11
 
 rates, and express them as percentage per quarter in the estimations.
 3.2
@@ -390,6 +427,7 @@ t is the average
 nominal lending rate charged by banks on household loans, e
 t;t+4 is one-year-ahead expected
 in‡ation at time t (taken from the CBB’s survey), wt is the real wage rate, nt is employment,
+12
 
 qt is the real e¤ective exchange rate, d01Q3 and d07Q4 are time dummies for 2001Q3 and
 2007Q4, respectively, and "c
@@ -438,6 +476,7 @@ t 2
 t 3 + "i
 t; (5)
 6We do not model inventory changes.
+13
 
 R2
 A = 0:77; LM1 = 0:02[0:88]; LM4 = 6:40[0:17]; HET = 19:11[0:51]; JB = 0:48[0:79]
@@ -500,6 +539,7 @@ R2
 A = 0:48; LM1 = 0:43[0:51]; LM4 = 3:98[0:40]; HET = 8:90[0:63]; JB = 2:74[0:25]
 Method: OLS;
 Sample: 1999Q3-2008Q2
+14
 
 where m
 t is our proxy for world imports. Imports also depend on the real exchange rate and
@@ -543,6 +583,7 @@ ulct = wt   (yt   nt) ;
 (11)
 where employment level (nt) depends on the working-age population (wapt) and on the
 unemployment rate (ut), and real unit labor cost (ulct) depends on real wage and labor
+15
 
 productivity (yt   nt). U is the long-run unemployment rate, calibrated according to the
 sample average (0:105).
@@ -554,7 +595,8 @@ ut = 0:66
 (0:06)yt   0:12
 (0:03)yt 1   0:13
 (0:04)
-
+ 
+1
 4
 4
 X
@@ -584,7 +626,8 @@ t = 0:44
 t 1 + 0:50
 (0:16)yt   0:13
 (0:03)
-
+ 
+1
 4
 4
 X
@@ -612,7 +655,8 @@ wt = 0:65
 (0:09)wt 1 + 1:04
 (0:21)yt  1:27
 (0:41)
-
+ 
+1
 3
 4
 X
@@ -623,6 +667,7 @@ ut j
 (0:14)t 1 + "w
 t :
 (14)
+16
 
 R2
 A = 0:84; LM1 = 0:00[0:96]; LM4 = 0:29[0:99]; HET = 8:19[0:88]; JB = 2:15[0:34]
@@ -643,7 +688,8 @@ statistically signi…cant even in the presence of both variables measuring real
 =
 0:45
 (0:13)
-
+ 
+1
 4
 4
 X
@@ -652,7 +698,8 @@ j=1
 !
 + (1   0:45)
 (0:13)
-
+ 
+1
 4
 4
 X
@@ -676,14 +723,16 @@ A = 0:78; LM1 = 0:20[0:65]; LM4 = 4:93[0:29]; HET = 10:17[0:86]; JB = 3:42[0:18]
 Method: 2SLS;
 Sample: 1999Q3-2007Q2
 Instrumented variables:
-
+ 
+1
 4
 4P
 j=1
 t+j
 !
 Instruments:
-
+ 
+1
 4
 4P
 j=1
@@ -699,6 +748,7 @@ quarter in‡ation, improves signi…cantly the …t of the regression. Addition
 helps to smooth out the high volatility of in‡ation at quarterly frequency. Similarly, we use
 the four-quarter moving average of future in‡ation instead of in‡ation expectations because
 it generates a better …t and a less volatile in‡ation pro…le. The estimated short-run exchange
+17
 
 rate pass-through, in equation (15), is roughly in line with other estimates in the literature,
 including those of Belaisch (2003), and Correa and Minella (2006).
@@ -747,6 +797,7 @@ swap rate (see Figure 1). Additionally, since the swap rate re‡ects the expect
 the future path of the policy rate, it also captures the expected stance of monetary policy.
 Therefore, the swap rate is modeled as depending on future Selic rate and the current
 7The net e¤ect on real unit labor cost also depends on the behavior of labor productivity.
+18
 
 country-risk premium:
 rs
@@ -754,7 +805,8 @@ t = 0:39
 (0:11)rs
 t 1 + 0:56
 (0:22)
-
+ 
+1
 4
 3
 X
@@ -771,7 +823,9 @@ R2
 A = 0:92; LM1 = 0:03[0:87]; LM4 = 4:44[0:35]; HET = 14:54[0:15]; JB = 0:84[0:66]
 Method: 2SLS;
 Sample: 1999Q3-2007Q3
-
+Instrumented variables:
+ 
+1
 4
 3P
 j=0
@@ -851,6 +905,7 @@ premium should depend upon idiosyncratic factors (e.g., debt level, credit ratin
 We constructed a series of expected real exchange rate, using data on expected nominal exchange rate and
 on expected in‡ation di¤erential. However, this procedure implies a signi…cant loss of observations because
 data on expected nominal exchange rate are available only from 2001Q4 onwards.
+19
 
 …scal stance, economic growth) as well as common factors (e.g., contagion e¤ects, world
 interest rate, investor’s willingness towards risk). In the case of Brazil, we found that the
@@ -940,6 +995,7 @@ t;t+4   t+4
 + "r
 t;
 (21)
+20
 
 R2
 A = 0:91; LM1 = 0:64[0:42]; LM4 = 1:92[0:75]; HET = 9:93[0:36]; JB = 4:58[0:10]
@@ -949,7 +1005,8 @@ Instrumented variables:
  e
 t;t+4
 
-
+Instruments:
+ 
 e
 t 1;t+3; e
 t 2;t+2;
@@ -985,6 +1042,7 @@ We turn on all shocks in the model and
 run 100,000 simulations, each having the same number of periods in the data sample (36
 9Minella et al. (2003) …nd similar estimated coe¢ cients for the Taylor rule, though using a shorter sample
 period.
+21
 
 quarters)10. For each simulation and variable, we compute the average of the following second
 moments: standard deviation, autocorrelation, and contemporaneous cross-correlations with
@@ -1017,6 +1075,7 @@ for the variances of shocks. In each simulation, we discard the …rst 100 obser
 in‡uence of the initial conditions.
 11Neumeyer and Perri (2005) document these and other stylized facts for several emerging market
 economies.
+22
 
 portant driver of Brazilian output and in‡ation in recent years; in turn, monetary policy
 innovations are at the center of the channel decomposition we perform in the next section.
@@ -1046,6 +1105,7 @@ The exchange rate appreciation also harms exports, whereas the fall in domestic 
 tion raises them. Since the price e¤ect dominates, the net result is an export reduction. By
 12For the …rst quarter, however, the shock is chosen in such way that the policy interest rate is 100 basis
 points.
+23
 
 the same token, the appreciation bene…ts imports, and the fall in output reduces them. In
 this case, however, the income e¤ect prevails, that is, imports fall in the …rst year since,
@@ -1075,6 +1135,7 @@ a Taylor-type rule. We conduct an exercise where, as before, the interest rate i
 afterwards. As we can see in Figure 5, the shapes of the responses are roughly equal to
 13The timing of the responses is in line with that in Catão et al. (2008). The magnitude of the e¤ect on
 the output gap and in‡ation, however, is slightly higher than in that paper.
+24
 
 those of the previous experiment. The di¤erence lies in the magnitude of the responses and
 the duration of the process. Output reduction reaches 0.5 percent in the …fth quarter, and
@@ -1105,6 +1166,7 @@ We then
 introduce a dummy variable in the shock term of each policy reaction function, which
 14ALS’approach also works for non-linear models as long as the residuals due to the inexact decomposition
 do not a¤ect the relative contribution of the individual channels.
+25
 
 takes values 0 or 1 ("‡ag variables"). The ‡ag associated with channel j takes value 1
 if we want to identify channel j in the simulations, and 0 otherwise. In the previous
@@ -1135,6 +1197,7 @@ in Figure 4.
 As expected, the three channels contribute to the output reduction, at least in the …rst
 …ve quarters. An increase in the policy rate immediately raises the household lending and
 swap rates (not shown) in both nominal and real terms, and reduces the real exchange rate.
+26
 
 The rise in the household lending rate directly reduces consumption, the increase in the
 swap rate lowers investment, and the exchange rate appreciation discourages net exports.
@@ -1163,6 +1226,7 @@ negative for some periods.
 On the other hand, the household interest rate and the exchange rate channels are equally
 important for explaining the behavior of in‡ation, each accounting for around 40% at all
 horizons. The important role played by the exchange rate channel in the decomposition
+27
 
 is consistent with the fact that exchange rate movements have been a key determinant of
 in‡ation dynamics in Brazil. Therefore, monetary policy has signi…cantly strengthened when
@@ -1192,6 +1256,7 @@ the non-expectation channels, apparently leaving no role for a separate expectat
 In order to get a sense of this channel, we run the previous model (baseline model)
 assuming that private agents’in‡ation expectations do not respond to the monetary policy
 shock (exogenous-expectation model). In our setup, in‡ation expectation terms appear in
+28
 
 equations (4), (5), (15) and (18). We then compare the response functions of the baseline
 model with those coming from the exogenous-expectation model. The di¤erence between
@@ -1220,6 +1285,7 @@ because actual in‡ation expectations probably move less than in models with co
 expectations. Even granting that our experiment overstates the expectation channel, the
 result is consistent with the theoretical view emphasizing the importance of expectations
 (see, for instance, Woodford (2003)). In the case of Brazil, Bevilaqua et al. (2008) and
+29
 
 Carvalho and Minella (2009) …nd that the in‡ation target works as an important anchor for
 in‡ation expectations. Our work further suggests that expectations are a key element in the
@@ -1248,6 +1314,7 @@ Looking into the future, we anticipate that other channels may play a relevant r
 Brazilian economy develops and …nancial and credit markets deepen. Among the potential
 competing channels, we highlight the so-called wealth and credit channels. The increase
 in the access to the stock market and the reduction in the share of interest-rate-linked
+30
 
 public debt may contribute to the development of a wealth channel in Brazil. Also, the
 credit behavior— the credit-to-GDP ratio has doubled in the last few years— has recently
@@ -1443,19 +1510,84 @@ Model
 Data
 Model
 GDP
+1.04
+1.00
+1.00
+1.00
+0.60
+0.54
+1.00
+1.00
 Consumption
+1.44
+1.15
+1.38
+1.14
+0.77
+0.71
+0.61
+0.60
 Investment
+4.20
+3.57
+4.02
+3.55
+0.77
+0.66
+0.78
+0.52
 Net Exports/GDP
+1.07
+0.87
+1.02
+0.87
+0.79
+0.55
 -0.24
+0.26
 Inflation Rate
+1.07
+0.94
+1.02
+0.94
+0.36
+0.48
+0.12
+0.40
 Unemployment Rate
+0.68
+0.72
+0.65
+0.72
+0.84
+0.85
 -0.37
 -0.47
 Capacity Utilization Rate
+1.21
+1.19
+1.16
+1.18
+0.69
+0.57
+0.58
+0.58
 Unit Labor Cost
+2.95
+2.61
+2.82
+2.60
+0.84
+0.76
+0.26
+0.21
 Real Exchange Rate
+8.94
 10.05
+8.56
 10.00
+0.70
+0.88
 -0.13
 -0.04
 Note: Data sample covers the period 1999Q3 to 2008Q2. All moments are generated by HP filtered data. Relative standard deviation is normalized to that of GDP.
@@ -1554,571 +1686,1253 @@ GDP
 B. Decomposition Identifying the Expectation Channel
 
 Figure 1. Brazilian Interest Rates - Jul/1999 to Jun/2008 
-
+ 
+ 
+ 
+ 
+ 
+8
+12
+16
+20
+24
+28
+32
+00
+01
+02
+03
+04
+05
+06
+07
+08
 Selic
 Swap
 Policy Interest Rate (Selic) and 360-Day Swap Pre-DI Rate (p.p.)
+8
+12
+16
+20
+24
+28
+00
+01
+02
+03
+04
+05
+06
+07
+08
 Households
 Firms
 Overall
 Time Deposit Rates (p.p.)
+30
+40
+50
+60
+70
+80
+90
+100
+110
+00
+01
+02
+03
+04
+05
+06
+07
+08
 Households
 Firms
 Overall
 Average Lending Rates (p.p.)
+40
+60
+80
+100
+120
+25
+30
+35
+40
+45
+50
+55
+60
+00
+01
+02
+03
+04
+05
+06
+07
+08
 Personal Credit (LHS)
 Working Capital (RHS)
 Disaggregated Lending Rates (p.p.)
 
 Figure 2. Cross-Correlations between GDP (at quarter j) and Variable (i) 
-
+ 
+-4
+-2
+0
+2
+4
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
 Consumption
+-4
+-2
+0
+2
+4
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
 Investment
-
+ 
+ 
 Data
 Model
+-4
+-2
+0
+2
+4
+-0.4
+-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
 Net Exports/GDP
+-4
+-2
+0
+2
+4
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
 Capacity Utilization Rate
+-4
+-2
+0
+2
+4
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
 Unemployment Rate
+-4
+-2
+0
+2
+4
+-0.5
+0
+0.5
 Inflation Rate
 
 Figure 3. Impulse Responses to a Consumption Shock 
-
+ 
+ 
+ 
+ 
+2
+4
+6
+8
+10
+12
+-0.5
+0
+0.5
+1
 Selic Interest Rate (% p.y.)
-
+ 
+ 
 Nominal
 Real Ex-Ante
+2
+4
+6
+8
+10
+12
+-0.2
+0
+0.2
+0.4
+0.6
 GDP
+2
+4
+6
+8
+10
+12
+0
+0.2
+0.4
+0.6
+0.8
 4-Quarter Inflation Rate
+2
+4
+6
+8
+10
+12
+-0.5
+0
+0.5
+1
 Consumption
+2
+4
+6
+8
+10
+12
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
 Investment
+2
+4
+6
+8
+10
+12
 -0.15
+-0.1
 -0.05
+0
+0.05
 Net Exports/GDP
+2
+4
+6
+8
+10
+12
+-0.2
+0
+0.2
+0.4
+0.6
 Real Exchange Rate
+2
+4
+6
+8
+10
+12
+0
+0.1
+0.2
+0.3
+0.4
 Real Unit Labor Cost
+2
+4
+6
+8
+10
+12
+-0.2
 -0.15
+-0.1
 -0.05
+0
+0.05
 Unemployment Rate
 
 Figure 4. Impulse Responses to a Monetary Policy Shock 
-
+ 
+2
+4
+6
+8
+10
+12
+-2
+-1
+0
+1
+2
+Selic Interest Rate (% p.y.)
+ 
+ 
 Nominal
+Real Ex-Ante
+2
+4
+6
+8
+10
+12
+-0.3
+-0.2
+-0.1
+0
+0.1
 GDP
+2
+4
+6
+8
+10
+12
+-0.8
+-0.6
+-0.4
+-0.2
+0
 4-Quarter Inflation Rate
+2
+4
+6
+8
+10
+12
+-0.3
+-0.2
+-0.1
+0
+0.1
 Consumption
+2
+4
+6
+8
+10
+12
+-0.6
+-0.4
+-0.2
+0
+0.2
 Investment
+2
+4
+6
+8
+10
+12
 -0.04
 -0.03
 -0.02
 -0.01
+0
+0.01
+0.02
 Net Exports/GDP
+2
+4
+6
+8
+10
+12
+-2
+-1.5
+-1
+-0.5
+0
 Real Exchange Rate
+2
+4
+6
+8
+10
+12
 -0.25
+-0.2
 -0.15
+-0.1
 -0.05
+0
 Real Unit Labor Cost
+2
+4
+6
+8
+10
+12
+0
+0.05
+0.1
+0.15
+0.2
+Unemployment Rate
 
 Figure 5. Impulse Responses to a Monetary Policy Shock with Fixed Policy 
-
+ 
+2
+4
+6
+8
+10
+12
+-3
+-2
+-1
+0
+1
+2
+3
+Selic Interest Rate (% p.y.)
+ 
+ 
 Nominal
+Real Ex-Ante
+2
+4
+6
+8
+10
+12
+-0.6
+-0.4
+-0.2
+0
+0.2
 GDP
+2
+4
+6
+8
+10
+12
+-2
+-1.5
+-1
+-0.5
+0
 4-Quarter Inflation Rate
+2
+4
+6
+8
+10
+12
+-0.6
+-0.4
+-0.2
+0
+0.2
 Consumption
+2
+4
+6
+8
+10
+12
+-1.5
+-1
+-0.5
+0
+0.5
 Investment
+2
+4
+6
+8
+10
+12
+-0.1
 -0.05
+0
+0.05
+0.1
 Net Exports/GDP
+2
+4
+6
+8
+10
+12
+-5
+-4
+-3
+-2
+-1
+0
 Real Exchange Rate
+2
+4
+6
+8
+10
+12
+-0.8
+-0.6
+-0.4
+-0.2
+0
 Real Unit Labor Cost
+2
+4
+6
+8
+10
+12
+0
+0.1
+0.2
+0.3
+0.4
+Unemployment Rate
 
 Figure 6. Baseline Channel Decomposition 
-
+ 
+2
+4
+6
+8
+10
+12
+-2
+-1
+0
+1
+2
+Selic Interest Rate (% p.y.)
+ 
+ 
 Nominal
+Real Ex-Ante
+2
+4
+6
+8
+10
+12
 -0.15
+-0.1
 -0.05
+0
+0.05
 GDP
-
+ 
+ 
 Household Rate Channel
 Firm Rate Channel
 Exchange Rate Channel
+2
+4
+6
+8
+10
+12
+-0.4
+-0.3
+-0.2
+-0.1
+0
 4-Quarter Inflation Rate
+2
+4
+6
+8
+10
+12
+-0.3
+-0.2
+-0.1
+0
+0.1
 Consumption
+2
+4
+6
+8
+10
+12
+-0.4
+-0.2
+0
+0.2
+0.4
 Investment
+2
+4
+6
+8
+10
+12
+-0.1
 -0.05
+0
+0.05
+0.1
 Net Exports/GDP
+2
+4
+6
+8
+10
+12
+-2
+-1.5
+-1
+-0.5
+0
+0.5
 Real Exchange Rate
+2
+4
+6
+8
+10
+12
 -0.15
+-0.1
 -0.05
+0
+0.05
 Real Unit Labor Cost
+2
+4
+6
+8
+10
+12
 -0.02
+0
+0.02
+0.04
+0.06
+0.08
+Unemployment Rate
 
 Figure 7. Channel Decomposition under Different Assumptions for Expectations 
-
+ 
+2
+4
+6
+8
+10
+12
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
 Nominal Selic Interest Rate (% p.y.)
+2
+4
+6
+8
+10
+12
+-0.3
+-0.2
+-0.1
+0
+0.1
 GDP
-
+ 
+ 
 Baseline (Model-Consistent Expectations)
 Exogenous Expectations
+2
+4
+6
+8
+10
+12
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
 4-Quarter Inflation Rate
+2
+4
+6
+8
+10
+12
+-0.3
+-0.2
+-0.1
+0
+0.1
 Consumption
+2
+4
+6
+8
+10
+12
+-0.6
+-0.4
+-0.2
+0
+0.2
 Investment
+2
+4
+6
+8
+10
+12
 -0.04
 -0.03
 -0.02
 -0.01
+0
+0.01
+0.02
 Net Exports/GDP
+2
+4
+6
+8
+10
+12
+-2
+-1.5
+-1
+-0.5
+0
 Real Exchange Rate
+2
+4
+6
+8
+10
+12
+-0.4
+-0.3
+-0.2
+-0.1
+0
 Real Unit Labor Cost
+2
+4
+6
+8
+10
+12
+0
+0.05
+0.1
+0.15
+0.2
+Unemployment Rate
 
+46
+Banco Central do Brasil 
+ 
+ 
 Trabalhos para Discussão 
 Os Trabalhos para Discussão podem ser acessados na internet, no formato PDF, 
-
+no endereço: http://www.bc.gov.br 
+ 
+Working Paper Series 
+Working Papers in PDF format can be downloaded from: http://www.bc.gov.br 
+ 
+ 
+ 
+ 
+1 
 Implementing Inflation Targeting in Brazil 
 Joel Bogdanski, Alexandre Antonio Tombini and Sérgio Ribeiro da Costa 
 Werlang 
-
+ 
 Jul/2000
 2 
 Política Monetária e Supervisão do Sistema Financeiro Nacional no 
+Banco Central do Brasil 
 Eduardo Lundberg 
-
+ 
 Monetary Policy and Banking Supervision Functions on the Central 
 Bank 
 Eduardo Lundberg 
-
+ 
 Jul/2000
 Jul/2000
 3 
 Private Sector Participation: a Theoretical Justification of the Brazilian 
 Position 
 Sérgio Ribeiro da Costa Werlang 
-
+ 
 Jul/2000
 4 
 An Information Theory Approach to the Aggregation of Log-Linear 
 Models 
 Pedro H. Albuquerque 
-
+ 
 Jul/2000
 5 
 The Pass-Through from Depreciation to Inflation: a Panel Study 
 Ilan Goldfajn and  Sérgio Ribeiro da Costa Werlang 
-
+ 
 Jul/2000
 6 
 Optimal Interest Rate Rules in Inflation Targeting Frameworks 
 José Alvaro Rodrigues Neto, Fabio Araújo and Marta Baltar J. Moreira 
-
+ 
 Jul/2000
 7 
 Leading Indicators of Inflation for Brazil 
 Marcelle Chauvet 
-
+ 
 Sep/2000
 8 
 The Correlation Matrix of the Brazilian Central Bank’s Standard Model 
 for Interest Rate Market Risk 
 José Alvaro Rodrigues Neto 
-
+ 
 Sep/2000
 9 
 Estimating Exchange Market Pressure and Intervention Activity 
 Emanuel-Werner Kohlscheen 
-
+ 
 Nov/2000
 10 
 Análise do Financiamento Externo a uma Pequena Economia 
 Aplicação da Teoria do Prêmio Monetário ao Caso Brasileiro: 1991–1998 
 Carlos Hamilton Vasconcelos Araújo e Renato Galvão Flôres Júnior 
-
+ 
 Mar/2001
 11 
 A Note on the Efficient Estimation of Inflation in Brazil 
 Michael F. Bryan and Stephen G. Cecchetti 
-
+ 
 Mar/2001
 12 
 A Test of Competition in Brazilian Banking 
 Márcio I. Nakane 
-
+ 
 Mar/2001
 
+47
 13 
 Modelos de Previsão de Insolvência Bancária no Brasil 
 Marcio Magalhães Janot 
-
+ 
 Mar/2001
 14 
 Evaluating Core Inflation Measures for Brazil 
 Francisco Marcos Rodrigues Figueiredo 
-
+ 
 Mar/2001
 15 
 Is It Worth Tracking Dollar/Real Implied Volatility? 
 Sandro Canesso de Andrade and Benjamin Miranda Tabak 
-
+ 
 Mar/2001
 16 
 Avaliação das Projeções do Modelo Estrutural do Banco Central do 
 Brasil para a Taxa de Variação do IPCA 
 Sergio Afonso Lago Alves 
-
+ 
 Evaluation of the Central Bank of Brazil Structural Model’s Inflation 
 Forecasts in an Inflation Targeting Framework 
 Sergio Afonso Lago Alves 
-
+ 
 Mar/2001
 Jul/2001
 17 
 Estimando o Produto Potencial Brasileiro: uma Abordagem de Função 
 de Produção 
 Tito Nícias Teixeira da Silva Filho 
-
+ 
 Estimating Brazilian Potential Output: a Production Function Approach
-
+Tito Nícias Teixeira da Silva Filho 
+ 
 Abr/2001
 Aug/2002
 18 
 A Simple Model for Inflation Targeting in Brazil 
 Paulo Springer de Freitas and Marcelo Kfoury Muinhos 
-
+ 
 Apr/2001
 19 
 Uncovered Interest Parity with Fundamentals: a Brazilian Exchange 
 Rate Forecast Model 
 Marcelo Kfoury Muinhos, Paulo Springer de Freitas and Fabio Araújo 
-
+ 
 May/2001
 20 
 Credit Channel without the LM Curve 
 Victorio Y. T. Chu and Márcio I. Nakane 
-
+ 
 May/2001
 21 
 Os Impactos Econômicos da CPMF: Teoria e Evidência 
 Pedro H. Albuquerque 
-
+ 
 Jun/2001
 22 
 Decentralized Portfolio Management 
 Paulo Coutinho and Benjamin Miranda Tabak 
-
+ 
 Jun/2001
 23 
 Os Efeitos da CPMF sobre a Intermediação Financeira 
 Sérgio Mikio Koyama e Márcio I. Nakane 
-
+ 
 Jul/2001
 24 
 Inflation Targeting in Brazil: Shocks, Backward-Looking Prices, and 
 IMF Conditionality 
 Joel Bogdanski, Paulo Springer de Freitas, Ilan Goldfajn and 
 Alexandre Antonio Tombini 
-
+ 
 Aug/2001
 25 
 Inflation Targeting in Brazil: Reviewing Two Years of Monetary Policy 
 1999/00 
 Pedro Fachada 
-
+ 
 Aug/2001
 26 
 Inflation Targeting in an Open Financially Integrated Emerging 
 Economy: the Case of Brazil 
 Marcelo Kfoury Muinhos 
-
+ 
 Aug/2001
-
+27 
+ 
 Complementaridade e Fungibilidade dos Fluxos de Capitais 
 Internacionais 
 Carlos Hamilton Vasconcelos Araújo e Renato Galvão Flôres Júnior 
-
+ 
 Set/2001
 
+48
+28 
+ 
 Regras Monetárias e Dinâmica Macroeconômica no Brasil: uma 
 Abordagem de Expectativas Racionais 
 Marco Antonio Bonomo e Ricardo D. Brito 
-
+ 
 Nov/2001
 29 
 Using a Money Demand Model to Evaluate Monetary Policies in Brazil 
 Pedro H. Albuquerque and Solange Gouvêa 
-
+ 
 Nov/2001
 30 
 Testing the Expectations Hypothesis in the Brazilian Term Structure of 
 Interest Rates 
 Benjamin Miranda Tabak and Sandro Canesso de Andrade 
-
+ 
 Nov/2001
 31 
 Algumas Considerações sobre a Sazonalidade no IPCA 
 Francisco Marcos R. Figueiredo e Roberta Blass Staub 
-
+ 
 Nov/2001
 32 
 Crises Cambiais e Ataques Especulativos no Brasil 
 Mauro Costa Miranda 
-
+ 
 Nov/2001
 33 
 Monetary Policy and Inflation in Brazil (1975-2000): a VAR Estimation 
 André Minella 
-
+ 
 Nov/2001
 34 
 Constrained Discretion and Collective Action Problems: Reflections on 
 the Resolution of International Financial Crises 
 Arminio Fraga and Daniel Luiz Gleizer 
-
+ 
 Nov/2001
 35 
 Uma Definição Operacional de Estabilidade de Preços 
-
+Tito Nícias Teixeira da Silva Filho 
+ 
 Dez/2001
 36 
 Can Emerging Markets Float? Should They Inflation Target? 
 Barry Eichengreen 
-
+ 
 Feb/2002
 37 
 Monetary Policy in Brazil: Remarks on the Inflation Targeting Regime, 
 Public Debt Management and Open Market Operations 
 Luiz Fernando Figueiredo, Pedro Fachada and Sérgio Goldenstein 
-
+ 
 Mar/2002
 38 
 Volatilidade Implícita e Antecipação de Eventos de Stress: um Teste para 
 o Mercado Brasileiro 
 Frederico Pechir Gomes 
-
+ 
 Mar/2002
 39 
 Opções sobre Dólar Comercial e Expectativas a Respeito do 
 Comportamento da Taxa de Câmbio 
 Paulo Castor de Castro 
-
+ 
 Mar/2002
 40 
 Speculative Attacks on Debts, Dollarization and Optimum Currency 
 Areas 
 Aloisio Araujo and Márcia Leon 
-
+ 
 Apr/2002
 41 
 Mudanças de Regime no Câmbio Brasileiro 
 Carlos Hamilton V. Araújo e Getúlio B. da Silveira Filho 
-
+ 
 Jun/2002
 42 
 Modelo Estrutural com Setor Externo: Endogenização do Prêmio de 
 Risco e do Câmbio 
 Marcelo Kfoury Muinhos, Sérgio Afonso Lago Alves e Gil Riella 
-
+ 
 Jun/2002
 43 
 The Effects of the Brazilian ADRs Program on Domestic Market 
 Efficiency 
 Benjamin Miranda Tabak and Eduardo José Araújo Lima 
-
+ 
 Jun/2002
 
+49
 44 
 Estrutura Competitiva, Produtividade Industrial e Liberação Comercial 
 no Brasil 
 Pedro Cavalcanti Ferreira e Osmani Teixeira de Carvalho Guillén 
-
+ 
 Jun/2002
 45 
 Optimal Monetary Policy, Gains from Commitment, and Inflation 
 Persistence  
 André Minella 
-
+ 
 Aug/2002
 46 
 The Determinants of Bank Interest Spread in Brazil 
 Tarsila Segalla Afanasieff, Priscilla Maria Villa Lhacer and Márcio I. Nakane
-
+ 
 Aug/2002
 47 
 Indicadores Derivados de Agregados Monetários  
 Fernando de Aquino Fonseca Neto e José Albuquerque Júnior 
-
+ 
 Set/2002
 48 
 Should Government Smooth Exchange Rate Risk?
 Ilan Goldfajn and Marcos Antonio Silveira 
-
+ 
 Sep/2002
 49 
 Desenvolvimento do Sistema Financeiro e Crescimento Econômico no 
 Brasil: Evidências de Causalidade 
 Orlando Carneiro de Matos 
-
+ 
 Set/2002
 50 
 Macroeconomic Coordination and Inflation Targeting in a Two-Country 
 Model 
 Eui Jung Chang, Marcelo Kfoury Muinhos and Joanílio Rodolpho Teixeira 
-
+ 
 Sep/2002
 51 
 Credit Channel with Sovereign Credit Risk: an Empirical Test 
 Victorio Yi Tson Chu 
-
+ 
 Sep/2002
 52 
 Generalized Hyperbolic Distributions and Brazilian Data 
 José Fajardo and Aquiles Farias 
-
+ 
 Sep/2002
 53 
 Inflation Targeting in Brazil: Lessons and Challenges 
 André Minella, Paulo Springer de Freitas, Ilan Goldfajn and 
 Marcelo Kfoury Muinhos 
-
+ 
 Nov/2002
 54 
 Stock Returns and Volatility 
 Benjamin Miranda Tabak and Solange Maria Guerra 
-
+ 
 Nov/2002
 55 
 Componentes de Curto e Longo Prazo das Taxas de Juros no Brasil 
 Carlos Hamilton Vasconcelos Araújo e Osmani Teixeira de Carvalho de 
 Guillén 
-
+ 
 Nov/2002
 56 
 Causality and Cointegration in Stock Markets: 
 the Case of Latin America 
 Benjamin Miranda Tabak and Eduardo José Araújo Lima 
-
+ 
 Dec/2002
 57 
 As Leis de Falência: uma Abordagem Econômica 
 Aloisio Araujo 
-
+ 
 Dez/2002
 58 
 The Random Walk Hypothesis and the Behavior of Foreign Capital 
 Portfolio Flows: the Brazilian Stock Market Case 
 Benjamin Miranda Tabak 
-
+ 
 Dec/2002
 59 
 Os Preços Administrados e a Inflação no Brasil 
 Francisco Marcos R. Figueiredo e Thaís Porto Ferreira 
-
+ 
 Dez/2002
 60 
 Delegated Portfolio Management 
 Paulo Coutinho and Benjamin Miranda Tabak 
-
+ 
 Dec/2002
 
+50
 61 
 O Uso de Dados de Alta Freqüência na Estimação da Volatilidade e 
 do Valor em Risco para o Ibovespa  
 João Maurício de Souza Moreira e Eduardo Facó Lemgruber 
-
+ 
 Dez/2002
 62 
 Taxa de Juros e Concentração Bancária no Brasil
 Eduardo Kiyoshi Tonooka e Sérgio Mikio Koyama 
-
+ 
 Fev/2003
 63 
 Optimal Monetary Rules: the Case of Brazil 
 Charles Lima de Almeida, Marco Aurélio Peres, Geraldo da Silva e Souza 
 and Benjamin Miranda Tabak 
-
+ 
 Feb/2003
 64 
 Medium-Size Macroeconomic Model for the Brazilian Economy
 Marcelo Kfoury Muinhos and Sergio Afonso Lago Alves 
-
+ 
 Feb/2003
 65 
 On the Information Content of Oil Future Prices 
-
+Benjamin Miranda Tabak 
+ 
 Feb/2003
 66 
 A Taxa de Juros de Equilíbrio: uma Abordagem Múltipla 
 Pedro Calhman de Miranda e Marcelo Kfoury Muinhos 
-
+ 
 Fev/2003
 67 
 Avaliação de Métodos de Cálculo de Exigência de Capital para Risco de 
 Mercado de Carteiras de Ações no Brasil 
 Gustavo S. Araújo, João Maurício S. Moreira e Ricardo S. Maia Clemente  
-
+ 
 Fev/2003
 68 
 Real Balances in the Utility Function: Evidence for Brazil 
 Leonardo Soriano de Alencar and Márcio I. Nakane 
-
+ 
 Feb/2003
 69 
 r-filters: a Hodrick-Prescott Filter Generalization
 Fabio Araújo, Marta Baltar Moreira Areosa and José Alvaro Rodrigues Neto 
-
+ 
 Feb/2003
 70 
 Monetary Policy Surprises and the Brazilian Term Structure of Interest 
 Rates 
-
+Benjamin Miranda Tabak 
+ 
 Feb/2003
 71 
 On Shadow-Prices of Banks in Real-Time Gross Settlement Systems 
 Rodrigo Penaloza 
-
+ 
 Apr/2003
 72 
 O Prêmio pela Maturidade na Estrutura a Termo das Taxas de Juros 
 Brasileiras 
 Ricardo Dias de Oliveira Brito, Angelo J. Mont'Alverne Duarte e Osmani 
 Teixeira de C. Guillen 
-
+ 
 Maio/2003
 73 
 Análise de Componentes Principais de Dados Funcionais – uma 
 Aplicação às Estruturas a Termo de Taxas de Juros 
 Getúlio Borges da Silveira e Octavio Bessada 
-
+ 
 Maio/2003
 74 
 Aplicação do Modelo de Black, Derman & Toy à Precificação de Opções 
 Sobre Títulos de Renda Fixa  
 Octavio Manuel Bessada Lion, Carlos Alberto Nunes Cosenza e César das 
 Neves 
-
+ 
 Maio/2003
 75 
 Brazil’s Financial System: Resilience to Shocks, no Currency 
 Substitution, but Struggling to Promote Growth 
 Ilan Goldfajn, Katherine Hennings and Helio Mori 
-
+ 
 Jun/2003
 
+51
 76 
 Inflation Targeting in Emerging Market Economies 
 Arminio Fraga, Ilan Goldfajn and André Minella 
-
+ 
 Jun/2003
 77 
 Inflation Targeting in Brazil: Constructing Credibility under Exchange 
 Rate Volatility 
 André Minella, Paulo Springer de Freitas, Ilan Goldfajn and Marcelo Kfoury 
 Muinhos 
-
+ 
 Jul/2003
 78 
 Contornando os Pressupostos de Black & Scholes: Aplicação do Modelo 
 de Precificação de Opções de Duan no Mercado Brasileiro 
 Gustavo Silva Araújo, Claudio Henrique da Silveira Barbedo, Antonio 
 Carlos Figueiredo, Eduardo Facó Lemgruber 
-
+ 
 Out/2003
 79 
 Inclusão do Decaimento Temporal na Metodologia  
@@ -2126,264 +2940,272 @@ Delta-Gama para o Cálculo do VaR de Carteiras
 Compradas em Opções no Brasil 
 Claudio Henrique da Silveira Barbedo, Gustavo Silva Araújo,  
 Eduardo Facó Lemgruber 
-
+ 
 Out/2003
-
+ 
+80 
 Diferenças e Semelhanças entre Países da América Latina: 
 uma Análise de Markov Switching para os Ciclos Econômicos 
 de Brasil e Argentina 
 Arnildo da Silva Correa 
-
+ 
 Out/2003
 81 
 Bank Competition, Agency Costs and the Performance of the  
 Monetary Policy 
 Leonardo Soriano de Alencar and Márcio I. Nakane 
-
+ 
 Jan/2004
 82 
 Carteiras de Opções: Avaliação de Metodologias de Exigência de Capital 
 no Mercado Brasileiro 
 Cláudio Henrique da Silveira Barbedo e Gustavo Silva Araújo 
-
+ 
 Mar/2004
 83 
 Does Inflation Targeting Reduce Inflation? An Analysis for the OECD 
 Industrial Countries 
 Thomas Y. Wu 
-
+ 
 May/2004
 84 
 Speculative Attacks on Debts and Optimum Currency Area: a Welfare 
 Analysis 
 Aloisio Araujo and Marcia Leon 
-
+ 
 May/2004
 85 
 Risk Premia for Emerging Markets Bonds: Evidence from Brazilian 
 Government Debt, 1996-2002 
 André Soares Loureiro and Fernando de Holanda Barbosa 
-
+ 
 May/2004
 86 
 Identificação do Fator Estocástico de Descontos e Algumas Implicações 
 sobre Testes de Modelos de Consumo 
 Fabio Araujo e João Victor Issler 
-
+ 
 Maio/2004
 87 
 Mercado de Crédito: uma Análise Econométrica dos Volumes de Crédito 
 Total e Habitacional no Brasil 
 Ana Carla Abrão Costa 
-
+ 
 Dez/2004
 88 
 Ciclos Internacionais de Negócios: uma Análise de Mudança de Regime 
 Markoviano para Brasil, Argentina e Estados Unidos 
 Arnildo da Silva Correa e Ronald Otto Hillbrecht 
-
+ 
 Dez/2004
 89 
 O Mercado de Hedge Cambial no Brasil: Reação das Instituições 
 Financeiras a Intervenções do Banco Central 
 Fernando N. de Oliveira 
-
+ 
 Dez/2004
 
+52
 90 
 Bank Privatization and Productivity: Evidence for Brazil 
 Márcio I. Nakane and Daniela B. Weintraub 
-
+ 
 Dec/2004
 91 
 Credit Risk Measurement and the Regulation of Bank Capital and 
 Provision Requirements in Brazil – a Corporate Analysis 
 Ricardo Schechtman, Valéria Salomão Garcia, Sergio Mikio Koyama and 
 Guilherme Cronemberger Parente 
-
+ 
 Dec/2004
-
+92 
+ 
+ 
+ 
 Steady-State Analysis of an Open Economy General Equilibrium Model 
 for Brazil 
 Mirta Noemi Sataka Bugarin, Roberto de Goes Ellery Jr., Victor Gomes 
 Silva, Marcelo Kfoury Muinhos 
-
+ 
 Apr/2005
 93 
 Avaliação de Modelos de Cálculo de Exigência de Capital para Risco 
 Cambial 
 Claudio H. da S. Barbedo, Gustavo S. Araújo, João Maurício S. Moreira e 
 Ricardo S. Maia Clemente 
-
+ 
 Abr/2005
 94 
 Simulação Histórica Filtrada: Incorporação da Volatilidade ao Modelo 
 Histórico de Cálculo de Risco para Ativos Não-Lineares 
 Claudio Henrique da Silveira Barbedo, Gustavo Silva Araújo e Eduardo 
 Facó Lemgruber  
-
+ 
 Abr/2005
 95 
 Comment on Market Discipline and Monetary Policy by Carl Walsh 
 Maurício S. Bugarin and Fábia A. de Carvalho 
-
+ 
 Apr/2005
 96 
 O que É Estratégia: uma Abordagem Multiparadigmática para a 
 Disciplina 
 Anthero de Moraes Meirelles 
-
+ 
 Ago/2005
 97 
 Finance and the Business Cycle: a Kalman Filter Approach with Markov 
 Switching 
 Ryan A. Compton and Jose Ricardo da Costa e Silva 
-
+ 
 Aug/2005
 98 
 Capital Flows Cycle: Stylized Facts and Empirical Evidences for 
 Emerging Market Economies 
 Helio Mori e Marcelo Kfoury Muinhos 
-
+ 
 Aug/2005
 99 
 Adequação das Medidas de Valor em Risco na Formulação da Exigência 
 de Capital para Estratégias de Opções no Mercado Brasileiro 
 Gustavo Silva Araújo, Claudio Henrique da Silveira Barbedo,e Eduardo 
 Facó Lemgruber  
-
+ 
 Set/2005
 100 Targets and Inflation Dynamics 
 Sergio A. L. Alves and Waldyr D. Areosa 
-
+ 
 Oct/2005
 101 Comparing Equilibrium Real Interest Rates: Different Approaches to 
 Measure Brazilian Rates 
 Marcelo Kfoury Muinhos and Márcio I. Nakane 
-
+ 
 Mar/2006
 102 Judicial Risk and Credit Market Performance: Micro Evidence from 
 Brazilian Payroll Loans 
 Ana Carla A. Costa and João M. P. de Mello 
-
+ 
 Apr/2006
 103 The Effect of Adverse Supply Shocks on Monetary Policy and Output 
 Maria da Glória D. S. Araújo, Mirta Bugarin, Marcelo Kfoury Muinhos and 
 Jose Ricardo C. Silva 
-
+ 
 Apr/2006
 
+53
 104 Extração de Informação de Opções Cambiais no Brasil 
 Eui Jung Chang e Benjamin Miranda Tabak 
-
+ 
 Abr/2006
 105 Representing Roommate’s Preferences with Symmetric Utilities 
 José Alvaro Rodrigues Neto 
-
+ 
 Apr/2006
 106 Testing Nonlinearities Between Brazilian Exchange Rates and Inflation 
 Volatilities 
 Cristiane R. Albuquerque and Marcelo Portugal 
-
+ 
 May/2006
 107 Demand for Bank Services and Market Power in Brazilian Banking 
 Márcio I. Nakane, Leonardo S. Alencar and Fabio Kanczuk 
-
+ 
 Jun/2006
 108 O Efeito da Consignação em Folha nas Taxas de Juros dos Empréstimos 
 Pessoais 
 Eduardo A. S. Rodrigues, Victorio Chu, Leonardo S. Alencar e Tony Takeda 
-
+ 
 Jun/2006
 109 The Recent Brazilian Disinflation Process and Costs 
 Alexandre A. Tombini and Sergio A. Lago Alves 
-
+ 
 Jun/2006
 110 Fatores de Risco e o Spread Bancário no Brasil 
 Fernando G. Bignotto e Eduardo Augusto de Souza Rodrigues 
-
+ 
 Jul/2006
 111 Avaliação de Modelos de Exigência de Capital para Risco de Mercado do 
 Cupom Cambial  
 Alan Cosme Rodrigues da Silva, João Maurício de Souza Moreira e Myrian 
 Beatriz Eiras das Neves 
-
+ 
 Jul/2006
 112 Interdependence and Contagion: an Analysis of Information 
 Transmission in Latin America's Stock Markets  
 Angelo Marsiglia Fasolo 
-
+ 
 Jul/2006
 113 Investigação da Memória de Longo Prazo da Taxa de Câmbio no Brasil 
 Sergio Rubens Stancato de Souza, Benjamin Miranda Tabak e Daniel O. 
 Cajueiro 
-
+ 
 Ago/2006
 114 The Inequality Channel of Monetary Transmission 
 Marta Areosa and Waldyr Areosa 
-
+ 
 Aug/2006
 115 Myopic Loss Aversion and House-Money Effect Overseas: an 
 Experimental Approach 
 José L. B. Fernandes, Juan Ignacio Peña and Benjamin M. Tabak  
-
+ 
 Sep/2006
 116 Out-Of-The-Money Monte Carlo Simulation Option Pricing: the Join 
 Use of Importance Sampling and Descriptive Sampling 
 Jaqueline Terra Moura Marins, Eduardo Saliby and Joséte Florencio dos 
 Santos 
-
+ 
 Sep/2006
 117 An Analysis of Off-Site Supervision of Banks’ Profitability, Risk and 
 Capital Adequacy: a Portfolio Simulation Approach Applied to Brazilian 
 Banks 
 Theodore M. Barnhill, Marcos R. Souto and Benjamin M. Tabak  
-
+ 
 Sep/2006
 118 Contagion, Bankruptcy and Social Welfare Analysis in a Financial 
 Economy with Risk Regulation Constraint 
 Aloísio P. Araújo and José Valentim M. Vicente  
-
+ 
 Oct/2006
 
+54
 119 A Central de Risco de Crédito no Brasil: uma Análise de Utilidade de 
 Informação 
 Ricardo Schechtman  
-
+ 
 Out/2006
 120 Forecasting Interest Rates: an Application for Brazil 
 Eduardo J. A. Lima, Felipe Luduvice and Benjamin M. Tabak 
-
+ 
 Oct/2006
 121 The Role of Consumer’s Risk Aversion on Price Rigidity 
 Sergio A. Lago Alves and Mirta N. S. Bugarin 
-
+ 
 Nov/2006
 122 Nonlinear Mechanisms of the Exchange Rate Pass-Through: a Phillips 
 Curve Model With Threshold for Brazil 
 Arnildo da Silva Correa and André Minella 
-
+ 
 Nov/2006
 123 A Neoclassical Analysis of the Brazilian “Lost-Decades” 
 Flávia Mourão Graminho 
-
+ 
 Nov/2006
 124 The Dynamic Relations between Stock Prices and Exchange Rates: 
 Evidence for Brazil 
 Benjamin M. Tabak 
-
+ 
 Nov/2006
 125 Herding Behavior by Equity Foreign Investors on Emerging Markets 
 Barbara Alemanni and José Renato Haas Ornelas 
-
+ 
 Dec/2006
 126 Risk Premium: Insights over the Threshold 
 José L. B. Fernandes, Augusto Hasman and Juan Ignacio Peña 
-
+ 
 Dec/2006
 127 Uma Investigação Baseada em Reamostragem sobre Requerimentos de 
 Capital para Risco de Crédito no Brasil  
-
+Ricardo Schechtman  
+ 
 Dec/2006
 128 Term Structure Movements Implicit in Option Prices 
 Caio Ibsen R. Almeida and José Valentim M. Vicente 
@@ -2394,173 +3216,178 @@ Jan/2007
 130 The Role of Banks in the Brazilian Interbank Market: Does Bank Type 
 Matter? 
 Daniel O. Cajueiro and Benjamin M. Tabak 
-
+ 
 Jan/2007
 131 Long-Range Dependence in Exchange Rates: the Case of the European 
 Monetary System  
 Sergio Rubens Stancato de Souza, Benjamin M. Tabak and Daniel O. 
 Cajueiro 
-
+ 
 Mar/2007
 132 Credit Risk Monte Carlo Simulation Using Simplified Creditmetrics’ 
 Model: the Joint Use of Importance Sampling and Descriptive Sampling 
 Jaqueline Terra Moura Marins and Eduardo Saliby 
-
+  
 Mar/2007
 133 A New Proposal for Collection and Generation of Information on 
 Financial Institutions’ Risk: the Case of Derivatives 
 Gilneu F. A. Vivan and Benjamin M. Tabak 
-
+  
 Mar/2007
 134 Amostragem Descritiva no Apreçamento de Opções Européias através 
 de Simulação Monte Carlo: o Efeito da Dimensionalidade e da 
 Probabilidade de Exercício no Ganho de Precisão 
 Eduardo Saliby, Sergio Luiz Medeiros Proença de Gouvêa e Jaqueline Terra 
 Moura Marins  
-
+ 
 Abr/2007
 
+55
 135 Evaluation of Default Risk for the Brazilian Banking Sector 
 Marcelo Y. Takami and Benjamin M. Tabak 
-
+ 
 May/2007
 136 Identifying Volatility Risk Premium from Fixed Income Asian Options 
 Caio Ibsen R. Almeida and José Valentim M. Vicente  
-
+ 
 May/2007
 137 Monetary Policy Design under Competing Models of Inflation 
 Persistence 
 Solange Gouvea e Abhijit Sen Gupta 
-
+ 
 May/2007
 138 Forecasting Exchange Rate Density Using Parametric Models:  
 the Case of Brazil  
 Marcos M. Abe, Eui J. Chang and Benjamin M. Tabak  
-
+ 
 May/2007
 139 Selection of Optimal Lag Length inCointegrated VAR Models with 
 Weak Form of Common Cyclical Features 
 Carlos Enrique Carrasco Gutiérrez, Reinaldo Castro Souza and Osmani 
 Teixeira de Carvalho Guillén 
-
+ 
 Jun/2007
 140 Inflation Targeting, Credibility and Confidence Crises 
 Rafael Santos and Aloísio Araújo 
-
+ 
 Aug/2007
 141 Forecasting Bonds Yields in the Brazilian Fixed income Market 
 Jose Vicente and Benjamin M. Tabak 
-
+ 
 Aug/2007
 142 Crises Análise da Coerência de Medidas de Risco no Mercado Brasileiro 
 de Ações e Desenvolvimento de uma Metodologia Híbrida para o 
 Expected Shortfall 
 Alan Cosme Rodrigues da Silva, Eduardo Facó Lemgruber, José Alberto 
 Rebello Baranowski e Renato da Silva Carvalho 
-
+ 
 Ago/2007
 143 Price Rigidity in Brazil: Evidence from CPI Micro Data 
 Solange Gouvea 
-
+ 
 Sep/2007
 144 The Effect of Bid-Ask Prices on Brazilian Options Implied Volatility: a 
 Case Study of Telemar Call Options 
 Claudio Henrique da Silveira Barbedo and Eduardo Facó Lemgruber 
-
+ 
 Oct/2007
 145 The Stability-Concentration Relationship in the Brazilian Banking 
 System 
 Benjamin Miranda Tabak, Solange Maria Guerra, Eduardo José Araújo 
 Lima and Eui Jung Chang 
-
+ 
 Oct/2007
 146 Movimentos da Estrutura a Termo e Critérios de Minimização do Erro 
 de Previsão em um Modelo Paramétrico Exponencial 
 Caio Almeida, Romeu Gomes, André Leite e José Vicente 
-
+ 
 Out/2007
 147 Explaining Bank Failures in Brazil: Micro, Macro and Contagion Effects 
 (1994-1998) 
 Adriana Soares Sales and Maria Eduarda Tannuri-Pianto 
-
+ 
 Oct/2007
 148 Um Modelo de Fatores Latentes com Variáveis Macroeconômicas para a 
 Curva de Cupom Cambial 
 Felipe Pinheiro, Caio Almeida e José Vicente 
-
+ 
 Out/2007
 149 Joint Validation of Credit Rating PDs under Default Correlation 
-
+Ricardo Schechtman 
+ 
 Oct/2007
 
+56
 150 A Probabilistic Approach for Assessing the Significance of Contextual 
 Variables in Nonparametric Frontier Models: an Application for 
 Brazilian Banks 
 Roberta Blass Staub and Geraldo da Silva e Souza 
-
+ 
 Oct/2007
 151 Building Confidence Intervals with Block Bootstraps for the Variance 
 Ratio Test of Predictability 
 Nov/2007
-
+ 
 Eduardo José Araújo Lima and Benjamin Miranda Tabak 
 152 Demand for Foreign Exchange Derivatives in Brazil:  
 Hedge or Speculation?  
 Fernando N. de Oliveira and Walter Novaes  
-
+ 
 Dec/2007
 153 Aplicação da Amostragem por Importância 
 à Simulação de Opções Asiáticas Fora do Dinheiro 
 Jaqueline Terra Moura Marins 
-
+ 
 Dez/2007
 154 Identification of Monetary Policy Shocks in the Brazilian Market  
 for Bank Reserves 
 Adriana Soares Sales and Maria Tannuri-Pianto 
-
+ 
 Dec/2007
 155 Does Curvature Enhance Forecasting? 
 Caio Almeida, Romeu Gomes, André Leite and José Vicente 
-
+ 
 Dec/2007
 156 Escolha do Banco e Demanda por Empréstimos: um Modelo de Decisão 
 em Duas Etapas Aplicado para o Brasil 
 Sérgio Mikio Koyama e Márcio I. Nakane 
-
+ 
 Dez/2007
 157 Is the Investment-Uncertainty Link Really Elusive? The Harmful Effects 
 of Inflation Uncertainty in Brazil 
-
+Tito Nícias Teixeira da Silva Filho  
+ 
 Jan/2008
 158 Characterizing the Brazilian Term Structure of Interest Rates 
 Osmani T. Guillen and Benjamin M. Tabak 
-
+ 
 Feb/2008
 159 Behavior and Effects of Equity Foreign Investors on Emerging Markets 
 Barbara Alemanni and José Renato Haas Ornelas 
-
+ 
 Feb/2008
 160 The Incidence of Reserve Requirements in Brazil: Do Bank Stockholders 
 Share the Burden? 
 Fábia A. de Carvalho and Cyntia F. Azevedo 
-
+ 
 Feb/2008
 161 Evaluating Value-at-Risk Models via Quantile Regressions 
 Wagner P. Gaglianone, Luiz Renato Lima and Oliver Linton 
-
+ 
 Feb/2008
 162 Balance Sheet Effects in Currency Crises: Evidence from Brazil 
 Marcio M. Janot, Márcio G. P. Garcia and Walter Novaes 
-
+ 
 Apr/2008
 163 Searching for the Natural Rate of Unemployment in a Large Relative 
 Price Shocks’ Economy: the Brazilian Case  
-
+Tito Nícias Teixeira da Silva Filho  
+ 
 May/2008
 164 Foreign Banks’ Entry and Departure: the recent Brazilian experience 
 (1996-2006) 
 Pedro Fachada 
-
+ 
 Jun/2008
 165 Avaliação de Opções de Troca e Opções de Spread Européias e 
 Americanas  
@@ -2568,76 +3395,77 @@ Giuliano Carrozza Uzêda Iorio de Souza, Carlos Patrício Samanez e
 Gustavo Santos Raposo 
 Jul/2008
 
+57
 166 Testing Hyperinflation Theories Using the Inflation Tax Curve: a case 
 study  
 Fernando de Holanda Barbosa and Tito Nícias Teixeira da Silva Filho 
-
+ 
 Jul/2008
 167 O Poder Discriminante das Operações de Crédito das Instituições 
 Financeiras Brasileiras  
 Clodoaldo Aparecido Annibal 
-
+ 
 Jul/2008
 168 An Integrated Model for Liquidity Management and Short-Term Asset 
 Allocation in Commercial Banks  
 Wenersamy Ramos de Alcântara 
-
+ 
 Jul/2008
 169 Mensuração do Risco Sistêmico no Setor Bancário com Variáveis 
 Contábeis e Econômicas 
 Lucio Rodrigues Capelletto, Eliseu Martins e Luiz João Corrar 
-
+ 
 Jul/2008
 170 Política de Fechamento de Bancos com Regulador Não-Benevolente: 
 Resumo e Aplicação 
 Adriana Soares Sales 
-
+ 
 Jul/2008
 171 Modelos para a Utilização das Operações de Redesconto pelos Bancos 
 com Carteira Comercial no Brasil 
 Sérgio Mikio Koyama e Márcio Issao Nakane 
-
+ 
 Ago/2008
 172 Combining Hodrick-Prescott Filtering with a Production Function 
 Approach to Estimate Output Gap 
 Marta Areosa 
-
+ 
 Aug/2008
 173 Exchange Rate Dynamics and the Relationship between the Random 
 Walk Hypothesis and Official Interventions 
 Eduardo José Araújo Lima and Benjamin Miranda Tabak 
-
+ 
 Aug/2008
-
+ 
 174 Foreign Exchange Market Volatility Information: an investigation of 
 real-dollar exchange rate 
 Frederico Pechir Gomes, Marcelo Yoshio Takami and Vinicius Ratton 
 Brandi 
-
+ 
 Aug/2008
 175 Evaluating Asset Pricing Models in a Fama-French Framework 
 Carlos Enrique Carrasco Gutierrez and Wagner Piazza Gaglianone 
-
+ 
 Dec/2008
 176 Fiat Money and the Value of Binding Portfolio Constraints 
 Mário R. Páscoa, Myrian Petrassi and Juan Pablo Torres-Martínez 
-
+ 
 Dec/2008
 177 Preference for Flexibility and Bayesian Updating 
 Gil Riella 
-
+ 
 Dec/2008
 178 An Econometric Contribution to the Intertemporal Approach of the 
 Current Account 
 Wagner Piazza Gaglianone and João Victor Issler 
-
+ 
 Dec/2008
 179 Are Interest Rate Options Important for the Assessment of Interest 
 Rate Risk? 
 Caio Almeida and José Vicente 
-
+ 
 Dec/2008
 180 A Class of Incomplete and Ambiguity Averse Preferences 
 Leandro Nascimento and Gil Riella 
-
+ 
 Dec/2008

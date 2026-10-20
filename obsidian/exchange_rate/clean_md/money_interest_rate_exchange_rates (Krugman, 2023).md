@@ -1,3 +1,4 @@
+15
 CHAPTER
 Money, Interest Rates,
 and Exchange Rates
@@ -125,6 +126,7 @@ line between money and near-money must be somewhat arbitrary and therefore contr
 discussion of this question, see Chapter 3 of Frederic S. Mishkin, The Economics of Money, Banking, and
 Financial Markets, 12th edition (New York: Pearson, 2020).
 
+420 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 through which the central bank controls the money supply are complex, and we
 assume for now that the central bank simply sets the size of the money supply at
 the level it desires. We go into the money supply process in more detail, however, in
@@ -170,6 +172,7 @@ than money offer an expected rate of return (measured in terms of money) equal t
 assumption allows us to use the interest rate to summarize the return an individual forgoes by holding money
 rather than an illiquid asset.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 421
 The theory of asset demand developed in the previous chapter shows how changes
 in the rate of interest affect the demand for money. The theory states that, other things
 equal, people prefer assets offering higher expected returns. Because an increase in
@@ -215,6 +218,7 @@ Three main factors determine aggregate money demand:
 reduce her demand for money. All else equal, aggregate money demand therefore
 falls when the interest rate rises.
 
+422 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 2. The price level. The economy’s price level is the price of a broad reference bas-
 ket of goods and services in terms of currency. Generally, the reference basket
 includes standard, everyday consumption items such as food, clothing, and hous-
@@ -262,6 +266,7 @@ real money demand for a given interest rate, the schedule L(R, Y2) lies to the r
 L(R, Y1) when Y2 is greater than Y1.
 3Naturally, L(R, Y) rises when R falls, and falls when Y falls.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 423
 FIGURE 15-1
 Aggregate Real Interest
 Money Demand rate, R
@@ -300,6 +305,7 @@ As you might expect from other economics courses you’ve taken, the money marke
 in equilibrium when the money supply set by the central bank equals aggregate money
 demand. In this section, we see how the interest rate is determined by money market
 
+424 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 equilibrium, given the price level and output, both of which are temporarily assumed
 to be unaffected by monetary changes.
 Equilibrium in the Money Market
@@ -337,6 +343,7 @@ With P and Y given and a real money supply of MS P, money market equilibrium is 
 point 1. At this point, aggregate real money demand and the real money supply are equal and
 the equilibrium interest rate is R1. >
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 425
 Let’s see why the interest rate tends to settle at its equilibrium level by considering
 what happens if the market is initially at point 2, with an interest rate, R2, that is
 above R1.
@@ -387,6 +394,7 @@ current money prices of illiquid assets that pay interest will be bid up as indi
 money holdings. This rise in current asset prices lowers the rate of return on nonmoney assets, and since this
 rate of return is equal to the interest rate (after adjustment for risk), the interest rate also must fall.
 
+426 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Interest
 rate, R
 Real money
@@ -425,6 +433,7 @@ interest rate to fall.
 We conclude that an increase in real output raises the interest rate, while a fall in real
 output lowers the interest rate, given the price level and the money supply.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 427
 Interest
 rate, R
 Real money
@@ -469,6 +478,7 @@ Figure 15-6, we combine two diagrams we have already studied separately. Let’s
 once again we are looking at the dollar/euro exchange rate, that is, the price of euros
 in terms of dollars.
 
+428 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Dollar/euro
 exchange
 rate, E
@@ -513,6 +523,7 @@ As you will remember from Chapter 14, the downward-sloping expected euro
 return schedule shows the expected return on euro deposits, measured in dollars. The
 schedule slopes downward because of the effect of current exchange rate changes on
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 429
 expectations of future depreciation: A strengthening of the dollar today (a fall in E )
 + :
 relative to its given expected future level makes euro deposits more attractive by leading
@@ -564,6 +575,7 @@ Monetary policy actions by the Fed affect the U.S. interest rate, changing the d
 exchange rate that clears the foreign exchange market. The ECB can affect the exchange rate
 by changing the European money supply and interest rate.
 
+430 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 the U.S. and European money supplies, Ms and Ms . Given the price levels and
 US E
 national incomes of the two countries, equilibrium in national money markets leads to
@@ -637,6 +649,8 @@ Ms lowers R , we can see the effect on the exchange rate by shifting the expecte
 E :
 return schedule in the top part of Figure 15-6 to the left.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 431
+Dollar/euro
 exchange
 rate, E
 $/:
@@ -682,6 +696,8 @@ money supply lowers R and therefore shifts to the left the schedule linking the
 : >
 expected return on euro deposits to the exchange rate. Foreign exchange market
 
+432 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+Dollar/euro
 exchange
 rate, E
 $/:
@@ -722,6 +738,7 @@ the euro to appreciate against the dollar (that is, E would rise). The change in
 + :
 >
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 433
 European money supply does not disturb the U.S. money market equilibrium, which
 remains at point 1.5
 Money, the Price Level, and the Exchange Rate
@@ -765,6 +782,7 @@ European money market and the foreign exchange market after the increase in Euro
 not change either the money supply or money demand in the United States, given Y and P .
 US US
 
+434 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 If, for example, the money supply doubles (to 2Ms) but output and the interest rate
 do not change, the price level must also double (to 2P) to maintain equilibrium in the
 money market.
@@ -816,6 +834,7 @@ rate need not be neutral in the long run. At the very least, a sustained change 
 will eventually affect equilibrium real money balances by raising the money interest rate (as discussed in
 the next chapter).
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 435
 same if all money prices double, since relative prices are just ratios of money prices.
 Thus, money supply changes do not change the long-run allocation of resources. Only
 the absolute level of money prices changes.7
@@ -867,6 +886,7 @@ current dollars, and this relative price would not change if the real value of t
 >
 up or down by the same factor on all dates.
 
+436 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Percentage increase in the price level
 10000
 1990
@@ -915,6 +935,7 @@ euro to one of 0.60 dollars/euro. Since the dollar prices of all U.S. goods and 
 would also decrease by half, this 50 percent appreciation of the dollar leaves the relative
 prices of all U.S. and foreign goods and services unchanged.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 437
 Percent per year Percent per year
 100000 1000000
 100000
@@ -954,6 +975,7 @@ Many prices in the economy, however, are written into long-term contracts and ca
 not be changed immediately when changes in the money supply occur. The most impor-
 tant prices of this type are workers’ wages, which are negotiated only periodically in
 
+438 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 many industries. Wages do not enter indices of the price level directly, but they make up
 a large fraction of the cost of producing goods and services. Since output prices depend
 heavily on production costs, the behavior of the overall price level is influenced by the
@@ -993,6 +1015,7 @@ Changes in exchange rate and price level
 ratios in U.S./Japan (percent change per month)
 Exchange rate change
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 439
 out of use. Automatic price level indexation of wage payments may also be widespread
 under highly inflationary conditions. Such developments make the price level much less
 rigid than it would be under moderate inflation, and large price level jumps become
@@ -1039,6 +1062,7 @@ Review (First Quarter 1995), pp. 1–12); and by Peter J. Klenow and Benjamin A.
 Evidence on Price Setting,” in Benjamin M. Friedman and Michael Woodford, eds., Handbook of Monetary
 Economics, Vol. 3 (Amsterdam: Elsevier, 2010).
 
+440 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Inflation (percent per month)
 3000
 2500
@@ -1092,6 +1116,7 @@ yaM
 8002
 .luJ
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 441
 carried out a further currency reform with each one of them: inflation of dollar prices remained
 new new Z$ equivalent to 10 billion old new dollars. low, under 5 percent per year. Unfortunately, after
 But the situation only worsened. Official CPI sta- 2014, low and positive inflation turned into defla-
@@ -1138,6 +1163,7 @@ Monetary Policy Institute 2011 Annual Report, Federal Reserve Bank of Dallas, pp
 Noko, “Dollarization: The Case of Zimbabwe,” Cato Journal 31 (Spring/Summer 2011), pp. 339–365.
 12See “Who Wants to Be a Trillionaire? Zimbabwe’s New Currency,” The Economist, May 14, 2016.
 
+442 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Permanent Money Supply Changes and the Exchange Rate
 We now apply our analysis of inflation to study the adjustment of the dollar/euro
 exchange rate following a permanent increase in the U.S. money supply. Figure 15-13
@@ -1172,11 +1198,13 @@ dollar terms)
 R2 R1
 $ $ $ $
 L(R ,Y ) L(R ,Y )
+M1 $ US M2 $ US
 US US
 P U 1 S 1 P U 2 S 4 U.S. real
 money supply
 M2 M2
 US US
+P U 1 S 2 P U 1 S 2
 U.S. real U.S. real
 money holdings money holdings
 (a) Short-run effects (b) Adjustment to long-run equilibrium
@@ -1186,6 +1214,7 @@ Short-Run and Long-Run Effects of an Increase in the U.S. Money Supply
 (a) Short-run adjustment of the asset markets. (b) How the interest rate, price level, and exchange rate
 move over time as the economy approaches its long-run equilibrium.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 443
 The first change in our analysis comes when we ask how the American money sup-
 ply change [shown in the bottom part of panel (a)] affects the foreign exchange market
 [shown in the top part of panel (a)]. As before, the fall in the U.S. interest rate is shown
@@ -1251,6 +1280,7 @@ from day to day.
 The economic explanation of overshooting comes from the interest parity condi-
 tion. The explanation is easiest to grasp if we assume that before the money supply
 
+444 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 (a) U.S. money (b) Dollar
 supply, M interest rate, R
 US $
@@ -1311,6 +1341,7 @@ would be no need for overshooting to maintain equilibrium in the foreign exchang
 market. The exchange rate would maintain equilibrium simply by jumping to its new,
 long-run level right away.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 445
 CASE STUDY
 Inflation Targeting and Exchange Rate in Emerging
 Countries
@@ -1353,9 +1384,11 @@ in favor of more flexible exchange rate frameworks. Additionally, according to
 Ouyang and Rajan (2016),13 a monetary policy based on inflation targeting is
 becoming increasingly popular around the world.
 13Alice Y. Ouyang & Ramkishen S. Rajan, “Does Inflation Targeting in Asia Reduce Exchange Rate Volatility?,”
+International Economic Journal, 30:2, 294–311, 2016, http://dx.doi.org/10.1080/10168737.2016.1148431; Keynote
 Address at the Conference on Fourteen Years of Inflation Targeting in South Africa and The Challenge of a
 Changing Mandate, South African Reserve Bank Conference Centre, Pretoria, South Africa, October 30, 2014.
 
+446 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 All inflation-targeting countries have either floating or free-floating exchange
 rate arrangements to avoid conflict with the management of interest rate.
 In his speech before the South African Reserve Bank, John B. Taylor, who for-
@@ -1390,10 +1423,15 @@ smaller. This gap is more pronounced in emerging market economies that target
 inflation as compared to emerging market economies that don’t.
 14Taylor equation: John B Taylor in 1992 proposed the following equation to link the central bank interest
 rate (r) with inflation (p) and the growth of real GDP (Y), which is r = 1.5p + 0.5 Y + 1, (Taylor, John B.
+(2013a)); also refer to “Lectures on Monetary Theory and Policy,” Stanford University, http://web.stanford
 .edu/~johntayl/Spring2013PhDclass/IndexSpring2013.html; The Annual Report on Exchange Arrange-
+ments and Exchange Restrictions, International Monetary Fund, 2014, www.imf.org/external/pubs/nft/2014
 /areaers/ar2014.pdf; “India Adopts Flexible Inflation Targeting,” Business Standard, March 3, 2015,
+http:// www.business-standard.com; and Anna Samarina, Mirre Terpstra, and Jakob De Haan, “Inflation
+Targeting and Inflation Performance: A Comparative Analysis,” Applied Economics, 2014; http://dx.doi.org
 /10.1080/00036846.2013.829205.
 
+CHAPTER 15 ■ Money, Interest Rates, and Exchange Rates 447
 Since every economy has its own macroeconomic challenges, a single appro-
 priate monetary policy is difficult to prescribe. For example, even in an inflation
 targeting economy, policymakers cannot be indifferent to the real exchange rate
@@ -1404,11 +1442,15 @@ management of real exchange rates, Ostry, David, Ghosh, and Chamon conclude
 in their 2012 study that in such a scenario, another instrument of monetary policy
 would be foreign exchange intervention. This would match the two targets of
 monetary policy, inflation and exchange rate, with the number of instruments!15
+15“Regional Economic Outlook,” Western Hemisphere, April 2016, www.imf.org/external/pubs/ft/reo/2016
 /whd/eng/wreo0416.htm; Joshua Aizenman, Michael Hutchison, and Ilan Noy, “Inflation Targeting
 and Real Exchange Rates in Emerging Markets,” NBER Working Paper No. 14561, December 2008, Revised
+July 2010, www.nber.org/papers/w14561.pdf; and Ostry, Jonathan David, Atish R Ghosh, and Marcos
 Chamon, “Two Targets, Two Instruments: Monetary and Exchange Rate Policies in Emerging Market
+Economies,” IMF Staff Discussion Note No. 12/01, International Monetary Fund (www.imf.org/external
 /pubs/ft/sdn/2012/sdn1201.pdf.
 
+448 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 SUMMARY
 ■■ People hold money because of its liquidity. When considered in real terms, aggregate
 money demand is not a demand for a certain number of currency units but is instead

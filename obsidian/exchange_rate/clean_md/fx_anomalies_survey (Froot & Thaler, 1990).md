@@ -111,6 +111,7 @@ provided by the interest differential should be unbiased.
 Unbiasedness is usually tested by regressing the change in the exchange
 rate on the interest differential,
 
+182 Journal of Economic Perspectives
 (1) Δs = α + β(i i*) + η ,
 t + k t t t + k
 where Δs is the percentage depreciation of the currency (the change in the
@@ -206,6 +207,7 @@ equilibrium—only if they get paid a premium on the return of A's asset relativ
 case, we would say that assets denominated in A's goods are "riskier" than those denominated
 in B's.
 
+184 Journal of Economic Perspectives
 nants of risk can help explain excess returns on foreign exchange, this ap-
 proach tests for certain patterns in or across excess currency returns. While this
 class of tests has provided rich information about the predictable components
@@ -251,6 +253,7 @@ They find evidence of "long swings" in the exchange rate and can reject the hypo
 exchange rate follows a random walk, but are also unable to find any correlation between their
 model's predictions and the forward discount's bias.
 
+Kenneth A. Froot and Richard H. Thaler 185
 is performed, the component attributable to risk turns out to be small and
 insignificantly different from zero. This is not to say that the surveys don't
 contain a risk premium, as would be true if the surveys were always equal to the
@@ -293,6 +296,7 @@ strength (and subsequent weakness) of fundamentals over this period. Rationally 
 ation (and depreciation) and estimates of the risk premium would then be closer to zero than
 calculated above. We address such explanations directly in the next section.
 
+186 Journal of Economic Perspectives
 associated with an equivalent increase in expected depreciation. Yet the print
 estimates above suggest that a 1 percent increase in the interest differential
 tends to be followed by a 1 percent appreciation in the value of the dollar. How
@@ -383,6 +387,7 @@ Keep in mind, however, a caveat about such casually formed test statistics: thei
 their true statistical significance because the 1980–85 subsample is not randomly drawn. See Evans
 (1986) for more formal methods.
 
+188 Journal of Economic Perspectives
 the statistical sample continues to increase, however, such arguments become
 increasingly strained.
 A Possible Explanation
@@ -424,6 +429,7 @@ Such an explanation (which stresses the lack of "efficiency" in the usual
 sense) seems to fit the facts well enough, but has an apparently serious flaw:
 10 For examples of such models see Cutler, Poterba, and Summers (1990) and Kyle (1985).
 
+Kenneth A. Froot and Richard H. Thaler 189
 isn't there money to be made by trading on contemporaneous interest rate
 changes? The empirical case for foreign-exchange market efficiency was made
 forcefully by Bilson (1981). He argued that the speculative rule suggested by
@@ -465,6 +471,7 @@ directly, how can the explanation ever be disproven? This type of thinking can
 11 Hodrick and Srivastava (1984) report less favorable risk-return tradeoffs using Bilson's (1981)
 data.
 
+190 Journal of Economic Perspectives
 lead to a false sense of security, because clever researchers often think of ways
 of testing such untestable propositions. An analogy is concept of utility maxi-
 mization, often considered an untestable tautology. However, as discussed in

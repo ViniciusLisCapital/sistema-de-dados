@@ -17,12 +17,14 @@ interest can cause a signiﬁcant deterioration in macroeconomic stabilization.
 JEL classiﬁcation: C32, E43, E52, O40.
 Keywords: natural rate of interest, interest rate rules, Kalman ﬁlter, trend growth,
 potential output, equilibrium real interest rate.
+∗Washington, D.C. 20551, tlaubach@frb.gov, jwilliams@frb.gov. The views expressed herein are those of
 the authors and do not necessarily reﬂect those of the Board of Governors of the Federal Reserve System
 or its staﬀ. We thank Adam Litwin for excellent research assistance. This research has beneﬁtted from
 discussions with Antulio Bomﬁm, Bill English, Michael Kiley, Ed Nelson, John Roberts, Brian Sack, Bill
 Whitesell, and participants at sessions at the Econometric Society North American Summer Meeting and
 the International Conference of the Society of Computational Economics.
 
+1
 Introduction
 A key input into the conduct of monetary policy is a measure of the “neutral” stance of
 policy, against which one can gauge policy’s stimulative or contractionary impetus. One
@@ -63,6 +65,7 @@ parameters (Cf. Taylor and Williams (1993), Orphanides and Wieland (1998), and R
 equally irrespective of size; if, instead, the utility of each generation is weighted according to its size, we
 have r = 1
 σ q + θ.
+1
 
 variety of models.3 In light of the evidence of substantial shifts in the trend growth rate in
 the United States and other countries over the past several decades (Cf. Maddison (1995),
@@ -99,6 +102,7 @@ s
 −δ, where s is the
 saving rate out of output and δ is the rate of depreciation.
 4An alternative would be to specify a reduced-form relationship between the change in the rate of inﬂation
+2
 
 both the level of potential output and its trend growth rate. We apply the Kalman ﬁlter
 to these unobserved low frequency variables, modeling the cyclical dynamics of output and
@@ -133,6 +137,7 @@ and a measure of inﬂation expectations to estimate low frequency movements in 
 work, Bomﬁm (2001) uses forward rates from Treasury inﬂation-indexed bonds to estimate r∗over the three
 years that they have been issued. One diﬃculty with this general approach is that one must account for
 time-variation in the term premium evident in the data.
+3
 
 is related to medium-run inﬂation stability, such univariate methods are likely to underes-
 timate r∗during the 1960s and 1970s when inﬂation was rising, and overestimate it during
@@ -173,6 +178,7 @@ which are arguably more prone to measurement error than near-term inﬂation exp
 the short-term interest rate. Second, in so far as we are seeking to estimate a natural rate useful for a
 monetary policy rule, the term premium, itself a potentially time-varying process, would also need to be
 estimated. We leave this to further research.
+4
 
 The relative price variables include measures of core import price and crude oil import price
 inﬂation, both measured as deviations from core PCE inﬂation. Potential GDP is deﬁned as
@@ -216,6 +222,7 @@ our state-space model.
 7The hypothesis that log real GDP is I(2) is typically rejected by an ADF test. However, as Stock and
 Watson (1998) point out, when the disturbance to the growth rate component has small variance, such a
 test statistic has a high false-rejection rate.
+5
 
 Several authors have used variants of the model (2)-(7) to obtain trend-cycle decomposi-
 tions of GDP, but none incorporate interest rates in their models. Watson (1986) considers
@@ -247,6 +254,7 @@ consists of contemporaneous core import price inﬂation, and the ﬁrst lag of 
 inﬂation, both measured relative to core PCE inﬂation.
 8In a related paper, Laubach (2001) identiﬁes the natural rate of unemployment using a model of inﬂation
 dynamics.
+6
 
 3.1
 Estimation Methodology
@@ -291,6 +299,7 @@ The ratio λz based on the test statistic for an intercept shift at unknown date
 ratio of arσ3/
 √
 2 to σ1.
+7
 
 ary, we proceed directly to the third and ﬁnal step; otherwise, in the second step, we impose
 the estimated value of λg from the previous step and follow a similar process to generate
@@ -327,6 +336,7 @@ the Monte Carlo simulations for computing the standard errors, this procedure is
 Laubach (2001, p. 222).
 11Note that these estimated conﬁdence intervals hold the imposed values of λg and λz ﬁxed but take into
 account the uncertainty regarding σ1, σ2, σ4, and, thus, implicitly σ3 and σ5.
+8
 
 Table 1: First- and Second-stage Estimation Results
 Exponential
@@ -377,6 +387,7 @@ a time-varying trend growth and a constant natural rate of interest to construct
 t , gt}. For each pair of simulated series we compute the exponential Wald statistic for an intercept shift
 in the ﬁrst diﬀerence of y∗
 t .
+9
 
 Table 2: Parameter Estimates
 Stationary
@@ -483,6 +494,7 @@ y∗
 4.32
 Notes: t statistics in parentheses. σ5 is expressed at annual rate.
 Standard errors are sample averages for smoothed estimates of states.
+10
 
 growth rate of output, and this result is robust to changes in the process for z. For the case
 of stationary z, c is estimated to be .97, with a standard error of .25. The second column
@@ -517,14 +529,66 @@ reaches a minimum of 1-1/4 percent in the early 1990s, and ends the sample perio
 above its sample average of 3 percent.
 The estimates of the trend growth rate and the output gap are very similar across the
 four estimates. As shown in the middle panel of the ﬁgure, the estimated trend growth
+11
 
 Figure 1: Smoothed Estimates of Unobserved States
+0
+2
+4
+6
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+0
+2
+4
+6
 Natural Rate of Interest (r*)
 z:AR(2)
 Baseline
 Lower z variability
 Higher z variability
+2
+3
+4
+5
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2
+3
+4
+5
 Trend Growth Rate (g)
+-10
+ -5
+  0
+  5
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+-10
+ -5
+  0
+  5
 Output Gap
 rate peaks in the mid-1960s at about 3-3/4 percent, and then declines through the 1970s
 and 1980s.
@@ -536,6 +600,7 @@ estimates, although Kuttner’s estimate is more volatile than either ours or Cl
 The standard errors of the estimates of the unobserved states, shown at the bottom of
 Table 2, are relatively large, as is typical for Kalman ﬁlter estimates. As a result, changes
 in the natural rate of interest and the trend growth rate of output are not measured with
+12
 
 much precision. Across the speciﬁcations reported in the table, the average standard error
 of r∗ranges from 1 to 2-1/2 percentage points, that for the trend growth rate is about
@@ -568,6 +633,7 @@ the results when λg takes the value 0.103, corresponding to the upper end of th
 conﬁdence interval. In this case, the estimate of λz is .060, slightly lower than the baseline
 estimate. Except for the greater variability of the trend growth rate itself, the parameter
 estimates do not diﬀer substantially from the baseline estimates. In particular, the estimate
+13
 
 Table 3: Parameter Estimates under Diﬀerent Potential Output Assumptions
 Parameter
@@ -677,24 +743,78 @@ Notes: t statistics in parentheses. σ4 is expressed at annual rate.
 Standard errors are sample averages for smoothed estimates of states.
 1. Log likelihhod for model augmented with equation for employee hours
 is not comparable to others.
+14
 
 Figure 2: Sensitivity of Estimates to Assumptions Regarding Potential Output
+0
+2
+4
+6
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+0
+2
+4
+6
 Natural Rate of Interest (r*)
 Baseline
 Lower g variability
 Higher g variability
 Hours Model
+2
+3
+4
+5
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+2
+3
+4
+5
 Trend Growth Rate (g)
+-10
+ -5
+  0
+  5
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+-10
+ -5
+  0
+  5
 Output Gap
 of c is again nearly unity. As seen in the ﬁgure, although the estimated trend growth rate is
 much more variable (shown by the dotted line in the middle panel), the resulting estimates
 of r∗diﬀer relatively little from the baseline estimates.
+4.1
 Incorporating Information on Employment Hours
 Our second alternative speciﬁcation for potential GDP is based on the notion that employ-
 ment hours, as well as inﬂation, contain information about the cyclical state of the economy.
 Speciﬁcally, we follow Roberts (2001) and introduce the equation
 ˜ht = f1˜yt + f2˜yt−1 + f3˜ht−1 + ϵ6t
 (8)
+15
 
 into the model, where ˜ht denotes percent deviations of private nonfarm employee hours ht
 from a trend h∗
@@ -732,6 +852,7 @@ shift in the raw hours data over our sample show no evidence for such a shift. M
 to construct a preliminary estimate of trend hours by estimating a trend-cycle decomposition based on a
 constant drift in trend hours, trend hours are estimated to be a simple time trend. These results diﬀer from
 those of Roberts (2001) who normalizes hours by population and ﬁnds this series to be I(2).
+16
 
 4.2
 Overall Robustness of Estimates
@@ -871,12 +992,64 @@ peaks in 1983. All estimates show the trend growth rate peaking in 1965 and the 
 occurring in the early 1990s (the augmented model has two nearly identical minima, in 1980
 and in the early 1990s). The estimates of the output gap are generally similar, with the
 peaks occurring in the late 1960s and the mid- and late-1970s; the minimum occurs in the
+17
 
 Figure 3: Estimates of the Stance of Monetary Policy
+-2
+ 0
+ 2
+ 4
+ 6
+ 8
+10
+12
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+-2
+ 0
+ 2
+ 4
+ 6
+ 8
+10
+12
+-2
+ 0
+ 2
+ 4
+ 6
+ 8
+10
+12
+1960
+1965
+1970
+1975
+1980
+1985
+1990
+1995
+2000
+-2
+ 0
+ 2
+ 4
+ 6
+ 8
+10
+12
 r*
 Baseline r* Estimates
 Actual Real Funds Rate
 early 1980s (with the augmented model showing an equally large negative gap in 1975).
+5
 Monetary Policy and a Time-varying Natural Interest Rate
 Allowing for time variation in the natural rate of interest can signiﬁcantly change one’s
 view of the stance of monetary policy during historical episodes in which r∗strayed from its
@@ -898,6 +1071,7 @@ t + απ(πt −π∗) + αy˜yt,
 (9)
 where ˆr∗
 t is the policymaker’s estimate of the natural rate of interest, πe is expected inﬂation,
+18
 
 Figure 4: Real-time Estimates of the Natural Rate of Interest
 1
@@ -944,6 +1118,7 @@ to a “real-time” estimate of r∗in that past data are used in estimating th
 the smoothed estimate as truth, the standard deviation of the measurement error using
 the one-sided ﬁlter is about 0.9 percentage point over the sample; nearly 10 percent of
 14The full sample is used to estimate the model parameters, however, so the analogy is not exact.
+19
 
 Table 5: Eﬀects of r∗Mismeasurement under the Taylor Rule
 Standard Deviation
@@ -1002,6 +1177,7 @@ where V ar(x) signiﬁes the unconditional variance of variable x.
 Model simulations indicate that mismeasurement of the natural rate of interest leads
 to a signiﬁcant deterioration in output stabilization, but has relatively modest eﬀects on
 inﬂation stabilization. The ﬁrst three columns of Table 5 report the simulated standard de-
+20
 
 viations of the output gap, the inﬂation rate, and the change in the nominal funds rate. The
 fourth column reports the value of the loss given by equation (10); the ﬁnal column shows
@@ -1033,6 +1209,7 @@ That study implicitly assumes policymakers update
 their r∗estimates, reducing the magnitude and persistence of mismeasurement relative to a constant r∗
 assumption. In addition, the coeﬃcients of the policy feedback rule are reoptimized when r∗mismeasurement
 is introduced, reducing the implied eﬀects on macroeconomic stabilization.
+21
 
 Appendix
 This appendix describes the data used in this study. The variable y refers to the log of
@@ -1055,3 +1232,4 @@ and crude oil import price inﬂation. The core import price series is the impli
 for imports of nonpetroleum goods. From 1968 on, this series also excludes the prices of
 computers and semiconductors. Finally, the hours data are total hours of employees and
 self-employed persons in the private nonfarm business sector.
+22

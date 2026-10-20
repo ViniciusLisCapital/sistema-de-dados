@@ -1,8 +1,8 @@
 # Ingestion Pipeline
 
 Turns a PDF into the two text layers of the knowledge base: `repository/<topic>/raw_md/` (verbatim
-extraction, the audit trail) and `obsidian/<topic>/clean_md/` (the same text minus page furniture
-and the reference list, in the vault the agents read). It is a **mechanical process of the
+extraction, the audit trail) and `obsidian/<topic>/clean_md/` (the same text minus the reference list
+and known boilerplate, in the vault the agents read). It is a **mechanical process of the
 system**, not a task of any topic agent (`SISTEMA_AGENTES.md` II.I.iv, decided 2026-10-19).
 
 ## How to use it
@@ -34,7 +34,7 @@ repository/<topic>/raw_pdf/<name>.pdf
 
 **What the sweep skips:** subfolders of `raw_pdf/` (`monetary_policy/raw_pdf/central_bank/` is the
 Copom ETL's), `repository/mental_model/` (manager letters: only when named, `/ingest mental_model/<manager>`; they keep raw_md and clean_md in their own folder — see `repository/mental_model/MENTAL_MODELS.md`), topics listed under
-`topics_on_hold` in `settings.yaml` (`trader`, scope undecided), and files marked
+`topics_on_hold` in `settings.yaml` (none since `trader` was released on 2026-10-20), and files marked
 `status: needs_attention` there (a scan, a failed page check), which are listed, not retried.
 
 **Naming:** `description_in_snake_case (Author, Year).pdf` — up to three surnames, four or more as
@@ -45,7 +45,7 @@ Copom ETL's), `repository/mental_model/` (manager letters: only when named, `/in
 | Script | What it does |
 |---|---|
 | `extract.py` | PDF → text. Modes: `plumber` (pdfplumber, `x_tolerance` 1.5), `plumber_flow` (word-grouped, for letter-spaced PDFs), `pymupdf` (math symbols as Unicode), `ocr` (Tesseract on pages rendered at 300 dpi, for scans and broken font encodings; a sideways page is turned by confidence; needs `winget install UB-Mannheim.TesseractOCR`, English only). `decode_shift` reverses a font-encoding Caesar shift, page by page, only where it makes the page read as English. No AI. |
-| `clean_code.py` | Regex cleaner, no AI: page numbers, repeated running headers/footers, URLs/emails, chart-axis debris, the References/Bibliography block (up to the next section heading, ALL CAPS or a known mixed-case starter such as "Appendix", "Comments and Discussion", "Endnotes", "Data Sources", a "Table N"/"Figure N" caption or a table's "Coefficient" header), and bank disclaimer tails. |
+| `clean_code.py` | Regex cleaner, no AI, that removes only whole blocks and known boilerplate text: the References/Bibliography block (up to the next section heading, ALL CAPS or a known mixed-case starter such as "Appendix", "Comments and Discussion", "Endnotes", "Data Sources", a "Table N"/"Figure N" caption or a table's "Coefficient" header), bank disclosure tails, and fixed boilerplate lines (JSTOR notices, watermarks, `.indd` stamps, known disclaimers and running heads). Page numbers, running heads, chart numbers, URLs and contacts stay (see below). Also used by the RPM ETL (`domain/db/brasil/bcb/_rpm_projecoes.py`). |
 | `qc.py` | `try` (every mode side by side, into a temp folder), `page` (one page's text), `render` (pages to PNG with PyMuPDF — no poppler needed), `check` (metrics of an ingested file, including whether the files reproduce from the PDF). Writes nothing into the repository. |
 | `settings.py` + `../settings.yaml` | `files:` per-file settings when the default fails, or `status: needs_attention` for a file the tools cannot ingest, each with the measured reason; `topics_on_hold:`. A re-run reproduces the same text. |
 | `run.py` | `--list [topic]`: the sweep (pending / needs attention / on hold per topic). `run.py --reclean [topic]`: after a cleaner change, rewrites every clean_md from its raw_md (no PDF re-extracted, raw_md untouched). `run.py <topic> <files>`: the commit step — extract with the file's settings, clean, write both files, append to `../LOG.md`, update the tracker. Refuses a bad name, a duplicate, a marked file, an existing output without `--overwrite`, and blocking QC flags without `--accept-flags`. |
@@ -84,25 +84,40 @@ A read-only run of the old pipeline over the 46 monetary-policy PDFs (its output
 - **No two-column layout** in the sampled body pages: the root CLAUDE.md's warning about reading
   order did not bite on this corpus, but the page check exists to catch it where it does.
 
-## The cleaner audit of 2026-10-19
+## What the cleaner removes, and why so little (2026-10-20)
 
-The last monetary-policy batches showed the line rules deleting content in every file they touched, silently. Measured over the 61 files then ingested, the fixed cleaner restores about 5,300 lines and removes about 1,500 more reference-list lines. What was deleted:
+clean_md is raw_md minus three things: the References/Bibliography blocks, a bank report's
+disclosure back-matter (from its heading to EOF), and lines whose text is fixed boilerplate
+(JSTOR notices, the "For the exclusive use of" watermark, `.indd` stamps, known disclaimer
+sentences, known running heads). No rule judges a line by its shape any more.
 
-- body lines starting with a citation year, `(1995), Ireland (1996a), ...`, taken for a copyright line;
-- equations and short-word prose, taken for chart debris (the rule itself, `r = p + .5y + .5(p - 2) + 2`, in Taylor 1993);
-- numeric table rows, all sharing a digit-stripped shape and taken for a running header;
-- every bare number, taken for a page number, including pymupdf's one-cell-per-line tables;
-- whole pages around a chart, because a chart-dominated block was dropped wholesale and pymupdf returns a page as one block.
+The shape rules (page numbers, repeated lines, chart debris and axis numbers, any line with a URL,
+e-mail or phone number) were 2.1% of the removal and every silent content loss found in three
+audits (2026-10-19, and twice on 2026-10-20). The last one, an independent check on a 16-file
+sample, found:
 
-A second pass the same day stopped two more: `Source:` lines are kept (under a paper's chart they name the data), and a repeated line is treated as a running head only at a page edge, keeping its first copy (inside a page it is a table's row label). Each has a test in `tests/test_ingestion.py`. The rule since: when in doubt the cleaner keeps the line.
+- **table cells dropped as axis ticks.** In a block of mostly short numbers every number of up
+  to 4 characters went: `0.83` was dropped and `-0.24` kept, so the surviving cells sat under the
+  wrong row (Minella & Souza-Sobrinho 2013, Table 2; 717 of Rey 2013's 1,218 appendix cells);
+- **sentences with a URL dropped whole** (~20 content lines in ~13 files: Garcia & Valpassos 1998
+  "Therefore, the domestic interest rate is computed through the", Svensson 2010, `Source:` lines);
+- **a table's totals row taken for a phone number** (`(1+2+3) 28.5 29.9 34.4 34.5`).
 
-On 2026-10-20 a line with an e-mail or phone number stopped being dropped whole: on a two-column bank cover pdfplumber puts the author sidebar's contact at the end of a body line, and the sentence went with it (Goldman 2026's "food accounting for 28% of the CPI", stated nowhere else). Now only the contact is cut when the rest is prose (8+ lowercase words); a sidebar line or the "For the exclusive use of" watermark still goes. Across the corpus it restored 4 Goldman body lines and 3 JSTOR cover lines.
+The knowledge base is read for its reasoning (synthesis first, the source only in a doubt case),
+so a page number or a running head left in the text costs nothing, and a lost sentence or a
+table whose cells moved costs the one reading that goes back to the source. Reduced to the block
+cuts, the reclean of the 123 ingested files restored 15,521 lines (3,471 table cells) and took
+the removal from 8.2% to 6.4%; nothing that was in clean_md before left it.
 
-Three more the same day, measured over the 96 raw_md files before and after (31 clean_md changed):
+What the References cut learned, and still applies (each with a test in `tests/test_ingestion.py`):
 
-- **A labelled table row is not chart debris.** "I 23% 42 -15 6 10 57" (Paiva 2006, Table 3) and "FF 65 30 19 17 19" (Christiano et al. 1999) were all short tokens, so the chart rule dropped them: 9 rows back. A label followed only by numbers is kept.
-- **A footnote printed under the reference list survives the cut**, and the cut resumes after it. A page's footnotes sit below that page's references: Mundell (1961) fn 9, BIS (2026) fn 10-11, Rey (2013) fn 18, Minella & Souza-Sobrinho (2013) fn 15. A footnote is its number and a mostly-lowercase sentence; a reference ("Surname, X") or a cited title in Title Case is not.
-- **A running head with its page number is kept once, not on every page.** "First copy kept" compared whole lines, so "384 PART THREE ■ …" was new on every page and ~30 copies per Krugman chapter stayed, with the `.indd` print stamps (~700 lines across 25 files, all running heads and JSTOR/print stamps; checked line by line). Only an end number is ignored: ignoring every digit made table rows that share a shape ("Adj. R-Squared 0.12 0.01 0.06") copies of each other.
+- it ends at the next heading, ALL CAPS or a known mixed-case starter: Campbell et al. (2012)
+  follow References with "Comments and Discussion", and the cut once ran to EOF and deleted the
+  discussants' comments (41% of the document);
+- a bare "Comment" heading ends it (Krugman 2000, IMF: Garber's comment);
+- a footnote printed under the reference list survives and the cut resumes after it (Mundell
+  1961 fn 9, BIS 2026 fn 10-11, Rey 2013 fn 18, Minella & Souza-Sobrinho 2013 fn 15);
+- a running head, an acronym line or a wrapped citation tail ("FEDS 2001-53.") does not end it.
 
 ## Why there is no AI in the text path (2026-08 audit)
 

@@ -3,12 +3,17 @@ Monetary Transmission Mechanism: what can we
 learn from firm-level data?
 Marco Bonomo and Bruno Martins
 March, 2016
+419
 
 ISSN 1518-3548
 CGC 00.038.166/0001-05
 Working Paper Series Brasília n. 419 March 2016 p. 1-29
 
 Working Paper Series
+Edited by Research Department (Depep) – E-mail: workingpaper@bcb.gov.br
+Editor: Francisco Marcos Rodrigues Figueiredo – E-mail: francisco-marcos.figueiredo@bcb.gov.br
+Editorial Assistant: Jane Sofia Moita – E-mail: jane.sofia@bcb.gov.br
+Head of Research Department: Eduardo José Araújo Lima – E-mail: eduardo.lima@bcb.gov.br
 The Banco Central do Brasil Working Papers are all evaluated in double blind referee process.
 Reproduction is permitted only if source is stated as follows: Working Paper n. 419.
 Authorized by Altamir Lopes, Deputy Governor for Economic Policy.
@@ -18,6 +23,9 @@ Comun/Dipiv/Coivi
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 14º andar
 Caixa Postal 8.670
 70074-900 Brasília – DF – Brazil
+Phones: +55 (61) 3414-3710 and 3414-3565
+Fax: +55 (61) 3414-1898
+E-mail: editor@bcb.gov.br
 The views expressed in this work are those of the authors and do not necessarily reflect those of the Banco Central or
 its members.
 Although these Working Papers often represent preliminary work, citation of source is required when used or reproduced.
@@ -30,6 +38,8 @@ Deati/Diate
 SBS – Quadra 3 – Bloco B – Edifício-Sede – 2º subsolo
 70074-900 Brasília – DF – Brazil
 Toll Free: 0800 9792345
+Fax: +55 (61) 3414-2553
+Internet: <http//www.bcb.gov.br/?CONTACTUS>
 
 The Impact of Government-Driven Loans in the
 Monetary Transmission Mechanism: what can we learn
@@ -64,6 +74,9 @@ loans
 JEL Classification: E51, E52, G21, H81
 * For valuable discussion, we thank Eduardo Lima, João Manoel Mello, Steen Byskov, Claudia Ruiz Ortega, Alvaro
 Morales, the participants at the Insper Seminar, and 37th Brazilian Econometric Society Meeting.
+** Insper. E-mail: MarcoACB@insper.edu.br.
+*** Research Department, Central Bank of Brazil. E-mail: bruno.martins@bcb.gov.br.
+3
 
 1. Introduction
 Government-driven credit expansion had an important role in countervailing the non-earmarked
@@ -97,6 +110,7 @@ and Feldman, 2009).
 Figure 1: Policy RAte (SELIC) vs Long‐term Interest Rate (TJLP)
 TJLP Policy Rate (Selic) Spread (Selic ‐ TJLP)
 Source: BCB
+4
 
 This paper investigates the impact of government-driven loans on the monetary transmission
 mechanism using a huge repository of corporate loan contracts, composing an unbalanced panel of
@@ -130,6 +144,7 @@ system, where borrowers are individuals.
 5 Lundberg (2011) provides a detailed account of the earmarked credit programs in Brazil.
 6 The statistics is calculated for firms that borrowed in the free market from both types of banks in the same year. We
 exclude negative spreads (lending rate minus SELIC rate) and spreads greater than 80% to eliminate outliers.
+5
 
 We start by investigating whether the transmission of policy rate to loan growth rate, the interest
 rates charged by private banks, and to the employment growth rate of employment are attenuated by
@@ -177,6 +192,7 @@ database does not allow us to be precise about the timing of the transmission me
 CDS shock. Notice, however that we reestimate all regressions controlling for the individual firm risk, which should
 attenuate this problem.
 10 For a firm with 50% of earmarked loans the effect on private loans is reduced in magnitude from -14% to -4%.
+6
 
 the effect on the employment growth rate is reduced by 3.8%. When the sample is split according to
 the number of employees, the pattern is similar to the one obtained for the policy rate effect. The
@@ -225,6 +241,7 @@ cannot easily find substitute source of funds.
 crisis relationships with less healthy lenders were more adversely affected during the 2008-9 financial crisis, reducing
 more their employment level.
 13 Banking credit over GDP increased from 25% in 2003 to around 55% in 2013.
+7
 
 Carvalho 2014). A consequence of it is that the competitive advantages entailed by firms with access
 to government-driven results in misallocation of funds and asymmetric transmission of monetary
@@ -267,6 +284,7 @@ Bank of Brazil
 17 We remove outliers in the highest 99th and lowest 1st percentile for dependent variables, lending rates and the average
 loan amount of firms. The great reduction in the number of observations comes also from the lag structure of the models
 and the use of fixed effects estimators.
+8
 
 Table 1: Summary statistics for the whole sample
 Total Real Non‐ Non‐
@@ -317,6 +335,7 @@ Earmarked Loans Ratio 0.1403 0.0434
 Government‐driven Loans Ratio 0.0987 0.0098 0.645
 Firm's age 0.1463 0.1275 ‐0.0036 ‐0.01
 Lending Rate ‐0.1791 ‐0.0903 ‐0.1346 ‐0.0255 ‐0.0342
+9
 
 There are almost 2.5 million firm-year observations in the whole sample. Of those, firms have, on
 average, 24% of its bank debt originated in earmarked rules, while earmarked and non-earmarked
@@ -351,6 +370,7 @@ receiving government-driven loans became relatively larger and older reinforce t
 Yet, there seems to be no big difference between the changes on private lending rate, which were, at
 the end of the sample, 4% smaller for firms receiving government-driven loans (7% smaller for firms
 receiving earmarked loans).
+10
 
 Table 3: Summary statistics (82 sectors)
 This table reports summary statistics after aggregating the dataset on 82 sectors. "Yes" refers to firms with government‐driven (Panel A)and earmarked (Panel B)loans access. "No" reports statistics for firms
@@ -378,6 +398,7 @@ Total Loans (R$, 2004) 695,726 478,061 686,392 474,477 769,471 458,528 761,751 4
 NPL (weighted) 4.38% 8.41% 2.89% 7.11% 3.00% 6.80% 2.95% 8.07% 2.04% 7.22% 2.63% 7.59% 3.21% 7.25% ‐27% ‐14%
 Private Lending Rate 38.48 43.54 34.09 38.04 37.93 44.28 32.89 41.36 33.43 43.28 34.99 43.08 29.73 36.11 ‐23% ‐17%
 Firm's Age 13.75 14.31 14.07 14.29 13.91 14.00 13.88 13.77 14.19 13.66 14.39 13.39 14.65 13.56 7% ‐5%
+11
 
 In some sense, the statistics reported in Table 3 indicate that firm’s access to government-driven and
 earmarked loans relates with firm’s characteristics, as size, age and creditworthiness. Moreover, this
@@ -425,6 +446,7 @@ Considering different sets of firms, Panel B reveals that firms that have borrow
 government-driven (or earmarked) loans for the whole period have paid lower spreads on free private
 loans, on average, than those that have not taken these loans. It seems to indicate a correlation
 between firm’s access to earmarked or government-driven loans and its characteristics.
+12
 
 3. Empirical Methodology
 In order to discriminate among loan supply and loan demand responses to monetary policy shocks, a
@@ -468,6 +490,7 @@ relates with unobserved differences in customer mix. For example, the access of 
 and/or government-owned banks loans may be correlated with firm characteristics, raising concerns
 18 Moreover, as pointed out by Gambacorta (2005) and Ashcraft (2006), results obtained from lending equations are
 robust to the use of annual data.
+13
 
 on demand-driven linkages. The second topic refers to selection bias. For example, firms may prefer
 government-driven banks loans not only because of its observable loan conditions but also as a more
@@ -510,6 +533,7 @@ We include three industry variables in vector S: (1) the non-performing loans of
 (2) the average change in the lending spread charged by private banks on industry s at year t; and (3)
 the loan growth for industry s at year t19. Vector M refers to macroeconomic controls and includes
 19 Variables (2) and (3) do not include loans taken by firm i, eliminating endogeneity concerns.
+14
 
 GDP growths and exchange rate change. Some models also add two additional risk controls (Risk):
 the first difference and the lagged values of lending spread charged by private banks on each firm.
@@ -558,6 +582,7 @@ government-driven loans would face a lower reduction in employment. Because it w
 side effect of the credit market to firm employment, it would constitute very interesting evidence in
 favor of the credit lending channel of monetary transmission, because of the link it provides at firm
 level between the firm’s supply of credit and its employment.
+15
 
 Besides dampening the transmission of monetary policy, the existence of government-driven loans
 could insulate borrowers from adverse external shocks. We also investigate the transmission of an
@@ -602,6 +627,7 @@ employment. Of course, the effect of SELIC on a firm’s employment does not nec
 transmission through the credit markets. However, the differential impact for firms with public credit
 access is likely to be related to this channel. Table 6 reports the results for the effect of variation in
 the SELIC rate on firms’ number of employees and its differential impact for firms with public credit
+16
 
 access. In Panel A we examine the impact of access to earmarked loans, while Panel B reports the
 results for the access to either earmarked or government-owned banks loans. For each panel we
@@ -647,6 +673,7 @@ Some few results are not statistically significant, as the effect of the access 
 credit on total loans and on private loans interest rate.
 Table 8 shows results for the effect of CDS on employment. A 100% increase in the log of CDS rate
 is associated with reduction of the employment growth rate by 5.2%. This effect is attenuated by
+17
 
 access to government-driven credit. Although the effect is statistically significant, the magnitudes are
 modest. The effect on employment growth for a firm with 50% of government-driven loans is a 4.5%
@@ -689,11 +716,13 @@ Our results show that monetary policy affects less firms with earmarked and gove
 loans access. This effect is shown in the smaller variation both in the amount of loans and in the
 interest rate paid on private loans. Additionally, since the loans data was merged with employment
 data for RAIS, we are able to investigate the impact on employment. Our results show that changes
+18
 
 in SELIC have smaller effect on the level of employment for firms with more access to earmarked
 and government-owned banks loans. We also confirm the hypothesis that firms with more access to
 government-driven loans have suffer a lower impact of external shocks on the loans growth rate,
 interest rate paid on private loans and employment growth rate.
+19
 
 Table 5: Credit Channel of Monetary Policy by Firms' Government Loan Access
 We apply fixed-effects instrumental variable estimator (xtivreg) in all models of this table. Panel A investigates the impact of government-driven loans access of firms on the transmission of monetary policy
@@ -741,6 +770,7 @@ Constant 2.0359*** 2.0234*** 1.8500*** 1.7058*** 1.9966** 2.2956** 2.1795** 2.60
 [0.3700] [0.3688] [0.4344] [0.4359] [0.8941] [0.8963] [0.9130] [0.8972] [8.5131] [8.5369]
 Number of Observations 746,991 746,991 442,827 442,827 538,085 538,085 442,827 442,827 427,886 427,886
 Number of firms 298,878 298,878 187,379 187,379 226,440 226,440 187,379 187,379 183,431 183,431
+22
 
 Table 6: Credit Channel of Monetary Policy by Firms' Size and Government-driven Loan Access
 We apply fixed-effects regression in all models of this table. The dependent variable is the percentage annual change of firm's total number of employees. We analyse tw o measures of
@@ -775,6 +805,7 @@ Constant 0.1342 0.5257** 0.1731 -0.3672 -6.9698 0.1320 0.5234** 0.1697 -0.3666 -
 [0.1448] [0.2056] [0.2749] [0.3724] [6.2174] [0.1453] [0.2059] [0.2749] [0.3725] [6.2190]
 Number of Observations 721,880 305,866 301,107 107,329 7,625 721,880 305,866 301,107 107,329 7,625
 Number of Firms 288,636 156,852 131,159 39,931 2,799 288,636 156,852 131,159 39,931 2,799
+23
 
 Table 7: Credit Channel of Country Risk Premium by Firms' Government Loan Access
 We apply fixed-effects instrumental variable estimator (xtivreg) in all models of this table. Panel A investigates the impact of government-driven loans access of firms on the transmission of country risk
@@ -823,6 +854,7 @@ Constant 2.2460*** 2.2247*** 1.9819*** 1.8461*** 2.0094** 2.3180*** 2.2765** 2.7
 [0.3702] [0.3690] [0.4346] [0.4365] [0.8949] [0.8978] [0.9136] [0.8981] [8.5176] [8.5417]
 Number of Observations 746,991 746,991 442827 442827 538,085 538,085 442,827 442,827 427,886 427886
 Number of firms 298,878 298,878 187379 187379 226,440 226,440 187,379 187,379 183,431 183431
+24
 
 Table 8: Credit Channel of Country Risk Premium by Firms' Size and Government-driven Loan Access
 We apply fixed-effects regression in all models of this table. The dependent variable is the percentage annual change of firm's total number of employees. We analyse tw o measures of government-
@@ -856,6 +888,8 @@ Age (in years) -0.0031 -0.0682** -0.0086 0.0356 0.3961 -0.0034 -0.0684** -0.0089
 Constant 0.1835 0.5451*** 0.2305 -0.3450 -7.0218 0.1816 0.5452*** 0.2274 -0.3452 -7.0365
 [0.1438] [0.2039] [0.2716] [0.3732] [6.2535] [0.1442] [0.2042] [0.2717] [0.3739] [6.2727]
 Number of Observations 721,880 305,866 301,107 107,329 7,625 721,880 305,866 301,107 107,329 7,625
+Number of Firms 288,636 156,852 131,159 39,931 2,799 288,636 156,852 131,159 39,931 2,799
+25
 
 Table 9: Credit Channel of Monetary Policy by Firms' Government Loan Access
 (only firms that have taken out government-driven loans in at least one year, but not in the whole period)
@@ -904,8 +938,10 @@ Constant 2.1533*** 1.9265*** 1.7577*** 1.5564*** 1.3732 2.0399** 1.6635 2.4719**
 [0.4327] [0.4171] [0.5077] [0.4700] [1.1984] [1.0377] [1.2585] [1.0677] [9.5487] [9.0790]
 Number of Observations 507,565 545,081 268,221 340,752 345,147 432,137 268,221 340,752 261,043 330,468
 Number of firms 185,147 199,583 105,047 137,966 135,875 175,669 105,047 137,966 103,514 135,493
+26
 
 Table 10: Credit Channel of Monetary Policy by Firms' Size and Government-driven Loan Access
+(only firms that have taken out government-driven loans in at least one year, but not in the whole period)
 We apply fixed-effects regression in all models of this table. The dependent variable is the percentage annual change of firm's total number of employees. We analyse tw o measures of
 government-driven loans access of firms: earmarked to total loans ratio (reported in Panel A) and all government-driven loan to total loan ratio (reported in Panel B). This table also reports
 estimates for subsamples grouped by firm's size - according to the number of their employees. SELIC is the nominal basic monetary policy instrument adopt in Brazil. Some observable sector
@@ -938,8 +974,10 @@ Constant 0.2208 0.7607*** 0.2599 -0.4159 -19.6343*** 0.1795 0.7068*** 0.2003 -0.
 [0.1662] [0.2463] [0.2963] [0.3431] [0.5780] [0.1717] [0.2521] [0.3017] [0.3549] [0.6170]
 Number of Observations 493,520 189,494 216,855 81,369 5,802 432,588 154,563 193,777 78,508 5,740
 Number of Firms 180,329 91,272 89,045 28,884 2,064 151,854 72,460 77,784 27,531 2,037
+27
 
 Table 11: Credit Channel of Country Risk Premium by Firms' Government Loan Access
+(only firms that have taken out government-driven loans in at least one year, but not in the whole period)
 We apply fixed-effects instrumental variable estimator (xtivreg) in all models of this table. Panel A investigates the impact of government-driven loans access of firms on the transmission of country risk
 premium through total volume of real outstanding loans. We analyse two measures of government-driven loans access of firms: earmarked to total loans ratio and all government-driven loan to total loan
 ratio. Panel B explores the credit channel of monetary policy in the lens of non-earmarked private banking sector, both through the total real outstanding loans and the lending rates mechanism. CDS
@@ -985,8 +1023,11 @@ L.Lending spread -0.0000 -0.0002 -0.0006 -0.0000
 Constant 2.3757*** 2.0990*** 1.8924*** 1.7111*** 1.3719 2.0424** 1.7661 2.5848** -13.8268 -15.1109*
 [0.4331] [0.4174] [0.5083] [0.4711] [1.1996] [1.0407] [1.2593] [1.0689] [9.5531] [9.0835]
 Number of Observations 507,565 545,081 268,221 340,752 345,147 432,137 268,221 340,752 261,043 330,468
+Number of firms 185,147 199,583 105,047 137,966 135,875 175,669 105,047 137,966 103,514 135,493
+28
 
 Table 12: Credit Channel of Country Risk Premium by Firms' Size and Government-driven Loan Access
+(only firms that have taken out government-driven loans in at least one year, but not in the whole period)
 We apply fixed-effects regression in all models of this table. The dependent variable is the percentage annual change of firm's total number of employees. We analyse two measures of government-
 driven loans access of firms: earmarked to total loans ratio (reported in Panel A) and all government-driven loan to total loan ratio (reported in Panel B). This table also reports estimates for subsamples
 grouped by firm's size - according to their number of employees. CDS Brazil, the Credit Default Swap for the Brazilian sovereign bonds, reflects the country risk premium. Some observable sector
@@ -1018,3 +1059,5 @@ Age (in years) -0.0110 -0.1011*** -0.0180 0.0406 1.0927*** -0.0065 -0.0918** -0.
 Constant 0.2552 0.7579*** 0.3055 -0.4058 -19.6670*** 0.2146 0.7066*** 0.2454 -0.4066 -20.0930***
 [0.1658] [0.2467] [0.2946] [0.3432] [0.5765] [0.1712] [0.2528] [0.3000] [0.3554] [0.6072]
 Number of Observations 493,520 189,494 216,855 81,369 5,802 432,588 154,563 193,777 78,508 5,740
+Number of Firms 180,329 91,272 89,045 28,884 2,064 151,854 72,460 77,784 27,531 2,037
+29

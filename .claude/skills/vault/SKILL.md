@@ -10,5 +10,4 @@ disable-model-invocation: true
 Synthesize into the vault. Arguments: $ARGUMENTS
 
 Follow your instructions (`.claude/agents/vault.md`) step by step: sweep with
-`vault.py --list`, then one pending file at a time (at most 5), and end with the report table
-and the proposed map additions they specify. No topic means every topic.
+`vault.py --list`, then one pending file at a time (at most 5), and end with the report they specify. No topic means every topic.

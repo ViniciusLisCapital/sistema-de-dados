@@ -68,6 +68,7 @@ rational forecast E(S,,,), evidence that B, in (3) is reliably non-zero means
 that the premium component of F,— S, has variation that shows up reliably in
 F,~ S,41-
 
+E.F. Fama, Forward and spot exchange rates 321
 With the assumption that the expected future spot rate in the forward rate is
 efficient or rational, the regression coefficients in (3) and (4) are
 = cov( F, — S,41,F,- S,)
@@ -103,6 +104,7 @@ In particular, it is not widely recognized thai, given an efficient or rational
 exchange market, the deviation of B, from 1.0 is a direct measure of the
 variation of the premium in the forward rate. The complementarity of the
 
+322 E.F. Fama, Forward and spot exchange rates
 regression coefficients in (3) and (4) which is described in (5) and (6) helps us
 to interpret some of the anomalous results observed for estimates of (4).
 2.2. Economics
@@ -135,6 +137,7 @@ With complete PPP, s//= V,,/V,,, that is, the spot exchange rate is the ratio
 of the price levels in the two countries, and (11) reduces to
 Fi = [E(r 041) — ECG, 0+1)] + E(Si4,). (9)
 
+E.F. Fama, Forward and spot exchange rates 323
 In words, with the Fisher equation, interest rate parity and purchasing
 power parity, the premium P, in the forward rate expression (1) is just the
 difference between the expected real returns on the nominal bonds of the two
@@ -218,6 +221,7 @@ autocorreistions are 0.0, the standard error of the sample autocorrelations is a
 vze
 sajyod a8unyoxa lod: pun papmso.g OUD “7
 
+E.F. Fama, Forward and spot exchange rates 325
 changes, E(S,, , — S,), varies in an autocorrelated way, this is not evident in the
 behavior of the observed changes. The F,— S,,, for different countries also
 show little autocorrelation. F,—S,,, is the premium, P,, plus the forecast
@@ -420,7 +424,9 @@ somplementarity of the F— S,,, and S,,,— 5S, regressions for each country me
 regressions. Under the hypothesis that the true autocorrelations are zero, the standard error of the estimated residual autocorreiations
 ws about 0.09.
 526
+E.F. Fama, Forward and spot exchange rates
 
+E.F. Fama, Forward and spot exchange rates 327
 proportions alone, since the coefficients in the S,, , — S, regressions are always
 negative so that those in the F, — S,, , regressions are greater than 1.0.
 Inspection of (5) and (6) indicates an explanation for the strange estimates
@@ -546,6 +552,8 @@ United Kingdom 0.45 0.36 0.31 O47 0.65 0.74 0.63 1.00
 West Germany 0.49 0.50 0.52 049 0.73 0.69 0.88 0.72 1.00
 *S,.1 7 5 1s the four-week change in the spot exchange r: rate: E- Spa. is ‘the thirty- day forward rate mincs the spot r: rate
 observed four weeks later; F, — S, is the forward rate minus the current spot rate.
+E.F. Fama, Forward and spot exchange rates
+329
 
 Table 4
 SUR regressions: 8/31,/73- 12/20/82, N = 122.°
@@ -574,6 +582,7 @@ F test All qeaual F=5.68 P level = 0.0001
 the F, — S,,, and S,,, — S, regressions sum to 0.0, the slopes sum to 1.0, and the residuals sum to 0.0 period-by-period.
 The subscripts on the & in the constrained 5,,, — S, regressions indicate countries.
 330
+E.F. Fama, Forward and spot exchange rates
 
 E.F, Fama, Forward and spot exchange rates 331
 a test statistic far out in the tail of the F distribution (beyond the 0.997 fractile)
@@ -668,7 +677,9 @@ minus the spot rate observed four weeks later: F — S, is the forward rate minu
 on a percent per month basis. Under the hypothesis that the truc autocorrelations are zero, the standard error of the sample autocorrelation p, is
 approximately 0.13. .
 332
+E.F. Fama, Forward and spot exchange rates
 
+E.F. Fama, Forward and spot exchange rates 333
 Table 6
 OLS regressions for 61-month subperiods.*
 Fe~ Sp = t BR - St het Spar S502 + BR St bra
@@ -713,6 +724,7 @@ relative to the variance of the expected change in the spot rate, and (c) negati
 covariation between P, and E(S,,, — S,) dominates the variance of E(S;,, — S,)
 to produce negative slope coefficients in the regressions of S,,, — S, on F,— S,.
 
+334 E.F. Fama, Forward and spot exchange rates
 Table 7
 SUR regressions for 61-month subperiods.”
 FS. = » BE SO+8 ao S787 a2 + BAF “S)4 rr
@@ -757,6 +769,7 @@ sponsible for my paraphrasing of their comments.
 The interpretation of the results above is based on the hypothesis that the
 assessment of E(S,_,~-5S,) in F,— 5, is efficient or rational. An alternative
 
+E.F. Fama, Forward and spot exchange rates 335
 hypothesis is that the negative slope coefficients in the regressions of S,,, — S,
 on F,--§, reflect assessments of E(S,,,—S,) that are consister.tly perverse
 realtive to the true expected value of the change in the spot rate. The large

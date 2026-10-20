@@ -9,6 +9,7 @@ Suggested Citation: Goldfajn, Ilan; Werlang, Sergio R.C. (2000) : The pass-throu
 inflation: A panel study, Texto para discussão, No. 423, Pontifícia Universidade Católica do Rio de
 Janeiro (PUC-Rio), Departamento de Economia, Rio de Janeiro
 This Version is available at:
+https://hdl.handle.net/10419/186667
 Standard-Nutzungsbedingungen: Terms of use:
 Die Dokumente auf EconStor dürfen zu eigenen wissenschaftlichen Documents in EconStor may be saved and copied for your personal
 Zwecken und zum Privatgebrauch gespeichert und kopiert werden. and scholarly purposes.
@@ -39,6 +40,7 @@ Marques de Sao Vicente, 225 Deputy Governor
 Rio de Janeiro, Brazil Banco Central do Brasil
 Phone: (5521) 274-2797 Brasilia, Brazil
 Fax: (5521) 294-2095
+email: goldfajn@econ.puc-rio.br
 Abstract
 The paper studies the relationship between exchange rate depreciations and inflation using a
 sample of 71 countries in the period 1980-1998. The main determinants of the extent of
@@ -331,6 +333,7 @@ pass-through
 0.2
 0.1
 0
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 months
 Note:Estimated with fixed effects and cross section weights
 The subdivision of the sample by economic development produces the results shown
@@ -396,6 +399,7 @@ Figure 3: Pass-through By Region
 0,4
 0,2
 0
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 months
 Pass-through Pass-through Europe Pass-through Africa Pass-through America
 Pass-through Oceania Pass-through Asia
@@ -547,6 +551,7 @@ Initial Inflation 0.557 0.000 0.791 0.000 1.334 0.000 2.423 0.000 +
 Openness 0.000 0.305 -0.002 0.186 -0.004 0.129 0.027 0.002 -
 Real E deviation -0.011 0.000 -0.116 0.000 -0.298 0.000 -0.694 0.000 -
 Accumulated Depreciation 0.022 0.000 0.167 0.000 0.294 0.000 0.492 0.000 +
+Note: Estimated with Fixed Effects and Cross Section Weights
 
 Table 6: Pass-through Regressions Using Cross-Terms - fixed estimation
 Dependent Variable:1 9Accumulated Inflation
@@ -575,7 +580,9 @@ Openness -0,027 0,003 -0,007 0,456 -0,014 0,000 0,017 0,000 0,028 0,114
 Real E deviation -0,282 0,000 -0,381 0,000 -0,184 0,000 -0,262 0,000 -0,097 0,000
 Accumulated Depreciation 0,586 0,000 0,215 0,000 0,222 0,000 0,185 0,000 0,016 0,548
 Note1: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and Accumulated Depreciation are at time t-1.
+19
 
+20
 Table 7: Pass-through Regressions by Type of Country
 Including Cross-Terms
 12 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
@@ -606,6 +613,7 @@ Real E deviation -0.128 0.000 -0.282 0.000 -0.365 0.000 -
 Accumulated Depreciation -0.043 0.261 0.385 0.000 0.292 0.000 +
 Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
 Accumulated Depreciation are at time t-1.
+20
 
 V. Forecasts
 It is important to check the accuracy of the model’s forecasts using known cases of
@@ -634,6 +642,7 @@ high inflation, although the actual inflation was “only” 82%.
 Using, instead, the emerging country’s coefficients, the upward bias in the forecast of
 inflation is magnified, since the pass-through coefficient is larger for this group of countries.
 
+22
 It is worth noting that part of depreciation’s strong influence is counterbalanced by (a also
 larger) real exchange rate deviation coefficient. One could argue, therefore, that these
 countries behaved like “developed countries” during exchange rate crisis periods due to their
@@ -664,7 +673,9 @@ devaluation. In the cross terms model, the real exchange rate deviation not only
 inflation directly but also multiplies the nominal depreciation and indirectly reduces inflation
 4 This emerging group includes: Brazil (1999), Indonesia (1997), Korea (1997), Mexico (1994), Thailand (1997),
 Malaysia (1997) and the Philippines (1997).
+22
 
+23
 by decreasing the pass-through coefficient. Therefore, the predicted inflation in the cross term
 model is closer to the actual inflation in Indonesia than the previous model.
 The forecasts for the European countries tend to produce better results when using
@@ -689,7 +700,9 @@ prediction of inflation in these crises cases. This is prevalent across all mode
 possibility is that in these cases the nominal exchange rate overshot and the expectation is that
 it will revert partially to its mean, inducing smaller price adjustment than in normal times. We
 will investigate this possibility in the next section.
+23
 
+24
 Table 8a: 12-Month Inflation Prediction in Selected Crises Cases
 Dependent Variable Type of Regression Contribution to Inflation in:
 General Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
@@ -741,7 +754,9 @@ Real E deviation -0.797 -2.8 -8.9 -4.7 -5.2 -4.4
 Accumulated Depreciation 0.605 5.5 18.4 12.0 10.1 7.5
 Predicted Inflation 6.0 12.1 11.4 10.7 6.3
 Actual Inflation 1.4 4.6 4.9 4.7 1.6
+24
 
+25
 Table 8c: 12-Month Inflation Prediction in Selected Crises Cases - Using Cross Terms
 Dependent Variable Type of Regression Contribution to Inflation in:
 General Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
@@ -786,7 +801,9 @@ Real E deviation -0.744 -14.5 -14.9 -7.8 -10.0 -12.1 -9.2 -7.8
 Accumulated Depreciation 1.144 326.1 57.2 39.2 110.9 53.2 43.7 42.3
 Predicted Inflation 89.9 29.6 6.1 42.4 -0.2 -30.6 4.7
 Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
+25
 
+26
 Table 8d: 12-Month Inflation Prediction in Selected European Crises Cases - Using Cross Terms
 Dependent Variable Type of Regression Contribution to Inflation in:
 Developed England - 92 Sweden - 92 Italy - 92 Spain - 92 Finland - 92
@@ -835,7 +852,9 @@ Sweden-92 30.5 4.6 11.0 12.1 7.9 6.5
 Italy-92 19.9 4.9 11.8 11.4 10.4 7.4
 Spain-92 16.7 4.7 9.8 10.7 9.3 8.0
 Finland-92 12.4 1.6 5.4 6.3 5.8 5.7
+26
 
+27
 VI. Using expectations
 One possibility for the upward bias of the forecasts is that the specification does not
 capture properly the role of expectations. If expectations are taken into account one could
@@ -863,7 +882,9 @@ The results are shown in Table 10. Using expectations for 3 and 6 months (longer
 horizons are not adequate since one would expect some learning during the process and the
 expectations at time t would not be representative of future adjustment of prices). The pass-
 through coefficient increases when one includes the expectation variable, but only marginally.
+27
 
+28
 For 6 months, the devaluation expectation coefficient was significantly positive, confirming
 that the more the exchange rate is expected to depreciate the greater is the markup of prices.
 However, the coefficient is relatively small, suggesting that either the expected permanent
@@ -894,7 +915,9 @@ effect of our main determinants of passthrough (RER, openness, initial inflation
 deviation) is factored in. In other words, it is only the direct impact of the passthrough
 5 In this way, any type of bias problem when comparing the model with and without expectations is avoided.
 6 The emphasis here is on the fact that expectations are measured at the beginning of the period.
+28
 
+29
 coefficient (or the passthrough residual after controlling for its determinants) that is affected
 by the permanent/temporary distinction.
 Table 10: Pass-through Regressions Using Expectations from Survey
@@ -945,7 +968,9 @@ RER*EXP 0.112 0.000 -0.002 0.786
 Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation, Accumulated Depreciation
 and Depreciation Expectation are at time t-1
 *Calculated only for 27 countries with avaiable data from the survey.
+29
 
+30
 VII. Robustness Checks
 This section performs important sensitivity tests of the results to other specifications
 and to the sample chosen. First, it investigates the influence of both openness and GDP
@@ -972,7 +997,9 @@ Initial Inflation 2.406 0.000 +
 Openness 0.023 0.009 -
 Real E deviation -0.696 0.000 -
 Accumulated Depreciation 0.513 0.000 +
+30
 
+31
 The trade openness variable is also sensitive to the specification and not always
 behaves according to the theory. One possibility is that trade openness variable is reacting to
 the degree of indebtedness of the countries that compose the sample. Terra (1998) argues that
@@ -1002,14 +1029,18 @@ Finally, it is possible to argue that there may be a sample bias problem in some
 subdivisions made in the paper. In order to test the sensitivity of the results to sample bias,
 two samples were constructed randomly and the results compared. Table 15 shows the results.
 The sign and the magnitude of the coefficients was reasonably similar between the two
+31
 
+32
 samples which implies that the choice of the countries participating in the sample may not
 have influenced the results.
 This section has hinted the reasons why the GDP deviation is not significant for some
 specifications. The GDP deviation at time t+6 seems to more representative of the business
 cycle during the period than the initial GDP deviation at time t. This section has also shown
 that the results are robust to different sampling and to using non-overlapping data.
+32
 
+33
 Table 13: Pass-through Panel Regressions Without Cross Terms
 Less Indebted countries
 Dependent Variable: Accumulated inflation rate ( t to t+12)
@@ -1044,7 +1075,9 @@ Accumulated Depreciation 0.431 + 5.302 0.000
 Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
 Accumulated Depreciation are at time t-1. White-Corrected standard errors.
 Source: List of indebted countries in appendix
+33
 
+34
 Table 14: Pass-through Panel Regressions With Cross Terms
 Without Overlapping
 months 6 12
@@ -1077,7 +1110,9 @@ Initial Inflation 2.187 + 1.238 0.216
 Openness 0.039 - 1.834 0.067
 Real E deviation -1.364 - -2.111 0.035
 Accumulated Depreciation 0.812 + 1.997 0.046
+34
 
+35
 VIII. Conclusions
 The paper reached a few results that are worth summarizing. First, with respect to the
 overall effect of exchange rate depreciation on inflation, we find that the pass-through
@@ -1106,7 +1141,9 @@ previous studies, in particular, the complete model, that includes the cross ter
 Notwithstanding these results we find that there is a systematic upward bias in the prediction
 of inflation in these crises cases. The main lesson for emerging markets is that one must take
 into account the RER overvaluation in the country in order to better predict inflation.
+35
 
+36
 Equivalently, the effect of the initial inflation is fundamental to access inflation in Europe or
 in developed countries in general.
 Fourth, in search of an explanation of the upward bias of our results, the paper
@@ -1123,7 +1160,9 @@ In other words, it is only the direct impact of the passthrough coefficient (or 
 residual after controlling for its determinants) that is affected by the permanent/temporary
 distinction. Finally, the results of the paper are robust to different sampling and to using non-
 overlapping data.
+36
 
+37
 X. Appendix
 This model describes the effect of openness and other variables on the passthrough
 coefficient. There is an small open economy with an infinite amount of goods, as in Dorbusch,
@@ -1147,24 +1186,32 @@ Q
 Pd = A - Q
 i
 ì E(P* - C ) if Q £ E(P* - C )
+ï i i i i
 Ps = í Q if E(P* - C ) < Q < E(P* + C )
+i i i i i i
 ï
 î E(P* + C ) if Q ³ E(P* + C )
 i i i i
+38
 
+39
 The equilibrium price is:
 ì A
 ï E(P* - C ) if £ E(P* - C )
+i i 2 i i
 ï
 ï A A
 P = í if E(P* - C ) < < E(P* + C )
+ï 2 i i 2 i i
 ï A
 E(P* + C ) if ³ E(P* + C )
+ï î i i 2 i i
 Therefore:
 ì
 ~ A ~
 ï E(1- q ) P i if £ i
 ï 2EP(1-q )
+~ ï A A ~ A
 P = í if < i <
 i ï 2 2EP(1-q ) 2EP(1+q )
 ï ~ A ~
@@ -1175,6 +1222,7 @@ The domestic price level is given by:
 A A
 [ ]
 E P ~ = 1 ò P ~ di = 2EP( ò 1+q) E(1+q ) P i di + 2EP( ò 1-q) A di + 1 ò E(1-q )P i di
+i 0 i 0 A 2 A
 2EP(1+q) 2EP(1-q)
 where we assumed that:
 A
@@ -1183,7 +1231,9 @@ A
 A
 or E ³ E where E =
 2P(1-q )
+39
 
+40
 So that:
 A
 æ i2 ö ù 2EP(1+q) A é A A ù æ i2 ö ù 1
@@ -1216,10 +1266,13 @@ where g =
 2(1- q )(1- q 2)
 It is easy to show that:
 [ ]
+E ³ E if q Î 0,1
 M
 Therefore, the part of interest to the function is always increasing and the pass-through
 coefficient is positive:
+40
 
+41
 A2
 1- .g
 dP . E = P2E2 > 0
@@ -1231,7 +1284,9 @@ coefficient is positively correlated to the transport cost q . Since the latter 
 degree of openness of the country (proportion of non tradable goods), the degree of openness
 is also positively correlated to the pass-through coefficient. Equivalently, one can verify that
 the pass-through increases with demand (parameter A in the model)
+41
 
+42
 Table A6: List of Countries
 Emerging Developed Developing
 Argentina Canada Bolivia
@@ -1262,6 +1317,7 @@ Romania
 Bahrain
 Bangladesh
 Papau New Guinea
+42
 
 Table A7: Countries Crises Dates
 Countries Date Countries Date
@@ -1283,6 +1339,7 @@ Indonesia 1983:04 Mexico 1982:02
 Indonesia 1986:09 Mexico 1994:12
 Italy 1992:09
 
+44
 Table A8: List of Countries Table A9: List of Countries Table A10: List of Countries
 O E C D Non-OECD Less indebted More indebted Random Sample 1 Random Sample 2
 Canada Argentina Argentina Bolivia Argentina Jordan
@@ -1321,3 +1378,4 @@ Uruguay Ireland United States
 Venezuela Israel Venezuela
 Zambia Italy Zambia
 Zimbabwe Jamaica Zimbabwe
+44

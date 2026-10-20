@@ -2,6 +2,7 @@ NBER WORKING PAPER SERIES
 INFLATION TARGETING
 Lars E.O. Svensson
 Working Paper 16654
+http://www.nber.org/papers/w16654
 NATIONAL BUREAU OF ECONOMIC RESEARCH
 1050 Massachusetts Avenue
 Cambridge, MA 02138
@@ -38,6 +39,7 @@ Sveriges Riksbank
 SE-103 37 Stockholm
 SWEDEN
 and Stockholm University and NBER
+lars.svensson@iies.su.se
 
 Contents
 1
@@ -48,18 +50,21 @@ An announced numerical inﬂation target . . . . . . . . . . . . . . . . . . . .
 1
 1.2
 Forecast targeting
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 2
 1.3
 A high degree of transparency and accountability . . . . . . . . . . . . . . . . . . . .
 2
 1.4
 Outline
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 4
 2
 History and macroeconomic eﬀects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 4
 2.1
 History
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 6
 2.2
 Macroeconomic eﬀects . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -69,9 +74,11 @@ Inﬂation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 8
 2.2.2
 Inﬂation expectations
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 10
 2.2.3
 Output
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 11
 2.2.4
 Summary of eﬀects of inﬂation targeting . . . . . . . . . . . . . . . . . . . . .
@@ -87,6 +94,7 @@ The projection model and the feasible set of projections . . . . . . . . . . . .
 21
 3.3
 Optimal policy choice
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 21
 3.4
 The forecast Taylor curve . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -102,6 +110,7 @@ Implementation and equilibrium determination . . . . . . . . . . . . . . . . . .
 27
 3.8
 Optimization under discretion and the discretion equilibrium
+. . . . . . . . . . . . .
 29
 3.8.1
 The projection model, the feasible set of projections, and the optimal policy
@@ -109,6 +118,7 @@ projection . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 31
 3.8.2
 Degrees of commitment
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 32
 3.9
 Uncertainty . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -118,6 +128,7 @@ Uncertainty about the state of the economy . . . . . . . . . . . . . . . . . . .
 33
 3.9.2
 Uncertainty about the model and the transmission mechanism
+. . . . . . . .
 35
 3.10 Judgment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 38
@@ -135,6 +146,7 @@ The Riksbank . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 43
 4.4
 Norges Bank
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 45
 4.5
 Preconditions for inﬂation targeting in emerging-market economies . . . . . . . . . .
@@ -144,6 +156,7 @@ Future . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 50
 5.1
 Price-level targeting
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 50
 5.2
 Inﬂation targeting and ﬁnancial stability: Lessons from the ﬁnancial crisis . . . . . .
@@ -151,6 +164,7 @@ Inﬂation targeting and ﬁnancial stability: Lessons from the ﬁnancial crisi
 5.2.1
 Did monetary policy contribute to the crisis, and could diﬀerent monetary
 policy have prevented the crisis?
+. . . . . . . . . . . . . . . . . . . . . . . . .
 53
 5.2.2
 Distinguish monetary policy and ﬁnancial-stability policy . . . . . . . . . . .
@@ -160,6 +174,7 @@ Conclusions for ﬂexible inﬂation targeting . . . . . . . . . . . . . . . . .
 57
 References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 61
+0
 
 1. Introduction
 Inﬂation targeting is a monetary-policy strategy that was introduced in New Zealand in 1990. It
@@ -192,6 +207,7 @@ utilization such as the output gap; that is, the gap between actual and potentia
 as the output gap.1 The objectives under ﬂexible inﬂation targeting seem well approximated by a
 1 The term “inﬂation nutter” for a central bank that is only concerned about stabilizing inﬂation was introduced in
 a paper by Mervyn King at a conference in Gerzensee, Switzerland, in 1995 and later published as King (1997). The
+1
 
 standard quadratic loss function consisting of the sum of the squared inﬂation gap to the target
 and a weight times the squared output gap, and possibly also a weight times squared policy-rate
@@ -228,6 +244,7 @@ monetary policy.
 introduced in King (1994). The term “inﬂation-forecast targeting” was introduced in Svensson (1997), and the term
 “forecast targeting” in Svensson (2005). See Woodford (2007) and Woodford (2010a) for more discussion and analysis
 of forecast targeting.
+2
 
 considerable secrecy. It is diﬃcult to ﬁnd any reasons for that secrecy beyond central bankers’ de-
 sire not to be subject to public scrutiny (including scrutiny and possible pressure from governments
@@ -261,6 +278,7 @@ responsibilities. In the U.K., the Chancellor of the Exchequer’s remit to the 
 instructs the Bank to write a public letter explaining any deviation from the target larger than
 one percentage point and what actions the Bank is taking in response to the deviation. In several
 countries, central-bank oﬃcials are subject to public hearings in the Parliament where monetary
+3
 
 policy is scrutinized; and in several countries, monetary policy is regularly or occasionally subject
 to extensive reviews by independent experts (for instance, New Zealand, the U.K., Norway, and
@@ -295,6 +313,7 @@ to growth, productivity, employment, or other measures of economic performance. 
 (2008), for Norway, the annual Norges Bank Watch, for instance, Svensson, Houg, Solheim, and Steigum (2002),
 and for Sweden, Giavazzi and Mishkin (2006). Svensson (2010a) provides a general discussion of the evaluation of
 inﬂation targeting, including the possibility of continuous real-time evaluation.
+4
 
 both absolute and relative to alternative monetary-policy strategies, such as exchange-rate targeting
 or money-growth targeting. No country has so far abandoned inﬂation targeting after adopting it
@@ -339,6 +358,7 @@ IT countries were less likely to face deﬂation scares and saw sharp real depre
 with a greater perception of risk by markets. There is also some weak evidence that IT countries did better on
 unemployment rates and that advanced IT countries had relatively stronger industrial production performance and
 higher GDP growth rates than their non-IT peers.
+5
 
 as an implicit inﬂation targeter (see Svensson (1999c, 2009d) for more discussions and references).
 Many small and medium-sized countries have tried exchange-rate targeting in the form of a ﬁxed
@@ -375,6 +395,7 @@ Furthermore, as emphasized by Nelson (2005), until
 8 Singleton, Hawke, and Grimes (2006) provides an authorative history of the origin of the Reserve Bank Act and
 the development of the Reserve Bank and monetary policy in New Zealand 1973-2002. Goodhart (2010) discusses
 the political economy of creation of the Act.
+6
 
 the mid-1980s, many politicians, and policy circles generally, in New Zealand subscribed to a
 nonmonetary view of inﬂation.
@@ -460,6 +481,7 @@ In Europe, the transition economies of Central and Eastern Europe began introduc
 targeting in the late 1990s as part of their comprehensive economic reforms, while in East Asia,
 9 Pétursson (2004b) and Freedman and Ötker-Robe (2009) provide an overview of the countries’ back-
 ground/motivation for adopting inﬂation targeting. See also Freedman and Laxton (2009).
+7
 
 inﬂation targeting began to be adopted in the early 2000s as countries emerged from monetary tar-
 geting under International Monetary Fund-supported programs following the 1997 Asian ﬁnancial
@@ -496,6 +518,7 @@ Iceland, Mexico, Poland, and Turkey.)
 In ﬁgure 2.2, the inﬂation targeters include: Chile, Columbia, Indonesia, Israel, South Africa, Mexico, Philippines,
 and Thailand. The non-inﬂation targeters in 2.2 include: China, Costa Rica, Dominican Republic, Ecuador, Egypt,
 El Salvador, India, Malaysia, Morocco, Nigeria, Pakistan, Panama, Tunisia, Singapore, and Taiwan.
+8
 
 Figure 2.1: Average inﬂation in inﬂation targeting and non-inﬂation targeting OECD-countries.
 Percent per year Source: EcoWin.
@@ -558,6 +581,7 @@ report signiﬁcant evidence that inﬂation targeting does lower inﬂation rat
 run. The eﬀects occur after the year of adopting inﬂation targeting and decay gradually.
 12 Surprisingly, Gonçalves and Salles (2008) does not ﬁnd a signiﬁcant eﬀect of inﬂation targeting on the volatility
 of inﬂation.
+9
 
 Figure 2.2: Average inﬂation in inﬂation targeting and non-inﬂation-targeting emerging economies.
 Percent per year. Source: Ecowin.
@@ -571,6 +595,7 @@ Percent per year. Source: Ecowin.
 70
 80
 90
+80 82 84 86 88 90 92 94 96 98 00 02 04 06 08 10
 0
 10
 20
@@ -601,6 +626,7 @@ to anchor the private sector’s long-run inﬂation expectations. Recently, Int
 Fund (2008) considered which monetary-policy frameworks had been most successful in anchoring
 inﬂation expectations in the wake of the oil and food price shocks in 2007, and found that “in
 emerging economies, inﬂation targeting seems to have recently been more eﬀective than alternative
+10
 
 monetary-policy frameworks in anchoring expectations.” Table 2.2 reports the percentage-point
 response of expected headline inﬂation 1, 3, 5 and 6—10 years ahead to a 1 percentage-point change
@@ -645,6 +671,7 @@ to interpret. Goncalves and Carvalho (2009) show that among 30 OECD countries th
 13 The group of countries are the same as in ﬁgures 2.1 and 2.2 (see footnote 10).
 14 Fang, Miller, and Lee (2009) ﬁnd that the inﬂation targeters in their sample of OECD countries achieve lower
 output growth and higher output-growth variability in the short run while this eﬀect disappears in the longer run.
+11
 
 Figure 2.3: Output performance before (left bar) and after (right bar) adoption of inﬂation targeting
 before and after 1998 (OECD) and 2001 (emerging markets). Average and standard deviation of
@@ -690,6 +717,7 @@ veloped economies have been similar, inﬂation targeting has improved macroecon
 among developing economies. Importantly, there is no evidence that inﬂation targeting has been
 detrimental to growth, productivity, employment, or other measures of economic performance in
 either developed and developing economies. Inﬂation targeting has stabilized long-run inﬂation
+12
 
 expectations. No country has so far abandoned inﬂation targeting after adopting it (except to join
 the euro area), or even expressed any regrets. For both industrial and non-industrial countries,
@@ -722,6 +750,7 @@ incentives to achieve optimal monetary policy than previous monetary-policy regi
 a theory of inﬂation targeting is to a large extent a theory of optimal policy, with the objective
 function given by the objective function of ﬂexible inﬂation targeting.
 15 See footnote 7.
+13
 
 However, there are a few aspects that make inﬂation targeting diﬀer from standard textbook
 treatments of optimal policy that I would like to take into account.
@@ -757,6 +786,7 @@ I am not implying that the policy of all inﬂation-targeting central banks are 
 by this theory.16
 The theory is by nature an idealization, in a similar way in which standard
 16 Although most inﬂation-targeting policymakers would probably agree that inﬂation targeting is about choosing
+14
 
 consumption theory is an idealization of actual consumer behavior. The theory is a theory of ma-
 ture inﬂation targeting, a theory of my view of what is potential best-practice inﬂation targeting,
@@ -805,6 +835,7 @@ a preliminary version of this chapter was presented.
 policy, the changes in variables are usually no more than a few percent, so the assumptions underlying the linearization
 are likely to be fulﬁlled. Adolfson, Laséen, Lindé, and Svensson (2009) shows in detail how the Riksbank’s operational
 DSGE model, Ramses, can be written in this form.
+15
 
 instruments but in most cases there is only one policy instrument, the policy rate, so = 1;
 is an -vector of i.i.d. shocks with mean zero and covariance matrix ; , , and , and
@@ -850,6 +881,7 @@ in the lower block of (3.1) can be redeﬁned as additional predetermined variab
 looking variables. That is, there is no vector of forward-looking variables, no lower block of equations in (3.1),
 and the vector of target variables only depends on the vector of predetermined variables and the (vector of)
 instrument(s) .
+16
 
 As an example, we can take a standard New Keynesian model,
 −∗= (+1|−∗) + (−¯) + 
@@ -905,6 +937,7 @@ where is an × (+ + ) matrix and partitioned conforma
 23 For plotting and other purposes, and to avoid unnecessary separate program code, it is often convenient to
 expand the vector to include a number of variables of interest that are not necessary target variables or potential
 target variables. These will then have zero weight in the loss function.
+17
 
 Let the quadratic intertemporal loss function in period be the sum of expected discounted
 future period losses,
@@ -948,6 +981,7 @@ Anderson (2000) for a comparison between AIM and other algorithms), but a new Ma
 Klein algorithm much faster. The appendix of Adolfson, Laséen, Lindé, and Svensson (2009) discusses the relation
 between the Klein and AIM algorithms and shows how the system of diﬀerence equations can be rewritten to ﬁt the
 AIM algorithm.
+18
 
 and intertemporal equilibrium can be described by the following diﬀerence equation,
 ∙
@@ -1032,6 +1066,7 @@ that case the matrices and depend on , , and , but not on .
 26 Adolfson, Laséen, Lindé, and Svensson (2009) discusses how the initial value for Ξ−1 can be chosen.
 27 See Svensson (2003b) and Svensson and Woodford (2005) for more discussion of explicit and implicit instrument
 rules.
+19
 
 The model (3.1) can also be solved for a given targeting rule, a linear combination of leads and
 lags of the target variables projection (Giannoni and Woodford (2003), Svensson and Woodford
@@ -1069,6 +1104,7 @@ and usually also publishes a forecast of inﬂation and the real economy. The pr
 responds to this information, and the actual equilibrium results. This is the kind of monetary
 policy and its implementation that I try to model next. In particular, forecasts and projections of
 the policy rate, inﬂation, and the real economy take center stage.
+20
 
 3.2. The projection model and the feasible set of projections
 Let ≡{+}∞
@@ -1120,6 +1156,7 @@ X
 where the period forecast loss, +, is speciﬁed as
 += +0Λ+
 (3.24)
+21
 
 for ≥0. The minimization is subject to the projection being in the feasible set of projections for
 given |, T (|).28
@@ -1175,6 +1212,7 @@ The expected value of discounted future losses will exceed the intertemporal for
 those forecasts errors and that term can be disregarded under certainty equivalence.
 29 This added term is closely related to the recursive saddlepoint method of Marcet and Marimon (1998), see
 Svensson (2009b) and Woodford (2010b) for more discussion.
+22
 
 intertemporal loss function, that is, to solve the problem
 minimize L() + 1
@@ -1214,6 +1252,7 @@ set of projections can be illustrated using a modiﬁed Taylor curve, a forecast
 the original Taylor curve involves unconditional variances (to be precise, standard deviations in
 ﬁgure 1 of Taylor (1979)) of ex post outcomes, the forecast Taylor curve involves the discounted
 sum of squared inﬂation-gap and output-gap forecasts ex ante (see Svensson (2010a) for applications
+23
 
 Figure 3.1: Forecast Taylor curve
 2
@@ -1305,6 +1344,7 @@ frontier and an isoloss line, the policy projection in the restricted set of fea
 gives the lowest intertemporal loss.
 The eﬃcient frontier consists of the projections in the set of restricted feasible projections that
 are eﬃcient, in the sense that there is no other projection in the restricted feasible set that has a
+24
 
 lower sum of squared inﬂation gaps without having a higher sum of squared output gaps. Obviously,
 the optimal policy projection is in the eﬃcient set.
@@ -1368,6 +1408,7 @@ Projections can obviously also be constructed for a given instrument rule,
 The resulting projection will satisfy equations such as (3.30)-(3.32), although without any Lagrange
 multipliers, where the matrices and depend on , , and . For arbitrary instrument rules,
 the projections will not be eﬃcient.
+25
 
 3.6. Targeting rules
 As discussed in Svensson (2003b) and Svensson (2005), the monetary-policy decision process makes
@@ -1403,6 +1444,7 @@ derivations of optimal targeting rules/target criteria, and they are further dis
 with the implication that a constant-interest-rate inﬂation forecasts that overshoots (undershoots) the inﬂation target
 at some horizon such as two years indicates that the policy rate needs to increased (decreased). This is a far-from-
 optimal targeting rule that has now been abandoned, as discussed in section 4.2.
+26
 
 In this framework, a given targeting rule would have the form
 
@@ -1438,6 +1480,7 @@ policy-rate path, = ˆ. Let us assume that the central-bank pr
 believed by the private sector.
 In particular, assume that private-sector expectations of next period’s forward-looking variables
 are equal to the central bank’s forecast and are rational and equal to E+1. The forward-looking
+27
 
 variables and the target variables in period are then determined by Eq. (3.4), given 
 and E+1, and (3.10), given , , and .
@@ -1484,6 +1527,7 @@ consistent with the optimal policy. For instance, the implicit instrument rule �
 with the optimal policy for any value of the scalar , since in equilibrium = ˜
 . However, the determinacy
 properties (the eigenvalue conﬁguration) may of course depend on .
+28
 
 3.8. Optimization under discretion and the discretion equilibrium
 The previous discussion is under the assumption that commitment in a timeless perspective is
@@ -1527,6 +1571,7 @@ gives
 +1 = ˜+ ˜+ +1
 (3.42)
 35 See Svensson (2009b) for more details of this algorithm.
+29
 
 where
 ˜≡11 + 12 ¯
@@ -1578,6 +1623,7 @@ where ( ¯¯) is the limit of ( ¯) when →−∞.
 The matrices and depend on , , , , Λ, and , but they are independent of . This
 demonstrates the certainty equivalence of the discretionary equilibrium.
 36 Svensson (2009b) provides details.
+30
 
 3.8.1. The projection model, the feasible set of projections, and the optimal policy
 projection
@@ -1625,6 +1671,7 @@ its forecast for both its policy rate in period + 1, +1, accordin
 +1= ¯+1+ ¯+1= ¯( ˜|+ ˜) + ¯+1
 37 Recall that private-sector rational expectations are denoted by a vertical bar in the subindex + |, whereas
 central-bank projections are denoted by a comma in the subindex + .
+31
 
 If the central bank’s forecast of its policy rate is consistent with its reoptimization in period + 1,
 it will satisfy
@@ -1657,6 +1704,7 @@ also a continuum in between. Schaumburg and Tambalotti (2007) present a simple f
 38 Furthermore, as discussed by Dennis (2008), the relative performance of commitment in a timeless perspective
 and discretion is an intriguing issue and depends on circumstances and how policy performance is evaluated. See
 Woodford (2010b) for more discussion of commitment, commitment in a timeless perspective, and discretion.
+32
 
 analyzing monetary policy in such a continuum, what they call quasi-commitment, between the
 extremes of commitment and discretion. Quasi-commitment is characterized by a given probability
@@ -1688,6 +1736,7 @@ with a quadratic loss function and a partially observable state of the economy (
 is characterized by certainty equivalence. That is, the optimal policy is the same as if the state
 of the economy were fully observable (full information), except that one responds to an eﬃcient
 estimate of the state vector rather than to its actual value. Furthermore, a separation principle
+33
 
 applies, according to which the selection of the optimal policy (the optimization problem) and the
 estimation of the current state of the economy (the estimation or signal-extraction problem) can be
@@ -1722,6 +1771,7 @@ above.39 They also provided a simple example, in the standard New Keynesian mode
 several issues raised by Orphanides (2003). He has argued, for instance, with reference to real-time
 39 Gerali and Lippi (2008) provide a toolkit of Matlab routines that applies the algorithms of Svensson and Woodford
 (2005).
+34
 
 U.S. data from the 1970s, that it is better that monetary policy disregards uncertain data about the
 output gap and responds to current inﬂation only. The ﬁndings in Svensson and Woodford (2003)
@@ -1756,6 +1806,7 @@ ity slowdowns and accelerations, switches in monetary and/or ﬁscal policy regi
 model with asymmetric information, where then central bank has less information than the private sector. Aoki
 (2006) provides an application to the standard New Keynesian model with a particular assumption about the central
 bank’s information set. See Woodford (2010b) for more discussion of the case of asymmetric information.
+35
 
 With algorithms for ﬁnding the optimal policy as well as solutions for arbitrary policy functions
 it is possible to compute and plot consistent distribution forecasts–fan charts–of target variables
@@ -1789,6 +1840,7 @@ proach for solving for the optimal policy in MJLQ models that include forward-lo
 This extension is key for policy analysis under rational expectations, but the forward-looking vari-
 ables make the model nonrecursive. The recursive saddlepoint method of Marcet and Marimon
 (1998) can then be applied to express the model in a convenient recursive way, and an algorithm
+36
 
 for determining the optimal policy and value functions can be derived.
 The more general case where modes are unobservable and decision makers infer from their ob-
@@ -1827,6 +1879,7 @@ for example) rather than our forward-looking case (+1, for example).
 learning in a New Keynesian model with uncertainty about the slope of the Phillips curve.
 44 Optimal policy under no learning, adaptive optimal policy, and Bayesian optimal policy have in the literature
 also been referred to as myopia, passive learning, and active learning, respectively.
+37
 
 3.10. Judgment
 Throughout the monetary-policy decision process in central banks, a considerable amount of judg-
@@ -1862,6 +1915,7 @@ May 2, 2002.
 Section 4.3 gives another example of the application of judgment, from the Riksbank’s policy
 45 See, for instance, Hansen and Sargent (2008). However, that literature deals with the more complex case when
 the model perturbations are endogenous and chosen by nature to correspond to a worst-case scenario.
+38
 
 decision on February 2009. In the middle of the recent ﬁnancial crisis and rapidly deteriorating
 economic situation, the Riksbank posted forecasts quite diﬀerent from the forecasts generated by
@@ -1895,6 +1949,7 @@ view of the transmission mechanism evolved gradually over the years to emphasize
 targeting in New Zealand.
 47 See Svensson (2000) and Svensson (2001) for a discussion of the channels of the transmission mechanism of
 monetary policy.
+39
 
 of transmission, especially the aggregate-demand channel.
 The Monetary Policy Statement of
@@ -1930,6 +1985,7 @@ MCI.) The MCI was supposed to measure the overall stance of monetary policy: the
 is deemed to resist either inﬂationary or deﬂationary tendencies. However, from the complexity of the transmission
 mechanism, with diﬀerent channels, diﬀerent lags and diﬀerent strengths of the eﬀects, it is apparent that a simple
 summary index like the MCI will be unreliable. For instance, the relative eﬀect of interest rate and exchange rate
+40
 
 Regarding the policy horizon, inﬂation targeting has sometimes been associated with a ﬁxed
 horizon, such as two years, within which the inﬂation target should be achieved. However, as is
@@ -1974,6 +2030,7 @@ quarters (18 to 24 months) is still appropriate generally, although speciﬁc oc
 shorter or longer time horizon might be appropriate.” At the time of writing (March 2010) the Riksbank mostly uses
 the phrase “in a couple of years,” but some documents (hopefully not for very long) still use the phrase “within two
 years.”
+41
 
 respectively, are all of the basic form
 +−∗=
@@ -2014,6 +2071,7 @@ to increased (decreased) (Jansson and Vredin (2003), Vickers (1998)). Increasing
 have become aware of a number of serious problems with the assumption of constant interest rates.
 50 A possible deﬁnition of half-time, , is the solution to the equation |1|= 12, where 1 is the eigenvalue
 with the largest modulus, so = −ln 2 ln |1|.
+42
 
 These problems include that the assumption may often be unrealistic and therefore imply biased
 forecasts, imply either explosive or indeterminate behavior of standard models of the transmission
@@ -2048,6 +2106,7 @@ the policy meeting are published about two weeks after the meeting. Since June 2
 are attributed. Since April 2009, the votes and any dissents are published in the press release the
 51 Gosselin, Lotz, and Wyplosz (2008) provide a theoretical analysis of transparency and opaqueness about the
 central bank’s policy-rate path.
+43
 
 Figure 4.1: Policy options for the Riksbank, July 2009
 a. Alternative repo-rate paths
@@ -2136,6 +2195,7 @@ icy Report the ﬁrst time in October 2009. The mean squared gap for the inﬂat
 
 =0(+−∗)2(+ 1) and 
 =0(+−¯+)2(+ 1), respectively, where is the forecast horizon.
+44
 
 corresponding mean squared gaps for the Low and High repo-rate paths. The almost horizontal
 line shows an isoloss line corresponding to equal weight on inﬂation and output-gap stabilization
@@ -2143,6 +2203,7 @@ line shows an isoloss line corresponding to equal weight on inﬂation and outpu
 that the High repo-rate path is dominated by the Main and Low repo-rate path. The majority
 of the board voted in favor of the Main alternative. Thanks to the high level of transparency of
 the Riksbank, the attributed minutes from the meeting (available in English on the Riksbank’s
+web page, www.riksbank.com) reveal a lively debate about the decision, including whether a zero
 repo-rate was a feasible alternative or not. (I dissented in favor of the Low alternative.)
 Figure 4.2 shows an example of how judgment is applied to result in a diﬀerent forecast than
 the model one. The four panels a-d show the forecast of the repo-rate, CPIF, GDP growth, and
@@ -2167,6 +2228,7 @@ The policy rate is set by the Bank’s executive board. Decisions concerning the
 are normally taken at the executive board’s monetary-policy meeting every sixth week. At three
 of these meetings, normally in March, June and October/November, Norges Bank publishes its
 Monetary Policy Report with an explicit instrument-rate path and corresponding projections of
+45
 
 Figure 4.2: The application of judgment by the Riksbank, February 2009.
 a. Repo rate 
@@ -2272,10 +2334,95 @@ Røisland (2007) report that optimal policy with = 03 has replicated polic
 by Norges Bank (with a discount factor of 099 and a weight on interest-rate smoothing of 02).
 Disregarding interest-rate smoothing, panel b shows that the Main alternative is marginally better
 then the High alternative for = 03
+46
 
 Figure 4.3: Main scenario and uncertainty intervals, Norges Bank, January 2008
+-2
+-1
+0
+1
+2
+3
+4
+5
+2005
+2006
+2007
+2008
+2009
+2010
+-2
+-1
+0
+1
+2
+3
+4
+5
 Output gap
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+2005
+2006
+2007
+2008
+2009
+2010
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
 Key policy rate
+0
+1
+2
+3
+4
+2005
+2006
+2007
+2008
+2009
+2010
+0
+1
+2
+3
+4
+-1
+0
+1
+2
+3
+4
+5
+2005
+2006
+2007
+2008
+2009
+2010
+-1
+0
+1
+2
+3
+4
+5
 Underlying inflation (CPI-
 ATE)
 Inflation (CPI)
@@ -2299,6 +2446,7 @@ if shocks of the same type and size occur, the alternative instrument-rate path 
 estimate of how it would react in such a situation. The shifts are consistent with the main scenario
 53 The staﬀnormally use commitment in a timeless perspective as the main normative benchmark, but they have
 also considered alternatives such as the quasi-commitment in Schaumburg and Tambalotti (2007) (see section 3.8.2).
+47
 
 Figure 4.4: Policy options for Norges Bank, March 2005
 a. Alternative interest rate paths
@@ -2308,6 +2456,7 @@ Percent, quarterly averages
 4.0
 6.0
 8.0
+       02        03        04        05        06        07        08
 0.0
 2.0
 4.0
@@ -2322,6 +2471,7 @@ Annual percentage change
 1.0
 2.0
 3.0
+       02        03        04        05        06        07        08
 0.0
 1.0
 2.0
@@ -2335,6 +2485,7 @@ Percent
 0.0
 2.0
 4.0
+       02        03        04        05        06        07        08
 -2.0
 0.0
 2.0
@@ -2374,6 +2525,7 @@ An oft-heard objection to inﬂation targeting (at least before Batini and Laxto
 is costly in terms of institutional and technical requirements, making the framework unsuitable for
 some emerging-market economies. A detailed exposition of this point was made in Eichengreen,
 Masson, Savastano, and Sharma (1999), who argued that technical capabilities and central bank
+48
 
 autonomy were severely lacking in most emerging-market economies (including several that sub-
 sequently adopted inﬂation targeting).54 Such countries, the argument goes, would be better oﬀ
@@ -2411,6 +2563,7 @@ Zelmer (2000); Carare, Schaechter, Stone, and Zelmer (2002); Khan (2003); and th
 Outlook. See also Masson, Savastano, and Sharma (1997). More neutral or benign views on the conceptual relevance
 of “preconditions” can instead be found in Truman (2003); Jonas and Mishkin (2003); Debelle (2001); and Amato
 and Gerlach (2002).
+49
 
 of countries with the introduction and implementation of inﬂation targeting regimes, and discuss
 how they fared in meeting the various conditions that some have argued are needed in advance of
@@ -2441,6 +2594,7 @@ A possible future issue is whether ﬂexible inﬂation targeting should eventua
 ﬂexible price-level targeting. Inﬂation targeting as practised implies that past deviations of inﬂation
 from target are not undone. This introduces a unit root in the price level and makes the price level
 not trend-stationary, that is, nonstationary even after the removal of a deterministic trend. That is,
+50
 
 the conditional variance of the future price level increases without bound with the horizon. In spite
 of this, inﬂation targeting with a low inﬂation rate is referred to as “price stability’. An alternative
@@ -2475,6 +2629,7 @@ the Great Depression.
 56 This section builds on Svensson (2009a) and Svensson (2010b). I thank Hanna Armelius, Charles Bean, Claes
 Berg, Alan Blinder, Stephen Cecchetti, Hans Dellmo, Chuck Freedman, Charles Goodhart, Björn Lagerwall, Lars
 Nyberg, Irma Rosenberg, Hyun Shin, Frank Smets, and Staﬀan Viotti for discussions of these issues.
+51
 
 such as low world real interest rates and U.S. housing policy. Ultimately, my main conclusion for
 monetary policy from the crisis so far is that ﬂexible inﬂation targeting, applied in the right way
@@ -2508,6 +2663,7 @@ Now, is there any reason to modify this view of monetary policy given the experi
 ﬁnancial crisis so far? Let me approach this question by ﬁrst asking what the causes of the ﬁnancial
 crisis were, whether monetary policy contributed to the crisis, and whether a diﬀerent monetary
 policy was warranted and could have prevented or reduced the size of the crisis.
+52
 
 5.2.1. Did monetary policy contribute to the crisis, and could diﬀerent monetary policy
 have prevented the crisis?
@@ -2543,6 +2699,7 @@ housing boom, the macroeconomic antecedents, the distorted incentives, the infor
 and propagation of the crisis into the real economy, the policy responses, and the lessons for monetary policy and
 economics generally. Bank for International Settlements (2009) provides a more detailed account of the possible
 macro- and microeconomic causes of the crisis.
+53
 
 relevant one when evaluating monetary policy. It is more relevant to evaluate policy taking into
 account the information available ex ante to the policymaker rather than information ex post that
@@ -2583,6 +2740,7 @@ rates so as to lower property prices by 15 percent would result in 5 percent low
 63 Kohn (2008), after extensive discussion, concludes that there is insuﬃcient evidence that low interest rates would
 have contributed much to the house-price boom and that higher interest rates would have had much dampening eﬀect
 on it.
+54
 
 However, going beyond the Federal Reserve’s actual monetary policy, perhaps it is possible that
 the emphasis on its readiness to relax monetary policy aggressively in the wake of a sharp fall in
@@ -2616,6 +2774,7 @@ possible. To counter the observed procyclicality of existing regulation, macro-p
 tion that is contingent on the business cycle and ﬁnancial indicators may need to be introduced
 64 The relationship for the euro area countries is less weak, but for reasons explained by Bernanke (2010) it is
 potentially overstated. See also Dokko, Doyle, Kiley, Kim et al. (2009).
+55
 
 to induce better ﬁnancial stability. Possible macro-prudential regulation includes variable capital,
 margin, and equity/loan requirements. As expressed by Bean (2009), “the best approach is likely
@@ -2651,6 +2810,7 @@ frictions and aggregate economic activity in the context of the current crisis. 
 how disruptions in ﬁnancial intermediation can induce a crisis that aﬀects real activity and to illustrate how various
 credit market interventions by the central bank and/or the Treasury of the type seen during the crisis might work to
 mitigate the crisis.
+56
 
 countries there is a separate ﬁnancial supervisory authority, sometimes the responsibility is shared
 between diﬀerent institutions. In Sweden, the Financial Supervisory Authority is responsible for
@@ -2683,6 +2843,7 @@ output and neutral real interest rates are aﬀected by ﬁnancial factors and �
 dia and Woodford (2009), Walsh (2009b)), and what impact ﬁnancial factors have on the general
 66 Blinder (2010) discusses how much of the responsibility for ﬁnancial-stability policy should rest with the central
 bank.
+57
 
 equilibrium eﬀects of alternative policy-rate paths on inﬂation and resource utilization forecasts.67
 Even with much better analytical foundations concerning the role of ﬁnancial factors in the trans-
@@ -2722,6 +2883,7 @@ Borio and Zhu (2008), that short interest-rate movements may have considerable e
 broker-dealers in the market-based ﬁnancial sector outside the commercial-banking sector. However, new regulation
 may aﬀect the magnitude of these aﬀects, and the size of the market-based ﬁnancial sector may end up being smaller
 after the crisis. In Europe, the commercial banks dominate the ﬁnancial sector.
+58
 
 resource utilization, and a central bank will probably rarely have suﬃcient information about the
 likely beneﬁcial longer-horizon eﬀects on inﬂation and resource utilization for the trade-oﬀto be
@@ -2758,6 +2920,7 @@ reasonable conﬁdence. Second, a somewhat tighter monetary policy must have a h
 check at least some of the speculative activity. And third, the expected improvement in future economic performance
 that would result from the curtailment of the bubble must be suﬃciently great.” He concludes, also in Kohn (2008)
 and after thorough considerations, that those conditions would rarely be met. See also Kohn (2009).
+59
 
 underway in academia and in central banks.
 The outcome might very well be that ﬁnancial factors are considered to have a larger role in
@@ -2769,3 +2932,4 @@ inﬂation and resource utilization in the explicit or implicit central-bank los
 it would be a matter of responding appropriately to ﬁnancial indicators in order to achieve over
 time the best possible stabilization of inﬂation around the inﬂation target and resource utilization
 around a normal level.
+60

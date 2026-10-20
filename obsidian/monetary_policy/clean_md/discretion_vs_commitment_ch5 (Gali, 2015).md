@@ -78,6 +78,7 @@ output and its efﬁcient counterpart even in the absence of price rigidities.
 In that case, and as shown in appendix 5.1, the welfare losses
 experienced by the representative household are, up to a second-order
 
+128
 CHAPTER 5
 approximation, proportional to
 E0
@@ -137,6 +138,7 @@ in desired markups, as well as ﬂuctuations in labor income taxes.
 Nevertheless, at least for the purposes of the analysis in this chapter,
 knowledge of the speciﬁc source of that gap is not important.
 
+MONETARY POLICY TRADEOFFS
 129
 Following much of the literature, the disturbance ut in (2) is referred to
 as a cost-push shock. Also, and for the remainder of this chapter, assume
@@ -179,6 +181,7 @@ there are no endogenous state variables (e.g., past inﬂation) affecting curren
 Otherwise the central bank would have to take into account the inﬂuence that its current
 actions, through their impact on those state variables, would have on future inﬂation.
 
+130
 CHAPTER 5
 The optimality condition for the problem above is given by
 xt = −κ
@@ -223,12 +226,66 @@ shock is assumed to be purely transitory (ρu = 0), whereas in ﬁgure 5.2 it
 “targeting” vs. “instrument” rules as alternative approaches to implementation of inﬂation
 targeting policies.
 
+MONETARY POLICY TRADEOFFS
+131
 Output gap
 Inflation
 Price level
 Cost-push stock
+0
+4
+2
 discretion
 commitment
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+–6
+–4
+–2
+0
+0.4
+0.3
+0.2
+–8
+0
+0.1
+–0.1
+0.4
+0
+0.8
+0.6
+1
+–0.2
+–0.2
+0.2
+0
+–0.1
+0.1
+0.2
+0.3
 Figure 5.1. Discretion vs. Commitment: Responses to a Transitory Cost-Push
 Shock.
 is assumed to have a positive autocorrelation (ρu = 0.8). The remaining
@@ -242,6 +299,7 @@ Note, however, that the increase in inﬂation is smaller than the increase
 that would be obtained if the output gap remained unchanged. In the
 latter case it is easy to check that inﬂation would be given by
 πt =
+1
 1 −βρu
 ut
 thus implying a larger response of inﬂation (in absolute value) at all
@@ -250,13 +308,66 @@ discretionary policy, the impact on inﬂation is dampened by the negative
 response of the output gap, also displayed in ﬁgures 5.1 and 5.2. Finally,
 it is seen that the implied response of inﬂation leads naturally to a
 
+132
 CHAPTER 5
 Output gap
 Inflation
 Price level
 Cost-push stock
+0
+4
+2
 discretion
 commitment
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+–6
+–4
+–2
+0
+2.5
+2
+1.5
+–8
+0
+1
+0.5
+0.4
+0
+0.8
+0.6
+1
+0.2
+–0.2
+0.2
+0
+0.1
+0.3
+0.4
+0.5
 Figure 5.2. Discretion vs. Commitment: Responses to a Persistent Cost-Push
 Shock.
 permanent change in the price level, whose size is increasing in the
@@ -283,6 +394,7 @@ t+1} + (1 −ρz)zt =
 ρ −σ(1 −ρa)ψyaat + (1 −ρz)zt is the real interest rate consistent with the
 efﬁcient level of output.
 
+MONETARY POLICY TRADEOFFS
 133
 Thus, combining (7) and (5) with (6) yields:
 it = re
@@ -357,6 +469,7 @@ for the reasons spelled out in chapter 4: It requires knowledge of
 the model’s parameters, and real-time observation of variations in the
 cost-push shock and the efﬁcient interest rate. Those difﬁculties have
 
+134
 CHAPTER 5
 led some authors to emphasize “targeting rules” like (4) as practical
 guides for monetary policy, as opposed to “instrument rules” like (10).
@@ -413,6 +526,7 @@ optimality conditions
 ϑxt −κξt = 0
 πt + ξt −ξt−1 = 0
 
+MONETARY POLICY TRADEOFFS
 135
 that must hold for t = 0, 1, 2, . . . and where ξ−1 = 0, because the inﬂation
 equation corresponding to period −1 is not an effective constraint for the
@@ -462,6 +576,7 @@ for t = 0, 1, 2, . . . where γ ≡
 ϑ
 ϑ(1+β)+κ2 .
 
+136
 CHAPTER 5
 The stationary solution to the previous difference equation is given by
 
@@ -510,6 +625,7 @@ for some pair (δ, b), with |δ| < 1. The previous guess can be veriﬁed and co
 determined by plugging the above equation into (14) and using the method of undetermined
 coefﬁcients.
 
+MONETARY POLICY TRADEOFFS
 137
 the period when the shock occurs. In the case illustrated in ﬁgure 5.1 it
 lowers the initial impact of the cost-push shock on inﬂation (relative to
@@ -559,6 +675,7 @@ necessary implication of the policy with commitment.
 In all cases, a feature of the economy’s response under discretionary
 policy is the attempt to stabilize the output gap in the medium term
 
+138
 CHAPTER 5
 more than the optimal policy under commitment calls for, without
 internalizing the beneﬁts in terms of short-term stability that result from
@@ -620,6 +737,7 @@ as discussed below.
 to generate a unique equilibrium in the basic New Keynesian model. See exercise 4.5 in
 chapter 4.
 
+MONETARY POLICY TRADEOFFS
 139
 efﬁcient levels of output, which is reﬂected in an inefﬁcient steady state.
 The size of the steady state distortion is measured by a parameter 
@@ -683,6 +801,7 @@ t ). Thus, the monetary authority will seek to
 minimize (17) subject to the sequence of constraints given by (18) for
 t = 0, 1, 2, . . .
 
+140
 CHAPTER 5
 Note that under the assumption of the “small” steady state distortion
 made above, the linear term 
@@ -727,6 +846,7 @@ yields the following expression for equilibrium inﬂation
 7 In the presence of a large distortion, the linear term in (17) would require the use of a
 second-order approximation to the equilibrium condition connecting output and inﬂation.
 
+MONETARY POLICY TRADEOFFS
 141
 Combining (19) and (20) yields the corresponding expression for the
 equilibrium output gap
@@ -782,6 +902,7 @@ xt −βπt+1)
 where {ξt} are the Lagrange multipliers associated with the sequence of
 constraints (18), for t = 0, 1, 2, . . .
 
+142
 CHAPTER 5
 The corresponding optimality conditions are given by
 ϑ
@@ -851,6 +972,7 @@ used, based on the following guess as to the form of the solution:
 pt = δpt−1 + but + c
 for some values of (δ, b, c), with |δ| < 1.
 
+MONETARY POLICY TRADEOFFS
 143
 Combining (21) and (23), the corresponding path for output can be
 derived (after some algebra):
@@ -912,6 +1034,7 @@ converges asymptotically to a constant, given by limT→∞pT = p−1 +
 converges to an equilibrium characterized by zero average inﬂation and
 a zero average output gap (relative to natural output). In that sense
 
+144
 CHAPTER 5
 it is (asymptotically) observationally equivalent to the outcome of an
 economy with an efﬁcient steady state. The desirability of zero long-run
@@ -953,6 +1076,7 @@ t = ye
 t for all t, is maintained for the remainder of this
 chapter. Thus the nonpolicy block of the model can be represented by
 
+MONETARY POLICY TRADEOFFS
 145
 the two equations:
 πt = βEt{πt+1} + κxt
@@ -996,6 +1120,7 @@ ment, as shown earlier in this chapter.
 in Jung, Teranishi, and Watanabe (2005) and Eggertsson and Woodford (2003). See the
 section at the end of the chapter for further references to the ZLB literature.
 
+146
 CHAPTER 5
 5.4.1 Optimal Discretionary Policy in the Presence of a ZLB Constraint
 Starting from t = 0, each period the central bank minimizes the loss
@@ -1043,6 +1168,7 @@ The solution to the previous problem is easy to characterize. From
 tZ + 1 onward,
 it = ρ > 0
 
+MONETARY POLICY TRADEOFFS
 147
 implying xt = −(κ/ϑ)πt, which combined with (29) implies:
 xt = πt = 0
@@ -1098,13 +1224,66 @@ bank could adopt an interest rate rule of the form
 it = ρ + φππt
 with φπ > 1.
 
+148
 CHAPTER 5
 Output gap
 Inflation
 Nominal rate
 Natural rate
+0
+4
+2
 discretion
 commitment
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+0
+4
+2
+8
+10
+6
+12
+–10
+–5
+0
+5
+6
+4
+2
+–15
+–2
+0
+0
+–4
+4
+2
+6
+–20
+–6
+–2
+0
+–25
+–15
+–10
+–5
+5
 Figure 5.3. Discretion vs. Commitment in the Presence of a ZLB.
 their optimal values until the negative shock vanishes. The presence of the
 zero lower bound is the ultimate source of the welfare losses resulting
@@ -1126,6 +1305,7 @@ t + ϑx2
 t
 
 
+MONETARY POLICY TRADEOFFS
 149
 subject to the sequence of constraints
 πt = βπt+1 + κxt
@@ -1177,6 +1357,7 @@ the difference equations
 (39)
 together with an initial condition for ξ1,tC+1 (to be determined below).
 
+150
 CHAPTER 5
 Note that (37) and (38) can be combined into the single condition
 xt = −κ
@@ -1228,6 +1409,7 @@ period in which the ZLB is not binding. They are given by:
 πtc+1 = β(1 −δ)ξ1,tC+1 + κxtc+1
 (46)
 
+MONETARY POLICY TRADEOFFS
 151
 Using (46) to substitute out ξ1,tC+1 from (44) and (45) yields the linear
 relation:
@@ -1328,6 +1510,7 @@ J ≡
 ϑ κ
 
 
+152
 CHAPTER 5
 Given an initial guess for tc, the equilibrium path under the optimal
 policy with commitment can be determined as follows. Equations (47),
@@ -1370,6 +1553,7 @@ This chapter follows closely Clarida, Galí, and Gertler (1999), where
 the optimal monetary policy in the context of the basic New Keynesian
 model augmented with an ad hoc cost-push shocks is analyzed, and
 
+MONETARY POLICY TRADEOFFS
 153
 where the outcomes under discretion and commitment are compared.
 That paper also contains a discussion of the classical inﬂation bias, whose
@@ -1415,6 +1599,7 @@ The resulting quadratic loss function can then be minimized subject to
 the constraints provided by log-linearized equilibrium conditions. That
 approach allows one to preserve the convenient structure and properties
 
+154
 CHAPTER 5
 of linear-quadratic problems, including the linearity of their implied
 optimal policy rules.
@@ -1452,6 +1637,7 @@ Ut −U = UcC
 
 
 yt(1 + zt) + 1 −σ
+2
 
 y2
 t
@@ -1469,6 +1655,7 @@ yt −at)2
 +t.i.p.
 where t.i.p. stands for terms independent of policy.
 
+MONETARY POLICY TRADEOFFS
 155
 Let  denote the size of the steady state distortion, implicitly deﬁned
 by −Un
@@ -1477,6 +1664,7 @@ Ut −U
 UcC
 = 
 yt(1 + zt) + 1 −σ
+2
 
 y2
 t
@@ -1580,7 +1768,7 @@ UcC
 
 t=0
 βt
-
+	
 
 yt −1
 2
@@ -1596,6 +1784,7 @@ ye
 t )2
 
 
+156
 CHAPTER 5
 Using lemma 2 in appendix 4.1 in chapter 4, the welfare losses can
 ﬁnally be written as
@@ -1604,7 +1793,7 @@ W = −E0
 
 t=0
 βt
-
+	
 
 yt −1
 2
@@ -1626,7 +1815,7 @@ t )2
 
 t=0
 βt
-
+	
 
 xt −1
 2
@@ -1694,6 +1883,7 @@ k=1
 (βθ)kEt{pt+k −(µt+k −µn
 t+k)}
 
+MONETARY POLICY TRADEOFFS
 157
 The resulting inﬂation equation then becomes
 πt = βEt{πt+1} −λ(µt −µn
@@ -1734,6 +1924,7 @@ which can be plugged into the inﬂation equation to yield
 t ) + ut
 where ut ≡−λ(µw,t −µw).
 
+158
 CHAPTER 5
 EXERCISES
 5.1. An optimized Taylor rule
@@ -1762,6 +1953,7 @@ ratio var(z)/var(u). What assumptions on parameter values
 would warrant an aggressive response to inﬂation implemented
 through a large φπ? Explain.
 
+160
 CHAPTER 5
 5.2. Optimal Markovian policy
 Consider an economy where inﬂation is described by the New
@@ -1813,6 +2005,7 @@ Consider the problem of choosing the state-contingent policy
 {yt, πt}∞
 t=0 that maximizes welfare subject to the sequence of
 
+MONETARY POLICY TRADEOFFS
 161
 constraints
 πt = βEt{πt+1} + κyt
@@ -1861,6 +2054,7 @@ c. Discuss how the degree of indexation γ affects the optimal
 responses to a transitory cost-push shock under the previous
 two scenarios.
 
+162
 CHAPTER 5
 5.5. Monetary policy, optimal steady state inﬂation, and the zero
 lower bound

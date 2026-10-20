@@ -3,15 +3,19 @@ Author(s): R. A. Mundell
 Source: The Canadian Journal of Economics and Political Science / Revue canadienne
 d'Economique et de Science politique, Vol. 29, No. 4 (Nov., 1963), pp. 475-485
 Published by: Wiley on behalf of Canadian Economics Association
+Stable URL: http://www.jstor.org/stable/139336 .
 Accessed: 07/04/2013 02:15
 Your use of the JSTOR archive indicates your acceptance of the Terms & Conditions of Use, available at .
+http://www.jstor.org/page/info/about/policies/terms.jsp
 .
 JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide range of
 content in a trusted digital archive. We use information technology and tools to increase productivity and facilitate new forms
+of scholarship. For more information about JSTOR, please contact support@jstor.org.
 .
 Wiley and Canadian Economics Association are collaborating with JSTOR to digitize, preserve and extend
 access to The Canadian Journal of Economics and Political Science / Revue canadienne d'Economique et de
 Science politique.
+http://www.jstor.org
 
 CAPITAL MOBILITY AND STABILIZATION POLICY
 UNDER FIXED AND FLEXIBLE EXCHANGE RATES*
@@ -163,6 +167,7 @@ to the outside world.
 goods as distinct from domestic goods, but the present approach is satisfactory for the
 purpose on hand.
 
+478 Canadian Journal of Economics and Political Science
 requirement of balance of payments equilibrium, implies a balance of trade
 surplus. Monetary policy therefore has a strong effect on the level of income
 and employment, not because it alters the rate of interest, but because it
@@ -210,6 +215,7 @@ rate, so fiscal policy is frustrated in its effects by these same considerations
 4Richard E. Caves arrives at essentially the same result in his paper, "Flexible Exchange
 Rates,"A merican Economic Review, LIII, May, 1963, 120-29.
 
+Capital Mobility and StabilizationP olicy 479
 III. POLICIESU NDERF IXEDE XCHANGER ATES
 Under fixed exchange rates the central bank intervenes in the exchange
 market by buying and selling reserves at the exchange parity; as already noted
@@ -256,6 +262,7 @@ pressure on the interest rate, and attracts foreign capital. This improves the
 balance of payments temporarily, forcing the central bank to intervene by
 buying foreign reserves and increasing the money supply. The money supply
 
+480 Canadian Journal of Economics and Political Science
 is therefore increased indirectly through the back door of exchange rate policy.
 Foreign exchange reserves accumulate by the full amount of the increased
 cash reserves needed by the banking system to supply the increased money
@@ -302,6 +309,7 @@ Suppose the government increases spending during a time when neutraliza-
 tion policy is being followed. The increase in spending would normally have
 a multiplier effect on income. But this would increase the demand for money
 
+Capital Mobility and StabilizationP olicy 481
 and put upward pressure on interest rates as the private sector dispenses with
 holdings of securities; this would cause a capital inflow and induce a balance
 of payments surplus. But now the authorities, in their rate-pegging operation,
@@ -351,6 +359,7 @@ duced by the more expansive fiscal policy. In the present paper, I have defined 
 policy as an increase in government spending financed by government bond issues with no
 change in the money supply. In both cases the underlying model is (in essence) the same
 
+482 Canadian Journal of Economics and Political Science
 XX plots the relation between the interest rate and income (given the exchange
 rate) along which there is no excess demand in the goods and services market
 (internal balance); LL describes a similar relation for the money market; and
@@ -404,6 +413,7 @@ through the exchange rate, still remains, with possibilities of cyclicity and ev
 depending on the adjustment speeds; in the present case it can be shown that instability
 at least would be ruled out if the exchange rate adapted virtually instantaneously.
 
+Capital Mobility and StabilizationP olicy 483
 OO X
 F l
 O~~~~~~~~~~~~~~
@@ -436,6 +446,7 @@ equilibrium (P) on FE and X'X' in the upper quadrant is only consistent if
 the money supply is allowed to expand. Obviously the points J and P cannot
 be maintained simultaneously.
 
+484 Canadian Journal of Economics and Political Science
 Certain qualifications or extensions to the analysis should be mentioned.
 The demand for money is likely to depend upon the exchange rate in addition
 to the interest rate and the level of income; this would slightly reduce the
@@ -482,6 +493,7 @@ Under fixed exchange rates, open market operations by the central bank result
 in equal changes in the gold stock, open market purchases causing it to decline
 and open market sales causing it to increase. And under flexible exchange
 
+Capital Mobility and StabilizationP olicy 485
 rates, budget deficits or surpluses induced by changes in taxes or government
 spending cause corresponding changes in the trade balance.
 Gold sterilization policies make no sense in a world of fixed exchange rates

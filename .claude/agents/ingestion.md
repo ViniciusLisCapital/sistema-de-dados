@@ -16,7 +16,7 @@ before 2026-08 truncated or paraphrased every file it touched.
 repository/<topic>/raw_pdf/<name>.pdf     (saved there by the user, or by Claude after a web search)
   └─ you: run.py --list → qc.py try → page check → settings.yaml → run.py → qc.py check
        ├─ repository/<topic>/raw_md/<name>.md         (verbatim extraction, the audit trail)
-       ├─ obsidian/<topic>/clean_md/<name>.md          (the same text minus page furniture and references)
+       ├─ obsidian/<topic>/clean_md/<name>.md          (the same text minus references and known boilerplate)
        └─ repository/agent_mapping/data_tracker.xlsx   (the literature to-do, updated by run.py)
 ```
 

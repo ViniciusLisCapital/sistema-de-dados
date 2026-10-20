@@ -78,6 +78,7 @@ prices) analyzed in chapter 2.
 Next, the factors that make the equilibrium allocation in the baseline
 model suboptimal are discussed.
 
+100
 CHAPTER 4
 4.2 SOURCES OF SUBOPTIMALITY IN THE BASIC NEW
 KEYNESIAN MODEL
@@ -122,6 +123,7 @@ is violated. Because, in equilibrium, the marginal rate of substitution
 and decreasing (or nonincreasing) in Nt, the presence of a markup
 distortion leads to an inefﬁciently low level of employment and output.
 
+MONETARY POLICY IN THE BASIC MODEL
 101
 The above inefﬁciency, resulting from the presence of market power,
 can be eliminated through an employment subsidy, ﬁnanced by means of
@@ -174,6 +176,7 @@ do with the fact that the relative prices of different goods will vary
 in a way unwarranted by changes in preferences or technologies, as a
 result of the lack of synchronization in price adjustments. Thus, generally
 
+102
 CHAPTER 4
 Pt(i) ̸= Pt( j) for any pair of goods (i, j) whose prices do not happen to
 have been adjusted in the same period. Such relative price distortions
@@ -215,6 +218,7 @@ allocation, given the assumed subsidy).
 that case, the optimal monetary policy converges to the one described here after a transition
 period.
 
+MONETARY POLICY IN THE BASIC MODEL
 103
 Using the notation introduced in chapter 3, the optimal policy requires
 that
@@ -256,6 +260,7 @@ automatically, as a byproduct of a successful price stabilization policy.3
 2 This is arguably one of the main lessons from the Real Business Cycle literature.
 3 See Blanchard and Galí (2007).
 
+104
 CHAPTER 4
 The intuition behind the desirability of zero inﬂation in the case of an
 efﬁcient natural allocation can be conveyed as follows: if price stability
@@ -303,6 +308,7 @@ Et{πt+1}
 
 (9)
 
+MONETARY POLICY IN THE BASIC MODEL
 105
 where
 AO ≡
@@ -350,7 +356,7 @@ AT ≡
 σ
 1 −βφπ
 σκ κ + β(σ + φy)
-
+	
 (13)
 and 
  ≡
@@ -358,6 +364,7 @@ and
 σ+φy+κφπ .
 4 See, e.g., Blanchard and Kahn (1980).
 
+106
 CHAPTER 4
 Once again, the desired outcome (yt = πt = 0 for all t) is always a
 solution to the dynamical system (12) and, hence, an equilibrium of the
@@ -407,6 +414,7 @@ the second equality makes use of the long-term relationship between
 inﬂation and the output gap implied by (7). Note that condition (14)
 5 See Bullard and Mitra (2002) for a proof.
 
+MONETARY POLICY IN THE BASIC MODEL
 107
 0.5
 Determinacy
@@ -434,6 +442,7 @@ In order to illustrate the existence of a multiplicity of policy rules
 capable of implementing the optimal policy, let us consider the following
 6 See Woodford (2001) for a discussion.
 
+108
 CHAPTER 4
 forward-looking rule
 it = rn
@@ -485,6 +494,7 @@ interest rate rules.
 β−1), as necessary for uniqueness. But it can be easily checked that the latter condition is
 implied by the two conditions (17) and (18). I thank Davide Debortoli for this observation.
 
+MONETARY POLICY IN THE BASIC MODEL
 109
 0.5
 Determinacy
@@ -517,6 +527,7 @@ economy’s “true model,” (ii) the values taken by all its parameters, and
 (iii) the realized value (observed in real time) of all the shocks that affect
 the natural rate.
 
+110
 CHAPTER 4
 Note that a similar requirement would have to be met if, as implied
 by (11) and (16), the central bank should also adjust the nominal rate
@@ -558,6 +569,7 @@ quence of deviations from the efﬁcient allocation. As shown in appendix
 8 The volume edited by John Taylor (1999b) contains several important contributions
 in that regard.
 
+MONETARY POLICY IN THE BASIC MODEL
 111
 optimality of the ﬂexible price equilibrium), that approximation yields
 the following welfare loss function
@@ -576,7 +588,7 @@ t=0
 t + ϵ
 λπ2
 t
-
+	
 where losses are expressed in terms of the equivalent permanent con-
 sumption decline, measured as a fraction of steady state consumption.
 The average welfare loss per period is thus given by a linear combina-
@@ -590,7 +602,7 @@ L = 1
 
 var(yt) + ϵ
 λ var(πt)
-
+	
 Note that the relative weight of output gap ﬂuctuations in the loss
 function is increasing in σ, ϕ, and α. The reason is that larger values of
 those “curvature” parameters amplify the effect of any given deviation
@@ -619,6 +631,7 @@ yt ≡log(Yt/Y) denotes the log deviation of output from its steady
 state and where φπ > 0 and φy > 0 are assumed to satisfy determinacy
 condition (14). Again, the choice of intercept ρ ≡−log β is consistent
 
+112
 CHAPTER 4
 with a zero inﬂation steady state. A numerical rule of the same form as
 (19) with φπ = 1.5 and φy = 0.125 was proposed by Taylor (1993) as
@@ -684,6 +697,7 @@ target of 2 percent and a steady state real interest rate of 2 percent (both ann
 φy = 0.125 value used in the text results from rewriting the original Taylor rule in terms of
 quarterly interest and inﬂation rates.
 
+MONETARY POLICY IN THE BASIC MODEL
 113
 TABLE 4.1
 Evaluation of Simple Rules: Taylor Rule
@@ -778,6 +792,7 @@ to unity, relative to Taylor’s original calibration. Second, the smallest
 welfare losses are attained when the monetary authority responds to
 changes in inﬂation only. Furthermore, those losses (as well as the
 
+114
 CHAPTER 4
 underlying ﬂuctuations in the output gap and inﬂation) become smaller
 as the strength of that response increases.
@@ -818,6 +833,7 @@ it −ζt
 10 It is easy to check that the variances of the output gap and inﬂation both converge to
 zero as φπ →+∞.
 
+MONETARY POLICY IN THE BASIC MODEL
 115
 Letting l+
 t ≡lt+ζt denote (log) real balances adjusted by the exogenous
@@ -892,6 +908,7 @@ same as above.
 where 3.77 is the estimated interest rate semielasticity using OLS over the period 1960:
 1–1988:4, which is characterized by a relatively stable money demand.
 
+116
 CHAPTER 4
 Note that the constant money growth rule performs reasonably well
 relative to the basic Taylor rule, conditional on technology and demand
@@ -934,6 +951,7 @@ Woodford (1999) derives a second-order approximation to the utility of
 the representative consumer. Chapter 6 in Woodford (2003) provides a
 detailed discussion of welfare-based evaluation of policy rules.
 
+MONETARY POLICY IN THE BASIC MODEL
 117
 APPENDIX
 4.1 A SECOND-ORDER APPROXIMATION TO A HOUSEHOLD’S WELFARE:
@@ -989,17 +1007,20 @@ N
 Ct −C
 C
 
+2
 +1
 2UnnN2
 
  Nt −N
 N
 
+2
 + UcC
 
 Ct −C
 C
 
+ 
  Zt −Z
 Z
 
@@ -1008,6 +1029,7 @@ Z
  Nt −N
 N
 
+ 
  Zt −Z
 Z
 
@@ -1017,6 +1039,7 @@ In terms of log deviations, and ignoring terms independent of policy.
 Ut −U ≃UcC
 
 yt(1 + zt) + 1 −σ
+2
 
 y2
 t
@@ -1024,12 +1047,14 @@ t
 +UnN
 
 nt(1 + zt) + 1 + ϕ
+2
 
 n2
 t
 
 + t.i.p.
 
+118
 CHAPTER 4
 where σ ≡−Ucc
 Uc C and ϕ ≡Unn
@@ -1078,6 +1103,7 @@ higher order) as
 Ut −U = UcC
 
 yt(1 + zt) + 1 −σ
+2
 
 y2
 t
@@ -1109,7 +1135,7 @@ t +
 
 (
 yt −at)2
-
+	
 + t.i.p.
 = −1
 2
@@ -1126,11 +1152,12 @@ t −2
 1 −α
 
 ytat
-
+	
 + t.i.p.
 = −1
 2
  ϵ
+ vari{pt(i)} +
 
 σ + ϕ + α
 1 −α
@@ -1141,20 +1168,22 @@ t −2
 yt
 yn
 t )
-
+	
 + t.i.p.
 = −1
 2
  ϵ
+ vari{pt(i)} +
 
 σ + ϕ + α
 1 −α
 
 y2
 t
-
+	
 + t.i.p.
 
+MONETARY POLICY IN THE BASIC MODEL
 119
 where 
 yn
@@ -1188,6 +1217,7 @@ t=0
 βt
 
  ϵ
+ vari{pt(i)} +
 
 σ + ϕ + α
 1 −α
@@ -1227,7 +1257,7 @@ t +
 
 y2
 t
-
+	
 TABLE 4.2
 Evaluation of Simple Rules: Constant Money Growth
 Technology
@@ -1250,6 +1280,7 @@ L
 0.04
 0.69
 
+120
 CHAPTER 4
 EXERCISES
 4.1. Some indeterminacy proofs
@@ -1296,6 +1327,7 @@ where all variables are deﬁned as in the text.
 Monetary policy is described by a simple rule of the form
 it = ρ + φππt
 
+122
 CHAPTER 4
 where φπ > 1. Labor productivity is given by
 yt −nt = at
@@ -1338,6 +1370,7 @@ b. Show that a rule requiring a constant money supply will
 generally be suboptimal. Explain. (Hint: derive the path of
 money under the optimal policy.)
 
+MONETARY POLICY IN THE BASIC MODEL
 123
 c. Derive a money supply rule that would implement the optimal
 policy.
@@ -1402,6 +1435,7 @@ t } is an i.i.d. normally distributed process with mean zero
 and variance σ 2
 m.
 
+124
 CHAPTER 4
 Finally, assume that all output is consumed, so that in equilibrium
 Yt = Ct for all t.
@@ -1465,6 +1499,7 @@ t } at all leads and lags. Notice that within that family of
 rules, monetary policy is fully described by three parameters:
 γm, φε, and φv. Determine the values of those parameters
 
+MONETARY POLICY IN THE BASIC MODEL
 125
 that maximize expected utility, subject to the constraint of
 a non-negative nominal interest rate. Show that the resulting

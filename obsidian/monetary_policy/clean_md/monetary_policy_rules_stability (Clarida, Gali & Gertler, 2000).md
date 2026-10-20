@@ -62,6 +62,7 @@ rule that treats the Federal Funds rate as the instrument of monetary policy. Th
 also on how the monetary policy rule in uences the e
 ects that oil shocks have on the economy.
 2 See, e.g., the recent discussions in Friedman and Kuttner [1996] and Gertler [1996].
+1
 
 rule calls for adjustment of the Funds rate to the gaps between expected in ation and
 output and their respective target levels. It is a version of the kind of policy rule
@@ -92,6 +93,7 @@ ations may arise under this rule because individuals (correctly) anticipate that
 Federal Reserve will accommodate a rise in expected in ation by letting short term
 real interest rates decline (which in turn stimulates the rise in aggregate demand
 3See Clarida, Galð, and Gertler [1999] for a review of the recent literature on monetary policy.
+2
 
 and in ation).4 On the other hand, self-fullling  uctuations cannot occur under the
 estimated rule for the Volcker-Greenspan era since, within this regime, the Federal
@@ -122,6 +124,7 @@ least with the benet of hindsight).
 mainly been due to self-fulfulling behavior. Their argument exploits the idea that there may be a
 multiplicity of equilibria in reputational models of monetary policy. Our analysis is based simply
 on the implications of the estimated historical policy reaction function.
+3
 
 II. The Federal Reserve's Policy Reaction Function: A
 Forward Looking Model
@@ -156,6 +159,7 @@ t, t + 1; :::and t + q  1). In our empirical work, we account for the fact that
 known as of the time the interest rate is set in that period, i.e., xt;1 =2 
 t. This is not true in our
 theoretical model of section IV, where all variables dated in period t are determined simultaneously.
+4
 
 central bank that has a quadratic loss function in deviations of in ation and output
 from their respective targets, given a generic macroeconomic model with nominal
@@ -179,6 +183,7 @@ gain the basic intuition, consider the implied rule for the (ex-ante) real rate 
 llT
 y :
 llT
+y $ llT k Bn  
  B+aWy`#jiyl  WT
  k  +a"y`[jiyl
 (2)
@@ -194,6 +199,7 @@ t is an approximate real rate since the forecast horizon for in ation will gen
 di
 er from the maturity of the short term nominal rate used as a monetary policy instrument. In
 practice this is of little relevance, given the high correlation among short term rates at maturities
+5
 
 factors in the long run, consistent with conventional wisdom.9 Accordingly, llT is a
 constant and is independent of monetary policy.10
@@ -234,6 +240,7 @@ we do let
 do a better job of capturing the degree of accommodation than any time variation in 
 , consistent
 with the approach we take.
+6
 
 reasons why. First, the specication assumes an immediate adjustment of the actual
 Funds rate to its target level, and thus ignores the Federal Reserve's tendency to
@@ -246,6 +253,7 @@ desired level (e.g., through necessary open market operations).
 We relax these assumptions by extending the model in a straightforward way. In
 particular we specify the following relationship for the actual Funds rate, ly:
 ly $ 1Br
+ ly0 k B  1
  lT
 y
 (3)
@@ -263,6 +271,7 @@ gap between its current target level and some linear combination of its past val
 We interpret 1 as an indicator of the degree of smoothing of interest rate changes.
 Combining the partial adjustment equation (3) with the target model (1) yields
 the policy reaction function
+ly $ B  1
  allT  Bn  
 WT k n Wy`# k  "y`[l k 1Br
  ly0 k -y
@@ -278,6 +287,7 @@ this smoothing occurs is beyond the scope of this paper, though a number of expl
 in the literature, including fear of disruption of nancial markets (Goodfriend [1991]), or uncertainty
 about the e
 ects of interest rate changes (Sack [1997]).
+7
 
 Let 0y denote a vector of instruments known when ly is set (i.e., 0y 2 iy). Equation
 (4) then implies the set of orthogonality conditions
@@ -316,6 +326,7 @@ arity of both in ation and the nominal interest rate is also a property of many 
 the theoretical models that rationalize the use of the kind of policy rule considered
 13Note that, by construction, the rst component of f"tg follows an MA(a) process, with a =
 max[k; q] 1, and will thus be serially correlated (unless k = q = 1).
+8
 
 here.14 In our robustness analysis, however, we do allow for the possibility of drift in
 the trend rate of in ation by letting the target in ation rate vary across the regimes
@@ -354,6 +365,7 @@ estimate of  that is closer to its true value.
 16When we consider sub-sample stability of our estimates in section III we address the short
 sample problem by restricting some coe!cients to be constant across the sample (in the cases where
 we cannot reject the coe!cient is stable.)
+9
 
 III. The Federal Reserve's Policy Reaction Function: the
 Evidence
@@ -385,6 +397,7 @@ and Alan Greenspan. As we discussed in the introduction, these subperiods roughl
 17In closely related work, Orphanides [1997] estimates a reaction function using more direct mea-
 sures of the Fed's perception of both the output gap and in ation, based on real time data. His
 results, by and large, conrm the results we obtain.
+10
 
 correspond to the unstable and stable eras of recent macroeconomic history. This
 characterization, while simplistic, is clearly re ected in the data. Table I reports
@@ -417,6 +430,7 @@ period (/A` with ob = cbc). On the other hand, the estimates of the coe!
 measuring the sensitivity to the cyclical variableare also signicant in both periods,
 but only marginally so for the Volcker-Greenspan era.18
 18See below for further discussion.
+11
 
 The estimates of the in ation target, WT, seem quite plausible in all cases: roughly
 four and a quarter percent pre-Volcker and three and half percent post- Volcker.
@@ -449,6 +463,7 @@ variation of our policy reaction function. We demonstrate that in each instance,
 19We stress that we are comparing the actual rate to the implied target rate, as opposed to the
 tted model, which allows for partial adjustment. The tted model, of course, would track the
 actual rate even more closely than does the target rate.
+12
 
 insights from the baseline case remain intact.
 1. Alternative Measures
@@ -487,6 +502,7 @@ a
 ects either variable (e.g., Bernanke and Mihov, 1998). In addition, these values
 as roughly consistent with informal discussions of policy tactics by Federal Reserve
 20We switch the sign of the series in order to preserve the sign interpretation for parameter .
+13
 
 o!cials. In either case, the results are qualitatively very similar to those reported in
 Table II.
@@ -518,6 +534,7 @@ imprecise estimates, given the limited number of observations. Accordingly, we a
 the following procedure: We rst estimate the reaction function for each baseline
 period (pre-Volcker or Volcker-Greenspan), but allowing for a shift across Chairmen
 in each of the coe!cients (by means of appropriate dummies). Second, we re-estimate
+14
 
 the rule after constraining all the parameters for which the shift was found to be
 insignicant in the rst stage to be constant across Chairmen, while allowing for
@@ -553,6 +570,7 @@ three years of the Volcker era from the entire Volcker-Greenspan sample. There a
 21Since we also dummy all the instruments, we only use only two instrument lags in our subsam-
 ple stability analysis, thus keeping the total number of instruments (and the degrees of freedom)
 comparable to the other specications.
+15
 
 least two reasons for doing this. First, this period was characterized by a sharp, one-
 shot disin ation episode, which brought in ation down from roughly 10 percent in
@@ -589,6 +607,7 @@ with Friedman and Kuttner [1996].
 23If we do not restrict the intercept to identify 
 ; then the estimate of  is signicantly above
 unity and tightly estimated for the (1;1) horizon, as well as for the (4;1) horizon.
+16
 
 function across time is the rise in the slope coe!cient on in ation from slightly less
 than unity pre-Volcker to around two in the Volcker-Greenspan era.
@@ -621,6 +640,7 @@ work, Huizinga and Mishkin [1986] show formally that there is a shift in interes
 and after October 1979.
 25As we noted at the end of section II, if the Fed responds aggressively only large deviations of
 in ation from target but not to small deviations, then it may be possible to obtain an estimate of
+17
 
 our results, the persistent and volatile behavior of in ation in the pre-Volcker era
 may be partly due to the monetary rule in place, independently of the nature of the
@@ -653,6 +673,7 @@ kind of persistent in ation that arose in this era in the absence of an accommod
  that is less than unity, even the the policy regime is geared toward stabilzing in ation. However,
 for this scenario to plausible, we should also observe little variation of in ation about target. This
 was clearly not the case in the Martin-Burns-Miller sample.
+18
 
 monetary policy. We brie y elaborate on each point.
 At a minimum, the notion that the oil shocks can largely account for the volatile
@@ -683,6 +704,7 @@ monetary policy during 1972 induced the run-up in commodity prices. Finally, the
 the 1979 oil shock and the the 81-82 recession makes questionable whether the former was central
 to the latter, especially given the sustained tightening of monetary policy over thie period. Further,
 the Carter credit controls appeared to have been at work during the brief downturn in 1980.
+19
 
 in ation over the period 1960:1 -1997:1. As DeLong argues, the initial build-up of
 in ation in the late 1960s and early 1970s occurs prior to the rst oil shock. Indeed,
@@ -716,6 +738,7 @@ the current oil price minus the largest price over the previous four quarters), 
 accounts for at best roughly ten percent of the variation in the GDP de ator over the period 1960:1
 to 1984:4. Extending the sample to 1997:4 points to an even weaker e
 ect of the oil shock.
+20
 
 with our story, which emphasizes the switch in monetary policy from accommodating
 to combating in ation.28
@@ -748,6 +771,7 @@ Wy $ ? +fWykjiyg k _ B(y  2y
 contrast to the tightening prior to the 1980-82 downturn. Thus, although policy tightening may have
 played a role in the 1974-75 recession, the overall pattern pre-1979 is consistent with accommodation
 of in ation, as our formal evidence suggests.
+21
 
 (y $ +a(ykjiyl  
 g Bly  +aWykjiyl
@@ -756,6 +780,7 @@ g Bly  +aWykjiyl
 lT
 y $ n +aWykjiyl k  "y
 (8)
+ly $ 1 ly0 k B  1
  lT
 y
 (9)
@@ -788,6 +813,7 @@ similar forward-looking Phillips curve arises, however, under alternative price-
 (e.g., quadratic adjustment costs or deterministic time-dependent rules with staggered pricing).
 31I assumes a CRRA period-utility with relative risk aversion parameter 
 .
+22
 
 elasticity of in ation equal to c
 , 32 and the autoregressive coe!cient of the 2y and zy
@@ -823,6 +849,7 @@ small (almost negligible), and independent of
 equilibrium is unique also has an upper bound. In other words, an excessive response to changes
 in expected in ation may also lead to indeterminacy. This is the case emphasized by Bernanke and
 Woodford [1997].
+23
 
 sequence of self-fullling revisions in in ationary expectations (sunspot shocks).
 We use the baseline estimates of the pre-Volcker regime to x the parameters of the
@@ -854,6 +881,7 @@ in ation. To account for the negative co-movement that occurred in the 1970s, it
 to also mix in adverse supply shocks. As we make clear in the next subsection, however, supply
 shocks alone cannot account for the persistent in ation over this era: For them to do so, it is critical
 to also have an accomodating monetary policy.
+24
 
 issue in the next section.
 C. Near-Indeterminacy and Fundamental Shocks
@@ -886,6 +914,7 @@ ectiveness and desirability of alternative interest rate rules in a
 model closely related to ours can be found in Rotemberg and Woodford [1997], among others. We
 di
 er by focusing on the implications of the feedback parameter on expected in ation.
+25
 
 The results make it clear that the cyclical response of the economy to fundamental
 shocks is quite sensitive to n, especially over the estimated range of values across the
@@ -916,6 +945,7 @@ Finally, we note that the results we obtain in the context of our simple New
 Keynesian model are largely robust to using a much broader set of macroeconomic
 models. Two model features are critical, but they are features that are commonplace
 in most conventional macroeconomic frameworks: First, there must be an inverse
+26
 
 relationship between output and the ex-ante real rate (i.e., an IS-type relationship).
 Second, there must be a positive short run link between output and in ation (i.e.,
@@ -949,6 +979,7 @@ Keynesian model (see, e.g, Svensson, 1996) is that, in the latter, self-fulllin
 possible since beliefs about the future do not a
 ect behavior. In this instance, a feedback rule with
  < 1 simply leads to explosive behavior, utlimately necessitating a shift in the policy rule.
+27
 
 One important question our paper raises but does not answer is the following:
 Why is it that during the pre-1979 period the Federal Reserve followed a rule that
@@ -979,9 +1010,11 @@ COLUMBIA UNIVERSITY
 38See, e.g., Croushore [1996] for evidence of systematic bias in in ation forecasts during that
 period.
 39Recent work in this direction can be found in Sargent [1998].
+28
 
 NEW YORK UNIVERSITY AND UNIVERSITAT POMPEU FABRA
 NEW YORK UNIVERSITY
+29
 
 TABLE I
 AGGREGATE VOLATILITY INDICATORS
@@ -1112,6 +1145,8 @@ Volcker-Greenspan
 (0.87)
 (0.03)
 Standard errors reported in brackets. The set of instruments includes
+four lags of in ation, output gap, the federal funds rate, the short-long
+spread, commodity price in ation and wage in ation.
 
 TABLE IV
 ALTERNATIVE HORIZONS
@@ -1164,6 +1199,8 @@ Volcker-Greenspan
 (0.31)
 (0.03)
 Standard errors reported in brackets. The set of instruments includes
+four lags of in ation, output gap, the federal funds rate, the short-long
+spread, commodity price in ation and wage in ation.
 
 TABLE V
 UNRESTRICTED INTERCEPT
@@ -1172,6 +1209,7 @@ UNRESTRICTED INTERCEPT
 
 
 p
+Pre-Volcker
 2.19
 0.68
 0.28
@@ -1192,6 +1230,8 @@ Volcker-Greenspan
 (0.87)
 (0.03)
 Standard errors reported in brackets. The set of instruments includes
+four lags of in ation, output gap, the federal funds rate, the short-long
+spread, commodity price in ation and wage in ation.
 
 TABLE VI
 SUBSAMPLE STABILITY
@@ -1319,6 +1359,7 @@ T
 
 
 p
+Pre-Volcker
 5.95
 0.86
 0.39
@@ -1349,6 +1390,8 @@ Post-82
 (0.28)
 (0.03)
 Standard errors reported in brackets. The set of instruments includes
+four lags of in ation, output gap, the federal funds rate, the short-long
+spread, commodity price in ation and wage in ation.
 
 WDEOH YLLL
 IXQGDPHQWDO VKRFNV
@@ -1390,40 +1433,208 @@ Ghpdqg Vkrfnv
 5194
 51;;
 61;;
+7158
 
 Figure I
 Actual
 Target
 Actual versus Target Rates: Pre-Volcker era
+61
+63
+65
+67
+69
+71
+73
+75
+77
+79
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
 
 Figure II
 Actual
 Target
 Actual versus Target Rates: Volcker-Greenspan era
+79
+81
+83
+85
+87
+89
+91
+93
+95
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0
+17.5
+20.0
 
 Figure III: Real Oil Price and Inflation
+1961
+1965
+1969
+1973
+1977
+1981
+1985
+1989
+1993
+1997
+0
+2
+4
+6
+8
+10
+12
 -0.90
 -0.60
 -0.30
+0.00
+0.30
+0.60
 Inflation
 Oil Price
 
 Figure IV: The Real Interest Rate and Inflation
 1961 1964 1967 1970 1973 1976 1979 1982 1985 1988 1991 1994 1997
+-2
+0
+2
+4
+6
+8
+10
+12
 Inflation
 Real Rate
 
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+0
+2
+4
+6
+8
+10
 inflation          
 Figure V. Simulated Sunspot Fluctuations under Pre−Volcker Rule
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+−2
+−1
+0
+1
+2
+3
+4
 output gap         
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+3
+4
+5
+6
+7
+8
+9
+10
 nominal rate
 
+0
+2
+4
+6
+8
+10
+12
+−1
+−0.8
+−0.6
+−0.4
+−0.2
 inflation          
 Figure VI. Impulse Responses to a Sunspot Shock
+0
+2
+4
+6
+8
+10
+12
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+0
 output gap         
+0
+2
+4
+6
+8
+10
+12
+−0.4
 −0.35
+−0.3
 −0.25
+−0.2
 nominal rate       
+0
+2
+4
+6
+8
+10
+12
+0
+0.1
+0.2
+0.3
+0.4
+0.5
 real rate
 
 Figure VII: Impulse Responses to a Supply Shock

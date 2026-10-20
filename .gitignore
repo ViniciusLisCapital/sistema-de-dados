@@ -69,3 +69,6 @@ logs/
 
 # Dados brutos (A) de cada ciclo dos agentes: grandes e reextraiveis; o F(A) e versionado
 obsidian/ciclos/*/dados/A/
+
+# Open mental-model run (snapshot), removed by mental.py done/abort
+repository/mental_model/ledger/.*.json

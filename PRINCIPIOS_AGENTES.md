@@ -10,6 +10,7 @@
     - iv. O mapa conceitual é o contrato da área, em cinco partes: perguntas centrais, esqueleto causal, saídas, entradas, índice de conceitos. (I.III.vi)
     - v. As perguntas centrais são o mínimo do report, não o máximo: insights novos e alertas também entram. (I.III.vi)
     - vi. Saídas e entradas são recíprocas entre os mapas e dão ênfase, não limite. Têm uma camada fixa (mapa) e uma dinâmica (reports). (I.III.vii, viii)
+    - vii. Da literatura o agente usa o raciocínio (mecanismo, premissas, quando vale e quando falha), não os números. A estimativa de um paper pertence à amostra dele e nunca entra como valor atual; o dado atual vem do banco. (II.I.v)
 
 ## (I.II) Dados
     - i. Toda tabela da lista do agente tem um tipo: endógeno (dele), endógeno de outro agente (consulta sem concluir), TWA (área ainda sem agente) ou exógeno (sem agente). (I.III.ix, x)

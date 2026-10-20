@@ -1,3 +1,4 @@
+DOI: http://dx.doi.org/10.1590/0103-6351/7570
 Abstract
 This paper analyzes the importance of the 
 exchange rate in the inﬂ ation determina-
@@ -96,6 +97,7 @@ Brasileira, entre 2002 e 2021, considerando a possibilidade de quebras es-
 truturais em períodos de tendência à apreciação ou depreciação relativa da 
 taxa de câmbio.
 364
+Nova Economia
 v.33 n.2 2023
 
 Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
@@ -137,7 +139,9 @@ tores indicam que o efeito líquido do aumento no preço das commodities
 é positivo sobre a inﬂ ação e mostra-se ainda mais intenso em simulações 
 365
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 sem a taxa de câmbio. Os autores concluem que a variável câmbio tem a 
 capacidade de absorver choques dos preços de commodities sobre a inﬂ ação.
 O repasse cambial também pode ser interpretado como a elasticidade 
@@ -176,8 +180,10 @@ aos preços com menor incidência, por conta da redução do poder de preci-
 fundamenta-se em políticas monetárias criadas pelos bancos centrais para 
 estabilizar a inﬂ ação. Assim, as variações nos preços domésticos tendem 
 366
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 a ser menores diante de um choque cambial conforme as expectativas dos 
 agentes da economia sobre a ação da autoridade monetária (Taylor, 2000; 
 Gagnon; Ihrig, 2004).
@@ -217,7 +223,9 @@ produtor, do mercado de destino ou de uma moeda que não faz parte das
 transações entre as duas economias. No Brasil, Santolin e Carvalho (2019) 
 367
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 estimam o pass-through entre 1999 a 2017 e conﬁ rmam que o coeﬁ ciente 
 de repasse cambial diminuiu ao longo do tempo, sobretudo após 2009, 
 quando o impacto sobre o Índice de Preços ao Consumidor Amplo (IPCA) 
@@ -253,8 +261,10 @@ Para a economia brasileira o ano de 1999 é caracterizado pelo abandono do
 regime de metas cambiais e adoção do Regime de Metas de Inﬂ ação. Após 
 as crises em diversos países – crise do México em 1994, a crise Asiática 
 368
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 em 1997 e a crise Russa em 1998 –, em 1998, o Brasil sofre com ataques 
 especulativos, que tornaram inevitável a mudança do regime cambial para 
 o câmbio ﬂ utuante. Segundo os dados do Banco Central do Brasil (BCB, 
@@ -293,7 +303,9 @@ o temor do governo Lula foi substituído por mais otimismo e entrada de
 1 Para mais detalhes dessa mudança, ver Barbosa-Filho (2008).
 369
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 capitais. No câmbio, a consequência foi um movimento de apreciação do 
 câmbio real e nominal.
 Tabela 1 Indicadores selecionados da economia brasileira – período de 1999 a 2021
@@ -507,8 +519,10 @@ Fonte: BCB (2022). Elaboração própria.
 Nota1: A Carta Aberta, de 21/1/2003, estabeleceu metas ajustadas de 8,5% para 2003 e de 5,5% para 
 2004.
 370
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 O subperíodo, que se inicia ao ﬁ nal de 2002 e vai até 2012 é caracterizado 
 pela apreciação cambial e relativa estabilidade de preços, conforme ilustra 
 a Figura 1, que mostra a análise conjunta da inﬂ ação e da taxa de câmbio 
@@ -561,7 +575,7 @@ Variação do IPCA (% a.a)
 IPCA
 Taxa de câmbio
 6,0000
-
+ 
 5,0000
 4,0000
 3,0000
@@ -578,7 +592,9 @@ Taxa de câmbio
 0
 371
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 -primas diminuíam os preços ﬁ nais de produtos nacionais que as usavam 
 como insumos, e os produtos ﬁ nais importados pressionavam para baixo 
 os preços dos bens nacionais concorrentes. Além disso, o dólar baixo exer-
@@ -617,8 +633,10 @@ a Tabela 1 indica.
 2 Ver Prates et al. (2017) para uma discussão sobre mudanças na política cambial no período 
 do governo de Dilma Rousseff.
 372
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 Diante da análise anterior, é possível concluir que, sob metas de inﬂ ação 
 e câmbio ﬂ utuante, observa-se na economia brasileira que os anos com 
 taxas de câmbios mais depreciadas – 2002, 2015 e 2021 – também foram 
@@ -652,7 +670,9 @@ n variáveis xn – pode ser, de forma genérica, representado matricialmente
 por:
 373
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 O modelo estrutural pode ser apresentado ainda em um formato compacto:
 Pré-multiplicando (2) por B–1 tem-se:
 O que resulta em um VAR na forma reduzida, que pode ser expresso como:
@@ -672,6 +692,7 @@ X
 t
 t
 t
+
 
 
 0
@@ -686,6 +707,15 @@ B
 t
 t
 t
+
+
+1
+0
+1
+1
+1
+1
+1
 
 
 (1)
@@ -698,6 +728,7 @@ e
 t
 t
 t
+
 
 A
 A
@@ -705,8 +736,10 @@ A
 1
 1
 374
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 Uma das formas possíveis utilizadas para identiﬁ car restrições sobre a 
 relação contemporânea dos choques é a chamada decomposição de Cho-
 lesky, que propõe uma estrutura exatamente identiﬁ cada ao modelo (3), 
@@ -746,7 +779,9 @@ temporâneas – B – do VAR com cinco variáveis a serem estimadas pode
 ser representada por:
 375
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Nesse modelo VAR têm-se 10 parâmetros para serem estimados, incluindo 
 as variâncias dos erros e a covariância entre os erros. Dessa forma, precisa-
 -se impor 10 restrições ao modelo original para que ele possa ser identiﬁ -
@@ -811,6 +846,8 @@ t :
 25
 34
 35
+45
+
 
 
 
@@ -819,6 +856,7 @@ t :
 
 
 
+
 
 
 
@@ -839,8 +877,10 @@ t
 t
 (5)
 376
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 bio (R$/US$); c) a Taxa de Juros SELIC; d) o Produto Interno Bruto (PIB) e; 
 e) o Índice global de commodities, todas para o período de outubro de 2002 a 
 novembro de 2021. Destaca-se que a série PIB teve seu valor deﬂ acionado 
@@ -907,7 +947,9 @@ so, a maioria dos artigos sobre o assunto, citados nesta pesquisa, utilizam
 diversas aplicações metodológicas semelhantes com propósito parecido.
 377
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 5 Resultados e discussões
 Os elementos teóricos e os fatos estilizados acerca da economia brasileira 
 apresentados destacam a relevância do câmbio como importante canal de 
@@ -945,8 +987,10 @@ apreciação a correlação de Pearson entre IPCA e SELIC é de –0,83, em con-
 trapartida, quando o câmbio apresenta tendência à depreciação essa corre-
 lação é de –0,52. Esse fato sinaliza que os padrões cambiais identiﬁ cados 
 378
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 sugerem, inclusive, alterações na transmissão da política monetária, por 
 conseguinte, efetividade da principal ferramenta operacional do RMI no 
 controle de preços.
@@ -997,7 +1041,9 @@ Período de câmbio apreciado
 Período de câmbio depreciado
 379
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 ram resultados inconclusivos, para todas as demais não se rejeita a hipótese 
 nula de que essas apresentam raiz unitária; que não persiste em primeira 
 diferença. Posto isso, o VAR deve ser estimado em primeira diferença – I(1).3
@@ -1045,8 +1091,10 @@ Função impulso-resposta
 Intervalo de confiança
 Período completo – VAR (4)
 380
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 Posto isso, para captar o efeito dinâmico do sistema de equações do modelo 
 VAR, a análise que segue considera as funções de impulso-resposta – cho-
 ques não ortogonais de um desvio padrão. Na Figura 3 observa-se a evolu-
@@ -1117,7 +1165,9 @@ Período de câmbio apreciado – VAR (2)
 Período de câmbio depreciado – VAR (2)
 381
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Em conjunto, os resultados encontrados neste estudo mostram a relevân-
 cia do canal de transmissão cambial como elemento de destaque para 
 controle de preços e para a ação da política monetária no país e, além 
@@ -1156,8 +1206,10 @@ Em linha com essa literatura, em primeiro momento, uma contração
 monetária gera elevação de custos que são transmitidos rapidamente para 
 os preços. Posteriormente, uma elevação dos juros desaquece a economia 
 382
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 e, ﬁ nalmente, impacta negativamente a inﬂ ação. O puzzle surge, portanto, 
 da existência de um descompasso entre os efeitos da política monetária 
 sobre os custos de produção – mais imediatos – e seus impactos defasados 
@@ -1196,7 +1248,9 @@ cambial do que em momentos de tendência à depreciação.
 de otimização do processo editorial eles não estão apresentados na íntegra neste artigo.
 383
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Figura 5 Taxa de câmbio e nível de utilização da capacidade instalada (NUCI) no Brasil 
 – período de 2002 a 2021 – dados Trimestrais
 Fonte: A taxa de câmbio utilizada é a mesma da pesquisa (estimativas) e NUCI – Utilização da capacida-
@@ -1252,8 +1306,9 @@ tendência à apreciação, em que a própria taxa de juros SELIC torna-se um
 2020.09
 2021.05
 NUCI
+Taxa de câmbio
 6,00
-
+ 
 5,00
 4,00
 3,00
@@ -1270,8 +1325,10 @@ NUCI
 55,00
 50,00
 384
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 colateral nesse processo. Cumpre avaliar, assim como assevera Bresser-
 -Pereira (2007), qual o papel a ser desempenhado pelo câmbio na nossa 
 economia, sendo que a experiência internacional sugere a necessidade des-
@@ -1305,7 +1362,9 @@ cambial no período, e outro referindo-se à exploração mais profunda da
 inﬂ ação de oferta no país. 
 385
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Referências
 ANDRÉS, S. A.; SANTIAGO, J. V. Exchange rate pass-through to prices: Var evidence for 
 Chile. Economia Chilena, Banco Central de Chile, v. 19, n. 1, p. 20-37, Apr. 2016.
@@ -1346,8 +1405,10 @@ FUNDO MONETÁRIO INTERNACIONAL – FMI. Índice Global de Commodities.
 GAGNON, J. E.; IHRIG, J. Monetary policy and exchange rate pass-through. International 
 Journal of Finance and Economics, Wiley Online Library, v. 9, n. 4, p. 315-338, Oct. 2004.
 386
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 GOLDBERG, P. K.; KNETTER, M. M. Goods prices and exchange rates: What have we 
 learned? Journal of Economic Literature, v. 35, n. 3, p. 1.243-1.272, Sept. 1997.
 INSTITUTO DE PESQUISA ECÔNOMICA APLICADA – IPEADATA. Dados macroeconômicos.
@@ -1391,7 +1452,9 @@ lis Quarterly Review, Winter, p. 1-16, 1986.
 SOUZA, R. G. DE; SILVA, L. R. Uma breve análise do processo inﬂ acionário do Brasil: sua 
 387
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 origem, característica e peculiaridades. Cadernos do Desenvolvimento, Rio de Janeiro, v. 13, 
 n. 22, p. 103-126, jan./jun. 2018.
 STOCKL, M.; RAMALHETE, M. R.; GIUBERTI, A. C. O impacto das commodities sobre a 
@@ -1403,9 +1466,15 @@ WALSH, C. Monetary Theory and Policy. Cambridge, Ma: MIT Press, 2003.
 YANG, J. Exchange rate pass-through in U.S. manufacturing industries. Review of Economics 
 and Statistics, Cambridge, v. 79, n. 7, p. 95-104, Feb. 1997.
 Sobre os autores
+Eliane Araújo – elianedearaujo@gmail.com
 Departamento de Economia, Universidade Estadual de Maringá, Maringá, PR, Brasil.
+ORCID: https://orcid.org/0000-0001-5104-2508.
+Carlos Eduardo Caldarelli – caldarelli@uel.br
 Departamento de Economia, Universidade Estadual de Londrina, Londrina, PR, Brasil.
+ORCID: https://orcid.org/0000-0002-6739-7183.
+João Paulo Cortapasso – joao.cortapasso@uel.br
 Departamento de Economia, Universidade Estadual de Londrina, Londrina, PR, Brasil.
+ORCID: https://orcid.org/0000-0002-0555-8682.
 Agradecimentos
 Os autores agradecem ao Conselho Nacional de Desenvolvimento Cientíﬁ co e Tecnológico (CNPq) (processo número 
 403059/2021-6) o apoio ﬁ nanceiro.
@@ -1416,8 +1485,10 @@ João Paulo Cortapasso: revisão bibliográﬁ ca, coleta de dados, estimações
 Sobre o artigo
 Recebido em 14 de abril de 2022. Aprovado em 08 de março 2023.
 388
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 APÊNDICE
 Tabela A1 Resultados dos testes de raiz unitária Elliott-Rothenberg-Stock (DF-GLS) e Phillips-Perron e ADF para as séries no nível
 Variáveis
@@ -1533,7 +1604,9 @@ INC – Inconclusiva (um ou dois testes sinalizam existência de raiz unitária)
 EST – Estacionariedade (três testes rejeitam a hipótese de raiz).
 389
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Tabela A2 Resultados dos testes de raiz unitária Elliott-Rothenberg-Stock (DF-GLS) e Phillips-Perron e ADF para as séries na diferença
 Variáveis
 Teste Elliott-Rothenberg-Stock DF-GLS
@@ -1646,31 +1719,168 @@ Nota 4: Ordem de Integração da série:
 I(0) – Estacionária em nível.
 I(1) – Estacionária na primeira diferença.
 390
+Nova Economia
 v.33 n.2 2023
 
+Padrões da transmissão cambial para taxa de inﬂ ação no Brasil
 Figura A1 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio 
 padrão nas variáveis IPCA e SELIC – período completo
 Fonte: Elaboração própria.
 Figura A2 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio 
 padrão nas variáveis IPCA e SELIC – período de câmbio apreciado
 Fonte: Elaboração própria.
+0
+5
+10
+15
+20
+25
+.03
+.02
+.01
+.00
+–.01
+0
+5
+10
+15
+20
+25
+.03
+.02
+.01
+.00
+–.01
+0
+5
+10
+15
+20
+25
+.2
+.1
+.0
+.–1
+–.2
+0
+5
+10
+15
+20
+25
+6
+4
+2
+0
+–2
 Função impulso-resposta
 Intervalo de confiança
 Choque cambial sobre o IPCA
 Choque da SELIC sobre o IPCA
 Choque cambial sobre a SELIC
 Choque do IPCA sobre a SELIC
+0
+5
+10
+15
+20
+25
+.03
+.02
+.01
+.00
+–.01
+0
+5
+10
+15
+20
+25
+.06
+.04
+.02
+.00
+–.02
+0
+5
+10
+15
+20
+25
+.2
+.1
+.0
+.–1
+–.2
+0
+5
+10
+15
+20
+25
+3
+2
+1
+0
+–1
 Função impulso-resposta
 Intervalo de confiança
 Choque cambial sobre o IPCA
 Choque da SELIC sobre o IPCA
 Choque cambial sobre a SELIC
 Choque do IPCA sobre a SELIC
+391
 v.33 n.2 2023
+Nova Economia
 
+Araújo, Caldarelli & Cortapasso
 Figura A3 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio 
 padrão nas variáveis IPCA e SELIC – período de câmbio depreciado
 Fonte: Elaboração própria.
+0
+5
+10
+15
+20
+25
+.03
+.02
+.01
+.00
+–.01
+0
+5
+10
+15
+20
+25
+.03
+.02
+.01
+.00
+–.01
+0
+5
+10
+15
+20
+25
+.2
+.1
+.0
+–.1
+–.2
+0
+5
+10
+15
+20
+25
+6
+4
+2
+0
+–2
 Função impulso-resposta
 Intervalo de confiança
 Choque cambial sobre o IPCA
@@ -1678,4 +1888,6 @@ Choque da SELIC sobre o IPCA
 Choque cambial sobre a SELIC
 Choque do IPCA sobre a SELIC
 This article is licensed under a Creative Commons Attribution 4.0 International License.
+392
+Nova Economia
 v.33 n.2 2023

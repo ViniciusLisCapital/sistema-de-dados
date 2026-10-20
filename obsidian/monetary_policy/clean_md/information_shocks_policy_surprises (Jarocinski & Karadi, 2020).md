@@ -3,7 +3,7 @@ Deconstructing monetary policy
 surprises:  
 the role of information shocks 
 Revised June 2018 
-
+ 
 Marek Jarociński, Peter Karadi 
 Disclaimer: This paper should not be reported as representing the views of the European Central Bank 
 (ECB). The views expressed are those of the authors and do not necessarily reflect those of the ECB. 
@@ -24,6 +24,7 @@ Keywords: Central Bank Private Information, Monetary Policy Shock, High-Frequenc
 Identiﬁcation, Structural VAR
 JEL codes: E32, E52, E58
 ECB Working Paper Series No 2133 / February 2018
+1
 
 Non-technical summary
 This paper studies the impact of central bank policy decisions and communication on the
@@ -64,6 +65,8 @@ signiﬁcant impact on many economic variables is notable, because it rejects th
 of central bank communication. We argue that the observed responses are consistent with the
 central bank revealing private information about current and future demand conditions and
 tightening its policy to counteract its impact on the macroeconomy.
+ECB Working Paper Series No 2133 / February 2018
+2
 
 We assess the predictions of our methodology also in the euro area. We ﬁnd results that
 are broadly consistent with our US results. A monetary tightening leads to a downturn and a
@@ -83,7 +86,10 @@ The lesson from this work is that central bank communication about the economy h
 negligible eﬀects on ﬁnancial and macroeconomic variables. Furthermore, for assessing the eﬀect
 of a monetary policy announcement on the economy it is important to look at the response of
 the stock prices in addition to the response of interest rates.
+ECB Working Paper Series No 2133 / February 2018
+3
 
+1
 Introduction
 The extent of monetary policy non-neutrality is a classic question in macroeconomics (Chris-
 tiano, Eichenbaum and Evans, 2005).
@@ -126,6 +132,8 @@ market prices to learn the content of the signal inherent in central bank announ
 would not be otherwise readily available to the econometrician.
 1Our focus is on the fundamental value. The contemporaneous impact of the policy tightening of any bubble
 component of the stock valuation is indeterminate (see e.g. Gal´ı, 2014).
+ECB Working Paper Series No 2133 / February 2018
+4
 
 We assess the dynamic impact of the policy shocks and the central bank information shocks
 using a Bayesian structural vector autoregression (VAR). In our baseline VAR on US data,
@@ -169,6 +177,8 @@ increase unexpectedly, the responses of many other variables are opposite to the
 the monetary policy shock. This rules out the ineﬀectiveness of central bank communication. If
 the stock prices were not responding to central bank communication, and instead varied after
 announcements just due to random noise, the responses to negative and positive co-movement
+ECB Working Paper Series No 2133 / February 2018
+5
 
 shocks that we identify would not diﬀer systematically. We argue that the observed responses
 are consistent with the central bank revealing private information about current and future
@@ -210,6 +220,8 @@ If, instead, monetary policy shocks are purged from the impact of central bank i
 shocks, the price-level response is stronger, implying a more moderate level of nominal rigidities.
 Financial frictions, in contrast, are estimated to be sizable. This helps the model to match both
 the large output response and the observed increase in corporate bond spreads. We conclude
+ECB Working Paper Series No 2133 / February 2018
+6
 
 that ﬁnancial frictions play a prominent role in the transmission of monetary policy shocks.
 We also use the model to learn about the nature of the central bank information shocks. In
@@ -250,6 +262,8 @@ bank information shocks from the high-frequency co-movement of interest rate and
 surprises. We track the dynamic impact of expectations and realized macroeconomic variables
 2With this, they challenge the contrary ﬁndings of Faust, Swanson and Wright (2004) based on a shorter
 sample.
+ECB Working Paper Series No 2133 / February 2018
+7
 
 as a response to such shocks in a VAR framework. Our paper is most closely related to the
 approach used in Andrade and Ferroni (2016), which we discovered recently. Similarly to us,
@@ -288,6 +302,8 @@ policy announcements as ‘surprises.’ This is because, if we assume that pric
 tions, they only change to the extent the announcement surprises the markets. Following much
 of the related literature we measure the surprises in a half-hour window starting 10 minutes
 before and ending 20 minutes after the announcement (G¨urkaynak, Sack and Swanson, 2005b).
+ECB Working Paper Series No 2133 / February 2018
+8
 
 2.1
 The US dataset
@@ -329,6 +345,8 @@ of 60 basis points. So our sample contains no discernible drift.
 ‘Wrong-signed’ responses of stock prices to interest rate surprises
 We now document a notable stylized fact about the surprises. Namely, many positive interest
 rate surprises are accompanied by positive stock market surprises, and many negative interest
+ECB Working Paper Series No 2133 / February 2018
+9
 
 rate surprises are accompanied by negative stock market surprises. This can be puzzling at ﬁrst
 glance, because, as discussed in the Introduction, textbook economics implies that an interest
@@ -373,6 +391,8 @@ They are not limited to any particular period, but occur throughout our sample (
 alternative measures of surprises.3
 3In the Appendix we replace the 3-month fed funds futures with the ﬁrst principal component of surprises in
 the current month and 3-month fed funds futures and 2-, 3-, and 4- quarters ahead 3-month eurodollar futures.
+ECB Working Paper Series No 2133 / February 2018
+10
 
 Another observation based on Figure 1 is that even when the stock prices move in the
 opposite direction to the interest rates, the strength of these stock price responses varies widely.
@@ -407,7 +427,7 @@ a vector of surprises in Nm ﬁnancial instruments observed in month t. To const
 up the intra-day surprises occurring in month t on the days with FOMC announcements. Our
 baseline model is a VAR with mt and yt and a restriction that mt does not depend on the lags
 of either mt or yt and has zero mean,
-
+ 
 mt
 yt
 !
@@ -415,7 +435,8 @@ yt
 P
 X
 p=1
-
+ 
+0
 0
 Bp
 Y M
@@ -426,18 +447,19 @@ mt−p
 yt−p
 !
 +
-
+ 
+0
 cY
 !
 +
-
+ 
 um
 t
 uy
 t
 !
 ,
-
+ 
 um
 t
 uy
@@ -448,12 +470,15 @@ t
 where N denotes the normal distribution. As long as the ﬁnancial market surprises are unpre-
 dictable, the above zero restrictions are plausible. In the Appendix, we show that our results
 We also replace the S&P500 surprise with the ﬁrst principal component of three stock indices.
+ECB Working Paper Series No 2133 / February 2018
+11
 
 are unaﬀected by relaxing these zero restrictions.
 We choose priors that are standard in the Bayesian VAR literature.
 Let B collect the
 coeﬃcients of the VAR, B = (B1
 Y M, B1
+Y Y , ..., BP
 Y M, BP
 Y Y , cY )′. We introduce a Minnesota-type
 prior speciﬁed as an independent normal-inverted Wishart prior, p(B, Σ) = p(B)p(Σ), where
@@ -491,6 +516,8 @@ announcement shocks (the negative co-movement shock and the positive co-movement
 shock), and not by other shocks.
 2. (Sign restrictions) A negative co-movement shock is associated with an interest rate in-
 crease and a drop in stock prices. A positive co-movement shock is the complementary
+ECB Working Paper Series No 2133 / February 2018
+12
 
 shock, i.e. the orthogonal shock that is associated with an increase in both interest rates
 and stock prices.
@@ -542,6 +569,8 @@ is the simplest one that allows us to make our points on the signs and shapes of
 of yt to diﬀerent shocks present in the FOMC announcements. It is an additional issue that
 the surprises mt do not capture all of the exogenous variation in monetary policy and central
 bank communication, as some of it is also reﬂected on other occasions, such as speeches by
+ECB Working Paper Series No 2133 / February 2018
+13
 
 FOMC members. Hence, it would be more precise to call our shocks ‘monetary policy shock in
 the FOMC announcements’ and ‘central bank information shock in the FOMC announcements,’
@@ -557,7 +586,7 @@ restrictions. The prior on the rotations is uniform in the subspace where the si
 are satisﬁed.
 More in detail, for each draw of Σ from the posterior we compute its lower-
 triangular Choleski decomposition, C. Then we postmultiply C by a matrix Q =
-
+ 
 Q∗
 0
 0
@@ -591,6 +620,8 @@ policy shocks or exogenous variation in central bank communication?” Such ques
 rescaling of the VAR impulse responses by means of instrumental variables techniques (a VAR with external
 instruments, see e.g. Stock and Watson, 2012; Mertens and Ravn, 2013; Gertler and Karadi, 2015; Stock and
 Watson, 2017; Paul, 2017).
+ECB Working Paper Series No 2133 / February 2018
+14
 
 as our low frequency monetary policy indicator. The advantage of using a rate longer than the
 targeted federal funds rate is that it incorporates the impact of forward guidance and therefore
@@ -631,6 +662,8 @@ and the excess bond premium in the two columns. This is all the more notable giv
 impose no restrictions on the responses of any low frequency variables yt. Second, monetary
 policy announcements generate not only monetary policy shocks. The second column clearly
 shows that the positive co-movement of interest rates and stock prices around monetary policy
+ECB Working Paper Series No 2133 / February 2018
+15
 
 announcements, which is inconsistent with monetary policy shocks, has low frequency conse-
 quences. For example, a high-frequency increase in stock prices and interest rate foretells a
@@ -645,34 +678,183 @@ CB information
 (positive co-movement)
 Monetary policy
 (Choleski, 3m ﬀf ﬁrst)
+0
+10
+20
+30
+0
+0.05
   surprise in
 3m ff futures
+0
+10
+20
+30
+0
+0.05
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
 surprise in
 S&P500
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+0
+0.1
+0.2
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+0
+0.2
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+0
+0.2
+0
+10
+20
+30
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
+0
+0.05
   surprise in
 3m ff futures
+0
+10
+20
+30
+-0.2
+-0.1
+0
 surprise in
 S&P500
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-1.5
+-1
+-0.5
+0
 S&P500
 (100 x log)
+0
+10
+20
+30
+-0.2
+0
+0.2
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+0
+0.02
+0.04
 EBP
 (%)
 months
@@ -680,6 +862,8 @@ months
 months
 The ﬁrst column shows the responses to a monetary policy shock. Due to the coeﬃcient
 restrictions in our VAR (1), the announcement surprises in mt are iid. They only respond to
+ECB Working Paper Series No 2133 / February 2018
+16
 
 Table 2: Impact responses of announcement surprises to shocks. Baseline VAR.
 A. Sign restrictions
@@ -747,6 +931,8 @@ The stock market eﬀects are also signiﬁcantly larger in Europe (see Section 
 followed a more transparent communication throughout our sample period.
 6The reversal of the output response can be a side eﬀect of monetary policy tightening aimed at stabilizing
 inﬂation volatility. We do not observe this reversal in our estimates on euro area data (see Section 5).
+ECB Working Paper Series No 2133 / February 2018
+17
 
 which the central bank communicates good news about the economy and tightens monetary
 policy, consistently with its reaction function, to partly oﬀset the eﬀect of the news and prevent
@@ -805,6 +991,8 @@ into the VAR and instead use it in
 auxiliary regressions outside the VAR. Caldara and Herbst (2016) and Paul (2017) discuss the relation between
 the Choleski factorization and the external instruments approach. We veriﬁed that in our application the ﬁndings
 are very similar when using both approaches.
+ECB Working Paper Series No 2133 / February 2018
+18
 
 4.3
 ‘Poor man’s’ sign restrictions and other robustness checks
@@ -845,6 +1033,8 @@ summarized by their posterior means. The upper panel reports the shocks obtained
 sign restrictions. The lower panel plots the ‘poor man’s proxies.’
 Figure 4 shows that the largest central bank information shock was the one discussed in the
 Introduction, which happened on January 22, 2008. Other central bank information shocks are
+ECB Working Paper Series No 2133 / February 2018
+19
 
 Figure 3: Impulse responses to one standard deviation shocks, baseline VAR with ‘poor man’s’
 sign restrictions. Median (line), percentiles 16-84 (darker band), percentiles 5-95 (lighter band).
@@ -852,22 +1042,98 @@ Monetary policy
 CB information
 (poor man’s proxy)
 (poor man’s proxy)
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+0
+0.1
+0.2
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.04
 -0.02
+0
+0.02
+0.04
+0.06
 EBP
 (%)
+0
+10
+20
+30
 -0.04
 -0.02
+0
+0.02
+0.04
+0.06
 months
 months
 not particularly clustered, but occur all over our sample. One episode worth highlighting is a
@@ -885,14 +1151,40 @@ weak demand conditions and high economic uncertainty with down-side risks.8 The 
 of the facts that “Household demand has been sustained, but business proﬁts and capital spending continue to
 weaken and growth abroad is slowing, weighing on the U.S. economy,” and announced that “risks are weighted
 mainly toward conditions that may generate economic weakness in the foreseeable future.” In March 2002, the
+ECB Working Paper Series No 2133 / February 2018
+20
 
 Figure 4: Contributions of shocks to the surprises in the 3-month fed funds futures, aggregated to the monthly frequency. Basis points
 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017
+-35
+-30
+-25
+-20
+-15
+-10
+-5
+0
+5
+10
+15
 Monetary Policy (sign restrictions)
 Central Bank Information (sign restrictions)
 1990 1991 1992 1993 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017
+-35
+-30
+-25
+-20
+-15
+-10
+-5
+0
+5
+10
+15
 Monetary Policy (poor man`s proxy)
 Central Bank Information (poor man`s proxy)
+ECB Working Paper Series No 2133 / February 2018
+21
 
 movement of interest rates and stock market changes after the majority of these announcements
 suggest that the worse-than-expected outlook of the FOMC led agents to update downwards
@@ -940,6 +1232,8 @@ determined by share of the current and the next calendar years in the following 
 calendar month).
 11This variable is available since 1999. The two-year breakeven inﬂation rate, available only since 2004, responds
 almost identically (not shown) as the 1-year survey-based measure shown in the second row.
+ECB Working Paper Series No 2133 / February 2018
+22
 
 Figure 5: Impulse responses of other low frequency variables to monetary policy and central bank
 information shocks. Median (line), percentiles 16-84 (darker band), percentiles 5-95 (lighter
@@ -952,35 +1246,137 @@ CB information
 (positive co-movement)
 Monetary policy
 (Choleski, 3m ﬀf ﬁrst)
+0
+10
+20
+30
 Expected GDP
   growth (%)
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
 Expected GDP
   growth (%)
+-0.1
+0
+0.1
+0
+10
+20
+30
 Expected
 inflation (%)
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
 Expected
 inflation (%)
+-0.1
+0
+0.1
+0
+10
+20
+30
 5y break-even
 inflation rate (%)
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
 5y break-even
 inflation rate (%)
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
 10y govt. bond
    yield (%)
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
 10y govt. bond
    yield (%)
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
 5y-5y forward
    rate (%)
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
 5y-5y forward
    rate (%)
 -0.05
+0
+0.05
 months
 months
 months
@@ -996,6 +1392,8 @@ peak response of inﬂation expectations. This large peak response of expectatio
 the ﬂexible inﬂation response in our baseline VAR, and suggests moderate nominal stickiness.
 We address this issue more formally in Section 6.
 The last two rows show that the central bank information shock does not raise the term
+ECB Working Paper Series No 2133 / February 2018
+23
 
 premium. By contrast, the premium temporarily increases after a monetary policy shock (Gertler
 and Karadi, 2015). We conclude this from the observation that even though the 10-year bond
@@ -1054,6 +1452,8 @@ yt, low frequency . . .
 •
 •
 After a monetary policy shock inﬂation is expected to fall and after favorable news about
+ECB Working Paper Series No 2133 / February 2018
+24
 
 Table 4: Impact responses of high-frequency surprises to shocks. Separating central bank infor-
 mation about demand from central bank information about supply.
@@ -1132,6 +1532,8 @@ that inﬂation risk premium moves in the same direction as the excess bond prem
 conservative: expected inﬂation necessarily declines if inﬂation compensation declines after a monetary policy
 shock, and expected inﬂation necessarily increases if inﬂation compensation increases after a news-about-demand
 shock.
+ECB Working Paper Series No 2133 / February 2018
+25
 
 Figure 6: Impulse responses to one standard deviation shocks. Median (line), percentiles 16-84
 (darker band), percentiles 5-95 (lighter band). VAR with central bank information about supply.
@@ -1140,27 +1542,107 @@ CB information
 about demand
 CB information
 about supply
+0
+20
+-0.1
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+20
+-0.1
+0
+0.1
+0.2
+0
+20
+-0.1
+0
+0.1
+0.2
+0
+20
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+20
+-2
+-1
+0
+1
+0
+20
+-2
+-1
+0
+1
+0
+20
+-0.2
+0
+0.2
 Real GDP
 (100 x log)
+0
+20
+-0.2
+0
+0.2
+0
+20
+-0.2
+0
+0.2
+0
+20
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+20
+-0.1
+0
+0.1
+0
+20
+-0.1
+0
+0.1
+0
+20
 -0.05
+0
+0.05
 EBP
 (%)
+0
+20
 -0.05
+0
+0.05
+0
+20
 -0.05
+0
+0.05
 months
 months
 months
+5
 Euro area evidence
 In this section, we analyze the robustness of our baseline US results by applying our methodology
 to euro area data. This application deserves particular attention, because, as we show below,
 standard high-frequency identiﬁcation of monetary policy shocks here leads to results that are
 inconsistent with theoretical predictions. Our methodology resolves this issue.
+5.1
 The euro area dataset
 We have constructed a novel dataset of euro area high-frequency ﬁnancial-market surprises along
 similar lines as the G¨urkaynak, Sack and Swanson (2005b) data for the US. This dataset contains
@@ -1169,6 +1651,8 @@ Most of these announcements happen
 after the ECB Governing Council monetary policy meeting and consist of a press statement
 at 13:45 followed by an hour-long press conference at 14:30. Analogously to the US, we use
 30-minute windows around press statements and 90-minute windows around press conferences,
+ECB Working Paper Series No 2133 / February 2018
+26
 
 both starting 10 minutes before and ending 20 minutes after the event. Whenever there is a
 press conference after a press statement our surprise measure is the sum of the responses in the
@@ -1213,6 +1697,8 @@ whether these releases contaminate our interest rate surprise measure by regress
 in the data releases (relative to Bloomberg consensus).
 The regression explains less than 0.1 percent of the
 variability of the surprise. We conclude that we can ignore the impact of the US data release.
+ECB Working Paper Series No 2133 / February 2018
+27
 
 50. Figure 7 shows the scatter plot of the surprises. This time 46% of the data points are in
 quadrants I and III with ‘wrong-signed’ reactions of stock prices to interest rate surprises, even
@@ -1254,6 +1740,8 @@ The poor man’s sign restriction identiﬁcation is implemented analogously as 
 again delivers similar impulse responses as the sign restrictions. The main diﬀerence is that
 15Recall that in the US 34% of the datapoints with non-zero surprises were in quadrants I and III. This
 proportion is 32% in the US sample starting in 1999, like in the euro area.
+ECB Working Paper Series No 2133 / February 2018
+28
 
 this time the impact increase in the 1-year government bond yield is signiﬁcant and of similar
 magnitude for both shocks.
@@ -1293,6 +1781,8 @@ as temporary deviations from a systematic interest rate rule. To obtain an analo
 bank information shocks, we introduce central bank communication policy to the model. In
 particular, we assume that the central bank has private information about a future disturbance
 and reveals this information in advance to the public. Even though news shocks are revealed
+ECB Working Paper Series No 2133 / February 2018
+29
 
 Figure 8: Impulse responses to one standard deviation shocks, euro area VAR. Median (line), percentiles 16-84 (darker band), percentiles
 5-95 (lighter band). Months on the horizontal axis. *The sign restriction identiﬁcation includes also a restriction that the impact response
@@ -1310,53 +1800,291 @@ Monetary policy
 CB information
 (poor man’s proxy)
 (poor man’s proxy)
+0
+10
+20
+30
 -0.05
+0
+0.05
 1y govt. bond
 yield DE (%)
+0
+10
+20
+30
+-1
+0
+1
 STOXX50
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
 BBB bond
 spread (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
 1y govt. bond
 yield DE (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
+-1
+0
+1
+2
 STOXX50
 (100 x log)
+0
+10
+20
+30
+-1
+0
+1
+2
+0
+10
+20
+30
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
 BBB bond
 spread (%)
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0
+10
+20
+30
+-0.1
+0
+0.1
 1y govt. bond
 yield DE (%)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
+-2
+0
+2
 STOXX50
 (100 x log)
+0
+10
+20
+30
+-2
+0
+2
+0
+10
+20
+30
+-0.2
+0
+0.2
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+0
+0.2
+0
+10
+20
+30
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.5
+0
+0.5
 BBB bond
 spread (%)
+0
+10
+20
+30
+-0.5
+0
+0.5
 months
 months
 months
 months
 months
+ECB Working Paper Series No 2133 / February 2018
+30
 
 Figure 9: Contribution of shocks to the surprise in the 3-month Eonia swap. Basis points
+1999
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+-30
+-25
+-20
+-15
+-10
+-5
+0
+5
+10
+15
 Monetary Policy (sign restrictions)
 Central Bank Information (sign restrictions)
+1999
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+-30
+-25
+-20
+-15
+-10
+-5
+0
+5
+10
+15
 Monetary Policy (poor man`s proxy)
 Central Bank Information (poor man`s proxy)
+ECB Working Paper Series No 2133 / February 2018
+31
 
 contemporaneously with monetary policy shocks, they are independent from each other, in line
 with our empirical framework.
@@ -1400,6 +2128,8 @@ This communication gave an explicit channel for the central bank to inﬂuence p
 tions, potentially independently from its rate setting decisions. We assume that the central bank
 can move markets with communication not because it has any advantage in collecting data, but
 because it employs a large number of analysts and researchers giving it an edge in processing
+ECB Working Paper Series No 2133 / February 2018
+32
 
 economic information. We model the central bank’s information advantage simply by assuming
 that it learns in period t about a future shock (ϵt+2) well before it materializes. The information
@@ -1443,6 +2173,8 @@ then optimally allocate some weight to both disturbances based on the relative v
 realistic framework, no pure monetary policy or central bank information shocks would ever materialize, only some
 combination of the two. Our empirical method, however, would still identify the two extreme building blocks of
 the observed shocks. We leave the analysis of this environment for future research.
+ECB Working Paper Series No 2133 / February 2018
+33
 
 It is of the form:
 πt −γP πt−1 = β(Et {πt+1} −γP πt) + (1 −γ)(1 −βγ)
@@ -1502,6 +2234,8 @@ f′
 It
 
 (12)
+ECB Working Paper Series No 2133 / February 2018
+34
 
 An increase in real rates reduces the value of capital Qt.
 This value equals the present
@@ -1550,6 +2284,8 @@ depreciation rate. Therefore, their value (Qt) equals to the value of the capita
 18The corporate bonds can be understood as equity.
 Firms operate a constant returns to scale technology
 without proﬁts. So the value of the ﬁrm comes only from the value of their capital holdings.
+ECB Working Paper Series No 2133 / February 2018
+35
 
 corporate bond return is
 Rkt = Ξt
@@ -1594,6 +2330,8 @@ leverage φt−1.
 How do ﬁnancial frictions amplify the impact of a monetary policy shock on real activity?
 As mentioned above, a temporary increase in the nominal rate translates into a higher real
 rate rt because of nominal rigidities. Higher real rates reduce consumption through a standard
+ECB Working Paper Series No 2133 / February 2018
+36
 
 intertemporal substitution mechanism. Furthermore, higher real rates raise the funding costs
 of banks, and make them raise the required return on corporate bonds (EtRkt+1).
@@ -1637,6 +2375,8 @@ Corporate bonds, by contrast, are traded by the banks, which require excess retu
 We denote by qxt the nominal price of a government bond with duration x. It pays ςi
 x unit
 in each quarter i = 0, 1, 2, . . . . Its steady state (yearly) duration is 1/[4(1 −ςx/R)], where R
+ECB Working Paper Series No 2133 / February 2018
+37
 
 is the steady state gross real rate (and steady state inﬂation is 0). Its (gross) nominal yield to
 maturity is Yxt = 1/qxt + ςx. The no arbitrage condition requires that
@@ -1683,6 +2423,8 @@ companies measured by the S&P500 than the value of capital (Qt). The two variabl
 model, but the former gets ampliﬁed by the calibrated leverage, similarly to how S&P500 valuations are ampliﬁed
 by the average leverage of the ﬁnancial and non-ﬁnancial ﬁrms it incorporates. Our results are robust to using
 Qt as a measure of stock market valuations.
+ECB Working Paper Series No 2133 / February 2018
+38
 
 We transform monthly VAR impulse responses into quarterly impulse responses by taking
 simple averages over each quarter. This gives us 12 moments for each observables. We simulate
@@ -1699,61 +2441,171 @@ Sign restrictions
 Monetary policy
 Monetary policy
 CB information
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
+0.4
 Percent
 1-year rate
+2
+4
+6
+8
 10 12
+-2
+0
+2
 Percent
 S&P500
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP deflator
+2
+4
+6
+8
 10 12
 Quarters
+-0.1
+0
+0.1
 Percent
 EBP
 VAR
 Model
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
+0.4
 Percent
 1-year rate
+2
+4
+6
+8
 10 12
+-2
+0
+2
 Percent
 S&P500
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP deflator
+2
+4
+6
+8
 10 12
 Quarters
+-0.1
+0
+0.1
 Percent
 EBP
 VAR
 Model
 Model,κ=0
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
+0.4
 Percent
 1-year rate
+2
+4
+6
+8
 10 12
+-2
+0
+2
 Percent
 S&P500
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP
+2
+4
+6
+8
 10 12
+-0.2
+0
+0.2
 Percent
 GDP deflator
+2
+4
+6
+8
 10 12
 Quarters
+-0.1
+0
+0.1
 Percent
 EBP
 VAR
 Model
+ECB Working Paper Series No 2133 / February 2018
+39
 
 Table 5: Estimated parameters
 Parameters
@@ -1814,6 +2666,8 @@ stickiness, however, is insuﬃcient to explain the output response, so the mode
 identiﬁcation. This way, it also gets closer to match the observed reaction of the excess bond
 premium.
 The red dotted lines on the ﬁgure show the impulse responses if we switch oﬀﬁnancial fric-
+ECB Working Paper Series No 2133 / February 2018
+40
 
 tions by setting the portfolio adjustment cost to zero (κ = 0). Notably, the output response
 becomes substantially more muted, suggesting that ﬁnancial ampliﬁcation plays a key role in
@@ -1854,6 +2708,8 @@ is similar to news about an upcoming demand shock that the central bank partly o
 Our results on the quantitative response to monetary policy shocks can be used to improve
 the calibration of models used for monetary policy analysis. We take the ﬁrst step and show
 that our baseline monetary policy shock gives a prominent role to ﬁnancial frictions in monetary
+ECB Working Paper Series No 2133 / February 2018
+41
 
 transmission. Our results on the impact of central bank communication about the real economy
 gives support to models that assume that the central bank has some advantage in processing
@@ -1862,6 +2718,8 @@ conditions.
 Our evidence can contribute to formulating realistic models that could be used
 to draw normative conclusions about central bank communication. We leave this for future
 research.
+ECB Working Paper Series No 2133 / February 2018
+42
 
 Appendix
 Appendix A
@@ -1897,6 +2755,7 @@ t−P y′
 t−P 1), B =
  B1
 Y M, B1
+Y Y , ..., BP
 Y M, BP
 Y Y , cy
 ′,
@@ -1909,7 +2768,7 @@ T
 ′.
 b) We partion Σ as follows
 Σ =
-
+ 
 ΣMM
 ΣMY
 ΣY M
@@ -1970,6 +2829,8 @@ The prior about the unobserved surprises is noninformative,
 p(m∗
 t ) ∝1 for all t ∈(τ1, ..., τT ∗)
 (A.6)
+ECB Working Paper Series No 2133 / February 2018
+43
 
 and therefore we ignore it further.
 The posterior is obtained as the product of the likelihood and the prior,
@@ -2050,6 +2911,8 @@ where ΣMM.1 = ΣMM −ΣMY Σ−1
 Y Y ΣY M, Mt−1 denotes the matrix (mt−1, ..., m0)′ and
 ut = yt −B′xt.
 Note that xt contains elements from Mt−1, that’s why we make the
+ECB Working Paper Series No 2133 / February 2018
+44
 
 conditioning on Mt−1 explicit.
 A.2
@@ -2113,6 +2976,8 @@ not depend on the future values m∗
 τ for τ > t. This justiﬁes drawing m∗
 t sequentially over time,
 using (A.14).
+ECB Working Paper Series No 2133 / February 2018
+45
 
 Appendix B
 Additional results for the US
@@ -2120,7 +2985,7 @@ B.1
 Relaxing the restrictions on the dynamics of mt
 In this subsection we show that our results are robust to relaxing the restrictions on the dynamics
 of mt in the VAR. The unrestricted VAR is
-
+ 
 mt
 yt
 !
@@ -2128,7 +2993,7 @@ yt
 P
 X
 p=1
-
+ 
 Bp
 MM
 Bp
@@ -2142,12 +3007,12 @@ mt−p
 yt−p
 !
 +
-
+ 
 cM
 cY
 !
 +
-
+ 
 um
 t
 uy
@@ -2181,6 +3046,8 @@ Results with Industrial Production and CPI
 Figure B.3 shows that when we replace the real GDP and GDP deﬂator with the industrial
 production and the CPI index, the standard high-frequency identiﬁcation yields a small price
 puzzle, and our sign restrictions eliminate it.
+ECB Working Paper Series No 2133 / February 2018
+46
 
 Figure B.1: Impulse responses in the restricted and in the unrestricted VAR. Sample January
 1990 to December 2016.
@@ -2197,56 +3064,260 @@ Monetary policy
 CB information
 (negative co-movement)
 (positive co-movement)
+0
+10
+20
+30
+0
+0.05
   surprise in
 3m ff futures
+0
+10
+20
+30
+0
+0.05
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
 surprise in
 S&P500
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
 1y govt. bond
    yield (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
+0
+0.02
+0.04
   surprise in
 3m ff futures
+0
+10
+20
+30
+0
+0.02
+0.04
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
 surprise in
 S&P500
+0
+10
+20
+30
+-0.4
+-0.2
+0
+0.2
+0.4
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
 1y govt. bond
    yield (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0
+10
+20
+30
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.08
 -0.06
 -0.04
 -0.02
+0
+0.02
+0.04
 GDP deflator
 (100 x log)
+0
+10
+20
+30
 -0.08
 -0.06
 -0.04
 -0.02
+0
+0.02
+0.04
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
 months
 months
 months
 months
+ECB Working Paper Series No 2133 / February 2018
+47
 
 Figure B.2: Impulse responses of yt to monetary policy and central bank information shocks:
 results for subsamples. Median (line), percentiles 16-84 (darker band), percentiles 5-95 (lighter
@@ -2261,36 +3332,188 @@ Monetary policy
 CB information
 (negative co-movement)
 (positive co-movement)
+0
+10
+20
+30
+-0.2
+0
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-0.2
+0
+0.2
+0
+10
+20
+30
+-6
+-4
+-2
+0
+2
 S&P500
 (100 x log)
+0
+10
+20
+30
+-6
+-4
+-2
+0
+2
+0
+10
+20
+30
+-0.6
+-0.4
+-0.2
+0
+0.2
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.6
+-0.4
+-0.2
+0
+0.2
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
+-0.1
+0
+0.1
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
 months
 months
 months
 months
+ECB Working Paper Series No 2133 / February 2018
+48
 
 Figure B.3: Impulse responses of yt to monetary policy and central bank information shocks,
 model with Industrial Production and Consumer Price Index. Median (line), percentiles 16-84
@@ -2303,31 +3526,147 @@ CB information
 (positive co-movement)
 Monetary policy
 (Choleski, 3m ﬀf ﬁrst)
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+0
+0.1
+0.2
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
 Ind. Prod.
 (100 x log)
+0
+10
+20
+30
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0
+10
+20
+30
+-0.2
+0
+0.2
 CPI
 (100 x log)
+0
+10
+20
+30
+-0.2
+0
+0.2
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-2
+-1
+0
 S&P500
 (100 x log)
+0
+10
+20
+30
+-0.8
+-0.6
+-0.4
+-0.2
+0
 Ind. Prod.
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
 CPI
 (100 x log)
+0
+10
+20
+30
+0
+0.02
+0.04
+0.06
 EBP
 (%)
 months
 months
 months
+ECB Working Paper Series No 2133 / February 2018
+49
 
 B.4
 VAR with factors of high-frequency surprises
@@ -2378,6 +3717,8 @@ Policy indicator
 Figure B.4 shows that when we use the alternative measures of surprises, the lessons on
 the ‘wrong-signed’ responses of stock prices to interest rates hold. Still, in 33% of the cases
 the co-movement between interest rates and stock price surprises is positive. This conﬁrms the
+ECB Working Paper Series No 2133 / February 2018
+50
 
 lessons from Figure 1.
 Figure B.4: Scatter plot of interest rate and stock price surprises. The policy indicator and the
@@ -2418,6 +3759,8 @@ point using the ‘multiple priors’ approach of Giacomini and Kitagawa (2015).
 The prior on Q might be important, because the sign restrictions in Table 1 provide only a
 set identiﬁcation, not a sharp identiﬁcation. That is, for every nonsingular variance matrix Σ
 there is a continuum of rotation matrices Q that are consistent with the sign restrictions. Since
+ECB Working Paper Series No 2133 / February 2018
+51
 
 Figure B.5: Impulse responses to one standard deviation shocks, VAR with factors of surprises. Median (line), percentiles 16-84 (darker
 band), percentiles 5-95 (lighter band). Months on the horizontal axis.
@@ -2434,48 +3777,228 @@ Monetary policy
 CB information
 (poor man’s proxy)
 (poor man’s proxy)
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-1.5
+-1
+-0.5
+0
+0.5
 S&P500
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.1
 -0.05
+0
 GDP deflator
 (100 x log)
+0
+10
+20
+30
 -0.02
+0
+0.02
+0.04
 EBP
 (%)
+0
+10
+20
+30
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+0
+0.1
+0.2
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0.15
 1y govt. bond
    yield (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+0.1
+0.15
+0
+10
+20
+30
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
 -0.05
+0
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
 -0.05
+0
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
+ECB Working Paper Series No 2133 / February 2018
+52
 
 the sample carries no information about Q, the weights on diﬀerent values of Q are determined
 by the prior.
@@ -2496,23 +4019,99 @@ Monetary policy
 CB information
 (negative co-movement)
 (positive co-movement)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0.2
 1y govt. bond
    yield (%)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0.2
+0
+10
+20
+30
+-2
+-1
+0
+1
 S&P500
 (100 x log)
+0
+10
+20
+30
+-2
+-1
+0
+1
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
 Real GDP
 (100 x log)
+0
+10
+20
+30
+-0.2
+-0.1
+0
+0.1
+0
+10
+20
+30
+-0.1
+0
+0.1
 GDP deflator
 (100 x log)
+0
+10
+20
+30
+-0.1
+0
+0.1
+0
+10
+20
+30
 -0.05
+0
+0.05
 EBP
 (%)
+0
+10
+20
+30
 -0.05
+0
+0.05
 months
 months
 Figure B.6 reports the robust bounds for the impulse responses of all variables yt at all
 horizons.
 The bounds are wider and include zero more often than the bounds in Figure 2,
+ECB Working Paper Series No 2133 / February 2018
+53
 
 but the diﬀerent nature of the monetary policy and central bank information shocks remains
 clear. Furthermore, let us make two comments related to the width of the bounds. First, the
@@ -2552,6 +4151,8 @@ shocks on proxies for the FOMC private information. The variables are at the mon
 quency. As measures of the two shocks we take the posterior medians of the respective shocks’
 contributions to the surprises in the 3-month fed funds futures. The proxy for the FOMC private
 information is standard in the literature. In particular, we link the staﬀforecasts on scheduled
+ECB Working Paper Series No 2133 / February 2018
+54
 
 Table C.1: Surprises and proxies for Fed private information
 (1)
@@ -2637,6 +4238,8 @@ Appendix D
 High-frequency euro area data
 We use high-frequency data on euro area asset prices to build a dataset of high-frequency asset
 price responses to the ECB policy announcements, analogous to the G¨urkaynak et al. (2005b)
+ECB Working Paper Series No 2133 / February 2018
+55
 
 dataset for the US. We take the high-frequency asset price data from the Thomson Reuters Tick
 History database. Our dataset has two kinds of assets: interest rate swaps and stock prices.
@@ -2677,6 +4280,8 @@ rate. The outliers are already removed, as they would distort the scale of the p
 line shows the midquote, which is our measure of the market rate. The ﬁrst panel presents the
 market for the 3-month Eonia OIS (EUREON3M) on May 10th, 2001. On that day the ECB
 announced a 25 basis point cut in its policy rates. The press release was issued at 13:45. We
+ECB Working Paper Series No 2133 / February 2018
+56
 
 Figure D.1: Construction of high-frequency surprises for the 3-month Eonia swap rate.
 4.5
@@ -2727,6 +4332,8 @@ unchanged. This was anticipated, so the press release at 13:45 did not contain a
 However, during the press conference that started at 14:30 and lasted about an hour, the ECB
 President Jean-Claude Trichet delivered a hawkish message. He highlighted the upwards risks
 to inﬂation coming from an increase in commodity prices, and concerns about second-round
+ECB Working Paper Series No 2133 / February 2018
+57
 
 eﬀects (i.e. the price increases fuelling wage increases). By the end of the press conference the
 3-month Eonia OIS was about 10 basis points higher, reﬂecting expectations of future interest
@@ -2789,6 +4396,8 @@ Inﬂation coeﬃcient in the Taylor rule
 κx
 -0.125
 Markup coeﬃcient in the Taylor rule
+ECB Working Paper Series No 2133 / February 2018
+58
 
 ISBN 978-92-899-3238-7 
 ISSN 1725-2806 

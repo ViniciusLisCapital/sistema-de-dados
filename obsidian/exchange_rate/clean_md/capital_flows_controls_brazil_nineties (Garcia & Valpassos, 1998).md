@@ -51,6 +51,8 @@ Send correspondence to:
 Dept. of Economics, PUC-Rio
 Rua Marquês de São Vicente, 225
 Rio de Janeiro, RJ, 22453-900, Brazil
+e-mail: mgarcia@baoba.econ.puc-rio.br
+2
 
 JEL Classification Ns.: F32, O54
 I. Introduction
@@ -78,6 +80,7 @@ This shows a very sharp increase of the capital flows in the nineties in contras
 previous period—when the foreign debt problem was a huge constraint on the Brazilian
 economy. The resumption of capital flows, together with the foreign debt renegotiation
 significantly relieved the external constraint, vis-à-vis the earlier period. Three crisis
+3
 
 were faced during the nineties: the Mexican crisis of December, 1994; the Asian crisis
 which started in July, 1997; and the Russian crisis which started in May 1998. The first
@@ -107,6 +110,7 @@ of refinancing, which were used to pay back the arrears (US$14,253 million of ar
 were repaid in 1992). In 1993 the change in short term liabilities flows was positive but
 1 The main items refinanced were US$9.5 billion with the Club of Paris, and US$7.1 of unpaid interest to
 banks (through IDU bonuses) [Banco Central do Brasil, 1992].
+4
 
 there was a reduction in the capital account surplus. The same 1992 pattern occurred in
 1994, now on a reduced level, as the higher capital account surplus was counterbalanced
@@ -131,6 +135,7 @@ massive short-term capital inflows, but was also very short-lived. The datum for
 1998.III, not yet available, will show massive short-term capital outflows, with the
 consequent loss in foreign reserves.
 2 For capital movement data see table 1.
+5
 
 II.2.Composition
 3
@@ -160,6 +165,7 @@ Payments (Table IV.1). The main differences are that the following items are not
 short term capital flows; inflows due to refinancing; and inflows and outflows of Brazilian residents
 (except for the item investments). Note also that the Brazilian Central Bank includes portfolio investment
 in medium and long term capital movement.
+6
 
 Chart 4 presents two striking features: the first is the enormous growth in both inflows
 and outflows; the second is the also enormous growth in net investment. As Charts 5
@@ -189,6 +195,7 @@ and buyers’ medium and long term credits.
 (1998)
 5 The suppliers and buyers’ short term credits (less than 360 days) enter the short term capital account of
 the balance of payments.
+7
 
 The improvement of the capital account performance in the nineties made it possible for
 Brazil to have a steadily negative Financing account in recent years until 1996, with the
@@ -223,6 +230,7 @@ the short term capital flows that have entered the Brazilian economy in the firs
 positive impact to the stabilization plan. Data for the first half of 1998 show that Financing remained
 positive, with a total of US$5,5 billion, caused once again by the large suppliers and buyers’ medium and
 long term credits surplus.
+8
 
 Chart 9 summarizes the main facts regarding the composition of capital movements to
 and from Brazil since the late eighties. The solid line is the total medium and long term
@@ -252,6 +260,7 @@ that.
 III. Main Determinants
 In addition to the improved economic prospects of Brazil in the medium and long run,
 its extremely high interest differential in comparison with the developed economies
+9
 
 was essential to attract the massive portfolio and direct investments observed in the
 7
@@ -282,6 +291,7 @@ of CID are related to restrictions to capital outflow.
 dominant for the capital flows to Latin American countries, up to 1992.
 8 The ex post result was a real appreaciation, which further increased the arbitrage gains.
 9 For a detailed description of this period, see Carneiro and Garcia [1994].
+10
 
 III.1.1. The Covered Interest Differential
 Many considerations must be made before implementing a theoretical concept as the
@@ -311,6 +321,7 @@ for a short while and, due to the high interest rate that prompted incipient cap
 has a very comprehensive review of the unbiasedness tests for exchange forward prices until then].
 However, what we need to compute the CID is exactly what is provided by the futures market, a hedge
 against the exchange rate risk.
+11
 
 inflows, it appreciated considerably, both in real and in nominal terms. This gave
 extremely high gains to foreign investors who had their money in Brazilian markets.
@@ -331,6 +342,7 @@ III.1.1.1.The CID Computed with US$ futures
 The futures market data are used to compute both the internal interest rate and the
 forward premium. In Brazil, the most liquid private interest rate market is a futures
 market, at the Brazilian Commodities and Futures Exchange (BM&F –
+http://www.bmf.com.br/). Therefore, the domestic interest rate is computed through the
 annualized daily expectations on the compound interbank rate (CDI) over the next three
 months.
 For the forward premium (the “nominal expected devaluation”), the exchange futures
@@ -338,6 +350,7 @@ market data are used. Chart 11 displays these data. The thick solid line at the 
 the spot exchange rate (R$/US$). Each of the other lines that converge to the spot rate is
 the futures price series for a given contract maturing at the first day of the respective
 month. That is, the sequence of futures prices “forecasting” the exchange rate on
+12
 
 October first, 1998 is the jagged line that joins the spot rate series on October first,
 1998.
@@ -365,6 +378,7 @@ the (blue) solid line.
 11 The IDU Bonds are bonds issued by The Federal Republic of Brazil under the terms of the Brady
 refinancing agreement. The issue size was US$ 7,200 Millions and the issue date was November 20,
 1992. The maturity is January 1, 2001, and the average life was 5 years.
+13
 
 III.1.1.3. The CID Computed with Brazilian Bonds indexed to US$
 Bonds indexed to US$ are also offered in the domestic market. The most liquid bond
@@ -391,6 +405,7 @@ futures market lies above all the others. This difference has decreased substant
 since the Russian crisis has been reversed.
 12 For a description of the Brazilian domestic debt market, see Bevilaqua, Carneiro, Garcia and Werneck
 [1998].
+14
 
 This difference can be explained by default risk, taxes, exchange-rate-spread risk and
 the effect of the term structure. As the NTN-Ds are usually longer than the longest
@@ -416,6 +431,7 @@ hypothesis is true, one may learn about the investors’ expectations on the sus
 of the exchange rate by the behavior of this spread over time. A few investment banks
 offer a special convertibility futures OTC contract, which insures the holder from this
 risk.
+15
 
 The third factor, the default risk, may signal that investors see the Brazilian government
 more committed to honoring the securities traded abroad (e.g., the IDU) than those
@@ -445,6 +461,7 @@ companies give a better credit rating to the “sovereign risk” of government 
 currency than to the “sovereign risk” of government securities issued in foreign currency. For example,
 the “sovereign rating” for Portugal securities issued in foreign currency is AA-, while it is AAA for
 Portuguese securities issued in domestic currency (Silveira, 1996).
+16
 
 CID. The last time this phenomenon had occurred was during the Mexican crisis of
 1994/95, showing the similarity between these two periods. This happened because the
@@ -473,6 +490,7 @@ basically by the Brazilian Central Bank, while the yield relevant for the intern
 CID is the secondary market yield of the Brazilian bonds (IDU and C-Bond). During
 crisis, the Brazil risk increases, and this is fully reflected by the increase in the Brazilian
 external bonds’ secondary market yields. However, domestically, the interest rates
+17
 
 may not rise enough to fully reflect the increase in the Brazil risk, since the Central
 Bank interferes with the domestic interest rate. In such cases, capital started. to flee the
@@ -502,6 +520,7 @@ Appendix 1, there are 40 regressions consisting in eight combinations of the reg
 inflows. Clearly, capital would be more attracted to come into a growing economy, and one that is
 investing strongly. Finally, the coefficient on the current account deficit is expected to be positive,
 because a higher deficit will likely require more external financing (Labán and Larraín, 1994, p. 12).
+18
 
 for each of the five dependent variables: TOTLRUN (total of long and medium run net
 flows, including official loans and portfolio investment), SRCF (short run capital flows,
@@ -529,6 +548,7 @@ autocorrelation. The level of significance of the F test (p-value), whose null h
 is that all coefficients are zero, is reported under the Durbin-Watson statistic. One can
 easily see that nearly for all the cases, the null hypothesis of joint insignificance of all
 variables is easily rejected at the 1% significance level.
+19
 
 Regressions 1 to 8, which report the results for the dependent variable TOTLRUN (total
 of long and medium run net flows, including official loans and portfolio investment)
@@ -557,6 +577,7 @@ Regressions 33 to 40, which report the results for the dependent variable NOFLR 
 of long and medium run net flows, excluding official loans and portfolio investment),
 show that the covered interest differential after 1991 (DCID) shows up significantly in
 all eight regressions. Both the investment/GDP rate for the whole period and the GDP
+20
 
 growth after 1991 (IGDPR4Q and DGDPGR) shows up significantly in all regressions
 15
@@ -586,6 +607,7 @@ flows.
 15 To partially address the criticism that the estimates may suffer from simultaneous equations bias, all
 regressions were rerun with the dependent variables lagged one quarter. The qualitative results did not
 change.
+21
 
 IV. Capital Controls
 As we have shown in Section II, since the last quarter of 1991, Brazil started attracting
@@ -612,6 +634,7 @@ Since 1987, portfolio investment was fostered by the creation of specific channe
 through the establishment of resolution 1289, that created annexes I-III. That gave
 foreign investors exemption from domestic income tax on capital gains. However, given
 the high capital inflows in the nineties, the need to revise the legislation was flagrant.
+22
 
 So, in May 1991 is created the so-called Annex IV—Securities Portfolios for
 Institutional Investors—, which became very attractive to foreign investor because, in
@@ -641,6 +664,7 @@ attenuate the monetary impact of the foreign sector, without interrupting the pr
 integration with international financial markets.
 16 Interest rates were kept at very high levels to control aggregate demand in view of the lack of further
 fiscal adjustment.
+23
 
 Some measures in order to diminish the short term capital flows were taken in June
 1993, when the Central Bank expanded the minimum average amortization term of
@@ -670,6 +694,7 @@ invest in Brazilian stock and derivative markets. Only foreign institutional inv
 such as Pension Funds, Portfolios belonging to Financial Institutions, Insurance
 Companies, and Foreign Investment Funds may invest in those portfolios. Despite the
 regulation, wealthy investors are known to have “individual funds” under Annex IV.
+24
 
 Nonetheless, by the use of financial operations, investments were made through Annex
 IV in order to provide fixed income gains. Given the tax exemptions of the investments
@@ -697,6 +722,7 @@ game between regulators and investment banks. As these markets were fairly well
 developed in Brazil, one could easily use them to provide fixed yields. By December
 a new Central Bank measure was enacted forbidding a broader range of fixed-income-
 17 For a description of derivatives markets in Brazil, see Braga (1996).
+25
 
 like securities, including investment strategies involving derivatives that lead to
 18
@@ -727,6 +753,7 @@ the Central Bank was increased from 360 to 720 days; c) 90 day suspension of inf
 maturity date is fixed. Since the payment is fixed at the maturity date, a no-arbitrage argument leads to
 the conclusion that the return on the whole strategy must equal the riskless rate of return. In the Brazilian
 case, this is the rate on the interbank funds market (CDI).
+26
 
 of foreign resources to be used in future capital increases and bridge investments for
 later conversion of debt into investments and, following that, indefinite suspension of
@@ -755,6 +782,7 @@ investment abroad by private nonfinancial legal entities. Legal entities were al
 allowed to purchase real estate abroad, something previously restricted to individuals.
 In September 1994, Brazilian investors were allowed to make special investments
 abroad. These investments should carry at least 60% of (internationally issued)
+27
 
 Brazilian government securities. Also in September, as the appreciation of the real
 continued taking place, the Central Bank was led to intervene in the exchange markets,
@@ -784,6 +812,7 @@ Foreign Capital Fixed Yield Funds; and c) from zero to 1%, in the case of Annex 
 investments. The minimum period for domestic loans under the Resolution # 63 (that
 regulates banks’ foreign liabilities aimed at making loans for agriculture) was raised
 from 90 to 540 days, and stricter requirements were put in place. Annex IV funds
+28
 
 could no longer invest in money market funds (FAFs) or fixed-income privatization
 currencies. Pension funds were allowed to place up to 10% of their reserves in
@@ -811,6 +840,7 @@ Central Bank was reduced from US$50 to US$5 millions.
 After a nominal devaluation of 5,2% at the end of March 1995, a new exchange band
 regime had been implemented, with frequent Central Bank interventions. This new
 regime aimed at (...) permitting a gradual devaluation of the “real” against the dollar,
+29
 
 without however providing the market any signals as to the speed or intensity of these
 devaluations [Banco Central do Brasil, 1996].
@@ -838,6 +868,7 @@ under Resolution # 63, while waiting in a domestic bank to be lent, cannot be in
 in NTN-D (exchange-rate-linked domestic debt). A 5% “entrance” tax (IOF) was
 imposed on investments in Privatization Funds. Foreign investors (individuals or legal
 entities) were allowed to invest in Real State Funds and Emerging Firms Investment
+30
 
 Mutual Funds, with a tax (10% or 5% for regular registered funds) on all withdrawals
 19
@@ -866,6 +897,7 @@ Crisis, the income tax over fixed income funds for foreign investors was raised 
 term investments.
 19 By the end of 1996, the government withdrew many of previous measures aimed at restricting the
 inflow of short term capital.
+31
 
 The next Section evaluates the effectiveness of the controls described above.
 IV.2. Evaluation of the Effectiveness of Capital Controls
@@ -897,6 +929,7 @@ defined as the ability to detect over extended time periods different average be
 economic variables for countries with and without capital controls programs. At the other extreme,
 effectiveness has been defined as the ability to maintain an inconsistent macroeconomic policy regime
 forever.
+32
 
 attributed a great portion of this increase to fixed-income investments disguised into
 direct investments to avoid the restriction on capital inflows.
@@ -923,6 +956,7 @@ Flows
 As an insurance of the Brazilian payment capability, the accumulation of foreign
 reserves was the main factor that allowed the exchange-rate-anchor strategy followed by
 the Real Plan. Until the necessary fiscal reforms are undertaken, the high foreign
+33
 
 reserves policy is required to maintain stability, mainly during external crisis periods, as
 the most recent Russian crisis has made once more clear.
@@ -949,6 +983,7 @@ Since the stabilization plan, the external accounts have gradually deteriorated.
 situation of no current account deficit before 1994, this account became extremely
 negative after the real plan. In the three year period 1995-97, the deficit added up to
 more than US$70 billion, and what is even more serious, showing an upward trend. In
+34
 
 1997, the US$33,4 billion represented more than 4% of GDP. This is clearly a risky
 strategy in a world of volatile capital flows, as the Russian crisis once more made clear.
@@ -956,6 +991,7 @@ On the other hand, if further progress is not attained on the fiscal side, a dev
 the Real would not save the stabilization plan. Of course, if fiscal deficits of the
 magnitude of the recent ones persist (nominal deficit of 6.1% GDP for 1997 and 7.27%
 for the first half of 1998), no nominal anchor will prevail in the long run.
+35
 
 V.2. Increase in the quasi fiscal deficit and in the domestic debt because
 of massive sterilization
@@ -984,6 +1020,7 @@ total deficit remaining stable at 5,89%. The nominal deficit worsened further in
 22 The Tanzi effect states that low inflation has positive effects on the public sector budget, because
 expenditures are indexed but receipts not. In Brazil, the opposite is observed, as inflation improves fiscal
 situation.
+36
 
 half of 1998, surpassing the 7% of GDP, despite the fiscal package released to
 counteract the Asian crisis.
@@ -1018,6 +1055,7 @@ Foreign Debt 11.8 10.4 9.5 8.4
 Net Debt
 Domestic Net Debt 9.2 10.1 11.5 13.0
 Foreign Net debt 0.3 0.3 0.4 0.5
+37
 
 VI. Conclusion
 Capital flows to Brazil resumed in the early nineties. Brazil, as many other developing
@@ -1037,6 +1075,7 @@ attractiveness of Brazilian bonds to foreign investors. The CID represents the e
 (3) Public Enterprises Net debt 6.7 6.5 6.1 2.8
 Domestic Net Debt 4.9 4.8 4.0 0.9
 Foreign Net debt 1.9 1.7 2.0 1.9
+Public Sector Net Debt (1+2+3) 28.5 29.9 34.4 34.5
 The Table shows that from the 1740 basis points (bp) increase in the net federal debt in domestic
 securities from December 94 and December 97, only 600 bp were attributable to the fiscal deficit during
 that period (this is the increase in the net federal debt). The remaining 1140 bp were attributable to the
@@ -1047,6 +1086,7 @@ bp).
 behavior:
 Year 1992 1993 1994 1995 1996 1997
 FDI/CAB (%) 6 6 13 13 29 63
+38
 
 that an investor would have by investing in the Brazilian bond market instead of
 investing in fixed income abroad, already discounting the exchange rate risk. The
@@ -1075,6 +1115,7 @@ by bright investment opportunities in fixed capital or even in the stock market,
 enormous interest rate differential that was generated both by very high domestic rates
 in Brazil and by low domestic rates abroad in the major part of the last five years. After
 1996, foreign direct investment became the main source of net capital inflows. Those
+39
 
 flows resulted in a major accumulation of foreign reserves. Those reserves worked as an
 insurance policy of the Real Plan, permitting the Brazilian government to keep an
@@ -1103,11 +1144,13 @@ foreigners, were the first to leave Mexican investments (see, among others, Fran
 Schmukler [1996]). Until now, hopefully, the Brazilian nationals did not follow that
 path. Nevertheless, the capital flows that have served so far as a backbone of the
 stabilization plan may very well turn into a very hard punishment if the notoriously
+40
 
 volatile investors’ confidence is threatened. If Brazil is lucky enough to survive the
 current crisis, our newly reelected government had better not waste this new chance,
 and carry out the recently announced fiscal package, unlike what was done with the
 previous one enacted after the Asian crisis.
+41
 
 Chart 1
 CAPITAL ACCOUNT BALANCE
@@ -1365,10 +1408,31 @@ Short Term Capital
 
 Chart 11
 Exchange Rate Spot and Futures Prices
+1,30
+1,25
+1,20
+1,15
+1,10
+1,05
+1,00
+0,95
+0,90
+0,85
+0,80
+49
 $SU/$R
 49-luJ 49-ogA 49-teS 49-voN 49-zeD 59-naJ 59-raM 59-rbA 59-iaM 59-luJ 59-ogA 59-teS 59-voN 59-zeD 69-naJ 69-raM 69-rbA 69-iaM 69-luJ 69-ogA 69-teS 69-voN 69-zeD 79-naJ 79-raM 79-rbA 79-nuJ 79-luJ 79-ogA 79-tuO 79-voN 79-zeD 89-veF 89-raM 89-rbA 89-nuJ 89-luJ 89-ogA 89-tuO
 Chart 12
 Different Measures of Country Risk for Brazil
+35%
+30%
+25%
+20%
+15%
+10%
+5%
+0%
+-5%
 .a.a
 %
 49/ogA/1 49/teS/31 49/tuO/72 49/zeD/21 59/naJ/42 59/raM/31 59/rbA/72 59/nuJ/9 59/luJ/42 59/teS/4 59/tuO/81 59/zeD/1 69/naJ/61 69/veF/92 69/rbA/51 69/iaM/82 69/luJ/01 69/ogA/12 69/tuO/2 69/voN/41 00/naJ/0 79/veF/31 79/raM/13 79/iaM/41 79/nuJ/62 79/ogA/8 79/teS/91 79/tuO/13 79/zeD/21 89/naJ/72 89/raM/21 89/rbA/82 89/nuJ/01 89/luJ/42
@@ -1514,6 +1578,7 @@ Period t-statistic t-statistic t-statistic t-statistic t-statistic t-statistic t
 85:01 TO 97:04- -2,516833 0,457224 2,384187 0,070046 0,281702 2,298819 -1,521563 -1,960559 0,897115 1,618623 0,415357 0,000131
 33 NOFLR -2641,38 41,08003 148,0563 -886,8676 11,99328 8895,838 -48,58015 -63912,58 -32,68989 2701,453 0,581084 1,658785
 85:01 TO 97:04- -2,040145 0,108514 1,954763 -0,28654 0,788675 2,290416 -1,227594 -2,311201 -0,8459 1,808395 0,491317 0,00001
+54
 
 T a b l e 3 - A N N E X I V - C om p o sitio n
 Value(US$ Millions) Total
@@ -1675,3 +1740,4 @@ Period t-statistic t-statistic t-statistic t-statistic t-statistic t-statistic t
 85:01 TO 97:04- -0,832824 0,15636 -0,348196 2,018762 -1,980281 2,91499 0,38038 0,000044
 40 NOFLR -153,6165 51,06685 9401,457 2183,145 0,341416 1,237743
 85:01 TO 97:04- -0,723687 0,141123 2,943293 2,60878 0,300254 0,000151
+57
