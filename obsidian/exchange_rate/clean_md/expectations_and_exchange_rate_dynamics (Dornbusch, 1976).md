@@ -33,8 +33,6 @@ Frenkel (1976), Kouri (1976), and Mussa (1976). The classics remain Fleming (196
 and Mundell (1964. 1968).
 () 1976 by The University of Chicago. All rights reserved.
 i i6i
-This content downloaded from 128.143.023.241 on August 07, 2016 19:28:35 PM
-All use subject to University of Chicago Press Terms and Conditions (http://www.journals.uchicago.edu/t-and-c).
 
 of differential adjustment speeds in goods and asset markets. In fact, the
 dynamic aspects of exchange rate determination in this model arise from
@@ -79,7 +77,6 @@ Assets denominated in terms of domestic and foreign currency are assumed
 to be perfect substitutes given a proper premium to offset anticipated
 exchange rate changes. Accordingly, if the domestic currency is expected
 
-EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i63
 to depreciate, interest rates on assets denominated in terms of domestic
 currency will exceed those abroad by the expected rate of depreciation.
 That relationship is expressed in (1) where r is the domestic interest rate,
@@ -161,7 +158,6 @@ results described below would be affected by this extension.
 arithm of the foreign price level. Setting the foreign price level equal to unity implies
 thatp* = 0.
 
-EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i65
 We note that the long-run equilibrium exchange rate implied by (8) is5
 e= - + (l/8)[Crr* + (1 - 7)y - u], (9)
 where f is defined in (5). From (9) it is apparent that the long-run
@@ -322,7 +318,6 @@ from point A to the short-run equilibrium at point B.
 WW e have not drawn in fig. 2, the p = 0 schedule. It is apparent, however, from the
 homogeneity properties of the model that the p = 0 schedule will pass through point C.
 
-EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i69
 p~~~~~~
 l
 0 e~~~~~~~5

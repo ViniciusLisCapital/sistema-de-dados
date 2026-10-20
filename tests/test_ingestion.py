@@ -117,6 +117,48 @@ def test_table_rows_are_not_a_running_header():
     assert spans == [(0, 2, "A Credit and Banking Data – For Online Publication")]
 
 
+def test_contact_on_a_body_line_drops_only_the_contact():
+    # A two-column cover puts the author sidebar at the end of a body line (Goldman 2026).
+    body = "in particular in lower-income countries, with food accounting for 28% of the CPI"
+    out = clean_code.clean("\n".join([PROSE, body + " marialudovica.ambrosino@gs.com", PROSE]))
+    assert body in out and "@gs.com" not in out
+    phone = "basket for EM economies, but it also exhibits higher volatility, with three major"
+    assert phone in clean_code.clean("\n".join([PROSE, phone + " +44(20)7051-6069 |", PROSE]))
+    for junk in ["Teresa Alves +44(20)7051-4700 |", "For the exclusive use of PEDRO.LINZMEYER@LISCAPITAL.COM.BR",
+                 "Research Department, Central Bank of Brazil. E-mail: someone@bcb.gov.br"]:
+        assert clean_code.clean("\n".join([PROSE, junk, PROSE])) == "\n".join([PROSE, PROSE])
+
+
+def test_labelled_table_row_is_not_chart_debris():
+    for row in ["I 23% 42 -15 6 10 57", "1M 8 12 2 3 1 5 0", "FF 65 30 19 17 19"]:
+        assert row in clean_code.clean("\n".join([PROSE, row, PROSE]))
+    assert "S e l i c" not in clean_code.clean("\n".join([PROSE, "S e l i c", PROSE]))
+
+
+def test_footnote_inside_references_survives_the_cut():
+    refs = ["References", "Doe, A. (2001): “A paper”, Journal of Things, vol 1.",
+            "Roe, B. (2002): “Another paper”, Journal of Stuff, vol 2."]
+    fn = ["9Other economists have advanced arguments in favor of balkanization of multiregional",
+          "countries (see for example, A. D. Scott [10]); and the argument adds to the list."]
+    out = clean_code.clean("\n".join([PROSE] + refs + fn + ["Scott, A.D., “A Note”, Economica (1950)."]))
+    assert all(f in out for f in fn) and "Doe, A." not in out and "Scott, A.D." not in out   # the cut resumes
+    out = clean_code.clean("\n".join([PROSE] + refs + ["", "10", "The online appendix shows that this result also "
+                                                       "extends to the unwinding of short positions in forwards."]))
+    assert "The online appendix shows" in out and "Roe, B." not in out
+    title = "3 On the Existence of a Consistent Course of Action when Tastes are Changing"
+    assert title not in clean_code.clean("\n".join([PROSE] + refs + [title]))   # a cited title, not a footnote
+
+
+def test_running_head_with_page_number_kept_once():
+    pages = [f"{PROSE}\n{PROSE}\n{n} PART THREE ■ Exchange Rates and Open-Economy Macroeconomics" for n in (380, 382, 384, 386)]
+    out = clean_code.clean("\n\n".join(pages))
+    assert out.count("PART THREE") == 1
+    stamps = [f"{PROSE}\n{PROSE}\nM14_KRUG9719_12_GE_C14.indd {n} 16/11/2021 16:16" for n in (381, 382, 383, 384)]
+    assert ".indd" not in clean_code.clean("\n\n".join(stamps))
+    rows = [f"{PROSE}\n{PROSE}\nAdj. R-Squared 0.{n}2 0.01 0.06" for n in range(4)]
+    assert clean_code.clean("\n\n".join(rows)).count("Adj. R-Squared") == 4   # rows sharing a shape are not copies
+
+
 def test_chart_block_keeps_its_caption():
     block = ["Figure 4: Responses of Expected Output Growth", "0.2", "0.3", "-0.5", "0.1", "1", "2"]
     out = clean_code.clean("\n".join([PROSE, ""] + block + ["", PROSE]))
@@ -128,9 +170,24 @@ def test_ocr_references_heading():
     assert clean_code.block_cut_spans(["Preferences", "Households maximize utility."]) == []
 
 
+def test_citation_tail_does_not_end_the_cut():
+    lines = ["References", "Orphanides, A., 2001, \"Monetary Policy Rules Based on Real-Time Data,\"",
+             "FEDS 2001-53.", "Woodford, M., 2003, Interest and Prices.", "APPENDIX TABLES"]
+    assert [(a, b) for a, b, _ in clean_code.block_cut_spans(lines)] == [(0, 4)]
+
+
 def test_acronym_line_does_not_end_the_cut():
     lines = ["References", "Smith, J. (2010), Report,", "ECB", "Working Paper.", "EXERCISES", PROSE]
     assert clean_code.block_cut_spans(lines) == [(0, 4, "EXERCISES")]
+
+
+def test_roman_numbered_and_literature_cited_headings():
+    # "XI. References" ... "X. Appendix" (Goldfajn 2000); "LITERATURE CITED" (Krugman 1979)
+    lines = ["XI. References", "Doe, A. (2001), Title.", "X. Appendix", PROSE]
+    assert clean_code.block_cut_spans(lines) == [(0, 2, "X. Appendix")]
+    lines = [PROSE, "LITERATURE CITED", "1. Brock, William A. \"A Simple Model.\""]
+    assert clean_code.block_cut_spans(lines) == [(1, 3, "EOF")]
+    assert clean_code.block_cut_spans(["XIV", PROSE]) == []    # a bare numeral is no heading
 
 
 def test_cut_to_eof_when_references_are_last():
@@ -168,6 +225,17 @@ def test_qc_flags():
     assert any(f.startswith("letter_spaced") for f in qc.flags([spaced], spaced, spaced, []))
     assert qc.flags([PROSE * 3], PROSE * 3, PROSE * 3, []) == []
     assert any(f.startswith("no_text_layer") for f in qc.flags(["", "", PROSE * 3], PROSE * 3, PROSE * 3, []))
+
+
+def test_reversed_text_flag():
+    # A rotated table read backwards: "Table", "inflation", "rate" reversed on one page.
+    body = [PROSE + " Table 1 shows the inflation rate and the exchange rate."] * 4
+    rotated = "1 elbaT noitalfni etar egnahcxe 0.5 0.7"
+    flags = qc.flags(body + [rotated], PROSE, PROSE, [])
+    assert any(f.startswith("reversed_text (p.5: 4 words") for f in flags), flags
+    assert qc.reversed_pages(body) == []
+    # two stray reversals on a page are noise, not a rotated block
+    assert qc.reversed_pages(body + ["elbaT etar"]) == []
 
 
 def _with_settings(text: str, fn):
@@ -214,12 +282,13 @@ def test_settings_file_is_valid():
 
 
 def test_sweep_states():
-    # The real folders: every state must be one of the four, and the known scan is not "pending".
+    # The real folders: every state must be one of the four, and a file marked needs_attention
+    # in settings.yaml is never swept as "pending" (it would be retried every run).
     states = {r["file"]: r["state"] for t in run.topics() for r in run.scan(t)}
     assert set(states.values()) <= {"ingested", "pending", "needs_attention", "on_hold"}
-    scan = "optimal_contracts_central_bankers (Walsh, 1995).pdf"
-    if scan in states:
-        assert states[scan] == "needs_attention"
+    for name, entry in settings.load()["files"].items():
+        if entry.get("status") and name in states:
+            assert states[name] != "pending", name
     trader = [r for r in run.scan("trader")]
     assert all(r["state"] in ("on_hold", "ingested") for r in trader)
 
@@ -236,6 +305,12 @@ def test_tracker_matching():
     assert tracker._match(tracker._parse_stem("fixed_exchange_rate_intervention (Krugman, 2023)"), rows) == (19, None)
     assert tracker._match(tracker._parse_stem("output_exchange_rates_sr (Krugman, 2023)"), rows) == (23, None)
     assert tracker._match(tracker._parse_stem("x (Rogoff, 1986)"), rows) == (None, "")  # wrong year never matches
+    # one row per book chapter: "Ch. 3" in the title is the "ch3" of the file name (Gali 2015 ch. 3 and 4 share words)
+    book = "Monetary Policy, Inflation, and the Business Cycle (2nd ed.), Ch. "
+    gali = [(12, {"gali"}, "2015", tracker._norm_tokens(book + "3 - The Basic New Keynesian Model")),
+            (13, {"gali"}, "2015", tracker._norm_tokens(book + "4 - Monetary Policy Design in the Basic New Keynesian Model"))]
+    assert tracker._match(tracker._parse_stem("basic_nk_model_ch3 (Gali, 2015)"), gali) == (12, None)
+    assert tracker._match(tracker._parse_stem("monetary_policy_design_nk_ch4 (Gali, 2015)"), gali) == (13, None)
     tie = [(1, {"smith"}, "2000", ["alpha"]), (2, {"smith"}, "2000", ["alpha"])]
     r, why = tracker._match(tracker._parse_stem("alpha (Smith, 2000)"), tie)
     assert r is None and "several" in why
@@ -285,6 +360,31 @@ def test_pymupdf_has_no_lone_carriage_return():
         print(f"   skip (not on this machine): {name}")
         return
     assert not any("\r" in t for t in extract.pages_text(pdf, "pymupdf"))
+
+
+def test_ocr_tidy():
+    # blank lines go (the cleaner would read each as a page edge and drop a table's numbers);
+    # a dash glued to a number is a minus, a dash between two numbers is not
+    raw = "Table 1\n\nAustralia 0.005 —0.67*** 0.01\n\n2.58\n\nbetween —0.5 and –3.2, in 1990—2000"
+    assert extract._ocr_tidy(raw) == "Table 1\nAustralia 0.005 -0.67*** 0.01\n2.58\nbetween -0.5 and -3.2, in 1990—2000"
+
+
+def test_ocr_reads_what_the_font_lost():
+    # Tambakis & Tarashev (2012) p.36: the text layer prints 0.005 as "0005" in every mode
+    name = "systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012).pdf"
+    pdf = _pdf(name)
+    try:
+        extract.tesseract()
+    except RuntimeError:
+        pdf = None
+    if pdf is None:
+        print(f"   skip (no PDF or no Tesseract on this machine): {name}")
+        return
+    import fitz
+    import tempfile
+    with fitz.open(pdf) as doc, tempfile.TemporaryDirectory() as d:
+        text, conf = extract._ocr_image(extract.tesseract(), doc[35], 0, Path(d))
+    assert "0.005" in text and conf > extract.OCR_CONF_MIN, (conf, text[:200])
 
 
 if __name__ == "__main__":

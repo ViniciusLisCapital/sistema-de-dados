@@ -16,6 +16,14 @@ PDFs on 2026-10-19 (see repository/ingestion/CLAUDE.md):
   pymupdf       PyMuPDF's get_text. Math symbols come out as Unicode (σ, β, π)
                 where pdfplumber prints "(cid:12)", at the cost of equations
                 spread over several lines. For math-heavy sources.
+  ocr           Ignores the text layer: each page is rendered at 300 dpi
+                (PyMuPDF) and read by Tesseract (`--psm 1`, which turns a
+                rotated page upright first). For scans with no or a broken text
+                layer, and for fonts whose encoding loses characters (Tambakis &
+                Tarashev 2012 printed 0.005 as "0005"). Deterministic for a given
+                Tesseract version, so the version is part of the setting; the
+                text is still code's, not a model's. Tesseract is a program, not
+                a Python package: `winget install UB-Mannheim.TesseractOCR`.
 
 decode_shift=N reverses a font-encoding Caesar shift (every character code +N),
 page by page and only where it helps: a page is decoded when the decoded text
@@ -32,7 +40,9 @@ from pathlib import Path
 
 import pdfplumber
 
-MODES = ("plumber", "plumber_flow", "pymupdf")
+MODES = ("plumber", "plumber_flow", "pymupdf", "ocr")
+OCR_DPI = 300
+_TESSERACT_DEFAULT = Path(r"C:\Program Files\Tesseract-OCR\tesseract.exe")
 SUPPORTED = {".pdf", ".txt", ".md"}
 
 _COMMON = frozenset({"the", "and", "of", "to", "in", "is", "that", "a", "for", "on", "with", "as", "by", "this", "be"})
@@ -71,11 +81,67 @@ def _flow_text(page, x_tolerance: float) -> str:
     return "\n".join(lines)
 
 
+def tesseract() -> str:
+    import shutil
+    exe = shutil.which("tesseract") or (str(_TESSERACT_DEFAULT) if _TESSERACT_DEFAULT.exists() else None)
+    if not exe:
+        raise RuntimeError("mode 'ocr' needs Tesseract: winget install UB-Mannheim.TesseractOCR")
+    return exe
+
+
+OCR_CONF_MIN = 60   # mean word confidence; an upright page reads 75-96, a sideways table 39
+
+
+def _ocr_image(exe: str, page, angle: int, work: Path) -> tuple[str, float]:
+    """(text, mean word confidence) of one page rendered at `angle` degrees."""
+    import subprocess
+    import fitz  # PyMuPDF
+    png = page.get_pixmap(matrix=fitz.Matrix(OCR_DPI / 72, OCR_DPI / 72).prerotate(angle)).tobytes("png")
+    base = work / "page"
+    subprocess.run([exe, "stdin", str(base), "--psm", "1", "-l", "eng", "txt", "tsv"],
+                   input=png, capture_output=True, check=True)
+    conf = [float(c[10]) for c in (l.split("\t") for l in base.with_suffix(".tsv").read_text(encoding="utf-8").splitlines()[1:])
+            if len(c) > 11 and c[11].strip() and float(c[10]) >= 0]
+    text = base.with_suffix(".txt").read_text(encoding="utf-8").replace("\x0c", "")   # form feed at page end
+    return text, (sum(conf) / len(conf) if conf else 0.0)
+
+
+def _ocr_pages(path: Path) -> list[str]:
+    import tempfile
+    import fitz  # PyMuPDF
+    exe = tesseract()
+    out = []
+    with fitz.open(path) as doc, tempfile.TemporaryDirectory() as d:
+        for page in doc:
+            # `--psm 1` turns most rotated pages upright by itself, but not a sideways table in a
+            # degraded scan (Fama 1984, p.6: confidence 39 as is, 75 turned by 90 degrees). Below
+            # OCR_CONF_MIN the other three orientations are tried and the most confident one kept.
+            best = _ocr_image(exe, page, 0, Path(d))
+            if best[1] < OCR_CONF_MIN:
+                best = max([best] + [_ocr_image(exe, page, a, Path(d)) for a in (90, 180, 270)], key=lambda x: x[1])
+            out.append(_ocr_tidy(best[0]))
+    return out
+
+
+def _ocr_tidy(text: str) -> str:
+    # Tesseract puts a blank line between most lines of a scan (Walsh 1995). The cleaner reads a
+    # blank line as a page edge and drops bare numbers there as page numbers, which in a table
+    # read one column per line (Fama 1984, Table 2) would delete the numbers: the blank lines go,
+    # and pages_text's joiner marks the real page edges, as in the other modes.
+    text = "\n".join(l for l in text.splitlines() if l.strip())
+    # Tesseract reads a minus sign as a dash: "—0.67***" in a table, "between —0.5 and —3.2" in
+    # the text (Tambakis & Tarashev 2012). A dash glued to a number and not to a word is a minus;
+    # "1990—2000" keeps its dash.
+    return re.sub(r"(?<![\w.,)])[—–](?=\d)", "-", text)
+
+
 def pages_text(path: Path, mode: str = "plumber", x_tolerance: float = 1.5, decode_shift: int = 0) -> list[str]:
     """One string per page, in page order (empty string for a page with no text layer)."""
     if mode not in MODES:
         raise ValueError(f"unknown mode {mode!r}; expected one of {MODES}")
-    if mode == "pymupdf":
+    if mode == "ocr":
+        pages = _ocr_pages(path)
+    elif mode == "pymupdf":
         import fitz  # PyMuPDF
         with fitz.open(path) as doc:
             pages = [p.get_text() for p in doc]

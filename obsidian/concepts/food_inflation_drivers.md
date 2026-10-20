@@ -59,5 +59,5 @@ No clear aggregate EM food-inflation effect historically (El Niño reduces rainf
 ## Connections
 
 - [[exchange_rate_pass_through]] — the USD-invoicing channel is the dominant driver of the global food-inflation factor; this is exchange-rate pass-through operating through a specific, internationally-traded CPI subcomponent
-- [[inflation/synthesis/em_food_inflation (goldamn, 2026)]] — primary source for this concept page's full methodology and findings
+- [[inflation/synthesis/em_food_inflation (Goldman, 2026)]] — primary source for this concept page's full methodology and findings
 - [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]] — methodologically analogous tradables/nontradables IPCA decomposition, isolating the internationally-traded component of a price basket to find where currency effects bite fastest

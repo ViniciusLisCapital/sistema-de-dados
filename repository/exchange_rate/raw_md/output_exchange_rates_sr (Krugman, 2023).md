@@ -2,7 +2,7 @@
 CHAPTER
 Output and the Exchange Rate
 in the Short Run
-The U.S. and Canadian economies registered similar negative rates of output
+T he U.S. and Canadian economies registered similar negative rates of output
 growth during 2009, a year of deep global recession. But while the U.S. dollar
 depreciated against foreign currencies by about 8 percent over the year, the
 Canadian dollar appreciated by roughly 16 percent. What explains these contrast-
@@ -84,7 +84,7 @@ M17_KRUG9719_12_GE_C17.indd 491 17/11/2021 16:14
 492 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 are all measured in terms of domestic output units.) With this assumption, a country’s
 desired consumption level can be written as a function of disposable income:
-C = C(Yd).
+C = C(Yd ).
 Because each consumer naturally demands more goods and services as his or her real
 income rises, we expect consumption to increase as disposable income increases at the
 aggregate level, too. Thus, consumption demand and disposable income are positively
@@ -209,12 +209,12 @@ income changes influence the domestic current account.
 The Equation of Aggregate Demand
 We now combine the four components of aggregate demand to get an expression for
 total aggregate demand, denoted D:
-D = C(Y - T) + I + G + CA(EP* P, Y - T),
+D = C(Y - T) + I + G + CA(EP* P, Y - T ),
 where we have written disposable income Yd as output, >Y, less taxes, T. This equation
 shows that aggregate demand for home output can be written as a function of the real
 exchange rate, disposable income, investment demand, and government spending:
 D = D(EP* P, Y - T, I, G).
-We now want to see how aggregate dem>and depends on the real exchange rate and
+We now want to see how aggregate dem> and depends on the real exchange rate and
 domestic GNP given the level of taxes, T, investment demand, I, and government
 purchases, G.5
 The Real Exchange Rate and Aggregate Demand
@@ -601,7 +601,7 @@ This shift, in turn, raises the equilibrium domestic interest rate to R2 (point 
 and R* fixed, the domestic currency must appreciate from E1 to E2 to bring the foreign
 exchange market back into equilibrium at point 2′. The domestic currency appreciates
 Exchange
-rate,E
+rate, E
 19
 E1
 Foreign E2 29
@@ -612,10 +612,10 @@ return on foreign-
 currency deposits
 Domestic interest
 0
-R1 R2 rate,R
-L(R,Y1)
+R1 R2 rate, R
+L(R, Y1)
 Money demand curves
-L(R,Y2)
+L(R, Y 2)
 Money
 market Output rises
 Ms
@@ -669,9 +669,9 @@ equal, causes a rise in
 the home interest rate
 and a domestic currency
 appreciation from E1 2
-to E2. E2
+to E2. E 2
 AA
-Y1 Y2 Output, Y
+Y1 Y 2 Output, Y
 M17_KRUG9719_12_GE_C17.indd 504 17/11/2021 16:14
 
 CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 505
@@ -736,17 +736,17 @@ by the DD curve) and the asset market
 (whose equilibrium points are summarized E1
 by the AA curve) simultaneously clear.
 AA
-Y1 Output, Y
+Y 1 Output, Y
 FIGURE 17-9
 Exchange
 How the Economy Reaches
 rate, E
 Its Short-Run Equilibrium
 DD
-Because asset markets adjust very quickly, E2 2
+Because asset markets adjust very quickly, E 2 2
 the exchange rate jumps immediately from
 point 2 to point 3 on AA. The economy
-E3
+E 3
 then moves to point 1 along AA as output 3
 rises to meet aggregate demand.
 1
@@ -871,7 +871,7 @@ a rise in output. E1
 2
 E2
 AA
-Y1 Y2 Output, Y
+Y1 Y 2 Output, Y
 Figure 17-11 shows how expansionary fiscal policy affects the economy in the short
 run. Initially the economy is at point 1, with an exchange rate E1 and output Y1.
 Suppose the government decides to spend $30 billion to develop a new space shuttle.
@@ -909,7 +909,7 @@ Demand for Domestic Products
 A temporary fall in world demand shifts DD2
 DD1 to DD2, reducing output from Yf to
 Y2 and causing the currency to depreciate
-from E1 to E2 (point 2). Temporary fiscal E3 3 DD1
+from E1 to E2 (point 2). Temporary fiscal E 3 3 DD1
 expansion can restore full employment
 (point 1) by shifting the DD schedule back 2
 to its original position. Temporary monetary
@@ -921,7 +921,7 @@ The fiscal policy restores the currency to its
 previous value E1 , whereas the monetary
 policy causes the currency to depreciate
 further, to E3. 1 2 AA1
-Y2 Yf Output, Y
+Y 2 Y f Output, Y
 new short-run equilibrium, the currency has depreciated to E2 and output, at Y2, is
 below its full-employment level: The economy is in a recession. Because the shift in
 preferences is assumed to be temporary, it does not affect Ee, so there is no change in
@@ -970,7 +970,7 @@ monetary policy restores
 the exchange rate back
 to E1, whereas the fiscal AA2
 policy leads to greater
-appreciation E3 . Y2 Yf Output, Y
+appreciation E3 . Y 2 Y f Output, Y
 1 2
 Inflation Bias and Other Problems of Policy Formulation
 The apparent ease with which a government can maintain full employment in our
@@ -1064,7 +1064,7 @@ the money supply, which
 shifts AA1 to AA2 and moves
 the economy from point
 2
-1 to point 2, has stronger E2
+1 to point 2, has stronger E 2
 effects on the exchange rate
 3
 and output than an equal
@@ -1073,7 +1073,7 @@ moves the economy only to
 point 3.
 AA2
 AA1
-Yf Y2 Output, Y
+Y f Y 2 Output, Y
 rate: A permanent increase in Ms must ultimately lead to a proportional rise in E.
 Therefore, the permanent rise in Ms causes Ee, the expected future exchange rate, to
 rise proportionally.
@@ -1112,9 +1112,9 @@ After a permanent money
 supply increase, a steadily
 increasing price level shifts
 2
-the DD and AA schedules E2
+the DD and AA schedules E 2
 to the left until a new long-
-E3 3
+E 3 3
 run equilibrium (point 3) is
 reached. E1 1
 AA2
@@ -1188,7 +1188,7 @@ starts in long-run equilibrium. E1 1
 A comparable temporary fiscal
 3
 expansion, in contrast, would
-E2 2
+E 2 2
 leave the economy at point 3.
 AA1
 AAAA22
@@ -1923,7 +1923,7 @@ expansion, is it still true that there are no output effects? (As previously, as
 an initial long-run equilibrium.)
 12. Suppose interest parity does not hold exactly, but the true relationship is
 R = R* + Ee - E E + r, where r is a term measuring the differential
-1 2>
+1 2 >
 M17_KRUG9719_12_GE_C17.indd 530 17/11/2021 16:14
 
 CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 531
@@ -1972,7 +1972,7 @@ we must add the interest parity conditions. Observe also that if Yf is the full-
 employment output level, then the long-run expected exchange rate, Ee, satisfies
 the equation: Yf = aEe + I + G s + m . (We are again taking investment
 I as given.) Using these equations, demonstrate algebraically that if the economy
-1 2>1 2
+1 2 > 1 2
 starts at full employment with R = R*, an increase in G has no effect on output.
 What is the effect on the exchange rate? How does the exchange rate change depend
 on a, and why?
@@ -2053,11 +2053,11 @@ in output raises saving.
 D2 2
 F
 1
-D1 =Q1
+D1 = Q1
 F F 29
 Indifference
 curves
-D1 =Q1 D2 Q2 Present
+D1 = Q1 D2 Q2 Present
 P P P P consumption
 533
 M17_KRUG9719_12_GE_C17.indd 533 17/11/2021 16:14
@@ -2192,7 +2192,7 @@ its right-hand side by (q1 EX1) to express it in terms of trade elasticities. Th
 current account is initially zero (that is, EX1 = q1 * EX*1), this las > t step shows that
 >
 ∆CA ∆q is positive when
-> h + (q2 q1)h*-1 7 0.
+> h + (q2 q1)h* -1 7 0.
 If the change in q is assumed to be> small, so that q2 ≈ q1, the condition for an
 increase in q to improve the current account is
 h + h* 7 1.
@@ -2353,33 +2353,33 @@ in the IS-LM Model
 Equilibrium is at point 1,
 where the output and asset
 1
-markets simultaneously R1
+markets simultaneously R 1
 clear.
 IS
-Y1 Output, Y
+Y 1 Output, Y
 The IS-LM model can be used to analyze the effects of monetary and fiscal policies.
 A temporary increase in the money supply, for example, shifts LM to the right, lower-
 ing the interest rate and expanding output. A permanent increase in the money supply,
 however, shifts LM to the right but also shifts IS to the right, since in an open economy
 that schedule depends on Ee, which now rises. The right-hand side of Figure 17A3-2
 Interest rate, R
-LM1
+LM 1
 Expected
-domestic currency LM2
+domestic currency LM 2
 return on
 foreign currency
 deposits
 1
-19 R1 2
-R2
+19 R 1 2
+R 2
 29
 3
-R3
+R 3
 39
-IS2
-IS1
-E2 E3 E1 Y1 Y3 Y2 Output, Y
-Exchange rate, E (dincreasing)
+IS 2
+IS 1
+E 2 E 3 E 1 Y 1 Y 3 Y 2 Output, Y
+Exchange rate, E (d increasing)
 FIGURE 17A3-2
 Effects of Permanent and Temporary Increases in the Money Supply in the IS-LM Model
 A temporary increase in the money supply shifts the LM curve alone to the right, but a permanent increase
@@ -2415,13 +2415,13 @@ on foreign currency
 deposits LM
 2
 29
-R2
+R 2
 19 39 1
-R1
-IS2
-IS1
-E1 E2 E3 YYff Y2 Output, Y
-Exchange rate, E (dincreasing)
+R 1
+IS 2
+IS 1
+E 1 E 2 E 3 YY ff Y 2 Output, Y
+Exchange rate, E (d increasing)
 FIGURE 17A3-3
 Effects of Permanent and Temporary Fiscal Expansions in the IS-LM Model
 Temporary fiscal expansion has a positive effect on output while permanent fiscal expansion has none.

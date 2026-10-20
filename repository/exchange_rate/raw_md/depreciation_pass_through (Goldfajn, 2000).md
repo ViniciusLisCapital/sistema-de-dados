@@ -60,15 +60,15 @@ Keywords: Passthrough, Real Exchange Rate, Devaluations
 Moriah Aurora Meyskens for editorial help.
 
 Table of Contents
-I. Introduction.......................................................................................................................3
+I. Introduction .......................................................................................................................3
 II. Theoretical Motivation and Methodology.........................................................................5
 III. The effect of depreciation on inflation...........................................................................8
 IV. The determinants of the passthrough coefficient........................................................15
 V. Forecasts.........................................................................................................................21
 VI. Using expectations.........................................................................................................27
 VII. Robustness Checks.......................................................................................................30
-VIII. Conclusions................................................................................................................35
-XI. References.....................................................................................................................37
+VIII. Conclusions ................................................................................................................35
+XI. References .....................................................................................................................37
 X. Appendix.........................................................................................................................38
 -2-
 
@@ -462,7 +462,7 @@ IV. The determinants of the passthrough coefficient
 It is relevant to analyze the effect of several of the control variables directly on the
 pass-through coefficient. Does the passthrough coefficient depend on the initial overvaluation,
 GDP deviation, initial inflation or degree of openness? A direct approach would have been to
-calculate PT= P / ê and regress against the independent variables. However,
+calculate PT = P / ê and regress against the independent variables. However,
 t [t,t+i] [t-1,t+i-1]
 some countries presented depreciation rates close to zero (due for example to a fixed
 exchange rate) with positive inflation rates leading to very high pass-through numbers.3 Given
@@ -759,7 +759,7 @@ Actual Inflation 1.4 4.6 4.9 4.7 1.6
 25
 Table 8c: 12-Month Inflation Prediction in Selected Crises Cases - Using Cross Terms
 Dependent Variable Type of Regression Contribution to Inflation in:
-General Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
+General Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -0.4 0.0 0.4 6.6 0.9 -1.9 3.3
 GDP*Ê -0.055 -0.5 0.4 -0.1 0.0 0.1 -0.2 0.0
 INF*Ê 0.770 2.5 -0.1 0.1 0.3 0.1 0.0 0.3
@@ -774,7 +774,7 @@ Predicted Inflation 106.2 4.3 12.4 42.6 13.4 15.5 20.1
 Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
 Note: Brazil is an estimate for the first 12-Month
 Dependent Variable Type of Regression Contribution to Inflation in:
-Developed Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
+Developed Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 GDP*Ê 0.246 2.0 -1.7 0.4 0.0 -0.3 0.9 0.1
 INF*Ê 1.983 6.4 -0.2 0.2 0.7 0.2 0.1 0.8
@@ -788,7 +788,7 @@ Accumulated Depreciation -0.083 -23.8 -4.2 -2.9 -8.1 -3.9 -3.2 -3.1
 Predicted Inflation 155.5 3.2 14.3 40.1 24.8 39.4 25.3
 Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
 Dependent Variable Type of Regression Contribution to Inflation in:
-Emerging Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
+Emerging Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -4.8 0.0 -3.7 3.1 -3.4 -10.5 -0.6
 GDP*Ê -1.029 -8.4 7.3 -1.8 0.0 1.3 -3.6 -0.5
 INF*Ê 0.740 2.4 -0.1 0.1 0.3 0.1 0.0 0.3
@@ -1208,23 +1208,23 @@ P* = P . i
 i
 ~
 where i ~ U(0,1) and
-C =qP*
+C = qP*
 i i
 The demand and supply of each good, Including imports and exports, is given by:
 P
-E(P* +C )
+E(P* + C )
 i i
-E(P*- C )
+E(P* - C )
 i i
 Q
 Pd = A - Q
 i
 ì E(P* - C ) if Q £ E(P* - C )
 ï i i i i
-Ps = í Q if E(P* - C ) < Q < E(P* +C )
+Ps = í Q if E(P* - C ) < Q < E(P* + C )
 i i i i i i
 ï
-î E(P* +C ) if Q ³ E(P* +C )
+î E(P* + C ) if Q ³ E(P* + C )
 i i i i
 38
 
@@ -1235,60 +1235,60 @@ The equilibrium price is:
 i i 2 i i
 ï
 ï A A
-P = í if E(P* - C ) < < E(P* +C )
+P = í if E(P* - C ) < < E(P* + C )
 ï 2 i i 2 i i
 ï A
-E(P* +C ) if ³ E(P* +C )
+E(P* + C ) if ³ E(P* + C )
 ï î i i 2 i i
 Therefore:
 ì
 ~ A ~
-ï E(1- q) Pi if £ i
-ï 2EP(1-q)
+ï E(1- q ) P i if £ i
+ï 2EP(1-q )
 ~ ï A A ~ A
 P = í if < i <
-i ï 2 2EP(1-q) 2EP(1+q)
+i ï 2 2EP(1-q ) 2EP(1+q )
 ï ~ A ~
-E(1+q)Pi if ³ i
+E(1+q )P i if ³ i
 ï
-î 2EP(1+q)
+î 2EP(1+q )
 The domestic price level is given by:
 A A
 [ ]
-E P ~ = 1 ò P ~ di = 2EP( ò 1+q) E(1+q) Pi di + 2EP( ò 1-q) A di + 1 ò E(1-q)Pi di
+E P ~ = 1 ò P ~ di = 2EP( ò 1+q) E(1+q ) P i di + 2EP( ò 1-q) A di + 1 ò E(1-q )P i di
 i 0 i 0 A 2 A
 2EP(1+q) 2EP(1-q)
 where we assumed that:
 A
 £ 1
-2EP(1- q)
+2EP (1- q )
 A
 or E ³ E where E =
-2P(1-q)
+2P(1-q )
 39
 
 40
 So that:
 A
 æ i2 ö ù 2EP(1+q) A é A A ù æ i2 ö ù 1
-ç ç E(1+q) P ÷ ÷ú + ê - ú + ç ç E(1-q) P ÷ ÷ú =
-è 2ø û 2 ë 2EP(1-q) 2EP(1+q)û è 2ø û
+ç ç E(1+q ) P ÷ ÷ú + ê - ú + ç ç E(1-q ) P ÷ ÷ú =
+è 2 ø û 2 ë 2EP(1-q ) 2EP(1+q )û è 2 ø û
 A
 0
 2EP(1- q)
-E(1+q) P æ A ö 2 A2 æ (1+q) - (1-q)ö E(1-q) P é æ A ö 2ù
-= . ç ç ÷ ÷ + . ç ÷ + . ê 1-ç ç ÷ ÷ú
-2 è 2EP(1+q)ø 4EP è 1-q2 ø 2 ê ë è 2EP(1-q)ø ú û
+E(1+q ) P æ A ö 2 A2 æ (1+q ) - (1-q ) ö E(1-q ) P é æ A ö 2ù
+= . ç ç ÷ ÷ + . ç ÷ + . ê 1- ç ç ÷ ÷ ú
+2 è 2EP(1+q ) ø 4EP è 1-q 2 ø 2 ê ë è 2EP(1-q ) ø ú û
 and:
-1 A2 A2 2q E(1-q)P 1 A2
+1 A2 A2 2q E(1-q )P 1 A2
 . + . + - . =
-8 EP(1+q) 4EP 1-q2 2 8 EP(1-q)
-1 é A2 ù é 1 1 ù E(1-q)P A2 é 2q ù
+8 EP(1+q ) 4EP 1-q 2 2 8 EP(1-q )
+1 é A2 ù é 1 1 ù E(1-q )P A2 é 2q ù
 = . ê ú . ê - ú + + . ê . ú =
-8 ë EPû ë 1+q 1-q û 2 4EP ë 1-q2û
-E(1-q)P A2 æ q ö
+8 ë EP û ë 1+q 1-q û 2 4EP ë 1-q 2 û
+E(1-q )P A2 æ q ö
 = + . ç ÷
-2 4EP è 1-q2 ø
+2 4EP è 1-q 2 ø
 The domestic price level is a function of the nominal exchange rate as shown by the equation
 immediately above. The equation has a minimum at:
 A 1
@@ -1297,7 +1297,7 @@ E = g
 M P
 q
 where g =
-2(1- q)(1- q2)
+2(1- q )(1- q 2)
 It is easy to show that:
 [ ]
 E ³ E if q Î 0,1
@@ -1312,7 +1312,7 @@ A2
 dP . E = P2E2 > 0
 dE P A2
 1+ .g
-P2
+P 2
 In the relevant part of the equation above, one can verify that the pass –through
 coefficient is positively correlated to the transport cost q . Since the latter also determines the
 degree of openness of the country (proportion of non tradable goods), the degree of openness
@@ -1375,7 +1375,7 @@ Italy 1992:09
 
 44
 Table A8: List of Countries Table A9: List of Countries Table A10: List of Countries
-OECD Non-OECD Less indebted More indebted Random Sample 1 Random Sample 2
+O E C D Non-OECD Less indebted More indebted Random Sample 1 Random Sample 2
 Canada Argentina Argentina Bolivia Argentina Jordan
 United States Belgium Bangladesh Malaysia Australia Korea
 Austria Bolivia Brazil Kenya Austria Kenya

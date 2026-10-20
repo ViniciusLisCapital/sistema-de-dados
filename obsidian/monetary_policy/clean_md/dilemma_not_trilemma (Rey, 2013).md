@@ -804,6 +804,8 @@ have had any observable effect on actual monetary policies.
 complex and policy action will most likely remain biased towards national priorities. A transparent
 forum in which the collective monetary policy stance of the systemically important central banks is
 actively discussed and inconsistencies analysed would reduce the risk of volatility in capital flows18.
+18 We also note that monetary policy is only one of the drivers of the global financial cycle and that more
+research should be done to uncover other important drivers.
 Appendix A
 List of countries included:
 North Latin Central & Eastern Western Emerging

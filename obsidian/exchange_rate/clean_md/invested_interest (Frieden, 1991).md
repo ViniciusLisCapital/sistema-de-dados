@@ -10,8 +10,6 @@ content in a trusted digital archive. We use information technology and tools to
 .
 The MIT Press is collaborating with JSTOR to digitize, preserve and extend access to International
 Organization.
-This content downloaded from 62.122.79.21 on Tue, 17 Jun 2014 11:23:37 AM
-All use subject to JSTOR Terms and Conditions
 
 Invested interests: the politics of
 national economic policies in a world
@@ -140,7 +138,6 @@ impact of financial internationalization-but approvingly: "It's a new world and 
 sovereignty is going to change.... The idea of fifteenth-century international law is gone. It hasn't
 laid down yet, but it's dead. It's like the three-mile limit in a world of Inter-Continental Ballistic
 
-428 International Organization
 The first step in evaluating the effects of contemporary levels of international
 capital mobility is to get a clear picture of where the levels stand in relation to
 the past. Long-term capital movements across borders were relatively limited
@@ -189,7 +186,6 @@ Brookings Institution, 1987), pp. 82-86. For a recent test, see Tamim Bayoumi, "
 Correlations: Immobile Capital, Government Policy, or Endogenous Behavior?" IMF Staff Papers
 37 (June 1990), pp. 360-87.
 
-Global finance 429
 these barriers have been and are still being reduced, there are a number of
 reasons why international investment is by no means yet a seamless web. First,
 movement of capital across borders still involves country and currency risks.
@@ -239,7 +235,6 @@ currency instruments of members of the Organization for Economic Cooperation and
 ment (OECD). Regarding this subject, see Goldstein, Mathieson, and Lane, "Determinants and
 Systemic Consequences of International Capital Flows," pp. 7-11.
 
-430 International Organization
 internationally linked to varying degrees: financial markets are closely linked,
 equity markets are less connected, and markets for firm- and sector-specific
 capital are quite nationally segmented. In other words, among industrialized
@@ -288,7 +283,6 @@ investment in the United States has created or reinforced domestic interest grou
 trade, see "Influx of Foreign Capital Mutes Debate on Trade," The New York Times, 8 February
 1987, p. 113.
 
-Global finance 431
 might be called the Mundell-Fleming conditions, taken from the most
 influential approach to payments balance developed in the early 1960s.14 These
 conditions include the possibility that financial assets may be fully mobile
@@ -337,7 +331,6 @@ independence and none at all; it is instead among different degrees of autonomy.
 is, it assumes that substitution effects dominate income effects or that expenditure switching
 dominates expenditure reduction.
 
-432 International Organization
 resultant "crowding out" of private investment dampens the expansion.
 However, if capital moves freely across borders, bonds floated to finance
 increased government spending are bought by international investors, and
@@ -385,7 +378,6 @@ to fall, they demand a higher interest rate for securities denominated in it, an
 interest parity appears to have held well from the mid-1970s onward among almost all major
 currencies.
 
-Global finance 433
 interest rate changes. If monetary expansion simply reduces national interest
 rates, chances are that most foreigners will be indifferent. If, however, it leads
 to currency depreciation in the expansionary country, foreigners are likely to be
@@ -428,7 +420,6 @@ Interdependence and the Exchange Rate Regime," in Rudiger Dornbusch and Jacob Fr
 eds., Intemational Economic Policy: Theory and Evidence (Baltimore, Md.: Johns Hopkins
 University Press, 1979), pp. 160-204.
 
-434 International Organization
 a pre-1970 world of limited capital mobility to a post-1980 world of relatively
 high capital mobility affected the interests and influence of economic agents:
 Who gained and who lost as we went from capital immobility to capital
@@ -476,7 +467,6 @@ rate of 17.5 percent, the three financial sectors (insurance, investment, and fi
 companies) paid an average of 8.5 percent. See "New Threat to Smokestack America," The New
 York Times, 26 May 1985, p. 3:1.
 
-Global finance 435
 But this picture is incomplete, for it ignores the dynamic effects of aggregate
 portfolio choices on asset-holders. The ability of capital to move freely across
 borders can in fact be bad for capitalists in a given country or good for labor in
@@ -522,7 +512,6 @@ capital) have probably benefited from international capital mobility. It might
 be argued that the developing countries' access to international financial
 22. Rogowski, Commerce and Coalitions.
 
-436 International Organization
 markets tended to strengthen labor (perhaps by increasing investment in
 labor-intensive activities), but this seems far from clear-cut.
 In fact, while the Heckscher-Ohlin approach may be useful in predicting
@@ -573,7 +562,6 @@ processes, along with a critique of the Heckscher-Ohlin assumption of intersecto
 mobility, see J. Peter Neary, "Short-Run Capital Specificity and the Pure Theory of International
 Trade," The Economic Joumal 88 (September 1978), pp. 488-510.
 
-Global finance 437
 In the specific-factors approach, which I regard as most useful to the task at
 hand, the economy is organized into activities (or sectors) to which factors are
 specific, along with factors that can move freely from activity to activity. The
@@ -620,7 +608,6 @@ mobile for specific labor or of mobile labor for mobile capital. For our purpose
 stop with the simpler version. Adding complexity to the model does not fundamentally change the
 analytic points; it only changes the details of their empirical application.
 
-438 International Organization
 or export capital for reasons that have little to do with their endowments,
 especially over the short and medium run. Nonetheless and over the longer run,
 developed countries tend to be net capital exporters, while developing
@@ -666,7 +653,6 @@ differences or blocs; for a good example of relevance to the issue at hand, see 
 David Law, "Global Hegemony and the Structural Power of Capital," International Studies
 Quarterly 33 (December 1989), pp. 475-99.
 
-Global finance 439
 move from a BCM to an ACM world, financial capital leaves areas where rates
 of return are lower and enters areas where they are higher. Interest rates go up
 in capital-exporting regions and down in capital-importing regions; interest
@@ -715,7 +701,6 @@ indeed override them. For example, in the early 1980s, financial asset-holders i
 American countries benefited strongly from capital mobility. In the context of political instability
 and strong and unsustainable currency appreciations, they were able to get their money out of
 
-440 International Organization
 A few examples indicate the plausibility of this sectoral map. The opening of
 global financial markets to the less developed countries (LDCs) was good for
 industries in the Third World, which were suddenly able to borrow at reduced
@@ -762,7 +747,6 @@ such as those involving the United States in the 1980s. I return to this problem
 section of the article. My discussion here also does not take into account such significant national
 variations as different rates of productivity growth on the part of domestically based firms.
 
-Global finance 441
 internationally diversified investments.33 I expect opposition to increased
 financial integration from specific industries, especially those tied to a
 particular national market. It is my opinion that this accurately, albeit in the
@@ -812,7 +796,6 @@ Markets and 1992," Brookings Papers on Economic Activity, no. 2, 1989, pp. 301-2
 see Thomas Bayard and Kimberly Ann Elliot, "Reciprocity in Financial Services: The Schumer
 Amendment and the Second Banking Directive," mimeograph, 1990.
 
-442 International Organization
 of the regulatory changes. Nonetheless, the general patterns appear consonant
 with the approach set forth here.38
 To summarize this section, the distributional effects of increased cross-
@@ -856,7 +839,6 @@ United States and Japan." For an argument that is complementary in many ways to 
 presented here, see John Goodman and Louis Pauly, "The New Politics of International Capital
 Mobility," mimeograph, Harvard University Business School and University of Toronto, 1990.
 
-Global finance 443
 One preliminary observation has to do with the potential effects of increased
 international capital mobility on the intensity of sectoral interests of owners of
 capital. The starting point is that the more specific the asset is to its current
@@ -905,7 +887,6 @@ for these assets are incomplete or nonexistent simply serves to point out that t
 the issue is expected. While there are not markets for these assets, there are good markets for other
 assets-and we expect owners of such assets to be less politically active.
 
-444 International Organization
 expect more political action by owners of capital as a class and less participa-
 tion of capitalists in sectoral lobbying.
 However, as argued above, even if this trend exists, it is embryonic and its
@@ -951,7 +932,6 @@ for the analysis of effects on national welfare, but it does not appear to matte
 and medium-term distributional effects, which are the focus here. For a discussion, see Corden,
 Inflation, Exchange Rates, and the World Economy, pp. 22-34.
 
-Global finance 445
 Preferred degree of exchange rate flexibility
 and national monetary policy autonomy
 High Low
@@ -989,7 +969,6 @@ affects all national nontradables producers more or less equally and is therefor
 to them than it is to tradables producers, who see their output change in price relative to that of
 their competitors.
 
-446 International Organization
 we can expect multinational firms, international investors more generally, and
 internationally oriented producers of tradable goods to be more sympathetic to
 currency stability, while we can expect producers in the nontradables sector
@@ -1041,7 +1020,6 @@ note here that empirically they tend to do so. On the relationship between forei
 investment and the exchange rate, see Steven W. Kohlhagen, "Exchange Rate Changes,
 Profitability, and Direct Foreign Investment," Southem Economic Joumal 44 (July 1977), pp. 43-52.
 
-Global finance 447
 Preliminary evidence seems to bear out these expectations both on the
 dimension of exchange rate flexibility and on that of the level of the exchange
 rate itself.47 Perhaps the arena in which the choice between monetary policy
@@ -1095,7 +1073,6 @@ and 17 percent from North America. This may help explain some of the British rel
 sterling to the ERM, especially at a time when the European currencies were appreciating strongly
 against the dollar.
 
-448 International Organization
 tion for rapid currency union, eight are from firms in the financial and related
 services sectors, two are from diversified multinational corporations, and two
 are major exporters.5" In the absence of systematic empirical work, few serious
@@ -1144,7 +1121,6 @@ Dollar Politics; Frankel, "The Making of Exchange Rate Policy in the 1980s"; and
 Henning, "International Monetary Policymaking Within the Countries of the Group of Five,"
 mimeograph, 1990.
 
-Global finance 449
 concluded at the time, than it was a reflection of the dominance of political
 pressures from nontradable goods producers and other supporters of a strong
 dollar over tradable goods producers who wanted a weaker dollar.
@@ -1193,7 +1169,6 @@ other things, it assumes that policymakers try to maximize national welfare, ign
 costs of not cooperating (or not appearing to cooperate), and makes it difficult to explain
 circumstances in which coordination has apparently been achieved.
 
-450 International Organization
 taxation.58 On this subject, there is so little analytic work and indeed so little
 experience in the real world that coordination is mostly speculation. However,
 both the trends within the EC and the discussions among other developed
@@ -1235,7 +1210,6 @@ conclusions. Hampered as national governments may be or appear to be in the
 58. See, for example, Alberto Giovannini, "National Tax Systems Versus the European Capital
 Market," Economic Policy 9 (October 1989), pp. 346-86.
 
-Global finance 451
 face of an internationally integrated financial system, they continue to have
 weapons in their policy arsenal. These weapons may not be as sharp or
 numerous as before, but they exist. Many sectoral policies can be effective, as

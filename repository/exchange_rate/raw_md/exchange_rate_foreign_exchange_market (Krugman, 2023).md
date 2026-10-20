@@ -650,7 +650,7 @@ Suppose that today’s exchange rate (quoted in American terms) is $1.10 per eur
 that you expect the rate to be $1.165 per euro in a year (perhaps because you expect
 unfavorable developments in the U.S. economy). Suppose also that the dollar interest
 rate is 10 percent per year while the euro interest rate is 5 percent per year. This means
-
+M14_KRUG9719_12_GE_C14.indd 393 16/11/2021 16:16
 
 394 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 14-2
@@ -689,6 +689,7 @@ Dollar rate
 4
 Yen rate
 –1
+M14_KRUG9719_12_GE_C14.indd 394 16/11/2021 16:16
 
 CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 395
 rate by 5 percent per year, the euro’s expected appreciation against the dollar gives
@@ -741,11 +742,11 @@ in favor of dollar deposits is 4 percent per year (R - R = 0.10 - 0.06 = 0.04), 
 $ :
 7If you compute the expected dollar return on euro deposits using the exact five-step method we described
 before introducing the simple rule, you’ll find that it actually equals
-(1 + R : )(E $ e : E $: ) - 1.
+(1 + R : )(E $ e : E $ : ) - 1.
 This exact formula can be rewritten, however, as > > >
-R : + (E $ e : - E $: ) E $: + R : * (E $ e : - E $: ) E $: .
-The expression above is very close t>o the fo>rm>ula> derived from th>e simpl>e r>ule >when, as is usually the case,
-the product R : * (E $ e : - E $: ) E $: is a small number.
+R : + (E $ e : - E $ : ) E $ : + R : * (E $ e : - E $ : ) E $ : .
+The expression above is very close t>o the fo>rm>ula> derived from th> e simpl>e r>ule >when, as is usually the case,
+the product R : * (E $ e : - E $ : ) E $ : is a small number.
 > > > >
 M14_KRUG9719_12_GE_C14.indd 395 16/11/2021 16:16
 
@@ -755,9 +756,9 @@ Expected Rate Rate of Return
 Dollar Euro of Dollar Depreciation Difference between
 Interest Rate Interest Rate against Euro Dollar and Euro Deposits
 Ee - E (Ee - E )
-$: $: $: $:
+$ : $ : $ : $ :
 R - R -
-Case R $ R : > E $: > $ : > E $: >
+Case R $ R : > E $ : > $ : > E $ : >
 1 0.10 0.06 0.0>0 0.04 >
 2 0.10 0.06 0.04 0.00
 3 0.10 0.06 0.08 -0.04
@@ -948,9 +949,9 @@ on Euro Deposits When E $ €e = $1.05 per Euro
 Today’s Dollar/Euro Interest Rate on Depreciation Rate Return on Euro
 Exchange Rate Euro Deposits against Euro Deposits
 1.05 - E 1.05 - E
-$: $:
+$ : $ :
 R +
-E $: R : E $: > : E $: >
+E $ : R : E $ : > : E $ : >
 1.0 > 7 0.05 -0.0>19 0.031 >
 1.05 0.05 0.00 0.05
 1.03 0.05 0.019 0.069
@@ -998,7 +999,7 @@ terms of dollars.
 0.031 0.050 0.069 0.079 0.100
 Expected dollar return on
 Ee – E
-euro deposits,R + $/: $/:
+euro deposits, R + $/: $/:
 : E
 $/:
 M14_KRUG9719_12_GE_C14.indd 400 16/11/2021 16:16
@@ -1162,19 +1163,18 @@ A rise in the interest rate offered by dollar
 deposits from R1 to R2 causes the dollar
 $ $
 to appreciate from E1 (point 1) to E2
-$: $:
+$ : $ :
 (point 2).
 > >
 1 19
 E1
 $/:
 2
-E2
+E 2
 $/:
 Expected
 euro return
-R1 R2
-Rates of return
+R1 R 2 Rates of return
 $ $
 (in dollar terms)
 M14_KRUG9719_12_GE_C14.indd 403 16/11/2021 16:16
@@ -1189,14 +1189,14 @@ Dollar return
 A rise in the interest rate paid by euro
 deposits causes the dollar to d epreciate
 from E1 (point 1) to E2 (point 2).
-$: $:
+$ : $ :
 (This figure also describes the effect of Rise in euro
 > > interest rate
 a rise in the expected future $ :
 exchange rate.)
 >
 2
-E2
+E 2
 $/:
 1
 E1 Expected

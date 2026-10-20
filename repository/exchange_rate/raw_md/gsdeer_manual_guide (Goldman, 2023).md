@@ -147,7 +147,7 @@ Coefficient Convergence of Spot to GSDEER Fair Value Coefficient
 -0.5 -0.5
 1 2 3 4 5 6 7 8 9 10
 Years Ahead
-Note: Whiskersshow maximum and minimum.
+Note: Whiskers show maximum and minimum.
 Source: Goldman Sachs Global Investment Research
 Reassuringly, these results are broadly consistent with our longstanding “rule of thumb”
 for long-term FX forecasts, which was derived using a slightly different technique.

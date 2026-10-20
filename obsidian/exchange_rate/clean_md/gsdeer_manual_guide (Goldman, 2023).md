@@ -2,9 +2,11 @@
 Global Markets Analyst
 GSDEER—A User’s Manual
 n There have been large swings in our GSDEER fair value estimates over the last Sid Bhushan
+three years. The surge in energy prices has boosted Terms of Trade for
 Goldman Sachs International
 commodity exporters, and in turn raised those currencies’ ‘fair value’. And while
 Michael Cahill
+the surge in inflation has been more common across countries, differentials
 across countries and sectors may also accumulate in coming quarters as central Goldman Sachs International
 banks face different trade-offs.
 n Fair value is an equilibrium concept, so some analysis is required before
@@ -105,7 +107,7 @@ Coefficient Convergence of Spot to GSDEER Fair Value Coefficient
 0.0 0.0
 -0.5 -0.5
 Years Ahead
-Note: Whiskersshow maximum and minimum.
+Note: Whiskers show maximum and minimum.
 Source: Goldman Sachs Global Investment Research
 Reassuringly, these results are broadly consistent with our longstanding “rule of thumb”
 for long-term FX forecasts, which was derived using a slightly different technique.

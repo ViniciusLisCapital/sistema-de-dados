@@ -7,6 +7,10 @@
 # topics_on_hold: topics the sweep reports but never ingests.
 
 files:
+  "credit_money_aggregate_demand (Bernanke & Blinder, 1988).pdf":
+    mode: ocr
+    reason: "NBER scan with an old OCR layer: no '=' anywhere, so the CC-LM equations were gone, and words misread ('asyninetric', 'IS/LN', 'Wairas'). Our OCR (2026-10-20) restores the equations (approximately) and those words; it adds a few of its own ('mode}' for model)"
+
   "policy_rules_real_time_data (Orphanides, 2001).pdf":
     mode: plumber_flow
     reason: every letter is placed as its own word; plumber's one-letter share is 98%, plumber_flow's 4.5% (measured 2026-10-19)
@@ -21,9 +25,13 @@ files:
     decode_shift: 3
     reason: "same Caesar shift as the 1999 paper (UPF WP 350 copy); the NBER copy is a scan with no text layer. After decoding, common-word share 0.293 (pymupdf) vs 0.279 (plumber), one-letter share 0.047 vs 0.053, unmapped glyphs 0 vs 8; References cut ends at TABLE I, tables after it survive. Known loss in both modes: ligatures (fi, fl, ff) and Greek header symbols of Table II (p.36) are absent from the font encoding"
 
+  "neutral_rate_time_varying_brazil (Perrelli & Roache, 2014).pdf":
+    mode: plumber
+    reason: "ingested with a known loss, at user decision (2026-10-20): the equations are embedded objects with no text, so every mode prints the '(6)' numbers and blank gaps where symbols sit (p.15 checked against the image). Prose and the estimate tables are intact; plumber keeps a table row per line, pymupdf one cell per line. The References cut used to stop at the wrapped citation 'FEDS 2001-53.'; fixed in the cleaner the same day"
+
   "optimal_contracts_central_bankers (Walsh, 1995).pdf":
-    status: needs_attention
-    reason: scan with no text layer (19 empty pages); low priority, needs OCR or a text copy
+    mode: ocr
+    reason: "scan with no text layer (19 empty pages). OCR (2026-10-20): body reads cleanly, common-word share 0.314; equations and Greek letters are approximate, as in any OCR"
 
   "basic_nk_model_ch3 (Gali, 2015).pdf":
     mode: pymupdf
@@ -110,21 +118,20 @@ files:
     reason: "plumber flags garbled (common-word share 0.123, one-letter 0.142); plumber_flow 0.277 and 0.024, same as pymupdf but with a smaller cleaner removal (4.4% vs 6.4%) (measured 2026-10-19)"
 
   "financial_crises_emerging_markets (Chang, 1998).pdf":
-    status: needs_attention
-    reason: "text layer is a substituted font encoding, not a Caesar shift: common-word share 0.008 (plumber) / 0.014 (pymupdf) at shift 0, and still at most 0.035 for decode-shift 1-5; p.5 extracts as symbol noise while the image is clean English. Needs OCR or a text copy"
+    mode: ocr
+    reason: "text layer is a substituted font encoding, not a Caesar shift: common-word share 0.008 (plumber) / 0.014 (pymupdf) at shift 0, at most 0.035 for decode-shift 1-5. OCR (2026-10-20): common-word share 0.305, body reads cleanly; equations approximate"
 
   "forward_spot_exchange (Fama, 1984).pdf":
-    status: needs_attention
-    reason: "scanned journal copy with a poor OCR layer, and the rotated table pages have no usable text in any mode: pp.6, 8, 11, 12, 14 (Tables 1-4 etc.) extract as 72-295 characters of noise while the images hold the tables; the OCR of the body also misreads words ('Fama' as 'Fam~', 'spot' as ',,~pot'). Needs OCR with rotation handling or a text copy"
+    mode: ocr
+    reason: "scanned journal copy with a poor OCR layer; the sideways table pages (pp.6, 8, 11, 12, 14) had no usable text in any mode. Our OCR (2026-10-20) turns them upright (confidence 39 -> 75 on p.6). Known loss: the scan is degraded, so table digits are partly misread ('O11' for 0.11, '002' for 0.02, stray '~'); check a table number against the PDF before quoting it. Body text reads cleanly"
 
   "sticky_wages_prices_ch6 (Gali, 2015).pdf":
     mode: pymupdf
     reason: "equation-driven chapter; plumber shows 497 unmapped math glyphs and one-letter share 0.228 vs 0.124 with pymupdf, no flags (measured 2026-10-19)"
 
   "systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012).pdf":
-    status: needs_attention
-    mode: pymupdf
-    reason: "font encoding loses the decimal point and Greek symbols in every mode (plumber, plumber_flow, pymupdf). p.36 Table 1 image shows 0.005 / -0.67*** / 0.01; text reads 0005 / -067 / 001. p.13 image has alpha, beta, rho symbols and '[0,1)'; pymupdf text reads 'where 1 + 2 = , ...' and '[01)'. Numbers would be silently wrong (checked 2026-10-19); needs OCR or a text copy"
+    mode: ocr
+    reason: "font encoding loses the decimal point and Greek symbols in every text-layer mode (p.36 Table 1: 0.005 read as '0005'). OCR (2026-10-20): Table 1 numbers match the page image; known loss: significance stars are sometimes miscounted (UK -3.22*** read as '**') and Greek letters come out as Latin look-alikes ('a', '8' for alpha, beta)"
 
   "trilemma_tradeoffs (Obstfeld, 2015).pdf":
     mode: pymupdf
@@ -145,6 +152,94 @@ files:
   "zero_bound_optimal_policy (Eggertsson & Woodford, 2003).pdf":
     mode: pymupdf
     reason: "equation-driven paper; plumber and plumber_flow leave 167 unmapped math glyphs (flag math_glyphs), pymupdf 0 and one-letter share 0.071 vs 0.078 (measured 2026-10-19); References cut (148 lines) runs to EOF and the last body sentence survives. Residual cleaner loss in every mode: the 'Source:' lines of the charts are dropped from clean (raw intact)"
+
+  "padrao_transmissao_cambial (Cortapasso, 2023).pdf":
+    mode: pymupdf
+    reason: "plumber reads the rotated Tables A1/A2 (pp.27-28) backwards one word per line, reverses the chart axis titles (p.9, p.17 'oibmâc ed axaT') and interleaves the two-column EN/PT abstract on p.1 (reversed_text on pp.17/27/28, 56 cid glyphs); pymupdf reads all of them forwards, 0 cid glyphs, A1 values checked against the p.27 image (measured 2026-10-20). Costs: Table 1 (p.8) one cell per line instead of a row per line; equations on pp.12/14 lose their symbols (unreadable in plumber too). Flag garbled accepted, a false alarm: the common-word share counts English stopwords only (0.069), against Portuguese stopwords it is 0.345 and the text reads cleanly"
+
+  "em_food_inflation (Goldman, 2026).pdf":
+    mode: pymupdf
+    reason: "two-column cover with an author sidebar (name, phone, e-mail) beside the key-takeaway bullets: plumber interleaves them line by line and the cleaner then drops the whole lines that carry the e-mail/phone, losing prose of the first bullet ('in particular in lower-income countries, with food accounting for 28% of the CPI' and 'basket for EM economies ... three major'); the 28% appears nowhere else, in plumber/ocr clean; pymupdf keeps the bullets whole (28% present). plumber also reads the rotated country labels of Exhibit 1 (p.3, 50 words) backwards ('dnalaeZ'); pymupdf forwards. plumber_flow keeps the cover but leaves the vertical watermark as ~2,500 one-letter lines. Costs of pymupdf (measured 2026-10-20): the cleaner drops the 'Source: Haver Analytics...' chart-source line of most exhibits (41 kept by plumber, 4 by pymupdf) and keeps the running head 'EM Macro Themes' / date per page. The removed blocks (36-41%) are the Goldman disclosure appendix (pp.32-34), watermark lines, page headers and chart axis numbers; no body text"
+
+  "credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005).pdf":
+    mode: pymupdf
+    reason: "book chapter scanned as two-page spreads (landscape, 2 text columns = 2 book pages per PDF page). plumber interleaves the two pages line by line (p.6 checked against the image: 'domestic monetary policy... / the resources and has to sell...' alternate); pymupdf and plumber_flow keep each book page whole. pymupdf chosen (one-letter share 0.033 vs 0.037). Residual: a mid-page heading or bullet block can land a few lines out of place at the page-boundary seam; source typos ('wea1th', 'Consequent1y') are in the PDF text layer"
+
+  "directed_credit_monetary_transmission (Bonomo & Martins, 2016).pdf":
+    mode: plumber
+    reason: "default kept on purpose (2026-10-20), with a known loss: the three regression equations (pp.15-16) print as '(cid:NNNN)' glyphs in plumber (375 unmapped symbols, flag math_glyphs); pymupdf reads them. But pymupdf puts every table cell on its own line and places the body of Table 5 (p.23, ~300 lines) before its caption, so the cleaner's References cut (395 lines vs 66 in plumber) swallows the results table; plumber keeps one table row per line and Tables 5-12 intact (p.23 checked against the image). The tables are the paper's results, the equations are restated in prose"
+
+  "depreciation_pass_through (Belaisch, 2003).pdf":
+    mode: pymupdf
+    reason: "IMF working paper scanned with an old OCR text layer (p.1 is an image-only cover). In plumber, plumber_flow and our OCR the cleaner drops the numeric table rows '1M 8 12 2 3 1 5 0', '3M ...', '12M ...', '16M ...' of Tables 3, 4 and 5 (p.14 checked against the image: the rows are in raw_md but not in clean_md); pymupdf keeps every cell (one per line, label then its 7 values) and cuts only the reference list (measured 2026-10-20). Cost: the embedded OCR layer has typos in prose in every text-layer mode ('IPeA', 'lEGE', 'Jan-Ol', 'IP A', 'V AR'); Tesseract reads the prose cleanly but loses the table rows and adds TOC dot-leader junk (flag run_together). Cleaner defect to fix: table row labels shaped like '1M'/'3M'/'12M' are treated as debris"
+
+  "inflation_targeting_handbook (Svensson, 2010).pdf":
+    mode: pymupdf
+    reason: "pdfplumber cannot open the file (pages lack a MediaBox: TypeError in pdfplumber page init, measured 2026-10-20), so plumber/plumber_flow are unavailable. pymupdf reads the prose exactly (one-letter share 0.043, common-word share 0.295, 0 unmapped glyphs); its References cut (lines 2938-3389, to EOF) is the reference list only. Known loss in pymupdf: the math font has no Unicode map, so Greek letters and sub/superscripts in the few equations are dropped (p.45 checked against the image: 'for = 1', 'x+-=' where the symbols sit). ocr (4m55s) restores some symbols approximately ('a_j, b_j' read, lambda as 'A', stray garbage lines) but reads prose with more errors (one-letter share 0.053) and adds junk from the figures, so it was not preferred. Chart axis numbers remain as one-number lines"
+
+  "exchange_rate_calculation (CFA L1, 2025).pdf":
+    mode: pymupdf
+    reason: "equation-driven module (arbitrage and forward-rate formulas). plumber splits every subscript onto its own line ('F' / 'f/d' lines, fractions as '_f/d _f'), so the formulas are ambiguous; pymupdf keeps each formula in one block with its subscripts attached ('S f/d (1 + r f)( 1 / F f/d ) = 1.6535(1.05)(1/1.6900) = 1.0273'; p.9 checked against the image). Costs (measured 2026-10-20): the formulas carry zero-width spaces (U+200B) and fraction bars as '_' runs; the small tables (Exhibit 1 forward points) come one cell per line instead of a row per line; the running heads 'Learning Module 8 / Exchange Rate Calculations' and the CFA copyright line survive in some pages"
+
+  "monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999).pdf":
+    mode: plumber
+    reason: "Handbook of Macroeconomics 1A chapter (replaced NBER WP 6400 on 2026-10-20): a scan (84 TIFF pages) carrying Elsevier's 2004 OCR text layer. plumber reads that layer: no flags, 2 cid glyphs, one-letter share 0.083. Our OCR was tried and is not better overall: on p.12 (identification) it reads the set notation worse ('Oy 9 QO' where plumber has 'Qv N Qr'), on Table 1 (p.49, checked against the image) it misses 4 minus signs against plumber's 6 plus two garbled sample dates ('65:01~4:12', '79:1044:12'). Known losses: math is approximate (intersection printed as 'N'/'n'/'A', subscripts inline); minus signs in table confidence bands are partly lost, so check a table number against the PDF before quoting it; figures are images."
+
+  "new_measure_monetary_shocks (Romer & Romer, 2004).pdf":
+    mode: ocr
+    reason: "AER published version (replaced NBER WP 9866 on 2026-10-20). The font maps the minus sign to nothing: plumber prints it as '(cid:3)' (459 glyphs) and interleaves Table 1 with the text column; pymupdf DROPS it ('Initial level of intended funds rate 0.021' for -0.021, quarters '1' for -1). OCR keeps the signs and the table rows: Table 1 on p.9 checked against the image (-0.021, -0.044, -0.062, -0.048 all right; '0)' for 0 twice). Costs: equation (1) is approximate ('Affn = & + Bffby'); OCR merges 'REFERENCES' with the other column's first line, so the cleaner does not cut the reference list (~70 lines stay)"
+
+  "exchange_rate_understanding_equilibrium (CFA L2, 2025).pdf":
+    mode: pymupdf
+    reason: "equation-driven module (parity conditions, PPP, BEER, risk premia). plumber splits subscripts onto their own lines ('future S rate' / 'f/d' on the next line, '%Δ S e = i − i , (2)' with 'f/d f d' below) so each formula must be reassembled by the reader; pymupdf keeps inline subscripts attached ('Sf/d', 'if − id = 6%', '%Δ Sf/d e = if − id, (2)'; p.22 checked against the image), one-letter share 0.049 vs 0.053 (measured 2026-10-20). Costs: formulas carry zero-width spaces (U+200B) and fraction bars as '_' runs; small tables come one cell per line instead of a row per line; running heads and the CFA copyright line survive on some pages"
+
+  "optimal_monetary_policy_inertia (Woodford, 1999).pdf":
+    mode: pymupdf
+    reason: "equation-driven paper (NBER WP 7261, 1999): plumber leaves 1,509 unmapped math glyphs (flag math_glyphs, one-letter share 0.086), pymupdf 0 and 0.062 (measured 2026-10-20); p.20 checked against the image (inline math, sub/superscripts, footnotes read). References cut ends at 'Table 1' and the tables survive; pymupdf prints each table cell on its own line"
+
+  "policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005).pdf":
+    mode: pymupdf
+    reason: "plumber reads the rotated tables backwards (flag reversed_text on pp.13, 21, 27, 29: 'sdnuF', 'stseT', 'snoitavresbO', 'tessA') and has run_together tokens (0.0023); pymupdf reads them forwards and raises no flag (measured 2026-10-20; Table 1 on p.13 checked against the image, one cell per line). Costs: the cleaner drops page headers ('Vol. 1 No. 1', running title) and the author-affiliation footnote line with the e-mail address; the References cut (to EOF) is the list only, the appendix before it survives"
+
+  "fiscal_dominance (itau, 2025).pdf":
+    mode: pymupdf
+    reason: "the FTPL intertemporal budget constraint on p.3 is Unicode math (Dt/Pt = Et sum[(Tt+i - Gt+i)/(1+r)^i]); plumber drops its symbols, and prints the rotated chart labels as letter-spaced debris ('n c r e a s', 'i o n o f', one-letter share 0.107 vs 0.028 for pymupdf, common-word share 0.266 vs 0.280); pymupdf keeps both the equation (symbols one per line, order preserved) and the chart legends ('selic', 'real', 'spending') (measured 2026-10-20). Removed 23% = Itau disclosure pages, 'Macro Vision | January 21, 2025' heads, chart axis numbers and the Bibliography, no body text"
+
+  "monetary_policy_exchange_rates (BIS, 2026).pdf":
+    mode: pymupdf
+    reason: "the local-projection equation (p.3-4, Unicode math with superscript h) contaminates the prose in plumber: the superscript h is injected inside words ('Carryℎ trade actiℎvity', 'wℎhether', 'cℎarry') and the equation reads as a run of 'ℎ ℎ ℎ' lines; pymupdf keeps the prose clean and the equation in one block (symbols one per line) (measured 2026-10-20). Known loss in every mode, a cleaner defect: footnotes 10 and 11 sit after the reference list on the last page and the References cut (to EOF) deletes them from clean_md (raw_md intact): 'The online appendix shows that this result also extends to the unwinding of short CHF and JPY positions in over-the-counter forwards...' and 'In principle, these results should apply to carry trade investment currencies...'"
+
+  "samba_dsge_brazil (de Castro et al., 2011).pdf":
+    mode: ocr
+    reason: "BCB WP 239 (139 pages): the font has no Unicode map. plumber returns 123,054 '(cid:N)' glyphs (common-word share 0.001, flags garbled + math_glyphs); pymupdf returns control characters (common-word share 0.049, one-letter share 0.464, flags garbled + letter_spaced); no decode shift applies (not a Caesar shift). OCR (2026-10-20): common-word share 0.243, one-letter share 0.091, no flags; prose reads cleanly. Known loss: the model's equations (body and Appendix A) are approximate OCR, with wrong symbols, lost sub/superscripts and sometimes lines out of order (Appendix A equations, e.g. A.4-A.9 in the extracted text; p.74 image shows nested fractions and multi-level indices that OCR cannot represent); use the prose, not the OCR'd equations, as the reference. The References cut (lines 1935-2050) ends at 'A.1 Households', so Appendix A survives"
+
+  "samba_dsge_brazil_update (Fasolo et al., 2023).pdf":
+    mode: pymupdf
+    reason: "equation-driven model description (BCB WP 578): plumber leaves 1,504 '(cid:N)' glyphs and scrambles the stacked sub/superscripts of display equations (p.18 compared with the image: cost-minimization problem), pymupdf 0 and keeps the symbols (flag math_glyphs avoided; measured 2026-10-20). Known loss in pymupdf: the tall bracket/brace pieces of display equations come out as ~500 control characters (\\x00-\\x1b pairs, ~0.3% of chars; e.g. around the min{...} on p.18) and fractions print numerator/denominator on separate lines. References cut (lines 5657-5768) ends at 'Appendices', so the appendices survive"
+
+  "term_structure_linear_regressions (Adrian, Crump & Moench, 2013).pdf":
+    mode: pymupdf
+    reason: "equation-driven (affine term-structure recursions): plumber leaves 1,333 '(cid:N)' glyphs (flag math_glyphs, one-letter share 0.121), pymupdf 0 and 0.110 (measured 2026-10-20); p.12 compared with the image: symbols, superscripts and Eq. numbers survive, display equations are spread one token per line. References cut ends at 'Table 1 Identification Tests', tables survive (one cell per line)"
+
+  "transmission_lags_meta_analysis (Havranek & Rusnak, 2013).pdf":
+    mode: pymupdf
+    reason: "plumber reads the rotated figure pages backwards (flag reversed_text, p.21 'eslupmi', p.24 'tnecrep'; the whole rotated block of Figure 4 prints reversed, checked against the image) and has run_together tokens (0.0022); pymupdf reads them forwards (long-token share 0). The cleaner removes 25% in pymupdf (24% in plumber): that is the end-of-paper References list (319 lines, 'References' on the last pages, which includes the primary studies of the meta-analysis), checked: the appendix tables and BMA diagnostics before it survive (Table 12 is the last table). Flag heavy_removal accepted for that reason"
+
+  "capital_controls_brazil (Chamon & Garcia, 2016).pdf":
+    mode: pymupdf
+    reason: "JIMF published version (25 pp., replaced the Sept 2013 working-paper draft on 2026-10-20). plumber reads the rotated chart labels on p.14 backwards (flag reversed_text, 'ralloD') and glues some words (18+-letter tokens 0.13%); pymupdf raises no flag, keeps the minus signs (200 vs 193) and reads Table 1 (the list of measures) row by row. Costs: pymupdf leaves the 'ﬁ'/'ﬂ' ligatures as single characters; regression tables print one cell per line"
+
+  "rmb_internationalization (Eichengreen & Kawai, 2014).pdf":
+    mode: plumber
+    reason: "ADBI WP 454 ('Issues for Renminbi Internationalization: An Overview'; the tracker row is the 2015 ADBI/Brookings book it grew into). The run_together flag (0.0061, both modes) is a false alarm: the 18+-letter tokens are 'internationalization' (60 of 61) and 'disproportionately' (measured 2026-10-20). Commit with --accept-flags"
+
+  "political_economy_international_monetary_relations (Broz & Frieden, 2001).pdf":
+    mode: pymupdf
+    reason: "Annual Review of Political Science. plumber glues words (run_together 0.0026); pymupdf stays under the threshold (0.0019, a few glued phrases remain, e.g. 'whichmakeshedgingparticularlydif') and has no other flag (measured 2026-10-20). The 'LITERATURE CITED' heading is cut since the cleaner change of the same day"
+
+  "logic_currency_crises (Obstfeld, 1994).pdf":
+    mode: ocr
+    reason: "typescript scan carrying an old OCR text layer that silently drops math symbols: p.17 (checked against the image) the layer prints Eq. (9) as 'log = 1(i + ') + log C.' and loses 'E~_t', 'T*' and the '(8)' reference; plumber/pymupdf agree with each other and plumber flags reversed_text on p.11. Our OCR (2026-10-20) keeps 'E, ... 7(i* + x7) + log C.' and 'T*' (55 asterisks vs 31 in the text layer), reads the prose equally well (common-word share 0.265 both, one-letter share 0.077 vs 0.084) but adds its own misreads ('(g)' for (8), 'l' for 1, '7' for eta). Equations remain approximate in both; no data tables, charts are figures"
 
 topics_on_hold:
   trader: scope undecided — a topical pillar or input to a trading strategy/agent (repository/CLAUDE.md)

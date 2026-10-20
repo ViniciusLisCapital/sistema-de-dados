@@ -36,6 +36,7 @@ repository/
   mental_model/<gestora>/       — asset-manager letters: raw_pdf/ + raw_md/ + clean_md/. The letters
                                   are cross-area raw material, so their clean_md stays HERE; the
                                   syntheses built from them live in obsidian/<área>/mental_models/.
+                                  Process: mental_model/MENTAL_MODELS.md (/ingest → /mental)
                                   kapitalo (83), verde_asset (200), kinea (60), kinea_insights (64),
                                   goldman_sachs (~80), spx_capital (7)
   ingestion/                    — scripts/ + settings.yaml (per-file settings, files needing
@@ -100,7 +101,8 @@ the status lands in `agent_mapping/data_tracker.xlsx`.
 - **The 16 exchange-rate files ingested before 2026-10-19** used `x_tolerance=3` and the old
   References cut; re-run with `/ingest exchange_rate "<file>" --overwrite` if one shows glued words
   or a missing appendix.
-- **Two file names with typos**, kept so links don't break: `em_food_inflation (goldamn, 2026)`
-  (Goldman) and `fiscal_dominance (itau, 2025)` (Itaú, lowercase). Their synthesis notes carry
-  the same names since 2026-10-19, so the tracker matches them exactly.
+- **One file name with a typo**, kept so links don't break: `fiscal_dominance (itau, 2025)`
+  (Itaú, lowercase). Its synthesis note carries the same name since 2026-10-19, so the tracker
+  matches it exactly. The other one, `em_food_inflation (goldamn, 2026)`, was renamed to
+  `(Goldman, 2026)` on 2026-10-20, with its raw_md, clean_md, synthesis note and wikilinks.
 - **Monetary policy — build the conceptual map**, one source at a time.

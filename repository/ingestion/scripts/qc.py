@@ -28,6 +28,7 @@ import json
 import re
 import sys
 import tempfile
+from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -47,6 +48,23 @@ LONG_TOKEN_MAX = 0.002     # glued words at x_tolerance=3: 0.01-0.075
 CID_INFO = 50              # math glyphs pdfplumber cannot map: informational, not an error
 REMOVED_MAX = 25.0         # % of raw removed by the cleaner
 CUT_LINES_MAX = 300        # one References cut longer than this deserves a look
+REVERSED_MIN = 3           # backwards words on one page; noise in Chang (1998) reaches 2
+
+
+def reversed_pages(pages: list[str]) -> list[tuple[int, list[str]]]:
+    """Pages where pdfplumber read rotated text backwards ("elbaT" for "Table").
+    A word counts when it is rare in the document read forwards and its reversal is common
+    there, so the document is its own dictionary and Portuguese works as well as English.
+    Measured 2026-10-20: rotated tables and chart axes give 3-50 such words on a page."""
+    words = [re.findall(r"[A-Za-z]{4,}", p) for p in pages]
+    vocab = Counter(w.lower() for ws in words for w in ws)
+    out = []
+    for n, ws in enumerate(words, 1):
+        hits = [w for w in ws if vocab[w.lower()] <= 2 and vocab[w.lower()[::-1]] >= 3
+                and w.lower() != w.lower()[::-1]]
+        if len(hits) >= REVERSED_MIN:
+            out.append((n, hits))
+    return out
 
 
 def text_metrics(text: str) -> dict:
@@ -88,6 +106,10 @@ def flags(pages: list[str], raw: str, cleaned: str, cuts: list[dict]) -> list[st
         f.append(f"run_together (long-token share {m['long_token_share']})")
     if m["cid_glyphs"] > CID_INFO:
         f.append(f"math_glyphs ({m['cid_glyphs']} unmapped symbols — consider pymupdf)")
+    rev = reversed_pages(pages)
+    if rev:
+        f.append("reversed_text (" + ", ".join(f"p.{n}: {len(h)} words, e.g. {h[0]!r}" for n, h in rev[:5])
+                 + (f", +{len(rev) - 5} pages" if len(rev) > 5 else "") + " — rotated text read backwards)")
     removed = 100 * (1 - len(cleaned) / len(raw)) if raw else 0
     if removed > REMOVED_MAX:
         f.append(f"heavy_removal ({removed:.0f}% removed by the cleaner)")
@@ -168,9 +190,9 @@ def cmd_render(a):
 
 
 def cmd_check(a):
-    raw_p = REPOSITORY / a.topic / "raw_md" / f"{a.name}.md"
-    clean_p = ROOT / "obsidian" / a.topic / "clean_md" / f"{a.name}.md"
-    pdf_p = REPOSITORY / a.topic / "raw_pdf" / f"{a.name}.pdf"
+    from run import paths                   # a manager's letters keep their clean_md in repository/
+    pp = paths(a.topic, a.name)
+    raw_p, clean_p, pdf_p = pp["raw"], pp["clean"], pp["pdf"]
     for p in (raw_p, clean_p, pdf_p):
         if not p.exists():
             sys.exit(f"missing: {p}")
@@ -194,6 +216,8 @@ def cmd_check(a):
 
 
 def main():
+    # The Windows console is cp1252; a PDF's private-use bullet (U+F0B7) crashed `page`.
+    sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("try"); t.add_argument("pdf"); t.add_argument("--modes")

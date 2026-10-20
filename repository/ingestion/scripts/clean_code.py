@@ -50,11 +50,13 @@ _TAIL_TRIGGERS = re.compile(
 _BLOCK_TRIGGERS = re.compile(
     r"""^
     # an optional section number: "6 References" (Holston et al. 2017, Favero & Giavazzi
-    # 2004 under plumber), "8 - References" (Muinhos & Nakane 2006), "8. References"
-    (\d{1,2}(\.\d{1,2})*\s*[-.–]?\s*)?
+    # 2004 under plumber), "8 - References" (Muinhos & Nakane 2006), "8. References",
+    # or a Roman one: "VII. References" (Garcia & Valpassos 1998), "XI. References" (Goldfajn 2000)
+    ((\d{1,2}(\.\d{1,2})*|[IVX]{1,5})\s*[-.–]?\s*)?
     (
         Bibliography |
-        References?
+        References? |
+        Literature\s+Cited    # Annual Review and older journals (Broz & Frieden 2001, Krugman 1979)
     )$""",
     re.IGNORECASE | re.VERBOSE,
 )
@@ -74,7 +76,9 @@ _NEXT_SECTION_RE = re.compile(
     r"""^(
         # (\s|:|$), not \b: a wrapped citation line 'Appendix," IMF Country Report ...'
         # (Belaisch 2003) is not a heading.
-        (Online\s+|Data\s+|Technical\s+|Mathematical\s+)?Appendi(x|ces)(\s|:|$) |
+        # A Roman section number may precede it: "X. Appendix" (Goldfajn 2000) is the model
+        # appendix that follows "XI. References" in the text order.
+        ([IVX]{1,5}\.\s*)?(Online\s+|Data\s+|Technical\s+|Mathematical\s+)?Appendi(x|ces)(\s|:|$) |
         Comments?\s+and\s+Discussion\b |
         Comment\s+By\b |
         General\s+Discussion\b |
@@ -107,6 +111,42 @@ def _ocr_references(s: str) -> bool:
             and difflib.SequenceMatcher(None, w, "references").ratio() >= 0.8)
 
 
+def _lowercase_words(s: str) -> int:
+    return sum(1 for w in s.split() if re.fullmatch(r"[a-z][a-z'’\-]*[,.;:]?", w))
+
+
+def _footnote_end(lines: list[str], i: int) -> int | None:
+    """If a body footnote starts at line i, the line after its last; else None.
+
+    A page's footnotes print below the reference list on that page, and the cut deleted them:
+    Mundell (1961) "9Other economists have advanced arguments in favor of balkanization...",
+    BIS (2026) "10" / "The online appendix shows that...". A footnote is its number (alone, or
+    fused to the text) and a sentence, "Word word ..." with 6+ lowercase words; a reference
+    entry starts "Surname, X" and never matches. It runs over the lines that continue it in
+    lowercase. Measured 2026-10-20: these 4 footnotes, nothing else in the 79 files.
+    """
+    s = lines[i].strip()
+    m = re.fullmatch(r"(\d{1,3})\s*(.*)", s)
+    if not m:
+        return None
+    text, j = m.group(2), i + 1
+    if not text:   # the number alone on its line, the text on the next
+        while j < len(lines) and not lines[j].strip() and j < i + 3:
+            j += 1
+        if j >= len(lines):
+            return None
+        text, j = lines[j].strip(), j + 1
+    # Mostly lowercase words: a cited title in Title Case is not a footnote ("3 On the Existence of
+    # a Consistent Course of Action when Tastes are Changing", JSTOR's linked citations, 6 of 13).
+    low = _lowercase_words(text)
+    if not (re.match(r"^[A-Z][a-z]+ [a-z]", text) and len(text) >= 60 and low >= 6
+            and low >= 0.6 * len(text.split())):
+        return None
+    while j < len(lines) and re.match(r"^[a-z]", lines[j].strip()):
+        j += 1
+    return j
+
+
 def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
     """Every References/Bibliography block the cleaner removes, as
     (start line, end line exclusive, the line that ended it or 'EOF').
@@ -117,11 +157,22 @@ def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
     # A running head is all caps too, and inside a long list it ended the cut after one page:
     # "POLICY IN THE OPEN ECONOMY" left ~100 reference lines of Gali (2015) ch. 8 in the text.
     running = _detect_running_headers(lines)
+    resume = None   # the line after a footnote kept from inside the list: the cut goes on there
     for i, line in enumerate(lines):
         s = line.strip()
         if start is None:
-            if s and (_BLOCK_TRIGGERS.match(s) or _ocr_references(s)):
-                start = i
+            if i != resume:
+                if s and (_BLOCK_TRIGGERS.match(s) or _ocr_references(s)):
+                    start = i
+                continue
+            start = i   # and fall through: the next footnote can follow at once (BIS 2026: 10, 11)
+        end = _footnote_end(lines, i)
+        if end is not None:
+            if i > start:
+                spans.append((start, i, s[:60]))
+            start, resume = None, end
+            if end >= len(lines):
+                break
             continue
         # "CHAPTER 3" is Gali's even-page running head, too short for the detector.
         if s in running or _RUNNING_HEADER_RE.match(s) or re.match(r"^CHAPTER\s+\d+$", s):
@@ -129,6 +180,10 @@ def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
         # A one-word ALL-CAPS line must be a word, not an acronym: pymupdf printed a reference
         # one word per line in Gali (2015) ch. 7, and "ECB" ended the cut 70 lines early.
         heading = _HEADING_LIKE_RE.match(s) and (" " in s or len(s) >= 6)
+        # A wrapped citation tail is all caps too: "FEDS 2001-53." ended the cut of Perrelli &
+        # Roache (2014) with ~75 references to go. A heading does not end in a year and a period.
+        if heading and re.search(r"\b(19|20)\d\d\b.*\.$", s):
+            heading = None
         if s and not _BLOCK_TRIGGERS.match(s) and (heading or _NEXT_SECTION_RE.match(s)):
             spans.append((start, i, s))
             start = None
@@ -196,6 +251,7 @@ _RUNNING_HEADER_RE = re.compile(
     r"Goldman\s+Sachs\s+Global\s+Investment\s+Research|"
     r"Macro\s+Vision\s*\|.*|"
     r"JOURNAL\s+OF\s+POLITICAL\s+ECONOMY|"
+    r"VOL\.\s*\d+\s+NO\.\s*\d+|"          # AER's even-page head; it ended the References cut of Walsh (1995)
     r"EXPECTATIONS\s+AND\s+EXCHANGE\s+RATE\s+DYNAMICS\b.*)$",
     re.IGNORECASE,
 )
@@ -205,6 +261,9 @@ _MATH_RE = re.compile(r"[=+<>()\[\]{}^ˆͰ-Ͽ∀-⋿]|\(cid:")
 
 # Reversed text fragments from Goldman's "For the exclusive use of" watermark
 _REVERSED_WORDS = frozenset({"fo", "esu", "evisulcxe", "eht", "rof"})
+
+
+_TABLE_NUM_RE = re.compile(r"^[\-−–(]?[\d.,]+[%)*]*$")
 
 
 def _is_chart_garbage(line: str) -> bool:
@@ -222,6 +281,10 @@ def _is_chart_garbage(line: str) -> bool:
         return False
     tokens = stripped.split()
     if len(tokens) < 5:
+        return False
+    # ...and a table row, a label and its numbers: "I 23% 42 -15 6 10 57" (Paiva 2006, Table 3),
+    # "1M 8 12 2 3 1 5 0" (Belaisch 2003), "FF 65 30 19 17 19" (Christiano et al. 1999).
+    if re.search(r"[A-Za-z]", tokens[0]) and all(_TABLE_NUM_RE.match(t) for t in tokens[1:]):
         return False
     # ...and prose with short words: "1 to t. In the equilibrium we" (Gertler & Karadi 2011).
     if any(sum(ch.isalpha() for ch in t) >= 4 for t in tokens):
@@ -268,6 +331,23 @@ def _line_should_remove(line: str) -> bool:
     if _is_chart_garbage(stripped):
         return True
     return False
+
+
+def _prose_without_contact(line: str) -> str | None:
+    """A line carrying an e-mail or phone number AND prose: the prose, with the contact cut out.
+
+    pdfplumber reads a two-column bank cover across both columns, so an author-sidebar contact
+    lands at the end of a body line: "... with food accounting for 28% of the CPI
+    maria.ambrosino@gs.com". Dropping the whole line deleted that sentence (Goldman 2026, the
+    only place the 28% appears). A sidebar line ("Teresa Alves +44(20)7051-4700 |") and the
+    "For the exclusive use of <e-mail>" watermark have names and few lowercase words, so prose
+    is told apart by 8+ lowercase words (measured 2026-10-20: body lines 10-13, sidebars 0-4).
+    """
+    if not (_EMAIL_RE.search(line) or _PHONE_RE.search(line)):
+        return None
+    rest = re.sub(r"\s+", " ", _PHONE_RE.sub(" ", _EMAIL_RE.sub(" ", line))).strip(" |")
+    lower = sum(1 for w in rest.split() if re.fullmatch(r"[a-z][a-z'’\-]*[,.;:]?", w))
+    return rest if lower >= 8 else None
 
 
 def _strip_digits(s: str) -> str:
@@ -368,11 +448,24 @@ def clean(text: str) -> str:
             # page is content (a table's row label, "Adj. R-Squared" under every table) and
             # is kept. At the edge, keep the first copy anyway: a figure note repeated under
             # every chart page is content too, and one stray running head costs less.
-            if stripped not in seen_headers:
-                seen_headers.add(stripped)
-                pass1.append(line)
+            # "First copy" ignores a page number at either end: keyed by the line itself, a head
+            # carrying its page number was new on every page and all ~30 copies stayed (Krugman
+            # 2023: "384 PART THREE ■ Exchange Rates..."). Only the end numbers: keyed by the
+            # whole digit-stripped shape, as the detector counts, table rows that share a shape
+            # ("Adj. R-Squared 0.12 0.01 0.06", "Number of firms 185,147 ...") and captions
+            # ("Table 13: Pass-through ...") went as copies of each other (measured 2026-10-20).
+            # And a line the line rules drop (the .indd stamp) is not kept even once.
+            key = re.sub(r"^\d{1,4}\s+|\s+\d{1,4}$", "", stripped)
+            if key not in seen_headers:
+                seen_headers.add(key)
+                if not _line_should_remove(line):
+                    pass1.append(line)
         elif _PAGE_NUM_RE.match(stripped) and at_page_edge(i):
             continue
+        elif (prose := _prose_without_contact(stripped)) is not None:
+            # The remainder still goes through the other line rules (a disclaimer stays out).
+            if not _line_should_remove(prose):
+                pass1.append(prose)
         elif not _line_should_remove(line):
             pass1.append(line)
 

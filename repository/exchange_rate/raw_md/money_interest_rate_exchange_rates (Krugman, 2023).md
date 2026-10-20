@@ -2,7 +2,7 @@
 CHAPTER
 Money, Interest Rates,
 and Exchange Rates
-Chapter 14 showed how the exchange rate between currencies depends on
+C hapter 14 showed how the exchange rate between currencies depends on
 two factors—the interest that can be earned on deposits of those currencies
 and the expected future exchange rate. To understand fully the determination
 of exchange rates, however, we have to learn how interest rates themselves are
@@ -237,14 +237,14 @@ services are sold in the economy. This increase in the real value of transaction
 raises the demand for money, given the price level.
 If P is the price level, R is the interest rate, and Y is real GNP, the aggregate demand
 for money, Md, can be expressed as
-Md = P * L(R, Y), (15-1)
+Md = P * L(R, Y ), (15-1)
 where the value of L(R, Y) falls when R rises, and rises when Y rises.3 To see why we
 have specified that aggregate money demand is proportional to the price level, imagine
 that all prices doubled but the interest rate and everyone’s real incomes remained
 unchanged. The money value of each individual’s average daily transactions would then
 simply double, as would the amount of money each wished to hold.
 We usually write the aggregate money demand relation (15-1) in the equivalent form
-Md P = L(R, Y), (15-2)
+Md P = L(R, Y ), (15-2)
 >
 and call L(R, Y) aggregate real money demand. This way of expressing money
 demand shows that the aggregate demand for liquidity, L(R, Y), is not a demand
@@ -301,8 +301,8 @@ interest rate and causes the
 real income
 whole demand schedule to
 shift upward.
-L(R, Y2)
-L(R, Y1)
+L(R, Y 2)
+L(R, Y 1)
 Aggregate real
 money demand
 The Equilibrium Interest Rate: The Interaction
@@ -336,7 +336,7 @@ Real money supply
 R2
 Aggregate real
 money demand,
-L(R, Y)
+L(R, Y )
 1
 R1
 R3
@@ -413,9 +413,8 @@ supply increases
 R1 1
 2
 R2
-L(R, Y)
-M1 M2
-Real money
+L(R, Y )
+M1 M 2 Real money
 P P holdings
 FIGURE 15-4
 Effect of an Increase in the Money Supply on the Interest Rate
@@ -455,7 +454,7 @@ real income
 R2
 1 19
 R1
-L(R, Y2)
+L(R, Y 2)
 L(R, Y1)
 Ms
 (= Q1)
@@ -493,7 +492,7 @@ M15_KRUG9719_12_GE_C15.indd 427 24/11/21 4:13 PM
 428 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Dollar/euro
 exchange
-rate,E
+rate, E
 $/:
 Return on
 dollar deposits
@@ -523,7 +522,7 @@ FIGURE 15-6
 Simultaneous Equilibrium in the U.S. Money Market and the Foreign
 Exchange Market
 Both asset markets are in equilibrium at the interest rate R1 and exchange rate E1 ; at these values,
-+ +:
++ + :
 money supply equals money demand (point 1) and the interest parity condition holds (point 1′).
 >
 The first diagram (introduced as Figure 14-4) shows equilibrium in the foreign
@@ -590,7 +589,7 @@ by changing the European money supply and interest rate.
 M15_KRUG9719_12_GE_C15.indd 429 24/11/21 4:13 PM
 
 430 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
-the U.S. and European money supplies, Ms and Ms. Given the price levels and
+the U.S. and European money supplies, Ms and Ms . Given the price levels and
 US E
 national incomes of the two countries, equilibrium in national money markets leads to
 the dollar and euro interest rates R and R . These interest rates feed into the foreign
@@ -967,7 +966,7 @@ Percent per year Percent per year
 100
 100
 10 10
-200120022003200420052006200720082009201020112012201320142015201620172018
+2001 2002 2003 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018
 Money supply growth (left vertical axis) Annual inflation (right vertical axis)
 FIGURE 15-11
 Money Supply Growth and Inflation in Venezuela, 2001–2018
@@ -1208,7 +1207,7 @@ R1 (point 1) to R2 (point 2). So far, our analysis proceeds exactly as it did ea
 > >
 this chapter.
 Dollar/euro exchange
-rate,E $/: E $/:
+rate, E $/: E $/:
 Dollar return Dollar return
 29 29
 E2 E2
@@ -1309,8 +1308,8 @@ tion. The explanation is easiest to grasp if we assume that before the money sup
 M15_KRUG9719_12_GE_C15.indd 443 24/11/21 4:13 PM
 
 444 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
-(a) U.S. money (b)Dollar
-supply,M interest rate,R
+(a) U.S. money (b) Dollar
+supply, M interest rate, R
 US $
 M2 R1
 US $
@@ -1320,8 +1319,8 @@ R2
 $
 t Time t Time
 0 0
-(c)U.S. price (d) Dollar/euro
-level,P exchange rate,E
+(c) U.S. price (d) Dollar/euro
+level, P exchange rate, E
 US $/@
 E2
 $/:

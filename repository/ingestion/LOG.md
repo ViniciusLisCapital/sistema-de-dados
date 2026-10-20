@@ -78,7 +78,7 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-19 | exchange_rate | primer_gsdeer_gsfeer (Goldman, 2025) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | exchange_rate | rational_self_fulfilling_bpc (Obstfeld, 1984) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | fiscal_policy | fiscal_dominance (itau, 2025) | reclean (cleaner change) |  |  |  | — |
-| 2026-10-19 | inflation | em_food_inflation (goldamn, 2026) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-19 | inflation | em_food_inflation (Goldman, 2026) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | basic_nk_model_ch3 (Gali, 2015) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | central_bank_communication_survey (Blinder et al., 2008) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | classical_monetary_model_ch2 (Gali, 2015) | reclean (cleaner change) |  |  |  | — |
@@ -124,7 +124,7 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-19 | exchange_rate | padrao_transmissao_cambial (Cortapasso, 2023) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | exchange_rate | price_levels_exchange_rate_lr (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | fiscal_policy | fiscal_dominance (itau, 2025) | reclean (cleaner change) |  |  |  | — |
-| 2026-10-19 | inflation | em_food_inflation (goldamn, 2026) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-19 | inflation | em_food_inflation (Goldman, 2026) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | central_bank_communication_survey (Blinder et al., 2008) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | financial_accelerator (Bernanke, Gertler & Gilchrist, 1999) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | information_effect_hf_identification (Nakamura & Steinsson, 2018) | reclean (cleaner change) |  |  |  | — |
@@ -160,7 +160,7 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-19 | exchange_rate | price_levels_exchange_rate_lr (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | exchange_rate | primer_gsdeer_gsfeer (Goldman, 2025) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | fiscal_policy | fiscal_dominance (itau, 2025) | reclean (cleaner change) |  |  |  | — |
-| 2026-10-19 | inflation | em_food_inflation (goldamn, 2026) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-19 | inflation | em_food_inflation (Goldman, 2026) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | basic_nk_model_ch3 (Gali, 2015) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | central_bank_communication_survey (Blinder et al., 2008) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | classical_monetary_model_ch2 (Gali, 2015) | reclean (cleaner change) |  |  |  | — |
@@ -193,3 +193,96 @@ One line per file written by `run.py` (newest last). Settings "default" = plumbe
 | 2026-10-19 | monetary_policy | zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | zero_bound_optimal_policy (Eggertsson & Woodford, 2003) | reclean (cleaner change) |  |  |  | — |
 | 2026-10-19 | monetary_policy | us_monetary_policy_global_cycle (Miranda-Agrippino & Rey, 2020) | default | 62 | 134,475 | 14.4% | — |
+| 2026-10-20 | monetary_policy | high_interest_rates_puzzle_brazil (Segura-Ubiergo, 2012) | default | 20 | 40,546 | 10.6% | reversed_text (p.4: 7 words, e.g. 'lizarB', p.8: 3 words, e.g. 'etaR', p.16: 6 words, e.g. 'aeroK' — rotated text read backwards) |
+| 2026-10-20 | monetary_policy | neutral_rate_time_varying_brazil (Perrelli & Roache, 2014) | default | 32 | 71,607 | 11.0% | — |
+| 2026-10-20 | exchange_rate | theory_optimum_currency_areas (Mundell, 1961) | default | 12 | 28,584 | 6.7% | — |
+| 2026-10-20 | exchange_rate | the_liberalization_management_capital_flows (IMF, 2012) | default | 48 | 143,230 | 13.4% | — |
+| 2026-10-20 | exchange_rate | padrao_transmissao_cambial (Cortapasso, 2023) | mode pymupdf | 30 | 64,572 | 3.9% | garbled (common-word share 0.069) |
+| 2026-10-20 | monetary_policy | systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012) | mode ocr | 42 | 67,827 | 8.5% | — |
+| 2026-10-20 | monetary_policy | optimal_contracts_central_bankers (Walsh, 1995) | mode ocr | 19 | 69,540 | 5.4% | — |
+| 2026-10-20 | monetary_policy | credit_money_aggregate_demand (Bernanke & Blinder, 1988) | mode ocr | 18 | 21,953 | 6.0% | — |
+| 2026-10-20 | exchange_rate | financial_crises_emerging_markets (Chang, 1998) | mode ocr | 52 | 102,660 | 5.2% | — |
+| 2026-10-20 | exchange_rate | forward_spot_exchange (Fama, 1984) | mode ocr | 20 | 49,326 | 7.4% | — |
+| 2026-10-20 | exchange_rate | gsdeer_manual_guide (Goldman, 2023) | default | 17 | 44,217 | 54.0% | heavy_removal (54% removed by the cleaner) |
+| 2026-10-20 | exchange_rate | primer_gsdeer_gsfeer (Goldman, 2025) | default | 11 | 41,227 | 53.5% | heavy_removal (54% removed by the cleaner) |
+| 2026-10-20 | inflation | em_food_inflation (Goldman, 2026) | mode pymupdf | 34 | 75,806 | 40.6% | heavy_removal (41% removed by the cleaner) |
+| 2026-10-20 | exchange_rate | depreciation_pass_through (Goldfajn, 2000) | default | 46 | 79,756 | 0.6% | reversed_text (p.6: 3 words, e.g. 'noitaulaveD' — rotated text read backwards) |
+| 2026-10-20 | monetary_policy | credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005) | default | 15 | 70,807 | 2.1% | — |
+| 2026-10-20 | monetary_policy | credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005) | mode pymupdf | 15 | 72,152 | 2.9% | — |
+| 2026-10-20 | monetary_policy | decreto_12079_meta_continua (Brazil, 2024) | default | 3 | 4,062 | 0.0% | no_text_layer (33% of pages empty — scanned?); garbled (common-word share 0.044) |
+| 2026-10-20 | monetary_policy | decreto_3088_metas_inflacao (Brazil, 1999) | default | 2 | 3,163 | 0.0% | garbled (common-word share 0.035) |
+| 2026-10-20 | monetary_policy | lc_179_autonomia_bcb (Brazil, 2021) | default | 4 | 11,085 | 0.0% | garbled (common-word share 0.022) |
+| 2026-10-20 | exchange_rate | capital_flow_fx_market (CFA L1, 2025) | default | 37 | 115,718 | 2.0% | — |
+| 2026-10-20 | monetary_policy | directed_credit_monetary_transmission (Bonomo & Martins, 2016) | default | 30 | 96,751 | 5.8% | math_glyphs (375 unmapped symbols — consider pymupdf) |
+| 2026-10-20 | exchange_rate | depreciation_pass_through (Belaisch, 2003) | mode pymupdf | 20 | 34,941 | 4.7% | — |
+| 2026-10-20 | exchange_rate | equilibrium_exchange_brazil (Paiva, 2006) | default | 23 | 48,560 | 5.5% | — |
+| 2026-10-20 | monetary_policy | inflation_targeting_handbook (Svensson, 2010) | mode pymupdf | 79 | 197,750 | 16.3% | long_references_cut (452 lines, ended by 'EOF') |
+| 2026-10-20 | exchange_rate | exchange_rate_calculation (CFA L1, 2025) | mode pymupdf | 13 | 36,995 | 3.1% | — |
+| 2026-10-20 | exchange_rate | exchange_rate_foreign_exchange_market (Krugman, 2023) | default | 32 | 104,610 | 0.3% | — |
+| 2026-10-20 | exchange_rate | exchange_rate_understanding_equilibrium (CFA L2, 2025) | mode pymupdf | 78 | 228,605 | 4.3% | — |
+| 2026-10-20 | exchange_rate | fixed_exchange_rate_intervention (Krugman, 2023) | default | 36 | 117,624 | 0.3% | — |
+| 2026-10-20 | monetary_policy | monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999) | mode ocr | 95 | 214,898 | 8.4% | long_references_cut (301 lines, ended by 'Table 1: The Liquidity Effect, Sample Period Sensitivity') |
+| 2026-10-20 | exchange_rate | money_interest_rate_exchange_rates (Krugman, 2023) | default | 32 | 86,685 | 1.0% | — |
+| 2026-10-20 | exchange_rate | output_exchange_rates_sr (Krugman, 2023) | default | 53 | 151,831 | 0.0% | — |
+| 2026-10-20 | exchange_rate | price_levels_exchange_rate_lr (Krugman, 2023) | default | 38 | 127,061 | 0.4% | — |
+| 2026-10-20 | monetary_policy | new_measure_monetary_shocks (Romer & Romer, 2004) | default | 75 | 176,043 | 3.5% | — |
+| 2026-10-20 | monetary_policy | optimal_interest_rate_smoothing (Woodford, 2003) | mode pymupdf | 109 | 210,600 | 5.6% | — |
+| 2026-10-20 | monetary_policy | policy_actions_vs_words (Gurkaynak, Sack & Swanson, 2005) | mode pymupdf | 39 | 81,689 | 8.7% | — |
+| 2026-10-20 | fiscal_policy | fiscal_dominance (itau, 2025) | mode pymupdf | 11 | 31,491 | 23.5% | — |
+| 2026-10-20 | monetary_policy | monetary_policy_exchange_rates (BIS, 2026) | mode pymupdf | 8 | 20,256 | 12.9% | — |
+| 2026-10-20 | exchange_rate | balance_of_payment_crisis (Krugman, 1979) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | gsdeer_manual_guide (Goldman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | primer_gsdeer_gsfeer (Goldman, 2025) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | credit_channel_transmission (Bernanke & Gertler, 1995) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | time_inconsistency_optimal_plans (Kydland & Prescott, 1977) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | samba_dsge_brazil (de Castro et al., 2011) | mode ocr | 139 | 195,553 | 6.4% | — |
+| 2026-10-20 | monetary_policy | samba_dsge_brazil_update (Fasolo et al., 2023) | mode pymupdf | 92 | 189,213 | 6.0% | — |
+| 2026-10-20 | monetary_policy | term_structure_linear_regressions (Adrian, Crump & Moench, 2013) | mode pymupdf | 68 | 121,152 | 6.1% | — |
+| 2026-10-20 | monetary_policy | transmission_lags_meta_analysis (Havranek & Rusnak, 2013) | mode pymupdf | 38 | 66,447 | 25.4% | heavy_removal (25% removed by the cleaner); long_references_cut (319 lines, ended by 'EOF') |
+| 2026-10-20 | monetary_policy | us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019) | default | 70 | 157,212 | 8.3% | — |
+| 2026-10-20 | exchange_rate | capital_controls_brazil (Chamon & Garcia, 2016) | mode pymupdf | 40 | 99,582 | 6.4% | — |
+| 2026-10-20 | exchange_rate | logic_currency_crises (Obstfeld, 1994) | mode ocr | 64 | 80,021 | 8.7% | — |
+| 2026-10-20 | exchange_rate | original_sin_em_debt (Eichengreen & Hausmann, 1999) | default | 56 | 84,208 | 10.8% | — |
+| 2026-10-20 | exchange_rate | balance_of_payment_crisis (Krugman, 1979) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | bs_transfer_problem_financial_crises (Krugman, 2000) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | capital_flow_fx_market (CFA L1, 2025) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | capital_mobility_exchange_rates_regimes (Mundell, 1963) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | collapsing_exchange_rate_regimes (Flood, 1983) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | equilibrium_exchange_brazil (Paiva, 2006) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | exchange_rate_foreign_exchange_market (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | expectations_and_exchange_rate_dynamics (Dornbusch, 1976) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | fixed_exchange_rate_intervention (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | forward_spot_exchange (Fama, 1984) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | invested_interest (Frieden, 1991) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | money_interest_rate_exchange_rates (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | national_income_balance_payments (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | output_exchange_rates_sr (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | price_levels_exchange_rate_lr (Krugman, 2023) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | primer_gsdeer_gsfeer (Goldman, 2025) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | the_liberalization_management_capital_flows (IMF, 2012) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | theory_optimum_currency_areas (Mundell, 1961) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | fiscal_policy | fiscal_dominance (itau, 2025) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | inflation | em_food_inflation (Goldman, 2026) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | central_bank_communication_survey (Blinder et al., 2008) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | credit_channel_transmission (Bernanke & Gertler, 1995) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | dilemma_not_trilemma (Rey, 2013) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | financial_accelerator (Bernanke, Gertler & Gilchrist, 1999) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | monetary_channels_brazil_semi_structural (Minella & Souza-Sobrinho, 2013) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | monetary_policy_exchange_rates (BIS, 2026) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | optimal_commitment_intermediate_target (Rogoff, 1985) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | optimal_contracts_central_bankers (Walsh, 1995) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | the_role_monetary_policy (Friedman, 1968) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | time_inconsistency_optimal_plans (Kydland & Prescott, 1977) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | new_measure_monetary_shocks (Romer & Romer, 2004) | mode ocr | 30 | 119,470 | 1.1% | — |
+| 2026-10-20 | monetary_policy | monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999) | default | 84 | 219,079 | 8.5% | — |
+| 2026-10-20 | exchange_rate | capital_controls_brazil (Chamon & Garcia, 2016) | mode pymupdf | 25 | 97,526 | 6.7% | — |
+| 2026-10-20 | monetary_policy | optimal_monetary_policy_inertia (Woodford, 1999) | mode pymupdf | 109 | 210,600 | 5.6% | — |
+| 2026-10-20 | exchange_rate | balance_of_payment_crisis (Krugman, 1979) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | depreciation_pass_through (Goldfajn, 2000) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | exchange_rate | depreciation_pass_through (Goldfajn, 2000) | reclean (cleaner change) |  |  |  | — |
+| 2026-10-20 | monetary_policy | two_targets_two_instruments (Ostry, Ghosh & Chamon, 2012) | default | 25 | 69,625 | 7.3% | — |
+| 2026-10-20 | exchange_rate | fx_anomalies_survey (Froot & Thaler, 1990) | default | 14 | 42,647 | 14.3% | — |
+| 2026-10-20 | exchange_rate | capital_flows_controls_brazil_nineties (Garcia & Valpassos, 1998) | default | 57 | 106,149 | 3.3% | — |
+| 2026-10-20 | exchange_rate | rmb_internationalization (Eichengreen & Kawai, 2014) | default | 22 | 66,659 | 6.2% | run_together (long-token share 0.0061) |
+| 2026-10-20 | exchange_rate | political_economy_international_monetary_relations (Broz & Frieden, 2001) | mode pymupdf | 27 | 89,012 | 13.2% | long_references_cut (305 lines, ended by 'EOF') |

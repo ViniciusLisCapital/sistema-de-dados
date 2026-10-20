@@ -446,7 +446,6 @@ I consider an open economy that produces a single good each period using capital
 for simplicity the production function is assumed Cobb-Douglas:
 y, = G(K,, L,) = K� L]-• (I)
 
-BALANCE SHEETS 37
 Capital is created through investment; I will assume, again for simplicity, that capital
 lasts only one period, so that this period's capital is equal to last period's investment. (This
 assumption also puts to one side Diamond-Dybvig-type concerns over maturity mismatch).
@@ -546,7 +545,6 @@ as a whole, because the volume of capital inflow affects the terms of trade and 
 valuation of foreign-currency-denominated debt. We can therefore immediately see the
 outlines of a story about financial crisis: a decline in capital inflows can adversely affect
 
-BALANCE SHEETS 39
 the balance sheets of domestic entrepreneurs, reducing their ability to borrow and hence
 further reducing capital inflows. But we need to be a bit more precise.
 Imagine a game in which lenders decide, in random order, how much credit to offer to
@@ -755,7 +753,6 @@ credit line would never actually have to be used, since its very existence would
 crisis from ever getting under way (but one has to be credibly willing to use it in order not
 to have to).
 
-BALANCE SHEETS 43
 Another possibility is to rule out the possibility of a downward financial spiral by being
 ready to impose a cUJfew on capital flight. Again, there is substantial sympathy even among
 respectable opinion for standstill agreements on foreign-currency debt; but this may well

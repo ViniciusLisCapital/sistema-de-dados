@@ -2,7 +2,7 @@
 CHAPTER
 Fixed Exchange Rates and
 Foreign Exchange Intervention
-In the past several chapters, we developed a model that helps us understand
+I n the past several chapters, we developed a model that helps us understand
 how a country’s exchange rate and national income are determined by the
 interaction of asset and output markets. Using that model, we saw how monetary
 and fiscal policies can be used to maintain full employment and a stable price
@@ -423,7 +423,7 @@ M18_KRUG9719_12_GE_C18.indd 551 01/11/21 4:04 PM
 FIGURE 18-1
 Exchange
 Asset Market Equilibrium
-rate,E
+rate, E
 with a Fixed Exchange
 Rate, E0
 To hold the exchange rate fixed
@@ -442,11 +442,11 @@ Domestic
 R* interest rate,R
 Real money
 demand, L(R, Y1)
-L(R, Y2)
+L(R, Y 2)
 M1
 Real money supply
 P 1 3
-M2
+M 2
 P 2
 Real domestic
 money holdings
@@ -495,7 +495,7 @@ out of circulation, and the asset market equilibrium curve shifts back toward it
 position as the home money supply falls. Only when the money supply has returned
 FIGURE 18-2
 Monetary Expansion Is Ineffective Exchange
-rate,E
+rate, E
 under a Fixed Exchange Rate
 Initial equilibrium is shown at point 1, where
 the output and asset markets simultaneously DD
@@ -573,7 +573,7 @@ CHAPTER 18 ■ Fixed Exchange Rates and Foreign Exchange Intervention 555
 FIGURE 18-3
 Exchange
 Fiscal Expansion under
-rate,E
+rate, E
 a Fixed Exchange Rate
 Fiscal expansion (shown by the
 shift from DD1 to DD2) and the
@@ -618,7 +618,7 @@ M18_KRUG9719_12_GE_C18.indd 555 01/11/21 4:04 PM
 FIGURE 18-4
 Exchange
 Effect of a Currency
-rate,E
+rate, E
 Devaluation
 When a currency is devalued
 from E0 to E1, the economy’s DD
@@ -630,7 +630,7 @@ the money supply expand.
 E0
 AA2
 AA1
-Y1 Y2 Output, Y
+Y1 Y 2 Output, Y
 accompanying the output increase. This excess money demand would push the home
 interest rate above the world interest rate if the central bank did not intervene in
 the foreign exchange market. To maintain the exchange rate at its new fixed level, E1, the
@@ -715,7 +715,7 @@ M18_KRUG9719_12_GE_C18.indd 557 01/11/21 4:04 PM
 FIGURE 18-5
 Exchange
 Capital Flight,
-rate,E
+rate, E
 the Money Supply,
 and the Interest Rate
 To hold the exchange rate
@@ -733,7 +733,7 @@ Domestic
 0
 R* R* + (E1 – E0)/E0 interest rate,R
 L(R, Y )
-M2
+M 2
 P 2
 M1
 Real money supply
@@ -1047,7 +1047,7 @@ tic currency return on foreign assets and the risk premium depends on the exchan
 FIGURE 18-7
 Exchange
 Effect of a Sterilized Central
-rate,E
+rate, E
 Bank Purchase of Foreign
 Sterilized purchase
 Assets under Imperfect Asset
@@ -1069,7 +1069,7 @@ Domestic
 0
 R1 interest rate, R
 L(R, Y)
-Ms
+M s
 Real money supply
 P 1
 Real domestic

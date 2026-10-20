@@ -18,7 +18,15 @@ The PDF never moves. Every character of raw_md and clean_md comes from the tools
 re-run on the same PDF with the same settings reproduces both files (qc.py check).
 
 Only the top level of raw_pdf/ is swept: monetary_policy/raw_pdf/central_bank/ belongs
-to the Copom ETL, and repository/mental_model/ (manager letters) has its own pipeline.
+to the Copom ETL.
+
+Manager letters are a second kind of source, named `mental_model/<manager folder>`
+(e.g. mental_model/goldman_sachs): repository/mental_model/<folder>/raw_pdf/ -> raw_md/ and
+clean_md/ in the same folder, not in obsidian/ — a letter feeds every area's mental model,
+so its text stays in repository/ and the mental-model agent condenses it per area. Their
+file name follows the manager's date pattern in repository/mental_model/mental_models.yaml
+instead of `(Author, Year)`, and they are not literature, so the tracker does not list them.
+--reclean never touches them: Kapitalo's clean_md was curated by its own curate.py.
 
 Guards — each one stops that file and says why, the rest continue:
   - the topic must be a folder of repository/, and not on hold (settings.yaml);
@@ -35,6 +43,7 @@ Usage:
     uv run python repository/ingestion/scripts/run.py monetary_policy "taylor_rule (Taylor, 1993).pdf"
     uv run python repository/ingestion/scripts/run.py monetary_policy "taylor_rule (Taylor, 1993).pdf" --overwrite
     uv run python repository/ingestion/scripts/run.py --reclean       # after a cleaner change
+    uv run python repository/ingestion/scripts/run.py mental_model/goldman_sachs "gs_global_fx_trader_2025-01-24.pdf"
 """
 
 import argparse
@@ -42,6 +51,8 @@ import datetime as dt
 import re
 import sys
 from pathlib import Path
+
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from extract import pages_text  # noqa: E402
@@ -58,6 +69,8 @@ LOG = INGESTION / "LOG.md"
 NAME_RE = re.compile(r"^[a-z0-9_]+ \([^()]+, \d{4}[a-z]?\)$")
 BLOCKING = ("no_text_layer", "garbled", "letter_spaced", "run_together")
 _NOT_TOPICS = {"ingestion", "agent_mapping", "mental_model"}
+LETTERS = REPOSITORY / "mental_model"
+LETTERS_CONFIG = LETTERS / "mental_models.yaml"
 
 
 def topics() -> list[str]:
@@ -65,12 +78,40 @@ def topics() -> list[str]:
                   if d.is_dir() and not d.name.startswith((".", "_")) and d.name not in _NOT_TOPICS)
 
 
+def letter_sources() -> list[str]:
+    """mental_model/<folder> for every manager folder with a raw_pdf/."""
+    return sorted(f"mental_model/{d.name}" for d in LETTERS.iterdir() if (d / "raw_pdf").is_dir())
+
+
+def is_letters(topic: str) -> bool:
+    return topic.startswith("mental_model/")
+
+
+def letter_pattern(topic: str) -> re.Pattern | None:
+    """The date pattern of the corpus whose clean_md is <folder>/clean_md, from mental_models.yaml."""
+    folder = topic.split("/", 1)[1]
+    cfg = yaml.safe_load(LETTERS_CONFIG.read_text(encoding="utf-8"))
+    for m in cfg["managers"].values():
+        for c in m["corpora"]:
+            if c["path"] == f"{folder}/clean_md":
+                return re.compile(c["date"])
+    return None
+
+
+def name_ok(topic: str, name: str) -> bool:
+    if not is_letters(topic):
+        return bool(NAME_RE.match(name))
+    rx = letter_pattern(topic)
+    return bool(rx and rx.search(name))
+
+
 def paths(topic: str, name: str) -> dict[str, Path]:
     """name = file stem, without .pdf."""
+    clean_dir = REPOSITORY / topic / "clean_md" if is_letters(topic) else OBSIDIAN / topic / "clean_md"
     return {
         "pdf": REPOSITORY / topic / "raw_pdf" / f"{name}.pdf",
         "raw": REPOSITORY / topic / "raw_md" / f"{name}.md",
-        "clean": OBSIDIAN / topic / "clean_md" / f"{name}.md",
+        "clean": clean_dir / f"{name}.md",
     }
 
 
@@ -89,7 +130,7 @@ def scan(topic: str) -> list[dict]:
         elif st:
             state, note = st
         else:
-            state, note = "pending", "" if NAME_RE.match(pdf.stem) else "name to fix"
+            state, note = "pending", "" if name_ok(topic, pdf.stem) else "name to fix"
         out.append({"topic": topic, "file": pdf.name, "name": pdf.stem, "state": state, "note": note})
     return out
 
@@ -110,8 +151,10 @@ def ingest_one(topic: str, file_name: str, overwrite: bool, accept_flags: bool) 
     p = paths(topic, name)
     if not p["pdf"].exists():
         return f"SKIP not found: {p['pdf'].relative_to(ROOT)}"
-    if not NAME_RE.match(name):
-        return "SKIP name does not follow 'description (Author, Year).pdf' — rename it in raw_pdf/ first"
+    if not name_ok(topic, name):
+        return ("SKIP name does not follow the manager's date pattern in mental_models.yaml — rename it in raw_pdf/ first"
+                if is_letters(topic) else
+                "SKIP name does not follow 'description (Author, Year).pdf' — rename it in raw_pdf/ first")
     others = [t for t in topics() if t != topic and (REPOSITORY / t / "raw_pdf" / p["pdf"].name).exists()]
     if others:
         return f"SKIP duplicate: the same file is in {', '.join(others)}/raw_pdf/"
@@ -158,7 +201,7 @@ def cmd_reclean(only: str | None) -> None:
 
 
 def cmd_list(only: str | None) -> None:
-    for t in ([only] if only else topics()):
+    for t in ([only] if only else topics() + letter_sources()):
         rows = scan(t)
         if not rows:
             continue
@@ -181,12 +224,14 @@ def main() -> None:
     ap.add_argument("--reclean", action="store_true", help="after a cleaner change: rewrite every clean_md from its raw_md")
     a = ap.parse_args()
 
-    if a.topic and a.topic not in topics():
-        sys.exit(f"unknown topic {a.topic!r}; existing: {', '.join(topics())}")
+    if a.topic and a.topic not in topics() + letter_sources():
+        sys.exit(f"unknown topic {a.topic!r}; existing: {', '.join(topics() + letter_sources())}")
     if a.list:
         cmd_list(a.topic)
         return
     if a.reclean:
+        if a.topic and is_letters(a.topic):
+            sys.exit("--reclean does not touch manager letters (their clean_md may come from a corpus curator)")
         cmd_reclean(a.topic)
         return
     if not a.topic or not a.names:
@@ -199,6 +244,8 @@ def main() -> None:
             print("     " + ingest_one(a.topic, n, a.overwrite, a.accept_flags))
         except Exception as e:  # noqa: BLE001 — one bad file must not stop the rest
             print(f"     ERROR {e!r}")
+    if is_letters(a.topic):
+        return                       # letters are not literature: the tracker does not list them
     try:
         from tracker import build
         print("tracker: " + build())

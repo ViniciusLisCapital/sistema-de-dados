@@ -27,13 +27,13 @@ Martin Cerisola, Roberto Guimaraes, and Professor Michael Wickens for valuable c
 the subject.
 
 Contents Page
-I. Introduction............................................................................................................................3
-II. The External Adjustment......................................................................................................4
+I. Introduction ............................................................................................................................3
+II. The External Adjustment ......................................................................................................4
 III. The Equilibrium Exchange Rate in Brazil.........................................................................10
 A. The Variables: Motivation and Definition..............................................................11
-B. The Data..................................................................................................................12
+B. The Data ..................................................................................................................12
 C. Empirical Modeling.................................................................................................13
-IV. Concluding Remarks.........................................................................................................19
+IV. Concluding Remarks .........................................................................................................19
 References................................................................................................................................20
 Tables
 1. Stationarity Tests: ADF Statistics........................................................................................13
@@ -44,10 +44,10 @@ Figures
 2. Brazil: Current Account Balance and Net Foreign Assets, 1994–2005.................................5
 3. Brazil: Exports, Imports, and the Trade Balance, 1994–2005...............................................5
 4. Brazil: 12-month Growth of Export Volumes and Export Prices 1994–2006.......................6
-5. Brazil: Export Market Share (index number), 1994:4–2006:1..............................................6
+5. Brazil: Export Market Share (index number), 1994:4–2006:1 ..............................................6
 6. Brazil: Installed Capacity in Manufacturing, (index number), 1994–2005...........................7
-7. Brazil: Saving, Investment, and the Current Account (% GDP), 1994–2005.......................7
-8. Brazil: National, Private, and Public Saving (% of GDP), 1994–2005.................................8
+7. Brazil: Saving, Investment, and the Current Account (% GDP), 1994–2005 .......................7
+8. Brazil: National, Private, and Public Saving (% of GDP), 1994–2005 .................................8
 9. Brazil: Debt Indicators, 1995–2006.......................................................................................8
 10. Brazil EMBI and Overall EMBI, 2002:1–2006:5................................................................9
 11. Relative Unit Labor Costs, Brazil and Main Partners, 1994–2005....................................10
@@ -361,7 +361,7 @@ A. The Variables: Motivation and Definition
 Following MacDonald and Clark (1998), Brazil’s equilibrium exchange rate dynamics are
 expected to be driven by fundamentals as follows:6
 + + + + −
-REER = f ( NTT ;TOT ;RINTDIFF ; NFA ;RELDEBT )
+REER = f ( NTT ;TOT ; RINTDIFF ; NFA ; RELDEBT )
 • The relative price of nontradables to tradables (NTT) is supposed to have a direct impact
 on the equilibrium exchange rate for two main reasons. First, it may capture the Balassa-
 Samuelson effect as faster productivity growth in the tradables sector would lead to lower
@@ -462,14 +462,14 @@ first order, econometric modeling was carried out according to cointegration met
 suggested in Johansen (1995). It is assumed that the dynamics of the six variables described
 above can be modeled through a Vector Error-Correction (VEC) specification of the form:
 k
-∆Y = Ψ Y + ∑ Φ ∆Y + δ + ε
-t t−1 i t−i t
-i=1
+∆ Y = Ψ Y + ∑ Φ ∆ Y + δ + ε
+t t −1 i t − i t
+i =1
 11 MacDonald and Clark (1998) and Maeso-Fernandez, Osbat, and Schnatz (2001) have also reported finding
 “border line” test statistics for some measures of interest rate differentials but treating the series as I(1).
 
 where
-Y’ = [REER, NTT, TOT, RINTDIFF, NFA, RELDEBT]
+Y ’ = [REER , NTT , TOT , RINTDIFF , NFA , RELDEBT ]
 Ψ is a (6 x 6) matrix of coefficients
 Φ is a (6 x k) matrix of short-run coefficients
 δ is a (6 x 1) vector of constants and
@@ -689,6 +689,8 @@ Table 3. Relative Contribution of Fundamentals to the BEER Appreciation, 2003–
 Model
 2003 → 2005 (in percent of total BEER appreciation)
 TOT NTT RINTDIFF RELDEBT NFA
+I 23% 42 -15 6 10 57
+II 23% 41 -14 5 9 59
 III 29% 39 -10 8 63
 IV 25% 40 -11 7 64
 Model estimates also have some interesting implications for the period covering the second

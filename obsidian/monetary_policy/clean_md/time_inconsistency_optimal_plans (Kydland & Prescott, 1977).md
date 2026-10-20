@@ -12,7 +12,7 @@ page of such transmission.
 The JSTOR Archive is a trusted digital repository providing for long-term preservation and access to leading academic
 journals and scholarly literature from around the world. The Archive is supported by libraries, scholarly societies, publishers,
 and foundations. It is an initiative of JSTOR, a not-for-profit organization with a mission to help the scholarly community take
-http://www.jstor.org
+advantage of advances in technology. For more information regarding JSTOR, please contact .
 Mon Oct 1 19:25:29 2007
 
 Rules Rather than Discretion:
@@ -47,7 +47,6 @@ Foundation, and the Bank of Korway.
 [Journal of Polltical Economy, 1977, vol. 85, no.31
 01977 by The University of Chicago. All rights reserved.
 
-474 JOURNAL OF POLITICAL ECONOMY
 best action, given the current situation, will not typically result in the
 social objective function being maximized. Rather, by relying on some
 policy rules, economic performance can be improved. In effect this is an
@@ -137,7 +136,6 @@ preference theory, one need only define the decision elements to be functions co
 upon observables to incorporate uncertainty as is done for the stabilization example in
 Sec. V.
 
-476 JOURNAL OF POLITICAL ECONOMY
 The inconsistency of the optimal plan is easily demonstrated by a
 two-period example. For T = 2, n, is selected so as to maximize
 subject to
@@ -207,7 +205,6 @@ is dominant, and for dominant-player games, the open-loop solution is inconsiste
 Kydland 1975a, 1975b for further details). That is why Peleg and Yaari's solution was
 not considered here.
 
-478 JOURNAL OF POLITICAL ECONOMY
 The attempts of economists to rationalize the apparent trade-off
 between unemployment and inflation in modern theoretical terms have
 resulted in models with the following structure: unemployment (employ-
@@ -251,7 +248,6 @@ the rational-expectations hypothesis is tested and accepted. He also
 explains why many other tests that rejected the hypothesis are invalid.
 He does not, however, comment on the Hirsch and Love11 (1969) test
 
-RULES RATHER THAN DISCRETION
 FIG.1. -Consistent and optimal equilibrium
 which used direct measures of expectations and found that forecast
 errors were systematically related to lagged sales, so we will do so. Re-
@@ -275,7 +271,6 @@ the vertical axis at x:. For a consistent equilibrium, the indifference curve
 must be tangent to a Phillips curve at a point along the vertical axis-
 as at point C. Only then are expectations rational and the policy selected
 
-480 JOURNAL OF POLITICAL ECONOMY
 best, given the current situation. The indifference curves imply that the
 socially preferred inflation rate is zero, which seems consistent with the
 public's preferences. We of course recognize that inflation is a tax on
@@ -319,7 +314,6 @@ decisions of agents in the current period will have the form
 nf).
 xt = dc(yf,TC,;
 
-RULES RATHER THAN DISCRETION 481
 Again, it is important to note that expectations of future policy affect
 current decisions. For example: the effect of an increase in the invest-
 ment tax credit will depend upon the expected future levels of the
@@ -364,7 +358,6 @@ of the variables. It was necessary to consider probability distributions because
 games a randomized strategy will be optimal and not dominated by a deterministic one.
 For games against nature, only deterministic strategies need be considered.
 
-482 JOURNAL OF POLITICAL ECONOMY
 V. The Investment-Tax-Credit Example
 In this section an equilibrium framework is developed for evaluating a
 class of investment-tax-credit policies. The assumed technological struc-
@@ -450,7 +443,6 @@ consequently, future investment tax credits larger. Because of this externality,
 petitive equilibrium will not in general maximize the utility of the economy-wide
 consumer, given the policy rule. This is \vhy it was necessary to devise direct methods.
 
-484 JOURNAL OF POLITICAL ECONOMY
 The policymakers are choosing values for n in each time period so as
 to minimize the value of some social preference function. We use a quad-
 ratic approximation of a function which includes the terms likely to carry
@@ -490,7 +482,6 @@ variables. However, the model could be modified to permit random fluctuations in
 price of capital. For estimation purposes, one would then, instead of using the investment
 tax credit, use the price ofcapital which is affected by the tax credit in a predictable way.
 
-RULES RATHER THAN DISCRETION 485
 aggregate demand relation9 Only these parameters and the parameters
 of the objective function were subject to variation. Space constraints
 preclude more than a brief summary of the results.1°
@@ -537,7 +528,6 @@ sponding target variables when the passive policy of n,= 0 is used in every peri
 O More details of the results of the numerical examples can be found in our original
 working paper, which is available upon request.
 
-486 JOURNAL OF POLITICAL ECONOMY
 optimal control theory can not be made applicable to economic planning
 by taking into consideration the way changes in the policy rule change the
 behavioral equation of the model when expectations are rational.
@@ -578,7 +568,6 @@ stabilization effects did, for some distributed lag expenditure schedules,
 contribute to economic instability and even make a stable economy
 unstable.
 
-RULES RATHER THAN DISCRETION 487
 The structures considered are far from a tested theory of economic
 fluctuations, something which is needed before policy evaluation is
 undertaken. The implication of this analysis is that, until we have such
@@ -618,7 +607,6 @@ variances. In the vector W we may also include other variables on which decision
 can depend and which may be common to the firm and the economy as a whole.
 An example would be the lagged price level of output.
 
-488 JOURNAL OF POLITICAL ECONOMY
 The firm's objective is to maximize
 where n, is a vector of policy variables assumed to be given by a sequence of
 linear policy rules,
@@ -694,7 +682,6 @@ control theory was then used to determine the policy Hn+' which would be
 Standard dynamic programming arguments such as those of Denardo (1967) could
 not be applied because there was not monotonicity of the mapping in the value space.
 
-490 JOURNAL OF POLITICAL ECONOMY
 optimal if Xnwere not to change as a result of the change in nn. Given initial
 linear feedback rule n o , sequences of linear rules {nn,X n}w ere obtained. When
 such sequences existed and converged, the limits constituted a consistent policy

@@ -1255,6 +1255,8 @@ become an important element in the country’s business cycle. The assessment of
 channel, however, involves the use of di¤erent tools and datasets15. Nevertheless, the ongoing
 worldwide …nancial crisis leaves no doubt about the importance of understanding better the
 credit channel and all related …nancial linkages.
+15So far, the empirical evidence about the credit channel in Brazil is not conclusive. The results seem to
+be sensitive to di¤erences in methodology, datasets and sample periods. See, for instance, ?, Souza-Sobrinho
 Coefficient
 of Interest
 Households

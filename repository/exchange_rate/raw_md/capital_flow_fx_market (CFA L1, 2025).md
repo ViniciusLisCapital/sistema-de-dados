@@ -194,7 +194,7 @@ that individual’s relative purchasing power will be compared with the other co
 An equivalent way of viewing the real exchange rate is that it represents the relative
 price levels in the domestic and foreign countries. Mathematically, we can represent
 the foreign price level in terms of the domestic currency as follows:
-Foreign price level in domestic currency = S × P,
+Foreign price level in domestic currency = S × P ,
 d/f f
 where S is the spot exchange rate (quoted in terms of the number of units of
 d/f
@@ -204,7 +204,7 @@ in terms of the foreign currency. We can define the domestic price level, in ter
 the domestic currency, as P . Hence, the ratio between the foreign and domestic price
 d
 levels is as follows:
-Real exchange rate = (S P)/P = S × (P/P ) .
+Real exchange rate = (S P )/P = S × (P /P ) .
 (d/f) d/f f d d/f f d
 For example, for a British consumer wanting to buy goods made in the Eurozone, the
 real exchange rate (defined in GBP/EUR terms; note that the domestic currency for
@@ -407,7 +407,7 @@ C. Nominal exchange rate.
 Solution:
 B is correct. The real exchange rate (quoted in terms of domestic currency
 per unit of foreign currency) is given as follows:
-Real exchange rate = S × (P/P ).
+Real exchange rate = S × (P /P ).
 (d/f) d/f f d
 An increase in the domestic price level (P ) decreases the real exchange
 d

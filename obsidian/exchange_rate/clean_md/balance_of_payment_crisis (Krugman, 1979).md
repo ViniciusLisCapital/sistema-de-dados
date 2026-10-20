@@ -5,11 +5,10 @@ Published by: Ohio State University Press
 Accessed: 26-09-2019 20:00 UTC
 JSTOR is a not-for-profit service that helps scholars, researchers, and students discover, use, and build upon a wide
 range of content in a trusted digital archive. We use information technology and tools to increase productivity and
+facilitate new forms of scholarship. For more information about JSTOR, please contact .
 Your use of the JSTOR archive indicates your acceptance of the Terms & Conditions of Use, available at
 Ohio State University Press is collaborating with JSTOR to digitize, preserve and extend
 access to Journal of Money, Credit and Banking
-This content downloaded from 74.72.245.75 on Thu, 26 Sep 2019 20:00:39 UTC
-All use subject to https://about.jstor.org/terms
 
 PAUL KRUGMAN
 A Model of Balance-of-Payments Crises
@@ -122,7 +121,6 @@ As a final simplifying assumption we suppose that foreigners do not hold
 2The reason for making this assumption is that it rules out international interest payments, allowing us
 to identify the current account with the trade balance.
 
-314 : MONEY, CREDIT, AND BANKING
 domestic money. Then M is also the outstanding stock of domestic money and in
 equilibrium domestic residents must be just willing to hold that stock. Since I
 assume that the desired holdings of domestic money are proportional to wealth,
@@ -160,7 +158,6 @@ Fig. 1. Effects of a Change in 1T with Fixed and Floating Rates
 3Note that I am making a clear distinction between stocks and flows; in any instant asset holdings are
 not affected by current saving.
 
-PAUL KRUGMAN : 315
 lowering LL to L'L'. Since F cannot change, P rises, moving the equilibrium
 from A to B.
 Matters are different if the government has a reserve of foreign money R, and
@@ -197,7 +194,6 @@ m = MIP - (MIP)(PIP)
 Turning next to holdings of foreign money, recall that such holdings represent
 claims on the rest of the world. They can only be increased by exchanging goods in
 
-316 : MONEY, CREDIT, AND BANKING
 return. So the rate of accumulation of foreign money must equal the current account
 balance.
 F = B = Y- G - C(Y- T, W). (7)
@@ -234,7 +230,6 @@ state. Some theoretical justification for this assumption has been given by Broc
 uncertainty. The special case of perfect foresight is easier to work with, however, and sufficient for
 present purposes.
 
-PAUL KRUGMAN : 317
 Fig. 2. Dynamic Behavior with a Floating Exchange Rate
 the best argument for the assumption, however, is that it gives economically
 sensible results.
@@ -261,7 +256,6 @@ Then from the budget constraint and the fact that the price level is pegged we
 immediately know that
 W = M/P+ F = S. (13)
 
-318 : MONEY, CREDIT, AND BANKING
 But private savings is in turn a function of private wealth, with dS/dW= -C2
 < 0. So ( 13) is a differential equation in W, and since dS/dW is negative it is stable.
 How is saving allocated between domestic and foreign money? This is
@@ -300,7 +294,6 @@ lines R = 0 and W = 0 would coincide, and it would be possible for the economy t
 reach an equilibrium at the given exchange rate if initial reserves were large enough.
 If the economy reaches an equilibrium with some reserves left, the model
 
-PAUL KRUGMAN : 319
 R
 R=O w=o
 /g\. AX
@@ -334,7 +327,6 @@ expansion path of portfolios under fixed rates as private wealth changes; it is 
 than m = O because a higher proportion of domestic money is held in the portfolio
 when X = O than when 7r = g (as it does along m = O). When reserves run out the
 
-320 : MONEY, CREDIT, AND BANKING
 Fig. 4. Windfall Capital Gains from the Transition to a Floating Rate
 system is at a point such as A. We know that when pegging endg and the exchange
 rate is allowed to float, real balances jump so as to put the system on the stable path
@@ -367,7 +359,6 @@ But iT > O, because the share of domestic money in wealth is falling. So
 L(O)S- (G- T) > O.
 But under fixed rates, R = L(O)S - (G - T). So, R > O at the intersection of OX with 55.
 
-PAUL KRUGMAN : 321
 investors to avoid windfall capital losses. Consider what such a speculative attack
 involves. From the government's point of view, it represents a liquidation of its
 reserves. From the point of view of domestic residents, however, what they are
@@ -404,7 +395,6 @@ had been further to the right. It is then obvious from the diagram that the rese
 acquired from the government must also have been larger. This establishes that the
 threshold at which a crisis occurs is upward sloping in W,R space.
 
-322 : MONEY, CREDIT, AND BANKING
 Fig. 5. The Elimination of Reserves by a Speculative Attack
 The approach to the crisis is illustrated in Figure 6, where the threshold (20)
 is represented by 5; it is upward-sloping and cuts the horizontal axis to the left
@@ -425,7 +415,6 @@ Fig. 6. The Approach to a Crisis
 oThe intersection of TT with the horizontal axis corresponds to the intersection of OX with SS in Figure
 5. But as argued in note 5, that intersection takes place at a level of wealth for which R > O.
 
-PAUL KRUGMAN : 323
 5. SPECULATION WHEN GOVERNMENT POLICY IS UNCERTAIN: THE ';ONE-WAY
 OPTION"
 Many different kinds of uncertainty could be introduced into the preceding
@@ -469,7 +458,6 @@ SUMMARY AND CONCLUSIONS
 This paper has been concerned with the circumstances in which a balance-of-
 payments problemefined as a situation in which a country is gradually losing
 
-324 : MONEY, CREDIT, AND BANKING
 reserves becomes a balance-of-payments crisis, in which speculators attack the
 currency. I have shown that balance-of-payments crises are a natural outcome of
 maximizing behavior by investors. When the government's willingness to use
@@ -503,7 +491,6 @@ F-F a21 a22 eA2t
 If the system is to converge to a steady state the initial condition must be such that
 al2 = a22 = O, so m and F converge exponentially to m, F. But then we have
 
-PAUL KRUGMAN : 325
 m = Al(m -m)
 (A3)
 = ws(mlF)(m-m) + ws(mlF)2(F-F)
@@ -511,15 +498,3 @@ which defines the stable path
 m -m = ws(mlF)2_ (F-F)
 1 + ws(mlF)
 The rest of the argument in the text then follows.
-LITERATURE CITED
-1. Brock, William A. "A Simple Perfect Foresight Monetary Model. " Journal of Monetary
-Economicss 1 (April 1 975), 1 33-1 50.
-2. Girton, Lance, and Dale W. Henderson. "Central Bank Operations in Foreign and
-Domestic Assets under Fixed and Flexible Exchange Rates." Federal Reserve Board
-International Finance Discussion Paper No. 83, May 1976.
-3. Kouri, Pentti J. K. "The Exchange Rate and the Balance of Payments in the Short Run
-and in the Long Run: A Monetary Approach." Scandinavian Journal of Economicss
-78 (1976), 28>304.
-4. Salant, Stephen W., and Dale W. Henderson. "Market Anticipation of Government
-Policy and the Price of Gold." Journal of Political Economys 86 (August 1978),
-627-648.

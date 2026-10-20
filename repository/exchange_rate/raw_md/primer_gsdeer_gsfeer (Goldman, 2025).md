@@ -114,7 +114,7 @@ have a greater contribution to fair values in commodity-exporter economies like 
 BRL or CLP.
 Exhibit 2: Our EUR/CHF GSDEER fair value estimate has Exhibit 3: The USD/MXN GSDEER fair value has moved
 moved almost 20% lower since 2014 nearly 40% higher since 2014
-ln % Contributionto change in EUR/CHF fair value since 2014 ln % ln % Contributionto change in USD/MXN fair value since 2014 ln %
+ln % Contribution to change in EUR/CHF fair value since 2014 ln % ln % Contributionto change in USD/MXN fair value since 2014 ln %
 20 20 40 40
 Higher USD/MXN
 Productivity fair value
@@ -124,7 +124,7 @@ Total Inflation
 Total
 0 0 20 20
 -10 -10 10 10
-LowerEUR/CHF
+Lower EUR/CHF
 -20 fair value -20 0 0
 -30 -30 -10 -10
 14 15 16 17 18 19 20 21 22 23 24 25 14 15 16 17 18 19 20 21 22 23 24 25
@@ -225,7 +225,7 @@ shifted slightly, with a 70-30 split on GSDEER and GSFEER respectively, based on
 multivariate regression results for 1-year real exchange rate returns (Exhibit 5).
 Exhibit 5: There remains strong evidence supporting a weighted-average approach when
 applying our fair value signals to 1-year real returns
-Beta Beta of 1y Real Returns toGSDEER and GSFEER Valuation Signals Beta
+Beta Beta of 1y Real Returns to GSDEER and GSFEER Valuation Signals Beta
 0.50 0.50
 0.45 0.45
 GSDEER
@@ -266,7 +266,7 @@ On account of its higher forecasting value over longer horizons, we developed ou
 10-year-ahead FX forecasts using our GSDEER framework specifically, and did not
 incorporate our GSFEER approach.
 Exhibit 6: At a 10-year horizon, our GSDEER model tends to more clearly outperform our GSFEER model
-Beta Beta of 10y Real Returns toGSDEER and GSFEER Valuation Signals Beta
+Beta Beta of 10y Real Returns to GSDEER and GSFEER Valuation Signals Beta
 3.0 3.0
 2.5 GSDEER GSFEER 2.5
 2.0 2.0

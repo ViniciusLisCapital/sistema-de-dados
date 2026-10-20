@@ -2,7 +2,7 @@
 CHAPTER
 Price Levels and the Exchange
 Rate in the Long Run
-At the end of 1970, you could have bought 358 Japanese yen with a sin-
+A t the end of 1970, you could have bought 358 Japanese yen with a sin-
 gle American dollar; by Christmas 1980, a dollar was worth only 203 yen.
 Despite a temporary comeback during the 1980s, the dollar’s price in yen slumped
 below 110 the summer of 2020. Many investors found these price changes dif-
@@ -81,13 +81,15 @@ follows: Let Pi be the dollar price of good i when sold in the United States, Pi
 US E
 corresponding euro price in Europe. Then the law of one price implies that the dollar
 price of good i is the same wherever it is sold.
-Pi = (E ) * (Pi).
-US + : E>
+Pi = (E ) * (Pi ).
+US + : E
+>
+M16_KRUG9719_12_GE_C16.indd 453 07/12/21 8:59 AM
 
 454 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Equivalently, the dollar/euro exchange rate is the ratio of good i’s U.S. and European
 money prices,
-E = Pi /Pi.
+E = Pi /Pi .
 +/: US E
 Purchasing Power Parity
 The theory of purchasing power parity states that the exchange rate between two coun-
@@ -180,7 +182,11 @@ can be defined only with respect to the time interval over which price levels an
 exchange rate change.
 1To be precise, equation (16-1) implies a good approximation to equation (16-2) when rates of change are
 not too large. The exact relationship is
-E+:,t E+:,t-1 = (P
+E+
+:,t
+E+
+:,t-1
+= (P
 US,t
 P
 US,t-1
@@ -189,12 +195,13 @@ E,t
 P
 E,t-1
 ).
-After subtracting 1 from both sid>es,> we> write the prece>ding exa>ct equ>ation as
-(E+:,t - E+:,t-1 ) E+:,t-1 = (p US,t + 1)(P E,t-1 P E,t ) - (P E,t P E,t )
+After subtracting 1 from both sid> es,> we> write the prece>ding exa>ct equ>ation as
+(E+ :,t - E+ :,t-1 ) E+ :,t-1 = (p US,t + 1)(P E,t-1 P E,t ) - (P E,t P E,t )
 > > > > = = ( ( p p U U S S , , t t - - p p E E , , t t ) )(1 - + p> E p ,t E (p ,t ) US,t - p E > ,t ) (1 + p E,t ).
 But if p US,t and p E,t are small, the term -p E,t (p US,t - p E,t ) (1 + p E,t ) in the last eq>uality is negligibly small,
 implying a very good approximation to (16-2).
 >
+M16_KRUG9719_12_GE_C16.indd 455 07/12/21 8:59 AM
 
 456 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In practice, national governments do not take pains to compute the price level indexes
@@ -236,7 +243,7 @@ will assume that in the long run, the foreign exchange market sets the rate so t
 holds [see equation (16-1)]:
 E = P P .
 + : US E
-In other words, we assume the abo>ve equati>on would hold in a world where there
+In other words, we assume the abo> ve equati>on would hold in a world where there
 are no market rigidities to prevent the exchange rate and other prices from adjusting
 immediately to levels consistent with full employment.
 In Chapter 15, equation (15-5) showed how we can explain domestic price levels in
@@ -244,6 +251,7 @@ terms of domestic money demands and supplies. In the United States,
 P = Ms L(R , Y ), (16-3)
 US US + US
 >
+M16_KRUG9719_12_GE_C16.indd 456 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 457
 while in Europe,
@@ -357,6 +365,7 @@ assets is
 R = R + (Ee - E ) E .
 + : + : + : + :
 > > > >
+M16_KRUG9719_12_GE_C16.indd 458 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 459
 [Recall equation (14-2) in the section on “Equilibrium in the Foreign Exchange
@@ -379,7 +388,7 @@ pe = (Pe - P) P.
 If relative PPP holds, however, market particip>ants will also expect relative PPP to
 hold, which means that we can replace the actual depreciation and inflation rates in
 equation (16-2) with the values the market expects to materialize:
-(Ee - E ) E = pe - pe.
+(Ee - E ) E = pe - pe .
 + : + : + : US E
 By combining this “expe>cted” ve>rsi>on >of relative PPP with the interest parity
 condition
@@ -387,10 +396,10 @@ R = R + (Ee - E ) E
 + : + : + : + :
 and rearranging, we arrive at a formula th>at expre>sse>s th>e international interest rate
 difference as the difference between expected national inflation rates:
-R - R = pe - pe. (16-5)
+R - R = pe - pe . (16-5)
 + : US E
 If, as PPP predicts, currency depreciation is expected to offset the international inflation
-difference (so that the expected dollar depreciation rate is pe - pe), the interest rate
+difference (so that the expected dollar depreciation rate is pe - pe ), the interest rate
 US E
 difference must equal the expected inflation difference.
 The Fisher Effect
@@ -407,7 +416,7 @@ year, dollar interest rates would eventually catch up with the higher inflation,
 by 5 percentage points per year from their initial level. These changes would leave the
 real rate of return on dollar assets, measured in terms of U.S. goods and services,
 unchanged. The Fisher effect is therefore another example of the general idea that in
-
+M16_KRUG9719_12_GE_C16.indd 459 07/12/21 8:59 AM
 
 460 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 the long run, purely monetary developments should have no effect on an economy’s
@@ -471,14 +480,13 @@ dollar depreciation. As investors respond by moving into foreign deposits, which
 20th century. His book The Theory of Interest (New York: Macmillan, 1930) discusses it at length. Fisher,
 incidentally, gave an early account of the interest parity condition on which we based our theory of foreign
 exchange market equilibrium.
-
+M16_KRUG9719_12_GE_C16.indd 460 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 461
 (a) U.S. money (b) Dollar interest
 supply, M rate, R
 US $
-R2=R1
-+ Dp
+R2 = R1 + Dp
 $ $
 Slope = p + Dp R1
 $
@@ -512,7 +520,7 @@ equilibrium requires an interest rate rise, given that the price level cannot do
 E
 the euro at rate p before t 0 and at rate p + ∆p afterward, depreciates at rate p - p E until t 0 and at rate
 p + ∆p - p E thereafter.
-
+M16_KRUG9719_12_GE_C16.indd 461 07/12/21 8:59 AM
 
 462 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 dropping immediately in response to the money supply reduction. In that sticky-price
@@ -562,7 +570,7 @@ Li, “International Prices, Costs, and Markup Differences,” American Economic
 pp. 2450–2486; Mario J. Crucini and Anthony Landry, “Accounting for Real Exchange Rates Using
 Micro-Data,” Working Paper 17812, National Bureau of Economic Research, February 2012; and the paper
 by Goldberg and Knetter in Further Readings.
-
+M16_KRUG9719_12_GE_C16.indd 462 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 463
 Figure 16-2 illustrates relative PPP’s weakness by plotting both the yen/dollar
@@ -599,7 +607,7 @@ E
 100
 80
 60
-19801982198419861988199019921994199619982000200220042006200820102012201420162018
+1980 1982 1984 1986 1988 1990 1992 1994 1996 1998 2000 2002 2004 2006 2008 2010 2012 2014 2016 2018
 FIGURE 16-2
 The Yen/Dollar Exchange Rate and Relative Japan–U.S. Price Levels, 1980–2019
 The graph shows that relative PPP does not track the yen/dollar exchange rate during 1980–2015.
@@ -715,7 +723,7 @@ ter’s Further Readings. Classic theoretical contributions on pricing to market
 Real-Financial Linkages among Open Economies (Cambridge, MA: MIT Press, 1987); and Andrew Atkeson
 and Ariel Burstein, “Pricing-to-Market, Trade Costs, and International Relative Prices,” American Economic
 Review 98 (December 2008), pp. 1998–2031.
-
+M16_KRUG9719_12_GE_C16.indd 465 07/12/21 8:59 AM
 
 466 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 In 2016, for example, a Volkswagen Polo cost $4,000 more in Ireland than in Austria
@@ -765,6 +773,7 @@ Another challenge is the determination of using a common price level as base and
 the prices of traded and non-traded commodi- ing it in a common currency.
 ties. While the prices of traded products can be Many major international agencies, such as the
 globally determined by the law of one price, the World Bank, International Monetary Fund, the
+M16_KRUG9719_12_GE_C16.indd 466 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 467
 World Health Organization, the United Nations when the PPP between two countries is the same,
@@ -825,7 +834,7 @@ individual product level for each basic heading for by international organizatio
 every pair of economies. On the other hand, mul- United Nations Development Program (UNDP)
 tilateral PPPs are calculated on the basis of tran- uses this data to calculate the human develop-
 sitivity and country invariance. Transitivity occurs ment index and formulate gender empowerment
-
+M16_KRUG9719_12_GE_C16.indd 467 07/12/21 8:59 AM
 
 468 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 4.5
@@ -886,7 +895,7 @@ Western Asia Commonwealth of
 Caribbean Independent States
 Latin America Asia and the Pacific
 Eurostat–OECD Africa
-
+M16_KRUG9719_12_GE_C16.indd 468 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 469
 Change in the relative prices of basket components, however, can cause relative PPP
@@ -1008,7 +1017,7 @@ Rich countries have high capital-labor ratios, while poor countries have more
 Studies in International Finance 52 (International Finance Section, Department of Economics, Princeton
 University, November 1983); and Jagdish N. Bhagwati, “Why Are Services Cheaper in the Poor Countries?”
 Economic Journal 94 (June 1984), pp. 279–286.
-
+M16_KRUG9719_12_GE_C16.indd 471 07/12/21 8:59 AM
 
 472 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 labor relative to capital. Because rich countries have higher capital-labor ratios,
@@ -1301,7 +1310,7 @@ than in Europe’s.
 to relative world demand for and supply of two products that could be produced in either of two countries.
 In contrast, the RD and RS curves in this chapter refer to the relative world demand for and supply of one
 country’s overall output (its GDP) relative to another’s.
-
+M16_KRUG9719_12_GE_C16.indd 476 07/12/21 8:59 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 477
 FIGURE 16-4
@@ -1499,7 +1508,7 @@ the nominal dollar/euro exchange rate less the international difference in infla
 between the United States and Europe. We thus arrive at the corresponding relation-
 ship among the expected change in the real exchange rate, the expected change in the
 nominal rate, and expected inflation:
-(qe - q ) q = (Ee - E ) E - (pe - pe), (16-8)
+(qe - q ) q = (Ee - E ) E - (pe - pe ), (16-8)
 + : + : + : + : + : + : US E
 where qe (as > per our > us>ual > notation) > is the re > al >exc > hange rate expected for a year
 + :
@@ -1514,7 +1523,7 @@ dollar/euro exchange rate is just the expected rate of change in the real dollar
 exchange rate plus the U.S.–Europe expected inflation difference. Combining (16-8)
 with the above interest parity condition, we thus are led to the following breakdown
 of the international interest rate gap:
-R - R = (qe - q ) q + (pe - pe). (16-9)
+R - R = (qe - q ) q + (pe - pe ). (16-9)
 + : + : + : + : US E
 Notice that when the market ex > pects re > lat>ive > PPP to prevail, qe = q and the
 + : + :
@@ -1563,7 +1572,7 @@ real interest rate must be reflected, one for one, in the nominal interest rate.
 A useful consequence of the preceding definition is a formula for the difference in
 expected real interest rates between two currency areas such as the United States and
 Europe:
-re - re = (R - pe ) - (R - pe).
+re - re = (R - pe ) - (R - pe ).
 US E + US : E
 If we rearrange equation (16-9) and combine it with the preceding equation, we get
 the desired real interest parity condition:
@@ -1580,7 +1589,7 @@ M16_KRUG9719_12_GE_C16.indd 481 07/12/21 8:59 AM
 
 482 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Expected real interest rates are the same in different countries when relative PPP is
-expected to hold [in which case (16-10) implies that re = re]. More generally, however,
+expected to hold [in which case (16-10) implies that re = re ]. More generally, however,
 US E
 expected real interest rates in different countries need not be equal, even in the long
 run, if continuing change in output markets is expected.27 Suppose, for example, that
@@ -1925,9 +1934,9 @@ R
 $
 1 R
 $
-2=R
+2 = R
 $
-1+ Dp (in dollar terms)
+1 + Dp (in dollar terms)
 PPP relation Money demand,
 L(R , Y )
 $ US
@@ -1946,14 +1955,14 @@ Rate When Goods Prices Are Flexible
 When goods prices are perfectly flexible, the money market equilibrium diagram (southeast quadrant) shows two
 effects of an increase, ∆p, in the future rate of U.S. money supply growth. The change (i) raises the dollar interest
 rate from R1 + to R2 + = R1 + + ∆p, in line with the Fisher effect, and (ii) causes the U.S. price level to jump upward, from
-P 1 to P 2. Money market equilibrium therefore moves from point 1 to point 2. (Because M1 doesn’t change imme-
+P 1 to P 2 . Money market equilibrium therefore moves from point 1 to point 2. (Because M1 doesn’t change imme-
 US US US
-diately, the real U.S. money supply falls to M1 P 2, bringing the real money supply into line with reduced money
+diately, the real U.S. money supply falls to M1 P 2 , bringing the real money supply into line with reduced money
 US US
 demand.) The PPP relationship in the southwest quadrant shows that the price level jump from P 1 to P 2 requires a
 depreciation of the dollar against the euro (the d > ollar/euro exchange rate moves up, from E1 to U E S 2 ). I U n S the foreign
 +/: +/:
-exchange market diagram (northeast quadrant), this dollar depreciation is shown as the move from point 1′to
+exchange market diagram (northeast quadrant), this dollar depreciation is shown as the move from point 1′ to
 point 2′. The dollar depreciates despite a rise in R because heightened expectations of future dollar depreciation
 +
 against the euro cause an outward shift of the locus measuring the expected dollar return on euro deposits.
@@ -1961,7 +1970,7 @@ M16_KRUG9719_12_GE_C16.indd 488 07/12/21 9:00 AM
 
 CHAPTER 16 ■ Price Levels and the Exchange Rate in the Long Run 489
 There you can see the dollar’s depreciation against the euro is associated with a move
-in the foreign exchange market’s equilibrium from point 1′to point 2′. The picture
+in the foreign exchange market’s equilibrium from point 1′ to point 2′. The picture
 shows why the dollar depreciates, despite the rise in R . The reason is an outward shift
 +
 in the downward-sloping schedule, which gives the expected dollar rate of return on
@@ -1975,3 +1984,4 @@ the dollar’s exchange rate without knowing why the nominal interest rate has r
 In a flexible-price model in which the home nominal interest rate rises because of
 higher expected future money supply growth, the home currency will depreciate—not
 appreciate—thanks to expectations of more rapid future depreciation.
+M16_KRUG9719_12_GE_C16.indd 489 07/12/21 9:00 AM

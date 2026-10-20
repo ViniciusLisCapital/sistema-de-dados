@@ -82,6 +82,9 @@ LINE_PT = 15.0
 
 def _norm_tokens(s: str) -> list[str]:
     s = unicodedata.normalize("NFKD", str(s or "")).encode("ascii", "ignore").decode().lower()
+    # "Ch. 3" in a row's title is the "ch3" of the file name: one row per book chapter, and the
+    # chapter number is what separates Gali (2015) ch. 3 from ch. 4, whose titles share words.
+    s = re.sub(r"\bch(?:apter)?\.?\s*(\d+)\b", r"ch\1", s)
     return [t for t in re.split(r"[^a-z0-9]+", s) if len(t) > 1 and t not in _STOP]
 
 
@@ -291,27 +294,55 @@ def _fill_tab(ws, topic: str, log: dict) -> dict:
 
 
 def _summary(wb, tabs: list[tuple[str, str]]) -> None:
+    """One line per area, read left to right as the work goes: the list, the PDFs, the text,
+    the synthesis. Every count is of rows of the area tab, one row per source file (a book
+    has a row per chapter). Dropped rows are out of the list. The two shares divide by
+    Sources, so they read as how far each area is from done."""
     if SUMMARY in wb.sheetnames:
         del wb[SUMMARY]
     ws = wb.create_sheet(SUMMARY, 0)
-    heads = ["Area", "Sources in the list", "Not acquired", "Dropped", "Ingested", "Pending", "Needs attention", "On hold"]
+    groups = [("", 1, 1), ("The list", 2, 3), ("Ingestion (text into the vault)", 4, 6), ("Synthesis", 7, 8)]
+    heads = ["Area", "Sources", "Acquired",
+             "Ingested", "% of sources", "Needs attention",
+             "Synthesized", "% of sources"]
+    pct_cols = {5, 8}
+    # teal = the user's columns (the list), navy = the system's (ingestion, synthesis)
+    fill = lambda c: TEAL if c <= 3 else NAVY  # noqa: E731
     for i, h in enumerate(heads, 1):
-        _header(ws, i, h, TEAL if i <= 4 else NAVY, 26 if i == 1 else 15)
-    ws.row_dimensions[1].height = 30
-    for r, (_, tab) in enumerate(tabs, 2):
+        for row, text in ((1, None), (2, h)):
+            cell = ws.cell(row, i, text)
+            cell.font, cell.alignment, cell.border, cell.fill = HEADER_FONT, HEAD, BORDER, fill(i)
+        ws.column_dimensions[get_column_letter(i)].width = 24 if i == 1 else 13
+    for title, a, b in groups:
+        ws.cell(1, a).value = title or None
+        if b > a:
+            ws.merge_cells(start_row=1, start_column=a, end_row=1, end_column=b)
+    ws.row_dimensions[1].height = 22
+    ws.row_dimensions[2].height = 30
+    first = 3
+    for r, (_, tab) in enumerate(tabs, first):
         q = f"'{tab}'!"
-        values = [tab.replace("Qual - ", ""), f"=COUNTA({q}A:A)-1", f'=COUNTIF({q}E:E,"No")', f'=COUNTIF({q}E:E,"Dropped")'] + \
-                 [f'=COUNTIF({q}K:K,"{lab}")' for lab in ("Ingested", "Pending", "Needs attention", "On hold")]
+        share = lambda col: f'=IF(B{r}=0,"",{col}{r}/B{r})'  # noqa: E731
+        values = [tab.replace("Qual - ", ""),
+                  f'=COUNTA({q}A:A)-1-COUNTIF({q}E:E,"Dropped")', f'=COUNTIF({q}E:E,"Yes")',
+                  f'=COUNTIF({q}K:K,"Ingested")', share("D"), f'=COUNTIF({q}K:K,"Needs attention")',
+                  f'=COUNTIF({q}O:O,"Yes")', share("G")]
         for c, v in enumerate(values, 1):
             cell = ws.cell(r, c, v)
             cell.font, cell.border = FONT, BORDER
             cell.alignment = Alignment(vertical="center", horizontal="left" if c == 1 else "center")
+            if c in pct_cols:
+                cell.number_format = "0%"
         ws.row_dimensions[r].height = 20
-    t = len(tabs) + 2
+    t = first + len(tabs)
     ws.cell(t, 1, "Total")
     for c in range(2, len(heads) + 1):
         col = get_column_letter(c)
-        ws.cell(t, c, f"=SUM({col}2:{col}{t - 1})")
+        if c in pct_cols:           # the total's share, not a sum of shares
+            num = get_column_letter(c - 1)
+            ws.cell(t, c, f'=IF(B{t}=0,"",{num}{t}/B{t})').number_format = "0%"
+        else:
+            ws.cell(t, c, f"=SUM({col}{first}:{col}{t - 1})")
     for c in range(1, len(heads) + 1):
         cell = ws.cell(t, c)
         cell.font, cell.border = Font(name="Calibri", size=11, bold=True), BORDER
@@ -319,16 +350,19 @@ def _summary(wb, tabs: list[tuple[str, str]]) -> None:
         cell.fill = PatternFill("solid", fgColor="EEF0F5")
     ws.row_dimensions[t].height = 20
     notes = [
-        "Ingested: text extracted into the vault. Pending: PDF in repository/<area>/raw_pdf/ not extracted yet — run /ingest.",
-        "Needs attention: the tools could not ingest it (a scan, a failed page check); the reason is in the area tab.",
-        "On hold: the area is paused (settings.yaml). Not acquired / Dropped: rows marked No / Dropped in \"Do we have it?\".",
+        "Sources: rows of the area tab, one per file (a book has a row per chapter), dropped rows excluded. "
+        "Acquired: the PDF is in the folder. Ingested: its text is in the vault. Needs attention: ingestion was tried "
+        "and the tools could not read it (a scan, a broken font — the reason is in the area tab). Synthesized: the "
+        "ingested file has a synthesis note. Both % columns divide by Sources.",
+        "Acquired but neither Ingested nor Needs attention: not run yet (/ingest), or the area is on hold in "
+        "settings.yaml (Trader). Recurring BCB documents (Copom statement, minutes, RPM) reach the vault through "
+        "the Copom ETL and have no row here.",
         "The reasoning behind each area's list — scope, cluster notes, open gaps, acquisition order — is in the Notes tab.",
-        "Counts are of sources (rows); a book in several chapter files counts once.",
         "Written by repository/ingestion/scripts/tracker.py on every ingestion. In the area tabs, teal columns are yours, navy ones the system's.",
     ]
     for i, n in enumerate(notes, t + 2):
         ws.cell(i, 1, n).font = Font(name="Calibri", size=10, italic=True, color="5B6377")
-    ws.freeze_panes = "A2"
+    ws.freeze_panes = "B3"
     ws.sheet_view.showGridLines = False
     ws.sheet_view.zoomScale = 100
 
