@@ -28,6 +28,8 @@ analytics/brasil/exchange_rate/models/ridge_results/
 *.pdf
 *.pptx
 *.xlsx
+# ...except the literature/data tracker, which is a record, not a binary dump
+!repository/agent_mapping/data_tracker.xlsx
 *.mp4
 
 # IDE — machine-specific paths

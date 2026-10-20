@@ -26,8 +26,7 @@ description against the row's title as the tie-break. A file that matches two ro
 is appended with a note naming them, rather than guessed.
 
 Facts come from the folders (raw_pdf/, raw_md/, clean_md/, synthesis/), settings.yaml and
-LOG.md, never from memory. The .xlsx is not in git; Dropbox's version history keeps the
-previous versions.
+LOG.md, never from memory. The .xlsx is in git (the one *.xlsx exception in .gitignore).
 """
 
 import math

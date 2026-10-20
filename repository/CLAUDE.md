@@ -51,8 +51,8 @@ repository/
                                   reasoning per cluster / data section (scope, open gaps,
                                   acquisition order, why a category matters). Columns A–I and
                                   Notes are hand-kept; J–P of the Qual tabs and "Literature
-                                  summary" are rewritten by every ingestion (tracker.py). Not in
-                                  git (*.xlsx): Dropbox's version history keeps old versions
+                                  summary" are rewritten by every ingestion (tracker.py). In git
+                                  since 2026-10-20 (the one *.xlsx exception in .gitignore)
 ```
 
 **`_legacy_ai_rewrite/`** folders inside some `raw_md/` hold the old AI-rewritten extractions, kept
@@ -93,8 +93,13 @@ the status lands in `agent_mapping/data_tracker.xlsx`.
 
 - **Revisit `clean_md`'s definition** (flagged 2026-08, not decided) — see the same item in
   [`obsidian/CLAUDE.md`](../obsidian/CLAUDE.md).
-- **Extend ingestion to the rest of the corpus**: 12 `exchange_rate`, 45 `monetary_policy` PDFs and
-  all of `trader/`.
+- **Extend ingestion to `trader/`** (on hold, scope undecided). `exchange_rate` and
+  `monetary_policy` are fully ingested since 2026-10-20; the sources still to acquire are marked
+  "Acquisition deferred" in the tracker's Comments.
+- **Low priority — two file names list only one author** (breaks the naming rule, not the tracker
+  match): `depreciation_pass_through (Goldfajn, 2000)` is Goldfajn & Werlang, and
+  `padrao_transmissao_cambial (Cortapasso, 2023)` is Araújo, Caldarelli & Cortapasso. Renaming
+  means the PDF, raw_md, clean_md, synthesis note, the wikilinks to it, settings.yaml and LOG.md.
 - **Equation/symbol garbling in `raw_md`** (e.g. Dornbusch 1976): inherent to pdfplumber on scanned
   PDFs of that era; would need a vision-based extraction if equation fidelity matters. For
   born-digital PDFs the `pymupdf` mode maps math symbols to Unicode (2026-10-19).
