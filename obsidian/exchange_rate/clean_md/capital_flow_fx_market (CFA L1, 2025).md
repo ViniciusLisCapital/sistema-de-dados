@@ -1,3 +1,5 @@
+© CFA Institute. For candidate use only. Not for distribution.
+7
 Capital Flows and the FX Market
 by William A. Barker, PhD, CFA, Paul D. McNelis, and Jerry Nickelsburg,
 PhD.
@@ -30,6 +32,7 @@ foreign exchange market.
 LEARNING MODULE OVERVIEW
 ■ The foreign exchange market is the largest market in the world.
 
+216 Learning Module 7 Capital Flows and the FX Market
 ■ Nominal spot exchange rates are quoted in the market and are inputs
 for analysts to determine real exchange rates, which reflect the rela-
 tionship between domestic and foreign price levels and indicate the
@@ -74,6 +77,7 @@ by domestic considerations. Likewise, investment portfolio performance increasin
 reflects global determinants because pricing in financial markets responds to the array
 of investment opportunities available worldwide, not just locally. All of these factors
 
+The Foreign Exchange Market and Exchange Rates 217
 funnel through, and are reflected in, the FX market. As investors shed their “home bias”
 and invest in FX, the exchange rate—the price at which foreign-currency-denominated
 investments are valued in terms of the domestic currency—becomes an increasingly
@@ -120,6 +124,7 @@ deposit); an exchange rate, however, is the price of one currency in terms of an
 can be singular, but two currencies always are involved in an exchange rate: the price
 of one currency relative to another. The exchange rate is the number of units of one
 
+218 Learning Module 7 Capital Flows and the FX Market
 currency (called the price currency) that one unit of another currency (called the base
 currency) will buy. An equivalent way of describing the exchange rate is as the cost of
 one unit of the base currency in terms of the price currency.
@@ -175,6 +180,7 @@ domestic income increased. (For this example, we will assume that changes in the
 individual’s income are proportional to changes in the domestic price level.) Hence,
 in real purchasing power terms, the real exchange rate that an individual faces is an
 
+The Foreign Exchange Market and Exchange Rates 219
 increasing function of the nominal exchange rate (quoted in terms of the number of
 units of domestic currency per one unit of foreign currency) and the foreign price level
 and a decreasing function of the domestic price level. The higher the real exchange rate
@@ -209,7 +215,11 @@ exchange rate (GBP/EUR) increases by 10 percent, the Eurozone price level increa
 by 5 percent, and the UK price level increases by 2 percent. The change in the real
 exchange rate is then as follows:
 _ Δ P f
+_ Δ S _d f _ ( 1 + Pf )
+1 + × − 1
+( S _d f ) ( 1 + _ Δ P P d d )
 _1 + 5%
+= (1 + 10%) × − 1 ≈ 10 % + 5 % − 2 % ≈ 13% .
 1 + 2%
 In this case, the real exchange rate for the UK-based individual has increased about 13
 percent, meaning that it now costs more, in real terms, to buy Eurozone goods. Or put
@@ -229,6 +239,7 @@ In this context, real exchange rates can be useful for understanding trends in
 international trade and capital flows and hence can be seen as one of the influences
 on nominal spot exchange rates. As an example, consider the exchange rate between
 
+220 Learning Module 7 Capital Flows and the FX Market
 the Indian rupee and the US dollar. During 2018, the nominal rupee exchange rate
 against the US dollar (INR/USD) rose by approximately 6.7 percent—meaning that
 the US dollar appreciated against the rupee. However, the annual inflation rates in the
@@ -236,6 +247,8 @@ United States and India were different during 2018—approximately 2.5 percent f
 United States and 4.7 percent for India. This means that the real exchange rate (in INR/
 USD terms) was depreciating less rapidly than the nominal INR/USD exchange rate:
 _ ( _1_ +_ _%_Δ_ P_U _S_ ) _
+1 + %Δ S _INR × − 1 ≈ + 6.7 % + 2.5 % − 4.7 % ≈ 4.5% .
+( USD ) (1 + %Δ P I ndia )
 This combination of a much weaker rupee and a higher Indian inflation rate meant
 that the real exchange rate faced by India was increasing, thus decreasing Indian
 purchasing power in US dollar terms.
@@ -277,6 +290,7 @@ lead to an increase in the real exchange rate (AUD/HKD). A
 higher real exchange rate means that the relative purchasing
 power of your Australian-dollar-denominated income is higher.
 
+The Foreign Exchange Market and Exchange Rates 221
 Statement 4 All else equal, a decrease in the nominal exchange rate (AUD/
 HKD) will decrease the real exchange rate (AUD/HKD) and
 increase the relative purchasing power of your Australian-
@@ -286,6 +300,8 @@ rates on relative purchasing power, the adviser uses the following scenario:
 “Suppose that the AUD/HKD exchange rate increases by 5 percent, the price
 of goods and services in Hong Kong SAR goes up by 5 percent, and the price of
 Australian goods and services goes up by 2 percent.”
+1. Statement 1 is:
+A. correct.
 B. incorrect, because based on the quote convention the investment’s
 value would be decreasing in Australian dollar terms.
 C. incorrect, because the nominal Australian dollar value of the foreign
@@ -297,6 +313,8 @@ rate means that the base currency (Hong Kong dollar) is appreciating (one
 Hong Kong dollar will buy more Australian dollars). This increases the
 nominal value of the Hong Kong-dollar-denominated investments when
 measured in Australian dollar terms.
+2. Statement 2 is:
+A. correct.
 B. incorrect, because purchasing power is not affected in this case.
 C. incorrect, because based on the quote convention, the client’s relative
 purchasing power would be decreasing.
@@ -307,6 +325,8 @@ spot exchange rate (or any other spot exchange rate) would not be relevant.
 In fact, this is a basic principle of currency risk management: reducing FX
 risk exposures by denominating assets and liabilities (or income and expens-
 es) in the same currency.
+3. Statement 3 is:
+A. correct.
 B. incorrect with respect to the real exchange rate only.
 C. incorrect with respect to both the real exchange rate and the purchas-
 ing power of Australian dollar -denominated income.
@@ -319,6 +339,9 @@ AUD/HKD
 purchasing power of the Australian client: Goods and services denominated
 in Hong Kong dollar would cost more.
 
+222 Learning Module 7 Capital Flows and the FX Market
+4. Statement 4 is:
+A. correct.
 B. incorrect with respect to the real exchange rate.
 C. incorrect with respect to the purchasing power of Australian dol-
 lar-denominated income.
@@ -348,9 +371,11 @@ C. +12 percent.
 Solution:
 A is correct. The real exchange rate (R ) is expressed as follows:
 AUD/HKD
+R _AUD = S _AUD × _ P H KD .
 P
 HKD HKD AUD
 The information in the adviser’s scenario can be expressed as follows:
+%Δ R _AUD ≈ %Δ S _AUD + %Δ P − %Δ P ≈ + 5 % + 5 % − 2 % ≈ + 8% .
 HKD AUD
 HKD HKD
 Because the real exchange rate (expressed in AUD/HKD terms) has gone up
@@ -362,6 +387,8 @@ in the cost of Hong Kong SAR goods and services (measured in Australian
 dollars) is only partially offset by the small (2 percent) increase in the inves-
 tor’s income (assumed equal to the change in the Australian price level).
 
+The Foreign Exchange Market and Exchange Rates 223
+QUESTION SET
 1. A decrease in the real exchange rate (quoted in terms of domestic
 currency per unit of foreign currency) is most likely to be associated with an
 increase in which of the following?
@@ -409,6 +436,7 @@ ing account that accepts and manages FX risk for profit. The professional
 trading community accounts for a large and growing proportion of daily FX
 market turnover. These active trading accounts also have a wide diversity of
 
+224 Learning Module 7 Capital Flows and the FX Market
 trading styles. Some are macro-hedge funds that take long-term FX posi-
 tions based on their views of the underlying economic fundamentals of a
 currency. Others are high-frequency algorithmic traders that use technical
@@ -463,6 +491,7 @@ strength in the Swiss franc versus the euro by selling the Swiss franc on
 the euro–Swiss (CHF/EUR) cross-rate. Central bank reserve managers are
 frequent participants in FX markets to manage their country’s FX reserves.
 
+The Foreign Exchange Market and Exchange Rates 225
 In this context, they act much like real money investment funds—although
 generally with a cautious, conservative mandate to safeguard the value of
 their country’s FX reserves. The FX reserves of some countries are enor-
@@ -514,6 +543,7 @@ ucts. In many cases, these are banks in emerging markets that do not have
 the business connections or credit lines required to access the FX market on
 a cost-effective basis on their own. As a result, these banks often outsource
 
+226 Learning Module 7 Capital Flows and the FX Market
 FX services by forming business relationships with the larger tier-one banks;
 otherwise, they depend on the deep, competitive liquidity provided by the
 largest FX market participants.
@@ -563,6 +593,7 @@ dictions, the results of which are aggregated and compiled at the BIS. The surve
 taken in April 2016, gives a broad indication of the current size and distribution of
 global FX market flows.
 
+The Foreign Exchange Market and Exchange Rates 227
 As of April 2016, the BIS estimates that average daily turnover in the traditional
 FX market (composed of spot, outright forward, and FX swap transactions) totaled
 approximately USD5.1 trillion. Exhibit 2 shows the approximate percentage allocation
@@ -603,6 +634,7 @@ The 2016 BIS survey also identified the top five currency pairs in terms of thei
 centage share of average daily global FX turnover. These are shown in Exhibit 4. Note
 that each of these most active pairs includes the US dollar (USD).
 
+228 Learning Module 7 Capital Flows and the FX Market
 Exhibit 4: FX Turnover by Currency Pair
 Currency Pair Percent of Market (%)
 USD/EUR 23.1
@@ -625,6 +657,8 @@ primarily focused on settling international trade flows.”
 Statement 2 “The most important FX market participants on the buy side are
 corporations engaged in international trade; on the sell side they
 are the local banks that service their FX needs.”
+1. Statement 1 is:
+A. correct.
 B. incorrect with respect to the importance of spot settlements.
 C. incorrect both with respect to the importance of spot settlements and
 international trade flows.
@@ -641,7 +675,10 @@ tive positioning with no intention of ever delivering/receiving the principal
 amount of the trades. Most FX trading volume is not related to international
 trade: Portfolio flows (cross-border capital movements) and speculative
 activities dominate.
+2. Statement 2 is:
+A. correct.
 
+The Foreign Exchange Market and Exchange Rates 229
 B. incorrect with respect to corporations engaged in international trade.
 C. incorrect with respect to both corporations and the local banks that
 service their trade needs.
@@ -659,6 +696,7 @@ Citigroup, HSBC, UBS) are increasingly dominating the amount of trading
 activity routed through dealers. Regional and local banks are increasingly
 being marginalized in terms of their share of average daily turnover in FX
 markets.
+QUESTION SET
 1. Which of the following counterparties is most likely to be consid-
 ered a sell-side FX market participant?
 A. A large corporation that borrows in foreign currencies
@@ -686,6 +724,7 @@ and a foreign currency would be the UK pound (GBP). For this Paris-based trader,
 a direct quote would be EUR/GBP. An exchange rate quote of EUR/GBP = 1.1211
 means that GBP1 costs EUR1.1211. For this Paris-based trader, an indirect quote has
 
+230 Learning Module 7 Capital Flows and the FX Market
 the domestic currency—the euro—as the base currency. An indirect quote of GBP/
 EUR = 0.8920 means that EUR1 costs GBP0.8920. Direct and indirect quotes are just
 the inverse (reciprocal) of each other.
@@ -734,6 +773,7 @@ is always mentioned first, the opposite order of the actual ratio (price currenc
 currency). Thus, the code for “Sterling–yen” is “GBPJPY,” but the actual number quoted
 is the number of yen per sterling (JPY/GBP). Note also that the codes may appear in
 
+The Foreign Exchange Market and Exchange Rates 231
 a variety of formats that all mean the same thing. For example, GBPJPY might instead
 appear as GBP:JPY or GBP–JPY. Fourth, regardless of where a market participant is
 located, there is always a mix of direct and indirect quotes in common market usage.
@@ -787,6 +827,7 @@ yen comes from the fact that the units of yen per unit of other currencies typic
 relatively large, and hence extending the exchange rate quote to four decimal places
 is viewed as unnecessary.
 
+232 Learning Module 7 Capital Flows and the FX Market
 Regardless of which quoting convention is used, changes in an exchange rate can
 be expressed as a percentage appreciation of one currency against the other: One
 simply has to be careful in identifying which currency is the price currency and which
@@ -794,6 +835,7 @@ is the base currency. For example, suppose the exchange rate for the euro (USD/E
 increases from 1.1500 to 1.2000. This represents an (unannualized) percentage change
 of the following:
 _1.2000
+− 1 = 4.35 % .
 1.1500
 This represents a 4.35 percent appreciation in the euro against the US dollar (and not
 an appreciation of the US dollar against the euro) because the USD/EUR exchange
@@ -804,6 +846,7 @@ not equal to 4.35 percent. Inverting the exchange rate quote from USD/EUR to EUR
 USD, so that the euro is now the price currency, leads to the following:
 _1
 _(1.2000) _1.1500
+− 1 = − 1 = − 4.17% .
 _1 1.2000
 (1.1500)
 Note that the US dollar depreciation is not the same, in percentage terms, as the euro
@@ -836,6 +879,7 @@ being purchased.
 the bid/offer quote in USD/MXN terms would be closest to:
 A. 0.05302–0.05303.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 233
 B. 0.05303–0.05302.
 C. 0.053025–0.053025.
 Solution:
@@ -878,6 +922,7 @@ uncertainty with respect to the prices of goods and services as well as real and
 cial assets. Second, all currencies would be fully convertible (i.e., currencies could
 be freely exchanged for any purpose and in any amount). This condition ensures the
 
+234 Learning Module 7 Capital Flows and the FX Market
 unrestricted flow of capital. Third, each country would be able to undertake fully
 independent monetary policy in pursuit of domestic objectives, such as growth and
 inflation targets.
@@ -929,6 +974,7 @@ for all other prices in the economy. Many countries (e.g., the colonies of the U
 Kingdom) fixed their currencies relative to sterling and were therefore implicitly also
 operating on the classical gold standard.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 235
 The classical gold standard operated by what is called the price-specie-flow mech-
 anism. This mechanism operated through the impact of trade imbalances on capital
 flows, namely gold. As countries experienced a trade surplus, they accumulated gold
@@ -984,6 +1030,7 @@ manifestation of a highly liquid, forward-looking asset market. Investment-drive
 transactions—for both long-term investment and short-term speculation—mattered
 much more in setting the spot exchange rate than anyone had previously imagined.
 
+236 Learning Module 7 Capital Flows and the FX Market
 There are costs, of course, to a high degree of exchange rate volatility. These include
 difficulty planning without hedging exchange rate risks—a form of insurance cost,
 domestic price fluctuations, uncertain costs of raw materials, and short-term inter-
@@ -1010,6 +1057,7 @@ across borders in Europe, enhance market competition, and facilitate more effici
 allocation of resources. The drawback, of course, is that each member country lost
 the ability to manage its exchange rate and therefore to engage in independent mon-
 etary policy.
+QUESTION SET
 1. An exchange rate:
 A. is most commonly quoted in real terms.
 B. is the price of one currency in terms of another.
@@ -1028,6 +1076,7 @@ rates among all currencies. This would eliminate currency-related uncer-
 tainty with respect to the prices of goods and services as well as real and
 financial assets.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 237
 A Taxonomy of Currency Regimes
 Although the pros and cons of fixed and flexible exchange rate regimes continue to be
 debated, regimes have been adopted that lie somewhere between these polar cases. In
@@ -1071,6 +1120,7 @@ Armenia, Dominican Republic,
 Guatemala, Argentina, Belarus,
 Haiti, Switzerland, Tunisia
 
+238 Learning Module 7 Capital Flows and the FX Market
 Currency Anchor
 Type of Regime US Dollar Euro Basket/None
 Managed float Cambodia, Liberia Algeria, Iran, Syria, The Gambia,
@@ -1123,6 +1173,7 @@ growth of international trade and capital flows if it creates an expectation of 
 and financial stability. In the process, however, it removes another potential source
 of stabilization—domestic monetary policy.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 239
 The European Economic and Monetary Union (EMU) is the most prominent
 example of the second type of arrangement lacking separate legal tender. Each EMU
 member country uses the euro as its currency. Although member countries cannot
@@ -1175,6 +1226,7 @@ ticipants know that the country may choose to adjust or abandon the parity rathe
 than endure other, potentially more painful, adjustments. Second, the target level of
 FX reserves is discretionary; it bears no particular relationship to domestic monetary
 
+240 Learning Module 7 Capital Flows and the FX Market
 aggregates. Thus, although monetary independence is ultimately limited as long as
 the exchange peg is maintained, the central bank can carry out traditional functions,
 such as serving as lender of last resort.
@@ -1225,6 +1277,7 @@ A country may simply follow an exchange rate policy based on either internal or
 external policy targets—intervening or not to achieve trade balance, price stability,
 or employment objectives. Such a policy, often called dirty floating, invites trading
 
+Exchange Rate Regimes: Ideals and Historical Perspective 241
 partners to respond likewise with their exchange rate policy and potentially decreases
 stability in FX markets as a whole. The exchange rate target, in terms of either a level
 or a rate of change, typically is not explicit.
@@ -1273,6 +1326,7 @@ the adviser attempts to explain some of the characteristics of FX markets. The
 adviser points out that exchange rate regimes affect the performance of domestic
 economies as well as the amount of FX risk posed by international investments.
 
+242 Learning Module 7 Capital Flows and the FX Market
 The client and her adviser discuss potential investments in Hong Kong SAR,
 Panama, and Canada. The adviser notes that the currency regimes of Hong
 Kong SAR, Panama, and Canada are a currency board, dollarization, and a free
@@ -1322,6 +1376,7 @@ stability. Neither Hong Kong SAR (currency board) nor Panama (dollarized)
 can exercise independent monetary policy to buffer its economy from the
 inflationary or deflationary consequences of US monetary policy.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 243
 3. The adviser’s reply about fixed parity regimes is incorrect with regard to:
 A. credibility.
 B. a constant exchange rate.
@@ -1371,6 +1426,7 @@ A is correct. A target zone means that the exchange rate between the euro
 and Danish krone (DKK) will be allowed to vary within a fixed band (as of
 2010, the target zone for the DKK/EUR is a ±2.5 percent band). This does
 
+244 Learning Module 7 Capital Flows and the FX Market
 not mean that the DKK/EUR rate is fixed at a certain level (B is incorrect)
 or that the target zone will vary to manage inflation expectations (this is a
 description of a crawling peg, which makes C incorrect).
@@ -1394,6 +1450,7 @@ intervened in FX markets to moderate the appreciation of their currencies
 against the US dollar. Answer A describes a fixed parity with a crawling
 bands regime, and B describes a target zone regime: Both answers are
 incorrect.
+QUESTION SET
 1. In practice, both a fixed parity regime and a target zone regime
 allow the exchange rate to float within a band around the parity level. The
 most likely rationale for the band is that the band allows the monetary au-
@@ -1416,6 +1473,7 @@ issuance is best described as:
 A. dollarization.
 B. a currency board.
 
+Exchange Rate Regimes: Ideals and Historical Perspective 245
 C. a monetary union.
 Solution:
 B is correct. With a currency board, the monetary authority is legally
@@ -1438,6 +1496,7 @@ the impact of exchange rates and other factors on the trade balance must be mirr
 by their impact on capital flows: They cannot affect one without affecting the other.
 Using a fundamental identity from macroeconomics, the relationship between the
 trade balance and expenditure/saving decisions can be expressed as follows:
+X − M = (S − I) + (T − G),
 where X represents exports, M is imports, S is private savings, I is investment in
 plant and equipment, T is taxes net of transfers, and G is government expenditure.
 From this relationship, we can see that a trade surplus (X > M) must be reflected in
@@ -1466,12 +1525,14 @@ with trade flows. In a fixed exchange rate regime, the central bank offsets the 
 capital flows in the process of maintaining the exchange rate peg and the adjustment
 occurs in other asset prices, typically interest rates, until and unless the central bank
 
+246 Learning Module 7 Capital Flows and the FX Market
 is forced to allow the exchange rate to adjust. In a floating exchange rate regime, the
 main adjustment is often a rapid change in the exchange rate that dampens an investor’s
 conviction that further movement will be forthcoming. Thus, capital flows—potential
 and actual—are the primary determinant of exchange rate movements in the short to
 intermediate term. Trade flows become increasingly important in the long term as
 expenditure and saving decisions as well as the prices of goods and services adjust.
+QUESTION SET
 1. A country with a trade deficit will most likely:
 A. have an offsetting capital account surplus.
 B. save enough to fund its investment spending.
@@ -1563,6 +1624,7 @@ impact of the controls from the impact of other policies, such as strengthening 
 prudential regulations, increased exchange rate flexibility, and adjustment of mone-
 tary policy. In the case of capital outflows, the imposition of controls during episodes
 
+248 Learning Module 7 Capital Flows and the FX Market
 of financial crisis seems to have produced mixed results, providing only temporary
 relief of varying duration to some countries, while successfully shielding others (e.g.,
 Malaysia) and providing them with sufficient time to restructure their economies.
@@ -1621,6 +1683,7 @@ universe of developed equity markets. This situation undermined interna-
 tional demand for Malaysian equities and made it more difficult to attract
 net long-term capital inflows.
 
+250 Learning Module 7 Capital Flows and the FX Market
 PRACTICE PROBLEMS
 1. What will be the effect on a direct exchange rate quote if the domestic currency
 appreciates?

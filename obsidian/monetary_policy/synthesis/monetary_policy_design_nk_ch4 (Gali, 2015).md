@@ -1,0 +1,57 @@
+---
+aliases: ["Gali 2015 - Monetary Policy Design in the Basic New Keynesian Model"]
+---
+
+# Monetary Policy Design in the Basic New Keynesian Model (Chapter 4) — Jordi Galí 2015
+
+**Type:** book chapter
+**Tags:** #new-keynesian #optimal-policy #taylor-principle #determinacy #divine-coincidence #simple-rules #welfare-loss
+**Source:** Chapter 4 of Galí's textbook (the clean_md prints only "Chapter 4" and the running heads; the book is the one of [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]])
+**Language:** English
+**Source file:** [[monetary_policy/clean_md/monetary_policy_design_nk_ch4 (Gali, 2015)]]
+
+---
+
+## Context and motivation
+
+Chapter 3 built the basic New Keynesian model; this chapter asks how monetary policy should be conducted in it. It characterizes the efficient allocation, shows what makes the decentralized equilibrium inefficient, derives the optimal policy when the flexible-price ("natural") allocation is efficient, and then turns to implementation: interest rate rules that deliver the optimum, why those rules are not usable in practice (they require observing the natural rate of interest), and how to evaluate "simple rules" with a welfare criterion. The case of an inefficient natural allocation is left to chapter 5.
+
+## Core argument / thesis
+
+With an employment subsidy that removes the monopolistic-competition distortion, the only remaining distortions come from sticky prices — a time-varying average markup and relative-price dispersion — and both disappear if the price level is fully stabilized. Optimal policy therefore sets the output gap to zero and inflation to zero at all times, with the nominal rate equal to the natural rate. Output itself should move one-for-one with natural output; stabilizing output around a smooth trend is not a goal. Because price stability and the efficient level of output coincide, "a central bank doesn't need to know or worry about what the efficient level of output is at each point in time" — the "divine coincidence". Implementing the optimum needs a rule that pins down a unique equilibrium (the Taylor principle), and since the natural rate is unobservable, a simple Taylor-type rule "that responds aggressively to movements in inflation can approximate arbitrarily well the optimal policy".
+
+## Key mechanisms / model
+
+- **Efficient allocation (4.1)**: equal consumption and labor across goods and firms ((1), (2)) and the marginal rate of substitution between consumption and employment equal to the marginal product of labor (3) — the same condition as the classical model of chapter 2.
+- **Distortions (4.2)**: (i) market power — the optimal markup M = ϵ/(ϵ−1) drives employment and output inefficiently low; removed by an employment subsidy τ with M(1 −τ) = 1, i.e. τ = 1/ϵ; (ii) sticky prices — the average markup Mt deviates from M, and unsynchronized price changes create relative-price dispersion that violates (1) and (2).
+- **Optimal policy (4.3)**: with the subsidy in place and no inherited price dispersion, a policy that keeps marginal cost consistent with the desired markup at unchanged prices means no firm wants to change its price: the output gap is zero (4), inflation is zero (5), and the nominal rate equals the natural rate. "Price stability emerges as a feature of the optimal policy even though, a priori, the policymaker does not attach any weight to such an objective."
+- **Implementation (4.3.1)**, each rule embedded in the dynamic IS equation (6) and the NKPC (7):
+  - *Exogenous rule* `it = rn_t` (8): consistent with the optimum, but the equilibrium is not unique — one eigenvalue of the system matrix (10) lies outside the unit circle, so other equilibria exist.
+  - *Rule with an endogenous component* (11): the natural rate plus responses φπ and φy to inflation and the output gap. With non-negative coefficients, the equilibrium is unique if and only if `κ(φπ −1) + (1 −β)φy > 0` (14) (proof in Bullard and Mitra 2002). By (15), this means the long-run response of the nominal rate to a permanent rise in inflation exceeds one, so the real rate eventually rises: "The previous property is often referred to as the Taylor principle". Paradoxically, when (14) holds the rule's feedback terms are never activated in equilibrium: the "threat" of a strong response rules out deviations.
+  - *Forward-looking rule* (16), responding to expected inflation and output gap: uniqueness needs (17), identical to (14), and (18), an upper bound — the central bank must not react "too strongly". Figure 4.2 suggests the overreaction region requires coefficients "well above those characterizing empirical interest rate rules". Footnote 7 notes that a third condition listed by Bullard and Mitra (2002) is implied by (17) and (18).
+- **Why optimal rules are impractical (4.3.2)**: they require adjusting the policy rate one-for-one with the natural rate, which presupposes knowing the true model, all its parameters and the real-time value of all shocks. The output-gap term is less of a problem since φy can be set to zero, with uniqueness still guaranteed by an inflation coefficient greater than unity (contemporaneous rule) or, for the forward-looking rule, "no greater than 1+2σ(1+β)/κ". Hence "simple rules": instrument a function of observable variables only, judged by robustness across models.
+- **Welfare criterion (4.4, appendix 4.1)**: following Rotemberg and Woodford (1999), a second-order approximation to household utility gives a loss in units of steady-state consumption equal to a weighted sum of the variances of the output gap and inflation. The output-gap weight rises with the curvature parameters σ, ϕ and α; the inflation weight rises with the elasticity of substitution ϵ and with price stickiness θ (inversely related to λ), because both amplify the cost of price dispersion.
+- **Simple Taylor rule (19)**: the rate responds to inflation and to output's log deviation from steady state (not the gap), with intercept ρ ≡ −log β. Taylor (1993) proposed this form "with φπ = 1.5 and φy = 0.125" as an approximation of the Fed in the early Greenspan years; footnote 9 prints the original `it = 4 + 1.5(πt −2) + 0.5yt` (a 2 percent inflation target and 2 percent steady-state real rate, annualized), with 0.125 the quarterly rewrite. Rewriting (19) in terms of the gap (20) adds a "pseudo-shock" vt proportional to natural output, whose variance rises with φy: responding to output means responding to natural-output movements.
+- **Constant money growth rule (4.4.2)**: zero money growth (associated with Friedman 1960) plus a money demand equation with an AR(1) money demand shock. Unlike an interest rate rule, under which money supply adjusts one-for-one to money demand, it transmits money demand shocks to the output gap and inflation.
+
+## Main results / findings
+
+- **Table 4.1 (Taylor rule variants)**, standard deviation of innovations set to one percent for technology and preference shocks; four rules per shock — Taylor's (φπ = 1.5, φy = 0.125), inflation only (φπ = 1.5, φy = 0), aggressive inflation only (φπ = 5), strong output response (φy = 1). Read in row order as extracted, welfare losses (L, percent of steady-state consumption) under technology shocks are 1.02, 0.25, 0.006 and 7.98, and under demand shocks 0.10, 0.13, 0.02 and 0.02. The text's conclusions: with technology shocks there is a tradeoff between stabilizing output and stabilizing inflation and the output gap — raising φy lowers output volatility but raises gap and inflation volatility and losses, substantially so at φy = 1; the smallest losses come from responding to inflation only, shrinking as the response strengthens (footnote 10: both variances go to zero as φπ → +∞). With demand shocks natural output does not move, the tradeoff vanishes, and raising either coefficient helps.
+- **Table 4.2 (constant money growth)**: losses of 0.29 (technology), 0.04 (demand) and 0.69 (money demand). The money demand process is calibrated from an AR(1) on the residual of a US M2 money demand function, ρζ = 0.2 and σζ = 0.01, with an interest semielasticity of 3.77 estimated by OLS over 1960: 1–1988:4. The money rule beats the original Taylor rule under technology and demand shocks but loses to the inflation-only rule; money demand shocks, harmless under an interest rate rule, cause substantial losses, so "the degree of stability of money demand is a key element" in the case for monetary targeting.
+- **Literature (4.5)**: Taylor (1993) as the origin of the rule; Judd and Rudebusch (1998) and Clarida, Galí and Gertler (2000) estimate it and its (in)stability; Orphanides (2003) attributes pre-Volcker deviations to biased real-time output-gap measures; Svensson (1997) on inflation targeting; Yun (2005) on optimal policy with an initial price dispersion.
+
+## Limitations and caveats
+
+- **Equations are damaged throughout**: hats and tildes are lost, so the output gap and output's deviation from steady state print with the same symbol (rule (19) and its rewrite (20), the money-demand block); the consumption index, the matrices (10), (13), the forward-looking matrix after (16), the welfare loss function and the appendix 4.1 derivation (including Lemma 1, where the symbol defined as (1−α)/(1−α+αϵ) is missing) read as fragments. They are described in words here, not restored. Conditions (14), (17), (18) and the NKPC/DIS pair (6)–(7) print intact.
+- **Figures 4.1 and 4.2** (determinacy regions for the standard and the forward-looking rule) survive only as captions and axis ticks.
+- **Tables 4.1 and 4.2** are extracted one value per line, and the output and output-gap rows both print as "σ(y)" (the tilde is lost). The losses and coefficient rows quoted above follow the extraction's order, which matches the coefficient rows and the text's description; the two volatility rows are not cited because they cannot be told apart in the file.
+- The analysis assumes an efficient steady state (optimal subsidy) and no inherited price dispersion; the inefficient case and discretion vs. commitment are in chapter 5. Exercise 4.1(b) asks to prove AT "has its two eigenvalues outside the unit circle if and only condition (14) is satisfied", while the text requires them within the unit circle — flagged as written.
+
+## Connections
+
+- [[taylor_principle]] — defined here: determinacy condition (14), its reading in (15) as a long-run nominal-rate response above one-for-one, and the extra upper bound (18) for forward-looking rules
+- [[taylor_rule]] — simple rule (19) with Taylor's calibration, the original rule in footnote 9, and its welfare evaluation in Table 4.1 against inflation-only and output-heavy variants
+- [[natural_rate_of_interest]] — optimal policy sets the nominal rate equal to it, and the optimal rules (8), (11), (16) track it one-for-one; its unobservability is why those rules are impractical
+- [[divine_coincidence]] (proposed) — zero inflation and a zero output gap coincide when the natural allocation is efficient, so price stability delivers efficient output
+- [[monetary_policy/synthesis/basic_nk_model_ch3 (Gali, 2015)]] — the model this chapter optimizes over; the determinacy condition ch3 states without interpretation is interpreted here as the Taylor principle
+- [[monetary_policy/synthesis/taylor_rule (Taylor, 1993)]] — the original rule, which this chapter rewrites in quarterly terms (φy = 0.125) and evaluates on welfare grounds

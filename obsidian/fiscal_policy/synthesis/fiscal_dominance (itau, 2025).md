@@ -1,10 +1,14 @@
+---
+aliases: ["Itaú 2025 - Fiscal Dominance in Brazil"]
+---
+
 # Fiscal Dominance in Brazil: Where Do We Stand? — Itaú Macro Research, 2025
 
 **Type:** Research report
 **Tags:** #fiscal-dominance #brasil #monetary-policy #inflation #risk-premium #brl #debt #bcb
 **Source:** Itaú Unibanco Macro Vision, January 21, 2025
 **Language:** English
-**Source file:** [[fiscal_dominance (itau, 2025)]]
+**Source file:** [[fiscal_policy/clean_md/fiscal_dominance (itau, 2025)]]
 
 ---
 

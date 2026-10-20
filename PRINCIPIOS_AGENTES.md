@@ -5,7 +5,7 @@
 
 ## (I.I) Conhecimento
     - i. O agente lê só o `obsidian/`. O bruto fica no `repository/` e nenhum agente lê dele. (I.III.i)
-    - ii. Pasta da área no vault: `clean_md/`, `synthesis/`, `concepts/`, `mental_models/` e o mapa conceitual. (I.III.ii)
+    - ii. Pasta da área no vault: `clean_md/`, `synthesis/`, `mental_models/` e o mapa conceitual. Os conceitos de todas as áreas ficam numa pasta só, `obsidian/concepts/`. (I.III.ii; pasta única decidida em 2026-10-19, II.I.v)
     - iii. Modelos mentais por área × gestora. São arcabouço, não opinião atual. (I.III.iii)
     - iv. O mapa conceitual é o contrato da área, em cinco partes: perguntas centrais, esqueleto causal, saídas, entradas, índice de conceitos. (I.III.vi)
     - v. As perguntas centrais são o mínimo do report, não o máximo: insights novos e alertas também entram. (I.III.vi)

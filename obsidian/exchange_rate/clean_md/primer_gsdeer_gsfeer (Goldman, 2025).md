@@ -72,7 +72,9 @@ account of higher Mexican inflation vis-à-vis the United States (the Bank of Me
 3% inflation target versus the Fed’s 2% target) (Exhibit 3).
 YPJ KON YNC PLC RAZ KES DUA RYM LRB WRK DZN NEP DWT RDI RNI DAC POC BHT RUE PHP FUH DGS FHC NLP PBG NXM SLI KZC
 % GSDEER misvaluation vs USD %
+Source: Goldman Sachs Global Investment Research
 
+Goldman Sachs FX in Focus
 The main implementation challenge for this type of valuation model is the choice of
 inflation measure used to deflate the nominal exchange rate. There is no perfect
 measure of FX-relevant inflation and different measures have their advantages and
@@ -102,6 +104,7 @@ Total
 LowerEUR/CHF
 -20 fair value -20 0 0
 -30 -30 -10 -10
+Source: Goldman Sachs Global Investment Research Source: Goldman Sachs Global Investment Research
 Our GSFEER model is more cyclical than GSDEER: instead of modelling the empirical
 relationship between real exchange rates and long-run drivers such as productivity and
 terms of trade, it links the currency to its economy’s external and internal imbalances. In
@@ -161,6 +164,7 @@ GSFEER
 GSDEER
 More
 undervalued
+Source: Goldman Sachs Global Investment Research
 
 The Roadmap — Slow and Steady Wins the Race
 Our fair value estimates define the landing zone for exchange rates, but empirical
@@ -197,6 +201,7 @@ GSFEER
 0.00 0.00
 Multivariate regression of 1-year real FX returns on moves implied by out-of-sample estimates from our GSDEER and GSFEER
 models. We impose a lower-bound of zero on the coefficients, and do not include an intercept. Annual data, 2000-2025.
+Source: Goldman Sachs Global Investment Research
 While these results make a strong argument for attaching some weight to the GSFEER
 model for 1-year ahead returns, that argument becomes slightly less clear for returns
 over longer horizons. Shifting from a 1-year to a 10-year forecasting horizon, the implied
@@ -222,6 +227,7 @@ Beta Beta of 10y Real Returns toGSDEER and GSFEER Valuation Signals Beta
 0.0 0.0
 Multivariate regression of 10-year real FX returns on moves implied by out-of-sample estimates from our GSDEER and GSFEER models. We impose a lower-bound of
 zero on the coefficients, and do not include an intercept. Annual data, 2000-2025.
+Source: Goldman Sachs Global Investment Research
 We present the 1-year real exchange rate convergence results of our GSDEER and
 GSFEER models in full in Exhibit 7. We believe these results support our long-standing
 convergence rule-of-thumb of 20% per year – particularly for G10 economies – that we
@@ -280,6 +286,7 @@ Panel (All) -0.13 -5.40 0.05 11.20 -0.07 -2.47 0.01 11.26
 Panel (G10) -0.18 -4.51 0.08 10.72 -0.06 -1.52 0.00 11.15
 Panel (EM) -0.09 -3.33 0.03 11.33 -0.07 -1.99 0.01 11.31
 Real out-of-sample univariate convergence rates to our GSDEER and GSFEER fair value estimates. Annual data, 2000-2025.
+Source: Goldman Sachs Global Investment Research
 Who’s ahead, who’s behind?
 Even for currencies with relatively high convergence rates, we view fair value anchors as
 gradually applying pressure on currencies, and as often being overwhelmed by cyclical

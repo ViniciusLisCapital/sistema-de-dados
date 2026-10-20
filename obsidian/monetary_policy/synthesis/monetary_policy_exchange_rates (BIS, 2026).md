@@ -1,10 +1,14 @@
+---
+aliases: ["BIS 2026 - Monetary Policy Transmission to Exchange Rates via Carry Trades"]
+---
+
 # BIS 2026 — Monetary Policy Transmission to Exchange Rates: The Role of Currency Carry Trades
 
 **Type:** Central bank research bulletin
 **Tags:** #carry-trade #monetary-policy #uip #cftc-positioning #deleveraging #chf #jpy
 **Source:** BIS Bulletin No 124, 6 May 2026
 **Language:** English
-**Source file:** [[monetary_policy_exchange_rates (BIS, 2026)]]
+**Source file:** [[monetary_policy/clean_md/monetary_policy_exchange_rates (BIS, 2026)]]
 
 ---
 

@@ -5,9 +5,9 @@ without re-extracting.
 
 Lower-level tool for a *_raw.md file that already exists by some other means
 (e.g. hand-run extract.py output, or a one-off recovered extraction). For
-ingesting a brand-new PDF, use run.py in this same folder instead — drop the
-PDF in repository/ingestion/land_space/<topic>/ and run it; that does
-extraction + cleaning + this publish step in one pass. There is no default
+ingesting a brand-new PDF, use /ingest instead (the ingestion agent over run.py):
+save the PDF in repository/<topic>/raw_pdf/; that does extraction + cleaning +
+this publish step in one pass, with the page check. There is no default
 input folder — pass a *_raw.md file or a folder to scan recursively.
 
   1. Writes the raw text, _raw suffix stripped, to

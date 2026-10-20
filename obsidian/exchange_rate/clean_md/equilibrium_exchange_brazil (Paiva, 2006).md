@@ -62,9 +62,18 @@ leading the way to record trade surpluses in recent years. From a saving-investm
 perspective, the external adjustment and current account surpluses registered in 2003–05
 reflected a strong increase in the national saving rate, notably that of the private sector.
 Figure 1. Brazil: The Real Effective Exchange Rate (REER), Jan 1994–Dec 2005
+140
+120
 PPI-REER
+100
+80
+60
 CPI-REER
+40
+20
+0
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006
+Source: Brazilian Institute of Applied Economic Research (IPEA) database.
 Note: CPI = consumer price index; PPI = producer price index.
 The wide exchange rate fluctuations and the current account reversal over the last several
 years call for a closer examination of Brazil’s external performance. What are the main
@@ -142,11 +151,21 @@ Est.
 -20.0 -60.0
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005
 Current Account Net Foreign Assets (right axis)
+Source: Brazilian Institute of Applied Economics; Lane and Milesi-Ferretti (2006); and author’s estimation
 Figure 3. Brazil: Exports, Imports, and the Trade Balance, 1994–2005
 (In billions of U.S. dollars)
+140
 Exports Imports Trade Balance
+120
+100
+80
+60
+40
+20
+0
 -20
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005
+Source: Brazilian Institute of Applied Economics
 2 Export market shares are calculated as the 4-quarter average growth of export volumes divided by the 4-
 quarter average growth of import volumes in Brazil’s main trading partners according to IMF, World Economic
 Outlook data.
@@ -165,10 +184,22 @@ Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec Jun Dec 
 -5.0
 -10.0
 -15.0
+Source: Brazilian Institute of Applied Economics
 Figure 5. Brazil: Export Market Share (index number), 1994:4–2006:1
+105
+100
 Export Market Share
+95
+90
+85
 Trend
+80
+75
+70
+65
+60
 1994Q4 1995Q2 1995Q4 1996Q2 1996Q4 1997Q2 1997Q4 1998Q2 1998Q4 1999Q2 1999Q4 2000Q2 2000Q4 2001Q2 2001Q4 2002Q2 2002Q4 2003Q2 2003Q4 2004Q2 2004Q4 2005Q2 2005Q4
+Source: IMF, World Economic Outlook; and author’s calculations
 The second spurt of export growth started in the latter half of 2002, triggered by a sharp
 REER depreciation associated with electoral uncertainty and large capital outflows. This
 renewed dynamism in export growth was amplified and later sustained by a buoyant global
@@ -183,9 +214,18 @@ not show a significant increase in investment rates, it does show an increase in
 equipment in total investment expenditure.
 
 Figure 6. Brazil: Installed Capacity in Manufacturing, (index number), 1994–2005
+210
+190
 170 Pegged Exchange Rate
+150
+130
+110
 Floating Exchange Rate
+90
+70
+50
 1994Q1 1994Q3 1995Q1 1995Q3 1996Q1 1996Q3 1997Q1 1997Q3 1998Q1 1998Q3 1999Q1 1999Q3 2000Q1 2000Q3 2001Q1 2001Q3 2002Q1 2002Q3 2003Q1 2003Q3 2004Q1 2004Q3 2005Q1 2005Q3
+Source: National Confederation of Industries (CNI) and author’s calculations
 From a saving-investment perspective, the improvement in the current account reflected
 mostly an increase in the saving ratio, as national saving as a percentage of GDP averaged
 21½ percent during 2003–05, compared to about 17 percent in 1998 (Figure 7). Both the
@@ -205,13 +245,22 @@ Figure 7. Brazil: Saving, Investment, and the Current Account (% of GDP), 1994�
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005
 (prel.)
 Gross capital formation Gross national savings Current account balance
+Source: IMF, World Economic Outlook.
 
 Figure 8. Brazil: National, Private, and Public Saving (% of GDP), 1994–2005
+30
 Gross private savings Gross public savings Gross national savings
+25
+20
+15
+10
+5
+0
 -5
 -10
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005
 (prel.)
+Source: IMF, World Economic Outlook.
 The large trade surpluses recorded after 2003 combined with prudent macroeconomic
 policies and a favorable external environment to restore investor confidence and increase the
 inflows of foreign currency. The exchange rate appreciated and debt indicators improved,
@@ -221,17 +270,34 @@ with the elimination of all dollar-indexed debt, further contributing to a sharp
 country risk (Figure 10).
 Figure 9. Brazil: Debt Indicators, 1995–2006
 60 300
+55
 50 250
+45
 40 200
+35
 30 150
+25
 20 100
+15
 10 50
 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005 2006 (est.)
 Public Debt (% of GDP) External Debt (% of GDP) Short-Term External Debt (% of Reserves; right axis)
+Source: Brazilian Institute of Applied Economics; IMF, World Economic Outlook.
 
 Figure 10. Brazil EMBI and Overall EMBI, 2002:1–2006:5
+2700
+2400
+2100
+1800
 Brazil Overall
+1500
+1200
+900
+600
+300
+0
 1/1/2002 4/1/2002 7/1/2002 10/1/2002 1/1/2003 4/1/2003 7/1/2003 10/1/2003 1/1/2004 4/1/2004 7/1/2004 10/1/2004 1/1/2005 4/1/2005 7/1/2005 10/1/2005 1/1/2006 4/1/2006
+Source: JPMorgan.
 The picture that thus emerges from Brazil’s external position is one in which a reduced debt
 burden and improved financing conditions signal that a lower trade surplus may still be
 compatible with the maintenance of external sustainability. Combined with the rise in export
@@ -256,8 +322,16 @@ their relative importance in explaining the recent strengthening of the BRL.
 and a decline in average productivity in the manufacturing sector.
 
 Figure 11. Relative Unit Labor Costs, Brazil and Main Partners, 1994–2005
+140
 Partners' ULC Brazil's ULC RULC
+120
+100
+80
+60
+40
+20
 1994 1995 1996 1997 1998 1999 2000 2001 2002 2003 2004 2005
+Source: Brazilian Institute of Applied Economics; IMF, World Economic Outlook; and author’s calculations
 III. THE EQUILIBRIUM EXCHANGE RATE IN BRAZIL
 This section presents an empirical analysis of Brazil’s real effective exchange rate dynamics
 based on the approach known in the literature as the Behavioral Equilibrium Exchange Rate
@@ -286,6 +360,7 @@ principles include Egert (2005), Komarek and Melecky (2005), and Zalduendo (2006
 A. The Variables: Motivation and Definition
 Following MacDonald and Clark (1998), Brazil’s equilibrium exchange rate dynamics are
 expected to be driven by fundamentals as follows:6
++ + + + −
 REER = f ( NTT ;TOT ;RINTDIFF ; NFA ;RELDEBT )
 • The relative price of nontradables to tradables (NTT) is supposed to have a direct impact
 on the equilibrium exchange rate for two main reasons. First, it may capture the Balassa-
@@ -387,6 +462,7 @@ first order, econometric modeling was carried out according to cointegration met
 suggested in Johansen (1995). It is assumed that the dynamics of the six variables described
 above can be modeled through a Vector Error-Correction (VEC) specification of the form:
 k
+∆Y = Ψ Y + ∑ Φ ∆Y + δ + ε
 t t−1 i t−i t
 i=1
 11 MacDonald and Clark (1998) and Maeso-Fernandez, Osbat, and Schnatz (2001) have also reported finding
@@ -394,6 +470,9 @@ i=1
 
 where
 Y’ = [REER, NTT, TOT, RINTDIFF, NFA, RELDEBT]
+Ψ is a (6 x 6) matrix of coefficients
+Φ is a (6 x k) matrix of short-run coefficients
+δ is a (6 x 1) vector of constants and
 ε is a (6 x 1) vector of white noise residuals
 t
 and k denotes the order of the VAR associated with this specification
@@ -439,8 +518,10 @@ I II III IV
 REER 1.00 1.00 1.00 1.00
 -1.49 -1.41 -1.73 -1.91
 TOT
+[-9.0] [-8.2] [-9.3] [-8.8]
 -0.46 -0.44 -0.39 -0.45
 NTT
+[-5.9] [-5.7] [-4.6] [-4.4]
 -0.23 -0.22
 RINTDIFF
 [-9.9] [-9.4]
@@ -449,16 +530,22 @@ RELDEBT
 [11.3] [10.1] [9.8] [8.2]
 -0.78 -0. 79 -1.09 -1.20
 NFA
+[-6.8] [-6.5] [-8.7] [-8.7]
 -0.46 -0.54 -0.70 -0.67
 α
+[-1.9] [-2.1] [-4.8] [-4.0]
 Exogenous variables None Het. dummy RINTDIFF RINTDIFF
 Het. dummy Varinfl
 Cointegration test: Trace Statistics
 H : r = 0 107.6** 108.1** 96.1** 86.7**
+0
 H : r ≤ 1 67.9 68.2 41.5 40.5
+0
 Cointegration Test: Max Eigenvalue Statistic
 H : r = 0 39.9* 39.9* 54.5** 46.4**
+0
 H : r ≤ 1 29.3 30.8 19.5 18.9
+0
 ∆BEER 2003 →2005 23% 23% 29% 31%
 ** denotes significance at the 5-percent significance level; * denotes significance at the 10-percent level
 The adjustment coefficients (α) in the dynamic real exchange rate equations were estimated

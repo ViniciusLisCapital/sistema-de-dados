@@ -1,10 +1,14 @@
+---
+aliases: ["Krugman 2023 - Exchange Rates and the Foreign Exchange Market (An Asset Approach)"]
+---
+
 # Krugman 2023 — Exchange Rates and the Foreign Exchange Market: An Asset Approach
 
 **Type:** Textbook chapter (International Economics, 12th ed., Ch. 14)
 **Tags:** #textbook #fx-market #asset-approach #uip #cip #carry-trade #forward-rate
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Source file:** [[exchange_rate_foreign_exchange_market (Krugman, 2023)]]
+**Source file:** [[exchange_rate/clean_md/exchange_rate_foreign_exchange_market (Krugman, 2023)]]
 
 ---
 
@@ -42,4 +46,4 @@ The foreign exchange market is in equilibrium only when the (uncovered) interest
 
 - [[uip]] — this chapter is the formal derivation of the UIP equilibrium condition and the equilibrium diagram; also documents CIP as the covered analogue and the post-2008 CIP breakdown puzzle
 - [[carry_trade]] — AUD/JPY case study is a textbook-level illustration of the carry trade and its crash risk, complementary to the vault's existing risk-premium framing
-- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — this chapter's UIP condition is the same equation Dornbusch uses as his rational-expectations building block for overshooting
+- [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — this chapter's UIP condition is the same equation Dornbusch uses as his rational-expectations building block for overshooting

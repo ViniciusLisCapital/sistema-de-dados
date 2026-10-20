@@ -33,6 +33,7 @@ exchange rate, infl ation, monetary policy. taxa de câmbio, infl ação, polít
 JEL Codes E52, F41, C32. Códigos JEL E52, F41, C32.
 v.33n.2p.363-3922023 Nova Economia� 363
 
+Araújo, Caldarelli & Cortapasso
 1 Introdução
 Com a liberalização da conta de capitais, promovida pela economia brasilei-
 ra em meados da década de 1990, e a adoção do regime de câmbio fl utuante,
@@ -69,7 +70,9 @@ mativas de um modelo de Autorregressão Vetorial (VAR) para a economia
 Brasileira, entre 2002 e 2021, considerando a possibilidade de quebras es-
 truturais em períodos de tendência à apreciação ou depreciação relativa da
 taxa de câmbio.
+364 Nova Economia� v.33n.22023
 
+Padrões da transmissão cambial para taxa de infl ação no Brasil
 2 Fundamentos teóricos da relação entre câmbio e
 infl ação
 O efeito exchange rate pass-through (ERPT) é defi nido como a relação entre a
@@ -106,6 +109,7 @@ dinâmica da infl ação ao consumidor no Brasil, assim como nas decisões de
 política monetária do Banco Central. Os resultados encontrados pelos au-
 tores indicam que o efeito líquido do aumento no preço das commodities
 é positivo sobre a infl ação e mostra-se ainda mais intenso em simulações
+v.33n.22023 Nova Economia� 365
 
 sem a taxa de câmbio. Os autores concluem que a variável câmbio tem a
 capacidade de absorver choques dos preços de commodities sobre a infl ação.
@@ -144,6 +148,7 @@ aos preços com menor incidência, por conta da redução do poder de preci-
 fi cação das empresas. Na visão macroeconômica, a diminuição do repasse
 fundamenta-se em políticas monetárias criadas pelos bancos centrais para
 estabilizar a infl ação. Assim, as variações nos preços domésticos tendem
+366 Nova Economia� v.33n.22023
 
 a ser menores diante de um choque cambial conforme as expectativas dos
 agentes da economia sobre a ação da autoridade monetária (Taylor, 2000;
@@ -161,6 +166,7 @@ ciando essa tendência e se há um padrão para tal, sendo tais repasses dife-
 rentes em países desenvolvidos e em desenvolvimento. No caso de econo-
 mias em desenvolvimento, como a brasileira, investiga-se a relação entre
 taxa de juros, câmbio e o repasse cambial, conforme destaca Fonseca et al.
+(2019), sendo que os autores argumentam que podem existir evidências de
 não linearidades no repasse cambial associadas a períodos de câmbio com
 tendência à apreciação/depreciação, como colateral dos juros. Os aludidos
 autores argumentam que a situação câmbio baixo e juro alto seria poten-
@@ -181,6 +187,7 @@ me de metas de infl ação. Na visão dos autores, o grau do pass-through de
 produtos importados depende da moeda, seja a moeda originária do país
 produtor, do mercado de destino ou de uma moeda que não faz parte das
 transações entre as duas economias. No Brasil, Santolin e Carvalho (2019)
+v.33n.22023 Nova Economia� 367
 
 estimam o pass-through entre 1999 a 2017 e confi rmam que o coefi ciente
 de repasse cambial diminuiu ao longo do tempo, sobretudo após 2009,
@@ -216,6 +223,7 @@ taxa de câmbio e preços
 Para a economia brasileira o ano de 1999 é caracterizado pelo abandono do
 regime de metas cambiais e adoção do Regime de Metas de Infl ação. Após
 as crises em diversos países – crise do México em 1994, a crise Asiática
+368 Nova Economia� v.33n.22023
 
 em 1997 e a crise Russa em 1998 –, em 1998, o Brasil sofre com ataques
 especulativos, que tornaram inevitável a mudança do regime cambial para
@@ -253,6 +261,7 @@ setor primário e, sobretudo, aos bens semielaborados, como demonstra
 Erber (2011). Desse modo, a restrição externa deixava de se manifestar, e
 o temor do governo Lula foi substituído por mais otimismo e entrada de
 1 Para mais detalhes dessa mudança, ver Barbosa-Filho (2008).
+v.33n.22023 Nova Economia� 369
 
 capitais. No câmbio, a consequência foi um movimento de apreciação do
 câmbio real e nominal.
@@ -260,11 +269,37 @@ Tabela 1 Indicadores selecionados da economia brasileira – período de 1999 a 
 Ano Norma Meta Limites IPCA Selic Variação Variação
 (%) (%) (%) (%) cambial PIB
 (%) (%)
+1999 Res. 2.615 8,00 6,0-10,0 8,94 19,0 56,4 0,5
+2000 Res. 2.615 6,00 4,0-8,0 5,97 15,8 0,8 4,4
+2001 Res. 2.615 4,0 2,0-6,0 7,67 19,1 22,1 1,4
+2002 Res. 2.744 3,5 1,5-5,5 12,53 24,9 19,5 3,1
+Res. 2.842 3,25 1,25-5,25
 2003 1 9,3 16,3 5,4 1,1
+Res. 2.972 4,00 1,5-6,5
+Res. 2.842 3,75 1,25-6,25
 2004 1 7,6 17,7 –5,0 5,8
+Res. 3.018 5,5 3,0-8,0
+2005 Res. 3.108 4,5 2,0-7,0 5,69 18,0 –20,2 3,2
+2006 Res. 3.210 4,5 2,5-6,5 3,14 13,2 –11,9 4,0
+2007 Res. 3.291 4,5 2,5-6,5 4,46 11,25 –11,7 6,0
+2008 Res. 3.378 4,5 2,5-6,5 5,9 13,75 –6,2 5,0
+2009 Res. 3.463 4,5 2,5-6,5 4,31 8,75 8,2 –0,2
+2010 Res. 3.584 4,5 2,5-6,5 5,91 10,75 –13,5 7,6
+2011 Res. 3.748 4,5 2,5-6,5 6,5 11,0 –5,1 3,9
+2012 Res. 3.880 4,5 2,5-6,5 5,84 7,25 14,3 1,8
+2013 Res. 3.991 4,5 2,5-6,5 5,91 10,0 9,4 2,7
+2014 Res. 4.095 4,5 2,5-6,5 6,41 11,75 8,3 0,1
+2015 Res. 4.237 4,5 2,5-6,5 10,67 14,25 29,4 –3,8
+2016 Res. 4.345 4,5 2,5-6,5 6,29 14,18 4,5 –3,6
+2017 Res. 4.419 4,5 3,0-6,0 2,95 10,11 –9,3 1,3
+2018 Res. 4.499 4,5 3,0-6,0 3,75 6,58 12,7 1,8
+2019 Res. 4.582 4,25 2,75-5,75 4,31 6,03 7,4 1,4
+2020 Res. 4.582 4,0 2,5-5,5 4,52 4,51 23,5 –4,1
+2021 Res. 4.671 3,75 2,25-5,25 10,06 11,25 4,4 6,0
 Fonte: BCB (2022). Elaboração própria.
 Nota1: A Carta Aberta, de 21/1/2003, estabeleceu metas ajustadas de 8,5% para 2003 e de 5,5% para
 2004.
+370 Nova Economia� v.33n.22023
 
 O subperíodo, que se inicia ao fi nal de 2002 e vai até 2012 é caracterizado
 pela apreciação cambial e relativa estabilidade de preços, conforme ilustra
@@ -312,6 +347,7 @@ oãçairaV
 2,00 1,0000
 0 0,0000
 IPCA Taxa de câmbio
+v.33n.22023 Nova Economia� 371
 
 -primas diminuíam os preços fi nais de produtos nacionais que as usavam
 como insumos, e os produtos fi nais importados pressionavam para baixo
@@ -350,6 +386,7 @@ pressionaram o nível de preços, que fechou 2021 em 10,6% a.a., conforme
 a Tabela 1 indica.
 2 Ver Prates et al. (2017) para uma discussão sobre mudanças na política cambial no período
 do governo de Dilma Rousseff.
+372 Nova Economia� v.33n.22023
 
 Diante da análise anterior, é possível concluir que, sob metas de infl ação
 e câmbio fl utuante, observa-se na economia brasileira que os anos com
@@ -383,6 +420,7 @@ Um modelo VAR em sua forma estrutural – com uma defasagem (t – 1) e
 n variáveis x – pode ser, de forma genérica, representado matricialmente
 n
 por:
+v.33n.22023 Nova Economia� 373
 
 (1)
 O modelo estrutural pode ser apresentado ainda em um formato compacto:
@@ -393,6 +431,7 @@ X (cid:31)B(cid:29)1(cid:28) (cid:30)B(cid:29)1(cid:28)X (cid:30)B(cid:29)1(cid:
 t 0 1 t(cid:29)1 t(cid:29)1
 O que resulta em um VAR na forma reduzida, que pode ser expresso como:
 X (cid:31)A (cid:30)A X (cid:30)e (4)
+t 0 1 t(cid:29)1 t
 O sistema é transformado da forma estrutural (1) para a forma reduzi-
 da (4) para que o mesmo possa ser estimado pelo Método dos Mínimos
 Quadrados – MQO. Contudo, um modelo VAR na forma reduzida não
@@ -404,11 +443,13 @@ sibilita recuperar o modelo na forma estrutural a partir da forma reduzida –
 utilizada na estimação. Tal como descrito por Sims (1986), em um modelo
 VAR é preciso impor restrições sobre os parâmetros para tornar o modelo
 primitivo identifi cado.
+374 Nova Economia� v.33n.22023
 
 Uma das formas possíveis utilizadas para identifi car restrições sobre a
 relação contemporânea dos choques é a chamada decomposição de Cho-
 lesky, que propõe uma estrutura exatamente identifi cada ao modelo (3),
 sendo que B é diagonal e Γ triangular inferior (Enders, 2014).
+1
 Contudo, autores como Sims (1986) têm ressaltado que, na existência
 de relação contemporânea, a escolha da ordem das variáveis na decom-
 posição de Cholesky pode implicar diferentes interpretações das funções
@@ -442,9 +483,11 @@ mente identifi cado e considerando a ordem decrescente de endogeneidade
 das variáveis baseada na literatura econômica, a matriz de relações con-
 temporâneas – B – do VAR com cinco variáveis a serem estimadas pode
 ser representada por:
+v.33n.22023 Nova Economia� 375
 
 (cid:31)1 b b b b (cid:28)(cid:28)(cid:31) IPCA (cid:28)
 (cid:29) (cid:26)(cid:29) (cid:26)
+0 1 b b b Cambio
 (cid:29) 23 24 25(cid:26)(cid:29) t(cid:26)
 BX :(cid:29)0 0 1 b b (cid:26)(cid:29) Selic (cid:26) (5)
 t (cid:29) 34 35(cid:26)(cid:29) t (cid:26)
@@ -479,6 +522,7 @@ não antecipado nas variáveis do modelo.
 4.2 Dados
 Este estudo utilizou para as estimações os dados mensais de cinco variá-
 veis: a) Índice de Preços ao Consumidor Amplo (IPCA); b) a Taxa de câm-
+376 Nova Economia� v.33n.22023
 
 bio (R$/US$); c) a Taxa de Juros SELIC; d) o Produto Interno Bruto (PIB) e;
 e) o Índice global de commodities, todas para o período de outubro de 2002 a
@@ -510,12 +554,14 @@ Disponibilidade interna
 ICOM Índice Global de Índice Global de Fundo Monetário
 Commodities Commodities – FMI Internacional
 (Índice 2016=100)
+Fonte: Elaboração própria.
 Uma vez que se utilizou a decomposição de Cholesky para a identifi cação
 do modelo VAR, faz sentido usar o modelo que traz as principais pressões
 sobre os preços – a oferta, a demanda, a taxa de câmbio e a taxa de juros
 – e resgatar os choques desejados no câmbio e sobre os preços. Além dis-
 so, a maioria dos artigos sobre o assunto, citados nesta pesquisa, utilizam
 diversas aplicações metodológicas semelhantes com propósito parecido.
+v.33n.22023 Nova Economia� 377
 
 5 Resultados e discussões
 Os elementos teóricos e os fatos estilizados acerca da economia brasileira
@@ -553,6 +599,7 @@ Cabe destacar, ainda, que para o período de câmbio com tendência à
 apreciação a correlação de Pearson entre IPCA e SELIC é de –0,83, em con-
 trapartida, quando o câmbio apresenta tendência à depreciação essa corre-
 lação é de –0,52. Esse fato sinaliza que os padrões cambiais identifi cados
+378 Nova Economia� v.33n.22023
 
 sugerem, inclusive, alterações na transmissão da política monetária, por
 conseguinte, efetividade da principal ferramenta operacional do RMI no
@@ -582,12 +629,19 @@ oibmâc
 ed
 axaT
 Período de câmbio apreciado Período de câmbio depreciado
+6
 5,5
+5
 4,5
+4
 3,5
+3
 2,5
+2
 1,5
+1
 2002m1 2004m1 2006m1 2008m1 2010m1 2012m1 2014m1 2016m1 2018m1 2020m1 2022m1
+v.33n.22023 Nova Economia� 379
 
 ram resultados inconclusivos, para todas as demais não se rejeita a hipótese
 nula de que essas apresentam raiz unitária; que não persiste em primeira
@@ -611,13 +665,17 @@ Período completo – VAR (4)
 .03
 .02
 .01
+0
 –.01
+Intervalo de confiança Função impulso-resposta
+Fonte: Elaboração própria.
 3 O teste de cointegração de Máximo Valor para as séries utilizadas, tanto para o período
 completo quanto para os subperíodos destacados, sinaliza a não existência de cointegração, o
 que afasta para este estudo, conforme Enders (2014), a utilização de um modelo VEC – Vetor
 de Correção de Erro.
 4 Os resultados dos referidos procedimentos podem ser solicitados aos autores. Por razões
 de otimização do processo editorial, eles não estão apresentados na íntegra neste artigo.
+380 Nova Economia� v.33n.22023
 
 Posto isso, para captar o efeito dinâmico do sistema de equações do modelo
 VAR, a análise que segue considera as funções de impulso-resposta – cho-
@@ -652,6 +710,9 @@ Período de câmbio apreciado – VAR (2) Período de câmbio depreciado – VAR
 .01 .01
 .00 .00
 –.01 –.01
+Intervalo de confiança Função impulso-resposta
+Fonte: Elaboração própria.
+v.33n.22023 Nova Economia� 381
 
 Em conjunto, os resultados encontrados neste estudo mostram a relevân-
 cia do canal de transmissão cambial como elemento de destaque para
@@ -690,6 +751,7 @@ ser repassado para preços.
 Em linha com essa literatura, em primeiro momento, uma contração
 monetária gera elevação de custos que são transmitidos rapidamente para
 os preços. Posteriormente, uma elevação dos juros desaquece a economia
+382 Nova Economia� v.33n.22023
 
 e, fi nalmente, impacta negativamente a infl ação. O puzzle surge, portanto,
 da existência de um descompasso entre os efeitos da política monetária
@@ -727,6 +789,7 @@ de que o repasse cambial tende a ser maior em momentos de apreciação
 cambial do que em momentos de tendência à depreciação.
 5 Os resultados dos referidos procedimentos podem ser solicitados aos autores. Por razões
 de otimização do processo editorial eles não estão apresentados na íntegra neste artigo.
+v.33n.22023 Nova Economia� 383
 
 Figura 5 Taxa de câmbio e nível de utilização da capacidade instalada (NUCI) no Brasil
 – período de 2002 a 2021 – dados Trimestrais
@@ -767,6 +830,7 @@ tendência à apreciação, em que a própria taxa de juros SELIC torna-se um
 55,00
 50,00 0,00
 NUCI Taxa de câmbio
+384 Nova Economia� v.33n.22023
 
 colateral nesse processo. Cumpre avaliar, assim como assevera Bresser-
 -Pereira (2007), qual o papel a ser desempenhado pelo câmbio na nossa
@@ -799,6 +863,7 @@ atipicidades da pandemia de Covid-19 como elemento que demanda um
 modelo específi co que justifi que a baixa infl ação, baixa Selic e depreciação
 cambial no período, e outro referindo-se à exploração mais profunda da
 infl ação de oferta no país.
+v.33n.22023 Nova Economia� 385
 
 Referências
 ANDRÉS, S. A.; SANTIAGO, J. V. Exchange rate pass-through to prices: Var evidence for
@@ -839,6 +904,7 @@ ta de Economia Política, São Paulo, v. 39, n. 2, p. 263-284, abr./jun. 2019.
 FUNDO MONETÁRIO INTERNACIONAL – FMI. Índice Global de Commodities.
 GAGNON, J. E.; IHRIG, J. Monetary policy and exchange rate pass-through. International
 Journal of Finance and Economics, Wiley Online Library, v. 9, n. 4, p. 315-338, Oct. 2004.
+386 Nova Economia� v.33n.22023
 
 GOLDBERG, P. K.; KNETTER, M. M. Goods prices and exchange rates: What have we
 learned? Journal of Economic Literature, v. 35, n. 3, p. 1.243-1.272, Sept. 1997.
@@ -881,6 +947,7 @@ SIMS, C. A. Macroeconomics and reality. Econometrica, Cleveland, v. 48, n. 1, p.
 SIMS, C. Are forecasting models usable for policy analysis? Federal Reserve Bank of Minneapo-
 lis Quarterly Review, Winter, p. 1-16, 1986.
 SOUZA, R. G. DE; SILVA, L. R. Uma breve análise do processo infl acionário do Brasil: sua
+v.33n.22023 Nova Economia� 387
 
 origem, característica e peculiaridades. Cadernos do Desenvolvimento, Rio de Janeiro, v. 13,
 n. 22, p. 103-126, jan./jun. 2018.
@@ -905,6 +972,7 @@ Carlos Eduardo Caldarelli: revisão bibliográfi ca, coleta de dados, estimaçõ
 João Paulo Cortapasso: revisão bibliográfi ca, coleta de dados, estimações econométricas, escrita do texto.
 Sobre o artigo
 Recebido em 14 de abril de 2022. Aprovado em 08 de março 2023.
+388 Nova Economia� v.33n.22023
 
 APÊNDICE
 levín
@@ -914,8 +982,10 @@ sa
 arap
 FDA
 e
+norreP-spillihP
 e
 )SLG-FD(
+kcotS-grebnehtoR-ttoillE
 airátinu
 ziar
 ed
@@ -927,8 +997,10 @@ airátinU
 ziaR
 FDA
 etseT
+norreP-spillihP
 etseT
 SLG-FD
+kcotS-grebnehtoR-ttoillE
 etseT
 sieváiraV
 IIP
@@ -1057,6 +1129,7 @@ ed setset
 so
 araP
 :2 atoN
+0
 :acitsítatse
 aicnâcfi
 ingis à oãçaler
@@ -1067,6 +1140,7 @@ ingis etnemacitsitatsE*
 .%5 a ovitacfi
 ingis etnemacitsitatsE**
 .%01
+a ovitacfi
 ingis etnemacitsitatsE***
 :airátinu
 ziar ed saicnêdivE
@@ -1093,6 +1167,7 @@ a matiejer
 setset sêrt(
 edadeiranoicatsE
 – TSE
+v.33n.22023 Nova Economia� 389
 
 açnerefid
 an
@@ -1101,8 +1176,10 @@ sa
 arap
 FDA
 e
+norreP-spillihP
 e
 )SLG-FD(
+kcotS-grebnehtoR-ttoillE
 airátinu
 ziar
 ed
@@ -1116,8 +1193,10 @@ ed
 medrO
 FDA
 etseT
+norreP-spillihP
 etseT
 SLG-FD
+kcotS-grebnehtoR-ttoillE
 etseT
 sieváiraV
 IIP
@@ -1249,16 +1328,20 @@ ed setset
 so
 araP
 :2 atoN
+0
 :acitsítatse
 aicnâcfi
 ingis à oãçaler
 moC
 :3 atoN
 .%1
+a ovitacfi
 ingis etnemacitsitatsE*
 .%5
+a ovitacfi
 ingis etnemacitsitatsE**
 .%01
+a ovitacfi
 ingis etnemacitsitatsE***
 :eirés
 ad oãçargetnI
@@ -1272,39 +1355,57 @@ me airánoicatsE
 ariemirp
 an airánoicatsE
 – )1(I
+390 Nova Economia� v.33n.22023
 
+Figura A1 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio
 padrão nas variáveis IPCA e SELIC – período completo
+Choque cambial sobre o IPCA Choque cambial sobre a SELIC
 .03 .2
 .02 .1
 .01 .0
 .00 .–1
 –.01 –.2
+Intervalo de confiança Função impulso-resposta
+Choque da SELIC sobre o IPCA Choque do IPCA sobre a SELIC
 .03 6
 .02 4
 .01 2
 .00 0
 –.01 –2
+Intervalo de confiança Função impulso-resposta
+Fonte: Elaboração própria.
+Figura A2 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio
 padrão nas variáveis IPCA e SELIC – período de câmbio apreciado
+Choque cambial sobre o IPCA Choque cambial sobre a SELIC
 .03 .2
 .02 .1
 .01 .0
 .00 .–1
 –.01 –.2
+Intervalo de confiança Função impulso-resposta
+Choque da SELIC sobre o IPCA Choque do IPCA sobre a SELIC
 .06 3
 .04 2
 .02 1
 .00 0
 –.02 –1
+Intervalo de confiança Função impulso-resposta
+v.33n.22023 Nova Economia� 391
 
+Figura A3 Função impulso-resposta, de 24 passos à frente, de um choque de um desvio
 padrão nas variáveis IPCA e SELIC – período de câmbio depreciado
+Choque cambial sobre o IPCA Choque cambial sobre a SELIC
 .03 .2
 .02 .1
 .01 .0
 .00 –.1
 –.01 –.2
+Intervalo de confiança Função impulso-resposta
+Choque da SELIC sobre o IPCA Choque do IPCA sobre a SELIC
 .03 6
 .02 4
 .01 2
 .00 0
 –.01 –2
+Intervalo de confiança Função impulso-resposta
 392 Nova Economia� v.33n.22023 This article is licensed under a Creative Commons Attribution 4.0 International License.

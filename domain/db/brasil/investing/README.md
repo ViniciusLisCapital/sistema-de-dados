@@ -22,3 +22,16 @@ Nos 4.850 dias em que as duas se sobrepõem, apenas **13 valores coincidem**
 variações diárias é máxima em lag 0.
 
 Detalhe completo no docstring do loader novo.
+
+## Exceção provisória: 09/09 a 14/10/2026 (carregado em 2026-10-15)
+
+Com a cota da API da Bloomberg estourada, os **26 pregões de 09/09 a 14/10/2026**
+entraram na `cmb_risco_pais` a partir de `raw/cds_5y_brasil_2026_outubro.csv`
+(investing.com), acrescentados por insert direto depois do último dia do export
+Bloomberg (08/09) — o histórico Bloomberg não foi tocado. Nos 27 dias em que os
+dois se sobrepõem (03/08 a 08/09) a diferença média é 1,5 bps e a máxima 5,3; na
+emenda, 112,95 contra 112,395.
+
+**Some sozinho no próximo export da Bloomberg**: o loader trunca a tabela antes de
+carregar, então rodar `cmb_risco_pais.run()` com um xlsx novo em `bloomberg/raw/`
+substitui esses 26 dias sem passo extra. Previsto para novembro/2026.

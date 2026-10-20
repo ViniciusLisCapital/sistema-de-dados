@@ -1,10 +1,14 @@
+---
+aliases: ["Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention"]
+---
+
 # Krugman 2023 — Fixed Exchange Rates and Foreign Exchange Intervention
 
 **Type:** Textbook chapter (International Economics, 12th ed., Ch. 18)
 **Tags:** #textbook #fixed-exchange-rate #sterilization #currency-crisis #capital-flight #reserve-currency #gold-standard #risk-premium
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Source file:** [[fixed_exchange_rate_intervention (Krugman, 2023)]]
+**Source file:** [[exchange_rate/clean_md/fixed_exchange_rate_intervention (Krugman, 2023)]]
 
 ---
 
@@ -43,6 +47,6 @@ Fixing the exchange rate at E₀ requires the central bank to keep R = R* (via U
 
 - [[risk_premium]] — Krugman's `ρ = ρ(B − A)` gives a specific microfoundation (relative bond supply) for the same risk-premium wedge this concept page already treats qualitatively for BRL (fiscal uncertainty, political risk, sub-investment-grade status)
 - [[uip]] — imperfect asset substitutability is UIP's risk-premium extension, formalized here via central bank balance sheet composition rather than generic risk aversion
-- [[carry_trade]] — the Polish zloty/Swiss franc mortgage carry trade (2015 SNB floor removal) is a textbook real-world carry-crash case, distinct from but structurally identical to the AUD/JPY case in [[Krugman 2023 - Exchange Rates and the Foreign Exchange Market (An Asset Approach)]]
+- [[carry_trade]] — the Polish zloty/Swiss franc mortgage carry trade (2015 SNB floor removal) is a textbook real-world carry-crash case, distinct from but structurally identical to the AUD/JPY case in [[exchange_rate/synthesis/exchange_rate_foreign_exchange_market (Krugman, 2023)]]
 - [[overshooting]] — permanent devaluation is shown to be long-run neutral just like a permanent Ms increase under floating (Ch. 15/16), reinforcing that the same money-neutrality logic underlies both regimes
-- [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — directly extends the DD-AA apparatus from that chapter to the fixed-exchange-rate case; monetary/fiscal policy effectiveness results are the mirror image of the floating-rate results there
+- [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] — directly extends the DD-AA apparatus from that chapter to the fixed-exchange-rate case; monetary/fiscal policy effectiveness results are the mirror image of the floating-rate results there

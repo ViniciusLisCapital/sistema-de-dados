@@ -1,10 +1,14 @@
+---
+aliases: ["CFA L1 2025 - Exchange Rate Calculations"]
+---
+
 # CFA L1 2025 — Exchange Rate Calculations
 
 **Type:** Curriculum reading (CFA Program, Level I)
 **Tags:** #cfa #cross-rate #triangular-arbitrage #forward-points #covered-interest-parity #cip
 **Source:** CFA Institute, Level I curriculum, Learning Module 8 (Economics)
 **Language:** English
-**Source file:** [[exchange_rate_calculation (CFA L1, 2025)]]
+**Source file:** [[exchange_rate/clean_md/exchange_rate_calculation (CFA L1, 2025)]]
 
 ---
 
@@ -31,9 +35,9 @@ Four market variables — spot rate, forward rate, and the two countries' intere
 
 ## Limitations and caveats
 
-- Purely mechanical/computational — no discussion of why CIP holds empirically better than UIP, or of the post-2008 CIP breakdown documented in [[Krugman 2023 - Exchange Rates and the Foreign Exchange Market (An Asset Approach)]]. Treat as a reference for quote conventions and arithmetic, not as an independent theoretical source.
+- Purely mechanical/computational — no discussion of why CIP holds empirically better than UIP, or of the post-2008 CIP breakdown documented in [[exchange_rate/synthesis/exchange_rate_foreign_exchange_market (Krugman, 2023)]]. Treat as a reference for quote conventions and arithmetic, not as an independent theoretical source.
 
 ## Connections
 
 - [[uip]] — this reading's CIP arbitrage equation is the same covered interest parity condition already in the "Variants" table, here with full swap-financing derivation and day-count mechanics
-- [[Krugman 2023 - Exchange Rates and the Foreign Exchange Market (An Asset Approach)]] — same CIP condition, same "forward rate ≈ expected future spot rate only if UIP also holds" logic, from the textbook-theory side rather than the trading-desk side
+- [[exchange_rate/synthesis/exchange_rate_foreign_exchange_market (Krugman, 2023)]] — same CIP condition, same "forward rate ≈ expected future spot rate only if UIP also holds" logic, from the textbook-theory side rather than the trading-desk side

@@ -1,10 +1,14 @@
+---
+aliases: ["Goldman 2025 - GSDEER and GSFEER Models Primer"]
+---
+
 # A Primer on Goldman Sachs' GSDEER and GSFEER Models
 
 **Authors:** Teresa Alves, Stuart Jenkins  
 **Source:** Goldman Sachs FX in Focus, 3 November 2025  
 **Type:** Research note — proprietary fair value framework  
 **Tags:** #fair-value #PPP #GSDEER #GSFEER #valuation #exchange-rate #goldman-sachs  
-**Source file:** [[primer_gsdeer_gsfeer (Goldman, 2025)]]
+**Source file:** [[exchange_rate/clean_md/primer_gsdeer_gsfeer (Goldman, 2025)]]
 
 ---
 
@@ -131,11 +135,11 @@ The implication: don't use GSDEER cheapness as a buy signal for BRL without a ca
 
 ## Connections in the bibliography
 
-- [[Goldman 2023 - GSDEER A User's Manual]] — deeper technical treatment of the GSDEER methodology
+- [[exchange_rate/synthesis/gsdeer_manual_guide (Goldman, 2023)]] — deeper technical treatment of the GSDEER methodology
 - [[ppp_balassa_samuelson]] — GSDEER is explicitly framed here as augmented PPP correcting for the Balassa-Samuelson productivity effect; BRL's GSDEER undervaluation is this concept's direct application
 - [[risk_premium]] — explicitly listed as a shared limitation of both models ("Neither model captures risk premium"); the key reason BRL's structural GSDEER cheapness doesn't convert into convergence
-- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — overshooting means fair value is a long-run concept; short-run deviations are rational
-- [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — GSFEER is implicitly a macro balance model in the M-F tradition
+- [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — overshooting means fair value is a long-run concept; short-run deviations are rational
+- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] / [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — GSFEER is implicitly a macro balance model in the M-F tradition
 - [[verde_fx_mental_models]] — Verde letters treat GSDEER-type arguments as "structural" floor for BRL; skeptical of convergence without carry catalyst
 - [[Sarno-Taylor]] — academic treatment of PPP-based equilibrium exchange rates and their empirical limitations
-- [[Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil]] — BEER model, the direct methodological ancestor applied to Brazil two decades earlier: same terms-of-trade/productivity/NFA/risk-premium fundamentals, cointegration instead of a cross-sectional regression
+- [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] — BEER model, the direct methodological ancestor applied to Brazil two decades earlier: same terms-of-trade/productivity/NFA/risk-premium fundamentals, cointegration instead of a cross-sectional regression

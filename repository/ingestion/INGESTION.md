@@ -1,140 +1,104 @@
 # Ingestion Pipeline
 
-Converts PDF research documents into clean, analysis-ready `.md` files for `repository/<topic>/raw_md/` and `obsidian/<topic>/clean_md/` (the vault, the only layer agents read). Lives inside `repository/` (moved here 2026-08, was a top-level `ingestion/` folder before) so the whole raw-PDF → raw_md → clean_md flow is self-contained in one place.
+Turns a PDF into the two text layers of the knowledge base: `repository/<topic>/raw_md/` (verbatim
+extraction, the audit trail) and `obsidian/<topic>/clean_md/` (the same text minus page furniture
+and the reference list, in the vault the agents read). It is a **mechanical process of the
+system**, not a task of any topic agent (`SISTEMA_AGENTES.md` II.I.iv, decided 2026-10-19).
 
----
+## How to use it
 
-## How it works — one command
+1. Save the PDF straight into **`repository/<topic>/raw_pdf/`** (top level), any name. The user
+   does it; Claude does too when it finds literature on the web. The PDF never moves again.
+2. Run **`/ingest`** (every topic) or **`/ingest <topic>`**. The command starts the ingestion agent
+   (`.claude/agents/ingestion.md`, in its own context). It sweeps for **pending** PDFs — a PDF at the
+   top level of `raw_pdf/` with no `raw_md/<name>.md` — and, for each: fixes the name, tries the
+   extraction modes, checks the text against rendered pages, records any non-default setting,
+   writes the files and verifies them. It returns a table plus a list of what needs attention.
+3. The literature to-do, **`repository/agent_mapping/data_tracker.xlsx`**, is updated by every
+   write: columns J–P of each "Qual - <Area>" tab and a "Literature summary" tab (`tracker.py`).
+4. Afterwards, **`/vault [topic]`** starts the vault agent (`.claude/agents/vault.md`): a synthesis
+   note per clean_md, the concept pages and the links, checked by `vault.py` (see
+   `obsidian/CLAUDE.md`).
 
-Drop a PDF into `repository/ingestion/land_space/<topic>/` (topic = one of `repository/`'s own topic names: `exchange_rate`, `monetary_policy`, `fiscal_policy`, `inflation`, ...), then:
-
-```powershell
-uv run python repository/ingestion/scripts/run.py
-```
-
-That's it. For that PDF, `run.py`:
-
-```
-repository/ingestion/land_space/<topic>/some_paper.pdf
- └─ [extract]      raw text extraction (pdfplumber, no AI)     → repository/<topic>/raw_md/some_paper.md
- └─ [clean_code]   deterministic regex cleaner (no AI)         → obsidian/<topic>/clean_md/some_paper.md
- └─ [move]         the PDF itself                              → repository/<topic>/raw_pdf/some_paper.pdf
-```
-
-The drop-zone folder ends up empty — everything lands organized under `repository/<topic>/`.
-
-| Step | Script | Tool | What it does |
-|---|---|---|---|
-| Extract | `extract.py` | pdfplumber | Reads PDF pages, writes raw text. No AI, no rewriting risk. |
-| Clean | `clean_code.py` | regex only | Removes boilerplate deterministically: page numbers, running headers/footers (both hand-tuned per-source patterns AND a generic "line repeats N+ times across the document, tolerating a varying page number" detector), emails/phones/URLs, chart-axis-label garbage, known disclaimer sentences, and References/Bibliography (bounded to that section only — not a to-EOF cut, so content that follows References in the source, like practice-problem solutions, survives). |
-| Move | `run.py` | — | Moves the source PDF into `raw_pdf/` once extraction + cleaning succeed. |
-
-**Boilerplate removed includes:** disclaimers, legal notices, regulatory disclosures, analyst contact details (phone numbers, emails), copyright notices, running headers/footers, table of contents, References/Bibliography sections, and blank filler pages. Footnotes and citations that aren't part of a References/Bibliography list are treated as content and kept.
-
-**Safety behavior:** if `repository/<topic>/raw_md/<name>.md` already exists, `run.py` preserves it (moves it to `repository/<topic>/raw_md/_legacy_ai_rewrite/<name>.md`) rather than overwriting — see the audit finding below for why this matters. If `repository/<topic>/raw_pdf/<name>.pdf` already exists, the source PDF is left in the drop zone untouched rather than silently duplicated or overwritten.
-
-### Usage
-
-```powershell
-# Process every topic folder in land_space/ that has PDFs waiting
-uv run python repository/ingestion/scripts/run.py
-
-# Process just one topic
-uv run python repository/ingestion/scripts/run.py exchange_rate
-
-# Reprocess even if clean_md already exists (e.g. after tuning a clean_code.py pattern)
-# raw_md/raw_pdf are always legacy-preserved / never silently clobbered, regardless of this flag
-uv run python repository/ingestion/scripts/run.py --overwrite
-```
-
-### If `clean_code.py` leaves obvious garbage in a new document
-
-Inspect `repository/<topic>/raw_md/<name>.md`, find the pattern (a repeated header, a disclaimer sentence, a new bank's contact-info format), and add a targeted regex to `clean_code.py` next to the existing ones — same pattern as the Goldman/Itaú-specific rules already there. The generic running-header detector (`_detect_running_headers`) catches most page-number-varying headers automatically; hand-tuned patterns are for anything it misses (known disclaimer sentences, chart-garbage shapes, watermarks). Then re-run with `--overwrite` to regenerate `clean_md`.
-
-### Adding a new topic
-
-Just create the folder — no registration needed:
-
-```powershell
-mkdir repository/ingestion/land_space/labor_market
-```
-
-Drop PDFs into it and run `run.py` — `repository/labor_market/{raw_pdf,raw_md}/` and `obsidian/labor_market/clean_md/` are created automatically.
-
----
-
-## ⚠️ 2026-08 finding: the AI cleaning pass (`clean.py`) is unreliable — do not use it
-
-A full audit (14 files across `exchange_rate`/`monetary_policy`/`fiscal_policy`/`inflation`, each verified against its source PDF) found that **every single file `clean.py` had produced was corrupted** in some way:
-- **Truncation**: long documents got cut off mid-sentence, silently dropping entire back sections (Results, Conclusions, References, worked examples) — traced to the per-chunk `max_tokens=8096` output budget in `_call()` not being enough for a chunk whose "cleaned" output is still nearly as long as its input.
-- **Overreach past "remove boilerplate"**: `_CLEAN_PROMPT` explicitly listed "Practice questions... and answers/solutions" as boilerplate to remove — that's substantive content, not garbage, and it silently deleted whole worked-example sections from CFA readings.
-- **Paraphrasing**: `_STRUCTURE_PROMPT` never says "preserve wording verbatim" — Haiku took the liberty of rewriting voice (first-person "I argue" → third-person "the paper argues") and restructuring prose into bullet lists in several documents, which is not "cleaning," it's editing.
-
-`clean_code.py` (deterministic, regex-based, zero AI calls) replaced it as the default — zero paraphrasing/truncation risk by construction. Its only failure mode is under/over-removal via an incomplete or over-broad pattern, which is auditable and fixable, unlike an LLM silently rewriting content. `clean.py` is kept in the repo for reference/possible future repair but is not called by `run.py`.
-
----
-
-## Folder layout
+`/ingest <topic> "<file>.pdf" --overwrite` redoes a file already ingested, e.g. after a settings
+change.
 
 ```
-repository/
-  ingestion/
-    land_space/                 ← DROP PDFs HERE — same topic names repository/ uses
-      exchange_rate/
-      monetary_policy/
-      fiscal_policy/
-      inflation/
-      ...
-    scripts/                     ← all pipeline code lives here
-      extract.py                 ← Step 1: raw extraction (pdfplumber, no AI)
-      clean_code.py               ← Step 2, recommended: deterministic regex cleaner (no AI)
-      clean.py                    ← Step 2, NOT recommended: AI cleaner — see the warning above
-      run.py                       ← THE entry point: drop-zone PDF -> raw_pdf + raw_md (repository) + clean_md (obsidian), one command
-      publish.py                   ← lower-level tool: publish an existing *_raw.md file/folder into
-                                      raw_md/+clean_md/ without re-extracting — takes an explicit path,
-                                      no default folder; most ingestion should just use run.py instead
-      run_code.py                   ← lower-level tool: runs clean_code.py over an explicit <source>
-                                      folder of *_raw.md, writes to an explicit <output> folder,
-                                      inspection only — no default folders (see history below)
-      compare.py                     ← optional, paid ($0.01/doc) AI spot-check: does clean_md preserve raw_md's substance?
-    INGESTION.md                  ← this file
-
-repository/<topic>/
-  raw_pdf/                     ← source PDFs land here once ingested
-  raw_md/                      ← FINAL raw output (verbatim, extraction artifacts only)
-    _legacy_ai_rewrite/         ← old clean.py-produced files preserved (not deleted) when real raw_md replaced them
-
-obsidian/<topic>/
-  clean_md/                    ← FINAL clean output (raw minus true garbage, no rewriting) — in the vault since 2026-09-30
+repository/<topic>/raw_pdf/<name>.pdf
+  └─ run.py --list → qc.py try → page check (qc.py render/page) → settings.yaml → run.py → qc.py check
+       ├─ repository/<topic>/raw_md/<name>.md
+       ├─ obsidian/<topic>/clean_md/<name>.md
+       ├─ repository/ingestion/LOG.md
+       └─ repository/agent_mapping/data_tracker.xlsx
 ```
 
-**2026-08 history**: this used to be a top-level `ingestion/` folder with an `inbox/<topic>/` drop zone (separate from `repository/`) and a multi-step manual workflow (`extract.py` → `ingestion/work/` → `publish.py` → `repository/`). It was consolidated into `repository/ingestion/` and flattened to a single `run.py` command, so the whole pipeline — drop zone, scripts, and final destination — lives in one place. `inbox/<topic>/` was renamed directly to `<topic>/` (dropping the extra nesting level), and its topic names were also fixed to match `repository/`'s exactly (previously used its own names like `exchange_rate_policy`, which caused a real misfiling — `em_food_inflation.pdf`, an inflation paper, had been sitting under `inbox/monetary_policy/`).
+**What the sweep skips:** subfolders of `raw_pdf/` (`monetary_policy/raw_pdf/central_bank/` is the
+Copom ETL's), `repository/mental_model/` (manager letters, own pipeline), topics listed under
+`topics_on_hold` in `settings.yaml` (`trader`, scope undecided), and files marked
+`status: needs_attention` there (a scan, a failed page check), which are listed, not retried.
 
-**Later 2026-08 — split into `land_space/` + `scripts/`**: the drop zone and the pipeline code originally sat as siblings directly under `repository/ingestion/` (`repository/ingestion/exchange_rate/` next to `repository/ingestion/run.py`). Per explicit request, separated the two concerns: every topic drop-zone folder now lives under `repository/ingestion/land_space/<topic>/`, and every script (`extract.py`, `clean_code.py`, `clean.py`, `run.py`, `publish.py`, `run_code.py`, `compare.py`, `__init__.py`) moved into `repository/ingestion/scripts/`. All path constants in the moved scripts were updated accordingly and the new layout was verified with a fully isolated scratch-tree smoke test (fresh ingest + legacy-preserve/duplicate-PDF re-ingest, both passing) before being applied to the real tree.
+**Naming:** `description_in_snake_case (Author, Year).pdf` — up to three surnames, four or more as
+`First et al.`. `run.py` refuses any other name.
 
-**Same day — `work/`, `test/`, `compare_report.md`, `ingestion_context.md` retired.** These four were all pre-`repository/`-move leftovers, checked and found redundant/stale rather than genuinely historical: `work/`'s 19 `*_raw.md` files were byte-identical to what's already in each topic's `raw_md/` (they were the source `publish.py` copied from — no unique content); `test/`'s 5 sample outputs actively **disagreed** with current `clean_md/` for 3 of them, since `clean_code.py` was tightened (the References block-cut fix, the generic running-header detector) after `test/` was generated — stale enough to mislead rather than inform; `compare_report.md` and `ingestion_context.md` were both dated 2026-06-26, predating even the `repository/`/`agent_bibliography/` rename, and referenced folders (`ingestion/work/exchange_rate_policy/`, `agent_bibliography/...`) that no longer exist. The one substantive open item from `ingestion_context.md` — the Fleming 1962 / Frenkel 1976 garbled-text safety-classifier block — was carried forward into its own section below before deletion, since it's still a real (if currently moot) limitation.
+## The scripts (`scripts/`)
 
----
+| Script | What it does |
+|---|---|
+| `extract.py` | Text layer → text. Modes: `plumber` (pdfplumber, `x_tolerance` 1.5), `plumber_flow` (word-grouped, for letter-spaced PDFs), `pymupdf` (math symbols as Unicode). `decode_shift` reverses a font-encoding Caesar shift, page by page, only where it makes the page read as English. No AI. |
+| `clean_code.py` | Regex cleaner, no AI: page numbers, repeated running headers/footers, URLs/emails, chart-axis debris, the References/Bibliography block (up to the next section heading, ALL CAPS or a known mixed-case starter such as "Appendix", "Comments and Discussion", "Endnotes", "Data Sources", a "Table N"/"Figure N" caption or a table's "Coefficient" header), and bank disclaimer tails. |
+| `qc.py` | `try` (every mode side by side, into a temp folder), `page` (one page's text), `render` (pages to PNG with PyMuPDF — no poppler needed), `check` (metrics of an ingested file, including whether the files reproduce from the PDF). Writes nothing into the repository. |
+| `settings.py` + `../settings.yaml` | `files:` per-file settings when the default fails, or `status: needs_attention` for a file the tools cannot ingest, each with the measured reason; `topics_on_hold:`. A re-run reproduces the same text. |
+| `run.py` | `--list [topic]`: the sweep (pending / needs attention / on hold per topic). `run.py --reclean [topic]`: after a cleaner change, rewrites every clean_md from its raw_md (no PDF re-extracted, raw_md untouched). `run.py <topic> <files>`: the commit step — extract with the file's settings, clean, write both files, append to `../LOG.md`, update the tracker. Refuses a bad name, a duplicate, a marked file, an existing output without `--overwrite`, and blocking QC flags without `--accept-flags`. |
+| `tracker.py` | Rewrites columns J–P (File, Ingestion, Ingested on, Extraction, QC flags, Synthesis, Ingestion note) of every "Qual - <Area>" tab of `agent_mapping/data_tracker.xlsx`, sets "Do we have it?" to Yes where the PDF exists, appends a marked row for each PDF the curated list lacks, and rebuilds the "Literature summary" tab. Matches a PDF to a row by year + author surnames, with the title words as tie-break; never guesses a tie (with no author in common, e.g. "IMF" on the file and the staff names on the row, a unique match on year + two title words). Columns A–I, the Notes tab and the Quant tabs are the user's; the workbook is the only home of the literature and data lists. Not in git: Dropbox's version history keeps old versions. |
+| `vault.py` | The vault agent's helper, read-only: `--list [topic]` (clean_md files with no synthesis note; skips `clean_md/central_bank/` and topics on hold), `check <topic> <name>` (template sections, Source file, every number in the clean_md, every wikilink resolves, concepts link back), `context <topic> <name>` (the file's tracker row and its cluster's notes). The vault's `qc.py check`. Tests: `tests/test_vault.py`. |
+| `publish.py`, `run_code.py`, `clean.py`, `compare.py` | Older tools, not part of the flow. `clean.py` (AI cleaner) must not be used: see below. |
 
-## Known limitation: garbled scanned-PDF text can block the AI cleaner
+**QC flags** (`qc.py`), with the thresholds measured on the 46 monetary-policy PDFs:
+blocking — `no_text_layer` (a scan), `garbled` (common-word share < 0.15), `letter_spaced`
+(one-letter share > 0.35), `run_together` (18+-letter tokens > 0.2%); informational —
+`math_glyphs` (> 50 `(cid:N)` symbols pdfplumber cannot map), `heavy_removal` (> 25% removed),
+`long_references_cut` (a cut > 300 lines, or to EOF over a quarter of the document).
 
-Two old JSTOR scans — `domestic_policy_exchange_rate_regimes (J. Marcus Fleming, 1962)` and `monetary_approach_exchange_rates (Frenkel, 1976)` — have such heavily garbled `pdfplumber` text (fused words, shifted spaces) that Claude's safety classifier blocks `clean.py`'s output outright, even after mitigation attempts (camelCase-fusion preprocessing, a contextual preamble, an academic-framing system prompt). This is moot for the current default path (`clean_code.py` is regex-only, makes no API call, so nothing to block) — it would only resurface if `clean.py` is ever repaired and used again on these two sources. If so, the remaining unexplored option is a "shifted space" heuristic keyed on common short English words (prepositions/articles: `in`, `on`, `of`, `to`, `from`, `at`, `by`, `an`, `the`) to catch the fusion pattern regex alone doesn't fix (e.g. `declinei n taxation`, `resultingf roma`) — or just read the source PDF directly in-session and hand-write the `.md`, per the root `CLAUDE.md`'s PDF-extraction routing table.
+Tests: `uv run python tests/test_ingestion.py`.
 
----
+## What the 2026-10-19 measurement found (why the tools are like this)
 
-## Skip logic
+A read-only run of the old pipeline over the 46 monetary-policy PDFs (kept in
+`staging/monetary_policy_2026-10-19/` until the real ingestion of those files is done):
 
-`run.py` is safe to re-run: `clean_md` is skipped if it already exists (use `--overwrite` to force), `raw_md` is always preserved via the legacy-move behavior above, and a `raw_pdf` that already exists at the destination is left untouched in the drop zone (with a message) rather than silently duplicated.
+- **Words glued together in ~20 files** with pdfplumber's default `x_tolerance=3`
+  ("AnaturalinterpretationofthisevidenceisthatFOMC…"). 1.5 removed it in every file and made none
+  worse.
+- **The References cut deleted content.** It ran until the next ALL-CAPS line; Campbell et al.
+  (2012, Brookings) follow References with "Comments and Discussion" in mixed case, so the cut ran
+  to EOF and deleted the discussants' comments — 41% of the document removed, with nothing
+  reporting it. Now 6%.
+- **Math as `(cid:N)` in 22 files**; PyMuPDF maps it to Unicode, at the cost of equations spread
+  over lines.
+- **Five files needed special handling:** two scans with no text layer (Bernanke–Gertler–Gilchrist
+  1999, Walsh 1995; the first was the NBER WP 6455 scan, replaced the same day by a
+  Handbook-chapter copy that has a text layer), two Caesar-shifted files (Clarida–Galí–Gertler 1999 and 2000), one
+  letter-spaced (Orphanides 2001).
+- **No two-column layout** in the sampled body pages: the root CLAUDE.md's warning about reading
+  order did not bite on this corpus, but the page check exists to catch it where it does.
 
----
+## The cleaner audit of 2026-10-19
 
-## Cost
+The last monetary-policy batches showed the line rules deleting content in every file they touched, silently. Measured over the 61 files then ingested, the fixed cleaner restores about 5,300 lines and removes about 1,500 more reference-list lines. What was deleted:
 
-`extract.py` and `clean_code.py` make **zero API calls** — `run.py`'s whole path is free. `compare.py` (optional QC spot-check, not run automatically) calls `claude-haiku-4-5` once per pair, ~$0.01/doc.
+- body lines starting with a citation year, `(1995), Ireland (1996a), ...`, taken for a copyright line;
+- equations and short-word prose, taken for chart debris (the rule itself, `r = p + .5y + .5(p - 2) + 2`, in Taylor 1993);
+- numeric table rows, all sharing a digit-stripped shape and taken for a running header;
+- every bare number, taken for a page number, including pymupdf's one-cell-per-line tables;
+- whole pages around a chart, because a chart-dominated block was dropped wholesale and pymupdf returns a page as one block.
 
----
+A second pass the same day stopped two more: `Source:` lines are kept (under a paper's chart they name the data), and a repeated line is treated as a running head only at a page edge, keeping its first copy (inside a page it is a table's row label). Each has a test in `tests/test_ingestion.py`. The rule since: when in doubt the cleaner keeps the line.
 
-## Requirements
+## Why there is no AI in the text path (2026-08 audit)
 
-- `ANTHROPIC_API_KEY` must be set in `.env` at the project root — only needed for `compare.py` (optional QC) or if `clean.py` is ever repaired and used again. `run.py` itself needs no API key.
-- Run `uv pip install -e .` once after cloning or adding new packages.
+An AI cleaning pass (`clean.py`) was audited on 14 files against their PDFs and **every file was
+corrupted**: long documents truncated mid-sentence (the per-chunk output budget), worked examples
+deleted as "boilerplate", and prose paraphrased ("I argue" → "the paper argues", paragraphs turned
+into bullets). The old outputs are kept in `raw_md/_legacy_ai_rewrite/` folders. Since then every
+character of raw_md and clean_md comes from deterministic code; the ingestion agent's judgment goes
+into choosing the extraction and checking it, never into writing the text.

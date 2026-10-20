@@ -1,0 +1,150 @@
+# What the ingestion pipeline remembers between runs. Read by repository/ingestion/scripts/settings.py.
+#
+# files: per-PDF entries, keyed by file name. Written only when the default extraction
+#   (mode plumber, x_tolerance 1.5, decode_shift 0) does not work, or with
+#   `status: needs_attention` for a file the tools cannot ingest. Always with the reason.
+#   Modes and what each fixes: repository/ingestion/scripts/extract.py.
+# topics_on_hold: topics the sweep reports but never ingests.
+
+files:
+  "policy_rules_real_time_data (Orphanides, 2001).pdf":
+    mode: plumber_flow
+    reason: every letter is placed as its own word; plumber's one-letter share is 98%, plumber_flow's 4.5% (measured 2026-10-19)
+
+  "science_of_monetary_policy (Clarida, Gali & Gertler, 1999).pdf":
+    mode: pymupdf
+    decode_shift: 3
+    reason: "text layer Caesar-shifted by 3 (font encoding, \"wkh\" for \"the\"; common-word share 0.001 before decoding); pymupdf for the equations. The References cut stops at the first figure caption (Fig 1), so the captions of Fig 1-6 survive (cleaner fix 2026-10-19)"
+
+  "monetary_policy_rules_stability (Clarida, Gali & Gertler, 2000).pdf":
+    mode: pymupdf
+    decode_shift: 3
+    reason: "same Caesar shift as the 1999 paper (UPF WP 350 copy); the NBER copy is a scan with no text layer. After decoding, common-word share 0.293 (pymupdf) vs 0.279 (plumber), one-letter share 0.047 vs 0.053, unmapped glyphs 0 vs 8; References cut ends at TABLE I, tables after it survive. Known loss in both modes: ligatures (fi, fl, ff) and Greek header symbols of Table II (p.36) are absent from the font encoding"
+
+  "optimal_contracts_central_bankers (Walsh, 1995).pdf":
+    status: needs_attention
+    reason: scan with no text layer (19 empty pages); low priority, needs OCR or a text copy
+
+  "basic_nk_model_ch3 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: equation-driven chapter; plumber leaves 425 unmapped math glyphs (flag math_glyphs, one-letter share 0.197), pymupdf 0 and 0.106 (measured 2026-10-19); p.10 checked against the image, exercises after References survive
+
+  "classical_monetary_model_ch2 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: equation-driven chapter; plumber 182 unmapped math glyphs and one-letter share 0.184, pymupdf 0 and 0.071 (measured 2026-10-19); p.20 checked against the image, exercises after References survive
+
+  "discretion_vs_commitment_ch5 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: equation-driven chapter; plumber 339 unmapped math glyphs ((cid:11), (cid:20)) and one-letter share 0.157, pymupdf 0 and 0.086 (measured 2026-10-19); p.15 checked against the image (a few capital-Lambda glyphs drop to blanks), exercises after References survive
+
+  "fiscal_dominance_it_brazil (Blanchard, 2004).pdf":
+    mode: pymupdf
+    reason: model paper whose argument lives in equations; plumber 133 unmapped math glyphs (math_glyphs flag), pymupdf 0 and no worse elsewhere (measured 2026-10-19); p.9 checked against the image, equations read cleanly
+
+  "forward_guidance_effects (Campbell et al., 2012).pdf":
+    mode: pymupdf
+    reason: plumber reverses the text of the rotated landscape tables (pp.12, 14, 20; 'elbaT', 'seirusaerT' read backwards, no flag raised); pymupdf reads them correctly, one-letter share 0.039 vs 0.047 (measured 2026-10-19); p.12 and p.30 checked against the images, Comments and Discussion after References survive
+
+  "implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 72 unmapped math glyphs (math_glyphs flag), pymupdf 0 and no worse elsewhere (measured 2026-10-19); p.12 checked against the image, References on p.29 end the file"
+
+  "inflation_forecast_targeting (Svensson, 1997).pdf":
+    mode: pymupdf
+    reason: "equation-driven model paper; pymupdf one-letter share 0.085 vs plumber 0.129 and keeps each equation in reading order (plumber scatters sub/superscripts), no flags (measured 2026-10-19); p.10 and p.32 checked against the image. Known limit of the text layer in every mode: custom math font decodes pi as ¼, delta as ±, ligature fl as ‡ (in‡ation)"
+
+  "information_effect_hf_identification (Nakamura & Steinsson, 2018).pdf":
+    mode: pymupdf
+    reason: "model paper (Fed information model); plumber leaves 136 unmapped math glyphs (math_glyphs flag) and one-letter share 0.098, pymupdf 0 and 0.070 (measured 2026-10-19); p.8 checked against the image, References pp.69-74 end the file"
+
+  "information_shocks_policy_surprises (Jarocinski & Karadi, 2020).pdf":
+    mode: pymupdf
+    reason: "Bayesian-VAR paper; plumber 153 unmapped math glyphs (math_glyphs flag) and one-letter share 0.075, pymupdf 0 and 0.061 (measured 2026-10-19); p.12 checked against the text; the References cut runs to the ECB copyright colophon at the end of the file, nothing but boilerplate follows"
+
+  "it_and_debt_brazil (Favero & Giavazzi, 2004).pdf":
+    mode: pymupdf
+    reason: "plumber prints the heading as \"6 References\" (section number fused), so the cleaner finds no References cut and keeps the 4-page list; pymupdf cuts it, stopping at Figure 1 so the figure captions after the list survive (re-ingested 2026-10-19 after that cleaner change). Cost: pymupdf reads the p.9 regression tables column by column (values all present, row layout lost); plumber keeps rows (measured 2026-10-19)"
+
+  "it_credibility_fx_volatility (Minella et al., 2003).pdf":
+    mode: pymupdf
+    reason: "plumber reverses the rotated x-axis labels of the charts (p.17 \"00-naJ\" for Jan-00), no flag raised; pymupdf reads them correctly, one-letter share 0.047 vs 0.053 (measured 2026-10-19); p.17 checked. Everything after References (pp.31-39) is the reference list and the central bank working-paper catalog, nothing of the paper (flag long_references_cut accepted)"
+
+  "it_lessons_and_challenges (Minella et al., 2002).pdf":
+    mode: pymupdf
+    reason: "plumber reverses the rotated x-axis labels of charts (\"naJ\", \"raM\" for Jan, Mar), no flag raised; pymupdf reads them correctly, one-letter share 0.038 vs 0.041 (measured 2026-10-19); everything after References (p.41 onwards) is the reference list and the central bank working-paper catalog (flag long_references_cut accepted)"
+
+  "liquidity_trap_japan (Krugman, 1998).pdf":
+    mode: pymupdf
+    reason: "plumber glues letters across words in the tables (p.27 \"ExchangeR ate\", \"Currenta ccountb\", \"Summaryst atistic\"), no flag raised; pymupdf keeps the words intact (cells come one per line, values all present) (measured 2026-10-19); p.27 checked, References at the end of the file"
+
+  "monetary_channels_brazil_semi_structural (Minella & Souza-Sobrinho, 2013).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 377 unmapped math glyphs (math_glyphs flag), pymupdf 0 and one-letter share 0.073 vs 0.091 (measured 2026-10-19). The appendix regression tables after the References survive since the cleaner stops at their first line, Coefficient (cut 1325-1438, the list only)"
+
+  "monetary_policy_design_nk_ch4 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: "equation-driven chapter; plumber 266 unmapped math glyphs and one-letter share 0.164, pymupdf 0 and 0.084 (measured 2026-10-19); p.9 checked against the text, the Exercises after References survive (cut is the 48-line list only)"
+
+  "natural_rate_international (Holston, Laubach & Williams, 2017).pdf":
+    mode: pymupdf
+    reason: "plumber prints the heading as \"6 References\" (section number fused), so no cut happens and the 6-page list stays in clean (removed 4.3%); pymupdf cuts it (146 lines) and stops at Table 1, so the tables and figures after the list survive (removed 18.8%); measured 2026-10-19"
+
+  "natural_rate_measurement (Laubach & Williams, 2003).pdf":
+    mode: pymupdf
+    reason: "plumber leaves 411 unmapped math glyphs (math_glyphs flag), pymupdf 0 and one-letter share 0.062 vs 0.073 (measured 2026-10-19); the References cut (92 lines) runs to the end of the file, the tables and figures come before it"
+
+  "nk_small_open_economy (Gali & Monacelli, 2005).pdf":
+    mode: pymupdf
+    reason: "equation-driven paper; plumber one-letter share 0.159, pymupdf 0.096 (measured 2026-10-19); p.12 equations read in order (fi ligature comes out as a different glyph, in both modes); References cut (113 lines) ends at Table 1, so the tables after it survive"
+
+  "open_economy_monetary_policy_ch8 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: "equation-driven chapter; plumber 317 unmapped math glyphs and one-letter share 0.158, pymupdf 0 and 0.080 (measured 2026-10-19). The References cut runs to EXERCISES since the cleaner skips the running head POLICY IN THE OPEN ECONOMY inside the list (fix 2026-10-19)"
+
+  "bs_transfer_problem_financial_crises (Krugman, 2000).pdf":
+    mode: plumber_flow
+    reason: "plumber drops the one-letter symbols (H, L) and splits sentences around a figure on p.10 ('collapse from to The collapse'); plumber_flow keeps them in order, one-letter share 0.053 vs 0.067, common-word share 0.278 vs 0.273 (measured 2026-10-19); p.10 checked against the image"
+
+  "invested_interest (Frieden, 1991).pdf":
+    mode: plumber_flow
+    reason: "plumber flags garbled (common-word share 0.123, one-letter 0.142); plumber_flow 0.277 and 0.024, same as pymupdf but with a smaller cleaner removal (4.4% vs 6.4%) (measured 2026-10-19)"
+
+  "financial_crises_emerging_markets (Chang, 1998).pdf":
+    status: needs_attention
+    reason: "text layer is a substituted font encoding, not a Caesar shift: common-word share 0.008 (plumber) / 0.014 (pymupdf) at shift 0, and still at most 0.035 for decode-shift 1-5; p.5 extracts as symbol noise while the image is clean English. Needs OCR or a text copy"
+
+  "forward_spot_exchange (Fama, 1984).pdf":
+    status: needs_attention
+    reason: "scanned journal copy with a poor OCR layer, and the rotated table pages have no usable text in any mode: pp.6, 8, 11, 12, 14 (Tables 1-4 etc.) extract as 72-295 characters of noise while the images hold the tables; the OCR of the body also misreads words ('Fama' as 'Fam~', 'spot' as ',,~pot'). Needs OCR with rotation handling or a text copy"
+
+  "sticky_wages_prices_ch6 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: "equation-driven chapter; plumber shows 497 unmapped math glyphs and one-letter share 0.228 vs 0.124 with pymupdf, no flags (measured 2026-10-19)"
+
+  "systematic_monetary_policy_forward_premium_puzzle (Tambakis & Tarashev, 2012).pdf":
+    status: needs_attention
+    mode: pymupdf
+    reason: "font encoding loses the decimal point and Greek symbols in every mode (plumber, plumber_flow, pymupdf). p.36 Table 1 image shows 0.005 / -0.67*** / 0.01; text reads 0005 / -067 / 001. p.13 image has alpha, beta, rho symbols and '[0,1)'; pymupdf text reads 'where 1 + 2 = , ...' and '[01)'. Numbers would be silently wrong (checked 2026-10-19); needs OCR or a text copy"
+
+  "trilemma_tradeoffs (Obstfeld, 2015).pdf":
+    mode: pymupdf
+    reason: "plumber 222 unmapped math glyphs, plumber_flow one-letter share 0.26 (measured by the ingestion agent 2026-10-19); was needs_attention for cleaner defects fixed the same day: year-initial body lines, equation lines and table rows no longer dropped"
+
+  "unconventional_policy_model (Gertler & Karadi, 2011).pdf":
+    mode: pymupdf
+    reason: "equation-driven model paper; pymupdf keeps the equations (measured by the ingestion agent 2026-10-19); was needs_attention for cleaner defects fixed the same day: year-initial body lines, equation lines and table rows no longer dropped"
+
+  "unemployment_nk_model_ch7 (Gali, 2015).pdf":
+    mode: pymupdf
+    reason: "equation-driven chapter; plumber 88 unmapped math glyphs (measured by the ingestion agent 2026-10-19); was needs_attention for cleaner defects fixed the same day: year-initial body lines, equation lines and table rows no longer dropped"
+
+  "zero_bound_alternatives (Bernanke, Reinhart & Sack, 2004).pdf":
+    mode: plumber_flow
+    reason: "plumber prints chart date axes reversed ('39-naJ 49-naJ', 3 hits in raw, 2 survive in clean); plumber_flow and pymupdf have none. pymupdf also drops the row labels (First factor, Second factor, Adj. R-Squared, ...) of the repeated tables as duplicate lines (5 copies in raw, 1 in clean), plumber_flow keeps both copies of the first table. Residual cleaner losses in every mode, small: footnote 5 (p.14, a URL pointer), one 'Source: IMF WEO' chart line, and one repeated table row 'Current policy setting 1.00 0.00 0.00' (checked 2026-10-19; raw intact)"
+
+  "zero_bound_optimal_policy (Eggertsson & Woodford, 2003).pdf":
+    mode: pymupdf
+    reason: "equation-driven paper; plumber and plumber_flow leave 167 unmapped math glyphs (flag math_glyphs), pymupdf 0 and one-letter share 0.071 vs 0.078 (measured 2026-10-19); References cut (148 lines) runs to EOF and the last body sentence survives. Residual cleaner loss in every mode: the 'Source:' lines of the charts are dropped from clean (raw intact)"
+
+topics_on_hold:
+  trader: scope undecided — a topical pillar or input to a trading strategy/agent (repository/CLAUDE.md)

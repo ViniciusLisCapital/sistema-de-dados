@@ -29,16 +29,16 @@ A textbook instance of nearly every indicator firing at once:
 - Central bank became technically insolvent (EUR 2bn in assets vs. EUR 50bn owed to foreign banks); the government could only guarantee domestic deposits, triggering a diplomatic dispute with the UK/Netherlands over foreign depositors.
 - Ended in an IMF/Nordic bailout (USD 4.6bn).
 
-Iceland demonstrates the **banking-crisis/currency-crisis feedback loop**: krona depreciation reduced the collateral value of krona-denominated bank assets right when banks most needed liquidity, accelerating both crises simultaneously — the same self-reinforcing dynamic (though via banks rather than the central bank's own reserves) as the balance-of-payments-crisis mechanics in [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]].
+Iceland demonstrates the **banking-crisis/currency-crisis feedback loop**: krona depreciation reduced the collateral value of krona-denominated bank assets right when banks most needed liquidity, accelerating both crises simultaneously — the same self-reinforcing dynamic (though via banks rather than the central bank's own reserves) as the balance-of-payments-crisis mechanics in [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]].
 
 ---
 
 ## Connections
 
-- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built from that reading's nine-indicator checklist and the Iceland 2008 case study
-- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same underlying balance-of-payments-crisis/capital-flight mechanics; Iceland is a real-world case where a fragile banking sector (not central bank reserves defending a formal peg) was the crisis transmission channel
+- [[exchange_rate/synthesis/exchange_rate_understanding_equilibrium (CFA L2, 2025)]] — primary source; this concept page was built from that reading's nine-indicator checklist and the Iceland 2008 case study
+- [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — same underlying balance-of-payments-crisis/capital-flight mechanics; Iceland is a real-world case where a fragile banking sector (not central bank reserves defending a formal peg) was the crisis transmission channel
 - [[currency_regimes]] — the 1992 UK/ERM crisis is a second real-world case study of the same "fixed/quasi-fixed regimes are more crisis-prone" indicator (#4)
 - [[risk_premium]] — a currency crisis is the extreme, discontinuous realization of a risk premium spike, per the "risk-premium overshooting" mechanism documented there
 - [[balance_of_payments_approach]] — large capital inflows and current-account/terms-of-trade deterioration (indicators #2, #7) are the same debt-sustainability logic in reverse (crisis is what happens when the market's patience with the imbalance runs out)
-- [[Cortapasso 2023 - Padrões da Transmissão Cambial para a Taxa de Inflação no Brasil]] — Brazil's 1999 currency crisis (capital flight, reserves falling from USD 74bn to USD 30bn in months, speculative attack forcing the float) is a direct Brazilian instance of these indicators
+- [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — Brazil's 1999 currency crisis (capital flight, reserves falling from USD 74bn to USD 30bn in months, speculative attack forcing the float) is a direct Brazilian instance of these indicators
 - [[kapitalo_fx_mental_models]] — 7.2: Argentine currency-band liberalization and capital-control removal as a real-time regime-exit case, and 7.1 more broadly on populist→orthodox transitions as repricing catalysts

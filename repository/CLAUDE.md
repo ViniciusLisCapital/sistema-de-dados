@@ -22,8 +22,9 @@ repository/
   <área>/raw_pdf/, raw_md/      — acquired PDFs and their untouched pdfplumber extraction
                                   (clean_md/ for these lives in obsidian/<área>/clean_md/)
     exchange_rate/              — 28 PDF, 16 raw_md; 12 PDFs still await extraction
-    monetary_policy/            — raw_pdf/theorical_literature/ (46 PDFs, 1 extracted),
-                                  and central_bank/, the same tree as the vault's
+    monetary_policy/            — literature flat at the top of raw_pdf/ (46 PDFs; the
+                                  theorical_literature/ subfolder was dissolved 2026-10-19), and
+                                  central_bank/, the same tree as the vault's
                                   clean_md/central_bank/: raw_pdf/central_bank/{atas (82),
                                   rpm (110, 1999-06 on)} and raw_md/central_bank/{comunicados (234),
                                   atas (261), rpm (full text, last 3 years), rpm_paginas_projecao
@@ -37,13 +38,20 @@ repository/
                                   syntheses built from them live in obsidian/<área>/mental_models/.
                                   kapitalo (83), verde_asset (200), kinea (60), kinea_insights (64),
                                   goldman_sachs (~80), spx_capital (7)
-  ingestion/                    — land_space/<área>/ (drop zone) + scripts/ (run.py and friends)
+  ingestion/                    — scripts/ + settings.yaml (per-file settings, files needing
+                                  attention, topics on hold) + LOG.md; run by /ingest [topic], which
+                                  sweeps <área>/raw_pdf/ for PDFs without raw_md. See INGESTION.md
   agent_mapping/                — acquisition planning, not agent knowledge:
-    recommended_bibliography/   — <área>_bibliography_candidates.md / _gaps.md (what to source,
-                                  with priority and suggested filename) and <área>_bibliography.md
-                                  (the consolidated list: what exists and whether it was ingested)
-    recommended_data/           — <área>_data_inventory.md
-    data_tracker.xlsx
+    data_tracker.xlsx           — THE list, the only one (since 2026-10-19 the .md lists of
+                                  recommended_bibliography/ and recommended_data/ live here):
+                                  "Qual - <Area>" = literature (candidates, acquired, dropped;
+                                  acquisition priority, suggested file and where to get it in
+                                  Comments), "Quant - <Area>" = data inventory, "Notes" = the
+                                  reasoning per cluster / data section (scope, open gaps,
+                                  acquisition order, why a category matters). Columns A–I and
+                                  Notes are hand-kept; J–P of the Qual tabs and "Literature
+                                  summary" are rewritten by every ingestion (tracker.py). Not in
+                                  git (*.xlsx): Dropbox's version history keeps old versions
 ```
 
 **`_legacy_ai_rewrite/`** folders inside some `raw_md/` hold the old AI-rewritten extractions, kept
@@ -54,24 +62,31 @@ but unused. See `INGESTION.md` for why they were replaced.
 **Exchange rate — complete.** 28 sources processed into
 [`obsidian/exchange_rate/exchange_rate_conceptual_map.md`](../obsidian/exchange_rate/exchange_rate_conceptual_map.md),
 9 clusters. 2 real gaps: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth
-(Eichengreen & Hausmann 1999) — see `exchange_rate_bibliography_gaps.md`.
+(Eichengreen & Hausmann 1999) — rows marked No in the Qual - Exchange Rate tab.
 
-**Monetary policy — mostly acquired, not processed.** 46 PDFs in `raw_pdf/theorical_literature/`
-(40 sources; Galí 2015 is 7 chapter files), 1 extracted, no conceptual map. The list is
-`monetary_policy_bibliography.md` (55 sources, 12 clusters); what is still missing — 15 sources,
-two of them high priority and blocked only by the IMF refusing scripted downloads — and the
-extraction quirks to fix before ingesting (two Caesar-shifted CGG files, two scans, letter spacing)
-are in `monetary_policy_bibliography_candidates.md`. Decide where to process Tambakis & Tarashev
-(2012), which also touches exchange rate.
+**Monetary policy — mostly acquired, being ingested.** 46 PDFs in `raw_pdf/` (40 sources; Galí 2015
+is 7 chapter files), pending the first `/ingest monetary_policy` run; no conceptual map yet. The list
+is the Qual - Monetary Policy tab (12 clusters plus the legal sources and the Copom track); what is
+still missing — two of them high priority and blocked only by the IMF refusing scripted downloads —
+is the rows marked No. The extraction quirks (two Caesar-shifted CGG files, letter spacing) are
+handled by `ingestion/settings.yaml`; the two scans are not. Decide where to file Tambakis &
+Tarashev (2012), which also touches exchange rate.
 
 **Trader — scope undecided.** Decide whether it is a topical pillar or feeds a trading
 strategy/agent directly before processing chapters.
 
 **economic_activity / fiscal_policy / inflation / labor_market — placeholders.** Candidates listed in
-`agent_mapping/recommended_bibliography/`.
+their Qual tabs of `agent_mapping/data_tracker.xlsx`.
 
-**Workflow for adding sources:** drop the PDF in `ingestion/land_space/<área>/`, run
-`ingestion/scripts/run.py` — one PDF at a time, never in parallel (user's preferred workflow).
+**The Quant tabs date from July (2026-07-22, the inventories' last real revision; exchange rate
+and monetary policy to Sep).** Many gaps they list have since been closed — the Copom decision
+table (`pm_copom_reuniao`), the DI curve (`br_di_grade`), the policy rates (`br_interest_rate`
+POLICY, `cmb_policy_rates`), the inflation target (`inflc_meta`), the fiscal tables (`fisc_*`),
+commodity prices (`comm_*`). A refresh against `domain/db/registry.py` is pending.
+
+**Workflow for adding sources:** save the PDF in `<área>/raw_pdf/`, run `/ingest` (or
+`/ingest <área>`). The agent goes one PDF at a time, never in parallel (user's preferred workflow);
+the status lands in `agent_mapping/data_tracker.xlsx`.
 
 ## Pending
 
@@ -80,5 +95,12 @@ strategy/agent directly before processing chapters.
 - **Extend ingestion to the rest of the corpus**: 12 `exchange_rate`, 45 `monetary_policy` PDFs and
   all of `trader/`.
 - **Equation/symbol garbling in `raw_md`** (e.g. Dornbusch 1976): inherent to pdfplumber on scanned
-  PDFs of that era; would need a vision-based extraction if equation fidelity matters.
+  PDFs of that era; would need a vision-based extraction if equation fidelity matters. For
+  born-digital PDFs the `pymupdf` mode maps math symbols to Unicode (2026-10-19).
+- **The 16 exchange-rate files ingested before 2026-10-19** used `x_tolerance=3` and the old
+  References cut; re-run with `/ingest exchange_rate "<file>" --overwrite` if one shows glued words
+  or a missing appendix.
+- **Two file names with typos**, kept so links don't break: `em_food_inflation (goldamn, 2026)`
+  (Goldman) and `fiscal_dominance (itau, 2025)` (Itaú, lowercase). Their synthesis notes carry
+  the same names since 2026-10-19, so the tracker matches them exactly.
 - **Monetary policy — build the conceptual map**, one source at a time.

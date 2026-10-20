@@ -47,6 +47,20 @@
     - i. Separar bruto (repository) e o que o agente lê (obsidian). (feito 2026-09-30)
     - ii. Ingestão grava o clean_md direto no vault. (feito 2026-09-30)
     - iii. Definir o que é `clean_md`: texto bruto sem lixo, ou versão reorganizada sem perda de conteúdo. (pendente, sem decisão)
+    - iv. A ingestão é um processo mecânico do sistema, não tarefa de agente de área. (decidido 2026-10-19)
+        - O PDF vai direto para `repository/<área>/raw_pdf/`, e não sai mais de lá. O usuário põe o PDF lá; o Claude também, quando busca literatura na web. (revisto no mesmo dia: substitui a caixa de entrada única)
+        - `/ingest` (todas as áreas) ou `/ingest <área>` chama o agente de ingestão. Ele varre o `raw_pdf/` atrás do PDF sem `raw_md` (o pendente), extrai com as ferramentas determinísticas, confere o resultado contra as páginas do PDF e grava `repository/<área>/raw_md/` e `obsidian/<área>/clean_md/`.
+        - O controle da literatura é o `repository/agent_mapping/data_tracker.xlsx`, uma aba "Qual" por área: a cada ingestão o sistema atualiza o status de cada fonte (ingerida, pendente, precisa de atenção, em espera) a partir do que está nas pastas.
+        - O agente escolhe como extrair e confere; o texto é sempre das ferramentas, nunca escrito por ele. Arquivo que as ferramentas não recuperam (PDF escaneado) volta para o usuário.
+        - Volume: intenso no começo do sistema; depois, só material marginal.
+    - v. Depois da ingestão, um agente do vault faz a síntese, extrai os conceitos e faz os links. (construído 2026-10-19: `.claude/agents/vault.md`, opus; piloto em 3 papers de política monetária, aguardando revisão do usuário)
+        - `/vault` (todas as áreas) ou `/vault <área> [arquivo ...]`. O pendente é o `clean_md` sem nota de síntese. No máximo 5 por rodada, um de cada vez: lê o `clean_md` inteiro, escreve a síntese, atualiza ou cria os conceitos, roda o `vault.py check` e o `tracker.py`.
+        - A nota de síntese tem o nome do `clean_md`. As 19 notas antigas foram renomeadas no mesmo dia e os links ajustados. Fleming 1962 fica como está, porque não tem `clean_md`.
+        - Uma pasta só de conceitos para todas as áreas: `obsidian/concepts/`. Página existente só recebe patch: a linha na tabela e o link.
+        - Todo número da síntese tem de estar no `clean_md`; o `vault.py check` confere. Texto danificado vai para as limitações, não é reconstruído.
+        - O mapa conceitual é contrato: o agente não o edita, só propõe acréscimos no report.
+        - Fora do agente, a decidir: os documentos do Copom em `clean_md/central_bank/` (precisam de desenho próprio, ver II.III.ix); e as 19 notas antigas, que não passam no check (4 sem as seções do modelo, 12 com número que não está no `clean_md`).
+    - vi. As listas de literatura e de dados vivem só no `repository/agent_mapping/data_tracker.xlsx`, sem .md, salvo o muito necessário (decidido 2026-10-19). A justificativa de cada fonte ou série fica em Comments; a de cada cluster ou seção (escopo, lacunas, ordem de aquisição), na aba Notes. Os .md de `recommended_bibliography/` e `recommended_data/` foram apagados (estão no histórico do git).
 
 ## (II.II) Câmbio
     - i. Mapa conceitual no formato novo. (feito 2026-09-30, aguardando revisão do usuário)
@@ -58,7 +72,7 @@
     - ii. Atas do Copom, todas, no vault, atualizadas junto com o ETL. (feito 2026-09-30, 261 atas, 1998–2026)
     - iii. RPM integral dos últimos 3 anos no vault. (feito 2026-09-30, 12 relatórios, dez/2023–set/2026)
     - iv. RPM integral do histórico. (pendente)
-    - v. Ingerir os 45 PDFs de `raw_pdf/theorical_literature/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07). Lista e o que falta: `repository/agent_mapping/recommended_bibliography/monetary_policy_bibliography.md`.
+    - v. Ingerir os 46 PDFs de `repository/monetary_policy/raw_pdf/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07), pelo `/ingest monetary_policy` (II.I.iv). Lista e o que falta: a aba Qual - Monetary Policy de `repository/agent_mapping/data_tracker.xlsx`.
     - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio.
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir)

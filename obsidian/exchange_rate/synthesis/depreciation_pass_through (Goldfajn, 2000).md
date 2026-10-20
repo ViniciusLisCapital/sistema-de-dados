@@ -1,10 +1,14 @@
+---
+aliases: ["Goldfajn and Werlang 2000 - The Pass-through from Depreciation to Inflation"]
+---
+
 # Goldfajn and Werlang 2000 — The Pass-through from Depreciation to Inflation: A Panel Study
 
 **Type:** Empirical paper (panel econometrics)
 **Tags:** #pass-through #real-exchange-rate #currency-crisis #emerging-markets #brazil #panel-data
 **Source:** Ilan Goldfajn (PUC-Rio / Deputy Governor, Banco Central do Brasil) and Sergio R.C. Werlang, working paper, 2000
 **Language:** English
-**Source file:** [[depreciation_pass_through (Goldfajn, 2000)]]
+**Source file:** [[exchange_rate/clean_md/depreciation_pass_through (Goldfajn, 2000)]]
 
 ---
 
@@ -42,6 +46,6 @@ Pass-through is not a fixed structural parameter — it rises with the horizon m
 ## Connections
 
 - [[exchange_rate_pass_through]] — this is the empirical/econometric backbone for the pass-through concept, complementing Krugman's qualitative textbook treatment with panel-data coefficients by horizon, region, and development status
-- [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — same "pass-through" term and definition, here estimated rather than theorized; the RER-misalignment-dampens-pass-through finding is the empirical analogue of Krugman's pricing-to-market discussion
+- [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] — same "pass-through" term and definition, here estimated rather than theorized; the RER-misalignment-dampens-pass-through finding is the empirical analogue of Krugman's pricing-to-market discussion
 - [[ppp_balassa_samuelson]] — RER misalignment (vs. HP trend) as a determinant of *future* inflation is the mirror image of PPP's usual framing (misalignment predicting future *depreciation*) — here misalignment predicts how much of a *given* depreciation becomes inflation
 - [[currency_crisis_indicators]] — direct empirical companion: this paper is about what happens to inflation *after* a crisis-driven depreciation, complementing that concept's pre-crisis leading indicators

@@ -32,7 +32,10 @@ in international trade and to understand how exchange rates are determined. To
 begin, we first learn how exchange rates allow us to compare the prices of differ-
 ent countries’ goods and services. Next, we describe the international asset mar-
 ket in which currencies are traded and show how equilibrium exchange rates are
+381
+M14_KRUG9719_12_GE_C14.indd 381 16/11/2021 16:16
 
+382 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 determined in that market. A final section underlines our asset market approach
 by showing how today’s exchange rate responds to changes in the expected future
 values of exchange rates.
@@ -77,7 +80,9 @@ dollars will pay more (the ask price) than a seller will receive (the bid price)
 the trade (for example by a bank or broker). The difference—the bid-ask spread—is a measure of transaction
 costs. In Chapter 19, we will refer to “effective” exchange rate indexes, which are averages of exchange rates
 against individual trading partner currencies.
+M14_KRUG9719_12_GE_C14.indd 382 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 383
 TABLE 14-1 Exchange Rate Quotations
 CURRENCIES
 DOLLAR EURO POUND
@@ -144,7 +149,9 @@ European Union Euro 0.8913 -0.0029 – – 1.1227 -0.0001
 ..Three Month 0.8911 -0.0029 – – 1.1226 -0.0001
 ..One Year 0.8903 -0.0029 – – 1.1221 -0.0001
 Rates are derived from WM Reuters Spot Rates and MorningStar (latest rates at time of production). Some values are rounded.
+M14_KRUG9719_12_GE_C14.indd 383 16/11/2021 16:16
 
+384 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 The answer is found by multiplying the price of the sweater in pounds, 50, by the price of
 a pound in terms of dollars—the dollar’s exchange rate against the pound. At an exchange
 rate of $1.50 per pound (expressed in American terms), the dollar price of the sweater is
@@ -191,7 +198,9 @@ Exchange Rates and Relative Prices
 Import and export demands, like the demands for all goods and services, are influenced
 by relative prices, such as the price of sweaters in terms of designer jeans. We have just
 seen how exchange rates allow individuals to compare domestic and foreign money
+M14_KRUG9719_12_GE_C14.indd 384 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 385
 TABLE 14-2 $ £ Exchange Rates and the Relative Price
 of American Designer Jeans and British Sweaters
 >
@@ -241,7 +250,9 @@ of total foreign exchange trading.
 We now describe the major actors in the market and their roles.
 1. Commercial banks. Commercial banks are at the center of the foreign exchange
 market because almost every sizable international transaction involves the debiting
+M14_KRUG9719_12_GE_C14.indd 385 16/11/2021 16:16
 
+386 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 and crediting of accounts at commercial banks in various financial centers. Thus,
 the vast majority of foreign exchange transactions involve the exchange of bank
 deposits denominated in different currencies.
@@ -291,7 +302,9 @@ for this impact is that participants in the foreign exchange market watch centra
 bank actions closely for clues about future macroeconomic policies that may affect
 exchange rates. Government agencies other than central banks may also trade in the
 foreign exchange market, but central banks are the most regular official participants.
+M14_KRUG9719_12_GE_C14.indd 386 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 387
 Characteristics of the Market
 Foreign exchange trading takes place in many financial centers, with the largest volumes
 of trade occurring in such major cities as London (the largest market), New York,
@@ -340,7 +353,9 @@ the Netherlands, Singapore, Hong Kong, and Australia. The April 2019 survey was 
 banks. Revised figures are reported in “Triennial Central Bank Survey: Foreign Exchange Turnover in April
 2019,” Bank for International Settlements, Basel, Switzerland, September 16, 2019. Daily U.S. foreign cur-
 rency trading in 1980 averaged only around $18 billion.
+M14_KRUG9719_12_GE_C14.indd 387 16/11/2021 16:16
 
+388 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 shekels. In contrast, relatively few transactions require direct exchanges of Swiss francs
 for shekels.3
 Because of its pivotal role in so many foreign exchange deals, the U.S. dollar is
@@ -393,7 +408,9 @@ is the book by Eichengreen, Mehl, and Chitu listed in Further Readings.
 5In days past, it would take up to two days to settle even spot foreign exchange transactions. In other words,
 the value date for a spot transaction was actually two days after the deal was struck. Nowadays, most spot
 trades of major currencies settle on the same day.
+M14_KRUG9719_12_GE_C14.indd 388 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 389
 2.2
 2.0
 1.8
@@ -404,6 +421,7 @@ trades of major currencies settle on the same day.
 FIGURE 14-1
 Dollar/Pound Spot and Forward Exchange Rates, 1983–2020
 Spot and forward exchange rates tend to move in a highly correlated fashion.
+Source: Datastream. Rates shown are 90-day forward exchange rates and spot exchange rates, at end of month.
 An example shows why parties may wish to engage in forward exchange transactions.
 Suppose Best Buy knows that in 30 days it must pay yen to a Japanese supplier for a ship-
 ment of radios arriving then. Best Buy can sell each radio for $100 and must pay its supplier
@@ -430,7 +448,9 @@ in this book.
 Exchange rates ($/£)
 Spot rate
 Forward rate
+M14_KRUG9719_12_GE_C14.indd 389 16/11/2021 16:16
 
+390 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Foreign Exchange Swaps
 A foreign exchange swap is a spot sale of a currency combined with a forward repur-
 chase of that currency. For example, suppose the Toyota auto company has just received
@@ -476,7 +496,9 @@ ations that influence the demand for any other asset. Chief among these consider
 is our view of what the deposit will be worth in the future. A foreign currency deposit’s
 6This description refers to a so-called American option, as opposed to a European option that can only be
 exercised on a predetermined date.
+M14_KRUG9719_12_GE_C14.indd 390 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 391
 future value depends in turn on two factors: the interest rate it offers and the expected
 change in the currency’s exchange rate against other currencies.
 Assets and Asset Returns
@@ -523,7 +545,9 @@ of all goods and services also increase by 10 percent. Then in terms of output�
 in real terms—the investment would be worth no more in 2021 than in 2022. With a real
 rate of return of zero, Financial Soothsayers stock would not be a very desirable asset
 (because in the real world assets with positive real rates of return usually are available).
+M14_KRUG9719_12_GE_C14.indd 391 16/11/2021 16:16
 
+392 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Although savers care about expected real rates of return, rates of return expressed
 in terms of a currency can still be used to compare real returns on different assets.
 Even if all dollar prices rise by 10 percent between 2021 and 2022, a rare bottle of
@@ -572,7 +596,9 @@ assets. Savers prefer to hold some liquid assets as a precaution against unexpec
 pressing expenses that might force them to sell less-liquid assets at a loss. They
 will therefore consider an asset’s liquidity as well as its expected return and risk in
 deciding how much of it to hold.
+M14_KRUG9719_12_GE_C14.indd 392 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 393
 Interest Rates
 As in other asset markets, participants in the foreign exchange market base their
 demands for deposits of different currencies on a comparison of these assets’
@@ -623,10 +649,12 @@ that you expect the rate to be $1.165 per euro in a year (perhaps because you ex
 unfavorable developments in the U.S. economy). Suppose also that the dollar interest
 rate is 10 percent per year while the euro interest rate is 5 percent per year. This means
 
+394 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 14-2
 Interest Rates on Dollar and Yen Deposits, 1978–2020
 Since dollar and yen interest rates are not measured in comparable terms, they can move quite differently
 over time.
+Source: Datastream. The figure shows three-month interest rates.
 a deposit of $1.00 pays $1.10 after a year while a deposit of €1 pays €1.05 after a year.
 Which of these deposits offers the higher return?
 You can find the answer in five steps.
@@ -651,10 +679,15 @@ is only 10 percent per year, you expect to do better by holding your wealth in t
 of euro deposits. Despite the fact that the dollar interest rate exceeds the euro interest
 8791 0891 2891 4891 6891 8891 0991 2991 4991 6991 8991 0002 2002 4002 6002 8002 0102 2102 4102 6102 8102 0202
 Percent per year
+19
+14
 Dollar rate
+9
+4
 Yen rate
 –1
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 395
 rate by 5 percent per year, the euro’s expected appreciation against the dollar gives
 euro holders a prospective capital gain that is large enough to make euro deposits the
 higher-yield asset.
@@ -688,12 +721,14 @@ the future exchange rate based on what people know today.)
 Using these symbols, we write the expected rate of return on a euro deposit, mea-
 sured in terms of dollars, as the sum of (1) the euro interest rate and (2) the expected
 rate of dollar depreciation against the euro:
+R + (Ee - E ) E .
 This expected return is what must b>e compa>red> wi>th the interest rate on one-year
 dollar deposits, R , in deciding whether dollar or euro deposits offer the higher expected
 $
 rate of return.7 The expected rate of return difference between dollar and euro deposits
 is therefore equal to R less the previous expression,
 $
+R - [R + (Ee - E ) E ] = R - R - (Ee - E ) E . (14-1)
 When the difference ab > ove is p > osit>ive, > dollar deposits yield th > e higher > ex>pec > ted rate of
 return; when it is negative, euro deposits yield the higher expected rate of return.
 Table 14-3 carries out some illustrative comparisons. In case 1, the interest difference
@@ -701,16 +736,23 @@ in favor of dollar deposits is 4 percent per year (R - R = 0.10 - 0.06 = 0.04), 
 $ :
 7If you compute the expected dollar return on euro deposits using the exact five-step method we described
 before introducing the simple rule, you’ll find that it actually equals
+(1 + R : )(E $ e : E $: ) - 1.
 This exact formula can be rewritten, however, as > > >
+R : + (E $ e : - E $: ) E $: + R : * (E $ e : - E $: ) E $: .
 The expression above is very close t>o the fo>rm>ula> derived from th>e simpl>e r>ule >when, as is usually the case,
+the product R : * (E $ e : - E $: ) E $: is a small number.
 > > > >
+M14_KRUG9719_12_GE_C14.indd 395 16/11/2021 16:16
 
+396 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 TABLE 14-3 Comparing Dollar Rates of Return on Dollar and Euro Deposits
 Expected Rate Rate of Return
 Dollar Euro of Dollar Depreciation Difference between
 Interest Rate Interest Rate against Euro Dollar and Euro Deposits
+Ee - E (Ee - E )
 $: $: $: $:
 R - R -
+Case R $ R : > E $: > $ : > E $: >
 1 0.10 0.06 0.0>0 0.04 >
 2 0.10 0.06 0.04 0.00
 3 0.10 0.06 0.08 -0.04
@@ -739,6 +781,7 @@ against the dollar. But the expected rate of depreciation of the euro against th
 is approximately the expected rate of appreciation of the dollar against the euro, that
 is, the expected rate of depreciation of the dollar against the euro with a minus sign in
 front of it. This means that in terms of euros, the return on a dollar deposit is
+R - (Ee - E ) E .
 The difference between the expression a>bove an>d R>: i>s identical to the right-hand side
 of equation (14-1). Thus, it makes no difference to our comparison whether we measure
 returns in terms of dollars or euros, as long as we measure them both in terms of the
@@ -750,7 +793,9 @@ demand for foreign currency assets depends not only on returns but also on risk 
 liquidity. Even if the expected dollar return on euro deposits is higher than that on dol-
 lar deposits, for example, people may be reluctant to hold euro deposits if the payoff
 to holding them varies erratically.
+M14_KRUG9719_12_GE_C14.indd 396 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 397
 There is no consensus among economists about the importance of risk in the foreign
 exchange market. Even the definition of “foreign exchange risk” is a topic of debate.
 For now, we will avoid these complex questions by assuming that the real returns on all
@@ -798,7 +843,9 @@ both return and risk. Our tentative assumption that risk is unimportant in deter
 foreign currency assets means, in terms of the traditional language, that the speculative motive for holding
 foreign currencies is far more important than the hedging motive. As noted in the text, however, we will
 consider the role of risk more closely later on in this book.
+M14_KRUG9719_12_GE_C14.indd 397 16/11/2021 16:16
 
+398 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 deposits view them all as equally desirable assets, provided their expected rates of return
 are the same.
 Let’s see why the foreign exchange market is in equilibrium only when the interest
@@ -832,6 +879,7 @@ holds.
 To represent interest parity between dollar and euro deposits symbolically, we use
 equation (14-1), which shows the difference between the two assets’ expected rates of
 return measured in dollars. The expected rates of return are equal when
+R = R + (Ee - E ) E . (14-2)
 You probably suspect that when dolla > r deposi > ts >offe > r a higher return than euro
 deposits, the dollar will appreciate against the euro as investors all try to shift their funds
 into dollars. Conversely, the dollar should depreciate against the euro when it is euro
@@ -844,7 +892,9 @@ As a first step in understanding how the foreign exchange market finds its equil
 we examine how changes in today’s exchange rate affect the expected return on a foreign
 currency deposit when interest rates and expectations about the future exchange rate do
 not change. Our analysis will show that, other things equal, depreciation of a country’s
+M14_KRUG9719_12_GE_C14.indd 398 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 399
 currency today lowers the expected domestic currency return on foreign currency deposits.
 Conversely, appreciation of the domestic currency today, all else equal, raises the
 domestic currency return expected of foreign currency deposits.
@@ -892,12 +942,15 @@ Exchange Rate Euro Deposits against Euro Deposits
 1.05 - E 1.05 - E
 $: $:
 R +
+E $: R : E $: > : E $: >
 1.0 > 7 0.05 -0.0>19 0.031 >
 1.05 0.05 0.00 0.05
 1.03 0.05 0.019 0.069
 1.02 0.05 0.029 0.079
 1.00 0.05 0.05 0.10
+M14_KRUG9719_12_GE_C14.indd 399 16/11/2021 16:16
 
+400 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 the dollar’s expected future depreciation against the euro therefore falls, or, alternatively,
 the dollar’s expected future appreciation rises. Since interest rates also are unchanged,
 today’s dollar depreciation thus makes euro deposits less attractive compared with
@@ -920,6 +973,7 @@ Today’s dollar/euro
 The Relation between
 exchange rate, E
 the Current Dollar/Euro $/:
+Exchange Rate
 and the Expected Dollar
 1.07
 Return on Euro Deposits
@@ -939,7 +993,9 @@ Ee – E
 euro deposits,R + $/: $/:
 : E
 $/:
+M14_KRUG9719_12_GE_C14.indd 400 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 401
 measures today’s dollar/euro exchange rate and the horizontal axis measures the
 expected dollar return on euro deposits. For fixed values of the expected future dollar/
 euro exchange rate and the euro interest rate, the relation between today’s dollar/euro
@@ -964,6 +1020,7 @@ schedule shows how the expected return on euro deposits, measured in terms of do
 depends on the current dollar/euro exchange rate. This second schedule is derived in
 the same way as the one shown in Figure 14-3.
 FIGURE 14-4
+Exchange rate,
 Determination of the Equilibrium
 E
 Dollar/Euro Exchange Rate $/:
@@ -977,6 +1034,7 @@ E2 2
 $/:
 E1 1
 $/:
+3
 E3
 $/:
 Expected return
@@ -984,12 +1042,16 @@ on euro deposits
 R Rates of return
 $
 (in dollar terms)
+M14_KRUG9719_12_GE_C14.indd 401 16/11/2021 16:16
 
+402 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 The equilibrium dollar/euro rate is the one indicated by the intersection of the two
 schedules at point 1, E1 . At this exchange rate, the returns on dollar and euro deposits
 $ :
 are equal, so that the interest parity condition (14-2),
 >
+R = R + (Ee - E1 ) E1 ,
+is satisfied. > > > >
 Let’s see why the exchange rate will tend to settle at point 1 in Figure 14-4 if
 it is initially at a point such as 2 or 3. Suppose first that we are at point 2, with
 the exchange rate equal to E2 . The downward-sloping schedule measuring the
@@ -1032,6 +1094,7 @@ is, the dollar tends to depreciate against the euro. When the exchange rate has 
 to E1 , rates of return are equalized across currencies and the market is in equilibrium.
 $ :
 The depreciation of the dollar from E3 to E1 makes euro deposits less attractive
+> $ : $ :
 relative to dollar deposits by reducing the rate at which the dollar is expected to depreci-
 > >
 ate in the future.9
@@ -1046,10 +1109,13 @@ a downward-sloping schedule showing how the euro return on dollar deposits varie
 :/$
 at the end of the chapter asks you to show that this alternative way of looking at equilibrium in the foreign
 exchange market gives the same answers as the method used here in the text.
+M14_KRUG9719_12_GE_C14.indd 402 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 403
 We will see that the exchange rate (which is the relative price of two assets) responds to
 factors that alter the expected rates of return on those two assets.
 The Effect of Changing Interest Rates on the Current
+Exchange Rate
 We often read in the newspaper that the dollar is strong because U.S. interest rates are
 high or that it is falling because U.S. interest rates are falling. Can these statements be
 explained using our analysis of the foreign exchange market?
@@ -1078,6 +1144,7 @@ $ :
 same as before the rise in R , so the expected return on euro deposits now exceeds that
 : >
 FIGURE 14-5
+Exchange rate,
 Effect of a Rise in the Dollar
 E
 Interest Rate $/:
@@ -1092,6 +1159,7 @@ $: $:
 1 19
 E1
 $/:
+2
 E2
 $/:
 Expected
@@ -1100,8 +1168,11 @@ R1 R2
 Rates of return
 $ $
 (in dollar terms)
+M14_KRUG9719_12_GE_C14.indd 403 16/11/2021 16:16
 
+404 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 14-6
+Exchange rate,
 Effect of a Rise in the Euro
 E
 Interest Rate $/:
@@ -1115,8 +1186,10 @@ $: $:
 a rise in the expected future $ :
 exchange rate.)
 >
+2
 E2
 $/:
+1
 E1 Expected
 $/:
 euro return
@@ -1142,11 +1215,14 @@ future exchange rates in Chapter 16. Keep in mind for now that in the real world
 cannot predict how a given interest rate change will alter exchange rates unless we know
 why the interest rate is changing.
 The Effect of Changing Expectations on the Current
+Exchange Rate
 We may also use Figure 14-6 to study the effect on today’s exchange rate of a rise in the
 expected future dollar/euro exchange rate, Ee .
 $ :
 >
+M14_KRUG9719_12_GE_C14.indd 404 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 405
 Given today’s exchange rate, a rise in the expected future price of euros in terms of
 dollars raises the dollar’s expected depreciation rate. For example, if today’s exchange
 rate is $1.00 per euro and the rate expected to prevail in a year is $1.05 per euro, the
@@ -1194,7 +1270,9 @@ still working hard to understand if the carry trade requires additional explanat
 Their work is likely to throw further light on the functioning of foreign exchange
 markets in particular and financial markets in general.
 kcotsrettuhS/ycnegaswenaisA
+M14_KRUG9719_12_GE_C14.indd 405 16/11/2021 16:16
 
+406 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 One important hazard of the carry trade is that investment currencies (the
 high-interest currencies that carry traders target) may experience abrupt crashes.
 Figure 14-7 illustrates this feature of foreign exchange markets, comparing the
@@ -1211,19 +1289,30 @@ ter in Australian dollars. And anyone savvy enough to unwind the strategy in Jun
 rather than taking a sizable loss over three. The carry trade is obviously a very
 risky business.
 Investment return
+200
+180
+160
 Australian dollar
+140
+120
+100
 Japanese yen
+80
+60
 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020
 FIGURE 14-7
 Cumulative Total Investment Return in Australian Dollars Compared with Japanese Yen,
 2006–2020
 The Australian dollar-yen carry trade has been profitable on average but is subject to sudden large
 reversals, as in 2008.
+Source: Quarterly Japanese yen/Australian dollar exchange rate, 90-day Australia bank bill rate, and 90-day Japan certificate
 of deposit rate from FRED database. The chart compares the cumulative value over time of a ¥100 investment in Japanese
 interest-bearing 90-day bonds, rolled over every quarter, with the same yen investment converted into Australian dollars,
 invested in 90-day Australian bonds and rolled over every quarter, and then converted back into yen at the end of the
 investment period.
+M14_KRUG9719_12_GE_C14.indd 406 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 407
 We can gain some insight into this pattern by imagining that investors expect
 a gradual 1 percent annual appreciation of the Australian dollar to occur with
 high probability (say, 90 percent) and a big 40 percent depreciation to occur with
@@ -1267,7 +1356,9 @@ Horizons, Alternative Expectations, and Emerging Markets,” Journal of Internat
 12See Brunnermeier et al., ibid., as well as Craig Burnside, “Carry Trades and Risk,” in Jessica James, Ian
 Marsh, and Lucio Sarno, eds., Handbook of Exchange Rates (Hoboken, NJ: John Wiley & Sons, 2012),
 pp. 283–312.
+M14_KRUG9719_12_GE_C14.indd 407 16/11/2021 16:16
 
+408 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Forward Exchange Rates and Covered Interest Parity
 We have seen that the forward exchange rate moves closely with the spot rate, but it
 has great importance in its own right, both as an indicator of market expectations
@@ -1313,17 +1404,24 @@ does not hold. In this situation, no one would be willing to hold dollar deposit
 one would prefer covered euro deposits. In other words, market pricing would present
 an arbitrage opportunity.
 More formally, we can express the covered return on euro deposits as
+F (1 + R ) - E
 ,
+> E $ : >
 which is approximately equal to >
 F - E
 $ : $ :
 R +
+: > E $ : >
 >
+M14_KRUG9719_12_GE_C14.indd 408 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 409
 when the product R * (F - E ) E is a small number. The covered interest
 parity condition can therefore be written
 > > > >
+R = R + (F - E ) E . (14-3)
 The quantity > > > >
+(F - E ) E
 is called the forward premium on euro>s agains>t d>olla>rs. (It is also called the forward dis-
 count on dollars against euros.) Using this terminology, we can state the covered interest
 parity condition as follows: The interest rate on dollar deposits equals the interest rate
@@ -1365,8 +1463,12 @@ Paper No. 267, Bank for International Settlements, December 2008. Chapter 20 wil
 underlying this last paper. On covered interest parity during the euro crisis (to be discussed in Chapter 21),
 see Victoria Ivashina, David S. Scharfstein, and Jeremy C. Stein, “Dollar Funding and the Lending Behavior
 of Global Banks,” Quarterly Journal of Economics 130 (August 2015), pp. 1241–1281.
+M14_KRUG9719_12_GE_C14.indd 409 16/11/2021 16:16
 
+410 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Basis points
+75
+25
 –25
 –75
 –125
@@ -1391,15 +1493,19 @@ CIP trades. The reasons behind this apparent puzzle are important for understand
 current conditions in financial markets, and we will discuss them further in
 Chapter 20.
 By comparing the uncovered interest parity (UIP) condition,
+R = R + (Ee - E ) E ,
 with the covered interest parity condition,> you wi>ll f>ind >that both conditions can be
 true at the same time only if the one-year forward rate quoted today equals the spot
 exchange rate people expect to materialize a year from today:
+F = Ee . (14-4)
 $ : $ :
 > >
 15See Du, Tepper, and Verdelhan, “Deviations from Covered Interest Rate Parity,” Journal of Finance 73
 (June 2018), pp. 915–957.
 2002 3002 4002 5002 6002 7002 8002 9002 0102 1102 2102 3102 4102 5102 6102 7102 8102 9102 0202
+M14_KRUG9719_12_GE_C14.indd 410 16/11/2021 16:16
 
+CHAPTER 14 ■ Exchange Rates and the Foreign Exchange Market: An Asset Approach 411
 This makes intuitive sense. When two parties agree to trade foreign exchange on a date
 in the future, the exchange rate they agree on is the spot rate they expect to prevail
 on that date. The important difference between covered and uncovered transactions
@@ -1443,7 +1549,9 @@ pants in that market are commercial banks, international corporations, nonbank
 financial institutions, and national central banks. Commercial banks play a pivotal
 role in the market because they facilitate the exchange of interest-bearing bank
 deposits, which make up the bulk of foreign exchange trading. Even though foreign
+M14_KRUG9719_12_GE_C14.indd 411 16/11/2021 16:16
 
+412 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 exchange trading takes place in many financial centers around the world, modern
 communication technology links those centers together into a single market that is
 open 24 hours a day. An important category of foreign exchange trading is forward
@@ -1494,3 +1602,4 @@ parity condition (UIP) that underlies our theory of foreign exchange market equi
 librium unless forward exchange rates equal expected future spot rates. As we will
 discuss in future chapters, this last condition need not always be satisfied, and even
 CIP itself has not held closely in recent years.
+M14_KRUG9719_12_GE_C14.indd 412 16/11/2021 16:16

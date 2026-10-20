@@ -80,26 +80,27 @@ Verde's "ruído vs. sinal" framework (section 1.6 in [[verde_fx_mental_models]])
 
 ## A microfoundation: relative bond supply (Krugman)
 
-Krugman's textbook treatment of imperfect asset substitutability gives `ρ` a specific formal driver: `ρ = ρ(B − A)`, where `B` is the stock of domestic government debt the private market must hold and `A` is the central bank's own domestic asset holdings. More debt for the market to absorb (higher `B − A`) raises the risk premium; central bank purchases of domestic assets (higher `A`, e.g., QE-style operations) lower it. This is a narrower, balance-sheet-specific version of the qualitative "fiscal uncertainty" channel below — it's also the mechanism that makes **sterilized FX intervention** effective: swapping central bank foreign for domestic assets changes `B − A` and thus `ρ`, moving the exchange rate even with the money supply unchanged. See [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]].
+Krugman's textbook treatment of imperfect asset substitutability gives `ρ` a specific formal driver: `ρ = ρ(B − A)`, where `B` is the stock of domestic government debt the private market must hold and `A` is the central bank's own domestic asset holdings. More debt for the market to absorb (higher `B − A`) raises the risk premium; central bank purchases of domestic assets (higher `A`, e.g., QE-style operations) lower it. This is a narrower, balance-sheet-specific version of the qualitative "fiscal uncertainty" channel below — it's also the mechanism that makes **sterilized FX intervention** effective: swapping central bank foreign for domestic assets changes `B − A` and thus `ρ`, moving the exchange rate even with the money supply unchanged. See [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]].
 
 ---
 
 ## Connections
 
 - [[uip]] — risk premium is the extension of UIP: `r = r* + E[Δe] + ρ`; it explains the forward premium puzzle
-- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — formal microfoundation `ρ(B−A)`; sterilized intervention as a risk-premium (not money-supply) channel; Swiss franc 2011–2015 case study
+- [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — formal microfoundation `ρ(B−A)`; sterilized intervention as a risk-premium (not money-supply) channel; Swiss franc 2011–2015 case study
 - [[balance_of_payments_approach]] — the portfolio balance approach is the qualitative version of this same debt-stock-driven risk premium: sustained fiscal deficits require compensation via rates, risk premium, or depreciation
 - [[currency_crisis_indicators]] — a currency crisis is the discontinuous, extreme realization of a risk premium spike
-- [[Cortapasso 2023 - Padrões da Transmissão Cambial para a Taxa de Inflação no Brasil]] — Brazil's 2003–2012 BRL appreciation is described as interest-rate arbitrage enabled by falling country risk premium, the same carry-inflow-driven appreciation mechanism as this page's carry/risk-premium framework
-- [[Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil]] — RELDEBT (relative public debt/GDP) as a formal country-risk-premium proxy in a BEER model; documents the 2002–06 EMBI collapse (2,700bp→300bp) that is the historical mirror image of the fiscal-deterioration case in [[Itaú 2025 - Fiscal Dominance in Brazil]]
-- [[BIS 2026 - Monetary Policy Transmission to Exchange Rates via Carry Trades]] — the carry-to-risk ratio (interest differential ÷ implied vol) is a risk-adjusted carry measure that flags when carry positioning is crowded and fragile to a policy shock
+- [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — Brazil's 2003–2012 BRL appreciation is described as interest-rate arbitrage enabled by falling country risk premium, the same carry-inflow-driven appreciation mechanism as this page's carry/risk-premium framework
+- [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] — RELDEBT (relative public debt/GDP) as a formal country-risk-premium proxy in a BEER model; documents the 2002–06 EMBI collapse (2,700bp→300bp) that is the historical mirror image of the fiscal-deterioration case in [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]]
+- [[monetary_policy/synthesis/monetary_policy_exchange_rates (BIS, 2026)]] — the carry-to-risk ratio (interest differential ÷ implied vol) is a risk-adjusted carry measure that flags when carry positioning is crowded and fragile to a policy shock
 - [[carry_trade]] — the average carry premium is compensation for bearing the crash risk embedded in `ρ`; carry fails precisely when `ρ` spikes
 - [[verde_fx_mental_models]] — sections 1.1–1.11 (fiscal credibility), 1.7 (BCB independence), 1.8 (fiscal dominance), 3.1 (carry overridden by risk premium), 4.8 (Stein's Law)
 - [[kinea_fx_mental_models]] — cluster 1 entirely (fiscal credibility, fiscal dominance, electoral cycle as risk-premium drivers); 2.6 (BRL as a high-beta currency); 4.5 (the US "reacting like an EM")
 - [[kapitalo_fx_mental_models]] — 6.1, 6.3, 6.8 (domestic fiscal/political risk as the BRL's thermometer; extreme technical positioning as a contrarian valuation signal)
-- [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — key omission from both models; blocks BRL GSDEER convergence
-- [[Goldman 2023 - GSDEER A User's Manual]] — EM currencies with high risk premia show slower, noisier GSDEER convergence
+- [[exchange_rate/synthesis/primer_gsdeer_gsfeer (Goldman, 2025)]] — key omission from both models; blocks BRL GSDEER convergence
+- [[exchange_rate/synthesis/gsdeer_manual_guide (Goldman, 2023)]] — EM currencies with high risk premia show slower, noisier GSDEER convergence
 - [[ppp_balassa_samuelson]] — GSDEER undervaluation is structural; risk premium is why it doesn't correct
 - [[overshooting]] — risk-premium overshooting (fiscal shock) vs. monetary overshooting (Dornbusch) are distinct mechanisms with similar price pattern
 - [[fiscal_dominance]] — the extreme manifestation of fiscal risk premium; when fiscal dominance materializes, ρ dominates r and effective carry inverts
-- [[Itaú 2025 - Fiscal Dominance in Brazil]] — formalizes the fiscal deterioration → ↑ρ → BRL depreciation channel (Blanchard 2004); Brazil 2025 empirical assessment
+- [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — formalizes the fiscal deterioration → ↑ρ → BRL depreciation channel (Blanchard 2004); Brazil 2025 empirical assessment
+- [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]] — the risk premium pθ∗ (default probability × foreign risk aversion, Baa spread as proxy) is the dominant, highly significant driver of the real exchange rate in Brazil 1999–2004

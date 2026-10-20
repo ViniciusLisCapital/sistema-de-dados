@@ -19,9 +19,9 @@ Os três saíram para o `repository/agent_mapping/`, a pedido do usuário:
 
 | saiu de `team_materials/` | foi para | o que aconteceu |
 |---|---|---|
-| `bibliography.md` | `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` | movido inteiro |
+| `bibliography.md` | `repository/agent_mapping/recommended_bibliography/exchange_rate_bibliography.md` | movido inteiro; desde 2026-10-19 a lista vive na aba Qual - Exchange Rate de `repository/agent_mapping/data_tracker.xlsx` |
 | `conceptual_map.md` | fundido em `obsidian/exchange_rate/exchange_rate_conceptual_map.md` | **apagado depois de fundir** — saiu daqui como arquivo próprio e, no mesmo dia, foi para dentro do mapa de ~140 conceitos: organizado pelos mesmos 9 clusters, era um segundo mapa conceitual com outro nome, e a convenção é **um por área** |
-| `data_inventory.md` | fundido em `agent_mapping/recommended_data/exchange_rate_data_inventory.md` | **apagado depois de fundir** — era subconjunto estrito do upstream (as mesmas 8 categorias, na mesma ordem, sem as colunas de status), então só o racional *Why it matters* por categoria era novo |
+| `data_inventory.md` | fundido em `agent_mapping/recommended_data/exchange_rate_data_inventory.md` (desde 2026-10-19, a aba Quant - Exchange Rate de `data_tracker.xlsx`) | **apagado depois de fundir** — era subconjunto estrito do upstream (as mesmas 8 categorias, na mesma ordem, sem as colunas de status), então só o racional *Why it matters* por categoria era novo |
 
 O que **ficou**, e por quê: os dois exploradores HTML (interativos, feitos para navegar), os 7 PDFs
 de modelo e de modelos mentais de gestoras, os 2 vídeos, e as duas introduções narrativas — prosa

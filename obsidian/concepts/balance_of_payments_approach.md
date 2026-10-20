@@ -33,12 +33,12 @@ This is the same logic as Krugman's formal `ρ = ρ(B − A)` risk premium (see 
 
 ## Connections
 
-- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built by combining that reading's BOP/debt-sustainability and portfolio-balance channels
+- [[exchange_rate/synthesis/exchange_rate_understanding_equilibrium (CFA L2, 2025)]] — primary source; this concept page was built by combining that reading's BOP/debt-sustainability and portfolio-balance channels
 - [[risk_premium]] — the portfolio balance approach is the qualitative version of Krugman's `ρ(B−A)` risk premium: a larger domestic bond stock (higher B) requires compensation via rates, risk premium, or depreciation
 - [[mundell_fleming_policy_mix]] — this approach explicitly extends Mundell-Fleming's short-run policy effects to the long-run consequence of sustained deficits
-- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same debt-stock-driven risk premium mechanism, formalized via the central bank balance sheet
+- [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — same debt-stock-driven risk premium mechanism, formalized via the central bank balance sheet
 - [[ppp_balassa_samuelson]] — a complementary (not competing) long-run channel: PPP/Balassa-Samuelson explain price-level-driven trend, BOP/portfolio-balance explain debt/flow-driven trend
 - [[fiscal_dominance]] — the extreme case where debt monetization concerns dominate and the portfolio-balance depreciation channel takes over from carry/rate differentials entirely
-- [[Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil]] — Brazil's NFA position improving ~15pp of GDP is estimated to explain ~60% of the 2003–05 BEER appreciation, a direct empirical instance of the NFA channel in this concept
+- [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] — Brazil's NFA position improving ~15pp of GDP is estimated to explain ~60% of the 2003–05 BEER appreciation, a direct empirical instance of the NFA channel in this concept
 - [[kinea_fx_mental_models]] — cluster 3 (current account, twin deficits, terms of trade as the adjustment variable that reconciles Brazil's external financing needs)
 - [[kapitalo_fx_mental_models]] — 2.5: an explicit BOP fair-value model with numerical current-account projections for Brazil, revising the equilibrium exchange rate upward as import growth outpaces potential even while the external position ("solid," low external debt, high reserves) remains healthy

@@ -33,6 +33,7 @@ currencies. Finally, it is advisable to discount the stronger NOK fair value
 because this is driven by the terms of trade component, which is a poor
 forecaster of medium-term FX moves for this cross.
 
+Goldman Sachs Global Markets Analyst
 GSDEER—A User’s Manual
 There have been large swings in our G10 GSDEER fair value estimates over the last
 three years. Big changes in commodity prices and inflation differentials have a direct
@@ -46,6 +47,7 @@ differentials across countries and sectors to accumulate in coming quarters as c
 banks face different trade-offs.
 Exhibit 1: Our GSDEER Fair Value Estimates Have Moved Sharply Higher for NOK and AUD but Weaker for
 EUR and GBP
+Source: Goldman Sachs Global Investment Research
 Take the Long Way Home
 However, moving fair value estimates may not translate into spot dynamics for a while.
 Even in the case of a currency such as Sterling, where fair value models work relatively
@@ -54,12 +56,14 @@ short-run, broad global macro variables and country-specific news will be more
 important for FX and dominate the signal from equilibrium fair value concepts.
 
 Exhibit 2: There Can Occasionally Be Large and Persistent Deviations from Fair Value
+Source: Bloomberg, Goldman Sachs Global Investment Research
 To empirically assess at what horizon the GSDEER becomes most useful, we extend
 our recent forecasting evaluation analysis. Specifically, we assess the forecasting
 performance of GSDEER using an out-of-sample approach. In short, this means that we
 only use data up to a certain date in constructing fair value estimates and
 fair-value-based forecasts for the nominal exchange rate.1
 Exhibit 3: It Takes Roughly Three Years for Fair Value Estimates to Outperform a Random Walk
+Source: Goldman Sachs Global Investment Research
 Exhibit 3 plots the root means square error (a measure of forecasting accuracy) relative
 to a random walk and R-squared (a measure of ‘goodness of fit’) for GSDEER at each
 horizon out to ten years. In line with the discussion above, it is roughly three years
@@ -72,6 +76,7 @@ forecasting performance continues to improve beyond this timeframe, but at a muc
 slower pace.
 Exhibit 4: Forecasting Using GSDEER Meaningfully Outperforms Forwards
 For data availability reasons, our sample evaluation starts in 1999 and we exclude SEK, NOK, and NZD.
+Source: Bloomberg, Goldman Sachs Global Investment Research
 Consistent with this, GSDEER valuation gaps fully close only after roughly five years
 with a nearly linear 20% per annum convergence rate until then (Exhibit 5, blue line).
 Further out, spot tends to hover around fair value before overshooting at the
@@ -82,6 +87,7 @@ the valuation gap (red line) is slightly quicker and there is somewhat less of a
 but the difference is minimal.
 
 Exhibit 5: It Takes Roughly Five Years for Spot to Converge to Fair Value
+Source: Goldman Sachs Global Investment Research
 Digging into the overshoot further, Exhibit 6 plots the convergence coefficients across
 countries in box and whisker format. Reasonably, there is a wider range of convergence
 coefficients across countries at longer horizons, especially relative to the tight
@@ -100,6 +106,7 @@ Coefficient Convergence of Spot to GSDEER Fair Value Coefficient
 -0.5 -0.5
 Years Ahead
 Note: Whiskersshow maximum and minimum.
+Source: Goldman Sachs Global Investment Research
 Reassuringly, these results are broadly consistent with our longstanding “rule of thumb”
 for long-term FX forecasts, which was derived using a slightly different technique.
 Consistent with the academic literature on the topic, we have found that real exchange
@@ -132,7 +139,9 @@ Better
 RMSE
 0.1 SEK
 NOK
+0
 Improvement in RMSE Relative to Random Walk
+Source: Goldman Sachs Global Investment Research
 Exhibit 8 documents the convergence path for each cross individually. Conceptually, fair
 value would be the “firmest anchor” if spot converges quickly with a limited overshoot.
 The results from this exercise are broadly similar to Exhibit 7. On this metric, GBP and
@@ -160,6 +169,7 @@ NOK NOK
 -0.5 -0.5
 Forecasting Quarter Forecasting Quarter
 Note: We plot NOK as 40 quarters in right panel because it never converges fully.
+Source: Goldman Sachs Global Investment Research
 Test an Alternate Route
 There are a number of ways to assess where fair value is the “firmest anchor”. Our
 results in the previous section show where spot tends to converge to fair value (as in
@@ -177,6 +187,7 @@ Cross that scores highly on not diverging
 1.5 1.5
 1.0 1.0
 1975 1980 1985 1990 1995 2000 2005 2010 2015 2020
+Source: Goldman Sachs Global Investment Research
 To assess the extent to which a currency sticks closely to fair value, without necessarily
 
 converging, we construct a probit model for each cross where the probability of further
@@ -197,6 +208,7 @@ CHF SEK NOK
 0 0 0 0
 0 4 8 12 16 20 CHF GBP JPY AUD NZD EUR CAD SEK NOK
 Forecasting Quarter
+Source: Goldman Sachs Global Investment Research
 Put together, our results suggest that there are three groups of currencies. First,
 GSDEER forecasts best for AUD, EUR, CAD, and NZD. However, it is arguably a firmer
 anchor for GBP, JPY, and CHF–these crosses are less likely to have large deviations from
@@ -230,6 +242,7 @@ Spot
 -30 -30
 0.45 -40 0.60 -40
 1990 1995 2000 2005 2010 2015 2020 1990 1995 2000 2005 2010 2015 2020
+Source: Bloomberg, Goldman Sachs Global Investment Research
 Pick the Best Driver
 GSDEER performs differently across countries for two main reasons.2 First, data quality
 is not the same everywhere and we have already highlighted the difference that inflation
@@ -257,6 +270,7 @@ Terms of Trade Productivity Inflation
 -10 -10
 -20 -20
 -20 -20
+Stronger against
 Stronger against -30 Dollar -30
 Dollar
 -40 -40
@@ -273,12 +287,15 @@ Terms of Trade Productivity Inflation Terms of Trade Productivity Inflation
 5 5
 -10 -10 0 0
 -5 -5
+Stronger against
 -20 Dollar -20
 -10 -10
+Stronger against
 -30 -30 Dollar
 -15 -15
 -40 -40 -20 -20
 1990 1995 2000 2005 2010 2015 2020 1990 1995 2000 2005 2010 2015 2020
+Source: Goldman Sachs Global Investment Research
 Put differently, fair value estimates derived in this way may be more useful if we look at
 what is driving the change in fair value and how useful that component typically is for a
 given cross. To test this, we construct component-level GSDEERs where we focus on
@@ -302,6 +319,7 @@ Percent Inflation Percent Percent Terms of Trade Percent
 -100%
 -30 -30-30 -30
 EUR GBP CAD NZD AUD NOK JPY CHF SEK EUR CAD AUD SEK NZD NOK JPY GBP CHF
+Source: Goldman Sachs Global Investment Research
 The results for the Terms of Trade component also appear sensible as this is particularly
 important in commodity currencies, such as CAD and AUD (Exhibit 13, right).
 Interestingly, Terms of Trade performs poorly for NOK (Exhibit 14). At first glance, this
@@ -310,6 +328,7 @@ unique fiscal mechanism (by which the government invests excess revenues
 internationally) blunts the impact of commodity prices on the currency.
 
 Exhibit 14: Although Terms of Trade Underperforms in Norway Because of Its Unique Fiscal Mechanism
+Source: Goldman Sachs Global Investment Research
 Navigate the Next Turns
 We see three key implications of our results.
 First, investors should take seriously the stronger fair value estimate for AUD (0.94)
@@ -337,6 +356,7 @@ Dollar
 -5 -5
 -10 -10
 EUR GBP CHF SEK NOK CAD JPY AUD NZD
+Source: Goldman Sachs Global Investment Research
 Second, weaker fair value estimates for EUR (1.21) and GBP (1.27) suggest that we
 should not expect too much of a valuation-driven boost for these currencies. Indeed,
 GBP is roughly already at our fair value estimate and EUR is only undervalued by 10%
@@ -381,5 +401,6 @@ Forecasts are evaluated on realized
 data after Jan 1995
 1.0 1.01.0 1.0
 1975 1980 1985 1990 1995 2000 2005 2010 2015 2020 1975 1980 1985 1990 1995 2000 2005 2010 2015 2020
+Source: Goldman Sachs Global Investment Research
 3 Both methods still have an advantage over true ‘real time’ data because the input data—productivity,
 inflation, and terms of trade—get revised over time. This is outside the scope of this report.

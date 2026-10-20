@@ -40,15 +40,15 @@ Policy transmits mainly through the trade balance, not capital flows — expansi
 
 ## Why this matters
 
-The same headline policy announcement (e.g., "fiscal stimulus") can be currency-bullish or -bearish depending on the country's capital-account openness — there is no universal sign. This is the reduced-form, capital-mobility-conditioned version of the same logic Krugman's DD-AA model derives from first principles (see [[Krugman 2023 - Output and the Exchange Rate in the Short Run]]): fiscal expansion appreciates the currency there too, but *because* higher money demand pushes up R under UIP, not because of a stylized "capital mobility" parameter.
+The same headline policy announcement (e.g., "fiscal stimulus") can be currency-bullish or -bearish depending on the country's capital-account openness — there is no universal sign. This is the reduced-form, capital-mobility-conditioned version of the same logic Krugman's DD-AA model derives from first principles (see [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]]): fiscal expansion appreciates the currency there too, but *because* higher money demand pushes up R under UIP, not because of a stylized "capital mobility" parameter.
 
 ---
 
 ## Connections
 
-- [[CFA L2 2025 - Currency Exchange Rates Understanding Equilibrium Value]] — primary source; this concept page was built from that reading's capital-mobility-conditioned policy tables
-- [[Krugman 2023 - Output and the Exchange Rate in the Short Run]] — same qualitative fiscal/monetary-policy-to-exchange-rate results (temporary fiscal → appreciation, temporary monetary → depreciation), derived from the DD-AA model rather than a capital-mobility parameter
-- [[Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)]] — original Mundell source on capital mobility and policy effectiveness under fixed vs. floating rates
+- [[exchange_rate/synthesis/exchange_rate_understanding_equilibrium (CFA L2, 2025)]] — primary source; this concept page was built from that reading's capital-mobility-conditioned policy tables
+- [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]] — same qualitative fiscal/monetary-policy-to-exchange-rate results (temporary fiscal → appreciation, temporary monetary → depreciation), derived from the DD-AA model rather than a capital-mobility parameter
+- [[exchange_rate/synthesis/capital_mobility_exchange_rates_regimes (Mundell, 1963)]] — original Mundell source on capital mobility and policy effectiveness under fixed vs. floating rates
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — companion original source
 - [[uip]] — the high-capital-mobility channel is UIP-driven capital flow response to interest differentials
 - [[balance_of_payments_approach]] — Mundell-Fleming is explicitly a short-run model; the portfolio balance approach extends it to the long-run effect of sustained fiscal deficits

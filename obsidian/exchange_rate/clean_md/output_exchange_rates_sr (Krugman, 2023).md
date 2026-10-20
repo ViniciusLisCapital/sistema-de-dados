@@ -31,7 +31,10 @@ balance and the current account, are of great concern to economic policy mak-
 ers. In the last part of this chapter, we use our short-run model to examine how
 macroeconomic policy tools affect output and the current account and how those
 tools can be used to maintain full employment.
+490
+M17_KRUG9719_12_GE_C17.indd 490 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 491
 LEARNING GOALS
 After reading this chapter, you will be able to:
 ■■ Explain the role of the real exchange rate in determining the aggregate
@@ -75,7 +78,9 @@ on disposable income, Yd (that is, national income less taxes, Y - T).1 (C, Y, a
 1A more complete model would allow other factors, such as real wealth, expected future income, and the
 real interest rate, to affect consumption plans. This chapter’s Appendix 1 links the formulation here to the
 microeconomic theory of the consumer, which was the basis of the discussion in the appendix to Chapter 6.
+M17_KRUG9719_12_GE_C17.indd 491 17/11/2021 16:14
 
+492 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 are all measured in terms of domestic output units.) With this assumption, a country’s
 desired consumption level can be written as a function of disposable income:
 C = C(Yd).
@@ -119,12 +124,15 @@ by domestic consumers. To understand how these real exchange rate and disposable
 income effects work, it is helpful to look separately at the demand for a country’s
 exports, EX, and the demand for imports by the country’s residents, IM. As we saw in
 Chapter 13, the current account is related to exports and imports by the identity
+CA = EX - IM,
 when CA, EX, and IM all are measured in terms of domestic output.
 2As footnote 1 observed, we are ignoring a number of factors (such as wealth and interest rates) that affect
 consumption along with disposable income. Since some part of any consumption change goes into imports,
 these omitted determinants of consumption also help to determine the current account. Following the con-
 vention of Chapter 13, we are also ignoring unilateral transfers in analyzing the current account balance.
+M17_KRUG9719_12_GE_C17.indd 492 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 493
 How Real Exchange Rate Changes Affect the Current Account
 You will recall that a representative domestic expenditure basket includes some
 imported products but places a relatively heavier weight on goods and services pro-
@@ -178,7 +186,9 @@ would lead to conclusions very much like those we reach later.
 real exchange rate. Appendix 2 to this chapter describes a precise mathematical condition, called the
 M arshall-Lerner condition, under which the assumption in the text is valid. The appendix also examines
 empirical evidence on the time horizon over which the Marshall-Lerner condition holds.
+M17_KRUG9719_12_GE_C17.indd 493 17/11/2021 16:14
 
+494 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 TABLE 17-1 Factors Determining the Current Account
 Change Effect on Current Account, CA
 Real exchange rate, EP* Pc CAc
@@ -198,9 +208,11 @@ income changes influence the domestic current account.
 The Equation of Aggregate Demand
 We now combine the four components of aggregate demand to get an expression for
 total aggregate demand, denoted D:
+D = C(Y - T) + I + G + CA(EP* P, Y - T),
 where we have written disposable income Yd as output, >Y, less taxes, T. This equation
 shows that aggregate demand for home output can be written as a function of the real
 exchange rate, disposable income, investment demand, and government spending:
+D = D(EP* P, Y - T, I, G).
 We now want to see how aggregate dem>and depends on the real exchange rate and
 domestic GNP given the level of taxes, T, investment demand, I, and government
 purchases, G.5
@@ -219,7 +231,9 @@ expected future exchange rate and a given full-employment output level, the mode
 that investment demand can be expressed as I(E,Y), where a rise in E (depreciation of domestic currency)
 raises investment demand, as does an increase in domestic output Y. Modeling investment in this way within
 the setup of this chapter would not change our predictions in any important way.
+M17_KRUG9719_12_GE_C17.indd 494 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 495
 demand for home output, other things equal; a real appreciation lowers aggregate demand
 for home output.
 Real Income and Aggregate Demand
@@ -254,10 +268,12 @@ income Y - T , invest-
 ment demand (I), and
 1 2 Aggregate demand function,
 government spending (G).
+D(EP*/P, Y – T, I, G)
 If all other factors remain
 unchanged, a rise in output
 (real income), Y, increases
 aggregate demand. Because
+458
 the increase in aggregate
 demand is less than the
 increase in output, the slope
@@ -266,12 +282,15 @@ function is less than 1 (as
 indicated by its position
 within the 45-degree angle).
 Output (real income), Y
+M17_KRUG9719_12_GE_C17.indd 495 17/11/2021 16:14
 
+496 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 How Output Is Determined in the Short Run
 Having discussed the factors that influence the demand for an open economy’s output,
 we now study how output is determined in the short run. We show that the output
 market is in equilibrium when real domestic output, Y, equals the aggregate demand
 for domestic output:
+Y = D(EP* P, Y - T, I, G). (17-1)
 The equality of aggregate supply and dem>and therefore determines the short-run equi-
 librium output level.6
 Our analysis of real output determination applies to the short run because we
@@ -311,7 +330,9 @@ holds, but equation (17-1) holds only if firms that are building up or drawing d
 are doing so willingly.
 7Thus, equation (17-1) also holds in long-run equilibrium, but the equation determines the long-run real
 exchange rate when Y is at its long-run value, as in Chapter 16. (We are holding foreign conditions constant.)
+M17_KRUG9719_12_GE_C17.indd 496 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 497
 FIGURE 17-2
 The Determination Aggregate
 of Output demand, D
@@ -325,6 +346,8 @@ aggregate demand,
 D1, equals aggregate 1 3
 D1
 output, Y1. 2
+458
+Y2 Y1 Y3 Output, Y
 Output Market Equilibrium in the Short Run:
 The DD Schedule
 Now that we understand how output is determined for a given real exchange rate
@@ -346,7 +369,9 @@ fixed values of the domestic price level, P, and the foreign price level, P*. Wi
 price levels at home and abroad, the rise in the nominal exchange rate makes foreign
 goods and services more expensive relative to domestic goods and services. This relative
 price change shifts the aggregate demand schedule upward.
+M17_KRUG9719_12_GE_C17.indd 497 17/11/2021 16:14
 
+498 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 17-3
 Aggregate
 Output Effect demand, D
@@ -356,12 +381,15 @@ with Fixed Output
 Prices Currency Aggregate demand (E2)
 depreciates
 A rise in the exchange
+rate from E1 to E2 (a 2
+Aggregate demand (E1)
 currency depreciation)
 raises aggregate demand
 to Aggregate demand E2
 and output to Y2, all else
 1 2 1
 equal.
+Y1 Y2 Output, Y
 The fall in the relative price of domestic output shifts the aggregate demand
 schedule upward because at each level of domestic output, the demand for domestic
 products is higher. For example, foreign and American consumers of autos alike
@@ -388,25 +416,33 @@ two relationships between E and Y needed to describe the short-run macroeconomic
 behavior of an open economy. We summarize this relationship by the DD schedule,
 which shows all combinations of output and the exchange rate for which the output
 market is in short-run equilibrium (aggregated demand = aggregate output).
+M17_KRUG9719_12_GE_C17.indd 498 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 499
 FIGURE 17-4
 Aggregate
 Deriving the DD
 demand, D
 D = Y
 Schedule
+Aggregate demand (E2)
 The DD schedule (shown
 in the lower panel) slopes
 upward because a rise in
+Aggregate demand (E1)
 the exchange rate from
 E1 to E2, all else equal,
 causes output to rise from
 Y1 to Y2.
+Y1 Y2 Output, Y
 Exchange
 rate, E
 DD
+2
 E2
+1
 E1
+Y1 Y2 Output, Y
 Figure 17-4 shows how to derive the DD schedule, which relates E and Y when
 P and P* are fixed. The upper part of the figure reproduces the result of Figure 17-3.
 (A depreciation of the domestic currency shifts the aggregate demand function upward,
@@ -420,7 +456,9 @@ Factors That Shift the DD Schedule
 A number of factors affect the position of the DD schedule: the levels of govern-
 ment demand, taxes, and investment; the domestic and foreign price levels; varia-
 tions in domestic consumption behavior; and the foreign demand for home output.
+M17_KRUG9719_12_GE_C17.indd 499 17/11/2021 16:14
 
+500 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 To understand the effects of shifts in each of these factors, we must study how the DD
 schedule shifts when it changes. In the following discussions, we assume all other fac-
 tors remain fixed.
@@ -437,15 +475,19 @@ D(E0P*/P, Y – T, I, G2)
 Government Aggregate demand curves
 spending
 rises D(E0P*/P, Y – T, I, G1)
+Y1 Y2 Output, Y
 Exchange
 rate, E DD1 DD2
 1 2
 E0
+Y1 Y2 Output, Y
 FIGURE 17-5
 Government Demand and the Position of the DD Schedule
 A rise in government demand from G1 to G2 raises output at every level of the
 exchange rate. The change therefore shifts DD to the right.
+M17_KRUG9719_12_GE_C17.indd 500 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 501
 An increase in G causes the aggregate demand schedule in the upper part of
 the figure to shift upward. Everything else remaining unchanged, output increases
 from Y1 to Y2. Point 2 in the bottom part shows the higher level of output at which
@@ -496,7 +538,9 @@ shifts to the right. The same reasoning shows that a shift in world demand away
 from domestic products and toward foreign products causes DD to shift to the left.
 You may have noticed that a simple rule allows you to predict the effect on DD of
 any of the disturbances we have discussed: Any disturbance that raises aggregate demand
+M17_KRUG9719_12_GE_C17.indd 501 17/11/2021 16:14
 
+502 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 for domestic output shifts the DD schedule to the right; any disturbance that lowers aggre-
 gate demand for domestic output shifts the DD schedule to the left.
 Asset Market Equilibrium in the Short Run:
@@ -525,10 +569,12 @@ be related when all asset markets simultaneously clear. Because the focus for no
 the domestic economy, the foreign interest rate is taken as given.
 For a given expected future exchange rate, Ee, the interest parity condition describ-
 ing foreign exchange market equilibrium is the analog of equation (14-2),
+R = R* + (Ee - E) E,
 where R is the interest rate on domestic currency de>posits and R* is the interest rate
 on foreign currency deposits. In Chapter 15, we saw that the domestic interest rate sat-
 isfying the interest parity condition must also equate the real domestic money supply,
 Ms P, to aggregate real money demand [see equation (15-4)]:
+> Ms P = L (R, Y).
 You will recall that aggregate real m>oney demand, L(R, Y), rises when the interest
 rate falls because a fall in R makes interest-bearing nonmoney assets less attractive to
 hold. (Conversely, a rise in the interest rate lowers real money demand.) A rise in real
@@ -539,7 +585,9 @@ We now use the diagrammatic tools developed in Chapter 15 to study the changes i
 the exchange rate that must accompany output changes so that asset markets remain
 in equilibrium. Figure 17-6 shows the equilibrium domestic interest rate and exchange
 rate associated with the output level Y1 for a given nominal money supply, Ms; a given
+M17_KRUG9719_12_GE_C17.indd 502 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 503
 domestic price level, P; a given foreign interest rate, R*; and a given value of the expected
 future exchange rate, Ee. In the lower part of the figure, we see that with real output at Y1
 and the real money supply at Ms P, the interest rate R1 clears the home money market
@@ -553,6 +601,7 @@ and R* fixed, the domestic currency must appreciate from E1 to E2 to bring the f
 exchange market back into equilibrium at point 2′. The domestic currency appreciates
 Exchange
 rate,E
+19
 E1
 Foreign E2 29
 exchange
@@ -561,6 +610,7 @@ Domestic-currency
 return on foreign-
 currency deposits
 Domestic interest
+0
 R1 R2 rate,R
 L(R,Y1)
 Money demand curves
@@ -576,7 +626,9 @@ FIGURE 17-6
 Output and the Exchange Rate in Asset Market Equilibrium
 For the asset (foreign exchange and money) markets to remain in equilibrium, a rise in
 output must be accompanied by an appreciation of the currency, all else equal.
+M17_KRUG9719_12_GE_C17.indd 503 17/11/2021 16:14
 
+504 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 by just enough that the increase in the rate at which it is expected to depreciate in the
 future offsets the increased interest rate advantage of home currency deposits. For asset
 markets to remain in equilibrium, a rise in domestic output must be accompanied by an
@@ -610,6 +662,7 @@ The asset market equi-
 librium schedule (AA)
 slopes downward
 because a rise in output
+1
 from Y1 to Y2, all else E1
 equal, causes a rise in
 the home interest rate
@@ -617,7 +670,10 @@ and a domestic currency
 appreciation from E1 2
 to E2. E2
 AA
+Y1 Y2 Output, Y
+M17_KRUG9719_12_GE_C17.indd 504 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 505
 2. A change in P. An increase in P reduces the real money supply and drives the
 interest rate upward. Other things (including Y ) equal, this rise in the interest rate
 causes E to fall. The effect of a rise in P is therefore a downward shift of AA. A
@@ -665,16 +721,21 @@ and output are therefore E1 and Y1.
 To convince yourself that the economy will indeed settle at point 1, imagine the
 economy is instead at a position like point 2 in Figure 17-9. At point 2, which lies above
 AA and DD, both the output and asset markets are out of equilibrium. Because E is
+M17_KRUG9719_12_GE_C17.indd 505 17/11/2021 16:14
 
+506 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+FIGURE 17-8 Exchange
 Short-Run Equilibrium: rate, E
 The Intersection of DD and AA DD
 The short-run equilibrium of the economy
 occurs at point 1, where the output market
 (whose equilibrium points are summarized
 by the DD curve) and the asset market
+1
 (whose equilibrium points are summarized E1
 by the AA curve) simultaneously clear.
 AA
+Y1 Output, Y
 FIGURE 17-9
 Exchange
 How the Economy Reaches
@@ -687,8 +748,10 @@ point 2 to point 3 on AA. The economy
 E3
 then moves to point 1 along AA as output 3
 rises to meet aggregate demand.
+1
 E1
 AA
+Y1 Output, Y
 so high relative to AA, the rate at which E is expected to fall in the future is also high
 relative to the rate that would maintain interest parity. The high expected future appre-
 ciation rate of the domestic currency implies that the expected domestic currency return
@@ -696,7 +759,9 @@ on foreign deposits is below that on domestic deposits, so there is an excess de
 the domestic currency in the foreign exchange market. The high level of E at point 2
 also makes domestic goods cheap for foreign buyers (given the goods’ domestic cur-
 rency prices), causing an excess demand for output at that point.
+M17_KRUG9719_12_GE_C17.indd 506 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 507
 The excess demand for domestic currency leads to an immediate fall in the
 exchange rate from E2 to E3. This appreciation equalizes the expected returns on
 domestic and foreign deposits and places the economy at point 3 on the asset mar-
@@ -744,7 +809,9 @@ to think about the macroeconomic effects of an import tariff.)
 9You can extend the results below to a setting with ongoing inflation by thinking of the exchange rate and
 price level changes we describe as departures from time paths along which E and P trend upward at constant
 rates.
+M17_KRUG9719_12_GE_C17.indd 507 17/11/2021 16:14
 
+508 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Monetary Policy
 The short-run effect of a temporary increase in the domestic money supply is shown
 in Figure 17-10. An increased money supply shifts AA1 upward to AA2 but does not
@@ -770,6 +837,7 @@ government spending, a cut in taxes, or some combination of the two that raises
 aggregate demand. A temporary fiscal expansion (which does not affect the expected
 future exchange rate) therefore shifts the DD schedule to the right but does not
 move AA.
+FIGURE 17-10 Exchange
 Effects of a Temporary rate, E
 Increase in the Money
 DD
@@ -780,10 +848,13 @@ money supply causes a
 currency depreciation and 2
 a rise in output.
 E2
+1
 E1
 AA2
 AA1
+M17_KRUG9719_12_GE_C17.indd 508 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 509
 FIGURE 17-11
 Exchange
 Effects of a Temporary rate, E
@@ -793,9 +864,12 @@ right, a temporary fiscal
 expansion causes a
 DD2
 currency appreciation and
+1
 a rise in output. E1
+2
 E2
 AA
+Y1 Y2 Output, Y
 Figure 17-11 shows how expansionary fiscal policy affects the economy in the short
 run. Initially the economy is at point 1, with an exchange rate E1 and output Y1.
 Suppose the government decides to spend $30 billion to develop a new space shuttle.
@@ -822,7 +896,9 @@ initial equilibrium is at point 1, where output equals its full-employment level
 Yf. Suddenly there is a temporary shift in consumer tastes away from domestic products.
 As we saw earlier in this chapter, such a shift is a decrease in aggregate demand for
 domestic goods, and it causes the curve DD1 to shift leftward, to DD2. At point 2, the
+M17_KRUG9719_12_GE_C17.indd 509 17/11/2021 16:14
 
+510 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 17-12
 Exchange
 Maintaining Full Employment rate, E
@@ -867,7 +943,9 @@ offsets the increase in money demand by giving domestic residents the additional
 money they desire to hold. Temporary fiscal expansion shifts DD1 to DD2 and restores
 full employment at point 3. But the move to point 3 involves an even greater apprecia-
 tion of the currency.
+M17_KRUG9719_12_GE_C17.indd 510 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 511
 FIGURE 17-13
 Exchange
 Policies to Maintain rate, E
@@ -890,6 +968,7 @@ monetary policy restores
 the exchange rate back
 to E1, whereas the fiscal AA2
 policy leads to greater
+appreciation E3 . Y2 Yf Output, Y
 1 2
 Inflation Bias and Other Problems of Policy Formulation
 The apparent ease with which a government can maintain full employment in our
@@ -919,7 +998,9 @@ low by lowering employment, monetary expansion that raises employment may move t
 a more efficient use of its total resources. The government might wish to reach a better resource allocation
 purely on the grounds that such a change potentially benefits everyone in the economy. But the private s ector’s
 expectation of such policies still will generate inflation.
+M17_KRUG9719_12_GE_C17.indd 511 17/11/2021 16:14
 
+512 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 2. In practice, it is sometimes hard to be sure whether a disturbance to the economy
 originates in the output or the asset markets. Yet a government concerned about
 the exchange rate effect of its policy response needs to know the source of the
@@ -967,7 +1048,9 @@ showed how a permanent increase in the money supply affects the long-run exchang
 11You may be wondering whether a permanent change in fiscal policy is always possible. For example, if a
 government starts with a balanced budget, doesn’t a fiscal expansion lead to a deficit and thus require an
 eventual fiscal contraction? Problem 3 at the end of this chapter suggests an answer.
+M17_KRUG9719_12_GE_C17.indd 512 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 513
 FIGURE 17-14
 Exchange
 Short-Run Effects rate, E
@@ -978,8 +1061,10 @@ DD1
 the money supply, which
 shifts AA1 to AA2 and moves
 the economy from point
+2
 1 to point 2, has stronger E2
 effects on the exchange rate
+3
 and output than an equal
 temporary increase, which E1 1
 moves the economy only to
@@ -1012,7 +1097,10 @@ are working overtime, the price level P is rising to keep up with rising product
 Although the DD and AA schedules are drawn for a constant price level P, we have seen
 how increases in P cause the schedules to shift. A rise in P makes domestic goods more
 expensive relative to foreign goods, discouraging exports and encouraging imports.
+M17_KRUG9719_12_GE_C17.indd 513 17/11/2021 16:14
 
+514 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
+FIGURE 17-15 Exchange
 Long-Run Adjustment rate, E
 to a Permanent
 Increase in the Money
@@ -1021,6 +1109,7 @@ DD1
 After a permanent money
 supply increase, a steadily
 increasing price level shifts
+2
 the DD and AA schedules E2
 to the left until a new long-
 E3 3
@@ -1055,7 +1144,9 @@ of the policy, the policy will not have inflationary consequences. Instead, mone
 expansion can move the economy straight to its long-run, full-employment position.
 12While the exchange rate initially overshoots in the case shown in Figure 17-15, overshooting does not have
 to occur in all circumstances. Can you explain why, and does the “undershooting” case seem reasonable?
+M17_KRUG9719_12_GE_C17.indd 514 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 515
 Keep in mind, however, that it is hard in practice to diagnose the origin or persistence
 of a particular shock to the economy.
 A Permanent Fiscal Expansion
@@ -1081,6 +1172,7 @@ ucts by making them more expensive relative to foreign products.
 Figure 17-16 is drawn to show a case in which fiscal expansion, contrary to what
 you might have guessed, has no net effect on output. This case is not, however, a special
 one; in fact, it is inevitable under the assumptions we have made. The argument that
+FIGURE 17-16 Exchange
 Effects of a Permanent rate, E
 Fiscal Expansion
 Because a permanent fiscal
@@ -1092,13 +1184,16 @@ the right. The effect on output
 (point 2) is nil if the economy
 starts in long-run equilibrium. E1 1
 A comparable temporary fiscal
+3
 expansion, in contrast, would
 E2 2
 leave the economy at point 3.
 AA1
 AAAA22
 Yf Output, Y
+M17_KRUG9719_12_GE_C17.indd 515 17/11/2021 16:14
 
+516 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 establishes this point requires five steps; by taking the time to understand them, you
 will solidify your understanding of the ground we have covered so far:
 1. As a first step, convince yourself (perhaps by reviewing Chapter 15) that because
@@ -1149,7 +1244,9 @@ a surplus or a deficit—may have undesirable long-run effects on national welfa
 external imbalances may also generate political pressures for governments to impose
 restrictions on trade. It is therefore important to know how monetary and fiscal policies
 aimed at domestic objectives affect the current account.
+M17_KRUG9719_12_GE_C17.indd 516 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 517
 Figure 17-17 shows how the DD-AA model can be extended to illustrate the effects
 of macroeconomic policies on the current account. In addition to the DD and AA
 curves, the figure contains a new curve, labeled XX, which shows combinations of the
@@ -1185,15 +1282,19 @@ DD
 Along the curve XX, the current account
 is constant at the level CA = X. Monetary XX
 expansion moves the economy to point
+2
 2 and thus raises the current account
 balance. Temporary fiscal expansion 1
 moves the economy to point 3, while E1
 permanent fiscal expansion moves it to
 point 4; in either case, the current account 3
 balance falls.
+4
 AA
 Yf Output, Y
+M17_KRUG9719_12_GE_C17.indd 517 17/11/2021 16:14
 
+518 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Consider next a temporary fiscal expansion. This action shifts DD to the right and
 moves the economy to point 3 in the figure. Because the currency appreciates and
 income rises, there is a deterioration in the current account. A permanent fiscal expan-
@@ -1240,7 +1341,9 @@ The result of these lags in adjustment is the gradually improving current accoun
 shown in Figure 17-18 as the move from point 2 to point 3 and beyond. Eventually, the
 increase in the current account tapers off as the adjustment to the real depreciation is
 completed.
+M17_KRUG9719_12_GE_C17.indd 518 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 519
 FIGURE 17-18
 Current account (in
 The J-Curve
@@ -1253,6 +1356,7 @@ account. real depreci-
 ation on the
 current
 account 1 3
+2
 Time
 Real depreciation End of J-curve
 takes place and
@@ -1280,7 +1384,9 @@ P and P* cannot suddenly jump, movements in the real exchange rate, q = EP* P, c
 spond perfectly in the short run to movements in the nominal rate, E. In reality, however,
 >
 13See the discussion of Table 17A2-1 in Appendix 2 of this chapter.
+M17_KRUG9719_12_GE_C17.indd 519 17/11/2021 16:14
 
+520 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 even the short-run correspondence between nominal and real exchange rate movements,
 while quite close, is less than perfect. To understand fully how nominal exchange rate
 movements affect the current account in the short run, we need to examine more closely
@@ -1332,7 +1438,9 @@ Global Value Chains and Exchange Rate Effects on Export
 and Import Prices
 Much of international trade takes the form of intermediate products, which may be
 imported for incorporation into other goods that the importing country subsequently
+M17_KRUG9719_12_GE_C17.indd 520 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 521
 exports. We saw in Chapter 8 how FDI, outsourcing, and offshoring have led this
 process to accelerate in recent years. The result has been a web of complex global value
 chains, in which different countries produce portions of the value added in a final
@@ -1361,12 +1469,25 @@ price of the euro less the rise in the euro price of the bicycle. The presence o
 linkages thus mutes the effect of currency depreciation on export prices—and thereby
 on net exports—of a given exchange rate change.
 Percent of value
+45
+40
+35
+30
+25
+20
+15
+10
+5
+0
 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016
 US Mexico South Korea Germany EU28
 FIGURE 17-19
 Import Content of Exports for Selected Countries and the European Union, 2005–2016
 Imported value added can account for a significant fraction of the value of exports.
+Source: OECD.
+M17_KRUG9719_12_GE_C17.indd 521 17/11/2021 16:14
 
+522 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 Forward linkages work in the same direction on the import side, though the effect
 is more roundabout. Because a currency depreciation lowers a country’s export prices,
 it will also lower the prices of imports that incorporate those exports as inputs. Even
@@ -1415,7 +1536,9 @@ chains in Maurice Obstfeld, “Harry Johnson’s ‘Case for Flexible Exchange R
 Manchester School 88 (September 2020), pp. 86-113.
 15“The International Price System,” in Inflation Dynamics and Monetary Policy (Kansas City, MO: Federal
 Reserve Bank of Kansas City, 2016).
+M17_KRUG9719_12_GE_C17.indd 522 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 523
 For example, over 90 percent of U.S. imports short run at least, be import rather than export
 and exports are invoiced in dollars. Because these adjustment—just the opposite as in the case of the
 prices are quite sticky when measured in dol- United States.
@@ -1461,7 +1584,9 @@ of England (September 2015).
 17An influential model of exchange rates and the current account is presented by Rudiger Dornbusch and
 Stanley Fischer, “Exchange Rates and the Current Account,” American Economic Review 70 (December
 1980), pp. 960–971.
+M17_KRUG9719_12_GE_C17.indd 523 17/11/2021 16:14
 
+524 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 The Liquidity Trap
 During the lengthy Great Depression of the 1930s, the nominal interest rate hit zero
 in the United States, and the country found itself caught in what economists call a
@@ -1509,16 +1634,20 @@ Seeing signs of economic recovery, the BOJ raised interest rates slightly starti
 interest rates then plummeted toward zero in the United States as well as in Japan.
 Simultaneously, other central banks throughout the world slashed their own rates dra-
 matically. The liquidity trap had gone global.
+M17_KRUG9719_12_GE_C17.indd 524 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 525
 The dilemma a central bank faces when the economy is in a liquidity trap slowdown
 can be seen by considering the interest parity condition when the domestic interest rate
 R = 0,
+R = 0 = R* + (Ee - E) E.
 Assume for the moment that the expected future exch>ange rate, Ee, is fixed. Suppose
 the central bank raises the domestic money supply so as to depreciate the currency
 temporarily (that is, to raise E today but return the exchange rate to the level Ee later).
 The interest parity condition shows that E cannot rise once R = 0 because the interest
 rate would have to become negative. Instead, despite the increase in the money supply,
 the exchange rate remains steady at the level
+E = Ee (1 - R*).
 The currency cannot depreciate further. >
 How is this possible? Our usual argument that a temporary increase in the money
 supply reduces the interest rate (and depreciates the currency) rests on the assumption
@@ -1555,7 +1684,9 @@ in which the economy is “trapped.”
 Our earlier assumption that the expected future exchange rate is fixed is a key ingre-
 dient in this liquidity trap story. Suppose the central bank can credibly promise to raise
 the money supply permanently, so that Ee rises at the same time as the current money
+M17_KRUG9719_12_GE_C17.indd 525 17/11/2021 16:14
 
+526 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 17-20
 Exchange
 A Low-Output Liquidity rate, E
@@ -1573,6 +1704,7 @@ the same. The horizontal
 stretch of AA gives rise to the
 liquidity trap.
 AA
+Y 1 Y f Output, Y
 supply. In that case, the AA schedule will shift up as well as to the right, output will
 therefore expand, and the currency will depreciate. Observers of Japan’s experience
 have argued, however, that BOJ officials were so fearful of depreciation and inflation
@@ -1595,7 +1727,9 @@ Another possible unconventional policy, which we will discuss in Chapter 18, is 
 purchase of foreign exchange.
 18A similar policy was advocated by Paul R. Krugman, “It’s Baaack: Japan’s Slump and the Return of the
 Liquidity Trap,” Brookings Papers on Economic Activity 2 (1998), pp. 137–205.
+M17_KRUG9719_12_GE_C17.indd 526 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 527
 CASE STUDY
 How Big Is the Government Spending Multiplier?
 Many students first encounter the government spending multiplier during their ini-
@@ -1641,7 +1775,9 @@ That is, when the government raises its consumption by $1, the resulting increas
 in output will be at most $1—smaller than the big multipliers of the simplest
 closed-economy models, but still an effect likely to have a substantial positive
 impact on employment.
+M17_KRUG9719_12_GE_C17.indd 527 17/11/2021 16:14
 
+528 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 We saw earlier, however, that in 2009, many industrial economies lowered
 their interest rates dramatically, sometimes entering liquidity traps with zero rates
 of interest. Hall explained that this situation is exceptional because the usual
@@ -1681,7 +1817,9 @@ Multiplier Large?” Journal of Political Economy 119 (February 2011), pp. 78–
 Yuriy Gorodnichenko, “Fiscal Multipliers in Recession and Expansion,” in Alberto Alesina and F rancesco
 Giavazzi, eds., Fiscal Policy after the Financial Crisis (Chicago: University of Chicago Press, 2013),
 pp. 63–102.
+M17_KRUG9719_12_GE_C17.indd 528 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 529
 SUMMARY
 ■■ The aggregate demand for an open economy’s output consists of four components
 corresponding to the four components of GNP: consumption demand, investment
@@ -1732,7 +1870,9 @@ amplified. Limited exchange rate pass-through, along with domestic price increas
 may reduce the effect of a nominal exchange rate change on the real exchange rate.
 The same is true of global value chains, although these production arrangements also
 tend to raise the gross levels of exports and imports.
+M17_KRUG9719_12_GE_C17.indd 529 17/11/2021 16:14
 
+530 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 KEY TERMS
 AA schedule, p. 502 government spending monetary policy, p. 507
 aggregate demand, p. 491 multiplier, p. 527 pass-through, p. 520
@@ -1780,8 +1920,11 @@ bit by lowering some import prices. If P can fall slightly due to a permanent fi
 expansion, is it still true that there are no output effects? (As previously, assume
 an initial long-run equilibrium.)
 12. Suppose interest parity does not hold exactly, but the true relationship is
+R = R* + Ee - E E + r, where r is a term measuring the differential
 1 2>
+M17_KRUG9719_12_GE_C17.indd 530 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 531
 riskiness of domestic versus foreign deposits. Suppose a permanent rise in domes-
 tic government spending, by creating the prospect of future government deficits,
 also raises r, that is, makes domestic currency deposits more risky. Evaluate the
@@ -1794,6 +1937,7 @@ is given by CA = aE - mY. (In macroeconomics textbooks, s is sometimes
 1 2
 referred to as the marginal propensity to save, and m is called the marginal pro-
 pensity to import.) Then the condition of equilibrium in the goods market is
+Y = C + I + G + CA = 1 - s Y + I + G + aE - mY. We will write the
 condition of money market equilibrium as Ms P = bY - dR. On the assump-
 1 2
 tion that the central bank can hold both the interest rate R and the exchange rate
@@ -1835,7 +1979,9 @@ for small exchange rate changes) as: R = R* + Ee - E Ee. Adding this to the
 model of problems 14 and 19, solve for Y as a function of G. What is the govern-
 ment spending multiplier for temporary changes 1 in G (tho 2 s > e that do not alter Ee)?
 How does your answer depend on the parameters a, b, and d, and why?
+M17_KRUG9719_12_GE_C17.indd 531 17/11/2021 16:14
 
+532 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FURTHER READINGS
 Victor Argy and Michael G. Porter. “The Forward Exchange Market and the Effects of D omestic
 and External Disturbances under Alternative Exchange Rate Systems.” International Monetary
@@ -1872,7 +2018,9 @@ policy options for economies facing deflation, including unconventional monetary
 World Bank. Trading for Development in the Age of Global Value Chains: World Development
 Report 2020. Washington, D.C.: World Bank Group, 2019. Comprehensive overview of the
 development of global value chains and their role in trade and economic growth.
+M17_KRUG9719_12_GE_C17.indd 532 17/11/2021 16:14
 
+APPENDIX 1 TO CHAPTER
 Intertemporal Trade and Consumption Demand
 We assume in the chapter that private consumption demand is a function of disposable
 income, C = C(Yd), with the property that when Yd rises, consumption rises by less
@@ -1885,6 +2033,7 @@ P F
 Q and future income is Q , consumers can use borrowing or saving to allocate their
 P F
 consumption over time in any way consistent with the intertemporal budget constraint
+D + D (1 + r) = Q + Q (1 + r),
 P F P F
 where r is the real rate of interest>. >
 Figure 17A1-1 reminds you of how consumption and saving were determined in
@@ -1900,12 +2049,17 @@ A one-period increase budget constraints
 in output raises saving.
 D2 2
 F
+1
 D1 =Q1
 F F 29
 Indifference
 curves
 D1 =Q1 D2 Q2 Present
+P P P P consumption
+533
+M17_KRUG9719_12_GE_C17.indd 533 17/11/2021 16:14
 
+534 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 We have assumed zero saving at point 1 to show most clearly the effect of a rise
 in current output, which we turn to next. Suppose present output rises while future
 output doesn’t, moving the income endowment to point 2′, which lies horizontally to
@@ -1940,7 +2094,9 @@ would lead us too far afield, although this is one of the most fascinating topic
 macroeconomics. We refer readers instead to any good intermediate macroeconomics
 text.20
 20For example, see Abel, Bernanke, and Croushore, op. cit., Chapter 15.
+M17_KRUG9719_12_GE_C17.indd 534 17/11/2021 16:14
 
+APPENDIX 2 TO CHAPTER
 The Marshall-Lerner Condition and Empirical Estimates
 of Trade Elasticities
 The chapter assumed a real depreciation of a country’s currency improves its current
@@ -1965,6 +2121,7 @@ measured in terms of foreign, rather than domestic, output. The notation EX* is 
 because domestic imports from abroad, measured in foreign output, equal the volume
 of foreign exports to the home country. If we identify q with the price of foreign prod-
 ucts in terms of domestic products, then IM and EX* are related by
+IM = q * EX*,
 that is, imports measured in domestic output = (domestic output units foreign output
 unit) * (imports measured in foreign output units).21
 >
@@ -1985,7 +2142,10 @@ covers their prices as well as those of tradables. To avoid the additional compl
 more detailed treatment of the composition of national outputs, we assume in deriving the Marshall-Lerner
 condition that the real exchange rate can be approximately identified with the relative price of imports in
 terms of exports.
+535
+M17_KRUG9719_12_GE_C17.indd 535 17/11/2021 16:14
 
+536 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 As we saw in the chapter, EX is positive (a real depreciation makes home products
 q
 relatively cheaper and stimulates exports) while EX* is negative (a relative cheapening
@@ -2028,8 +2188,10 @@ its right-hand side by (q1 EX1) to express it in terms of trade elasticities. Th
 current account is initially zero (that is, EX1 = q1 * EX*1), this las > t step shows that
 >
 ∆CA ∆q is positive when
+> h + (q2 q1)h*-1 7 0.
 If the change in q is assumed to be> small, so that q2 ≈ q1, the condition for an
 increase in q to improve the current account is
+h + h* 7 1.
 This is the Marshall-Lerner condition, which states that if the current account is ini-
 tially zero, a real currency depreciation causes a current account surplus if the sum
 of the relative price elasticities of export and import demand exceeds 1. (If the cur-
@@ -2040,7 +2202,9 @@ Now that we have the Marshall-Lerner condition, we can ask whether empirical est
 mates of trade equations imply price elasticities consistent with this chapter’s assump-
 tion that a real exchange rate depreciation improves the current account. Table 17A2-1
 presents International Monetary Fund elasticity estimates for trade in manufactured
+M17_KRUG9719_12_GE_C17.indd 536 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 537
 TABLE 17A2-1 Estimated Price Elasticities for International Trade in Manufactured Goods
 h h*
 Country Impact Short-run Long-run Impact Short-run Long-run
@@ -2058,6 +2222,7 @@ Norway 0.40 0.74 1.49 — 0.01 0.71
 Sweden 0.27 0.73 1.59 — — 0.94
 Switzerland 0.28 0.42 0.73 0.25 0.25 0.25
 United States 0.18 0.48 1.67 — 1.06 1.06
+Source: Estimates come from Jacques R. Artus and Malcolm D. Knight, Issues in the Assessment of the Exchange Rates
 of Industrial Countries. Occasional Paper 29. Washington, D.C.: International Monetary Fund, July 1984, table 4. Dashes
 indicate unavailable estimates.
 goods. The table reports export and import price elasticities measured over three suc-
@@ -2077,7 +2242,9 @@ Marshall-Lerner condition in the short run and that virtually all do so in the l
 The evidence is therefore consistent with the assumption made in the chapter: Except
 over short time periods, a real depreciation is likely to improve the current account,
 while a real appreciation is likely to worsen it.
+M17_KRUG9719_12_GE_C17.indd 537 17/11/2021 16:14
 
+APPENDIX 3 TO CHAPTER
 The IS-LM Model and the DD-AA Model
 In this appendix we examine the relationship between the DD-AA model of the chap-
 ter and another model frequently used to answer questions in international macro-
@@ -2105,6 +2272,7 @@ interest rate is weaker than the investment response.
 In the IS-LM model, aggregate demand is therefore written as a function of the real
 exchange rate, disposable income, and the real interest rate,
 D(EP* P, Y - T, R - pe) = C(Y - T, R - pe) + I(R - pe)
++ G + CA(EP* P, Y - T, R - pe),
 >
 where pe is the expected inflation rate and> R - pe therefore is the expected real inter-
 est rate. The model assumes that P P*, G, T, R*, and Ee are all given. (To simplify the
@@ -2118,16 +2286,22 @@ in our notation). The open-economy version of the model, with the expectations a
 >
 for simplicity, is called the Mundell-Fleming model. Columbia University economist Robert Mundell won a
 Nobel Prize in 1999 for his work on the model.
+538
+M17_KRUG9719_12_GE_C17.indd 538 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 539
 To find the IS curve of R and Y combinations such that aggregate demand equals
 output,
+Y = D(EP* P, Y - T, R - pe),
 we must first write this output market e>quilibrium condition so that it does not depend
 on E.
 We solve for E using the interest parity condition, R = R* + (Ee - E) E. If we
 solve this equation for E, the result is
 >
+E = Ee (1 + R - R*).
 Substitution of this expression into >the aggregate demand function shows that we
 can express the condition for output market equilibrium as
+Y = D[EeP* P(1 + R - R*), Y - T, R - pe].
 To get a complete picture of >how output changes affect goods market equilibrium,
 we must remember that the inflation rate in the economy depends positively on the gap
 between actual output, Y, and “full-employment” output, Yf. We therefore write pe as
@@ -2164,16 +2338,20 @@ rises with a rise in output, it rises by less. Notice, however, that a rise in o
 and thus stimulates demand. So it is conceivable that a fall in output, not a rise, eliminates excess demand in
 the output market. We assume that this perverse possibility (which would give an upward-sloping IS curve)
 does not arise.
+M17_KRUG9719_12_GE_C17.indd 539 17/11/2021 16:14
 
+540 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 FIGURE 17A3-1
 Interest
 Short-Run Equilibrium rate, R LM
 in the IS-LM Model
 Equilibrium is at point 1,
 where the output and asset
+1
 markets simultaneously R1
 clear.
 IS
+Y1 Output, Y
 The IS-LM model can be used to analyze the effects of monetary and fiscal policies.
 A temporary increase in the money supply, for example, shifts LM to the right, lower-
 ing the interest rate and expanding output. A permanent increase in the money supply,
@@ -2186,17 +2364,24 @@ domestic currency LM2
 return on
 foreign currency
 deposits
+1
 19 R1 2
 R2
+29
+3
 R3
+39
 IS2
 IS1
+E2 E3 E1 Y1 Y3 Y2 Output, Y
 Exchange rate, E (dincreasing)
 FIGURE 17A3-2
 Effects of Permanent and Temporary Increases in the Money Supply in the IS-LM Model
 A temporary increase in the money supply shifts the LM curve alone to the right, but a permanent increase
 shifts both the IS and LM curves in that direction.
+M17_KRUG9719_12_GE_C17.indd 540 17/11/2021 16:14
 
+CHAPTER 17 ■ Output and the Exchange Rate in the Short Run 541
 shows these shifts. At the new short-run equilibrium following a permanent increase in
 the money supply (point 2), output and the interest rate are higher than at the short-run
 equilibrium (point 3) following an equal temporary increase. The nominal interest rate
@@ -2223,16 +2408,21 @@ Expected
 domestic currency return
 on foreign currency
 deposits LM
+2
+29
 R2
 19 39 1
 R1
 IS2
 IS1
+E1 E2 E3 YYff Y2 Output, Y
 Exchange rate, E (dincreasing)
 FIGURE 17A3-3
 Effects of Permanent and Temporary Fiscal Expansions in the IS-LM Model
 Temporary fiscal expansion has a positive effect on output while permanent fiscal expansion has none.
+M17_KRUG9719_12_GE_C17.indd 541 17/11/2021 16:14
 
+542 PART THREE ■ Exchange Rates and Open-Economy Macroeconomics
 and thus a fall in Ee. The IS curve therefore does not shift out as much as in the case
 of a temporary policy. In fact, it does not shift at all: As in the DD-AA model, a per-
 manent fiscal expansion has no effect on output or the home interest rate. The reason why
@@ -2244,3 +2434,4 @@ exports, a complete “crowding out” effect on aggregate demand.24
 cause a deterioration of the current account (even when there are no J-curve effects) by lowering the real
 interest rate and thus encouraging domestic spending. We leave it to the interested student to derive the
 IS-LM version of the XX curve discussed in Chapter 17.
+M17_KRUG9719_12_GE_C17.indd 542 17/11/2021 16:14

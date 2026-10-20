@@ -1,122 +1,126 @@
 """
-Step 1 — Extract text from PDF (and plain text) files into raw .md.
+Step 1 — Extract text from a PDF (or pass a .txt/.md through) into raw .md.
 
-Wraps pdfplumber for PDFs and passes .txt/.md files through unchanged.
-Output files land in a `raw/` sub-directory relative to the source,
-or in the explicit output_dir you pass.
+No AI and no rewriting: every character comes from the PDF's own text layer.
+What can vary is HOW the text layer is read, because PDFs encode it in ways
+that break a single default. The modes, all measured on the 46 monetary-policy
+PDFs on 2026-10-19 (see repository/ingestion/CLAUDE.md):
 
-Usage (CLI):
-    uv run python repository/ingestion/scripts/extract.py repository/ingestion/sample/teste.pdf
-    uv run python repository/ingestion/scripts/extract.py repository/ingestion/sample/ --output repository/ingestion/sample/raw/
+  plumber       pdfplumber's extract_text, with x_tolerance (default 1.5).
+                The library default (3) glued words together in ~20 of the 46
+                files ("AnaturalinterpretationofthisevidenceisthatFOMC..."); 1.5
+                removed it in all of them and made none worse.
+  plumber_flow  pdfplumber's extract_words(use_text_flow=True), lines rebuilt
+                by vertical position. For PDFs that place every letter as its
+                own word (Orphanides 2001: one-letter share 98% -> 4.5%).
+  pymupdf       PyMuPDF's get_text. Math symbols come out as Unicode (σ, β, π)
+                where pdfplumber prints "(cid:12)", at the cost of equations
+                spread over several lines. For math-heavy sources.
 
-As a function:
-    from extract import process
-    raw_path = process("repository/ingestion/sample/teste.pdf", output_dir="repository/ingestion/sample/raw")
+decode_shift=N reverses a font-encoding Caesar shift (every character code +N),
+page by page and only where it helps: a page is decoded when the decoded text
+has a higher share of common English words. Clarida-Gali-Gertler 1999/2000 need
+N=3 ("wkh" -> "the").
+
+Usage (CLI, for one file):
+    uv run python repository/ingestion/scripts/extract.py <pdf> <dest.md> [--mode pymupdf] [--x-tolerance 1.5] [--decode-shift 3]
 """
 
 import argparse
+import re
 from pathlib import Path
 
 import pdfplumber
 
-
+MODES = ("plumber", "plumber_flow", "pymupdf")
 SUPPORTED = {".pdf", ".txt", ".md"}
 
-
-def _extract_pdf(path: Path) -> str:
-    pages = []
-    with pdfplumber.open(path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
-            if text and text.strip():
-                pages.append(text.strip())
-    return "\n\n".join(pages)
+_COMMON = frozenset({"the", "and", "of", "to", "in", "is", "that", "a", "for", "on", "with", "as", "by", "this", "be"})
 
 
-def _extract_text(path: Path) -> str:
-    return path.read_text(encoding="utf-8", errors="replace")
+def common_word_share(text: str) -> float:
+    toks = re.findall(r"[A-Za-z]+", text)
+    return sum(1 for t in toks if t.lower() in _COMMON) / len(toks) if toks else 0.0
 
 
-def extract(source: Path, dest: Path) -> int:
-    """
-    Convert a single file to .md. Returns character count of extracted text.
-    dest should already have the .md extension.
-    """
+def _shift(text: str, n: int) -> str:
+    # Shift only printable ASCII; a result below the space stays as it was.
+    out = []
+    for c in text:
+        o = ord(c)
+        out.append(chr(o - n) if 33 <= o <= 126 and o - n >= 32 else c)
+    return "".join(out)
+
+
+def _decode_page(text: str, n: int) -> str:
+    dec = _shift(text, n)
+    return dec if common_word_share(dec) > common_word_share(text) else text
+
+
+def _flow_text(page, x_tolerance: float) -> str:
+    words = page.extract_words(x_tolerance=x_tolerance, use_text_flow=True, keep_blank_chars=False)
+    lines, cur, top = [], [], None
+    for w in words:
+        if top is not None and abs(w["top"] - top) > 3:
+            lines.append(" ".join(cur))
+            cur = []
+        cur.append(w["text"])
+        top = w["top"]
+    if cur:
+        lines.append(" ".join(cur))
+    return "\n".join(lines)
+
+
+def pages_text(path: Path, mode: str = "plumber", x_tolerance: float = 1.5, decode_shift: int = 0) -> list[str]:
+    """One string per page, in page order (empty string for a page with no text layer)."""
+    if mode not in MODES:
+        raise ValueError(f"unknown mode {mode!r}; expected one of {MODES}")
+    if mode == "pymupdf":
+        import fitz  # PyMuPDF
+        with fitz.open(path) as doc:
+            pages = [p.get_text() for p in doc]
+    else:
+        with pdfplumber.open(path) as pdf:
+            if mode == "plumber":
+                pages = [p.extract_text(x_tolerance=x_tolerance) or "" for p in pdf.pages]
+            else:
+                pages = [_flow_text(p, x_tolerance) for p in pdf.pages]
+    # PyMuPDF emits a lone "\r" for some math glyphs. Reading the file back (universal newlines)
+    # turns it into "\n" (and "\r\n" into "\n\n", since writing adds its own "\r"), so the text on
+    # disk stopped matching a fresh extraction. Normalize here, to what the files written before
+    # this fix already hold.
+    pages = [t.replace("\r", "\n") for t in pages]
+    if decode_shift:
+        pages = [_decode_page(t, decode_shift) for t in pages]
+    return pages
+
+
+def extract_text(source: Path, mode: str = "plumber", x_tolerance: float = 1.5, decode_shift: int = 0) -> str:
     suffix = source.suffix.lower()
     if suffix == ".pdf":
-        text = _extract_pdf(source)
-    elif suffix in {".txt", ".md"}:
-        text = _extract_text(source)
-    else:
-        raise ValueError(f"Unsupported file type: {suffix}")
+        pages = pages_text(source, mode, x_tolerance, decode_shift)
+        return "\n\n".join(t.strip() for t in pages if t.strip())
+    if suffix in {".txt", ".md"}:
+        return source.read_text(encoding="utf-8", errors="replace")
+    raise ValueError(f"Unsupported file type: {suffix}")
 
+
+def extract(source: Path, dest: Path, mode: str = "plumber", x_tolerance: float = 1.5, decode_shift: int = 0) -> int:
+    """Write the extraction of one file to dest (.md). Returns the character count."""
+    text = extract_text(Path(source), mode, x_tolerance, decode_shift)
+    dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(text, encoding="utf-8")
     return len(text)
 
 
-def process(
-    source: str | Path,
-    output_dir: str | Path | None = None,
-    overwrite: bool = False,
-    recursive: bool = True,
-) -> Path | None:
-    """
-    Extract one file or all supported files in a folder to raw .md.
-
-    Returns the output path for a single-file call, None for folder calls.
-    """
-    source = Path(source)
-
-    if source.is_file():
-        pdfs = [source]
-    elif source.is_dir():
-        pattern = "**/*" if recursive else "*"
-        pdfs = sorted(p for p in source.glob(pattern) if p.suffix.lower() in SUPPORTED and p.is_file())
-        if not pdfs:
-            print(f"No supported files found in: {source}")
-            return None
-    else:
-        raise FileNotFoundError(f"Path not found: {source}")
-
-    result = None
-    total = len(pdfs)
-
-    for i, src in enumerate(pdfs, 1):
-        if output_dir:
-            dest_dir = Path(output_dir)
-        else:
-            dest_dir = src.parent / "raw"
-
-        out = dest_dir / src.with_suffix(".md").name
-        prefix = f"[{i}/{total}]"
-
-        if out.exists() and not overwrite:
-            print(f"{prefix}  skip     {src.name}  (use --overwrite to replace)")
-            result = out
-            continue
-
-        try:
-            chars = extract(src, out)
-            print(f"{prefix}  ok       {src.name}  ({chars:,} chars) -> {out}")
-            result = out
-        except Exception as e:
-            print(f"{prefix}  ERROR    {src.name}: {e}")
-
-    return result if total == 1 else None
-
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Extract text from PDF/text files to raw .md.")
-    parser.add_argument("source", help="File or folder path")
-    parser.add_argument("--output", "-o", default=None, help="Output directory")
-    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing .md files")
-    parser.add_argument("--no-recursive", action="store_true", help="Do not recurse into subfolders")
-    args = parser.parse_args()
-
-    process(
-        source=args.source,
-        output_dir=args.output,
-        overwrite=args.overwrite,
-        recursive=not args.no_recursive,
-    )
+    parser = argparse.ArgumentParser(description="Extract one PDF/text file to raw .md.")
+    parser.add_argument("source")
+    parser.add_argument("dest")
+    parser.add_argument("--mode", default="plumber", choices=MODES)
+    parser.add_argument("--x-tolerance", type=float, default=1.5)
+    parser.add_argument("--decode-shift", type=int, default=0)
+    a = parser.parse_args()
+    n = extract(Path(a.source), Path(a.dest), a.mode, a.x_tolerance, a.decode_shift)
+    print(f"{n:,} chars -> {a.dest}")

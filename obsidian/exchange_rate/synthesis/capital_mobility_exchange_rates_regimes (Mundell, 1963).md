@@ -1,5 +1,5 @@
 ---
-aliases: ["Mundell 1963"]
+aliases: ["Mundell 1963", "Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates (R. A. Mundell)"]
 ---
 
 # Capital Mobility and Stabilization Policy under Fixed and Flexible Exchange Rates
@@ -8,7 +8,7 @@ aliases: ["Mundell 1963"]
 **Source:** The Canadian Journal of Economics and Political Science, Vol. 29, No. 4 (Nov. 1963), pp. 475–485  
 **Type:** Foundational theoretical article  
 **Tags:** #mundell-fleming #exchange-rate #fiscal-policy #monetary-policy #capital-mobility #fixed-vs-floating #foundational  
-**Source file:** [[capital_mobility_exchange_rates_regimes (Mundell, 1963)]]
+**Source file:** [[exchange_rate/clean_md/capital_mobility_exchange_rates_regimes (Mundell, 1963)]]
 
 ---
 
@@ -118,7 +118,7 @@ Mundell shows that sterilization (offsetting reserve changes with open market op
 ## Connections in the bibliography
 
 - [[Fleming 1962 - Domestic Financial Policies Under Fixed and Floating Exchange Rates]] — parallel derivation; Fleming arrived at essentially the same model simultaneously at the IMF. Fleming's version is more explicit on partial vs. perfect capital mobility.
-- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — extends with dynamic expectations and sticky prices; Mundell's model is the static backbone that Dornbusch adds dynamics to.
+- [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — extends with dynamic expectations and sticky prices; Mundell's model is the static backbone that Dornbusch adds dynamics to.
 - [[Obstfeld-Rogoff]] — microfoundation of the Mundell-Fleming model (Redux chapter)
 - [[Sarno-Taylor]] — critiques of M-F, extensions with risk premium and portfolio balance
 - [[verde_fx_mental_models]] — Verde letters apply M-F logic when discussing BCB Selic policy and BRL carry

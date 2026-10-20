@@ -248,7 +248,9 @@ Depreciation
 Average 167.0 121.3 60.6 -11.7 -0.5
 Median 61.5 5.0 53.3 -2.1 1.4
 Number of Observations 14013 14013 15389 14013 14013
+Number of Countries 71 71 72 71 71
 Note: All data in percentage terms.
+Source: INS(IMF), IFS(IMF), GDP various sources
 III. The effect of depreciation on inflation
 In this section, the paper estimates directly the pass-through coefficient in order to
 shed light on the overall effect of the exchange rate depreciation on inflation and observe its
@@ -259,6 +261,7 @@ The following equation, that only include the isolated effects of the independen
 variables over accumulated inflation, was adopted to estimate the pass-through coefficient:
 -8-
 
+(1) P = b + b ê + b RER + b GDP + b P + b OPE + u
 i,[t,t+j] 0 1 i,[t-1,t+j-1] 2 i,t(-1) 3 i, t(-1) 4 i,t(-1) 5 i, t(-1)
 where i indicates the country and t the time. The inflation rate and nominal exchange rate
 depreciation are accumulated during a period of time and the other control variables - real
@@ -327,6 +330,7 @@ pass-through
 0.3 pass-through ignoring Real E deviation
 0.2
 0.1
+0
 months
 Note:Estimated with fixed effects and cross section weights
 The subdivision of the sample by economic development produces the results shown
@@ -345,38 +349,79 @@ OECD. For 6 months, for example, a 10% nominal exchange rate devaluation would l
 1.13% inflation for OECD members and 4.71% for non-members.
 -11-
 
+Table 2: Pass-through Panel Regressions Without Cross Terms
+Dependent Variable: Accumulated inflation rate ( t to t+12)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.023 + 4.449 0.000
+Initial Inflation 2.429 + 1.603 0.109
 Openness 0.035 - 9.074 0.000
+Real E deviation -1.185 - -3.348 0.001
+Accumulated Depreciation 0.732 + 3.458 0.001
+Dependent Variable: Accumulated inflation rate ( t to t+6)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.015 + 7.194 0.000
+Initial Inflation 1.729 + 6.735 0.000
 Openness 0.005 - 3.264 0.001
+Real E deviation -0.447 - -8.611 0.000
+Accumulated Depreciation 0.426 + 7.293 0.000
+Dependent Variable: Accumulated inflation rate ( t to t+3)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.003 + 6.900 0.000
+Initial Inflation 0.812 + 8.798 0.000
 Openness -0.001 - -2.599 0.009
+Real E deviation -0.132 - -15.223 0.000
+Accumulated Depreciation 0.170 + 8.115 0.000
+Dependent Variable: Accumulated inflation rate ( t to t+1)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.001 + 5.004 0.000
+Initial Inflation 0.499 + 15.777 0.000
 Openness 0.000 - -8.084 0.000
+Real E deviation -0.012 - -13.021 0.000
+Accumulated Depreciation 0.012 + 3.275 0.001
+Note: Estimated with Fixed Effects and Cross Section Weights
 -12-
 
 Table 3: Pass-through coefficient by Regions
 Months Total Europe Africa America Oceania Asia
+1 0,012 0,018 0,018 0,013 0,002 0,093
+3 0,169 0,116 0,159 0,199 0,051 0,166
+6 0,426 0,211 0,343 0,539 0,092 0,367
+12 0,732 0,360 0,643 0,692 0,158 0,712
+18 0,701 0,460 0,520 1,240 0,193 0,841
 Figure 3: Pass-through By Region
 1,2
+1
 0,8
 0,6
 0,4
 0,2
+0
 months
 Pass-through Pass-through Europe Pass-through Africa Pass-through America
 Pass-through Oceania Pass-through Asia
 -13-
 
 Table 4: Pass-through Regressions by Type of Country
+12 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
+Developed Emerging Other Developing
 coefficient t-Statistic coefficient t-Statistic coefficient t-Statistic
 GDP deviation 0,033 4,313 -0,002 -0,209 0,032 1,766
 Initial Inflation 4,701 5,221 1,219 2,083 1,489 1,789
 Openness -0,033 -5,287 0,041 9,628 0,068 2,070
 Real E deviation -0,797 -5,855 -1,534 -7,202 -1,045 -2,638
 Accumulated Depreciation 0,605 5,916 0,912 7,562 0,506 2,220
+6 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
+Developed Emerging Other Developing
 coefficient t-Statistic coefficient t-Statistic coefficient t-Statistic
 GDP deviation 0,007 2,217 0,015 3,441 0,018 1,998
 Initial Inflation 3,151 6,513 1,170 3,980 1,112 4,061
 Openness -0,016 -5,290 0,012 10,178 0,016 4,482
 Real E deviation -0,215 -5,222 -0,412 -6,045 -0,470 -5,994
 Accumulated Depreciation 0,245 4,539 0,394 5,152 0,340 4,393
+Note1: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
+Accumulated Depreciation are at time t-1. White-Corrected standard errors.
+Source: List of emerging countries in appendix
+12 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
 OECD non-OECD
 coefficient t-Statistic coefficient t-Statistic
 GDP deviation 0,029 3,326 0,014 3,886
@@ -384,6 +429,7 @@ Initial Inflation 4,336 8,156 2,087 1,298
 Openness -0,031 -6,815 0,088 6,260
 Real E deviation -0,258 -10,975 -1,314 -3,739
 Accumulated Depreciation 0,188 10,512 0,754 3,841
+6 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
 OECD non-OECD
 coefficient t-Statistic coefficient t-Statistic
 GDP deviation 0,016 3,054 0,010 3,498
@@ -391,6 +437,9 @@ Initial Inflation 2,447 9,810 1,553 5,975
 Openness -0,022 -9,234 0,027 12,380
 Real E deviation -0,119 -11,675 -0,530 -9,665
 Accumulated Depreciation 0,113 8,838 0,471 8,088
+Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
+Accumulated Depreciation are at time t-1. White-Corrected standard errors.
+Source: List of oecd countries in appendix
 -14-
 
 We can summarize the results obtained in this section as follows. The pass-through
@@ -427,7 +476,17 @@ coefficient was 55.1484 and the standard deviation was 811.175. Evidently, the m
 
 coefficient through its’ indirect effect. For simplicity, it is assumed that that pass-through
 coefficient is a linear function of the other variables in question:
+P i = a + b ê + b RER + b GDP + b P + b OPE + u
+[t,t+j] 1 i, [t-1,t+j-1] 2 i, t(-1) 3 i, t 4 i, t(-1) 5 i, t
+where b = b + b RER + b GDP + b P + b OPE
+1 6 7 i, t(-1) 8 i, t 9 i, t(-1) 10 i, t
 Or:
+(3) P = a + b ê + b ê * RER + b ê * GDP
+i , [t,t+j] 6 i , [t-1,t+j-1] 7 i ,[t-1,t+j-1] i, t(-1) 8 i , [t-1,t+j-1] i, t
++ b ê * P + b ê * OPE + b RER + b GDP +
+9 i , [t-1,t+j-1] i, t(-1) 10 i, [t-1,t+j-1] i, t 2 i, t(-1) 3 i, t
+b P + b OPE + u
+4 i, t(-1) 5 i, t
 The estimates are presented in Table 5, which has the results for 1, 3, 6, 12 and 18
 months. For the first month after the depreciation, the interactive terms (those that make up
 the pass-through coefficient) are not significant, with the exception of initial inflation that
@@ -476,12 +535,18 @@ pass-through coefficient in Africa and Oceania.
 -17-
 
 Table 5: Pass-through Panel Regressions With Cross Terms
+months 1 3 6 12
+Expected Sign
 coefficient P-value coefficient P-value coefficient P-value coefficient P-value
 GDP*Ê 0.092 0.222 0.465 0.000 1.169 0.000 -0.055 0.616 +
 INF*Ê -0.109 0.000 0.678 0.000 1.357 0.000 0.770 0.000 +
 OPE*Ê 0.007 0.318 0.003 0.739 -0.010 0.313 0.069 0.000 +
 RER*Ê -0.009 0.329 -0.177 0.000 -0.348 0.000 -0.678 0.000 -
+GDP deviation 0.001 0.409 0.002 0.508 0.005 0.355 0.042 0.007 +
+Initial Inflation 0.557 0.000 0.791 0.000 1.334 0.000 2.423 0.000 +
 Openness 0.000 0.305 -0.002 0.186 -0.004 0.129 0.027 0.002 -
+Real E deviation -0.011 0.000 -0.116 0.000 -0.298 0.000 -0.694 0.000 -
+Accumulated Depreciation 0.022 0.000 0.167 0.000 0.294 0.000 0.492 0.000 +
 
 Table 6: Pass-through Regressions Using Cross-Terms - fixed estimation
 Dependent Variable:1 9Accumulated Inflation
@@ -513,6 +578,9 @@ Note1: GDP deviation and Openness are at time t. Initial Inflation, Real E devia
 
 Table 7: Pass-through Regressions by Type of Country
 Including Cross-Terms
+12 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
+Developed Emerging Other Developing
+Expected Sign
 coefficient P-value coefficient P-value coefficient P-value
 GDP*Ê 0.246 0.882 -1.029 0.319 -0.659 0.874 +
 INF*Ê 1.983 0.190 0.740 0.300 0.218 0.431 +
@@ -521,7 +589,11 @@ RER*Ê 1.342 0.333 -1.305 0.128 -0.398 0.224 -
 GDP deviation 0.033 0.003 0.039 0.178 0.061 0.485 +
 Initial Inflation 4.246 0.000 0.831 0.045 1.586 0.000 +
 Openness -0.031 0.000 0.107 0.000 0.090 0.000 -
+Real E deviation -0.398 0.000 -0.744 0.000 -0.724 0.000 -
 Accumulated Depreciation -0.083 0.121 1.144 0.000 0.357 0.036 +
+6 Months - Dependent Variable Accumulated Inflation - Fixed Estimation
+Developed Emerging Other Developing
+Expected Sign
 coefficient P-value coefficient P-value coefficient P-value
 GDP*Ê 0.511 0.672 1.454 0.025 0.977 0.304 +
 INF*Ê 2.752 0.025 1.548 0.000 0.832 0.130 +
@@ -530,7 +602,9 @@ RER*Ê 0.080 0.912 -0.230 0.647 -0.270 0.133 -
 GDP deviation 0.013 0.011 -0.008 0.599 0.008 0.049 +
 Initial Inflation 2.522 0.000 0.810 0.053 0.887 0.000 +
 Openness -0.024 0.000 0.018 0.000 0.014 0.000 -
+Real E deviation -0.128 0.000 -0.282 0.000 -0.365 0.000 -
 Accumulated Depreciation -0.043 0.261 0.385 0.000 0.292 0.000 +
+Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
 Accumulated Depreciation are at time t-1.
 
 V. Forecasts
@@ -617,61 +691,131 @@ it will revert partially to its mean, inducing smaller price adjustment than in 
 will investigate this possibility in the next section.
 
 Table 8a: 12-Month Inflation Prediction in Selected Crises Cases
+Dependent Variable Type of Regression Contribution to Inflation in:
 General Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -5.1 0.0 -1.3 3.8 -0.2 -3.4 0.8
+GDP deviation 0.000 0.0 -0.3 0.1 0.0 -0.1 0.2 0.0
+Initial Inflation 2.430 0.0 -0.4 0.8 0.9 0.4 0.2 2.5
 Openness 0.032 0.0 0.6 2.5 1.9 3.0 6.0 3.5
+Real E deviation -1.184 -23.0 -23.7 -12.3 -16.0 -19.2 -14.7 -12.4
+Accumulated Depreciation 0.732 208.8 36.6 25.1 71.0 34.1 28.0 27.1
+Predicted Inflation 185.2 12.7 14.8 61.6 18.0 16.4 21.5
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
+Dependent Variable Type of Regression Contribution to Inflation in:
 Emerging Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -7.3 0.0 -2.0 2.8 -0.5 -4.2 -0.1
+GDP deviation 0.000 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+Initial Inflation 1.219 1.4 -0.2 0.4 0.4 0.2 0.1 1.3
 Openness 0.039 2.2 0.7 3.0 2.3 3.7 7.4 4.3
+Real E deviation -1.534 -29.8 -30.7 -16.0 -20.7 -24.9 -19.0 -16.0
+Accumulated Depreciation 0.912 260.1 45.6 31.3 88.5 42.4 34.9 33.7
+Predicted Inflation 226.6 15.4 16.7 73.3 21.0 19.2 23.1
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
+Dependent Variable Type of Regression Contribution to Inflation in:
 Developed Indonesia - 97 Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
+GDP deviation 0.033 0.0 -0.5 0.2 0.0 -0.1 0.3 0.0
+Initial Inflation 4.701 5.3 -0.8 1.5 1.7 0.8 0.4 4.9
 Openness -0.033 -1.8 -0.6 -2.5 -1.9 -3.1 -6.2 -3.5
+Real E deviation -0.797 -15.5 -15.9 -8.3 -10.8 -12.9 -9.9 -8.3
+Accumulated Depreciation 0.605 172.5 30.3 20.7 58.7 28.1 23.1 22.4
+Predicted Inflation 160.5 12.4 11.6 47.7 12.9 7.8 15.5
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
 Table 8b: 12-Month Inflation Prediction in Selected European Crises Cases
+Dependent Variable Type of Regression Contribution to Inflation in:
 General England - 92 Sweden - 92 Italy - 92 Spain - 92 Finland - 92
 Constant 1.1 -0.2 2.4 2.7 0.6
+GDP deviation 0.023 0.0 -0.1 0.0 -0.1 -0.1
+Initial Inflation 2.430 0.6 0.5 0.6 1.5 0.6
 Openness 0.032 1.6 1.7 1.2 1.2 1.7
+Real E deviation -1.184 -4.1 -13.3 -7.0 -7.8 -6.5
+Accumulated Depreciation 0.732 6.6 22.3 14.6 12.2 9.1
+Predicted Inflation 5.7 11.0 11.8 9.8 5.4
+Actual Inflation 1.4 4.6 4.9 4.7 1.6
+Dependent Variable Type of Regression Contribution to Inflation in:
 Developed England - 92 Sweden - 92 Italy - 92 Spain - 92 Finland - 92
 Constant 3.8 3.5 4.1 4.4 3.8
+GDP deviation 0.033 0.0 -0.2 0.0 -0.1 -0.1
+Initial Inflation 4.701 1.1 1.0 1.1 2.8 1.2
 Openness -0.033 -1.6 -1.8 -1.2 -1.2 -1.7
+Real E deviation -0.797 -2.8 -8.9 -4.7 -5.2 -4.4
+Accumulated Depreciation 0.605 5.5 18.4 12.0 10.1 7.5
+Predicted Inflation 6.0 12.1 11.4 10.7 6.3
+Actual Inflation 1.4 4.6 4.9 4.7 1.6
 
 Table 8c: 12-Month Inflation Prediction in Selected Crises Cases - Using Cross Terms
+Dependent Variable Type of Regression Contribution to Inflation in:
 General Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -0.4 0.0 0.4 6.6 0.9 -1.9 3.3
 GDP*Ê -0.055 -0.5 0.4 -0.1 0.0 0.1 -0.2 0.0
 INF*Ê 0.770 2.5 -0.1 0.1 0.3 0.1 0.0 0.3
 OPE*Ê 0.069 11.0 0.6 1.8 3.9 3.0 5.0 2.8
 RER*Ê -0.678 -37.5 -6.8 -2.4 -8.9 -5.1 -3.2 -2.6
+GDP deviation 0.042 0.1 -0.6 0.2 0.0 -0.1 0.4 0.1
+Initial Inflation 2.423 2.7 -0.4 0.8 0.9 0.4 0.2 2.5
 Openness 0.027 1.5 0.5 2.0 1.5 2.5 5.0 2.9
+Real E deviation -0.694 -13.5 -13.9 -7.2 -9.4 -11.2 -8.6 -7.2
+Accumulated Depreciation 0.492 140.1 24.6 16.9 47.7 22.9 18.8 18.2
+Predicted Inflation 106.2 4.3 12.4 42.6 13.4 15.5 20.1
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
 Note: Brazil is an estimate for the first 12-Month
+Dependent Variable Type of Regression Contribution to Inflation in:
 Developed Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 GDP*Ê 0.246 2.0 -1.7 0.4 0.0 -0.3 0.9 0.1
 INF*Ê 1.983 6.4 -0.2 0.2 0.7 0.2 0.1 0.8
 OPE*Ê 0.632 101.2 5.6 16.7 35.6 27.4 45.5 25.3
 RER*Ê 1.342 74.3 13.4 4.8 17.6 10.1 6.4 5.2
+GDP deviation 0.033 0.1 -0.5 0.2 0.0 -0.1 0.3 0.0
+Initial Inflation 4.246 4.8 -0.8 1.4 1.5 0.7 0.3 4.5
 Openness -0.031 -1.7 -0.5 -2.4 -1.8 -2.9 -5.8 -3.4
+Real E deviation -0.398 -7.7 -8.0 -4.1 -5.4 -6.5 -4.9 -4.2
+Accumulated Depreciation -0.083 -23.8 -4.2 -2.9 -8.1 -3.9 -3.2 -3.1
+Predicted Inflation 155.5 3.2 14.3 40.1 24.8 39.4 25.3
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
+Dependent Variable Type of Regression Contribution to Inflation in:
 Emerging Indonesia - 97Brazil-99 Korea -97 Mexico-94 Thailand - 97 Malaysia -97 Phillipines-97
 Constant -4.8 0.0 -3.7 3.1 -3.4 -10.5 -0.6
 GDP*Ê -1.029 -8.4 7.3 -1.8 0.0 1.3 -3.6 -0.5
 INF*Ê 0.740 2.4 -0.1 0.1 0.3 0.1 0.0 0.3
 OPE*Ê -0.911 -145.9 -8.1 -24.0 -51.3 -39.5 -65.6 -36.5
 RER*Ê -1.305 -72.2 -13.0 -4.7 -17.1 -9.8 -6.2 -5.0
+GDP deviation 0.039 0.1 -0.6 0.2 0.0 -0.1 0.4 0.1
+Initial Inflation 0.831 0.9 -0.1 0.3 0.3 0.1 0.1 0.9
 Openness 0.107 6.0 1.9 8.3 6.2 10.0 20.2 11.6
+Real E deviation -0.744 -14.5 -14.9 -7.8 -10.0 -12.1 -9.2 -7.8
+Accumulated Depreciation 1.144 326.1 57.2 39.2 110.9 53.2 43.7 42.3
+Predicted Inflation 89.9 29.6 6.1 42.4 -0.2 -30.6 4.7
+Actual Inflation 82.2 8.9 6.6 51.7 10.0 5.8 9.9
 
 Table 8d: 12-Month Inflation Prediction in Selected European Crises Cases - Using Cross Terms
+Dependent Variable Type of Regression Contribution to Inflation in:
 Developed England - 92 Sweden - 92 Italy - 92 Spain - 92 Finland - 92
 Constant 4.2 4.3 5.2 5.3 4.2
 GDP*Ê 0.2464 0.0 -3.6 0.0 -0.1 0.1
 INF*Ê 1.9826 0.0 0.1 0.1 0.2 0.1
 OPE*Ê 0.6317 2.8 10.4 4.5 4.0 4.1
 RER*Ê 1.3419 0.4 4.6 1.6 1.5 0.9
+GDP deviation 0.0327 0.0 -1.6 0.0 -0.1 0.1
+Initial Inflation 4.2463 1.0 0.9 1.0 2.5 1.1
 Openness -0.0310 -1.5 -1.7 -1.1 -1.2 -1.6
+Real E deviation -0.3980 -1.4 -4.5 -2.3 -2.6 -2.2
+Accumulated Depreciation -0.0833 -0.8 -2.5 -1.7 -1.4 -1.0
+Predicted Inflation 4.8 6.5 7.4 8.0 5.7
+Actual Inflation 1.4 4.6 4.9 4.7 1.6
+Dependent Variable Type of Regression Contribution to Inflation in:
 General England - 92 Sweden - 92 Italy - 92 Spain - 92 Finland - 92
 Constant 2.0 1.0 3.4 3.5 1.4
 GDP*Ê -0.055 0.0 0.8 0.0 0.0 0.0
 INF*Ê 0.770 0.0 0.0 0.0 0.1 0.0
 OPE*Ê 0.069 0.3 1.1 0.5 0.4 0.4
 RER*Ê -0.678 -0.2 -2.3 -0.8 -0.7 -0.5
+GDP deviation 0.042 0.0 -2.0 0.0 -0.1 0.1
+Initial Inflation 2.423 0.6 0.5 0.6 1.4 0.6
 Openness 0.027 1.3 1.4 1.0 1.0 1.4
+Real E deviation -0.694 -2.4 -7.8 -4.1 -4.5 -3.8
+Accumulated Depreciation 0.492 4.4 15.0 9.8 8.2 6.1
+Predicted Inflation 6.0 7.9 10.4 9.3 5.8
+Actual Inflation 1.4 4.6 4.9 4.7 1.6
 Table 9: Comparing 12-Month Predictions of Different Models
 Actual Predictions
 Borensztein & Without Cross Terms With Cross Terms
@@ -705,6 +849,10 @@ paper (171 countries). In order to compare the effect of expectations on the res
 the exercise in the previous sections, using only the restricted sample.5 The expectation
 variable is calculated as the expected exchange rate variation for the next 3 or 6 months. The
 estimation is based in the following linear form:
+(4) P , = b + b ê , + b RER , + b GDP , + b P , + b OPE ,
+i [t,t+j] 0 1 i [t-1,t+j-1] 2 i t(-1) 3 i t 4 i t(-1) 5 i t
++ b E(ê) , + u ,
+6 i [t,t+j] i t
 It is important to note the timing that the expectations variable is introduced. Initially,
 the expectations were introduced a one month after the beginning of the nominal exchange
 rate depreciation (at time t). In this way, the expectations are formed with the knowledge of
@@ -754,18 +902,28 @@ Expected Depreciation at t
 Dependent Variable Accumulated Inflation - RE Estimation
 6 months 3 months Expected Sign
 coefficient* P-Value coefficient P-Value coefficient P-Value coefficient P-Value
+GDP deviation 0.022 0.037 0.036 0.007 0.008 0.137 0.013 0.046 +
+Initial Inflation 2.820 0.000 2.516 0.000 1.590 0.000 1.574 0.000 +
 Openness -0.012 0.006 -0.009 0.202 -0.005 0.015 -0.006 0.081 -
+Real E deviation -0.329 0.000 -0.378 0.000 -0.080 0.000 -0.095 0.000 -
+Accumulated Depreciation 0.377 0.000 0.434 0.000 0.153 0.000 0.190 0.000 +
 Depreciation Expectation 0.022 0.000 0.003 0.120 +
 Note: GDP deviation, Depreciation Expectation and Openness are at time t. Initial Inflation, Real E deviation and Accumulated Depreciation
 are at time t-1.
+*Calculated only for 27 countries with avaiable data from the survey.
 Lagged Expected Depreciation (t-1)
 Dependent Variable Accumulated Inflation - RE Estimation
 6 months 3 months Expected Sign
 coefficient* P-Value coefficient P-Value coefficient P-Value coefficient P-Value
+GDP deviation 0.022 0.037 0.039 0.027 0.008 0.137 0.016 0.024 +
+Initial Inflation 2.820 0.000 2.517 0.000 1.590 0.000 1.575 0.000 +
 Openness -0.012 0.006 -0.010 0.261 -0.005 0.015 -0.005 0.095 -
+Real E deviation -0.329 0.000 -0.373 0.000 -0.080 0.000 -0.094 0.000 -
+Accumulated Depreciation 0.377 0.000 0.437 0.000 0.153 0.000 0.190 0.000 +
 Depreciation Expectation 0.015 0.023 0.004 0.053 +
 Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation, Accumulated Depreciation
 and Depreciation Expectation are at time t-1.
+*Calculated only for 27 countries with avaiable data from the survey.
 Table 11:Pass-through Regressions using Expectations with cross terms
 Dependent Variable Accumulated Inflation - Fixed Estimation
 6 months 3 months
@@ -774,7 +932,11 @@ GDP*Ê 1.686 0.000 1.318 0.000 0.737 0.000 0.537 0.000
 INF*Ê 1.642 0.000 2.194 0.000 1.273 0.000 1.534 0.000
 OPE*Ê -0.171 0.000 -0.244 0.000 -0.103 0.000 -0.160 0.000
 RER*Ê -0.359 0.000 -0.434 0.000 -0.026 0.559 -0.089 0.086
+GDP deviation 0.004 0.622 0.460 0.000 0.001 0.782 0.573 0.000
+Initial Inflation 2.140 0.000 -0.638 0.000 1.124 0.000 -0.143 0.000
 Openness 0.000 0.944 -0.201 0.000 -0.001 0.679 -0.004 0.657
+Real E deviation -0.151 0.000 -0.667 0.000 -0.061 0.000 -0.072 0.309
+Accumulated Depreciation 0.270 0.000 0.019 0.060 0.153 0.000 0.006 0.213
 Depreciation Expectation 1.755 0.000 0.911 0.000
 GDP*EXP -0.008 0.091 -0.003 0.220
 INF*EXP -0.116 0.000 -0.055 0.000
@@ -782,6 +944,7 @@ OPE*EXP 0.276 0.000 0.177 0.000
 RER*EXP 0.112 0.000 -0.002 0.786
 Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation, Accumulated Depreciation
 and Depreciation Expectation are at time t-1
+*Calculated only for 27 countries with avaiable data from the survey.
 
 VII. Robustness Checks
 This section performs important sensitivity tests of the results to other specifications
@@ -807,6 +970,7 @@ RER*Ê -0.678 0.000 -
 GDP deviation 0.019 0.089 +
 Initial Inflation 2.406 0.000 +
 Openness 0.023 0.009 -
+Real E deviation -0.696 0.000 -
 Accumulated Depreciation 0.513 0.000 +
 
 The trade openness variable is also sensitive to the specification and not always
@@ -846,17 +1010,45 @@ specifications. The GDP deviation at time t+6 seems to more representative of th
 cycle during the period than the initial GDP deviation at time t. This section has also shown
 that the results are robust to different sampling and to using non-overlapping data.
 
+Table 13: Pass-through Panel Regressions Without Cross Terms
 Less Indebted countries
+Dependent Variable: Accumulated inflation rate ( t to t+12)
+Variable Coefficient Expected Sign t-Statistic P-value
 GDP deviation -0.006 + -0.161 0.872
+Initial Inflation 1.373 + 2.956 0.003
 Openness 0.037 - 2.440 0.015
+Real E deviation -1.004 - -3.604 0.000
+Accumulated Depreciation 0.644 + 3.683 0.000
+Dependent Variable: Accumulated inflation rate ( t to t+6)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.020 + 1.085 0.278
+Initial Inflation 1.125 + 5.963 0.000
 Openness 0.004 - 0.648 0.517
+Real E deviation -0.448 - -4.186 0.000
+Accumulated Depreciation 0.431 + 3.431 0.001
 More Indebted countries
+Dependent Variable: Accumulated inflation rate ( t to t+12)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.024 + 7.441 0.000
+Initial Inflation 1.324 + 1.539 0.124
 Openness 0.065 - 1.806 0.071
+Real E deviation -1.272 - -3.406 0.001
+Accumulated Depreciation 0.641 + 3.115 0.002
+Dependent Variable: Accumulated inflation rate ( t to t+6)
+Variable Coefficient Expected Sign t-Statistic P-value
+GDP deviation 0.016 + 5.267 0.000
+Initial Inflation 0.970 + 2.269 0.023
 Openness 0.006 - 1.423 0.155
+Real E deviation -0.591 - -6.874 0.000
+Accumulated Depreciation 0.431 + 5.302 0.000
+Note: GDP deviation and Openness are at time t. Initial Inflation, Real E deviation and
+Accumulated Depreciation are at time t-1. White-Corrected standard errors.
+Source: List of indebted countries in appendix
 
 Table 14: Pass-through Panel Regressions With Cross Terms
 Without Overlapping
 months 6 12
+Expected Sign
 coefficient P-value coefficient P-value
 GDP*Ê 2.149 0.000 3.128 0.000 +
 INF*Ê 1.000 0.000 1.411 0.000 +
@@ -865,13 +1057,26 @@ RER*Ê -0.457 0.000 -4.568 0.000 -
 GDP deviation 0.022 0.145 0.043 0.813 +
 Initial Inflation 1.162 0.000 -0.974 0.054 +
 Openness -0.014 0.116 0.012 0.814 -
+Real E deviation -0.392 0.000 -1.026 0.000 -
 Accumulated Depreciation 0.376 0.000 1.846 0.000 +
+Note: Estimated with Fixed Effects and Cross Section Weights
+Table 15: Pass-through Panel Regressions Without Cross Terms
 Random Sample 1
+Dependent Variable: Accumulated inflation rate ( t to t+12)
 Variable CoefficientExpected Signt-Statistic P-value
+GDP deviation 0.023 + 4.174 0.000
+Initial Inflation 2.988 + 2.242 0.025
 Openness 0.067 - 12.212 0.000
+Real E deviation -0.927 - -2.529 0.012
+Accumulated Depreciation 0.581 + 2.646 0.008
 Random Sample 2
+Dependent Variable: Accumulated inflation rate ( t to t+12)
 Variable CoefficientExpected Signt-Statistic P-value
+GDP deviation 0.020 + 1.054 0.292
+Initial Inflation 2.187 + 1.238 0.216
 Openness 0.039 - 1.834 0.067
+Real E deviation -1.364 - -2.111 0.035
+Accumulated Depreciation 0.812 + 1.997 0.046
 
 VIII. Conclusions
 The paper reached a few results that are worth summarizing. First, with respect to the
@@ -949,6 +1154,7 @@ Terra, M.C. “Openness and Inflation: a comment,” Quarterly Journal of Econom
 1998.
 Fisher, S, Dorbusch and Samuelson, P.A , "Comparative Advantage, Trade and Payments in a
 Ricardian Model with a Continuum of Goods" American Economic Review, vol 67, No 5.
+1977
 
 X. Appendix
 This model describes the effect of openness and other variables on the passthrough
@@ -957,6 +1163,7 @@ Fischer and Samuelson (1977), with a uniform transport cost proportional to each
 international price. Each good has an international price that is distributed uniformly around
 an average international price:
 ~
+P* = P . i
 i
 ~
 where i ~ U(0,1) and
@@ -969,19 +1176,28 @@ i i
 E(P*- C )
 i i
 Q
+Pd = A - Q
 i
+ì E(P* - C ) if Q £ E(P* - C )
+Ps = í Q if E(P* - C ) < Q < E(P* +C )
 ï
+î E(P* +C ) if Q ³ E(P* +C )
 i i i i
 
 The equilibrium price is:
 ì A
+ï E(P* - C ) if £ E(P* - C )
 ï
 ï A A
+P = í if E(P* - C ) < < E(P* +C )
 ï A
+E(P* +C ) if ³ E(P* +C )
 Therefore:
 ì
 ~ A ~
+ï E(1- q) Pi if £ i
 ï 2EP(1-q)
+P = í if < i <
 i ï 2 2EP(1-q) 2EP(1+q)
 ï ~ A ~
 E(1+q)Pi if ³ i
@@ -990,26 +1206,42 @@ E(1+q)Pi if ³ i
 The domestic price level is given by:
 A A
 [ ]
+E P ~ = 1 ò P ~ di = 2EP( ò 1+q) E(1+q) Pi di + 2EP( ò 1-q) A di + 1 ò E(1-q)Pi di
 2EP(1+q) 2EP(1-q)
 where we assumed that:
 A
 £ 1
 2EP(1- q)
 A
+or E ³ E where E =
 2P(1-q)
 
 So that:
 A
+æ i2 ö ù 2EP(1+q) A é A A ù æ i2 ö ù 1
+ç ç E(1+q) P ÷ ÷ú + ê - ú + ç ç E(1-q) P ÷ ÷ú =
+è 2ø û 2 ë 2EP(1-q) 2EP(1+q)û è 2ø û
 A
+0
 2EP(1- q)
+E(1+q) P æ A ö 2 A2 æ (1+q) - (1-q)ö E(1-q) P é æ A ö 2ù
+= . ç ç ÷ ÷ + . ç ÷ + . ê 1-ç ç ÷ ÷ú
+2 è 2EP(1+q)ø 4EP è 1-q2 ø 2 ê ë è 2EP(1-q)ø ú û
 and:
+1 A2 A2 2q E(1-q)P 1 A2
+. + . + - . =
 8 EP(1+q) 4EP 1-q2 2 8 EP(1-q)
+1 é A2 ù é 1 1 ù E(1-q)P A2 é 2q ù
+= . ê ú . ê - ú + + . ê . ú =
 8 ë EPû ë 1+q 1-q û 2 4EP ë 1-q2û
+E(1-q)P A2 æ q ö
+= + . ç ÷
 2 4EP è 1-q2 ø
 The domestic price level is a function of the nominal exchange rate as shown by the equation
 immediately above. The equation has a minimum at:
 A 1
 E = g
+2
 M P
 q
 where g =
@@ -1022,6 +1254,7 @@ coefficient is positive:
 
 A2
 1- .g
+dP . E = P2E2 > 0
 dE P A2
 1+ .g
 P2

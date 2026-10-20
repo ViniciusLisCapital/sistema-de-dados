@@ -48,7 +48,11 @@ _TAIL_TRIGGERS = re.compile(
 # Problems -> Solutions, so a to-EOF cut here would wrongly swallow the
 # Practice Problems/Solutions that follow. See _HEADING_LIKE_RE below.
 _BLOCK_TRIGGERS = re.compile(
-    r"""^(
+    r"""^
+    # an optional section number: "6 References" (Holston et al. 2017, Favero & Giavazzi
+    # 2004 under plumber), "8 - References" (Muinhos & Nakane 2006), "8. References"
+    (\d{1,2}(\.\d{1,2})*\s*[-.–]?\s*)?
+    (
         Bibliography |
         References?
     )$""",
@@ -60,6 +64,77 @@ _BLOCK_TRIGGERS = re.compile(
 # short) since section headings in these raw extractions are reliably
 # all-caps standalone lines (SUMMARY, PRACTICE PROBLEMS, SOLUTIONS, APPENDIX).
 _HEADING_LIKE_RE = re.compile(r"^[A-Z][A-Z0-9 ,.&/'\-]{2,60}$")
+
+# ...but not always all-caps. A Brookings paper follows its References with
+# "Comments and Discussion" in mixed case, and without this list the cut ran to
+# EOF and deleted the discussants' comments — ~1,150 lines of Campbell et al.
+# (2012), a third of the document, with nothing reporting it (measured
+# 2026-10-19). Mixed-case section starters that end a References block:
+_NEXT_SECTION_RE = re.compile(
+    r"""^(
+        # (\s|:|$), not \b: a wrapped citation line 'Appendix," IMF Country Report ...'
+        # (Belaisch 2003) is not a heading.
+        (Online\s+|Data\s+|Technical\s+|Mathematical\s+)?Appendi(x|ces)(\s|:|$) |
+        Comments?\s+and\s+Discussion\b |
+        Comment\s+By\b |
+        General\s+Discussion\b |
+        Tables?\s*$ |
+        Figures?\s*$ |
+        (Tables?|Figures?)\s+(and|&)\s+(Tables?|Figures?)\s*$ |
+        # Added 2026-10-19 from three monetary-policy papers whose content follows the list:
+        # Mishkin (2000) "Endnotes", Kohlscheen (2014) "Data Sources" then "Figure 1 - ...",
+        # Minella & Souza-Sobrinho (2013) appendix tables whose first line is "Coefficient"
+        # (pymupdf puts the caption "Table 1." below the table body).
+        (End|Foot)?notes\s*$ |
+        Data\s+Sources?\s*$ |
+        # A lettered appendix after the list (Miranda-Agrippino & Rey 2020):
+        # "A Credit and Banking Data – For Online Publication", "A.1 Domestic and Cross-Border Credit"
+        .*\bFor\s+Online\s+Publication\b |
+        [A-Z]\.\d+\s+[A-Z] |
+        (Table|Figure|Fig\.?|Chart|Graph|Exhibit)\s+[A-Z]?\d+\b |
+        Coefficients?\s*$
+    )""",
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def _ocr_references(s: str) -> bool:
+    """An OCR misreading of the heading: "Refermces" (Calvo 1983). Starts with "Ref" so that
+    "Preferences", a heading of its own in a model section, never matches."""
+    import difflib
+    w = s.strip(" .:").lower()
+    return (w.startswith("ref") and " " not in w and w not in ("reference", "references")
+            and difflib.SequenceMatcher(None, w, "references").ratio() >= 0.8)
+
+
+def block_cut_spans(lines: list[str]) -> list[tuple[int, int, str]]:
+    """Every References/Bibliography block the cleaner removes, as
+    (start line, end line exclusive, the line that ended it or 'EOF').
+    Shared by clean() and the QC report, so the report describes the cut the
+    cleaner actually makes."""
+    spans: list[tuple[int, int, str]] = []
+    start = None
+    # A running head is all caps too, and inside a long list it ended the cut after one page:
+    # "POLICY IN THE OPEN ECONOMY" left ~100 reference lines of Gali (2015) ch. 8 in the text.
+    running = _detect_running_headers(lines)
+    for i, line in enumerate(lines):
+        s = line.strip()
+        if start is None:
+            if s and (_BLOCK_TRIGGERS.match(s) or _ocr_references(s)):
+                start = i
+            continue
+        # "CHAPTER 3" is Gali's even-page running head, too short for the detector.
+        if s in running or _RUNNING_HEADER_RE.match(s) or re.match(r"^CHAPTER\s+\d+$", s):
+            continue
+        # A one-word ALL-CAPS line must be a word, not an acronym: pymupdf printed a reference
+        # one word per line in Gali (2015) ch. 7, and "ECB" ended the cut 70 lines early.
+        heading = _HEADING_LIKE_RE.match(s) and (" " in s or len(s) >= 6)
+        if s and not _BLOCK_TRIGGERS.match(s) and (heading or _NEXT_SECTION_RE.match(s)):
+            spans.append((start, i, s))
+            start = None
+    if start is not None:
+        spans.append((start, len(lines), "EOF"))
+    return spans
 
 # ── Line-level removal ────────────────────────────────────────────────────────
 # Known inline disclaimer sentence starters (first line of multi-line disclaimers).
@@ -104,8 +179,9 @@ _WATERMARK_RE = re.compile(r"^RB\.MOC\.", re.IGNORECASE)
 _HASH_RE = re.compile(r"^[a-f0-9]{32}$")
 # "Source: ..." attribution lines
 _SOURCE_RE = re.compile(r"^Source:\s*", re.IGNORECASE)
-# Copyright symbols / lines
-_COPYRIGHT_RE = re.compile(r"^[\(©]\s*\d{4}\b")
+# Copyright symbols / lines. Not a bare "(": "(1995), Ireland (1996a), ..." is a body line
+# that starts with a citation year, and 150 of them were deleted across the corpus (2026-10-19).
+_COPYRIGHT_RE = re.compile(r"^(©|\(c\)|Copyright\b)\s*\d{4}\b", re.IGNORECASE)
 # JSTOR download notices (appear on every page, embedded in content blocks)
 _JSTOR_DOWNLOAD_RE = re.compile(r"^This\s+content\s+downloaded\s+from\s+\d+\.\d+", re.IGNORECASE)
 _JSTOR_TNC_RE = re.compile(r"^All\s+use\s+subject\s+to\b", re.IGNORECASE)
@@ -124,6 +200,9 @@ _RUNNING_HEADER_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Marks of an equation: operators, brackets, Greek letters, math symbols, unmapped glyphs.
+_MATH_RE = re.compile(r"[=+<>()\[\]{}^ˆͰ-Ͽ∀-⋿]|\(cid:")
+
 # Reversed text fragments from Goldman's "For the exclusive use of" watermark
 _REVERSED_WORDS = frozenset({"fo", "esu", "evisulcxe", "eht", "rof"})
 
@@ -137,8 +216,15 @@ def _is_chart_garbage(line: str) -> bool:
     stripped = line.strip()
     if len(stripped) < 5:
         return False
+    # An equation has the same short tokens ("πt = κxt + υt", "r = p + .5y + .5(p - 2) + 2"),
+    # and this rule deleted Taylor's rule from Taylor (1993) among ~870 lines (2026-10-19).
+    if _MATH_RE.search(stripped):
+        return False
     tokens = stripped.split()
     if len(tokens) < 5:
+        return False
+    # ...and prose with short words: "1 to t. In the equilibrium we" (Gertler & Karadi 2011).
+    if any(sum(ch.isalpha() for ch in t) >= 4 for t in tokens):
         return False
     short = sum(1 for t in tokens if len(t) <= 2)
     return short / len(tokens) >= 0.70
@@ -148,16 +234,15 @@ def _line_should_remove(line: str) -> bool:
     stripped = line.strip()
     if not stripped:
         return False
-    if _PAGE_NUM_RE.match(stripped):
-        return True
+    # _PAGE_NUM_RE is checked in clean(), which knows whether the line sits at a page edge.
     if _DATE_PAGE_RE.match(stripped):
         return True
     if _WATERMARK_RE.match(stripped):
         return True
     if _HASH_RE.match(stripped):
         return True
-    if _SOURCE_RE.match(stripped):
-        return True
+    # "Source:" lines are kept since 2026-10-19: under a paper's chart or table they say where
+    # the data come from ("Source: Authors' calculations."), which is content.
     if _COPYRIGHT_RE.match(stripped):
         return True
     if _JSTOR_DOWNLOAD_RE.match(stripped):
@@ -186,7 +271,8 @@ def _line_should_remove(line: str) -> bool:
 
 
 def _strip_digits(s: str) -> str:
-    return re.sub(r"\d+", "", s).strip(" .-|")
+    # "'" and "`": OCR reads a page number as "49'" (Kydland & Prescott 1977)
+    return re.sub(r"\d+", "", s).strip(" .-|'’`")
 
 
 def _detect_running_headers(
@@ -217,6 +303,10 @@ def _detect_running_headers(
         norm = _strip_digits(stripped)
         if not (min_len <= len(norm) <= max_len):
             continue
+        # A running head is words. Rows of a numeric table share their digit-stripped shape
+        # ("FF4 17.930 [6.675 22.673]" → "FF . [. .]") and were all deleted as one header.
+        if sum(ch.isalpha() for ch in norm) < 6:
+            continue
         counts[norm] += 1
         originals.setdefault(norm, set()).add(stripped)
 
@@ -227,6 +317,12 @@ def _detect_running_headers(
     return to_remove
 
 
+def _is_axis_fragment(line: str) -> bool:
+    s = line.strip()
+    return _is_chart_garbage(s) or (len(s) <= 4 and s.replace(".", "").replace(",", "").replace("%", "")
+                                    .replace("-", "").replace("–", "").replace("−", "").strip().replace(" ", "").isdigit())
+
+
 def _block_is_garbage(lines: list[str]) -> bool:
     """
     Detect chart-artifact blocks: short blocks where most lines are numeric/
@@ -234,40 +330,49 @@ def _block_is_garbage(lines: list[str]) -> bool:
     """
     if len(lines) < 4:
         return False
-    total = len(lines)
-    garbled = sum(
-        1 for ln in lines
-        if _is_chart_garbage(ln) or (len(ln.strip()) <= 4 and ln.strip().replace(".", "").replace(",", "").replace("%", "").replace("-", "").strip().replace(" ", "").isdigit())
-    )
-    return garbled / total >= 0.6
+    return sum(1 for ln in lines if _is_axis_fragment(ln)) / len(lines) >= 0.6
 
 
 def clean(text: str) -> str:
     """Apply all code-based rules. Returns cleaned text."""
-    running_headers = _detect_running_headers(text.splitlines())
+    lines = text.splitlines()
+    running_headers = _detect_running_headers(lines)
+    cut = {i for a, b, _ in block_cut_spans(lines) for i in range(a, b)}
 
     # Pass 1: line-by-line — tail trigger + individual line removal.
     # Tail trigger is checked per-line (not per-block first-line) because bank
     # reports often put the trigger heading on line 2 of a block with no blank
     # line separator (e.g. "Goldman Sachs FX in Focus\nDisclosure Appendix").
+    def at_page_edge(i: int) -> bool:
+        # Pages are joined with a blank line (extract.py), so a page's first or last line
+        # touches one. A bare number elsewhere is a table cell or an equation term, not a page
+        # number: pymupdf prints one table cell per line, and every "0" and "1984" was deleted.
+        return i == 0 or i == len(lines) - 1 or not lines[i - 1].strip() or not lines[i + 1].strip()
+
+    def near_page_edge(i: int) -> bool:
+        # A running head can sit one line in, next to its page number ("88" / "CHAPTER 3").
+        return any(at_page_edge(j) for j in range(max(0, i - 1), min(len(lines), i + 2)))
+
     pass1: list[str] = []
-    in_block_cut = False
-    for line in text.splitlines():
+    seen_headers: set[str] = set()
+    for i, line in enumerate(lines):
         stripped = line.strip()
         if stripped and _TAIL_TRIGGERS.match(stripped):
             break  # discard everything from here to EOF
-        if in_block_cut:
-            if stripped and _HEADING_LIKE_RE.match(stripped) and not _BLOCK_TRIGGERS.match(stripped):
-                in_block_cut = False  # next section reached — resume keeping lines, including this heading
-            else:
-                continue  # still inside the References/Bibliography block — skip
-        if stripped and _BLOCK_TRIGGERS.match(stripped):
-            in_block_cut = True
-            continue  # drop the heading itself too
+        if i in cut:
+            continue  # inside a References/Bibliography block (heading included)
         if not stripped:
             pass1.append("")
-        elif stripped in running_headers:
-            continue  # generic repeated-line-across-document detector
+        elif stripped in running_headers and near_page_edge(i):
+            # A running head sits at the top or bottom of a page. A repeated line inside a
+            # page is content (a table's row label, "Adj. R-Squared" under every table) and
+            # is kept. At the edge, keep the first copy anyway: a figure note repeated under
+            # every chart page is content too, and one stray running head costs less.
+            if stripped not in seen_headers:
+                seen_headers.add(stripped)
+                pass1.append(line)
+        elif _PAGE_NUM_RE.match(stripped) and at_page_edge(i):
+            continue
         elif not _line_should_remove(line):
             pass1.append(line)
 
@@ -279,7 +384,10 @@ def clean(text: str) -> str:
 
     def _flush(buf: list[str]) -> None:
         if _block_is_garbage(buf):
-            pass2.append("")  # replace whole cluster with a single blank
+            # Drop the axis fragments only, never the whole block: pymupdf returns a page as
+            # one block, so a chart page took its caption and the prose around it along
+            # (826 lines of Jarocinski & Karadi 2020 in a trial, 2026-10-19).
+            pass2.extend(ln for ln in buf if not _is_axis_fragment(ln))
         else:
             pass2.extend(buf)
 

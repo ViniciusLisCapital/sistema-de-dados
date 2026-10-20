@@ -1,3 +1,5 @@
+© CFA Institute. For candidate use only. Not for distribution.
+8
 Exchange Rate Calculations
 LEARNING OUTCOMES
 Mastery The candidate should be able to:
@@ -29,6 +31,7 @@ terms of forward points, which are also called swap points.
 ■ Forward rates are directly proportional to currency spot rates, the
 interest rate differential, and the maturity of the forward contract.
 
+254 Learning Module 8 Exchange Rate Calculations
 ■ As a result of the interrelationship among these four variables, any
 variable can be calculated by using the other three as inputs.
 2 CROSS-RATE CALCULATIONS
@@ -48,6 +51,7 @@ it is possible to back out the cross-rate between the euro and the Canadian doll
 which according to market convention is quoted as euro–Canada (CAD/EUR). This
 calculation is shown as follows:
 _CAD _USD _CAD _ USD _CAD
+× = × = .
 USD EUR USD EUR EUR
 Hence, to get a euro–Canada (CAD/EUR) quote, we must multiply the dollar–Canada
 (CAD/USD) quote by the euro–dollar (USD/EUR) quote. For example, assume the
@@ -66,6 +70,7 @@ that the dollar–Canada rate (CAD/USD) be inverted to a Canada–dollar (USD/CA
 quote for the calculations to work, as follows:
 −1
 _CAD _JPY _USD _JPY _ USD _JPY _JPY
+× = × = × = .
 (USD) USD CAD USD CAD USD CAD
 Hence, to get a Canada–yen (JPY/CAD) quote, we must first invert the dollar–Canada
 (CAD/USD) quote before multiplying by the dollar–yen (JPY/USD) quote. Market
@@ -124,6 +129,7 @@ _CHF _USD _CHF
 = × = 1.1701 × 0.9900 = 1.1584
 EUR EUR USD
 
+256 Learning Module 8 Exchange Rate Calculations
 2. The spot GBP/EUR cross-rate is closest to:
 A. 0.8920.
 B. 1.1211.
@@ -132,6 +138,7 @@ Solution:
 A is correct:
 −1
 _GBP _USD _USD _USD _GBP _1.1701
+= × = × = = 0.8920
 EUR EUR (GBP) EUR USD 1.3118
 3. Based on the research report, the euro is expected to appreciate by how
 much against the US dollar over the next year?
@@ -144,6 +151,7 @@ the expected decrease in the USD/EUR rate indicates that the euro is
 depreciating. In one year, it will cost less, in US dollars, to buy one euro.
 Mathematically:
 _1.1619
+− 1 = − 0.7%
 1.1701
 4. Based on the research report, how much is the US dollar expected to appre-
 ciate against the British pound sterling over the next year?
@@ -158,6 +166,7 @@ lently, the US dollar is expected to appreciate against the British pound.
 Mathematically:
 −1
 _1.3066 _1.3118
+− 1 = − 1 = + 0.4%
 (1.3118) 1.3066
 5. Over the next year, the Swiss franc is expected to:
 A. depreciate against the British pound.
@@ -215,6 +224,7 @@ the US dollar. Inverting the CHF/USD rate to a USD/CHF convention shows
 that the base currency Swiss franc appreciates by +0.35 percent against the
 US dollar (= [1.0136/1.0101] – 1).
 
+258 Learning Module 8 Exchange Rate Calculations
 3 FORWARD RATE CALCULATIONS
 explain the arbitrage relationship between spot and forward
 exchange rates and interest rates, calculate a forward rate using
@@ -260,6 +270,7 @@ sists of simultaneous spot and forward transactions. In our example, a trader wo
 have faced a spot rate and forward points in the euro–dollar (USD/EUR) currency
 pair similar to those in Exhibit 1,
 
+Forward Rate Calculations 259
 Exhibit 1: Sample Spot and Forward Quotes
 Maturity Spot Rate or Forward Points
 Spot 1.15885
@@ -289,6 +300,7 @@ Occasionally, one will see the forward rate or forward points represented as a p
 of the spot rate rather than as an absolute number of points. Continuing the previous
 example, the three-month forward rate for USD/EUR can be represented as follows:
 _1_.1_5_8_8_5_ +_ 0_._0_0_8_09_ _1.16694
+− 1 = − 1 = + 0.698% .
 1.15885 (1.15885)
 This shows that either the forward rate or the forward points can be used to calculate
 the percentage discount (or premium) in the forward market—in this case, +0.698
@@ -310,6 +322,7 @@ d
 at the end of the period, the amount of funds held is equal to (1 + r ). An alternative
 d
 
+260 Learning Module 8 Exchange Rate Calculations
 investment is to convert this one unit of domestic currency to foreign currency using
 the spot rate of S (number of units of foreign currency per one unit of domestic
 f/d
@@ -332,6 +345,8 @@ istics, they must have the same return. Bearing in mind that the currency quotin
 convention is the number of foreign currency units per single domestic unit (f/d), this
 relationship can be stated as follows:
 _1
+(1 + r ) = S 1 + r .
+d f/d( f)( F f /d )
 This is an arbitrage relationship because it describes two alternative investments
 (one on either side of the equal sign) that should have equal returns. If they do not, a
 riskless arbitrage opportunity exists because an investor can sell short the investment
@@ -349,6 +364,7 @@ finally (3) convert the foreign currency back to the domestic currency. Recall t
 equation is based on an f/d exchange rate quoting convention. If the exchange rate
 data were presented in d/f form, one could either invert these quotes back to f/d form
 and use the previous equation or use the following equivalent equation:
+(1 + r ) = (1/S )(1 + r)F .
 d d/f f d/f
 If this latter equation were used, remember that forward and spot exchange rates are
 now being quoted on a d/f convention.
@@ -370,6 +386,7 @@ _1.0500
 1.6535 = 1.6775 .
 (1.0350)
 
+Forward Rate Calculations 261
 Suppose instead that, with the spot exchange rate and interest rates unchanged, you
 were given a quote on the 12-month forward rate (F ) of 1.6900. Because this mis-
 f/d
@@ -380,6 +397,7 @@ domestic-only investment approach is the domestic risk-free rate (3.50 percent).
 contrast, the return on the hedged foreign investment when this misquoted forward
 rate is put into the arbitrage equation equals:
 _1 _1
+S 1 + r = 1.6535( 1.05) = 1.0273 .
 f/d( f)( F f /d ) (1.6900)
 This results in a return of 2.73 percent. Hence, the investor could make riskless
 arbitrage profits by borrowing at the higher foreign risk-free rate, selling the foreign
@@ -396,6 +414,7 @@ rate as a percentage of the spot rate:
 F 1 + r
 _f/d _f
 = .
+S (1 + r )
 f/d d
 This shows that, given an f/d quoting convention, the forward rate will be higher than
 (be at a premium to) the spot rate if foreign interest rates are higher than domestic
@@ -408,9 +427,12 @@ F = S .
 t t+1
 Substituting this expression into the previous equation and doing some rearranging
 leads to the following:
+_ S t + 1 − 1 = %Δ S = _ r f − r d .
+S t+1 (1 + r )
 t d
 This shows that if forward rates are interpreted as expected future spot rates, the
 expected percentage change in the spot rate is proportional to the interest rate dif-
+ferential (r – r ).
 f d
 It is intuitively appealing to see forward rates as expected future spot rates. However,
 this interpretation of forward rates should be used cautiously. The direction of the
@@ -425,6 +447,7 @@ future spot rates. Although various econometric studies suggest that forward rat
 be unbiased predictors of future spot rates (i.e., they do not systematically over- or
 under-estimate future spot rates), this is not particularly useful information because
 
+262 Learning Module 8 Exchange Rate Calculations
 the margin of error for these forecasts is so large. As mentioned in the Introduction,
 the FX market is far too complex and dynamic to be captured by a single variable,
 such as the level of the yield differential between countries. Moreover, according to the
@@ -458,6 +481,7 @@ relationship and solving for the difference between the forward and spot exchang
 rates gives the following:
 r − r
 _f d
+F − S = S τ .
 f/d f/d f/d(1 + r τ)
 d
 This equation shows that forward points (appropriately scaled) are proportional to
@@ -473,7 +497,9 @@ involved. The day count convention for Libor deposits is actual/360. Incorporati
 the fractional period (τ) and inserting the data into the forward rate equation leads
 to the following 30-day forward rate:
 _30
+1 + r τ 1 + 0.0300
 _f ________[_3_6_0_]
+F = S = 1.6555 = 1.6569 .
 f/d f/d(1 + r
 d
 τ)
@@ -486,13 +512,18 @@ This means that, for a 30-day term, forward rates are trading at a premium of 14
 points:
 r − r
 _f d _0_.0_3_0_0_ −_ 0_._0_2_00_ _30
+F − S = S τ = 1.6555 = 0.0014 .
+f/d f/d f/d(1 + r d τ) (1 + 0.0200 [ _ 3 3 6 0 0 ] ) [360]
 
+Forward Rate Calculations 263
 As should be clear from this expression, the absolute number of swap points will be
 closely related to the term of the forward contract (i.e., approximately proportional to τ
 = actual/360). For example, leaving the spot exchange rate and interest rates unchanged,
 and setting the term of the forward contract to 180 days, we obtain the following:
 _0_.0_3_0_0_ −_ 0_._0_2_00_ _180
+F − S = 1.6555 = 0.0082 .
 f/d f/d _180 [360]
+(1 + 0.0200 [ 360 ] )
 This leads to the forward rate trading at a premium of 82 pips. The increase in the
 number of forward points is approximately proportional to the increase in the term
 of the contract (from 30 days to 180 days). Note that although the term of the 180-day
@@ -507,8 +538,11 @@ rate differential (r – r ) from 1.00 percent to 2.00 percent; it also doubles 
 f d
 points (rounding to four decimal places), as follows:
 _0_.0_4_0_0_ −_ 0_._0_2_00_ _30
+F − S = 1.6555 = 0.0028 .
 f/d f/d _30 [360]
+(1 + 0.0200 [ 360 ] )
 EXAMPLE 2
+Forward Rate Calculations
 A French company recently finalized a sale of goods to a UK-based client and
 expects to receive a payment of GBP50 million in 32 days. The corporate trea-
 surer at the French company wants to hedge the FX risk of this transaction and
@@ -530,6 +564,7 @@ forward discount shown is that:
 A. the euro is expected to depreciate over the next 30 days.
 B. one-month UK interest rates are higher than those in the Eurozone.
 
+264 Learning Module 8 Exchange Rate Calculations
 C. one-month Eurozone interest rates are higher than those in the United
 Kingdom.
 Solution:
@@ -573,7 +608,9 @@ C. –2.8.
 Solution:
 C is correct, because the forward rate is calculated as:
 
+Forward Rate Calculations 265
 _Actual _270
+1 + r 1 + 0.01325
 ____G_B_P_[__36_0__] _________[_3_6_0_]
 F _GBP = S _GBP = 0.8489 = 0.84862 .
 EUR EUR (1 + r _ Actua l ) (1 + 0.01370 _270 )
@@ -582,5 +619,6 @@ This shows that the forward points are at a discount of: 0.84862 – 0.84890
 = –0.00028, or –2.8 points. This can also be seen using the swap points
 formula:
 _0_.0_1_3_2_5_ −_ 0_._0_1_3_70_ _270
+F _G EU BP R − S _ E G U B R P = 0.8489 ( 1 + 0.013 70 [ _2 3 7 6 0 0 ] ) [ 360 ] = − 0.00028 .
 The calculation of –3.8 points omits the day count (270/360), and –22.8
 points gets the scaling wrong.

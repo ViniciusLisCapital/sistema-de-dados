@@ -920,9 +920,9 @@ Ao analisar o BRL, a Verde efetivamente percorre:
 - [[overshooting]] — padrão empírico: BRL "correndo à frente dos fundamentos" (seção 1.6); correções técnicas (7.3); timing de unwind de carry (9.4)
 - [[ppp_balassa_samuelson]] — Verde usa PPP relativa como baseline para a tendência do BRL (diferencial de inflação BRL vs. USD)
 - [[fiscal_dominance]] — seções 1.1–1.11 e 1.8: credibilidade fiscal como driver estrutural do BRL; dominância fiscal como risco de cauda
-- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — dinâmica de overshooting subjacente ao padrão "à frente dos fundamentos"
-- [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — Verde trata subvalorização GSDEER como piso estrutural; cético em relação à convergência sem catalisador de carry
-- [[Goldman 2023 - GSDEER A User's Manual]] — convergência lenta ao fair value consistente com a visão Verde de que carry, não valor, dirige o BRL no curto prazo
-- [[Itaú 2025 - Fiscal Dominance in Brazil]] — framework teórico por trás das seções de credibilidade fiscal das cartas Verde
+- [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — dinâmica de overshooting subjacente ao padrão "à frente dos fundamentos"
+- [[exchange_rate/synthesis/primer_gsdeer_gsfeer (Goldman, 2025)]] — Verde trata subvalorização GSDEER como piso estrutural; cético em relação à convergência sem catalisador de carry
+- [[exchange_rate/synthesis/gsdeer_manual_guide (Goldman, 2023)]] — convergência lenta ao fair value consistente com a visão Verde de que carry, não valor, dirige o BRL no curto prazo
+- [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — framework teórico por trás das seções de credibilidade fiscal das cartas Verde
 - [[kinea_fx_mental_models]] — mesmo gênero de documento (mental model de câmbio de gestora macro brasileira), construído de forma independente
 - [[kapitalo_fx_mental_models]] — terceiro documento da mesma família (mental models de câmbio por gestora); Kapitalo é multi-ativo global e telegráfica, Verde e Kinea são Brasil-cêntricas e mais discursivas

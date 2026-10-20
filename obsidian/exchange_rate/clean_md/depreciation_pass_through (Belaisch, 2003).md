@@ -91,16 +91,22 @@ central bank control, it is important to anticipate their sensitivity to an exch
 calibrate monetary policy. I
 Figure 1. Brazil: Inflation and depreciation, 2001-02
 (Dec 20()Q=o 100)
+200
 .,.---~
 -R$/US$
+180
 - .. ~Consumerprices
+160
+140
 -
 _
+120
 ----- -
 -- . .. ..
 -
 l00~~~~~---~---_,---_,----,_--~
 Jan-Ol May-O! Sep-O! 100-02 May-02 Sep-02 Dec-02
+Source: Central Bank of Brazil.
 There are some clear stylized facts in the behavior of these prices.
 • Inflation has been much more stable than the change in the exchange rate and price
 changes are difficult to relate to changes in the exchange rate (Figure 2A).
@@ -117,10 +123,15 @@ Figure 2. Brazil: Depreciation and Inflation, 1999:07-2002:12
 2A. Depreciation and inflation • IGP·Dl
 (12-tlK)nth percent change) • !PA
 --!PCA
+50
 ---Monitored
+- . - . - Tradables
+30
+....... Nontradables
 -+--R$/US$ (right axis) .@
 20 30
 . 20
+10
 --' -:-"'~:-""""'::"':: =---':....--.;.~- ::-.: :-.".-=-. -----. - .... _. .... _. -...• IO
 ..
 :-.: :--:. .
@@ -134,7 +145,9 @@ IS
 -!PCA
 - -IPA
 IO
+5
 -
+0
 ~
 -5
 -IO .
@@ -155,6 +168,7 @@ Table I. Behavior of Exchange Rate and Prices (Deviations from Trend), 1997:07-2
 Volatility
 relative to Cross correlation ofE(t) with X (t+j), withj ~
 E's
+(percent) 0 1 2 3 4 5 6
 Variable X:
 !PCA 6.6 0.45 0.43 0.40 -- -- -- --
 Administered prices 7.2 0.32 0.34 -- -- -- --
@@ -162,12 +176,14 @@ Administered prices 7.2 0.32 0.34 -- -- -- --
 Free prices 9.5 0.57 0.55 0.52 --
 -- --
 Tradables 17.1 0.42 0.49 0.55 0.46 0.36
+Nontradables 7.1 0.36 -- -- -- -- -- --
 Wholesale prices 35.6 0.44 0.42 0.37 -- -- -- --
 -- -- --
 General price index 27.6 0.53 0.56 0.52 0.37
 Note: E is the R$/US$ exchange rate. Variables are in deviations from trend (Hodrick-Prescott filtered
 logarithms of deseasonalized data). The table only reports significant coefficients (0.30 is the 5 percent
 significant level). No lead coefficient was significant at 5 percent significance.
+Source: IMF staff calculations.
 The overall impression from the data is that, until recently, there appears to have been little
 response of consumer price inflation to exchange rate volatility. In particular, exchange rate
 deviations from trend do not lead to equivalent domestic price adjustments. This suggests the
@@ -301,11 +317,14 @@ standard error (approximately 2.3 percent).
 Figure 3. Brazil: Response of Different Prices to an Exchange Rate Shock
 0.40
 ,
+035
 ,
 I'
+1
 \
 030 1
 \
+1
 \
 I
 \
@@ -331,6 +350,7 @@ Months
 - - IGP-DI -IPCA
 __ Administered prices ~ " - --Free prices
 --Nontraded goods --Traded goods
+Source: Fund staff estimates.
 
 - 11 -
 • There does not appear to be a strong relationship between the exchange rate and
@@ -366,6 +386,7 @@ addition, these prices carry a specific tax (Cide) making up a third ofthe retai
 dampens the link between the exchange rate and the retail price of oil products.
 
 - 12 -
+7
 components of the wholesale price index are tradables
 Table 3. VA R Estimates of the Pass-Through
 (percent)
@@ -396,9 +417,16 @@ average of the pass-through coefficients to the disaggregated price indices.
 - 13 -
 Figure 4: Exchange rate passthrougb across price baskets
 60 (percent)
+50
+40
+30
+20
 Fre~ prices
+Nontradables
+10
 o
 1M 3M 12M 16M
+Source: Fund staff estimates.
 The impact of the exchange rate on consumer price inflation in Brazil is low by international
 standards (Table 4). It is much lower than in Latin American countries as a group (Goldfajn
 and Werlang, 2000) and, although the short-term pass-through is larger in Brazil than that for
@@ -500,6 +528,7 @@ Chow Forecast Test: Some evidence of a structural break from 2002:09 onward.
 F-statistic 3.35 Probability 0.0226
 Log likelihood ratio 15.96 Probability 0.0031
 The 95 percent significance level for the F test is 2.66.
+Source: Fund staff calculations.
 VI. CONCLUSJO:'oI
 This paper finds that the significant trend depreciation in Brazil in 200 1--{)2-the result of a
 series of domestic and external shocks-has not been followed by a large increase in

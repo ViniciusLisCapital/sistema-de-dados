@@ -33,6 +33,8 @@ Frenkel (1976), Kouri (1976), and Mussa (1976). The classics remain Fleming (196
 and Mundell (1964. 1968).
 () 1976 by The University of Chicago. All rights reserved.
 i i6i
+This content downloaded from 128.143.023.241 on August 07, 2016 19:28:35 PM
+All use subject to University of Chicago Press Terms and Conditions (http://www.journals.uchicago.edu/t-and-c).
 
 of differential adjustment speeds in goods and asset markets. In fact, the
 dynamic aspects of exchange rate determination in this model arise from
@@ -77,12 +79,14 @@ Assets denominated in terms of domestic and foreign currency are assumed
 to be perfect substitutes given a proper premium to offset anticipated
 exchange rate changes. Accordingly, if the domestic currency is expected
 
+EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i63
 to depreciate, interest rates on assets denominated in terms of domestic
 currency will exceed those abroad by the expected rate of depreciation.
 That relationship is expressed in (1) where r is the domestic interest rate,
 r* is the given world rate of interest, and x is the expected rate of de-
 preciation of the domestic currency, or the expected rate of increase of
 the domestic currency price of foreign exchange:
+r = r* + x. (1)
 Equation (1) is a representation of perfect capital mobility, and it is
 assumed that incipient capital flows will ensure that (1) holds at all times.
 Consider next expectations formation. Here we distinguish between
@@ -123,6 +127,7 @@ the long-run equilibrium price level, fi, will equal
 p = m + (Ar* - 0rfiy). (5)
 Substituting (5) in (4) gives us a relationship between the exchange rate
 and the price level:3
+e = e - (l /O) (p -P ) (6)
 Equation (6) is one of the key equations of the model. For given long-run
 values of exchange rates and prices, it serves to determine the current
 spot price of foreign exchange as a function of the current level of prices.
@@ -137,6 +142,7 @@ C. The Goods Market
 The demand for domestic output depends on the relative price of
 domestic goods, e - p, interest rates, and real income. The demand func-
 tion is assumed to have the form
+in D = u + 6(e - p) + Ty - ar, (7)
 where D denotes the demand for domestic output and where u is a shift
 parameter.4 From (7) we note that a decrease in the relative price of
 domestic goods raises demand, as does an increase in income or a reduc-
@@ -155,6 +161,7 @@ results described below would be affected by this extension.
 arithm of the foreign price level. Setting the foreign price level equal to unity implies
 thatp* = 0.
 
+EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i65
 We note that the long-run equilibrium exchange rate implied by (8) is5
 e= - + (l/8)[Crr* + (1 - 7)y - u], (9)
 where f is defined in (5). From (9) it is apparent that the long-run
@@ -163,6 +170,7 @@ monetary variables, but obviously on real variables, too.
 The price equation in (8) can be simplified by using the definition of
 the long-run rate in (9) and the fact that interest differences equal
 expected depreciation, r - 0(e - e), to become 6
+A = - [(63 + UO)/0) + 3] (p - f) = (p -f -), (10)
 where
 v -[(b + CO)/OJ + ]. (11)
 The price adjustment equation in (10) can be solved to yield
@@ -195,9 +203,11 @@ equation of the goods-market equilibrium schedule:
 p = [c1/(c) + u)]e + [a/()AR + c)]m + [A/(bA + a)][u + (1 - - OcylA/].
 
 I i66 JOURNAL OF POLITICAL ECONOMY
+450
 p
 / I~~~~~~~
 e
+0
 FIG. 1
 correspond to an excess supply of goods and falling prices. Conversely,
 points to the right and below the schedule correspond to an excess
@@ -241,6 +251,7 @@ predict the actual path of exchange rates it must be true that 0 = v.
 Accordingly, the expectations coefficient, 0, that corresponds to perfect
 foresight, or, equivalently, that is consistent with the model is given by the
 solution to the equation
+0 = V _ [( + U0)/0R + 3]. (14)
 The consistent expectations coefficient, 0, obtained as the solution to (14),
 is a function of the structural parameters of the economy9
 0 ( ,, a, 7r) = 7r(a/)A + 6)/2 + [7r2(a/l + )2/4 + 7/)j112
@@ -311,6 +322,7 @@ from point A to the short-run equilibrium at point B.
 WW e have not drawn in fig. 2, the p = 0 schedule. It is apparent, however, from the
 homogeneity properties of the model that the p = 0 schedule will pass through point C.
 
+EXPECTATIONS AND EXCHANGE RATE DYNAMICS I i69
 p~~~~~~
 l
 0 e~~~~~~~5
@@ -346,6 +358,7 @@ The interpretation of (16) has not so far used the restriction that
 I I 70 JOURNAL OF POLITICAL ECONOMY
 expectations be rational. That restriction is introduced by substituting
 (15) in (16) to obtain
+de/dm = 1 + l/fl = 1 1+
 Th(a + R)/2 + [7r2(a + 6)2/4 + 71A]I/2
 (17)
 Equation (17) has two implications that cannot be derived from (16).
@@ -428,6 +441,7 @@ adjustments in output in response to changes in aggregate demand.
 to provide a rationale for the short-run stickiness of prices. At the same time, such an
 extension would have interesting implications for the manner in which expectations are
 formed. Exchange rate determination in a stochastic setting has been studied by Black
+(1973), Kouri (1975), and Mussa (1976). Fischer (1976) has used a stochastic framework
 to evaluate fixed versus flexible exchange rate systems.
 
 I I 72 JOURNAL OF POLITICAL ECONOMY
@@ -474,6 +488,7 @@ same proportion as the nominal quantity of money, it follows that the
 
 spot rate would increase less than the quantity of money. The condition
 that gives rise to this case is
+I - 06/(l - y) < 0. (20)
 The term 3/(1 - y) is the elasticity of equilibrium output with respect
 to the exchange rate. That term multiplied by the income elasticity of
 demand gives the increase in money demand due to a depreciation in the
@@ -571,6 +586,7 @@ Consider next the impact effect of a monetary expansion. Remembering that
 in the long run an increase in money causes an equiproportionate increase in
 prices and the exchange rate, we have de = dp = dm. Therefore, from (A8) we
 obtain the impact effect of a monetary expansion on the exchange rate as
+de/dm = 1 + (1 - qpc5)/A > 0. (Al1)
 Whether the exchange rate increases more or less proportionately than the
 nominal quantity of money depends on the condition
 I - OPub; 0, (A12)
@@ -581,12 +597,3 @@ Since from (A9) the inflation rate converges monotonically to the long-run
 level, we know that output declines monotonically back toward the level of full
 employment. The exchange rate, following the impact effect, will appreciate, or
 depreciate, depending on (A12).
-Mundell, R. A. "Exchange Rate Margins and Economic Policy." In Moneyi n the
-InternationaOl rder,e dited by C. Murphy. Dallas: Southern Methodist Univ.
-Press, 1964.
-. International Economics. New York: Macmillan, 1968.
-Mussa, M. "The Exchange Rate, the Balance of Payments and Monetary and
-Fiscal Policy under a Regime of Controlled Floating." ScandinavianJ . Econ.
-2 (May 1976): 229-48.
-Niehans, J. "Some Doubts about the Efficacy of Monetary Policy under Flexible
-Exchange Rates." J. Internat.E con. 5 (August 1975): 275-81.

@@ -79,13 +79,15 @@ reports/             — Outputs gerados, não versionados, autocontidos e envi�
                        área de analytics/ (reports/brasil/, reports/us/) — sem isso o Inflation.html
                        do Brasil colidiria com o dos EUA. Nomes em Title Case com espaço
 repository/          — O BRUTO: PDFs e extração intocada por área (raw_pdf/, raw_md/), as cartas das
-                       gestoras (mental_model/), o acompanhamento de aquisição (agent_mapping/: candidatos,
-                       lacunas, bibliografia consolidada, inventário de dados) e o pipeline de ingestão. Nenhum agente lê daqui
+                       gestoras (mental_model/), o acompanhamento de aquisição (agent_mapping/data_tracker.xlsx:
+                       literatura e dados de cada área, com status, numa planilha só) e o pipeline de
+                       ingestão (/ingest). Nenhum agente lê daqui
                        ↳ repository/CLAUDE.md
 obsidian/            — A ÚNICA camada que os agentes-analistas leem (desde 2026-09-30): por área,
-                       clean_md/, synthesis/, concepts/, mental_models/ (área × gestora), o mapa
-                       conceitual. A ingestão escreve o clean_md direto
-                       aqui ↳ obsidian/CLAUDE.md
+                       clean_md/, synthesis/, mental_models/ (área × gestora), o mapa
+                       conceitual; os conceitos de todas as áreas numa pasta só, concepts/.
+                       A ingestão escreve o clean_md direto aqui; o /vault escreve a síntese
+                       e os conceitos ↳ obsidian/CLAUDE.md
 team_materials/      — Só o que é MOSTRADO: PDFs, painéis HTML interativos, vídeos, diagramas e as
                        introduções narrativas. Lista, inventário e mapa vivem no repository/, qualquer
                        que seja a voz em que foram escritos — foi por essa regra que as 3 .md de base

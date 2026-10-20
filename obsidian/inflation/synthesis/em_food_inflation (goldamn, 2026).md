@@ -1,10 +1,14 @@
+---
+aliases: ["Goldman 2026 - EM Food Inflation"]
+---
+
 # Goldman 2026 — EM Food Inflation: Upside Pressures Globally, But Heterogeneous Local Exposure
 
 **Type:** Sell-side research note (EM Macro Themes)
 **Tags:** #food-inflation #emerging-markets #pca-factor-model #commodities #exchange-rate-pass-through
 **Source:** Goldman Sachs, EM Macro Themes, 23 June 2026
 **Language:** English
-**Source file:** [[em_food_inflation (goldamn, 2026)]]
+**Source file:** [[inflation/clean_md/em_food_inflation (goldamn, 2026)]]
 
 ---
 
@@ -39,4 +43,4 @@ Food inflation is structurally more important and more volatile in EM than DM (2
 ## Connections
 
 - [[exchange_rate_pass_through]] — the USD-invoicing/dollar-strength channel is the dominant driver of the report's global food-inflation factor, and currency volatility is one of the three structural reasons EM food inflation exceeds DM; this is exchange-rate pass-through operating through a specific, globally-traded CPI subcomponent rather than the aggregate basket
-- [[Belaisch 2003 - Exchange Rate Pass-Through in Brazil]] — that paper's tradables/nontradables IPCA decomposition (Belaisch finds tradables/wholesale prices show much faster, larger FX pass-through than the aggregate CPI) is methodologically analogous to this report's global/regional/local decomposition, both isolating the internationally-traded component of a price basket to find where currency effects actually bite
+- [[exchange_rate/synthesis/depreciation_pass_through (Belaisch, 2003)]] — that paper's tradables/nontradables IPCA decomposition (Belaisch finds tradables/wholesale prices show much faster, larger FX pass-through than the aggregate CPI) is methodologically analogous to this report's global/regional/local decomposition, both isolating the internationally-traded component of a price basket to find where currency effects actually bite

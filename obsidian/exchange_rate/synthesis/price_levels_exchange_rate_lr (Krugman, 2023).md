@@ -1,10 +1,14 @@
+---
+aliases: ["Krugman 2023 - Price Levels and the Exchange Rate in the Long Run"]
+---
+
 # Krugman 2023 — Price Levels and the Exchange Rate in the Long Run
 
 **Type:** Textbook chapter (International Economics, 12th ed., Ch. 16)
 **Tags:** #textbook #ppp #law-of-one-price #balassa-samuelson #real-exchange-rate #fisher-effect #monetary-approach
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Source file:** [[price_levels_exchange_rate_lr (Krugman, 2023)]]
+**Source file:** [[exchange_rate/clean_md/price_levels_exchange_rate_lr (Krugman, 2023)]]
 
 ---
 
@@ -43,4 +47,4 @@ Absolute PPP (`E = P_US/P_E`) and its corollary relative PPP (`ΔE = π_US − �
 - [[ppp_balassa_samuelson]] — this chapter is the fullest textbook derivation of both PPP (absolute/relative, monetary approach) and the Balassa-Samuelson effect, including the competing Bhagwati-Kravis-Lipsey capital-endowment explanation not previously in this vault; also introduces the real exchange rate and real interest parity as PPP's generalization
 - [[uip]] — Fisher effect and real interest parity are UIP's nominal condition split into inflation-expectations and real-exchange-rate-expectations components
 - [[overshooting]] — this chapter's long-run real exchange rate model is explicitly the "anchor" Krugman uses for expectations in the short-run (overshooting) chapters
-- [[Dornbusch 1976 - Expectations and Exchange Rate Dynamics]] — shares the same long-run PPP anchor (`ē = p̄ − p̄*`) that Dornbusch takes as given before deriving short-run overshooting around it
+- [[exchange_rate/synthesis/expectations_and_exchange_rate_dynamics (Dornbusch, 1976)]] — shares the same long-run PPP anchor (`ē = p̄ − p̄*`) that Dornbusch takes as given before deriving short-run overshooting around it

@@ -34,6 +34,7 @@ certain markets. Our analysis suggests that high exposure to the global factor
 may amplify food inflation risks in EMs vs. DMs, with Ethiopia, Pakistan, Senegal,
 Malaysia, Ghana and Morocco screening among the more exposed countries.
 
+Goldman Sachs EM Macro Themes
 EM Food Inflation: Upside Pressures Globally, But Heterogeneous Local Exposure
 Food price shocks have historically been frequent and large across emerging markets
 (EMs), more so than in developed markets (DMs). These shocks tend to be driven by a
@@ -130,7 +131,9 @@ detinU
 aibarA
 iduaS
 namO niarhaB lageneS hsedalgnaB tiawuK tpygE lapeN
+Goldman Sachs EM Macro Themes
 FoodNet Exports, % of GDP FoodNet Exports, % of GDP
+Source: Haver Analytics, World Bank, Goldman Sachs Global Investment Research
 
 decomposition has two practical advantages. First, it is agnostic: we do not need to
 pre-commit to a particular basket of commodity prices or to a specific transmission
@@ -175,6 +178,7 @@ DM Median Food Inflation
 5 5
 0 0
 -5 -5
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 The higher exposure of EM headline inflation to food price swings reflects several
 reinforcing factors. First, EM consumers spend a much larger share of their disposable
 income on food, mechanically raising food’s weight in the CPI basket – a pattern
@@ -198,6 +202,7 @@ EM DM
 GDP Per Capita,'000 USD
 0.0
 0 20 40 60 80 100 120 140
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 This supply-side taxonomy is particularly well-suited to food inflation because, unlike
 core services or non-essential components of CPI, food demand is highly inelastic –
 households cannot easily substitute away from staples even as prices rise. As a result,
@@ -218,12 +223,23 @@ Exhibit 4: Lagged FAO Food Index Movements Lead Global Food Inflation, but
 Underpredicted the 2022 Surge Relative to Prior Shocks
 120 FAO Food Commodity Prices (LHS, % yoy) 14
 Global Food Inflation Median (RHS, %yoy)
+100
+12
 Priorfood inflation episodes accounted for
 by soft commodity prices
 80 Food Inflation increased more than
 implied by soft commodity prices 10
+60
+8
+40
+6
+20
+4
+0
+2
 -20
 -40 0
+Source: Haver Analytics, UN FAOSTAT, Goldman Sachs Global Investment Research
 The gap reflected the fact that 2022 was not only a soft-commodity shock but also –
 and arguably more importantly – a fertilizer and energy input cost shock, triggered by
 Russia’s full-scale invasion of Ukraine and the resultant disruption to natural gas flows to
@@ -255,10 +271,15 @@ Dieseland fertilizer lead
 increasing
 food inflation...
 15.0
+150
+100
 10.0
+50
+0
 5.0
 -50
 0.0 -100
+Source: Haver, Goldman Sachs Global Investment Research
 Global and Local Factors Emerge As The Main Drivers
 To disentangle the drivers of food inflation systematically, we adopt a Principal
 Component Analysis decomposition framework (described in detail in Box 1), following
@@ -285,6 +306,7 @@ Median Global Food Inflation
 4 4
 2 2
 0 0
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 However, the explanatory power of the regional factors varies meaningfully across areas.
 Our regional factors explain less than the global one does, partially due to the global
 nature of agricultural trade, and to the fact that countries’ specific idiosyncrasies would
@@ -314,6 +336,7 @@ Latin America Are More Idiosyncratic
      
    
             %                                                         
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 Similarly, in Africa, the largest share of the variation across regions is explained by local
 factors. This is consistent with the dominant role of domestic harvest cycles, sharp FX
 moves, conflict‑related supply disruptions, and pervasive price administration, which
@@ -345,18 +368,37 @@ Exhibit 8: Country-Specific Drivers of Food Inflation Are More Nuanced and Varie
     4  %                   %  
        
        
+               
+               
        
+               
+                       
+               
+                       
+               
        
+               
+               
        
    %6 1  0 4  %             % 6          2     %4  6   
+                       
        
        
+               
        
        
+               
+               
+               
+               
+               
        
        
+               
        
        
+                       
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 We Expect Global Food Inflation Pressure to Build Up in 2026H2
 Having extracted the global factor, we then regress it on a small set of observable global
 price processes – the FAO soft commodities index, fertilizer and diesel prices, and the
@@ -383,6 +425,7 @@ Fitted Values Projection
 0 0
 -5 -5
 -10 -10
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 We then use these estimates to trace the contribution of these variables to building food
 inflationary pressures. Assuming a gradual normalisation of the prices of fertilizer and
 diesel over time, and given the elasticities estimated from our global-factor regression,
@@ -418,6 +461,7 @@ Poland
 Brazil Taiwan Philippines Mexico Peru
 India C In h d in o a nesia Turkiye Greece Hungary
 Portugal
+20.0 Ecuador Japan Saud S i A ou ra th b i A a frica Kuwait A O us m tr a a n lia Chile New B Z e e l a g l i a u n m d Czechia S S lo p v a e i n n ia
 Korea Iceland Israel United Arab Emirates Colombia France Italy
 Qatar Norway Switzerland Canada Sweden F G in e la r n m d any Austria Denmark
 10.0 Bahrain Netherlands Luxembourg Ireland
@@ -426,6 +470,7 @@ United States of America
 % of Variance ExplainedBy Global Factor
 0.0
 0.0 10.0 20.0 30.0 40.0 50.0 60.0 70.0 80.0 90.0
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 El Niño Presents Localized Rather than Global Upside Food Inflation
 Risks
 As previously noted, additional upside pressure on food prices could also materialise as
@@ -447,6 +492,7 @@ temperature
      
                                              
        
+             
        
        
      
@@ -456,6 +502,7 @@ temperature
      
        
        
+           
        
        
    
@@ -463,6 +510,7 @@ temperature
        
      
                                   
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Historically, the 2015-2016 and 2023-2024 episodes stand out as particularly
 significant, given their sizeable impact on global temperatures and, by extension, on
 agricultural conditions and output. While in-depth analysis of the potential
@@ -489,6 +537,7 @@ We decompose quarterly year-on-year food CPI inflation across a broad cross-sect
 regional factor common to countries within the same geographic region, and a local (country-specific)
 residual. The procedure is a sequential two-stage Principal Component Analysis (PCA) followed by
 country-level OLS projection, in the spirit of dynamic factor models5 of Forni, Hallin, Lippi and Reichlin
+(2000), Bai and Ng (2002) and Stock and Watson (2002).
 The input is food CPI levels for around 125 countries. A small list of countries with patently unreliable or
 hyper-inflationary series is excluded ex ante.
 We extract the global component by applying PCA to a balanced panel food inflation, from 2000-Q1
@@ -515,30 +564,42 @@ terms.
 5 Medel (2017) for Chile, Garcia, Medeiros, Vasconcelos (2017) for Brazil use similar approaches to understand
 
 Exhibit 13: Regional Factors
+Year-over-year, %
                          
                          
                                                         
                                                
+                   
      
+                   
                          
+                   
      
+                 
                      
+               
    
+               
                                                                                                                
                                                    
                          
                                                         
                                                
+                   
      
          
          
+               
          
          
+               
        
        
+             
        
        
    
+               
                      
                                                                                          
               %   
@@ -555,6 +616,7 @@ Exhibit 13: Regional Factors
    
      
                              
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 inflation dynamics.
 
 Box 2: Explaining the Global Factor
@@ -568,6 +630,7 @@ literature: (i) world soft-commodity prices (FAO), (ii) input costs through ener
 mechanically affects local-currency import prices of food and fuel.
 Exhibit 14: FAO and USD NEER Strongly Influence the
 Global Factor, Followed by Fertilizer and Diesel
+Source: Haver Analytics, Goldman Sachs Global Investment Research
 The lag is chosen by AIC and BIC criteria, recognizing that pass-through from world prices to a
 cross-country common factor in CPI food inflation is neither instantaneous nor uniform across channels –
 fertilizers, in particular, are typically pre-bought one to two seasons ahead.
@@ -577,8 +640,11 @@ that driver, holding the others fixed at their respective optimal lags (Exhibit 
 
 Appendix: Country Summaries
 Exhibit 15: Australia: Food Inflation Decomposition Exhibit 16: Austria: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
           %                                      %                             
+           
+                                           
                        
    
      
@@ -593,9 +659,14 @@ Exhibit 15: Australia: Food Inflation Decomposition Exhibit 16: Austria: Food In
    
      
    
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 17: Bahrain: Food Inflation Decomposition Exhibit 18: Belgium: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+               
+                                           
                                  
      
        
@@ -610,10 +681,15 @@ Exhibit 17: Bahrain: Food Inflation Decomposition Exhibit 18: Belgium: Food Infl
    
 %    %       
 %    %    %  % 
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 19: Brazil: Food Inflation Decomposition Exhibit 20: Canada: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                            
+           
+                                           
+                 
      
      
    
@@ -627,9 +703,16 @@ Exhibit 19: Brazil: Food Inflation Decomposition Exhibit 20: Canada: Food Inflat
    
    
      
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 21: Chile: Food Inflation Decomposition Exhibit 22: China: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                          
+           
+                                           
+                 
+           
      
      
      
@@ -639,10 +722,16 @@ Exhibit 21: Chile: Food Inflation Decomposition Exhibit 22: China: Food Inflatio
    
    
      
+             
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 23: Colombia: Food Inflation Decomposition Exhibit 24: Czechia: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                               
+           
+                                           
+                 
      
      
      
@@ -656,14 +745,31 @@ Exhibit 23: Colombia: Food Inflation Decomposition Exhibit 24: Czechia: Food Inf
    
    
      
+             
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 25: Denmark: Food Inflation Decomposition Exhibit 26: Ecuador: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                %                             
+                 
+                                           
+                 
+                 
+                 
+               
+             
+             
+             
            
+                 
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 27: Egypt: Food Inflation Decomposition Exhibit 28: Ethiopia: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
   %                                                                        
+           
+                                           
                        
      
      
@@ -677,12 +783,17 @@ Exhibit 27: Egypt: Food Inflation Decomposition Exhibit 28: Ethiopia: Food Infla
      
    
            
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 29: Finland: Food Inflation Decomposition Exhibit 30: France: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                             
+           
+                                           
                        
      
      
+           
    
    
    
@@ -690,13 +801,19 @@ Exhibit 29: Finland: Food Inflation Decomposition Exhibit 30: France: Food Infla
    
    
    
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 31: Germany: Food Inflation Decomposition Exhibit 32: Ghana: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                              %                            
+           
+                                           
                        
      
      
+           
      
      
      
@@ -704,23 +821,35 @@ Exhibit 31: Germany: Food Inflation Decomposition Exhibit 32: Ghana: Food Inflat
      
    
    
+             
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 33: Hungary: Food Inflation Decomposition Exhibit 34: Iceland: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
         %                                                                    
+           
+                                           
+                 
      
      
      
      
      
+           
    
      
    
    
      
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 35: India: Food Inflation Decomposition Exhibit 36: Indonesia: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+               
+                                           
                                  
          
      
@@ -733,23 +862,36 @@ Exhibit 35: India: Food Inflation Decomposition Exhibit 36: Indonesia: Food Infl
        
    
        
+               
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 37: Ireland: Food Inflation Decomposition Exhibit 38: Israel: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                             
+               
+                                           
+                 
          
      
          
      
        
+           
        
    
        
      
          
+                 
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 39: Italy: Food Inflation Decomposition Exhibit 40: Japan: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                          
+           
+                                           
                        
    
      
@@ -764,9 +906,16 @@ Exhibit 39: Italy: Food Inflation Decomposition Exhibit 40: Japan: Food Inflatio
    
      
    
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 41: Kazakhstan: Food Inflation Decomposition Exhibit 42: Kenya: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                               
+           
+                                           
+                 
+           
      
      
      
@@ -777,10 +926,16 @@ Exhibit 41: Kazakhstan: Food Inflation Decomposition Exhibit 42: Kenya: Food Inf
    
    
        
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 43: Korea: Food Inflation Decomposition Exhibit 44: Kuwait: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                             %                             
+           
+                                           
+                 
+           
          
        
        
@@ -788,9 +943,15 @@ Exhibit 43: Korea: Food Inflation Decomposition Exhibit 44: Kuwait: Food Inflati
        
 %  %     
 %  %       
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 45: Malaysia: Food Inflation Decomposition Exhibit 46: Mexico: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+           
+                                           
+                 
+           
      
    
    
@@ -801,10 +962,13 @@ Exhibit 45: Malaysia: Food Inflation Decomposition Exhibit 46: Mexico: Food Infl
    
    
        
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 47: Netherlands: Food Inflation Decomposition Exhibit 48: New Zealand: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                        %                            
+           
                                           
                  
      
@@ -818,9 +982,15 @@ Exhibit 47: Netherlands: Food Inflation Decomposition Exhibit 48: New Zealand: F
    
    
    
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 49: Nigeria: Food Inflation Decomposition Exhibit 50: Norway: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                             
+           
+                                           
+                 
      
      
      
@@ -830,10 +1000,16 @@ Exhibit 49: Nigeria: Food Inflation Decomposition Exhibit 50: Norway: Food Infla
      
      
    
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 51: Oman: Food Inflation Decomposition Exhibit 52: Pakistan: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                            
+           
+                                           
+                 
      
      
      
@@ -844,16 +1020,32 @@ Exhibit 51: Oman: Food Inflation Decomposition Exhibit 52: Pakistan: Food Inflat
      
    
          
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 53: Peru: Food Inflation Decomposition Exhibit 54: Philippines: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+                   
+                                           
                                      
+                   
+                   
+                 
+               
+               
+               
 %    %           
 %    %             
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 55: Poland: Food Inflation Decomposition Exhibit 56: Portugal: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+           
+                                           
+                 
      
      
      
@@ -864,9 +1056,15 @@ Exhibit 55: Poland: Food Inflation Decomposition Exhibit 56: Portugal: Food Infl
    
    
          
+             
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 57: Qatar: Food Inflation Decomposition Exhibit 58: Romania: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                            
+           
+                                           
+                 
          
    
      
@@ -878,27 +1076,51 @@ Exhibit 57: Qatar: Food Inflation Decomposition Exhibit 58: Romania: Food Inflat
    
 %  % 
 %  %         
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 59: Russia: Food Inflation Decomposition Exhibit 60: Saudi Arabia: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                    %                             
+               
+                                           
+                 
+               
+               
+               
+             
+           
+           
+             
+                 
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 61: South Africa: Food Inflation Decomposition Exhibit 62: Spain: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                                 
+               
+                                           
                            
      
          
+               
        
      
        
+           
        
    
          
 %  %           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 63: Sweden: Food Inflation Decomposition Exhibit 64: Thailand: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                                                              
+               
+                                           
+                 
          
      
          
@@ -908,11 +1130,17 @@ Exhibit 63: Sweden: Food Inflation Decomposition Exhibit 64: Thailand: Food Infl
        
    
        
+           
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 65: Turkiye: Food Inflation Decomposition Exhibit 66: Ukraine: Food Inflation Decomposition
+Year-over-year, % Year-over-year, %
        
                                               %                            
+             
                                          
                  
+           
      
      
      
@@ -922,11 +1150,16 @@ Exhibit 65: Turkiye: Food Inflation Decomposition Exhibit 66: Ukraine: Food Infl
      
    
    
+               
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 
 Exhibit 67: United Kingdom: Food Inflation Decomposition Exhibit 68: United States of America: Food Inflation
 Year-over-year, % Decomposition
+Year-over-year, %
        
                                                  %    % %                          %             %  
+           
+                                           
                  
      
      
@@ -938,7 +1171,10 @@ Year-over-year, % Decomposition
    
    
    
+           
+Source: Haver Analytics, Goldman Sachs Global Investment Research Source: Haver Analytics, Goldman Sachs Global Investment Research
 Exhibit 69: Vietnam: Food Inflation Decomposition
+Year-over-year, %
    
                                       
      
@@ -950,3 +1186,4 @@ Exhibit 69: Vietnam: Food Inflation Decomposition
      
    
        
+Source: Haver Analytics, Goldman Sachs Global Investment Research

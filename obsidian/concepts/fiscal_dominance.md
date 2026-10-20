@@ -74,10 +74,11 @@ Three information sets:
 
 | Source | Role |
 |---|---|
-| [[Itaú 2025 - Fiscal Dominance in Brazil]] | Full theoretical framework + Brazil 2025 empirical assessment (Sargent-Wallace, Leeper, Blanchard, FTPL, Woodford) |
+| [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] | Full theoretical framework + Brazil 2025 empirical assessment (Sargent-Wallace, Leeper, Blanchard, FTPL, Woodford) |
 | [[verde_fx_mental_models]] | Practitioner operationalization: sections 1.1–1.11 (fiscal credibility), 1.8 (fiscal dominance risk), 3.1 (carry overridden when ρ dominates) |
 | [[kinea_fx_mental_models]] | Explicit definition used verbatim by the manager (1.3); "good vs. bad equilibrium" framework (1.4); Dec/2024–Jan/2025 case of carry failing without credibility (1.9) |
 | [[kapitalo_fx_mental_models]] | 6.6–6.7: 2024 fiscal-anchor credibility crisis and its pass-through to inflation; fiscal dominance and underpriced risk premia in 2025 |
+| [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]] | Primary source of the Blanchard mechanism: model of rate → default risk → depreciation, estimated on Brazil 1999–2004; a 100 bp Selic rise implies a 258 bp depreciation at 2002-type debt and risk aversion |
 
 ---
 
@@ -99,7 +100,8 @@ Itaú's assessment: Brazil in an intermediate regime, moving toward fiscal domin
 - [[uip]] — fiscal dominance breaks UIP carry logic: rate hike → ↑ρ → E[Δe] rises → BRL depreciates despite higher r
 - [[carry_trade]] — fiscal dominance is the most severe carry failure mode: effective carry `(r − r*) − ρ` goes negative at peak nominal rates
 - [[overshooting]] — Blanchard overshooting (fiscal) is directionally opposite to Dornbusch overshooting (monetary): rate hike → depreciation vs. rate hike → appreciation
-- [[Itaú 2025 - Fiscal Dominance in Brazil]] — primary source for this concept
+- [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — primary source for this concept
 - [[verde_fx_mental_models]] — practitioner framework; fiscal credibility sections 1.1–1.11, 1.8
 - [[kinea_fx_mental_models]] — explicit definition (1.3), good-vs-bad-equilibrium framework (1.4), and the Dec/2024–Jan/2025 empirical lesson that no nominal rate level anchors the currency without fiscal credibility (1.9)
 - [[kapitalo_fx_mental_models]] — 6.6–6.7: 2024 fiscal-anchor credibility crisis with pass-through to inflation, and 2025 fiscal dominance with underpriced risk premia
+- [[monetary_policy/synthesis/fiscal_dominance_it_brazil (Blanchard, 2004)]] — the original model and estimates: under high debt, a high dollar share and high risk aversion, a rate rise depreciates the Real and inflation targeting becomes perverse

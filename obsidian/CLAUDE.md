@@ -11,30 +11,65 @@ byte-identical copies. The copy in `repository/` was removed and the ingestion p
 straight into this vault. The one-way flow:
 
 ```
-repository/ingestion/land_space/<área>/*.pdf
-   └─ repository/ingestion/scripts/run.py
+repository/<área>/raw_pdf/*.pdf   (o PDF sem raw_md é o pendente)
+   └─ /ingest [área]  (agente de ingestão → repository/ingestion/scripts/run.py)
         ├─ repository/<área>/raw_pdf/  + raw_md/     (bruto, trilha de auditoria)
-        └─ obsidian/<área>/clean_md/                 (texto integral, sem lixo)
+        └─ obsidian/<área>/clean_md/<name>.md        (texto integral, sem lixo)
+             └─ /vault [área]  (agente do vault → repository/ingestion/scripts/vault.py)
+                  ├─ obsidian/<área>/synthesis/<name>.md   (o mesmo nome do clean_md)
+                  └─ obsidian/concepts/<slug>.md           (patch ou página nova)
 ```
 
-## Structure per area
+## Structure
 
 ```
-obsidian/<área>/
-  clean_md/                     — full text of each source, garbage removed, nothing condensed
-  synthesis/                    — one condensed note per literature source
-  concepts/                     — atomic theory notes, densely [[wikilinked]]
-  mental_models/                — one file per asset manager: that manager's frameworks FOR THIS AREA
-  <área>_conceptual_map.md      — the area's contract with the system (see below)
+obsidian/
+  concepts/                     — atomic theory notes, densely [[wikilinked]]; ONE folder for every area
+  <área>/
+    clean_md/                   — full text of each source, garbage removed, nothing condensed
+    synthesis/                  — one condensed note per source, named exactly like its clean_md
+    mental_models/              — one file per asset manager: that manager's frameworks FOR THIS AREA
+    <área>_conceptual_map.md    — the area's contract with the system (see below)
 ```
 
-| área | clean_md | synthesis | concepts | mental_models | map |
-|---|---|---|---|---|---|
-| exchange_rate | 16 | 17 | 10 | 4 (Verde, Kapitalo, Kinea, GS — GS partial) | yes |
-| monetary_policy | 1 paper + central_bank/ | 1 | 0 | 0 | no |
-| fiscal_policy | 1 | 1 | 1 | 0 | no |
-| inflation | 1 | 1 | 1 | 0 | no |
-| labor_market, economic_activity | empty | | | | | |
+| área | clean_md | synthesis | mental_models | map |
+|---|---|---|---|---|
+| exchange_rate | 16 | 17 | 4 (Verde, Kapitalo, Kinea, GS — GS partial) | yes |
+| monetary_policy | papers (ingestion under way) + central_bank/ | 14 of 44 (2026-10-19) | 0 | no |
+| fiscal_policy | 1 | 1 | 0 | no |
+| inflation | 1 | 1 | 0 | no |
+| labor_market, economic_activity | empty | | | |
+
+`concepts/`: 24 pages (2026-10-19). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
+
+**One concepts folder** (decided 2026-10-19): a concept is theory, not an area's property, and
+UIP is the same page whether the FX or the monetary-policy agent follows the link. One folder
+means a concept cannot exist twice and nothing moves when a second area starts using it.
+
+**Synthesis notes carry the clean_md's name** (decided 2026-10-19; the 19 older notes were renamed
+the same day, their old titles kept as `aliases:`). That makes `--list` and the tracker's
+"Synthesis" column exact. The cost: a note and its clean_md share a name, so `[[<name>]]` alone is
+ambiguous, and links to either are written with the path from the vault root —
+`[[exchange_rate/synthesis/<name>]]`, `[[exchange_rate/clean_md/<name>]]`. Concept and
+mental-model links stay bare (`[[uip]]`). `vault.py check` fails an ambiguous link. Fleming 1962
+keeps its free name: it has no clean_md.
+
+### The vault agent (`/vault [topic] [file ...]`)
+
+`.claude/agents/vault.md`, run by the skill in its own context, opus, at most 5 files per run. Per
+file: read the clean_md in full → write the synthesis (template in the agent file; it replaced
+the `/add` and `/sync-vault` commands, deleted 2026-10-19) → patch the concept pages it links (a row in the appearances table and a Connections
+bullet, never a rewrite) or create the missing ones → `vault.py check` → `tracker.py`. Every number
+in a note must be in the clean_md text, and damaged text is reported under "Limitations and
+caveats", not reconstructed. The agent never edits a conceptual map: it lists proposed additions in
+its report. Not swept: `monetary_policy/clean_md/central_bank/` (500+ Copom documents, needs its own
+design, II.III.ix) and topics on hold.
+
+**The 19 older notes predate the check and fail it** (measured 2026-10-19): 4 lack the template
+sections (Mundell, Dornbusch, the two GSDEER notes), and 12 carry numbers the clean_md does not
+contain — journal volumes and page ranges, sample sizes, coefficients from tables the extraction
+lost (Goldfajn & Werlang 2000: five coefficients). The agent does not rewrite them; that is a
+decision for the user.
 
 **The map keeps the area prefix** because Obsidian resolves `[[wikilinks]]` by
 note name across the whole vault; six files named `conceptual_map.md` would be ambiguous. Same
@@ -61,12 +96,12 @@ matters TO IT, coming from that agent; (4) **inputs** — what the other agents 
 coming from it; (5) **concept index** from the literature. An input gives emphasis, never a limit.
 Every output must appear as the other agent's input and vice versa. The map holds the **fixed** layer;
 the **dynamic** layer (what a given cycle's thesis needs) lives in the reports.
-Curation (sources processed, coverage, status) lives in the area's
-`repository/agent_mapping/recommended_bibliography/<área>_bibliography.md`. Only
+Curation (which sources exist and their status, coverage notes, open gaps) lives in
+`repository/agent_mapping/data_tracker.xlsx`: the area's Qual tab and the Notes tab. Only
 `exchange_rate` has the new format so far (2026-09-30); its monetary-policy rows are drafts until
 that map exists.
 
-**Two folders are not areas:** `ciclos/` (report and log templates, one folder per cycle: `dados/`
+**Three folders are not areas:** `concepts/` (above), `ciclos/` (report and log templates, one folder per cycle: `dados/`
 with A, the F(A) of each agent and the G scripts; `<agente>_r1.md`, `_r2.md`, `_rf.md`; `P1.md`,
 `P2.md`, `PF.md`; `log.md`; `relatorio.md` — when the cycle ends only the `_rf.md`, the log, the
 relatório and `dados/` stay) and

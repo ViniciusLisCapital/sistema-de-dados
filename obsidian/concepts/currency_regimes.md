@@ -14,7 +14,7 @@ A country cannot simultaneously have all three of:
 
 **Why not:** if 1 and 2 both hold, there is effectively only one currency in the world — any attempt to set domestic rates below foreign rates triggers unlimited capital outflow, forcing the central bank to sell reserves until domestic rates are bid back up to parity (and symmetrically for a rate cut attempt). Independent monetary policy is only possible by giving up one of the other two legs.
 
-Under a **floating** rate, this tension resolves cleanly: a rate cut weakens the currency, which itself reinforces the expansionary policy (more exports, fewer imports) rather than fighting it — this is the same DD-AA logic as [[Krugman 2023 - Output and the Exchange Rate in the Short Run]], stated as a policy trilemma rather than derived from a diagram.
+Under a **floating** rate, this tension resolves cleanly: a rate cut weakens the currency, which itself reinforces the expansionary policy (more exports, fewer imports) rather than fighting it — this is the same DD-AA logic as [[exchange_rate/synthesis/output_exchange_rates_sr (Krugman, 2023)]], stated as a policy trilemma rather than derived from a diagram.
 
 Every currency regime below is a different choice of which corner(s) of the trilemma to sacrifice, and by how much.
 
@@ -44,18 +44,19 @@ Key nuance: even "independent floats" intervene occasionally (Plaza Accord 1985;
 ## Historical evolution
 
 - **Classical gold standard** (~1870–WWI): price-specie-flow mechanism — trade surplus → gold inflow → money supply expansion → prices rise → exports fall (self-correcting, but tied domestic monetary policy to trade flows regardless of domestic conditions).
-- **Bretton Woods** (1944–1973): fixed dollar parities with periodic realignment; broke down under chronic inflation and the reserve-currency asymmetry documented in [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]].
+- **Bretton Woods** (1944–1973): fixed dollar parities with periodic realignment; broke down under chronic inflation and the reserve-currency asymmetry documented in [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]].
 - **Post-1973 float**: adopted expecting exchange rates to track goods/trade flows; instead, exchange rates proved to be dominated by asset-market/investment flows and were far more volatile than predicted — an early empirical hint at the asset-approach logic later formalized in [[uip]] and [[overshooting]].
-- **European Exchange Rate Mechanism (1979) and its 1992 crisis**: the classic **self-fulfilling speculative attack** case — UK recession/low rates vs. German reunification-driven high rates pulled capital toward DM; Bank of England ran out of reserves defending sterling, forcing UK exit from the ERM in September 1992, only two years after joining. Same mechanics as the balance-of-payments-crisis model in [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]].
+- **European Exchange Rate Mechanism (1979) and its 1992 crisis**: the classic **self-fulfilling speculative attack** case — UK recession/low rates vs. German reunification-driven high rates pulled capital toward DM; Bank of England ran out of reserves defending sterling, forcing UK exit from the ERM in September 1992, only two years after joining. Same mechanics as the balance-of-payments-crisis model in [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]].
 - **Euro (1999)**: the "no separate legal tender" endpoint of the trilemma for its members — full currency credibility transfer, full loss of independent monetary policy, exposed as a real cost in the 2010 EMU sovereign debt crisis (monetary union confers credibility, not creditworthiness).
 
 ---
 
 ## Connections
 
-- [[CFA L1 2025 - Capital Flows and the FX Market]] — primary source; this concept page (Impossible Trinity framework and the full IMF regime taxonomy) was created from that reading
-- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — same core mechanics (fixing R=R* requires giving up Ms control) derived via the DD-AA/money-market model rather than stated as a trilemma; gold standard and reserve-currency-asymmetry history overlaps directly
+- [[exchange_rate/synthesis/capital_flow_fx_market (CFA L1, 2025)]] — primary source; this concept page (Impossible Trinity framework and the full IMF regime taxonomy) was created from that reading
+- [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — same core mechanics (fixing R=R* requires giving up Ms control) derived via the DD-AA/money-market model rather than stated as a trilemma; gold standard and reserve-currency-asymmetry history overlaps directly
 - [[uip]] — the trilemma's "credibly fixed + convertible ⇒ one currency" logic is UIP with zero risk premium and zero expected depreciation
 - [[overshooting]] — post-1973 float volatility being driven by asset flows rather than trade flows is the empirical seed for the asset-approach/overshooting framework
-- [[CFA L1 2025 - Exchange Rate Calculations]] — companion reading in the same CFA learning module, covering the mechanics (cross-rates, forward points) that operate within whatever regime a currency is in
+- [[exchange_rate/synthesis/exchange_rate_calculation (CFA L1, 2025)]] — companion reading in the same CFA learning module, covering the mechanics (cross-rates, forward points) that operate within whatever regime a currency is in
 - [[kapitalo_fx_mental_models]] — 7.1–7.2: populist→orthodox government transitions as a repricing catalyst; Argentine currency-band liberalization and capital controls as a real-world regime-transition case study
+- [[monetary_policy/synthesis/taylor_rule (Taylor, 1993)]] — G-7 policy-rule simulations: fixed exchange rates raise output and price volatility relative to flexible rates with domestic interest-rate rules

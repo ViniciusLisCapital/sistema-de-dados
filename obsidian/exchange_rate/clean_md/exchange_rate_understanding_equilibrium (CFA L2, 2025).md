@@ -1,3 +1,5 @@
+© CFA Institute. For candidate use only. Not for distribution.
+1
 Currency Exchange Rates:
 Understanding Equilibrium Value
 by Michael R. Rosenberg, and William A. Barker, PhD, CFA.
@@ -12,10 +14,19 @@ given the bid–offer quotations for three currencies
 explain spot and forward rates and calculate the forward premium/
 discount for a given currency
 calculate the mark-to-market value of a forward contract
+explain international parity conditions (covered and uncovered
+interest rate parity, forward rate parity, purchasing power parity, and
+the international Fisher effect)
+describe relations among the international parity conditions
+evaluate the use of the current spot rate, the forward rate,
+purchasing power parity, and uncovered interest parity to forecast
+future spot exchange rates
 explain approaches to assessing the long-run fair value of an
 exchange rate
 describe the carry trade and its relation to uncovered interest rate
 parity and calculate the profit from a carry trade
+explain how flows in the balance of payment accounts affect
+currency exchange rates
 explain the potential effects of monetary and fiscal policy on
 exchange rates
 describe objectives of central bank or government intervention and
@@ -23,6 +34,7 @@ capital controls and describe the effectiveness of intervention and
 capital controls
 describe warning signs of a currency crisis
 
+4 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 1 INTRODUCTION
 Exchange rates are well known to follow a random walk, whereby fluctuations from
 one day to the next are unpredictable. The business of currency forecasting can be
@@ -115,6 +127,7 @@ option (but not the obligation) to deal at either the bid (to sell the base cur-
 rency) or the offer (to buy the base currency) quoted by the dealer. If the party
 chooses to trade at the quoted prices, the party is said to have either “hit the
 
+6 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 bid” or “paid the offer.” If the base currency is being sold, the party is said
 to have hit the bid. If the base currency is being bought, the party is said to
 have paid the offer.
@@ -220,6 +233,7 @@ For example, the dealer firm might also transact in bond and/or equity securitie
 the same client. In a competitive business environment, in order to win the client’s
 business for these other services, the dealer might provide a tighter (i.e., smaller)
 
+8 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 bid–offer spot exchange rate quote. The dealer might also give tighter bid–offer quotes
 in order to win repeat FX business. A client’s credit risk can also be a factor. A client
 with a poor credit profile may be quoted a wider bid–offer spread than one with
@@ -281,6 +295,7 @@ Buy EUR Buy USD Buy EUR
 Note that “Buy USD” and “Sell USD” in the expressions on the right-hand side of the
 equal sign will cancel out to give the JPY/EUR cross rate. In equation form, we can
 represent this relationship as follows:
+_JPY _JPY _ USD
 = .
 (EUR) ( USD )(EUR)
 Now, let’s incorporate the bid–offer rates in order to do the JPY/EUR calculation. A
@@ -301,10 +316,14 @@ quote, we need an exchange rate that is an offer rate. Thus, we need the
 offer rate for USD/EUR.
 Combining all of this conceptually and putting in the relevant offer rates leads to
 a JPY/EUR offer rate of
+_JPY _JPY _ USD
+= = 105.41 × 1.1651 = 122.81.
 (EUR) offer ( USD ) offer (EUR) offer
 Perhaps not surprisingly, calculating the implied JPY/EUR bid rate uses the same
 process as above but with “Buy JPY, Sell EUR” for the left-hand side of the equation,
 which leads to
+_JPY _JPY _ USD
+= = 105.39 × 1.1649 = 122.77.
 (EUR) ( USD ) (EUR)
 bid bid bid
 As one would expect, the implied cross-rate bid (122.77) is less than the offer (122.81).
@@ -319,6 +338,7 @@ _GBP _USD _USD
 ≠ .
 EUR (GBP)(EUR)
 
+10 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Instead, because the USD is in the numerator in both currency pairs, we will have to
 invert one of the pairs to derive the GBP/EUR cross rate.
 The following equation represents the cross-rate relationship we are trying to derive:
@@ -343,10 +363,12 @@ We can now finish the calculation of the bid and offer cross rates for GBP/EUR.
 Using the previously provided 1.1649/1.1651 as the bid–offer in USD/EUR, we cal-
 culate the GBP/EUR bid rate as follows:
 _GBP _GBP _ USD
+= = 0.81274 × 1.1649 = 0.9468.
 (EUR) ( USD ) (EUR)
 bid bid bid
 Similarly, the implied GBP/EUR offer rate is
 _GBP _GBP _ USD
+= = 0.81288 × 1.1651 = 0.9471.
 (EUR) offer ( USD ) offer (EUR) offer
 Note that the implied bid rate is less than the implied offer rate, as it must be to
 prevent arbitrage.
@@ -401,6 +423,7 @@ Solution
 C is correct. Using the intuitive equation-based approach,
 −1
 _JPY _JPY _CAD _JPY _ USD
+= × = × .
 CAD USD (USD) USD CAD
 This equation shows that we have to invert the CAD/USD quotes to get
 the USD/CAD bid–offer rates of 0.75752/0.75763. That is, given the CAD/
@@ -411,6 +434,7 @@ then leads to the following:
 Bid: 79.84 = 105.39 × 0.75752.
 Offer: 79.86 = 105.41 × 0.75763.
 
+12 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 3. If a dealer quoted a bid–offer rate of 79.81/79.83 in JPY/CAD, then a trian-
 gular arbitrage would involve buying:
 A. CAD in the interbank market and selling it to the dealer, for a profit of
@@ -444,6 +468,9 @@ Transaction 2 Sell CAD 100 million against the KRW at 21:30 London time.
 Transaction 3 Sell CAD 10 million against the USD at 15:30 London time.
 Given the proposed transactions, what is the most likely ranking of the bid–
 offer spreads, from tightest to widest, under normal market conditions?
+A. Transactions 1, 2, 3
+B. Transactions 2, 1, 3
+C. Transactions 3, 1, 2
 Solution
 C is correct. The CAD/USD currency pair is most liquid when New York
 and London are both in their most liquid trading periods at the same time
@@ -500,6 +527,8 @@ the spot and forward exchange markets to eliminate currency risk. Equating the
 returns on these two investment alternatives—that is, putting investments A and B
 on opposite sides of the equal sign—leads to the following relationship:
 _1
+(1 + i ) = S 1 + i .
+d f/d( f)( F f /d )
 To see the intuition behind forward rate calculations, note that the right-hand
 side of the expression (for investment B) also shows the chronological order of this
 investment: Convert from domestic to foreign currency at the spot rate (S ); invest
@@ -510,6 +539,7 @@ maturity, convert the foreign currency investment proceeds back into the domesti
 currency using the forward rate (1/F ).
 f/d
 
+14 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 For simplicity, we assumed a one-year horizon in the preceding example. However,
 the argument holds for any investment horizon. The risk-free assets used in this arbi-
 trage relationship are typically bank deposits quoted using the appropriate Market
@@ -521,11 +551,14 @@ count convention is the GBP, for which the convention is Actual/365. For the pur
 of our discussion, we will use Actual/360 consistently in order to avoid complication.
 Incorporating this day count convention into our arbitrage formula leads to
 _Actual _Actual _1
+1 + i = S 1 + i .
 ( d[ 360 ]) f/d( f[ 360 ])( F f /d )
 This equation can be rearranged to isolate the forward rate:
 _Actual
 1 + i
 _f[ 360 ]
+F = S . (1)
+f/d f/d _Actual
 (1 + i )
 d[ 360 ]
 Equation 1 describes covered interest rate parity. Our previous work shows that
@@ -538,6 +571,8 @@ The covered interest rate parity equation can also be rearranged to give an expr
 sion for the forward premium or discount:
 _Actual
 _[ 360 ]
+F − S = S i − i .
+f/d f/d f/d _Actual (f d)
 (1 + i )
 d[ 360 ]
 The domestic currency will trade at a forward premium (F > S ) if, and only if,
@@ -594,6 +629,7 @@ B is correct. The equation to calculate the forward premium (discount) is as
 follows:
 _Actual
 _[ 360 ]
+F − S = S ( i − i ) .
 P/B P/B P/B _Actual P B
 (1 + i )
 B[ 360 ]
@@ -613,11 +649,15 @@ the spot rate and the number of forward points at each maturity, as shown in Exh
 1 (“Maturity” is defined in terms of the time between spot settlement—usually T +
 2—and the settlement of the forward contract).
 
+16 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Exhibit 1: Sample Spot and Forward Quotes (Bid–Offer)
 Maturity Spot Rate
 Spot (USD/EUR) 1.1649/1.1651
 Forward Points
 1 month −5.6/−5.1
+3 months −15.9/−15.3
+6 months −37.0/−36.3
+12 months −94.3/−91.8
 Note the following:
 ■ As always, the offer in the bid–offer quote is larger than the bid. In this
 example, the forward points are negative (i.e., the forward rate for the EUR
@@ -643,6 +683,7 @@ is selling the EUR forward against the USD and is given a USD/EUR quote. The EUR
 is the base currency; thus, the market participant must use the bid rates (i.e., hit the
 bid). Using the data in Exhibit 1, the three-month forward bid rate in this case would
 be based on the spot bid and the forward points bid and hence would be
+1.1649 + (−15.9/10,000) = 1.16331.
 The market participant would be selling EUR three months forward at a price of
 USD 1.16331 per EUR.
 5 THE MARK-TO-MARKET VALUE OF A FORWARD
@@ -703,6 +744,7 @@ _90
 This result is the mark-to-market value of the original long GBP 10 million
 six-month forward when it is closed out three months prior to settlement.
 
+18 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 To summarize, the process for marking to market a forward position is relatively
 straightforward:
 1. Create an offsetting forward position that is equal to the original forward
@@ -767,6 +809,7 @@ Solution
 C is correct. The dealer will sell CHF against the GBP, which is equivalent
 to buying GBP (the base currency) against the CHF. Hence, the offer side of
 the market will be used for forward points. The all-in forward price will be
+1.2941 + (−54.0/10,000) = 1.28870.
 3. Some time ago, Laurier Bay Capital, an investment fund based in Los An-
 geles, hedged a long exposure to the New Zealand dollar by selling NZD 10
 million forward against the USD; the all-in forward price was 0.7900 (USD/
@@ -795,6 +838,7 @@ of 0.7830 − 0.0010 = 0.7820. On the settlement day, Laurier Bay will receive
 USD 7,900,000 (NZD 10,000,000 × 0.7900 USD/NZD) from the original for-
 ward contract and pay out USD 7,820,000 (NZD 10,000,000 × 0.7820 USD/
 
+20 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 NZD) based on the offsetting forward contract. The result is a net cash flow
 on the settlement day of 10,000,000 × (0.7900 − 0.7820) = +USD 80,000.
 This is a cash inflow because Laurier Bay sold the NZD forward and the
@@ -824,6 +868,7 @@ three months’ time) in order to close out the initial position. Buying USD
 using the USD/NZD currency pair is the same as selling the NZD. Because
 the NZD is the base currency in the USD/NZD quote, selling the NZD
 means calculating the bid rate:
+0.7825 + (−12.1/10,000) = 0.78129.
 At settlement, the USD amounts will net to zero (USD 10 million both
 bought and sold). The NZD amounts will not net to zero, however, because
 the all-in forward rate changed between the time Laurier Bay initiated the
@@ -849,6 +894,9 @@ _90
 
 International Parity Conditions 21
 INTERNATIONAL PARITY CONDITIONS 6
+explain international parity conditions (covered and uncovered
+interest rate parity, forward rate parity, purchasing power parity, and
+the international Fisher effect)
 Having reviewed the basic tools of the FX market, we now turn our focus to how they
 are used in practice. At the heart of the trading decision in FX markets lies a view on
 equilibrium market prices. An understanding of equilibrium pricing will assist the
@@ -894,6 +942,7 @@ simple formula, model, or approach that will allow market participants to precis
 forecast exchange rates. Models that work well in one period may fail in others. Models
 that work for one set of exchange rates may fail to work for others.
 
+22 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Nonetheless, market participants must have a market view to guide their decisions,
 even if this view requires significant revision as new information becomes available.
 The following sections provide a framework for understanding FX markets, a guide
@@ -920,6 +969,13 @@ do not hold in the short term is covered interest rate parity, which is the only
 condition that is enforced by arbitrage. We examine this parity condition first.
 7 COVERED AND UNCOVERED INTEREST RATE PARITY
 AND FORWARD RATE PARITY
+explain international parity conditions (covered and uncovered
+interest rate parity, forward rate parity, purchasing power parity, and
+the international Fisher effect)
+describe relations among the international parity conditions
+evaluate the use of the current spot rate, the forward rate,
+purchasing power parity, and uncovered interest parity to forecast
+future spot exchange rates
 We have already discussed covered interest rate parity in our examination of forward
 exchange rates. Under this parity condition, an investment in a foreign money market
 instrument that is completely hedged against exchange rate risk should yield exactly
@@ -930,6 +986,7 @@ either in a domestic money market instrument or in a fully currency-hedged forei
 money market instrument—exactly the same holding period return. If one strategy
 gave a higher holding period return than the other, then an investor could short-sell
 
+Covered and Uncovered Interest Rate Parity and Forward Rate Parity 23
 the lower-yielding approach and invest the proceeds in the higher-yielding approach,
 earning riskless arbitrage profits in the process. In real-world financial markets,
 such a disparity will be quickly arbitraged away so that no further arbitrage profits
@@ -972,6 +1029,7 @@ ment is 10% while the return on the one-year domestic money market instrument is
 investment in domestic currency terms is known with complete certainty. This is not the
 case for the uncovered investment in the foreign currency money market instrument.
 In domestic currency terms, the investment return on an uncovered (or unhedged)
+foreign-currency-denominated investment is equal to ( 1 + i f ) (1 − %Δ S f /d ) − 1.
 Intuitively, the formula says that the investor’s return on a foreign investment is
 a function of both the foreign interest rate and the change in the spot rate, whereby
 a depreciation in the foreign currency reduces the investor’s return. The percentage
@@ -981,8 +1039,10 @@ currency declines in value, thereby reducing the all-in return from the domestic
 rency perspective of our investor. This all-in return depends on future movements in
 the S rate, which cannot be known until the end of the period. This return can be
 f/d
+approximated by ≅ i − % Δ S .
 f f/d
 
+24 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Note that this approximate formula holds because the product (i × %ΔS) is small
 compared with the interest rate (i) and the percentage change in the exchange rate
 (%ΔS). For simplicity of exposition, we will use the ≅ symbol when we introduce an
@@ -1015,6 +1075,7 @@ risk-neutral investors to force equality of expected returns.
 Using our example’s foreign/domestic (f/d) notation, uncovered interest rate parity
 says the expected change in the spot exchange rate over the investment horizon should
 be reflected in the interest rate differential:
+%Δ S e = i − i , (2)
 f/d f d
 where ∆Se indicates the change in the spot rate expected for future periods.
 Note that Equation 2 cannot hold simultaneously for S/ and S / (= 1/S/ ) because
@@ -1038,6 +1099,7 @@ shift capital from one currency to another because expected returns on otherwise
 identical money market investments would be equal across markets and risk-neutral
 investors would be indifferent among them.
 
+Covered and Uncovered Interest Rate Parity and Forward Rate Parity 25
 Most studies have found that over short- and medium-term periods, the rate
 of depreciation of the high-yield currency is less than what would be implied by
 uncovered interest rate parity. In many cases, high-yield currencies have been found
@@ -1064,6 +1126,8 @@ arbitrage condition that underlies covered interest rate parity (illustrated ear
 be rearranged to give an expression for the forward premium or discount:
 _Actual
 _[ 360 ]
+F − S = S i − i .
+f/d f/d f/d _Actual (f d)
 (1 + i )
 d[ 360 ]
 The domestic currency will trade at a forward premium (F > S ) if, and only if,
@@ -1073,30 +1137,37 @@ f d
 For the sake of simplicity, we assume that the investment horizon is one year, so that
 i − i
 _f d
+F − S = S .
 f/d f/d f/d(1 + i )
 d
 Because the 1 + i denominator will be close to 1, we can approximate the above
 d
 equation as follows:
+F f /d − S f /d ≅ S f /d ( i f − i d ) .
 This covered interest rate parity equation can be rearranged to show the forward
 discount or premium as a percentage of the spot rate:
 F − S
 _f/d f/d
+S ≅ i f − i d .
 f/d
 We have also shown that if uncovered interest rate parity holds, then the expected
 change in the spot rate is equal to the interest rate differential:
+%Δ S e = i − i .
 f/d f d
 We can link the covered interest rate parity and uncovered interest rate parity
 equations as follows:
 F − S
+_ f/d f/d = %Δ S e = i − i .
 S f/d f d
 f/d
 
+26 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Thus, the forward premium (discount) on a currency, expressed in percentage
 terms, equals the expected percentage appreciation (depreciation) of the domestic
 currency (assuming that the uncovered interest rate parity condition holds).
 In theory, then, the forward exchange rate will be an unbiased forecast of the future
 spot exchange rate if both covered and uncovered interest rate parity hold:
+F = S e .
 f/d f/d
 This condition is often referred to as forward rate parity.
 We know covered interest rate parity must hold because it is enforced by arbitrage.
@@ -1137,6 +1208,7 @@ B is correct. The expected depreciation of the Australian dollar (decline in
 the JPY/AUD rate) is equal to the interest rate differential between Australia
 and Japan (3% − 1%).
 
+Covered and Uncovered Interest Rate Parity and Forward Rate Parity 27
 2. The best explanation of why this prediction may not be very accurate is that:
 A. covered interest rate parity does hold in this case.
 B. the forward points indicate that a riskless arbitrage opportunity exists.
@@ -1184,6 +1256,7 @@ C is correct. A fully hedged JPY investment would provide the same return
 as the AUD investment: 3%. This represents covered interest rate parity, an
 arbitrage condition.
 
+28 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 6. The fixed-income manager collects the following information and uses it,
 along with the international parity conditions, to estimate investment re-
 turns and future exchange rate movements.
@@ -1213,6 +1286,7 @@ A is correct. If uncovered interest rate parity holds, then forward rate parity
 will hold and the expected spot rate one year forward is equal to the one-
 year forward exchange rate. This forward rate is calculated in the usual
 manner, given the spot exchange rates and MRRs:
+Se = F = 129.67(1.001/1.03) = 126.02.
 8. If uncovered interest rate parity holds, between today and one year from
 now, the expected movement in the JPY/USD currency pair is closest to:
 A. −1.60%.
@@ -1225,6 +1299,13 @@ term, there is no difference between USD MRR and JPY MRR.
 
 Purchasing Power Parity 29
 PURCHASING POWER PARITY 8
+explain international parity conditions (covered and uncovered
+interest rate parity, forward rate parity, purchasing power parity, and
+the international Fisher effect)
+describe relations among the international parity conditions
+evaluate the use of the current spot rate, the forward rate,
+purchasing power parity, and uncovered interest parity to forecast
+future spot exchange rates
 So far, we have looked at the relationship between exchange rates and interest rate
 differentials. Now, we turn to examining the relationship between exchange rates and
 inflation differentials. The basis for this relationship is known as purchasing power
@@ -1242,6 +1323,7 @@ f
 x
 exchange rate–adjusted price of the identical good in the domestic country, P :
 d
+P x = S × P x .
 f f/d d
 For example, for a euro-based consumer, if the price of good x in the euro area is EUR
 100 and the nominal exchange rate stands at 1.15 USD/EUR, then the price of good
@@ -1253,6 +1335,7 @@ of the foreign country (P) should equal the currency-adjusted broad price level 
 f
 the domestic country (P ):
 d
+P = (S )(P ).
 f f/d d
 This equation implicitly assumes that all domestic and foreign goods are tradable and
 that the domestic and foreign price indexes include the same bundle of goods and
@@ -1271,6 +1354,7 @@ service across countries, but if transaction costs are significant and/or not al
 and services are tradable, then goods arbitrage will be incomplete. Hence, sizable and
 persistent departures from absolute PPP are likely.
 
+30 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 However, if it is assumed that transaction costs and other trade impediments are
 constant over time, it might be possible to show that changes in exchange rates and
 changes in national price levels are related, even if the relationship between exchange
@@ -1279,6 +1363,7 @@ of PPP, the percentage change in the spot exchange rate (%ΔS ) will be complete
 f/d
 determined by the difference between the foreign and domestic inflation rates (π − π ):
 f d
+%Δ S f /d ≅ π f − π d . (3)
 Intuitively, the relative version of PPP implies that the exchange rate changes to offset
 changes in competitiveness arising from inflation differentials. For example, if the
 foreign inflation rate is assumed to be 9% while the domestic inflation rate is assumed
@@ -1308,6 +1393,7 @@ that are expected to run persistently high inflation rates should expect to see 
 currencies depreciate over time, while countries that are expected to run relatively low
 inflation rates on a sustainable basis should expect to see their currencies appreciate
 over time. Ex ante PPP can be expressed as
+%Δ S e = π e − π e , (4)
 f/d f d
 where it is understood that the use of expectations (the superscript e) indicates
 e
@@ -1370,6 +1456,7 @@ Real-USD exchange rate changes rapidly in the period 1980-1993, mirroring the ve
 large differences in relative inflation between hyperinflationary Brazil and low infla-
 tion rate United States. It also indicates that the majority countries did not have large
 
+32 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 inflation differentials with the United States, and so 1-year changes in exchange rates
 cluster near the origin. This mirrors the upper left panel in Exhibit 2 above, which
 excludes Brazil from the sample of countries.
@@ -1377,8 +1464,11 @@ Exhibit 3: Effect of Large Differences in Inflation Rates on Exchange Rates
 over 1-Year Time Horizons
 REAL/USD Differences in Inflation Rates
 3.5 600
+400
 3.0
+200
 2.5
+0
 –200
 2.0
 Exchange Rate –400
@@ -1388,6 +1478,13 @@ Exchange Rate –400
 1.0 –800
 9 THE FISHER EFFECT, REAL INTEREST RATE PARITY,
 AND INTERNATIONAL PARITY CONDITIONS
+explain international parity conditions (covered and uncovered
+interest rate parity, forward rate parity, purchasing power parity, and
+the international Fisher effect)
+describe relations among the international parity conditions
+evaluate the use of the current spot rate, the forward rate,
+purchasing power parity, and uncovered interest parity to forecast
+future spot exchange rates
 explain approaches to assessing the long-run fair value of an
 exchange rate
 So far, we have examined the relationships between exchange rates and interest rate
@@ -1399,11 +1496,14 @@ nominal interest rate (i) in a given country into two parts: (1) the real intere
 (r) in that particular country and (2) the expected inflation rate (πe) in that country:
 
 The Fisher Effect, Real Interest Rate Parity, and International Parity Conditions 33
+i = r + πe.
 To relate this concept to exchange rates, we can write the Fisher equation for both
 the domestic country and a foreign country. If the Fisher effect holds, the nominal
 interest rates in both countries will equal the sum of their respective real interest rates
 and expected inflation rates:
+i = r + π e .
 d d d
+i = r + π e .
 f f f
 Let’s take a closer look at the macroeconomic forces that drive the trend in nominal
 yield spreads. Subtracting the top equation from the bottom equation shows that
@@ -1414,22 +1514,29 @@ f d
 e e
 foreign–domestic expected inflation differential ( π − π ):
 f d
+i f − i d = ( r f − r d ) + ( π f e − π d e ) .
 We can rearrange this equation to solve for the real interest rate differential instead
 of the nominal interest rate differential:
+( r f − r d ) = ( i f − i d ) − ( π f e − π d e ) .
 To tie this material to our previous work on exchange rates, recall our expression for
 uncovered interest rate parity:
+%Δ S e = i − i .
 f/d f d
 The nominal interest rate spread (i − i ) equals the expected change in the exchange
 f d
 e
+rate (% Δ S ).
 f/d
 Recall also the expression for ex ante PPP:
+%Δ S e = π e − π e .
 f/d f d
 The difference in expected inflation rates equals the expected change in the exchange
 rate. Combining these two expressions, we derive the following:
+i − i = π e − π e .
 f d f d
 The nominal interest rate spread is equal to the difference in expected inflation rates.
 We can therefore conclude that if uncovered interest rate parity and ex ante PPP hold,
+(r − r ) = 0.
 f d
 The real yield spread between the domestic and foreign countries (r − r ) will be zero,
 f d
@@ -1440,6 +1547,7 @@ different markets is known as the real interest rate parity condition.
 Finally, if real interest rates are equal across markets, then it also follows that the
 foreign–domestic nominal yield spread is determined solely by the foreign–domestic
 expected inflation differential:
+i − i = π e − π e .
 f d f d
 This is known as the international Fisher effect. The reader should be aware that
 some authors refer to uncovered interest rate parity as the “international Fisher effect.”
@@ -1447,6 +1555,7 @@ We reserve this term for the relationship between nominal interest rate differen
 and expected inflation differentials because the original (domestic) Fisher effect is a
 relationship between interest rates and expected inflation.
 
+34 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 The international Fisher effect and, by extension, real interest rate parity assume
 that currency risk is the same throughout the world. However, not all currencies carry
 the same risk. For example, an emerging country may have a high level of indebtedness,
@@ -1538,6 +1647,7 @@ across all markets (real interest rate parity), then the nominal yield spread
 between domestic and foreign markets will equal the domestic–foreign
 expected inflation differential, which is the international Fisher effect.
 
+36 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 6. If ex ante PPP and the international Fisher effect hold, then expected infla-
 tion differentials should equal both the expected change in the exchange
 rate and the nominal interest rate differential. This relationship implies that
@@ -1560,12 +1670,18 @@ EXAMPLE 6
 The Relationships among the International Parity
 Conditions
 1. Which of the following is a no-arbitrage condition?
+A. Real interest rate parity
+B. Covered interest rate parity
+C. Uncovered interest rate parity
 Solution
 B is correct. Covered interest rate parity is enforced by equating the invest-
 ment return on two riskless investments (domestic and currency-hedged
 foreign).
 2. Forward rates are unbiased predictors of future spot rates if two parity con-
 ditions hold. Which of the following is not one of these conditions?
+A. Real interest rate parity
+B. Covered interest rate parity
+C. Uncovered interest rate parity
 Solution
 A is correct. Both covered and uncovered interest rate parity must hold for
 the forward rate to be an unbiased predictor of the future spot rate. Real
@@ -1618,11 +1734,13 @@ as the FX carry trade, which involves taking long positions in high-yield curren
 and short positions in low-yield currencies. The latter are often referred to as “funding
 currencies.” As a simplified example of the carry trade, assume a trader can borrow
 
+38 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Canadian dollars at 1% and earn 9% on an investment in Brazilian reals for one year.
 To execute the trade to earn 8% from the interest rate differential, the trader will do
 the following:
 1. Borrow Canadian dollars at t = 0.
 2. Sell the dollars and buy Brazilian reals at the spot rate at t = 0.
+3. Invest in a real-denominated investment at t = 0.
 4. Liquidate the Brazilian investment at t = 1.
 5. Sell the reals and buy dollars at the spot rate at t = 1.
 6. Pay back the dollar loan.
@@ -1712,6 +1830,7 @@ A is correct. Carry trades are leveraged trades (borrow in the funding cur-
 rency, invest in the high-yield currency), and leverage increases the volatility
 in the investor’s return on equity.
 
+40 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 4. A Tokyo-based asset manager enters into a carry trade position based on
 borrowing in yen and investing in one-year Australian MRR.
 Spot Rate Spot Rate One
@@ -1746,6 +1865,8 @@ the yen loan results in a profit of JPY 101.51 − (JPY 100 × 1.001) = JPY 1.41
 This is equivalent to the 1.42% profit calculated previously (slight difference
 arising due to rounding).
 11 THE IMPACT OF BALANCE OF PAYMENTS FLOWS
+explain how flows in the balance of payment accounts affect
+currency exchange rates
 As noted earlier, the parity conditions may be appropriate for assessing fair value for
 currencies over long horizons, but they are of little use as a real-time gauge of value.
 There have been many attempts to find a better framework for determining a curren-
@@ -1803,6 +1924,7 @@ mechanisms:
 ■ The portfolio balance channel
 ■ The debt sustainability channel
 
+42 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 We briefly discuss each of these mechanisms next.
 The Flow Supply/Demand Channel
 The flow supply/demand channel is based on a fairly simple model that focuses on the
@@ -1906,6 +2028,7 @@ concerns over outsized US current account deficits coupled with relatively low
 nominal and/or real short-term US interest rates, which made it difficult to
 attract sufficient foreign capital to the United States to finance those deficits.
 
+44 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 EXCHANGE RATE ADJUSTMENT IN SURPLUS NATIONS: JAPAN AND CHINA
 Japan and, for a number of years, China represent examples of countries with
 large current account surpluses and illustrate the pressure that those surpluses
@@ -1923,6 +2046,8 @@ to more heated protectionist rhetoric, Japan felt compelled to tolerate steady
 upward pressure on the yen. As a result, the yen’s value versus the dollar has
 tended to move in sync with the trend in Japan’s current account surplus.
 12 CAPITAL FLOWS
+explain how flows in the balance of payment accounts affect
+currency exchange rates
 Greater financial integration of the world’s capital markets and greater freedom of
 capital to flow across national borders have increased the importance of global financial
 flows in determining exchange rates, interest rates, and broad asset price trends. One
@@ -2000,6 +2125,7 @@ and 1995, the US dollar fell while the US equity market was strong and the Japan
 yen soared while Japanese stocks were weak. In contrast, between 1995 and early
 2000, the US dollar soared in tandem with a rising US equity market while the yen
 
+46 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 weakened in tandem with a decline in the Japanese equity market. Such instability in
 the correlation between exchange rates and equity markets makes it difficult to form
 judgments on possible future currency moves based solely on expected equity market
@@ -2095,6 +2221,7 @@ age these activities through lower taxes. Nor would the EM country be likely
 to encourage further currency appreciation by intervening in the market to
 buy its own currency.
 
+48 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 6. If government actions were ineffective and the EM country’s bubble eventu-
 ally burst, this would most likely be reflected in an increase in:
 A. the risk premium for the EM.
@@ -2112,6 +2239,7 @@ index. One of her research associates tells her that, in general, the correla-
 tion between equity market returns and changes in exchange rates has been
 found to be highly positive over time.
 The statement made by the research associate is:
+A. correct.
 B. incorrect, because the correlation is highly negative over time.
 C. incorrect, because the correlation is not stable and tends to converge
 toward zero in the long run.
@@ -2134,6 +2262,7 @@ In this model, expansionary monetary policy affects growth, in part, by reducing
 interest rates and thereby increasing investment and consumption spending. Given
 flexible exchange rates and expansionary monetary policy, downward pressure on
 
+Monetary and Fiscal Policies 49
 domestic interest rates will induce capital to flow to higher-yielding markets, putting
 downward pressure on the domestic currency. The more responsive capital flows are
 to interest rate differentials, the greater the depreciation of the currency.
@@ -2165,7 +2294,9 @@ Rates under Conditions of High Capital Mobility
 DEM/USD US Less German Real Interest Rates (bps)
 1.9 200
 1.8 Differential (right axis)
+100
 1.7
+0
 1.6
 Exchange Rate
 (left axis) –100
@@ -2173,10 +2304,12 @@ Exchange Rate
 –200
 1.4
 1.3 –300
+Source: Rosenberg (1996, p. 132).
 When capital mobility is low, the effects of monetary and fiscal policy on exchange
 rates will operate primarily through trade flows rather than capital flows. The com-
 bination of expansionary monetary and fiscal policy will be bearish for a currency.
 
+50 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Earlier we said that expansionary fiscal policy will increase imports and hence the
 trade deficit, creating downward pressure on the currency. Layering on an expansive
 monetary policy will further boost spending and imports, worsening the trade balance
@@ -2196,11 +2329,14 @@ Policy Policy
 Domestic
 Expansionary
 currency Indeterminate
+Fiscal Policy
 depreciates
 Domestic
 Restrictive Indeterminate
 currency
+Fiscal Policy
 appreciates
+Source: Adapted from Rosenberg (1996, p. 133).
 Exhibit 4 is more relevant for the G–10 countries because capital mobility tends to
 be high in developed economies. Exhibit 5 is more relevant for emerging market
 economies that restrict capital movement.
@@ -2219,6 +2355,7 @@ take the opposite perspective: Output is fixed and monetary policy affects excha
 rates primarily through the price level and the rate of inflation. In this section, we briefly
 describe two variations of the monetary approach to exchange rate determination.
 
+Monetary and Fiscal Policies 51
 The monetary approach asserts that an X percent rise in the domestic money
 supply will produce an X percent rise in the domestic price level. Assuming that pur-
 chasing power parity holds—that is, that changes in exchange rates reflect changes
@@ -2265,6 +2402,7 @@ were all preceded by sharp accelerations in domestic credit expansions. In 2012,
 Venezuela began a period of triple-digit inflation, followed by a massive currency
 depreciation and an economic crisis.
 
+52 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 EXAMPLE 9
 Monetary Policy and Exchange Rates
 Monique Kwan, the currency strategist at a major foreign exchange dealer, is
@@ -2310,6 +2448,7 @@ C is correct. The looser monetary policy will lead to exchange rate deprecia-
 tion. To counter this effect and maintain the currency peg, the central bank
 will have to intervene in the FX market, buying the country’s own currency.
 
+Monetary and Fiscal Policies 53
 A is incorrect because tighter fiscal policy is associated with lower interest
 rates and is therefore likely to increase rather than mitigate the downward
 pressure on the domestic currency. Similarly, B is incorrect because a move
@@ -2357,6 +2496,7 @@ In the portfolio balance approach, global investors are assumed to hold a diver-
 sified portfolio of domestic and foreign assets, including bonds. The desired allocation
 is assumed to vary in response to changes in expected return and risk considerations.
 
+54 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 In this framework, a growing government budget deficit leads to a steady increase
 in the supply of domestic bonds outstanding. These bonds will be willingly held only
 if investors are compensated in the form of a higher expected return. Such a return
@@ -2389,17 +2529,21 @@ Policy Policy
 Domestic
 Expansionary
 currency Indeterminate
+Fiscal Policy
 depreciates
 Domestic
 Restrictive
 Indeterminate currency
+Fiscal Policy
 appreciates
+Source: Rosenberg (2003).
 EXAMPLE 10
 Fiscal Policy and Exchange Rates
 Monique Kwan is continuing her analysis of the foreign exchange rate outlook
 for selected countries. She examines a DM country that has a high degree of
 capital mobility and a floating-rate currency regime. Kwan notices that although
 
+Monetary and Fiscal Policies 55
 the current outstanding volume of government debt is low, as a percentage of
 GDP, it is rising sharply as a result of expansionary fiscal policy. Moreover,
 projections for the government debt-to-GDP ratio point to further increases
@@ -2448,6 +2592,7 @@ rising government debt, the most likely fiscal response is an eventual move
 toward fiscal consolidation—reducing the public deficit and debt levels that
 were causing the debt metrics to deteriorate. This policy adjustment would
 
+56 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 involve issuing fewer government bonds. All else equal, bond yields would
 decrease, leading to a weaker domestic currency over the longer term.
 A is incorrect because currency appreciation is not likely to accompany
@@ -2549,6 +2694,7 @@ distortions in global trade and finance and that, in all likelihood, market part
 would eventually find ways to circumvent the controls. Furthermore, many thought
 that capital controls imposed by one country could deflect capital flows to other
 
+58 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 countries, which could complicate monetary and exchange rate policies in those
 economies. Despite such concerns, the IMF has said that the benefits associated
 with capital controls may exceed the associated costs. Given the painful lessons that
@@ -2597,6 +2743,7 @@ the economy contracts, asset values plummet, and the currency sharply depreciate
 History is filled with examples of currencies that have come under heavy selling pres-
 sure within short windows of time. For example, between August 2008 and February
 
+Warning Signs of a Currency Crisis 59
 2009, 23 currencies dropped by 25% or more against the US dollar. These included the
 developed market currencies of Australia, Sweden, and the United Kingdom, which
 dropped by 35% or more, and the emerging market currencies of Brazil, Russia, and
@@ -2652,6 +2799,7 @@ ditions were identified in one or more studies (Babecký, Havránek, Matějů, R
 1. Prior to a currency crisis, the capital markets have been liberalized to allow
 the free flow of capital.
 
+60 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 2. There are large inflows of foreign capital (relative to GDP) in the period
 leading up to a crisis, with short-term funding denominated in a foreign
 currency being particularly problematic.
@@ -2703,6 +2851,7 @@ attractive interest rates and were denominated in foreign currencies. In partic-
 ular, many of the depositors were British, Dutch, and other European citizens
 who held deposit accounts denominated in pounds and euros.
 
+Warning Signs of a Currency Crisis 61
 With government guarantees on their deposit accounts, the banking industry
 grew rapidly. The largest bank, Kaupthing, experienced asset growth of 30 times
 between 2000 and 2008. The three banks increased lending rapidly, with many
@@ -2743,6 +2892,7 @@ krona and imposed capital controls on the selling of krona for foreign currency.
 The Icelandic economy contracted, and per capita GDP fell 9.2% in 2009. By
 the spring of 2009, unemployment was 9%. The country subsequently required
 a bailout from the IMF and its neighbors of USD 4.6 billion.
+Source: Federal Reserve Bank of St. Louis database; Bekaert and Hodrick 2018; Matsangou 2015;
 Daniels and VanHoose 2017.
 EXAMPLE 11
 Currency Crises
@@ -2751,10 +2901,12 @@ emerging market currencies. She discusses this matter with a research associ-
 ate, who tells her that the historical record of currency crises shows that most
 of these episodes were not very well anticipated by investors (in terms of their
 
+62 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 positioning), by the bond markets (in terms of yield spreads between countries),
 or by major credit rating agencies and economists (in terms of the sovereign
 credit ratings and forecasts, respectively).
 1. The research associate is most likely:
+A. correct.
 B. incorrect, because most credit rating agencies and economists typi-
 cally change their forecasts prior to a crisis.
 C. incorrect, because investor positioning and international yield differ-
@@ -2767,6 +2919,7 @@ cludes that even countries with relatively sound economic fundamentals
 can fall victim to these crisis episodes and that these attacks can occur when
 sentiment shifts for reasons unrelated to economic fundamentals.
 Kwan’s conclusion is most likely:
+A. correct.
 B. incorrect, because there are few historical crises involving currencies
 of countries with sound economic fundamentals.
 C. incorrect, because there are few historical episodes in which a sudden
@@ -2792,6 +2945,7 @@ typically decreases the likelihood of a currency crisis.
 A. had a strong record of predicting actual crises, even if it generates a lot
 of false signals.
 
+Warning Signs of a Currency Crisis 63
 B. included a wide variety of economic indicators, including those for
 which data are available only with a significant lag.
 C. started flashing well in advance of an actual currency crisis to give
@@ -2837,6 +2991,7 @@ higher (lower) than the current interbank offer (bid) price.
 than the implied cross-rate offers (bids) available in the interbank mar-
 ket. If they are not, then a triangular arbitrage opportunity arises.
 
+64 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 ■ Forward exchange rates are quoted in terms of points to be added to the
 spot exchange rate. If the points are positive (negative), the base currency
 is trading at a forward premium (discount). The points are proportional to
@@ -2889,6 +3044,7 @@ low-yield currencies do not appreciate as much as yield spreads would sug-
 gest over short to medium periods, thus violating the theory of uncovered
 interest rate parity.
 
+Warning Signs of a Currency Crisis 65
 ■ Carry trades overweight high-yield currencies at the expense of low-yield
 currencies. Historically, carry trades have generated attractive returns in
 benign market conditions but tend to perform poorly (i.e., are subject to
@@ -2941,6 +3097,7 @@ quent currency appreciation, or (3) some combination of the two.
 ■ Surges in capital inflows can fuel boom-like conditions, asset price bubbles,
 and currency overvaluation.
 
+66 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 ■ Many consider capital controls to be a legitimate part of a policymaker’s
 toolkit. The IMF believes that capital controls may be needed to prevent
 exchange rates from overshooting, asset price bubbles from forming, and
@@ -2988,7 +3145,9 @@ Appendix 67
 KRW Korean won
 NZD New Zealand dollar
 
+68 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 PRACTICE PROBLEMS
+The following information relates to questions
 1-5
 Ed Smith is a new trainee in the foreign exchange (FX) services department of a
 major global bank. Smith’s focus is to assist senior FX trader Feliz Mehmet, CFA.
@@ -3022,6 +3181,7 @@ USD 0.80% CAD/USD 1.3200 1.3151
 CAD 1.71% EUR/CAD 0.6506 0.6567
 EUR 2.20%
 
+70 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Finally, Mehmet asks Smith to assist with a trade involving a US multinational
 customer operating in Europe and Japan. The customer is a very cost-conscious
 industrial company with an AA credit rating and strives to execute its currency
@@ -3064,8 +3224,10 @@ C. pair of currencies involved.
 most likely to be forecast by:
 A. current spot rates.
 
+Practice Problems 71
 B. forward exchange rates.
 C. inflation rate differentials.
+The following information relates to questions
 6-13
 Anna Goldsworthy is the chief financial officer of a manufacturing firm head-
 quartered in the United Kingdom. She is responsible for overseeing exposure to
@@ -3100,6 +3262,7 @@ months ago, the firm sold EUR 5,000,000 against the GBP using a nine-month
 forward contract at an all-in price of GBP/EUR 0.9526. To mark the position to
 market, Underwood collects the GBP/EUR forward rates in Exhibit 2.
 
+72 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Exhibit 2: GBP/EUR Forward Rates
 Maturity Forward Points
 One month 4.40/4.55
@@ -3139,6 +3302,7 @@ action of MXN 27,000,000 would be closest to:
 A. GBP 0.
 B. GBP 5,400.
 
+Practice Problems 73
 C. GBP 10,800.
 9. Based on Exhibits 1, 2, and 3, the mark-to-market gain for Goldsworthy’s forward
 position is closest to:
@@ -3156,11 +3320,15 @@ B. –0.0010.
 C. +0.0010.
 12. Using Exhibits 1, 2, and 3, which international parity condition would Goldswor-
 thy most likely use to calculate the EUR MRR?
+A. Real interest rate parity
+B. Covered interest rate parity
+C. Uncovered interest rate parity
 13. The international parity condition Goldsworthy will use to provide the estimate
 of the future JPY/GBP spot rate is most likely:
 A. covered interest rate parity.
 B. uncovered interest rate parity.
 C. relative purchasing power parity.
+The following information relates to questions
 14-20
 Connor Wagener, a student at the University of Canterbury in New Zealand, has
 been asked to prepare a presentation on foreign exchange rates for his interna-
@@ -3170,6 +3338,7 @@ with currency trader Hannah McFadden. During the interview, Wagener asks
 McFadden,
 Could you explain what drives exchange rates? I’m curious as to why our New
 
+74 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 Zealand dollar was affected by the European debt crisis in 2011 and what other
 factors impact it.
 In response, McFadden begins with a general discussion of exchange rates. She
@@ -3179,6 +3348,7 @@ well as current and expected future spot rates. McFadden makes the following
 statement:
 Statement 1: “Fortunately, the international parity condition most relevant for
 FX carry trades does not always hold.”
+McFadden continues her discussion:
 FX carry traders go long (i.e., buy) high-yield currencies and fund their position
 by shorting—that is, borrowing in—low-yield currencies. Unfortunately, crashes
 in currency values can occur which create financial crises as traders unwind their
@@ -3205,6 +3375,7 @@ rates in the short term.
 McFadden describes monetary models by stating,
 Statement 3: “Monetary models of exchange rate determination focus on the
 effects of inflation, price level changes, and risk premium adjustments.”
+McFadden continues her discussion:
 So far, we’ve touched on balance of payments and monetary policy. The portfolio
 balance model addresses the impacts of sustained fiscal policy on exchange rates.
 I must take a client call but will return shortly. In the meantime, here is some
@@ -3222,10 +3393,12 @@ notes that capital flows can have a significant impact on exchange rates and hav
 contributed to currency crises in both EM and DM countries. She explains that
 central banks, such as the Reserve Bank of New Zealand, use FX market inter-
 
+Practice Problems 75
 vention as a tool to manage exchange rates. McFadden states,
 Statement 4: “Some studies have found that EM central banks tend to be more
 effective in using exchange rate intervention than DM central banks, primarily
 because of one important factor.”
+McFadden continues her discussion:
 Statement 5: “I mentioned that capital inflows could cause a currency crisis,
 leaving fund managers with significant losses. In the period leading up to a cur-
 rency crisis, I would predict that an affected country’s:
@@ -3259,6 +3432,7 @@ C. increase in government debt.
 19. The factor that McFadden is most likely referring to in Statement 4 is:
 A. FX reserve levels.
 
+76 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 B. domestic demand.
 C. the level of capital flows.
 20. Which of McFadden’s predictions in Statement 5 is least likely to be correct?
@@ -3271,6 +3445,8 @@ SOLUTIONS
 1. C is correct. The equation to calculate the forward premium (discount) is:
 _Actual
 _[ 360 ]
+F − S = S i − i .
+f/d f/d f/d _Actual (f d)
 (1 + i )
 d[ 360 ]
 S is the spot rate with GBP the base currency or d and INR the foreign curren-
@@ -3289,6 +3465,7 @@ f/d f/d _360
 _1
 F − S = 79.5093 (0.0752 − 0.0543) .
 f/d f/d (1.0543)
+F − S = 1.576.
 f/d f/d
 2. B is correct. The dealer is posting a bid rate to buy BRL at a price that is too high.
 This overpricing is determined by calculating the interbank implied cross rate for
@@ -3317,7 +3494,9 @@ today’s EUR/USD rate is the product of these two numbers: 1.3200 × 0.6506 =
 measured in dollars, the investment return for the unhedged EUR MRR deposit
 is equal to
 
+78 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 (1.3200 × 0.6506) × (1 + 0.022) × [1/(1.3151 × 0.6567)] – 1
+= 0.8588 × (1.022)(1/0.8636) – 1 = 1.01632 – 1
 = 1.632%.
 However, the borrowing costs must be charged against this gross return to fund
 the carry trade investment (one-year USD MRR was 0.80%). The net return on
@@ -3349,9 +3528,11 @@ base currency. Larger transactions may be harder for the dealer to sell in the i
 terbank market and would likely require the dealer to quote a wider spread (lower
 bid price and higher offer price).
 8. A is correct. Using quotes from Dealer A, she can find
+_MXN _MXN _USD
 = × .
 GBP USD GBP
 The bid from Dealer A for MXN/GBP is effectively
+_MXN _MXN _USD
 = ×
 (GBP)
 b id
@@ -3361,6 +3542,7 @@ bid
 bid
 = 20.140 × 1.2301 = 24.7742.
 The offer from Dealer A is
+_MXN _MXN _USD
 = ×
 (GBP)
 o ffer
@@ -3398,6 +3580,7 @@ _Actual
 1 + i
 _f[ 360 ]
 F = S ,
+f/d f/d _Actual
 (1 + i )
 d[ 360 ]
 suggests a forward rate greater than the spot rate requires a non-domestic
@@ -3409,6 +3592,7 @@ _Actual
 1 + i
 _f[ 360 ]
 F = S
+f/d f/d _Actual
 (1 + i )
 d[ 360 ]
 _90
@@ -3420,11 +3604,14 @@ _90
 [360]
 Because the domestic MRR is higher than the non-domestic MRR, the forward
 rate will be less than the spot rate, giving a forward discount of
+F − S = 1.2295 − 1.2303 = − 0.0008.
 f/d f/d
 12. B is correct. The covered interest rate parity condition,
 _Actual
 1 + i
 _f[ 360 ]
+F = S , (Equation 1)
+f/d f/d _Actual
 (1 + i )
 d[ 360 ]
 specifies the forward exchange rate that must hold to prevent arbitrage given the
@@ -3432,6 +3619,7 @@ spot exchange rate and the risk-free rates in both countries. If the forward and
 spot exchange rates, as well as one of the risk-free rates, are known, the other
 risk-free rate can be calculated.
 13. B is correct. According to uncovered interest rate parity,
+%Δ S e = i − i , (Equation 2)
 f/d f d
 the expected change in the spot exchange rate should reflect the interest rate
 spread between the two countries, which can be found in Exhibit 3. Given the
@@ -3441,6 +3629,7 @@ be able to estimate the future spot exchange rate.
 terest rate parity does not hold in the short or medium term. If uncovered inter-
 est rate parity held, it would mean that investors would receive identical returns
 
+80 Learning Module 1 Currency Exchange Rates: Understanding Equilibrium Value
 from either an unhedged foreign currency investment or a domestic currency
 investment because the appreciation/depreciation of the exchange rate would
 offset the yield differential. However, during periods of low volatility, evidence

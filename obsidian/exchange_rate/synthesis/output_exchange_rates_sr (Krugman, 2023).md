@@ -1,10 +1,14 @@
+---
+aliases: ["Krugman 2023 - Output and the Exchange Rate in the Short Run"]
+---
+
 # Krugman 2023 — Output and the Exchange Rate in the Short Run
 
 **Type:** Textbook chapter (International Economics, 12th ed., Ch. 17)
 **Tags:** #textbook #dd-aa-model #fiscal-policy #monetary-policy #j-curve #pass-through #global-value-chains #crowding-out
 **Source:** Krugman, Obstfeld & Melitz, *International Economics: Theory and Policy*, 12th ed. (2023), Part Three
 **Language:** English
-**Source file:** [[output_exchange_rates_sr (Krugman, 2023)]]
+**Source file:** [[exchange_rate/clean_md/output_exchange_rates_sr (Krugman, 2023)]]
 
 ---
 
@@ -47,5 +51,5 @@ Short-run equilibrium is the intersection of DD (output market clears: aggregate
 - [[overshooting]] — this chapter derives overshooting a second, independent way (via DD-AA under a permanent money supply increase) and adds the J-curve as a second, distinct amplifier of exchange-rate overshooting
 - [[uip]] — the AA schedule is UIP + money-market equilibrium restated as a function of output; permanent-vs-temporary policy distinctions here are the same E^e-sensitivity logic as Ch. 15/16
 - [[ppp_balassa_samuelson]] — the real exchange rate `q = EP*/P` is the operative variable throughout the current-account/DD analysis, same definition as Ch. 16
-- [[Krugman 2023 - Money, Interest Rates, and Exchange Rates]] — direct continuation; this chapter's permanent-money-supply overshooting result is the DD-AA restatement of that chapter's money-market-only derivation
-- [[Krugman 2023 - Price Levels and the Exchange Rate in the Long Run]] — E^e here is exactly that chapter's long-run exchange rate; permanent policy shifts move it, temporary ones don't
+- [[exchange_rate/synthesis/money_interest_rate_exchange_rates (Krugman, 2023)]] — direct continuation; this chapter's permanent-money-supply overshooting result is the DD-AA restatement of that chapter's money-market-only derivation
+- [[exchange_rate/synthesis/price_levels_exchange_rate_lr (Krugman, 2023)]] — E^e here is exactly that chapter's long-run exchange rate; permanent policy shifts move it, temporary ones don't

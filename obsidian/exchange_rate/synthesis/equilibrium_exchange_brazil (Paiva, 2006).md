@@ -1,16 +1,20 @@
+---
+aliases: ["Paiva 2006 - External Adjustment and Equilibrium Exchange Rate in Brazil"]
+---
+
 # Paiva 2006 — External Adjustment and Equilibrium Exchange Rate in Brazil
 
 **Type:** Empirical paper (BEER / cointegration model)
 **Tags:** #beer #fair-value #real-exchange-rate #brazil #balassa-samuelson #terms-of-trade #net-foreign-assets #risk-premium
 **Source:** Claudio Paiva, IMF Working Paper, 2006
 **Language:** English
-**Source file:** [[equilibrium_exchange_brazil (Paiva, 2006)]]
+**Source file:** [[exchange_rate/clean_md/equilibrium_exchange_brazil (Paiva, 2006)]]
 
 ---
 
 ## Context and motivation
 
-Written to explain a striking fact: the BRL appreciated ~40% in real effective terms from January 2003 to December 2005 — its strongest level since the 1999 float — *at the same time* Brazil's current account swung from a 4¼%-of-GDP deficit (1998) to a 1¾%-of-GDP surplus (2005). The paper's question is whether this simultaneous appreciation-and-surplus combination was a disequilibrium (overshooting) or whether the BRL's stronger value was itself the *equilibrium* response to genuinely improved fundamentals. This is the direct methodological ancestor of the GSDEER-style fair-value models already in the vault ([[Goldman 2023 - GSDEER A User's Manual]], [[Goldman 2025 - GSDEER and GSFEER Models Primer]]) — same "augmented PPP" logic, applied to Brazil two decades earlier with a Behavioral Equilibrium Exchange Rate (BEER) framework.
+Written to explain a striking fact: the BRL appreciated ~40% in real effective terms from January 2003 to December 2005 — its strongest level since the 1999 float — *at the same time* Brazil's current account swung from a 4¼%-of-GDP deficit (1998) to a 1¾%-of-GDP surplus (2005). The paper's question is whether this simultaneous appreciation-and-surplus combination was a disequilibrium (overshooting) or whether the BRL's stronger value was itself the *equilibrium* response to genuinely improved fundamentals. This is the direct methodological ancestor of the GSDEER-style fair-value models already in the vault ([[exchange_rate/synthesis/gsdeer_manual_guide (Goldman, 2023)]], [[exchange_rate/synthesis/primer_gsdeer_gsfeer (Goldman, 2025)]]) — same "augmented PPP" logic, applied to Brazil two decades earlier with a Behavioral Equilibrium Exchange Rate (BEER) framework.
 
 ## Core argument / thesis
 
@@ -31,8 +35,8 @@ Using a cointegration (Johansen VECM) approach across five fundamentals, most (r
 ## Main results / findings
 
 - All four model specifications estimate equilibrium appreciation (23–31%) close to the actual REER appreciation (~25%) over 2003–05 — the central conclusion that this was "an equilibrium phenomenon," not overshooting, is robust across specifications.
-- The broader external-adjustment narrative (Section II): export growth (not import compression) drove the current account reversal; Brazil's EMBI spread collapsed from ~2,700bp (Jan 2002) to ~300bp (May 2006) alongside declining public/external debt ratios and the elimination of dollar-indexed domestic public debt — a country-risk-premium collapse that is the exact historical mirror image of the deterioration analyzed decades later in [[Itaú 2025 - Fiscal Dominance in Brazil]].
-- BCB was already actively intervening to slow the appreciation by 2005–06 (large FX purchases to build reserves) — an early instance of the reserve-accumulation intervention behavior discussed generically in [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]].
+- The broader external-adjustment narrative (Section II): export growth (not import compression) drove the current account reversal; Brazil's EMBI spread collapsed from ~2,700bp (Jan 2002) to ~300bp (May 2006) alongside declining public/external debt ratios and the elimination of dollar-indexed domestic public debt — a country-risk-premium collapse that is the exact historical mirror image of the deterioration analyzed decades later in [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]].
+- BCB was already actively intervening to slow the appreciation by 2005–06 (large FX purchases to build reserves) — an early instance of the reserve-accumulation intervention behavior discussed generically in [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]].
 
 ## Limitations and caveats
 
@@ -43,8 +47,8 @@ Using a cointegration (Johansen VECM) approach across five fundamentals, most (r
 ## Connections
 
 - [[ppp_balassa_samuelson]] — the NTT variable is a direct empirical Balassa-Samuelson proxy; BEER is the direct methodological ancestor of GSDEER's "augmented PPP" approach
-- [[Goldman 2023 - GSDEER A User's Manual]] / [[Goldman 2025 - GSDEER and GSFEER Models Primer]] — same fundamentals-based fair-value logic (terms of trade, productivity/Balassa-Samuelson, real rate differentials) applied to Brazil specifically, two decades before GSDEER's own Brazil coverage
+- [[exchange_rate/synthesis/gsdeer_manual_guide (Goldman, 2023)]] / [[exchange_rate/synthesis/primer_gsdeer_gsfeer (Goldman, 2025)]] — same fundamentals-based fair-value logic (terms of trade, productivity/Balassa-Samuelson, real rate differentials) applied to Brazil specifically, two decades before GSDEER's own Brazil coverage
 - [[uip]] — RINTDIFF is this model's direct UIP channel; treating it as endogenous vs. exogenous across specifications mirrors the vault's own UIP-fails-empirically discussion
-- [[risk_premium]] / [[balance_of_payments_approach]] — RELDEBT is a country-risk-premium proxy nearly identical in spirit to Krugman's `ρ(B−A)`; the EMBI collapse (2,700bp→300bp, 2002–06) is the historical mirror image of the fiscal-deterioration case in [[Itaú 2025 - Fiscal Dominance in Brazil]]
-- [[Krugman 2023 - Fixed Exchange Rates and Foreign Exchange Intervention]] — BCB's 2005–06 FX purchases to slow appreciation and build reserves are a real-world instance of that chapter's intervention mechanics
-- [[Cortapasso 2023 - Padrões da Transmissão Cambial para a Taxa de Inflação no Brasil]] — this paper's 2003–05 appreciation episode is exactly the period Cortapasso (2023) identifies as driven by interest-arbitrage/falling risk premium, now given a formal fundamentals-based decomposition
+- [[risk_premium]] / [[balance_of_payments_approach]] — RELDEBT is a country-risk-premium proxy nearly identical in spirit to Krugman's `ρ(B−A)`; the EMBI collapse (2,700bp→300bp, 2002–06) is the historical mirror image of the fiscal-deterioration case in [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]]
+- [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — BCB's 2005–06 FX purchases to slow appreciation and build reserves are a real-world instance of that chapter's intervention mechanics
+- [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — this paper's 2003–05 appreciation episode is exactly the period Cortapasso (2023) identifies as driven by interest-arbitrage/falling risk premium, now given a formal fundamentals-based decomposition

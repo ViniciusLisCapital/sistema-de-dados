@@ -1,3 +1,4 @@
+BIS Bulletin
 No 124
 Monetary policy transmission to
 exchange rates: the role of currency
@@ -53,6 +54,7 @@ that exchange rate moves will offset any excess returns from borrowing in low ra
 2 See Gürkaynak et al (2021) for analysis of exchange rate responses to monetary policy, and Antolín-Díaz et al (forthcoming),
 Falconio (2022) and Hutchison and Sushko (2013) for the role of carry trades in the pass-through of monetary policy and macro
 news to exchange rates.
+BIS Bulletin 1
 
 sharply around two announcements, in June 2010 and June 2022 (purple and red lines), but barely moved
 around two others, in March 2015 and March 2020 (blue and yellow lines).3
@@ -64,8 +66,14 @@ monetary policy announcements3
 9:10 = 100 bp ‘000 contracts
 a a
 100.5 20
+10
+100
 99.5 0
+5
+99
 98.5 −20
+0
+98
 97.5 −5 −40
 09:00 10:00 11:00 12:00 09:00 10:00 11:00 12:00 17.06.10 19.03.15 19.03.20 16.06.22
 17.06.2010 19.03.2015 17.06.2010 19.03.2015
@@ -95,6 +103,7 @@ speculators) in currency futures on the Chicago Mercantile Exchange (CME) is a r
 For example, in June 2010, the SNB indicated a reduced willingness to prevent excessive appreciation of the Swiss franc. March
 2015 marked the first monetary policy assessment following the discontinuation of the minimum exchange rate policy, while
 June 2022 was the first policy rate hike since 2005.
+2 BIS Bulletin
 
 trade activity. This is even though futures account for only a small part of the overall activity, which mainly
 takes place in over-the-counter spot and forwards markets (see eg Galati et al (2007)).4
@@ -127,6 +136,7 @@ franc and Japanese yen turn increasingly net short when this carry-to-risk ratio
 The influence of carry trade activity on the exchange rate response to monetary policy
 The effect of investor leverage on the exchange rate response to monetary policy shocks can be assessed
 using local projections:6
+10
 𝑦𝑦𝑡𝑡+ℎ−𝑦𝑦𝑡𝑡−1 =β1 ×D𝐻𝐻𝐻𝐻𝐻𝐻𝐻𝐻,𝑡𝑡−1×𝑀𝑀𝑀𝑀𝑡𝑡+β2 ×D𝐿𝐿𝐿𝐿𝐿𝐿,𝑡𝑡−1×𝑀𝑀𝑀𝑀𝑡𝑡+�β3,𝑙𝑙𝑋𝑋𝑡𝑡−𝑙𝑙+𝜀𝜀𝑡𝑡+ℎ
 𝑙𝑙=1
 4 Traders are classified as non-commercial if they do not reveal a foreign exchange exposure to hedge and therefore presumably
@@ -134,6 +144,7 @@ trade to make a profit. CFTC staff may reclassify the trader if they possess add
 5 See Brunnermeier et al (2008).
 6 Jordà and Taylor (2025) review the practical applications of local projection methods in estimating the impact of exogenous
 interventions and subsequent feedback effects on economic and financial market outcomes.
+BIS Bulletin 3
 )sdnasuoht(
 stcartnoC
 
@@ -182,6 +193,7 @@ were computed by Kubota and Shintani (2022).
 8 Related evidence on liquidity-state-dependent transmission along the yield curve is provided by Ashtari‑Tafti et al (2025).
 9 In the online appendix we show that this result is robust to classifying carry trade periods according to carry-to-risk ratios (ie
 based on interest rate differentials and currency volatility).
+4 BIS Bulletin
 
 Exchange rate response to monetary policy amplified by carry trade activity1
 In per cent Graph 3
@@ -217,6 +229,7 @@ Tightening shocks drive carry trade deleveraging in these currencies. Following 
 shock, net speculative short positions in CHF futures shrink by over 60% of all open interest (ie relative to
 the total outstanding open CHF futures contracts) (Graph 4.B). In the yen, the point estimate for
 contractionary shocks is barely significant, in part due to few monetary policy tightening events. This
+BIS Bulletin 5
 
 underscores the pivotal role of carry trade activity and subsequent quantity adjustments to the leveraged
 positions in shaping the state-dependent reaction of the exchange rate to monetary policy.10
