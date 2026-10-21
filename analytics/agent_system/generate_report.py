@@ -53,18 +53,19 @@ def vault_info() -> dict:
     return out
 
 
-def dados_cambio(avisos: list[str]) -> dict:
-    """A lista de dados do agente de câmbio, lida da seção V.I do SISTEMA_AGENTES.md.
+def dados_agente(agente: str, nome: str, avisos: list[str]) -> dict:
+    """A lista de dados de um agente, lida da seção V do SISTEMA_AGENTES.md (V.I câmbio, V.II PM).
 
     É lida, e não copiada para cá, para que o diagrama e a lista decidida não divirjam. O
     leitor é o mesmo do gerador do F(A) (`dados/motor.py`)."""
+    import importlib
     from analytics.agent_system.dados.motor import ler_lista
-    from analytics.agent_system.dados.cambio import SECAO
+    SECAO = importlib.import_module(f"analytics.agent_system.dados.{agente}").SECAO
 
     try:
         grupos = ler_lista(SECAO)
     except (OSError, ValueError) as exc:
-        avisos.append(f"Lista de dados do câmbio (SISTEMA_AGENTES.md V.I) não encontrada ({type(exc).__name__}).")
+        avisos.append(f"Lista de dados de {nome} (SISTEMA_AGENTES.md V) não encontrada ({type(exc).__name__}).")
         return {"grupos": []}
     try:
         from domain.db import registry
@@ -75,7 +76,7 @@ def dados_cambio(avisos: list[str]) -> dict:
         for it in g["itens"]:
             dotted = reg.get(it["tabela"])
             if reg and not dotted:
-                avisos.append(f"`{it['tabela']}` está na lista do câmbio mas não no registry de tabelas.")
+                avisos.append(f"`{it['tabela']}` está na lista de {nome} mas não no registry de tabelas.")
             it["fonte"] = dotted.split(".")[3] if dotted else None
     return {"grupos": grupos}
 
@@ -83,17 +84,17 @@ def dados_cambio(avisos: list[str]) -> dict:
 _RE_PERGUNTA = re.compile(r"^\| (Q\d) \| ([^|]+?) \|")
 
 
-def perguntas_cambio(avisos: list[str]) -> list[dict]:
-    """As perguntas centrais do câmbio, lidas da Parte 1 do mapa conceitual (não copiadas)."""
-    mapa = VAULT / "exchange_rate" / "exchange_rate_conceptual_map.md"
+def perguntas(area: str, nome: str, avisos: list[str]) -> list[dict]:
+    """As perguntas centrais de uma área, lidas da Parte 1 do mapa conceitual (não copiadas)."""
+    mapa = VAULT / area / f"{area}_conceptual_map.md"
     try:
         linhas = mapa.read_text(encoding="utf-8").splitlines()
     except OSError:
-        avisos.append("Mapa conceitual do câmbio não encontrado: sem as perguntas centrais.")
+        avisos.append(f"Mapa conceitual de {nome} não encontrado: sem as perguntas centrais.")
         return []
     out = [{"id": m.group(1), "texto": m.group(2)} for l in linhas if (m := _RE_PERGUNTA.match(l))]
     if not out:
-        avisos.append("Perguntas centrais não encontradas no mapa conceitual do câmbio.")
+        avisos.append(f"Perguntas centrais não encontradas no mapa conceitual de {nome}.")
     return out
 
 
@@ -102,8 +103,10 @@ def montar() -> dict:
     return {
         "gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "registry": registry_info(avisos),
-        "dados_cambio": dados_cambio(avisos),
-        "perguntas_cambio": perguntas_cambio(avisos),
+        "dados_cambio": dados_agente("cambio", "câmbio", avisos),
+        "perguntas_cambio": perguntas("exchange_rate", "câmbio", avisos),
+        "dados_pm": dados_agente("politica_monetaria", "política monetária", avisos),
+        "perguntas_pm": perguntas("monetary_policy", "política monetária", avisos),
         "n_connectors": sum(1 for p in (RAIZ / "connectors").glob("*.py") if p.name != "__init__.py"),
         "vault": vault_info(),
         "avisos": avisos,

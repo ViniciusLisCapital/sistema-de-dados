@@ -19,7 +19,7 @@
 | 9 | Crescer e outros agentes | a discutir |
 
 **Em curso (2026-10-21, noite):** subagente D acrescenta IC-Br em dólar e EX0 ao F de PM e documenta a convenção das exógenas no `listar`. Falta o usuário rodar `/vault exchange_rate` para refazer a síntese do Cortapasso.
-**Próximo:** revisão do report de PM pelo usuário; as decisões da Fase 7 (consolidação IV.vi, donos das exógenas IV.ii, estrutura do relatório do escrivão); a seta do agente de PM no diagrama. Mapa de câmbio religado ao vault (8f62a33) e `vault.py map` nos dois mapas.
+**Próximo:** revisão do report de PM pelo usuário; as decisões da Fase 7 (consolidação IV.vi, donos das exógenas IV.ii, estrutura do relatório do escrivão). Mapa de câmbio religado ao vault (8f62a33) e `vault.py map` nos dois mapas.
 
 **A revisar quando o plano terminar** (pedidos do usuário, 2026-10-21): a Selic de fechamento derivada da média de dois trimestres (reestimar a regra no fechamento?); um pente fino no processo dos modelos mentais (as regras gravadas no `mental-model.md` e no revisor nesse dia); a estrutura do modelo mental da Verde de PM (juros dos desenvolvidos no bloco 3, 2.3 × 3.2, 2.6 de uma carta só, 1.1 × a 1.2 do câmbio).
 

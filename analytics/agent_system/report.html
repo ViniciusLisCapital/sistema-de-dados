@@ -172,7 +172,7 @@ function badge(st, rot) { return `<span class="badge ${st}">${rot || ST_LABEL[st
 // Depois da rodada 2, P2 e o report final de cada agente; o cenário final é o PF*.
 const AGENTES = [
   { k: 'c', nome: 'Câmbio', st: 'parcial' },
-  { k: 'p', nome: 'Pol. monetária', st: 'planejado' },
+  { k: 'p', nome: 'Pol. monetária', st: 'parcial' },
   { k: 'n', nome: 'Agente n', st: 'planejado' },
 ];
 // as três linhas dos agentes; MySQL, ferramentas e conhecimento ficam nas mesmas alturas,
@@ -233,15 +233,19 @@ const DETALHES = {
   'mysql>c': { titulo: 'MySQL → Câmbio', st: 'parcial', render: detMysqlCambio },
   'ferr': { titulo: 'Ferramentas', st: 'existe', render: detFerramentas },
   'm1c': { titulo: 'Câmbio · report 1', st: 'parcial', render: detPerguntasCambio },
+  'mysql>p': { titulo: 'MySQL → Política monetária', st: 'parcial', render: detMysqlPM },
+  'm1p': { titulo: 'Política monetária · report 1', st: 'parcial', render: detPerguntasPM },
   'mod': { titulo: 'Modelo estrutural', st: 'parcial', render: detModelo },
   'p1': { titulo: 'P1 · cenário consolidado da rodada 1', st: 'planejado', render: detP1 },
 };
 
-function detMysqlCambio() {
-  const G = (D.dados_cambio || {}).grupos || [];
+function detMysqlCambio() { return detMysql(D.dados_cambio, 'de câmbio', 'V.I'); }
+function detMysqlPM() { return detMysql(D.dados_pm, 'de política monetária', 'V.II'); }
+function detMysql(dados, quem, secao) {
+  const G = (dados || {}).grupos || [];
   const itens = G.flatMap(g => g.itens);
   const nTab = new Set(itens.map(i => i.tabela)).size;
-  let h = `<p class="lead">O que o agente de câmbio recebe do banco, e como. Hoje ${nTab} tabelas, lidas da lista decidida (V.I do <code>SISTEMA_AGENTES.md</code>).</p>`;
+  let h = `<p class="lead">O que o agente ${quem} recebe do banco, e como. Hoje ${nTab} tabelas, lidas da lista decidida (${secao} do <code>SISTEMA_AGENTES.md</code>).</p>`;
 
   h += `<h3>Como chega ${badge('existe', 'decidido')}</h3>
     <p class="formula"><code>A</code> dado bruto &nbsp;→&nbsp; <code>F(A)</code> &nbsp;→&nbsp; report</p>
@@ -262,8 +266,10 @@ function detMysqlCambio() {
   return h;
 }
 
-function detPerguntasCambio() {
-  const P = D.perguntas_cambio || [];
+function detPerguntasCambio() { return detPerguntas(D.perguntas_cambio); }
+function detPerguntasPM() { return detPerguntas(D.perguntas_pm); }
+function detPerguntas(P) {
+  P = P || [];
   return `<h3>Perguntas centrais</h3><ul class="lst">` +
     P.map(q => `<li><strong>${esc(q.id)}</strong> ${esc(q.texto)}</li>`).join('') +
     `</ul><p class="lead">O mínimo de todo report, não o máximo.</p>` +

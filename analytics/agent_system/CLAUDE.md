@@ -24,7 +24,8 @@ caixa) e a função que monta o HTML. Ir aos poucos, sem encher de conteúdo.
 
 Hoje: **MySQL → Câmbio** (como os dados chegam e as tabelas da lista, lidas da V.I do
 `SISTEMA_AGENTES.md`), **Ferramentas** e **Câmbio · report 1** (as perguntas centrais, lidas da Parte 1
-do mapa conceitual). O tratamento de cada tabela (as métricas do F) não entra na caixa: é do sistema,
+do mapa conceitual), e as duas mesmas caixas da política monetária (**MySQL → Política monetária**, da
+V.II, e **Política monetária · report 1**; 2026-10-21, quando o agente passou a existir). O tratamento de cada tabela (as métricas do F) não entra na caixa: é do sistema,
 não do usuário (2026-10-07). Tabela da lista fora do registry vira aviso na página.
 
 Conferido em Chrome headless (2026-10-07): zero exceções, as três caixas abrem, sem rolagem
