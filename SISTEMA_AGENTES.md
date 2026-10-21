@@ -168,6 +168,7 @@
     - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
         - Decidido (2026-10-21): a literatura de repasse é do agente de inflação (I.III.xvii). O câmbio a alcança pelo conceito de repasse e avisa a inflação quando vê risco relevante de depreciação. Até o agente de inflação existir, a literatura fica na camada 1 provisória dele, e o câmbio continua informando a PM pelas entradas E1 e E3.
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
+        - A discutir na Fase 7 (usuário, 2026-10-21): quem escreve o caminho da NTN-B de 10 anos (`rr_10a`). É exógena no Modelo Estrutural e decide sozinha a central da Selic; a curva B3 é dado endógeno da PM, e o prêmio fiscal que a move não tem agente.
     - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o report final.
     - iv. Como o agente analisa os dados quantitativos. (decidido 2026-10-02)
         - Decidido (2026-10-02, reescrito 2026-10-07): o dado bruto A passa por F, as transformações fixas, iguais em todo ciclo. O agente lê F(A), não A. Quando precisa de uma conta que o F não faz, escreve uma função G e usa G(A). Não há catálogo de funções à parte (2026-10-07).
