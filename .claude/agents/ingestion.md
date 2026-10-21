@@ -17,7 +17,7 @@ repository/<topic>/raw_pdf/<name>.pdf     (saved there by the user, or by Claude
   └─ you: run.py --list → qc.py try → page check → settings.yaml → run.py → qc.py check
        ├─ repository/<topic>/raw_md/<name>.md         (verbatim extraction, the audit trail)
        ├─ obsidian/<topic>/clean_md/<name>.md          (the same text minus references and known boilerplate)
-       └─ repository/agent_mapping/data_tracker.xlsx   (the literature to-do, updated by run.py)
+       └─ repository/agent_mapping/data_tracker.xlsx   (the knowledge to-do, updated by run.py)
 ```
 
 All commands run from the project root as `uv run python repository/ingestion/scripts/<script>`.
@@ -102,7 +102,8 @@ The asset managers' letters and research notes the mental-model agent reads
 
 - **Destination.** `run.py mental_model/<folder> "<file>"` writes `raw_md/` and `clean_md/` inside
   `repository/mental_model/<folder>/`, not in `obsidian/`: a letter feeds every area's mental
-  model, so its text stays in `repository/`. No tracker update (letters are not literature).
+  model, so its text stays in `repository/`. `run.py` updates the tracker as for any source: the
+  letters are not literature, so they land in its "Mental Models" tab, not in a Qual tab.
 - **Name.** Not `(Author, Year)`: the manager's `date` pattern in
   `repository/mental_model/mental_models.yaml`, which is how the mental-model agent orders them.
   When the PDF name carries a title instead of the date (Goldman Sachs: `Global FX Trader_ A Brief

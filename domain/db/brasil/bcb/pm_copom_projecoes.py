@@ -249,6 +249,8 @@ def run(sincronizar: bool = True, inicio: int | None = None, fim: int | None = N
         ri = rp.ingerir_integral(verbose=False)  # texto integral para o vault (bibliografia)
         print(f"{_TABLE}: relatorios -- {len(ri['extraidos'])} integrais novos no vault, "
               f"{len(ri['erros'])} erros.")
+        if ri["extraidos"]:
+            ct.atualizar_tracker()  # aba Copom do tracker; avisa e segue se a planilha estiver aberta
 
     edicoes = rp.carregar()
     dfr = montar_relatorios(edicoes)

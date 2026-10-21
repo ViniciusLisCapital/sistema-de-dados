@@ -9,6 +9,9 @@ no banco. Duas responsabilidades:
 
 2. **`parse()`** — extrai do texto as projecoes de inflacao do Copom e os condicionantes do cenario.
 
+Quando grava um comunicado ou uma ata nova no vault, atualiza a aba Copom do tracker
+(`atualizar_tracker()`), sem derrubar a carga se a planilha estiver aberta no Excel.
+
 ## O que da para extrair, por regime
 
 O comunicado mudou de forma varias vezes. Ver `copom_comunicados.md` nesta pasta para o levantamento
@@ -139,6 +142,8 @@ def sincronizar(
 
     if destino == DIRETORIO_MD:
         r["vault"] = espelhar_vault()
+        if r["vault"]:
+            atualizar_tracker()
 
     if verbose:
         print(
@@ -146,6 +151,29 @@ def sincronizar(
             f"{len(r['vazios'])} sem conteudo na API, {len(r['erros'])} erros."
         )
     return r
+
+
+def atualizar_tracker(planilha: Path | str | None = None) -> str | None:
+    """Reescreve a aba Copom do `repository/agent_mapping/data_tracker.xlsx` a partir do vault.
+
+    Chamado quando a carga grava um documento novo no vault. O tracker nunca custa a carga: se a
+    planilha estiver aberta no Excel (ou qualquer outra falha), avisa e segue. Carregado pelo
+    caminho, como `_clean_code()` em `_rpm_projecoes.py`, porque `repository/` nao e pacote Python.
+    `planilha` = outra copia (teste); None = a real.
+    """
+    import importlib.util
+
+    try:
+        caminho = _RAIZ / "repository" / "ingestion" / "scripts" / "tracker.py"
+        spec = importlib.util.spec_from_file_location("_tracker_ingestao", caminho)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        msg = mod.build(planilha) if planilha else mod.build()
+    except Exception as e:  # noqa: BLE001 -- o tracker nunca derruba o ETL
+        print(f"  tracker NAO atualizado ({e}); rode repository/ingestion/scripts/tracker.py depois")
+        return None
+    print(f"  tracker: {msg}")
+    return msg
 
 
 def espelhar_vault(origem: Path = DIRETORIO_MD, destino: Path = DIRETORIO_VAULT) -> int:
@@ -246,6 +274,8 @@ def sincronizar_atas(
         if verbose:
             print(f"  ata {nro} {a.data_referencia} ({'API' if nro in r['api'] else 'PDF'})")
 
+    if r["api"] or r["pdf"]:
+        atualizar_tracker()
     if verbose:
         print(f"sincronizar_atas: {len(r['api'])} pela API, {len(r['pdf'])} pelo PDF, "
               f"{len(r['existentes'])} ja em disco, {len(r['vazios'])} vazias, "

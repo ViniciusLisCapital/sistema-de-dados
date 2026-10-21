@@ -1,22 +1,41 @@
 """
-The literature to-do: repository/agent_mapping/data_tracker.xlsx, one "Qual - <Area>" tab per
-agent area (the curated literature lists), kept in step with what is on disk.
+The knowledge to-do: repository/agent_mapping/data_tracker.xlsx, one "Qual - <Area>" tab per
+agent area (the curated literature lists), plus the managers' letters and the Copom documents,
+kept in step with what is on disk.
 
-Called by run.py after every write, and runnable on its own:
+Called by run.py after every write (letters included), by `mental.py done`, by the Copom ETL
+(domain/db/brasil/bcb/_copom_texto.py), and runnable on its own:
 
     uv run python repository/ingestion/scripts/tracker.py
+    uv run python repository/ingestion/scripts/tracker.py --file <copy.xlsx>   # a copy, not the real one
 
 What it writes, and only this:
-  - columns J-P of every "Qual - <Area>" tab (File, Ingestion, Ingested on, Extraction,
+  - columns M-S of every "Qual - <Area>" tab (File, Ingestion, Ingested on, Extraction,
     QC flags, Synthesis, Ingestion note), cleared and rewritten on each run, with a navy
     header so they read as the system's columns next to the user's teal ones;
+  - the headers of the layer columns right after I (LAYER_HEADERS: "Dono", "Camada",
+    "Fila" in J-L): the agent that owns each source, its layer in the owner's library and its
+    place in the promotion queue (SISTEMA_AGENTES I.III.xvii, PLANO_AGENTES.md I). The
+    values are the user's, as A-I are. A tab in any other layout — the one before 2026-10-21,
+    with the system's columns in J-P, or one with other layer columns — is migrated on the
+    first run (_migrate): the layer values move by header name, the system's columns are
+    cleared (they are rewritten anyway) and nothing in A-I moves;
   - "Do we have it?" = Yes on a row whose PDF is in repository/<topic>/raw_pdf/ (a row
     with no PDF keeps whatever the user wrote);
   - one row at the bottom of the tab for each PDF the curated list does not have, marked in
     Comments as added by ingestion (rebuilt on each run, so they never pile up; the user
-    keeps one by filling A-I and deleting the mark);
-  - a "Literature summary" tab with the counts, as formulas.
-Every other cell — the curated columns A-I, the Notes tab, the Quant tabs — is the user's.
+    keeps one by filling A-I and deleting the mark). A Camada/Fila typed on such a row is
+    carried over to its rebuilt row, by file name;
+  - a "Literature summary" tab with the counts, as formulas;
+  - a "Mental Models" tab, rebuilt from the folders: one line per document (area x manager:
+    window, letters in it, letters read per ledger/, pending, last run), then one line per
+    letter in the window. Camada and Fila of each document are the user's, kept by document
+    name across rebuilds;
+  - a "Copom" tab, rebuilt from obsidian/monetary_policy/clean_md/central_bank/: one line per
+    kind (statement, minutes, RPM), then one per document, with its layer (copom_layer(), the
+    same function the cycle's knowledge snapshot uses): the statements since the current
+    governor's term began, and the latest minutes and RPM, before the cycle date.
+Every other cell — the curated columns A-L, the Notes tab, the Quant tabs — is the user's.
 The workbook is the single home of the literature and data lists (since 2026-10-19; the
 .md lists were folded into it). The formatting follows its own: Calibri 11, top-aligned and
 wrapped, thin grey borders, Yes/No fills.
@@ -29,6 +48,8 @@ Facts come from the folders (raw_pdf/, raw_md/, clean_md/, synthesis/), settings
 LOG.md, never from memory. The .xlsx is in git (the one *.xlsx exception in .gitignore).
 """
 
+import argparse
+import datetime as dt
 import math
 import os
 import re
@@ -45,6 +66,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from run import LOG, NAME_RE, OBSIDIAN, REPOSITORY, scan, topics  # noqa: E402
 
 TRACKER = REPOSITORY / "agent_mapping" / "data_tracker.xlsx"
+MM_DIR = REPOSITORY / "mental_model"
 SUMMARY = "Literature summary"
 TAB = {
     "exchange_rate": "Qual - Exchange Rate", "monetary_policy": "Qual - Monetary Policy",
@@ -53,10 +75,32 @@ TAB = {
 }
 BASE_HEADERS = ["Name", "Autor/Company", "Date", "Importance (1-5)", "Do we have it?", "Type", "Cluster", "Why", "Comments"]
 BASE_WIDTHS = [42, 28, 12, 10, 14, 20, 28, 55, 30]
+LAYER_HEADERS = ["Dono", "Camada", "Fila"]  # the user's, like A-I (SISTEMA_AGENTES I.III.xvii)
+LAYER_WIDTHS = [18, 10, 8]
+# The agents a source can belong to, including those that do not exist yet. The tracker never
+# writes Dono; it only warns about a value outside this list (a typo would drop the source from
+# every snapshot without a word).
+OWNERS = ("cambio", "politica_monetaria", "inflacao", "fiscal", "externo", "atividade", "credito",
+          "mercado_trabalho", "trader")
+# The layout of the layer columns is this list; _migrate() moves the user's values by header name
+# whenever it changes.
+FIRST_LAYER = len(BASE_HEADERS) + 1        # column J
+LAYER_COLS = range(FIRST_LAYER, FIRST_LAYER + len(LAYER_HEADERS))
+CAMADA, FILA = (FIRST_LAYER + LAYER_HEADERS.index(h) for h in ("Camada", "Fila"))
 NEW_HEADERS = ["File", "Ingestion", "Ingested on", "Extraction", "QC flags", "Synthesis", "Ingestion note"]
 NEW_WIDTHS = [44, 16, 15, 22, 36, 11, 40]
-FIRST_NEW = len(BASE_HEADERS) + 1          # column J
+FIRST_NEW = LAYER_COLS.stop                # column M
+OLD_FIRST_NEW = FIRST_LAYER                # before 2026-10-21 the system's columns started at J
 ADDED_MARK = "Added by ingestion"
+LAYER_NOTE = ("Dono: the agent whose library the source belongs to, by the question it answers "
+              f"({', '.join(OWNERS)}; one that does not exist yet is fine). Camada, in the owner's library: "
+              "1 = the core the agent reads, 2 = depth and alternatives, 3 = the rest. Other agents reach a "
+              "layer-1 source through the concept pages (SISTEMA_AGENTES I.III.xvii, PLANO_AGENTES I). "
+              "Fila: the order in which layers 2 and 3 are promoted, 1 first. All three are yours; "
+              "tracker.py never writes them.")
+MM_LAYER_NOTE = ("Camada and Fila of the document in the library of its area's agent (the owner is the "
+                 "document's area). Yours; tracker.py never writes them.")
+MM_TAB, COPOM_TAB = "Mental Models", "Copom"
 LABEL = {"ingested": "Ingested", "pending": "Pending", "needs_attention": "Needs attention", "on_hold": "On hold"}
 _RANK = ["needs_attention", "pending", "on_hold", "ingested"]   # the worst state of a row's files wins
 _STOP = {"and", "the", "of", "in", "a", "an", "for", "on", "to", "et", "al", "l1", "l2", "l3", "vs"}
@@ -73,7 +117,7 @@ TOP_CENTER = Alignment(horizontal="center", vertical="top", wrap_text=True)
 HEAD = Alignment(horizontal="center", vertical="center", wrap_text=True)
 YES_FILL, NO_FILL = "DCEEE8", "FBEAE6"
 STATE_FILL = {"Ingested": "DCEEE8", "Pending": "FFF1CC", "Needs attention": "F8DAD5", "On hold": "E6E8EE"}
-CENTERED = {3, 4, 5, FIRST_NEW + 1, FIRST_NEW + 2, FIRST_NEW + 5}   # Date, Importance, Do we have it, Ingestion, Ingested on, Synthesis
+CENTERED = {3, 4, 5, *LAYER_COLS, FIRST_NEW + 1, FIRST_NEW + 2, FIRST_NEW + 5}   # Date, Importance, Do we have it, the layer columns, Ingestion, Ingested on, Synthesis
 LINE_PT = 15.0
 
 
@@ -211,22 +255,60 @@ def _ensure_tab(wb, title: str):
 
 # ── one tab ──────────────────────────────────────────────────────────────────
 
+def _migrate(ws) -> bool:
+    """Puts the tab in the current layout — A-I, then LAYER_HEADERS, then the system's columns —
+    whatever layout it had: the one before 2026-10-21 (system in J-P, no layer columns) or one
+    with other layer columns. The user's layer values are read by HEADER NAME and written back
+    under the same name, so adding, dropping or reordering a layer column moves no value to the
+    wrong place (a column no longer in LAYER_HEADERS is dropped, and said so). The system's
+    columns are rewritten on every run, so clearing them loses nothing; A-I are not touched."""
+    head = {str(ws.cell(1, c).value or ""): c for c in range(OLD_FIRST_NEW, ws.max_column + 1)}
+    want = LAYER_HEADERS + NEW_HEADERS
+    if [ws.cell(1, OLD_FIRST_NEW + i).value for i in range(len(want))] == want:
+        return False
+    sys_col = head.get(NEW_HEADERS[0], ws.max_column + 1)
+    layer = {h: c for h, c in head.items() if h and c < sys_col}
+    dropped = [h for h in layer if h not in LAYER_HEADERS]
+    if dropped and any(ws.cell(r, layer[h]).value not in (None, "") for h in dropped for r in range(2, ws.max_row + 1)):
+        print(f"  {ws.title}: layer column(s) {', '.join(dropped)} no longer in the layout — their values are dropped")
+    kept = {h: [ws.cell(r, c).value for r in range(2, ws.max_row + 1)] for h, c in layer.items() if h in LAYER_HEADERS}
+    for r in range(1, ws.max_row + 1):
+        for c in range(OLD_FIRST_NEW, ws.max_column + 1):
+            cell = ws.cell(r, c)
+            cell.value, cell.fill, cell.comment = None, PatternFill(), None
+    for h, values in kept.items():
+        c = OLD_FIRST_NEW + LAYER_HEADERS.index(h)
+        for r, v in enumerate(values, 2):
+            ws.cell(r, c).value = v
+    return True
+
+
 def _fill_tab(ws, topic: str, log: dict) -> dict:
     last_new = FIRST_NEW + len(NEW_HEADERS) - 1
-    # 1. remove the rows this script appended last time; clear its columns on the others
+    _migrate(ws)
+    # 1. remove the rows this script appended last time (keeping a Camada/Fila typed on them, by
+    #    file name); clear its columns on the others
+    carried = {}
     for r in range(ws.max_row, 1, -1):
         if str(ws.cell(r, 9).value or "").startswith(ADDED_MARK):
+            layer = tuple(ws.cell(r, c).value for c in LAYER_COLS)
+            if any(v not in (None, "") for v in layer):
+                carried[str(ws.cell(r, FIRST_NEW).value or "")] = layer
             ws.delete_rows(r)
             ws.row_dimensions[r].height = None
     for r in range(2, ws.max_row + 1):
         for c in range(FIRST_NEW, last_new + 1):
             cell = ws.cell(r, c)
             cell.value, cell.fill = None, PatternFill()
+    for i, (h, w) in enumerate(zip(LAYER_HEADERS, LAYER_WIDTHS)):
+        _header(ws, FIRST_LAYER + i, h, TEAL, w)
+    ws.cell(1, FIRST_LAYER).comment = Comment(LAYER_NOTE, "tracker")
     for i, (h, w) in enumerate(zip(NEW_HEADERS, NEW_WIDTHS)):
         _header(ws, FIRST_NEW + i, h, NAVY, w)
     ws.cell(1, FIRST_NEW).comment = Comment(
-        "The navy columns (J-P) are written by repository/ingestion/scripts/tracker.py after every "
-        "ingestion; edits in them are overwritten. The teal columns (A-I) are yours.", "ingestion")
+        f"The navy columns ({get_column_letter(FIRST_NEW)}-{get_column_letter(last_new)}) are written by "
+        "repository/ingestion/scripts/tracker.py after every ingestion; edits in them are overwritten. "
+        f"The teal columns (A-{get_column_letter(FIRST_NEW - 1)}) are yours.", "ingestion")
 
     # 2. match each PDF on disk to a row
     rows = [(r, set(_norm_tokens(ws.cell(r, 2).value)), str(ws.cell(r, 3).value or "")[:4], _norm_tokens(ws.cell(r, 1).value))
@@ -253,6 +335,7 @@ def _fill_tab(ws, topic: str, log: dict) -> dict:
                   None, "Yes", None, None, None,
                   f"{ADDED_MARK}: not in the curated list" + (f" ({why})" if why else "")
                   + ". Fill in columns A-I and delete this sentence to keep the row."]
+        values += list(carried.get(f["name"], (None,) * len(LAYER_COLS)))
         for c, v in enumerate(values, 1):
             _body(ws.cell(r, c, v))
         per_row[r] = [f]
@@ -280,16 +363,25 @@ def _fill_tab(ws, topic: str, log: dict) -> dict:
         e.value = "Yes"
         if e.fill.fill_type is None or (e.fill.fgColor.rgb or "").endswith(NO_FILL):
             e.fill = PatternFill("solid", fgColor=YES_FILL)    # a user's own highlight (e.g. yellow) stays
+        for c in LAYER_COLS:
+            _body(ws.cell(r, c))
         _fit_height(ws, r, range(1, last_new + 1), keep_existing=r in curated_rows)
 
     # 5. curated rows without a PDF still get the grid in the new columns
     for r in curated_rows - set(per_row):
-        for c in range(FIRST_NEW, last_new + 1):
+        for c in range(FIRST_LAYER, last_new + 1):
             _body(ws.cell(r, c))
+
+    # 6. an owner outside the list drops the source from every snapshot without a word: say so
+    dono = FIRST_LAYER + LAYER_HEADERS.index("Dono")
+    odd = sorted({str(ws.cell(r, dono).value) for r in range(2, ws.max_row + 1)
+                  if ws.cell(r, dono).value not in (None, "") and str(ws.cell(r, dono).value).strip() not in OWNERS})
+    if odd:
+        print(f"  {ws.title}: Dono not in {', '.join(OWNERS)}: {', '.join(odd)}")
 
     ws.auto_filter.ref = f"A1:{get_column_letter(last_new)}{ws.max_row}"
     ws.sheet_view.showGridLines = False
-    return {"files": sum(len(v) for v in per_row.values()), "appended": len(unmatched)}
+    return {"files": sum(len(v) for v in per_row.values()), "appended": len(unmatched), "odd_owners": odd}
 
 
 def _summary(wb, tabs: list[tuple[str, str]]) -> None:
@@ -319,13 +411,14 @@ def _summary(wb, tabs: list[tuple[str, str]]) -> None:
     ws.row_dimensions[1].height = 22
     ws.row_dimensions[2].height = 30
     first = 3
+    ing, syn = get_column_letter(FIRST_NEW + 1), get_column_letter(FIRST_NEW + 5)
     for r, (_, tab) in enumerate(tabs, first):
         q = f"'{tab}'!"
         share = lambda col: f'=IF(B{r}=0,"",{col}{r}/B{r})'  # noqa: E731
         values = [tab.replace("Qual - ", ""),
                   f'=COUNTA({q}A:A)-1-COUNTIF({q}E:E,"Dropped")', f'=COUNTIF({q}E:E,"Yes")',
-                  f'=COUNTIF({q}K:K,"Ingested")', share("D"), f'=COUNTIF({q}K:K,"Needs attention")',
-                  f'=COUNTIF({q}O:O,"Yes")', share("G")]
+                  f'=COUNTIF({q}{ing}:{ing},"Ingested")', share("D"), f'=COUNTIF({q}{ing}:{ing},"Needs attention")',
+                  f'=COUNTIF({q}{syn}:{syn},"Yes")', share("G")]
         for c, v in enumerate(values, 1):
             cell = ws.cell(r, c, v)
             cell.font, cell.border = FONT, BORDER
@@ -355,9 +448,10 @@ def _summary(wb, tabs: list[tuple[str, str]]) -> None:
         "ingested file has a synthesis note. Both % columns divide by Sources.",
         "Acquired but neither Ingested nor Needs attention: not run yet (/ingest), or the area is on hold in "
         "settings.yaml (Trader). Recurring BCB documents (Copom statement, minutes, RPM) reach the vault through "
-        "the Copom ETL and have no row here.",
+        "the Copom ETL and are listed in the Copom tab; the managers' letters, in the Mental Models tab.",
         "The reasoning behind each area's list — scope, cluster notes, open gaps, acquisition order — is in the Notes tab.",
-        "Written by repository/ingestion/scripts/tracker.py on every ingestion. In the area tabs, teal columns are yours, navy ones the system's.",
+        "Written by repository/ingestion/scripts/tracker.py on every ingestion, mental-model run and Copom load. "
+        "In the area tabs, teal columns are yours (Dono, Camada and Fila included), navy ones the system's.",
     ]
     for i, n in enumerate(notes, t + 2):
         ws.cell(i, 1, n).font = Font(name="Calibri", size=10, italic=True, color="5B6377")
@@ -366,10 +460,201 @@ def _summary(wb, tabs: list[tuple[str, str]]) -> None:
     ws.sheet_view.zoomScale = 100
 
 
-def build() -> str:
-    if not TRACKER.exists():
-        raise FileNotFoundError(TRACKER)
-    wb = openpyxl.load_workbook(TRACKER)
+# ── the tabs rebuilt from the folders: Mental Models, Copom ──────────────────
+
+def _rebuild(wb, title: str):
+    """Drop and recreate a tab in the same place (at the end the first time)."""
+    pos = wb.sheetnames.index(title) if title in wb.sheetnames else len(wb.sheetnames)
+    if title in wb.sheetnames:
+        del wb[title]
+    ws = wb.create_sheet(title, pos)
+    ws.sheet_view.showGridLines = False
+    ws.sheet_view.zoomScale = 85
+    return ws
+
+
+def _table(ws, top: int, heads: list[tuple[str, float, PatternFill]], rows: list[list], centered: set[int]) -> int:
+    """Header row at `top` and the rows under it. Returns the last row written."""
+    for c, (h, w, fill) in enumerate(heads, 1):
+        cell = ws.cell(top, c, h)
+        cell.font, cell.fill, cell.alignment, cell.border = HEADER_FONT, fill, HEAD, BORDER
+        dim = ws.column_dimensions[get_column_letter(c)]
+        dim.width = max(w, dim.width if top != 1 and dim.width else 0)
+    ws.row_dimensions[top].height = 30
+    for r, values in enumerate(rows, top + 1):
+        for c, v in enumerate(values, 1):
+            cell = ws.cell(r, c, v)
+            cell.font, cell.border = FONT, BORDER
+            cell.alignment = TOP_CENTER if c in centered else TOP
+    return top + len(rows)
+
+
+def _kept(wb, title: str, key: str, cols: tuple[str, ...]) -> dict[str, tuple]:
+    """The user's values in `cols` of the first table of a tab about to be rebuilt, by `key`."""
+    if title not in wb.sheetnames:
+        return {}
+    ws = wb[title]
+    head = {ws.cell(1, c).value: c for c in range(1, ws.max_column + 1)}
+    if key not in head or not all(c in head for c in cols):
+        return {}
+    out = {}
+    for r in range(2, ws.max_row + 1):
+        k = ws.cell(r, head[key]).value
+        if not k:
+            break                                  # the blank row before the second table
+        vals = tuple(ws.cell(r, head[c]).value for c in cols)
+        if any(v not in (None, "") for v in vals):
+            out[str(k)] = vals
+    return out
+
+
+def _mental_models(wb) -> dict:
+    import mental
+    cfg = mental.config()
+    kept = _kept(wb, MM_TAB, "Document", ("Camada", "Fila"))
+    configured = set(cfg.get("documents") or {})
+    docs = sorted({(m, a) for m in cfg["managers"] for a in cfg["areas"]
+                   if mental.doc_path(cfg, m, a).exists() or mental.ledger_path(mental.doc_name(cfg, m, a)).exists()
+                   or mental.doc_name(cfg, m, a) in configured}, key=lambda x: (x[1], x[0]))
+    awaiting = {}           # the PDFs /ingest has not turned into clean_md yet (not scan(): it reads settings.yaml per file)
+    for m, mc in cfg["managers"].items():
+        folders = {c["path"].split("/")[0] for c in mc["corpora"]}
+        awaiting[m] = sum(1 for fo in folders for pdf in (MM_DIR / fo / "raw_pdf").glob("*.pdf")
+                          if not (MM_DIR / fo / "clean_md" / f"{pdf.stem}.md").exists())
+    summary, letters_rows, counts = [], [], {}
+    for m, a in docs:
+        s = mental.state(cfg, m, a)
+        read_on = mental.ledger(s["name"])
+        window = (f"{s['start']:%Y-%m}" if s["start"] else "start") + " → " + (f"{s['end']:%Y-%m}" if s["end"] else "open")
+        in_window = sorted(s["done"] + s["pending"], key=lambda x: (x["date"], x["name"]))
+        runs = sorted(v for v in read_on.values() if v != "seeded")
+        last = runs[-1] if runs else ("seeded (before the ledger)" if read_on else "—")
+        camada, fila = kept.get(s["name"], (None, None))
+        summary.append([s["name"], a, cfg["managers"][m]["name"], window, len(s["done"]) + len(s["pending"]),
+                        len(s["done"]), len(s["pending"]), last, awaiting[m], camada, fila])
+        counts[s["name"]] = {"read": len(s["done"]), "pending": len(s["pending"])}
+        for x in in_window:
+            letters_rows.append([s["name"], x["name"], x["date"].isoformat(), str(x["path"].parent.relative_to(MM_DIR)),
+                                 "Read" if x["name"] in read_on else "Pending", read_on.get(x["name"])])
+    ws = _rebuild(wb, MM_TAB)
+    heads = [("Document", 34, NAVY), ("Area", 24, NAVY), ("Manager", 14, NAVY), ("Window", 22, NAVY),
+             ("Letters in window", 12, NAVY), ("Read", 12, NAVY), ("Pending", 9, NAVY), ("Last run", 15, NAVY),
+             ("Awaiting /ingest", 11, NAVY), ("Camada", 10, TEAL), ("Fila", 8, TEAL)]
+    end = _table(ws, 1, heads, summary, centered=set(range(5, 12)))
+    ws.cell(1, 1).comment = Comment(
+        "Rebuilt from the folders by repository/ingestion/scripts/tracker.py (run.py, mental.py done). Read = letters in "
+        "ledger/<document>.tsv; Pending = letters in the window not read yet; Awaiting /ingest = the manager's PDFs "
+        "without clean_md. Camada and Fila (teal) are yours and survive the rebuild.", "tracker")
+    ws.cell(1, 10).comment = Comment(MM_LAYER_NOTE, "tracker")
+    for r in range(2, end + 1):
+        if ws.cell(r, 7).value:
+            ws.cell(r, 7).fill = PatternFill("solid", fgColor=STATE_FILL["Pending"])
+    top = end + 2
+    lheads = [("Document", 34, NAVY), ("Letter", 24, NAVY), ("Date", 14, NAVY), ("Corpus", 22, NAVY),
+              ("Status", 12, NAVY), ("Read on", 12, NAVY)]
+    last = _table(ws, top, lheads, letters_rows, centered={3, 5, 6})
+    for r in range(top + 1, last + 1):
+        ws.cell(r, 5).fill = PatternFill("solid", fgColor=STATE_FILL["Ingested" if ws.cell(r, 5).value == "Read" else "Pending"])
+    ws.freeze_panes = "B2"
+    return counts
+
+
+COPOM = OBSIDIAN / "monetary_policy" / "clean_md" / "central_bank"
+COPOM_KINDS = (("Statement", "comunicados"), ("Minutes", "atas"), ("RPM", "rpm"))
+COPOM_LAYER1 = 1       # minutes and RPM: how many, the latest before the cycle, are layer 1 (PLANO_AGENTES.md I)
+# Statements: every one published since this date (and before the cycle) is layer 1 — the start of
+# the term of the current BCB governor (Galípolo, 2025-01-01). Changes when the governor changes.
+# Decided by the user 2026-10-21: the statements of one governor read as one sequence of signals.
+MANDATO_INICIO = dt.date(2025, 1, 1)
+_ISO = r"(\d{4}-\d{2}-\d{2})"
+
+
+def copom_docs() -> list[dict]:
+    """Every Copom document in the vault: {kind, folder, name, path, meeting, date, published}.
+    date = the meeting (statement, minutes) or the issue (RPM); published = when the text came out,
+    from the file's own header: the minutes come ~6 days after the meeting, the statement the same
+    day. This is what the recency rule compares with the cycle date."""
+    out = []
+    for kind, folder in COPOM_KINDS:
+        for p in sorted((COPOM / folder).glob("*.md")):
+            with p.open(encoding="utf-8") as fh:
+                head = fh.read(1500)
+            g = lambda rx: (re.search(rx, head, re.M) or [None, None])[1]  # noqa: E731
+            ref = g(rf"^Data de refer[êe]ncia:\s*{_ISO}") or (re.findall(_ISO, p.stem) or [None])[-1]
+            pub = g(rf"^Data de publica[çc][ãa]o:\s*{_ISO}") or g(rf"^Publicado em:\s*{_ISO}") or ref
+            meeting = g(r"^Reuni[ãa]o:\s*(\d+)")
+            out.append({"kind": kind, "folder": folder, "name": p.stem, "path": p,
+                        "meeting": int(meeting) if meeting else None,
+                        "date": dt.date.fromisoformat(ref) if ref else None,
+                        "published": dt.date.fromisoformat(pub) if pub else None})
+    return out
+
+
+def copom_layer(docs: list[dict], before: dt.date, n: int = COPOM_LAYER1,
+                mandato: dt.date = MANDATO_INICIO) -> dict[str, int | None]:
+    """The layer of each Copom document for a cycle on `before`, by document name. Only what was
+    published strictly before `before` counts; one published on or after it is None — it did not
+    exist yet for that cycle.
+      - statements: layer 1 = every one published since `mandato` (the current governor's term);
+        a cycle before `mandato` (a backtest) falls back to the `n` latest, so it is never left
+        without a statement;
+      - minutes, RPM: layer 1 = the `n` latest (the recency rule);
+    the rest is layer 3 (history)."""
+    out = {}
+    for kind, _ in COPOM_KINDS:
+        known = sorted((d for d in docs if d["kind"] == kind and d["published"] and d["published"] < before),
+                       key=lambda d: (d["published"], d["meeting"] or 0, d["name"]), reverse=True)
+        in_term = kind == "Statement" and before > mandato
+        for i, d in enumerate(known):
+            out[d["name"]] = 1 if (d["published"] >= mandato if in_term else i < n) else 3
+    for d in docs:
+        out.setdefault(d["name"], None)
+    return out
+
+
+def _copom(wb) -> dict:
+    docs = copom_docs()
+    tomorrow = dt.date.today() + dt.timedelta(days=1)
+    layer = copom_layer(docs, tomorrow)
+    summary, rows, counts = [], [], {}
+    for kind, folder in COPOM_KINDS:
+        ds = [d for d in docs if d["kind"] == kind]
+        pubs = sorted(d["published"] for d in ds if d["published"])
+        l1 = sorted((d for d in ds if layer[d["name"]] == 1), key=lambda d: (d["published"], d["name"]))
+        latest = (l1[0]["name"] if len(l1) == 1 else f"{len(l1)}: {l1[0]['name']} … {l1[-1]['name']}") if l1 else None
+        summary.append([kind, f"central_bank/{folder}", len(ds), pubs[0].isoformat() if pubs else None,
+                        pubs[-1].isoformat() if pubs else None, latest or None])
+        counts[folder] = len(ds)
+        for d in sorted(ds, key=lambda d: (d["published"] or dt.date.min, d["name"]), reverse=True):
+            rows.append([kind, d["meeting"], d["name"], d["date"].isoformat() if d["date"] else None,
+                         d["published"].isoformat() if d["published"] else None, layer[d["name"]]])
+    ws = _rebuild(wb, COPOM_TAB)
+    heads = [("Kind", 12, NAVY), ("Folder", 14, NAVY), ("Documents", 28, NAVY), ("First published", 13, NAVY),
+             ("Last published", 12, NAVY), ("Layer 1 today", 36, NAVY)]
+    end = _table(ws, 1, heads, summary, centered={3, 4, 5})
+    ws.cell(1, 1).comment = Comment(
+        "Rebuilt by repository/ingestion/scripts/tracker.py from obsidian/monetary_policy/clean_md/central_bank/ "
+        "(the Copom ETL calls it after each load). First table: per kind, the count and the first and last "
+        "publication. Layer, for a cycle on a date: statements published since the current BCB governor's term "
+        f"began ({MANDATO_INICIO:%Y-%m-%d}) are layer 1; of the minutes and the RPM, the latest published before "
+        "the date; the rest is layer 3 (history). Here the cycle date is tomorrow; the cycle's knowledge snapshot "
+        "applies the same rule (copom_layer) to its own date.", "tracker")
+    top = end + 2
+    dheads = [("Kind", 12, NAVY), ("Meeting", 14, NAVY), ("Document", 28, NAVY), ("Meeting date", 13, NAVY),
+              ("Published", 12, NAVY), ("Layer", 36, NAVY)]
+    last = _table(ws, top, dheads, rows, centered={2, 4, 5, 6})
+    for r in range(top + 1, last + 1):
+        if ws.cell(r, 6).value == 1:
+            ws.cell(r, 6).fill = PatternFill("solid", fgColor=YES_FILL)
+    ws.freeze_panes = "A2"
+    return counts
+
+
+def build(path: Path = TRACKER) -> str:
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(path)
+    wb = openpyxl.load_workbook(path)
     log = _log_rows()
     done = []
     for topic in topics():
@@ -380,17 +665,27 @@ def build() -> str:
         _fill_tab(ws, topic, log)
         done.append((topic, ws.title))
     _summary(wb, done)
+    mm = _mental_models(wb)
+    cp = _copom(wb)
     wb.active = 0
     wb.calculation.fullCalcOnLoad = True
-    tmp = TRACKER.with_name("data_tracker.tmp.xlsx")
+    tmp = path.with_name(path.stem + ".tmp.xlsx")
     wb.save(tmp)
     try:
-        os.replace(tmp, TRACKER)
+        os.replace(tmp, path)
     except PermissionError:
         tmp.unlink(missing_ok=True)
-        raise PermissionError(f"{TRACKER.name} is open in Excel — close it and run tracker.py again")
-    return f"{TRACKER.relative_to(REPOSITORY.parent)} updated ({len(done)} areas)"
+        raise PermissionError(f"{path.name} is open in Excel — close it and run tracker.py again")
+    try:
+        shown = path.relative_to(REPOSITORY.parent)
+    except ValueError:
+        shown = path
+    return (f"{shown} updated ({len(done)} areas, {len(mm)} mental-model documents, "
+            f"Copom {cp.get('comunicados', 0)}/{cp.get('atas', 0)}/{cp.get('rpm', 0)})")
 
 
 if __name__ == "__main__":
-    print(build())
+    sys.stdout.reconfigure(encoding="utf-8")
+    ap = argparse.ArgumentParser(description="Rewrite the system's columns and tabs of the knowledge tracker.")
+    ap.add_argument("--file", type=Path, default=TRACKER, help="another copy of the workbook (default: the real one)")
+    print(build(ap.parse_args().file))

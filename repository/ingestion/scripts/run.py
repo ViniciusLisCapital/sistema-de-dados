@@ -25,7 +25,8 @@ Manager letters are a second kind of source, named `mental_model/<manager folder
 clean_md/ in the same folder, not in obsidian/ — a letter feeds every area's mental model,
 so its text stays in repository/ and the mental-model agent condenses it per area. Their
 file name follows the manager's date pattern in repository/mental_model/mental_models.yaml
-instead of `(Author, Year)`, and they are not literature, so the tracker does not list them.
+instead of `(Author, Year)`. They are not literature: the tracker lists them in its "Mental
+Models" tab, not in a Qual tab, and is updated after a letter is written just the same.
 --reclean never touches them: Kapitalo's clean_md was curated by its own curate.py.
 
 Guards — each one stops that file and says why, the rest continue:
@@ -244,8 +245,6 @@ def main() -> None:
             print("     " + ingest_one(a.topic, n, a.overwrite, a.accept_flags))
         except Exception as e:  # noqa: BLE001 — one bad file must not stop the rest
             print(f"     ERROR {e!r}")
-    if is_letters(a.topic):
-        return                       # letters are not literature: the tracker does not list them
     try:
         from tracker import build
         print("tracker: " + build())
