@@ -157,7 +157,11 @@
     - iv. Relatório final em markdown enquanto calibramos; PDF depois.
     - v. Primeiro teste completo com câmbio + política monetária. É o ponto final do `PLANO_AGENTES.md` (Fase 8), rodado só com a camada 1 (I.III.xvi).
     - vi. Propostas sobre o modelo (decidido 2026-10-21, vale para todos os agentes): cada report tem a seção 6, "Sobre o modelo": o que a literatura lida sugere da especificação do Modelo Estrutural e o teste empírico que decidiria. O escrivão não a leva ao relatório; a sessão que conduz o ciclo junta as propostas aqui, e o usuário decide o que testar.
-        - (nenhuma ainda)
+        - Do segundo teste solo de PM (ciclo 2026-10-15, `politica_monetaria_r1.md` §6), a decidir:
+            - 1. Regra de juros (R) suavizando o **nível** da Selic em vez da distância Selic − âncora (Clarida-Galí-Gertler; Minella 2002): hoje a âncora `rr_10a` passa 1 para 1 no mesmo trimestre. Teste: estimar as duas formas de 2006 a 2026 e comparar erro fora da amostra e o impacto de `rr_10a`.
+            - 2. Restringir a Selic média do trimestre de partida aos dias já decididos até a próxima reunião (no 4T26, 35 de 92 dias a 13,75%). Teste: erro do fechamento derivado, 2006–2026, com e sem a restrição.
+            - 3. Âncora só com a parte da NTN-B explicada por fundamentos (CDS, juro real americano de 10 anos), separando prêmio a termo (Perrelli & Roache; Adrian, Crump & Moench). Teste: regredir `rr_10a` nesses fundamentos e reestimar (R) com ajustado e resíduo separados.
+            - 4. Brent em reais (ou IC-Br energia) como regressor da equação de monitorados, com uma defasagem, e testar em bens industriais (RPM set/26, boxe do petróleo).
 
 
 # (IV) Decisões pendentes
