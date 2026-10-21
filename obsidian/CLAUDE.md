@@ -41,7 +41,7 @@ obsidian/
 | trader (new agent's literature, 2026-10-20) | 26 | 0 | — | no |
 | labor_market, economic_activity | empty | | | |
 
-`concepts/`: 49 pages (2026-10-21). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
+`concepts/`: 53 pages (2026-10-21). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
 
 **One concepts folder** (decided 2026-10-19): a concept is theory, not an area's property, and
 UIP is the same page whether the FX or the monetary-policy agent follows the link. One folder
@@ -110,8 +110,11 @@ Curation (which sources exist and their status, coverage notes, open gaps) lives
 `exchange_rate` has the new format so far (2026-09-30); its monetary-policy rows are drafts until
 that map exists.
 
+**`vault.py` skips `ciclos/`** (since 2026-10-21): the knowledge snapshots there are per-cycle copies, and indexing them would make every copied name ambiguous. Obsidian excludes it too (`.obsidian/app.json`).
+
 **Three folders are not areas:** `concepts/` (above), `ciclos/` (report and log templates, one folder per cycle: `dados/`
-with A, the F(A) of each agent and the G scripts; `<agente>_r1.md`, `_r2.md`, `_rf.md`; `P1.md`,
+with A, the F(A) of each agent and the G scripts; `conhecimento/<agente>/`, the knowledge snapshot the
+agent reads instead of the vault, layer 1 only (`analytics/agent_system/CLAUDE.md`); `<agente>_r1.md`, `_r2.md`, `_rf.md`; `P1.md`,
 `P2.md`, `PF.md`; `log.md`; `relatorio.md` — when the cycle ends only the `_rf.md`, the log, the
 relatório and `dados/` stay) and
 `escrivao/` (the writer agent's style manual, `manual_do_escrivao.md` — the condensation of the

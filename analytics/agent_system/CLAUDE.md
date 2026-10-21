@@ -56,6 +56,32 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 
 O diagrama lê a lista pelo mesmo `motor.ler_lista()`.
 
+Desde 2026-10-21 o mesmo comando grava também o retrato do conhecimento do agente (abaixo), no
+mesmo ciclo e com o mesmo `--refazer`.
+
+## conhecimento.py — o retrato do conhecimento do ciclo (SISTEMA_AGENTES.md I.III.xvi–xvii)
+
+```
+uv run python -m analytics.agent_system.conhecimento <agente> [--ciclo AAAA-MM-DD] [--refazer]
+```
+
+Grava `obsidian/ciclos/<data>/conhecimento/<agente>/`, com os caminhos do vault preservados para os
+wikilinks resolverem. O agente lê literatura, conceitos e modelos mentais **só dali**. O dono e a
+camada de cada item vêm do `data_tracker.xlsx` (colunas Dono/Camada das abas "Qual", Camada da aba
+"Mental Models"; o Copom pela regra da camada 1, `copom_layer()` do `tracker.py`). Entram:
+
+- a camada 1 de que o agente é dono (síntese + clean_md; modelo mental; para `politica_monetaria`,
+  os documentos do Copom);
+- as páginas de conceito que linkam esses itens, podadas às linhas que apontam para o retrato;
+- a camada 1 de outros donos que essas páginas linkam, marcada "outro dono" (sem transitividade);
+- o mapa conceitual, inteiro.
+
+Em todo arquivo copiado, menos o mapa, link para fora do retrato vira texto simples. `INDICE.md`
+(para o agente) e `retrato.json` listam cada arquivo com dono, camada, a marca de outro dono e o
+motivo da entrada; o log do ciclo usa isso para mostrar quando o agente leu material de outro dono.
+Fonte com dono e sem camada fica fora (ainda não classificada). Fixo no ciclo, como o F(A).
+Teste: `tests/test_conhecimento.py`.
+
 ## modelo.py — o Modelo Estrutural para os G (SISTEMA_AGENTES.md IV.vi)
 
 ```

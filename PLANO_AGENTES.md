@@ -8,9 +8,9 @@
 | Fase | O quê | Status |
 |---|---|---|
 | 0 | Registrar o framework e arrumar | feito (2026-10-21) |
-| 1 | Camada 1 e fila do câmbio | donos, camada 1 e fila aprovados (2026-10-21, SISTEMA_AGENTES II.II.iv); faltam 5 sínteses e 2 correções, depois do ok da 3E (o `/vault` roda o tracker) |
+| 1 | Camada 1 e fila do câmbio | feito (2026-10-21): donos, camada 1 e fila no tracker; toda fonte da camada 1 com síntese que passa no check; conceito fx_intervention criado |
 | 2 | Mapa conceitual, camada 1 e fila de PM | — |
-| 3 | Infraestrutura (3A dados de PM, 3B modelo, 3C retrato do conhecimento, 3D câmbio lê o retrato, 3E tracker) | — |
+| 3 | Infraestrutura (3A dados de PM, 3B modelo, 3C retrato do conhecimento, 3D câmbio lê o retrato, 3E tracker) | 3C, 3D e 3E feitas (2026-10-21, chat G); 3A e 3B esperam a lista V.II |
 | 4 | Re-teste do câmbio só com o núcleo | — |
 | 5 | Material da camada 1 de PM (sínteses e modelo mental da Verde) | preparação do chat H feita (2026-10-21: `end` no `mental.py`, documento `verde_mp_mental_models` no yaml, 24 cartas pendentes); falta abrir o chat H |
 | 6 | Agente de PM e teste solo | — |
