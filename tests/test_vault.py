@@ -246,6 +246,20 @@ def test_tracker_match_is_exact():
             tracker.OBSIDIAN = saved
 
 
+
+def test_index_skips_the_cycle_snapshots():
+    """A cycle's knowledge snapshot copies notes into ciclos/<date>/conhecimento/; the copies must
+    not make a link to the original ambiguous."""
+    with TempVault() as v:
+        copy = v.root / "ciclos/2026-10-22/conhecimento/cambio/mp/synthesis"
+        copy.mkdir(parents=True)
+        (copy / f"{NAME}.md").write_text(NOTE, encoding="utf-8")
+        idx = vault.index()
+        assert idx[NAME.lower()] == [v.root / "mp/synthesis" / f"{NAME}.md"], idx[NAME.lower()]
+        assert vault.resolve(NAME, idx)[0] == "ok"
+        assert not [p for p in v.check()["problems"] if "several" in p]
+
+
 # ── the real vault ───────────────────────────────────────────────────────────
 
 def test_real_vault_layout():

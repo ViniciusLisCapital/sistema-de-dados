@@ -95,10 +95,13 @@ def orphans(topic: str) -> list[str]:
 
 
 def index() -> dict[str, list[Path]]:
-    """note name (lower case) -> every .md file with that name, anywhere in the vault."""
+    """note name (lower case) -> every .md file with that name, anywhere in the vault but ciclos/:
+    a cycle's knowledge snapshot (ciclos/<date>/conhecimento/) holds copies of notes, and counting
+    them would make every link to a copied note ambiguous."""
     out: dict[str, list[Path]] = {}
     for p in OBSIDIAN.rglob("*.md"):
-        if ".obsidian" not in p.parts:
+        rel = p.relative_to(OBSIDIAN).parts
+        if ".obsidian" not in rel and rel[0] != "ciclos":
             out.setdefault(p.stem.lower(), []).append(p)
     return out
 
