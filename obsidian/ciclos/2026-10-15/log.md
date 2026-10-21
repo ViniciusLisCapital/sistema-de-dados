@@ -105,7 +105,7 @@ Nenhuma: os dois reports não leram um ao outro. Possível: o câmbio usou a Sel
 
 ## O que os testes mudaram (2026-10-21)
 
-- **PM:** nos dois trimestres reunião a reunião, a central passa a ser o caminho de reuniões do agente; a do modelo fica como referência (a regra de juros pedia 12,47% no 4T26 com a Selic em 13,75%).
+- **PM, revisão do usuário:** o agente afirmou de memória um passo máximo de 25 p.b. por reunião e montou os cenários sobre isso; o ciclo de 2021–2022 desmente (padrão histórico agora só sai de dado, PRINCIPIOS I.II.ix). O foco mudou: o agente confronta o que o Copom vai fazer, o que deveria fazer pelos dados e o que o mercado precifica (Q1–Q4). A central é a do modelo em todos os trimestres, e o report conta a história econômica do corte do modelo (a NTN-B cai com o prêmio fiscal: consolidação e menos demanda à frente) antes de discordar. Cada report ganha a seção 6, "Sobre o modelo" (o caso Perrelli & Roache).
 - **Câmbio:** o agente não escreve de memória o que o Copom disse do câmbio; aguarda a S3.
 - **F de PM:** passa a trazer o IC-Br em dólar e o núcleo EX0, que o agente tirou do A.
 
