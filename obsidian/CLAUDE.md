@@ -105,6 +105,7 @@ matters TO IT, coming from that agent; (4) **inputs** — what the other agents 
 coming from it; (5) **concept index** from the literature. An input gives emphasis, never a limit.
 Every output must appear as the other agent's input and vice versa. The map holds the **fixed** layer;
 the **dynamic** layer (what a given cycle's thesis needs) lives in the reports.
+`vault.py map <área>` checks a map's links (both maps pass since 2026-10-21): it fails a link that resolves to no file, to several or to an empty note, a link to a synthesis/clean_md without the path, and a name in `code` that has a concept page (`code` = a concept with no page yet; a facet of a broader page is `[[page|name]]`).
 Curation (which sources exist and their status, coverage notes, open gaps) lives in
 `repository/agent_mapping/data_tracker.xlsx`: the area's Qual tab and the Notes tab. Only
 `exchange_rate` has the new format so far (2026-09-30); its monetary-policy rows are drafts until

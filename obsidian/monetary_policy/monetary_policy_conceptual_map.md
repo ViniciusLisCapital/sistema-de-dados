@@ -114,7 +114,8 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   persistent moves act on long rates (Woodford 1999). A rule is an input, not the decision: Taylor
   (1993) shows the literal rule giving the wrong answer to a temporary oil shock.
 - **Read:** [[inflation_forecast_targeting]], [[taylor_rule]], [[taylor_principle]],
-  [[interest_rate_smoothing]], [[targeting_rules]], [[time_inconsistency]].
+  [[interest_rate_smoothing]], [[targeting_rules]], [[time_inconsistency]], [[monetary_policy_shocks]],
+  [[real_time_data]].
 - **Mental models:** Verde §2.3 (the BC pushed by the curve), §2.6 (the "dócil" BC).
 - **Data:** `pm_copom_reuniao`, `pm_copom_calendario`, `pm_copom_projecoes`, `inflc_meta`, and the
   Copom documents.
@@ -134,7 +135,8 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   is continuous: 12-month IPCA checked every month, breached after six consecutive months outside the
   band (Decreto 12.079/2024, as described in the RPM's institutional section).
 - **Read:** [[inflation_targeting]], [[inflation_persistence]], [[administered_prices]],
-  [[core_inflation]], [[food_inflation_drivers]], [[divine_coincidence]], [[nk_phillips_curve]].
+  [[core_inflation]], [[food_inflation_drivers]], [[divine_coincidence]], [[nk_phillips_curve]],
+  [[exchange_rate_pass_through]].
 - **Mental models:** Verde §2.5 (supply shocks and calibration), §2.4 (lags), §2.6 (a target met by
   tax cuts is a deferred cost).
 - **Data:** `pm_copom_projecoes`, `inflc_meta`; TWA inflation `inflc_agregados`,

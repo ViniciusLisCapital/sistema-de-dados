@@ -261,7 +261,58 @@ def test_index_skips_the_cycle_snapshots():
         assert not [p for p in v.check()["problems"] if "several" in p]
 
 
+# ── conceptual maps ──────────────────────────────────────────────────────────
+
+MAP = f"""# MP — Conceptual Map
+
+**Legend.** `[[concept]]` links go to `concepts/`; a name in `code` font has no page yet.
+
+- **Read:** [[taylor_rule]], [[taylor_rule|the rule]], `lucas_critique`.
+
+| # | row |
+|---|---|
+| S1 | the [[taylor_rule\\|rule]] ahead |
+
+- [[taylor_rule]] (facet) — the rule. [[mp/synthesis/{NAME}]], [[mp/clean_md/other_paper (Doe, 2000)]]
+
+```
+[[shown_in_a_fence]]
+```
+"""
+
+
+def test_map_check():
+    """The 2026-10-21 FX map had 171 dangling targets (Part 5 named concepts that were never
+    split into pages), one link to an empty note created by clicking a dangling node, and cited
+    its sources in italics. The check fails each kind; links inside `code` do not count."""
+    def run(text):
+        (v.root / "mp/mp_conceptual_map.md").write_text(text, encoding="utf-8")
+        return vault.check_map("mp")
+    with TempVault() as v:
+        r = run(MAP)
+        assert r["ok"], r["problems"]
+        assert r["links"] == 6 and r["targets"] == 3, r
+        (v.root / "stub.md").write_text("", encoding="utf-8")
+        cases = [
+            (MAP + "- [[uncovered_interest_rate_parity]]\n", "resolves to no file"),
+            (MAP + "- [[stub]]\n", "is an empty file"),
+            (MAP + f"- [[{NAME}]]\n", "matches several files"),
+            (MAP + "- [[other_paper (Doe, 2000)]]\n", "is a clean_md note"),
+            (MAP.replace("`lucas_critique`", "`taylor_rule`"), "has a concept page"),
+        ]
+        for text, expect in cases:
+            r = run(text)
+            assert not r["ok"] and any(expect in p for p in r["problems"]), (expect, r["problems"])
+    with TempVault() as v:
+        assert not vault.check_map("mp")["ok"]          # no map file
+
+
 # ── the real vault ───────────────────────────────────────────────────────────
+
+def test_real_maps_pass():
+    for t in ("exchange_rate", "monetary_policy"):
+        r = vault.check_map(t)
+        assert r["ok"], (t, r["problems"][:5])
 
 def test_real_vault_layout():
     obs = ROOT / "obsidian"

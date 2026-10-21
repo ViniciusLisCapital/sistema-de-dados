@@ -6,6 +6,7 @@ equivalent of qc.py check. Reads the vault, writes nothing.
     uv run python repository/ingestion/scripts/vault.py check <topic> "<name>"
     uv run python repository/ingestion/scripts/vault.py concept [<slug> ...]    # concept pages (all if none)
     uv run python repository/ingestion/scripts/vault.py biblio <topic> "<name>"  # the tracker's bibliographic fields
+    uv run python repository/ingestion/scripts/vault.py map <topic> [...]       # a conceptual map's links
 
 The step after ingestion (SISTEMA_AGENTES.md II.I.v):
 
@@ -318,6 +319,61 @@ def check_concept(slug: str) -> dict:
     return {"slug": p.stem, "ok": not bad, "problems": [f"number not in the linked sources, {x}" for x in bad]}
 
 
+# ── conceptual maps ──────────────────────────────────────────────────────────
+
+CODE_SPAN = re.compile(r"`([^`\n]*)`")
+
+
+def _blank_code(text: str) -> str:
+    """The text with inline code spans and fenced blocks blanked out (same length per line):
+    Obsidian does not treat a [[link]] inside `code` as a link, and the maps use that to show
+    the link syntax in their legends."""
+    out, fenced = [], False
+    for line in text.split("\n"):
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            out.append("")
+            continue
+        out.append("" if fenced else CODE_SPAN.sub(lambda m: " " * len(m.group(0)), line))
+    return "\n".join(out)
+
+
+def check_map(topic: str) -> dict:
+    """obsidian/<topic>/<topic>_conceptual_map.md against the vault. Fails on
+      - a [[link]] that resolves to no file, or to several (outside `code`);
+      - a link whose target is an empty file (a note created by clicking a dangling link);
+      - a link to a synthesis note or a clean_md written without the path from the vault root;
+      - a name in `code` font that has a concept page (the map's convention: `code` is a concept
+        with no page yet; one with a page is linked)."""
+    p = OBSIDIAN / topic / f"{topic}_conceptual_map.md"
+    if not p.exists():
+        return {"topic": topic, "ok": False, "problems": [f"no map: {p.relative_to(OBSIDIAN.parent)}"]}
+    text = p.read_text(encoding="utf-8")
+    idx = index()
+    pages = {c.stem.lower() for c in CONCEPTS.glob("*.md")}
+    prob: list[str] = []
+    found = links(_blank_code(text))
+    for n, target, _ in found:
+        t = target.strip().rstrip("\\").strip()
+        state, hit = resolve(t, idx)
+        if state == "ambiguous":
+            prob.append(f"line {n}: [[{t}]] matches several files — write the path from the vault root")
+        elif state == "missing":
+            prob.append(f"line {n}: [[{t}]] resolves to no file")
+        elif hit.stat().st_size == 0:
+            prob.append(f"line {n}: [[{t}]] is an empty file ({hit.relative_to(OBSIDIAN).as_posix()})")
+        elif "/" not in t and hit.parent.name in ("synthesis", "clean_md"):
+            prob.append(f"line {n}: [[{t}]] is a {hit.parent.name} note — write "
+                        f"[[{hit.relative_to(OBSIDIAN).with_suffix('').as_posix()}]]")
+    for n, line in enumerate(text.split("\n"), 1):
+        for m in CODE_SPAN.finditer(line):
+            if m.group(1).strip().lower() in pages:
+                prob.append(f"line {n}: `{m.group(1)}` has a concept page — link it: [[{m.group(1).strip()}]]")
+    targets = {t.strip().rstrip("\\").strip().lower() for _, t, _ in found}
+    return {"topic": topic, "links": len(found), "targets": len(targets),
+            "ok": not prob, "problems": list(dict.fromkeys(prob))}
+
+
 # ── bibliographic fields from the tracker ────────────────────────────────────
 
 BIBLIO = ("Name", "Autor/Company", "Date", "Type")
@@ -379,6 +435,8 @@ def main() -> None:
     x = sub.add_parser("biblio", help="the tracker's bibliographic fields for one file (read-only)")
     x.add_argument("topic")
     x.add_argument("name")
+    mp = sub.add_parser("map", help="check an area's conceptual map's links against the vault")
+    mp.add_argument("topics", nargs="+", help="areas, e.g. exchange_rate monetary_policy")
     a = ap.parse_args()
     if a.list is not None:
         if a.list and a.list not in topics():
@@ -398,6 +456,14 @@ def main() -> None:
             failed += not r["ok"]
             print(f"{'PASS' if r['ok'] else 'FAIL'}  {r['slug']}" + "".join(f"\n   - {x}" for x in r["problems"]))
         print(f"\n{len(slugs) - failed}/{len(slugs)} pass")
+        sys.exit(1 if failed else 0)
+    if a.cmd == "map":
+        failed = 0
+        for t in a.topics:
+            r = check_map(t)
+            failed += not r["ok"]
+            print(f"{'PASS' if r['ok'] else 'FAIL'}  {t}" + (f"  ({r['links']} links, {r['targets']} targets)" if "links" in r else "")
+                  + "".join(f"\n   - {x}" for x in r["problems"]))
         sys.exit(1 if failed else 0)
     if a.cmd == "biblio":
         print(json.dumps(biblio(a.topic, a.name[:-3] if a.name.endswith(".md") else a.name),
