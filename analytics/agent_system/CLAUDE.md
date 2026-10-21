@@ -33,7 +33,7 @@ horizontal a 390 px.
 ## dados/ — o retrato de dados do ciclo (A → F(A))
 
 ```
-uv run python -m analytics.agent_system.dados cambio [--ciclo AAAA-MM-DD] [--refazer]
+uv run python -m analytics.agent_system.dados {cambio|politica_monetaria} [--ciclo AAAA-MM-DD] [--refazer]
 ```
 
 Grava em `obsidian/ciclos/<data>/dados/`: `A/` (cada tabela da lista do agente, um `.csv.gz`, mais
@@ -49,7 +49,23 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 - `cambio.py`: as tabelas do câmbio, as séries e a leitura de cada uma, e as leituras combinadas
   (o real e os pares: variação, volatilidade, carry). Agente novo = um arquivo destes e uma linha em
   `AGENTES` no `__main__.py`.
-- O F(A) é fixo no ciclo: rodar de novo para a mesma data para; `--refazer` reextrai.
+- `politica_monetaria.py` (2026-10-21): as 68 entradas da V.II, até o grupo "Fora da lista" (fora do
+  F). Tabela que o câmbio também lê sai da declaração dele (`_do_cambio`/`_so`): mesma consulta,
+  outras séries, e o A do ciclo serve aos dois. F próprio: ciclo de juros em curso, projeções da
+  última reunião e o horizonte relevante nas últimas oito, hiato e as revisões entre edições, QPC,
+  recortes do BC refeitos dos subitens (`inflc_dim`; batem com `inflc_agregados`), fatores da DLSP,
+  EFGG, contas nacionais. Combinadas: a Selic por reunião na curva DI e na Focus, e o juro real
+  contra o neutro do QPC.
+- `Tabela.variante`: outra consulta da mesma tabela que a de outro agente, em outro arquivo de A (a
+  curva americana inteira do agente de PM vai para `us_interest_rate__curva.csv.gz`; o câmbio lê
+  três vértices). Sem ela, consulta diferente no mesmo arquivo levanta.
+- A lista aceita um item com várias tabelas ("- `a`, `b`, `c`: papel"); série trimestral sai com
+  Δ 1t/4t; `dims=()` para tabela sem coluna de dimensão.
+- `fisc_efgg`: o `geral_` é a soma das três esferas, sem consolidar; o F diz para ler a variação,
+  não o nível.
+- O F(A) é fixo no ciclo: rodar de novo para a mesma data para; `--refazer` reextrai. **`--refazer`
+  reextrai TODAS as tabelas do agente, inclusive as que ele divide com outro agente no A do ciclo**;
+  num ciclo em uso, refaça só o texto do F com `motor.montar_f` sobre o A que já está lá.
 - `Tabela.fora` tira da conta uma tabela da lista com defeito conhecido (hoje nenhuma; a
   `cmb_fluxo_cambial` saiu da lista em 2026-10-07); `Tabela.nota` imprime um defeito conhecido no F (hoje nenhuma: a
   do PEN da `cmb_fx_latam` saiu em 2026-10-07, quando a tabela trocou o Yahoo pelo BIS).
