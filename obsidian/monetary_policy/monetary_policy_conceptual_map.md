@@ -1,8 +1,7 @@
 # Monetary Policy — Conceptual Map
 
-**Status (2026-10-21): draft.** Part 1 (central questions, horizon, worst and best) was approved by the
-user on 2026-10-21. Parts 3 and 4
-mirror the drafts in the exchange-rate map and close them once both maps are approved. Layer 1 of
+**Status (2026-10-21):** Parts 1 to 4 approved by the user on 2026-10-21 (central questions, horizon,
+worst and best, outputs and inputs, mirrored in the exchange-rate map). Layer 1 of
 this agent's material is chosen in a separate step (`PLANO_AGENTES.md`, Phase 2) and is not decided
 here.
 
@@ -341,7 +340,7 @@ projections already exists (`especiais.py`) and serves the FX agent today.
 
 ## Part 3 — Outputs: what this agent tells the others matters to it
 
-### 3.1 To FX — DRAFT (fixed layer)
+### 3.1 To FX (fixed layer; approved by the user 2026-10-21)
 
 What this agent needs from the FX agent, every cycle. These are the FX map's rows E1–E7, unchanged in
 substance, written from this side. What the Copom cares about in the exchange rate is its effect on
@@ -355,14 +354,15 @@ inflation and expectations, not its level for its own sake (2.7).
 | S4 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** (a recent rate, then PPP) | A gap between the market and that path is a risk to the projection | The gap widens in the direction the Copom lists as a risk | 2.1, 2.2 |
 | S5 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral and weakens transmission (ata of the 281st meeting, §8) | CDS and BRL move together against peers | 2.5, 2.6 |
 | S6 | E6 | **How much carry is supporting the BRL** | The exchange rate is one channel from the Selic to inflation; if carry stops working, that channel weakens | Carry and the BRL decouple | 2.10, 2.7 |
-| S7 | E7 | **FX market functioning.** Liquidity, central-bank intervention | Tells whether the BCB is using FX instruments rather than the rate | Intervention, or a liquidity squeeze | 2.1, 2.7 |
+| S7 | E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention; whether there is dysfunction | Tells whether the BCB is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (trigger of E4) | Intervention, a liquidity squeeze or a cupom cambial spike | 2.1, 2.7 |
 
-**Proposed changes — PROPOSTA, aguarda aprovação do usuário.**
+**Decided by the user, 2026-10-21.**
 - **S3 (E3) is provisional.** The pass-through literature belongs to the inflation agent (IV.i).
   Until it exists the FX agent answers this row; when it does, the row moves to inflation → this
   agent, and the FX agent tells the inflation agent about depreciation risk (I.III.xvii).
-- **S7 (E7) drops the cupom cambial.** The FX map names it, but the series is in neither agent's data
-  list (III.I.vii); the row is answered with reserves, interventions and the FX flow.
+- **S7 (E7) keeps the cupom cambial.** The series is not in the data yet; it comes with the Bloomberg
+  API (expected 2026-11-01). Until then the row is answered with reserves, interventions and the FX
+  flow.
 
 ### 3.2 To other areas — not defined yet
 
@@ -381,7 +381,7 @@ Written when those agents exist. The ones that matter most to this area:
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-### 4.1 From FX — DRAFT (fixed layer)
+### 4.1 From FX (fixed layer; approved by the user 2026-10-21)
 
 What the FX agent needs from this agent, every cycle: the FX map's rows S1–S4, written from this side.
 
@@ -390,14 +390,14 @@ What the FX agent needs from this agent, every cycle: the FX map's rows S1–S4,
 | E1 | S1 | **Expected path of the Selic and the balance of risks**, as this agent reads it (not only the Focus median) | The forward carry, which supports the BRL, is the differential ahead, not today's | The thesis of Q5 in the horizon format of Part 1 (quarter close; meeting by meeting for the next two quarters) |
 | E2 | S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link | Q3, channels 2.3 and 2.6 |
 | E3 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | The Copom documents of layer 1 (II.III.ix); channel 2.7 |
-| E4 | S4 | **Reaction function to a depreciation.** Would the Copom respond? | A credible response caps the depreciation; its absence removes the cap | Q1, channels 2.1 and 2.2 (the second-order-effects test) |
+| E4 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate (intervention without signs of dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, answered by both agents with this agent leading | A credible response caps the depreciation; its absence removes the cap. Under a defense posture what matters is the BCB's reaction function, not the technical state of the market | Q1, channels 2.1 and 2.2 (the second-order-effects test); under the trigger, 2.1 and 2.7 with the FX agent's reading of dysfunction (S7) |
 
-**Proposed changes — PROPOSTA, aguarda aprovação do usuário.**
-- **E4 (S4) drops "with which instrument".** FX intervention is not a Copom decision and is the FX
-  agent's own channel (FX map 2.7, `cmb_reservas_bc` is its endogenous table); the reverse request
-  already exists (S7 above). This agent answers on the rate: whether a depreciation reaches the
-  projection or expectations enough to change the path.
-- **E1 (S1) follows the horizon proposal.** The FX equation of the Structural Model was estimated with
+**Decided by the user, 2026-10-21.**
+- **E4 (S4) is triggered.** While the BCB intervenes only against dysfunction, intervention is the FX
+  agent's channel (FX map 2.7, `cmb_reservas_bc`), and judging dysfunction is its job (S7); this agent
+  answers on the rate. If the BCB's posture turns to defending the exchange rate, the reaction
+  function, intervention included, becomes a question for both, led by this agent.
+- **E1 (S1) follows the approved horizon.** The FX equation of the Structural Model was estimated with
   the Selic at the quarter close and the simulator uses the average; the close is what this agent
   gives (Part 1, horizon, item 3).
 

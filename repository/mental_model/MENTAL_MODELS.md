@@ -62,7 +62,7 @@ Kinea has no PDFs: `kinea/fetch_kinea.py` saves the letters as markdown, and tho
 | verde_fx | 80 (2020-01 → 2026-08) | 0 | its About says 73 letters; the ledger was seeded with the whole range, 77 in the corpus |
 | kapitalo_fx | 83 (2019-07 → 2026-05) | 3 | |
 | kinea_fx | 124 (2021-05 → 2026-06) | 5 | 60 letters + 64 Insights |
-| verde_mp | 0 | 24 | window 2021-01 → 2022-12 only (the 2021–2022 tightening cycle), decided 2026-10-21 |
+| verde_mp | 24 | 0 | window 2021-01 → 2022-12 only (the 2021–2022 tightening cycle), decided 2026-10-21; done the same day in 3 runs |
 | goldman_sachs_fx | 25 of 80 issues (→ 2025-06-20) | — | the 80 PDFs need `/ingest mental_model/goldman_sachs` first; then `mental.py seed goldman_sachs exchange_rate 2025-01-03 2025-06-20` |
 
 Known gaps:

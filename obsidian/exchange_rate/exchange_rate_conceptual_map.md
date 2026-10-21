@@ -157,16 +157,16 @@ Since 2026-10-07 the agent reads every table of the list through the cycle's F(A
 
 ## Part 3 — Outputs: what this agent tells the others matters to it
 
-### 3.1 To monetary policy — DRAFT (fixed layer)
+### 3.1 To monetary policy (fixed layer; approved by the user 2026-10-21)
 
 What the FX agent needs from the monetary-policy agent, every cycle.
 
 | # | What the FX agent needs | Why it matters to FX | Used in |
 |---|---|---|---|
-| S1 | **Expected path of the Selic and the balance of risks**, as the monetary-policy agent reads it (not only the Focus median) | The forward carry, which is what supports the BRL, is the differential ahead, not today's | 2.1 |
+| S1 | **Expected path of the Selic and the balance of risks**, as the monetary-policy agent reads it (not only the Focus median): the Selic at each quarter close, and meeting by meeting for the next two quarters | The forward carry, which is what supports the BRL, is the differential ahead, not today's | 2.1 |
 | S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link ([[fisher_effect_uip_ppp_paradox_resolution]]) | 2.1, 2.2 |
 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 2.7, Part 4 |
-| S4 | **Reaction function to a depreciation.** Would the Copom respond, and with which instrument? | A credible response caps the depreciation; its absence removes the cap | 2.1, 2.9 |
+| S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate (intervention without signs of market dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, and is answered by both agents with the monetary-policy agent leading | A credible response caps the depreciation; its absence removes the cap. While the BCB intervenes only against dysfunction, judging dysfunction is this agent's job (E7); under a defense posture what matters is the BCB's reaction function, not the technical state of the market | 2.1, 2.9 |
 
 ### 3.2 To other areas — not defined yet
 
@@ -177,7 +177,7 @@ are the two that matter most to this area. They are written when those agents ex
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-### 4.1 From monetary policy — DRAFT (fixed layer)
+### 4.1 From monetary policy (fixed layer; approved by the user 2026-10-21)
 
 What the monetary-policy agent needs from the FX agent, every cycle. Written as the monetary-policy
 agent would state it. What the Copom cares about in the exchange rate is its effect on inflation and
@@ -194,10 +194,12 @@ taxa de câmbio compatível com a PPC".
 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** | The reference scenario assumes a PPP-compatible path; a gap between the market and that path is a risk to the projection | The gap widens in a direction that the Copom lists as a risk |
 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral rate and weakens transmission ([[fiscal_dominance]]) | CDS and BRL move together against peers |
 | E6 | **How much carry is supporting the BRL** | The exchange rate is one channel through which the Selic reaches inflation; if carry stops working, that channel weakens (Kapitalo §3.2 treats FX as a financial-conditions component equivalent to rates) | Carry and the BRL decouple |
-| E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention | Tells whether the central bank is using FX instruments rather than the rate | Intervention or a cupom cambial spike |
+| E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention; whether there is dysfunction | Tells whether the central bank is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (S4 trigger) | Intervention or a cupom cambial spike |
 
 Pass-through (E1, E3) sits between this area and inflation. Until the inflation agent exists, the FX
-agent reports it; when that agent exists, this row is renegotiated between the two maps.
+agent reports it, provisionally (decided 2026-10-21); when that agent exists, E3 moves to it (pending in
+`SISTEMA_AGENTES.md`). The cupom cambial of E7 is not in the data yet: it comes with the Bloomberg API
+(expected 2026-11-01); until then E7 is answered with reserves, interventions and the FX flow.
 
 ### 4.2 From other areas — not defined yet
 
