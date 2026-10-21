@@ -12,7 +12,9 @@ Cada item erra sem levantar nada se quebrar:
 2. o caminho de uma exogena entra no trimestre errado, ou nao e segurado depois do ultimo dado;
 3. o multiplicador nao chega a conta (x1 tem de ser identidade, x0 tem de desligar o canal);
 4. uma chave invalida (endogena, sigma, multiplicador negativo, trimestre fora) passa calada;
-5. o trimestre que ja fechou nao e marcado.
+5. o trimestre que ja fechou nao e marcado;
+6. a Selic de fechamento (derivada) nao segue (media de q + media de q+1)/2 na central ou num
+   desenho, o ultimo trimestre nao fica em branco, ou o de partida nao e o observado.
 
 A faixa foi conferida uma vez contra `_simFaixasSistema` da pagina, no mesmo payload: 3e-9 no
 pior quantil (2026-10-15). Aqui so se afirma que x1 nao a muda.
@@ -50,7 +52,10 @@ def levanta(fn, trecho, tipo=Exception):
 
 
 def dif(a, b):
-    return max(abs(x - y) for x, y in zip(a, b))
+    """Maior diferenca; o trimestre em branco (None) tem de estar em branco nos dois."""
+    if any((x is None) != (y is None) for x, y in zip(a, b)):
+        return float("inf")
+    return max(abs(x - y) for x, y in zip(a, b) if x is not None)
 
 
 # 1. o cenario padrao
@@ -149,6 +154,56 @@ fe = modelo.rodar({"ciclo": vira.isoformat(), "p": p}, faixa=False)["fechados"]
 check(f"no primeiro dia depois de {jan[0]}, ele ja fechou", fe == [jan[0]], fe)
 fe = modelo.rodar({"ciclo": (vira - dt.timedelta(days=1)).isoformat(), "p": p}, faixa=False)["fechados"]
 check("na vespera, nenhum", fe == [], fe)
+
+# 6. a Selic de fechamento, derivada das medias (decisao do usuario em 2026-10-21, a revisar)
+med, fim = r0["endogenas"]["selic"]["central"], r0["endogenas"]["selic_fim"]["central"]
+check("central: fechamento de q = (media de q + media de q+1) / 2",
+      all(abs(fim[j] - (med[j] + med[j + 1]) / 2) < 1e-12 for j in range(len(med) - 1)))
+check("o ultimo trimestre projetado fica em branco", fim[-1] is None and len(fim) == len(med), fim[-1])
+# Num desenho: a mesma regra sobre as medias DAQUELE desenho, nao sobre as da central.
+from analytics.brasil.structural_model import simulator as sm  # noqa: E402
+
+i0, h = p["i0"], p["h_padrao"]
+sd, _ = sm.resolver(p, modelo._coefs(p, {}, 7), i0, h, sm.entradas(p, i0, h))
+s7 = modelo._saidas(p, sd)
+check("num desenho: o fechamento e o das medias do desenho",
+      all(abs(s7["selic_fim"][j] - (sd["selic"][j] + sd["selic"][j + 1]) / 2) < 1e-12 for j in range(h - 1))
+      and s7["selic_fim"][-1] is None and dif(s7["selic"], med) > 1e-6)
+ef = fa["endogenas"]["selic_fim"]
+check("a faixa do fechamento existe nos 11 primeiros e fica em branco no ultimo",
+      all(lo is not None and lo <= c <= hi for lo, c, hi in zip(ef["lo"][:-1], ef["central"][:-1], ef["hi"][:-1]))
+      and ef["lo"][-1] is None and ef["hi"][-1] is None)
+check("e o texto diz que ela e derivada", "DERIVADA" in modelo.texto(fa) and "(derivada)" in ef["nome"])
+
+# O de partida e o OBSERVADO: do A do ciclo se a tabela estiver la, senao do retrato.
+import gzip  # noqa: E402
+import tempfile  # noqa: E402
+
+rot = p["rot"][-1]
+fim_tri = modelo._fim_tri(rot)
+with tempfile.TemporaryDirectory() as tmp:
+    pasta = Path(tmp)
+    original = modelo._pasta_a
+    modelo._pasta_a = lambda ciclo: pasta
+    try:
+        retrato = {"rot": rot, "valor": 99.0, "data": str(fim_tri), "fonte": "banco, no retrato"}
+        r_ret = modelo.rodar({"ciclo": "2026-10-15", "p": p, "selic_fim": retrato}, faixa=False)
+        check("sem a tabela no A, o fechamento de partida vem do retrato",
+              r_ret["partida"]["selic_fim"] == 99.0, r_ret["partida"]["selic_fim"])
+        linhas = ["date,curve,tenor,tenor_years,value",
+                  f"{fim_tri.replace(day=1)},POLICY,1d,0.003968,14.00",
+                  f"{fim_tri},POLICY,1d,0.003968,13.75",
+                  f"{fim_tri + __import__('datetime').timedelta(days=1)},POLICY,1d,0.003968,13.50",
+                  f"{fim_tri},DIPRE,12M,1.0,12.00"]
+        with gzip.open(pasta / "br_interest_rate.csv.gz", "wt", encoding="utf-8") as fh:
+            fh.write("\n".join(linhas) + "\n")
+        r_a = modelo.rodar({"ciclo": "2026-10-15", "p": p, "selic_fim": retrato}, faixa=False)
+        check("com a tabela no A, ela ganha do retrato: a POLICY do ultimo dia do trimestre",
+              r_a["partida"]["selic_fim"] == 13.75, r_a["partida"]["selic_fim"])
+        r_n = modelo.rodar({"ciclo": "2026-10-15", "p": p, "selic_fim": dict(retrato, rot="1999T1")}, faixa=False)
+        check("retrato de outro trimestre nao vale (e o A ainda vale)", r_n["partida"]["selic_fim"] == 13.75)
+    finally:
+        modelo._pasta_a = original
 
 print(f"\n{'FALHAS: ' + str(falhas) if falhas else 'tudo ok'}")
 sys.exit(1 if falhas else 0)

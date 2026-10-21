@@ -23,9 +23,17 @@ O que entra:
             na mediana e em cada desenho do posterior. m ≥ 0.
 
 O que sai, por trimestre dos 12 seguintes ao último trimestre com dado (o último sai como
-"observado", é dali que a conta parte): PTAX de fechamento, Selic média, IPCA do trimestre e
-de 12 meses, Focus de 12 meses e hiato, cada um com a central (os pesos da mediana) e a faixa
-de 90% do posterior.
+"observado", é dali que a conta parte): PTAX de fechamento, Selic média e de fechamento, IPCA
+do trimestre e de 12 meses, Focus de 12 meses e hiato, cada um com a central (os pesos da
+mediana) e a faixa de 90% do posterior.
+
+A Selic de fechamento é DERIVADA (decisão do usuário em 2026-10-21, a revisar): o modelo só
+tem a média do trimestre. Fechamento de q ≈ (média de q + média de q+1) / 2, na central e em
+cada desenho; no último trimestre projetado não há q+1 e ele fica em branco. No trimestre de
+partida sai o fechamento observado (curva POLICY de `br_interest_rate`). Medido de 2006 a
+2026T3 contra o fechamento de fato: erro médio 0,12 p.p., máximo 0,55. A alternativa, degraus
+nas reuniões do Copom, erra 0,06 um trimestre por vez, mas divide pela fração do trimestre
+depois da reunião e, encadeada por 12 trimestres como numa projeção, chega a 41,8 p.p.
 
 Três regras, cada uma contra um defeito silencioso:
 
@@ -61,6 +69,7 @@ ARQUIVO = "modelo_estrutural.json"
 SAIDAS = (
     ("ptax", "PTAX de venda, fechamento do trimestre", "R$/US$", 3),
     ("selic", "Selic, média do trimestre", "% a.a.", 2),
+    ("selic_fim", "Selic, fechamento do trimestre (derivada)", "% a.a.", 2),
     ("ipca_12m", "IPCA acumulado em 12 meses, no fim do trimestre", "%", 2),
     ("ipca_tri", "IPCA no trimestre", "%", 2),
     ("focus_12m", "Focus IPCA 12 meses à frente, média do trimestre", "% a.a.", 2),
@@ -90,8 +99,57 @@ def retratar(ciclo, refazer: bool = False) -> Path:
         "ciclo": str(ciclo),
         "gerado_em": dt.datetime.now().isoformat(timespec="seconds"),
         "p": p,
+        "selic_fim": _selic_fim_banco(p, ciclo),
     }), encoding="utf-8")
     return saida
+
+
+# ── a Selic de fechamento observada no trimestre de partida ───────────────────
+_SELIC_A = "br_interest_rate.csv.gz"
+
+
+def _fim_tri(rot: str) -> dt.date:
+    """'2026T3' -> 2026-09-30."""
+    ano, tri = int(rot[:4]), int(rot[5:])
+    return dt.date(ano + (tri == 4), tri % 4 * 3 + 1, 1) - dt.timedelta(days=1)
+
+
+def _selic_fim_banco(p: dict, ciclo) -> dict | None:
+    """O fechamento do trimestre de partida, lido do banco na hora do retrato: vai para o
+    retrato porque o A só tem a curva quando o agente lê `br_interest_rate` (o de PM lê)."""
+    from utils import explore as ex
+
+    rot = p["rot"][-1]
+    fim = min(_fim_tri(rot), dt.date.fromisoformat(str(ciclo)))
+    d = ex.q("SELECT date, value FROM br_interest_rate WHERE curve = 'POLICY' AND tenor = '1d' "
+             "AND date <= %(fim)s ORDER BY date DESC LIMIT 1", schema="macro_brasil",
+             params={"fim": fim.isoformat()})
+    if d.empty:
+        return None
+    return {"rot": rot, "valor": float(d["value"].iloc[0]),
+            "data": str(d["date"].iloc[0])[:10], "fonte": "banco, no retrato"}
+
+
+def _selic_fim_obs(sim: dict) -> dict | None:
+    """{rot, valor, data, fonte} do fechamento observado do trimestre de partida: do A do
+    ciclo se a tabela estiver lá, senão do retrato; None se nenhum dos dois tem."""
+    if "_selic_fim" in sim:
+        return sim["_selic_fim"]
+    rot = sim["p"]["rot"][-1]
+    ini, fim = _fim_tri(rot) - dt.timedelta(days=91), _fim_tri(rot)
+    out = None
+    arq = _pasta_a(sim["ciclo"]) / _SELIC_A
+    if arq.exists():
+        d = motor.ler_a(arq.parent, arq.name)
+        d = d[(d["curve"] == "POLICY") & (d["tenor"] == "1d") & (d["date"] <= motor.pd.Timestamp(fim))]
+        if not d.empty and d["date"].max() > motor.pd.Timestamp(ini):
+            x = d.sort_values("date").iloc[-1]
+            out = {"rot": rot, "valor": float(x["value"]), "data": str(x["date"])[:10],
+                   "fonte": f"A/{_SELIC_A}"}
+    if out is None and (r := sim.get("selic_fim")) and r.get("rot") == rot:
+        out = r
+    sim["_selic_fim"] = out
+    return out
 
 
 def carregar(ciclo) -> dict:
@@ -367,6 +425,12 @@ def _caminhos(p: dict, caminhos: dict) -> tuple[dict, dict]:
 
 
 # ── a rodada ──────────────────────────────────────────────────────────────────
+def selic_fim(media: list[float]) -> list[float | None]:
+    """Fechamento de cada trimestre a partir das médias: (média de q + média de q+1) / 2. O
+    último fica em branco, porque não há média do trimestre seguinte."""
+    return [(a + b) / 2 for a, b in zip(media, media[1:])] + [None]
+
+
 def _saidas(p: dict, sol: dict) -> dict:
     from analytics.brasil.structural_model import simulator as sm
 
@@ -374,9 +438,11 @@ def _saidas(p: dict, sol: dict) -> dict:
     eqi = p["eq"]["I"]
     pre = list(eqi["pre_insumo"]["infl_br"])
     serie = pre + list(eqi["obs_insumo"]["infl_br"][:i0]) + list(sol["infl_br"])
+    sel = list(sol["selic"])
     return {
         "ptax": list(sol["de"]),
-        "selic": list(sol["selic"]),
+        "selic": sel,
+        "selic_fim": selic_fim(sel),
         "ipca_12m": [sm._i12_de_trimestres(serie, len(pre) + i0 + j) for j in range(h)],
         "ipca_tri": [100.0 * (float(np.exp(x / 100.0)) - 1.0) for x in sol["infl_br"]],
         "focus_12m": list(sol["pi_e"]),
@@ -397,6 +463,10 @@ def _quantis(cols: list[list[float]], prob: float) -> tuple[list, list]:
     """Os mesmos índices de `_simQuantis` na página."""
     a, lo, hi = (1 - prob) / 2, [], []
     for col in cols:
+        if not col:                      # trimestre em branco (o último fechamento da Selic)
+            lo.append(None)
+            hi.append(None)
+            continue
         col = sorted(col)
         lo.append(col[int(np.floor(a * (len(col) - 1)))])
         hi.append(col[int(np.ceil((1 - a) * (len(col) - 1)))])
@@ -426,7 +496,9 @@ def rodar(sim: dict, caminhos: dict | None = None, mult: dict | None = None,
         "trimestres": [_rotulo(a, t) for a, t in jan],
         "fechados": [_rotulo(a, t) for a, t in jan if _fechado(a, t, ciclo)],
         "ultimo_dado": _rot(p["rot"][-1]),
-        "partida": _observado_em(p, i0 - 1),
+        "partida": _observado_em(p, i0 - 1) | {
+            "selic_fim": (_selic_fim_obs(sim) or {}).get("valor")},
+        "selic_fim_partida": _selic_fim_obs(sim),
         "segurados": part["segurados"],
         "endogenas": {k: {"nome": n, "unidade": u, "casas": c, "central": central[k]}
                       for k, n, u, c in SAIDAS},
@@ -453,7 +525,8 @@ def rodar(sim: dict, caminhos: dict | None = None, mult: dict | None = None,
             continue
         for k, serie in _saidas(p, sd).items():
             for j in range(h):
-                cols[k][j].append(serie[j])
+                if serie[j] is not None:
+                    cols[k][j].append(serie[j])
     for k, *_ in SAIDAS:
         res["endogenas"][k]["lo"], res["endogenas"][k]["hi"] = _quantis(cols[k], prob)
     res["faixa"] = {"prob": prob, "desenhos": n - falhou, "nao_convergiu": falhou}
@@ -489,10 +562,16 @@ def texto(res: dict, trimestres: list[str] | None = None) -> str:
         cel = [_f(res["partida"][k], c)]
         for j in idx:
             s = _f(e["central"][j], c)
-            if res["faixa"]:
+            if res["faixa"] and e["central"][j] is not None:
                 s += f" [{_f(e['lo'][j], c)}; {_f(e['hi'][j], c)}]"
             cel.append(s)
         out.append(f"| {e['nome']} ({e['unidade']}) | " + " | ".join(cel) + " |")
+    sf = res.get("selic_fim_partida")
+    out.append("\nSelic de fechamento: DERIVADA, não sai do modelo (que só tem a média). Fechamento "
+               "de um trimestre = (média dele + média do seguinte) / 2, na central e em cada desenho; "
+               "o último trimestre fica em branco. No observado, o fechamento de fato"
+               + (f" ({sf['data']}, {sf['fonte']})." if sf else ": sem o dado, em branco.")
+               + " Erro histórico da regra: 0,12 p.p. em média, 0,55 no pior trimestre.")
     if res["faixa"]:
         fx = res["faixa"]
         out.append(f"\nFaixa: {fx['prob']:.0%} do posterior dos pesos, {fx['desenhos']} desenhos"
