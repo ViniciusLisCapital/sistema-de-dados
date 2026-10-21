@@ -116,29 +116,34 @@ def test_copom_layer_uses_publication_date_strictly_before_the_cycle():
     d = dt.date
     docs = [_doc("Statement", "c267", d(2024, 12, 11), 267), _doc("Statement", "c268", d(2025, 1, 29), 268),
             _doc("Statement", "c280", d(2026, 8, 5), 280), _doc("Statement", "c281", d(2026, 9, 16), 281),
+            _doc("Minutes", "a267", d(2024, 12, 17), 267), _doc("Minutes", "a268", d(2025, 2, 4), 268),
             _doc("Minutes", "a280", d(2026, 8, 12), 280), _doc("Minutes", "a281", d(2026, 9, 22), 281),
-            _doc("RPM", "r06", d(2026, 6, 25)), _doc("RPM", "r09", d(2026, 9, 24))]
-    # a cycle on 2026-09-18: every statement of the current term (since 2025-01-01) is layer 1, the
-    # one before it is history; the 281st minutes are not out yet (meeting 16/09, published 22/09)
+            _doc("RPM", "r12", d(2024, 12, 19)), _doc("RPM", "r06", d(2026, 6, 25)), _doc("RPM", "r09", d(2026, 9, 24))]
+    # a cycle on 2026-09-18: everything published in the current term (since 2025-01-01) is layer 1,
+    # what came before is history; the 281st minutes are not out yet (meeting 16/09, published 22/09)
     lay = tracker.copom_layer(docs, d(2026, 9, 18))
-    assert lay == {"c268": 1, "c280": 1, "c281": 1, "c267": 3,
-                   "a280": 1, "a281": None, "r06": 1, "r09": None}, lay
+    assert lay == {"c267": 3, "c268": 1, "c280": 1, "c281": 1,
+                   "a267": 3, "a268": 1, "a280": 1, "a281": None,
+                   "r12": 3, "r06": 1, "r09": None}, lay
     # on the publication day itself the document does not count yet (strictly before)
     assert tracker.copom_layer(docs, d(2026, 9, 22))["a281"] is None
     assert tracker.copom_layer(docs, d(2026, 9, 23))["a281"] == 1
-    # a cycle before the term (a backtest) still gets its latest statement
-    assert tracker.copom_layer(docs, d(2025, 1, 1))["c267"] == 1
+    # a cycle before the term (a backtest) still gets the latest of each kind
+    early = tracker.copom_layer(docs, d(2025, 1, 1))
+    assert (early["c267"], early["a267"], early["r12"]) == (1, 1, 1), early
     assert tracker.MANDATO_INICIO == d(2025, 1, 1)
 
 
 def test_copom_layer_today_matches_the_decision():
-    """2026-10-21: statements 268-281 (14), the latest minutes and RPM."""
+    """2026-10-21: statements and minutes of meetings 268-281 (14 each), RPMs 202503-202609 (7)."""
     docs = tracker.copom_docs()
     lay = tracker.copom_layer(docs, dt.date(2026, 10, 22))
     l1 = {k: sorted(x["meeting"] or 0 for x in docs if x["kind"] == k and lay[x["name"]] == 1)
           for k, _ in tracker.COPOM_KINDS}
     assert l1["Statement"] == list(range(268, 282)), l1["Statement"]
-    assert len(l1["Minutes"]) == 1 and len(l1["RPM"]) == 1, l1
+    assert l1["Minutes"] == list(range(268, 282)), l1["Minutes"]
+    rpm = sorted(x["name"][:10] for x in docs if x["kind"] == "RPM" and lay[x["name"]] == 1)
+    assert rpm == [f"rpm_{m}" for m in ("202503", "202506", "202509", "202512", "202603", "202606", "202609")], rpm
 
 
 def test_copom_docs_match_the_folders():

@@ -33,8 +33,8 @@ What it writes, and only this:
     name across rebuilds;
   - a "Copom" tab, rebuilt from obsidian/monetary_policy/clean_md/central_bank/: one line per
     kind (statement, minutes, RPM), then one per document, with its layer (copom_layer(), the
-    same function the cycle's knowledge snapshot uses): the statements since the current
-    governor's term began, and the latest minutes and RPM, before the cycle date.
+    same function the cycle's knowledge snapshot uses): layer 1 = everything published since the
+    current governor's term began and before the cycle date.
 Every other cell — the curated columns A-L, the Notes tab, the Quant tabs — is the user's.
 The workbook is the single home of the literature and data lists (since 2026-10-19; the
 .md lists were folded into it). The formatting follows its own: Calibri 11, top-aligned and
@@ -561,11 +561,11 @@ def _mental_models(wb) -> dict:
 
 COPOM = OBSIDIAN / "monetary_policy" / "clean_md" / "central_bank"
 COPOM_KINDS = (("Statement", "comunicados"), ("Minutes", "atas"), ("RPM", "rpm"))
-COPOM_LAYER1 = 1       # minutes and RPM: how many, the latest before the cycle, are layer 1 (PLANO_AGENTES.md I)
-# Statements: every one published since this date (and before the cycle) is layer 1 — the start of
-# the term of the current BCB governor (Galípolo, 2025-01-01). Changes when the governor changes.
-# Decided by the user 2026-10-21: the statements of one governor read as one sequence of signals.
+# Layer 1 of the Copom documents = every statement, minutes and RPM PUBLISHED since this date and
+# before the cycle: the start of the term of the current BCB governor (Galípolo, 2025-01-01).
+# Changes when the governor changes. Decided by the user 2026-10-21.
 MANDATO_INICIO = dt.date(2025, 1, 1)
+COPOM_LAYER1 = 1       # a cycle dated before MANDATO_INICIO (a backtest) gets this many latest of each kind
 _ISO = r"(\d{4}-\d{2}-\d{2})"
 
 
@@ -593,18 +593,16 @@ def copom_docs() -> list[dict]:
 def copom_layer(docs: list[dict], before: dt.date, n: int = COPOM_LAYER1,
                 mandato: dt.date = MANDATO_INICIO) -> dict[str, int | None]:
     """The layer of each Copom document for a cycle on `before`, by document name. Only what was
-    published strictly before `before` counts; one published on or after it is None — it did not
-    exist yet for that cycle.
-      - statements: layer 1 = every one published since `mandato` (the current governor's term);
-        a cycle before `mandato` (a backtest) falls back to the `n` latest, so it is never left
-        without a statement;
-      - minutes, RPM: layer 1 = the `n` latest (the recency rule);
-    the rest is layer 3 (history)."""
+    published strictly before `before` counts (the minutes by their publication, ~6 days after the
+    meeting); one published on or after it is None — it did not exist yet for that cycle.
+    Layer 1 = every statement, minutes and RPM published since `mandato` (the current governor's
+    term); the rest is layer 3 (history). A cycle dated before `mandato` (a backtest) falls back
+    to the `n` latest of each kind, so it is never left without a document."""
     out = {}
     for kind, _ in COPOM_KINDS:
         known = sorted((d for d in docs if d["kind"] == kind and d["published"] and d["published"] < before),
                        key=lambda d: (d["published"], d["meeting"] or 0, d["name"]), reverse=True)
-        in_term = kind == "Statement" and before > mandato
+        in_term = before > mandato
         for i, d in enumerate(known):
             out[d["name"]] = 1 if (d["published"] >= mandato if in_term else i < n) else 3
     for d in docs:
@@ -635,9 +633,9 @@ def _copom(wb) -> dict:
     ws.cell(1, 1).comment = Comment(
         "Rebuilt by repository/ingestion/scripts/tracker.py from obsidian/monetary_policy/clean_md/central_bank/ "
         "(the Copom ETL calls it after each load). First table: per kind, the count and the first and last "
-        "publication. Layer, for a cycle on a date: statements published since the current BCB governor's term "
-        f"began ({MANDATO_INICIO:%Y-%m-%d}) are layer 1; of the minutes and the RPM, the latest published before "
-        "the date; the rest is layer 3 (history). Here the cycle date is tomorrow; the cycle's knowledge snapshot "
+        "publication. Layer, for a cycle on a date: every statement, minutes and RPM published since the current "
+        f"BCB governor's term began ({MANDATO_INICIO:%Y-%m-%d}) and before the date is layer 1; the rest is layer 3 "
+        "(history). The minutes count by their publication date. Here the cycle date is tomorrow; the cycle's knowledge snapshot "
         "applies the same rule (copom_layer) to its own date.", "tracker")
     top = end + 2
     dheads = [("Kind", 12, NAVY), ("Meeting", 14, NAVY), ("Document", 28, NAVY), ("Meeting date", 13, NAVY),
