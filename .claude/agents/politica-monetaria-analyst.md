@@ -127,11 +127,15 @@ snapshot and the escrivão manual.
     Focus, and it must close on the quarter's value in the thesis.
   - Worst is the Selic above the central, best below it. The three probabilities of a row sum to
     100%. Pbc − Pwc goes from −1 to +1.
-  - **The central is the Structural Model's Selic at the quarter close in the base scenario**, with
-    no adjustment: the field "Selic, fechamento do trimestre (derivada)" that `modelo.texto(res)`
-    prints. It is derived from the model's quarterly averages (the mean of this quarter's and the
-    next one's); say so in a footnote. The base range, the tail limits and the probabilities are
-    yours (section 3.2).
+  - **The central, from the third quarter on, is the Structural Model's Selic at the quarter close
+    in the base scenario**, with no adjustment: the field "Selic, fechamento do trimestre (derivada)"
+    that `modelo.texto(res)` prints. It is derived from the model's quarterly averages (the mean of
+    this quarter's and the next one's); say so in a footnote.
+  - **In the two meeting-by-meeting quarters the central is your meeting path** (the close of the
+    most probable path of steps), because the model ignores the meeting calendar. Print the model's
+    close beside it in the thesis table as a reference, and explain the gap in section 2 (Q5).
+  - The base range, the tail limits and the probabilities are yours (section 3.2), and the base range
+    contains the central.
   - Under the table, one line per tail saying what leads to it, in both steps of section 3: the
     model scenario and the tempero.
   - The Fed funds rate is not your thesis variable: it is an exogenous path in step 1.

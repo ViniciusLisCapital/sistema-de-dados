@@ -84,11 +84,14 @@ exception for this agent. The rule:
    meeting, the probability of each step (hold, −25, −50 bp, …). The decision is discrete, and a
    continuous range hides that. The quarters after that use the system's format (central, base range
    and tails with probabilities); their close is the sum of the steps.
-3. **The central still comes from the model, converted mechanically.** Equation (R) of the
-   Structural Model works with the quarterly *average* Selic, while the FX equation (F) was estimated
-   with the quarter *close* (`analytics/brasil/structural_model/CLAUDE.md`). The agent converts the
-   model's base-scenario average path into a meeting path with a fixed G that places the steps on the
-   meeting dates. The conversion is not tempero and does not move the central.
+3. **The central.** Equation (R) of the Structural Model works with the quarterly *average* Selic,
+   while the FX equation (F) was estimated with the quarter *close*. The model's close is derived
+   mechanically, the mean of this quarter's and the next one's average (`modelo.py`, "Selic,
+   fechamento do trimestre (derivada)"). **In the two meeting-by-meeting quarters the central is the
+   agent's meeting path**, with the model's close printed beside it as a reference: the model ignores
+   the meeting calendar and can ask for cuts no meeting sequence delivers (first solo test, 2026-10-15:
+   12,47% for 4T26 with the Selic at 13,75% and two meetings left). From the third quarter on, the
+   central is the model's close, with no adjustment.
 4. **Scoreboard**: for each closed quarter, the band in which the close fell; for each meeting, whether
    the decision was the step the agent gave the highest probability.
 5. **Worst and best**: worst is the Selic above the central, best below it. A higher Selic than in the
