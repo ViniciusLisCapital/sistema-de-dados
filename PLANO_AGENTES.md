@@ -9,17 +9,17 @@
 |---|---|---|
 | 0 | Registrar o framework e arrumar | feito (2026-10-21) |
 | 1 | Camada 1 e fila do câmbio | feito (2026-10-21): donos, camada 1 e fila no tracker; as 6 fontes da camada 1 com síntese que passa no check; conceito fx_intervention criado; Kalemli-Ozcan 2019 entrou na camada 1 (canal 2.3) |
-| 2 | Mapa conceitual, camada 1 e fila de PM | em andamento: 0. donos das fontes de PM — feito; 1. lista V.II — aprovada (68 tabelas); mapa — rascunho sendo escrito por subagente; 2–6 (perguntas, horizonte, saídas/entradas, camada 1, fila) — aguardam o rascunho |
-| 3 | Infraestrutura | 3C, 3D e 3E feitas (2026-10-21, chat G, encerrado); 3A e 3B em andamento (subagente D) |
-| 4 | Re-teste do câmbio só com o núcleo | em andamento: rodada 1 sobre os dados de 15/10 com a camada 1 (o FRED em manutenção impediu o ciclo de 21/10; a pasta `obsidian/ciclos/2026-10-21/` ficou só com o A parcial) |
-| 5 | Material da camada 1 de PM | modelo mental da Verde (chat H): 20 de 24 cartas, rodada 3 em curso; sínteses — aguardam a camada 1 de PM |
+| 2 | Mapa conceitual, camada 1 e fila de PM | em andamento: 0. donos — feito; 1. lista V.II — aprovada (68 tabelas); mapa — rascunho pronto (`obsidian/monetary_policy/monetary_policy_conceptual_map.md`); 2. perguntas Q1–Q5 — aprovadas; 3. horizonte e worst/best — aprovados (SISTEMA III.III.i); 4. saídas/entradas PM ↔ câmbio — em explicação ao usuário; 5–6. camada 1 e fila de PM — próximas |
+| 3 | Infraestrutura | 3A, 3C, 3D e 3E feitas (2026-10-21). 3A: F de PM no ciclo 2026-10-15, 68 entradas, testes passam (acea399, 6698688). 3B: o modelo só tem a Selic média; proposta do fechamento derivado aguarda o usuário |
+| 4 | Re-teste do câmbio só com o núcleo | rodada 1 feita sobre os dados de 15/10 com a camada 1 (`obsidian/ciclos/2026-10-15/cambio_r1.md`): report completo; abriu o mapa, a Verde, 6 conceitos e 2 sínteses, nenhum clean_md; "faltou" lista gestoras, repasse, eleições, cupom cambial. Decisões de promoção aguardam o usuário. (O FRED em manutenção impediu o ciclo de 21/10; `obsidian/ciclos/2026-10-21/` ficou só com o A parcial) |
+| 5 | Material da camada 1 de PM | modelo mental da Verde (chat H): 20 de 24 cartas, rodada 3 corrigindo 2 pontos do revisor; sínteses — aguardam a camada 1 de PM |
 | 6 | Agente de PM e teste solo | — |
 | 7 | Engrenagem do ciclo conjunto (consolidação, exógenas, escrivão) | — |
 | 8 | Primeiro ciclo conjunto câmbio + PM | — |
 | 9 | Crescer e outros agentes | a discutir |
 
-**Em curso (2026-10-21, fim do dia):** re-teste do câmbio (subagente cambio-analyst, escreve `obsidian/ciclos/2026-10-15/cambio_r1.md`; comparar com `2026-10-07/cambio_r1.md`, olhando as linhas "Conhecimento aberto" e "Faltou"); 3A+3B (subagente D); rascunho do mapa de PM (subagente, escreve `obsidian/monetary_policy/monetary_policy_conceptual_map.md`); chat H no `/mental verde monetary_policy`, reportando ao chat principal. Coordenação: só o chat principal fala com o usuário; decisões sempre na janela de escolha (AskUserQuestion).
-**Próximas decisões do usuário:** perguntas centrais de PM, tratamento do horizonte da Selic, saídas e entradas PM ↔ câmbio, camada 1 e fila de PM (Fase 2, itens 2–6); resultado do re-teste do câmbio (Fase 4).
+**Em curso (2026-10-21, noite):** chat H fecha a rodada 3 do `/mental verde monetary_policy`. Nenhum subagente rodando.
+**Próximas decisões do usuário:** espelho PM ↔ câmbio (4 ajustes); 3B (Selic de fechamento derivada da média); promoções a partir do re-teste e acesso do câmbio aos documentos do Copom; camada 1 e fila de PM (Fase 2, itens 5–6).
 
 Atualizado em 2026-10-21. Decisões do dia fora das fases: dono da literatura (SISTEMA_AGENTES I.III.xvii); camada 1 do Copom = comunicados, atas e RPMs desde 2025-01-01; a camada 1 do Copom e os modelos mentais têm acompanhamento próprio no tracker (abas "Copom" e "Mental Models").
 
