@@ -102,6 +102,8 @@
     - iv. RPM integral do histórico. (estoque: só se promovido, I.III.xvi)
     - v. Ingerir os 46 PDFs de `repository/monetary_policy/raw_pdf/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07), pelo `/ingest monetary_policy` (II.I.iv). Lista e o que falta: a aba Qual - Monetary Policy de `repository/agent_mapping/data_tracker.xlsx`. (feito 2026-10-20: 64 fontes ingeridas, 53 com síntese; as 11 restantes só se caírem na camada 1 ou forem promovidas, I.III.xvi)
     - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio. Junto, a camada 1 e a fila de prioridade de PM. (pendente, `PLANO_AGENTES.md` Fase 2)
+        - Donos das fontes da pasta de PM (decidido 2026-10-21, I.III.xvii): todas da PM, salvo Kohlscheen 2014, Tambakis & Tarashev 2012 e Kalemli-Ozcan 2019 (câmbio), Miranda-Agrippino & Rey 2020 (externo) e Calvo 1983 (inflação); BIS 2026 já era do câmbio. Ostry, Ghosh & Chamon 2012 e Rey 2013 ficam com a PM: a pergunta deles é a condução e a autonomia da política monetária.
+        - Kalemli-Ozcan 2019 entra na camada 1 do câmbio e cobre o canal 2.3 (dólar global e Fed). Kohlscheen 2014 e Tambakis & Tarashev 2012 entram no fim da fila do câmbio (8 e 9).
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
         - Decidido (2026-10-21): por enquanto só a Verde, com as cartas do ciclo de aperto de 2021 e 2022 (~24 cartas), para ver que modelo ela aplicou naquele ciclo. Kinea, Kapitalo e outras janelas vão para a fila de PM.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir; estoque até ser promovido, I.III.xvi)
