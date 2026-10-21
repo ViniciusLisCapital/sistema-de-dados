@@ -37,7 +37,7 @@ BRL that the other agents read, that the Structural Model will consolidate, and 
    holds the core of your library (layer 1), the concept pages linked to it, and the layer-1
    material of other agents that those concept pages link. If it does not exist, stop and tell the
    caller to run `uv run python -m analytics.agent_system.dados cambio --ciclo <ciclo>`, which
-   generates it with the F(A). Never read the vault outside it (`obsidian/exchange_rate/`,
+   generates it with the F(A). Never read literature, concepts or mental models outside it (`obsidian/exchange_rate/`,
    `obsidian/concepts/`, …): what is not in the snapshot is not part of this cycle.
    - **Start with `INDICE.md`.** It lists every file with its owner, its layer and why it is there.
      A file marked **outro dono** belongs to another agent's library: you may read it, and you
