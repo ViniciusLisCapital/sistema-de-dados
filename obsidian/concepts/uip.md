@@ -63,6 +63,7 @@ CIP itself broke down persistently after the 2007–08 crisis and has not fully 
 | [[monetary_policy/synthesis/monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999)]] | Survey: a contractionary US policy shock produces persistent appreciation and persistent deviations from UIP in favor of US investments (Eichenbaum & Evans 1995) — the higher return is magnified by expected appreciation rather than offset by depreciation |
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | The exchange-rate block of the BCB's first structural model: UIP with a risk premium in first differences, the foreign rate from futures and the risk premium as the volatile exogenous (or fiscal-driven) term |
 | [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] | UIP with a risk premium, built from survey expectations and swaps, in a small model with a rule on expected inflation: the reduced form links depreciation negatively to the lagged rate (McCallum's explanation of the UIP puzzle); estimated partial effect of the Selic is an appreciation, the EMBI a depreciation (Brazil 1999–2003) |
+| [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] | The real interest rate differential (RINTDIFF) is the BEER model's direct UIP channel for Brazil: higher domestic real rates go with a stronger real exchange rate |
 
 ---
 
