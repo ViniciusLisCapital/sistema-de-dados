@@ -134,6 +134,16 @@ regras na docstring do módulo.
   `retratar()` grava desde 2026-10-21 (o retrato de 2026-10-15 não tem e não precisa). Medido de
   2006 a 2026T3: erro médio 0,12 p.p., máximo 0,55. Degraus nas reuniões do Copom erram 0,06 um
   trimestre por vez, mas encadeados por 12 trimestres chegam a 41,8 p.p.: por isso não.
+- **Convenção de cada exógena (`CONVENCAO`, 2026-10-21):** como o simulador põe cada uma no
+  trimestre e de onde vem o valor; `listar()` imprime, e caminho digitado tem de vir na mesma
+  convenção. Fechamento: CDS, dólar contra emergentes, S&P, IC-Br em dólar total, vol implícita.
+  Média: NTN-B 10a, IC-Br agro e metal, meta. CPI dos EUA: variação no trimestre. O payload não
+  carrega isso: está escrito à mão, conferido contra o banco nos dois últimos trimestres, e o
+  teste levanta se uma exógena entrar ou sair sem a declaração acompanhar.
+- **Fed Funds = efetivo, média do último mês do trimestre** (FRED FEDFUNDS em
+  `diferenciais_juros`): o simulador o reconstrói como Selic de fechamento − carry, e o carry da
+  estimação é o do último mês. Não é o ponto médio da banda nem a média do trimestre (3T26: 3,75,
+  com o Fed subindo em 17/09). Convenção da estimação, não defeito.
 
 Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
 banco; ~1 min).
