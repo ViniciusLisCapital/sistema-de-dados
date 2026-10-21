@@ -35,7 +35,7 @@ obsidian/
 | área | clean_md | synthesis | mental_models | map |
 |---|---|---|---|---|
 | exchange_rate | 35 | 17 | 4 (Verde, Kapitalo, Kinea, GS — GS partial) | yes |
-| monetary_policy | 64 papers + central_bank/ | 53 of 64 (2026-10-20) | 1 (Verde, 2021–2022 letters) | no |
+| monetary_policy | 64 papers + central_bank/ | 53 of 64 (2026-10-20) | 1 (Verde, 2021–2022 letters) | yes (parts 1–4 approved 2026-10-21) |
 | fiscal_policy | 1 | 1 | 0 | no |
 | inflation | 1 | 1 | 0 | no |
 | trader (new agent's literature, 2026-10-20) | 26 | 0 | — | no |

@@ -330,11 +330,10 @@ meeting has a channel:
 
 ### Where the agent reads the data
 
-The F(A) of this agent does not exist yet. When it is built (`analytics/agent_system/dados`, one
-file declaring the tables of V.II), the agent reads every table of the list through
-`obsidian/ciclos/<date>/dados/F_politica_monetaria.md`, fixed for the cycle. The special F for the DI
-curve (the Selic priced meeting by meeting), the Focus, the calendar and the Copom's decisions and
-projections already exists (`especiais.py`) and serves the FX agent today.
+The agent reads every table of the list through `obsidian/ciclos/<date>/dados/F_politica_monetaria.md`,
+fixed for the cycle (`analytics/agent_system/dados`, which declares the tables of V.II). Besides the
+reading of each table, it carries the Selic priced meeting by meeting on the DI curve and in the
+Focus, side by side, and the ex-ante real rate against the QPC's neutral.
 
 ---
 
