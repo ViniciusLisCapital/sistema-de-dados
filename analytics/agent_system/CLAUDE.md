@@ -126,5 +126,14 @@ regras na docstring do módulo.
   como "observado". Exógena sem o dado dele fica no último valor e aparece como segurada (hoje
   a vol implícita, que vem de planilha). Retrato gravado antes dessa regra levanta.
 
+- **Selic de fechamento (derivada; decisão do usuário em 2026-10-21, a revisar no fim de
+  tudo):** o modelo só tem a média do trimestre (`panel.selic_bc("media")`). `selic_fim` de q =
+  (média de q + média de q+1) / 2, na central e em cada desenho; o 12º trimestre fica em branco.
+  No trimestre de partida, o fechamento observado da curva POLICY de `br_interest_rate`: do A do
+  ciclo se a tabela estiver lá (o agente de PM a lê), senão do campo `selic_fim` do retrato, que
+  `retratar()` grava desde 2026-10-21 (o retrato de 2026-10-15 não tem e não precisa). Medido de
+  2006 a 2026T3: erro médio 0,12 p.p., máximo 0,55. Degraus nas reuniões do Copom erram 0,06 um
+  trimestre por vez, mas encadeados por 12 trimestres chegam a 41,8 p.p.: por isso não.
+
 Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
 banco; ~1 min).

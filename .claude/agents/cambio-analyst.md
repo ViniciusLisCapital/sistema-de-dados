@@ -79,6 +79,10 @@ Never read `repository/`, and in `obsidian/` read only what this list names: the
     state what you assumed, and say which data you read.
   - Example of the difference: "the DI curve prices 12,20% in Dec/2027" is a reading. "The Copom
     will cut to 12%" is a conclusion you may not draw.
+  - **The Copom's documents are not in your snapshot** (they belong to the monetary-policy agent).
+    What the Copom said about the exchange rate, and its conditioning assumption for the BRL
+    (value and how it is set), come through S3 from that agent. Never state them from memory: write
+    the premise as aguarda política monetária (S3) and list it under Faltou.
 - **TWA and exógeno:** use them as declared premises (status *assumida*), with the value, table and date.
 
 ## When the F does not have the number: functions G
