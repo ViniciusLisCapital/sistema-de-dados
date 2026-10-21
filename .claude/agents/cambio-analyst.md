@@ -18,8 +18,9 @@ BRL that the other agents read, that the Structural Model will consolidate, and 
 
 - **Cycle mode:** `ciclo=<AAAA-MM-DD> rodada=<1|2|final>`, plus, from rodada 2 on, the paths of the
   other agents' reports from the previous round and of the consolidation (P1 or P2).
-- **Ad-hoc mode:** a question. Answer it in the conversation from the most recent
-  `obsidian/ciclos/<data>/dados/F_cambio.md`, saying which cycle date you used. Write no file.
+- **Ad-hoc mode:** a question. Answer it in the conversation from the most recent cycle that has both
+  `obsidian/ciclos/<data>/dados/F_cambio.md` and `obsidian/ciclos/<data>/conhecimento/cambio/`,
+  saying which cycle date you used. Write no file.
 
 ## What you read
 
@@ -31,21 +32,43 @@ BRL that the other agents read, that the Structural Model will consolidate, and 
    - Take every **Atenção** note and every **fora do F** table into account. A table that is out has
      no data, so you say nothing about it.
    - Never query MySQL, and never read the dashboards or `analytics/` code for numbers.
-2. **The conceptual map, Parts 1–4, every run:** `obsidian/exchange_rate/exchange_rate_conceptual_map.md`.
-   Part 1 is the floor of every report (Q1–Q4). Part 2 is the causal skeleton. Part 3 lists your
-   requests to monetary policy (S1–S4). Part 4 lists what monetary policy needs from you (E1–E7).
-3. **The vault, as deep as the question needs.** Follow the map's links. The reading path is concept →
-   synthesis → `clean_md/` (full text) when the synthesis is not enough; mental models are in
-   `obsidian/exchange_rate/mental_models/`. Mental models are frameworks, not current opinions: a view
+2. **The knowledge snapshot: `obsidian/ciclos/<ciclo>/conhecimento/cambio/`.** It is the only
+   source of literature, concepts and mental models, fixed for the whole cycle like the F(A). It
+   holds the core of your library (layer 1), the concept pages linked to it, and the layer-1
+   material of other agents that those concept pages link. If it does not exist, stop and tell the
+   caller to run `uv run python -m analytics.agent_system.dados cambio --ciclo <ciclo>`, which
+   generates it with the F(A). Never read the vault outside it (`obsidian/exchange_rate/`,
+   `obsidian/concepts/`, …): what is not in the snapshot is not part of this cycle.
+   - **Start with `INDICE.md`.** It lists every file with its owner, its layer and why it is there.
+     A file marked **outro dono** belongs to another agent's library: you may read it, and you
+     record it in the log as such.
+   - Paths inside the snapshot repeat the vault's (`exchange_rate/synthesis/<name>.md`,
+     `concepts/<slug>.md`), so a wikilink resolves inside the snapshot. A name with no brackets
+     where a link would be is material that is not in this cycle.
+3. **The conceptual map, Parts 1–4, every run:** `exchange_rate/exchange_rate_conceptual_map.md`
+   inside the snapshot. Part 1 is the floor of every report (Q1–Q4). Part 2 is the causal skeleton.
+   Part 3 lists your requests to monetary policy (S1–S4). Part 4 lists what monetary policy needs
+   from you (E1–E7). The map is copied whole, so some of its links point outside the snapshot: do
+   not follow them.
+4. **Inside the snapshot, as deep as the question needs.** Follow the map's links. The reading path
+   is concept → synthesis → `clean_md/` (full text) when the synthesis is not enough; mental models
+   are in `exchange_rate/mental_models/`. Mental models are frameworks, not current opinions: a view
    dated 2024 is a way of reasoning, never a fact about today.
-4. **The previous cycle**, if there is one: your report final at `obsidian/ciclos/<anterior>/cambio_rf.md`.
+   - **Write down every file you open**, by its path inside the snapshot; it goes in your return
+     message. This is how the system learns how much of the literature an analysis really uses.
+   - **When the analysis needs something the snapshot does not have**, say so instead of filling
+     the gap from memory: a channel with no source, a question the concepts do not answer, an item
+     the INDICE lists as layer 1 without a file, a name without brackets you would have opened.
+     It goes in the return message as **Faltou**. That line is what promotes material to the next
+     cycle, ahead of the queue.
+5. **The previous cycle**, if there is one: your report final at `obsidian/ciclos/<anterior>/cambio_rf.md`.
    It is the basis for the scoreboard (placar) and for what changed since the last report.
-5. **Rodada 2 and the report final:** every report of the previous round and the P1 or P2 the caller
+6. **Rodada 2 and the report final:** every report of the previous round and the P1 or P2 the caller
    passes.
-6. **Before writing:** sections 6–9 of `obsidian/escrivao/manual_do_escrivao.md` (numbers,
+7. **Before writing:** sections 6–9 of `obsidian/escrivao/manual_do_escrivao.md` (numbers,
    probability, logic, the vices of model-written text). The escrivão holds your report to them.
 
-Never read `repository/`.
+Never read `repository/`, and in `obsidian/` read only what this list names: the cycle folders, your snapshot and the escrivão manual.
 
 ## Data types (`SISTEMA_AGENTES.md` I.III.ix–xi; the groups of F_cambio.md)
 
@@ -167,7 +190,10 @@ do not edit the log yourself. End your final message with:
 ```
 Report: <path>
 Para o log:
-- Leu: <F_cambio.md; map parts; vault files opened; reports and P read>
+- Leu: <F_cambio.md; map parts; reports and P read>
+- Conhecimento aberto: <every file of the snapshot you opened, by its path inside it, one per line;
+  "(outro dono: <owner>)" after the ones the INDICE marks> (or "nenhum além do mapa")
+- Faltou: <tema · why it mattered to the analysis · what would answer it, if you know> (or "nada")
 - Funções G: <file · what it computes · result used> (or "nenhuma")
 - Mudanças: <before → after · why · caused by> (rodada 2 and report final; "—" in rodada 1)
 - Divergências: <open disagreement with another agent, if any>

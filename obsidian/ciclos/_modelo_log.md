@@ -15,7 +15,9 @@ Rodada 1 → P1 → rodada 2 → P2 → report final → PF*. Dentro de uma roda
 
 ### Rodada <n> · <agente>
 
-- **Leu:** <na rodada 1: dados, ferramentas, vault> · <a partir da rodada 2: os reports de todos da rodada anterior e o P<n−1>>
+- **Leu:** <na rodada 1: dados, ferramentas, partes do mapa> · <a partir da rodada 2: os reports de todos da rodada anterior e o P<n−1>>
+- **Conhecimento aberto:** os arquivos do retrato (`conhecimento/<agente>/`) que o agente abriu nesta rodada — vão para a tabela "Conhecimento" abaixo
+- **Faltou:** <tema> | nada — vai para a tabela "Faltou" abaixo
 - **Escreveu:** report <n> | report final
 - **Mudanças** (a partir da rodada 2):
 
@@ -28,6 +30,20 @@ Rodada 1 → P1 → rodada 2 → P2 → report final → PF*. Dentro de uma roda
 - **Reports usados:** <report de cada agente na rodada n>
 - **O que o Modelo Estrutural devolveu:** <variáveis e trajetória>
 - **Onde divergiu dos agentes:** <variável, agente, tamanho da diferença>
+
+## Conhecimento
+
+O que cada agente abriu do seu retrato do conhecimento (`conhecimento/<agente>/`, gerado no início do ciclo com o F(A)). É o que responde quanto da literatura uma análise de fato usa. **Outro dono** = o arquivo é da biblioteca de outro agente e entrou no retrato por uma página de conceito; o `INDICE.md` do retrato diz qual.
+
+| Agente · rodada | Arquivo (caminho no retrato) | Tipo | Dono | Outro dono |
+|---|---|---|---|---|
+
+## Faltou
+
+O que a análise precisou e o retrato não tinha. Cada linha fura a fila de promoção: o item vai para o topo do próximo lote do agente (PLANO_AGENTES.md I).
+
+| Agente · rodada | Tema | Por que fez falta | O que resolveria (se o agente souber) |
+|---|---|---|---|
 
 ## Funções G
 
