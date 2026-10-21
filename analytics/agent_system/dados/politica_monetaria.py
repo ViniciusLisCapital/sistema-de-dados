@@ -712,6 +712,7 @@ TABELAS: list[Tabela] = [
     _do_cambio("cmb_dollar_index"),
     _do_cambio("cmb_dollar_index_em"),
     _do_cambio("comm_brent"),
+    _do_cambio("comm_icbr_usd"),
     Tabela("comm_icbr", series=tuple(
         _s(k, rot, "índice, em R$", "pct") for k, rot in (
             ("icbr_geral", "IC-Br"), ("icbr_agropecuaria", "IC-Br agropecuária"),

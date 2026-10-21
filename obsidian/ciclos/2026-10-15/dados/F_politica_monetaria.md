@@ -1,6 +1,6 @@
 # F(A) — politica_monetaria — ciclo 2026-10-15
 
-Gerado em 2026-10-21 17:18. Dados do banco até 2026-10-15, fixos durante o ciclo. Sem ciclo anterior.
+Gerado em 2026-10-21 17:37. Dados do banco até 2026-10-15, fixos durante o ciclo. Sem ciclo anterior.
 
 Os dados brutos (A) estão em `A/`, um arquivo por tabela; as funções G leem de lá e o código delas fica em `G/`. Nada aqui é opinião: é a mesma conta em todo ciclo.
 
@@ -1011,6 +1011,17 @@ Governo geral (GFSM) = soma de União, estados e municípios, SEM consolidar as 
 | IC-Br agropecuária | índice, em R$ | 2026-09-01 | 454.03 | +0.1 | +3.8 | -3.5 |
 | IC-Br metal | índice, em R$ | 2026-09-01 | 754.19 | -0.8 | +1.1 | +36.3 |
 | IC-Br energia | índice, em R$ | 2026-09-01 | 216.23 | +10.4 | +11.7 | +23.8 |
+
+### comm_icbr_usd
+
+Último dado 2026-09-01 (44 dias antes do corte) · A: `A/comm_icbr_usd.csv.gz`
+
+| Série | Unidade | Data | Último | Δ% 1m | Δ% 3m | Δ% 12m |
+|---|---|---|---|---|---|---|
+| IC-Br em dólar | índice | 2026-09-01 | 205.70 | +1.7 | +4.1 | +12.8 |
+| IC-Br agropecuária | índice | 2026-09-01 | 201.80 | +0.3 | +3.3 | +0.7 |
+| IC-Br metal | índice | 2026-09-01 | 335.06 | -0.6 | +0.7 | +42.2 |
+| IC-Br energia | índice | 2026-09-01 | 96.00 | +10.6 | +11.2 | +29.2 |
 
 ## x. Exógeno (leitura enxuta)
 

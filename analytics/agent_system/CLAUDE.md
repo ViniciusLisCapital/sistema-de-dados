@@ -49,7 +49,7 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 - `cambio.py`: as tabelas do câmbio, as séries e a leitura de cada uma, e as leituras combinadas
   (o real e os pares: variação, volatilidade, carry). Agente novo = um arquivo destes e uma linha em
   `AGENTES` no `__main__.py`.
-- `politica_monetaria.py` (2026-10-21): as 68 entradas da V.II, até o grupo "Fora da lista" (fora do
+- `politica_monetaria.py` (2026-10-21): as 69 entradas da V.II (68 aprovadas mais o `comm_icbr_usd`, 2026-10-21), até o grupo "Fora da lista" (fora do
   F). Tabela que o câmbio também lê sai da declaração dele (`_do_cambio`/`_so`): mesma consulta,
   outras séries, e o A do ciclo serve aos dois. F próprio: ciclo de juros em curso, projeções da
   última reunião e o horizonte relevante nas últimas oito, hiato e as revisões entre edições, QPC,

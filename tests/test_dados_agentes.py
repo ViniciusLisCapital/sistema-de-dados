@@ -92,7 +92,7 @@ check("prazo alem do ultimo vertice nao e extrapolado", _taxa(du, tx, 600) is No
 grupos = motor.ler_lista(pm.SECAO)
 itens = [it for g in grupos for it in g["itens"]]
 check("a declaracao de PM bate com a lista V.II", not levanta(lambda: motor.conferir(pm.TABELAS, grupos), ""))
-check("V.II tem 68 entradas em 10 grupos", (len(itens), len(grupos)) == (68, 10), (len(itens), len(grupos)))
+check("V.II tem 69 entradas em 10 grupos", (len(itens), len(grupos)) == (69, 10), (len(itens), len(grupos)))
 check("o grupo 'Fora da lista' nao entra na secao", not any("Fora" in g["nome"] for g in grupos))
 comex = [it for it in itens if it["tabela"].startswith("cmb_comex")]
 check("item com tres tabelas numa linha vira tres itens com o mesmo papel",

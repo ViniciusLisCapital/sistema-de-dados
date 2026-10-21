@@ -437,6 +437,7 @@
     - `comm_brent`: Brent em dólar. Choque de oferta que chega aos combustíveis e aos preços administrados; o Copom olha os efeitos secundários, não o choque.
 
     - `comm_icbr`: IC-Br em reais e sub-índices. Pressão das commodities sobre alimentos e energia já com o câmbio embutido, que é a forma em que ela chega ao IPCA.
+    - `comm_icbr_usd`: IC-Br em dólar e sub-índices (acrescentado 2026-10-21). Os índices agro e metal em dólar são exógenas do Modelo Estrutural, na curva de Phillips: é com eles que o agente escreve o caminho das commodities nos cenários.
 
 ### x. Exógeno
     - `cmb_risco_pais`: CDS de 5 anos do Brasil. Termômetro da percepção de risco que o Copom cita e que chega ao juro longo e ao câmbio; conferir a data do último dado, a carga é manual.
