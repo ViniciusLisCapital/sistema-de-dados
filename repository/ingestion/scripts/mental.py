@@ -42,7 +42,8 @@ grows a few letters per run, in date order, and each run is bracketed by this sc
           word for word in the new text; every new claim supported, with its evidence word for word
           in a letter; nothing in uncovered_old or extra. --accept lets through verdicts the USER
           accepted. Then writes the letters to ledger/<document>.tsv, appends the verdict table to
-          ledger/<document>.log.md, and drops the run's files. A letter with nothing for the area
+          ledger/<document>.log.md, drops the run's files and updates the tracker's "Mental Models"
+          tab (tracker.py; a workbook open in Excel only warns). A letter with nothing for the area
           still goes in the ledger.
   abort   drops the open run's files, the ledger unchanged (the document is not restored).
   audit   the whole document's quotes against the manager's whole corpus. Read-only; it reports
@@ -631,6 +632,11 @@ def cmd_done(cfg: dict, manager: str, area: str, accept: list[str]) -> None:
     s = state(cfg, manager, area)
     span = f"{s['done'][0]['date']:%Y-%m} → {s['done'][-1]['date']:%Y-%m}"
     print(f"{s['name']}: +{len(run['names'])} letters · read {len(s['done'])} ({span}) · pending {len(s['pending'])}")
+    try:
+        from tracker import build
+        print("tracker: " + build())
+    except Exception as e:  # noqa: BLE001 -- the tracker never costs a run (the workbook may be open in Excel)
+        print(f"tracker NOT updated: {e!r} — run repository/ingestion/scripts/tracker.py later")
 
 
 def cmd_audit(cfg: dict, manager: str, area: str) -> None:
