@@ -8,15 +8,17 @@
 | Fase | O quê | Status |
 |---|---|---|
 | 0 | Registrar o framework e arrumar | feito (2026-10-21) |
-| 1 | Camada 1 e fila do câmbio | feito (2026-10-21): donos, camada 1 e fila no tracker; toda fonte da camada 1 com síntese que passa no check; conceito fx_intervention criado |
-| 2 | Mapa conceitual, camada 1 e fila de PM | — |
-| 3 | Infraestrutura (3A dados de PM, 3B modelo, 3C retrato do conhecimento, 3D câmbio lê o retrato, 3E tracker) | 3C, 3D e 3E feitas (2026-10-21, chat G); 3A e 3B esperam a lista V.II |
-| 4 | Re-teste do câmbio só com o núcleo | — |
-| 5 | Material da camada 1 de PM (sínteses e modelo mental da Verde) | preparação do chat H feita (2026-10-21: `end` no `mental.py`, documento `verde_mp_mental_models` no yaml, 24 cartas pendentes); falta abrir o chat H |
+| 1 | Camada 1 e fila do câmbio | feito (2026-10-21): donos, camada 1 e fila no tracker; as 6 fontes da camada 1 com síntese que passa no check; conceito fx_intervention criado; Kalemli-Ozcan 2019 entrou na camada 1 (canal 2.3) |
+| 2 | Mapa conceitual, camada 1 e fila de PM | em andamento: 0. donos das fontes de PM — feito; 1. lista V.II — aprovada (68 tabelas); mapa — rascunho sendo escrito por subagente; 2–6 (perguntas, horizonte, saídas/entradas, camada 1, fila) — aguardam o rascunho |
+| 3 | Infraestrutura | 3C, 3D e 3E feitas (2026-10-21, chat G, encerrado); 3A e 3B em andamento (subagente D) |
+| 4 | Re-teste do câmbio só com o núcleo | em andamento: rodada 1 sobre os dados de 15/10 com a camada 1 (o FRED em manutenção impediu o ciclo de 21/10; a pasta `obsidian/ciclos/2026-10-21/` ficou só com o A parcial) |
+| 5 | Material da camada 1 de PM | modelo mental da Verde (chat H): 20 de 24 cartas, rodada 3 em curso; sínteses — aguardam a camada 1 de PM |
 | 6 | Agente de PM e teste solo | — |
 | 7 | Engrenagem do ciclo conjunto (consolidação, exógenas, escrivão) | — |
 | 8 | Primeiro ciclo conjunto câmbio + PM | — |
 | 9 | Crescer e outros agentes | a discutir |
+
+Atualizado em 2026-10-21. Decisões do dia fora das fases: dono da literatura (SISTEMA_AGENTES I.III.xvii); camada 1 do Copom = comunicados, atas e RPMs desde 2025-01-01; a camada 1 do Copom e os modelos mentais têm acompanhamento próprio no tracker (abas "Copom" e "Mental Models").
 
 
 # (I) O framework: começar pequeno, testar, ampliar
