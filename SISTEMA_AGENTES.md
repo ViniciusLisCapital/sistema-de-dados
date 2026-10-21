@@ -291,6 +291,7 @@
     - `cmb_risco_pais`: CDS de 5 anos do Brasil. É o preço do risco soberano, par do real no canal de prêmio de risco (2.2); a carga é por export manual da Bloomberg, então conferir a data do último dado antes de usar.
 
 ## (V.II) Agente de política monetária
+*Lista aprovada pelo usuário em 2026-10-21, com as 68 tabelas abaixo (I.III.xvi: os dados ficam fora das camadas por ora; reavaliar depois do teste solo).*
 
 ### i. Endógeno
     - `pm_copom_calendario`: calendário oficial das reuniões, inclusive as do ano seguinte. Situa cada leitura no ciclo e permite ler Focus e curva reunião a reunião.
