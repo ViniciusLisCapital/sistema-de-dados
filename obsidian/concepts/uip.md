@@ -38,7 +38,7 @@ UIP is not a behavioral assumption. It is an **arbitrage-free pricing condition*
 | Covered (CIP) | Forward rate locks in the exchange | `r = r* + f − e` (f = log forward rate) |
 | UIP + risk premium | Risk-averse investors | `r = r* + E[Δe] + ρ` (ρ = risk premium) |
 
-CIP holds empirically (enforced by arbitrage). **UIP fails empirically** — the "forward premium puzzle": high-yield currencies tend to *appreciate* rather than depreciate as UIP predicts. This failure is partially explained by a time-varying risk premium.
+CIP holds empirically (enforced by arbitrage). **UIP fails empirically** — the "forward premium puzzle": high-yield currencies tend to *appreciate* rather than depreciate as UIP predicts. A common reading is that a time-varying risk premium partially explains this failure; Froot and Thaler find no positive evidence for it and, from survey data, trace the bias to expectational errors. Both readings are kept: see [[forward_premium_puzzle]].
 
 CIP itself broke down persistently after the 2007–08 crisis and has not fully re-normalized since — not explained by counterparty default risk (Du, Tepper & Verdelhan 2018); the leading explanation is that post-crisis balance-sheet/collateral constraints limit arbitrageurs' capacity to close the gap, even though the arbitrage is riskless in principle. See [[exchange_rate/synthesis/exchange_rate_foreign_exchange_market (Krugman, 2023)]].
 
@@ -82,7 +82,7 @@ CIP itself broke down persistently after the 2007–08 crisis and has not fully 
 
 - [[carry_trade]] — the carry trade is a bet on the empirical failure of UIP
 - [[overshooting]] — overshooting is driven by UIP: the exchange rate must be far out of equilibrium so the return path satisfies UIP
-- [[risk_premium]] — the extended form of UIP that explains the forward premium puzzle
+- [[risk_premium]] — the extended form of UIP; one of the two readings of the forward premium puzzle (the other, expectational errors, in [[forward_premium_puzzle]])
 - [[fiscal_dominance]] — when fiscal stress dominates, rate hikes raise ρ and break UIP carry logic entirely
 - [[fiscal_policy/synthesis/fiscal_dominance (itau, 2025)]] — Blanchard (2004) mechanism: fiscal stress raises ρ faster than r, causing BRL depreciation despite rate hikes
 - [[exchange_rate/synthesis/exchange_rate_foreign_exchange_market (Krugman, 2023)]] — textbook derivation of UIP/CIP and the post-2008 CIP breakdown puzzle

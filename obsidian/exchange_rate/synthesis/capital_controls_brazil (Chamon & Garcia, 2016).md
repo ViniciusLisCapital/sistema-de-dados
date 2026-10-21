@@ -54,3 +54,4 @@ The controls worked as a wedge but, for most of the episode, not as an exchange-
 
 - [[capital_controls]] — the core subject: an empirical test of Brazil's 2009–2013 IOF-based inflow controls, showing segmentation without exchange-rate effect until the controls became comprehensive
 - [[carry_trade]] — foreigners' onshore derivatives carry trade as the main bypass of the inflow tax, and the tax on the notional amount of derivatives as the measure that ended it
+- [[fx_intervention]] — sterilized intervention with no effect on the real in either direction, and footnote 19 on why purchases have no traction

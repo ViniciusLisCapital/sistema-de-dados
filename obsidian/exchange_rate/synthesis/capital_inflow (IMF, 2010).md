@@ -51,3 +51,4 @@ The note is a decision sequence (Figure 1 in the original) rather than a formal 
 - [[capital_controls]] — the IMF staff's conditions for when inflow controls belong in the toolkit, the effectiveness survey, and the multilateral costs
 - [[macroprudential_policy]] — controls on debt inflows as a buttress to bank prudential regulation, needed because firms and households borrow abroad outside the banking system
 - [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] — a co-author's later test of Brazil's post-crisis IOF controls, the episode this note cites as recent: segmentation came first and the exchange rate moved only once controls became comprehensive
+- [[fx_intervention]] — reserve accumulation with sterilization as the first response to inflows, and its limits

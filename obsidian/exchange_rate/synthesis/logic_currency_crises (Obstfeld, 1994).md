@@ -61,3 +61,4 @@ The paper has no econometrics; its evidence is the Swedish narrative, one table 
 - [[currency_crisis_models]] — the first-generation (Krugman–Flood–Garber) speculative-attack model restated through the exhaustible-resource analogy, and two second-generation models of self-fulfilling attacks driven by government optimization
 - [[time_inconsistency]] — both models rest on the government's inability to precommit; section 3.2 is a Barro–Gordon inflation-bias model in an open economy, with a fixed realignment cost as an escape clause
 - [[currency_regimes]] — why "fixed but adjustable" pegs are fragile: the decision to abandon a peg as a cost–benefit choice, illustrated with Sweden and the 1992–93 ERM crisis
+- [[fx_intervention]] — Sweden 1992: borrowed reserves and an interest-rate defense, then the peg dropped by decision

@@ -86,7 +86,7 @@ Krugman's textbook treatment of imperfect asset substitutability gives `ρ` a sp
 
 ## Connections
 
-- [[uip]] — risk premium is the extension of UIP: `r = r* + E[Δe] + ρ`; it explains the forward premium puzzle
+- [[uip]] — risk premium is the extension of UIP: `r = r* + E[Δe] + ρ`; one reading of the forward premium puzzle, for which Froot and Thaler find no positive evidence, tracing the bias to expectational errors instead ([[forward_premium_puzzle]])
 - [[exchange_rate/synthesis/fixed_exchange_rate_intervention (Krugman, 2023)]] — formal microfoundation `ρ(B−A)`; sterilized intervention as a risk-premium (not money-supply) channel; Swiss franc 2011–2015 case study
 - [[balance_of_payments_approach]] — the portfolio balance approach is the qualitative version of this same debt-stock-driven risk premium: sustained fiscal deficits require compensation via rates, risk premium, or depreciation
 - [[currency_crisis_indicators]] — a currency crisis is the discontinuous, extreme realization of a risk premium spike

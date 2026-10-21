@@ -49,5 +49,5 @@ A posição de câmbio dos bancos é o estoque acumulado das contratações de c
 ## Connections
 
 - [[bank_fx_position]] — definição e mecânica da posição de câmbio do sistema financeiro, sua relação com saldo, disponibilidade e exposição cambial, e por que os bancos ficam vendidos
-- [[fx_intervention]] (proposed) — leilões de venda à vista do BCB em 2019 como oferta de liquidez em dólar que reduz a posição vendida do sistema e o spread do cupom cambial, distintos dos leilões de linha e dos swaps
+- [[fx_intervention]] — leilões de venda à vista do BCB em 2019 como oferta de liquidez em dólar que reduz a posição vendida do sistema e o spread do cupom cambial, distintos dos leilões de linha e dos swaps
 - [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] — o recolhimento compulsório sobre a posição vendida bruta dos bancos atuou exatamente sobre o estoque definido aqui; os dois textos usam o spread do cupom cambial como medida da liquidez em dólar no país
