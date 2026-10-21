@@ -155,6 +155,17 @@ check(f"no primeiro dia depois de {jan[0]}, ele ja fechou", fe == [jan[0]], fe)
 fe = modelo.rodar({"ciclo": (vira - dt.timedelta(days=1)).isoformat(), "p": p}, faixa=False)["fechados"]
 check("na vespera, nenhum", fe == [], fe)
 
+# 5b. toda exogena diz a convencao do trimestre e de onde vem o valor (pedido do teste solo de PM)
+exo = modelo._exogenas_keys(p)
+check("toda exogena do simulador tem a convencao declarada em modelo.CONVENCAO",
+      set(exo) <= set(modelo.CONVENCAO), sorted(set(exo) - set(modelo.CONVENCAO)))
+check("e nenhuma declaracao sobra (exogena que saiu do simulador)",
+      set(modelo.CONVENCAO) <= set(exo), sorted(set(modelo.CONVENCAO) - set(exo)))
+ls = modelo.listar(SIM)
+check("o listar imprime a convencao de cada exogena", ls.count("trimestre: **") == len(exo))
+check("o Fed Funds e o efetivo do ultimo mes, nao o ponto medio",
+      modelo.CONVENCAO["ffr"][0] == "último mês do trimestre" and "EFETIVO" in modelo.CONVENCAO["ffr"][1])
+
 # 6. a Selic de fechamento, derivada das medias (decisao do usuario em 2026-10-21, a revisar)
 med, fim = r0["endogenas"]["selic"]["central"], r0["endogenas"]["selic_fim"]["central"]
 check("central: fechamento de q = (media de q + media de q+1) / 2",

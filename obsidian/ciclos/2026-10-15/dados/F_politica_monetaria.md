@@ -1,6 +1,6 @@
 # F(A) — politica_monetaria — ciclo 2026-10-15
 
-Gerado em 2026-10-21 16:00. Dados do banco até 2026-10-15, fixos durante o ciclo. Sem ciclo anterior.
+Gerado em 2026-10-21 17:18. Dados do banco até 2026-10-15, fixos durante o ciclo. Sem ciclo anterior.
 
 Os dados brutos (A) estão em `A/`, um arquivo por tabela; as funções G leem de lá e o código delas fica em `G/`. Nada aqui é opinião: é a mesma conta em todo ciclo.
 
@@ -449,6 +449,7 @@ Unidade: R$/US$. Mediana da pesquisa (janela de 30 dias).
 | Alimentação | 2026-09 | 0.96 | -0.80 | 4.19 | 3.01 |
 | Serviços | 2026-09 | 0.61 | 1.18 | 5.97 | 5.90 |
 | Industriais | 2026-09 | 0.17 | 0.50 | 3.07 | 2.76 |
+| Núcleo EX0 | 2026-09 | 0.44 | 0.92 | 4.85 | 4.67 |
 | Núcleo EX3 | 2026-09 | 0.26 | 0.78 | 4.65 | 4.64 |
 | Núcleo médias aparadas com suavização | 2026-09 | 0.31 | 0.89 | 4.43 | 4.33 |
 | Núcleo P55 | 2026-09 | 0.42 | 0.97 | 4.68 | 4.54 |

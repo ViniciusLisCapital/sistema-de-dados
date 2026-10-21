@@ -526,7 +526,7 @@ TABELAS: list[Tabela] = [
             ("ipca", "IPCA"), ("ipca15", "IPCA-15"), ("ipca_livres", "Livres"),
             ("ipca_administrado", "Administrados"), ("ipca_alimentacao", "Alimentação"),
             ("ipca_servicos", "Serviços"), ("ipca_industriais", "Industriais"),
-            ("ipca_nucleo_ex03", "Núcleo EX3"),
+            ("ipca_nucleo_ex0", "Núcleo EX0"), ("ipca_nucleo_ex03", "Núcleo EX3"),
             ("ipca_nucleo_medias_aparadas", "Núcleo médias aparadas com suavização"),
             ("ipca_nucleo_p55", "Núcleo P55"), ("ipca_nucleo_dp", "Núcleo dupla ponderação"),
             ("ipca_nucleo_exfe", "Núcleo EXFE"))],

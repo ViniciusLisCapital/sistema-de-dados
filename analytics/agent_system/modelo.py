@@ -76,6 +76,40 @@ SAIDAS = (
     ("hiato", "Hiato do produto", "% do potencial", 2),
 )
 
+# Como o simulador põe cada exógena no trimestre, e de onde vem o valor do trimestre (o
+# "último" do `listar()`): (convenção, fonte). O payload não carrega isso; está escrito aqui a
+# partir do código que monta o simulador e conferido contra o banco em 2026-10-21, nos dois
+# últimos trimestres observados. Caminho que o agente digita tem de vir na MESMA convenção.
+CONVENCAO = {
+    "meta_12m": ("média do trimestre",
+                 "meta do CMN (`inflc_meta`) do ano e do seguinte, pesadas como a Focus 12 meses à "
+                 "frente (2/12, 5/12, 8/12, 11/12 do ano seguinte por trimestre); depois do último "
+                 "ano publicado, a última meta"),
+    "rr_10a": ("média do trimestre",
+               "NTN-B 10 anos, `br_interest_rate` curva NTNBJS 120M, média dos pregões"),
+    "fiscal": ("fechamento",
+               "CDS 5 anos, `cmb_risco_pais` (export manual da Bloomberg), último pregão do trimestre"),
+    "vol": ("fechamento",
+            "vol implícita de 3 meses das opções de dólar, de planilha (fora do banco), última "
+            "cotação do trimestre; sem cotação perto do fim, o trimestre fica sem dado"),
+    "infl_us": ("variação no trimestre",
+                "CPI dos EUA, do último mês do trimestre anterior ao último mês deste (100·Δlog)"),
+    "ffr": ("último mês do trimestre",
+            "Fed Funds EFETIVO, média do último mês do trimestre (FRED FEDFUNDS, em "
+            "`diferenciais_juros`). Não é o ponto médio da banda nem a média do trimestre: sai "
+            "da estimação do carry, ffr = Selic de fechamento − (Selic − Fed Funds) do último "
+            "mês. Num trimestre em que o Fed mexe no último mês, fica entre as duas metas"),
+    "dxy_em": ("fechamento", "`cmb_dollar_index_em` (FRED), último dado do trimestre"),
+    "sp500": ("fechamento", "`cmb_equity_us`, último pregão do trimestre"),
+    "icbr_usd": ("fechamento",
+                 "IC-Br em dólar (`comm_icbr_usd`), o do último mês do trimestre (o índice mensal "
+                 "já é média do mês)"),
+    "icbr_agr_usd": ("média do trimestre",
+                     "IC-Br agropecuária em dólar (`comm_icbr_usd`), média dos três meses"),
+    "icbr_met_usd": ("média do trimestre",
+                     "IC-Br metal em dólar (`comm_icbr_usd`), média dos três meses"),
+}
+
 # Coeficiente que não aceita multiplicador: o desvio do erro não entra na conta, e as
 # marcas de crise valem zero em todo trimestre projetado.
 _SEM_MULT = {"sigma", "d08", "d20"}
@@ -377,8 +411,10 @@ def exogenas(sim: dict) -> list[dict]:
         v = p["var"][k]
         u = _ultimo(v["obs"])
         seg = v.get("segura") or {}
+        conv, fonte = CONVENCAO.get(k, ("não declarada", "não declarada em modelo.CONVENCAO"))
         out.append({
             "chave": k, "nome": v["nome"], "unidade": v["unidade"],
+            "trimestre": conv, "fonte": fonte,
             "regiao": v.get("regiao"), "como_digitar": v.get("instrucao"),
             "lida_por": [p["eq"][ek]["nome"] for ek in p["eq_ordem"]
                          if k in p["eq"][ek]["consome"]],
@@ -608,7 +644,8 @@ def listar(sim: dict) -> str:
         u = e["ultimo"]
         out.append(f"- `{e['chave']}` · {e['nome']} ({e['unidade']}) · último {u['trimestre']}"
                    f" = {_f(u['valor'], 2)} · padrão: {e['regra_padrao']}, "
-                   f"{_f(e['padrao'][jan[0]], 2)} · lida por {', '.join(e['lida_por'])}")
+                   f"{_f(e['padrao'][jan[0]], 2)} · lida por {', '.join(e['lida_por'])}\n"
+                   f"  trimestre: **{e['trimestre']}** · de onde vem: {e['fonte']}")
     out += ["", "**Coeficientes** (mult={chave: m})", ""]
     for c in coeficientes(sim):
         lo, hi = c["intervalo"]
