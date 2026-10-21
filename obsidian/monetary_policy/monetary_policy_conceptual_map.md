@@ -51,21 +51,21 @@ Curation material (sources and their status, owners, clusters, gaps) lives in
 
 ## Part 1 — Central questions: what every report answers
 
-**Approved by the user, 2026-10-21.** The questions are the floor, not the ceiling: the agent
-is expected to go beyond them, and nothing here limits what it may say. They are kept in Portuguese,
-the language of the report.
+**Approved by the user, 2026-10-21; refocused the same day after the first solo test.** The questions
+are the floor, not the ceiling: the agent is expected to go beyond them, and nothing here limits what
+it may say. They are kept in Portuguese, the language of the report.
+
+The agent does not describe the Copom: it confronts three things — what it thinks the Copom **will**
+do, what it thinks the Copom **should** do given the data, and what the **market** prices —, and the
+Copom's own signalling is one more piece of evidence in that confrontation.
 
 | # | Question | What the answer covers | Where to look |
 |---|---|---|---|
-| Q1 | Qual é a função de reação do Copom, e a que ela está respondendo agora? | The projection at the relevant horizon against the target, the balance of risks, and which input is moving the decision (expectations, gap, supply shocks and their second-round effects, fiscal, exchange rate, external). Whether the Copom is acting as its usual reaction implies, or departing from it, and why | 2.1, 2.2–2.8 |
-| Q2 | Quão restritiva está a política monetária, e contra qual juro neutro? | The ex-ante real Selic against the neutral the Copom uses, against the Structural Model's anchor and against the literature's range; what is moving the neutral (fiscal, directed credit, saving, global rates) | 2.5, 2.6, 2.8 |
-| Q3 | A política monetária está chegando à inflação? | Credibility and transmission: whether expectations are re-anchoring, whether credit, activity and the labour market respond, and what weakens the channels (deanchoring, directed credit, fiscal stimulus) | 2.3, 2.4, 2.10, 2.6 |
-| Q4 | Que trajetória de Selic o mercado precifica, e onde ela diverge da sinalização do Copom e da leitura do agente? | The DI curve meeting by meeting, the Focus and the QPC; expected path against premium; the room for surprise at the next meetings | 2.9, 2.1 |
-| Q5 | Qual o cenário prospectivo para a Selic? | The report's thesis on the horizons below: central from the Structural Model's base scenario (equation R), distribution from the agent's tempero — for example, the rule reacting to the inflation deviation more strongly than estimated, as a multiplier on its coefficient (`SISTEMA_AGENTES.md` IV.ix) | report §1, 2.1 |
+| Q1 | O que o Copom vai fazer? | The agent's forecast of the decisions, read from the Copom's documents (the reaction function, the projection at the relevant horizon against the target, the balance of risks, the guidance) and from the data; which input is moving the decision, and whether the Copom is acting as its usual reaction implies or departing from it | 2.1, 2.2–2.8 |
+| Q2 | O que o Copom deveria fazer, pelos dados? | The agent's own reading of what the data ask for: inflation against the target and its persistence; the gap; expectations and credibility (the reading the FX agent asks for, Part 4, E2); the stance, the ex-ante real Selic against the neutral the Copom uses, the Structural Model's anchor and the literature's range; transmission and what weakens it | 2.2–2.6, 2.10 |
+| Q3 | O que o mercado precifica, e onde isso diverge do que o Copom vai fazer, do que deveria fazer e do que ele mesmo sinaliza? | The DI curve meeting by meeting, the Focus and the QPC; expected path against premium; against Q1, Q2 and the Copom's projections and conditioning paths; the room for surprise at the next meetings | 2.9, 2.1 |
+| Q4 | Qual o cenário prospectivo para a Selic? | The report's thesis on the horizons below: central from the Structural Model's base scenario; distribution from the agent's tempero, shaped by Q1; the risk that comes from the distance between what the Copom will do and what it should do (Q1 against Q2) | report §1, 2.1 |
 
-- Q2 and Q3 could be one question. They are split because the credibility reading of Q3 is an
-  output the FX agent asked for (Part 4, E2), and because the Copom's current case for restriction is
-  about expectations, not about the stance alone (ata of the 281st meeting, §10).
 - The Copom's relevant horizon (first quarter of 2028 at the 281st meeting) falls today on the last
   of the model's six quarters; the projection there is what Q1 reads.
 
@@ -84,14 +84,13 @@ exception for this agent. The rule:
    meeting, the probability of each step (hold, −25, −50 bp, …). The decision is discrete, and a
    continuous range hides that. The quarters after that use the system's format (central, base range
    and tails with probabilities); their close is the sum of the steps.
-3. **The central.** Equation (R) of the Structural Model works with the quarterly *average* Selic,
-   while the FX equation (F) was estimated with the quarter *close*. The model's close is derived
-   mechanically, the mean of this quarter's and the next one's average (`modelo.py`, "Selic,
-   fechamento do trimestre (derivada)"). **In the two meeting-by-meeting quarters the central is the
-   agent's meeting path**, with the model's close printed beside it as a reference: the model ignores
-   the meeting calendar and can ask for cuts no meeting sequence delivers (first solo test, 2026-10-15:
-   12,47% for 4T26 with the Selic at 13,75% and two meetings left). From the third quarter on, the
-   central is the model's close, with no adjustment.
+3. **The central is the model's close in every quarter.** Equation (R) of the Structural Model works
+   with the quarterly *average* Selic, while the FX equation (F) was estimated with the quarter
+   *close*. The model's close is derived mechanically, the mean of this quarter's and the next one's
+   average (`modelo.py`, "Selic, fechamento do trimestre (derivada)"). The meeting path of the first
+   two quarters is the agent's, and it shapes the distribution around the central. The Copom's step
+   size is not fixed (the 2021–2022 cycle moved 75, 100 and 150 p.b. per meeting), so a central far
+   from today's Selic is not by itself out of reach.
 4. **Scoreboard**: for each closed quarter, the band in which the close fell; for each meeting, whether
    the decision was the step the agent gave the highest probability.
 5. **Worst and best**: worst is the Selic above the central, best below it. A higher Selic than in the
@@ -199,7 +198,13 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   unexplained (Segura-Ubiergo 2012). The Copom uses one value in its reference scenario, checks
   alternatives (RPM Sep/2026, 2.2), and holds that weaker fiscal discipline, directed credit and debt
   uncertainty raise it (ata of the 281st meeting, §8). The Structural Model's anchor is the 10-year
-  real yield plus the target.
+  real yield plus the target, and it reads the stance the way the Copom can: when the 10-year real
+  yield falls because the fiscal risk premium compresses, the market is pricing a fiscal
+  consolidation ahead — slower spending, less demand pressure, weaker growth and lower inflation —,
+  so the same Selic becomes tighter against the demand to come and opens room to cut. Much of
+  Brazil's very high real rate is the counterpart of fiscal demand pressure (Verde §1.1). When the
+  model moves the Selic through this anchor, the report argues the economic story first, and only
+  then says where it disagrees (user, 2026-10-21).
 - **Read:** [[natural_rate_of_interest]], [[taylor_rule]], [[real_time_data]],
   [[jurisdictional_uncertainty]], [[term_premium]]; `directed_credit`.
 - **Mental models:** Verde §1.1 (the structural Selic level is conditional on the fiscal anchor),
@@ -227,7 +232,9 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   exogenous `cmb_risco_pais`; TWA `atv_pib_mensal` (denominator).
 - **Trap.** Fiscal dominance is a spectrum, not a switch. Blanchard's estimate is for 2002, with
   dollar-linked debt; in Segura-Ubiergo's panel gross debt is not a robust determinant of real rates
-  while the fiscal balance is. Fiscal data are TWA: the report states its premises.
+  while the fiscal balance is. Fiscal data are TWA: the report states its premises. A compression
+  of the fiscal premium in the long rates is a demand story as well as a risk story (2.5); until a
+  fiscal agent exists, the report states which fiscal path the market is pricing.
 
 ### 2.7 The exchange rate, read through inflation
 
@@ -374,7 +381,9 @@ Written when those agents exist. The ones that matter most to this area:
 - **Inflation** — the drivers of the projection, persistence, services and administered prices (2.2).
   Pass-through is already decided to be the inflation agent's (IV.i); until it exists, inflation is TWA
   and S3 stays with FX.
-- **Fiscal** — fiscal impulse, debt dynamics and the risk premium (2.5, 2.6). Blanchard (2004) stays
+- **Fiscal** — fiscal impulse, debt dynamics and the risk premium (2.5, 2.6); and, when the long
+  rates move on the fiscal premium, whether the consolidation they price is credible and how much
+  demand it takes out (the user expects this exchange to sharpen the stance reading, 2026-10-21). Blanchard (2004) stays
   with this agent because it asks about the efficacy of monetary policy under fiscal dominance
   (I.III.xvii); the fiscal agent will own the fiscal side of [[fiscal_dominance]].
 - **External** — the Fed path and the global cycle (2.8).
@@ -391,8 +400,8 @@ What the FX agent needs from this agent, every cycle: the FX map's rows S1–S4,
 
 | # | FX map | What the FX agent needs | Why it matters to FX | How this agent answers |
 |---|---|---|---|---|
-| E1 | S1 | **Expected path of the Selic and the balance of risks**, as this agent reads it (not only the Focus median) | The forward carry, which supports the BRL, is the differential ahead, not today's | The thesis of Q5 in the horizon format of Part 1 (quarter close; meeting by meeting for the next two quarters) |
-| E2 | S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link | Q3, channels 2.3 and 2.6 |
+| E1 | S1 | **Expected path of the Selic and the balance of risks**, as this agent reads it (not only the Focus median) | The forward carry, which supports the BRL, is the differential ahead, not today's | The thesis of Q4 in the horizon format of Part 1 (quarter close; meeting by meeting for the next two quarters) |
+| E2 | S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link | Q2, channels 2.3 and 2.6 |
 | E3 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | The Copom documents of layer 1 (II.III.ix); channel 2.7 |
 | E4 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate (intervention without signs of dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, answered by both agents with this agent leading | A credible response caps the depreciation; its absence removes the cap. Under a defense posture what matters is the BCB's reaction function, not the technical state of the market | Q1, channels 2.1 and 2.2 (the second-order-effects test); under the trigger, 2.1 and 2.7 with the FX agent's reading of dysfunction (S7) |
 

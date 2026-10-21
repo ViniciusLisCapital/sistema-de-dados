@@ -51,7 +51,7 @@ and `PRINCIPIOS_AGENTES.md`; this file is how you apply them.
      wikilink resolves inside the snapshot. A name with no brackets where a link would be is material
      that is not in this cycle.
 3. **The conceptual map, Parts 1–4, every run:** `monetary_policy/monetary_policy_conceptual_map.md`
-   inside the snapshot. Part 1 is the floor of every report (Q1–Q5) and the horizon rule. Part 2 is
+   inside the snapshot. Part 1 is the floor of every report (Q1–Q4) and the horizon rule. Part 2 is
    the causal skeleton (2.1–2.10). Part 3 lists your requests to FX (S1–S7). Part 4 lists what FX
    needs from you (E1–E4). The map is copied whole, so some of its links point outside the snapshot:
    do not follow them.
@@ -102,6 +102,11 @@ snapshot and the escrivão manual.
 - Every treatment of the data goes through a G: a variation, an average, a sum, a difference, an
   ex-ante real rate, any arithmetic, however small. A number used exactly as it is in A ("a Selic
   está em 13,75% desde 17/09") needs no G. Never compute in the terminal or in your head.
+- **A historical regularity is data, not memory.** "The Copom moves 25 p.b. per meeting", "it
+  never cuts before the inflation peak": state it only from a G over the A (`pm_copom_reuniao` has
+  every decision since 1999), with the window, and never build a scenario on one that you did not
+  check. The first solo test assumed a 25 p.b. maximum step; the 2021–2022 cycle moved 75, 100 and
+  150 p.b. per meeting.
 - Write a short Python script in `obsidian/ciclos/<ciclo>/dados/G/pm_<what>.py`.
   - It reads only the files in `../A/` (`pandas.read_csv("…/A/<tabela>.csv.gz")`) and never touches
     the database.
@@ -127,29 +132,38 @@ snapshot and the escrivão manual.
     Focus, and it must close on the quarter's value in the thesis.
   - Worst is the Selic above the central, best below it. The three probabilities of a row sum to
     100%. Pbc − Pwc goes from −1 to +1.
-  - **The central, from the third quarter on, is the Structural Model's Selic at the quarter close
-    in the base scenario**, with no adjustment: the field "Selic, fechamento do trimestre (derivada)"
-    that `modelo.texto(res)` prints. It is derived from the model's quarterly averages (the mean of
-    this quarter's and the next one's); say so in a footnote.
-  - **In the two meeting-by-meeting quarters the central is your meeting path** (the close of the
-    most probable path of steps), because the model ignores the meeting calendar. Print the model's
-    close beside it in the thesis table as a reference, and explain the gap in section 2 (Q5).
+  - **The central is the Structural Model's Selic at the quarter close in the base scenario**, in
+    every quarter, with no adjustment: the field "Selic, fechamento do trimestre (derivada)" that
+    `modelo.texto(res)` prints. It is derived from the model's quarterly averages (the mean of this
+    quarter's and the next one's); say so in a footnote. Your meeting path shapes the distribution
+    around it; where the two differ, Q4 says why.
+  - **When the model moves the Selic, tell the economic story before you disagree.** The model is a
+    statement about the economy, not an artefact: a fall in the 10-year real yield (the anchor of
+    the rule) on a compression of the fiscal premium prices a fiscal consolidation, less demand and
+    lower inflation ahead, which tightens the same Selic and opens room to cut (map 2.5). Argue that
+    channel, then say what you think the model gets wrong and why.
   - The base range, the tail limits and the probabilities are yours (section 3.2), and the base range
     contains the central.
   - Under the table, one line per tail saying what leads to it, in both steps of section 3: the
     model scenario and the tempero.
   - The Fed funds rate is not your thesis variable: it is an exogenous path in step 1.
-- **Section 2 answers Q1–Q5 explicitly**, then anything else the data, the Copom's documents or the
-  other reports raise.
-  - Q1 reads the reaction function from the Copom's own documents: the projection at the relevant
-    horizon against the target, the balance of risks, and which input is moving the decision.
-    Equation (R) of the Structural Model is the model's reaction function, not the Copom's (map 2.1).
-  - Q2 says which neutral it uses (the Copom's, the QPC's, the model's anchor `rr_10a` + meta) and
-    why; the stances can disagree.
-  - Q4 compares the path the DI curve prices meeting by meeting with the Focus and with the Copom's
-    guidance; the DI path carries term and risk premia (map 2.9).
-  - Q5 is the thesis: why the central (the exogenous paths of the base scenario and what the model
-    does with them) and why the distribution (the temperos of section 3.2). A qualitative force you
+- **Section 2 answers Q1–Q4 explicitly**, then anything else the data, the Copom's documents or the
+  other reports raise. You do not describe the Copom: you confront what it **will** do, what it
+  **should** do and what the **market** prices, with the Copom's signalling as evidence.
+  - Q1, what the Copom will do: your forecast, read from its documents (reaction function, the
+    projection at the relevant horizon against the target, the balance of risks, the guidance) and
+    from the data. Equation (R) of the Structural Model is the model's reaction function, not the
+    Copom's (map 2.1).
+  - Q2, what the Copom should do given the data: your own reading of inflation, the gap,
+    expectations and credibility, the stance against the neutral (say which neutral: the Copom's,
+    the QPC's, the model's anchor `rr_10a` + meta, and why) and transmission. It is a judgement of
+    yours, argued with the data, not a paraphrase of the ata.
+  - Q3, what the market prices and where it diverges from Q1, from Q2 and from what the Copom
+    signals (its projections and conditioning paths): the DI curve meeting by meeting, the Focus, the
+    QPC; the DI path carries term and risk premia (map 2.9).
+  - Q4 is the thesis: why the central (the exogenous paths of the base scenario and what the model
+    does with them) and why the distribution (the temperos of section 3.2, shaped by Q1). The
+    distance between Q1 and Q2 is a risk and says which tail it feeds. A qualitative force you
     believe in for the base case never moves the central: it goes into the asymmetry.
 - **Every datum in section 2 has a role** (template, "Cada dado tem um papel"). When a claim has parts,
   write the parts and hang each datum on one of them.
@@ -210,6 +224,12 @@ snapshot and the escrivão manual.
 - **Placar:** for every quarter of the previous report final that closed, say which range the
   closing Selic fell in; for every meeting held, whether the decision was the step you gave the
   highest probability. With no previous cycle, write "primeiro ciclo".
+- **Sobre o modelo (section 6):** what the literature you read says about the Structural Model's
+  specification, and an empirical test that would settle it: the source, what it suggests (a
+  regressor, a lag, a break, a different anchor), the test (data, sample, what result would change
+  the specification), and why it matters for this cycle's thesis. Only what the material you opened
+  supports; "nada neste ciclo" is a valid answer. It is for the system, not the reader: the escrivão
+  leaves it out of the relatório, and the session that conducts the cycle collects it.
 
 ### Rodada 2 and the report final
 

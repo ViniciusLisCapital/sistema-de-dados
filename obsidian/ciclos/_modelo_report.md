@@ -130,3 +130,10 @@ Os trimestres que fecharam desde o último ciclo.
 |---|---|---|---|---|---|
 
 Em que faixa a variável caiu, e o que isso diz da tese e das premissas: mantidas, revistas ou derrubadas, e por quê.
+
+## 6. Sobre o modelo
+
+O que a literatura lida neste ciclo diz sobre a especificação do Modelo Estrutural, e o teste empírico que decidiria. É para o sistema, não para o leitor: o escrivão não leva esta seção ao relatório, e a sessão que conduz o ciclo junta as propostas no `SISTEMA_AGENTES.md` (III.III.vi). "Nada neste ciclo" é resposta válida.
+
+| Fonte | O que sugere (regressor, defasagem, quebra, âncora) | Teste proposto (dado, amostra, que resultado mudaria a especificação) | Por que importa para a tese deste ciclo |
+|---|---|---|---|

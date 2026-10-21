@@ -21,6 +21,7 @@
     - vi. Conta que o F não faz: o agente escreve uma função G e usa G(A). G só lê, usa o mesmo A do ciclo, e o código e o resultado vão para o log, nunca para o report nem para o relatório. No fim do ciclo, G fica como registro ou é promovido ao F. Todo tratamento do dado passa por G; o dado usado como está na base não precisa. (IV.iv)
     - vii. Profundidade: endógeno com leitura completa; TWA e exógeno com leitura enxuta. (IV.iv, provisório até a distribuição das exógenas)
     - viii. Todo número rastreável até a fonte: valor, tabela e data. (I.I.iv)
+    - ix. Padrão histórico afirmado é dado, não memória: "o Copom só move 25 p.b. por reunião", "o real sempre cai em dezembro" saem de um G sobre o A, com a janela dita, ou não entram. (2026-10-21, da revisão do primeiro report de PM: o agente afirmou de memória um passo máximo de 25 p.b., que o ciclo de 2021–2022 desmente, e montou os cenários sobre isso.)
 
 ## (I.III) Report e ciclo
     - i. Report em três blocos (tese, argumentação, premissas), mais saídas e pedidos aos outros agentes e o placar. Modelo único para todos: `obsidian/ciclos/_modelo_report.md`. (III.III.i)
@@ -29,6 +30,8 @@
     - iv. Ciclo: rodada 1, P1, rodada 2, P2, report final, PF*. Todos escrevem em paralelo dentro da rodada. Do ciclo ficam o report final, o log e o relatório. (III.III.ii)
     - v. Report e relatório em português; termo técnico consagrado em inglês é permitido. (III.III.i)
     - vi. Premissas em duas etapas. Etapa 1: o caminho de cada exógena do modelo por cenário; o modelo resolve as endógenas e dá a central (cenário base, sem ajuste). Etapa 2: o tempero qualitativo forma a distribuição em torno da central, por (i) efeito de um input mais forte ou mais fraco que o estimado, com justificativa tanto mais forte quanto mais longe na distribuição do coeficiente, ou (ii) fator fora das variáveis do modelo. Canal que está no modelo só entra pelo tipo (i). (IV.ix)
+    - vii. Quando o modelo move a variável, o report conta a história econômica do canal antes de discordar dele: o modelo é uma afirmação sobre a economia, não um artefato. (2026-10-21)
+    - viii. Seção 6 do report, "Sobre o modelo": o que a literatura lida sugere da especificação do Modelo Estrutural e o teste que decidiria. Fica fora do relatório; a sessão do ciclo junta as propostas (SISTEMA III.III.vi). (2026-10-21)
 
 ## (I.IV) Ferramentas e modelo
     - i. Ferramenta = processamento pré-definido que entrega ao agente uma saída pronta. Fica fora dos agentes nesta fase. (I.III.xiv, I.II.iv)

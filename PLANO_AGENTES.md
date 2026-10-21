@@ -9,11 +9,11 @@
 |---|---|---|
 | 0 | Registrar o framework e arrumar | feito (2026-10-21) |
 | 1 | Camada 1 e fila do câmbio | feito (2026-10-21): donos, camada 1 e fila no tracker; as 6 fontes da camada 1 com síntese que passa no check; conceito fx_intervention criado; Kalemli-Ozcan 2019 entrou na camada 1 (canal 2.3) |
-| 2 | Mapa conceitual, camada 1 e fila de PM | feito (2026-10-21): mapa com as Partes 1–4 aprovadas (perguntas Q1–Q5, horizonte, worst/best, saídas e entradas espelhadas no câmbio); camada 1 de PM (10 fontes, uma por canal, todas com síntese) e fila aprovadas e marcadas no tracker |
+| 2 | Mapa conceitual, camada 1 e fila de PM | feito (2026-10-21): mapa com as Partes 1–4 aprovadas (perguntas Q1–Q4 (refeitas após o teste solo), horizonte, worst/best, saídas e entradas espelhadas no câmbio); camada 1 de PM (10 fontes, uma por canal, todas com síntese) e fila aprovadas e marcadas no tracker |
 | 3 | Infraestrutura | feito (2026-10-21): 3A (F de PM, acea399, 6698688), 3B (Selic de fechamento derivada da média de dois trimestres, 5fdab47; a revisar no fim do plano), 3C, 3D e 3E |
 | 4 | Re-teste do câmbio só com o núcleo | feito (2026-10-21, dados de 15/10): report completo com pouca literatura aberta; promovida a Kapitalo para a camada 1; síntese do Cortapasso removida para ser refeita pelo `/vault`; o câmbio declara a lacuna do Copom em vez de escrever de memória (SISTEMA II.II.iv) |
 | 5 | Material da camada 1 de PM | feito (2026-10-21): modelo mental da Verde, 24 cartas em 3 rodadas (14d91ac); as 10 fontes da camada 1 já tinham síntese |
-| 6 | Agente de PM e teste solo | feito (2026-10-21): definição (`.claude/agents/politica-monetaria-analyst.md`); rodada 1 solo em `obsidian/ciclos/2026-10-15/politica_monetaria_r1.md` (fba897b). O teste mostrou a central do modelo inviável nos primeiros trimestres: nos dois de reunião a reunião a central passa a ser o caminho do agente. Promovidos Segura-Ubiergo e Adrian-Crump-Moench. Falta a seta no diagrama |
+| 6 | Agente de PM e teste solo | feito (2026-10-21): definição (`.claude/agents/politica-monetaria-analyst.md`); rodada 1 solo em `obsidian/ciclos/2026-10-15/politica_monetaria_r1.md` (fba897b). Revisão do usuário: o agente afirmou de memória um passo máximo de 25 p.b. (falso: virou princípio I.II.ix); o foco mudou para vai × deveria × mercado (Q1–Q4); a central volta a ser a do modelo em todos os trimestres; cada report ganha a seção 6, "Sobre o modelo". Pronto para um segundo teste solo. Promovidos Segura-Ubiergo e Adrian-Crump-Moench. Falta a seta no diagrama |
 | 7 | Engrenagem do ciclo conjunto (consolidação, exógenas, escrivão) | — |
 | 8 | Primeiro ciclo conjunto câmbio + PM | — |
 | 9 | Crescer e outros agentes | a discutir |
@@ -21,7 +21,7 @@
 **Em curso (2026-10-21, noite):** subagente D acrescenta IC-Br em dólar e EX0 ao F de PM e documenta a convenção das exógenas no `listar`. Falta o usuário rodar `/vault exchange_rate` para refazer a síntese do Cortapasso.
 **Próximo:** revisão do report de PM pelo usuário; as decisões da Fase 7 (consolidação IV.vi, donos das exógenas IV.ii, estrutura do relatório do escrivão); a seta do agente de PM no diagrama. Mapa de câmbio religado ao vault (8f62a33) e `vault.py map` nos dois mapas.
 
-**A revisar quando o plano terminar** (pedidos do usuário, 2026-10-21): a Selic de fechamento derivada da média de dois trimestres (reestimar a regra no fechamento?); um pente fino no processo dos modelos mentais (as regras gravadas no `mental-model.md` e no revisor nesse dia); a estrutura do modelo mental da Verde de PM (juros dos desenvolvidos no bloco 3, 2.3 × 3.2, 2.6 de uma carta só, 1.1 × a 1.2 do câmbio); a regra de juros do Modelo Estrutural, que passa quase inteira à Selic do mesmo trimestre um salto de um pregão na NTN-B de 10 anos (âncora suavizada ou defasada?).
+**A revisar quando o plano terminar** (pedidos do usuário, 2026-10-21): a Selic de fechamento derivada da média de dois trimestres (reestimar a regra no fechamento?); um pente fino no processo dos modelos mentais (as regras gravadas no `mental-model.md` e no revisor nesse dia); a estrutura do modelo mental da Verde de PM (juros dos desenvolvidos no bloco 3, 2.3 × 3.2, 2.6 de uma carta só, 1.1 × a 1.2 do câmbio).
 
 Atualizado em 2026-10-21. Decisões do dia fora das fases: dono da literatura (SISTEMA_AGENTES I.III.xvii); camada 1 do Copom = comunicados, atas e RPMs desde 2025-01-01; a camada 1 do Copom e os modelos mentais têm acompanhamento próprio no tracker (abas "Copom" e "Mental Models").
 

@@ -179,6 +179,12 @@ Never read `repository/`, and in `obsidian/` read only what this list names: the
 - **Placar:** for every quarter of the previous report final that closed, say which range the
   closing PTAX fell in and what that says about the thesis. With no previous cycle, write
   "primeiro ciclo".
+- **Sobre o modelo (section 6):** what the literature you read says about the Structural Model's
+  specification, and an empirical test that would settle it: the source, what it suggests (a
+  regressor, a lag, a break, a different anchor), the test (data, sample, what result would change
+  the specification), and why it matters for this cycle's thesis. Only what the material you opened
+  supports; "nada neste ciclo" is a valid answer. It is for the system, not the reader: the escrivão
+  leaves it out of the relatório, and the session that conducts the cycle collects it.
 
 ### Rodada 2 and the report final
 
