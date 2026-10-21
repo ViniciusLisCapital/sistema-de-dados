@@ -10,7 +10,8 @@ Três garantias, cada uma contra um defeito silencioso:
     funções G do agente olharem exatamente o mesmo dado.
   - A é extraído uma vez por ciclo e compartilhado entre os agentes. Um segundo agente que
     declare a mesma tabela com o mesmo nome de recorte e outra consulta faz o gerador
-    levantar, em vez de reaproveitar um arquivo que não é o que ele pediu.
+    levantar, em vez de reaproveitar um arquivo que não é o que ele pediu. Se a consulta
+    diferente é de propósito, ela leva uma `variante`, que vai para outro arquivo.
 
 As leituras de série (o F genérico):
 
@@ -46,6 +47,8 @@ _SCHEMA = {"brasil": "macro_brasil", "international": "macro_international", "us
 _COLS_DATA = ("date", "date_start", "vintage", "ref_date")
 _GRUPO_COMPLETO = "Endógeno"
 _JANELAS = (("1m", 1), ("3m", 3), ("12m", 12))
+# Série trimestral: 1m e 3m dariam o mesmo trimestre anterior.
+_JANELAS_TRI = (("1t", 3), ("4t", 12))
 
 
 # ── declaração ────────────────────────────────────────────────────────────────
@@ -74,10 +77,13 @@ class Tabela:
     especial: Callable | None = None     # F próprio: (df, ctx) -> linhas de markdown
     fora: str | None = None              # está na lista mas não entra: o motivo
     nota: str | None = None              # defeito conhecido do dado, impresso no F
+    variante: str | None = None          # outra consulta da mesma tabela e recorte que a de
+                                         # outro agente: vai para outro arquivo de A
 
     @property
     def arquivo(self) -> str:
-        return self.nome + (f"__{_slug(self.recorte)}" if self.recorte else "") + ".csv.gz"
+        return (self.nome + (f"__{_slug(self.recorte)}" if self.recorte else "")
+                + (f"__{_slug(self.variante)}" if self.variante else "") + ".csv.gz")
 
 
 def _slug(s: str) -> str:
@@ -87,7 +93,8 @@ def _slug(s: str) -> str:
 
 # ── a lista do SISTEMA_AGENTES.md ─────────────────────────────────────────────
 _RE_GRUPO = re.compile(r"^### ([ivx]+)\. (.+?)\s*$")
-_RE_ITEM = re.compile(r"^\s*- `([A-Za-z0-9_]+)`(?: \(([^)]+)\))?: (.+?)\s*$")
+# Um item pode nomear várias tabelas com o mesmo papel: "- `a`, `b`, `c`: papel".
+_RE_ITEM = re.compile(r"^\s*- ((?:`[A-Za-z0-9_]+`, )*`[A-Za-z0-9_]+`)(?: \(([^)]+)\))?: (.+?)\s*$")
 
 
 def ler_lista(secao: tuple[str, str]) -> list[dict]:
@@ -100,8 +107,9 @@ def ler_lista(secao: tuple[str, str]) -> list[dict]:
         if m := _RE_GRUPO.match(linha):
             grupos.append({"id": m.group(1), "nome": m.group(2), "itens": []})
         elif (m := _RE_ITEM.match(linha)) and grupos:
-            grupos[-1]["itens"].append({"tabela": m.group(1), "recorte": m.group(2),
-                                        "papel": m.group(3)})
+            for nome in re.findall(r"`([A-Za-z0-9_]+)`", m.group(1)):
+                grupos[-1]["itens"].append({"tabela": nome, "recorte": m.group(2),
+                                            "papel": m.group(3)})
     return grupos
 
 
@@ -149,7 +157,7 @@ def extrair(tabelas: list[Tabela], pasta_a: Path, corte: pd.Timestamp,
         if anterior and not refazer and (t.arquivo and (pasta_a / t.arquivo).exists()):
             if anterior["sql"] != sql or anterior["params"] != params:
                 raise ValueError(f"{t.arquivo} já existe neste ciclo com outra consulta "
-                                 f"({anterior['sql']}); dê outro nome ao recorte")
+                                 f"({anterior['sql']}); declare uma `variante`")
             continue
         df = ex.q(sql, schema=schema, params=params or None)
         df.to_csv(pasta_a / t.arquivo, index=False)
@@ -197,9 +205,12 @@ class Ctx:
 
 
 def largo(df: pd.DataFrame, t: Tabela) -> pd.DataFrame:
+    """Uma coluna por série. Tabela sem coluna de dimensão (dims=()) vira uma série só,
+    com a chave igual ao nome da coluna de valor."""
     if df.empty:
         return pd.DataFrame()
-    k = df[list(t.dims)].astype(str).agg("|".join, axis=1)
+    k = (df[list(t.dims)].astype(str).agg("|".join, axis=1) if t.dims
+         else pd.Series(t.valor, index=df.index))
     w = df.assign(_k=k).pivot_table(index="date", columns="_k", values=t.valor, aggfunc="last")
     return w.sort_index()
 
@@ -272,7 +283,7 @@ def _nivel(se: Serie, s: pd.Series, ctx: Ctx, pct: bool) -> dict:
     cd = 1 if pct else se.casas
     row = {"Série": se.rotulo, "Unidade": se.unidade, "Data": fdata(t0), "Último": fmt(v, se.casas)}
     p = "Δ%" if pct else "Δ"
-    for lab, m in _JANELAS:
+    for lab, m in (_JANELAS_TRI if frequencia(s) == "trimestral" else _JANELAS):
         row[f"{p} {lab}"] = fmt(var(em(s, antes(t0, m))), cd, True)
     if ctx.anterior is not None:
         row[f"{p} desde o ciclo ant."] = ("sem dado novo" if t0 <= ctx.anterior
@@ -386,7 +397,9 @@ def bloco_generico(t: Tabela, df: pd.DataFrame, ctx: Ctx) -> list[str]:
 
 def _cabecalho_tabela(t: Tabela, df: pd.DataFrame, ctx: Ctx) -> str:
     col = t.corte or "date"
-    if df.empty or col not in df:
+    if not df.empty and col not in df:
+        return f"Tabela sem data (classificação), {len(df)} linhas · A: `A/{t.arquivo}`"
+    if df.empty:
         return f"A: `A/{t.arquivo}` · sem linhas no corte"
     ult = df[col].max()
     dias = (ctx.corte - ult).days
@@ -398,7 +411,7 @@ def _cabecalho_tabela(t: Tabela, df: pd.DataFrame, ctx: Ctx) -> str:
 # ── F(A) ──────────────────────────────────────────────────────────────────────
 _COMO_LER = """\
 Como ler:
-- **Δ% 1m/3m/12m**: variação contra o último valor de 1, 3 e 12 meses antes da última data da série.
+- **Δ% 1m/3m/12m**: variação contra o último valor de 1, 3 e 12 meses antes da última data da série; numa série trimestral, **1t/4t**: contra 1 e 4 trimestres antes.
 - **Δ**: diferença na unidade da série (p.p. quando a série é %, p.b. quando é p.b.).
 - **Pctl**: posição do último valor no histórico, de 0 (o menor já visto) a 100 (o maior). "10a" = últimos 10 anos.
 - **Soma 3m/12m**: soma dos últimos 3 e 12 meses completos; o mês em curso aparece à parte e não entra nas somas.

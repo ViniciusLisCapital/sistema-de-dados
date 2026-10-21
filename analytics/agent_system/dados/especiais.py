@@ -107,10 +107,11 @@ def focus_copom(df: pd.DataFrame, ctx: Ctx) -> list[str]:
 
 
 # ── Copom ─────────────────────────────────────────────────────────────────────
-def copom_calendario(df: pd.DataFrame, ctx: Ctx) -> list[str]:
+def copom_calendario(df: pd.DataFrame, ctx: Ctx, proximas: int | None = 4) -> list[str]:
+    """A última reunião e as `proximas` seguintes (None: todas as do calendário oficial)."""
     datas = sorted(df["date"])
     passadas = [d for d in datas if d < ctx.corte]
-    futuras = [d for d in datas if d >= ctx.corte][:4]
+    futuras = [d for d in datas if d >= ctx.corte][:proximas]
     linhas = [{"Reunião": "última" if i == 0 else f"próxima {i}", "Decisão": fdata(d),
                "Dias a partir do corte": (d - ctx.corte).days}
               for i, d in enumerate(passadas[-1:] + futuras)]
@@ -177,15 +178,33 @@ def _taxa(du: np.ndarray, tx: np.ndarray, alvo: int) -> float | None:
     return float(np.expm1(np.interp(alvo, xs, lnf) * 252.0 / alvo) * 100)
 
 
-def di_grade(df: pd.DataFrame, ctx: Ctx) -> list[str]:
+def _curva(df: pd.DataFrame, p) -> tuple[np.ndarray, np.ndarray]:
+    g = df[df["date"] == p].sort_values("du")
+    return g["du"].to_numpy(float), g["value"].to_numpy(float)
+
+
+def selic_na_curva(ctx: Ctx, p, curva=None) -> dict[pd.Timestamp, float]:
+    """A Selic que a curva DI do pregão `p` precifica em cada reunião do calendário oficial
+    a partir dele: o `caminho_di` do relatório de política monetária, levado da taxa DI para
+    a meta pela diferença entre as duas na data (a meta vigente menos o CDI de partida)."""
     from analytics.brasil.monetary_policy.expectativas_juros import caminho_di
 
+    cal = sorted(ctx.ler("pm_copom_calendario")["date"])
+    reun = [d for d in cal if d >= p]
+    vig, _ = _selic_vigente(ctx, p + pd.Timedelta(days=1))
+    if not reun or vig is None:
+        return {}
+    du, tx = curva if curva is not None else _curva(ctx.ler("br_di_grade"), p)
+    cdi0, cam = caminho_di(p.date(), du, tx, [d.date() for d in reun])
+    return {d: v + (vig - cdi0) for d, v in zip(reun, cam)}
+
+
+def di_grade(df: pd.DataFrame, ctx: Ctx) -> list[str]:
     pregoes = sorted(pd.DatetimeIndex(df["date"].unique()))
     p0 = pregoes[-1]
 
     def curva(p):
-        g = df[df["date"] == p].sort_values("du")
-        return g["du"].to_numpy(float), g["value"].to_numpy(float)
+        return _curva(df, p)
 
     refs = {lab: _pesquisa_em(pregoes, antes(p0, m)) for lab, m in (("1m", 1), ("3m", 3), ("12m", 12))}
     if ctx.anterior is not None:
@@ -208,12 +227,7 @@ def di_grade(df: pd.DataFrame, ctx: Ctx) -> list[str]:
         return out
 
     def caminho(p):
-        reun = [d for d in cal if d >= p]
-        cdi0, cam = caminho_di(p.date(), *curvas.setdefault(p, curva(p)), [d.date() for d in reun])
-        vig, _ = _selic_vigente(ctx, p + pd.Timedelta(days=1))
-        if vig is None:
-            return {}
-        return {d: v + (vig - cdi0) for d, v in zip(reun, cam)}
+        return selic_na_curva(ctx, p, curvas.setdefault(p, curva(p)))
 
     c0 = caminho(p0)
     p1 = refs.get("1m")

@@ -19,7 +19,8 @@ import sys
 
 from analytics.agent_system.dados import motor
 
-AGENTES = {"cambio": "analytics.agent_system.dados.cambio"}
+AGENTES = {"cambio": "analytics.agent_system.dados.cambio",
+           "politica_monetaria": "analytics.agent_system.dados.politica_monetaria"}
 
 
 def gerar(agente: str, ciclo: dt.date, refazer: bool = False):
