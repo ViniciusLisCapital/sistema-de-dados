@@ -18,6 +18,9 @@
 | 8 | Primeiro ciclo conjunto câmbio + PM | — |
 | 9 | Crescer e outros agentes | a discutir |
 
+**Em curso (2026-10-21, fim do dia):** re-teste do câmbio (subagente cambio-analyst, escreve `obsidian/ciclos/2026-10-15/cambio_r1.md`; comparar com `2026-10-07/cambio_r1.md`, olhando as linhas "Conhecimento aberto" e "Faltou"); 3A+3B (subagente D); rascunho do mapa de PM (subagente, escreve `obsidian/monetary_policy/monetary_policy_conceptual_map.md`); chat H no `/mental verde monetary_policy`, reportando ao chat principal. Coordenação: só o chat principal fala com o usuário; decisões sempre na janela de escolha (AskUserQuestion).
+**Próximas decisões do usuário:** perguntas centrais de PM, tratamento do horizonte da Selic, saídas e entradas PM ↔ câmbio, camada 1 e fila de PM (Fase 2, itens 2–6); resultado do re-teste do câmbio (Fase 4).
+
 Atualizado em 2026-10-21. Decisões do dia fora das fases: dono da literatura (SISTEMA_AGENTES I.III.xvii); camada 1 do Copom = comunicados, atas e RPMs desde 2025-01-01; a camada 1 do Copom e os modelos mentais têm acompanhamento próprio no tracker (abas "Copom" e "Mental Models").
 
 
