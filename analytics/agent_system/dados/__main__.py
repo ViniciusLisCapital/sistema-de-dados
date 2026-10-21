@@ -1,5 +1,5 @@
 """
-Gera o F(A) de um agente para um ciclo.
+Gera o F(A) de um agente para um ciclo, e junto o retrato do conhecimento (conhecimento.py).
 
     uv run python -m analytics.agent_system.dados cambio
     uv run python -m analytics.agent_system.dados cambio --ciclo 2026-10-07
@@ -40,6 +40,12 @@ def gerar(agente: str, ciclo: dt.date, refazer: bool = False):
                            pasta / "A", anterior, getattr(mod, "PIB", None))
     saida.write_text(texto, encoding="utf-8")
     print(f"  F(A)  {saida}")
+    # O retrato do conhecimento (o que o agente pode ler), fixo no ciclo como o F(A).
+    from analytics.agent_system import conhecimento
+    try:
+        print(f"  conhecimento  {conhecimento.gerar(agente, ciclo, refazer)}")
+    except FileExistsError as e:
+        print(f"  conhecimento  {e}")
     return saida
 
 
