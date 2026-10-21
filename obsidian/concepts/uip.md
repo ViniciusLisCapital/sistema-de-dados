@@ -64,6 +64,7 @@ CIP itself broke down persistently after the 2007–08 crisis and has not fully 
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | The exchange-rate block of the BCB's first structural model: UIP with a risk premium in first differences, the foreign rate from futures and the risk premium as the volatile exogenous (or fiscal-driven) term |
 | [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] | UIP with a risk premium, built from survey expectations and swaps, in a small model with a rule on expected inflation: the reduced form links depreciation negatively to the lagged rate (McCallum's explanation of the UIP puzzle); estimated partial effect of the Selic is an appreciation, the EMBI a depreciation (Brazil 1999–2003) |
 | [[exchange_rate/synthesis/equilibrium_exchange_brazil (Paiva, 2006)]] | The real interest rate differential (RINTDIFF) is the BEER model's direct UIP channel for Brazil: higher domestic real rates go with a stronger real exchange rate |
+| [[exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990)]] | The unbiasedness test of UIP: the slope of realized depreciation on the interest differential (or forward discount) is reliably below one and often negative; the bias is traced to expectational errors rather than a risk premium |
 
 ---
 
@@ -102,3 +103,4 @@ CIP itself broke down persistently after the 2007–08 crisis and has not fully 
 - [[monetary_policy/synthesis/monetary_policy_shocks_survey (Christiano, Eichenbaum & Evans, 1999)]] — VAR evidence that monetary policy shocks move exchange rates against UIP
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — UIP plus a risk premium as the exchange-rate equation of the BCB's policy models
 - [[monetary_policy/synthesis/it_and_debt_brazil (Favero & Giavazzi, 2004)]] — a reaction function as one explanation of UIP's failure, and default risk as the risk-premium term that can reverse the sign of the policy effect
+- [[exchange_rate/synthesis/fx_anomalies_survey (Froot & Thaler, 1990)]] — survey of the forward discount bias, the empirical rejection of UIP with unbiased expectations

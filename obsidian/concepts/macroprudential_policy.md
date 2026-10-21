@@ -27,6 +27,7 @@ Since "the most dangerous outcome of inappropriately loose global financial cond
 | [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]] | Under the financial trilemma openness degrades national prudential tools, raising the burden on monetary policy; Basel III reciprocity for countercyclical buffers as a remedy; Ito's comment on loan-to-value limits and the "separation hypothesis" |
 | [[monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] | Macroprudential limits on unhedged foreign currency liabilities, in financial and non-financial firms, preferred to monetary policy as the response to US-driven risk spillovers |
 | [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] | Financial-stability policy distinguished from monetary policy by objective, instruments and authority; macro-prudential regulation (variable capital, margin and loan-to-value requirements) preferred to leaning against the wind with the policy rate (Section 5.2) |
+| [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] | Prudential regulation of banks may suffice in normal times; with large inflows, controls on the riskiest liabilities (a pecking order from foreign-currency debt down to FDI) buttress it, because debt liabilities predict 2008–09 output losses even after controlling for bank credit booms and FX lending |
 
 ## BRL / application to the current analysis
 
@@ -40,3 +41,4 @@ The sources linked here say nothing about Brazilian macroprudential policy yet.
 - [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]] — why open capital markets weaken macroprudential policy (the financial trilemma) and how that worsens monetary policy's trade-offs
 - [[monetary_policy/synthesis/us_policy_international_risk_spillovers (Kalemli-Ozcan, 2019)]] — macroprudential tools instead of exchange-rate defense with interest rates
 - [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] — why the policy rate is a blunt instrument for financial stability and supervision and regulation should carry it
+- [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] — inflow controls targeted at debt as a complement to bank prudential rules

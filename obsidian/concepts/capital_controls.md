@@ -25,6 +25,8 @@ A tax or limit on inflows lowers the volume of flows entering in a boom. Rey des
 | [[monetary_policy/synthesis/dilemma_not_trilemma (Rey, 2013)]] | Option (a) for dealing with the "dilemma": permanent or temporary controls, with the Chilean encaje (1991–1998) and Brazil's 2010 and 2011 taxes on equity inflows as examples |
 | [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]] | EMEs liberalised less and kept more restrictions; only thoroughgoing, long-standing controls seem to raise interest rate independence (Klein and Shambaugh); when controls help is left as an open question; Ito recommends a Chilean-type withholding tax on short-term inflows |
 | [[monetary_policy/synthesis/credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005)]] | Brazil's convertibility restrictions (the partial CC-5 opening, the central bank's power to suspend remittances) as a response to jurisdictional uncertainty that raises the short-term rate: under a float they signal that no market premium could compensate for the jurisdiction; making the currency convertible would lower the risk factor in capital flows |
+| [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] | Empirical test of Brazil's IOF-based inflow controls, 2009–2013: they opened onshore–offshore price wedges (cupom cambial, ADR premia), but the BRL moved only after the last, comprehensive measures closed the bypass channels (derivatives tax, longer-maturity borrowing tax) |
+| [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] | IMF staff position: inflow controls justified, alongside macro and prudential policy, when the economy is near potential, reserves are adequate, the currency is not undervalued and the surge is transitory; past evidence finds effects on composition more than on volume or the exchange rate; controls on debt inflows associated with milder 2008–09 output losses; multilateral costs |
 
 ## BRL / application to the current analysis
 
@@ -38,3 +40,5 @@ Rey cites "the 2010 and 2011 Brazilian taxes on equity inflows" as a temporary c
 - [[monetary_policy/synthesis/dilemma_not_trilemma (Rey, 2013)]] — capital controls as a response to the global financial cycle
 - [[monetary_policy/synthesis/trilemma_tradeoffs (Obstfeld, 2015)]] — capital controls as one response to the trilemmas, with their effectiveness left open
 - [[monetary_policy/synthesis/credit_interest_jurisdictional_uncertainty (Arida, Bacha & Lara-Resende, 2005)]] — outflow restrictions as a source of higher domestic interest rates, and their signaling under a floating rate
+- [[exchange_rate/synthesis/capital_controls_brazil (Chamon & Garcia, 2016)]] — controls segment markets before they move the exchange rate; effective only when comprehensive
+- [[exchange_rate/synthesis/capital_inflow (IMF, 2010)]] — when controls belong in the toolkit, why they work through composition rather than volume, and their multilateral costs

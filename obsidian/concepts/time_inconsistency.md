@@ -37,6 +37,7 @@ A plan is time-inconsistent when, after private agents have acted on it, the pol
 | [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] | Commitment in a timeless perspective as the benchmark for optimal policy projections; the discretion equilibrium (Section 3.8) and quasi-commitment, where most of the gain from commitment accrues at low levels of credibility |
 | [[monetary_policy/synthesis/optimal_monetary_policy_inertia (Woodford, 1999)]] | The optimal plan is time-inconsistent even with no output target above the natural rate, as soon as the natural rate varies; discretion gives insufficient inertia, an inflation bias and, with persistent shocks, a "discretion trap" (Table 2) |
 | [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] | The inverse credibility problem at the zero bound: the public expects the central bank to return to price stability, so current expansion is read as transitory; it must credibly promise to be irresponsible; Dominguez notes such a promise is itself time-inconsistent |
+| [[exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994)]] | Open-economy application: a government that cannot precommit its exchange rate faces an inflation bias (Barro–Gordon with predetermined wages) and, with a fixed realignment cost as an escape clause, multiple equilibria in which expected devaluation validates itself; in a debt version, high interest rates on domestic-currency debt raise the incentive to devalue |
 
 ## BRL / application to the current analysis
 
@@ -58,3 +59,4 @@ The sources linked here say nothing about Brazil yet.
 - [[monetary_policy/synthesis/inflation_targeting_handbook (Svensson, 2010)]] — degrees of commitment between discretion and the timeless perspective in an inflation-targeting framework
 - [[monetary_policy/synthesis/optimal_monetary_policy_inertia (Woodford, 1999)]] — the gain from commitment in the response to shocks, beyond the average inflation bias
 - [[monetary_policy/synthesis/liquidity_trap_japan (Krugman, 1998)]] — credibility in reverse: committing to future inflation rather than to price stability
+- [[exchange_rate/synthesis/logic_currency_crises (Obstfeld, 1994)]] — the inability to precommit as the root of self-fulfilling currency crises under fixed-but-adjustable pegs
