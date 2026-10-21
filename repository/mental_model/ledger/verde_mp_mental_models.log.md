@@ -284,3 +284,163 @@ Repacked: 1.1 (100% of its words kept), 1.2 (100% of its words kept), 2 (100% of
 | 4.2 | N4 | The benefit is short-term and coexists with risk premia pressured by fiscal thre | supported |  |
 | 4.2 | N5 | May/2022: the scenario was more complex for equities despite attractive valuatio | supported |  |
 | 4.2 | N6 | Key variables: Brazil-DM rate differential and relative stage of tightening cycl | supported |  |
+
+## 2026-10-21 · Verde-REL-2022_09, Verde-REL-2022_10, Verde-REL-2022_11, Verde-REL-2022_12
+
+Repacked: 1 (100% of its words kept), 1.1 (100% of its words kept), 2 (100% of its words kept), 2.1 (100% of its words kept), 3 (100% of its words kept), 3.2 (100% of its words kept), 3.3 (100% of its words kept), 3.4 (100% of its words kept), Padrões e Recorrências (99% of its words kept), Connections (100% of its words kept) · added: —
+
+| block | id | statement | verdict | note |
+|---|---|---|---|---|
+| 1 | C1 | Cluster 1 is the central cluster of the period. | kept |  |
+| 1 | C2 | For Verde, the level of rates Brazil can sustain is not the central bank's choic | kept |  |
+| 1 | C3 | The fiscal anchor (the spending cap, Teto de Gastos) is what allowed low rates. | kept |  |
+| 1 | C4 | Its erosion brings back inflation, premium and high rates, and imposes on the ce | kept |  |
+| 1 | N1 | After the 2022 election the same reading was applied to the elected government's | supported |  |
+| 1.1 | C1 | Verde describes the Brazilian macro model by two regimes; under 'fiscal accelera | kept |  |
+| 1.1 | C2 | The 2017-2019 reforms (spending cap, pension reform) opened room to invert that  | kept |  |
+| 1.1 | C3 | The fall in rates was 'revolutionary' for capital-market growth (see 4.1). | kept |  |
+| 1.1 | C4 | The pandemic suspended the logic with two simultaneous accelerators, which Verde | kept |  |
+| 1.1 | C5 | Signs of a will to revive the fiscal accelerator permanently ('the country seems | kept |  |
+| 1.1 | C6 | Low rates, in this reading, are conditional on the fiscal anchor. | kept |  |
+| 1.1 | C7 | In the 2021 review Verde attributed to the PEC dos Precatórios ('implosion of th | kept |  |
+| 1.1 | C8 | In January 2022, with the cap 'modified but in force', the chief economist's art | kept |  |
+| 1.1 | C9 | Key variables: respect for the cap and proposals to take spending out of it (esp | kept |  |
+| 1.1 | C10 | Feb/2021: discussions of new Auxílio Emergencial and opening room in the cap for | kept |  |
+| 1.1 | C11 | Jul/2021: Verde took up the model it says it used in many letters: the vaccinati | kept |  |
+| 1.1 | C12 | Oct/2021: with the PEC dos Precatórios described as the end of the cap, Verde co | kept |  |
+| 1.1 | C13 | Dec/2021: in the annual review Verde said it had not believed in the cap being b | kept |  |
+| 1.1 | C14 | Jan/2022: the article described the destruction of the credibility of the cap an | kept |  |
+| 1.1 | C15 | The entry's quotes (fev/2021, two jul/2021, jul/2021 'freio monetário', dez/2021 | kept |  |
+| 1.1 | N1 | After the 2022 election the framework gained a condition on the nature of the an | supported |  |
+| 1.1 | N2 | The PEC da Transição, which left the Senate with two hundred billion reais of sp | supported |  |
+| 1.1 | N3 | The November letter brings the rate level into the argument: the PEC's preamble  | supported |  |
+| 1.1 | N4 | In October the letter suggested the new government's members study what happened | supported |  |
+| 1.1 | N5 | New key variables: the elected government's fiscal commitments (whether the prom | supported |  |
+| 1.1 | N6 | Oct/2022: after Lula's narrow second-round win, Verde viewed with concern the ne | supported |  |
+| 1.1 | N7 | Nov/2022: the PEC, which the letter now calls 'PEC da Gastança', left the Senate | supported |  |
+| 2 | C1 | Cluster 2 covers how Verde reads what the domestic curve prices and the central  | kept |  |
+| 2 | C2 | The curve carries fiscal and electoral premium beyond the expected cycle. | kept |  |
+| 2 | C3 | The central bank is seen as reactive to the market and to current inflation. | kept |  |
+| 2 | C4 | In August 2021 the operational question was whether there was enough premium to  | kept |  |
+| 2 | C5 | In 2022 premia came to oscillate with the electoral calendar and the global envi | kept |  |
+| 2 | C6 | The supply shocks of the war and China brought the calibration problem to the wo | kept |  |
+| 2 | C7 | The January 2022 article brought the historical counterexample of the 'docile' B | kept |  |
+| 2 | N1 | After the election the premium came to be read against a global context favourab | supported |  |
+| 2.1 | C1 | Verde separates the expected Selic path from the premium the term structure carr | kept |  |
+| 2.1 | C2 | Fiscal uncertainty (lack of commitment by political leaders) plus the electoral  | kept |  |
+| 2.1 | C3 | In 2021 Verde built positions in this market patiently while no resolution seeme | kept |  |
+| 2.1 | C4 | In August 2021, to 'is there enough premium?', it answered yes for now: kept int | kept |  |
+| 2.1 | C5 | In October 2021 it admitted the error of that reading: it believed much bad news | kept |  |
+| 2.1 | C6 | The December 2021 review reaffirmed the revision: gains in Brazilian rates in 20 | kept |  |
+| 2.1 | C7 | In 2022 Brazilian risk premia oscillated with two forces: threats to the fiscal  | kept |  |
+| 2.1 | C8 | In August 2022 premia kept falling while the gap between candidates narrowed. | kept |  |
+| 2.1 | C9 | Key variables: distance between expected Selic and futures; fiscal commitment of | kept |  |
+| 2.1 | C10 | Jan/2021: signals of a Selic hike became clearer but the term structure already  | kept |  |
+| 2.1 | C11 | Mar/2021: pandemic, politics and public accounts generated higher premia especia | kept |  |
+| 2.1 | C12 | Aug/2021: with the market raising required premium on all Brazilian assets, the  | kept |  |
+| 2.1 | C13 | Oct/2021: thesis revision; the positioning proved fragile; the real-rate book (R | kept |  |
+| 2.1 | C14 | Dec/2021: revision reaffirmed (see 1.1); for 2022, with a presidential election  | kept |  |
+| 2.1 | C15 | May/2022: repeated threats to the fiscal framework by electoral measures pressur | kept |  |
+| 2.1 | C16 | Jul/2022: Brazilian market improved with lower risk premia, mainly from global f | kept |  |
+| 2.1 | C17 | Aug/2022: the improvement continued with lower premia; the narrowing happened, a | kept |  |
+| 2.1 | C18 | The entry's quotes (jan/2021, two mar/2021, ago/2021, out/2021, dez/2021, mai/20 | kept |  |
+| 2.1 | N1 | The election showed a third determinant of the premium, Congress's composition:  | supported |  |
+| 2.1 | N2 | Sep/2022: the fund increased its Brazilian breakeven position. | supported |  |
+| 2.1 | N3 | Oct/2022: Lula's very narrow second-round win went in the direction (though not  | supported |  |
+| 2.1 | N4 | After the election the source of premium was again fiscal, now through the elect | supported |  |
+| 2.1 | N5 | Nov/2022: the world became 'much less hostile for Brazil': the 10-year Treasury  | supported |  |
+| 2.1 | N6 | Per the November letter, with minimal fiscal discipline from the elected governm | supported |  |
+| 2.1 | N7 | Nov/2022: the fund kept the breakeven, which gained, and added a small receive r | supported |  |
+| 2.1 | N8 | Dec/2022: Brazil had been volatile since the week after the election; in a count | supported |  |
+| 2.1 | N9 | Dec/2022: the global context remained favourable (China's reopening, US inflatio | supported |  |
+| 2.1 | N10 | Dec/2022: Verde noted any new government goes through this phase: the market lac | supported | minor: the letter says what becomes clear in a few months is which interlocutors |
+| 2.1 | N11 | Dec/2022: the fund kept the breakeven and the small receive real-rate position;  | supported |  |
+| 2.1 | N12 | New key variables: a new government's fiscal signals; the composition of the ele | supported |  |
+| 3 | C1 | Verde kept paid positions in developed-market rates throughout 2021, and the let | kept |  |
+| 3 | C2 | From end-2021 the argument shifted axis: from reopening with stimulus to central | kept |  |
+| 3 | C3 | In 2022 the market came to oscillate between inflation and slowdown (3.3), and t | kept |  |
+| 3 | N1 | In H2 2022 the British fiscal shock took the tightening of financial conditions  | supported |  |
+| 3 | N2 | Verde came to see exaggeration in the pendulum and zeroed its US paid positions  | supported | minor: 'passou a ver exagero no pêndulo e zerou as tomadas nos EUA' juxtaposes v |
+| 3 | N3 | At year-end global rates eased. | supported |  |
+| 3 | N4 | In the 2022 review the fund's big highlight was the fixed-income portfolio, espe | supported |  |
+| 3.2 | C1 | For Verde, the market and the Fed spent 2021 'behind the curve' given the size o | kept |  |
+| 3.2 | C2 | In Verde's reading the correction would come through faster and stronger tighten | kept |  |
+| 3.2 | C3 | The monetary-policy transition is treated as 'much more complicated and subject  | kept |  |
+| 3.2 | C4 | In November 2021 Verde linked the Fed's haste to inflation seeming to have gone  | kept |  |
+| 3.2 | C5 | In 2022 Verde describes the Fed practically forced by the market to accelerate a | kept |  |
+| 3.2 | C6 | The instrument is paid DM rate positions, sized by how much was priced: reduced  | kept |  |
+| 3.2 | C7 | Key variables: US inflation and its political cost; US terminal rate priced by t | kept |  |
+| 3.2 | C8 | Nov/2021: the Fed seemed to recognize inflation had gone beyond reasonable (incl | kept |  |
+| 3.2 | C9 | Dec/2021: annual review attributed the frustration of US paid positions to marke | kept |  |
+| 3.2 | C10 | Jan/2022: major central banks moved to more aggressive tightening; the fund gain | kept |  |
+| 3.2 | C11 | Mar/2022: the conviction that inflation pressures would stay acute and lead cent | kept |  |
+| 3.2 | C12 | Apr/2022: the fund began reducing paid positions in the US and, to a lesser exte | kept |  |
+| 3.2 | C13 | Jun/2022: the market panicked on inflation data and practically forced the Fed t | kept |  |
+| 3.2 | C14 | Aug/2022: at Jackson Hole Powell showed a Fed still committed to lowering inflat | kept |  |
+| 3.2 | C15 | The entry's quotes (two nov/2021, dez/2021, mar/2022, jun/2022, ago/2022) are ke | kept |  |
+| 3.2 | N1 | The US paid positions were zeroed in September 2022 after the recent move, and t | supported |  |
+| 3.2 | N2 | Dec/2022: in the 2022 review the fund's big highlight was the fixed-income portf | supported |  |
+| 3.2 | N3 | Dec/2022: in the month the European paid position gained and was kept. | supported |  |
+| 3.3 | C1 | Amid the 2022 global repricing, Verde reads the market oscillating between two f | kept |  |
+| 3.3 | C2 | The backdrop is a transition from 'a world with much growth' to an equilibrium w | kept |  |
+| 3.3 | C3 | Benign inflation data, commodity correction and the perception that central bank | kept |  |
+| 3.3 | C4 | The size of paid positions followed the pendulum. | kept |  |
+| 3.3 | C5 | Key variables: inflation data vs activity data; market perception of the peak in | kept |  |
+| 3.3 | C6 | May/2022: the debate, previously dominated by inflation, came to have growth slo | kept |  |
+| 3.3 | C7 | Jun/2022: the pendulum kept oscillating ever more frequently; after the early-mo | kept |  |
+| 3.3 | C8 | Jul/2022: the month's rally attributed partly to the perception US (and hence ot | kept |  |
+| 3.3 | C9 | Aug/2022: the first half extended the rally, helped by benign inflation data, co | kept |  |
+| 3.3 | C10 | The entry's quotes (two mai/2022, jun/2022, ago/2022) are kept verbatim. | kept |  |
+| 3.3 | N1 | Sep/2022: Verde believed the market pendulum was starting to show exaggerations, | supported |  |
+| 3.3 | N2 | Sep/2022: in the same month, after the recent move in rates, the fund zeroed its | supported |  |
+| 3.3 | N3 | Nov/2022: in a month with signs of US economic slowdown and indications that Chi | supported | minor: the letter opens that sentence with the concessive 'Mesmo com sinais de d |
+| 3.3 | N4 | Dec/2022: the US economy kept showing signs of cooling inflation, which, for Ver | supported |  |
+| 3.3 | N5 | New key variables: leading growth indicators and the 10-year Treasury yield. | supported |  |
+| 3.4 | C1 | The rise in global rates reaches risk assets through the discount rate, with str | kept |  |
+| 3.4 | C2 | In a lower-liquidity environment the tightening of financial conditions becomes  | kept |  |
+| 3.4 | C3 | Verde finds it odd when equities absorb the rise in discount rates well and asks | kept |  |
+| 3.4 | C4 | Conversely, it treats the perception of a peak in US long rates, plus very pessi | kept |  |
+| 3.4 | C5 | In the portfolio the framework appears as caution in global equities, use of hed | kept |  |
+| 3.4 | C6 | Key variables: US long rates and perception of their peak; financial conditions  | kept |  |
+| 3.4 | C7 | Jan/2022: central banks' move to more aggressive tightening led to a major globa | kept |  |
+| 3.4 | C8 | Mar/2022: Verde was surprised by global equities' capacity to absorb the strong  | kept |  |
+| 3.4 | C9 | Apr/2022: the tightening of global financial conditions continued 'unshaken', br | kept |  |
+| 3.4 | C10 | Jun/2022: in the half-year the S&P had its worst start since 1970, a US bond met | kept |  |
+| 3.4 | C11 | Jul/2022: rally attributed to very negative positioning plus better-behaved disc | kept |  |
+| 3.4 | C12 | Aug/2022: given the hawkish impulses from Jackson Hole (3.2), risk assets fell a | kept |  |
+| 3.4 | C13 | The entry's quotes (jan/2022, mar/2022, abr/2022, jul/2022, ago/2022) are kept v | kept |  |
+| 3.4 | N1 | September 2022 showed the tightening's trigger can be fiscal and come from a dev | supported |  |
+| 3.4 | N2 | Sep/2022: the S&P fell -9.34% in the month, the worst result of the year; the gl | supported |  |
+| 3.4 | N3 | Oct/2022: with the global scenario calmer, global equities recovered importantly | supported |  |
+| 3.4 | N4 | Oct/2022: the global equity position detracted in the month, and the fund increa | supported |  |
+| 3.4 | N5 | New key variable: fiscal shocks in developed markets and the contagion of their  | supported |  |
+| Padrões e Recorrências | C1 | Fiscal precedes monetary: in seven of the ten letters (jan, feb, mar, apr, jul,  | kept |  |
+| Padrões e Recorrências | C2 | In the Nov/2021-Aug/2022 letters the pattern continues in December, January, May | sharpened | the open-ended 'a partir de fevereiro de 2022' is now bounded at August, which t |
+| Padrões e Recorrências | C3 | 'Is there enough premium?': asked in August, answered yes for now for the interm | kept |  |
+| Padrões e Recorrências | C4 | The December review reaffirmed the error and extended the revision to the real-r | kept |  |
+| Padrões e Recorrências | C5 | Distrust of the central bank's reaction: Verde reads the BC as pushed by the mar | kept |  |
+| Padrões e Recorrências | C6 | Those readings accompanied receive real-rate positions, when the priced real rat | kept |  |
+| Padrões e Recorrências | C7 | In 2022 the same reading appears for the Fed, practically forced by the market t | kept |  |
+| Padrões e Recorrências | C8 | Global and local: DM rate positions follow their own reopening-and-stimulus fram | kept |  |
+| Padrões e Recorrências | C9 | The link to Brazil appears in passing: in February rising global long rates were | kept |  |
+| Padrões e Recorrências | C10 | In 2022 the link became explicit both ways: Brazil, with an advanced cycle, as r | kept |  |
+| Padrões e Recorrências | C11 | From reopening to central banks behind the curve: from November 2021 the thesis  | kept |  |
+| Padrões e Recorrências | N1 | Across the whole 2021-2022 cycle, in most letters Verde's explanation for the do | supported | minor: by the bullet's own list the fiscal explanation appears in 13 of 24 lette |
+| Padrões e Recorrências | N2 | The argument does not change form when the government changes: the promise of fi | supported |  |
+| Padrões e Recorrências | N3 | Politics inside the premium: the electoral calendar enters the premium from Marc | supported |  |
+| Padrões e Recorrências | N4 | The Brazilian rates position that ran through 2022 was the breakeven purchase, o | supported |  |
+| Padrões e Recorrências | N5 | Of the Brazilian central bank, the 2022 letters record the already-advanced tigh | supported |  |
+| Padrões e Recorrências | N6 | At end-2022 the global-local link becomes the measure of the fiscal cost: with g | supported |  |
+| Padrões e Recorrências | N7 | In September 2022, when Verde came to see exaggerations in the pendulum, the US  | supported | minor: 'quando a Verde passou a ver exageros no pêndulo, as tomadas nos EUA fora |
+| Connections | C1 | fiscal_dominance - section 1.2 (unanchored spending reaches rates via debt, FX a | kept |  |
+| Connections | C2 | mundell_fleming_policy_mix - section 1.1 (fiscal accelerator with monetary brake | kept |  |
+| Connections | C3 | natural_rate_of_interest - section 1.1 (structurally lower rate conditional on t | kept |  |
+| Connections | C4 | term_premium - section 2.1 (curve premium above the expected hiking cycle); sect | kept |  |
+| Connections | C5 | risk_premium - sections 2.1 and 1.2 (fiscal and electoral premium on Brazilian a | kept |  |
+| Connections | C6 | monetary_transmission_lags - section 2.4 (curve and BC watching current inflatio | kept |  |
+| Connections | C7 | Blanchard (2004) synthesis - theoretical reference for 1.2 and 2.3; the letters  | kept |  |
+| Connections | C8 | Segura-Ubiergo (2012) synthesis - 1.1: Brazil's structural rate level tied to th | kept |  |
+| Connections | C9 | global_financial_cycle - 3.4: tightening of global financial conditions bringing | kept |  |
+| Connections | C10 | carry_trade - 4.2: the advanced cycle's rate differential benefiting the BRL. | kept |  |
+| Connections | C11 | Miranda-Agrippino & Rey (2020) synthesis - 3.2 and 3.4: US tightening transmitte | kept |  |
+| Connections | N1 | time_inconsistency - section 1.1: rules vs discretion in fiscal policy; the prom | supported |  |
