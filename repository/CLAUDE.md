@@ -21,8 +21,8 @@ repository/
   BIBLIOGRAPHY_METHODOLOGY.md   — reusable process, not the output of any single topic
   <área>/raw_pdf/, raw_md/      — acquired PDFs and their untouched pdfplumber extraction
                                   (clean_md/ for these lives in obsidian/<área>/clean_md/)
-    exchange_rate/              — 28 PDF, 16 raw_md; 12 PDFs still await extraction
-    monetary_policy/            — literature flat at the top of raw_pdf/ (46 PDFs; the
+    exchange_rate/              — 35 PDF, 35 raw_md (2026-10-20)
+    monetary_policy/            — literature flat at the top of raw_pdf/ (64 PDFs, all ingested; the
                                   theorical_literature/ subfolder was dissolved 2026-10-19), and
                                   central_bank/, the same tree as the vault's
                                   clean_md/central_bank/: raw_pdf/central_bank/{atas (82),
@@ -52,8 +52,14 @@ repository/
                                   Comments), "Quant - <Area>" = data inventory, "Notes" = the
                                   reasoning per cluster / data section (scope, open gaps,
                                   acquisition order, why a category matters). Columns A–I and
-                                  Notes are hand-kept; J–P of the Qual tabs and "Literature
-                                  summary" are rewritten by every ingestion (tracker.py). In git
+                                  Notes are hand-kept, and so are J–L of the Qual tabs
+                                  (Dono, Camada, Fila: owner agent, layer and queue position,
+                                  SISTEMA_AGENTES I.III.xvi–xvii); M–S of the Qual tabs,
+                                  "Literature summary", "Mental Models" (one row per
+                                  area × manager document and per letter) and "Copom" (one row per
+                                  statement, minutes, RPM, with the layer-1 rule) are rewritten
+                                  by tracker.py, run after every ingestion, /mental done and Copom
+                                  load (since 2026-10-21). In git
                                   since 2026-10-20 (the one *.xlsx exception in .gitignore)
 ```
 
@@ -67,13 +73,13 @@ but unused. See `INGESTION.md` for why they were replaced.
 9 clusters. 2 real gaps: FX options/volatility (Garman & Kohlhagen 1983) and non-Brazil EM depth
 (Eichengreen & Hausmann 1999) — rows marked No in the Qual - Exchange Rate tab.
 
-**Monetary policy — mostly acquired, being ingested.** 46 PDFs in `raw_pdf/` (40 sources; Galí 2015
-is 7 chapter files), pending the first `/ingest monetary_policy` run; no conceptual map yet. The list
-is the Qual - Monetary Policy tab (12 clusters plus the legal sources and the Copom track); what is
-still missing — two of them high priority and blocked only by the IMF refusing scripted downloads —
-is the rows marked No. The extraction quirks (two Caesar-shifted CGG files, letter spacing) are
-handled by `ingestion/settings.yaml`; the two scans are not. Decide where to file Tambakis &
-Tarashev (2012), which also touches exchange rate.
+**Monetary policy — ingested (2026-10-20).** 64 PDFs in `raw_pdf/`, all with raw_md and clean_md; 53 have a
+synthesis note. No conceptual map yet. The list is the Qual - Monetary Policy tab (12 clusters plus the
+legal sources and the Copom track); still missing is Brainard (1967), paywalled on JSTOR, and three books
+were dropped. Since 2026-10-21 the agents grow by layers (`PRINCIPIOS_AGENTES.md` I.VI): the 11 sources
+without synthesis are only synthesized if they fall in layer 1 or get promoted. The extraction quirks
+(two Caesar-shifted CGG files, letter spacing) are handled by `ingestion/settings.yaml`. Decide where to
+file Tambakis & Tarashev (2012), which also touches exchange rate.
 
 **Trader — ingested, for a new agent.** Decided 2026-10-20: the literature of a new trader agent,
 not a topical pillar (`SISTEMA_AGENTES.md` I.II.vii). All 26 chapters ingested the same day; the

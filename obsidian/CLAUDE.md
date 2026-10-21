@@ -34,14 +34,14 @@ obsidian/
 
 | área | clean_md | synthesis | mental_models | map |
 |---|---|---|---|---|
-| exchange_rate | 16 | 17 | 4 (Verde, Kapitalo, Kinea, GS — GS partial) | yes |
-| monetary_policy | papers (ingestion under way) + central_bank/ | 14 of 44 (2026-10-19) | 0 | no |
+| exchange_rate | 35 | 17 | 4 (Verde, Kapitalo, Kinea, GS — GS partial) | yes |
+| monetary_policy | 64 papers + central_bank/ | 53 of 64 (2026-10-20) | 0 (Verde 2021–2022 next) | no |
 | fiscal_policy | 1 | 1 | 0 | no |
 | inflation | 1 | 1 | 0 | no |
 | trader (new agent's literature, 2026-10-20) | 26 | 0 | — | no |
 | labor_market, economic_activity | empty | | | |
 
-`concepts/`: 24 pages (2026-10-19). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
+`concepts/`: 49 pages (2026-10-21). Live counts: `uv run python repository/ingestion/scripts/vault.py --list`.
 
 **One concepts folder** (decided 2026-10-19): a concept is theory, not an area's property, and
 UIP is the same page whether the FX or the monetary-policy agent follows the link. One folder

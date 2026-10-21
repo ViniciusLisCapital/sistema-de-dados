@@ -16,6 +16,8 @@ especialistas por área macro existem, fases de investimento planejadas):
 
 📄 **Sistema de agentes-analistas — regras decididas e o que falta fazer:** [`SISTEMA_AGENTES.md`](SISTEMA_AGENTES.md).
 Princípios gerais de todo agente (aplicados sem perguntar nos agentes novos): [`PRINCIPIOS_AGENTES.md`](PRINCIPIOS_AGENTES.md).
+Plano de construção até o agente de política monetária, em fases e com o que roda em paralelo: [`PLANO_AGENTES.md`](PLANO_AGENTES.md).
+Desde 2026-10-21 os agentes **crescem por camadas**: rodam só com a camada 1 do material, e o resto entra por promoção.
 Decisão sobre o sistema vai para lá, em lista simples; não para os `CLAUDE.md` de pasta.
 `Workflow.md` é do usuário: agente/IA não acrescenta nem retira itens dele.
 

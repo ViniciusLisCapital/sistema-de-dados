@@ -21,7 +21,7 @@ Kinea has no PDFs: `kinea/fetch_kinea.py` saves the letters as markdown, and tho
 
 | file | what it holds |
 |---|---|
-| `mental_models.yaml` | the corpora of each manager (folder + date pattern of the file names, which is also the naming rule `/ingest` applies), the area codes of the document names, and each document's `start` |
+| `mental_models.yaml` | the corpora of each manager (folder + date pattern of the file names, which is also the naming rule `/ingest` applies), the area codes of the document names, and each document's `start` and optional `end` (the window of letters it reads) |
 | `ledger/<document>.tsv` | the letters a document has read, one per line, written only by `mental.py done` (`seeded` = read before the ledger existed) |
 | `ledger/.<document>.run.json` | an open run: its letters and the document's snapshot |
 | `ledger/.<document>.claims.json` | the writer's claims: per block repacked or added, the old text cut into statements and the new statements with their letter |
@@ -55,13 +55,14 @@ Kinea has no PDFs: `kinea/fetch_kinea.py` saves the letters as markdown, and tho
   model too; the log is where a user audits it.
 - **Quotes literal, numbers from the letters**: `check` looks for both in the run's letters.
 
-## State (2026-10-20)
+## State (2026-10-21)
 
 | document | read | pending | note |
 |---|---|---|---|
-| verde_fx | 77 (2020-01 → 2026-05) | 3 | its About says 73 letters; the ledger was seeded with the whole range, 77 in the corpus |
+| verde_fx | 80 (2020-01 → 2026-08) | 0 | its About says 73 letters; the ledger was seeded with the whole range, 77 in the corpus |
 | kapitalo_fx | 83 (2019-07 → 2026-05) | 3 | |
 | kinea_fx | 124 (2021-05 → 2026-06) | 5 | 60 letters + 64 Insights |
+| verde_mp | 0 | 24 | window 2021-01 → 2022-12 only (the 2021–2022 tightening cycle), decided 2026-10-21 |
 | goldman_sachs_fx | 25 of 80 issues (→ 2025-06-20) | — | the 80 PDFs need `/ingest mental_model/goldman_sachs` first; then `mental.py seed goldman_sachs exchange_rate 2025-01-03 2025-06-20` |
 
 Known gaps:

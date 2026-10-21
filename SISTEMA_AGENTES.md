@@ -1,4 +1,4 @@
-**Sobre este arquivo:** organização do sistema de agentes-analistas. Mantido pelo Claude a pedido do usuário: marca o que foi feito e acrescenta o que a conversa decidir. Uma decisão só entra aqui depois que o usuário a tomou. Detalhe técnico vai para o `CLAUDE.md` da pasta, não para cá. Os princípios gerais, que valem para todo agente, ficam no `PRINCIPIOS_AGENTES.md`.
+**Sobre este arquivo:** organização do sistema de agentes-analistas. Mantido pelo Claude a pedido do usuário: marca o que foi feito e acrescenta o que a conversa decidir. Uma decisão só entra aqui depois que o usuário a tomou. Detalhe técnico vai para o `CLAUDE.md` da pasta, não para cá. Os princípios gerais, que valem para todo agente, ficam no `PRINCIPIOS_AGENTES.md`. A ordem do trabalho até o agente de política monetária finalizado (fases, estimativas, o que roda em paralelo) fica no [`PLANO_AGENTES.md`](PLANO_AGENTES.md).
 
 
 # (I) O sistema
@@ -40,6 +40,19 @@
     - xiii. Dados por agente: ver (V).
     - xiv. Ferramenta = um processamento específico e pré-definido de dados ou de informação qualitativa que gera um output que o agente usa direto, sem processar o bruto ele mesmo. Ex.: o FX attributor processa as cartas das gestoras sobre o câmbio e responde se elas veem o câmbio subindo ou caindo, e com que grau. (decidido 2026-10-02)
     - xv. O Modelo Estrutural não é ferramenta: é o filtro de saída da análise. Na discussão das variáveis e dos cenários, o cenário dos agentes também é expresso por meio do modelo estrutural. É output dos agentes, não input para eles. (decidido 2026-10-02)
+    - xvi. Crescer por camadas (decidido 2026-10-21). Ingerir e sintetizar toda a literatura de câmbio e de PM antes de ter o agente foi um erro estratégico: só rodando se vê quanto o agente busca na literatura e como a usa. Daqui em diante: começar pequeno, testar e, se estiver certo, ampliar.
+        - O material de cada agente (literatura, modelos mentais, documentos do Copom) tem três camadas; o agente roda só com a camada 1, por um retrato do conhecimento por ciclo. Os dados ficam como estão (V).
+        - Nada do que foi feito é apagado: o que está fora da camada 1 é estoque, e entra por promoção (fila de prioridade do agente, lote a lote, ou demanda do ciclo, que fura a fila).
+        - Agente novo ingere e sintetiza só a camada 1.
+        - Regras em `PRINCIPIOS_AGENTES.md` (I.VI); fases em `PLANO_AGENTES.md`.
+    - xvii. Dono da literatura (decidido 2026-10-21). Cada fonte de literatura tem um agente dono, e cada agente tem a sua biblioteca.
+        - O dono é decidido pela pergunta que a fonte pretende responder: o agente responsável pela variável que ela explica. Ex.: repasse cambial é do agente de inflação, porque o paper não investiga por que o câmbio se deprecia, e sim como a depreciação afeta a inflação; Blanchard (2004) é da PM, porque discute a eficácia da política monetária supondo dominância fiscal (se investigasse a dominância fiscal em si, como acontece e o que é, seria do fiscal). Caso ambíguo vai para o usuário.
+        - A camada (I.III.xvi) é a da biblioteca do dono.
+        - Os outros agentes chegam à literatura de um dono pelos conceitos: o retrato do ciclo de um agente leva a camada 1 dele, os conceitos ligados a ela e, por esses conceitos, a camada 1 dos outros donos; nunca a camada 2 ou 3 de ninguém. O log registra quando um agente leu material de outro.
+        - Literatura cujo dono ainda não existe (ex.: inflação, fiscal, externo) fica numa camada 1 provisória desse dono futuro, alcançável pelos conceitos como se ele já existisse. Mesma lógica do dado TWA.
+        - Conceito não tem dono: a pasta `obsidian/concepts/` é única e qualquer agente lê.
+        - O dono fica registrado no tracker agora. Mover os arquivos para a pasta do dono fica para depois, de uma vez, quando o primeiro agente novo for criado (`PLANO_AGENTES.md`, Fase 9).
+        - O agente que vê algo relevante para a literatura de outro dono avisa pelo mecanismo de saídas do mapa. Ex.: o câmbio, ao ver risco relevante de depreciação, avisa o agente de inflação.
 
 
 # (II) Base de conhecimento
@@ -74,19 +87,25 @@
 
 ## (II.II) Câmbio
     - i. Mapa conceitual no formato novo. (feito 2026-09-30, aguardando revisão do usuário)
-    - ii. Extrair os 12 PDFs de câmbio ainda sem raw_md.
-    - iii. Terminar o modelo mental do Goldman Sachs (25 de ~80 edições feitas).
+    - ii. Extrair os 12 PDFs de câmbio ainda sem raw_md. (feito 2026-10-20: 35 PDFs, 35 raw_md; 17 com síntese, as outras só se promovidas, I.III.xvi)
+    - iii. Terminar o modelo mental do Goldman Sachs (25 de ~80 edições feitas). (estoque: só se promovido, I.III.xvi)
+    - iv. Camada 1 e fila de prioridade do câmbio (I.III.xvi). (aprovado 2026-10-21; vai para as colunas Dono/Camada/Fila do tracker quando a planilha migrar)
+        - Donos das 35 fontes da pasta de câmbio (I.III.xvii): inflação (provisório): Cortapasso 2023, Goldfajn & Werlang 2000, Belaisch 2003. Externo (provisório): FMI 2010, FMI 2012, Krugman 2023 (renda nacional e balanço de pagamentos), Eichengreen & Hausmann 1999, Eichengreen & Kawai 2014, Garcia & Valpassos 1998. PM: Mundell 1963, Fleming 1962. Câmbio: as outras 23, mais o BIS 2026 (que está na pasta de PM).
+        - Camada 1 do câmbio: Froot & Thaler 1990 (2.1), Paiva 2006 (2.4 e 2.8), Chamon & Garcia 2016 (2.5), BIS 2026 (2.6), BCB 2020 posição de câmbio (2.7), Obstfeld 1994 (2.9) e o modelo mental da Verde. O 2.2 chega pelo conceito de dominância fiscal à camada 1 da PM; o 2.3 fica sem literatura.
+        - Camada 1 provisória de outros donos, alcançada pelos conceitos: Cortapasso 2023 (inflação) e FMI 2010 (externo).
+        - Fila do câmbio (camada 2, em ordem): Krugman 2023 cap. 14, Goldman Sachs 2025 (GSDEER/GSFEER), Fama 1984, modelo mental da Kapitalo, Dornbusch 1976, modelo mental da Kinea, Flood 1983. O resto é camada 3, inclusive Krugman 2000 (texto extraído ilegível) e o modelo mental do Goldman Sachs.
 
 ## (II.III) Política monetária
     - i. Comunicados do Copom no vault, atualizados junto com o ETL. (feito 2026-09-30, 234 comunicados)
     - ii. Atas do Copom, todas, no vault, atualizadas junto com o ETL. (feito 2026-09-30, 261 atas, 1998–2026)
     - iii. RPM integral dos últimos 3 anos no vault. (feito 2026-09-30, 12 relatórios, dez/2023–set/2026)
-    - iv. RPM integral do histórico. (pendente)
-    - v. Ingerir os 46 PDFs de `repository/monetary_policy/raw_pdf/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07), pelo `/ingest monetary_policy` (II.I.iv). Lista e o que falta: a aba Qual - Monetary Policy de `repository/agent_mapping/data_tracker.xlsx`.
-    - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio.
+    - iv. RPM integral do histórico. (estoque: só se promovido, I.III.xvi)
+    - v. Ingerir os 46 PDFs de `repository/monetary_policy/raw_pdf/` (eram 35; 10 papers de prioridade alta entraram em 2026-10-07), pelo `/ingest monetary_policy` (II.I.iv). Lista e o que falta: a aba Qual - Monetary Policy de `repository/agent_mapping/data_tracker.xlsx`. (feito 2026-10-20: 64 fontes ingeridas, 53 com síntese; as 11 restantes só se caírem na camada 1 ou forem promovidas, I.III.xvi)
+    - vi. Construir o mapa conceitual de política monetária, fechando as saídas e entradas com o de câmbio. Junto, a camada 1 e a fila de prioridade de PM. (pendente, `PLANO_AGENTES.md` Fase 2)
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
-    - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir)
-    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault.)
+        - Decidido (2026-10-21): por enquanto só a Verde, com as cartas do ciclo de aperto de 2021 e 2022 (~24 cartas), para ver que modelo ela aplicou naquele ciclo. Kinea, Kapitalo e outras janelas vão para a fila de PM.
+    - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir; estoque até ser promovido, I.III.xvi)
+    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault. Na camada 1 do agente de PM (I.III.xvi): todos os comunicados desde o início do mandato do Galípolo (2025-01-01; hoje 268 a 281, 14 comunicados), a última ata e o último RPM, sempre anteriores à data do ciclo. Decidido 2026-10-21; a data de início muda quando mudar o presidente do BC.)
 
 
 # (III) Agentes
@@ -128,11 +147,12 @@
         - Ciclo = um processo de atualização do cenário, disparado por informação nova (quantitativa ou qualitativa). Sem informação nova, o cenário não muda. Um único dado novo basta para rodar um ciclo, embora na prática o usuário prefira juntar mais dados antes.
     - iii. Checagem de todo número do relatório contra a fonte antes de publicar.
     - iv. Relatório final em markdown enquanto calibramos; PDF depois.
-    - v. Primeiro teste completo com câmbio + política monetária.
+    - v. Primeiro teste completo com câmbio + política monetária. É o ponto final do `PLANO_AGENTES.md` (Fase 8), rodado só com a camada 1 (I.III.xvi).
 
 
 # (IV) Decisões pendentes
     - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
+        - Decidido (2026-10-21): a literatura de repasse é do agente de inflação (I.III.xvii). O câmbio a alcança pelo conceito de repasse e avisa a inflação quando vê risco relevante de depreciação. Até o agente de inflação existir, a literatura fica na camada 1 provisória dele, e o câmbio continua informando a PM pelas entradas E1 e E3.
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
     - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o report final.
     - iv. Como o agente analisa os dados quantitativos. (decidido 2026-10-02)

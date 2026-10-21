@@ -150,6 +150,12 @@ def start_of(cfg: dict, name: str) -> dt.date | None:
     return _parse_day(s) if s else None
 
 
+def end_of(cfg: dict, name: str) -> dt.date | None:
+    """Last day of the document's window, or None when it is open-ended."""
+    s = (cfg.get("documents") or {}).get(name, {}).get("end")
+    return _parse_day(s, end=True) if s else None
+
+
 def ledger_path(name: str) -> Path:
     return LEDGER / f"{name}.tsv"
 
@@ -182,12 +188,13 @@ def state(cfg: dict, manager: str, area: str) -> dict:
     name = doc_name(cfg, manager, area)
     all_, missing = letters(cfg, manager)
     done = ledger(name)
-    start = start_of(cfg, name)
-    in_range = [x for x in all_ if start is None or x["date"] >= start]
+    start, end = start_of(cfg, name), end_of(cfg, name)
+    in_range = [x for x in all_ if (start is None or x["date"] >= start) and (end is None or x["date"] <= end)]
     return {"name": name, "path": doc_path(cfg, manager, area), "missing": missing, "start": start,
-            "all": all_, "done": [x for x in all_ if x["name"] in done],
+            "end": end, "all": all_, "done": [x for x in all_ if x["name"] in done],
             "pending": [x for x in in_range if x["name"] not in done],
-            "before_start": [x for x in all_ if x not in in_range and x["name"] not in done],
+            "before_start": [x for x in all_ if start and x["date"] < start and x["name"] not in done],
+            "after_end": [x for x in all_ if end and x["date"] > end and x["name"] not in done],
             "unknown_in_ledger": sorted(set(done) - {x["name"] for x in all_})}
 
 
@@ -264,8 +271,10 @@ def _fmt(x: dict) -> str:
 
 
 def cmd_list(cfg: dict) -> None:
+    configured = set(cfg.get("documents") or {})
     docs = {(m, a) for m in cfg["managers"] for a in cfg["areas"]
-            if doc_path(cfg, m, a).exists() or ledger_path(doc_name(cfg, m, a)).exists()}
+            if doc_path(cfg, m, a).exists() or ledger_path(doc_name(cfg, m, a)).exists()
+            or doc_name(cfg, m, a) in configured}
     print("Documents")
     for m, a in sorted(docs, key=lambda x: (x[1], x[0])):
         s = state(cfg, m, a)
@@ -273,6 +282,7 @@ def cmd_list(cfg: dict) -> None:
         span = f"{done[0]['date']:%Y-%m} → {done[-1]['date']:%Y-%m}" if done else "none read"
         line = (f"  {a}/{s['name']}: read {len(done)} ({span}) · pending {len(s['pending'])}"
                 + (f" · before start {s['start']:%Y-%m}: {len(s['before_start'])}" if s["before_start"] else "")
+                + (f" · after end {s['end']:%Y-%m}: {len(s['after_end'])}" if s["after_end"] else "")
                 + (" · RUN OPEN" if run_path(s["name"]).exists() else "")
                 + ("" if s["path"].exists() else " · document file missing"))
         print(line)

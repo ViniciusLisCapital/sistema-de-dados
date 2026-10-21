@@ -38,6 +38,16 @@
     - i. Diagrama do sistema: guia expansível; cada seta ou caixa abre o detalhe ao clicar. O conteúdo de cada caixa é curto e combinado com o usuário antes de entrar.
     - ii. Títulos se distinguem pela cor, não pelo tamanho da letra.
 
+## (I.VI) Crescer por camadas (2026-10-21)
+    - i. Começar pequeno, testar e, se estiver certo, ampliar. O agente fica de pé com o mínimo e cresce conforme recebe conteúdo; um erro é pequeno e se corrige em escala menor. Vale para todo agente, inclusive câmbio e PM. (SISTEMA_AGENTES I.III.xvi)
+    - ii. O material do agente (literatura, modelos mentais, documentos do Copom) tem três camadas. Camada 1: o mínimo que cobre cada pergunta central e cada canal do esqueleto causal, uma fonte por canal, uma gestora, um recorte recente dos documentos do Copom (regra em SISTEMA_AGENTES II.III.ix). Camada 2: profundidade, alternativas, as outras gestoras. Camada 3: o resto, inclusive o histórico. Os dados ficam fora das camadas por ora: a lista de cada agente entra inteira.
+    - iii. O agente lê só a camada 1, por um retrato do conhecimento por ciclo, fixo como o F(A). Nada fora da camada 1 é apagado.
+    - iv. Agente novo: só a camada 1 é ingerida e sintetizada. As camadas 2 e 3 ficam listadas no tracker.
+    - v. Promoção por dois caminhos: a fila de prioridade do agente (a cada ciclo aprovado sobe um lote) e a demanda do ciclo, que fura a fila. O log de cada ciclo lista o que o agente abriu e o que faltou.
+    - vi. Toda fonte de literatura tem um agente dono: o responsável pela variável que ela explica, ou seja, pela pergunta que ela pretende responder. A camada é a da biblioteca do dono. Caso ambíguo vai para o usuário. (SISTEMA_AGENTES I.III.xvii)
+    - vii. Os outros agentes chegam a essa literatura pelos conceitos, que não têm dono: o retrato de um agente leva a camada 1 dele, os conceitos ligados a ela e, por eles, a camada 1 dos outros donos. Nunca a camada 2 ou 3 de ninguém.
+    - viii. Literatura de um dono que ainda não existe fica na camada 1 provisória dele, como o dado TWA.
+
 
 # (II) O que o Claude faz sem perguntar num agente novo
     - i. Montar a pasta da área no vault e o mapa conceitual no formato das cinco partes.
@@ -53,6 +63,7 @@
     - iii. A lista de dados e o tipo de cada tabela, apresentada de uma vez e numerada, para aprovar, cortar ou questionar.
     - iv. As saídas e entradas com os agentes que já existem.
     - v. Qualquer exceção a um princípio deste arquivo.
+    - vi. O dono de cada fonte da área, a camada 1 do material e a fila de prioridade das camadas 2 e 3, numerados, de uma vez (I.VI).
 
 
 # (IV) Ainda em definição no câmbio (viram princípio quando decididos)

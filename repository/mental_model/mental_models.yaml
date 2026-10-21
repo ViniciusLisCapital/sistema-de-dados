@@ -43,7 +43,8 @@ managers:                  # corpora: folders under repository/mental_model/ wit
       - path: spx_capital/clean_md       # 7 PDFs, not ingested yet
         date: 'spxcapital_(?P<m>\d{2})(?P<y>\d{4})'
 
-documents:                 # per-document settings. start: letters dated before it are out of range
+documents:                 # per-document settings. start/end: letters dated before start or after end are out of range
   verde_fx_mental_models: {start: 2020-01}
   kapitalo_fx_mental_models: {start: 2019-07}
   kinea_fx_mental_models: {start: 2021-05}
+  verde_mp_mental_models: {start: 2021-01, end: 2022-12}   # 2021-2022 tightening cycle only (decided 2026-10-21)

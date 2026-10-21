@@ -157,7 +157,7 @@ Since 2026-10-07 the agent reads every table of the list through the cycle's F(A
 
 ## Part 3 — Outputs: what this agent tells the others matters to it
 
-### 2.1 To monetary policy — DRAFT (fixed layer)
+### 3.1 To monetary policy — DRAFT (fixed layer)
 
 What the FX agent needs from the monetary-policy agent, every cycle.
 
@@ -168,7 +168,7 @@ What the FX agent needs from the monetary-policy agent, every cycle.
 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 2.7, Part 4 |
 | S4 | **Reaction function to a depreciation.** Would the Copom respond, and with which instrument? | A credible response caps the depreciation; its absence removes the cap | 2.1, 2.9 |
 
-### 2.2 To other areas — not defined yet
+### 3.2 To other areas — not defined yet
 
 Fiscal policy (the risk-premium drivers of 2.2) and external (the Fed and the global dollar of 2.3)
 are the two that matter most to this area. They are written when those agents exist.
@@ -177,7 +177,7 @@ are the two that matter most to this area. They are written when those agents ex
 
 ## Part 4 — Inputs: what the others told this agent matters to them
 
-### 3.1 From monetary policy — DRAFT (fixed layer)
+### 4.1 From monetary policy — DRAFT (fixed layer)
 
 What the monetary-policy agent needs from the FX agent, every cycle. Written as the monetary-policy
 agent would state it. What the Copom cares about in the exchange rate is its effect on inflation and
@@ -199,7 +199,7 @@ taxa de câmbio compatível com a PPC".
 Pass-through (E1, E3) sits between this area and inflation. Until the inflation agent exists, the FX
 agent reports it; when that agent exists, this row is renegotiated between the two maps.
 
-### 3.2 From other areas — not defined yet
+### 4.2 From other areas — not defined yet
 
 Inflation, fiscal policy, economic activity, credit, labour market and external. Each is written when
 that agent's map is built, by that agent.
