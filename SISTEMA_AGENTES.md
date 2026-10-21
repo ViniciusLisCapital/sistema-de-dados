@@ -105,7 +105,7 @@
     - vii. Modelos mentais de política monetária das gestoras (Verde, Kinea, Kapitalo), a partir das mesmas cartas.
         - Decidido (2026-10-21): por enquanto só a Verde, com as cartas do ciclo de aperto de 2021 e 2022 (~24 cartas), para ver que modelo ela aplicou naquele ciclo. Kinea, Kapitalo e outras janelas vão para a fila de PM.
     - viii. Modelos mentais do BC: uma linha histórica (o que não muda com o presidente) e uma da gestão atual. (a discutir; estoque até ser promovido, I.III.xvi)
-    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault. Na camada 1 do agente de PM (I.III.xvi): todos os comunicados desde o início do mandato do Galípolo (2025-01-01; hoje 268 a 281, 14 comunicados), a última ata e o último RPM, sempre anteriores à data do ciclo. Decidido 2026-10-21; a data de início muda quando mudar o presidente do BC.)
+    - ix. Síntese trimestral de comunicado + ata + RPM. (a discutir; o usuário marcou como discussão importante, adiada em 2026-10-20. Hoje 261 atas, 234 comunicados e 12 RPMs ficam fora do agente do vault. Na camada 1 do agente de PM (I.III.xvi): todos os comunicados, atas e RPMs publicados desde o início do mandato do Galípolo (2025-01-01) e antes da data do ciclo; hoje 14 comunicados e 14 atas (reuniões 268 a 281) e 7 RPMs (mar/2025 a set/2026). Decidido 2026-10-21; a data de início muda quando mudar o presidente do BC.)
 
 
 # (III) Agentes

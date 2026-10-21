@@ -24,7 +24,7 @@
 Ingerir e sintetizar toda a literatura de câmbio e de PM antes de ter o agente foi um erro estratégico (avaliação do usuário, 2026-10-21). Ainda não se sabe quanto o agente de fato busca na literatura nem como a usa, e isso só aparece rodando. Daqui em diante, o sistema fica de pé com o mínimo e cresce conforme recebe mais conteúdo; se errarmos, erramos pequeno e corrigimos em escala menor. Registrado como princípio em `PRINCIPIOS_AGENTES.md` (I.VI).
 
 - **Camadas do material** (literatura, modelos mentais, documentos do Copom):
-    - **Camada 1, o núcleo:** o mínimo que cobre cada pergunta central e cada canal do esqueleto causal do mapa, com uma fonte por canal (~8–12 por agente). Uma gestora nos modelos mentais. Do Copom: os comunicados desde o início do mandato do Galípolo (2025-01-01), a última ata e o último RPM, sempre anteriores à data do ciclo.
+    - **Camada 1, o núcleo:** o mínimo que cobre cada pergunta central e cada canal do esqueleto causal do mapa, com uma fonte por canal (~8–12 por agente). Uma gestora nos modelos mentais. Do Copom: comunicados, atas e RPMs publicados desde o início do mandato do Galípolo (2025-01-01), sempre anteriores à data do ciclo.
     - **Camada 2:** profundidade, alternativas, evidência brasileira adicional, as outras gestoras.
     - **Camada 3:** o resto, inclusive o histórico.
 - **Dados:** ficam as listas atuais (V.I e V.II). O F(A) já resume as tabelas, então cortar dado economiza pouco. Reavaliar depois do primeiro teste de PM.
@@ -107,7 +107,7 @@ Tempo em dias úteis, com o usuário disponível. Tokens = total processado, ~95
         - as sínteses e os `clean_md` da camada 1;
         - as páginas de conceito, só com as linhas que apontam para notas da camada 1 (conceito sem nenhuma dessas linhas fica fora);
         - os modelos mentais da camada 1;
-        - os documentos do Copom da camada 1 (comunicados desde 2025-01-01, última ata, último RPM), sempre anteriores à data do ciclo;
+        - os documentos do Copom da camada 1 (comunicados, atas e RPMs publicados desde 2025-01-01), sempre anteriores à data do ciclo;
         - o mapa conceitual, inteiro.
     - É fixo no ciclo, como o F(A): rodar de novo não refaz, salvo com `--refazer`. Tem teste em `tests/`.
 - **3D. Câmbio lê o retrato** (chat G, depois da 3C, ~0,5 dia). Em `cambio-analyst.md`:
