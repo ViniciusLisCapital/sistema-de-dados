@@ -81,6 +81,10 @@ Every old and new claim of every block gets a verdict. A `note` on anything that
 - When in doubt between `kept` and a failing verdict, choose the failing one and say why in the
   note: a false alarm costs the user one look; a missed change stays in the document.
 - You do not judge whether the manager was right, whether the framework is good, or the style.
+- A framework formulated beyond the letters' literal words is fine when the letters ground it (the
+  document is a synthesis). These fail: a caveat of the letter turned into a fact; a statement whose
+  scope differs from the letter's (world against Brazil, one market or book against another); a
+  causal link or a reason the letter does not give; process jargon in the document.
 
 ## Never
 

@@ -174,6 +174,18 @@ must ask the user to review them before the next run (the Goldman Sachs pilot wa
   English document. Quotes are never translated.
 - **No view of your own.** The document says what the manager argued and when. Not whether they
   were right, not what it means for today.
+- **The document is a synthesis.** You may formulate a framework in your own words, beyond the
+  letters' literal phrasing, when the letters ground it well; the applications and quotes are the
+  grounding.
+- **Keep every caveat.** A conditional, a "caso", a hedge or a probability in the letter stays in
+  the document; a caveat turned into a fact is a fault.
+- **Exact scope.** What the letter says of the world is not said of Brazil, and the reverse; the
+  same for a market, a horizon or a fund book.
+- **No causal link the letter does not make.** Two facts in the same letter are not cause and
+  effect unless the letter says so; a position the letter gives no reason for is a fact, not an
+  application of a framework.
+- **No process jargon** in the document (run, round, ledger, repack, reviewer): it is read by the
+  analyst agent, not by the system.
 
 ### 4. Check
 
