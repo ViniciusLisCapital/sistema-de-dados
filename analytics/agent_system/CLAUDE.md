@@ -11,6 +11,9 @@ uv run python -m analytics.agent_system.generate_report
 
 - **À mão, no `report.html`:** caixas, setas e o estado de cada bloco (existe / em construção /
   planejado), em `SPECS.geral` e `rodadasGeral()`; a lista `FERRAMENTAS`; o texto de cada detalhe.
+  Desde 2026-10-22 o ciclo mostra os **sete agentes** do primeiro batch (`AGENTES`, uma linha cada, em
+  `AY`; as três fontes ficam em `LINHAS`). A leitura entre rodadas é **uma seta só** ("leem todos"), não
+  uma por par, que seriam 49. P1, P2, PF* e o escrivão estão em construção; o relatório macro, planejado.
 - **Lido na geração:** contagens do registry, dos connectors e das notas do vault por área; a lista
   de dados do câmbio, da seção V.I do `SISTEMA_AGENTES.md` (com a fonte de cada tabela pelo
   registry).
@@ -70,8 +73,9 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 - **Os sete agentes** (2026-10-22): `cambio`, `politica_monetaria`, `inflacao`, `atividade`, `fiscal`,
   `externo`, `expectativas`, um módulo cada, listas em V.I–V.VII do `SISTEMA_AGENTES.md` (V.VII termina
   em "*Fim das listas por agente.*"). Tabelas que os novos agentes tiram de câmbio e PM vêm por `de`/`so`;
-  as que vieram de outro agente novo levam `variante="<agente>"` (hoje só recortes da
-  `expc_focus_periodo` em inflação, atividade e fiscal), a unificar quando o dono as declarar.
+  as que vieram de outro agente novo levam `variante="<agente>"` (hoje recortes da
+  `expc_focus_periodo`: desocupação na atividade, fiscal no fiscal, componentes na inflação; o PIB da
+  atividade já vem de expectativas, 2026-10-22), a unificar quando a V.VII os declarar.
 - `Tabela.variante`: outra consulta da mesma tabela que a de outro agente, em outro arquivo de A (a
   curva americana inteira do agente de PM vai para `us_interest_rate__curva.csv.gz`; o câmbio lê
   três vértices). Sem ela, consulta diferente no mesmo arquivo levanta.

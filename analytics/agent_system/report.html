@@ -130,7 +130,7 @@ table.t th.num { text-align: right; }
     <figure>
       <div class="fig-head"><h2>Do dado e do documento ao relatório</h2></div>
       <svg id="svg-geral" role="img" aria-label="O ETL grava os dados no MySQL e a ingestão grava o conhecimento no vault; MySQL, ferramentas e conhecimento chegam a cada agente; os agentes trocam reports dentro do ciclo e o ciclo produz o relatório."></svg>
-      <figcaption>À esquerda, os processos de entrada: o ETL consome o dado das fontes e a ingestão traz a informação qualitativa. No meio, o que o agente recebe: dados (o MySQL), ferramentas e conhecimento (o vault), cada um chegando a cada agente; as ferramentas ficam fora por ora. As setas e caixas com o selo <strong>+</strong> abrem o detalhe ao clicar: o que passa por ali e como. Na zona dos agentes, um ciclo: na rodada 1 cada agente escreve o seu report, com a central tirada do modelo estrutural, que ele roda por G com os caminhos das exógenas, e o tempero qualitativo, que forma a distribuição em torno dela; o modelo estrutural consolida os reports em P1; na rodada 2 cada agente lê os reports de todos e o P1 e escreve de novo; o modelo consolida em P2; e cada agente escreve o report final, de onde sai o cenário final (PF*). O escrivão lê os reports finais e o PF* e redige o relatório, garantindo a lógica e a coesão dos argumentos; quando uma explicação não está clara, ele cobra o agente. O modelo estrutural não é ferramenta: o agente o roda para a central do seu report, e ele consolida os reports em P1, P2 e PF*. "Agente n" representa os agentes que ainda vão entrar. O <code>repository/</code> guarda o bruto e nenhum agente lê dele.</figcaption>
+      <figcaption>À esquerda, os processos de entrada: o ETL consome o dado das fontes e a ingestão traz a informação qualitativa. No meio, o que o agente recebe: dados (o MySQL), ferramentas e conhecimento (o vault), cada um chegando a cada agente; as ferramentas ficam fora por ora. As setas e caixas com o selo <strong>+</strong> abrem o detalhe ao clicar: o que passa por ali e como. Na zona dos agentes, um ciclo: na rodada 1 cada agente escreve o seu report, com a central tirada do modelo estrutural, que ele roda por G com os caminhos das exógenas, e o tempero qualitativo, que forma a distribuição em torno dela; o modelo estrutural consolida os reports em P1; na rodada 2 cada agente lê os reports de todos e o P1 e escreve de novo; o modelo consolida em P2; e cada agente escreve o report final, de onde sai o cenário final (PF*). O escrivão lê os reports finais e o PF* e redige o relatório, garantindo a lógica e a coesão dos argumentos; quando uma explicação não está clara, ele cobra o agente. O modelo estrutural não é ferramenta: o agente o roda para a central do seu report, e ele consolida os reports em P1, P2 e PF*. O <code>repository/</code> guarda o bruto e nenhum agente lê dele.</figcaption>
     </figure>
   </div>
   <div class="card">
@@ -173,11 +173,19 @@ function badge(st, rot) { return `<span class="badge ${st}">${rot || ST_LABEL[st
 const AGENTES = [
   { k: 'c', nome: 'Câmbio', st: 'parcial' },
   { k: 'p', nome: 'Pol. monetária', st: 'parcial' },
-  { k: 'n', nome: 'Agente n', st: 'planejado' },
+  { k: 'i', nome: 'Inflação', st: 'parcial' },
+  { k: 'a', nome: 'Atividade', st: 'parcial' },
+  { k: 'f', nome: 'Fiscal', st: 'parcial' },
+  { k: 'e', nome: 'Externo', st: 'parcial' },
+  { k: 'x', nome: 'Expectativas', st: 'parcial' },
 ];
-// as três linhas dos agentes; MySQL, ferramentas e conhecimento ficam nas mesmas alturas,
-// para que cada um aponte para cada agente (o desenho do usuário de 2026-10-07)
+// as três linhas das fontes (MySQL, ferramentas, conhecimento); cada uma aponta para cada um
+// dos agentes (o desenho do usuário de 2026-10-07). Os sete agentes ficam em linhas próprias,
+// mais baixas, a partir de AY0 (2026-10-22, quando o primeiro batch passou a ser de sete).
 const LINHAS = [272, 357, 442];
+const AY0 = 262, AST = 44, AH = 34;
+const AY = AGENTES.map((_, i) => AY0 + i * AST);
+const ZBASE = AY[AY.length - 1] + AH + 14;
 function rodadasGeral() {
   const ags = AGENTES;
   const cols = [
@@ -185,14 +193,14 @@ function rodadasGeral() {
     { r: 2, x: 852, rot: 'Rodada 2', memo: 'report 2' },
     { r: 3, x: 1034, rot: 'Report final', memo: 'report final' },
   ];
-  const Y = LINHAS, mh = 56, mw = 96;
-  const zonas = cols.map(c => ({ id: 'zr' + c.r, x: c.x, y: 232, w: 110, h: 288, label: c.rot }));
+  const Y = AY, mh = AH, mw = 96;
+  const zonas = cols.map(c => ({ id: 'zr' + c.r, x: c.x, y: 232, w: 110, h: ZBASE - 232, label: c.rot }));
   const nos = [
     { id: 'g_mod', x: 670, y: 100, w: 474, h: 44, st: 'parcial', lines: ['Modelo estrutural', 'o agente roda por G · consolida os reports em P'], det: 'mod' },
-    { id: 'g_p1', x: 782, y: 170, w: 68, h: 44, st: 'planejado', lines: ['P1', 'consolida'], det: 'p1' },
-    { id: 'g_p2', x: 964, y: 170, w: 68, h: 44, st: 'planejado', lines: ['P2', 'consolida'] },
-    { id: 'g_pf', x: 1050, y: 545, w: 94, h: 56, st: 'planejado', lines: ['PF*', 'cenário final'] },
-    { id: 'g_escr', x: 820, y: 545, w: 150, h: 56, st: 'planejado', lines: ['Escrivão', 'redige o relatório'] },
+    { id: 'g_p1', x: 782, y: 170, w: 68, h: 44, st: 'parcial', lines: ['P1', 'consolida'], det: 'p1' },
+    { id: 'g_p2', x: 964, y: 170, w: 68, h: 44, st: 'parcial', lines: ['P2', 'consolida'] },
+    { id: 'g_pf', x: 1050, y: ZBASE + 34, w: 94, h: 56, st: 'parcial', lines: ['PF*', 'cenário final'] },
+    { id: 'g_escr', x: 820, y: ZBASE + 34, w: 150, h: 56, st: 'parcial', lines: ['Escrivão', 'redige o relatório'] },
   ];
   cols.forEach(c => AGENTES.forEach((a, i) => nos.push({ id: `m${c.r}${a.k}`, x: c.x + 7, y: Y[i], w: mw, h: mh, st: a.st, lines: [a.nome, c.memo], det: DETALHES[`m${c.r}${a.k}`] ? `m${c.r}${a.k}` : null })));
   const arestas = [
@@ -208,13 +216,15 @@ function rodadasGeral() {
     { from: 'g_p2', fs: 'r', to: 'zr3', ts: 't', ta: 0.25, label: '' },
     { from: 'zr3', fs: 'b', to: 'g_pf', ts: 't', label: '' },
     { from: 'g_pf', fs: 'l', to: 'g_escr', ts: 'r', label: 'RF + PF*' },
-    { pts: [[956, 545], [956, 510], [1034, 510]], cls: 'dashed', label: 'cobra clareza', lpos: [950, 534, 'end'] },
+    { pts: [[956, ZBASE + 34], [956, ZBASE - 4], [1034, ZBASE - 4]], cls: 'dashed', label: 'cobra clareza', lpos: [950, ZBASE + 23, 'end'] },
   ];
-  // todos leem os reports de todos: cada report de uma rodada vai a cada agente da seguinte
-  [[1, 2], [2, 3]].forEach(([de, para]) => ags.forEach((a, i) => ags.forEach((b, j) => {
-    const x0 = cols[de - 1].x + 7 + mw, x1 = cols[para - 1].x + 7;
-    arestas.push({ pts: [[x0, Y[i] + mh / 2], [x1, Y[j] + mh / 2]], cls: 'cross' });
-  })));
+  // todos leem os reports de todos: com sete agentes, uma seta só entre as rodadas em vez de
+  // uma por par (seriam 49)
+  const yMeio = (AY[0] + AY[AY.length - 1] + AH) / 2;
+  [[1, 2], [2, 3]].forEach(([de, para]) => {
+    const x0 = cols[de - 1].x + 110, x1 = cols[para - 1].x;
+    arestas.push({ pts: [[x0, yMeio], [x1, yMeio]], cls: 'cross', label: 'leem todos', lpos: [(x0 + x1) / 2, yMeio - 6, 'middle'] });
+  });
   return { zonas, nos, arestas };
 }
 const FERRAMENTAS = [
@@ -293,10 +303,10 @@ function detModelo() {
     <li>Um canal que está no modelo só entra pelo tipo (i), para não ser contado duas vezes. Um tempero no cenário base não move a central: vira assimetria.</li>
     <li>As exógenas que a área não usa ficam no padrão do modelo (o último valor repetido) até terem dono.</li>
     </ul>
-    <h3>Entre as rodadas: P1, P2 e PF* ${badge('planejado', 'a definir')}</h3>
-    <ul class="lst"><li>Com quais variáveis o modelo consolida os reports, quem faz a conta e o que acontece quando o modelo e os agentes divergem (IV.vi).</li></ul>
-    <h3>O que falta ${badge('planejado')}</h3>
-    <ul class="lst"><li>A função fixa que o G chama: recebe os caminhos das exógenas e os multiplicadores, e devolve as endógenas por trimestre com a faixa de incerteza dos pesos.</li></ul>
+    <h3>Entre as rodadas: P1, P2 e PF* ${badge('parcial', 'em construção')}</h3>
+    <ul class="lst"><li>O <code>consolidacao.py</code> lê o JSON de caminhos dos agentes, usa o caminho de quem tem nível em cada exógena, roda o modelo sem multiplicadores e grava P1, P2 e PF*. Falta decidir o peso de cada nível e o que acontece quando o modelo e um agente divergem (IV.vi).</li></ul>
+    <h3>A função que o G chama ${badge('existe')}</h3>
+    <ul class="lst"><li>O <code>modelo.py</code> recebe os caminhos das exógenas e os multiplicadores, e devolve as endógenas por trimestre, com a faixa de incerteza dos pesos.</li></ul>
     <h3>O modelo hoje ${badge('existe')}</h3>
     <ul class="lst"><li>Trimestral, cinco equações resolvidas juntas: curva IS (hiato), curva de Phillips (inflação), expectativas, regra de juros (Selic) e câmbio. Pesos de uma estimação bayesiana, que também dá a faixa de incerteza.</li>
     <li>Onde: <code>analytics/brasil/structural_model/</code> (aba Structural Model do relatório).</li></ul>`;
@@ -311,15 +321,20 @@ function detP1() {
     </ul>
     <h3>Como deve funcionar ${badge('planejado', 'proposta')}</h3>
     <ul class="lst">
-    <li><strong>Entra:</strong> os caminhos das exógenas de cada cenário, cada exógena vinda do agente que é dono dela, e os temperos do tipo (i), que mudam o peso de uma exógena.</li>
+    <li><strong>Entra:</strong> o caminho base de cada exógena, vindo de quem tem nível nela na aba "Exógenas" do tracker, em JSON. O P é uma rodada do modelo sem multiplicadores; os temperos do tipo (i) ficam na distribuição de cada agente.</li>
     <li><strong>O modelo resolve as endógenas uma vez, com tudo junto.</strong> A Selic que o câmbio usa passa a ser a que sai das premissas da política monetária, e o câmbio que a política monetária usa passa a ser o que sai das premissas do câmbio.</li>
     <li><strong>Sai:</strong> o caminho de cada endógena por trimestre, no cenário base e nas caudas, com a faixa de incerteza dos pesos.</li>
     <li><strong>Para a rodada 2:</strong> onde a central de cada agente difere do P1, e qual premissa de outro agente explica a diferença. É isso que os agentes discutem na rodada 2.</li>
     </ul>
-    <h3>A definir (IV.vi) ${badge('planejado')}</h3>
+    <h3>Decidido (IV.vi) ${badge('existe', 'decidido')}</h3>
     <ul class="lst">
-    <li>Quem roda o P1: a sessão que conduz o ciclo, um agente ou o administrador.</li>
-    <li>Como juntar as caudas: os cenários worst de cada agente acontecem juntos ou são combinados de outra forma.</li>
+    <li>Quem roda o P1: a sessão que conduz o ciclo, com o <code>consolidacao.py</code>, que lê o JSON de caminhos de cada agente.</li>
+    <li>As caudas: cada agente entrega upside e downside com probabilidades. O PF* é a central conjunta mais a distribuição de cada agente.</li>
+    <li>Quem escreve uma exógena sem ter nível nela, ou com caminho diferente do usado, gera divergência, que o agente responde na rodada seguinte.</li>
+    </ul>
+    <h3>A definir ${badge('planejado')}</h3>
+    <ul class="lst">
+    <li>O peso de cada nível da aba "Exógenas" na média dos caminhos.</li>
     <li>O que fazer com dois temperos do tipo (i) sobre o mesmo peso, vindos de agentes diferentes.</li>
     <li>O que acontece quando o modelo e um agente divergem.</li>
     </ul>`;
@@ -487,15 +502,15 @@ const SPECS = {
     FONTES.forEach((f, s) => AGENTES.forEach((a, i) => {
       const det = DETALHES[`${f.k}>${a.k}`] ? `${f.k}>${a.k}` : null;
       leque.push({
-        pts: [[FX + FW, LINHAS[s] + h * (0.3 + 0.2 * i)], [MX, LINHAS[i] + h * (0.3 + 0.2 * s)]],
+        pts: [[FX + FW, LINHAS[s] + h * (0.1 + 0.8 * i / (AGENTES.length - 1))], [MX, AY[i] + AH * (0.2 + 0.3 * s)]],
         cls: f.k === 'ferr' ? 'dashed' : (a.st === 'planejado' ? 'cross' : ''), det,
       });
     }));
     return {
-      W: 1180, H: 730, Y0: 60,
+      W: 1180, H: ZBASE + 34 + 56 + 24 + 20 + 60 + 20, Y0: 60,
       zones: [
         { x: 10, y: 70, w: 230, h: 540, label: 'Processos de entrada' },
-        { id: 'z_ag', x: 650, y: 70, w: 514, h: 550, label: 'Agentes num ciclo · obsidian/ciclos/<data>/' },
+        { id: 'z_ag', x: 650, y: 70, w: 514, h: ZBASE + 34 + 56 + 24 - 70, label: 'Agentes num ciclo · obsidian/ciclos/<data>/' },
         ...rod.zonas,
       ],
       nodes: [
@@ -506,7 +521,7 @@ const SPECS = {
         { id: 'g_repo', x: P, y: 535, w, h: 56, st: 'existe', lines: ['repository/', 'o bruto · nenhum agente lê'] },
         ...FONTES.map((f, s) => ({ id: f.id, x: FX, y: LINHAS[s], w: FW, h, st: f.st, lines: f.lines, det: f.det })),
         ...rod.nos,
-        { id: 'g_rel', x: 828, y: 650, w: 135, h: 60, st: 'planejado', lines: ['Relatório macro', 'markdown'] },
+        { id: 'g_rel', x: 828, y: ZBASE + 34 + 56 + 24 + 20, w: 135, h: 60, st: 'planejado', lines: ['Relatório macro', 'markdown'] },
       ],
       edges: [
         { from: 'g_fapi', fs: 'b', to: 'g_etl', ts: 't', label: 'busca' },
