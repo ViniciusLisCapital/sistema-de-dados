@@ -45,7 +45,7 @@ As notas vêm do agente, no report, e o escrivão as leva para o rodapé. Ele n�
 
 Minto propõe o texto como uma pirâmide. No topo fica a conclusão. Abaixo dela vêm os argumentos que a sustentam, agrupados. Abaixo de cada argumento, a evidência. Assim, quem para no primeiro parágrafo já leva a conclusão, e quem segue lendo leva os porquês.
 
-Quais seções o relatório terá ainda não foi decidido (seção 13). Os princípios abaixo valem para qualquer estrutura.
+As seções do relatório estão na seção 13 (decidido 2026-10-22). Os princípios abaixo valem dentro de cada uma.
 
 - **O relatório abre pelo cenário, e não pelo contexto.** O primeiro parágrafo traz a tese central e o que a mudaria. O contexto vem depois, e só na medida em que explica a tese.
 - **Cada seção e cada parágrafo abrem com a sua conclusão.** É o que Williams chama de *ponto*: a afirmação que o resto do trecho sustenta vem no começo.
@@ -244,6 +244,13 @@ A ordem importa: a estrutura vem antes da frase, porque não adianta polir uma f
 | Guias de linguagem simples (governo; Heloisa Fischer) | ordem direta, frase curta, voz ativa | 4 |
 
 
-# 13. Em definição (`SISTEMA_AGENTES.md`, IV.vii)
+# 13. Estrutura do relatório (`SISTEMA_AGENTES.md`, IV.vii)
 
-- Quais seções o relatório terá, e se ele se organiza por tema ou por área.
+- **Decidido (2026-10-22): por tema, com um apêndice por área.** As seções, nesta ordem:
+    1. **O cenário em uma página:** a tese central; uma tabela com Selic, IPCA, câmbio, hiato e PIB, expectativas e as exógenas que mais pesam, por trimestre; o que nos faria mudar de ideia.
+    2. **O que move o cenário**, em ordem causal e não na ordem dos agentes: o ambiente externo chega ao câmbio, o câmbio à inflação e às expectativas, e elas aos juros; o fiscal e a atividade chegam à demanda, a demanda à inflação, e a inflação aos juros.
+    3. **Riscos:** o upside e o downside de cada variável e o que os dispara (as caudas são só posição; o texto diz se cada uma é boa ou ruim para o Brasil quando importar).
+    4. **Onde os analistas discordam:** as divergências abertas, as posições e o que decidiria entre elas (2).
+    5. **O que acompanhar:** as premissas e as datas que podem mudar o cenário.
+    - **Apêndice:** uma tabela por variável, com central, faixa, caudas e probabilidades por trimestre.
+    - **Notas de rodapé** (1.3).
