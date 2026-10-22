@@ -42,6 +42,7 @@ In the New Keynesian model with a cost-push shock, inflation above target calls 
 | [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] | The BCB's own account of Brazil's 1999 design: headline IPCA for credibility, declining targets because the devaluation was a one-off realignment, no escape clauses offset by a wide band, an open letter on breach |
 | [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] | Brazil's first three years judged on expectations, not outcomes: the target anchored expectations while inflation breached the band in 2001; first-round effects of supply shocks accommodated; headline index, no escape clauses, bands widened for 2003 and 2004 |
 | [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] | Brazil's regime through the 2002 confidence crisis: expectations anchored until the last quarter of 2002, then broke on uncertainty about the next government; an announced "adjusted target" when first-round effects of supply shocks are accommodated |
+| [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] | Brazil 2002–2021: the regime read as exacerbatedly dependent on exchange-rate pass-through, more effective with high rates and an appreciating real; with a depreciating real the Selic responds more to inflation and inflation converges more slowly |
 
 ## BRL / application to the current analysis
 
@@ -72,3 +73,4 @@ Blanchard (2004) argues that in Brazil in 2002 a rate rise in response to inflat
 - [[monetary_policy/synthesis/implementing_it_brazil (Bogdanski, Tombini & Werlang, 2000)]] — how and why Brazil adopted inflation targeting after the 1999 float, and the design choices behind its targets
 - [[monetary_policy/synthesis/it_lessons_and_challenges (Minella et al., 2002)]] — how to evaluate a young targeting regime hit by supply shocks, and the design choices that protect its credibility
 - [[monetary_policy/synthesis/it_credibility_fx_volatility (Minella et al., 2003)]] — an emerging-market targeting regime under a sudden stop, and the adjusted-target practice
+- [[exchange_rate/synthesis/padrao_transmissao_cambial (Cortapasso, 2023)]] — how much Brazil's inflation targeting leans on the exchange-rate channel, and the costs of the high-rate, appreciated-currency mix that makes it work
