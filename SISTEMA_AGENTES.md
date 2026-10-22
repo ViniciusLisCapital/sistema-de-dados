@@ -11,7 +11,8 @@
 
 ## (I.II) Agentes
     - i. Câmbio e política monetária primeiro. Testar bem os dois antes de acrescentar outro.
-    - ii. Depois, um a um: inflação, fiscal, atividade, crédito, mercado de trabalho, externo.
+        - Revisto em 2026-10-22: com só dois agentes, cada um escrevia exógenas que não lhe competem (a NTN-B de 10 anos decidiu a central da Selic sem dono). Os agentes que o Modelo Estrutural precisa entram de uma vez, na forma mínima e sem teste solo: inflação, atividade, fiscal, externo e expectativas, com câmbio e PM, formam o primeiro batch de sete. O primeiro teste é o ciclo conjunto, sem literatura (`PLANO_AGENTES.md`, Fases 7–10).
+    - ii. Depois, um a um: crédito, mercado de trabalho e os demais.
     - iii. Os agentes rodam no Claude Code, sob demanda, nesta fase.
     - iv. O modelo quantitativo (Modelo Estrutural, FX Model) fica fora dos agentes por enquanto. Primeiro, azeitar o processo analítico e o fluxo de informação. Quando o Modelo Estrutural entrar, entra como saída dos agentes, não como ferramenta (I.III.xv).
     - v. Agente escrivão (2026-10-02): organiza o relatório final a partir dos reports finais (RF) e do cenário final (PF*). O objetivo é um relatório em ótimo português, de clareza e objetividade excepcionais. Garante a validade lógica e a coesão dos argumentos dos reports, e pode cobrar de um agente mais clareza numa explicação. Regras em IV.vii. Manual de escrita: `obsidian/escrivao/manual_do_escrivao.md` (feito 2026-10-07).
@@ -37,6 +38,7 @@
     - x. Endógeno de outro agente: qualquer agente consulta, mas não tira conclusão sobre ele; a posição vem do agente responsável. Ex.: o agente de câmbio não conclui sobre o caminho da Selic sem a leitura do agente de política monetária.
     - xi. Exógeno e TWA: a forma de análise ainda será definida, a partir da interação entre os agentes. O mesmo dado pode ser consumido por mais de um agente, então é preciso uma visão consolidada sobre ele (ver IV.ii). Até lá, o agente usa o dado declarando no report as premissas que assumiu. (provisório, 2026-10-01)
     - xii. Expectativas não são da política monetária: são TWA, e pode haver um agente de expectativas no futuro.
+        - Decidido (2026-10-22): expectativas têm agente próprio (`expectativas`), dono da variável de expectativas do Modelo Estrutural.
     - xiii. Dados por agente: ver (V).
     - xiv. Ferramenta = um processamento específico e pré-definido de dados ou de informação qualitativa que gera um output que o agente usa direto, sem processar o bruto ele mesmo. Ex.: o FX attributor processa as cartas das gestoras sobre o câmbio e responde se elas veem o câmbio subindo ou caindo, e com que grau. (decidido 2026-10-02)
     - xv. O Modelo Estrutural não é ferramenta: é o filtro de saída da análise. Na discussão das variáveis e dos cenários, o cenário dos agentes também é expresso por meio do modelo estrutural. É output dos agentes, não input para eles. (decidido 2026-10-02)
@@ -169,6 +171,9 @@
         - Decidido (2026-10-21): a literatura de repasse é do agente de inflação (I.III.xvii). O câmbio a alcança pelo conceito de repasse e avisa a inflação quando vê risco relevante de depreciação. Até o agente de inflação existir, a literatura fica na camada 1 provisória dele, e o câmbio continua informando a PM pelas entradas E1 e E3.
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
         - A discutir na Fase 7 (usuário, 2026-10-21): quem escreve o caminho da NTN-B de 10 anos (`rr_10a`). É exógena no Modelo Estrutural e decide sozinha a central da Selic; a curva B3 é dado endógeno da PM, e o prêmio fiscal que a move não tem agente.
+        - Decidido (2026-10-22), para as exógenas do Modelo Estrutural: a tutela de cada uma fica na aba "Exógenas" do `data_tracker.xlsx`, uma exógena por linha e os sete agentes nas colunas, com nível de 1 (decide) a 5; em branco, o agente não escreve o caminho. **Quem preenche é o usuário**, inclusive a `rr_10a`; a coluna "Proposta" é só sugestão. Agentes no mesmo nível têm o mesmo peso. A consolidação lê a aba (não há dono escrito em código).
+        - Decidido (2026-10-22): as endógenas do modelo seguem a área: hiato → atividade, IPCA → inflação, expectativas → expectativas, Selic → PM, câmbio → câmbio.
+        - Decidido (2026-10-22): quando um agente escreve para uma exógena um caminho diferente do de quem tem a tutela, o P usa o caminho de quem tem a tutela; a divergência vai para o log e é respondida na rodada seguinte. Se o argumento for bom, quem tem a tutela muda o caminho.
     - iii. Número de rodadas por ciclo: reabrir sempre que entrar um agente novo. Hoje: duas rodadas e o report final.
     - iv. Como o agente analisa os dados quantitativos. (decidido 2026-10-02)
         - Decidido (2026-10-02, reescrito 2026-10-07): o dado bruto A passa por F, as transformações fixas, iguais em todo ciclo. O agente lê F(A), não A. Quando precisa de uma conta que o F não faz, escreve uma função G e usa G(A). Não há catálogo de funções à parte (2026-10-07).
@@ -181,7 +186,13 @@
     - v. Ferramentas (I.III.xiv): quais são (hoje candidatas: FX attributor e FX Model; dashboards não são ferramenta) e quando e como entram nos agentes. Por ora fora (I.II.iv).
     - vi. Como os reports viram P1, P2 e PF* no Modelo Estrutural (I.III.xv): com quais variáveis, quem faz a conta e o que acontece quando o modelo e os agentes divergem. (anotado 2026-10-02, a definir)
         - Decidido (2026-10-15, adianta a parte que o câmbio precisa): como a central vem do modelo (IV.ix), o agente roda o simulador do Modelo Estrutural por um G, com os caminhos das exógenas de cada cenário e, no tempero (i), o multiplicador do coeficiente. Sem reestimar: os coeficientes são os de hoje. As exógenas que a área não usa ficam no padrão do simulador (último valor repetido) até terem dono (IV.ii).
-        - A função fixa que esse G chama (feito 2026-10-15: `analytics/agent_system/modelo.py`): recebe os caminhos das exógenas e os multiplicadores, devolve as endógenas por trimestre e a faixa do posterior. O retrato do simulador é gravado uma vez por ciclo, junto com o A. Consolidação de P1, P2 e PF* segue a definir.
+        - A função fixa que esse G chama (feito 2026-10-15: `analytics/agent_system/modelo.py`): recebe os caminhos das exógenas e os multiplicadores, devolve as endógenas por trimestre e a faixa do posterior. O retrato do simulador é gravado uma vez por ciclo, junto com o A.
+        - Decidido (2026-10-22), a consolidação:
+            - O P é uma rodada do modelo com o caminho base de cada exógena, vindo de quem tem a tutela dela (IV.ii; no empate, a média), sem multiplicadores: o multiplicador fica no tempero de cada agente.
+            - Da rodada 2 em diante, a central de quem tem variável no modelo vem do P.
+            - O PF* é a central conjunta mais a distribuição de cada agente.
+            - Cada agente grava os caminhos base num JSON padrão, com as chaves do `modelo.CONVENCAO`.
+            - Fiscal e externo, sem variável endógena no modelo: a tese é o caminho base das exógenas de que têm tutela, por trimestre, e a distribuição em volta também é deles. No futuro devem ganhar variáveis da área (usuário, 2026-10-22).
     - vii. Agente escrivão (I.II.v):
         - Decidido (2026-10-07): a forma é do escrivão, o conteúdo é do agente. O escrivão reordena, corta, reescreve e padroniza; não muda número, faixa, probabilidade ou premissa, não acrescenta argumento nem dado e não resolve divergência escolhendo um lado. Se precisa de algo que o report não diz, cobra o agente. (manual, 1.1)
         - Decidido (2026-10-07): a cobrança reabre o report final só no trecho cobrado.

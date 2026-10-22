@@ -51,12 +51,22 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
   (o real e os pares: variação, volatilidade, carry). Agente novo = um arquivo destes e uma linha em
   `AGENTES` no `__main__.py`.
 - `politica_monetaria.py` (2026-10-21): as 69 entradas da V.II (68 aprovadas mais o `comm_icbr_usd`, 2026-10-21), até o grupo "Fora da lista" (fora do
-  F). Tabela que o câmbio também lê sai da declaração dele (`_do_cambio`/`_so`): mesma consulta,
+  F). Tabela que o câmbio também lê sai da declaração dele (`de`/`so`, abaixo): mesma consulta,
   outras séries, e o A do ciclo serve aos dois. F próprio: ciclo de juros em curso, projeções da
   última reunião e o horizonte relevante nas últimas oito, hiato e as revisões entre edições, QPC,
   recortes do BC refeitos dos subitens (`inflc_dim`; batem com `inflc_agregados`), fatores da DLSP,
   EFGG, contas nacionais. Combinadas: a Selic por reunião na curva DI e na Focus, e o juro real
   contra o neutro do QPC.
+- **Tabela de outro agente: `motor.de(modulo, nome, recorte=None, **mudar)` e
+  `motor.so(modulo, nome, chaves, ...)`** (2026-10-22). Copiam a declaração do outro agente: mesma
+  consulta, mesmo arquivo de A, outras séries. Mudar a consulta exige `variante`. Antes de extrair,
+  `gerar()` roda `conferir_consultas()` sobre **todos os pares** de `AGENTES`: mesmo arquivo de A com
+  consulta diferente levanta.
+- O F é gravado por último, depois do retrato do conhecimento: se o retrato falhar, o F não fica e
+  rodar de novo funciona; `--refazer` apaga o F antigo antes de extrair.
+- `--sem-literatura` (no `dados` e no `conhecimento`): o retrato leva só o mapa conceitual e, na PM, o
+  Copom da camada 1. O mapa é obrigatório; `INDICE.md` e `retrato.json` dizem que o retrato é sem
+  literatura; um retrato existente feito no outro modo levanta em vez de passar como "já existe".
 - `Tabela.variante`: outra consulta da mesma tabela que a de outro agente, em outro arquivo de A (a
   curva americana inteira do agente de PM vai para `us_interest_rate__curva.csv.gz`; o câmbio lê
   três vértices). Sem ela, consulta diferente no mesmo arquivo levanta.
@@ -82,7 +92,8 @@ mesmo ciclo e com o mesmo `--refazer`.
 uv run python -m analytics.agent_system.conhecimento <agente> [--ciclo AAAA-MM-DD] [--refazer]
 ```
 
-Grava `obsidian/ciclos/<data>/conhecimento/<agente>/`, com os caminhos do vault preservados para os
+`AREA` liga o agente à pasta do vault (`externo` → `external`, `expectativas` → `expectations`, desde
+2026-10-22). Grava `obsidian/ciclos/<data>/conhecimento/<agente>/`, com os caminhos do vault preservados para os
 wikilinks resolverem. O agente lê literatura, conceitos e modelos mentais **só dali**. O dono e a
 camada de cada item vêm do `data_tracker.xlsx` (colunas Dono/Camada das abas "Qual", Camada da aba
 "Mental Models"; o Copom pela regra da camada 1, `copom_layer()` do `tracker.py`). Entram:

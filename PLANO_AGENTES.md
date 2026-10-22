@@ -21,12 +21,12 @@ Fica fora deste plano tudo o que não leva a isso (lista em "Anotado para depois
 | 4 | Re-teste do câmbio só com o núcleo | feito (2026-10-21, dados de 15/10): report completo com pouca literatura aberta; Kapitalo promovida para a camada 1; síntese do Cortapasso refeita pelo `/vault` (f44c8a0); o câmbio declara a lacuna do Copom em vez de escrever de memória (SISTEMA II.II.iv) |
 | 5 | Material da camada 1 de PM | feito (2026-10-21): modelo mental da Verde, 24 cartas em 3 rodadas (14d91ac); as 10 fontes da camada 1 já tinham síntese |
 | 6 | Agente de PM e teste solo | feito (2026-10-21): definição (`.claude/agents/politica-monetaria-analyst.md`); dois testes solo em `obsidian/ciclos/2026-10-15/` (fba897b, 414eda4). Da revisão do usuário: passo máximo de 25 p.b. afirmado de memória (virou o princípio I.II.ix); foco vai × deveria × mercado (Q1–Q4); central do modelo em todos os trimestres; seção 6, "Sobre o modelo", em todo report. Promovidos Segura-Ubiergo e Adrian-Crump-Moench. Seta no diagrama (9f6383e) |
-| 7 | Desenho do ciclo conjunto (decisões) | — |
-| 8 | Os cinco agentes novos, na forma mínima | — |
-| 9 | Engrenagem do ciclo conjunto | — |
+| 7 | Desenho do ciclo conjunto (decisões) | em curso (2026-10-22): itens 2, 3 e 4 decididos (SISTEMA IV.ii, IV.vi); item 1 virou a aba "Exógenas" do tracker, que o usuário preenche; falta o item 5 |
+| 8 | Os cinco agentes novos, na forma mínima | em curso (2026-10-22): os cinco rascunhos de mapa prontos (M1–M5, sem commit), esperando aprovação |
+| 9 | Engrenagem do ciclo conjunto | em curso (2026-10-22): E1 feito (71bbb16, 78c79f6) |
 | 10 | O primeiro ciclo conjunto, sem literatura | — |
 
-**Em curso:** nada. **Próximo:** as decisões da Fase 7 e, em paralelo, o E1 e os rascunhos M1–M5 (seção "Quem faz o quê").
+**Em curso:** a aprovação dos cinco mapas e o preenchimento da aba "Exógenas" pelo usuário. **Próximo:** o E2 (consolidação, lendo a aba) e o item 5 da Fase 7 (estrutura do relatório do escrivão).
 
 O A e o F(A) de câmbio e PM do ciclo 2026-10-22 já foram montados, antes da mudança de rumo. A data do ciclo conjunto será escolhida na Fase 10, depois da conversa sobre o recorte dos dados.
 
@@ -65,12 +65,12 @@ Com só dois agentes, cada um escrevia exógenas que não lhe competem. O caso m
 # (III) Fases
 
 ## Fase 7 — Desenho · decisões, chat principal, com o usuário
-1. **Dono de cada exógena do modelo.** Proposta, pela área da variável:
+1. **Tutela de cada exógena do modelo.** Decidido (2026-10-22): fica na aba "Exógenas" do `data_tracker.xlsx`, com níveis de 1 a 5 por agente, e quem preenche é o usuário. A coluna "Proposta" traz a sugestão:
     - **externo:** `ffr`, `infl_us`, `dxy_em`, `sp500`, `icbr_usd`, `icbr_agr_usd`, `icbr_met_usd`;
     - **fiscal:** `fiscal` (o CDS);
     - **câmbio:** `vol`;
     - **PM:** `meta_12m`;
-    - **a decidir, fiscal ou PM:** `rr_10a`.
+    - **fiscal ou PM:** `rr_10a`.
 2. **Endógenas do modelo:**
     - hiato → atividade;
     - IPCA → inflação;
@@ -160,12 +160,13 @@ Só o que o ciclo conjunto precisa:
 
 # (V) Sem amarrar (pedido do usuário, 2026-10-22)
 
-Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo de PIB, quando existir, vai receber a demanda do governo do agente fiscal. Por isso o vínculo entre agente e variável do modelo fica em **dado declarativo**, não em código. A consolidação lê uma tabela simples (exógena → dono), em um único lugar. Hoje essa tabela tem um dono por exógena; depois ela migra para o tracker com níveis de tutela, sem mudar a consolidação além do leitor. Mudar um dono é editar uma linha. A tese de cada agente também não fica presa a ter variável no modelo. O objetivo é construir simples e ir fazendo o fine tuning.
+Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo de PIB, quando existir, vai receber a demanda do governo do agente fiscal. Por isso o vínculo entre agente e variável do modelo fica em **dado declarativo**, não em código. A consolidação lê a aba "Exógenas" do `data_tracker.xlsx` (2026-10-22, antecipada a pedido do usuário): uma exógena por linha, os agentes nas colunas, tutela de 1 a 5. Mudar a tutela é editar uma célula. A tese de cada agente também não fica presa a ter variável no modelo. O objetivo é construir simples e ir fazendo o fine tuning.
 
 
 # (VI) Anotado para depois (fora deste plano)
 
-- **Tutela das exógenas no `data_tracker.xlsx`:** uma exógena por linha, os agentes nas colunas, e nível de tutela de 1 a 5. Agentes com o mesmo nível têm o mesmo peso na decisão; por exemplo, três agentes com tutela 1 decidem com o mesmo peso. Pede um estudo de cada exógena para definir quem manda nela. Mais de um agente pode acompanhar a mesma exógena, com prioridades diferentes.
+- **Estudo de cada exógena** para definir a tutela com mais cuidado (a aba "Exógenas" já existe, preenchida pelo usuário). Mais de um agente pode acompanhar a mesma exógena, com prioridades diferentes.
+- Variáveis próprias da área para fiscal e externo, além do caminho das exógenas.
 - O modelo de PIB do agente de atividade, com a demanda do governo vindo do fiscal.
 - A camada 1 de literatura dos agentes novos (~5 fontes cada), o ciclo com literatura e a medição do ruído (a rodada 1 duas vezes).
 - O agente de busca na internet (a discutir).
