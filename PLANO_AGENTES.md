@@ -18,6 +18,19 @@
 | 8 | Primeiro ciclo conjunto câmbio + PM | — |
 | 9 | Crescer e outros agentes | a discutir |
 
+# Hoje (2026-10-22)
+
+**Meta do dia (usuário):** Fase 7 completa e a Fase 8 inteira, o primeiro ciclo conjunto câmbio + PM até o relatório do escrivão, no ciclo de 22/10 (o FRED voltou).
+
+| Bloco | O quê | Quem | Depende de | Status |
+|---|---|---|---|---|
+| 0 | Montar o ciclo 2026-10-22: A, F(A) e retrato do conhecimento dos dois agentes, retrato do modelo | chat principal | — | em curso |
+| 1 | Decisões 7A (como os reports viram P1, P2 e PF*) e 7B (quem escreve cada exógena do modelo, inclusive a NTN-B 10a) | usuário + chat principal | — | — |
+| 2a | Módulo de consolidação (roda o modelo com os caminhos dos dois agentes e escreve o P) | subagente | 1 | — |
+| 2b | 7D: os agentes leem o report um do outro, sem o "aguarda câmbio/PM" | chat principal | 1 | — |
+| 2c | 7C: estrutura do relatório (§13 do manual do escrivão), depois o agente escrivão | usuário + subagente | — | — |
+| 3 | Fase 8: rodada 1 (dois agentes em paralelo) → P1 → rodada 2 → P2 → RF → PF* → relatório do escrivão → checagem dos números → log; revisão do usuário em cada P | chat principal + subagentes | 0, 2a, 2b (o escrivão, 2c) | — |
+
 **Em curso (2026-10-21, noite):** subagente D acrescenta IC-Br em dólar e EX0 ao F de PM e documenta a convenção das exógenas no `listar`. Falta o usuário rodar `/vault exchange_rate` para refazer a síntese do Cortapasso.
 **Próximo:** revisão do report de PM pelo usuário; as decisões da Fase 7 (consolidação IV.vi, donos das exógenas IV.ii, estrutura do relatório do escrivão). Mapa de câmbio religado ao vault (8f62a33) e `vault.py map` nos dois mapas.
 
