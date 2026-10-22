@@ -131,7 +131,7 @@
 
 ## (III.II) Agente de política monetária
     - i. Construir o agente a partir do mapa conceitual de política monetária.
-    - ii. Inflação é TWA (I.III.ix, xi). Quando o agente de inflação existir, vira endógeno dele e o agente de política monetária passa a receber a posição dele.
+    - ii. Inflação é TWA (I.III.ix, xi). (feito 2026-10-22: o agente de inflação existe, a inflação é endógena dele e a política monetária recebe a posição dele, V.II.)
 
 ## (III.III) Interação e relatório
     - i. Definir o formato do report de cada agente. Decidido 2026-10-01:
@@ -181,8 +181,8 @@
 
 
 # (IV) Decisões pendentes
-    - i. Repasse cambial: câmbio ou inflação? Por ora o câmbio reporta (E1, E3 do mapa de câmbio).
-        - Decidido (2026-10-21): a literatura de repasse é do agente de inflação (I.III.xvii). O câmbio a alcança pelo conceito de repasse e avisa a inflação quando vê risco relevante de depreciação. Até o agente de inflação existir, a literatura fica na camada 1 provisória dele, e o câmbio continua informando a PM pelas entradas E1 e E3.
+    - i. Repasse cambial: câmbio ou inflação? O câmbio reporta a persistência do movimento (E1); o repasse é da inflação (feito 2026-10-22).
+        - Decidido (2026-10-21): a literatura de repasse é do agente de inflação (I.III.xvii). O câmbio a alcança pelo conceito de repasse e avisa a inflação quando vê risco relevante de depreciação. Até o agente de inflação existir, a literatura fica na camada 1 provisória dele, e o câmbio continua informando a PM pela entrada E1; o repasse passou para a inflação em 2026-10-22.
     - ii. Como se forma a visão consolidada sobre um dado exógeno ou TWA: discussão entre os agentes ou um "economista-chefe" que calibra. E o que o agente faz com esse dado enquanto isso não estiver definido. (a discutir; para as exógenas, a intenção é distribuí-las a um ou dois agentes, I.III.ix)
         - A discutir na Fase 7 (usuário, 2026-10-21): quem escreve o caminho da NTN-B de 10 anos (`rr_10a`). É exógena no Modelo Estrutural e decide sozinha a central da Selic; a curva B3 é dado endógeno da PM, e o prêmio fiscal que a move não tem agente.
         - Decidido (2026-10-22), para as exógenas do Modelo Estrutural: a tutela de cada uma fica na aba "Exógenas" do `data_tracker.xlsx`, uma exógena por linha e os sete agentes nas colunas, com nível de 1 (decide) a 5; em branco, o agente não escreve o caminho. **Quem preenche é o usuário**, inclusive a `rr_10a`; a coluna "Proposta" é só sugestão. Agentes no mesmo nível têm o mesmo peso. A consolidação lê a aba (não há dono escrito em código).

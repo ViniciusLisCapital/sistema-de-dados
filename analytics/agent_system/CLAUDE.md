@@ -50,7 +50,7 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 - `cambio.py`: as tabelas do câmbio, as séries e a leitura de cada uma, e as leituras combinadas
   (o real e os pares: variação, volatilidade, carry). Agente novo = um arquivo destes e uma linha em
   `AGENTES` no `__main__.py`.
-- `politica_monetaria.py` (2026-10-21): as 69 entradas da V.II (68 aprovadas mais o `comm_icbr_usd`, 2026-10-21), até o grupo "Fora da lista" (fora do
+- `politica_monetaria.py` (2026-10-21): as 69 entradas da V.II (68 aprovadas mais o `comm_icbr_usd`, 2026-10-21), até o grupo ix, "Fora da lista" (fora do
   F). Tabela que o câmbio também lê sai da declaração dele (`de`/`so`, abaixo): mesma consulta,
   outras séries, e o A do ciclo serve aos dois. F próprio: ciclo de juros em curso, projeções da
   última reunião e o horizonte relevante nas últimas oito, hiato e as revisões entre edições, QPC,
@@ -83,8 +83,8 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
   reextrai TODAS as tabelas do agente, inclusive as que ele divide com outro agente no A do ciclo**;
   num ciclo em uso, refaça só o texto do F com `motor.montar_f` sobre o A que já está lá.
 - `Tabela.fora` tira da conta uma tabela da lista com defeito conhecido (hoje nenhuma; a
-  `cmb_fluxo_cambial` saiu da lista em 2026-10-07); `Tabela.nota` imprime um defeito conhecido no F (hoje nenhuma: a
-  do PEN da `cmb_fx_latam` saiu em 2026-10-07, quando a tabela trocou o Yahoo pelo BIS).
+  `cmb_fluxo_cambial` saiu da lista em 2026-10-07); `Tabela.nota` imprime um defeito conhecido no F (hoje uma: a da `cmb_fx_latam`,
+  de 2026-10-22, avisa que CLP e COP do BIS chegam com um dia de defasagem, e o `cambio.py` as alinha com `shift(-1)`).
 
 O diagrama lê a lista pelo mesmo `motor.ler_lista()`.
 

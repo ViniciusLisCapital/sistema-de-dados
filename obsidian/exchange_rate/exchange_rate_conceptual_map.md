@@ -25,8 +25,8 @@ each cycle has a **dynamic** layer, set by the theses and arguments of that cycl
 whose thesis hinges on something asks for it explicitly in its report. The dynamic layer lives in the
 reports, not in this file. Every output here must appear as an input in the other agent's map and vice
 versa. The monetary-policy rows (3.1, 4.1) were approved on 2026-10-21; the rows with the other five
-agents (3.2, 4.2) were written on 2026-10-22, when the batch of seven was built, and are drafts until
-the user approves them.
+agents (3.2, 4.2) were written on 2026-10-22, when the batch of seven was built; the user approved
+3.2 on 2026-10-22.
 
 **Data rule (decided 2026-09-30, types 2026-10-01, regrouped 2026-10-22).** *Endogenous*: this
 area's own data, which this agent is responsible for analysing. *Endogenous of another agent*: the
@@ -197,7 +197,7 @@ What the FX agent needs from the monetary-policy agent, every cycle.
 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 2.7, Part 4 |
 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate ([[fx_intervention\|intervention]] without signs of market dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, and is answered by both agents with the monetary-policy agent leading | A credible response caps the depreciation; its absence removes the cap. While the BCB intervenes only against dysfunction, judging dysfunction is this agent's job (E6); under a defense posture what matters is the BCB's reaction function, not the technical state of the market | 2.1, 2.9 |
 
-### 3.2 To the other agents of the batch (draft, 2026-10-22)
+### 3.2 To the other agents of the batch (approved by the user, 2026-10-22)
 
 What the FX agent needs from the other five, every cycle. Each row becomes an input in that agent's
 map (its Part 4). Fiscal (the risk premium of 2.2) and external (the global block of 2.3) matter

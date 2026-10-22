@@ -5,8 +5,8 @@ the tails, outputs and inputs with FX, mirrored in the exchange-rate map). Adjus
 the batch of seven agents (`SISTEMA_AGENTES.md` III.III.vii): the tails are upside and downside;
 expectations, the output gap, the fiscal premium and the Fed path have owners now, and the readings
 of channels 2.3, 2.4, 2.5–2.6 and 2.8 that belong to them come through the rows of 3.2; the
-pass-through row (now S7, in 3.2) went to inflation. The rows with the other five agents (3.2, 4.2) are drafts
-until the user approves them. Layer 1 of this agent's material is chosen in a separate step
+pass-through row (now S7, in 3.2) went to inflation. The rows of 3.2, with the other five agents, were approved by
+the user on 2026-10-22. Layer 1 of this agent's material is chosen in a separate step
 (`PLANO_AGENTES.md`, Phase 2) and is not decided here.
 
 **What this file is.** This is the monetary-policy agent's contract with the rest of the system. It
@@ -409,7 +409,7 @@ inflation and expectations, not its level for its own sake (2.7).
   API (expected 2026-11-01). Until then the row is answered with reserves, interventions and the FX
   flow.
 
-### 3.2 To the other agents of the batch (draft, 2026-10-22)
+### 3.2 To the other agents of the batch (approved by the user, 2026-10-22)
 
 What this agent needs from the other five, every cycle. Each row becomes an input in that agent's
 map (its Part 4). They carry the readings of Part 2 that have owners now: pass-through and the drivers
