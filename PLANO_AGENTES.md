@@ -22,11 +22,29 @@ Fica fora deste plano tudo o que não leva a isso (lista em "Anotado para depois
 | 5 | Material da camada 1 de PM | feito (2026-10-21): modelo mental da Verde, 24 cartas em 3 rodadas (14d91ac); as 10 fontes da camada 1 já tinham síntese |
 | 6 | Agente de PM e teste solo | feito (2026-10-21): definição (`.claude/agents/politica-monetaria-analyst.md`); dois testes solo em `obsidian/ciclos/2026-10-15/` (fba897b, 414eda4). Da revisão do usuário: passo máximo de 25 p.b. afirmado de memória (virou o princípio I.II.ix); foco vai × deveria × mercado (Q1–Q4); central do modelo em todos os trimestres; seção 6, "Sobre o modelo", em todo report. Promovidos Segura-Ubiergo e Adrian-Crump-Moench. Seta no diagrama (9f6383e) |
 | 7 | Desenho do ciclo conjunto (decisões) | feito (2026-10-22): SISTEMA IV.ii, IV.vi, IV.vii e III.III.vii; a tutela das exógenas virou a aba "Exógenas" do tracker, **que o usuário preenche**; caudas upside/downside para todos; relatório por tema com apêndice por área (manual §13) |
-| 8 | Os cinco agentes novos, na forma mínima | em curso (2026-10-22): mapas aprovados, exceto a Parte 1 do fiscal, reescrita nas duas discussões (contábil × impacto na demanda); os subagentes escrevem lista, módulo de dados e definição. Falta o ajuste de câmbio e PM |
-| 9 | Engrenagem do ciclo conjunto | em curso (2026-10-22): E1 (71bbb16, 78c79f6), E2 consolidação (4f9f186), templates (9b262ce); em curso E3 (escrivão) e E4 (grupos do IPCA no modelo, upside/downside no JSON) |
+| 8 | Os cinco agentes novos, na forma mínima | quase feito (2026-10-22): os cinco mapas aprovados (o fiscal reescrito nas duas discussões, com foco no impacto na demanda), listas V.III–V.VII, módulos de dados e definições (1a7ef6a, b23ea25, cd52f2f, 04d3102, 0e311f4), os sete em `AGENTES` (50a40b0). **Falta o ajuste de câmbio e PM** |
+| 9 | Engrenagem do ciclo conjunto | quase feito (2026-10-22): E1 (71bbb16, 78c79f6), E2 consolidação (4f9f186), E3 escrivão (94a1672), E4 grupos do IPCA e upside/downside (faab307), templates (9b262ce), tutela preenchida (cf8a7c6, efe85f7). Falta a unificação das `variante` e o teste dos sete |
 | 10 | O primeiro ciclo conjunto, sem literatura | — |
 
-**Em curso:** M1–M5 (lista, módulo, definição), E3, E4. **Falta do usuário:** preencher a aba "Exógenas"; aprovar a Parte 1 do fiscal. **Próximo:** linhas em `AGENTES`, unificação das tabelas com `variante` própria, ajuste de câmbio e PM.
+## Para a próxima sessão (handover de 2026-10-22)
+
+Esta sessão parou aqui por custo (o chat ficou longo). Ler este bloco, a tabela acima, a seção (III) e o `SISTEMA_AGENTES.md` III.III.i, III.III.vii, IV.ii, IV.vi e IV.vii.
+
+**Modelo dos subagentes** (decisão do usuário, 2026-10-22): Sonnet para engenharia com teste; Opus para mapas, definições, rodadas do ciclo e escrivão.
+
+**Próximos passos, nesta ordem:**
+1. **Ajuste de câmbio e PM** (um subagente, Opus), depois dos cinco:
+    - V.I e V.II do SISTEMA: os grupos TWA viram "Endógeno de <agente> (consulta)" conforme as fronteiras de III.III.vii (inflação, atividade com hiato e mercado de trabalho, fiscal com o CDS, externo, expectativas com Focus e QPC); o CDS sai de "Exógeno". O `motor.conferir` tem de seguir passando.
+    - Os dois mapas: a linha do repasse (E3 do câmbio, S3 da PM) vai para a inflação; na PM, 2.3 (ancoragem) vai para expectativas, 2.4 (hiato) para atividade, a leitura do prêmio fiscal (2.5, 2.6) para o fiscal, o caminho do Fed (2.8, item 6 do horizonte) para o externo; as seções 3.2/4.2 "not defined yet" viram linhas; worst/best → upside/downside; tutela pela aba.
+    - As duas definições (`cambio-analyst.md` 110–112, `politica-monetaria-analyst.md` 133–134 ainda dizem worst/best e Pbc − Pwc): upside/downside, JSON de caminhos, tutela, divergência, multiplicador do dono da equação, sem literatura.
+    - `cambio.py`: CLP e COP do `cmb_fx_latam` (BIS) chegam com um dia de defasagem (correlação com o dólar EM 0,02 no mesmo dia, 0,55 alinhado); o externo já alinha, câmbio e PM não.
+    - **A Parte 4 (entradas) dos sete mapas**, espelho das Partes 3: hoje é placeholder nos cinco novos.
+2. **Unificação das `variante`** (subagente, Sonnet): os recortes de `expc_focus_periodo` declarados por inflação (componentes), atividade (PIB, desocupação) e fiscal (fiscal) passam a vir de expectativas, onde fizer sentido; `tests/test_dados_agentes.py` cobrindo os sete (`conferir` e `conferir_consultas` já passam nos sete).
+3. **Fase 10:** a conversa sobre o recorte e a tempestividade, com o que os subagentes acharam: Focus parada em 09/10; CDS em 14/10 (carga manual); `cred_fluxo_financeiro` em abr/26; `mt_pnad` fora do job de rotina; posição de swap do BC em 01/08; EFGG e PIB trimestral no 2T26; `inflc_meta` só até 2026; inflação implícita de 1 ano em 6,66% contra Focus 4,48% (vértice curto da NTN-B, causa não confirmada); IPCA 24m suavizado com 17 respondentes. Depois: o usuário atualiza a base, escolhemos a data, `dados <agente> --ciclo D --sem-literatura` para os sete, conferir F e retratos, rodadas (a definição do fiscal espera `tutela=...` nos argumentos).
+
+**Decisão pendente do usuário, antes do primeiro placar da atividade:** o placar do hiato foi fixado na edição do RPM do fechamento do trimestre, mas o BC vem revisando o hiato para cima (4T25: 0,17 na edição de dez/25, 0,74 hoje) e o modelo projeta na escala da edição corrente. A tese pode parecer acertar ou errar pela revisão.
+
+**Fora do plano, anotado:** o diagrama (`analytics/agent_system/report.html:322`) ainda diz "os cenários worst de cada agente".
 
 O A e o F(A) de câmbio e PM do ciclo 2026-10-22 já foram montados, antes da mudança de rumo. A data do ciclo conjunto será escolhida na Fase 10, depois da conversa sobre o recorte dos dados.
 
