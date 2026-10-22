@@ -24,20 +24,22 @@ O CONTRATO — o JSON que cada agente grava em cada rodada
                                                 # depois do último dado, o valor é segurado
       "tese": {                                 # a distribuição, por variável e trimestre
         "ptax": {                               # variável do modelo que é do agente (ENDOGENA_DONO),
-          "worst": "acima",                     # uma exógena (fiscal e externo) ou uma variável
-          "trimestres": {                       # própria da área (então com "nome" e "unidade")
-            "4T26": {"central": 5.21, "faixa": [5.10, 5.32],
-                     "p_faixa": 55, "p_worst": 25, "p_best": 20}
+          "trimestres": {                       # uma exógena (fiscal e externo) ou uma variável
+            "4T26": {"central": 5.21,           # própria da área (então com "nome" e "unidade")
+                     "faixa": [5.10, 5.32],
+                     "p_faixa": 55, "p_upside": 25, "p_downside": 20}
           }
         }
       },
       "nota": "opcional, texto livre"
     }
 
-  - `worst` é a direção da cauda ruim: "acima" (inflação, câmbio, Selic) ou "abaixo" (hiato).
-    A cauda worst fica além da ponta da faixa naquela direção; a best, além da outra.
+  - As caudas são de POSIÇÃO (SISTEMA III.III.i, decidido 2026-10-22):
+    `p_upside` é a probabilidade de a variável fechar ACIMA da faixa (> faixa[1]), `p_downside`
+    a de fechar ABAIXO dela (< faixa[0]). Nenhuma das duas é "a ruim": se uma cauda é boa ou
+    ruim para o Brasil, o report diz em texto. Assimetria = (p_upside − p_downside) / 100.
   - Em cada trimestre: faixa[0] ≤ central ≤ faixa[1]; cada probabilidade entre 0 e 100, e as
-    três somam 100.
+    três (p_faixa, p_upside, p_downside) somam 100.
   - Quem tem variável no modelo escreve como central a do modelo (na rodada 1, a do G dele; da
     rodada 2 em diante, a do P anterior). Quem não tem (fiscal, externo) escreve a tese sobre a
     exógena de que tem tutela, e a central é o próprio caminho base: o validador confere que é.
@@ -98,6 +100,13 @@ ENDOGENA_DONO = {
     "selic": "politica_monetaria",
     "selic_fim": "politica_monetaria",
     "ipca_12m": "inflacao",
+    # os quatro grupos do IPCA, como contribuição para o de 12 meses, e o resíduo dos trimestres
+    # observados: decomposição da central da inflação (SISTEMA III.III.vii), sem faixa exigida
+    "ipca_12m_servicos": "inflacao",
+    "ipca_12m_alimentacao": "inflacao",
+    "ipca_12m_industriais": "inflacao",
+    "ipca_12m_monitorados": "inflacao",
+    "ipca_12m_residuo": "inflacao",
     "ipca_tri": "inflacao",
     "focus_12m": "expectativas",
     "hiato": "atividade",
@@ -109,8 +118,8 @@ ABA = "Exógenas"
 HORIZONTE = 6            # os seis trimestres da tese, a partir do primeiro projetado
 _TOL = 1e-6              # valores iguais até aqui não divergem
 _CAMPOS = {"agente", "rodada", "ciclo", "caminhos", "tese", "nota"}
-_CAMPOS_VAR = {"worst", "trimestres", "nome", "unidade", "nota"}
-_CAMPOS_TRI = {"central", "faixa", "p_faixa", "p_worst", "p_best"}
+_CAMPOS_VAR = {"trimestres", "nome", "unidade", "nota"}
+_CAMPOS_TRI = {"central", "faixa", "p_faixa", "p_upside", "p_downside"}
 
 
 def _norm(s) -> str:
@@ -274,7 +283,7 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
     tese: dict = {}
     ts = dados.get("tese")
     if not isinstance(ts, dict) or not ts:
-        e("'tese' tem de ser {variável: {worst, trimestres}}, com ao menos uma variável")
+        e("'tese' tem de ser {variável: {trimestres}}, com ao menos uma variável")
         ts = {}
     for var, d in ts.items():
         if not isinstance(d, dict):
@@ -299,12 +308,10 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
             if not nome or not un:
                 e(f"tese.{var}: não é variável do modelo nem exógena; como variável própria da "
                   "área, precisa de 'nome' e 'unidade'")
-        if d.get("worst") not in ("acima", "abaixo"):
-            e(f"tese.{var}.worst: {d.get('worst')!r}; vale 'acima' ou 'abaixo'")
         tris = d.get("trimestres")
         if not isinstance(tris, dict) or not tris:
             e(f"tese.{var}.trimestres: tem de ser {{trimestre: {{central, faixa, p_faixa, "
-              "p_worst, p_best}}}, não vazio")
+              "p_upside, p_downside}}}, não vazio")
             continue
         proprio = expandir(caminhos.get(var, {}), jan) if tipo == "exogena" else None
         out = {}
@@ -328,7 +335,7 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
             if not (isinstance(fx, list) and len(fx) == 2 and all(_num(x) for x in fx)):
                 e(f"{w}.faixa: tem de ser [baixo, alto], dois números")
                 continue
-            ps = [q["p_faixa"], q["p_worst"], q["p_best"]]
+            ps = [q["p_faixa"], q["p_upside"], q["p_downside"]]
             if not _num(q["central"]) or not all(_num(p) for p in ps):
                 e(f"{w}: central e probabilidades têm de ser números")
                 continue
@@ -338,7 +345,7 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
             if any(not 0 <= p <= 100 for p in ps):
                 e(f"{w}: probabilidade fora de 0 a 100: {ps}")
             if abs(sum(ps) - 100) > 0.01:
-                e(f"{w}: p_faixa + p_worst + p_best = {sum(ps):g}, não 100")
+                e(f"{w}: p_faixa + p_upside + p_downside = {sum(ps):g}, não 100")
             if proprio is not None:
                 j = jan.index(tn)
                 if proprio[j] is None:
@@ -348,8 +355,8 @@ def validar(dados, ctx: dict, onde: str = "") -> dict:
                     e(f"{w}: central {c} diferente do próprio caminho base ({proprio[j]}); numa "
                       "tese sobre exógena a central é o caminho")
             out[tn] = {"central": c, "faixa": [lo, hi], "p_faixa": float(ps[0]),
-                       "p_worst": float(ps[1]), "p_best": float(ps[2])}
-        tese[var] = {"tipo": tipo, "nome": nome, "unidade": un, "worst": d.get("worst"),
+                       "p_upside": float(ps[1]), "p_downside": float(ps[2])}
+        tese[var] = {"tipo": tipo, "nome": nome, "unidade": un,
                      "trimestres": {t: out[t] for t in jan if t in out}}
         if d.get("nota"):
             tese[var]["nota"] = d["nota"]
@@ -512,7 +519,7 @@ def _teses(lidos: dict, res: dict, ctx: dict, usados: dict) -> list[dict]:
                 lo, hi = q["faixa"]
                 linhas.append({
                     "agente": a, "variavel": var, "tipo": t["tipo"], "trimestre": tri,
-                    **q, "worst": t["worst"], "assimetria": (q["p_best"] - q["p_worst"]) / 100,
+                    **q, "assimetria": (q["p_upside"] - q["p_downside"]) / 100,
                     "central_p": pc, "lo_p": plo, "hi_p": phi,
                     "diferenca": None if pc is None else pc - q["central"],
                     "fora_da_faixa": pc is not None and not lo - _TOL <= pc <= hi + _TOL})
@@ -606,14 +613,12 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
     for (a, var), lns in por_var.items():
         t = lidos[a]["tese"][var]
         casas = ctx["saidas"][var]["casas"] if t["tipo"] == "modelo" else 2
-        out += ["", f"### {AGENTES[a]} — {t['nome']} ({t['unidade']}) · worst = {t['worst']}", "",
+        out += ["", f"### {AGENTES[a]} — {t['nome']} ({t['unidade']})", "",
                 f"| Trimestre | Central do agente | {cp} | Diferença | Faixa base · P | "
-                "Cauda worst · P | Cauda best · P | Pbc − Pwc |",
+                "Downside · P | Upside · P | P(up) − P(down) |",
                 "|---|---|---|---|---|---|---|---|"]
         for ln in lns:
             lo, hi = ln["faixa"]
-            wl, bl = (hi, lo) if ln["worst"] == "acima" else (lo, hi)
-            wd, bd = ("acima", "abaixo") if ln["worst"] == "acima" else ("abaixo", "acima")
             c_p = _f(ln["central_p"], casas)
             if ln["lo_p"] is not None:
                 c_p += f" [{_f(ln['lo_p'], casas)}; {_f(ln['hi_p'], casas)}]"
@@ -621,9 +626,9 @@ def _md(r: dict, ctx: dict, res: dict, lidos: dict) -> str:
                 c_p += " · **fora da faixa**"
             out.append(f"| {ln['trimestre']} | {_f(ln['central'], casas)} | {c_p} | "
                        f"{_f(ln['diferenca'], casas, True)} | {_f(lo, casas)} a {_f(hi, casas)} · "
-                       f"{_f(ln['p_faixa'], 0)}% | {wd} de {_f(wl, casas)} · {_f(ln['p_worst'], 0)}% | "
-                       f"{bd} de {_f(bl, casas)} · {_f(ln['p_best'], 0)}% | "
-                       f"{_f(ln['assimetria'], 2, True)} |")
+                       f"{_f(ln['p_faixa'], 0)}% | abaixo de {_f(lo, casas)} · "
+                       f"{_f(ln['p_downside'], 0)}% | acima de {_f(hi, casas)} · "
+                       f"{_f(ln['p_upside'], 0)}% | {_f(ln['assimetria'], 2, True)} |")
         if t["tipo"] == "propria":
             out.append("\nVariável própria da área, fora do modelo: o P não tem central para ela.")
     return "\n".join(out) + "\n"

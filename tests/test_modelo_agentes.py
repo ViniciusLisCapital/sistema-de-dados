@@ -14,7 +14,10 @@ Cada item erra sem levantar nada se quebrar:
 4. uma chave invalida (endogena, sigma, multiplicador negativo, trimestre fora) passa calada;
 5. o trimestre que ja fechou nao e marcado;
 6. a Selic de fechamento (derivada) nao segue (media de q + media de q+1)/2 na central ou num
-   desenho, o ultimo trimestre nao fica em branco, ou o de partida nao e o observado.
+   desenho, o ultimo trimestre nao fica em branco, ou o de partida nao e o observado;
+7. as contribuicoes dos quatro grupos do IPCA (mais o residuo) nao somam o IPCA de 12 meses, um
+   grupo sai com o rotulo de outro, ou o residuo dos trimestres observados some ou vaza para a
+   janela toda projetada.
 
 A faixa foi conferida uma vez contra `_simFaixasSistema` da pagina, no mesmo payload: 3e-9 no
 pior quantil (2026-10-15). Aqui so se afirma que x1 nao a muda.
@@ -176,7 +179,7 @@ from analytics.brasil.structural_model import simulator as sm  # noqa: E402
 
 i0, h = p["i0"], p["h_padrao"]
 sd, _ = sm.resolver(p, modelo._coefs(p, {}, 7), i0, h, sm.entradas(p, i0, h))
-s7 = modelo._saidas(p, sd)
+s7 = modelo._saidas(p, sd, modelo._coefs(p, {}, 7)["I"])
 check("num desenho: o fechamento e o das medias do desenho",
       all(abs(s7["selic_fim"][j] - (sd["selic"][j] + sd["selic"][j + 1]) / 2) < 1e-12 for j in range(h - 1))
       and s7["selic_fim"][-1] is None and dif(s7["selic"], med) > 1e-6)
@@ -215,6 +218,66 @@ with tempfile.TemporaryDirectory() as tmp:
         check("retrato de outro trimestre nao vale (e o A ainda vale)", r_n["partida"]["selic_fim"] == 13.75)
     finally:
         modelo._pasta_a = original
+
+# 7. os quatro grupos do IPCA, como contribuicao para o de 12 meses (decisao de 2026-10-22)
+GR = [f"ipca_12m_{s}" for s in modelo.GRUPOS.values()] + ["ipca_12m_residuo"]
+check("as quatro contribuicoes e o residuo estao em SAIDAS e no resultado, em p.p.",
+      all(k in fa["endogenas"] and fa["endogenas"][k]["unidade"] == "p.p." for k in GR)
+      and {k for k, *_ in modelo.SAIDAS} >= set(GR))
+check("os grupos de modelo.GRUPOS sao os da (I)", set(modelo.GRUPOS) == set(p["eq"]["I"]["ordem_grupos"]))
+i12 = fa["endogenas"]["ipca_12m"]["central"]
+soma = [sum(fa["endogenas"][k]["central"][j] for k in GR) for j in range(h)]
+check("grupos + residuo somam o IPCA de 12 meses em todo trimestre projetado",
+      dif(soma, i12) < 1e-8, dif(soma, i12))
+# Num desenho tambem: a decomposicao e refeita com os pesos daquele desenho.
+check("e num desenho", dif([sum(s7[k][j] for k in GR) for j in range(h)], s7["ipca_12m"]) < 1e-8)
+pa = fa["partida"]
+check("e no trimestre de partida, contra o IPCA 12m publicado (6 casas no payload)",
+      abs(sum(pa[k] for k in GR) - pa["ipca_12m"]) < 1e-5, sum(pa[k] for k in GR) - pa["ipca_12m"])
+res_ = fa["endogenas"]["ipca_12m_residuo"]["central"]
+check("o residuo e zero com a janela toda projetada (do 4o trimestre em diante)",
+      all(x == 0.0 for x in res_[3:]), res_[3:])
+check("e nao e zero enquanto a janela tem trimestre observado (o IPCA publicado != soma dos grupos)",
+      any(abs(x) > 1e-4 for x in res_[:3]) and abs(pa["ipca_12m_residuo"]) > 1e-4, (res_[:3], pa["ipca_12m_residuo"]))
+check("o residuo nao tem faixa (so depende do observado)",
+      fa["endogenas"]["ipca_12m_residuo"]["lo"] == fa["endogenas"]["ipca_12m_residuo"]["hi"] == res_)
+check("a faixa de cada grupo contem a central",
+      all(e["lo"][j] <= e["central"][j] <= e["hi"][j] and e["lo"][j] < e["hi"][j]
+          for k in GR[:-1] for e in [fa["endogenas"][k]] for j in range(h)))
+# O rotulo: contra uma conta independente, sem encadear. O encadeamento so multiplica cada
+# trimestre pelo cheio dos anteriores, entao a diferenca fica entre 0 e aprox x IPCA12m/100 (com
+# as parcelas positivas). Medido: ate 0,03 p.p.; trocar dois rotulos sai alem disso.
+I = p["eq"]["I"]
+
+
+def no_limite(v, aprox, i12_):
+    return -1e-9 <= v - aprox <= abs(aprox) * i12_ / 100 + 1e-9
+
+
+# A chave de cada grupo sai do NOME que a saida imprime contra o nome do grupo no payload, e nao de
+# modelo.GRUPOS: um GRUPOS com dois rotulos trocados passaria num teste que lesse o mesmo GRUPOS
+# (mutante verificado).
+nomes = {k: n for k, n, *_ in modelo.SAIDAS}
+chave = {}
+for g, G in I["grupos"].items():
+    ks = [k for k in GR if nomes[k].endswith("contribuição de " + G["nome_frase"])]
+    check(f"uma saida, e so uma, se chama contribuicao de {G['nome_frase']}", len(ks) == 1, ks)
+    chave[g] = ks[0] if ks else None
+for g, k in chave.items():
+    aprox = sum(I["pesos_obs"][g][i] * I["obs_grupo"][g][i] for i in range(u - 3, u + 1))
+    check(f"partida: {k} e o grupo {g} (peso x variacao somado na janela, mais o encadeamento)",
+          k is not None and no_limite(pa[k], aprox, pa["ipca_12m"]), (k and pa[k], aprox))
+partes = []
+sm._sim_infl(p, modelo._coefs(p, {})["I"], i0, h, sm.resolver(p, modelo._coefs(p, {}), i0, h,
+                                                             sm.entradas(p, i0, h))[0], partes=partes)
+for g, k in chave.items():
+    aprox = sum(pt["pesos"][g] * pt["grupos"][g] for pt in partes[-4:])
+    check(f"ultimo trimestre projetado: {k} e o grupo {g}",
+          k is not None and no_limite(fa["endogenas"][k]["central"][-1], aprox, i12[-1]),
+          (k and fa["endogenas"][k]["central"][-1], aprox))
+tx = modelo.texto(fa)
+check("o texto imprime as quatro contribuicoes e diz a unidade e o residuo",
+      all(fa["endogenas"][k]["nome"] in tx for k in GR) and "em p.p." in tx and "as faixas não somam" in tx)
 
 print(f"\n{'FALHAS: ' + str(falhas) if falhas else 'tudo ok'}")
 sys.exit(1 if falhas else 0)

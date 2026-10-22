@@ -91,12 +91,13 @@ def planilha(destino: Path, tutela: dict | None) -> Path:
     return p
 
 
-def tese(var, worst, tris, base=None, larg=0.1):
-    """Uma tese simples: central = base[t] (ou 1.0), faixa +- larg, 50/30/20."""
-    return {var: {"worst": worst, "trimestres": {
+def tese(var, tris, base=None, larg=0.1):
+    """Uma tese simples: central = base[t] (ou 1.0), faixa +- larg, 50 na faixa, 30 upside, 20
+    downside."""
+    return {var: {"trimestres": {
         t: {"central": (base or {}).get(t, 1.0), "faixa": [(base or {}).get(t, 1.0) - larg,
                                                             (base or {}).get(t, 1.0) + larg],
-            "p_faixa": 50, "p_worst": 30, "p_best": 20} for t in tris}}}
+            "p_faixa": 50, "p_upside": 30, "p_downside": 20} for t in tris}}}
 
 
 def grava(raiz: Path, agente: str, rodada: str, caminhos: dict, ts: dict, **extra):
@@ -150,16 +151,16 @@ with tempfile.TemporaryDirectory() as tmp:
     rr_f = {"4T26": 7.5, "1T27": 7.2, "2T27": 7.0}
     rr_pm = {"1T27": 7.6, "2T27": 7.4}                       # comeca um trimestre depois
     grava(raiz, "fiscal", "r1", {"fiscal": fis, "rr_10a": rr_f},
-          tese("fiscal", "acima", H6, base=dict(zip(H6, cs.expandir(fis, H6))), larg=15))
+          tese("fiscal", H6, base=dict(zip(H6, cs.expandir(fis, H6))), larg=15))
     grava(raiz, "politica_monetaria", "r1", {"rr_10a": rr_pm, "fiscal": {"4T26": 160.0, "1T27": 135.0}},
-          tese("selic_fim", "acima", H6, base={t: 13.0 for t in H6}, larg=1.0))
+          tese("selic_fim", H6, base={t: 13.0 for t in H6}, larg=1.0))
     grava(raiz, "cambio", "r1", {"vol": {"4T26": 14.0}, "dxy_em": {"2026T4": 131.0}},
-          tese("ptax", "acima", H6, base={t: 5.2 for t in H6}, larg=0.15))
+          tese("ptax", H6, base={t: 5.2 for t in H6}, larg=0.15))
     grava(raiz, "externo", "r1", {"dxy_em": {"4T26": 129.0, "1T27": 128.0}, "ffr": {"4T26": 3.6},
                                   "icbr_met_usd": {"4T26": 335.0}},
-          tese("dxy_em", "acima", H6[:2], base={"4T26": 129.0, "1T27": 128.0}, larg=3))
+          tese("dxy_em", H6[:2], base={"4T26": 129.0, "1T27": 128.0}, larg=3))
     grava(raiz, "inflacao", "r1", {"icbr_agr_usd": {"4T26": 210.0}},
-          tese("ipca_12m", "acima", H6, base={t: 4.5 for t in H6}, larg=0.4))
+          tese("ipca_12m", H6, base={t: 4.5 for t in H6}, larg=0.4))
 
     r = cs.consolidar(CICLO, "r1", raiz=raiz, tracker=tk, sim=SIM, faixa=True)
     us = r["caminhos_usados"]
@@ -232,7 +233,7 @@ with tempfile.TemporaryDirectory() as tmp:
     x = tp[("externo", "dxy_em", "1T27")]
     check("a tese de quem nao tem variavel no modelo (externo) le o caminho usado",
           x["central_p"] == us["dxy_em"]["1T27"] and x["lo_p"] is None, x)
-    check("assimetria = (Pbest - Pworst)/100", perto(x["assimetria"], -0.10), x["assimetria"])
+    check("assimetria = (P(upside) - P(downside))/100", perto(x["assimetria"], 0.10), x["assimetria"])
 
     # 9. os arquivos
     md = (raiz / CICLO / "P1.md").read_text(encoding="utf-8")
@@ -248,6 +249,13 @@ with tempfile.TemporaryDirectory() as tmp:
           "| Política monetária | `fiscal` | 3 | 4T26 | 160,00 | 140,00 | +20,00 |" in md)
     check("a saida do modelo vem com a faixa e sem a lista repetida de exogenas",
           "**Endógenas** — central e faixa" in md and "**Exógenas do cenário**" not in md)
+    check("e com os quatro grupos do IPCA (contribuicao para o de 12 meses) e o residuo",
+          all(f"| {n} ({u}) |" in md for k, n, u, _c in modelo.SAIDAS if k.startswith("ipca_12m_")))
+    lo_, hi_ = 5.2 - 0.15, 5.2 + 0.15
+    check("as caudas da tese saem por posicao: downside abaixo da faixa, upside acima",
+          "| Downside · P | Upside · P | P(up) − P(down) |" in md
+          and f"abaixo de {cs._f(lo_, 3)} · 20% | acima de {cs._f(hi_, 3)} · 30% | +0,10 |" in md
+          and "worst" not in md.lower() and "best" not in md.lower(), md[md.find("### Câmbio"):][:600])
     check("o JSON do P le de volta com os caminhos usados", js["caminhos_usados"]["fiscal"]["4T26"] == 140.0)
 
     # 10. o PF*: os mesmos arquivos como report final
@@ -268,7 +276,7 @@ with tempfile.TemporaryDirectory() as tmp:
     # 11. o contrato rejeita o que esta errado
     def com(**mudar):
         base = {"agente": "cambio", "rodada": "r1", "ciclo": CICLO, "caminhos": {"vol": {"4T26": 13.0}},
-                "tese": tese("ptax", "acima", ["4T26"], base={"4T26": 5.2})}
+                "tese": tese("ptax", ["4T26"], base={"4T26": 5.2})}
         base.update(mudar)
         return lambda: cs.validar(base, CTX, "teste")
 
@@ -279,25 +287,36 @@ with tempfile.TemporaryDirectory() as tmp:
     check("trimestre fora da janela levanta",
           levanta(com(caminhos={"vol": {"4T30": 13}}), "fora da janela") is True)
     check("trimestre mal escrito levanta", levanta(com(caminhos={"vol": {"5T26": 13}}), "inválido") is True)
-    ruim = tese("ptax", "acima", ["4T26"], base={"4T26": 5.2})
-    ruim["ptax"]["trimestres"]["4T26"]["p_best"] = 19
+    ruim = tese("ptax", ["4T26"], base={"4T26": 5.2})
+    ruim["ptax"]["trimestres"]["4T26"]["p_downside"] = 19
     check("probabilidades que nao somam 100 levantam", levanta(com(tese=ruim), "não 100") is True)
-    ruim = tese("ptax", "acima", ["4T26"], base={"4T26": 5.2})
+    ruim = tese("ptax", ["4T26"], base={"4T26": 5.2})
     ruim["ptax"]["trimestres"]["4T26"]["faixa"] = [5.3, 5.4]
     check("faixa que nao contem a central levanta", levanta(com(tese=ruim), "não contém a central") is True)
-    ruim = tese("ptax", "acima", ["4T26"], base={"4T26": 5.2})
-    ruim["ptax"]["trimestres"]["4T26"]["p_worts"] = 1
-    check("campo desconhecido (erro de digitacao) levanta", levanta(com(tese=ruim), "p_worts") is True)
-    check("worst fora de acima/abaixo levanta",
-          levanta(com(tese={"ptax": {**tese("ptax", "x", ["4T26"], {"4T26": 5.2})["ptax"]}}), "worst") is True)
+    ruim = tese("ptax", ["4T26"], base={"4T26": 5.2})
+    ruim["ptax"]["trimestres"]["4T26"]["p_upsdie"] = 1
+    check("campo desconhecido (erro de digitacao) levanta", levanta(com(tese=ruim), "p_upsdie") is True)
+    # As caudas sao de posicao desde 2026-10-22: o contrato antigo (worst/best) nao passa calado.
+    ruim = tese("ptax", ["4T26"], base={"4T26": 5.2})
+    ruim["ptax"]["worst"] = "acima"
+    check("o campo 'worst' antigo levanta como desconhecido", levanta(com(tese=ruim), "'worst'") is True)
+    ruim = tese("ptax", ["4T26"], base={"4T26": 5.2})
+    q = ruim["ptax"]["trimestres"]["4T26"]
+    q["p_worst"], q["p_best"] = q.pop("p_upside"), q.pop("p_downside")
+    check("p_worst/p_best antigos levantam, e a mensagem pede p_upside e p_downside",
+          levanta(com(tese=ruim), "'p_worst'", "'p_best'", "falta 'p_upside'", "falta 'p_downside'") is True)
+    check("a inflacao escreve tese sobre a contribuicao de um grupo do IPCA",
+          cs.validar({"agente": "inflacao", "rodada": "r1", "ciclo": CICLO, "caminhos": {},
+                      "tese": tese("ipca_12m_servicos", ["4T26"], base={"4T26": 2.0})}, CTX, "teste")
+          ["tese"]["ipca_12m_servicos"]["tipo"] == "modelo")
     check("tese sobre a variavel do modelo de outro agente levanta",
-          levanta(com(tese=tese("hiato", "abaixo", ["4T26"])), "atividade") is True)
+          levanta(com(tese=tese("hiato", ["4T26"])), "atividade") is True)
     check("tese sobre exogena com central diferente do proprio caminho levanta",
-          levanta(com(tese=tese("vol", "acima", ["4T26"], base={"4T26": 12.0})),
+          levanta(com(tese=tese("vol", ["4T26"], base={"4T26": 12.0})),
                   "diferente do próprio caminho") is True)
     check("varios erros saem juntos numa mensagem so",
           levanta(com(caminhos={"cds": {"4T26": 1}, "vol": {"4T30": 1}}), "'cds'", "4T30") is True)
-    arq = grava(raiz, "atividade", "r2", {}, tese("hiato", "abaixo", ["4T26"]))
+    arq = grava(raiz, "atividade", "r2", {}, tese("hiato", ["4T26"]))
     d = json.loads(arq.read_text(encoding="utf-8"))
     d["rodada"] = "r1"
     arq.write_text(json.dumps(d), encoding="utf-8")

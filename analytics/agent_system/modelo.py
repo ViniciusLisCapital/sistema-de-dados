@@ -9,8 +9,8 @@ O Modelo Estrutural rodado por um agente: a função fixa que o G chama (SISTEMA
     sim = modelo.carregar("2026-10-15")
     print(modelo.listar(sim))                     # exógenas e coeficientes, com as chaves
     base = modelo.rodar(sim, caminhos={"fiscal": {"4T26": 130, "1T27": 125}})
-    worst = modelo.rodar(sim, caminhos={"fiscal": {"4T26": 150}}, mult={"F.b_fiscal": 1.5})
-    print(modelo.texto(worst))
+    alta = modelo.rodar(sim, caminhos={"fiscal": {"4T26": 150}}, mult={"F.b_fiscal": 1.5})
+    print(modelo.texto(alta))
 
 O que entra:
 
@@ -24,8 +24,24 @@ O que entra:
 
 O que sai, por trimestre dos 12 seguintes ao último trimestre com dado (o último sai como
 "observado", é dali que a conta parte): PTAX de fechamento, Selic média e de fechamento, IPCA
-do trimestre e de 12 meses, Focus de 12 meses e hiato, cada um com a central (os pesos da
-mediana) e a faixa de 90% do posterior.
+do trimestre e de 12 meses, a contribuição de cada grupo do IPCA para o de 12 meses, Focus de
+12 meses e hiato, cada um com a central (os pesos da mediana) e a faixa de 90% do posterior.
+
+Os quatro grupos (decisão de 2026-10-22, SISTEMA III.III.vii: a tese da inflação é o IPCA 12m,
+e os grupos são a decomposição da central) saem como CONTRIBUIÇÃO para o IPCA de 12 meses, em
+p.p., que é a unidade em que eles somam o cheio. A conta é a da composição exata: com C o IPCA
+cheio de cada trimestre da janela de quatro e w·x o peso do grupo vezes a variação dele no
+trimestre (as duas em % simples, e Σ w·x = C nos trimestres projetados, por construção da (I)),
+
+    contribuição do grupo = Σ_q  w·x(q) · Π_{q' antes de q na janela} (1 + C(q')/100)
+
+e as quatro somam 100·(Π(1 + C/100) − 1), o IPCA de 12 meses. Enquanto a janela tem trimestre
+OBSERVADO, sobra um resíduo, `ipca_12m_residuo`: ali o C é o publicado, e o publicado não é
+exatamente Σ w·x dos grupos trimestrais (o IBGE agrega mês a mês, com o peso de cada mês;
+medido na grade, 0,014 p.p. por trimestre em média e 0,14 no pior). Do quarto trimestre
+projetado em diante a janela é toda projetada e o resíduo é zero. Grupos + resíduo fecham o
+IPCA de 12 meses em todo trimestre (o teste confere). A faixa de cada grupo sai dos mesmos
+desenhos do posterior e é só dele: as faixas não somam.
 
 A Selic de fechamento é DERIVADA (decisão do usuário em 2026-10-21, a revisar): o modelo só
 tem a média do trimestre. Fechamento de q ≈ (média de q + média de q+1) / 2, na central e em
@@ -71,6 +87,11 @@ SAIDAS = (
     ("selic", "Selic, média do trimestre", "% a.a.", 2),
     ("selic_fim", "Selic, fechamento do trimestre (derivada)", "% a.a.", 2),
     ("ipca_12m", "IPCA acumulado em 12 meses, no fim do trimestre", "%", 2),
+    ("ipca_12m_servicos", "IPCA 12m: contribuição de serviços", "p.p.", 2),
+    ("ipca_12m_alimentacao", "IPCA 12m: contribuição de alimentação", "p.p.", 2),
+    ("ipca_12m_industriais", "IPCA 12m: contribuição de bens industriais", "p.p.", 2),
+    ("ipca_12m_monitorados", "IPCA 12m: contribuição de monitorados", "p.p.", 2),
+    ("ipca_12m_residuo", "IPCA 12m: resíduo de agregação dos trimestres observados", "p.p.", 2),
     ("ipca_tri", "IPCA no trimestre", "%", 2),
     ("focus_12m", "Focus IPCA 12 meses à frente, média do trimestre", "% a.a.", 2),
     ("hiato", "Hiato do produto", "% do potencial", 2),
@@ -109,6 +130,10 @@ CONVENCAO = {
     "icbr_met_usd": ("média do trimestre",
                      "IC-Br metal em dólar (`comm_icbr_usd`), média dos três meses"),
 }
+
+# Grupo da curva de Phillips (`eq["I"]["ordem_grupos"]`) -> o sufixo da saída `ipca_12m_<sufixo>`.
+# Um grupo que entrar ou sair da (I) sem acompanhar aqui levanta em `_parcelas`.
+GRUPOS = {"IS": "servicos", "IA": "alimentacao", "II": "industriais", "IM": "monitorados"}
 
 # Coeficiente que não aceita multiplicador: o desvio do erro não entra na conta, e as
 # marcas de crise valem zero em todo trimestre projetado.
@@ -467,7 +492,55 @@ def selic_fim(media: list[float]) -> list[float | None]:
     return [(a + b) / 2 for a, b in zip(media, media[1:])] + [None]
 
 
-def _saidas(p: dict, sol: dict) -> dict:
+# ── a decomposição do IPCA de 12 meses nos quatro grupos ──────────────────────
+def _parcelas(p: dict, partes: list) -> tuple[list, dict]:
+    """(C, {grupo: w·x}) por trimestre, em % simples: os quatro observados que terminam no
+    trimestre de partida (posições i0−4 a i0−1 da grade) e, depois, os projetados de `partes`
+    (o que `_sim_infl` devolve, um por trimestre). Posição 3 = partida; 4 + j = projetado j."""
+    from analytics.brasil.structural_model import simulator as sm
+
+    eq, i0 = p["eq"]["I"], p["i0"]
+    ordem = eq["ordem_grupos"]
+    if set(ordem) != set(GRUPOS):
+        raise ValueError(f"os grupos da (I) são {ordem}, e modelo.GRUPOS declara {list(GRUPOS)}")
+    C, cg = [], {g: [] for g in ordem}
+    for i in range(i0 - sm.ACUM_I12, i0):
+        w, c = sm._pesos_em(eq, i), p["var"]["infl_br"]["obs"][i]
+        x = {g: eq["obs_grupo"][g][i] for g in ordem}
+        if c is None or any(v is None for v in x.values()):
+            raise ValueError(f"o retrato não tem o IPCA e os quatro grupos de {_rot(p['rot'][i])}")
+        C.append(100.0 * (float(np.exp(c / 100.0)) - 1.0))
+        for g in ordem:
+            cg[g].append(w[g] * x[g])
+    for pt in partes:
+        C.append(pt["cheio"])
+        for g in ordem:
+            cg[g].append(pt["pesos"][g] * pt["grupos"][g])
+    return C, cg
+
+
+def _contrib_12m(C: list, cg: dict, fim: int) -> dict:
+    """A contribuição de cada grupo para o IPCA de 12 meses que termina na posição `fim`, e o
+    resíduo dos trimestres observados, em p.p.: a composição exata, encadeada pelo cheio dos
+    trimestres anteriores da janela (ver a docstring do módulo). Grupos + resíduo somam
+    100·(Π(1 + C/100) − 1)."""
+    out = {f"ipca_12m_{s}": 0.0 for s in GRUPOS.values()}
+    res, fator = 0.0, 1.0
+    for q in range(fim - 3, fim + 1):
+        soma = 0.0
+        for g in cg:                     # na ordem da (I), a mesma da soma de `_sim_infl`
+            out[f"ipca_12m_{GRUPOS[g]}"] += cg[g][q] * fator
+            soma += cg[g][q]
+        res += (C[q] - soma) * fator
+        fator *= 1.0 + C[q] / 100.0
+    out["ipca_12m_residuo"] = res
+    return out
+
+
+def _saidas(p: dict, sol: dict, coef_i: dict) -> dict:
+    """As saídas de `SAIDAS` de uma solução do laço. `coef_i` são os pesos da (I) com que a
+    solução foi feita: a curva de Phillips roda de novo sobre ela só para devolver os grupos
+    (o IPCA cheio que sai bate com o da solução até a tolerância do laço)."""
     from analytics.brasil.structural_model import simulator as sm
 
     i0, h = p["i0"], p["h_padrao"]
@@ -475,7 +548,11 @@ def _saidas(p: dict, sol: dict) -> dict:
     pre = list(eqi["pre_insumo"]["infl_br"])
     serie = pre + list(eqi["obs_insumo"]["infl_br"][:i0]) + list(sol["infl_br"])
     sel = list(sol["selic"])
-    return {
+    partes: list = []
+    sm._sim_infl(p, coef_i, i0, h, sol, partes=partes)
+    C, cg = _parcelas(p, partes)
+    dec = [_contrib_12m(C, cg, 4 + j) for j in range(h)]
+    out = {
         "ptax": list(sol["de"]),
         "selic": sel,
         "selic_fim": selic_fim(sel),
@@ -484,15 +561,21 @@ def _saidas(p: dict, sol: dict) -> dict:
         "focus_12m": list(sol["pi_e"]),
         "hiato": list(sol["hiato"]),
     }
+    for k in dec[0]:
+        out[k] = [d[k] for d in dec]
+    return out
 
 
 def _observado_em(p: dict, i: int) -> dict:
     """As saídas no trimestre `i` da grade, como foram publicadas: o ponto de partida."""
     v = p["var"]
+    if i != p["i0"] - 1:
+        raise ValueError("a decomposição observada só é montada para o trimestre de partida")
+    C, cg = _parcelas(p, [])
     return {"ptax": p["eq"]["F"]["ptax"][i], "selic": v["selic"]["obs"][i],
             "ipca_12m": p["eq"]["I"]["i12_obs"][i],
             "ipca_tri": 100.0 * (float(np.exp(v["infl_br"]["obs"][i] / 100.0)) - 1.0),
-            "focus_12m": v["pi_e"]["obs"][i], "hiato": v["hiato"]["obs"][i]}
+            "focus_12m": v["pi_e"]["obs"][i], "hiato": v["hiato"]["obs"][i]} | _contrib_12m(C, cg, 3)
 
 
 def _quantis(cols: list[list[float]], prob: float) -> tuple[list, list]:
@@ -519,11 +602,12 @@ def rodar(sim: dict, caminhos: dict | None = None, mult: dict | None = None,
     i0, h = p["i0"], p["h_padrao"]
     mt = _ler_mult(p, mult)
     ent, fonte = _caminhos(p, caminhos)
+    cm = _coefs(p, mt)
     try:
-        sol, voltas = sm.resolver(p, _coefs(p, mt), i0, h, ent)
+        sol, voltas = sm.resolver(p, cm, i0, h, ent)
     except RuntimeError as err:
         raise RuntimeError(f"o modelo não converge com estes multiplicadores ({err})") from None
-    central = _saidas(p, sol)
+    central = _saidas(p, sol, cm["I"])
 
     ciclo = dt.date.fromisoformat(sim["ciclo"])
     jan = _janela(p)
@@ -554,12 +638,13 @@ def rodar(sim: dict, caminhos: dict | None = None, mult: dict | None = None,
     cols = {k: [[] for _ in range(h)] for k, *_ in SAIDAS}
     falhou = 0
     for s in range(n):
+        cs = _coefs(p, mt, s)
         try:
-            sd, _ = sm.resolver(p, _coefs(p, mt, s), i0, h, ent)
+            sd, _ = sm.resolver(p, cs, i0, h, ent)
         except RuntimeError:
             falhou += 1
             continue
-        for k, serie in _saidas(p, sd).items():
+        for k, serie in _saidas(p, sd, cs["I"]).items():
             for j in range(h):
                 if serie[j] is not None:
                     cols[k][j].append(serie[j])
@@ -573,6 +658,8 @@ def rodar(sim: dict, caminhos: dict | None = None, mult: dict | None = None,
 def _f(v, casas: int, sinal: bool = False) -> str:
     if v is None:
         return "—"
+    if round(v, casas) == 0:             # sem "-0,00" num resíduo de 1e-4
+        v = 0.0
     s = f"{v:+,.{casas}f}" if sinal else f"{v:,.{casas}f}"
     return s.replace(",", "§").replace(".", ",").replace("§", ".")
 
@@ -598,10 +685,17 @@ def texto(res: dict, trimestres: list[str] | None = None) -> str:
         cel = [_f(res["partida"][k], c)]
         for j in idx:
             s = _f(e["central"][j], c)
-            if res["faixa"] and e["central"][j] is not None:
+            if res["faixa"] and e["central"][j] is not None and e["lo"][j] != e["hi"][j]:
                 s += f" [{_f(e['lo'][j], c)}; {_f(e['hi'][j], c)}]"
             cel.append(s)
         out.append(f"| {e['nome']} ({e['unidade']}) | " + " | ".join(cel) + " |")
+    out.append("\nGrupos do IPCA: contribuição de cada um para o IPCA de 12 meses, em p.p.; os "
+               "quatro mais o resíduo somam o IPCA de 12 meses. Contribuição = soma, nos quatro "
+               "trimestres da janela, de peso do grupo × variação dele no trimestre, encadeada pelo "
+               "IPCA cheio dos trimestres anteriores da janela. O resíduo só existe enquanto a janela "
+               "tem trimestre observado (o IPCA publicado não é exatamente peso × grupos "
+               "trimestrais: o IBGE agrega mês a mês) e é zero do quarto trimestre projetado em "
+               "diante. A faixa de cada grupo é só dele: as faixas não somam.")
     sf = res.get("selic_fim_partida")
     out.append("\nSelic de fechamento: DERIVADA, não sai do modelo (que só tem a média). Fechamento "
                "de um trimestre = (média dele + média do seguinte) / 2, na central e em cada desenho; "
