@@ -1,6 +1,6 @@
 # Fiscal Policy — Conceptual Map
 
-**Status:** Partes 2–4 aprovadas em 2026-10-22; Parte 1 reescrita, aguardando aprovação.
+**Status:** Partes 1–4 aprovadas pelo usuário em 2026-10-22 (a Parte 1 reescrita nas duas discussões e aprovada no mesmo dia).
 
 **What this file is.** This is the fiscal agent's contract with the rest of the system. It says what
 every report must answer (Part 1, central questions), what moves fiscal policy and its effects
@@ -55,7 +55,7 @@ historical comes out of a G over the cycle's A, with the window said, or does no
 
 ## Part 1 — Central questions: what every report answers
 
-**Rewritten 2026-10-22 around the two discussions, awaiting approval.** The questions are the floor,
+**Rewritten 2026-10-22 around the two discussions; approved by the user the same day.** The questions are the floor,
 not the ceiling. They are kept in Portuguese, the language of the report.
 
 The agent does not describe the fiscal accounts: it says what fiscal policy is doing to demand and

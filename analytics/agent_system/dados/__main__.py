@@ -26,7 +26,12 @@ import sys
 from analytics.agent_system.dados import motor
 
 AGENTES = {"cambio": "analytics.agent_system.dados.cambio",
-           "politica_monetaria": "analytics.agent_system.dados.politica_monetaria"}
+           "politica_monetaria": "analytics.agent_system.dados.politica_monetaria",
+           "inflacao": "analytics.agent_system.dados.inflacao",
+           "atividade": "analytics.agent_system.dados.atividade",
+           "fiscal": "analytics.agent_system.dados.fiscal",
+           "externo": "analytics.agent_system.dados.externo",
+           "expectativas": "analytics.agent_system.dados.expectativas"}
 
 
 def conferir_consultas() -> None:

@@ -67,6 +67,11 @@ para as funções G do agente). Regras de SISTEMA_AGENTES.md IV.iv.
 - `--sem-literatura` (no `dados` e no `conhecimento`): o retrato leva só o mapa conceitual e, na PM, o
   Copom da camada 1. O mapa é obrigatório; `INDICE.md` e `retrato.json` dizem que o retrato é sem
   literatura; um retrato existente feito no outro modo levanta em vez de passar como "já existe".
+- **Os sete agentes** (2026-10-22): `cambio`, `politica_monetaria`, `inflacao`, `atividade`, `fiscal`,
+  `externo`, `expectativas`, um módulo cada, listas em V.I–V.VII do `SISTEMA_AGENTES.md` (V.VII termina
+  em "*Fim das listas por agente.*"). Tabelas que os novos agentes tiram de câmbio e PM vêm por `de`/`so`;
+  as que vieram de outro agente novo levam `variante="<agente>"` (hoje só recortes da
+  `expc_focus_periodo` em inflação, atividade e fiscal), a unificar quando o dono as declarar.
 - `Tabela.variante`: outra consulta da mesma tabela que a de outro agente, em outro arquivo de A (a
   curva americana inteira do agente de PM vai para `us_interest_rate__curva.csv.gz`; o câmbio lê
   três vértices). Sem ela, consulta diferente no mesmo arquivo levanta.
@@ -159,3 +164,21 @@ regras na docstring do módulo.
 
 Teste: `uv run python tests/test_modelo_agentes.py` (lê o payload do relatório entregue, não o
 banco; ~1 min).
+
+## consolidacao.py — P1, P2 e PF* (SISTEMA_AGENTES.md IV.ii, IV.vi; 2026-10-22)
+
+```
+uv run python -m analytics.agent_system.consolidacao --ciclo AAAA-MM-DD --rodada {r1|r2|rf} [--sem-faixa]
+```
+
+Lê `obsidian/ciclos/<data>/caminhos/<agente>_<rodada>.json` (o contrato está na docstring: caminhos
+base na convenção do `modelo.CONVENCAO`, mais a tese por trimestre, validada) e a tutela da aba
+"Exógenas" do `data_tracker.xlsx` (colunas achadas pelo nome; aba sem nenhum nível levanta). Por
+exógena vale o melhor nível entre quem tem tutela e escreveu; no empate, a média trimestre a
+trimestre de quem tem valor; sem ninguém, o padrão do simulador, com aviso. Quem escreveu fora da
+tutela, ou num nível pior, com valor diferente vira divergência. Uma rodada de `modelo.rodar` sem
+multiplicadores grava `P1|P2|PF.md` e o `.json` ao lado. No PF* a faixa do agente não é deslocada
+para a central conjunta: o P mostra a diferença e marca "fora da faixa". O dono de cada endógena
+está em `ENDOGENA_DONO`, no topo do módulo; o das exógenas, só na aba.
+Teste: `uv run python tests/test_consolidacao.py` (cópia do tracker com tutela fictícia, retrato de
+2026-10-22, pasta temporária; ~25 s).

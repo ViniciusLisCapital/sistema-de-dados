@@ -19,6 +19,7 @@ Rodada 1 → P1 → rodada 2 → P2 → report final → PF*. Dentro de uma roda
 - **Conhecimento aberto:** os arquivos do retrato (`conhecimento/<agente>/`) que o agente abriu nesta rodada — vão para a tabela "Conhecimento" abaixo
 - **Faltou:** <tema> | nada — vai para a tabela "Faltou" abaixo
 - **Escreveu:** report <n> | report final
+- **Blocos** (só o externo): o que cada um dos três blocos (política dos EUA · risco e dólar · commodities) custou e achou nesta rodada. É o insumo para decidir se o externo vira dois agentes (SISTEMA_AGENTES.md III.III.vii)
 - **Mudanças** (a partir da rodada 2):
 
 | O que | Antes | Depois | Motivo | Provocado por |

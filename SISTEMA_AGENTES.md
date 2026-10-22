@@ -139,6 +139,7 @@
         - Tese por variável: medida central, faixa do cenário base com probabilidade, e worst-case e best-case como as caudas abaixo e acima da faixa, cada uma com probabilidade (soma 100%). Ex.: PIB 2027, central 1,2%; 50% entre 1,0 e 1,4; 40% abaixo de 1,0; 10% acima de 1,4.
         - A direção de worst e best é de cada variável: inflação mais alta é worst, crescimento menor é worst. No câmbio, por ora, depreciação é worst.
         - Assimetria: Pbc − Pwc, de −1 a +1; zero é simétrico e o sinal diz para que lado a distribuição pende (no exemplo, 0,10 − 0,40 = −0,30). Substituiu Pbc/Pwc, que não existe com Pwc = 0 e tem escala torta.
+        - Decidido (2026-10-22), substitui worst/best nos três itens acima, para todos os agentes: as caudas são **upside** (acima da central) e **downside** (abaixo), só posição, sem julgar se é bom ou ruim; a assimetria é P(upside) − P(downside). O report diz em texto se uma cauda é boa ou ruim para o Brasil quando isso importar. Motivo: a direção de "worst" era ambígua em vários casos (commodities, atividade com sinal oposto ao da inflação, expectativa desancorando para baixo, corte de imposto).
         - Riscos não são seção própria: entram na argumentação, justificando a probabilidade de cada cauda.
         - Central (2026-10-15): a do Modelo Estrutural no cenário base; a distribuição em torno dela é do agente (IV.ix).
         - Horizontes (2026-10-15, substitui curto, médio e longo prazo por agente): os trimestres do Modelo Estrutural, seis a partir do trimestre em curso (no ciclo de 07/10/2026, do 4T26 ao 1T28). A variável é medida no fechamento do trimestre (no câmbio, a PTAX do último dia útil), que é o que se compara com o dado de hoje.
@@ -164,6 +165,19 @@
             - 2. Restringir a Selic média do trimestre de partida aos dias já decididos até a próxima reunião (no 4T26, 35 de 92 dias a 13,75%). Teste: erro do fechamento derivado, 2006–2026, com e sem a restrição.
             - 3. Âncora só com a parte da NTN-B explicada por fundamentos (CDS, juro real americano de 10 anos), separando prêmio a termo (Perrelli & Roache; Adrian, Crump & Moench). Teste: regredir `rr_10a` nesses fundamentos e reestimar (R) com ajustado e resíduo separados.
             - 4. Brent em reais (ou IC-Br energia) como regressor da equação de monitorados, com uma defasagem, e testar em bens industriais (RPM set/26, boxe do petróleo).
+    - vii. Primeiro batch de sete agentes (decidido 2026-10-22, nas janelas de aprovação dos mapas):
+        - Fronteiras:
+            - o hiato do BC (`pm_hiato_produto` e as vintages) passa da PM para a atividade; na PM fica como o Copom lê o hiato e reage;
+            - a atividade absorve o mercado de trabalho provisoriamente (`mt_pnad`, `mt_desocupacao_retro`, `mt_caged`, `mt_caged_setor`), até existir o agente dele;
+            - as tabelas da Focus e do QPC são de expectativas, e os outros consultam; a PM continua concluindo sobre o caminho da Selic precificado (Q3 dela); a inflação esperada dos EUA (`expc_inflacao`) é do externo; a conclusão sobre a inflação implícita na curva é de expectativas, com a curva seguindo dado da PM;
+            - commodities: Brent e IC-Br em dólar são do externo; o IC-Br em reais é da inflação;
+            - o `clima_oni` fica fora das listas até algum job atualizá-lo.
+        - O multiplicador de um coeficiente (tempero tipo (i)) é de quem é dono da equação: quem tem a tutela da exógena argumenta pela saída e o dono da equação aplica (ex.: o fiscal argumenta, o câmbio aplica no peso do CDS na (F)).
+        - Inflação: a tese é o IPCA 12 meses no fechamento do trimestre; os quatro grupos aparecem só como decomposição da central, sem faixa própria (revisar depois do 1º ciclo). O `modelo.py` passa a devolver os quatro grupos.
+        - Atividade: a tese é o hiato do BC por trimestre, com uma linha companheira de PIB interanual derivada mecanicamente (hiato do modelo + potencial implícito no hiato do BC). O placar do hiato é a edição do RPM do fechamento do próprio trimestre. Ideia do usuário para depois: decompor o hiato em componentes (PIB, desemprego e outros), e então o hiato passaria a ser de mais de um agente.
+        - Fiscal: a política fiscal tem duas discussões, (i) contábil (tamanho e composição da dívida, estrutura do orçamento, propostas do governo, medidas, resultados primário e nominal) e (ii) o impacto das medidas fiscais sobre a atividade e a inflação (crescimento das despesas, impulso, demanda do governo no PIB, a postura da política fiscal). As duas ficam registradas no mapa; o interesse agora é a (ii). As metas da regra fiscal não estão no banco: no 1º ciclo o agente declara a lacuna e compara com a Focus; depois, uma tabela declarativa no molde da `inflc_meta`.
+        - Externo: um agente só, com três blocos obrigatórios em todo report, cada um com seção própria (política dos EUA, risco e dólar, commodities). A separação em dois agentes (EUA/condições globais × commodities) se decide pelo log do 1º ciclo. Cada exógena é medida na convenção em que o modelo a usa (`modelo.CONVENCAO`), e as teses vêm em três blocos de cenário.
+        - Expectativas: a tese é a Focus IPCA 12 meses, medida pela média do trimestre (convenção do modelo). Q1 compara o nível de desancoragem com o histórico; Q2 lê as aberturas das expectativas de inflação e de PIB. O usuário registrou que ainda tem dúvidas sobre este agente.
 
 
 # (IV) Decisões pendentes
@@ -210,7 +224,7 @@
             - sem sinal neste ciclo: no bloco "Olhado, sem sinal", no fim da seção 2, uma linha por dado (dado · valor · por que não diz nada agora · o que o faria dizer algo). Mostra o que o agente olhou e descartou, para o usuário poder cobrar o descarte.
             - Afirmação com partes (ex.: "mercado fino" e "demanda fora do mercado à vista") é escrita em partes, e cada dado diz a qual delas responde.
             - Dado sem ligação com uma afirmação é defeito: ou o agente escreve a ligação, ou o dado vai para o bloco "Olhado, sem sinal". Exemplo do teste: o estoque de swaps citado como nível (−US$ 91,6 bi) não diz nada sobre o mês; a variação diria, a favor ou contra a tese.
-        - Estrutura do relatório: a definir mais tarde.
+        - Estrutura do relatório (decidido 2026-10-22): por tema, com um apêndice por área. O cenário em uma página; o que move o cenário, em ordem causal; riscos (upside e downside); onde os analistas discordam; o que acompanhar; apêndice com uma tabela por variável. Detalhe no manual, seção 13.
         - Formato (intenção do usuário, 2026-10-15, a resolver depois): relatório final em HTML, numa aba de Report de um dashboard, para poder se ligar a ferramentas interativas de acompanhamento do cenário (ex.: a matriz de premissas, IV.ix). A aba teria um botão que gera o PDF.
         - Decidido (2026-10-15): o dashboard de Report é o mesmo do Modelo Estrutural, porque o modelo só funciona dentro da discussão dos agentes. O dash ganha nome novo e as abas são reorganizadas depois, pelo usuário. O acompanhamento das exógenas (IV.ix) mora nele.
     - viii. Agente administrador (I.II.vi): o que mais administra além da promoção de G ao F, com que critério promove e quem decide até ele existir. (anotado 2026-10-02, a definir)
@@ -462,3 +476,309 @@
 
 ### xi. Fora da lista (consulta livre, sem uso previsto)
     - `mt_pnad_trimestral`, `mt_caged_uf`, `mt_caged_salario`, `cred_credito_porte`, `cred_credito_atividade_economica`, `cred_credito_tipo_cliente`, `fisc_investimento`: cortes estruturais, regionais ou de detalhe que não mudam a leitura do juro.
+
+## (V.III) Agente de inflação
+*Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
+
+### i. Endógeno
+    - `inflc_agregados`: IPCA e IPCA-15, os quatro grupos do BC, livres, comercializáveis e não comercializáveis, núcleos, difusão e o IPCA de 12 meses (SGS). É a inflação que o agente explica: o cheio contra os núcleos e a difusão separa choque de tendência (canal 2.1); a série longa sustenta a leitura de inércia (2.2).
+
+    - `inflc_indice_geral`: o IPCA e o IPCA-15 como o IBGE publica (número-índice, mês, ano, 12 meses). Dá o acumulado exato de qualquer janela e chega antes do SGS no dia da divulgação; é a fonte do placar (12 meses do último mês do trimestre).
+
+    - `inflc_decomposicao`: IPCA e IPCA-15 por subitem, com variação, peso e contribuição. Mostra se a pressão vem de poucos itens ou de muitos (2.1) e acompanha os administrados um a um: gasolina, diesel, gás, energia, plano de saúde, remédios, transporte (2.7).
+
+    - `inflc_decomposicao_item`: a mesma decomposição por item. Base dos núcleos de médias aparadas e dupla ponderação, e leitura de qual item move um grupo.
+
+    - `inflc_dim`: a classificação do BC de cada subitem (monitorado ou livre; alimentação, industriais, serviços; serviços subjacentes; comercializável; marcas de núcleo). Reconstrói os mesmos quatro grupos do Modelo Estrutural e os recortes que a ata cita.
+
+    - `comm_icbr`: IC-Br em reais e os subíndices agropecuária, metal e energia. É a forma em que commodities e câmbio chegam juntos ao IPCA: alimentos, industriais e combustíveis (2.5, 2.6, 2.7).
+
+### ii. Endógeno de câmbio (consulta; a posição vem pelas saídas IN-S1–IN-S2 do mapa de inflação)
+    - `cmb_ptax`: câmbio diário. É o insumo do repasse a alimentos e industriais (2.5); se o movimento é persistente e qual o caminho vêm do agente de câmbio.
+
+### iii. Endógeno de política monetária (consulta; a posição vem pelas saídas IN-S3–IN-S4)
+    - `inflc_meta`: meta de inflação do CMN. É a âncora contra a qual a tese e as expectativas são lidas (2.3).
+
+    - `pm_copom_projecoes`: projeções de IPCA, livres e administrados do Copom (referência e alternativas), por trimestre. É o termo de comparação da Q4; os condicionantes por trás delas chegam pela IN-S4.
+
+### iv. Endógeno de atividade (consulta; a posição vem pela saída IN-S5)
+    - `pm_hiato_produto`: hiato do produto do BCB. É o canal de demanda de serviços e industriais (2.4); o caminho vem do agente de atividade.
+
+    - `atv_pms`: volume de serviços. Mostra se a demanda em serviços acompanha o hiato, o grupo mais persistente (2.4).
+
+    - `mt_pnad`: desocupação, rendimento real habitual e massa salarial. Salário acima da produtividade pressiona serviços (2.4); entra só pelo que o hiato não carrega.
+
+    - `mt_desocupacao_retro`: desocupação dessazonalizada do BCB desde 2004. Folga do mercado de trabalho contra o histórico (2.4).
+
+    - `mt_caged`: emprego formal mensal. Sinal mais rápido do ciclo de serviços (2.4).
+
+### v. Endógeno de expectativas (consulta; a posição vem pelas saídas IN-S9–IN-S10)
+    - `expc_focus`: Focus do IPCA 12 e 24 meses à frente, os cinco componentes (livres, administrados, serviços, bens industrializados, alimentação no domicílio) e o IGP-M. A expectativa do cheio é a âncora dos quatro grupos no modelo (2.3); os componentes mostram onde o mercado espera mudança de preço relativo.
+
+    - `expc_focus_periodo` (IPCA): Focus do IPCA por ano-calendário. Termo de comparação da Q4 ano a ano.
+
+    - `expc_focus_periodo` (componentes): Focus por ano-calendário dos cinco componentes do IPCA e do IGP-M. Onde o mercado põe a inflação de cada grupo no horizonte; o IGP-M esperado indica a pressão sobre aluguéis e contratos indexados (2.2, 2.3).
+
+    - `expc_qpc`: projeções de IPCA do mercado antes de cada Copom (curto prazo, núcleos, serviços subjacentes, horizonte relevante, balanço de riscos). Comparação com a tese no curto prazo e no horizonte relevante.
+
+### vi. Endógeno de externo (consulta; a posição vem pelas saídas IN-S7–IN-S8)
+    - `comm_icbr_usd`: IC-Br em dólar e subíndices agro, metal e energia. Agro e metal são exógenas da curva de Phillips (alimentação e industriais, 2.6); o caminho vem de quem tem a tutela na aba Exógenas.
+
+    - `comm_brent`: Brent em dólar, diário. Fora do modelo; chega aos combustíveis e aos administrados, tempero (ii) (2.7).
+
+## (V.IV) Agente de atividade
+*Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
+
+### i. Endógeno
+    - `atv_pib`: PIB trimestral em índice de volume dessazonalizado, oferta e demanda. É a medida do nível de atividade e da composição que o agente explica (Q1, Q2).
+
+    - `atv_pib_taxas`: taxas oficiais do PIB e dos componentes (contra o trimestre anterior, interanual, em quatro trimestres). A interanual é a linha companheira da tese e o número conferido no placar.
+
+    - `atv_pib_valores_correntes`: PIB a preços correntes por componente. Dá o peso de cada componente da demanda, para a contribuição ao crescimento.
+
+    - `atv_pib_mensal`: PIB nominal mensal e de 12 meses. Denominador das razões em % do PIB (crédito, impulso fiscal).
+
+    - `atv_ibcbr`: IBC-Br, total, ex-agropecuária e por setor. Leitura mensal do ciclo entre dois PIBs; o ex-agro separa o ciclo do choque de safra (2.7).
+
+    - `atv_pim`: produção industrial por seção. Ciclo do setor mais sensível ao juro e ao câmbio; a extrativa separa choque de oferta (2.1, 2.7).
+
+    - `atv_pim_uso`: produção industrial por categoria de uso. Bens de capital antecipam o investimento (2.6); duráveis respondem primeiro ao aperto (2.1).
+
+    - `atv_pmc`: volume do varejo restrito e ampliado, por segmento. Consumo de bens; veículos e móveis e eletrodomésticos são onde o crédito e a Selic aparecem primeiro (2.1, 2.2).
+
+    - `atv_pms`: volume de serviços por segmento. O maior setor da economia e o elo da atividade com a inflação de serviços.
+
+    - `atv_renda_poupanca`: renda nacional, poupança e capacidade de financiamento. Separa renda de produto (termos de troca, 2.5) e mede poupança e formação de capital (2.6, 2.8).
+
+    - `pm_hiato_produto`: hiato do produto do BC na edição corrente do RPM, central e dispersão entre modelos. É a variável da tese, o ponto de partida do modelo e a série em que a (H) foi estimada (2.8).
+
+    - `pm_hiato_produto_vintages`: todas as edições do hiato. Mostra a revisão que move o ponto de partida sem dado novo e é a base do placar (a edição do fechamento de cada trimestre); só a central é comparável entre as edições de 2024-06 e 2024-09.
+
+    - `mt_pnad`: desocupação, participação, rendimento real e massa salarial, Brasil (provisório, até existir o agente de mercado de trabalho). A massa salarial real move o consumo (2.4), e a desocupação é a checagem observada da folga (2.8).
+
+    - `mt_desocupacao_retro`: desocupação dessazonalizada retropolada pelo BC, desde 2004 (provisório). Série longa para comparar a folga de hoje com o histórico e com a NAIRU do mercado.
+
+    - `mt_caged`: estoque de emprego formal, total e por setor (provisório). Sinal mensal do ciclo, mais rápido que a PNAD.
+
+    - `mt_caged_setor`: saldo de empregos por seção CNAE (provisório). Mostra onde o emprego cresce ou para.
+
+### ii. Endógeno de política monetária (consulta; a posição vem pelas saídas S-PM1–S-PM3 do mapa)
+    - `br_interest_rate`: Selic e NTN-B de 2 e 10 anos. A NTN-B de 10 anos é a âncora do aperto da (H) e, fora do modelo, o custo de capital do investimento (2.1, 2.6).
+
+    - `pm_copom_reuniao`: Selic decidida e passo, por reunião. É a Selic que vira o aperto do trimestre seguinte na (H).
+
+    - `inflc_meta`: meta de inflação do CMN. Terceira peça do aperto da (H).
+
+### iii. Endógeno de câmbio (consulta; S-CB1–S-CB2)
+    - `cmb_ptax`: câmbio diário. O câmbio real muda a competitividade dos comercializáveis e a renda real (2.5).
+
+    - `cmb_termos_troca`: termos de troca da Funcex. Ganho de renda além do produto (2.5).
+
+    - `cmb_comex_produto`: exportação das principais commodities. Separa preço de volume, e safra de ciclo (2.5, 2.7).
+
+    - `cmb_comex_pais`: exportação e importação por parceiro. Por onde chega o choque de demanda externa (2.5).
+
+### iv. Endógeno de inflação (consulta; S-IN1–S-IN2)
+    - `inflc_agregados`: IPCA, livres, serviços e alimentação. Deflator da renda real (2.4), e serviços como o sinal do hiato nos preços (2.8).
+
+    - `comm_icbr`: IC-Br em reais e subíndices. A renda agrícola e mineral em reais, que é a que o produtor recebe (2.5, 2.7).
+
+### v. Endógeno de fiscal (consulta; S-FI1–S-FI2)
+    - `fisc_efgg`: governo geral pela classificação do FMI, trimestral. Base do impulso fiscal, a demanda do governo (2.3).
+
+    - `fisc_rtn`: resultado do governo central, mensal. Despesa e transferências que viram renda das famílias (2.3, 2.4).
+
+    - `fisc_nfsp`: resultado primário e nominal em % do PIB, 12 meses. A direção da política fiscal (2.3).
+
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. Prêmio de risco e condições financeiras; o efeito que passa pelo juro de 10 anos já está no modelo e não entra de novo (2.2, 2.3).
+
+### vi. Endógeno de externo (consulta; S-EXT1–S-EXT3)
+    - `comm_icbr_usd`: IC-Br em dólar e subíndices. Renda das commodities e investimento extrativo, que chegam à atividade fora do modelo (2.5).
+
+### vii. Endógeno de expectativas (consulta; S-EXP1–S-EXP2)
+    - `expc_focus_periodo` (PIB): mediana da Focus para o PIB, trimestral e anual, com os componentes. O consenso, para separar surpresa de convergência (Q1, Q4).
+
+    - `expc_focus_periodo` (desocupação): mediana da Focus para a taxa de desocupação. O consenso para a folga do mercado de trabalho (Q3).
+
+    - `expc_qpc`: Questionário Pré-Copom: PIB trimestral, hiato, balanço de riscos do PIB, PIB potencial e NAIRU. O hiato do mercado contra o do BC, e o potencial e a NAIRU para medir a folga (Q3, 2.8).
+
+### viii. TWA — crédito
+    - `cred_credito_resumo`: concessões, taxas, spread e inadimplência, por recurso e segmento. A transmissão pelo preço do crédito (2.2).
+
+    - `cred_fluxo_financeiro`: impulso de crédito no conceito do RPM. O mesmo número que o BC usa ao falar de condições financeiras (2.2).
+
+    - `cred_ptc`: oferta e demanda de crédito na leitura dos bancos. Antecede o que os saldos só mostram depois (2.2).
+
+    - `cred_credito_familias`: endividamento e comprometimento de renda das famílias. Quanto o consumo aguenta (2.4).
+
+    - `cred_credito_amplo`: crédito ao setor não financeiro, com títulos e dívida externa. Financiamento do investimento fora dos bancos (2.6).
+
+    - `cred_modalidade_livre_pf`: crédito livre à pessoa física por modalidade. Onde o aperto aparece primeiro no consumo (2.2).
+
+    - `cred_modalidade_livre_pj`: crédito livre à pessoa jurídica por modalidade. Capital de giro (2.2).
+
+    - `cred_modalidade_direcionado_pj`: crédito direcionado à pessoa jurídica, inclusive BNDES. Investimento pouco sensível à Selic (2.2, 2.6).
+
+*Fora da lista (consulta livre, sem uso previsto): atv_pib_usd (denominador do balanço de pagamentos, lido pelo câmbio), mt_pnad_trimestral, mt_caged_uf, mt_caged_salario, os outros cortes de crédito, fisc_divida, fisc_investimento, comm_brent. O clima_oni fica fora até algum job atualizá-lo.*
+
+## (V.V) Agente fiscal
+*Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
+
+### i. Endógeno
+    - `fisc_rtn`: resultado do governo central por rubrica, mensal, acima da linha. Receita e despesa por grupo (benefícios, pessoal, discricionárias, subsídios), a base do crescimento real das despesas e do impulso (2.1, 2.2) e o objeto da regra fiscal (2.7).
+
+    - `fisc_efgg`: governo geral pela classificação do FMI, trimestral, por esfera. O gasto por natureza econômica que chega à demanda (benefícios, remuneração, uso de bens e serviços, investimento): base do impulso medido pela despesa (2.1, 2.2, 2.3).
+
+    - `fisc_investimento`: investimento do governo federal por GND, função e natureza, mensal. A parte do gasto que entra na demanda e no potencial e que costuma ser a primeira a ser cortada (2.1).
+
+    - `fisc_nfsp`: resultado primário, juros nominais e resultado nominal do setor público em % do PIB em 12 meses, por esfera, e o fluxo mensal do primário. A variação do primário é o impulso medido abaixo da linha (2.2); o nível é o esforço fiscal (2.7). Negativo é déficit.
+
+    - `fisc_dlsp_fatores`: o que explica cada variação da dívida líquida, por item. Separa r − g do primário e dos ajustes (2.8) e traz o crédito do Tesouro às instituições financeiras oficiais, o canal parafiscal (2.5). Sinal oposto ao da NFSP: fluxo positivo aumenta a dívida.
+
+    - `fisc_divida`: dívida bruta e líquida em % do PIB, total e por esfera. A trajetória que o prêmio de risco precifica (2.8, 2.9).
+
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil, diário. É a exógena `fiscal` do Modelo Estrutural e a variável da tese, conforme a tutela na aba Exógenas (2.9); carga manual, conferir a data do último dado.
+
+### ii. Endógeno de atividade (consulta; FS-AT1–FS-AT2)
+    - `pm_hiato_produto`: hiato do produto do BC na edição corrente do RPM. Corrige o primário pelo ciclo para medir o impulso, e é onde o impulso chega (2.2, 2.4).
+
+    - `atv_pib`: PIB trimestral em volume dessazonalizado, com consumo do governo e FBCF. A demanda do governo no PIB, a checagem do impulso pelas contas nacionais (2.3).
+
+    - `atv_pib_taxas`: crescimento real do PIB e dos componentes. O padrão contra o qual se mede o crescimento real das despesas e o g de r − g (2.1, 2.8).
+
+    - `atv_pib_valores_correntes`: PIB trimestral a preços correntes por componente. O peso do governo no PIB e o denominador da EFGG (2.3).
+
+    - `atv_pib_mensal`: PIB nominal mensal e em 12 meses. Denominador de todo % do PIB (2.2, 2.8).
+
+### iii. Endógeno de inflação (consulta; FS-IN1–FS-IN2)
+    - `inflc_agregados`: IPCA e monitorados. Deflaciona a despesa (2.1); os monitorados mostram decisões de governo que chegam direto aos preços (2.4); indexa receita, despesa e dívida (2.8).
+
+### iv. Endógeno de política monetária (consulta; FS-PM1–FS-PM4)
+    - `pm_copom_reuniao`: Selic decidida por reunião. A metade monetária do policy mix e o custo da dívida pós-fixada (2.6, 2.8).
+
+    - `br_interest_rate`: Selic, curva DI e curva real das NTN-B. O juro real de 10 anos carrega o prêmio fiscal e é a `rr_10a` do modelo (2.9, 2.10); a inflação implícita, por um G, é sinal de dominância fiscal (2.12).
+
+### v. Endógeno de câmbio (consulta; FS-CB1–FS-CB2)
+    - `cmb_ptax`: câmbio diário. Move a dívida líquida pelo ajuste de paridade (2.8); se o real precifica estresse fiscal é leitura do câmbio (2.9).
+
+    - `cmb_reservas_bc`: reservas e swaps do BC. As reservas separam a dívida líquida da bruta; o resultado dos swaps passa pelo resultado nominal (2.8).
+
+    - `cmb_fx_latam`: moedas dos pares latinos. Sem CDS dos pares na base, o real contra os pares separa o prêmio fiscal do movimento global (2.9).
+
+### vi. Endógeno de expectativas (consulta; FS-EP1–FS-EP2)
+    - `expc_focus_periodo` (fiscal): mediana da Focus para o resultado primário, o resultado nominal, as dívidas líquida e bruta e o consumo do governo, por ano. O consenso fiscal, para separar surpresa de convergência e comparar o primário na falta das metas da regra (2.4, 2.7, 2.8).
+
+    - `expc_focus_periodo` (IPCA): mediana da Focus para o IPCA por ano. A expectativa longa que desancora com notícia fiscal é sinal de dominância (2.12).
+
+    - `expc_qpc`: Questionário Pré-Copom. A percepção do mercado sobre a situação fiscal desde o último Copom (2.7).
+
+### vii. Endógeno de externo (consulta; FS-EX1–FS-EX3)
+    - `us_interest_rate`: Fed Funds e Treasuries de 2 e 10 anos. O componente global do juro real longo (2.10).
+
+    - `cmb_equity_us`: S&P 500. Proxy do apetite a risco global, o componente global do CDS (2.9).
+
+    - `cmb_dollar_index_em`: dólar contra emergentes. Mostra se a pressão sobre os emergentes é generalizada (2.9).
+
+    - `comm_brent`: Brent em dólar. Royalties e dividendos de estatais na receita (2.7).
+
+### viii. TWA — crédito
+    - `cred_credito_controle_capital`: crédito por controle do banco (público, privado, estrangeiro). A expansão dos bancos públicos é estímulo parafiscal (2.5).
+
+    - `cred_modalidade_direcionado_pj`: crédito direcionado à pessoa jurídica, inclusive BNDES. Mesma leitura (2.5).
+
+    - `cred_modalidade_direcionado_pf`: crédito direcionado à pessoa física (imobiliário, rural). Mesma leitura (2.5).
+
+    - `cred_credito_resumo`: saldo, concessões, taxas e inadimplência, livre e direcionado. A fatia do crédito fora da taxa de mercado (2.5).
+
+*Fora da lista (consulta livre, sem uso previsto): os outros cortes de crédito, `pm_hiato_produto_vintages`, `atv_renda_poupanca`. As metas da regra fiscal não estão no banco: no 1º ciclo o agente declara a lacuna e compara com a Focus.*
+
+## (V.VI) Agente externo
+*Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
+
+### i. Endógeno
+    - `us_interest_rate`: meta do Fed (ponto médio) e os 11 vértices do Treasury, na variante "curva completa". A ponta curta é o caminho do Fed que o mercado precifica (Q1); a longa é o juro de desconto global e o prêmio a termo (canal 2.2).
+
+    - `diferenciais_juros` (EUA): só as séries americanas: Fed Funds efetivo, CPI 12 meses e juro real ex-post dos EUA. O Fed Funds efetivo daqui é o `ffr` do modelo, na convenção do último mês do trimestre; o diferencial continua sendo do câmbio.
+
+    - `inflc_cpi`: CPI-U dos EUA (cheio, núcleo, bens, serviços, habitação, alimentação, energia). É a fonte do `infl_us` do modelo e a leitura da persistência da inflação americana (canal 2.3).
+
+    - `inflc_pce`: PCE e núcleo, a medida que o Fed persegue. Diz como o Fed lê a inflação (canal 2.1).
+
+    - `expc_inflacao`: estrutura a termo da inflação esperada dos EUA (Cleveland Fed), de 1 a 30 anos. Mede a ancoragem do objetivo do Fed e, por G, o juro real ex-ante (canais 2.1 e 2.2).
+
+    - `mt_ces`: payroll (emprego total e privado, salário por hora). Mede a folga do mercado de trabalho e os salários, insumos da função de reação do Fed (canais 2.1 e 2.3).
+
+    - `mt_cps`: pesquisa domiciliar (desemprego, U-6, participação). A taxa de desemprego é o outro mandato do Fed.
+
+    - `mt_jolts`: vagas, contratações e pedidos de demissão. Mede o aperto do mercado de trabalho e antecede os salários.
+
+    - `cmb_dollar_index`: DXY. Separa o ciclo do dólar contra desenvolvidos (euro e iene) do ciclo contra emergentes (canal 2.4).
+
+    - `cmb_dollar_index_em`: dólar contra emergentes (FRED). É o `dxy_em` do modelo, em fechamento (canal 2.4).
+
+    - `cmb_equity_us`: S&P 500. É o `sp500` do modelo e a proxy do apetite a risco global (canal 2.5).
+
+    - `comm_icbr_usd`: IC-Br em dólar, total, agropecuária, metal e energia. São o `icbr_usd`, o `icbr_agr_usd` e o `icbr_met_usd` do modelo; a energia ajuda a montar o total (canal 2.6).
+
+    - `comm_brent`: Brent em dólar, diário. Caminho da energia, que fica fora do modelo e chega à inflação (combustíveis, monitorados); dado por este agente para o ciclo não ter dois caminhos de petróleo.
+
+    - `inter_interest_rate`: juro de política de México, Chile, Colômbia e Peru. Mostra o ciclo dos pares e se o movimento do Brasil é comum ou próprio (canal 2.7).
+
+    - `cmb_real_rates`: juro de política, inflação 12 meses e juro real ex-post de BR, MX, CL, CO e PE, num método só. Compara o grau de restrição dos pares e o do Brasil (canal 2.7).
+
+### ii. Endógeno de câmbio (consulta; a posição vem pelas saídas XS1–XS2 do mapa externo)
+    - `cmb_fx_latam`: moedas dos pares latinos. Grupo de comparação do global × idiossincrático, que é do câmbio (XS1).
+
+    - `cmb_cot_fx`: posição em futuros de BRL e MXN. Evidência de que o apetite a risco chega ao Brasil por dinheiro, não só por preço (XS2).
+
+    - `cmb_termos_troca`: termos de troca da Funcex. A consequência, no Brasil, do caminho das commodities (canal 2.6).
+
+    - `cmb_comex_pais`: exportação por parceiro (China, EUA). A única janela para a demanda chinesa, que não tem dado no banco (canal 2.6).
+
+### iii. Endógeno de fiscal (consulta; a posição vem pela saída XS5; o externo tem a palavra sobre o componente global, I.III.ix)
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. É onde o risco global e o fiscal se encontram; o caminho é do fiscal, e o externo diz quanto do movimento é global. Conferir a data do último dado, a carga é manual.
+
+### iv. Endógeno de expectativas (consulta; a posição vem pela saída XS8)
+    - `expc_qpc`: o bloco de ambiente externo do Questionário Pré-Copom. É o consenso contra o qual o cenário externo é visão ou surpresa.
+
+*Sem TWA (crédito e mercado de trabalho do Brasil não mudam a leitura externa) e sem exógeno (o CDS é do fiscal). Fora da lista (consulta livre, sem uso previsto): `inflc_cpi_dim`, `inflc_cpi_pesos`, `inflc_pce_dim`, `mt_ces_dim`, `mt_jolts_dim` (hierarquias e pesos, que o F usa e o agente não lê), `mt_produtividade` (produtividade e custo unitário do trabalho, profundidade que a forma mínima dispensa) e `cmb_reer` (do câmbio). `comm_icbr` (em reais) é da inflação e `clima_oni` fica fora de todas as listas.*
+
+## (V.VII) Agente de expectativas
+*Lista aprovada pelo usuário em 2026-10-22 (janela de aprovação do mapa). Escrita pelo subagente do agente.*
+
+### i. Endógeno
+    - `expc_focus` (inflação): expectativa de horizonte móvel do IPCA e dos cinco componentes (livres, administrados, serviços, bens industrializados, alimentação no domicílio), a 12 e 24 meses, suavizada e não suavizada, nas bases de 30 dias e de 4 dias úteis, com mediana, média, desvio-padrão, mínimo, máximo e respondentes. A IPCA 12 meses suavizada, base de 30 dias, é a variável da tese e a `pi_e` do Modelo Estrutural; a 24 meses e os componentes mostram em que horizonte e em que preços a expectativa anda; a base de 4 dias úteis adianta a revisão que a de 30 dias ainda não mostra (canais 2.1, 2.4, 2.5, 2.7, 2.9).
+
+    - `expc_focus_periodo` (inflação): IPCA e os cinco componentes por período fixo (mês, trimestre e ano-calendário, até o último ano perguntado), com as cinco estatísticas e os respondentes. Os anos longos são onde se julga a ancoragem e a posição dela no histórico (Q1); a história da revisão de um período fixo mostra quanto e em que componente a pesquisa revisou (canais 2.2, 2.5, 2.7, 2.9).
+
+    - `expc_focus_periodo` (PIB): PIB total, por setor (agropecuária, indústria, serviços) e por componente da demanda (consumo das famílias e do governo, investimento, exportação, importação), anual e trimestral. A abertura da atividade esperada pela pesquisa, para ver se a inflação esperada é coerente com o crescimento esperado e de onde ele vem (Q2, canal 2.9); a leitura da atividade em si é do agente de atividade.
+
+    - `expc_focus_periodo` (Selic): Selic esperada no fim de cada ano. Com o IPCA esperado do mesmo ano dá o juro real esperado e o teste de coerência da pesquisa (Q3, canal 2.8).
+
+    - `expc_focus_periodo` (câmbio): câmbio esperado no fim de cada ano. Só como o câmbio que a pesquisa supõe ao formar a inflação esperada; a leitura do câmbio é do agente de câmbio (canal 2.4).
+
+    - `expc_focus_copom`: Selic esperada em cada reunião do Copom. O caminho de juros que o consenso espera, para o teste de credibilidade (Q3, canal 2.8); o caminho que a curva precifica é conclusão da política monetária.
+
+    - `expc_qpc`: Questionário Pré-Copom: balanço de riscos do IPCA, projeção no horizonte relevante com a probabilidade de desvio, IPCA de curto prazo, o que o Copom fará e deveria fazer, juro neutro. O consenso às vésperas da reunião e onde ele discorda do Copom (Q3, canais 2.2, 2.8); os blocos de hiato, PIB, potencial e NAIRU são consulta da atividade.
+
+### ii. Endógeno de política monetária (consulta; a posição vem pelas saídas XS1–XS4 do mapa de expectativas)
+    - `inflc_meta`: meta de inflação do CMN. É o termo de âncora da (E) e a régua da desancoragem em todos os horizontes (canais 2.1, 2.2).
+
+    - `pm_copom_projecoes`: projeção de inflação do Copom, de referência, até o horizonte relevante. A distância para a Focus e para o QPC é parte do teste de credibilidade (Q3).
+
+    - `pm_copom_reuniao`: Selic decidida e passo, por reunião. Situa a reação das expectativas a cada decisão (canal 2.2).
+
+    - `pm_copom_calendario`: datas das reuniões do Copom. Ordena a Focus por reunião e situa as revisões em torno de cada decisão (canais 2.2, 2.8).
+
+    - `br_interest_rate`: curvas DI × pré e NTN-B (juro real) nos mesmos vértices. A razão entre as duas dá a inflação implícita na curva, a medida de mercado ao lado da pesquisa; a conclusão sobre ela é deste agente, a curva continua sendo dado da política monetária (canal 2.6).
+
+### iii. Endógeno de inflação (consulta; a posição vem pelas saídas XS5–XS6 do mapa de expectativas)
+    - `inflc_agregados`: IPCA mensal e 12 meses, grupos, núcleos e difusão. O IPCA 12 meses é o regressor da (E); a composição separa choque pontual de pressão persistente, e a surpresa contra a Focus mensal é o que faz a pesquisa revisar (canais 2.1, 2.4).
+
+### iv. Endógeno de câmbio (consulta; a posição vem pela saída XS7 do mapa de expectativas)
+    - `cmb_ptax`: câmbio diário. Para ver se a pesquisa reagiu a um movimento do câmbio (canal 2.4).
+
+### v. Endógeno de fiscal (consulta; a posição vem pela saída XS8 do mapa de expectativas)
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. O prêmio de risco soberano, termômetro da dúvida fiscal que chega primeiro aos horizontes longos (canal 2.3); a carga é manual, conferir a data do último dado.
+
+*Fim das listas por agente.*
