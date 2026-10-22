@@ -25,7 +25,7 @@ O diagrama é um guia expansível (pedido do usuário, 2026-10-07): seta ou caix
 um detalhe: uma entrada em `DETALHES` (chave `<fonte>><agente>` para as setas do leque, ou `det` na
 caixa) e a função que monta o HTML. Ir aos poucos, sem encher de conteúdo.
 
-Hoje: **MySQL → Câmbio** (como os dados chegam e as tabelas da lista, lidas da V.I do
+Desde 2026-10-22 os **sete agentes** têm as duas caixas (MySQL → agente, da V.I–V.VII, e report 1, das perguntas da Parte 1 do mapa; `AGENTES_DET` no `generate_report.py`, `DET_AGENTES` no `report.html`; só o texto da tese muda por agente). Antes, só câmbio e PM. Primeiro, para o câmbio: **MySQL → Câmbio** (como os dados chegam e as tabelas da lista, lidas da V.I do
 `SISTEMA_AGENTES.md`), **Ferramentas** e **Câmbio · report 1** (as perguntas centrais, lidas da Parte 1
 do mapa conceitual), e as duas mesmas caixas da política monetária (**MySQL → Política monetária**, da
 V.II, e **Política monetária · report 1**; 2026-10-21, quando o agente passou a existir). O tratamento de cada tabela (as métricas do F) não entra na caixa: é do sistema,

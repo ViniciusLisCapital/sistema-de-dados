@@ -240,17 +240,27 @@ const FERRAMENTAS = [
 // O diagrama é um guia expansível: o que tem entrada aqui ganha o selo "+" e abre ao clicar.
 // A chave de uma seta da fonte para o agente é "<fonte>><agente>" (mysql, ferr, conh × c, p, n).
 const DETALHES = {
-  'mysql>c': { titulo: 'MySQL → Câmbio', st: 'parcial', render: detMysqlCambio },
   'ferr': { titulo: 'Ferramentas', st: 'existe', render: detFerramentas },
-  'm1c': { titulo: 'Câmbio · report 1', st: 'parcial', render: detPerguntasCambio },
-  'mysql>p': { titulo: 'MySQL → Política monetária', st: 'parcial', render: detMysqlPM },
-  'm1p': { titulo: 'Política monetária · report 1', st: 'parcial', render: detPerguntasPM },
   'mod': { titulo: 'Modelo estrutural', st: 'parcial', render: detModelo },
   'p1': { titulo: 'P1 · cenário consolidado da rodada 1', st: 'planejado', render: detP1 },
 };
 
-function detMysqlCambio() { return detMysql(D.dados_cambio, 'de câmbio', 'V.I'); }
-function detMysqlPM() { return detMysql(D.dados_pm, 'de política monetária', 'V.II'); }
+// MySQL → agente e report 1 de cada agente do ciclo: a lista de dados vem da seção V do SISTEMA_AGENTES.md
+// e as perguntas centrais da Parte 1 do mapa conceitual; só o texto da tese muda com o agente.
+const DET_AGENTES = {
+  c: { nome: 'Câmbio', de: 'de câmbio', secao: 'V.I', tese: 'a central vem do modelo estrutural no cenário base (a PTAX); a faixa, as caudas e as probabilidades são do agente.' },
+  p: { nome: 'Política monetária', de: 'de política monetária', secao: 'V.II', tese: 'a central vem do modelo estrutural no cenário base (a Selic); a faixa, as caudas e as probabilidades são do agente.' },
+  i: { nome: 'Inflação', de: 'de inflação', secao: 'V.III', tese: 'a central vem do modelo estrutural no cenário base (o IPCA e os quatro grupos); a faixa, as caudas e as probabilidades são do agente.' },
+  a: { nome: 'Atividade', de: 'de atividade', secao: 'V.IV', tese: 'a central vem do modelo estrutural no cenário base (o hiato do produto); a faixa, as caudas e as probabilidades são do agente.' },
+  f: { nome: 'Fiscal', de: 'fiscal', secao: 'V.V', tese: 'não há variável fiscal no modelo: a tese é o caminho base de cada exógena em que o agente tem nível (o CDS e o juro real de 10 anos), com a distribuição em volta.' },
+  e: { nome: 'Externo', de: 'externo', secao: 'V.VI', tese: 'não há variável do ambiente global no modelo: a tese é o caminho base de cada exógena em que o agente tem nível (Fed funds, dólar, S&P, IC-Br, inflação americana), com a distribuição em volta.' },
+  x: { nome: 'Expectativas', de: 'de expectativas', secao: 'V.VII', tese: 'a central vem do modelo estrutural no cenário base (a expectativa de inflação); a faixa, as caudas e as probabilidades são do agente.' },
+};
+Object.keys(DET_AGENTES).forEach(k => {
+  const a = DET_AGENTES[k], dd = ((D.agentes || {})[k]) || {};
+  DETALHES['mysql>' + k] = { titulo: 'MySQL → ' + a.nome, st: 'parcial', render: () => detMysql(dd.dados, a.de, a.secao) };
+  DETALHES['m1' + k] = { titulo: a.nome + ' · report 1', st: 'parcial', render: () => detPerguntas(dd.perguntas, a.tese) };
+});
 function detMysql(dados, quem, secao) {
   const G = (dados || {}).grupos || [];
   const itens = G.flatMap(g => g.itens);
@@ -276,15 +286,13 @@ function detMysql(dados, quem, secao) {
   return h;
 }
 
-function detPerguntasCambio() { return detPerguntas(D.perguntas_cambio); }
-function detPerguntasPM() { return detPerguntas(D.perguntas_pm); }
-function detPerguntas(P) {
+function detPerguntas(P, tese) {
   P = P || [];
   return `<h3>Perguntas centrais</h3><ul class="lst">` +
     P.map(q => `<li><strong>${esc(q.id)}</strong> ${esc(q.texto)}</li>`).join('') +
     `</ul><p class="lead">O mínimo de todo report, não o máximo.</p>` +
     `<h3>O report</h3><ul class="lst">
-    <li><strong>Tese:</strong> a central vem do modelo estrutural no cenário base; a faixa, as caudas e as probabilidades são do agente.</li>
+    <li><strong>Tese:</strong> ${esc(tese)}</li>
     <li><strong>Argumentação:</strong> as perguntas centrais; cada dado sustenta a afirmação, a contraria ou vai para "olhado, sem sinal".</li>
     <li><strong>Premissas, etapa 1:</strong> o caminho de cada exógena do modelo, por cenário; o modelo resolve as endógenas.</li>
     <li><strong>Premissas, etapa 2:</strong> o tempero qualitativo, por (i) efeito de um input mais forte ou mais fraco que o estimado, ou (ii) fator fora do modelo.</li>

@@ -81,7 +81,7 @@ def dados_agente(agente: str, nome: str, avisos: list[str]) -> dict:
     return {"grupos": grupos}
 
 
-_RE_PERGUNTA = re.compile(r"^\| (Q\d) \| ([^|]+?) \|")
+_RE_PERGUNTA = re.compile(r"^\| ([QF]\d) \| ([^|]+?) \|")
 
 
 def perguntas(area: str, nome: str, avisos: list[str]) -> list[dict]:
@@ -92,10 +92,25 @@ def perguntas(area: str, nome: str, avisos: list[str]) -> list[dict]:
     except OSError:
         avisos.append(f"Mapa conceitual de {nome} não encontrado: sem as perguntas centrais.")
         return []
-    out = [{"id": m.group(1), "texto": m.group(2)} for l in linhas if (m := _RE_PERGUNTA.match(l))]
+    # só a Parte 1: os outros blocos dos mapas também têm linhas "| Q.. |" ou "| F.. |"
+    ini = next((i for i, l in enumerate(linhas) if l.startswith("## Part 1")), 0)
+    fim = next((i for i, l in enumerate(linhas) if i > ini and l.startswith("## Part 2")), len(linhas))
+    out = [{"id": m.group(1), "texto": m.group(2)} for l in linhas[ini:fim] if (m := _RE_PERGUNTA.match(l))]
     if not out:
         avisos.append(f"Perguntas centrais não encontradas no mapa conceitual de {nome}.")
     return out
+
+
+# chave do report.html, módulo de dados/, nome e pasta do vault de cada agente
+AGENTES_DET = [
+    ("c", "cambio", "câmbio", "exchange_rate"),
+    ("p", "politica_monetaria", "política monetária", "monetary_policy"),
+    ("i", "inflacao", "inflação", "inflation"),
+    ("a", "atividade", "atividade", "economic_activity"),
+    ("f", "fiscal", "fiscal", "fiscal_policy"),
+    ("e", "externo", "externo", "external"),
+    ("x", "expectativas", "expectativas", "expectations"),
+]
 
 
 def montar() -> dict:
@@ -103,10 +118,9 @@ def montar() -> dict:
     return {
         "gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "registry": registry_info(avisos),
-        "dados_cambio": dados_agente("cambio", "câmbio", avisos),
-        "perguntas_cambio": perguntas("exchange_rate", "câmbio", avisos),
-        "dados_pm": dados_agente("politica_monetaria", "política monetária", avisos),
-        "perguntas_pm": perguntas("monetary_policy", "política monetária", avisos),
+        # uma entrada por agente do ciclo, na ordem de AGENTES do report.html
+        "agentes": {k: {"dados": dados_agente(mod, nome, avisos), "perguntas": perguntas(area, nome, avisos)}
+                    for k, mod, nome, area in AGENTES_DET},
         "n_connectors": sum(1 for p in (RAIZ / "connectors").glob("*.py") if p.name != "__init__.py"),
         "vault": vault_info(),
         "avisos": avisos,
