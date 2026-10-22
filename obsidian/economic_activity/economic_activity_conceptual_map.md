@@ -95,13 +95,17 @@ every quarter. The proposal:
    adjusted quarterly rate is not: the identity holds on average, and quarter by quarter the
    difference is noise that the four-quarter window averages out. The distribution of this row is
    the agent's, like the gap's.
-4. **Scoreboard** (the user's choice, 2026-10-22). GDP growth: IBGE's first release for the quarter
-   (`atv_pib_taxas`). The gap: the BCB's central estimate for that quarter in the **RPM edition
-   published at the close of that same quarter** (March, June, September, December;
-   `pm_hiato_produto_vintages` keeps every edition). That estimate is the BCB's own nowcast, made
-   before IBGE publishes the quarter's GDP, so the scoreboard compares two readings of the same
-   unobserved thing taken at the same moment; later revisions are not rescored, and when one is
-   large, the report says so.
+4. **Scoreboard** (the user's choice, 2026-10-22, revised the same day). GDP growth: IBGE's first
+   release for the quarter (`atv_pib_taxas`). The gap: the BCB's central estimate for that quarter in
+   the **first RPM edition after IBGE publishes the quarter's GDP**, i.e. the edition at the close of
+   the following quarter (the 3Q gap is scored with the December edition; `pm_hiato_produto_vintages`
+   keeps every edition). It comes one quarter after the other scoreboards, but already includes the
+   quarter's GDP, which cuts (without removing) the revision between the BCB's nowcast and later
+   editions. Recent editions revised the gap upwards (4Q25: 0.17 in Dec/25, 0.74 in Sep/26), while
+   the model projects on the scale of the current edition. Later revisions are not rescored; when one
+   is large, the report says so. The user's goal for later: a model that regresses only the
+   consolidated part of the BCB gap (up to two or three years ago, the part least likely to be
+   revised) on GDP, unemployment, industry and other data, and uses those coefficients forward.
 5. **Upside and downside** (`SISTEMA_AGENTES.md` III.III.i). Upside is the tail above the central (a
    higher gap, faster growth), downside the tail below; position only, no judgement, and the
    asymmetry is P(upside) − P(downside). Whether a tail is good or bad for Brazil the report says in

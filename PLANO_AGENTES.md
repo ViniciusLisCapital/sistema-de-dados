@@ -42,7 +42,7 @@ Esta sessão parou aqui por custo (o chat ficou longo). Ler este bloco, a tabela
 2. **Unificação das `variante`** (subagente, Sonnet): os recortes de `expc_focus_periodo` declarados por inflação (componentes), atividade (PIB, desocupação) e fiscal (fiscal) passam a vir de expectativas, onde fizer sentido; `tests/test_dados_agentes.py` cobrindo os sete (`conferir` e `conferir_consultas` já passam nos sete).
 3. **Fase 10:** a conversa sobre o recorte e a tempestividade, com o que os subagentes acharam: Focus parada em 09/10; CDS em 14/10 (carga manual); `cred_fluxo_financeiro` em abr/26; `mt_pnad` fora do job de rotina; posição de swap do BC em 01/08; EFGG e PIB trimestral no 2T26; `inflc_meta` só até 2026; inflação implícita de 1 ano em 6,66% contra Focus 4,48% (vértice curto da NTN-B, causa não confirmada); IPCA 24m suavizado com 17 respondentes. Depois: o usuário atualiza a base, escolhemos a data, `dados <agente> --ciclo D --sem-literatura` para os sete, conferir F e retratos, rodadas (a definição do fiscal espera `tutela=...` nos argumentos).
 
-**Decisão pendente do usuário, antes do primeiro placar da atividade:** o placar do hiato foi fixado na edição do RPM do fechamento do trimestre, mas o BC vem revisando o hiato para cima (4T25: 0,17 na edição de dez/25, 0,74 hoje) e o modelo projeta na escala da edição corrente. A tese pode parecer acertar ou errar pela revisão.
+**Placar do hiato** (decidido 2026-10-22, depois do handover): o primeiro RPM depois do PIB do IBGE do trimestre, a edição do fechamento do trimestre seguinte. Mapa, definição e F da atividade já mudaram.
 
 **Fora do plano, anotado:** o diagrama (`analytics/agent_system/report.html:322`) ainda diz "os cenários worst de cada agente".
 
@@ -186,6 +186,7 @@ Quem influencia o modelo, e por qual variável, vai mudar. Um exemplo: o modelo 
 - **Estudo de cada exógena** para definir a tutela com mais cuidado (a aba "Exógenas" já existe, preenchida pelo usuário). Mais de um agente pode acompanhar a mesma exógena, com prioridades diferentes.
 - Variáveis próprias da área para fiscal e externo, além do caminho das exógenas.
 - O modelo de PIB do agente de atividade, com a demanda do governo vindo do fiscal.
+- Um modelo do hiato que regride só a parte consolidada do hiato do BC (até dois ou três anos atrás, a de menor revisão esperada) contra PIB, desemprego, indústria e outros, e usa os coeficientes para a frente (ideia do usuário, 2026-10-22).
 - A camada 1 de literatura dos agentes novos (~5 fontes cada), o ciclo com literatura e a medição do ruído (a rodada 1 duas vezes).
 - O agente de busca na internet (a discutir).
 - Os demais agentes (crédito, mercado de trabalho, trader, administrador), as promoções de câmbio e PM, o estoque de sínteses pendentes e o diagrama.

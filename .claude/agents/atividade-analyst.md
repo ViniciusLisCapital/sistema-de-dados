@@ -206,7 +206,9 @@ snapshot, the templates and the escrivão manual.
   - From rodada 2 on, answer every divergence the P lists on an input of which you have the tutela:
     keep or change your path, and say why.
 - **Placar:** for every quarter of the previous report final that closed, the gap as the BCB put it
-  in the RPM edition published at the close of that quarter (`pm_hiato_produto_vintages`), and which
+  in the first RPM edition after IBGE published that quarter's GDP, i.e. the edition at the close of
+  the following quarter (`pm_hiato_produto_vintages`; the F prints it); a quarter whose edition is
+  not out yet waits for the next cycle, and which
   range it fell in; for the companion row, IBGE's first release. With no previous cycle, write
   "primeiro ciclo".
 - **Sobre o modelo (section 6):** what the material you read says about the Structural Model's

@@ -88,7 +88,8 @@ def pib_taxas(df: pd.DataFrame, ctx: Ctx) -> list[str]:
 
 def hiato_vintages(df: pd.DataFrame, ctx: Ctx) -> list[str]:
     """A revisão do hiato e o placar: a central de cada trimestre recente nas últimas
-    edições, e na edição publicada no fechamento do próprio trimestre (a do placar)."""
+    edições, e na primeira edição depois do PIB do IBGE daquele trimestre, a do fechamento do
+    trimestre seguinte (a do placar)."""
     c = df[df["variavel"] == "central"]
     w = c.pivot_table(index="date", columns="vintage", values="value", aggfunc="last").sort_index()
     if w.empty:
@@ -97,9 +98,9 @@ def hiato_vintages(df: pd.DataFrame, ctx: Ctx) -> list[str]:
     linhas = []
     for d, x in w.tail(8).iloc[::-1].iterrows():
         row = {"Trimestre": _tri(d)}
-        fecho = pd.Timestamp(d) + pd.DateOffset(months=2)          # mar, jun, set, dez
-        row["Placar: edição do fechamento"] = (f"{fmt(x.get(fecho))} ({fecho:%Y-%m})"
-                                               if fecho in w.columns else "—")
+        placar = pd.Timestamp(d) + pd.DateOffset(months=5)         # fechamento do trimestre seguinte
+        row["Placar: 1º RPM após o PIB"] = (f"{fmt(x.get(placar))} ({placar:%Y-%m})"
+                                            if placar in w.columns else "ainda não saiu")
         for v in eds:
             row[f"Edição {pd.Timestamp(v):%Y-%m}"] = fmt(x.get(v))
         if len(eds) > 1:
@@ -107,8 +108,8 @@ def hiato_vintages(df: pd.DataFrame, ctx: Ctx) -> list[str]:
             row["Revisão na última (p.p.)"] = fmt(None if pd.isna(a) or pd.isna(b) else a - b, 2, True)
         linhas.append(row)
     return [f"{w.shape[1]} edições, desde {pd.Timestamp(w.columns[0]):%Y-%m}. Central, % do potencial. "
-            "O placar do hiato de um trimestre é a central da edição do RPM publicada no fechamento "
-            "dele; a quebra metodológica entre 2024-06 e 2024-09 deixa só a central comparável.",
+            "O placar do hiato de um trimestre é a central do primeiro RPM depois do PIB do IBGE "
+            "daquele trimestre (a edição do fechamento do trimestre seguinte); a quebra metodológica entre 2024-06 e 2024-09 deixa só a central comparável.",
             ""] + md_tabela(linhas)
 
 
