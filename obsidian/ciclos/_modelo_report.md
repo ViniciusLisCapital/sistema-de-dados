@@ -124,7 +124,7 @@ Abaixo da tabela, em uma ou duas frases: como esses pontos dão a faixa base, os
 
 ## 4. Para os outros agentes
 
-- **Respostas às entradas fixas** do mapa conceitual (no câmbio, E1–E7 para política monetária): uma linha cada. Quando a condição de alerta do mapa aconteceu, o item vem marcado **em destaque**, com o motivo e o argumento ("E7, em destaque: o BC vendeu US$ 3 bi à vista em setembro").
+- **Respostas às entradas fixas** do mapa conceitual (no câmbio, E1–E6 para política monetária): uma linha cada. Quando a condição de alerta do mapa aconteceu, o item vem marcado **em destaque**, com o motivo e o argumento ("E6, em destaque: o BC vendeu US$ 3 bi à vista em setembro").
 - **Pedidos:** as saídas fixas do mapa (no câmbio, S1–S4) e os pedidos deste ciclo, com a pergunta exata e a tese que depende dela.
 - **Divergências** (da rodada 2 em diante): para cada divergência da seção 3 do P sobre uma exógena de que este agente tem a tutela, mantém ou muda o caminho, e diz por quê.
 

@@ -58,8 +58,8 @@ and `PRINCIPIOS_AGENTES.md`; this file is how you apply them.
      that is not in this cycle.
 3. **The conceptual map, Parts 1–4, every run:** `monetary_policy/monetary_policy_conceptual_map.md`
    inside the snapshot. Part 1 is the floor of every report (Q1–Q4) and the horizon rule. Part 2 is
-   the causal skeleton (2.1–2.10). Part 3 lists your requests to FX (S1, S2, S4–S7) and to the other
-   five agents (S3, pass-through, now asked of inflation, and S8–S13). Part 4 lists what they need
+   the causal skeleton (2.1–2.10). Part 3 lists your requests to FX (S1–S6) and to the other
+   five agents (S7, pass-through, asked of inflation, and S8–S13). Part 4 lists what they need
    from you: FX (E1–E4) and the other five (E5–E20). The map is copied whole, so some of its links
    point outside the snapshot: do not follow them.
 4. **The Copom's latest documents, every run:** the last comunicado, the last ata and the last RPM
@@ -100,7 +100,7 @@ snapshot, the templates and the escrivão manual.
   position arrives through your outputs (map, Part 3):
   - câmbio — persistence of a move, global against idiosyncratic, the risk premium, carry and market
     functioning (S1, S2, S4–S7);
-  - inflação — the IPCA path and what drives it, and pass-through (S3, S8);
+  - inflação — the IPCA path and what drives it, and pass-through (S7, S8);
   - expectativas — the Focus and the QPC: the anchoring reading (S9). The Selic the curve prices,
     against the survey, stays yours (Q3);
   - atividade — the national accounts, the monthly indicators, the BCB output gap and its vintages
@@ -259,11 +259,11 @@ snapshot, the templates and the escrivão manual.
     ask for the thesis or for what the Copom said, so write those once and point to them. E1 in the
     horizon format. E4 is triggered: while the BCB intervenes only against dysfunction, answer on the
     Selic; if its posture turns to defending the exchange rate, answer on the whole reaction function,
-    intervention included, with the FX agent's reading of dysfunction (S7). When the map's alert
+    intervention included, with the FX agent's reading of dysfunction (S6). When the map's alert
     condition for an item happened, mark it **em destaque**, with the reason and the argument. Never
     write "gatilho".
-  - Make S1, S2, S4–S7 (FX), S3 and S8–S13 (the other five) and this cycle's requests as exact
-    questions, each naming the thesis that depends on it. S3 (pass-through) goes to the inflation
+  - Make S1–S6 (FX), S7–S13 (the other five) and this cycle's requests as exact
+    questions, each naming the thesis that depends on it. S7 (pass-through) goes to the inflation
     agent since 2026-10-22.
   - From rodada 2 on, **Divergências**: for each divergence in the P on an exogenous of your tutela,
     keep or change the path and say why; change it when the argument is good.

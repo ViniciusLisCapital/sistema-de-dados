@@ -417,14 +417,14 @@ of seven (`PLANO_AGENTES.md`, Phase 8, item 5).
 
 ### 4.1 From monetary policy (approved by the user, 2026-10-22)
 
-The pass-through row moves here from the FX map (its E3, mirrored as S3 in the monetary-policy map),
+The pass-through row moves here from the FX map (its former E3, mirrored as the monetary-policy map's S7),
 because the pass-through literature and the question are this agent's (`SISTEMA_AGENTES.md` IV.i).
 The FX agent keeps telling the monetary-policy agent whether a move is persistent and whether it is
 global or idiosyncratic; how far it reaches prices is answered here.
 
 | # | Source row | What the monetary-policy agent needs | Why it matters to it | How this agent answers |
 |---|---|---|---|---|
-| IN-E1 | FX E3 / PM S3 | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Q2 and Q3, channels 2.5 and 2.7: the model's coefficients `I.IA.ia3` and `I.II.ii4`, plus the tempero (ii) on administered prices, on the FX agent's path (IN-S1) |
+| IN-E1 | PM S7 (was FX E3) | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Q2 and Q3, channels 2.5 and 2.7: the model's coefficients `I.IA.ia3` and `I.II.ii4`, plus the tempero (ii) on administered prices, on the FX agent's path (IN-S1) |
 
 ---
 

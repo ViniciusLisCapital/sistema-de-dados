@@ -56,8 +56,7 @@ the writer agent (escrivão) turns into the final macro report. The system's rul
 3. **The conceptual map, Parts 1–4, every run:** `exchange_rate/exchange_rate_conceptual_map.md`
    inside the snapshot. Part 1 is the floor of every report (Q1–Q4) and the upside/downside rule.
    Part 2 is the causal skeleton. Part 3 lists your requests to monetary policy (S1–S4) and to the
-   other five agents (S5–S10). Part 4 lists what they need from you: monetary policy (E1, E2,
-   E4–E7; E3, pass-through, moved to the inflation agent) and the other five (E8–E16). The map is
+   other five agents (S5–S10). Part 4 lists what they need from you: monetary policy (E1–E6) and the other five (E7–E15). The map is
    copied whole, so some of its links point outside the snapshot: do not follow them.
 4. **Inside the snapshot, as deep as the question needs.** Follow the map's links. The reading path
    is concept → synthesis → `clean_md/` (full text) when the synthesis is not enough; mental models
@@ -216,13 +215,13 @@ snapshot, the templates and the escrivão manual.
   of section 1 (`central`, `faixa`, `p_faixa`, `p_upside`, `p_downside`). The upside and downside
   paths stay only in the report.
 - **Section 4:**
-  - Answer E1, E2 and E4–E7 (monetary policy) and E8–E16 (the other five agents) one line each; many
+  - Answer E1–E6 (monetary policy) and E7–E15 (the other five agents) one line each; many
     of them ask for the same two judgements (persistence, E1; global or idiosyncratic, E2), so write
     them once in section 2 and point to them. When the map's alert condition for an item happened,
     mark it **em destaque**, with the reason and the argument. Never write "gatilho".
   - Make S1–S10 and this cycle's requests as exact questions, each naming the thesis that depends on
     it.
-  - Tell the inflation agent when you see a relevant risk of depreciation (E9): pass-through is its
+  - Tell the inflation agent when you see a relevant risk of depreciation (E8): pass-through is its
     question, not yours (`SISTEMA_AGENTES.md` IV.i).
   - From rodada 2 on, **Divergências**: for each divergence in the P on an exogenous of your tutela,
     keep or change the path and say why; change it when the argument is good.

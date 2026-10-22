@@ -5,7 +5,7 @@ the tails, outputs and inputs with FX, mirrored in the exchange-rate map). Adjus
 the batch of seven agents (`SISTEMA_AGENTES.md` III.III.vii): the tails are upside and downside;
 expectations, the output gap, the fiscal premium and the Fed path have owners now, and the readings
 of channels 2.3, 2.4, 2.5–2.6 and 2.8 that belong to them come through the rows of 3.2; the
-pass-through row (S3) went to inflation. The rows with the other five agents (3.2, 4.2) are drafts
+pass-through row (now S7, in 3.2) went to inflation. The rows with the other five agents (3.2, 4.2) are drafts
 until the user approves them. Layer 1 of this agent's material is chosen in a separate step
 (`PLANO_AGENTES.md`, Phase 2) and is not decided here.
 
@@ -27,7 +27,7 @@ agent's bibliography, in `clean_md/central_bank/`; which of them a cycle reads i
 
 **Outputs and inputs.** An output of agent A to agent B is what A tells B is important for A, coming
 from B. An input of A from B is what B told A is important for B, coming from A. So this agent's
-outputs to FX (Part 3) are the FX agent's inputs from monetary policy (FX map, Part 4, rows E1–E7),
+outputs to FX (Part 3) are the FX agent's inputs from monetary policy (FX map, Part 4, rows E1–E6),
 and this agent's inputs from FX (Part 4) are the FX agent's outputs to monetary policy (FX map,
 Part 3, rows S1–S4); the same holds with the other five agents of the batch (3.2, 4.2). Each row here
 carries its label in the other map, so the mirror can be checked line by line. A row is a request;
@@ -165,7 +165,7 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
 - **Data:** `pm_copom_projecoes`, `inflc_meta`; inflation's, for consultation, `inflc_agregados`,
   `inflc_decomposicao`, `inflc_decomposicao_item`, `inflc_dim`, `comm_icbr`; external's `comm_brent`.
   The IPCA path, its persistence and what drives it come from the inflation agent (S8), and so does
-  pass-through (S3).
+  pass-through (S7).
 - **Trap.** The reference-scenario projection is conditional on paths set by governance — the Focus
   Selic, a PPP exchange rate, oil futures — which "não necessariamente refletem o cenário mais
   provável" (RPM Sep/2026, 2.3). Read as the Copom's forecast, it confuses the conditioning with the
@@ -288,7 +288,7 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
 - **Trap.** This agent draws no conclusion about the exchange rate (I.III.x): persistence, global
   against idiosyncratic and the risk premium come from the FX agent (Part 3). Pass-through, its
   literature and the question, belongs to the inflation agent (IV.i), and reaches this agent through
-  S3. And the sign of the rate → exchange rate link is
+  S7. And the sign of the rate → exchange rate link is
   not given: under fiscal stress a hike can depreciate (2.6).
 
 ### 2.8 Global rates and spillovers
@@ -388,25 +388,24 @@ Focus, side by side, and the ex-ante real rate against the QPC's neutral.
 
 ### 3.1 To FX (fixed layer; approved by the user 2026-10-21)
 
-What this agent needs from the FX agent, every cycle. These are the FX map's rows E1–E7, unchanged in
-substance, written from this side (E3 moved to inflation on 2026-10-22). What the Copom cares about in the exchange rate is its effect on
+What this agent needs from the FX agent, every cycle. These are the FX map's rows E1–E6, unchanged in
+substance, written from this side. What the Copom cares about in the exchange rate is its effect on
 inflation and expectations, not its level for its own sake (2.7).
 
 | # | FX map | What this agent needs | Why it matters to this agent | Flag when | Used in |
 |---|---|---|---|---|---|
 | S1 | E1 | **Is the move persistent or transitory?** A judgement, with the reason, separating a level shift from noise | Pass-through depends on persistence; a transitory spike is looked through | A move the FX agent classifies as persistent, in either direction | 2.2, 2.7 |
 | S2 | E2 | **Global or idiosyncratic?** The split of the FX agent's Q3 | An idiosyncratic depreciation usually comes with a higher risk premium, which also reaches expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move | 2.3, 2.6, 2.7 |
-| S3 | E3 | *Moved to the inflation agent (2026-10-22): see 3.2.* The number stays so that S4–S7 keep their labels | — | — | — |
-| S4 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** (a recent rate, then PPP) | A gap between the market and that path is a risk to the projection | The gap widens in the direction the Copom lists as a risk | 2.1, 2.2 |
-| S5 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral and weakens transmission (ata of the 281st meeting, §8) | CDS and BRL move together against peers | 2.5, 2.6 |
-| S6 | E6 | **How much carry is supporting the BRL** | The exchange rate is one channel from the Selic to inflation; if carry stops working, that channel weakens | Carry and the BRL decouple | 2.10, 2.7 |
-| S7 | E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention; whether there is dysfunction | Tells whether the BCB is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (trigger of E4) | Intervention, a liquidity squeeze or a cupom cambial spike | 2.1, 2.7 |
+| S3 | E3 | **Where the BRL is relative to the Copom's conditioning assumption** (a recent rate, then PPP) | A gap between the market and that path is a risk to the projection | The gap widens in the direction the Copom lists as a risk | 2.1, 2.2 |
+| S4 | E4 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral and weakens transmission (ata of the 281st meeting, §8) | CDS and BRL move together against peers | 2.5, 2.6 |
+| S5 | E5 | **How much carry is supporting the BRL** | The exchange rate is one channel from the Selic to inflation; if carry stops working, that channel weakens | Carry and the BRL decouple | 2.10, 2.7 |
+| S6 | E6 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention; whether there is dysfunction | Tells whether the BCB is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (trigger of E4) | Intervention, a liquidity squeeze or a cupom cambial spike | 2.1, 2.7 |
 
 **Decided by the user, 2026-10-21.**
-- **S3 (E3) was provisional, and moved on 2026-10-22.** The pass-through literature belongs to the
+- **Pass-through was provisional, and moved on 2026-10-22.** The pass-through literature belongs to the
   inflation agent (IV.i); the row is now asked of the inflation agent (3.2), and the FX agent tells
   the inflation agent about depreciation risk (I.III.xvii; inflation map IN-S1, IN-S2).
-- **S7 (E7) keeps the cupom cambial.** The series is not in the data yet; it comes with the Bloomberg
+- **S6 (E6) keeps the cupom cambial.** The series is not in the data yet; it comes with the Bloomberg
   API (expected 2026-11-01). Until then the row is answered with reserves, interventions and the FX
   flow.
 
@@ -421,7 +420,7 @@ reaction.
 
 | # | To | What this agent needs | Why it matters to this agent | Flag when | Used in |
 |---|---|---|---|---|---|
-| S3 | Inflation (its IN-E1; was FX E3) | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Always, as context for S1 | 2.2, 2.7 |
+| S7 | Inflation (its IN-E1; was FX E3) | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Always, as context for S1 | 2.2, 2.7 |
 | S8 | Inflation | **The IPCA path and what drives it**: persistence (cores, diffusion, underlying services), administered prices and food, first round against second round | The projection at the relevant horizon decides, and the Copom accommodates the first-round effects of supply shocks and reacts to the second round (2.2) | The thesis moves at the relevant horizon, or the inflation agent reads a shock as spreading | 2.2, Q2 |
 | S9 | Expectations | **The anchoring reading**: the path of the 12-month-ahead expectation (the expectations agent's thesis), the long horizons against the target, and whether a move is deanchoring or a short-run reaction to a shock | Deanchored expectations require "restrição monetária maior e por mais tempo" (ata of the 281st meeting, §10), and the rule (R) reacts to the Focus deviation from the target | The long horizons move away from the target, or the expectations agent's upside tail gains probability | 2.3, 2.1, Q2 |
 | S10 | Activity | **The output-gap path** (the activity agent's thesis) **and its revision** in the latest RPM, with the labour market (unemployment, wages against productivity) | The gap enters the Copom's projection, and a revision moves the projection with no new data; the Copom watches wages growing above productivity (ata of the 281st meeting, §7) | The gap changes sign in the horizon, or the RPM revises recent quarters | 2.4, Q2 |
@@ -446,11 +445,11 @@ What the FX agent needs from this agent, every cycle: the FX map's rows S1–S4,
 | E1 | S1 | **Expected path of the Selic and the balance of risks**, as this agent reads it (not only the Focus median) | The forward carry, which supports the BRL, is the differential ahead, not today's | The thesis of Q4 in the horizon format of Part 1 (quarter close; meeting by meeting for the next two quarters) |
 | E2 | S2 | **Credibility reading: is a hike read as credibility or as validating inflation?** | Decides the sign of the rate → FX link | Q2, channels 2.3 and 2.6 |
 | E3 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | The Copom documents of layer 1 (II.III.ix); channel 2.7 |
-| E4 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate (intervention without signs of dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, answered by both agents with this agent leading | A credible response caps the depreciation; its absence removes the cap. Under a defense posture what matters is the BCB's reaction function, not the technical state of the market | Q1, channels 2.1 and 2.2 (the second-order-effects test); under the trigger, 2.1 and 2.7 with the FX agent's reading of dysfunction (S7) |
+| E4 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate (intervention without signs of dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, answered by both agents with this agent leading | A credible response caps the depreciation; its absence removes the cap. Under a defense posture what matters is the BCB's reaction function, not the technical state of the market | Q1, channels 2.1 and 2.2 (the second-order-effects test); under the trigger, 2.1 and 2.7 with the FX agent's reading of dysfunction (S6) |
 
 **Decided by the user, 2026-10-21.**
 - **E4 (S4) is triggered.** While the BCB intervenes only against dysfunction, intervention is the FX
-  agent's channel (FX map 2.7, `cmb_reservas_bc`), and judging dysfunction is its job (S7); this agent
+  agent's channel (FX map 2.7, `cmb_reservas_bc`), and judging dysfunction is its job (S6); this agent
   answers on the rate. If the BCB's posture turns to defending the exchange rate, the reaction
   function, intervention included, becomes a question for both, led by this agent.
 - **E1 (S1) follows the approved horizon.** The FX equation of the Structural Model was estimated with

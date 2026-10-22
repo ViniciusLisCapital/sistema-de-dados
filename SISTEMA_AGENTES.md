@@ -346,26 +346,26 @@
 
     - `inflc_meta`: meta de inflação do CMN. É a âncora contra a qual projeções e expectativas são medidas; dado institucional, não leitura de inflação.
 
-### ii. Endógeno de câmbio (consulta; a posição vem pelas entradas E1, E2 e E4–E7 do mapa de câmbio; a E3, repasse, passou para a inflação)
+### ii. Endógeno de câmbio (consulta; a posição vem pelas entradas E1–E6 do mapa de câmbio; o repasse passou para a inflação)
     - `cmb_ptax`: câmbio diário. Entra na projeção de inflação do Copom; se o movimento é persistente ou transitório (E1) e global ou idiossincrático (E2) vem do agente de câmbio.
 
     - `cmb_fx_latam`: moedas dos pares latinos. Base da separação global × idiossincrático (E2): depreciação só do real costuma vir com prêmio de risco, que também afeta expectativas.
 
-    - `cmb_reer`: câmbio real efetivo. Diz se o real está caro ou barato, o ponto de partida para a distância entre o câmbio de mercado e a premissa do Copom (E4).
+    - `cmb_reer`: câmbio real efetivo. Diz se o real está caro ou barato, o ponto de partida para a distância entre o câmbio de mercado e a premissa do Copom (E3).
 
-    - `cmb_reservas_bc`: reservas e intervenções. Mostra se o BC está usando instrumento cambial em vez do juro (E7).
+    - `cmb_reservas_bc`: reservas e intervenções. Mostra se o BC está usando instrumento cambial em vez do juro (E6).
 
-    - `cmb_cambio_contratado`: fluxo cambial diário, somado no mês. Pressão de liquidez que pode levar à intervenção (E7) e fundamento para a persistência do movimento (E1).
+    - `cmb_cambio_contratado`: fluxo cambial diário, somado no mês. Pressão de liquidez que pode levar à intervenção (E6) e fundamento para a persistência do movimento (E1).
 
-    - `cmb_balanco_pagmt`: balanço de pagamentos. Déficit externo mal financiado aumenta a vulnerabilidade e o prêmio de risco (E5).
+    - `cmb_balanco_pagmt`: balanço de pagamentos. Déficit externo mal financiado aumenta a vulnerabilidade e o prêmio de risco (E4).
 
-    - `cmb_cot_fx`: posição especulativa em BRL. Posição grande sustentada pelo carry é risco de reversão do câmbio quando o juro cair (E6).
+    - `cmb_cot_fx`: posição especulativa em BRL. Posição grande sustentada pelo carry é risco de reversão do câmbio quando o juro cair (E5).
 
     - `cmb_termos_troca`: termos de troca. Choque de termos de troca muda o câmbio de forma persistente (E1) e, por ele, a projeção de inflação.
 
     - `cmb_comex_fator_agregado`, `cmb_comex_pais`, `cmb_comex_produto`: composição do saldo comercial. Contexto para a persistência do movimento (E1); raramente lidas diretamente pelo agente de política monetária.
 
-    - `diferenciais_juros`: Selic menos Fed Funds. Mede quanto do carry sustenta o real (E6): se o carry deixa de funcionar, enfraquece o canal pelo qual a Selic chega à inflação via câmbio.
+    - `diferenciais_juros`: Selic menos Fed Funds. Mede quanto do carry sustenta o real (E5): se o carry deixa de funcionar, enfraquece o canal pelo qual a Selic chega à inflação via câmbio.
 
 ### iii. Endógeno de expectativas (consulta; a posição vem pela saída S9 do mapa de PM; a conclusão sobre o caminho da Selic que a curva precifica continua da PM, Q3)
     - `expc_focus_copom`: mediana da Focus para a Selic em cada reunião. É o caminho esperado pelo consenso; a diferença para a curva é prêmio, a diferença para a comunicação é espaço de surpresa.
@@ -378,7 +378,7 @@
 
     - `expc_focus_periodo` (IPCA): expectativa de IPCA por ano-calendário. Mostra o que o mercado espera para a inflação em cada ano do horizonte relevante.
 
-    - `expc_focus_periodo` (câmbio): câmbio esperado pelo consenso. A distância para a premissa do Copom é um dos riscos do cenário de referência; a leitura do câmbio continua vindo do agente de câmbio (E4).
+    - `expc_focus_periodo` (câmbio): câmbio esperado pelo consenso. A distância para a premissa do Copom é um dos riscos do cenário de referência; a leitura do câmbio continua vindo do agente de câmbio (E3).
 
 ### iv. Endógeno de inflação (consulta; a posição vem pelas saídas S3 e S8 do mapa de PM)
     - `inflc_agregados`: IPCA e IPCA-15 com componentes, difusão e núcleos. É a inflação corrente que o Copom lê, em especial serviços subjacentes e núcleos, que mostram a persistência.
