@@ -1,9 +1,13 @@
 # Monetary Policy — Conceptual Map
 
-**Status (2026-10-21):** Parts 1 to 4 approved by the user on 2026-10-21 (central questions, horizon,
-worst and best, outputs and inputs, mirrored in the exchange-rate map). Layer 1 of
-this agent's material is chosen in a separate step (`PLANO_AGENTES.md`, Phase 2) and is not decided
-here.
+**Status (2026-10-22):** Parts 1 to 4 approved by the user on 2026-10-21 (central questions, horizon,
+the tails, outputs and inputs with FX, mirrored in the exchange-rate map). Adjusted on 2026-10-22 to
+the batch of seven agents (`SISTEMA_AGENTES.md` III.III.vii): the tails are upside and downside;
+expectations, the output gap, the fiscal premium and the Fed path have owners now, and the readings
+of channels 2.3, 2.4, 2.5–2.6 and 2.8 that belong to them come through the rows of 3.2; the
+pass-through row (S3) went to inflation. The rows with the other five agents (3.2, 4.2) are drafts
+until the user approves them. Layer 1 of this agent's material is chosen in a separate step
+(`PLANO_AGENTES.md`, Phase 2) and is not decided here.
 
 **What this file is.** This is the monetary-policy agent's contract with the rest of the system. It
 says what every report must answer (Part 1, central questions), what moves the Selic decision
@@ -25,24 +29,38 @@ agent's bibliography, in `clean_md/central_bank/`; which of them a cycle reads i
 from B. An input of A from B is what B told A is important for B, coming from A. So this agent's
 outputs to FX (Part 3) are the FX agent's inputs from monetary policy (FX map, Part 4, rows E1–E7),
 and this agent's inputs from FX (Part 4) are the FX agent's outputs to monetary policy (FX map,
-Part 3, rows S1–S4). Each row here carries its label in the FX map, so the mirror can be checked line
-by line. A row is a request; the content flows the other way: the FX agent's reading of the exchange
-rate reaches this agent through the rows of Part 3. An input gives emphasis and tells the agent what
-to flag; it never limits the analysis.
+Part 3, rows S1–S4); the same holds with the other five agents of the batch (3.2, 4.2). Each row here
+carries its label in the other map, so the mirror can be checked line by line. A row is a request;
+the content flows the other way: the FX agent's reading of the exchange rate reaches this agent
+through the rows of Part 3. An input gives emphasis and tells the agent what to flag; it never limits
+the analysis.
 
 **Two layers.** What is written here is the **fixed** layer: what matters every cycle. On top of it,
 each cycle has a **dynamic** layer, set by the theses of that cycle's reports: an agent whose thesis
 hinges on something asks for it explicitly in its report. The dynamic layer lives in the reports, not
 in this file.
 
-**Data rule** (`SISTEMA_AGENTES.md` I.III.ix–xii, V.II). *Endogenous*: the Copom's calendar,
-decisions and projections, the BCB output gap and its vintages, the B3 curves and the inflation
-target. *Endogenous of the FX agent*: the exchange-rate tables, read for consultation; this agent
-draws no conclusion about them, and the FX agent's position arrives through Part 3. *TWA*
-(temporarily without agent): expectations, inflation, activity, labour market, credit, fiscal and the
-global data, used with the premises stated in the report. Inflation becomes the inflation agent's
-when it exists (III.II.ii); expectations are not this agent's (I.III.xii). *Exogenous*: the CDS. The
-table-by-table list, with why each table matters, is V.II.
+**Data rule** (`SISTEMA_AGENTES.md` I.III.ix–xii, III.III.vii, V.II; regrouped 2026-10-22).
+*Endogenous*: the Copom's calendar, decisions and projections, the B3 curves and the inflation
+target. *Endogenous of another agent*, read for consultation: this agent draws no conclusion about
+them, and the owner's position arrives through Part 3 — FX (the exchange-rate tables); expectations
+(the Focus and the QPC; the Selic the curve prices stays this agent's conclusion, Q3); inflation (the
+IPCA, its decomposition and the IC-Br in reais); activity (the national accounts, the monthly
+indicators, the BCB output gap and its vintages, which moved here from this agent's own data, and,
+provisionally, the labour market); fiscal (the fiscal accounts and the CDS, which was the exogenous
+example); external (US rates, the peers' policy rates and real rates, the dollar indices, Brent and
+the IC-Br in dollars). On the gap this agent keeps how the Copom reads it and reacts. *TWA*
+(temporarily without agent): credit only, used with the premises stated in the report. No exogenous
+data is left. The table-by-table list, with why each table matters, is V.II.
+
+**Exogenous paths of the model: the tutela is in the tracker, not here.** Who writes the path of each
+exogenous input of the Structural Model (the target, the 10-year real yield, the CDS, the Fed funds,
+…) is set by the user in the "Exógenas" tab of `repository/agent_mapping/data_tracker.xlsx`, one
+level per agent. The consolidation (P) uses the path of whoever has the tutela; a path this agent
+writes without it becomes a logged divergence, answered in the next round (`SISTEMA_AGENTES.md`
+IV.ii). The multiplier on a coefficient of the interest-rate rule (R) is this agent's to apply,
+because it owns the equation, even when another agent argues for it; a multiplier on another
+equation (I, E, H, F) is argued here and applied by its owner (III.III.vii).
 
 Curation material (sources and their status, owners, clusters, gaps) lives in
 `repository/agent_mapping/data_tracker.xlsx` (the Qual - Monetary Policy and Notes tabs), not here.
@@ -93,11 +111,14 @@ exception for this agent. The rule:
    from today's Selic is not by itself out of reach.
 4. **Scoreboard**: for each closed quarter, the band in which the close fell; for each meeting, whether
    the decision was the step the agent gave the highest probability.
-5. **Worst and best**: worst is the Selic above the central, best below it. A higher Selic than in the
-   base scenario means inflation, expectations or fiscal worse than assumed. The caveat: a lower Selic
-   from a lenient Copom (Verde §2.6, the BC "dócil") would score as best.
-6. **The Fed funds rate is not a thesis variable of this agent.** It is a global (TWA) series, entered
-   as an exogenous path in step 1 of the premises; FOMC meetings matter only as events.
+5. **Upside and downside** (decided 2026-10-22 for every agent, replacing worst and best): upside is
+   the Selic above the base range, downside below it — position only; the asymmetry is
+   P(upside) − P(downside). The report says in words when a tail is good or bad for Brazil: an upside
+   Selic usually means inflation, expectations or fiscal worse than assumed, and a downside from a
+   lenient Copom (Verde §2.6, the BC "dócil") is not good news.
+6. **The Fed funds rate is not a thesis variable of this agent.** It is the external agent's: its path
+   comes from whoever has its tutela in the "Exógenas" tab, and the Fed path and the global cycle
+   reach this agent through S13; FOMC meetings matter only as events.
 
 ---
 
@@ -141,9 +162,10 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   [[exchange_rate_pass_through]].
 - **Mental models:** Verde §2.5 (supply shocks and calibration), §2.4 (lags), §2.6 (a target met by
   tax cuts is a deferred cost).
-- **Data:** `pm_copom_projecoes`, `inflc_meta`; TWA inflation `inflc_agregados`,
-  `inflc_decomposicao`, `inflc_decomposicao_item`, `inflc_dim`; TWA external `comm_brent`,
-  `comm_icbr`.
+- **Data:** `pm_copom_projecoes`, `inflc_meta`; inflation's, for consultation, `inflc_agregados`,
+  `inflc_decomposicao`, `inflc_decomposicao_item`, `inflc_dim`, `comm_icbr`; external's `comm_brent`.
+  The IPCA path, its persistence and what drives it come from the inflation agent (S8), and so does
+  pass-through (S3).
 - **Trap.** The reference-scenario projection is conditional on paths set by governance — the Focus
   Selic, a PPP exchange rate, oil futures — which "não necessariamente refletem o cenário mais
   provável" (RPM Sep/2026, 2.3). Read as the Copom's forecast, it confuses the conditioning with the
@@ -162,11 +184,14 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   [[central_bank_communication]], [[inflation_targeting]]; `inflation_expectations_anchoring`.
 - **Mental models:** Verde §1.1 (a promise of discipline without a framework holds only if decisions
   corroborate it), §2.6.
-- **Data:** TWA expectations `expc_focus`, `expc_focus_periodo` (IPCA), `expc_qpc`; `br_interest_rate`
-  (nominal and real, so implied inflation by a G); `inflc_meta`.
-- **Trap.** Expectations are not this agent's (I.III.xii): it reads them and states its premises.
-  Anchoring is judged two or three years ahead, free of the short-run effect of current shocks
-  (RPM Sep/2026, 2.3); a short-horizon rise after a supply shock is not by itself deanchoring.
+- **Data:** expectations', for consultation, `expc_focus`, `expc_focus_periodo` (IPCA), `expc_qpc`;
+  `br_interest_rate` (nominal and real, so implied inflation by a G; the conclusion on the implied
+  inflation is the expectations agent's, III.III.vii); `inflc_meta`.
+- **Trap.** Expectations are not this agent's (I.III.xii): the anchoring reading — the path of the
+  12-month expectation, the long horizons against the target — comes from the expectations agent
+  (S9). What this agent keeps is how the Copom reacts to it. Anchoring is judged two or three years
+  ahead, free of the short-run effect of current shocks (RPM Sep/2026, 2.3); a short-horizon rise
+  after a supply shock is not by itself deanchoring.
 
 ### 2.4 Output gap, activity and labour market
 
@@ -179,10 +204,12 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   [[real_time_data]].
 - **Mental models:** Verde §2.4 (real income loss and lags; the curve and the BC looking at current
   inflation).
-- **Data:** `pm_hiato_produto`, `pm_hiato_produto_vintages`; TWA expectations `expc_qpc` (the market's
-  gap); TWA activity `atv_pib`, `atv_pib_taxas`, `atv_pib_valores_correntes`, `atv_ibcbr`, `atv_pim`,
-  `atv_pim_uso`, `atv_pmc`, `atv_pms`; TWA labour `mt_pnad`, `mt_desocupacao_retro`, `mt_caged`,
-  `mt_caged_setor`.
+- **Data:** all the activity agent's since 2026-10-22, for consultation: `pm_hiato_produto`,
+  `pm_hiato_produto_vintages`, `atv_pib`, `atv_pib_taxas`, `atv_pib_valores_correntes`, `atv_ibcbr`,
+  `atv_pim`, `atv_pim_uso`, `atv_pmc`, `atv_pms`, and, provisionally, the labour market `mt_pnad`,
+  `mt_desocupacao_retro`, `mt_caged`, `mt_caged_setor`; expectations' `expc_qpc` (the market's gap).
+  The gap path and its revision come from the activity agent (S10); this agent keeps how the Copom
+  reads the gap and reacts to it (III.III.vii).
 - **Trap.** Real-time gap estimates differ materially from revised ones (Orphanides 2001), so a gap
   revision changes the projection with no new data (`pm_hiato_produto_vintages`). Filters fold a long
   slump into potential (Krugman 1998). A slowdown is in the Copom's base scenario; only a faster one
@@ -209,8 +236,11 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   [[jurisdictional_uncertainty]], [[term_premium]]; `directed_credit`.
 - **Mental models:** Verde §1.1 (the structural Selic level is conditional on the fiscal anchor),
   §2.2 (a real rate too high does not last: inflation or the nominal rate adjusts).
-- **Data:** `br_interest_rate`, `br_di_grade`, `inflc_meta`; TWA `expc_focus_periodo` (Selic),
-  `expc_focus`, `cmb_real_rates` (peers), `atv_renda_poupanca`, `fisc_divida`.
+- **Data:** `br_interest_rate`, `br_di_grade`, `inflc_meta`; for consultation, expectations'
+  `expc_focus_periodo` (Selic) and `expc_focus`, external's `cmb_real_rates` (peers), activity's
+  `atv_renda_poupanca`, fiscal's `fisc_divida`. The reading of the fiscal premium in the long rates —
+  is the consolidation they price credible, how much demand it takes out — comes from the fiscal
+  agent (S11); the `rr_10a` path, from whoever has its tutela.
 - **Trap.** Every estimate is imprecise. A mismeasured neutral is costly under a passive rule and
   largely self-correcting under an activist one (Perrelli & Roache 2014, against Orphanides' result
   for the gap). The model's anchor is a market yield that carries term and fiscal premia, not the
@@ -228,13 +258,15 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
 - **Read:** [[fiscal_dominance]], [[risk_premium]], [[mundell_fleming_policy_mix]], [[term_premium]].
 - **Mental models:** Verde §1.1 ("acelerador fiscal com freio monetário"), §1.2 (spending → debt and
   FX → inflation → rates), §2.1 (fiscal and electoral premium in the curve), §2.6.
-- **Data:** TWA fiscal `fisc_nfsp`, `fisc_divida`, `fisc_dlsp_fatores`, `fisc_rtn`, `fisc_efgg`;
-  exogenous `cmb_risco_pais`; TWA `atv_pib_mensal` (denominator).
+- **Data:** fiscal's, for consultation, `fisc_nfsp`, `fisc_divida`, `fisc_dlsp_fatores`, `fisc_rtn`,
+  `fisc_efgg`, `cmb_risco_pais` (the CDS, no longer exogenous); activity's `atv_pib_mensal`
+  (denominator).
 - **Trap.** Fiscal dominance is a spectrum, not a switch. Blanchard's estimate is for 2002, with
   dollar-linked debt; in Segura-Ubiergo's panel gross debt is not a robust determinant of real rates
-  while the fiscal balance is. Fiscal data are TWA: the report states its premises. A compression
-  of the fiscal premium in the long rates is a demand story as well as a risk story (2.5); until a
-  fiscal agent exists, the report states which fiscal path the market is pricing.
+  while the fiscal balance is. The fiscal reading is the fiscal agent's (S11, S12): the impulse,
+  the debt dynamics, the CDS path and which fiscal path the market is pricing. A compression of the
+  fiscal premium in the long rates is a demand story as well as a risk story (2.5). This agent keeps
+  the efficacy of monetary policy under fiscal dominance (Blanchard 2004, I.III.xvii).
 
 ### 2.7 The exchange rate, read through inflation
 
@@ -251,11 +283,12 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   supporting the currency).
 - **Data:** FX endogenous, for consultation: `cmb_ptax`, `cmb_fx_latam`, `cmb_reer`,
   `cmb_reservas_bc`, `cmb_cambio_contratado`, `cmb_balanco_pagmt`, `cmb_cot_fx`, `cmb_termos_troca`,
-  `cmb_comex_fator_agregado`, `cmb_comex_pais`, `cmb_comex_produto`, `diferenciais_juros`; TWA
-  `expc_focus_periodo` (câmbio); `pm_copom_projecoes`.
+  `cmb_comex_fator_agregado`, `cmb_comex_pais`, `cmb_comex_produto`, `diferenciais_juros`;
+  expectations' `expc_focus_periodo` (câmbio); `pm_copom_projecoes`.
 - **Trap.** This agent draws no conclusion about the exchange rate (I.III.x): persistence, global
-  against idiosyncratic and the risk premium come from the FX agent (Part 3). The pass-through
-  literature belongs to the inflation agent (IV.i). And the sign of the rate → exchange rate link is
+  against idiosyncratic and the risk premium come from the FX agent (Part 3). Pass-through, its
+  literature and the question, belongs to the inflation agent (IV.i), and reaches this agent through
+  S3. And the sign of the rate → exchange rate link is
   not given: under fiscal stress a hike can depreciate (2.6).
 
 ### 2.8 Global rates and spillovers
@@ -272,11 +305,11 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
   [[macroprudential_policy]], [[risk_premium]], [[uip]].
 - **Mental models:** Verde §3.1–3.4 (global rates, central banks behind the curve, the
   inflation–growth pendulum, global rates as the discount rate), §4.2.
-- **Data:** TWA external `us_interest_rate`, `inter_interest_rate`, `cmb_real_rates`,
-  `cmb_dollar_index`, `cmb_dollar_index_em`, `comm_brent`, `comm_icbr`; FX endogenous
+- **Data:** external's, for consultation, `us_interest_rate`, `inter_interest_rate`, `cmb_real_rates`,
+  `cmb_dollar_index`, `cmb_dollar_index_em`, `comm_brent`, `comm_icbr_usd`; FX endogenous
   `diferenciais_juros`.
-- **Trap.** Global data are TWA until an external agent exists; the Fed path is a stated premise, not
-  a conclusion of this agent.
+- **Trap.** The Fed path and the global cycle are the external agent's (S13): the Fed funds path in
+  step 1 comes from whoever has its tutela, and it is not a conclusion of this agent.
 
 ### 2.9 Communication, the curve and the market's path
 
@@ -292,7 +325,9 @@ Section 2.1 is how the inputs combine into a decision; 2.2–2.10 are the inputs
 - **Mental models:** Verde §2.1 (premium in the curve above the expected cycle; "há prêmio
   suficiente?"), §2.2, §2.3.
 - **Data:** `br_di_grade` (the Selic priced meeting by meeting), `br_interest_rate`,
-  `pm_copom_calendario`; TWA `expc_focus_copom`, `expc_focus_periodo` (Selic), `expc_qpc`.
+  `pm_copom_calendario`; expectations', for consultation, `expc_focus_copom`, `expc_focus_periodo`
+  (Selic), `expc_qpc`. The Selic the curve prices, against the survey, stays this agent's conclusion
+  (Q3, III.III.vii); the expectations agent asks for it (4.2, E20).
 - **Trap.** The DI path is not the expected path: it carries term and risk premia (Verde §2.1;
   Favero & Giavazzi find default risk in Brazilian swap term premia). The reference scenario uses the
   Focus Selic, not the Copom's intended path. A surprise is read with the other prices that moved
@@ -354,41 +389,49 @@ Focus, side by side, and the ex-ante real rate against the QPC's neutral.
 ### 3.1 To FX (fixed layer; approved by the user 2026-10-21)
 
 What this agent needs from the FX agent, every cycle. These are the FX map's rows E1–E7, unchanged in
-substance, written from this side. What the Copom cares about in the exchange rate is its effect on
+substance, written from this side (E3 moved to inflation on 2026-10-22). What the Copom cares about in the exchange rate is its effect on
 inflation and expectations, not its level for its own sake (2.7).
 
 | # | FX map | What this agent needs | Why it matters to this agent | Flag when | Used in |
 |---|---|---|---|---|---|
 | S1 | E1 | **Is the move persistent or transitory?** A judgement, with the reason, separating a level shift from noise | Pass-through depends on persistence; a transitory spike is looked through | A move the FX agent classifies as persistent, in either direction | 2.2, 2.7 |
 | S2 | E2 | **Global or idiosyncratic?** The split of the FX agent's Q3 | An idiosyncratic depreciation usually comes with a higher risk premium, which also reaches expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move | 2.3, 2.6, 2.7 |
-| S3 | E3 | **Pass-through channel.** Which prices a depreciation reaches, and how fast | The Copom projects free and administered prices separately, and their pass-through differs | Always, as context for S1 | 2.2 |
+| S3 | E3 | *Moved to the inflation agent (2026-10-22): see 3.2.* The number stays so that S4–S7 keep their labels | — | — | — |
 | S4 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** (a recent rate, then PPP) | A gap between the market and that path is a risk to the projection | The gap widens in the direction the Copom lists as a risk | 2.1, 2.2 |
 | S5 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral and weakens transmission (ata of the 281st meeting, §8) | CDS and BRL move together against peers | 2.5, 2.6 |
 | S6 | E6 | **How much carry is supporting the BRL** | The exchange rate is one channel from the Selic to inflation; if carry stops working, that channel weakens | Carry and the BRL decouple | 2.10, 2.7 |
 | S7 | E7 | **FX market functioning.** Liquidity, cupom cambial, central-bank intervention; whether there is dysfunction | Tells whether the BCB is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (trigger of E4) | Intervention, a liquidity squeeze or a cupom cambial spike | 2.1, 2.7 |
 
 **Decided by the user, 2026-10-21.**
-- **S3 (E3) is provisional.** The pass-through literature belongs to the inflation agent (IV.i).
-  Until it exists the FX agent answers this row; when it does, the row moves to inflation → this
-  agent, and the FX agent tells the inflation agent about depreciation risk (I.III.xvii).
+- **S3 (E3) was provisional, and moved on 2026-10-22.** The pass-through literature belongs to the
+  inflation agent (IV.i); the row is now asked of the inflation agent (3.2), and the FX agent tells
+  the inflation agent about depreciation risk (I.III.xvii; inflation map IN-S1, IN-S2).
 - **S7 (E7) keeps the cupom cambial.** The series is not in the data yet; it comes with the Bloomberg
   API (expected 2026-11-01). Until then the row is answered with reserves, interventions and the FX
   flow.
 
-### 3.2 To other areas — not defined yet
+### 3.2 To the other agents of the batch (draft, 2026-10-22)
 
-Written when those agents exist. The ones that matter most to this area:
-- **Inflation** — the drivers of the projection, persistence, services and administered prices (2.2).
-  Pass-through is already decided to be the inflation agent's (IV.i); until it exists, inflation is TWA
-  and S3 stays with FX.
-- **Fiscal** — fiscal impulse, debt dynamics and the risk premium (2.5, 2.6); and, when the long
-  rates move on the fiscal premium, whether the consolidation they price is credible and how much
-  demand it takes out (the user expects this exchange to sharpen the stance reading, 2026-10-21). Blanchard (2004) stays
-  with this agent because it asks about the efficacy of monetary policy under fiscal dominance
-  (I.III.xvii); the fiscal agent will own the fiscal side of [[fiscal_dominance]].
-- **External** — the Fed path and the global cycle (2.8).
-- **Expectations**, if an agent is created (I.III.xii); **activity**, **labour market** and **credit**
-  (2.4, 2.10).
+What this agent needs from the other five, every cycle. Each row becomes an input in that agent's
+map (its Part 4). They carry the readings of Part 2 that have owners now: pass-through and the drivers
+of the projection (2.2) from inflation, anchoring (2.3) from expectations, the gap (2.4) from
+activity, the fiscal premium and fiscal dominance (2.5, 2.6) from fiscal, the Fed path (2.8 and item 6
+of the horizon) from external. What this agent keeps in each channel is the Copom's reading and its
+reaction.
+
+| # | To | What this agent needs | Why it matters to this agent | Flag when | Used in |
+|---|---|---|---|---|---|
+| S3 | Inflation (its IN-E1; was FX E3) | **Pass-through channel.** Which prices a depreciation reaches, and how fast: food, industrial goods, and administered prices through fuels, energy and medicines | The Copom projects free and administered prices separately, and their pass-through differs; it reacts to the second round, not the first | Always, as context for S1 | 2.2, 2.7 |
+| S8 | Inflation | **The IPCA path and what drives it**: persistence (cores, diffusion, underlying services), administered prices and food, first round against second round | The projection at the relevant horizon decides, and the Copom accommodates the first-round effects of supply shocks and reacts to the second round (2.2) | The thesis moves at the relevant horizon, or the inflation agent reads a shock as spreading | 2.2, Q2 |
+| S9 | Expectations | **The anchoring reading**: the path of the 12-month-ahead expectation (the expectations agent's thesis), the long horizons against the target, and whether a move is deanchoring or a short-run reaction to a shock | Deanchored expectations require "restrição monetária maior e por mais tempo" (ata of the 281st meeting, §10), and the rule (R) reacts to the Focus deviation from the target | The long horizons move away from the target, or the expectations agent's upside tail gains probability | 2.3, 2.1, Q2 |
+| S10 | Activity | **The output-gap path** (the activity agent's thesis) **and its revision** in the latest RPM, with the labour market (unemployment, wages against productivity) | The gap enters the Copom's projection, and a revision moves the projection with no new data; the Copom watches wages growing above productivity (ata of the 281st meeting, §7) | The gap changes sign in the horizon, or the RPM revises recent quarters | 2.4, Q2 |
+| S11 | Fiscal | **The fiscal premium in the long rates and the CDS path**: when the long rates move on the fiscal premium, is the consolidation they price credible, and how much demand does it take out; and the `rr_10a` path, if the fiscal agent has its tutela | `rr_10a` + meta is the anchor of the rule and of the IS curve: a compression of the premium tightens the same Selic and opens room to cut (2.5). The user expects this exchange to sharpen the stance reading (2026-10-21) | The long real yield moves on the fiscal premium, or the CDS path changes | 2.5, 2.6, Q2, Q4 |
+| S12 | Fiscal | **The fiscal impulse and the fiscal-dominance reading**: the direction and size of the stimulus to demand, and whether the primary responds to the debt | Fiscal policy acts on demand in the short run; whether a global shock turns into a vicious circle depends on the primary responding to the debt (Favero & Giavazzi 2004) | The impulse changes sign, or the fiscal agent's adverse tail gains probability | 2.6, 2.10 |
+| S13 | External | **The Fed path and the global cycle**: the Fed funds (`ffr`) and US inflation paths by quarter, base and tails, global risk appetite and the peers' policy cycle | US policy and global risk move emerging-market premia, flows and long rates (2.8); the Fed funds is an exogenous input of the model, written by whoever has its tutela | A change in the Fed path, a global risk-off, or a turn in the peers' cycle | 2.8, 2.5, Q4 |
+
+- **Blanchard (2004) stays with this agent** because it asks about the efficacy of monetary policy
+  under fiscal dominance (I.III.xvii); the fiscal agent owns the fiscal side of [[fiscal_dominance]].
+- **Credit** has no agent yet: its data stay TWA (2.10), used with the premises stated in the report.
 
 ---
 
@@ -414,10 +457,31 @@ What the FX agent needs from this agent, every cycle: the FX map's rows S1–S4,
   the Selic at the quarter close and the simulator uses the average; the close is what this agent
   gives (Part 1, horizon, item 3).
 
-### 4.2 From other areas — not defined yet
+### 4.2 From the other agents of the batch (2026-10-22)
 
-Inflation, fiscal policy, economic activity, credit, labour market, expectations and external. Each
-is written when that agent's map is built, by that agent.
+The mirror of what the other five maps ask of this agent in their Part 3 (approved by the user on
+2026-10-22, in each agent's approval window), written from this side; the source row carries the
+label in that map. Most of them ask for the thesis (the Selic path) and for what the Copom said, so
+the answer is written once, in the report, and each row points to it.
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| E5 | Inflation IN-S3 | **The Selic path**, at each quarter close and meeting by meeting for the next two quarters | The Selic reaches inflation through the gap and the exchange rate with long lags; it is the loop that pulls the central back to the target | The thesis of Q4 in the horizon format of Part 1 |
+| E6 | Inflation IN-S4 | **What the Copom projects for inflation and on which assumptions**: the reference-scenario projection by quarter, the administered-prices projection, and the conditioning paths it states (oil, the tariff flag, the exchange rate) | The inflation agent does not read the Copom's documents; the Copom's assumptions on administered prices are the best public calendar of those decisions | The Copom documents of layer 1 (II.III.ix) and `pm_copom_projecoes`; channel 2.2, with the conditioning read as conditioning, not as forecast |
+| E7 | Activity S-PM1 | **The Selic path and its balance of risks**: average and close of each quarter | The Selic of each quarter is the tightening of the next one in the IS curve (H); this agent's tails shape the activity agent's | The thesis of Q4 and its tails; the quarterly average is the model's, the close is the thesis |
+| E8 | Activity S-PM2 | **The stance**: how restrictive policy is against the neutral the Copom uses and against the model's anchor | (H) measures the tightening against `rr_10a` + meta; if the anchor carries premia the neutral does not, the effective tightening differs from the model's | Q2, channel 2.5, saying which neutral and why |
+| E9 | Activity S-PM3 | **How the Copom read activity and the gap at the last meeting**, with the revision of the gap in the latest RPM | The model's starting point and the activity agent's thesis variable are the BCB's gap; a revision moves both without new data | The Copom documents of layer 1; channel 2.4 |
+| E10 | Fiscal FS-PM1 | **The Selic path** at each quarter close | It sets the cost of the debt, the r of r − g, and the monetary half of the policy mix | The thesis of Q4 |
+| E11 | Fiscal FS-PM2 | **How the Copom described fiscal policy**, from the comunicado, the ata and the RPM | Tells whether the Copom reads fiscal policy as a demand push, a premium or a neutral-rate question, and whether a fiscal move is already in its scenario | The Copom documents of layer 1; channels 2.5 and 2.6 |
+| E12 | Fiscal FS-PM3 | **The split of the long real yield**: the expected real policy path and the term premium, against the fiscal premium (needed if the fiscal agent has the tutela of `rr_10a`) | Writing `rr_10a` is splitting it, and the policy part is this agent's | Channels 2.5 and 2.9: the Selic path of the thesis, the curve and the term premium ([[term_premium]]) |
+| E13 | Fiscal FS-PM4 | **Credibility reading: is a hike read as credibility or as raising the risk of the debt?** | It is the monetary side of the fiscal-dominance test | Q2, channels 2.3 and 2.6 (the same reading E2 gives the FX agent) |
+| E14 | External XS3 | **The Selic path** | Brazil's relative carry against the Fed and the peers, which decides whether Brazil gains or loses within the emerging-market carry trade | The thesis of Q4 |
+| E15 | External XS4 | **How the Copom reads the external scenario**: its assessment, its balance of risks and the external conditioning of the reference scenario | Tells the external agent whether its scenario is already in the Copom's or is news to it; that agent does not read the Copom's documents | The Copom documents of layer 1; channel 2.8 |
+| E16 | External XS6 | **The `rr_10a` path, and how much of it is US long rates** — asked of whoever writes `rr_10a` (fiscal or this agent, per the "Exógenas" tab) | Keeps the external agent's long-rate scenario consistent with the anchor that carries it into the gap | Only when this agent's path is the one the P uses for `rr_10a`; channel 2.5 |
+| E17 | Expectations XS1 | **The reaction function to expectations above the target**: would the Copom respond, and how much | The anchor holds only if a response is expected; the survey's Selic path is judged against it | Q1, channels 2.1 and 2.3 |
+| E18 | Expectations XS2 | **What the Copom said about expectations at the last meeting**: which horizons it watches, whether it calls them deanchored, its projection at the relevant horizon against the Focus | The expectations agent does not read the Copom's documents | The Copom documents of layer 1; channel 2.3 |
+| E19 | Expectations XS3 | **The path of the target (`meta_12m`)** and any risk of the CMN changing it | It is the anchor term of the expectations equation (E); a change moves its rest point | The `meta_12m` path, written under the tutela of the "Exógenas" tab, and the CMN's decisions |
+| E20 | Expectations XS4 | **The Selic the curve prices against the survey**, and the premium between them | Separates what the survey expects of the Selic from what the market charges, for the expectations agent's credibility test | Q3, channel 2.9 (the curve meeting by meeting against the Focus) |
 
 ---
 

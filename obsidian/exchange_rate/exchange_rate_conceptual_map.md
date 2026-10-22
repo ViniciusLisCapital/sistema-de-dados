@@ -24,17 +24,31 @@ tells the agent what to flag; it never limits the FX analysis.
 each cycle has a **dynamic** layer, set by the theses and arguments of that cycle's report: an agent
 whose thesis hinges on something asks for it explicitly in its report. The dynamic layer lives in the
 reports, not in this file. Every output here must appear as an input in the other agent's map and vice
-versa; until the monetary-policy map exists, both tables are **drafts**.
+versa. The monetary-policy rows (3.1, 4.1) were approved on 2026-10-21; the rows with the other five
+agents (3.2, 4.2) were written on 2026-10-22, when the batch of seven was built, and are drafts until
+the user approves them.
 
-**Data rule (decided 2026-09-30, types 2026-10-01).** Three types of data. *Endogenous*: this
-area's own data, which this agent is responsible for analysing. *Exogenous*: data with no agent,
-open to every agent (the CDS). *TWA* (temporarily without agent): data from an area with no agent
-yet (inflation, fiscal, expectations, the global data until an external agent exists), treated as
-exogenous until that agent exists. Another agent's endogenous data may be read, but this agent draws
-no conclusion about it: the Selic path, the Copom's stance and the credibility reading come from the
-monetary-policy agent (Part 3). How exogenous and TWA data are analysed is still to be defined,
-through the interaction between agents, since several may use the same series. The
+**Data rule (decided 2026-09-30, types 2026-10-01, regrouped 2026-10-22).** *Endogenous*: this
+area's own data, which this agent is responsible for analysing. *Endogenous of another agent*: the
+data of an area that has its own agent — monetary policy, expectations (the Focus), external (the
+dollar indices, the S&P 500, US rates, the peers' real rates, Brent and the IC-Br in dollars),
+inflation (the IPCA), fiscal (the fiscal accounts and the CDS) and activity (GDP in dollars, only as
+a denominator). This agent may read it but draws no conclusion about it: the position comes from the
+owner, through the outputs of Part 3 (the Selic path from monetary policy, S1; the CDS path and the
+fiscal reading from fiscal, S6–S7; the global block from external, S8–S9). Since 2026-10-22 the
+batch of seven covers every area this agent reads, so it has no TWA and no exogenous data: the CDS,
+the old example of exogenous data, is the fiscal agent's (`SISTEMA_AGENTES.md` III.III.vii). The
 table-by-table list is in `SISTEMA_AGENTES.md`, section (V.I), with why each table matters to this agent.
+
+**Exogenous paths of the model: the tutela is in the tracker, not here.** Who writes the path of each
+exogenous input of the Structural Model (the CDS, the implied volatility, the dollar against
+emerging markets, the S&P 500, the IC-Br in dollars, the Fed funds, US inflation, …) is set by the
+user in the "Exógenas" tab of `repository/agent_mapping/data_tracker.xlsx`, one level per agent. The
+consolidation (P) uses the path of whoever has the tutela; a path this agent writes without it
+becomes a logged divergence, answered in the next round (`SISTEMA_AGENTES.md` IV.ii). The multiplier
+on a coefficient of the FX equation (F) is this agent's to apply, because it owns the equation, even
+when another agent argues for it (the fiscal agent argues for the weight of the CDS, this agent
+applies it; III.III.vii).
 
 Curation material (sources and their status, coverage notes, gaps) lives in
 `repository/agent_mapping/data_tracker.xlsx` (the Qual - Exchange Rate and Notes tabs), not here.
@@ -53,8 +67,13 @@ Portuguese, the language the report is written in.
 | Q1 | Quais as condições subjacentes do mercado de câmbio brasileiro? | How the market is working: liquidity, flows, positioning, onshore dollar scarcity, the central bank's presence | 2.5, 2.6, 2.7 |
 | Q2 | Como estão os fundamentos macroeconômicos para o câmbio? | Carry, risk premium, terms of trade, external accounts and valuation | 2.1, 2.2, 2.4, 2.5, 2.8 |
 | Q3 | O que explica a dinâmica recente do câmbio? | What moved the BRL and through which channel, including whether the move is global or idiosyncratic. That split is part of the model's explanation (FX Model or Structural Model), read against the LatAm peers and the dollar indices | 2.1–2.7 · data `cmb_fx_latam`, `cmb_dollar_index`, `cmb_dollar_index_em` · mental models Verde §5.5 ("Brasil como passageiro"), Kapitalo §1.5 |
-| Q4 | Qual o cenário prospectivo para o câmbio? | The report's thesis: central value, base range and tails for each of the six quarters of the Structural Model (PTAX at the close of the quarter), the central from the model's base scenario, the distribution around it from the agent's qualitative tempero | report §1 · 2.9 for the tail |
+| Q4 | Qual o cenário prospectivo para o câmbio? | The report's thesis: central value, base range and the upside and downside tails for each of the six quarters of the Structural Model (PTAX at the close of the quarter), the central from the model's base scenario, the distribution around it from the agent's qualitative tempero | report §1 · 2.9 for the tail |
 
+- **Upside and downside** (decided 2026-10-22 for every agent, replacing worst and best): upside is a
+  PTAX above the base range (a weaker real), downside below it (a stronger real) — position only. The
+  asymmetry is P(upside) − P(downside). Until 2026-10-22 depreciation was the worst case; the label
+  no longer carries the judgement, and the report says in words when a tail is good or bad for
+  Brazil (`SISTEMA_AGENTES.md` III.III.i).
 - "Recente" in Q3 is the agent's call (user, 2026-10-07): as a reference, 1 to 3 months, also considering what happened since the last cycle's report, especially if that was more than a month ago, without being restricted to it.
 - The marginal-versus-level distinction is deliberately left out for now (user decision, 2026-10-02).
 
@@ -84,7 +103,9 @@ Portuguese, the language the report is written in.
   instead of strengthening it.
 - **Read:** [[risk_premium]], [[fiscal_dominance]] (in `obsidian/concepts/`).
 - **Mental models:** Verde §1.1–1.11 and §6.1–6.3, Kinea §1.1–1.9, Kapitalo §6.1–6.7, GS §7.2.
-- **Data:** `cmb_risco_pais` (5-year CDS, Bloomberg).
+- **Data:** `cmb_risco_pais` (5-year CDS, Bloomberg), the fiscal agent's: the CDS path and whether a
+  move is fiscal come from it (S6, S7), the global part of the move from the external agent (S9);
+  `fisc_nfsp`, `fisc_divida`, read for consultation.
 
 ### 2.3 Global dollar, Fed and risk appetite
 
@@ -93,7 +114,9 @@ Portuguese, the language the report is written in.
   high-beta currency in risk-off.
 - **Read:** [[global_financial_cycle]].
 - **Mental models:** Verde §4.1–4.11 and §5.4, Kinea §4.1–4.9 and §2.6, Kapitalo §3.1–3.6, GS §3.
-- **Data:** `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_equity_us` (S&P 500), `us_interest_rate`.
+- **Data:** `cmb_dollar_index`, `cmb_dollar_index_em`, `cmb_equity_us` (S&P 500), `us_interest_rate`,
+  all the external agent's: the paths of the global block come from it (S8, S9). The split of the
+  BRL's move into global and idiosyncratic (Q3) stays this agent's.
 
 ### 2.4 Terms of trade and commodities
 
@@ -102,7 +125,8 @@ Portuguese, the language the report is written in.
   relative to EM importers.
 - **Read:** [[balance_of_payments_approach]].
 - **Mental models:** Verde §2.1–2.4, Kinea §3.1–3.4, Kapitalo §2.3, GS §1.7.
-- **Data:** `cmb_termos_troca` (Funcex), `comm_icbr_usd` (IC-Br in USD), `comm_brent`.
+- **Data:** `cmb_termos_troca` (Funcex); `comm_icbr_usd` (IC-Br in USD) and `comm_brent`, the external
+  agent's (S8, S9).
 
 ### 2.5 Balance of payments and flows
 
@@ -140,7 +164,8 @@ Portuguese, the language the report is written in.
   not for "where next month".
 - **Read:** [[ppp_balassa_samuelson]], [[overshooting]].
 - **Mental models:** Kapitalo §2.1–2.5, GS §1.1–1.2.
-- **Data:** `cmb_reer` (BIS REER), `cmb_ptax` with the IPCA and US CPI for a relative-PPP path.
+- **Data:** `cmb_reer` (BIS REER), `cmb_ptax` with the IPCA (the inflation agent's, S5) and US CPI for a
+  relative-PPP path.
 
 ### 2.9 Tail: regime stress and crisis
 
@@ -172,10 +197,25 @@ What the FX agent needs from the monetary-policy agent, every cycle.
 | S3 | **How the Copom described the exchange rate at the last meeting**, filtered from the comunicado, ata and RPM | Tells whether the FX move is already inside the Copom's scenario or is news to it | 2.7, Part 4 |
 | S4 | **Reaction function to a depreciation.** Would the Copom respond with the Selic, and by how much? **Trigger:** if the BCB's posture turns to defending the exchange rate ([[fx_intervention\|intervention]] without signs of market dysfunction, or communication about the level of the BRL), the question widens to the BCB's whole reaction function, intervention included, and is answered by both agents with the monetary-policy agent leading | A credible response caps the depreciation; its absence removes the cap. While the BCB intervenes only against dysfunction, judging dysfunction is this agent's job (E7); under a defense posture what matters is the BCB's reaction function, not the technical state of the market | 2.1, 2.9 |
 
-### 3.2 To other areas — not defined yet
+### 3.2 To the other agents of the batch (draft, 2026-10-22)
 
-Fiscal policy (the risk-premium drivers of 2.2) and external (the Fed and the global dollar of 2.3)
-are the two that matter most to this area. They are written when those agents exist.
+What the FX agent needs from the other five, every cycle. Each row becomes an input in that agent's
+map (its Part 4). Fiscal (the risk premium of 2.2) and external (the global block of 2.3) matter
+most: most of the exogenous inputs of equation (F) are in their areas.
+
+| # | To | What the FX agent needs | Why it matters to FX | Flag when | Used in |
+|---|---|---|---|---|---|
+| S5 | Inflation | **The IPCA path** (12 months, by quarter: the inflation agent's thesis) and where its tails come from | The inflation differential is the relative-PPP leg of the BRL's level (2.8) and enters (F) with its weight fixed at one (`infl_br − infl_us`); a higher domestic path is, mechanically, more nominal depreciation | The thesis moves materially against the previous cycle, or a tail gains probability | 2.8, Q4 |
+| S6 | Fiscal | **The CDS path** (`fiscal`, base and tails) **and whether a move is fiscal**: the reading behind it (the primary, the debt path, the framework) | The CDS is the risk-premium input of (F); the fiscal agent writes its path and argues for its weight, and this agent applies the multiplier on that weight (III.III.vii) | The CDS path or its tails move, or the fiscal agent argues the weight is larger or smaller than estimated | 2.2, 2.9, Q4 |
+| S7 | Fiscal | **The fiscal-dominance reading**: is the fiscal anchor credible, and is there a risk that a rate hike raises the premium instead of supporting the BRL | It decides the sign of the rate → FX link together with the credibility reading of monetary policy (S2): under dominance carry stops supporting the currency ([[fiscal_dominance]]) | The fiscal agent's adverse tail gains probability, or the framework changes | 2.1, 2.2, 2.9 |
+| S8 | External | **The paths of the global block of (F)** — the dollar against emerging markets (`dxy_em`), the S&P 500, the IC-Br in dollars, the Fed funds and US inflation — base and tails | They are exogenous inputs of (F), written by whoever has their tutela; the BRL's central moves with them | A path or a tail moves materially against the previous cycle | 2.1, 2.3, 2.4, Q4 |
+| S9 | External | **The global cycle outside the model**: the dollar against developed currencies, risk appetite, the peers' policy cycle and Brent | The global-or-idiosyncratic split of Q3 is read against them, and Brent reaches the terms of trade (2.4); carry is relative to the peers' rates as well as the Fed's | A global risk-off or risk-on move, a turn in the peers' cycle, or a sustained oil move | 2.1, 2.3, 2.4, Q3 |
+| S10 | Expectations | **The consensus for the exchange rate**: the Focus for the BRL at each year-end and its revisions, and the IPCA and Selic the survey expects | Separates surprise from convergence; the expected IPCA enters prospective PPP and the expected Selic the expected carry | The survey revises its year-end exchange rate, or the IPCA or Selic it expects, in the direction of the BRL's move | Q3, 2.1, 2.8 |
+
+**No fixed output to activity.** This agent uses activity data only as a denominator (GDP in dollars,
+for the balance of payments in % of GDP); the flow goes the other way (the exchange rate and the terms
+of trade reaching activity), and that row is in the activity map, as its output to this agent (4.2).
+Credit has no agent yet.
 
 ---
 
@@ -194,21 +234,37 @@ taxa de câmbio compatível com a PPC".
 |---|---|---|---|
 | E1 | **Is the move persistent or transitory?** A judgement, with the reason, separating a level shift from noise | [[exchange_rate_pass_through\|Pass-through]] depends on persistence; a transitory spike is looked through | A move that the FX agent classifies as persistent, in either direction |
 | E2 | **Global or idiosyncratic?** The split from Q3 (Part 1) | An idiosyncratic depreciation usually comes with a higher risk premium, which also hits inflation expectations; a global one does not carry that signal | The idiosyncratic component dominates the month's move |
-| E3 | **Pass-through channel.** Which prices a depreciation reaches, and how fast | Wholesale prices pass through almost fully in a year, consumer prices far less and administered prices barely ([[exchange_rate_pass_through\|distribution_chain_pass_through]]); the Copom projects free and administered prices separately | Always, as context for E1 |
+| E3 | *Moved to the inflation agent (2026-10-22).* The pass-through channel — which prices a depreciation reaches, and how fast — is now asked by monetary policy of the inflation agent (monetary-policy map S3, inflation map IN-E1). The number stays so that E4–E7 keep their labels | — | — |
 | E4 | **Where the BRL is relative to the Copom's conditioning assumption** | The reference scenario assumes a [[ppp_balassa_samuelson\|PPP]]-compatible path; a gap between the market and that path is a risk to the projection | The gap widens in a direction that the Copom lists as a risk |
 | E5 | **Risk premium reading.** Is the BRL pricing fiscal or institutional stress? | The same stress raises the neutral rate and weakens transmission ([[fiscal_dominance]]) | CDS and BRL move together against peers |
 | E6 | **How much [[carry_trade\|carry]] is supporting the BRL** | The exchange rate is one channel through which the Selic reaches inflation; if carry stops working, that channel weakens (Kapitalo §3.2 treats FX as a financial-conditions component equivalent to rates) | Carry and the BRL decouple |
 | E7 | **FX market functioning.** Liquidity, cupom cambial, [[fx_intervention\|central-bank intervention]]; whether there is dysfunction | Tells whether the central bank is using FX instruments rather than the rate, and whether an intervention answers dysfunction or defends the level (S4 trigger) | Intervention or a cupom cambial spike |
 
-Pass-through (E1, E3) sits between this area and inflation. Until the inflation agent exists, the FX
-agent reports it, provisionally (decided 2026-10-21); when that agent exists, E3 moves to it (pending in
-`SISTEMA_AGENTES.md`). The cupom cambial of E7 is not in the data yet: it comes with the Bloomberg API
+Pass-through sits between this area and inflation. The FX agent reported it provisionally until the
+inflation agent existed (decided 2026-10-21); since 2026-10-22 E3 is the inflation agent's
+(`SISTEMA_AGENTES.md` IV.i). This agent keeps E1 (is the move persistent?) and tells the inflation
+agent when it sees a relevant risk of depreciation (4.2, E8–E9). The cupom cambial of E7 is not in the data yet: it comes with the Bloomberg API
 (expected 2026-11-01); until then E7 is answered with reserves, interventions and the FX flow.
 
-### 4.2 From other areas — not defined yet
+### 4.2 From the other agents of the batch (2026-10-22)
 
-Inflation, fiscal policy, economic activity, credit, labour market and external. Each is written when
-that agent's map is built, by that agent.
+The mirror of what the other five maps ask of this agent in their Part 3 (approved by the user on
+2026-10-22, in each agent's approval window), written from this side; the source row carries the
+label in that map. Most of them ask the same two things this agent already answers for monetary
+policy — whether a move is persistent (E1) and whether it is global or idiosyncratic (E2) —, so the
+answer is written once, in section 2 of the report, and each row points to it.
+
+| # | Source row | What the other agent needs | Why it matters to it | How this agent answers |
+|---|---|---|---|---|
+| E8 | Inflation IN-S1 | **The exchange-rate path and whether the move is persistent or transitory**: the thesis by quarter, with the judgement on persistence | Pass-through depends on persistence: a transitory spike is absorbed in margins, a level shift reaches food, goods and administered prices | The thesis of Q4 by quarter, and E1 |
+| E9 | Inflation IN-S2 | **Risk of a relevant depreciation**: the upside tail of the thesis and what drives it, and whether a move is global or idiosyncratic | A depreciation with a domestic risk premium comes with weaker expectations, more pass-through and more persistence; it is the main source of the inflation agent's upside tail in goods and food | The upside tail of Q4 and its line under the thesis table, and E2; flag it when the upside tail gains probability |
+| E10 | Activity S-CB1 | **The FX path and whether the move is persistent** | A persistent real depreciation changes the competitiveness of tradables and real income | The thesis of Q4, and E1 |
+| E11 | Activity S-CB2 | **Terms of trade: price against volume**, from the trade detail | Terms-of-trade gains raise national income above GDP and feed demand in the commodity sectors | Q2, channel 2.4 (`cmb_termos_troca`, `cmb_comex_produto`) |
+| E12 | Fiscal FS-CB1 | **Is the real pricing fiscal stress?** The global/idiosyncratic split, and whether the real and the CDS moved together against the peers | It is the market's confirmation that a CDS move is fiscal | Q3, channels 2.2 and 2.3, and E2; flag it when the idiosyncratic part dominates and the CDS moved with it |
+| E13 | Fiscal FS-CB2 | **The exchange-rate path and the BCB's FX operations** (reserves, swaps) | The parity adjustment moves the net debt, and the swap result moves the nominal result | The thesis of Q4, and Q1, channel 2.7 (`cmb_reservas_bc`) |
+| E14 | External XS1 | **Global or idiosyncratic?** The split of the BRL's recent move, against the dollar indices and the peers | It is the evidence of whether the global block is what moves Brazil; the external agent cannot infer it from `dxy_em`, which contains the BRL | Q3 and E2 |
+| E15 | External XS2 | **Flows and positioning as evidence of the global cycle in Brazil**: the financial FX flow and the speculative position in BRL futures | Tells whether the risk-appetite scenario reaches Brazil through money actually moving, or only through prices | Q1, channels 2.5 and 2.6 (`cmb_cambio_contratado`, `cmb_cot_fx`) |
+| E16 | Expectations XS7 | **Is the move persistent, and global or idiosyncratic?**, and the thesis by quarter | A persistent, idiosyncratic depreciation carries a risk premium that reaches the long horizons of expectations; a global one usually does not | E1, E2 and the thesis of Q4 |
 
 ---
 

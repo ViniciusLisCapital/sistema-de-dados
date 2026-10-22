@@ -98,7 +98,21 @@ check("prazo alem do ultimo vertice nao e extrapolado", _taxa(du, tx, 600) is No
 grupos = motor.ler_lista(pm.SECAO)
 itens = [it for g in grupos for it in g["itens"]]
 check("a declaracao de PM bate com a lista V.II", not levanta(lambda: motor.conferir(pm.TABELAS, grupos), ""))
-check("V.II tem 69 entradas em 10 grupos", (len(itens), len(grupos)) == (69, 10), (len(itens), len(grupos)))
+check("V.II tem 69 entradas em 8 grupos", (len(itens), len(grupos)) == (69, 8), (len(itens), len(grupos)))
+# 2026-10-22 (SISTEMA III.III.vii): o hiato passou para a atividade, o TWA virou endogeno do dono
+# (fica so o credito) e o CDS saiu de "Exogeno". As tabelas sao as mesmas.
+nomes = [g["nome"] for g in grupos]
+check("V.II: sem grupo 'Exogeno' e so o credito como TWA",
+      not any(n.startswith("Exógeno") for n in nomes)
+      and [n for n in nomes if n.startswith("TWA")] == ["TWA — crédito"], nomes)
+por_tabela = {it["tabela"]: g["nome"] for g in grupos for it in g["itens"]}
+check("V.II: o hiato e o CDS sao consulta (atividade e fiscal)",
+      por_tabela["pm_hiato_produto"].startswith("Endógeno de atividade")
+      and por_tabela["cmb_risco_pais"].startswith("Endógeno de fiscal"),
+      (por_tabela["pm_hiato_produto"], por_tabela["cmb_risco_pais"]))
+nomes_fx = [g["nome"] for g in motor.ler_lista(cambio.SECAO)]
+check("V.I: sem TWA nem 'Exogeno'",
+      not any(n.startswith(("TWA", "Exógeno")) for n in nomes_fx), nomes_fx)
 check("o grupo 'Fora da lista' nao entra na secao", not any("Fora" in g["nome"] for g in grupos))
 comex = [it for it in itens if it["tabela"].startswith("cmb_comex")]
 check("item com tres tabelas numa linha vira tres itens com o mesmo papel",

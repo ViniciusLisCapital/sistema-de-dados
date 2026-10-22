@@ -7,7 +7,7 @@ sistema (IV.iv) e se ajusta pela qualidade do report.
 
 Três coisas que valem para o arquivo inteiro:
 
-  - A seção vai até o grupo "xi. Fora da lista": o que está ali é consulta livre, sem uso
+  - A seção vai até o grupo "ix. Fora da lista": o que está ali é consulta livre, sem uso
     previsto, e não entra no F.
   - Tabela que o câmbio também lê sai da declaração DELE (`de(cambio, ...)` e
     `so(cambio, ...)`, do motor), trocando só as séries. A consulta fica idêntica, e o A
@@ -15,7 +15,9 @@ Três coisas que valem para o arquivo inteiro:
     americana inteira, e não só três vértices), ela leva uma `variante` e vai para outro
     arquivo.
   - Profundidade (PRINCIPIOS I.II.vii): só o grupo "Endógeno" ganha a leitura completa;
-    "Endógeno de câmbio", TWA e Exógeno, a enxuta. O motor decide pelo nome do grupo.
+    os "Endógeno de <outro agente>" e o TWA (crédito), a enxuta. O motor decide pelo nome do
+    grupo. Desde 2026-10-22 (SISTEMA III.III.vii) o hiato do BC é endógeno da atividade, mas a
+    declaração continua aqui: a atividade a copia com `de(politica_monetaria, ...)`.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from analytics.agent_system.dados import especiais as esp
 from analytics.agent_system.dados.motor import (Ctx, Serie, Tabela, antes, de, em, fdata, fmt,
                                                 md_tabela, pctl, so)
 
-SECAO = ("## (V.II) Agente de política monetária", "### xi. Fora da lista")
+SECAO = ("## (V.II) Agente de política monetária", "### ix. Fora da lista")
 PIB = None   # o balanço de pagamentos em % do PIB é leitura do câmbio; aqui não há PIB em dólar
 
 _BI = 1000.0  # R$ ou US$ milhões -> bilhões
@@ -180,7 +182,7 @@ def hiato_vintages(df: pd.DataFrame, ctx: Ctx) -> list[str]:
             ""] + md_tabela(linhas)
 
 
-# ── F próprio dos TWA (leitura enxuta) ────────────────────────────────────────
+# ── F próprio das consultas e do TWA (leitura enxuta) ─────────────────────────
 def _texto(s: pd.Series) -> pd.Series:
     """Coluna de rótulo lida do csv: vazio vira "" e número vira "25", não "25.0"."""
     def um(v):
@@ -467,8 +469,6 @@ TABELAS: list[Tabela] = [
     de(cambio, "pm_copom_calendario", especial=partial(esp.copom_calendario, proximas=None)),
     de(cambio, "pm_copom_reuniao", especial=copom_decisoes),
     de(cambio, "pm_copom_projecoes", especial=copom_projecoes),
-    Tabela("pm_hiato_produto", corte="vintage", especial=hiato),
-    Tabela("pm_hiato_produto_vintages", corte="vintage", especial=hiato_vintages),
     Tabela("br_interest_rate", dims=("curve", "tenor"), series=(
         _s("POLICY|1d", "Selic, meta", "% a.a.", "dif"),
         *[_s(f"DIPRE|{t}", f"DI × pré {r}", "% a.a.", "dif")
@@ -493,7 +493,7 @@ TABELAS: list[Tabela] = [
     so(cambio, "cmb_comex_pais", ("mundo_export", "mundo_import", "china_export")),
     so(cambio, "cmb_comex_produto", ("petroleo_export", "soja_export", "minerio_ferro_export")),
     so(cambio, "diferenciais_juros", ("selic", "fed_funds", "diferencial_nominal", "diferencial_real")),
-    # ── iii. TWA — expectativas ──────────────────────────────────────────────
+    # ── iii. Endógeno de expectativas ────────────────────────────────────────
     de(cambio, "expc_focus_copom"),
     de(cambio, "expc_focus_periodo", recorte="Selic"),
     Tabela("expc_qpc", especial=qpc),
@@ -507,7 +507,7 @@ TABELAS: list[Tabela] = [
     )),
     de(cambio, "expc_focus_periodo", recorte="IPCA"),
     de(cambio, "expc_focus_periodo", recorte="câmbio"),
-    # ── iv. TWA — inflação ───────────────────────────────────────────────────
+    # ── iv. Endógeno de inflação ─────────────────────────────────────────────
     de(cambio, "inflc_agregados", series=(
         *[_s(k, rot, "%", "var_mensal") for k, rot in (
             ("ipca", "IPCA"), ("ipca15", "IPCA-15"), ("ipca_livres", "Livres"),
@@ -522,7 +522,13 @@ TABELAS: list[Tabela] = [
     Tabela("inflc_decomposicao", especial=inflc_decomposicao),
     Tabela("inflc_decomposicao_item", especial=inflc_decomposicao_item),
     Tabela("inflc_dim", corte=None, especial=inflc_dim),
-    # ── v. TWA — atividade ───────────────────────────────────────────────────
+    Tabela("comm_icbr", series=tuple(
+        _s(k, rot, "índice, em R$", "pct") for k, rot in (
+            ("icbr_geral", "IC-Br"), ("icbr_agropecuaria", "IC-Br agropecuária"),
+            ("icbr_metal", "IC-Br metal"), ("icbr_energia", "IC-Br energia")))),
+    # ── v. Endógeno de atividade (o hiato do BC e, provisoriamente, o trabalho) ──
+    Tabela("pm_hiato_produto", corte="vintage", especial=hiato),
+    Tabela("pm_hiato_produto_vintages", corte="vintage", especial=hiato_vintages),
     Tabela("atv_pib", dims=("name", "seasonal_adjs"), series=tuple(
         _s(f"{k}|Y", rot, "índice, dessaz.", "pct") for k, rot in (
             ("pib_pm", "PIB"), ("consumo_familias", "Consumo das famílias"),
@@ -568,7 +574,6 @@ TABELAS: list[Tabela] = [
             ("prof_adm_complementares", "Profissionais e administrativos"),
             ("transportes_correio", "Transportes e correio")))),
     Tabela("atv_renda_poupanca", especial=renda_poupanca),
-    # ── vi. TWA — mercado de trabalho ────────────────────────────────────────
     Tabela("mt_pnad", filtro="region = 'Brasil'", series=(
         _s("taxa_desocupacao", "Taxa de desocupação", "%", "dif", casas=1),
         _s("taxa_participacao", "Taxa de participação", "%", "dif", casas=1),
@@ -594,7 +599,7 @@ TABELAS: list[Tabela] = [
             ("informacao_comunicacao", "informação e comunicação"),
             ("atividades_administrativas_servicos_complementares", "serviços administrativos"),
             ("saude_servicos_sociais", "saúde"), ("educacao", "educação")))),
-    # ── vii. TWA — crédito ───────────────────────────────────────────────────
+    # ── vi. TWA — crédito ────────────────────────────────────────────────────
     Tabela("cred_credito_resumo", series=(
         _s("saldo_total_total", "Saldo total", "R$ bi", "pct", escala=_BI, casas=0),
         _s("saldo_livre_pf", "Saldo livre PF", "R$ bi", "pct", escala=_BI, casas=0),
@@ -668,7 +673,7 @@ TABELAS: list[Tabela] = [
         _s("taxa_juros_pj", "Taxa de juros PJ", "% a.a.", "dif"),
         _s("concessao_credito_pj", "Concessões PJ", "R$ bi", "fluxo", escala=_BI, casas=1),
     )),
-    # ── viii. TWA — fiscal ───────────────────────────────────────────────────
+    # ── vii. Endógeno de fiscal (com o CDS) ──────────────────────────────────
     de(cambio, "fisc_nfsp", series=(
         _s("resultado_primario_pct_pib_12m", "Resultado primário, 12m (+ = superávit)", "% do PIB", "dif"),
         _s("resultado_primario_governo_federal_bc_pct_pib_12m",
@@ -685,7 +690,8 @@ TABELAS: list[Tabela] = [
         _s("despesa_total", "Despesa total", "R$ bi", "fluxo", escala=_BI, casas=1),
     )),
     Tabela("fisc_efgg", especial=efgg),
-    # ── ix. TWA — externo ────────────────────────────────────────────────────
+    de(cambio, "cmb_risco_pais"),
+    # ── viii. Endógeno de externo ────────────────────────────────────────────
     de(cambio, "us_interest_rate", variante="curva",
                filtro="curve = 'POLICY' OR (curve = 'US_TREASURY' AND tenor IN ('3M', '2Y', '5Y', '10Y', '30Y'))",
                series=(_s("POLICY|1d", "Fed Funds, meta (ponto médio)", "% a.a.", "dif"),
@@ -700,12 +706,6 @@ TABELAS: list[Tabela] = [
     de(cambio, "cmb_dollar_index_em"),
     de(cambio, "comm_brent"),
     de(cambio, "comm_icbr_usd"),
-    Tabela("comm_icbr", series=tuple(
-        _s(k, rot, "índice, em R$", "pct") for k, rot in (
-            ("icbr_geral", "IC-Br"), ("icbr_agropecuaria", "IC-Br agropecuária"),
-            ("icbr_metal", "IC-Br metal"), ("icbr_energia", "IC-Br energia")))),
-    # ── x. Exógeno ───────────────────────────────────────────────────────────
-    de(cambio, "cmb_risco_pais"),
 ]
 
 

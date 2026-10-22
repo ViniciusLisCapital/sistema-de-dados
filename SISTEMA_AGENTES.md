@@ -255,6 +255,7 @@
 *Cada agente tem a sua lista, e a mesma tabela aparece em mais de uma, com o motivo daquele agente. Os grupos seguem os tipos de (I.III.ix): endógeno (da área), endógeno de outro agente (consulta; a posição vem daquele agente), TWA e exógeno.*
 
 ## (V.I) Agente de câmbio
+*Grupos refeitos em 2026-10-22, com o primeiro batch de sete agentes (III.III.vii): o que era TWA e o CDS, que era exógeno, viraram endógeno do agente dono. As tabelas são as mesmas.*
 
 ### i. Endógeno
     - `cmb_ptax`: PTAX de venda diária do BCB (desde jul/1994) e volume do interbancário. É a variável que o agente explica; o volume diz se o movimento veio com mercado fundo ou raso.
@@ -292,7 +293,7 @@
 
     - `inflc_meta`: meta de inflação do CMN. É a inflação doméstica de longo prazo que entra na paridade de poder de compra prospectiva.
 
-### iii. TWA — expectativas
+### iii. Endógeno de expectativas (consulta; a posição vem pela saída S10 do mapa de câmbio)
     - `expc_focus_periodo` (câmbio): mediana da Focus para o câmbio no fim de cada ano. Mostra o que o consenso já espera, para separar surpresa de convergência.
 
     - `expc_focus_copom`: mediana da Focus para a Selic em cada reunião. É o carry futuro esperado pelo consenso, para comparar com a curva.
@@ -301,7 +302,7 @@
 
     - `expc_focus_periodo` (IPCA): mediana da Focus para o IPCA no fim de cada ano. É a inflação doméstica esperada que entra na paridade de poder de compra prospectiva, ao lado da meta.
 
-### iv. TWA — externo
+### iv. Endógeno de externo (consulta; a posição vem pelas saídas S8–S9 do mapa de câmbio; o caminho das exógenas do bloco global vem de quem tem a tutela na aba Exógenas)
     - `cmb_dollar_index`: DXY, dólar contra moedas desenvolvidas, diário. Separa o ciclo global do dólar do que é do real (canal 2.3).
 
     - `cmb_dollar_index_em`: dólar contra moedas emergentes (FRED), diário desde 2006. Comparação mais próxima do real que o DXY, porque tira o efeito do euro e do iene.
@@ -316,20 +317,21 @@
 
     - `comm_icbr_usd`: IC-Br em dólar. Preço das commodities relevantes para o Brasil sem a variação cambial embutida: o insumo certo para explicar o real.
 
-### v. TWA — doméstico
+### v. Endógeno de inflação (consulta; a posição vem pela saída S5 do mapa de câmbio)
     - `inflc_agregados`: IPCA e seus componentes. Entra na inflação relativa da paridade de poder de compra e no câmbio real; o agente usa o número sem opinar sobre a inflação.
 
+### vi. Endógeno de fiscal (consulta; a posição vem pelas saídas S6–S7 do mapa de câmbio; o multiplicador do peso do CDS na (F) é do câmbio, que é o dono da equação, III.III.vii)
     - `fisc_nfsp`: resultado primário e nominal do setor público em % do PIB, 12 meses. Esforço fiscal fraco eleva o prêmio de risco do real (canal 2.2).
 
     - `fisc_divida`: dívida bruta e líquida em % do PIB. A trajetória da dívida é o fundamento do prêmio de risco (canal 2.2).
 
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. É o preço do risco soberano, par do real no canal de prêmio de risco (2.2), e a exógena `fiscal` da (F), cujo caminho vem de quem tem a tutela; a carga é por export manual da Bloomberg, então conferir a data do último dado antes de usar.
+
+### vii. Endógeno de atividade (consulta; sem saída fixa: o câmbio só usa o número como denominador)
     - `atv_pib_usd`: PIB mensal em dólar. É o denominador do balanço de pagamentos em % do PIB.
 
-### vi. Exógeno
-    - `cmb_risco_pais`: CDS de 5 anos do Brasil. É o preço do risco soberano, par do real no canal de prêmio de risco (2.2); a carga é por export manual da Bloomberg, então conferir a data do último dado antes de usar.
-
 ## (V.II) Agente de política monetária
-*Lista aprovada pelo usuário em 2026-10-21, com as 68 tabelas abaixo (I.III.xvi: os dados ficam fora das camadas por ora; reavaliar depois do teste solo).*
+*Lista aprovada pelo usuário em 2026-10-21, com as 68 tabelas abaixo (I.III.xvi: os dados ficam fora das camadas por ora; reavaliar depois do teste solo). Grupos refeitos em 2026-10-22, com o primeiro batch de sete agentes (III.III.vii): o hiato do BC passou para a atividade, o que era TWA virou endógeno do agente dono (salvo o crédito, que ainda não tem agente) e o CDS, que era exógeno, foi para o fiscal. As tabelas são as mesmas.*
 
 ### i. Endógeno
     - `pm_copom_calendario`: calendário oficial das reuniões, inclusive as do ano seguinte. Situa cada leitura no ciclo e permite ler Focus e curva reunião a reunião.
@@ -338,17 +340,13 @@
 
     - `pm_copom_projecoes`: projeções de inflação do Copom (referência e alternativas), dos comunicados e do RPM. É a variável que o Copom persegue; o desvio dela para a meta no horizonte relevante explica a decisão.
 
-    - `pm_hiato_produto`: hiato do produto do BCB na última edição do RPM. É a ociosidade que entra na projeção do BC; a diferença para o hiato do mercado (QPC) é fonte de divergência sobre o juro.
-
-    - `pm_hiato_produto_vintages`: todas as estimativas de hiato já publicadas. Revisão do hiato muda a projeção sem que o dado do mês mude, e por isso explica mudanças de postura que os dados correntes não explicam.
-
     - `br_interest_rate`: curva de juros da B3 nos vértices padrão, com a Selic. Mostra o juro nominal e real que o mercado precifica; o juro real é a medida de quão restritiva está a política.
 
     - `br_di_grade`: curva DI com todos os vértices. Dá a Selic implícita reunião a reunião, para comparar com a Focus e com a sinalização do Copom.
 
     - `inflc_meta`: meta de inflação do CMN. É a âncora contra a qual projeções e expectativas são medidas; dado institucional, não leitura de inflação.
 
-### ii. Endógeno de câmbio (consulta; a posição vem pelas entradas E1–E7 do mapa de câmbio)
+### ii. Endógeno de câmbio (consulta; a posição vem pelas entradas E1, E2 e E4–E7 do mapa de câmbio; a E3, repasse, passou para a inflação)
     - `cmb_ptax`: câmbio diário. Entra na projeção de inflação do Copom; se o movimento é persistente ou transitório (E1) e global ou idiossincrático (E2) vem do agente de câmbio.
 
     - `cmb_fx_latam`: moedas dos pares latinos. Base da separação global × idiossincrático (E2): depreciação só do real costuma vir com prêmio de risco, que também afeta expectativas.
@@ -369,7 +367,7 @@
 
     - `diferenciais_juros`: Selic menos Fed Funds. Mede quanto do carry sustenta o real (E6): se o carry deixa de funcionar, enfraquece o canal pelo qual a Selic chega à inflação via câmbio.
 
-### iii. TWA — expectativas
+### iii. Endógeno de expectativas (consulta; a posição vem pela saída S9 do mapa de PM; a conclusão sobre o caminho da Selic que a curva precifica continua da PM, Q3)
     - `expc_focus_copom`: mediana da Focus para a Selic em cada reunião. É o caminho esperado pelo consenso; a diferença para a curva é prêmio, a diferença para a comunicação é espaço de surpresa.
 
     - `expc_focus_periodo` (Selic): mediana da Focus para a Selic no fim de cada ano. Nível do juro esperado num horizonte mais longo que o das reuniões.
@@ -382,7 +380,7 @@
 
     - `expc_focus_periodo` (câmbio): câmbio esperado pelo consenso. A distância para a premissa do Copom é um dos riscos do cenário de referência; a leitura do câmbio continua vindo do agente de câmbio (E4).
 
-### iv. TWA — inflação (vira endógeno do agente de inflação quando ele existir)
+### iv. Endógeno de inflação (consulta; a posição vem pelas saídas S3 e S8 do mapa de PM)
     - `inflc_agregados`: IPCA e IPCA-15 com componentes, difusão e núcleos. É a inflação corrente que o Copom lê, em especial serviços subjacentes e núcleos, que mostram a persistência.
 
     - `inflc_decomposicao`: IPCA por subitem, com peso e contribuição. Separa choque pontual (alimentos, energia) de pressão disseminada, a distinção que decide se o Copom reage.
@@ -391,7 +389,13 @@
 
     - `inflc_dim`: classificação analítica do BC para cada subitem. Permite reconstruir os mesmos recortes que a ata cita (serviços subjacentes, industriais, alimentação no domicílio).
 
-### v. TWA — atividade
+    - `comm_icbr`: IC-Br em reais e sub-índices. Pressão das commodities sobre alimentos e energia já com o câmbio embutido, que é a forma em que ela chega ao IPCA.
+
+### v. Endógeno de atividade (consulta; a posição vem pela saída S10 do mapa de PM; inclui o hiato do BC e, provisoriamente, o mercado de trabalho, III.III.vii)
+    - `pm_hiato_produto`: hiato do produto do BCB na última edição do RPM. É a ociosidade que entra na projeção do BC; a diferença para o hiato do mercado (QPC) é fonte de divergência sobre o juro. O caminho do hiato é da atividade; na PM fica como o Copom lê o hiato e reage.
+
+    - `pm_hiato_produto_vintages`: todas as estimativas de hiato já publicadas. Revisão do hiato muda a projeção sem que o dado do mês mude, e por isso explica mudanças de postura que os dados correntes não explicam.
+
     - `atv_pib`: PIB trimestral pela oferta e pela demanda. Crescimento da demanda doméstica acima do potencial fecha o hiato e pressiona a inflação.
 
     - `atv_pib_taxas`: taxas oficiais de variação do PIB. Permitem citar os mesmos números que o comunicado e a ata citam.
@@ -412,7 +416,6 @@
 
     - `atv_renda_poupanca`: renda nacional, poupança e capacidade de financiamento. Poupança e investimento são determinantes do juro neutro.
 
-### vi. TWA — mercado de trabalho
     - `mt_pnad`: desocupação, ocupação, rendimento e massa salarial. Mede a folga do mercado de trabalho e o crescimento da renda, que alimenta a inflação de serviços.
 
     - `mt_desocupacao_retro`: desocupação dessazonalizada retropolada pelo BCB, desde 2004. É a série que o BC usa, longa o bastante para comparar o nível atual com o histórico.
@@ -421,7 +424,7 @@
 
     - `mt_caged_setor`: saldo de empregos por setor. Mostra se o emprego cresce em serviços, onde a pressão salarial chega mais direto à inflação.
 
-### vii. TWA — crédito
+### vi. TWA — crédito
     - `cred_credito_resumo`: saldo, concessões, juros, spread e inadimplência, por recurso e segmento. É a leitura principal da transmissão: se concessões e taxas respondem à Selic, a política está funcionando.
 
     - `cred_fluxo_financeiro`: impulso de crédito no conceito do RPM. É o mesmo número que o BC usa ao falar de condições financeiras.
@@ -444,7 +447,7 @@
 
     - `cred_inadimplencia_pj`: inadimplência e atraso de 15 a 90 dias das empresas. Mede o custo do aperto e o risco para a estabilidade financeira.
 
-### viii. TWA — fiscal
+### vii. Endógeno de fiscal (consulta; a posição vem pelas saídas S11–S12 do mapa de PM; inclui o CDS)
     - `fisc_nfsp`: resultado primário, nominal e juros em % do PIB, 12 meses. Política fiscal expansionista estimula a demanda e exige juro mais alto para o mesmo resultado de inflação.
 
     - `fisc_divida`: dívida bruta e líquida em % do PIB. A trajetória da dívida afeta o prêmio de risco e as expectativas, e por aí o juro neutro.
@@ -455,7 +458,9 @@
 
     - `fisc_efgg`: estatísticas fiscais do governo geral pela classificação do FMI, trimestral. É a base para medir o impulso fiscal, o estímulo à demanda que o Copom pondera.
 
-### ix. TWA — externo
+    - `cmb_risco_pais`: CDS de 5 anos do Brasil. Termômetro da percepção de risco que o Copom cita e que chega ao juro longo e ao câmbio; o caminho vem de quem tem a tutela da exógena `fiscal` na aba Exógenas. Conferir a data do último dado, a carga é manual.
+
+### viii. Endógeno de externo (consulta; a posição vem pela saída S13 do mapa de PM; o caminho do Fed Funds e das outras exógenas do bloco global vem de quem tem a tutela na aba Exógenas)
     - `us_interest_rate`: curva do Treasury e meta do Fed. O juro americano condiciona o espaço para o diferencial de juros e o apetite por emergentes.
 
     - `inter_interest_rate`: taxa de política dos pares latinos. Mostra o ciclo dos outros BCs, referência para quanto o Copom pode se afastar.
@@ -468,13 +473,9 @@
 
     - `comm_brent`: Brent em dólar. Choque de oferta que chega aos combustíveis e aos preços administrados; o Copom olha os efeitos secundários, não o choque.
 
-    - `comm_icbr`: IC-Br em reais e sub-índices. Pressão das commodities sobre alimentos e energia já com o câmbio embutido, que é a forma em que ela chega ao IPCA.
-    - `comm_icbr_usd`: IC-Br em dólar e sub-índices (acrescentado 2026-10-21). Os índices agro e metal em dólar são exógenas do Modelo Estrutural, na curva de Phillips: é com eles que o agente escreve o caminho das commodities nos cenários.
+    - `comm_icbr_usd`: IC-Br em dólar e sub-índices (acrescentado 2026-10-21). Os índices agro e metal em dólar são exógenas do Modelo Estrutural, na curva de Phillips; o caminho deles vem de quem tem a tutela na aba Exógenas.
 
-### x. Exógeno
-    - `cmb_risco_pais`: CDS de 5 anos do Brasil. Termômetro da percepção de risco que o Copom cita e que chega ao juro longo e ao câmbio; conferir a data do último dado, a carga é manual.
-
-### xi. Fora da lista (consulta livre, sem uso previsto)
+### ix. Fora da lista (consulta livre, sem uso previsto)
     - `mt_pnad_trimestral`, `mt_caged_uf`, `mt_caged_salario`, `cred_credito_porte`, `cred_credito_atividade_economica`, `cred_credito_tipo_cliente`, `fisc_investimento`: cortes estruturais, regionais ou de detalhe que não mudam a leitura do juro.
 
 ## (V.III) Agente de inflação

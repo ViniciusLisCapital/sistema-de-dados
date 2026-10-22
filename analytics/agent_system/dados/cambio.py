@@ -4,6 +4,10 @@ As tabelas do agente de câmbio (SISTEMA_AGENTES.md V.I) e o F de cada uma.
 A lista (quais tabelas) é decidida com o usuário e vive no SISTEMA_AGENTES.md; o gerador
 levanta se esta declaração divergir dela. O tratamento (quais séries, que leitura) é do
 sistema (IV.iv) e se ajusta pela qualidade do report.
+
+Desde 2026-10-22 (SISTEMA III.III.vii) o que era TWA e o CDS, que era exógeno, são endógenos
+dos agentes donos (expectativas, externo, inflação, fiscal, atividade). As declarações continuam
+aqui: os outros agentes as copiam com `motor.de`/`motor.so`, e o A do ciclo serve a todos.
 """
 
 from __future__ import annotations
@@ -16,6 +20,10 @@ from analytics.agent_system.dados.motor import Ctx, Serie, Tabela, antes, em, fd
 
 SECAO = ("## (V.I) Agente de câmbio", "## (V.II)")
 PIB = ("atv_pib_usd", "pib_usd")
+# A taxa oficial do Chile e a da Colômbia datadas em t (BIS) são formadas nos negócios do dia
+# útil anterior: no mesmo dia elas não correlacionam com nada (contra o dólar EM, 0,04 no mesmo
+# dia e 0,59/0,49 alinhadas, 2024 em diante). Mesma correção do `externo.risco_e_dolar`.
+_DIA_SEGUINTE = ("CL", "CO")
 
 _BI = 1000.0  # US$ milhões -> US$ bilhões
 
@@ -105,7 +113,9 @@ TABELAS: list[Tabela] = [
         _s(p, rot, f"{u}/US$", "pct", casas=4 if p in ("MX", "PE") else 2)
         for p, rot, u in (("MX", "Peso mexicano", "MXN"), ("CL", "Peso chileno", "CLP"),
                           ("CO", "Peso colombiano", "COP"), ("PE", "Sol peruano", "PEN"))
-    )),
+    ), nota="O peso chileno e o colombiano datados em um dia são a taxa oficial formada no dia útil "
+            "anterior: para comparar com o real ou com o dólar no mesmo dia, leia a taxa do dia útil "
+            "seguinte. A tabela abaixo está como a fonte publica."),
     Tabela("diferenciais_juros", series=(
         _s("selic", "Selic", "% a.a.", "dif"),
         _s("fed_funds", "Fed Funds", "% a.a.", "dif"),
@@ -122,7 +132,7 @@ TABELAS: list[Tabela] = [
     Tabela("pm_copom_projecoes", corte="vintage", especial=esp.copom_projecoes),
     Tabela("br_di_grade", especial=esp.di_grade),
     Tabela("inflc_meta", especial=esp.inflc_meta),
-    # ── iii. TWA — expectativas ──────────────────────────────────────────────
+    # ── iii. Endógeno de expectativas ────────────────────────────────────────
     *[Tabela("expc_focus_periodo", recorte=rec, especial=esp.focus_anual,
              filtro="indicador = %(ind)s AND periodicidade = 'anual' AND tipo_calculo = 'geral' "
                     "AND base_calculo = 0 AND detalhe = ''",
@@ -130,7 +140,7 @@ TABELAS: list[Tabela] = [
       for rec, ind in (("câmbio", "Câmbio"), ("Selic", "Selic"), ("IPCA", "IPCA"))],
     Tabela("expc_focus_copom", filtro="tipo_calculo = 'geral' AND base_calculo = 0",
            especial=esp.focus_copom),
-    # ── iv. TWA — externo ────────────────────────────────────────────────────
+    # ── iv. Endógeno de externo ──────────────────────────────────────────────
     Tabela("cmb_dollar_index", series=(_s("dxy", "DXY", "índice", "pct"),)),
     Tabela("cmb_dollar_index_em", series=(_s("dxy_em", "Dólar contra emergentes (FRED)", "índice", "pct"),)),
     Tabela("cmb_equity_us", series=(_s("sp500", "S&P 500", "pontos", "pct", casas=0),)),
@@ -151,13 +161,14 @@ TABELAS: list[Tabela] = [
         _s("icbr_metal_usd", "IC-Br metal", "índice", "pct"),
         _s("icbr_energia_usd", "IC-Br energia", "índice", "pct"),
     )),
-    # ── v. TWA — doméstico ───────────────────────────────────────────────────
+    # ── v. Endógeno de inflação ──────────────────────────────────────────────
     Tabela("inflc_agregados", series=tuple(
         _s(k, rot, "%", "var_mensal") for k, rot in (
             ("ipca", "IPCA"), ("ipca_livres", "Livres"), ("ipca_administrado", "Administrados"),
             ("ipca_comercializaveis", "Comercializáveis"), ("ipca_nao_comercializaveis", "Não comercializáveis"),
             ("ipca_servicos", "Serviços"), ("ipca_industriais", "Industriais"))
     )),
+    # ── vi. Endógeno de fiscal (com o CDS) ───────────────────────────────────
     Tabela("fisc_nfsp", series=(
         _s("resultado_primario_pct_pib_12m", "Resultado primário, 12m (+ = superávit)", "% do PIB", "dif"),
         _s("resultado_nominal_pct_pib_12m", "Resultado nominal, 12m", "% do PIB", "dif"),
@@ -167,9 +178,9 @@ TABELAS: list[Tabela] = [
         _s("dbgg_pct_pib", "Dívida bruta do governo geral", "% do PIB", "dif", casas=1),
         _s("dlsp_pct_pib", "Dívida líquida do setor público", "% do PIB", "dif", casas=1),
     )),
-    Tabela("atv_pib_usd", series=(_s("pib_usd", "PIB mensal em dólar", "US$ bi", "fluxo", escala=_BI),)),
-    # ── vi. Exógeno ──────────────────────────────────────────────────────────
     Tabela("cmb_risco_pais", series=(_s("cds_5y_usd", "CDS 5 anos Brasil", "p.b.", "dif", casas=0),)),
+    # ── vii. Endógeno de atividade ───────────────────────────────────────────
+    Tabela("atv_pib_usd", series=(_s("pib_usd", "PIB mensal em dólar", "US$ bi", "fluxo", escala=_BI),)),
 ]
 
 
@@ -182,8 +193,10 @@ def _vol(s: pd.Series, n: int) -> pd.Series:
 def brl_e_pares(ctx: Ctx) -> list[str]:
     """O real contra os pares: variação, volatilidade realizada e carry contra o Fed."""
     moedas = [("BRL", ctx.serie("cmb_ptax", "ptax_venda"))]
-    moedas += [(m, ctx.serie("cmb_fx_latam", p)) for m, p in
-               (("MXN", "MX"), ("CLP", "CL"), ("COP", "CO"), ("PEN", "PE"))]
+    for m, p in (("MXN", "MX"), ("CLP", "CL"), ("COP", "CO"), ("PEN", "PE")):
+        s = ctx.serie("cmb_fx_latam", p)
+        # Alinhadas ao dia em que a taxa foi formada (_DIA_SEGUINTE), como o real e o dólar.
+        moedas.append((m, s.shift(-1).dropna() if p in _DIA_SEGUINTE else s))
     fed = ctx.serie("us_interest_rate", "POLICY|1d")
     selic, d_selic = esp._selic_vigente(ctx, ctx.corte + pd.Timedelta(days=1))
     linhas = []
@@ -215,7 +228,9 @@ def brl_e_pares(ctx: Ctx) -> list[str]:
         linhas.append(row)
     return (["### O real e os pares", "",
              "Moeda local por dólar: Δ% positivo = a moeda se desvalorizou. Volatilidade realizada "
-             "em % ao ano. Juro de política dos pares pelo BIS (mensal, com defasagem: data ao lado); "
+             "em % ao ano. O peso chileno e o colombiano entram com a taxa oficial do dia útil seguinte, "
+             "que é a formada no dia anterior: a coluna Data é o dia da formação, como no real. "
+             "Juro de política dos pares pelo BIS (mensal, com defasagem: data ao lado); "
              "o do Brasil é a Selic vigente. Carry = juro de política menos a meta do Fed na mesma data.",
              ""] + md_tabela(linhas))
 
